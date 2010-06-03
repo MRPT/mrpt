@@ -1,0 +1,45 @@
+=head1 NAME
+
+camera-calib - GUI for calibrating a monocular camera using a checker-board
+
+=head1 SYNOPSIS
+
+camera-calib
+
+=head1 DESCRIPTION
+
+B<camera-calib-gui> is a graphical application which allows the user to select a sequence
+of images where a checkerboad (calibration pattern) appears, then it computes the intrinsic
+and distortion parameters of the camera, using the OpenCV implementation of Zhang's algorithm.
+
+The sequence of images can be grabbed directly from a webcam, firewire camera or any 
+other video source.
+
+
+=head1 BUGS
+
+Please report bugs at http://sourceforge.net/tracker/?group_id=205280&atid=993006
+
+=head1 SEE ALSO
+
+The application wiki page at http://babel.isa.uma.es/mrpt/index.php/Applications
+
+=head1 AUTHORS
+
+B<camera-calib> is part of the Mobile Robot Programming Toolkit (MRPT), and was originally 
+written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3, or (at your option) any
+later version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
+=cut
+

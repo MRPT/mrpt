@@ -1,0 +1,14 @@
+Special thanks to all those who have helped me maintain this 
+distribution, including:
+
+ * Fadi Chakik <chakik@cut.edu.lb>
+ * Werner Pomwenger <werner.pomwenger@fh-salzburg.ac.at>
+ * Joel Sole <joelsole@gmail.com>
+ * Xu Jie <xujie@cse.unsw.edu.au>
+ * Gerrit Verstraete <gerrit.verstraete@barco.com>
+ * Vincent Rabaud <vrabaud@cs.ucsd.edu>
+ * Yuan Gong <yuan.gong@gmail.com>
+ * Sebastien Henrotin <shenrotin@gmail.com>
+
+If you've helped and aren't listed, it isn't intentional.  Just remind 
+me, and I'll put you in here.

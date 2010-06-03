@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="slamdemo" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Release">
+				<Option output="bin/Release/slamdemo" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="`wx-config --cflags`" />
+			<Add option="-Wall" />
+		</Compiler>
+		<Linker>
+			<Add option="`wx-config --libs`" />
+		</Linker>
+		<Unit filename="CDlgParams.cpp" />
+		<Unit filename="CDlgParams.h" />
+		<Unit filename="CLogView.cpp" />
+		<Unit filename="CLogView.h" />
+		<Unit filename="slamdemoApp.cpp" />
+		<Unit filename="slamdemoApp.h" />
+		<Unit filename="slamdemoMain.cpp" />
+		<Unit filename="slamdemoMain.h" />
+		<Unit filename="wxsmith/slamdemoframe.wxs" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<wxsmith version="1">
+				<gui name="wxWidgets" src="slamdemoApp.cpp" main="slamdemoFrame" init_handlers="necessary" language="CPP" />
+				<resources>
+					<wxFrame wxs="wxsmith/slamdemoframe.wxs" src="slamdemoMain.cpp" hdr="slamdemoMain.h" name="slamdemoFrame" language="CPP" />
+					<wxDialog wxs="wxsmith/CDlgParams.wxs" src="CDlgParams.cpp" hdr="CDlgParams.h" name="CDlgParams" language="CPP" />
+					<wxDialog wxs="wxsmith/CLogView.wxs" src="CLogView.cpp" hdr="CLogView.h" name="CLogView" language="CPP" />
+				</resources>
+			</wxsmith>
+			<lib_finder disable_auto="1" />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

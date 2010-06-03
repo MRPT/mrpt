@@ -1,0 +1,42 @@
+=head1 NAME
+
+observations2map - Transforms a set of pairs <pose,observation> into metric maps.
+
+=head1 SYNOPSIS
+
+observations2map I<config_file.ini> I<observations.simplemap> I<output_maps_prefix>
+
+=head1 DESCRIPTION
+
+B<observations2map> reads a multi metric map description from the config file and insert
+all the observations into it. Then it saves all the metric maps to independent files. 
+It can be used to generate point maps, occupancy grid maps, or any kind of maps from a 
+sequence of localized observations.
+
+=head1 BUGS
+
+Please report bugs at http://sourceforge.net/tracker/?group_id=205280&atid=993006
+
+=head1 SEE ALSO
+
+The application wiki page at http://babel.isa.uma.es/mrpt/index.php/Applications
+
+=head1 AUTHORS
+
+B<observations2map> is part of the Mobile Robot Programming Toolkit (MRPT), and was originally 
+written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3, or (at your option) any
+later version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
+=cut
+

@@ -1,0 +1,30 @@
+
+(These notes are mostly for myself (J.L. Blanco), but hopefully they'll be 
+ useful if someone else maintains MRPT in the future...)
+
+  MRPT release check-list:
+=============================
+
+1) CREATE PACKAGES OF SOURCES
+> Go to mrpt-src. 
+> Update "Build & Install" documentation. 
+>> Update file doc/COMPILE-INSTALL.wiki
+>> wiki2html -o html_postbuild/install.html -t "Building and Installing Instructions" COMPILE-INSTALL.wiki
+> bash scripts/build_docs.sh -c
+> Do the final "svn ci" before the release.
+> bash scripts/prepare_release.sh
+> bash scripts/prepare_debian.sh
+
+The packages are in $(HOME)/mrpt_release and $(HOME)/mrpt_debian
+
+2) DEBIAN PACKAGE
+> Go to mrpt_debian/debian
+> Edit changelog and copy it to my SVN.
+> Go to mrpt_debian
+> debuild -S -sa
+
+3) Try compilation in Debian Unstable
+> sudo ARCH=amd64 DIST=sid pbuilder --update
+> sudo ARCH=amd64 DIST=sid pbuilder --build  MRPT*.dsc
+
+

@@ -1,0 +1,320 @@
+/* +---------------------------------------------------------------------------+
+   |          The Mobile Robot Programming Toolkit (MRPT) C++ library          |
+   |                                                                           |
+   |                   http://mrpt.sourceforge.net/                            |
+   |                                                                           |
+   |   Copyright (C) 2005-2010  University of Malaga                           |
+   |                                                                           |
+   |    This software was written by the Machine Perception and Intelligent    |
+   |      Robotics Lab, University of Malaga (Spain).                          |
+   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>                     |
+   |                                                                           |
+   |  This file is part of the MRPT project.                                   |
+   |                                                                           |
+   |     MRPT is free software: you can redistribute it and/or modify          |
+   |     it under the terms of the GNU General Public License as published by  |
+   |     the Free Software Foundation, either version 3 of the License, or     |
+   |     (at your option) any later version.                                   |
+   |                                                                           |
+   |   MRPT is distributed in the hope that it will be useful,                 |
+   |     but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+   |     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
+   |     GNU General Public License for more details.                          |
+   |                                                                           |
+   |     You should have received a copy of the GNU General Public License     |
+   |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
+   |                                                                           |
+   +---------------------------------------------------------------------------+ */
+#ifndef PF_implementations_data_H
+#define PF_implementations_data_H
+
+#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/bayes/CParticleFilterData.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPoseRandomSampler.h>
+#include <mrpt/slam/TKLDParams.h>
+
+#include <mrpt/slam/link_pragmas.h>
+
+namespace mrpt
+{
+	namespace slam
+	{
+		using namespace std;
+		using namespace mrpt::poses;
+		using namespace mrpt::bayes;
+		using namespace mrpt::math;
+
+
+		// Frwd decl:
+		template <class PARTICLETYPE, class BINTYPE>
+		void KLF_loadBinFromParticle(
+			BINTYPE				&outBin,
+			const TKLDParams  	&opts,
+			const PARTICLETYPE 	*currentParticleValue = NULL,
+			const TPose3D		*newPoseToBeInserted = NULL );
+
+
+		/** A set of common data shared by PF implementations for both SLAM and localization
+		  */
+		template <class PARTICLE_TYPE>
+		class PF_implementation
+		{
+		public:
+			PF_implementation(
+					mrpt::bayes::CParticleFilterData<PARTICLE_TYPE> &pfd,
+					mrpt::bayes::CParticleFilterCapable				&pfc
+					) :
+				m_partdata(pfd),
+				m_pfc(pfc),
+				m_accumRobotMovement2DIsValid(false),
+				m_accumRobotMovement3DIsValid(false)
+			{
+			}
+
+			typedef mrpt::bayes::CParticleFilterData<PARTICLE_TYPE> BASE;
+			typedef mrpt::bayes::CParticleFilterCapable				BASE2;
+
+		protected:
+
+			BASE	&m_partdata;  //!< the particle filter data object, implementing CParticleFilterData<PARTICLE_TYPE>
+			BASE2	&m_pfc;  	  //!< the particle filter data object, implementing CParticleFilterCapable
+
+			/** \name Data members and methods used by generic PF implementations
+			    @{ */
+
+			CActionRobotMovement2D	m_accumRobotMovement2D;
+			bool					m_accumRobotMovement2DIsValid;
+			CPose3DPDFGaussian		m_accumRobotMovement3D;
+			bool					m_accumRobotMovement3DIsValid;
+
+			CPoseRandomSampler				m_movementDrawer;						//!< Used in al PF implementations. \sa PF_SLAM_implementation_gatherActionsCheckBothActObs
+			mutable vector_double			m_pfAuxiliaryPFOptimal_estimatedProb;	//!< Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
+			mutable vector_double			m_pfAuxiliaryPFStandard_estimatedProb;	//!< Auxiliary variable used in the "pfAuxiliaryPFStandard" algorithm.
+			mutable vector_double			m_pfAuxiliaryPFOptimal_maxLikelihood;						//!< Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
+			mutable std::vector<TPose3D>	m_pfAuxiliaryPFOptimal_maxLikDrawnMovement;		//!< Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
+			std::vector<bool>				m_pfAuxiliaryPFOptimal_maxLikMovementDrawHasBeenUsed;
+
+			/**  Compute w[i]·p(z_t | mu_t^i), with mu_t^i being
+			  *    the mean of the new robot pose
+			  *
+			  * \param action MUST be a "const CPose3D*"
+			  * \param observation MUST be a "const CSensoryFrame*"
+			  */
+			template <class BINTYPE> // Template arg. actually not used, just to allow giving the definition in another file later on
+			static double PF_SLAM_particlesEvaluator_AuxPFStandard(
+				const CParticleFilter::TParticleFilterOptions &PF_options,
+				const CParticleFilterCapable	*obj,
+				size_t index,
+				const void * action,
+				const void * observation );
+
+			template <class BINTYPE> // Template arg. actually not used, just to allow giving the definition in another file later on
+			static double  PF_SLAM_particlesEvaluator_AuxPFOptimal(
+				const CParticleFilter::TParticleFilterOptions &PF_options,
+				const CParticleFilterCapable	*obj,
+				size_t					index,
+				const void				*action,
+				const void				*observation );
+
+			/** @} */
+
+			/** \name The generic PF implementations for localization & SLAM.
+			    @{ */
+
+			/** A generic implementation of the PF method "prediction_and_update_pfAuxiliaryPFOptimal" (optimal sampling with rejection sampling approximation),
+			  *  common to both localization and mapping.
+			  *
+			  * - BINTYPE: TPoseBin or whatever to discretize the sample space for KLD-sampling.
+			  *
+			  *  This method implements optimal sampling with a rejection sampling-based approximation of the true posterior.
+			  *  For details, see the papers:
+			  *
+			  *  J.-L. Blanco, J. González, and J.-A. Fernández-Madrigal,
+			  *    "An Optimal Filtering Algorithm for Non-Parametric Observation Models in
+			  *     Robot Localization," in Proc. IEEE International Conference on Robotics
+			  *     and Automation (ICRA'08), 2008, pp. 461–466.
+			  */
+			template <class BINTYPE>
+			void PF_SLAM_implementation_pfAuxiliaryPFOptimal(
+				const CActionCollection	* actions,
+				const CSensoryFrame		* sf,
+				const CParticleFilter::TParticleFilterOptions &PF_options,
+				const TKLDParams &KLD_options);
+
+			/** A generic implementation of the PF method "prediction_and_update_pfAuxiliaryPFStandard" (Auxiliary particle filter with the standard proposal),
+			  *  common to both localization and mapping.
+			  *
+			  * - BINTYPE: TPoseBin or whatever to discretize the sample space for KLD-sampling.
+			  *
+			  *  This method is described in the paper:
+			  *   Pitt, M.K.; Shephard, N. (1999). "Filtering Via Simulation: Auxiliary Particle Filters".
+			  *    Journal of the American Statistical Association 94 (446): 590–591. doi:10.2307/2670179.
+			  *
+			  */
+			template <class BINTYPE>
+			void PF_SLAM_implementation_pfAuxiliaryPFStandard(
+				const CActionCollection	* actions,
+				const CSensoryFrame		* sf,
+				const CParticleFilter::TParticleFilterOptions &PF_options,
+				const TKLDParams &KLD_options);
+
+
+			/** A generic implementation of the PF method "pfStandardProposal" (standard proposal distribution, that is, a simple SIS particle filter),
+			  *  common to both localization and mapping.
+			  *
+			  * - BINTYPE: TPoseBin or whatever to discretize the sample space for KLD-sampling.
+			  */
+			template <class BINTYPE>
+			void PF_SLAM_implementation_pfStandardProposal(
+				const CActionCollection	* actions,
+				const CSensoryFrame		* sf,
+				const CParticleFilter::TParticleFilterOptions &PF_options,
+				const TKLDParams &KLD_options);
+
+			/** @} */
+
+
+			/** \name Virtual methods that the PF_implementations assume exist.
+			    @{ */
+
+			/** Return a pointer to the last robot pose in the i'th particle (or NULL if it's a path and it's empty). */
+			virtual const TPose3D * getLastPose(const size_t i) const = 0;
+
+			virtual void PF_SLAM_implementation_custom_update_particle_with_new_pose(
+				PARTICLE_TYPE *particleData,
+				const TPose3D &newPose) const = 0;
+
+			/** This is the default algorithm to efficiently replace one old set of samples by another new set.
+			  *  The method uses pointers to make fast copies the first time each particle is duplicated, then
+			  *   makes real copies for the next ones.
+			  *
+			  *  Note that more efficient specializations might exist for specific particle data structs.
+			  */
+			virtual void PF_SLAM_implementation_replaceByNewParticleSet(
+				typename BASE::CParticleList	 &old_particles,
+				const vector<TPose3D>		&newParticles,
+				const vector_double			&newParticlesWeight,
+				const vector<size_t>		&newParticlesDerivedFromIdx ) const
+			{
+				// ---------------------------------------------------------------------------------
+				// Substitute old by new particle set:
+				//   Old are in "m_particles"
+				//   New are in "newParticles", "newParticlesWeight","newParticlesDerivedFromIdx"
+				// ---------------------------------------------------------------------------------
+				const size_t N = newParticles.size();
+				typename BASE::CParticleList newParticlesArray(N);
+
+				// For efficiency, just copy the "CParticleData" from the old particle into the
+				//  new one, but this can be done only once:
+				std::vector<bool>	oldParticleAlreadyCopied(old_particles.size(),false);
+
+				size_t i;
+				typename BASE::CParticleList::iterator	newPartIt;
+				for (newPartIt=newParticlesArray.begin(),i=0;newPartIt!=newParticlesArray.end();newPartIt++,i++)
+				{
+					// The weight:
+					newPartIt->log_w = newParticlesWeight[i];
+
+					// The data (CParticleData):
+					PARTICLE_TYPE *newPartData;
+					if (!oldParticleAlreadyCopied[newParticlesDerivedFromIdx[i]])
+					{
+						// The first copy of this old particle:
+						newPartData = old_particles[ newParticlesDerivedFromIdx[i] ].d;
+						oldParticleAlreadyCopied[newParticlesDerivedFromIdx[i]] = true;
+					}
+					else
+					{
+						// Make a copy:
+						newPartData = new PARTICLE_TYPE( *old_particles[ newParticlesDerivedFromIdx[i] ].d );
+					}
+
+					newPartIt->d = newPartData;
+				} // end for "newPartIt"
+
+				// Now add the new robot pose to the paths:
+				//  (this MUST be done after the above loop, separately):
+				// Update the particle with the new pose: this part is caller-dependant and must be implemented there:
+				for (newPartIt=newParticlesArray.begin(),i=0;i<N;++newPartIt,++i)
+					PF_SLAM_implementation_custom_update_particle_with_new_pose( newPartIt->d, newParticles[i] );
+
+				// Free those old m_particles not being copied into the new ones:
+				for (size_t i=0;i<old_particles.size();i++)
+					if (!oldParticleAlreadyCopied[i])
+						mrpt::utils::delete_safe( old_particles[ i ].d );
+
+				// Copy into "m_particles"
+				old_particles.resize( newParticlesArray.size() );
+				typename BASE::CParticleList::iterator	trgPartIt;
+				for (newPartIt=newParticlesArray.begin(),trgPartIt=old_particles.begin(); newPartIt!=newParticlesArray.end(); ++newPartIt, ++trgPartIt )
+				{
+					trgPartIt->log_w = newPartIt->log_w;
+					trgPartIt->d = newPartIt->d;
+				}
+			} // end of PF_SLAM_implementation_replaceByNewParticleSet
+
+
+
+			virtual bool PF_SLAM_implementation_doWeHaveValidObservations(
+				const typename  BASE::CParticleList	&particles,
+				const CSensoryFrame *sf) const
+			{
+				return true;	// By default, always process the SFs.
+			}
+
+			/** Make a specialization if needed, eg. in the first step in SLAM.  */
+			virtual bool PF_SLAM_implementation_skipRobotMovement() const
+			{
+				return false; // By default, always allow the robot to move!
+			}
+
+			/** Evaluate the observation likelihood for one particle at a given location */
+			virtual double PF_SLAM_computeObservationLikelihoodForParticle(
+				const CParticleFilter::TParticleFilterOptions	&PF_options,
+				const size_t			particleIndexForMap,
+				const CSensoryFrame		&observation,
+				const CPose3D			&x )  const = 0;
+
+			/** @} */
+
+
+		/** Auxiliary method called by PF implementations: return true if we have both action & observation,
+		  *   otherwise, return false AND accumulate the odometry so when we have an observation we didn't lose a thing.
+		  *   On return=true, the "m_movementDrawer" member is loaded and ready to draw samples of the increment of pose since last step.
+		  *  This method is smart enough to accumulate CActionRobotMovement2D or CActionRobotMovement3D, whatever comes in.
+		  */
+		template <class BINTYPE> // Template arg. actually not used, just to allow giving the definition in another file later on
+		bool PF_SLAM_implementation_gatherActionsCheckBothActObs(
+			const CActionCollection	* actions,
+			const CSensoryFrame		* sf );
+
+		private:
+			/** The shared implementation body of two PF methods: APF and Optimal-APF, depending on USE_OPTIMAL_SAMPLING */
+			template <class BINTYPE>
+			void PF_SLAM_implementation_pfAuxiliaryPFStandardAndOptimal(
+				const CActionCollection	* actions,
+				const CSensoryFrame		* sf,
+				const CParticleFilter::TParticleFilterOptions &PF_options,
+				const TKLDParams &KLD_options,
+				const bool USE_OPTIMAL_SAMPLING  );
+
+			template <class BINTYPE>
+			void PF_SLAM_aux_perform_one_rejection_sampling_step(
+				const bool		USE_OPTIMAL_SAMPLING,
+				const bool		doResample,
+				const double	maxMeanLik,
+				size_t    k, // The particle from the old set "m_particles[]"
+				const CSensoryFrame		* sf,
+				const CParticleFilter::TParticleFilterOptions &PF_options,
+				CPose3D			& out_newPose,
+				double			& out_newParticleLogWeight);
+
+
+		}; // end PF_implementation
+	}
+}
+
+#endif

@@ -1,0 +1,11 @@
+prefix=@mrpt_pkgconfig_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib@LIB_SUFFIX@
+includedir=${prefix}/include
+
+Name: MRPT
+Description: Mobile Robot Programming Toolkit (MRPT) - C++ library
+Version: @CMAKE_MRPT_VERSION_NUMBER_MAJOR@.@CMAKE_MRPT_VERSION_NUMBER_MINOR@.@CMAKE_MRPT_VERSION_NUMBER_PATCH@
+Libs: -L${libdir} @MRPT_LINKER_LIBS_FOR_PKGCONFIG@
+Cflags: -I${includedir} -I${includedir}/mrpt/mrpt-config/ @wxWidgets_CXX_FLAGS@
+

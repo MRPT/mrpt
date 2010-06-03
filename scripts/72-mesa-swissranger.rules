@@ -1,0 +1,12 @@
+# UDEV-style hotplug map for the MESA SwissRanger camera to 
+#   have proper permissions
+#
+# Put this file in /etc/udev/rules.d
+#
+#  J.L. Blanco, MAY/2010
+# ---------------------------------------
+
+# SR-4000
+ATTR{idVendor}=="1ad2", ATTR{idProduct}=="0075", MODE="666"
+
+

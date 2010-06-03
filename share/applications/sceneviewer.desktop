@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=Scene Viewer 3D
+Comment=Viewer of MRPT scenes
+Exec=SceneViewer3D %F
+Icon=sceneviewer
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=Education;Science;Robotics;ArtificialIntelligence;
+StartupNotify=true
+MimeType=application/x-mrpt-3dscene;
+

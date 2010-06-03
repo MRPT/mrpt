@@ -1,0 +1,147 @@
+
+ARIA Installation Instructions
+===============================
+
+Don't forget to sign up for the Aria-Users mailing list by sending a message 
+with the subject 'subscribe' to aria-users-request@mobilerobots.com.
+
+ARIA software development is supported on Windows 2000 using MS Visual 
+Studio 2003/.NET (7) and on GNU/Linux using GNU development tools (make, 
+GCC).
+
+See README.txt for more information.
+
+
+Windows:
+--------
+
+Run the Aria-<version>.exe to invoke the setup program, then simply
+follow the prompts.  All ARIA software will be installed in 
+C:\Program Files\MobileRobots\Aria.  Shortcuts will be installed
+in the Start menu to documentation, examples, and the Aria directory.
+
+The kit includes the Aria library and two pre-built examples
+that you can run from the bin directory. To see more examples, 
+open Microsoft Visual Studio and load the example projects
+(examples\examples.sln).
+
+In order to compile ARIA and the examples, you should use Microsoft 
+Visual C++ .net 2003. 
+
+We have discontinued support Visual C++ 6.0.  We only support Visual
+C++ .net 2003 now.  We switched to Visual C++ .net since it was no
+longer possible to obtain Visual C++ 6.0 and we are now discontinuing
+support for Visual C++ 6.0.  The libraries compiled between the two
+versions in our experience do not work either forwardly compatible or
+backwardly compatible.  A copy of Visual C++ .net can be purchased for
+less than $100 US.
+
+If you really want to use Visual C++ 6.0 the old files are in the
+vc++6 directory, see the README.txt in that directory, note that these
+files are unsupported.
+
+
+GNU/Linux:
+----------
+
+To use the precompiled Aria library under Linux, you will need GCC 3.4 
+(with the C++ compiler, g++) and Make.  You should be able to compile Aria
+from scratch with just about any c++ compiler you'd like, you can do this 
+by typing 'make clean; make' in the top level directory (/usr/local/Aria).
+You can set environment variables to affect compilation, such as CXX and
+CXXFLAGS. 
+
+The Aria library (libAria.so) and two pre-built examples are included.
+You can run these examples from the bin directory and you can find
+more examples in the examples directory.  All ARIA software is placed
+in /usr/local/Aria.  In addition, the file /etc/Aria will be created with 
+the ARIA installation location, and /etc/ld.so.conf may be updated to 
+include /usr/local/Aria/lib. 
+
+
+To install on RedHat:
+---------------------
+
+For RedHat, the ARIA and ArNetworking libraries are provided by the
+"ARIA" RPM package, which provides libAria, libArNetworking, all 
+documentation, source code, example programs, and Java and Python
+wrapper libraries.
+
+To install the ARIA RPM package, log in as the 'root' user, or use the
+'su' command to become root. Then install with 'rpm':
+   rpm -i ARIA-$ARIAMAJOR.$MINOR-$BUILD.i386.rpm
+
+Aria will be installed in /usr/local/Aria.
+
+To upgrade an existing ARIA install use 'rpm -U' instead of 'rpm -i'.  
+To remove  the currently installed Aria package, use:
+   rpm -e ARIA
+   
+See the documentation for 'rpm' for more options:
+   man rpm
+
+
+To install on Debian:
+---------------------
+
+ARIA libraries are provided by the following Debian packages: libaria, 
+libaria-python, libaria-java.  libaria provides libArNetworking as well 
+as libAria, and all documentation, source code, and example programs.
+libaria-python and libaria-java provide the Python and Java wrapper 
+libraries respectively.
+
+To install a .deb package file downloaded from the website, use dpkg:
+   dpkg -i libaria_$ARIAMAJOR.$MINOR.$BUILD_i386.deb
+
+Aria will be installed in /usr/local/Aria.
+
+You may also need to install dependencies using aptitude, synaptic, or 
+apt-get.
+
+To uninstall the ARIA libraries, use 'apt-get remove libaria'. Any
+packages that depend on libaria will also be removed.
+
+An online Internet repository for use with the apt-get, aptitude, and
+synaptic tools will be available soon.
+
+
+To install on other GNU/Linux systems:
+--------------------------------------
+
+Many Linux systems use either the RPM or DEB packaging formats, or
+a tool such as "alien" can be used to convert.  Alternatively, you
+may download the source code as a compressed 'tar' archive and 
+compile Aria yourself (See README.txt for notes about compiling 
+the source).
+
+Unpack the .tar.gz archive:
+   tar xzvf ARIA-$ARIAMAJOR.$MINOR.$BUILD.tar.gz
+
+Enter the new directory, and use make to build ARIA:
+   cd Aria-$ARIAMAJOR.$MINOR.$BUILD
+   make
+
+To install Aria, become the root user and use make again:
+   su
+   ...
+   make install
+
+Aria will be installed in /usr/local/Aria.   The dynamic (shared) 
+libraries are in /usr/local/Aria/lib and the header files are in
+/usr/local/Aria/include and /usr/local/Aria/ArNetworking/include.
+
+Next, you will then need to tell the dynamic linker where to find the ARIA 
+libraries: either add "/usr/local/Aria/lib" to /etc/ld.so.conf for 
+permanent effect, or add it to the LD_LIBRARY_PATH environment variable 
+for temporary effect.
+
+All future development should use the installed Aria, not the source
+you unpacked, so that directory may be removed.
+
+
+------------ 
+MobileRobots, Inc
+support@mobilerobots.com
+http://www.mobilerobots.com
+http://robots.mobilerobots.com
+

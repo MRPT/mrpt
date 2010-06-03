@@ -1,0 +1,130 @@
+mrpt (1:0.8.1-1) unstable; urgency=low
+
+  * New version of upstream sources.
+  * Solves FTBFS error (Closes: #560538)
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sat, 17 Apr 2010 12:37:58 +0200
+
+mrpt (0.8.1svn1408-1) unstable; urgency=low
+
+  * New version of upstream sources.
+  * Fixed conflicts between files in different packages (Closes: #543621)
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Mon, 04 Jan 2010 02:41:27 +0100
+
+mrpt (0.7.1svn1127-1) unstable; urgency=low
+
+  * New version of upstream sources.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Thu, 30 Jul 2009 15:20:07 +0200
+
+mrpt (0.7.0svn1047-1) unstable; urgency=low
+
+  * New version of upstream sources.
+  * Fixed lintian desktop-mimetype warnings.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Wed, 27 May 2009 09:37:29 +0200
+
+mrpt (0.6.5svn807-2) unstable; urgency=low
+
+  * All applications are now in mrpt-apps again.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Wed, 18 Feb 2009 11:17:00 +0100
+
+mrpt (0.6.5svn807-1) unstable; urgency=low
+
+  * New version of upstream sources.
+  * Applications separated in individual packages, "mrpt-apps" still 
+    exists as a virtual package.
+  * Fixed desktop-mimetype-without-update-call
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Mon, 16 Feb 2009 13:58:13 +0100
+
+mrpt (0.6.5svn706-1) unstable; urgency=low
+
+  * New version of upstream sources.
+  * Fixed compiling error on MIPS (Closes: #509366)
+  * Fixed all shdeplibs warnings.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Mon, 22 Dec 2008 01:01:41 +0100
+
+mrpt (0.6.4svn702-1) unstable; urgency=low
+
+  * New version of upstream sources.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sat, 20 Dec 2008 17:04:01 +0100
+
+mrpt (0.6.4svn604-1) unstable; urgency=low
+
+  * New version of upstream sources.
+  * Fixed conflicting program name (Closes: #505272)
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Wed, 12 Nov 2008 23:46:20 +0100
+
+mrpt (0.6.4svn585-1) unstable; urgency=low
+
+  * New version of upstream sources.
+  * Fixed invalid gcc flags (Closes: #503458)
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Wed, 29 Oct 2008 17:41:12 +0100
+
+mrpt (0.6.3svn565-1) unstable; urgency=low
+
+  * New version of upstream sources.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Thu, 23 Oct 2008 22:19:27 +0200
+
+mrpt (0.6.2svn476-1) unstable; urgency=low
+
+  * New version of upstream sources.
+  * debian files: Fixed libraries package names and copyright file.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Mon, 01 Sep 2008 23:59:06 +0200
+
+mrpt (0.6.1svn468-1) unstable; urgency=low
+
+  * New version of upstream sources (bug fixes, new apps and examples).
+  * debian/control: Dependencies updated.
+  * xmlparser license replaced by custom version from the author.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Wed, 27 Aug 2008 23:38:28 +0200
+
+mrpt (0.6.1svn462-2) unstable; urgency=low
+
+  * debian/control: Changed dependency on obsolete tetex-bin to "texlive | tetex".
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sun, 24 Aug 2008 00:13:05 +0200
+
+mrpt (0.6.1svn462-1) unstable; urgency=low
+
+  * New version of upstream sources (valgrind errors fixed).
+  * debian/watch now works.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sat, 23 Aug 2008 23:16:07 +0200
+
+mrpt (0.6.1svn461-1) unstable; urgency=low
+
+  * New version of upstream sources: clear separation of debian scripts.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sat, 23 Aug 2008 00:24:29 +0200
+
+mrpt (0.6.1svn460-1) unstable; urgency=low
+
+  * New version of upstream sources.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Thu, 21 Aug 2008 18:19:21 +0200
+
+mrpt (0.6.0-2) unstable; urgency=low
+
+  * Reorganization of binary Debian packages. Each library (.so) now has its own package.
+  * Added man pages for all applications (mrpt-apps package).
+  * Fixed debian/watch file.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Thu, 21 Aug 2008 00:29:27 +0200
+
+mrpt (0.6.0-1) unstable; urgency=low
+
+  * Initial packaging (Closes: #495520)
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Wed, 06 Aug 2008 19:12:19 +0200
+

@@ -1,0 +1,218 @@
+# =========================================================================
+#  The Mobile Robot Programming Toolkit (MRPT) CMake configuration file
+#
+#             ** File generated automatically, do not modify **
+#
+#  Usage from an external project: 
+#   In your CMakeLists.txt, add these lines:
+#
+#    FIND_PACKAGE( MRPT REQUIRED )  # Default: Use mrpt-slam & mrpt-topography
+#     or
+#    FIND_PACKAGE( MRPT REQUIRED base vision hwdrivers ... )
+#
+#    TARGET_LINK_LIBRARIES(MY_TARGET_NAME ${MRPT_LIBS})
+#
+#   
+#   The libraries or "modules" which can be included are
+#   (see the full list and description in: http://www.mrpt.org/Libraries )
+#     - base           --> libmrpt-base
+#     - opengl         --> libmrpt-opengl
+#     - hwdrivers      --> libmrpt-hwdrivers
+#     - reactivenav    --> libmrpt-reactivenav
+#     - hmtslam        --> libmrpt-hmtslam
+#
+#   This file will define the following variables:
+#    - MRPT_LIBS: The list of libraries to links against.
+#    - MRPT_VERSION: The MRPT version (e.g. "1.0.0"). 
+#    - MRPT_VERSION_{MAJOR,MINOR,PATCH}: 3 variables for the version parts
+#
+# =========================================================================
+
+# MRPT version numbers:
+SET(MRPT_VERSION @CMAKE_MRPT_FULL_VERSION@)
+SET(MRPT_VERSION_MAJOR @CMAKE_MRPT_VERSION_NUMBER_MAJOR@)
+SET(MRPT_VERSION_MINOR @CMAKE_MRPT_VERSION_NUMBER_MINOR@)
+SET(MRPT_VERSION_PATCH @CMAKE_MRPT_VERSION_NUMBER_PATCH@)
+
+
+# Extract the directory where *this* file has been installed (determined at cmake run-time)
+get_filename_component(THIS_MRPT_CONFIG_PATH "${CMAKE_CURRENT_LIST_FILE}" PATH)
+
+# MRPT source dir
+SET(MRPT_SOURCE_DIR "@THE_MRPT_SOURCE_DIR@")
+SET(MRPT_LIBS_INCL_DIR "@THE_MRPT_LIBS_INCL_DIR@")
+
+# MRPT binary dir
+SET(MRPT_DIR "@THE_CMAKE_BINARY_DIR@")
+
+# MRPT include directory for "config.h"
+SET(MRPT_CONFIG_DIR "@THE_MRPT_CONFIG_FILE_INCLUDE_DIR@")
+
+#MESSAGE(STATUS "MRPT_FIND_COMPONENTS: ${MRPT_FIND_COMPONENTS}")
+
+# Warning on deprecated style:
+IF(MRPT_USE_LIBS)
+	MESSAGE(STATUS "***********************************************************************" )
+	MESSAGE(STATUS "  MRPT WARNING: Deprecated variable MRPT_USE_LIBS. Replace your code:" )
+	MESSAGE(STATUS "    SET(MRPT_USE_LIBS ${MRPT_USE_LIBS})" )
+	MESSAGE(STATUS "    FIND_PACKAGE(MRPT REQUIRED)" )
+	MESSAGE(STATUS "  By the new code:" )
+	MESSAGE(STATUS "    FIND_PACKAGE(MRPT REQUIRED ${MRPT_USE_LIBS})" )
+	MESSAGE(STATUS "***********************************************************************" )
+
+	LIST(APPEND MRPT_FIND_COMPONENTS ${MRPT_USE_LIBS})
+ENDIF(MRPT_USE_LIBS)
+
+# ======================================================
+# Include directories to add to the user project:
+# ======================================================
+INCLUDE_DIRECTORIES(${MRPT_CONFIG_DIR})
+
+# OpenCV library:
+IF(@CMAKE_MRPT_HAS_OPENCV_SYSTEM@)    # CMAKE_MRPT_HAS_OPENCV_SYSTEM
+	# Using system opencv lib: 
+	# Users must link against OpenCV only if MRPT is not a dynamic library:
+	IF (NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)  # CMAKE_MRPT_BUILD_SHARED_LIB
+		LINK_DIRECTORIES("@OPENCV_LIBDIR@")  # OPENCV_LIBDIR
+	ENDIF (NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
+ENDIF(@CMAKE_MRPT_HAS_OPENCV_SYSTEM@)
+
+
+
+# ==========================================================
+# Default "MRPT_FIND_COMPONENTS" -> "slam" + "topography",
+#  for backward compatibility (< MRPT 0.9.0)
+# ==========================================================
+IF ("${MRPT_FIND_COMPONENTS}" STREQUAL "")
+	SET(MRPT_FIND_COMPONENTS core)
+ENDIF ("${MRPT_FIND_COMPONENTS}" STREQUAL "")
+
+# ======================================================
+# The list of MRPT libs/modules in this build
+# ======================================================
+SET(ALL_MRPT_LIBS "@ALL_MRPT_LIBS@")
+#  Start of DECLARE_LIBS_DEPS 
+@DECLARE_LIBS_DEPS@
+#  End of DECLARE_LIBS_DEPS 
+
+# Add hierarchical dependencies of MRPT libraries,
+#  and replace "base"->"mrpt-base", etc.
+# ================================================
+SET(FINAL_LIST_COMPONENTS "")
+FOREACH(_MOD ${MRPT_FIND_COMPONENTS})
+	STRING(TOLOWER ${_MOD} _MOD)
+	SET(_NAM "mrpt-${_MOD}")
+	get_property(_LIB_DEP GLOBAL PROPERTY "${_NAM}_LIB_DEPS")
+
+	# Add deps:
+	IF (NOT "${_LIB_DEP}" STREQUAL "")
+		#MESSAGE(STATUS "ADD: ${_LIB_DEP}")
+		LIST(APPEND FINAL_LIST_COMPONENTS ${_LIB_DEP})
+	ENDIF (NOT "${_LIB_DEP}" STREQUAL "")
+
+	# Add lib itself:
+	IF (NOT "${_NAM}" STREQUAL "mrpt-core")
+		LIST(APPEND FINAL_LIST_COMPONENTS ${_NAM})
+	ENDIF (NOT "${_NAM}" STREQUAL "mrpt-core")
+ENDFOREACH(_MOD)
+SET(MRPT_FIND_COMPONENTS ${FINAL_LIST_COMPONENTS})
+list(REMOVE_DUPLICATES MRPT_FIND_COMPONENTS)
+
+# ======================================================
+# Check:
+#  All libraries must exist in the MRPT build. 
+#  Compare "MRPT_FIND_COMPONENTS" against "ALL_MRPT_LIBS":
+# ======================================================
+#MESSAGE(STATUS "LIBS: ${ALL_MRPT_LIBS}")
+FOREACH(MRPTLIB ${MRPT_FIND_COMPONENTS})
+	list(FIND ALL_MRPT_LIBS "${MRPTLIB}" _LIB_IDX)
+	IF (_LIB_IDX EQUAL -1)
+		MESSAGE(FATAL_ERROR "ERROR: MRPT_FIND_COMPONENTS contains '${MRPTLIB}', not built in mrpt (built ones: ${ALL_MRPT_LIBS})")
+	ENDIF (_LIB_IDX EQUAL -1)
+ENDFOREACH(MRPTLIB)
+#MESSAGE(STATUS "MRPT_FIND_COMPONENTS: ${MRPT_FIND_COMPONENTS}")
+
+
+# ======================================================
+#   MRPT list of libraries the user should link against:
+# ======================================================
+SET(MRPT_LIBS "@MRPT_LINKER_LIBS@")
+
+SET(MRPT_COMP_HWDRIVERS 0  INTERNAL)
+# Process the list:
+FOREACH(MRPTLIB ${MRPT_FIND_COMPONENTS})
+	STRING(TOLOWER ${MRPTLIB} MRPTLIB)
+	STRING(REGEX REPLACE "mrpt-(.*)" "\\1" MRPTLIB ${MRPTLIB})
+
+	# The include dir:
+	INCLUDE_DIRECTORIES("${MRPT_LIBS_INCL_DIR}/${MRPTLIB}/include")
+
+	# List of link libs only needed in GCC. In MSVC we use pragma link libs.
+	IF(NOT MSVC AND NOT BORLAND)
+		LIST(APPEND MRPT_LIBS  optimized mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@ debug mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@-dbg)
+	ENDIF(NOT MSVC AND NOT BORLAND)
+	
+	IF(MRPTLIB MATCHES "hwdrivers")
+		SET(MRPT_COMP_HWDRIVERS 1)
+	ENDIF(MRPTLIB MATCHES "hwdrivers")
+ENDFOREACH(MRPTLIB)
+
+# Handle special cases:
+# libs for ffmpeg in win32 (only if building static libs)
+IF(MRPT_COMP_HWDRIVERS AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
+	IF(@MRPT_HAS_FFMPEG_WIN32@ MATCHES "ON")  # MRPT_HAS_FFMPEG_WIN32
+		FOREACH(FFMPGLIB "@MRPT_FFMPEG_LIBS_TO_LINK@")
+			LIST(APPEND MRPT_LIBS general "${FFMPGLIB}")
+		ENDFOREACH(FFMPGLIB)
+	ENDIF(@MRPT_HAS_FFMPEG_WIN32@ MATCHES "ON")
+ENDIF(MRPT_COMP_HWDRIVERS AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
+
+# ======================================================
+# Support for wxWidgets: We only need wx libs at user
+#  link time if MRPT libs are static.
+# ======================================================
+IF(@CMAKE_MRPT_HAS_WXWIDGETS@ AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)  # CMAKE_MRPT_HAS_WXWIDGETS AND NOT CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF
+	SET(wxWidgets_USE_LIBS base core gl adv aui)
+
+	IF(CMAKE_BUILD_TYPE MATCHES "Debug")
+		SET(wxWidgets_USE_DEBUG "ON")
+	ELSE(CMAKE_BUILD_TYPE MATCHES "Debug")
+		SET(wxWidgets_USE_REL_AND_DBG "ON")
+	ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
+
+	FIND_PACKAGE(wxWidgets)
+	IF(wxWidgets_FOUND)
+		# Include wxWidgets macros
+		INCLUDE(${wxWidgets_USE_FILE})
+		# ${wxWidgets_LIBRARIES}  will contain the libraries that should be added through TARGET_LINK_LIBRARIES(...)
+		LINK_DIRECTORIES(${wxWidgets_LIBRARY_DIRS})
+
+		IF(MSVC)
+			ADD_DEFINITIONS(-DwxUSE_NO_MANIFEST=1)
+		ENDIF(MSVC)
+
+		LIST(APPEND MRPT_LIBS ${wxWidgets_LIBRARIES})
+		IF(MSVC)
+			ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS)
+		ENDIF(MSVC)
+	ELSE(wxWidgets_FOUND)
+		MESSAGE("Warning: MRPT was compiled with wxWidgets, but CMake is not able to locate wxWidgets automatically. Please, set wxWidgets_ROOT_DIR to the lib directory manually.\n You can safely ignore this warning if you don't intend to use MRPT GUI classes or wxWidgets directly from your application.")
+	ENDIF(wxWidgets_FOUND)
+ENDIF(@CMAKE_MRPT_HAS_WXWIDGETS@ AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
+
+# ======================================================
+# Support for Bumblebee
+# ======================================================
+IF(WIN32 AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
+	IF(@CMAKE_MRPT_HAS_BUMBLEBEE@)   # CMAKE_MRPT_HAS_BUMBLEBEE
+		LINK_DIRECTORIES("@BUMBLEBEE_PGR_FLYCAPTURE_ROOT_DIR@/lib")
+		LINK_DIRECTORIES("@BUMBLEBEE_TRICLOPS_ROOT_DIR@/lib")
+	ENDIF(@CMAKE_MRPT_HAS_BUMBLEBEE@)
+ENDIF(WIN32 AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
+
+# ======================================================
+# Link directories to add to the user project:
+# ======================================================
+LINK_DIRECTORIES(${MRPT_DIR}/lib)
+LINK_DIRECTORIES(${MRPT_DIR}/lib/otherlibs)
+

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=PRRT Navigator Demo
+Comment=Robotics Simulation
+Exec=prrt-navigator-demo
+Icon=reactivenav
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=Education;Science;Robotics;ArtificialIntelligence;
+StartupNotify=true
+MimeType=
+

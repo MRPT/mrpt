@@ -1,0 +1,42 @@
+=head1 NAME
+
+stereo-calib-gui - GUI program to calibrate stereo pairs with a checker-board
+
+=head1 SYNOPSIS
+
+stereo-calib-gui
+
+=head1 DESCRIPTION
+
+B<stereo-calib-gui> is a GUI application which accepts a sequence of images grabbed 
+from the left and right cameras and then detects the corner of the checker-board and 
+computes the required parameters to rectify the images. 
+
+=head1 BUGS
+
+Please report bugs at http://sourceforge.net/tracker/?group_id=205280&atid=993006
+
+=head1 SEE ALSO
+
+The application wiki page at http://babel.isa.uma.es/mrpt/index.php/Applications
+
+=head1 AUTHORS
+
+B<camera-calib> is part of the Mobile Robot Programming Toolkit (MRPT), and was originally 
+written by the MAPIR laboratory (University of Malaga). This program is based on free code
+from OpenCV 1.1.0 and the OpenCV book.
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3, or (at your option) any
+later version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
+=cut
+

@@ -1,0 +1,69 @@
+#include <MRPT/UTILS/utils.h>
+using namespace UTILS;
+using namespace std;
+// ------------------------------------------------------
+//				TestStringList
+// ------------------------------------------------------
+void TestStringList()
+{
+	UTILS::CStringList		strings, strings2;
+	std::string				wholeStr;
+ // This was line 10!!
+	std::cout << "Number of lines: " << strings.size() << "\n";
+	std::cout << "Line  [10]    : " << strings(10) << "\n";
+	strings(10)=" // This was line 10!!";
+	std::cout << "Mod. line [10]: " << strings(10) << "\n";
+	strings.getText(wholeStr);
+	std::cout << "Whole text: (Press any key to show)\n";
+	MRPT_OS::getch();
+	std::cout << wholeStr;
+	strings2 = strings;
+	strings2.saveToFile("_test_copy.txt");
+	{
+		CFileStream		f("_out_strings.bin",fomWrite);
+		f << strings;
+	}
+	std::cout << "Number of lines: " << strings2.size() << "\n";
+	strings2.clear();
+	std::cout << "Number of lines: " << strings2.size() << "\n";
+	{
+		CFileStream		f("_out_strings.bin",fomRead);
+		f >> strings2;
+	}
+	std::cout << "Number of lines: " << strings2.size() << "\n";
+	strings2.getText(wholeStr);
+	std::cout << "Whole text: (Press any key to show)\n";
+	MRPT_OS::getch();
+	std::cout << wholeStr;
+}
+void Test2()
+{
+	UTILS::CStringList		strings;
+	strings.loadFromFile("test.ini");
+	cout << "OBSTACLES_GRID_MAX_RANGE=" << strings.get_float("OBSTACLES_GRID_MAX_RANGE") << endl;
+	strings.set("x","");
+	cout << "Now we read a non-existing entry, which should give raise to an exception:" << endl;
+	MRPT_OS::pause();
+	cout << strings.get_string("GPT11_Type") << endl;
+}
+// ------------------------------------------------------
+//						MAIN
+// ------------------------------------------------------
+int main()
+{
+	try
+	{
+		 TestStringList();
+		 Test2();
+		return 0;
+	} catch (std::exception &e)
+	{
+		std::cout << "MRPT exception catched: " << e.what() << std::endl;
+		return -1;
+	}
+	catch (...)
+	{
+		printf("Untyped exception!!");
+		return -1;
+	}
+}

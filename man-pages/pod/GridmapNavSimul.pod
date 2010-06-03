@@ -1,0 +1,44 @@
+=head1 NAME
+
+GridmapNavSimul - GUI robot simulation within a gridmap
+
+=head1 SYNOPSIS
+
+GridmapNavSimul 
+
+=head1 DESCRIPTION
+
+A GUI application for simulation of robot motion within a simulated environment defined by an 
+occupancy grid map. The program simulates noisy odometry and laser measurements and generates
+a rawlog which can then be used as the input of SLAM algorithms. A ground truth file is also 
+generated.
+
+The robot is controlled with a joystick or the cursor arrow keys.
+
+=head1 BUGS
+
+Please report bugs at http://sourceforge.net/tracker/?group_id=205280&atid=993006
+
+=head1 SEE ALSO
+
+The application wiki page at http://babel.isa.uma.es/mrpt/index.php/Applications
+
+=head1 AUTHORS
+
+B<GridmapNavSimul> is part of the Mobile Robot Programming Toolkit (MRPT), and was originally 
+written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3, or (at your option) any
+later version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
+=cut
+

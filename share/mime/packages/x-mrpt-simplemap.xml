@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-mrpt-simplemap">
+    <comment>Robotic simplemap</comment>
+    <glob pattern="*.simplemap"/>
+    <glob pattern="*.simplemap.gz"/>
+    <sub-class-of type="application/binary"/>
+  </mime-type>
+</mime-info>

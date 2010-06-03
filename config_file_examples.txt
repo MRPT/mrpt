@@ -1,0 +1,5 @@
+Example configuration files for some of the MRPT applications
+can be found at MRPT/share/mrpt/config_files.
+
+JLBC
+

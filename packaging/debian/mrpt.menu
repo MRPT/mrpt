@@ -1,0 +1,31 @@
+?package(camera-calib-gui):\
+	needs="X11"\ 
+	section="Applications/Science"\
+	title="cameracalibgui"\
+	command="/usr/bin/camera-calib-gui"
+?package(gridmapnavsimul):\
+	needs="X11"\
+	section="Applications/Science"\
+	title="gridmapnavsimul"\
+	command="/usr/bin/GridmapNavSimul"
+?package(rawlogviewer):\
+	needs="X11"\
+	section="Applications/Science"\
+	title="rawlogviewer"\
+	command="/usr/bin/RawLogViewer"
+?package(reactivenavigationsimul):\
+	needs="X11"\
+	section="Applications/Science"\
+	title="reactivenavdemo"\
+	command="/usr/bin/ReactiveNavigationDemo"
+?package(sceneviewer3d):\
+	needs="X11"\
+	section="Applications/Science"\
+	title="sceneviewer"\
+	command="/usr/bin/SceneViewer3D"
+?package(navlog-viewer):\
+	needs="X11"\
+	section="Applications/Science"\
+	title="navlogviewer"\
+	command="/usr/bin/navlog-viewer"
+

@@ -1,0 +1,216 @@
+/* +---------------------------------------------------------------------------+
+   |          The Mobile Robot Programming Toolkit (MRPT) C++ library          |
+   |                                                                           |
+   |                   http://mrpt.sourceforge.net/                            |
+   |                                                                           |
+   |   Copyright (C) 2005-2010  University of Malaga                           |
+   |                                                                           |
+   |    This software was written by the Machine Perception and Intelligent    |
+   |      Robotics Lab, University of Malaga (Spain).                          |
+   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>                     |
+   |                                                                           |
+   |  This file is part of the MRPT project.                                   |
+   |                                                                           |
+   |     MRPT is free software: you can redistribute it and/or modify          |
+   |     it under the terms of the GNU General Public License as published by  |
+   |     the Free Software Foundation, either version 3 of the License, or     |
+   |     (at your option) any later version.                                   |
+   |                                                                           |
+   |   MRPT is distributed in the hope that it will be useful,                 |
+   |     but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+   |     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
+   |     GNU General Public License for more details.                          |
+   |                                                                           |
+   |     You should have received a copy of the GNU General Public License     |
+   |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
+   |                                                                           |
+   +---------------------------------------------------------------------------+ */
+
+#include <mrpt/base.h>  // Precompiled headers
+
+
+#ifdef _MSC_VER
+#	define _SCL_SECURE_NO_WARNINGS
+#endif
+
+#include <mrpt/utils/CFileStream.h>
+#include <mrpt/system/os.h>
+
+using namespace mrpt::utils;
+using namespace std;
+
+/*---------------------------------------------------------------
+							Constructor
+ ---------------------------------------------------------------*/
+CFileStream::CFileStream() : m_f()
+{
+}
+
+/*---------------------------------------------------------------
+							Constructor
+ ---------------------------------------------------------------*/
+CFileStream::CFileStream( const string &fileName, TFileOpenModes mode ) : m_f()
+{
+	MRPT_START;
+	// Try to open the file:
+	m_f.open(fileName.c_str(), mode);
+	if (!m_f.is_open())
+		THROW_EXCEPTION_CUSTOM_MSG1( "Error creating/opening: '%s'",fileName.c_str() );
+	MRPT_END;
+}
+
+/*---------------------------------------------------------------
+							open
+ ---------------------------------------------------------------*/
+bool CFileStream::open(const std::string &fileName, TFileOpenModes mode)
+{
+	MRPT_START;
+
+	if (m_f.is_open())
+		m_f.close();
+
+	m_f.open(fileName.c_str(), ios_base::binary | mode );
+	return m_f.is_open();
+
+	MRPT_END;
+}
+
+/*---------------------------------------------------------------
+							close
+ ---------------------------------------------------------------*/
+void CFileStream::close()
+{
+	m_f.close();
+}
+
+/*---------------------------------------------------------------
+							Destructor
+ ---------------------------------------------------------------*/
+CFileStream::~CFileStream()
+{
+	m_f.close();
+}
+
+
+/*---------------------------------------------------------------
+							Read
+			Reads bytes from the stream into Buffer
+ ---------------------------------------------------------------*/
+size_t  CFileStream::Read(void *Buffer, size_t Count)
+{
+	if (! m_f.is_open()) return 0;
+	m_f.read(static_cast<char*>(Buffer),Count);
+	return m_f.fail() ? 0:Count;
+}
+
+/*---------------------------------------------------------------
+							Write
+			Writes a block of bytes to the stream.
+ ---------------------------------------------------------------*/
+size_t  CFileStream::Write(const void *Buffer, size_t Count)
+{
+	if (!m_f.is_open()) return 0;
+
+	m_f.write( static_cast<const char*>(Buffer),Count);
+	return m_f.fail() ? 0:Count;
+}
+
+/*---------------------------------------------------------------
+							Seek
+	Method for moving to a specified position in the streamed resource.
+	 See documentation of CStream::Seek
+ ---------------------------------------------------------------*/
+size_t CFileStream::Seek(long Offset, CStream::TSeekOrigin Origin)
+{
+	if (!m_f.is_open()) return 0;
+
+	fstream::off_type  offset = Offset;
+	fstream::seekdir   way;
+
+	switch(Origin)
+	{
+	case sFromBeginning: way = ios_base::beg; break;
+	case sFromCurrent: way = ios_base::cur; break;
+	case sFromEnd: way = ios_base::end; break;
+	default: THROW_EXCEPTION("Invalid value for 'Origin'");
+	}
+
+	m_f.seekp(offset, way);
+	m_f.seekg(offset, way);
+
+	return getPosition();
+}
+
+/*---------------------------------------------------------------
+						getTotalBytesCount
+ ---------------------------------------------------------------*/
+size_t CFileStream::getTotalBytesCount()
+{
+	if (!fileOpenCorrectly()) return 0;
+
+	size_t previousPos = getPosition();
+	size_t fileSize = Seek(0,sFromEnd);
+	Seek(static_cast<long>(previousPos));
+	return fileSize;
+}
+
+/*---------------------------------------------------------------
+						getPosition
+ ---------------------------------------------------------------*/
+size_t CFileStream::getPosition()
+{
+	if (m_f.is_open())
+			return m_f.tellg();
+	else	return 0;
+}
+
+/*---------------------------------------------------------------
+						getPositionI
+ ---------------------------------------------------------------*/
+size_t CFileStream::getPositionI()
+{
+	if (m_f.is_open())
+			return m_f.tellg();
+	else	return 0;
+}
+
+/*---------------------------------------------------------------
+						getPositionO
+ ---------------------------------------------------------------*/
+size_t CFileStream::getPositionO()
+{
+	if (m_f.is_open())
+			return m_f.tellp();
+	else	return 0;
+}
+
+/*---------------------------------------------------------------
+						fileOpenCorrectly
+ ---------------------------------------------------------------*/
+bool  CFileStream::fileOpenCorrectly()
+{
+	return m_f.is_open();
+}
+
+/*---------------------------------------------------------------
+						readLine
+ ---------------------------------------------------------------*/
+bool CFileStream::readLine( string &str )
+{
+	str = string(); // clear() is not defined in VC6
+	if (!m_f.is_open()) return false;
+
+	std::getline( m_f, str );
+	return !m_f.fail() && !m_f.eof();
+}
+
+
+/*---------------------------------------------------------------
+						checkEOF
+ ---------------------------------------------------------------*/
+bool CFileStream::checkEOF()
+{
+	if (!m_f.is_open())
+			return true;
+	return	m_f.eof();
+}

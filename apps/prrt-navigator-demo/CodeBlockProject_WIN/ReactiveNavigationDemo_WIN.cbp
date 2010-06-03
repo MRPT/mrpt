@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ReactiveNavigationDemo" />
+		<Option pch_mode="2" />
+		<Option compiler="msvc8" />
+		<Build>
+			<Target title="Release">
+				<Option output="bin\Release\ReactiveNavigationDemo" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="..\..\..\bin" />
+				<Option object_output="obj\Release\" />
+				<Option type="0" />
+				<Option compiler="msvc8" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="/Ox" />
+					<Add option="/DNDEBUG" />
+					<Add option="/MT" />
+					<Add option="/O2" />
+					<Add option="/Ob1" />
+					<Add directory="$(#wx)\lib\vc_lib\msw" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="$(#wx)\lib\vc_lib\msw" />
+				</ResourceCompiler>
+				<Linker>
+					<Add option="/NODEFAULTLIB:libcmt.lib" />
+					<Add library="libcmt.lib" />
+					<Add library="wxmsw28_core.lib" />
+					<Add library="wxbase28.lib" />
+					<Add library="wxpng.lib" />
+					<Add library="wxzlib.lib" />
+					<Add library="wxmsw28_adv.lib" />
+					<Add library="wxjpeg.lib" />
+					<Add library="wxtiff.lib" />
+					<Add directory="$(#wx)\lib\vc_lib" />
+				</Linker>
+				<ExtraCommands>
+					<Add after='mt.exe /nologo /manifest &quot;bin\Release\ReactiveNavigationDemo.exe.manifest&quot; /outputresource:&quot;bin\Release\ReactiveNavigationDemo.exe&quot;;1' />
+				</ExtraCommands>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="/TP" />
+			<Add option="/Gd" />
+			<Add option="/GF" />
+			<Add option="/W3" />
+			<Add option="/Zc:wchar_t" />
+			<Add option="/EHsc" />
+			<Add option="/DWIN32" />
+			<Add option="/D__WIN32__" />
+			<Add option="/D__WXMSW__" />
+			<Add option="/D_WINDOWS" />
+			<Add option="/D_CRT_SECURE_DEPRECATE" />
+			<Add option="/D_CRT_NONSTDC_NO_DEPRECATE" />
+			<Add option="/D_VC80_UPGRADE=0x0600" />
+			<Add directory="$(#wx)\include" />
+			<Add directory="$(#wx)\contrib\include" />
+			<Add directory="..\..\..\include" />
+		</Compiler>
+		<ResourceCompiler>
+			<Add directory="$(#wx)\include" />
+		</ResourceCompiler>
+		<Linker>
+			<Add option="/INCREMENTAL:NO" />
+			<Add option="/SUBSYSTEM:WINDOWS" />
+			<Add library="winmm.lib" />
+			<Add library="rpcrt4.lib" />
+			<Add library="kernel32.lib" />
+			<Add library="user32.lib" />
+			<Add library="gdi32.lib" />
+			<Add library="winspool.lib" />
+			<Add library="comdlg32.lib" />
+			<Add library="advapi32.lib" />
+			<Add library="shell32.lib" />
+			<Add library="ole32.lib" />
+			<Add library="oleaut32.lib" />
+			<Add library="uuid.lib" />
+			<Add library="comctl32.lib" />
+			<Add library="wsock32.lib" />
+			<Add library="odbc32.lib" />
+			<Add library="libReactiveNav_MSVC8.lib" />
+			<Add directory="..\..\..\lib\release" />
+			<Add directory="..\..\..\lib\otherlibs" />
+		</Linker>
+		<Unit filename="..\CIniEditor.cpp" />
+		<Unit filename="..\CIniEditor.h" />
+		<Unit filename="..\prrtnavdemoApp.cpp" />
+		<Unit filename="..\prrtnavdemoApp.h" />
+		<Unit filename="..\prrtnavdemoMain.cpp" />
+		<Unit filename="..\prrtnavdemoMain.h" />
+		<Unit filename="..\resource.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="..\wxsmith\ReactiveNavigationDemoframe.wxs" />
+		<Unit filename="..\wxsmith\CIniEditor.wxs" />
+		<Unit filename="..\..\wxMathPlot\mathplot.cpp" />
+		<Unit filename="..\..\wxMathPlot\mathplot.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<wxsmith version="1">
+				<gui name="wxWidgets" src="prrtnavdemoApp.cpp" main="ReactiveNavigationDemoFrame" init_handlers="necessary" language="CPP" />
+				<resources>
+					<wxFrame wxs="../wxsmith/ReactiveNavigationDemoframe.wxs" src="../prrtnavdemoMain.cpp" hdr="../prrtnavdemoMain.h" name="ReactiveNavigationDemoFrame" language="CPP" />
+					<wxDialog wxs="..\wxsmith/CIniEditor.wxs" src="..\CIniEditor.cpp" hdr="..\CIniEditor.h" name="CIniEditor" language="CPP" />
+				</resources>
+			</wxsmith>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

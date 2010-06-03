@@ -1,0 +1,13 @@
+
+Unicode versions of the X11 "misc-fixed-*" fonts -- CJK Supplement
+------------------------------------------------------------------
+
+Markus Kuhn <Markus.Kuhn@cl.cam.ac.uk> -- 1999-08-25
+
+This supplemental package contains additional Chinese, Japanese and
+Korean ISO 10646-1 fonts with Han characters. For more information,
+please refer to the README file in the main package. The latest
+versions of both packages is available from
+
+  http://www.cl.cam.ac.uk/~mgk25/download/ucs-fonts.tar.gz
+  http://www.cl.cam.ac.uk/~mgk25/download/ucs-fonts-asian.tar.gz

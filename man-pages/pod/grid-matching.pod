@@ -1,0 +1,62 @@
+=head1 NAME
+
+grid-matching - Executes occupancy grid matching techniques
+
+=head1 SYNOPSIS
+
+grid-matching --match --map1=I<grid1.simplemap> --map2=I<grid1.simplemap>  [I<options>]
+grid-matching --detect-test --map1=I<grid1.simplemap> [I<options>]
+
+=head1 DESCRIPTION
+
+B<grid-matching> is a command-line application which takes two maps as input and computes
+a Sum-Of-Gaussians (SOG) density distribution for the 2D transformation between them, if 
+they are found to match.
+
+=head1 OPTIONS
+
+B<--match>                           Operation: match two maps
+B<--detect-test>                     Operation: Quality of match with one map
+B<--map1> arg                        Map #1 to align (*.simplemap)
+B<--map2> arg                        Map #2 to align (*.simplemap)
+B<--out> arg (=gridmatching_out.txt) Output file for the results
+B<--config> arg                      Optional config. file with more params
+B<--save-sog-3d>                     Save a 3D view of all the SOG modes
+B<--save-sog-all>                    Save all the map overlaps
+B<--noise-xy> arg (=0)               In detect-test mode,std. noise in XY
+B<--noise-phi> arg (=0)              In detect-test mode,std. noise in PHI (deg)
+B<--Ax> arg (=4)                     In detect-test mode, displacement in X
+B<--Ay> arg (=2)                     In detect-test mode, displacement in Y
+B<--Aphi> arg (=30)                  In detect-test mode, displ. in PHI (deg)
+B<--verbose>                         verbose output
+B<--nologo>                          skip the logo at startup
+B<--help>                            produce help message
+
+
+=head1 BUGS
+
+Please report bugs at http://sourceforge.net/tracker/?group_id=205280&atid=993006
+
+=head1 SEE ALSO
+
+The application wiki page at http://babel.isa.uma.es/mrpt/index.php/Applications
+
+=head1 AUTHORS
+
+B<grid-matching> is part of the Mobile Robot Programming Toolkit (MRPT), and was originally 
+written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3, or (at your option) any
+later version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
+=cut
+
