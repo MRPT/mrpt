@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.05.03"/>
+    <PROJECT value="HolonomicNavigationTester.exe"/>
+    <OBJFILES value="HolonomicNavigationTester.obj mainUnit.obj 
+      ..\ReactiveNavigatorLibrary\CLogFileRecord.obj 
+      ..\ReactiveNavigatorLibrary\CHolonomicLogFileRecord.obj 
+      ..\ReactiveNavigatorLibrary\CHolonomicSBG.obj 
+      ..\ReactiveNavigatorLibrary\CHolonomicVFF.obj"/>
+    <RESFILES value=""/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) mainUnit.dfm"/>
+    <LIBFILES value="..\..\lib\MRPT_BC.lib"/>
+    <LIBRARIES value="dclusr50.lib Vcl50.lib"/>
+    <SPARELIBS value="Vcl50.lib dclusr50.lib"/>
+    <PACKAGES value="Vcl50.bpi Vclx50.bpi bcbsmp50.bpi Vcldb50.bpi vclado50.bpi ibsmp50.bpi 
+      VCLBDE50.bpi vcldbx50.bpi Qrpt50.bpi TeeUI50.bpi TeeDB50.bpi Tee50.bpi 
+      Dss50.bpi TeeQR50.bpi VCLIB50.bpi Vclmid50.bpi vclie50.bpi Inetdb50.bpi 
+      Inet50.bpi NMFast50.bpi webmid50.bpi bcbie50.bpi dclocx50.bpi 
+      bcb2kaxserver50.bpi dclusr50.bpi OpenGLPanel_DP.bpi"/>
+    <PATHCPP value=".;..\ReactiveNavigatorLibrary"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="tlink32"/>
+    <USERDEFINES value="_DEBUG"/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="HolonomicNavigationTester.cpp"/>
+    <INCLUDEPATH value="..\ReactiveNavigatorLibrary;..\..\..\src\UTIL;..\..\..\src\MRML;..\..\..\apps\RNAV;$(BCB)\include;$(BCB)\include\vcl;..\..\include;C:\JL\componentes_Delphi_CBuilder\sgraph23\;&quot;..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23&quot;"/>
+    <LIBPATH value="..\ReactiveNavigatorLibrary;..\..\..\src\UTIL;..\..\..\src\MRML;..\..\..\apps\RNAV;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\lib"/>
+    <WARNINGS value="-w-par"/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I..\..\..\apps\RNAV -I$(BCB)\include -I$(BCB)\include\vcl 
+      -I..\..\..\include -I&quot;C:\JL\componentes_Delphi_CBuilder\sgraph23\.&quot; 
+      -src_suffix cpp -D_DEBUG -boa"/>
+    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl50.csm -Hc -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -c 
+      -tW -tWM"/>
+    <PFLAGS value="-$Y+ -$W -$O- -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zi"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn -v"/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+  </LINKER>
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=3082
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[HistoryLists\hlIncludePath]
+Count=11
+Item0=..\ReactiveNavigatorLibrary;..\..\..\src\UTIL;..\..\..\src\MRML;..\..\..\apps\RNAV;$(BCB)\include;$(BCB)\include\vcl;..\..\include;C:\JL\componentes_Delphi_CBuilder\sgraph23\;..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23
+Item1=..\ReactiveNavigatorLibrary;..\..\..\src\UTIL;..\..\..\src\MRML;..\..\..\apps\RNAV;$(BCB)\include;$(BCB)\include\vcl;..\..\include;C:\JL\componentes_Delphi_CBuilder\sgraph23\;..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23
+Item2=..\ReactiveNavigatorLibrary;..\..\..\src\UTIL;..\..\..\src\MRML;..\..\..\apps\RNAV;$(BCB)\include;$(BCB)\include\vcl;..\..\..\include;C:\JL\componentes_Delphi_CBuilder\sgraph23\;..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23
+Item3=..\..\..\src\UTIL;..\..\..\src\MRML;..\..\..\apps\RNAV;$(BCB)\include;$(BCB)\include\vcl;..\..\..\include;C:\JL\componentes_Delphi_CBuilder\sgraph23\;..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23
+Item4=..\..\..\apps\RNAV;$(BCB)\include;$(BCB)\include\vcl;..\..\..\include;C:\JL\componentes_Delphi_CBuilder\sgraph23\;D:\Trabajo\Code\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23
+Item5=..\..\..\apps\RNAV;$(BCB)\include;$(BCB)\include\vcl;..\..\..\include;C:\JL\componentes_Delphi_CBuilder\sgraph23\
+Item6=..\..\..\apps\RNAV;$(BCB)\include;$(BCB)\include\vcl;..\..\..\include;C:\JL\componentes_Delphi_CBuilder\sgraph23
+Item7=..\..\..\apps\RNAV;$(BCB)\include;$(BCB)\include\vcl;..\..\..\include
+Item8=$(BCB)\include;$(BCB)\include\vcl;..\..\..\include
+Item9=$(BCB)\include;$(BCB)\include\vcl;D:\Trabajo\Code\MRPT\include
+Item10=$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=6
+Item0=..\ReactiveNavigatorLibrary;..\..\..\src\UTIL;..\..\..\src\MRML;..\..\..\apps\RNAV;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\lib
+Item1=..\..\..\src\UTIL;..\..\..\src\MRML;..\..\..\apps\RNAV;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\lib
+Item2=..\..\..\apps\RNAV;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\lib
+Item3=$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;..\..\..\lib
+Item4=$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib;D:\Trabajo\Code\MRPT\lib
+Item5=$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_DEBUG
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+  </IDEOPTIONS>
+</PROJECT>

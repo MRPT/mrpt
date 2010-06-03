@@ -1,0 +1,40 @@
+/* +---------------------------------------------------------------------------+
+   |          The Mobile Robot Programming Toolkit (MRPT) C++ library          |
+   |                                                                           |
+   |                   http://mrpt.sourceforge.net/                            |
+   |                                                                           |
+   |   Copyright (C) 2005-2008  University of Malaga                           |
+   |                                                                           |
+   |    This software was written by the Perception and Robotics               |
+   |      research group, University of Malaga (Spain).                        |
+   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>                     |
+   |                                                                           |
+   |  This file is part of the MRPT project.                                   |
+   |                                                                           |
+   |     MRPT is free software: you can redistribute it and/or modify          |
+   |     it under the terms of the GNU General Public License as published by  |
+   |     the Free Software Foundation, either version 3 of the License, or     |
+   |     (at your option) any later version.                                   |
+   |                                                                           |
+   |   MRPT is distributed in the hope that it will be useful,                 |
+   |     but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+   |     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
+   |     GNU General Public License for more details.                          |
+   |                                                                           |
+   |     You should have received a copy of the GNU General Public License     |
+   |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
+   |                                                                           |
+   +---------------------------------------------------------------------------+ */
+
+#ifndef  MRPT_VERSION_H
+#define  MRPT_VERSION_H
+
+const char MRPT_version_str[] = "${CMAKE_MRPT_COMPLETE_NAME}";
+
+/** Version number of package in hexadecimal:
+  * A three digits version code, eg. 0.5.1 -> 0x051,  1.2.0 -> 0x120
+  */
+#define MRPT_VERSION ${CMAKE_MRPT_VERSION_CODE}
+
+
+#endif

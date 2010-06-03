@@ -1,0 +1,431 @@
+/* +---------------------------------------------------------------------------+
+   |          The Mobile Robot Programming Toolkit (MRPT) C++ library          |
+   |                                                                           |
+   |                   http://mrpt.sourceforge.net/                            |
+   |                                                                           |
+   |   Copyright (C) 2005-2010  University of Malaga                           |
+   |                                                                           |
+   |    This software was written by the Machine Perception and Intelligent    |
+   |      Robotics Lab, University of Malaga (Spain).                          |
+   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>                     |
+   |                                                                           |
+   |  This file is part of the MRPT project.                                   |
+   |                                                                           |
+   |     MRPT is free software: you can redistribute it and/or modify          |
+   |     it under the terms of the GNU General Public License as published by  |
+   |     the Free Software Foundation, either version 3 of the License, or     |
+   |     (at your option) any later version.                                   |
+   |                                                                           |
+   |   MRPT is distributed in the hope that it will be useful,                 |
+   |     but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+   |     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
+   |     GNU General Public License for more details.                          |
+   |                                                                           |
+   |     You should have received a copy of the GNU General Public License     |
+   |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
+   |                                                                           |
+   +---------------------------------------------------------------------------+ */
+#include "CScanAnimation.h"
+
+//(*InternalHeaders(CScanAnimation)
+#include <wx/intl.h>
+#include <wx/string.h>
+//*)
+
+#include <wx/app.h>
+#include <wx/log.h>
+#include <wx/msgdlg.h>
+#include <wx/progdlg.h>
+#include <wx/busyinfo.h>
+
+#include "xRawLogViewerMain.h"
+
+//(*IdInit(CScanAnimation)
+const long CScanAnimation::ID_RADIOBUTTON1 = wxNewId();
+const long CScanAnimation::ID_RADIOBUTTON2 = wxNewId();
+const long CScanAnimation::ID_STATICTEXT22 = wxNewId();
+const long CScanAnimation::ID_TEXTCTRL11 = wxNewId();
+const long CScanAnimation::ID_BUTTON5 = wxNewId();
+const long CScanAnimation::ID_BUTTON1 = wxNewId();
+const long CScanAnimation::ID_BUTTON2 = wxNewId();
+const long CScanAnimation::ID_STATICTEXT4 = wxNewId();
+const long CScanAnimation::ID_SPINCTRL2 = wxNewId();
+const long CScanAnimation::ID_CHECKBOX1 = wxNewId();
+const long CScanAnimation::ID_BUTTON3 = wxNewId();
+const long CScanAnimation::ID_CUSTOM2 = wxNewId();
+const long CScanAnimation::ID_SLIDER1 = wxNewId();
+const long CScanAnimation::ID_STATICTEXT1 = wxNewId();
+const long CScanAnimation::ID_SPINCTRL1 = wxNewId();
+const long CScanAnimation::ID_BUTTON4 = wxNewId();
+const long CScanAnimation::ID_STATICTEXT2 = wxNewId();
+const long CScanAnimation::ID_STATICTEXT3 = wxNewId();
+//*)
+
+BEGIN_EVENT_TABLE(CScanAnimation,wxDialog)
+	//(*EventTable(CScanAnimation)
+	//*)
+END_EVENT_TABLE()
+
+#include <mrpt/slam.h>
+
+using namespace mrpt;
+using namespace mrpt::slam;
+using namespace mrpt::opengl;
+using namespace mrpt::system;
+using namespace mrpt::math;
+using namespace mrpt::utils;
+using namespace std;
+
+
+CScanAnimation::CScanAnimation(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size)
+{
+	//(*Initialize(CScanAnimation)
+	wxFlexGridSizer* FlexGridSizer4;
+	wxFlexGridSizer* FlexGridSizer3;
+	wxFlexGridSizer* FlexGridSizer5;
+	wxFlexGridSizer* FlexGridSizer2;
+	wxFlexGridSizer* FlexGridSizer7;
+	wxFlexGridSizer* FlexGridSizer6;
+	wxFlexGridSizer* FlexGridSizer1;
+	
+	Create(parent, wxID_ANY, _("Animate laser scans"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER, _T("wxID_ANY"));
+	FlexGridSizer1 = new wxFlexGridSizer(4, 1, 0, 0);
+	FlexGridSizer1->AddGrowableCol(0);
+	FlexGridSizer1->AddGrowableRow(2);
+	StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Get data from:"));
+	BoxSizer4 = new wxBoxSizer(wxVERTICAL);
+	BoxSizer5 = new wxBoxSizer(wxHORIZONTAL);
+	FlexGridSizer8 = new wxFlexGridSizer(2, 4, 0, 0);
+	FlexGridSizer8->AddGrowableCol(2);
+	rbLoaded = new wxRadioButton(this, ID_RADIOBUTTON1, _("Currently loaded rawlog"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON1"));
+	rbLoaded->SetValue(true);
+	FlexGridSizer8->Add(rbLoaded, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer8->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer8->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer8->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	rbFile = new wxRadioButton(this, ID_RADIOBUTTON2, _("Rawlog in file:"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON2"));
+	FlexGridSizer8->Add(rbFile, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	StaticText22 = new wxStaticText(this, ID_STATICTEXT22, _("Input file:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT22"));
+	FlexGridSizer8->Add(StaticText22, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+	edFile = new wxTextCtrl(this, ID_TEXTCTRL11, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL11"));
+	FlexGridSizer8->Add(edFile, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	btnPickInput = new wxButton(this, ID_BUTTON5, _("Select..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON5"));
+	FlexGridSizer8->Add(btnPickInput, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	BoxSizer5->Add(FlexGridSizer8, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	BoxSizer4->Add(BoxSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	StaticBoxSizer1->Add(BoxSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer1->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer4 = new wxFlexGridSizer(1, 7, 0, 0);
+	FlexGridSizer4->AddGrowableCol(5);
+	FlexGridSizer4->AddGrowableRow(0);
+	btnPlay = new wxButton(this, ID_BUTTON1, _("Start"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
+	btnPlay->SetDefault();
+	FlexGridSizer4->Add(btnPlay, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	btnStop = new wxButton(this, ID_BUTTON2, _("Stop"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
+	btnStop->Disable();
+	FlexGridSizer4->Add(btnStop, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticText2 = new wxStaticText(this, ID_STATICTEXT4, _("Animation delay (ms):"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT4"));
+	FlexGridSizer4->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	edDelay = new wxSpinCtrl(this, ID_SPINCTRL2, _T("5"), wxDefaultPosition, wxDefaultSize, 0, 0, 1000, 5, _T("ID_SPINCTRL2"));
+	edDelay->SetValue(_T("5"));
+	FlexGridSizer4->Add(edDelay, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	cbAllowMix = new wxCheckBox(this, ID_CHECKBOX1, _("Enable mixing of diff. lasers"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
+	cbAllowMix->SetValue(true);
+	FlexGridSizer4->Add(cbAllowMix, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer4->Add(-1,-1,1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	btnClose = new wxButton(this, ID_BUTTON3, _("Close"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
+	FlexGridSizer4->Add(btnClose, 1, wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL, 5);
+	FlexGridSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer2 = new wxFlexGridSizer(1, 1, 0, 0);
+	FlexGridSizer2->AddGrowableCol(0);
+	FlexGridSizer2->AddGrowableRow(0);
+	FlexGridSizer5 = new wxFlexGridSizer(1, 1, 0, 0);
+	FlexGridSizer5->AddGrowableCol(0);
+	FlexGridSizer5->AddGrowableRow(0);
+	plotMap = new mpWindow(this,ID_CUSTOM2,wxDefaultPosition,wxSize(764,517),0);
+	FlexGridSizer5->Add(plotMap, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer2->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer3 = new wxFlexGridSizer(2, 1, 0, 0);
+	FlexGridSizer3->AddGrowableCol(0);
+	FlexGridSizer6 = new wxFlexGridSizer(1, 1, 0, 0);
+	FlexGridSizer6->AddGrowableCol(0);
+	slPos = new wxSlider(this, ID_SLIDER1, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_SLIDER1"));
+	FlexGridSizer6->Add(slPos, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer3->Add(FlexGridSizer6, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer7 = new wxFlexGridSizer(2, 4, 0, 0);
+	FlexGridSizer7->AddGrowableCol(3);
+	StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("Rawlog index:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
+	FlexGridSizer7->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	edIndex = new wxSpinCtrl(this, ID_SPINCTRL1, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0, 100, 0, _T("ID_SPINCTRL1"));
+	edIndex->SetValue(_T("0"));
+	FlexGridSizer7->Add(edIndex, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	btnJump = new wxButton(this, ID_BUTTON4, _("Jump"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON4"));
+	FlexGridSizer7->Add(btnJump, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	lbNumScans = new wxStaticText(this, ID_STATICTEXT2, _("Number of laser scans: 0"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+	FlexGridSizer7->Add(lbNumScans, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer7->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer7->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer7->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	lbNumPoints = new wxStaticText(this, ID_STATICTEXT3, _("Number of points: 0"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
+	FlexGridSizer7->Add(lbNumPoints, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer3->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer1->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	SetSizer(FlexGridSizer1);
+	FlexGridSizer1->Fit(this);
+	FlexGridSizer1->SetSizeHints(this);
+	Center();
+	
+	Connect(ID_RADIOBUTTON1,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&CScanAnimation::OnrbLoadedSelect);
+	Connect(ID_RADIOBUTTON2,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&CScanAnimation::OnrbFile);
+	Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanAnimation::OnbtnPickInputClick);
+	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanAnimation::OnbtnPlayClick);
+	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanAnimation::OnbtnStopClick);
+	Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&CScanAnimation::OncbAllowMixClick);
+	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanAnimation::OnbtnCloseClick);
+	Connect(ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&CScanAnimation::OnslPosCmdScrollChanged);
+	Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&CScanAnimation::OnslPosCmdScrollChanged);
+	Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&CScanAnimation::OnslPosCmdScrollChanged);
+	Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanAnimation::OnbtnJumpClick);
+	Connect(wxID_ANY,wxEVT_INIT_DIALOG,(wxObjectEventFunction)&CScanAnimation::OnInit);
+	//*)
+
+	// The point map:
+	plotMap->AddLayer( new mpScaleX() );
+	plotMap->AddLayer( new mpScaleY() );
+	plotMap->LockAspect( true);
+	plotMap->Fit(-10,10,-10,10);
+
+	m_lyMapPoints = new mpFXYVector(_("points"));
+	m_lyMapPoints ->SetPen( wxPen(wxColour(0,0,255),3) );
+	m_lyMapPoints ->SetContinuity( false );
+	plotMap->AddLayer( m_lyMapPoints );
+
+	plotMap->EnableDoubleBuffer(true);
+
+	m_mixlasers = cbAllowMix->GetValue();
+
+}
+
+CScanAnimation::~CScanAnimation()
+{
+	//(*Destroy(CScanAnimation)
+	//*)
+}
+
+// Get the rawlog entry (from cur. loaded rawlog), build and displays its map:
+void CScanAnimation::RebuildMaps()
+{
+	WX_START_TRY
+
+	int  idx = slPos->GetValue();
+
+	if ( idx>=0 && idx<(int)rawlog.size() )
+	{
+		if (rawlog.getType(idx)==CRawlog::etSensoryFrame)
+		{
+			CSensoryFramePtr sf = rawlog.getAsObservations(idx);
+			BuildMapAndRefresh(sf.pointer());
+		}
+		else
+		if (rawlog.getType(idx)==CRawlog::etObservation)
+		{
+			CSensoryFramePtr sf = CSensoryFrame::Create();
+			sf->insert( rawlog.getAsObservation(idx) );
+			BuildMapAndRefresh(sf.pointer());
+		}
+	}
+
+	WX_END_TRY
+}
+
+
+// This method is called in any case for displaying a laser scan.
+//  We keep an internal list of recent scans so they don't vanish instantaneously.
+void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
+{
+	WX_START_TRY
+
+	CSimplePointsMap	pointMap;
+
+	// Mix?
+	if (m_mixlasers)
+	{
+		static std::map< std::string, CObservation2DRangeScanPtr > lstScans;
+
+		// Insert new scans:
+		mrpt::system::TTimeStamp  	tim_last = INVALID_TIMESTAMP;
+		bool						wereScans = false;
+		size_t idx=0;
+		CObservation2DRangeScanPtr obs;
+		do
+		{
+			obs = sf->getObservationByClass<CObservation2DRangeScan>(idx++);
+			if (obs)
+			{
+				wereScans = true;
+				if (tim_last==INVALID_TIMESTAMP || tim_last<obs->timestamp)
+					tim_last = obs->timestamp;
+
+				// Add to list:
+				lstScans[obs->sensorLabel] = obs;
+			}
+		} while (obs.present());
+
+
+		// And now insert all the observations (this includes the current ones in "sf")
+		const double largest_period = 0.2;
+		vector_string lst_to_delete;
+		for (std::map< std::string, CObservation2DRangeScanPtr >::iterator it=lstScans.begin();it!=lstScans.end();++it)
+		{
+			pointMap.insertObservation( it->second.pointer() );
+			if (tim_last!=INVALID_TIMESTAMP && fabs(mrpt::system::timeDifference( it->second->timestamp, tim_last)) > largest_period )
+				lst_to_delete.push_back(it->second->sensorLabel);
+		}
+
+		// Remove too old observations:
+		for (vector_string::iterator s=lst_to_delete.begin();s!=lst_to_delete.end();++s)
+		{
+			lstScans.erase(*s);
+		}
+
+		if (tim_last==INVALID_TIMESTAMP && wereScans)
+			lstScans.clear(); // we dont' have info
+	}
+	else
+	{
+		// Add the current laser:
+		sf->insertObservationsInto( &pointMap );
+	}
+
+	// Draw points:
+	vector_float xs,ys;
+	pointMap.getAllPoints(xs,ys);
+	m_lyMapPoints->SetData( xs, ys );
+
+	plotMap->Refresh();
+
+	WX_END_TRY
+}
+
+void CScanAnimation::OnbtnPlayClick(wxCommandEvent& event)
+{
+	//
+
+
+	// Disable all but stop while playing:
+	btnStop->Enable();
+	btnPlay->Disable();
+	btnClose->Disable();
+
+	slPos->Disable();
+
+	m_stop=false;
+
+	try
+	{
+		wxBusyCursor	cursorBusy;
+		int 		    delay_ms = edDelay->GetValue();
+
+		while (!m_stop)
+		{
+			int idx = slPos->GetValue();
+			if (idx>=((int)rawlog.size())-1) break;	// End!
+
+			if (rawlog.getType(idx) != CRawlog::etActionCollection )
+			{
+				RebuildMaps();
+				::wxMilliSleep( delay_ms );
+			}
+
+			idx++;
+			slPos->SetValue(idx);
+			edIndex->SetValue(idx);
+			wxTheApp->Yield();
+		}
+	}
+	catch(...)
+	{
+	}
+
+	btnStop->Disable();
+	btnPlay->Enable();
+	btnClose->Enable();
+
+	slPos->Enable();
+}
+
+void CScanAnimation::OnbtnStopClick(wxCommandEvent& event)
+{
+	m_stop=true;
+}
+
+void CScanAnimation::OnbtnCloseClick(wxCommandEvent& event)
+{
+	Close();
+}
+
+void CScanAnimation::OnslPosCmdScrollChanged(wxScrollEvent& event)
+{
+    edIndex->SetValue( slPos->GetValue() );
+	RebuildMaps();
+}
+
+void CScanAnimation::OnbtnJumpClick(wxCommandEvent& event)
+{
+    slPos->SetValue( edIndex->GetValue() );
+	RebuildMaps();
+}
+
+void CScanAnimation::OnslPosCmdScroll(wxScrollEvent& event)
+{
+	RebuildMaps();
+}
+
+void CScanAnimation::OnbtnPickInputClick(wxCommandEvent& event)
+{
+
+}
+
+void CScanAnimation::OnInit(wxInitDialogEvent& event)
+{
+	slPos->SetValue(0);
+	slPos->SetMin(0);
+	slPos->SetMax( (int)rawlog.size() );
+
+	edIndex->SetValue(0);
+	edIndex->SetRange(0, (int)rawlog.size() );
+
+	Fit();
+
+	wxCommandEvent dummy;
+
+	OnrbLoadedSelect( dummy );
+}
+
+
+void CScanAnimation::OnrbLoadedSelect(wxCommandEvent& event)
+{
+    edFile->Enable(false);
+    btnPickInput->Enable(false);
+
+    slPos->Enable(true);
+    edIndex->Enable(true);
+    btnJump->Enable(true);
+}
+
+void CScanAnimation::OnrbFile(wxCommandEvent& event)
+{
+    edFile->Enable(true);
+    btnPickInput->Enable(true);
+
+    slPos->Enable(false);
+    edIndex->Enable(false);
+    btnJump->Enable(false);
+}
+
+
+void CScanAnimation::OncbAllowMixClick(wxCommandEvent& event)
+{
+	m_mixlasers = cbAllowMix->GetValue();
+}

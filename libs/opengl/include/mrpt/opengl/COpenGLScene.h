@@ -1,0 +1,221 @@
+/* +---------------------------------------------------------------------------+
+   |          The Mobile Robot Programming Toolkit (MRPT) C++ library          |
+   |                                                                           |
+   |                   http://mrpt.sourceforge.net/                            |
+   |                                                                           |
+   |   Copyright (C) 2005-2010  University of Malaga                           |
+   |                                                                           |
+   |    This software was written by the Machine Perception and Intelligent    |
+   |      Robotics Lab, University of Malaga (Spain).                          |
+   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>                     |
+   |                                                                           |
+   |  This file is part of the MRPT project.                                   |
+   |                                                                           |
+   |     MRPT is free software: you can redistribute it and/or modify          |
+   |     it under the terms of the GNU General Public License as published by  |
+   |     the Free Software Foundation, either version 3 of the License, or     |
+   |     (at your option) any later version.                                   |
+   |                                                                           |
+   |   MRPT is distributed in the hope that it will be useful,                 |
+   |     but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+   |     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
+   |     GNU General Public License for more details.                          |
+   |                                                                           |
+   |     You should have received a copy of the GNU General Public License     |
+   |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
+   |                                                                           |
+   +---------------------------------------------------------------------------+ */
+#ifndef opengl_COpenGLScene_H
+#define opengl_COpenGLScene_H
+
+#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/COpenGLViewport.h>
+
+namespace mrpt
+{
+	/** The namespace for 3D scene representation and rendering.
+	  */
+	namespace opengl
+	{
+		// This must be added to any CSerializable derived class:
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( COpenGLScene, mrpt::utils::CSerializable, OPENGL_IMPEXP )
+
+
+		/** This class allows the user to create, load, save, and render 3D scenes using OpenGL primitives.
+		  *  The class can be understood as a program to be run over OpenGL, containing a sequence of viewport definitions,
+		  *   rendering primitives, etc...
+		  *
+		  *  In MRPT 0.5.5 this class has been re-structured to contain from 1 to any number of <b>Viewports</b>, each one
+		  *   associated a set of OpenGL objects and, optionally, a preferred camera position. Both orthogonal (2D/3D) and projection
+		  *   camera models can be used for each viewport independently, greatly increasing the possibilities of rendered scenes.
+		  *
+		  *  An object of COpenGLScene always contains at least one viewport (utils::COpenGLViewport), named "main". Optionally, any
+		  *   number of other viewports may exist. Viewports are referenced by their names, case-sensitive strings. Each viewport contains
+		  *   a different 3D scene (i.e. they render different objects), though a mechanism exist to share the same 3D scene by a number of
+		  *   viewports so memory is not wasted replicating the same objects (see COpenGLViewport::setCloneView ).
+		  *
+		  *  The main rendering method, COpenGLScene::render(), assumes a viewport has been set-up for the entire target window. That
+		  *   method will internally make the required calls to opengl for creating the additional viewports. Note that only the depth
+		  *   buffer is cleared by default for each (non-main) viewport, to allow transparencies. This can be disabled by the approppriate
+		  *   member in COpenGLViewport.
+		  *
+		  *   An object COpenGLScene can be saved to a ".3Dscene" file using CFileOutputStream, for posterior visualization from
+		  *    the standalone application <a href="http://www.mrpt.org/Application:SceneViewer">SceneViewer</a>.
+		  *    It can be also displayed in real-time using gui::CDisplayWindow3D.
+		  */
+		class OPENGL_IMPEXP COpenGLScene : public mrpt::utils::CSerializable
+		{
+			DEFINE_SERIALIZABLE( COpenGLScene )
+		public:
+			/** Constructor
+			  */
+			COpenGLScene();
+
+			/** Destructor:
+			 */
+			virtual ~COpenGLScene();
+
+			/** Copy operator:
+			  */
+			COpenGLScene & operator =( const COpenGLScene &obj );
+
+			/** Copy constructor:
+			  */
+			COpenGLScene( const COpenGLScene &obj );
+
+			/**
+			  * Inserts a set of objects into the scene, in the given viewport ("main" by default). Any iterable object will be accepted.
+			  * \sa createViewport,getViewport
+			  */
+			template<class T> inline void insertCollection(const T &objs,const std::string &vpn=std::string("main"))	{
+				insert(objs.begin(),objs.end(),vpn);
+			}
+			/** Insert a new object into the scene, in the given viewport (by default, into the "main" viewport).
+			  *  The viewport must be created previously, an exception will be raised if the given name does not correspond to
+			  *   an existing viewport.
+			  * \sa createViewport, getViewport
+			  */
+			void insert( const CRenderizablePtr &newObject, const std::string &viewportName=std::string("main"));
+
+			/**
+			  * Inserts a set of objects into the scene, in the given viewport ("main" by default).
+			  * \sa createViewport,getViewport
+			  */
+			template<class T_it> inline void insert(const T_it &begin,const T_it &end,const std::string &vpn=std::string("main"))	{
+				for (T_it it=begin;it!=end;it++) insert(*it,vpn);
+			}
+
+			/**Creates a new viewport, adding it to the scene and returning a pointer to the new object.
+			  *  Names (case-sensitive) cannot be duplicated: if the name provided coincides with an already existing viewport, a pointer to the existing object will be returned.
+			  *  The first, default viewport, is named "main".
+			  */
+			COpenGLViewportPtr createViewport( const std::string &viewportName );
+
+			/** Returns the viewport with the given name, or NULL if it does not exist
+			  */
+			COpenGLViewportPtr getViewport( const std::string &viewportName ) const;
+
+			/** Render this scene.
+			  */
+			void  render() const;
+
+			size_t  viewportsCount() const { return m_viewports.size(); }
+
+			/** Clear the list of objects and viewports in the scene, deleting objects' memory, and leaving just the default viewport with the default values.
+			  */
+			void  clear( bool createMainViewport = true );
+
+			/** If disabled (default), the SceneViewer application will ignore the camera of the "main" viewport and keep the viewport selected by the user by hand; otherwise, the camera in the "main" viewport prevails.
+			  * \sa followCamera
+			  */
+			void enableFollowCamera( bool enabled ) { m_followCamera = enabled; }
+
+			/** Return the value of "followCamera"
+			  * \sa enableFollowCamera
+			  */
+			bool followCamera() const { return m_followCamera; }
+
+			/** Returns the first object with a given name, or NULL (an empty smart pointer) if not found.
+			  */
+			CRenderizablePtr	getByName( const std::string &str, const std::string &viewportName = std::string("main") );
+
+			 /** Returns the i'th object of a given class (or of a descendant class), or NULL (an empty smart pointer) if not found.
+			   *  Example:
+			   * \code
+					CSpherePtr obs = myscene.getByClass<CSphere>();
+			   * \endcode
+			   * By default (ith=0), the first observation is returned.
+			   */
+			 template <typename T>
+			 typename T::SmartPtr getByClass( const size_t &ith = 0 ) const
+			 {
+				MRPT_START;
+				for (TListViewports::const_iterator it = m_viewports.begin();it!=m_viewports.end();++it)
+				{
+					typename T::SmartPtr o = (*it)->getByClass<T>(ith);
+					if (o.present()) return o;
+				}
+				return typename T::SmartPtr();	// Not found: return empty smart pointer
+				MRPT_END;
+			 }
+
+
+			/** Removes the given object from the scene (it also deletes the object to free its memory).
+			  */
+			void removeObject( const CRenderizablePtr &obj, const std::string &viewportName = std::string("main") );
+
+			/** Initializes all textures in the scene (See opengl::CTexturedPlane::loadTextureInOpenGL)
+			  */
+			void  initializeAllTextures();
+
+			/** Retrieves a list of all objects in text form.
+			  */
+			void dumpListOfObjects( utils::CStringList  &lst );
+
+			/** Saves the scene to a 3Dscene file, loadable by the application SceneViewer3D 
+			  * \sa loadFromFile
+			  * \return false on any error.
+			  */
+			bool saveToFile(const std::string &fil) const;
+
+			/** Loads the scene from a 3Dscene file, the format used by the application SceneViewer3D.
+			  * \sa saveToFile
+			  * \return false on any error.
+			  */
+			bool loadFromFile(const std::string &fil);
+
+			/** Traces a ray
+			  */
+			bool traceRay(const mrpt::poses::CPose3D&o,double &dist) const;
+
+		protected:
+			bool		m_followCamera;
+
+			typedef std::vector<COpenGLViewportPtr> TListViewports;
+
+			/**  The list of viewports, indexed by name.
+			  */
+			TListViewports		m_viewports;
+		};
+		/**
+		  * Inserts an openGL object into a scene. Allows call chaining.
+		  * \sa mrpt::opengl::COpenGLScene::insert
+		  */
+		inline COpenGLScenePtr &operator<<(COpenGLScenePtr &s,const CRenderizablePtr &r)	{
+			s->insert(r);
+			return s;
+		}
+		/**
+		  * Inserts any iterable collection of openGL objects into a scene, allowing call chaining.
+		  * \sa mrpt::opengl::COpenGLScene::insert
+		  */
+		template <class T> inline COpenGLScenePtr &operator<<(COpenGLScenePtr &s,const std::vector<T> &v)	{
+			s->insert(v.begin(),v.end());
+			return s;
+		}
+	} // end namespace
+
+} // End of namespace
+
+
+#endif

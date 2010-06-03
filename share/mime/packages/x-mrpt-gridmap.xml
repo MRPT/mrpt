@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-mrpt-gridmap">
+    <comment>Robotic gridmap</comment>
+    <glob pattern="*.gridmap"/>
+    <glob pattern="*.gridmap.gz"/>
+    <sub-class-of type="application/binary"/>
+  </mime-type>
+</mime-info>

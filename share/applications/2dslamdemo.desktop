@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=2D SLAM demo
+Comment=A didactic robotic SLAM simulator
+Exec=2d-slam-demo
+Icon=2d-slam-demo
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=Education;Science;Robotics;ArtificialIntelligence;
+StartupNotify=true
+MimeType=
+

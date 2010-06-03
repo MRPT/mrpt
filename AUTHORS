@@ -1,0 +1,77 @@
+This file contains the list of people involved in the development
+of MRPT along its history. If you feel someone is missing, please
+email me at joseluisblancoc at gmail dot com
+
+ DEVELOPERS
+==========================================================
+
+The development of the MRPT project was started at the MAPIR lab of
+the University of Malaga.
+
+* Jose-Luis Blanco-Claraco. Main developer.  http://www.isa.uma.es/jlblanco
+
+* Francisco-Angel Moreno-Dueñas. http://www.isa.uma.es/famoreno
+  - Maintainer of vision-related classes (mrpt::vision namespace in libmrpt-core).
+  - Visual odometry for stereo images.
+  - Work in CLandmarksMap for efficiency of visual SLAM.
+  - Many image-related functions.
+  - Many functions in mrpt::topography
+
+* Antonio J. Ortiz de Galisteo, University of Malaga (2007).
+  - Addition of many mathematical functions.
+  - More matrix operations.
+  - Quaternion support.
+  - Mono SLAM classes and the MonoSLAM demo (the first version).
+  - Some classes for hardware interfaces (Sonars, robotic head)
+  - Additions to the graphics renderer CMRPTCanvas.
+  - The first version of the ro-localization application.
+
+* Pablo Moreno Olalla, University of Malaga.
+  - Tons of new code and optimizations in mrpt::math
+  - Work on laser scanner simulation in 3D scenes.
+  - Tons of geometry-related functions and lightweight geometry data types.
+  - Many new classes in mrpt::opengl
+
+* José Raul Ruiz Sarmiento, University of Malaga.
+  - Work on PTU unit integration with Hokuyo laser scanner and 3D point clouds.
+  - Some classes: mrpt::hwdrivers::CPtuDperception, mrpt::utils::md5, and more.
+  - Website documentation.
+
+* Vicente Arevalo Espejo, University of Malaga.
+  - The application camera-calib.
+  - Some classes: mrpt::opengl::CSetOfTexturedTriangles, etc..
+  - Some minor changes in: 3DSceneViewer and RawlogViewer applications.
+  - Some image-related functions.
+
+* Paul Newman, Mobile Robotics Group, University of Oxford.
+  - The Levenberg-Marquardt algorithm implemented in slam::CICP.
+
+* M.A. Amiri Atashgah (MAAA), University of Sharif Technology, Tehran, Iran.
+  - Rewrite of a very old version of "mono-slam" to adapt it to MRPT 0.7.0.
+
+* Philipp Robbel, Massachusetts Institute of Technology, USA.
+  - New CRangeObservation for 3D point clouds.
+  - Many hacks and optimizations in different parts of MRPT.
+  
+* Adrien Barral - Robopec (France).
+  - Driver for SICK LMS100 via ethernet (mrpt::hwdrivers::CLMS100eth)
+
+* Eduardo Fernandez Moral , University of Malaga.
+  - Driver for Rovio mobile robot with webcam. 
+  - Some other functions.
+
+* Javier G. Monroy, University of Malaga.
+  - Driver for Rovio mobile robot with webcam.
+  - New algorithms in gas maps.
+
+* Cipriano Galindo Andrades. University of Malaga.
+  - New functionality in HMT maps.
+  - Website documentation.
+ 
+* mrhemali
+  - SWIG wrappers (Python) for MRPT.  
+  - Fixes to build without freeglut, some bug fixes, ...
+
+Several bug reports have been provided from MRPT users world-wide. We kindly thank all of
+them for this valuable feedback, and they are usually mentioned in changelogs.
+

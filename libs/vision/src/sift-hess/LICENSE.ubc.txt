@@ -1,0 +1,26 @@
+
+SIFT LICENSE CONDITIONS
+
+Copyright (2005), University of British Columbia.
+
+This software for the detection of invariant keypoints is being made
+available for individual research use only.  Any commercial use or any
+redistribution of this software requires a license from the University
+of British Columbia.
+
+The following patent has been issued for methods embodied in this
+software: "Method and apparatus for identifying scale invariant
+features in an image and use of same for locating an object in an
+image," David G. Lowe, US Patent 6,711,293 (March 23,
+2004). Provisional application filed March 8, 1999. Asignee: The
+University of British Columbia.
+
+For further details on obtaining a commercial license, contact David
+Lowe (lowe@cs.ubc.ca) or the University-Industry Liaison Office of the
+University of British Columbia. 
+
+THE UNIVERSITY OF BRITISH COLUMBIA MAKES NO REPRESENTATIONS OR
+WARRANTIES OF ANY KIND CONCERNING THIS SOFTWARE.
+
+This license file must be retained with all copies of the software,
+including any modified or derivative versions.

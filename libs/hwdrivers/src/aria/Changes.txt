@@ -1,0 +1,895 @@
+
+Aria 2.5.1
+February 20, 2007
+---------------------------
+
+ * Adds support for gyro-corrected heading automatically calculated by the
+   microcontroller firmware (requires updated firmware), and for obtaining the
+   odometry calculation delay (firmware's delay between reading odometers and reporting
+   heading and pose to to the client). If the firmware supports it, ARIA now
+   normally uses the firmware's integrated gyro heading rather than calculating 
+   it on the client side.
+ * Fixes memory leak in ArNetworking (some stored packets were not deleted if
+   ArNetPacketSenderTcp was destroyed)
+
+
+
+Aria 2.5.0
+December  1, 2006
+---------------------------
+
+Important Changes and Bug Fixes:
+ * Modified ArPTZ so that the functions for pan and tilt take doubles
+   instead of integers so we can get finer grained movement, updated
+   ArVCC4, ArSonyPTZ, ArAMPTU, and ArDPPTU for this.  Tested ArVCC4
+   and ArSonyPTZ and they worked fine, if there are problems with this
+   or with the AMPTU or ArDPPTU send email to aria-users.  Modified
+   ArServerHandlerCamera to fix for the change too.
+ * ArNetworking: Removed some functions from ArServerInfoStrings to manually
+   add items.  Instead, ArServerInfoStrings receives data from Aria's new
+   ArStringInfoGroup global data store.
+ * ArActionDesired behavior changed slightly in that now for the
+   transMaxVel, transNegMaxVel, transAccel, transDecel, rotMaxVel,
+   rotAccel, and rotDecel can now just use the slowest value (so that
+   if you have multiple things trying to set a maximum speed they
+   don't have to coordinate each can just set the slowest and the
+   slowest is what is used) (note of course that decel uses the
+   fastest decel instead).  You can specify the old behavior when you
+   do the sets on these if you want to (its not recommended and won't
+   work with the built in actions).
+ * All libraries are built with -fPIC for greater binary compatability when
+   linking at runtime.
+ * Added Aria::parseArgs() and Aria::logOptions(), and the functions
+   Aria::addParseArgsCB()  and Aria::addLogOptionsCB() for classes/modules 
+   to add functors that parseArgs() and logOptions() call; modified all 
+   the things that parse arguments and log options to use these new functions 
+   (old code will still work since the functions still work when called directly, 
+   but this usage is deprecated)
+ * ArNetworking: ArServerBase and ArClientBase should be threadsafe, 
+   you shouldn't need to worry about locking and unlocking them when doing
+   things and may cause problems if you do   
+ * ArServerBase::broadcastPacketTcp and
+   ArServerBase::broadcastPacketUdp will no longer take clients to not
+   send the data too, this is because that behavior does not work with
+   the central server... there's now a WithExclusion command for each
+   of these if you need that behavior (its not recommended)
+ * Python wrapper now requires Python 2.4, except on RedHat 7.3 where it 
+   still uses Python 2.2 (which is the last Python released for RHL).
+   You can install python2.4 if on Debian, or download for Windows or other 
+   systems at <http://www.python.org/download/releases/2.4.4>.
+
+Enhancements: 
+ * Added new ArSonarAutoDisabler that turns off the sonar if the
+   robot is stopped for a period of time and re-enables them when the robot
+   moves; ArNetworking's ArServerModeStop no longer turns off the sonar.
+ * Made ArArgumentParser::loadDefaultArguments so it can put them in
+   something other than the first position
+ * Modified ArConfig so that it can save unknown sections and
+   parameters, so that information isn't lost if nothing knows about it
+   this run
+ * Added ArActionDriveDistance, an action which will just take a
+   distance and drive forward that distance
+ * ArNetworking: Added ArServerMode::setWillUnlockIfRequested and
+   getWillUnlockIfRequested to get the info about whether we'll unlock
+   if requested or not (so other things can tell if docking is forced
+   or not)
+ * ArNetworking: Added code so that ArServerMode can keep track of
+   which data (commands) belong to which mode and a test program for
+   that (ArNetworking/tests/modeInfoClient.cpp) and added the new call
+   to ArServerMode::addData to all existing ArServerModes.
+   ArNetworking clients can get this information
+ * Added new simulator commands to ArCommands enum
+ * Added support for SICK reflectance (for reflector markers); also
+   added support for retrieving extended-info laser packets from the
+   simulator (which contain reflectance information)
+ * ArNetworking: Added boolean to ArServerMode::lockMode (defaults to
+   old behavior) which indicates if the mode will unlock if requested
+   or not and added ArServerMode::willUnlockIfRequested to get the
+   info about whether we'll unlock if requested or not
+ * ArNetworking: Added code to ArServerBase so that clients can get
+   which mode is active and if its locked or not, and if it'll unlock
+   if requested or not
+ * New class ArSystemStatus (for Linux only).
+ * Modifed some code in ArKeyHandler and ArNetworking/ArNetpacketReceiverTcp 
+   so that they'd work better on Mac OS X
+ * There's now network usage tracking in ArNetworking (by packet type)
+   see logTracking and resetTracking in ArServerBase, there's also an
+   ArServerSimpleServerCommands that'll let you do these things over
+   the network
+ * Fixed a crash bug on shutdown with adding actions to ArActionGroups
+   then deleting them
+ * Fixed the Aria::signalHandlerCB and Aria::exit so that it
+   couldn't loop anymore (previously it would loop if you did an
+   Aria::shutdown and that caused a segfault)
+ * Added ArServerClient::hasGroupAccess so that an ArNetworking call
+   can check to see if a client has access to some group, note that
+   this is generally not needed since the command won't be called if
+   the user doesn't have access to that group (its for the next enhancement)
+ * Made ArServerModeRatioDrive so that if a user didn't have access to
+   unsafe drive mode and tried to drive the robot while it was in
+   unsafe mode the mode would kick back over into safe driving mode
+ * Made ArSickLogger so that it takes in a robot joy handler too and
+   changed the way it takes goals a little, now if you press a button
+   for a goal you have to let it go before another goal is taken (this
+   is instead of a time/distance/turn based check) Also changed it so
+   that if you were adding goals it'd only check if you had a
+   keyhandler, it wouldn't add a keyhandler
+ * Made ArServerModeMapping so that when it makes a new ArSickLogger
+   it passes in Aria::getJoyHandler and Aria::getRobotJoyHandler as
+   well as now telling it to add goals
+ * ArServerHandlerCamera now has different modes and can look at goals
+   as it is driving to them, look at points, and can adjust its
+   position relative to the image, and some commands to set the
+   position on the camera but play well with the modes while doing
+   it... 
+ * Added ArNetServer calls to send to a specific client, this is so
+   that one doesn't have to worry about if the socket was closed or
+   not... this may have a better method later
+ * Added some calls to the ArServerHandlerConfig to make it a little
+   more generically usable
+ * Added requestOnceUdp and findCommandByName to ArClientBase
+ * Added examples/gotoActionExample.cpp
+ * Added ArRobot::getRobotLengthFront and ArRobot::getRobotLengthRear 
+   with associated entries in the parameters file, if either value is
+   zero then it will be set to half of the robot length
+ * Added ArRobot::getAbsoluteMaxTransAccel,
+   ArRobot::getAbsoluteMaxTransDecel, ArRobot::getAbsoluteMaxRotAccel,
+   and ArRobot::getAbsoluteMaxRotDecel which will report the top
+   values (accel and decel are the same on the pioneers now but
+   someday may not be)... these (like the versions for the max vels)
+   are set from the config packet if its there, otherwise they are set
+   to an arbitrary value (unlike the max vel ones which come from a
+   param file).... made ArActionMovementParams use this value
+ * ArMapObject now has getFromToSegments which can get the rotated
+   line segments so that everyone doesn't have to calculate the
+   rotated rectangles on their own
+ * New ArGPS, ArGPSConnector and ArNovatelGPS classes to receive data
+   from Global Positioning System devices, and the Novatel ProPak G2 
+   in particular.
+ * Made ArRobot so that it has a new method isTryingToMove that is set
+   to true if the robot is trying to move even if it isn't moving
+   (this is mainly for where the robot isn't moving because an action
+   is stopping it from hitting something), there's a forceTryingToMove
+   to go with this for things that want the robot always look like its
+   trying to move
+ * Made ArSonarAutoDisabler so that it'd use the new isTryingToMove
+   flag and so that it would assume its the only thing changing the
+   sonar, since the ArRobot::areSonarEnabled will return false if the
+   robot has no sonar, or if they are disabled
+ * Added a flag to range devices so they can say if they're location
+   dependent or not (for use with the next enhancement)
+ * Added a flag to the ArRobot functions that check all the range
+   devices to say whether to ignore range devices that are location
+   dependent (so that its easy to say ignore forbidden lines from the
+   robot joystick)
+   
+
+Aria 2.4.3
+December 7, 2005
+---------------------------
+
+ Uses -fPIC flag when building Linux shared libraries for greater compatability.
+
+Aria 2.4.1
+October 14, 2005
+---------------------------
+
+Fixes:
+ * Moved accessors for protected static members in ArSoundPlayer out of header file 
+   (MSVC tried to inline them, and failed to link because the members were not
+   exported from the DLL)
+
+Aria 2.4.0
+September 15, 2005
+---------------------------
+
+
+Fixes:
+ * Made ArActionDeceleratingLimiter honor the UseEStop flag
+ * Changed ArSignalHandler_LIN to work with the newer
+   Linux kernels/libs (e.g. in Debian), changes are documented in runThread 
+   for the curious (It seems that if you try and hit control c in near the 
+   time of a system call sometimes it will break signal handling but that 
+   looked like it happened before this revision too)
+ * Improvements to ArSocket so that it doesn't try and look up
+   localhost when it opens (since it uses INADDR_ANY anyways, and all
+   the look up would do is slow down things on some machines without
+   DNS setup), also in Linux a failed lookup on a host will no longer
+   then try localhost (it never should have)
+ * Changed ArAnalogGyro so that if it got no encoder readings from
+   the robot but did get readings from the gyro that it would just use the
+   gyro readings
+ * Revamped ArActionInput... 
+   * removed deltaHeading and deltaVel function from ArActionInput
+     (since they weren't used and are broken), if you need them send
+     email to the aria-users list and we'll put it (or something that
+     takes care of that function) back in...
+   * added setHeading and made the stuff there simpler
+ * Made it so that sonar readings are set to be ignored until they have gotten
+   data
+
+Important Changes:
+ * If ArRobot can't find a parameter file for a robot AND has no internal
+   parameters for the robot type, it will now fail the connection rather than 
+   using (probably unsuitable) default values.
+ * The wrapper Java code is now distributed as Aria.jar and
+   ArNetworking.jar rather than separate .class files.
+
+Enhancements:
+ * Added access to ArRobot for the interpolated encoder position, this is 
+   now used for the encoder pose on the SICK raw readings 
+   (ArRobot::getEncoderPoseInterpPosition)
+ * ArSick::processPacket: the name and meaning of the deinterlacePose
+   is now deinterlaceDelta, I don't imagine anyone uses it except for
+   some internal code or I'd make it more backwards compatible
+ * Added ArServerInfoStrings to the ArNetworking library, it can send
+   arbitrary strings from a server out to MobileEyes for MobileEyes to
+   display
+ * Added the ability to log abitrary strings (ie like above) to
+   ArDataLogger
+ * Added ArConstFunctors and ArConstRetFunctors so that you could use 
+   the above string functions with the const functions in ArRobot.
+   * NOTE: In a future release some currently non-const methods will become
+     const. 
+ * Generalized some ArSoundsQueue callbacks. Some public methods have been deprecated.
+   addItem(ItemType, const char*, int) has been replaced by addItem(Item), and
+   createDefaultSpeechItem() and createDefaultFileItem() were added.
+ * Added a setIgnoreThisReading on the ArSensorReading class
+ * ArNetworking library now has Python and Java wrappers! (Thanks to Swig)
+ * Changed things a little so that ArRangeBuffer now additionally has
+   getClosestPolarInList and getClosestBoxInList so that you can do
+   these operations on arbitrary lists of readings (for instance from
+   transformed readings) more easily (you can also just make your own buffer)
+ * Added a targetPose to ArRangeBuffer box checking so that you can
+   see if a point is closer to someplace other than the robot
+ * ArArgumentParser functions now generally have arguments so you
+   avoid just get one argument (previously it'd always recurse and
+   find you the last argument)
+
+
+
+
+
+Aria 2.3.3
+May 31, 2005
+---------------------------
+
+Fixes:
+ * Position mode can display some new flags
+ * Initialize a variable in position mode
+
+
+
+Aria 2.3.2
+May 24, 2005
+---------------------------
+
+Fixes:
+  * Cleans up some warning messages seen in Windows
+  * Companion to ARNL 1.3-2 with important fixes.
+  * Fixes uninitialized variable in ArModePosition.
+
+
+Aria 2.3.1
+May 23, 2005
+---------------------------
+
+Fixes:
+  * Fixed a bug in the filtering of ArRangeDevice readings that caused odd 
+    behavior in Windows
+  * Put a log message into the default signal handling if exit was occuring
+
+Enhancements:
+  * Modified ArServerModeStop so it doesn't always turn off sonar when stopped 
+    (depends on an argument in the constructor), SONARNL uses the new behavior 
+    so that you don't need to move before you can localize
+
+
+Aria 2.3.0
+May 16, 2005
+----------------------------
+
+Critical Changes:
+
+  * Aria::exit has been enhanced with callbacks (see Aria::addExitCallback) 
+    and will now just exit the program instead of trying to get threads to cooperate.  
+      * This has been made the default way to exit on signals (segfaults 
+        and control C for instance). 
+      * Exit has also been made the default way that ArRobot will call if escape is
+        pressed to shut things down (see ArRobot::setKeyHandler for the
+        way to use the old behavior).  
+      * Aria::init and ArRobot::ArRobot now have new parameters to control 
+        this behavior. Java code will require updating for this new parameter.
+    This is so that things can be more consistent between programs and exit 
+    conditions with less code required in the programs, generally it just works
+    better.
+  * SRIsim binary has been removed. Use MobileSim instead.
+  * MS Visual C++ 6 project files have been moved into the vc++6 subdirectory,
+    and are no longer maintained. Use Visual C++ 7.1 (.NET) instead.
+
+Fixes:
+  * Bug fix in ArSoundsQueue::resume().
+  * ArFileParser can now remove its remainder handlers in remHandler
+
+Enhancements:
+  * ArMap now deals with lines (for SONARNL, MobileSim, etc.)
+  * ArMap now deals with RouteInfo (for ARAM, just ignore for Aria and Arnl)
+  * Added ability to track velocities coming back from the robot, see 
+    ArRobot::setLogVelocitiedReceived, also added it to 
+    ArServerSimpleComMovementLogging
+  * Added ability to track packets received and sent more easily, see
+    ArRobot::setPacketsReceivedTracking and
+    ArRobot::setPacketsSentTracking.  Also added these to the
+    ArServerSimpleComMovementLogging.
+  * polySegments shape added to ArDrawingData
+
+Aria 2.2-0
+March 29, 2005
+----------------------------
+
+Critical Changes:
+  * Sonar position parameters are now given from center of rotation 
+  * Replaced old ArSpeech library with three new rewritten libraries.
+
+Fixes:
+  * Bug fix in ArNetworking TCP packet sender which might have caused some
+    data to be lost
+  * Removed problematic methods ArPTZ::getReal{Pan,Tilt,Zoom}
+  * Removed all the references to using a std::string in ariaUtil's ArUtil 
+    that would allocate or modify memory since if used in windows dll's 
+    these'll cause major problems, made them take char *, 
+    ArUtil::splitString is removed (use ArArgumentBuilder), commented out
+    stripDir and stripFile since they have problems and it doesn't seem 
+    worth fixing 
+
+Enhancements:
+  * ArRobot returns the actual battery voltage from the robot (Rather than
+    scaling to 13v) if you call ArRobot::getRealBatteryVoltage and have a 
+    recent OS on the microcontroller (otherwise gives the scaled value)
+  * New robot parameter files for SH-based robots (p3dx-sh, p3at-sh,
+    patrolbot-sh, peoplebot-sh, powerbot-sh). Fixed P3AT's laser Y position
+    to 0. 
+  * ArConfig: improved error handling, sections now operate fully and permit 
+    the same parameter in multiple sections to be handled properly.
+  * New ArUtil and ArMath functions: findMax, findMin, log2, isOnlyAlphaNumeric
+  * ArActionTriangleDriveTo improved for greater accuracy
+  * ArRobot::getRobotLength() and ArRobot::getRobotWidth() added
+  * ArActionMovementParameters added, it can set all the vels and accels/decels
+    in the action so that you can have different action groups drive more 
+    differently easier
+  * New Joydrive and Input classes (ArActionRatioInput and ArRatioInput*), 
+    and server mode and handlers in ArNetworking for "Ratio drive", 
+    to which you give front/back/left/right percentages of a maximum velocity.
+    Server can also enable/disable safe drive mode.
+  * New ArRobotJoyHandler class for getting joystick information from recent
+    OS on the microcontroller
+  * New ArNetworing classes: ArServerSimpleOpener, ArClientSimpleConnector.
+  * New class: ArActionGotoStraight
+  * New class: ArDataLogger
+  * Changed ArRobot::moveTo to keep range devices locked the whole time its
+    modifying things and now it doesn't use applyTransform (which probably
+    shouldn't be used)
+  * Added new action ArActionDeceleratingLimiter which will crank up the
+    deceleration to avoid a collision if it needs to (up to throwing an estop)
+  * New ArActionGroupNewInput using the new ArioInput
+  * New ArSoundsQueue and ArSoundPlayer classes
+  * New speech synthesis and recognition design, with implementations using
+    Festival and Cepstral (synthesis) and Sphinx (recognition) in separate
+    libraries.  Aria now has a common base class for synthesis, ArSpeechSynth.
+    (Replace old ArSpeech library)
+  * ArKeyHandler supports more special function keys  
+  * ArSimpleConnector may be used in Java and Python by passing in the
+    language's normal argv object (main() argument in Java, sys.argv in Python)
+  * New classes in ArNetworking in ArServerFileUtils and ArClientFileUtils for
+    transfering files over the ArNetworking connection, really only works in 
+    Linux (and is mostly for the new feature in Mapper3)
+  * User and password information can now be required to connect with 
+    ArNetworking, see the ArNetworking overview in the documentation for more 
+    details (and ArNetworking/examples/serverDemo.userInfo);
+
+Aria 2.1-3
+October 12, 2004
+----------------------------
+  * Special prerelease, with various Aria changes, and new ArSpeech_* setup [reed]
+
+Aria 2.1-2
+??
+----------------------------
+  * Special prerelease? 
+
+Aria 2.1-1
+23 August 2004
+---------------------------
+  
+  ?
+
+Aria 2.1
+11 August 2004
+----------------------------
+  
+  ArRangeDevices now have some information about how they should be
+  drawn in programs like MobileEyes (see the ArNetworking notes on
+  ArServerInfoDrawings).  See setCurrentDrawingData and
+  setCumulativeDrawingData.
+
+  ArTCM2 class added to handle the TCM2 compass.
+
+  ArRobot now has information about the IR on a robot (stored in the .p
+  files).
+
+  ArSick can now ignore readings at certain angles (stored in the .p
+  files).
+
+  demo now has a command mode which will send commands down to the robot
+  directly.  This stops state reflection (with the new
+  ArRobot::stopStateReflection) so you can send motion commands to the
+  robot without problems.
+
+  demo's position mode can now activate and deactivate the gyro and now
+  has a mode where it can control just one of heading or velocity.
+
+  demo now has a mode for viewing the TCM2 compass data.
+
+  New range devices, ArForbiddenRangeDevice (makes forbidden lines in a
+  map into range device readings), ArBumpers (makes bumper triggers into
+  range device readings), and ArIRs (makes IRs into range device
+  readings).
+
+  You can now activate and deactivate the ArAnalogGyro.
+
+  ArActionBumpers now works dynamically with differing bumper numbers.
+
+  ArArgumentBuilder will now take a set of strings (addStrings) and will
+  allow you put put them a particular place in the list.
+
+  ArArgumentParser will now let you load default arguments that will
+  then be parsed as if passed in on the command line
+  (loadDefaultArguments loads these).  This is for things like passing
+  in the robot port or laser port to all your programs.  See the class
+  description for more details.  Aria::init and Arnl::init add files to
+  the list, for Aria its the file /etc/Aria.args and environmental
+  variable $ARIAARGS and for Arnl it adds /etc/Arnl.args and
+  environmental variable $ARNLARGS.  The parser therefor has a function
+  checkHelpAndWarnUnparsed to call instead of the old check against
+  argc.  If you use this new feature you'll want to check against
+  parser.getArgc if you care about variable count since after
+  loadDefaultArguments is called the parser will no longer be using
+  the argc passed in (since it had to add).
+
+  ArSimpleConnector can now configure a sick to use the different number
+  of degrees and the different increments.
+
+  ArVCC4 can now handle some other Cannon camera types.
+
+  Changed things to check #ifndef WIN32 instead of #ifdef linux to make
+  things easier for people using Aria on non linux but still unix
+  platforms.
+
+  The priorities for ArConfig are now different (there are only 3).
+
+  ArNetworking Changes
+  --------------------
+
+  ArServerInfoDrawing takes range devices (or all the range devices on a
+  robot) and provides it through an ArNetworking server (to draw in MobileEyes). 
+  They will then be drawing by MobileEyes.  The supported types
+  right now are PolyDots (takes a list of points and draw dots of a
+  given size at those points), PolyPoints (takes a list of points and
+  draw small points at those points), PolyLine (takes a list of points
+  through which it draws a line), PolyArrow (takes a list of points
+  through which it draws arrows pointing at the robot).
+  ArServerInfoDrawing can also just take a functor which'll return a
+  packet to draw so that you can draw whatever arbitrary information you
+  like.
+
+  ArServerHandlerCommands provides a list of commands through the ArNetworking
+  server, and calls a functor or a functor with string argument when the command
+  is received (These are displayed as "Custom Commands" in MobileEyes).
+
+  ArServerSimpleCommandsUC is a class which will hook into
+  ArServerHandlerCommands and let you send commands to the
+  microcontroller (uC).  Note that if you use motion commands with this
+  the ArRobot state reflection on the server is still going on so you'll
+  want to hold enter (for the tool) or control s (for the toolbar) in
+  MobileEyes.
+
+  New ArServerHandlerCamera class to control an ArPTZ through ArNetworking
+
+  ArHybridForwardVideo will connect to a running video server and
+  forward video from that server out through its server.
+  These video servers are either our color tracking
+  software (ACTS, purchased separately) or our SAV (software a/v)
+  transmission software (free to all our customers).
+
+  ArClientBase::logDataList will now log not only the name and
+  description of the data available but also the return description and
+  argument description.
+
+  ArNetPacket now has doubleToBuf and bufToDouble.
+
+  ArServerHandlerMap now optionally take a map instance in the
+  constructor in which case it won't worry about loading a map itself
+  and will instead use the given map (and hook into the its map
+  reloaded callback).
+
+  ArConfig information can be passed from the server to the client and
+  vice versa now.  MobileEyes has a GUI editing tool for configuration
+  data (ARNL guiServer lets people edit arnl.p).
+
+  ArClientBase requestOnceWithString does a request once on the given
+  name using a packet with the string passed in put in the buffer.
+
+
+
+
+Aria 2.0
+11 February 2004
+----------------------------
+
+  ArNetworking library added! ARNL and MobileEyes were also released.
+
+  ArConfig now a new class ArConfigArg instead of ArArg, ArConfigArg can
+  also makememory to hold things and is more set up for working with
+  ArNetworking (and hides some things from people just trying to use the
+  base ArArg stuff).  ArConfig::writeFile now writes priorities of the
+  config out but has a parameter not to.
+
+  ArConfig now has sections to it and doesn't need to be subclassed
+  from, there is also an Aria::getConfig so that you can have one config
+  for all the options in a program without as much coordination
+  required.
+
+  The demo program and ArSimpleConnector now have shortcuts for arguments
+  along with a new flag -connectLaser which will have it connect the
+  laser (only in demo and ArNetworking example serverDemo right now).
+  You can also now just pass one hyphen (-) but two (--) will still work
+  fine.
+
+  The simulator will now use rotational and translational accelerations
+  and decelerations independently and respond appropriately to these.
+  Previously rotational acceleration was linked to translational
+  acceleration and there was no deceleration parameter as acceleration
+  parameter was used for deceleration too.  If you set the accel/decel
+  params in your robot's parameter file these will be sent to the
+  simulator which will respond appropriately.  Note that too large
+  values will cause the simulator to act erratically.
+
+  ArRangeDevice now has generic code to keep current and cumulative
+  readings.
+
+  Signal handling should work appropriately now.
+
+  New params in the parameter file.  GyroScaler and LaserTh, RobotWidth
+  and RobotLength.  GyroScaler is used with an ArAnalogGyro to calibrate
+  it (figure out the error and then adjust this scaler to compensate).
+
+  There is new code in that deinterlaces sick laser readings if you are
+  operating at 1/2 degree increments (the reading aren't interlaced with
+  any other mode).  Mapping does not yet take advantage of this.
+
+  ArArgumentParser has some new functions to make life easier and now
+  tries parsin with a - extra)
+
+  ArUtil has a few new functions e.g.  ArUtil::atof which deals with inf 
+  and -inf correctly (to help Windows).
+
+  ArNetServer can log data sent and received.
+
+  ArRobot has some new functions (requestIOPackets, stopIOPackets,
+  requestEncoderPackets, stopEncoderPackets, getIOAnalogVoltage (which
+  like all the getIO calls you need to call requestIOPackets to use),
+  getLeftEncoder and getRightEncoder (which you have to call
+  requestEncoderPackets to use))
+
+  There's a new class ArLineFinder which finds lines from a range device
+  that puts in rawReadings which at this point is really only the ArSick
+  class.  It will find the lines in a reading which can be used to do
+  different things.  ArActionTriangleDriveTo now exists which uses this
+  class, these are used with the docking stations that we have.
+
+  Other miscellaneous small fixes.
+
+
+
+Aria 1.3-2
+8 September 2003
+----------------------------
+
+  RequestIOPackets was on for all robots instead of just the newer
+  PeopleBots which wound up sending too much data and broke a few
+  things.  Its off now except for the PeopleBots that need it, but the
+  following fixes are in place so that things will still work well with
+  that amount of data.
+
+  Before if you had a lot of data (a gyro, lots of sonar data, and were
+  requesting IO) you could wind up where Aria would spend all of its
+  time receiving data and none doing anything with it, this was only at
+  9600 baud and more data than most people ever send back and forth.  It
+  did this because it tried to process all incoming data before running
+  its loop, now it'll only try to do this for a half a cycle's worth of
+  time.
+
+  The warning messages for when things take too long now clearly
+  indicate that they are in fact merely warnings.
+
+  A new release of AROS should be out this week, if you are using this
+  version (1.9) or newer and are connecting over a serial port the
+  connection will be automatically shifted up to 38.4 baud after the
+  connection is made.  Aria sends a command to the robot to tell it to
+  change baud rates, then changes its own baud rate in reflection.  If
+  either side doesn't hear from the other for a half second it fails
+  back over to the previous baud rate.  You can disable this behavior by
+  changing SwitchToBaudRate to 0 in your parameter files.  You can also
+  set it higher (up to 115200) if you wish, you must use the normal baud
+  rates of 9600 19200 38400 56800 or 115200.
+
+
+Aria 1.3 ?
+11 August 2003
+----------------------------
+
+  (BasicSuite Mapper and LaserMapper (ScanStudio) were both also released) 
+
+  Code for the new gyroscopic correction system is integrated in with
+  the base level Aria code.  The class is ArAnalogGyro.  If your robot
+  has a gyro mode then in the Aria demo in position mode the raw gyro
+  and raw robot headings will show up.
+
+  ArRobot now requests a configPacket from the robot after it connects
+  and waits for that before saying it is connected (it times out within
+  a few seconds so it will work okay with pioneer 1s and other old
+  robots, but everyone with anything but a pioneer 1 should get the new
+  AROS or P2OS version since it has one critical bug fix).
+
+  ArActions have gotten a major upgrade as they can now set the
+  accelerations and decelerations the robot uses.  The values an action
+  sets will be used as long as an action sets an accel, decel, or rot
+  vel max when an action isn't setting them anymore these values all
+  reset to the values the robot had at connection (the reason the
+  configPacket reader was implemented).  trans vel max is still taken
+  care of in software.  You can also set these values on the robot so
+  that ArRobot will ignore the ones from the configPacket, look at
+  setRotVelMax, setRotAccel, setRotDecel, setTransVelMax, setTransAccel
+  and setTransDecel.  You can now also use rot vel with the actions,
+  note that this does not mix at all with the heading modes and that
+  whichever mode is used first is what will be used the other will be
+  ignored.
+
+  ArRobot has a stabilizing time that can be set with
+  ArRobot::setStabilizingTime so that it will wait a set amount of time
+  after the initial connection is made before saying it is connected and
+  calling the connect callbacks.  This stabilizing time right now is
+  only used for the gyro (since needs to find the center while the
+  robots not moving before it can be used).  
+
+  There is now a warning time for the robot cycle time
+  (ArRobot::setWarningTime).  If the robot sync tasks take longer than
+  this time a warning is issued.  If any individual task takes longer
+  then that task is also warned over.  Default is 200 ms, 0 disables it.
+
+  The sick filtering code has been changed.  Look at that class for
+  specifics but one main thing is that readings will now be filtered and
+  thrown away if they are too old, but this like all filtering is
+  configurable.  There was code that ignored some readings on the sides
+  of the robot but this was gotten rid of since it sometimes caused
+  trouble because it would sometimes hold readings that should have been
+  discarded.
+
+  New class called ArConfig for having configuration
+  files of different sorts, the mechanism that reads/writes .p files was
+  overhauled to use this instead of the old ArPref* system that has been
+  removed.  The new system is much more robust and usable than the old
+  system.
+
+  The wrapper.i file needed for rebuilding the Java and Python wrappers
+  is now included.  If you have any trouble with the wrappers in the
+  stock Aria please send me an email.
+
+  The demo and anything using the ArSimpleConnector can now change the
+  baud by using the switch --robotBaud in the command line.
+
+  The code for ArVCC4 has been upgraded a little bit and now has the
+  ability to enable or disable the getting of the position from the
+  camera.
+
+  The option not to do state reflecting has been removed from the
+  constructor since no one I'd heard of used it and it was making things
+  too complicated for little benefit.
+
+  The general Aria static class now has functions for setting and
+  getting ArJoyHandlers like it has for key handlers.
+
+  ArUtil had strcasecmp functions added for comparing the cases of
+  strings and char *s without paying attention to case.  Also has a
+  function call to convert a value to true or false for easier
+  logging/understanding.  There's also a function to lower an entire
+  string.
+
+  A few other minor bug fixes and additions.
+
+Aria 1.2
+4 March 2003
+----------------------------
+
+  Aria now supports Java and Python (Wrappers generated by Swig).  
+  A number of names of member functions have changed to accomodate this 
+  (since they were keywords in one of these languages).  The most important 
+  one is that the different print members are now called log (since thats 
+  what they do).  
+
+  There are a couple of more complicated features that don't work yet in
+  these languages.  The only unimplemented feature of SWIG is virtual
+  function overloading which means that you will not be able to make
+  your own ArActions in Java or Python, but you can always add them to
+  the C++ library and use them in Java or Python.  
+  You also will not be able to make your own ArFunctors
+  for callbacks, but again where thats needed you can make objects in
+  the C++ library and use them in Java or Python.  For this deficiency
+  language specific workarounds could likely be written by users, which
+  I could incorporate or if there are large numbers of people using
+  these wrappers we may develop these on our own.
+
+  Also note with python, if you use non-interactive mode the program
+  will crash on exit.  In interactive mode you should do
+  robot.disconnect(); Aria.shutdown() before you exit to avoid a crash,
+  or you can add these to the simple.py for non-interactive mode.
+
+  Note that there are no Java or Python wrappers for anything but Aria.
+  If people use this wrapper and want wrappers for the other packages I
+  will probably make them.  If you use either of the wrappers and have
+  feedback about it, feel free to send it to me.
+
+  ArSick now has a cumulative buffer (it had none before) which
+  is filtered for readings that the laser doesn't see anymore (ie
+  transient obstacles).
+
+  ArRangeDevice now has a buffer that is ArPoseWithTime instead of
+  ArPose, people may need to change their iterators.  Cumulative
+  readings older than a certian time can now be flushed.
+
+  Accessors in Aria are now const.  Some functions have both a const and
+  non const function.  No one should really even notice this except for
+  the people who want to use it.
+
+  The Cannon VCC4 camera got an improvement in that it now uses
+  bidirectioncal communication.
+
+  New ArSimpleConnector class that should make it easier to connect to
+  the simulator or real robot with an ArRobot or ArSick.  Also supports
+  the command line options the demo uses.  It is used in
+  examples/demo.cpp examples/wander.cpp examples/teleop.cpp
+  examples/sickWander.cpp examples/sickTeleop.cpp.
+
+  As always there were more bug fixes and improvements.
+
+
+Aria 1.1-11b
+29 Jan 2003
+---------------------------
+
+  * Fixes errors in windows packages
+
+Aria 1.1-11
+23 Jan 2003
+----------------------------
+
+   ?
+
+Aria 1.1-10
+13 November 2002
+----------------------------
+
+   ?
+
+Aria 1.1-8
+10 October 2002
+----------------------------
+
+   ?
+
+Aria 1.1-7 ?
+5 September 2002
+----------------------------
+
+  * The addition of new robot types for use with the new H8 controller
+  * Preventing the robot from jumping to the origin on connect
+  * Fixed a memory leak in ArBasePacket
+  * Fixed a corrupted file in the Windows distribution of ArSpeech.
+
+
+Aria 1.1-5 ?
+12 July 2002
+----------------------------
+
+  This mostly fixes some problems with sonars from an over-agressive other
+  bug fix I did.  It didn't process the last parameter of the sonar and
+  wound up thinking it was pointing forward (0, 0, 0).  It has a few
+  other small fixes but nothing major (some previous parsing errors used
+  to crash Saphira but Kurt fixed it so it didn't).
+
+  This may fix the sonar localization issue reported today, I'm not
+  sure.  If not you can try doing an mcSetGauss after moving a robot
+  back to locate the samples there.  If that works and it isn't an issue
+  let me know.
+
+
+Aria 1.1-2
+10 May 2002
+----------------------------
+
+  * rewritten ipthru program (examples/ipthru.cpp)
+  * Fixes and minor additions 
+
+Aria 1.1 
+11 March 2002
+----------------------------
+
+  * ArSick class added to support the Sick laser rangefinder.
+  * New unified demo program that'll control basically everything on the
+    robot, gripper, camera, all that.  
+  * New examples sickWander.cpp and sickTeleop.cpp which
+    demonstrate how to configure the laser.
+
+
+Aria 1.0-3
+26 February 2002
+----------------------------
+
+  * ArActionGroup added.
+  * Minor bug fixes.
+
+
+Aria 1.0-2
+??
+----------------------------
+
+   ?
+
+Aria 1.0-1
+??
+----------------------------
+
+   ?
+
+
+Aria 1.0
+21 December 2001
+----------------------------
+
+  * First full, official ARIA release!
+
+  * ArAction::run renamed to ArAction::fire
+  * Better documentation
+  * ArKeyHandler added
+
+
+Aria 0.71
+8 November 2001
+----------------------------
+
+Fix to the simulator in Windows
+
+Aria 0.7
+6 November 2001
+----------------------------
+
+First public beta
+
+You can now do a setPort on an ArSerialConnection or ArTcpConnection 
+instead of having to open it... the robot connect will then open it 
+(and fail if it can't open it).  The only time you really need to open 
+it yourself is if you want to do error checking and do different 
+things if the open fails.
+
+The sync loop now just waits in the packet handler all the time, and
+the packet handler finally returns (which runs the main sync loop) as
+soon as it gets a SIP from the packet.  There is a flag to the ArRobot 
+contructor if you don't want to use this new behavior.
+
+
+Aria 0.6
+13 September 2001
+----------------------------
+
+  * Internal beta
+

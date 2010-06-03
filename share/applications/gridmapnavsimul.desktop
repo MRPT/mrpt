@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=Gridmap Navigation Simulator
+Comment=Robotics Simulator
+Exec=GridmapNavSimul
+Icon=gridmapsimul
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=Education;Science;Robotics;ArtificialIntelligence;
+StartupNotify=true
+MimeType=
+

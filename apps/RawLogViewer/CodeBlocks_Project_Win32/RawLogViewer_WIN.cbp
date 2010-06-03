@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="RawLogViewer_WIN" />
+		<Option pch_mode="2" />
+		<Option compiler="msvc8" />
+		<Build>
+			<Target title="Debug_WIN">
+				<Option output="bin\Debug_WIN\RawLogViewer" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug_WIN\" />
+				<Option type="0" />
+				<Option compiler="msvc8" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="/MTd" />
+					<Add option="/Zi /D_DEBUG" />
+					<Add option="/Zi" />
+					<Add option="/D_DEBUG" />
+					<Add option="/D__WXDEBUG__" />
+					<Add directory="$($(#wx))\lib\vc_lib\mswd" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="$(#wx)\lib\vc_lib\mswd" />
+				</ResourceCompiler>
+				<Linker>
+					<Add option="/DEBUG" />
+					<Add option="/NODEFAULTLIB:libcmtd.lib" />
+					<Add option="/NODEFAULTLIB:msvcrt.lib" />
+					<Add library="msvcrtd.lib" />
+					<Add library="wxmsw28d_core.lib" />
+					<Add library="wxbase28d.lib" />
+					<Add library="wxpngd.lib" />
+					<Add library="wxzlibd.lib" />
+					<Add library="wxjpegd.lib" />
+					<Add library="wxtiffd.lib" />
+					<Add directory="$(#wx)\lib\vc_lib" />
+				</Linker>
+				<ExtraCommands>
+					<Add after='mt.exe /nologo /manifest &quot;bin\Debug_WIN\RawLogViewer.exe.manifest&quot; /outputresource:&quot;bin\Debug_WIN\RawLogViewer.exe&quot;;1' />
+				</ExtraCommands>
+			</Target>
+			<Target title="Release_WIN">
+				<Option output="..\..\..\bin\RawLogViewer.exe" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\..\bin" />
+				<Option object_output="obj\Release_WIN\" />
+				<Option type="0" />
+				<Option compiler="msvc8" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="/MT" />
+					<Add option="/O2" />
+					<Add option="/Ox" />
+					<Add option="/Ob1" />
+					<Add option="/DNDEBUG" />
+					<Add directory="$(#wx)\lib\vc_lib\msw" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="$(#wx)\lib\vc_lib\msw" />
+				</ResourceCompiler>
+				<Linker>
+					<Add option="/NODEFAULTLIB:msvcrt.lib" />
+					<Add library="libcmt.lib" />
+					<Add library="wxmsw28_core.lib" />
+					<Add library="wxbase28.lib" />
+					<Add library="wxpng.lib" />
+					<Add library="wxzlib.lib" />
+					<Add library="wxmsw28_adv.lib" />
+					<Add library="wxjpeg.lib" />
+					<Add library="wxtiff.lib" />
+					<Add directory="$(#wx)\lib\vc_lib" />
+				</Linker>
+				<ExtraCommands>
+					<Add after='mt.exe /nologo /manifest &quot;..\..\..\bin\RawLogViewer.exe.manifest&quot; /outputresource:&quot;..\..\..\bin\RawLogViewer.exe&quot;;1' />
+				</ExtraCommands>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="/TP" />
+			<Add option="/Gd" />
+			<Add option="/GF" />
+			<Add option="/W3" />
+			<Add option="/Zc:wchar_t" />
+			<Add option="/EHsc" />
+			<Add option="/DWIN32" />
+			<Add option="/D__WIN32__" />
+			<Add option="/D__WXMSW__" />
+			<Add option="/D_WINDOWS" />
+			<Add option="/D_CRT_SECURE_DEPRECATE" />
+			<Add option="/D_CRT_NONSTDC_NO_DEPRECATE" />
+			<Add option="/D_VC80_UPGRADE=0x0600" />
+			<Add directory="$(#wx)\include" />
+			<Add directory="$(#wx)\contrib\include" />
+			<Add directory="..\..\include" />
+		</Compiler>
+		<ResourceCompiler>
+			<Add directory="$(#wx)\include" />
+		</ResourceCompiler>
+		<Linker>
+			<Add option="/INCREMENTAL:NO" />
+			<Add option="/SUBSYSTEM:WINDOWS" />
+			<Add library="winmm.lib" />
+			<Add library="rpcrt4.lib" />
+			<Add library="kernel32.lib" />
+			<Add library="user32.lib" />
+			<Add library="gdi32.lib" />
+			<Add library="winspool.lib" />
+			<Add library="comdlg32.lib" />
+			<Add library="advapi32.lib" />
+			<Add library="shell32.lib" />
+			<Add library="ole32.lib" />
+			<Add library="oleaut32.lib" />
+			<Add library="uuid.lib" />
+			<Add library="comctl32.lib" />
+			<Add library="wsock32.lib" />
+			<Add library="odbc32.lib" />
+			<Add directory="..\..\lib" />
+			<Add directory="..\..\lib\otherlibs" />
+		</Linker>
+		<Unit filename="../CAboutBox.cpp" />
+		<Unit filename="../CAboutBox.h" />
+		<Unit filename="../CFormChangeSensorPositions.cpp" />
+		<Unit filename="../CFormChangeSensorPositions.h" />
+		<Unit filename="../CFormEdit.cpp" />
+		<Unit filename="../CFormEdit.h" />
+		<Unit filename="../CFormMotionModel.cpp" />
+		<Unit filename="../CFormMotionModel.h" />
+		<Unit filename="../CFormPlayVideo.cpp" />
+		<Unit filename="../CFormPlayVideo.h" />
+		<Unit filename="../CFormRawMap.cpp" />
+		<Unit filename="../CFormRawMap.h" />
+		<Unit filename="../CMyRedirector.h" />
+		<Unit filename="../COdometryParams.cpp" />
+		<Unit filename="../COdometryParams.h" />
+		<Unit filename="../CScanMatching.cpp" />
+		<Unit filename="../CScanMatching.h" />
+		<Unit filename="../CScanAnimation.cpp" />
+		<Unit filename="../CScanAnimation.h" />
+		<Unit filename="../wxsmith/CAboutBox.wxs" />
+		<Unit filename="../wxsmith/CFormChangeSensorPositions.wxs" />
+		<Unit filename="../wxsmith/CFormEdit.wxs" />
+		<Unit filename="../wxsmith/CFormMotionModel.wxs" />
+		<Unit filename="../wxsmith/CFormPlayVideo.wxs" />
+		<Unit filename="../wxsmith/CFormRawMap.wxs" />
+		<Unit filename="../wxsmith/COdometryParams.wxs" />
+		<Unit filename="../wxsmith/CScanMatching.wxs" />
+		<Unit filename="../wxsmith/xRawLogViewerframe.wxs" />
+		<Unit filename="../xRawLogViewerApp.cpp" />
+		<Unit filename="../xRawLogViewerApp.h" />
+		<Unit filename="../xRawLogViewerMain.cpp" />
+		<Unit filename="../xRawLogViewerMain.h" />
+		<Unit filename="../../wxMathPlot/mathplot.cpp" />
+		<Unit filename="../../wxMathPlot/mathplot.h" />
+		<Unit filename="..\resource.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<wxsmith version="1">
+				<gui name="wxWidgets" src="..\xRawLogViewerApp.cpp" main="xRawLogViewerFrame" init_handlers="necessary" language="CPP" />
+				<resources>
+					<wxFrame wxs="../wxsmith/xRawLogViewerframe.wxs" src="../xRawLogViewerMain.cpp" hdr="../xRawLogViewerMain.h" name="xRawLogViewerFrame" language="CPP" />
+					<wxDialog wxs="../wxsmith/CAboutBox.wxs" src="../CAboutBox.cpp" hdr="../CAboutBox.h" name="CAboutBox" language="CPP" />
+					<wxDialog wxs="../wxsmith/CFormMotionModel.wxs" src="../CFormMotionModel.cpp" hdr="../CFormMotionModel.h" name="CFormMotionModel" language="CPP" />
+					<wxDialog wxs="../wxsmith/CFormPlayVideo.wxs" src="../CFormPlayVideo.cpp" hdr="../CFormPlayVideo.h" name="CFormPlayVideo" language="CPP" />
+					<wxDialog wxs="../wxsmith/CFormRawMap.wxs" src="../CFormRawMap.cpp" hdr="../CFormRawMap.h" name="CFormRawMap" language="CPP" />
+					<wxDialog wxs="../wxsmith/CFormEdit.wxs" src="../CFormEdit.cpp" hdr="../CFormEdit.h" name="CFormEdit" language="CPP" />
+					<wxDialog wxs="../wxsmith/COdometryParams.wxs" src="../COdometryParams.cpp" hdr="../COdometryParams.h" name="COdometryParams" language="CPP" />
+					<wxDialog wxs="../wxsmith/CScanMatching.wxs" src="../CScanMatching.cpp" hdr="../CScanMatching.h" name="CScanMatching" language="CPP" />
+					<wxDialog wxs="../wxsmith/CFormChangeSensorPositions.wxs" src="../CFormChangeSensorPositions.cpp" hdr="../CFormChangeSensorPositions.h" name="CFormChangeSensorPositions" language="CPP" />
+					<wxDialog wxs="../wxsmith/CScanAnimation.wxs" src="../CScanAnimation.cpp" hdr="../CScanAnimation.h" name="CScanAnimation" language="CPP" />
+				</resources>
+			</wxsmith>
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

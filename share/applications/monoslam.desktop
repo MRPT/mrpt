@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=Monocular SLAM
+Comment=Localization and Mapping with a single calibrated camera
+Exec=mono-slam
+Icon=monoslam
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=Education;Science;Robotics;ArtificialIntelligence;
+StartupNotify=true
+MimeType=
+

@@ -1,0 +1,39 @@
+# UDEV-style hotplug map for MAPIR devices to 
+#   have proper permissions
+#
+# Put this file in /etc/udev/rules.d
+#
+#  J.L. Blanco, DEC/2009
+# ---------------------------------------
+
+# SICK-USB v2-v3
+ATTR{idVendor}=="0403", ATTR{idProduct}=="6078", MODE="666"
+
+# SICK-USB v1
+ATTR{idVendor}=="0403", ATTR{idProduct}=="6077", MODE="666"
+
+# eNeck
+ATTR{idVendor}=="0403", ATTR{idProduct}=="2000", MODE="666"
+
+# Dual SICK
+ATTR{idVendor}=="0403", ATTR{idProduct}=="2200", MODE="666"
+
+# Sonar USB board
+ATTR{idVendor}=="0403", ATTR{idProduct}=="1300", MODE="666"
+ATTR{idVendor}=="0403", ATTR{idProduct}=="1301", MODE="666"
+
+# Set GROUP="video" for some IEEE 1394 device types, driven by the new firewire stack.
+# We cannot use the GROUP directive because the significant device type attributes
+# live in child devices. So change the group after the fact with chgrp.
+
+# IIDC devices: industrial cameras and some webcams
+KERNEL=="dv1394*|video1394*|raw1394*|fw[0-9]*",    GROUP="video"
+
+# libraw1394 older than v2.0.1 and some special-purpose applications also need
+# access to the local node(s).  Alas there is no simple way to tell local nodes apart
+# from remote ones; here is a simple hack.
+
+SUBSYSTEM=="firewire", ATTR{vendor_name}=="Linux Firewire", GROUP="video"
+# Or if your application needs access to all nodes, simply use:
+
+SUBSYSTEM=="firewire", GROUP="video"

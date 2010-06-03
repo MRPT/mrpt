@@ -1,0 +1,5 @@
+# File generated automatically. Build with cmake . at the root directory
+PROJECT(ALL_EXAMPLES)
+
+${CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS}
+

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="3DSceneViewer" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Release">
+				<Option output="bin/Release/3DSceneViewer" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="`wx-config --cflags`" />
+			<Add directory="/Trabajo/Code/MRPT/include" />
+		</Compiler>
+		<Linker>
+			<Add option="`wx-config --libs gl`" />
+			<Add library="MRPT" />
+			<Add library="GL" />
+			<Add library="GLU" />
+			<Add library="cv" />
+			<Add library="highgui" />
+			<Add library="glut" />
+			<Add directory="/Trabajo/Code/MRPT/lib" />
+		</Linker>
+		<Unit filename="../CDialogOptions.cpp" />
+		<Unit filename="../CDialogOptions.h" />
+		<Unit filename="../CDlgCamTracking.cpp" />
+		<Unit filename="../CDlgCamTracking.h" />
+		<Unit filename="../_DSceneViewerApp.cpp" />
+		<Unit filename="../_DSceneViewerApp.h" />
+		<Unit filename="../_DSceneViewerMain.cpp" />
+		<Unit filename="../_DSceneViewerMain.h" />
+		<Unit filename="../wxsmith/CDialogOptions.wxs" />
+		<Unit filename="../wxsmith/_DSceneViewerframe.wxs" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<wxsmith version="1">
+				<gui name="wxWidgets" src="../_DSceneViewerApp.cpp" main="_DSceneViewerFrame" init_handlers="necessary" language="CPP" />
+				<resources>
+					<wxFrame wxs="../wxsmith/_DSceneViewerframe.wxs" src="../_DSceneViewerMain.cpp" hdr="../_DSceneViewerMain.h" name="_DSceneViewerFrame" language="CPP" />
+					<wxDialog wxs="../wxsmith/CDialogOptions.wxs" src="../CDialogOptions.cpp" hdr="../CDialogOptions.h" name="CDialogOptions" language="CPP" />
+					<wxDialog wxs="../wxsmith/CDlgCamTracking.wxs" src="../CDlgCamTracking.cpp" hdr="../CDlgCamTracking.h" name="CDlgCamTracking" language="CPP" />
+				</resources>
+			</wxsmith>
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

@@ -1,0 +1,228 @@
+/* +---------------------------------------------------------------------------+
+   |          The Mobile Robot Programming Toolkit (MRPT) C++ library          |
+   |                                                                           |
+   |                   http://mrpt.sourceforge.net/                            |
+   |                                                                           |
+   |   Copyright (C) 2005-2010  University of Malaga                           |
+   |                                                                           |
+   |    This software was written by the Machine Perception and Intelligent    |
+   |      Robotics Lab, University of Malaga (Spain).                          |
+   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>                     |
+   |                                                                           |
+   |  This file is part of the MRPT project.                                   |
+   |                                                                           |
+   |     MRPT is free software: you can redistribute it and/or modify          |
+   |     it under the terms of the GNU General Public License as published by  |
+   |     the Free Software Foundation, either version 3 of the License, or     |
+   |     (at your option) any later version.                                   |
+   |                                                                           |
+   |   MRPT is distributed in the hope that it will be useful,                 |
+   |     but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+   |     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
+   |     GNU General Public License for more details.                          |
+   |                                                                           |
+   |     You should have received a copy of the GNU General Public License     |
+   |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
+   |                                                                           |
+   +---------------------------------------------------------------------------+ */
+
+#include <mrpt/hmtslam.h> // Precomp header
+
+#include <mrpt/system/os.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/system/os.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+
+using namespace mrpt::slam;
+using namespace mrpt::hmtslam;
+using namespace mrpt::gui;
+using namespace mrpt::utils;
+using namespace mrpt::synch;
+using namespace std;
+
+/*---------------------------------------------------------------
+
+				CHMTSLAM_LOG
+
+	Implements a 2D local SLAM method based on scan matching
+	  between near observations and an EKF. A part of HMT-SLAM
+
+\param LMH   The local metric hypothesis which must be updated by this SLAM algorithm.
+\param act   The action to process (or NULL).
+\param sf    The observations to process (or NULL).
+
+--------------------------------------------------------------- */
+void CHMTSLAM::generateLogFiles(unsigned int nIteration)
+{
+	MRPT_START
+
+	// Speed up the storage of images (in opengl::CTexturedPlane's):
+	//CImage::DISABLE_ZIP_COMPRESSION = true;
+
+	static CTicTac	tictac;
+
+	tictac.Tic();
+
+	THypothesisID	bestHypoID;
+	CLocalMetricHypothesis  *bestLMH = NULL;
+	{
+		CCriticalSectionLocker  locker( &m_LMHs_cs );
+
+		printf_debug("[LOG] Number of LMHs: %u\n", (unsigned int)m_LMHs.size() );
+
+
+		// Generate 3D view of local areas:
+		{
+			string filLocalAreas = format("%s/LSLAM_3D/mostLikelyLMH_LSLAM_%05u.3Dscene", m_options.LOG_OUTPUT_DIR.c_str(), nIteration );
+			COpenGLScenePtr	sceneLSLAM = COpenGLScene::Create();
+
+			// Look for the most likely LMH:
+			std::map< THypothesisID, CLocalMetricHypothesis >::iterator  it;
+			for ( it = m_LMHs.begin();it!=m_LMHs.end();it++)
+			{
+				if (!bestLMH)
+				{
+					bestLMH = & it->second;
+				}
+				else if ( it->second.m_log_w > bestLMH->m_log_w)
+				{
+					bestLMH = & it->second;
+				}
+			}
+			ASSERT_(bestLMH!=NULL)
+
+			bestHypoID = bestLMH->m_ID;
+
+			{
+				CCriticalSectionLocker  lockerLMH( &bestLMH->m_lock );
+
+				{
+					// Generate the metric maps 3D view...
+					opengl::CSetOfObjectsPtr maps3D = opengl::CSetOfObjects::Create();
+					maps3D->setName("metric-maps");
+					bestLMH->getMostLikelyParticle()->d->metricMaps.getAs3DObject( maps3D );
+					sceneLSLAM->insert( maps3D );
+
+					// ...and the robot poses, areas, etc:
+					opengl::CSetOfObjectsPtr LSLAM_3D = opengl::CSetOfObjects::Create();
+					LSLAM_3D->setName("LSLAM_3D");
+					bestLMH->getAs3DScene( LSLAM_3D );
+					sceneLSLAM->insert( LSLAM_3D );
+
+					sceneLSLAM->enableFollowCamera(true);
+
+					printf_debug("[LOG] Saving %s\n", filLocalAreas.c_str());
+					CFileGZOutputStream(filLocalAreas) << *sceneLSLAM;
+				}
+
+
+				// Save the SSO matrix:
+#if 0
+				{
+					CCriticalSectionLocker  locker( &bestLMH->m_robotPosesGraph.lock );
+					string filSSO = format("%s/ASSO/mostLikelyLMH_ASSO_%05u.3Dscene", m_options.LOG_OUTPUT_DIR.c_str(), nIteration );
+					COpenGLScene	sceneSSO;
+					opengl::CSetOfObjectsPtr sso3D = opengl::CSetOfObjects::Create();
+					bestLMH->m_robotPosesGraph.partitioner.getAs3DScene( sso3D, &bestLMH->m_robotPosesGraph.idx2pose );
+					sceneSSO.insert(sso3D);
+					CFileGZOutputStream(filSSO) << sceneSSO;
+
+					if (1)
+					{
+						CMatrix  A;
+						bestLMH->m_robotPosesGraph.partitioner.getAdjacencyMatrix( A );
+						if (A.getColCount()>0)
+						{
+							A.adjustRange();
+							A.saveToTextFile( format("%s/ASSO/mostLikelyLMH_ASSO_%05u.txt", m_options.LOG_OUTPUT_DIR.c_str(), nIteration ) );
+							CImageFloat(A).saveToFile( format("%s/ASSO/mostLikelyLMH_ASSO_%05u.png", m_options.LOG_OUTPUT_DIR.c_str(), nIteration ) );
+						}
+					}
+				} // end lock partitioner's CS
+#endif
+
+			} // end LMH's lock
+
+
+			// Show 3D view:
+			if (m_options.LOG_SHOW3D)
+			{
+				static CDisplayWindow3D   win3D("Local SLAM",500,500);
+
+				COpenGLScenePtr &scen = win3D.get3DSceneAndLock();
+				scen = sceneLSLAM;
+				scen->enableFollowCamera(false);
+				win3D.unlockAccess3DScene();
+				win3D.updateWindow();
+			}
+
+		}
+
+	}  // end of lock on LMHs_cs
+
+#if 1
+	{
+		// Save the whole HMT-SLAM state to a dump file
+		static int CNT = 0;
+		if ((CNT++ % 20) == 0)
+		{
+			string hmtmap_file( format("%s/HMTSLAM_state/state_%05u.hmtslam", m_options.LOG_OUTPUT_DIR.c_str(), nIteration ) );
+			printf_debug("[LOG] Saving %s\n", hmtmap_file.c_str());
+			CFileGZOutputStream(hmtmap_file) << *this;
+		}
+	}
+#endif
+
+
+
+#if 1
+	{
+		// Update the poses-graph in the HMT-map from the LMH to draw it:
+		static int CNT = 0;
+		if ((CNT++ % 5) == 0)
+		{
+			CCriticalSectionLocker  lockerLMH( &bestLMH->m_lock );
+
+			for (TNodeIDSet::const_iterator n = bestLMH->m_neighbors.begin();n!=bestLMH->m_neighbors.end();++n)
+				bestLMH->updateAreaFromLMH( *n );
+
+			// Save global map for most likely hypothesis:
+			COpenGLScene	sceneGlobalHMTMAP;
+			{
+				CCriticalSectionLocker  locker( &m_map_cs );
+				printf_debug("[LOG] HMT-map: %u nodes/ %u arcs\n", (unsigned int)m_map.nodeCount(), (unsigned int)m_map.arcCount() );
+
+				m_map.getAs3DScene(
+					sceneGlobalHMTMAP,					// Scene
+					m_map.getFirstNode()->getID(),		// Reference node
+					bestHypoID,							// Hypothesis to get
+					3									// iterations
+					);
+			}
+
+			string hmtmap_file( format("%s/HMAP_3D/mostLikelyHMT_MAP_%05u.3Dscene", m_options.LOG_OUTPUT_DIR.c_str(), nIteration ) );
+			printf_debug("[LOG] Saving %s\n", hmtmap_file.c_str());
+			CFileGZOutputStream(hmtmap_file) << sceneGlobalHMTMAP;
+		}
+	}
+#endif
+
+
+	// Save the memory usage:
+	unsigned long memUsage = mrpt::system::getMemoryUsage();
+
+	FILE		*f=os::fopen( format("%s/log_MemoryUsage.txt",m_options.LOG_OUTPUT_DIR.c_str()).c_str() ,"at");
+	if (f)
+	{
+		os::fprintf(f,"%u\t%f\n",nIteration,memUsage/(1024.0*1024.0));
+		os::fclose(f);
+	}
+
+	double t_log = tictac.Tac();
+	printf_debug("[LOG] Time for logging: %f ms\n", 1000*t_log);
+
+	MRPT_END
+}
+

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxDialog" name="CDlgLog">
+		<title>Log messages</title>
+		<pos>50,350</pos>
+		<size>344,143</size>
+		<pos_arg>1</pos_arg>
+		<size_arg>1</size_arg>
+		<style>wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX</style>
+		<handler function="OnClose" entry="EVT_CLOSE" />
+		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
+			<cols>1</cols>
+			<rows>2</rows>
+			<growablecols>0</growablecols>
+			<growablerows>1</growablerows>
+			<object class="sizeritem">
+				<object class="wxFlexGridSizer" variable="FlexGridSizer2" member="no">
+					<cols>3</cols>
+					<rows>2</rows>
+					<object class="sizeritem">
+						<object class="wxButton" name="ID_BUTTON1" variable="btnClear" member="yes">
+							<label>Clear</label>
+						</object>
+						<flag>wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+					<object class="sizeritem">
+						<object class="wxButton" name="ID_BUTTON2" variable="btnSave" member="yes">
+							<label>Save log..</label>
+						</object>
+						<flag>wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM</flag>
+						<border>5</border>
+						<option>1</option>
+					</object>
+				</object>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM</flag>
+				<option>1</option>
+			</object>
+			<object class="sizeritem">
+				<object class="wxFlexGridSizer" variable="FlexGridSizer3" member="no">
+					<cols>1</cols>
+					<rows>1</rows>
+					<growablecols>0</growablecols>
+					<growablerows>0</growablerows>
+					<object class="sizeritem">
+						<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="edLog" member="yes">
+							<size>408,96</size>
+							<font>
+								<size>8</size>
+								<family>teletype</family>
+							</font>
+							<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxALWAYS_SHOW_SB</style>
+						</object>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM</flag>
+						<border>1</border>
+						<option>1</option>
+					</object>
+				</object>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM</flag>
+				<option>1</option>
+			</object>
+		</object>
+		<object class="wxTimer" name="ID_TIMER1" variable="timDumpLog" member="yes">
+			<interval>250</interval>
+			<handler function="OntimDumpLogTrigger" entry="EVT_TIMER" />
+		</object>
+	</object>
+</wxsmith>

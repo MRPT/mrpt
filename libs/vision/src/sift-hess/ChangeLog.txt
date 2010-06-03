@@ -1,0 +1,23 @@
+1.1.1:
+ In kdtree.c/kdtree.h:
+   * (12/14/2006) [API] Removed kd_root structure and kd_root_node(); 
+        now uses only kd_node
+   * (12/14/2006) Fixed kdtree_release() to get rid of big memory leak
+   * (12/14/2006) [API] Changed kdtree_release() prototype
+   * (12/14/2006) Added bbf_data structure to avoid potential data loss 
+        in bbf search
+   * (01/19/2007) Fixed memory leak in kdtree_build()
+   * (03/30/2007) Fixed pq insertion bug in explore_to_leaf()
+ In sift.c:
+   * (12/14/2006) Fixed significant bug in interp_hist_entry()
+   * (12/14/2006) Fixed memory leak stemming from scale_space_extrema()
+   * (01/19/2007) Fixed memory leak in calc_feature_oris()
+   * (09/10/2007) Removed unused variables in convert_to_gray32() and
+	scale_space_extrema()
+   * (11/08/2007) Changed RGB2GRAY flag to BGR2GRAY in convert_to_gray32()
+	to conform to OpenCV image storage conventions
+ In xform.c
+   * (09/10/2007) Fixed potential overflow error in calc_min_inliers()
+ In imgfeatures.c/imgfeatures.h
+   * (09/13/2007) [API] Renamed 'class' field of struct feature to
+	'category' for compliance with C++ language (class is a keyword)

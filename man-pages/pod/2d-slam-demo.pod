@@ -1,0 +1,42 @@
+=head1 NAME
+
+2d-slam-demo - A didactical GUI application to learn how 2D SLAM works
+
+=head1 SYNOPSIS
+
+2d-slam-demo 
+
+=head1 DESCRIPTION
+
+B<2d-slam-demo> is a GUI application which allows the user to run a Extended
+Kalman Filter (EKF) implementation of range-bearing 2D SLAM in step-by-step or 
+continuous mode. Graphs are shown for the observations, data association, etc...
+
+
+=head1 BUGS
+
+Please report bugs at http://sourceforge.net/tracker/?group_id=205280&atid=993006
+
+=head1 SEE ALSO
+
+The application wiki page at http://babel.isa.uma.es/mrpt/index.php/Applications
+
+=head1 AUTHORS
+
+B<2d-slam-demo> is part of the Mobile Robot Programming Toolkit (MRPT), and was originally 
+written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3, or (at your option) any
+later version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
+=cut
+

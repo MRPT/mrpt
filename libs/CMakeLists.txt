@@ -1,0 +1,24 @@
+# ------------------------------------------
+# List of MRPT "modules" or "libraries":
+# ------------------------------------------
+add_subdirectory(base)
+add_subdirectory(opengl)
+add_subdirectory(gui)
+add_subdirectory(topography)
+add_subdirectory(obs)
+add_subdirectory(hwdrivers)
+add_subdirectory(maps)
+add_subdirectory(vision)
+add_subdirectory(slam)
+
+add_subdirectory(reactivenav)
+add_subdirectory(hmtslam)
+
+# These ones are still experimental...
+IF(BUILD_MONOSLAM)
+	add_subdirectory(monoslam)
+ENDIF(BUILD_MONOSLAM)
+
+IF(BUILD_STEREOSLAM)
+	add_subdirectory(stereoslam)
+ENDIF(BUILD_STEREOSLAM)

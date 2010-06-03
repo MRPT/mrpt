@@ -1,0 +1,14 @@
+
+[Desktop Entry]
+Version=1.0
+Name=Navigation log viewer
+Comment=A visualization tool for navigation logs
+Exec=navlog-viewer
+Icon=navlog-viewer
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=Education;Science;Robotics;ArtificialIntelligence;
+StartupNotify=true
+MimeType=application/x-mrpt-navlog;
+

@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.05.03"/>
+    <PROJECT value="PTG_Designer.exe"/>
+    <OBJFILES value="PTG_Designer.obj mainUnit.obj ..\ReactiveNavigatorLibrary\CPTG3.obj 
+      ..\ReactiveNavigatorLibrary\CPTG1.obj 
+      ..\ReactiveNavigatorLibrary\CPTG2.obj ..\ReactiveNavigatorLibrary\CParameterizedTrajectoryGenerator.obj 
+      ..\ReactiveNavigatorLibrary\CPTG4.obj 
+      ..\ReactiveNavigatorLibrary\CPTG5.obj ..\ReactiveNavigatorLibrary\CPTG6.obj 
+      ..\ReactiveNavigatorLibrary\CPTG7.obj"/>
+    <RESFILES value="PTG_Designer.res"/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) mainUnit.dfm"/>
+    <LIBFILES value="..\..\lib\MRPT_BC.lib ..\..\lib\highgui_BC.lib ..\..\lib\cv_BC.lib 
+      ..\..\lib\cvaux_BC.lib ..\..\lib\cxcore_BC.lib"/>
+    <LIBRARIES value="dclusr50.lib Vclx50.lib Vcl50.lib"/>
+    <SPARELIBS value="Vcl50.lib Vclx50.lib dclusr50.lib"/>
+    <PACKAGES value="Vcl50.bpi Vclx50.bpi bcbsmp50.bpi Qrpt50.bpi Vcldb50.bpi Vclbde50.bpi 
+      ibsmp50.bpi vcldbx50.bpi TeeUI50.bpi TeeDB50.bpi Tee50.bpi TeeQR50.bpi 
+      VCLIB50.bpi bcbie50.bpi vclie50.bpi Inetdb50.bpi Inet50.bpi NMFast50.bpi 
+      dclocx50.bpi bcb2kaxserver50.bpi dclusr50.bpi"/>
+    <PATHCPP value=".;..\ReactiveNavigatorLibrary"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="tlink32"/>
+    <USERDEFINES value=""/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="PTG_Designer.cpp"/>
+    <INCLUDEPATH value="..\ReactiveNavigatorLibrary;..\..\..\apps\RNAV;..\RNAV;&quot;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\&quot;;&quot;C:\Archivos de programa\Borland\CBuilder5\Projects\&quot;;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;&quot;C:\Archivos de programa\include\&quot;;..\..\include;&quot;..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23&quot;;&quot;..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component&quot;"/>
+    <LIBPATH value="..\ReactiveNavigatorLibrary;..\..\..\apps\RNAV;..\RNAV;&quot;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\&quot;;&quot;j:\[code]\interfaces graficas (c++builder)\componentes_delphi_cbuilder\openglv0.5bcb5\component\&quot;;$(BCB)\Projects\Lib;d:\misprogramas\delphi\componentes\sgraph\;&quot;C:\Archivos de programa\Borland\CBuilder5\Projects\&quot;;$(BCB)\lib\obj;$(BCB)\lib;..\..\lib"/>
+    <WARNINGS value="-w-par"/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I&quot;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\.&quot; 
+      -I&quot;C:\Archivos de programa\Borland\CBuilder5\Projects\.&quot; -I$(BCB)\include 
+      -I$(BCB)\include\vcl -Id:\misprogramas\delphi\componentes\sgraph\. 
+      -ID:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\. 
+      -I&quot;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23\.&quot; 
+      -I&quot;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component\.&quot; 
+      -I&quot;..\..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component&quot; 
+      -I&quot;..\..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23&quot; 
+      -src_suffix cpp -D_DEBUG -boa"/>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl50.csm -Hc -Vx -Ve -VF -X- -a8 -b- -k- -vi -tWD -tWM -c"/>
+    <PFLAGS value="-$Y- -$L- -$D- -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn"/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+  </LINKER>
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=3082
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[HistoryLists\hlIncludePath]
+Count=23
+Item0=..\ReactiveNavigatorLibrary;..\..\..\apps\RNAV;..\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;C:\Archivos de programa\include\;..\..\include;..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23;..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component
+Item1=..\ReactiveNavigatorLibrary;..\..\..\apps\RNAV;..\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;C:\Archivos de programa\include\;..\..\include;..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23;..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component
+Item2=..\ReactiveNavigatorLibrary;..\..\..\apps\RNAV;..\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;C:\Archivos de programa\include\;..\..\..\include;..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23;..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component
+Item3=..\..\..\apps\RNAV;..\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;C:\Archivos de programa\include\;..\..\..\include;..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23;..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component
+Item4=..\..\..\apps\RNAV;..\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;C:\Archivos de programa\include\;..\..\..\include;..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23;D:\Trabajo\Code\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component
+Item5=..\..\..\apps\RNAV;..\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;C:\Archivos de programa\include\;..\..\..\include;..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23
+Item6=..\..\..\apps\RNAV;..\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;C:\Archivos de programa\include\;..\..\..\include;D:\Trabajo\Code\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23
+Item7=..\..\..\apps\RNAV;..\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;C:\Archivos de programa\include\;..\..\..\include
+Item8=..\..\..\apps\RNAV;..\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;C:\Archivos de programa\include\;D:\Trabajo\Code\MRPT\include
+Item9=..\..\..\apps\RNAV;..\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;C:\Archivos de programa\include\
+Item10=..\..\apps\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;C:\Archivos de programa\include\
+Item11=..\..\..\apps\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;C:\Archivos de programa\include\
+Item12=d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;D:\Trabajo\Code\MRPT\include
+Item13=d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23\;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component\;C:\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component\;C:\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23\
+Item14=d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23\;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component\;..\..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component;..\..\..\..\..\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23
+Item15=d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23\;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component\;E:\[Trabajo]\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component;E:\[Trabajo]\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23
+Item16=d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23\;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component\
+Item17=d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23\;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component\
+Item18=C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23\;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component\
+Item19=C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\sgraph23;J:\[Code]\Interfaces Graficas (C++Builder)\componentes_Delphi_CBuilder\OpenGLv0.5BCB5\Component
+Item20=C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph\;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component\
+Item21=C:\Archivos de programa\Borland\CBuilder5\Projects;$(BCB)\include;$(BCB)\include\vcl;d:\misprogramas\delphi\componentes\sgraph;D:\MisProgramas\Delphi\Componentes\3D\OpenGLv0.5BCB5\Component
+Item22=d:\misprogramas\delphi\componentes\sgraph;C:\Archivos de programa\Borland\CBuilder5\Projects;$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=10
+Item0=..\ReactiveNavigatorLibrary;..\..\..\apps\RNAV;..\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;j:\[code]\interfaces graficas (c++builder)\componentes_delphi_cbuilder\openglv0.5bcb5\component\;$(BCB)\Projects\Lib;d:\misprogramas\delphi\componentes\sgraph\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\lib\obj;$(BCB)\lib;..\..\lib
+Item1=..\ReactiveNavigatorLibrary;..\..\..\apps\RNAV;..\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;j:\[code]\interfaces graficas (c++builder)\componentes_delphi_cbuilder\openglv0.5bcb5\component\;$(BCB)\Projects\Lib;d:\misprogramas\delphi\componentes\sgraph\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\lib\obj;$(BCB)\lib;..\lib
+Item2=..\ReactiveNavigatorLibrary;..\..\..\apps\RNAV;..\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;j:\[code]\interfaces graficas (c++builder)\componentes_delphi_cbuilder\openglv0.5bcb5\component\;$(BCB)\Projects\Lib;d:\misprogramas\delphi\componentes\sgraph\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\lib\obj;$(BCB)\lib
+Item3=..\..\..\apps\RNAV;..\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;j:\[code]\interfaces graficas (c++builder)\componentes_delphi_cbuilder\openglv0.5bcb5\component\;$(BCB)\Projects\Lib;d:\misprogramas\delphi\componentes\sgraph\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\lib\obj;$(BCB)\lib
+Item4=..\..\apps\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;j:\[code]\interfaces graficas (c++builder)\componentes_delphi_cbuilder\openglv0.5bcb5\component\;$(BCB)\Projects\Lib;d:\misprogramas\delphi\componentes\sgraph\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\lib\obj;$(BCB)\lib
+Item5=..\..\..\apps\RNAV;d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;j:\[code]\interfaces graficas (c++builder)\componentes_delphi_cbuilder\openglv0.5bcb5\component\;$(BCB)\Projects\Lib;d:\misprogramas\delphi\componentes\sgraph\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\lib\obj;$(BCB)\lib
+Item6=d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23\;j:\[code]\interfaces graficas (c++builder)\componentes_delphi_cbuilder\openglv0.5bcb5\component\;$(BCB)\Projects\Lib;d:\misprogramas\delphi\componentes\sgraph\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\lib\obj;$(BCB)\lib
+Item7=d:\programas\interfaces graficas (c++builder)\componentes_delphi_cbuilder\sgraph23;j:\[code]\interfaces graficas (c++builder)\componentes_delphi_cbuilder\openglv0.5bcb5\component;$(BCB)\Projects\Lib;d:\misprogramas\delphi\componentes\sgraph\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\lib\obj;$(BCB)\lib
+Item8=$(BCB)\Projects\Lib;d:\misprogramas\delphi\componentes\sgraph\;C:\Archivos de programa\Borland\CBuilder5\Projects\;$(BCB)\lib\obj;$(BCB)\lib
+Item9=$(BCB)\Projects\Lib;d:\misprogramas\delphi\componentes\sgraph;C:\Archivos de programa\Borland\CBuilder5\Projects;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_DEBUG
+
+[HistoryLists\hlFinalOutputDir]
+Count=2
+Item0=../CGUI4BABEL (Clase C++, interfaz con la DLL)\
+Item1=../CGUI4BABEL (Clase C++, interfaz con la DLL)
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=1
+LinkCGLIB=0
+
+[Language]
+ActiveLang=
+ProjectLang=
+RootDir=
+  </IDEOPTIONS>
+</PROJECT>
