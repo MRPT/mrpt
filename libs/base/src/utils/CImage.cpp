@@ -2923,8 +2923,18 @@ void CImage::joinImagesHorz( const CImage &im1, const CImage &im2 )
 	cvCopy( _im2, out );
 	cvSetImageROI( out, cvRect( 0, 0, out->width, out->height ) );
 
-	// Assign the output image to the IPLImage pointer within the CImage
-	this->setFromIplImageReadOnly( out );
+	IplImage *out2;
+	if( _im1->nChannels != this->getChannelCount() )	// Convert the input to the output channel format
+	{
+		out2 = cvCreateImage( cvSize( _im1->width + _im2->width, _im1->height ), _im1->depth, this->getChannelCount() );
+		cvCvtColor( out, out2, CV_GRAY2BGR );
+		this->setFromIplImageReadOnly( out2 );
+	}
+	else	// Assign the output image to the IPLImage pointer within the CImage
+		this->setFromIplImageReadOnly( out );
+
+	
+	
 #endif
 } // end
 

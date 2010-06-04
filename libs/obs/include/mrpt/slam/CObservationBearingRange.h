@@ -56,7 +56,7 @@ namespace slam
 
 		float minSensorDistance, maxSensorDistance;  //! Information about the sensor: Ranges, in meters (0: there is no limits)
 		float fieldOfView_yaw;		//!< Information about the sensor: The "field-of-view" of the sensor, in radians (for yaw ).
-		float fieldOfView_pitch;	//!< Information about the sensor: The "field-of-view" of the sensor, in radians (for yaw ).
+		float fieldOfView_pitch;	//!< Information about the sensor: The "field-of-view" of the sensor, in radians (for pitch ).
 
 		/** The position of the sensor on the robot.
 		  */

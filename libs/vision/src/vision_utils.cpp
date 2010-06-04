@@ -2199,6 +2199,9 @@ void  TMatchingOptions::loadFromConfigFile(
 	case 2:
 		matching_method = mmDescriptorSURF;
 		break;
+	case 3:
+		matching_method = mmSAD;
+		break;
 	} // end switch
 
 	epipolar_TH		= iniFile.read_float(section.c_str(),"epipolar_TH",epipolar_TH);
@@ -2851,8 +2854,10 @@ void vision::StereoObs2BRObs( const CObservationStereoImages &inObs, const std::
 
 		CObservationBearingRange::TMeasurement m;
 		m.range = sqrt( square(X) + square(Y) + square(Z) );
-		m.yaw	= atan2( Y,X );
-		m.pitch = -asin( Z/m.range );
+		//m.yaw	= atan2( Y,X );
+		//m.pitch = -asin( Z/m.range );
+		m.yaw	= atan2( X,Z );
+		m.pitch = atan2( Y,Z );
 
 		// Compute the covariance
 		// Formula: S_BR = JG * (JF * diag(sg_c^2, sg_r^2, sg_d^2) * JF') * JG'
@@ -2916,6 +2921,8 @@ void vision::StereoObs2BRObs( const CObservationStereoImages &inObs, const std::
 		// m.covariance = aux; // error covariance in 3D
 		m.landmarkID = id;
 		outObs.sensedData.push_back( m );
+		outObs.fieldOfView_yaw		= 2*fabs(atan2( -x0, f ));
+		outObs.fieldOfView_pitch	= 2*fabs(atan2( -y0, f ));
 
 	} // end for
 
@@ -2925,3 +2932,19 @@ void vision::StereoObs2BRObs( const CObservationStereoImages &inObs, const std::
 
 } // end StereoObs2BRObs
 
+void vision::StereoObs2BRObs( const CObservationVisualLandmarks &inObs, CObservationBearingRange &outObs )
+{
+	// For each of the 3D landmarks [X,Y,Z] we compute their range and bearing representation. 
+	// The reference system is assumed to be that typical of cameras: +Z forward and +X to the right.
+	CLandmarksMap::TCustomSequenceLandmarks::const_iterator itCloud;
+	for( itCloud = inObs.landmarks.landmarks.begin(); itCloud != inObs.landmarks.landmarks.end(); ++itCloud )
+	{
+		CObservationBearingRange::TMeasurement m;
+		m.range			= sqrt( square(itCloud->pose_mean.x) + square(itCloud->pose_mean.y) + square(itCloud->pose_mean.z) );
+		m.yaw			= atan2( itCloud->pose_mean.x, itCloud->pose_mean.z );
+		m.pitch			= atan2( itCloud->pose_mean.y, itCloud->pose_mean.z );
+		m.landmarkID	= itCloud->ID;
+
+		outObs.sensedData.push_back( m );
+	} // end for
+} // end StereoObs2BRObs

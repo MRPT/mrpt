@@ -110,7 +110,8 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	fastDetector.detect( theImg, cv_feats );
 	sort( cv_feats.begin(), cv_feats.end(), KeypointComp );
 
-	cvReleaseImage( &cGrey );
+	if( img->nChannels != 1 )
+		cvReleaseImage( &cGrey );
 	
 #	elif MRPT_OPENCV_VERSION_NUM > 0x200 
 
@@ -150,7 +151,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 		const int yBorderInf = (int)floor( cv_feats[i].pt.y - size_2 );
 		const int yBorderSup = (int)floor( cv_feats[i].pt.y + size_2 );
 
-		if( options.patchSize==0 || ( (xBorderSup < (int)imgW) && (xBorderInf > 0) && (yBorderSup < (int)imgH) && (yBorderInf > 0) ) )
+		if( xBorderSup < (int)imgW && xBorderInf > 0 && yBorderSup < (int)imgH && yBorderInf > 0 )
 		{
 			CFeaturePtr ft		= CFeature::Create();
 			ft->type			= featFAST;

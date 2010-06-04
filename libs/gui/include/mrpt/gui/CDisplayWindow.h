@@ -144,8 +144,9 @@ namespace mrpt
 
 				for( typename MATCHEDLIST::const_iterator i = mList.begin(); i != mList.end(); ++i )
 				{
-					imgColor.cross( round( i->first->x ), round( i->first->y ), color, '+' );
-					imgColor.cross( round( i->second->x + w ), round( i->second->y ), color, '+' );
+					imgColor.drawCircle( round( i->first->x ), round( i->first->y ), 4, color );
+					imgColor.drawCircle( round( i->second->x + w ), round( i->second->y ), 4, color );
+					imgColor.line( round( i->first->x ), round( i->first->y ), round( i->second->x + w ), round( i->second->y ), color );
 				}
 				showImage(imgColor);
 

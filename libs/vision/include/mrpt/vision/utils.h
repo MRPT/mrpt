@@ -570,7 +570,15 @@ namespace mrpt
 				const std::vector<double> &sg,
 				CObservationBearingRange &outObs
 				);
-
+			
+			/** Converts a CObservationVisualLandmarks into a bearing and range observation (without any covariances). Fields of view are not computed.
+				\param inObs			[IN]	The input observation.
+				\param outObs			[OUT]	The output bearing and range observation.
+			*/
+			void VISION_IMPEXP StereoObs2BRObs( 
+				const CObservationVisualLandmarks &inObs, 
+				CObservationBearingRange &outObs 
+				);
 	}
 }
 
