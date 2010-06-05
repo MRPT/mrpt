@@ -66,7 +66,12 @@ using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::system;
 using namespace std;
-using namespace cv;
+
+#if MRPT_HAS_OPENCV
+#	if MRPT_OPENCV_VERSION_NUM>=0x211
+		using namespace cv;
+#	endif
+#endif
 
 /************************* Local Function Prototypes for Hess' SIFT *************************/
 #if MRPT_HAS_OPENCV && MRPT_HAS_SIFT_HESS

@@ -31,6 +31,15 @@
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</i></p>
 
+  <a name="0.9.1">
+  <h2>Version 0.9.1: (In developement)</h2></a>
+	- <b>Detailed list of changes:</b>
+		- BUGFIXES:
+			- Fixed compilation against OpenCV 1.1.0 and 2.0.0.
+
+
+  <br> <hr> <br>
+
   <a name="0.9.0">
   <h2>Version 0.9.0: Released 3-JUN-2010 (SVN 1880) </h2></a>
 	- <b>Most relevant changes:</b>

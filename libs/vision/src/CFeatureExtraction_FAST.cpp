@@ -56,12 +56,14 @@ using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::system;
 using namespace std;
-using namespace cv;
 
 bool featureComp( CFeaturePtr f1, CFeaturePtr f2 ) { return ( f1->KLT_val > f2->KLT_val ); }
 
 #if MRPT_HAS_OPENCV
+#	if MRPT_OPENCV_VERSION_NUM>=0x200
+using namespace cv;
 bool KeypointComp( KeyPoint k1, KeyPoint k2 ) { return (k1.response > k2.response); }
+#	endif
 #endif
 
 /************************************************************************************************
@@ -78,7 +80,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 #if MRPT_HAS_OPENCV
 #	if MRPT_OPENCV_VERSION_NUM < 0x200
 		THROW_EXCEPTION("This function requires OpenCV >= 2.0.0")
-#	endif
+#	else // MRPT_OPENCV_VERSION_NUM < 0x200
 
 	vector<KeyPoint> cv_feats; // The opencv keypoint output vector
 	int aux = options.FASTOptions.threshold;
@@ -88,7 +90,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 		double b = -0.4107*nDesiredFeatures;
 		double c = 134.7;
 		double d = -0.003121*nDesiredFeatures;
-       
+
 		aux = max(0,(int)(a*exp(b) + c*exp(d))-20);
 	}
 
@@ -112,8 +114,8 @@ void  CFeatureExtraction::extractFeaturesFAST(
 
 	if( img->nChannels != 1 )
 		cvReleaseImage( &cGrey );
-	
-#	elif MRPT_OPENCV_VERSION_NUM > 0x200 
+
+#	elif MRPT_OPENCV_VERSION_NUM > 0x200
 
 	CvImage img, cGrey;
 	img.attach( (IplImage*)inImg.getAsIplImage(), false );	// Attach Image as IplImage and do not use ref counter
@@ -178,6 +180,8 @@ void  CFeatureExtraction::extractFeaturesFAST(
 		++i;
 	}
 	feats.resize( cont );
+
+#	endif // else of MRPT_OPENCV_VERSION_NUM < 0x200
 #endif
 	MRPT_END
 }
