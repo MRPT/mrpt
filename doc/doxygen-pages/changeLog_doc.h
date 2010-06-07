@@ -34,6 +34,10 @@
   <a name="0.9.1">
   <h2>Version 0.9.1: (In developement)</h2></a>
 	- <b>Detailed list of changes:</b>
+		- Improved classes:
+			- mrpt::slam::CObservationGPS: Fixed const'ness of the getAsStruct<>() methods.
+		- New functions:
+			- mrpt::topography::ENUToGeocentric()
 		- BUGFIXES:
 			- Fixed compilation against OpenCV 1.1.0 and 2.0.0.
 

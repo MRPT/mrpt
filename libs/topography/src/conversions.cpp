@@ -56,6 +56,11 @@ const int dumm = mrpt_topography_class_reg.do_nothing(); // Avoid compiler remov
 #endif
 
 
+std::ostream& mrpt::topography::operator<<( std::ostream& out, const TCoords &o )
+{
+	return out << o.getAsString();
+}
+
 /*---------------------------------------------------------------
 				geodeticToENU_WGS84
  ---------------------------------------------------------------*/
@@ -630,4 +635,47 @@ void  mrpt::topography::coordinatesTransformation_WGS84_geocentric(
     out_x_meters = p.x;
     out_y_meters = p.y;
     out_z_meters = p.z;
+}
+
+/** ENU to geocentric coordinates.
+  * \sa geodeticToENU_WGS84
+  */
+void mrpt::topography::ENUToGeocentric(
+	const mrpt::math::TPoint3D	&p,
+	const TGeodeticCoords		&in_coords_origin,
+	TGeocentricCoords 			&out_coords,
+	const TEllipsoid			&ellip
+	)
+{
+	// Generate reference 3D point:
+	TPoint3D P_geocentric_ref;
+	mrpt::topography::geodeticToGeocentric(in_coords_origin,P_geocentric_ref, ellip);
+
+	vector_double   P_ref(3);
+	P_ref[0] = P_geocentric_ref.x;
+	P_ref[1] = P_geocentric_ref.y;
+	P_ref[2] = P_geocentric_ref.z;
+
+	// Z axis -> In direction out-ward the center of the Earth:
+	vector_double	REF_X(3),REF_Y(3),REF_Z(3);
+	math::normalize(P_ref, REF_Z);
+
+	// 1st column: Starting at the reference point, move in the tangent direction
+	//   east-ward: I compute this as the derivative of P_ref wrt "longitude":
+	//      A_east[0] =-(N+in_height_meters)*cos(lat)*sin(lon);  --> -Z[1]
+	//      A_east[1] = (N+in_height_meters)*cos(lat)*cos(lon);  -->  Z[0]
+	//      A_east[2] = 0;                                       -->  0
+	// ---------------------------------------------------------------------------
+	vector_double AUX_X(3);
+	AUX_X[0]=-REF_Z[1];
+	AUX_X[1]= REF_Z[0];
+	AUX_X[2]= 0;
+	math::normalize(AUX_X, REF_X);
+
+	// 2nd column: The cross product:
+	math::crossProduct3D(REF_Z, REF_X, REF_Y);
+
+	out_coords.x = REF_X[0]*p.x + REF_Y[0]*p.y + REF_Z[0]*p.z + P_geocentric_ref.x;
+	out_coords.y = REF_X[1]*p.x + REF_Y[1]*p.y + REF_Z[1]*p.z + P_geocentric_ref.y;
+	out_coords.z = REF_X[2]*p.x + REF_Y[2]*p.y + REF_Z[2]*p.z + P_geocentric_ref.z;
 }

@@ -88,11 +88,11 @@ namespace slam
 		{
 			TGPSDatum_GGA();
 
-			/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography) 
+			/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography)
 			  *   Call as: getAsStruct<TGeodeticCoords>();
 			  */
 			template <class TGEODETICCOORDS>
-			inline TGEODETICCOORDS getAsStruct() {
+			inline TGEODETICCOORDS getAsStruct() const {
 				return TGEODETICCOORDS(latitude_degrees,longitude_degrees,altitude_meters);
 			}
 
@@ -175,12 +175,12 @@ namespace slam
 		struct OBS_IMPEXP TGPSDatum_PZS
 		{
 			TGPSDatum_PZS();
-			
-			/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography) 
+
+			/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography)
 			  *   Call as: getAsStruct<TGeodeticCoords>();
 			  */
 			template <class TGEODETICCOORDS>
-			inline TGEODETICCOORDS getAsStruct() {
+			inline TGEODETICCOORDS getAsStruct() const {
 				return TGEODETICCOORDS(latitude_degrees,longitude_degrees,height_meters);
 			}
 
@@ -188,7 +188,7 @@ namespace slam
 			double		longitude_degrees;	//!< The measured longitude, in degrees (East:+ , West:-)
 			double		height_meters;		//!< ellipsoidal height from N-beam [m] perhaps weighted with regular gps
 			double		RTK_height_meters;	//!< ellipsoidal height [m] without N-beam correction
-			float		PSigma;				//!< position SEP [m] 
+			float		PSigma;				//!< position SEP [m]
 			double		angle_transmitter;	//!< Vertical angle of N-beam
 			uint8_t		nId;		//!< ID of the transmitter [1-4], 0 if none.
 			uint8_t		Fix;		//!< 1: GPS, 2: mmGPS

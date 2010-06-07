@@ -33,8 +33,8 @@
 
 #include <mrpt/topography/link_pragmas.h>
 
-using namespace std;
-using namespace mrpt::utils;
+#include <mrpt/topography/data_types.h>
+
 
 namespace mrpt
 {
@@ -42,264 +42,8 @@ namespace mrpt
 	 */
 	namespace topography
 	{
-
-	/** =======================================================================
-	   @name Data structures
-	   @{ */
-
-		struct TOPO_IMPEXP TCoords
-		{
-			inline TCoords( const int _deg, const int _min, const double _sec ) : degrees(_deg), minutes(_min), seconds(_sec) {}
-			inline TCoords( const double dec ) { setFromDecimal(dec); }
-
-			int degrees;
-			int minutes;
-			double seconds;
-
-			inline void setFromDecimal( const double dec )
-			{
-				double aux = fabs(dec);
-				degrees = (int)aux;
-				minutes = (int)((aux - degrees)*60.0f);
-				seconds = ((aux - degrees)*60.0f - minutes)*60.0f;
-				if( dec<0 )
-					degrees *= -1;
-			}
-			inline double getDecimalValue() const
-			{
-				double aux = abs(degrees)+minutes/60.0f+seconds/3600.0f;
-				if( degrees < 0 )
-					aux *= -1;
-				return aux;
-			}
-			inline operator double(void) const { return getDecimalValue(); }
-		};
-
-		inline std::ostream& operator<<( std::ostream& out, const TCoords &o )
-		{
-			out << o.degrees << "deg " << o.minutes << "' " << o.seconds << "''";
-			return out;
-		}
-
-			struct TOPO_IMPEXP TEllipsoid
-		{
-			inline TEllipsoid() : sa( 6378137.0 ), sb( 6356752.314245 ), name("WGS84") {}
-			inline TEllipsoid( const double _sa, const double _sb, const string _name ) : sa(_sa), sb(_sb), name(_name) {}
-
-			double sa;		//!< largest semiaxis of the reference ellipsoid (in meters)
-			double sb;		//!< smallest semiaxis of the reference ellipsoid (in meters)
-			string name;	//!< the ellipsoid name
-		};
-
-		inline TEllipsoid Ellipsoid_WGS84() {					return TEllipsoid( 6378137.000, 6356752.314245, "WGS84" ); }
-		inline TEllipsoid Ellipsoid_WGS72() {					return TEllipsoid( 6378135.000, 6356750.519915, "WGS72"  ); }
-		inline TEllipsoid Ellipsoid_WGS66() {					return TEllipsoid( 6378145.000, 6356759.769356, "WGS66"  ); }
-		inline TEllipsoid Ellipsoid_Walbeck_1817() {			return TEllipsoid( 6376896.000, 6355834.846700, "Walbeck_1817"  ); }
-		inline TEllipsoid Ellipsoid_Sudamericano_1969() {		return TEllipsoid( 6378160.000, 6356774.720000, "Sudamericano_1969"  ); }
-		inline TEllipsoid Ellipsoid_Nuevo_Internacional_1967() {return TEllipsoid( 6378157.500, 6356772.200000, "Nuevo_Internacional_1967"  ); }
-		inline TEllipsoid Ellipsoid_Mercury_Modificado_1968() {	return TEllipsoid( 6378150.000, 6356768.337303, "Mercury_Modificado_1968" ); }
-		inline TEllipsoid Ellipsoid_Mercury_1960() {			return TEllipsoid( 6378166.000, 6356784.283666, "Mercury_1960"  ); }
-		inline TEllipsoid Ellipsoid_Krasovsky_1940() {			return TEllipsoid( 6378245.000, 6356863.018800, "Krasovsky_1940"  ); }
-		inline TEllipsoid Ellipsoid_Internacional_1924() {		return TEllipsoid( 6378388.000, 6356911.946130, "Internacional_1924"  ); }
-		inline TEllipsoid Ellipsoid_Internacional_1909() {		return TEllipsoid( 6378388.000, 6356911.946130, "Internacional_1909" ); }
-		inline TEllipsoid Ellipsoid_Hough_1960() {				return TEllipsoid( 6378270.000, 6356794.343479, "Hough_1960"  ); }
-		inline TEllipsoid Ellipsoid_Helmert_1906() {			return TEllipsoid( 6378200.000, 6356818.170000, "Helmert_1906"  ); }
-		inline TEllipsoid Ellipsoid_Hayford_1909() {			return TEllipsoid( 6378388.000, 6356911.946130, "Hayford_1909"  ); }
-		inline TEllipsoid Ellipsoid_GRS80() {					return TEllipsoid( 6378137.000, 6356752.314140, "GRS80"  ); }
-		inline TEllipsoid Ellipsoid_Fischer_1968() {			return TEllipsoid( 6378150.000, 6356768.330000, "Fischer_1968"  ); }
-		inline TEllipsoid Ellipsoid_Fischer_1960() {			return TEllipsoid( 6378166.000, 6356784.280000, "Fischer_1960" ); }
-		inline TEllipsoid Ellipsoid_Clarke_1880() {				return TEllipsoid( 6378249.145, 6356514.869550, "Clarke_1880"  ); }
-		inline TEllipsoid Ellipsoid_Clarke_1866() {				return TEllipsoid( 6378206.400, 6356583.800000, "Clarke_1866"  ); }
-		inline TEllipsoid Ellipsoid_Bessel_1841() {				return TEllipsoid( 6377397.155, 6356078.962840, "Bessel_1841"  ); }
-		inline TEllipsoid Ellipsoid_Airy_Modificado_1965() {	return TEllipsoid( 6377340.189, 6356034.447900, "Airy_Modificado_1965"  ); }
-		inline TEllipsoid Ellipsoid_Airy_1830() {				return TEllipsoid( 6377563.396, 6356256.910000, "Airy_1830"  ); }
-
-		typedef mrpt::math::TPoint3D TUTMCoords;
-		typedef mrpt::math::TPoint3D TGeocentricCoords;
-
-		/**  A set of geodetic coordinates: latitude, longitude and height, defined over a given geoid (typically, WGS84)  */
-		struct TOPO_IMPEXP TGeodeticCoords
-		{
-			TGeodeticCoords() : lat(0),lon(0),height(0) {}
-			TGeodeticCoords(const double _lat, const double _lon, const double _height) : lat(_lat),lon(_lon),height(_height) {}
-
-			double lat;		//!< Latitude (in degrees)
-			double lon;		//!< Longitude (in degrees)
-			double height;	//!< Geodetic height (in meters)
-		};
-
-		/** Parameters for a topographic transfomation
-		  * \sa TDatum10Params, transform7params
-		  */
-		struct TOPO_IMPEXP TDatum7Params
-		{
-			double dX, dY, dZ;		//!< Deltas (X,Y,Z)
-			double Rx, Ry, Rz;		//!< Rotation components (in secs)
-			double dS;				//!< Scale factor (in ppm) (Scale is 1+dS/1e6)
-
-			inline TDatum7Params(
-				const double _dX, const double _dY, const double _dZ,
-				const double _Rx, const double _Ry, const double _Rz,
-				const double _dS ) :
-			dX(_dX), dY(_dY), dZ(_dZ)
-			{
-				Rx = DEG2RAD(_Rx/60/60);
-				Ry = DEG2RAD(_Ry/60/60);
-				Rz = DEG2RAD(_Rz/60/60);
-				dS = _dS*1e-6;
-			}
-		};
-
-		struct TOPO_IMPEXP TDatum7Params_TOPCON
-		{
-			double dX, dY, dZ;		//!< Deltas (X,Y,Z)
-			double m11, m12, m13, m21, m22, m23, m31, m32, m33;
-			double dS;				//!< Scale factor (in ppm) (Scale is 1+dS/1e6)
-
-			inline TDatum7Params_TOPCON(
-				const double _dX, const double _dY, const double _dZ,
-				const double _m11, const double _m12, const double _m13,
-				const double _m21, const double _m22, const double _m23,
-				const double _m31, const double _m32, const double _m33,
-				const double _dS ) :
-			dX(_dX), dY(_dY), dZ(_dZ), m11(_m11), m12(_m12), m13(_m13), m21(_m21), m22(_m22), m23(_m23), m31(_m31), m32(_m32), m33(_m33)
-			{
-				dS = _dS*1e-6;
-			}
-		};
-
-
-		/** Parameters for a topographic transfomation
-		  * \sa TDatum7Params, transform10params
-		  */
-		struct TOPO_IMPEXP TDatum10Params
-		{
-			double dX, dY, dZ; //!< Deltas (X,Y,Z)
-			double Xp, Yp, Zp; //!< To be substracted to the input point
-			double Rx, Ry, Rz; //!< Rotation components
-			double dS; //!< Scale factor (Scale is 1+dS)
-
-			inline TDatum10Params(
-				const double _dX, const double _dY, const double _dZ,
-				const double _Xp, const double _Yp, const double _Zp,
-				const double _Rx, const double _Ry, const double _Rz,
-				const double _dS ) :
-			dX(_dX), dY(_dY), dZ(_dZ), Xp(_Xp), Yp(_Yp), Zp(_Zp)
-			{
-				Rx = DEG2RAD(_Rx/60/60);
-				Ry = DEG2RAD(_Ry/60/60);
-				Rz = DEG2RAD(_Rz/60/60);
-				dS = _dS*1e-6;
-			}
-		};
-
-		/** Parameters for a topographic transfomation
-		  * \sa TDatumHelmert3D, transformHelmert2D
-		  */
-		struct TOPO_IMPEXP TDatumHelmert2D
-		{
-			double dX, dY;		//!< Deltas [X,Y]
-			double alpha;		// The rotation about Z-axis (degrees)
-			double dS;			// Scale factor (Scale is 1+dS)
-			double Xp, Yp;		// Coordinates of the rotation point
-
-			inline TDatumHelmert2D(
-				const double _dX, const double _dY,
-				const double _alpha, const double _dS,
-				const double _Xp, const double _Yp ) :
-			dX(_dX), dY(_dY), Xp(_Xp), Yp(_Yp)
-			{
-				alpha = DEG2RAD(_alpha);
-				dS = _dS*1e-6;
-			}
-		};
-
-		struct TOPO_IMPEXP TDatumHelmert2D_TOPCON
-		{
-			double a,b,c,d;
-
-			inline TDatumHelmert2D_TOPCON(
-				const double _a, const double _b,
-				const double _c, const double _d ) :
-			a(_a), b(_b), c(_c), d(_d) {}
-
-		};
-
-		/** Parameters for a topographic transfomation
-		  * \sa TDatumHelmert2D, transformHelmert3D
-		  */
-		struct TOPO_IMPEXP TDatumHelmert3D
-		{
-			double dX, dY, dZ; //!< Deltas (X,Y,Z)
-			double Rx, Ry, Rz; //!< Rotation components
-			double dS; //!< Scale factor (Scale is 1+dS)
-
-			inline TDatumHelmert3D(
-				const double _dX, const double _dY, const double _dZ,
-				const double _Rx, const double _Ry, const double _Rz,
-				const double _dS ) :
-			dX(_dX), dY(_dY), dZ(_dZ)
-			{
-				Rx = DEG2RAD(_Rx/60/60);
-				Ry = DEG2RAD(_Ry/60/60);
-				Rz = DEG2RAD(_Rz/60/60);
-				dS = _dS*1e-6;
-			}
-		};
-
-		/** Parameters for a topographic transfomation
-		  * \sa TDatumHelmert2D, transformHelmert3D
-		  */
-		struct TOPO_IMPEXP TDatumHelmert3D_TOPCON
-		{
-			double a,b,c,d,e,f,g;
-
-			inline TDatumHelmert3D_TOPCON(
-				const double _a, const double _b, const double _c,
-				const double _d, const double _e, const double _f, const double _g ) :
-			a(_a), b(_b), c(_c), d(_d), e(_e), f(_f), g(_g) { }
-		};
-
-		/** Parameters for a topographic transfomation
-		  * \sa transform1D
-		  */
-		struct TOPO_IMPEXP TDatum1DTransf
-		{
-			double dX, dY, DZ; //!< Deltas (X,Y,Z)
-			double dS; //!< Scale factor (Scale is 1+dS)
-
-			inline TDatum1DTransf(
-				const double _dX, const double _dY, const double _DZ,
-				const double _dS ) :
-			dX(_dX), dY(_dY), DZ(_DZ)
-			{
-				dS = _dS*1e-6;
-			}
-		};
-
-		/** Parameters for a topographic transfomation
-		  * \sa transform1D
-		  */
-		struct TOPO_IMPEXP TDatumTransfInterpolation
-		{
-			double dX, dY;		//!< Deltas (X,Y,Z)
-			double dSx, dSy;	//!< Scale factor in X and Y
-			double beta;		//!< Distortion angle
-
-			inline TDatumTransfInterpolation(
-				const double _dX, const double _dY,
-				const double _dSx, const double _dSy, const double _beta ) :
-			dX(_dX), dY(_dY)
-			{
-				dSx = _dSx*1e-6;
-				dSy = _dSy*1e-6;
-				beta = DEG2RAD(_beta/60/60);
-			}
-		};
-
-		/** @}
-	    ======================================================================= */
-
+		using namespace std;
+		using namespace mrpt::utils;
 
 	/** =======================================================================
 		   @name Topography coordinate conversion functions
@@ -309,12 +53,21 @@ namespace mrpt
 		  *  The WGS84 ellipsoid is used for the transformation. The coordinates are in 3D
 		  *   relative to some user-provided point, with local X axis being east-ward, Y north-ward, Z up-ward.
 		  *  For an explanation, refer to http://en.wikipedia.org/wiki/Reference_ellipsoid
-		  * \sa coordinatesTransformation_WGS84_geocentric, ENU_axes_from_WGS84
+		  * \sa coordinatesTransformation_WGS84_geocentric, ENU_axes_from_WGS84, ENUToGeocentric
 		  */
 		void  TOPO_IMPEXP geodeticToENU_WGS84(
 			const TGeodeticCoords		&in_coords,
 			mrpt::math::TPoint3D	&out_ENU_point,
 			const TGeodeticCoords		&in_coords_origin );
+
+		/** ENU to geocentric coordinates.
+		  * \sa geodeticToENU_WGS84
+		  */
+		void  TOPO_IMPEXP ENUToGeocentric(
+			const mrpt::math::TPoint3D	&in_ENU_point,
+			const TGeodeticCoords		&in_coords_origin,
+			TGeocentricCoords			&out_coords,
+			const TEllipsoid			&ellip );
 
 		/** Coordinates transformation from longitude/latitude/height to geocentric X/Y/Z coordinates (with a WGS84 geoid).
 		  *  The WGS84 ellipsoid is used for the transformation. The coordinates are in 3D
@@ -340,7 +93,7 @@ namespace mrpt
 		void  TOPO_IMPEXP geocentricToGeodetic(
 			const TGeocentricCoords		&in_point,
 			TGeodeticCoords				&out_coords,
-			const TEllipsoid			&ellip = Ellipsoid_WGS84() );
+			const TEllipsoid			&ellip = TEllipsoid::Ellipsoid_WGS84() );
 
 		/**  7-parameter Bursa-Wolf transformation:
 		  *   [ X Y Z ]_WGS84 = [ dX dY dZ ] + ( 1 + dS ) [ 1 RZ -RY; -RZ 1 RX; RY -RX 1 ] [ X Y Z ]_local
@@ -425,7 +178,7 @@ namespace mrpt
 			char		hem,
 			double		&out_lon /*degrees*/,
 			double		&out_lat /*degrees*/,
-			TEllipsoid	ellip = Ellipsoid_WGS84() );
+			TEllipsoid	ellip = TEllipsoid::Ellipsoid_WGS84() );
 
 		/** Returns the Geodetic coordinates of the UTM input point.
 		  * \param UTMCoords: UTM input coordinates.
@@ -439,9 +192,9 @@ namespace mrpt
 			const int			&zone,
 			const char			&hem,
 			TGeodeticCoords		&GeodeticCoords,
-			TEllipsoid	ellip = Ellipsoid_WGS84() )
+			TEllipsoid	ellip = TEllipsoid::Ellipsoid_WGS84() )
 		{
-			UTMToGeodetic( UTMCoords.x, UTMCoords.y, zone, hem, GeodeticCoords.lon, GeodeticCoords.lat, ellip );
+			UTMToGeodetic( UTMCoords.x, UTMCoords.y, zone, hem, GeodeticCoords.lon.decimal_value, GeodeticCoords.lat.decimal_value, ellip );
 			GeodeticCoords.height = UTMCoords.z;
 		}
 
@@ -466,14 +219,14 @@ namespace mrpt
 			double    	&out_UTM_y,
 			int    		&out_UTM_zone,
 			char    	&out_UTM_latitude_band,
-			TEllipsoid	ellip = Ellipsoid_WGS84());
+			TEllipsoid	ellip = TEllipsoid::Ellipsoid_WGS84());
 
 		void  TOPO_IMPEXP geodeticToUTM(
 			const TGeodeticCoords	&GeodeticCoords,
 			TUTMCoords				&UTMCoords,
 			int    					&UTMZone,
 			char    				&UTMLatitudeBand,
-			TEllipsoid				ellip = Ellipsoid_WGS84());
+			TEllipsoid				ellip = TEllipsoid::Ellipsoid_WGS84());
 
 
 		/** Convert latitude and longitude coordinates into UTM coordinates, computing the corresponding UTM zone and latitude band.
@@ -495,7 +248,7 @@ namespace mrpt
 			TUTMCoords				&UTMCoords,
 			int    					&UTMZone,
 			char    				&UTMLatitudeBand,
-			TEllipsoid				ellip = Ellipsoid_WGS84())
+			TEllipsoid				ellip = TEllipsoid::Ellipsoid_WGS84())
 		{
 			GeodeticToUTM( GeodeticCoords.lat, GeodeticCoords.lon, UTMCoords.x, UTMCoords.y, UTMZone, UTMLatitudeBand, ellip );
 			UTMCoords.z = GeodeticCoords.height;
