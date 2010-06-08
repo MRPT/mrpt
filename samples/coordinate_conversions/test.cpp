@@ -210,7 +210,7 @@ void TestCoordinatesConversions()
 	const char hem = 'n';
 
 	TGeodeticCoords		GeodeticCoords;
-	TEllipsoid			ellip = Ellipsoid_WGS84();
+	TEllipsoid			ellip = TEllipsoid::Ellipsoid_WGS84();
 
 	// Dump to console of input values
 	cout << "INPUT DATA: " << endl << "----------------------------------" << endl;
@@ -257,7 +257,7 @@ void TestCoordinatesConversions()
 
 	// ... and back to Geodetic
 	TGeodeticCoords		GeodeticCoords2;
-	ellip = Ellipsoid_Hough_1960();
+	ellip = TEllipsoid::Ellipsoid_Hough_1960();
 	geocentricToGeodetic( GeocentricCoords2, GeodeticCoords2, ellip );
 	cout << "Geocentric to Geodetic" << endl;
 	cout << "Geodetic Coordinates:" << endl;
@@ -306,12 +306,12 @@ void Examples_01()
 	int			UTMZone; 
 	char		UTMBand;
 	TUTMCoords	MAND_UTM, OROZ_UTM, SANC_UTM, ARJO_UTM, CANI_UTM, HALC_UTM;
-	geodeticToUTM( MAND_92633, MAND_UTM, UTMZone, UTMBand, Ellipsoid_WGS84() );
-	geodeticToUTM( OROZ_96965, OROZ_UTM, UTMZone, UTMBand, Ellipsoid_WGS84() );
-	geodeticToUTM( SANC_94744, SANC_UTM, UTMZone, UTMBand, Ellipsoid_WGS84() );
-	geodeticToUTM( ARJO_94633, ARJO_UTM, UTMZone, UTMBand, Ellipsoid_WGS84() );
-	geodeticToUTM( CANI_96833, CANI_UTM, UTMZone, UTMBand, Ellipsoid_WGS84() );
-	geodeticToUTM( HALC_92543, HALC_UTM, UTMZone, UTMBand, Ellipsoid_WGS84() );
+	geodeticToUTM( MAND_92633, MAND_UTM, UTMZone, UTMBand, TEllipsoid::Ellipsoid_WGS84() );
+	geodeticToUTM( OROZ_96965, OROZ_UTM, UTMZone, UTMBand, TEllipsoid::Ellipsoid_WGS84() );
+	geodeticToUTM( SANC_94744, SANC_UTM, UTMZone, UTMBand, TEllipsoid::Ellipsoid_WGS84() );
+	geodeticToUTM( ARJO_94633, ARJO_UTM, UTMZone, UTMBand, TEllipsoid::Ellipsoid_WGS84() );
+	geodeticToUTM( CANI_96833, CANI_UTM, UTMZone, UTMBand, TEllipsoid::Ellipsoid_WGS84() );
+	geodeticToUTM( HALC_92543, HALC_UTM, UTMZone, UTMBand, TEllipsoid::Ellipsoid_WGS84() );
 
 	vector_double thisResults;
 	thisResults.resize(18);
@@ -335,16 +335,16 @@ void Examples_02()
 	TGeodeticCoords CANI_96833( TCoords(37,33,6.94237).getDecimalValue(), TCoords(-4,3,28.81611).getDecimalValue(), 897.626 );
 	TGeodeticCoords HALC_92543( TCoords(37,53,11.26838).getDecimalValue(), TCoords(-4,2,44.35794).getDecimalValue(), 530.446 );
 
-	const TEllipsoid ellip = Ellipsoid_Internacional_1924();
+	const TEllipsoid ellip = TEllipsoid::Ellipsoid_Internacional_1924();
 
 	// A3
 	TGeocentricCoords	MAND_Geoc, OROZ_Geoc, SANC_Geoc, ARJO_Geoc, CANI_Geoc, HALC_Geoc;
-	geodeticToGeocentric( MAND_92633, MAND_Geoc, Ellipsoid_WGS84() );
-	geodeticToGeocentric( OROZ_96965, OROZ_Geoc, Ellipsoid_WGS84() );
-	geodeticToGeocentric( SANC_94744, SANC_Geoc, Ellipsoid_WGS84() );
-	geodeticToGeocentric( ARJO_94633, ARJO_Geoc, Ellipsoid_WGS84() );
-	geodeticToGeocentric( CANI_96833, CANI_Geoc, Ellipsoid_WGS84() );
-	geodeticToGeocentric( HALC_92543, HALC_Geoc, Ellipsoid_WGS84() );
+	geodeticToGeocentric( MAND_92633, MAND_Geoc, TEllipsoid::Ellipsoid_WGS84() );
+	geodeticToGeocentric( OROZ_96965, OROZ_Geoc, TEllipsoid::Ellipsoid_WGS84() );
+	geodeticToGeocentric( SANC_94744, SANC_Geoc, TEllipsoid::Ellipsoid_WGS84() );
+	geodeticToGeocentric( ARJO_94633, ARJO_Geoc, TEllipsoid::Ellipsoid_WGS84() );
+	geodeticToGeocentric( CANI_96833, CANI_Geoc, TEllipsoid::Ellipsoid_WGS84() );
+	geodeticToGeocentric( HALC_92543, HALC_Geoc, TEllipsoid::Ellipsoid_WGS84() );
 
 	//A5
 	TGeocentricCoords	MAND_Geoc2, OROZ_Geoc2, SANC_Geoc2, ARJO_Geoc2, CANI_Geoc2, HALC_Geoc2;
@@ -399,7 +399,7 @@ void Examples_03()
 	TGeodeticCoords CANI_96833( TCoords(37,33,6.94237).getDecimalValue(), TCoords(-4,3,28.81611).getDecimalValue(), 897.626 );
 	TGeodeticCoords HALC_92543( TCoords(37,53,11.26838).getDecimalValue(), TCoords(-4,2,44.35794).getDecimalValue(), 530.446 );
 
-	const TEllipsoid ellip = Ellipsoid_WGS84();
+	const TEllipsoid ellip = TEllipsoid::Ellipsoid_WGS84();
 
 	//A2
 	int			UTMZone; 
@@ -445,7 +445,7 @@ void Examples_04()
 	TGeodeticCoords CANI_96833( TCoords(37,33,6.94237).getDecimalValue(), TCoords(-4,3,28.81611).getDecimalValue(), 897.626 );
 	TGeodeticCoords HALC_92543( TCoords(37,53,11.26838).getDecimalValue(), TCoords(-4,2,44.35794).getDecimalValue(), 530.446 );
 
-	const TEllipsoid ellip = Ellipsoid_WGS84();
+	const TEllipsoid ellip = TEllipsoid::Ellipsoid_WGS84();
 
 	//A2
 	int			UTMZone; 
@@ -492,7 +492,7 @@ void Examples_05()
 	TGeodeticCoords CANI_96833( TCoords(37,33,6.94237).getDecimalValue(), TCoords(-4,3,28.81611).getDecimalValue(), 897.626 );
 	TGeodeticCoords HALC_92543( TCoords(37,53,11.26838).getDecimalValue(), TCoords(-4,2,44.35794).getDecimalValue(), 530.446 );
 
-	const TEllipsoid ellip = TEllipsoid( 6378137, 6356752.31424518, "USER" );
+	const TEllipsoid ellip = TEllipsoid::TEllipsoid( 6378137, 6356752.31424518, "USER" );
 
 	//A2
 	int			UTMZone; 
@@ -542,7 +542,7 @@ void Examples_06()
 	TGeodeticCoords CANI_96833( TCoords(37,33,6.94237).getDecimalValue(), TCoords(-4,3,28.81611).getDecimalValue(), 897.626 );
 	TGeodeticCoords HALC_92543( TCoords(37,53,11.26838).getDecimalValue(), TCoords(-4,2,44.35794).getDecimalValue(), 530.446 );
 
-	const TEllipsoid ellip = Ellipsoid_Internacional_1924();
+	const TEllipsoid ellip = TEllipsoid::Ellipsoid_Internacional_1924();
 
 	// A3
 	TGeocentricCoords	MAND_Geoc, OROZ_Geoc, SANC_Geoc, ARJO_Geoc, CANI_Geoc, HALC_Geoc;
@@ -624,7 +624,7 @@ void Examples_07()
 	TGeodeticCoords CANI_96833( TCoords(37,33,6.94237).getDecimalValue(), TCoords(-4,3,28.81611).getDecimalValue(), 897.626 );
 	TGeodeticCoords HALC_92543( TCoords(37,53,11.26838).getDecimalValue(), TCoords(-4,2,44.35794).getDecimalValue(), 530.446 );
 
-	const TEllipsoid ellip = Ellipsoid_Internacional_1924();
+	const TEllipsoid ellip = TEllipsoid::Ellipsoid_Internacional_1924();
 
 	// A3
 	TGeocentricCoords	MAND_Geoc, OROZ_Geoc, SANC_Geoc, ARJO_Geoc, CANI_Geoc, HALC_Geoc;
@@ -706,7 +706,7 @@ void Examples_08()
 	TGeodeticCoords CANI_96833( TCoords(37,33,6.94237).getDecimalValue(), TCoords(-4,3,28.81611).getDecimalValue(), 897.626 );
 	TGeodeticCoords HALC_92543( TCoords(37,53,11.26838).getDecimalValue(), TCoords(-4,2,44.35794).getDecimalValue(), 530.446 );
 
-	const TEllipsoid ellip = Ellipsoid_Internacional_1924();
+	const TEllipsoid ellip = TEllipsoid::Ellipsoid_Internacional_1924();
 
 	// A3
 	TGeocentricCoords	MAND_Geoc, OROZ_Geoc, SANC_Geoc, ARJO_Geoc, CANI_Geoc, HALC_Geoc;
@@ -793,7 +793,7 @@ void Examples_10()
 	TGeodeticCoords CANI_96833( TCoords(37,33,6.94237).getDecimalValue(), TCoords(-4,3,28.81611).getDecimalValue(), 897.626 );
 	TGeodeticCoords HALC_92543( TCoords(37,53,11.26838).getDecimalValue(), TCoords(-4,2,44.35794).getDecimalValue(), 530.446 );
 
-	const TEllipsoid ellip = Ellipsoid_Hayford_1909();
+	const TEllipsoid ellip = TEllipsoid::Ellipsoid_Hayford_1909();
 
 	// A3
 	TGeocentricCoords	MAND_Geoc, OROZ_Geoc, SANC_Geoc, ARJO_Geoc, CANI_Geoc, HALC_Geoc;
@@ -857,7 +857,7 @@ void Examples_11()
 	TGeodeticCoords CANI_96833( TCoords(37,33,6.94237).getDecimalValue(), TCoords(-4,3,28.81611).getDecimalValue(), 897.626 );
 	TGeodeticCoords HALC_92543( TCoords(37,53,11.26838).getDecimalValue(), TCoords(-4,2,44.35794).getDecimalValue(), 530.446 );
 
-	const TEllipsoid ellip = Ellipsoid_Hayford_1909();
+	const TEllipsoid ellip = TEllipsoid::Ellipsoid_Hayford_1909();
 
 	// A3
 	TGeocentricCoords	MAND_Geoc, OROZ_Geoc, SANC_Geoc, ARJO_Geoc, CANI_Geoc, HALC_Geoc;
@@ -921,7 +921,7 @@ void Examples_12()
 	TGeodeticCoords CANI_96833( TCoords(37,33,6.94237).getDecimalValue(), TCoords(-4,3,28.81611).getDecimalValue(), 897.626 );
 	TGeodeticCoords HALC_92543( TCoords(37,53,11.26838).getDecimalValue(), TCoords(-4,2,44.35794).getDecimalValue(), 530.446 );
 
-	const TEllipsoid ellip = Ellipsoid_Hayford_1909();
+	const TEllipsoid ellip = TEllipsoid::Ellipsoid_Hayford_1909();
 
 	//A2
 	int			UTMZone; 
@@ -977,7 +977,7 @@ void Examples_13()
 	TGeodeticCoords CANI_96833( TCoords(37,33,6.94237).getDecimalValue(), TCoords(-4,3,28.81611).getDecimalValue(), 897.626 );
 	TGeodeticCoords HALC_92543( TCoords(37,53,11.26838).getDecimalValue(), TCoords(-4,2,44.35794).getDecimalValue(), 530.446 );
 
-	const TEllipsoid ellip = Ellipsoid_Hayford_1909();
+	const TEllipsoid ellip = TEllipsoid::Ellipsoid_Hayford_1909();
 
 	//A2
 	int			UTMZone; 
