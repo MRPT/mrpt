@@ -43,16 +43,16 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE(CGeneralizedCylinder,CRenderizable,mrpt::opengl)
 
 void CGeneralizedCylinder::TQuadrilateral::calculateNormal()	{
-	float ax=points[1].x-points[0].x;
-	float ay=points[1].y-points[0].y;
-	float az=points[1].z-points[0].z;
-	float bx=points[2].x-points[0].x;
-	float by=points[2].y-points[0].y;
-	float bz=points[2].z-points[0].z;
+	double ax=points[1].x-points[0].x;
+	double ay=points[1].y-points[0].y;
+	double az=points[1].z-points[0].z;
+	double bx=points[2].x-points[0].x;
+	double by=points[2].y-points[0].y;
+	double bz=points[2].z-points[0].z;
 	normal[0]=az*by-ay*bz;
 	normal[1]=ax*bz-az*bx;
 	normal[2]=ay*bx-ax*by;
-	float s=0;
+	double s=0;
 	for (size_t i=0;i<3;i++) s+=normal[i]*normal[i];
 	s=sqrt(s);
 	for (size_t i=0;i<3;i++) normal[i]/=s;
@@ -64,8 +64,8 @@ private:
 	const mrpt::utils::TColorf &color;
 public:
 	void operator()(const CGeneralizedCylinder::TQuadrilateral t) const	{
-		glNormal3f(t.normal[0],t.normal[1],t.normal[2]);
-		for (int i=0;i<4;i++) glVertex3f(t.points[i].x,t.points[i].y,t.points[i].z);
+		glNormal3d(t.normal[0],t.normal[1],t.normal[2]);
+		for (int i=0;i<4;i++) glVertex3d(t.points[i].x,t.points[i].y,t.points[i].z);
 	}
 	FQuadrilateralRenderer(const mrpt::utils::TColorf &c):color(c)	{}
 	~FQuadrilateralRenderer()	{}

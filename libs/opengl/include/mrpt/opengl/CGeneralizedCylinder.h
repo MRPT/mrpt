@@ -63,7 +63,7 @@ namespace opengl	{
 			/**
 			  * Normal vector.
 			  */ 
-			float normal[3];
+			double normal[3];
 			/**
 			  * Given a polygon with 4 already positions allocated, this method fills it with the quadrilateral points.
 			  * \sa mrpt::math::TPolygon3D
