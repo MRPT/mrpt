@@ -49,7 +49,7 @@ namespace mrpt
 		/** A decorator of CStringList special for keeping logs.
 		  * \note Class written by Vicente Arevalo
 		  */
-		class CLog : protected mrpt::utils::CStringList
+		class BASE_IMPEXP CLog : protected mrpt::utils::CStringList
 		{
 		public:
 			CLog();
