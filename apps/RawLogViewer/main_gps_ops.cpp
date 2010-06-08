@@ -70,14 +70,14 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 			_("GPS reference"),
 			_("0.0"), this );
 		if (s.IsEmpty()) return;
-		if (!s.ToDouble(&ref.lat)) { wxMessageBox(_("Invalid number")); return; }
+		if (!s.ToDouble(&ref.lat.decimal_value)) { wxMessageBox(_("Invalid number")); return; }
 
 		s = wxGetTextFromUser(
 			_("Reference Longitude (degrees):"),
 			_("GPS reference"),
 			_("0.0"), this );
 		if (s.IsEmpty()) return;
-		if (!s.ToDouble(&ref.lon)) { wxMessageBox(_("Invalid number")); return; }
+		if (!s.ToDouble(&ref.lon.decimal_value)) { wxMessageBox(_("Invalid number")); return; }
 
 		s = wxGetTextFromUser(
 			_("Reference Height (meters):"),
@@ -133,7 +133,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 			TPoint3D  X_ENU;		// Transformed coordinates
 
 			const TGeodeticCoords obsCoords = obs->GGA_datum.getAsStruct<TGeodeticCoords>();
-			
+
 			// The first gps datum?
 			if (!ref_valid)
 			{
@@ -469,7 +469,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
                     last_GPS1->GGA_datum.getAsStruct<TGeodeticCoords>(),
 					p1,
 					refCoords);
-					
+
                 TPoint3D  p2;
                 mrpt::topography::geodeticToENU_WGS84(
                     last_GPS2->GGA_datum.getAsStruct<TGeodeticCoords>(),
@@ -629,14 +629,14 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
                 _("GPS reference"),
                 _("0.0"), this );
             if (s.IsEmpty()) return;
-            if (!s.ToDouble(&refCoords.lat)) { wxMessageBox(_("Invalid number")); return; }
+            if (!s.ToDouble(&refCoords.lat.decimal_value)) { wxMessageBox(_("Invalid number")); return; }
 
             s = wxGetTextFromUser(
                 _("Reference Longitude (degrees):"),
                 _("GPS reference"),
                 _("0.0"), this );
             if (s.IsEmpty()) return;
-            if (!s.ToDouble(&refCoords.lon)) { wxMessageBox(_("Invalid number")); return; }
+            if (!s.ToDouble(&refCoords.lon.decimal_value)) { wxMessageBox(_("Invalid number")); return; }
 
             s = wxGetTextFromUser(
                 _("Reference Height (meters):"),
@@ -839,7 +839,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 
 								// Geocentric XYZ:
 								TPoint3D geo;
-								mrpt::topography::geodeticToGeocentric_WGS84( 
+								mrpt::topography::geodeticToGeocentric_WGS84(
 									obs->GGA_datum.getAsStruct<TGeodeticCoords>(),
 									geo );
 
