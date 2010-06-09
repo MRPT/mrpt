@@ -49,6 +49,7 @@ namespace mrpt
 	{
 		using namespace mrpt::utils;
 		using namespace mrpt::math;
+		using namespace mrpt;
 		using namespace std;
 
 		/** The Kalman Filter algorithm to employ in bayes::CKalmanFilterCapable
@@ -95,7 +96,7 @@ namespace mrpt
 			void runOneKalmanIteration_addNewLandmarks(
 				CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj,
 				std::vector<typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::KFArray_OBS> Z,
-				const vector_int		&data_association,
+				const mrpt::vector_int		&data_association,
 				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R
 				);
 			// Specialization:
@@ -103,7 +104,7 @@ namespace mrpt
 			void runOneKalmanIteration_addNewLandmarks(
 				CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE> &obj,
 				std::vector<typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::KFArray_OBS> Z,
-				const vector_int       &data_association,
+				const mrpt::vector_int       &data_association,
 				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R
 				);
 
@@ -112,6 +113,12 @@ namespace mrpt
 			// Specialization:
 			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 			inline size_t getNumberOfLandmarksInMap(const CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /*FEAT_SIZE*/,ACT_SIZE,KFTYPE> &obj);
+
+			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
+			inline bool isMapEmpty(const CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj);
+			// Specialization:
+			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
+			inline bool isMapEmpty(const CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /*FEAT_SIZE*/,ACT_SIZE,KFTYPE> &obj);
 		}
 
 
@@ -150,6 +157,7 @@ namespace mrpt
 			static inline size_t get_feature_size() { return FEAT_SIZE; }
 			static inline size_t get_action_size() { return ACT_SIZE; }
 			inline size_t getNumberOfLandmarksInTheMap() const { return detail::getNumberOfLandmarksInMap(*this); }
+			inline bool   isMapEmpty() const { return detail::isMapEmpty(*this); }
 
 
 			typedef KFTYPE kftype; //!< The numeric type used in the Kalman Filter (default=double)
@@ -256,8 +264,8 @@ namespace mrpt
 			  * \sa OnGetObservations, OnDataAssociation
 			  */
 			virtual void OnPreComputingPredictions(
-				const vector<KFArray_OBS>	&in_all_prediction_means,
-				vector_size_t				&out_LM_indices_to_predict ) const
+				const std::vector<KFArray_OBS>	&in_all_prediction_means,
+				mrpt::vector_size_t				&out_LM_indices_to_predict ) const
 			{
 				// Default: all of them:
 				const size_t N = this->getNumberOfLandmarksInTheMap();
@@ -284,8 +292,8 @@ namespace mrpt
 			  */
 			virtual void OnGetObservationsAndDataAssociation(
 				std::vector<KFArray_OBS>    &out_z,
-				vector_int                  &out_data_association,
-				const vector<KFArray_OBS>   &in_all_predictions,
+				mrpt::vector_int                  &out_data_association,
+				const std::vector<KFArray_OBS>   &in_all_predictions,
 				const KFMatrix              &in_S,
 				const vector_size_t         &in_lm_indices_in_S,
 				const KFMatrix_OxO          &in_R
@@ -296,7 +304,7 @@ namespace mrpt
 			  * \param out_predictions The predicted observations.
 			  */
 			virtual void OnObservationModel(
-				const vector_size_t       &idx_landmarks_to_predict,
+				const mrpt::vector_size_t       &idx_landmarks_to_predict,
 				std::vector<KFArray_OBS>  &out_predictions
 				) const = 0;
 
@@ -1600,6 +1608,18 @@ namespace mrpt
 			inline size_t getNumberOfLandmarksInMap(const CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /*FEAT_SIZE*/,ACT_SIZE,KFTYPE> &obj)
 			{
 				return 0;
+			}
+
+			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
+			inline bool isMapEmpty(const CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj)
+			{
+				return (obj.getStateVectorLength()==VEH_SIZE);
+			}
+			// Specialization for FEAT_SIZE=0
+			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
+			inline bool isMapEmpty (const CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /*FEAT_SIZE*/,ACT_SIZE,KFTYPE> &obj)
+			{
+				return true;
 			}
 
 		} // end namespace "detail"
