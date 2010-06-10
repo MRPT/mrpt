@@ -135,8 +135,21 @@ namespace mrpt
 			  * Sets a specific line in the set, given its index.
 			  * \sa appendLine
 			  */
-			inline void setLineByIndex(size_t index,float x0,float y0,float z0,float x1,float y1,float z1)	{
+			inline void setLineByIndex(size_t index,double x0,double y0,double z0,double x1,double y1,double z1)	{
 				setLineByIndex(index,TSegment3D(TPoint3D(x0,y0,z0),TPoint3D(x1,y1,z1)));
+			}
+			/**
+			  * Gets a specific line in the set, given its index.
+			  * \sa getLineByIndex
+			  */
+			inline void getLineByIndex(size_t index,double &x0,double &y0,double &z0,double &x1,double &y1,double &z1) const	{
+				ASSERT_(index<mSegments.size())
+				x0 = mSegments[index].point1.x;
+				y0 = mSegments[index].point1.y;
+				z0 = mSegments[index].point1.z;
+				x1 = mSegments[index].point2.x;
+				y1 = mSegments[index].point2.y;
+				z1 = mSegments[index].point2.z;
 			}
 			/**
 			  * Class factory
@@ -149,6 +162,9 @@ namespace mrpt
 			void  render() const;
 
 			//Iterator management
+			typedef std::vector<TSegment3D>::iterator iterator;	//!< Iterator to the set.
+			typedef std::vector<TSegment3D>::reverse_iterator reverse_iterator;	//!< Iterator to the set.
+
 			/**
 			  * Const iterator to the set.
 			  */
@@ -164,6 +180,7 @@ namespace mrpt
 			inline const_iterator begin() const	{
 				return mSegments.begin();
 			}
+			inline iterator begin() { return mSegments.begin(); }
 			/**
 			  * Ending const iterator.
 			  * \sa begin,rend,rbegin
@@ -171,6 +188,7 @@ namespace mrpt
 			inline const_iterator end() const	{
 				return mSegments.end();
 			}
+			inline iterator end() { return mSegments.end(); }
 			/**
 			  * Beginning const reverse iterator (actually, accesses the end of the set).
 			  * \sa rend,begin,end

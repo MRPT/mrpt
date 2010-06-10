@@ -468,6 +468,8 @@ namespace mrpt
 				m_timLogger.enable(KF_options.enable_profiler || KF_options.verbose);
 				m_timLogger.enter("KF:complete_step");
 
+				ASSERT_(m_xkk.size()>=VEH_SIZE)
+
 				// =============================================================
 				//  1. CREATE ACTION MATRIX u FROM ODOMETRY
 				// =============================================================
