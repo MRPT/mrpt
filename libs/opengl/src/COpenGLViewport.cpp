@@ -335,10 +335,9 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 			// This is the right order so that the transformation results in the standard matrix.
 			// The order seems to be wrong, but it's not.
 			glTranslated((*it)->m_x, (*it)->m_y, (*it)->m_z);
-
-			glRotatef((*it)->m_yaw, 0.0, 0.0, 1.0);
-			glRotatef((*it)->m_pitch, 0.0, 1.0, 0.0);
-			glRotatef((*it)->m_roll, 1.0, 0.0, 0.0);
+			glRotated((*it)->m_yaw, 0.0, 0.0, 1.0);
+			glRotated((*it)->m_pitch, 0.0, 1.0, 0.0);
+			glRotated((*it)->m_roll, 1.0, 0.0, 0.0);
 
 			// Do scaling after the other transformations!
 			glScalef((*it)->m_scale_x,(*it)->m_scale_y,(*it)->m_scale_z);

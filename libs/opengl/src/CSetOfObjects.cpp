@@ -77,19 +77,15 @@ void   CSetOfObjects::render() const
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 
-			glTranslated((*it)->getPoseX(), (*it)->getPoseY(), (*it)->getPoseZ());
-			// Versión de José Luis...
-			/*glRotatef((*it)->getPoseRoll(), 1.0, 0.0, 0.0);
-			glRotatef((*it)->getPosePitch(), 0.0, 1.0, 0.0);
-			glRotatef((*it)->getPoseYaw(), 0.0, 0.0, 1.0);*/
-
-			// Versión de Pablo...
-			glRotatef((*it)->getPoseYaw(),0.0,0.0,1.0);
-			glRotatef((*it)->getPosePitch(),0.0,1.0,0.0);
-			glRotatef((*it)->getPoseRoll(),1.0,0.0,0.0);
+			// This is the right order so that the transformation results in the standard matrix.
+			// The order seems to be wrong, but it's not.
+			glTranslated((*it)->m_x, (*it)->m_y, (*it)->m_z);
+			glRotated((*it)->m_yaw, 0.0, 0.0, 1.0);
+			glRotated((*it)->m_pitch, 0.0, 1.0, 0.0);
+			glRotated((*it)->m_roll, 1.0, 0.0, 0.0);
+			
 			// Do scaling after the other transformations!
 			glScalef((*it)->m_scale_x,(*it)->m_scale_y,(*it)->m_scale_z);
-
 
 			// Set color:
 			glColor4f( (*it)->getColorR(),(*it)->getColorG(),(*it)->getColorB(),(*it)->getColorA());
