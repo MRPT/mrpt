@@ -36,6 +36,9 @@
 	- <b>Detailed list of changes:</b>
 		- Improved classes:
 			- mrpt::slam::CObservationGPS: Fixed const'ness of the getAsStruct<>() methods.
+			- Absolute pixel coordinates are now permited where previously there were only factors over width/height. See:
+				- mrpt::opengl::COpenGLViewport::setViewportPosition and mrpt::opengl::COpenGLViewport::getViewportPosition.
+				- mrpt::gui::CDisplayWindow3D::addTextMessage.
 		- New functions:
 			- mrpt::topography::ENUToGeocentric()
 		- BUGFIXES:
@@ -156,7 +159,7 @@
 			- unscented_transformation_test
 			- grab3Dvideo
 	- <b>BUG FIXES:</b>
-		- mrpt::utils::CConfigFileBase didn't always remove extra leading and trailing whitespaces in read_string(). 
+		- mrpt::utils::CConfigFileBase didn't always remove extra leading and trailing whitespaces in read_string().
 		- Initial size of the window was ignored in mrpt::gui::CDisplayWindow3D.
 		- Error returning 2x1 size() in dynamic matrices, since there was only one static member shared by all matrices.
 		- Swapped red-blue channels in mrpt::gui::wxImage2MRPTImage (Closes <a href="http://www.mrpt.org/node/70" >this issue</a>).

@@ -219,11 +219,16 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRender()
 	this->GetSize(&w,&h);
 
 	for (std::map<size_t,T2DTextData>::const_iterator it=m_2D_texts.begin();it!=m_2D_texts.end();++it)
+	{
+		// If (x,y) \in [0,1[, it's interpreted as a ratio, otherwise, as an actual coordinate in pixels
+		int x = it->second.x>=1 ? int(it->second.x) : (it->second.x<0 ? int(w+it->second.x) : int(it->second.x * w));
+		int y = it->second.y>=1 ? int(it->second.y) : (it->second.y<0 ? int(h+it->second.y) : int(it->second.y * h));
 		this->renderTextBitmap(
-			int(it->second.x * w) ,int(it->second.y * h),
+			x,y,
 			it->second.text,
 			it->second.color.R,it->second.color.G,it->second.color.B,
 			it->second.font);
+	}
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)

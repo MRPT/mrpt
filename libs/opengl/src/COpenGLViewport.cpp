@@ -111,10 +111,8 @@ void COpenGLViewport::setViewportPosition(
 	const double height )
 {
 	MRPT_START
-	ASSERT_( m_view_x>=0 && m_view_x<=1 );
-	ASSERT_( m_view_y>=0 && m_view_y<=1 );
-	ASSERT_( m_view_width>=0 && m_view_width<=1 );
-	ASSERT_( m_view_height>=0 && m_view_height<=1 );
+	ASSERT_( m_view_width>0)
+	ASSERT_( m_view_height>0)
 
 	m_view_x = x;
 	m_view_y = y;
@@ -167,24 +165,44 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 	{
 		// Change viewport:
 		// -------------------------------------------
-        glViewport(
-			GLint( render_width * m_view_x ),
-			GLint( render_height * m_view_y ),
-			GLsizei( render_width * m_view_width ),
-			GLsizei( render_height * m_view_height ) );
+		const GLint vx = m_view_x>1 ?  GLint(m_view_x) : ( m_view_x<0 ? GLint(render_width+m_view_x)  : GLint( render_width  * m_view_x ) );
+		const GLint vy = m_view_y>1 ?  GLint(m_view_y) : ( m_view_y<0 ? GLint(render_height+m_view_y) : GLint( render_height * m_view_y ) );
+
+		GLint vw;
+		if (m_view_width>1)  // >1 -> absolute pixels:
+			vw = GLint(m_view_width);
+		else if (m_view_width<0)
+		{  // Negative numbers: Specify the right side coordinates instead of the width:
+			if (m_view_width>=-1)
+			     vw = GLint( -render_width * m_view_width - vx +1 );
+			else vw = GLint( -m_view_width - vx + 1 );
+		}
+		else  // A factor:
+		{
+			vw = GLint( render_width * m_view_width );
+		}
+
+
+		GLint vh;
+		if (m_view_height>1)  // >1 -> absolute pixels:
+			vh = GLint(m_view_height);
+		else if (m_view_height<0)
+		{  // Negative numbers: Specify the right side coordinates instead of the width:
+			if (m_view_height>=-1)
+			     vh = GLint( -render_height * m_view_height - vy + 1);
+			else vh = GLint( -m_view_height - vy +1 );
+		}
+		else  // A factor:
+			vh = GLint( render_height * m_view_height );
+
+        glViewport(vx,vy, vw, vh );
 
 		// Clear depth&/color buffers:
 		// -------------------------------------------
-		m_lastProjMat.viewport_width  = render_width * m_view_width;
-		m_lastProjMat.viewport_height = render_height * m_view_height;
+		m_lastProjMat.viewport_width  = vw;
+		m_lastProjMat.viewport_height = vh;
 
-		const GLsizei  width  = GLsizei( m_lastProjMat.viewport_width  );
-		const GLsizei  height = GLsizei( m_lastProjMat.viewport_height );
-
-        glScissor(
-			GLint( render_width * m_view_x ),
-			GLint( render_height * m_view_y ),
-			width, height );
+        glScissor(vx,vy,vw,vh);
 
         glEnable(GL_SCISSOR_TEST);
         if ( !m_isTransparent )
@@ -282,11 +300,11 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 
         if (myCamera->m_projectiveModel)
         {
-            gluPerspective( myCamera->m_projectiveFOVdeg, width/double(height),m_clip_min,m_clip_max);
+            gluPerspective( myCamera->m_projectiveFOVdeg, vw/double(vh),m_clip_min,m_clip_max);
         }
         else
         {
-			const double ratio = width/double(height);
+			const double ratio = vw/double(vh);
 			double Ax = myCamera->m_distanceZoom*0.5;
 			double Ay = myCamera->m_distanceZoom*0.5;
 

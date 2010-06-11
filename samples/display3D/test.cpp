@@ -42,8 +42,7 @@ void TestDisplay3D()
 	COpenGLScenePtr &theScene = win.get3DSceneAndLock();
 
 
-	// Add a clone viewport:
-	if (1)
+	// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
 	{
 		COpenGLViewportPtr vi= theScene->createViewport("myClone");
 		vi->setViewportPosition(0.7,0.05,0.28,0.28);
@@ -54,9 +53,21 @@ void TestDisplay3D()
 		vi->getCamera().setZoomDistance(10);
 	}
 
-	// And another transparent viewport just to show 3D text:
-	mrpt::opengl::CTextPtr txt1 = mrpt::opengl::CText::Create();
+	// Another clone viewport, using absolute coordinates
 	{
+		COpenGLViewportPtr vi= theScene->createViewport("myClone2");
+		vi->setViewportPosition(/*x px*/ -250, /*y px*/-250, /*width px*/ 250, /*height px*/ 200);  // x,y negative means pixels from the top/right, instead of from the bottom/left.
+		vi->setCloneView("main");
+		vi->setTransparent(false);
+		vi->getCamera().setAzimuthDegrees(-95);
+		vi->getCamera().setElevationDegrees(30);
+		vi->getCamera().setZoomDistance(8);
+	}
+
+	// And another transparent viewport just to show 3D text:
+	if (0)
+	{
+		mrpt::opengl::CTextPtr txt1 = mrpt::opengl::CText::Create();
 		COpenGLViewportPtr vi= theScene->createViewport("flat_viewport");
 		vi->setViewportPosition(0,0,0.3,0.3);
 		vi->setTransparent(true);
@@ -157,10 +168,17 @@ void TestDisplay3D()
 			obj1->getPoseZ() - sin(obj1->getPoseX()/2)*0.08 );
 
 
-		win.addTextMessage(0.02,0.98,
+		win.addTextMessage(0.02,0.02,  // X,Y<=1 means coordinates are factors over the entire viewport area.
 			format("ball#1 pos: %.02f %.02f %.02f ",obj1->getPoseX(),obj1->getPoseY(),obj1->getPoseZ()),
 			TColorf(.8,.8,.8),
 			10, // An arbitrary ID to always overwrite the same, previous 2D text message
+			MRPT_GLUT_BITMAP_HELVETICA_12
+			);
+
+		win.addTextMessage(5,-15,  // |X|,|Y|>1 means absolute coordinates, negative means from the top instead of the bottom.
+			format("Time: %s", mrpt::system::dateTimeLocalToString( mrpt::system::now() ).c_str() ),
+			TColorf(1,1,1),
+			20, // An arbitrary ID to always overwrite the same, previous 2D text message
 			MRPT_GLUT_BITMAP_HELVETICA_12
 			);
 

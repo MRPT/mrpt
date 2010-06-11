@@ -100,8 +100,16 @@ namespace mrpt
 			inline std::string getName() { return m_name; }
 
 			/** Change the viewport position and dimension on the rendering window.
-			  *  Coordinates here are alwasys in the range [0,1], relative to the actual
-			  *   window sizes (i.e. width=1 means the entire width of the rendering window).
+			  *  X & Y coordinates here can have two interpretations:
+			  *    - If in the range [0,1], they are factors with respect to the actual window sizes (i.e. width=1 means the entire width of the rendering window).
+			  *    - If >1, they are interpreted as pixels.
+			  *
+			  *  width & height can be interpreted as:
+			  *		- If >1, they are the size of the viewport in that dimension, in pixels.
+			  *		- If in [0,1], they are the size of the viewport in that dimension, in a factor of the width/height.
+			  *		- If in [-1,0[, the size is computed such as the right/top border ends up in the given coordinate, interpreted as a factor (e.g. -1: up to the end of the viewport, -0.5: up to the middle of it).
+			  *		- If <-1 the size is computed such as the right/top border ends up in the given absolute coordinate (e.g. -200: up to the row/column 200px).
+			  *
 			  * \note (x,y) specify the lower left corner of the viewport rectangle.
 			  * \sa getViewportPosition
 			  */
@@ -112,8 +120,9 @@ namespace mrpt
 				const double height );
 
 			/** Get the current viewport position and dimension on the rendering window.
-			  *  Coordinates here are alwasys in the range [0,1], relative to the actual
-			  *   window sizes (i.e. width=1 means the entire width of the rendering window).
+			  *  X & Y coordinates here can have two interpretations:
+			  *    - If in the range [0,1], they are factors with respect to the actual window sizes (i.e. width=1 means the entire width of the rendering window).
+			  *    - If >1, they are interpreted as pixels.
 			  * \note (x,y) specify the lower left corner of the viewport rectangle.
 			  * \sa setViewportPosition
 			  */
@@ -123,12 +132,12 @@ namespace mrpt
 				double &width,
 				double &height );
 
-			/** Set the min/max clip depth distances for rendering (default: 0.1 - 10000)
+			/** Set the min/max clip depth distances of the rendering frustum (default: 0.1 - 10000)
 			  * \sa getViewportClipDistances
 			  */
 			void setViewportClipDistances(const double clip_min, const double clip_max);
 
-			/** Get the current min/max clip depth distances for rendering (default: 0.1 - 10000)
+			/** Get the current min/max clip depth distances of the rendering frustum (default: 0.1 - 10000)
 			  * \sa setViewportClipDistances
 			  */
 			void getViewportClipDistances(double &clip_min, double &clip_max) const;

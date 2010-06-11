@@ -315,8 +315,8 @@ namespace mrpt
 			/** Add 2D text messages overlapped to the 3D rendered scene. The string will remain displayed in the 3D window
 			  *   until it's changed with subsequent calls to this same method, or all the texts are cleared with clearTextMessages().
 			  *
-			  *  \param x_frac The X position, in the range [0,1] (left,right, of the 3D viewport).
-			  *  \param y_frac The Y position, in the range [0,1] (bottom,top, of the 3D viewport).
+			  *  \param x The X position, interpreted as absolute pixels from the left if X>=1, absolute pixels from the left if X<0 or as a width factor if in the range [0,1[.
+			  *  \param y The Y position, interpreted as absolute pixels from the bottom if Y>=1, absolute pixels from the top if Y<0 or as a height factor if in the range [0,1[.
 			  *  \param text The text string to display.
 			  *  \param color The text color. For example: TColorf(1.0,1.0,1.0)
 			  *  \param unique_index An "index" for this text message, so that subsequent calls with the same index will overwrite this text message instead of creating new ones.
@@ -326,8 +326,8 @@ namespace mrpt
 			  * \sa clearTextMessages
 			  */
 			void addTextMessage(
-				const double x_frac,
-				const double y_frac,
+				const double x,
+				const double y,
 				const std::string &text,
 				const mrpt::utils::TColorf &color = mrpt::utils::TColorf(1.0,1.0,1.0),
 				const size_t unique_index = 0,
