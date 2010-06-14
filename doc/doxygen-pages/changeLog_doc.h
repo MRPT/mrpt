@@ -39,6 +39,7 @@
 			- Absolute pixel coordinates are now permited where previously there were only factors over width/height. See:
 				- mrpt::opengl::COpenGLViewport::setViewportPosition and mrpt::opengl::COpenGLViewport::getViewportPosition.
 				- mrpt::gui::CDisplayWindow3D::addTextMessage.
+			- mrpt::hwdrivers::CGenericSensor::registerClass is now public.
 		- New functions:
 			- mrpt::topography::ENUToGeocentric()
 		- BUGFIXES:

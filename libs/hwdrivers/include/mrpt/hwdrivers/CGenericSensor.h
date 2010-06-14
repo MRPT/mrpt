@@ -97,14 +97,20 @@ namespace mrpt
 
 			double getProcessRate() const { return m_process_rate; }
 
+			/** Register a class into the internal list of "CGenericSensor" descendents.
+			  *  Used internally in the macros DEFINE_GENERIC_SENSOR, etc...
+			  *
+			  *  Can be used as "CGenericSensor::registerClass( SENSOR_CLASS_ID(CMySensor) );" if
+			  *    building custom sensors outside mrpt libraries in user code.
+			  */
+			static void registerClass(const TSensorClassId* pNewClass);
+
 		private:
 			synch::CCriticalSection			m_csObjList;		//!< The critical section for m_objList
 			TListObservations				m_objList;		//!< The queue of objects to be returned by getObservations
 
 			/** Used in registerClass */
 			static std::map< std::string , const TSensorClassId *>	m_knownClasses;
-
-			// DECLARE_UNCOPIABLE( CGenericSensor )
 
 
 		protected:
@@ -128,11 +134,6 @@ namespace mrpt
 			  \endcode
 			  */
 			void appendObservation( const mrpt::utils::CSerializablePtr &obj);
-
-			/** Register a class into the internal list of "CGenericSensor" descendents.
-			  *  Used internally in the macros DEFINE_GENERIC_SENSOR, etc...
-			  */
-			static void registerClass(const TSensorClassId* pNewClass);
 
 
 			/** Auxiliary structure used for CSerializable runtime class ID support.
@@ -163,7 +164,7 @@ namespace mrpt
 			static CGenericSensor* createSensor(const std::string &className);
 
 			/** Just like createSensor, but returning a smart pointer to the newly created sensor object. */
-			static inline CGenericSensorPtr createSensorPtr(const std::string &className) 
+			static inline CGenericSensorPtr createSensorPtr(const std::string &className)
 			{
 				return CGenericSensorPtr(createSensor(className));
 			}
