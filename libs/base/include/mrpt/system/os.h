@@ -191,6 +191,12 @@ namespace mrpt
 		*/
 		bool  BASE_IMPEXP vectorToTextFile( const std::vector<size_t> &vec, const std::string &fileName, bool append = false, bool byRows=false );
 
+		/** Load a std::vector from a text file (compat. with MATLAB)
+		* \return Returns false on any error, true on everything OK.
+		* \sa loadBinaryFile
+		*/
+		bool  BASE_IMPEXP vectorFromTextFile( std::vector<double> &vec, const std::string &fileName );
+
 		/** Saves a vector directly as a binary dump to a file:
 		* \return Returns false on any error, true on everything OK.
 		* \sa loadBinaryFile

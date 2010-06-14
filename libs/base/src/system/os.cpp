@@ -374,6 +374,22 @@ bool  mrpt::system::vectorToTextFile( const vector<size_t> &vec, const string &f
 }
 
 /*---------------------------------------------------------------
+						vectorFromTextFile
+ ---------------------------------------------------------------*/
+bool  mrpt::system::vectorFromTextFile( std::vector<double> &vec, const std::string &fileName )
+{
+	FILE	*f = os::fopen( fileName.c_str(), "r" );
+	if (!f) return false;
+
+	double number = 0;
+
+	while ( fscanf( f, "%d", number ) != EOF )
+		vec.push_back( number );
+	
+	return true;
+}
+
+/*---------------------------------------------------------------
 					mrpt::system::MRPT_getCompilationDate
 ---------------------------------------------------------------*/
 string mrpt::system::MRPT_getCompilationDate()
