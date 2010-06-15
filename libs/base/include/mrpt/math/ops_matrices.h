@@ -42,6 +42,8 @@
 #include <mrpt/math/ops_matrices_eigen.h>	// Eigenvectors are apart because it's a mess of code...
 #include <mrpt/math/matrices_metaprogramming.h>  // TMatrixProductType, ...
 
+#include <mrpt/utils/metaprogramming.h>  // for copy_container_typecasting()
+
 
 /** \file ops_matrices.h
   * This file implements miscelaneous matrix and matrix/vector operations, plus internal functions in mrpt::math::detail
@@ -1046,7 +1048,7 @@ namespace mrpt
 			mrpt::math::CMatrixTemplateNumeric<double> MM;
 			MM.loadFromTextFile(file);
 			M.resize(MM.size());
-			std::copy(MM.begin(),MM.end(),M.begin());
+			mrpt::utils::metaprogramming::copy_container_typecasting(MM,M);
 		}
 
 	} // end detail
