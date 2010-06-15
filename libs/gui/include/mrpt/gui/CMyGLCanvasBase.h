@@ -175,6 +175,7 @@ namespace mrpt
 			/** Draws a text string on the screen.
 			  *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the viewport.
 			  *   - The text color is defined by (color_r,color_g,color_b), each float numbers in the range [0,1].
+			  *  \sa textBitmapWidth
 			  */
 			void renderTextBitmap(
 				int screen_x,
@@ -185,6 +186,13 @@ namespace mrpt
 				float  color_b=1,
 				TOpenGLFont    font = MRPT_GLUT_BITMAP_TIMES_ROMAN_24
 				);
+
+			/** Return the exact width in pixels for a given string, as will be rendered by renderTextBitmap().
+			  * \sa renderTextBitmap
+			  */
+			int textBitmapWidth(
+				const std::string &str,
+				TOpenGLFont    font = MRPT_GLUT_BITMAP_TIMES_ROMAN_24 );
 
 			// Used to create the gl context at startup.
 			void OnWindowCreation(wxWindowCreateEvent &ev);

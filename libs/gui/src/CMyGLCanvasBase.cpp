@@ -252,6 +252,38 @@ CMyGLCanvasBase::CMyGLCanvasBase(wxWindow *parent, wxWindowID id,const wxPoint& 
 #endif
 }
 
+
+void *aux_mrptfont2glutfont(const TOpenGLFont font)
+{
+#if MRPT_HAS_OPENGL_GLUT
+	switch (font)
+	{
+	default:
+	case MRPT_GLUT_BITMAP_TIMES_ROMAN_10: return GLUT_BITMAP_TIMES_ROMAN_10; break;
+	case MRPT_GLUT_BITMAP_TIMES_ROMAN_24: return GLUT_BITMAP_TIMES_ROMAN_24; break;
+
+	case MRPT_GLUT_BITMAP_HELVETICA_10: return GLUT_BITMAP_HELVETICA_10; break;
+	case MRPT_GLUT_BITMAP_HELVETICA_12: return GLUT_BITMAP_HELVETICA_12; break;
+	case MRPT_GLUT_BITMAP_HELVETICA_18: return GLUT_BITMAP_HELVETICA_18; break;
+	}
+#else
+	return NULL;
+#endif
+}
+
+int CMyGLCanvasBase::textBitmapWidth(
+	const std::string &str,
+	TOpenGLFont    font)
+{
+#if MRPT_HAS_OPENGL_GLUT
+	if (str.empty()) return 0;
+	return glutBitmapLength(aux_mrptfont2glutfont(font), (const unsigned char*)str.c_str() );
+#else 
+	return 10;
+#endif
+}
+
+
 void CMyGLCanvasBase::renderTextBitmap(
 	int screen_x,
 	int screen_y,
@@ -298,17 +330,7 @@ void CMyGLCanvasBase::renderTextBitmap(
 	glPopAttrib();
 
 	// Select font:
-	void *glut_font_sel;
-	switch (font)
-	{
-	default:
-	case 0: glut_font_sel = GLUT_BITMAP_TIMES_ROMAN_10; break;
-	case 1: glut_font_sel = GLUT_BITMAP_TIMES_ROMAN_24; break;
-
-	case 2: glut_font_sel = GLUT_BITMAP_HELVETICA_10; break;
-	case 3: glut_font_sel = GLUT_BITMAP_HELVETICA_12; break;
-	case 4: glut_font_sel = GLUT_BITMAP_HELVETICA_18; break;
-	}
+	void *glut_font_sel = aux_mrptfont2glutfont(font);
 
 	for (size_t i=0;i<str.size();i++)
 		glutBitmapCharacter( glut_font_sel ,str[i] );

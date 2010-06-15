@@ -45,6 +45,7 @@
 				- saveToTextFileAsVector
 		- New functions:
 			- mrpt::topography::ENUToGeocentric()
+			- mrpt::gui::CMyGLCanvasBase::textBitmapWidth(), a new function to compute the width of a bitmap string.
 		- BUGFIXES:
 			- Fixed compilation against OpenCV 1.1.0 and 2.0.0.
 
