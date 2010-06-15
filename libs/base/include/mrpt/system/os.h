@@ -195,7 +195,7 @@ namespace mrpt
 		* \return Returns false on any error, true on everything OK.
 		* \sa loadBinaryFile
 		*/
-		bool  BASE_IMPEXP vectorFromTextFile( std::vector<double> &vec, const std::string &fileName );
+		bool  BASE_IMPEXP vectorFromTextFile( std::vector<double> &vec, const std::string &fileName, const bool byRows=false );
 
 		/** Saves a vector directly as a binary dump to a file:
 		* \return Returns false on any error, true on everything OK.

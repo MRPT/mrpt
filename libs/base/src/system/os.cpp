@@ -376,15 +376,19 @@ bool  mrpt::system::vectorToTextFile( const vector<size_t> &vec, const string &f
 /*---------------------------------------------------------------
 						vectorFromTextFile
  ---------------------------------------------------------------*/
-bool  mrpt::system::vectorFromTextFile( std::vector<double> &vec, const std::string &fileName )
+bool  mrpt::system::vectorFromTextFile( std::vector<double> &vec, const std::string &fileName, bool byRows )
 {
 	FILE	*f = os::fopen( fileName.c_str(), "r" );
 	if (!f) return false;
 
 	double number = 0;
 
-	while ( fscanf( f, "%d", number ) != EOF )
-		vec.push_back( number );
+	while ( !feof(f) )
+	{
+		size_t readed = fscanf( f, byRows ? "%lf" : "%lf\n", &number );
+		if ( (!byRows) || (readed == 1) )
+			vec.push_back( number );
+	}
 	
 	return true;
 }
