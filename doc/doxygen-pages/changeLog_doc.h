@@ -40,6 +40,9 @@
 				- mrpt::opengl::COpenGLViewport::setViewportPosition and mrpt::opengl::COpenGLViewport::getViewportPosition.
 				- mrpt::gui::CDisplayWindow3D::addTextMessage.
 			- mrpt::hwdrivers::CGenericSensor::registerClass is now public.
+			- All MRPT containers (mrpt::vector_double, all kind of matrices, arrays, etc) now have two new methods for saving to and loading from text files "as vectors", i.e. even for matrices, all the elements are saved/loaded as a simple sequence:
+				- loadFromTextFileAsVector
+				- saveToTextFileAsVector
 		- New functions:
 			- mrpt::topography::ENUToGeocentric()
 		- BUGFIXES:

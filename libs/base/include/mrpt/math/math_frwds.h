@@ -147,6 +147,11 @@ namespace mrpt
 		inline double std(bool unbiased=true) const /*! Return the standard deviation of all the elements in the container. */ { return mrpt::math::stddev(*this); } \
 		void meanAndStd(double &out_mean, double &out_std, bool unbiased = true) /*! Return the mean and standard deviation of all the elements in the container. */ { \
 			return mrpt::math::meanAndStd(*this,out_mean,out_std,unbiased); } \
+		/*! Load this matrix or vector from a text file which can contain a column or row vector or a matrix, then assigns to this container all those elements in order (for example, a file with a 10x2 matrix can be loaded into a 20-length array) \exception std::exception On any error. */ \
+		inline void loadFromTextFileAsVector(const std::string &file) {  mrpt::math::detail::loadFromTextFileAsVector(*this,file); } \
+		/*! Save this matrix or vector to a text file as a row (or optionally as a vector), independently of this containers actually being a vector, an array or a matrix. \exception std::exception On any error. */ \
+		inline void saveToTextFileAsVector(const std::string &file, mrpt::math::TMatrixTextFileFormat fileFormat = mrpt::math::MATRIX_FORMAT_ENG ,bool asColumnVector=false) const {  mrpt::math::detail::saveToTextFileAsVector(*this,file,fileFormat ,asColumnVector); }
+
 
 		//Some operations could be made more efficient if inside each class:
 		//operator-() const
@@ -475,7 +480,7 @@ namespace mrpt
 
 			// -------- Others --------
 			template <class MAT> void
-				saveMatrixToTextFile(const MAT &theMatrix, const std::string &file, TMatrixTextFileFormat fileFormat = MATRIX_FORMAT_ENG, bool appendMRPTHeader = false, const std::string &userHeader = std::string("") );
+				saveMatrixToTextFile(const MAT &theMatrix, const std::string &file, mrpt::math::TMatrixTextFileFormat fileFormat = MATRIX_FORMAT_ENG, bool appendMRPTHeader = false, const std::string &userHeader = std::string("") );
 			template <class MATRIX>
 				std::string  matrix_inMatlabFormat(const MATRIX &m,const size_t decimal_digits);
 
@@ -501,6 +506,8 @@ namespace mrpt
 			template <class MATRIX> inline bool isMatrixTypeResizable(const MATRIX&) { return false; }
 			// Specializations are in CMatrixTemplateNumeric.h
 
+			template <class CONTAINER> void loadFromTextFileAsVector(CONTAINER &M, const std::string &file);
+			template <class CONTAINER> void saveToTextFileAsVector(const CONTAINER &M, const std::string &file, mrpt::math::TMatrixTextFileFormat fileFormat, bool asColumnVector);
 
 			// Implemented in "lightweight_geom_data.cpp"
 			TPoint2D BASE_IMPEXP lightFromPose(const mrpt::poses::CPoint2D &p);	//!< Convert a pose into a light-weight structure (functional form, needed for forward declarations)

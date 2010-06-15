@@ -658,3 +658,4 @@ TEST(Matrices,mahalanobis)
 	t=time.Tac();
 	EXPECT_TRUE(0==accumulate(itDouble(res1.begin(),res2.begin()),itDouble(res1.end(),res2.end()),NumericType(0.0),&compareAndSum<NumericType>));
 }
+

@@ -1040,6 +1040,14 @@ namespace mrpt
 				m.set_unsafe(i+startingRow,nCol, static_cast<typename MAT::value_type>(in[i]));
 		}
 
+		template <class CONTAINER>
+		void loadFromTextFileAsVector(CONTAINER &M, const std::string &file)
+		{
+			mrpt::math::CMatrixTemplateNumeric<double> MM;
+			MM.loadFromTextFile(file);
+			M.resize(MM.size());
+			std::copy(MM.begin(),MM.end(),M.begin());
+		}
 
 	} // end detail
 

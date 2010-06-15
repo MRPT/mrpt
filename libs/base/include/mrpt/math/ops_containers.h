@@ -494,6 +494,38 @@ namespace mrpt
 			if (curRan!=0) m *= (maxVal-minVal)/curRan;
 		}
 
+		namespace detail
+		{
+			template <class CONTAINER>
+			void saveToTextFileAsVector(
+				const CONTAINER &M,
+				const std::string &file,
+				mrpt::math::TMatrixTextFileFormat fileFormat,
+				bool asColumnVector)
+			{
+				using namespace mrpt::system;
+				MRPT_START
+				FILE	*f=os::fopen(file.c_str(),"wt");
+				if (!f) THROW_EXCEPTION_CUSTOM_MSG1("saveToTextFile: Error opening file '%s' for writing a matrix as text.", file.c_str());
+
+				for (typename CONTAINER::const_iterator it=M.begin();it!=M.end();++it)
+				{
+					switch(fileFormat)
+					{
+					case MATRIX_FORMAT_ENG: os::fprintf(f,"%.16e ",static_cast<double>(*it)); break;
+					case MATRIX_FORMAT_FIXED: os::fprintf(f,"%.16f ",static_cast<double>(*it)); break;
+					case MATRIX_FORMAT_INT: os::fprintf(f,"%i ",static_cast<int>(*it)); break;
+					default:
+						THROW_EXCEPTION("Unsupported value for the parameter 'fileFormat'!");
+					};
+					// If saving as a column, save a newline char:
+					if (asColumnVector) os::fprintf(f,"\n");
+				}
+				os::fclose(f);
+				MRPT_END
+			}
+		}
+
 		/** @} Misc ops */
 
 		/** \name Generic container element-wise operations - Mathematical functions
