@@ -75,6 +75,19 @@ namespace slam
 		  */
 		virtual ~CSimpleMap();
 
+		/** Save this object to a .simplemap binary file (compressed with gzip)
+		  * \sa loadFromFile
+		  * \return false on any error.
+		  */
+		bool saveToFile(const std::string &filName) const;
+
+		/** Load the contents of this object from a .simplemap binary file (possibly compressed with gzip)
+		  * \sa saveToFile
+		  * \return false on any error.
+		  */
+		bool loadFromFile(const std::string &filName);
+
+
 		/** Returns the pairs count.
 		  */
 		size_t size() const;
@@ -145,12 +158,27 @@ namespace slam
 		/** Change the coordinate origin of all stored poses, for consistency with future new poses to enter in the system. */
 		void changeCoordinatesOrigin( const CPose3D  &newOrigin );
 
-	private:
 
 		typedef std::pair<CPose3DPDFPtr,CSensoryFramePtr> TPosePDFSensFramePair;
-
 		typedef std::deque<TPosePDFSensFramePair> TPosePDFSensFramePairList;
 
+		typedef TPosePDFSensFramePairList::const_iterator 	const_iterator;
+		typedef TPosePDFSensFramePairList::iterator 		iterator;
+		typedef TPosePDFSensFramePairList::reverse_iterator reverse_iterator;
+		typedef TPosePDFSensFramePairList::const_reverse_iterator const_reverse_iterator;
+
+
+		inline const_iterator begin() const 	{ return m_posesObsPairs.begin(); }
+		inline const_iterator end() const 		{ return m_posesObsPairs.end(); }
+		inline iterator begin() 				{ return m_posesObsPairs.begin(); }
+		inline iterator end() 					{ return m_posesObsPairs.end(); }
+
+		inline const_reverse_iterator rbegin() const 	{ return m_posesObsPairs.rbegin(); }
+		inline const_reverse_iterator rend() const 		{ return m_posesObsPairs.rend(); }
+		inline reverse_iterator rbegin() 				{ return m_posesObsPairs.rbegin(); }
+		inline reverse_iterator rend() 					{ return m_posesObsPairs.rend(); }
+
+	private:
 		/** The stored data */
 		TPosePDFSensFramePairList		m_posesObsPairs;
 

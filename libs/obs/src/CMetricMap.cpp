@@ -37,8 +37,8 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/utils.h>
 
-using namespace mrpt::slam; 
-using namespace mrpt::utils; 
+using namespace mrpt::slam;
+using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CMetricMap, CSerializable, mrpt::slam)
@@ -97,97 +97,7 @@ void  CMetricMap::loadFromProbabilisticPosesAndObservations(const CSimpleMap &sf
 				&robotPose	// At this pose.
 				);
 	}
-
 }
-
-/*---------------------------------------------------------------
-  Aligns an observation to its maximum likelihood pose (in 2D)
-     into this map, by hill climbing in values computed
-	 with "computeObservationLikelihood".
-	\param obs The observation to be aligned
-	\param in_initialEstimatedPose The initial input to the
-			algorithm, an initial "guess" for the observation pose in the map.
-	\param out_ResultingPose The resulting pose from this algorithm
-  ---------------------------------------------------------------*/
-void 	CMetricMap::alignBylikelihoodHillClimbing(
-					CObservation		*obs,
-					CPose2D				in_initialEstimatedPose,
-					CPose2D				&out_ResultingPose )
-{
-	bool			iterate;
-	TPose2D			curEstimation,est[10],estBest;
-	double			likCur,lik[10],likBest;
-	float			Axy,Ap;
-	int				i;
-
-	Axy = 0.01f;
-	Ap  = DEG2RAD(1);
-
-	// Initial value:
-	curEstimation = in_initialEstimatedPose;
-
-	// The main loop:
-	// ---------------------------
-	do
-	{
-		// Current pose:
-		likCur=computeObservationLikelihood(obs,curEstimation);
-
-		// Neighbourhood:
-		est[0]=curEstimation;  est[0].x+=Axy;
-		est[1]=curEstimation;  est[1].x-=Axy;
-		est[2]=curEstimation;  est[2].y+=Axy;
-		est[3]=curEstimation;  est[3].y-=Axy;
-		est[4]=curEstimation;  est[4].phi+=Ap;
-		est[5]=curEstimation;  est[5].phi-=Ap;
-
-		est[6]=curEstimation;  est[6].x+=Axy;est[6].y+=Axy;
-		est[7]=curEstimation;  est[7].x-=Axy;est[7].y+=Axy;
-		est[8]=curEstimation;  est[8].x+=Axy;est[8].y-=Axy;
-		est[9]=curEstimation;  est[9].x+=Axy;est[9].y-=Axy;
-
-
-		// Evaluate and find the best:
-		likBest=-1.0f;
-		for (i=0;i<10;i++)
-		{
-			lik[i] = computeObservationLikelihood(obs,est[i]) - likCur;
-			if (lik[i]>likBest || i==0)
-			{
-				likBest = lik[i];
-				estBest = est[i];
-			}
-		}
-
-		// for the next iteration:
-		// -----------------------------
-		if (likBest>0)
-		{
-			float	gradX = estBest.x - curEstimation.x;
-			float	gradY = estBest.y - curEstimation.y;
-			float	gradP = estBest.phi - curEstimation.phi;
-			float	Alfa  = 1.0f;
-
-			// Follow the incre. gradient of the MI:
-			curEstimation.x+= gradX * Alfa;
-			curEstimation.y+= gradY * Alfa;
-			curEstimation.phi+= gradP * Alfa;
-
-//			curEstimation = estBest;
-			printf("MI_incr=%f\tGrad=(%.02f,%.02f,%.02f)\tNew=(%.03f,%.03f,%.02f)\n",likBest,gradX,gradY,RAD2DEG(gradP),curEstimation.x,curEstimation.y,RAD2DEG(curEstimation.phi));
-		}
-
-
-		// End criterion:
-		// ---------------------------
-		iterate = (likBest>0);
-
-	} while (iterate);
-
-
-	out_ResultingPose = curEstimation;
-}
-
 
 /*---------------------------------------------------------------
 						computeObservationsLikelihood

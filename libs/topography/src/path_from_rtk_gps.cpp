@@ -397,7 +397,7 @@ void  mrpt::topography::path_from_rtk_gps(
 				}
 
 				// Compute the XYZ coordinates of all sensors:
-				CMetricMap::TMatchingPairList corrs;
+				TMatchingPairList corrs;
 				unsigned int k;
 				std::map<std::string, CObservationGPSPtr>::iterator g_it;
 
@@ -418,7 +418,7 @@ void  mrpt::topography::path_from_rtk_gps(
 					XYZidxs[g_it->second->sensorLabel] = k; // Save index correspondence
 
 					// Create the correspondence:
-					corrs.push_back( mrpt::slam::CMetricMap::TMatchingPair(
+					corrs.push_back( TMatchingPair(
 						k,k, 	// Indices
 						g_it->second->sensorPose.x(),g_it->second->sensorPose.y(),g_it->second->sensorPose.z(), // "other"/local coordinates
 						P.x,P.y,P.z // "This"/Global coords

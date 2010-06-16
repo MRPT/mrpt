@@ -65,15 +65,15 @@ namespace mrpt
 				robot pose beliefs, just the raw observation and information about
 				the sensor pose relative to the robot mobile base coordinates origin.
 		 *
-		 *  Note that all metric maps implement this mrpt::utils::CObservable interface, 
+		 *  Note that all metric maps implement this mrpt::utils::CObservable interface,
 		 *   emitting the following events:
 		 *	  - mrpt::slam::mrptEventMetricMapClear: Upon call of the ::clear() method.
 		 *    - mrpt::slam::mrptEventMetricMapInsert: Upon insertion of an observation that effectively modifies the map (e.g. inserting an image into a grid map will NOT raise an event, inserting a laser scan will).
 		 *
 		 * \sa CObservation, CSensoryFrame, CMultiMetricMap
 		 */
-		class OBS_IMPEXP CMetricMap : 
-			public mrpt::utils::CSerializable, 
+		class OBS_IMPEXP CMetricMap :
+			public mrpt::utils::CSerializable,
 			public mrpt::utils::CObservable
 		{
 			// This must be added to any CSerializable derived class:
@@ -83,10 +83,10 @@ namespace mrpt
 			/** Internal method called by clear() */
 			virtual void  internal_clear() = 0;
 
-			/** Hook for each time a "internal_insertObservation" returns "true"  
+			/** Hook for each time a "internal_insertObservation" returns "true"
 			  * This is called automatically from insertObservation() when internal_insertObservation returns true.
 			  */
-			virtual void OnPostSuccesfulInsertObs(const CObservation *) 
+			virtual void OnPostSuccesfulInsertObs(const CObservation *)
 			{
 				// Default: do nothing
 			}
@@ -111,7 +111,16 @@ namespace mrpt
 			 * \sa insertObservation, CSimpleMap
 			 * \exception std::exception Some internal steps in invoked methods can raise exceptions on invalid parameters, etc...
 			 */
-			void  loadFromProbabilisticPosesAndObservations( const CSimpleMap &sfSeq );
+			void  loadFromProbabilisticPosesAndObservations( const CSimpleMap &Map );
+
+			/** Load the map contents from a CSimpleMap object, erasing all previous content of the map.
+			 *  This is automaticed invoking "insertObservation" for each observation at the mean 3D robot pose as
+			 *   given by the "poses::CPosePDF" in the CSimpleMap object.
+			 *
+			 * \sa insertObservation, CSimpleMap
+			 * \exception std::exception Some internal steps in invoked methods can raise exceptions on invalid parameters, etc...
+			 */
+			inline void  loadFromSimpleMap( const CSimpleMap &Map ) {  loadFromProbabilisticPosesAndObservations(Map); }
 
 			/** Insert the observation information into this map. This method must be implemented
 			 *    in derived classes.
@@ -199,17 +208,10 @@ namespace mrpt
 			  */
 			virtual ~CMetricMap();
 
-			/** Aligns an observation to its maximum likelihood pose (in 2D) into this map, by hill climbing in values computed with "computeObservationLikelihood".
-			  * \param obs The observation to be aligned
-			  * \param in_initialEstimatedPose The initial input to the algorithm, an initial "guess" for the observation pose in the map.
-			  * \param out_ResultingPose The resulting pose from this algorithm
-			  */
-			void 	alignBylikelihoodHillClimbing( CObservation *obs, CPose2D	in_initialEstimatedPose, CPose2D	&out_ResultingPose );
-
 			typedef mrpt::utils::TMatchingPair   	TMatchingPair;
 			typedef mrpt::utils::TMatchingPairPtr   TMatchingPairPtr;
 			typedef mrpt::utils::TMatchingPairList 	TMatchingPairList;
-			
+
 
 			/** Computes the matchings between this and another 2D points map.
 			   This includes finding:
@@ -329,7 +331,7 @@ namespace mrpt
 			}
 
 
-			/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it. 
+			/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 			  * Otherwise, return NULL
 			  */
 			virtual const CSimplePointsMap * getAsSimplePointsMap() const { return NULL; }

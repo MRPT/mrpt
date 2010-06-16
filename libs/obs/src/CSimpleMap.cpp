@@ -30,6 +30,7 @@
 
 
 #include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;
@@ -44,7 +45,7 @@ IMPLEMENTS_SERIALIZABLE(CSimpleMap, CSerializable,mrpt::slam)
 // -------------------------------------------------------------------------------
 //  HACK:
 //  The name of this class was previously "CSensFrameProbSequence", so this 'hack' is
-//  needed to allow portability in the old serializations. 
+//  needed to allow portability in the old serializations.
 // -------------------------------------------------------------------------------
 CLASSINIT CSimpleMap::_init_CSensFrameProbSequence( (static_cast<TRuntimeClassId*>(&CSimpleMap::classCSensFrameProbSequence)) );
 TRuntimeClassId CSimpleMap::classCSensFrameProbSequence = {
@@ -52,7 +53,7 @@ TRuntimeClassId CSimpleMap::classCSensFrameProbSequence = {
 		CSimpleMap::CreateObject,
 		&CSimpleMap::_GetBaseClass };
 
-	// 
+	//
 
 
 /*---------------------------------------------------------------
@@ -345,4 +346,40 @@ void CSimpleMap::changeCoordinatesOrigin( const CPose3D  &newOrigin )
 {
 	for (TPosePDFSensFramePairList::iterator it=m_posesObsPairs.begin(); it!=m_posesObsPairs.end(); ++it)
 		it->first->changeCoordinatesReference(newOrigin);
+}
+
+/** Save this object to a .simplemap binary file (compressed with gzip)
+* \sa loadFromFile
+* \return false on any error.
+*/
+bool CSimpleMap::saveToFile(const std::string &filName) const
+{
+	try
+	{
+		mrpt::utils::CFileGZOutputStream  f(filName);
+		f << *this;
+		return true;
+	}
+	catch (...)
+	{
+		return false;
+	}
+}
+
+/** Load the contents of this object from a .simplemap binary file (possibly compressed with gzip)
+* \sa saveToFile
+* \return false on any error.
+*/
+bool CSimpleMap::loadFromFile(const std::string &filName)
+{
+	try
+	{
+		mrpt::utils::CFileGZInputStream  f(filName);
+		f >> *this;
+		return true;
+	}
+	catch (...)
+	{
+		return false;
+	}
 }

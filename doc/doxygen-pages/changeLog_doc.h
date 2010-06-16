@@ -34,7 +34,13 @@
   <a name="0.9.1">
   <h2>Version 0.9.1: (In developement)</h2></a>
 	- <b>Detailed list of changes:</b>
-		- Improved classes:
+		- Changes in classes:
+			- In mrpt::slam::CMetricMap
+				- New method loadFromSimpleMap() (fast inline call to loadFromProbabilisticPosesAndObservations, with a better name!).
+				- The method alignBylikelihoodHillClimbing() has been removed, since it didn't make sense there and was a pretty old and unefficient implementation.
+			- In mrpt::slam::CSimpleMap:
+				- New methods loadFromFile() and saveToFile().
+				- Added STL-like iterators and such.
 			- mrpt::slam::CObservationGPS: Fixed const'ness of the getAsStruct<>() methods.
 			- Absolute pixel coordinates are now permited where previously there were only factors over width/height. See:
 				- mrpt::opengl::COpenGLViewport::setViewportPosition and mrpt::opengl::COpenGLViewport::getViewportPosition.
