@@ -148,7 +148,7 @@ CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
     const wxPoint& pos, const wxSize& size, long style, const wxString& name)
     : CMyGLCanvasBase(parent,id,pos,size,style,name)
 {
-    m_win3D = win3D;
+	m_win3D = win3D;
 	Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnCharCustom);
 }
 
@@ -158,12 +158,9 @@ void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(CDisplayWindow3D *m_
 	{
 		if (ev.AltDown() && ev.GetKeyCode()== MRPTK_RETURN)
 		{
-			static mrpt::system::TTimeStamp m_lastFullScreen = mrpt::system::now();
-
-
-			if (mrpt::system::timeDifference( m_lastFullScreen, mrpt::system::now() )>0.2)
+			if (mrpt::system::timeDifference( m_win3D->m_lastFullScreen, mrpt::system::now() )>0.2)
 			{
-				m_lastFullScreen = mrpt::system::now();
+				m_win3D->m_lastFullScreen = mrpt::system::now();
 				cout << "[CDisplayWindow3D] Switching fullscreen...\n";
 				C3DWindowDialog *win = (C3DWindowDialog*) m_win3D->m_hwnd.get();
 				if (win)
@@ -403,6 +400,8 @@ CDisplayWindow3D::CDisplayWindow3D(
       m_grab_imgs_idx(0),
       m_is_capturing_imgs(false)
 {
+	m_lastFullScreen = mrpt::system::now();
+
 	m_3Dscene = COpenGLScene::Create();
 	CBaseGUIWindow::createWxWindow(initialWindowWidth,initialWindowHeight);
 }

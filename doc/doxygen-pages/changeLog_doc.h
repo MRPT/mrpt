@@ -53,6 +53,7 @@
 			- mrpt::topography::ENUToGeocentric()
 			- mrpt::gui::CMyGLCanvasBase::textBitmapWidth(), a new function to compute the width of a bitmap string.
 		- BUGFIXES:
+			- Fixed ignoring the first time ALT+ENTER is pressed in mrpt::gui::CDisplayWindow3D
 			- Fixed compilation against OpenCV 1.1.0 and 2.0.0.
 
 

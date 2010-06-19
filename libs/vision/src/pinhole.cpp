@@ -228,3 +228,27 @@ void mrpt::vision::pinhole::undistort_points(
 
 	MRPT_END
 }
+
+
+/* -------------------------------------------------------
+				projectPoint_with_distortion
+   ------------------------------------------------------- */
+void mrpt::vision::pinhole::projectPoint_with_distortion(
+	const mrpt::math::TPoint3D  &P,
+	const mrpt::utils::TCamera  &params, 
+	mrpt::vision::TPixelCoordf  &pixel,
+	bool accept_points_behind
+	)
+{
+	// Pinhole model:
+	const double x = P.x/P.z;
+	const double y = P.y/P.z;
+
+	// Radial distortion:
+	const double r2 = square(x)+square(y);
+	const double r4 = square(r2);
+	const double r6 = r2*r4;
+
+	pixel.x = params.cx() + params.fx() *(  x*(1+params.dist[0]*r2+params.dist[1]*r4 + 2*params.dist[2]*x*y+params.dist[3]*(r2+2*square(x))  )  );
+	pixel.y = params.cy() + params.fy() *(  y*(1+params.dist[0]*r2+params.dist[1]*r4 + 2*params.dist[3]*x*y+params.dist[2]*(r2+2*square(y)))  );
+}

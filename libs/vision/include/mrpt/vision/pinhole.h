@@ -29,6 +29,7 @@
 #ifndef mrpt_vision_pinhole_H
 #define mrpt_vision_pinhole_H
 
+#include <mrpt/utils/TCamera.h>
 #include <mrpt/vision/utils.h>
 
 namespace mrpt
@@ -67,7 +68,7 @@ namespace mrpt
 			  *
 			  * \note Points "behind" the camera (which couldn't be physically seen in the real world) are marked with pixel coordinates (-1,-1) to detect them as invalid, unless accept_points_behind is true. In that case they'll be projected normally.
 			  *
-			  * \sa projectPoints_no_distortion
+			  * \sa projectPoint_with_distortion, projectPoints_no_distortion
 			  */
 			void VISION_IMPEXP projectPoints_with_distortion(
 				const std::vector<mrpt::poses::CPoint3D> &in_points_3D,
@@ -75,6 +76,23 @@ namespace mrpt
 				const mrpt::math::CMatrixDouble33 & intrinsicParams,
 				const std::vector<double> & distortionParams,
 				std::vector<mrpt::vision::TPixelCoordf> &projectedPoints,
+				bool accept_points_behind = false
+				);
+
+			/** Project one 3D point into a camera using its calibration matrix and distortion parameters (radial and tangential distortions projection model)
+			  * \param in_point_wrt_cam [IN] The 3D point wrt the camera focus, with +Z=optical axis, +X=righthand in the image plane, +Y=downward in the image plane.
+			  * \param in_cam_params [IN] The camera parameters. See http://www.mrpt.org/Camera_Parameters
+			  * \param out_projectedPoints [OUT] The projected point, in pixel units.
+			  * \param accept_points_behind [IN] See the note below.
+			  *
+			  * \note Points "behind" the camera (which couldn't be physically seen in the real world) are marked with pixel coordinates (-1,-1) to detect them as invalid, unless accept_points_behind is true. In that case they'll be projected normally.
+			  *
+			  * \sa projectPoints_with_distortion
+			  */
+			void VISION_IMPEXP projectPoint_with_distortion(
+				const mrpt::math::TPoint3D  &in_point_wrt_cam,
+				const mrpt::utils::TCamera  &in_cam_params, 
+				mrpt::vision::TPixelCoordf  &out_projectedPoints,
 				bool accept_points_behind = false
 				);
 

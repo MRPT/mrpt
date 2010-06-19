@@ -58,7 +58,7 @@ namespace mrpt
 				intrinsicParams.set_unsafe(0,2,356.2368);
 				intrinsicParams.set_unsafe(1,2,252.9216);
 				intrinsicParams.set_unsafe(2,2,1);
-				for (size_t i=0;i<5;i++)
+				for (size_t i=0;i<dist.static_size;i++)
 					dist[i] = 0;
 			}
 

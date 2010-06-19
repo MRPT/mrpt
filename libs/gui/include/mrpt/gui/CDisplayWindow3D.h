@@ -132,6 +132,8 @@ namespace mrpt
 
 			void  doRender();
 
+			mrpt::system::TTimeStamp 	m_lastFullScreen;
+
 		public:
 			/** Constructor
 			 */
