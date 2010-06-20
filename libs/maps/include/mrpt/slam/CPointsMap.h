@@ -791,6 +791,7 @@ namespace slam
 
 		/** Returns a 3D object representing the map.
 		  *  The color of the points is given by the static variables: COLOR_3DSCENE_R,COLOR_3DSCENE_G,COLOR_3DSCENE_B
+		  * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 		  */
 		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
@@ -852,6 +853,15 @@ namespace slam
 	}; // End of class def.
 
 	} // End of namespace
+
+	namespace global_settings
+	{
+		/** The size of points when exporting with getAs3DObject() (default=3.0)
+		  * Affects to:
+		  *		- mrpt::slam::CPointsMap and all its children classes.
+		  */
+		extern MAPS_IMPEXP float POINTSMAPS_3DOBJECT_POINTSIZE;
+	}
 } // End of namespace
 
 #endif

@@ -40,6 +40,10 @@ using namespace mrpt::poses;
 using namespace mrpt::slam;
 using namespace std;
 
+
+float mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE = 3.0f;
+
+
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap,mrpt::slam)
 
 
@@ -774,13 +778,10 @@ void  CPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 
 	obj->loadFromPointsMap(this);
 	obj->setColor( CPointsMap::COLOR_3DSCENE_R, CPointsMap::COLOR_3DSCENE_G, CPointsMap::COLOR_3DSCENE_B, 1 );
-	obj->setPointSize( 3.0 );
+	obj->setPointSize( mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE );
 	obj->enableColorFromZ(true);
 
 	obj->setGradientColors( TColorf(0.0,0,0), TColorf(CPointsMap::COLOR_3DSCENE_R,CPointsMap::COLOR_3DSCENE_G,CPointsMap::COLOR_3DSCENE_B));
-
-	// Debug!
-	//obj->setGradientColors( TColorf(0,0,0), TColorf(0.9,0.9,0.9) );
 
 	outObj->insert(obj);
 }

@@ -174,11 +174,11 @@ namespace mrpt
 			  */
 			void  applyDeletionMask( std::vector<bool> &mask );
 
-			/** Adds a new point given its coordinates and color.
+			/** Adds a new point given its coordinates and color (colors range is [0,1])
 			  */
 			void  insertPoint( float x, float y, float z, float R, float G, float B );
 
-			/** Retrieves a point and its color
+			/** Retrieves a point and its color (colors range is [0,1])
 			  */
 			virtual void  getPoint( size_t index, float &x, float &y, float &z, float &R, float &G, float &B ) const;
 
@@ -203,6 +203,7 @@ namespace mrpt
 			void setAllPoints(const vector_float &X,const vector_float &Y);
 
 			/** Override of the default 3D scene builder to account for the individual points' color.
+			  * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 			  */
 			virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 

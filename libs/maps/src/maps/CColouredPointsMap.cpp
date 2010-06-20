@@ -1020,6 +1020,23 @@ void  CColouredPointsMap::insertPoint( float x, float y, float z )
 /*---------------------------------------------------------------
 						insertPoint
  ---------------------------------------------------------------*/
+void  CColouredPointsMap::insertPoint( float x, float y, float z, float R, float G, float B )
+{
+	this->x.push_back(x);
+	this->y.push_back(y);
+	this->z.push_back(z);
+	pointWeight.push_back(1);
+	m_color_R.push_back(R);
+	m_color_G.push_back(G);
+	m_color_B.push_back(B);
+
+	m_largestDistanceFromOriginIsUpdated  = false;
+	m_KDTreeDataIsUpdated				 = false;
+}
+
+/*---------------------------------------------------------------
+						insertPoint
+ ---------------------------------------------------------------*/
 void  CColouredPointsMap::insertPoint( CPoint3D p )
 {
 	x.push_back(p.x());
@@ -1305,7 +1322,7 @@ void CColouredPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj )
 	obj->loadFromPointsMap(this);
 	obj->setColor(1,1,1,  1.0);
 
-	obj->setPointSize( 3.0f );
+	obj->setPointSize( mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE );
 
 	outObj->insert(obj);
 }
