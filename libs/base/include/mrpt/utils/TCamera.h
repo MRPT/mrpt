@@ -43,6 +43,7 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( TCamera, mrpt::utils::CSerializable )
 
 		/** Structure to hold the parameters of a pinhole camera model.
+		  *  The parameters obtained for one camera resolution can be used for any other resolution by menas of the method TCamera::scaleToResolution()
 		  *
 		  * \sa mrpt::vision::CCamModel, the application <a href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui</a> for calibrating a camera
 		 */
@@ -71,6 +72,10 @@ namespace mrpt
 			double  			focalLengthMeters;  //!< The focal length of the camera, in meters (can be used among 'intrinsicParams' to determine the pixel size).
 
 			/** @} */
+
+			/** Rescale all the parameters for a new camera resolution (it raises an exception if the aspect ratio is modified, which is not permitted).
+			  */
+			void scaleToResolution(uint32_t new_ncols, uint32_t new_nrows);
 
 			/**  Save as a config block:
 			  *  \code

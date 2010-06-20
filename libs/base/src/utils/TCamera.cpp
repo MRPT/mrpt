@@ -142,3 +142,29 @@ void TCamera::loadFromConfigFile(const std::string &section,  const mrpt::utils:
 	focalLengthMeters = cfg.read_double(section,"focal_length",0.002, false /* optional value */ );
 
 }
+
+/** Rescale all the parameters for a new camera resolution (it raises an exception if the aspect ratio is modified, which is not permitted).
+  */
+void TCamera::scaleToResolution(uint32_t new_ncols, uint32_t new_nrows)
+{
+	ASSERT_(new_nrows>0 && new_ncols>0)
+
+	const double prev_aspect_ratio = ncols/double(nrows);
+	const double new_aspect_ratio  = new_ncols/double(new_nrows);
+
+	ASSERT_(std::abs(prev_aspect_ratio-new_aspect_ratio)<1e-3 )
+
+	const double K = new_ncols / double(ncols);
+
+	ncols = new_ncols;
+	nrows = new_nrows;
+
+	// fx fy cx cy
+	intrinsicParams(0,0)*=K;
+	intrinsicParams(1,1)*=K;
+	intrinsicParams(0,2)*=K;
+	intrinsicParams(1,2)*=K;
+
+	// distortion params: unmodified.
+
+}

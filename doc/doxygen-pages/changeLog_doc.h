@@ -35,6 +35,7 @@
   <h2>Version 0.9.1: (In developement)</h2></a>
 	- <b>Detailed list of changes:</b>
 		- Changes in classes:
+			- New method TCamera::scaleToResolution() for scale camera calibration params for different resolutions.
 			- In mrpt::slam::CMetricMap
 				- New method loadFromSimpleMap() (fast inline call to loadFromProbabilisticPosesAndObservations, with a better name!).
 				- The method alignBylikelihoodHillClimbing() has been removed, since it didn't make sense there and was a pretty old and unefficient implementation.
