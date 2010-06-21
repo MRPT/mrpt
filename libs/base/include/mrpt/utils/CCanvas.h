@@ -306,7 +306,7 @@ namespace mrpt
 				cov2D->eigenVectors(eigVec,eigVal);
 
 				eigVal.Sqrt();
-				MATRIX2X2	M(UNINITIALIZED_MATRIX);
+				MATRIX2X2	M;
 				M.multiply_ABt(eigVal, eigVec);
 
 				// Compute the points of the 2D ellipse:
