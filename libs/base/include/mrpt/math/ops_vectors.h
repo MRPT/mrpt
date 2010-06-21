@@ -119,6 +119,29 @@ namespace mrpt
 			return out;
 		}
 
+		/** Binary dump of a CArrayNumeric<T,N> to a stream. */
+		template <typename T,size_t N>
+		mrpt::utils::CStream& operator << (mrpt::utils::CStream& ostrm, const CArrayNumeric<T,N>& a)
+		{
+			ostrm << mrpt::utils::TTypeName< CArrayNumeric<T,N> >::get();
+			if (N) ostrm.WriteBuffer(&a[0],N*sizeof(T));
+			return ostrm;
+		}
+
+		/** Binary read of a CArrayNumeric<T,N> from a stream. */
+		template <typename T,size_t N>
+		mrpt::utils::CStream& operator >> (mrpt::utils::CStream& istrm, CArrayNumeric<T,N>& a)
+		{
+			static const std::string namExpect = mrpt::utils::TTypeName< CArrayNumeric<T,N> >::get();
+			std::string nam;
+			istrm >> nam;
+			ASSERTMSG_(nam==namExpect, format("Error deserializing: expected '%s', got '%s'", namExpect.c_str(),nam.c_str() ) )
+			if (N) istrm.ReadBuffer(&a[0],N*sizeof(T));
+			return istrm;
+		}
+
+
+
 
 	} // End of math namespace
 

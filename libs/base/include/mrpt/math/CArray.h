@@ -477,7 +477,6 @@ namespace math
 		return ostrm;
 	}
 
-
 	/** @} */
 
 
@@ -486,11 +485,11 @@ namespace math
 	namespace utils
 	{
 		// Extensions to mrpt::utils::TTypeName for matrices:
-		template<typename T,size_t N> struct TTypeName <mrpt::math::CArrayNumeric<T,N> > { 
+		template<typename T,size_t N> struct TTypeName <mrpt::math::CArrayNumeric<T,N> > {
 			static std::string get() { return mrpt::format("CArrayNumeric<%s,%u>",TTypeName<T>::get().c_str(),static_cast<unsigned int>(N)); } };
-		template<size_t N> struct TTypeName <mrpt::math::CArrayDouble<N> > { 
+		template<size_t N> struct TTypeName <mrpt::math::CArrayDouble<N> > {
 			static std::string get() { return mrpt::format("CArrayNumeric<double,%u>",static_cast<unsigned int>(N)); } };
-		template<size_t N> struct TTypeName <mrpt::math::CArrayFloat<N> > { 
+		template<size_t N> struct TTypeName <mrpt::math::CArrayFloat<N> > {
 			static std::string get() { return mrpt::format("CArrayNumeric<float,%u>",static_cast<unsigned int>(N)); } };
 	}
 

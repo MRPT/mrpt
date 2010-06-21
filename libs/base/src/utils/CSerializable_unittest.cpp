@@ -134,3 +134,26 @@ TEST(SerializeTestBase, WriteReadToMem)
 	}
 }
 
+// Create a set of classes, then serialize and deserialize to test possible bugs:
+TEST(SerializeTestBase, CArray)
+{
+	try
+	{
+		CMemoryStream  buf;
+		CArrayDouble<5>  a, b;
+		for (size_t i=0;i<a.size();i++) a[i] = i+10;
+
+		buf << a;
+		buf.Seek(0);
+		buf >> b;
+
+		EXPECT_TRUE(a==b);
+	}
+	catch(std::exception &e)
+	{
+		GTEST_FAIL() <<
+			"Exception:\n" << e.what() << endl;
+	}
+
+}
+

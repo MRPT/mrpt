@@ -51,6 +51,7 @@
 				- loadFromTextFileAsVector
 				- saveToTextFileAsVector
 		- New functions:
+			- Added << and >> operators to mrpt::math::CArrayNumeric<> classes to dump/read them with MRPT's mrpt::utils::CStream streams.
 			- mrpt::topography::ENUToGeocentric()
 			- mrpt::gui::CMyGLCanvasBase::textBitmapWidth(), a new function to compute the width of a bitmap string.
 		- Global settings:
