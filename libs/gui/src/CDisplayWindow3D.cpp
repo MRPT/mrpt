@@ -347,7 +347,9 @@ void C3DWindowDialog::OnMenuAbout(wxCommandEvent& event)
 
 void C3DWindowDialog::OnChar(wxKeyEvent& ev)
 {
+#if MRPT_HAS_OPENGL_GLUT
 	CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(m_win3D, ev);
+#endif
 }
 
 void C3DWindowDialog::OnResize(wxSizeEvent& event)

@@ -57,6 +57,7 @@
 		- Global settings:
 			- New global variable mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 		- BUGFIXES:
+			- Fixed build error when compiling without OpenGL/GLUT support.
 			- The method mrpt::slam::CColouredPointsMap::insertPoint( float x, float y, float z, float R, float G, float B ) was declared but not defined.
 			- Fixed ignoring the first time ALT+ENTER is pressed in mrpt::gui::CDisplayWindow3D
 			- Fixed compilation against OpenCV 1.1.0 and 2.0.0.
