@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 		string	port="/dev/ttyUSB0";
 #endif
 
-		int 	port_baud = 9600;
+		int 	port_baud = 115200;
 
 		cout << "Usage: " << argv[0] << " [SERIAL_PORT [BAUD_RATE] ]" << endl;
 
