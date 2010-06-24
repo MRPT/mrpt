@@ -229,6 +229,14 @@ void  CRangeBearingKFSLAM2D::OnTransitionModel(
 {
 	MRPT_START
 
+	// Do not update the vehicle pose & its covariance until we have some landmakrs in the map,
+	// otherwise, we are imposing a lower bound to the best uncertainty from now on:
+	if (m_xkk.size() == get_vehicle_size() )
+	{
+		out_skipPrediction = true;
+		return;
+	}
+
 	CPose2D  robotPose(xv[0],xv[1],xv[2]);
 	CPose2D  odoIncrement(u[0],u[1],u[2]);
 
@@ -238,15 +246,6 @@ void  CRangeBearingKFSLAM2D::OnTransitionModel(
 	xv[0]=robotPose.x();
 	xv[1]=robotPose.y();
 	xv[2]=robotPose.phi();
-
-	// Do not update the vehicle pose & its covariance until we have some landmakrs in the map,
-	// otherwise, we are imposing a lower bound to the best uncertainty from now on:
-	if (m_xkk.size() == get_vehicle_size() )
-	{
-		out_skipPrediction = true;
-		return;
-	}
-
 
 	MRPT_END
 }

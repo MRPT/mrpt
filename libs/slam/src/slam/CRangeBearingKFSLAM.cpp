@@ -295,6 +295,13 @@ void  CRangeBearingKFSLAM::OnTransitionModel(
 {
 	MRPT_START
 
+	// Do not update the vehicle pose & its covariance until we have some landmarks in the map,
+	// otherwise, we are imposing a lower bound to the best uncertainty from now on:
+	if (m_xkk.size() == get_vehicle_size() )
+	{
+		out_skipPrediction = true;
+	}
+
 	// Current pose: copy xyz+quat
 	CPose3DQuat	robotPose = getCurrentRobotPoseMean();
 
@@ -308,13 +315,6 @@ void  CRangeBearingKFSLAM::OnTransitionModel(
 	// Output:
 	for (size_t i=0;i<xv.static_size;i++)
 		xv[i] = robotPose[i];
-
-	// Do not update the vehicle pose & its covariance until we have some landmarks in the map,
-	// otherwise, we are imposing a lower bound to the best uncertainty from now on:
-	if (m_xkk.size() == get_vehicle_size() )
-	{
-		out_skipPrediction = true;
-	}
 
 	MRPT_END
 }
