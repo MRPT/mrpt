@@ -248,11 +248,14 @@ namespace slam
 			/** [KF3 algortihm] id for the enose used to generate this map (must be < gasGrid_count)
 			  */
 			uint16_t enose_id;
-
-			/** [KF3 algortihm] true / 1= Save generated gas map as a log file
+			
+			/** [useMOSmodel] If true save generated gas map as a log file
 			  */
 			bool save_maplog;
-
+	
+			/** [useMOSmodel] If true use MOS model before map algorithm
+				*/
+			bool useMOSmodel;
 
 		} insertionOptions;
 
@@ -322,22 +325,23 @@ namespace slam
 
 	protected:
 
-		/** [KF3] Ofstream to save to file option "save_maplog"
+		/** [useMOSmodel] Ofstream to save to file option "save_maplog"
 		  */
 		std::ofstream			*m_debug_dump;
 		
-		/** [KF3] Decimate value for oversampled enose readings
+		/** [useMOSmodel] Decimate value for oversampled enose readings
 		  */
 		uint16_t				decimate_count;
 
-		/** [KF3] To force e-nose samples to have fixed time increments
+		/** [useMOSmodel] To force e-nose samples to have fixed time increments
 		  */
 		double					fixed_incT;
 		bool					first_incT;
 
 		/** The map representation type of this map.
 		  */
-		TMapRepresentation		m_mapType;
+		TMapRepresentation		m_mapType;		
+		
 
 		/** The whole covariance matrix, used for the Kalman Filter map representation.
 		  */
@@ -367,15 +371,7 @@ namespace slam
 		void  insertObservation_KF2(
 			float			normReading,
 			const CPose3D	&sensorPose );
-
-		/** The implementation of "insertObservation" for the Efficient Kalman Filter map model with estimation of real gas concentration using sensor model.
-		  * \param normReading Is a [0,1] normalized concentration reading.
-		  * \param sensorPose Is the sensor pose
-		  */
-		void  insertObservation_KF3(
-			float			normReading,
-			CPose3D	&sensorPose,
-			mrpt::system::TTimeStamp	timestamp);
+		
 
 		/** Estimates the gas concentration based on readings and sensor model
 		  */
