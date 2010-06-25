@@ -347,7 +347,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxMenuItem* MenuItem33;
 	wxMenuItem* MenuItem26;
 	wxMenuItem* MenuItem25;
-	wxMenuItem* MenuItem80;
 	wxMenuItem* MenuItem2;
 	wxFlexGridSizer* FlexGridSizer3;
 	wxMenuItem* MenuItem55;
@@ -376,8 +375,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxMenu* Menu2;
 	wxMenuItem* MenuItem18;
 	wxMenuItem* MenuItem19;
-
-	Create(parent, id, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("id"));
+	
+	Create(parent, wxID_ANY, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("wxID_ANY"));
 	SetClientSize(wxSize(700,500));
 	{
 		wxIcon FrameIcon;
@@ -760,7 +759,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	mnuTree.Append(ID_MENUITEM48, _("Add action"), MenuItem45, wxEmptyString);
 	timAutoLoad.SetOwner(this, ID_TIMER1);
 	timAutoLoad.Start(50, true);
-
+	
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnbtnEditCommentsClick1);
 	Connect(ID_NOTEBOOK1,wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,(wxObjectEventFunction)&xRawLogViewerFrame::OnNotebook1PageChanging);
 	Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnFileOpen);
@@ -2198,6 +2197,45 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 														this->m_gl3DRangeScan->Refresh();
 													#endif
+
+													}
+													else
+													if ( classID  == CLASS_ID(CObservationStereoImagesFeatures) )
+													{
+														// ----------------------------------------------------------------------
+														//              CObservationStereoImagesFeatures
+														// ----------------------------------------------------------------------
+														CObservationStereoImagesFeaturesPtr obs = CObservationStereoImagesFeaturesPtr( sel_obj );
+														curSelectedObservation = CObservationPtr( sel_obj );
+
+														cout << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
+														cout << obs->cameraPoseOnRobot.getHomogeneousMatrixVal()
+														<< obs->cameraPoseOnRobot << endl;
+
+														cout << "Homogeneous matrix for the RIGHT camera's 3D pose, relative to LEFT camera reference system:\n";
+														cout << obs->rightCameraPose.getHomogeneousMatrixVal()
+														<< obs->rightCameraPose << endl;
+
+														cout << "Intrinsic parameters matrix for the LEFT camera:"<< endl;
+														CMatrixDouble33 aux = obs->cameraLeft.intrinsicParams;
+														cout << aux.inMatlabFormat() << endl << aux << endl;
+
+														cout << "Distortion parameters vector for the LEFT camera:"<< endl << "[ ";
+														for( unsigned int i = 0; i < 5; ++i )
+															cout << obs->cameraLeft.dist[i] << " ";
+														cout << "]" << endl;
+
+														cout << "Intrinsic parameters matrix for the RIGHT camera:"<< endl;
+														aux = obs->cameraRight.intrinsicParams;
+														cout << aux.inMatlabFormat() << endl << aux << endl;
+
+														cout << "Distortion parameters vector for the RIGHT camera:"<< endl << "[ ";
+														for( unsigned int i = 0; i < 5; ++i )
+															cout << obs->cameraRight.dist[i] << " ";
+														cout << "]"<< endl;
+
+														cout << endl << format(" Image size: %ux%u pixels\n", (unsigned int)obs->cameraLeft.ncols, (unsigned int)obs->cameraLeft.nrows );
+														cout << endl << format(" Number of features in images: %u\n", (unsigned int)obs->featsLeft.size() );
 
 													}
 													else

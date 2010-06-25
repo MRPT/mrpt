@@ -39,9 +39,9 @@ IF(BUILD_APPs_SIMUL)
 	add_subdirectory(simul-beacons)
 	add_subdirectory(simul-landmarks)
 	add_subdirectory(simul-gridmap)
+	add_subdirectory(simul-stereo-images-features)
 	add_subdirectory(GridmapNavSimul)
 ENDIF(BUILD_APPs_SIMUL)
-
 
 add_subdirectory(grid-matching)
 add_subdirectory(pf-localization)

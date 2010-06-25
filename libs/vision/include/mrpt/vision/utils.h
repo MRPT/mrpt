@@ -546,8 +546,8 @@ namespace mrpt
 
 			/** Converts a stereo images observation into a bearing and range observation.
 				\param inObs	[IN]	The input stereo images observation.
-				\param outObs	[OUT]	The output bearing and range observation (including covariances).
 				\param sg		[IN]	The sigma of the row, col, and disparity variables involved in the feature detection.
+				\param outObs	[OUT]	The output bearing and range observation (including covariances).
 			*/
 			void VISION_IMPEXP StereoObs2BRObs(
 				const CObservationStereoImages &inObs,

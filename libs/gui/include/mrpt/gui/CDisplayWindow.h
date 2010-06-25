@@ -153,6 +153,33 @@ namespace mrpt
 				MRPT_END
 			}
 
+			/** Show a pair of given color or grayscale images (put together) on the window and print a set of matches on them.
+			 *  It adapts the size of the window to that of the image.
+			 *  FEATURELIST can be of the class: mrpt::vision::CFeatureList
+			 */
+			template <class FEATURELIST>
+			void  showImagesAndMatchedPoints( const	CImage &img1, const	CImage &img2, const FEATURELIST &leftList, const FEATURELIST &rightList, const TColor &color = TColor::red )
+			{
+				MRPT_START
+
+				CImage imgColor;
+
+				//img1.colorImage( imgColor ); // Create a colorimage
+				ASSERT_( leftList.size() == rightList.size() );
+				imgColor.joinImagesHorz( img1, img2 );
+
+				unsigned int w = img1.getWidth();
+
+				for( typename FEATURELIST::const_iterator iL = leftList.begin(), iR = rightList.begin(); iL != leftList.end(); ++iL, ++iR )
+				{
+					imgColor.drawCircle( round( (*iL)->x ), round( (*iL)->y ), 4, color );
+					imgColor.drawCircle( round( (*iR)->x + w ), round( (*iR)->y ), 4, color );
+					imgColor.line( round( (*iL)->x ), round( (*iL)->y ), round( (*iR)->x + w ), round( (*iR)->y ), color );
+				}
+				showImage(imgColor);
+
+				MRPT_END
+			}
 
 			/** Show a given color or grayscale image on the window.
 			 *  It adapts the size of the window to that of the image.

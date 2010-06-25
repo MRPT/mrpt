@@ -411,6 +411,7 @@ private:
     wxMenuItem* MenuItem40;
     wxNotebook* Notebook1;
     wxPanel* pn_CObservationGasSensors;
+    wxMenuItem* MenuItem80;
     wxToolBarToolBase* ToolBarItem3;
     wxBoxSizer* BoxSizer8;
     wxMenuItem* MenuItem54;

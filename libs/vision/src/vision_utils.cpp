@@ -2941,8 +2941,11 @@ void vision::StereoObs2BRObs( const CObservationVisualLandmarks &inObs, CObserva
 	{
 		CObservationBearingRange::TMeasurement m;
 		m.range			= sqrt( square(itCloud->pose_mean.x) + square(itCloud->pose_mean.y) + square(itCloud->pose_mean.z) );
-		m.yaw			= atan2( itCloud->pose_mean.x, itCloud->pose_mean.z );
-		m.pitch			= atan2( itCloud->pose_mean.y, itCloud->pose_mean.z );
+		//m.yaw			= atan2( itCloud->pose_mean.x, itCloud->pose_mean.z );
+		//m.pitch		= atan2( itCloud->pose_mean.y, itCloud->pose_mean.z );
+		// The reference system is assumed to be that typical robot operation: +X forward and +Z upwards.
+		m.yaw			= atan2( itCloud->pose_mean.y, itCloud->pose_mean.x );
+		m.pitch			= -sin( itCloud->pose_mean.z/m.range );
 		m.landmarkID	= itCloud->ID;
 
 		outObs.sensedData.push_back( m );

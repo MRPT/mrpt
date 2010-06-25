@@ -85,7 +85,7 @@ namespace mrpt
 			  *  cy         = CY
 			  *  fx         = FX
 			  *  fy         = FY
-			  *  dist       = [K1 K2 T1 T2 T3]
+			  *  dist       = [K1 K2 T1 T2 K3]
 			  *  focal_length = FOCAL_LENGTH
 			  *  \endcode
 			  */
@@ -100,7 +100,7 @@ namespace mrpt
 			  *  cy         = CY
 			  *  fx         = FX
 			  *  fy         = FY
-			  *  dist       = [K1 K2 T1 T2 T3]
+			  *  dist       = [K1 K2 T1 T2 K3]
 			  *  focal_length = FOCAL_LENGTH  [optional field]
 			  *  \endcode
 			  *  \exception std::exception on missing fields
@@ -152,13 +152,13 @@ namespace mrpt
 
 			/** Set the vector of distortion params of the camera from the individual values of the distortion coefficients
 			  */
-			inline void setDistortionParamsFromValues( double k1, double k2, double p1, double p2, double p3 = 0 )
+			inline void setDistortionParamsFromValues( double k1, double k2, double p1, double p2, double k3 = 0 )
 			{
 				dist[0] = k1;
 				dist[1] = k2;
 				dist[2] = p1;
 				dist[3] = p2;
-				dist[4] = p3;
+				dist[4] = k3;
 			}
 
 			/** Get the value of the principal point x-coordinate (in pixels).
@@ -188,7 +188,7 @@ namespace mrpt
 			inline double p2() const { return dist[3]; }
 			/** Get the value of the p3 distortion parameter.
 			  */
-			inline double p3() const { return dist[4]; }
+			inline double k3() const { return dist[4]; }
 
 		};
 

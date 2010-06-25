@@ -28,7 +28,7 @@
 
 #include <mrpt/obs.h>   // Precompiled headers
 
-#include <mrpt/slam/CObservationStereoImages.h>
+//#include <mrpt/slam/CObservationStereoImages.h>
 //#include <mrpt/slam/CLandmarksMap.h>
 
 using namespace mrpt::slam; 

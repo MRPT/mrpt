@@ -453,6 +453,8 @@ namespace mrpt
 		/** @name Typedefs for common sizes
 			@{ */
 		typedef CMatrixFixedNumeric<double,2,2> CMatrixDouble22;
+		typedef CMatrixFixedNumeric<double,2,3> CMatrixDouble23;
+		typedef CMatrixFixedNumeric<double,3,2> CMatrixDouble32;
 		typedef CMatrixFixedNumeric<double,3,3> CMatrixDouble33;
 		typedef CMatrixFixedNumeric<double,4,4> CMatrixDouble44;
 		typedef CMatrixFixedNumeric<double,6,6> CMatrixDouble66;
@@ -469,6 +471,8 @@ namespace mrpt
 		typedef CMatrixFixedNumeric<double,1,5> CMatrixDouble15;
 
 		typedef CMatrixFixedNumeric<float,2,2> CMatrixFloat22;
+		typedef CMatrixFixedNumeric<float,2,3> CMatrixFloat23;
+		typedef CMatrixFixedNumeric<float,3,2> CMatrixFloat32;
 		typedef CMatrixFixedNumeric<float,3,3> CMatrixFloat33;
 		typedef CMatrixFixedNumeric<float,4,4> CMatrixFloat44;
 		typedef CMatrixFixedNumeric<float,6,6> CMatrixFloat66;
