@@ -158,7 +158,7 @@ namespace mrpt
 				v.x_2=square(v.x_);
 				v.y_2=square(v.y_);
 				v.R=v.x_2+v.y_2;
-				v.K=1+v.R*(cam.k1()+v.R*(cam.k2()+v.R*cam.p3()));
+				v.K=1+v.R*(cam.k1()+v.R*(cam.k2()+v.R*cam.k3()));
 				T xy=v.x_*v.y_,p1=cam.p1(),p2=cam.p2();
 				v.x__=v.x_*v.K+2*p1*xy+p2*(3*v.x_2+v.y_2);
 				v.y__=v.y_*v.K+p1*(v.x_2+3*v.y_2)+2*p2*xy;
@@ -186,7 +186,7 @@ namespace mrpt
 				T x_2=square(x_);
 				//First two jacobians...
 				CMatrixFixedNumeric<T,3,3> J21;
-				T tmpK=2*(cam.k1()+tmp.R*(2*cam.k2()+3*tmp.R*cam.p3()));
+				T tmpK=2*(cam.k1()+tmp.R*(2*cam.k2()+3*tmp.R*cam.k3()));
 				T tmpKx=tmpK*tmp.x_;
 				T tmpKy=tmpK*tmp.y_;
 				T yx2=-pIn[1]*x_2;
@@ -254,12 +254,12 @@ namespace mrpt
 				static CMatrixFixedNumeric<double,2,2> J1(firstInverseJacobian());
 				static CMatrixFixedNumeric<double,4,2> J2(secondInverseJacobian());
 				static CMatrixFixedNumeric<double,3,4> J3(thirdInverseJacobian());
-				static CMatrixFixedNumeric<double,2,3> J4;	//This is not initialized in a special way, although declaring it 
+				static CMatrixFixedNumeric<double,2,3> J4;	//This is not initialized in a special way, although declaring it
 				CArray<double,4> tmp1;
 				CArray<double,2> tmp2;	//This would be a CArray<double,3>, but to avoid copying, we let "R2" lie in tmp1.
 				//Camera Parameters
 				double cx=cam.cx(),cy=cam.cy(),ifx=1/cam.fx(),ify=1/cam.fy();
-				double K1=cam.k1(),K2=cam.k2(),p1=cam.p1(),p2=cam.p2(),K3=cam.p3();
+				double K1=cam.k1(),K2=cam.k2(),p1=cam.p1(),p2=cam.p2(),K3=cam.k3();
 				//First step: intrinsic matrix.
 				tmp1[0]=(pIn[0]-cx)*ifx;
 				tmp1[1]=(pIn[1]-cy)*ify;

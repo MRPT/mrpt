@@ -2924,7 +2924,7 @@ void CImage::joinImagesHorz( const CImage &im1, const CImage &im2 )
 	cvSetImageROI( out, cvRect( 0, 0, out->width, out->height ) );
 
 	IplImage *out2;
-	if( _im1->nChannels != this->getChannelCount() )	// Convert the input to the output channel format
+	if( (int)_im1->nChannels != (int)this->getChannelCount() )	// Convert the input to the output channel format
 	{
 		out2 = cvCreateImage( cvSize( _im1->width + _im2->width, _im1->height ), _im1->depth, this->getChannelCount() );
 		cvCvtColor( out, out2, CV_GRAY2BGR );
