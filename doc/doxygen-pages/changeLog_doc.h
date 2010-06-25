@@ -50,6 +50,7 @@
 			- All MRPT containers (mrpt::vector_double, all kind of matrices, arrays, etc) now have two new methods for saving to and loading from text files "as vectors", i.e. even for matrices, all the elements are saved/loaded as a simple sequence:
 				- loadFromTextFileAsVector
 				- saveToTextFileAsVector
+			- mrpt::hwdrivers::CActivMediaRobotBase can now transparently open serial ports >COM4 in Windows without the prefix "\\.\" (it's added automatically if needed).
 		- New functions:
 			- Added << and >> operators to mrpt::math::CArrayNumeric<> classes to dump/read them with MRPT's mrpt::utils::CStream streams.
 			- mrpt::topography::ENUToGeocentric()

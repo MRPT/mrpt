@@ -36,12 +36,6 @@
 #include <mrpt/slam/CObservationOdometry.h>
 
 #if MRPT_HAS_ARIA
-	// Specific definitions for ARIA, before including Aria.h:
-	// -------------------------------------------------------------
-//	#if defined(_MSC_VER) && !defined(MRPT_BUILT_AS_DLL)
-//		#define ARIA_STATIC
-//	#endif
-
 	#include "Aria.h"
 #endif
 
@@ -162,12 +156,21 @@ void CActivMediaRobotBase::initialize()
 	char		strBaud[100];
 	os::sprintf(strBaud,sizeof(strBaud),"%i", m_robotBaud);
 
-	char		strCOM[100];
-	os::sprintf(strCOM,sizeof(strCOM),"%s", m_com_port.c_str());
+
+	std::string strCOM = m_com_port;
+#ifdef MRPT_OS_WINDOWS
+    // Is it COMX, X>4? ->  "\\.\COMX"
+    if ( tolower( strCOM[0]) =='c' && tolower( strCOM[1]) =='o' && tolower( strCOM[2]) =='m' )
+    {
+        // Need to add "\\.\"?
+        if (strCOM.size()>4 || strCOM[3]>'4')
+			strCOM= std::string("\\\\.\\") + strCOM;
+    }
+#endif
 
 	args[0] = (char*)"mrpt";
-
-	args[1] = (char*)"-robotPort";	args[2] = strCOM;
+	
+	args[1] = (char*)"-robotPort";	args[2] = strCOM.c_str();
 	args[3] = (char*)"-robotBaud"; args[4] = strBaud;
 	args[5] = NULL;
 	nArgs = 5;
