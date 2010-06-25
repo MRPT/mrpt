@@ -156,7 +156,6 @@ void CActivMediaRobotBase::initialize()
 	char		strBaud[100];
 	os::sprintf(strBaud,sizeof(strBaud),"%i", m_robotBaud);
 
-
 	std::string strCOM = m_com_port;
 #ifdef MRPT_OS_WINDOWS
     // Is it COMX, X>4? ->  "\\.\COMX"
@@ -168,9 +167,11 @@ void CActivMediaRobotBase::initialize()
     }
 #endif
 
+	char strCOM2[100];
+	strcpy( strCOM2, strCOM.c_str() );
+
 	args[0] = (char*)"mrpt";
-	
-	args[1] = (char*)"-robotPort";	args[2] = strCOM.c_str();
+	args[1] = (char*)"-robotPort";	args[2] = strCOM2;
 	args[3] = (char*)"-robotBaud"; args[4] = strBaud;
 	args[5] = NULL;
 	nArgs = 5;
