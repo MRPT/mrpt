@@ -8,9 +8,11 @@ add_subdirectory(topography)
 add_subdirectory(obs)
 add_subdirectory(hwdrivers)
 add_subdirectory(maps)
+
+add_subdirectory(interfaces)
+
 add_subdirectory(vision)
 add_subdirectory(slam)
-
 add_subdirectory(reactivenav)
 add_subdirectory(hmtslam)
 

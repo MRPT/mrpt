@@ -1937,7 +1937,7 @@ double	 CPointsMap::computeObservationLikelihood(
 		const CObservation2DRangeScan *o = static_cast<const CObservation2DRangeScan*>(obs);
 
 		// Build (if not done before) the points map representation of this observation:
-		const CPointsMap *scanPoints = o->getAuxPointsMap<CPointsMap>();
+		const CPointsMap *scanPoints = o->buildAuxPointsMap<CPointsMap>();
 
 		float		sumSqrDist=0;
 

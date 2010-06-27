@@ -33,6 +33,8 @@
 
   <a name="0.9.1">
   <h2>Version 0.9.1: (In developement)</h2></a>
+	- <b>Most important changes:</b>
+		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.
 	- <b>Detailed list of changes:</b>
 		- Changes in classes:
 			- New method TCamera::scaleToResolution() for scale camera calibration params for different resolutions.
@@ -55,9 +57,12 @@
 			- Added << and >> operators to mrpt::math::CArrayNumeric<> classes to dump/read them with MRPT's mrpt::utils::CStream streams.
 			- mrpt::topography::ENUToGeocentric()
 			- mrpt::gui::CMyGLCanvasBase::textBitmapWidth(), a new function to compute the width of a bitmap string.
+		- New classes:
+			- mrpt::slam::CObservationStereoImagesFeatures to hold the minimum information needed by a stereo SLAM back-end algorithm.
 		- Global settings:
 			- New global variable mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 		- BUGFIXES:
+			- <b>CRITICAL REGRESION FIXED</b>: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.
 			- mrpt::slam::COccupancyGridMap2D::TLikelihoodOptions::loadFromConfigFile ignored the "section" name for loading "likelihoodMethod" (reported by Thomas Ciarfuglia, Università di Perugia).
 			- Fixed build error when compiling without OpenGL/GLUT support.
 			- The method mrpt::slam::CColouredPointsMap::insertPoint( float x, float y, float z, float R, float G, float B ) was declared but not defined.
