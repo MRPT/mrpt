@@ -121,6 +121,7 @@ public:
 		Connect(ID_BTN_CANCEL,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CDialogAskUserForCamera::OnBtnCancel);
 
 		SetSizer(f1);
+		Fit();
 	}
 
 	virtual ~CDialogAskUserForCamera()

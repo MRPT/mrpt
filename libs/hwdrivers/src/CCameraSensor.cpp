@@ -798,9 +798,6 @@ CCameraSensorPtr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 		return CCameraSensorPtr();
 
 	CCameraSensorPtr cam = CCameraSensorPtr(new CCameraSensor);
-	// Load Configuration from a ini file
-	//mrpt::utils::CConfigFile	iniFile("./CONFIG_camera.ini");
-	//cam->loadConfig( iniFile, "CONFIG" );
 	cam->loadConfig(dlgSelection.selectedConfig,"CONFIG");
 	cam->initialize();	// This will raise an exception if neccesary
 

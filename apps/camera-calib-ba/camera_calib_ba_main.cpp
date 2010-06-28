@@ -27,7 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-    APPLICATION: camera-calib-auto
+    APPLICATION: camera-calib-ba
     AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
 
 	A camera calibration algorithm based on automatically tracked
@@ -45,23 +45,15 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::vision;
+using namespace mrpt::poses;
+
 
 
 // ------------------------------------------------------
 //		DoCameraCalibBA
 // ------------------------------------------------------
-int DoCameraCalibBA()
+int DoCameraCalibBA(CCameraSensorPtr  cam)
 {
-	cout << "Select the source of images for the camera calibration...\n";
-
-	CCameraSensorPtr  cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
-	if (!cam)
-	{
-		cerr << "No images source was correctly initialized! Exiting.\n";
-		return -1;
-	}
-
-
 	mrpt::gui::CDisplayWindowPtr win;
 #if MRPT_HAS_WXWIDGETS
 	win = mrpt::gui::CDisplayWindow::Create("Tracked features");
@@ -72,6 +64,10 @@ int DoCameraCalibBA()
 
 	CFeatureList	trackedFeats;
 	unsigned int	step_num = 0;
+
+	unsigned int 	NUM_FRAMES_TO_GO 		= 50;
+	unsigned int 	FRAMES_DECIMATION		= 5;  // actual # frames =  NUM_FRAMES_TO_GO / FRAMES_DECIMATION
+	unsigned int 	NUM_FEATS_TO_DETECT 	= 100;
 
 	// The list of tracked features:
 	vector<map<TFeatureID,TPixelCoordf> >  lstTrackedFeats;
@@ -184,11 +180,11 @@ int DoCameraCalibBA()
 
 		// Condition to end this endless loop:
 		//  Do we have enough tracked features?
-		if (lstTrackedFeats.size()>100)
+		if (lstTrackedFeats.size()>NUM_FRAMES_TO_GO)
 			break; // finish
 
 		// At the beginning, look for new features:
-		if (trackedFeats.empty() && step_num==20) // wait a bit to detect
+		if (trackedFeats.empty() && step_num==10) // wait a bit to detect
 		{
 			cout << "Detecting features...\n";
 
@@ -196,10 +192,10 @@ int DoCameraCalibBA()
 			FE.options.featsType = featKLT;  // use the KLT detector
 			FE.options.patchSize = 21;
 			FE.options.KLTOptions.min_distance = 20;
-			FE.options.KLTOptions.threshold = 0.03;
+			FE.options.KLTOptions.threshold = 0.02;
 			FE.options.KLTOptions.tile_image = true;
 
-			FE.detectFeatures(theImg, trackedFeats, 0 /* first ID */, 60 /* # feats */ );
+			FE.detectFeatures(theImg, trackedFeats, 0 /* first ID */, NUM_FEATS_TO_DETECT /* # feats */ );
 		}
 
 
@@ -262,7 +258,7 @@ int DoCameraCalibBA()
 	// =================================================
 	vector<vector<TPixelCoordf> >  calib_tracked_feats;
 
-	for (size_t i=0;i<lstTrackedFeats.size();i++)
+	for (size_t i=0;i<lstTrackedFeats.size();i+=FRAMES_DECIMATION)
 	{
 		//vector<map<TFeatureID,TPixelCoordf> >  lstTrackedFeats;
 		// Add to "calib_tracked_feats" in the same order as they appear in
@@ -291,12 +287,15 @@ int DoCameraCalibBA()
 	cout << "# of frames to be calibrated: " << calib_tracked_feats.size() << endl;
 	cout << "# of features tracked in all the frames: " << calib_tracked_feats[0].size() << endl;
 
+	TCamCalibBAResults calib_extra_data;
+
 	double avrg_err =
 	mrpt::vision::camera_calib_ba(
 		calib_tracked_feats,
 		cameraParams.ncols,
 		cameraParams.nrows,
-		cameraParams
+		cameraParams,
+		calib_extra_data
 		);
 
 	cout << "Calibration done! Avr. error = " << avrg_err << " px.\n";
@@ -305,8 +304,48 @@ int DoCameraCalibBA()
 	cameraParams.saveToConfigFile("CAMERA_PARAMS",cfg);
 	cout << "Camera parameters:\n" << cfg.getContent();
 
+
+	// ------------------------------------------------
+	// Show a 3D view of the estimated scene geometry:
+	// ------------------------------------------------
+#if MRPT_HAS_WXWIDGETS
+	mrpt::gui::CDisplayWindow3D  win3d("Reconstructed geometry",600,500);
+
+	opengl::COpenGLScenePtr &scene = win3d.get3DSceneAndLock();
+
+	scene->insert( opengl::CGridPlaneXY::Create() );
+
+	for (size_t i=0;i<calib_extra_data.camera_poses.size();i++)
+	{
+		opengl::CSetOfObjectsPtr fr = opengl::stock_objects::CornerXYZSimple(0.4,2.0);
+		fr->setName(format("Cam %u",(unsigned)i ));
+		fr->enableShowName(true);
+		fr->setPose( CPose3D(calib_extra_data.camera_poses[i]) );
+		scene->insert( fr );
+	}
+
+	opengl::CPointCloudPtr pts = opengl::CPointCloud::Create();
+	for (size_t i=0;i<calib_extra_data.landmark_positions.size();i++)
+	{
+		pts->insertPoint(
+			calib_extra_data.landmark_positions[i].x,
+			calib_extra_data.landmark_positions[i].y,
+			calib_extra_data.landmark_positions[i].z );
+	}
+	pts->setPointSize(4.0);
+	pts->setColor(0,0,1);
+	scene->insert( pts );
+
+	win3d.unlockAccess3DScene();
+	win3d.repaint();
+
+	mrpt::system::pause();
+#endif  // MRPT_HAS_WXWIDGETS
+
 	return 0; // End ok.
 }
+
+void showUsage(char *cmd);
 
 // ------------------------------------------------------
 //						MAIN
@@ -315,11 +354,91 @@ int main(int argc, char **argv)
 {
 	try
 	{
-		printf(" camera-calib-auto - Part of MRPT\n");
+		printf(" camera-calib-ba - Part of MRPT\n");
 		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
 		printf("-------------------------------------------------------------------\n");
 
-		return DoCameraCalibBA();
+		// The video source:
+		CCameraSensorPtr  cam;
+
+		// process cmd line arguments?
+
+		if (argc!=1 && argc!=2)
+		{
+			cerr << "Incorrect number of arguments.\n";
+			showUsage(argv[0]);
+			return -1;
+		}
+
+		if (argc==2)
+		{
+			if (!strcmp(argv[1],"--help"))
+			{
+				showUsage(argv[0]);
+				return 0;
+			}
+			if (!mrpt::system::fileExists(argv[1]))
+			{
+				cerr << "File does not exist: " << argv[1] << endl;
+				return -1;
+			}
+
+			const string fil = string(argv[1]);
+			const string ext = mrpt::system::lowerCase(mrpt::system::extractFileExtension(fil,true));
+
+			if (ext=="rawlog")
+			{
+				// It's a rawlog:
+				cout << "Interpreting '" << fil << "' as a rawlog file...\n";
+
+				cam = CCameraSensorPtr(new CCameraSensor);
+
+				CConfigFileMemory  cfg;
+				cfg.write("CONFIG","grabber_type","rawlog");
+				cfg.write("CONFIG","rawlog_file", fil );
+
+				// For delayed-load images:
+				CImage::IMAGES_PATH_BASE = CRawlog::detectImagesDirectory(fil);
+
+				cam->loadConfig(cfg,"CONFIG");
+				cam->initialize();	// This will raise an exception if neccesary
+			}
+			else
+			{
+				// Assume it's a video:
+				cout << "Interpreting '" << fil << "' as a video file...\n";
+
+				cam = CCameraSensorPtr(new CCameraSensor);
+
+				CConfigFileMemory  cfg;
+				cfg.write("CONFIG","grabber_type","ffmpeg");
+				cfg.write("CONFIG","ffmpeg_url", fil );
+
+				cam->loadConfig(cfg,"CONFIG");
+				cam->initialize();	// This will raise an exception if neccesary
+			}
+		}
+
+
+
+
+		if (!cam)
+		{
+			cout << "You didn't specify any video source in the command line.\n"
+					"(You can run with --help to see usage).\n"
+					"Showing a GUI window to select the video source...\n";
+			// If no camera opened so far, ask the user for one:
+
+			cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
+			if (!cam)
+			{
+				cerr << "No images source was correctly initialized! Exiting.\n";
+				return -1;
+			}
+		}
+
+		// do it:
+		return DoCameraCalibBA(cam);
 	}
 	catch (std::exception &e)
 	{
@@ -333,4 +452,16 @@ int main(int argc, char **argv)
 		mrpt::system::pause();
 		return -1;
 	}
+}
+
+
+void showUsage(char *cmd)
+{
+	cout <<
+		"Usage:\n"
+		"  " << cmd << "                 -> Ask the user for video source.\n"
+		"  " << cmd << " dataset.rawlog  -> Use a rawlog file.\n"
+		"  " << cmd << " video.{avi,mpg} -> Use a video file.\n"
+		"  " << cmd << " --help          -> Show this information.\n"
+		"\n";
 }

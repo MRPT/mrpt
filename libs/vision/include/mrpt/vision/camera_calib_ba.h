@@ -38,6 +38,13 @@ namespace mrpt
 {
 	namespace vision
 	{
+		/** Data returned by  mrpt::vision::camera_calib_ba */
+		struct VISION_IMPEXP TCamCalibBAResults
+		{
+			std::vector<mrpt::poses::CPose3DQuat>  	camera_poses;
+			std::vector<mrpt::math::TPoint3D>		landmark_positions;
+		};
+
 		/** Optimizes the camera intrinsic and distortion parameters given a sequence of features tracked along a few consecutive frames.
 		  *  This method allows calibrating a camera without a checkerboard or any other special pattern, just by moving the camera and tracking
 		  *  random features.
@@ -49,7 +56,8 @@ namespace mrpt
 			const std::vector< std::vector<mrpt::utils::TPixelCoordf> >  & in_tracked_feats,
 			unsigned int camera_ncols,
 			unsigned int camera_nrows,
-			mrpt::utils::TCamera &out_optimal_params
+			mrpt::utils::TCamera &out_optimal_params,
+			TCamCalibBAResults &out_info
 			);
 	}
 }
