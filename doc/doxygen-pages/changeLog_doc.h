@@ -70,6 +70,7 @@
 			- New global variable mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 		- BUGFIXES:
 			- <b>CRITICAL REGRESION FIXED</b>: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.
+			- Fixed: RANSAC won't use the last input data point (Thanks "Stephane" for reporting!)
 			- mrpt::slam::COccupancyGridMap2D::TLikelihoodOptions::loadFromConfigFile ignored the "section" name for loading "likelihoodMethod" (reported by Thomas Ciarfuglia, Università di Perugia).
 			- Fixed build error when compiling without OpenGL/GLUT support.
 			- The method mrpt::slam::CColouredPointsMap::insertPoint( float x, float y, float z, float R, float G, float B ) was declared but not defined.

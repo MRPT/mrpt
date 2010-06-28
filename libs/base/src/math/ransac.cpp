@@ -98,7 +98,8 @@ bool RANSAC_Template<NUMTYPE>::execute(
             // Generate s random indicies in the range 1..npts
             ind.resize( minimumSizeSamplesToFit );
 
-			randomGenerator.drawUniformVector(ind,static_cast<size_t>(0), static_cast<size_t>(Npts-1) );
+			// The +0.99... is due to the floor rounding afterwards when converting from random double samples to size_t
+			randomGenerator.drawUniformVector(ind,0.0, Npts-1+0.999999 );
 
             // Test that these points are not a degenerate configuration.
             degenerate = degen_func(data, ind);

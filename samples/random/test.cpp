@@ -58,12 +58,13 @@ void TestRandomGenerators()
 	randomGenerator.randomize();
 
 	// Uniform numbers integers:
-	CDisplayWindowPlots	  win1("Unif(0,5)");
+	CDisplayWindowPlots	  win1("Unif(0,5) (integers)");
 	win1.setPos(10,10);
 	win1.resize(400,400);
 	{
-		vector_double v1(100000);
-		randomGenerator.drawUniformVector(v1 ,0,5);
+		//vector_double v1(100000);
+		vector_size_t  v1(100000);
+		randomGenerator.drawUniformVector(v1 ,0, 5.999);
 
 		CHistogram  hist(-2,15, 100);
 		hist.add(v1);
@@ -156,6 +157,7 @@ void TestRandomGenerators()
 
 		win4.axis_fit();
 	}
+
 
 
 	mrpt::system::pause();
