@@ -84,6 +84,12 @@ namespace utils
 		/** Changes the contents of the virtual "config file" */
 		void setContent(  const std::string &str );
 
+		/** Return the currnet contents of the virtual "config file" */
+		void getContent(  std::string &str ) const;
+
+		/** Return the currnet contents of the virtual "config file" */
+		inline std::string getContent() const {  std::string s; getContent(s); return s; }
+
 		/** Destructor
 		 */
 		virtual ~CConfigFileMemory( );

@@ -5,7 +5,6 @@
 INCLUDE(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 if(BUILD_MONOSLAM)
-#	add_subdirectory(MonoSLAM_demo)
 	add_subdirectory(mono-slam)
 endif(BUILD_MONOSLAM)
 
@@ -21,6 +20,7 @@ IF(BUILD_APPs_GUIs)
 		add_subdirectory(hmtMapViewer)
 	endif(EXISTS ${MRPT_SOURCE_DIR}/apps/hmtMapViewer)
 	add_subdirectory(camera-calib)
+	add_subdirectory(camera-calib-ba)
 ENDIF(BUILD_APPs_GUIs)
 
 IF(BUILD_APPs_SLAM)

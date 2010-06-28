@@ -37,6 +37,8 @@
 		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.
 	- <b>Detailed list of changes:</b>
 		- Changes in classes:
+			- mrpt::utils::CConfigFileMemory has a new method getContent().
+			- Template mrpt::utils::TParameters now has typedefs mrpt::utils::TParametersDouble, mrpt::utils::TParametersString and many new methods. See the example params-by-name.
 			- New method TCamera::scaleToResolution() for scale camera calibration params for different resolutions.
 			- In mrpt::slam::CMetricMap
 				- New method loadFromSimpleMap() (fast inline call to loadFromProbabilisticPosesAndObservations, with a better name!).
@@ -54,11 +56,16 @@
 				- saveToTextFileAsVector
 			- mrpt::hwdrivers::CActivMediaRobotBase can now transparently open serial ports >COM4 in Windows without the prefix "\\.\" (it's added automatically if needed).
 		- New functions:
+			- mrpt::vision::camera_calib_ba is a new method based on Bundle-Adjustment to calibrate a camera from the tracking of a set of random points. See also the new application camera-calib-ba
 			- Added << and >> operators to mrpt::math::CArrayNumeric<> classes to dump/read them with MRPT's mrpt::utils::CStream streams.
 			- mrpt::topography::ENUToGeocentric()
 			- mrpt::gui::CMyGLCanvasBase::textBitmapWidth(), a new function to compute the width of a bitmap string.
 		- New classes:
 			- mrpt::slam::CObservationStereoImagesFeatures to hold the minimum information needed by a stereo SLAM back-end algorithm.
+		- New applications:
+			- camera-calib-ba: A tool to calibrate a camera from a set of random tracked features (no need to use a checkerboard).
+		- New examples:
+			- params-by-name
 		- Global settings:
 			- New global variable mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 		- BUGFIXES:

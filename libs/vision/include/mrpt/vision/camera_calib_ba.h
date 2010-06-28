@@ -26,25 +26,33 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef __mrpt_vision_H
-#define __mrpt_vision_H
+#ifndef mrpt_vision_camera_calib_ba_H
+#define mrpt_vision_camera_calib_ba_H
 
-#include <mrpt/obs.h> // dependencies
-#include <mrpt/gui.h> // dependencies
+#include <mrpt/utils/types.h>
+#include <mrpt/utils/TCamera.h>
 
-#include <mrpt/vision/utils.h>
-#include <mrpt/vision/pinhole.h>
-#include <mrpt/vision/CCamModel.h>
-#include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/vision/CVideoFileWriter.h>
-#include <mrpt/vision/camera_calib_ba.h>
+#include <mrpt/vision/link_pragmas.h>
 
-// Maps:
-#include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CLandmarksMap.h>
-
-// Obs:
-#include <mrpt/slam/CObservationVisualLandmarks.h>
-
+namespace mrpt
+{
+	namespace vision
+	{
+		/** Optimizes the camera intrinsic and distortion parameters given a sequence of features tracked along a few consecutive frames.
+		  *  This method allows calibrating a camera without a checkerboard or any other special pattern, just by moving the camera and tracking
+		  *  random features.
+		  *
+		  * \return Returns the average pixel reprojection error with the final estimated parameters.
+		  *
+		  */
+		double VISION_IMPEXP camera_calib_ba(
+			const std::vector< std::vector<mrpt::utils::TPixelCoordf> >  & in_tracked_feats,
+			unsigned int camera_ncols,
+			unsigned int camera_nrows,
+			mrpt::utils::TCamera &out_optimal_params
+			);
+	}
+}
 
 #endif
+

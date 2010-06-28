@@ -26,25 +26,26 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef __mrpt_vision_H
-#define __mrpt_vision_H
+#include <mrpt/vision.h>  // Precompiled headers
 
-#include <mrpt/obs.h> // dependencies
-#include <mrpt/gui.h> // dependencies
-
-#include <mrpt/vision/utils.h>
-#include <mrpt/vision/pinhole.h>
-#include <mrpt/vision/CCamModel.h>
-#include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/vision/CVideoFileWriter.h>
 #include <mrpt/vision/camera_calib_ba.h>
 
-// Maps:
-#include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CLandmarksMap.h>
+using namespace mrpt;
+using namespace mrpt::vision;
+using namespace mrpt::utils;
+using namespace mrpt::math;
+using namespace std;
 
-// Obs:
-#include <mrpt/slam/CObservationVisualLandmarks.h>
+/*-------------------------------------------------------------
 
+-------------------------------------------------------------*/
+double mrpt::vision::camera_calib_ba(
+	const std::vector< std::vector<mrpt::utils::TPixelCoordf> >  & in_tracked_feats,
+	unsigned int camera_ncols,
+	unsigned int camera_nrows,
+	mrpt::utils::TCamera &out_optimal_params
+	)
+{
 
-#endif
+	return 0;
+}

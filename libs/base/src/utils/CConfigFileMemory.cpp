@@ -116,6 +116,14 @@ void CConfigFileMemory::setContent(  const std::string &str )
 }
 
 /*---------------------------------------------------------------
+					getContent
+ ---------------------------------------------------------------*/
+void CConfigFileMemory::getContent( std::string &str ) const
+{
+	((CSimpleIniA*)(m_ini.get()))->Save( str, false );
+}
+
+/*---------------------------------------------------------------
 					Destructor
  ---------------------------------------------------------------*/
 CConfigFileMemory::~CConfigFileMemory(  )

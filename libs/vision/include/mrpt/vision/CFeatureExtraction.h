@@ -113,7 +113,7 @@ namespace mrpt
 					/** KLT Options
 					  */
 					int		radius;			// size of the block of pixels used
-					float	threshold;		// for rejecting weak local maxima (with min_eig < threshold*max(eig_image))
+					float	threshold;		// (default=0.1) for rejecting weak local maxima (with min_eig < threshold*max(eig_image))
 					float	min_distance;	// minimum distance between features
 					bool	tile_image;		// splits the image into 8 tiles and search for the best points in all of them (distribute the features over all the image)
 				} KLTOptions;
@@ -122,7 +122,7 @@ namespace mrpt
 				{
 					/** Harris Options
 					  */
-					float	threshold;		// for rejecting weak local maxima (with min_eig < threshold*max(eig_image))
+					float	threshold;		// (default=0.005) for rejecting weak local maxima (with min_eig < threshold*max(eig_image))
 					float	k;				// k factor for the Harris algorithm
 					float	sigma;			// standard deviation for the gaussian smoothing function
 					int		radius;			// size of the block of pixels used

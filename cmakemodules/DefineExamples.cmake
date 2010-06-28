@@ -101,6 +101,7 @@ IF(BUILD_EXAMPLES)
 		unscented_transform_test
 		grab3Dvideo
 		coordinate_conversions
+		params-by-name
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-vision mrpt-gui mrpt-topography)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
