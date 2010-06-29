@@ -40,14 +40,14 @@
 #include <mrpt/slam/CLandmarksMap.h>
 #include <mrpt/slam/CObservationVisualLandmarks.h>
 
+#include <mrpt/vision/types.h>
+
 #include <mrpt/vision/link_pragmas.h>
 
 namespace mrpt
 {
 	namespace slam
 	{
-		//class CLandmarksMap;
-		//class CObservationVisualLandmarks;
 		class CObservationStereoImages;
 		class CObservationBearingRange;
 	}
@@ -59,187 +59,6 @@ namespace mrpt
 		using namespace mrpt::slam;
 		using namespace mrpt::math;
 		using namespace mrpt::utils;
-
-		// Here follow utility declarations, methods, etc. (Old "VisionUtils" namespace).
-		//  Implementations are in "vision.cpp"
-
-		/** Landmark ID
-		  */
-		typedef	 uint64_t TLandmarkID;
-
-		/** Parameters associated to a stereo system
-		  */
-		struct VISION_IMPEXP TStereoSystemParams : public mrpt::utils::CLoadableOptions
-		{
-			/** Initilization of default parameters
-			 */
-			TStereoSystemParams(	);
-
-			/** See utils::CLoadableOptions
-			  */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string		&section);
-
-			/** See utils::CLoadableOptions
-			  */
-			void  dumpToTextStream(CStream	&out) const;
-
-			/** Method for propagating the feature's image coordinate uncertainty into 3D space. Default value: Prop_Linear
-			  */
-			enum TUnc_Prop_Method
-			{
-				/** Linear propagation of the uncertainty
-				  */
-				Prop_Linear = -1,
-				/** Uncertainty propagation through the Unscented Transformation
-				  */
-				Prop_UT,
-				/** Uncertainty propagation through the Scaled Unscented Transformation
-				  */
-				Prop_SUT
-			};
-
-			TUnc_Prop_Method uncPropagation;
-
-			/** Intrinsic parameters
-			  */
-			CMatrixDouble33	K;
-			/** Baseline. Default value: baseline = 0.119f;	[Bumblebee]
-			  */
-			float		baseline;
-			/** Standard deviation of the error in feature detection. Default value: stdPixel = 1
-			  */
-			float		stdPixel;
-			/** Standard deviation of the error in disparity computation. Default value: stdDisp = 1
-			  */
-			float		stdDisp;
-			/** Maximum allowed distance. Default value: maxZ = 20.0f
-			  */
-			float		maxZ;
-			/** Maximum allowed distance. Default value: minZ = 0.5f
-			  */
-			float		minZ;
-			/** Maximum allowed height. Default value: maxY = 3.0f
-			  */
-			float		maxY;
-			/** K factor for the UT. Default value: k = 1.5f
-			  */
-			float		factor_k;
-			/** Alpha factor for SUT. Default value: a = 1e-3
-			  */
-			float		factor_a;
-			/** Beta factor for the SUT. Default value: b = 2.0f
-			  */
-			float		factor_b;
-
-			/** Parameters initialization
-			  */
-			//TStereoSystemParams();
-
-		}; // End struct TStereoSystemParams
-
-		/** A structure for storing a 3D ROI
-		  */
-		struct VISION_IMPEXP TROI
-		{
-			// Constructors
-			TROI();
-			TROI(float x1, float x2, float y1, float y2, float z1, float z2);
-
-			// Members
-			float	xMin;
-			float	xMax;
-			float	yMin;
-			float	yMax;
-			float	zMin;
-			float	zMax;
-		}; // end struct TROI
-
-		/** A structure for defining a ROI within an image
-		  */
-		struct VISION_IMPEXP TImageROI
-		{
-			// Constructors
-			TImageROI();
-			TImageROI( float x1, float x2, float y1, float y2 );
-
-			// Members
-			/** X coordinate limits [0,imageWidth)
-			  */
-			float	xMin, xMax;
-			/** Y coordinate limits [0,imageHeight)
-			  */
-			float	yMin, yMax;
-		}; // end struct TImageROI
-
-		/** A structure containing options for the matching
-		  */
-		struct VISION_IMPEXP TMatchingOptions : public mrpt::utils::CLoadableOptions
-		{
-
-			/** Method for propagating the feature's image coordinate uncertainty into 3D space. Default value: Prop_Linear
-			  */
-			enum TMatchingMethod
-			{
-				/** Matching by cross correlation of the image patches
-				  */
-				mmCorrelation = 0,
-				/** Matching by Euclidean distance between SIFT descriptors
-				  */
-				mmDescriptorSIFT,
-				/** Matching by Euclidean distance between SURF descriptors
-				  */
-				mmDescriptorSURF,
-				/** Matching by sum of absolute differences of the image patches
-				  */
-				mmSAD
-			};
-
-			// For determining
-			bool	useEpipolarRestriction;		//!< Whether or not take into account the epipolar restriction for finding correspondences
-			bool	hasFundamentalMatrix;		//!< Whether or not there is a fundamental matrix
-			bool	parallelOpticalAxis;		//!< Whether or not the stereo rig has the optical axes parallel
-			bool	useXRestriction;			//!< Whether or not employ the x-coord restriction for finding correspondences (bumblebee camera, for example)
-
-			CMatrixDouble33 F;
-
-			// General
-			TMatchingMethod	matching_method;	//!< Matching method
-			float	epipolar_TH;				//!< Epipolar constraint (rows of pixels)
-
-			// SIFT
-			float	maxEDD_TH;					//!< Maximum Euclidean Distance Between SIFT Descriptors
-			float	EDD_RATIO;					//!< Boundary Ratio between the two lowest EDD
-
-			// KLT
-			float	minCC_TH;					//!< Minimum Value of the Cross Correlation
-			float	minDCC_TH;					//!< Minimum Difference Between the Maximum Cross Correlation Values
-			float	rCC_TH;						//!< Maximum Ratio Between the two highest CC values
-
-			// SURF
-			float	maxEDSD_TH;					//!< Maximum Euclidean Distance Between SURF Descriptors
-			float	EDSD_RATIO;					//!< Boundary Ratio between the two lowest SURF EDSD
-
-			// SAD
-			double	minSAD_TH;
-			double  SAD_RATIO;
-
-			/** Constructor
-			  */
-			TMatchingOptions( );
-
-			/** See utils::CLoadableOptions
-			  */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string		&section);
-
-			/** See utils::CLoadableOptions
-			  */
-			void  dumpToTextStream(CStream	&out) const;
-
-		}; // end struct TMatchingOptions
 
 			/**	Computes the correlation between this image and another one, encapsulating the openCV function cvMatchTemplate
 			*   This implementation reduced computation time.
@@ -380,13 +199,13 @@ namespace mrpt
 
 			/** Tracks a set of features in an image.
 			  */
-			void VISION_IMPEXP trackFeatures2( 
+			void VISION_IMPEXP trackFeatures2(
 				const CImage &inImg1,
 				const CImage &inImg2,
 				CFeatureList &featureList,
 				const unsigned int &window_width = 15,
 				const unsigned int &window_height = 15);
-			
+
 			/** Tracks a set of features in an image.
 			  */
 			void VISION_IMPEXP trackFeatures( const CImage &inImg1,
@@ -470,9 +289,12 @@ namespace mrpt
 								  CMatchedFeatureList &matches,
 								  const TMatchingOptions &options = TMatchingOptions() );
 
-			void VISION_IMPEXP addFeaturesToImage( 
-				const CImage &inImg, 
-				const CFeatureList &theList, 
+
+			/** Draw rectangles around each of the features.
+			  */
+			void VISION_IMPEXP addFeaturesToImage(
+				const CImage &inImg,
+				const CFeatureList &theList,
 				CImage &outImg );
 
 			/** Project a list of matched features into the 3D space, using the provided options for the stereo system
@@ -485,7 +307,7 @@ namespace mrpt
 				const vision::TStereoSystemParams	&param,			// Parameters for the stereo system
 				mrpt::slam::CLandmarksMap			&landmarks );	// Output map of 3D landmarks
 
-			/** Project a pair of feature lists into the 3D space, using the provided options for the stereo system. The matches must be in order, 
+			/** Project a pair of feature lists into the 3D space, using the provided options for the stereo system. The matches must be in order,
 			  *	i.e. leftList[0] corresponds to rightList[0] and so on;
 			  * \param leftList (Input). The left list of matched features.
 			  * \param rightList (Input). The right list of matched features.
@@ -570,14 +392,14 @@ namespace mrpt
 				const std::vector<double> &sg,
 				CObservationBearingRange &outObs
 				);
-			
+
 			/** Converts a CObservationVisualLandmarks into a bearing and range observation (without any covariances). Fields of view are not computed.
 				\param inObs			[IN]	The input observation.
 				\param outObs			[OUT]	The output bearing and range observation.
 			*/
-			void VISION_IMPEXP StereoObs2BRObs( 
-				const CObservationVisualLandmarks &inObs, 
-				CObservationBearingRange &outObs 
+			void VISION_IMPEXP StereoObs2BRObs(
+				const CObservationVisualLandmarks &inObs,
+				CObservationBearingRange &outObs
 				);
 	}
 }

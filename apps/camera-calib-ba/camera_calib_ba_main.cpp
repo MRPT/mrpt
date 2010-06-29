@@ -39,6 +39,23 @@
 #include <mrpt/gui.h>
 #include <mrpt/hwdrivers.h>
 
+#define CV_NO_CVV_IMAGE   // Avoid CImage name crash
+#	if MRPT_OPENCV_VERSION_NUM>=0x211
+#		include <opencv2/core/core.hpp>
+#		include <opencv2/highgui/highgui.hpp>
+#		include <opencv2/imgproc/imgproc.hpp>
+#		include <opencv2/imgproc/imgproc_c.h>
+#		include <opencv2/calib3d/calib3d.hpp>
+#		include <opencv2/features2d/features2d.hpp>
+#	else
+#		include <cv.h>
+#		include <highgui.h>
+#	endif
+#ifdef CImage	// For old OpenCV versions (<=1.0.0)
+#undef CImage
+#endif
+
+
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -59,15 +76,17 @@ int DoCameraCalibBA(CCameraSensorPtr  cam)
 	win = mrpt::gui::CDisplayWindow::Create("Tracked features");
 #endif
 
+	CTimeLogger  timlog;
+
 	bool 		hasResolution = false;
 	TCamera		cameraParams; // For now, will only hold the image resolution on the arrive of the first frame.
 
 	CFeatureList	trackedFeats;
 	unsigned int	step_num = 0;
 
-	unsigned int 	NUM_FRAMES_TO_GO 		= 50;
-	unsigned int 	FRAMES_DECIMATION		= 5;  // actual # frames =  NUM_FRAMES_TO_GO / FRAMES_DECIMATION
-	unsigned int 	NUM_FEATS_TO_DETECT 	= 100;
+	unsigned int 	NUM_FRAMES_TO_GO 		= 80;
+	unsigned int 	FRAMES_DECIMATION		= 2;  // actual # frames =  NUM_FRAMES_TO_GO / FRAMES_DECIMATION
+	unsigned int 	NUM_FEATS_TO_DETECT 	= 80;
 
 	// The list of tracked features:
 	vector<map<TFeatureID,TPixelCoordf> >  lstTrackedFeats;
@@ -124,10 +143,15 @@ int DoCameraCalibBA(CCameraSensorPtr  cam)
 			for (size_t i=0;i<trackedFeats.size();i++)
 				prevFeats.push_back( TPixelCoordf( trackedFeats[i]->x,trackedFeats[i]->y ) );
 
+
+			timlog.enter("TRACKING");
+
 			mrpt::vision::trackFeatures(
 				previous_image,
 				theImg,
 				trackedFeats);
+
+			timlog.leave("TRACKING");
 
 			// Take a measure of "how much the camera has moved":
 			vector_double featMovesSq;
@@ -189,13 +213,19 @@ int DoCameraCalibBA(CCameraSensorPtr  cam)
 			cout << "Detecting features...\n";
 
 			CFeatureExtraction  FE;
-			FE.options.featsType = featKLT;  // use the KLT detector
-			FE.options.patchSize = 21;
+//			FE.options.featsType = featFAST;
+			FE.options.featsType = featKLT;
+
+			FE.options.patchSize = 0;
+			FE.options.FASTOptions.threshold = 20;
+			FE.options.FASTOptions.nonmax_suppression = false;
 			FE.options.KLTOptions.min_distance = 20;
-			FE.options.KLTOptions.threshold = 0.02;
-			FE.options.KLTOptions.tile_image = true;
+			FE.options.KLTOptions.threshold = 0.01;
+			FE.options.KLTOptions.tile_image = false;
 
 			FE.detectFeatures(theImg, trackedFeats, 0 /* first ID */, NUM_FEATS_TO_DETECT /* # feats */ );
+
+			ASSERT_(trackedFeats.size()>3)
 		}
 
 
@@ -289,13 +319,18 @@ int DoCameraCalibBA(CCameraSensorPtr  cam)
 
 	TCamCalibBAResults calib_extra_data;
 
+	TParametersDouble  extra_params;
+	extra_params["verbose"] = 1;
+	extra_params["max_iters"] = 1000;
+
 	double avrg_err =
 	mrpt::vision::camera_calib_ba(
 		calib_tracked_feats,
 		cameraParams.ncols,
 		cameraParams.nrows,
 		cameraParams,
-		calib_extra_data
+		calib_extra_data,
+		extra_params
 		);
 
 	cout << "Calibration done! Avr. error = " << avrg_err << " px.\n";

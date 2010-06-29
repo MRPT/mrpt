@@ -110,7 +110,9 @@ void  CFeatureExtraction::extractFeaturesFAST(
 
 	Mat theImg = cvarrToMat( cGrey );
 	fastDetector.detect( theImg, cv_feats );
+
 	sort( cv_feats.begin(), cv_feats.end(), KeypointComp );
+
 
 	if( img->nChannels != 1 )
 		cvReleaseImage( &cGrey );

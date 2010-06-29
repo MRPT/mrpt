@@ -32,32 +32,34 @@
 #include <mrpt/utils/types.h>
 #include <mrpt/utils/TCamera.h>
 
+#include <mrpt/vision/types.h>
+
 #include <mrpt/vision/link_pragmas.h>
 
 namespace mrpt
 {
 	namespace vision
 	{
-		/** Data returned by  mrpt::vision::camera_calib_ba */
-		struct VISION_IMPEXP TCamCalibBAResults
-		{
-			std::vector<mrpt::poses::CPose3DQuat>  	camera_poses;
-			std::vector<mrpt::math::TPoint3D>		landmark_positions;
-		};
-
 		/** Optimizes the camera intrinsic and distortion parameters given a sequence of features tracked along a few consecutive frames.
 		  *  This method allows calibrating a camera without a checkerboard or any other special pattern, just by moving the camera and tracking
 		  *  random features.
 		  *
-		  * \return Returns the average pixel reprojection error with the final estimated parameters.
+		  *  It internally implements a Bundle Adjustment (BA) over all the 3D features, 6D camera poses and camera parameters and
+		  *  searches for the least-square error in the reprojected pixel errors.
 		  *
+		  *  The "extra_params" field can optionally contain any of these parameters:
+		  *		- "max_iters" : Maximum number of iterations to run the iterative optimization (default=1000)
+		  *		- "verbose"   : If set to !=0, will show verbose information (default=false)
+		  *
+		  * \return Returns the average pixel reprojection error with the final estimated parameters.
 		  */
 		double VISION_IMPEXP camera_calib_ba(
 			const std::vector< std::vector<mrpt::utils::TPixelCoordf> >  & in_tracked_feats,
 			unsigned int camera_ncols,
 			unsigned int camera_nrows,
 			mrpt::utils::TCamera &out_optimal_params,
-			TCamCalibBAResults &out_info
+			TCamCalibBAResults &out_info,
+			const mrpt::utils::TParametersDouble &extra_params = mrpt::utils::TParametersDouble()
 			);
 	}
 }

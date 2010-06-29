@@ -31,6 +31,7 @@
 #include <mrpt/vision/camera_calib_ba.h>
 #include <mrpt/math/CLevenbergMarquardt.h>
 
+
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::poses;
@@ -56,7 +57,8 @@ double mrpt::vision::camera_calib_ba(
 	unsigned int camera_ncols,
 	unsigned int camera_nrows,
 	mrpt::utils::TCamera &out_optimal_params,
-	TCamCalibBAResults &out_info
+	TCamCalibBAResults &out_info,
+	const mrpt::utils::TParametersDouble &extra_params
 	)
 {
 	ASSERT_(camera_ncols>1 && camera_nrows>1)
@@ -81,10 +83,10 @@ double mrpt::vision::camera_calib_ba(
 	// First wild guesses of the camera params:
 	camPar.intrinsicParams.zeros();
 	camPar.intrinsicParams(2,2) = 1;
-	camPar.intrinsicParams(0,0) = camera_ncols;  // cx
-	camPar.intrinsicParams(1,1) = camera_ncols;  // cy
-	camPar.intrinsicParams(0,2) = camera_ncols >> 1; // fx
-	camPar.intrinsicParams(1,2) = camera_nrows >> 1; // fy
+	camPar.intrinsicParams(0,0) = camera_ncols;  // fx
+	camPar.intrinsicParams(1,1) = camera_ncols;  // fy
+	camPar.intrinsicParams(0,2) = camera_ncols >> 1; // cx
+	camPar.intrinsicParams(1,2) = camera_nrows >> 1; // cy
 
 
 	// Launch LM optimization:
@@ -110,6 +112,10 @@ double mrpt::vision::camera_calib_ba(
 	// Need a first gross estimate of the state vector:
 	// ----------------------------------------------------
 	// 1) Camera params: already there.
+	// Increments for numeric Jacobians:
+	vector_double increments_x(stateLen);
+	for (size_t i=0;i<4;i++)	increments_x[0+i]=1e-4;
+	for (size_t i=0;i<5;i++)	increments_x[4+i]=1e-10;
 
 	// 2) camera poses:
 	for (size_t i=0;i<nFrames-1;i++)
@@ -118,10 +124,19 @@ double mrpt::vision::camera_calib_ba(
 		initial_x[camParLen+i*7+1] =
 		initial_x[camParLen+i*7+2] = 0;
 
+		increments_x[camParLen+i*7+0] =
+		increments_x[camParLen+i*7+1] =
+		increments_x[camParLen+i*7+2] = 1e-4;
+
 		initial_x[camParLen+i*7+3] = 1.0; // qr qx qy qz
 		initial_x[camParLen+i*7+4] =
 		initial_x[camParLen+i*7+5] =
 		initial_x[camParLen+i*7+6] = 0;
+
+		increments_x[camParLen+i*7+3] =
+		increments_x[camParLen+i*7+4] =
+		increments_x[camParLen+i*7+5] =
+		increments_x[camParLen+i*7+6] = 1e-6;
 	}
 
 	// 3) gross initial guess of landmarks positions:
@@ -133,10 +148,11 @@ double mrpt::vision::camera_calib_ba(
 		initial_x[camParLen+(nFrames-1)*7+i*3+0] = p.x;
 		initial_x[camParLen+(nFrames-1)*7+i*3+1] = p.y;
 		initial_x[camParLen+(nFrames-1)*7+i*3+2] = p.z;
-	}
 
-	// Increments for numeric Jacobians:
-	const vector_double increments_x(initial_x.size(), 1e-9);
+		increments_x[camParLen+(nFrames-1)*7+i*3+0] =
+		increments_x[camParLen+(nFrames-1)*7+i*3+1] =
+		increments_x[camParLen+(nFrames-1)*7+i*3+2] = 1e-4;
+	}
 
 	// Do the optimization ===================
 	TMyLevMar::execute(
@@ -146,11 +162,11 @@ double mrpt::vision::camera_calib_ba(
 		increments_x,
 		in_tracked_feats,
 		info,
-		true, /* verbose */
-		1000, /* max iter */
+		extra_params.getWithDefaultVal("verbose",0)!=0, /* verbose */
+		extra_params.getWithDefaultVal("max_iters",1000) , /* max iter */
 		1e-3,
-		1e-9,
-		1e-9,
+		1e-11,
+		1e-11,
 		false
 		);
 

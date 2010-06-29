@@ -140,7 +140,7 @@ namespace mrpt
 				{
 					/** FAST Options
 					  */
-					int 	threshold;
+					int 	threshold;  //!< default= 20
 					bool	nonmax_suppression;		//!< Default = true
 				} FASTOptions;
 
