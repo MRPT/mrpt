@@ -180,14 +180,6 @@ namespace mrpt
 								CFeatureList &rightList,
 								float threshold = 0.0);
 
-			/** Search for correspondences which are not in the same row and deletes them
-			  * ...
-			  */
-			void VISION_IMPEXP checkTrackedFeatures( CFeatureList &leftList,
-							    CFeatureList &rightList,
-								vision::TMatchingOptions options);
-
-
 			/** Computes the dispersion of the features in the image
 			  * \param list (IN) Input list of features
 			  * \param std	(OUT) 2 element vector containing the standard deviations in the 'x' and 'y' coordinates.
@@ -197,37 +189,6 @@ namespace mrpt
 											  vector_float &std,
 											  vector_float &mean );
 
-			/** Tracks a set of features in an image.
-			  */
-			void VISION_IMPEXP trackFeatures2(
-				const CImage &inImg1,
-				const CImage &inImg2,
-				CFeatureList &featureList,
-				const unsigned int &window_width = 15,
-				const unsigned int &window_height = 15);
-
-			/** Tracks a set of features in an image.
-			  */
-			void VISION_IMPEXP trackFeatures( const CImage &inImg1,
-								 const CImage &inImg2,
-								 vision::CFeatureList &featureList,
-								 const unsigned int &window_width = 15,
-								 const unsigned int &window_height = 15 );
-
-			/** Tracks a set of features in an image.
-			  */
-			void VISION_IMPEXP trackFeatures( const CImage &inImg1,
-							 	const CImage &inImg2,
-								const CFeatureList &inFeatureList,
-								CFeatureList &outFeatureList,
-								const unsigned int &window_width,
-								const unsigned int &window_height);
-
-			/** Filter bad correspondences by distance
-			  * ...
-			  */
-			void VISION_IMPEXP filterBadCorrsByDistance( mrpt::utils::TMatchingPairList &list,	// The list of correspondences
-											unsigned int numberOfSigmas );				// Threshold
 
 
 			/** Returns a new image where distortion has been removed.

@@ -50,7 +50,7 @@ namespace mrpt
 		typedef uint64_t TCameraPoseID;
 
 		/** A collection of camera poses from which a given feature has been observed, and its pixel coordinates for each of them. */
-		typedef std::set<TCameraPoseID,mrpt::utils::TPixelCoordf> TFeatureObservations;
+		typedef std::map<TCameraPoseID,mrpt::utils::TPixelCoordf> TFeatureObservations;
 
 		/** Input data used by some methods in mrpt::vision     \sa mrpt::vision::camera_calib_ba */
 		typedef std::map<TFeatureID, TFeatureObservations>  TSequenceFeatureObservations;

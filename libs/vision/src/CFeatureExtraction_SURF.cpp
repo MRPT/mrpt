@@ -30,27 +30,9 @@
 
 #include <mrpt/vision/CFeatureExtraction.h>
 
-#if MRPT_HAS_OPENCV
-	// OPENCV HEADERS
 
-#	if MRPT_OPENCV_VERSION_NUM>=0x211
-#		include <opencv2/core/core.hpp>
-#		include <opencv2/highgui/highgui.hpp>
-#		include <opencv2/imgproc/imgproc.hpp>
-#		include <opencv2/imgproc/imgproc_c.h>
-#		include <opencv2/features2d/features2d.hpp>
+#include "do_opencv_includes.h"
 
-#		include <opencv2/legacy/legacy.hpp>  // CvImage
-#	else
-#		include <cv.h>
-#		include <cvaux.h>
-#		include <highgui.h>
-#	endif
-
-	#ifdef CImage	// For old OpenCV versions (<=1.0.0)
-	#undef CImage
-	#endif
-#endif // MRPT_HAS_OPENCV
 
 using namespace mrpt;
 using namespace mrpt::vision;

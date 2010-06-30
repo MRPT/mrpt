@@ -37,25 +37,9 @@
 	#include "sift-hess/utils.h"
 #endif
 
-#if MRPT_HAS_OPENCV
-	// OPENCV HEADERS
-	#define CV_NO_CVV_IMAGE   // Avoid CImage name crash
 
-#	if MRPT_OPENCV_VERSION_NUM>=0x211
-#		include <opencv2/core/core.hpp>
-#		include <opencv2/highgui/highgui.hpp>
-#		include <opencv2/imgproc/imgproc.hpp>
-#		include <opencv2/imgproc/imgproc_c.h>
-#		include <opencv2/features2d/features2d.hpp>
-#	else
-#		include <cv.h>
-#		include <highgui.h>
-#	endif
+#include "do_opencv_includes.h"
 
-	#ifdef CImage	// For old OpenCV versions (<=1.0.0)
-	#undef CImage
-	#endif
-#endif // MRPT_HAS_OPENCV
 
 // TODO: Remove, it's just for GetTempPathA
 #ifdef MRPT_OS_WINDOWS
@@ -382,8 +366,8 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 		case OpenCV:
 		{
 #if MRPT_OPENCV_VERSION_NUM >= 0x211
-			SiftFeatureDetector SIFTDetector( 
-				SIFT::DetectorParams::GET_DEFAULT_THRESHOLD(), 
+			SiftFeatureDetector SIFTDetector(
+				SIFT::DetectorParams::GET_DEFAULT_THRESHOLD(),
 				SIFT::DetectorParams::GET_DEFAULT_EDGE_THRESHOLD() );
 
 			SiftDescriptorExtractor SIFTDescriptor;

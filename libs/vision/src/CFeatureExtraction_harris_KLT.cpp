@@ -30,27 +30,8 @@
 
 #include <mrpt/vision/CFeatureExtraction.h>
 
-#if MRPT_HAS_OPENCV
-	// OPENCV HEADERS
+#include "do_opencv_includes.h"
 
-#	if MRPT_OPENCV_VERSION_NUM>=0x211
-#		include <opencv2/core/core.hpp>
-#		include <opencv2/highgui/highgui.hpp>
-#		include <opencv2/imgproc/imgproc.hpp>
-#		include <opencv2/imgproc/imgproc_c.h>
-#		include <opencv2/features2d/features2d.hpp>
-
-#		include <opencv2/legacy/legacy.hpp>  // CvImage
-#	else
-#		include <cv.h>
-#		include <highgui.h>
-#		include <cvaux.h>
-#	endif
-
-	#ifdef CImage	// For old OpenCV versions (<=1.0.0)
-	#undef CImage
-	#endif
-#endif // MRPT_HAS_OPENCV
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -262,7 +243,7 @@ void  CFeatureExtraction::findMoreFeatures( const mrpt::utils::CImage &img,
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START;
-	
+
 	if( options.featsType == featHarris || options.featsType == featKLT )
 	{
 		// Mask the points already stored in the list
@@ -286,7 +267,7 @@ void  CFeatureExtraction::findMoreFeatures( const mrpt::utils::CImage &img,
 			size_t xxE = min( cx + 15, (int)mask.cols()-1 );
 			size_t yyI = max( 0, cy - 15 );
 			size_t yyE = min( cy + 15, (int)mask.rows()-1 );
-			
+
 			for(size_t yy = yyI; yy < yyE; yy++)
 				for(size_t xx = xxI; xx < xxE; xx++)
 					cvSet2D( mask, yy, xx, zero );

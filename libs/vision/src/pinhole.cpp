@@ -32,27 +32,8 @@
 #include <mrpt/vision/pinhole.h>
 
 
-#if MRPT_HAS_OPENCV
-	// OPENCV HEADERS
-	#define CV_NO_CVV_IMAGE   // Avoid CImage name crash
+#include "do_opencv_includes.h"
 
-
-#	if MRPT_OPENCV_VERSION_NUM>=0x211
-#		include <opencv2/core/core.hpp>
-#		include <opencv2/highgui/highgui.hpp>
-#		include <opencv2/imgproc/imgproc.hpp>
-#		include <opencv2/imgproc/imgproc_c.h>
-
-#		include <opencv2/calib3d/calib3d.hpp>
-#	else
-#		include <cv.h>
-#		include <highgui.h>
-#	endif
-
-	#ifdef CImage	// For old OpenCV versions (<=1.0.0)
-	#undef CImage
-	#endif
-#endif // MRPT_HAS_OPENCV
 
 using namespace mrpt;
 using namespace mrpt::vision;

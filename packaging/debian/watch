@@ -1,2 +1,2 @@
 version=3
-http://babel.isa.uma.es/mrpt/src-repo/mrpt-(.+)\.tar\.gz
+http://archive.mrpt.org/debian-packages/mrpt-(.+)\.tar\.gz
