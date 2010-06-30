@@ -39,7 +39,8 @@ namespace mrpt
 	{
 		class BASE_IMPEXP CSerializable;
 		struct BASE_IMPEXP  CSerializablePtr;
-		
+		class BASE_IMPEXP CMessage;
+
 		/** This base class is used to provide a unified interface to
 		 *    files,memory buffers,..Please see the derived classes. This class is
 		 *    largely inspired by Borland VCL "TStream" class. <br><br>
@@ -84,6 +85,16 @@ namespace mrpt
 			 *	\exception std::exception On any error, or if ZERO bytes are read.
 			 */
 			size_t  ReadBuffer(void *Buffer, size_t Count);
+
+			/** Reads a block of bytes from the stream into Buffer, and returns the amound of bytes actually read, without waiting for more extra bytes to arrive (just those already enqued in the stream).
+			 *  Note that this method will fallback to ReadBuffer() in most CStream classes but in some hardware-related  classes.
+			 *
+			 *	\exception std::exception On any error, or if ZERO bytes are read.
+			 */
+			virtual size_t  ReadBufferImmediate(void *Buffer, size_t Count)
+			{
+				return ReadBuffer(Buffer, Count);
+			}
 
 			/** Writes a block of bytes to the stream from Buffer.
 			 *	\exception std::exception On any error
@@ -156,6 +167,43 @@ namespace mrpt
 				}
 				this->printf("]");
 			}
+
+			/** Send a message to the device.
+			 *  Note that only the low byte from the "type" field will be used.
+			 *
+			 *  For frames of size < 255 the frame format is an array of bytes in this order:
+			 *  \code
+			 *  <START_FLAG> <HEADER> <LENGTH> <BODY> <END_FLAG>
+			 *  	<START_FLAG> 	= 0x69
+			 *  	<HEADER> 		= A header byte
+			 *  	<LENGHT>		= Number of bytes of BODY
+			 *  	<BODY>			= N x bytes
+			 *  	<END_FLAG>		= 0X96
+			 *  Total length 	= 	<LENGTH> + 4
+			 *  \endcode
+			 *
+			 *  For frames of size > 255 the frame format is an array of bytes in this order:
+			 *  \code
+			 *  <START_FLAG> <HEADER> <HIBYTE(LENGTH)> <LOBYTE(LENGTH)> <BODY> <END_FLAG>
+			 *  	<START_FLAG> 	= 0x79
+			 *  	<HEADER> 		= A header byte
+			 *  	<LENGHT>		= Number of bytes of BODY
+			 *  	<BODY>			= N x bytes
+			 *  	<END_FLAG>		= 0X96
+			 *  Total length 	= 	<LENGTH> + 5
+			 *  \endcode
+			 *
+			 * \exception std::exception On communication errors
+			 */
+			void  sendMessage( const utils::CMessage &msg);
+
+			/** Tries to receive a message from the device.
+			  * \exception std::exception On communication errors
+			  * \returns True if successful, false if there is no new data from the device (but communications seem to work fine)
+			  * \sa The frame format is described in sendMessage()
+			  */
+			bool  receiveMessage( utils::CMessage &msg );
+
 
 		}; // End of class def.
 

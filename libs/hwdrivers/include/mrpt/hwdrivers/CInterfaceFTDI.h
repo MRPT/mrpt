@@ -151,6 +151,12 @@ namespace mrpt
 				return Write(Buffer,Count);
 			}
 
+			/** Reads a block of bytes from the stream into Buffer, and returns the amound of bytes actually read, without waiting for more extra bytes to arrive (just those already enqued in the stream).
+			 *  In this class this method actually behaves as expected and does not fallback to ReadBuffer().
+			 *	\exception std::exception On any error, or if ZERO bytes are read.
+			 */
+			virtual size_t  ReadBufferImmediate(void *Buffer, size_t Count);
+
 		protected:
 			/** Introduces a pure virtual method responsible for reading from the stream.
 			  *  It integrates a cache buffer to speed-up sequences of many, small readings.

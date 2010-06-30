@@ -43,16 +43,21 @@ IMPLEMENTS_GENERIC_SENSOR(CBoardENoses,mrpt::hwdrivers)
 /*-------------------------------------------------------------
 					CBoardENoses
 -------------------------------------------------------------*/
-CBoardENoses::CBoardENoses( )
+CBoardENoses::CBoardENoses( ) :
+	m_usbSerialNumber 	("ENOSE001"),
+	m_sensorLabel	  	("ENOSE"),
+	m_COM_port			(),
+	m_COM_baud			(115200),
+	m_stream_FTDI		(NULL),
+	m_stream_SERIAL		(NULL)
 {
-	m_usbSerialNumber = "ENOSE001";
-	m_sensorLabel	  = "ENOSE";
 	first_reading = true;
 }
 
 CBoardENoses::~CBoardENoses( )
 {
-
+	delete_safe(m_stream_FTDI);
+	delete_safe(m_stream_SERIAL);
 }
 
 /*-------------------------------------------------------------
@@ -64,9 +69,15 @@ void  CBoardENoses::loadConfig_sensorSpecific(
 {
 	MRPT_START;
 
-	m_usbSerialNumber = configSource.read_string(iniSection, "USB_serialname","",true);
+	m_usbSerialNumber = configSource.read_string(iniSection, "USB_serialname","",false);
 	m_sensorLabel	= configSource.read_string( iniSection, "sensorLabel", m_sensorLabel, false );
 
+#ifdef MRPT_OS_WINDOWS
+	m_COM_port = configSource.read_string(iniSection, "COM_port_WIN",m_COM_port);
+#else
+	m_COM_port = configSource.read_string(iniSection, "COM_port_LIN",m_COM_port);
+#endif
+	m_COM_baud = configSource.read_uint64_t(iniSection, "COM_baudRate",m_COM_baud);
 
 	configSource.read_vector( iniSection, "enose_poses_x", vector<float>(0), enose_poses_x, true);
 	configSource.read_vector( iniSection, "enose_poses_y", vector<float>(0), enose_poses_y, true);
@@ -101,12 +112,14 @@ bool CBoardENoses::queryFirmwareVersion( string &out_firmwareVersion )
 		utils::CMessage		msg,msgRx;
 
 		// Try to connect to the device:
-		if (!checkConnectionAndConnect())	return false;
+		CStream *comms = checkConnectionAndConnect();
+		if (!comms)
+			return false;
 
 		msg.type = 0x10;
-		sendMessage(msg);
+		comms->sendMessage(msg);
 
-		if (receiveMessage(msgRx) )
+		if (comms->receiveMessage(msgRx) )
 		{
 			msgRx.getContentAsString( out_firmwareVersion );
 			return true;
@@ -116,7 +129,9 @@ bool CBoardENoses::queryFirmwareVersion( string &out_firmwareVersion )
 	}
 	catch(...)
 	{
-		Close();
+		// Close everything and start again:
+		delete_safe(m_stream_SERIAL);
+		delete_safe(m_stream_FTDI);
 		return false;
 	}
 }
@@ -125,26 +140,57 @@ bool CBoardENoses::queryFirmwareVersion( string &out_firmwareVersion )
 /*-------------------------------------------------------------
 					checkConnectionAndConnect
 -------------------------------------------------------------*/
-bool CBoardENoses::checkConnectionAndConnect()
+CStream *CBoardENoses::checkConnectionAndConnect()
 {
-	if (isOpen())
-		return true;
-
-	try
+	// Make sure one of the two possible pipes is open:
+	if (!m_stream_FTDI && !m_stream_SERIAL)
 	{
-		OpenBySerialNumber( m_usbSerialNumber );
-		mrpt::system::sleep(10);
-		Purge();
-		mrpt::system::sleep(10);
-		SetLatencyTimer(1);
-		SetTimeouts(10,100);
-		return true;
+		if (!m_COM_port.empty())
+				m_stream_SERIAL = new CSerialPort();
+		else 	m_stream_FTDI = new CInterfaceFTDI();
 	}
-	catch(...)
-	{
-		// Error opening device:
-		Close();
-		return false;
+
+
+	if (m_stream_FTDI)
+	{	// FTDI pipe ==================
+		if (m_stream_FTDI->isOpen())
+			return m_stream_FTDI;
+		try
+		{
+			m_stream_FTDI->OpenBySerialNumber( m_usbSerialNumber );
+			mrpt::system::sleep(10);
+			m_stream_FTDI->Purge();
+			mrpt::system::sleep(10);
+			m_stream_FTDI->SetLatencyTimer(1);
+			m_stream_FTDI->SetTimeouts(10,100);
+			return m_stream_FTDI;
+		}
+		catch(...)
+		{	// Error opening device:
+			m_stream_FTDI->Close();
+			return NULL;
+		}
+	}
+	else
+	{	// Serial pipe ==================
+		ASSERT_(m_stream_SERIAL)
+		if (m_stream_SERIAL->isOpen())
+			return m_stream_SERIAL;
+		try
+		{
+			m_stream_SERIAL->setConfig(m_COM_baud);
+			m_stream_SERIAL->open(m_COM_port);
+			mrpt::system::sleep(10);
+			m_stream_SERIAL->purgeBuffers();
+			mrpt::system::sleep(10);
+			m_stream_SERIAL->setTimeouts(10,1,10, 1,20);
+			return m_stream_SERIAL;
+		}
+		catch(...)
+		{	// Error opening device:
+			m_stream_SERIAL->close();
+			return NULL;
+		}
 	}
 }
 
@@ -157,20 +203,23 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 	try
 	{
 		// Connected?
-		if (!checkConnectionAndConnect())	return false;
+		CStream *comms = checkConnectionAndConnect();
+
+		if (!comms)
+			return false;
 
 		utils::CMessage		msg;
 		CObservationGasSensors::TObservationENose	newRead;
-		
+
 		obs.m_readings.clear();
 
 		//// Send request:
 		//msg.type = 0x11;
 		//msg.content.clear();
-		//sendMessage( msg );
+		//comms->sendMessage( msg );
 
-		// Wait for e-nose frame (each 100ms)
-		receiveMessage( msg );
+		// Wait for e-nose frame
+		comms->receiveMessage( msg );
 
         //m_state = ssWorking;
 
@@ -215,7 +264,7 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 				newRead.sensorTypes.clear();
 				newRead.readingsVoltage.clear();
 				newRead.hasTemperature = false;
-				
+
 				for (size_t idx=0;idx<(wordsPereNose-1)/2;idx++)
 				{
 					if ( readings[i*wordsPereNose + 2*idx + 0] != 0x0000 )
@@ -229,17 +278,17 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 
 						// Is Reading's Time?
 						else if (readings[i*wordsPereNose + 2*idx + 0]==0xEEEE)
-						{							
+						{
 							uint32_t *p = (uint32_t*)&readings[i*wordsPereNose + 2*idx + 1];	//Get readings time from frame
-							obs.timestamp = mrpt::system::secondsToTimestamp(((double)*p)/1000);	
+							obs.timestamp = mrpt::system::secondsToTimestamp(((double)*p)/1000);
 
 							if (first_reading)
-							{								
+							{
 								initial_timestamp = mrpt::system::getCurrentTime() - obs.timestamp;
-								first_reading = false;	
+								first_reading = false;
 							}
 							obs.timestamp = obs.timestamp + initial_timestamp;
-							
+
 						}
 
 						else
@@ -250,7 +299,7 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 							// Pass from ADC internal Atmel value[10bits] to [0-2.5] volt range:
 							if ( readings[i*wordsPereNose + 2*idx + 0]==(0x2611) ){
 								newRead.readingsVoltage.push_back( ( readings[i*wordsPereNose + 2*idx + 1] * 5.0f) / 1024.0f  );
-							
+
 							}else{	// Pass from ADC value[12bits] to [0-2.5] volt range:
 								newRead.readingsVoltage.push_back( ( readings[i*wordsPereNose + 2*idx + 1] * 5.0f) / 4096.0f  );
 							}
@@ -319,9 +368,10 @@ void  CBoardENoses::doProcess()
   */
 void CBoardENoses::initialize()
 {
+	// We'll rather try it in doProcess() since it's quite usual that it fails
+	//  on a first try, then works on the next ones.
 	/*
 	if (!checkConnectionAndConnect())
-		THROW_EXCEPTION("Couldn't connect to the USB board");
+		THROW_EXCEPTION("Couldn't connect to the eNose board");
 	*/
-
 }

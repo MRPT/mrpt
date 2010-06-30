@@ -107,4 +107,12 @@ size_t CInterfaceFTDI::getPosition()
 	return 0;
 }
 
-
+/*-------------------------------------------------------------
+					ReadBufferImmediate
+-------------------------------------------------------------*/
+size_t CInterfaceFTDI::ReadBufferImmediate(void *Buffer, size_t Count)
+{
+	unsigned long nRead;
+	ftdi_read(Buffer, Count, &nRead);
+	return nRead;
+}

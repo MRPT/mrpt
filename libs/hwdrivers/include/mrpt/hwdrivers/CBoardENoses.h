@@ -29,7 +29,8 @@
 #ifndef CBoardENoses_H
 #define CBoardENoses_H
 
-#include <mrpt/hwdrivers/CInterfaceFTDIMessages.h>
+#include <mrpt/hwdrivers/CInterfaceFTDI.h>
+#include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
 #include <mrpt/slam/CObservationGasSensors.h>
@@ -47,7 +48,12 @@ namespace mrpt
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
-		  *    USB_serialname=ENOSE001
+		  *    USB_serialname=ENOSE001   // USB FTDI pipe: will open only if COM_port_* are not set or empty
+		  *
+		  *    COM_port_WIN = COM1       // Serial port to connect to.
+		  *    COM_port_LIN = ttyS0
+		  *
+		  *    COM_baudRate = 115200
 		  *
 		  *    ; 3D position (in meters) of the master +slave eNoses
 		  *    enose_poses_x=<MASTER X> <SLAVE#1 X> <SLAVE#2 X> <SLAVE#3 X>...
@@ -62,7 +68,7 @@ namespace mrpt
 		  *  \endcode
 		  *
  		  */
-		class HWDRIVERS_IMPEXP CBoardENoses : public mrpt::hwdrivers::CGenericSensor, public mrpt::hwdrivers::CInterfaceFTDIMessages
+		class HWDRIVERS_IMPEXP CBoardENoses : public mrpt::hwdrivers::CGenericSensor
 		{
 			DEFINE_GENERIC_SENSOR(CBoardENoses)
 
@@ -74,14 +80,23 @@ namespace mrpt
 			mrpt::system::TTimeStamp initial_timestamp;
 			bool first_reading;
 
-			/** The 3D pose of the master + N slave eNoses on the robot (meters & radians)
-			  */
+			std::string		m_COM_port;  //!< If not an empty string (default), will open that serial port, otherwise will try to open USB FTDI device "m_usbSerialNumber"
+			unsigned int 	m_COM_baud;	 //!< Default=115200
+
+
+			// Only one of these two streams will be !=NULL and open for each specific eNose board!
+			/**  FTDI comms pipe (when not in serial port mode) */
+			CInterfaceFTDI	*m_stream_FTDI;
+			/**  Serial port comms */
+			CSerialPort		*m_stream_SERIAL;
+
+			/** The 3D pose of the master + N slave eNoses on the robot (meters & radians) */
 			vector_float	enose_poses_x,enose_poses_y,enose_poses_z,enose_poses_yaw,enose_poses_pitch,enose_poses_roll;
 
 			/** Tries to connect to the USB device (if disconnected).
-			  * \return True on connection OK, false on error.
+			  * \return NULL on error, otherwise a stream to be used for comms.
 			  */
-			bool	checkConnectionAndConnect();
+			mrpt::utils::CStream*	checkConnectionAndConnect();
 
 			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
 			  *  See hwdrivers::CBoardENoses for the possible parameters
@@ -123,6 +138,17 @@ namespace mrpt
 			  */
 			virtual void initialize();
 
+
+
+			/** If not an empty string, will open that serial port, otherwise will try to open USB FTDI device "m_usbSerialNumber"
+			  *  The default is an empty string. Example strings: "COM1", "ttyUSB0", ...
+			  */
+			inline void setSerialPort(const std::string &port) { m_COM_port = port; }
+			inline std::string getSerialPort() const { return m_COM_port; }
+
+			/** Set the serial port baud rate (default: 115200) */
+			inline void setSerialPortBaud(unsigned int baud) { m_COM_baud=baud; }
+			inline unsigned int getSerialPortBaud() const { return m_COM_baud; }
 
 
 		}; // end of class

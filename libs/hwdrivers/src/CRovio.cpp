@@ -394,7 +394,7 @@ bool CRovio::captureImageAsync( CImage & picture, bool rectified)
   -----------------------------------------------*/
 bool CRovio::getRovioState(CRovio::TRovioState &status)
 {
-	size_t x_pos, y_pos, theta_pos, lenght;
+	size_t x_pos, /*y_pos, theta_pos,*/ lenght;
 	string x_value, y_value, theta_value, MF, response, errormsg;
 	mrpt::math::TPose2D pose;
 	general_command(1, response, errormsg);		//Get report from Rovio to response

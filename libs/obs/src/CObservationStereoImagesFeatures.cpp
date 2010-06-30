@@ -96,7 +96,6 @@ void  CObservationStereoImagesFeatures::writeToStream(CStream &out, int *version
 		}
 		out << sensorLabel << timestamp;
 	}
-	MRPT_TODO( "Make CArrayDouble objects to be serializable as a whole (not element to element)");
 }
 
 /*---------------------------------------------------------------

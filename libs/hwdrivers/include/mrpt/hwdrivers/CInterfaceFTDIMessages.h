@@ -36,44 +36,9 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-
-		/** An implementation of message passing over a FTDI USB link.
-		 *  	The limit for the body size is 255 bytes. The frame format is an array of bytes, in this order:
-		  \code
-			<START_FLAG> <HEADER> <LENGTH> <BODY> <END_FLAG>
-
-				<START_FLAG> 	= 0x69
-				<HEADER> 		= A header byte
-				<LENGHT>		= Number of bytes of BODY
-				<BODY>			= N x bytes
-				<END_FLAG>		= 0X96
-					 Total length 	= 	<LENGTH> + 4
-		  \endcode
-		 * \sa CInterfaceFTDI
+		/** Since MRPT 0.9.1 this class has no extra functionality, since the methods for sending/receiving messages are not in CStream.
 		 */
-		class HWDRIVERS_IMPEXP CInterfaceFTDIMessages : public hwdrivers::CInterfaceFTDI
-		{
-		public:
-			/** Constructor
-			  */
-			CInterfaceFTDIMessages();
-
-			/** Destructor
-			  */
-			virtual ~CInterfaceFTDIMessages();
-
-			/** Send a message to the device.
-			  *  Note that only the low byte from the "type" field will be used.
-			  * \exception std::exception On communication errors
-			  */
-			void  sendMessage( const utils::CMessage &msg);
-
-			/** Tries to receive a message from the device.
-			  * \exception std::exception On communication errors
-			  * \returns True if successful, false if there is no new data from the device (but communications seem to work fine)
-			  */
-			bool  receiveMessage( utils::CMessage &msg );
-		}; // end of class
+		typedef CInterfaceFTDI  CInterfaceFTDIMessages;
 
 	} // end of namespace
 } // end of namespace
