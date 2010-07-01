@@ -202,3 +202,9 @@ void CObservation3DRangeScan::swap(CObservation3DRangeScan &o)
 	std::swap(sensorPose, o.sensorPose);
 	std::swap(stdError, o.stdError);
 }
+
+void CObservation3DRangeScan::unload()
+{
+	intensityImage.unload();
+	confidenceImage.unload();
+}

@@ -59,11 +59,11 @@ CSickLaserSerial::CSickLaserSerial() :
 	m_scans_res(50),
 	m_com_port(),
 	m_mySerialPort( NULL ),
-	m_sensorLabel("SICKLMS"),
 	m_com_baudRate(38400),
 	m_nTries_connect(1),
 	m_nTries_current(0)
 {
+	m_sensorLabel = "SICKLMS";
 	memset(m_received_frame_buffer,0,sizeof(m_received_frame_buffer));
 }
 
@@ -153,7 +153,6 @@ void  CSickLaserSerial::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &configSource,
 	const std::string	  &iniSection )
 {
-	m_sensorLabel  = configSource.read_string(iniSection,"sensorLabel",m_sensorLabel);
 	m_sensorPose = CPose3D(
 		configSource.read_float(iniSection,"pose_x",0),
 		configSource.read_float(iniSection,"pose_y",0),

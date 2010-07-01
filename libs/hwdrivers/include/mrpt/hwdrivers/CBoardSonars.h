@@ -104,8 +104,6 @@ namespace mrpt
 				  */
 				std::string		m_usbSerialNumber;
 
-				std::string 	m_sensorLabel;
-
 				/** A value between 0 and 16, for gains between 40 and 700 (not linear).
 				  */
 				uint8_t			m_gain;

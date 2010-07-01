@@ -76,7 +76,6 @@ namespace mrpt
 			/** A copy of the device serial number (to open the USB FTDI chip)
 			  */
 			std::string		m_usbSerialNumber;
-			std::string		m_sensorLabel;
 			mrpt::system::TTimeStamp initial_timestamp;
 			bool first_reading;
 

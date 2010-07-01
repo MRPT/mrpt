@@ -100,7 +100,7 @@ namespace mrpt
 			mrpt::utils::circular_buffer<uint8_t> m_rx_buffer; //!< Auxiliary buffer for readings
 
 			std::string     m_lastSentMeasCmd; //!< The last sent measurement command (MDXXX), including the last 0x0A.
-			
+
 			bool 			m_verbose;
 
 			/** Enables the SCIP2.0 protocol (this must be called at the very begining!).
@@ -203,7 +203,7 @@ namespace mrpt
 			  *  Call with "0" to disable this reduction again (the default).
 			  */
 			void setReducedFOV(const double fov) { m_reduced_fov = fov; }
-			
+
 			void setVerbose(bool enable = true) { m_verbose = enable; }
 
 
@@ -223,8 +223,6 @@ namespace mrpt
 
 			uint32_t		m_timeStartUI;	//!< Time of the first data packet, for synchronization purposes.
 			mrpt::system::TTimeStamp	m_timeStartTT;
-
-			std::string		m_sensorLabel;
 
 			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
 			  *  See hwdrivers::CHokuyoURG for the possible parameters

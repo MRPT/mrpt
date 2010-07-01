@@ -69,7 +69,6 @@ namespace mrpt
 			/** This serial port will be attempted to be opened automatically when this class is first used to request data from the device.
 			  * \sa hwdrivers::CSerialPort
 			  */
-			std::string					m_sensorLabel;
 			int							m_COMbauds;
 			std::string					m_com_port;
 			uint64_t					m_timeStartUI;

@@ -223,8 +223,8 @@ void  vision::trackFeatures(
 	const CImage &inImg1,
 	const CImage &inImg2,
 	CFeatureList &featureList,
-	const unsigned int &window_width,
-	const unsigned int &window_height)
+	const unsigned int window_width,
+	const unsigned int window_height)
 {
 	CFeatureTracker_KL klt( TParametersDouble(
 		"window_width",(double)window_width,
@@ -236,124 +236,21 @@ void  vision::trackFeatures(
 
 /*------------------------------------------------------------
 					trackFeatures
+
+	OLD/DEPRECATED VERSION: Redirect to CFeatureTracker_KL
 -------------------------------------------------------------*/
-void  vision::trackFeatures( const CImage &inImg1,
-				 				  const CImage &inImg2,
-								  const CFeatureList &inFeatureList,
-								  CFeatureList &outFeatureList,
-								  const unsigned int &window_width,
-								  const unsigned int &window_height)
+void  vision::trackFeatures(
+	const CImage &inImg1,
+	const CImage &inImg2,
+	const CFeatureList &inFeatureList,
+	CFeatureList &outFeatureList,
+	const unsigned int window_width,
+	const unsigned int window_height )
 {
-MRPT_START;
+	CFeatureTracker_KL klt( TParametersDouble(
+		"window_width",(double)window_width,
+		"window_height",(double)window_height,
+		NULL) );
 
-MRPT_TODO("Remove this function / unify with the overloaded one!")
-
-#if MRPT_HAS_OPENCV
-
-MRPT_START;
-
-// Both images must be of the same size
-ASSERT_( inImg1.getWidth() == inImg2.getWidth() && inImg1.getHeight() == inImg2.getHeight() );
-
-// Use OpenCV Implementation
-// OpenCV Local Variables
-std::vector<CvPoint2D32fVector>		points(2);
-std::vector<char>	status;
-
-int	flags		= 0;
-const int	nFeatures	= (int)inFeatureList.size();					// Number of features
-
-// Grayscale images
-IplImage *pGrey, *cGrey;
-
-if( inImg1.isColor() && inImg2.isColor() )
-{
-	// Input Images
-	IplImage* pImg = (IplImage*)inImg1.getAsIplImage();
-	IplImage* cImg = (IplImage*)inImg2.getAsIplImage();
-
-	pGrey = cvCreateImage( cvGetSize( pImg ), 8, 1 );
-	cGrey = cvCreateImage( cvGetSize( cImg ), 8, 1 );
-
-	// Conver to grayscale
-	cvCvtColor( pImg, pGrey, CV_BGR2GRAY );
-	cvCvtColor( cImg, cGrey, CV_BGR2GRAY );
+	klt.trackFeaturesNewList(inImg1,inImg2,inFeatureList, outFeatureList);
 }
-else
-{
-	pGrey = (IplImage*)inImg1.getAsIplImage();
-	cGrey = (IplImage*)inImg2.getAsIplImage();
-}
-
-// Pyramids
-IplImage* pPyr = NULL;
-IplImage* cPyr = NULL;
-
-// Arrays definition
-points[0].resize(nFeatures);	// = (CvPoint2D32f*)cvAlloc( nFeatures*sizeof( points[0][0] ) );
-points[1].resize(nFeatures);	// = (CvPoint2D32f*)cvAlloc( nFeatures*sizeof( points[0][0] ) );
-status.resize(nFeatures);		// = (char*)cvAlloc( nFeatures );
-
-// Array conversion MRPT->OpenCV
-CFeatureList::const_iterator		itFeat;
-int							i;				// Counter
-for( i = 0, itFeat = inFeatureList.begin(); i < nFeatures && itFeat != inFeatureList.end(); ++i, ++itFeat  )
-{
-	points[0][i].x = (*itFeat)->x;
-	points[0][i].y = (*itFeat)->y;
-} // end for
-
-cvCalcOpticalFlowPyrLK( pGrey, cGrey, pPyr, cPyr,
-	&points[0][0], &points[1][0], nFeatures, cvSize( window_width, window_height ), 3, &status[0], NULL,
-	cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,20,0.03), flags );
-
-// outFeatureList.resize( nFeatures );
-
-// Array conversion OpenCV->MRPT
-for( i = 0, itFeat = inFeatureList.begin(); i < nFeatures && itFeat != inFeatureList.end(); ++i, ++itFeat )
-{
-	CFeaturePtr feat = CFeature::Create();
-
-	if( status[i] == 1 &&
-		points[1][i].x > 0 && points[1][i].y > 0 &&
-		points[1][i].x < pGrey->width && points[1][i].y < pGrey->height )
-	{
-		// Feature could be tracked
-		feat->x			= points[1][i].x;
-		feat->y			= points[1][i].y;
-		feat->KLT_status	= statusKLT_TRACKED;
-	} // end if
-	else	// Feature could not be tracked
-	{
-		feat->x				= -1;
-		feat->y				= -1;
-		feat->KLT_status	= status[i] == 0 ? statusKLT_IDLE : statusKLT_OOB;
-	} // end else
-	feat->ID = (*itFeat)->ID;
-	outFeatureList.push_back( feat );
-} // end for
-
-// Free memory
-if( inImg1.isColor() && inImg2.isColor() )
-{
-	cvReleaseImage( &pGrey );
-	cvReleaseImage( &cGrey );
-}
-
-cvReleaseImage( &pPyr );
-cvReleaseImage( &cPyr );
-
-//cvFree( (void**)&points[0] );
-//cvFree( (void**)&points[1] );
-//cvFree( (void**)&status );
-
-MRPT_END;
-
-#else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
-#endif
-
-	MRPT_END;
-} // end trackFeatures
-
-

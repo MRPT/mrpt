@@ -81,7 +81,7 @@ namespace mrpt
 			DEFINE_VIRTUAL_SERIALIZABLE(CObservation)
 
 		protected:
-			void swap(CObservation &o);  //!< Swap with another observation, ONLY the data defined here in the base class CObservation. It's protected since it'll be only called from child classes.
+			void swap(CObservation &o);  //!< Swap with another observation, ONLY the data defined here in the base class CObservation. It's protected since it'll be only called from child classes that should know what else to swap appart from these common data.
 
 		 public:
 

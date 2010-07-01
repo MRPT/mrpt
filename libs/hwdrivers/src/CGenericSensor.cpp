@@ -49,6 +49,7 @@ CGenericSensor::CGenericSensor() :
 	m_process_rate(0),
 	m_max_queue_len(200),
 	m_grab_decimation(0),
+	m_sensorLabel("UNNAMED_SENSOR"),
 	m_grab_decimation_counter(0),
 	m_state( ssInitializing ),
 	m_path_for_external_images	(),
@@ -147,6 +148,8 @@ void  CGenericSensor::loadConfig(
 	m_process_rate  = cfg.read_double(sect,"process_rate",0 );  // Leave it to 0 so rawlog-grabber can detect if it's not set by the user.
 	m_max_queue_len = static_cast<size_t>(cfg.read_int(sect,"max_queue_len",int(m_max_queue_len)));
 	m_grab_decimation = static_cast<size_t>(cfg.read_int(sect,"grab_decimation",int(m_grab_decimation)));
+
+	m_sensorLabel	= cfg.read_string( sect, "sensorLabel", m_sensorLabel );
 
 	m_grab_decimation_counter = 0;
 

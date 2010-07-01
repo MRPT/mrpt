@@ -65,8 +65,6 @@ void  CBoardSonars::loadConfig_sensorSpecific(	const mrpt::utils::CConfigFileBas
 
 	std::vector<double> aux;											// Auxiliar vector
 
-	m_sensorLabel		= configSource.read_string(iniSection,"sensorLabel",m_sensorLabel);
-
 	// Some parameters ...
 	m_usbSerialNumber	= configSource.read_string(iniSection,"USB_serialNumber",m_usbSerialNumber,true);
 	m_gain				= configSource.read_int(iniSection,"gain",m_gain,true);

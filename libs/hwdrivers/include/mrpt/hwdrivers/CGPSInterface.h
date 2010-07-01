@@ -115,7 +115,6 @@ namespace mrpt
 
 			poses::CPoint3D	m_sensorPose;
 
-			std::string		m_sensorLabel;
 			std::string		m_customInit;
 
 			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)

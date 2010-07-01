@@ -80,7 +80,6 @@ using namespace mrpt::hwdrivers;
 					CIMUXSens
 -------------------------------------------------------------*/
 CIMUXSens::CIMUXSens( ) :
-	m_sensorLabel   ("XSensMTi"),
 	m_COMbauds		(0),
 	m_com_port		(),
 	m_timeStartUI	(0),
@@ -90,6 +89,7 @@ CIMUXSens::CIMUXSens( ) :
 	m_deviceId_ptr	(NULL),
 	m_toutCounter	(0)
 {
+	m_sensorLabel = "XSensMTi";
 #if MRPT_HAS_xSENS
     m_cmt3_ptr  = new xsens::Cmt3[1];
     m_deviceId_ptr = new CmtDeviceId[1];
@@ -389,8 +389,6 @@ void  CIMUXSens::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &configSource,
 	const std::string	  &iniSection )
 {
-	m_sensorLabel	= configSource.read_string( iniSection, "sensorLabel", m_sensorLabel, false );
-
 	m_sensorPose.setFromValues(
         configSource.read_float( iniSection, "pose_x", 0, false ),
         configSource.read_float( iniSection, "pose_y", 0, false ),

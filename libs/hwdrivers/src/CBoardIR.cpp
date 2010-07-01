@@ -43,12 +43,13 @@ IMPLEMENTS_GENERIC_SENSOR(CBoardIR,mrpt::hwdrivers)
    ----------------------------------------------------- */
 CBoardIR::CBoardIR( int BUFFER_LENGTH ) :
 	m_COM					(),
-	m_sensorLabel			("BoardIR"),
 	m_minRange				(0.1f),
 	m_maxRange				(0.8f),
 	m_COMname				(),
 	m_COMbauds				(4800)
-{}
+{
+	m_sensorLabel = "BoardIR";
+}
 
 /* -----------------------------------------------------
                 loadConfig_sensorSpecific
@@ -64,7 +65,6 @@ void  CBoardIR::loadConfig_sensorSpecific(
 #endif
 
 	m_COMbauds		= configSource.read_int( iniSection, "baudRate",m_COMbauds, true );
-	m_sensorLabel	= configSource.read_string( iniSection, "sensorLabel", m_sensorLabel, false );
 
 	std::vector<int32_t>::iterator itIR;
 	std::vector<double> aux;				// Auxiliar vector

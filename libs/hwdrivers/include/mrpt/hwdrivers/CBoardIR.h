@@ -114,7 +114,6 @@ namespace mrpt
 
 			poses::CPoint3D	m_sensorPose;
 
-			std::string		m_sensorLabel;
 			std::string		m_customInit;
 
 			/** The minimum range in meters (10cm).

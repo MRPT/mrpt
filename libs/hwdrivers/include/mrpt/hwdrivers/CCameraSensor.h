@@ -188,13 +188,11 @@ namespace mrpt
 			  */
 			virtual void setPathForExternalImages( const std::string &directory );
 
-
 			/** This must be called before initialize() */
 			void enableLaunchOwnThreadForSavingImages(bool enable=true) { m_external_images_own_thread = enable; };
 
 		protected:
 			poses::CPose3D		m_sensorPose;
-			std::string			m_sensorLabel;
 
 			std::string								m_grabber_type; //!< Can be "opencv",...
 			bool									m_capture_grayscale;
@@ -219,10 +217,6 @@ namespace mrpt
 			std::string								m_rawlog_detected_images_dir;
 
 			bool				m_external_images_own_thread; //!< Whether to launch independent thread
-			unsigned int		m_external_image_saver_count; //!< Number of working threads. Default:1, set to 2 in quad cores.
-			std::vector<mrpt::system::TThreadHandle>  m_threadImagesSaver;
-
-			bool 	m_threadImagesSaverShouldEnd;
 
 			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
 			  *  See hwdrivers::CCameraSensor for the possible parameters
@@ -253,10 +247,16 @@ namespace mrpt
 			int							 m_preview_counter;
 			mrpt::gui::CDisplayWindowPtr m_preview_win1,m_preview_win2; //!< Normally we'll use only one window, but for stereo images we'll use two of them.
 
+			/** @name Stuff related to working threads to save images to disk
+			    @{ */
+			unsigned int		m_external_image_saver_count; //!< Number of working threads. Default:1, set to 2 in quad cores.
+			std::vector<mrpt::system::TThreadHandle>  m_threadImagesSaver;
+
+			bool 	m_threadImagesSaverShouldEnd;
 			mrpt::synch::CCriticalSection	m_csToSaveList;		//!< The critical section for m_toSaveList
 			std::vector<TListObservations>	m_toSaveList;		//!< The queues of objects to be returned by getObservations, one for each working thread.
-
 			void thread_save_images(unsigned int my_working_thread_index); //!< Thread to save images to files.
+			/**  @} */
 
 		}; // end class
 

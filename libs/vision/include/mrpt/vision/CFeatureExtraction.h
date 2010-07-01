@@ -142,6 +142,7 @@ namespace mrpt
 					  */
 					int 	threshold;  //!< default= 20
 					bool	nonmax_suppression;		//!< Default = true
+					float	min_distance;	//!< (default=2) minimum distance between features (in pixels)
 				} FASTOptions;
 
 				struct VISION_IMPEXP TSIFTOptions

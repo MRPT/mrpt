@@ -30,7 +30,11 @@
 
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 
+#include <mrpt/system/string_utils.h>
+#include <mrpt/system/filesystem.h>
+
 using namespace mrpt::hwdrivers;
+using namespace mrpt::system;
 
 IMPLEMENTS_GENERIC_SENSOR(CSwissRanger3DCamera,mrpt::hwdrivers)
 
@@ -83,9 +87,9 @@ CSwissRanger3DCamera::CSwissRanger3DCamera()  :
 	m_cols			(0),
 	m_cam_serial_num(0),
 	m_maxRange		(5),
-	m_preview_window(false),
-	m_sensorLabel   ("3DCAM")
+	m_preview_window(false)
 {
+	m_sensorLabel = "3DCAM";
 #if MRPT_HAS_SWISSRANGE
 
 #else
@@ -143,7 +147,6 @@ void  CSwissRanger3DCamera::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &configSource,
 	const std::string			&iniSection )
 {
-	m_sensorLabel		= configSource.read_string(iniSection,"sensorLabel",m_sensorLabel);
 	m_sensorPoseOnRobot.setFromValues(
 		configSource.read_float(iniSection,"pose_x",0),
 		configSource.read_float(iniSection,"pose_y",0),
@@ -377,7 +380,6 @@ void CSwissRanger3DCamera::getNextObservation(
 					obs.intensityImage.resize(img->width,img->height,1, true);
 
 					const uint16_t *data_ptr = reinterpret_cast<const uint16_t *>(img->data);
-
 					for (size_t y=0;y<img->height;y++)
 					{
 						uint8_t *row = obs.intensityImage.get_unsafe(0,y,0);
@@ -387,6 +389,14 @@ void CSwissRanger3DCamera::getNextObservation(
 
 					if (m_enable_img_hist_equal)
 						obs.intensityImage.equalizeHistInPlace();
+
+					// Save as external image file??
+					if (!m_path_for_external_images.empty())
+					{
+						const string filName = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_INT_%f.%s", (double)timestampTotime_t( obs.timestamp ), m_external_images_format.c_str() );
+						obs.intensityImage.saveToFile( m_path_for_external_images + string("/") +filName, m_external_images_jpeg_quality );
+						obs.intensityImage.setExternalStorage( filName );
+					}
 				}
 			}
 			break;
@@ -399,14 +409,25 @@ void CSwissRanger3DCamera::getNextObservation(
 					ASSERT_(img->dataType==ImgEntry::DT_USHORT)
 					obs.hasConfidenceImage  = true;
 
-					const float K = 1.0f / 0xFFFF;
-					obs.confidenceImage.setSize(img->height, img->width);
+					//const float K = 1.0f / 0xFFFF;
+					obs.confidenceImage.resize(img->width,img->height,1, true);
 
 					const uint16_t *data_ptr = reinterpret_cast<const uint16_t *>(img->data);
-
 					for (size_t y=0;y<img->height;y++)
+					{
+						uint8_t *row = obs.confidenceImage.get_unsafe(0,y,0);
 						for (size_t x=0;x<img->width;x++)
-							obs.confidenceImage.set_unsafe(y,x, K * (*data_ptr++) );
+							(*row++) = (*data_ptr++) >> 8;	// Convert 16u -> 8u
+					}
+
+					// Save as external image file??
+					if (!m_path_for_external_images.empty())
+					{
+						const string filName = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_CONF_%f.%s", (double)timestampTotime_t( obs.timestamp ), m_external_images_format.c_str() );
+						obs.confidenceImage.saveToFile( m_path_for_external_images + string("/") +filName, m_external_images_jpeg_quality );
+						obs.confidenceImage.setExternalStorage( filName );
+					}
+
 				}
 			}
 			break;
@@ -441,5 +462,14 @@ void CSwissRanger3DCamera::getNextObservation(
 }
 
 
-
-
+/* -----------------------------------------------------
+				setPathForExternalImages
+----------------------------------------------------- */
+void CSwissRanger3DCamera::setPathForExternalImages( const std::string &directory )
+{
+	if (!mrpt::system::createDirectory( directory ))
+	{
+		THROW_EXCEPTION_CUSTOM_MSG1("Error: Cannot create the directory for externally saved images: %s",directory.c_str() )
+	}
+	m_path_for_external_images = directory;
+}

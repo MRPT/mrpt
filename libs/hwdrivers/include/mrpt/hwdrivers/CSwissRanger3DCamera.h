@@ -128,6 +128,11 @@ namespace mrpt
 			/** Returns the maximum camera range, as deduced from its operating frequency. */
 			double	getMaxRange() const { return m_maxRange; }
 
+			/**  Set the path where to save off-rawlog image files (this class DOES take into account this path).
+			  *  An  empty string (the default value at construction) means to save images embedded in the rawlog, instead of on separate files.
+			  * \exception std::exception If the directory doesn't exists and cannot be created.
+			  */
+			virtual void setPathForExternalImages( const std::string &directory );
 
 			/** @name Capture configuration methods (apart from loadConfig)
 			    @{ */
@@ -204,8 +209,6 @@ namespace mrpt
 
 			bool		m_preview_window; //!< Show preview window while grabbing
 			mrpt::gui::CDisplayWindowPtr  m_win2d;
-
-			std::string  m_sensorLabel;
 
 			void *m_cam;  //!< opaque handler to SRCAM. NULL means it's not open yet.
 

@@ -314,6 +314,7 @@ CFeatureExtraction::TOptions::TOptions()
 	// FAST:
 	FASTOptions.threshold				= 20;
 	FASTOptions.nonmax_suppression 		= true;
+	FASTOptions.min_distance 			= 2;
 
 	// SpinImages Options:
 	SpinImagesOptions.hist_size_distance  = 10;

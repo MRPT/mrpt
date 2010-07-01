@@ -49,14 +49,18 @@ namespace slam
 	 *    - 3D point cloud (as float's instead of double's to save storage space - precision is not a problem in this case).
 	 *    - 2D range image (as a matrix).
 	 *    - 2D intensity image (as a CImage).
-	 *    - 2D confidence image (as a matrix).
+	 *    - 2D confidence image (as a CImage).
 	 *
 	 *  The coordinates of the 3D point cloud are in meters with respect to the optical center of the camera,
 	 *    with the +X axis pointing forward, +Y pointing left-hand and +Z pointing up.
 	 *
 	 *  The 2D images and matrices are stored as common images, with an up->down rows order and left->right, as usual.
+	 *   Optionally, the intensity and confidence channels can be set to delayed-load images for off-rawlog storage so it saves
+	 *   memory by having loaded in memory just the needed images. See the method unload()
 	 *
 	 *  A class that grabs observations of this type is mrpt::hwdrivers::CSwissRanger3DCamera
+	 *
+	 *  \note Starting at serialization version 2 (MRPT 0.9.1+), the confidence channel is stored as an image instead of a matrix to optimize memory and disk space.
 	 *
 	 * \sa mrpt::hwdrivers::CSwissRanger3DCamera, CObservation
 	 */
@@ -86,7 +90,7 @@ namespace slam
 		mrpt::utils::CImage intensityImage; 	//!< If hasIntensityImage=true, a gray-level intensity image of the same size than "rangeImage"
 
 		bool hasConfidenceImage; 			//!< true means the field confidenceImage contains valid data
-		mrpt::math::CMatrix confidenceImage;  //!< If hasConfidenceImage=true, a matrix of floats with the "confidence" value [range 0-1] as estimated by the capture drivers.
+		mrpt::utils::CImage confidenceImage;  //!< If hasConfidenceImage=true, an image with the "confidence" value [range 0-255] as estimated by the capture drivers.
 
 
 		float  	maxRange;	//!< The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
@@ -106,8 +110,9 @@ namespace slam
 		  */
 		void setSensorPose( const CPose3D &newSensorPose ) { sensorPose = newSensorPose; }
 
-
 		void swap(CObservation3DRangeScan &o);	//!< Very efficient method to swap the contents of two observations.
+
+		void unload(); //!< Unload all images, for the case they being delayed-load images stored in external files (othewise, has no effect).
 
 	}; // End of class def.
 

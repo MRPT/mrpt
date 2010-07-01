@@ -114,8 +114,8 @@ void  vision::trackFeatures2(
 	const CImage &inImg1,
 	const CImage &inImg2,
 	CFeatureList &featureList,
-	const unsigned int &window_width,
-	const unsigned int &window_height)
+	const unsigned int window_width,
+	const unsigned int window_height)
 {
 MRPT_START;
 #if MRPT_HAS_OPENCV

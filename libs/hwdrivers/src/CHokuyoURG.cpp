@@ -54,9 +54,9 @@ CHokuyoURG::CHokuyoURG() :
     m_reduced_fov(0),
 	m_com_port(""),
 	m_I_am_owner_serial_port(false),
-	m_timeStartUI( 0 ),
-	m_sensorLabel("Hokuyo")
+	m_timeStartUI( 0 )
 {
+	m_sensorLabel = "Hokuyo";
 }
 
 /*-------------------------------------------------------------
@@ -191,7 +191,6 @@ void  CHokuyoURG::loadConfig_sensorSpecific(
 	m_reduced_fov = DEG2RAD( configSource.read_float(iniSection,"reduced_fov",0) ),
 
 	m_motorSpeed_rpm	= configSource.read_int(iniSection,"HOKUYO_motorSpeed_rpm",0);
-	m_sensorLabel		= configSource.read_string(iniSection,"sensorLabel",m_sensorLabel);
 	m_sensorPose.setFromValues(
 		configSource.read_float(iniSection,"pose_x",0),
 		configSource.read_float(iniSection,"pose_y",0),

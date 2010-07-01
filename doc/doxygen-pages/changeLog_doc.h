@@ -37,7 +37,11 @@
 		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.
 	- <b>Detailed list of changes:</b>
 		- Changes in classes:
-			- mrpt::hwdrivers::CGenericSensor now has a generic interface for external image directories (it was only in CCameraSensor before), so more sensors can use this feature.
+			- mrpt::hwdrivers::CGenericSensor:
+				- Now has a generic interface for external image directories (it was only in CCameraSensor before), so more sensors can use this feature.
+				- The sensor label member is now "m_sensorLabel" in this base class, instead of replicating it in all children classes.
+			- mrpt::slam::CObservation3DRangeScan: the confidence channel is stored as an image instead of a matrix to optimize memory and disk space. 
+			- mrpt::hwdrivers::CSwissRanger3DCamera is now prepared to store intensity & confidence channels to external image files to save rawlog storage size.
 			- mrpt::utils::CStream now has methods for sending/receiving messages in a predefined frame format. See mrpt::utils::CStream::receiveMessage,  mrpt::utils::CStream::sendMessage.
 			- mrpt::utils::CConfigFileMemory has a new method getContent().
 			- Template mrpt::utils::TParameters now has typedefs mrpt::utils::TParametersDouble, mrpt::utils::TParametersString and many new methods. See the example params-by-name.

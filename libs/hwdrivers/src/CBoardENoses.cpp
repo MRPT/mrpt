@@ -45,12 +45,12 @@ IMPLEMENTS_GENERIC_SENSOR(CBoardENoses,mrpt::hwdrivers)
 -------------------------------------------------------------*/
 CBoardENoses::CBoardENoses( ) :
 	m_usbSerialNumber 	("ENOSE001"),
-	m_sensorLabel	  	("ENOSE"),
 	m_COM_port			(),
 	m_COM_baud			(115200),
 	m_stream_FTDI		(NULL),
 	m_stream_SERIAL		(NULL)
 {
+	m_sensorLabel = "ENOSE";
 	first_reading = true;
 }
 
@@ -70,7 +70,6 @@ void  CBoardENoses::loadConfig_sensorSpecific(
 	MRPT_START;
 
 	m_usbSerialNumber = configSource.read_string(iniSection, "USB_serialname","",false);
-	m_sensorLabel	= configSource.read_string( iniSection, "sensorLabel", m_sensorLabel, false );
 
 #ifdef MRPT_OS_WINDOWS
 	m_COM_port = configSource.read_string(iniSection, "COM_port_WIN",m_COM_port);

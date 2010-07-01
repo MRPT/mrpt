@@ -100,7 +100,6 @@ namespace mrpt
 
 			std::string		m_com_port;		//!< If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser.
 			CSerialPort		*m_mySerialPort; //!< Will be !=NULL only if I created it, so I must destroy it at the end.
-			std::string		m_sensorLabel;
 			int             m_com_baudRate; //!< Baudrate: 9600, 38400, 500000
 			unsigned int    m_nTries_connect; //!< Default = 1
 			unsigned int    m_nTries_current;

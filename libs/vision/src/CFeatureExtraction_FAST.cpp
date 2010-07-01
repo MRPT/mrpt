@@ -65,20 +65,20 @@ void  CFeatureExtraction::extractFeaturesFAST(
 #	else // MRPT_OPENCV_VERSION_NUM < 0x200
 
 	vector<KeyPoint> cv_feats; // The opencv keypoint output vector
-	int aux = options.FASTOptions.threshold;
-	if( nDesiredFeatures != 0 )
-	{
-		double a = 89.81;
-		double b = -0.4107*nDesiredFeatures;
-		double c = 134.7;
-		double d = -0.003121*nDesiredFeatures;
-
-		aux = max(0,(int)(a*exp(b) + c*exp(d))-20);
-	}
+//	int aux = options.FASTOptions.threshold;
+//	if( nDesiredFeatures != 0 )
+//	{
+//		double a = 89.81;
+//		double b = -0.4107*nDesiredFeatures;
+//		double c = 134.7;
+//		double d = -0.003121*nDesiredFeatures;
+//
+//		aux = max(0,(int)(a*exp(b) + c*exp(d))-20);
+//	}
 
 #	if MRPT_OPENCV_VERSION_NUM >= 0x211
 
-	FastFeatureDetector fastDetector( aux, options.FASTOptions.nonmax_suppression );
+	FastFeatureDetector fastDetector( options.FASTOptions.threshold, options.FASTOptions.nonmax_suppression );
 	IplImage* img, *cGrey;
 	img = (IplImage*)inImg.getAsIplImage();
 
@@ -116,10 +116,11 @@ void  CFeatureExtraction::extractFeaturesFAST(
 
 	IplImage* _img = cGrey;
 
-	FAST(_img, cv_feats, aux, options.FASTOptions.nonmax_suppression );
+	FAST(_img, cv_feats, options.FASTOptions.threshold, options.FASTOptions.nonmax_suppression );
 	sort( cv_feats.begin(), cv_feats.end(), KeypointComp );
 
 #	endif
+
 	const size_t	N			= cv_feats.size();
 	unsigned int	nMax		= nDesiredFeatures != 0 && N > nDesiredFeatures ? nDesiredFeatures : N;
 	const int 		offset		= (int)this->options.patchSize/2 + 1;

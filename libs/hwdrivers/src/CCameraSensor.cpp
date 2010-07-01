@@ -64,7 +64,6 @@ IMPLEMENTS_GENERIC_SENSOR(CCameraSensor,mrpt::hwdrivers)
    ----------------------------------------------------- */
 CCameraSensor::CCameraSensor() :
 	m_sensorPose			(),
-	m_sensorLabel			("CAMERA"),
 	m_grabber_type			("opencv"),
 	m_capture_grayscale		(false),
 	m_cv_camera_index		(0),
@@ -79,8 +78,6 @@ CCameraSensor::CCameraSensor() :
 	m_bumblebee_options		(),
 	m_bumblebee_monocam		(-1),
 	m_external_images_own_thread(false),
-	m_external_image_saver_count( mrpt::system::getNumberOfProcessors() ),
-	m_threadImagesSaverShouldEnd(false),
 	m_cap_cv			(NULL),
 	m_cap_dc1394		(NULL),
 	m_cap_bumblebee		(NULL),
@@ -88,8 +85,11 @@ CCameraSensor::CCameraSensor() :
 	m_cap_rawlog		(NULL),
 	m_camera_grab_decimator (0),
 	m_camera_grab_decimator_counter(0),
-	m_preview_counter	(0)
+	m_preview_counter	(0),
+	m_external_image_saver_count( mrpt::system::getNumberOfProcessors() ),
+	m_threadImagesSaverShouldEnd(false)
 {
+	m_sensorLabel = "CAMERA";
 	m_state = CGenericSensor::ssInitializing;
 }
 
@@ -259,8 +259,6 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	}
 	else
 		m_camera_grab_decimator = m_camera_grab_decimator_counter = 0;
-
-	m_sensorLabel	= configSource.read_string( iniSection, "sensorLabel", m_sensorLabel );
 
 	m_grabber_type	= configSource.read_string_first_word( iniSection, "grabber_type", m_grabber_type );
 	MRPT_LOAD_HERE_CONFIG_VAR( preview_decimation, int, m_preview_decimation , configSource, iniSection )
@@ -735,7 +733,6 @@ void CCameraSensor::setPathForExternalImages( const std::string &directory )
 	{
 		THROW_EXCEPTION_CUSTOM_MSG1("Error: Cannot create the directory for externally saved images: %s",directory.c_str() )
 	}
-
 	m_path_for_external_images = directory;
 }
 

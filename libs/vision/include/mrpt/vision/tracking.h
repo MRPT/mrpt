@@ -35,6 +35,8 @@
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/utils/CImage.h>
 
+#include <mrpt/utils/metaprogramming.h>
+
 namespace mrpt
 {
 	namespace vision
@@ -50,13 +52,13 @@ namespace mrpt
 		/** (Deprecated) Track a set of features from img1 -> img2 using sparse optimal flow (classic KL method)
 		  *  \sa OpenCV's method cvCalcOpticalFlowPyrLK
 		  */
-		MRPT_DECLARE_DEPRECATED_FUNCTION("Deprecated: Use trackFeatures_KL instead",
+		MRPT_DECLARE_DEPRECATED_FUNCTION("Deprecated: See CGenericFeatureTracker",
 		 void VISION_IMPEXP trackFeatures(
 			const CImage &old_img,
 			const CImage &new_img,
 			vision::CFeatureList &featureList,
-			const unsigned int &window_width = 15,
-			const unsigned int &window_height = 15 ) );
+			const unsigned int window_width = 15,
+			const unsigned int window_height = 15 ) );
 
 
 		/** A virtual interface for all feature trackers.
@@ -73,12 +75,26 @@ namespace mrpt
 			inline CGenericFeatureTracker(mrpt::utils::TParametersDouble extraParams) : extra_params(extraParams)
 			{ }
 
-			/** To be implemented in children classes. */
+			/** The main tracking method, to be implemented in children classes. */
 			virtual void trackFeatures(
 				const CImage &old_img,
 				const CImage &new_img,
 				vision::CFeatureList &inout_featureList ) = 0;
 
+			/** A wrapper around the virtual trackFeatures() method, which keeps the original list of features unmodified and returns the tracked ones in a new list. */
+			inline void trackFeaturesNewList(
+				const CImage &old_img,
+				const CImage &new_img,
+				const vision::CFeatureList &in_featureList,
+				vision::CFeatureList &out_featureList
+				)
+			{
+				out_featureList = in_featureList;
+				std::for_each(
+					out_featureList.begin(),out_featureList.end(),
+					mrpt::utils::metaprogramming::ObjectMakeUnique() );
+				this->trackFeatures(old_img, new_img, out_featureList);
+			}
 		};
 
 
@@ -124,15 +140,18 @@ namespace mrpt
 
 
 
-		// JL: TODO: remove this one? unify with the other version?
-		/** Tracks a set of features in an image.
+		/** (Deprecated) Track a set of features from img1 -> img2 using sparse optimal flow (classic KL method)
+		  *  \sa OpenCV's method cvCalcOpticalFlowPyrLK
 		  */
-		void VISION_IMPEXP trackFeatures( const CImage &inImg1,
-							const CImage &inImg2,
-							const CFeatureList &inFeatureList,
-							CFeatureList &outFeatureList,
-							const unsigned int &window_width,
-							const unsigned int &window_height);
+		MRPT_DECLARE_DEPRECATED_FUNCTION("Deprecated: See CGenericFeatureTracker",
+		void VISION_IMPEXP trackFeatures(
+			const CImage &inImg1,
+			const CImage &inImg2,
+			const CFeatureList &inFeatureList,
+			CFeatureList &outFeatureList,
+			const unsigned int window_width,
+			const unsigned int window_height)
+			);
 
 
 		/** Search for correspondences which are not in the same row and deletes them
@@ -148,8 +167,8 @@ namespace mrpt
 			const CImage &inImg1,
 			const CImage &inImg2,
 			CFeatureList &featureList,
-			const unsigned int &window_width = 15,
-			const unsigned int &window_height = 15);
+			const unsigned int window_width = 15,
+			const unsigned int window_height = 15);
 
 		/** Filter bad correspondences by distance
 		  * ...

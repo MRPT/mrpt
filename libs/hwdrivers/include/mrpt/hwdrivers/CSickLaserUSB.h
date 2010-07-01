@@ -70,7 +70,6 @@ namespace mrpt
 		private:
 			CInterfaceFTDI		*m_usbConnection;
 			std::string			m_serialNumber;
-			std::string			m_sensorLabel;
 
 			uint32_t		m_timeStartUI;	//!< Time of the first data packet, for synchronization purposes.
 			mrpt::system::TTimeStamp	m_timeStartTT;

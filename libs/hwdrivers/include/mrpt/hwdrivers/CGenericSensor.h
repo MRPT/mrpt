@@ -93,9 +93,12 @@ namespace mrpt
 			};
 
 			/** The current state of the sensor  */
-			TSensorState getState() const { return m_state; }
+			inline TSensorState getState() const { return m_state; }
 
-			double getProcessRate() const { return m_process_rate; }
+			inline double getProcessRate() const { return m_process_rate; }
+
+			inline std::string getSensorLabel() const { return m_sensorLabel; }
+			inline void setSensorLabel(const std::string& sensorLabel) { m_sensorLabel=sensorLabel; }
 
 			/** Register a class into the internal list of "CGenericSensor" descendents.
 			  *  Used internally in the macros DEFINE_GENERIC_SENSOR, etc...
@@ -114,14 +117,17 @@ namespace mrpt
 
 
 		protected:
-			// === Common settings to any sensor, loaded in "loadConfig" ====
+			/** @name Common settings to any sensor, loaded in "loadConfig"
+			    @{ */
+
 			double	m_process_rate;  //!< See CGenericSensor
 			size_t	m_max_queue_len; //!< See CGenericSensor
 			size_t	m_grab_decimation;	//!< If set to N>=2, only 1 out of N observations will be saved to m_objList.
-			// ======================================
+			std::string  m_sensorLabel; //!< See CGenericSensor
+
+			/** @} */
 
 			size_t	m_grab_decimation_counter; //!< Used when "m_grab_decimation" is enabled
-
 
 			TSensorState    m_state;
 

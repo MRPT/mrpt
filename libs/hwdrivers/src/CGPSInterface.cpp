@@ -43,7 +43,6 @@ IMPLEMENTS_GENERIC_SENSOR(CGPSInterface,mrpt::hwdrivers)
    ----------------------------------------------------- */
 CGPSInterface::CGPSInterface( int BUFFER_LENGTH ) :
 	m_COM					(),
-	m_sensorLabel			("GPS"),
 	m_customInit			(),
 
 	m_COMname				(),
@@ -59,6 +58,7 @@ CGPSInterface::CGPSInterface( int BUFFER_LENGTH ) :
 	m_JAVAD_rtk_src_baud	(0),
 	m_JAVAD_rtk_format		("cmr")
 {
+	m_sensorLabel = "GPS";
 	m_latestGPS_data.has_GGA_datum = false;
 	m_latestGPS_data.has_RMC_datum = false;
 }
@@ -78,7 +78,6 @@ void  CGPSInterface::loadConfig_sensorSpecific(
 
 	m_COMbauds		= configSource.read_int( iniSection, "baudRate",m_COMbauds, true );
 
-	m_sensorLabel	= configSource.read_string( iniSection, "sensorLabel", m_sensorLabel, false );
 	m_customInit	= configSource.read_string( iniSection, "customInit", m_customInit, false );
 
 	m_sensorPose.x( configSource.read_float( iniSection, "pose_x",0, false ) );

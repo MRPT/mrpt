@@ -52,10 +52,10 @@ using namespace mrpt::hwdrivers;
 CSickLaserUSB::CSickLaserUSB() :
 	m_usbConnection( NULL ),
 	m_serialNumber ( "LASER001" ),
-	m_sensorLabel  ( "SICKLMS"  ),
 	m_timeStartUI  ( 0 )
 {
 	MRPT_START;
+	m_sensorLabel = "SICKLMS";
 	m_usbConnection = new CInterfaceFTDI();
 	MRPT_END;
 }
@@ -147,7 +147,6 @@ void  CSickLaserUSB::loadConfig_sensorSpecific(
 	const std::string	  &iniSection )
 {
 	m_serialNumber = configSource.read_string(iniSection,"SICKUSB_serialNumber",m_serialNumber);
-	m_sensorLabel  = configSource.read_string(iniSection,"sensorLabel",m_sensorLabel);
 	m_sensorPose = CPose3D(
 		configSource.read_float(iniSection,"pose_x",0),
 		configSource.read_float(iniSection,"pose_y",0),
