@@ -59,21 +59,72 @@ namespace mrpt
 			const unsigned int &window_height = 15 ) );
 
 
+		/** A virtual interface for all feature trackers.
+		  */
+		struct VISION_IMPEXP  CGenericFeatureTracker
+		{
+			/** Optional list of extra parameters to the algorithm. */
+			mrpt::utils::TParametersDouble extra_params;
+
+			/** Default ctor */
+			inline CGenericFeatureTracker()
+			{ }
+			/** Ctor with extra parameters */
+			inline CGenericFeatureTracker(mrpt::utils::TParametersDouble extraParams) : extra_params(extraParams)
+			{ }
+
+			/** To be implemented in children classes. */
+			virtual void trackFeatures(
+				const CImage &old_img,
+				const CImage &new_img,
+				vision::CFeatureList &inout_featureList ) = 0;
+
+		};
+
+
 		/** Track a set of features from old_img -> new_img using sparse optimal flow (classic KL method)
-		  *  Optional parameters that can be passed in "extra_params":
-		  *		- "window_width"  (Default=15)
-		  *		- "window_height" (Default=15)
-		  *
 		  *  \sa OpenCV's method cvCalcOpticalFlowPyrLK
 		  */
-		void VISION_IMPEXP trackFeatures_KL(
-			const CImage &old_img,
-			const CImage &new_img,
-			vision::CFeatureList &inout_featureList,
-			const mrpt::utils::TParametersDouble &extra_params = mrpt::utils::TParametersDouble() );
+		struct VISION_IMPEXP CFeatureTracker_KL : public CGenericFeatureTracker
+		{
+			/** Default ctor */
+			inline CFeatureTracker_KL() { }
+			/** Ctor with extra parameters */
+			inline CFeatureTracker_KL(mrpt::utils::TParametersDouble extraParams) : CGenericFeatureTracker(extraParams)	{ }
+
+			/** Optional parameters that can be passed in "extra_params":
+			  *		- "window_width"  (Default=15)
+			  *		- "window_height" (Default=15)
+			  */
+			virtual void trackFeatures(
+				const CImage &old_img,
+				const CImage &new_img,
+				vision::CFeatureList &inout_featureList );
+		};
+
+		/** Track a set of features from old_img -> new_img by patch correlation over the closest FAST features, using a KD-tree for looking closest correspondences.
+		  */
+		struct VISION_IMPEXP CFeatureTracker_FAST : public CGenericFeatureTracker
+		{
+			/** Default ctor */
+			inline CFeatureTracker_FAST() { }
+			/** Ctor with extra parameters */
+			inline CFeatureTracker_FAST(mrpt::utils::TParametersDouble extraParams) : CGenericFeatureTracker(extraParams)	{ }
+
+			/**  Optional parameters that can be passed in "extra_params":
+			  *		- "window_width"  (Default=15)
+			  *		- "window_height" (Default=15)
+			  */
+			virtual void trackFeatures(
+				const CImage &old_img,
+				const CImage &new_img,
+				vision::CFeatureList &inout_featureList );
+		};
 
 
 
+
+		// JL: TODO: remove this one? unify with the other version?
 		/** Tracks a set of features in an image.
 		  */
 		void VISION_IMPEXP trackFeatures( const CImage &inImg1,

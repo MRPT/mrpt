@@ -62,6 +62,7 @@
 			- mrpt::topography::ENUToGeocentric()
 			- mrpt::gui::CMyGLCanvasBase::textBitmapWidth(), a new function to compute the width of a bitmap string.
 		- New classes:
+			- Feature tracking for images now has a set of different implementations. See mrpt::vision::CGenericFeatureTracker
 			- mrpt::slam::CObservationStereoImagesFeatures to hold the minimum information needed by a stereo SLAM back-end algorithm.
 		- New applications:
 			- camera-calib-ba: A tool to calibrate a camera from a set of random tracked features (no need to use a checkerboard).
