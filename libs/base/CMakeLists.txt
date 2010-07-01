@@ -23,6 +23,11 @@ LIST(APPEND base_EXTRA_SRCS_NAME 	"utils/simpleini" "utils/simpleini")
 LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.cpp" "${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.h")
 LIST(APPEND base_EXTRA_SRCS_NAME 	"utils/xmlparser" "utils/xmlparser")
 
+# ann library:
+LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/ann/*.cpp" "${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/ann/*.h")
+LIST(APPEND base_EXTRA_SRCS_NAME 	"ann" "ann")
+INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/")
+
 # Embedded version of libjpeg for (mostly) Windows:
 IF (CMAKE_MRPT_HAS_JPEG AND NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
 	LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/utils/jpeglib/*.cpp" "${MRPT_LIBS_ROOT}/base/src/utils/jpeglib/*.h")
@@ -60,6 +65,11 @@ IF(MRPT_ENABLE_PRECOMPILED_HDRS)
 			${utils/simpleini_FILES}	
 			${utils/jpeglib_FILES}
 			${compress/zlib_FILES}
+			PROPERTIES COMPILE_FLAGS "/Y-"
+			)
+
+		set_source_files_properties(
+			${ann_FILES}
 			PROPERTIES COMPILE_FLAGS "/Y-"
 			)
 	ENDIF (MSVC)

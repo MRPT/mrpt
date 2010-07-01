@@ -56,6 +56,7 @@
 				- loadFromTextFileAsVector
 				- saveToTextFileAsVector
 			- mrpt::hwdrivers::CActivMediaRobotBase can now transparently open serial ports >COM4 in Windows without the prefix "\\.\" (it's added automatically if needed).
+			- The ANN library has been moved from mrpt-maps to mrpt-base (still can be reached at the same path under <mrpt/otherlibs/ann/...>. This is to allow more code to use KD-trees without depending on mrpt-maps.
 		- New functions:
 			- mrpt::vision::camera_calib_ba is a new method based on Bundle-Adjustment to calibrate a camera from the tracking of a set of random points. See also the new application camera-calib-ba
 			- Added << and >> operators to mrpt::math::CArrayNumeric<> classes to dump/read them with MRPT's mrpt::utils::CStream streams.

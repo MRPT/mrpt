@@ -7,9 +7,11 @@ LIST(APPEND maps_EXTRA_SRCS_NAME 	"maps" "maps")
 LIST(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/opengl/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/opengl/*.h")
 LIST(APPEND maps_EXTRA_SRCS_NAME 	"opengl" "opengl")
 
-LIST(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/maps/ann/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/otherlibs/ann/*.h")
-LIST(APPEND maps_EXTRA_SRCS_NAME 	"ann" "ann")
-INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/otherlibs/")
+# for ann:
+INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/")
+#LIST(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/maps/ann/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/otherlibs/ann/*.h")
+#LIST(APPEND maps_EXTRA_SRCS_NAME 	"ann" "ann")
+#INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/otherlibs/")
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -25,9 +27,6 @@ define_mrpt_lib(
 
 # Ignore precompiled headers in some sources:
 IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-	set_source_files_properties(
-		${ann_FILES}
-		PROPERTIES COMPILE_FLAGS "/Y-"
-		)
+	#...
 ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 

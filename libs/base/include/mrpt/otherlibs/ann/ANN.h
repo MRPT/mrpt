@@ -57,9 +57,9 @@
 #ifndef ANN_H
 #define ANN_H
 
-// JLBC: Use DLL defines as those in the library ANN is embedded into: mrpt-maps
-#include <mrpt/maps/link_pragmas.h>
-#define DLL_API  MAPS_IMPEXP
+// JLBC: Use DLL defines as those in the library ANN is embedded into: mrpt-base
+#include <mrpt/base/link_pragmas.h>
+#define DLL_API  BASE_IMPEXP
 
 //----------------------------------------------------------------------
 //  basic includes
