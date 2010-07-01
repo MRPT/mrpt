@@ -312,6 +312,16 @@ ELSE(BUILD_ARIA)
 	SET(CMAKE_MRPT_HAS_ARIA 0)
 ENDIF(BUILD_ARIA)
 
+# Build the ARIA library
+# ===================================================
+SET(MRPT_HAS_SWISSRANGE OFF CACHE BOOL "Add support for SwissRange Camera?")
+#MARK_AS_ADVANCED(MRPT_HAS_SWISSRANGE)
+IF(MRPT_HAS_SWISSRANGE)
+	SET(CMAKE_MRPT_HAS_SWISSRANGE 1)
+ELSE(MRPT_HAS_SWISSRANGE)
+	SET(CMAKE_MRPT_HAS_SWISSRANGE 0)
+ENDIF(MRPT_HAS_SWISSRANGE)
+
 # Build the xSENS library
 # ===================================================
 SET(BUILD_XSENS ON CACHE BOOL "Build an embedded version of xSens library (interface to xSens MTi device)")
