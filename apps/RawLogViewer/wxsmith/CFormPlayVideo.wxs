@@ -118,7 +118,6 @@
 								<object class="sizeritem">
 									<object class="wxCheckBox" name="ID_CHECKBOX2" variable="cbOrderByY" member="yes">
 										<label>Order by &apos;y&apos; (&lt;0: left, &gt;0:right)</label>
-										<checked>1</checked>
 									</object>
 									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 									<border>5</border>

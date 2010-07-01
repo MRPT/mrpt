@@ -37,11 +37,11 @@
 #include <wx/dcclient.h>
 
 //(*InternalHeaders(CFormPlayVideo)
-#include <wx/artprov.h>
-#include <wx/bitmap.h>
-#include <wx/intl.h>
-#include <wx/image.h>
 #include <wx/string.h>
+#include <wx/intl.h>
+#include <wx/bitmap.h>
+#include <wx/image.h>
+#include <wx/artprov.h>
 //*)
 
 #include <mrpt/gui/WxUtils.h>
@@ -107,15 +107,15 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent,wxWindowID id)
 	firstFit = true;
 
     //(*Initialize(CFormPlayVideo)
-    wxFlexGridSizer* FlexGridSizer4;
-    wxFlexGridSizer* FlexGridSizer10;
-    wxFlexGridSizer* FlexGridSizer3;
-    wxFlexGridSizer* FlexGridSizer5;
-    wxFlexGridSizer* FlexGridSizer9;
     wxFlexGridSizer* FlexGridSizer2;
-    wxFlexGridSizer* FlexGridSizer7;
-    wxFlexGridSizer* FlexGridSizer12;
     wxFlexGridSizer* FlexGridSizer11;
+    wxFlexGridSizer* FlexGridSizer7;
+    wxFlexGridSizer* FlexGridSizer4;
+    wxFlexGridSizer* FlexGridSizer9;
+    wxFlexGridSizer* FlexGridSizer3;
+    wxFlexGridSizer* FlexGridSizer10;
+    wxFlexGridSizer* FlexGridSizer12;
+    wxFlexGridSizer* FlexGridSizer5;
     
     Create(parent, wxID_ANY, _("Play images in a Rawlog as a video"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX, _T("wxID_ANY"));
     FlexGridSizer1 = new wxFlexGridSizer(4, 1, 0, 0);
@@ -152,7 +152,7 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent,wxWindowID id)
     cbOrderByYaw->SetValue(false);
     FlexGridSizer9->Add(cbOrderByYaw, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     cbOrderByY = new wxCheckBox(Panel1, ID_CHECKBOX2, _("Order by \'y\' (<0: left, >0:right)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
-    cbOrderByY->SetValue(true);
+    cbOrderByY->SetValue(false);
     FlexGridSizer9->Add(cbOrderByY, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     cbReduceLarge = new wxCheckBox(Panel1, ID_CHECKBOX3, _("Reduce large images (w>640px)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
     cbReduceLarge->SetValue(true);

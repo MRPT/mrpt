@@ -50,7 +50,10 @@ CGenericSensor::CGenericSensor() :
 	m_max_queue_len(200),
 	m_grab_decimation(0),
 	m_grab_decimation_counter(0),
-	m_state( ssInitializing )
+	m_state( ssInitializing ),
+	m_path_for_external_images	(),
+	m_external_images_format	("jpg"),
+	m_external_images_jpeg_quality (95)
 {
 }
 

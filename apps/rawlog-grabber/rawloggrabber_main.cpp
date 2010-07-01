@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 
 		// If we have plug-ins, we need to register them manually here:
 #ifdef RAWLOGGRABBER_PLUGIN
-		
+
 #endif
 
 		string INI_FILENAME( argv[1] );
@@ -117,7 +117,19 @@ int main(int argc, char **argv)
 
 		// Build full rawlog file name:
 		string	rawlog_postfix = "_";
-		rawlog_postfix += dateTimeToString( now() );
+
+		//rawlog_postfix += dateTimeToString( now() );
+		mrpt::system::TTimeParts parts;
+		mrpt::system::timestampToParts(now(), parts, true);
+		rawlog_postfix += format("%04u-%02u-%02u_%02uh%02um%02us",
+			(unsigned int)parts.year,
+			(unsigned int)parts.month,
+			(unsigned int)parts.day,
+			(unsigned int)parts.hour,
+			(unsigned int)parts.minute,
+			(unsigned int)parts.second );
+
+		rawlog_postfix = mrpt::system::fileNameStripInvalidChars( rawlog_postfix );
 
 		// Only set this if we want externally stored images:
 		rawlog_ext_imgs_dir = rawlog_prefix+fileNameStripInvalidChars( rawlog_postfix+string("_Images") );
@@ -397,11 +409,7 @@ void SensorThread(TThreadParams params)
 		int		process_period_ms = round( 1000.0 / sensor->getProcessRate() );
 
 		// For imaging sensors, set external storage directory:
-		if ( !rawlog_ext_imgs_dir.empty() &&  SENSOR_IS_CLASS(sensor, CCameraSensor ) )
-		{
-			CCameraSensor* camSens = dynamic_cast<CCameraSensor*>( sensor.pointer() );
-			camSens->setPathForExternalImages( rawlog_ext_imgs_dir );
-		}
+		sensor->setPathForExternalImages( rawlog_ext_imgs_dir );
 
 		// Init device:
 		sensor->initialize();

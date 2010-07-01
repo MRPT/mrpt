@@ -182,26 +182,12 @@ namespace mrpt
 			  */
 			void close();
 
-			/**  Set the path where to save off-rawlog images: empty (default) means save images embedded in the rawlog.
-			  * \exception std::exception If the directory cannot be created
+			/**  Set the path where to save off-rawlog image files (this class DOES take into account this path).
+			  *  An  empty string (the default value at construction) means to save images embedded in the rawlog, instead of on separate files.
+			  * \exception std::exception If the directory doesn't exists and cannot be created.
 			  */
-			void setPathForExternalImages( const std::string &directory );
+			virtual void setPathForExternalImages( const std::string &directory );
 
-			/**  Set the extension ("jpg","gif","png",...) that determines the format of images saved externally
-			  *   The default is "jpg".
-			  * \sa setPathForExternalImages, setExternalImageJPEGQuality
-			  */
-			void setExternalImageFormat( const std::string &ext ) {
-				m_external_images_format = ext;
-			}
-
-			/** The quality of JPEG compression, when external images is enabled and the format is "jpg". \sa setExternalImageFormat */
-			void setExternalImageJPEGQuality(const unsigned int quality) {
-				m_external_images_jpeg_quality = quality;
-			}
-			unsigned int getExternalImageJPEGQuality()const  {
-				return m_external_images_jpeg_quality;
-			}
 
 			/** This must be called before initialize() */
 			void enableLaunchOwnThreadForSavingImages(bool enable=true) { m_external_images_own_thread = enable; };
@@ -231,10 +217,6 @@ namespace mrpt
 			std::string								m_rawlog_file;
 			std::string								m_rawlog_camera_sensor_label;
 			std::string								m_rawlog_detected_images_dir;
-
-			std::string			m_path_for_external_images; //!< The path where to save off-rawlog images: empty means save images embedded in the rawlog.
-			std::string			m_external_images_format; //!< The extension ("jpg","gif","png",...) that determines the format of images saved externally \sa setPathForExternalImages
-			unsigned int		m_external_images_jpeg_quality; //!< For JPEG images, the quality (default=95%).
 
 			bool				m_external_images_own_thread; //!< Whether to launch independent thread
 			unsigned int		m_external_image_saver_count; //!< Number of working threads. Default:1, set to 2 in quad cores.

@@ -125,6 +125,13 @@ namespace mrpt
 
 			TSensorState    m_state;
 
+			// === Data for off-rawlog file external image directory ====
+			//  Only used by a few sensor classes.
+			std::string			m_path_for_external_images; //!< The path where to save off-rawlog images: empty means save images embedded in the rawlog.
+			std::string			m_external_images_format; //!< The extension ("jpg","gif","png",...) that determines the format of images saved externally \sa setPathForExternalImages
+			unsigned int		m_external_images_jpeg_quality; //!< For JPEG images, the quality (default=95%).
+			// ======================================
+
 			/** This method must be called by derived classes to enqueue a new observation in the list to be returned by getObservations.
 			  *  Passed objects must be created in dynamic memory and a smart pointer passed. Example of creation:
 			  \code
@@ -196,6 +203,30 @@ namespace mrpt
 			/** Returns a list of enqueued objects, emptying it (thread-safe). The objects must be freed by the invoker.
 			  */
 			void getObservations( TListObservations		&lstObjects );
+
+			/**  Set the path where to save off-rawlog image files (will be ignored in those sensors where this is not applicable).
+			  *  An  empty string (the default value at construction) means to save images embedded in the rawlog, instead of on separate files.
+			  * \exception std::exception If the directory doesn't exists and cannot be created.
+			  */
+			virtual void setPathForExternalImages( const std::string &directory ) {
+				// In this base class, the default is to ignore image paths.
+			}
+
+			/**  Set the extension ("jpg","gif","png",...) that determines the format of images saved externally
+			  *   The default is "jpg".
+			  * \sa setPathForExternalImages, setExternalImageJPEGQuality
+			  */
+			void setExternalImageFormat( const std::string &ext ) {
+				m_external_images_format = ext;
+			}
+
+			/** The quality of JPEG compression, when external images is enabled and the format is "jpg". \sa setExternalImageFormat */
+			void setExternalImageJPEGQuality(const unsigned int quality) {
+				m_external_images_jpeg_quality = quality;
+			}
+			unsigned int getExternalImageJPEGQuality()const  {
+				return m_external_images_jpeg_quality;
+			}
 
 		}; // end of class
 

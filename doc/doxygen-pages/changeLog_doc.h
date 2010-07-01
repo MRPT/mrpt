@@ -37,6 +37,7 @@
 		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.
 	- <b>Detailed list of changes:</b>
 		- Changes in classes:
+			- mrpt::hwdrivers::CGenericSensor now has a generic interface for external image directories (it was only in CCameraSensor before), so more sensors can use this feature.
 			- mrpt::utils::CStream now has methods for sending/receiving messages in a predefined frame format. See mrpt::utils::CStream::receiveMessage,  mrpt::utils::CStream::sendMessage.
 			- mrpt::utils::CConfigFileMemory has a new method getContent().
 			- Template mrpt::utils::TParameters now has typedefs mrpt::utils::TParametersDouble, mrpt::utils::TParametersString and many new methods. See the example params-by-name.
