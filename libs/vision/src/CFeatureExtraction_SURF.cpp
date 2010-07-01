@@ -44,7 +44,7 @@ using namespace std;
 *								extractFeaturesSURF  									        *
 ************************************************************************************************/
 void  CFeatureExtraction::extractFeaturesSURF(
-		const mrpt::utils::CImage		&img,
+		const mrpt::utils::CImage		&inImg,
 		CFeatureList			&feats,
 		unsigned int			init_ID,
 		unsigned int			nDesiredFeatures,
@@ -54,16 +54,15 @@ void  CFeatureExtraction::extractFeaturesSURF(
 
 	const int EXTENDED_DESCRIPTOR = options.SURFOptions.rotation_invariant ? 1:0;
 
-	CvImage image, cGrey;
+	IplImage* img, *cGrey;
+	img = (IplImage*)inImg.getAsIplImage();
 
-	image.attach( (IplImage*)img.getAsIplImage(), false );
-
-	if( image.channels() == 1 )
-			cGrey = image;										// Input image is already 'grayscale'
+	if( img->nChannels == 1 )
+		cGrey = img;										// Input image is already 'grayscale'
 	else
 	{
-		cGrey.create( cvGetSize( image ), 8, 1);
-		cvCvtColor( image, cGrey, CV_BGR2GRAY );				// Convert input image into 'grayscale'
+		cGrey = cvCreateImage( cvGetSize( img ), 8, 1);
+		cvCvtColor( img, cGrey, CV_BGR2GRAY );				// Convert input image into 'grayscale'
 	}
 
 	CvSeq *kp	=	NULL;
@@ -81,8 +80,8 @@ void  CFeatureExtraction::extractFeaturesSURF(
 	unsigned int	nCFeats		= init_ID;
 	int				limit;
 	int				offset		= (int)this->options.patchSize/2 + 1;
-	unsigned int	imgH		= img.getHeight();
-	unsigned int	imgW		= img.getWidth();
+	unsigned int	imgH		= inImg.getHeight();
+	unsigned int	imgW		= inImg.getWidth();
 
 	if( nDesiredFeatures == 0 )
 		limit = kp->total;
@@ -113,7 +112,7 @@ void  CFeatureExtraction::extractFeaturesSURF(
 
 			if( options.patchSize > 0 )
 			{
-				img.extract_patch(
+				inImg.extract_patch(
 					ft->patch,
 					round( ft->x ) - offset,
 					round( ft->y ) - offset,
@@ -137,8 +136,11 @@ void  CFeatureExtraction::extractFeaturesSURF(
 
 	cvClearMemStorage(storage); // Free memory
 
+	if( img->nChannels != 1 )
+		cvReleaseImage( &cGrey );
+
 #else
-			THROW_EXCEPTION("Method not available since either MRPT has been compiled without OpenCV or OpenCV version is incorrect (Required 1.1.0)")
+	THROW_EXCEPTION("Method not available since either MRPT has been compiled without OpenCV or OpenCV version is incorrect (Required 1.1.0)")
 #endif //MRPT_HAS_OPENCV
 } // end extractFeaturesSURF
 
@@ -147,7 +149,7 @@ void  CFeatureExtraction::extractFeaturesSURF(
 *						internal_computeSurfDescriptors
 ************************************************************************************************/
 void  CFeatureExtraction::internal_computeSurfDescriptors(
-	const mrpt::utils::CImage	&img,
+	const mrpt::utils::CImage	&inImg,
 	CFeatureList		&in_features) const
 {
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x111
@@ -156,16 +158,15 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 
 	const int EXTENDED_DESCRIPTOR = options.SURFOptions.rotation_invariant ? 1:0;
 
-	CvImage image, cGrey;
+	IplImage* img, *cGrey;
+	img = (IplImage*)inImg.getAsIplImage();
 
-	image.attach( (IplImage*)img.getAsIplImage(), false );
-
-	if( image.channels() == 1 )
-			cGrey = image;										// Input image is already 'grayscale'
+	if( img->nChannels == 1 )
+		cGrey = img;										// Input image is already 'grayscale'
 	else
 	{
-		cGrey.create( cvGetSize( image ), 8, 1);
-		cvCvtColor( image, cGrey, CV_BGR2GRAY );				// Convert input image into 'grayscale'
+		cGrey = cvCreateImage( cvGetSize( img ), 8, 1);
+		cvCvtColor( img, cGrey, CV_BGR2GRAY );				// Convert input image into 'grayscale'
 	}
 
 	CvMemStorage *storage = cvCreateMemStorage(0);
@@ -217,6 +218,9 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 
 
 	cvClearMemStorage(storage); // Free memory
+
+	if( img->nChannels != 1 )
+		cvReleaseImage( &cGrey );
 
 #else
 			THROW_EXCEPTION("Method not available since either MRPT has been compiled without OpenCV or OpenCV version is incorrect (Required 1.1.0)")

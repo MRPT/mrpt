@@ -65,6 +65,8 @@ void  CFeatureExtraction::extractFeaturesFAST(
 #	else // MRPT_OPENCV_VERSION_NUM < 0x200
 
 	vector<KeyPoint> cv_feats; // The opencv keypoint output vector
+
+	// JL: It's better to use an adaptive threshold, controlled from our caller. 
 //	int aux = options.FASTOptions.threshold;
 //	if( nDesiredFeatures != 0 )
 //	{
