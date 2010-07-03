@@ -463,6 +463,18 @@ CFeatureList::~CFeatureList()
 {
 } // end destructor
 
+/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],...,data[i][nDims-1]). */
+void CFeatureList::kdtree_fill_point_data(ANNpointArray &data, const int nDims) const
+{
+	ASSERTMSG_(nDims==2, "CFeatureList only supports 2D KD-trees.")
+
+	for (size_t i=0;i<m_feats.size();i++)
+	{
+		data[i][0] = m_feats[i]->x;
+		data[i][1] = m_feats[i]->y;
+	}
+}
+
 // --------------------------------------------------
 // saveToTextFile
 // --------------------------------------------------
@@ -550,13 +562,29 @@ CFeaturePtr CFeatureList::getByID( TFeatureID ID ) const
 // --------------------------------------------------
 // nearest(x,y)
 // --------------------------------------------------
-CFeaturePtr CFeatureList::nearest(  const double &x,  const double &y, double &dist_prev ) const
+CFeaturePtr CFeatureList::nearest(  const float x,  const float y, double &dist_prev ) const
 {
+	if (this->empty())
+		return CFeaturePtr();
+
+	float closest_x,closest_y;
+	float closest_sqDist;
+
+	// Look for the closest feature using KD-tree look up:
+	const size_t closest_idx = this->kdTreeClosestPoint2D(x,y,closest_x,closest_y,closest_sqDist);
+	float closest_dist = std::sqrt(closest_sqDist);
+
+	if (closest_dist<=dist_prev)
+	{
+		dist_prev = closest_dist;
+		return m_feats[closest_idx];
+	}
+	else return CFeaturePtr();
+
+#if 0
 	float dist;
 	CFeatureList::const_iterator menor = end();
-
-	for( CFeatureList::const_iterator it = begin(); it != end(); ++it )
-	{
+	for( CFeatureList::const_iterator it = begin(); it != end(); ++it ) {
 		dist = sqrt( square((*it)->x - x) + square((*it)->y - y) );
 		if( dist < dist_prev ){
 			dist_prev = dist;
@@ -564,6 +592,7 @@ CFeaturePtr CFeatureList::nearest(  const double &x,  const double &y, double &d
 		}
 	}
 	return menor==end() ? CFeaturePtr() : *menor;
+#endif
 } // end nearest
 
 

@@ -37,6 +37,7 @@
 		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.
 	- <b>Detailed list of changes:</b>
 		- Changes in classes:
+			- mrpt::vision::CFeatureList now has KD-tree-based search.
 			- mrpt::hwdrivers::CGenericSensor:
 				- Now has a generic interface for external image directories (it was only in CCameraSensor before), so more sensors can use this feature.
 				- The sensor label member is now "m_sensorLabel" in this base class, instead of replicating it in all children classes.

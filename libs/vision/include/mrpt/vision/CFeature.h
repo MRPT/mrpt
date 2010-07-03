@@ -32,6 +32,7 @@
 #include <mrpt/utils/stl_extensions.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/KDTreeCapable.h>
 
 #include <mrpt/vision/link_pragmas.h>
 
@@ -77,27 +78,17 @@ namespace mrpt
 
 		enum TKLTFeatureStatus
 		{
-			/** Inactive
-			*/
-			statusKLT_IDLE,
-			/** Out Of Bounds
-			*/
-			statusKLT_OOB,
-			/** Determinant of the matrix too small
-			*/
-			statusKLT_SMALL_DET,
-			/** Error too big
-			*/
-			statusKLT_LARGE_RESIDUE,
-			/**
-			*/
-			statusKLT_MAX_RESIDUE,
-			/** Feature correctly tracked
-			*/
-			statusKLT_TRACKED,
-			/** Iteration maximum reached
-			*/
-			statusKLT_MAX_ITERATIONS
+			status_TRACKED 	= 5,	//!< Feature correctly tracked
+			status_OOB		= 1,	//!< Feature felt Out Of Bounds
+			status_IDLE 	= 0,	//!< Inactive
+
+			statusKLT_IDLE 	= 0,	//!< Inactive
+			statusKLT_OOB	= 1,	//!< Out Of Bounds	(Value identical to status_OOB)
+			statusKLT_SMALL_DET	= 2,	//!< Determinant of the matrix too small
+			statusKLT_LARGE_RESIDUE = 3,	//!< Error too big
+			statusKLT_MAX_RESIDUE	= 4,
+			statusKLT_TRACKED 	= 5,	//!< Feature correctly tracked (Value identical to status_TRACKED)
+			statusKLT_MAX_ITERATIONS	= 6	//!< Iteration maximum reached
 		};
 
 		/****************************************************
@@ -211,7 +202,6 @@ namespace mrpt
 
 
 		protected:
-			//unsigned int numRefs;
 
 			/** Internal function used by "descriptorLogPolarImgDistanceTo" and "descriptorPolarImgDistanceTo"
 			  */
@@ -224,51 +214,89 @@ namespace mrpt
 
 		}; // end of class
 
+
 		/****************************************************
 						Class CFEATURELIST
 		*****************************************************/
-		/** A list of features
-		*/
-		class VISION_IMPEXP CFeatureList : public std::deque<CFeaturePtr>
+		/** A list of visual features, to be used as output by detectors, as input/output by trackers, etc.
+		  */
+		class VISION_IMPEXP CFeatureList : public mrpt::math::KDTreeCapable  //public std::deque<CFeaturePtr>
 		{
+		protected:
+			typedef std::deque<CFeaturePtr> TInternalFeatList;
+
+			TInternalFeatList  m_feats; //!< The actual container with the list of features
+
 		public:
+			/** The type of the first feature in the list */
+			inline TFeatureType get_type() const { return empty() ? featNotDefined : (*begin())->get_type(); }
 
-			/** The type of feature which contains
-			*/
-			TFeatureType get_type() const {
-				if( size() > 0 )
-					return (*begin())->get_type();
-				else
-					return featNotDefined;
-			}
-
-			/** Save feature list to a text file
-			*/
+			/** Save feature list to a text file */
 			void saveToTextFile( const std::string &fileName, bool APPEND = false );
 
-			/** Save feature list to a text file
-			*/
+			/** Save feature list to a text file */
 			void loadFromTextFile( const std::string &fileName );
 
-			/** Get the maximum ID into the list
-			*/
+			/** Get the maximum ID into the list */
 			TFeatureID getMaxID() const;
 
-			/** Get a reference to a Feature from its ID
-			*/
+			/** Get a reference to a Feature from its ID */
 			CFeaturePtr getByID( TFeatureID ID ) const;
 
-			/** Get a reference of the nearest Feature to a given point
-			* Use dist_prev to stablish the maximum distance of search, this parameter gives the distance of the nearest element
+			/** Get a reference to the nearest feature to the a given 2D point (version returning distance to closest feature in "max_dist")
+			*   \param x [IN] The query point x-coordinate
+			*   \param y [IN] The query point y-coordinate
+			*   \param max_dist [IN/OUT] At input: The maximum distance to search for. At output: The actual distance to the feature.
+			*  \return A reference to the found feature, or a NULL smart pointer if none found.
+			*  \note See also all the available KD-tree search methods, listed in mrpt::math::KDTreeCapable
 			*/
-			CFeaturePtr nearest( const double &x, const double &y, double &dist_prev ) const;
+			CFeaturePtr nearest( const float x, const float y, double &max_dist ) const;
 
-			/** Constructor
-			*/
+			/** Constructor */
 			CFeatureList();
 
 			/** Virtual destructor */
 			virtual ~CFeatureList();
+
+			/** @name Method and datatypes to emulate a STL container
+			    @{ */
+			typedef TInternalFeatList::iterator iterator;
+			typedef TInternalFeatList::const_iterator const_iterator;
+
+			typedef TInternalFeatList::reverse_iterator reverse_iterator;
+			typedef TInternalFeatList::const_reverse_iterator const_reverse_iterator;
+
+			inline iterator begin() { return m_feats.begin(); }
+			inline iterator end() { return m_feats.end(); }
+			inline const_iterator begin() const { return m_feats.begin(); }
+			inline const_iterator end() const { return m_feats.end(); }
+
+			inline iterator erase(const iterator it)  { return m_feats.erase(it); }
+
+			inline bool empty() const  { return m_feats.empty(); }
+			inline size_t size() const { return m_feats.size(); }
+
+			inline void clear() { m_feats.clear(); }
+			inline void resize(size_t N) { m_feats.resize(N); }
+
+			inline void push_front(const CFeaturePtr &f) { m_feats.push_front(f); }
+			inline void push_back(const CFeaturePtr &f) { m_feats.push_back(f); }
+
+			inline CFeaturePtr & operator [](const unsigned int index) { return m_feats[index]; }
+			inline const CFeaturePtr & operator [](const unsigned int index) const  { return m_feats[index]; }
+
+			/** @} */
+
+			/** @name Virtual methods that MUST be implemented by children classes of KDTreeCapable
+			    @{ */
+
+			/** Must return the number of data points */
+			virtual size_t kdtree_get_point_count() const { return size(); }
+
+			/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],...,data[i][nDims-1]). */
+			virtual void kdtree_fill_point_data(ANNpointArray &data, const int nDims) const;
+			/** @} */
+
 
 		}; // end of class
 
@@ -280,21 +308,13 @@ namespace mrpt
 		class VISION_IMPEXP CMatchedFeatureList : public std::deque< std::pair<CFeaturePtr,CFeaturePtr> >
 		{
 		public:
-			/** The type of feature which contains
-			*/
-			TFeatureType get_type() const {
-				if( size() > 0 )
-					return (begin()->first)->get_type();
-				else
-					return featNotDefined;
-			}
+			/** The type of the first feature in the list */
+			inline TFeatureType get_type() const { return empty() ? featNotDefined : (begin()->first)->get_type(); }
 
-			/** Save list of matched features to a text file
-			*/
+			/** Save list of matched features to a text file */
 			void saveToTextFile(const std::string &fileName);
 
-			/** Constructor
-			*/
+			/** Constructor */
 			CMatchedFeatureList();
 
 			/** Virtual destructor */
