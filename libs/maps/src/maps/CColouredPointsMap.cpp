@@ -86,7 +86,7 @@ void  CColouredPointsMap::copyFrom(const CPointsMap &obj)
 	m_largestDistanceFromOriginIsUpdated = obj.m_largestDistanceFromOriginIsUpdated;
 	m_largestDistanceFromOrigin = obj.m_largestDistanceFromOrigin;
 
-	m_KDTreeDataIsUpdated				 = false;
+	kd_tree_mark_as_outdated();
 
 	MRPT_END;
 }
@@ -103,8 +103,7 @@ void  CColouredPointsMap::loadFromRangeScan(
 	int			i;
 	CPose3D		sensorPose3D;
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 
 	// If robot pose is supplied, compute sensor pose relative to it.
 	if (!robotPose)
@@ -346,8 +345,7 @@ void  CColouredPointsMap::loadFromRangeScan(
 {
 	CPose3D		sensorPose3D;
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 
 	// If robot pose is supplied, compute sensor pose relative to it.
 	if (!robotPose)
@@ -562,8 +560,7 @@ bool  CColouredPointsMap::load2D_from_text_file(std::string file)
 {
 	MRPT_START;
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 
 	FILE	*f=os::fopen(file.c_str(),"rt");
 	if (!f) return false;
@@ -629,8 +626,7 @@ bool  CColouredPointsMap::load3D_from_text_file(std::string file)
 {
 	MRPT_START;
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 
 	FILE	*f=os::fopen(file.c_str(),"rt");
 	if (!f) return false;
@@ -756,8 +752,7 @@ void  CColouredPointsMap::readFromStream(CStream &in, int version)
 	case 5:
 	case 6:
 		{
-			m_largestDistanceFromOriginIsUpdated  = false;
-			m_KDTreeDataIsUpdated				 = false;
+			mark_as_modified();
 
 			// Read the number of points:
 			uint32_t n;
@@ -841,8 +836,7 @@ void  CColouredPointsMap::internal_clear()
 	x.clear();
 	y.clear();
 	z.clear();
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -858,8 +852,7 @@ void  CColouredPointsMap::setPoint(size_t index,CPoint2D &p)
 	this->y[index] = p.y();
 	this->z[index] = 0;
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 void  CColouredPointsMap::setPoint(size_t index,CPoint3D &p)
 {
@@ -869,8 +862,7 @@ void  CColouredPointsMap::setPoint(size_t index,CPoint3D &p)
 	this->x[index] = p.x();
 	this->y[index] = p.y();
 	this->z[index] = p.z();
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 void  CColouredPointsMap::setPoint(size_t index,float x,float y)
 {
@@ -880,8 +872,7 @@ void  CColouredPointsMap::setPoint(size_t index,float x,float y)
 	this->x[index] = x;
 	this->y[index] = y;
 	this->z[index] = 0;
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 void  CColouredPointsMap::setPoint(size_t index,float x,float y,float z)
 {
@@ -891,8 +882,7 @@ void  CColouredPointsMap::setPoint(size_t index,float x,float y,float z)
 	this->x[index] = x;
 	this->y[index] = y;
 	this->z[index] = z;
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -912,8 +902,7 @@ void  CColouredPointsMap::fuseWith(
 	float						corrRatio;
 	static CPose2D				nullPose(0,0,0);
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 
 	nThis  =     this->getPointsCount();
 	nOther = otherMap->getPointsCount();
@@ -1013,8 +1002,7 @@ void  CColouredPointsMap::insertPoint( float x, float y, float z )
 	m_color_G.push_back(1);
 	m_color_B.push_back(1);
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -1030,8 +1018,7 @@ void  CColouredPointsMap::insertPoint( float x, float y, float z, float R, float
 	m_color_G.push_back(G);
 	m_color_B.push_back(B);
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -1047,8 +1034,7 @@ void  CColouredPointsMap::insertPoint( CPoint3D p )
 	m_color_G.push_back(1);
 	m_color_B.push_back(1);
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -1086,8 +1072,7 @@ void  CColouredPointsMap::applyDeletionMask( std::vector<bool> &mask )
 	m_color_B.resize(j);
 
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -1121,8 +1106,7 @@ bool  CColouredPointsMap::internal_insertObservation(
 					OBSERVATION TYPE: CObservation2DRangeScan
 
 			********************************************************************/
-		m_largestDistanceFromOriginIsUpdated  = false;
-		m_KDTreeDataIsUpdated				 = false;
+		mark_as_modified();
 
 		const CObservation2DRangeScan *o = static_cast<const CObservation2DRangeScan *>(obs);
 		// Insert only HORIZONTAL scans??
@@ -1219,8 +1203,7 @@ bool  CColouredPointsMap::internal_insertObservation(
 					OBSERVATION TYPE: CObservation3DRangeScan
 
 			********************************************************************/
-		m_largestDistanceFromOriginIsUpdated  = false;
-		m_KDTreeDataIsUpdated				 = false;
+		mark_as_modified();
 
 		const CObservation3DRangeScan *o = static_cast<const CObservation3DRangeScan *>(obs);
 		// Insert only HORIZONTAL scans??
@@ -1513,8 +1496,7 @@ void CColouredPointsMap::setAllPoints(const vector_float &X,const vector_float &
 	m_color_G.assign(N,1);
 	m_color_B.assign(N,1);
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -1531,7 +1513,6 @@ void CColouredPointsMap::setAllPoints(const vector_float &X,const vector_float &
 	m_color_G.assign(N,1);
 	m_color_B.assign(N,1);
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 

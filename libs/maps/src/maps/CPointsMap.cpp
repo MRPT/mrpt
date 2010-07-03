@@ -54,33 +54,16 @@ float CPointsMap::COLOR_3DSCENE_B = 1;
 extern CStartUpClassesRegister  mrpt_maps_class_reg;
 const int dumm = mrpt_maps_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
-
-/** Auxiliary class, instantiated once globally with the idea of avoiding one memory leak of the ANN library if "annClose" is not called.
-  */
-class CAuxANNCloser
-{
-public:
-	CAuxANNCloser() {  }
-	~CAuxANNCloser() { annClose(); }
-	void deleteKDTree( ANNkd_tree *kdtree )  //!< Some foolish method just to assure the linker does not blank this class ;-)
-	{
-		delete kdtree;
-	}
-};
-CAuxANNCloser	theANNcloser;  //!< The single global instance of CAuxANNCloser
-
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
 CPointsMap::CPointsMap() :
 	x(),y(),z(),pointWeight(),
 	m_largestDistanceFromOrigin(0),
-	m_largestDistanceFromOriginIsUpdated(false),
-	m_KDTreeDataIsUpdated(false),
-	KDTreeData(),
 	insertionOptions(),
 	likelihoodOptions()
 {
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -251,8 +234,7 @@ void  CPointsMap::clipOutOfRangeInZ(float zMin, float zMax)
 	// Perform deletion:
 	applyDeletionMask(deletionMask);
 
-	m_largestDistanceFromOriginIsUpdated = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 
@@ -274,8 +256,7 @@ void  CPointsMap::clipOutOfRange(const CPoint2D	&point, float maxRange)
 	// Perform deletion:
 	applyDeletionMask(deletionMask);
 
-	m_largestDistanceFromOriginIsUpdated = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -621,8 +602,7 @@ void  CPointsMap::changeCoordinatesReference(const CPose2D	&newBase)
 		setPoint(i,g);
 	}
 
-	m_largestDistanceFromOriginIsUpdated = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -641,8 +621,7 @@ void  CPointsMap::changeCoordinatesReference(const CPose3D	&newBase)
 		setPoint(i,g);
 	}
 
-	m_largestDistanceFromOriginIsUpdated = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -1059,238 +1038,42 @@ void  CPointsMap::getAllPoints( vector<float> &xs, vector<float> &ys, size_t dec
 	MRPT_END;
 }
 
-/*---------------------------------------------------------------
-						TKDTreeData
----------------------------------------------------------------*/
-CPointsMap::TKDTreeData::TKDTreeData() :
-	m_pDataTree  ( NULL ),
-	m_DataPoints ( NULL ),
-	m_QueryPoint ( NULL ),
-	m_nTreeSize(0),
-	m_nDim(0),
-	m_nk(0)
+
+
+/** Must return the number of data points */
+size_t CPointsMap::kdtree_get_point_count() const
 {
-    //m_NearNeighbourIndices   = new ANNidx[10];	// max. number of closest points
-    //m_NearNeighbourDistances = new ANNdist[10]; // max. number of closest points
+	return this->size();
 }
 
-/*---------------------------------------------------------------
-				copy TKDTreeData
----------------------------------------------------------------*/
-CPointsMap::TKDTreeData::TKDTreeData(const TKDTreeData &o) :
-	m_pDataTree  ( NULL ),
-	m_DataPoints ( NULL ),
-	m_QueryPoint ( NULL ),
-	m_nTreeSize(0),
-	m_nDim(0),
-	m_nk(0)
+/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],data[i][1]). */
+void CPointsMap::kdtree_fill_point_data(ANNpointArray &data, const int nDims) const
 {
-}
+	ASSERT_(nDims==2 || nDims==3)
 
-/*---------------------------------------------------------------
-					TKDTreeData::operator =
----------------------------------------------------------------*/
-CPointsMap::TKDTreeData& CPointsMap::TKDTreeData::operator =(const CPointsMap::TKDTreeData &o)
-{
-	if (this!=&o)
+	const size_t N = this->size();
+
+	if (nDims==2)
 	{
-		clear();
-	}
-	return *this;
-}
-
-/*---------------------------------------------------------------
-						Destructor
----------------------------------------------------------------*/
-CPointsMap::TKDTreeData::~TKDTreeData()
-{
-	clear();
-}
-
-/*---------------------------------------------------------------
-						clear
----------------------------------------------------------------*/
-void CPointsMap::TKDTreeData::clear()
-{
-	if(m_pDataTree!=NULL)
-	{
-		theANNcloser.deleteKDTree( m_pDataTree );
-		//delete m_pDataTree;
-		m_pDataTree = NULL;
-	}
-
-	if(	m_DataPoints)
-	{
-		annDeallocPts(m_DataPoints);
-		m_DataPoints = NULL;
-	}
-
-	if(m_QueryPoint!=NULL)
-	{
-		annDeallocPt(m_QueryPoint);
-		m_QueryPoint = NULL;
-	}
-}
-
-/*---------------------------------------------------------------
- KD Tree-based search for the closest point (only ONE) to some given 2D coordinates.
-  *  This method automatically build the "KDTreeData" structure when:
-  *		- It is called for the first time
-  *		- The map has changed
-  *		- The KD-tree was build for 3D.
-  *
-  * \param x0  The X coordinate of the query.
-  * \param y0  The Y coordinate of the query.
-  * \param out_x The X coordinate of the found closest correspondence.
-  * \param out_y The Y coordinate of the found closest correspondence.
-  * \param out_dist_sqr The square distance between the query and the returned point.
-  *
-  * \return The index of the closest point in the map array.
-  *  \sa kdTreeClosestPoint3D
----------------------------------------------------------------*/
-size_t CPointsMap::kdTreeClosestPoint2D(
-	float   x0,
-	float   y0,
-	float   	  &out_x,
-	float   	  &out_y,
-	float		  &out_dist_sqr ) const
-{
-	if ( size()<1 ) THROW_EXCEPTION("There are no points in the map.")
-
-	// First: Create the KD-Tree if required:
-	build_kdTree2D();
-
-    KDTreeData.m_QueryPoint[0]=x0;
-    KDTreeData.m_QueryPoint[1]=y0;
-
-    KDTreeData.m_pDataTree->annkSearch(
-		KDTreeData.m_QueryPoint,
-		1,		// We want just ONE point
-		KDTreeData.m_NearNeighbourIndices,
-		&out_dist_sqr
-		//KDTreeData.m_NearNeighbourDistances
-		);
-
-	// Copy output to user vars:
-	//out_dist_sqr = KDTreeData.m_NearNeighbourDistances[0];
-	size_t  idx = KDTreeData.m_NearNeighbourIndices[0];
-	out_x = x[idx];
-	out_y = y[idx];
-
-	return idx;
-}
-
-/*---------------------------------------------------------------
-				kdTreeClosestPoint2DsqrError
----------------------------------------------------------------*/
-float CPointsMap::kdTreeClosestPoint2DsqrError(
-	float   x0,
-	float   y0 ) const
-{
-	if ( size()<1 ) THROW_EXCEPTION("There are no points in the map.")
-
-	// First: Create the KD-Tree if required:
-	build_kdTree2D();
-
-    KDTreeData.m_QueryPoint[0]=x0;
-    KDTreeData.m_QueryPoint[1]=y0;
-
-	float  closestSqrErr;
-    KDTreeData.m_pDataTree->annkSearch(
-		KDTreeData.m_QueryPoint,
-		1,		// We want just ONE point
-		KDTreeData.m_NearNeighbourIndices,
-		&closestSqrErr
-		//KDTreeData.m_NearNeighbourDistances
-		);
-
-	return closestSqrErr;
-}
-
-
-/*---------------------------------------------------------------
-						build_kdTree2D
----------------------------------------------------------------*/
-void CPointsMap::build_kdTree2D() const
-{
-	if ( !KDTreeData.m_pDataTree  ||
-	     !m_KDTreeDataIsUpdated   ||
-	      KDTreeData.m_nDim != 2 )
-	{
-		// Erase previous tree:
-		KDTreeData.clear();
-
-		// Create new KD-Tree
-		size_t    N = this->size();
-		KDTreeData.m_nTreeSize = N;
-		KDTreeData.m_nDim      = 2;  // 2D points
-
-		//allocate memory for query point and results
-		KDTreeData.m_QueryPoint = annAllocPt(  KDTreeData.m_nDim );
-
-		//allocate memory for data points
-		KDTreeData.m_DataPoints = annAllocPts(KDTreeData.m_nTreeSize,KDTreeData.m_nDim);
-
-		// Create the list of points in ANN's format:
 		const float  *x_ptr = &x[0];
 		const float  *y_ptr = &y[0];
 		for(size_t i=0;i<N;i++)
 		{
-			KDTreeData.m_DataPoints[i][0]= *x_ptr++;
-			KDTreeData.m_DataPoints[i][1]= *y_ptr++;
+			data[i][0]= *x_ptr++;
+			data[i][1]= *y_ptr++;
 		}
-
-		//allocate memory for tree and build it
-		KDTreeData.m_pDataTree=new ANNkd_tree(
-			KDTreeData.m_DataPoints,
-			KDTreeData.m_nTreeSize,
-			KDTreeData.m_nDim );
-
-		m_KDTreeDataIsUpdated = true;
 	}
-}
-
-/*---------------------------------------------------------------
-						build_kdTree3D
----------------------------------------------------------------*/
-void CPointsMap::build_kdTree3D() const
-{
-	if ( !KDTreeData.m_pDataTree  ||
-	     !m_KDTreeDataIsUpdated   ||
-	      KDTreeData.m_nDim != 3 )
+	else
 	{
-		// Erase previous tree:
-		KDTreeData.clear();
-
-		// Create new KD-Tree
-		size_t    N = this->size();
-		KDTreeData.m_nTreeSize = N;
-		KDTreeData.m_nDim      = 3;  // 3D points
-
-		//allocate memory for query point and results
-		KDTreeData.m_QueryPoint = annAllocPt(  KDTreeData.m_nDim );
-
-		//allocate memory for data points
-		KDTreeData.m_DataPoints = annAllocPts(KDTreeData.m_nTreeSize,KDTreeData.m_nDim);
-
-		// Create the list of points in ANN's format:
 		const float  *x_ptr = &x[0];
 		const float  *y_ptr = &y[0];
 		const float  *z_ptr = &z[0];
 		for(size_t i=0;i<N;i++)
 		{
-			KDTreeData.m_DataPoints[i][0]= *x_ptr++;
-			KDTreeData.m_DataPoints[i][1]= *y_ptr++;
-			KDTreeData.m_DataPoints[i][2]= *z_ptr++;
+			data[i][0]= *x_ptr++;
+			data[i][1]= *y_ptr++;
+			data[i][2]= *z_ptr++;
 		}
-
-		//allocate memory for tree and build it
-		KDTreeData.m_pDataTree=new ANNkd_tree(
-			KDTreeData.m_DataPoints,
-			KDTreeData.m_nTreeSize,
-			KDTreeData.m_nDim );
-
-		m_KDTreeDataIsUpdated = true;
 	}
 }
 
@@ -1340,288 +1123,6 @@ float CPointsMap::squareDistanceToClosestCorrespondence(
 }
 
 
-/*---------------------------------------------------------------
-				kdTreeTwoClosestPoint2D
----------------------------------------------------------------*/
-void CPointsMap::kdTreeTwoClosestPoint2D(
-	float   x0,
-	float   y0,
-	float   	  &out_x1,
-	float   	  &out_y1,
-	float   	  &out_x2,
-	float   	  &out_y2,
-	float		  &out_dist_sqr1,
-	float		  &out_dist_sqr2 ) const
-{
-	if ( size()<2 )
-		THROW_EXCEPTION("Map must have at least 2 points.")
-
-	// First: Create the KD-Tree if required:
-	build_kdTree2D();
-
-
-    KDTreeData.m_QueryPoint[0]=x0;
-    KDTreeData.m_QueryPoint[1]=y0;
-
-    KDTreeData.m_pDataTree->annkSearch(
-		KDTreeData.m_QueryPoint,
-		2,		// We want TWO points
-		KDTreeData.m_NearNeighbourIndices,
-		KDTreeData.m_NearNeighbourDistances
-		);
-
-	// Copy output to user vars:
-	out_dist_sqr1 = KDTreeData.m_NearNeighbourDistances[0];
-	out_dist_sqr2 = KDTreeData.m_NearNeighbourDistances[1];
-
-	size_t  idx1 = KDTreeData.m_NearNeighbourIndices[0];
-	out_x1 = x[idx1];
-	out_y1 = y[idx1];
-
-	size_t  idx2 = KDTreeData.m_NearNeighbourIndices[1];
-	out_x2 = x[idx2];
-	out_y2 = y[idx2];
-} // end kdTreeTwoClosestPoint2D
-
-/*---------------------------------------------------------------
-				kdTreeNClosestPoint2D
----------------------------------------------------------------*/
-std::vector<size_t>  CPointsMap::kdTreeNClosestPoint2D(
-	float			x0,
-	float			y0,
-	unsigned int  N,
-	std::vector<float>  &out_x,
-	std::vector<float>  &out_y,
-	std::vector<float>  &out_dist_sqr ) const
-{
-	if ( size()<N )
-		THROW_EXCEPTION( format("Map must have at least %u points.",N) )
-
-	// First: Create the KD-Tree if required:
-	build_kdTree2D();
-
-    KDTreeData.m_QueryPoint[0]=x0;
-    KDTreeData.m_QueryPoint[1]=y0;
-
-    KDTreeData.m_pDataTree->annkSearch(
-		KDTreeData.m_QueryPoint,
-		N,		// We want N points
-		KDTreeData.m_NearNeighbourIndices,
-		KDTreeData.m_NearNeighbourDistances
-		);
-
-	std::vector<size_t> indices(N);
-
-	out_x.resize(N,0);
-	out_y.resize(N,0);
-	out_dist_sqr.resize(N,0);
-
-	// Copy output to user vars:
-	for( unsigned int k = 0; k < N; k++ )
-	{
-		const size_t  idx = KDTreeData.m_NearNeighbourIndices[k];
-		indices[k]		= idx;
-		out_x[k]		= x[idx];
-		out_y[k]		= y[idx];
-		out_dist_sqr[k] = KDTreeData.m_NearNeighbourDistances[k];
-	}
-
-	return indices;
-} // end kdTreeNClosestPoint2D
-
-/*---------------------------------------------------------------
-				kdTreeNClosestPoint3DIdx
----------------------------------------------------------------*/
-void CPointsMap::kdTreeNClosestPoint2DIdx(
-	float			x0,
-	float			y0,
-	unsigned int  N,
-	std::vector<int>	&out_idx,
-	std::vector<float>  &out_dist_sqr ) const
-{
-	if ( size()<N )
-		THROW_EXCEPTION( format("Map must have at least %u points.",N) )
-
-	// First: Create the KD-Tree if required:
-	build_kdTree3D();
-
-    KDTreeData.m_QueryPoint[0]=x0;
-    KDTreeData.m_QueryPoint[1]=y0;
-
-	std::vector<ANNdist> my_NearNeighbourDistances( N );
-	std::vector<ANNidx> my_NearNeighbourIndices( N );
-
-	KDTreeData.m_pDataTree->annkSearch(
-		KDTreeData.m_QueryPoint,
-		N,		// We want N points
-		&my_NearNeighbourIndices[0],
-		&my_NearNeighbourDistances[0]
-		);
-
-	out_idx.resize(N,0);
-	out_dist_sqr.resize(N,0);
-
-	// Copy output to user vars:
-	for( unsigned int k = 0; k < N; k++ )
-	{
-		out_idx[k]		= (int)my_NearNeighbourIndices[k];
-		out_dist_sqr[k] = my_NearNeighbourDistances[k];
-	}
-
-} // end kdTreeNClosestPoint2DIdx
-
-/*---------------------------------------------------------------
- KD Tree-based search for the closest point (only ONE) to some given 3D coordinates.
-*  This method automatically build the "KDTreeData" structure when:
-*		- It is called for the first time
-*		- The map has changed
-*		- The KD-tree was build for 2D.
-*
-* \param x0  The X coordinate of the query.
-* \param y0  The Y coordinate of the query.
-* \param z0  The Z coordinate of the query.
-* \param out_x The X coordinate of the found closest correspondence.
-* \param out_y The Y coordinate of the found closest correspondence.
-* \param out_z The Z coordinate of the found closest correspondence.
-* \param out_dist_sqr The square distance between the query and the returned point.
-*
-* \return The index of the closest point in the map array.
-*  \sa kdTreeClosestPoint2D
----------------------------------------------------------------*/
-size_t CPointsMap::kdTreeClosestPoint3D(
-	float   x0,
-	float   y0,
-	float   z0,
-	float   	  &out_x,
-	float   	  &out_y,
-	float   	  &out_z,
-	float		  &out_dist_sqr ) const
-{
-	if ( size()<1 ) THROW_EXCEPTION("There are no points in the map.")
-
-	// First: Create the KD-Tree if required:
-	build_kdTree3D();
-
-    KDTreeData.m_QueryPoint[0]=x0;
-    KDTreeData.m_QueryPoint[1]=y0;
-    KDTreeData.m_QueryPoint[2]=z0;
-
-    KDTreeData.m_pDataTree->annkSearch(
-		KDTreeData.m_QueryPoint,
-		1,		// We want just ONE point
-		KDTreeData.m_NearNeighbourIndices,
-		&out_dist_sqr
-		);
-
-	// Copy output to user vars:
-	size_t  idx = KDTreeData.m_NearNeighbourIndices[0];
-	out_x = x[idx];
-	out_y = y[idx];
-	out_z = z[idx];
-
-	return idx;
-}
-
-/*---------------------------------------------------------------
-				kdTreeNClosestPoint3D
----------------------------------------------------------------*/
-void CPointsMap::kdTreeNClosestPoint3D(
-	float			x0,
-	float			y0,
-	float			z0,
-	unsigned int  N,
-	std::vector<float>  &out_x,
-	std::vector<float>  &out_y,
-	std::vector<float>  &out_z,
-	std::vector<float>  &out_dist_sqr ) const
-{
-	if ( size()<N )
-		THROW_EXCEPTION( format("Map must have at least %u points.",N) )
-
-	// First: Create the KD-Tree if required:
-	build_kdTree3D();
-
-    KDTreeData.m_QueryPoint[0]=x0;
-    KDTreeData.m_QueryPoint[1]=y0;
-	KDTreeData.m_QueryPoint[2]=z0;
-
-	ANNdist *my_NearNeighbourDistances	= new ANNdist[N];
-	ANNidx *my_NearNeighbourIndices		= new ANNidx[N];
-
-    KDTreeData.m_pDataTree->annkSearch(
-		KDTreeData.m_QueryPoint,
-		N,		// We want N points
-		KDTreeData.m_NearNeighbourIndices,
-		KDTreeData.m_NearNeighbourDistances
-		);
-
-	out_x.resize(N,0);
-	out_y.resize(N,0);
-	out_z.resize(N,0);
-	out_dist_sqr.resize(N,0);
-
-	// Copy output to user vars:
-	for( unsigned int k = 0; k < N; k++ )
-	{
-		size_t  idx		= KDTreeData.m_NearNeighbourIndices[k];
-		out_x[k]		= x[idx];
-		out_y[k]		= y[idx];
-		out_z[k]		= z[idx];
-		out_dist_sqr[k] = KDTreeData.m_NearNeighbourDistances[k];
-	}
-
-	delete[] my_NearNeighbourIndices;
-	delete[] my_NearNeighbourDistances;
-} // end kdTreeNClosestPoint2D
-
-/*---------------------------------------------------------------
-				kdTreeNClosestPoint3DIdx
----------------------------------------------------------------*/
-void CPointsMap::kdTreeNClosestPoint3DIdx(
-	float			x0,
-	float			y0,
-	float			z0,
-	unsigned int  N,
-	std::vector<int>	&out_idx,
-	std::vector<float>  &out_dist_sqr ) const
-{
-	mrpt::utils::CTicTac	tictac;
-	if ( size()<N )
-		THROW_EXCEPTION( format("Map must have at least %u points.",N) )
-
-	// First: Create the KD-Tree if required:
-	//tictac.Tic();
-	build_kdTree3D();
-	//cout << "BUILD KDTREE: " << tictac.Tac() << endl;
-
-    KDTreeData.m_QueryPoint[0]=x0;
-    KDTreeData.m_QueryPoint[1]=y0;
-	KDTreeData.m_QueryPoint[2]=z0;
-
-	std::vector<ANNdist> my_NearNeighbourDistances( N );
-	std::vector<ANNidx> my_NearNeighbourIndices( N );
-
-    //tictac.Tic();
-	KDTreeData.m_pDataTree->annkSearch(
-		KDTreeData.m_QueryPoint,
-		N,		// We want N points
-		&my_NearNeighbourIndices[0],
-		&my_NearNeighbourDistances[0]
-		);
-
-	//cout << "Search in KDTree: " << tictac.Tac() << endl;
-
-	out_idx.resize(N,0);
-	out_dist_sqr.resize(N,0);
-
-	// Copy output to user vars:
-	for( unsigned int k = 0; k < N; k++ )
-	{
-		out_idx[k]		= (int)my_NearNeighbourIndices[k];
-		out_dist_sqr[k] = my_NearNeighbourDistances[k];
-	}
-
-} // end kdTreeNClosestPoint2D
 
 /*---------------------------------------------------------------
 				boundingBox
@@ -2013,6 +1514,14 @@ double	 CPointsMap::computeObservationLikelihood(
 	 /**/
 }
 
+/*---------------------------------------------------------------
+						mark_as_modified
+  ---------------------------------------------------------------*/
+void CPointsMap::mark_as_modified() const
+{
+	m_largestDistanceFromOriginIsUpdated=false;
+	kd_tree_mark_as_outdated();
+}
 
 
 namespace mrpt
@@ -2048,4 +1557,5 @@ struct TAuxLoadFunctor
 };
 
 TAuxLoadFunctor  dummy_loader;  // used just to set "ptr_internal_build_points_map_from_scan2D"
+
 

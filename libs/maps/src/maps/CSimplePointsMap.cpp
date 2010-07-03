@@ -73,7 +73,7 @@ void  CSimplePointsMap::copyFrom(const CPointsMap &obj)
 	m_largestDistanceFromOriginIsUpdated = obj.m_largestDistanceFromOriginIsUpdated;
 	m_largestDistanceFromOrigin = obj.m_largestDistanceFromOrigin;
 
-	m_KDTreeDataIsUpdated				 = false;
+	kd_tree_mark_as_outdated();
 
 	MRPT_END;
 }
@@ -90,8 +90,7 @@ void  CSimplePointsMap::loadFromRangeScan(
 	register int	i;
 	CPose3D			sensorPose3D;
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 
 	// If robot pose is supplied, compute sensor pose relative to it.
 	if (!robotPose)
@@ -281,8 +280,7 @@ void  CSimplePointsMap::loadFromRangeScan(
 {
 	CPose3D			sensorPose3D;
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 
 	// If robot pose is supplied, compute sensor pose relative to it.
 	if (!robotPose)
@@ -408,8 +406,7 @@ bool  CSimplePointsMap::load2D_from_text_file(std::string file)
 {
 	MRPT_START;
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 
 	FILE	*f=os::fopen(file.c_str(),"rt");
 	if (!f) return false;
@@ -465,8 +462,7 @@ bool  CSimplePointsMap::load3D_from_text_file(std::string file)
 {
 	MRPT_START;
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 
 	FILE	*f=os::fopen(file.c_str(),"rt");
 	if (!f) return false;
@@ -579,8 +575,7 @@ void  CSimplePointsMap::readFromStream(CStream &in, int version)
 	case 5:
 	case 6:
 		{
-			m_largestDistanceFromOriginIsUpdated  = false;
-			m_KDTreeDataIsUpdated				 = false;
+			mark_as_modified();
 
 			// Read the number of points:
 			uint32_t n;
@@ -652,8 +647,7 @@ void  CSimplePointsMap::internal_clear()
 	x.clear();
 	y.clear();
 	z.clear();
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -669,8 +663,7 @@ void  CSimplePointsMap::setPoint(size_t index,CPoint2D &p)
 	this->y[index] = p.y();
 	this->z[index] = 0;
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 void  CSimplePointsMap::setPoint(size_t index,CPoint3D &p)
 {
@@ -680,8 +673,7 @@ void  CSimplePointsMap::setPoint(size_t index,CPoint3D &p)
 	this->x[index] = p.x();
 	this->y[index] = p.y();
 	this->z[index] = p.z();
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 void  CSimplePointsMap::setPoint(size_t index,float x,float y)
 {
@@ -691,8 +683,7 @@ void  CSimplePointsMap::setPoint(size_t index,float x,float y)
 	this->x[index] = x;
 	this->y[index] = y;
 	this->z[index] = 0;
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 void  CSimplePointsMap::setPoint(size_t index,float x,float y,float z)
 {
@@ -702,8 +693,7 @@ void  CSimplePointsMap::setPoint(size_t index,float x,float y,float z)
 	this->x[index] = x;
 	this->y[index] = y;
 	this->z[index] = z;
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -721,8 +711,7 @@ void  CSimplePointsMap::fuseWith(
 	float				corrRatio;
 	const CPose2D		nullPose(0,0,0);
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 
 	//const size_t nThis  =     this->getPointsCount();
 	const size_t nOther = otherMap->getPointsCount();
@@ -816,8 +805,7 @@ void  CSimplePointsMap::insertPoint( float x, float y, float z )
 	this->z.push_back(z);
 	pointWeight.push_back(1);
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -848,8 +836,7 @@ void  CSimplePointsMap::applyDeletionMask( std::vector<bool> &mask )
 	z.resize(j);
 	pointWeight.resize(j);
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -883,8 +870,7 @@ bool  CSimplePointsMap::internal_insertObservation(
 					OBSERVATION TYPE: CObservation2DRangeScan
 
 			********************************************************************/
-		m_largestDistanceFromOriginIsUpdated  = false;
-		m_KDTreeDataIsUpdated				 = false;
+		mark_as_modified();
 
 		const CObservation2DRangeScan *o = static_cast<const CObservation2DRangeScan *>(obs);
 		// Insert only HORIZONTAL scans??
@@ -982,8 +968,7 @@ bool  CSimplePointsMap::internal_insertObservation(
 					OBSERVATION TYPE: CObservation3DRangeScan
 
 			********************************************************************/
-		m_largestDistanceFromOriginIsUpdated  = false;
-		m_KDTreeDataIsUpdated				 = false;
+		mark_as_modified();
 
 		const CObservation3DRangeScan *o = static_cast<const CObservation3DRangeScan *>(obs);
 		// Insert only HORIZONTAL scans??
@@ -1046,8 +1031,7 @@ bool  CSimplePointsMap::internal_insertObservation(
 		/********************************************************************
 					OBSERVATION TYPE: CObservationRange  (IRs, Sonars, etc.)
 		 ********************************************************************/
-		m_largestDistanceFromOriginIsUpdated  = false;
-		m_KDTreeDataIsUpdated				 = false;
+		mark_as_modified();
 
 		const CObservationRange* o = static_cast<const CObservationRange*>(obs);
 
@@ -1111,8 +1095,7 @@ void  CSimplePointsMap::insertAnotherMap(	CPointsMap			*otherMap,
 	std::vector<uint32_t>::iterator	ws;
 	CPoint3D								p,pp;
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 
 	// Reserve:
 	reserve( N_this + N_other );
@@ -1167,8 +1150,7 @@ void CSimplePointsMap::setAllPoints(const vector_float &X,const vector_float &Y,
 	this->z = Z;
 	pointWeight.assign(X.size(),1);
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
 
 /*---------------------------------------------------------------
@@ -1181,6 +1163,5 @@ void CSimplePointsMap::setAllPoints(const vector_float &X,const vector_float &Y)
 	this->z.assign(X.size(),0);
 	pointWeight.assign(X.size(),1);
 
-	m_largestDistanceFromOriginIsUpdated  = false;
-	m_KDTreeDataIsUpdated				 = false;
+	mark_as_modified();
 }
