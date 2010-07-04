@@ -42,7 +42,7 @@
 			- mrpt::hwdrivers::CGenericSensor:
 				- Now has a generic interface for external image directories (it was only in CCameraSensor before), so more sensors can use this feature.
 				- The sensor label member is now "m_sensorLabel" in this base class, instead of replicating it in all children classes.
-			- mrpt::slam::CObservation3DRangeScan: the confidence channel is stored as an image instead of a matrix to optimize memory and disk space. 
+			- mrpt::slam::CObservation3DRangeScan: the confidence channel is stored as an image instead of a matrix to optimize memory and disk space.
 			- mrpt::hwdrivers::CSwissRanger3DCamera is now prepared to store intensity & confidence channels to external image files to save rawlog storage size.
 			- mrpt::utils::CStream now has methods for sending/receiving messages in a predefined frame format. See mrpt::utils::CStream::receiveMessage,  mrpt::utils::CStream::sendMessage.
 			- mrpt::utils::CConfigFileMemory has a new method getContent().
@@ -64,6 +64,7 @@
 				- saveToTextFileAsVector
 			- mrpt::hwdrivers::CActivMediaRobotBase can now transparently open serial ports >COM4 in Windows without the prefix "\\.\" (it's added automatically if needed).
 			- The ANN library has been moved from mrpt-maps to mrpt-base (still can be reached at the same path under <mrpt/otherlibs/ann/...>. This is to allow more code to use KD-trees without depending on mrpt-maps.
+			- mrpt::vision::TPixelCoordf now holds "float" coordinates instead of "double" since: it's enough for pixels, to save memory, and for consistency in name suffixes "f".
 		- New functions:
 			- mrpt::vision::camera_calib_ba is a new method based on Bundle-Adjustment to calibrate a camera from the tracking of a set of random points. See also the new application camera-calib-ba
 			- Added << and >> operators to mrpt::math::CArrayNumeric<> classes to dump/read them with MRPT's mrpt::utils::CStream streams.

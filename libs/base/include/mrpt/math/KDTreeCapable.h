@@ -36,7 +36,21 @@ namespace mrpt
 {
 	namespace math
 	{
-		/** XXXX
+		/** A base virtual class providing automatic, cached KD-tree-based look-up of points among data of arbitrary dimensionality.
+		 *  Any derived class must only implement:
+		 * 		- kdtree_get_point_count()
+		 * 		- kdtree_fill_point_data()
+		 *  and must be aware of the need to call "kdtree_mark_as_outdated()" when the data points change to mark the cached KD-tree as invalid.
+		 *
+		 * The KD-tree will be built on demand only upon call of any of the query methods provided by
+		 *  this class (kdTreeClosestPoint2D, etc.).
+		 *
+		 *  Notice that there is only ONE internal cached KD-tree, so if a method to query a 2D point is called,
+		 *  then another method for 3D points, then again the 2D method, three KD-trees will be built. So, try
+		 *  to group all the calls for a given dimensionality together or build different class instances for
+		 *  queries of each dimensionality, etc.
+		 *
+		 *  \sa See some of the derived classes for example implementations of the pure virtual methods.
 		 */
 		class BASE_IMPEXP KDTreeCapable
 		{
@@ -291,7 +305,7 @@ namespace mrpt
 
 		protected:
 			/** To be called by child classes when KD tree data changes. */
-			inline void kd_tree_mark_as_outdated() const { m_KDTreeDataIsUpToDate = false; }
+			inline void kdtree_mark_as_outdated() const { m_KDTreeDataIsUpToDate = false; }
 
 			/** @name Virtual methods that MUST be implemented by children classes of KDTreeCapable
 			    @{ */

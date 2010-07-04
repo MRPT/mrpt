@@ -69,4 +69,7 @@
 #include "math/CBinaryRelation.h"
 #include "math/CMonteCarlo.h"
 #include "math/jacobians.h"
+
+#include "math/KDTreeCapable.h"
+
 #endif

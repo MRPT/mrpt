@@ -65,11 +65,10 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	CFeatureList	trackedFeats;
 	unsigned int	step_num = 0;
 
+	mrpt::vision::CFeatureTracker_FAST   tracker;
+	//mrpt::vision::CFeatureTracker_KL   tracker;
 
-	//mrpt::vision::CFeatureTracker_FAST   tracker;
-	mrpt::vision::CFeatureTracker_KL   tracker;
-
-	unsigned int 	NUM_FEATS_TO_DETECT = 200;
+	unsigned int 	NUM_FEATS_TO_DETECT = 100;
 
 	CImage		previous_image; // the tracking
 
@@ -115,11 +114,6 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		// Do tracking:
 		if (!trackedFeats.empty())
 		{
-			// Keep a copy of the previous features:
-			vector<TPixelCoordf> prevFeats;
-			for (size_t i=0;i<trackedFeats.size();i++)
-				prevFeats.push_back( TPixelCoordf( trackedFeats[i]->x,trackedFeats[i]->y ) );
-
 			timlog.enter("TRACKING");
 
 			tracker.trackFeatures(previous_image, theImg, trackedFeats);
@@ -130,7 +124,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			CFeatureList::iterator itFeat = trackedFeats.begin();
 			while (itFeat!=trackedFeats.end())
 			{
-				bool eras = (statusKLT_TRACKED!=(*itFeat)->KLT_status);
+				bool eras = (status_TRACKED!=(*itFeat)->KLT_status);
 				if (!eras)
 				{
 					// Also, check if it's too close to the image border:
@@ -151,10 +145,9 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		}
 
 		// At the beginning, look for new features:
-		if (trackedFeats.empty() && step_num==10) // wait a bit to detect
+		if (trackedFeats.empty()) // && step_num==10) // wait a bit to detect
 		{
-			cout << "Detecting features...\n";
-
+			//cout << "Detecting features...\n";
 			timlog.enter("DETECT");
 
 			CFeatureExtraction  FE;
@@ -162,10 +155,10 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 			FE.options.patchSize = 0;
 			FE.options.FASTOptions.threshold = 20;
-			FE.options.FASTOptions.min_distance = 40;
+			FE.options.FASTOptions.min_distance = 20;
 			FE.options.FASTOptions.nonmax_suppression = false;
 
-			FE.detectFeatures(theImg, trackedFeats, 0 /* first ID */, 0 /*NUM_FEATS_TO_DETECT*/ /* # feats */ );
+			FE.detectFeatures(theImg, trackedFeats, 0 /* first ID */, NUM_FEATS_TO_DETECT /* # feats */ );
 
 			timlog.leave("DETECT");
 

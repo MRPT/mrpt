@@ -252,13 +252,13 @@ namespace mrpt
 		/** A pair (x,y) of pixel coordinates (subpixel resolution). */
 		struct BASE_IMPEXP TPixelCoordf
 		{
-			double x,y;
+			float x,y;
 
 			/** Default constructor: undefined values of x,y */
 			TPixelCoordf() : x(),y() {}
 
 			/** Constructor from x,y values */
-			TPixelCoordf(const double _x,const double _y) : x(_x), y(_y) { }
+			TPixelCoordf(const float _x,const float _y) : x(_x), y(_y) { }
 		};
 
 		/** A pair (x,y) of pixel coordinates (integer resolution). */

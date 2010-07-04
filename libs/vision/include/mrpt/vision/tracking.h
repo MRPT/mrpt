@@ -122,10 +122,8 @@ namespace mrpt
 		  */
 		struct VISION_IMPEXP CFeatureTracker_FAST : public CGenericFeatureTracker
 		{
-			/** Default ctor */
-			inline CFeatureTracker_FAST() { }
-			/** Ctor with extra parameters */
-			inline CFeatureTracker_FAST(mrpt::utils::TParametersDouble extraParams) : CGenericFeatureTracker(extraParams)	{ }
+			/** Ctor */
+			CFeatureTracker_FAST(const mrpt::utils::TParametersDouble & extraParams = mrpt::utils::TParametersDouble() );
 
 			/**  Optional parameters that can be passed in "extra_params":
 			  *		- "window_width"  (Default=15)
@@ -135,6 +133,17 @@ namespace mrpt
 				const CImage &old_img,
 				const CImage &new_img,
 				vision::CFeatureList &inout_featureList );
+
+			struct VISION_IMPEXP TExtraOutputInfo
+			{
+				size_t  raw_FAST_feats_detected;  //!< In the new_img with the last adaptive threshold
+			};
+
+			TExtraOutputInfo  last_execution_extra_info; //!< Updated with each call to trackFeatures()
+
+		private:
+			int		m_detector_adaptive_thres;		//!< threshold for cvFAST()
+			size_t	m_hysteresis_min_num_feats, m_hysteresis_max_num_feats; //!< for the adaptive control of "m_detector_adaptive_thres"
 		};
 
 

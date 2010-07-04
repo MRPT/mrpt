@@ -80,7 +80,7 @@ namespace mrpt
 		{
 			status_TRACKED 	= 5,	//!< Feature correctly tracked
 			status_OOB		= 1,	//!< Feature felt Out Of Bounds
-			status_IDLE 	= 0,	//!< Inactive
+			status_IDLE 	= 0,	//!< Inactive (right after detection, and before being tried to track)
 
 			statusKLT_IDLE 	= 0,	//!< Inactive
 			statusKLT_OOB	= 1,	//!< Out Of Bounds	(Value identical to status_OOB)
