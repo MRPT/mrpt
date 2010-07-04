@@ -30,7 +30,6 @@
 
 #include <mrpt/vision/CFeatureExtraction.h>
 
-
 #include "do_opencv_includes.h"
 
 
@@ -39,12 +38,19 @@ using namespace mrpt::vision;
 using namespace mrpt::system;
 using namespace std;
 
-bool featureComp( CFeaturePtr f1, CFeaturePtr f2 ) { return ( f1->KLT_val > f2->KLT_val ); }
 
 #if MRPT_HAS_OPENCV
 #	if MRPT_OPENCV_VERSION_NUM>=0x200
 using namespace cv;
 bool KeypointComp( KeyPoint k1, KeyPoint k2 ) { return (k1.response > k2.response); }
+struct KeypointCompCache : public std::binary_function<size_t,size_t,bool>
+{
+	const vector<KeyPoint> &m_data;
+	KeypointCompCache( const vector<KeyPoint> &data ) : m_data(data) { }
+	bool operator() (size_t k1, size_t k2 ) const {
+		return (m_data[k1].response > m_data[k2].response);
+	}
+};
 #	endif
 #endif
 
@@ -59,6 +65,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	const TImageROI			&ROI )  const
 {
 	MRPT_START
+
 #if MRPT_HAS_OPENCV
 #	if MRPT_OPENCV_VERSION_NUM < 0x200
 		THROW_EXCEPTION("This function requires OpenCV >= 2.0.0")
@@ -66,22 +73,15 @@ void  CFeatureExtraction::extractFeaturesFAST(
 
 	vector<KeyPoint> cv_feats; // The opencv keypoint output vector
 
-	// JL: It's better to use an adaptive threshold, controlled from our caller.
-//	int aux = options.FASTOptions.threshold;
-//	if( nDesiredFeatures != 0 )
-//	{
-//		double a = 89.81;
-//		double b = -0.4107*nDesiredFeatures;
-//		double c = 134.7;
-//		double d = -0.003121*nDesiredFeatures;
-//
-//		aux = max(0,(int)(a*exp(b) + c*exp(d))-20);
-//	}
+	// JL: Instead of
+	//	int aux = options.FASTOptions.threshold; ....
+	//  It's better to use an adaptive threshold, controlled from our caller outside.
 
 #	if MRPT_OPENCV_VERSION_NUM >= 0x211
 
 	FastFeatureDetector fastDetector( options.FASTOptions.threshold, options.FASTOptions.nonmax_suppression );
 	IplImage* img, *cGrey;
+
 	img = (IplImage*)inImg.getAsIplImage();
 
 	if( img->nChannels == 1 )
@@ -93,6 +93,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	}
 
 	Mat theImg = cvarrToMat( cGrey );
+
 	fastDetector.detect( theImg, cv_feats );
 
 	if( img->nChannels != 1 )
@@ -115,9 +116,14 @@ void  CFeatureExtraction::extractFeaturesFAST(
 #	endif
 
 	// *All* the features have been extracted.
+	const size_t	N			= cv_feats.size();
+
 	// Now:
-	//  1) Sort them by "response"
-	sort( cv_feats.begin(), cv_feats.end(), KeypointComp );
+	//  1) Sort them by "response": It's ~100 times faster to sort a list of
+	//      indices "sorted_indices" than sorting directly the actual list of features "cv_feats"
+	std::vector<size_t> sorted_indices(N);
+	for (size_t i=0;i<N;i++)  sorted_indices[i]=i;
+	std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointCompCache(cv_feats) );
 
 	//  2) Filter by "min-distance" (in options.FASTOptions.min_distance)
 	//  3) Convert to MRPT CFeatureList format.
@@ -129,14 +135,17 @@ void  CFeatureExtraction::extractFeaturesFAST(
 
 	const bool do_filter_min_dist = options.FASTOptions.min_distance>1;
 
-	size_t grid_lx = !do_filter_min_dist ? 1 : size_t(1 + inImg.getWidth() / options.FASTOptions.min_distance);
-	size_t grid_ly = !do_filter_min_dist ? 1 : size_t(1 + inImg.getHeight() / options.FASTOptions.min_distance);
+	// Used half the min-distance since we'll later mark as occupied the ranges [i-1,i+1] for a feature at "i"
+	const unsigned int occupied_grid_cell_size = options.FASTOptions.min_distance/2.0;
+	const float occupied_grid_cell_size_inv = 1.0f/occupied_grid_cell_size;
+
+	unsigned int grid_lx = !do_filter_min_dist ? 1 : (unsigned int)(1 + inImg.getWidth() * occupied_grid_cell_size_inv);
+	unsigned int grid_ly = !do_filter_min_dist ? 1 : (unsigned int)(1 + inImg.getHeight() * occupied_grid_cell_size_inv );
 
 	mrpt::math::CMatrixBool  occupied_sections(grid_lx,grid_ly);
 	occupied_sections.fillAll(false);
 
 
-	const size_t	N			= cv_feats.size();
 	unsigned int	nMax		= (nDesiredFeatures!=0 && N > nDesiredFeatures) ? nDesiredFeatures : N;
 	const int 		offset		= (int)this->options.patchSize/2 + 1;
 	const size_t	size_2		= options.patchSize/2;
@@ -148,13 +157,14 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	feats.clear();
 	for(; cont != nMax && i != N; i++)
 	{
-		// Do some checks...
+		// Take the next feature fromt the ordered list of good features:
+		const KeyPoint &kp = cv_feats[ sorted_indices[i] ];
 
 		// Patch out of the image??
-		const int xBorderInf = (int)floor( cv_feats[i].pt.x - size_2 );
-		const int xBorderSup = (int)floor( cv_feats[i].pt.x + size_2 );
-		const int yBorderInf = (int)floor( cv_feats[i].pt.y - size_2 );
-		const int yBorderSup = (int)floor( cv_feats[i].pt.y + size_2 );
+		const int xBorderInf = (int)floor( kp.pt.x - size_2 );
+		const int xBorderSup = (int)floor( kp.pt.x + size_2 );
+		const int yBorderInf = (int)floor( kp.pt.y - size_2 );
+		const int yBorderSup = (int)floor( kp.pt.y + size_2 );
 
 		if (!( xBorderSup < (int)imgW && xBorderInf > 0 && yBorderSup < (int)imgH && yBorderInf > 0 ))
 			continue; // nope, skip.
@@ -162,25 +172,29 @@ void  CFeatureExtraction::extractFeaturesFAST(
 		if (do_filter_min_dist)
 		{
 			// Check the min-distance:
-			const size_t section_idx_x = size_t(cv_feats[i].pt.x / options.FASTOptions.min_distance);
-			const size_t section_idx_y = size_t(cv_feats[i].pt.y / options.FASTOptions.min_distance);
+			const size_t section_idx_x = size_t(kp.pt.x * occupied_grid_cell_size_inv);
+			const size_t section_idx_y = size_t(kp.pt.y * occupied_grid_cell_size_inv);
 
 			if (occupied_sections(section_idx_x,section_idx_y))
 				continue; // Already occupied! skip.
 
-			occupied_sections(section_idx_x,section_idx_y) = true; // Mark section as occupied
+			// Mark section as occupied
+			occupied_sections.set_unsafe(section_idx_x,section_idx_y, true);
+			if (section_idx_x>0)	occupied_sections.set_unsafe(section_idx_x-1,section_idx_y, true);
+			if (section_idx_y>0)	occupied_sections.set_unsafe(section_idx_x,section_idx_y-1, true);
+			if (section_idx_x<grid_lx-1)	occupied_sections.set_unsafe(section_idx_x+1,section_idx_y, true);
+			if (section_idx_y<grid_ly-1)	occupied_sections.set_unsafe(section_idx_x,section_idx_y+1, true);
 		}
-
 
 		// All tests passed: add new feature:
 		CFeaturePtr ft		= CFeature::Create();
 		ft->type			= featFAST;
 		ft->ID				= nextID++;
-		ft->x				= cv_feats[i].pt.x;
-		ft->y				= cv_feats[i].pt.y;
-		ft->KLT_val			= cv_feats[i].response;
-		ft->orientation		= cv_feats[i].angle;
-		ft->scale			= cv_feats[i].octave;
+		ft->x				= kp.pt.x;
+		ft->y				= kp.pt.y;
+		ft->KLT_val			= kp.response;
+		ft->orientation		= kp.angle;
+		ft->scale			= kp.octave;
 		ft->patchSize		= options.patchSize;		// The size of the feature patch
 
 		if( options.patchSize > 0 )

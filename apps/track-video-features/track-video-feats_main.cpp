@@ -31,8 +31,8 @@
     Started by: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
                 @ Jun 2010
 
-    Purpose: Illustrate MRPT classes and functions for live 
-             video features detection and tracking, as well 
+    Purpose: Illustrate MRPT classes and functions for live
+             video features detection and tracking, as well
              as real-time visualization of all that stuff.
   ---------------------------------------------------------------*/
 
@@ -159,15 +159,11 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 			CFeatureExtraction  FE;
 			FE.options.featsType = featFAST;
-//			FE.options.featsType = featKLT;
 
 			FE.options.patchSize = 0;
-			FE.options.FASTOptions.threshold = 10;
-			FE.options.FASTOptions.min_distance = 20;
+			FE.options.FASTOptions.threshold = 20;
+			FE.options.FASTOptions.min_distance = 40;
 			FE.options.FASTOptions.nonmax_suppression = false;
-			FE.options.KLTOptions.min_distance = 20;
-			FE.options.KLTOptions.threshold = 0.01;
-			FE.options.KLTOptions.tile_image = false;
 
 			FE.detectFeatures(theImg, trackedFeats, 0 /* first ID */, 0 /*NUM_FEATS_TO_DETECT*/ /* # feats */ );
 
