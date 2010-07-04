@@ -48,6 +48,7 @@ add_subdirectory(pf-localization)
 add_subdirectory(ro-localization)
 add_subdirectory(map-partition)
 add_subdirectory(features-matching)
+add_subdirectory(track-video-features)
 add_subdirectory(mrpt-performance)
 
 # This program requires opencv version 1.1.0:

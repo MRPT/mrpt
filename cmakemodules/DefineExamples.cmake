@@ -138,7 +138,6 @@ IF(BUILD_EXAMPLES)
 			captureVideoOpenCV
 			captureVideoDC1394
 			enumerateCameras1394
-			trackVideoFeatures
 			)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-hwdrivers)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

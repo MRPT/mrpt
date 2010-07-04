@@ -27,14 +27,18 @@
    +---------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-    DEMO: trackVideoFeatures
-    AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
+    DEMO: track-video-features
+    Started by: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
+                @ Jun 2010
+
+    Purpose: Illustrate MRPT classes and functions for live 
+             video features detection and tracking, as well 
+             as real-time visualization of all that stuff.
   ---------------------------------------------------------------*/
 
-#include <mrpt/vision.h>
-#include <mrpt/gui.h>
-#include <mrpt/hwdrivers.h>
-
+#include <mrpt/vision.h> 	// For feature detection, etc.
+#include <mrpt/gui.h>		// For visualization windows
+#include <mrpt/hwdrivers.h>	// For capture of video from videos/cameras
 
 using namespace std;
 using namespace mrpt;
@@ -43,8 +47,6 @@ using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::vision;
 using namespace mrpt::poses;
-
-
 
 // ------------------------------------------------------
 //		DoTrackingDemo
@@ -63,7 +65,11 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	CFeatureList	trackedFeats;
 	unsigned int	step_num = 0;
 
-	unsigned int 	NUM_FEATS_TO_DETECT 	= 200;
+
+	//mrpt::vision::CFeatureTracker_FAST   tracker;
+	mrpt::vision::CFeatureTracker_KL   tracker;
+
+	unsigned int 	NUM_FEATS_TO_DETECT = 200;
 
 	CImage		previous_image; // the tracking
 
@@ -116,10 +122,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 			timlog.enter("TRACKING");
 
-			mrpt::vision::trackFeatures(
-				previous_image,
-				theImg,
-				trackedFeats);
+			tracker.trackFeatures(previous_image, theImg, trackedFeats);
 
 			timlog.leave("TRACKING");
 
@@ -152,12 +155,14 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		{
 			cout << "Detecting features...\n";
 
+			timlog.enter("DETECT");
+
 			CFeatureExtraction  FE;
 			FE.options.featsType = featFAST;
 //			FE.options.featsType = featKLT;
 
 			FE.options.patchSize = 0;
-			FE.options.FASTOptions.threshold = 50;
+			FE.options.FASTOptions.threshold = 10;
 			FE.options.FASTOptions.min_distance = 20;
 			FE.options.FASTOptions.nonmax_suppression = false;
 			FE.options.KLTOptions.min_distance = 20;
@@ -165,6 +170,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			FE.options.KLTOptions.tile_image = false;
 
 			FE.detectFeatures(theImg, trackedFeats, 0 /* first ID */, 0 /*NUM_FEATS_TO_DETECT*/ /* # feats */ );
+
+			timlog.leave("DETECT");
 
 			ASSERT_(trackedFeats.size()>3)
 		}
@@ -212,7 +219,7 @@ int main(int argc, char **argv)
 {
 	try
 	{
-		printf(" trackVideoFeatures - Part of MRPT\n");
+		printf(" track-video-features - Part of MRPT\n");
 		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
 		printf("-------------------------------------------------------------------\n");
 

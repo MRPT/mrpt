@@ -35,6 +35,7 @@
   <h2>Version 0.9.1: (In developement)</h2></a>
 	- <b>Most important changes:</b>
 		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.
+		- New application 'track-video-features' illustrating feature detection and tracking (many of this functionality is new or has been improved in this MRPT version).
 	- <b>Detailed list of changes:</b>
 		- Changes in classes:
 			- mrpt::vision::CFeatureList now has KD-tree-based search.
@@ -73,6 +74,7 @@
 			- Feature tracking for images now has a set of different implementations. See mrpt::vision::CGenericFeatureTracker
 			- mrpt::slam::CObservationStereoImagesFeatures to hold the minimum information needed by a stereo SLAM back-end algorithm.
 		- New applications:
+			- track-video-features: A demonstration of robust feature detection and tracking on a video/live camera stream. See http://www.mrpt.org/Application:track-video-features
 			- camera-calib-ba: A tool to calibrate a camera from a set of random tracked features (no need to use a checkerboard).
 		- New examples:
 			- params-by-name
