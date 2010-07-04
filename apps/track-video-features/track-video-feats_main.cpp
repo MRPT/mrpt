@@ -68,6 +68,10 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	mrpt::vision::CFeatureTracker_FAST   tracker;
 	//mrpt::vision::CFeatureTracker_KL   tracker;
 
+	tracker.extra_params["window_width"]  = 7;
+	tracker.extra_params["window_height"] = 7;
+
+
 	unsigned int 	NUM_FEATS_TO_DETECT = 100;
 
 	CImage		previous_image; // the tracking
@@ -124,7 +128,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			CFeatureList::iterator itFeat = trackedFeats.begin();
 			while (itFeat!=trackedFeats.end())
 			{
-				bool eras = (status_TRACKED!=(*itFeat)->KLT_status);
+				bool eras = (status_TRACKED!=(*itFeat)->track_status);
 				if (!eras)
 				{
 					// Also, check if it's too close to the image border:
@@ -145,7 +149,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		}
 
 		// At the beginning, look for new features:
-		if (trackedFeats.empty()) // && step_num==10) // wait a bit to detect
+		if (trackedFeats.empty() && step_num==5) // wait a bit to detect
 		{
 			//cout << "Detecting features...\n";
 			timlog.enter("DETECT");
@@ -153,7 +157,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			CFeatureExtraction  FE;
 			FE.options.featsType = featFAST;
 
-			FE.options.patchSize = 0;
+			FE.options.patchSize = 13;
 			FE.options.FASTOptions.threshold = 20;
 			FE.options.FASTOptions.min_distance = 20;
 			FE.options.FASTOptions.nonmax_suppression = false;

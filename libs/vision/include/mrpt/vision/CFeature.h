@@ -76,12 +76,19 @@ namespace mrpt
 			descLogPolarImages	= 16  //!< Log-Polar image descriptor
 		};
 
-		enum TKLTFeatureStatus
+		enum TFeatureTrackStatus
 		{
-			status_TRACKED 	= 5,	//!< Feature correctly tracked
-			status_OOB		= 1,	//!< Feature felt Out Of Bounds
+			// Init value
 			status_IDLE 	= 0,	//!< Inactive (right after detection, and before being tried to track)
+			
+			// Ok:
+			status_TRACKED 	= 5,	//!< Feature correctly tracked
 
+			// Bad:
+			status_OOB		= 1,	//!< Feature felt Out Of Bounds
+			status_LOST 	= 10,	//!< Unable to track this feature
+
+			// KLT specific:
 			statusKLT_IDLE 	= 0,	//!< Inactive
 			statusKLT_OOB	= 1,	//!< Out Of Bounds	(Value identical to status_OOB)
 			statusKLT_SMALL_DET	= 2,	//!< Determinant of the matrix too small
@@ -90,6 +97,8 @@ namespace mrpt
 			statusKLT_TRACKED 	= 5,	//!< Feature correctly tracked (Value identical to status_TRACKED)
 			statusKLT_MAX_ITERATIONS	= 6	//!< Iteration maximum reached
 		};
+
+		typedef TFeatureTrackStatus TKLTFeatureStatus; //!< For backward compatibility
 
 		/****************************************************
 						Class CFEATURE
@@ -114,8 +123,8 @@ namespace mrpt
 			CImage				patch;			//!< A patch of the image surrounding the feature
 			uint16_t			patchSize;		//!< Size of the patch (patchSize x patchSize) (it must be an odd number)
 			TFeatureType		type;			//!< Type of the feature: featNotDefined, featSIFT, featKLT,	featHarris, featSURF, featBeacon
-			TKLTFeatureStatus	KLT_status;		//!< Status of the feature tracking process
-			float				KLT_val;		//!< Value of the goodness of the feature
+			TFeatureTrackStatus	track_status;	//!< Status of the feature tracking process (old name: KLT_status)
+			float				response;		//!< A measure of the "goodness" of the feature (old name: KLT_val)
 			float				orientation;	//!< Main orientation of the feature
 			float				scale;			//!< Feature scale into the scale space
 			uint8_t				IDSourceImage;	//!< ID of the image from which the feature was extracted.

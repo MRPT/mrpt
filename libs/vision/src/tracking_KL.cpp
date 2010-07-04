@@ -150,7 +150,7 @@ for( i = 0, itFeat = featureList.begin(); i < nFeatures && itFeat != featureList
 //		// Feature could be tracked
 //		(*itFeat)->x			= itPoints->x;
 //		(*itFeat)->y			= itPoints->y;
-//		(*itFeat)->KLT_status	= statusKLT_TRACKED;
+//		(*itFeat)->track_status	= statusKLT_TRACKED;
 //		(*itFeat)->KLT_val		= err[i];
 //	} // end if
 //	else
@@ -158,7 +158,7 @@ for( i = 0, itFeat = featureList.begin(); i < nFeatures && itFeat != featureList
 //		// Feature could not be tracked
 //		(*itFeat)->x			= -1;
 //		(*itFeat)->y			= -1;
-//		(*itFeat)->KLT_status	= cStatus[i] == 0 ? statusKLT_IDLE : statusKLT_OOB;
+//		(*itFeat)->track_status	= cStatus[i] == 0 ? statusKLT_IDLE : statusKLT_OOB;
 //	} // end else
 //} // end-for
 // ********************************************************************************
@@ -182,13 +182,13 @@ for( i = 0, itFeat = featureList.begin(); i < nFeatures && itFeat != featureList
 		// Feature could be tracked
 		(*itFeat)->x			= points[1][i].x;
 		(*itFeat)->y			= points[1][i].y;
-		(*itFeat)->KLT_status	= statusKLT_TRACKED;
+		(*itFeat)->track_status	= statusKLT_TRACKED;
 	} // end if
 	else	// Feature could not be tracked
 	{
 		(*itFeat)->x			= -1;
 		(*itFeat)->y			= -1;
-		(*itFeat)->KLT_status	= status[i] == 0 ? statusKLT_IDLE : statusKLT_OOB;
+		(*itFeat)->track_status	= status[i] == 0 ? statusKLT_IDLE : statusKLT_OOB;
 	} // end else
 } // end for
 

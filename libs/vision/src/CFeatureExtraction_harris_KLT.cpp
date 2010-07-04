@@ -196,8 +196,8 @@ void CFeatureExtraction::selectGoodFeaturesKLT(
 				ft->type		= featKLT;
 				ft->x			= points[i].x;				// X position
 				ft->y			= points[i].y;				// Y position
-				ft->KLT_status	= statusKLT_TRACKED;		// Feature Status
-				ft->KLT_val		= 0.0;						// A value proportional to the quality of the feature (unused yet)
+				ft->track_status = statusKLT_TRACKED;		// Feature Status
+				ft->response	= 0.0;						// A value proportional to the quality of the feature (unused yet)
 				ft->ID			= nCFeats++;				// Feature ID into extraction
 				ft->patchSize	= options.patchSize;		// The size of the feature patch
 

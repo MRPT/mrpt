@@ -316,6 +316,7 @@ namespace mrpt
 			void  setFromIplImage( void* iplImage );
 
 			/** Reads the image from a OpenCV IplImage object (WITHOUT making a copy) and from now on the image cannot be modified, just read.
+			  *  When assigning an IPLImage to this object with this method, the IPLImage will NOT be released/freed at this object destructor.
 			  *   This method provides a fast method to grab images from a camera without making a copy of every frame.
 			  */
 			void  setFromIplImageReadOnly( void* iplImage );

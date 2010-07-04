@@ -61,8 +61,8 @@ void  CFeature::writeToStream(CStream &out,int *version) const
 			<< patch
 			<< patchSize
 			<< (uint32_t)type
-			<< (uint32_t)KLT_status
-			<< KLT_val
+			<< (uint32_t)track_status
+			<< response
 			<< orientation
 			<< scale
 			<< IDSourceImage
@@ -91,7 +91,7 @@ void  CFeature::readFromStream(CStream &in,int version)
 				>> patchSize
 				>> aux_type
 				>> aux_KLTS
-				>> KLT_val
+				>> response
 				>> orientation
 				>> scale
 				>> IDSourceImage
@@ -104,7 +104,7 @@ void  CFeature::readFromStream(CStream &in,int version)
 				>> descriptors.polarImgsNoRotation;
 
 			type		= (TFeatureType)aux_type;
-			KLT_status	= (TKLTFeatureStatus)aux_KLTS;
+			track_status	= (TKLTFeatureStatus)aux_KLTS;
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -117,7 +117,7 @@ void  CFeature::readFromStream(CStream &in,int version)
 *****************************************************/
 // CONSTRUCTOR
 CFeature::CFeature(): x(0.0f), y(0.0f), ID(0), patchSize(21), type(featNotDefined),
-	KLT_status(statusKLT_IDLE), KLT_val(0.0),
+	track_status(status_IDLE), response(0.0),
 	orientation(0.0), scale(0.0), IDSourceImage(0),
 	descriptors()
 {}
@@ -505,7 +505,7 @@ void CFeatureList::saveToTextFile( const std::string &filename, bool APPEND )
 			for( unsigned int k = 0; k < (*it)->descriptors.SpinImg.size(); k++ )
 				f.printf( "%.4f ", (*it)->descriptors.SpinImg[k]);
 
-		f.printf( "%d %.3f\n", (int)(*it)->KLT_status, (*it)->KLT_val );
+		f.printf( "%d %.3f\n", (int)(*it)->track_status, (*it)->response );
 	} // end for
 
 	f.close();

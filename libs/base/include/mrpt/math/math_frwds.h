@@ -45,7 +45,7 @@ namespace mrpt
 	namespace utils
 	{
 		class BASE_IMPEXP CStream;
-		template<class T> inline T square(const T& x);
+		template<class T> inline T square(const T x);
 	}
 
 	namespace poses

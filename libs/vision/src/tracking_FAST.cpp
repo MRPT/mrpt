@@ -42,9 +42,10 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-// Auxiliary KD-tree search class for vector<KeyPoint>:
 #if MRPT_HAS_OPENCV
 #if MRPT_OPENCV_VERSION_NUM >= 0x211
+
+// Auxiliary KD-tree search class for vector<KeyPoint>:
 class CSimple2DKDTree : public mrpt::math::KDTreeCapable
 {
 public:
@@ -66,6 +67,34 @@ protected:
 		}
 	}
 };
+
+// Auxiliary function:
+double match_template_SQDIFF(
+	const IplImage* img,
+	const IplImage* patch,
+	const unsigned int patch_pos_x, 
+	const unsigned int patch_pos_y)
+{
+	unsigned int sq_diff = 0;
+
+	// Only for 8bit grayscale:
+	ASSERT_(img->depth==patch->depth && patch->depth==8)
+	ASSERT_(img->nChannels == 1 && patch->nChannels == 1 )
+	ASSERT_(patch_pos_x + patch->width<=(size_t)img->width)
+	ASSERT_(patch_pos_y + patch->height<=(size_t)img->height)
+
+	for (unsigned int y=0;y<(unsigned int)patch->height;y++)
+	{
+		const uint8_t *pixel_img   = reinterpret_cast<const uint8_t *>(img->imageData) + img->widthStep*(y+patch_pos_y) + patch_pos_x;
+		const uint8_t *pixel_patch = reinterpret_cast<const uint8_t *>(patch->imageData) + patch->widthStep*y + 0;
+
+		for (unsigned int x=patch->width;x!=0;x--)
+			sq_diff += mrpt::square( (*pixel_img++) - (*pixel_patch++) );
+	}
+
+	return 1.0 - sq_diff / (square(255.0)* patch->width *  patch->height);
+}
+
 #endif
 #endif
 
@@ -117,26 +146,18 @@ void CFeatureTracker_FAST::trackFeatures(
 
 	FastFeatureDetector fastDetector( m_detector_adaptive_thres , true /* non-max supres. */ );
 
-	{ // Create a temporary gray image, if needed:
-		IplImage* img = reinterpret_cast<IplImage*>(new_img.getAsIplImage());
-		IplImage* cGrey;
+	// Create a temporary gray image, if needed:
+	mrpt::utils::CImage  new_img_gray;
+	if (new_img.isColor())
+			new_img.grayscale(new_img_gray);	// Create a new auxiliary grayscale image
+	else	new_img_gray.setFromIplImageReadOnly( new_img.getAsIplImage() );  // Copy the IPLImage, but do not own the memory
 
-		if( img->nChannels == 1 )
-			cGrey = img;										// Input image is already 'grayscale'
-		else
-		{
-			cGrey = cvCreateImage( cvGetSize( img ), 8, 1);
-			cvCvtColor( img, cGrey, CV_BGR2GRAY );				// Convert input image into 'grayscale'
-		}
+	// Do the detection
+	const Mat new_img_gray_mat = cvarrToMat( reinterpret_cast<IplImage*>(new_img_gray.getAsIplImage()) );
+	fastDetector.detect( new_img_gray_mat, cv_feats );
 
-		const Mat theImg = cvarrToMat( cGrey );
-		fastDetector.detect( theImg, cv_feats );  // Do the detection
-
-		if( img->nChannels != 1 )
-			cvReleaseImage( &cGrey );
-	}
-
-	const size_t N = cv_feats.size();  // # of detected feats.
+	// # of detected feats.
+	const size_t N = cv_feats.size();  
 
 	last_execution_extra_info.raw_FAST_feats_detected = N; // Extra out info.
 
@@ -158,8 +179,6 @@ void CFeatureTracker_FAST::trackFeatures(
 	size_t max_query_results = 40;
 	keep_min(max_query_results, N);
 
-	printf("Raw feats: %u\n",(unsigned) N);
-
 	// Maximum distance for ignoring a "close" potential match:
 	const float max_sq_dist_to_check = square(window_width) + square(window_height);
 
@@ -171,6 +190,14 @@ void CFeatureTracker_FAST::trackFeatures(
 	{
 		ASSERTDEB_(featureList[i].present())
 		CFeaturePtr &feat = featureList[i];
+
+		// Get the size of the patch so we know when we are too close to a border.
+		ASSERTDEB_(feat->patch.getWidth()>1)
+		ASSERTDEB_(feat->patch.getWidth()==feat->patch.getHeight())
+		
+		const unsigned int patch_half_size = (feat->patch.getWidth()-1)>>1;
+		const unsigned int max_border_x = new_img_gray.getWidth() - patch_half_size -1;
+		const unsigned int max_border_y = new_img_gray.getHeight() - patch_half_size -1;
 
 		std::vector<size_t> closest_idxs =
 		kdtree.kdTreeNClosestPoint2D(
@@ -187,18 +214,51 @@ void CFeatureTracker_FAST::trackFeatures(
 			if (closest_dist_sqr[k]>max_sq_dist_to_check)
 				break; // Too far.
 
+			const unsigned int px = cv_feats[closest_idxs[k]].pt.x;
+			const unsigned int py = cv_feats[closest_idxs[k]].pt.y;
+			
+			if (px<patch_half_size || 
+				py<patch_half_size || 
+				px>=max_border_x || 
+				py>=max_border_y)
+			{	
+				// Can't match the entire patch with the image... what to do? 
+				// -> Discard it and mark as OOB:
+				feat->track_status = status_OOB;
+				break;
+			}
+
 			// This is a potential match: Check the patch to see if it matches:
-			printf("testing %u against (%.02f,%.02f)\n",(unsigned)i, cv_feats[closest_idxs[k]].pt.x,cv_feats[closest_idxs[k]].pt.y );
-			double match_quality = 0.9;
+			//printf("testing %u against (%u,%u)\n",(unsigned)i, px,py );
+
+			// Possible algorithms: { TM_SQDIFF=0, TM_SQDIFF_NORMED=1, TM_CCORR=2, TM_CCORR_NORMED=3, TM_CCOEFF=4, TM_CCOEFF_NORMED=5 };
+			double match_quality  = match_template_SQDIFF( 
+				reinterpret_cast<IplImage*>( new_img_gray.getAsIplImage()),
+				reinterpret_cast<IplImage*>( feat->patch.getAsIplImage()),
+				px-patch_half_size-1,
+				py-patch_half_size-1);
+
 			potential_matches[match_quality] = closest_idxs[k];
 		}
 
-		// Keep the best match: Since std::map<> is ordered, the last is the best one:
-		const size_t idxBestMatch = potential_matches.rbegin()->second;
+		if (!potential_matches.empty())
+		{
+			// Keep the best match: Since std::map<> is ordered, the last is the best one:
+			const double valBestMatch = potential_matches.rbegin()->first;
+			const size_t idxBestMatch = potential_matches.rbegin()->second;
+
+			// OK: Accept it:
+			feat->track_status	= status_TRACKED;
+			feat->x				= cv_feats[idxBestMatch].pt.x;
+			feat->y				= cv_feats[idxBestMatch].pt.y;
+		}
+		else
+		{
+			// No potential match! 
+			// Mark as "lost":
+			feat->track_status = status_LOST;
+		}
 	}
-
-	printf("DONE!\n");
-
 
 #else
 	THROW_EXCEPTION("This function requires OpenCV >= 2.1.1")

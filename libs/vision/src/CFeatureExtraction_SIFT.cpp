@@ -421,7 +421,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 					ft->ID				= nextID++;
 					ft->x				= cv_feats[i].pt.x;
 					ft->y				= cv_feats[i].pt.y;
-					ft->KLT_val			= cv_feats[i].response;
+					ft->response		= cv_feats[i].response;
 					ft->orientation		= cv_feats[i].angle;
 					ft->scale			= cv_feats[i].size;
 					ft->patchSize		= options.patchSize;														// The size of the feature patch

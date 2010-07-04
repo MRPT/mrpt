@@ -624,7 +624,7 @@ namespace mrpt
 
 		/** Inline function for the square of a number. */
 		template<class T>
-		inline T square(const T& x)    { return x*x; }
+		inline T square(const T x)    { return x*x; }
 
 
 		/** Utility to get a cast'ed pointer from a smart pointer */
