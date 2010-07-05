@@ -157,7 +157,7 @@ int DoCameraCalibBA(CCameraSensorPtr  cam)
 			vector_double featMovesSq;
 			for (size_t i=0;i<prevFeats.size();i++)
 			{
-				if (statusKLT_TRACKED==trackedFeats[i]->KLT_status)
+				if (statusKLT_TRACKED==trackedFeats[i]->track_status)
 				{
 					const double distSq = square( trackedFeats[i]->x-prevFeats[i].x) + square(trackedFeats[i]->y-prevFeats[i].y);
 					featMovesSq.push_back(distSq);
@@ -170,7 +170,7 @@ int DoCameraCalibBA(CCameraSensorPtr  cam)
 			CFeatureList::iterator itFeat = trackedFeats.begin();
 			while (itFeat!=trackedFeats.end())
 			{
-				bool eras = (statusKLT_TRACKED!=(*itFeat)->KLT_status);
+				bool eras = (statusKLT_TRACKED!=(*itFeat)->track_status);
 				if (!eras)
 				{
 					// Also, check if it's too close to the image border:

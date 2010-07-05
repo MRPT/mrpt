@@ -73,7 +73,7 @@ void  CSimplePointsMap::copyFrom(const CPointsMap &obj)
 	m_largestDistanceFromOriginIsUpdated = obj.m_largestDistanceFromOriginIsUpdated;
 	m_largestDistanceFromOrigin = obj.m_largestDistanceFromOrigin;
 
-	kd_tree_mark_as_outdated();
+	kdtree_mark_as_outdated();
 
 	MRPT_END;
 }

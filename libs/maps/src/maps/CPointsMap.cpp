@@ -1520,7 +1520,7 @@ double	 CPointsMap::computeObservationLikelihood(
 void CPointsMap::mark_as_modified() const
 {
 	m_largestDistanceFromOriginIsUpdated=false;
-	kd_tree_mark_as_outdated();
+	kdtree_mark_as_outdated();
 }
 
 
