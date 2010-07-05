@@ -856,7 +856,7 @@ void CRangeBearingKFSLAM::OnInverseObservationModel(
 	dyn_dhn.multiply_AB(jacob_dyn_dynrelsensor, dynlocal_dhn);
 
 	//dyn_dxv = 
-	dyn_dxv.multiply_AB(jacob_dyn_dsensorabs, dsensorabs_dsenrelpose);
+	dyn_dxv.multiply_AB(jacob_dyn_dsensorabs, dsensorabs_dvehpose ); // dsensorabs_dsenrelpose);
 
     MRPT_END
 }
