@@ -91,6 +91,11 @@ namespace slam
 			/** Sensed temperature in Celcius (valid if hasTemperature=true only)
 			  */
 			float			temperature;
+
+			/** True if the input to this chamber/enose is poluted air, False if clean air
+			  */
+			bool			isActive;
+
 		};
 
 		/** One entry per e-nose on the robot.

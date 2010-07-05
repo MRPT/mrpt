@@ -28,6 +28,8 @@
 
 #include <mrpt/hwdrivers/CBoardENoses.h>
 #include <mrpt/utils.h>
+#include <mrpt/slam.h>
+
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -46,14 +48,26 @@ int main()
 		FILE					*f_log = os::fopen("./log.txt","wt");
 		TTimeStamp				timStart = mrpt::system::getCurrentTime();
 		
-		/*
-		// Load configuration:
-		ASSERT_( mrpt::system::fileExists("_CONFIG_eNoses.ini") );
-		CConfigFile conf("_CONFIG_eNoses.ini");
+		
+		// Load configuration:	
+		if (mrpt::system::fileExists("./CONFIG_eNoses.ini"))
+		{
+			cout << "Using configuration from './CONFIG_eNoses.ini'" << endl;
+			CConfigFile		conf("./CONFIG_eNoses.ini");
+			eNoses.loadConfig( conf, "eNoses" );
+		}
+		else
+		{
+			cout << "Configuration file (ini) cannot be found" << endl;
+			return -1;
+		}
+
+		ASSERT_( mrpt::system::fileExists("CONFIG_eNoses.ini") );
+		CConfigFile conf("./CONFIG_eNoses.ini");
 		eNoses.loadConfig( conf, "eNoses" );
 
 		
-		if (!eNoses.queryFirmwareVersion( firmVers ) )
+		/*if (!eNoses.queryFirmwareVersion( firmVers ) )
 		{
 			printf("Error!!\n");
 			return -1;

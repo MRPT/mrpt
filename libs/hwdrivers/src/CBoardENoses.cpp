@@ -217,7 +217,7 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 		//msg.content.clear();
 		//comms->sendMessage( msg );
 
-		// Wait for e-nose frame
+		// Wait for e-nose frame	[2 header, N sensors*Mchambers, 2 timestamp] of uint16_t
 		comms->receiveMessage( msg );
 
         //m_state = ssWorking;
@@ -230,21 +230,23 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 			// Copy to a vector of 16bit integers:
 			vector<uint16_t>	readings( msg.content.size() / 2 );	// divide by 2 to pass from byte to word
 			memcpy( &readings[0],&msg.content[0],msg.content.size() * sizeof(msg.content[0]) );
+			
+			//HEADER Frame [ Nº of chambers/enoses (16b) , Active Chamber (16b)]
+			size_t NumberOfChambers = (size_t)readings[0];
+			size_t ActiveChamber = (size_t)readings[1];
 
-			// Get the number of eNoses data packs:
-			size_t wordsPereNose = 18/*5 sensors/enose*/ * 2 /*descriptor+data*/ +3 /*reading's time*/;
-			ASSERT_((readings.size() % wordsPereNose)==0);
-			size_t		M = readings.size() / wordsPereNose;
+			// Sensors readings info			
+			ASSERT_( ((readings.size() - 4) % NumberOfChambers)==0 );
+			size_t wordsPereNose = (readings.size() - 4) / NumberOfChambers;						
+			
 
 			// Process them (some may be empty):
-			for (size_t i=0;i<M;i++)
+			for (size_t i=0; i<NumberOfChambers; i++)
 			{
-				// ------------------------------------------------------------
-				// Each "i" comprises the 8 values:
-				//  readings[ i*8+0 ] ... readings[ i*8+7 ]
-				// Which correspond to the 4 sensors on the i'th eNose:
-				// ------------------------------------------------------------
-
+				// ----------------------------------------------------------------------
+				// Each "i" comprises a complete Enose reading: Gas sensors + temperature
+				// ----------------------------------------------------------------------
+				
 				// Do we have the sensor position?
 				if (i<enose_poses_x.size())
 				{
@@ -263,49 +265,33 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 				newRead.sensorTypes.clear();
 				newRead.readingsVoltage.clear();
 				newRead.hasTemperature = false;
+				newRead.isActive = false;
+				
+				// check if active chamber
+				if (i == (ActiveChamber-1))
+					newRead.isActive = true;
 
-				for (size_t idx=0;idx<(wordsPereNose-1)/2;idx++)
+				for (size_t idx=0 ; idx<(wordsPereNose-1)/2 ; idx++)
 				{
-					if ( readings[i*wordsPereNose + 2*idx + 0] != 0x0000 )
+					if ( readings[i*wordsPereNose + 2*idx + 2] != 0x0000 )	//not empty slot
 					{
 						// Is temperature?
-						if (readings[i*wordsPereNose + 2*idx + 0]==0xFFFF)
+						if (readings[i*wordsPereNose + 2*idx + 2] == 0xFFFF)
 						{
 							newRead.hasTemperature = true;
-							newRead.temperature = ((int16_t)readings[i*wordsPereNose + 2*idx + 1]) / 32.0f;
+							newRead.temperature = ((int16_t)readings[i*wordsPereNose + 2*idx + 3]) / 32.0f;
 						}
-
-						// Is Reading's Time?
-						else if (readings[i*wordsPereNose + 2*idx + 0]==0xEEEE)
-						{
-							uint32_t *p = (uint32_t*)&readings[i*wordsPereNose + 2*idx + 1];	//Get readings time from frame
-							obs.timestamp = mrpt::system::secondsToTimestamp(((double)*p)/1000);
-
-							if (first_reading)
-							{
-								initial_timestamp = mrpt::system::getCurrentTime() - obs.timestamp;
-								first_reading = false;
-							}
-							obs.timestamp = obs.timestamp + initial_timestamp;
-
-						}
-
-						else
+						else	//Is a gas sensors
 						{
 							// It is not a null code: There is a valid measure:
-							newRead.sensorTypes.push_back( readings[i*wordsPereNose + 2*idx + 0] );
+							newRead.sensorTypes.push_back( readings[i*wordsPereNose + 2*idx + 2] );
 
-							// Pass from ADC internal Atmel value[10bits] to [0-2.5] volt range:
-							if ( readings[i*wordsPereNose + 2*idx + 0]==(0x2611) ){
-								newRead.readingsVoltage.push_back( ( readings[i*wordsPereNose + 2*idx + 1] * 5.0f) / 1024.0f  );
-
-							}else{	// Pass from ADC value[12bits] to [0-2.5] volt range:
-								newRead.readingsVoltage.push_back( ( readings[i*wordsPereNose + 2*idx + 1] * 5.0f) / 4096.0f  );
-							}
+							// Pass from ADC value[12bits] to [0-2.5] volt range:
+							newRead.readingsVoltage.push_back( ( readings[i*wordsPereNose + 2*idx + 3] * 5.0f) / 4096.0f  );							
 						}
 					}
 				} // end for each sensor on this eNose
-
+		
 				// Add to observations:
 				if ( !newRead.sensorTypes.empty() )
 					obs.m_readings.push_back( newRead );
@@ -314,8 +300,17 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 
 			obs.sensorLabel = m_sensorLabel;
 
-		} // end if message has data
+			// Set Timestamp
+			uint32_t *p = (uint32_t*)&readings[readings.size()-2];	//Get readings time from frame (always last 2 words)
+			obs.timestamp = mrpt::system::secondsToTimestamp(((double)*p)/1000);
+			if (first_reading)
+			{
+				initial_timestamp = mrpt::system::getCurrentTime() - obs.timestamp;
+				first_reading = false;
+			}
+			obs.timestamp = obs.timestamp + initial_timestamp;
 
+		} // end if message has data
 
 		// Set timestamp:
 		//obs.timestamp = mrpt::system::getCurrentTime();
