@@ -34,10 +34,13 @@
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
+
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
+#include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
+
 #include <mrpt/utils/CFileGZInputStream.h>
 
 #include <mrpt/gui/CDisplayWindow.h>
@@ -53,66 +56,40 @@ namespace mrpt
 		  *
 		  *  \code
 		  *   CCameraSensor myCam;
-		  *   string str = "[CONFIG]\n grabber_type=opencv \n";
+		  *   const string str =
+		  *      "[CONFIG]\n"
+		  *      "grabber_type=opencv\n";
+		  *
 		  *   CConfigFileMemory	cfg(str);
 		  *   myCam.loadConfig(cfg,"CONFIG");
 		  *   myCam.initialize();
 		  *   CObservationPtr obs = myCam.getNextFrame();
 		  *  \endcode
 		  *
-		  *  Images can be retrieves through the normal "doProcess()" interface, or the specific method "getNextFrame()".
+		  *  Images can be retrieved through the normal "doProcess()" interface, or the specific method "getNextFrame()".
 		  *
-		  *  These is the list of all the accepted parameters:
+		  * Some notes:
+		  *  - "grabber_type" determines the class to use internally for image capturing (see below).
+		  *  - For the meaning of cv_camera_type and other parameters, refer to mrpt::hwdrivers::CImageGrabber_OpenCV
+		  *  - For the parameters of dc1394 parameters, refer to generic IEEE1394 documentation, and to mrpt::hwdrivers::TCaptureOptions_dc1394.
+		  *  - If all the existing parameter annoy you, try the function prepareVideoSourceFromUserSelection(), which displays a GUI dialog to the user so he/she can choose the desired camera & its parameters.
+		  *
+		  *  Images can be saved in the "external storage" mode. See setPathForExternalImages and setExternalImageFormat. These methods
+		  *   are called automatically from rawlog-grabber.
+		  *
+		  *  These is the list of all accepted parameters:
 		  *
 		  *  \code
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
-		  *    // Select one of the grabber implementations:
-		  *    grabber_type       = opencv | dc1394 | bumblebee | ffmpeg | rawlog
+		  *    // Select one of the grabber implementations -----------------------
+		  *    grabber_type       = opencv | dc1394 | bumblebee | ffmpeg | rawlog | swissranger
+		  *
+		  *    // Options for any grabber_type ------------------------------------
 		  *    preview_decimation = 0     // N<=0 (or not present): No preview; N>0, display 1 out of N captured frames.
 		  *    preview_reduction  = 0     // 0 or 1 (or not present): The preview shows the actual image. For 2,3,..., reduces the size of the image by that factor, only for the preview window.
 		  *    capture_grayscale  = 0     // 1:capture in grayscale, whenever the driver allows it. Default=0
-		  *
-		  *    // Options for grabber_type= opencv
-		  *    cv_camera_index  = 0       // [opencv] Number of camera to open
-		  *    cv_camera_type   = CAMERA_CV_AUTODETECT
-		  *    cv_frame_width   = 640     // [opencv] Capture width (not present or set to 0 for default)
-		  *    cv_frame_height  = 480     // [opencv] Capture height (not present or set to 0 for default)
-		  *    cv_fps           = 15      // [opencv] IEEE1394 cams only: Capture FPS (not present or 0 for default)
-		  *    cv_gain          = 0       // [opencv] Camera gain, if available (nor present or set to 0 for default).
-		  *
-		  *    // Options for grabber_type= dc1394
-		  *    dc1394_camera_guid   = 0 | 0x11223344    // 0 (or not present): the first camera; A hexadecimal number: The GUID of the camera to open
-		  *    dc1394_camera_unit   = 0     			// 0 (or not present): the first camera; 0,1,2,...: The unit number (within the given GUID) of the camera to open (Stereo cameras: 0 or 1)
-		  *    dc1394_frame_width	= 640
-		  *    dc1394_frame_height	= 480
-		  *    dc1394_framerate		= 15					// eg: 7.5, 15, 30, 60, etc... For posibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
-		  *    dc1394_mode7         = -1                    // -1: Ignore, i>=0, set to MODE7_i
-		  *    dc1394_color_coding	= COLOR_CODING_YUV422	// For posibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
-		  *    dc1394_shutter		= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
-		  *    dc1394_gain			= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
-		  *    dc1394_gamma			= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
-		  *    dc1394_brightness	= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
-		  *    dc1394_exposure		= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
-		  *    dc1394_sharpness		= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
-		  *    dc1394_white_balance	= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
-		  *
-		  *    // Options for grabber_type= bumblebee
-		  *    bumblebee_camera_index  = 0       // [bumblebee] Number of camera within the firewire bus to open (typically = 0)
-		  *    bumblebee_frame_width   = 640     // [bumblebee] Capture width (not present or set to 0 for default)
-		  *    bumblebee_frame_height  = 480     // [bumblebee] Capture height (not present or set to 0 for default)
-		  *    bumblebee_fps           = 15      // [bumblebee] Capture FPS (not present or 0 for default)
-		  *    bumblebee_mono          = 0|1     // [bumblebee] OPTIONAL: If this parameter is present, monocular (0:left, 1:right) images will be grabbed instead of stereo pairs.
-		  *    bumblebee_get_rectified = 0|1     // [bumblebee] Determines if the camera should grab rectified or raw images (1 is the default)
-		  *
-		  *    // Options for grabber_type= ffmpeg
-		  *    ffmpeg_url             = rtsp://127.0.0.1      // [ffmpeg] The video file or IP camera to open
-		  *
-		  *    // Options for grabber_type= rawlog
-		  *    rawlog_file            = mylog.rawlog          // [rawlog] This can be used to simulate the capture of images already grabbed in the past in the form of a MRPT rawlog.
-		  *    rawlog_camera_sensor_label  = CAMERA1          // [rawlog] If this field is not present, all images found in the rawlog will be retrieved. Otherwise, only those observations with a matching sensor label.
-		  *
 		  *    // For externaly stored images, the format of image files (default=jpg)
 		  *    //external_images_format  = jpg
 		  *
@@ -135,14 +112,54 @@ namespace mrpt
 		  *    pose_pitch=0
 		  *    pose_roll=0
 		  *
+		  *    // Options for grabber_type= opencv  ------------------------------------
+		  *    cv_camera_index  = 0       // [opencv] Number of camera to open
+		  *    cv_camera_type   = CAMERA_CV_AUTODETECT
+		  *    cv_frame_width   = 640     // [opencv] Capture width (not present or set to 0 for default)
+		  *    cv_frame_height  = 480     // [opencv] Capture height (not present or set to 0 for default)
+		  *    cv_fps           = 15      // [opencv] IEEE1394 cams only: Capture FPS (not present or 0 for default)
+		  *    cv_gain          = 0       // [opencv] Camera gain, if available (nor present or set to 0 for default).
+		  *
+		  *    // Options for grabber_type= dc1394 -------------------------------------
+		  *    dc1394_camera_guid   = 0 | 0x11223344    // 0 (or not present): the first camera; A hexadecimal number: The GUID of the camera to open
+		  *    dc1394_camera_unit   = 0     			// 0 (or not present): the first camera; 0,1,2,...: The unit number (within the given GUID) of the camera to open (Stereo cameras: 0 or 1)
+		  *    dc1394_frame_width	= 640
+		  *    dc1394_frame_height	= 480
+		  *    dc1394_framerate		= 15					// eg: 7.5, 15, 30, 60, etc... For posibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
+		  *    dc1394_mode7         = -1                    // -1: Ignore, i>=0, set to MODE7_i
+		  *    dc1394_color_coding	= COLOR_CODING_YUV422	// For posibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
+		  *    dc1394_shutter		= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
+		  *    dc1394_gain			= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
+		  *    dc1394_gamma			= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
+		  *    dc1394_brightness	= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
+		  *    dc1394_exposure		= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
+		  *    dc1394_sharpness		= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
+		  *    dc1394_white_balance	= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
+		  *
+		  *    // Options for grabber_type= bumblebee ----------------------------------
+		  *    bumblebee_camera_index  = 0       // [bumblebee] Number of camera within the firewire bus to open (typically = 0)
+		  *    bumblebee_frame_width   = 640     // [bumblebee] Capture width (not present or set to 0 for default)
+		  *    bumblebee_frame_height  = 480     // [bumblebee] Capture height (not present or set to 0 for default)
+		  *    bumblebee_fps           = 15      // [bumblebee] Capture FPS (not present or 0 for default)
+		  *    bumblebee_mono          = 0|1     // [bumblebee] OPTIONAL: If this parameter is present, monocular (0:left, 1:right) images will be grabbed instead of stereo pairs.
+		  *    bumblebee_get_rectified = 0|1     // [bumblebee] Determines if the camera should grab rectified or raw images (1 is the default)
+		  *
+		  *    // Options for grabber_type= ffmpeg -------------------------------------
+		  *    ffmpeg_url             = rtsp://127.0.0.1      // [ffmpeg] The video file or IP camera to open
+		  *
+		  *    // Options for grabber_type= rawlog -------------------------------------
+		  *    rawlog_file            = mylog.rawlog          // [rawlog] This can be used to simulate the capture of images already grabbed in the past in the form of a MRPT rawlog.
+		  *    rawlog_camera_sensor_label  = CAMERA1          // [rawlog] If this field is not present, all images found in the rawlog will be retrieved. Otherwise, only those observations with a matching sensor label.
+		  *
+		  *    // Options for grabber_type= swissranger -------------------------------------
+		  *    sr_use_usb         = true	        // True: use USB, false: use ethernet
+		  *    sr_IP              = 192.168.2.14    // If sr_use_usb=false, the camera IP
+		  *    sr_grab_grayscale  = true            // whether to save the intensity channel
+		  *    sr_grab_3d         = true            // whether to save the 3D points
+		  *    sr_grab_range      = true            // whether to save the range image
+		  *    sr_grab_confidence = true            // whether to save the confidence image
+		  *
 		  *  \endcode
-		  *
-		  *  - "grabber_type" is the class to use internally for image capturing. Choices are "opencv" (Windows & Linux) or "dc1394" (Linux only for now, requires libdc1394-2).
-		  *  - For the meaning of cv_camera_type and other parameters, refer to mrpt::hwdrivers::CImageGrabber_OpenCV
-		  *  - For the parameters of dc1394 parameters, refer to generic IEEE1394 documentation, and to mrpt::hwdrivers::TCaptureOptions_dc1394.
-		  *
-		  *  Images can be saved in the "external storage" mode. See setPathForExternalImages and setExternalImageFormat. These methods
-		  *   are called automatically from rawlog-grabber.
 		  *
 		  *  \note The execution rate (in rawlog-grabber) should be greater than the required capture FPS.
 		  *  \note In Linux you may need to execute "chmod 666 /dev/video1394/ * " and "chmod 666 /dev/raw1394" for allowing any user R/W access to firewire cameras.
@@ -168,7 +185,10 @@ namespace mrpt
 			void  doProcess();
 
 			/** Retrieves the next frame from the video source, raising an exception on any error.
-			  * \note The observations can be of the classes CObservationImage or CObservationStereoImages
+			  * Note: The returned observations can be of one of these classes (you can use IS_CLASS(obs,CObservationXXX) to determine it):
+			  *		- mrpt::slam::CObservationImage (For normal cameras or video sources)
+			  *		- mrpt::slam::CObservationStereoImages (For stereo cameras)
+			  *		- mrpt::slam::CObservation3DRangeScan (For 3D cameras)
 			  */
 			mrpt::slam::CObservationPtr getNextFrame();
 
@@ -216,6 +236,13 @@ namespace mrpt
 			std::string								m_rawlog_camera_sensor_label;
 			std::string								m_rawlog_detected_images_dir;
 
+			bool 			m_sr_open_from_usb; //!< true: USB, false: ETH
+			std::string  	m_sr_ip_address;
+			bool 			m_sr_save_3d;			//!< Save the 3D point cloud (default: true)
+			bool 			m_sr_save_range_img;	//!< Save the 2D range image (default: true)
+			bool 			m_sr_save_intensity_img; //!< Save the 2D intensity image (default: true)
+			bool 			m_sr_save_confidence;	//!< Save the estimated confidence 2D image (default: false)
+
 			bool				m_external_images_own_thread; //!< Whether to launch independent thread
 
 			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
@@ -226,20 +253,14 @@ namespace mrpt
 				const std::string	  &iniSection );
 
 		private:
-			/**  The OpenCV capture object. */
-			mrpt::hwdrivers::CImageGrabber_OpenCV 		*m_cap_cv;
-
-			/**  The dc1394 capture object. */
-			mrpt::hwdrivers::CImageGrabber_dc1394 		*m_cap_dc1394;
-
-			/**  The bumblebee capture object. */
-			mrpt::hwdrivers::CStereoGrabber_Bumblebee *m_cap_bumblebee;
-
-			/** The FFMPEG capture object */
-			CFFMPEG_InputStream						*m_cap_ffmpeg;
-
-			/** The input file for rawlogs */
-			mrpt::utils::CFileGZInputStream			*m_cap_rawlog;
+			// Only one of these will be !=NULL at a time ===========
+			CImageGrabber_OpenCV 				*m_cap_cv;		//!< The OpenCV capture object.
+			CImageGrabber_dc1394 				*m_cap_dc1394;	//!< The dc1394 capture object.
+			CStereoGrabber_Bumblebee 			*m_cap_bumblebee;	//!< The bumblebee capture object.
+			CFFMPEG_InputStream					*m_cap_ffmpeg;	//!< The FFMPEG capture object
+			mrpt::utils::CFileGZInputStream		*m_cap_rawlog;	//!< The input file for rawlogs
+			CSwissRanger3DCamera				*m_cap_swissranger; //!< SR 3D camera object.
+			// =========================
 
 			int			m_camera_grab_decimator;
 			int			m_camera_grab_decimator_counter;

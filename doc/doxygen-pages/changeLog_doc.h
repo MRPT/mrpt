@@ -38,6 +38,8 @@
 		- New application 'track-video-features' illustrating feature detection and tracking (many of this functionality is new or has been improved in this MRPT version).
 	- <b>Detailed list of changes:</b>
 		- Changes in classes:
+			- mrpt::hwdrivers::prepareVideoSourceFromUserSelection() now also displays as an option to grab images from SwissRanger 3D cameras.
+			- mrpt::hwdrivers::CCameraSensor can now open SwissRanger 3D cameras.
 			- mrpt::vision::CFeatureList now has KD-tree-based search.
 			- mrpt::hwdrivers::CGenericSensor:
 				- Now has a generic interface for external image directories (it was only in CCameraSensor before), so more sensors can use this feature.

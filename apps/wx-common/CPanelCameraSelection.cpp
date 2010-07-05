@@ -29,9 +29,9 @@
 
 //(*InternalHeaders(CPanelCameraSelection)
 #include <wx/settings.h>
-#include <wx/font.h>
-#include <wx/intl.h>
 #include <wx/string.h>
+#include <wx/intl.h>
+#include <wx/font.h>
 //*)
 
 //(*IdInit(CPanelCameraSelection)
@@ -63,7 +63,16 @@ const long CPanelCameraSelection::ID_STATICTEXT11 = wxNewId();
 const long CPanelCameraSelection::ID_PANEL6 = wxNewId();
 const long CPanelCameraSelection::ID_RADIOBOX1 = wxNewId();
 const long CPanelCameraSelection::ID_CHECKBOX1 = wxNewId();
+const long CPanelCameraSelection::ID_STATICTEXT2 = wxNewId();
 const long CPanelCameraSelection::ID_PANEL7 = wxNewId();
+const long CPanelCameraSelection::ID_RADIOBOX2 = wxNewId();
+const long CPanelCameraSelection::ID_STATICTEXT4 = wxNewId();
+const long CPanelCameraSelection::ID_TEXTCTRL4 = wxNewId();
+const long CPanelCameraSelection::ID_CHECKBOX3 = wxNewId();
+const long CPanelCameraSelection::ID_CHECKBOX4 = wxNewId();
+const long CPanelCameraSelection::ID_CHECKBOX5 = wxNewId();
+const long CPanelCameraSelection::ID_CHECKBOX6 = wxNewId();
+const long CPanelCameraSelection::ID_PANEL1 = wxNewId();
 const long CPanelCameraSelection::ID_NOTEBOOK1 = wxNewId();
 const long CPanelCameraSelection::ID_CHECKBOX2 = wxNewId();
 //*)
@@ -76,13 +85,16 @@ END_EVENT_TABLE()
 CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 {
 	//(*Initialize(CPanelCameraSelection)
+	wxFlexGridSizer* FlexGridSizer1;
+	wxFlexGridSizer* FlexGridSizer2;
+	wxFlexGridSizer* FlexGridSizer11;
+	wxFlexGridSizer* FlexGridSizer3;
 	wxFlexGridSizer* FlexGridSizer16;
 	wxFlexGridSizer* FlexGridSizer10;
-	wxFlexGridSizer* FlexGridSizer18;
 	wxFlexGridSizer* FlexGridSizer13;
+	wxFlexGridSizer* FlexGridSizer18;
 	wxFlexGridSizer* FlexGridSizer12;
-	wxFlexGridSizer* FlexGridSizer1;
-	wxFlexGridSizer* FlexGridSizer11;
+	wxStaticBoxSizer* StaticBoxSizer1;
 	
 	Create(parent, id, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("id"));
 	FlexGridSizer1 = new wxFlexGridSizer(0, 1, 0, 0);
@@ -178,11 +190,11 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer13->Fit(Panel6);
 	FlexGridSizer13->SetSizeHints(Panel6);
 	Panel1 = new wxPanel(pagesCameras, ID_PANEL7, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL7"));
-	FlexGridSizer18 = new wxFlexGridSizer(0, 3, 0, 0);
+	FlexGridSizer18 = new wxFlexGridSizer(2, 2, 0, 0);
 	wxString __wxRadioBoxChoices_1[2] = 
 	{
-		_("Left"),
-		_("Right")
+	_("Left"),
+	_("Right")
 	};
 	rbBumblebeeSel = new wxRadioBox(Panel1, ID_RADIOBOX1, _("Select monocular input"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX1"));
 	rbBumblebeeSel->SetSelection(0);
@@ -190,15 +202,52 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	cbBumblebeeRectif = new wxCheckBox(Panel1, ID_CHECKBOX1, _("Use vendor\'s rectify"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
 	cbBumblebeeRectif->SetValue(false);
 	FlexGridSizer18->Add(cbBumblebeeRectif, 1, wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 10);
+	FlexGridSizer18->Add(-1,-1,1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
+	StaticText2 = new wxStaticText(Panel1, ID_STATICTEXT2, _("(Unchecked = raw images)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+	FlexGridSizer18->Add(StaticText2, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
 	Panel1->SetSizer(FlexGridSizer18);
 	FlexGridSizer18->Fit(Panel1);
 	FlexGridSizer18->SetSizeHints(Panel1);
+	pnSwissRanger = new wxPanel(pagesCameras, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
+	FlexGridSizer2 = new wxFlexGridSizer(3, 3, 0, 0);
+	wxString __wxRadioBoxChoices_2[2] = 
+	{
+	_("USB"),
+	_("Ethernet")
+	};
+	rbSR_usb = new wxRadioBox(pnSwissRanger, ID_RADIOBOX2, _("Connection"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_2, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX2"));
+	FlexGridSizer2->Add(rbSR_usb, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	StaticText4 = new wxStaticText(pnSwissRanger, ID_STATICTEXT4, _("IP:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT4"));
+	FlexGridSizer2->Add(StaticText4, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	edSR_IP = new wxTextCtrl(pnSwissRanger, ID_TEXTCTRL4, _("192.168.2.14"), wxDefaultPosition, wxSize(120,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL4"));
+	FlexGridSizer2->Add(edSR_IP, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, pnSwissRanger, _("Channels to grab: "));
+	FlexGridSizer3 = new wxFlexGridSizer(3, 1, 0, 0);
+	cbSR_chIntensity = new wxCheckBox(pnSwissRanger, ID_CHECKBOX3, _("Grayscale intensity"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
+	cbSR_chIntensity->SetValue(true);
+	cbSR_chIntensity->Disable();
+	FlexGridSizer3->Add(cbSR_chIntensity, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
+	cbSR_ch3D = new wxCheckBox(pnSwissRanger, ID_CHECKBOX4, _("3D point cloud"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX4"));
+	cbSR_ch3D->SetValue(false);
+	FlexGridSizer3->Add(cbSR_ch3D, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
+	cbSR_chRange = new wxCheckBox(pnSwissRanger, ID_CHECKBOX5, _("Depth image"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX5"));
+	cbSR_chRange->SetValue(false);
+	FlexGridSizer3->Add(cbSR_chRange, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
+	cbSR_chConf = new wxCheckBox(pnSwissRanger, ID_CHECKBOX6, _("Confidence"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX6"));
+	cbSR_chConf->SetValue(false);
+	FlexGridSizer3->Add(cbSR_chConf, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
+	StaticBoxSizer1->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
+	FlexGridSizer2->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
+	pnSwissRanger->SetSizer(FlexGridSizer2);
+	FlexGridSizer2->Fit(pnSwissRanger);
+	FlexGridSizer2->SetSizeHints(pnSwissRanger);
 	pagesCameras->AddPage(Panel2, _("Camera (opencv)"), false);
 	pagesCameras->AddPage(Panel3, _("Camera (FFmpeg)"), false);
 	pagesCameras->AddPage(Panel4, _("Camera (custom)"), false);
 	pagesCameras->AddPage(Panel5, _("Video file"), false);
 	pagesCameras->AddPage(Panel6, _("Rawlog file"), false);
 	pagesCameras->AddPage(Panel1, _("Bumblebee"), false);
+	pagesCameras->AddPage(pnSwissRanger, _("SwissRanger ToF"), false);
 	FlexGridSizer1->Add(pagesCameras, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	cbGrayscale = new wxCheckBox(this, ID_CHECKBOX2, _("Capture in grayscale"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
 	cbGrayscale->SetValue(true);

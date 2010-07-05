@@ -141,6 +141,9 @@ namespace mrpt
 			inline void setOpenFromUSB(bool USB) { m_open_from_usb = USB; }
 			inline bool getOpenFromUSBMode() const { return m_open_from_usb; }
 
+			inline void setOpenIPAddress(const std::string &IP)  { m_ip_address = IP; }
+			inline std::string getOpenIPAddress() const  { return m_ip_address; }
+
 			inline void setSave3D(bool save) { m_save_3d = save; }
 			inline void setSaveRangeImage(bool save) { m_save_range_img = save; }
 			inline void setSaveIntensityImage(bool save) { m_save_intensity_img = save; }

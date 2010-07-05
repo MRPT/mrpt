@@ -172,37 +172,46 @@ namespace mrpt
 				mrpt::utils::CConfigFileBase *cfg ) const;
 
 			//(*Declarations(CPanelCameraSelection)
-			wxTextCtrl* edRawlogLabel;
-			wxStaticText* StaticText10;
-			wxStaticText* StaticText9;
-			wxPanel* Panel5;
-			wxButton* btnBrowseRawlogDir;
-			wxRadioBox* rbBumblebeeSel;
-			wxButton* btnBrowseVideo;
-			wxPanel* Panel4;
-			wxStaticText* StaticText6;
-			wxSpinCtrl* opencvCamIndex;
-			wxTextCtrl* edIPcamURL;
-			wxStaticText* StaticText8;
-			wxStaticText* StaticText11;
-			wxTextCtrl* edCustomCamConfig;
-			wxPanel* Panel1;
-			wxChoice* cbOpencvCamType;
-			wxStaticText* StaticText1;
-			wxStaticText* StaticText3;
-			wxPanel* Panel6;
-			wxButton* btnBrowseRawlog;
-			wxPanel* Panel3;
-			wxCheckBox* cbGrayscale;
-			wxStaticText* StaticText5;
-			wxStaticText* StaticText7;
-			wxTextCtrl* edVideoFile;
-			wxCheckBox* cbBumblebeeRectif;
 			wxNotebook* pagesCameras;
-			wxTextCtrl* edRawlogFile;
-			wxTextCtrl* edRawlogImgDir;
+			wxPanel* Panel1;
+			wxPanel* Panel6;
+			wxPanel* pnSwissRanger;
+			wxTextCtrl* edCustomCamConfig;
+			wxCheckBox* cbSR_chRange;
+			wxCheckBox* cbSR_chIntensity;
+			wxTextCtrl* edIPcamURL;
+			wxCheckBox* cbSR_ch3D;
+			wxRadioBox* rbSR_usb;
+			wxStaticText* StaticText1;
+			wxStaticText* StaticText10;
+			wxButton* btnBrowseVideo;
 			wxPanel* Panel2;
+			wxStaticText* StaticText3;
+			wxPanel* Panel4;
+			wxTextCtrl* edRawlogFile;
+			wxButton* btnBrowseRawlog;
 			wxChoice* cbOpencvResolution;
+			wxPanel* Panel5;
+			wxStaticText* StaticText8;
+			wxPanel* Panel3;
+			wxStaticText* StaticText7;
+			wxCheckBox* cbGrayscale;
+			wxChoice* cbOpencvCamType;
+			wxRadioBox* rbBumblebeeSel;
+			wxTextCtrl* edRawlogLabel;
+			wxStaticText* StaticText4;
+			wxCheckBox* cbSR_chConf;
+			wxStaticText* StaticText5;
+			wxStaticText* StaticText2;
+			wxTextCtrl* edSR_IP;
+			wxStaticText* StaticText6;
+			wxCheckBox* cbBumblebeeRectif;
+			wxButton* btnBrowseRawlogDir;
+			wxTextCtrl* edRawlogImgDir;
+			wxSpinCtrl* opencvCamIndex;
+			wxStaticText* StaticText9;
+			wxStaticText* StaticText11;
+			wxTextCtrl* edVideoFile;
 			//*)
 		protected:
 
@@ -235,20 +244,29 @@ namespace mrpt
 			static const long ID_PANEL6;
 			static const long ID_RADIOBOX1;
 			static const long ID_CHECKBOX1;
+			static const long ID_STATICTEXT2;
 			static const long ID_PANEL7;
+			static const long ID_RADIOBOX2;
+			static const long ID_STATICTEXT4;
+			static const long ID_TEXTCTRL4;
+			static const long ID_CHECKBOX3;
+			static const long ID_CHECKBOX4;
+			static const long ID_CHECKBOX5;
+			static const long ID_CHECKBOX6;
+			static const long ID_PANEL1;
 			static const long ID_NOTEBOOK1;
 			static const long ID_CHECKBOX2;
 			//*)
 
-			private:
+		private:
 
-				//(*Handlers(CPanelCameraSelection)
-				//*)
-				void OnbtnBrowseVideoClick(wxCommandEvent& event);
-				void OnbtnBrowseRawlogClick(wxCommandEvent& event);
-				void OnbtnBrowseRawlogDirClick(wxCommandEvent& event);
+			//(*Handlers(CPanelCameraSelection)
+			//*)
+			void OnbtnBrowseVideoClick(wxCommandEvent& event);
+			void OnbtnBrowseRawlogClick(wxCommandEvent& event);
+			void OnbtnBrowseRawlogDirClick(wxCommandEvent& event);
 
-				DECLARE_EVENT_TABLE()
+			DECLARE_EVENT_TABLE()
 		};
 		// end   -----------
 

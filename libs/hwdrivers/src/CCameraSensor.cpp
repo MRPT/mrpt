@@ -77,12 +77,20 @@ CCameraSensor::CCameraSensor() :
 	m_bumblebee_camera_index(0),
 	m_bumblebee_options		(),
 	m_bumblebee_monocam		(-1),
+
+	m_sr_open_from_usb		(true),
+	m_sr_save_3d			(true),
+	m_sr_save_range_img		(true),
+	m_sr_save_intensity_img	(true),
+	m_sr_save_confidence	(true),
+
 	m_external_images_own_thread(false),
 	m_cap_cv			(NULL),
 	m_cap_dc1394		(NULL),
 	m_cap_bumblebee		(NULL),
 	m_cap_ffmpeg		(NULL),
 	m_cap_rawlog		(NULL),
+	m_cap_swissranger	(NULL),
 	m_camera_grab_decimator (0),
 	m_camera_grab_decimator_counter(0),
 	m_preview_counter	(0),
@@ -158,6 +166,32 @@ void CCameraSensor::initialize()
 			THROW_EXCEPTION_CUSTOM_MSG1("Error opening FFmpeg stream: %s", m_ffmpeg_url.c_str())
 		}
 	}
+	else if (m_grabber_type=="swissranger")
+	{
+		cout << "[CCameraSensor::initialize] SwissRanger camera...\n";
+		m_cap_swissranger = new CSwissRanger3DCamera();
+
+		m_cap_swissranger->setOpenFromUSB( m_sr_open_from_usb );
+		m_cap_swissranger->setOpenIPAddress(m_sr_ip_address);
+
+		m_cap_swissranger->setSave3D(m_sr_save_3d);
+		m_cap_swissranger->setSaveRangeImage(m_sr_save_range_img);
+		m_cap_swissranger->setSaveIntensityImage(m_sr_save_intensity_img);
+		m_cap_swissranger->setSaveConfidenceImage(m_sr_save_confidence);
+
+		if (!m_path_for_external_images.empty())
+			m_cap_swissranger->setPathForExternalImages( m_path_for_external_images );
+
+		// Open it:
+		try
+		{
+			m_cap_swissranger->initialize(); // This will launch an exception if needed.
+		} catch (std::exception &e)
+		{
+			m_state = CGenericSensor::ssError;
+			throw e;
+		}
+	}
 	else if (m_grabber_type=="rawlog")
 	{
 		//m_cap_rawlog
@@ -204,31 +238,13 @@ void CCameraSensor::initialize()
    ----------------------------------------------------- */
 void CCameraSensor::close()
 {
-	if (m_cap_cv)
-	{
-		delete m_cap_cv;
-		m_cap_cv = NULL;
-	}
-	if (m_cap_dc1394)
-	{
-		delete m_cap_dc1394;
-		m_cap_dc1394 = NULL;
-	}
-	if (m_cap_bumblebee)
-	{
-		delete m_cap_bumblebee;
-		m_cap_bumblebee = NULL;
-	}
-	if (m_cap_ffmpeg)
-	{
-		delete m_cap_ffmpeg;
-		m_cap_ffmpeg = NULL;
-	}
-	if (m_cap_rawlog)
-	{
-		delete m_cap_rawlog;
-		m_cap_rawlog = NULL;
-	}
+	delete_safe(m_cap_cv);
+	delete_safe(m_cap_dc1394);
+	delete_safe(m_cap_bumblebee);
+	delete_safe(m_cap_ffmpeg);
+	delete_safe(m_cap_rawlog);
+	delete_safe(m_cap_swissranger);
+
 	m_state = CGenericSensor::ssInitializing;
 
 	// Wait for threads:
@@ -308,6 +324,14 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	m_rawlog_file = mrpt::system::trim( configSource.read_string( iniSection, "rawlog_file", m_rawlog_file ) );
 	m_rawlog_camera_sensor_label = mrpt::system::trim( configSource.read_string( iniSection, "rawlog_camera_sensor_label", m_rawlog_camera_sensor_label ) );
 
+	// SwissRanger options:
+	m_sr_open_from_usb = configSource.read_bool( iniSection, "sr_use_usb", m_sr_open_from_usb );
+	m_sr_ip_address = configSource.read_string( iniSection, "sr_IP", m_sr_ip_address );
+
+	m_sr_save_3d = configSource.read_bool( iniSection, "sr_grab_3d", m_sr_save_3d );
+	m_sr_save_intensity_img = configSource.read_bool( iniSection, "sr_grab_grayscale", m_sr_save_intensity_img );
+	m_sr_save_range_img = configSource.read_bool( iniSection, "sr_grab_range", m_sr_save_range_img );
+	m_sr_save_confidence = configSource.read_bool( iniSection, "sr_grab_confidence", m_sr_save_confidence );
 
 	// Special stuff: FPS
 	map<double,grabber_dc1394_framerate_t>	map_fps;
@@ -406,6 +430,7 @@ CObservationPtr CCameraSensor::getNextFrame()
 {
 	CObservationImagePtr		obs;
 	CObservationStereoImagesPtr	stObs;
+	CObservation3DRangeScanPtr	obs3D;  // 3D range image, also with an intensity channel
 
 	bool  capture_ok = false;
 
@@ -426,6 +451,20 @@ CObservationPtr CCameraSensor::getNextFrame()
 		{	// Error
 			m_state = CGenericSensor::ssError;
 			THROW_EXCEPTION("Error grabbing image");
+		}
+		else capture_ok = true;
+	}
+	else if (m_cap_swissranger)
+	{
+		obs3D = CObservation3DRangeScan::Create();
+
+		bool there_is_obs, hardware_error;
+		m_cap_swissranger->getNextObservation(*obs3D, there_is_obs, hardware_error);
+
+		if (!there_is_obs || hardware_error)
+		{	// Error
+			m_state = CGenericSensor::ssError;
+			THROW_EXCEPTION("Error grabbing image from SwissRanger camera.");
 		}
 		else capture_ok = true;
 	}
@@ -543,14 +582,21 @@ CObservationPtr CCameraSensor::getNextFrame()
 	// Continue as normal:
 	m_camera_grab_decimator_counter = 0;
 
+	ASSERT_(obs || stObs || obs3D)
 
 	// If we grabbed an image: prepare it and add it to the internal queue:
-	(stObs ? stObs->sensorLabel : obs->sensorLabel) = m_sensorLabel;
-
-	if (stObs)
-		stObs->cameraPose = m_sensorPose;
-	else
-		obs->cameraPose = m_sensorPose;
+	if (obs) {
+		obs->sensorLabel = m_sensorLabel;
+		obs->setSensorPose( m_sensorPose );
+	}
+	else if (stObs) {
+		stObs->sensorLabel = m_sensorLabel;
+		stObs->setSensorPose( m_sensorPose );
+	}
+	else {
+		obs3D->sensorLabel = m_sensorLabel;
+		obs3D->setSensorPose( m_sensorPose );
+	}
 
 	// Convert to grayscale if the user wants so and  the driver did ignored us:
 	if (m_capture_grayscale)
@@ -564,6 +610,10 @@ CObservationPtr CCameraSensor::getNextFrame()
 			if (stObs->imageLeft.isColor())   stObs->imageLeft.grayscaleInPlace();
 			if (stObs->imageRight.isColor())  stObs->imageRight.grayscaleInPlace();
 		}
+		else if (obs3D)
+		{
+			if (obs3D->hasIntensityImage && obs3D->intensityImage.isColor()) obs3D->intensityImage.grayscaleInPlace();
+		}
 	}
 
 	// External storage?
@@ -572,7 +622,7 @@ CObservationPtr CCameraSensor::getNextFrame()
 	if (!m_path_for_external_images.empty())
 	{
 		if( stObs )			// If we have grabbed an stereo observation ...
-		{
+		{	// Stereo obs  -------
 			if (m_external_images_own_thread)
 			{
 				m_csToSaveList.enter();
@@ -601,8 +651,8 @@ CObservationPtr CCameraSensor::getNextFrame()
 				stObs->imageRight.setExternalStorage( filNameR );
 			}
 		}
-		else
-		{
+		else if (obs)
+		{	// Monocular image obs  -------
 			if (m_external_images_own_thread)
 			{
 				m_csToSaveList.enter();
@@ -657,24 +707,14 @@ CObservationPtr CCameraSensor::getNextFrame()
 			// Monocular image or Left from a stereo pair:
 			if (m_preview_win1->isOpen())
 			{
-				const CImage *img = stObs ? &stObs->imageLeft : &obs->image;
-				// Apply image reduction?
-				if (m_preview_reduction>=2)
-				{
-					unsigned int w = img->getWidth();
-					unsigned int h = img->getHeight();
-					CImage auxImg;
-					img->scaleImage(auxImg, w/m_preview_reduction, h/m_preview_reduction, IMG_INTERP_NN);
-					m_preview_win1->showImage(auxImg);
-				}
+				CImage *img;
+				if (stObs)
+					img = &stObs->imageLeft;
+				else if (obs)
+					img = &obs->image;
 				else
-					m_preview_win1->showImage(*img);
-			}
+					img = &obs3D->intensityImage;
 
-			// Monocular image or Left from a stereo pair:
-			if (m_preview_win1->isOpen())
-			{
-				const CImage *img = stObs ? &stObs->imageLeft : &obs->image;
 				// Apply image reduction?
 				if (m_preview_reduction>=2)
 				{
