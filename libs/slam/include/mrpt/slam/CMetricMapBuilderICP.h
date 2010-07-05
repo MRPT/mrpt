@@ -79,21 +79,21 @@ namespace slam
 
 			/** (default:false) Match against the occupancy grid or the points map? The former is quicker but less precise. */
 			bool	matchAgainstTheGrid;
-			
+
 			double insertionLinDistance;	//!< Minimum robot linear (m) displacement for a new observation to be inserted in the map.
-			double insertionAngDistance;	//!< Minimum robot angular (rad, deg when loaded from the .ini) displacement for a new observation to be inserted in the map. 
-			double localizationLinDistance;	//!< Minimum robot linear (m) displacement for a new observation to be used to do ICP-based localization (otherwise, dead-reckon with odometry). 
-			double localizationAngDistance;//!< Minimum robot angular (rad, deg when loaded from the .ini) displacement for a new observation to be used to do ICP-based localization (otherwise, dead-reckon with odometry). 
+			double insertionAngDistance;	//!< Minimum robot angular (rad, deg when loaded from the .ini) displacement for a new observation to be inserted in the map.
+			double localizationLinDistance;	//!< Minimum robot linear (m) displacement for a new observation to be used to do ICP-based localization (otherwise, dead-reckon with odometry).
+			double localizationAngDistance;//!< Minimum robot angular (rad, deg when loaded from the .ini) displacement for a new observation to be used to do ICP-based localization (otherwise, dead-reckon with odometry).
 
 			double minICPgoodnessToAccept;  //!< Minimum ICP goodness (0,1) to accept the resulting corrected position (default: 0.40)
 
-			/** What maps to create (at least one points map and/or a grid map are needed). 
+			/** What maps to create (at least one points map and/or a grid map are needed).
 			  *  For the expected format in the .ini file when loaded with loadFromConfigFile(), see documentation of TSetOfMetricMapInitializers.
 			  */
 			TSetOfMetricMapInitializers	mapInitializers;
-			
+
 		 };
-		 
+
 		 TConfigParams			ICP_options; //!< Options for the ICP-SLAM application \sa ICP_params
 		 CICP::TConfigParams	ICP_params;  //!< Options for the ICP algorithm itself \sa ICP_options
 
@@ -122,9 +122,9 @@ namespace slam
 		void  processActionObservation(
 					CActionCollection	&action,
 					CSensoryFrame		&in_SF );
-		
+
 		/**  The main method of this class: Process one odometry or sensor observation.
-		    The new entry point of the algorithm (the old one  was processActionObservation, which now is a wrapper to 
+		    The new entry point of the algorithm (the old one  was processActionObservation, which now is a wrapper to
 		  this method).
 		 * See params in CMetricMapBuilder::options and CMetricMapBuilderICP::ICP_options
 		  */
@@ -169,7 +169,6 @@ namespace slam
 		 std::string				currentMapFile;
 
 		 /** The pose estimation by the alignment algorithm (ICP). */
-		 //CPosePDFGaussian			estPose;		 
 		 mrpt::poses::CRobot2DPoseEstimator		m_lastPoseEst;  //!< Last pose estimation (Mean)
 		 mrpt::math::CMatrixDouble33			m_lastPoseEst_cov; //!< Last pose estimation (covariance)
 
@@ -187,7 +186,7 @@ namespace slam
 		};
 		TDist                        m_distSinceLastICP;
 		std::map<std::string,TDist>  m_distSinceLastInsertion; //!< Indexed by sensor label.
-		bool	                     m_there_has_been_an_odometry; 
+		bool	                     m_there_has_been_an_odometry;
 		void accumulateRobotDisplacementCounters(const CPose2D &Apose);
 
 	};

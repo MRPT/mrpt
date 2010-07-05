@@ -76,12 +76,12 @@ void CRobot2DPoseEstimator::reset()
 
 /** Updates the filter so the pose is tracked to the current time */
 void CRobot2DPoseEstimator::processUpdateNewPoseLocalization(
-	const TPose2D &newPose, 
-	const CMatrixDouble33 &newPoseCov, 
+	const TPose2D &newPose,
+	const CMatrixDouble33 &newPoseCov,
 	TTimeStamp cur_tim)
 {
 	CCriticalSectionLocker   lock(&m_cs);
-	
+
 	// Overwrite old localization data:
 	m_last_loc_time	= cur_tim;
 	m_last_loc		= newPose;
@@ -92,7 +92,7 @@ void CRobot2DPoseEstimator::processUpdateNewPoseLocalization(
 	{
 		const double dT = timeDifference(m_last_odo_time,cur_tim);
 		extrapolateRobotPose(
-			m_last_odo,m_robot_v,m_robot_w,  
+			m_last_odo,m_robot_v,m_robot_w,
 			dT,
 			m_loc_odo_ref);
 	}
@@ -100,8 +100,8 @@ void CRobot2DPoseEstimator::processUpdateNewPoseLocalization(
 
 /** Updates the filter so the pose is tracked to the current time */
 void CRobot2DPoseEstimator::processUpdateNewOdometry(
-	const TPose2D &newGlobalOdometry, 
-	TTimeStamp cur_tim, 
+	const TPose2D &newGlobalOdometry,
+	TTimeStamp cur_tim,
 	bool hasVelocities,
 	float v,
 	float w)
@@ -109,6 +109,12 @@ void CRobot2DPoseEstimator::processUpdateNewOdometry(
 	MRPT_START
 
 	CCriticalSectionLocker   lock(&m_cs);
+
+	if (m_last_odo_time!=INVALID_TIMESTAMP)
+	{
+		const double dT = timeDifference(m_last_odo_time,cur_tim);
+		if (dT<=0) std::cerr << "[CRobot2DPoseEstimator::processUpdateNewOdometry] WARNING: Diff. in timestamps between odometry should be >0, and it's " << dT << "\n";
+	}
 
 	// First, update velocities:
 	if (hasVelocities)
@@ -127,7 +133,7 @@ void CRobot2DPoseEstimator::processUpdateNewOdometry(
 			m_robot_w = (newGlobalOdometry.phi-m_last_odo.phi)/dT;
 			m_robot_v = ::hypot(newGlobalOdometry.x-m_last_odo.x, newGlobalOdometry.y-m_last_odo.y)/dT;
 			// sign of v:
-			if (fabs(atan2(newGlobalOdometry.y-m_last_odo.y,newGlobalOdometry.x-m_last_odo.x))>0.5*M_PI) 
+			if (fabs(atan2(newGlobalOdometry.y-m_last_odo.y,newGlobalOdometry.x-m_last_odo.x))>0.5*M_PI)
 				m_robot_v *=-1;
 		}
 		else
@@ -140,16 +146,16 @@ void CRobot2DPoseEstimator::processUpdateNewOdometry(
 	// And now times & odo:
 	m_last_odo_time = cur_tim;
 	m_last_odo		= newGlobalOdometry;
-	
+
 	MRPT_END
 }
 
-/** get the current estimate 
+/** get the current estimate
 * \return true is the estimate can be trusted. False if the real observed data is too old.
 */
-bool CRobot2DPoseEstimator::getCurrentEstimate( 
+bool CRobot2DPoseEstimator::getCurrentEstimate(
 	TPose2D &pose, float &v, float &w,
-	TTimeStamp tim_query 
+	TTimeStamp tim_query
 	) const
 {
 	if (m_last_odo_time==INVALID_TIMESTAMP || m_last_loc_time==INVALID_TIMESTAMP )
@@ -173,38 +179,38 @@ bool CRobot2DPoseEstimator::getCurrentEstimate(
 		return false;
 
 	extrapolateRobotPose(
-		p,m_robot_v,m_robot_w, 
-		dTimeOdo, 
+		p,m_robot_v,m_robot_w,
+		dTimeOdo,
 		pose);
-		
+
 	return true;
 }
 
-/** get the current estimate 
+/** get the current estimate
 * \return true is the estimate can be trusted. False if the real observed data is too old.
 */
 bool CRobot2DPoseEstimator::getLatestRobotPose(TPose2D &pose) const
 {
 	if (m_last_odo_time==INVALID_TIMESTAMP && m_last_loc_time==INVALID_TIMESTAMP )
 		return false;
-		
+
 	bool ret_odo;
 	if (m_last_odo_time!=INVALID_TIMESTAMP && m_last_loc_time!=INVALID_TIMESTAMP)
 			ret_odo = (m_last_odo_time>m_last_loc_time);
 	else if (m_last_odo_time!=INVALID_TIMESTAMP)
 			ret_odo=true;
 	else 	ret_odo=false;
-	
+
 	if (ret_odo)
 		pose= CPose2D(m_last_loc) + ( CPose2D(m_last_odo) - CPose2D(m_loc_odo_ref) );
 	else
 		pose= m_last_loc;
-		
+
 	return true;
 }
 
 
-// An auxiliary method to extrapolate the pose of a robot located at "p" 
+// An auxiliary method to extrapolate the pose of a robot located at "p"
 //  with velocities (v,w) after a time delay "delta_time".
 void CRobot2DPoseEstimator::extrapolateRobotPose(
 	const TPose2D &p,
