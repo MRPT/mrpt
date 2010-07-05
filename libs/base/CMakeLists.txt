@@ -28,6 +28,10 @@ LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/ann/*.cpp" "${MRPT_LIBS
 LIST(APPEND base_EXTRA_SRCS_NAME 	"ann" "ann")
 INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/")
 
+LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/math/CSparse/*.c" "${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/CSparse/*.h")
+LIST(APPEND base_EXTRA_SRCS_NAME 	"math/CSparse" "math/CSparse")
+INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/CSparse/")
+
 # Embedded version of libjpeg for (mostly) Windows:
 IF (CMAKE_MRPT_HAS_JPEG AND NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
 	LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/utils/jpeglib/*.cpp" "${MRPT_LIBS_ROOT}/base/src/utils/jpeglib/*.h")
@@ -61,17 +65,15 @@ define_mrpt_lib(
 IF(MRPT_ENABLE_PRECOMPILED_HDRS)
 	IF (MSVC)
 		set_source_files_properties(
+			${math/CSparse_FILES}
 			${utils/xmlparser_FILES}
 			${utils/simpleini_FILES}	
 			${utils/jpeglib_FILES}
 			${compress/zlib_FILES}
-			PROPERTIES COMPILE_FLAGS "/Y-"
-			)
-
-		set_source_files_properties(
 			${ann_FILES}
 			PROPERTIES COMPILE_FLAGS "/Y-"
 			)
+
 	ENDIF (MSVC)
 ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
 	
