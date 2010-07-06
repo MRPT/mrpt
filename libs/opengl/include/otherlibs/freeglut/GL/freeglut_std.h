@@ -49,6 +49,11 @@
 #   undef min
 #   undef max
 
+/* MOD JLBC FOR MRPT */
+#ifndef MRPT_BUILT_AS_DLL
+#	define FREEGLUT_STATIC
+#endif
+
 /* Windows static library */
 #   ifdef FREEGLUT_STATIC
 

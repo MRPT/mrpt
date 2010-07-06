@@ -3,7 +3,7 @@
    |                                                                           |
    |                   http://mrpt.sourceforge.net/                            |
    |                                                                           |
-   |   Copyright (C) 2004-2008  University of Malaga                           |
+   |   Copyright (C) 2004-2010  University of Malaga                           |
    |                                                                           |
    |    This software was written by the Perception and Robotics               |
    |      research group, University of Malaga (Spain).                        |
@@ -86,6 +86,7 @@
 			- New global variable mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 		- BUGFIXES:
 			- <b>CRITICAL REGRESION FIXED</b>: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.
+			- Fixed build with BUILD_SHARED_LIBS=OFF under Visual Studio.
 			- Fixed: RANSAC won't use the last input data point (Thanks "Stephane" for reporting!)
 			- mrpt::slam::COccupancyGridMap2D::TLikelihoodOptions::loadFromConfigFile ignored the "section" name for loading "likelihoodMethod" (reported by Thomas Ciarfuglia, Università di Perugia).
 			- Fixed build error when compiling without OpenGL/GLUT support.
