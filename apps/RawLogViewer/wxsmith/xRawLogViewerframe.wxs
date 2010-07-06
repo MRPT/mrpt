@@ -299,15 +299,103 @@
 														<growablecols>0</growablecols>
 														<growablerows>0</growablerows>
 														<object class="sizeritem">
-															<object class="Custom" name="ID_XY_GLCANVAS" subclass="CMyGLCanvas" variable="m_gl3DRangeScan" member="yes">
-																<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),$(STYLE),$(NAME));</creating_code>
-																<include_file>MyGLCanvas.h</include_file>
-																<local_include>1</local_include>
-																<style>wxTAB__TRAVERSAL</style>
-																<focused>1</focused>
-																<tooltip>Reconstrucción 3D de la carretera</tooltip>
+															<object class="wxNotebook" name="ID_NOTEBOOK4" variable="nb_3DObsChannels" member="yes">
+																<object class="notebookpage">
+																	<object class="wxPanel" name="ID_PANEL20" variable="pn3Dobs_3D" member="yes">
+																		<object class="wxFlexGridSizer" variable="FlexGridSizer8" member="no">
+																			<cols>1</cols>
+																			<rows>1</rows>
+																			<growablecols>0</growablecols>
+																			<growablerows>0</growablerows>
+																			<object class="sizeritem">
+																				<object class="Custom" name="ID_XY_GLCANVAS" subclass="CMyGLCanvas" variable="m_gl3DRangeScan" member="yes">
+																					<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),$(STYLE),$(NAME));</creating_code>
+																					<include_file>MyGLCanvas.h</include_file>
+																					<local_include>1</local_include>
+																					<style>wxTAB__TRAVERSAL</style>
+																					<focused>1</focused>
+																					<tooltip>Reconstrucción 3D de la carretera</tooltip>
+																				</object>
+																				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																				<option>1</option>
+																			</object>
+																		</object>
+																	</object>
+																	<label>3D points</label>
+																</object>
+																<object class="notebookpage">
+																	<object class="wxPanel" name="ID_PANEL21" variable="pn3Dobs_Depth" member="yes">
+																		<object class="wxFlexGridSizer" variable="FlexGridSizer9" member="no">
+																			<cols>1</cols>
+																			<rows>1</rows>
+																			<growablecols>0</growablecols>
+																			<growablerows>0</growablerows>
+																			<object class="sizeritem">
+																				<object class="wxStaticBitmap" name="ID_STATICBITMAP4" subclass="wxStaticBitmapPopup" variable="bmp3Dobs_depth" member="yes">
+																					<pos>0,0</pos>
+																					<style>wxFULL_REPAINT_ON_RESIZE</style>
+																				</object>
+																				<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
+																				<border>5</border>
+																				<option>1</option>
+																			</object>
+																		</object>
+																	</object>
+																	<label>Depth</label>
+																</object>
+																<object class="notebookpage">
+																	<object class="wxPanel" name="ID_PANEL22" variable="pn3Dobs_Int" member="yes">
+																		<object class="wxFlexGridSizer" variable="FlexGridSizer10" member="no">
+																			<cols>1</cols>
+																			<rows>2</rows>
+																			<growablecols>0</growablecols>
+																			<growablerows>1</growablerows>
+																			<object class="sizeritem">
+																				<object class="wxCheckBox" name="ID_CHECKBOX1" variable="cbObs3Dauto_histogram" member="yes">
+																					<label>Normalize histogram</label>
+																					<checked>1</checked>
+																					<handler function="OncbObs3Dauto_histogramClick" entry="EVT_CHECKBOX" />
+																				</object>
+																				<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>5</border>
+																				<option>1</option>
+																			</object>
+																			<object class="sizeritem">
+																				<object class="wxStaticBitmap" name="ID_STATICBITMAP5" subclass="wxStaticBitmapPopup" variable="bmp3Dobs_int" member="yes">
+																					<pos>0,0</pos>
+																					<style>wxFULL_REPAINT_ON_RESIZE</style>
+																				</object>
+																				<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
+																				<border>5</border>
+																				<option>1</option>
+																			</object>
+																		</object>
+																	</object>
+																	<label>Intensity</label>
+																</object>
+																<object class="notebookpage">
+																	<object class="wxPanel" name="ID_PANEL23" variable="pn3Dobs_Conf" member="yes">
+																		<object class="wxFlexGridSizer" variable="FlexGridSizer11" member="no">
+																			<cols>1</cols>
+																			<rows>1</rows>
+																			<growablecols>0</growablecols>
+																			<growablerows>0</growablerows>
+																			<object class="sizeritem">
+																				<object class="wxStaticBitmap" name="ID_STATICBITMAP6" subclass="wxStaticBitmapPopup" variable="bmp3Dobs_conf" member="yes">
+																					<pos>0,0</pos>
+																					<style>wxFULL_REPAINT_ON_RESIZE</style>
+																				</object>
+																				<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
+																				<border>5</border>
+																				<option>1</option>
+																			</object>
+																		</object>
+																	</object>
+																	<label>Confidence</label>
+																</object>
 															</object>
 															<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<border>1</border>
 															<option>1</option>
 														</object>
 													</object>

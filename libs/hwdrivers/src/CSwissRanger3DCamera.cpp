@@ -74,6 +74,8 @@ CSwissRanger3DCamera::CSwissRanger3DCamera()  :
 	m_save_intensity_img(true),
 	m_save_confidence(false),
 
+	m_intensity_right_bit_shifts(2),
+
 	m_enable_img_hist_equal(false),
 	m_enable_median_filter (true),
 	m_enable_mediancross_filter(false),
@@ -375,6 +377,7 @@ void CSwissRanger3DCamera::getNextObservation(
 				if (this->m_save_intensity_img)
 				{
 					ASSERT_(img->dataType==ImgEntry::DT_USHORT)
+					ASSERT_(m_intensity_right_bit_shifts>=0 && m_intensity_right_bit_shifts<15)
 					obs.hasIntensityImage = true;
 
 					obs.intensityImage.resize(img->width,img->height,1, true);
@@ -384,7 +387,13 @@ void CSwissRanger3DCamera::getNextObservation(
 					{
 						uint8_t *row = obs.intensityImage.get_unsafe(0,y,0);
 						for (size_t x=0;x<img->width;x++)
-							(*row++) = (*data_ptr++) >> 8;	// Convert 16u -> 8u
+						{
+							// Convert 16u -> 8u
+							uint16_t v = (*data_ptr++) >> m_intensity_right_bit_shifts;
+							if (v>0xFF)
+									(*row++) = 0xFF;
+							else	(*row++) = uint8_t(v);
+						}
 					}
 
 					if (m_enable_img_hist_equal)
@@ -409,7 +418,6 @@ void CSwissRanger3DCamera::getNextObservation(
 					ASSERT_(img->dataType==ImgEntry::DT_USHORT)
 					obs.hasConfidenceImage  = true;
 
-					//const float K = 1.0f / 0xFFFF;
 					obs.confidenceImage.resize(img->width,img->height,1, true);
 
 					const uint16_t *data_ptr = reinterpret_cast<const uint16_t *>(img->data);

@@ -37,6 +37,7 @@
 #include <wx/stattext.h>
 #include <wx/menu.h>
 #include <wx/textctrl.h>
+#include <wx/checkbox.h>
 #include <wx/splitter.h>
 #include <wx/toolbar.h>
 #include "MyGLCanvas.h"
@@ -245,6 +246,7 @@ private:
     void OnMenuRegenerateTimestampBySF(wxCommandEvent& event);
     void OnmnuCreateAVISelected(wxCommandEvent& event);
     void OnMenuRegenerateOdometryTimes(wxCommandEvent& event);
+    void OncbObs3Dauto_histogramClick(wxCommandEvent& event);
     //*)
 
     //(*Identifiers(xRawLogViewerFrame)
@@ -281,6 +283,15 @@ private:
     static const long ID_PANEL17;
     static const long ID_PANEL16;
     static const long ID_XY_GLCANVAS;
+    static const long ID_PANEL20;
+    static const long ID_STATICBITMAP4;
+    static const long ID_PANEL21;
+    static const long ID_CHECKBOX1;
+    static const long ID_STATICBITMAP5;
+    static const long ID_PANEL22;
+    static const long ID_STATICBITMAP6;
+    static const long ID_PANEL23;
+    static const long ID_NOTEBOOK4;
     static const long ID_PANEL19;
     static const long ID_NOTEBOOK1;
     static const long ID_PANEL5;
@@ -399,6 +410,7 @@ private:
     wxMenuItem* MenuItem31;
     wxMenuItem* MenuItem57;
     wxStaticBitmapPopup* bmpObsImage;
+    wxPanel* pn3Dobs_Conf;
     wxMenuItem* MenuItem59;
     wxPanel* pn_CSensorialFrame;
     wxPanel* Panel5;
@@ -423,6 +435,7 @@ private:
     mpWindow* plotScan2D;
     wxMenuItem* MenuItem68;
     wxMenu* Menu14;
+    wxStaticBitmapPopup* bmp3Dobs_depth;
     wxMenu* Menu3;
     wxToolBarToolBase* ToolBarItem10;
     wxMenu* Menu20;
@@ -437,6 +450,7 @@ private:
     wxMenuItem* MenuItem14;
     wxMenuItem* MenuItem36;
     wxMenuItem* MenuItem11;
+    wxPanel* pn3Dobs_3D;
     wxMenu mnuTree;
     wxPanel* Panel9;
     wxMenuItem* MenuItem29;
@@ -459,6 +473,7 @@ private:
     wxMenu* MenuItem8;
     mpWindow* plotAct2D_XY;
     wxMenuItem* MenuItem10;
+    wxNotebook* nb_3DObsChannels;
     wxMenuItem* MenuItem62;
     wxPanel* Panel6;
     wxPanel* Panel3;
@@ -473,12 +488,14 @@ private:
     wxMenuItem* MenuItem3;
     CRawlogTreeView* tree_view;
     wxMenuItem* MenuItem64;
+    wxStaticBitmapPopup* bmp3Dobs_int;
     wxTextCtrl* memo;
     wxMenuItem* MenuItem28;
     wxMenuItem* MenuItem63;
     CMyGLCanvas* m_gl3DRangeScan;
     wxPanel* Panel7;
     wxMenuItem* MenuItem78;
+    wxPanel* pn3Dobs_Depth;
     wxMenuItem* mnuCreateAVI;
     wxMenu* MenuItem45;
     wxStatusBar* StatusBar1;
@@ -488,7 +505,9 @@ private:
     wxMenuItem* MenuItem23;
     wxToolBarToolBase* ToolBarItem5;
     wxBoxSizer* BoxSizer1;
+    wxStaticBitmapPopup* bmp3Dobs_conf;
     wxMenuItem* MenuItem58;
+    wxPanel* pn3Dobs_Int;
     wxTextCtrl* memStats;
     wxToolBarToolBase* ToolBarItem8;
     wxPanel* pn_CObservationStereoImage;
@@ -512,6 +531,7 @@ private:
     wxMenuItem* MenuItem53;
     wxToolBarToolBase* ToolBarItem2;
     wxMenuItem* MenuItem48;
+    wxCheckBox* cbObs3Dauto_histogram;
     wxMenu* Menu4;
     wxTextCtrl* txtException;
     wxButton* btnEditComments;

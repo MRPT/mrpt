@@ -215,6 +215,15 @@ const long xRawLogViewerFrame::ID_CUSTOM4 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL17 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL16 = wxNewId();
 const long xRawLogViewerFrame::ID_XY_GLCANVAS = wxNewId();
+const long xRawLogViewerFrame::ID_PANEL20 = wxNewId();
+const long xRawLogViewerFrame::ID_STATICBITMAP4 = wxNewId();
+const long xRawLogViewerFrame::ID_PANEL21 = wxNewId();
+const long xRawLogViewerFrame::ID_CHECKBOX1 = wxNewId();
+const long xRawLogViewerFrame::ID_STATICBITMAP5 = wxNewId();
+const long xRawLogViewerFrame::ID_PANEL22 = wxNewId();
+const long xRawLogViewerFrame::ID_STATICBITMAP6 = wxNewId();
+const long xRawLogViewerFrame::ID_PANEL23 = wxNewId();
+const long xRawLogViewerFrame::ID_NOTEBOOK4 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL19 = wxNewId();
 const long xRawLogViewerFrame::ID_NOTEBOOK1 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL5 = wxNewId();
@@ -348,11 +357,13 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxMenuItem* MenuItem26;
 	wxMenuItem* MenuItem25;
 	wxMenuItem* MenuItem2;
+	wxFlexGridSizer* FlexGridSizer10;
 	wxFlexGridSizer* FlexGridSizer3;
 	wxMenuItem* MenuItem55;
 	wxMenuItem* MenuItem1;
 	wxMenuItem* MenuItem56;
 	wxFlexGridSizer* FlexGridSizer5;
+	wxFlexGridSizer* FlexGridSizer9;
 	wxMenuItem* MenuItem22;
 	wxFlexGridSizer* FlexGridSizer2;
 	wxMenuItem* MenuItem17;
@@ -364,6 +375,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxMenuItem* MenuItem24;
 	wxMenuItem* MenuItem69;
 	wxMenuItem* MenuItem27;
+	wxFlexGridSizer* FlexGridSizer8;
 	wxMenuItem* MenuItem70;
 	wxMenuItem* MenuItem67;
 	wxMenuItem* MenuItem65;
@@ -371,12 +383,13 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxMenuBar* MenuBar1;
 	wxFlexGridSizer* FlexGridSizer6;
 	wxFlexGridSizer* FlexGridSizer1;
+	wxFlexGridSizer* FlexGridSizer11;
 	wxMenuItem* MenuItem43;
 	wxMenu* Menu2;
 	wxMenuItem* MenuItem18;
 	wxMenuItem* MenuItem19;
-
-	Create(parent, wxID_ANY, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("wxID_ANY"));
+	
+	Create(parent, id, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("id"));
 	SetClientSize(wxSize(700,500));
 	{
 		wxIcon FrameIcon;
@@ -509,8 +522,51 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	FlexGridSizer7 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer7->AddGrowableCol(0);
 	FlexGridSizer7->AddGrowableRow(0);
-	m_gl3DRangeScan = new CMyGLCanvas(pn_CObservation3DRangeScan,ID_XY_GLCANVAS,wxDefaultPosition,wxDefaultSize,wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
-	FlexGridSizer7->Add(m_gl3DRangeScan, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	nb_3DObsChannels = new wxNotebook(pn_CObservation3DRangeScan, ID_NOTEBOOK4, wxDefaultPosition, wxDefaultSize, 0, _T("ID_NOTEBOOK4"));
+	pn3Dobs_3D = new wxPanel(nb_3DObsChannels, ID_PANEL20, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL20"));
+	FlexGridSizer8 = new wxFlexGridSizer(1, 1, 0, 0);
+	FlexGridSizer8->AddGrowableCol(0);
+	FlexGridSizer8->AddGrowableRow(0);
+	m_gl3DRangeScan = new CMyGLCanvas(pn3Dobs_3D,ID_XY_GLCANVAS,wxDefaultPosition,wxDefaultSize,wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
+	FlexGridSizer8->Add(m_gl3DRangeScan, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	pn3Dobs_3D->SetSizer(FlexGridSizer8);
+	FlexGridSizer8->Fit(pn3Dobs_3D);
+	FlexGridSizer8->SetSizeHints(pn3Dobs_3D);
+	pn3Dobs_Depth = new wxPanel(nb_3DObsChannels, ID_PANEL21, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL21"));
+	FlexGridSizer9 = new wxFlexGridSizer(1, 1, 0, 0);
+	FlexGridSizer9->AddGrowableCol(0);
+	FlexGridSizer9->AddGrowableRow(0);
+	bmp3Dobs_depth = new wxStaticBitmapPopup(pn3Dobs_Depth, ID_STATICBITMAP4, wxNullBitmap, wxPoint(0,0), wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP4"));
+	FlexGridSizer9->Add(bmp3Dobs_depth, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	pn3Dobs_Depth->SetSizer(FlexGridSizer9);
+	FlexGridSizer9->Fit(pn3Dobs_Depth);
+	FlexGridSizer9->SetSizeHints(pn3Dobs_Depth);
+	pn3Dobs_Int = new wxPanel(nb_3DObsChannels, ID_PANEL22, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL22"));
+	FlexGridSizer10 = new wxFlexGridSizer(2, 1, 0, 0);
+	FlexGridSizer10->AddGrowableCol(0);
+	FlexGridSizer10->AddGrowableRow(1);
+	cbObs3Dauto_histogram = new wxCheckBox(pn3Dobs_Int, ID_CHECKBOX1, _("Normalize histogram"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
+	cbObs3Dauto_histogram->SetValue(true);
+	FlexGridSizer10->Add(cbObs3Dauto_histogram, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	bmp3Dobs_int = new wxStaticBitmapPopup(pn3Dobs_Int, ID_STATICBITMAP5, wxNullBitmap, wxPoint(0,0), wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP5"));
+	FlexGridSizer10->Add(bmp3Dobs_int, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	pn3Dobs_Int->SetSizer(FlexGridSizer10);
+	FlexGridSizer10->Fit(pn3Dobs_Int);
+	FlexGridSizer10->SetSizeHints(pn3Dobs_Int);
+	pn3Dobs_Conf = new wxPanel(nb_3DObsChannels, ID_PANEL23, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL23"));
+	FlexGridSizer11 = new wxFlexGridSizer(1, 1, 0, 0);
+	FlexGridSizer11->AddGrowableCol(0);
+	FlexGridSizer11->AddGrowableRow(0);
+	bmp3Dobs_conf = new wxStaticBitmapPopup(pn3Dobs_Conf, ID_STATICBITMAP6, wxNullBitmap, wxPoint(0,0), wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP6"));
+	FlexGridSizer11->Add(bmp3Dobs_conf, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	pn3Dobs_Conf->SetSizer(FlexGridSizer11);
+	FlexGridSizer11->Fit(pn3Dobs_Conf);
+	FlexGridSizer11->SetSizeHints(pn3Dobs_Conf);
+	nb_3DObsChannels->AddPage(pn3Dobs_3D, _("3D points"), false);
+	nb_3DObsChannels->AddPage(pn3Dobs_Depth, _("Depth"), false);
+	nb_3DObsChannels->AddPage(pn3Dobs_Int, _("Intensity"), false);
+	nb_3DObsChannels->AddPage(pn3Dobs_Conf, _("Confidence"), false);
+	FlexGridSizer7->Add(nb_3DObsChannels, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
 	pn_CObservation3DRangeScan->SetSizer(FlexGridSizer7);
 	FlexGridSizer7->Fit(pn_CObservation3DRangeScan);
 	FlexGridSizer7->SetSizeHints(pn_CObservation3DRangeScan);
@@ -759,8 +815,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	mnuTree.Append(ID_MENUITEM48, _("Add action"), MenuItem45, wxEmptyString);
 	timAutoLoad.SetOwner(this, ID_TIMER1);
 	timAutoLoad.Start(50, true);
-
+	
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnbtnEditCommentsClick1);
+	Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OncbObs3Dauto_histogramClick);
 	Connect(ID_NOTEBOOK1,wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,(wxObjectEventFunction)&xRawLogViewerFrame::OnNotebook1PageChanging);
 	Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnFileOpen);
 	Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnSaveFile);
@@ -2167,7 +2224,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 														cout << "Has intensity data? " << (obs->hasIntensityImage ? "YES": "NO"); cout << endl;
 														cout << "Has confidence data? " << (obs->hasConfidenceImage ? "YES": "NO"); cout << endl;
 
-														// Update 3D view:
+														// Update 3D view ==========
 													#if RAWLOGVIEWER_HAS_3D
 														this->m_gl3DRangeScan->m_openGLScene->clear();
 														//this->m_gl3DRangeScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
@@ -2192,11 +2249,45 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 														// Translate the 3D cloud since sensed points are relative to the camera, but the camera may be translated wrt the robot (our 0,0,0 here):
 														pnts->setPose( obs->sensorPose );
 
-
 														this->m_gl3DRangeScan->m_openGLScene->insert(pnts);
 
 														this->m_gl3DRangeScan->Refresh();
 													#endif
+
+														// Update intensity image ======
+														if (obs->hasIntensityImage)
+														{
+															CImage im = obs->intensityImage;
+
+															if (cbObs3Dauto_histogram->GetValue())
+																im.equalizeHistInPlace();
+
+															wxImage *img = mrpt::gui::MRPTImage2wxImage( im );
+															bmp3Dobs_int->SetBitmap( wxBitmap(*img) );
+															bmp3Dobs_int->Refresh();
+															delete img;
+															obs->intensityImage.unload(); // For externally-stored datasets
+														}
+														// Update depth image ======
+														if (obs->hasRangeImage)
+														{
+															CImage  auxImg;
+															auxImg.setFromMatrix(obs->rangeImage);
+															wxImage *img = mrpt::gui::MRPTImage2wxImage( auxImg );
+															bmp3Dobs_depth->SetBitmap( wxBitmap(*img) );
+															bmp3Dobs_depth->Refresh();
+															delete img;
+														}
+														// Update confidence image ======
+														if (obs->hasConfidenceImage)
+														{
+															wxImage *img = mrpt::gui::MRPTImage2wxImage( obs->confidenceImage );
+															bmp3Dobs_conf->SetBitmap( wxBitmap(*img) );
+															bmp3Dobs_conf->Refresh();
+															delete img;
+															obs->confidenceImage.unload(); // For externally-stored datasets
+														}
+
 
 													}
 													else
@@ -5874,4 +5965,10 @@ void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent& event)
 	wxMessageBox(_U( format("%u entries have been modified",nChanges).c_str() ),_("Done"),wxOK,this);
 
 	WX_END_TRY
+}
+
+void xRawLogViewerFrame::OncbObs3Dauto_histogramClick(wxCommandEvent& event)
+{
+	// Refresh:
+	SelectObjectInTreeView(curSelectedObject);
 }

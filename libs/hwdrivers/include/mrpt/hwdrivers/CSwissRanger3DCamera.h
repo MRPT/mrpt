@@ -64,6 +64,7 @@ namespace mrpt
 		  *    save_3d            = true			// Save the 3D point cloud (default: true)
 		  *    save_range_img     = true			// Save the 2D range image (default: true)
 		  *    save_intensity_img = true			// Save the 2D intensity image (default: true)
+		  *    intensity_right_bit_shifts  = 4		// To convert 16bit intensity level to standard 8bit grayscale, how many bits to ">>" (saturation is properly handled in any case).
 		  *    save_confidence    = true			// Save the estimated confidence 2D image (default: false)
 		  *
 		  *    enable_img_hist_equal = false		// Enable intensity image histogram equalization (default: false)
@@ -71,6 +72,8 @@ namespace mrpt
 		  *    enable_mediancross_filter = false	// Enable median cross-filter (default: false)
 		  *    enable_conv_gray      = false		// Enable intensity image scale with range (default: false)
 		  *    enable_denoise_anf    = true			// Enable this noise filter (default: true)
+		  *
+		  *    
 		  *
 		  *    pose_x=0.21	// Camera position in the robot (meters)
 		  *    pose_y=0
@@ -149,6 +152,9 @@ namespace mrpt
 			inline void setSaveIntensityImage(bool save) { m_save_intensity_img = save; }
 			inline void setSaveConfidenceImage(bool save) { m_save_confidence = save; }
 
+			inline void setIntensityRightShiftBitCount( int nBits ) { m_intensity_right_bit_shifts = nBits; }
+			inline int getIntensityRightShiftBitCount( ) const { return m_intensity_right_bit_shifts; }
+
 			inline void enableImageHistEqualization(bool enable) { m_enable_img_hist_equal = enable; }
 			inline bool isEnabledImageHistEqualization() const { return m_enable_img_hist_equal; }
 
@@ -194,6 +200,8 @@ namespace mrpt
 			bool m_save_range_img;	//!< Save the 2D range image (default: true)
 			bool m_save_intensity_img; //!< Save the 2D intensity image (default: true)
 			bool m_save_confidence;	//!< Save the estimated confidence 2D image (default: false)
+
+			int m_intensity_right_bit_shifts; //!< for ">>" the intensity 16bit values
 
 			bool m_enable_img_hist_equal;
 			bool m_enable_median_filter;

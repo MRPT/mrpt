@@ -2946,8 +2946,8 @@ void CImage::equalizeHist( CImage  &outImg ) const
 {
 #if MRPT_HAS_OPENCV
 	// Convert to a single luminance channel image
-	IplImage		*ipl = ((IplImage*)img);
-	ASSERT_(ipl);
+	IplImage *ipl = static_cast<IplImage*>( getAsIplImage() );	// Source Image
+    ASSERT_(ipl!=NULL);
 
 	int	 cx = getWidth(), cy = getHeight();
 	outImg.changeSize(cx,cy,1,isOriginTopLeft());
@@ -2963,8 +2963,8 @@ void CImage::equalizeHistInPlace()
 {
 #if MRPT_HAS_OPENCV
 	// Convert to a single luminance channel image
-	IplImage		*srcImg = ((IplImage*)img);
-	ASSERT_(srcImg);
+	IplImage *srcImg = static_cast<IplImage*>( getAsIplImage() );	// Source Image
+    ASSERT_(srcImg!=NULL);
 
 	IplImage *outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
