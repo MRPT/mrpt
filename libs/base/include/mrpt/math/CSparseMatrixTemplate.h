@@ -30,19 +30,23 @@
 
 #include <mrpt/utils/utils_defs.h>
 
-namespace mrpt	{namespace math	{
+namespace mrpt	{
+namespace math	{
     using namespace std;
 
     /** A sparse matrix container (with cells of any type), with iterators.
       *  This class stores only those elements created by assigning them a value, for example: "M(2,3)=8;".
       *
+      *  This class doesn't implement math operations since it's a generic sparse container, but it can be
+      *   used to initialize the contents of a CSparse library-based matrix of type mrpt::math::CSparseMatrix.
+      *
       *  Note that reading non-existing cell elements will return the default value (0 for numbers)
       *   and that cell will remain non-created in the matrix.
       *
       *  There is an additional method "exists(i,j)" to check whether a given element exists in the matrix.
-      *  \sa CSparseSymmetricalMatrix
       *
-      * \note Methods marked as "Doesn't check bounds" mean that if an access to an element out of the matrix size is tried, an empty element will be assumed, but this will not raise any invalid memory access.
+      *  \sa mrpt::math::CSparseMatrix, CSparseSymmetricalMatrix
+      *  \note Methods marked as "Doesn't check bounds" mean that if an access to an element out of the matrix size is tried, an empty element will be assumed, but this will not raise any invalid memory access.
       */
 	template<class T>
 	class CSparseMatrixTemplate	{
@@ -286,6 +290,11 @@ namespace mrpt	{namespace math	{
 		inline size_t getNonNullElements() const	{
 			return objectList.size();
 		}
+		/** Are there no elements set to !=0 ?
+		  * \sa getNullElements,isNull,isNotNull
+		  */
+		inline bool empty() const	{ return objectList.empty(); }
+
 		/**
 		  * Gets the amount of null elements inside the matrix.
 		  * \sa getNonNullElements,isNull,isNotNull
@@ -357,6 +366,6 @@ namespace mrpt	{namespace math	{
 
 	}; // end of CSparseSymmetricalMatrix
 
-}}
-
+}
+}
 #endif

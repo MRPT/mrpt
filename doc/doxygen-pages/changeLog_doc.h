@@ -73,6 +73,7 @@
 			- mrpt::topography::ENUToGeocentric()
 			- mrpt::gui::CMyGLCanvasBase::textBitmapWidth(), a new function to compute the width of a bitmap string.
 		- New classes:
+			- mrpt::math::CMatrixSparse for efficient sparse matrix computations (based on code from robotvision & the CSparse library - see the class doc for more details and credits).
 			- New generalized KD-tree pattern class: mrpt::math::KDTreeCapable, previously used only for points of maps, now used in more places.
 			- Feature tracking for images now has a set of different implementations. See mrpt::vision::CGenericFeatureTracker
 			- mrpt::slam::CObservationStereoImagesFeatures to hold the minimum information needed by a stereo SLAM back-end algorithm.

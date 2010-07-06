@@ -26,51 +26,33 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_math_H
-#define _mrpt_math_H
 
-#include "math/distributions.h"
-#include "math/transform_gaussian.h"
-#include "math/fourier.h"
-#include "math/utils.h"
-#include "math/ops_vectors.h"
-#include "math/ops_matrices.h"
-#include "math/ops_containers.h"
+#include <mrpt/math_mrpt.h>
+#include <gtest/gtest.h>
 
-#include "math/CMatrixViews.h"
+using namespace mrpt;
+using namespace mrpt::utils;
+using namespace mrpt::math;
+using namespace std;
 
-#include "math/CLevenbergMarquardt.h"
-#include "math/CQuaternion.h"
-#include "math/CQuaternion.h"
-#include "math/ransac.h"
-#include "math/ransac_applications.h"
-#include "math/dijkstra.h"
+void do_test_init_to_unit(size_t N)
+{
+	CMatrixDouble	 dense1;
+	dense1.unit(N);
 
-#include "math/CHistogram.h"
-#include "math/CMatrix.h"
-#include "math/CMatrixD.h"
-#include "math/CMatrixB.h"
-#include "math/CMatrixTemplateObjects.h"
-#include "math/CMatrixFixedNumeric.h"
-#include "math/CArray.h"
+	CSparseMatrix SM(dense1);
 
-#include "math/graphs.h"
-#include "math/CGraphPartitioner.h"
-#include "math/CPolygon.h"
-#include "math/geometry.h"
-#include "math/CVectorTemplate.h"
+	CMatrixDouble    dense_out;
+	SM.get_dense(dense_out);
 
-#include "math/CSplineInterpolator1D.h"
+	EXPECT_TRUE( dense_out==dense1 ) <<
+		"Failed with N=" << N << "\n";
+}
 
-#include "math/lightweight_geom_data.h"
-#include "math/CSparseMatrixTemplate.h"
-#include "math/CSparseMatrix.h"
+TEST(SparseMatrix, InitFromDense)
+{
+	do_test_init_to_unit(1);
+	do_test_init_to_unit(10);
+	do_test_init_to_unit(100);
+}
 
-#include "math/CAStarAlgorithm.h"
-#include "math/CBinaryRelation.h"
-#include "math/CMonteCarlo.h"
-#include "math/jacobians.h"
-
-#include "math/KDTreeCapable.h"
-
-#endif
