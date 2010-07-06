@@ -1462,7 +1462,9 @@ size_t vision::matchFeatures2( const CFeatureList &list1,
 					// Ensure that both features have patches
 					ASSERT_(	(*itList1)->patch.getHeight() > 0 && (*itList1)->patch.getWidth() > 0 &&
 								(*itList2)->patch.getHeight() > 0 && (*itList2)->patch.getWidth() > 0 );
-
+#if !MRPT_HAS_OPENCV
+	THROW_EXCEPTION("MRPT has been compiled without OpenCV")
+#else
 					IplImage *aux1, *aux2;
 
 					if( (*itList1)->patch.isColor() && (*itList2)->patch.isColor() )
@@ -1510,7 +1512,7 @@ size_t vision::matchFeatures2( const CFeatureList &list1,
 
 					//cvReleaseImage( &aux1 );
 					//cvReleaseImage( &aux2 );
-
+#endif
 					break;
 					//cv::Mat out = cv::Mat( (*itList1)->patch.getHeight(), (*itList1)->patch.getWidth(), CV_8UC1 );
 					//cv::absdiff(

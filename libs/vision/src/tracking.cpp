@@ -143,11 +143,10 @@ MRPT_START;
 	for( itFeat = featureList.begin(), itmList = mList.begin(); itFeat != featureList.end(); ++itFeat )
 		(*itFeat) = itmList->second;
 
-MRPT_END;
-
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
+MRPT_END;
 } // end trackFeatures2
 
 
