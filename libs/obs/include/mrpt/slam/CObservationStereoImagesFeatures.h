@@ -45,20 +45,15 @@ namespace slam
 
 	struct OBS_IMPEXP TStereoImageFeatures
 	{
-		std::pair<TPixelCoordf,TPixelCoordf> pixels;
-		unsigned int 					ID;
+		std::pair<TPixelCoordf,TPixelCoordf>	pixels;
+		unsigned int 							ID;
 	};
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationStereoImagesFeatures , CObservation, OBS_IMPEXP )
-
-	/** Declares a class derived from "CObservation" that encapsule a pair of images taken by a stereo camera.
-	     The next figure illustrate the coordinates reference systems involved in this class:<br>
-		 <center>
-		 <img src="CObservationStereoImages_figRefSystem.png">
-		 </center>
+	/** Declares a class derived from "CObservation" that encapsules a pair of cameras and a set of matched image features extracted from them.
 	 *
-	 <br>
-	 <b>NOTE:</b> The images stored in this class are supposed to be UNDISTORTED images already.<br>
+	 <b>NOTE:</b> The image features stored in this class are NOT supposed to be UNDISTORTED, but the TCamera members must provide their distortion params. 
+	 A zero-vector of distortion params means a set of UNDISTORTED pixels.<br>
 	 * \sa CObservation
 	 */
 	class OBS_IMPEXP CObservationStereoImagesFeatures : public CObservation
@@ -71,16 +66,18 @@ namespace slam
 		 */
 		CObservationStereoImagesFeatures( );
 
-		/** Constructor.
+		/** Other constructor providing members initialization.
 		 */
 		CObservationStereoImagesFeatures( 
-			const CMatrixDouble33 &iPLeft, const CMatrixDouble33 &iPRight,
-			const CArrayDouble<5> &dPLeft, const CArrayDouble<5> &dPRight,
-			const CPose3DQuat &rCPose, const CPose3DQuat &cPORobot );
+			const CMatrixDouble33 &iPLeft /*left intrinsic params*/, const CMatrixDouble33 &iPRight /*right intrinsic params*/,
+			const CArrayDouble<5> &dPLeft /*left distortion params*/, const CArrayDouble<5> &dPRight /*right distortion params*/,
+			const CPose3DQuat &rCPose /*rightCameraPose*/, const CPose3DQuat &cPORobot /*cameraPoseOnRobot*/ );
 		
+		/** Other constructor providing members initialization.
+		 */
 		CObservationStereoImagesFeatures( 
-			const TCamera &cLeft, const TCamera &cRight,
-			const CPose3DQuat &rCPose, const CPose3DQuat &cPORobot );
+			const TCamera &cLeft /*left camera*/, const TCamera &cRight /*right camera*/,
+			const CPose3DQuat &rCPose /*rightCameraPose*/, const CPose3DQuat &cPORobot /*cameraPoseOnRobot*/ );
 
 		/** Destructor
 		 */
@@ -92,7 +89,7 @@ namespace slam
 		TCamera cameraLeft, cameraRight;
 		
 		/** The pose of the right camera, relative to the left one:
-		  *  Note that using the conventional reference coordinates for the left
+		  *  Note that for the Bumblebee stereo camera and using the conventional reference coordinates for the left
 		  *   camera ("x" points to the right, "y" down), the "right" camera is situated
 		  *   at position (BL, 0, 0) with q = [1 0 0 0], where BL is the BASELINE.
 		  */
@@ -105,18 +102,12 @@ namespace slam
 		/** Vectors of image feature pairs (with ID).
 		  */
 		vector<TStereoImageFeatures> theFeatures;
-		// vector<TPixelCoordf> featsLeft, featsRight;
-
-		///** Vectors of image features IDs. Equal IDs corresponds to the projection of the same 3D points.
-		//  */
-		//vector<unsigned int> featsLeftIDs, featsRightIDs;
 
 		/** A general method to retrieve the sensor pose on the robot.
 		  *  Note that most sensors will return a full (6D) CPose3DQuat, but see the derived classes for more details or special cases.
 		  * \sa setSensorPose
 		  */
 		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = CPose3D(cameraPoseOnRobot); }
-
 
 		/** A general method to change the sensor pose on the robot.
 		  *  Note that most sensors will use the full (6D) CPose3DQuat, but see the derived classes for more details or special cases.

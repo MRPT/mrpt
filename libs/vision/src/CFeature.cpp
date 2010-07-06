@@ -478,7 +478,7 @@ void CFeatureList::kdtree_fill_point_data(ANNpointArray &data, const int nDims) 
 // --------------------------------------------------
 // saveToTextFile
 // --------------------------------------------------
-// FORMAT: ID type x y orientation scale [descriptorSIFT] [descriptorSURF] KLT_status KLT_val
+// FORMAT: ID type x y orientation scale [descriptorSIFT] [descriptorSURF] track_status response
 void CFeatureList::saveToTextFile( const std::string &filename, bool APPEND )
 {
 	MRPT_START
