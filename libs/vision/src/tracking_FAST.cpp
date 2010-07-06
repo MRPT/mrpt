@@ -102,8 +102,8 @@ double match_template_SQDIFF(
 CFeatureTracker_FAST::CFeatureTracker_FAST(const mrpt::utils::TParametersDouble &extraParams) :
 	CGenericFeatureTracker			( extraParams ),
 	m_detector_adaptive_thres		( 10 ),
-	m_hysteresis_min_num_feats		( 100 ),
-	m_hysteresis_max_num_feats		( 300 )
+	m_hysteresis_min_num_feats		( 2500 ),
+	m_hysteresis_max_num_feats		( 3500 )
 {
 }
 
@@ -145,7 +145,7 @@ void CFeatureTracker_FAST::trackFeatures(
 	// =======================================================================
 	vector<KeyPoint> cv_feats; // The opencv keypoint output vector
 
-	FastFeatureDetector fastDetector( m_detector_adaptive_thres , true /* non-max supres. */ );
+	FastFeatureDetector fastDetector( m_detector_adaptive_thres , false /* non-max supres. */ );
 
 	// Create a temporary gray image, if needed:
 	mrpt::utils::CImage  new_img_gray;
@@ -171,6 +171,7 @@ void CFeatureTracker_FAST::trackFeatures(
 
 	// # of detected feats.
 	const size_t N = cv_feats.size();
+	cout << "N: " << N << endl;
 
 	last_execution_extra_info.raw_FAST_feats_detected = N; // Extra out info.
 

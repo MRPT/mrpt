@@ -50,6 +50,7 @@
 #   undef max
 
 /* MOD JLBC FOR MRPT */
+#include <mrpt/config.h>
 #ifndef MRPT_BUILT_AS_DLL
 #	define FREEGLUT_STATIC
 #endif
