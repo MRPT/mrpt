@@ -157,10 +157,9 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			CFeatureExtraction  FE;
 			FE.options.featsType = featFAST;
 
-			FE.options.patchSize = 19;
+			FE.options.patchSize = 11;
 			FE.options.FASTOptions.threshold = 20;
 			FE.options.FASTOptions.min_distance = 20;
-			FE.options.FASTOptions.nonmax_suppression = false;
 
 			FE.detectFeatures(theImg, trackedFeats, 0 /* first ID */, NUM_FEATS_TO_DETECT /* # feats */ );
 

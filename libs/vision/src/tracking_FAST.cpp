@@ -145,7 +145,7 @@ void CFeatureTracker_FAST::trackFeatures(
 	// =======================================================================
 	vector<KeyPoint> cv_feats; // The opencv keypoint output vector
 
-	FastFeatureDetector fastDetector( m_detector_adaptive_thres , false /* non-max supres. */ );
+	FastFeatureDetector fastDetector( m_detector_adaptive_thres , true /* non-max supres. */ );
 
 	// Create a temporary gray image, if needed:
 	mrpt::utils::CImage  new_img_gray;
@@ -190,7 +190,7 @@ void CFeatureTracker_FAST::trackFeatures(
 	CSimple2DKDTree  kdtree(cv_feats);
 
 	// # of closest features to look for:
-	size_t max_query_results = 40;
+	size_t max_query_results = 100;
 	keep_min(max_query_results, N);
 
 	// Maximum distance for ignoring a "close" potential match:

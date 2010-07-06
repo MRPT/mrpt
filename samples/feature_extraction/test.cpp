@@ -37,8 +37,8 @@ using namespace mrpt::vision;
 using namespace std;
 
 #include <mrpt/examples_config.h>
-//string   myDataDir( MRPT_EXAMPLES_BASE_DIRECTORY + string("imageConvolutionFFT/") );
-string	myDataDir = "D:/Trabajo/MRPT-trunk/samples/imageConvolutionFFT/";
+string   myDataDir( MRPT_EXAMPLES_BASE_DIRECTORY + string("imageConvolutionFFT/") );
+//string	myDataDir = "D:/Trabajo/MRPT-trunk/samples/imageConvolutionFFT/";
 
 void TestTrackFeatures()
 {
@@ -315,6 +315,17 @@ void TestExtractFeatures()
 	wind1.setWindowTitle("Harris detected features");
 	wind1.showImageAndPoints( img, featsHarris );
 
+	cout << "Extracting FAST features... [f_fast.txt]" << endl;
+	tictac.Tic();
+	fExt.options.featsType = featFAST;
+	fExt.options.FASTOptions.threshold = 150;
+	fExt.detectFeatures( img, featsFAST, 0, 10 );
+	cout << "Detected " << featsFAST.size() << " features in ";
+	cout << format("  %.03fms",tictac.Tac()*1000) << endl << endl;
+	featsFAST.saveToTextFile("f_fast.txt");
+	wind5.setWindowTitle("FAST detected features");
+	wind5.showImageAndPoints( img, featsFAST );
+
 	cout << "Computing SIFT descriptors only ... [f_harris+sift.txt]" << endl;
 	tictac.Tic();
 	fExt.options.SIFTOptions.implementation = CFeatureExtraction::Hess;
@@ -364,16 +375,6 @@ void TestExtractFeatures()
 	cout << format("  %.03fms",tictac.Tac()*1000) << endl << endl;
 	featsHarris.saveToTextFile("f_harris+spinimgs.txt");
 
-	cout << "Extracting FAST features... [f_fast.txt]" << endl;
-	tictac.Tic();
-	fExt.options.featsType = featFAST;
-	fExt.options.FASTOptions.threshold = 150;
-	fExt.detectFeatures( img, featsFAST, 0, 10 );
-	cout << "Detected " << featsFAST.size() << " features in ";
-	cout << format("  %.03fms",tictac.Tac()*1000) << endl << endl;
-	featsFAST.saveToTextFile("f_fast.txt");
-	wind5.setWindowTitle("FAST detected features");
-	wind5.showImageAndPoints( img, featsFAST );
 
 	mrpt::system::pause();
 
@@ -535,8 +536,8 @@ int main(int argc, char **argv)
 {
 	try
 	{
-		TestMatchFeatures();
-		//TestExtractFeatures();
+		//TestMatchFeatures();
+		TestExtractFeatures();
 		//TestExtractFeaturesTile();
 		//TestRectifyImages();
 		//TestTrackFeatures();

@@ -40,7 +40,7 @@ using namespace std;
 
 // Don't do this since it seems FAST features don't provide a "response" measure.
 //  Enable in the future if it's implemented in OpenCV.
-//#define DO_SORT_BY_RESPONSE_QUALITY
+#define DO_SORT_BY_RESPONSE_QUALITY
 
 
 #if MRPT_HAS_OPENCV && defined(DO_SORT_BY_RESPONSE_QUALITY)
@@ -209,7 +209,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 		ft->ID				= nextID++;
 		ft->x				= kp.pt.x;
 		ft->y				= kp.pt.y;
-		ft->response			= kp.response;
+		ft->response		= kp.response;
 		ft->orientation		= kp.angle;
 		ft->scale			= kp.octave;
 		ft->patchSize		= options.patchSize;		// The size of the feature patch
