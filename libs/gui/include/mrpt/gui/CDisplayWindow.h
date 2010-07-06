@@ -79,28 +79,19 @@ namespace mrpt
 
 			/** Show a given color or grayscale image on the window and print a set of points on it.
 			 *  It adapts the size of the window to that of the image.
-			 *  The class of FEATURELIST can be: mrpt::vision::CFeatureList
+			 *  The class of FEATURELIST can be: mrpt::vision::CFeatureList or any STL container of entities having "x","y" and "ID" fields.
 			 */
 			template <class FEATURELIST>
 			void  showImageAndPoints( const CImage &img, const FEATURELIST &list, const TColor &color = TColor::red, const bool &showIDs = false )
 			{
 				MRPT_START
-				CImage imgColor(1,1,3);
+				CImage imgColor(1,1,CH_RGB);
 				img.colorImage( imgColor );	// Create a colorimage
-
-				for(typename FEATURELIST::const_iterator i = list.begin(); i != list.end(); ++i )
-				{
-					imgColor.cross( round((*i)->x), round((*i)->y), color, '+' );
-					if( showIDs )
-						imgColor.textOut( round((*i)->x), round((*i)->y), format("%u", static_cast<unsigned int>((*i)->ID)), 0xFF0000 );
-					if( ! (*i)->isPointFeature() )
-						imgColor.drawCircle( round((*i)->x), round((*i)->y), (*i)->scale, TColor::red );
-				}
-
+				imgColor.drawFeatures(list,color,showIDs);
 				showImage(imgColor);
 				MRPT_END
 			}
-
+			
 			/** Show a given color or grayscale image on the window and print a set of points on it and a set of lines splitting the image in tiles.
 			 *  It adapts the size of the window to that of the image.
 			 *  The class of FEATURELIST can be: mrpt::vision::CFeatureList

@@ -135,7 +135,8 @@ void CFeatureTracker_FAST::trackFeatures(
 	// 3) For each old feature:
 	//    3.A) Look for a set of closest ones among the new feats.
 	//    3.B) Keep the one with the best patch similarity.
-	// 4) Optionally: Add NEW features from the list of already detected ones.
+	// 4) Optionally: Add NEW features from the list of already detected ones, 
+	//     so we do tracking + new feats detection at once.
 	//
 	// =======================================================================
 
@@ -155,9 +156,21 @@ void CFeatureTracker_FAST::trackFeatures(
 	// Do the detection
 	const Mat new_img_gray_mat = cvarrToMat( reinterpret_cast<IplImage*>(new_img_gray.getAsIplImage()) );
 	fastDetector.detect( new_img_gray_mat, cv_feats );
+	
+#if 0
+	{
+		mrpt::utils::CImage  dbg_img;
+		new_img_gray.colorImage(dbg_img);
+		vector<TPoint2D> pts;
+		for (size_t i=0;i<cv_feats.size();i++) pts.push_back(TPoint2D(cv_feats[i].pt.x,cv_feats[i].pt.y));
+		dbg_img.drawFeaturesSimple(pts);
+		static int cnt = 1;
+		dbg_img.saveToFile( format("dbg_%04i.jpg",cnt++) );
+	}
+#endif	
 
 	// # of detected feats.
-	const size_t N = cv_feats.size();  
+	const size_t N = cv_feats.size();
 
 	last_execution_extra_info.raw_FAST_feats_detected = N; // Extra out info.
 

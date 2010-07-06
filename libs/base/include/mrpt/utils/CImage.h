@@ -51,8 +51,12 @@ namespace mrpt
 			IMG_INTERP_CUBIC=2,
 			IMG_INTERP_AREA=3
 		};
-
-
+		
+		/** For use in mrpt::utils::CImage */
+		typedef int  TImageChannels;
+		#define CH_GRAY  1
+		#define CH_RGB   3
+		
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CImage, mrpt::utils::CSerializable )
 
@@ -117,7 +121,7 @@ namespace mrpt
 			void  changeSize(
 					unsigned int	width,
 					unsigned int	height,
-					unsigned int	nChannels,
+					TImageChannels	nChannels,
 					bool			originTopLeft );
 
 			/** Release the internal IPL image, if not NULL or read-only. */
@@ -141,7 +145,7 @@ namespace mrpt
 			void  resize(
 					unsigned int	width,
 					unsigned int	height,
-					unsigned int	nChannels,
+					TImageChannels	nChannels,
 					bool			originTopLeft )
 			{
 				ASSERT_(img!=NULL);
@@ -192,7 +196,7 @@ namespace mrpt
 			 */
 			CImage( unsigned int	width,
 					unsigned int	height,
-					unsigned int	nChannels = 3,
+					TImageChannels	nChannels = CH_RGB,
 					bool			originTopLeft = true
 					);
 			/** Copy constructor:
@@ -466,33 +470,35 @@ namespace mrpt
 			CImage  scaleDouble()const;
 
 
-			/** Returns a string of the form "BGR" indicating the channels ordering.
+			/** Returns a string of the form "BGR","RGB" or "GRAY" indicating the channels ordering.
 			  */
 			const char *  getChannelsOrder()const;
 
-			/** Returns the number of channels (typ: 1 or 3)
+			/** Returns the number of channels, typically 1 (GRAY) or 3 (RGB)
 			  * \sa isColor
 			  */
-			unsigned int getChannelCount() const;
+			TImageChannels getChannelCount() const;
 
-			/** Update image with patch given as argument. Upper left corner of the patch
-			 * will be will be set to the pixel described by the two arguments _row, and _column.
+			/** Update a part of this image with the "patch" given as argument. 
+			 * The "patch" will be "pasted" at the (col,row) coordinates of this image.
 			 * \exception std::exception if patch pasted on the pixel (_row, _column) jut out
 			 * of the image.
+			 * \sa extract_patch
 			 */
-			void update_patch(CImage &patch,
-					  const unsigned int col_,
-					  const unsigned int row_);
+			void update_patch(const CImage &patch,
+					  const unsigned int col,
+					  const unsigned int row);
 
-			/** Extracts a patch of this image into another image.
-			  * (by AJOGD @ DEC-2006)
+			/** Extract a patch from this image, saveing it into "patch" (its previous contents will be overwritten).
+			  *  The patch to extract starts at (col,row) and has the given dimensions.
+			  * \sa update_patch
 			  */
 			void  extract_patch(
 				CImage	&patch,
-				const unsigned int	col_=0,
-				const unsigned int	row_=0,
-				const unsigned int	col_num=1,
-				const unsigned int	row_num=1 ) const;
+				const unsigned int	col=0,
+				const unsigned int	row=0,
+				const unsigned int	width=1,
+				const unsigned int	height=1 ) const;
 
 			/** Computes the correlation coefficient (returned as val), between two images
 			*	This function use grayscale images only

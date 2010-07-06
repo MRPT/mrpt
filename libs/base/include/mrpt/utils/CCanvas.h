@@ -329,6 +329,37 @@ namespace mrpt
 					std::cout << "Covariance matrix leading to error is:" << std::endl << *cov2D << std::endl; \
 					);
 			}
+			
+			/** Draws a set of marks onto the image, given a generic container of entities having just "x" and "y" fields.
+			 *  The class of FEATURELIST can be, for example, std::vector<TPoint2D>, std::vector<TPixelCoordsf> or mrpt::vision::CFeatureList 
+			 * \sa drawFeatures
+			 */
+			template <class FEATURELIST>
+			void  drawFeaturesSimple( const FEATURELIST &list, const TColor &color = TColor::red )
+			{
+				for(typename FEATURELIST::const_iterator i = list.begin(); i != list.end(); ++i ) {
+					this->cross( round(i->x), round(i->y), color, '+' );
+				}
+			}
+			
+			/** Draws a set of marks (or scaled circles for features with scale) onto the image, given a generic container of features.
+			 *  The class of FEATURELIST can be mrpt::vision::CFeatureList 
+			 * \sa drawFeaturesSimple
+			 */
+			template <class FEATURELIST>
+			void  drawFeatures( const FEATURELIST &list, const TColor &color = TColor::red, const bool &showIDs = false )
+			{
+				for(typename FEATURELIST::const_iterator i = list.begin(); i != list.end(); ++i )
+				{
+					this->cross( round((*i)->x), round((*i)->y), color, '+' );
+					if( showIDs )
+						this->textOut( round((*i)->x), round((*i)->y), format("%u", static_cast<unsigned int>((*i)->ID)), 0xFF0000 );
+					if( ! (*i)->isPointFeature() )
+						this->drawCircle( round((*i)->x), round((*i)->y), (*i)->scale, TColor::red );
+				}
+			}
+			
+			
 
 		}; // End of class
 

@@ -433,7 +433,7 @@ std::string CImage::IMAGES_PATH_BASE(".");
  ---------------------------------------------------------------*/
 CImage::CImage( unsigned int	width,
 	unsigned int	height,
-	unsigned int	nChannels,
+	TImageChannels	nChannels,
 	bool			originTopLeft ) :
 		img(NULL),
 		m_imgIsReadOnly(false),
@@ -452,7 +452,7 @@ CImage::CImage( ) :
 		m_imgIsExternalStorage(false)
 {
 	MRPT_START;
-	changeSize( 1, 1, 3, true );
+	changeSize( 1, 1, CH_RGB, true );
 	MRPT_END;
 }
 
@@ -674,7 +674,7 @@ CImage::~CImage( )
 void  CImage::changeSize(
 		unsigned int	width,
 		unsigned int	height,
-		unsigned int	nChannels,
+		TImageChannels	nChannels,
 		bool			originTopLeft)
 {
 	MRPT_START;
@@ -1221,7 +1221,7 @@ bool  CImage::isColor() const
 /*---------------------------------------------------------------
 						getChannelCount
  ---------------------------------------------------------------*/
-unsigned int CImage::getChannelCount() const
+TImageChannels CImage::getChannelCount() const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
@@ -1742,7 +1742,7 @@ void  CImage::drawCircle(
 /*---------------------------------------------------------------
                                                update_patch
  --------------------------------------------------------------*/
-void CImage::update_patch(CImage &patch,
+void CImage::update_patch(const CImage &patch,
 			  const unsigned int col_,
 			  const unsigned int row_)
 {
