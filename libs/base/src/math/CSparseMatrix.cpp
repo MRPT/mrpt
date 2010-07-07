@@ -70,8 +70,37 @@ void  CSparseMatrix::copy(const cs  * const sm)
   ::memcpy(sparse_matrix.x,sm->x,sizeof(double)*sm->nzmax);
 }
 
+/** Fast copy the data from an existing "cs" CSparse data structure, copying the pointers and leaving NULLs in the source structure. */
+void  CSparseMatrix::copy_fast(cs  * const sm)
+{
+  // Free previous contents, if any.
+  internal_free_mem(); 
+
+  // Fast copy / Move:
+  sparse_matrix.m = sm->m;
+  sparse_matrix.n = sm->n;
+  sparse_matrix.nz = sm->nz;
+  sparse_matrix.nzmax = sm->nzmax;
+
+  sparse_matrix.i = sm->i;
+  sparse_matrix.p = sm->p;
+  sparse_matrix.x = sm->x;
+
+  // Mark source as empty:
+  sm->i=NULL;
+  sm->p=NULL;
+  sm->x=NULL;
+}
+
+
 // Dtor
 CSparseMatrix::~CSparseMatrix()
+{
+	internal_free_mem();
+}
+
+/** free buffers (deallocate the memory of the i,p,x buffers) */
+void CSparseMatrix::internal_free_mem()
 {
   cs_free(sparse_matrix.i);
   cs_free(sparse_matrix.p);
@@ -82,17 +111,28 @@ CSparseMatrix::~CSparseMatrix()
 void CSparseMatrix::construct_from_triplet(const cs & triplet)
 {
 	cs * sm = cs_compress(&triplet);
-	sparse_matrix.i = (int*)malloc(sizeof(int)*sm->nzmax);
-	sparse_matrix.p = (int*)malloc(sizeof(int)*(sm->n+1));
-	sparse_matrix.x = (double*)malloc(sizeof(double)*sm->nzmax);
-	copy(sm);
-	cs_spfree(sm);
+	copy_fast(sm);
+	cs_spfree(sm); // This will release just the "cs" structure itself, not the internal buffers, now set to NULL.
 }
 
-/** Insert an element into a "cs", return false on error. */
-bool CSparseMatrix::internal_add_entry(cs &MAT, int i, int j, double val )
+/** Default constructor: empty */
+CSparseMatrix::CSparseMatrix(const size_t nRows, const size_t nCols)
 {
-	return 0!=cs_entry(&MAT,i,j,val);
+	sparse_matrix.nzmax = 1;
+	sparse_matrix.m = nRows;
+	sparse_matrix.n = nCols;
+	sparse_matrix.i = (int*)malloc(sizeof(int)*sparse_matrix.nzmax);
+	sparse_matrix.p = (int*)malloc(sizeof(int)*(sparse_matrix.n+1));
+	sparse_matrix.x = (double*)malloc(sizeof(double)*sparse_matrix.nzmax);
+	sparse_matrix.nz = 0;
+}
+
+
+/** Insert an element into a "cs", return false on error. */
+void CSparseMatrix::insert_entry(const size_t row, const size_t col, const double val )
+{
+	if (!cs_entry(&sparse_matrix,row,col,val))
+		THROW_EXCEPTION("Error inserting element in sparse matrix (out of mem?)")
 }
 
 

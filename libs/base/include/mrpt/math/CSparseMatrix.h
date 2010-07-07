@@ -91,8 +91,8 @@ namespace mrpt
 			/** Initialization from a triplet "cs", which is first compressed */
 			void construct_from_triplet(const cs & triplet);
 
-			/** Insert an element into a "cs", return false on error. */
-			bool internal_add_entry(cs &MAT, int i, int j, double val );
+			/** free buffers (deallocate the memory of the i,p,x buffers) */
+			void internal_free_mem();
 
 
 		public:
@@ -100,31 +100,26 @@ namespace mrpt
 			/** @name Constructors, destructor & copy operations
 			    @{  */
 
+			/** Create an initially empty sparse matrix */
+			CSparseMatrix(const size_t nRows, const size_t nCols); 
+
 			/** Best way to initialize a sparse matrix from a list of non NULL elements */
 			template <typename T>
 			CSparseMatrix(const CSparseMatrixTemplate<T> & data)
 			{
 				ASSERTMSG_(!data.empty(), "Input data must contain at least one non-zero element.")
-
-				// JL: RE-DO for efficiency!!!
+				sparse_matrix.i = NULL; // This is to know they shouldn't be tried to free()
+				sparse_matrix.p = NULL;
+				sparse_matrix.x = NULL;
 
 				// 1) Create triplet matrix
-				cs triplet;
-				triplet.nzmax = 1;
-				triplet.m = data.getRowCount();
-				triplet.n = data.getColCount();
-				triplet.i = (int*)malloc(sizeof(int)*triplet.nzmax);
-				triplet.p = (int*)malloc(sizeof(int)*(triplet.n+1));
-				triplet.x = (double*)malloc(sizeof(double)*triplet.nzmax);
-				triplet.nz = 0;
-
+				CSparseMatrix  triplet(data.getRowCount(),data.getColCount());
 				// 2) Put data in:
 				for (typename CSparseMatrixTemplate<T>::const_iterator it=data.begin();it!=data.end();++it)
-					if (!internal_add_entry(triplet,it->first.first,it->first.second, it->second))
-						throw std::runtime_error("CSparseMatrix: error initializing from CSparseMatrixTemplate (out of mem? out of range?)");
+					triplet.insert_entry(it->first.first,it->first.second, it->second);
 
 				// 3) Compress:
-				construct_from_triplet(triplet);
+				construct_from_triplet(triplet.sparse_matrix);
 			}
 
 
@@ -148,6 +143,9 @@ namespace mrpt
 			/** Copy the data from an existing "cs" CSparse data structure */
 			void  copy(const cs  * const sm);
 
+			/** Fast copy the data from an existing "cs" CSparse data structure, copying the pointers and leaving NULLs in the source structure. */
+			void  copy_fast(cs  * const sm);
+
 			/** Copy operator from another existing object */
 			void operator = (const CSparseMatrix & other);
 
@@ -167,12 +165,22 @@ namespace mrpt
 
 			/** @}  */
 
+
+			/** @ Access the matrix, get, set elements, etc.
+			    @{ */
+
+			/** Insert a <b>new</b> non-zero entry in the matrix. */
+			void insert_entry(const size_t row, const size_t col, const double val );
+
 			/** Return a dense representation of the sparse matrix */
 			void get_dense(CMatrixDouble &outMat) const;
 
 			// Very basic, standard methods that MRPT methods expect for any matrix:
 			inline size_t getRowCount() const { return sparse_matrix.m; }
 			inline size_t getColCount() const { return sparse_matrix.n; }
+
+
+			/** @} */
 
 		}; // end class CSparseMatrix
 
