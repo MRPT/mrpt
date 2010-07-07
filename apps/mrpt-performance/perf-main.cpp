@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 {
 	try
 	{
-		printf(" mrpt-performance version 0.1 - Part of the MRPT\n");
+		printf(" mrpt-performance - Part of the MRPT\n");
 		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
 		printf("-------------------------------------------------------------------\n");
 

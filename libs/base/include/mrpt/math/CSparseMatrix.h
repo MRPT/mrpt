@@ -29,9 +29,10 @@
 #define CSparseMatrix_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/math/CSparseMatrixTemplate.h>
+#include <mrpt/utils/CUncopiable.h>
 
 #include <mrpt/math/math_frwds.h>
+#include <mrpt/math/CSparseMatrixTemplate.h>
 
 extern "C"{
 #include <mrpt/otherlibs/CSparse/cs.h>
@@ -41,6 +42,14 @@ namespace mrpt
 {
 	namespace math
 	{
+		/** Used in mrpt::math::CSparseMatrix */
+		class CExceptionNotDefPos : public mrpt::utils::CMRPTException
+		{
+		public:
+			CExceptionNotDefPos(const std::string &s) : CMRPTException(s) {  }
+		};
+
+
 		/** A sparse matrix capable of efficient math operations (a wrapper around the CSparse library)
 		  *  The type of cells is fixed to "double".
 		  *
@@ -55,22 +64,32 @@ namespace mrpt
 		  *    <li> <b>As a triplet (empty), then add entries, then compress:</b> 
 		  *         \code
 		  *             CSparseMatrix  SM(100,100);
-		  *             SM.insert_entry(i,j, val); ...
+		  *             SM.insert_entry(i,j, val);  // or
+		  *             SM.insert_submatrix(i,j, MAT); //  ...
 		  *             SM.compressFromTriplet();
 		  *         \endcode
 		  *    </li>
-		  *    <li> <b>As a triplet from a CSparseMatrixTemplate<T>:</b> 
+		  *    <li> <b>As a triplet from a CSparseMatrixTemplate<double>:</b> 
 		  *         \code
-		  *             CSparseMatrix  SM(M);
+		  *             CSparseMatrixTemplate<double>  data;
+		  *             data(row,col) = val;
+		  *             ...
+		  *             CSparseMatrix  SM(data);
 		  *         \endcode
 		  *    </li>
 		  *    <li> <b>From an existing dense matrix:</b> 
 		  *         \code
-		  *             CSparseMatrix  SM(M);
+		  *             CMatrixDouble data(100,100); // or
+		  *             CMatrixFloat  data(100,100); // or
+		  *             CMatrixFixedNumeric<double,4,6>  data; // etc...
+		  *             CSparseMatrix  SM(data);
 		  *         \endcode
 		  *    </li>
 		  *
 		  *   </ol>
+		  *
+		  *  Due to its practical utility, there is a special inner class CSparseMatrix::CholeskyDecomp to handle Cholesky-related methods and data.
+		  *
 		  *
 		  * \note This class was initially adapted from "robotvision", by Hauke Strasdat, Steven Lovegrove and Andrew J. Davison. See http://www.openslam.org/robotvision.html
 		  * \note CSparse is maintained by Timothy Davis: http://people.sc.fsu.edu/~jburkardt/c_src/csparse/csparse.html . 
@@ -120,9 +139,20 @@ namespace mrpt
 			/** Initialization from a triplet "cs", which is first compressed */
 			void construct_from_triplet(const cs & triplet);
 
+			/** To be called by constructors only, assume previous pointers are trash and overwrite them */
+			void construct_from_existing_cs(const cs &sm);
+
 			/** free buffers (deallocate the memory of the i,p,x buffers) */
 			void internal_free_mem();
 
+			/** Copy the data from an existing "cs" CSparse data structure */
+			void  copy(const cs  * const sm);
+
+			/** Fast copy the data from an existing "cs" CSparse data structure, copying the pointers and leaving NULLs in the source structure. */
+			void  copy_fast(cs  * const sm);
+
+			/** Insert an element into a "cs", without checking if the matrix is in Triplet format and without extending the matrix extension/limits if (row,col) is out of the current size. */
+			void insert_entry_fast(const size_t row, const size_t col, const double val );
 
 		public:
 
@@ -175,12 +205,6 @@ namespace mrpt
 			/** Destructor */
 			virtual ~CSparseMatrix();
 
-			/** Copy the data from an existing "cs" CSparse data structure */
-			void  copy(const cs  * const sm);
-
-			/** Fast copy the data from an existing "cs" CSparse data structure, copying the pointers and leaving NULLs in the source structure. */
-			void  copy_fast(cs  * const sm);
-
 			/** Copy operator from another existing object */
 			void operator = (const CSparseMatrix & other);
 
@@ -221,7 +245,6 @@ namespace mrpt
 			}
 			CSparseMatrix transpose() const;
 
-
 			/** @}  */
 
 
@@ -235,6 +258,27 @@ namespace mrpt
 			  */
 			void insert_entry(const size_t row, const size_t col, const double val );
 
+			/** ONLY for TRIPLET matrices: insert a given matrix (in any of the MRPT formats) at a given location of the sparse matrix.
+			  *  This method cannot be used once the matrix is in column-compressed form.
+			  *  The size of the matrix will be automatically extended if the indices are out of the current limits.
+			  *  Since this is inline, it can be very efficient for fixed-size MRPT matrices.
+			  * \sa isTriplet, compressFromTriplet, insert_entry
+			  */
+			template <class MATRIX>
+			inline void insert_submatrix(const size_t row, const size_t col, const MATRIX &M )
+			{
+				if (!isTriplet()) THROW_EXCEPTION("insert_entry() is only available for sparse matrix in 'triplet' format.")
+				const size_t nR = M.getRowCount();
+				const size_t nC = M.getColCount();
+				for (size_t r=0;r<nR;r++)
+					for (size_t c=0;c<nC;c++)
+						insert_entry_fast(row+r,col+c, M.get_unsafe(r,c));
+				// If needed, extend the size of the matrix:
+				sparse_matrix.m = std::max(sparse_matrix.m, int(row+nR));
+				sparse_matrix.n = std::max(sparse_matrix.n, int(col+nC));
+			}
+
+
 			/** ONLY for TRIPLET matrices: convert the matrix in a column-compressed form.
 			  * \sa insert_entry
 			  */
@@ -244,6 +288,10 @@ namespace mrpt
 			  * \sa saveToTextFile_dense
 			  */
 			void get_dense(CMatrixDouble &outMat) const;
+
+			/** Static method to convert a "cs" structure into a dense representation of the sparse matrix.
+			  */
+			static void cs2dense(const cs& SM, CMatrixDouble &outMat);
 
 			/** save as a dense matrix to a text file \return False on any error.
 			  */
@@ -263,6 +311,66 @@ namespace mrpt
 			/** Returns true if this sparse matrix is in "column compressed" form. \sa isTriplet */
 			inline bool isColumnCompressed() const { return sparse_matrix.nz<0; }  // <0 means "column compressed", ">=0" means triplet.
 			
+			/** @} */
+
+
+			/** @name Cholesky factorization 
+			    @{  */
+
+			/** Auxiliary class to hold the results of a Cholesky factorization of a sparse matrix.
+			  *  Usage example:
+			  *   \code
+			  *     CSparseMatrix  SM(100,100);
+			  *     SM.insert_entry(i,j, val); ...
+			  *     SM.compressFromTriplet();
+			  *
+			  *     // Do Cholesky decomposition:
+			  *		CSparseMatrix::CholeskyDecomp  CD(SM);
+			  *     CD.get_inverse(); 
+			  *     ...
+			  *   \endcode
+			  *
+			  * \note This class was initially adapted from "robotvision", by Hauke Strasdat, Steven Lovegrove and Andrew J. Davison. See http://www.openslam.org/robotvision.html
+			  * \note This class designed to be "uncopiable".
+			  * \sa The main class: CSparseMatrix
+			  */
+			class BASE_IMPEXP CholeskyDecomp  : public mrpt::utils::CUncopiable
+			{
+			private:
+				css * m_symbolic_structure;
+				csn * m_numeric_structure;
+				const CSparseMatrix *m_originalSM;  //!< A const reference to the original matrix used to build this decomposition.
+
+			public:
+				/** Constructor from a square definite-positive sparse matrix A, which can be use to solve Ax=b
+				  *   The actual Cholesky decomposition takes places in this constructor.
+				  *  \exception std::runtime_error On non-square input matrix.
+				  *  \exception mrpt::math::CExceptionNotDefPos On non-definite-positive matrix as input.
+				  */
+				CholeskyDecomp(const CSparseMatrix &A);
+
+				/** Destructor */
+				virtual ~CholeskyDecomp();
+
+				/** Return the L matrix (L*L' = M), as a dense matrix. */
+				inline CMatrixDouble get_L() const { CMatrixDouble L; get_L(L); return L; }
+
+				/** Return the L matrix (L*L' = M), as a dense matrix. */
+				void get_L(CMatrixDouble &out_L) const;
+
+				/** Return the vector from a back-substitution step that solves: Ux=b   */
+				inline std::vector<double> backsub(const std::vector<double> &b) const { std::vector<double> res; backsub(b,res); return res; }
+				
+				/** Return the vector from a back-substitution step that solves: Ux=b   */
+				void backsub(const std::vector<double> &b, std::vector<double> &result_x) const;
+
+				/** Update the Cholesky factorization from an updated vesion of the original input, square definite-positive sparse matrix.
+				  *  NOTE: This new matrix MUST HAVE exactly the same sparse structure than the original one.
+				  */
+				void update(const CSparseMatrix &new_SM);
+			};
+
+
 			/** @} */
 
 		}; // end class CSparseMatrix

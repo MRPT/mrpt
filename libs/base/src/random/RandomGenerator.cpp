@@ -201,6 +201,21 @@ double CRandomGenerator::drawGaussian1D_normalized( double *likelihood  )
    }
 }
 
+/** Generates a random definite-positive matrix of the given size, using the formula C = v*v^t + epsilon*I, with "v" being a vector of gaussian random samples.
+*/
+CMatrixDouble CRandomGenerator::drawDefinitePositiveMatrix(
+	const size_t dim, 
+	const double std_scale, 
+	const double diagonal_epsilon)
+{
+	CMatrixDouble   r(dim,1);
+	drawGaussian1DMatrix(r, 0,std_scale);
+	CMatrixDouble   cov(dim,dim);
+	cov.multiply_AAt(r);  // random semi-definite positive matrix:
+	for (size_t i=0;i<dim;i++) cov(i,i)+=diagonal_epsilon;  // make sure it's definite-positive
+	return cov;
+}
+
 
 /*---------------------------------------------------------------
 				drawGaussianMultivariate

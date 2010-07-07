@@ -154,6 +154,10 @@ namespace mrpt
 							matrix.get_unsafe(r,c) = static_cast<typename MAT::value_type>( drawGaussian1D(mean,std) );
 				}
 
+				/** Generates a random definite-positive matrix of the given size, using the formula C = v*v^t + epsilon*I, with "v" being a vector of gaussian random samples.
+				  */
+				CMatrixDouble drawDefinitePositiveMatrix(const size_t dim, const double std_scale = 1.0, const double diagonal_epsilon = 1e-8);
+
 				/** Fills the given vector with independent, 1D-normally distributed samples.
 				  * \sa drawGaussian1D
   				  */

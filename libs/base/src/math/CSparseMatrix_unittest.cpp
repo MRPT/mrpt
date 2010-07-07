@@ -205,3 +205,29 @@ TEST(SparseMatrix, Op_Multiply_AB)
 	do_matrix_op_test(8,34,100, 34,3,100, &op_sparse_multiply_AB, &op_dense_multiply_AB);
 }
 
+
+TEST(SparseMatrix, CholeskyDecomp)
+{
+	CSparseMatrix SM(10,10);
+	const CMatrixDouble COV1 = mrpt::random::randomGenerator.drawDefinitePositiveMatrix(6, 0.2);
+	const CMatrixDouble COV2 = mrpt::random::randomGenerator.drawDefinitePositiveMatrix(4, 0.2);
+
+	SM.insert_submatrix(0,0, COV1);
+	SM.insert_submatrix(6,6, COV2);
+	SM.compressFromTriplet();
+
+	CSparseMatrix::CholeskyDecomp  Chol(SM);
+
+	const CMatrixDouble L = Chol.get_L();  // lower triangle
+
+	// Compare with the dense matrix implementation:
+	CMatrixDouble D;
+	SM.get_dense(D);
+
+	CMatrixDouble Ud; // Upper triangle
+	D.chol(Ud);
+
+	const double err = ((~Ud)-L).Abs().mean();
+	EXPECT_TRUE(err<1e-8);
+}
+
