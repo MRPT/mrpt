@@ -578,12 +578,12 @@ CObservationPtr CCameraSensor::getNextFrame()
 	if (m_camera_grab_decimator_counter<m_camera_grab_decimator)
 		// Done here:
 		return CObservationPtr();
-
+		
 	// Continue as normal:
 	m_camera_grab_decimator_counter = 0;
 
 	ASSERT_(obs || stObs || obs3D)
-
+	
 	// If we grabbed an image: prepare it and add it to the internal queue:
 	if (obs) {
 		obs->sensorLabel = m_sensorLabel;
@@ -749,7 +749,7 @@ CObservationPtr CCameraSensor::getNextFrame()
 	if (delayed_insertion_in_obs_queue)
 		return CObservationPtr();
 	else
-		return stObs ? CObservationPtr(stObs) : CObservationPtr(obs);
+		return stObs ? CObservationPtr(stObs) : (obs ? CObservationPtr(obs) : CObservationPtr(obs3D));
 }
 
 

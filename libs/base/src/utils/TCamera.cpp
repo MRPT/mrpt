@@ -147,12 +147,15 @@ void TCamera::loadFromConfigFile(const std::string &section,  const mrpt::utils:
   */
 void TCamera::scaleToResolution(uint32_t new_ncols, uint32_t new_nrows)
 {
+	if (ncols == new_ncols && nrows == new_nrows)
+		return; // already done
+
 	ASSERT_(new_nrows>0 && new_ncols>0)
 
 	const double prev_aspect_ratio = ncols/double(nrows);
 	const double new_aspect_ratio  = new_ncols/double(new_nrows);
 
-	ASSERT_(std::abs(prev_aspect_ratio-new_aspect_ratio)<1e-3 )
+	ASSERTMSG_(std::abs(prev_aspect_ratio-new_aspect_ratio)<1e-3, "TCamera: Trying to scale camera parameters for a resolution of different aspect ratio." )
 
 	const double K = new_ncols / double(ncols);
 
@@ -166,5 +169,4 @@ void TCamera::scaleToResolution(uint32_t new_ncols, uint32_t new_nrows)
 	intrinsicParams(1,2)*=K;
 
 	// distortion params: unmodified.
-
 }

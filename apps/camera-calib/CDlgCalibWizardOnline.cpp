@@ -265,7 +265,21 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 
 		CObservationPtr obs = m_video->getNextFrame();
 		ASSERT_(obs)
-		ASSERT_(IS_CLASS(obs,CObservationImage))
+		ASSERT_(IS_CLASS(obs,CObservationImage) || IS_CLASS(obs,CObservation3DRangeScan) )
+		
+		// Convert to an image:
+		if (IS_CLASS(obs,CObservation3DRangeScan))
+		{
+			CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(obs);
+			
+			CObservationImagePtr obsImg = CObservationImage::Create();
+			obsImg->timestamp = obs3D->timestamp;
+			ASSERT_(obs3D->hasIntensityImage)
+			obsImg->image = obs3D->intensityImage;
+			
+			// Ale hoop!
+			obs = obsImg;			
+		}
 
 		CImage  img_to_show;
 

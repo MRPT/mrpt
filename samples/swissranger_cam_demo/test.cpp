@@ -92,8 +92,9 @@ void Test_SwissRanger()
 	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(4.5);
 
-	mrpt::opengl::CTexturedPlanePtr gl_img_range =  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
-	mrpt::opengl::CTexturedPlanePtr gl_img_intensity =  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
+	mrpt::opengl::CTexturedPlanePtr gl_img_range 			=  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
+	mrpt::opengl::CTexturedPlanePtr gl_img_intensity 		=  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
+	mrpt::opengl::CTexturedPlanePtr gl_img_intensity_rect 	=  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
 
 
 	{
@@ -105,26 +106,36 @@ void Test_SwissRanger()
 		scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 
 		// Create the Opengl objects for the planar images, as textured planes, each in a separate viewport:
+		win3D.addTextMessage(30,-195+230+5,"Range data",TColorf(1,1,1), 1 );
 		opengl::COpenGLViewportPtr viewRange = scene->createViewport("view2d_range");
 		scene->insert( gl_img_range, "view2d_range");
-		viewRange->setViewportPosition(0.005,0.65, 0.3,0.3 );
+		viewRange->setViewportPosition(5,-195, 200,230);
 		viewRange->setTransparent(true);
 		viewRange->getCamera().setOrthogonal(true);
 		viewRange->getCamera().setAzimuthDegrees(90);
 		viewRange->getCamera().setElevationDegrees(90);
 		viewRange->getCamera().setZoomDistance(1.0);
 
+		win3D.addTextMessage(30, -380+230+5,"Intensity data",TColorf(1,1,1), 2 );
 		opengl::COpenGLViewportPtr viewInt = scene->createViewport("view2d_int");
 		scene->insert( gl_img_intensity, "view2d_int");
-		viewInt->setViewportPosition(0.005,0.1,0.3,0.3 );
+		viewInt->setViewportPosition(5, -380, 200,230 );
 		viewInt->setTransparent(true);
 		viewInt->getCamera().setOrthogonal(true);
 		viewInt->getCamera().setAzimuthDegrees(90);
 		viewInt->getCamera().setElevationDegrees(90);
 		viewInt->getCamera().setZoomDistance(1.0);
 
-		win3D.addTextMessage(0.1,0.97,"Range data",TColorf(1,1,1), 1 );
-		win3D.addTextMessage(0.1,0.42,"Intensity data",TColorf(1,1,1), 2 );
+		win3D.addTextMessage(30, -570+230+5,"Intensity data (undistorted)",TColorf(1,1,1), 3 );
+		opengl::COpenGLViewportPtr viewIntRect = scene->createViewport("view2d_intrect");
+		scene->insert( gl_img_intensity_rect, "view2d_intrect");
+		viewIntRect->setViewportPosition(5, -570, 200,230 );
+		viewIntRect->setTransparent(true);
+		viewIntRect->getCamera().setOrthogonal(true);
+		viewIntRect->getCamera().setAzimuthDegrees(90);
+		viewIntRect->getCamera().setElevationDegrees(90);
+		viewIntRect->getCamera().setZoomDistance(1.0);
+
 
 		win3D.unlockAccess3DScene();
 		win3D.repaint();
@@ -159,7 +170,11 @@ void Test_SwissRanger()
 		if (there_is_obs && obs.hasIntensityImage )
 		{
 			win3D.get3DSceneAndLock();
-				gl_img_intensity->assignImage(obs.intensityImage); // Note: "_fast" destroys the original image
+				gl_img_intensity->assignImage(obs.intensityImage);
+				
+				CImage  undistortImg;
+				obs.intensityImage.rectifyImage(undistortImg, obs.cameraParams.intrinsicParams, obs.cameraParams.getDistortionParamsAsVector());
+				gl_img_intensity_rect->assignImage(undistortImg);
 			win3D.unlockAccess3DScene();
 		}
 

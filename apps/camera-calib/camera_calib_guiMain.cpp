@@ -65,9 +65,7 @@ using namespace std;
 // VARIABLES  ================================
 
 TCalibrationImageList  lst_images;	// Here are all the images: file_name -> data
-
-CMatrixDouble33			intrinsicParams;
-std::vector<double>		distortionParams;
+mrpt::utils::TCamera     camera_params;
 
 // END VARIABLES  ============================
 
@@ -348,6 +346,8 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	//*)
 
 
+	camera_params.intrinsicParams(0,0) = 0; // Indicate calib didn't run yet.
+
 	wxIcon icon;
 	icon.CopyFromBitmap( wxBitmap(wxImage( icono_main_xpm )) );
 	this->SetIcon( icon );
@@ -495,8 +495,7 @@ void camera_calib_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 		check_size_y,
 		check_squares_length_X_meters,
 		check_squares_length_Y_meters,
-		intrinsicParams,
-		distortionParams,
+		camera_params,
 		normalize_image );
 
 
@@ -529,7 +528,7 @@ void camera_calib_guiDialog::OnbtnAboutClick(wxCommandEvent& event)
 // save matrices:
 void camera_calib_guiDialog::OnbtnSaveClick(wxCommandEvent& event)
 {
-	if (intrinsicParams(0,0)==0)
+	if (camera_params.intrinsicParams(0,0)==0)
 	{
 		wxMessageBox(_("Run the calibration first"),_("Error"));
 		return;
@@ -546,7 +545,7 @@ void camera_calib_guiDialog::OnbtnSaveClick(wxCommandEvent& event)
 
 		if (wxID_OK!=dlg.ShowModal()) return;
 
-		intrinsicParams.saveToTextFile(	string(dlg.GetPath().mb_str()) );
+		camera_params.intrinsicParams.saveToTextFile(	string(dlg.GetPath().mb_str()) );
 	}
 
 	{
@@ -562,7 +561,7 @@ void camera_calib_guiDialog::OnbtnSaveClick(wxCommandEvent& event)
 
 		CMatrixDouble  M(1,4);
 		for (unsigned i=0;i<4;i++)
-			M(0,i) = distortionParams[i];
+			M(0,i) = camera_params.dist[i];
 
 		M.saveToTextFile( string(dlg.GetPath().mb_str()) );
 	}
@@ -620,7 +619,7 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 
 	// Rectify:
 	CImage  imgRect;
-	if (intrinsicParams(0,0)==0)
+	if (camera_params.intrinsicParams(0,0)==0)
 	{
 		// Not calibrated yet:
 		imgRect = imgOrgColor;
@@ -628,7 +627,7 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 	}
 	else
 	{
-		imgOrgColor.rectifyImage(imgRect,intrinsicParams, distortionParams);
+		imgOrgColor.rectifyImage(imgRect,camera_params.intrinsicParams, camera_params.getDistortionParamsAsVector());
 		imgRect.scaleImage(imgSizes.x*zoomVal,imgSizes.y*zoomVal, IMG_INTERP_NN);
 
 		// Draw reprojected:
@@ -740,47 +739,46 @@ void camera_calib_guiDialog::OnbtnManualRectClick(wxCommandEvent& event)
 
 	wxString s;
 
-	if (intrinsicParams(0,0)==0)
+	if (camera_params.intrinsicParams(0,0)==0)
 	{
 		wxMessageBox(_("Run the calibration first"),_("Error"));
 		return;
 	}
 
-	distortionParams.resize(4);
-
-	s = wxGetTextFromUser(_("Focus length in X pixel size (fx):"),_("Manual parameters"),wxString::Format(wxT("%.07f"),intrinsicParams(0,0)), this );
+	
+	s = wxGetTextFromUser(_("Focus length in X pixel size (fx):"),_("Manual parameters"),wxString::Format(wxT("%.07f"),camera_params.intrinsicParams(0,0)), this );
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&intrinsicParams(0,0))) { wxMessageBox(_("Invalid number")); return; }
+	if (!s.ToDouble(&camera_params.intrinsicParams(0,0))) { wxMessageBox(_("Invalid number")); return; }
 
-	s = wxGetTextFromUser(_("Focus length in Y pixel size (fy):"),_("Manual parameters"),wxString::Format(wxT("%.07f"),intrinsicParams(1,1)), this );
+	s = wxGetTextFromUser(_("Focus length in Y pixel size (fy):"),_("Manual parameters"),wxString::Format(wxT("%.07f"),camera_params.intrinsicParams(1,1)), this );
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&intrinsicParams(1,1))) { wxMessageBox(_("Invalid number")); return; }
+	if (!s.ToDouble(&camera_params.intrinsicParams(1,1))) { wxMessageBox(_("Invalid number")); return; }
 
-	s = wxGetTextFromUser(_("Image center X (cx):"),_("Manual parameters"),wxString::Format(wxT("%.07f"),intrinsicParams(0,2)), this );
+	s = wxGetTextFromUser(_("Image center X (cx):"),_("Manual parameters"),wxString::Format(wxT("%.07f"),camera_params.intrinsicParams(0,2)), this );
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&intrinsicParams(0,2))) { wxMessageBox(_("Invalid number")); return; }
+	if (!s.ToDouble(&camera_params.intrinsicParams(0,2))) { wxMessageBox(_("Invalid number")); return; }
 
-	s = wxGetTextFromUser(_("Image center Y (cy):"),_("Manual parameters"),wxString::Format(wxT("%.07f"),intrinsicParams(1,2)), this );
+	s = wxGetTextFromUser(_("Image center Y (cy):"),_("Manual parameters"),wxString::Format(wxT("%.07f"),camera_params.intrinsicParams(1,2)), this );
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&intrinsicParams(1,2))) { wxMessageBox(_("Invalid number")); return; }
+	if (!s.ToDouble(&camera_params.intrinsicParams(1,2))) { wxMessageBox(_("Invalid number")); return; }
 
 
 
-	s = wxGetTextFromUser(_("Distortion param p1:"),_("Manual parameters"),wxString::Format(wxT("%.07f"),distortionParams[0]), this );
+	s = wxGetTextFromUser(_("Distortion param p1:"),_("Manual parameters"),wxString::Format(wxT("%.07f"),camera_params.dist[0]), this );
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&distortionParams[0])) { wxMessageBox(_("Invalid number")); return; }
+	if (!s.ToDouble(&camera_params.dist[0])) { wxMessageBox(_("Invalid number")); return; }
 
-	s = wxGetTextFromUser(_("Distortion param p2:"),_("Manual parameters"),wxString::Format(wxT("%.07f"),distortionParams[1]), this );
+	s = wxGetTextFromUser(_("Distortion param p2:"),_("Manual parameters"),wxString::Format(wxT("%.07f"),camera_params.dist[1]), this );
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&distortionParams[1])) { wxMessageBox(_("Invalid number")); return; }
+	if (!s.ToDouble(&camera_params.dist[1])) { wxMessageBox(_("Invalid number")); return; }
 
-	s = wxGetTextFromUser(_("Distortion param k1:"),_("Manual parameters"),wxString::Format(wxT("%.07f"),distortionParams[2]), this );
+	s = wxGetTextFromUser(_("Distortion param k1:"),_("Manual parameters"),wxString::Format(wxT("%.07f"),camera_params.dist[2]), this );
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&distortionParams[2])) { wxMessageBox(_("Invalid number")); return; }
+	if (!s.ToDouble(&camera_params.dist[2])) { wxMessageBox(_("Invalid number")); return; }
 
-	s = wxGetTextFromUser(_("Distortion param k2:"),_("Manual parameters"),wxString::Format(wxT("%.07f"),distortionParams[3]), this );
+	s = wxGetTextFromUser(_("Distortion param k2:"),_("Manual parameters"),wxString::Format(wxT("%.07f"),camera_params.dist[3]), this );
 	if (s.IsEmpty()) return;
-	if (!s.ToDouble(&distortionParams[3])) { wxMessageBox(_("Invalid number")); return; }
+	if (!s.ToDouble(&camera_params.dist[3])) { wxMessageBox(_("Invalid number")); return; }
 
 
 	refreshDisplayedImage();

@@ -70,8 +70,6 @@ CSwissRanger3DCamera::CSwissRanger3DCamera()  :
 	m_save_intensity_img(true),
 	m_save_confidence(false),
 
-	m_intensity_right_bit_shifts(2),
-
 	m_enable_img_hist_equal(false),
 	m_enable_median_filter (true),
 	m_enable_mediancross_filter(false),
@@ -88,9 +86,21 @@ CSwissRanger3DCamera::CSwissRanger3DCamera()  :
 	m_preview_window(false)
 {
 	m_sensorLabel = "3DCAM";
-#if MRPT_HAS_SWISSRANGE
-
-#else
+	
+	// Default params:
+	m_cameraParams.ncols = 176;
+	m_cameraParams.nrows = 144;
+	m_cameraParams.intrinsicParams(0,0) = 252.5409; // fx
+	m_cameraParams.intrinsicParams(1,1) = 253.3256; // fy
+	m_cameraParams.intrinsicParams(0,2) = 89.22405; // cx
+	m_cameraParams.intrinsicParams(0,2) = 68.20542; // cy
+	m_cameraParams.dist[0] = -9.008820e-01;
+	m_cameraParams.dist[1] = 8.207181e-01; 
+	m_cameraParams.dist[2] = 3.417374e-03;
+	m_cameraParams.dist[3] = -5.459138e-04;
+	m_cameraParams.dist[4] = 0;
+	
+#if !MRPT_HAS_SWISSRANGE
 	THROW_EXCEPTION("MRPT was compiled without support for SwissRanger 3D cameras! Rebuild it.")
 #endif
 }
@@ -101,6 +111,55 @@ CSwissRanger3DCamera::CSwissRanger3DCamera()  :
 CSwissRanger3DCamera::~CSwissRanger3DCamera()
 {
 	this->close();
+}
+
+
+/*-------------------------------------------------------------
+	Modified A-law compression algorithm for uint16_t -> uint8_t
+	 The original method uses signed int16_t. It's being tuned for 
+	 what we want here...
+ -------------------------------------------------------------*/
+static char ALawCompressTable[128] = 
+{ 
+     1,1,2,2,3,3,3,3, 
+     4,4,4,4,4,4,4,4, 
+     5,5,5,5,5,5,5,5, 
+     5,5,5,5,5,5,5,5, 
+     6,6,6,6,6,6,6,6, 
+     6,6,6,6,6,6,6,6, 
+     6,6,6,6,6,6,6,6, 
+     6,6,6,6,6,6,6,6, 
+     7,7,7,7,7,7,7,7, 
+     7,7,7,7,7,7,7,7, 
+     7,7,7,7,7,7,7,7, 
+     7,7,7,7,7,7,7,7, 
+     7,7,7,7,7,7,7,7, 
+     7,7,7,7,7,7,7,7, 
+     7,7,7,7,7,7,7,7, 
+     7,7,7,7,7,7,7,7 
+}; 
+
+uint8_t table_16u_to_8u [0x10000];
+bool    table_16u_to_8u_init = false;
+
+unsigned char LinearToALawSample(uint16_t sample)
+{ 
+     if (sample >= 0x200)
+     { 
+          int exponent =  ALawCompressTable[(sample >> 9) & 0x7F]; 
+          int mantissa = (sample >> (exponent + 3) ) & 0x1F; 
+          return ((exponent << 5) | mantissa); 
+     } 
+     else 
+     { 
+          return (sample >> 4); 
+     }
+}
+
+void do_init_table_16u_to_8u()
+{
+	for (unsigned int i=0;i<0x10000;i++)
+		table_16u_to_8u[i] = LinearToALawSample(i);
 }
 
 
@@ -160,7 +219,7 @@ void  CSwissRanger3DCamera::loadConfig_sensorSpecific(
 	m_save_range_img= configSource.read_bool(iniSection,"save_range_img",m_save_range_img);
 	m_save_intensity_img= configSource.read_bool(iniSection,"save_intensity_img",m_save_intensity_img);
 	m_save_confidence= configSource.read_bool(iniSection,"save_confidence",m_save_confidence);
-
+	
 	m_enable_img_hist_equal = configSource.read_bool(iniSection,"enable_img_hist_equal",m_enable_img_hist_equal);
 	m_enable_median_filter = configSource.read_bool(iniSection,"enable_median_filter",m_enable_median_filter);
 	m_enable_mediancross_filter = configSource.read_bool(iniSection,"enable_mediancross_filter",m_enable_mediancross_filter);
@@ -170,7 +229,8 @@ void  CSwissRanger3DCamera::loadConfig_sensorSpecific(
 	m_open_from_usb = configSource.read_bool(iniSection,"open_from_usb",m_open_from_usb);
 	m_usb_serial = configSource.read_uint64_t(iniSection,"usb_serial",m_usb_serial);
 	m_ip_address = configSource.read_string(iniSection,"ip_address",m_ip_address);
-
+	
+	m_cameraParams.loadFromConfigFile(iniSection, configSource);
 }
 
 
@@ -373,8 +433,18 @@ void CSwissRanger3DCamera::getNextObservation(
 				if (this->m_save_intensity_img)
 				{
 					ASSERT_(img->dataType==ImgEntry::DT_USHORT)
-					ASSERT_(m_intensity_right_bit_shifts>=0 && m_intensity_right_bit_shifts<15)
 					obs.hasIntensityImage = true;
+					
+					// Make sure the camera params are there:
+					m_cameraParams.scaleToResolution(img->width,img->height);
+					obs.cameraParams = m_cameraParams;
+					
+					// make sure the modified A-law Look Up Table is up-to-date:
+					if (!table_16u_to_8u_init)
+					{
+						table_16u_to_8u_init = true;
+						do_init_table_16u_to_8u();
+					}						
 
 					obs.intensityImage.resize(img->width,img->height,1, true);
 
@@ -383,13 +453,8 @@ void CSwissRanger3DCamera::getNextObservation(
 					{
 						uint8_t *row = obs.intensityImage.get_unsafe(0,y,0);
 						for (size_t x=0;x<img->width;x++)
-						{
 							// Convert 16u -> 8u
-							uint16_t v = (*data_ptr++) >> m_intensity_right_bit_shifts;
-							if (v>0xFF)
-									(*row++) = 0xFF;
-							else	(*row++) = uint8_t(v);
-						}
+							(*row++) = table_16u_to_8u[ *data_ptr++ ];
 					}
 
 					if (m_enable_img_hist_equal)
@@ -440,7 +505,8 @@ void CSwissRanger3DCamera::getNextObservation(
 				break;
 		}
 	}
-
+	
+	// Save the observation to the user's object:
 	_out_obs.swap(obs);
 
 	there_is_obs = true;

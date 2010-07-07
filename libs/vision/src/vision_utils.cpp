@@ -1810,6 +1810,36 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 	bool               skipDrawDetectedImgs
 	)
 {
+	// Just a wrapper for the newer version of the function which uses TCamera:
+	TCamera  cam;
+	bool ret = checkerBoardCameraCalibration(
+		images,
+		check_size_x,check_size_y,
+		check_squares_length_X_meters, check_squares_length_Y_meters,
+		cam,
+		normalize_image,
+		out_MSE,skipDrawDetectedImgs);
+		
+	intrinsicParams = cam.intrinsicParams;
+	distortionParams = cam.getDistortionParamsAsVector();
+	return ret;
+}
+
+/* -------------------------------------------------------
+				checkerBoardCameraCalibration
+   ------------------------------------------------------- */
+bool mrpt::vision::checkerBoardCameraCalibration(
+	TCalibrationImageList &images,
+	unsigned int  check_size_x,
+	unsigned int  check_size_y,
+	double        check_squares_length_X_meters,
+	double        check_squares_length_Y_meters,
+	mrpt::utils::TCamera    &out_camera_params,
+	bool					normalize_image,
+	double            *out_MSE,
+	bool               skipDrawDetectedImgs
+	)
+{
 #if MRPT_HAS_OPENCV
 	try
 	{
@@ -1874,6 +1904,8 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 			if (!i)
 			{
 				imgSize = cvSize(img_gray_org.getWidth(),img_gray_org.getHeight() );
+				out_camera_params.ncols = imgSize.width;
+				out_camera_params.nrows = imgSize.height;
 			}
 			else
 			{
@@ -2071,7 +2103,6 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		vector<CvPoint3D32f> transVects( valid_detected_imgs );
         vector<float>        rotMatrs( valid_detected_imgs * 9 );
 
-
 		// Calirate camera
 		cvCalibrateCamera(
 			valid_detected_imgs,
@@ -2086,10 +2117,10 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 			0 );
 
 		// Load matrix:
-		intrinsicParams = CMatrixFloat33( CMatrixDouble33( proj_matrix ) );
-
-		distortionParams.resize(4);
-		loadVector(distortionParams,distortion);
+		out_camera_params.intrinsicParams = CMatrixFloat33( CMatrixDouble33( proj_matrix ) );
+		out_camera_params.dist.assign(0);
+		for (int i=0;i<4;i++)
+			out_camera_params.dist[i] = distortion[i];
 
 		// Load camera poses:
 		for (i=0;i<valid_detected_imgs;i++)
@@ -2123,11 +2154,11 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 			std::cout << "Img: " <<  mrpt::system::extractFileName(pointsIdx2imageFile[i])  << ": " << p << std::endl;
 		}
 
-
-		std::cout << "Intrinsic parameter matrix: " << std::endl << intrinsicParams;
-		std::cout << "Distortion vector: " << std::endl;
-		std::cout << format(" k1=%f\n k2=%f\n p1=%e\n p2=%e\n",
-			distortionParams[0],distortionParams[1],distortionParams[2],distortionParams[3]);
+		{
+			CConfigFileMemory cfg;
+			out_camera_params.saveToConfigFile("CAMERA_PARAMS",cfg);
+			std::cout << cfg.getContent() << std::endl;
+		}
 
 		// ----------------------------------------
 		// Undistort images:
@@ -2136,7 +2167,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		{
 			TImageCalibData	&dat = it->second;
 			if (!dat.img_original.isExternallyStored())
-				dat.img_original.rectifyImage( dat.img_rectified, intrinsicParams, distortionParams);
+				dat.img_original.rectifyImage( dat.img_rectified, out_camera_params.intrinsicParams, out_camera_params.getDistortionParamsAsVector());
 		} // end undistort
 
 		// -----------------------------------------------
@@ -2162,15 +2193,15 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 			vision::pinhole::projectPoints_no_distortion(
 				lstPatternPoints, // Input points
 				dat.reconstructed_camera_pose,
-				intrinsicParams, // calib matrix
+				out_camera_params.intrinsicParams, // calib matrix
 				projectedPoints  // Output points in pixels
 				);
 
 			vision::pinhole::projectPoints_with_distortion(
 				lstPatternPoints, // Input points
 				dat.reconstructed_camera_pose,
-				intrinsicParams, // calib matrix
-				distortionParams,
+				out_camera_params.intrinsicParams, // calib matrix
+				out_camera_params.getDistortionParamsAsVector(),
 				projectedPoints_distorted// Output points in pixels
 				);
 

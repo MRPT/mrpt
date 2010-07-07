@@ -223,7 +223,7 @@ void CObservation3DRangeScan::unload()
 
 // ==============  Auxiliary function for "recoverCameraCalibrationParameters"  =========================
 
-#define CALIB_DECIMAT  10
+#define CALIB_DECIMAT  15
 
 namespace mrpt
 {

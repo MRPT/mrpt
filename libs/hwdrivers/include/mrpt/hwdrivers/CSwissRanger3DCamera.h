@@ -41,13 +41,17 @@ namespace mrpt
 	namespace hwdrivers
 	{
 		/** A class for grabing "range images" from a MESA imaging SwissRanger 3D cameras (SR-2, SR-3000, SR-4k).
+		  * 
 		  * NOTES:
-		  *		- This class requires a vendor specific driver installed in the system in order to build MRPT with support for this sensor.
+		  *		- This class requires a vendor specific driver installed in the system in order to build MRPT with support for this sensor. Download and install the driver from: http://www.mesa-imaging.ch/drivers.php
+		  *		- The intensity channel (grayscale image) is converted from 16bit to standard 8bit-per-pixel using a logarithmic, modified A-law compression. This allows exploiting the full dynamic range of the sensor and provides quite good results.
 		  *
 		  * As with any other CGenericSensor class, the normal sequence of methods to be called is:
 		  *   - loadConfig() - Or calls to the individual setXXX() to configure the camera parameters.
 		  *   - initialize() - to init the comms with the camera
 		  *   - call getNextObservation() for getting the frames.
+		  *
+		  *  This sensor can be also used from within rawlog-grabber.
 		  *
 		  *  \code
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
@@ -64,7 +68,6 @@ namespace mrpt
 		  *    save_3d            = true			// Save the 3D point cloud (default: true)
 		  *    save_range_img     = true			// Save the 2D range image (default: true)
 		  *    save_intensity_img = true			// Save the 2D intensity image (default: true)
-		  *    intensity_right_bit_shifts  = 4		// To convert 16bit intensity level to standard 8bit grayscale, how many bits to ">>" (saturation is properly handled in any case).
 		  *    save_confidence    = true			// Save the estimated confidence 2D image (default: false)
 		  *
 		  *    enable_img_hist_equal = false		// Enable intensity image histogram equalization (default: false)
@@ -73,7 +76,14 @@ namespace mrpt
 		  *    enable_conv_gray      = false		// Enable intensity image scale with range (default: false)
 		  *    enable_denoise_anf    = true			// Enable this noise filter (default: true)
 		  *
-		  *    
+		  *    // Camera calibration parameters: See mrpt::utils::TCamera
+		  *    //  If not provided, a set of default parameters for a SR4000 camera will be loaded.
+		  *    resolution = [176 144]
+		  *    cx         = 87.99958
+		  *    cy         = 68.99957
+		  *    fx         = 262.9201
+		  *    fy         = 262.9218
+		  *    dist       = [-8.258543e-01 6.561022e-01 2.699818e-06 -3.263559e-05 0]
 		  *
 		  *    pose_x=0.21	// Camera position in the robot (meters)
 		  *    pose_y=0
@@ -152,9 +162,6 @@ namespace mrpt
 			inline void setSaveIntensityImage(bool save) { m_save_intensity_img = save; }
 			inline void setSaveConfidenceImage(bool save) { m_save_confidence = save; }
 
-			inline void setIntensityRightShiftBitCount( int nBits ) { m_intensity_right_bit_shifts = nBits; }
-			inline int getIntensityRightShiftBitCount( ) const { return m_intensity_right_bit_shifts; }
-
 			inline void enableImageHistEqualization(bool enable) { m_enable_img_hist_equal = enable; }
 			inline bool isEnabledImageHistEqualization() const { return m_enable_img_hist_equal; }
 
@@ -201,8 +208,6 @@ namespace mrpt
 			bool m_save_intensity_img; //!< Save the 2D intensity image (default: true)
 			bool m_save_confidence;	//!< Save the estimated confidence 2D image (default: false)
 
-			int m_intensity_right_bit_shifts; //!< for ">>" the intensity 16bit values
-
 			bool m_enable_img_hist_equal;
 			bool m_enable_median_filter;
 			bool m_enable_mediancross_filter;
@@ -222,6 +227,8 @@ namespace mrpt
 			mrpt::gui::CDisplayWindowPtr  m_win2d;
 
 			void *m_cam;  //!< opaque handler to SRCAM. NULL means it's not open yet.
+			
+			mrpt::utils::TCamera  	m_cameraParams; 
 
 		private:
 
