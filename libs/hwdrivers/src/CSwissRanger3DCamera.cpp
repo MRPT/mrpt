@@ -56,10 +56,6 @@ IMPLEMENTS_GENERIC_SENSOR(CSwissRanger3DCamera,mrpt::hwdrivers)
 		#include <asm/ioctls.h>
 		#include <sys/select.h>
 	#endif
-
-	#ifdef MRPT_OS_WINDOWS
-
-	#endif
 #endif
 
 

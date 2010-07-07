@@ -247,6 +247,7 @@ private:
     void OnmnuCreateAVISelected(wxCommandEvent& event);
     void OnMenuRegenerateOdometryTimes(wxCommandEvent& event);
     void OncbObs3Dauto_histogramClick(wxCommandEvent& event);
+    void OnMenuItem3DObsRecoverParams(wxCommandEvent& event);
     //*)
 
     //(*Identifiers(xRawLogViewerFrame)
@@ -349,6 +350,8 @@ private:
     static const long ID_MENUITEM77;
     static const long ID_MENUITEM79;
     static const long ID_MENUITEM18;
+    static const long ID_MENUITEM86;
+    static const long ID_MENUITEM85;
     static const long ID_MENUITEM29;
     static const long ID_MENUITEM9;
     static const long ID_MENUITEM28;

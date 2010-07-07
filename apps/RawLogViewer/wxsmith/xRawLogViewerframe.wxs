@@ -662,6 +662,14 @@
 						<handler function="OnLaserFilterAngles" entry="EVT_MENU" />
 					</object>
 				</object>
+				<object class="wxMenu" name="ID_MENUITEM85" variable="MenuItem81" member="no">
+					<label>&amp;3D depth cameras</label>
+					<object class="wxMenuItem" name="ID_MENUITEM86" variable="MenuItem82" member="no">
+						<label>Recover camera params...</label>
+						<help>Executes a Levenberg-Marquart optimization to recover the camera calibration matrix</help>
+						<handler function="OnMenuItem3DObsRecoverParams" entry="EVT_MENU" />
+					</object>
+				</object>
 				<object class="wxMenu" name="ID_MENUITEM21" variable="Menu23" member="yes">
 					<label>&amp;Images (Mono &amp;&amp; Stereo)</label>
 					<object class="wxMenuItem" name="ID_MENUITEM29" variable="MenuItem31" member="yes">

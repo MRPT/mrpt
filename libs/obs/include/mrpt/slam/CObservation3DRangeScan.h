@@ -92,6 +92,8 @@ namespace slam
 		bool hasConfidenceImage; 			//!< true means the field confidenceImage contains valid data
 		mrpt::utils::CImage confidenceImage;  //!< If hasConfidenceImage=true, an image with the "confidence" value [range 0-255] as estimated by the capture drivers.
 
+		mrpt::utils::TCamera	cameraParams;	//!< Projection parameters of the camera.
+
 
 		float  	maxRange;	//!< The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
 		CPose3D	sensorPose;	//!< The 6D pose of the sensor on the robot.
@@ -113,6 +115,16 @@ namespace slam
 		void swap(CObservation3DRangeScan &o);	//!< Very efficient method to swap the contents of two observations.
 
 		void unload(); //!< Unload all images, for the case they being delayed-load images stored in external files (othewise, has no effect).
+
+		/** A Levenberg-Marquart-based optimizer to recover the calibration parameters of a 3D camera given a range (depth) image and the corresponding 3D point cloud. 
+		  * \param camera_offset The offset (in meters) in the +X direction of the point cloud. It's 1cm for SwissRanger SR4000.
+		  * \return The final average reprojection error per pixel (typ <0.05 px)
+		  */
+		static double recoverCameraCalibrationParameters(
+			const CObservation3DRangeScan	&in_obs,
+			mrpt::utils::TCamera			&out_camParams,
+			const double camera_offset = 0.01 );
+
 
 	}; // End of class def.
 

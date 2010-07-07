@@ -281,6 +281,8 @@ const long xRawLogViewerFrame::ID_MENUITEM74 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM77 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM79 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM18 = wxNewId();
+const long xRawLogViewerFrame::ID_MENUITEM86 = wxNewId();
+const long xRawLogViewerFrame::ID_MENUITEM85 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM29 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM9 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM28 = wxNewId();
@@ -369,6 +371,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxMenuItem* MenuItem17;
 	wxMenu* Menu1;
 	wxFlexGridSizer* FlexGridSizer7;
+	wxMenuItem* MenuItem82;
 	wxMenuItem* MenuItem75;
 	wxMenuItem* MenuItem60;
 	wxMenuItem* MenuItem12;
@@ -380,6 +383,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxMenuItem* MenuItem67;
 	wxMenuItem* MenuItem65;
 	wxMenuItem* MenuItem41;
+	wxMenu* MenuItem81;
 	wxMenuBar* MenuBar1;
 	wxFlexGridSizer* FlexGridSizer6;
 	wxFlexGridSizer* FlexGridSizer1;
@@ -710,6 +714,10 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	MenuItem76 = new wxMenuItem(Menu20, ID_MENUITEM79, _("Batch exclusion angles filtering..."), wxEmptyString, wxITEM_NORMAL);
 	Menu20->Append(MenuItem76);
 	Menu6->Append(ID_MENUITEM18, _("&Laser scans"), Menu20, wxEmptyString);
+	MenuItem81 = new wxMenu();
+	MenuItem82 = new wxMenuItem(MenuItem81, ID_MENUITEM86, _("Recover camera params..."), _("Executes a Levenberg-Marquart optimization to recover the camera calibration matrix"), wxITEM_NORMAL);
+	MenuItem81->Append(MenuItem82);
+	Menu6->Append(ID_MENUITEM85, _("&3D depth cameras"), MenuItem81, wxEmptyString);
 	Menu23 = new wxMenu();
 	MenuItem31 = new wxMenuItem(Menu23, ID_MENUITEM29, _("Sequence of PNG files with images..."), _("Extract all the images of the rawlog to a given directory"), wxITEM_NORMAL);
 	Menu23->Append(MenuItem31);
@@ -863,6 +871,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	Connect(ID_MENUITEM74,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuChangeMaxRangeLaser);
 	Connect(ID_MENUITEM77,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuBatchLaserExclusionZones);
 	Connect(ID_MENUITEM79,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnLaserFilterAngles);
+	Connect(ID_MENUITEM86,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuItem3DObsRecoverParams);
 	Connect(ID_MENUITEM29,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnGenerateSeqImgs);
 	Connect(ID_MENUITEM9,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnShowImagesAsVideo);
 	Connect(ID_MENUITEM28,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuVisualOdometry);
@@ -2216,13 +2225,22 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 														cout << endl;
 														cout << "maxRange = " << obs->maxRange << " m" << endl;
 
-														cout << "Has 3D point cloud? " << (obs->hasPoints3D ? "YES": "NO"); cout << endl;
-
-														if (obs->hasPoints3D) cout << "# of points: "<< obs->points3D_x.size() << endl;
+														cout << "Has 3D point cloud? ";
+														if (obs->hasPoints3D) 
+																cout << "YES: " << obs->points3D_x.size() << " points." << endl;
+														else	cout << "NO" << endl;
 
 														cout << "Has raw range data? " << (obs->hasRangeImage ? "YES": "NO"); cout << endl;
 														cout << "Has intensity data? " << (obs->hasIntensityImage ? "YES": "NO"); cout << endl;
 														cout << "Has confidence data? " << (obs->hasConfidenceImage ? "YES": "NO"); cout << endl;
+
+														cout << endl;
+														cout << "Camera calibration parameters:" << endl;
+														{
+															CConfigFileMemory cfg;
+															obs->cameraParams.saveToConfigFile("CALIB-PARAMS",cfg);
+															cout << cfg.getContent() << endl;
+														}
 
 														// Update 3D view ==========
 													#if RAWLOGVIEWER_HAS_3D
@@ -5971,4 +5989,90 @@ void xRawLogViewerFrame::OncbObs3Dauto_histogramClick(wxCommandEvent& event)
 {
 	// Refresh:
 	SelectObjectInTreeView(curSelectedObject);
+}
+
+// Recover 3D camera params from range data:
+void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent& event)
+{
+	WX_START_TRY
+
+	wxBusyCursor        waitCursor;
+	int					nEntries = (int)rawlog.size();
+
+	wxString            auxStr;
+	wxProgressDialog    progDia(
+		wxT("Progress"),
+		wxT("Parsing rawlog..."),
+		nEntries, // range
+		this, // parent
+		wxPD_CAN_ABORT |
+		wxPD_APP_MODAL |
+		wxPD_SMOOTH |
+		wxPD_AUTO_HIDE |
+		wxPD_ELAPSED_TIME |
+		wxPD_ESTIMATED_TIME |
+		wxPD_REMAINING_TIME);
+
+	wxTheApp->Yield();  // Let the app. process messages
+
+	int			nChanges = 0;
+	string		errorMsg;
+
+	bool firstObs = true;
+	TCamera optimal_params;
+
+	for (int countLoop=0;countLoop<nEntries;countLoop++)
+	{
+		if (countLoop % 20 == 0)
+		{
+			auxStr.sprintf(wxT("Parsing rawlog... %u objects"),countLoop );
+			if (!progDia.Update( countLoop, auxStr ))
+				break;
+			wxTheApp->Yield();  // Let the app. process messages
+		}
+
+		try
+		{
+			if (rawlog.getType(countLoop) == CRawlog::etObservation)
+			{
+				CObservationPtr obs = rawlog.getAsObservation(countLoop);
+				if (IS_CLASS(obs,CObservation3DRangeScan))
+				{
+					CObservation3DRangeScanPtr o = CObservation3DRangeScanPtr(obs);
+
+					if (firstObs)
+					{
+						const double avrErr = CObservation3DRangeScan::recoverCameraCalibrationParameters(
+							*o,
+							optimal_params);
+
+						if (wxNO==wxMessageBox( _U(format("Calibration with first observation:\nAverage reprojection error=%.04fpx.\n Accept and apply to ALL 3D observations?",avrErr).c_str()),_("Warning"), wxYES_NO | wxICON_EXCLAMATION))
+							break;
+
+						firstObs = false;						
+					}
+
+					// For the rest (including the first obs):
+					o->cameraParams = optimal_params;
+					nChanges++;
+				}
+			}
+		}
+		catch (exception &e)
+		{
+			errorMsg = e.what();
+			break;
+		}
+		catch (...)
+		{
+			break;
+		}
+	} // end while keep loading
+
+	progDia.Update( nEntries );
+
+	wxMessageBox(_U( format("%u entries have been modified",nChanges).c_str() ),_("Done"),wxOK,this);
+
+	WX_END_TRY
+
 }

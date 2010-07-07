@@ -44,7 +44,9 @@
 			- mrpt::hwdrivers::CGenericSensor:
 				- Now has a generic interface for external image directories (it was only in CCameraSensor before), so more sensors can use this feature.
 				- The sensor label member is now "m_sensorLabel" in this base class, instead of replicating it in all children classes.
-			- mrpt::slam::CObservation3DRangeScan: the confidence channel is stored as an image instead of a matrix to optimize memory and disk space.
+			- mrpt::slam::CObservation3DRangeScan: 
+				- The confidence channel is stored as an image instead of a matrix to optimize memory and disk space.
+				- New "auto-calibration" method: CObservation3DRangeScan::recoverCameraCalibrationParameters
 			- mrpt::hwdrivers::CSwissRanger3DCamera is now prepared to store intensity & confidence channels to external image files to save rawlog storage size.
 			- mrpt::utils::CStream now has methods for sending/receiving messages in a predefined frame format. See mrpt::utils::CStream::receiveMessage,  mrpt::utils::CStream::sendMessage.
 			- mrpt::utils::CConfigFileMemory has a new method getContent().
@@ -73,6 +75,7 @@
 			- mrpt::topography::ENUToGeocentric()
 			- mrpt::gui::CMyGLCanvasBase::textBitmapWidth(), a new function to compute the width of a bitmap string.
 		- New classes:
+			- New hierarchy of computer vision detectors/detectable objects. See mrpt::vision::CObjectDetection and mrpt::vision::CDetectableObject
 			- mrpt::math::CMatrixSparse for efficient sparse matrix computations (based on code from robotvision & the CSparse library - see the class doc for more details and credits).
 			- New generalized KD-tree pattern class: mrpt::math::KDTreeCapable, previously used only for points of maps, now used in more places.
 			- Feature tracking for images now has a set of different implementations. See mrpt::vision::CGenericFeatureTracker
