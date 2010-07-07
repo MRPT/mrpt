@@ -60,6 +60,7 @@ CSparseMatrix::CSparseMatrix(const cs  * const sm)
 /** Copy the data from an existing "cs" CSparse data structure */
 void  CSparseMatrix::copy(const cs  * const sm)
 {
+  // TODO: Will this work for both triplet / compressed??
   sparse_matrix.m = sm->m;
   sparse_matrix.n = sm->n;
   sparse_matrix.nz = sm->nz;
@@ -99,6 +100,22 @@ CSparseMatrix::~CSparseMatrix()
 	internal_free_mem();
 }
 
+/** Erase all previous contents and leave the matrix as a "triplet" 1x1 matrix without any data. */
+void CSparseMatrix::clear()
+{
+	// Free old data:
+	internal_free_mem();
+
+	// Init as 1x1 triplet:
+	sparse_matrix.nzmax = 1;
+	sparse_matrix.m = 1; //nRows;
+	sparse_matrix.n = 1; // nCols;
+	sparse_matrix.i = (int*)malloc(sizeof(int)*sparse_matrix.nzmax);
+	sparse_matrix.p = (int*)malloc(sizeof(int)*(sparse_matrix.n+1));
+	sparse_matrix.x = (double*)malloc(sizeof(double)*sparse_matrix.nzmax);
+	sparse_matrix.nz = 0;
+}
+
 /** free buffers (deallocate the memory of the i,p,x buffers) */
 void CSparseMatrix::internal_free_mem()
 {
@@ -131,6 +148,8 @@ CSparseMatrix::CSparseMatrix(const size_t nRows, const size_t nCols)
 /** Insert an element into a "cs", return false on error. */
 void CSparseMatrix::insert_entry(const size_t row, const size_t col, const double val )
 {
+	if (!isTriplet())
+		THROW_EXCEPTION("insert_entry() is only available for sparse matrix in 'triplet' format.")
 	if (!cs_entry(&sparse_matrix,row,col,val))
 		THROW_EXCEPTION("Error inserting element in sparse matrix (out of mem?)")
 }
@@ -155,6 +174,7 @@ void CSparseMatrix::operator = (const CSparseMatrix & other)
 CSparseMatrix CSparseMatrix::operator + (const CSparseMatrix & other) const
 {
 	cs * sm = cs_add(&(this->sparse_matrix), &(other.sparse_matrix),1,1);
+	ASSERT_(sm)
 	CSparseMatrix SM(sm);
 	cs_spfree(sm);
 	return SM;
@@ -163,6 +183,7 @@ CSparseMatrix CSparseMatrix::operator + (const CSparseMatrix & other) const
 CSparseMatrix CSparseMatrix::operator * (const CSparseMatrix & other) const
 {
 	cs * sm = cs_multiply(&(this->sparse_matrix), &(other.sparse_matrix));
+	ASSERT_(sm)
 	CSparseMatrix SM(sm);
 	cs_spfree(sm);
 	return SM;
@@ -181,6 +202,7 @@ std::vector<double> CSparseMatrix::operator * (const std::vector<double> & other
 void CSparseMatrix::operator += (const CSparseMatrix & other)
 {
 	cs * sm = cs_add(&(this->sparse_matrix), &(other.sparse_matrix),1,1);
+	ASSERT_(sm)
 	copy(sm);
 	cs_spfree(sm);
 }
@@ -188,6 +210,7 @@ void CSparseMatrix::operator += (const CSparseMatrix & other)
 void CSparseMatrix::operator *= (const CSparseMatrix & other)
 {
 	cs * sm = cs_multiply(&(this->sparse_matrix), &(other.sparse_matrix));
+	ASSERT_(sm)
 	copy(sm);
 	cs_spfree(sm);
 }
@@ -195,6 +218,7 @@ void CSparseMatrix::operator *= (const CSparseMatrix & other)
 CSparseMatrix CSparseMatrix::transpose() const
 {
 	cs * sm = cs_transpose(&sparse_matrix,1);
+	ASSERT_(sm)
 	CSparseMatrix SM(sm);
 	cs_spfree(sm);
 	return SM;
@@ -204,12 +228,48 @@ CSparseMatrix CSparseMatrix::transpose() const
 void CSparseMatrix::get_dense(CMatrixDouble &d_M) const
 {
 	d_M.zeros(sparse_matrix.m,sparse_matrix.n);
-	int col_idx = -1;
-
-	for (int r=0;r<sparse_matrix.nzmax; ++r)
-	{
-		if (sparse_matrix.p[col_idx+1]==r)
-			++col_idx;
-		d_M(sparse_matrix.i[r],col_idx) = sparse_matrix.x[r];
+	if (isTriplet())
+	{	// It's in triplet form.
+		for (int idx=0;idx<sparse_matrix.nzmax; ++idx)
+			d_M(sparse_matrix.i[idx],sparse_matrix.p[idx]) = sparse_matrix.x[idx];
 	}
+	else
+	{	// Column compressed format:
+		ASSERT_(sparse_matrix.x)  // JL: Could it be NULL and be OK??? 
+
+        //printf ("%d-by-%d, nzmax: %d nnz: %d, 1-norm: %g\n", m, n, nzmax, Ap [n], cs_norm (A)) ;
+		for (int j = 0 ; j < sparse_matrix.n ; j++)
+        {
+            //printf ("    col %d : locations %d to %d\n", j, Ap [j], Ap [j+1]-1);
+			const int p0 = sparse_matrix.p [j];
+			const int p1 = sparse_matrix.p [j+1];
+            for (int p = p0 ; p < p1 ; p++)
+				d_M(sparse_matrix.i[p],j) = sparse_matrix.x [p];
+        }
+	}
+}
+
+void CSparseMatrix::compressFromTriplet()
+{
+	if (!isTriplet())
+		THROW_EXCEPTION("compressFromTriplet(): Matrix is already in column-compressed format.")
+	
+	cs * sm = cs_compress(&this->sparse_matrix);
+	copy_fast(sm);
+	cs_spfree(sm); // This will release just the "cs" structure itself, not the internal buffers, now set to NULL.
+}
+
+
+/** save as a dense matrix to a text file \return False on any error.
+*/
+bool CSparseMatrix::saveToTextFile_dense(const std::string &filName)
+{
+	CMatrixDouble    dense;
+	this->get_dense(dense);
+	try
+	{
+		dense.saveToTextFile(filName);
+		return true;
+	}
+	catch(...) { return false; } 
 }

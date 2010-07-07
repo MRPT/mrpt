@@ -44,8 +44,37 @@ namespace mrpt
 		/** A sparse matrix capable of efficient math operations (a wrapper around the CSparse library)
 		  *  The type of cells is fixed to "double".
 		  *
+		  *  There are two main formats for the non-zero entries in this matrix:
+		  *		- A "triplet" matrix: a set of (r,c)=val triplet entries.
+		  *		- A column-compressed sparse matrix. 
+		  *
+		  *  The latter is the "normal" format, which is expected by most mathematical operations defined
+		  *   in this class. There're two three ways of initializing and populating a sparse matrix:
+		  *
+		  *   <ol> 
+		  *    <li> <b>As a triplet (empty), then add entries, then compress:</b> 
+		  *         \code
+		  *             CSparseMatrix  SM(100,100);
+		  *             SM.insert_entry(i,j, val); ...
+		  *             SM.compressFromTriplet();
+		  *         \endcode
+		  *    </li>
+		  *    <li> <b>As a triplet from a CSparseMatrixTemplate<T>:</b> 
+		  *         \code
+		  *             CSparseMatrix  SM(M);
+		  *         \endcode
+		  *    </li>
+		  *    <li> <b>From an existing dense matrix:</b> 
+		  *         \code
+		  *             CSparseMatrix  SM(M);
+		  *         \endcode
+		  *    </li>
+		  *
+		  *   </ol>
+		  *
 		  * \note This class was initially adapted from "robotvision", by Hauke Strasdat, Steven Lovegrove and Andrew J. Davison. See http://www.openslam.org/robotvision.html
-		  * \note CSparse is maintained by Timothy Davis: http://people.sc.fsu.edu/~jburkardt/c_src/csparse/csparse.html
+		  * \note CSparse is maintained by Timothy Davis: http://people.sc.fsu.edu/~jburkardt/c_src/csparse/csparse.html . 
+		  * \note See also his book "Direct methods for sparse linear systems". http://books.google.es/books?id=TvwiyF8vy3EC&pg=PA12&lpg=PA12&dq=cs_compress&source=bl&ots=od9uGJ793j&sig=Wa-fBk4sZkZv3Y0Op8FNH8PvCUs&hl=es&ei=UjA0TJf-EoSmsQay3aXPAw&sa=X&oi=book_result&ct=result&resnum=8&ved=0CEQQ6AEwBw#v=onepage&q&f=false
 		  *
 		  * \sa mrpt::math::CMatrixFixedNumeric, mrpt::math::CMatrixTemplateNumeric, etc.
 		  */
@@ -85,7 +114,7 @@ namespace mrpt
 				::memcpy(sparse_matrix.p, &col_list[0], sizeof(col_list[0])*col_list.size() );
 				::memcpy(sparse_matrix.x, &content_list[0], sizeof(content_list[0])*content_list.size() );
 
-				sparse_matrix.nz = -1;
+				sparse_matrix.nz = -1;  // <0 means "column compressed", ">=0" means triplet.
 			}
 
 			/** Initialization from a triplet "cs", which is first compressed */
@@ -100,10 +129,16 @@ namespace mrpt
 			/** @name Constructors, destructor & copy operations
 			    @{  */
 
-			/** Create an initially empty sparse matrix */
-			CSparseMatrix(const size_t nRows, const size_t nCols); 
+			/** Create an initially empty sparse matrix, in the "triplet" form. 
+			  *  Notice that you must call "compressFromTriplet" after populating the matrix and before using the math operatons on this matrix.
+			  *  The initial size can be later on extended with insert_entry() or setRowCount() & setColCount().
+			  * \sa insert_entry, setRowCount, setColCount
+			  */
+			CSparseMatrix(const size_t nRows=0, const size_t nCols=0); 
 
-			/** Best way to initialize a sparse matrix from a list of non NULL elements */
+			/** A good way to initialize a sparse matrix from a list of non NULL elements. 
+			  *  This constructor takes all the non-zero entries in "data" and builds a column-compressed sparse representation.
+			  */
 			template <typename T>
 			CSparseMatrix(const CSparseMatrixTemplate<T> & data)
 			{
@@ -125,10 +160,10 @@ namespace mrpt
 
 			// We can't do a simple "template <class ANYMATRIX>" since it would be tried to match against "cs*"...
 
-			/** Constructor from a dense matrix of any kind existing in MRPT. */
+			/** Constructor from a dense matrix of any kind existing in MRPT, creating a "column-compressed" sparse matrix. */
 			template <typename T,size_t N,size_t M> inline CSparseMatrix(const CMatrixFixedNumeric<T,N,M> &MAT) { construct_from_mrpt_mat(MAT); }
 
-			/** Constructor from a dense matrix of any kind existing in MRPT. */
+			/** Constructor from a dense matrix of any kind existing in MRPT, creating a "column-compressed" sparse matrix. */
 			template <typename T>  inline CSparseMatrix(const CMatrixTemplateNumeric<T> &MAT) { construct_from_mrpt_mat(MAT); }
 
 			/** Copy constructor */
@@ -148,6 +183,9 @@ namespace mrpt
 
 			/** Copy operator from another existing object */
 			void operator = (const CSparseMatrix & other);
+
+			/** Erase all previous contents and leave the matrix as a "triplet" 1x1 matrix without any data. */
+			void clear();
 
 			/** @}  */
 
@@ -169,17 +207,41 @@ namespace mrpt
 			/** @ Access the matrix, get, set elements, etc.
 			    @{ */
 
-			/** Insert a <b>new</b> non-zero entry in the matrix. */
+			/** ONLY for TRIPLET matrices: insert a new non-zero entry in the matrix.
+			  *  This method cannot be used once the matrix is in column-compressed form.
+			  *  The size of the matrix will be automatically extended if the indices are out of the current limits.
+			  * \sa isTriplet, compressFromTriplet
+			  */
 			void insert_entry(const size_t row, const size_t col, const double val );
 
-			/** Return a dense representation of the sparse matrix */
+			/** ONLY for TRIPLET matrices: convert the matrix in a column-compressed form.
+			  * \sa insert_entry
+			  */
+			void compressFromTriplet();
+
+			/** Return a dense representation of the sparse matrix.
+			  * \sa saveToTextFile_dense
+			  */
 			void get_dense(CMatrixDouble &outMat) const;
+
+			/** save as a dense matrix to a text file \return False on any error.
+			  */
+			bool saveToTextFile_dense(const std::string &filName); 
 
 			// Very basic, standard methods that MRPT methods expect for any matrix:
 			inline size_t getRowCount() const { return sparse_matrix.m; }
 			inline size_t getColCount() const { return sparse_matrix.n; }
 
+			/** Change the number of rows in the matrix (can't be lower than current size) */
+			inline void setRowCount(const size_t nRows) { ASSERT_(nRows>=(size_t)sparse_matrix.m); sparse_matrix.m = nRows; }
+			inline void setColCount(const size_t nCols) { ASSERT_(nCols>=(size_t)sparse_matrix.n); sparse_matrix.n = nCols; }
+			
+			/** Returns true if this sparse matrix is in "triplet" form. \sa isColumnCompressed */
+			inline bool isTriplet() const { return sparse_matrix.nz>=0; }  // <0 means "column compressed", ">=0" means triplet.
 
+			/** Returns true if this sparse matrix is in "column compressed" form. \sa isTriplet */
+			inline bool isColumnCompressed() const { return sparse_matrix.nz<0; }  // <0 means "column compressed", ">=0" means triplet.
+			
 			/** @} */
 
 		}; // end class CSparseMatrix

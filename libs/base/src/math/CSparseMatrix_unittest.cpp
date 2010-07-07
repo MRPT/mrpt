@@ -36,9 +36,23 @@ using namespace mrpt::math;
 using namespace std;
 
 
-void generateRandomSparseMatrix(size_t N, size_t M, CSparseMatrix &MAT)
+void generateRandomSparseMatrix(size_t N, size_t M, size_t nEntries,  CSparseMatrix &MAT)
 {
+	MAT.clear();
 
+	MAT.setRowCount(N);
+	MAT.setColCount(M);
+
+	for (size_t i=0;i<nEntries;i++)
+	{
+		MAT.insert_entry( 
+			mrpt::random::randomGenerator.drawUniform32bit() % N,
+			mrpt::random::randomGenerator.drawUniform32bit() % M,
+			mrpt::random::randomGenerator.drawGaussian1D(0,1) );
+	}
+
+	// Return already compressed:
+	MAT.compressFromTriplet();
 }
 
 
@@ -83,6 +97,28 @@ TEST(SparseMatrix, InitFromDenseRandom)
 }
 
 
+TEST(SparseMatrix, InitFromTriplet)
+{
+	CSparseMatrix SM;
+	CMatrixDouble  D(10,20);
+
+	SM.insert_entry(2,2, 4.0);  D(2,2) = 4.0;
+	SM.insert_entry(6,8, -2.0);  D(6,8) = -2.0;
+
+	SM.setRowCount(10);
+	SM.setColCount(20);
+
+	CMatrixDouble    dense_out1;
+	SM.get_dense(dense_out1);
+
+	SM.compressFromTriplet();
+
+	CMatrixDouble    dense_out2;
+	SM.get_dense(dense_out2);
+
+	EXPECT_TRUE(dense_out1==dense_out2);
+}
+
 
 TEST(SparseMatrix, InitFromSparse)
 {
@@ -100,5 +136,31 @@ TEST(SparseMatrix, InitFromSparse)
 	EXPECT_TRUE( dense_out==D ) 
 		<< "Dense: \n" << D 
 		<< "Sparse:\n" << dense_out << endl;
+}
+
+TEST(SparseMatrix, InitFromRandom)
+{
+	CSparseMatrix SM;
+	generateRandomSparseMatrix(100,100, 25, SM);
+	generateRandomSparseMatrix(20,10, 15, SM);
+}
+
+TEST(SparseMatrix, Op_Add)
+{
+	CSparseMatrix SM1, SM2;
+	generateRandomSparseMatrix(40,30, 33, SM1);
+	generateRandomSparseMatrix(40,30, 88, SM2);
+
+	CSparseMatrix SM_res = SM1+SM2;
+
+	// Check:
+	CMatrixDouble    D1,D2,Dres;
+	SM1.get_dense(D1);
+	SM2.get_dense(D2);
+	SM_res.get_dense(Dres);
+
+	CMatrixDouble  RES = D1+D2;
+
+	EXPECT_TRUE(RES==Dres);
 }
 
