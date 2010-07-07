@@ -1285,7 +1285,7 @@ bool math::intersect(const TPolygon2D &p1,const TPolygon2D &p2,TObject2D &obj)	{
 		}
 	}
 	for (size_t i=0;i<intersections.getRowCount();i++)	{
-		for (size_t j=0;j<intersections.getColumnCount();j++) cout<<fromObject(intersections(i,j));
+		for (size_t j=0;j<intersections.getColCount();j++) cout<<fromObject(intersections(i,j));
 		cout<<'\n';
 	}
 	if (hmInters==0)	{
@@ -1799,7 +1799,7 @@ inline bool firstOrNonPresent(size_t i,const std::vector<MatchingVertex> &v)	{
 	return true;
 }
 bool depthFirstSearch(const CSparseMatrixTemplate<unsigned char> &mat,std::vector<std::vector<MatchingVertex> > &res,std::vector<bool> &used,size_t searching,unsigned char mask,std::vector<MatchingVertex> &current)	{
-	for (size_t i=0;i<mat.getColumnCount();i++) if (!used[i]&&mat.isNotNull(searching,i))	{
+	for (size_t i=0;i<mat.getColCount();i++) if (!used[i]&&mat.isNotNull(searching,i))	{
 		unsigned char match=mat(searching,i)&mask;
 		if (!match) continue;
 		else if (firstOrNonPresent(i,current))	{

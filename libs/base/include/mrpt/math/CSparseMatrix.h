@@ -88,6 +88,12 @@ namespace mrpt
 				sparse_matrix.nz = -1;
 			}
 
+			/** Initialization from a triplet "cs", which is first compressed */
+			void construct_from_triplet(const cs & triplet);
+
+			/** Insert an element into a "cs", return false on error. */
+			bool internal_add_entry(cs &MAT, int i, int j, double val );
+
 
 		public:
 
@@ -107,25 +113,18 @@ namespace mrpt
 				triplet.nzmax = 1;
 				triplet.m = data.getRowCount();
 				triplet.n = data.getColCount();
-				triplet.i = (int*)malloc(sizeof(int)*sparse_matrix.nzmax);
-				triplet.p = (int*)malloc(sizeof(int)*(sparse_matrix.n+1));
-				triplet.x = (double*)malloc(sizeof(double)*sparse_matrix.nzmax);
+				triplet.i = (int*)malloc(sizeof(int)*triplet.nzmax);
+				triplet.p = (int*)malloc(sizeof(int)*(triplet.n+1));
+				triplet.x = (double*)malloc(sizeof(double)*triplet.nzmax);
 				triplet.nz = 0;
 
 				// 2) Put data in:
 				for (typename CSparseMatrixTemplate<T>::const_iterator it=data.begin();it!=data.end();++it)
-				{
-					if (!cs_entry(&triplet,it->first.first,it->first.second, it->second))
+					if (!internal_add_entry(triplet,it->first.first,it->first.second, it->second))
 						throw std::runtime_error("CSparseMatrix: error initializing from CSparseMatrixTemplate (out of mem? out of range?)");
-				}
 
 				// 3) Compress:
-				cs * sm = cs_compress(&triplet);
-				sparse_matrix.i = (int*)malloc(sizeof(int)*sm->nzmax);
-				sparse_matrix.p = (int*)malloc(sizeof(int)*(sm->n+1));
-				sparse_matrix.x = (double*)malloc(sizeof(double)*sm->nzmax);
-				copy(sm);
-				cs_spfree(sm);
+				construct_from_triplet(triplet);
 			}
 
 

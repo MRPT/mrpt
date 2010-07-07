@@ -8,7 +8,7 @@ csn *cs_lu (const cs *A, const css *S, double tol)
     int *Lp, *Li, *Up, *Ui, *pinv, *xi, *q, n, ipiv, k, top, p, i, col, lnz,unz;
     if (!CS_CSC (A) || !S) return (NULL) ;          /* check inputs */
     n = A->n ;
-    q = S->q ; lnz = S->lnz ; unz = S->unz ;
+    q = S->q ; lnz = (int)S->lnz ; unz = (int)S->unz ;
     x = cs_malloc (n, sizeof (double)) ;            /* get double workspace */
     xi = cs_malloc (2*n, sizeof (int)) ;            /* get int workspace */
     N = cs_calloc (1, sizeof (csn)) ;               /* allocate result */

@@ -78,6 +78,24 @@ CSparseMatrix::~CSparseMatrix()
   cs_free(sparse_matrix.x);
 }
 
+/** Initialization from a triplet "cs", which is first compressed */
+void CSparseMatrix::construct_from_triplet(const cs & triplet)
+{
+	cs * sm = cs_compress(&triplet);
+	sparse_matrix.i = (int*)malloc(sizeof(int)*sm->nzmax);
+	sparse_matrix.p = (int*)malloc(sizeof(int)*(sm->n+1));
+	sparse_matrix.x = (double*)malloc(sizeof(double)*sm->nzmax);
+	copy(sm);
+	cs_spfree(sm);
+}
+
+/** Insert an element into a "cs", return false on error. */
+bool CSparseMatrix::internal_add_entry(cs &MAT, int i, int j, double val )
+{
+	return 0!=cs_entry(&MAT,i,j,val);
+}
+
+
 /** Copy operator from another existing object */
 void CSparseMatrix::operator = (const CSparseMatrix & other)
 {

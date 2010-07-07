@@ -113,7 +113,7 @@ namespace math	{
 		}
 		/**
 		  * Returns the amount of rows in this matrix.
-		  * \sa getColumnCount,getRow
+		  * \sa getColCount,getRow
 		  */
 		inline size_t getRowCount() const	{
 			return mRows;
@@ -122,7 +122,7 @@ namespace math	{
 		  * Returns the amount of columns in this matrix.
 		  * \sa getRowCount
 		  */
-		inline size_t getColumnCount() const	{
+		inline size_t getColCount() const	{
 			return mColumns;
 		}
 		/**
@@ -151,7 +151,7 @@ namespace math	{
 		}
 		/**
 		  * Extracts a full column from the matrix.
-		  * \sa getColumnCount,getRow,setColumn
+		  * \sa getColCount,getRow,setColumn
 		  * \throw std::logic_error on out of range.
 		  */
 		void getColumn(size_t nCol,std::vector<T> &vec) const	{

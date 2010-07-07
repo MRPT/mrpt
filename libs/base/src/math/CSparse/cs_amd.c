@@ -28,7 +28,7 @@ int *cs_amd (int order, const cs *A)  /* order 0:natural, 1:Chol, 2:LU, 3:QR */
     AT = cs_transpose (A, 0) ;              /* compute A' */
     if (!AT) return (NULL) ;
     m = A->m ; n = A->n ;
-    dense = CS_MAX (16, 10 * sqrt ((double) n)) ;   /* find dense threshold */
+    dense = (int)CS_MAX (16, 10 * sqrt ((double) n)) ;   /* find dense threshold */
     dense = CS_MIN (n-2, dense) ;
     if (order == 1 && n == m)
     {

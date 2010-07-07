@@ -35,6 +35,13 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
+
+void generateRandomSparseMatrix(size_t N, size_t M, CSparseMatrix &MAT)
+{
+
+}
+
+
 void do_test_init_to_unit(size_t N)
 {
 	CMatrixDouble	 dense1;
@@ -49,10 +56,49 @@ void do_test_init_to_unit(size_t N)
 		"Failed with N=" << N << "\n";
 }
 
-TEST(SparseMatrix, InitFromDense)
+TEST(SparseMatrix, InitFromDenseUnit)
 {
 	do_test_init_to_unit(1);
 	do_test_init_to_unit(10);
 	do_test_init_to_unit(100);
+}
+
+
+void do_test_init_random(size_t N)
+{
+	CMatrixDouble	 dense1;
+	mrpt::random::randomGenerator.drawGaussian1DMatrix(dense1);
+	CSparseMatrix SM(dense1);
+	CMatrixDouble    dense_out;
+	SM.get_dense(dense_out);
+	EXPECT_TRUE( dense_out==dense1 ) <<
+		"Failed with N=" << N << "\n";
+}
+
+TEST(SparseMatrix, InitFromDenseRandom)
+{
+	do_test_init_random(1);
+	do_test_init_random(10);
+	do_test_init_random(100);
+}
+
+
+
+TEST(SparseMatrix, InitFromSparse)
+{
+	CMatrixDouble  D(4,5);
+	mrpt::math::CSparseMatrixTemplate<double>  S(4,5);
+	D(1,2) = 2.0;
+	S(1,2) = 2.0;
+
+	D(3,1) = -7.0;
+	S(3,1) = -7.0;
+
+	CSparseMatrix SM(S);
+	CMatrixDouble    dense_out;
+	SM.get_dense(dense_out);
+	EXPECT_TRUE( dense_out==D ) 
+		<< "Dense: \n" << D 
+		<< "Sparse:\n" << dense_out << endl;
 }
 
