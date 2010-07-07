@@ -161,16 +161,16 @@ namespace mrpt
 			// We can't do a simple "template <class ANYMATRIX>" since it would be tried to match against "cs*"...
 
 			/** Constructor from a dense matrix of any kind existing in MRPT, creating a "column-compressed" sparse matrix. */
-			template <typename T,size_t N,size_t M> inline CSparseMatrix(const CMatrixFixedNumeric<T,N,M> &MAT) { construct_from_mrpt_mat(MAT); }
+			template <typename T,size_t N,size_t M> inline explicit CSparseMatrix(const CMatrixFixedNumeric<T,N,M> &MAT) { construct_from_mrpt_mat(MAT); }
 
 			/** Constructor from a dense matrix of any kind existing in MRPT, creating a "column-compressed" sparse matrix. */
-			template <typename T>  inline CSparseMatrix(const CMatrixTemplateNumeric<T> &MAT) { construct_from_mrpt_mat(MAT); }
+			template <typename T>  inline explicit CSparseMatrix(const CMatrixTemplateNumeric<T> &MAT) { construct_from_mrpt_mat(MAT); }
 
 			/** Copy constructor */
 			CSparseMatrix(const CSparseMatrix & other);
 
 			/** Copy constructor from an existing "cs" CSparse data structure */
-			CSparseMatrix(const cs  * const sm);
+			explicit CSparseMatrix(const cs  * const sm);
 
 			/** Destructor */
 			virtual ~CSparseMatrix();
@@ -192,14 +192,35 @@ namespace mrpt
 			/** @name Math operations (the interesting stuff...)
 				@{ */
 
-			CSparseMatrix operator + (const CSparseMatrix & other) const;
-			CSparseMatrix operator * (const CSparseMatrix & other) const;
+			void add_AB(const CSparseMatrix & A,const CSparseMatrix & B); //!< this = A+B
+			void multiply_AB(const CSparseMatrix & A,const CSparseMatrix & B); //!< this = A*B
+			void multiply_Ab(const std::vector<double> &b, std::vector<double> &out_res) const; //!< out_res = this * b
 
-			std::vector<double> operator * (const std::vector<double> & other) const;
-
-			void operator += (const CSparseMatrix & other);
-			void operator *= (const CSparseMatrix & other);
+			inline CSparseMatrix operator + (const CSparseMatrix & other) const
+			{
+				CSparseMatrix RES;
+				RES.add_AB(*this,other);
+				return RES;
+			}
+			inline CSparseMatrix operator * (const CSparseMatrix & other) const
+			{
+				CSparseMatrix RES;
+				RES.multiply_AB(*this,other);
+				return RES;
+			}
+			inline std::vector<double> operator * (const std::vector<double> & other) const {
+				std::vector<double> res;
+				multiply_Ab(other,res);
+				return res;
+			}
+			inline void operator += (const CSparseMatrix & other) {
+				this->add_AB(*this,other);
+			}
+			inline void operator *= (const CSparseMatrix & other) {
+				this->multiply_AB(*this,other);
+			}
 			CSparseMatrix transpose() const;
+
 
 			/** @}  */
 

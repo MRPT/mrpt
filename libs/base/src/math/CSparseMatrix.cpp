@@ -171,49 +171,35 @@ void CSparseMatrix::operator = (const CSparseMatrix & other)
 }
 
 
-CSparseMatrix CSparseMatrix::operator + (const CSparseMatrix & other) const
+void CSparseMatrix::add_AB(const CSparseMatrix & A,const CSparseMatrix & B)
 {
-	cs * sm = cs_add(&(this->sparse_matrix), &(other.sparse_matrix),1,1);
+	ASSERT_(A.getColCount()==B.getColCount() && A.getRowCount()==B.getRowCount())
+
+	cs * sm = cs_add(&(A.sparse_matrix), &(B.sparse_matrix),1,1);
 	ASSERT_(sm)
-	CSparseMatrix SM(sm);
+	this->copy_fast(sm);
 	cs_spfree(sm);
-	return SM;
 }
 
-CSparseMatrix CSparseMatrix::operator * (const CSparseMatrix & other) const
+void CSparseMatrix::multiply_AB(const CSparseMatrix & A,const CSparseMatrix & B)
 {
-	cs * sm = cs_multiply(&(this->sparse_matrix), &(other.sparse_matrix));
+	ASSERT_(A.getColCount()==B.getRowCount())
+
+	cs * sm = cs_multiply(&(A.sparse_matrix), &(B.sparse_matrix));
 	ASSERT_(sm)
-	CSparseMatrix SM(sm);
+	this->copy_fast(sm);
 	cs_spfree(sm);
-	return SM;
 }
 
-std::vector<double> CSparseMatrix::operator * (const std::vector<double> & other) const
+void CSparseMatrix::multiply_Ab(const std::vector<double> &b, std::vector<double> &out_res) const
 {
-	ASSERT_(other.size() == getColCount());
-	std::vector<double> res(getRowCount());
-	const double * y = &(other[0]);
-	double * x = &(res[0]);
+	ASSERT_(b.size() == getColCount());
+	out_res.resize( getRowCount() );
+	const double * y = &(b[0]);
+	double * x = &(out_res[0]);
 	cs_gaxpy(&sparse_matrix,y,x);
-	return res;
 }
 
-void CSparseMatrix::operator += (const CSparseMatrix & other)
-{
-	cs * sm = cs_add(&(this->sparse_matrix), &(other.sparse_matrix),1,1);
-	ASSERT_(sm)
-	copy(sm);
-	cs_spfree(sm);
-}
-
-void CSparseMatrix::operator *= (const CSparseMatrix & other)
-{
-	cs * sm = cs_multiply(&(this->sparse_matrix), &(other.sparse_matrix));
-	ASSERT_(sm)
-	copy(sm);
-	cs_spfree(sm);
-}
 
 CSparseMatrix CSparseMatrix::transpose() const
 {
@@ -231,7 +217,7 @@ void CSparseMatrix::get_dense(CMatrixDouble &d_M) const
 	if (isTriplet())
 	{	// It's in triplet form.
 		for (int idx=0;idx<sparse_matrix.nzmax; ++idx)
-			d_M(sparse_matrix.i[idx],sparse_matrix.p[idx]) = sparse_matrix.x[idx];
+			d_M(sparse_matrix.i[idx],sparse_matrix.p[idx]) += sparse_matrix.x[idx];  // += since the convention is that duplicate (i,j) entries add to each other.
 	}
 	else
 	{	// Column compressed format:
@@ -244,7 +230,7 @@ void CSparseMatrix::get_dense(CMatrixDouble &d_M) const
 			const int p0 = sparse_matrix.p [j];
 			const int p1 = sparse_matrix.p [j+1];
             for (int p = p0 ; p < p1 ; p++)
-				d_M(sparse_matrix.i[p],j) = sparse_matrix.x [p];
+				d_M(sparse_matrix.i[p],j) += sparse_matrix.x [p];  // += since the convention is that duplicate (i,j) entries add to each other.
         }
 	}
 }

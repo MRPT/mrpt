@@ -145,13 +145,20 @@ TEST(SparseMatrix, InitFromRandom)
 	generateRandomSparseMatrix(20,10, 15, SM);
 }
 
-TEST(SparseMatrix, Op_Add)
+typedef void (*TMatrixSMOperator)(const CSparseMatrix &M1, const CSparseMatrix &M2, CSparseMatrix &res);
+typedef void (*TMatrixDenseOperator)(const CMatrixDouble &M1, const CMatrixDouble &M2, CMatrixDouble &res);
+
+void do_matrix_op_test(
+	size_t nRows1, size_t nCols1, size_t nNonZeros1,
+	size_t nRows2, size_t nCols2, size_t nNonZeros2, 
+	TMatrixSMOperator op1, TMatrixDenseOperator op2)
 {
 	CSparseMatrix SM1, SM2;
-	generateRandomSparseMatrix(40,30, 33, SM1);
-	generateRandomSparseMatrix(40,30, 88, SM2);
+	generateRandomSparseMatrix(nRows1,nCols1,nNonZeros1, SM1);
+	generateRandomSparseMatrix(nRows2,nCols2,nNonZeros2, SM2);
 
-	CSparseMatrix SM_res = SM1+SM2;
+	CSparseMatrix SM_res;
+	(*op1)(SM1,SM2,SM_res);
 
 	// Check:
 	CMatrixDouble    D1,D2,Dres;
@@ -159,8 +166,42 @@ TEST(SparseMatrix, Op_Add)
 	SM2.get_dense(D2);
 	SM_res.get_dense(Dres);
 
-	CMatrixDouble  RES = D1+D2;
+	CMatrixDouble  RES;
+	(*op2)(D1,D2,RES);
 
-	EXPECT_TRUE(RES==Dres);
+	const double err = (RES-Dres).Abs().maximum();
+
+	EXPECT_TRUE(err<1e-10)
+		<< "M1:\n" << D1 
+		<< "M2:\n" << D2
+		<< "Real op result:\n" << RES 
+		<< "SM result:\n" << Dres 
+		<< "ERR:\n" << (RES-Dres);	 
+}
+
+void op_sparse_add(const CSparseMatrix &M1, const CSparseMatrix &M2, CSparseMatrix &res) { res = M1+M2; }
+void op_dense_add(const CMatrixDouble &M1, const CMatrixDouble &M2, CMatrixDouble &res) { res = M1+M2; }
+
+
+TEST(SparseMatrix, Op_Add)
+{
+	do_matrix_op_test(1,1,0, 1,1,0, &op_sparse_add, &op_dense_add);
+	do_matrix_op_test(1,1,1, 1,1,1, &op_sparse_add, &op_dense_add);
+	do_matrix_op_test(2,2,1, 2,2,1, &op_sparse_add, &op_dense_add);
+	do_matrix_op_test(10,20,33, 10,20,33, &op_sparse_add, &op_dense_add);
+	do_matrix_op_test(11,21,34, 11,21,34, &op_sparse_add, &op_dense_add);
+}
+
+void op_sparse_multiply_AB(const CSparseMatrix &M1, const CSparseMatrix &M2, CSparseMatrix &res) { res = M1*M2; }
+void op_dense_multiply_AB(const CMatrixDouble &M1, const CMatrixDouble &M2, CMatrixDouble &res) { res = M1*M2; }
+
+
+TEST(SparseMatrix, Op_Multiply_AB)
+{
+	do_matrix_op_test(1,1,0, 1,1,0, &op_sparse_multiply_AB, &op_dense_multiply_AB);
+	do_matrix_op_test(1,1,1, 1,1,1, &op_sparse_multiply_AB, &op_dense_multiply_AB);
+	do_matrix_op_test(2,2,1, 2,2,1, &op_sparse_multiply_AB, &op_dense_multiply_AB);
+	do_matrix_op_test(10,20,33, 20,15,33, &op_sparse_multiply_AB, &op_dense_multiply_AB);
+	do_matrix_op_test(8,34,100, 34,3,100, &op_sparse_multiply_AB, &op_dense_multiply_AB);
 }
 
