@@ -50,5 +50,9 @@ void registerAllClasses_mrpt_vision()
 	registerClass( CLASS_ID( CLandmarksMap ) );
 
 	registerClass( CLASS_ID( CObservationVisualLandmarks ) );
+
+	registerClass( CLASS_ID( CDetectableObject ) );
+	registerClass( CLASS_ID( CDetectable2D ) );
+	registerClass( CLASS_ID( CDetectable3D ) );
 }
 

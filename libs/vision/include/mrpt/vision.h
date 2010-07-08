@@ -40,6 +40,8 @@
 #include <mrpt/vision/camera_calib_ba.h>
 #include <mrpt/vision/tracking.h>
 
+#include <mrpt/vision/CDetectableObject.h>
+
 // Maps:
 #include <mrpt/slam/CLandmark.h>
 #include <mrpt/slam/CLandmarksMap.h>
