@@ -229,7 +229,7 @@ namespace mrpt
 			double		m_maxRange;	//!< Max range, as deducted from the camera frequency.
 
 			bool		m_preview_window; //!< Show preview window while grabbing
-			mrpt::gui::CDisplayWindowPtr  m_win2d;
+			mrpt::gui::CDisplayWindowPtr  m_win_range, m_win_int;
 
 			void *m_cam;  //!< opaque handler to SRCAM. NULL means it's not open yet.
 			

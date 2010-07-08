@@ -524,18 +524,28 @@ void CSwissRanger3DCamera::getNextObservation(
 	// preview in real-time?
 	if (m_preview_window)
 	{
-		if (!m_win2d)
-			m_win2d = mrpt::gui::CDisplayWindow::Create("Preview of range data");
-
-		mrpt::utils::CImage  img;
-		// Normalize the image
-		CMatrixFloat  range2D = _out_obs.rangeImage;
-		range2D*= 1.0/m_maxRange;
-		img.setFromMatrix(range2D);
-		m_win2d->showImage(img);
+		if ( _out_obs.hasRangeImage )
+		{
+			if (!m_win_range)	{ m_win_range = mrpt::gui::CDisplayWindow::Create("Preview RANGE"); m_win_range->setPos(5,5); }
+			
+			mrpt::utils::CImage  img;
+			// Normalize the image
+			CMatrixFloat  range2D = _out_obs.rangeImage;
+			range2D*= 1.0/m_maxRange;
+			img.setFromMatrix(range2D);
+			m_win_range->showImage(img);
+		}
+		if ( _out_obs.hasIntensityImage )
+		{
+			if (!m_win_int)		{ m_win_int = mrpt::gui::CDisplayWindow::Create("Preview INTENSITY"); m_win_int->setPos(300,5); }
+			m_win_int->showImage(_out_obs.intensityImage );
+		}
 	}
-	else if (m_win2d)
-		m_win2d.clear();
+	else 
+	{
+		if (m_win_range) m_win_range.clear();
+		if (m_win_int) m_win_int.clear();
+	}
 
 	return;
 #endif
