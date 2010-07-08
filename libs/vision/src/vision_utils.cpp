@@ -1819,7 +1819,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		cam,
 		normalize_image,
 		out_MSE,skipDrawDetectedImgs);
-		
+
 	intrinsicParams = cam.intrinsicParams;
 	distortionParams = cam.getDistortionParamsAsVector();
 	return ret;
@@ -2167,7 +2167,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		{
 			TImageCalibData	&dat = it->second;
 			if (!dat.img_original.isExternallyStored())
-				dat.img_original.rectifyImage( dat.img_rectified, out_camera_params.intrinsicParams, out_camera_params.getDistortionParamsAsVector());
+				dat.img_original.rectifyImage( dat.img_rectified, out_camera_params);
 		} // end undistort
 
 		// -----------------------------------------------

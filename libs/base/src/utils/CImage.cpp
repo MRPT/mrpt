@@ -43,7 +43,7 @@
 
 #if MRPT_HAS_OPENCV
 	#define CV_NO_CVV_IMAGE   // Avoid CImage name crash
-	
+
 #	if MRPT_OPENCV_VERSION_NUM>=0x211
 #		include <opencv2/core/core.hpp>
 #		include <opencv2/highgui/highgui.hpp>
@@ -2397,10 +2397,7 @@ void CImage::swapRB()
 /*---------------------------------------------------------------
                     rectifyImageInPlace
  ---------------------------------------------------------------*/
-// CImage		&out_img:		[OUT: UNDISTORTED IMAGE]
-// CMatrixDouble	&cameraMatrix:	[IN:  CAMERA MATRIX CONTAINING THE INTRINSIC PARAMETERS]
-// vector_double	&distCoeff:		[IN:  DISTORTION COEFFICIENTS]
-void CImage::rectifyImageInPlace( const math::CMatrixDouble33 &cameraMatrix, const vector_double &distCoeff )
+void CImage::rectifyImageInPlace( const mrpt::utils::TCamera &cameraParams  )
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
@@ -2411,11 +2408,13 @@ void CImage::rectifyImageInPlace( const math::CMatrixDouble33 &cameraMatrix, con
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
 	double aux1[3][3], aux2[1][4];
+	const CMatrixDouble33 &cameraMatrix = cameraParams.intrinsicParams;
 
-	aux1[0][0] = cameraMatrix(0,0);	aux1[0][1] = cameraMatrix(0,1);	aux1[0][2] = cameraMatrix(0,2);
-	aux1[1][0] = cameraMatrix(1,0);	aux1[1][1] = cameraMatrix(1,1);	aux1[1][2] = cameraMatrix(1,2);
-	aux1[2][0] = cameraMatrix(2,0);	aux1[2][1] = cameraMatrix(2,1);	aux1[2][2] = cameraMatrix(2,2);
-	aux2[0][0] = distCoeff[0];	aux2[0][1] = distCoeff[1];	aux2[0][2] = distCoeff[2];	aux2[0][3] = distCoeff[3];
+	for (int i=0;i<3;i++)
+		for (int j=0;j<3;j++)
+			aux1[i][j] = cameraMatrix(i,j);
+	for (int i=0;i<4;i++)
+		aux2[0][i]=cameraParams.dist[i];
 
 	CvMat inMat =  cvMat( cameraMatrix.getRowCount(), cameraMatrix.getColCount(), CV_64F, aux1 );
 	CvMat distM =  cvMat( 1, 4, CV_64F, aux2 );
@@ -2432,10 +2431,9 @@ void CImage::rectifyImageInPlace( const math::CMatrixDouble33 &cameraMatrix, con
 /*---------------------------------------------------------------
                         rectifyImage
  ---------------------------------------------------------------*/
-// CImage		&out_img:		[OUT: UNDISTORTED IMAGE]
-// CMatrixDouble	&cameraMatrix:	[IN:  CAMERA MATRIX CONTAINING THE INTRINSIC PARAMETERS]
-// vector_double	&distCoeff:		[IN:  DISTORTION COEFFICIENTS]
-void CImage::rectifyImage( CImage &out_img, const math::CMatrixDouble33 &cameraMatrix, const vector_double &distCoeff ) const
+void CImage::rectifyImage(
+	CImage &out_img,
+	const mrpt::utils::TCamera &cameraParams ) const
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
@@ -2446,20 +2444,19 @@ void CImage::rectifyImage( CImage &out_img, const math::CMatrixDouble33 &cameraM
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
 	double aux1[3][3], aux2[1][4];
+	const CMatrixDouble33 &cameraMatrix = cameraParams.intrinsicParams;
 
-	aux1[0][0] = cameraMatrix(0,0);	aux1[0][1] = cameraMatrix(0,1);	aux1[0][2] = cameraMatrix(0,2);
-	aux1[1][0] = cameraMatrix(1,0);	aux1[1][1] = cameraMatrix(1,1);	aux1[1][2] = cameraMatrix(1,2);
-	aux1[2][0] = cameraMatrix(2,0);	aux1[2][1] = cameraMatrix(2,1);	aux1[2][2] = cameraMatrix(2,2);
-	aux2[0][0] = distCoeff[0];	aux2[0][1] = distCoeff[1];	aux2[0][2] = distCoeff[2];	aux2[0][3] = distCoeff[3];
+	for (int i=0;i<3;i++)
+		for (int j=0;j<3;j++)
+			aux1[i][j] = cameraMatrix(i,j);
+	for (int i=0;i<4;i++)
+		aux2[0][i]=cameraParams.dist[i];
 
 	CvMat inMat =  cvMat( cameraMatrix.getRowCount(), cameraMatrix.getColCount(), CV_64F, aux1 );
 	CvMat distM =  cvMat( 1, 4, CV_64F, aux2 );
 
 	// Remove distortion
 	cvUndistort2( srcImg, outImg, &inMat, &distM );
-
-	//releaseIpl();
-	//img = outImg;
 
 	// OpenCV -> MRPT Output Transformation
 	out_img.loadFromIplImage( outImg );
@@ -2933,8 +2930,8 @@ void CImage::joinImagesHorz( const CImage &im1, const CImage &im2 )
 	else	// Assign the output image to the IPLImage pointer within the CImage
 		this->setFromIplImageReadOnly( out );
 
-	
-	
+
+
 #endif
 } // end
 

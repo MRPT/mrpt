@@ -32,6 +32,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CCanvas.h>
+#include <mrpt/utils/TCamera.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/exceptions.h>
 
@@ -51,12 +52,12 @@ namespace mrpt
 			IMG_INTERP_CUBIC=2,
 			IMG_INTERP_AREA=3
 		};
-		
+
 		/** For use in mrpt::utils::CImage */
 		typedef int  TImageChannels;
 		#define CH_GRAY  1
 		#define CH_RGB   3
-		
+
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CImage, mrpt::utils::CSerializable )
 
@@ -479,7 +480,7 @@ namespace mrpt
 			  */
 			TImageChannels getChannelCount() const;
 
-			/** Update a part of this image with the "patch" given as argument. 
+			/** Update a part of this image with the "patch" given as argument.
 			 * The "patch" will be "pasted" at the (col,row) coordinates of this image.
 			 * \exception std::exception if patch pasted on the pixel (_row, _column) jut out
 			 * of the image.
@@ -607,18 +608,41 @@ namespace mrpt
 			  */
 			void swapRB();
 
+			/** Rectify (un-distort) the image according to some camera parameters, and returns an output un-distorted image.
+			  * \param out_img The output rectified image
+			  * \param cameraParams The input camera params (containing the intrinsic and distortion parameters of the camera)
+			  */
+			void rectifyImage( CImage &out_img, const mrpt::utils::TCamera &cameraParams) const;
+
 			/** Rectify (un-distort) the image according to a certain camera matrix and vector of distortion coefficients and returns an output rectified image
 			  * \param out_img The output rectified image
 			  * \param cameraMatrix The input camera matrix (containing the intrinsic parameters of the camera): [fx 0 cx; 0 fy cy; 0 0 1]: (fx,fy)  focal length and (cx,cy) principal point coordinates
 			  * \param distCoeff The (input) distortion coefficients: [k1, k2, p1, p2]:  k1 and k2 (radial) and p1 and p2 (tangential)
 			  */
-			void rectifyImage( CImage &out_img, const math::CMatrixDouble33 &cameraMatrix, const vector_double &distCoeff ) const;
+			inline void rectifyImage( CImage &out_img, const math::CMatrixDouble33 &cameraMatrix, const vector_double &distCoeff ) const
+			{
+				mrpt::utils::TCamera  cam;
+				cam.intrinsicParams = cameraMatrix;
+				cam.setDistortionParamsVector(distCoeff);
+				rectifyImage(out_img,cam);
+			}
 
-			/** Rectify (un-distort) the image according to a certain camera matrix and vector of distortion coefficients, replacing "this"· with the rectified image
+			/** Rectify (un-distort) the image according to a certain camera matrix and vector of distortion coefficients, replacing "this" with the rectified image
+			  * \param cameraParams The input camera params (containing the intrinsic and distortion parameters of the camera)
+			  */
+			void rectifyImageInPlace(const mrpt::utils::TCamera &cameraParams );
+
+			/** Rectify (un-distort) the image according to a certain camera matrix and vector of distortion coefficients, replacing "this" with the rectified image
 			  * \param cameraMatrix The input camera matrix (containing the intrinsic parameters of the camera): [fx 0 cx; 0 fy cy; 0 0 1]: (fx,fy)  focal length and (cx,cy) principal point coordinates
 			  * \param distCoeff The (input) distortion coefficients: [k1, k2, p1, p2]:  k1 and k2 (radial) and p1 and p2 (tangential)
 			  */
-			void rectifyImageInPlace( const math::CMatrixDouble33 &cameraMatrix, const vector_double &distCoeff );
+			inline void rectifyImageInPlace( const math::CMatrixDouble33 &cameraMatrix, const vector_double &distCoeff )
+			{
+				mrpt::utils::TCamera  cam;
+				cam.intrinsicParams = cameraMatrix;
+				cam.setDistortionParamsVector(distCoeff);
+				rectifyImageInPlace(cam);
+			}
 
 			/** Filter the image with a Median filter with a window size WxW, returning the filtered image in out_img  */
 			void filterMedian( CImage &out_img, int W=3 ) const;
