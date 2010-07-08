@@ -85,6 +85,11 @@ namespace mrpt
 		  *    fy         = 262.9218
 		  *    dist       = [-8.258543e-01 6.561022e-01 2.699818e-06 -3.263559e-05 0]
 		  *
+		  *    // For externaly stored images, the format of image files (default=jpg)
+		  *    //external_images_format  = jpg
+		  *    // (Only when external_images_format=jpg): Optional parameter to set the JPEG compression quality:
+		  *    //external_images_jpeg_quality = 95    // [1-100]. Default: 95
+		  *
 		  *    pose_x=0.21	// Camera position in the robot (meters)
 		  *    pose_y=0
 		  *    pose_z=0.34

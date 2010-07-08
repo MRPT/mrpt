@@ -484,7 +484,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer1 = new wxFlexGridSizer(0, 1, 0, 0);
 	FlexGridSizer1->AddGrowableCol(0);
 	FlexGridSizer1->AddGrowableRow(0);
-	pagesCameras = new wxNotebook(this, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, wxNB_MULTILINE, _T("ID_NOTEBOOK1"));
+	pagesCameras = new wxNotebook(this, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_NOTEBOOK1"));
 	Panel2 = new wxPanel(pagesCameras, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
 	FlexGridSizer10 = new wxFlexGridSizer(0, 2, 0, 0);
 	FlexGridSizer10->AddGrowableCol(1);
@@ -593,7 +593,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer18->Fit(Panel1);
 	FlexGridSizer18->SetSizeHints(Panel1);
 	pnSwissRanger = new wxPanel(pagesCameras, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
-	FlexGridSizer2 = new wxFlexGridSizer(3, 3, 0, 0);
+	FlexGridSizer2 = new wxFlexGridSizer(3, 2, 0, 0);
 	wxString __wxRadioBoxChoices_2[2] =
 	{
 	_("USB"),

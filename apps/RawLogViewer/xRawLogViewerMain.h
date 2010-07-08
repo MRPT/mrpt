@@ -31,22 +31,21 @@
 
 
 //(*Headers(xRawLogViewerFrame)
-#include "CRawlogTreeView.h"
-#include <wx/notebook.h>
-#include <wx/sizer.h>
-#include <wx/stattext.h>
-#include <wx/menu.h>
-#include <wx/textctrl.h>
-#include <wx/checkbox.h>
-#include <wx/splitter.h>
 #include <wx/toolbar.h>
-#include "MyGLCanvas.h"
-#include <wx/panel.h>
-#include <wx/statbmp.h>
+#include <wx/sizer.h>
+#include <wx/notebook.h>
 #include <wx/button.h>
-#include <wx/frame.h>
-#include <wx/timer.h>
+#include <wx/menu.h>
+#include <wx/panel.h>
+#include <wx/splitter.h>
 #include <wx/statusbr.h>
+#include "CRawlogTreeView.h"
+#include <wx/frame.h>
+#include "MyGLCanvas.h"
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+#include <wx/timer.h>
+#include <wx/statbmp.h>
 //*)
 
 #include <wx/bitmap.h>
@@ -246,7 +245,6 @@ private:
     void OnMenuRegenerateTimestampBySF(wxCommandEvent& event);
     void OnmnuCreateAVISelected(wxCommandEvent& event);
     void OnMenuRegenerateOdometryTimes(wxCommandEvent& event);
-    void OncbObs3Dauto_histogramClick(wxCommandEvent& event);
     void OnMenuItem3DObsRecoverParams(wxCommandEvent& event);
     //*)
 
@@ -287,7 +285,6 @@ private:
     static const long ID_PANEL20;
     static const long ID_STATICBITMAP4;
     static const long ID_PANEL21;
-    static const long ID_CHECKBOX1;
     static const long ID_STATICBITMAP5;
     static const long ID_PANEL22;
     static const long ID_STATICBITMAP6;
@@ -404,141 +401,140 @@ private:
     //*)
 
     //(*Declarations(xRawLogViewerFrame)
-    wxMenu* MenuItem51;
-    wxBoxSizer* BoxSizer4;
-    wxMenu* MenuItem42;
-    mpWindow* plotRangeBearing;
-    wxToolBarToolBase* ToolBarItem4;
-    wxMenuItem* MenuItem61;
-    wxMenuItem* MenuItem31;
-    wxMenuItem* MenuItem57;
-    wxStaticBitmapPopup* bmpObsImage;
-    wxPanel* pn3Dobs_Conf;
-    wxMenuItem* MenuItem59;
-    wxPanel* pn_CSensorialFrame;
-    wxPanel* Panel5;
-    wxToolBar* ToolBar1;
-    wxPanel* pn_CObservation2DRangeScan;
-    wxToolBarToolBase* ToolBarItem9;
-    wxMenuItem* MenuItem7;
-    wxMenuItem* MenuItem74;
-    wxBoxSizer* BoxSizer5;
-    wxMenuItem* MenuItem40;
-    wxNotebook* Notebook1;
-    wxPanel* pn_CObservationGasSensors;
-    wxMenuItem* MenuItem80;
-    wxToolBarToolBase* ToolBarItem3;
-    wxBoxSizer* BoxSizer8;
-    wxMenuItem* MenuItem54;
-    wxPanel* pn_CObservationBeaconRanges;
-    wxStaticText* StaticText2;
-    wxPanel* Panel4;
-    wxMenuItem* MenuItem49;
-    wxMenuItem* MenuItem50;
-    mpWindow* plotScan2D;
-    wxMenuItem* MenuItem68;
-    wxMenu* Menu14;
-    wxStaticBitmapPopup* bmp3Dobs_depth;
-    wxMenu* Menu3;
-    wxToolBarToolBase* ToolBarItem10;
-    wxMenu* Menu20;
-    wxMenuItem* MenuItem71;
-    mpWindow* plotAct2D_PHI;
-    wxMenu* MenuItem20;
-    wxMenuItem* MenuItem46;
-    wxStaticBitmapPopup* bmpObsStereoLeft;
-    wxMenuItem* MenuItem4;
-    wxMenuItem* MenuItem76;
-    wxPanel* pn_Action;
-    wxMenuItem* MenuItem14;
-    wxMenuItem* MenuItem36;
-    wxMenuItem* MenuItem11;
-    wxPanel* pn3Dobs_3D;
-    wxMenu mnuTree;
-    wxPanel* Panel9;
     wxMenuItem* MenuItem29;
-    wxMenu* Menu40;
-    wxPanel* Panel8;
-    wxPanel* pn_CObservationImage;
-    wxMenuItem* MenuItem15;
-    wxMenu* MenuItem39;
-    wxMenuItem* MenuItem73;
-    wxMenu* MenuItem6;
-    wxPanel* pn_CObservationGPS;
-    wxPanel* Panel1;
-    wxMenuItem* MenuItem37;
-    wxMenu* Menu38;
-    wxStaticText* StaticText1;
-    wxMenuItem* MenuItem32;
-    wxBoxSizer* BoxSizer2;
-    wxTimer timAutoLoad;
-    wxMenuItem* MenuItem13;
-    wxMenu* MenuItem8;
-    mpWindow* plotAct2D_XY;
-    wxMenuItem* MenuItem10;
-    wxNotebook* nb_3DObsChannels;
-    wxMenuItem* MenuItem62;
-    wxPanel* Panel6;
-    wxPanel* Panel3;
-    wxToolBarToolBase* ToolBarItem6;
-    wxMenuItem* MenuItem72;
-    wxMenuItem* MenuItem44;
-    wxPanel* pn_CObservationBearingRange;
-    wxMenuItem* MenuItem79;
-    wxToolBarToolBase* ToolBarItem1;
-    wxMenu* Menu23;
-    wxMenuItem* MenuItem38;
-    wxMenuItem* MenuItem3;
-    CRawlogTreeView* tree_view;
-    wxMenuItem* MenuItem64;
-    wxStaticBitmapPopup* bmp3Dobs_int;
-    wxTextCtrl* memo;
-    wxMenuItem* MenuItem28;
-    wxMenuItem* MenuItem63;
-    CMyGLCanvas* m_gl3DRangeScan;
-    wxPanel* Panel7;
-    wxMenuItem* MenuItem78;
-    wxPanel* pn3Dobs_Depth;
-    wxMenuItem* mnuCreateAVI;
-    wxMenu* MenuItem45;
-    wxStatusBar* StatusBar1;
-    wxMenuItem* MenuItem52;
-    wxMenuItem* MenuItem35;
-    wxSplitterWindow* SplitterWindow3;
-    wxMenuItem* MenuItem23;
-    wxToolBarToolBase* ToolBarItem5;
-    wxBoxSizer* BoxSizer1;
-    wxStaticBitmapPopup* bmp3Dobs_conf;
-    wxMenuItem* MenuItem58;
-    wxPanel* pn3Dobs_Int;
-    wxTextCtrl* memStats;
-    wxToolBarToolBase* ToolBarItem8;
     wxPanel* pn_CObservationStereoImage;
-    wxPanel* Panel2;
-    wxMenu* MenuItem5;
-    wxMenuItem* MenuItem21;
-    wxNotebook* Notebook2;
-    wxMenuItem* MenuItem34;
-    wxMenuItem* MenuItem16;
-    wxSplitterWindow* SplitterWindow1;
-    wxBoxSizer* BoxSizer3;
-    wxNotebook* Notebook3;
-    wxMenu* Menu6;
-    wxMenuItem* MenuItem9;
-    wxPanel* pn_CObservation3DRangeScan;
-    wxMenuItem* MenuItem47;
+    wxMenuItem* MenuItem23;
+    wxMenu* Menu14;
+    wxPanel* pn_Action;
+    wxMenuItem* MenuItem40;
+    wxMenuItem* MenuItem59;
+    wxMenuItem* MenuItem31;
+    wxMenuItem* MenuItem49;
+    wxToolBarToolBase* ToolBarItem5;
+    wxPanel* Panel6;
+    wxPanel* Panel1;
     wxMenuItem* MenuItem30;
+    mpWindow* plotAct2D_PHI;
+    wxPanel* pn_CSensorialFrame;
+    wxPanel* Panel7;
+    wxBoxSizer* BoxSizer3;
+    wxPanel* pn3Dobs_Int;
+    wxMenuItem* MenuItem68;
+    wxStatusBar* StatusBar1;
     wxStaticBitmapPopup* bmpObsStereoRight;
-    wxMenuItem* MenuItem77;
-    wxMenuItem* MenuItem66;
-    wxMenuItem* MenuItem53;
-    wxToolBarToolBase* ToolBarItem2;
-    wxMenuItem* MenuItem48;
-    wxCheckBox* cbObs3Dauto_histogram;
-    wxMenu* Menu4;
+    wxMenuItem* MenuItem16;
+    wxMenuItem* MenuItem73;
+    wxMenuItem* MenuItem36;
+    wxPanel* pn3Dobs_Depth;
+    mpWindow* plotScan2D;
     wxTextCtrl* txtException;
-    wxButton* btnEditComments;
+    wxMenuItem* MenuItem80;
+    wxMenuItem* MenuItem50;
+    wxMenu* MenuItem51;
+    wxStaticBitmapPopup* bmp3Dobs_conf;
+    wxToolBarToolBase* ToolBarItem6;
+    wxPanel* pn_CObservation3DRangeScan;
+    wxMenu* Menu3;
+    wxStaticBitmapPopup* bmp3Dobs_int;
+    wxMenu* MenuItem39;
+    wxMenuItem* MenuItem32;
+    wxMenu* MenuItem45;
+    wxMenuItem* MenuItem52;
+    wxMenu* Menu40;
+    wxPanel* pn_CObservationBearingRange;
+    wxTimer timAutoLoad;
+    wxMenu* Menu6;
+    wxMenuItem* MenuItem66;
+    wxMenuItem* MenuItem48;
+    wxMenuItem* MenuItem76;
+    wxPanel* Panel8;
+    wxPanel* Panel9;
+    wxMenuItem* MenuItem64;
+    wxBoxSizer* BoxSizer2;
+    wxMenuItem* MenuItem15;
+    wxMenuItem* MenuItem72;
+    wxStaticText* StaticText1;
     wxToolBarToolBase* ToolBarItem7;
+    wxPanel* pn3Dobs_3D;
+    wxPanel* Panel2;
+    wxToolBarToolBase* ToolBarItem2;
+    wxMenuItem* MenuItem21;
+    wxSplitterWindow* SplitterWindow1;
+    wxMenuItem* MenuItem57;
+    wxToolBarToolBase* ToolBarItem9;
+    wxMenuItem* mnuCreateAVI;
+    wxMenuItem* MenuItem54;
+    wxPanel* pn3Dobs_Conf;
+    wxMenuItem* MenuItem74;
+    wxMenu* MenuItem6;
+    wxPanel* Panel4;
+    wxButton* btnEditComments;
+    wxPanel* pn_CObservationBeaconRanges;
+    wxPanel* pn_CObservationGPS;
+    wxTextCtrl* memStats;
+    wxMenuItem* MenuItem3;
+    mpWindow* plotRangeBearing;
+    wxMenu mnuTree;
+    wxMenu* Menu20;
+    wxPanel* Panel5;
+    wxMenuItem* MenuItem78;
+    wxPanel* pn_CObservationImage;
+    wxMenuItem* MenuItem9;
+    wxToolBarToolBase* ToolBarItem10;
+    wxMenu* Menu4;
+    wxBoxSizer* BoxSizer4;
+    wxSplitterWindow* SplitterWindow3;
+    wxMenu* MenuItem5;
+    wxMenuItem* MenuItem35;
+    wxToolBar* ToolBar1;
+    CRawlogTreeView* tree_view;
+    wxMenuItem* MenuItem11;
+    wxPanel* Panel3;
+    wxMenuItem* MenuItem63;
+    wxStaticBitmapPopup* bmpObsImage;
+    wxBoxSizer* BoxSizer8;
+    mpWindow* plotAct2D_XY;
+    wxNotebook* Notebook3;
+    wxToolBarToolBase* ToolBarItem4;
+    wxMenuItem* MenuItem77;
+    wxNotebook* Notebook2;
+    wxMenuItem* MenuItem79;
+    wxMenuItem* MenuItem44;
+    wxStaticBitmapPopup* bmpObsStereoLeft;
+    wxToolBarToolBase* ToolBarItem1;
+    wxTextCtrl* memo;
+    wxBoxSizer* BoxSizer1;
+    wxMenuItem* MenuItem38;
+    wxStaticBitmapPopup* bmp3Dobs_depth;
+    wxMenuItem* MenuItem10;
+    CMyGLCanvas* m_gl3DRangeScan;
+    wxStaticText* StaticText2;
+    wxNotebook* Notebook1;
+    wxPanel* pn_CObservation2DRangeScan;
+    wxToolBarToolBase* ToolBarItem3;
+    wxMenuItem* MenuItem53;
+    wxMenuItem* MenuItem7;
+    wxMenuItem* MenuItem4;
+    wxMenu* MenuItem42;
+    wxMenuItem* MenuItem62;
+    wxMenuItem* MenuItem13;
+    wxNotebook* nb_3DObsChannels;
+    wxMenu* Menu23;
+    wxMenuItem* MenuItem28;
+    wxMenuItem* MenuItem37;
+    wxMenuItem* MenuItem61;
+    wxToolBarToolBase* ToolBarItem8;
+    wxMenu* MenuItem8;
+    wxPanel* pn_CObservationGasSensors;
+    wxMenuItem* MenuItem34;
+    wxMenuItem* MenuItem47;
+    wxMenuItem* MenuItem14;
+    wxMenu* Menu38;
+    wxMenu* MenuItem20;
+    wxMenuItem* MenuItem58;
+    wxBoxSizer* BoxSizer5;
+    wxMenuItem* MenuItem46;
+    wxMenuItem* MenuItem71;
     //*)
 
 

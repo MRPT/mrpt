@@ -2451,7 +2451,7 @@ void CImage::rectifyImage(
 			aux1[i][j] = cameraMatrix(i,j);
 	for (int i=0;i<4;i++)
 		aux2[0][i]=cameraParams.dist[i];
-
+		
 	CvMat inMat =  cvMat( cameraMatrix.getRowCount(), cameraMatrix.getColCount(), CV_64F, aux1 );
 	CvMat distM =  cvMat( 1, 4, CV_64F, aux2 );
 

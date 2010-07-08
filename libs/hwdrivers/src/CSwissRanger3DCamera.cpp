@@ -87,17 +87,17 @@ CSwissRanger3DCamera::CSwissRanger3DCamera()  :
 {
 	m_sensorLabel = "3DCAM";
 	
-	// Default params:
+	// Default params: Obtained from a SR4000 with 0.004px avr reprojection error.
 	m_cameraParams.ncols = 176;
 	m_cameraParams.nrows = 144;
-	m_cameraParams.intrinsicParams(0,0) = 252.5409; // fx
-	m_cameraParams.intrinsicParams(1,1) = 253.3256; // fy
-	m_cameraParams.intrinsicParams(0,2) = 89.22405; // cx
-	m_cameraParams.intrinsicParams(0,2) = 68.20542; // cy
-	m_cameraParams.dist[0] = -9.008820e-01;
-	m_cameraParams.dist[1] = 8.207181e-01; 
-	m_cameraParams.dist[2] = 3.417374e-03;
-	m_cameraParams.dist[3] = -5.459138e-04;
+	m_cameraParams.intrinsicParams(0,0) = 262.9201; // fx
+	m_cameraParams.intrinsicParams(1,1) = 262.9218; // fy
+	m_cameraParams.intrinsicParams(0,2) = 87.99958; // cx
+	m_cameraParams.intrinsicParams(1,2) = 68.99957; // cy
+	m_cameraParams.dist[0] = -8.258543e-01;
+	m_cameraParams.dist[1] =  6.561022e-01;
+	m_cameraParams.dist[2] =  2.699818e-06;
+	m_cameraParams.dist[3] = -3.263559e-05;
 	m_cameraParams.dist[4] = 0;
 	
 #if !MRPT_HAS_SWISSRANGE
@@ -229,8 +229,18 @@ void  CSwissRanger3DCamera::loadConfig_sensorSpecific(
 	m_open_from_usb = configSource.read_bool(iniSection,"open_from_usb",m_open_from_usb);
 	m_usb_serial = configSource.read_uint64_t(iniSection,"usb_serial",m_usb_serial);
 	m_ip_address = configSource.read_string(iniSection,"ip_address",m_ip_address);
+
+	m_external_images_format = mrpt::utils::trim( configSource.read_string( iniSection, "external_images_format", m_external_images_format ) );
+	m_external_images_jpeg_quality = configSource.read_int( iniSection, "external_images_jpeg_quality", m_external_images_jpeg_quality );
 	
-	m_cameraParams.loadFromConfigFile(iniSection, configSource);
+	try
+	{
+		m_cameraParams.loadFromConfigFile(iniSection, configSource);
+	}
+	catch(std::exception &e)
+	{
+		// If there's some missing field, just keep the default values.	
+	}
 }
 
 

@@ -104,32 +104,36 @@ void Test_SwissRanger()
 		scene->insert( gl_points );
 		scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
 		scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
+		
+		const int VW_WIDTH = 200;
+		const int VW_HEIGHT = 150;
+		const int VW_GAP = 10;
 
 		// Create the Opengl objects for the planar images, as textured planes, each in a separate viewport:
-		win3D.addTextMessage(30,-195+230+5,"Range data",TColorf(1,1,1), 1 );
+		win3D.addTextMessage(30,-10-1*(VW_GAP+VW_HEIGHT),"Range data",TColorf(1,1,1), 1, MRPT_GLUT_BITMAP_HELVETICA_12 );
 		opengl::COpenGLViewportPtr viewRange = scene->createViewport("view2d_range");
 		scene->insert( gl_img_range, "view2d_range");
-		viewRange->setViewportPosition(5,-195, 200,230);
+		viewRange->setViewportPosition(5,-10-1*(VW_GAP+VW_HEIGHT), VW_WIDTH,VW_HEIGHT);
 		viewRange->setTransparent(true);
 		viewRange->getCamera().setOrthogonal(true);
 		viewRange->getCamera().setAzimuthDegrees(90);
 		viewRange->getCamera().setElevationDegrees(90);
 		viewRange->getCamera().setZoomDistance(1.0);
 
-		win3D.addTextMessage(30, -380+230+5,"Intensity data",TColorf(1,1,1), 2 );
+		win3D.addTextMessage(30, -10-2*(VW_GAP+VW_HEIGHT),"Intensity data",TColorf(1,1,1), 2, MRPT_GLUT_BITMAP_HELVETICA_12 );
 		opengl::COpenGLViewportPtr viewInt = scene->createViewport("view2d_int");
 		scene->insert( gl_img_intensity, "view2d_int");
-		viewInt->setViewportPosition(5, -380, 200,230 );
+		viewInt->setViewportPosition(5, -10-2*(VW_GAP+VW_HEIGHT), VW_WIDTH,VW_HEIGHT );
 		viewInt->setTransparent(true);
 		viewInt->getCamera().setOrthogonal(true);
 		viewInt->getCamera().setAzimuthDegrees(90);
 		viewInt->getCamera().setElevationDegrees(90);
 		viewInt->getCamera().setZoomDistance(1.0);
 
-		win3D.addTextMessage(30, -570+230+5,"Intensity data (undistorted)",TColorf(1,1,1), 3 );
+		win3D.addTextMessage(30, -10-3*(VW_GAP+VW_HEIGHT),"Intensity data (undistorted)",TColorf(1,1,1), 3, MRPT_GLUT_BITMAP_HELVETICA_12 );
 		opengl::COpenGLViewportPtr viewIntRect = scene->createViewport("view2d_intrect");
 		scene->insert( gl_img_intensity_rect, "view2d_intrect");
-		viewIntRect->setViewportPosition(5, -570, 200,230 );
+		viewIntRect->setViewportPosition(5, -10-3*(VW_GAP+VW_HEIGHT), VW_WIDTH,VW_HEIGHT );
 		viewIntRect->setTransparent(true);
 		viewIntRect->getCamera().setOrthogonal(true);
 		viewIntRect->getCamera().setAzimuthDegrees(90);
@@ -147,7 +151,7 @@ void Test_SwissRanger()
 
 	bool endLoop = false;
 
-	while (there_is_obs && !endLoop )
+	while (there_is_obs && !endLoop && win3D.isOpen() )
 	{
 		// Grab new observation from the camera:
 		cam.getNextObservation(obs,there_is_obs,hard_error);
@@ -173,7 +177,7 @@ void Test_SwissRanger()
 				gl_img_intensity->assignImage(obs.intensityImage);
 				
 				CImage  undistortImg;
-				obs.intensityImage.rectifyImage(undistortImg, obs.cameraParams.intrinsicParams, obs.cameraParams.getDistortionParamsAsVector());
+				obs.intensityImage.rectifyImage(undistortImg, obs.cameraParams);
 				gl_img_intensity_rect->assignImage(undistortImg);
 			win3D.unlockAccess3DScene();
 		}

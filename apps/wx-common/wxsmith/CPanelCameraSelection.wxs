@@ -7,7 +7,6 @@
 			<growablerows>0</growablerows>
 			<object class="sizeritem">
 				<object class="wxNotebook" name="ID_NOTEBOOK1" variable="pagesCameras" member="yes">
-					<style>wxNB_MULTILINE</style>
 					<object class="notebookpage">
 						<object class="wxPanel" name="ID_PANEL2" variable="Panel2" member="yes">
 							<object class="wxFlexGridSizer" variable="FlexGridSizer10" member="no">
@@ -291,7 +290,7 @@
 						<object class="wxPanel" name="ID_PANEL1" variable="pnSwissRanger" member="yes">
 							<object class="wxFlexGridSizer" variable="FlexGridSizer2" member="no">
 								<cols>3</cols>
-								<rows>3</rows>
+								<rows>2</rows>
 								<object class="sizeritem">
 									<object class="wxRadioBox" name="ID_RADIOBOX2" variable="rbSR_usb" member="yes">
 										<label>Connection</label>

@@ -57,13 +57,13 @@
 #include <mrpt/gui/WxUtils.h>
 
 //(*InternalHeaders(xRawLogViewerFrame)
-#include <wx/artprov.h>
+#include <wx/string.h>
+#include <wx/intl.h>
+#include <wx/font.h>
 #include <wx/bitmap.h>
 #include <wx/icon.h>
-#include <wx/font.h>
-#include <wx/intl.h>
 #include <wx/image.h>
-#include <wx/string.h>
+#include <wx/artprov.h>
 //*)
 
 #include <wx/tooltip.h>
@@ -218,7 +218,6 @@ const long xRawLogViewerFrame::ID_XY_GLCANVAS = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL20 = wxNewId();
 const long xRawLogViewerFrame::ID_STATICBITMAP4 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL21 = wxNewId();
-const long xRawLogViewerFrame::ID_CHECKBOX1 = wxNewId();
 const long xRawLogViewerFrame::ID_STATICBITMAP5 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL22 = wxNewId();
 const long xRawLogViewerFrame::ID_STATICBITMAP6 = wxNewId();
@@ -353,52 +352,52 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxArtProvider::Push(new MyArtProvider);
 
 	//(*Initialize(xRawLogViewerFrame)
-	wxMenu* Menu39;
-	wxFlexGridSizer* FlexGridSizer4;
-	wxMenuItem* MenuItem33;
-	wxMenuItem* MenuItem26;
-	wxMenuItem* MenuItem25;
 	wxMenuItem* MenuItem2;
-	wxFlexGridSizer* FlexGridSizer10;
-	wxFlexGridSizer* FlexGridSizer3;
-	wxMenuItem* MenuItem55;
-	wxMenuItem* MenuItem1;
-	wxMenuItem* MenuItem56;
-	wxFlexGridSizer* FlexGridSizer5;
-	wxFlexGridSizer* FlexGridSizer9;
-	wxMenuItem* MenuItem22;
-	wxFlexGridSizer* FlexGridSizer2;
-	wxMenuItem* MenuItem17;
-	wxMenu* Menu1;
-	wxFlexGridSizer* FlexGridSizer7;
-	wxMenuItem* MenuItem82;
-	wxMenuItem* MenuItem75;
-	wxMenuItem* MenuItem60;
-	wxMenuItem* MenuItem12;
-	wxMenuItem* MenuItem24;
-	wxMenuItem* MenuItem69;
-	wxMenuItem* MenuItem27;
-	wxFlexGridSizer* FlexGridSizer8;
-	wxMenuItem* MenuItem70;
-	wxMenuItem* MenuItem67;
-	wxMenuItem* MenuItem65;
-	wxMenuItem* MenuItem41;
 	wxMenu* MenuItem81;
-	wxMenuBar* MenuBar1;
-	wxFlexGridSizer* FlexGridSizer6;
+	wxMenuItem* MenuItem1;
+	wxFlexGridSizer* FlexGridSizer8;
 	wxFlexGridSizer* FlexGridSizer1;
-	wxFlexGridSizer* FlexGridSizer11;
+	wxFlexGridSizer* FlexGridSizer2;
 	wxMenuItem* MenuItem43;
-	wxMenu* Menu2;
-	wxMenuItem* MenuItem18;
+	wxMenu* Menu39;
+	wxMenuItem* MenuItem75;
+	wxMenu* Menu1;
+	wxMenuItem* MenuItem12;
+	wxMenuItem* MenuItem25;
+	wxMenuItem* MenuItem55;
 	wxMenuItem* MenuItem19;
+	wxFlexGridSizer* FlexGridSizer11;
+	wxMenuItem* MenuItem65;
+	wxMenuItem* MenuItem56;
+	wxMenuItem* MenuItem67;
+	wxMenuItem* MenuItem33;
+	wxFlexGridSizer* FlexGridSizer7;
+	wxMenuItem* MenuItem24;
+	wxFlexGridSizer* FlexGridSizer4;
+	wxMenuItem* MenuItem69;
+	wxFlexGridSizer* FlexGridSizer9;
+	wxFlexGridSizer* FlexGridSizer6;
+	wxMenuItem* MenuItem17;
+	wxFlexGridSizer* FlexGridSizer3;
+	wxMenuItem* MenuItem60;
+	wxMenuItem* MenuItem22;
+	wxMenuItem* MenuItem41;
+	wxFlexGridSizer* FlexGridSizer10;
+	wxMenuItem* MenuItem82;
+	wxMenuBar* MenuBar1;
+	wxMenuItem* MenuItem27;
+	wxMenuItem* MenuItem18;
+	wxMenuItem* MenuItem26;
+	wxMenuItem* MenuItem70;
+	wxMenu* Menu2;
+	wxFlexGridSizer* FlexGridSizer5;
 	
 	Create(parent, id, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("id"));
 	SetClientSize(wxSize(700,500));
 	{
-		wxIcon FrameIcon;
-		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_OTHER));
-		SetIcon(FrameIcon);
+	wxIcon FrameIcon;
+	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_OTHER));
+	SetIcon(FrameIcon);
 	}
 	SplitterWindow1 = new wxSplitterWindow(this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_3DBORDER|wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW1"));
 	SplitterWindow1->SetMinSize(wxSize(10,10));
@@ -546,12 +545,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	FlexGridSizer9->Fit(pn3Dobs_Depth);
 	FlexGridSizer9->SetSizeHints(pn3Dobs_Depth);
 	pn3Dobs_Int = new wxPanel(nb_3DObsChannels, ID_PANEL22, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL22"));
-	FlexGridSizer10 = new wxFlexGridSizer(2, 1, 0, 0);
+	FlexGridSizer10 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer10->AddGrowableCol(0);
-	FlexGridSizer10->AddGrowableRow(1);
-	cbObs3Dauto_histogram = new wxCheckBox(pn3Dobs_Int, ID_CHECKBOX1, _("Normalize histogram"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
-	cbObs3Dauto_histogram->SetValue(true);
-	FlexGridSizer10->Add(cbObs3Dauto_histogram, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer10->AddGrowableRow(0);
 	bmp3Dobs_int = new wxStaticBitmapPopup(pn3Dobs_Int, ID_STATICBITMAP5, wxNullBitmap, wxPoint(0,0), wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP5"));
 	FlexGridSizer10->Add(bmp3Dobs_int, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	pn3Dobs_Int->SetSizer(FlexGridSizer10);
@@ -825,7 +821,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	timAutoLoad.Start(50, true);
 	
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnbtnEditCommentsClick1);
-	Connect(ID_CHECKBOX1,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OncbObs3Dauto_histogramClick);
 	Connect(ID_NOTEBOOK1,wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,(wxObjectEventFunction)&xRawLogViewerFrame::OnNotebook1PageChanging);
 	Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnFileOpen);
 	Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnSaveFile);
@@ -2276,9 +2271,6 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 														if (obs->hasIntensityImage)
 														{
 															CImage im = obs->intensityImage;
-
-															if (cbObs3Dauto_histogram->GetValue())
-																im.equalizeHistInPlace();
 
 															wxImage *img = mrpt::gui::MRPTImage2wxImage( im );
 															bmp3Dobs_int->SetBitmap( wxBitmap(*img) );
@@ -5983,12 +5975,6 @@ void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent& event)
 	wxMessageBox(_U( format("%u entries have been modified",nChanges).c_str() ),_("Done"),wxOK,this);
 
 	WX_END_TRY
-}
-
-void xRawLogViewerFrame::OncbObs3Dauto_histogramClick(wxCommandEvent& event)
-{
-	// Refresh:
-	SelectObjectInTreeView(curSelectedObject);
 }
 
 // Recover 3D camera params from range data:
