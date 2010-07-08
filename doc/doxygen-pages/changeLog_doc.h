@@ -37,6 +37,9 @@
 		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.
 		- New application 'track-video-features' illustrating feature detection and tracking (many of this functionality is new or has been improved in this MRPT version).
 	- <b>Detailed list of changes:</b>
+		- Changes in applications:
+			- camera-calib can now open SwissRangers 3D cameras as well for real-time calibration.
+			- rawlog-grabber: New config file optional argument: "rawlog_GZ_compress_level" to settle the desired GZ-compression level of rawlogs.
 		- Changes in classes:
 			- mrpt::hwdrivers::prepareVideoSourceFromUserSelection() now also displays as an option to grab images from SwissRanger 3D cameras.
 			- mrpt::hwdrivers::CCameraSensor can now open SwissRanger 3D cameras.

@@ -108,12 +108,15 @@ int main(int argc, char **argv)
 		double			SF_max_time_span = 0.25;			// Seconds
 		bool			use_sensoryframes = false;
 		int				GRABBER_PERIOD_MS = 1000;
+		int 			rawlog_GZ_compress_level  = 1;  // 0: No compress, 1-9: compress level
 
 		MRPT_LOAD_CONFIG_VAR( rawlog_prefix, string, iniFile, GLOBAL_SECTION_NAME );
 		MRPT_LOAD_CONFIG_VAR( time_between_launches, int, iniFile, GLOBAL_SECTION_NAME );
 		MRPT_LOAD_CONFIG_VAR( SF_max_time_span, float,		iniFile, GLOBAL_SECTION_NAME );
 		MRPT_LOAD_CONFIG_VAR( use_sensoryframes, bool,		iniFile, GLOBAL_SECTION_NAME );
 		MRPT_LOAD_CONFIG_VAR( GRABBER_PERIOD_MS, int, iniFile, GLOBAL_SECTION_NAME );
+		
+		MRPT_LOAD_CONFIG_VAR( rawlog_GZ_compress_level, int, iniFile, GLOBAL_SECTION_NAME );
 
 		// Build full rawlog file name:
 		string	rawlog_postfix = "_";
@@ -174,7 +177,9 @@ int main(int argc, char **argv)
 		// ----------------------------------------------
 		// Run:
 		// ----------------------------------------------
-		CFileGZOutputStream	out_file( rawlog_filename );
+		CFileGZOutputStream	out_file; 
+		
+		out_file.open( rawlog_filename, rawlog_GZ_compress_level );
 
 		CSensoryFrame						curSF;
 		CGenericSensor::TListObservations	copy_of_global_list_obs;
