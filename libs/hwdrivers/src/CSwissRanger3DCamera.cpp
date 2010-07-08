@@ -526,19 +526,29 @@ void CSwissRanger3DCamera::getNextObservation(
 	{
 		if ( _out_obs.hasRangeImage )
 		{
-			if (!m_win_range)	{ m_win_range = mrpt::gui::CDisplayWindow::Create("Preview RANGE"); m_win_range->setPos(5,5); }
+			static int decim = 0;
+			if (++decim>10)
+			{
+				decim=0;
+				if (!m_win_range)	{ m_win_range = mrpt::gui::CDisplayWindow::Create("Preview RANGE"); m_win_range->setPos(5,5); }
 			
-			mrpt::utils::CImage  img;
-			// Normalize the image
-			CMatrixFloat  range2D = _out_obs.rangeImage;
-			range2D*= 1.0/m_maxRange;
-			img.setFromMatrix(range2D);
-			m_win_range->showImage(img);
+				mrpt::utils::CImage  img;
+				// Normalize the image
+				CMatrixFloat  range2D = _out_obs.rangeImage;
+				range2D*= 1.0/m_maxRange;
+				img.setFromMatrix(range2D);
+				m_win_range->showImage(img);
+			}
 		}
 		if ( _out_obs.hasIntensityImage )
 		{
-			if (!m_win_int)		{ m_win_int = mrpt::gui::CDisplayWindow::Create("Preview INTENSITY"); m_win_int->setPos(300,5); }
-			m_win_int->showImage(_out_obs.intensityImage );
+			static int decim = 0;
+			if (++decim>10)
+			{
+				decim=0;
+				if (!m_win_int)		{ m_win_int = mrpt::gui::CDisplayWindow::Create("Preview INTENSITY"); m_win_int->setPos(300,5); }
+				m_win_int->showImage(_out_obs.intensityImage );
+			}
 		}
 	}
 	else 
@@ -557,9 +567,14 @@ void CSwissRanger3DCamera::getNextObservation(
 ----------------------------------------------------- */
 void CSwissRanger3DCamera::setPathForExternalImages( const std::string &directory )
 {
+	return;  
+	// Ignore for now. It seems performance is better grabbing everything 
+	// to a single big file than creating hundreds of smaller files per second...
+ 
 	if (!mrpt::system::createDirectory( directory ))
 	{
 		THROW_EXCEPTION_CUSTOM_MSG1("Error: Cannot create the directory for externally saved images: %s",directory.c_str() )
 	}
 	m_path_for_external_images = directory;
 }
+
