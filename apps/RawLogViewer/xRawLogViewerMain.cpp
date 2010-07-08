@@ -2298,7 +2298,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 																for(size_t r=0;r<H;r++)
 																{
-																	unsigned char const * ptr_lin = obs->confidenceImage.get_unsafe(r,0,0);
+																	unsigned char const * ptr_lin = obs->confidenceImage.get_unsafe(0,r,0);
 																	for(size_t c=0;c<W;c++,  i++ )
 																	{
 																		unsigned char conf = *ptr_lin++;

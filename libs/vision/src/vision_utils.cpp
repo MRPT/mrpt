@@ -935,90 +935,81 @@ void  vision::openCV_cross_correlation(
 	double		mini;
 	CvPoint		min_point,max_point;
 
-/*	static gui::CDisplayWindow	win1("IMG");
-	static gui::CDisplayWindow	win2("PATCH");
-	win1.showImage(img);
-	win2.showImage(patch_img);
-	win1.waitForKey();
-*/
-
 	bool entireImg = (x_search_ini<0 || y_search_ini<0 || x_search_size<0 || y_search_size<0);
 
-	IplImage *im, *patch_im;
+	CImage  im, patch_im;
 
 	if( img.isColor() && patch_img.isColor() )
 	{
-		IplImage *im_ = (IplImage*)img.getAsIplImage();
-		IplImage *patch_im_ = (IplImage*)patch_img.getAsIplImage();
-
-		im = cvCreateImage( cvGetSize( im_ ), 8, 1 );
-		patch_im = cvCreateImage( cvGetSize( patch_im_ ), 8, 1 );
-
-		cvCvtColor( im_, im, CV_BGR2GRAY );
-		cvCvtColor( patch_im_, patch_im, CV_BGR2GRAY );
+		img.grayscale(im);
+		patch_img.grayscale(patch_im);
 	}
 	else
 	{
-		im = (IplImage*)img.getAsIplImage();
-		patch_im = (IplImage*)patch_img.getAsIplImage();
+		ASSERT_(!img.isColor() && !patch_img.isColor())
+
+		im.setFromIplImageReadOnly( img.getAsIplImage() );
+		patch_im.setFromIplImageReadOnly( patch_img.getAsIplImage() );
 	}
 
-	//IplImage *im_ = (IplImage*)img.getAsIplImage();
-	//IplImage *patch_im_ = (IplImage*)patch_img.getAsIplImage();
-
-	//IplImage *im = cvCreateImage( cvGetSize( im_ ), 8, 1 );
-	//IplImage *patch_im = cvCreateImage( cvGetSize( patch_im_ ), 8, 1 );
-
-	//cvCvtColor( im_, im, CV_BGR2GRAY );
-	//cvCvtColor( patch_im_, patch_im, CV_BGR2GRAY );
+	const int im_w = im.getWidth();
+	const int im_h = im.getHeight();
+	const int patch_w = patch_im.getWidth();
+	const int patch_h = patch_im.getHeight();
 
 	if (entireImg)
 	{
-		x_search_size = im->width - patch_im->width;
-		y_search_size = im->height - patch_im->height;
+		x_search_size = im_w - patch_w;
+		y_search_size = im_h - patch_h;
 	}
 
 	// JLBC: Perhaps is better to raise the exception always??
-	if ((x_search_ini + x_search_size  + patch_im->width-1)>im->width)
-		x_search_size -= (x_search_ini + x_search_size + patch_im->width-1) - im->width;
+	if ((x_search_ini + x_search_size  + patch_w-1)>im_w)
+		x_search_size -= (x_search_ini + x_search_size + patch_w-1) - im_w;
 
-	if ((y_search_ini + y_search_size  + patch_im->height-1)>im->height)
-		y_search_size -= (y_search_ini + y_search_size  + patch_im->height-1) - im->height;
+	if ((y_search_ini + y_search_size  + patch_h-1)>im_h)
+		y_search_size -= (y_search_ini + y_search_size  + patch_h-1) - im_h;
 
-	ASSERT_( (x_search_ini + x_search_size  + patch_im->width-1)<=im->width )
-	ASSERT_( (y_search_ini + y_search_size  + patch_im->height-1)<=im->height )
+	ASSERT_( (x_search_ini + x_search_size  + patch_w-1)<=im_w )
+	ASSERT_( (y_search_ini + y_search_size  + patch_h-1)<=im_h )
 
 	IplImage *result = cvCreateImage(cvSize(x_search_size+1,y_search_size+1),IPL_DEPTH_32F, 1);
 
-	IplImage *ipl_ext;
+	CImage  img_region_to_search;
 
-	if (!entireImg)
+	if (entireImg)
 	{
-		ipl_ext = cvCreateImage(cvSize(patch_im->width+x_search_size,patch_im->height+y_search_size),IPL_DEPTH_8U, 1);
-		for (unsigned int i = 0 ; i < (unsigned int)y_search_size ; i++)
-		{
-			memcpy( &ipl_ext->imageData[i * ipl_ext->widthStep ],
-					&im->imageData[(i+y_search_ini) * im->widthStep + x_search_ini * im->nChannels],
-					ipl_ext->width * ipl_ext->nChannels ); //widthStep);  <-- JLBC: widthstep SHOULD NOT be used as the length of each row (the last one may be shorter!!)
-		}
+		// Just a pointer to the original img:
+		img_region_to_search.setFromIplImageReadOnly( im.getAsIplImage() );
 	}
 	else
 	{
-		ipl_ext = im;
-	}
+		im.extract_patch(
+			img_region_to_search,
+			x_search_ini,   // start corner
+			y_search_ini ,
+			patch_w+x_search_size,  // sub-image size
+			patch_h+y_search_size
+			);
+ 	}
 
 	// Compute cross correlation:
-	cvMatchTemplate(ipl_ext,patch_im,result,CV_TM_CCORR_NORMED);
-	//cvMatchTemplate(ipl_ext,patch_im,result,CV_TM_CCOEFF_NORMED);
+	cvMatchTemplate(
+		img_region_to_search.getAsIplImage(),
+		patch_im.getAsIplImage(),
+		result,
+		CV_TM_CCORR_NORMED
+		//CV_TM_CCOEFF_NORMED
+		);
 
 	// Find the max point:
 	cvMinMaxLoc(result,&mini,&max_val,&min_point,&max_point,NULL);
-	x_max = max_point.x+x_search_ini+(round(patch_im->width-1)/2);
-	y_max = max_point.y+y_search_ini+(round(patch_im->height-1)/2);
+	x_max = max_point.x+x_search_ini+(round(patch_w-1)>>1);
+	y_max = max_point.y+y_search_ini+(round(patch_h-1)>>1);
 
 	// Free memory:
-	if (!entireImg) cvReleaseImage( &ipl_ext );
 	cvReleaseImage( &result );
+
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif

@@ -65,8 +65,10 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	CFeatureList	trackedFeats;
 	unsigned int	step_num = 0;
 
-	mrpt::vision::CFeatureTracker_FAST   tracker;
+	//mrpt::vision::CFeatureTracker_FAST   tracker;
 	//mrpt::vision::CFeatureTracker_KL   tracker;
+	mrpt::vision::CFeatureTracker_PatchMatch   tracker;
+	tracker.extra_params["match_method"] = 0;
 
 	tracker.extra_params["window_width"]  = 7;
 	tracker.extra_params["window_height"] = 7;
@@ -158,7 +160,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			FE.options.featsType = featFAST;
 
 			FE.options.patchSize = 11;
-			FE.options.FASTOptions.threshold = 20;
+			FE.options.FASTOptions.threshold = 10;
 			FE.options.FASTOptions.min_distance = 20;
 
 			FE.detectFeatures(theImg, trackedFeats, 0 /* first ID */, NUM_FEATS_TO_DETECT /* # feats */ );

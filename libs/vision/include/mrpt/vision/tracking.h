@@ -119,6 +119,7 @@ namespace mrpt
 		};
 
 		/** Track a set of features from old_img -> new_img by patch correlation over the closest FAST features, using a KD-tree for looking closest correspondences.
+		  *  See CFeatureTracker_FAST::trackFeatures for a list of optional parameters.
 		  */
 		struct VISION_IMPEXP CFeatureTracker_FAST : public CGenericFeatureTracker
 		{
@@ -147,6 +148,27 @@ namespace mrpt
 		};
 
 
+		/** Track a set of features from old_img -> new_img by patch matching over a fixed window centered at each feature's previous location.
+		  *  See CFeatureTracker_PatchMatch::trackFeatures for a list of optional parameters.
+		  */
+		struct VISION_IMPEXP CFeatureTracker_PatchMatch : public CGenericFeatureTracker
+		{
+			/** Ctor */
+			CFeatureTracker_PatchMatch(const mrpt::utils::TParametersDouble & extraParams = mrpt::utils::TParametersDouble() );
+
+			/**  Optional parameters that can be passed in "extra_params":
+			  *		- "window_width"  (Default=15)
+			  *		- "window_height" (Default=15)
+			  *		- "match_method" (Default=0)
+			  *
+			  *  Possible values for "match_method":
+			  *		- 0 : Normalized cross correlation
+			  */
+			virtual void trackFeatures(
+				const CImage &old_img,
+				const CImage &new_img,
+				vision::CFeatureList &inout_featureList );
+		};
 
 
 		/** (Deprecated) Track a set of features from img1 -> img2 using sparse optimal flow (classic KL method)

@@ -105,7 +105,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	if( img->nChannels != 1 )
 		cvReleaseImage( &cGrey );
 
-#	elif MRPT_OPENCV_VERSION_NUM > 0x200
+#	elif MRPT_OPENCV_VERSION_NUM >= 0x200
 	CvImage img, cGrey;
 	img.attach( (IplImage*)inImg.getAsIplImage(), false );	// Attach Image as IplImage and do not use ref counter
 

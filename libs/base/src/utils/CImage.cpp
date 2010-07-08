@@ -1776,18 +1776,19 @@ void  CImage::extract_patch(
 	const unsigned int row_num)const
 {
 #if MRPT_HAS_OPENCV
-	if ((getWidth()<col_+col_num) | (getHeight()<row_+row_num))
-	{
-		THROW_EXCEPTION( "Error while extracting patch in CImage::extract_patch")
-	}
-
-	//patch.resize(row_num,col_num,img->nChannels,true,patch.img);
-	patch.resize(col_num,row_num,((IplImage*)img)->nChannels,true);
-
+	makeSureImageIsLoaded();   // For delayed loaded images stored externally
 	IplImage *ipl_int = ((IplImage*)img);
 	IplImage *ipl_ext = ((IplImage*)patch.img);
 	ASSERT_(ipl_int);
 	ASSERT_(ipl_ext);
+
+	if ((ipl_int->width<(int)(col_+col_num)) | (ipl_int->height<(int)(row_+row_num)))
+	{
+		THROW_EXCEPTION( format("Trying to extract patch out of image boundaries: Image size=%ix%i, Patch size=%ux%u, extraction location=(%u,%u)",ipl_int->width,ipl_int->height, col_num, row_num, col_, row_ ) )
+	}
+
+	patch.resize(col_num,row_num,((IplImage*)img)->nChannels,true);
+
 	for (unsigned int i=0;i<row_num;i++)
 	{
 		memcpy( &ipl_ext->imageData[i * ipl_ext->widthStep ],
@@ -2451,7 +2452,7 @@ void CImage::rectifyImage(
 			aux1[i][j] = cameraMatrix(i,j);
 	for (int i=0;i<4;i++)
 		aux2[0][i]=cameraParams.dist[i];
-		
+
 	CvMat inMat =  cvMat( cameraMatrix.getRowCount(), cameraMatrix.getColCount(), CV_64F, aux1 );
 	CvMat distM =  cvMat( 1, 4, CV_64F, aux2 );
 
