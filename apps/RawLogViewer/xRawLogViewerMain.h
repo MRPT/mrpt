@@ -38,6 +38,7 @@
 #include <wx/menu.h>
 #include <wx/panel.h>
 #include <wx/splitter.h>
+#include <wx/slider.h>
 #include <wx/statusbr.h>
 #include "CRawlogTreeView.h"
 #include <wx/frame.h>
@@ -246,6 +247,7 @@ private:
     void OnmnuCreateAVISelected(wxCommandEvent& event);
     void OnMenuRegenerateOdometryTimes(wxCommandEvent& event);
     void OnMenuItem3DObsRecoverParams(wxCommandEvent& event);
+    void Onslid3DcamConfCmdScrollChanged(wxScrollEvent& event);
     //*)
 
     //(*Identifiers(xRawLogViewerFrame)
@@ -282,6 +284,8 @@ private:
     static const long ID_PANEL17;
     static const long ID_PANEL16;
     static const long ID_XY_GLCANVAS;
+    static const long ID_STATICTEXT3;
+    static const long ID_SLIDER1;
     static const long ID_PANEL20;
     static const long ID_STATICBITMAP4;
     static const long ID_PANEL21;
@@ -465,6 +469,7 @@ private:
     wxMenuItem* mnuCreateAVI;
     wxMenuItem* MenuItem54;
     wxPanel* pn3Dobs_Conf;
+    wxStaticText* StaticText3;
     wxMenuItem* MenuItem74;
     wxMenu* MenuItem6;
     wxPanel* Panel4;
@@ -509,6 +514,7 @@ private:
     wxMenuItem* MenuItem10;
     CMyGLCanvas* m_gl3DRangeScan;
     wxStaticText* StaticText2;
+    wxSlider* slid3DcamConf;
     wxNotebook* Notebook1;
     wxPanel* pn_CObservation2DRangeScan;
     wxToolBarToolBase* ToolBarItem3;

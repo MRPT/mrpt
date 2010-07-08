@@ -303,7 +303,7 @@
 																<object class="notebookpage">
 																	<object class="wxPanel" name="ID_PANEL20" variable="pn3Dobs_3D" member="yes">
 																		<object class="wxFlexGridSizer" variable="FlexGridSizer8" member="no">
-																			<cols>1</cols>
+																			<cols>2</cols>
 																			<rows>1</rows>
 																			<growablecols>0</growablecols>
 																			<growablerows>0</growablerows>
@@ -317,6 +317,37 @@
 																					<tooltip>Reconstrucción 3D de la carretera</tooltip>
 																				</object>
 																				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																				<option>1</option>
+																			</object>
+																			<object class="sizeritem">
+																				<object class="wxFlexGridSizer" variable="FlexGridSizer12" member="no">
+																					<cols>1</cols>
+																					<rows>2</rows>
+																					<growablecols>0</growablecols>
+																					<growablerows>1</growablerows>
+																					<object class="sizeritem">
+																						<object class="wxStaticText" name="ID_STATICTEXT3" variable="StaticText3" member="yes">
+																							<label>Min.conf.</label>
+																						</object>
+																						<flag>wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM</flag>
+																						<border>5</border>
+																						<option>1</option>
+																					</object>
+																					<object class="sizeritem">
+																						<object class="wxSlider" name="ID_SLIDER1" variable="slid3DcamConf" member="yes">
+																							<value>127</value>
+																							<max>255</max>
+																							<style>wxSL_VERTICAL|wxSL_INVERSE</style>
+																							<handler function="Onslid3DcamConfCmdScrollChanged" entry="EVT_COMMAND_SCROLL" />
+																							<handler function="Onslid3DcamConfCmdScrollChanged" entry="EVT_COMMAND_SCROLL_THUMBTRACK" />
+																							<handler function="Onslid3DcamConfCmdScrollChanged" entry="EVT_COMMAND_SCROLL_CHANGED" />
+																						</object>
+																						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM</flag>
+																						<border>5</border>
+																						<option>1</option>
+																					</object>
+																				</object>
+																				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM</flag>
 																				<option>1</option>
 																			</object>
 																		</object>

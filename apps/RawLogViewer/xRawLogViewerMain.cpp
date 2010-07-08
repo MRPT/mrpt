@@ -215,6 +215,8 @@ const long xRawLogViewerFrame::ID_CUSTOM4 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL17 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL16 = wxNewId();
 const long xRawLogViewerFrame::ID_XY_GLCANVAS = wxNewId();
+const long xRawLogViewerFrame::ID_STATICTEXT3 = wxNewId();
+const long xRawLogViewerFrame::ID_SLIDER1 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL20 = wxNewId();
 const long xRawLogViewerFrame::ID_STATICBITMAP4 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL21 = wxNewId();
@@ -389,9 +391,10 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxMenuItem* MenuItem18;
 	wxMenuItem* MenuItem26;
 	wxMenuItem* MenuItem70;
+	wxFlexGridSizer* FlexGridSizer12;
 	wxMenu* Menu2;
 	wxFlexGridSizer* FlexGridSizer5;
-	
+
 	Create(parent, id, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("id"));
 	SetClientSize(wxSize(700,500));
 	{
@@ -527,11 +530,19 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	FlexGridSizer7->AddGrowableRow(0);
 	nb_3DObsChannels = new wxNotebook(pn_CObservation3DRangeScan, ID_NOTEBOOK4, wxDefaultPosition, wxDefaultSize, 0, _T("ID_NOTEBOOK4"));
 	pn3Dobs_3D = new wxPanel(nb_3DObsChannels, ID_PANEL20, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL20"));
-	FlexGridSizer8 = new wxFlexGridSizer(1, 1, 0, 0);
+	FlexGridSizer8 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer8->AddGrowableCol(0);
 	FlexGridSizer8->AddGrowableRow(0);
 	m_gl3DRangeScan = new CMyGLCanvas(pn3Dobs_3D,ID_XY_GLCANVAS,wxDefaultPosition,wxDefaultSize,wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
 	FlexGridSizer8->Add(m_gl3DRangeScan, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer12 = new wxFlexGridSizer(2, 1, 0, 0);
+	FlexGridSizer12->AddGrowableCol(0);
+	FlexGridSizer12->AddGrowableRow(1);
+	StaticText3 = new wxStaticText(pn3Dobs_3D, ID_STATICTEXT3, _("Min.conf."), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
+	FlexGridSizer12->Add(StaticText3, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
+	slid3DcamConf = new wxSlider(pn3Dobs_3D, ID_SLIDER1, 127, 0, 255, wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL|wxSL_INVERSE, wxDefaultValidator, _T("ID_SLIDER1"));
+	FlexGridSizer12->Add(slid3DcamConf, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
+	FlexGridSizer8->Add(FlexGridSizer12, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
 	pn3Dobs_3D->SetSizer(FlexGridSizer8);
 	FlexGridSizer8->Fit(pn3Dobs_3D);
 	FlexGridSizer8->SetSizeHints(pn3Dobs_3D);
@@ -819,8 +830,11 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	mnuTree.Append(ID_MENUITEM48, _("Add action"), MenuItem45, wxEmptyString);
 	timAutoLoad.SetOwner(this, ID_TIMER1);
 	timAutoLoad.Start(50, true);
-	
+
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnbtnEditCommentsClick1);
+	Connect(ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
+	Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
+	Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
 	Connect(ID_NOTEBOOK1,wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,(wxObjectEventFunction)&xRawLogViewerFrame::OnNotebook1PageChanging);
 	Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnFileOpen);
 	Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnSaveFile);
@@ -2221,7 +2235,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 														cout << "maxRange = " << obs->maxRange << " m" << endl;
 
 														cout << "Has 3D point cloud? ";
-														if (obs->hasPoints3D) 
+														if (obs->hasPoints3D)
 																cout << "YES: " << obs->points3D_x.size() << " points." << endl;
 														else	cout << "NO" << endl;
 
@@ -2249,21 +2263,61 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 														const TColorf yellow(1,1,0);
 														pnts->setGradientColors(red,yellow);
 
-														vector_float &xs = pnts->getArrayX();
-														vector_float &ys = pnts->getArrayY();
-														vector_float &zs = pnts->getArrayZ();
+														if (obs->hasPoints3D)
+														{
+															// Assign only those points above a certain threshold:
+															const int confThreshold =   obs->hasConfidenceImage ? slid3DcamConf->GetValue() : 0;
 
-														xs = obs->points3D_x;
-														ys = obs->points3D_y;
-														zs = obs->points3D_z;
+															vector_float  &obs_xs = obs->points3D_x;
+															vector_float  &obs_ys = obs->points3D_y;
+															vector_float  &obs_zs = obs->points3D_z;
 
-														pnts->setPointSize(4.0);
+															vector_float &xs = pnts->getArrayX();
+															vector_float &ys = pnts->getArrayY();
+															vector_float &zs = pnts->getArrayZ();
 
-														// Translate the 3D cloud since sensed points are relative to the camera, but the camera may be translated wrt the robot (our 0,0,0 here):
-														pnts->setPose( obs->sensorPose );
+															if (confThreshold==0)
+															{
+																xs = obs_xs;
+																ys = obs_ys;
+																zs = obs_zs;
+															}
+															else
+															{
+																xs.clear();
+																ys.clear();
+																zs.clear();
 
+																size_t i=0;
+
+																const size_t W = obs->confidenceImage.getWidth();
+																const size_t H = obs->confidenceImage.getHeight();
+
+																ASSERT_(obs->confidenceImage.isColor()==false)
+																ASSERT_(obs_xs.size() == H*W)
+
+																for(size_t r=0;r<H;r++)
+																{
+																	unsigned char const * ptr_lin = obs->confidenceImage.get_unsafe(r,0,0);
+																	for(size_t c=0;c<W;c++,  i++ )
+																	{
+																		unsigned char conf = *ptr_lin++;
+																		if (conf>=confThreshold)
+																		{
+																			xs.push_back(obs_xs[i]);
+																			ys.push_back(obs_ys[i]);
+																			zs.push_back(obs_zs[i]);
+																		}
+																	}
+																}
+															}
+
+															pnts->setPointSize(4.0);
+
+															// Translate the 3D cloud since sensed points are relative to the camera, but the camera may be translated wrt the robot (our 0,0,0 here):
+															pnts->setPose( obs->sensorPose );
+														}
 														this->m_gl3DRangeScan->m_openGLScene->insert(pnts);
-
 														this->m_gl3DRangeScan->Refresh();
 													#endif
 
@@ -6035,7 +6089,7 @@ void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent& event)
 						if (wxNO==wxMessageBox( _U(format("Calibration with first observation:\nAverage reprojection error=%.04fpx.\n Accept and apply to ALL 3D observations?",avrErr).c_str()),_("Warning"), wxYES_NO | wxICON_EXCLAMATION))
 							break;
 
-						firstObs = false;						
+						firstObs = false;
 					}
 
 					// For the rest (including the first obs):
@@ -6061,4 +6115,10 @@ void xRawLogViewerFrame::OnMenuItem3DObsRecoverParams(wxCommandEvent& event)
 
 	WX_END_TRY
 
+}
+
+void xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged(wxScrollEvent& event)
+{
+	// Refresh:
+	SelectObjectInTreeView(curSelectedObject);
 }
