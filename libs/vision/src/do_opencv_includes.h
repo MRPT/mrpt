@@ -44,6 +44,7 @@
 #		include <opencv2/features2d/features2d.hpp>
 #		include <opencv2/video/tracking.hpp>
 #		include <opencv2/calib3d/calib3d.hpp>
+#		include <opencv2/objdetect/objdetect.hpp>
 
 #		include <opencv2/legacy/legacy.hpp>  // CvImage
 #	else

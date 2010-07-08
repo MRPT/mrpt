@@ -30,6 +30,7 @@
 #define CFaceDetection_H
 
 #include <mrpt/vision/CObjectDetection.h>
+#include <mrpt/vision/CCascadeClassifierDetection.h>
 
 namespace mrpt
 {
@@ -37,11 +38,19 @@ namespace mrpt
 	{
 		class VISION_IMPEXP CFaceDetection: virtual public CObjectDetection
 		{
-			int hola;
+		public:
+			CCascadeClassifierDetection cascadeClassifier;
 
-			CFaceDetection(){};
+			CFaceDetection();
 
-			virtual void detectObjects(CObservation *obs);
+			void init(std::string configFile);
+
+			virtual void detectObjects(CObservation *obs, vector_detectable_object &detected);
+			
+			inline void detectObjects(CObservationPtr obs, vector_detectable_object &detected)
+			{
+				detectObjects(obs.pointer(), detected); 
+			}
 
 		}; // End of class
 	}

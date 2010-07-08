@@ -43,12 +43,69 @@ namespace mrpt
 
 		}; // End of class
 
+
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable2D, mrpt::utils::CSerializable, VISION_IMPEXP )
 
 		class VISION_IMPEXP CDetectable2D: public CDetectableObject
 		{
 			DEFINE_SERIALIZABLE( CDetectable2D )
+
+		public:
+
+			/** Object location */
+			int m_x, m_y; //!< 2D Coordinates of detected object
+			
+			/** Object size */
+			int m_height, m_width; //!< Size of detected object
+
+			/** Default constructor */
+			CDetectable2D() {};
+
+			/** Extra constructor */
+			CDetectable2D( const int &x, const int &y, const int &height, const int &width ): m_x(x), m_y(y), m_height(height), m_width(width) {};
+
+			/** Copy constructor */
+			CDetectable2D( const CDetectable2D &d2 )
+			{	
+				m_x = d2.m_x;
+				m_y = d2.m_y;
+				m_height = d2.m_height;
+				m_width = d2.m_width;
+			};
+
+			/** Copy constructor */
+			CDetectable2D( const CDetectable2D *d2 )
+			{	
+				m_x = d2->m_x;
+				m_y = d2->m_y;
+				m_height = d2->m_height;
+				m_width = d2->m_width;
+			};
+			
+			/** Compute distance between centers of two detectable 2D objects.
+			  * \return calculated distance.
+			  */
+			inline double distanceTo( const CDetectable2D &d2 )
+			{
+				double mean_x1 = ( m_x + m_width/2 );
+				double mean_x2 = ( d2.m_x + d2.m_width/2 );
+				double mean_y1 = ( m_y + m_height/2 ) ;
+				double mean_y2 = ( d2.m_y + d2.m_height/2 ) ;
+				return sqrt( pow( mean_x1 - mean_x2, 2 ) + pow( mean_y1 - mean_y2, 2 ) );
+			};
+
 		};
+
+		
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable3D, mrpt::utils::CSerializable, VISION_IMPEXP )
+
+		class VISION_IMPEXP CDetectable3D: public CDetectable2D
+		{
+			DEFINE_SERIALIZABLE( CDetectable3D )
+
+		public:
+
+		}; // End of class
 	}
 
 }

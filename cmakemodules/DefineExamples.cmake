@@ -101,7 +101,7 @@ IF(BUILD_EXAMPLES)
 		unscented_transform_test
 		grab3Dvideo
 		coordinate_conversions
-		params-by-name
+		params-by-name		
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-vision mrpt-gui mrpt-topography)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
@@ -138,6 +138,7 @@ IF(BUILD_EXAMPLES)
 			captureVideoOpenCV
 			captureVideoDC1394
 			enumerateCameras1394
+			face_detection
 			)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-hwdrivers)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

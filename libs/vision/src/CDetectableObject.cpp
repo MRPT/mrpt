@@ -36,13 +36,21 @@ using namespace mrpt::vision;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CDetectableObject, CSerializable, mrpt::vision)
 IMPLEMENTS_SERIALIZABLE(CDetectable2D, CSerializable,mrpt::vision)
+IMPLEMENTS_SERIALIZABLE(CDetectable3D, CSerializable,mrpt::vision)
 
 void CDetectable2D::readFromStream(CStream &in, int version)
 {
+
 }
 void CDetectable2D::writeToStream(CStream &out, int *version) const
 {
 }
 
+void CDetectable3D::readFromStream(CStream &in, int version)
+{
 
+}
+void CDetectable3D::writeToStream(CStream &out, int *version) const
+{
+}
 

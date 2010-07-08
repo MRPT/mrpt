@@ -26,33 +26,39 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
+#ifndef CCascadeClassifierDetection_H
+#define CCascadeClassifierDetection_H
 
-#ifndef CObjectDetection_H
-#define CObjectDetection_H
-
-#include <mrpt/vision/CDetectableObject.h>
+#include <mrpt/vision/CObjectDetection.h>
 
 namespace mrpt
 {
 	namespace vision
 	{
-		using namespace std;
-		using namespace mrpt::slam;
-
-		typedef vector<CDetectableObjectPtr> vector_detectable_object;
-
-		class VISION_IMPEXP CObjectDetection	
+		class VISION_IMPEXP CCascadeClassifierDetection: virtual public CObjectDetection
 		{
-			//virtual ~CObjectDetection();
+		public:
 
-			virtual void init(std::string configFile)=0;
+			CCascadeClassifierDetection( ) {};
+			CCascadeClassifierDetection( std::string configFile );
+			virtual ~CCascadeClassifierDetection(); 
 
-			inline void detectObjects(CObservationPtr obs, vector_detectable_object &detected) 
-			{ 
-				detectObjects(obs.pointer(), detected); 
-			};
+			void init(std::string configFile);
 
-			virtual void detectObjects(CObservation *obs, vector_detectable_object &detected)=0;
+			void detectObjects(CObservation *obs, vector_detectable_object &detected);
+
+		protected:
+
+			void * m_cascade;
+
+			struct TOptions
+			{
+				std::string	cascadeFileName;
+				double scaleFactor;
+				int minNeighbors;
+				int flags;
+				int minSize;
+			}m_options;
 
 		}; // End of class
 	}
@@ -60,7 +66,3 @@ namespace mrpt
 }
 
 #endif
-
-
-
-			

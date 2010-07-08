@@ -33,7 +33,17 @@
 
 using namespace mrpt::vision;
 
-void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs)
+CFaceDetection::CFaceDetection()
 {
 
+}
+
+void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detectable_object &detected)
+{
+	cascadeClassifier.detectObjects( obs, detected );
+}
+
+void CFaceDetection::init(std::string configFile)
+{
+	cascadeClassifier.init( configFile );
 }
