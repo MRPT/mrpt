@@ -29,9 +29,9 @@
 
 //(*InternalHeaders(CPanelCameraSelection)
 #include <wx/settings.h>
-#include <wx/string.h>
-#include <wx/intl.h>
 #include <wx/font.h>
+#include <wx/intl.h>
+#include <wx/string.h>
 //*)
 
 //(*IdInit(CPanelCameraSelection)
@@ -85,16 +85,16 @@ END_EVENT_TABLE()
 CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 {
 	//(*Initialize(CPanelCameraSelection)
-	wxFlexGridSizer* FlexGridSizer1;
-	wxFlexGridSizer* FlexGridSizer2;
-	wxFlexGridSizer* FlexGridSizer11;
-	wxFlexGridSizer* FlexGridSizer3;
 	wxFlexGridSizer* FlexGridSizer16;
 	wxFlexGridSizer* FlexGridSizer10;
-	wxFlexGridSizer* FlexGridSizer13;
+	wxFlexGridSizer* FlexGridSizer3;
+	wxFlexGridSizer* FlexGridSizer2;
 	wxFlexGridSizer* FlexGridSizer18;
+	wxFlexGridSizer* FlexGridSizer13;
 	wxFlexGridSizer* FlexGridSizer12;
 	wxStaticBoxSizer* StaticBoxSizer1;
+	wxFlexGridSizer* FlexGridSizer1;
+	wxFlexGridSizer* FlexGridSizer11;
 	
 	Create(parent, id, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("id"));
 	FlexGridSizer1 = new wxFlexGridSizer(0, 1, 0, 0);
@@ -193,8 +193,8 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer18 = new wxFlexGridSizer(2, 2, 0, 0);
 	wxString __wxRadioBoxChoices_1[2] = 
 	{
-	_("Left"),
-	_("Right")
+		_("Left"),
+		_("Right")
 	};
 	rbBumblebeeSel = new wxRadioBox(Panel1, ID_RADIOBOX1, _("Select monocular input"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX1"));
 	rbBumblebeeSel->SetSelection(0);
@@ -212,8 +212,8 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer2 = new wxFlexGridSizer(2, 3, 0, 0);
 	wxString __wxRadioBoxChoices_2[2] = 
 	{
-	_("USB"),
-	_("Ethernet")
+		_("USB"),
+		_("Ethernet")
 	};
 	rbSR_usb = new wxRadioBox(pnSwissRanger, ID_RADIOBOX2, _("Connection"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_2, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX2"));
 	FlexGridSizer2->Add(rbSR_usb, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
@@ -222,7 +222,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	edSR_IP = new wxTextCtrl(pnSwissRanger, ID_TEXTCTRL4, _("192.168.2.14"), wxDefaultPosition, wxSize(120,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL4"));
 	FlexGridSizer2->Add(edSR_IP, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, pnSwissRanger, _("Channels to grab: "));
-	FlexGridSizer3 = new wxFlexGridSizer(3, 1, 0, 0);
+	FlexGridSizer3 = new wxFlexGridSizer(4, 1, 0, 0);
 	cbSR_chIntensity = new wxCheckBox(pnSwissRanger, ID_CHECKBOX3, _("Grayscale intensity"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
 	cbSR_chIntensity->SetValue(true);
 	cbSR_chIntensity->Disable();

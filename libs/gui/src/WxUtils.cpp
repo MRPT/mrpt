@@ -606,7 +606,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	edSR_IP = new wxTextCtrl(pnSwissRanger, ID_TEXTCTRL4, _("192.168.2.14"), wxDefaultPosition, wxSize(120,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL4"));
 	FlexGridSizer2->Add(edSR_IP, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, pnSwissRanger, _("Channels to grab: "));
-	FlexGridSizer3 = new wxFlexGridSizer(3, 1, 0, 0);
+	FlexGridSizer3 = new wxFlexGridSizer(4, 1, 0, 0);
 	cbSR_chIntensity = new wxCheckBox(pnSwissRanger, ID_CHECKBOX3, _("Grayscale intensity"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
 	cbSR_chIntensity->SetValue(true);
 	cbSR_chIntensity->Disable();

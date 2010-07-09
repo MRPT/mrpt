@@ -327,7 +327,7 @@
 										<object class="sizeritem">
 											<object class="wxFlexGridSizer" variable="FlexGridSizer3" member="no">
 												<cols>1</cols>
-												<rows>3</rows>
+												<rows>4</rows>
 												<object class="sizeritem">
 													<object class="wxCheckBox" name="ID_CHECKBOX3" variable="cbSR_chIntensity" member="yes">
 														<label>Grayscale intensity</label>
