@@ -108,6 +108,22 @@ namespace mrpt
 				const mrpt::math::CMatrixDouble33 & intrinsicParams,
 				const std::vector<double> & distortionParams );
 
+			/** Undistort a list of points given by their pixel coordinates, provided the camera matrix and distortion coefficients.
+			  * \param inputPixels [IN] The pixel coordinates as in the distorted image.
+			  * \param dstUndistortedPixels [OUT] The computed pixel coordinates without distortion.
+			  * \param intrinsicParams [IN] The 3x3 calibration matrix. See http://www.mrpt.org/Camera_Parameters
+			  * \param distortionParams [IN] The 4-length vector with the distortion parameters [k1 k2 p1 p2]. See http://www.mrpt.org/Camera_Parameters
+			  */
+			//void VISION_IMPEXP undistort_points( 
+			//	const std::vector<mrpt::vision::TPixelCoordf>	&inputPixels, 		/* distorted pixels in image */
+			//	const mrpt::math::CMatrixDouble33				&intrinsicParams,	/* intrinsic parameters of the camera */
+			//	const std::vector<double>						&distortionParams,	/* k1 k2 p1 p2 */
+			//	const unsigned int								&resX,				/* X-resolution of the image */
+			//	const unsigned int								&resY,				/* Y-resolution of the image */
+			//	std::vector<mrpt::vision::TPixelCoordf>			&outputPixels		/* estimated undistorted pixels in image */
+			//	);
+
+
 		}
 	}
 }

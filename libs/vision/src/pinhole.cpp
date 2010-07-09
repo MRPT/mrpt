@@ -69,7 +69,6 @@ void mrpt::vision::pinhole::projectPoints_no_distortion(
 	MRPT_END
 }
 
-
 /* -------------------------------------------------------
 				projectPoints_with_distortion
    ------------------------------------------------------- */
@@ -202,13 +201,119 @@ void mrpt::vision::pinhole::undistort_points(
         }
 
 		// Save undistorted pixel coords:
-		out_pixels[i].x = x;
-		out_pixels[i].y = y;
+		out_pixels[i].x = x*fx + cx;
+		out_pixels[i].y = y*fy + cy;
 
     } // end for i
 
 	MRPT_END
 }
+
+/* -------------------------------------------------------
+					undistortPixels
+   ------------------------------------------------------- */
+//void mrpt::vision::pinhole::undistortPixels( 
+//	const std::vector<mrpt::vision::TPixelCoordf>	&inputPixels, 		/* distorted pixels in image */
+//	const mrpt::math::CMatrixDouble33				&intrinsicParams,	/* intrinsic parameters of the camera */
+//	const std::vector<double>						&distortionParams,	/* k1 k2 p1 p2 */
+//	const unsigned int								&resX,				/* X-resolution of the image */
+//	const unsigned int								&resY,				/* Y-resolution of the image */
+//	const double									&pixelSize,			/* pixel size (square)*/
+//	std::vector<mrpt::vision::TPixelCoordf>			&outputPixels		/* estimated undistorted pixels in image */
+//    )
+//{
+//	MRPT_START
+//
+//	ASSERT_( distortionParams.size() >= 4 );
+//	const double k1 = distortionParams[0];
+//	const double k2 = distortionParams[1];
+//	const double p1 = distortionParams[2];
+//	const double p2 = distortionParams[3];
+//
+//	const double fx = intrinsicParams(0,0);
+//	const double fy = intrinsicParams(1,1);
+//	const double cx = intrinsicParams(0,2);
+//	const double cy = intrinsicParams(1,2);
+//
+//	CMatrixFixedNumeric<double,43,43> dx, dy;
+//
+//	// Compute the undistortion params according to Heittilä code.
+//	// Generate a regular meshgrid of size 43x43 and distort them
+//	std::vector<mrpt::vision::TPixelCoordf>				grid;			// The 43x43 grid with distorted 
+//	std::vector<mrpt::vision::TPixelCoordf>::iterator	itGrid;		
+//
+//	grid.resize( 43 );
+//	unsigned int c;
+//	double px, py;
+//	for( c = 0, itGrid = grid.begin(); itGrid != grid.end(); ++itGrid )
+//	{
+//		px = -resX/40 + c*resX/40;
+//		for( unsigned int k = 0; k < 43; ++k )
+//		{
+//			py = -resY/40 + k*resY/40;
+//			const double dx = ( px - cx )*pixelSize;
+//			const double dy = ( py - cy )*pixelSize;
+//
+//			const double r2 = dx*dx + dy*dy;
+//			const double delta = k1*r2 + k2*r2*r2;
+//
+//			const double ncx = dx*(1+delta)+2*p1*dx*dy+p2*(r2+2*dx*dx); 
+//			const double ncy = dy*(1+delta)+p1*(r2+2*dy*dy)+2*p2*dx*dy;
+//
+//			(*itGrid)->x = ncx/pixelSize + cx;
+//			(*itGrid)->y = ncy/pixelSize + cy;
+//		}
+//	} // end-itGrid
+//
+//	// DISTORT POINTS
+//	dx=(dp(:,1)-Cpx)*Sx/NDX/Asp;
+//	dy=(dp(:,2)-Cpy)*Sy/NDY;
+//
+//	r2=dx.*dx+dy.*dy;
+//	delta=Rad1*r2+Rad2*r2.*r2;
+//
+//	cx=dx.*(1+delta)+2*Tan1*dx.*dy+Tan2*(r2+2*dx.*dx); 
+//	cy=dy.*(1+delta)+Tan1*(r2+2*dy.*dy)+2*Tan2*dx.*dy; 
+//
+//	p=NDX*Asp*cx/Sx+Cpx;
+//	p(:,2)=NDY*cy/Sy+Cpy;
+//
+//
+//	sys=configc(name);
+//	NDX=sys(1); NDY=sys(2); Sx=sys(3); Sy=sys(4);
+//	Asp=par(1); Foc=par(2);
+//	Cpx=par(3); Cpy=par(4);
+//	Rad1=par(5); Rad2=par(6);
+//	Tan1=par(7); Tan2=par(8);
+//
+//	// Generate a meshgrid of points
+//	[dx,dy]=meshgrid(-NDX/40:NDX/40:NDX+NDX/40,-NDY/40:NDY/40:NDY+NDY/40);
+//	cc=imcorr(name,par,[dx(:) dy(:)]);
+//	cx=(cc(:,1)-Cpx)/NDX*Sx/Asp;
+//	cy=(cc(:,2)-Cpy)/NDY*Sy;
+//
+//	r2=cx.*cx+cy.*cy;
+//	delta=Rad1*r2+Rad2*r2.*r2;
+//
+//	Q=1+(4*Rad1*r2+6*Rad2*r2.*r2+8*Tan1*cy+8*Tan2*cx);
+//
+//	dx=cx-(cx.*delta+2*Tan1*cx.*cy+Tan2*(r2+2*cx.*cx))./Q; 
+//	dy=cy-(cy.*delta+Tan1*(r2+2*cy.*cy)+2*Tan2*cx.*cy)./Q; 
+//
+//
+//	r2=dx.*dx+dy.*dy;
+//	  
+//	Tx=[dx.*r2 dx.*r2.*r2 2*dx.*dy r2+2*dx.*dx];
+//	Ty=[dy.*r2 dy.*r2.*r2 r2+2*dy.*dy 2*dx.*dy];
+//	T=[Tx;Ty];
+//	e=[cx-dx;cy-dy];
+//	a=pinv(T)*e;
+//	par=par(:);
+//	a=[par(1:4);a];
+//
+//	MRPT_END
+//}
+
 
 
 /* -------------------------------------------------------

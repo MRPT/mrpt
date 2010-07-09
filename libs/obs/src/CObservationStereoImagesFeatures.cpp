@@ -74,6 +74,17 @@ CObservationStereoImagesFeatures::CObservationStereoImagesFeatures(
 CObservationStereoImagesFeatures::~CObservationStereoImagesFeatures( )
 {}
 
+void  CObservationStereoImagesFeatures::saveFeaturesToTextFile( const std::string &filename )
+{
+	CFileOutputStream	file( filename );
+
+	vector<TStereoImageFeatures>::iterator it;
+	for( it = theFeatures.begin(); it != theFeatures.end(); ++it )
+		file << format("%u %.2f %.2f %.2f %.2f\n", it->ID, it->pixels.first.x, it->pixels.first.y, it->pixels.second.x, it->pixels.second.y ); 
+
+	file.close();
+}
+
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
@@ -91,7 +102,7 @@ void  CObservationStereoImagesFeatures::writeToStream(CStream &out, int *version
 		for( unsigned int i = 0; i < theFeatures.size(); ++i )
 		{
 			out << theFeatures[i].pixels.first.x << theFeatures[i].pixels.first.y;
-			out << theFeatures[i].pixels.second.x << theFeatures[i].pixels.first.y;
+			out << theFeatures[i].pixels.second.x << theFeatures[i].pixels.second.y;
 			out << (uint32_t)theFeatures[i].ID;
 		}
 		out << sensorLabel << timestamp;
@@ -116,7 +127,7 @@ void  CObservationStereoImagesFeatures::readFromStream(CStream &in, int version)
 			for( unsigned int i = 0; i < theFeatures.size(); ++i )
 			{
 				in >> theFeatures[i].pixels.first.x >> theFeatures[i].pixels.first.y;
-				in >> theFeatures[i].pixels.second.x >> theFeatures[i].pixels.first.y;
+				in >> theFeatures[i].pixels.second.x >> theFeatures[i].pixels.second.y;
 				in >> nR;
 				theFeatures[i].ID = (unsigned int)nR;
 			}

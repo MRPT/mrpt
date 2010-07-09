@@ -276,7 +276,7 @@ CPose3DQuat CRangeBearingKFSLAM::getIncrementFromOdometry() const
 /** Must return the action vector u.
   * \param out_u The action vector which will be passed to OnTransitionModel
   */
-void CRangeBearingKFSLAM::OnGetAction( KFArray_ACT &u) const
+void CRangeBearingKFSLAM::OnGetAction( KFArray_ACT &u ) const
 {
 	// Get odometry estimation:
 	const CPose3DQuat theIncr = getIncrementFromOdometry();
@@ -284,7 +284,6 @@ void CRangeBearingKFSLAM::OnGetAction( KFArray_ACT &u) const
 	for (size_t i=0;i<u.size();i++)
 		u[i] = theIncr[i];
 }
-
 
 /** This virtual function musts implement the prediction model of the Kalman filter.
  */

@@ -83,6 +83,12 @@ namespace slam
 		 */
 		~CObservationStereoImagesFeatures( );
 
+		/** A method for storing the set of observed features in a text file in the format: <br>
+		  * ID ul vl ur vr <br>
+		  * being (ul,vl) and (ur,vr) the "x" and "y" coordinates for the left and right feature, respectively.
+		 */
+		void  saveFeaturesToTextFile( const std::string &filename );
+
 		// ------------------
 		// Class Members
 		// ------------------
@@ -103,18 +109,29 @@ namespace slam
 		  */
 		vector<TStereoImageFeatures> theFeatures;
 
-		/** A general method to retrieve the sensor pose on the robot.
+		/** A general method to retrieve the sensor pose on the robot in CPose3D form.
 		  *  Note that most sensors will return a full (6D) CPose3DQuat, but see the derived classes for more details or special cases.
 		  * \sa setSensorPose
 		  */
-		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = CPose3D(cameraPoseOnRobot); }
+		inline void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = CPose3D(cameraPoseOnRobot); }
 
-		/** A general method to change the sensor pose on the robot.
+		/** A general method to retrieve the sensor pose on the robot in CPose3DQuat form.
+		  *  Note that most sensors will return a full (6D) CPose3DQuat, but see the derived classes for more details or special cases.
+		  * \sa setSensorPose
+		  */
+		inline void getSensorPose( CPose3DQuat &out_sensorPose ) const { out_sensorPose = cameraPoseOnRobot; }
+
+		/** A general method to change the sensor pose on the robot in a CPose3D form.
 		  *  Note that most sensors will use the full (6D) CPose3DQuat, but see the derived classes for more details or special cases.
 		  * \sa getSensorPose
 		  */
-		void setSensorPose( const CPose3D &newSensorPose ) { cameraPoseOnRobot = CPose3DQuat(newSensorPose); }
+		inline void setSensorPose( const CPose3D &newSensorPose ) { cameraPoseOnRobot = CPose3DQuat(newSensorPose); }
 
+		/** A general method to change the sensor pose on the robot in a CPose3DQuat form.
+		  *  Note that most sensors will use the full (6D) CPose3DQuat, but see the derived classes for more details or special cases.
+		  * \sa getSensorPose
+		  */
+		inline void setSensorPose( const CPose3DQuat &newSensorPose ) { cameraPoseOnRobot = newSensorPose; }
 	}; // End of class def.
 
 	} // End of namespace
