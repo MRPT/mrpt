@@ -90,6 +90,26 @@ namespace mrpt { namespace math { namespace detail
 			MAT_2::mrpt_matrix_type_ncols>::mat_type
 
 
+	// Macro for easy usage of "TMatrixProductType":
+	// For use out of templates:
+	#define MAT_TYPEDECL_PRODUCT_AtB_OF(MAT_1,MAT_2) \
+		mrpt::math::detail::TMatrixProductType< \
+			MAT_1::value_type, \
+			MAT_1::mrpt_matrix_type_ncols, \
+			MAT_1::mrpt_matrix_type_nrows, \
+			MAT_2::mrpt_matrix_type_nrows, \
+			MAT_2::mrpt_matrix_type_ncols>::mat_type
+
+	// For use within templates:
+	#define MAT_TYPE_PRODUCT_AtB_OF(MAT_1,MAT_2) \
+		typename mrpt::math::detail::TMatrixProductType< \
+			typename MAT_1::value_type, \
+			MAT_1::mrpt_matrix_type_ncols, \
+			MAT_1::mrpt_matrix_type_nrows, \
+			MAT_2::mrpt_matrix_type_nrows, \
+			MAT_2::mrpt_matrix_type_ncols>::mat_type
+
+
 	/** TMatrixTransposeType: Metaprogramming helper to determine the type of the transpose of a matrix in compile time.
 	  * This assume usage of DECLARE_MRPT_CONTAINER_IS_MATRIX and DECLARE_MRPT_CONTAINER_IS_MATRIX_FIXED.
 	  * Example of usage with the helper macro  MAT_TYPE_TRANSPOSE_OF():
@@ -119,7 +139,7 @@ namespace mrpt { namespace math { namespace detail
 			MAT::value_type, \
 			MAT::mrpt_matrix_type_nrows, \
 			MAT::mrpt_matrix_type_ncols>::mat_type
-			
+
 	// For use within templates:
 	#define MAT_TYPE_TRANSPOSE_OF(MAT) \
 		typename mrpt::math::detail::TMatrixTransposeType< \
@@ -158,7 +178,7 @@ namespace mrpt { namespace math { namespace detail
 			MAT::value_type, \
 			MAT::mrpt_matrix_type_nrows, \
 			MAT::mrpt_matrix_type_ncols>::mat_type
-			
+
 	// For use within templates:
 	#define MAT_TYPE_COVARIANCE_OF(MAT) \
 		typename mrpt::math::detail::TMatrixCovarianceType< \

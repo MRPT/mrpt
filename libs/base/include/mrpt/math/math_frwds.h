@@ -247,13 +247,11 @@ namespace mrpt
 		/*! R = H<sup>T</sup> * C * H (with a vector H and a symmetric matrix C) In fact when H is a vector, multiply_HCHt_scalar and multiply_HtCH_scalar are exactly equivalent */ \
 		template <typename MAT_C> NUMTYPE multiply_HtCH_scalar(const MAT_C &C) const { return mrpt::math::detail::multiply_HCHt_scalar(*this,C); } \
 		/*! this = C * C<sup>T</sup> * f (with a matrix C and a scalar f). */\
-		template<typename MAT> inline void multiply_AAt_scalar(const MAT &A,typename MAT::value_type f)	{\
-			mrpt::math::detail::multiply_AAt_scalar(A,f,*this);\
-		}\
+		template<typename MAT_A> inline void multiply_AAt_scalar(const MAT_A &A,typename MAT_A::value_type f)	{\
+			mrpt::math::detail::multiply_AAt_scalar(A,f,*this); }\
 		/*! this = C<sup>T</sup> * C * f (with a matrix C and a scalar f). */\
-		template<typename MAT> inline void multiply_AtA_scalar(const MAT &A,typename MAT::value_type f)	{\
-			mrpt::math::detail::multiply_AtA_scalar(A,f,*this);\
-		}\
+		template<typename MAT_A> inline void multiply_AtA_scalar(const MAT_A &A,typename MAT_A::value_type f)	{\
+			mrpt::math::detail::multiply_AtA_scalar(A,f,*this); }\
 		/*! R = H<sup>T</sup> * C * H (with a symmetric matrix C) */ \
 		template <typename MAT_C, typename MAT_R> \
 		inline void multiply_HtCH(const MAT_C &C,MAT_R &R,bool accumResultInOutput=false,bool allow_submatrix_mult=false) const /*!< R = this<sup>T</sup> * C * this \sa detail::multiply_HtCH */  { \
@@ -445,12 +443,18 @@ namespace mrpt
 
 			template <class MAT_A,class MAT_B,class MAT_OUT>
 				void multiply_ABt(const MAT_A &A,const MAT_B &B, MAT_OUT &out);
+			template <class MAT_A,class MAT_B,class MAT_OUT>
+				void multiply_AtB(const MAT_A &A,const MAT_B &B, MAT_OUT &out);
 			template <class MAT_A,class MAT_OUT>
 				void multiply_AAt(const MAT_A &A, MAT_OUT &out);
 			template <class MAT_A,class MAT_OUT>
 				void multiply_AAt(const MAT_A &A,MAT_OUT &out);
 			template <class MAT_A,class MAT_B,class MAT_OUT>
 				void multiply_result_is_symmetric(const MAT_A &A,const MAT_B &B, MAT_OUT &out);
+			template<typename MAT_IN,typename MAT_OUT>
+				void multiply_AAt_scalar(const MAT_IN &in,typename MAT_IN::value_type scalar,MAT_OUT &out);
+			template<typename MAT_IN,typename MAT_OUT>
+				void multiply_AtA_scalar(const MAT_IN &in,typename MAT_IN::value_type scalar,MAT_OUT &out);
 
 
 			template<typename MatrixType> size_t rank(const MatrixType &m,typename MatrixType::value_type eps=1e-7);

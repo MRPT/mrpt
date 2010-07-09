@@ -441,7 +441,7 @@ namespace mrpt
 			ASSERTMSG_(N==B.getRowCount(),format("Invalid matrix sizes in multiplication: %ux%u * %ux%u",(unsigned int)sA,(unsigned int)N,(unsigned int)B.getRowCount(),(unsigned int)sB));
 			if (((void *)&A==(void *)&C)||((void *)&B==(void *)&C))	{
 				//We can't work directly over C!
-				MAT_TYPE_PRODUCT_OF(MAT_TYPEDECL_TRANSPOSE_OF(MAT_IN_1),MAT_IN_2) tmpMat;
+				MAT_TYPE_PRODUCT_AtB_OF(MAT_IN_1,MAT_IN_2) tmpMat;
 				for (size_t i=0;i<sA;++i) for (size_t j=0;j<sB;++j)	{
 					/*
 					tmpMat.set_unsafe(i,j,0);
