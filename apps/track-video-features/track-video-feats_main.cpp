@@ -66,15 +66,16 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	unsigned int	step_num = 0;
 
 	//mrpt::vision::CFeatureTracker_FAST   tracker;
-	//mrpt::vision::CFeatureTracker_KL   tracker;
-	mrpt::vision::CFeatureTracker_PatchMatch   tracker;
-	tracker.extra_params["match_method"] = 0;
+	mrpt::vision::CFeatureTracker_KL   tracker;
+	//mrpt::vision::CFeatureTracker_PatchMatch   tracker;
+	//tracker.extra_params["match_method"] = 0;
 
 	tracker.extra_params["window_width"]  = 7;
 	tracker.extra_params["window_height"] = 7;
 
 
-	unsigned int 	NUM_FEATS_TO_DETECT = 100;
+	static const unsigned int 	NUM_FEATS_TO_DETECT = 100;
+	static const unsigned int 	PATCH_SIZE	= 11;
 
 	CImage		previous_image; // the tracking
 
@@ -165,7 +166,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			CFeatureExtraction  FE;
 			FE.options.featsType = featFAST;
 
-			FE.options.patchSize = 21;
+			FE.options.patchSize = PATCH_SIZE;
 			FE.options.FASTOptions.threshold = 10;
 			FE.options.FASTOptions.min_distance = 20;
 

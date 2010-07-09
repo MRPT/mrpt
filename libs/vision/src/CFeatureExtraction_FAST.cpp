@@ -164,8 +164,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	unsigned int	cont		= 0;
 	TFeatureID		nextID		= init_ID;
 	feats.clear();
-	//for(; cont != nMax && i != N; i++)
-	while( cont != nMax )
+	while( cont != nMax && i!=N )
 	{
 		// Take the next feature fromt the ordered list of good features:
 #ifdef DO_SORT_BY_RESPONSE_QUALITY
