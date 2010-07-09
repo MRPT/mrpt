@@ -312,16 +312,6 @@ ELSE(BUILD_ARIA)
 	SET(CMAKE_MRPT_HAS_ARIA 0)
 ENDIF(BUILD_ARIA)
 
-# Build the ARIA library
-# ===================================================
-SET(MRPT_HAS_SWISSRANGE OFF CACHE BOOL "Add support for SwissRange Camera?")
-#MARK_AS_ADVANCED(MRPT_HAS_SWISSRANGE)
-IF(MRPT_HAS_SWISSRANGE)
-	SET(CMAKE_MRPT_HAS_SWISSRANGE 1)
-ELSE(MRPT_HAS_SWISSRANGE)
-	SET(CMAKE_MRPT_HAS_SWISSRANGE 0)
-ENDIF(MRPT_HAS_SWISSRANGE)
-
 # Build the xSENS library
 # ===================================================
 SET(BUILD_XSENS ON CACHE BOOL "Build an embedded version of xSens library (interface to xSens MTi device)")
@@ -537,6 +527,8 @@ ENDIF(UNIX)
 SET(CMAKE_MRPT_HAS_OPENCV 0)
 SET(MRPT_OPENCV_VERSION 0.0.0)
 SET(MRPT_OPENCV_VERSION_HEX "0x000")
+SET(MRPT_OPENCV_SRC_DIR "")
+
 # Invoke pkg-config for getting the configuration:
 IF(PKG_CONFIG_FOUND)
 	PKG_CHECK_MODULES(OPENCV opencv)
@@ -564,6 +556,9 @@ IF(NOT CMAKE_MRPT_HAS_OPENCV)
 		SET(MRPT_OPENCV_VERSION ${OpenCV_VERSION})
 		SET(OpenCV_LIBRARIES ${OpenCV_LIBS})
 		SET(OPENCV_LIBDIR ${OpenCV_LIB_DIR})
+		if (NOT "${BASEDIR}" STREQUAL "")
+			SET(MRPT_OPENCV_SRC_DIR "${BASEDIR}")
+		endif (NOT "${BASEDIR}" STREQUAL "")
 		MESSAGE(STATUS "OpenCV ${OpenCV_VERSION} found through OpenCVConfig.cmake")
 
 		SET(CMAKE_MRPT_HAS_OPENCV 1)
@@ -1589,6 +1584,7 @@ add_subdirectory(libs)
 #-----------------------------------
 # The examples
 #-----------------------------------
+add_definitions(-DMRPT_OPENCV_SRC_DIR="${MRPT_OPENCV_SRC_DIR}")
 include(cmakemodules/DefineExamples.cmake REQUIRED)
 
 #-----------------------------------

@@ -43,7 +43,7 @@ namespace mrpt
 
 			CFaceDetection();
 
-			void init(std::string configFile);
+			virtual void init(const mrpt::utils::CConfigFileBase &cfg );
 
 			virtual void detectObjects(CObservation *obs, vector_detectable_object &detected);
 			

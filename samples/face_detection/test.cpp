@@ -49,6 +49,12 @@ string   myIniFile( MRPT_EXAMPLES_BASE_DIRECTORY + string("face_detection/FACE_D
 CFaceDetection faceDetector;
 
 
+#ifdef MRPT_OPENCV_SRC_DIR
+static string OPENCV_SRC_DIR = MRPT_OPENCV_SRC_DIR;
+#else
+static string OPENCV_SRC_DIR = "./";
+#endif
+
 // ------------------------------------------------------
 //				TestCameraFaceDetection
 // ------------------------------------------------------
@@ -85,9 +91,11 @@ void TestCameraFaceDetection()
 			CObservationImagePtr o = CObservationImagePtr(obs);
 			if ( detected.size() > 0 )
 			{	
-				CDetectable2D obj = (CDetectable2D*)(detected[0].pointer());
+				//CDetectable2D obj = (CDetectable2D*)(detected[0].pointer());
+				ASSERT_( IS_CLASS(detected[0],CDetectable2D ) )
+				CDetectable2DPtr obj = CDetectable2DPtr( detected[0] );
 				//CDetectable2DPtr obj = CDetectable2DPtr( new CDetectable2D(  ) );
-				o->image.rectangle( obj.m_x, obj.m_y, obj.m_x+obj.m_width, obj.m_y + obj.m_height, 154 );
+				o->image.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );
 			}
 
 			win.showImage(o->image);
@@ -116,7 +124,12 @@ void TestImagesFaceDetection()
 
 void TestPrepareDetector()
 {
-	faceDetector.init( myIniFile );
+	CStringList  lst;
+	lst.loadFromFile(myIniFile);
+	CConfigFileMemory  cfg; 
+	cfg.setContent(lst);
+	cfg.write("CascadeClassifier","cascadeFileName", OPENCV_SRC_DIR + "/data/haarcascades/haarcascade_frontalface_alt2.xml");
+	faceDetector.init( cfg );
 }
 
 // ------------------------------------------------------

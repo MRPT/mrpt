@@ -35,8 +35,8 @@ using namespace mrpt;
 using namespace mrpt::vision;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CDetectableObject, CSerializable, mrpt::vision)
-IMPLEMENTS_SERIALIZABLE(CDetectable2D, CSerializable,mrpt::vision)
-IMPLEMENTS_SERIALIZABLE(CDetectable3D, CSerializable,mrpt::vision)
+IMPLEMENTS_SERIALIZABLE(CDetectable2D, CDetectableObject,mrpt::vision)
+IMPLEMENTS_SERIALIZABLE(CDetectable3D, CDetectable2D,mrpt::vision)
 
 void CDetectable2D::readFromStream(CStream &in, int version)
 {

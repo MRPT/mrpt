@@ -43,7 +43,7 @@ namespace mrpt
 			CCascadeClassifierDetection( std::string configFile );
 			virtual ~CCascadeClassifierDetection(); 
 
-			void init(std::string configFile);
+			virtual void init(const mrpt::utils::CConfigFileBase &cfg );
 
 			void detectObjects(CObservation *obs, vector_detectable_object &detected);
 

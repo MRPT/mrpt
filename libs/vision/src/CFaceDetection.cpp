@@ -43,7 +43,7 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 	cascadeClassifier.detectObjects( obs, detected );
 }
 
-void CFaceDetection::init(std::string configFile)
+void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 {
-	cascadeClassifier.init( configFile );
+	cascadeClassifier.init( cfg );
 }

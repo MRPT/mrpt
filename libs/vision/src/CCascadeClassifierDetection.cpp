@@ -35,11 +35,10 @@ CCascadeClassifierDetection::~CCascadeClassifierDetection()
 	delete CASCADE;
 }
 
-void CCascadeClassifierDetection::init(std::string configFile)
+
+void CCascadeClassifierDetection::init(const mrpt::utils::CConfigFileBase &config)
 {
 	// load configuration values
-	CConfigFile config(configFile);
-
 	m_options.cascadeFileName		= config.read_string("CascadeClassifier","cascadeFilename","");
 	m_options.scaleFactor			= config.read_double("DetectionOptions","scaleFactor",1.1);
 	m_options.minNeighbors			= config.read_int("DetectionOptions","minNeighbors",3);
@@ -57,6 +56,7 @@ void CCascadeClassifierDetection::init(std::string configFile)
 
 void CCascadeClassifierDetection::detectObjects(CObservation *obs, vector_detectable_object &detected)
 {
+#if MRPT_HAS_OPENCV
 	vector<Rect> objects;
 
 	mrpt::utils::CImage *img = NULL;
@@ -90,6 +90,8 @@ void CCascadeClassifierDetection::detectObjects(CObservation *obs, vector_detect
 		CDetectable2DPtr obj = CDetectable2DPtr( new CDetectable2D( objects[i].x, objects[i].y, objects[i].height, objects[i].width ) );
 		detected.push_back((CDetectableObjectPtr)obj);
 	}
-	
+#else
+	THROW_EXCEPTION("This method requires MRPT built against OpenCV")
+#endif
 }
 

@@ -45,7 +45,15 @@ namespace mrpt
 		{
 			//virtual ~CObjectDetection();
 
-			virtual void init(std::string configFile)=0;
+			/** Initialize the object with parameters loaded from the given config file. */
+			inline void init(const std::string &configFile)
+			{
+				mrpt::utils::CConfigFile  cfg(configFile);
+				init(cfg);
+			}
+
+			/** Initialize the object with parameters loaded from the given config source. */
+			virtual void init(const mrpt::utils::CConfigFileBase &cfg )=0;
 
 			inline void detectObjects(CObservationPtr obs, vector_detectable_object &detected) 
 			{ 

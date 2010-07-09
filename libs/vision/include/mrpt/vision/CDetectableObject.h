@@ -44,7 +44,7 @@ namespace mrpt
 		}; // End of class
 
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable2D, mrpt::utils::CSerializable, VISION_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable2D, mrpt::vision::CDetectableObject, VISION_IMPEXP )
 
 		class VISION_IMPEXP CDetectable2D: public CDetectableObject
 		{
@@ -97,7 +97,7 @@ namespace mrpt
 		};
 
 		
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable3D, mrpt::utils::CSerializable, VISION_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable3D, mrpt::vision::CDetectable2D, VISION_IMPEXP )
 
 		class VISION_IMPEXP CDetectable3D: public CDetectable2D
 		{

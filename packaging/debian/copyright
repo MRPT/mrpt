@@ -22,7 +22,7 @@ Upstream Authors:
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 
-The Debian packaging is Copyright 2008, Jose Luis Blanco <joseluisblancoc@gmail.com> 
+The Debian packaging is Copyright 2010, Jose Luis Blanco <joseluisblancoc@gmail.com> 
 and is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
 
 
@@ -284,3 +284,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+ * The CSparse library for sparse matrix manipulation. 
+    CSPARSE: a Concise Sparse matrix package.
+    Copyright (c) 2006, Timothy A. Davis.
+    http://www.cise.ufl.edu/research/sparse/CSparse
+
+    Published under GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1
+    See `/usr/share/common-licenses/LGPL-2.1'.
