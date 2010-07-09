@@ -182,7 +182,7 @@ namespace mrpt
 			}
 
 			template<typename T,typename POINT,typename MATRIX> void getFullJacobianT(const POINT &pIn,const CameraTempVariables<T> &tmp,MATRIX &mOut) const	{
-				T x_=1/square(pIn[0]);
+				T x_=1/pIn[0];
 				T x_2=square(x_);
 				//First two jacobians...
 				CMatrixFixedNumeric<T,3,3> J21;
@@ -213,6 +213,7 @@ namespace mrpt
 				J43.set_unsafe(1,1,fy*(tmp.K+6*p1y+2*p2x));
 				J43.set_unsafe(1,2,fy*tmp.y_);
 				mOut.multiply(J43,J21);
+				cout<<"J21:\n"<<J21<<"\nJ43:\n"<<J43<<"\nmOut:\n"<<mOut;
 			}
 		private:
 			//These functions are little tricks to avoid multiple initialization.
@@ -271,7 +272,7 @@ namespace mrpt
 				double K12=sK1-K2;
 				double K123=-K1*sK1+2*K1*K2-K3;	//-K1³+2K1K2-K3
 				//tmp1[3]=1-K1*tmp1[2]+K12*square(tmp1[2]);
-				tmp1[3]=1-tmp1[2]*(-K1+tmp1[2]*(K12+tmp1[2]*K123));
+				tmp1[3]=1+tmp1[2]*(-K1+tmp1[2]*(K12+tmp1[2]*K123));
 				J2.set_unsafe(2,0,2*tmp1[0]);
 				J2.set_unsafe(2,1,2*tmp1[1]);
 				double jTemp=-2*K1+4*tmp1[2]*K12+6*square(tmp1[2])*K123;
@@ -297,7 +298,7 @@ namespace mrpt
 				J4.set_unsafe(1,2,-p1);
 				//As fast as possible, and without more temporaries, let the jacobian be J4*J3*J2*J1;
 				jOut.multiply_ABC(J4,J3,J2);	//Note that using the other order is not possible due to matrix sizes (jOut may, and most probably will, be fixed).
-				jOut*=J1;
+				jOut.multiply(jOut,J1);
 			}
 
 		}; // end class

@@ -230,6 +230,7 @@ namespace mrpt
 		inline void multiply( const MATRIX1& A, const MATRIX2 &B ) /*!< this = A * B */ { mrpt::math::detail::multiply_AB(A,B,*this); } \
 		template <class MATRIX1,class MATRIX2> \
 		inline void multiply_AB( const MATRIX1& A, const MATRIX2 &B ) /*!< this = A * B */ { mrpt::math::detail::multiply_AB(A,B,*this); } \
+		template <typename MATRIX1,typename MATRIX2> inline void multiply_AtB(const MATRIX1 &A,const MATRIX2 &B) /*!< this=A^t * B */	{ mrpt::math::detail::multiply_AtB(A,B,*this); }	\
 		/*! Computes the vector vOut = this * vIn, where "vIn" is a column vector of the appropriate length. */ \
 		template<typename OTHERVECTOR1,typename OTHERVECTOR2> \
 		inline void multiply_Ab(const OTHERVECTOR1 &vIn,OTHERVECTOR2 &vOut,bool accumToOutput = false) const {\
@@ -245,6 +246,14 @@ namespace mrpt
 		template <typename MAT_C> NUMTYPE multiply_HCHt_scalar(const MAT_C &C) const { return mrpt::math::detail::multiply_HCHt_scalar(*this,C); } \
 		/*! R = H<sup>T</sup> * C * H (with a vector H and a symmetric matrix C) In fact when H is a vector, multiply_HCHt_scalar and multiply_HtCH_scalar are exactly equivalent */ \
 		template <typename MAT_C> NUMTYPE multiply_HtCH_scalar(const MAT_C &C) const { return mrpt::math::detail::multiply_HCHt_scalar(*this,C); } \
+		/*! this = C * C<sup>T</sup> * f (with a matrix C and a scalar f). */\
+		template<typename MAT> inline void multiply_AAt_scalar(const MAT &A,typename MAT::value_type f)	{\
+			mrpt::math::detail::multiply_AAt_scalar(A,f,*this);\
+		}\
+		/*! this = C<sup>T</sup> * C * f (with a matrix C and a scalar f). */\
+		template<typename MAT> inline void multiply_AtA_scalar(const MAT &A,typename MAT::value_type f)	{\
+			mrpt::math::detail::multiply_AtA_scalar(A,f,*this);\
+		}\
 		/*! R = H<sup>T</sup> * C * H (with a symmetric matrix C) */ \
 		template <typename MAT_C, typename MAT_R> \
 		inline void multiply_HtCH(const MAT_C &C,MAT_R &R,bool accumResultInOutput=false,bool allow_submatrix_mult=false) const /*!< R = this<sup>T</sup> * C * this \sa detail::multiply_HtCH */  { \

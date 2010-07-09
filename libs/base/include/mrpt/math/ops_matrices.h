@@ -435,6 +435,34 @@ namespace mrpt
 			MRPT_END
 		} // end multiply
 
+		template<typename MAT_IN_1,typename MAT_IN_2,typename MAT_OUT> void multiply_AtB(const MAT_IN_1 &A,const MAT_IN_2 &B,MAT_OUT &C)	{
+			size_t sA=A.getColCount(),sB=B.getColCount();
+			size_t N=A.getRowCount();
+			ASSERTMSG_(N==B.getRowCount(),format("Invalid matrix sizes in multiplication: %ux%u * %ux%u",(unsigned int)sA,(unsigned int)N,(unsigned int)B.getRowCount(),(unsigned int)sB));
+			if (((void *)&A==(void *)&C)||((void *)&B==(void *)&C))	{
+				//We can't work directly over C!
+				MAT_TYPE_PRODUCT_OF(MAT_TYPEDECL_TRANSPOSE_OF(MAT_IN_1),MAT_IN_2) tmpMat;
+				for (size_t i=0;i<sA;++i) for (size_t j=0;j<sB;++j)	{
+					/*
+					tmpMat.set_unsafe(i,j,0);
+					for (size_t k=0;k<N;++k) tmpMat.get_unsafe(i,j)+=A.get_unsafe(k,i)*B.get_unsafe(k,j);
+					*/
+					//OK, let's assume that N is NOT zero, which will be virtually ALL cases.
+					tmpMat.set_unsafe(i,j,A.get_unsafe(0,i)*B.get_unsafe(0,j));
+					for (size_t k=1;k<N;++k) tmpMat.get_unsafe(i,j)+=A.get_unsafe(k,i)*B.get_unsafe(k,j);
+				}
+				C.setSize(sA,sB);
+				for (size_t i=0;i<sA;++i) for (size_t j=0;j<sB;++j) C.set_unsafe(i,j,tmpMat.get_unsafe(i,j));
+			}	else	{
+				C.setSize(sA,sB);
+				for (size_t i=0;i<sA;++i) for (size_t j=0;j<sB;++j)	{
+					//As in the previous case, let's assume that N is not zero. Let the degenerate case be handled externally.
+					C.set_unsafe(i,j,A.get_unsafe(0,i)*B.get_unsafe(0,j));
+					for (size_t k=1;k<N;++k) C.get_unsafe(i,j)+=A.get_unsafe(k,i)*B.get_unsafe(k,j);
+				}
+			}
+		}
+
 
 		/** R = H * C * H^t (with C symmetric) */
 		template <typename MAT_H, typename MAT_C, typename MAT_R>
@@ -561,6 +589,63 @@ namespace mrpt
 						sumAccum += R_.get_unsafe(i,l) * H.get_unsafe(l,j);
 					R.get_unsafe(i,j) = R.get_unsafe(j,i) = sumAccum;
 				}
+			MRPT_END
+		}
+
+		/**
+		  * OUT=IN * IN^t * scalar. This is equivalent to IN*(I*scalar)*IN^t, with I
+		  * being an identity matrix with a number of rows and columns equal to IN's rows.
+		  */
+		template<typename MAT_IN,typename MAT_OUT> void multiply_AAt_scalar(const MAT_IN &in,typename MAT_IN::value_type scalar,MAT_OUT &out)	{
+			MRPT_START
+			ASSERTMSG_((void*)&in!=(void*)&out,"The matrices mustn't be the same." )
+			size_t r=in.getRowCount();
+			size_t c=in.getColCount();
+			out.setSize(r,r);
+			typename MAT_IN::value_type accum=typename MAT_IN::value_type(0);
+			for (size_t k=0;k<c;++k) accum+=square(in.get_unsafe(0,k));
+			out.set_unsafe(0,0,accum*scalar);
+			for (size_t i=1;i<r;++i)	{
+				for (size_t j=0;j<i;++j)	{
+					accum=typename MAT_IN::value_type(0);
+					for (size_t k=0;k<c;++k) accum+=in.get_unsafe(i,k)*in.get_unsafe(j,k);
+					accum*=scalar;
+					out.set_unsafe(i,j,accum);
+					out.set_unsafe(j,i,accum);
+				}
+				accum=typename MAT_IN::value_type(0);
+				for (size_t k=0;k<c;++k) accum+=square(in.get_unsafe(i,k));
+				out.set_unsafe(i,i,accum*scalar);
+			}
+			MRPT_END
+		}
+
+		/**
+		  * OUT=IN^t * IN * scalar. This is equivalent to IN^t*(I*scalar)*IN, with I
+		  * being an identity matrix with a number of rows and columns equal to IN's
+		  * columns.
+		  */
+		template<typename MAT_IN,typename MAT_OUT> void multiply_AtA_scalar(const MAT_IN &in,typename MAT_IN::value_type scalar,MAT_OUT &out)	{
+			MRPT_START
+			ASSERTMSG_((void*)&in!=(void*)&out,"The matrices mustn't be the same." )
+			size_t r=in.getRowCount();
+			size_t c=in.getColCount();
+			out.setSize(c,c);
+			typename MAT_IN::value_type accum=typename MAT_IN::value_type(0);
+			for (size_t k=0;k<c;++k) accum+=square(in.get_unsafe(k,0));
+			out.set_unsafe(0,0,accum*scalar);
+			for (size_t i=1;i<r;++i)	{
+				for (size_t j=0;j<i;++j)	{
+					accum=typename MAT_IN::value_type(0);
+					for (size_t k=0;k<c;++k) accum+=in.get_unsafe(k,i)*in.get_unsafe(k,j);
+					accum*=scalar;
+					out.set_unsafe(i,j,accum);
+					out.set_unsafe(j,i,accum);
+				}
+				accum=typename MAT_IN::value_type(0);
+				for (size_t k=0;k<c;++k) accum+=square(in.get_unsafe(k,i));
+				out.set_unsafe(i,i,accum*scalar);
+			}
 			MRPT_END
 		}
 
