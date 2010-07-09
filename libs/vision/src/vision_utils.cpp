@@ -964,14 +964,14 @@ void  vision::openCV_cross_correlation(
 	}
 
 	// JLBC: Perhaps is better to raise the exception always??
-	if ((x_search_ini + x_search_size  + patch_w-1)>im_w)
-		x_search_size -= (x_search_ini + x_search_size + patch_w-1) - im_w;
+	if ((x_search_ini + x_search_size  + patch_w)>im_w)
+		x_search_size -= (x_search_ini + x_search_size + patch_w) - im_w;
 
-	if ((y_search_ini + y_search_size  + patch_h-1)>im_h)
-		y_search_size -= (y_search_ini + y_search_size  + patch_h-1) - im_h;
+	if ((y_search_ini + y_search_size  + patch_h)>im_h)
+		y_search_size -= (y_search_ini + y_search_size  + patch_h) - im_h;
 
-	ASSERT_( (x_search_ini + x_search_size  + patch_w-1)<=im_w )
-	ASSERT_( (y_search_ini + y_search_size  + patch_h-1)<=im_h )
+	ASSERT_( (x_search_ini + x_search_size + patch_w)<=im_w )
+	ASSERT_( (y_search_ini + y_search_size + patch_h)<=im_h )
 
 	IplImage *result = cvCreateImage(cvSize(x_search_size+1,y_search_size+1),IPL_DEPTH_32F, 1);
 

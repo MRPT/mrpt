@@ -108,23 +108,26 @@ void CFeatureTracker_PatchMatch::trackFeatures(
 		size_t  best_x, best_y;
 		double  best_match;
 
-//		mrpt::vision::openCV_cross_correlation(
-//			new_img_gray,
-//			feat->patch,
-//			best_x, best_y,best_match,   // Output
-//			x_search_ini, y_search_ini,
-//			x_search_size,y_search_size);
+#if 0
+		mrpt::vision::openCV_cross_correlation(
+			new_img_gray,
+			feat->patch,
+			best_x, best_y,best_match,   // Output
+			x_search_ini, y_search_ini,
+			x_search_size,y_search_size);
+#else
+		if ((x_search_ini + x_search_size  + patch_size)>new_img_width)
+			x_search_size -= (x_search_ini + x_search_size + patch_size) - new_img_width;
 
-		if ((x_search_ini + x_search_size  + patch_size-1)>new_img_width)
-			x_search_size -= (x_search_ini + x_search_size + patch_size-1) - new_img_width;
+		if ((y_search_ini + y_search_size  + patch_size)>new_img_height)
+			y_search_size -= (y_search_ini + y_search_size  + patch_size) - new_img_height;
 
-		if ((y_search_ini + y_search_size  + patch_size-1)>new_img_height)
-			y_search_size -= (y_search_ini + y_search_size  + patch_size-1) - new_img_height;
+		ASSERT_( (x_search_ini + x_search_size + patch_size)<=new_img_width )
+		ASSERT_( (y_search_ini + y_search_size + patch_size)<=new_img_height )
 
-		ASSERT_( (x_search_ini + x_search_size  + patch_size-1)<=new_img_width )
-		ASSERT_( (y_search_ini + y_search_size  + patch_size-1)<=new_img_height )
-
-		IplImage *result = cvCreateImage(cvSize(x_search_size+1,y_search_size+1),IPL_DEPTH_32F, 1);
+		const int result_width  = x_search_size+1;
+		const int result_height = y_search_size+1;
+		IplImage *result = cvCreateImage(cvSize(result_width,result_height),IPL_DEPTH_32F, 1);
 
 		CImage  img_region_to_search;
 		new_img_gray.extract_patch(
@@ -145,27 +148,38 @@ void CFeatureTracker_PatchMatch::trackFeatures(
 			);
 
 		// Find the max point:
+		CvPoint		max_point;  // In coords. relative to "result"!
 		{
 			double		mini;
-			CvPoint		min_point,max_point;
+			CvPoint		min_point;
 			cvMinMaxLoc(result,&mini,&best_match,&min_point,&max_point,NULL);
-			best_x = max_point.x+x_search_ini+(round(patch_size-1)>>1);
-			best_y = max_point.y+y_search_ini+(round(patch_size-1)>>1);
+			best_x = max_point.x+x_search_ini; //+(round(patch_size-1)>>1);
+			best_y = max_point.y+y_search_ini; //+(round(patch_size-1)>>1);
 		}
-
+#endif
 		//cout << "match: " << best_match << endl;
 
 		if (best_match>0.90)
 		{
 			// Aditional checks:
 			// A good, isolated match in its neighbourhood?
+			CvScalar n1 = cvGet2D(result, max_point.x,std::max(0,max_point.y-1));
+			CvScalar n2 = cvGet2D(result, max_point.x,std::min(result_height-1,max_point.y+1));
+			CvScalar n3 = cvGet2D(result, std::max(0,max_point.x-1),max_point.y);
+			CvScalar n4 = cvGet2D(result, std::min(result_width-1, max_point.x+1),max_point.y);
 
-			// ...
-
-			// OK: Accept it:
-			feat->track_status	= status_TRACKED;
-			feat->x				= best_x;
-			feat->y				= best_y;
+			// A local maxima?
+			static const double MIN_DIFF = 0.05;
+			if (best_match>(n1.val[0]-MIN_DIFF) && 
+				best_match>(n2.val[0]-MIN_DIFF) && 
+				best_match>(n3.val[0]-MIN_DIFF) && 
+				best_match>(n4.val[0]-MIN_DIFF) )
+			{
+				// OK: Accept it:
+				feat->track_status	= status_TRACKED;
+				feat->x				= best_x;
+				feat->y				= best_y;
+			}
 		}
 		else
 		{

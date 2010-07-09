@@ -159,7 +159,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			CFeatureExtraction  FE;
 			FE.options.featsType = featFAST;
 
-			FE.options.patchSize = 11;
+			FE.options.patchSize = 21;
 			FE.options.FASTOptions.threshold = 10;
 			FE.options.FASTOptions.min_distance = 20;
 

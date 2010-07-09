@@ -1777,17 +1777,18 @@ void  CImage::extract_patch(
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
-	IplImage *ipl_int = ((IplImage*)img);
-	IplImage *ipl_ext = ((IplImage*)patch.img);
-	ASSERT_(ipl_int);
-	ASSERT_(ipl_ext);
 
-	if ((ipl_int->width<(int)(col_+col_num)) | (ipl_int->height<(int)(row_+row_num)))
+	IplImage *ipl_int = ((IplImage*)img);
+	ASSERT_(ipl_int);
+
+	if ((ipl_int->width<(int)(col_+col_num)) || (ipl_int->height<(int)(row_+row_num)))
 	{
 		THROW_EXCEPTION( format("Trying to extract patch out of image boundaries: Image size=%ix%i, Patch size=%ux%u, extraction location=(%u,%u)",ipl_int->width,ipl_int->height, col_num, row_num, col_, row_ ) )
 	}
 
 	patch.resize(col_num,row_num,((IplImage*)img)->nChannels,true);
+	IplImage *ipl_ext = ((IplImage*)patch.img);
+	ASSERT_(ipl_ext);
 
 	for (unsigned int i=0;i<row_num;i++)
 	{

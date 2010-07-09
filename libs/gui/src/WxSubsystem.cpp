@@ -269,6 +269,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				if (msg->source2D)
                 {
                     CWindowDialog  *wnd = new CWindowDialog(msg->source2D, this, (wxWindowID) -1, msg->str, wxSize(msg->x,msg->y)  );
+					if (!wnd) break;
 
                     // Set the "m_hwnd" member of the window:
                     * ((void**)msg->voidPtr) = (void*)wnd;
@@ -284,9 +285,11 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
                 if (msg->source2D)
 				{
                     CWindowDialog  *wnd = (CWindowDialog*) msg->voidPtr; //msg->source2D->getWxObject();
+					if (!wnd) break;
                     wxImage       *img = (wxImage*) msg->voidPtr2;
+					if (!img) break;
 
-                    wnd->m_image->AssignImage(new wxBitmap(*img)); // Memory will be freed by the object.
+					wnd->m_image->AssignImage(new wxBitmap(*img)); // Memory will be freed by the object.
 
 					if (wnd->m_image->GetSize().GetX() != img->GetWidth() &&
 						wnd->m_image->GetSize().GetY() != img->GetHeight() )
@@ -297,10 +300,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 						wnd->Fit();
 						//wnd->SetClientSize(img->GetWidth(), img->GetHeight());
 					}
-
 					delete img;
-
-                    wnd->m_image->Refresh(false); // false: Do NOT erase background: avoid flickering
+					wnd->m_image->Refresh(false); // false: Do NOT erase background: avoid flickering
                 }
                 break;
                 // Set position
@@ -348,6 +349,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				if (msg->source3D )
                 {
                     C3DWindowDialog  *wnd = new C3DWindowDialog(msg->source3D, this, (wxWindowID) -1, msg->str, wxSize(msg->x,msg->y)  );
+					if (!wnd) break;
 
                     // Set the "m_hwnd" member of the window:
                     * ((void**)msg->voidPtr) = (void*)wnd;
@@ -442,6 +444,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				if (msg->sourcePlots )
                 {
                     CWindowDialogPlots  *wnd = new CWindowDialogPlots(msg->sourcePlots, this, (wxWindowID) -1, msg->str, wxSize(msg->x,msg->y) );
+					if (!wnd) break;
 
                     // Set the "m_hwnd" member of the window:
                     * ((void**)msg->voidPtr) = (void*)wnd;
