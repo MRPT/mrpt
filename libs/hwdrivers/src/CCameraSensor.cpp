@@ -507,7 +507,7 @@ CObservationPtr CCameraSensor::getNextFrame()
 
 		CSerializablePtr  newObs;
 
-		while (!obs.present() && !stObs.present())
+		while (!obs.present() && !stObs.present() && !obs3D.present())
 		{
 			*m_cap_rawlog  >> newObs;
 			if (IS_DERIVED( newObs, CObservation) )
@@ -520,6 +520,8 @@ CObservationPtr CCameraSensor::getNextFrame()
 					obs = CObservationImagePtr(o);
 				else if (IS_CLASS(o,CObservationStereoImages))
 					stObs = CObservationStereoImagesPtr(o);
+				else if (IS_CLASS(o,CObservation3DRangeScan))
+					obs3D = CObservation3DRangeScanPtr(o);
 			}
 			else if (IS_CLASS( newObs, CSensoryFrame) )
 			{
@@ -542,10 +544,15 @@ CObservationPtr CCameraSensor::getNextFrame()
 						stObs = CObservationStereoImagesPtr(o);
 						break;
 					}
+					else if (IS_CLASS(o,CObservation3DRangeScan))
+					{
+						obs3D = CObservation3DRangeScanPtr(o);
+						break;
+					}
 				}
 			}
 
-			if (obs || stObs)
+			if (obs || stObs || obs3D)
 			{
 				// We must convert externally stored images into "normal in-memory" images.
 				const std::string old_dir = CImage::IMAGES_PATH_BASE; // Save current
@@ -553,6 +560,9 @@ CObservationPtr CCameraSensor::getNextFrame()
 
 				if (obs && obs->image.isExternallyStored())
 					obs->image.loadFromFile( obs->image.getExternalStorageFileAbsolutePath() );
+
+				if (obs3D && obs3D->hasIntensityImage && obs3D->intensityImage.isExternallyStored())
+					obs3D->intensityImage.loadFromFile( obs3D->intensityImage.getExternalStorageFileAbsolutePath() );
 
 				if (stObs && stObs->imageLeft.isExternallyStored())
 					stObs->imageLeft.loadFromFile( stObs->imageLeft.getExternalStorageFileAbsolutePath() );
@@ -578,12 +588,12 @@ CObservationPtr CCameraSensor::getNextFrame()
 	if (m_camera_grab_decimator_counter<m_camera_grab_decimator)
 		// Done here:
 		return CObservationPtr();
-		
+
 	// Continue as normal:
 	m_camera_grab_decimator_counter = 0;
 
 	ASSERT_(obs || stObs || obs3D)
-	
+
 	// If we grabbed an image: prepare it and add it to the internal queue:
 	if (obs) {
 		obs->sensorLabel = m_sensorLabel;

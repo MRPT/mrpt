@@ -100,6 +100,12 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			CObservationStereoImagesPtr o = CObservationStereoImagesPtr(obs);
 			theImg.copyFastFrom(o->imageLeft);
 		}
+		else if (IS_CLASS(obs,CObservation3DRangeScan))
+		{
+			CObservation3DRangeScanPtr o = CObservation3DRangeScanPtr(obs);
+			if (o->hasIntensityImage)
+				theImg.copyFastFrom(o->intensityImage);
+		}
 		else
 		{
 			continue; // Silently ignore non-image observations.

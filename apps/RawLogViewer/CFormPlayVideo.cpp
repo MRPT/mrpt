@@ -116,7 +116,7 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent,wxWindowID id)
     wxFlexGridSizer* FlexGridSizer10;
     wxFlexGridSizer* FlexGridSizer12;
     wxFlexGridSizer* FlexGridSizer5;
-    
+
     Create(parent, wxID_ANY, _("Play images in a Rawlog as a video"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX, _T("wxID_ANY"));
     FlexGridSizer1 = new wxFlexGridSizer(4, 1, 0, 0);
     FlexGridSizer1->AddGrowableCol(0);
@@ -244,7 +244,7 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent,wxWindowID id)
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-    
+
     Connect(ID_RADIOBUTTON1,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&CFormPlayVideo::OnrbLoadedSelect);
     Connect(ID_RADIOBUTTON2,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&CFormPlayVideo::OnrbFileSelect);
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CFormPlayVideo::OnbtnPickClick);
@@ -681,6 +681,50 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
 
 				// save:
 				displayedImgs[ 1 ] = obsImg2;
+
+                doDelay= true;
+            }
+        }
+	}
+
+	// 3D range images:
+	{
+        CObservation3DRangeScanPtr obs3D = sf->getObservationByClass<CObservation3DRangeScan>();
+        if (obs3D && obs3D->hasIntensityImage)
+        {
+            nImgs++;
+
+			// Intensity channel
+            {
+                imgShow = &obs3D->intensityImage;
+
+				// Subsampling?
+				if ( doReduceLargeImgs && imgShow->getWidth() > 650 )
+				{
+					auxImgForSubSampling = imgShow->scaleHalf();
+					imgShow = &auxImgForSubSampling ;
+				}
+
+                if (firstFit)
+                {
+                    pnLeft->SetMinSize( wxSize( imgShow->getWidth()+2,imgShow->getHeight()+2 ) );
+                    //Fit();
+                    // firstFit=false; // Done in the right pane below...
+                }
+
+                wxImage *wxIMG = mrpt::gui::MRPTImage2wxImage( *imgShow );
+                imgShow->unload();  // for delayed-loaded rawlogs, save lots of memory!
+
+                wxWindowDC  dc( pnLeft );
+                wxMemoryDC  tmpDc;
+                tmpDc.SelectObjectAsSource(wxBitmap( *wxIMG ));
+                dc.Blit(0,0,wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
+                delete wxIMG;
+
+                lbCam1->SetLabel( _U( format( "%s - Intensity", obs3D->sensorLabel.c_str()).c_str() ));
+
+				// save:
+				displayedImgs[ 0 ] = obs3D;
 
                 doDelay= true;
             }
