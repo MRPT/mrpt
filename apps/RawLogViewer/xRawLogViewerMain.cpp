@@ -1304,7 +1304,9 @@ void xRawLogViewerFrame::loadRawlogFile(
 
 	CFileGZInputStream	fil(str);
 
-	int					filSize = (int)fil.getTotalBytesCount();
+	uint64_t filSize = fil.getTotalBytesCount();
+
+	const uint64_t progDialogMax = filSize>>10; // Size, in Kb's (to avoid saturatin the "int" in wxProgressDialog)
 
 	loadedFileName = str;
 
@@ -1312,7 +1314,7 @@ void xRawLogViewerFrame::loadRawlogFile(
 	wxProgressDialog    progDia(
 		wxT("Progress of rawlog load"),
 		wxT("Loading..."),
-		filSize, // range
+		progDialogMax, // range, in Kb's
 		this, // parent
 		wxPD_CAN_ABORT |
 		wxPD_APP_MODAL |
@@ -1343,7 +1345,7 @@ void xRawLogViewerFrame::loadRawlogFile(
 	{
 		if (countLoop++ % 10 == 0)
 		{
-			size_t  fil_pos = fil.getPosition();
+			uint64_t fil_pos = fil.getPosition();
 			static double last_ratio = -1;
 			double ratio = fil_pos/(1.0*filSize);
 
@@ -1354,8 +1356,10 @@ void xRawLogViewerFrame::loadRawlogFile(
 				unsigned long	memUsg = getMemoryUsage();
 				double			memUsg_Mb = memUsg / (1024.0*1024.0);
 
+				const uint64_t  progPos = fil_pos>>10;
+
 				auxStr.sprintf(wxT("Loading... %u objects / Memory usage: %.03fMb"),rawlog.size(), memUsg_Mb);
-				if (!progDia.Update( ((int)fil_pos)<(filSize-1) ? ((int)fil_pos) : (filSize-1), auxStr ))
+				if (!progDia.Update( progPos<(progDialogMax-1) ? progPos : (progDialogMax-1), auxStr ))
 					keepLoading = false;
 				progDia.Fit();
 				wxTheApp->Yield();  // Let the app. process messages
@@ -1464,7 +1468,7 @@ void xRawLogViewerFrame::loadRawlogFile(
 	} // end while keep loading
 
 	timeToLoad = crono_Loading.Tac();
-	progDia.Update( filSize );
+	progDia.Update( progDialogMax );
 
 	// Update the views:
 	rebuildTreeView();

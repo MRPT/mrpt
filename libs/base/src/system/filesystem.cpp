@@ -56,7 +56,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifndef MRPT_OS_WINDOWS
+#if !defined(_MSC_VER)
 	#define _access access
 	#define _rmdir rmdir
 	#define _stat stat
@@ -344,3 +344,23 @@ std::string mrpt::system::fileNameStripInvalidChars( const std::string &filename
 	return ret;
 }
 
+
+/*---------------------------------------------------------------
+			fileNameStripInvalidChars
+---------------------------------------------------------------*/
+uint64_t mrpt::system::getFileSize(const std::string &fileName)
+{
+#if defined(_MSC_VER)
+	// Visual Studio:
+	struct __stat64 filStat;
+	if ( _stat64( fileName.c_str(), &filStat ) )
+			return uint64_t(-1);
+	else	return uint64_t(filStat.st_size);
+#else
+	// The rest of the world:
+	struct stat filStat;
+	if ( stat( fileName.c_str(), &filStat ) )
+			return uint64_t(-1);
+	else	return uint64_t(filStat.st_size);
+#endif
+}

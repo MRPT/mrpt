@@ -68,17 +68,17 @@ namespace utils
 
 		/** It has no efect in this class.
 		 */
-		size_t Seek(long Offset, CStdOutStream::TSeekOrigin Origin = sFromBeginning)
+		uint64_t Seek(long Offset, CStdOutStream::TSeekOrigin Origin = sFromBeginning)
 			{ THROW_EXCEPTION("Invalid operation for this kind of stream"); }
 
 		/** It has no efect in this class.
 		 */
-		size_t getTotalBytesCount()
+		uint64_t getTotalBytesCount()
 			{ THROW_EXCEPTION("Invalid operation for this kind of stream"); }
 
 		/** It has no efect in this class.
 		 */
-		size_t getPosition()
+		uint64_t getPosition()
 			{ THROW_EXCEPTION("Invalid operation for this kind of stream"); }
 
 	}; // End of class def.

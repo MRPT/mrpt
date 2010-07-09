@@ -84,7 +84,7 @@ size_t  CInterfaceFTDI::Write(const void *Buffer, size_t Count)
 /*-------------------------------------------------------------
 					Seek
 -------------------------------------------------------------*/
-size_t CInterfaceFTDI::Seek(long Offset, CStream::TSeekOrigin Origin)
+uint64_t CInterfaceFTDI::Seek(long Offset, CStream::TSeekOrigin Origin)
 {
 	MRPT_UNUSED_PARAM(Offset);
 	MRPT_UNUSED_PARAM(Origin);
@@ -94,7 +94,7 @@ size_t CInterfaceFTDI::Seek(long Offset, CStream::TSeekOrigin Origin)
 /*-------------------------------------------------------------
 					getTotalBytesCount
 -------------------------------------------------------------*/
-size_t CInterfaceFTDI::getTotalBytesCount()
+uint64_t CInterfaceFTDI::getTotalBytesCount()
 {
 	return 0;
 }
@@ -102,7 +102,7 @@ size_t CInterfaceFTDI::getTotalBytesCount()
 /*-------------------------------------------------------------
 					getPosition
 -------------------------------------------------------------*/
-size_t CInterfaceFTDI::getPosition()
+uint64_t CInterfaceFTDI::getPosition()
 {
 	return 0;
 }

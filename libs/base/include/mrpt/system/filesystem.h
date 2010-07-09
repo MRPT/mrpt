@@ -107,6 +107,10 @@ namespace mrpt
 		  */
 		std::string BASE_IMPEXP fileNameStripInvalidChars( const std::string &filename);
 
+		/** Return the size of the given file, or size_t(-1) if some error is found accessing that file.
+		  */
+		uint64_t BASE_IMPEXP getFileSize(const std::string &fileName);
+
 		/** @} */
 
 

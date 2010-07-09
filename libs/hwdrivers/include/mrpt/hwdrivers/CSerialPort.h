@@ -166,7 +166,7 @@ namespace mrpt
 			 *	- sFromEnd			Offset is from the end of the resource. Offset must be <= 0 to indicate a number of bytes before the end of the file.
 			 * \return Seek returns the new value of the Position property.
 			 */
-			size_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning)
+			uint64_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning)
 			{
 				MRPT_START
 				MRPT_UNUSED_PARAM(Origin);
@@ -177,7 +177,7 @@ namespace mrpt
 
 			/** Returns the total amount of bytes in the stream.
 			 */
-			size_t getTotalBytesCount()
+			uint64_t getTotalBytesCount()
 			{
 				MRPT_START
 				THROW_EXCEPTION("Method not applicable to serial communications port CStream!");
@@ -186,7 +186,7 @@ namespace mrpt
 
 			/** Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one.
 			 */
-			size_t getPosition()
+			uint64_t getPosition()
 			{
 				MRPT_START
 				THROW_EXCEPTION("Method not applicable to serial communications port CStream!");

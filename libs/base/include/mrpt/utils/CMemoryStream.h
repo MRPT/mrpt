@@ -59,13 +59,13 @@ namespace utils
 		/** Internal data
 		 */
 		void_ptr_noncopy	m_memory;
-		size_t	m_size, m_position, m_bytesWritten;
-		size_t	m_alloc_block_size;
+		uint64_t	m_size, m_position, m_bytesWritten;
+		uint64_t	m_alloc_block_size;
 		bool	m_read_only;   //!< If the memory block does not belong to the object.
 
 		/** Resizes the internal buffer size.
 		 */
-		void resize(size_t newSize);
+		void resize(uint64_t newSize);
 	public:
 		/** Default constructor
 		 */
@@ -74,13 +74,13 @@ namespace utils
 		/** Constructor to initilize the data in the stream from a block of memory (which is copied), and sets the current stream position at the beginning of the data.
 		 * \sa assignMemoryNotOwn
 		 */
-		CMemoryStream( const void *data, const size_t nBytesInData );
+		CMemoryStream( const void *data, const uint64_t nBytesInData );
 
 		/** Initilize the data in the stream from a block of memory which is NEITHER OWNED NOR COPIED by the object, so it must exist during the whole live of the object.
 		  *  After assigning a block of data with this method, the object becomes "read-only", so further attempts to change the size of the buffer will raise an exception.
 		  *  This method resets the write and read positions to the beginning.
 		  */
-		void assignMemoryNotOwn( const void *data, const size_t nBytesInData );
+		void assignMemoryNotOwn( const void *data, const uint64_t nBytesInData );
 
 		/** Destructor
 		 */
@@ -93,20 +93,20 @@ namespace utils
 		/** Change size. This would be rarely used. Use ">>" operators for writing to stream.
 		 * \sa Stream
 		 */
-		void  changeSize( size_t newSize );
+		void  changeSize( uint64_t newSize );
 
 		/** Method for moving to a specified position in the streamed resource.
 		 *  \sa CStream::Seek
 		 */
-		size_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning);
+		uint64_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning);
 
 		/** Returns the total size of the internal buffer.
 		 */
-		size_t getTotalBytesCount();
+		uint64_t getTotalBytesCount();
 
 		/** Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one.
 		 */
-		size_t getPosition();
+		uint64_t getPosition();
 
 		/** Method for getting a pointer to the raw stored data.
 		 * The lenght in bytes is given by getTotalBytesCount
@@ -125,7 +125,7 @@ namespace utils
 		bool loadBufferFromFile( const std::string &file_name );
 
 		/** Change the size of the additional memory block that is reserved whenever the current block runs too short (default=0x10000 bytes) */
-		void setAllocBlockSize( size_t  alloc_block_size )
+		void setAllocBlockSize( uint64_t  alloc_block_size )
 		{
 			ASSERT_(alloc_block_size>0)
 			m_alloc_block_size = alloc_block_size;

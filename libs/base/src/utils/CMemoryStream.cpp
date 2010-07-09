@@ -55,7 +55,7 @@ CMemoryStream::CMemoryStream() :
  ---------------------------------------------------------------*/
 CMemoryStream::CMemoryStream(
 	const void *data,
-	const size_t nBytesInData )  :
+	const uint64_t nBytesInData )  :
 	m_memory		(NULL),
 	m_size		(0),
 	m_position	(0),
@@ -78,7 +78,7 @@ CMemoryStream::CMemoryStream(
 /*---------------------------------------------------------------
 				assignMemoryNotOwn
  ---------------------------------------------------------------*/
-void CMemoryStream::assignMemoryNotOwn( const void *data, const size_t nBytesInData )
+void CMemoryStream::assignMemoryNotOwn( const void *data, const uint64_t nBytesInData )
 {
 	this->Clear();
 	m_memory.set(data);
@@ -103,7 +103,7 @@ CMemoryStream::~CMemoryStream()
 /*---------------------------------------------------------------
 							resize
  ---------------------------------------------------------------*/
-void CMemoryStream::resize(size_t newSize)
+void CMemoryStream::resize(uint64_t newSize)
 {
 	if (m_read_only)
 		THROW_EXCEPTION("[CMemoryStream::resize] Cannot change memory block size since it was set with 'assign'")
@@ -179,7 +179,7 @@ size_t CMemoryStream::Write(const void *Buffer, size_t Count)
 	Method for moving to a specified position in the streamed resource.
 	 See documentation of CStream::Seek
  ---------------------------------------------------------------*/
-size_t CMemoryStream::Seek(long Offset, CStream::TSeekOrigin Origin)
+uint64_t CMemoryStream::Seek(long Offset, CStream::TSeekOrigin Origin)
 {
 	switch (Origin)
 	{
@@ -202,7 +202,7 @@ size_t CMemoryStream::Seek(long Offset, CStream::TSeekOrigin Origin)
 /*---------------------------------------------------------------
 						getTotalBytesCount
  ---------------------------------------------------------------*/
-size_t CMemoryStream::getTotalBytesCount()
+uint64_t CMemoryStream::getTotalBytesCount()
 {
 	return m_bytesWritten;
 }
@@ -210,7 +210,7 @@ size_t CMemoryStream::getTotalBytesCount()
 /*---------------------------------------------------------------
 						getPosition
  ---------------------------------------------------------------*/
-size_t CMemoryStream::getPosition()
+uint64_t CMemoryStream::getPosition()
 {
 	return m_position;
 }
@@ -238,7 +238,7 @@ void*  CMemoryStream::getRawBufferData()
 Change size. This would be rarely used
  Use ">>" operators for writing to stream.
  ---------------------------------------------------------------*/
-void  CMemoryStream::changeSize( size_t newSize )
+void  CMemoryStream::changeSize( uint64_t newSize )
 {
 	resize(newSize);
 }
@@ -268,12 +268,12 @@ bool CMemoryStream::loadBufferFromFile( const std::string &file_name )
 	try
 	{
 		CFileInputStream	fi(file_name);
-		size_t  N = fi.getTotalBytesCount();
+		uint64_t  N = fi.getTotalBytesCount();
 
 		// Read into the buffer:
 		Clear();
 		resize(N+100);
-		size_t N_read = fi.ReadBuffer( m_memory.get(), N );
+		uint64_t N_read = fi.ReadBuffer( m_memory.get(), N );
 
 		m_position = N_read;
 		m_bytesWritten = max(m_bytesWritten,m_position);

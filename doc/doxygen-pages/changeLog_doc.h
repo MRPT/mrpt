@@ -41,6 +41,7 @@
 			- camera-calib can now open SwissRangers 3D cameras as well for real-time calibration.
 			- rawlog-grabber: New config file optional argument: "rawlog_GZ_compress_level" to settle the desired GZ-compression level of rawlogs.
 		- Changes in classes:
+			- mrpt::utils::CStream now handles sizes as uint64_t instead of size_t, to allow files larger than 4Gb in 32bit systems.
 			- mrpt::hwdrivers::prepareVideoSourceFromUserSelection() now also displays as an option to grab images from SwissRanger 3D cameras.
 			- mrpt::hwdrivers::CCameraSensor can now open SwissRanger 3D cameras.
 			- mrpt::vision::CFeatureList now has KD-tree-based search.
@@ -92,6 +93,7 @@
 			- New global variable mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 		- BUGFIXES:
 			- <b>CRITICAL REGRESION FIXED</b>: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.
+			- Error in CStream-classes handling files larger than 4Gb. 
 			- Fixed build with BUILD_SHARED_LIBS=OFF under Visual Studio.
 			- Fixed: RANSAC won't use the last input data point (Thanks "Stephane" for reporting!)
 			- mrpt::slam::COccupancyGridMap2D::TLikelihoodOptions::loadFromConfigFile ignored the "section" name for loading "likelihoodMethod" (reported by Thomas Ciarfuglia, Università di Perugia).

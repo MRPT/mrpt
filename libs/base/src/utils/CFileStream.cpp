@@ -120,7 +120,7 @@ size_t  CFileStream::Write(const void *Buffer, size_t Count)
 	Method for moving to a specified position in the streamed resource.
 	 See documentation of CStream::Seek
  ---------------------------------------------------------------*/
-size_t CFileStream::Seek(long Offset, CStream::TSeekOrigin Origin)
+uint64_t CFileStream::Seek(long Offset, CStream::TSeekOrigin Origin)
 {
 	if (!m_f.is_open()) return 0;
 
@@ -144,12 +144,12 @@ size_t CFileStream::Seek(long Offset, CStream::TSeekOrigin Origin)
 /*---------------------------------------------------------------
 						getTotalBytesCount
  ---------------------------------------------------------------*/
-size_t CFileStream::getTotalBytesCount()
+uint64_t CFileStream::getTotalBytesCount()
 {
 	if (!fileOpenCorrectly()) return 0;
 
-	size_t previousPos = getPosition();
-	size_t fileSize = Seek(0,sFromEnd);
+	uint64_t previousPos = getPosition();
+	uint64_t fileSize = Seek(0,sFromEnd);
 	Seek(static_cast<long>(previousPos));
 	return fileSize;
 }
@@ -157,7 +157,7 @@ size_t CFileStream::getTotalBytesCount()
 /*---------------------------------------------------------------
 						getPosition
  ---------------------------------------------------------------*/
-size_t CFileStream::getPosition()
+uint64_t CFileStream::getPosition()
 {
 	if (m_f.is_open())
 			return m_f.tellg();
@@ -167,7 +167,7 @@ size_t CFileStream::getPosition()
 /*---------------------------------------------------------------
 						getPositionI
  ---------------------------------------------------------------*/
-size_t CFileStream::getPositionI()
+uint64_t CFileStream::getPositionI()
 {
 	if (m_f.is_open())
 			return m_f.tellg();
@@ -177,7 +177,7 @@ size_t CFileStream::getPositionI()
 /*---------------------------------------------------------------
 						getPositionO
  ---------------------------------------------------------------*/
-size_t CFileStream::getPositionO()
+uint64_t CFileStream::getPositionO()
 {
 	if (m_f.is_open())
 			return m_f.tellp();

@@ -35,6 +35,8 @@
 
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/filesystem.h>
+
 
 #include <zlib.h>
 
@@ -67,13 +69,9 @@ bool CFileGZInputStream::open(const std::string &fileName )
 	if (m_f) gzclose(m_f);
 
 	// Get compressed file size:
-	{
-		FILE *f = fopen(fileName.c_str(),"rb");
-		if (!f) return false;
-		fseek (f, 0 , SEEK_END);
-		m_file_size = ftell(f);
-		fclose(f);
-	}
+	m_file_size = mrpt::system::getFileSize(fileName);
+	if (m_file_size==uint64_t(-1))
+		THROW_EXCEPTION_CUSTOM_MSG1("Couldn't access the file '%s'",fileName.c_str() );
 
 	// Open gz stream:
 	m_f = gzopen(fileName.c_str(),"rb");
@@ -125,7 +123,7 @@ size_t  CFileGZInputStream::Write(const void *Buffer, size_t Count)
 /*---------------------------------------------------------------
 						getTotalBytesCount
  ---------------------------------------------------------------*/
-size_t CFileGZInputStream::getTotalBytesCount()
+uint64_t CFileGZInputStream::getTotalBytesCount()
 {
 	if (!m_f) { THROW_EXCEPTION("File is not open."); }
 	return m_file_size;
@@ -134,7 +132,7 @@ size_t CFileGZInputStream::getTotalBytesCount()
 /*---------------------------------------------------------------
 						getPosition
  ---------------------------------------------------------------*/
-size_t CFileGZInputStream::getPosition()
+uint64_t CFileGZInputStream::getPosition()
 {
 	if (!m_f) { THROW_EXCEPTION("File is not open."); }
 	return gztell(m_f);

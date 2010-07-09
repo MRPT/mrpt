@@ -61,8 +61,8 @@ namespace mrpt
 			// DECLARE_UNCOPIABLE( CFileGZInputStream )
 
 		private:
-			void			*m_f;
-			size_t			m_file_size;	//!< Compressed file size
+			void		*m_f;
+			uint64_t	m_file_size;	//!< Compressed file size
 
 		public:
 			 /** Constructor without open
@@ -98,14 +98,14 @@ namespace mrpt
 
 			/** Method for getting the total number of <b>compressed</b> bytes of in the file (the physical size of the compressed file).
 			 */
-			size_t getTotalBytesCount();
+			uint64_t getTotalBytesCount();
 
 			/** Method for getting the current cursor position in the <b>compressed</b>, where 0 is the first byte and TotalBytesCount-1 the last one.
 			 */
-			size_t getPosition();
+			uint64_t getPosition();
 
 			/** This method is not implemented in this class */
-			size_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning)
+			uint64_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning)
 			{
 				THROW_EXCEPTION("Seek is not implemented in this class");
 			}

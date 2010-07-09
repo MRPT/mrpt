@@ -131,7 +131,7 @@ namespace utils
 
 		/** This virtual method has no effect in this implementation over a TCP socket, and its use raises an exception
 		 */
-		size_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning)
+		uint64_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning)
 		{
 		    MRPT_START
 			MRPT_UNUSED_PARAM(Offset); MRPT_UNUSED_PARAM(Origin);
@@ -141,7 +141,7 @@ namespace utils
 
 		/** This virtual method has no effect in this implementation over a TCP socket, and its use raises an exception
 		 */
-		size_t getTotalBytesCount()
+		uint64_t getTotalBytesCount()
 		{
 		    MRPT_START
 			THROW_EXCEPTION("This method has no effect in this class!");
@@ -150,7 +150,7 @@ namespace utils
 
 		/** This virtual method has no effect in this implementation over a TCP socket, and its use raises an exception
 		 */
-		size_t getPosition()
+		uint64_t getPosition()
 		{
 		    MRPT_START
 			THROW_EXCEPTION("This method has no effect in this class!");

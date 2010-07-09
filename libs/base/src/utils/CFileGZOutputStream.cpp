@@ -123,7 +123,7 @@ size_t  CFileGZOutputStream::Write(const void *Buffer, size_t Count)
 /*---------------------------------------------------------------
 						getPosition
  ---------------------------------------------------------------*/
-size_t CFileGZOutputStream::getPosition()
+uint64_t CFileGZOutputStream::getPosition()
 {
 	if (!m_f) { THROW_EXCEPTION("File is not open."); }
 	return gztell(m_f);

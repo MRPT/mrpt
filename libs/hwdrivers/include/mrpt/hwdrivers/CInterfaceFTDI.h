@@ -172,15 +172,15 @@ namespace mrpt
 
 			/** This virtual method does nothing in this class.
 			 */
-			size_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning);
+			uint64_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning);
 
 			/** This virtual method does nothing in this class.
 			 */
-			size_t getTotalBytesCount();
+			uint64_t getTotalBytesCount();
 
 			/** This virtual method does nothing in this class.
 			 */
-			size_t getPosition();
+			uint64_t getPosition();
 
 
 			void  ftdi_read(void  *lpvBuffer, unsigned long dwBuffSize, unsigned long  *lpdwBytesRead);

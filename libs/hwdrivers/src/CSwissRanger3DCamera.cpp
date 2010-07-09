@@ -237,7 +237,7 @@ void  CSwissRanger3DCamera::loadConfig_sensorSpecific(
 	{
 		m_cameraParams.loadFromConfigFile(iniSection, configSource);
 	}
-	catch(std::exception &e)
+	catch(std::exception &)
 	{
 		// If there's some missing field, just keep the default values.	
 	}

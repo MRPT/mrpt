@@ -96,16 +96,16 @@ namespace mrpt
 
 			/** Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one.
 			 */
-			size_t getPosition();
+			uint64_t getPosition();
 
 			/** This method is not implemented in this class */
-			size_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning)
+			uint64_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning)
 			{
 				THROW_EXCEPTION("Seek is not implemented in this class");
 			}
 
 			/** This method is not implemented in this class */
-			size_t getTotalBytesCount()
+			uint64_t getTotalBytesCount()
 			{
 				THROW_EXCEPTION("getTotalBytesCount is not implemented in this class");
 			}

@@ -112,15 +112,15 @@ namespace mrpt
 			 *	- sFromEnd			Offset is from the end of the resource. Offset must be <= 0 to indicate a number of bytes before the end of the file.
 			 * \return Seek returns the new value of the Position property.
 			 */
-			virtual size_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning) = 0;
+			virtual uint64_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning) = 0;
 
 			/** Returns the total amount of bytes in the stream.
 			 */
-			virtual size_t getTotalBytesCount() = 0;
+			virtual uint64_t getTotalBytesCount() = 0;
 
 			/** Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one.
 			 */
-			virtual size_t getPosition() =0;
+			virtual uint64_t getPosition() =0;
 
 			/** Writes an object to the stream.
 			 */
