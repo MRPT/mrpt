@@ -62,6 +62,8 @@ namespace mrpt
 
 			virtual void detectObjects(CObservation *obs, vector_detectable_object &detected)=0;
 
+			virtual void detectObjects(CImage *img, vector_detectable_object &detected)=0;
+
 		}; // End of class
 	}
 

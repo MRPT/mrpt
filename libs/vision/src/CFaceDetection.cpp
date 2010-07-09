@@ -47,3 +47,8 @@ void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 {
 	cascadeClassifier.init( cfg );
 }
+
+void CFaceDetection::detectObjects(CImage *img, vector_detectable_object &detected)
+{
+	cascadeClassifier.detectObjects( img, detected );
+}

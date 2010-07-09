@@ -52,6 +52,10 @@ namespace mrpt
 				detectObjects(obs.pointer(), detected); 
 			}
 
+			virtual void detectObjects(CImage *img, vector_detectable_object &detected);
+
+
+
 		}; // End of class
 	}
 

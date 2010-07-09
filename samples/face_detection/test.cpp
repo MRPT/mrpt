@@ -117,9 +117,40 @@ void TestCameraFaceDetection()
 	cout << "Closing..." << endl;
 }
 
-void TestImagesFaceDetection()
+void TestImagesFaceDetection(int argc, char *argv[])
 {
+	CImage		img;
+	CDisplayWindow  win("Result");
+	mrpt::utils::CTicTac	tictac;
 
+	for ( int i = 1; i < argc; i++ )
+	{
+		string fileName( argv[i] );
+		
+		if (!img.loadFromFile(myDataDir+fileName))
+		{
+			cerr << "Cannot load " << myDataDir+fileName << endl;
+			continue;
+		}
+
+		vector_detectable_object detected;
+
+		tictac.Tic();
+		faceDetector.detectObjects( &(CImage(img)), detected );
+
+		cout << "Detection time: " << tictac.Tac() << " ms" << endl;
+
+		for ( unsigned int i = 0; i < detected.size() ; i++ )
+		{	
+			ASSERT_( IS_CLASS(detected[i],CDetectable2D ) )
+			CDetectable2DPtr obj = CDetectable2DPtr( detected[i] );
+			img.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );
+		}
+
+		win.showImage(img);
+
+		mrpt::system::pause();
+	}
 }
 
 void TestPrepareDetector()
@@ -141,8 +172,8 @@ int main(int argc, char *argv[])
 	{
 		TestPrepareDetector();
 
-		if ( argc > 2 )
-			TestImagesFaceDetection();
+		if ( argc > 1 )
+			TestImagesFaceDetection( argc, argv );
 		else
 			TestCameraFaceDetection();
 		

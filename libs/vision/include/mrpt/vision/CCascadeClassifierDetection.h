@@ -45,7 +45,9 @@ namespace mrpt
 
 			virtual void init(const mrpt::utils::CConfigFileBase &cfg );
 
-			void detectObjects(CObservation *obs, vector_detectable_object &detected);
+			virtual void detectObjects(CObservation *obs, vector_detectable_object &detected);
+
+			virtual void detectObjects(CImage *img, vector_detectable_object &detected);
 
 		protected:
 

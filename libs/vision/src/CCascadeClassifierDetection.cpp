@@ -57,8 +57,7 @@ void CCascadeClassifierDetection::init(const mrpt::utils::CConfigFileBase &confi
 void CCascadeClassifierDetection::detectObjects(CObservation *obs, vector_detectable_object &detected)
 {
 #if MRPT_HAS_OPENCV
-	vector<Rect> objects;
-
+	
 	mrpt::utils::CImage *img = NULL;
 
 	if (IS_CLASS(obs,CObservationImage))
@@ -73,9 +72,22 @@ void CCascadeClassifierDetection::detectObjects(CObservation *obs, vector_detect
 	}
 	if (!img)
 	{
-	    mrpt::system::sleep(100);
-	    return;
+	    mrpt::system::sleep(2);
+	    return;	
 	}
+
+	detectObjects(img, detected);
+
+#else
+	THROW_EXCEPTION("This method requires MRPT built against OpenCV")
+#endif
+}
+
+void CCascadeClassifierDetection::detectObjects(CImage *img, vector_detectable_object &detected)
+{
+	vector<Rect> objects;
+
+	img->grayscaleInPlace();
 
 	// Convert to IplImage and copy it
 	IplImage *image = static_cast<IplImage*>(img->getAsIplImage());
@@ -90,8 +102,4 @@ void CCascadeClassifierDetection::detectObjects(CObservation *obs, vector_detect
 		CDetectable2DPtr obj = CDetectable2DPtr( new CDetectable2D( objects[i].x, objects[i].y, objects[i].height, objects[i].width ) );
 		detected.push_back((CDetectableObjectPtr)obj);
 	}
-#else
-	THROW_EXCEPTION("This method requires MRPT built against OpenCV")
-#endif
 }
-
