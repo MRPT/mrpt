@@ -41,6 +41,10 @@ namespace mrpt
 		{
 			DEFINE_VIRTUAL_SERIALIZABLE( CDetectableObject )
 
+		public:
+
+			std::string	m_id; //!< A unique id for each detectable object
+
 		}; // End of class
 
 
@@ -52,10 +56,7 @@ namespace mrpt
 
 		public:
 
-			/** Object location */
 			int m_x, m_y; //!< 2D Coordinates of detected object
-			
-			/** Object size */
 			int m_height, m_width; //!< Size of detected object
 
 			/** Default constructor */
@@ -104,6 +105,8 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CDetectable3D )
 
 		public:
+
+			int		m_z; //!< Z coordinate of detected object
 
 		}; // End of class
 	}
