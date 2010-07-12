@@ -58,6 +58,9 @@ namespace mrpt
 		#define CH_GRAY  1
 		#define CH_RGB   3
 
+		/** For usage in one of the CImage constructors */
+		#define UNINITIALIZED_IMAGE  false,false,false
+
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CImage, mrpt::utils::CSerializable )
 
@@ -102,20 +105,21 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CImage )
 
 		protected:
-			/** Data members
-			*/
-			void 	*img;
+			/** @name Data members
+				@{ */
+
+			void 	*img;  //!< The internal IplImage pointer to the actual image content.
 
 			/**  Set to true only when using setFromIplImageReadOnly.
-			  * \sa setFromIplImageReadOnly
-			  */
+			  * \sa setFromIplImageReadOnly  */
 			bool	m_imgIsReadOnly;
-
 			/**  Set to true only when using setExternalStorage.
 			  * \sa setExternalStorage
 			  */
 			mutable bool	m_imgIsExternalStorage;
 			mutable std::string 	m_externalFile;		//!< The file name of a external storage image.
+
+			/** @} */
 
 			/**  Resize the buffers in "img" to accomodate a new image size and/or format.
 			  */
@@ -207,6 +211,16 @@ namespace mrpt
 			/** Copy constructor:
 			 */
 			CImage( const CImageFloat &o );
+
+			/** Fast constructor that leaves the image uninitialized (the internal IplImage pointer set to NULL).
+			  *  Use only when you know the image will be soon be assigned another image.
+			  *  Example of usage:
+			  *   \code
+			  *    CImage myImg(UNINITIALIZED_IMAGE);
+			  *   \endcode
+			  */
+			inline CImage(bool, bool, bool) : img(NULL),m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
+			{ }
 
 			/** Copy operator
 			  * \sa copyFastFrom
@@ -323,8 +337,15 @@ namespace mrpt
 			/** Reads the image from a OpenCV IplImage object (WITHOUT making a copy) and from now on the image cannot be modified, just read.
 			  *  When assigning an IPLImage to this object with this method, the IPLImage will NOT be released/freed at this object destructor.
 			  *   This method provides a fast method to grab images from a camera without making a copy of every frame.
+			  *  \sa setFromImageReadOnly
 			  */
 			void  setFromIplImageReadOnly( void* iplImage );
+
+			/** Sets the internal IplImage pointer to that of another given image, WITHOUT making a copy, and from now on the image cannot be modified in this object (it will be neither freed, so the memory responsibility will still be of the original image object).
+			  *  When assigning an IPLImage to this object with this method, the IPLImage will NOT be released/freed at this object destructor.
+			  *  \sa setFromIplImageReadOnly
+			  */
+			inline void setFromImageReadOnly( const CImage &other_img ) { setFromIplImageReadOnly(other_img.getAsIplImage() ); }
 
 			/**  By using this method the image is marked as referenced to an external file, which will be loaded only under demand.
 			  *   A CImage with external storage does not consume memory until some method trying to access the image is invoked (e.g. getWidth(), isColor(),...)

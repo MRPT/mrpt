@@ -57,6 +57,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 	win = mrpt::gui::CDisplayWindow::Create("Tracked features");
 
+	mrpt::vision::CVideoFileWriter  vidWritter;
+
 	CTimeLogger  timlog;
 
 	bool 		hasResolution = false;
@@ -65,17 +67,25 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	CFeatureList	trackedFeats;
 	unsigned int	step_num = 0;
 
+	static const unsigned int 	NUM_FEATS_TO_DETECT = 100;
+	static const unsigned int 	PATCH_SIZE	= 11;
+	bool  DO_SAVE_VIDEO = false; //true;
+	bool  DO_HIST_EQUALIZE_IN_GRAYSCALE = false; //true;
+	string VIDEO_OUTPUT_FILE = "./tracking_video.avi";
+
 	//mrpt::vision::CFeatureTracker_FAST   tracker;
 	mrpt::vision::CFeatureTracker_KL   tracker;
 	//mrpt::vision::CFeatureTracker_PatchMatch   tracker;
 	//tracker.extra_params["match_method"] = 0;
 
+	tracker.extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
+	tracker.extra_params["add_new_feat_min_separation"]  = 20;
+	tracker.extra_params["add_new_feat_max_features"]    = 150;
+	tracker.extra_params["add_new_feat_patch_size"]      = PATCH_SIZE;
+
 	tracker.extra_params["window_width"]  = 7;
 	tracker.extra_params["window_height"] = 7;
 
-
-	static const unsigned int 	NUM_FEATS_TO_DETECT = 100;
-	static const unsigned int 	PATCH_SIZE	= 11;
 
 	CImage		previous_image; // the tracking
 
@@ -125,7 +135,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		}
 
 		// Do tracking:
-		if (!trackedFeats.empty())
+		if (step_num>1)  // we need "previous_image" to be valid.
 		{
 			timlog.enter("TRACKING");
 
@@ -137,7 +147,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			CFeatureList::iterator itFeat = trackedFeats.begin();
 			while (itFeat!=trackedFeats.end())
 			{
-				bool eras = (status_TRACKED!=(*itFeat)->track_status);
+				const TFeatureTrackStatus status = (*itFeat)->track_status;
+				bool eras = (status_TRACKED!=status && status_IDLE!=status);
 				if (!eras)
 				{
 					// Also, check if it's too close to the image border:
@@ -158,24 +169,24 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		}
 
 		// At the beginning, look for new features:
-		if (trackedFeats.empty() && step_num==5) // wait a bit to detect
-		{
-			//cout << "Detecting features...\n";
-			timlog.enter("DETECT");
-
-			CFeatureExtraction  FE;
-			FE.options.featsType = featFAST;
-
-			FE.options.patchSize = PATCH_SIZE;
-			FE.options.FASTOptions.threshold = 10;
-			FE.options.FASTOptions.min_distance = 20;
-
-			FE.detectFeatures(theImg, trackedFeats, 0 /* first ID */, NUM_FEATS_TO_DETECT /* # feats */ );
-
-			timlog.leave("DETECT");
-
-			ASSERT_(trackedFeats.size()>3)
-		}
+//		if (trackedFeats.empty() && step_num==5) // wait a bit to detect
+//		{
+//			//cout << "Detecting features...\n";
+//			timlog.enter("DETECT");
+//
+//			CFeatureExtraction  FE;
+//			FE.options.featsType = featFAST;
+//
+//			FE.options.patchSize = PATCH_SIZE;
+//			FE.options.FASTOptions.threshold = 10;
+//			FE.options.FASTOptions.min_distance = 10;
+//
+//			FE.detectFeatures(theImg, trackedFeats, 0 /* first ID */, NUM_FEATS_TO_DETECT /* # feats */ );
+//
+//			timlog.leave("DETECT");
+//
+//			ASSERT_(trackedFeats.size()>3)
+//		}
 
 
 		// Save the image for the next step:
@@ -184,13 +195,18 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		// now that we're done with the image, we can directly write onto it
 		//  for the display
 		// ----------------------------------------------------------------
+		if (DO_HIST_EQUALIZE_IN_GRAYSCALE && !theImg.isColor())
+			theImg.equalizeHistInPlace();
+		// Convert to color so we can draw color marks, etc.
+		theImg.colorImageInPlace();
+
 		{	// FPS:
 			static CTicTac tictac;
 			const double T = tictac.Tac();
 			tictac.Tic();
 			const double fps = 1.0/(std::max(1e-5,T));
-			theImg.filledRectangle(1,1,175,25,TColor(0,0,0));
-			theImg.textOut(3,3,format("FPS: %.03f Hz", fps ),TColor(20,20,255) );
+			//theImg.filledRectangle(1,1,175,25,TColor(0,0,0));
+			theImg.textOut(3,3,format("FPS: %.03f Hz", fps ),TColor(20,200,20) );
 		}
 		{	// Tracked feats:
 			for (CFeatureList::const_iterator it=trackedFeats.begin();it!=trackedFeats.end();++it)
@@ -199,11 +215,35 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 				const float y = (*it)->y;
 				theImg.cross(x,y,TColor(0,0,255),'+',5);
 			}
-			theImg.filledRectangle(1,25,175,50,TColor(0,0,0));
-			theImg.textOut(3,28,format("# feats: %u", (unsigned int)trackedFeats.size()  ),TColor(20,20,255) );
+			//theImg.filledRectangle(1,25,175,50,TColor(0,0,0));
+			theImg.textOut(3,28,format("# feats: %u", (unsigned int)trackedFeats.size()  ),TColor(20,200,20) );
 		}
 
 		win->showImage(theImg);
+
+		// Save debug output video:
+		// ----------------------------------
+		if (DO_SAVE_VIDEO)
+		{
+			static bool first = true;
+			if (first)
+			{
+				first=false;
+				if (vidWritter.open(
+						VIDEO_OUTPUT_FILE,
+						30 /* fps */, theImg.getSize(),
+						"PIM1",  // MPEG1
+						true /* force color video */ ) )
+				{
+					cout << "[track-video] Saving tracking video to: " << VIDEO_OUTPUT_FILE << endl;
+				}
+				else
+					cerr << "ERROR: Trying to create output video: " << VIDEO_OUTPUT_FILE << endl;
+			}
+
+			vidWritter << theImg;
+		}
+
 
 		step_num++;
 	} // end infinite loop

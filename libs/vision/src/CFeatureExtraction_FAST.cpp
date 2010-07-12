@@ -38,25 +38,6 @@ using namespace mrpt::vision;
 using namespace mrpt::system;
 using namespace std;
 
-// Don't do this since it seems FAST features don't provide a "response" measure.
-//  Enable in the future if it's implemented in OpenCV.
-#define DO_SORT_BY_RESPONSE_QUALITY
-
-
-#if MRPT_HAS_OPENCV && defined(DO_SORT_BY_RESPONSE_QUALITY)
-#	if MRPT_OPENCV_VERSION_NUM>=0x200
-using namespace cv;
-bool KeypointComp( KeyPoint k1, KeyPoint k2 ) { return (k1.response > k2.response); }
-struct KeypointCompCache : public std::binary_function<size_t,size_t,bool>
-{
-	const vector<KeyPoint> &m_data;
-	KeypointCompCache( const vector<KeyPoint> &data ) : m_data(data) { }
-	bool operator() (size_t k1, size_t k2 ) const {
-		return (m_data[k1].response > m_data[k2].response);
-	}
-};
-#	endif
-#endif
 
 /************************************************************************************************
 *								extractFeaturesFAST												*
@@ -127,11 +108,9 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	// Now:
 	//  1) Sort them by "response": It's ~100 times faster to sort a list of
 	//      indices "sorted_indices" than sorting directly the actual list of features "cv_feats"
-#ifdef DO_SORT_BY_RESPONSE_QUALITY
 	std::vector<size_t> sorted_indices(N);
 	for (size_t i=0;i<N;i++)  sorted_indices[i]=i;
 	std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointCompCache(cv_feats) );
-#endif
 
 	//  2) Filter by "min-distance" (in options.FASTOptions.min_distance)
 	//  3) Convert to MRPT CFeatureList format.
@@ -155,7 +134,6 @@ void  CFeatureExtraction::extractFeaturesFAST(
 
 
 	unsigned int	nMax		= (nDesiredFeatures!=0 && N > nDesiredFeatures) ? nDesiredFeatures : N;
-	unsigned int    decimation_step = nDesiredFeatures==0 ? 1 : N/nDesiredFeatures;
 	const int 		offset		= (int)this->options.patchSize/2 + 1;
 	const size_t	size_2		= options.patchSize/2;
 	const size_t 	imgH		= inImg.getHeight();
@@ -167,14 +145,8 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	while( cont != nMax && i!=N )
 	{
 		// Take the next feature fromt the ordered list of good features:
-#ifdef DO_SORT_BY_RESPONSE_QUALITY
 		const KeyPoint &kp = cv_feats[ sorted_indices[i] ];
 		i++;
-#else
-		const KeyPoint &kp = cv_feats[i];
-		i+=decimation_step;
-		if (i>=N) i-=(N-1);
-#endif
 
 		// Patch out of the image??
 		const int xBorderInf = (int)floor( kp.pt.x - size_2 );

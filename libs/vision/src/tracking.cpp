@@ -42,10 +42,125 @@ using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace std;
 
+/** Perform feature tracking from "old_img" to "new_img", with a (possibly empty) list of previously tracked features "featureList".
+  *  This is a list of parameters (in "extraParams") accepted by ALL implementations of feature tracker (see each derived class for more specific parameters).
+  *		- "add_new_features" (Default=0). If set to "1", new features will be also added to the existing ones in areas of the image poor of features.
+  * This method actually first call the pure virtual "trackFeatures_impl" method, then implements the optional detection of new features if "add_new_features"!=0.
+  */
+void CGenericFeatureTracker::trackFeatures(
+	const CImage &old_img,
+	const CImage &new_img,
+	vision::CFeatureList &featureList )
+{
+	const size_t  img_width  = new_img.getWidth();
+	const size_t  img_height = new_img.getHeight();
 
-#if MRPT_HAS_OPENCV
-typedef std::vector<CvPoint2D32f> CvPoint2D32fVector;
-#endif
+	// Take the maximum ID of "old" features so new feats (if "add_new_features==true") will be id+1, id+2, ...
+	TFeatureID  max_feat_ID_at_input = 0;
+	if (!featureList.empty())
+		max_feat_ID_at_input = featureList.getMaxID();
+
+	// Grayscale images
+	// =========================================
+	CImage   prev_gray(UNINITIALIZED_IMAGE);
+	CImage   cur_gray(UNINITIALIZED_IMAGE);
+
+	if( old_img.isColor() )
+			old_img.grayscale(prev_gray);
+	else	prev_gray.setFromImageReadOnly(old_img);
+	if( new_img.isColor() )
+			new_img.grayscale(cur_gray);
+	else	cur_gray.setFromImageReadOnly(new_img);
+
+	// =================================
+	// Do the actual tracking
+	// =================================
+	trackFeatures_impl(prev_gray,cur_gray,featureList);
+
+	// Do detection of new features??
+	const bool   add_new_features = extra_params.getWithDefaultVal("add_new_features",0)!=0;
+	const double threshold_dist_to_add_new = extra_params.getWithDefaultVal("add_new_feat_min_separation",15);
+
+	// Additional operation: if "add_new_features==true", find new features and add them in
+	//  areas spare of valid features:
+	if (add_new_features)
+	{
+#if MRPT_OPENCV_VERSION_NUM >= 0x211
+		using namespace cv;
+
+		// Look for new features:
+		vector<KeyPoint> new_feats; // The opencv keypoint output vector
+		static int m_detector_adaptive_thres = 10;
+		FastFeatureDetector fastDetector( m_detector_adaptive_thres, true /* non-max supres. */ );
+
+		// Do the detection
+		const Mat new_img_gray_mat = cvarrToMat( reinterpret_cast<IplImage *>(cur_gray.getAsIplImage()) );
+		fastDetector.detect( new_img_gray_mat, new_feats );
+
+		const size_t N = new_feats.size();
+
+		// Update the adaptive threshold.
+//		if (N<m_hysteresis_min_num_feats) 		m_detector_adaptive_thres*=0.8;
+//		else if (N>m_hysteresis_max_num_feats)	m_detector_adaptive_thres*=1.2;
+
+		//  Sort them by "response": It's ~100 times faster to sort a list of
+		//      indices "sorted_indices" than sorting directly the actual list of features "cv_feats"
+		std::vector<size_t> sorted_indices(N);
+		for (size_t i=0;i<N;i++)  sorted_indices[i]=i;
+		std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointCompCache(new_feats) );
+
+		// For each new good feature, add it to the list of tracked ones only if it's pretty
+		//  isolated:
+
+		const size_t nNewToCheck = std::min( size_t(300), N );
+		const double threshold_sqr_dist_to_add_new = square(threshold_dist_to_add_new);
+		const size_t maxNumFeatures = extra_params.getWithDefaultVal("add_new_feat_max_features",100);
+		const size_t patchSize = extra_params.getWithDefaultVal("add_new_feat_patch_size",11);
+		const int 	 offset		= (int)patchSize/2 + 1;
+
+		for (size_t i=0;i<nNewToCheck && featureList.size()<maxNumFeatures;i++)
+		{
+			const KeyPoint &kp = new_feats[sorted_indices[i]];
+
+			double min_dist_sqr = square(10000);
+
+			if (!featureList.empty())
+				min_dist_sqr = featureList.kdTreeClosestPoint2DsqrError(kp.pt.x,kp.pt.y );
+
+			if (min_dist_sqr>threshold_sqr_dist_to_add_new &&
+				kp.pt.x > offset &&
+				kp.pt.y > offset &&
+				kp.pt.x < img_width - offset &&
+				kp.pt.y < img_height - offset )
+			{
+				// Add new feature:
+				CFeaturePtr ft		= CFeature::Create();
+				ft->type			= featFAST;
+				ft->ID				= max_feat_ID_at_input++;
+				ft->x				= kp.pt.x;
+				ft->y				= kp.pt.y;
+				ft->response		= kp.response;
+				ft->orientation		= kp.angle;
+				ft->scale			= kp.octave;
+				ft->patchSize		= patchSize;		// The size of the feature patch
+
+				if( patchSize > 0 )
+					new_img.extract_patch(
+						ft->patch,
+						round( ft->x ) - offset,
+						round( ft->y ) - offset,
+						patchSize,
+						patchSize );						// Image patch surronding the feature
+
+				featureList.push_back( ft );
+			}
+		}
+#else
+	THROW_EXCEPTION("add_new_features requires OpenCV >=2.1.1")
+#endif //MRPT_OPENCV_VERSION_NUM >= 0x211
+	}
+
+} // end of CGenericFeatureTracker::trackFeatures
 
 
 /*------------------------------------------------------------

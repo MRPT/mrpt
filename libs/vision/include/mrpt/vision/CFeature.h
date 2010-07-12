@@ -80,7 +80,7 @@ namespace mrpt
 		{
 			// Init value
 			status_IDLE 	= 0,	//!< Inactive (right after detection, and before being tried to track)
-			
+
 			// Ok:
 			status_TRACKED 	= 5,	//!< Feature correctly tracked
 
@@ -267,6 +267,9 @@ namespace mrpt
 			/** Virtual destructor */
 			virtual ~CFeatureList();
 
+			/** Call this when the list of features has been modified so the KD-tree is marked as outdated. */
+			inline void mark_kdtree_as_outdated() const { kdtree_mark_as_outdated(); }
+
 			/** @name Method and datatypes to emulate a STL container
 			    @{ */
 			typedef TInternalFeatList::iterator iterator;
@@ -280,16 +283,16 @@ namespace mrpt
 			inline const_iterator begin() const { return m_feats.begin(); }
 			inline const_iterator end() const { return m_feats.end(); }
 
-			inline iterator erase(const iterator it)  { return m_feats.erase(it); }
+			inline iterator erase(const iterator it)  { mark_kdtree_as_outdated(); return m_feats.erase(it); }
 
 			inline bool empty() const  { return m_feats.empty(); }
 			inline size_t size() const { return m_feats.size(); }
 
-			inline void clear() { m_feats.clear(); }
+			inline void clear() { m_feats.clear(); mark_kdtree_as_outdated(); }
 			inline void resize(size_t N) { m_feats.resize(N); }
 
-			inline void push_front(const CFeaturePtr &f) { m_feats.push_front(f); }
-			inline void push_back(const CFeaturePtr &f) { m_feats.push_back(f); }
+			inline void push_front(const CFeaturePtr &f) { mark_kdtree_as_outdated();  m_feats.push_front(f); }
+			inline void push_back(const CFeaturePtr &f) { mark_kdtree_as_outdated();  m_feats.push_back(f); }
 
 			inline CFeaturePtr & operator [](const unsigned int index) { return m_feats[index]; }
 			inline const CFeaturePtr & operator [](const unsigned int index) const  { return m_feats[index]; }

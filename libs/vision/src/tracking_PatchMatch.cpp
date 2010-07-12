@@ -55,7 +55,7 @@ CFeatureTracker_PatchMatch::CFeatureTracker_PatchMatch(const mrpt::utils::TParam
 *  Possible values for "match_method":
 *		- 0 : Normalized cross correlation
 */
-void CFeatureTracker_PatchMatch::trackFeatures(
+void CFeatureTracker_PatchMatch::trackFeatures_impl(
 	const CImage &old_img,
 	const CImage &new_img,
 	vision::CFeatureList &featureList )
@@ -170,9 +170,9 @@ void CFeatureTracker_PatchMatch::trackFeatures(
 
 			// A local maxima?
 			static const double MIN_DIFF = 0.05;
-			if (best_match>(n1.val[0]-MIN_DIFF) && 
-				best_match>(n2.val[0]-MIN_DIFF) && 
-				best_match>(n3.val[0]-MIN_DIFF) && 
+			if (best_match>(n1.val[0]-MIN_DIFF) &&
+				best_match>(n2.val[0]-MIN_DIFF) &&
+				best_match>(n3.val[0]-MIN_DIFF) &&
 				best_match>(n4.val[0]-MIN_DIFF) )
 			{
 				// OK: Accept it:

@@ -59,6 +59,48 @@
 
 	using mrpt::utils::CImage;
 
+	typedef std::vector<CvPoint2D32f> CvPoint2D32fVector;
+
+#	if MRPT_OPENCV_VERSION_NUM >= 0x211
+
+#	include <mrpt/math/KDTreeCapable.h>
+
+	/** Helper class: KD-tree search class for vector<KeyPoint>:
+	  */
+	class CSimple2DKDTree : public mrpt::math::KDTreeCapable
+	{
+	public:
+		const std::vector<cv::KeyPoint> & m_data;
+		CSimple2DKDTree(const std::vector<cv::KeyPoint> & data) : m_data(data) {  }
+
+	protected:
+		/** Must return the number of data points */
+		virtual size_t kdtree_get_point_count() const {
+			return m_data.size();
+		}
+		/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],...,data[i][nDims-1]). */
+		virtual void kdtree_fill_point_data(ANNpointArray &data, const int nDims) const
+		{
+			const size_t N = m_data.size();
+			for (size_t i=0;i<N;i++) {
+				data[i][0] = m_data[i].pt.x;
+				data[i][1] = m_data[i].pt.y;
+			}
+		}
+	}; // end CSimple2DKDTree
+
+	/** A helper struct to sort keypoints by their response */
+	struct KeypointCompCache : public std::binary_function<size_t,size_t,bool>
+	{
+		const std::vector<cv::KeyPoint> &m_data;
+		KeypointCompCache( const std::vector<cv::KeyPoint> &data ) : m_data(data) { }
+		bool operator() (size_t k1, size_t k2 ) const {
+			return (m_data[k1].response > m_data[k2].response);
+		}
+	};
+
+#	endif // MRPT_OPENCV_VERSION_NUM >= 0x211
+
 #endif // MRPT_HAS_OPENCV
 
 #endif

@@ -32,8 +32,6 @@
 #include <mrpt/vision/tracking.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 
-#include <mrpt/math/KDTreeCapable.h>
-
 #include "do_opencv_includes.h"
 
 using namespace mrpt;
@@ -45,34 +43,11 @@ using namespace std;
 #if MRPT_HAS_OPENCV
 #if MRPT_OPENCV_VERSION_NUM >= 0x211
 
-// Auxiliary KD-tree search class for vector<KeyPoint>:
-class CSimple2DKDTree : public mrpt::math::KDTreeCapable
-{
-public:
-	const vector<cv::KeyPoint> & m_data;
-	CSimple2DKDTree(const vector<cv::KeyPoint> & data) : m_data(data) {  }
-
-protected:
-	/** Must return the number of data points */
-	virtual size_t kdtree_get_point_count() const {
-		return m_data.size();
-	}
-	/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],...,data[i][nDims-1]). */
-	virtual void kdtree_fill_point_data(ANNpointArray &data, const int nDims) const
-	{
-		const size_t N = m_data.size();
-		for (size_t i=0;i<N;i++) {
-			data[i][0] = m_data[i].pt.x;
-			data[i][1] = m_data[i].pt.y;
-		}
-	}
-};
-
 // Auxiliary function:
 double match_template_SQDIFF(
 	const IplImage* img,
 	const IplImage* patch,
-	const unsigned int patch_pos_x, 
+	const unsigned int patch_pos_x,
 	const unsigned int patch_pos_y)
 {
 	unsigned int sq_diff = 0;
@@ -113,7 +88,7 @@ CFeatureTracker_FAST::CFeatureTracker_FAST(const mrpt::utils::TParametersDouble 
 *		- "window_width"  (Default=15)
 *		- "window_height" (Default=15)
 */
-void CFeatureTracker_FAST::trackFeatures(
+void CFeatureTracker_FAST::trackFeatures_impl(
 	const CImage &old_img,
 	const CImage &new_img,
 	vision::CFeatureList &featureList )
@@ -135,7 +110,7 @@ void CFeatureTracker_FAST::trackFeatures(
 	// 3) For each old feature:
 	//    3.A) Look for a set of closest ones among the new feats.
 	//    3.B) Keep the one with the best patch similarity.
-	// 4) Optionally: Add NEW features from the list of already detected ones, 
+	// 4) Optionally: Add NEW features from the list of already detected ones,
 	//     so we do tracking + new feats detection at once.
 	//
 	// =======================================================================
@@ -148,15 +123,15 @@ void CFeatureTracker_FAST::trackFeatures(
 	FastFeatureDetector fastDetector( m_detector_adaptive_thres , true /* non-max supres. */ );
 
 	// Create a temporary gray image, if needed:
-	mrpt::utils::CImage  new_img_gray;
+	mrpt::utils::CImage  new_img_gray(UNINITIALIZED_IMAGE);
 	if (new_img.isColor())
 			new_img.grayscale(new_img_gray);	// Create a new auxiliary grayscale image
-	else	new_img_gray.setFromIplImageReadOnly( new_img.getAsIplImage() );  // Copy the IPLImage, but do not own the memory
+	else	new_img_gray.setFromImageReadOnly( new_img );  // Copy the IPLImage, but do not own the memory
 
 	// Do the detection
 	const Mat new_img_gray_mat = cvarrToMat( reinterpret_cast<IplImage*>(new_img_gray.getAsIplImage()) );
 	fastDetector.detect( new_img_gray_mat, cv_feats );
-	
+
 #if 0
 	{
 		mrpt::utils::CImage  dbg_img;
@@ -167,11 +142,11 @@ void CFeatureTracker_FAST::trackFeatures(
 		static int cnt = 1;
 		dbg_img.saveToFile( format("dbg_%04i.jpg",cnt++) );
 	}
-#endif	
+#endif
 
 	// # of detected feats.
 	const size_t N = cv_feats.size();
-	cout << "N: " << N << endl;
+	//cout << "N: " << N << endl;
 
 	last_execution_extra_info.raw_FAST_feats_detected = N; // Extra out info.
 
@@ -208,7 +183,7 @@ void CFeatureTracker_FAST::trackFeatures(
 		// Get the size of the patch so we know when we are too close to a border.
 		ASSERTDEB_(feat->patch.getWidth()>1)
 		ASSERTDEB_(feat->patch.getWidth()==feat->patch.getHeight())
-		
+
 		const unsigned int patch_half_size = (feat->patch.getWidth()-1)>>1;
 		const unsigned int max_border_x = new_img_gray.getWidth() - patch_half_size -1;
 		const unsigned int max_border_y = new_img_gray.getHeight() - patch_half_size -1;
@@ -230,13 +205,13 @@ void CFeatureTracker_FAST::trackFeatures(
 
 			const unsigned int px = cv_feats[closest_idxs[k]].pt.x;
 			const unsigned int py = cv_feats[closest_idxs[k]].pt.y;
-			
-			if (px<patch_half_size || 
-				py<patch_half_size || 
-				px>=max_border_x || 
+
+			if (px<patch_half_size ||
+				py<patch_half_size ||
+				px>=max_border_x ||
 				py>=max_border_y)
-			{	
-				// Can't match the entire patch with the image... what to do? 
+			{
+				// Can't match the entire patch with the image... what to do?
 				// -> Discard it and mark as OOB:
 				feat->track_status = status_OOB;
 				break;
@@ -246,7 +221,7 @@ void CFeatureTracker_FAST::trackFeatures(
 			//printf("testing %u against (%u,%u)\n",(unsigned)i, px,py );
 
 			// Possible algorithms: { TM_SQDIFF=0, TM_SQDIFF_NORMED=1, TM_CCORR=2, TM_CCORR_NORMED=3, TM_CCOEFF=4, TM_CCOEFF_NORMED=5 };
-			double match_quality  = match_template_SQDIFF( 
+			double match_quality  = match_template_SQDIFF(
 				reinterpret_cast<IplImage*>( new_img_gray.getAsIplImage()),
 				reinterpret_cast<IplImage*>( feat->patch.getAsIplImage()),
 				px-patch_half_size-1,
@@ -268,7 +243,7 @@ void CFeatureTracker_FAST::trackFeatures(
 		}
 		else
 		{
-			// No potential match! 
+			// No potential match!
 			// Mark as "lost":
 			feat->track_status = status_LOST;
 		}

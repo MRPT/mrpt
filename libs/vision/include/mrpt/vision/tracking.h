@@ -75,13 +75,20 @@ namespace mrpt
 			inline CGenericFeatureTracker(mrpt::utils::TParametersDouble extraParams) : extra_params(extraParams)
 			{ }
 
-			/** The main tracking method, to be implemented in children classes. */
-			virtual void trackFeatures(
+			/** Perform feature tracking from "old_img" to "new_img", with a (possibly empty) list of previously tracked features "inout_featureList".
+			  *  This is a list of parameters (in "extraParams") accepted by ALL implementations of feature tracker (see each derived class for more specific parameters).
+			  *		- "add_new_features" (Default=0). If set to "1", new features will be also added to the existing ones in areas of the image poor of features.
+			  * This method does:
+			  *    - Convert old and new images to grayscale, if they're in color.
+			  *    - Call the pure virtual "trackFeatures_impl" method.
+			  *    - Implement the optional detection of new features if "add_new_features"!=0.
+			  */
+			void trackFeatures(
 				const CImage &old_img,
 				const CImage &new_img,
-				vision::CFeatureList &inout_featureList ) = 0;
+				vision::CFeatureList &inout_featureList );
 
-			/** A wrapper around the virtual trackFeatures() method, which keeps the original list of features unmodified and returns the tracked ones in a new list. */
+			/** A wrapper around the basic trackFeatures() method, but keeping the original list of features unmodified and returns the tracked ones in a new list. */
 			inline void trackFeaturesNewList(
 				const CImage &old_img,
 				const CImage &new_img,
@@ -95,10 +102,17 @@ namespace mrpt
 					mrpt::utils::metaprogramming::ObjectMakeUnique() );
 				this->trackFeatures(old_img, new_img, out_featureList);
 			}
+		protected:
+			/** The tracking method implementation, to be implemented in children classes. */
+			virtual void trackFeatures_impl(
+				const CImage &old_img,
+				const CImage &new_img,
+				vision::CFeatureList &inout_featureList ) = 0;
 		};
 
 
-		/** Track a set of features from old_img -> new_img using sparse optimal flow (classic KL method)
+		/** Track a set of features from old_img -> new_img using sparse optimal flow (classic KL method).
+		  *  See CFeatureTracker_KL::trackFeatures for the list of existing parameters.
 		  *  \sa OpenCV's method cvCalcOpticalFlowPyrLK
 		  */
 		struct VISION_IMPEXP CFeatureTracker_KL : public CGenericFeatureTracker
@@ -108,11 +122,12 @@ namespace mrpt
 			/** Ctor with extra parameters */
 			inline CFeatureTracker_KL(mrpt::utils::TParametersDouble extraParams) : CGenericFeatureTracker(extraParams)	{ }
 
+		protected:
 			/** Optional parameters that can be passed in "extra_params":
 			  *		- "window_width"  (Default=15)
 			  *		- "window_height" (Default=15)
 			  */
-			virtual void trackFeatures(
+			virtual void trackFeatures_impl(
 				const CImage &old_img,
 				const CImage &new_img,
 				vision::CFeatureList &inout_featureList );
@@ -126,21 +141,22 @@ namespace mrpt
 			/** Ctor */
 			CFeatureTracker_FAST(const mrpt::utils::TParametersDouble & extraParams = mrpt::utils::TParametersDouble() );
 
-			/**  Optional parameters that can be passed in "extra_params":
-			  *		- "window_width"  (Default=15)
-			  *		- "window_height" (Default=15)
-			  */
-			virtual void trackFeatures(
-				const CImage &old_img,
-				const CImage &new_img,
-				vision::CFeatureList &inout_featureList );
-
 			struct VISION_IMPEXP TExtraOutputInfo
 			{
 				size_t  raw_FAST_feats_detected;  //!< In the new_img with the last adaptive threshold
 			};
 
 			TExtraOutputInfo  last_execution_extra_info; //!< Updated with each call to trackFeatures()
+
+		protected:
+			/**  Optional parameters that can be passed in "extra_params":
+			  *		- "window_width"  (Default=15)
+			  *		- "window_height" (Default=15)
+			  */
+			virtual void trackFeatures_impl(
+				const CImage &old_img,
+				const CImage &new_img,
+				vision::CFeatureList &inout_featureList );
 
 		private:
 			int		m_detector_adaptive_thres;		//!< threshold for cvFAST()
@@ -156,6 +172,7 @@ namespace mrpt
 			/** Ctor */
 			CFeatureTracker_PatchMatch(const mrpt::utils::TParametersDouble & extraParams = mrpt::utils::TParametersDouble() );
 
+		protected:
 			/**  Optional parameters that can be passed in "extra_params":
 			  *		- "window_width"  (Default=15)
 			  *		- "window_height" (Default=15)
@@ -164,7 +181,7 @@ namespace mrpt
 			  *  Possible values for "match_method":
 			  *		- 0 : Normalized cross correlation
 			  */
-			virtual void trackFeatures(
+			virtual void trackFeatures_impl(
 				const CImage &old_img,
 				const CImage &new_img,
 				vision::CFeatureList &inout_featureList );

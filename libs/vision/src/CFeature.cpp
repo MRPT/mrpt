@@ -601,21 +601,13 @@ CFeaturePtr CFeatureList::nearest(  const float x,  const float y, double &dist_
 // --------------------------------------------------
 TFeatureID CFeatureList::getMaxID() const
 {
-	MRPT_START;
-	ASSERT_( size() > 0 );
-
+	MRPT_START
+	ASSERT_( !empty() )
 	vision::TFeatureID maxID	= (*begin())->ID;
-	CFeatureList::const_iterator itList;
-
-	for(itList = begin(); itList != end(); itList++)
-	{
-		if( (*itList)->ID > maxID )
-			maxID = (*itList)->ID;
-	} // end for
-
+	for(CFeatureList::const_iterator itList = begin(); itList != end(); itList++)
+		mrpt::utils::keep_max(maxID, (*itList)->ID);
 	return maxID;
-
-	MRPT_END;
+	MRPT_END
 
 } // end getMaxID()
 
