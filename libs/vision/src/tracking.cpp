@@ -100,8 +100,12 @@ void CGenericFeatureTracker::trackFeatures(
 		const size_t N = new_feats.size();
 
 		// Update the adaptive threshold.
-//		if (N<m_hysteresis_min_num_feats) 		m_detector_adaptive_thres*=0.8;
-//		else if (N>m_hysteresis_max_num_feats)	m_detector_adaptive_thres*=1.2;
+		const size_t desired_num_feats = (img_width >> 5) * (img_height >> 5);
+		const size_t hysteresis_min_num_feats = desired_num_feats * 0.9;
+		const size_t hysteresis_max_num_feats = desired_num_feats * 1.1;
+
+		if (N<hysteresis_min_num_feats) 		m_detector_adaptive_thres = std::max(2.0,std::min(m_detector_adaptive_thres-1.0, m_detector_adaptive_thres*0.8));
+		else if (N>hysteresis_max_num_feats)	m_detector_adaptive_thres = std::max(m_detector_adaptive_thres+1.0, m_detector_adaptive_thres*1.2);
 
 		//  Sort them by "response": It's ~100 times faster to sort a list of
 		//      indices "sorted_indices" than sorting directly the actual list of features "cv_feats"

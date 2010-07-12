@@ -67,10 +67,9 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	CFeatureList	trackedFeats;
 	unsigned int	step_num = 0;
 
-	static const unsigned int 	NUM_FEATS_TO_DETECT = 100;
-	static const unsigned int 	PATCH_SIZE	= 11;
-	bool  DO_SAVE_VIDEO = false; //true;
-	bool  DO_HIST_EQUALIZE_IN_GRAYSCALE = false; //true;
+	bool  SHOW_FEAT_IDS = true;
+	bool  DO_SAVE_VIDEO = true;
+	bool  DO_HIST_EQUALIZE_IN_GRAYSCALE = true;
 	string VIDEO_OUTPUT_FILE = "./tracking_video.avi";
 
 	//mrpt::vision::CFeatureTracker_FAST   tracker;
@@ -78,16 +77,23 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	//mrpt::vision::CFeatureTracker_PatchMatch   tracker;
 	//tracker.extra_params["match_method"] = 0;
 
-	tracker.extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
-	tracker.extra_params["add_new_feat_min_separation"]  = 20;
-	tracker.extra_params["add_new_feat_max_features"]    = 150;
-	tracker.extra_params["add_new_feat_patch_size"]      = PATCH_SIZE;
-
 	tracker.extra_params["window_width"]  = 7;
 	tracker.extra_params["window_height"] = 7;
 
+	// Set of parameters common to any tracker implementation:
+	tracker.extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
+	tracker.extra_params["add_new_feat_min_separation"]  = 20;
+	tracker.extra_params["add_new_feat_max_features"]    = 100;
+	tracker.extra_params["add_new_feat_patch_size"]      = 11;
 
-	CImage		previous_image; // the tracking
+
+	// --------------------------------
+	// The main loop
+	// --------------------------------
+	CImage		previous_image;
+
+	TSequenceFeatureObservations    feat_track_history;
+	TCameraPoseID 					curCamPoseId = 0;
 
 	while( win->isOpen() ) // infinite loop, until we close the win
 	{
@@ -154,7 +160,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 					// Also, check if it's too close to the image border:
 					const float x= (*itFeat)->x;
 					const float y= (*itFeat)->y;
-					static const float MIN_DIST_MARGIN_TO_STOP_TRACKING = 20;
+					static const float MIN_DIST_MARGIN_TO_STOP_TRACKING = 10;
 					if (x<MIN_DIST_MARGIN_TO_STOP_TRACKING  || y<MIN_DIST_MARGIN_TO_STOP_TRACKING ||
 						x>(cameraParams.ncols-MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
 						y>(cameraParams.nrows-MIN_DIST_MARGIN_TO_STOP_TRACKING))
@@ -168,29 +174,21 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			}
 		}
 
-		// At the beginning, look for new features:
-//		if (trackedFeats.empty() && step_num==5) // wait a bit to detect
-//		{
-//			//cout << "Detecting features...\n";
-//			timlog.enter("DETECT");
-//
-//			CFeatureExtraction  FE;
-//			FE.options.featsType = featFAST;
-//
-//			FE.options.patchSize = PATCH_SIZE;
-//			FE.options.FASTOptions.threshold = 10;
-//			FE.options.FASTOptions.min_distance = 10;
-//
-//			FE.detectFeatures(theImg, trackedFeats, 0 /* first ID */, NUM_FEATS_TO_DETECT /* # feats */ );
-//
-//			timlog.leave("DETECT");
-//
-//			ASSERT_(trackedFeats.size()>3)
-//		}
-
-
 		// Save the image for the next step:
 		previous_image = theImg;
+
+		// Save history of feature observations:
+		timlog.enter("Save history");
+
+		for (CFeatureList::iterator itFeat = trackedFeats.begin();itFeat!=trackedFeats.end();++itFeat)
+		{
+			const CFeature &f = **itFeat;
+			TFeatureObservations &obs = feat_track_history[f.ID];
+			obs[curCamPoseId] = TPixelCoordf(f.x,f.y);
+		}
+		curCamPoseId++;
+
+		timlog.leave("Save history");
 
 		// now that we're done with the image, we can directly write onto it
 		//  for the display
@@ -209,13 +207,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			theImg.textOut(3,3,format("FPS: %.03f Hz", fps ),TColor(20,200,20) );
 		}
 		{	// Tracked feats:
-			for (CFeatureList::const_iterator it=trackedFeats.begin();it!=trackedFeats.end();++it)
-			{
-				const float x = (*it)->x;
-				const float y = (*it)->y;
-				theImg.cross(x,y,TColor(0,0,255),'+',5);
-			}
-			//theImg.filledRectangle(1,25,175,50,TColor(0,0,0));
+			theImg.drawFeatures(trackedFeats, TColor(0,0,255), SHOW_FEAT_IDS);
 			theImg.textOut(3,28,format("# feats: %u", (unsigned int)trackedFeats.size()  ),TColor(20,200,20) );
 		}
 
@@ -232,7 +224,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 				if (vidWritter.open(
 						VIDEO_OUTPUT_FILE,
 						30 /* fps */, theImg.getSize(),
-						"PIM1",  // MPEG1
+						"XVID",  // MPEG1
 						true /* force color video */ ) )
 				{
 					cout << "[track-video] Saving tracking video to: " << VIDEO_OUTPUT_FILE << endl;

@@ -52,8 +52,13 @@ namespace mrpt
 		/** A collection of camera poses from which a given feature has been observed, and its pixel coordinates for each of them. */
 		typedef std::map<TCameraPoseID,mrpt::utils::TPixelCoordf> TFeatureObservations;
 
-		/** Input data used by some methods in mrpt::vision     \sa mrpt::vision::camera_calib_ba */
-		typedef std::map<TFeatureID, TFeatureObservations>  TSequenceFeatureObservations;
+		/** Input data used by some (Bundle-adjustment) methods in mrpt::vision
+		  *  \sa mrpt::vision::camera_calib_ba
+		  */
+		struct TSequenceFeatureObservations : public std::map<TFeatureID, TFeatureObservations>
+		{
+
+		};
 
 		/** Data returned by  mrpt::vision::camera_calib_ba */
 		struct VISION_IMPEXP TCamCalibBAResults
