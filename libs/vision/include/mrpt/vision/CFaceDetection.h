@@ -39,6 +39,7 @@ namespace mrpt
 		class VISION_IMPEXP CFaceDetection: virtual public CObjectDetection
 		{
 		public:
+		
 			CCascadeClassifierDetection cascadeClassifier;
 
 			CFaceDetection();
@@ -54,7 +55,12 @@ namespace mrpt
 
 			virtual void detectObjects(CImage *img, vector_detectable_object &detected);
 
+		protected:
 
+			struct TOptions
+			{
+				double confidenceThreshold;
+			}m_options;
 
 		}; // End of class
 	}

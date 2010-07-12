@@ -97,6 +97,11 @@ void CCascadeClassifierDetection::detectObjects(CObservation *obs, vector_detect
 		CObservationStereoImages* o = static_cast<CObservationStereoImages*>(obs);
 		img = &o->imageLeft;
 	}
+	else if (IS_CLASS(obs, CObservation3DRangeScan ) )
+	{
+		CObservation3DRangeScan* o = static_cast<CObservation3DRangeScan*>(obs);
+		img = &o->intensityImage;
+	}
 	if (!img)
 	{
 	    mrpt::system::sleep(2);

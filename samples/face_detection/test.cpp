@@ -105,6 +105,24 @@ void TestCameraFaceDetection()
 			CObservationStereoImagesPtr o=CObservationStereoImagesPtr(obs);
 			win.showImage(o->imageRight);
 		}
+		else if (IS_CLASS(obs, CObservation3DRangeScan ) )
+		{
+			vector_detectable_object detected;
+
+			CObservation3DRangeScanPtr o = CObservation3DRangeScanPtr(obs);
+			
+			faceDetector.detectObjects( obs, detected );
+			
+			if ( detected.size() > 0 )
+			{	
+				ASSERT_( IS_CLASS(detected[0],CDetectable2D ) )
+				CDetectable2DPtr obj = CDetectable2DPtr( detected[0] );
+				o->intensityImage.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );
+			}
+
+			win.showImage(o->intensityImage);			
+		}
+
 		if( ++counter == 10 )
 		{
 			double t = tictac.Tac();
@@ -138,7 +156,7 @@ void TestImagesFaceDetection(int argc, char *argv[])
 		tictac.Tic();
 		faceDetector.detectObjects( &(CImage(img)), detected );
 
-		cout << "Detection time: " << tictac.Tac() << " ms" << endl;
+		cout << "Detection time: " << tictac.Tac() << " s" << endl;
 
 		for ( unsigned int i = 0; i < detected.size() ; i++ )
 		{	

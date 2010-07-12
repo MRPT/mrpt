@@ -40,11 +40,78 @@ CFaceDetection::CFaceDetection()
 
 void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detectable_object &detected)
 {
+	// Detect possible faces
 	cascadeClassifier.detectObjects( obs, detected );
+
+	if (IS_CLASS(obs, CObservation3DRangeScan ) )
+	{
+		CObservation3DRangeScan* o = static_cast<CObservation3DRangeScan*>( obs );
+	
+		// Detected objects to delete if they aren't a face
+		vector<size_t> deleteDetected;
+
+		for ( unsigned int i = 0; i < detected.size(); i++ )
+		{
+			CDetectable2DPtr rec	= CDetectable2DPtr(detected[i]);
+			bool confidence			= o->hasConfidenceImage;
+
+			// First check if we can adjust a plane to detected region as face, if yes it isn't a face!
+
+			CImage			conf;
+			CMatrixFloat	conf2,conf3;
+		
+			if ( confidence )
+			{
+				conf = o->confidenceImage;
+				conf.getAsMatrix(conf2);
+				conf2.extractSubmatrix( rec->m_y, rec->m_y + rec->m_height, rec->m_x, rec->m_x + rec->m_width, conf3 );
+			}
+
+			vector<TPoint3D> points;
+
+			// Submatrix size
+			size_t imgWidth = conf2.getColCount();
+			size_t imgHeight = conf2.getRowCount();
+
+			for ( unsigned int j = 0; j < conf3.getRowCount(); j++ )
+			{
+				for ( unsigned int k = 0; k < conf3.getColCount(); k++ )
+				{
+					if ( ( confidence ) && ( conf3.get_unsafe( j, k ) > m_options.confidenceThreshold )) // TODO: Check if the point is valid
+					{	
+						int position = imgHeight*j + rec->m_x + k;
+						points.push_back( TPoint3D(o->points3D_x[position],o->points3D_y[position],o->points3D_z[position]) );
+					}
+					else if ( !confidence )
+					{
+						int position = imgHeight*j + rec->m_x + k;
+						points.push_back( TPoint3D(o->points3D_x[position],o->points3D_y[position],o->points3D_z[position]) );
+					}
+				}
+			}
+				
+			TPlane plane;
+			double estimation = getRegressionPlane(points,plane);	
+
+			// TODO: Chose a estimation threshold and delete no-faces of detected vector!!
+			if ( estimation > 0.9 )
+				deleteDetected.push_back( i );
+			
+		}
+
+		for ( unsigned int i = deleteDetected.size(); i > 0; i-- )
+			deleteDetected.erase( deleteDetected.begin() + i );
+
+
+	}
+
+	
 }
 
 void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 {
+	m_options.confidenceThreshold = cfg.read_double("FaceDetection","confidenceThreshold",0.9);
+
 	cascadeClassifier.init( cfg );
 }
 
