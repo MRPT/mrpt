@@ -201,6 +201,7 @@ mrpt::system::TThreadHandle mrpt::system::detail::createThreadImpl(
 ---------------------------------------------------------------*/
 void mrpt::system::joinThread( const TThreadHandle &threadHandle )
 {
+	if (threadHandle.isClear()) return;
 #ifdef MRPT_OS_WINDOWS
 	int prio = GetThreadPriority((HANDLE) threadHandle.hThread);
 	if (THREAD_PRIORITY_ERROR_RETURN==prio)
