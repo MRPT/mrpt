@@ -41,18 +41,19 @@ CFaceDetection::CFaceDetection()
 void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detectable_object &detected)
 {
 	// Detect possible faces
-	cascadeClassifier.detectObjects( obs, detected );
+	vector_detectable_object localDetected;
+	cascadeClassifier.detectObjects( obs, localDetected );
 
-	if (IS_CLASS(obs, CObservation3DRangeScan ) )
+	if ( (IS_CLASS(obs, CObservation3DRangeScan )) && ( localDetected.size() > 0 ) )
 	{
 		CObservation3DRangeScan* o = static_cast<CObservation3DRangeScan*>( obs );
 	
 		// Detected objects to delete if they aren't a face
 		vector<size_t> deleteDetected;
 
-		for ( unsigned int i = 0; i < detected.size(); i++ )
+		for ( unsigned int i = 0; i < localDetected.size(); i++ )
 		{
-			CDetectable2DPtr rec	= CDetectable2DPtr(detected[i]);
+			CDetectable2DPtr rec	= CDetectable2DPtr(localDetected[i]);
 			bool confidence			= o->hasConfidenceImage;
 
 			// First check if we can adjust a plane to detected region as face, if yes it isn't a face!
@@ -99,10 +100,21 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 			
 		}
 
+		// Delete non faces
 		for ( unsigned int i = deleteDetected.size(); i > 0; i-- )
-			deleteDetected.erase( deleteDetected.begin() + i );
+			localDetected.erase( localDetected.begin() + deleteDetected[i-1] );
 
+		// Convert 2d detected objects to 3d
+		for ( unsigned int i = 0; i < localDetected.size(); i++ )
+		{
+			CDetectable3DPtr object3d = CDetectable3DPtr( new CDetectable3D((CDetectable2DPtr)localDetected[i]) );
+			detected.push_back( object3d );
+		}
 
+	}
+	else
+	{
+		detected = localDetected;
 	}
 
 	

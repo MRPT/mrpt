@@ -43,7 +43,11 @@ namespace mrpt
 
 		public:
 
-			std::string	m_id; //!< A unique id for each detectable object
+			std::string	m_id; //!< Must be an unique id for each detectable object
+
+			CObservationPtr obs; //!< Observation wich contain the deteted object
+
+			inline void setObservation( CObservationPtr newObs ){	obs = newObs;	};
 
 		}; // End of class
 
@@ -105,6 +109,36 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CDetectable3D )
 
 		public:
+
+			CDetectable3D(){};
+
+			CDetectable3D( const CDetectable2DPtr &object2d )
+			{
+				m_x		= object2d->m_x;
+				m_y		= object2d->m_y;
+				m_z		= 0;
+				m_height = object2d->m_height;
+				m_width = object2d->m_width;
+			};
+
+						/** Copy constructor */
+			CDetectable3D( const CDetectable3D &d2 )
+			{	
+				m_x = d2.m_x;
+				m_y = d2.m_y;
+				m_height = d2.m_height;
+				m_width = d2.m_width;
+			};
+
+			CDetectable3D( const CDetectable3D *d2 )
+			{	
+				m_x = d2->m_x;
+				m_y = d2->m_y;
+				m_z = d2->m_z;
+				m_height = d2->m_height;
+				m_width = d2->m_width;
+			};
+
 
 			int		m_z; //!< Z coordinate of detected object
 

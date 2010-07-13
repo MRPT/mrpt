@@ -83,8 +83,6 @@ void CCascadeClassifierDetection::init(const mrpt::utils::CConfigFileBase &confi
 
 void CCascadeClassifierDetection::detectObjects(CObservation *obs, vector_detectable_object &detected)
 {
-#if MRPT_HAS_OPENCV
-	
 	mrpt::utils::CImage *img = NULL;
 
 	if (IS_CLASS(obs,CObservationImage))
@@ -109,10 +107,6 @@ void CCascadeClassifierDetection::detectObjects(CObservation *obs, vector_detect
 	}
 
 	detectObjects(img, detected);
-
-#else
-	THROW_EXCEPTION("This method requires MRPT built against OpenCV")
-#endif
 }
 
 void CCascadeClassifierDetection::detectObjects(CImage *img, vector_detectable_object &detected)
