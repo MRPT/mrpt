@@ -198,7 +198,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 
 
 				corners_found = 0 !=
-#if 1
+#if 0
 				cvFindChessboardCorners(
 					img_gray.getAsIplImage(),
 					check_size,
@@ -633,6 +633,9 @@ static int icvCleanFoundConnectedQuads( int quad_count, CvCBQuad **quads,
 static int mrWriteCorners( CvCBQuad **output_quads, int count, CvSize pattern_size,
 						   int min_number_of_corners );
 
+// Return 1 on success in finding all the quads, 0 on didn't, -1 on error.
+int myQuads2Points( CvCBQuad **output_quads, int count, CvSize pattern_size, CvPoint2D32f* out_corners);
+
 
 
 //===========================================================================
@@ -785,10 +788,10 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size,
 
 //VISUALIZATION--------------------------------------------------------------
 #if VIS
- 		cvNamedWindow( "Original Image", 1 );
-		cvShowImage( "Original Image", img);
-		//cvSaveImage("pictureVis/OrigImg.png", img);
-		cvWaitKey(0);
+ 		//cvNamedWindow( "Original Image", 1 );
+		//cvShowImage( "Original Image", img);
+		cvSaveImage("D:/OrigImg.png", img);
+		//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
 
@@ -822,10 +825,10 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size,
 
 //VISUALIZATION--------------------------------------------------------------
 #if VIS
-		cvNamedWindow( "After adaptive Threshold (and Dilation)", 1 );
-		cvShowImage( "After adaptive Threshold (and Dilation)", thresh_img);
-		//cvSaveImage("pictureVis/afterDilation.png", thresh_img);
-		cvWaitKey(0);
+		//cvNamedWindow( "After adaptive Threshold (and Dilation)", 1 );
+		//cvShowImage( "After adaptive Threshold (and Dilation)", thresh_img);
+		cvSaveImage("D:/afterDilation.png", thresh_img);
+		//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
 
@@ -852,7 +855,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size,
 
 //VISUALIZATION--------------------------------------------------------------
 #if VIS
-  		cvNamedWindow( "all found quads per dilation run", 1 );
+  		//cvNamedWindow( "all found quads per dilation run", 1 );
 		IplImage* imageCopy2 = cvCreateImage( cvGetSize(thresh_img), 8, 1 );
 		IplImage* imageCopy22 = cvCreateImage( cvGetSize(thresh_img), 8, 3 );
 		cvCopy( thresh_img, imageCopy2);
@@ -875,9 +878,9 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size,
 			cvLine( imageCopy22, pt[2], pt[3], CV_RGB(255,255,0), 1, 8 );
 			cvLine( imageCopy22, pt[3], pt[0], CV_RGB(255,255,0), 1, 8 );
 		}
-		cvShowImage( "all found quads per dilation run", imageCopy22);
-		//cvSaveImage("pictureVis/allFoundQuads.png", imageCopy22);
-		cvWaitKey(0);
+		//cvShowImage( "all found quads per dilation run", imageCopy22);
+		cvSaveImage("D:/allFoundQuads.png", imageCopy22);
+		//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
 
@@ -889,7 +892,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size,
 
 //VISUALIZATION--------------------------------------------------------------
 #if VIS
-		cvNamedWindow( "quads with neighbors", 1 );
+		//cvNamedWindow( "quads with neighbors", 1 );
 		IplImage* imageCopy3 = cvCreateImage( cvGetSize(thresh_img), 8, 3 );
 		cvCopy( imageCopy22, imageCopy3);
 		CvPoint pt;
@@ -909,9 +912,9 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size,
 				}
 			}
 		}
-		cvShowImage( "quads with neighbors", imageCopy3);
-		//cvSaveImage("pictureVis/allFoundNeighbors.png", imageCopy3);
-		cvWaitKey(0);
+		//cvShowImage( "quads with neighbors", imageCopy3);
+		cvSaveImage("D:/allFoundNeighbors.png", imageCopy3);
+		//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
 
@@ -963,7 +966,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size,
 //VISUALIZATION--------------------------------------------------------------
 #if VIS
 				// display all corners in INCREASING ROW AND COLUMN ORDER
-				cvNamedWindow( "Corners in increasing order", 1 );
+				//cvNamedWindow( "Corners in increasing order", 1 );
 				IplImage* imageCopy11 = cvCreateImage( cvGetSize(thresh_img), 8, 3 );
 				cvCopy( imageCopy22, imageCopy11);
 				// Assume min and max rows here, since we are outside of the
@@ -1000,15 +1003,15 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size,
 										{
 											cvPutText(imageCopy11, str, ptt, &font, CV_RGB(255,0,0));
 										}
-										cvShowImage( "Corners in increasing order", imageCopy11);
-										//cvSaveImage("pictureVis/CornersIncreasingOrder.tif", imageCopy11);
+										//cvShowImage( "Corners in increasing order", imageCopy11);
+										cvSaveImage("D:/CornersIncreasingOrder.tif", imageCopy11);
 										//cvWaitKey(0);
 									}
 								}
 							}
 						}
 				}
-				cvWaitKey(0);
+				//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
 
@@ -1041,9 +1044,12 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size,
 #endif
 
 	// If enough corners have been found already, then there is no need for PART 2 ->EXIT
-	found = mrWriteCorners( output_quad_group, max_count, pattern_size, min_number_of_corners);
-		if (found == -1 || found == 1)
-			EXIT;
+	// JLBC for MRPT: Don't save to Matlab files (mrWriteCorners), but to "CvPoint2D32f *out_corners":
+	// Return true on success in finding all the quads.
+	found = myQuads2Points( output_quad_group, max_count, pattern_size,out_corners);
+	//found = mrWriteCorners( output_quad_group, max_count, pattern_size, min_number_of_corners);
+	if (found == -1 || found == 1)
+		EXIT;
 
 	// PART 2: AUGMENT LARGEST PATTERN
 	//-----------------------------------------------------------------------
@@ -1081,7 +1087,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size,
 
 //VISUALIZATION--------------------------------------------------------------
 #if VIS
-		cvNamedWindow( "PART2: Starting Point", 1 );
+		//cvNamedWindow( "PART2: Starting Point", 1 );
 		IplImage* imageCopy23 = cvCreateImage( cvGetSize(thresh_img), 8, 3 );
 		cvCvtColor( thresh_img, imageCopy23, CV_GRAY2BGR );
 
@@ -1104,9 +1110,9 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size,
 		cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, 0.5, 0.5, 0, 2);
 		//cvPutText(imageCopy23, str, cvPoint(20,20), &font, CV_RGB(0,255,0));
 
-		cvShowImage( "PART2: Starting Point", imageCopy23);
-		cvSaveImage("pictureVis/part2Start.png", imageCopy23);
-		cvWaitKey(0);
+		//cvShowImage( "PART2: Starting Point", imageCopy23);
+		cvSaveImage("D:/part2Start.png", imageCopy23);
+		//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
 
@@ -1182,9 +1188,9 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size,
 			//cvPutText(imageCopy23, str, cvPoint(x3,y3), &font, CV_RGB(0,0,0));
 		}
 
-		cvShowImage( "PART2: Starting Point", imageCopy23);
-		cvSaveImage("pictureVis/part2StartAndNewQuads.png", imageCopy23);
-		cvWaitKey(0);
+		//cvShowImage( "PART2: Starting Point", imageCopy23);
+		cvSaveImage("D:/part2StartAndNewQuads.png", imageCopy23);
+		//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
 
@@ -1255,9 +1261,9 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size,
 						}
 					}
 				}
-				cvShowImage( "PART2: Starting Point", imageCopy23);
-				cvSaveImage("pictureVis/part2StartAndSelectedQuad.png", imageCopy23);
-				cvWaitKey(0);
+				//cvShowImage( "PART2: Starting Point", imageCopy23);
+				cvSaveImage("D:/part2StartAndSelectedQuad.png", imageCopy23);
+				//cvWaitKey(0);
 			}
 #endif
 //END------------------------------------------------------------------------
@@ -1273,7 +1279,8 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size,
 
 				// write the found corners to output array
 				// Go to //__END__, if enough corners have been found
-				found = mrWriteCorners( output_quad_group, max_count, pattern_size, min_number_of_corners);
+				found = myQuads2Points( output_quad_group, max_count, pattern_size,out_corners);
+				//found = mrWriteCorners( output_quad_group, max_count, pattern_size, min_number_of_corners);
 				if (found == -1 || found == 1)
 					EXIT;
 			}
@@ -2786,6 +2793,171 @@ exit:
     return quad_count;
 }
 
+
+// Return 1 on success in finding all the quads, 0 on didn't, -1 on error.
+int myQuads2Points( CvCBQuad **output_quads, int count, CvSize pattern_size, CvPoint2D32f* out_corners)
+{
+	// Initialize
+	int corner_count = 0;
+	bool flagRow = false;
+	bool flagColumn = false;
+	int maxPattern_sizeRow = -1;
+	int maxPattern_sizeColumn = -1;
+
+	// Return variable
+	int internal_found = 0;
+
+	// Compute the minimum and maximum row / column ID
+	// (it is unlikely that more than 8bit checkers are used per dimension)
+	int min_row		=  127;
+	int max_row		= -127;
+	int min_column	=  127;
+	int max_column	= -127;
+
+	for(int i = 0; i < count; i++ )
+    {
+		CvCBQuad* q = output_quads[i];
+
+		for(int j = 0; j < 4; j++ )
+		{
+			if( (q->corners[j])->row > max_row)
+				max_row = (q->corners[j])->row;
+			if( (q->corners[j])->row < min_row)
+				min_row = (q->corners[j])->row;
+			if( (q->corners[j])->column > max_column)
+				max_column = (q->corners[j])->column;
+			if( (q->corners[j])->column < min_column)
+				min_column = (q->corners[j])->column;
+		}
+	}
+
+
+	// If in a given direction the target pattern size is reached, we know exactly how
+	// the checkerboard is oriented.
+	// Else we need to prepare enought "dummy" corners for the worst case.
+	for(int i = 0; i < count; i++ )
+    {
+		CvCBQuad* q = output_quads[i];
+
+		for(int j = 0; j < 4; j++ )
+		{
+			if( (q->corners[j])->column == max_column && (q->corners[j])->row != min_row && (q->corners[j])->row != max_row )
+			{
+				if( (q->corners[j]->needsNeighbor) == false)
+				{
+					// We know, that the target pattern size is reached
+					// in column direction
+					flagColumn = true;
+				}
+			}
+			if( (q->corners[j])->row == max_row && (q->corners[j])->column != min_column && (q->corners[j])->column != max_column )
+			{
+				if( (q->corners[j]->needsNeighbor) == false)
+				{
+					// We know, that the target pattern size is reached
+					// in row direction
+					flagRow = true;
+				}
+			}
+		}
+	}
+
+	if( flagColumn == true)
+	{
+		if( max_column - min_column == pattern_size.width + 1)
+		{
+			maxPattern_sizeColumn = pattern_size.width;
+			maxPattern_sizeRow = pattern_size.height;
+		}
+		else
+		{
+			maxPattern_sizeColumn = pattern_size.height;
+			maxPattern_sizeRow = pattern_size.width;
+		}
+	}
+	else if( flagRow == true)
+	{
+		if( max_row - min_row == pattern_size.width + 1)
+		{
+			maxPattern_sizeRow = pattern_size.width;
+			maxPattern_sizeColumn = pattern_size.height;
+		}
+		else
+		{
+			maxPattern_sizeRow = pattern_size.height;
+			maxPattern_sizeColumn = pattern_size.width;
+		}
+	}
+	else
+	{
+		// If target pattern size is not reached in at least one of the two
+		// directions,  then we do not know where the remaining corners are
+		// located. Account for this.
+		maxPattern_sizeColumn = max(pattern_size.width, pattern_size.height);
+		maxPattern_sizeRow = max(pattern_size.width, pattern_size.height);
+	}
+
+	// JL: Check sizes:
+	if (maxPattern_sizeRow * maxPattern_sizeColumn != pattern_size.width * pattern_size.height )
+		return 0; // Bad...
+
+	// Open the output files
+	//ofstream cornersX("cToMatlab/cornersX.txt");
+	//ofstream cornersY("cToMatlab/cornersY.txt");
+	//ofstream cornerInfo("cToMatlab/cornerInfo.txt");
+
+
+	// Write the corners in increasing order to "out_corners"
+	CvPoint2D32f* outPtr = out_corners;
+
+	for(int i = min_row + 1; i < maxPattern_sizeRow + min_row + 1; i++)
+	{
+		for(int j = min_column + 1; j < maxPattern_sizeColumn + min_column + 1; j++)
+		{
+			// Reset the iterator
+			int iter = 1;
+
+			for(int k = 0; k < count; k++)
+			{
+				for(int l = 0; l < 4; l++)
+				{
+					if(((output_quads[k])->corners[l]->row == i) && ((output_quads[k])->corners[l]->column == j) )
+					{
+						// Only write corners to the output file, which are connected
+						// i.e. only if iter == 2
+						if( iter == 2)
+						{
+							// The respective row and column have been found, save point:
+							*outPtr++ = (output_quads[k])->corners[l]->pt;
+							corner_count++;
+						}
+
+						// If the iterator is larger than two, this means that more than
+						// two corners have the same row / column entries. Then some
+						// linking errors must have occured and we should not use the found
+						// pattern
+						if (iter > 2)
+							return -1;
+
+						iter++;
+					}
+				}
+			}
+
+			// If the respective row / column is non - existent or is a border corner
+			if (iter == 1 || iter == 2)
+			{
+				//cornersX << -1;
+				//cornersX << " ";
+				//cornersY << -1;
+				//cornersY << " ";
+			}
+		}
+	}
+
+	// All corners found?
+	return (corner_count == pattern_size.width * pattern_size.height ) ? 1:0;
+}
 
 
 //===========================================================================
