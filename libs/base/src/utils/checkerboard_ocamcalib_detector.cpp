@@ -28,34 +28,6 @@
 
 #include <mrpt/base.h>  // Precompiled headers
 
-#if MRPT_HAS_OPENCV
-	#define CV_NO_CVV_IMAGE   // Avoid CImage name crash
-
-#	if MRPT_OPENCV_VERSION_NUM>=0x211
-#		include <opencv2/core/core.hpp>
-#		include <opencv2/highgui/highgui.hpp>
-#		include <opencv2/imgproc/imgproc.hpp>
-#		include <opencv2/imgproc/imgproc_c.h>
-#		include <opencv2/calib3d/calib3d.hpp>
-#	else
-#		include <cv.h>
-#		include <highgui.h>
-#	endif
-
-	#ifdef CImage	// For old OpenCV versions (<=1.0.0)
-	#undef CImage
-	#endif
-#endif
-
-#include <cmath>
-#include <stdio.h>
-
-using namespace mrpt;
-using namespace mrpt::utils;
-using namespace mrpt::math;
-
-#if MRPT_HAS_OPENCV
-
 // Note for MRPT: what follows below is a modified part of the "OCamCalib Toolbox":
 //  See: http://asl.epfl.ch/~scaramuz/research/Davide_Scaramuzza_files/Research/OcamCalib_Tutorial.htm
 // 
@@ -86,6 +58,35 @@ If you use this code, please cite the following articles:
 3. Rufli, M., Scaramuzza, D., and Siegwart, R. (2008), Automatic Detection of Checkerboards on Blurred and Distorted Images, Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS 2008), Nice, France, September 2008.
 
 \************************************************************************************/
+
+
+#if MRPT_HAS_OPENCV
+	#define CV_NO_CVV_IMAGE   // Avoid CImage name crash
+
+#	if MRPT_OPENCV_VERSION_NUM>=0x211
+#		include <opencv2/core/core.hpp>
+#		include <opencv2/highgui/highgui.hpp>
+#		include <opencv2/imgproc/imgproc.hpp>
+#		include <opencv2/imgproc/imgproc_c.h>
+#		include <opencv2/calib3d/calib3d.hpp>
+#	else
+#		include <cv.h>
+#		include <highgui.h>
+#	endif
+
+	#ifdef CImage	// For old OpenCV versions (<=1.0.0)
+	#undef CImage
+	#endif
+#endif
+
+#include <cmath>
+#include <stdio.h>
+
+using namespace mrpt;
+using namespace mrpt::utils;
+using namespace mrpt::math;
+
+#if MRPT_HAS_OPENCV
 
 //===========================================================================
 // CODE STARTS HERE
@@ -167,10 +168,6 @@ static void mrCopyQuadGroup( CvCBQuad **temp_quad_group, CvCBQuad **out_quad_gro
 
 static int icvCleanFoundConnectedQuads( int quad_count, CvCBQuad **quads,
 									    CvSize pattern_size );
-
-static int mrWriteCorners( CvCBQuad **output_quads, int count, CvSize pattern_size,
-						   int min_number_of_corners );
-
 // Return 1 on success in finding all the quads, 0 on didn't, -1 on error.
 int myQuads2Points( CvCBQuad **output_quads, int count, CvSize pattern_size, CvPoint2D32f* out_corners);
 
@@ -2314,12 +2311,14 @@ int myQuads2Points( CvCBQuad **output_quads, int count, CvSize pattern_size, CvP
 	// JL: Check sizes:
 	if (maxPattern_sizeRow * maxPattern_sizeColumn != pattern_size.width * pattern_size.height )
 		return 0; // Bad...
+	// and also, swap rows/columns so we always have consistently the points in the order: first all columns in a row, then the next row, etc...
+	bool do_swap_col_row = maxPattern_sizeRow != pattern_size.height;
 
-	// Open the output files
-	//ofstream cornersX("cToMatlab/cornersX.txt");
-	//ofstream cornersY("cToMatlab/cornersY.txt");
-	//ofstream cornerInfo("cToMatlab/cornerInfo.txt");
-
+	if (do_swap_col_row)
+	{
+		std::swap(min_row,min_column);
+		std::swap(maxPattern_sizeRow, maxPattern_sizeColumn);
+	}
 
 	// Write the corners in increasing order to "out_corners"
 	CvPoint2D32f* outPtr = out_corners;
@@ -2335,7 +2334,12 @@ int myQuads2Points( CvCBQuad **output_quads, int count, CvSize pattern_size, CvP
 			{
 				for(int l = 0; l < 4; l++)
 				{
-					if(((output_quads[k])->corners[l]->row == i) && ((output_quads[k])->corners[l]->column == j) )
+					int r = output_quads[k]->corners[l]->row;
+					int c = output_quads[k]->corners[l]->column;
+					if (do_swap_col_row)
+						std::swap(r,c);
+
+					if(r == i && c == j)
 					{
 						// Only write corners to the output file, which are connected
 						// i.e. only if iter == 2
@@ -2373,196 +2377,6 @@ int myQuads2Points( CvCBQuad **output_quads, int count, CvSize pattern_size, CvP
 	return (corner_count == pattern_size.width * pattern_size.height ) ? 1:0;
 }
 
-
-//===========================================================================
-// WRITE CORNERS TO FILE
-//===========================================================================
-static int mrWriteCorners( CvCBQuad **output_quads, int count, CvSize pattern_size, int min_number_of_corners )
-{
-	// Initialize
-	int corner_count = 0;
-	bool flagRow = false;
-	bool flagColumn = false;
-	int maxPattern_sizeRow = -1;
-	int maxPattern_sizeColumn = -1;
-
-
-	// Return variable
-	int internal_found = 0;
-
-
-	// Compute the minimum and maximum row / column ID
-	// (it is unlikely that more than 8bit checkers are used per dimension)
-	int min_row		=  127;
-	int max_row		= -127;
-	int min_column	=  127;
-	int max_column	= -127;
-
-	for(int i = 0; i < count; i++ )
-    {
-		CvCBQuad* q = output_quads[i];
-
-		for(int j = 0; j < 4; j++ )
-		{
-			if( (q->corners[j])->row > max_row)
-				max_row = (q->corners[j])->row;
-			if( (q->corners[j])->row < min_row)
-				min_row = (q->corners[j])->row;
-			if( (q->corners[j])->column > max_column)
-				max_column = (q->corners[j])->column;
-			if( (q->corners[j])->column < min_column)
-				min_column = (q->corners[j])->column;
-		}
-	}
-
-
-	// If in a given direction the target pattern size is reached, we know exactly how
-	// the checkerboard is oriented.
-	// Else we need to prepare enought "dummy" corners for the worst case.
-	for(int i = 0; i < count; i++ )
-    {
-		CvCBQuad* q = output_quads[i];
-
-		for(int j = 0; j < 4; j++ )
-		{
-			if( (q->corners[j])->column == max_column && (q->corners[j])->row != min_row && (q->corners[j])->row != max_row )
-			{
-				if( (q->corners[j]->needsNeighbor) == false)
-				{
-					// We know, that the target pattern size is reached
-					// in column direction
-					flagColumn = true;
-				}
-			}
-			if( (q->corners[j])->row == max_row && (q->corners[j])->column != min_column && (q->corners[j])->column != max_column )
-			{
-				if( (q->corners[j]->needsNeighbor) == false)
-				{
-					// We know, that the target pattern size is reached
-					// in row direction
-					flagRow = true;
-				}
-			}
-		}
-	}
-
-	if( flagColumn == true)
-	{
-		if( max_column - min_column == pattern_size.width + 1)
-		{
-			maxPattern_sizeColumn = pattern_size.width;
-			maxPattern_sizeRow = pattern_size.height;
-		}
-		else
-		{
-			maxPattern_sizeColumn = pattern_size.height;
-			maxPattern_sizeRow = pattern_size.width;
-		}
-	}
-	else if( flagRow == true)
-	{
-		if( max_row - min_row == pattern_size.width + 1)
-		{
-			maxPattern_sizeRow = pattern_size.width;
-			maxPattern_sizeColumn = pattern_size.height;
-		}
-		else
-		{
-			maxPattern_sizeRow = pattern_size.height;
-			maxPattern_sizeColumn = pattern_size.width;
-		}
-	}
-	else
-	{
-		// If target pattern size is not reached in at least one of the two
-		// directions,  then we do not know where the remaining corners are
-		// located. Account for this.
-		maxPattern_sizeColumn = max(pattern_size.width, pattern_size.height);
-		maxPattern_sizeRow = max(pattern_size.width, pattern_size.height);
-	}
-
-
-	// Open the output files
-	ofstream cornersX("cToMatlab/cornersX.txt");
-	ofstream cornersY("cToMatlab/cornersY.txt");
-	ofstream cornerInfo("cToMatlab/cornerInfo.txt");
-
-
-	// Write the corners in increasing order to the output file
-	for(int i = min_row + 1; i < maxPattern_sizeRow + min_row + 1; i++)
-	{
-		for(int j = min_column + 1; j < maxPattern_sizeColumn + min_column + 1; j++)
-		{
-			// Reset the iterator
-			int iter = 1;
-
-			for(int k = 0; k < count; k++)
-			{
-				for(int l = 0; l < 4; l++)
-				{
-					if(((output_quads[k])->corners[l]->row == i) && ((output_quads[k])->corners[l]->column == j) )
-					{
-						// Only write corners to the output file, which are connected
-						// i.e. only if iter == 2
-						if( iter == 2)
-						{
-							// The respective row and column have been found, print it to
-							// the output file, only do this once
-							cornersX << (output_quads[k])->corners[l]->pt.x;
-							cornersX << " ";
-							cornersY << (output_quads[k])->corners[l]->pt.y;
-							cornersY << " ";
-
-							corner_count++;
-						}
-
-
-						// If the iterator is larger than two, this means that more than
-						// two corners have the same row / column entries. Then some
-						// linking errors must have occured and we should not use the found
-						// pattern
-						if (iter > 2)
-							return -1;
-
-						iter++;
-					}
-				}
-			}
-
-			// If the respective row / column is non - existent or is a border corner
-			if (iter == 1 || iter == 2)
-			{
-				cornersX << -1;
-				cornersX << " ";
-				cornersY << -1;
-				cornersY << " ";
-			}
-		}
-		cornersX << endl;
-		cornersY << endl;
-	}
-
-
-	// Write to the corner matrix size info file
-	cornerInfo << maxPattern_sizeRow<< " " << maxPattern_sizeColumn << endl;
-
-
-	// Close the output files
-	cornersX.close();
-	cornersY.close();
-	cornerInfo.close();
-
-
-	// check whether enough corners have been found
-	if (corner_count >= min_number_of_corners)
-		internal_found = 1;
-	else
-		internal_found = 0;
-
-
-	// pattern found, or not found?
-	return internal_found;
-}
 
 //===========================================================================
 // END OF FILE  (Of "OCamCalib Toolbox" code)

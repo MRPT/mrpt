@@ -141,79 +141,123 @@
 							<object class="sizeritem">
 								<object class="wxFlexGridSizer" variable="FlexGridSizer6" member="no">
 									<cols>2</cols>
-									<rows>5</rows>
-									<growablecols>1</growablecols>
+									<rows>2</rows>
+									<growablecols>0,1</growablecols>
 									<object class="sizeritem">
-										<object class="wxStaticText" name="ID_STATICTEXT1" variable="StaticText1" member="yes">
-											<label>Size in X (squares):</label>
+										<object class="wxStaticBoxSizer" variable="StaticBoxSizer4" member="no">
+											<label>Number of inner corners: </label>
+											<object class="sizeritem">
+												<object class="wxFlexGridSizer" variable="FlexGridSizer17" member="no">
+													<cols>4</cols>
+													<rows>1</rows>
+													<object class="sizeritem">
+														<object class="wxStaticText" name="ID_STATICTEXT1" variable="StaticText1" member="yes">
+															<label>In X:</label>
+														</object>
+														<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+													<object class="sizeritem">
+														<object class="wxSpinCtrl" name="ID_SPINCTRL1" variable="edSizeX" member="yes">
+															<value>5</value>
+															<min>1</min>
+															<max>200</max>
+															<size>50,-1</size>
+														</object>
+														<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+													<object class="sizeritem">
+														<object class="wxStaticText" name="ID_STATICTEXT2" variable="StaticText2" member="yes">
+															<label>In Y:</label>
+														</object>
+														<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+													<object class="sizeritem">
+														<object class="wxSpinCtrl" name="ID_SPINCTRL2" variable="edSizeY" member="yes">
+															<value>8</value>
+															<min>1</min>
+															<max>200</max>
+															<size>50,-1</size>
+														</object>
+														<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+												</object>
+												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<option>1</option>
+											</object>
 										</object>
-										<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
-										<border>5</border>
+										<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>2</border>
 										<option>1</option>
 									</object>
 									<object class="sizeritem">
-										<object class="wxSpinCtrl" name="ID_SPINCTRL1" variable="edSizeX" member="yes">
-											<value>5</value>
-											<min>1</min>
-											<max>200</max>
+										<object class="wxRadioBox" name="ID_RADIOBOX1" variable="rbMethod" member="yes">
+											<label> Detector method: </label>
+											<content>
+												<item>OpenCV&apos;s default</item>
+												<item>Scaramuzza et al.&apos;s</item>
+											</content>
+											<default>-1</default>
 										</object>
 										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-										<border>5</border>
+										<border>2</border>
 										<option>1</option>
 									</object>
 									<object class="sizeritem">
-										<object class="wxStaticText" name="ID_STATICTEXT2" variable="StaticText2" member="yes">
-											<label>Size in Y (squares):</label>
+										<object class="wxStaticBoxSizer" variable="StaticBoxSizer5" member="no">
+											<label> Size of quads (in mm): </label>
+											<object class="sizeritem">
+												<object class="wxFlexGridSizer" variable="FlexGridSizer18" member="no">
+													<cols>4</cols>
+													<rows>1</rows>
+													<object class="sizeritem">
+														<object class="wxStaticText" name="ID_STATICTEXT3" variable="StaticText3" member="yes">
+															<label>In X:</label>
+														</object>
+														<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+													<object class="sizeritem">
+														<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="edLengthX" member="yes">
+															<value>40.0</value>
+															<size>40,-1</size>
+														</object>
+														<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+													<object class="sizeritem">
+														<object class="wxStaticText" name="ID_STATICTEXT6" variable="StaticText6" member="yes">
+															<label>In Y:</label>
+														</object>
+														<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+													<object class="sizeritem">
+														<object class="wxTextCtrl" name="ID_TEXTCTRL3" variable="edLengthY" member="yes">
+															<value>40.0</value>
+															<size>40,-1</size>
+														</object>
+														<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+												</object>
+												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<option>1</option>
+											</object>
 										</object>
-										<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
-										<border>5</border>
-										<option>1</option>
-									</object>
-									<object class="sizeritem">
-										<object class="wxSpinCtrl" name="ID_SPINCTRL2" variable="edSizeY" member="yes">
-											<value>8</value>
-											<min>1</min>
-											<max>200</max>
-										</object>
-										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-										<border>5</border>
-										<option>1</option>
-									</object>
-									<object class="sizeritem">
-										<object class="wxStaticText" name="ID_STATICTEXT3" variable="StaticText3" member="yes">
-											<label>Square length in X (mm):</label>
-										</object>
-										<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
-										<border>5</border>
-										<option>1</option>
-									</object>
-									<object class="sizeritem">
-										<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="edLengthX" member="yes">
-											<value>40.0</value>
-										</object>
-										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-										<border>5</border>
-										<option>1</option>
-									</object>
-									<object class="sizeritem">
-										<object class="wxStaticText" name="ID_STATICTEXT4" variable="StaticText4" member="yes">
-											<label>Square length in Y (mm):</label>
-										</object>
-										<flag>wxALL|wxEXPAND|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
-										<border>5</border>
-										<option>1</option>
-									</object>
-									<object class="sizeritem">
-										<object class="wxTextCtrl" name="ID_TEXTCTRL3" variable="edLengthY" member="yes">
-											<value>40.0</value>
-										</object>
-										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-										<border>5</border>
-										<option>1</option>
-									</object>
-									<object class="spacer">
-										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-										<border>5</border>
+										<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<border>2</border>
 										<option>1</option>
 									</object>
 									<object class="sizeritem">
@@ -221,7 +265,7 @@
 											<label>Normalize image</label>
 											<checked>1</checked>
 										</object>
-										<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 										<border>5</border>
 										<option>1</option>
 									</object>
@@ -289,7 +333,7 @@
 													<label>Save matrices...</label>
 													<handler function="OnbtnSaveClick" entry="EVT_BUTTON" />
 												</object>
-												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 												<border>5</border>
 												<option>1</option>
 											</object>
@@ -303,7 +347,7 @@
 													<label>Manual params...</label>
 													<handler function="OnbtnManualRectClick" entry="EVT_BUTTON" />
 												</object>
-												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 												<border>5</border>
 												<option>1</option>
 											</object>
@@ -312,7 +356,7 @@
 													<label>About</label>
 													<handler function="OnbtnAboutClick" entry="EVT_BUTTON" />
 												</object>
-												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 												<border>5</border>
 												<option>1</option>
 											</object>
@@ -321,7 +365,7 @@
 													<label>Quit</label>
 													<handler function="OnbtnCloseClick" entry="EVT_BUTTON" />
 												</object>
-												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 												<border>5</border>
 												<option>1</option>
 											</object>

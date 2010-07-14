@@ -49,6 +49,7 @@ const long CDlgCalibWizardOnline::ID_STATICTEXT1 = wxNewId();
 const long CDlgCalibWizardOnline::ID_SPINCTRL1 = wxNewId();
 const long CDlgCalibWizardOnline::ID_STATICTEXT2 = wxNewId();
 const long CDlgCalibWizardOnline::ID_SPINCTRL2 = wxNewId();
+const long CDlgCalibWizardOnline::ID_RADIOBOX1 = wxNewId();
 const long CDlgCalibWizardOnline::ID_STATICTEXT3 = wxNewId();
 const long CDlgCalibWizardOnline::ID_TEXTCTRL1 = wxNewId();
 const long CDlgCalibWizardOnline::ID_STATICTEXT4 = wxNewId();
@@ -81,14 +82,18 @@ CDlgCalibWizardOnline::CDlgCalibWizardOnline(wxWindow* parent,wxWindowID id,cons
 	//(*Initialize(CDlgCalibWizardOnline)
 	wxStaticBoxSizer* StaticBoxSizer2;
 	wxFlexGridSizer* FlexGridSizer4;
+	wxStaticBoxSizer* StaticBoxSizer4;
 	wxFlexGridSizer* FlexGridSizer3;
 	wxFlexGridSizer* FlexGridSizer5;
 	wxFlexGridSizer* FlexGridSizer2;
 	wxFlexGridSizer* FlexGridSizer7;
 	wxStaticBoxSizer* StaticBoxSizer3;
+	wxFlexGridSizer* FlexGridSizer18;
 	wxFlexGridSizer* FlexGridSizer6;
 	wxStaticBoxSizer* StaticBoxSizer1;
-
+	wxFlexGridSizer* FlexGridSizer17;
+	wxStaticBoxSizer* StaticBoxSizer5;
+	
 	Create(parent, id, _("Grab chessboard calibration pattern"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("id"));
 	SetClientSize(wxDefaultSize);
 	Move(wxDefaultPosition);
@@ -101,34 +106,49 @@ CDlgCalibWizardOnline::CDlgCalibWizardOnline(wxWindow* parent,wxWindowID id,cons
 	m_panelCamera = new mrpt::gui::CPanelCameraSelection(this,ID_CUSTOM2);
 	StaticBoxSizer1->Add(m_panelCamera, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer4->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	StaticBoxSizer3 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Checkerboard detection parameters"));
-	FlexGridSizer6 = new wxFlexGridSizer(0, 2, 0, 0);
+	FlexGridSizer6 = new wxFlexGridSizer(2, 2, 0, 0);
+	FlexGridSizer6->AddGrowableCol(0);
 	FlexGridSizer6->AddGrowableCol(1);
-	StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("Size in X (squares):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-	FlexGridSizer6->Add(StaticText1, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-	edSizeX = new wxSpinCtrl(this, ID_SPINCTRL1, _T("5"), wxDefaultPosition, wxDefaultSize, 0, 1, 200, 5, _T("ID_SPINCTRL1"));
+	StaticBoxSizer4 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Number of inner corners: "));
+	FlexGridSizer17 = new wxFlexGridSizer(1, 4, 0, 0);
+	StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("In X:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
+	FlexGridSizer17->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	edSizeX = new wxSpinCtrl(this, ID_SPINCTRL1, _T("5"), wxDefaultPosition, wxSize(50,-1), 0, 1, 200, 5, _T("ID_SPINCTRL1"));
 	edSizeX->SetValue(_T("5"));
-	FlexGridSizer6->Add(edSizeX, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticText2 = new wxStaticText(this, ID_STATICTEXT2, _("Size in Y (squares):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
-	FlexGridSizer6->Add(StaticText2, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-	edSizeY = new wxSpinCtrl(this, ID_SPINCTRL2, _T("8"), wxDefaultPosition, wxDefaultSize, 0, 1, 200, 8, _T("ID_SPINCTRL2"));
+	FlexGridSizer17->Add(edSizeX, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticText2 = new wxStaticText(this, ID_STATICTEXT2, _("In Y:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+	FlexGridSizer17->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	edSizeY = new wxSpinCtrl(this, ID_SPINCTRL2, _T("8"), wxDefaultPosition, wxSize(50,-1), 0, 1, 200, 8, _T("ID_SPINCTRL2"));
 	edSizeY->SetValue(_T("8"));
-	FlexGridSizer6->Add(edSizeY, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticText3 = new wxStaticText(this, ID_STATICTEXT3, _("Square length in X (mm):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
-	FlexGridSizer6->Add(StaticText3, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-	edLengthX = new wxTextCtrl(this, ID_TEXTCTRL1, _("40.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-	FlexGridSizer6->Add(edLengthX, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticText4 = new wxStaticText(this, ID_STATICTEXT4, _("Square length in Y (mm):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT4"));
-	FlexGridSizer6->Add(StaticText4, 1, wxALL|wxEXPAND|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-	edLengthY = new wxTextCtrl(this, ID_TEXTCTRL3, _("40.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL3"));
-	FlexGridSizer6->Add(edLengthY, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer6->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer17->Add(edSizeY, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticBoxSizer4->Add(FlexGridSizer17, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer6->Add(StaticBoxSizer4, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 2);
+	wxString __wxRadioBoxChoices_1[2] = 
+	{
+		_("OpenCV\'s default"),
+		_("Scaramuzza et al.\'s")
+	};
+	rbMethod = new wxRadioBox(this, ID_RADIOBOX1, _(" Detector method: "), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX1"));
+	FlexGridSizer6->Add(rbMethod, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+	StaticBoxSizer5 = new wxStaticBoxSizer(wxHORIZONTAL, this, _(" Size of quads (in mm): "));
+	FlexGridSizer18 = new wxFlexGridSizer(1, 4, 0, 0);
+	StaticText3 = new wxStaticText(this, ID_STATICTEXT3, _("In X:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
+	FlexGridSizer18->Add(StaticText3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	edLengthX = new wxTextCtrl(this, ID_TEXTCTRL1, _("40.0"), wxDefaultPosition, wxSize(40,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
+	FlexGridSizer18->Add(edLengthX, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticText4 = new wxStaticText(this, ID_STATICTEXT4, _("In Y:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT4"));
+	FlexGridSizer18->Add(StaticText4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	edLengthY = new wxTextCtrl(this, ID_TEXTCTRL3, _("40.0"), wxDefaultPosition, wxSize(40,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL3"));
+	FlexGridSizer18->Add(edLengthY, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticBoxSizer5->Add(FlexGridSizer18, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer6->Add(StaticBoxSizer5, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 2);
 	cbNormalize = new wxCheckBox(this, ID_CHECKBOX1, _("Normalize image"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
 	cbNormalize->SetValue(true);
-	FlexGridSizer6->Add(cbNormalize, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer6->Add(cbNormalize, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StaticBoxSizer3->Add(FlexGridSizer6, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-	FlexGridSizer4->Add(StaticBoxSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer2->Add(StaticBoxSizer3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StaticBoxSizer2 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Capture limits"));
 	FlexGridSizer7 = new wxFlexGridSizer(0, 2, 0, 0);
 	FlexGridSizer7->AddGrowableCol(0);
@@ -173,7 +193,7 @@ CDlgCalibWizardOnline::CDlgCalibWizardOnline(wxWindow* parent,wxWindowID id,cons
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
-
+	
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CDlgCalibWizardOnline::OnbtnStartClick);
 	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CDlgCalibWizardOnline::OnbtnStopClick);
 	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CDlgCalibWizardOnline::OnbtnCloseClick);
@@ -261,7 +281,7 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 		m_check_size_x = this->edSizeX->GetValue();
 		m_check_size_y = this->edSizeY->GetValue();
 		m_normalize_image = this->cbNormalize->GetValue();
-
+		m_useScaramuzzaAlternativeDetector = this->rbMethod->GetSelection() == 1;
 
 		CObservationPtr obs = m_video->getNextFrame();
 		ASSERT_(obs)
@@ -389,7 +409,7 @@ void CDlgCalibWizardOnline::threadProcessCorners()
 				try
 				{
 					// Detect corners:
-					bool foundCorners = obj->m_threadImgToProcess->image.findChessboardCorners( obj->m_threadResults, obj->m_check_size_x, obj->m_check_size_y,	obj->m_normalize_image );
+					bool foundCorners = obj->m_threadImgToProcess->image.findChessboardCorners( obj->m_threadResults, obj->m_check_size_x, obj->m_check_size_y,	obj->m_normalize_image, obj->m_useScaramuzzaAlternativeDetector );
 
 					//cout << "corners: " << obj->m_threadResults.size() << endl;
 

@@ -30,20 +30,21 @@
 #define CAMERA_CALIB_GUIMAIN_H
 
 //(*Headers(camera_calib_guiDialog)
-#include <wx/spinctrl.h>
-#include <wx/checkbox.h>
-#include <wx/dialog.h>
-#include <wx/sizer.h>
-#include <wx/notebook.h>
-#include <wx/button.h>
-#include <wx/panel.h>
 #include <wx/scrolwin.h>
-#include "MyGLCanvas.h"
-#include <mrpt/gui/WxUtils.h>
+#include <wx/notebook.h>
+#include <wx/sizer.h>
 #include <wx/stattext.h>
+#include <wx/radiobox.h>
 #include <wx/textctrl.h>
-#include <wx/choice.h>
+#include <wx/checkbox.h>
 #include <wx/listbox.h>
+#include <wx/spinctrl.h>
+#include "MyGLCanvas.h"
+#include <wx/panel.h>
+#include <wx/choice.h>
+#include <wx/button.h>
+#include <wx/dialog.h>
+#include <mrpt/gui/WxUtils.h>
 //*)
 
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -85,9 +86,10 @@ class camera_calib_guiDialog: public wxDialog
         static const long ID_SPINCTRL1;
         static const long ID_STATICTEXT2;
         static const long ID_SPINCTRL2;
+        static const long ID_RADIOBOX1;
         static const long ID_STATICTEXT3;
         static const long ID_TEXTCTRL1;
-        static const long ID_STATICTEXT4;
+        static const long ID_STATICTEXT6;
         static const long ID_TEXTCTRL3;
         static const long ID_CHECKBOX1;
         static const long ID_TEXTCTRL2;
@@ -108,39 +110,40 @@ class camera_calib_guiDialog: public wxDialog
         //*)
 
         //(*Declarations(camera_calib_guiDialog)
-        wxTextCtrl* edLengthY;
-        wxPanel* Panel1;
-        wxButton* btnManualRect;
-        wxButton* btnClose;
-        wxCheckBox* cbNormalize;
-        wxFlexGridSizer* FlexGridSizer11;
-        wxButton* btnAbout;
-        CMyGLCanvas* m_3Dview;
-        wxButton* btnRunCalib;
         mrpt::gui::wxMRPTImageControl* bmpOriginal;
+        wxCheckBox* cbNormalize;
+        wxTextCtrl* edLengthX;
+        CMyGLCanvas* m_3Dview;
+        wxNotebook* Notebook1;
+        wxRadioBox* rbMethod;
+        wxButton* btnSave;
+        wxButton* btnAbout;
+        wxStaticText* StaticText2;
+        wxButton* btnClose;
+        wxButton* btnRunCalib;
+        wxScrolledWindow* ScrolledWindow3;
+        wxStaticText* StaticText6;
+        wxTextCtrl* edLengthY;
         wxSpinCtrl* edSizeY;
+        wxChoice* cbZoom;
+        wxPanel* Panel1;
+        wxButton* btnCaptureNow;
         wxStaticText* StaticText1;
+        wxTextCtrl* txtLog;
+        wxStaticText* StaticText3;
+        wxButton* Button22;
         wxButton* btnSaveImages;
+        wxPanel* Panel3;
+        wxButton* Button11;
+        wxStaticText* StaticText5;
+        wxScrolledWindow* ScrolledWindow2;
         wxFlexGridSizer* FlexGridSizer14;
+        wxSpinCtrl* edSizeX;
         mrpt::gui::wxMRPTImageControl* bmpRectified;
         wxPanel* Panel2;
-        wxStaticText* StaticText3;
-        wxSpinCtrl* edSizeX;
-        wxButton* btnCaptureNow;
-        wxPanel* Panel3;
         wxListBox* lbFiles;
-        wxTextCtrl* txtLog;
-        wxScrolledWindow* ScrolledWindow3;
-        wxScrolledWindow* ScrolledWindow2;
-        wxStaticText* StaticText4;
-        wxChoice* cbZoom;
-        wxStaticText* StaticText5;
-        wxStaticText* StaticText2;
-        wxNotebook* Notebook1;
-        wxTextCtrl* edLengthX;
-        wxButton* Button22;
-        wxButton* Button11;
-        wxButton* btnSave;
+        wxFlexGridSizer* FlexGridSizer11;
+        wxButton* btnManualRect;
         //*)
 
         DECLARE_EVENT_TABLE()

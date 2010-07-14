@@ -42,6 +42,7 @@
 		<Unit filename="camera_calib_guiMain.cpp" />
 		<Unit filename="camera_calib_guiMain.h" />
 		<Unit filename="wxsmith/camera_calib_guidialog.wxs" />
+		<Unit filename="wxsmith/CDlgCalibWizardOnline.wxs" />
 		<Extensions>
 			<envvars />
 			<code_completion />
@@ -49,6 +50,7 @@
 				<gui name="wxWidgets" src="camera_calib_guiApp.cpp" main="camera_calib_guiDialog" init_handlers="necessary" language="CPP" />
 				<resources>
 					<wxDialog wxs="wxsmith/camera_calib_guidialog.wxs" src="camera_calib_guiMain.cpp" hdr="camera_calib_guiMain.h" name="camera_calib_guiDialog" language="CPP" />
+					<wxDialog wxs="wxsmith/CDlgCalibWizardOnline.wxs" src="CDlgCalibWizardOnline.cpp" hdr="CDlgCalibWizardOnline.h" name="CDlgCalibWizardOnline" language="CPP" />
 				</resources>
 			</wxsmith>
 			<debugger />

@@ -33,6 +33,7 @@
 //(*Headers(CDlgCalibWizardOnline)
 #include <wx/sizer.h>
 #include <wx/stattext.h>
+#include <wx/radiobox.h>
 #include <wx/textctrl.h>
 #include <wx/checkbox.h>
 #include <wx/spinctrl.h>
@@ -62,6 +63,7 @@ class CDlgCalibWizardOnline: public wxDialog
 		wxTextCtrl* edLengthX;
 		mrpt::gui::wxMRPTImageControl* m_realtimeview;
 		wxStaticText* lbProgress;
+		wxRadioBox* rbMethod;
 		wxStaticText* StaticText2;
 		wxButton* btnStart;
 		wxButton* btnClose;
@@ -88,6 +90,7 @@ class CDlgCalibWizardOnline: public wxDialog
 		static const long ID_SPINCTRL1;
 		static const long ID_STATICTEXT2;
 		static const long ID_SPINCTRL2;
+		static const long ID_RADIOBOX1;
 		static const long ID_STATICTEXT3;
 		static const long ID_TEXTCTRL1;
 		static const long ID_STATICTEXT4;
@@ -128,6 +131,7 @@ class CDlgCalibWizardOnline: public wxDialog
 		unsigned int  m_check_size_x;
 		unsigned int  m_check_size_y;
 		bool		  m_normalize_image;
+		bool		  m_useScaramuzzaAlternativeDetector;
 
 
 		mrpt::hwdrivers::CCameraSensorPtr  m_video;

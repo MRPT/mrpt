@@ -37,7 +37,6 @@ using namespace mrpt::gui;
 #include <mrpt/examples_config.h>
 std::string   myDataDir = MRPT_EXAMPLES_BASE_DIRECTORY + string("checkerboardDetectors/");
 
-
 // ------------------------------------------------------
 //				TestCheckerboardDetectors
 // ------------------------------------------------------
@@ -47,7 +46,10 @@ void TestCheckerboardDetectors()
 
 	// Load img:
 	CImage img;
-	if (!img.loadFromFile(myDataDir + string("test_1_checkerboard_9x6.jpg")))
+	if (!img.loadFromFile(
+		//"D:/Rawlogs/LAMONOSLAM/calib/CAMERA1_1274446974.089168.jpg"
+		myDataDir + string("test_1_checkerboard_9x6.jpg"))
+		))
 		throw std::runtime_error("Can't load demo image!");
 
 	// Detect multiple-checkerboards:
@@ -62,7 +64,7 @@ void TestCheckerboardDetectors()
 				cornerCoords,
 				checkerboard_size_x, checkerboard_size_y,
 				true, // normalize_image
-				true // useScaramuzzaMethod
+				false // useScaramuzzaMethod
 				);
 
 	timlog.leave("findChessboardCorners [OpenCV]");
