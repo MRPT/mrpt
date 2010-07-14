@@ -33,6 +33,8 @@
 
   <a name="0.9.1">
   <h2>Version 0.9.1: (In developement)</h2></a>
+	- <b>Most important changes:</b>
+		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.		
 		- New application 'track-video-features' illustrating feature detection and tracking (many of this functionality is new or has been improved in this MRPT version).
 	- <b>Detailed list of changes:</b>
 		- Changes in applications:
@@ -96,6 +98,7 @@
 		- Global settings:
 			- New global variable mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 		- BUGFIXES:
+			- <b>CRITICAL REGRESION FIXED</b>: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.
 			- Fixed crash (on non Win32) when calling mrpt::system::joinThread on an empty thread handle.
 			- Error in CStream-classes handling files larger than 4Gb.
 			- Fixed build with BUILD_SHARED_LIBS=OFF under Visual Studio.
