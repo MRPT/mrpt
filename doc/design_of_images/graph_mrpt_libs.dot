@@ -12,8 +12,6 @@ digraph MRPT_LIBS {
 	vision 		[label="mrpt-vision",URL="mrpt-vision.html"];
 
 	slam 		[label="mrpt-slam",URL="mrpt-slam.html"];
-
-	interfaces 	[label="mrpt-interfaces",URL="mrpt-interfaces.html"];
 	
 	hmtslam		[label="mrpt-hmtslam",URL="mrpt-hmtslam.html"];
 	reactivenav	[label="mrpt-reactivenav",URL="mrpt-reactivenav.html"];
@@ -37,19 +35,15 @@ digraph MRPT_LIBS {
 	
 	maps -> obs;
 
-	interfaces -> maps;
-
-	slam -> interfaces;
+	slam -> maps;
 	slam -> vision;
 	
 	hmtslam -> slam;
 	
 	monoslam -> vision;
-	monoslam -> interfaces;
 
 	stereoslam -> vision;
-	stereoslam -> interfaces;
 	
-	reactivenav -> interfaces;
+	reactivenav -> maps;
 	reactivenav -> gui;
 }

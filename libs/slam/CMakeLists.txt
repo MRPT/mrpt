@@ -18,9 +18,8 @@ define_mrpt_lib(
 	slam 		
 	# Dependencies
 	mrpt-vision
-	mrpt-interfaces
-	# And deps of the deps:
 	mrpt-maps
+	# And deps of the deps:
 	mrpt-gui
 	mrpt-obs
 	mrpt-opengl
