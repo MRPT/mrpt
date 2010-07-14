@@ -310,6 +310,7 @@ namespace mrpt
 			  * \param normalize_image [IN] Select OpenCV flag
 			  * \param out_MSE  [OUT] If set to !=NULL, the mean square error of the reprojection will be stored here (in pixel units).
 			  * \param skipDrawDetectedImgs [IN] Whether to skip the generation of the undistorted and detected images in each TImageCalibData
+			  * \param useScaramuzzaAlternativeDetector [IN] Whether to use an alternative detector. See CImage::findChessboardCorners for more deatails and references.
 			  * \sa The <a href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui application</a> is a user-friendly GUI to this class.
 			  * \return false on any error (more info will be dumped to cout), or true on success.
 			  * \sa CImage::findChessboardCorners
@@ -323,7 +324,8 @@ namespace mrpt
 				mrpt::utils::TCamera   &out_camera_params,
 				bool		normalize_image = true,
 				double            *out_MSE = NULL,
-				bool               skipDrawDetectedImgs = false
+				bool               skipDrawDetectedImgs = false,
+				bool			   useScaramuzzaAlternativeDetector = false
 				);
 
 			/** Performs a camera calibration (computation of projection and distortion parameters) from a sequence of captured images of a checkerboard.
@@ -337,6 +339,7 @@ namespace mrpt
 			  * \param normalize_image [IN] Select OpenCV flag
 			  * \param out_MSE  [OUT] If set to !=NULL, the mean square error of the reprojection will be stored here (in pixel units).
 			  * \param skipDrawDetectedImgs [IN] Whether to skip the generation of the undistorted and detected images in each TImageCalibData
+			  * \param useScaramuzzaAlternativeDetector [IN] Whether to use an alternative detector. See CImage::findChessboardCorners for more deatails and references.
 			  * \sa The <a href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui application</a> is a user-friendly GUI to this class.
 			  * \return false on any error (more info will be dumped to cout), or true on success.
 			  * \sa CImage::findChessboardCorners
@@ -351,7 +354,8 @@ namespace mrpt
 				std::vector<double>		&distortionParams,
 				bool		normalize_image = true,
 				double            *out_MSE = NULL,
-				bool               skipDrawDetectedImgs = false
+				bool               skipDrawDetectedImgs = false,
+				bool			   useScaramuzzaAlternativeDetector = false
 				);
 
 			/** Converts a stereo images observation into a bearing and range observation.

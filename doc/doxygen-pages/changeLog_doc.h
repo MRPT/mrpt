@@ -41,7 +41,10 @@
 			- camera-calib can now open SwissRangers 3D cameras as well for real-time calibration.
 			- rawlog-grabber: New config file optional argument: "rawlog_GZ_compress_level" to settle the desired GZ-compression level of rawlogs.
 		- Changes in classes:
-			- mrpt::utils::CImage now has a new method (setFromImageReadOnly) and a new constructor as UNINITIALIZED_IMAGE.
+			- mrpt::utils::CImage:
+				- It now has a new method (setFromImageReadOnly) and a new constructor as UNINITIALIZED_IMAGE.
+				- New alternative checkerboard detector algorithm (by Scaramuzza et al.). See mrpt::utils::CImage::findChessboardCorners for references and more details.
+				- (TODO) New method to detect several checkerboards on each image. See See mrpt::utils::CImage::findMultipleChessboardsCorners
 			- mrpt::utils::CStream now handles sizes as uint64_t instead of size_t, to allow files larger than 4Gb in 32bit systems.
 			- mrpt::hwdrivers::prepareVideoSourceFromUserSelection() now also displays as an option to grab images from SwissRanger 3D cameras.
 			- mrpt::hwdrivers::CCameraSensor can now open SwissRanger 3D cameras.
@@ -90,6 +93,8 @@
 			- camera-calib-ba: A tool to calibrate a camera from a set of random tracked features (no need to use a checkerboard).
 		- New examples:
 			- params-by-name
+			- checkerboardDetectors
+			- multipleCheckerboards
 		- Global settings:
 			- New global variable mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 		- BUGFIXES:

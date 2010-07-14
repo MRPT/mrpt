@@ -2689,12 +2689,19 @@ void CImage::rotateImage( double angle_radians, unsigned int center_x, unsigned 
 #endif
 }
 
+// Declaration of auxiliary functions in checkerboard_ocamcalib_detector.cpp
+#if MRPT_HAS_OPENCV
+	// Return: -1: errors, 0: not found, 1: found OK
+	int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, CvPoint2D32f* out_corners, int* out_corner_count);
+#endif
+
 
 /** Look for the corners of a chessboard in the image
   * \param cornerCoords [OUT] The pixel coordinates of all the corners.
   * \param check_size_x [IN] The number of squares, in the X direction
   * \param check_size_y [IN] The number of squares, in the Y direction
   * \param normalize_image [IN] Whether to normalize the image before detection
+  * \param useScaramuzzaMethod [IN] Whether to use the alternative, more robust method by M. Rufli, D. Scaramuzza, and R. Siegwart.
   *
   * \return true on success
   */
@@ -2702,27 +2709,19 @@ bool CImage::findChessboardCorners(
 	std::vector<TPixelCoordf> 	&cornerCoords,
 	unsigned int  check_size_x,
 	unsigned int  check_size_y,
-	bool		normalize_image ) const
+	bool		normalize_image,
+	bool		useScaramuzzaMethod) const
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START
 
 	ASSERT_(check_size_y>0 && check_size_x>0)
 
-	IplImage *img;
-	bool delete_img = false;
-
-	// Assure we have a grayscale image in "img":
-	if (!isColor())
-		img = static_cast<IplImage*>(getAsIplImage());
-	else
-	{
-		delete_img=true;
-		IplImage *srcImg = static_cast<IplImage*>(getAsIplImage());
-		img = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, 1 );
-		cvCvtColor( srcImg, img, CV_BGR2GRAY );
-		img->origin = srcImg->origin;
-	}
+	// Grayscale version:
+	CImage img(UNINITIALIZED_IMAGE);
+	if (this->isColor())
+			this->grayscale(img);
+	else	img.setFromImageReadOnly(*this);
 
 	// Try with expanded versions of the image if it fails to detect the checkerboard:
 	int corners_count;
@@ -2742,45 +2741,51 @@ bool CImage::findChessboardCorners(
 	if (normalize_image)
 		find_chess_flags |= CV_CALIB_CB_NORMALIZE_IMAGE;
 
-//	CTicTac	tim;
-//	tim.Tic();
+	if (!useScaramuzzaMethod)
+	{
+		// Standard OpenCV's function:
+		corners_found = 0 != cvFindChessboardCorners(
+			static_cast<IplImage*>(img.getAsIplImage()),
+			check_size,
+			&corners_list[0],
+			&corners_count,
+			find_chess_flags);
+	}
+	else
+	{
+		int found_corner_count=0;
+		// Return: -1: errors, 0: not found, 1: found OK
+		corners_found = 1 == cvFindChessboardCorners3( 
+			static_cast<IplImage*>(img.getAsIplImage()), 
+			check_size, 
+			&corners_list[0],
+			&corners_count
+			);
+	}
 
-	corners_found = 0 != cvFindChessboardCorners(
-		img,
-		check_size,
-		&corners_list[0],
-		&corners_count,
-		find_chess_flags);
-
-//	cout << "find: " << tim.Tac() << endl;
-
-	//cout << "corners: " << corners_count << endl;
+	// Check # of corners:
+	if (corners_found && corners_count!=CORNERS_COUNT) 
+		corners_found=false;
 
 	if( corners_found )
 	{
-//		tim.Tic();
 		// Refine corners:
 		cvFindCornerSubPix(
-			img,
+			static_cast<IplImage*>(img.getAsIplImage()),
 			&corners_list[0],
 			corners_count,
 			cvSize(5,5), 	// window
 			cvSize(-1,-1),
 			cvTermCriteria( CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10, 0.01f ));
 
-//		cout << "refine: " << tim.Tac() << endl;
-
 		// save the corners in the data structure:
 		int y;
 		unsigned int k;
-
 		for( y = 0, k = 0; y < check_size.height; y++ )
 			for( int x = 0; x < check_size.width; x++, k++ )
 				cornerCoords.push_back(  TPixelCoordf( corners_list[k].x, corners_list[k].y ) );
 	}
 
-	if (delete_img)
-		cvReleaseImage(&img);
 
 	return corners_found;
 
@@ -2977,4 +2982,72 @@ void CImage::equalizeHistInPlace()
 
 #endif
 }
+
+
+/** Look for the corners of one or more chessboard/checkerboards in the image.
+  *  This method uses an improved version of OpenCV's cvFindChessboardCorners published
+  *   by M. Rufli, D. Scaramuzza, and R. Siegwart.
+  *  That method has been extended in this MRPT implementation to automatically detect a
+  *   number of different checkerboards in the same image.
+  *
+  * \param cornerCoords [OUT] A vector of N vectors of pixel coordinates, for each of the N chessboards detected.
+  * \param check_size_x [IN] The number of squares, in the X direction
+  * \param check_size_y [IN] The number of squares, in the Y direction
+  *
+  *
+  * \sa mrpt::vision::checkerBoardCameraCalibration, drawChessboardCorners
+  */
+void CImage::findMultipleChessboardsCorners(
+	std::vector<std::vector<TPixelCoordf> > 	&cornerCoords,
+	unsigned int  check_size_x,
+	unsigned int  check_size_y ) const
+{
+#if MRPT_HAS_OPENCV
+	// Grayscale version:
+	CImage img(UNINITIALIZED_IMAGE);
+	if (this->isColor())
+			this->grayscale(img);
+	else	img.setFromImageReadOnly(*this);
+
+	std::vector<CvPoint2D32f>  corners_list;
+	corners_list.resize(check_size_x*check_size_y*10);
+
+	int found_corner_count=0;
+	// Return: -1: errors, 0: not found, 1: found OK
+	bool corners_found = 1==cvFindChessboardCorners3( 
+		static_cast<IplImage*>(img.getAsIplImage()), 
+		cvSize(check_size_x,check_size_y), 
+		&corners_list[0], 
+		&found_corner_count);
+
+	// Check # of corners:
+	if (corners_found && found_corner_count!=check_size_x*check_size_y) 
+		corners_found=false;
+
+	if( corners_found )
+	{
+		// Refine corners:
+		cvFindCornerSubPix(
+			static_cast<IplImage*>(img.getAsIplImage()),
+			&corners_list[0],
+			found_corner_count,
+			cvSize(5,5), 	// window
+			cvSize(-1,-1),
+			cvTermCriteria( CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10, 0.01f ));
+
+		// save the corners in the data structure:
+		cornerCoords.resize(1);
+		for( unsigned int y = 0, k = 0; y < check_size_y; y++ )
+			for( unsigned int x = 0; x < check_size_x; x++, k++ )
+				cornerCoords[0].push_back(  TPixelCoordf( corners_list[k].x, corners_list[k].y ) );
+	}
+	else
+	{	// Not found.
+		cornerCoords.clear();
+		return;
+	}
+
+#endif
+}
+
 

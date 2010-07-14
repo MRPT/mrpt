@@ -487,6 +487,8 @@ void camera_calib_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 
 	const bool			normalize_image = cbNormalize->GetValue();
 
+	const bool			useScaramuzzaAlternativeDetector = true;
+
 	wxBusyCursor waitcur;
 
 	bool res = mrpt::vision::checkerBoardCameraCalibration(
@@ -496,7 +498,10 @@ void camera_calib_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 		check_squares_length_X_meters,
 		check_squares_length_Y_meters,
 		camera_params,
-		normalize_image );
+		normalize_image,
+		NULL /* MSE */,
+		false /* skip draw */, 
+		useScaramuzzaAlternativeDetector);
 
 
 	refreshDisplayedImage();

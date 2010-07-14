@@ -140,7 +140,7 @@ void CGenericFeatureTracker::trackFeatures(
 				// Add new feature:
 				CFeaturePtr ft		= CFeature::Create();
 				ft->type			= featFAST;
-				ft->ID				= max_feat_ID_at_input++;
+				ft->ID				= ++max_feat_ID_at_input;
 				ft->x				= kp.pt.x;
 				ft->y				= kp.pt.y;
 				ft->response		= kp.response;

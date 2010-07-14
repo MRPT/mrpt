@@ -105,6 +105,7 @@ MRPT_START;
 
 
 	// local scope for auxiliary variables around cvCalcOpticalFlowPyrLK()
+	if (!featureList.empty())
 	{
 		IplImage *prev_gray_ipl = reinterpret_cast<IplImage *>(prev_gray.getAsIplImage());
 		IplImage *cur_gray_ipl  = reinterpret_cast<IplImage *>(cur_gray.getAsIplImage());

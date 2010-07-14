@@ -82,8 +82,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 	// Set of parameters common to any tracker implementation:
 	tracker.extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
-	tracker.extra_params["add_new_feat_min_separation"]  = 20;
-	tracker.extra_params["add_new_feat_max_features"]    = 100;
+	tracker.extra_params["add_new_feat_min_separation"]  = 10;
+	tracker.extra_params["add_new_feat_max_features"]    = 150;
 	tracker.extra_params["add_new_feat_patch_size"]      = 11;
 
 
@@ -197,6 +197,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			theImg.equalizeHistInPlace();
 		// Convert to color so we can draw color marks, etc.
 		theImg.colorImageInPlace();
+		theImg.selectTextFont("6x13");
 
 		{	// FPS:
 			static CTicTac tictac;
@@ -204,11 +205,11 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			tictac.Tic();
 			const double fps = 1.0/(std::max(1e-5,T));
 			//theImg.filledRectangle(1,1,175,25,TColor(0,0,0));
-			theImg.textOut(3,3,format("FPS: %.03f Hz", fps ),TColor(20,200,20) );
+			theImg.textOut(3,3,format("FPS: %.03f Hz", fps ),TColor(200,20,20) );
 		}
 		{	// Tracked feats:
 			theImg.drawFeatures(trackedFeats, TColor(0,0,255), SHOW_FEAT_IDS);
-			theImg.textOut(3,28,format("# feats: %u", (unsigned int)trackedFeats.size()  ),TColor(20,200,20) );
+			theImg.textOut(3,22,format("# feats: %u", (unsigned int)trackedFeats.size()  ),TColor(200,20,20) );
 		}
 
 		win->showImage(theImg);
@@ -224,7 +225,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 				if (vidWritter.open(
 						VIDEO_OUTPUT_FILE,
 						30 /* fps */, theImg.getSize(),
-						"XVID",  // MPEG1
+						"XVID",  // PIM1: MPEG1
 						true /* force color video */ ) )
 				{
 					cout << "[track-video] Saving tracking video to: " << VIDEO_OUTPUT_FILE << endl;
