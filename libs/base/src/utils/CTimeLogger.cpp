@@ -52,7 +52,7 @@ namespace mrpt
 	}
 }
 
-CTimeLogger::CTimeLogger() : m_tictac(), m_enabled(true)
+CTimeLogger::CTimeLogger(bool enabled) : m_tictac(), m_enabled(enabled)
 {
 	m_tictac.Tic();
 }

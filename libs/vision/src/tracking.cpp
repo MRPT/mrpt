@@ -52,6 +52,8 @@ void CGenericFeatureTracker::trackFeatures(
 	const CImage &new_img,
 	vision::CFeatureList &featureList )
 {
+	m_timlog.enter("[CGenericFeatureTracker::trackFeatures] Complete iteration");
+
 	const size_t  img_width  = new_img.getWidth();
 	const size_t  img_height = new_img.getHeight();
 
@@ -62,6 +64,8 @@ void CGenericFeatureTracker::trackFeatures(
 
 	// Grayscale images
 	// =========================================
+	m_timlog.enter("[CGenericFeatureTracker] Convert grayscale");
+
 	CImage   prev_gray(UNINITIALIZED_IMAGE);
 	CImage   cur_gray(UNINITIALIZED_IMAGE);
 
@@ -72,12 +76,62 @@ void CGenericFeatureTracker::trackFeatures(
 			new_img.grayscale(cur_gray);
 	else	cur_gray.setFromImageReadOnly(new_img);
 
+	m_timlog.leave("[CGenericFeatureTracker] Convert grayscale");
+
 	// =================================
-	// Do the actual tracking
+	// (1st STEP)  Do the actual tracking
 	// =================================
+	m_timlog.enter("[CGenericFeatureTracker] trackFeatures_impl");
+
 	trackFeatures_impl(prev_gray,cur_gray,featureList);
 
-	// Do detection of new features??
+	m_timlog.leave("[CGenericFeatureTracker] trackFeatures_impl");
+
+	// ========================================================
+	// (2nd STEP) For successfully followed features, update its patch:
+	// ========================================================
+	const int update_patches_every = extra_params.getWithDefaultVal("update_patches_every",0);
+
+	if (update_patches_every>0 && ++m_update_patches_counter>=size_t(update_patches_every))
+	{
+		m_timlog.enter("[CGenericFeatureTracker] update patches");
+
+		m_update_patches_counter = 0;
+
+		// Update the patch for each valid feature:
+		for (CFeatureList::iterator itFeat = featureList.begin(); itFeat != featureList.end();  ++itFeat)
+		{
+			CFeature* ft = itFeat->pointer();
+			if (ft->track_status!=status_TRACKED) 
+				continue; // Skip if it's not correctly tracked.
+
+			const size_t patch_width  = ft->patch.getWidth();
+			const size_t patch_height = ft->patch.getHeight();
+			if (patch_width>0 && patch_height>0)
+			{
+				const int offset = (int)patch_width/2; // + 1;
+				try
+				{
+					new_img.extract_patch(
+						ft->patch,
+						round( ft->x ) - offset,
+						round( ft->y ) - offset,
+						patch_width,
+						patch_height );
+				}
+				catch (std::exception &)
+				{
+					ft->track_status = status_OOB; // Out of bounds!
+				}
+			}
+		}
+
+		m_timlog.leave("[CGenericFeatureTracker] update patches");
+	} // end if update_patches_every
+
+	// ========================================================
+	// (3rd STEP) Do detection of new features??
+	// ========================================================
 	const bool   add_new_features = extra_params.getWithDefaultVal("add_new_features",0)!=0;
 	const double threshold_dist_to_add_new = extra_params.getWithDefaultVal("add_new_feat_min_separation",15);
 
@@ -85,6 +139,8 @@ void CGenericFeatureTracker::trackFeatures(
 	//  areas spare of valid features:
 	if (add_new_features)
 	{
+		m_timlog.enter("[CGenericFeatureTracker] add new features");
+
 #if MRPT_OPENCV_VERSION_NUM >= 0x211
 		using namespace cv;
 
@@ -162,7 +218,11 @@ void CGenericFeatureTracker::trackFeatures(
 #else
 	THROW_EXCEPTION("add_new_features requires OpenCV >=2.1.1")
 #endif //MRPT_OPENCV_VERSION_NUM >= 0x211
+
+		m_timlog.leave("[CGenericFeatureTracker] add new features");
 	}
+
+	m_timlog.leave("[CGenericFeatureTracker::trackFeatures] Complete iteration");
 
 } // end of CGenericFeatureTracker::trackFeatures
 

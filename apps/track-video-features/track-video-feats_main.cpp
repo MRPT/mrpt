@@ -59,8 +59,6 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 	mrpt::vision::CVideoFileWriter  vidWritter;
 
-	CTimeLogger  timlog;
-
 	bool 		hasResolution = false;
 	TCamera		cameraParams; // For now, will only hold the image resolution on the arrive of the first frame.
 
@@ -68,23 +66,27 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	unsigned int	step_num = 0;
 
 	bool  SHOW_FEAT_IDS = true;
-	bool  DO_SAVE_VIDEO = true;
-	bool  DO_HIST_EQUALIZE_IN_GRAYSCALE = true;
+	bool  DO_SAVE_VIDEO = false;
+	bool  DO_HIST_EQUALIZE_IN_GRAYSCALE = false;
 	string VIDEO_OUTPUT_FILE = "./tracking_video.avi";
 
 	//mrpt::vision::CFeatureTracker_FAST   tracker;
-	mrpt::vision::CFeatureTracker_KL   tracker;
-	//mrpt::vision::CFeatureTracker_PatchMatch   tracker;
+	//mrpt::vision::CFeatureTracker_KL   tracker;
+	mrpt::vision::CFeatureTracker_PatchMatch   tracker;
 	//tracker.extra_params["match_method"] = 0;
 
-	tracker.extra_params["window_width"]  = 7;
-	tracker.extra_params["window_height"] = 7;
+	tracker.extra_params["window_width"]  = 5;
+	tracker.extra_params["window_height"] = 5;
 
 	// Set of parameters common to any tracker implementation:
 	tracker.extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
-	tracker.extra_params["add_new_feat_min_separation"]  = 10;
-	tracker.extra_params["add_new_feat_max_features"]    = 150;
-	tracker.extra_params["add_new_feat_patch_size"]      = 11;
+	tracker.extra_params["add_new_feat_min_separation"]  = 15;
+	tracker.extra_params["add_new_feat_max_features"]    = 25;
+	tracker.extra_params["add_new_feat_patch_size"]      = 21;
+
+	tracker.extra_params["update_patches_every"]		= 5;  // Update patches at all frames.
+
+	tracker.enableTimeLogger(true); // Do time profiling.
 
 
 	// --------------------------------
@@ -143,11 +145,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		// Do tracking:
 		if (step_num>1)  // we need "previous_image" to be valid.
 		{
-			timlog.enter("TRACKING");
-
 			tracker.trackFeatures(previous_image, theImg, trackedFeats);
-
-			timlog.leave("TRACKING");
 
 			// Remove those now out of the image plane:
 			CFeatureList::iterator itFeat = trackedFeats.begin();
@@ -178,7 +176,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		previous_image = theImg;
 
 		// Save history of feature observations:
-		timlog.enter("Save history");
+		tracker.getProfiler().enter("Save history");
 
 		for (CFeatureList::iterator itFeat = trackedFeats.begin();itFeat!=trackedFeats.end();++itFeat)
 		{
@@ -188,7 +186,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		}
 		curCamPoseId++;
 
-		timlog.leave("Save history");
+		tracker.getProfiler().leave("Save history");
 
 		// now that we're done with the image, we can directly write onto it
 		//  for the display

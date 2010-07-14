@@ -66,7 +66,7 @@ namespace mrpt
 			double do_leave( const char *func_name );
 
 		public:
-			CTimeLogger(); //! Default constructor
+			CTimeLogger(bool enabled = true); //! Default constructor
 			virtual ~CTimeLogger(); //!< Destructor
 			std::string getStatsAsText(const size_t column_width=80) const; //!< Dump all stats to a multi-line text string. \sa dumpAllStats, saveToCVSFile
 			void dumpAllStats(const size_t column_width=80) const; //!< Dump all stats through the CDebugOutputCapable interface. \sa getStatsAsText, saveToCVSFile

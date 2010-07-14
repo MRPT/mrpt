@@ -66,12 +66,15 @@ void CFeatureTracker_PatchMatch::trackFeatures_impl(
 
 	const unsigned int window_width = extra_params.getWithDefaultVal("window_width",15);
 	const unsigned int window_height = extra_params.getWithDefaultVal("window_height",15);
+	
+	const double min_valid_matching = extra_params.getWithDefaultVal("min_valid_matching",0.97);
+	const double min_matching_step = extra_params.getWithDefaultVal("min_matching_step",0.4);
 
 	// Create a temporary gray image, if needed:
 	mrpt::utils::CImage  new_img_gray;
 	if (new_img.isColor())
 			new_img.grayscale(new_img_gray);	// Create a new auxiliary grayscale image
-	else	new_img_gray.setFromIplImageReadOnly( new_img.getAsIplImage() );  // Copy the IPLImage, but do not own the memory
+	else	new_img_gray.setFromImageReadOnly( new_img );  // Copy the IPLImage, but do not own the memory
 
 	const size_t  new_img_width = new_img_gray.getWidth();
 	const size_t  new_img_height = new_img_gray.getHeight();
@@ -93,14 +96,14 @@ void CFeatureTracker_PatchMatch::trackFeatures_impl(
 	for (size_t i=0;i<featureList.size();i++)
 	{
 		ASSERTDEB_(featureList[i].present())
-		CFeaturePtr &feat = featureList[i];
+		CFeature* feat = featureList[i].pointer();
 
 		// Get the size of the patch so we know when we are too close to a border.
 		ASSERTDEB_(feat->patch.getWidth()>1)
 		ASSERTDEB_(feat->patch.getWidth()==feat->patch.getHeight())
 
-		int x_search_ini = feat->x - window_width;
-		int	y_search_ini = feat->y - window_height;
+		int x_search_ini = feat->x - window_width - (patch_size>>1);
+		int	y_search_ini = feat->y - window_height - (patch_size>>1);
 		int x_search_size = window_width*2;
 		int	y_search_size = window_height*2;
 
@@ -153,27 +156,35 @@ void CFeatureTracker_PatchMatch::trackFeatures_impl(
 			double		mini;
 			CvPoint		min_point;
 			cvMinMaxLoc(result,&mini,&best_match,&min_point,&max_point,NULL);
-			best_x = max_point.x+x_search_ini; //+(round(patch_size-1)>>1);
-			best_y = max_point.y+y_search_ini; //+(round(patch_size-1)>>1);
+			best_x = max_point.x+x_search_ini + (patch_size>>1);
+			best_y = max_point.y+y_search_ini + (patch_size>>1);
 		}
 #endif
 		//cout << "match: " << best_match << endl;
 
-		if (best_match>0.90)
+		if (best_match>min_valid_matching)
 		{
 			// Aditional checks:
 			// A good, isolated match in its neighbourhood?
-			CvScalar n1 = cvGet2D(result, max_point.x,std::max(0,max_point.y-1));
-			CvScalar n2 = cvGet2D(result, max_point.x,std::min(result_height-1,max_point.y+1));
-			CvScalar n3 = cvGet2D(result, std::max(0,max_point.x-1),max_point.y);
-			CvScalar n4 = cvGet2D(result, std::min(result_width-1, max_point.x+1),max_point.y);
+			CvScalar n1 = cvGet2D(result, std::max(0,max_point.y-1), max_point.x);
+			CvScalar n2 = cvGet2D(result, std::min(result_height-1,max_point.y+1), max_point.x);
+			CvScalar n3 = cvGet2D(result, max_point.y, std::max(0,max_point.x-1));
+			CvScalar n4 = cvGet2D(result, max_point.y, std::min(result_width-1, max_point.x+1));
+			
+			CvScalar n5 = cvGet2D(result, std::max(0,max_point.y-1), std::max(0,max_point.x-1));
+			CvScalar n6 = cvGet2D(result, std::max(0,max_point.y-1), std::min(result_width-1, max_point.x+1));
+			CvScalar n7 = cvGet2D(result, std::min(result_height-1,max_point.y+1), std::max(0,max_point.x-1));
+			CvScalar n8 = cvGet2D(result, std::min(result_height-1,max_point.y+1), std::min(result_width-1, max_point.x+1));
 
 			// A local maxima?
-			static const double MIN_DIFF = 0.05;
-			if (best_match>(n1.val[0]-MIN_DIFF) &&
-				best_match>(n2.val[0]-MIN_DIFF) &&
-				best_match>(n3.val[0]-MIN_DIFF) &&
-				best_match>(n4.val[0]-MIN_DIFF) )
+			if (best_match>(n1.val[0]-min_matching_step) &&
+				best_match>(n2.val[0]-min_matching_step) &&
+				best_match>(n3.val[0]-min_matching_step) &&
+				best_match>(n4.val[0]-min_matching_step) &&
+				best_match>(n5.val[0]-min_matching_step) &&
+				best_match>(n6.val[0]-min_matching_step) &&
+				best_match>(n7.val[0]-min_matching_step) &&
+				best_match>(n8.val[0]-min_matching_step) )
 			{
 				// OK: Accept it:
 				feat->track_status	= status_TRACKED;

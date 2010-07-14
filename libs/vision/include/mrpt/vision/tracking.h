@@ -34,6 +34,7 @@
 
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/utils/CImage.h>
+#include <mrpt/utils/CTimeLogger.h>
 
 #include <mrpt/utils/metaprogramming.h>
 
@@ -61,7 +62,10 @@ namespace mrpt
 			const unsigned int window_height = 15 ) );
 
 
-		/** A virtual interface for all feature trackers.
+		/** A virtual interface for all feature trackers, implementing the part of feature tracking to be shared by any specific tracker implementation.
+		  *
+		  *  This class also offers a time profiler, disabled by default (see getProfiler and enableTimeLogger).
+		  *
 		  */
 		struct VISION_IMPEXP  CGenericFeatureTracker
 		{
@@ -69,10 +73,13 @@ namespace mrpt
 			mrpt::utils::TParametersDouble extra_params;
 
 			/** Default ctor */
-			inline CGenericFeatureTracker()
+			inline CGenericFeatureTracker() : m_timlog(false), m_update_patches_counter(0)
 			{ }
 			/** Ctor with extra parameters */
-			inline CGenericFeatureTracker(mrpt::utils::TParametersDouble extraParams) : extra_params(extraParams)
+			inline CGenericFeatureTracker(mrpt::utils::TParametersDouble extraParams) : extra_params(extraParams), m_timlog(false), m_update_patches_counter(0)
+			{ }
+			/** Dtor */
+			virtual ~CGenericFeatureTracker()
 			{ }
 
 			/** Perform feature tracking from "old_img" to "new_img", with a (possibly empty) list of previously tracked features "inout_featureList".
@@ -102,12 +109,27 @@ namespace mrpt
 					mrpt::utils::metaprogramming::ObjectMakeUnique() );
 				this->trackFeatures(old_img, new_img, out_featureList);
 			}
+
+			/** Returns a read-only reference to the internal time logger */
+			inline const mrpt::utils::CTimeLogger  & getProfiler() const { return m_timlog; }
+			/** Returns a reference to the internal time logger */
+			inline mrpt::utils::CTimeLogger  & getProfiler() { return m_timlog; }
+
+			/** Returns a read-only reference to the internal time logger */
+			inline void enableTimeLogger(bool enable=true) { m_timlog.enable(enable); }
+
 		protected:
 			/** The tracking method implementation, to be implemented in children classes. */
 			virtual void trackFeatures_impl(
 				const CImage &old_img,
 				const CImage &new_img,
 				vision::CFeatureList &inout_featureList ) = 0;
+
+			mrpt::utils::CTimeLogger  m_timlog; //!< the internal time logger, disabled by default.
+
+		private:
+			size_t		m_update_patches_counter; //!< for use when "update_patches_every">=1
+
 		};
 
 
