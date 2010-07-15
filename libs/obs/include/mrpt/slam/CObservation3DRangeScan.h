@@ -116,6 +116,8 @@ namespace slam
 
 		void unload(); //!< Unload all images, for the case they being delayed-load images stored in external files (othewise, has no effect).
 
+		void getZoneAsObs( CObservation3DRangeScan &obs, const unsigned int &r1, const unsigned int &r2, const unsigned int &c1, const unsigned int &c2 );
+
 		/** A Levenberg-Marquart-based optimizer to recover the calibration parameters of a 3D camera given a range (depth) image and the corresponding 3D point cloud. 
 		  * \param camera_offset The offset (in meters) in the +X direction of the point cloud. It's 1cm for SwissRanger SR4000.
 		  * \return The final average reprojection error per pixel (typ <0.05 px)

@@ -378,3 +378,50 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
 	MRPT_END
 }
 
+void CObservation3DRangeScan::getZoneAsObs( 
+	CObservation3DRangeScan &obs, 
+	const unsigned int &r1, const unsigned int &r2, 
+	const unsigned int &c1, const unsigned int &c2 )
+{
+	unsigned int cols = cameraParams.ncols;
+	unsigned int rows = cameraParams.nrows;
+
+	ASSERT_( (r1<r2) && (c1<c2) )
+	ASSERT_( (r2<rows) && (c2<cols) )	
+
+	// Maybe we needed to copy more base obs atributes
+
+	// Copy zone of range image
+	obs.hasRangeImage = hasRangeImage;
+	if ( hasRangeImage )
+		rangeImage.extractSubmatrix( c1, c2, r1, r2, obs.rangeImage );
+
+	// Copy zone of intensity image
+	obs.hasIntensityImage = hasIntensityImage;
+	if ( hasIntensityImage )
+		intensityImage.extract_patch( obs.intensityImage, c1, r1, c2-c1, r2-r1 );
+
+	// Copy zone of confidence image
+	obs.hasConfidenceImage = hasConfidenceImage;
+	if ( hasConfidenceImage )
+		confidenceImage.extract_patch( obs.confidenceImage, c1, r1, c2-c1, r2-r1 );
+
+	// Copy zone of scanned points
+	obs.hasPoints3D = hasPoints3D;	
+	if ( hasPoints3D )
+	{
+		for ( unsigned int i = r1; i <= r2; i++ )
+			for ( unsigned int j = c1; j <= c2; j++ )
+			{
+				obs.points3D_x.push_back( points3D_x.at( cols*i + j ) );
+				obs.points3D_y.push_back( points3D_y.at( cols*i + j ) );
+				obs.points3D_z.push_back( points3D_z.at( cols*i + j ) );
+			}	
+	}
+
+	obs.maxRange	= maxRange;
+	obs.sensorPose	= sensorPose;
+	obs.stdError	= stdError;
+
+	obs.cameraParams = cameraParams;
+}

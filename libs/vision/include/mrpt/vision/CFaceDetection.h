@@ -55,12 +55,20 @@ namespace mrpt
 
 			virtual void detectObjects(CImage *img, vector_detectable_object &detected);
 
-		protected:
-
 			struct TOptions
 			{
-				double confidenceThreshold;
+				int		confidenceThreshold;
+				double	planeThreshold;
+				double	regionsThreshold;
 			}m_options;
+
+		private:
+
+			bool checkIfFacePlane( const vector<TPoint3D> &points );
+
+			bool checkIfFaceRegions( CObservation3DRangeScan* face, const unsigned int &faceWidth, const unsigned int &faceHeight );
+
+			bool checkRegionsConstrains( const double values[3][3] );
 
 		}; // End of class
 	}

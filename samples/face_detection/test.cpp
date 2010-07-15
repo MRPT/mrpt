@@ -48,6 +48,7 @@ string   myIniFile( MRPT_EXAMPLES_BASE_DIRECTORY + string("face_detection/FACE_D
 
 CFaceDetection faceDetector;
 
+bool showEachDetectedFace = false; // If using a 3D face detection (actually with swissrange
 
 #ifdef MRPT_OPENCV_SRC_DIR
 static string OPENCV_SRC_DIR = MRPT_OPENCV_SRC_DIR;
@@ -61,20 +62,26 @@ static string OPENCV_SRC_DIR = "./";
 void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 {
 	CDisplayWindow  win("Live video");
+	CDisplayWindow  win2("FaceDetected");
 
 	cout << "Close the window to exit." << endl;
 
-	mrpt::gui::CDisplayWindow3D  win3D("3D camera view",800,600);
-
+	mrpt::gui::CDisplayWindow3D  win3D("3D camera view",800,600);	
+	mrpt::gui::CDisplayWindow3D  win3D2;
+	
 	win3D.setCameraAzimuthDeg(140);
 	win3D.setCameraElevationDeg(20);
 	win3D.setCameraZoom(6.0);
 	win3D.setCameraPointingToPoint(2.5,0,0);
 
 	mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
+	mrpt::opengl::COpenGLScenePtr scene2;
 
 	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(4.5);
+
+	mrpt::opengl::CPointCloudColouredPtr gl_points2 = mrpt::opengl::CPointCloudColoured::Create();
+	gl_points2->setPointSize(4.5);
 
 	// Create the Opengl object for the point cloud:
 	scene->insert( gl_points );
@@ -82,6 +89,24 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 	scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 
 	win3D.unlockAccess3DScene();
+
+	if ( showEachDetectedFace )
+	{
+		win3D2.setWindowTitle("3D Face detected");
+		win3D2.resize(400,300);
+
+		win3D2.setCameraAzimuthDeg(140);
+		win3D2.setCameraElevationDeg(20);
+		win3D2.setCameraZoom(6.0);
+		win3D2.setCameraPointingToPoint(2.5,0,0);
+
+		scene2 = win3D2.get3DSceneAndLock();
+
+		scene2->insert( gl_points2 );
+		scene2->insert( mrpt::opengl::CGridPlaneXY::Create() );
+		
+		win3D2.unlockAccess3DScene();
+	}
 
 	double counter = 0;
 	mrpt::utils::CTicTac	tictac;
@@ -91,14 +116,14 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 		if( !counter )
 			tictac.Tic();
 
-		mrpt::slam::CObservationPtr  obs = cam->getNextFrame();
-		ASSERT_(obs);
+		CObservation3DRangeScanPtr o = CObservation3DRangeScanPtr(cam->getNextFrame());
+		ASSERT_(o);
 
 		vector_detectable_object detected;
 
-		CObservation3DRangeScanPtr o = CObservation3DRangeScanPtr(obs);
+		//CObservation3DRangeScanPtr o = CObservation3DRangeScanPtr(obs);
 			
-		faceDetector.detectObjects( obs, detected );
+		faceDetector.detectObjects( o, detected );
 		
 		if ( detected.size() > 0 )
 		{	
@@ -106,7 +131,54 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 			{
 				ASSERT_( IS_CLASS(detected[i],CDetectable3D ) )
 				CDetectable3DPtr obj = CDetectable3DPtr( detected[i] );
-				o->intensityImage.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );
+
+				if ( showEachDetectedFace )
+				{
+					CObservation3DRangeScan face;
+					o->getZoneAsObs( face, obj->m_y, obj->m_y + obj->m_height, obj->m_x, obj->m_x + obj->m_width );
+					win2.showImage( face.intensityImage );
+					
+					if ( o->hasPoints3D )
+					{
+						win3D2.get3DSceneAndLock();
+
+						CColouredPointsMap pntsMap;
+
+						if ( !o->hasConfidenceImage )
+						{
+							pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
+							pntsMap.loadFromRangeScan( face );								
+						}
+						else
+						{
+							vector_float xs, ys, zs;
+							unsigned int i = 0;
+							for ( unsigned int j = 0; j < face.confidenceImage.getHeight(); j++ )
+								for ( unsigned int k = 0; k < face.confidenceImage.getWidth(); k++, i++ )
+								{
+									unsigned char c = *(face.confidenceImage.get_unsafe( k, j, 0 ));
+									if ( c > faceDetector.m_options.confidenceThreshold )
+									{
+										xs.push_back( face.points3D_x[i] );
+										ys.push_back( face.points3D_y[i] );
+										zs.push_back( face.points3D_z[i] );
+									}
+								}
+
+							pntsMap.setAllPoints( xs, ys, zs );
+						}
+
+						gl_points2->loadFromPointsMap(&pntsMap);
+
+						win3D2.unlockAccess3DScene();
+						win3D2.repaint();
+					}
+				}
+
+				o->intensityImage.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );	
+
+				if ( showEachDetectedFace )
+					system::pause();
 			}
 		}
 
@@ -178,10 +250,8 @@ void TestCameraFaceDetection()
 			CObservationImagePtr o = CObservationImagePtr(obs);
 			if ( detected.size() > 0 )
 			{	
-				//CDetectable2D obj = (CDetectable2D*)(detected[0].pointer());
 				ASSERT_( IS_CLASS(detected[0],CDetectable2D ) )
 				CDetectable2DPtr obj = CDetectable2DPtr( detected[0] );
-				//CDetectable2DPtr obj = CDetectable2DPtr( new CDetectable2D(  ) );
 				o->image.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );
 			}
 
