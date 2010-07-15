@@ -33,6 +33,7 @@ the University of Malaga.
   - Many new classes in mrpt::opengl
 
 * José Raul Ruiz Sarmiento, University of Malaga.
+  - Generic "detector classes" (CDetectableObject, CObjectDetection, ...).
   - Work on PTU unit integration with Hokuyo laser scanner and 3D point clouds.
   - Some classes: mrpt::hwdrivers::CPtuDperception, mrpt::utils::md5, and more.
   - Website documentation.
