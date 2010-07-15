@@ -132,6 +132,8 @@ namespace mrpt
 
 		};
 
+		typedef std::auto_ptr<CGenericFeatureTracker> CGenericFeatureTrackerAutoPtr; 
+
 
 		/** Track a set of features from old_img -> new_img using sparse optimal flow (classic KL method).
 		  *  See CFeatureTracker_KL::trackFeatures for the list of existing parameters.

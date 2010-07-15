@@ -541,6 +541,7 @@ bool CRawlog::getActionObservationPairOrObservation(
 			else if (IS_DERIVED(obj,CObservation ) )
 			{
 				observation = CObservationPtr(obj);
+				rawlogEntry++;
 				return true;
 			}
 			else
@@ -557,10 +558,6 @@ bool CRawlog::getActionObservationPairOrObservation(
 			if (obj->GetRuntimeClass() == CLASS_ID( CSensoryFrame ) )
 			{
 				observations = CSensoryFramePtr(obj);
-			}
-			else
-			{
-				obj.clear();
 			}
 			rawlogEntry++;
 		}
