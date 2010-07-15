@@ -49,7 +49,7 @@ void TestCheckerboardDetectors()
 	if (!img.loadFromFile(
 		//"D:/Rawlogs/LAMONOSLAM/calib/CAMERA1_1274446974.089168.jpg"
 		myDataDir + string("test_1_checkerboard_9x6.jpg"))
-		))
+		)
 		throw std::runtime_error("Can't load demo image!");
 
 	// Detect multiple-checkerboards:
