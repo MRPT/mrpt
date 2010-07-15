@@ -143,6 +143,7 @@ namespace mrpt
 					int 	threshold;  //!< default= 20
 					bool	nonmax_suppression;		//!< Default = true
 					float	min_distance;	//!< (default=5) minimum distance between features (in pixels)
+					bool    use_KLT_response; //!< (default=false) If true, use CImage::KLT_response to compute the response at each point instead of the FAST "standard response".
 				} FASTOptions;
 
 				struct VISION_IMPEXP TSIFTOptions

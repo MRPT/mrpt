@@ -122,6 +122,8 @@ public:
 
 		SetSizer(f1);
 		Fit();
+
+		btnOk->SetFocus(); // So the default params can be accepted by just pressing ENTER.
 	}
 
 	virtual ~CDialogAskUserForCamera()

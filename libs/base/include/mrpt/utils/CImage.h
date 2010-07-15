@@ -248,9 +248,23 @@ namespace mrpt
 
 			void swap(CImage &o); //!< Very efficient swap of two images (just swap the internal pointers)
 
-			/** Returns a pointer to an "OpenCv" IplImage struct containing the image, which is linked to this class: free neigther that pointer nor this class until they are not required anymore, since this class is in charge of freeing the memory buffers inside of the returned image.
-			 */
-			void*  getAsIplImage() const;
+			/** Returns a pointer to an T* containing the image - the idea is to call like "img.getAs<IplImage>()" so we can avoid here including OpenCV's headers. \sa getAsIplImage */
+			template <typename T> inline const T* getAs() const {
+				makeSureImageIsLoaded();
+				return reinterpret_cast<const T*>(img);
+			}
+			/** Returns a pointer to an T* containing the image - the idea is to call like "img.getAs<IplImage>()" so we can avoid here including OpenCV's headers. \sa getAsIplImage */
+			template <typename T> inline T* getAs(){
+				makeSureImageIsLoaded();
+				return reinterpret_cast<T*>(img);
+			}
+
+			/** Returns a pointer to an OpenCV's IplImage struct containing the image, which is linked to this class: free neigther that pointer nor this class until they are not required anymore, since this class is in charge of freeing the memory buffers inside of the returned image.  \sa getAs */
+			inline void*  getAsIplImage() const {
+				makeSureImageIsLoaded();
+				return img;
+			}
+
 
 			/**  Access to pixels without checking boundaries - Use normally the () operator better, which checks the coordinates.
 			  \sa CImage::operator()
@@ -751,6 +765,13 @@ namespace mrpt
 			void joinImagesHorz(
 				const CImage &im1,
 				const CImage &im2 );
+
+			/** Compute the KLT response at a given pixel (x,y) - Only for grayscale images (for efficiency it avoids converting to grayscale internally).
+			  */
+			float KLT_response(
+				const unsigned int x,
+				const unsigned int y,
+				const unsigned int half_window_size ) const;
 
 		}; // End of class
 

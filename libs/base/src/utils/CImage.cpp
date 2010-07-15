@@ -902,19 +902,6 @@ unsigned char*  CImage::get_unsafe(
 #endif
 }
 
-
-
-/*---------------------------------------------------------------
-						getAsIplImage
- ---------------------------------------------------------------*/
-void *  CImage::getAsIplImage() const
-{
-	makeSureImageIsLoaded();   // For delayed loaded images stored externally
-	return img;
-}
-
-
-
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
@@ -1323,12 +1310,10 @@ void CImage::grayscale( CImage  &ret ) const
 	else
 	{
 		// Convert to a single luminance channel image
-		IplImage		*ipl = ((IplImage*)img);
+		makeSureImageIsLoaded();   // For delayed loaded images stored externally
+		IplImage *ipl = ((IplImage*)img);
 		ASSERT_(ipl);
-
-		int	 cx = getWidth(), cy = getHeight();
-		ret.changeSize(cx,cy,1,isOriginTopLeft());
-
+		ret.changeSize(ipl->width, ipl->height,1,isOriginTopLeft());
 		cvCvtColor( ipl, (IplImage*)ret.img, CV_BGR2GRAY );
 	}
 #endif
@@ -3051,3 +3036,57 @@ void CImage::findMultipleChessboardsCorners(
 }
 
 
+/** Compute the KLT response at a given pixel (x,y) - Only for grayscale images (for efficiency it avoids converting to grayscale internally).
+  */
+float CImage::KLT_response(
+	const unsigned int x,
+	const unsigned int y,
+	const unsigned int half_window_size ) const
+{
+#if MRPT_HAS_OPENCV
+	const IplImage *srcImg = this->getAs<IplImage>();
+    ASSERT_(srcImg!=NULL)
+	ASSERTMSG_(srcImg->nChannels==1, "KLT_response only works with grayscale images.")
+
+	const unsigned int img_w = srcImg->width;
+	const unsigned int img_h = srcImg->height;
+
+	const unsigned int min_x = x-half_window_size;
+	const unsigned int max_x = x+half_window_size;
+	const unsigned int min_y = y-half_window_size;
+	const unsigned int max_y = y+half_window_size;
+
+	// Since min_* are "unsigned", checking "<" will detect negative numbers:
+	ASSERT_(min_x<img_w && max_x<img_w && min_y<img_h && max_y<img_h)
+
+	// Gradient sums: Use integers since they're much faster than doubles/floats!!
+	int32_t gxx = 0;
+	int32_t gxy = 0;  
+	int32_t gyy = 0;
+
+	for (unsigned int yy = min_y; yy<=max_y; yy++)
+		for (unsigned int xx = min_x; xx<=max_x; xx++)
+		{
+			const int32_t dx = srcImg->imageData[srcImg->widthStep*yy+ xx+1] - srcImg->imageData[srcImg->widthStep*yy+ xx-1];
+			const int32_t dy = srcImg->imageData[srcImg->widthStep*(yy+1)+ xx] - srcImg->imageData[srcImg->widthStep*(yy-1)+ xx];
+
+			gxx += dx * dx;
+			gxy += dx * dy;
+			gyy += dy * dy;
+		}
+
+
+	// Convert to float's and normalize in the way:
+	const float K = 1.0f/( (max_y-min_y+1) * (max_x-min_x+1) );
+	const float Gxx = gxx * K;
+	const float Gxy = gxy * K;
+	const float Gyy = gyy * K;
+
+	// Return the minimum eigenvalue of:
+	//    ( gxx  gxy )
+	//    ( gxy  gyy )
+	return 0.5f * (Gxx + Gyy - std::sqrt( (Gxx - Gyy)*(Gxx - Gyy) + 4*Gxy*Gxy)  );
+#else
+	return 0;
+#endif
+}

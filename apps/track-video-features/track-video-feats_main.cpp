@@ -70,6 +70,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	bool  DO_HIST_EQUALIZE_IN_GRAYSCALE = false;
 	string VIDEO_OUTPUT_FILE = "./tracking_video.avi";
 
+	const double MAX_FPS = 5000; // 5.0;  // Hz (to slow down visualization).
+
 	CGenericFeatureTrackerAutoPtr  tracker;
 
 	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_FAST );
@@ -84,7 +86,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	// Set of parameters common to any tracker implementation:
 	tracker->extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
 	tracker->extra_params["add_new_feat_min_separation"]  = 15;
-	tracker->extra_params["add_new_feat_max_features"]    = 100; //25;
+	tracker->extra_params["add_new_feat_max_features"]    = 100;
 	tracker->extra_params["add_new_feat_patch_size"]      = 21;
 
 	tracker->extra_params["update_patches_every"]		= 0;  // Update patches at all frames.
@@ -200,6 +202,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		theImg.colorImageInPlace();
 		theImg.selectTextFont("6x13");
 
+		double extra_tim_to_wait=0;
+
 		{	// FPS:
 			static CTicTac tictac;
 			const double T = tictac.Tac();
@@ -207,6 +211,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			const double fps = 1.0/(std::max(1e-5,T));
 			//theImg.filledRectangle(1,1,175,25,TColor(0,0,0));
 			theImg.textOut(3,3,format("FPS: %.03f Hz", fps ),TColor(200,20,20) );
+
+			extra_tim_to_wait = 1.0/MAX_FPS - 1.0/fps;
 		}
 		{	// Tracked feats:
 			theImg.drawFeatures(trackedFeats, TColor(0,0,255), SHOW_FEAT_IDS);
@@ -238,6 +244,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			vidWritter << theImg;
 		}
 
+		if (extra_tim_to_wait>0)
+			mrpt::system::sleep(1000*extra_tim_to_wait);
 
 		step_num++;
 	} // end infinite loop

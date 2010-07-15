@@ -150,7 +150,7 @@ void CGenericFeatureTracker::trackFeatures(
 		FastFeatureDetector fastDetector( m_detector_adaptive_thres, true /* non-max supres. */ );
 
 		// Do the detection
-		const Mat new_img_gray_mat = cvarrToMat( reinterpret_cast<IplImage *>(cur_gray.getAsIplImage()) );
+		const Mat new_img_gray_mat = cvarrToMat( cur_gray.getAs<IplImage>() );
 		fastDetector.detect( new_img_gray_mat, new_feats );
 
 		const size_t N = new_feats.size();
@@ -162,6 +162,19 @@ void CGenericFeatureTracker::trackFeatures(
 
 		if (N<hysteresis_min_num_feats) 		m_detector_adaptive_thres = std::max(2.0,std::min(m_detector_adaptive_thres-1.0, m_detector_adaptive_thres*0.8));
 		else if (N>hysteresis_max_num_feats)	m_detector_adaptive_thres = std::max(m_detector_adaptive_thres+1.0, m_detector_adaptive_thres*1.2);
+
+		// Use KLT response instead of the OpenCV's original "response" field:
+		{
+			const unsigned int KLT_half_win = 4; 
+			for (size_t i=0;i<N;i++)	
+			{
+				const unsigned int x = new_feats[i].pt.x;
+				const unsigned int y = new_feats[i].pt.y;
+				if (x>KLT_half_win && y>KLT_half_win && x<img_width-KLT_half_win && y<img_height-KLT_half_win)
+						new_feats[i].response = cur_gray.KLT_response(x,y,KLT_half_win);
+				else	new_feats[i].response = 0; // Out of bounds
+			}
+		}
 
 		//  Sort them by "response": It's ~100 times faster to sort a list of
 		//      indices "sorted_indices" than sorting directly the actual list of features "cv_feats"
@@ -178,9 +191,13 @@ void CGenericFeatureTracker::trackFeatures(
 		const size_t patchSize = extra_params.getWithDefaultVal("add_new_feat_patch_size",11);
 		const int 	 offset		= (int)patchSize/2 + 1;
 
+		const float minResponseToAccept = 100;
+
 		for (size_t i=0;i<nNewToCheck && featureList.size()<maxNumFeatures;i++)
 		{
 			const KeyPoint &kp = new_feats[sorted_indices[i]];
+
+			if (kp.response<minResponseToAccept) continue;
 
 			double min_dist_sqr = square(10000);
 

@@ -60,50 +60,40 @@ void  CFeatureExtraction::extractFeaturesFAST(
 
 	vector<KeyPoint> cv_feats; // The opencv keypoint output vector
 
+	// Make sure we operate on a gray-scale version of the image:
+	CImage   inImg_gray(UNINITIALIZED_IMAGE);
+	if( inImg.isColor() )
+			inImg.grayscale(inImg_gray);
+	else	inImg_gray.setFromImageReadOnly(inImg);
+
 	// JL: Instead of
 	//	int aux = options.FASTOptions.threshold; ....
 	//  It's better to use an adaptive threshold, controlled from our caller outside.
 
-#	if MRPT_OPENCV_VERSION_NUM >= 0x211
+#if MRPT_OPENCV_VERSION_NUM >= 0x211
 
 	FastFeatureDetector fastDetector( options.FASTOptions.threshold, options.FASTOptions.nonmax_suppression );
-	IplImage* img, *cGrey;
 
-	img = (IplImage*)inImg.getAsIplImage();
-
-	if( img->nChannels == 1 )
-		cGrey = img;										// Input image is already 'grayscale'
-	else
-	{
-		cGrey = cvCreateImage( cvGetSize( img ), 8, 1);
-		cvCvtColor( img, cGrey, CV_BGR2GRAY );				// Convert input image into 'grayscale'
-	}
-
-	Mat theImg = cvarrToMat( cGrey );
+	const Mat theImg = cvarrToMat( inImg_gray.getAs<IplImage>() );
 
 	fastDetector.detect( theImg, cv_feats );
 
-	if( img->nChannels != 1 )
-		cvReleaseImage( &cGrey );
+#elif MRPT_OPENCV_VERSION_NUM >= 0x200
 
-#	elif MRPT_OPENCV_VERSION_NUM >= 0x200
-	CvImage img, cGrey;
-	img.attach( (IplImage*)inImg.getAsIplImage(), false );	// Attach Image as IplImage and do not use ref counter
+	FAST(inImg_gray.getAs<IplImage>(), cv_feats, options.FASTOptions.threshold, options.FASTOptions.nonmax_suppression );
 
-	if( img.channels() == 1 )
-		cGrey = img;										// Input image is already 'grayscale'
-	else
-	{
-		cGrey.create( cvGetSize( img ), 8, 1);
-		cvCvtColor( img, cGrey, CV_BGR2GRAY );				// Convert input image into 'grayscale'
-	}
-	IplImage* _img = cGrey;
-
-	FAST(_img, cv_feats, options.FASTOptions.threshold, options.FASTOptions.nonmax_suppression );
-#	endif
+#endif
 
 	// *All* the features have been extracted.
 	const size_t	N			= cv_feats.size();
+
+	// Use KLT response instead of the OpenCV's original "response" field:
+	if (options.FASTOptions.use_KLT_response)
+	{
+		const unsigned int KLT_half_win = 4; 
+		for (size_t i=0;i<N;i++)	
+			cv_feats[i].response = inImg_gray.KLT_response(cv_feats[i].pt.x,cv_feats[i].pt.y,KLT_half_win);
+	}
 
 	// Now:
 	//  1) Sort them by "response": It's ~100 times faster to sort a list of
@@ -129,7 +119,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	unsigned int grid_lx = !do_filter_min_dist ? 1 : (unsigned int)(1 + inImg.getWidth() * occupied_grid_cell_size_inv);
 	unsigned int grid_ly = !do_filter_min_dist ? 1 : (unsigned int)(1 + inImg.getHeight() * occupied_grid_cell_size_inv );
 
-	mrpt::math::CMatrixBool  occupied_sections(grid_lx,grid_ly);
+	mrpt::math::CMatrixBool  occupied_sections(grid_lx,grid_ly);  // See the comments above for an explanation.
 	occupied_sections.fillAll(false);
 
 
