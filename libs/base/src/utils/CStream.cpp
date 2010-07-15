@@ -841,3 +841,37 @@ bool  CStream::receiveMessage( utils::CMessage &msg )
 	}
 	MRPT_END
 }
+
+/*-------------------------------------------------------------
+Reads from the stream until a '\n' character is found ('\r' characters are ignored).
+return false on EOF or any other read error.
+-------------------------------------------------------------*/
+bool CStream::getline(std::string &out_str)
+{
+	out_str.clear();
+	try
+	{
+		for (;;)
+		{
+			size_t N = out_str.size();
+			out_str.resize(N+1);
+			if (! Read(&out_str[N], 1) )
+				return false;
+
+			// New char read:
+			if (out_str[N]=='\r')
+			{
+				out_str.resize(N); // Ignore.
+			}
+			else if (out_str[N]=='\n')
+			{
+				out_str.resize(N); // End of line!
+				return true; // Ok.
+			}
+		}
+	}
+	catch(...)
+	{	// Any read error: 
+		return false;
+	}
+}

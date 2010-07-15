@@ -55,13 +55,15 @@ using namespace std;
 
 // Declarations:
 #define VERBOSE_COUT	if (verbose) cout << "[rawlog-edit:verbose] "
+
 typedef void (*TOperationFunctor)(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose);
+#define DECLARE_OP_FUNCTION(_NAME) void _NAME(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose)
 
 
 // Frwd. decl:
-void op_externalize(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose);
-void op_info(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose);
-void op_remove_label(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose);
+DECLARE_OP_FUNCTION(op_externalize);
+DECLARE_OP_FUNCTION(op_info);
+DECLARE_OP_FUNCTION(op_remove_label);
 
 // Declare the supported command line switches ===========
 TCLAP::CmdLine cmd("rawlog-edit", ' ', MRPT_getVersion().c_str());
@@ -70,6 +72,8 @@ TCLAP::ValueArg<std::string> arg_input_file ("i","input","Input dataset (require
 TCLAP::ValueArg<std::string> arg_output_file("o","output","Output dataset (*.rawlog)",false,"","dataset_out.rawlog",cmd);
 
 //TCLAP::ValueArg<double> arg_Ax("X","Ax","In detect-test mode, displacement in X (m)",false,4,"X",cmd);
+
+TCLAP::ValueArg<std::string> arg_external_img_extension("","image-format","External image format",false,"jpg","jpg,png,pgm,...",cmd);
 
 TCLAP::SwitchArg arg_overwrite("w","overwrite","Force overwrite target file without prompting.",cmd, false);
 
@@ -86,21 +90,21 @@ int main(int argc, char **argv)
 
 	try
 	{
-		// List of possible operations ---------------
+		// --------------- List of possible operations ---------------
 		map<string,TOperationFunctor>  ops_functors;
 
-		arg_ops.push_back(new TCLAP::SwitchArg("x","externalize","Op: convert to external storage.",cmd, false) );
+		arg_ops.push_back(new TCLAP::SwitchArg("","externalize","Op: convert to external storage.",cmd, false) );
 		ops_functors["externalize"] = &op_externalize;
 
-		arg_ops.push_back(new TCLAP::SwitchArg("f","info","Op: parse input file and dump information and statistics.",cmd, false) );
+		arg_ops.push_back(new TCLAP::SwitchArg("","info","Op: parse input file and dump information and statistics.",cmd, false) );
 		ops_functors["info"] = &op_info;
 
-		arg_ops.push_back(new TCLAP::ValueArg<std::string>("r","remove-label","Op: Remove all observation matching the given sensor label.",false,"","",cmd) );
+		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","remove-label","Op: Remove all observation matching the given sensor label.",false,"","",cmd) );
 		ops_functors["remove-label"] = &op_remove_label;
-		// End of list of possible operations ---------------
+		// --------------- End of list of possible operations --------
+
 
 		// Parse arguments:
-		// -------------------------------------
 		if (!cmd.parse( argc, argv ))
 			throw std::runtime_error(""); // should exit.
 
@@ -175,50 +179,155 @@ int main(int argc, char **argv)
 	return ret_val;
 }
 
-
 // ======================================================================
 //		op_externalize
 // ======================================================================
-void op_externalize(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline,bool verbose)
+DECLARE_OP_FUNCTION(op_externalize)
 {
-	if (!arg_output_file.isSet())
-		throw runtime_error("This operation requires an output file. Use '-o file' or '--output file'.");
-
-	const string output_rawlog = arg_output_file.getValue();
-
-	if (fileExists(output_rawlog) && !arg_overwrite.getValue() )
-		throw runtime_error(string("*ABORTING*: Output file already exists: ") + output_rawlog + string("\n. Select a different output path, remove the file or force overwrite with '-w' or '--overwrite'.") );
-	
-	// Create the default "/Images" directory.
-	string 	outDir = extractFileDirectory(output_rawlog) + string("/") + extractFileName(output_rawlog) + string("_Images");
-	if (directoryExists(outDir))
-		throw runtime_error(string("*ABORTING*: Output directory for images already exists: ") + outDir + string("\n. Select a different output path or remove the directory.") );
-
-	VERBOSE_COUT << "Creating directory: " << outDir << endl;
-
-	mrpt::system::createDirectory( outDir );
-	if (!fileExists(outDir))
-		throw runtime_error(string("*ABORTING*: Couldn't create directory: ") + outDir );
-
-	// Add the final /
-	outDir+="/";
-
-	// Let the user choose the image format:
-	string imgFileExtension = "jpg";
-
-
 	// A class to do this operation:
 	class CRawlogProcessor_Externalize : public CRawlogProcessorOnEachObservation
 	{
+	protected:
+		CFileGZOutputStream out_rawlog;
+		string	imgFileExtension;
+		string output_rawlog;
+		string 	outDir;
+
 	public:
-		CRawlogProcessor_Externalize(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) : CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose)
-		{ }
+		size_t  entries_converted;
+		size_t  entries_skipped; // Already external
+
+		CRawlogProcessor_Externalize(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) : 
+			CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose)
+		{ 
+			entries_converted = 0;
+			entries_skipped  = 0;
+			imgFileExtension = arg_external_img_extension.getValue(); 
+
+			if (!arg_output_file.isSet())
+				throw runtime_error("This operation requires an output file. Use '-o file' or '--output file'.");
+
+			output_rawlog = arg_output_file.getValue();
+			if (fileExists(output_rawlog) && !arg_overwrite.getValue() )
+				throw runtime_error(string("*ABORTING*: Output file already exists: ") + output_rawlog + string("\n. Select a different output path, remove the file or force overwrite with '-w' or '--overwrite'.") );
+			
+			// Create the default "/Images" directory.
+			const string out_rawlog_basedir = extractFileDirectory(output_rawlog);
+
+			outDir = (out_rawlog_basedir.empty() ? string() : (out_rawlog_basedir+string("/") )) + extractFileName(output_rawlog) + string("_Images");
+			if (directoryExists(outDir))
+				throw runtime_error(string("*ABORTING*: Output directory for images already exists: ") + outDir + string("\n. Select a different output path or remove the directory.") );
+
+			VERBOSE_COUT << "Creating directory: " << outDir << endl;
+
+			mrpt::system::createDirectory( outDir );
+			if (!fileExists(outDir))
+				throw runtime_error(string("*ABORTING*: Couldn't create directory: ") + outDir );
+
+			// Add the final /
+			outDir+="/";
+
+			if (!out_rawlog.open(output_rawlog))
+				throw runtime_error(string("*ABORTING*: Cannot open output file: ") + output_rawlog );
+		}
 
 		bool processOneObservation(CObservationPtr  &obs)
 		{
+			const string label_time = format("%s_%f", obs->sensorLabel.c_str(), timestampTotime_t(obs->timestamp) );
+			if (IS_CLASS(obs, CObservationStereoImages ) )
+			{
+				CObservationStereoImagesPtr obsSt = CObservationStereoImagesPtr(obs);
+				// save image to file & convert into external storage:
+				if (!obsSt->imageLeft.isExternallyStored())
+				{
+					const string fileName = string("img_") + label_time + string("_left.") + imgFileExtension;
+					obsSt->imageLeft.saveToFile( outDir + fileName );
+					obsSt->imageLeft.setExternalStorage( fileName );
+					entries_converted++;
+				} 
+				else entries_skipped++;
+
+				if (!obsSt->imageRight.isExternallyStored())
+				{
+					const string fileName = string("img_") + label_time + string("_right.") + imgFileExtension;
+					obsSt->imageRight.saveToFile( outDir + fileName );
+					obsSt->imageRight.setExternalStorage( fileName );
+					entries_converted++;
+				} 
+				else entries_skipped++;
+			}
+			else if (IS_CLASS(obs, CObservationImage ) )
+			{
+				CObservationImagePtr obsIm = CObservationImagePtr(obs);
+
+				if (!obsIm->image.isExternallyStored())
+				{
+					const string fileName = string("img_") + label_time +string(".")+ imgFileExtension;
+					obsIm->image.saveToFile( outDir + fileName );
+					obsIm->image.setExternalStorage( fileName );
+					entries_converted++;
+				} 
+				else entries_skipped++;
+			}
+			else if (IS_CLASS(obs, CObservation3DRangeScan ) )
+			{
+				CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(obs);
+				
+				// save images to file & convert into external storage:
+				// Intensity channel:
+				if (obs3D->hasIntensityImage && !obs3D->intensityImage.isExternallyStored())
+				{
+					const string fileName = string("3DCAM_") + label_time + string("_INT.") + imgFileExtension;
+					obs3D->intensityImage.saveToFile( outDir + fileName );
+					obs3D->intensityImage.setExternalStorage( fileName );
+					entries_converted++;
+				} 
+				else entries_skipped++;
+
+				// Confidence channel:
+				if (obs3D->hasConfidenceImage && !obs3D->confidenceImage.isExternallyStored())
+				{
+					const string fileName = string("3DCAM_") + label_time + string("_CONF.") + imgFileExtension;
+					obs3D->confidenceImage.saveToFile( outDir + fileName );
+					obs3D->confidenceImage.setExternalStorage( fileName );
+					entries_converted++;
+				} 
+				else entries_skipped++;
+
+				// 3D points:
+				if (obs3D->hasPoints3D && !obs3D->points3D_isExternallyStored())
+				{
+					const string fileName = string("3DCAM_") + label_time + string("_3D.bin");
+					obs3D->points3D_convertToExternalStorage(fileName, outDir);
+					entries_converted++;
+				} 
+				else entries_skipped++;
+
+				// Range image:
+				if (obs3D->hasRangeImage  && !obs3D->rangeImage_isExternallyStored())
+				{
+					const string fileName = string("3DCAM_") + label_time + string("_RANGES.bin");
+					obs3D->rangeImage_convertToExternalStorage(fileName, outDir);
+					entries_converted++;
+				} 
+				else entries_skipped++;
+			}
 
 			return true;
 		}
+
+		// This method can be reimplemented to save the modified object to an output stream.
+		virtual void OnPostProcess(
+			mrpt::slam::CActionCollectionPtr &actions,
+			mrpt::slam::CSensoryFramePtr     &SF,
+			mrpt::slam::CObservationPtr      &obs) 
+		{
+			ASSERT_((actions && SF) || obs)
+			if (actions) 
+					out_rawlog << actions << SF;
+			else	out_rawlog << obs;
+		}
+
 	};
 
 	// Process
@@ -228,7 +337,9 @@ void op_externalize(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline,bool 
 
 	// Dump statistics:
 	// ---------------------------------
-	cout << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
+	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
+	VERBOSE_COUT << "Entries converted                 : " << proc.entries_converted << "\n";
+	VERBOSE_COUT << "Entries skipped (already external): " << proc.entries_skipped << "\n";
 
 }
 
@@ -246,7 +357,7 @@ struct TInfoPerSensorLabel
 // ======================================================================
 //		op_info
 // ======================================================================
-void op_info(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline,bool verbose)
+DECLARE_OP_FUNCTION(op_info)
 {
 	// A class to do this operation:
 	class CRawlogProcessor_Info : public CRawlogProcessor
@@ -296,16 +407,13 @@ void op_info(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline,bool verbose
 
 				// Process "obs_indiv":
 				ASSERT_(obs_indiv)
-				if (!obs_indiv->sensorLabel.empty())
-				{
-					TInfoPerSensorLabel &d = infoPerSensorLabel[obs_indiv->sensorLabel];
-					
-					d.className = obs_indiv->GetRuntimeClass()->className;
-					d.occurrences++;
-					if (d.tim_first==INVALID_TIMESTAMP)  
-						d.tim_first = obs_indiv->timestamp;
-					d.tim_last = obs_indiv->timestamp;
-				}
+				TInfoPerSensorLabel &d = infoPerSensorLabel[obs_indiv->sensorLabel];
+				
+				d.className = obs_indiv->GetRuntimeClass()->className;
+				d.occurrences++;
+				if (d.tim_first==INVALID_TIMESTAMP)  
+					d.tim_first = obs_indiv->timestamp;
+				d.tim_last = obs_indiv->timestamp;
 			}
 
 			// Clear read objects:
@@ -366,7 +474,7 @@ void op_info(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline,bool verbose
 // ======================================================================
 //		op_remove_label
 // ======================================================================
-void op_remove_label(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline,bool verbose)
+DECLARE_OP_FUNCTION(op_remove_label)
 {
 }
 

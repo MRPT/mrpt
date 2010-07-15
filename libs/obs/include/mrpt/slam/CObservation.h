@@ -145,6 +145,22 @@ namespace mrpt
 		*/
 		void setSensorPose( const mrpt::math::TPose3D &newSensorPose );
 
+		/** @name Delayed-load manual control methods.
+		    @{ */
+
+		/** Makes sure all images and other fields which may be externally stored are loaded in memory.
+		  *  Note that for all CImages, calling load() is not required since the images will be automatically loaded upon first access, so load() shouldn't be needed to be called in normal cases by the user.
+		  *  If all the data were alredy loaded or this object has no externally stored data fields, calling this method has no effects.
+		  * \sa unload
+		  */
+		virtual void load() const { /* Default implementation: do nothing */ } 
+		/** Unload all images, for the case they being delayed-load images stored in external files (othewise, has no effect).
+		  * \sa load
+		  */
+		virtual void unload() { /* Default implementation: do nothing */ } 
+
+		/** @} */
+
 		}; // End of class def.
 
 

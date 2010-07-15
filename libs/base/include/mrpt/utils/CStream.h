@@ -204,6 +204,11 @@ namespace mrpt
 			  */
 			bool  receiveMessage( utils::CMessage &msg );
 
+			/** Reads from the stream until a '\n' character is found ('\r' characters are ignored).
+			  * \return false on EOF or any other read error.
+			  */
+			bool getline(std::string &out_str);
+
 
 		}; // End of class def.
 

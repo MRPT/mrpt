@@ -361,7 +361,6 @@ namespace mrpt
 			  *   \endcode
 			  *
 			  *   \note Modifications to the memory copy of the image are not automatically saved to disk.
-			  *   \note This feature has been added in MRPT 0.5.5.
 			  *  \sa unload, isExternallyStored
 			  */
 			void setExternalStorage( const std::string &fileName ) MRPT_NO_THROWS;

@@ -28,8 +28,6 @@
 
 #include <mrpt/obs.h>   // Precompiled headers
 
-
-
 #include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
 
@@ -44,10 +42,17 @@ using namespace mrpt::math;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation,mrpt::slam)
 
+
+// Whether external files for 3D points & range are text or binary.
+//#define EXTERNALS_AS_TEXT  
+
+
 /*---------------------------------------------------------------
 							Constructor
  ---------------------------------------------------------------*/
 CObservation3DRangeScan::CObservation3DRangeScan( ) :
+	m_points3D_external_stored(false),
+	m_rangeImage_external_stored(false),
 	hasPoints3D(false),
 	hasRangeImage(false),
 	hasIntensityImage(false),
@@ -72,19 +77,11 @@ CObservation3DRangeScan::~CObservation3DRangeScan()
 void  CObservation3DRangeScan::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 2;
+		*version = 3;
 	else
 	{
 		// The data
 		out << maxRange << sensorPose;
-
-		// Old in v0:
-		// uint32_t	N = scan_x.size();
-		// out << N;
-		//	out.WriteBuffer( &scan_x[0], sizeof(scan_x[0])*N );
-		//	out.WriteBuffer( &scan_y[0], sizeof(scan_y[0])*N );
-		//	out.WriteBuffer( &scan_z[0], sizeof(scan_z[0])*N );
-		//	out.WriteBuffer( &validRange[0],sizeof(validRange[0])*N );
 
 		out << hasPoints3D;
 		if (hasPoints3D)
@@ -108,6 +105,10 @@ void  CObservation3DRangeScan::writeToStream(CStream &out, int *version) const
 		out << stdError;
 		out << timestamp;
 		out << sensorLabel;
+
+		// New in v3:
+		out << m_points3D_external_stored << m_points3D_external_file;
+		out << m_rangeImage_external_stored << m_rangeImage_external_file;
 	}
 }
 
@@ -121,6 +122,7 @@ void  CObservation3DRangeScan::readFromStream(CStream &in, int version)
 	case 0:
 	case 1:
 	case 2:
+	case 3:
 		{
 			uint32_t		N;
 
@@ -181,6 +183,18 @@ void  CObservation3DRangeScan::readFromStream(CStream &in, int version)
 			in >> timestamp;
 			in >> sensorLabel;
 
+			if (version>=3)
+			{
+				// New in v3:
+				in >> m_points3D_external_stored >> m_points3D_external_file;
+				in >> m_rangeImage_external_stored >> m_rangeImage_external_file;
+			}
+			else
+			{
+				m_points3D_external_stored = false;
+				m_rangeImage_external_stored = false;
+			}
+
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -197,9 +211,13 @@ void CObservation3DRangeScan::swap(CObservation3DRangeScan &o)
 	points3D_x.swap(o.points3D_x);
 	points3D_y.swap(o.points3D_y);
 	points3D_z.swap(o.points3D_z);
+	std::swap(m_points3D_external_stored,o.m_points3D_external_stored);
+	std::swap(m_points3D_external_file,o.m_points3D_external_file);
 
 	std::swap(hasRangeImage,o.hasRangeImage);
 	rangeImage.swap(o.rangeImage);
+	std::swap(m_rangeImage_external_stored, o.m_rangeImage_external_stored);
+	std::swap(m_rangeImage_external_file, o.m_rangeImage_external_file);
 
 	std::swap(hasIntensityImage,o.hasIntensityImage);
 	intensityImage.swap(o.intensityImage);
@@ -214,12 +232,133 @@ void CObservation3DRangeScan::swap(CObservation3DRangeScan &o)
 	std::swap(cameraParams,o.cameraParams);
 }
 
+void CObservation3DRangeScan::load() const
+{
+	if (hasPoints3D && m_points3D_external_stored)
+	{
+		const string fil = points3D_getExternalStorageFileAbsolutePath();
+#ifdef EXTERNALS_AS_TEXT
+		CMatrixFloat M;
+		M.loadFromTextFile(fil);
+		
+		M.extractRow(0,const_cast<vector_float&>(points3D_x));
+		M.extractRow(1,const_cast<vector_float&>(points3D_y));
+		M.extractRow(2,const_cast<vector_float&>(points3D_z));
+#else
+		mrpt::utils::CFileGZInputStream(fil) >> const_cast<vector_float&>(points3D_x) >> const_cast<vector_float&>(points3D_y) >> const_cast<vector_float&>(points3D_z);
+#endif
+	}
+
+	if (hasRangeImage && m_rangeImage_external_stored)
+	{
+		const string fil = rangeImage_getExternalStorageFileAbsolutePath();
+#ifdef EXTERNALS_AS_TEXT
+		const_cast<CMatrix&>(rangeImage).loadFromTextFile(fil);
+#else
+		mrpt::utils::CFileGZInputStream(fil) >> const_cast<CMatrix&>(rangeImage);
+#endif
+	}
+}
+
 void CObservation3DRangeScan::unload()
 {
+	points3D_x.clear();
+	points3D_y.clear();
+	points3D_z.clear();
+
+	rangeImage.setSize(0,0);
+
 	intensityImage.unload();
 	confidenceImage.unload();
 }
 
+void CObservation3DRangeScan::rangeImage_getExternalStorageFileAbsolutePath(std::string &out_path) const
+{
+	ASSERT_(m_rangeImage_external_file.size()>2);
+	if (m_rangeImage_external_file[0]=='/' || ( m_rangeImage_external_file[1]==':' && m_rangeImage_external_file[2]=='\\' ) )
+	{
+		out_path= m_rangeImage_external_file;
+	}
+	else
+	{
+		out_path = CImage::IMAGES_PATH_BASE;
+		size_t N=CImage::IMAGES_PATH_BASE.size()-1;
+		if (CImage::IMAGES_PATH_BASE[N]!='/' && CImage::IMAGES_PATH_BASE[N]!='\\' )
+			out_path+= "/";
+		out_path+= m_rangeImage_external_file;
+	}
+}
+void CObservation3DRangeScan::points3D_getExternalStorageFileAbsolutePath(std::string &out_path) const
+{
+	ASSERT_(m_points3D_external_file.size()>2);
+	if (m_points3D_external_file[0]=='/' || ( m_points3D_external_file[1]==':' && m_points3D_external_file[2]=='\\' ) )
+	{
+		out_path= m_points3D_external_file;
+	}
+	else
+	{
+		out_path = CImage::IMAGES_PATH_BASE;
+		size_t N=CImage::IMAGES_PATH_BASE.size()-1;
+		if (CImage::IMAGES_PATH_BASE[N]!='/' && CImage::IMAGES_PATH_BASE[N]!='\\' )
+			out_path+= "/";
+		out_path+= m_points3D_external_file;
+	}
+}
+
+void CObservation3DRangeScan::points3D_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir )
+{
+	ASSERT_(!points3D_isExternallyStored())
+	m_points3D_external_file = fileName;
+	
+	// Use "use_this_base_dir" in "*_getExternalStorageFileAbsolutePath()" instead of CImage::IMAGES_PATH_BASE
+	const string savedDir = CImage::IMAGES_PATH_BASE;
+	CImage::IMAGES_PATH_BASE = use_this_base_dir;
+	const string real_absolute_file_path = points3D_getExternalStorageFileAbsolutePath();
+	CImage::IMAGES_PATH_BASE = savedDir;
+
+	const size_t nPts = points3D_x.size();
+	ASSERT_(points3D_x.size()==points3D_y.size() && points3D_x.size()==points3D_z.size())
+
+#ifdef EXTERNALS_AS_TEXT
+	CMatrixFloat M(3,nPts);
+	M.insertRow(0,points3D_x);
+	M.insertRow(1,points3D_y);
+	M.insertRow(2,points3D_z);
+	
+	M.saveToTextFile( 
+		real_absolute_file_path, 
+		MATRIX_FORMAT_FIXED );
+#else
+	mrpt::utils::CFileGZOutputStream(real_absolute_file_path)  << points3D_x << points3D_y << points3D_z;
+#endif
+
+	m_points3D_external_stored = true;
+	points3D_x.clear();
+	points3D_y.clear();
+	points3D_z.clear();
+}
+void CObservation3DRangeScan::rangeImage_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir )
+{
+	ASSERT_(!rangeImage_isExternallyStored())
+	m_rangeImage_external_file = fileName;
+	
+	// Use "use_this_base_dir" in "*_getExternalStorageFileAbsolutePath()" instead of CImage::IMAGES_PATH_BASE
+	const string savedDir = CImage::IMAGES_PATH_BASE;
+	CImage::IMAGES_PATH_BASE = use_this_base_dir;
+	const string real_absolute_file_path = rangeImage_getExternalStorageFileAbsolutePath();
+	CImage::IMAGES_PATH_BASE = savedDir;
+
+#ifdef EXTERNALS_AS_TEXT
+	rangeImage.saveToTextFile( 
+		real_absolute_file_path, 
+		MATRIX_FORMAT_FIXED );
+#else
+	mrpt::utils::CFileGZOutputStream(real_absolute_file_path)  << rangeImage;
+#endif
+
+	m_rangeImage_external_stored = true;
+	rangeImage.setSize(0,0);
+}
 
 // ==============  Auxiliary function for "recoverCameraCalibrationParameters"  =========================
 

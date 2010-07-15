@@ -581,7 +581,6 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
 
 			// Draw image:
 			wxImage *wxIMG = mrpt::gui::MRPTImage2wxImage( *imgShow );
-			obsImg->image.unload();  // for delayed-loaded rawlogs, save lots of memory!
 
 			wxWindowDC  dc( thePanel );
 			wxMemoryDC  tmpDc;

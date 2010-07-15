@@ -2232,6 +2232,9 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 														// ----------------------------------------------------------------------
 														Notebook1->ChangeSelection( 9 );
 														CObservation3DRangeScanPtr obs = CObservation3DRangeScanPtr( sel_obj );
+
+														obs->load(); // Make sure the 3D point cloud, etc... are all loaded in memory.
+
 														curSelectedObservation = CObservationPtr( sel_obj );
 
 
@@ -2240,12 +2243,37 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 														cout << "Has 3D point cloud? ";
 														if (obs->hasPoints3D)
-																cout << "YES: " << obs->points3D_x.size() << " points." << endl;
+														{
+															cout << "YES: " << obs->points3D_x.size() << " points";
+															if (obs->points3D_isExternallyStored())
+																cout << ". External file: " << obs->points3D_getExternalStorageFile() << endl;
+															else cout << " (embedded)." << endl;
+														}
 														else	cout << "NO" << endl;
 
-														cout << "Has raw range data? " << (obs->hasRangeImage ? "YES": "NO"); cout << endl;
-														cout << "Has intensity data? " << (obs->hasIntensityImage ? "YES": "NO"); cout << endl;
-														cout << "Has confidence data? " << (obs->hasConfidenceImage ? "YES": "NO"); cout << endl;
+														cout << "Has raw range data? " << (obs->hasRangeImage ? "YES": "NO"); 
+														if (obs->hasRangeImage)
+														{
+															if (obs->rangeImage_isExternallyStored())
+																 cout << ". External file: " << obs->rangeImage_getExternalStorageFile() << endl;
+															else cout << " (embedded)." << endl;
+														}
+
+														cout << "Has intensity data? " << (obs->hasIntensityImage ? "YES": "NO"); 
+														if (obs->hasIntensityImage)
+														{
+															if (obs->intensityImage.isExternallyStored())
+																cout << ". External file: " << obs->intensityImage.getExternalStorageFile() << endl;
+															else cout << " (embedded)." << endl;
+														}
+
+														cout << "Has confidence data? " << (obs->hasConfidenceImage ? "YES": "NO"); 
+														if (obs->hasConfidenceImage)
+														{
+															if (obs->confidenceImage.isExternallyStored())
+																cout << ". External file: " << obs->confidenceImage.getExternalStorageFile() << endl;
+															else cout << " (embedded)." << endl;
+														}
 
 														cout << endl;
 														cout << "Camera calibration parameters:" << endl;
@@ -2356,6 +2384,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 															obs->confidenceImage.unload(); // For externally-stored datasets
 														}
 
+														obs->unload();
 
 													}
 													else

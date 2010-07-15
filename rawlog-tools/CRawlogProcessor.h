@@ -42,7 +42,7 @@ protected:
 	mrpt::utils::CFileGZInputStream	& m_in_rawlog;
 	TCLAP::CmdLine			& m_cmdline;
 	bool					verbose;
-	size_t					m_last_console_update;
+	mrpt::system::TTimeStamp m_last_console_update;
 	mrpt::utils::CTicTac	m_timParse;
 
 public:
@@ -52,7 +52,7 @@ public:
 
 	// Ctor
 	CRawlogProcessor(mrpt::utils::CFileGZInputStream &_in_rawlog, TCLAP::CmdLine &_cmdline, bool _verbose) : 
-		m_in_rawlog(_in_rawlog),m_cmdline(_cmdline), verbose(_verbose), m_rawlogEntry(0), m_last_console_update(0)
+		m_in_rawlog(_in_rawlog),m_cmdline(_cmdline), verbose(_verbose), m_rawlogEntry(0), m_last_console_update( mrpt::system::now() )
 	{
 		m_filSize = _in_rawlog.getTotalBytesCount();
 	}
@@ -74,10 +74,19 @@ public:
 			actions,SF, obs, 
 			m_rawlogEntry ) )
 		{
+			// Abort if the user presses ESC:
+			if (mrpt::system::os::kbhit())
+				if (27 == mrpt::system::os::getch())
+				{
+					std::cerr << "Aborted since user pressed ESC.\n";
+					break;
+				}
+
 			// Update status to the console?
-			if ( (m_rawlogEntry>>6) != m_last_console_update  ) 
+			const mrpt::system::TTimeStamp tNow = mrpt::system::now();
+			if ( mrpt::system::timeDifference(m_last_console_update,tNow)>0.25)
 			{
-				m_last_console_update = (m_rawlogEntry>>6);
+				m_last_console_update = tNow;
 				uint64_t fil_pos = m_in_rawlog.getPosition();
 				if(verbose) std::cout << mrpt::format("Progress: %7u objects --- Pos: %9sB/%9sB \r", 
 					(unsigned int)m_rawlogEntry,
@@ -89,6 +98,13 @@ public:
 			// Do whatever:
 			processOneEntry(actions,SF,obs);
 
+			// Post process:
+			OnPostProcess(actions,SF,obs);
+
+			// Clear read objects:
+			actions.clear_unique();
+			SF.clear_unique();
+			obs.clear_unique();
 		}; // end while
 	
 		if(verbose) std::cout << "\n"; // new line after the "\r".
@@ -104,6 +120,15 @@ public:
 		mrpt::slam::CActionCollectionPtr &actions,
 		mrpt::slam::CSensoryFramePtr     &SF,
 		mrpt::slam::CObservationPtr      &obs) = 0;
+
+	// This method can be reimplemented to save the modified object to an output stream.
+	virtual void OnPostProcess(
+		mrpt::slam::CActionCollectionPtr &actions,
+		mrpt::slam::CSensoryFramePtr     &SF,
+		mrpt::slam::CObservationPtr      &obs) 
+	{
+		// Default: Do nothing
+	}
 
 }; // end CRawlogProcessor
 
@@ -143,11 +168,6 @@ public:
 			if (!processOneObservation(obs_indiv))
 				return false;
 		}
-
-		// Clear read objects:
-		actions.clear_unique();
-		SF.clear_unique();
-		obs.clear_unique();
 
 		return true; // No error.
 	}
