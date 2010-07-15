@@ -1434,7 +1434,7 @@ bool CColouredPointsMap::colourFromObservation( const CObservationImage &obs, co
 	else { chR = 0; chG = 1; chB = 2; }
 
 	unsigned int n_proj = 0;
-	const float factor = 0.003921568627450980392156862745098;	// Normalize pixels: 1.0/255
+	const float factor = 1.0/255;	// Normalize pixels: 
 
 	// Get the colour of the projected points
 	for( itProPoints = projectedPoints.begin(), k = 0;

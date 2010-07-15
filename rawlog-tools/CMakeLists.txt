@@ -13,6 +13,7 @@ PROJECT(rawlog_tools)
 # Define the executable target:
 ADD_EXECUTABLE(rawlog-edit
 	rawlog-edit_main.cpp
+	CRawlogProcessor.h
 	)
 SET(TMP_TARGET_NAME "rawlog-edit")
 SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(RAWLOGTOOL) ${TMP_TARGET_NAME}")

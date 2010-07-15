@@ -112,7 +112,7 @@ void CGenericFeatureTracker::trackFeatures(
 				const int offset = (int)patch_width/2; // + 1;
 				try
 				{
-					new_img.extract_patch(
+					cur_gray.extract_patch(
 						ft->patch,
 						round( ft->x ) - offset,
 						round( ft->y ) - offset,
@@ -205,7 +205,7 @@ void CGenericFeatureTracker::trackFeatures(
 				ft->patchSize		= patchSize;		// The size of the feature patch
 
 				if( patchSize > 0 )
-					new_img.extract_patch(
+					cur_gray.extract_patch(
 						ft->patch,
 						round( ft->x ) - offset,
 						round( ft->y ) - offset,

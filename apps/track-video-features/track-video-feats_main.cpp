@@ -72,8 +72,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 	CGenericFeatureTrackerAutoPtr  tracker;
 
-	tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_FAST );
-	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_KL );
+	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_FAST );
+	tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_KL );
 	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_PatchMatch );
 	
 	//tracker->extra_params["match_method"] = 0;
@@ -87,7 +87,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	tracker->extra_params["add_new_feat_max_features"]    = 100; //25;
 	tracker->extra_params["add_new_feat_patch_size"]      = 21;
 
-	tracker->extra_params["update_patches_every"]		= 5;  // Update patches at all frames.
+	tracker->extra_params["update_patches_every"]		= 0;  // Update patches at all frames.
 
 	tracker->enableTimeLogger(true); // Do time profiling.
 
