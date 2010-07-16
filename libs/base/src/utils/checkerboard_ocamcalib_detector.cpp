@@ -30,7 +30,12 @@
 
 // Note for MRPT: what follows below is a modified part of the "OCamCalib Toolbox":
 //  See: http://asl.epfl.ch/~scaramuz/research/Davide_Scaramuzza_files/Research/OcamCalib_Tutorial.htm
+// Modifications include:
+//  - Clean up of code and update to use STL containers, and stlplus smart pointers.
+//  - Addition of a new method to detect a number of checkerboards.
+//  - Modification of the dilation algorithm - see do_special_dilation().
 //
+// Original copyright note:
 /************************************************************************************\
     This is improved variant of chessboard corner detection algorithm that
     uses a graph of connected quads. It is based on the code contributed
@@ -170,6 +175,98 @@ int icvCleanFoundConnectedQuads( int quad_count, std::vector<CvCBQuadPtr> &quads
 int myQuads2Points( const std::vector<CvCBQuadPtr> &output_quads, const CvSize &pattern_size, std::vector<CvPoint2D32f> &out_corners);
 
 
+#if MRPT_HAS_OPENCV
+
+// JL: Refactored code from within cvFindChessboardCorners3() and alternative algorithm:
+bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations, 
+	IplConvKernel *kernel_cross, 
+	IplConvKernel *kernel_rect,
+	IplConvKernel *kernel_diag1,
+	IplConvKernel *kernel_diag2,
+	IplConvKernel *kernel_horz,
+	IplConvKernel *kernel_vert
+	)
+{
+#if 0
+	// MARTIN's Code
+	// Use both a rectangular and a cross kernel. In this way, a more
+	// homogeneous dilation is performed, which is crucial for small,
+	// distorted checkers. Use the CROSS kernel first, since its action
+	// on the image is more subtle
+	if (dilations >= 1)
+		cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel_cross, 1);
+	if (dilations >= 2)
+		cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel_rect, 1);
+	if (dilations >= 3)
+		cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel_cross, 1);
+	if (dilations >= 4)
+		cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel_rect, 1);
+	if (dilations >= 5)
+		cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel_cross, 1);
+	if (dilations >= 6)
+		cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel_rect, 1);
+
+	return dilations==6; // Last dilation?
+#else
+	IplImage *ipl = thresh_img.getAs<IplImage>();
+
+	bool isLast = false;
+
+	switch(dilations)
+	{
+	case 37:		cvDilate(ipl,ipl, kernel_cross , 1); isLast  = true;
+	case 36:		cvErode (ipl,ipl, kernel_rect , 1);
+	case 35:		cvDilate(ipl,ipl, kernel_vert , 1);	
+	case 34:		cvDilate(ipl,ipl, kernel_vert , 1);	
+	case 33:		cvDilate(ipl,ipl, kernel_vert , 1);	
+	case 32:		cvDilate(ipl,ipl, kernel_vert , 1);
+	case 31:		cvDilate(ipl,ipl, kernel_vert , 1); break;
+	
+	case 30:		cvDilate(ipl,ipl, kernel_cross , 1);
+	case 29:		cvErode (ipl,ipl, kernel_rect , 1);
+	case 28:		cvDilate(ipl,ipl, kernel_horz , 1);
+	case 27:		cvDilate(ipl,ipl, kernel_horz , 1);
+	case 26:		cvDilate(ipl,ipl, kernel_horz , 1);
+	case 25:		cvDilate(ipl,ipl, kernel_horz , 1);
+	case 24:		cvDilate(ipl,ipl, kernel_horz , 1); break;
+
+	case 23:		cvDilate(ipl,ipl, kernel_diag2 , 1);
+	case 22:		cvDilate(ipl,ipl, kernel_diag1 , 1);
+	case 21:		cvDilate(ipl,ipl, kernel_diag2 , 1);
+	case 20:		cvDilate(ipl,ipl, kernel_diag1 , 1);
+	case 19:		cvDilate(ipl,ipl, kernel_diag2 , 1);
+	case 18:		cvDilate(ipl,ipl, kernel_diag1 , 1); break;
+
+	case 17:		cvDilate(ipl,ipl, kernel_diag2 , 1);
+	case 16:		cvDilate(ipl,ipl, kernel_diag2 , 1);
+	case 15:		cvDilate(ipl,ipl, kernel_diag2 , 1);
+	case 14:		cvDilate(ipl,ipl, kernel_diag2 , 1); break;
+
+	case 13:		cvDilate(ipl,ipl, kernel_diag1 , 1);
+	case 12:		cvDilate(ipl,ipl, kernel_diag1 , 1);
+	case 11:		cvDilate(ipl,ipl, kernel_diag1 , 1);
+	case 10:		cvDilate(ipl,ipl, kernel_diag1 , 1);  break;
+
+	case 9:		cvDilate(ipl,ipl, kernel_cross , 1);
+	case 8:		cvErode (ipl,ipl, kernel_rect , 1);
+	case 7:		cvDilate(ipl,ipl, kernel_cross , 1);
+	case 6:		cvDilate(ipl,ipl, kernel_diag2 , 1);
+	case 5:		cvDilate(ipl,ipl, kernel_diag1 , 1);
+	case 4:		cvDilate(ipl,ipl, kernel_rect , 1);
+	case 3:		cvErode (ipl,ipl, kernel_cross , 1);
+	case 2:		cvDilate(ipl,ipl, kernel_rect , 1);
+	case 1:		cvDilate(ipl,ipl, kernel_cross , 1);
+	case 0:		/* first try: do nothing to the image */ break;
+	};
+
+	return isLast;
+
+#endif
+}
+
+#endif
+
+
 //===========================================================================
 // MAIN FUNCTION
 //===========================================================================
@@ -182,14 +279,9 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 	int flags					=  1;	// not part of the function call anymore!
 	int max_count				=  0;
 	int max_dilation_run_ID		= -1;
-    const int min_dilations		=  1;
-    const int max_dilations		=  6;
+    //const int min_dilations		=  0; // JL: was: 1
+    //const int max_dilations		=  23; // JL: see do_special_dilation()
     int found					=  0;
-    //CvMat* norm_img				=  0;
-    //CvMat* thresh_img			=  0;
-	//CvMat* thresh_img_save		=  0;
-
-	// cv::MemStorage	storage = cvCreateMemStorage();
 
 	vector<CvCBQuadPtr>		quads;			// CvCBQuad **quads = 0;
 	vector<CvCBQuadPtr>		quad_group;		// CvCBQuad **quad_group		=  0;
@@ -201,18 +293,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 	int block_size = 0;
 
 	// Further initializations
-    int quad_count, group_idx, dilations;
-
-	// Read image from input
-    //CvMat stub, *img = (CvMat*)arr;
-    //img = cvGetMat( img, &stub );
-
-	// Error handling, write error message to error.txt
-//    if( CV_MAT_DEPTH( img->type ) != CV_8U || CV_MAT_CN( img->type ) == 2 )
-//	{
-//		std::cerr << "Only 8-bit grayscale or color images are supported" << endl;
-//		return -1;
-//	}
+    int quad_count, group_idx;
 
     if( pattern_size.width < 2 || pattern_size.height < 2 )
 	{
@@ -235,33 +316,46 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 	CImage thresh_img_save(img.getWidth(),img.getHeight(), CH_GRAY ); //  = cvCreateMat( img->rows, img->cols, CV_8UC1 );
 
 	// JL: Move these constructors out of the loops:
-	IplConvKernel *kernel1 = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CROSS,NULL);
-	IplConvKernel *kernel2 = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_RECT,NULL);
+	IplConvKernel *kernel_cross = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CROSS,NULL);
+	IplConvKernel *kernel_rect = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_RECT,NULL);
 
-	// Image histogramm normalization and
-	// BGR to Grayscale image conversion (if applicable)
-	// MARTIN: Set to "false"
-//    if( CV_MAT_CN(img->type) != 1 || (flags & CV_CALIB_CB_NORMALIZE_IMAGE) )
-//    {
-//        norm_img = cvCreateMat( img->rows, img->cols, CV_8UC1 );
-//        if( CV_MAT_CN(img->type) != 1 )
-//        {
-//            cvCvtColor( img, norm_img, CV_BGR2GRAY );
-//            img = norm_img;
-//        }
-//        if(false)
-//        {
-//            cvEqualizeHist( img, norm_img );
-//            img = norm_img;
-//        }
-//    }
+	static int kernel_diag1_vals[9] = { 
+		1,0,0,
+		0,1,0,
+		0,0,1 };
+	IplConvKernel *kernel_diag1 = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CUSTOM,kernel_diag1_vals);
+	static int kernel_diag2_vals[9] = { 
+		0,0,1,
+		0,1,0,
+		1,0,0 };
+	IplConvKernel *kernel_diag2 = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CUSTOM,kernel_diag2_vals);
+	static int kernel_horz_vals[9] = { 
+		0,0,0,
+		1,1,1,
+		0,0,0 };
+	IplConvKernel *kernel_horz = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CUSTOM,kernel_horz_vals);
+	static int kernel_vert_vals[9] = { 
+		0,1,0,
+		0,1,0,
+		0,1,0 };
+	IplConvKernel *kernel_vert = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CUSTOM,kernel_vert_vals);
+
 
 	// For image binarization (thresholding)
     // we use an adaptive threshold with a gaussian mask
 	// ATTENTION: Gaussian thresholding takes MUCH more time than Mean thresholding!
     block_size = cvRound(MIN(img.getWidth(),img.getHeight())*0.2)|1;
-    cvAdaptiveThreshold( img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, block_size, 0 );
+
+	cvAdaptiveThreshold( img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, block_size, 0 );
+
 	cvCopy( thresh_img.getAs<IplImage>(), thresh_img_save.getAs<IplImage>());
+
+//VISUALIZATION--------------------------------------------------------------
+#if VIS
+	mrpt::system::deleteFiles("./DBG_*.png");
+	img.saveToFile("./DBG_OrigImg.png");
+#endif
+//END------------------------------------------------------------------------
 
 
 	// PART 1: FIND LARGEST PATTERN
@@ -270,50 +364,21 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 	// then applying a canny edge finder on the closed contours (checkers).
 	// Try one dilation run, but if the pattern is not found, repeat until
 	// max_dilations is reached.
-    for( dilations = min_dilations; dilations <= max_dilations; dilations++ )
+    //for( int dilations = min_dilations; dilations <= max_dilations; dilations++ )
+
+	bool last_dilation = false;
+
+	for( int dilations = 0; !last_dilation; dilations++ )
     {
 		// Calling "cvCopy" again is much faster than rerunning "cvAdaptiveThreshold"
 		cvCopy( thresh_img_save.getAs<IplImage>(), thresh_img.getAs<IplImage>() );
 
+		// Dilate squares:
+		last_dilation = do_special_dilation(thresh_img, dilations,kernel_cross,kernel_rect,kernel_diag1,kernel_diag2, kernel_horz,kernel_vert);
 
-//VISUALIZATION--------------------------------------------------------------
 #if VIS
- 		//cvNamedWindow( "Original Image", 1 );
-		//cvShowImage( "Original Image", img);
-		img.saveToFile("./OrigImg.png");
-		//cvWaitKey(0);
+		thresh_img.saveToFile(mrpt::format("./DBG_dilation=%i.png",(int)dilations));
 #endif
-//END------------------------------------------------------------------------
-
-
-		// MARTIN's Code
-		// Use both a rectangular and a cross kernel. In this way, a more
-		// homogeneous dilation is performed, which is crucial for small,
-		// distorted checkers. Use the CROSS kernel first, since its action
-		// on the image is more subtle
-
-        if (dilations >= 1)
-			cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel1, 1);
-		if (dilations >= 2)
-			cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel2, 1);
-		if (dilations >= 3)
-			cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel1, 1);
-		if (dilations >= 4)
-			cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel2, 1);
-		if (dilations >= 5)
-			cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel1, 1);
-		if (dilations >= 6)
-			cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel2, 1);
-
-//VISUALIZATION--------------------------------------------------------------
-#if VIS
-		//cvNamedWindow( "After adaptive Threshold (and Dilation)", 1 );
-		//cvShowImage( "After adaptive Threshold (and Dilation)", thresh_img);
-		thresh_img.saveToFile("./afterDilation.png");
-		//cvWaitKey(0);
-#endif
-//END------------------------------------------------------------------------
-
 
         // In order to find rectangles that go to the edge, we draw a white
 		// line around the image edge. Otherwise FindContours will miss those
@@ -322,7 +387,6 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
         cvRectangle( thresh_img.getAs<IplImage>(), cvPoint(0,0),
 					cvPoint(thresh_img.getWidth()-1,thresh_img.getHeight()-1),
 					CV_RGB(255,255,255), 3, 8);
-
 
 		// Generate quadrangles in the following function
 		// "quad_count" is the number of cound quadrangles
@@ -363,7 +427,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 		}
 		static int cnt = 0;
 		cnt++;
-		cvSaveImage( mrpt::format("./allFoundQuads_%05i.png",cnt).c_str(), imageCopy22);
+		cvSaveImage( mrpt::format("./DBG_dilation=%i_quads.png",(int)dilations).c_str(), imageCopy22);
 
 		//cvNamedWindow( "quads with neighbors", 1 );
 		IplImage* imageCopy3 = cvCreateImage( cvGetSize(thresh_img.getAs<IplImage>()), 8, 3 );
@@ -385,7 +449,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 				}
 			}
 		}
-		cvSaveImage( mrpt::format("./allFoundNeighbors_%05i.png",cnt).c_str(), imageCopy3);
+		cvSaveImage( mrpt::format("./DBG_allFoundNeighbors_%05i.png",cnt).c_str(), imageCopy3);
 	}
 #endif
 //END------------------------------------------------------------------------
@@ -411,7 +475,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
         for( group_idx = 0; ; group_idx++ )
         {
             int count;
-            count = icvFindConnectedQuads( quads, quad_count, quad_group, group_idx/*, storage*/, dilations );
+            count = icvFindConnectedQuads( quads, quad_count, quad_group, group_idx, dilations );
 
             if( count == 0 )
                 break;
@@ -423,8 +487,10 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 			// To save computational time, only proceed, if the number of
 			// found quads during this dilation run is larger than the
 			// largest previous found number
-			if( count >= max_count)
+			if( count /*>=*/ >  max_count)
 			{
+				cout << "CHECKERBOARD: Best found at dilation=" << dilations << endl;
+
 				// set max_count to its new value
 				max_count = count;
 				max_dilation_run_ID = dilations;
@@ -486,7 +552,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 						}
 				}
 				static int cnt=0;
-				cvSaveImage( format("./CornersIncreasingOrder_%05i.png",cnt++).c_str(), imageCopy11);
+				cvSaveImage( format("./DBG_CornersIncreasingOrder_%05i.png",cnt++).c_str(), imageCopy11);
 				//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
@@ -519,7 +585,9 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 		// produced the maximum number of found quadrangles.
 		// In essence the first section of PART 2 is identical to the first
 		// section of PART 1.
-		for( dilations = max_dilations; dilations >= min_dilations; dilations-- )
+		//for( int dilations = max_dilations; dilations >= min_dilations; dilations-- )
+		bool last_dilation = false;
+		for( int dilations = 0; !last_dilation; dilations++ )
 		{
 			//if(max_dilation_run_ID == dilations)
 			//	continue;
@@ -527,18 +595,8 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 			// Calling "cvCopy" again is much faster than rerunning "cvAdaptiveThreshold"
 			cvCopy( thresh_img_save.getAs<IplImage>(), thresh_img.getAs<IplImage>());
 
-			if (dilations >= 1)
-				cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel1, 1);
-			if (dilations >= 2)
-				cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel2, 1);
-			if (dilations >= 3)
-				cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel1, 1);
-			if (dilations >= 4)
-				cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel2, 1);
-			if (dilations >= 5)
-				cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel1, 1);
-			if (dilations >= 6)
-				cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel2, 1);
+			// Dilate squares:
+			last_dilation = do_special_dilation(thresh_img, dilations,kernel_cross,kernel_rect,kernel_diag1,kernel_diag2, kernel_horz,kernel_vert);
 
 			cvRectangle( thresh_img.getAs<IplImage>(), cvPoint(0,0),
 						cvPoint(thresh_img.getWidth()-1,thresh_img.getHeight()-1),
@@ -570,7 +628,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 			//cvPutText(imageCopy23, str, cvPoint(20,20), &font, CV_RGB(0,255,0));
 
 			//cvShowImage( "PART2: Starting Point", imageCopy23);
-			cvSaveImage("./part2Start.png", imageCopy23);
+			cvSaveImage("./DBG_part2Start.png", imageCopy23);
 			//cvWaitKey(0);
 	#endif
 	//END------------------------------------------------------------------------
@@ -646,7 +704,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 			}
 
 			//cvShowImage( "PART2: Starting Point", imageCopy23);
-			cvSaveImage("./part2StartAndNewQuads.png", imageCopy23);
+			cvSaveImage("./DBG_part2StartAndNewQuads.png", imageCopy23);
 			//cvWaitKey(0);
 	#endif
 	//END------------------------------------------------------------------------
@@ -719,7 +777,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 						}
 					}
 					//cvShowImage( "PART2: Starting Point", imageCopy23);
-					cvSaveImage("./part2StartAndSelectedQuad.png", imageCopy23);
+					cvSaveImage("./DBG_part2StartAndSelectedQuad.png", imageCopy23);
 					//cvWaitKey(0);
 				}
 	#endif
@@ -741,7 +799,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 					if (found == -1 || found == 1)
 					{
 						// JL: was a "goto exit;", but, have you seen http://xkcd.com/292/ ??? ;-)
-						dilations = min_dilations+1; // This will break the outer for loop
+						last_dilation = true; // This will break the outer for loop
 						break;
 					}
 				}
@@ -753,8 +811,12 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 
 
 	// Free mem:
-	cvReleaseStructuringElement(&kernel1);
-	cvReleaseStructuringElement(&kernel2);
+	cvReleaseStructuringElement(&kernel_cross);
+	cvReleaseStructuringElement(&kernel_rect);
+	cvReleaseStructuringElement(&kernel_diag1);
+	cvReleaseStructuringElement(&kernel_diag2);
+	cvReleaseStructuringElement(&kernel_horz);
+	cvReleaseStructuringElement(&kernel_vert);
 
 	/*
 	// MARTIN:
