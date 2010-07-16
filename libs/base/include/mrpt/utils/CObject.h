@@ -279,14 +279,14 @@ namespace std
 {
 	/**  This operator enables comparing two smart pointers with "==" to test whether they point to the same object.
 	  */
-	template <typename T,typename C>
-	bool operator == ( const stlplus::smart_ptr_base<T,C>&a,const stlplus::smart_ptr_base<T,C>&b) {
+	template <typename T,typename C, typename COUNTER>
+	inline bool operator == ( const stlplus::smart_ptr_base<T,C,COUNTER>&a,const stlplus::smart_ptr_base<T,C,COUNTER>&b) {
 		return a.aliases(b);
 	}
 	/**  This operator enables comparing two smart pointers with "!=" to test whether they don't point to the same object.
 	  */
-	template <typename T,typename C>
-	bool operator != ( const stlplus::smart_ptr_base<T,C>&a,const stlplus::smart_ptr_base<T,C>&b) {
+	template <typename T,typename C, typename COUNTER>
+	inline bool operator != ( const stlplus::smart_ptr_base<T,C,COUNTER>&a,const stlplus::smart_ptr_base<T,C,COUNTER>&b) {
 		return !a.aliases(b);
 	}
 }

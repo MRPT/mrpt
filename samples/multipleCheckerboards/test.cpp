@@ -47,64 +47,38 @@ void TestMultipleCheckerboard()
 
 	// Load img:
 	CImage img;
-	if (!img.loadFromFile(
-			"D:/imgs_temp/o.jpg"
-			//myDataDir + string("test_3_checkerboards.jpg")
-			))
+	if (!img.loadFromFile( myDataDir + string("test_3_checkerboards_6x9.jpg") ))
 		throw std::runtime_error("Can't load demo image!");
 
 	// Detect multiple-checkerboards:
-	vector<TPixelCoordf> 	cornerCoords;
+	vector<vector<TPixelCoordf> > 	listCornerCoords;
 	const unsigned int  checkerboard_size_x  = 6;
 	const unsigned int  checkerboard_size_y  = 9;
 
-	// Detect:
-	timlog.enter("findChessboardCorners [OpenCV]");
+	timlog.enter("findMultipleChessboardsCorners");
 	
-	bool detectOk1 = img.findChessboardCorners(
-				cornerCoords,
-				checkerboard_size_x, checkerboard_size_y,
-				true, // normalize_image
-				false // useScaramuzzaMethod
-				);
+	img.findMultipleChessboardsCorners(
+				listCornerCoords,
+				checkerboard_size_x, checkerboard_size_y );
 
-	timlog.leave("findChessboardCorners [OpenCV]");
+	timlog.leave("findMultipleChessboardsCorners");
+
+	cout << "Number of checkerboards detected: " << listCornerCoords.size() << endl;
 
 	// Draw:
-	CImage img_detect1 = img;
-	img_detect1.drawChessboardCorners(cornerCoords,checkerboard_size_x,checkerboard_size_y);
-
-
-	timlog.enter("findChessboardCorners [Scaramuzza]");
-	
-	bool detectOk2 = img.findChessboardCorners(
-				cornerCoords,
-				checkerboard_size_x, checkerboard_size_y,
-				true, // normalize_image
-				true // useScaramuzzaMethod
-				);
-
-	timlog.leave("findChessboardCorners [Scaramuzza]");
-
-	// Draw:
-	CImage img_detect2 = img;
-	img_detect2.drawChessboardCorners(cornerCoords,checkerboard_size_x,checkerboard_size_y);
+	CImage img_detect = img;
+	for (size_t i=0;i<listCornerCoords.size();i++)
+		img_detect.drawChessboardCorners(listCornerCoords[i],checkerboard_size_x,checkerboard_size_y);
 
 	// Show results:
-	CDisplayWindow  win1("Detected checkerboard (OpenCV)");
-	win1.showImage(img_detect1);
-
-	CDisplayWindow  win2("Detected checkerboard (Scaramuzza)");
-	win2.showImage(img_detect2);
+	CDisplayWindow  win1("Detected checkerboards ");
+	win1.showImage(img_detect);
 
 	timlog.dumpAllStats();
 	timlog.clear();
 
 	// wait till user closes any window:
-	while (win1.isOpen() && win2.isOpen())
-	{
-		mrpt::system::sleep(10);
-	}
+	win1.waitForKey();
 }
 
 

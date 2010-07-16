@@ -49,7 +49,7 @@
 	Programming Toolkit (MRPT).
 
 	Sources have been modified to support thred-safe smart pointers
-	through Boost atomic operations.
+	through atomic operations.
 
 	2009, Jose Luis Blanco. University of Malaga.
 */
@@ -94,13 +94,13 @@ namespace stlplus
   ////////////////////////////////////////////////////////////////////////////////
   // internals
 
-  template<typename T> class smart_ptr_holder;
+  template<typename T,typename COUNTER> class smart_ptr_holder;
 
   ////////////////////////////////////////////////////////////////////////////////
   // Base class
   ////////////////////////////////////////////////////////////////////////////////
 
-  template<typename T, typename C>
+  template<typename T, typename C, typename COUNTER> // Typically: COUNTER = mrpt::synch::CAtomicCounter>
   class smart_ptr_base
   {
   public:
@@ -129,7 +129,7 @@ namespace stlplus
     explicit smart_ptr_base(T* data);
 
     // copy constructor implements aliasing so no copy is made
-    explicit smart_ptr_base(const smart_ptr_base<T,C>& r);
+    explicit smart_ptr_base(const smart_ptr_base<T,C,COUNTER>& r);
 
     // destructor decrements the reference count and delete only when the last reference is destroyed
     ~smart_ptr_base(void);
@@ -178,23 +178,23 @@ namespace stlplus
     // functions to manage aliases
 
     // make this an alias of the passed object
-    void alias(const smart_ptr_base<T,C>&);
+    inline void alias(const smart_ptr_base<T,C,COUNTER>&);
 
     // test whether two pointers point to the same object(known as aliasing the object)
     // used in the form if(a.aliases(b))
-    bool aliases(const smart_ptr_base<T,C>&) const;
+    inline bool aliases(const smart_ptr_base<T,C,COUNTER>&) const;
 
     // find the number of aliases - used when you need to know whether an
     // object is still referred to from elsewhere (rare!)
-    unsigned alias_count(void) const;
+    inline unsigned alias_count(void) const;
 
     // delete the object and make the pointer null - does not make it unique
     // first, so all other pointers to this will be null too
-    void clear(void);
+    inline void clear(void);
 
     // make the pointer unique and null in one step - does not affect other
     // pointers that were pointing to the same object
-    void clear_unique(void);
+    inline void clear_unique(void);
 
     //////////////////////////////////////////////////////////////////////////////
     // functions that involve copying
@@ -205,14 +205,14 @@ namespace stlplus
 
     // make this pointer unique with respect to any other references to the same object
     // if this pointer is already unique, it does nothing - otherwise it copies the object
-    void make_unique(void) throw(illegal_copy);
+    inline void make_unique(void) throw(illegal_copy);
 
     // make this pointer a unique copy of the parameter
     // useful for expressions like p1.copy(p2) which makes p1 a pointer to a unique copy of the contents of p2
-    void copy(const smart_ptr_base<T,C>&) throw(illegal_copy);
+    void copy(const smart_ptr_base<T,C,COUNTER>&) throw(illegal_copy);
 
   protected:
-    smart_ptr_holder<T>* m_holder;
+    smart_ptr_holder<T,COUNTER>* m_holder;
 
   public:
     // internal use only - had to make them public because they need to be
@@ -264,13 +264,13 @@ namespace stlplus
   ////////////////////////////////////////////////////////////////////////////////
   // smart_ptr        for simple types and classes which have copy constructors
 
-  template <typename T>
-  class smart_ptr : public smart_ptr_base<T, constructor_copy<T> >
+  template <typename T,typename COUNTER = mrpt::synch::CAtomicCounter>
+  class smart_ptr : public smart_ptr_base<T, constructor_copy<T>, COUNTER  >
   {
   public:
     smart_ptr(void) {}
-    explicit smart_ptr(const T& data) : smart_ptr_base<T, constructor_copy<T> >(data) {}
-    explicit smart_ptr(T* data) : smart_ptr_base<T, constructor_copy<T> >(data) {}
+    explicit smart_ptr(const T& data) : smart_ptr_base<T, constructor_copy<T>,COUNTER >(data) {}
+    explicit smart_ptr(T* data) : smart_ptr_base<T, constructor_copy<T>,COUNTER >(data) {}
     smart_ptr<T>& operator=(const T& data) {set_value(data); return *this;}
     smart_ptr<T>& operator=(const smart_ptr<T>& r) {alias(r); return *this;}
     ~smart_ptr(void) {}
@@ -279,13 +279,13 @@ namespace stlplus
   ////////////////////////////////////////////////////////////////////////////////
   // smart_ptr_clone  for polymorphic class hierarchies which have a clone method
 
-  template <typename T>
-  class smart_ptr_clone : public smart_ptr_base<T, clone_copy<T> >
+  template <typename T,typename COUNTER = mrpt::synch::CAtomicCounter>
+  class smart_ptr_clone : public smart_ptr_base<T, clone_copy<T>, COUNTER >
   {
   public:
     smart_ptr_clone(void) {}
-    explicit smart_ptr_clone(const T& data) : smart_ptr_base<T, clone_copy<T> >(data) {}
-    explicit smart_ptr_clone(T* data) : smart_ptr_base<T, clone_copy<T> >(data) {}
+    explicit smart_ptr_clone(const T& data) : smart_ptr_base<T, clone_copy<T>, COUNTER >(data) {}
+    explicit smart_ptr_clone(T* data) : smart_ptr_base<T, clone_copy<T>, COUNTER >(data) {}
     smart_ptr_clone<T>& operator=(const T& data) {set_value(data); return *this;}
     smart_ptr_clone<T>& operator=(const smart_ptr_clone<T>& r) {alias(r); return *this;}
     ~smart_ptr_clone(void) {}
@@ -294,13 +294,13 @@ namespace stlplus
   ////////////////////////////////////////////////////////////////////////////////
   // smart_ptr_nocopy for any class that cannot or should not be copied
 
-  template <typename T>
-  class smart_ptr_nocopy : public smart_ptr_base<T, no_copy<T> >
+  template <typename T,typename COUNTER = mrpt::synch::CAtomicCounter>
+  class smart_ptr_nocopy : public smart_ptr_base<T, no_copy<T>, COUNTER >
   {
   public:
     smart_ptr_nocopy(void) {}
-    explicit smart_ptr_nocopy(const T& data) : smart_ptr_base<T, no_copy<T> >(data) {}
-    explicit smart_ptr_nocopy(T* data) : smart_ptr_base<T, no_copy<T> >(data) {}
+    explicit smart_ptr_nocopy(const T& data) : smart_ptr_base<T, no_copy<T>, COUNTER >(data) {}
+    explicit smart_ptr_nocopy(T* data) : smart_ptr_base<T, no_copy<T>, COUNTER >(data) {}
     smart_ptr_nocopy<T>& operator=(const T& data) {set_value(data); return *this;}
     smart_ptr_nocopy<T>& operator=(const smart_ptr_nocopy<T>& r) {alias(r); return *this;}
     ~smart_ptr_nocopy(void) {}

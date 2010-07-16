@@ -2677,7 +2677,7 @@ void CImage::rotateImage( double angle_radians, unsigned int center_x, unsigned 
 // Declaration of auxiliary functions in checkerboard_ocamcalib_detector.cpp
 #if MRPT_HAS_OPENCV
 	// Return: -1: errors, 0: not found, 1: found OK
-	int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, CvPoint2D32f* out_corners, int* out_corner_count);
+	int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<CvPoint2D32f> &out_corners);
 #endif
 
 
@@ -2738,13 +2738,11 @@ bool CImage::findChessboardCorners(
 	}
 	else
 	{
-		int found_corner_count=0;
 		// Return: -1: errors, 0: not found, 1: found OK
 		corners_found = 1 == cvFindChessboardCorners3( 
 			static_cast<IplImage*>(img.getAsIplImage()), 
 			check_size, 
-			&corners_list[0],
-			&corners_count
+			corners_list
 			);
 	}
 
@@ -2994,20 +2992,13 @@ void CImage::findMultipleChessboardsCorners(
 			this->grayscale(img);
 	else	img.setFromImageReadOnly(*this);
 
-	std::vector<CvPoint2D32f>  corners_list;
-	corners_list.resize(check_size_x*check_size_y*10);
+	std::vector<CvPoint2D32f>  corners_list(check_size_x*check_size_y*10);
 
-	int found_corner_count=0;
 	// Return: -1: errors, 0: not found, 1: found OK
-	bool corners_found = 1==cvFindChessboardCorners3( 
-		static_cast<IplImage*>(img.getAsIplImage()), 
+	bool corners_found = 1==cvFindChessboardCorners3(
+		img.getAs<IplImage>(), 
 		cvSize(check_size_x,check_size_y), 
-		&corners_list[0], 
-		&found_corner_count);
-
-	// Check # of corners:
-	if (corners_found && found_corner_count!=check_size_x*check_size_y) 
-		corners_found=false;
+		corners_list);
 
 	if( corners_found )
 	{
@@ -3015,7 +3006,7 @@ void CImage::findMultipleChessboardsCorners(
 		cvFindCornerSubPix(
 			static_cast<IplImage*>(img.getAsIplImage()),
 			&corners_list[0],
-			found_corner_count,
+			check_size_x*check_size_y,
 			cvSize(5,5), 	// window
 			cvSize(-1,-1),
 			cvTermCriteria( CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10, 0.01f ));

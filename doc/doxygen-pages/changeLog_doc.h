@@ -48,6 +48,7 @@
 				- New method to compute KLT response at any given position: mrpt::utils::CImage::KLT_response
 			- mrpt::vision::CFeatureExtraction has a new option FASTOptions.use_KLT_response. 
 			- mrpt::slam::CObservation now has virtual load() and unload() method to manually invoke delayed-load (actually only needed by 3D camera observations).
+			- stlplus::smart_ptr templates now have an extra template argument "COUNTER" which defaults to an thread-safe atomic counter but can be set to a plain "unsigned int" in time-critical apps which are known to work in a single thread.
 			- mrpt::utils::CStream now handles sizes as uint64_t instead of size_t, to allow files larger than 4Gb in 32bit systems.
 			- mrpt::hwdrivers::prepareVideoSourceFromUserSelection() now also displays as an option to grab images from SwissRanger 3D cameras.
 			- mrpt::hwdrivers::CCameraSensor can now open SwissRanger 3D cameras.

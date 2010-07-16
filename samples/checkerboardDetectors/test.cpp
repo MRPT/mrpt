@@ -46,10 +46,7 @@ void TestCheckerboardDetectors()
 
 	// Load img:
 	CImage img;
-	if (!img.loadFromFile(
-		//"D:/Rawlogs/LAMONOSLAM/calib/CAMERA1_1274446974.089168.jpg"
-		myDataDir + string("test_1_checkerboard_9x6.jpg"))
-		)
+	if (!img.loadFromFile( myDataDir + string("test_1_checkerboard_9x6.jpg")) )
 		throw std::runtime_error("Can't load demo image!");
 
 	// Detect multiple-checkerboards:
@@ -89,7 +86,7 @@ void TestCheckerboardDetectors()
 	CImage img_detect2 = img;
 	img_detect2.drawChessboardCorners(cornerCoords,checkerboard_size_x,checkerboard_size_y);
 
-	ASSERT_(detectOk1 && detectOk2);
+	//ASSERT_(detectOk1 && detectOk2);
 
 	// Show results:
 	CDisplayWindow  win1("Detected checkerboard (OpenCV)");
