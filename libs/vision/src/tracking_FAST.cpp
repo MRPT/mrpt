@@ -233,7 +233,7 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 		if (!potential_matches.empty())
 		{
 			// Keep the best match: Since std::map<> is ordered, the last is the best one:
-			const double valBestMatch = potential_matches.rbegin()->first;
+			//const double valBestMatch = potential_matches.rbegin()->first;
 			const size_t idxBestMatch = potential_matches.rbegin()->second;
 
 			// OK: Accept it:

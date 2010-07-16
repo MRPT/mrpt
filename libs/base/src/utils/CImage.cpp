@@ -2714,7 +2714,7 @@ bool CImage::findChessboardCorners(
 
 	const CvSize check_size = cvSize(check_size_x, check_size_y);
 
-	const size_t CORNERS_COUNT = check_size_x * check_size_y;
+	const int CORNERS_COUNT = check_size_x * check_size_y;
 
 	vector<CvPoint2D32f> corners_list;
 	corners_count = CORNERS_COUNT;

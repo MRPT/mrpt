@@ -52,7 +52,7 @@ public:
 
 	// Ctor
 	CRawlogProcessor(mrpt::utils::CFileGZInputStream &_in_rawlog, TCLAP::CmdLine &_cmdline, bool _verbose) : 
-		m_in_rawlog(_in_rawlog),m_cmdline(_cmdline), verbose(_verbose), m_rawlogEntry(0), m_last_console_update( mrpt::system::now() )
+		m_in_rawlog(_in_rawlog),m_cmdline(_cmdline), verbose(_verbose), m_last_console_update( mrpt::system::now() ), m_rawlogEntry(0)
 	{
 		m_filSize = _in_rawlog.getTotalBytesCount();
 	}

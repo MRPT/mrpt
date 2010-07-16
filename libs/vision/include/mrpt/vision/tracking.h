@@ -38,6 +38,8 @@
 
 #include <mrpt/utils/metaprogramming.h>
 
+#include <memory> 	// for auto_ptr
+
 namespace mrpt
 {
 	namespace vision
@@ -132,7 +134,7 @@ namespace mrpt
 
 		};
 
-		typedef std::auto_ptr<CGenericFeatureTracker> CGenericFeatureTrackerAutoPtr; 
+		typedef std::auto_ptr<CGenericFeatureTracker> CGenericFeatureTrackerAutoPtr;
 
 
 		/** Track a set of features from old_img -> new_img using sparse optimal flow (classic KL method).

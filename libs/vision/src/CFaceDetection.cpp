@@ -67,7 +67,7 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 	if ( (IS_CLASS(obs, CObservation3DRangeScan )) && ( localDetected.size() > 0 ) )
 	{
 		CObservation3DRangeScan* o = static_cast<CObservation3DRangeScan*>( obs );
-	
+
 		if ( o->hasPoints3D )
 		{
 			// Detected objects to delete if they aren't a face
@@ -88,7 +88,7 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 
 				// Image size
 				size_t imgWidth		= o->cameraParams.ncols;
-				size_t imgHeight	= o->cameraParams.nrows;
+				//size_t imgHeight	= o->cameraParams.nrows;
 
 				// Create a vector with points coordinates
 				vector<TPoint3D> points;
@@ -98,7 +98,7 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 					for ( unsigned int k = 0; k < c2-c1; k++ )
 					{
 						if ( ( confidence ) && ( *(o->confidenceImage.get_unsafe( j, k, 0 )) > m_options.confidenceThreshold )) // TODO: Check if the point is valid
-						{	
+						{
 							int position = imgWidth*j + c1 + k;
 							points.push_back( TPoint3D(o->points3D_x[position],o->points3D_y[position],o->points3D_z[position]) );
 						}
@@ -112,21 +112,21 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 
 				// Check if it's really a face!
 				if ( !checkIfFacePlane( points ) )
-					deleteDetected.push_back( i );	
-				else 
+					deleteDetected.push_back( i );
+				else
 				{
 					CObservation3DRangeScan face;
 					o->getZoneAsObs( face, r1, r2, c1, c2 );
 					if ( !checkIfFaceRegions( &face, c2-c1, r2-r1 ) )
-						deleteDetected.push_back( i );	
+						deleteDetected.push_back( i );
 				}
-				
+
 			}
 
 			// Delete non faces
 			for ( unsigned int i = deleteDetected.size(); i > 0; i-- )
-				localDetected.erase( localDetected.begin() + deleteDetected[i-1] );			
-		}	
+				localDetected.erase( localDetected.begin() + deleteDetected[i-1] );
+		}
 
 		// Convert 2d detected objects to 3d
 		for ( unsigned int i = 0; i < localDetected.size(); i++ )
@@ -140,7 +140,7 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 		detected = localDetected;
 	}
 
-	
+
 }
 
 
@@ -160,7 +160,7 @@ bool CFaceDetection::checkIfFacePlane( const vector<TPoint3D> &points )
 {
 	// Try to ajust a plane
 	TPlane plane;
-	
+
 	if ( getRegressionPlane(points,plane) < m_options.planeThreshold )
 		return true;
 
@@ -170,8 +170,8 @@ bool CFaceDetection::checkIfFacePlane( const vector<TPoint3D> &points )
 //------------------------------------------------------------------------
 //							checkIfFaceSections
 //------------------------------------------------------------------------
-bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face, 
-										 const unsigned int &faceWidth, 
+bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face,
+										 const unsigned int &faceWidth,
 										 const unsigned int &faceHeight )
 {
 	unsigned int x1 = ceil(faceWidth*0.1);
@@ -183,10 +183,10 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face,
 	unsigned int sectionHSize = floor((x2-x1)/3.0);
 
 	vector<TPoint3D> points;
-	unsigned int cont = 0;				
+	unsigned int cont = 0;
 
-	double meanDepth[3][3] = {0,0,0,0,0,0,0,0,0};
-	double numPoints[3][3] = {0,0,0,0,0,0,0,0,0};
+	double meanDepth[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
+	double numPoints[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
 
 	for ( unsigned int i = y1; i <= y2; i++ )
 		for ( unsigned int j = x1; j <= x2; j++, cont++ )
@@ -197,14 +197,14 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face,
 					row = 0;
 				else if ( i-y1 < sectionVSize*2 + floor(sectionVSize*0.2) )
 					row = 1;
-				else 
+				else
 					row = 2;
 
 				if ( j-x1 < sectionHSize - floor(sectionHSize*0.2) )
 					col = 0;
 				else if ( j-x1 < sectionHSize*2 + floor(sectionHSize*0.2) )
 					col = 1;
-				else 
+				else
 					col = 2;
 
 				meanDepth[row][col]+=face->points3D_x[cont];
@@ -212,7 +212,7 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face,
 			}
 
 	// Create 9 regions and calculate
-	vector<vector<TPoint3D>> regions;
+	vector<vector<TPoint3D> > regions;
 
 	for ( size_t i = 0; i < 3; i++ )
 		for ( size_t j = 0; j < 3; j++ )
@@ -220,7 +220,7 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face,
 				meanDepth[i][j] = 0;
 			else
 				meanDepth[i][j] /= numPoints[i][j];
-	
+
 	/*ofstream f2;
 	f2.open("fichero2.txt", ofstream::app);
 
@@ -236,7 +236,7 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face,
 bool CFaceDetection::checkRegionsConstrains( const double values[3][3] )
 {
 	// This matrix put, for instance, in 0,0 an 1 if this region is farther that 0,1 region
-	double satisfy[3][3] = {0,0,0,0,0,0,0,0,0}; 
+	double satisfy[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
 
 	if ( values[0][0] < values[0][1] )
 		satisfy[0][0] = 1;
@@ -253,8 +253,8 @@ bool CFaceDetection::checkRegionsConstrains( const double values[3][3] )
 
 	size_t sumCol0	= satisfy[0][0] + satisfy[1][0] + satisfy[2][0];
 	size_t sumCol2	= satisfy[0][2] + satisfy[1][2] + satisfy[2][2];
-	size_t sumFil0 = satisfy[0][0] + satisfy[0][1] + satisfy[0][2];
-	size_t sumFil2 = satisfy[2][0] + satisfy[2][1] + satisfy[2][2];
+	//size_t sumFil0 = satisfy[0][0] + satisfy[0][1] + satisfy[0][2];
+	//size_t sumFil2 = satisfy[2][0] + satisfy[2][1] + satisfy[2][2];
 
 	// We can choose any constrain to require to candidate face scan
 	if ( ( sumCol0 >= 2 ) && ( sumCol2 >= 2 ) ) // Frontal faces

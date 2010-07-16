@@ -44,7 +44,7 @@ IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation,mrpt::slam)
 
 
 // Whether external files for 3D points & range are text or binary.
-//#define EXTERNALS_AS_TEXT  
+//#define EXTERNALS_AS_TEXT
 
 
 /*---------------------------------------------------------------
@@ -240,12 +240,13 @@ void CObservation3DRangeScan::load() const
 #ifdef EXTERNALS_AS_TEXT
 		CMatrixFloat M;
 		M.loadFromTextFile(fil);
-		
+
 		M.extractRow(0,const_cast<vector_float&>(points3D_x));
 		M.extractRow(1,const_cast<vector_float&>(points3D_y));
 		M.extractRow(2,const_cast<vector_float&>(points3D_z));
 #else
-		mrpt::utils::CFileGZInputStream(fil) >> const_cast<vector_float&>(points3D_x) >> const_cast<vector_float&>(points3D_y) >> const_cast<vector_float&>(points3D_z);
+		mrpt::utils::CFileGZInputStream f(fil);
+		f >> const_cast<vector_float&>(points3D_x) >> const_cast<vector_float&>(points3D_y) >> const_cast<vector_float&>(points3D_z);
 #endif
 	}
 
@@ -255,7 +256,8 @@ void CObservation3DRangeScan::load() const
 #ifdef EXTERNALS_AS_TEXT
 		const_cast<CMatrix&>(rangeImage).loadFromTextFile(fil);
 #else
-		mrpt::utils::CFileGZInputStream(fil) >> const_cast<CMatrix&>(rangeImage);
+		mrpt::utils::CFileGZInputStream f(fil);
+		f >> const_cast<CMatrix&>(rangeImage);
 #endif
 	}
 }
@@ -309,27 +311,29 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage( const std::stri
 {
 	ASSERT_(!points3D_isExternallyStored())
 	m_points3D_external_file = fileName;
-	
+
 	// Use "use_this_base_dir" in "*_getExternalStorageFileAbsolutePath()" instead of CImage::IMAGES_PATH_BASE
 	const string savedDir = CImage::IMAGES_PATH_BASE;
 	CImage::IMAGES_PATH_BASE = use_this_base_dir;
 	const string real_absolute_file_path = points3D_getExternalStorageFileAbsolutePath();
 	CImage::IMAGES_PATH_BASE = savedDir;
 
-	const size_t nPts = points3D_x.size();
 	ASSERT_(points3D_x.size()==points3D_y.size() && points3D_x.size()==points3D_z.size())
 
 #ifdef EXTERNALS_AS_TEXT
+	const size_t nPts = points3D_x.size();
+
 	CMatrixFloat M(3,nPts);
 	M.insertRow(0,points3D_x);
 	M.insertRow(1,points3D_y);
 	M.insertRow(2,points3D_z);
-	
-	M.saveToTextFile( 
-		real_absolute_file_path, 
+
+	M.saveToTextFile(
+		real_absolute_file_path,
 		MATRIX_FORMAT_FIXED );
 #else
-	mrpt::utils::CFileGZOutputStream(real_absolute_file_path)  << points3D_x << points3D_y << points3D_z;
+	mrpt::utils::CFileGZOutputStream f(real_absolute_file_path);
+	f  << points3D_x << points3D_y << points3D_z;
 #endif
 
 	m_points3D_external_stored = true;
@@ -341,7 +345,7 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage( const std::st
 {
 	ASSERT_(!rangeImage_isExternallyStored())
 	m_rangeImage_external_file = fileName;
-	
+
 	// Use "use_this_base_dir" in "*_getExternalStorageFileAbsolutePath()" instead of CImage::IMAGES_PATH_BASE
 	const string savedDir = CImage::IMAGES_PATH_BASE;
 	CImage::IMAGES_PATH_BASE = use_this_base_dir;
@@ -349,11 +353,12 @@ void CObservation3DRangeScan::rangeImage_convertToExternalStorage( const std::st
 	CImage::IMAGES_PATH_BASE = savedDir;
 
 #ifdef EXTERNALS_AS_TEXT
-	rangeImage.saveToTextFile( 
-		real_absolute_file_path, 
+	rangeImage.saveToTextFile(
+		real_absolute_file_path,
 		MATRIX_FORMAT_FIXED );
 #else
-	mrpt::utils::CFileGZOutputStream(real_absolute_file_path)  << rangeImage;
+	mrpt::utils::CFileGZOutputStream f(real_absolute_file_path);
+	f  << rangeImage;
 #endif
 
 	m_rangeImage_external_stored = true;
@@ -374,8 +379,8 @@ namespace mrpt
 			{
 				const CObservation3DRangeScan &obs;
 				const double z_offset;
-				TLevMarData(const CObservation3DRangeScan &obs_, const double z_offset_ ) : 
-					obs(obs_),z_offset(z_offset_) {} 
+				TLevMarData(const CObservation3DRangeScan &obs_, const double z_offset_ ) :
+					obs(obs_),z_offset(z_offset_) {}
 			};
 
 			void cam2vec(const TCamera &camPar,vector_double &x)
@@ -436,7 +441,7 @@ namespace mrpt
 							// Radial distortion:
 							const double r2 = square(x)+square(y);
 							const double r4 = square(r2);
-							
+
 							pixel.x = params.cx() + params.fx() *(  x*(1+params.dist[0]*r2+params.dist[1]*r4+ 2*params.dist[2]*x*y+params.dist[3]*(r2+2*square(x))  )  );
 							pixel.y = params.cy() + params.fy() *(  y*(1+params.dist[0]*r2+params.dist[1]*r4+ 2*params.dist[3]*x*y+params.dist[2]*(r2+2*square(y)))  );
 						}
@@ -454,7 +459,7 @@ namespace mrpt
 
 
 
-/** A Levenberg-Marquart-based optimizer to recover the calibration parameters of a 3D camera given a range (depth) image and the corresponding 3D point cloud. 
+/** A Levenberg-Marquart-based optimizer to recover the calibration parameters of a 3D camera given a range (depth) image and the corresponding 3D point cloud.
   * \param camera_offset The offset (in meters) in the +X direction of the point cloud. It's 1cm for SwissRanger SR4000.
   * \return The final average reprojection error per pixel (typ <0.05 px)
   */
@@ -517,16 +522,16 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
 	MRPT_END
 }
 
-void CObservation3DRangeScan::getZoneAsObs( 
-	CObservation3DRangeScan &obs, 
-	const unsigned int &r1, const unsigned int &r2, 
+void CObservation3DRangeScan::getZoneAsObs(
+	CObservation3DRangeScan &obs,
+	const unsigned int &r1, const unsigned int &r2,
 	const unsigned int &c1, const unsigned int &c2 )
 {
 	unsigned int cols = cameraParams.ncols;
 	unsigned int rows = cameraParams.nrows;
 
 	ASSERT_( (r1<r2) && (c1<c2) )
-	ASSERT_( (r2<rows) && (c2<cols) )	
+	ASSERT_( (r2<rows) && (c2<cols) )
 
 	// Maybe we needed to copy more base obs atributes
 
@@ -546,7 +551,7 @@ void CObservation3DRangeScan::getZoneAsObs(
 		confidenceImage.extract_patch( obs.confidenceImage, c1, r1, c2-c1, r2-r1 );
 
 	// Copy zone of scanned points
-	obs.hasPoints3D = hasPoints3D;	
+	obs.hasPoints3D = hasPoints3D;
 	if ( hasPoints3D )
 	{
 		for ( unsigned int i = r1; i <= r2; i++ )
@@ -555,7 +560,7 @@ void CObservation3DRangeScan::getZoneAsObs(
 				obs.points3D_x.push_back( points3D_x.at( cols*i + j ) );
 				obs.points3D_y.push_back( points3D_y.at( cols*i + j ) );
 				obs.points3D_z.push_back( points3D_z.at( cols*i + j ) );
-			}	
+			}
 	}
 
 	obs.maxRange	= maxRange;

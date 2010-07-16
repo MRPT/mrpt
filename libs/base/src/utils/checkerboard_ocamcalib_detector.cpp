@@ -30,7 +30,7 @@
 
 // Note for MRPT: what follows below is a modified part of the "OCamCalib Toolbox":
 //  See: http://asl.epfl.ch/~scaramuz/research/Davide_Scaramuzza_files/Research/OcamCalib_Tutorial.htm
-// 
+//
 /************************************************************************************\
     This is improved variant of chessboard corner detection algorithm that
     uses a graph of connected quads. It is based on the code contributed
@@ -190,7 +190,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
     CvMat* norm_img				=  0;
     CvMat* thresh_img			=  0;
 	CvMat* thresh_img_save		=  0;
-	
+
 	// cv::MemStorage	storage = cvCreateMemStorage();
 
 	vector<CvCBQuadPtr>		quads;			// CvCBQuad **quads = 0;
@@ -276,7 +276,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 #if VIS
  		//cvNamedWindow( "Original Image", 1 );
 		//cvShowImage( "Original Image", img);
-		cvSaveImage("D:/OrigImg.png", img);
+		cvSaveImage("./OrigImg.png", img);
 		//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
@@ -307,7 +307,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 #if VIS
 		//cvNamedWindow( "After adaptive Threshold (and Dilation)", 1 );
 		//cvShowImage( "After adaptive Threshold (and Dilation)", thresh_img);
-		cvSaveImage("D:/afterDilation.png", thresh_img);
+		cvSaveImage("./afterDilation.png", thresh_img);
 		//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
@@ -353,7 +353,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 			cvLine( imageCopy22, pt[3], pt[0], CV_RGB(255,255,0), 1, 8 );
 		}
 		//cvShowImage( "all found quads per dilation run", imageCopy22);
-		cvSaveImage("D:/allFoundQuads.png", imageCopy22);
+		cvSaveImage("./allFoundQuads.png", imageCopy22);
 		//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
@@ -387,7 +387,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 			}
 		}
 		//cvShowImage( "quads with neighbors", imageCopy3);
-		cvSaveImage("D:/allFoundNeighbors.png", imageCopy3);
+		cvSaveImage("./allFoundNeighbors.png", imageCopy3);
 		//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
@@ -488,7 +488,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 						}
 				}
 				static int cnt=0;
-				cvSaveImage( format("D:/CornersIncreasingOrder_%05i.png",cnt++).c_str(), imageCopy11);
+				cvSaveImage( format("./CornersIncreasingOrder_%05i.png",cnt++).c_str(), imageCopy11);
 				//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
@@ -519,7 +519,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 	// Return true on success in finding all the quads.
 	found = myQuads2Points( output_quad_group, pattern_size,out_corners);
 	//found = mrWriteCorners( output_quad_group, max_count, pattern_size, min_number_of_corners);
-	
+
 	if (found != -1 && found != 1)
 	{
 		// PART 2: AUGMENT LARGEST PATTERN
@@ -582,7 +582,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 			//cvPutText(imageCopy23, str, cvPoint(20,20), &font, CV_RGB(0,255,0));
 
 			//cvShowImage( "PART2: Starting Point", imageCopy23);
-			cvSaveImage("D:/part2Start.png", imageCopy23);
+			cvSaveImage("./part2Start.png", imageCopy23);
 			//cvWaitKey(0);
 	#endif
 	//END------------------------------------------------------------------------
@@ -659,7 +659,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 			}
 
 			//cvShowImage( "PART2: Starting Point", imageCopy23);
-			cvSaveImage("D:/part2StartAndNewQuads.png", imageCopy23);
+			cvSaveImage("./part2StartAndNewQuads.png", imageCopy23);
 			//cvWaitKey(0);
 	#endif
 	//END------------------------------------------------------------------------
@@ -732,7 +732,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 						}
 					}
 					//cvShowImage( "PART2: Starting Point", imageCopy23);
-					cvSaveImage("D:/part2StartAndSelectedQuad.png", imageCopy23);
+					cvSaveImage("./part2StartAndSelectedQuad.png", imageCopy23);
 					//cvWaitKey(0);
 				}
 	#endif
@@ -795,8 +795,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 //===========================================================================
 // If we found too many connected quads, remove those which probably do not
 // belong.
-static int
-icvCleanFoundConnectedQuads( int quad_count, std::vector<CvCBQuadPtr> &quad_group, CvSize pattern_size )
+int icvCleanFoundConnectedQuads( int quad_count, std::vector<CvCBQuadPtr> &quad_group, CvSize pattern_size )
 {
 	cv::MemStorage temp_storage;  // JL: "Modernized" to use C++ STL stuff.
 	vector<CvPoint2D32f> centers;
@@ -812,7 +811,7 @@ icvCleanFoundConnectedQuads( int quad_count, std::vector<CvCBQuadPtr> &quad_grou
 	// of the function
     if( quad_count <= count )
 		return quad_count;	// JL: was: EXIT;
-        
+
 
 
     // Create an array of quadrangle centers
@@ -922,8 +921,7 @@ icvCleanFoundConnectedQuads( int quad_count, std::vector<CvCBQuadPtr> &quad_grou
 //===========================================================================
 // FIND COONECTED QUADS
 //===========================================================================
-static int
-icvFindConnectedQuads( std::vector<CvCBQuadPtr> &quad, int quad_count, std::vector<CvCBQuadPtr> &out_group,
+int icvFindConnectedQuads( std::vector<CvCBQuadPtr> &quad, int quad_count, std::vector<CvCBQuadPtr> &out_group,
                        int group_idx, int dilation )
 {
 	// initializations
@@ -953,7 +951,7 @@ icvFindConnectedQuads( std::vector<CvCBQuadPtr> &quad, int quad_count, std::vect
 
 		while( !seqStack.empty() )
 		{
-			q = seqStack.top(); 
+			q = seqStack.top();
 			seqStack.pop(); // cvSeqPop( stack, &q );
 
 			for( i = 0; i < 4; i++ )
@@ -1148,8 +1146,8 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 
 
 				// Remember corner and quad
-				int cornerID;
-				int quadID;
+				int cornerID=0;
+				int quadID=0;
 
 				for(int k = 0; k < count; k++)
 				{
@@ -1200,8 +1198,8 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 
 
 				// remember corner and quad
-				int cornerID;
-				int quadID;
+				int cornerID=0;
+				int quadID=0;
 
 				for(int k = 0; k < count; k++)
 				{
@@ -1444,7 +1442,7 @@ void mrFindQuadNeighbors2( std::vector<CvCBQuadPtr> &quads, int quad_count, int 
 	const float thresh_dilation = (float)(2*dilation+3)*(2*dilation+3)*2;	// the "*2" is for the x and y component
     int idx, i, k, j;														// the "3" is for initial corner mismatch
     float dx, dy, dist;
-	int cur_quad_group = -1;
+	//int cur_quad_group = -1;
 
 
     // Find quad neighbors
@@ -2064,8 +2062,8 @@ int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out
             if(dst_contour->total == 4 && cvCheckContourConvexity(dst_contour) )
             {
                 CvPoint pt[4];
-                double d1, d2, p = cvContourPerimeter(dst_contour);
-                double area = fabs(cvContourArea(dst_contour, CV_WHOLE_SEQ));
+                double d1, d2; //, p = cvContourPerimeter(dst_contour);
+                //double area = fabs(cvContourArea(dst_contour, CV_WHOLE_SEQ));
                 double dx, dy;
 
                 for( int i = 0; i < 4; i++ )
@@ -2112,11 +2110,11 @@ int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out
 	out_quads.clear();	//*out_quads = (CvCBQuad*)cvAlloc(root->total * sizeof((*out_quads)[0]));
 	for (int q=0;q<root->total;q++)
 		out_quads.push_back( CvCBQuadPtr(new CvCBQuad) );
-    
+
 	out_corners.clear();	// *out_corners = (CvCBCorner*)cvAlloc(root->total * 4 * sizeof((*out_corners)[0]));
 	for (int q=0;q< 4 * root->total;q++)
 		out_corners.push_back( CvCBCornerPtr(new CvCBCorner) );
-	
+
     // Create array of quads structures
     for( int idx = 0; idx < root->total; idx++ )
     {
@@ -2173,9 +2171,6 @@ int myQuads2Points( const std::vector<CvCBQuadPtr> &output_quads,const CvSize &p
 	bool flagColumn = false;
 	int maxPattern_sizeRow = -1;
 	int maxPattern_sizeColumn = -1;
-
-	// Return variable
-	int internal_found = 0;
 
 	// Compute the minimum and maximum row / column ID
 	// (it is unlikely that more than 8bit checkers are used per dimension)
@@ -2331,7 +2326,7 @@ int myQuads2Points( const std::vector<CvCBQuadPtr> &output_quads,const CvSize &p
 	}
 
 	// All corners found?
-	return (out_corners.size() == pattern_size.width * pattern_size.height ) ? 1:0;
+	return (out_corners.size() == size_t( pattern_size.width * pattern_size.height) ) ? 1:0;
 }
 
 
