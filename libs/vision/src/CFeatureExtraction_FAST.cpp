@@ -91,8 +91,16 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	if (options.FASTOptions.use_KLT_response)
 	{
 		const unsigned int KLT_half_win = 4; 
-		for (size_t i=0;i<N;i++)	
-			cv_feats[i].response = inImg_gray.KLT_response(cv_feats[i].pt.x,cv_feats[i].pt.y,KLT_half_win);
+		const unsigned int max_x = inImg_gray.getWidth() - 1 - KLT_half_win;
+		const unsigned int max_y = inImg_gray.getHeight() - 1 - KLT_half_win;
+		for (size_t i=0;i<N;i++)
+		{
+			const unsigned int x = cv_feats[i].pt.x;
+			const unsigned int y = cv_feats[i].pt.y;
+			if (x>KLT_half_win && y>KLT_half_win && x<=max_x && y<=max_y)
+					cv_feats[i].response = inImg_gray.KLT_response(x,y,KLT_half_win);
+			else	cv_feats[i].response = -100;
+		}
 	}
 
 	// Now:

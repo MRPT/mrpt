@@ -88,14 +88,59 @@ void CGenericFeatureTracker::trackFeatures(
 	m_timlog.leave("[CGenericFeatureTracker] trackFeatures_impl");
 
 	// ========================================================
-	// (2nd STEP) For successfully followed features, update its patch:
+	// (2nd STEP) For successfully followed features, check their KLT response??
+	// ========================================================
+	const int	check_KLT_response_every = extra_params.getWithDefaultVal("check_KLT_response_every",0);
+	const float minimum_KLT_response = extra_params.getWithDefaultVal("minimum_KLT_response",1000);
+
+	if (check_KLT_response_every>0 && ++m_check_KLT_counter>=size_t(check_KLT_response_every))
+	{
+		m_timlog.enter("[CGenericFeatureTracker] check KLT responses");
+		m_check_KLT_counter = 0;
+
+		const unsigned int check_KLT_response_half_win = extra_params.getWithDefaultVal("check_KLT_response_half_win",4);
+
+		const unsigned int max_x = img_width  - check_KLT_response_half_win;
+		const unsigned int max_y = img_height - check_KLT_response_half_win;
+
+		for (CFeatureList::iterator itFeat = featureList.begin(); itFeat != featureList.end();  ++itFeat)
+		{
+			CFeature* ft = itFeat->pointer();
+			if (ft->track_status!=status_TRACKED) 
+				continue; // Skip if it's not correctly tracked.
+
+			const unsigned int x = ft->x;
+			const unsigned int y = ft->y;
+			if (x>check_KLT_response_half_win && y>check_KLT_response_half_win && x<max_x && y<max_y)
+			{	// Update response:
+				ft->response = cur_gray.KLT_response(x,y,check_KLT_response_half_win);
+
+				// Is it good enough? http://www.youtube.com/watch?v=5kMi9tvuuZY
+				if (ft->response<minimum_KLT_response)
+				{	// Nope!
+					ft->track_status = status_LOST;
+				}
+			}
+			else
+			{	// Out of bounds
+				ft->response = 0; 
+				ft->track_status = status_OOB;
+			}
+		}
+
+		m_timlog.leave("[CGenericFeatureTracker] check KLT responses");
+
+	} // end check_KLT_response_every
+	
+
+	// ========================================================
+	// (3rd STEP) For successfully followed features, update its patch:
 	// ========================================================
 	const int update_patches_every = extra_params.getWithDefaultVal("update_patches_every",0);
 
 	if (update_patches_every>0 && ++m_update_patches_counter>=size_t(update_patches_every))
 	{
 		m_timlog.enter("[CGenericFeatureTracker] update patches");
-
 		m_update_patches_counter = 0;
 
 		// Update the patch for each valid feature:
@@ -130,7 +175,7 @@ void CGenericFeatureTracker::trackFeatures(
 	} // end if update_patches_every
 
 	// ========================================================
-	// (3rd STEP) Do detection of new features??
+	// (4th STEP) Do detection of new features??
 	// ========================================================
 	const bool   add_new_features = extra_params.getWithDefaultVal("add_new_features",0)!=0;
 	const double threshold_dist_to_add_new = extra_params.getWithDefaultVal("add_new_feat_min_separation",15);
@@ -165,8 +210,8 @@ void CGenericFeatureTracker::trackFeatures(
 
 		// Use KLT response instead of the OpenCV's original "response" field:
 		{
-			const unsigned int KLT_half_win = 4; 
-			for (size_t i=0;i<N;i++)	
+			const unsigned int KLT_half_win = 2; 
+			for (size_t i=0;i<N;i++)
 			{
 				const unsigned int x = new_feats[i].pt.x;
 				const unsigned int y = new_feats[i].pt.y;
@@ -191,13 +236,11 @@ void CGenericFeatureTracker::trackFeatures(
 		const size_t patchSize = extra_params.getWithDefaultVal("add_new_feat_patch_size",11);
 		const int 	 offset		= (int)patchSize/2 + 1;
 
-		const float minResponseToAccept = 100;
-
 		for (size_t i=0;i<nNewToCheck && featureList.size()<maxNumFeatures;i++)
 		{
 			const KeyPoint &kp = new_feats[sorted_indices[i]];
 
-			if (kp.response<minResponseToAccept) continue;
+			if (kp.response<minimum_KLT_response) continue;
 
 			double min_dist_sqr = square(10000);
 

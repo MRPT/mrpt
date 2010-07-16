@@ -66,6 +66,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	unsigned int	step_num = 0;
 
 	bool  SHOW_FEAT_IDS = true;
+	bool  SHOW_RESPONSES = true;
+
 	bool  DO_SAVE_VIDEO = false;
 	bool  DO_HIST_EQUALIZE_IN_GRAYSCALE = false;
 	string VIDEO_OUTPUT_FILE = "./tracking_video.avi";
@@ -78,18 +80,18 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_KL );
 	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_PatchMatch );
 	
-	//tracker->extra_params["match_method"] = 0;
-
 	tracker->extra_params["window_width"]  = 5;
 	tracker->extra_params["window_height"] = 5;
 
 	// Set of parameters common to any tracker implementation:
 	tracker->extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
-	tracker->extra_params["add_new_feat_min_separation"]  = 15;
-	tracker->extra_params["add_new_feat_max_features"]    = 100;
+	tracker->extra_params["add_new_feat_min_separation"]  = 25;
+	tracker->extra_params["add_new_feat_max_features"]    = 150;
 	tracker->extra_params["add_new_feat_patch_size"]      = 21;
 
 	tracker->extra_params["update_patches_every"]		= 0;  // Update patches at all frames.
+
+	tracker->extra_params["check_KLT_response_every"]	= 5;	// Re-check the KLT-response to assure features are in good points.
 
 	tracker->enableTimeLogger(true); // Do time profiling.
 
@@ -215,7 +217,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			extra_tim_to_wait = 1.0/MAX_FPS - 1.0/fps;
 		}
 		{	// Tracked feats:
-			theImg.drawFeatures(trackedFeats, TColor(0,0,255), SHOW_FEAT_IDS);
+			theImg.drawFeatures(trackedFeats, TColor(0,0,255), SHOW_FEAT_IDS, SHOW_RESPONSES);
 			theImg.textOut(3,22,format("# feats: %u", (unsigned int)trackedFeats.size()  ),TColor(200,20,20) );
 		}
 

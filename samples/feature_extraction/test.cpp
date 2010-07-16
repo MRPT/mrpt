@@ -40,6 +40,10 @@ using namespace std;
 string   myDataDir( MRPT_EXAMPLES_BASE_DIRECTORY + string("imageConvolutionFFT/") );
 //string	myDataDir = "D:/Trabajo/MRPT-trunk/samples/imageConvolutionFFT/";
 
+const string the_img_for_extract_feats = myDataDir+string("test_image.jpg");
+//const string the_img_for_extract_feats = "/imgs_temp/o.jpg";
+
+
 void TestTrackFeatures()
 {
 
@@ -291,14 +295,12 @@ void TestExtractFeatures()
 	CFeatureList		featsHarris, featsKLT, featsSIFT_Hess, featsSIFT_Lowe, featsSIFT_Vedaldi, featsSURF, featsFAST;
 	CImage				img;
 
-	string the_img = myDataDir+string("test_image.jpg");
-
-	if (!img.loadFromFile(the_img ))
+	if (!img.loadFromFile(the_img_for_extract_feats ))
 	{
-		cerr << "Cannot load " << the_img  << endl;
+		cerr << "Cannot load " << the_img_for_extract_feats  << endl;
 		return;
 	}
-	cout << "Loaded test image: " << endl << the_img << endl;
+	cout << "Loaded test image: " << endl << the_img_for_extract_feats << endl;
 	cout << "--------------------------------------------------------------------------" << endl << endl;
 
 	CTicTac	tictac;
@@ -313,13 +315,19 @@ void TestExtractFeatures()
 	cout << format("  %.03fms",tictac.Tac()*1000) << endl << endl;
 	featsHarris.saveToTextFile("f_harris.txt");
 	wind1.setWindowTitle("Harris detected features");
-	wind1.showImageAndPoints( img, featsHarris );
+	{
+		CImage img_aux = img;
+		img_aux.drawFeatures(featsHarris);
+		wind1.showImage( img_aux );
+	}
 
 	cout << "Extracting FAST features... [f_fast.txt]" << endl;
 	tictac.Tic();
 	fExt.options.featsType = featFAST;
-	fExt.options.FASTOptions.threshold = 150;
-	fExt.detectFeatures( img, featsFAST, 0, 10 );
+	fExt.options.FASTOptions.threshold = 15; //150;
+	fExt.options.FASTOptions.min_distance = 4;
+	fExt.options.FASTOptions.use_KLT_response = true;
+	fExt.detectFeatures( img, featsFAST, 0,  500 /* max num feats */  );
 	cout << "Detected " << featsFAST.size() << " features in ";
 	cout << format("  %.03fms",tictac.Tac()*1000) << endl << endl;
 	featsFAST.saveToTextFile("f_fast.txt");

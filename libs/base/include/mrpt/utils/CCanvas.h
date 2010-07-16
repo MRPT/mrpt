@@ -347,15 +347,16 @@ namespace mrpt
 			 * \sa drawFeaturesSimple
 			 */
 			template <class FEATURELIST>
-			void  drawFeatures( const FEATURELIST &list, const TColor &color = TColor::red, const bool &showIDs = false )
+			void  drawFeatures( const FEATURELIST &list, const TColor &color = TColor::red, const bool showIDs = false, const bool showResponse = false  )
 			{
 				for(typename FEATURELIST::const_iterator i = list.begin(); i != list.end(); ++i )
 				{
-					this->cross( round((*i)->x), round((*i)->y), color, '+' );
-					if( showIDs )
-						this->textOut( round((*i)->x), round((*i)->y), format("%u", static_cast<unsigned int>((*i)->ID)), 0xFF0000 );
-					if( ! (*i)->isPointFeature() )
-						this->drawCircle( round((*i)->x), round((*i)->y), (*i)->scale, TColor::red );
+					const int x = round((*i)->x);
+					const int y = round((*i)->y);
+					this->cross(x,y, color, '+' );
+					if( showIDs ) this->textOut(x,y, format("%u", static_cast<unsigned int>((*i)->ID)), 0xFF0000 );
+					if (showResponse) this->textOut( x,y+10, format("R:%u", static_cast<unsigned int>((*i)->response)), 0xFF0000 );
+					if( ! (*i)->isPointFeature() ) this->drawCircle( round((*i)->x), round((*i)->y), (*i)->scale, TColor::red );
 				}
 			}
 			
