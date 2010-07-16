@@ -48,7 +48,7 @@ string   myIniFile( MRPT_EXAMPLES_BASE_DIRECTORY + string("face_detection/FACE_D
 
 CFaceDetection faceDetector;
 
-bool showEachDetectedFace = false; // If using a 3D face detection (actually with swissrange
+bool showEachDetectedFace = false; // If using a 3D face detection (actually with swissrange) we want stop every a face is detected for analize it.
 
 #ifdef MRPT_OPENCV_SRC_DIR
 static string OPENCV_SRC_DIR = MRPT_OPENCV_SRC_DIR;

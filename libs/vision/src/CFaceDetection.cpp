@@ -48,7 +48,7 @@ CFaceDetection::CFaceDetection()
 void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 {
 	m_options.confidenceThreshold	= cfg.read_int( "FaceDetection", "confidenceThreshold", 125 );
-	m_options.planeThreshold		= cfg.read_double( "FaceDetection", "planeThreshold", 0.5 );
+	m_options.planeThreshold		= cfg.read_double( "FaceDetection", "planeThreshold", 50 );
 	m_options.regionsThreshold		= cfg.read_double( "FaceDetection", "regionsThreshold", 0.5 );
 
 	cascadeClassifier.init( cfg );
@@ -97,14 +97,14 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 				{
 					for ( unsigned int k = 0; k < c2-c1; k++ )
 					{
-						if ( ( confidence ) && ( *(o->confidenceImage.get_unsafe( j, k, 0 )) > m_options.confidenceThreshold )) // TODO: Check if the point is valid
+						if ( ( confidence ) && ( *(o->confidenceImage.get_unsafe( j+r1, k+c1, 0 )) > m_options.confidenceThreshold )) // TODO: Check if the point is valid
 						{
-							int position = imgWidth*j + c1 + k;
+							int position = imgWidth*(j+r1) + c1 + k;
 							points.push_back( TPoint3D(o->points3D_x[position],o->points3D_y[position],o->points3D_z[position]) );
 						}
 						else if ( !confidence )
 						{
-							int position = imgWidth*j + c1 + k;
+							int position = imgWidth*(j+r1) + c1 + k;
 							points.push_back( TPoint3D(o->points3D_x[position],o->points3D_y[position],o->points3D_z[position]) );
 						}
 					}
@@ -160,6 +160,11 @@ bool CFaceDetection::checkIfFacePlane( const vector<TPoint3D> &points )
 {
 	// Try to ajust a plane
 	TPlane plane;
+
+	ofstream f;
+	f.open("planeEstimations.txt", ofstream::app);
+	f << (double)getRegressionPlane(points,plane) << endl;
+	f.close();
 
 	if ( getRegressionPlane(points,plane) < m_options.planeThreshold )
 		return true;

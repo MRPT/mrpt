@@ -538,7 +538,7 @@ void CObservation3DRangeScan::getZoneAsObs(
 	// Copy zone of range image
 	obs.hasRangeImage = hasRangeImage;
 	if ( hasRangeImage )
-		rangeImage.extractSubmatrix( c1, c2, r1, r2, obs.rangeImage );
+		rangeImage.extractSubmatrix( r1, r2, c1, c2, obs.rangeImage );
 
 	// Copy zone of intensity image
 	obs.hasIntensityImage = hasIntensityImage;
