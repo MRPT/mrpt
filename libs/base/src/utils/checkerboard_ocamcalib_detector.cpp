@@ -150,7 +150,7 @@ struct CvCBQuad
 // FUNCTION PROTOTYPES
 //===========================================================================
 int icvGenerateQuads( std::vector<CvCBQuadPtr> &quads, vector<CvCBCornerPtr> &corners,
-                             CvMat *image, int flags, int dilation,
+                             const mrpt::utils::CImage &img, int flags, int dilation,
 							 bool firstRun );
 
 void mrFindQuadNeighbors2( std::vector<CvCBQuadPtr> &quads, int quad_count, int dilation);
@@ -176,7 +176,7 @@ int myQuads2Points( const std::vector<CvCBQuadPtr> &output_quads, const CvSize &
 // MAIN FUNCTION
 //===========================================================================
 // Return: -1: errors, 0: not found, 1: found OK
-int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<CvPoint2D32f> &out_corners)
+int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_size, std::vector<CvPoint2D32f> &out_corners)
 {
 	// PART 0: INITIALIZATION
 	//-----------------------------------------------------------------------
@@ -187,9 +187,9 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
     const int min_dilations		=  1;
     const int max_dilations		=  6;
     int found					=  0;
-    CvMat* norm_img				=  0;
-    CvMat* thresh_img			=  0;
-	CvMat* thresh_img_save		=  0;
+    //CvMat* norm_img				=  0;
+    //CvMat* thresh_img			=  0;
+	//CvMat* thresh_img_save		=  0;
 
 	// cv::MemStorage	storage = cvCreateMemStorage();
 
@@ -204,18 +204,18 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 
 	// Further initializations
     int quad_count, group_idx, dilations;
-    CvMat stub, *img = (CvMat*)arr;
 
 	// Read image from input
-    img = cvGetMat( img, &stub );
-
+    //CvMat stub, *img = (CvMat*)arr;
+    //img = cvGetMat( img, &stub );
 
 	// Error handling, write error message to error.txt
-    if( CV_MAT_DEPTH( img->type ) != CV_8U || CV_MAT_CN( img->type ) == 2 )
-	{
-		std::cerr << "Only 8-bit grayscale or color images are supported" << endl;
-		return -1;
-	}
+//    if( CV_MAT_DEPTH( img->type ) != CV_8U || CV_MAT_CN( img->type ) == 2 )
+//	{
+//		std::cerr << "Only 8-bit grayscale or color images are supported" << endl;
+//		return -1;
+//	}
+
     if( pattern_size.width < 2 || pattern_size.height < 2 )
 	{
         std::cerr  << "Pattern should have at least 2x2 size" << endl;
@@ -227,37 +227,43 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 		return -1;
 	}
 
-	// Create memory storage
-    thresh_img = cvCreateMat( img->rows, img->cols, CV_8UC1 );
-	thresh_img_save = cvCreateMat( img->rows, img->cols, CV_8UC1 );
+	// Assure it's a grayscale image:
+	CImage img(UNINITIALIZED_IMAGE);
+	if (img_.isColor())
+			img_.grayscale(img);
+	else 	img.setFromImageReadOnly(img_);
 
+    CImage thresh_img(img.getWidth(),img.getHeight(), CH_GRAY ); // = cvCreateMat( img->rows, img->cols, CV_8UC1 );
+	CImage thresh_img_save(img.getWidth(),img.getHeight(), CH_GRAY ); //  = cvCreateMat( img->rows, img->cols, CV_8UC1 );
+
+	// JL: Move these constructors out of the loops:
+	IplConvKernel *kernel1 = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CROSS,NULL);
+	IplConvKernel *kernel2 = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_RECT,NULL);
 
 	// Image histogramm normalization and
 	// BGR to Grayscale image conversion (if applicable)
 	// MARTIN: Set to "false"
-    if( CV_MAT_CN(img->type) != 1 || (flags & CV_CALIB_CB_NORMALIZE_IMAGE) )
-    {
-        norm_img = cvCreateMat( img->rows, img->cols, CV_8UC1 );
-
-        if( CV_MAT_CN(img->type) != 1 )
-        {
-            cvCvtColor( img, norm_img, CV_BGR2GRAY );
-            img = norm_img;
-        }
-
-        if(false)
-        {
-            cvEqualizeHist( img, norm_img );
-            img = norm_img;
-        }
-    }
+//    if( CV_MAT_CN(img->type) != 1 || (flags & CV_CALIB_CB_NORMALIZE_IMAGE) )
+//    {
+//        norm_img = cvCreateMat( img->rows, img->cols, CV_8UC1 );
+//        if( CV_MAT_CN(img->type) != 1 )
+//        {
+//            cvCvtColor( img, norm_img, CV_BGR2GRAY );
+//            img = norm_img;
+//        }
+//        if(false)
+//        {
+//            cvEqualizeHist( img, norm_img );
+//            img = norm_img;
+//        }
+//    }
 
 	// For image binarization (thresholding)
     // we use an adaptive threshold with a gaussian mask
 	// ATTENTION: Gaussian thresholding takes MUCH more time than Mean thresholding!
-    block_size = cvRound(MIN(img->cols,img->rows)*0.2)|1;
-    cvAdaptiveThreshold( img, thresh_img, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, block_size, 0 );
-	cvCopy( thresh_img, thresh_img_save);
+    block_size = cvRound(MIN(img.getWidth(),img.getHeight())*0.2)|1;
+    cvAdaptiveThreshold( img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, block_size, 0 );
+	cvCopy( thresh_img.getAs<IplImage>(), thresh_img_save.getAs<IplImage>());
 
 
 	// PART 1: FIND LARGEST PATTERN
@@ -269,14 +275,14 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
     for( dilations = min_dilations; dilations <= max_dilations; dilations++ )
     {
 		// Calling "cvCopy" again is much faster than rerunning "cvAdaptiveThreshold"
-		cvCopy( thresh_img_save, thresh_img);
+		cvCopy( thresh_img_save.getAs<IplImage>(), thresh_img.getAs<IplImage>() );
 
 
 //VISUALIZATION--------------------------------------------------------------
 #if VIS
  		//cvNamedWindow( "Original Image", 1 );
 		//cvShowImage( "Original Image", img);
-		cvSaveImage("./OrigImg.png", img);
+		img.saveToFile("./OrigImg.png");
 		//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
@@ -287,27 +293,25 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 		// homogeneous dilation is performed, which is crucial for small,
 		// distorted checkers. Use the CROSS kernel first, since its action
 		// on the image is more subtle
-		IplConvKernel *kernel1 = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CROSS,NULL);
-		IplConvKernel *kernel2 = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_RECT,NULL);
 
         if (dilations >= 1)
-			cvDilate( thresh_img, thresh_img, kernel1, 1);
+			cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel1, 1);
 		if (dilations >= 2)
-			cvDilate( thresh_img, thresh_img, kernel2, 1);
+			cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel2, 1);
 		if (dilations >= 3)
-			cvDilate( thresh_img, thresh_img, kernel1, 1);
+			cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel1, 1);
 		if (dilations >= 4)
-			cvDilate( thresh_img, thresh_img, kernel2, 1);
+			cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel2, 1);
 		if (dilations >= 5)
-			cvDilate( thresh_img, thresh_img, kernel1, 1);
+			cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel1, 1);
 		if (dilations >= 6)
-			cvDilate( thresh_img, thresh_img, kernel2, 1);
+			cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel2, 1);
 
 //VISUALIZATION--------------------------------------------------------------
 #if VIS
 		//cvNamedWindow( "After adaptive Threshold (and Dilation)", 1 );
 		//cvShowImage( "After adaptive Threshold (and Dilation)", thresh_img);
-		cvSaveImage("./afterDilation.png", thresh_img);
+		thresh_img.saveToFile("./afterDilation.png");
 		//cvWaitKey(0);
 #endif
 //END------------------------------------------------------------------------
@@ -317,8 +321,9 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 		// line around the image edge. Otherwise FindContours will miss those
 		// clipped rectangle contours. The border color will be the image mean,
 		// because otherwise we risk screwing up filters like cvSmooth()
-        cvRectangle( thresh_img, cvPoint(0,0), cvPoint(thresh_img->cols-1,
-                     thresh_img->rows-1), CV_RGB(255,255,255), 3, 8);
+        cvRectangle( thresh_img.getAs<IplImage>(), cvPoint(0,0),
+					cvPoint(thresh_img.getWidth()-1,thresh_img.getHeight()-1),
+					CV_RGB(255,255,255), 3, 8);
 
 
 		// Generate quadrangles in the following function
@@ -327,12 +332,18 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
         if( quad_count <= 0 )
             continue;
 
+        // The following function finds and assigns neighbor quads to every
+		// quadrangle in the immediate vicinity fulfilling certain
+		// prerequisites
+        mrFindQuadNeighbors2( quads, quad_count, dilations);
+
 //VISUALIZATION--------------------------------------------------------------
 #if VIS
+		IplImage* imageCopy22 = cvCreateImage( cvGetSize(thresh_img.getAs<IplImage>()), 8, 3 );
+	{
   		//cvNamedWindow( "all found quads per dilation run", 1 );
-		IplImage* imageCopy2 = cvCreateImage( cvGetSize(thresh_img), 8, 1 );
-		IplImage* imageCopy22 = cvCreateImage( cvGetSize(thresh_img), 8, 3 );
-		cvCopy( thresh_img, imageCopy2);
+		IplImage* imageCopy2 = cvCreateImage( cvGetSize(thresh_img.getAs<IplImage>()), 8, 1 );
+		cvCopy( thresh_img.getAs<IplImage>(), imageCopy2);
 		cvCvtColor( imageCopy2, imageCopy22, CV_GRAY2BGR );
 
 		for( int kkk = 0; kkk < quad_count; kkk++ )
@@ -352,22 +363,12 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 			cvLine( imageCopy22, pt[2], pt[3], CV_RGB(255,255,0), 1, 8 );
 			cvLine( imageCopy22, pt[3], pt[0], CV_RGB(255,255,0), 1, 8 );
 		}
-		//cvShowImage( "all found quads per dilation run", imageCopy22);
-		cvSaveImage("./allFoundQuads.png", imageCopy22);
-		//cvWaitKey(0);
-#endif
-//END------------------------------------------------------------------------
+		static int cnt = 0;
+		cnt++;
+		cvSaveImage( mrpt::format("./allFoundQuads_%05i.png",cnt).c_str(), imageCopy22);
 
-
-        // The following function finds and assigns neighbor quads to every
-		// quadrangle in the immediate vicinity fulfilling certain
-		// prerequisites
-        mrFindQuadNeighbors2( quads, quad_count, dilations);
-
-//VISUALIZATION--------------------------------------------------------------
-#if VIS
 		//cvNamedWindow( "quads with neighbors", 1 );
-		IplImage* imageCopy3 = cvCreateImage( cvGetSize(thresh_img), 8, 3 );
+		IplImage* imageCopy3 = cvCreateImage( cvGetSize(thresh_img.getAs<IplImage>()), 8, 3 );
 		cvCopy( imageCopy22, imageCopy3);
 		CvPoint pt;
 		int scale = 0;
@@ -386,9 +387,8 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 				}
 			}
 		}
-		//cvShowImage( "quads with neighbors", imageCopy3);
-		cvSaveImage("./allFoundNeighbors.png", imageCopy3);
-		//cvWaitKey(0);
+		cvSaveImage( mrpt::format("./allFoundNeighbors_%05i.png",cnt).c_str(), imageCopy3);
+	}
 #endif
 //END------------------------------------------------------------------------
 
@@ -445,7 +445,7 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 #if VIS
 				// display all corners in INCREASING ROW AND COLUMN ORDER
 				//cvNamedWindow( "Corners in increasing order", 1 );
-				IplImage* imageCopy11 = cvCreateImage( cvGetSize(thresh_img), 8, 3 );
+				IplImage* imageCopy11 = cvCreateImage( cvGetSize(thresh_img.getAs<IplImage>()), 8, 3 );
 				cvCopy( imageCopy22, imageCopy11);
 				// Assume min and max rows here, since we are outside of the
 				// relevant function
@@ -535,34 +535,32 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 			//	continue;
 
 			// Calling "cvCopy" again is much faster than rerunning "cvAdaptiveThreshold"
-			cvCopy( thresh_img_save, thresh_img);
-
-			IplConvKernel *kernel1 = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CROSS,NULL);
-			IplConvKernel *kernel2 = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_RECT,NULL);
+			cvCopy( thresh_img_save.getAs<IplImage>(), thresh_img.getAs<IplImage>());
 
 			if (dilations >= 1)
-				cvDilate( thresh_img, thresh_img, kernel1, 1);
+				cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel1, 1);
 			if (dilations >= 2)
-				cvDilate( thresh_img, thresh_img, kernel2, 1);
+				cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel2, 1);
 			if (dilations >= 3)
-				cvDilate( thresh_img, thresh_img, kernel1, 1);
+				cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel1, 1);
 			if (dilations >= 4)
-				cvDilate( thresh_img, thresh_img, kernel2, 1);
+				cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel2, 1);
 			if (dilations >= 5)
-				cvDilate( thresh_img, thresh_img, kernel1, 1);
+				cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel1, 1);
 			if (dilations >= 6)
-				cvDilate( thresh_img, thresh_img, kernel2, 1);
+				cvDilate( thresh_img.getAs<IplImage>(), thresh_img.getAs<IplImage>(), kernel2, 1);
 
-			cvRectangle( thresh_img, cvPoint(0,0), cvPoint(thresh_img->cols-1,
-						 thresh_img->rows-1), CV_RGB(255,255,255), 3, 8);
+			cvRectangle( thresh_img.getAs<IplImage>(), cvPoint(0,0),
+						cvPoint(thresh_img.getWidth()-1,thresh_img.getHeight()-1),
+						CV_RGB(255,255,255), 3, 8);
 
 	//VISUALIZATION--------------------------------------------------------------
 	#if VIS
 			//cvNamedWindow( "PART2: Starting Point", 1 );
-			IplImage* imageCopy23 = cvCreateImage( cvGetSize(thresh_img), 8, 3 );
-			cvCvtColor( thresh_img, imageCopy23, CV_GRAY2BGR );
+			IplImage* imageCopy23 = cvCreateImage( cvGetSize(thresh_img.getAs<IplImage>()), 8, 3 );
+			cvCvtColor( thresh_img.getAs<IplImage>(), imageCopy23, CV_GRAY2BGR );
 
-			CvPoint *pt = new CvPoint[4];
+			CvPoint pt[4];
 			for( int kkk = 0; kkk < max_count; kkk++ )
 			{
 				const CvCBQuadPtr & print_quad2 = output_quad_group[kkk];
@@ -613,10 +611,10 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 				cvLine( imageCopy23, pt[2], pt[3], CV_RGB(255,0,0), 1, 8 );
 				cvLine( imageCopy23, pt[3], pt[0], CV_RGB(255,0,0), 1, 8 );
 				//compute center of print_quad
-				int x1 = (pt[0].x + pt[1].x)/2;
-				int y1 = (pt[0].y + pt[1].y)/2;
-				int x2 = (pt[2].x + pt[3].x)/2;
-				int y2 = (pt[2].y + pt[3].y)/2;
+//				int x1 = (pt[0].x + pt[1].x)/2;
+//				int y1 = (pt[0].y + pt[1].y)/2;
+//				int x2 = (pt[2].x + pt[3].x)/2;
+//				int y2 = (pt[2].y + pt[3].y)/2;
 
 				//int x3 = (x1 + x2)/2;
 				//int y3 = (y1 + y2)/2;
@@ -642,17 +640,16 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 				pt[3].x = (int)print_quad->corners[3]->pt.x;
 				pt[3].y = (int)print_quad->corners[3]->pt.y;
 				//compute center of print_quad
-				int x1 = (pt[0].x + pt[1].x)/2;
-				int y1 = (pt[0].y + pt[1].y)/2;
-				int x2 = (pt[2].x + pt[3].x)/2;
-				int y2 = (pt[2].y + pt[3].y)/2;
-
-				int x3 = (x1 + x2)/2;
-				int y3 = (y1 + y2)/2;
-
+//				int x1 = (pt[0].x + pt[1].x)/2;
+//				int y1 = (pt[0].y + pt[1].y)/2;
+//				int x2 = (pt[2].x + pt[3].x)/2;
+//				int y2 = (pt[2].y + pt[3].y)/2;
+//
+//				int x3 = (x1 + x2)/2;
+//				int y3 = (y1 + y2)/2;
 				// indicate the quad number in the image
-				char str[255];
-				sprintf(str,"%i",kkk);
+//				char str[255];
+//				sprintf(str,"%i",kkk);
 				//CvFont font;
 				//cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX, 0.5, 0.5, 0, 1);
 				//cvPutText(imageCopy23, str, cvPoint(x3,y3), &font, CV_RGB(0,0,0));
@@ -764,6 +761,11 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
 
 	} // JL: Was label "exit:", but again, http://xkcd.com/292/ ;-)
 
+
+	// Free mem:
+	cvReleaseStructuringElement(&kernel1);
+	cvReleaseStructuringElement(&kernel2);
+
 	/*
 	// MARTIN:
 	found = mrWriteCorners( output_quad_group, max_count, pattern_size, min_number_of_corners);
@@ -775,11 +777,6 @@ int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<
         std::cerr  << "While linking the corners a problem was encountered. No corner sequence is returned. " << endl;
 		return -1;
 	}
-
-
-	// Release allocated memory
-    cvReleaseMat( &norm_img );
-    cvReleaseMat( &thresh_img );
 
 	// Return found
 	// Found can have the values
@@ -1994,7 +1991,7 @@ int mrAugmentBestRun( std::vector<CvCBQuadPtr> &new_quads, int new_quad_count, i
 // GENERATE QUADRANGLES
 //===========================================================================
 int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out_corners,
-                  CvMat *image, int flags, int dilation, bool firstRun )
+                  const mrpt::utils::CImage &image, int flags, int dilation, bool firstRun )
 {
 	// Initializations
     int quad_count = 0;
@@ -2013,13 +2010,13 @@ int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out
 
     // Empiric sower bound for the size of allowable quadrangles.
 	// MARTIN, modified: Added "*0.1" in order to find smaller quads.
-	const int min_size = cvRound( image->cols * image->rows * .03 * 0.01 * 0.92 * 0.1);
+	const int min_size = cvRound( image.getWidth() * image.getHeight() * .03 * 0.01 * 0.92 * 0.1);
 
 
     root = cvCreateSeq( 0, sizeof(CvSeq), sizeof(CvSeq*), temp_storage );
 
     // Initialize contour retrieving routine
-    scanner = cvStartFindContours( image, temp_storage, sizeof(CvContourEx), CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
+    scanner = cvStartFindContours( (IplImage*)image.getAsIplImage(), temp_storage, sizeof(CvContourEx), CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
 
     // Get all the contours one by one
     while( (src_contour = cvFindNextContour( scanner )) != 0 )
@@ -2156,6 +2153,8 @@ int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out
 		out_corners.clear();
         quad_count = 0;
     }
+
+	cvClearSeq(root);
 
     return quad_count;
 }

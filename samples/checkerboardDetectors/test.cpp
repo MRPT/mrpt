@@ -56,7 +56,7 @@ void TestCheckerboardDetectors()
 
 	// Detect:
 	timlog.enter("findChessboardCorners [OpenCV]");
-	
+
 	bool detectOk1 = img.findChessboardCorners(
 				cornerCoords,
 				checkerboard_size_x, checkerboard_size_y,
@@ -72,7 +72,7 @@ void TestCheckerboardDetectors()
 
 
 	timlog.enter("findChessboardCorners [Scaramuzza]");
-	
+
 	bool detectOk2 = img.findChessboardCorners(
 				cornerCoords,
 				checkerboard_size_x, checkerboard_size_y,
@@ -86,6 +86,7 @@ void TestCheckerboardDetectors()
 	CImage img_detect2 = img;
 	img_detect2.drawChessboardCorners(cornerCoords,checkerboard_size_x,checkerboard_size_y);
 
+	return;
 	//ASSERT_(detectOk1 && detectOk2);
 
 	// Show results:

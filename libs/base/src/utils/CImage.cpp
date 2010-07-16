@@ -760,6 +760,9 @@ void  CImage::setFromIplImageReadOnly( void* iplImage )
 	MRPT_START;
 
 #if MRPT_HAS_OPENCV
+	ASSERT_(iplImage!=NULL)
+	ASSERTMSG_(iplImage!=this->img,"Trying to assign read-only to itself.")
+
 	releaseIpl();
 	img = (IplImage*)iplImage;
 	m_imgIsReadOnly = true;
@@ -2677,7 +2680,7 @@ void CImage::rotateImage( double angle_radians, unsigned int center_x, unsigned 
 // Declaration of auxiliary functions in checkerboard_ocamcalib_detector.cpp
 #if MRPT_HAS_OPENCV
 	// Return: -1: errors, 0: not found, 1: found OK
-	int cvFindChessboardCorners3( const void* arr, CvSize pattern_size, std::vector<CvPoint2D32f> &out_corners);
+	int cvFindChessboardCorners3( const mrpt::utils::CImage & img, CvSize pattern_size, std::vector<CvPoint2D32f> &out_corners);
 #endif
 
 
@@ -2739,15 +2742,15 @@ bool CImage::findChessboardCorners(
 	else
 	{
 		// Return: -1: errors, 0: not found, 1: found OK
-		corners_found = 1 == cvFindChessboardCorners3( 
-			static_cast<IplImage*>(img.getAsIplImage()), 
-			check_size, 
+		corners_found = 1 == cvFindChessboardCorners3(
+			img,
+			check_size,
 			corners_list
 			);
 	}
 
 	// Check # of corners:
-	if (corners_found && corners_count!=CORNERS_COUNT) 
+	if (corners_found && corners_count!=CORNERS_COUNT)
 		corners_found=false;
 
 	if( corners_found )
@@ -2996,8 +2999,8 @@ void CImage::findMultipleChessboardsCorners(
 
 	// Return: -1: errors, 0: not found, 1: found OK
 	bool corners_found = 1==cvFindChessboardCorners3(
-		img.getAs<IplImage>(), 
-		cvSize(check_size_x,check_size_y), 
+		img,
+		cvSize(check_size_x,check_size_y),
 		corners_list);
 
 	if( corners_found )
@@ -3052,7 +3055,7 @@ float CImage::KLT_response(
 
 	// Gradient sums: Use integers since they're much faster than doubles/floats!!
 	int32_t gxx = 0;
-	int32_t gxy = 0;  
+	int32_t gxy = 0;
 	int32_t gyy = 0;
 
 	for (unsigned int yy = min_y; yy<=max_y; yy++)
