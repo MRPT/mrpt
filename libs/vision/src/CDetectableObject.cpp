@@ -38,6 +38,9 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CDetectableObject, CSerializable, mrpt::vision)
 IMPLEMENTS_SERIALIZABLE(CDetectable2D, CDetectableObject,mrpt::vision)
 IMPLEMENTS_SERIALIZABLE(CDetectable3D, CDetectable2D,mrpt::vision)
 
+extern CStartUpClassesRegister  mrpt_vision_class_reg;
+const int dumm2 = mrpt_vision_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
+
 void CDetectable2D::readFromStream(CStream &in, int version)
 {
 

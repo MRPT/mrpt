@@ -38,30 +38,30 @@ using namespace std;
 #define CASCADE  (reinterpret_cast<CascadeClassifier*>(m_cascade))
 #define CASCADE_CONST  (reinterpret_cast<const CascadeClassifier*>(m_cascade))
 
-CCascadeClassifierDetection::CCascadeClassifierDetection( string configFilename )
+// ------------------------------------------------------
+//				CCascadeClassifierDetection
+// ------------------------------------------------------
+
+CCascadeClassifierDetection::CCascadeClassifierDetection( )
 {
-	// load configuration values
-	CConfigFile config(configFilename);
-
-	m_options.cascadeFileName		= config.read_string("CascadeClassifier","cascadeFilename","");
-	m_options.scaleFactor			= config.read_double("DetectionOptions","scaleFactor",1.1);
-	m_options.minNeighbors			= config.read_int("DetectionOptions","minNeighbors",3);
-	m_options.flags					= config.read_int("DetectionOptions","flags",0);
-	m_options.minSize				= config.read_int("DetectionOptions","minSize",30);
-
-	m_cascade = new CascadeClassifier();
-
-	CASCADE->load( m_options.cascadeFileName );
-
-	if ( CASCADE->empty() )
-		throw  std::runtime_error("Incorrect cascade file.");
+	// Check if MRPT is using OpenCV
+	#if !MRPT_HAS_OPENCV
+		THROW_EXCEPTION("CCascadeClassifierDetection class requires MRPT built against OpenCV")
+	#endif
 }
+
+// ------------------------------------------------------
+//  			~CCascadeClassifierDetection
+// ------------------------------------------------------
 
 CCascadeClassifierDetection::~CCascadeClassifierDetection()
 {
 	delete CASCADE;
 }
 
+// ------------------------------------------------------
+//						  init
+// ------------------------------------------------------
 
 void CCascadeClassifierDetection::init(const mrpt::utils::CConfigFileBase &config)
 {
@@ -74,15 +74,21 @@ void CCascadeClassifierDetection::init(const mrpt::utils::CConfigFileBase &confi
 
 	m_cascade = new CascadeClassifier();
 
+	// Load cascade classifier from file
 	CASCADE->load( m_options.cascadeFileName );
 
+	// Check if cascade is empty
 	if ( CASCADE->empty() )
 		throw  std::runtime_error("Incorrect cascade file.");
 }
 
+// ------------------------------------------------------
+//				detectObjects (*CObservation)
+// ------------------------------------------------------
 
 void CCascadeClassifierDetection::detectObjects(CObservation *obs, vector_detectable_object &detected)
 {
+	// Obtain image from generic observation 
 	mrpt::utils::CImage *img = NULL;
 
 	if (IS_CLASS(obs,CObservationImage))
@@ -105,27 +111,39 @@ void CCascadeClassifierDetection::detectObjects(CObservation *obs, vector_detect
 	    mrpt::system::sleep(2);
 	    return;	
 	}
-
+	
+	// Call more specific detector
 	detectObjects(img, detected);
 }
+
+// ------------------------------------------------------
+//				  detectObjects (*CImage)
+// ------------------------------------------------------
 
 void CCascadeClassifierDetection::detectObjects(CImage *img, vector_detectable_object &detected)
 {
 	vector<Rect> objects;
 
+	// Some needed preprocessing
 	img->grayscaleInPlace();
 
 	// Convert to IplImage and copy it
 	IplImage *image = static_cast<IplImage*>(img->getAsIplImage());
 
-	CASCADE->detectMultiScale( cv::cvarrToMat(image), objects);
+	// Detect objects
+	CASCADE->detectMultiScale( cv::cvarrToMat(image), objects, m_options.scaleFactor,
+								m_options.minNeighbors, m_options.flags, 
+								Size(m_options.minSize,m_options.minSize) );
 
 	unsigned int N = objects.size();
 	//detected.resize( N );
 
+	// Convert from cv::Rect to vision::CDetectable2D
 	for ( unsigned int i = 0; i < N; i++ )
 	{
-		CDetectable2DPtr obj = CDetectable2DPtr( new CDetectable2D( objects[i].x, objects[i].y, objects[i].height, objects[i].width ) );
+		CDetectable2DPtr obj = 
+			CDetectable2DPtr( new CDetectable2D( objects[i].x, objects[i].y, objects[i].height, objects[i].width ) );
+
 		detected.push_back((CDetectableObjectPtr)obj);
 	}
 }

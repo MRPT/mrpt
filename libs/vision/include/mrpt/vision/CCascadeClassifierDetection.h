@@ -38,33 +38,39 @@ namespace mrpt
 		class VISION_IMPEXP CCascadeClassifierDetection: virtual public CObjectDetection
 		{
 		public:
-
-			CCascadeClassifierDetection( ) {};
-			CCascadeClassifierDetection( std::string configFile );
+			
+			CCascadeClassifierDetection( );
+			
 			virtual ~CCascadeClassifierDetection(); 
 
+			/** Initialize cascade classifier detection */
 			virtual void init(const mrpt::utils::CConfigFileBase &cfg );
 
+			/** Detect objects in a *CObservation
+			 * \return A vector with detected objects 
+			 */
 			virtual void detectObjects(CObservation *obs, vector_detectable_object &detected);
 
+			/** Detect objects in a *CImage
+			 * \return A vector with detected objects 
+			 */
 			virtual void detectObjects(CImage *img, vector_detectable_object &detected);
 
 		protected:
 
-			void * m_cascade;
+			void * m_cascade; //!< Cascade classifier object
 
 			struct TOptions
 			{
-				std::string	cascadeFileName;
-				double scaleFactor;
+				std::string	cascadeFileName; 
+				double scaleFactor;	
 				int minNeighbors;
 				int flags;
 				int minSize;
-			}m_options;
+			}m_options; //!< Cascade classifier options
 
 		}; // End of class
 	}
-
 }
 
 #endif

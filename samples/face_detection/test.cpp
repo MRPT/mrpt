@@ -43,17 +43,18 @@ using namespace mrpt::hwdrivers;
 using namespace std;
 
 #include <mrpt/examples_config.h>
+
 string   myDataDir( MRPT_EXAMPLES_BASE_DIRECTORY + string("face_detection/") );
-string   myIniFile( MRPT_EXAMPLES_BASE_DIRECTORY + string("face_detection/FACE_DETECTION_TEST.INI") );
+string   myInitFile( MRPT_EXAMPLES_BASE_DIRECTORY + string("face_detection/FACE_DETECTION_TEST.INI") );
 
 CFaceDetection faceDetector;
 
 bool showEachDetectedFace = false; // If using a 3D face detection (actually with swissrange) we want stop every a face is detected for analize it.
 
 #ifdef MRPT_OPENCV_SRC_DIR
-static string OPENCV_SRC_DIR = MRPT_OPENCV_SRC_DIR;
+	static string OPENCV_SRC_DIR = MRPT_OPENCV_SRC_DIR;
 #else
-static string OPENCV_SRC_DIR = "./";
+	static string OPENCV_SRC_DIR = "./";
 #endif
 
 // ------------------------------------------------------
@@ -259,7 +260,18 @@ void TestCameraFaceDetection()
 		}
 		else if (IS_CLASS(obs,CObservationStereoImages))
 		{
+			vector_detectable_object detected;
+			faceDetector.detectObjects( obs, detected );
+
 			CObservationStereoImagesPtr o=CObservationStereoImagesPtr(obs);
+
+			if ( detected.size() > 0 )
+			{	
+				ASSERT_( IS_CLASS(detected[0],CDetectable2D ) )
+				CDetectable2DPtr obj = CDetectable2DPtr( detected[0] );
+				o->imageRight.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );
+			}
+
 			win.showImage(o->imageRight);
 		}
 		
@@ -275,12 +287,16 @@ void TestCameraFaceDetection()
 	cout << "Closing..." << endl;
 }
 
+// ------------------------------------------------------
+// 				 TestImagesFaceDetection
+// ------------------------------------------------------
 void TestImagesFaceDetection(int argc, char *argv[])
 {
 	CImage		img;
 	CDisplayWindow  win("Result");
 	mrpt::utils::CTicTac	tictac;
 
+	// For each aditional argument, tty to load an image and detect faces
 	for ( int i = 1; i < argc; i++ )
 	{
 		string fileName( argv[i] );
@@ -311,10 +327,13 @@ void TestImagesFaceDetection(int argc, char *argv[])
 	}
 }
 
+// ------------------------------------------------------
+//					TestPrepareDetector
+// ------------------------------------------------------
 void TestPrepareDetector()
 {
 	CStringList  lst;
-	lst.loadFromFile(myIniFile);
+	lst.loadFromFile(myInitFile);
 	CConfigFileMemory  cfg; 
 	cfg.setContent(lst);
 	cfg.write("CascadeClassifier","cascadeFileName", OPENCV_SRC_DIR + "/data/haarcascades/haarcascade_frontalface_alt2.xml");

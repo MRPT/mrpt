@@ -64,21 +64,21 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 	vector_detectable_object localDetected;
 	cascadeClassifier.detectObjects( obs, localDetected );
 
+	// Check if we are using a 3D Camera and 3D points are saved
 	if ( (IS_CLASS(obs, CObservation3DRangeScan )) && ( localDetected.size() > 0 ) )
 	{
 		CObservation3DRangeScan* o = static_cast<CObservation3DRangeScan*>( obs );
 
 		if ( o->hasPoints3D )
 		{
-			// Detected objects to delete if they aren't a face
+			// Vector to save detected objects to delete if they aren't a face
 			vector<size_t> deleteDetected;
 
+			// Check if all possible detected faces satisfy a serial of constrains
 			for ( unsigned int i = 0; i < localDetected.size(); i++ )
 			{
 				CDetectable2DPtr rec	= CDetectable2DPtr(localDetected[i]);
 				bool confidence			= o->hasConfidenceImage;
-
-				// First check if we can adjust a plane to detected region as face, if yes it isn't a face!
 
 				// Calculate initial and final rows and columns
 				unsigned int r1 = rec->m_y;
@@ -97,7 +97,9 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 				{
 					for ( unsigned int k = 0; k < c2-c1; k++ )
 					{
-						if ( ( confidence ) && ( *(o->confidenceImage.get_unsafe( j+r1, k+c1, 0 )) > m_options.confidenceThreshold )) // TODO: Check if the point is valid
+						 // TODO: Check if the point is valid
+						if ( ( confidence ) && 
+							( *(o->confidenceImage.get_unsafe( j+r1, k+c1, 0 )) > m_options.confidenceThreshold ))
 						{
 							int position = imgWidth*(j+r1) + c1 + k;
 							points.push_back( TPoint3D(o->points3D_x[position],o->points3D_y[position],o->points3D_z[position]) );
@@ -110,7 +112,7 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 					}
 				}
 
-				// Check if it's really a face!
+				// First check if we can adjust a plane to detected region as face, if yes it isn't a face!
 				if ( !checkIfFacePlane( points ) )
 					deleteDetected.push_back( i );
 				else
@@ -131,11 +133,12 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 		// Convert 2d detected objects to 3d
 		for ( unsigned int i = 0; i < localDetected.size(); i++ )
 		{
-			CDetectable3DPtr object3d = CDetectable3DPtr( new CDetectable3D((CDetectable2DPtr)localDetected[i]) );
+			CDetectable3DPtr object3d = 
+				CDetectable3DPtr( new CDetectable3D((CDetectable2DPtr)localDetected[i]) );
 			detected.push_back( object3d );
 		}
 	}
-	else
+	else // Not using a 3D camera
 	{
 		detected = localDetected;
 	}
