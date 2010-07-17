@@ -30,14 +30,19 @@
 #define CDetectableObject_H
 
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/slam/CObservation.h>
+
+#include <mrpt/detectors/link_pragmas.h>
 
 namespace mrpt
 {
-	namespace vision
+	namespace detectors
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectableObject, mrpt::utils::CSerializable, VISION_IMPEXP )
+		using namespace mrpt::slam;
 
-		class VISION_IMPEXP CDetectableObject: public mrpt::utils::CSerializable
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectableObject, mrpt::utils::CSerializable, DETECTORS_IMPEXP )
+
+		class DETECTORS_IMPEXP CDetectableObject: public mrpt::utils::CSerializable
 		{
 			DEFINE_VIRTUAL_SERIALIZABLE( CDetectableObject )
 
@@ -52,9 +57,9 @@ namespace mrpt
 		}; // End of class
 
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable2D, mrpt::vision::CDetectableObject, VISION_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable2D, mrpt::detectors::CDetectableObject, DETECTORS_IMPEXP )
 
-		class VISION_IMPEXP CDetectable2D: public CDetectableObject
+		class DETECTORS_IMPEXP CDetectable2D: public CDetectableObject
 		{
 			DEFINE_SERIALIZABLE( CDetectable2D )
 
@@ -102,9 +107,9 @@ namespace mrpt
 		};
 
 		
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable3D, mrpt::vision::CDetectable2D, VISION_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable3D, mrpt::detectors::CDetectable2D, DETECTORS_IMPEXP )
 
-		class VISION_IMPEXP CDetectable3D: public CDetectable2D
+		class DETECTORS_IMPEXP CDetectable3D: public CDetectable2D
 		{
 			DEFINE_SERIALIZABLE( CDetectable3D )
 

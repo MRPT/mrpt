@@ -15,6 +15,8 @@ add_subdirectory(reactivenav)
 add_subdirectory(hmtslam)
 
 # These ones are still experimental...
+add_subdirectory(detectors)
+
 IF(BUILD_MONOSLAM)
 	add_subdirectory(monoslam)
 ENDIF(BUILD_MONOSLAM)

@@ -26,51 +26,39 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef CCascadeClassifierDetection_H
-#define CCascadeClassifierDetection_H
+#ifndef MRPT_DETECTORS_INTERNAL_OPECV_INCL_H
+#define MRPT_DETECTORS_INTERNAL_OPECV_INCL_H
 
-#include <mrpt/vision/CObjectDetection.h>
+#include <mrpt/config.h>
 
-namespace mrpt
-{
-	namespace vision
-	{
-		class VISION_IMPEXP CCascadeClassifierDetection: virtual public CObjectDetection
-		{
-		public:
-			
-			CCascadeClassifierDetection( );
-			
-			virtual ~CCascadeClassifierDetection(); 
+#if MRPT_HAS_OPENCV
+	// OPENCV HEADERS
 
-			/** Initialize cascade classifier detection */
-			virtual void init(const mrpt::utils::CConfigFileBase &cfg );
+#	if MRPT_OPENCV_VERSION_NUM>=0x211
+#		define CV_NO_CVV_IMAGE   // Avoid CImage name crash
 
-			/** Detect objects in a *CObservation
-			 * \return A vector with detected objects 
-			 */
-			virtual void detectObjects(CObservation *obs, vector_detectable_object &detected);
+#		include <opencv2/core/core.hpp>
+#		include <opencv2/highgui/highgui.hpp>
+#		include <opencv2/imgproc/imgproc.hpp>
+#		include <opencv2/imgproc/imgproc_c.h>
+#		include <opencv2/features2d/features2d.hpp>
+#		include <opencv2/video/tracking.hpp>
+#		include <opencv2/calib3d/calib3d.hpp>
+#		include <opencv2/objdetect/objdetect.hpp>
 
-			/** Detect objects in a *CImage
-			 * \return A vector with detected objects 
-			 */
-			virtual void detectObjects(CImage *img, vector_detectable_object &detected);
+#		include <opencv2/legacy/legacy.hpp>  // CvImage
+#	else
+#		include <cv.h>
+#		include <highgui.h>
+#		include <cvaux.h>
+#	endif
 
-		protected:
+	#ifdef CImage	// For old OpenCV versions (<=1.0.0)
+	#undef CImage
+	#endif
 
-			void * m_cascade; //!< Cascade classifier object
+	using mrpt::utils::CImage;
 
-			struct TOptions
-			{
-				std::string	cascadeFileName; 
-				double scaleFactor;	
-				int minNeighbors;
-				int flags;
-				int minSize;
-			}m_options; //!< Cascade classifier options
-
-		}; // End of class
-	}
-}
+#endif // MRPT_HAS_OPENCV
 
 #endif

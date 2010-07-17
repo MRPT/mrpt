@@ -26,34 +26,57 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#ifndef CFaceDetection_H
+#define CFaceDetection_H
 
+#include <mrpt/detectors/CObjectDetection.h>
+#include <mrpt/detectors/CCascadeClassifierDetection.h>
 
-#include <mrpt/vision/CDetectableObject.h>
-
-using namespace mrpt;
-using namespace mrpt::vision;
-
-IMPLEMENTS_VIRTUAL_SERIALIZABLE(CDetectableObject, CSerializable, mrpt::vision)
-IMPLEMENTS_SERIALIZABLE(CDetectable2D, CDetectableObject,mrpt::vision)
-IMPLEMENTS_SERIALIZABLE(CDetectable3D, CDetectable2D,mrpt::vision)
-
-extern CStartUpClassesRegister  mrpt_vision_class_reg;
-const int dumm2 = mrpt_vision_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
-
-void CDetectable2D::readFromStream(CStream &in, int version)
+namespace mrpt
 {
+	namespace slam { class CObservation3DRangeScan; }
+
+	namespace detectors
+	{
+		using namespace mrpt::slam;
+
+		class DETECTORS_IMPEXP CFaceDetection: virtual public CObjectDetection
+		{
+		public:
+		
+			CCascadeClassifierDetection cascadeClassifier;
+
+			CFaceDetection();
+
+			virtual void init(const mrpt::utils::CConfigFileBase &cfg );
+
+			virtual void detectObjects(CObservation *obs, vector_detectable_object &detected);
+			
+			inline void detectObjects(CObservationPtr obs, vector_detectable_object &detected)
+			{
+				detectObjects(obs.pointer(), detected); 
+			}
+
+			virtual void detectObjects(CImage *img, vector_detectable_object &detected);
+
+			struct TOptions
+			{
+				int		confidenceThreshold;
+				double	planeThreshold;
+				double	regionsThreshold;
+			}m_options;
+
+		private:
+
+			bool checkIfFacePlane( const vector<TPoint3D> &points );
+
+			bool checkIfFaceRegions( CObservation3DRangeScan* face, const unsigned int &faceWidth, const unsigned int &faceHeight );
+
+			bool checkRegionsConstrains( const double values[3][3] );
+
+		}; // End of class
+	}
 
 }
-void CDetectable2D::writeToStream(CStream &out, int *version) const
-{
-}
 
-void CDetectable3D::readFromStream(CStream &in, int version)
-{
-
-}
-void CDetectable3D::writeToStream(CStream &out, int *version) const
-{
-}
-
+#endif

@@ -140,11 +140,20 @@ IF(BUILD_EXAMPLES)
 			captureVideoOpenCV
 			captureVideoDC1394
 			enumerateCameras1394
-			face_detection
 			)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-hwdrivers)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+		
+		
+		# === HWDRIVERS & DETECTORS ===
+		SET(LIST_EXAMPLES_IN_THIS_DIR
+			face_detection
+			)
+		SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-hwdrivers mrpt-detectors)
+		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+	
 	ENDIF(BUILD_HWDRIVERS)
 
 	# Generate the CMakeLists.txt in the "/samples" directory

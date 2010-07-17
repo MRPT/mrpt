@@ -26,11 +26,14 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
-#include "do_opencv_includes.h"
-#include <mrpt/vision/CCascadeClassifierDetection.h>
+#include <mrpt/detectors.h>  // Precompiled headers
 
-using namespace mrpt::vision;
+#include "do_opencv_includes.h"
+
+#include <mrpt/detectors/CCascadeClassifierDetection.h>
+#include <mrpt/obs.h>
+
+using namespace mrpt::detectors;
 using namespace mrpt::slam;
 using namespace cv;
 using namespace std;

@@ -26,29 +26,25 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef __mrpt_vision_H
-#define __mrpt_vision_H
+#include <mrpt/detectors.h>
 
-#include <mrpt/obs.h> // dependencies
-#include <mrpt/gui.h> // dependencies
-
-#include <mrpt/vision/utils.h>
-#include <mrpt/vision/chessboard_camera_calib.h>
-#include <mrpt/vision/chessboard_find_corners.h>
-#include <mrpt/vision/pinhole.h>
-#include <mrpt/vision/CCamModel.h>
-#include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/vision/CVideoFileWriter.h>
-#include <mrpt/vision/camera_calib_ba.h>
-#include <mrpt/vision/tracking.h>
+#include <mrpt/utils.h>
 
 
-// Maps:
-#include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CLandmarksMap.h>
+using namespace mrpt::detectors;
+using namespace mrpt::utils;
 
-// Obs:
-#include <mrpt/slam/CObservationVisualLandmarks.h>
+void registerAllClasses_mrpt_detectors();
 
+CStartUpClassesRegister  mrpt_detectors_class_reg(&registerAllClasses_mrpt_detectors);
 
-#endif
+/*---------------------------------------------------------------
+					registerAllClasses_mrpt_detectors
+  ---------------------------------------------------------------*/
+void registerAllClasses_mrpt_detectors()
+{
+	registerClass( CLASS_ID( CDetectableObject ) );
+	registerClass( CLASS_ID( CDetectable2D ) );
+	registerClass( CLASS_ID( CDetectable3D ) );
+}
+

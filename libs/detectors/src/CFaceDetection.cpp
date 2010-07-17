@@ -27,11 +27,14 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include <mrpt/detectors.h>  // Precompiled headers
 
-#include <mrpt/vision/CFaceDetection.h>
+#include <mrpt/detectors/CFaceDetection.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/math/geometry.h>
 
-using namespace mrpt::vision;
+using namespace mrpt::detectors;
+using namespace mrpt::math;
 
 //------------------------------------------------------------------------
 //							CFaceDetection

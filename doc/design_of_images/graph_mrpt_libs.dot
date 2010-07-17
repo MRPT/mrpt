@@ -18,6 +18,8 @@ digraph MRPT_LIBS {
 	monoslam	[label="mrpt-monoslam (*)",URL="mrpt-monoslam.html"];
 	stereoslam	[label="mrpt-stereoslam (*)",URL="mrpt-stereoslam.html"];
 	
+	detectors	[label="mrpt-detectors (*)",URL="mrpt-detectors.html"];
+	
 	
 	opengl -> base;
 	
@@ -37,6 +39,9 @@ digraph MRPT_LIBS {
 
 	slam -> maps;
 	slam -> vision;
+	
+	detectors -> vision;
+	detectors -> maps;
 	
 	hmtslam -> slam;
 	

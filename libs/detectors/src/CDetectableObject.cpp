@@ -26,51 +26,36 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
+#include <mrpt/detectors.h>  // Precompiled headers
 
-#ifndef CObjectDetection_H
-#define CObjectDetection_H
+#include <mrpt/detectors/CDetectableObject.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
-#include <mrpt/vision/CDetectableObject.h>
+using namespace mrpt;
+using namespace mrpt::utils;
+using namespace mrpt::detectors;
 
-namespace mrpt
+IMPLEMENTS_VIRTUAL_SERIALIZABLE(CDetectableObject, CSerializable, mrpt::detectors)
+IMPLEMENTS_SERIALIZABLE(CDetectable2D, CDetectableObject,mrpt::detectors)
+IMPLEMENTS_SERIALIZABLE(CDetectable3D, CDetectable2D,mrpt::detectors)
+
+
+extern CStartUpClassesRegister  mrpt_detectors_class_reg;
+const int dumm2 = mrpt_detectors_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
+
+void CDetectable2D::readFromStream(CStream &in, int version)
 {
-	namespace vision
-	{
-		using namespace std;
-		using namespace mrpt::slam;
-
-		typedef vector<CDetectableObjectPtr> vector_detectable_object;
-
-		class VISION_IMPEXP CObjectDetection	
-		{
-			//virtual ~CObjectDetection();
-
-			/** Initialize the object with parameters loaded from the given config file. */
-			inline void init(const std::string &configFile)
-			{
-				mrpt::utils::CConfigFile  cfg(configFile);
-				init(cfg);
-			}
-
-			/** Initialize the object with parameters loaded from the given config source. */
-			virtual void init(const mrpt::utils::CConfigFileBase &cfg )=0;
-
-			inline void detectObjects(CObservationPtr obs, vector_detectable_object &detected) 
-			{ 
-				detectObjects(obs.pointer(), detected); 
-			};
-
-			virtual void detectObjects(CObservation *obs, vector_detectable_object &detected)=0;
-
-			virtual void detectObjects(CImage *img, vector_detectable_object &detected)=0;
-
-		}; // End of class
-	}
 
 }
+void CDetectable2D::writeToStream(CStream &out, int *version) const
+{
+}
 
-#endif
+void CDetectable3D::readFromStream(CStream &in, int version)
+{
 
+}
+void CDetectable3D::writeToStream(CStream &out, int *version) const
+{
+}
 
-
-			

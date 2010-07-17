@@ -26,13 +26,14 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
+#include <mrpt/detectors.h>
 #include <mrpt/vision.h>
 #include <mrpt/hwdrivers.h>
 #include <mrpt/slam.h>
 
-#include <mrpt/vision/CObjectDetection.h>
-#include <mrpt/vision/CCascadeClassifierDetection.h>
-#include <mrpt/vision/CFaceDetection.h>
+//#include <mrpt/detectors/CObjectDetection.h>  // Already in <mrpt/detectors.h>
+//#include <mrpt/detectors/CCascadeClassifierDetection.h>
+//#include <mrpt/detectors/CFaceDetection.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
@@ -40,6 +41,7 @@ using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::vision;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::detectors;
 using namespace std;
 
 #include <mrpt/examples_config.h>

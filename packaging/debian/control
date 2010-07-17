@@ -174,6 +174,22 @@ Description: Mobile Robot Programming Toolkit - topography library
  . 
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
+ Package: libmrpt-detectors0.9
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+	  libmrpt-maps0.9,
+	  libmrpt-vision0.9
+Description: Mobile Robot Programming Toolkit - detectors library
+ The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
+ and open source C++ library aimed to help robotics researchers to design and
+ implement algorithms in the fields of Simultaneous Localization and Mapping 
+ (SLAM), computer vision, and motion planning (obstacle avoidance).
+ .
+ This package includes the mrpt-detectors library. 
+ . 
+ More about MRPT libraries in: http://www.mrpt.org/Libraries
+
 
 Package: libmrpt-slam0.9
 Section: libs
@@ -235,6 +251,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
          libmrpt-vision0.9, 
          libmrpt-slam0.9, 
          libmrpt-topography0.9, 
+         libmrpt-detectors0.9, 
          libmrpt-hwdrivers0.9,
          libmrpt-reactivenav0.9,
          libmrpt-hmtslam0.9

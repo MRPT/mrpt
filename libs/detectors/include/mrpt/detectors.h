@@ -26,53 +26,12 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef CFaceDetection_H
-#define CFaceDetection_H
+#ifndef _mrpt_detectors_H
+#define _mrpt_detectors_H
 
-#include <mrpt/vision/CObjectDetection.h>
-#include <mrpt/vision/CCascadeClassifierDetection.h>
-
-namespace mrpt
-{
-	namespace vision
-	{
-		class VISION_IMPEXP CFaceDetection: virtual public CObjectDetection
-		{
-		public:
-		
-			CCascadeClassifierDetection cascadeClassifier;
-
-			CFaceDetection();
-
-			virtual void init(const mrpt::utils::CConfigFileBase &cfg );
-
-			virtual void detectObjects(CObservation *obs, vector_detectable_object &detected);
-			
-			inline void detectObjects(CObservationPtr obs, vector_detectable_object &detected)
-			{
-				detectObjects(obs.pointer(), detected); 
-			}
-
-			virtual void detectObjects(CImage *img, vector_detectable_object &detected);
-
-			struct TOptions
-			{
-				int		confidenceThreshold;
-				double	planeThreshold;
-				double	regionsThreshold;
-			}m_options;
-
-		private:
-
-			bool checkIfFacePlane( const vector<TPoint3D> &points );
-
-			bool checkIfFaceRegions( CObservation3DRangeScan* face, const unsigned int &faceWidth, const unsigned int &faceHeight );
-
-			bool checkRegionsConstrains( const double values[3][3] );
-
-		}; // End of class
-	}
-
-}
+#include <mrpt/detectors/CDetectableObject.h>
+#include <mrpt/detectors/CObjectDetection.h>
+#include <mrpt/detectors/CCascadeClassifierDetection.h>
+#include <mrpt/detectors/CFaceDetection.h>
 
 #endif
