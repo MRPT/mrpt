@@ -409,7 +409,9 @@ void CDlgCalibWizardOnline::threadProcessCorners()
 				try
 				{
 					// Detect corners:
-					bool foundCorners = obj->m_threadImgToProcess->image.findChessboardCorners( obj->m_threadResults, obj->m_check_size_x, obj->m_check_size_y,	obj->m_normalize_image, obj->m_useScaramuzzaAlternativeDetector );
+					bool foundCorners = mrpt::vision::findChessboardCorners( 
+						obj->m_threadImgToProcess->image,
+						obj->m_threadResults, obj->m_check_size_x, obj->m_check_size_y,	obj->m_normalize_image, obj->m_useScaramuzzaAlternativeDetector );
 
 					//cout << "corners: " << obj->m_threadResults.size() << endl;
 

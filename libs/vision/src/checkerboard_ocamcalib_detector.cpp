@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include <mrpt/vision.h>  // Precompiled headers
 
 // Note for MRPT: what follows below is a modified part of the "OCamCalib Toolbox":
 //  See: http://asl.epfl.ch/~scaramuz/research/Davide_Scaramuzza_files/Research/OcamCalib_Tutorial.htm
@@ -65,27 +65,8 @@ If you use this code, please cite the following articles:
 \************************************************************************************/
 
 
-#if MRPT_HAS_OPENCV
-	#define CV_NO_CVV_IMAGE   // Avoid CImage name crash
+#include "checkerboard_ocamcalib_detector.h"
 
-#	if MRPT_OPENCV_VERSION_NUM>=0x211
-#		include <opencv2/core/core.hpp>
-#		include <opencv2/highgui/highgui.hpp>
-#		include <opencv2/imgproc/imgproc.hpp>
-#		include <opencv2/imgproc/imgproc_c.h>
-#		include <opencv2/calib3d/calib3d.hpp>
-#	else
-#		include <cv.h>
-#		include <highgui.h>
-#	endif
-
-	#ifdef CImage	// For old OpenCV versions (<=1.0.0)
-	#undef CImage
-	#endif
-#endif
-
-#include <cmath>
-#include <stdio.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -103,79 +84,6 @@ using namespace std;
 //Ming #define VIS 1
 #define VIS 0
 
-
-// Definition Contour Struct
-typedef struct CvContourEx
-{
-    CV_CONTOUR_FIELDS()
-    int counter;
-}
-CvContourEx;
-
-// Definition Corner Struct
-struct CvCBCorner;
-typedef stlplus::smart_ptr<CvCBCorner> CvCBCornerPtr;
-
-struct CvCBCorner
-{
-	CvCBCorner() : row(-1000),column(-1000), count(0)
-	{}
-
-    CvPoint2D32f	pt;				// X and y coordinates
-	int				row;			// Row and column of the corner
-	int				column;			// in the found pattern
-	bool			needsNeighbor;	// Does the corner require a neighbor?
-    int				count;			// number of corner neighbors
-    CvCBCornerPtr	neighbors[4];	// pointer to all corner neighbors
-};
-
-
-// Definition Quadrangle Struct
-// This structure stores information about the chessboard quadrange
-struct CvCBQuad;
-typedef stlplus::smart_ptr<CvCBQuad>  CvCBQuadPtr;
-
-struct CvCBQuad
-{
-	CvCBQuad() : count(0),group_idx(0),edge_len(0),labeled(false)
-	{}
-
-    int				count;							// Number of quad neihbors
-    int				group_idx;						// Quad group ID
-    float			edge_len;						// Smallest side length^2
-    CvCBCornerPtr	corners[4];				//CvCBCorner *corners[4];				// Coordinates of quad corners
-    CvCBQuadPtr		neighbors[4];		// Pointers of quad neighbors
-	bool labeled;						// Has this corner been labeled?
-};
-
-
-
-
-//===========================================================================
-// FUNCTION PROTOTYPES
-//===========================================================================
-int icvGenerateQuads( std::vector<CvCBQuadPtr> &quads, vector<CvCBCornerPtr> &corners,
-                             const mrpt::utils::CImage &img, int flags, int dilation,
-							 bool firstRun );
-
-void mrFindQuadNeighbors2( std::vector<CvCBQuadPtr> &quads, int quad_count, int dilation);
-
-int mrAugmentBestRun( std::vector<CvCBQuadPtr> &new_quads, int new_dilation,
-							 std::vector<CvCBQuadPtr> &old_quads, int old_dilation );
-
-int icvFindConnectedQuads( std::vector<CvCBQuadPtr> &quads, int quad_count, std::vector<CvCBQuadPtr> &quad_group,
-								  int group_idx,
-                                  int dilation );
-
-void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize pattern_size,
-							  bool firstRun );
-
-int icvCleanFoundConnectedQuads( int quad_count, std::vector<CvCBQuadPtr> &quads, CvSize pattern_size );
-// Return 1 on success in finding all the quads, 0 on didn't, -1 on error.
-int myQuads2Points( const std::vector<CvCBQuadPtr> &output_quads, const CvSize &pattern_size, std::vector<CvPoint2D32f> &out_corners);
-
-
-#if MRPT_HAS_OPENCV
 
 // JL: Refactored code from within cvFindChessboardCorners3() and alternative algorithm:
 bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations, 
@@ -263,8 +171,6 @@ bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations,
 
 #endif
 }
-
-#endif
 
 
 //===========================================================================

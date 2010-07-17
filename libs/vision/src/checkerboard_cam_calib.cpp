@@ -28,22 +28,9 @@
 
 #include <mrpt/vision.h>  // Precompiled headers
 
-
-#include <mrpt/vision/utils.h>
-#include <mrpt/vision/pinhole.h>
-#include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/vision/CFeature.h>
-
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/math/ops_vectors.h>
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/math/geometry.h>
-
+#include <mrpt/vision/chessboard_camera_calib.h>
 
 #include "do_opencv_includes.h"
-
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -191,7 +178,8 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 
 			// Do detection (this includes the "refine corners" with cvFindCornerSubPix):
 			vector<TPixelCoordf> detectedCoords;
-			corners_found = img_gray.findChessboardCorners(
+			corners_found = mrpt::vision::findChessboardCorners(
+				img_gray,
 				detectedCoords,
 				check_size_x,check_size_y,
 				normalize_image, // normalize_image

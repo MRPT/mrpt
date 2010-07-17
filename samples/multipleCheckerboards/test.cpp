@@ -57,9 +57,10 @@ void TestMultipleCheckerboard()
 
 	timlog.enter("findMultipleChessboardsCorners");
 	
-	img.findMultipleChessboardsCorners(
-				listCornerCoords,
-				checkerboard_size_x, checkerboard_size_y );
+	mrpt::vision::findMultipleChessboardsCorners(
+		img,
+		listCornerCoords,
+		checkerboard_size_x, checkerboard_size_y );
 
 	timlog.leave("findMultipleChessboardsCorners");
 

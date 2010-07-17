@@ -133,7 +133,7 @@ IF(BUILD_EXAMPLES)
 			SICK_lms100eth_test
 			eNeck_test
 			# rovio_test
-			tracking_planes_test
+			#tracking_planes_test
 			cameraCaptureAskDialog
 			eNosesRealtime_test
 			IRBoard_test

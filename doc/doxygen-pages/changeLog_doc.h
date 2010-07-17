@@ -44,7 +44,7 @@
 			- mrpt::utils::CImage:
 				- It now has a new method (setFromImageReadOnly) and a new constructor as UNINITIALIZED_IMAGE.
 				- New alternative checkerboard detector algorithm (by Scaramuzza et al.). See mrpt::utils::CImage::findChessboardCorners for references and more details.
-				- (TODO) New method to detect several checkerboards on each image. See See mrpt::utils::CImage::findMultipleChessboardsCorners
+				- findChessboardCorners() is no longer a method of CImage, but a function in mrpt::vision (see mrpt::vision::findChessboardCorners).
 				- New method to compute KLT response at any given position: mrpt::utils::CImage::KLT_response
 			- mrpt::vision::CFeatureExtraction has a new option FASTOptions.use_KLT_response. 
 			- mrpt::slam::CObservation now has virtual load() and unload() method to manually invoke delayed-load (actually only needed by 3D camera observations).
@@ -82,10 +82,11 @@
 			- The ANN library has been moved from mrpt-maps to mrpt-base (still can be reached at the same path under <mrpt/otherlibs/ann/...>. This is to allow more code to use KD-trees without depending on mrpt-maps.
 			- mrpt::vision::TPixelCoordf now holds "float" coordinates instead of "double" since: it's enough for pixels, to save memory, and for consistency in name suffixes "f".
 		- New functions:
-			- mrpt::vision::camera_calib_ba is a new method based on Bundle-Adjustment to calibrate a camera from the tracking of a set of random points. See also the new application camera-calib-ba
+			- mrpt::vision::findMultipleChessboardsCorners
+			- mrpt::vision::camera_calib_ba is a new method based on Bundle-Adjustment to calibrate a camera from the tracking of a set of random points.
 			- Added << and >> operators to mrpt::math::CArrayNumeric<> classes to dump/read them with MRPT's mrpt::utils::CStream streams.
-			- mrpt::topography::ENUToGeocentric()
-			- mrpt::gui::CMyGLCanvasBase::textBitmapWidth(), a new function to compute the width of a bitmap string.
+			- mrpt::topography::ENUToGeocentric
+			- mrpt::gui::CMyGLCanvasBase::textBitmapWidth, a new function to compute the width of a bitmap string.
 		- New classes:
 			- New hierarchy of computer vision detectors/detectable objects. See mrpt::vision::CObjectDetection and mrpt::vision::CDetectableObject
 			- mrpt::math::CSparseMatrix for efficient sparse matrix computations (based on code from robotvision & the CSparse library - see the class doc for more details and credits).

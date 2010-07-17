@@ -33,6 +33,8 @@
 #include <mrpt/gui.h> // dependencies
 
 #include <mrpt/vision/utils.h>
+#include <mrpt/vision/chessboard_camera_calib.h>
+#include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/pinhole.h>
 #include <mrpt/vision/CCamModel.h>
 #include <mrpt/vision/CFeatureExtraction.h>
@@ -41,6 +43,7 @@
 #include <mrpt/vision/tracking.h>
 
 #include <mrpt/vision/CDetectableObject.h>
+
 
 // Maps:
 #include <mrpt/slam/CLandmark.h>

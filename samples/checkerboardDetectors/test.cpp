@@ -57,12 +57,13 @@ void TestCheckerboardDetectors()
 	// Detect:
 	timlog.enter("findChessboardCorners [OpenCV]");
 
-	bool detectOk1 = img.findChessboardCorners(
-				cornerCoords,
-				checkerboard_size_x, checkerboard_size_y,
-				true, // normalize_image
-				false // useScaramuzzaMethod
-				);
+	bool detectOk1 = mrpt::vision::findChessboardCorners(
+		img,
+		cornerCoords,
+		checkerboard_size_x, checkerboard_size_y,
+		true, // normalize_image
+		false // useScaramuzzaMethod
+		);
 
 	timlog.leave("findChessboardCorners [OpenCV]");
 
@@ -73,12 +74,13 @@ void TestCheckerboardDetectors()
 
 	timlog.enter("findChessboardCorners [Scaramuzza]");
 
-	bool detectOk2 = img.findChessboardCorners(
-				cornerCoords,
-				checkerboard_size_x, checkerboard_size_y,
-				true, // normalize_image
-				true // useScaramuzzaMethod
-				);
+	bool detectOk2 = mrpt::vision::findChessboardCorners(
+		img,
+		cornerCoords,
+		checkerboard_size_x, checkerboard_size_y,
+		true, // normalize_image
+		true // useScaramuzzaMethod
+		);
 
 	timlog.leave("findChessboardCorners [Scaramuzza]");
 
