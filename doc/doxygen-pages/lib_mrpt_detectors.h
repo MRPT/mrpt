@@ -1,4 +1,4 @@
-/** \page mrpt-topography Library overview: mrpt-topography
+/** \page mrpt-detectors Library overview: mrpt-detectors
  *
 
 <small> <a href="index.html#libs">Back to list of libraries</a> </small>
