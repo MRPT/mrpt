@@ -42,6 +42,10 @@ namespace mrpt
 
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectableObject, mrpt::utils::CSerializable, DETECTORS_IMPEXP )
 
+		/** Base class that contains common atributes and functions of detectable objects.
+		  * It was initially thought for detected objects in images from cams, but it's easily
+		  * expandable to other source types (f.i. scanners).
+		  */
 		class DETECTORS_IMPEXP CDetectableObject: public mrpt::utils::CSerializable
 		{
 			DEFINE_VIRTUAL_SERIALIZABLE( CDetectableObject )
@@ -68,40 +72,29 @@ namespace mrpt
 			int m_x, m_y; //!< 2D Coordinates of detected object
 			int m_height, m_width; //!< Size of detected object
 
-			/** Default constructor */
-			CDetectable2D() {};
-
 			/** Extra constructor */
-			CDetectable2D( const int &x, const int &y, const int &height, const int &width ): m_x(x), m_y(y), m_height(height), m_width(width) {};
+			CDetectable2D( const int &x = 0, const int &y = 0, const int &height = 0, const int &width = 0 )
+				: m_x(x), m_y(y), m_height(height), m_width(width) 
+			{};
 
-			/** Copy constructor */
-			CDetectable2D( const CDetectable2D &d2 )
+			/** Copy pointer content constructor */
+			CDetectable2D( const CDetectable2D *d )
 			{	
-				m_x = d2.m_x;
-				m_y = d2.m_y;
-				m_height = d2.m_height;
-				m_width = d2.m_width;
-			};
-
-			/** Copy constructor */
-			CDetectable2D( const CDetectable2D *d2 )
-			{	
-				m_x = d2->m_x;
-				m_y = d2->m_y;
-				m_height = d2->m_height;
-				m_width = d2->m_width;
+				*this = *d;
 			};
 			
 			/** Compute distance between centers of two detectable 2D objects.
 			  * \return calculated distance.
 			  */
 			inline double distanceTo( const CDetectable2D &d2 )
-			{
-				double mean_x1 = ( m_x + m_width/2 );
-				double mean_x2 = ( d2.m_x + d2.m_width/2 );
-				double mean_y1 = ( m_y + m_height/2 ) ;
-				double mean_y2 = ( d2.m_y + d2.m_height/2 ) ;
-				return sqrt( pow( mean_x1 - mean_x2, 2 ) + pow( mean_y1 - mean_y2, 2 ) );
+			{	
+				// Calculate objects centers
+				double c_x1 = ( m_x + m_width/2 );
+				double c_x2 = ( d2.m_x + d2.m_width/2 );
+				double c_y1 = ( m_y + m_height/2 ) ;
+				double c_y2 = ( d2.m_y + d2.m_height/2 ) ;
+
+				return sqrt( pow( c_x1 - c_x2, 2 ) + pow( c_y1 - c_y2, 2 ) );
 			};
 
 		};
@@ -118,33 +111,16 @@ namespace mrpt
 			CDetectable3D(){};
 
 			CDetectable3D( const CDetectable2DPtr &object2d )
-			{
-				m_x		= object2d->m_x;
-				m_y		= object2d->m_y;
-				m_z		= 0;
-				m_height = object2d->m_height;
-				m_width = object2d->m_width;
-			};
+				: CDetectable2D( object2d.pointer() ), m_z(0)
+			{ };
 
-						/** Copy constructor */
-			CDetectable3D( const CDetectable3D &d2 )
+			/** Copy pointer content constructor */
+			CDetectable3D( const CDetectable3D *d )
 			{	
-				m_x = d2.m_x;
-				m_y = d2.m_y;
-				m_height = d2.m_height;
-				m_width = d2.m_width;
+				*this = *d;
 			};
 
-			CDetectable3D( const CDetectable3D *d2 )
-			{	
-				m_x = d2->m_x;
-				m_y = d2->m_y;
-				m_z = d2->m_z;
-				m_height = d2->m_height;
-				m_width = d2->m_width;
-			};
-
-
+				
 			int		m_z; //!< Z coordinate of detected object
 
 		}; // End of class

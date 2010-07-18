@@ -28,13 +28,19 @@
 
 
 #include <mrpt/detectors.h>  // Precompiled headers
+#include <mrpt/gui.h>
+#include <mrpt/slam.h>
 
 #include <mrpt/detectors/CFaceDetection.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/math/geometry.h>
 
+
+
 using namespace mrpt::detectors;
 using namespace mrpt::math;
+using namespace mrpt::gui;
+using namespace mrpt::opengl;
 
 //------------------------------------------------------------------------
 //							CFaceDetection
@@ -167,10 +173,13 @@ bool CFaceDetection::checkIfFacePlane( const vector<TPoint3D> &points )
 	// Try to ajust a plane
 	TPlane plane;
 
-	ofstream f;
-	f.open("planeEstimations.txt", ofstream::app);
-	f << (double)getRegressionPlane(points,plane) << endl;
-	f.close();
+	// To obtain experimental results
+	{
+		ofstream f;
+		f.open("planeEstimations.txt", ofstream::app);
+		f << (double)getRegressionPlane(points,plane) << endl;
+		f.close();
+	}
 
 	if ( getRegressionPlane(points,plane) < m_options.planeThreshold )
 		return true;
@@ -178,8 +187,42 @@ bool CFaceDetection::checkIfFacePlane( const vector<TPoint3D> &points )
 	return false;
 }
 
+
 //------------------------------------------------------------------------
-//							checkIfFaceSections
+//  					 checkIfFacePlaneCov
+//------------------------------------------------------------------------
+bool CFaceDetection::checkIfFacePlaneCov( const vector<TPoint3D> &points )
+{
+	CMatrixDouble cov;
+
+	vector<CArrayDouble<3>> v;
+
+	const unsigned int N = points.size();
+
+	v.resize(N);
+
+	for ( unsigned int i = 0; i < N; i++ )
+	{
+		CArrayDouble<3> a;
+		a[0] = points[i].x;
+		a[1] = points[i].y;
+		a[2] = points[i].z;
+
+		v[i] = a;
+	}
+
+	cov = covVector( v ); // TODO: Analyze cov matrix returned!
+
+	/*ofstream f;
+	f.open("planeEstimations.txt", ofstream::app);
+	f << (double)getRegressionPlane(points,plane) << endl;
+	f.close(); */
+
+	return true;
+}
+
+//------------------------------------------------------------------------
+//							checkIfFaceRegions
 //------------------------------------------------------------------------
 bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face,
 										 const unsigned int &faceWidth,
@@ -244,6 +287,10 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face,
 	return checkRegionsConstrains( meanDepth );
 }
 
+
+//------------------------------------------------------------------------
+//						 checkRegionsConstrains
+//------------------------------------------------------------------------
 bool CFaceDetection::checkRegionsConstrains( const double values[3][3] )
 {
 	// This matrix put, for instance, in 0,0 an 1 if this region is farther that 0,1 region
@@ -274,4 +321,38 @@ bool CFaceDetection::checkRegionsConstrains( const double values[3][3] )
 		return true;
 
 	return false;
+}
+
+void CFaceDetection::viewFacePointsScanned( const CObservation3DRangeScan &face )
+{
+	mrpt::gui::CDisplayWindow3D  win3D;
+
+	win3D.setWindowTitle("3D Face detected (Scanned points)");
+	
+	win3D.resize(400,300);
+
+	win3D.setCameraAzimuthDeg(140);
+	win3D.setCameraElevationDeg(20);
+	win3D.setCameraZoom(6.0);
+	win3D.setCameraPointingToPoint(2.5,0,0);
+
+	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	gl_points->setPointSize(4.5);
+
+	mrpt::opengl::COpenGLScenePtr scene = win3D.get3DSceneAndLock();
+
+	scene->insert( gl_points );
+	scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
+		
+	CColouredPointsMap pntsMap;
+
+	pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
+	pntsMap.loadFromRangeScan( face );
+	
+	gl_points->loadFromPointsMap(&pntsMap);
+
+	win3D.unlockAccess3DScene();
+	win3D.repaint();
+
+	system::pause();
 }

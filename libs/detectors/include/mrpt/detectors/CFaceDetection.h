@@ -70,9 +70,13 @@ namespace mrpt
 
 			bool checkIfFacePlane( const vector<TPoint3D> &points );
 
+			bool checkIfFacePlaneCov( const vector<TPoint3D> &points );
+
 			bool checkIfFaceRegions( CObservation3DRangeScan* face, const unsigned int &faceWidth, const unsigned int &faceHeight );
 
 			bool checkRegionsConstrains( const double values[3][3] );
+
+			void viewFacePointsScanned( const CObservation3DRangeScan &face );
 
 		}; // End of class
 	}

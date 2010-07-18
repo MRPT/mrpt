@@ -49,9 +49,9 @@ using namespace std;
 string   myDataDir( MRPT_EXAMPLES_BASE_DIRECTORY + string("face_detection/") );
 string   myInitFile( MRPT_EXAMPLES_BASE_DIRECTORY + string("face_detection/FACE_DETECTION_TEST.INI") );
 
-CFaceDetection faceDetector;
+CFaceDetection faceDetector;	// Face detector object
 
-bool showEachDetectedFace = false; // If using a 3D face detection (actually with swissrange) we want stop every a face is detected for analize it.
+bool showEachDetectedFace;	// If using a 3D face detection (actually with swissrange) and we want stop every a face is detected for analize it.
 
 #ifdef MRPT_OPENCV_SRC_DIR
 	static string OPENCV_SRC_DIR = MRPT_OPENCV_SRC_DIR;
@@ -251,10 +251,10 @@ void TestCameraFaceDetection()
 			faceDetector.detectObjects( obs, detected );
 
 			CObservationImagePtr o = CObservationImagePtr(obs);
-			if ( detected.size() > 0 )
+			for ( unsigned int i = 0; i < detected.size(); i++ )
 			{	
-				ASSERT_( IS_CLASS(detected[0],CDetectable2D ) )
-				CDetectable2DPtr obj = CDetectable2DPtr( detected[0] );
+				ASSERT_( IS_CLASS(detected[i],CDetectable2D ) )
+				CDetectable2DPtr obj = CDetectable2DPtr( detected[i] );
 				o->image.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );
 			}
 
@@ -267,10 +267,10 @@ void TestCameraFaceDetection()
 
 			CObservationStereoImagesPtr o=CObservationStereoImagesPtr(obs);
 
-			if ( detected.size() > 0 )
+			for ( unsigned int i = 0; i < detected.size(); i++ )
 			{	
-				ASSERT_( IS_CLASS(detected[0],CDetectable2D ) )
-				CDetectable2DPtr obj = CDetectable2DPtr( detected[0] );
+				ASSERT_( IS_CLASS(detected[i],CDetectable2D ) )
+				CDetectable2DPtr obj = CDetectable2DPtr( detected[i] );
 				o->imageRight.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );
 			}
 
@@ -312,6 +312,7 @@ void TestImagesFaceDetection(int argc, char *argv[])
 		vector_detectable_object detected;
 
 		tictac.Tic();
+
 		faceDetector.detectObjects( &(CImage(img)), detected );
 
 		cout << "Detection time: " << tictac.Tac() << " s" << endl;
@@ -334,12 +335,23 @@ void TestImagesFaceDetection(int argc, char *argv[])
 // ------------------------------------------------------
 void TestPrepareDetector()
 {
-	CStringList  lst;
-	lst.loadFromFile(myInitFile);
+	CStringList  lst;	
 	CConfigFileMemory  cfg; 
+
+	lst.loadFromFile(myInitFile);
 	cfg.setContent(lst);
-	cfg.write("CascadeClassifier","cascadeFileName", OPENCV_SRC_DIR + "/data/haarcascades/haarcascade_frontalface_alt2.xml");
-	//cfg.write("CascadeClassifier","cascadeFileName", OPENCV_SRC_DIR + "/data/lbpcascades/lbpcascade_frontalface.xml");
+	
+	int classifierType = cfg.read_bool( "Example", "classifierType", 0 );
+	
+	if ( classifierType == 0 ) // Haar
+		cfg.write("CascadeClassifier","cascadeFileName", OPENCV_SRC_DIR + "/data/haarcascades/haarcascade_frontalface_alt2.xml");
+	else if ( classifierType == 1 ) // LBP
+		cfg.write("CascadeClassifier","cascadeFileName", OPENCV_SRC_DIR + "/data/lbpcascades/lbpcascade_frontalface.xml");
+	else
+		throw  std::runtime_error("Incorrect cascade classifier type.");
+
+	showEachDetectedFace = cfg.read_bool( "Example", "showEachDetectedFace", 0 );
+
 	faceDetector.init( cfg );
 }
 
