@@ -165,30 +165,37 @@ void mrpt::vision::findMultipleChessboardsCorners(
 			in_img.grayscale(img);
 	else	img.setFromImageReadOnly(in_img);
 
-	std::vector<CvPoint2D32f>  corners_list(check_size_x*check_size_y*10);
+	std::vector<std::vector<CvPoint2D32f> >  corners_list;
 
 	// Return: -1: errors, 0: not found, 1: found OK
-	bool corners_found = 1==cvFindChessboardCorners3(
+	bool corners_found = find_chessboard_corners_multiple( 
 		img,
 		cvSize(check_size_x,check_size_y),
 		corners_list);
 
-	if( corners_found )
+	if( corners_found && corners_list.empty() )
 	{
-		// Refine corners:
-		cvFindCornerSubPix(
-			static_cast<IplImage*>(img.getAsIplImage()),
-			&corners_list[0],
-			check_size_x*check_size_y,
-			cvSize(5,5), 	// window
-			cvSize(-1,-1),
-			cvTermCriteria( CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10, 0.01f ));
+		// Alloc space for output points:
+		cornerCoords.resize( corners_list.size() );
 
-		// save the corners in the data structure:
-		cornerCoords.resize(1);
-		for( unsigned int y = 0, k = 0; y < check_size_y; y++ )
-			for( unsigned int x = 0; x < check_size_x; x++, k++ )
-				cornerCoords[0].push_back(  TPixelCoordf( corners_list[k].x, corners_list[k].y ) );
+		// Refine corners:
+		for (size_t i=0;i<corners_list.size();i++)
+		{
+			ASSERT_(corners_list[i].size()==check_size_x*check_size_y)
+
+			cvFindCornerSubPix(
+				static_cast<IplImage*>(img.getAsIplImage()),
+				&corners_list[i][0],
+				check_size_x*check_size_y,
+				cvSize(5,5), 	// window
+				cvSize(-1,-1),
+				cvTermCriteria( CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10, 0.01f ));
+
+			// save the corners in the data structure:
+			for( unsigned int y = 0, k = 0; y < check_size_y; y++ )
+				for( unsigned int x = 0; x < check_size_x; x++, k++ )
+					cornerCoords[i].push_back(  TPixelCoordf( corners_list[i][k].x, corners_list[i][k].y ) );
+		}
 	}
 	else
 	{	// Not found.

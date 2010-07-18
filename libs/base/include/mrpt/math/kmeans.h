@@ -137,7 +137,7 @@ namespace mrpt
 			const size_t k,
 			const LIST_OF_VECTORS1 & points,
 			std::vector<int>  &assignments,
-			LIST_OF_VECTORS2 *out_centers = static_cast<std::vector<std::vector<double> > >(NULL),
+			LIST_OF_VECTORS2 *out_centers = NULL,
 			const size_t attempts = 3
 			)
 		{
@@ -165,7 +165,7 @@ namespace mrpt
 			const size_t k,
 			const LIST_OF_VECTORS1 & points,
 			std::vector<int>  &assignments,
-			LIST_OF_VECTORS2 *out_centers = static_cast<std::vector<std::vector<double> > >(NULL),
+			LIST_OF_VECTORS2 *out_centers = NULL,
 			const size_t attempts = 3
 			)
 		{

@@ -36,6 +36,10 @@
 
 #if MRPT_HAS_OPENCV
 
+// Debug visualizations...
+//Ming #define VIS 1
+#define VIS 0
+
 // Definition Contour Struct
 struct CvContourEx
 {
@@ -84,7 +88,16 @@ struct CvCBQuad
 // PUBLIC FUNCTION PROTOTYPES
 //===========================================================================
 // Return: -1: errors, 0: not found, 1: found OK
-int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_size, std::vector<CvPoint2D32f> &out_corners);
+int cvFindChessboardCorners3( 
+	const mrpt::utils::CImage & img_, 
+	CvSize pattern_size, 
+	std::vector<CvPoint2D32f> &out_corners);
+
+// Return: true: found OK
+bool find_chessboard_corners_multiple( 
+	const mrpt::utils::CImage & img_, 
+	CvSize pattern_size, 
+	std::vector< std::vector<CvPoint2D32f> > &out_corners);
 
 
 //===========================================================================
@@ -99,17 +112,30 @@ void mrFindQuadNeighbors2( std::vector<CvCBQuadPtr> &quads, int quad_count, int 
 int mrAugmentBestRun( std::vector<CvCBQuadPtr> &new_quads, int new_dilation,
 							 std::vector<CvCBQuadPtr> &old_quads, int old_dilation );
 
-int icvFindConnectedQuads( std::vector<CvCBQuadPtr> &quads, int quad_count, std::vector<CvCBQuadPtr> &quad_group,
-								  int group_idx,
-                                  int dilation );
+void icvFindConnectedQuads( 
+	std::vector<CvCBQuadPtr> &in_quads, 
+	std::vector<CvCBQuadPtr> &out_quad_group,
+	const int group_idx,
+    const int dilation );
 
 void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize pattern_size,
 							  bool firstRun );
 
-int icvCleanFoundConnectedQuads( int quad_count, std::vector<CvCBQuadPtr> &quads, CvSize pattern_size );
+// Remove quads' extra quads until reached the expected number of quads.
+void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quads, const CvSize &pattern_size );
 
 // Return 1 on success in finding all the quads, 0 on didn't, -1 on error.
 int myQuads2Points( const std::vector<CvCBQuadPtr> &output_quads, const CvSize &pattern_size, std::vector<CvPoint2D32f> &out_corners);
+
+// JL: Refactored code from within cvFindChessboardCorners3() and alternative algorithm:
+bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations, 
+	IplConvKernel *kernel_cross, 
+	IplConvKernel *kernel_rect,
+	IplConvKernel *kernel_diag1,
+	IplConvKernel *kernel_diag2,
+	IplConvKernel *kernel_horz,
+	IplConvKernel *kernel_vert
+	);
 
 
 #endif // MRPT_HAS_OPENCV

@@ -81,9 +81,6 @@ using namespace std;
 // Defines
 #define MAX_CONTOUR_APPROX  7
 
-//Ming #define VIS 1
-#define VIS 0
-
 
 // JL: Refactored code from within cvFindChessboardCorners3() and alternative algorithm:
 bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations, 
@@ -157,10 +154,10 @@ bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations,
 
 	case 9:		cvDilate(ipl,ipl, kernel_cross , 1);
 	case 8:		cvErode (ipl,ipl, kernel_rect , 1);
-	case 7:		cvDilate(ipl,ipl, kernel_cross , 1);
-	case 6:		cvDilate(ipl,ipl, kernel_diag2 , 1);
+	case 7:		cvDilate(ipl,ipl, kernel_cross , 1); 
+	case 6:		cvDilate(ipl,ipl, kernel_diag2 , 1);  isLast  = true;  // How many dilations to try???
 	case 5:		cvDilate(ipl,ipl, kernel_diag1 , 1);
-	case 4:		cvDilate(ipl,ipl, kernel_rect , 1);
+	case 4:		cvDilate(ipl,ipl, kernel_rect , 1); 
 	case 3:		cvErode (ipl,ipl, kernel_cross , 1);
 	case 2:		cvDilate(ipl,ipl, kernel_rect , 1);
 	case 1:		cvDilate(ipl,ipl, kernel_cross , 1);
@@ -183,7 +180,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 	//-----------------------------------------------------------------------
 	// Initialize variables
 	int flags					=  1;	// not part of the function call anymore!
-	int max_count				=  0;
+	size_t max_count				=  0;
 	int max_dilation_run_ID		= -1;
     //const int min_dilations		=  0; // JL: was: 1
     //const int max_dilations		=  23; // JL: see do_special_dilation()
@@ -192,7 +189,6 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 	vector<CvCBQuadPtr>		quads;			// CvCBQuad **quads = 0;
 	vector<CvCBQuadPtr>		quad_group;		// CvCBQuad **quad_group		=  0;
     vector<CvCBCornerPtr>	corners;		// CvCBCorner *corners			=  0;
-	vector<CvCBCornerPtr>	corner_group;	// CvCBCorner **corner_group	=  0;
 	vector<CvCBQuadPtr>		output_quad_group;	//	CvCBQuad **output_quad_group = 0;
 
     // debug trial. Martin Rufli, 28. Ocober, 2008
@@ -360,16 +356,6 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 #endif
 //END------------------------------------------------------------------------
 
-
-		// Allocate memory
-        quad_group.resize(quad_count);  // (CvCBQuad**)cvAlloc( sizeof(quad_group[0]) * quad_count);
-		for (size_t i=0;i<quad_group.size();i++)
-			quad_group[i] = CvCBQuadPtr(new CvCBQuad);
-
-		corner_group.resize(quad_count*4);  //corner_group = (CvCBCorner**)cvAlloc( sizeof(corner_group[0]) * quad_count*4 );
-		for (size_t i=0;i<corner_group.size();i++)
-			corner_group[i] = CvCBCornerPtr( new CvCBCorner );
-
 		// The connected quads will be organized in groups. The following loop
 		// increases a "group_idx" identifier.
 		// The function "icvFindConnectedQuads assigns all connected quads
@@ -380,14 +366,13 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 		// quadrangles by minimizing the convex hull of the remaining pattern.
         for( group_idx = 0; ; group_idx++ )
         {
-            int count;
-            count = icvFindConnectedQuads( quads, quad_count, quad_group, group_idx, dilations );
+            icvFindConnectedQuads( quads, quad_group, group_idx, dilations );
 
-            if( count == 0 )
+			if( quad_group.empty() )
                 break;
 
-			count = icvCleanFoundConnectedQuads( count, quad_group, pattern_size );
-
+			icvCleanFoundConnectedQuads( quad_group, pattern_size );
+			size_t count = quad_group.size();
 
 			// MARTIN's Code
 			// To save computational time, only proceed, if the number of
@@ -395,7 +380,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 			// largest previous found number
 			if( count /*>=*/ >  max_count)
 			{
-				cout << "CHECKERBOARD: Best found at dilation=" << dilations << endl;
+				//cout << "CHECKERBOARD: Best found at dilation=" << dilations << endl;
 
 				// set max_count to its new value
 				max_count = count;
@@ -427,9 +412,9 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 				{
 						for(int j = min_column; j <= max_column; j++)
 						{
-							for(int k = 0; k < count; k++)
+							for(size_t k = 0; k < count; k++)
 							{
-								for(int l = 0; l < 4; l++)
+								for(size_t l = 0; l < 4; l++)
 								{
 									if( ((quad_group[k])->corners[l]->row == i) && ((quad_group[k])->corners[l]->column == j) )
 									{
@@ -515,10 +500,10 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 			cvCvtColor( thresh_img.getAs<IplImage>(), imageCopy23, CV_GRAY2BGR );
 
 			CvPoint pt[4];
-			for( int kkk = 0; kkk < max_count; kkk++ )
+			for( size_t kkk = 0; kkk < max_count; kkk++ )
 			{
 				const CvCBQuadPtr & print_quad2 = output_quad_group[kkk];
-				for( int kkkk = 0; kkkk < 4; kkkk++ )
+				for( size_t kkkk = 0; kkkk < 4; kkkk++ )
 				{
 					pt[kkkk].x = (int) print_quad2->corners[kkkk]->pt.x;
 					pt[kkkk].y = (int) print_quad2->corners[kkkk]->pt.y;
@@ -580,7 +565,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 				//cvPutText(imageCopy23, str, cvPoint(x3,y3), &font, CV_RGB(0,255,255));
 			}
 
-			for( int kkk = 0; kkk < max_count; kkk++ )
+			for( size_t kkk = 0; kkk < max_count; kkk++ )
 			{
 				const CvCBQuadPtr & print_quad = output_quad_group[kkk];
 
@@ -636,7 +621,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 				if( feedBack == -1)
 				{
 					CvCBQuadPtr remember_quad;
-					for( int kkk = max_count; kkk < max_count+1; kkk++ )
+					for( size_t kkk = max_count; kkk < max_count+1; kkk++ )
 					{
 						CvCBQuadPtr print_quad = output_quad_group[kkk];
 						remember_quad = print_quad;
@@ -658,11 +643,11 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 					cvWaitKey(0);
 					// also draw the corner to which it is connected
 					// Remember it is not yet completely linked!!!
-					for( int kkk = 0; kkk < max_count; kkk++ )
+					for( size_t kkk = 0; kkk < max_count; kkk++ )
 					{
 						const CvCBQuadPtr &print_quad = output_quad_group[kkk];
 
-						for( int kkkk = 0; kkkk < 4; kkkk++)
+						for( size_t kkkk = 0; kkkk < 4; kkkk++)
 						{
 							if(print_quad->neighbors[kkkk] == remember_quad)
 							{
@@ -750,35 +735,32 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 //===========================================================================
 // If we found too many connected quads, remove those which probably do not
 // belong.
-int icvCleanFoundConnectedQuads( int quad_count, std::vector<CvCBQuadPtr> &quad_group, CvSize pattern_size )
+void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const CvSize &pattern_size )
 {
 	cv::MemStorage temp_storage;  // JL: "Modernized" to use C++ STL stuff.
-	vector<CvPoint2D32f> centers;
 
-    CvPoint2D32f center = {0,0};
-    int i, j, k;
+	CvPoint2D32f center = {0,0};
 
     // Number of quads this pattern should contain
-    int count = ((pattern_size.width + 1)*(pattern_size.height + 1) + 1)/2;
+    const size_t expected_count = ((pattern_size.width + 1)*(pattern_size.height + 1) + 1)/2;
 
     // If we have more quadrangles than we should, try to eliminate duplicates
 	// or ones which don't belong to the pattern rectangle. Else go to the end
 	// of the function
-    if( quad_count <= count )
-		return quad_count;	// JL: was: EXIT;
-
+    if(quad_group.size() <= expected_count )
+		return; // Nothing to be done.
 
 
     // Create an array of quadrangle centers
-    centers.resize(quad_count); // = (CvPoint2D32f *)cvAlloc( sizeof(centers[0])*quad_count );
+    vector<CvPoint2D32f>	centers( quad_group.size() );
 	temp_storage = cvCreateMemStorage(0);
 
-    for( i = 0; i < quad_count; i++ )
+    for( size_t i = 0; i < quad_group.size(); i++ )
     {
         CvPoint2D32f ci = {0,0};
         const CvCBQuadPtr& q = quad_group[i];
 
-        for( j = 0; j < 4; j++ )
+        for( size_t j = 0; j < 4; j++ )
         {
             CvPoint2D32f pt = q->corners[j]->pt;
             ci.x += pt.x;
@@ -795,8 +777,8 @@ int icvCleanFoundConnectedQuads( int quad_count, std::vector<CvCBQuadPtr> &quad_
         center.x += ci.x;
         center.y += ci.y;
     }
-    center.x /= quad_count;
-    center.y /= quad_count;
+    center.x /= quad_group.size();
+    center.y /= quad_group.size();
 
     // If we have more quadrangles than we should, we try to eliminate bad
 	// ones based on minimizing the bounding box. We iteratively remove the
@@ -804,20 +786,18 @@ int icvCleanFoundConnectedQuads( int quad_count, std::vector<CvCBQuadPtr> &quad_
     // (since we want the rectangle to be as small as possible) remove the
 	// quadrange that causes the biggest reduction in pattern size until we
 	// have the correct number
-    for( ; quad_count > count; quad_count-- )
+    while( quad_group.size() > expected_count )
     {
         double min_box_area = DBL_MAX;
-        int skip, min_box_area_index = -1;
-        //CvCBQuad *q0, *q;
-
+        int min_box_area_index = -1;
 
         // For each point, calculate box area without that point
-        for( skip = 0; skip < quad_count; skip++ )
+        for( size_t skip = 0; skip < quad_group.size(); skip++ )
         {
             // get bounding rectangle
             CvPoint2D32f temp = centers[skip];
             centers[skip] = center;
-            CvMat pointMat = cvMat(1, quad_count, CV_32FC2, &centers[0]);
+            CvMat pointMat = cvMat(1, quad_group.size(), CV_32FC2, &centers[0]);
 			CvSeq *hull = cvConvexHull2( &pointMat, temp_storage , CV_CLOCKWISE, 1 );
             centers[skip] = temp;
             double hull_area = fabs(cvContourArea(hull, CV_WHOLE_SEQ));
@@ -836,17 +816,17 @@ int icvCleanFoundConnectedQuads( int quad_count, std::vector<CvCBQuadPtr> &quad_
 
 
         // remove any references to this quad as a neighbor
-        for( i = 0; i < quad_count; i++ )
+        for( size_t i = 0; i < quad_group.size(); i++ )
         {
             CvCBQuadPtr &q = quad_group[i];
 
-            for( j = 0; j < 4; j++ )
+            for(size_t j = 0; j < 4; j++ )
             {
                 if( q->neighbors[j] == q0 )
                 {
 					q->neighbors[j].clear_unique(); // = 0;
                     q->count--;
-                    for( k = 0; k < 4; k++ )
+                    for( size_t k = 0; k < 4; k++ )
                         if( q0->neighbors[k] == q )
                         {
 							q0->neighbors[k].clear_unique(); // = 0;
@@ -859,35 +839,30 @@ int icvCleanFoundConnectedQuads( int quad_count, std::vector<CvCBQuadPtr> &quad_
         }
 
 		// remove the quad by copying th last quad in the list into its place
-        quad_count--;
-        quad_group[min_box_area_index] = quad_group[quad_count];
-        centers[min_box_area_index] = centers[quad_count];
+		quad_group.erase( quad_group.begin() + min_box_area_index);
+		centers.erase(centers.begin() + min_box_area_index );
     }
 
-
-    //cvReleaseMemStorage( &temp_storage ); // JL: Not needed anymore.
-    //cvFree( &centers );
-
-    return quad_count;
+	// done.
 }
-
 
 
 //===========================================================================
 // FIND COONECTED QUADS
 //===========================================================================
-int icvFindConnectedQuads( std::vector<CvCBQuadPtr> &quad, int quad_count, std::vector<CvCBQuadPtr> &out_group,
-                       int group_idx, int dilation )
+void icvFindConnectedQuads( 
+	std::vector<CvCBQuadPtr> &quad, 
+	std::vector<CvCBQuadPtr> &out_group,
+	const int group_idx, 
+	const int dilation )
 {
 	// initializations
 	out_group.clear();
 
-    //CvMemStorage* temp_storage = cvCreateChildMemStorage( storage );
-    //CvSeq* stack = cvCreateSeq( 0, sizeof(*stack), sizeof(void*), temp_storage );
-	//int count = 0;
+	const size_t quad_count = quad.size();
 
     // Scan the array for a first unlabeled quad
-    for( int i = 0; i < quad_count; i++ )
+    for( size_t i = 0; i < quad_count; i++ )
     {
         if( quad[i]->count < 0 || quad[i]->group_idx >= 0)
 			continue;
@@ -900,9 +875,8 @@ int icvFindConnectedQuads( std::vector<CvCBQuadPtr> &quad, int quad_count, std::
 
 		seqStack.push(q);  // cvSeqPush( stack, &q );
 
-
 		q->group_idx = group_idx;
-		out_group.push_back( quad[i] ); // out_group[count++] = q;
+		out_group.push_back( q ); // out_group[count++] = q;
 
 		while( !seqStack.empty() )
 		{
@@ -926,9 +900,6 @@ int icvFindConnectedQuads( std::vector<CvCBQuadPtr> &quad, int quad_count, std::
 
 		break;
     }
-
-    //cvReleaseMemStorage( &temp_storage );
-	return out_group.size();
 }
 
 
