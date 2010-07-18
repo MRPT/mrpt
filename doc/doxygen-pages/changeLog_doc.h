@@ -36,6 +36,7 @@
 	- <b>Most important changes:</b>
 		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.		
 		- New application 'track-video-features' illustrating feature detection and tracking (many of this functionality is new or has been improved in this MRPT version).
+		- New library: mrpt-detectors
 	- <b>Detailed list of changes:</b>
 		- Changes in applications:
 			- camera-calib can now open SwissRangers 3D cameras as well for real-time calibration.
@@ -82,13 +83,14 @@
 			- The ANN library has been moved from mrpt-maps to mrpt-base (still can be reached at the same path under <mrpt/otherlibs/ann/...>. This is to allow more code to use KD-trees without depending on mrpt-maps.
 			- mrpt::vision::TPixelCoordf now holds "float" coordinates instead of "double" since: it's enough for pixels, to save memory, and for consistency in name suffixes "f".
 		- New functions:
+			- mrpt::math::kmeans, mrpt::math::kmeanspp: Efficient implementations of k-means and k-means++ algorithms. By David Arthur (Standford, USA) (See http://www.stanford.edu/~darthur/kmpp.zip ).
 			- mrpt::vision::findMultipleChessboardsCorners
 			- mrpt::vision::camera_calib_ba is a new method based on Bundle-Adjustment to calibrate a camera from the tracking of a set of random points.
 			- Added << and >> operators to mrpt::math::CArrayNumeric<> classes to dump/read them with MRPT's mrpt::utils::CStream streams.
 			- mrpt::topography::ENUToGeocentric
 			- mrpt::gui::CMyGLCanvasBase::textBitmapWidth, a new function to compute the width of a bitmap string.
 		- New classes:
-			- New hierarchy of computer vision detectors/detectable objects. See mrpt::vision::CObjectDetection and mrpt::vision::CDetectableObject
+			- New hierarchy of computer vision detectors/detectable objects. See new namespace mrpt::detectors for the new library mrpt-detectors.
 			- mrpt::math::CSparseMatrix for efficient sparse matrix computations (based on code from robotvision & the CSparse library - see the class doc for more details and credits).
 			- New generalized KD-tree pattern class: mrpt::math::KDTreeCapable, previously used only for points of maps, now used in more places.
 			- Feature tracking for images now has a set of different implementations. See mrpt::vision::CGenericFeatureTracker
@@ -97,6 +99,7 @@
 			- track-video-features: A demonstration of robust feature detection and tracking on a video/live camera stream. See http://www.mrpt.org/Application:track-video-features
 			- camera-calib-ba: A tool to calibrate a camera from a set of random tracked features (no need to use a checkerboard).
 		- New examples:
+			- kmeans
 			- params-by-name
 			- checkerboardDetectors
 			- multipleCheckerboards

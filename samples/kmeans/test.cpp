@@ -26,52 +26,105 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_math_H
-#define _mrpt_math_H
+#include <mrpt/math_mrpt.h>
+#include <mrpt/gui.h>
 
-#include "math/distributions.h"
-#include "math/transform_gaussian.h"
-#include "math/fourier.h"
-#include "math/utils.h"
-#include "math/ops_vectors.h"
-#include "math/ops_matrices.h"
-#include "math/ops_containers.h"
+using namespace mrpt::utils;
+using namespace mrpt::math;
+using namespace mrpt::gui;
+using namespace mrpt::random;
+using namespace std;
 
-#include "math/CMatrixViews.h"
 
-#include "math/CLevenbergMarquardt.h"
-#include "math/CQuaternion.h"
-#include "math/CQuaternion.h"
-#include "math/ransac.h"
-#include "math/ransac_applications.h"
-#include "math/dijkstra.h"
+// ------------------------------------------------------
+//				TestKMeans
+// ------------------------------------------------------
+void TestKMeans()
+{
+	randomGenerator.randomize();
+	CTicTac tictac;
 
-#include "math/CHistogram.h"
-#include "math/CMatrix.h"
-#include "math/CMatrixD.h"
-#include "math/CMatrixB.h"
-#include "math/CMatrixTemplateObjects.h"
-#include "math/CMatrixFixedNumeric.h"
-#include "math/CArray.h"
+	CDisplayWindowPlots	win("k-means results");
 
-#include "math/graphs.h"
-#include "math/CGraphPartitioner.h"
-#include "math/CPolygon.h"
-#include "math/geometry.h"
-#include "math/CVectorTemplate.h"
+	cout << "Close the window to end.\n";
 
-#include "math/CSplineInterpolator1D.h"
+	while (win.isOpen())
+	{
+		// Generate N clusters of random points:
+		vector< CArrayDouble<2> >  points;
+		const size_t nClusters = 2 + (randomGenerator.drawUniform32bit() % 4);
 
-#include "math/lightweight_geom_data.h"
-#include "math/CSparseMatrixTemplate.h"
-#include "math/CSparseMatrix.h"
+		for (size_t cl=0;cl<nClusters;cl++)
+		{
+			const size_t nPts = randomGenerator.drawUniform(5,50);
+			
+			TPoint2D  clCenter;
+			clCenter.x = randomGenerator.drawUniform(0,10);
+			clCenter.y = randomGenerator.drawUniform(0,10);
 
-#include "math/CAStarAlgorithm.h"
-#include "math/CBinaryRelation.h"
-#include "math/CMonteCarlo.h"
-#include "math/jacobians.h"
+			for (size_t p=0;p<nPts;p++)
+			{
+				CArrayDouble<2> v;
+				v[0] = clCenter.x + randomGenerator.drawGaussian1D(0,1);
+				v[1] = clCenter.y + randomGenerator.drawGaussian1D(0,1);
+				points.push_back(v);
+			}
+		}
 
-#include "math/KDTreeCapable.h"
-#include "math/kmeans.h"
+		// do k-means
+		vector< CArrayDouble<2> >	centers;
+		vector<int>				assignments;
+		tictac.Tic();
+		
+		const double cost = mrpt::math::kmeanspp(nClusters, points, assignments, &centers);
 
-#endif
+		cout << "Took: " << tictac.Tac()*1e3 << " ms.\n";
+		cout << "cost: " << cost << endl;
+
+		// Show:
+		win.clf();
+		win.hold_on();
+		static const char colors[6] = {'b','r','k','g','m','c'};
+
+		for (size_t c=0;c<nClusters;c++)
+		{
+			vector_double xs,ys;
+
+			for (size_t i=0;i<points.size();i++)
+			{
+				if (assignments[i]==c)
+				{
+					xs.push_back( points[i][0] );
+					ys.push_back( points[i][1] );
+				}
+			}
+			win.plot(xs,ys,format(".4%c",colors[c%6]));
+		}
+		win.axis_fit();
+		win.axis_equal();
+
+		cout << "Press any key to generate another random dataset...\n";
+		win.waitForKey();
+	};
+
+
+}
+
+int main(int argc, char **argv)
+{
+	try
+	{
+		TestKMeans();
+		return 0;
+	} catch (std::exception &e)
+	{
+		std::cout << "MRPT exception caught: " << e.what() << std::endl;
+		return -1;
+	}
+	catch (...)
+	{
+		printf("Another exception!!");
+		return -1;
+	}
+
+}

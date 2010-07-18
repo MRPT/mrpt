@@ -28,9 +28,14 @@ LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/ann/*.cpp" "${MRPT_LIBS
 LIST(APPEND base_EXTRA_SRCS_NAME 	"ann" "ann")
 INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/")
 
+# CSparse
 LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/math/CSparse/*.c" "${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/CSparse/*.h")
 LIST(APPEND base_EXTRA_SRCS_NAME 	"math/CSparse" "math/CSparse")
 INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/CSparse/")
+
+# kmeans++
+LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/math/kmeans++/*.cpp" "${MRPT_LIBS_ROOT}/base/src/math/kmeans++/*.h")
+LIST(APPEND base_EXTRA_SRCS_NAME 	"math/kmeans" "math/kmeans")
 
 # Embedded version of libjpeg for (mostly) Windows:
 IF (CMAKE_MRPT_HAS_JPEG AND NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
@@ -66,6 +71,7 @@ IF(MRPT_ENABLE_PRECOMPILED_HDRS)
 	IF (MSVC)
 		set_source_files_properties(
 			${math/CSparse_FILES}
+			${math/kmeans_FILES}
 			${utils/xmlparser_FILES}
 			${utils/simpleini_FILES}	
 			${utils/jpeglib_FILES}

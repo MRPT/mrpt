@@ -33,34 +33,52 @@ IF(BUILD_EXAMPLES)
 	# -----------------------------------------------------------------
 	SET(CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT "")
 
-	# === UTILS ===
+	# === Depending on: mrpt-base ===
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		db
+		times
+		SocketsTest
+		directoryExplorer	
+		exceptionDemo
+		http_tests
+		critSectionDeadLock
+		threadsTest
+		fileSystemWatcher
+		geometry3D
+		poses
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-base)
+	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+	# === Depending on: mrpt-base, mrpt-gui ===
+	#  list of examples for each directory:
+	SET(LIST_EXAMPLES_IN_THIS_DIR
 		display3D
 		imageBasics
 		imageCorrelation
 		random
-		SocketsTest
-		times
-		directoryExplorer
 		imageConvolutionFFT
 		imageFFT
 		matrix
-		rejectionSampling
-		stringList
-		exceptionDemo
-		benchmark-matrix
 		bayesianTracking
 		displayPlots
-		threadsTest
-		critSectionDeadLock
 		textFonts
-		fileSystemWatcher
 		optimize-lm
-		geometry3D
 		icp
-		poses
+		kmeans
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-gui)
+	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+	# === Depending on: base, obs, maps, etc... ===
+	#  list of examples for each directory:
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		rejectionSampling
+		stringList
+		benchmark-matrix
 		RangeOnlyLocalization_RejectionSampling
 		consistent_global_optimization
 		benchmark-gridmaps
@@ -92,7 +110,6 @@ IF(BUILD_EXAMPLES)
 		dijkstra-example
 		fbo_render_test
 		setOfTexturedTrianglesTest
-		http_tests
 		gui_windows_events
 		a_starAlgorithm
 		math_iterators_test

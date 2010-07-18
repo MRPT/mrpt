@@ -5,8 +5,6 @@ See the directory "scripts" for instruction on rebuilding the MRPT documentation
 The directory "images" is for temporary stored images. Add new images to "design_of_images"
 or "screenshots" if they are referenced in the doxygen documentation.
 
-The final ".chm" file is copied to the root directory. 
-
     ~~  The MRPT Library  ~~
     Jose Luis Blanco, Aug 2007
 

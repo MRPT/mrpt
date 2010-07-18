@@ -36,7 +36,6 @@
 #include <mrpt/system/os.h>
 #include <mrpt/utils/exceptions.h>
 
-
 namespace mrpt
 {
 	namespace utils
@@ -70,9 +69,21 @@ namespace mrpt
 		 *          in the MRPT library. This format is not compatible with any standarized image format.
 		 *		- Saving/loading from files of different formats (bmp,jpg,png,...) using the methods CImage::loadFromFile and CImage::saveToFile.
 		 *
+		 *  How to create color/grayscale images:
+		 *  \code
+		 *    CImage  img1(width, height,  CH_GRAY );  // Grayscale image (8U1C)
+		 *    CImage  img2(width, height,  CH_RGB );  // RGB image (8U3C)
+		 *  \endcode
+		 *
 		 * Additional notes:
-		 *		- The OpenCV "IplImage" format is used internally for compatibility with all OpenCV functions. See CImage::getAsIplImage.
-		 *		- Only the unsigned 8-bit storage format for pixels (on each channel) is supported
+		 *		- The OpenCV "IplImage" format is used internally for compatibility with all OpenCV functions. See CImage::getAsIplImage and CImage::getAs<>(). Example:
+		 *         \code
+		 *            CImage  img;
+		 *            ...
+		 *            // Call to OpenCV function expecting an "IplImage *" or a "void* arr":
+		 *            cvFunction( img.getAs<IplImage>(), ... );
+		 *         \endcode
+		 *		- Only the unsigned 8-bit storage format for pixels (on each channel) is supported.
 		 *		- An external storage mode can be enabled by calling CImage::setExternalStorage, useful for storing large collections of image objects in memory while loading the image data itself only for the relevant images at any time.
 		 *		- To move images from one object to the another, use CImage::copyFastFrom rather than the copy operator =.
 		 *		- If you are interested in a smart pointer to an image, use:
@@ -84,17 +95,9 @@ namespace mrpt
 		 *			- CImage::setFromIplImage
 		 *			- CImage::CImage(void *IPL)
 		 *
+		 * For many computer vision functions that use CImage as its image data type, see mrpt::vision.
 		 *
-		 * Additional implementated operators:
-		 *		- getAsFloat
-		 *		- getMaxAsFloat
-		 *		- scaleImage
-		 *		- rotateImage
-		 *		- An assignment "=" operator for converting between the classes "CImage" and "CImageFloat" and CMatrixFloat / CMatrixDouble.
-		 *		- operators over images: * (Images multiplication)
-		 *		- etc...
-		 *
-		 * \note This class acts as a wrapper class for OpenCV functions, and an IplImage is the internal representation for compatibility.
+		 * \note This class acts as a wrapper class to a small subset of OpenCV functions. IplImage is the internal storage structure.
 		 *
 		 * \sa mrpt::vision, mrpt::vision::CFeatureExtractor, CSerializable, CCanvas
 		 */

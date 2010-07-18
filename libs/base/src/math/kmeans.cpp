@@ -26,52 +26,35 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_math_H
-#define _mrpt_math_H
+#include <mrpt/base.h>  // Precompiled headers
 
-#include "math/distributions.h"
-#include "math/transform_gaussian.h"
-#include "math/fourier.h"
-#include "math/utils.h"
-#include "math/ops_vectors.h"
-#include "math/ops_matrices.h"
-#include "math/ops_containers.h"
+#include <mrpt/math/kmeans.h>
 
-#include "math/CMatrixViews.h"
+// This file is just a stub for the k-means++ library so MRPT users don't need 
+//  to include those headers too.
 
-#include "math/CLevenbergMarquardt.h"
-#include "math/CQuaternion.h"
-#include "math/CQuaternion.h"
-#include "math/ransac.h"
-#include "math/ransac_applications.h"
-#include "math/dijkstra.h"
+// Include the kmeans++ library, by David Arthur (darthur@gmail.com), 2009:
+#include "kmeans++/KMeans.h"
 
-#include "math/CHistogram.h"
-#include "math/CMatrix.h"
-#include "math/CMatrixD.h"
-#include "math/CMatrixB.h"
-#include "math/CMatrixTemplateObjects.h"
-#include "math/CMatrixFixedNumeric.h"
-#include "math/CArray.h"
+using namespace std;
+using namespace mrpt;
+using namespace mrpt::math;
+using namespace mrpt::utils;
 
-#include "math/graphs.h"
-#include "math/CGraphPartitioner.h"
-#include "math/CPolygon.h"
-#include "math/geometry.h"
-#include "math/CVectorTemplate.h"
+/* -------------------------------------------
+                 internal_kmeans
+   ------------------------------------------- */
+template <> BASE_IMPEXP  
+double mrpt::math::detail::internal_kmeans<double>(
+	const bool use_kmeansplusplus_method,
+	const size_t nPoints, 
+	const size_t k, 
+	const size_t dims,
+	const double *points,
+	const size_t attempts,
+	double* out_center,
+	int *out_assignments)
+{
+	return RunKMeans(nPoints,k,dims,const_cast<double*>(points),attempts,out_center,out_assignments);
+}
 
-#include "math/CSplineInterpolator1D.h"
-
-#include "math/lightweight_geom_data.h"
-#include "math/CSparseMatrixTemplate.h"
-#include "math/CSparseMatrix.h"
-
-#include "math/CAStarAlgorithm.h"
-#include "math/CBinaryRelation.h"
-#include "math/CMonteCarlo.h"
-#include "math/jacobians.h"
-
-#include "math/KDTreeCapable.h"
-#include "math/kmeans.h"
-
-#endif

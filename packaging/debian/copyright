@@ -291,3 +291,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Published under GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1
     See `/usr/share/common-licenses/LGPL-2.1'.
+
+ * The kmeans++ implementation, by David Arthur (Standford, 2007).
+   No explicit license, but this note:
+	You may use and modify the code as you see fit, but please 
+	maintain a reference in the comments to this implementation:
+      http://www.stanford.edu/~darthur/kmpp.zip
