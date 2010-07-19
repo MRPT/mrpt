@@ -35,7 +35,8 @@
   <h2>Version 0.9.1: (In developement)</h2></a>
 	- <b>Most important changes:</b>
 		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.		
-		- New application 'track-video-features' illustrating feature detection and tracking (many of this functionality is new or has been improved in this MRPT version).
+		- Many new stuff and improvements in mrpt-vision, e.g. mrpt::vision::CGenericFeatureTracker, mrpt::vision::CFeatureList, etc.
+		- (TODO) New command-line dataset manipulation tools: rawlog-edit, carmen2rawlog, rawlog2carmen.
 		- New library: mrpt-detectors
 	- <b>Detailed list of changes:</b>
 		- Changes in applications:
@@ -102,6 +103,7 @@
 			- params-by-name
 			- checkerboardDetectors
 			- multipleCheckerboards
+			- face-detector
 		- Global settings:
 			- New global variable mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 		- BUGFIXES:
@@ -114,7 +116,7 @@
 			- Fixed build error when compiling without OpenGL/GLUT support.
 			- The method mrpt::slam::CColouredPointsMap::insertPoint( float x, float y, float z, float R, float G, float B ) was declared but not defined.
 			- Fixed ignoring the first time ALT+ENTER is pressed in mrpt::gui::CDisplayWindow3D
-			- Fixed compilation against OpenCV 1.1.0 and 2.0.0.
+			- Fixed compilation against older OpenCV versions 1.1.0 and 2.0.0.
 
 
   <br> <hr> <br>

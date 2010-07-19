@@ -64,10 +64,73 @@ namespace mrpt
 			const unsigned int window_height = 15 ) );
 
 
-		/** A virtual interface for all feature trackers, implementing the part of feature tracking to be shared by any specific tracker implementation.
+		/** A virtual interface for all feature trackers, implementing the part of feature tracking that is common to any specific tracker implementation.
+		  *   This class provides a quite robust tracking of features, avoiding as many outliers as possible but not all of them: 
+		  *    more robust tracking would require application-specific information and could be done in a number of very different approaches, 
+		  *    so this class will not try to do any kind of RANSAC or any other advanced outlier rejection; instead, it should 
+		  *    be done by the users or the classes that employ this class.
+		  *  
+		  *   The basic usage of this class is as follows:
+		  *    \code
+		  *       CFeatureTracker_KL    tracker;  // Note: CFeatureTracker_KL is the most robust implementation for now. 
+		  *       tracker.extra_params["add_new_features"] = 1;  // Enable detection of new features, not only tracking
+		  *       tracker.extra_params[...] = ...
+		  *       // ....
+		  *       CFeatureList	theFeats;  // The list of features 
+		  *       mrpt::utils::CImage  previous_img, current_img;
 		  *
+		  *       while (true) {
+		  *           current_img = ... // Grab new image.
+		  *           if ( previous_img_is_ok ) 
+		  *               tracker.trackFeatures(previous_img, current_img, theFeats);
+		  *           previous_img = current_img;
+		  *       }
+		  *    \endcode
+		  *
+		  *  Below follows the list of optional parameters for "extra_params" which can be set 
+		  *  and will be understood by this base class for any specific tracker implementation. 
+		  *  Note that all parameters are double's, but boolean flags are emulated by the values 0.0 (false) and 1.0 (true).
+		  *
+		  *  List of parameters:
+		  * <table border="1" >
+		  *   <tr><td align="center" > <b>Parameter name</b>  </td>  <td align="center" > <b>Default value</b> </td> <td align="center" > <b>Comments</b> </td> </tr>
+		  *   <tr><td align="center" > add_new_features  </td>  <td align="center" > 0 </td> 
+		  *      <td> If set to "1", the class will not only track existing features, but will also perform (after doing the actual tracking) an efficient
+		  *            search for new features with the FAST detector, and will add them to the passed "CFeatureList" if they fulfill a set of restrictions, 
+		  *            as stablished by the other parameters (see <i>add_new_feat_min_separation</i>,<i>add_new_feat_max_features</i>,<i>minimum_KLT_response_to_add</i>).
+		  *        </td> </tr>
+		  *   <tr><td align="center" > add_new_feat_min_separation  </td>  <td align="center" > 15 </td>
+		  *      <td> If <i>add_new_features</i>==1,  this is the minimum separation (in pixels) to any other (old, or new) feature for it
+		  *             being considered a candidate to be added.
+		  *         </td> </tr>
+		  *   <tr><td align="center" > add_new_feat_max_features  </td>  <td align="center" > 100 </td>
+		  *      <td> If <i>add_new_features</i>==1,  FAST features are detected in each frame, and only the best <i>add_new_feat_max_features</i> keypoints 
+		  *             (ordered by their KLT response) will be considered as eligible for addition to the set of tracked features.
+		  *         </td> </tr>
+		  *   <tr><td align="center" > add_new_feat_patch_size  </td>  <td align="center" > 11 </td>
+		  *      <td> If <i>add_new_features</i>==1,  for each new added feature, this is the size of the patch to be extracted around the keypoint (set to 0 if patches are not required at all).
+		  *          </td> </tr>
+		  *   <tr><td align="center" > minimum_KLT_response_to_add  </td>  <td align="center" > 1500 </td>
+		  *      <td> If <i>add_new_features</i>==1, this sets the minimum KLT response of candidate FAST features to be added in each frame, if they also fulfil the other restrictions (e.g. min.distance).
+		  *         </td> </tr>
+		  *   <tr><td align="center" > check_KLT_response_every  </td>  <td align="center" > 0 </td> 
+		  *      <td> If >0, it will compute the KLT response at each feature point every <i>N</i> frames 
+		  *            and those below <i>minimum_KLT_response</i> will be marked as "lost" in their "track_status" field.
+		  *        </td> </tr>
+		  *   <tr><td align="center" > minimum_KLT_response  </td>  <td align="center" > 1000 </td> 
+		  *      <td> See explanation of <i>check_KLT_response_every</i>. 
+		  *        </td> </tr>
+		  *   <tr><td align="center" > KLT_response_half_win  </td>  <td align="center" > 4 </td> 
+		  *      <td> When computing the KLT response of features (see <i>minimum_KLT_response</i> and <i>minimum_KLT_response_to_add</i>), 
+		  *            the window centered at the point for its estimation will be of size (2*W+1)x(2*W+1), with <i>W</i> being this parameter value.
+		  *       </td> </tr>
+		  *   <tr><td align="center" > update_patches_every  </td>  <td align="center" > 0 </td> 
+		  *      <td> If !=0, the patch associated to each feature will be updated with every N'th frame. </td> </tr>
+		  * </table>
+		  * 
 		  *  This class also offers a time profiler, disabled by default (see getProfiler and enableTimeLogger).
 		  *
+		  * \sa CFeatureTracker_KL, the example application "track-video-features".
 		  */
 		struct VISION_IMPEXP  CGenericFeatureTracker
 		{
@@ -140,7 +203,13 @@ namespace mrpt
 
 
 		/** Track a set of features from old_img -> new_img using sparse optimal flow (classic KL method).
-		  *  See CFeatureTracker_KL::trackFeatures for the list of existing parameters.
+		  *
+		  *  See CGenericFeatureTracker for a more detailed explanation on how to use this class.
+		  *
+		  *   List of additional parameters in "extra_params" (apart from those in CGenericFeatureTracker) accepted by this class:
+		  *		- "window_width"  (Default=15)
+		  *		- "window_height" (Default=15)
+		  *  
 		  *  \sa OpenCV's method cvCalcOpticalFlowPyrLK
 		  */
 		struct VISION_IMPEXP CFeatureTracker_KL : public CGenericFeatureTracker
@@ -151,10 +220,6 @@ namespace mrpt
 			inline CFeatureTracker_KL(mrpt::utils::TParametersDouble extraParams) : CGenericFeatureTracker(extraParams)	{ }
 
 		protected:
-			/** Optional parameters that can be passed in "extra_params":
-			  *		- "window_width"  (Default=15)
-			  *		- "window_height" (Default=15)
-			  */
 			virtual void trackFeatures_impl(
 				const CImage &old_img,
 				const CImage &new_img,
@@ -162,7 +227,12 @@ namespace mrpt
 		};
 
 		/** Track a set of features from old_img -> new_img by patch correlation over the closest FAST features, using a KD-tree for looking closest correspondences.
-		  *  See CFeatureTracker_FAST::trackFeatures for a list of optional parameters.
+		  *  See CGenericFeatureTracker for a more detailed explanation on how to use this class.
+		  *
+		  *   List of additional parameters in "extra_params" (apart from those in CGenericFeatureTracker) accepted by this class:
+		  *		- "window_width"  (Default=15)
+		  *		- "window_height" (Default=15)
+		  *  
 		  */
 		struct VISION_IMPEXP CFeatureTracker_FAST : public CGenericFeatureTracker
 		{
@@ -177,10 +247,6 @@ namespace mrpt
 			TExtraOutputInfo  last_execution_extra_info; //!< Updated with each call to trackFeatures()
 
 		protected:
-			/**  Optional parameters that can be passed in "extra_params":
-			  *		- "window_width"  (Default=15)
-			  *		- "window_height" (Default=15)
-			  */
 			virtual void trackFeatures_impl(
 				const CImage &old_img,
 				const CImage &new_img,
@@ -193,7 +259,12 @@ namespace mrpt
 
 
 		/** Track a set of features from old_img -> new_img by patch matching over a fixed window centered at each feature's previous location.
-		  *  See CFeatureTracker_PatchMatch::trackFeatures for a list of optional parameters.
+		  *  See CGenericFeatureTracker for a more detailed explanation on how to use this class.
+		  *
+		  *   List of additional parameters in "extra_params" (apart from those in CGenericFeatureTracker) accepted by this class:
+		  *		- "window_width"  (Default=15)
+		  *		- "window_height" (Default=15)
+		  *  
 		  */
 		struct VISION_IMPEXP CFeatureTracker_PatchMatch : public CGenericFeatureTracker
 		{
@@ -201,14 +272,6 @@ namespace mrpt
 			CFeatureTracker_PatchMatch(const mrpt::utils::TParametersDouble & extraParams = mrpt::utils::TParametersDouble() );
 
 		protected:
-			/**  Optional parameters that can be passed in "extra_params":
-			  *		- "window_width"  (Default=15)
-			  *		- "window_height" (Default=15)
-			  *		- "match_method" (Default=0)
-			  *
-			  *  Possible values for "match_method":
-			  *		- 0 : Normalized cross correlation
-			  */
 			virtual void trackFeatures_impl(
 				const CImage &old_img,
 				const CImage &new_img,
@@ -238,6 +301,7 @@ namespace mrpt
 							vision::TMatchingOptions options);
 
 		/** Tracks a set of features in an image.
+		  *  Deprecated: See CGenericFeatureTracker
 		  */
 		void VISION_IMPEXP trackFeatures2(
 			const CImage &inImg1,

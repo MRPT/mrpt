@@ -92,16 +92,15 @@ void CGenericFeatureTracker::trackFeatures(
 	// ========================================================
 	const int	check_KLT_response_every = extra_params.getWithDefaultVal("check_KLT_response_every",0);
 	const float minimum_KLT_response = extra_params.getWithDefaultVal("minimum_KLT_response",1000);
+	const unsigned int KLT_response_half_win = extra_params.getWithDefaultVal("KLT_response_half_win",4);
 
 	if (check_KLT_response_every>0 && ++m_check_KLT_counter>=size_t(check_KLT_response_every))
 	{
 		m_timlog.enter("[CGenericFeatureTracker] check KLT responses");
 		m_check_KLT_counter = 0;
 
-		const unsigned int check_KLT_response_half_win = extra_params.getWithDefaultVal("check_KLT_response_half_win",4);
-
-		const unsigned int max_x = img_width  - check_KLT_response_half_win;
-		const unsigned int max_y = img_height - check_KLT_response_half_win;
+		const unsigned int max_x = img_width  - KLT_response_half_win;
+		const unsigned int max_y = img_height - KLT_response_half_win;
 
 		for (CFeatureList::iterator itFeat = featureList.begin(); itFeat != featureList.end();  ++itFeat)
 		{
@@ -111,9 +110,9 @@ void CGenericFeatureTracker::trackFeatures(
 
 			const unsigned int x = ft->x;
 			const unsigned int y = ft->y;
-			if (x>check_KLT_response_half_win && y>check_KLT_response_half_win && x<max_x && y<max_y)
+			if (x>KLT_response_half_win && y>KLT_response_half_win && x<max_x && y<max_y)
 			{	// Update response:
-				ft->response = cur_gray.KLT_response(x,y,check_KLT_response_half_win);
+				ft->response = cur_gray.KLT_response(x,y,KLT_response_half_win);
 
 				// Is it good enough? http://www.youtube.com/watch?v=5kMi9tvuuZY
 				if (ft->response<minimum_KLT_response)
@@ -215,13 +214,14 @@ void CGenericFeatureTracker::trackFeatures(
 
 		// Use KLT response instead of the OpenCV's original "response" field:
 		{
-			const unsigned int KLT_half_win = 2;
+			const unsigned int max_x = img_width-KLT_response_half_win;
+			const unsigned int max_y = img_height-KLT_response_half_win;
 			for (size_t i=0;i<N;i++)
 			{
 				const unsigned int x = new_feats[i].pt.x;
 				const unsigned int y = new_feats[i].pt.y;
-				if (x>KLT_half_win && y>KLT_half_win && x<img_width-KLT_half_win && y<img_height-KLT_half_win)
-						new_feats[i].response = cur_gray.KLT_response(x,y,KLT_half_win);
+				if (x>KLT_response_half_win && y>KLT_response_half_win && x<max_x && y<max_y)
+						new_feats[i].response = cur_gray.KLT_response(x,y,KLT_response_half_win);
 				else	new_feats[i].response = 0; // Out of bounds
 			}
 		}
@@ -240,12 +240,14 @@ void CGenericFeatureTracker::trackFeatures(
 		const size_t maxNumFeatures = extra_params.getWithDefaultVal("add_new_feat_max_features",100);
 		const size_t patchSize = extra_params.getWithDefaultVal("add_new_feat_patch_size",11);
 		const int 	 offset		= (int)patchSize/2 + 1;
+			
+		const float minimum_KLT_response_to_add = extra_params.getWithDefaultVal("minimum_KLT_response_to_add",1500);
 
 		for (size_t i=0;i<nNewToCheck && featureList.size()<maxNumFeatures;i++)
 		{
 			const KeyPoint &kp = new_feats[sorted_indices[i]];
 
-			if (kp.response<minimum_KLT_response) continue;
+			if (kp.response<minimum_KLT_response_to_add) continue;
 
 			double min_dist_sqr = square(10000);
 

@@ -76,14 +76,15 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 	CGenericFeatureTrackerAutoPtr  tracker;
 
-	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_FAST );
+	// "CFeatureTracker_KL" is by far the most robust implementation for now:
 	tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_KL );
+	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_FAST );
 	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_PatchMatch );
-	
-	tracker->extra_params["window_width"]  = 5;
-	tracker->extra_params["window_height"] = 5;
 
+	tracker->enableTimeLogger(true); // Do time profiling.
+	
 	// Set of parameters common to any tracker implementation:
+	// To see all the existing params and documentation, see mrpt::vision::CGenericFeatureTracker
 	tracker->extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
 	tracker->extra_params["add_new_feat_min_separation"]  = 25;
 	tracker->extra_params["add_new_feat_max_features"]    = 150;
@@ -93,7 +94,10 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 	tracker->extra_params["check_KLT_response_every"]	= 5;	// Re-check the KLT-response to assure features are in good points.
 
-	tracker->enableTimeLogger(true); // Do time profiling.
+	// Specific params for "CFeatureTracker_KL"
+	tracker->extra_params["window_width"]  = 5;
+	tracker->extra_params["window_height"] = 5;
+
 
 
 	// --------------------------------
@@ -103,6 +107,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 	TSequenceFeatureObservations    feat_track_history;
 	TCameraPoseID 					curCamPoseId = 0;
+
+	cout << endl << "TO END THE PROGRAM: Close the window.\n";
 
 	while( win->isOpen() ) // infinite loop, until we close the win
 	{
