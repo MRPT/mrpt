@@ -29,16 +29,16 @@
 // ===========================================================================
 //  Program: rawlog-edit
 //
-//  Intention: A generic rawlog (dataset) files manipulation program, 
-//   much like the GUI program RawlogViewer but allowing command-line 
-//   operations. 
-//  See the "--help" output for list of supported operations and further 
+//  Intention: A generic rawlog (dataset) files manipulation program,
+//   much like the GUI program RawlogViewer but allowing command-line
+//   operations.
+//  See the "--help" output for list of supported operations and further
 //   instructions.
 //
 //  About integration with bash/.BAT scripts: The program will return 0 upon
-//   successful execution, without dumping any information to stdout (unless
-//   --verbose is used). Upon error, it will return -1.
-// 
+//   successful execution. To avoid any information display to stdout invoke
+//   it with the -q (or --quiet) flag. Upon error, it will return -1.
+//
 //  Started: JLBC @ Jul-2010
 // ===========================================================================
 
@@ -54,7 +54,7 @@ using namespace mrpt::system;
 using namespace std;
 
 // Declarations:
-#define VERBOSE_COUT	if (verbose) cout << "[rawlog-edit:verbose] "
+#define VERBOSE_COUT	if (verbose) cout << "[rawlog-edit] "
 
 typedef void (*TOperationFunctor)(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose);
 #define DECLARE_OP_FUNCTION(_NAME) void _NAME(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose)
@@ -77,7 +77,7 @@ TCLAP::ValueArg<std::string> arg_external_img_extension("","image-format","Exter
 
 TCLAP::SwitchArg arg_overwrite("w","overwrite","Force overwrite target file without prompting.",cmd, false);
 
-TCLAP::SwitchArg arg_verbose("v","verbose","Verbose output",cmd, false);
+TCLAP::SwitchArg arg_quiet("q","quiet","Terse output",cmd, false);
 
 
 // ======================================================================
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 			throw std::runtime_error(""); // should exit.
 
 		string input_rawlog  = arg_input_file.getValue();
-		const bool verbose = arg_verbose.getValue();
+		const bool verbose = !arg_quiet.getValue();
 
 		// Check the selected operation:
 		//  Only one of the ops should be selected:
@@ -158,12 +158,12 @@ int main(int argc, char **argv)
 		//  EXECUTE THE REQUESTED OPERATION
 		// ------------------------------------
 		ASSERTMSG_(ops_functors.find(selected_op)!=ops_functors.end(), "Internal error: Unknown operation functor!")
-		
+
 		// Call the selected functor:
 		ops_functors[selected_op](fil_input,cmd,verbose);
 
 		// successful end of program.
-		ret_val = 0; 
+		ret_val = 0;
 	}
 	catch(std::exception &e)
 	{
@@ -197,12 +197,12 @@ DECLARE_OP_FUNCTION(op_externalize)
 		size_t  entries_converted;
 		size_t  entries_skipped; // Already external
 
-		CRawlogProcessor_Externalize(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) : 
+		CRawlogProcessor_Externalize(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
 			CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose)
-		{ 
+		{
 			entries_converted = 0;
 			entries_skipped  = 0;
-			imgFileExtension = arg_external_img_extension.getValue(); 
+			imgFileExtension = arg_external_img_extension.getValue();
 
 			if (!arg_output_file.isSet())
 				throw runtime_error("This operation requires an output file. Use '-o file' or '--output file'.");
@@ -210,7 +210,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 			output_rawlog = arg_output_file.getValue();
 			if (fileExists(output_rawlog) && !arg_overwrite.getValue() )
 				throw runtime_error(string("*ABORTING*: Output file already exists: ") + output_rawlog + string("\n. Select a different output path, remove the file or force overwrite with '-w' or '--overwrite'.") );
-			
+
 			// Create the default "/Images" directory.
 			const string out_rawlog_basedir = extractFileDirectory(output_rawlog);
 
@@ -244,7 +244,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 					obsSt->imageLeft.saveToFile( outDir + fileName );
 					obsSt->imageLeft.setExternalStorage( fileName );
 					entries_converted++;
-				} 
+				}
 				else entries_skipped++;
 
 				if (!obsSt->imageRight.isExternallyStored())
@@ -253,7 +253,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 					obsSt->imageRight.saveToFile( outDir + fileName );
 					obsSt->imageRight.setExternalStorage( fileName );
 					entries_converted++;
-				} 
+				}
 				else entries_skipped++;
 			}
 			else if (IS_CLASS(obs, CObservationImage ) )
@@ -266,13 +266,13 @@ DECLARE_OP_FUNCTION(op_externalize)
 					obsIm->image.saveToFile( outDir + fileName );
 					obsIm->image.setExternalStorage( fileName );
 					entries_converted++;
-				} 
+				}
 				else entries_skipped++;
 			}
 			else if (IS_CLASS(obs, CObservation3DRangeScan ) )
 			{
 				CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(obs);
-				
+
 				// save images to file & convert into external storage:
 				// Intensity channel:
 				if (obs3D->hasIntensityImage && !obs3D->intensityImage.isExternallyStored())
@@ -281,7 +281,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 					obs3D->intensityImage.saveToFile( outDir + fileName );
 					obs3D->intensityImage.setExternalStorage( fileName );
 					entries_converted++;
-				} 
+				}
 				else entries_skipped++;
 
 				// Confidence channel:
@@ -291,7 +291,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 					obs3D->confidenceImage.saveToFile( outDir + fileName );
 					obs3D->confidenceImage.setExternalStorage( fileName );
 					entries_converted++;
-				} 
+				}
 				else entries_skipped++;
 
 				// 3D points:
@@ -300,7 +300,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 					const string fileName = string("3DCAM_") + label_time + string("_3D.bin");
 					obs3D->points3D_convertToExternalStorage(fileName, outDir);
 					entries_converted++;
-				} 
+				}
 				else entries_skipped++;
 
 				// Range image:
@@ -309,7 +309,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 					const string fileName = string("3DCAM_") + label_time + string("_RANGES.bin");
 					obs3D->rangeImage_convertToExternalStorage(fileName, outDir);
 					entries_converted++;
-				} 
+				}
 				else entries_skipped++;
 			}
 
@@ -320,10 +320,10 @@ DECLARE_OP_FUNCTION(op_externalize)
 		virtual void OnPostProcess(
 			mrpt::slam::CActionCollectionPtr &actions,
 			mrpt::slam::CSensoryFramePtr     &SF,
-			mrpt::slam::CObservationPtr      &obs) 
+			mrpt::slam::CObservationPtr      &obs)
 		{
 			ASSERT_((actions && SF) || obs)
-			if (actions) 
+			if (actions)
 					out_rawlog << actions << SF;
 			else	out_rawlog << obs;
 		}
@@ -408,10 +408,10 @@ DECLARE_OP_FUNCTION(op_info)
 				// Process "obs_indiv":
 				ASSERT_(obs_indiv)
 				TInfoPerSensorLabel &d = infoPerSensorLabel[obs_indiv->sensorLabel];
-				
+
 				d.className = obs_indiv->GetRuntimeClass()->className;
 				d.occurrences++;
-				if (d.tim_first==INVALID_TIMESTAMP)  
+				if (d.tim_first==INVALID_TIMESTAMP)
 					d.tim_first = obs_indiv->timestamp;
 				d.tim_last = obs_indiv->timestamp;
 			}
@@ -424,7 +424,7 @@ DECLARE_OP_FUNCTION(op_info)
 			return true; // No error.
 		}
 
-	}; // end CRawlogProcessor_Info 
+	}; // end CRawlogProcessor_Info
 
 	// Process
 	// ---------------------------------
@@ -446,7 +446,7 @@ DECLARE_OP_FUNCTION(op_info)
 	cout << "All sensor labels                 : ";
 	for (map<string,TInfoPerSensorLabel>::const_iterator it=proc.infoPerSensorLabel.begin();it!=proc.infoPerSensorLabel.end();++it)
 	{
-		if (it!=proc.infoPerSensorLabel.begin()) cout << ", "; 
+		if (it!=proc.infoPerSensorLabel.begin()) cout << ", ";
 		cout << it->first;
 	}
 	cout << "\n";
@@ -461,11 +461,11 @@ DECLARE_OP_FUNCTION(op_info)
 			dur = mrpt::system::timeDifference(tf,tl);
 			Hz = double(it->second.occurrences>1 ? it->second.occurrences-1 : 1)/dur;
 		}
-		cout << "Sensor (Label/Occurs/Rate/Durat.) : " << 
+		cout << "Sensor (Label/Occurs/Rate/Durat.) : " <<
 			format("%15s /%7u /%5.03f /%.03f\n",
-				it->first.c_str(), 
+				it->first.c_str(),
 				(unsigned)it->second.occurrences,
-				Hz, 
+				Hz,
 				dur);
 	}
 

@@ -1,0 +1,87 @@
+=head1 NAME
+
+rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
+
+=head1 SYNOPSIS
+
+   rawlog-edit  [--remove-label <>] [--info] [--externalize] [-q] [-w]
+                [--image-format <jpg,png,pgm,...>] [-o
+                <dataset_out.rawlog>] -i <dataset.rawlog> [--] [--version]
+                [-h]
+
+=head1 EXAMPLES
+
+ Quick overview of a dataset file:
+ 
+   rawlog-edit --info -i my_dataset.rawlog
+
+=head1 DESCRIPTION
+
+B<rawlog-edit> is a command-line application to inspect and manipulate robotic
+dataset files in the "rawlog" standardized format. 
+
+These are the supported arguments and operations:
+
+   --remove-label <>
+     Op: Remove all observation matching the given sensor label.
+
+   --info
+     Op: parse input file and dump information and statistics.
+
+   --externalize
+     Op: convert to external storage.
+
+   -q,  --quiet
+     Terse output
+
+   -w,  --overwrite
+     Force overwrite target file without prompting.
+
+   --image-format <jpg,png,pgm,...>
+     External image format
+
+   -o <dataset_out.rawlog>,  --output <dataset_out.rawlog>
+     Output dataset (*.rawlog)
+
+   -i <dataset.rawlog>,  --input <dataset.rawlog>
+     (required)  Input dataset (required) (*.rawlog)
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
+
+=head1 BUGS
+
+Please report bugs at http://www.mrpt.org/project/issues/MRPT
+
+
+=head1 SEE ALSO
+
+The GUI program RawLogViewer, and the application wiki pages
+at http://www.mrpt.org/
+
+=head1 AUTHORS
+
+B<rawlog-edit> is part of the Mobile Robot Programming Toolkit (MRPT), and 
+was originally written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3, or (at your option) any
+later version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
+=cut
+

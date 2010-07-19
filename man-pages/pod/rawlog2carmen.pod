@@ -1,19 +1,17 @@
 =head1 NAME
 
-GridmapNavSimul - GUI robot simulation within a gridmap
+rawlog2carmen - Convert robotic datasets between CARMEN and Rawlog formats
 
 =head1 SYNOPSIS
 
-GridmapNavSimul 
+rawlog2carmen -i I<in_file.rawlog> -o I<out_file.log>
+
+rawlog2carmen --help
 
 =head1 DESCRIPTION
 
-A GUI application for simulation of robot motion within a simulated environment defined by an 
-occupancy grid map. The program simulates noisy odometry and laser measurements and generates
-a rawlog which can then be used as the input of SLAM algorithms. A ground truth file is also 
-generated.
-
-The robot is controlled with a joystick or the cursor arrow keys.
+B<carmen2rawlog> is a command-line application to convert robotic datasets 
+from the "rawlog" standardized file format to the CARMEN format.
 
 =head1 BUGS
 
@@ -25,8 +23,8 @@ The application wiki page at http://www.mrpt.org/Applications
 
 =head1 AUTHORS
 
-B<GridmapNavSimul> is part of the Mobile Robot Programming Toolkit (MRPT), and was originally 
-written by the MAPIR laboratory (University of Malaga).
+B<rawlog2carmen> is part of the Mobile Robot Programming Toolkit (MRPT), and 
+was originally written by the MAPIR laboratory (University of Malaga).
 
 This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
 

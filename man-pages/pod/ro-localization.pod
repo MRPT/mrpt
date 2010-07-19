@@ -18,11 +18,11 @@ visualization in 3D of the particles, the beacons, and the measurements.
 
 =head1 BUGS
 
-Please report bugs at http://sourceforge.net/tracker/?group_id=205280&atid=993006
+Please report bugs at http://www.mrpt.org/project/issues/MRPT
 
 =head1 SEE ALSO
 
-The application wiki page at http://babel.isa.uma.es/mrpt/index.php/Applications
+The application wiki page at http://www.mrpt.org/Applications
 
 B<pf-localization>
 

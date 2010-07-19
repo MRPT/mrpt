@@ -33,7 +33,7 @@
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 
-/** A virtual class that implements the common stuff around parsing a rawlog file 
+/** A virtual class that implements the common stuff around parsing a rawlog file
   * and (optionally) display a progress indicator to the console.
   */
 class CRawlogProcessor
@@ -51,7 +51,7 @@ public:
 	double 			m_timToParse; // Public variable, at end will hold ellapsed time.
 
 	// Ctor
-	CRawlogProcessor(mrpt::utils::CFileGZInputStream &_in_rawlog, TCLAP::CmdLine &_cmdline, bool _verbose) : 
+	CRawlogProcessor(mrpt::utils::CFileGZInputStream &_in_rawlog, TCLAP::CmdLine &_cmdline, bool _verbose) :
 		m_in_rawlog(_in_rawlog),m_cmdline(_cmdline), verbose(_verbose), m_last_console_update( mrpt::system::now() ), m_rawlogEntry(0)
 	{
 		m_filSize = _in_rawlog.getTotalBytesCount();
@@ -71,7 +71,7 @@ public:
 		// Parse the entire rawlog:
 		while (mrpt::slam::CRawlog::getActionObservationPairOrObservation(
 			m_in_rawlog,
-			actions,SF, obs, 
+			actions,SF, obs,
 			m_rawlogEntry ) )
 		{
 			// Abort if the user presses ESC:
@@ -88,11 +88,17 @@ public:
 			{
 				m_last_console_update = tNow;
 				uint64_t fil_pos = m_in_rawlog.getPosition();
-				if(verbose) std::cout << mrpt::format("Progress: %7u objects --- Pos: %9sB/%9sB \r", 
+				if(verbose)
+				{
+					std::cout << mrpt::format("Progress: %7u objects --- Pos: %9sB/%c%9sB \r",
 					(unsigned int)m_rawlogEntry,
 					mrpt::system::unitsFormat(fil_pos).c_str(),
+					(fil_pos>m_filSize ? '>':' '),
 					mrpt::system::unitsFormat(m_filSize).c_str()
 					);  // \r -> don't go to the next line...
+
+					std::cout.flush();
+				}
 			}
 
 			// Do whatever:
@@ -106,7 +112,7 @@ public:
 			SF.clear_unique();
 			obs.clear_unique();
 		}; // end while
-	
+
 		if(verbose) std::cout << "\n"; // new line after the "\r".
 
 		m_timToParse = m_timParse.Tac();
@@ -125,14 +131,14 @@ public:
 	virtual void OnPostProcess(
 		mrpt::slam::CActionCollectionPtr &actions,
 		mrpt::slam::CSensoryFramePtr     &SF,
-		mrpt::slam::CObservationPtr      &obs) 
+		mrpt::slam::CObservationPtr      &obs)
 	{
 		// Default: Do nothing
 	}
 
 }; // end CRawlogProcessor
 
-/** A virtual class that implements the common stuff around parsing a rawlog file 
+/** A virtual class that implements the common stuff around parsing a rawlog file
   * and (optionally) display a progress indicator to the console.
   */
 class CRawlogProcessorOnEachObservation : public CRawlogProcessor
@@ -178,5 +184,5 @@ public:
 }; // end CRawlogProcessorOnEachObservation
 
 
-#endif 
+#endif
 
