@@ -30,13 +30,14 @@
 
 #include <mrpt/math/kmeans.h>
 
+#include "do_opencv_includes.h"
 #include "checkerboard_ocamcalib_detector.h"
 
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
+
 
 #if MRPT_HAS_OPENCV
 
@@ -47,13 +48,13 @@ bool find_chessboard_corners_multiple(
 	std::vector< std::vector<CvPoint2D32f> > &out_corners)
 {
 	// Assure it's a grayscale image:
-	CImage img(UNINITIALIZED_IMAGE);
+	mrpt::utils::CImage img(UNINITIALIZED_IMAGE);
 	if (img_.isColor())
 			img_.grayscale(img);
 	else 	img.setFromImageReadOnly(img_);
 
-    CImage thresh_img(img.getWidth(),img.getHeight(), CH_GRAY );
-	CImage thresh_img_save(img.getWidth(),img.getHeight(), CH_GRAY );
+    mrpt::utils::CImage thresh_img(img.getWidth(),img.getHeight(), CH_GRAY );
+	mrpt::utils::CImage thresh_img_save(img.getWidth(),img.getHeight(), CH_GRAY );
 
 	out_corners.clear();  // for now, empty the output.
 
@@ -182,7 +183,7 @@ bool find_chessboard_corners_multiple(
 				win.setWindowTitle( format("All quads (%u) | %u clusters",
 					(unsigned)quad_centers.size(),
 					(unsigned)nClusters ));
-				CImage im;
+				mrpt::utils::CImage im;
 				img.colorImage(im);
 				for (size_t i=0;i<quad_centers.size();i++)
 				{
@@ -236,7 +237,7 @@ bool find_chessboard_corners_multiple(
 						{
 							static mrpt::gui::CDisplayWindow  win;
 							win.setWindowTitle( format("Candidate group #%i (%i)",(int)group_idx, (int)quad_group.size()));
-							CImage im;
+							mrpt::utils::CImage im;
 							img.colorImage(im);
 							for (size_t i=0;i<quad_group.size();i++)
 							{

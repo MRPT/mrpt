@@ -61,7 +61,7 @@
 
 	typedef std::vector<CvPoint2D32f> CvPoint2D32fVector;
 
-#	if MRPT_OPENCV_VERSION_NUM >= 0x211
+#	if MRPT_OPENCV_VERSION_NUM >= 0x200
 
 #	include <mrpt/math/KDTreeCapable.h>
 

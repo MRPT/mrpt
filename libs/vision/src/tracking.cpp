@@ -106,7 +106,7 @@ void CGenericFeatureTracker::trackFeatures(
 		for (CFeatureList::iterator itFeat = featureList.begin(); itFeat != featureList.end();  ++itFeat)
 		{
 			CFeature* ft = itFeat->pointer();
-			if (ft->track_status!=status_TRACKED) 
+			if (ft->track_status!=status_TRACKED)
 				continue; // Skip if it's not correctly tracked.
 
 			const unsigned int x = ft->x;
@@ -123,7 +123,7 @@ void CGenericFeatureTracker::trackFeatures(
 			}
 			else
 			{	// Out of bounds
-				ft->response = 0; 
+				ft->response = 0;
 				ft->track_status = status_OOB;
 			}
 		}
@@ -131,7 +131,7 @@ void CGenericFeatureTracker::trackFeatures(
 		m_timlog.leave("[CGenericFeatureTracker] check KLT responses");
 
 	} // end check_KLT_response_every
-	
+
 
 	// ========================================================
 	// (3rd STEP) For successfully followed features, update its patch:
@@ -147,7 +147,7 @@ void CGenericFeatureTracker::trackFeatures(
 		for (CFeatureList::iterator itFeat = featureList.begin(); itFeat != featureList.end();  ++itFeat)
 		{
 			CFeature* ft = itFeat->pointer();
-			if (ft->track_status!=status_TRACKED) 
+			if (ft->track_status!=status_TRACKED)
 				continue; // Skip if it's not correctly tracked.
 
 			const size_t patch_width  = ft->patch.getWidth();
@@ -192,6 +192,7 @@ void CGenericFeatureTracker::trackFeatures(
 		// Look for new features:
 		vector<KeyPoint> new_feats; // The opencv keypoint output vector
 		static int m_detector_adaptive_thres = 10;
+
 		FastFeatureDetector fastDetector( m_detector_adaptive_thres, true /* non-max supres. */ );
 
 		// Do the detection
@@ -210,7 +211,7 @@ void CGenericFeatureTracker::trackFeatures(
 
 		// Use KLT response instead of the OpenCV's original "response" field:
 		{
-			const unsigned int KLT_half_win = 2; 
+			const unsigned int KLT_half_win = 2;
 			for (size_t i=0;i<N;i++)
 			{
 				const unsigned int x = new_feats[i].pt.x;
@@ -277,7 +278,7 @@ void CGenericFeatureTracker::trackFeatures(
 		}
 #else
 	THROW_EXCEPTION("add_new_features requires OpenCV >=2.1.1")
-#endif //MRPT_OPENCV_VERSION_NUM >= 0x211
+#endif //MRPT_OPENCV_VERSION_NUM
 
 		m_timlog.leave("[CGenericFeatureTracker] add new features");
 	}

@@ -83,8 +83,8 @@ using namespace std;
 
 
 // JL: Refactored code from within cvFindChessboardCorners3() and alternative algorithm:
-bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations, 
-	IplConvKernel *kernel_cross, 
+bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations,
+	IplConvKernel *kernel_cross,
 	IplConvKernel *kernel_rect,
 	IplConvKernel *kernel_diag1,
 	IplConvKernel *kernel_diag2,
@@ -121,12 +121,12 @@ bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations,
 	{
 	case 37:		cvDilate(ipl,ipl, kernel_cross , 1); isLast  = true;
 	case 36:		cvErode (ipl,ipl, kernel_rect , 1);
-	case 35:		cvDilate(ipl,ipl, kernel_vert , 1);	
-	case 34:		cvDilate(ipl,ipl, kernel_vert , 1);	
-	case 33:		cvDilate(ipl,ipl, kernel_vert , 1);	
+	case 35:		cvDilate(ipl,ipl, kernel_vert , 1);
+	case 34:		cvDilate(ipl,ipl, kernel_vert , 1);
+	case 33:		cvDilate(ipl,ipl, kernel_vert , 1);
 	case 32:		cvDilate(ipl,ipl, kernel_vert , 1);
 	case 31:		cvDilate(ipl,ipl, kernel_vert , 1); break;
-	
+
 	case 30:		cvDilate(ipl,ipl, kernel_cross , 1);
 	case 29:		cvErode (ipl,ipl, kernel_rect , 1);
 	case 28:		cvDilate(ipl,ipl, kernel_horz , 1);
@@ -152,12 +152,12 @@ bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations,
 	case 11:		cvDilate(ipl,ipl, kernel_diag1 , 1);
 	case 10:		cvDilate(ipl,ipl, kernel_diag1 , 1);  break;
 
-	case 9:		cvDilate(ipl,ipl, kernel_cross , 1); isLast  = true;
+	case 9:		cvDilate(ipl,ipl, kernel_cross , 1);
 	case 8:		cvErode (ipl,ipl, kernel_rect , 1);
-	case 7:		cvDilate(ipl,ipl, kernel_cross , 1);  
+	case 7:		cvDilate(ipl,ipl, kernel_cross , 1);
 	case 6:		cvDilate(ipl,ipl, kernel_diag2 , 1);
 	case 5:		cvDilate(ipl,ipl, kernel_diag1 , 1);
-	case 4:		cvDilate(ipl,ipl, kernel_rect , 1); 
+	case 4:		cvDilate(ipl,ipl, kernel_rect , 1);
 	case 3:		cvErode (ipl,ipl, kernel_cross , 1);
 	case 2:		cvDilate(ipl,ipl, kernel_rect , 1);
 	case 1:		cvDilate(ipl,ipl, kernel_cross , 1);
@@ -209,34 +209,34 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 	}
 
 	// Assure it's a grayscale image:
-	CImage img(UNINITIALIZED_IMAGE);
+	mrpt::utils::CImage img(UNINITIALIZED_IMAGE);
 	if (img_.isColor())
 			img_.grayscale(img);
 	else 	img.setFromImageReadOnly(img_);
 
-    CImage thresh_img(img.getWidth(),img.getHeight(), CH_GRAY ); // = cvCreateMat( img->rows, img->cols, CV_8UC1 );
-	CImage thresh_img_save(img.getWidth(),img.getHeight(), CH_GRAY ); //  = cvCreateMat( img->rows, img->cols, CV_8UC1 );
+    mrpt::utils::CImage thresh_img(img.getWidth(),img.getHeight(), CH_GRAY ); // = cvCreateMat( img->rows, img->cols, CV_8UC1 );
+	mrpt::utils::CImage thresh_img_save(img.getWidth(),img.getHeight(), CH_GRAY ); //  = cvCreateMat( img->rows, img->cols, CV_8UC1 );
 
 	// JL: Move these constructors out of the loops:
 	IplConvKernel *kernel_cross = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CROSS,NULL);
 	IplConvKernel *kernel_rect = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_RECT,NULL);
 
-	static int kernel_diag1_vals[9] = { 
+	static int kernel_diag1_vals[9] = {
 		1,0,0,
 		0,1,0,
 		0,0,1 };
 	IplConvKernel *kernel_diag1 = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CUSTOM,kernel_diag1_vals);
-	static int kernel_diag2_vals[9] = { 
+	static int kernel_diag2_vals[9] = {
 		0,0,1,
 		0,1,0,
 		1,0,0 };
 	IplConvKernel *kernel_diag2 = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CUSTOM,kernel_diag2_vals);
-	static int kernel_horz_vals[9] = { 
+	static int kernel_horz_vals[9] = {
 		0,0,0,
 		1,1,1,
 		0,0,0 };
 	IplConvKernel *kernel_horz = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CUSTOM,kernel_horz_vals);
-	static int kernel_vert_vals[9] = { 
+	static int kernel_vert_vals[9] = {
 		0,1,0,
 		0,1,0,
 		0,1,0 };
@@ -850,10 +850,10 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
 //===========================================================================
 // FIND COONECTED QUADS
 //===========================================================================
-void icvFindConnectedQuads( 
-	std::vector<CvCBQuadPtr> &quad, 
+void icvFindConnectedQuads(
+	std::vector<CvCBQuadPtr> &quad,
 	std::vector<CvCBQuadPtr> &out_group,
-	const int group_idx, 
+	const int group_idx,
 	const int dilation )
 {
 	// initializations
@@ -1548,7 +1548,7 @@ void mrFindQuadNeighbors2( std::vector<CvCBQuadPtr> &quads, int dilation)
 // "mrFindQuadNeighbors2"
 // The comparisons between two points and two lines could be computed in their
 // own function
-int mrAugmentBestRun( 
+int mrAugmentBestRun(
 	std::vector<CvCBQuadPtr> &new_quads, int new_dilation,
 	std::vector<CvCBQuadPtr> &old_quads, int old_dilation )
 {
@@ -2236,7 +2236,7 @@ void quadListMakeUnique( std::vector<CvCBQuadPtr> &quads)
 
 	std::vector<CvCBQuadPtr> new_quads = quads;
 	std::for_each(
-		new_quads.begin(), new_quads.end(), 
+		new_quads.begin(), new_quads.end(),
 		std::mem_fun_ref(&CvCBQuadPtr::make_unique)
 		);
 	for (size_t i=0;i<new_quads.size();i++)
