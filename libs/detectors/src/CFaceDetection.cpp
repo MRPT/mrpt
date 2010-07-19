@@ -130,7 +130,7 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 				{
 					CObservation3DRangeScan face;
 					o->getZoneAsObs( face, r1, r2, c1, c2 );
-					//viewFacePointsScanned( face );
+					//experimental_viewFacePointsScanned( face );
 					if ( !checkIfFaceRegions( &face, c2-c1, r2-r1 ) )
 						deleteDetected.push_back( i );
 				}
@@ -221,6 +221,8 @@ bool CFaceDetection::checkIfFacePlaneCov( const vector<TPoint3D> &points )
 	cov.eigenValues( eVals );
 
 	cout << "Eigen values: " << eVals[0] << ":" << eVals[1] << ":" << eVals[2] << endl;
+
+	m_exp.lessEigenVals.push_back(eVals[0]);
 
 	/*
 	double v1 = cov.get_unsafe(0,0);
@@ -339,7 +341,47 @@ bool CFaceDetection::checkRegionsConstrains( const double values[3][3] )
 	return false;
 }
 
-void CFaceDetection::viewFacePointsScanned( const CObservation3DRangeScan &face )
+void CFaceDetection::experimental_viewFacePointsScanned( const CObservation3DRangeScan &face )
+{
+	vector_float xs, ys, zs;
+
+	unsigned int N = face.points3D_x.size();
+
+	xs.resize(N);
+	ys.resize(N);
+	zs.resize(N);
+
+	for ( unsigned int i = 0; i < N; i++ )
+	{
+		xs[i] = face.points3D_x[i];
+		ys[i] = face.points3D_y[i];
+		zs[i] = face.points3D_z[i];
+	}
+
+	experimental_viewFacePointsScanned( xs, ys, zs );
+}
+
+void CFaceDetection::experimental_viewFacePointsScanned( const vector<TPoint3D> &points )
+{
+	vector_float xs, ys, zs;
+
+	unsigned int N = points.size();
+
+	xs.resize(N);
+	ys.resize(N);
+	zs.resize(N);
+
+	for ( unsigned int i = 0; i < N; i++ )
+	{
+		xs[i] = points[i].x;
+		ys[i] = points[i].y;
+		zs[i] = points[i].z;
+	}
+
+	experimental_viewFacePointsScanned( xs, ys, zs );
+}
+
+void CFaceDetection::experimental_viewFacePointsScanned( const vector_float &xs, const vector_float &ys, const vector_float &zs )
 {
 	mrpt::gui::CDisplayWindow3D  win3D;
 
@@ -362,8 +404,7 @@ void CFaceDetection::viewFacePointsScanned( const CObservation3DRangeScan &face 
 		
 	CColouredPointsMap pntsMap;
 
-	pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
-	pntsMap.loadFromRangeScan( face );
+	pntsMap.setAllPoints( xs, ys, zs );
 	
 	gl_points->loadFromPointsMap(&pntsMap);
 
@@ -371,4 +412,31 @@ void CFaceDetection::viewFacePointsScanned( const CObservation3DRangeScan &face 
 	win3D.repaint();
 
 	system::pause();
+}
+
+void CFaceDetection::experimental_showMeasurements()
+{
+	double sumLessEigenVal = 0;
+	double minLessEigenVal = 1;
+	double maxLessEigenVal = 0;
+	
+	unsigned int numEigenVal = m_exp.lessEigenVals.size();
+
+	for ( unsigned int i = 0; i < numEigenVal; i++ )
+	{
+		double eVal = m_exp.lessEigenVals[i];
+
+		if ( eVal < minLessEigenVal )
+			minLessEigenVal = eVal;
+		if ( eVal > maxLessEigenVal )
+			maxLessEigenVal = eVal;
+
+		sumLessEigenVal += eVal;
+	}
+
+	cout << "Min eigenVal: " << minLessEigenVal << endl;
+	cout << "Max eigenVal: " << maxLessEigenVal << endl;
+	cout << "Mean eigenVal: " << sumLessEigenVal/(double)numEigenVal << endl;
+
+
 }

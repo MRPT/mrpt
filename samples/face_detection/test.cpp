@@ -128,7 +128,7 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 			
 		faceDetector.detectObjects( o, detected );
 		
-		/*
+		
 		if ( detected.size() > 0 )
 		{	
 			for ( unsigned int i = 0; i < detected.size(); i++ )
@@ -184,7 +184,7 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 				if ( showEachDetectedFace )
 					system::pause();
 			}
-		}*/
+		}
 
 		win.showImage(o->intensityImage);			
 
@@ -377,11 +377,16 @@ int main(int argc, char *argv[])
 		return 0;
 	} catch (std::exception &e)
 	{
+
+		faceDetector.experimental_showMeasurements();
+
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;
 	}
 	catch (...)
 	{
+		faceDetector.experimental_showMeasurements();
+
 		printf("Untyped exception!!");
 		return -1;
 	}

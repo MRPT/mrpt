@@ -40,6 +40,10 @@ namespace mrpt
 	{
 		using namespace mrpt::slam;
 
+		/** Specific class for face detection.
+		  * Methods and variables labeled as experimentals are temporals (for debug or testing
+		  * purposes) and may disappear in future versions.
+		  */
 		class DETECTORS_IMPEXP CFaceDetection: virtual public CObjectDetection
 		{
 		public:
@@ -66,6 +70,14 @@ namespace mrpt
 				double	regionsThreshold;
 			}m_options;
 
+			struct TExperimental
+			{
+				vector_double lessEigenVals;
+			}m_exp;
+
+			// Experimental methods
+			void experimental_showMeasurements();
+
 		private:
 
 			bool checkIfFacePlane( const vector<TPoint3D> &points );
@@ -76,7 +88,14 @@ namespace mrpt
 
 			bool checkRegionsConstrains( const double values[3][3] );
 
-			void viewFacePointsScanned( const CObservation3DRangeScan &face );
+			// Experimental methods
+			void experimental_viewFacePointsScanned( const vector_float &xs, const vector_float &ys, const vector_float &zs );
+
+			void experimental_viewFacePointsScanned( const CObservation3DRangeScan &face );
+			
+			void experimental_viewFacePointsScanned( const vector<TPoint3D> &points );
+
+			
 
 		}; // End of class
 	}
