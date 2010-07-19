@@ -75,10 +75,10 @@ namespace mrpt
 			mrpt::utils::TParametersDouble extra_params;
 
 			/** Default ctor */
-			inline CGenericFeatureTracker() : m_timlog(false), m_update_patches_counter(0),m_check_KLT_counter(0)
+			inline CGenericFeatureTracker() : m_timlog(false), m_update_patches_counter(0),m_check_KLT_counter(0),m_detector_adaptive_thres(10)
 			{ }
 			/** Ctor with extra parameters */
-			inline CGenericFeatureTracker(mrpt::utils::TParametersDouble extraParams) : extra_params(extraParams), m_timlog(false), m_update_patches_counter(0),m_check_KLT_counter(0)
+			inline CGenericFeatureTracker(mrpt::utils::TParametersDouble extraParams) : extra_params(extraParams), m_timlog(false), m_update_patches_counter(0),m_check_KLT_counter(0),m_detector_adaptive_thres(10)
 			{ }
 			/** Dtor */
 			virtual ~CGenericFeatureTracker()
@@ -132,6 +132,7 @@ namespace mrpt
 		private:
 			size_t		m_update_patches_counter;	//!< for use when "update_patches_every">=1
 			size_t		m_check_KLT_counter;	//!< For use when "check_KLT_response_every">=1
+			int			m_detector_adaptive_thres;  //!< For use in "add_new_features" == true
 
 		};
 

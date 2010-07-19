@@ -186,18 +186,22 @@ void CGenericFeatureTracker::trackFeatures(
 	{
 		m_timlog.enter("[CGenericFeatureTracker] add new features");
 
-#if MRPT_OPENCV_VERSION_NUM >= 0x211
+#if MRPT_OPENCV_VERSION_NUM >= 0x200
 		using namespace cv;
 
 		// Look for new features:
 		vector<KeyPoint> new_feats; // The opencv keypoint output vector
-		static int m_detector_adaptive_thres = 10;
-
-		FastFeatureDetector fastDetector( m_detector_adaptive_thres, true /* non-max supres. */ );
 
 		// Do the detection
-		const Mat new_img_gray_mat = cvarrToMat( cur_gray.getAs<IplImage>() );
-		fastDetector.detect( new_img_gray_mat, new_feats );
+# if MRPT_OPENCV_VERSION_NUM >= 0x211
+	// Modern version:
+	FastFeatureDetector fastDetector( m_detector_adaptive_thres, true /* non-max supres. */ );
+	const Mat new_img_gray_mat = cvarrToMat( cur_gray.getAs<IplImage>() );
+	fastDetector.detect( new_img_gray_mat, new_feats );
+# elif MRPT_OPENCV_VERSION_NUM >= 0x200 
+	// Older version:
+	FAST(cur_gray.getAs<IplImage>(), new_feats, m_detector_adaptive_thres, true /* non-max supres. */ );
+# endif
 
 		const size_t N = new_feats.size();
 
@@ -277,7 +281,7 @@ void CGenericFeatureTracker::trackFeatures(
 			}
 		}
 #else
-	THROW_EXCEPTION("add_new_features requires OpenCV >=2.1.1")
+	THROW_EXCEPTION("add_new_features requires OpenCV >=2.0.0")
 #endif //MRPT_OPENCV_VERSION_NUM
 
 		m_timlog.leave("[CGenericFeatureTracker] add new features");
