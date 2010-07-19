@@ -213,7 +213,7 @@ namespace mrpt
 				J43.set_unsafe(1,1,fy*(tmp.K+6*p1y+2*p2x));
 				J43.set_unsafe(1,2,fy*tmp.y_);
 				mOut.multiply(J43,J21);
-				cout<<"J21:\n"<<J21<<"\nJ43:\n"<<J43<<"\nmOut:\n"<<mOut;
+				//cout<<"J21:\n"<<J21<<"\nJ43:\n"<<J43<<"\nmOut:\n"<<mOut;
 			}
 		private:
 			//These functions are little tricks to avoid multiple initialization.
