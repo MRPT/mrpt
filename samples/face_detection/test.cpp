@@ -25,7 +25,7 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-
+ 
 #include <mrpt/detectors.h>
 #include <mrpt/vision.h>
 #include <mrpt/hwdrivers.h>
@@ -128,6 +128,7 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 			
 		faceDetector.detectObjects( o, detected );
 		
+		/*
 		if ( detected.size() > 0 )
 		{	
 			for ( unsigned int i = 0; i < detected.size(); i++ )
@@ -183,7 +184,7 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 				if ( showEachDetectedFace )
 					system::pause();
 			}
-		}
+		}*/
 
 		win.showImage(o->intensityImage);			
 

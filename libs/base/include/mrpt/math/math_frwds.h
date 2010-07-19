@@ -360,7 +360,7 @@ namespace mrpt
 		inline void eigenVectorsVec( MATRIX1& eVecs, VECTOR1& eVals) const { mrpt::math::detail::eigenVectorsMatrix(*this, &eVecs,eVals); } \
 		/*! Return the eigenvalues of the matrix in an ordered vector. \sa eigenVectors */ \
 		template <class VECTOR1> \
-		inline void eigenValues( VECTOR1& eVals) const { mrpt::math::detail::eigenVectorsMatrix(*this,static_cast<const mrpt_autotype*>(NULL),eVals); } \
+		inline void eigenValues( VECTOR1& eVals) const { mrpt::math::detail::eigenVectorsMatrix(*this,static_cast<mrpt_autotype*>(NULL),eVals); } \
 		inline void setIdentity()	{\
 			ASSERT_(isSquare());\
 			set_unsafe(0,0,NUMTYPE(1));\

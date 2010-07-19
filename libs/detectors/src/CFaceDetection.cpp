@@ -29,7 +29,7 @@
 
 #include <mrpt/detectors.h>  // Precompiled headers
 #include <mrpt/gui.h>
-#include <mrpt/slam.h>
+#include <mrpt/slam/CColouredPointsMap.h>
 
 #include <mrpt/detectors/CFaceDetection.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
@@ -69,6 +69,8 @@ void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 //------------------------------------------------------------------------
 void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detectable_object &detected)
 {
+	MRPT_TRY_START
+
 	// Detect possible faces
 	vector_detectable_object localDetected;
 	cascadeClassifier.detectObjects( obs, localDetected );
@@ -122,12 +124,13 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 				}
 
 				// First check if we can adjust a plane to detected region as face, if yes it isn't a face!
-				if ( !checkIfFacePlane( points ) )
+				if ( !checkIfFacePlaneCov( points ) )
 					deleteDetected.push_back( i );
 				else
 				{
 					CObservation3DRangeScan face;
 					o->getZoneAsObs( face, r1, r2, c1, c2 );
+					//viewFacePointsScanned( face );
 					if ( !checkIfFaceRegions( &face, c2-c1, r2-r1 ) )
 						deleteDetected.push_back( i );
 				}
@@ -152,6 +155,7 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 		detected = localDetected;
 	}
 
+	MRPT_TRY_END
 
 }
 
@@ -194,6 +198,7 @@ bool CFaceDetection::checkIfFacePlane( const vector<TPoint3D> &points )
 bool CFaceDetection::checkIfFacePlaneCov( const vector<TPoint3D> &points )
 {
 	CMatrixDouble cov;
+	vector_double eVals;
 
 	vector<CArrayDouble<3>> v;
 
@@ -213,6 +218,16 @@ bool CFaceDetection::checkIfFacePlaneCov( const vector<TPoint3D> &points )
 
 	cov = covVector( v ); // TODO: Analyze cov matrix returned!
 
+	cov.eigenValues( eVals );
+
+	cout << "Eigen values: " << eVals[0] << ":" << eVals[1] << ":" << eVals[2] << endl;
+
+	/*
+	double v1 = cov.get_unsafe(0,0);
+	double v2 = cov.get_unsafe(1,1);
+	double v3 = cov.get_unsafe(2,2);
+	*/
+	
 	/*ofstream f;
 	f.open("planeEstimations.txt", ofstream::app);
 	f << (double)getRegressionPlane(points,plane) << endl;
@@ -275,14 +290,15 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face,
 			else
 				meanDepth[i][j] /= numPoints[i][j];
 
-	/*ofstream f2;
-	f2.open("fichero2.txt", ofstream::app);
+	ofstream f;
+	f.open("faceRegions.txt", ofstream::app);
 
-	f2 << meanDepth[0][0] << "." << meanDepth[0][1] << "." << meanDepth[0][2] << endl;
-	f2 << meanDepth[1][0] << "." << meanDepth[1][1] << "." << meanDepth[1][2] << endl;
-	f2 << meanDepth[2][0] << "." << meanDepth[2][1] << "." << meanDepth[2][2] << endl;
+	f << meanDepth[0][0] << " . " << meanDepth[0][1] << " . " << meanDepth[0][2] << endl;
+	f << meanDepth[1][0] << " . " << meanDepth[1][1] << " . " << meanDepth[1][2] << endl;
+	f << meanDepth[2][0] << " . " << meanDepth[2][1] << " . " << meanDepth[2][2] << endl;
+	f << "- - - - - - - - - - - - - - - - - - - - - " << endl;
 
-	f2.close();*/
+	f.close();
 
 	return checkRegionsConstrains( meanDepth );
 }
