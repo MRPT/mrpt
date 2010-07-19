@@ -152,10 +152,10 @@ bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations,
 	case 11:		cvDilate(ipl,ipl, kernel_diag1 , 1);
 	case 10:		cvDilate(ipl,ipl, kernel_diag1 , 1);  break;
 
-	case 9:		cvDilate(ipl,ipl, kernel_cross , 1);
+	case 9:		cvDilate(ipl,ipl, kernel_cross , 1); 
 	case 8:		cvErode (ipl,ipl, kernel_rect , 1);
 	case 7:		cvDilate(ipl,ipl, kernel_cross , 1); 
-	case 6:		cvDilate(ipl,ipl, kernel_diag2 , 1);  isLast  = true;  // How many dilations to try???
+	case 6:		cvDilate(ipl,ipl, kernel_diag2 , 1);
 	case 5:		cvDilate(ipl,ipl, kernel_diag1 , 1);
 	case 4:		cvDilate(ipl,ipl, kernel_rect , 1); 
 	case 3:		cvErode (ipl,ipl, kernel_cross , 1);
@@ -299,7 +299,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
         // The following function finds and assigns neighbor quads to every
 		// quadrangle in the immediate vicinity fulfilling certain
 		// prerequisites
-        mrFindQuadNeighbors2( quads, quad_count, dilations);
+        mrFindQuadNeighbors2( quads, dilations);
 
 //VISUALIZATION--------------------------------------------------------------
 #if VIS
@@ -393,7 +393,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 				// The last parameter is set to "true", because this is the
 				// first function call and some initializations need to be
 				// made.
-				mrLabelQuadGroup( quad_group, max_count, pattern_size, true );
+				mrLabelQuadGroup( quad_group, pattern_size, true );
 
 
 //VISUALIZATION--------------------------------------------------------------
@@ -680,7 +680,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 				{
 					// increase max_count by one
 					max_count = max_count + 1;
-   					mrLabelQuadGroup( output_quad_group, max_count, pattern_size, false );
+   					mrLabelQuadGroup( output_quad_group, pattern_size, false );
 
 
 					// write the found corners to output array
@@ -742,12 +742,12 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
 	CvPoint2D32f center = {0,0};
 
     // Number of quads this pattern should contain
-    const size_t expected_count = ((pattern_size.width + 1)*(pattern_size.height + 1) + 1)/2;
+    const size_t expected_quads_count = ((pattern_size.width + 1)*(pattern_size.height + 1) + 1)/2;
 
     // If we have more quadrangles than we should, try to eliminate duplicates
 	// or ones which don't belong to the pattern rectangle. Else go to the end
 	// of the function
-    if(quad_group.size() <= expected_count )
+    if(quad_group.size() <= expected_quads_count )
 		return; // Nothing to be done.
 
 
@@ -786,7 +786,7 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
     // (since we want the rectangle to be as small as possible) remove the
 	// quadrange that causes the biggest reduction in pattern size until we
 	// have the correct number
-    while( quad_group.size() > expected_count )
+    while( quad_group.size() > expected_quads_count )
     {
         double min_box_area = DBL_MAX;
         int min_box_area_index = -1;
@@ -907,8 +907,10 @@ void icvFindConnectedQuads(
 //===========================================================================
 // LABEL CORNER WITH ROW AND COLUMN //DONE
 //===========================================================================
-void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize pattern_size, bool firstRun )
+void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, const CvSize &pattern_size, bool firstRun )
 {
+	const size_t count = quad_group.size();
+
 	// If this is the first function call, a seed quad needs to be selected
 	if (firstRun == true)
 	{
@@ -916,9 +918,9 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 		// (usually 4). This will be our starting point.
 		int max_id = -1;
 		int max_number = -1;
-		for(int i = 0; i < count; i++ )
+		for(size_t i = 0; i < count; i++ )
 		{
-			CvCBQuadPtr q = quad_group[i];
+			CvCBQuad* q = quad_group[i].pointer();
 			if( q->count > max_number)
 			{
 				max_number = q->count;
@@ -933,18 +935,18 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 		// Mark the starting quad's (per definition) upper left corner with
 		//(0,0) and then proceed clockwise
 		// The following labeling sequence enshures a "right coordinate system"
-		(quad_group[max_id])->labeled = true;
+		CvCBQuad* q = quad_group[max_id].pointer();
 
-		(quad_group[max_id])->corners[0]->row = 0;
-        (quad_group[max_id])->corners[0]->column = 0;
-		(quad_group[max_id])->corners[1]->row = 0;
-		(quad_group[max_id])->corners[1]->column = 1;
-		(quad_group[max_id])->corners[2]->row = 1;
-		(quad_group[max_id])->corners[2]->column = 1;
-		(quad_group[max_id])->corners[3]->row = 1;
-		(quad_group[max_id])->corners[3]->column = 0;
+		q->labeled = true;
+		q->corners[0]->row = 0;
+        q->corners[0]->column = 0;
+		q->corners[1]->row = 0;
+		q->corners[1]->column = 1;
+		q->corners[2]->row = 1;
+		q->corners[2]->column = 1;
+		q->corners[3]->row = 1;
+		q->corners[3]->column = 0;
 	}
-
 
 	// Mark all other corners with their respective row and column
 	bool flag_changed = true;
@@ -956,14 +958,14 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 
 		// Go through all quads top down is faster, since unlabeled quads will
 		// be inserted at the end of the list
-		for( int i = (count-1); i >= 0; i-- )
+		for( int i = int(count-1); i >= 0; i-- )
 		{
 			// Check whether quad "i" has been labeled already
  			if ( (quad_group[i])->labeled == false )
 			{
 				// Check its neighbors, whether some of them have been labeled
 				// already
-				for( int j = 0; j < 4; j++ )
+				for( size_t j = 0; j < 4; j++ )
 				{
 					// Check whether the neighbor exists (i.e. is not the NULL
 					// pointer)
@@ -1039,11 +1041,11 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 	int min_column	=  127;
 	int max_column	= -127;
 
-	for(int i = 0; i < count; i++ )
+	for(size_t i = 0; i < count; i++ )
     {
 		const CvCBQuadPtr &q = quad_group[i];
 
-		for(int j = 0; j < 4; j++ )
+		for(size_t j = 0; j < 4; j++ )
 		{
 			if( (q->corners[j])->row > max_row)
 				max_row = (q->corners[j])->row;
@@ -1075,9 +1077,9 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 				int cornerID=0;
 				int quadID=0;
 
-				for(int k = 0; k < count; k++)
+				for(size_t k = 0; k < count; k++)
 				{
-					for(int l = 0; l < 4; l++)
+					for(size_t l = 0; l < 4; l++)
 					{
 						if( ((quad_group[k])->corners[l]->row == i) && ((quad_group[k])->corners[l]->column == j) )
 						{
@@ -1127,9 +1129,9 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 				int cornerID=0;
 				int quadID=0;
 
-				for(int k = 0; k < count; k++)
+				for(size_t k = 0; k < count; k++)
 				{
-					for(int l = 0; l < 4; l++)
+					for(size_t l = 0; l < 4; l++)
 					{
 						if( ((quad_group[k])->corners[l]->row == i) && ((quad_group[k])->corners[l]->column == j) )
 						{
@@ -1191,9 +1193,9 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 		// We found out that in the column direction the target pattern size is reached
 		// Therefore border column corners do not need a neighbor anymore
 		// Go through all corners
-		for( int k = 0; k < count; k++ )
+		for( size_t k = 0; k < count; k++ )
 		{
-			for( int l = 0; l < 4; l++ )
+			for( size_t l = 0; l < 4; l++ )
 			{
 				if ( (quad_group[k])->corners[l]->column == min_column || (quad_group[k])->corners[l]->column == max_column)
 				{
@@ -1210,9 +1212,9 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 		// We found out that in the column direction the target pattern size is reached
 		// Therefore border column corners do not need a neighbor anymore
 		// Go through all corners
-		for( int k = 0; k < count; k++ )
+		for( size_t k = 0; k < count; k++ )
 		{
-			for( int l = 0; l < 4; l++ )
+			for( size_t l = 0; l < 4; l++ )
 			{
 				if ( (quad_group[k])->corners[l]->row == min_row || (quad_group[k])->corners[l]->row == max_row)
 				{
@@ -1238,7 +1240,7 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 		// pattern size is reached in column direction
 		if((smallerDimPattern + 1) == max_column - min_column)
 		{
-			for( int k = 0; k < count; k++ )
+			for( size_t k = 0; k < count; k++ )
 			{
 				for( int l = 0; l < 4; l++ )
 				{
@@ -1258,9 +1260,9 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 		// pattern size is reached in row direction
 		if((smallerDimPattern + 1) == max_row - min_row)
 		{
-			for( int k = 0; k < count; k++ )
+			for( size_t k = 0; k < count; k++ )
 			{
-				for( int l = 0; l < 4; l++ )
+				for( size_t l = 0; l < 4; l++ )
 				{
 					if ( (quad_group[k])->corners[l]->row == min_row || (quad_group[k])->corners[l]->row == max_row)
 					{
@@ -1278,9 +1280,9 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 		// pattern size is reached in row direction
 		if((smallerDimPattern + 1) == max_row - min_row)
 		{
-			for( int k = 0; k < count; k++ )
+			for( size_t k = 0; k < count; k++ )
 			{
-				for( int l = 0; l < 4; l++ )
+				for( size_t l = 0; l < 4; l++ )
 				{
 					if ( (quad_group[k])->corners[l]->row == min_row || (quad_group[k])->corners[l]->row == max_row)
 					{
@@ -1298,9 +1300,9 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 		// pattern size is reached in column direction
 		if((smallerDimPattern + 1) == max_column - min_column)
 		{
-			for( int k = 0; k < count; k++ )
+			for( size_t k = 0; k < count; k++ )
 			{
-				for( int l = 0; l < 4; l++ )
+				for( size_t l = 0; l < 4; l++ )
 				{
 					if ( (quad_group[k])->corners[l]->column == min_column || (quad_group[k])->corners[l]->column == max_column)
 					{
@@ -1322,7 +1324,7 @@ void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize p
 //===========================================================================
 // This function replaces mrFindQuadNeighbors, which in turn replaced
 // icvFindQuadNeighbors
-void mrFindQuadNeighbors2( std::vector<CvCBQuadPtr> &quads, int quad_count, int dilation)
+void mrFindQuadNeighbors2( std::vector<CvCBQuadPtr> &quads, int dilation)
 {
 	// Thresh dilation is used to counter the effect of dilation on the
 	// distance between 2 neighboring corners. Since the distance below is
@@ -1330,20 +1332,20 @@ void mrFindQuadNeighbors2( std::vector<CvCBQuadPtr> &quads, int quad_count, int 
 	// conservative assumption that dilation was performed using the 3x3 CROSS
 	// kernel, which coresponds to the 4-neighborhood.
 	const float thresh_dilation = (float)(2*dilation+3)*(2*dilation+3)*2;	// the "*2" is for the x and y component
-    int idx, i, k, j;														// the "3" is for initial corner mismatch
     float dx, dy, dist;
 	//int cur_quad_group = -1;
 
+	const size_t quad_count = quads.size();
 
     // Find quad neighbors
-    for( idx = 0; idx < quad_count; idx++ )
+    for( size_t idx = 0; idx < quad_count; idx++ )
     {
         CvCBQuadPtr &cur_quad = quads[idx];
 
 
 		// Go through all quadrangles and label them in groups
         // For each corner of this quadrangle
-        for( i = 0; i < 4; i++ )
+        for( size_t i = 0; i < 4; i++ )
         {
             CvPoint2D32f pt;
             float min_dist = FLT_MAX;
@@ -1357,12 +1359,12 @@ void mrFindQuadNeighbors2( std::vector<CvCBQuadPtr> &quads, int quad_count, int 
 
 
             // Find the closest corner in all other quadrangles
-            for( k = 0; k < quad_count; k++ )
+            for( size_t k = 0; k < quad_count; k++ )
             {
                 if( k == idx )
                     continue;
 
-                for( j = 0; j < 4; j++ )
+                for( size_t j = 0; j < 4; j++ )
                 {
 					// If it already has a neighbor
                     if( quads[k]->neighbors[j] )
@@ -1513,14 +1515,12 @@ void mrFindQuadNeighbors2( std::vector<CvCBQuadPtr> &quads, int quad_count, int 
 
                 // Make shure that the closest quad does not have the current
 				// quad as neighbor already
-                for( j = 0; j < 4; j++ )
-                {
-                    if( closest_quad->neighbors[j] == cur_quad )
-                        break;
-                }
-                if( j < 4 )
-                    continue;
+				bool skip=false;
+                for( size_t j = 0; !skip && j < 4; j++ )
+                    skip = closest_quad->neighbors[j] == cur_quad;
 
+				if( skip )
+                    continue;
 
 				// We've found one more corner - remember it
                 closest_corner->pt.x = (pt.x + closest_corner->pt.x) * 0.5f;
@@ -2220,6 +2220,28 @@ int myQuads2Points( const std::vector<CvCBQuadPtr> &output_quads,const CvSize &p
 
 	// All corners found?
 	return (out_corners.size() == size_t( pattern_size.width * pattern_size.height) ) ? 1:0;
+}
+
+// Make unique all the (smart pointers-pointed) objects in the list and neighbors lists.
+void quadListMakeUnique( std::vector<CvCBQuadPtr> &quads)
+{
+	std::map<CvCBQuad*,size_t> pointer2index;
+	for (size_t i=0;i<quads.size();i++)
+		pointer2index[quads[i].pointer()] = i;
+
+	vector<CArray<size_t,4> >  neig_indices(quads.size());
+	for (size_t i=0;i<quads.size();i++)
+		for (size_t j=0;j<4;j++)
+			neig_indices[i][j] = pointer2index[ quads[i]->neighbors[j].pointer() ];
+
+	std::vector<CvCBQuadPtr> new_quads = quads;
+	std::for_each(
+		new_quads.begin(), new_quads.end(), 
+		std::mem_fun_ref(&CvCBQuadPtr::make_unique)
+		);
+	for (size_t i=0;i<new_quads.size();i++)
+		for (size_t j=0;j<4;j++)
+			new_quads[i]->neighbors[j] = new_quads[ neig_indices[i][j] ];
 }
 
 

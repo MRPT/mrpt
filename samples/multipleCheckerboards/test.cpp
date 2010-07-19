@@ -47,7 +47,9 @@ void TestMultipleCheckerboard()
 
 	// Load img:
 	CImage img;
-	if (!img.loadFromFile( myDataDir + string("test_3_checkerboards_6x9.jpg") ))
+	if (!img.loadFromFile( 
+		//"d:/imgs_temp/c2.jpg" )) 
+		myDataDir + string("test_3_checkerboards_6x9.jpg") ))
 		throw std::runtime_error("Can't load demo image!");
 
 	// Detect multiple-checkerboards:

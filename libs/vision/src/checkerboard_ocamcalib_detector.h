@@ -107,7 +107,7 @@ int icvGenerateQuads( std::vector<CvCBQuadPtr> &quads, vector<CvCBCornerPtr> &co
                              const mrpt::utils::CImage &img, int flags, int dilation,
 							 bool firstRun );
 
-void mrFindQuadNeighbors2( std::vector<CvCBQuadPtr> &quads, int quad_count, int dilation);
+void mrFindQuadNeighbors2( std::vector<CvCBQuadPtr> &quads, int dilation);
 
 int mrAugmentBestRun( std::vector<CvCBQuadPtr> &new_quads, int new_dilation,
 							 std::vector<CvCBQuadPtr> &old_quads, int old_dilation );
@@ -118,14 +118,16 @@ void icvFindConnectedQuads(
 	const int group_idx,
     const int dilation );
 
-void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group, int count, CvSize pattern_size,
-							  bool firstRun );
+void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group,  const CvSize &pattern_size, bool firstRun );
 
 // Remove quads' extra quads until reached the expected number of quads.
 void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quads, const CvSize &pattern_size );
 
-// Return 1 on success in finding all the quads, 0 on didn't, -1 on error.
+// JL: Return 1 on success in finding all the quads, 0 on didn't, -1 on error.
 int myQuads2Points( const std::vector<CvCBQuadPtr> &output_quads, const CvSize &pattern_size, std::vector<CvPoint2D32f> &out_corners);
+
+// JL: Make unique all the (smart pointers-pointed) objects in the list and neighbors lists.
+void quadListMakeUnique( std::vector<CvCBQuadPtr> &quads);
 
 // JL: Refactored code from within cvFindChessboardCorners3() and alternative algorithm:
 bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations, 

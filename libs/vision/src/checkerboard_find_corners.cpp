@@ -173,7 +173,7 @@ void mrpt::vision::findMultipleChessboardsCorners(
 		cvSize(check_size_x,check_size_y),
 		corners_list);
 
-	if( corners_found && corners_list.empty() )
+	if( corners_found && !corners_list.empty() )
 	{
 		// Alloc space for output points:
 		cornerCoords.resize( corners_list.size() );

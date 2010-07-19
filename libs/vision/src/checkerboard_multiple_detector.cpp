@@ -55,19 +55,19 @@ bool find_chessboard_corners_multiple(
     CImage thresh_img(img.getWidth(),img.getHeight(), CH_GRAY );
 	CImage thresh_img_save(img.getWidth(),img.getHeight(), CH_GRAY );
 
+	out_corners.clear();  // for now, empty the output.
+
+    const size_t expected_quads_count = ((pattern_size.width + 1)*(pattern_size.height + 1) + 1)/2;
 
 	// PART 0: INITIALIZATION
 	//-----------------------------------------------------------------------
 	// Initialize variables
 	int flags					=  1;	// not part of the function call anymore!
-	size_t max_count				=  0;
-	int max_dilation_run_ID		= -1;
     int found					=  0;
 
-	vector<CvCBQuadPtr>		quads;			// CvCBQuad **quads = 0;
-	vector<CvCBQuadPtr>		quad_group;		// CvCBQuad **quad_group		=  0;
-    vector<CvCBCornerPtr>	corners;		// CvCBCorner *corners			=  0;
-	vector<CvCBQuadPtr>		output_quad_group;	//	CvCBQuad **output_quad_group = 0;
+	vector<CvCBQuadPtr>		quads;
+    vector<CvCBCornerPtr>	corners;
+	list< vector<CvCBQuadPtr> > good_quad_groups;  // Storage of potential good quad groups found
 
     if( pattern_size.width < 2 || pattern_size.height < 2 )
 	{
@@ -146,6 +146,11 @@ bool find_chessboard_corners_multiple(
         if( quad_count <= 0 )
             continue;
 
+		// The following function finds and assigns neighbor quads to every
+		// quadrangle in the immediate vicinity fulfilling certain
+		// prerequisites
+		mrFindQuadNeighbors2( quads, dilations);
+
 		// JL: To achieve multiple-checkerboard, take all the raw detected quads and 
 		//  separate them in groups with k-means.
 		vector<CArrayDouble<2> >	quad_centers;
@@ -189,6 +194,7 @@ bool find_chessboard_corners_multiple(
 			}
 #endif // VIS
 
+
 			// Take a look at the promising clusters:
 			// -----------------------------------------
 			for (size_t i=0;i<nClusters;i++)
@@ -200,15 +206,10 @@ bool find_chessboard_corners_multiple(
 				vector<CvCBQuadPtr> ith_quads;
 				for (size_t q=0;q<quads.size();q++)
 					if (size_t(assignments[q])==i)
-					{
-						ith_quads.push_back(quads[i]);
-						ith_quads.back().make_unique(); // make unique so it's decouppled of the main original list.
-					}
+						ith_quads.push_back(quads[q]);
 
-				// The following function finds and assigns neighbor quads to every
-				// quadrangle in the immediate vicinity fulfilling certain
-				// prerequisites
-				mrFindQuadNeighbors2( ith_quads, quad_count, dilations);
+				// Make sense out of smart pointers...
+				quadListMakeUnique(ith_quads);
 
 				// The connected quads will be organized in groups. The following loop
 				// increases a "group_idx" identifier.
@@ -220,58 +221,43 @@ bool find_chessboard_corners_multiple(
 				// quadrangles by minimizing the convex hull of the remaining pattern.
 				for( int group_idx = 0; ; group_idx++ )
 				{
-					icvFindConnectedQuads( ith_quads, quad_group, group_idx, dilations );
+					vector<CvCBQuadPtr>		quad_group;
+
+					icvFindConnectedQuads( ith_quads , quad_group, group_idx, dilations );
 					if( quad_group.empty() )
 						break;
 
 					icvCleanFoundConnectedQuads( quad_group, pattern_size );
 					size_t count = quad_group.size();
 
-#if VIS
-			{
-				static mrpt::gui::CDisplayWindow  win;
-				win.setWindowTitle( format("Candidate group (%i)", count));
-				CImage im;
-				img.colorImage(im);
-				for (size_t i=0;i<quad_centers.size();i++) 
-				{
-					static const TColor colors[4] = { TColor(255,0,0),TColor(0,0,255),TColor(255,0,255),TColor(0,255,0) };
-					im.cross(quad_centers[i][0],quad_centers[i][1], colors[assignments[i]%4],'+', 10);
-				}
-				win.showImage(im);
-				win.waitForKey();
-			}
-#endif // VIS
-
-					// MARTIN's Code
-					// To save computational time, only proceed, if the number of
-					// found quads during this dilation run is larger than the
-					// largest previous found number
-					if( count /*>=*/ >  max_count)
+					if( count == expected_quads_count )
 					{
-						cout << "CHECKERBOARD: Best found at dilation=" << dilations << endl;
-
-						// set max_count to its new value
-						max_count = count;
-						max_dilation_run_ID = dilations;
+#if VIS
+						{
+							static mrpt::gui::CDisplayWindow  win;
+							win.setWindowTitle( format("Candidate group #%i (%i)",(int)group_idx, (int)quad_group.size()));
+							CImage im;
+							img.colorImage(im);
+							for (size_t i=0;i<quad_group.size();i++) 
+							{
+								static const TColor colors[4] = { TColor(255,0,0),TColor(0,0,255),TColor(255,0,255),TColor(0,255,0) };
+								const double x=0.25*(quad_group[i]->corners[0]->pt.x+quad_group[i]->corners[1]->pt.x+quad_group[i]->corners[2]->pt.x+quad_group[i]->corners[3]->pt.x);
+								const double y=0.25*(quad_group[i]->corners[0]->pt.y+quad_group[i]->corners[1]->pt.y+quad_group[i]->corners[2]->pt.y+quad_group[i]->corners[3]->pt.y);
+								im.cross(x,y, colors[group_idx%4],'+', 10);
+							}
+							win.showImage(im);
+							win.waitForKey();
+						}
+#endif // VIS
 
 						// The following function labels all corners of every quad
 						// with a row and column entry.
-						// "count" specifies the number of found quads in "quad_group"
-						// with group identifier "group_idx"
-						// The last parameter is set to "true", because this is the
-						// first function call and some initializations need to be
-						// made.
-						mrLabelQuadGroup( quad_group, max_count, pattern_size, true );
+						mrLabelQuadGroup( quad_group, pattern_size, true );
 
-						// Allocate memory
-						//output_quad_group.resize( (pattern_size.height+2) * (pattern_size.width+2) ); // = (CvCBQuad**)cvAlloc( sizeof(output_quad_group[0]) * ((pattern_size.height+2) * (pattern_size.width+2)) );
-						// The following function copies every member of "quad_group"
-						// to "output_quad_group", because "quad_group" will be
-						// overwritten during the next loop pass.
-						// "output_quad_group" is a true copy of "quad_group" and
-						// later used for output
-						output_quad_group = quad_group; // mrCopyQuadGroup( quad_group, output_quad_group, max_count );
+						// Add this set of quads as a good result to be returned to the user:
+						good_quad_groups.push_back(quad_group);
+						// And "make_unique()" it:
+						//quadListMakeUnique( good_quad_groups.back() );
 					}
 
 				} // end for each "group_idx"
@@ -282,8 +268,39 @@ bool find_chessboard_corners_multiple(
 
 	} // end for dilation
 
-	// Convert to the expected output data struct:
-	//myQuads2Points( output_quad_group, pattern_size,out_corners);
+
+	// Convert the set of good detected quad sets in "good_quad_groups" 
+	//  to the expected output data struct, doing a final check to 
+	//  remove duplicates:
+	vector<TPoint2D> out_boards_centers; // the center (average) of each output board.
+	for (list<vector<CvCBQuadPtr> >::const_iterator it=good_quad_groups.begin();it!=good_quad_groups.end();++it)
+	{
+		// Compute the center of this board:
+		TPoint2D boardCenter(0,0);
+		for (size_t i=0;i<it->size();i++)
+		{	// JL: Avoid the normalizations of all the averages, since it really doesn't matter for our purpose.
+			boardCenter += TPoint2D(
+				/*0.25* */ (*it)[i]->corners[0]->pt.x+(*it)[i]->corners[1]->pt.x+(*it)[i]->corners[2]->pt.x+(*it)[i]->corners[3]->pt.x,
+				/*0.25* */ (*it)[i]->corners[0]->pt.y+(*it)[i]->corners[1]->pt.y+(*it)[i]->corners[2]->pt.y+(*it)[i]->corners[3]->pt.y );
+		}
+
+		// If it's too close to an already existing board, it's surely a duplicate:
+		double min_dist = std::numeric_limits<double>::max();
+		for (size_t b=0;b<out_boards_centers.size();b++)
+			keep_min(min_dist, mrpt::math::distance(boardCenter, out_boards_centers[b]) );
+
+		if (out_corners.empty() || min_dist > 80 )
+		{
+			vector<CvPoint2D32f> pts;
+			if (1==myQuads2Points( *it, pattern_size,pts ))	// and populate it now.
+			{
+				// Ok with it: add to the output list:
+				out_corners.push_back(pts);
+				// Add center to list of known centers:
+				out_boards_centers.push_back(boardCenter);
+			}
+		}
+	}	
 
 	// Free mem:
 	cvReleaseStructuringElement(&kernel_cross);

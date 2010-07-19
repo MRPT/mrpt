@@ -97,7 +97,6 @@
 			- mrpt::slam::CObservationStereoImagesFeatures to hold the minimum information needed by a stereo SLAM back-end algorithm.
 		- New applications:
 			- track-video-features: A demonstration of robust feature detection and tracking on a video/live camera stream. See http://www.mrpt.org/Application:track-video-features
-			- camera-calib-ba: A tool to calibrate a camera from a set of random tracked features (no need to use a checkerboard).
 		- New examples:
 			- kmeans
 			- params-by-name
