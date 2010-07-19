@@ -34,14 +34,14 @@
 namespace mrpt
 {
 	namespace math
-	{	
-		namespace detail { 
+	{
+		namespace detail {
 			// Auxiliary method: templatized for working with float/double's.
-			template <typename SCALAR> 
+			template <typename SCALAR>
 			double BASE_IMPEXP internal_kmeans(
 				const bool use_kmeansplusplus_method,
-				const size_t nPoints, 
-				const size_t k, 
+				const size_t nPoints,
+				const size_t k,
 				const size_t dims,
 				const SCALAR *points,
 				const size_t attempts,
@@ -65,7 +65,7 @@ namespace mrpt
 				const size_t N = points.size();
 				assignments.resize(N);
 				if (out_centers) out_centers->clear();
-				if (!N)	
+				if (!N)
 					return 0;	// No points, we're done.
 				// Parse to required format:
 				size_t dims=0;
@@ -73,8 +73,8 @@ namespace mrpt
 				const typename LIST_OF_VECTORS1::const_iterator it_end  =points.end();
 				typedef typename LIST_OF_VECTORS1::value_type TInnerVector;
 				typedef typename LIST_OF_VECTORS2::value_type TInnerVectorCenters;
-				std::vector<TInnerVector::value_type> raw_vals;
-				TInnerVector::value_type *trg_ptr=NULL;
+				std::vector<typename TInnerVector::value_type> raw_vals;
+				typename TInnerVector::value_type *trg_ptr=NULL;
 				for (typename LIST_OF_VECTORS1::const_iterator it=it_first;it!=it_end;++it)
 				{
 					if (it==it_first)
@@ -89,16 +89,16 @@ namespace mrpt
 						ASSERTMSG_(dims==it->size(),"All points must have the same dimensionality.")
 					}
 
-					::memcpy(trg_ptr, &(*it)[0], dims*sizeof(TInnerVector::value_type));
+					::memcpy(trg_ptr, &(*it)[0], dims*sizeof(typename TInnerVector::value_type));
 					trg_ptr+=dims;
 				}
 				// Call the internal implementation:
-				std::vector<TInnerVectorCenters::value_type> centers(dims*k);
+				std::vector<typename TInnerVectorCenters::value_type> centers(dims*k);
 				const double ret = detail::internal_kmeans(false,N,k,points.begin()->size(),&raw_vals[0],attempts,&centers[0],&assignments[0]);
 				// Centers:
 				if (out_centers)
 				{
-					const TInnerVectorCenters::value_type *center_ptr = &centers[0];
+					const typename TInnerVectorCenters::value_type *center_ptr = &centers[0];
 					for (size_t i=0;i<k;i++)
 					{
 						TInnerVectorCenters c;
@@ -119,10 +119,10 @@ namespace mrpt
 		/** k-means algorithm to cluster a list of N points of arbitrary dimensionality into exactly K clusters.
 		  *   The list of input points can be any template CONTAINER<POINT> with:
 		  *		- CONTAINER can be: Any STL container: std::vector,std::list,std::deque,...
-		  *		- POINT can be: 
+		  *		- POINT can be:
 		  *			- std::vector<double/float>
 		  *			- CArrayDouble<N> / CArrayFloat<N>
-		  * 
+		  *
 		  *  \param k [IN] Number of cluster to look for.
 		  *  \param points [IN] The list of N input points. It can be any STL-like containers of std::vector<float/double>, for example a std::vector<vector_double>, a std::list<vector_float>, etc...
 		  *  \param assignments [OUT] At output it will have a number [0,k-1] for each of the N input points.
@@ -142,12 +142,12 @@ namespace mrpt
 			)
 		{
 			return detail::stub_kmeans(false /* standard method */, k,points,assignments,out_centers,attempts);
-		}	
+		}
 
 		/** k-means++ algorithm to cluster a list of N points of arbitrary dimensionality into exactly K clusters.
 		  *   The list of input points can be any template CONTAINER<POINT> with:
 		  *		- CONTAINER can be: Any STL container: std::vector,std::list,std::deque,...
-		  *		- POINT can be: 
+		  *		- POINT can be:
 		  *			- std::vector<double/float>
 		  *			- CArrayDouble<N> / CArrayFloat<N>
 		  *
@@ -170,10 +170,10 @@ namespace mrpt
 			)
 		{
 			return detail::stub_kmeans(true /* kmeans++ algorithm*/, k,points,assignments,out_centers,attempts);
-		}	
-	
+		}
+
 		/** @} */
-		
+
 	} // End of MATH namespace
 } // End of namespace
 #endif

@@ -88,22 +88,22 @@ struct CvCBQuad
 // PUBLIC FUNCTION PROTOTYPES
 //===========================================================================
 // Return: -1: errors, 0: not found, 1: found OK
-int cvFindChessboardCorners3( 
-	const mrpt::utils::CImage & img_, 
-	CvSize pattern_size, 
+int cvFindChessboardCorners3(
+	const mrpt::utils::CImage & img_,
+	CvSize pattern_size,
 	std::vector<CvPoint2D32f> &out_corners);
 
 // Return: true: found OK
-bool find_chessboard_corners_multiple( 
-	const mrpt::utils::CImage & img_, 
-	CvSize pattern_size, 
+bool find_chessboard_corners_multiple(
+	const mrpt::utils::CImage & img_,
+	CvSize pattern_size,
 	std::vector< std::vector<CvPoint2D32f> > &out_corners);
 
 
 //===========================================================================
 // INTERNAL FUNCTION PROTOTYPES
 //===========================================================================
-int icvGenerateQuads( std::vector<CvCBQuadPtr> &quads, vector<CvCBCornerPtr> &corners,
+int icvGenerateQuads( std::vector<CvCBQuadPtr> &quads, std::vector<CvCBCornerPtr> &corners,
                              const mrpt::utils::CImage &img, int flags, int dilation,
 							 bool firstRun );
 
@@ -112,8 +112,8 @@ void mrFindQuadNeighbors2( std::vector<CvCBQuadPtr> &quads, int dilation);
 int mrAugmentBestRun( std::vector<CvCBQuadPtr> &new_quads, int new_dilation,
 							 std::vector<CvCBQuadPtr> &old_quads, int old_dilation );
 
-void icvFindConnectedQuads( 
-	std::vector<CvCBQuadPtr> &in_quads, 
+void icvFindConnectedQuads(
+	std::vector<CvCBQuadPtr> &in_quads,
 	std::vector<CvCBQuadPtr> &out_quad_group,
 	const int group_idx,
     const int dilation );
@@ -130,8 +130,8 @@ int myQuads2Points( const std::vector<CvCBQuadPtr> &output_quads, const CvSize &
 void quadListMakeUnique( std::vector<CvCBQuadPtr> &quads);
 
 // JL: Refactored code from within cvFindChessboardCorners3() and alternative algorithm:
-bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations, 
-	IplConvKernel *kernel_cross, 
+bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations,
+	IplConvKernel *kernel_cross,
 	IplConvKernel *kernel_rect,
 	IplConvKernel *kernel_diag1,
 	IplConvKernel *kernel_diag2,
@@ -142,5 +142,5 @@ bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations,
 
 #endif // MRPT_HAS_OPENCV
 
-#endif 
+#endif
 

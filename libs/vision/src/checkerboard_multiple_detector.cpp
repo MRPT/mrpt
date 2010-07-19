@@ -41,9 +41,9 @@ using namespace std;
 #if MRPT_HAS_OPENCV
 
 // Return: true: found OK
-bool find_chessboard_corners_multiple( 
-	const mrpt::utils::CImage & img_, 
-	CvSize pattern_size, 
+bool find_chessboard_corners_multiple(
+	const mrpt::utils::CImage & img_,
+	CvSize pattern_size,
 	std::vector< std::vector<CvPoint2D32f> > &out_corners)
 {
 	// Assure it's a grayscale image:
@@ -63,7 +63,7 @@ bool find_chessboard_corners_multiple(
 	//-----------------------------------------------------------------------
 	// Initialize variables
 	int flags					=  1;	// not part of the function call anymore!
-    int found					=  0;
+    //int found					=  0;
 
 	vector<CvCBQuadPtr>		quads;
     vector<CvCBCornerPtr>	corners;
@@ -84,22 +84,22 @@ bool find_chessboard_corners_multiple(
 	IplConvKernel *kernel_cross = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CROSS,NULL);
 	IplConvKernel *kernel_rect = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_RECT,NULL);
 
-	static int kernel_diag1_vals[9] = { 
+	static int kernel_diag1_vals[9] = {
 		1,0,0,
 		0,1,0,
 		0,0,1 };
 	IplConvKernel *kernel_diag1 = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CUSTOM,kernel_diag1_vals);
-	static int kernel_diag2_vals[9] = { 
+	static int kernel_diag2_vals[9] = {
 		0,0,1,
 		0,1,0,
 		1,0,0 };
 	IplConvKernel *kernel_diag2 = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CUSTOM,kernel_diag2_vals);
-	static int kernel_horz_vals[9] = { 
+	static int kernel_horz_vals[9] = {
 		0,0,0,
 		1,1,1,
 		0,0,0 };
 	IplConvKernel *kernel_horz = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CUSTOM,kernel_horz_vals);
-	static int kernel_vert_vals[9] = { 
+	static int kernel_vert_vals[9] = {
 		0,1,0,
 		0,1,0,
 		0,1,0 };
@@ -151,7 +151,7 @@ bool find_chessboard_corners_multiple(
 		// prerequisites
 		mrFindQuadNeighbors2( quads, dilations);
 
-		// JL: To achieve multiple-checkerboard, take all the raw detected quads and 
+		// JL: To achieve multiple-checkerboard, take all the raw detected quads and
 		//  separate them in groups with k-means.
 		vector<CArrayDouble<2> >	quad_centers;
 		quad_centers.resize(quads.size());
@@ -167,9 +167,9 @@ bool find_chessboard_corners_multiple(
 		for (size_t nClusters=1;nClusters<MAX_NUM_CLUSTERS;nClusters++)
 		{
 			vector<size_t> num_quads_by_cluster(nClusters);
-			
+
 			vector<int>	assignments;
-			const double final_cost = mrpt::math::kmeanspp< vector<CArrayDouble<2> >, vector<CArrayDouble<2> > >(
+			mrpt::math::kmeanspp< vector<CArrayDouble<2> >, vector<CArrayDouble<2> > >(
 				nClusters,quad_centers,assignments);
 
 			// Count # of quads in each cluster:
@@ -184,7 +184,7 @@ bool find_chessboard_corners_multiple(
 					(unsigned)nClusters ));
 				CImage im;
 				img.colorImage(im);
-				for (size_t i=0;i<quad_centers.size();i++) 
+				for (size_t i=0;i<quad_centers.size();i++)
 				{
 					static const TColor colors[4] = { TColor(255,0,0),TColor(0,0,255),TColor(255,0,255),TColor(0,255,0) };
 					im.cross(quad_centers[i][0],quad_centers[i][1], colors[assignments[i]%4],'+', 10);
@@ -199,7 +199,7 @@ bool find_chessboard_corners_multiple(
 			// -----------------------------------------
 			for (size_t i=0;i<nClusters;i++)
 			{
-				if (num_quads_by_cluster[i]<size_t(pattern_size.height*pattern_size.width)) 
+				if (num_quads_by_cluster[i]<size_t(pattern_size.height*pattern_size.width))
 					continue; // Can't be good...
 
 				// Create a subset of the quads with those in the i'th cluster:
@@ -238,7 +238,7 @@ bool find_chessboard_corners_multiple(
 							win.setWindowTitle( format("Candidate group #%i (%i)",(int)group_idx, (int)quad_group.size()));
 							CImage im;
 							img.colorImage(im);
-							for (size_t i=0;i<quad_group.size();i++) 
+							for (size_t i=0;i<quad_group.size();i++)
 							{
 								static const TColor colors[4] = { TColor(255,0,0),TColor(0,0,255),TColor(255,0,255),TColor(0,255,0) };
 								const double x=0.25*(quad_group[i]->corners[0]->pt.x+quad_group[i]->corners[1]->pt.x+quad_group[i]->corners[2]->pt.x+quad_group[i]->corners[3]->pt.x);
@@ -269,8 +269,8 @@ bool find_chessboard_corners_multiple(
 	} // end for dilation
 
 
-	// Convert the set of good detected quad sets in "good_quad_groups" 
-	//  to the expected output data struct, doing a final check to 
+	// Convert the set of good detected quad sets in "good_quad_groups"
+	//  to the expected output data struct, doing a final check to
 	//  remove duplicates:
 	vector<TPoint2D> out_boards_centers; // the center (average) of each output board.
 	for (list<vector<CvCBQuadPtr> >::const_iterator it=good_quad_groups.begin();it!=good_quad_groups.end();++it)
@@ -300,7 +300,7 @@ bool find_chessboard_corners_multiple(
 				out_boards_centers.push_back(boardCenter);
 			}
 		}
-	}	
+	}
 
 	// Free mem:
 	cvReleaseStructuringElement(&kernel_cross);

@@ -167,7 +167,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 			}
 
 			// Try with expanded versions of the image if it fails to detect the checkerboard:
-			int corners_count;
+			unsigned corners_count;
 			bool corners_found=false;
 
 			corners_count = CORNERS_COUNT;

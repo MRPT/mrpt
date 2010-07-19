@@ -30,7 +30,7 @@
 
 #include <mrpt/math/kmeans.h>
 
-// This file is just a stub for the k-means++ library so MRPT users don't need 
+// This file is just a stub for the k-means++ library so MRPT users don't need
 //  to include those headers too.
 
 // Include the kmeans++ library, by David Arthur (darthur@gmail.com), 2009:
@@ -41,20 +41,57 @@ using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 
-/* -------------------------------------------
-                 internal_kmeans
-   ------------------------------------------- */
-template <> BASE_IMPEXP  
-double mrpt::math::detail::internal_kmeans<double>(
-	const bool use_kmeansplusplus_method,
-	const size_t nPoints, 
-	const size_t k, 
-	const size_t dims,
-	const double *points,
-	const size_t attempts,
-	double* out_center,
-	int *out_assignments)
+namespace mrpt
 {
-	return RunKMeans(nPoints,k,dims,const_cast<double*>(points),attempts,out_center,out_assignments);
+	namespace math
+	{
+		namespace detail
+		{
+			/* -------------------------------------------
+							 internal_kmeans
+			   ------------------------------------------- */
+			template <> BASE_IMPEXP
+			double internal_kmeans<double>(
+				const bool use_kmeansplusplus_method,
+				const size_t nPoints,
+				const size_t k,
+				const size_t dims,
+				const double *points,
+				const size_t attempts,
+				double* out_center,
+				int *out_assignments)
+			{
+				return RunKMeans(nPoints,k,dims,const_cast<double*>(points),attempts,out_center,out_assignments);
+			}
+
+			template <> BASE_IMPEXP
+			double internal_kmeans<float>(
+				const bool use_kmeansplusplus_method,
+				const size_t nPoints,
+				const size_t k,
+				const size_t dims,
+				const float *points,
+				const size_t attempts,
+				float* out_center,
+				int *out_assignments)
+			{
+				std::vector<double>  points_d(nPoints*dims);
+				std::vector<double>  centers_d(k*dims);
+				// Convert: float -> double
+				for (size_t i=0;i<nPoints*dims;i++)
+					points_d[i] = double(points[i]);
+
+				const double ret = RunKMeans(nPoints,k,dims,&points_d[0],attempts,&centers_d[0],out_assignments);
+
+				// Convert: double -> float
+				if (out_center)
+					for (size_t i=0;i<k*dims;i++)
+						out_center[i] = float(centers_d[i]);
+
+				return ret;
+			}
+
+		}
+	}
 }
 

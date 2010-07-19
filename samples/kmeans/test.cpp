@@ -41,6 +41,9 @@ using namespace std;
 // ------------------------------------------------------
 void TestKMeans()
 {
+	typedef CArrayDouble<2>  CPointType;
+	//typedef CArrayFloat<2>  CPointType;
+
 	randomGenerator.randomize();
 	CTicTac tictac;
 
@@ -51,20 +54,20 @@ void TestKMeans()
 	while (win.isOpen())
 	{
 		// Generate N clusters of random points:
-		vector< CArrayDouble<2> >  points;
+		vector< CPointType >  points;
 		const size_t nClusters = 2 + (randomGenerator.drawUniform32bit() % 4);
 
 		for (size_t cl=0;cl<nClusters;cl++)
 		{
 			const size_t nPts = randomGenerator.drawUniform(5,50);
-			
+
 			TPoint2D  clCenter;
 			clCenter.x = randomGenerator.drawUniform(0,10);
 			clCenter.y = randomGenerator.drawUniform(0,10);
 
 			for (size_t p=0;p<nPts;p++)
 			{
-				CArrayDouble<2> v;
+				CPointType v;
 				v[0] = clCenter.x + randomGenerator.drawGaussian1D(0,1);
 				v[1] = clCenter.y + randomGenerator.drawGaussian1D(0,1);
 				points.push_back(v);
@@ -72,10 +75,10 @@ void TestKMeans()
 		}
 
 		// do k-means
-		vector< CArrayDouble<2> >	centers;
+		vector< CPointType >	centers;
 		vector<int>				assignments;
 		tictac.Tic();
-		
+
 		const double cost = mrpt::math::kmeanspp(nClusters, points, assignments, &centers);
 
 		cout << "Took: " << tictac.Tac()*1e3 << " ms.\n";
@@ -92,7 +95,7 @@ void TestKMeans()
 
 			for (size_t i=0;i<points.size();i++)
 			{
-				if (assignments[i]==c)
+				if (size_t(assignments[i])==c)
 				{
 					xs.push_back( points[i][0] );
 					ys.push_back( points[i][1] );
