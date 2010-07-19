@@ -152,9 +152,9 @@ bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations,
 	case 11:		cvDilate(ipl,ipl, kernel_diag1 , 1);
 	case 10:		cvDilate(ipl,ipl, kernel_diag1 , 1);  break;
 
-	case 9:		cvDilate(ipl,ipl, kernel_cross , 1); 
+	case 9:		cvDilate(ipl,ipl, kernel_cross , 1); isLast  = true;
 	case 8:		cvErode (ipl,ipl, kernel_rect , 1);
-	case 7:		cvDilate(ipl,ipl, kernel_cross , 1); 
+	case 7:		cvDilate(ipl,ipl, kernel_cross , 1);  
 	case 6:		cvDilate(ipl,ipl, kernel_diag2 , 1);
 	case 5:		cvDilate(ipl,ipl, kernel_diag1 , 1);
 	case 4:		cvDilate(ipl,ipl, kernel_rect , 1); 

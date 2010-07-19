@@ -47,15 +47,13 @@ void TestMultipleCheckerboard()
 
 	// Load img:
 	CImage img;
-	if (!img.loadFromFile( 
-		//"d:/imgs_temp/c2.jpg" )) 
-		myDataDir + string("test_3_checkerboards_6x9.jpg") ))
+	if (!img.loadFromFile( myDataDir + string("test_3_checkerboards_5x4.jpg") ))
 		throw std::runtime_error("Can't load demo image!");
 
 	// Detect multiple-checkerboards:
 	vector<vector<TPixelCoordf> > 	listCornerCoords;
-	const unsigned int  checkerboard_size_x  = 6;
-	const unsigned int  checkerboard_size_y  = 9;
+	const unsigned int  checkerboard_size_x  = 5;
+	const unsigned int  checkerboard_size_y  = 4;
 
 	timlog.enter("findMultipleChessboardsCorners");
 	
