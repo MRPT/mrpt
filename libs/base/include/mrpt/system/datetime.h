@@ -107,6 +107,12 @@ namespace mrpt
 		  */
 		double BASE_IMPEXP timestampTotime_t( const mrpt::system::TTimeStamp  &t );
 
+		/** Transform from TTimeStamp to standard "time_t" (actually a double number, it can contain fractions of seconds).
+		  * This function is just an (inline) alias of timestampTotime_t(), with a more significant name.
+		  * \sa time_tToTimestamp, secondsToTimestamp
+		  */
+		inline double timestampToDouble( const mrpt::system::TTimeStamp  &t ) { return timestampTotime_t(t); }
+
 		/** Retuns the time difference from t1 to t2 (positive if t2 is posterior to t1), in seconds.
 		  * \sa secondsToTimestamp
           */
