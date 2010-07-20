@@ -243,7 +243,15 @@ void TestCameraFaceDetection()
 		if( !counter )
 			tictac.Tic();
 
-		mrpt::slam::CObservationPtr  obs = cam->getNextFrame();
+		mrpt::slam::CObservationPtr  obs;
+		try 
+		{
+			obs = cam->getNextFrame();
+		}
+		catch (CExceptionEOF &)
+		{
+			break; 
+		}
 		ASSERT_(obs);
 
 		if (IS_CLASS(obs,CObservationImage))
