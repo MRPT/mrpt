@@ -3984,13 +3984,13 @@ bool  COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 {
 	MRPT_START;
 
-	CImageFloat					img1,img2;
-	CImage						img(10,10,3,true);
-	unsigned long					lineColor;
-	unsigned int					i,n , lx1, ly1, lx2, ly2, Ay1, Ay2;
-	unsigned int					px, py;
+	CImageFloat		img1,img2;
+	CImage			img(10,10,3,true);
+	TColor 			lineColor;
+	unsigned int	i,n , lx1, ly1, lx2, ly2, Ay1, Ay2;
+	unsigned int	px, py;
 
-	lineColor = 0xFF0000;
+	lineColor = TColor::red;
 
 	// The individual maps:
 	// ---------------------------------------------
@@ -4015,14 +4015,14 @@ bool  COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 	// Compute the size of the composite image:
 	// ---------------------------------------------
 	img.resize(lx1 + lx2 + 1, max(ly1,ly2), 3, true );
-	img.filledRectangle(0,0,img.getWidth()-1,img.getHeight()-1,0);	// background: black
+	img.filledRectangle(0,0,img.getWidth()-1,img.getHeight()-1, TColor::black );	// background: black
 	img.drawImage(0,Ay1,img1);
 	img.drawImage(lx1+1,Ay2,img2);
 
 	// Draw the features:
 	// ---------------------------------------------
 	n = corrs.size();
-	lineColor = 0x000000;
+	lineColor = TColor::black;
 	for (i=0;i<n;i++)
 	{
 		// In M1:
@@ -4042,10 +4042,10 @@ bool  COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 	// ---------------------------------------------
 	for (i=0;i<n;i++)
 	{
-		lineColor =
-			static_cast<long>(randomGenerator.drawUniform(0,255.0f)) +
-			(static_cast<long>(randomGenerator.drawUniform(0,255.0f)) << 8) +
-			(static_cast<long>(randomGenerator.drawUniform(0,255.0f)) << 16) ;
+		lineColor = TColor(
+			static_cast<long>(randomGenerator.drawUniform(0,255.0f)),
+			static_cast<long>(randomGenerator.drawUniform(0,255.0f)),
+			static_cast<long>(randomGenerator.drawUniform(0,255.0f)) );
 
 		img.line(
 			m1->x2idx( corrs[i].this_x ),
@@ -4073,13 +4073,13 @@ bool  COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 	MRPT_START;
 
 	CEnhancedMetaFile				emf(fileName,1);
-	CImageFloat					img1,img2;
-	unsigned long					lineColor;
-	unsigned int					i,n , lx1, ly1, lx2, ly2, Ay1, Ay2;
-	unsigned int					px, py;
+	CImageFloat		img1,img2;
+	TColor			lineColor;
+	unsigned int	i,n , lx1, ly1, lx2, ly2, Ay1, Ay2;
+	unsigned int	px, py;
 
 
-	lineColor = 0xFF0000;
+	lineColor = TColor::red;
 
 	// The individual maps:
 	// ---------------------------------------------
@@ -4114,7 +4114,7 @@ bool  COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 	// Draw the features:
 	// ---------------------------------------------
 	n = corrs.size();
-	lineColor = 0x000000;
+	lineColor = TColor::black;
 	for (i=0;i<n;i++)
 	{
 		// In M1:
@@ -4159,12 +4159,12 @@ bool  COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 		emf.textOut(
 			m1->x2idx( corrs[i].this_x ) - 10 ,
 			Ay1+ly1-1- m1->y2idx( corrs[i].this_y ) - 25,
-			str, 0 );
+			str, TColor::black );
 
 		emf.textOut(
 			lx1+1+ m2->x2idx( corrs[i].other_x ) - 10,
 			Ay2+ly2-1-m2->y2idx( corrs[i].other_y ) - 25,
-			str,0 );
+			str,TColor::black );
 	} // i
 
 	return true;

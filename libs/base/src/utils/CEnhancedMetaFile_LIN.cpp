@@ -37,7 +37,6 @@
 #include <mrpt/utils/CEnhancedMetaFile.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CImageFloat.h>
-//#include <libwmf/api.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -58,7 +57,7 @@ CEnhancedMetaFile::CEnhancedMetaFile(
 		m_targetFile(targetFileName)
 {
     m_hdc = (void*) new CImage(CEnhancedMetaFile::LINUX_IMG_WIDTH, CEnhancedMetaFile::LINUX_IMG_HEIGHT );
-    ((CImage*)m_hdc.get())->filledRectangle(0,0,CEnhancedMetaFile::LINUX_IMG_WIDTH-1, CEnhancedMetaFile::LINUX_IMG_HEIGHT-1,0);
+    ((CImage*)m_hdc.get())->filledRectangle(0,0,CEnhancedMetaFile::LINUX_IMG_WIDTH-1, CEnhancedMetaFile::LINUX_IMG_HEIGHT-1, TColor(0,0,0) );
 }
 
 /*---------------------------------------------------------------
@@ -96,7 +95,7 @@ void  CEnhancedMetaFile::line(
 	int				y0,
 	int				x1,
 	int				y1,
-	unsigned int	color,
+	const mrpt::utils::TColor color,
 	unsigned int	width,
 	TPenStyle		penStyle
 	)
@@ -115,7 +114,7 @@ void  CEnhancedMetaFile::textOut(
 	int					x0,
 	int					y0,
 	const std::string	&str,
-	unsigned int		color
+	const mrpt::utils::TColor color
 	)
 {
     MRPT_TRY_START;
@@ -177,7 +176,7 @@ void  CEnhancedMetaFile::rectangle(
 	int				y0,
 	int				x1,
 	int				y1,
-	unsigned int	color,
+	const mrpt::utils::TColor color,
 	unsigned int	width)
 {
 	line(x0,y0,x1,y0,color,width);

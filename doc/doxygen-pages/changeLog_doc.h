@@ -85,6 +85,7 @@
 			- mrpt::hwdrivers::CActivMediaRobotBase can now transparently open serial ports >COM4 in Windows without the prefix "\\.\" (it's added automatically if needed).
 			- The ANN library has been moved from mrpt-maps to mrpt-base (still can be reached at the same path under <mrpt/otherlibs/ann/...>. This is to allow more code to use KD-trees without depending on mrpt-maps.
 			- mrpt::vision::TPixelCoordf now holds "float" coordinates instead of "double" since: it's enough for pixels, to save memory, and for consistency in name suffixes "f".
+			- mrpt::utils::CCanvas now uses TColor as color data type, instead of "int"s (finally!).
 		- New functions:
 			- mrpt::math::kmeans, mrpt::math::kmeanspp: Efficient implementations of k-means and k-means++ algorithms. By David Arthur (Standford, USA) (See http://www.stanford.edu/~darthur/kmpp.zip ).
 			- mrpt::vision::findMultipleChessboardsCorners

@@ -153,7 +153,7 @@ void  CCanvas::line(
 	int				y0,
 	int				x1,
 	int				y1,
-	unsigned int	color,
+	const mrpt::utils::TColor	color,
 	unsigned int	width,
 	TPenStyle		penStyle
 	)
@@ -204,7 +204,7 @@ void  CCanvas::rectangle(
 	int				y0,
 	int				x1,
 	int				y1,
-	unsigned int	color,
+	const mrpt::utils::TColor	color,
 	unsigned int	width)
 {
 	int		w_min = (int) -ceil(((float)width)/2);
@@ -227,7 +227,7 @@ void  CCanvas::triangle(
 			int				x0,
 			int				y0,
 			int				size,
-			unsigned int	color,
+			const mrpt::utils::TColor	color,
 			bool			inferior,
 			unsigned int	width)
 {
@@ -257,7 +257,7 @@ void  CCanvas::filledRectangle(
 	int				y0,
 	int				x1,
 	int				y1,
-	unsigned int	color)
+	const mrpt::utils::TColor	color)
 {
 	int		x_min = max(x0,0);
 	int		x_max = min(x1,(int)getWidth()-1);
@@ -378,7 +378,7 @@ void  CCanvas::drawImage(
 /*---------------------------------------------------------------
 						cross
 ---------------------------------------------------------------*/
-void  CCanvas::cross(int x0,int y0, unsigned int color, char type, unsigned int size, unsigned int width)
+void  CCanvas::cross(int x0,int y0, const mrpt::utils::TColor	color, char type, unsigned int size, unsigned int width)
 {
 	MRPT_UNUSED_PARAM(width);
 	if (type=='+')
@@ -400,7 +400,7 @@ void  CCanvas::drawCircle(
 	int		x,
 	int		y,
 	int		radius,
-	const mrpt::utils::TColor	&color,
+	const mrpt::utils::TColor	color,
 	unsigned int	width
 	)
 {
@@ -442,7 +442,7 @@ void  CCanvas::textOut(
 	int					x0,
 	int					y0,
 	const std::string	&str,
-	unsigned int		color
+	const mrpt::utils::TColor	color
 	)
 {
 	MRPT_START;

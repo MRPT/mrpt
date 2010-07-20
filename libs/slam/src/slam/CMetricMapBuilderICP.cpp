@@ -38,9 +38,9 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CEnhancedMetaFile.h>
 
-using namespace std; 
-using namespace mrpt::slam; 
-using namespace mrpt::utils; 
+using namespace std;
+using namespace mrpt::slam;
+using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 /*---------------------------------------------------------------
@@ -91,7 +91,7 @@ CMetricMapBuilderICP::~CMetricMapBuilderICP()
 /*---------------------------------------------------------------
 							Options
   ---------------------------------------------------------------*/
-CMetricMapBuilderICP::TConfigParams::TConfigParams() :  
+CMetricMapBuilderICP::TConfigParams::TConfigParams() :
 	matchAgainstTheGrid( false ),
 	insertionLinDistance(1.0),
 	insertionAngDistance(DEG2RAD(30)),
@@ -113,7 +113,7 @@ void  CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR_DEGREES(localizationAngDistance, source,section)
 
 	MRPT_LOAD_CONFIG_VAR(minICPgoodnessToAccept, double	,source,section)
-	
+
 
 	mapInitializers.loadFromConfigFile(source,section);
 }
@@ -124,21 +124,21 @@ void  CMetricMapBuilderICP::TConfigParams::dumpToTextStream( CStream	&out) const
 
 /*---------------------------------------------------------------
 						processObservation
- This is the new entry point of the algorithm (the old one 
-  was processActionObservation, which now is a wrapper to 
+ This is the new entry point of the algorithm (the old one
+  was processActionObservation, which now is a wrapper to
   this method).
   ---------------------------------------------------------------*/
 void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 {
 	mrpt::synch::CCriticalSectionLocker lock_cs( &critZoneChangingMap );
-	
+
 	MRPT_START
 
 	if (metricMap.m_pointsMaps.empty() && metricMap.m_gridMaps.empty())
 		throw std::runtime_error("Neither grid maps nor points map: Have you called initialize() after setting ICP_options.mapInitializers?");
-	
+
 	ASSERT_(obs.present())
-	
+
 	// Is it an odometry observation??
 	if (IS_CLASS(obs,CObservationOdometry))
 	{
@@ -163,7 +163,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 	} // end it's odometry
 	else
 	{
-		// Current robot pose given the timestamp of the observation (this can include a small extrapolation 
+		// Current robot pose given the timestamp of the observation (this can include a small extrapolation
 		//  using the latest known robot velocities):
 		CPose2D		initialEstimatedRobotPose;
 		{
@@ -173,20 +173,20 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			else
 				m_lastPoseEst.getLatestRobotPose(initialEstimatedRobotPose);
 		}
-		
+
 		// To know the total path length:
 		CPose2D  previousKnownRobotPose;
 		m_lastPoseEst.getLatestRobotPose(previousKnownRobotPose);
 
-		// Increment (this may only include the effects of extrapolation with velocity...):	
+		// Increment (this may only include the effects of extrapolation with velocity...):
 		this->accumulateRobotDisplacementCounters(initialEstimatedRobotPose-previousKnownRobotPose);
 
 		// We'll skip ICP-based localization for this observation only if:
 		//  - We had some odometry since the last pose correction (m_there_has_been_an_odometry=true).
 		//  - AND, the traversed distance is small enough:
-		const bool we_skip_ICP_pose_correction = 
-			m_there_has_been_an_odometry && 
-			m_distSinceLastICP.lin < std::min(ICP_options.localizationLinDistance,ICP_options.insertionLinDistance) && 
+		const bool we_skip_ICP_pose_correction =
+			m_there_has_been_an_odometry &&
+			m_distSinceLastICP.lin < std::min(ICP_options.localizationLinDistance,ICP_options.insertionLinDistance) &&
 			m_distSinceLastICP.ang < std::min(ICP_options.localizationAngDistance,ICP_options.insertionAngDistance);
 
 		CICP::TReturnInfo	icpReturn;
@@ -222,11 +222,11 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			CSimplePointsMap   sensedPoints;
 			sensedPoints.insertionOptions.minDistBetweenLaserPoints = 0.02f;
 			sensedPoints.insertionOptions.also_interpolate = false;
-			
-			// Create points representation of the observation:		
+
+			// Create points representation of the observation:
 			// Insert only those planar range scans in the altitude of the grid map:
-			if (ICP_options.matchAgainstTheGrid && 
-				!metricMap.m_gridMaps.empty() && 
+			if (ICP_options.matchAgainstTheGrid &&
+				!metricMap.m_gridMaps.empty() &&
 				metricMap.m_gridMaps[0]->insertionOptions.useMapAltitude)
 			{
 				// Use grid altitude:
@@ -245,7 +245,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 
 			if (IS_DERIVED(matchWith,CPointsMap) && static_cast<CPointsMap*>(matchWith)->empty())
 				can_do_icp = false;	// The reference map is empty!
-			
+
 			if (can_do_icp)
 			{
 				// We DO HAVE points with this observation:
@@ -269,11 +269,11 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 					// save estimation:
 					CPosePDFGaussian  pEst2D;
 					pEst2D.copyFrom( *pestPose );
-					
+
 					m_lastPoseEst.processUpdateNewPoseLocalization( TPose2D(pEst2D.mean), pEst2D.cov, obs->timestamp );
 					m_lastPoseEst_cov = pEst2D.cov;
-				
-					
+
+
 					// Debug output to console:
 					if (options.verbose)
 					{
@@ -289,7 +289,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 					if (options.verbose)
 						cout << "[CMetricMapBuilderICP]  Ignoring ICP of low quality: " << icpReturn.goodness*100 << std::endl;
 				}
-				
+
 			} // end we can do ICP.
 
 
@@ -318,18 +318,18 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		if (options.alwaysInsertByClass.contains(obs->GetRuntimeClass()))
 			update = true;
 
-		// We need to always insert ALL the observations at the beginning until the first one 
+		// We need to always insert ALL the observations at the beginning until the first one
 		//  that actually insert some points into the map used as a reference, since otherwise
 		//  we'll not be able to do ICP against an empty map!!
 		if (matchWith && matchWith->isEmpty())
 			update = true;
-		 
+
 		// ----------------------------------------------------------
 		// ----------------------------------------------------------
 		if ( options.enableMapUpdating && update)
 		{
 			CTicTac tictac;
-			
+
 			// Reset distance counters:
 			m_distSinceLastInsertion[obs->sensorLabel].lin = 0;
 			m_distSinceLastInsertion[obs->sensorLabel].ang = 0;
@@ -347,7 +347,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			// Add to the vector of "poses"-"SFs" pairs:
 			CPosePDFGaussian	posePDF(currentKnownRobotPose);
 			CPose3DPDFPtr  pose3D = CPose3DPDFPtr( CPose3DPDF::createFrom2D( posePDF ) );
-			
+
 			CSensoryFramePtr sf = CSensoryFrame::Create();
 			sf->insert(obs);
 
@@ -358,7 +358,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		}
 
 
-	
+
 	} // end other observation
 
 	// Robot path history:
@@ -386,7 +386,7 @@ void  CMetricMapBuilderICP::processActionObservation(
 	if (movEstimation)
 	{
 		m_auxAccumOdometry.composeFrom( m_auxAccumOdometry, movEstimation->poseChange->getMeanVal() );
-		
+
 		CObservationOdometryPtr obs = CObservationOdometry::Create();
 		obs->timestamp = movEstimation->timestamp;
 		obs->odometry = m_auxAccumOdometry;
@@ -425,7 +425,7 @@ CPose3DPDFPtr CMetricMapBuilderICP::getCurrentPoseEstimation() const
 	CPosePDFGaussian  pdf2D;
 	m_lastPoseEst.getLatestRobotPose(pdf2D.mean);
 	pdf2D.cov = m_lastPoseEst_cov;
-	
+
 	CPose3DPDFGaussianPtr pdf3D = CPose3DPDFGaussian::Create();
 	pdf3D->copyFrom(pdf2D);
 	return pdf3D;
@@ -439,11 +439,11 @@ void  CMetricMapBuilderICP::initialize(
 	CPosePDF					*x0 )
 {
 	MRPT_START
-	
+
 	// Reset vars:
 	m_estRobotPath.clear();
 	m_auxAccumOdometry = CPose2D(0,0,0);
-	
+
 	m_distSinceLastICP.lin = m_distSinceLastICP.ang = 0;
 	m_distSinceLastInsertion.clear();
 
@@ -472,7 +472,7 @@ void  CMetricMapBuilderICP::initialize(
 
 	// Load estimated pose from given PDF:
 	m_lastPoseEst.reset();
-	
+
 	if (x0)
 		m_lastPoseEst.processUpdateNewPoseLocalization( x0->getMeanVal(), CMatrixDouble33(), mrpt::system::now() );
 
@@ -590,7 +590,7 @@ void  CMetricMapBuilderICP::saveCurrentEstimationToImage(const std::string &file
 		EMF.line(
 			x1, imgHeight-1-y1,
 			x2, imgHeight-1-y2,
-			0 );
+			TColor::black );
 	}
 
 	MRPT_END;

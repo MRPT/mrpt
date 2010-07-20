@@ -182,7 +182,7 @@ void  CEnhancedMetaFile::line(
 	int				y0,
 	int				x1,
 	int				y1,
-	unsigned int	color,
+	const mrpt::utils::TColor color,
 	unsigned int	width,
 	TPenStyle		penStyle
 	)
@@ -193,7 +193,7 @@ void  CEnhancedMetaFile::line(
 	HPEN	hPen = CreatePen(
 		penStyle,
 		width,
-		color );
+		(unsigned int)color );
 
 	HPEN hOldPen = (HPEN) SelectObject( (HDC)m_hdc.get(), hPen );
 
@@ -211,13 +211,13 @@ void  CEnhancedMetaFile::textOut(
 	int					x0,
 	int					y0,
 	const std::string	&str,
-	unsigned int		color
+	const mrpt::utils::TColor color
 	)
 {
 	x0*=m_scale; y0*=m_scale;
 
 	::SetBkMode((HDC)m_hdc.get(), TRANSPARENT);
-	::SetTextColor( (HDC)m_hdc.get(),color);
+	::SetTextColor( (HDC)m_hdc.get(),(unsigned int)color);
 
 	::TextOutA( (HDC)m_hdc.get(), x0,y0, str.c_str(), (int)str.size());
 }

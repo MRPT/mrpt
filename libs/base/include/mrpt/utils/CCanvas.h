@@ -93,8 +93,12 @@ namespace mrpt
 			  *  Pixel coordinates starts at the left-top corner of the image, and start in (0,0).
 			  *  The meaning of the parameter "color" depends on the implementation: it will usually
 			  *   be a 24bit RGB value (0x00RRGGBB), but it can also be just a 8bit gray level.
+			  *
+			  *  You can also use a TColor() type as input and it will be automatically converted to size_t.
+			  *
 			  *  This method must support (x,y) values OUT of the actual image size without neither
 			  *   raising exceptions, nor leading to memory access errors.
+			  *
 			  */
 			virtual void  setPixel( int x, int y, size_t color) =0;
 
@@ -120,7 +124,7 @@ namespace mrpt
 				int				y0,
 				int				x1,
 				int				y1,
-				unsigned int	color,
+				const mrpt::utils::TColor color,
 				unsigned int	width = 1,
 				TPenStyle		penStyle = psSolid);
 
@@ -138,7 +142,7 @@ namespace mrpt
 				int				y0,
 				int				x1,
 				int				y1,
-				unsigned int	color,
+				const mrpt::utils::TColor	color,
 				unsigned int	width = 1 );
 
 	/*****************************************************AJOGD***************************************************/
@@ -155,7 +159,7 @@ namespace mrpt
 				int				x0,
 				int				y0,
 				int				size,
-				unsigned int	color,
+				const mrpt::utils::TColor	color,
 				bool			inferior = true,
 				unsigned int	width = 1 );
 	/************************************************************************************************************/
@@ -174,7 +178,7 @@ namespace mrpt
 				int				y0,
 				int				x1,
 				int				y1,
-				unsigned int	color
+				const mrpt::utils::TColor	color
 				);
 
 			/** Renders 2D text using bitmap fonts.
@@ -189,7 +193,7 @@ namespace mrpt
 				int					x0,
 				int					y0,
 				const std::string	&str,
-				unsigned int		color
+				const mrpt::utils::TColor	color
 				);
 
 			/** Select the current font used when drawing text.
@@ -218,7 +222,7 @@ namespace mrpt
 			* \param type The cross type. It could be: "x" or "+"
 			* \param width The desired width of the cross (this is IGNORED yet)
 			*/
-			void  cross (int x0,int y0, unsigned int color,char type, unsigned int size=5, unsigned int width = 1);
+			void  cross (int x0,int y0, const mrpt::utils::TColor	color,char type, unsigned int size=5, unsigned int width = 1);
 
 			/** Draws an image as a bitmap at a given position, with some custom scale and rotation changes.
 			  * \param x0 The top-left corner x coordinates on this canvas where the image is to be drawn
@@ -272,7 +276,7 @@ namespace mrpt
 				int		x,
 				int		y,
 				int		radius,
-				const mrpt::utils::TColor	&color = mrpt::utils::TColor(255,255,255),
+				const mrpt::utils::TColor	color = mrpt::utils::TColor(255,255,255),
 				unsigned int	width = 1 );
 
 			/** Draws an ellipse representing a given confidence interval of a 2D Gaussian distribution.
@@ -329,9 +333,9 @@ namespace mrpt
 					std::cout << "Covariance matrix leading to error is:" << std::endl << *cov2D << std::endl; \
 					);
 			}
-			
+
 			/** Draws a set of marks onto the image, given a generic container of entities having just "x" and "y" fields.
-			 *  The class of FEATURELIST can be, for example, std::vector<TPoint2D>, std::vector<TPixelCoordsf> or mrpt::vision::CFeatureList 
+			 *  The class of FEATURELIST can be, for example, std::vector<TPoint2D>, std::vector<TPixelCoordsf> or mrpt::vision::CFeatureList
 			 * \sa drawFeatures
 			 */
 			template <class FEATURELIST>
@@ -341,9 +345,9 @@ namespace mrpt
 					this->cross( round(i->x), round(i->y), color, '+' );
 				}
 			}
-			
+
 			/** Draws a set of marks (or scaled circles for features with scale) onto the image, given a generic container of features.
-			 *  The class of FEATURELIST can be mrpt::vision::CFeatureList 
+			 *  The class of FEATURELIST can be mrpt::vision::CFeatureList
 			 * \sa drawFeaturesSimple
 			 */
 			template <class FEATURELIST>
@@ -354,13 +358,13 @@ namespace mrpt
 					const int x = round((*i)->x);
 					const int y = round((*i)->y);
 					this->cross(x,y, color, '+' );
-					if( showIDs ) this->textOut(x,y, format("%u", static_cast<unsigned int>((*i)->ID)), 0xFF0000 );
-					if (showResponse) this->textOut( x,y+10, format("R:%u", static_cast<unsigned int>((*i)->response)), 0xFF0000 );
+					if( showIDs ) this->textOut(x,y, format("%u", static_cast<unsigned int>((*i)->ID)), TColor::red );
+					if (showResponse) this->textOut( x,y+10, format("R:%u", static_cast<unsigned int>((*i)->response)), TColor::red );
 					if( ! (*i)->isPointFeature() ) this->drawCircle( round((*i)->x), round((*i)->y), (*i)->scale, TColor::red );
 				}
 			}
-			
-			
+
+
 
 		}; // End of class
 

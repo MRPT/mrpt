@@ -442,7 +442,7 @@ void  CMetricMapBuilderRBPF::drawCurrentEstimationToImage( utils::CCanvas *img )
 				img->line(
 					x1, round( (imgHeight-1)-y1 ),
 					x2, round( (imgHeight-1)-y2 ),
-					i==M ? 0x000000 : 0x505050,	 // Color, gray levels,
+					i==M ? TColor(0,0,0) : TColor(0x50,0x50,0x50),	 // Color, gray levels,
 					i==M ? 70 : 30				 // Line width
 					);
 			}

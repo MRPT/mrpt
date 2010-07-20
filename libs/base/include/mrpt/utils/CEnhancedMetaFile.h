@@ -74,15 +74,15 @@ namespace utils
 		  *  This method must support (x,y) values OUT of the actual image size without neither
 		  *   raising exceptions, nor leading to memory access errors.
 		  */
-		void  setPixel( int x, int y, size_t color);
+		virtual void  setPixel( int x, int y, size_t color);
 
 		/** Returns the width of the image in pixels (this currently has no applicability for a EMF file...)
 		  */
-		size_t  getWidth() const { return 640; }
+		virtual size_t  getWidth() const { return 640; }
 
 		/** Returns the height of the image in pixels (this currently has no applicability for a EMF file...)
 		  */
-		size_t getHeight() const {return 480;}
+		virtual size_t getHeight() const {return 480;}
 
 		/** Draws an image as a bitmap at a given position.
 		  * \param x0 The top-left corner x coordinates on this canvas where the image is to be drawn
@@ -90,7 +90,7 @@ namespace utils
 		  * \param img The image to be drawn in this canvas
 		  *  This method may be redefined in some classes implementing this interface in a more appropiate manner.
 		  */
-		void  drawImage(
+		virtual void  drawImage(
 			int						x,
 			int						y,
 			const utils::CImage	&img );
@@ -104,12 +104,12 @@ namespace utils
 		  * \param width The desired width of the line (this is IGNORED in this virtual class)
 		  *  This method may be redefined in some classes implementing this interface in a more appropiate manner.
 		  */
-		void  line(
+		virtual void  line(
 			int				x0,
 			int				y0,
 			int				x1,
 			int				y1,
-			unsigned int	color,
+			const mrpt::utils::TColor color,
 			unsigned int	width = 1,
 			TPenStyle		penStyle = psSolid);
 
@@ -122,11 +122,11 @@ namespace utils
 		  *  This method may be redefined in some classes implementing this interface in a more appropiate manner.
 		  * \sa rectangle
 		  */
-		void  textOut(
+		virtual void  textOut(
 			int					x0,
 			int					y0,
 			const std::string	&str,
-			unsigned int		color
+			const mrpt::utils::TColor color
 			);
 
 		/** Select the current font used when drawing text.
@@ -136,7 +136,7 @@ namespace utils
 		  * \param italic Whether the font is italic
 		  * \sa textOut
 		  */
-		void  selectTextFont(
+		virtual void  selectTextFont(
 			const std::string  &fontName,
 			int					fontSize,
 			bool				bold = false,
@@ -148,7 +148,7 @@ namespace utils
 		  * \param img The image to be drawn in this canvas
 		  * This method actually calls internally to "drawImage" with a "CImage" parameter.
 		  */
-		void  drawImage(
+		virtual void  drawImage(
 			int								x,
 			int								y,
 			const utils::CImageFloat	&img );
@@ -161,7 +161,7 @@ namespace utils
 		  * \param img The image to be drawn in this canvas
 		  *  This method may be redefined in some classes implementing this interface in a more appropiate manner.
 		  */
-		void  drawImage(
+		virtual void  drawImage(
 			int						x,
 			int						y,
 			const utils::CImage	&img,
@@ -181,12 +181,12 @@ namespace utils
 		  * \param width The desired width of the line.
 		  * \sa filledRectangle
 		  */
-		void  rectangle(
+		virtual void  rectangle(
 			int				x0,
 			int				y0,
 			int				x1,
 			int				y1,
-			unsigned int	color,
+			const mrpt::utils::TColor color,
 			unsigned int	width = 1 );
 
 		/** Draws an ellipse representing a given confidence interval of a 2D Gaussian distribution.
@@ -205,7 +205,7 @@ namespace utils
 			T							mean_x,
 			T							mean_y,
 			float						confIntervalStds = 2,
-			unsigned int				color = 0xFFFFFF,
+			const mrpt::utils::TColor 	color = mrpt::utils::TColor(255,255,255),
 			unsigned int				width = 1,
 			int							nEllipsePoints = 20
 			)

@@ -387,16 +387,16 @@ void  CDisplayWindow::plot( const vector_float &x, const vector_float &y )
 
 	imgColor.resize( 640, 480, 3, 0 );
 	// Draw axis:
-	imgColor.filledRectangle( 0, 0, 640, 480, 0xFFFFFF);
-	imgColor.line( 40, 40, 560, 40, 0x000000, 3 );
-	imgColor.line( 40, 40, 40, 440, 0x000000, 3 );
-	imgColor.line( 560, 40, 555, 45, 0x000000, 3 );
-	imgColor.line( 560, 40, 555, 35, 0x000000, 3 );
-	imgColor.line( 40, 440, 35, 435, 0x000000, 3 );
-	imgColor.line( 40, 440, 45, 435, 0x000000, 3 );
+	imgColor.filledRectangle( 0, 0, 640, 480, TColor(255,255,255) );
+	imgColor.line( 40, 40, 560, 40, TColor::black, 3 );
+	imgColor.line( 40, 40, 40, 440, TColor::black, 3 );
+	imgColor.line( 560, 40, 555, 45, TColor::black, 3 );
+	imgColor.line( 560, 40, 555, 35, TColor::black, 3 );
+	imgColor.line( 40, 440, 35, 435, TColor::black, 3 );
+	imgColor.line( 40, 440, 45, 435, TColor::black, 3 );
 
-	//imgColor.textOut( 550, 25, "x", 0x000000 );
-	//imgColor.textOut( 25, 430, "y", 0x000000 );
+	//imgColor.textOut( 550, 25, "x", TColor::black );
+	//imgColor.textOut( 25, 430, "y", TColor::black );
 
 	vector_float::const_iterator itx, ity;
 	vector_float::const_iterator itymx, itymn;
@@ -411,9 +411,9 @@ void  CDisplayWindow::plot( const vector_float &x, const vector_float &y )
 	{
 		float tpx = (*itx-x[0])/px + ox;
 		float tpy = (*ity-*itymn)/py + oy;
-		imgColor.cross( tpx, tpy, 0xFF0000, 'x' );
+		imgColor.cross( tpx, tpy, TColor(255,0,0), 'x' );
 		if( itx != x.begin() )
-			imgColor.line( tpxA, tpyA, tpx, tpy, 0x0000FF, 3 );
+			imgColor.line( tpxA, tpyA, tpx, tpy, TColor(0,0,255), 3 );
 		tpxA = tpx;
 		tpyA = tpy;
 	} // end for
@@ -440,16 +440,16 @@ void  CDisplayWindow::plot( const vector_float &y )
 
 	imgColor.resize( 640, 480, 3, 0 );
 	// Draw axis:
-	imgColor.filledRectangle( 0, 0, 640, 480, 0xFFFFFF);
-	imgColor.line( 40, 40, 560, 40, 0x000000, 3 );
-	imgColor.line( 40, 40, 40, 440, 0x000000, 3 );
-	imgColor.line( 560, 40, 555, 45, 0x000000, 3 );
-	imgColor.line( 560, 40, 555, 35, 0x000000, 3 );
-	imgColor.line( 40, 440, 35, 435, 0x000000, 3 );
-	imgColor.line( 40, 440, 45, 435, 0x000000, 3 );
+	imgColor.filledRectangle( 0, 0, 640, 480, TColor::white);
+	imgColor.line( 40, 40, 560, 40, TColor::black, 3 );
+	imgColor.line( 40, 40, 40, 440, TColor::black, 3 );
+	imgColor.line( 560, 40, 555, 45, TColor::black, 3 );
+	imgColor.line( 560, 40, 555, 35, TColor::black, 3 );
+	imgColor.line( 40, 440, 35, 435, TColor::black, 3 );
+	imgColor.line( 40, 440, 45, 435, TColor::black, 3 );
 
-	imgColor.textOut( 550, 25, "x", 0x000000 );
-	imgColor.textOut( 25, 430, "y", 0x000000 );
+	imgColor.textOut( 550, 25, "x", TColor::black );
+	imgColor.textOut( 25, 430, "y", TColor::black );
 
 	vector_float::const_iterator ity;
 	vector_float::const_iterator itymx, itymn;
@@ -465,9 +465,9 @@ void  CDisplayWindow::plot( const vector_float &y )
 	{
 		float tpx = k/px + ox;
 		float tpy = (*ity-*itymn)/py + oy;
-		imgColor.cross( tpx, tpy, 0xFF0000, 'x' );
+		imgColor.cross( tpx, tpy, TColor::red, 'x' );
 		if( k > 0 )
-			imgColor.line( tpxA, tpyA, tpx, tpy, 0x0000FF, 3 );
+			imgColor.line( tpxA, tpyA, tpx, tpy, TColor::blue, 3 );
 		tpxA = tpx;
 		tpyA = tpy;
 	} // end for
