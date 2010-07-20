@@ -41,28 +41,28 @@ void TestFonts()
 {
 	CImage		img(400,300);
 
-	img.filledRectangle(0,0,400,300, 0x505050);
+	img.filledRectangle(0,0,400,300, TColor(0x50,0x50,0x50) );
 
 	img.selectTextFont("6x13");
-	img.textOut(10,10,"Hello World! with font \"6x13\"", 0xFFFFFF);
+	img.textOut(10,10,"Hello World! with font \"6x13\"", TColor::white);
 
 	img.selectTextFont("6x13B");
-	img.textOut(10,30,"Hello World! with font \"6x13B\"", 0xFFFFFF);
+	img.textOut(10,30,"Hello World! with font \"6x13B\"", TColor::white);
 
 	img.selectTextFont("6x13O");
-	img.textOut(10,50,"Hello World! with font \"6x13O\"", 0xFFFFFF);
+	img.textOut(10,50,"Hello World! with font \"6x13O\"", TColor::white);
 
 	img.selectTextFont("9x15");
-	img.textOut(10,70,"Hello World! with font \"9x15\"", 0xFFFFFF);
+	img.textOut(10,70,"Hello World! with font \"9x15\"", TColor::white);
 
 	img.selectTextFont("9x15B");
-	img.textOut(10,90,"Hello World! with font \"9x15B\"", 0xFFFFFF);
+	img.textOut(10,90,"Hello World! with font \"9x15B\"", TColor::white);
 
 	img.selectTextFont("18x18ja");
-	img.textOut(10,110,"MRPTのフォントは易しいです!", 0xFFFFFF);
+	img.textOut(10,110,"MRPTのフォントは易しいです!", TColor::white);
 
 	img.selectTextFont("10x20");
-	img.textOut(10,130,"Hello World! with font \"10x20\"", 0xFFFFFF);
+	img.textOut(10,130,"Hello World! with font \"10x20\"", TColor::white);
 
 
     CDisplayWindow		win1("MRPT - Demo of text fonts render");

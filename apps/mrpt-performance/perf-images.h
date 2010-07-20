@@ -56,7 +56,7 @@ double image_test_1(int w, int img_quality)
 	CImage  img(w,h,3);
 
 	for (int i=0;i<5000;i++)
-		img.line(randomGenerator.drawUniform(0,w-1),randomGenerator.drawUniform(0,h-1),randomGenerator.drawUniform(0,w-1),randomGenerator.drawUniform(0,h-1), randomGenerator.drawUniform32bit() );
+		img.line(randomGenerator.drawUniform(0,w-1),randomGenerator.drawUniform(0,h-1),randomGenerator.drawUniform(0,w-1),randomGenerator.drawUniform(0,h-1), TColor( randomGenerator.drawUniform32bit() )  );
 
 	CTicTac	 tictac;
 
@@ -82,7 +82,7 @@ double image_test_2(int w, int h)
 #endif
 
 	for (int i=0;i<5000;i++)
-		img.line(randomGenerator.drawUniform(0,w-1),randomGenerator.drawUniform(0,h-1),randomGenerator.drawUniform(0,w-1),randomGenerator.drawUniform(0,h-1), randomGenerator.drawUniform32bit() );
+		img.line(randomGenerator.drawUniform(0,w-1),randomGenerator.drawUniform(0,h-1),randomGenerator.drawUniform(0,w-1),randomGenerator.drawUniform(0,h-1), TColor( randomGenerator.drawUniform32bit() ) );
 
 	CTicTac	 tictac;
 

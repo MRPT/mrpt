@@ -154,7 +154,7 @@ void TestLaser2Imgs()
 				*itImgY = - K(1,1)*((pCamera.y())/(pCamera.z())) + K(1,2);
 
 				if( *itImgX > 0 && *itImgX < imgW && *itImgY > 0 && *itImgY < imgH )
-					image.filledRectangle(*itImgX-1,*itImgY-1,*itImgX+1,*itImgY+1,0xFF0000);
+					image.filledRectangle(*itImgX-1,*itImgY-1,*itImgX+1,*itImgY+1,TColor(255,0,0));
 			} // end if
 		} // end for
 

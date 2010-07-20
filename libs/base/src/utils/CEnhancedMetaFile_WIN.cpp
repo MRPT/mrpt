@@ -368,7 +368,7 @@ void  CEnhancedMetaFile::rectangle(
 	int				y0,
 	int				x1,
 	int				y1,
-	unsigned int	color,
+	TColor			color,
 	unsigned int	width)
 {
 	line(x0,y0,x1,y0,color,width);

@@ -151,7 +151,7 @@ void TestImageFFT()
 		CImage		aux(max(IM1.getWidth(),IM2.getWidth()),max(IM1.getHeight(),IM2.getHeight()));
 
 		aux.drawImage(0,0,IM2);
-		aux.rectangle(u,v,u-IM1.getWidth()/2,v-IM1.getHeight()/2,0xFFFFFF,2);
+		aux.rectangle(u,v,u-IM1.getWidth()/2,v-IM1.getHeight()/2,TColor::white,2);
 
 		win.showImage(aux);		win.setPos(30,30);
 		win2.showImage(IM1);	win2.setPos(30,400);

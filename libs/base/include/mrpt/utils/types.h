@@ -231,6 +231,7 @@ namespace mrpt
 		{
 			inline TColor() : R(0),G(0),B(0),A(255) { }
 			inline TColor(uint8_t r,uint8_t g,uint8_t b, uint8_t alpha=255) : R(r),G(g),B(b),A(alpha) { }
+			inline explicit TColor(const unsigned int color_RGB_24bit) : R(uint8_t(color_RGB_24bit>>16)),G(uint8_t(color_RGB_24bit>>8)),B(uint8_t(color_RGB_24bit)),A(255) { }
 			uint8_t R,G,B,A;
 			/** Operator for implicit conversion into an int binary representation 0xRRGGBB */
 			inline operator unsigned int(void) const { return (((unsigned int)R)<<16) | (((unsigned int)G)<<8) | B; }

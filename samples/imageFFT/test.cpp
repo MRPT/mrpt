@@ -208,17 +208,17 @@ void TestImageConversion()
 
 	// Test some draw capabilities:
 	// ---------------------------------
-	imgSmall.rectangle( 85,35, 170,170,0xFF0000,10);
+	imgSmall.rectangle( 85,35, 170,170,TColor(255,0,0),10);
 
-	imgSmall.line( 550,75, 650,25,0x0000FF);
-	imgSmall.line( -10,-20, 20,30,0x0000FF);
+	imgSmall.line( 550,75, 650,25,TColor(0,0,255) );
+	imgSmall.line( -10,-20, 20,30,TColor(0,0,255));
 
 	CMatrix 	COV(2,2);
 	COV(0,0) = 100;
 	COV(1,1) = 50;
 	COV(0,1) = COV(1,0) = -30;
-	imgSmall.ellipseGaussian( &COV, 600.0f,50.0f, 2, 0xFFFF00, 4);
-	imgGray.ellipseGaussian( &COV, 100.0f,100.0f, 2, 0xFF, 4);
+	imgSmall.ellipseGaussian( &COV, 600.0f,50.0f, 2, TColor(255,255,0), 4);
+	imgGray.ellipseGaussian( &COV, 100.0f,100.0f, 2, TColor(0,0,255), 4);
 
 	imgSmall.drawImage( 400,500,imgGray );
 

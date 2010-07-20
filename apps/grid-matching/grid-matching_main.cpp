@@ -425,10 +425,10 @@ void do_grid_align()
 							imgCanvas = imgGrid1;
 
 							// Draw the overlaped the_map2:
-							imgCanvas.line( grid1->x2idx(pp1.x),imgGrid1LY-1-grid1->y2idx(pp1.y),grid1->x2idx(pp2.x),imgGrid1LY-1-grid1->y2idx(pp2.y),0x00);
-							imgCanvas.line( grid1->x2idx(pp2.x),imgGrid1LY-1-grid1->y2idx(pp2.y),grid1->x2idx(pp3.x),imgGrid1LY-1-grid1->y2idx(pp3.y),0x00);
-							imgCanvas.line( grid1->x2idx(pp3.x),imgGrid1LY-1-grid1->y2idx(pp3.y),grid1->x2idx(pp4.x),imgGrid1LY-1-grid1->y2idx(pp4.y),0x00);
-							imgCanvas.line( grid1->x2idx(pp4.x),imgGrid1LY-1-grid1->y2idx(pp4.y),grid1->x2idx(pp1.x),imgGrid1LY-1-grid1->y2idx(pp1.y),0x00);
+							imgCanvas.line( grid1->x2idx(pp1.x),imgGrid1LY-1-grid1->y2idx(pp1.y),grid1->x2idx(pp2.x),imgGrid1LY-1-grid1->y2idx(pp2.y),TColor::black);
+							imgCanvas.line( grid1->x2idx(pp2.x),imgGrid1LY-1-grid1->y2idx(pp2.y),grid1->x2idx(pp3.x),imgGrid1LY-1-grid1->y2idx(pp3.y),TColor::black);
+							imgCanvas.line( grid1->x2idx(pp3.x),imgGrid1LY-1-grid1->y2idx(pp3.y),grid1->x2idx(pp4.x),imgGrid1LY-1-grid1->y2idx(pp4.y),TColor::black);
+							imgCanvas.line( grid1->x2idx(pp4.x),imgGrid1LY-1-grid1->y2idx(pp4.y),grid1->x2idx(pp1.x),imgGrid1LY-1-grid1->y2idx(pp1.y),TColor::black);
 
 							imgCanvas.saveToFile( format("%s/_OVERLAP_MAPS_SOG_MODE_%04u.png",RESULTS_DIR.c_str(), (unsigned int)nNode  ) );
 
