@@ -40,6 +40,7 @@
 using namespace mrpt::detectors;
 using namespace mrpt::math;
 using namespace mrpt::gui;
+using namespace mrpt::math;
 using namespace mrpt::opengl;
 
 //------------------------------------------------------------------------
@@ -124,7 +125,7 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 				}
 
 				// First check if we can adjust a plane to detected region as face, if yes it isn't a face!
-				if ( !checkIfFacePlaneCov( points ) )
+				if ( checkIfFacePlaneCov( points ) )
 					deleteDetected.push_back( i );
 				else
 				{
@@ -216,26 +217,23 @@ bool CFaceDetection::checkIfFacePlaneCov( const vector<TPoint3D> &points )
 		v[i] = a;
 	}
 
-	cov = covVector( v ); // TODO: Analyze cov matrix returned!
+	cov = covVector( v ); 
 
 	cov.eigenValues( eVals );
 
-	cout << "Eigen values: " << eVals[0] << ":" << eVals[1] << ":" << eVals[2] << endl;
+	/*if ( eVals[0] < planeEigenValThreshold )
+		return true;
+
+	//cout << "Eigen values: " << eVals[0] << ":" << eVals[1] << ":" << eVals[2] << endl;
 
 	m_exp.lessEigenVals.push_back(eVals[0]);
 
-	/*
-	double v1 = cov.get_unsafe(0,0);
-	double v2 = cov.get_unsafe(1,1);
-	double v3 = cov.get_unsafe(2,2);
-	*/
-	
 	/*ofstream f;
 	f.open("planeEstimations.txt", ofstream::app);
 	f << (double)getRegressionPlane(points,plane) << endl;
 	f.close(); */
 
-	return true;
+	return false;
 }
 
 //------------------------------------------------------------------------
@@ -416,27 +414,18 @@ void CFaceDetection::experimental_viewFacePointsScanned( const vector_float &xs,
 
 void CFaceDetection::experimental_showMeasurements()
 {
-	double sumLessEigenVal = 0;
-	double minLessEigenVal = 1;
-	double maxLessEigenVal = 0;
+	// This method execution time is not critical because it's executed only at the end
+	// or a few times in user application
+
+	// 
+	double meanEigenVal, stdEigenVal;
+	double minEigenVal = *min_element( m_exp.lessEigenVals.begin(), m_exp.lessEigenVals.end() );
+	double maxEigenVal = *max_element( m_exp.lessEigenVals.begin(), m_exp.lessEigenVals.end() );
 	
-	unsigned int numEigenVal = m_exp.lessEigenVals.size();
+	meanAndStd( m_exp.lessEigenVals, meanEigenVal, stdEigenVal );
 
-	for ( unsigned int i = 0; i < numEigenVal; i++ )
-	{
-		double eVal = m_exp.lessEigenVals[i];
-
-		if ( eVal < minLessEigenVal )
-			minLessEigenVal = eVal;
-		if ( eVal > maxLessEigenVal )
-			maxLessEigenVal = eVal;
-
-		sumLessEigenVal += eVal;
-	}
-
-	cout << "Min eigenVal: " << minLessEigenVal << endl;
-	cout << "Max eigenVal: " << maxLessEigenVal << endl;
-	cout << "Mean eigenVal: " << sumLessEigenVal/(double)numEigenVal << endl;
-
-
+	cout << "Min eigenVal: " << minEigenVal << endl;
+	cout << "Max eigenVal: " << maxEigenVal << endl;
+	cout << "Mean eigenVal: " << meanEigenVal << endl;
+	cout << "Standard Desv: " << stdEigenVal << endl;
 }
