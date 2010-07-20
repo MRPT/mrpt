@@ -130,7 +130,8 @@ TEST(LSRigidTrans6D, CPose3D)
 	const double quat_z = qPose.z();
 	// --
 
-	bool res1 = scan_matching::leastSquareErrorRigidTransformation6D( list, out, scale );
+	/*bool res1 =*/ 
+	scan_matching::leastSquareErrorRigidTransformation6D( list, out, scale );
 	const double err = sqrt(	square(out.x() - quat_x) + square(out.y() - quat_y) + square(out.z() - quat_z) + 
 								square(out.yaw() - quat_yaw) + square(out.pitch() - quat_pitch) + square(out.roll() - quat_roll) );
 	EXPECT_TRUE( err< 1e-6 )
@@ -149,7 +150,8 @@ TEST(LSRigidTrans6D, CPose3DQuat)
 	CPose3DQuat		outQuat;							// Output CPose3DQuat for the LSRigidTransformation
 	double			scale;								// Output scale value
 
-	bool res2 = scan_matching::leastSquareErrorRigidTransformation6D( list, outQuat, scale );
+	/*bool res2 =*/ 
+	scan_matching::leastSquareErrorRigidTransformation6D( list, outQuat, scale );
 
 	double err = 0.0;
 	if( (qPose[3]*outQuat[3] > 0 && qPose[4]*outQuat[4] > 0 && qPose[5]*outQuat[5] > 0 && qPose[6]*outQuat[6] > 0) ||

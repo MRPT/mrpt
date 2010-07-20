@@ -200,7 +200,7 @@ bool CFaceDetection::checkIfFacePlaneCov( const vector<TPoint3D> &points )
 	CMatrixDouble cov;
 	vector_double eVals;
 
-	vector<CArrayDouble<3>> v;
+	vector<CArrayDouble<3> > v;
 
 	const unsigned int N = points.size();
 

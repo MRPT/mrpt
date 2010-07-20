@@ -26,11 +26,11 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/utils.h>
+#include <mrpt/system.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
 using namespace std;
 
 #include <mrpt/examples_config.h>

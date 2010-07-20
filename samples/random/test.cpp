@@ -26,7 +26,11 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/utils.h>
+#include <mrpt/gui.h>
+#include <mrpt/math_mrpt.h>
+#include <mrpt/system.h>
+#include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

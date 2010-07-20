@@ -26,7 +26,8 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/poses.h>
+#include <mrpt/utils.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::slam;

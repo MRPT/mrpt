@@ -62,11 +62,9 @@ IF(BUILD_EXAMPLES)
 		imageConvolutionFFT
 		imageFFT
 		matrix
-		bayesianTracking
 		displayPlots
 		textFonts
 		optimize-lm
-		icp
 		kmeans
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-gui)
@@ -76,7 +74,9 @@ IF(BUILD_EXAMPLES)
 	# === Depending on: base, obs, maps, etc... ===
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
+		icp
 		rejectionSampling
+		bayesianTracking
 		stringList
 		benchmark-matrix
 		RangeOnlyLocalization_RejectionSampling

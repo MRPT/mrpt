@@ -29,13 +29,13 @@
 #ifndef _mrpt_system_H
 #define _mrpt_system_H
 
-#include "system/CDirectoryExplorer.h"
-#include "system/CFileSystemWatcher.h"
-#include "system/datetime.h"
-#include "system/filesystem.h"
-#include "system/memory.h"
-#include "system/os.h"
-#include "system/string_utils.h"
-#include "system/threads.h"
+#include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/CFileSystemWatcher.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/memory.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/string_utils.h>
+#include <mrpt/system/threads.h>
 
 #endif

@@ -26,7 +26,8 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/utils.h>
+#include <mrpt/gui.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
@@ -91,8 +92,8 @@ void TestDisplayPlots()
 
 	float t = 0;
 	ellipse_cov(0,1)=ellipse_cov(1,0)=-0.9f;
-	while (!mrpt::system::os::kbhit() && 
-		    win.isOpen() && 
+	while (!mrpt::system::os::kbhit() &&
+		    win.isOpen() &&
 			win2.isOpen() &&
 			!win.keyHit() &&
 			!win2.keyHit() )

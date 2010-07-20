@@ -26,13 +26,14 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/utils.h>
+#include <mrpt/system.h>
+#include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::synch;
 using namespace mrpt::system;
-using namespace mrpt::slam;
 using namespace mrpt::random;
 using namespace std;
 

@@ -26,7 +26,8 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/utils.h>
+#include <mrpt/system.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

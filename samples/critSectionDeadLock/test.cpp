@@ -26,12 +26,12 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/utils.h>
+#include <mrpt/synch.h>
 
 using namespace mrpt;
 using namespace mrpt::synch;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
 using namespace std;
 
 CCriticalSection  csTest("csTest");

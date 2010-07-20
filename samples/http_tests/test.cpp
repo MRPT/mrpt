@@ -26,7 +26,6 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
 #include <mrpt/utils/net_utils.h>
 
 using namespace mrpt;

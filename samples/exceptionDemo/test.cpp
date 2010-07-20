@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/utils.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -36,8 +36,6 @@ using namespace mrpt::math;
 void FunctionFoo2(int, double)
 {
 	MRPT_START
-
-	//THROW_EXCEPTION("Ey!")
 
 	// Something really stupid:
 	int  *ptr = NULL;

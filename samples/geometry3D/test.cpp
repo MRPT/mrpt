@@ -26,11 +26,11 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/utils.h>
+#include <mrpt/poses.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::poses;
-using namespace mrpt::slam;
 using namespace std;
 
 void TestGeometry3D2()
