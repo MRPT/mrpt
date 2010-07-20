@@ -48,6 +48,8 @@
 				- New alternative checkerboard detector algorithm (by Scaramuzza et al.). See mrpt::utils::CImage::findChessboardCorners for references and more details.
 				- findChessboardCorners() is no longer a method of CImage, but a function in mrpt::vision (see mrpt::vision::findChessboardCorners).
 				- New method to compute KLT response at any given position: mrpt::utils::CImage::KLT_response
+				- New efficient constructor to build a grayscale version of another image, or a fast "link" if it was already grayscale. See CImage::CImage( img, FAST_REF_OR_CONVERT_TO_GRAY )
+			- Many classes: UNINITIALIZED_* which were #defines have been transformed into enums to keep all that stuff into MRPT namespaces.
 			- mrpt::vision::CFeatureExtraction has a new option FASTOptions.use_KLT_response. 
 			- mrpt::slam::CObservation now has virtual load() and unload() method to manually invoke delayed-load (actually only needed by 3D camera observations).
 			- stlplus::smart_ptr templates now have an extra template argument "COUNTER" which defaults to an thread-safe atomic counter but can be set to a plain "unsigned int" in time-critical apps which are known to work in a single thread.

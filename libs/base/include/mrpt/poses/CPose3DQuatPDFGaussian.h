@@ -69,7 +69,7 @@ namespace poses
 		CPose3DQuatPDFGaussian();
 
 		/** Constructor which left all the member uninitialized, for using when speed is critical - as argument, use UNINITIALIZED_QUATERNION. */
-		CPose3DQuatPDFGaussian(bool, bool);
+		CPose3DQuatPDFGaussian(TConstructorFlags_Quaternions constructor_dummy_param);
 
 		/** Constructor from a default mean value, covariance equals to zero. */
 		explicit CPose3DQuatPDFGaussian( const CPose3DQuat &init_Mean );

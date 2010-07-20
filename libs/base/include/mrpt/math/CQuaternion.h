@@ -39,7 +39,10 @@ namespace mrpt
 	{
 
 		// For use with a constructor of CQuaternion
-		#define UNINITIALIZED_QUATERNION   false,false
+		enum TConstructorFlags_Quaternions
+		{
+			UNINITIALIZED_QUATERNION = 0
+		};
 
 		/** A quaternion, which can represent a 3D rotation as pair \f$ (r,\mathbf{u}) \f$, with a real part "r" and a 3D vector \f$ \mathbf{u} = (x,y,z) \f$, or alternatively, q = r + ix + jy + kz.
 		 *
@@ -64,7 +67,7 @@ namespace mrpt
 	 */
 
 		/**	Can be used with UNINITIALIZED_QUATERNION as argument, does not initialize the 4 elements of the quaternion (use this constructor when speed is critical). */
-		inline CQuaternion(bool, bool ) { }
+		inline CQuaternion(TConstructorFlags_Quaternions constructor_dummy_param) { }
 
 		/**	Default constructor: construct a (1, (0,0,0) ) quaternion representing no rotation. */
 		inline CQuaternion()

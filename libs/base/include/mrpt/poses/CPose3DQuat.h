@@ -83,7 +83,7 @@ namespace poses
 		CPose3DQuat();
 
 		/** Constructor which left all the quaternion members un-initialized, for use when speed is critical; Use UNINITIALIZED_POSE as argument to this constructor. */
-		CPose3DQuat(bool,bool);
+		CPose3DQuat(TConstructorFlags_Quaternions constructor_dummy_param);
 
 		/** Constructor with initilization of the pose */
 		CPose3DQuat(const double x,const double y,const double z,const mrpt::math::CQuaternionDouble &q );
@@ -91,7 +91,7 @@ namespace poses
 		/** Constructor from a CPose3D */
 		CPose3DQuat(const CPose3D &p);
 
-		/** Constructor from lightweight object. 
+		/** Constructor from lightweight object.
 		*/
 		CPose3DQuat(const mrpt::math::TPose3DQuat &p);
 

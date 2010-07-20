@@ -60,7 +60,7 @@ CPose3DPDFGaussian::CPose3DPDFGaussian() : mean(0,0,0), cov()
 /*---------------------------------------------------------------
 	Constructor
   ---------------------------------------------------------------*/
-CPose3DPDFGaussian::CPose3DPDFGaussian(bool,bool) : mean(UNINITIALIZED_POSE), cov(UNINITIALIZED_MATRIX)
+CPose3DPDFGaussian::CPose3DPDFGaussian(TConstructorFlags_Poses constructor_dummy_param) : mean(UNINITIALIZED_POSE), cov(UNINITIALIZED_MATRIX)
 {
 }
 

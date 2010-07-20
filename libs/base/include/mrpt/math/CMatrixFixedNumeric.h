@@ -107,11 +107,11 @@ namespace mrpt
 				if (NROWS*NCOLS) ::memset(&m_Val[0],0,sizeof(T)*NROWS*NCOLS);
 			}
 
-			/** Constructor which leaves the matrix uninitialized: it uses two bool arguments with ignored values, but they must be present to make the method signature distinctive and make sure that the user wants the matrix to be uninitialized (ie, leaving only one bool argument may lead to unintended conversions from bool values!)
+			/** Constructor which leaves the matrix uninitialized.
 			  *  Example of usage: CMatrixFixedNumeric<double,3,2> M(UNINITIALIZED_MATRIX);
 			  */
-			CMatrixFixedNumeric(bool ,bool, bool ) {
-			}
+			inline CMatrixFixedNumeric(TConstructorFlags_Matrices constructor_flag)
+			{ }
 
 
 			/** Copy constructor from a matrix of any type  */

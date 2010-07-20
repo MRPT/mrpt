@@ -61,10 +61,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	vector<KeyPoint> cv_feats; // The opencv keypoint output vector
 
 	// Make sure we operate on a gray-scale version of the image:
-	CImage   inImg_gray(UNINITIALIZED_IMAGE);
-	if( inImg.isColor() )
-			inImg.grayscale(inImg_gray);
-	else	inImg_gray.setFromImageReadOnly(inImg);
+	const CImage inImg_gray( inImg, FAST_REF_OR_CONVERT_TO_GRAY );
 
 	// JL: Instead of
 	//	int aux = options.FASTOptions.threshold; ....
@@ -90,7 +87,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	// Use KLT response instead of the OpenCV's original "response" field:
 	if (options.FASTOptions.use_KLT_response)
 	{
-		const unsigned int KLT_half_win = 4; 
+		const unsigned int KLT_half_win = 4;
 		const unsigned int max_x = inImg_gray.getWidth() - 1 - KLT_half_win;
 		const unsigned int max_y = inImg_gray.getHeight() - 1 - KLT_half_win;
 		for (size_t i=0;i<N;i++)

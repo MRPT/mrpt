@@ -72,16 +72,8 @@ MRPT_START;
 	const size_t nFeatures	= featureList.size();					// Number of features
 
 	// Grayscale images
-	CImage   prev_gray(UNINITIALIZED_IMAGE);
-	CImage   cur_gray(UNINITIALIZED_IMAGE);
-
-	if( old_img.isColor() )
-			old_img.grayscale(prev_gray);
-	else	prev_gray.setFromImageReadOnly(old_img);
-
-	if( new_img.isColor() )
-			new_img.grayscale(cur_gray);
-	else	cur_gray.setFromImageReadOnly(new_img);
+	const CImage prev_gray(old_img, FAST_REF_OR_CONVERT_TO_GRAY);
+	const CImage cur_gray(new_img, FAST_REF_OR_CONVERT_TO_GRAY);
 
 	// Arrays definition
 	points[0].resize(nFeatures);

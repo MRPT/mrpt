@@ -63,10 +63,7 @@ bool mrpt::vision::findChessboardCorners(
 	ASSERT_(check_size_y>0 && check_size_x>0)
 
 	// Grayscale version:
-	CImage img(UNINITIALIZED_IMAGE);
-	if (in_img.isColor())
-			in_img.grayscale(img);
-	else	img.setFromImageReadOnly(in_img);
+	const CImage img( in_img, FAST_REF_OR_CONVERT_TO_GRAY );
 
 	// Try with expanded versions of the image if it fails to detect the checkerboard:
 	int corners_count;
@@ -160,15 +157,12 @@ void mrpt::vision::findMultipleChessboardsCorners(
 {
 #if MRPT_HAS_OPENCV
 	// Grayscale version:
-	CImage img(UNINITIALIZED_IMAGE);
-	if (in_img.isColor())
-			in_img.grayscale(img);
-	else	img.setFromImageReadOnly(in_img);
+	const CImage img( in_img, FAST_REF_OR_CONVERT_TO_GRAY );
 
 	std::vector<std::vector<CvPoint2D32f> >  corners_list;
 
 	// Return: -1: errors, 0: not found, 1: found OK
-	bool corners_found = find_chessboard_corners_multiple( 
+	bool corners_found = find_chessboard_corners_multiple(
 		img,
 		cvSize(check_size_x,check_size_y),
 		corners_list);

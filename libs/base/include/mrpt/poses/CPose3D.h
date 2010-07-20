@@ -223,7 +223,7 @@ namespace poses
 		 CPose3D(const CPose3DQuat &);
 
 		 /** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
-		 inline CPose3D(bool,bool) : m_HM(UNINITIALIZED_MATRIX)  {  m_is3D = true; }
+		 inline CPose3D(TConstructorFlags_Poses constructor_dummy_param) : m_HM(UNINITIALIZED_MATRIX)  {  m_is3D = true; }
 
 		 /** Returns the corresponding 4x4 homogeneous transformation matrix for the point(translation) or pose (translation+orientation).
 		   * \sa getInverseHomogeneousMatrix

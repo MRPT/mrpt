@@ -66,15 +66,8 @@ void CGenericFeatureTracker::trackFeatures(
 	// =========================================
 	m_timlog.enter("[CGenericFeatureTracker] Convert grayscale");
 
-	CImage   prev_gray(UNINITIALIZED_IMAGE);
-	CImage   cur_gray(UNINITIALIZED_IMAGE);
-
-	if( old_img.isColor() )
-			old_img.grayscale(prev_gray);
-	else	prev_gray.setFromImageReadOnly(old_img);
-	if( new_img.isColor() )
-			new_img.grayscale(cur_gray);
-	else	cur_gray.setFromImageReadOnly(new_img);
+	const CImage prev_gray(old_img, FAST_REF_OR_CONVERT_TO_GRAY);
+	const CImage cur_gray(new_img, FAST_REF_OR_CONVERT_TO_GRAY);
 
 	m_timlog.leave("[CGenericFeatureTracker] Convert grayscale");
 
@@ -197,7 +190,7 @@ void CGenericFeatureTracker::trackFeatures(
 	FastFeatureDetector fastDetector( m_detector_adaptive_thres, true /* non-max supres. */ );
 	const Mat new_img_gray_mat = cvarrToMat( cur_gray.getAs<IplImage>() );
 	fastDetector.detect( new_img_gray_mat, new_feats );
-# elif MRPT_OPENCV_VERSION_NUM >= 0x200 
+# elif MRPT_OPENCV_VERSION_NUM >= 0x200
 	// Older version:
 	FAST(cur_gray.getAs<IplImage>(), new_feats, m_detector_adaptive_thres, true /* non-max supres. */ );
 # endif
@@ -240,7 +233,7 @@ void CGenericFeatureTracker::trackFeatures(
 		const size_t maxNumFeatures = extra_params.getWithDefaultVal("add_new_feat_max_features",100);
 		const size_t patchSize = extra_params.getWithDefaultVal("add_new_feat_patch_size",11);
 		const int 	 offset		= (int)patchSize/2 + 1;
-			
+
 		const float minimum_KLT_response_to_add = extra_params.getWithDefaultVal("minimum_KLT_response_to_add",1500);
 
 		for (size_t i=0;i<nNewToCheck && featureList.size()<maxNumFeatures;i++)

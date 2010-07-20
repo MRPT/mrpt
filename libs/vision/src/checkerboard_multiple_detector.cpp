@@ -48,10 +48,7 @@ bool find_chessboard_corners_multiple(
 	std::vector< std::vector<CvPoint2D32f> > &out_corners)
 {
 	// Assure it's a grayscale image:
-	mrpt::utils::CImage img(UNINITIALIZED_IMAGE);
-	if (img_.isColor())
-			img_.grayscale(img);
-	else 	img.setFromImageReadOnly(img_);
+	const mrpt::utils::CImage img( img_, FAST_REF_OR_CONVERT_TO_GRAY );
 
     mrpt::utils::CImage thresh_img(img.getWidth(),img.getHeight(), CH_GRAY );
 	mrpt::utils::CImage thresh_img_save(img.getWidth(),img.getHeight(), CH_GRAY );

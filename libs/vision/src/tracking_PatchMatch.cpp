@@ -66,15 +66,12 @@ void CFeatureTracker_PatchMatch::trackFeatures_impl(
 
 	const unsigned int window_width = extra_params.getWithDefaultVal("window_width",15);
 	const unsigned int window_height = extra_params.getWithDefaultVal("window_height",15);
-	
+
 	const double min_valid_matching = extra_params.getWithDefaultVal("min_valid_matching",0.97);
 	const double min_matching_step = extra_params.getWithDefaultVal("min_matching_step",0.4);
 
 	// Create a temporary gray image, if needed:
-	mrpt::utils::CImage  new_img_gray;
-	if (new_img.isColor())
-			new_img.grayscale(new_img_gray);	// Create a new auxiliary grayscale image
-	else	new_img_gray.setFromImageReadOnly( new_img );  // Copy the IPLImage, but do not own the memory
+	const CImage new_img_gray(new_img, FAST_REF_OR_CONVERT_TO_GRAY);
 
 	const size_t  new_img_width = new_img_gray.getWidth();
 	const size_t  new_img_height = new_img_gray.getHeight();
@@ -170,7 +167,7 @@ void CFeatureTracker_PatchMatch::trackFeatures_impl(
 			CvScalar n2 = cvGet2D(result, std::min(result_height-1,max_point.y+1), max_point.x);
 			CvScalar n3 = cvGet2D(result, max_point.y, std::max(0,max_point.x-1));
 			CvScalar n4 = cvGet2D(result, max_point.y, std::min(result_width-1, max_point.x+1));
-			
+
 			CvScalar n5 = cvGet2D(result, std::max(0,max_point.y-1), std::max(0,max_point.x-1));
 			CvScalar n6 = cvGet2D(result, std::max(0,max_point.y-1), std::min(result_width-1, max_point.x+1));
 			CvScalar n7 = cvGet2D(result, std::min(result_height-1,max_point.y+1), std::max(0,max_point.x-1));

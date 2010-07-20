@@ -123,10 +123,7 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 	FastFeatureDetector fastDetector( m_detector_adaptive_thres , true /* non-max supres. */ );
 
 	// Create a temporary gray image, if needed:
-	mrpt::utils::CImage  new_img_gray(UNINITIALIZED_IMAGE);
-	if (new_img.isColor())
-			new_img.grayscale(new_img_gray);	// Create a new auxiliary grayscale image
-	else	new_img_gray.setFromImageReadOnly( new_img );  // Copy the IPLImage, but do not own the memory
+	const CImage new_img_gray(new_img, FAST_REF_OR_CONVERT_TO_GRAY);
 
 	// Do the detection
 	const Mat new_img_gray_mat = cvarrToMat( reinterpret_cast<IplImage*>(new_img_gray.getAsIplImage()) );

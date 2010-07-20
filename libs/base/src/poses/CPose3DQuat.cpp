@@ -71,7 +71,7 @@ CPose3DQuat::CPose3DQuat(const double x,const double y,const double z,const mrpt
 	m_quat.normalize();
 }
 
-CPose3DQuat::CPose3DQuat(bool,bool) : m_quat(UNINITIALIZED_QUATERNION)
+CPose3DQuat::CPose3DQuat(TConstructorFlags_Quaternions constructor_dummy_param) : m_quat(UNINITIALIZED_QUATERNION)
 {
 	m_is3D = true;
 }
@@ -454,9 +454,9 @@ void CPose3DQuat::sphericalCoordinates(
 
 		const double t2 = std::sqrt(x2 + y2);
 		const double _K = 1.0/(t2*square(out_range));
- 
-		double vals[3*3]= { 
-			local.x*_r,					local.y*_r,					local.z*_r, 
+
+		double vals[3*3]= {
+			local.x*_r,					local.y*_r,					local.z*_r,
 			-local.y/(x2*(y2/x2 + 1)),	1.0/(local.x*(y2/x2 + 1)),  0,
 			(local.x*local.z) * _K,		(local.y*local.z) * _K,		-t2/square(out_range)
 			};

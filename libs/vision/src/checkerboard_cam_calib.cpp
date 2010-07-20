@@ -146,10 +146,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 			TImageCalibData	&dat = it->second;
 
 			// Make grayscale version:
-			CImage	img_gray(UNINITIALIZED_IMAGE);
-			if (dat.img_original.isColor())
-					dat.img_original.grayscale(img_gray);
-			else	img_gray.setFromImageReadOnly(dat.img_original);
+			const CImage img_gray( dat.img_original, FAST_REF_OR_CONVERT_TO_GRAY );
 
 			if (!i)
 			{

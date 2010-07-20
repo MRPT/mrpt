@@ -76,8 +76,10 @@ namespace mrpt
 
 		/** For usage in one of the constructors of CMatrixFixedNumeric or CMatrixTemplate (and derived classes), if it's not required
 		     to fill it with zeros at the constructor to save time. */
-		#define UNINITIALIZED_MATRIX  false,false,false
-
+		enum TConstructorFlags_Matrices
+		{
+			UNINITIALIZED_MATRIX = 0
+		};
 
 		// ---------------- Forward declarations: Classes ----------------
 		template <class T> class CVectorTemplate;

@@ -57,7 +57,7 @@ CPose3DQuatPDFGaussian::CPose3DQuatPDFGaussian() :
 }
 
 // Un-initialized constructor:
-CPose3DQuatPDFGaussian::CPose3DQuatPDFGaussian(bool, bool) :
+CPose3DQuatPDFGaussian::CPose3DQuatPDFGaussian(TConstructorFlags_Quaternions constructor_dummy_param) :
 	mean(UNINITIALIZED_QUATERNION), cov(UNINITIALIZED_MATRIX)
 {
 }

@@ -117,7 +117,7 @@ namespace mrpt
 			DECLARE_MRPT_CONTAINER_IS_MATRIX
 			DECLARE_MRPT_MATRIX_ITERATORS
 			DECLARE_COMMON_MATRIX_MEMBERS(T)
-						
+
 
 			inline CMatrixTemplateNumeric( const TPose2D &p)  : CMatrixTemplate<T>( 3,1 )	{ mrpt::math::containerFromPoseOrPoint(*this,p); }
 			inline CMatrixTemplateNumeric( const TPose3D &p)  : CMatrixTemplate<T>( 6,1 )	{ mrpt::math::containerFromPoseOrPoint(*this,p); }
@@ -134,10 +134,14 @@ namespace mrpt
 			/** Default constructor, builds a 1x1 matrix */
 			CMatrixTemplateNumeric();
 
-			/** Default constructor, builds a 0x0 matrix, with a signature identical to that of the fixed matrix constructor for uninitialized matrix constructor */
-			inline CMatrixTemplateNumeric(bool,bool,bool) : CMatrixTemplate<T>( 0,0 )
-			{
-			}
+			/** Constructor that builds a 0x0 matrix (that is, uninitialized), for usage in places where efficiency is a priority.
+			  *  Use as:
+			  *   \code
+			  *     CMatrixTemplateNumeric<double>  M( UNINITIALIZED_MATRIX
+			  *   \endcode
+			  */
+			inline CMatrixTemplateNumeric(TConstructorFlags_Matrices constructor_flag) : CMatrixTemplate<T>( 0,0 )
+			{ }
 
 			/** Constructor */
 			CMatrixTemplateNumeric(size_t row, size_t col);

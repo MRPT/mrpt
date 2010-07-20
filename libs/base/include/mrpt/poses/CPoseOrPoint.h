@@ -43,7 +43,10 @@ namespace mrpt
 		using namespace mrpt::math;  // For ligh. geom data
 
 		// For use in some constructors (eg. CPose3D)
-		#define UNINITIALIZED_POSE  false,false
+		enum TConstructorFlags_Poses
+		{
+			UNINITIALIZED_POSE = 0
+		};
 
 		class CPoint2D;
 		class CPoint3D;

@@ -73,7 +73,7 @@ namespace poses
 
 		/** Uninitialized constructor: leave all fields uninitialized - Call with UNINITIALIZED_POSE as argument
 		  */
-		CPose3DPDFGaussian(bool,bool);
+		CPose3DPDFGaussian(TConstructorFlags_Poses constructor_dummy_param);
 
 		MRPT_DECLARE_DEPRECATED_FUNCTION("Deprecated: use the constructor accepting a CMatrixDouble66 instead.",
 		/** *DEPRECATED* Constructor  */
@@ -246,8 +246,8 @@ namespace poses
 	bool BASE_IMPEXP operator==(const CPose3DPDFGaussian &p1,const CPose3DPDFGaussian &p2);
 
 	} // End of namespace
-	
-	
+
+
 	/** Global variables to change the run-time behaviour of some MRPT classes within mrpt-core.
 	  *  See each variable for the description of what classes it affects.
 	  */
@@ -259,7 +259,7 @@ namespace poses
 		  */
 		extern BASE_IMPEXP bool USE_SUT_QUAT2EULER_CONVERSION;
 	}
-	
+
 } // End of namespace
 
 #endif
