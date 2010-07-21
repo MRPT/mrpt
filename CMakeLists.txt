@@ -1766,13 +1766,13 @@ ENDIF( BUILD_TESTING)
 # ----------------------------------------------------------------------------
 #   More installation commands:
 # ----------------------------------------------------------------------------
-FILE(GLOB MRPT_PKGCONFIG_PC_FILES "${MRPT_BINARY_DIR}/pkgconfig/libmrpt-*.pc")
+FILE(GLOB MRPT_PKGCONFIG_PC_FILES "${MRPT_BINARY_DIR}/pkgconfig/mrpt-*.pc")
 
-IF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/libmrpt-base.pc")
+IF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/mrpt-base.pc")
 	INSTALL(
 		FILES ${MRPT_PKGCONFIG_PC_FILES}
 		DESTINATION ${libmrpt_dev_INSTALL_PREFIX}lib${LIB_SUFFIX}/pkgconfig )
-ENDIF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/libmrpt-base.pc")
+ENDIF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/mrpt-base.pc")
 
 # CMake will look for MRPTConfig.cmake at: /usr/share|lib/mrpt
 IF(WIN32)

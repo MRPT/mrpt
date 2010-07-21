@@ -217,7 +217,7 @@ endif(1)
 	IF(UNIX)
 		# TODO: Declare some more vars, etc...
 		SET(mrpt_pkgconfig_LIBNAME ${name})
-		CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/pkgconfig/libmrpt.pc.in" "${CMAKE_BINARY_DIR}/pkgconfig/libmrpt-${name}.pc" @ONLY)
+		CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/pkgconfig/mrpt_template.pc.in" "${CMAKE_BINARY_DIR}/pkgconfig/mrpt-${name}.pc" @ONLY)
 	ENDIF(UNIX)
 
 
