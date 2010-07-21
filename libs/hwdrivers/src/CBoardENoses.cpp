@@ -418,6 +418,7 @@ bool CBoardENoses::setActiveChamber( unsigned char chamber )
 		buf[0] = ((chamber & 3) << 3) | 165;	 //165 = 101 00 101	
 
 		comms->WriteBuffer(buf,1);	// Exceptions will be raised on errors here
+		return true;
 	}
 	catch(...)
 	{
