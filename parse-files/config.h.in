@@ -72,6 +72,11 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
   */
 #define MRPT_HAS_BUMBLEBEE        ${CMAKE_MRPT_HAS_BUMBLEBEE}
 
+/** Define for including SVS interface through the vendor's proprietary API.
+  * \sa CStereoGrabber_SVS
+  */
+#define MRPT_HAS_SVS        ${CMAKE_MRPT_HAS_SVS}
+
 /* do we have MESA Imaging SwissRange 3D camera driver? */
 #define MRPT_HAS_SWISSRANGE       ${CMAKE_MRPT_HAS_SWISSRANGE}
 

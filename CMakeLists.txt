@@ -412,6 +412,42 @@ IF(MRPT_HAS_BUMBLEBEE)
 
 ENDIF(MRPT_HAS_BUMBLEBEE)
 
+# Support for Videre Design stereo camera:
+# ===================================================
+SET( MRPT_HAS_SVS OFF CACHE BOOL "Add support for STOC Stereo Camera?")
+
+IF(MRPT_HAS_SVS)
+	SET( SVS_ROOT_DIR "" CACHE PATH "Path to SVS library root directory")
+	
+
+	IF(UNIX)		
+		# Set to 1, next check for missing things and set to 0 on any error & report message:
+		SET(CMAKE_MRPT_HAS_SVS 1)
+
+		IF(NOT EXISTS ${SVS_ROOT_DIR})
+			SET(CMAKE_MRPT_HAS_SVS 0)
+			MESSAGE("The directory 'SVS_ROOT_DIR' does not exists. Turn off SVS support or provide the correct path.")
+		ENDIF(NOT EXISTS ${SVS_ROOT_DIR})
+
+		IF(NOT EXISTS ${SVS_ROOT_DIR}/src/svsclass.h)
+			SET(CMAKE_MRPT_HAS_SVS 0)
+			MESSAGE("The directory 'SVS_ROOT_DIR' does not contain src/svsclass.h. Turn off SVS support or provide the correct path.")
+		ENDIF(NOT EXISTS ${SVS_ROOT_DIR}/src/svsclass.h)
+
+		IF(NOT EXISTS ${SVS_ROOT_DIR}/src/dcs.h)
+			SET(CMAKE_MRPT_HAS_SVS 0)
+			MESSAGE("The directory 'SVS_ROOT_DIR' does not contain src/dcs.h. Turn off SVS support or provide the correct path.")
+		ENDIF(NOT EXISTS ${SVS_ROOT_DIR}/src/dcs.h)
+	ELSE(UNIX)
+		
+
+		MESSAGE("Sorry! STOC camera is supported only for LINUX yet. Set MRPT_HAS_SVS to OFF")
+		SET(CMAKE_MRPT_HAS_SVS 0)
+
+
+	ENDIF(UNIX)
+
+ENDIF(MRPT_HAS_SVS)
 
 #   FabMap module for HMT-SLAM? (optional)
 # =======================================
@@ -1252,6 +1288,7 @@ ENDMACRO(CREATE_CMAKE_MRPT_DEFINE)
 CREATE_CMAKE_MRPT_DEFINE(MRPT_ALWAYS_CHECKS_DEBUG)
 CREATE_CMAKE_MRPT_DEFINE(MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 CREATE_CMAKE_MRPT_DEFINE(MRPT_HAS_BUMBLEBEE)
+CREATE_CMAKE_MRPT_DEFINE(MRPT_HAS_SVS)
 CREATE_CMAKE_MRPT_DEFINE(MRPT_HAS_ASSERT)
 CREATE_CMAKE_MRPT_DEFINE(MRPT_HAS_STACKED_EXCEPTIONS)
 CREATE_CMAKE_MRPT_DEFINE(MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER)
@@ -1313,6 +1350,12 @@ IF(CMAKE_MRPT_HAS_BUMBLEBEE)
 	LINK_DIRECTORIES("${BUMBLEBEE_PGR_FLYCAPTURE_ROOT_DIR}/lib")
 	LINK_DIRECTORIES("${BUMBLEBEE_TRICLOPS_ROOT_DIR}/lib")
 ENDIF(CMAKE_MRPT_HAS_BUMBLEBEE)
+
+IF(CMAKE_MRPT_HAS_SVS)
+	INCLUDE_DIRECTORIES("${SVS_ROOT_DIR}/src")
+	
+	LINK_DIRECTORIES("${SVS_ROOT_DIR}/bin")
+ENDIF(CMAKE_MRPT_HAS_SVS)
 
 # Add user supplied extra options (optimization, etc...)
 # ==========================================================
@@ -1877,6 +1920,7 @@ SHOW_CONFIG_LINE("Use MMX/SSE2?                           " CMAKE_MRPT_HAS_SSE2)
 SHOW_CONFIG_LINE("Use OpenMP?                             " CMAKE_MRPT_HAS_OPENMP)
 
 SHOW_CONFIG_LINE("Has Bumblebee stereo camera             " CMAKE_MRPT_HAS_BUMBLEBEE)
+SHOW_CONFIG_LINE("Has videre    stereo camera             " CMAKE_MRPT_HAS_SVS)
 SHOW_CONFIG_LINE("Has wxWidgets incl. OpenGL classes      " CMAKE_MRPT_HAS_WXWIDGETS)
 SHOW_CONFIG_LINE("Has OpenGL & GLUT:                      " CMAKE_MRPT_HAS_OPENGL_GLUT)
 SHOW_CONFIG_LINE("Has xSENS MTi library (inertial sensor) " CMAKE_MRPT_HAS_xSENS)

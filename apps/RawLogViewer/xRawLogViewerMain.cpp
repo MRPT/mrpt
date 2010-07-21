@@ -1884,6 +1884,54 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 				}
 				else
+                                    if ( classID  == CLASS_ID(CObservationDisparityImages) )
+                                    {
+                                            // ----------------------------------------------------------------------
+                                            //              CObservationDisparityImages
+                                            // ----------------------------------------------------------------------
+                                            Notebook1->ChangeSelection( 4);
+                                            CObservationDisparityImagesPtr obs = CObservationDisparityImagesPtr(sel_obj);
+                                            curSelectedObservation = CObservationPtr( sel_obj );
+
+
+                                            cout << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
+                                            cout << obs->cameraPose.getHomogeneousMatrixVal()
+                                                    << obs->cameraPose << endl;
+
+                                            //	cout << "Homogeneous matrix for the RIGHT camera's 3D pose, relative to LEFT camera reference system:\n";
+                                            //	cout << obs->rightCameraPose.getHomogeneousMatrixVal()
+                                            //	<< obs->rightCameraPose << endl;
+
+                                            cout << "Intrinsic parameters matrix for the camera:"<< endl;
+                                            CMatrixDouble33 aux = obs->leftCamera.intrinsicParams;
+                                            cout << aux.inMatlabFormat() << endl << aux << endl;
+
+                                            if (obs->imageLeft.isExternallyStored())
+                                                cout << " Left image is stored externally in file: " << obs->imageLeft.getExternalStorageFile() << endl;
+                                            if (obs->imageDisparity.isExternallyStored())
+                                                cout << " Right image is stored externally in file: " << obs->imageDisparity.getExternalStorageFile() << endl;
+
+                                            cout << format(" Image size: %ux%u pixels\n", (unsigned int)obs->imageLeft.getWidth(), (unsigned int)obs->imageLeft.getHeight() );
+
+                                            cout << " Channels order: " << obs->imageLeft.getChannelsOrder() << endl;
+
+                                            cout << format(" Rows are stored in top-bottom order: %s\n",
+                                                           obs->imageLeft.isOriginTopLeft() ? "YES" : "NO");
+
+                                            // Get bitmap LEFT:
+                                            // ----------------------
+                                            wxImage *imgLeft = mrpt::gui::MRPTImage2wxImage( obs->imageLeft );
+                                            bmpObsStereoLeft->SetBitmap( wxBitmap(*imgLeft) );
+                                            bmpObsStereoLeft->Refresh();
+                                            delete imgLeft;
+
+                                            wxImage *imgDisparity = mrpt::gui::MRPTImage2wxImage( obs->imageDisparity );
+                                            bmpObsStereoRight->SetBitmap( wxBitmap(*imgDisparity) );
+                                            bmpObsStereoRight->Refresh();
+                                            delete imgDisparity;
+
+                                }
+                                else
 					if ( classID == CLASS_ID(CActionRobotMovement2D) )
 					{
 						// ----------------------------------------------------------------------
@@ -3195,6 +3243,14 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent& event)
 						obsSt->imageRight.saveToFile( format("%s/img_stereo_%u_right_%05u.%s",outDir.c_str(),k,imgSaved,imgFileExtension.c_str()) );
 						imgSaved++;
 					}
+                                        if (SF->getObservationByIndex(k)->GetRuntimeClass()==CLASS_ID(CObservationDisparityImages ) )
+                                        {
+                                                CObservationDisparityImagesPtr obsDs = SF->getObservationByIndexAs<CObservationDisparityImagesPtr>(k);
+                                                obsDs->imageLeft.saveToFile( format("%s/img_stereo_%u_left_%05u.%s",outDir.c_str(),k,imgSaved,imgFileExtension.c_str()) );
+
+                                                obsDs->imageDisparity.saveToFile( format("%s/img_stereo_%u_right_%05u.%s",outDir.c_str(),k,imgSaved,imgFileExtension.c_str()) );
+                                                imgSaved++;
+                                        }
 					if (SF->getObservationByIndex(k)->GetRuntimeClass()==CLASS_ID(CObservationImage ) )
 					{
 						CObservationImagePtr obsIm = SF->getObservationByIndexAs<CObservationImagePtr>(k);
@@ -3278,6 +3334,14 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
 				imgToSave = &obs->imageLeft;
 			else	imgToSave = &obs->imageRight;
 		}
+                else if ( curSelectedObservation->GetRuntimeClass()==CLASS_ID(CObservationDisparityImages) )
+                {
+                        CObservationDisparityImages *obs = (CObservationDisparityImages*) curSelectedObservation.pointer();
+
+                        if (theMainWindow->Notebook2->GetSelection()==0)
+                                imgToSave = &obs->imageLeft;
+                        else	imgToSave = &obs->imageDisparity;
+                }
 
 		if (imgToSave)
 		{
@@ -3324,6 +3388,14 @@ void wxStaticBitmapPopup::OnPopupLoadImage(wxCommandEvent& event)
 				imgToLoad = &obs->imageLeft;
 			else	imgToLoad = &obs->imageRight;
 		}
+                else if ( curSelectedObservation->GetRuntimeClass()==CLASS_ID(CObservationDisparityImages) )
+                {
+                        CObservationDisparityImages *obs = (CObservationDisparityImages*) curSelectedObservation.pointer();
+
+                        if (theMainWindow->Notebook2->GetSelection()==0)
+                            imgToLoad = &obs->imageLeft;
+                        else	imgToLoad = &obs->imageDisparity;
+                }
 
 		if (imgToLoad)
 		{
@@ -5897,22 +5969,33 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 				}
 				else
 				{
-					CObservationStereoImagesPtr obsStereoImg = SF->getObservationByClass<CObservationStereoImages>();
-					if (obsStereoImg)
-					{
-						img_to_save = &obsStereoImg->imageLeft;
-						img_to_save2 = &obsStereoImg->imageRight;
-					}
+                                    CObservationStereoImagesPtr obsStereoImg = SF->getObservationByClass<CObservationStereoImages>();
+                                    if (obsStereoImg)
+                                    {
+                                        img_to_save = &obsStereoImg->imageLeft;
+                                        img_to_save2 = &obsStereoImg->imageRight;
+                                    }
+                                    else
+                                    {
+                                        CObservationDisparityImagesPtr obsDisparityImg = SF->getObservationByClass<CObservationDisparityImages>();
+                                        if(obsDisparityImg)
+                                        {
+                                            img_to_save = &obsDisparityImg->imageLeft;
+                                            img_to_save2 = &obsDisparityImg->imageDisparity;
+                                        }
+
+
 					else
+
 					{
-						CObservation3DRangeScanPtr obs3D = SF->getObservationByClass<CObservation3DRangeScan>();
-						if ( obs3D )
-						{
-							img_to_save = &obs3D->intensityImage;
-						}
+                                            CObservation3DRangeScanPtr obs3D = SF->getObservationByClass<CObservation3DRangeScan>();
+                                            if ( obs3D )
+                                            {
+                                                img_to_save = &obs3D->intensityImage;
+                                            }
 
 					}
-					
+                                    }
 				}
 			} // end for each entry
 			else if ( rawlog.getType(countLoop) == CRawlog::etObservation )
@@ -5935,6 +6018,12 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 					CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(o);
 					img_to_save = &obs3D->intensityImage;
 				}
+                                else if(IS_CLASS(o,CObservationDisparityImages))
+                                {
+                                        CObservationDisparityImagesPtr obsDisparityImg = CObservationDisparityImagesPtr(o);
+                                        img_to_save = &obsDisparityImg->imageLeft;
+                                        img_to_save2 = &obsDisparityImg->imageDisparity;
+                                }
 			} // end for each entry
 
 			// If we have an image, dump it to the video:

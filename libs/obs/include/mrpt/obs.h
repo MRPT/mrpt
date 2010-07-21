@@ -38,6 +38,7 @@
 #include <mrpt/slam/CObservationImage.h>
 // #include <mrpt/slam/CObservationVisualLandmarks.h>  // This one is in mrpt-core
 #include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/slam/CObservationDisparityImages.h>
 #include <mrpt/slam/CObservationStereoImagesFeatures.h>
 #include <mrpt/slam/CObservationBeaconRanges.h>
 #include <mrpt/slam/CObservationGasSensors.h>

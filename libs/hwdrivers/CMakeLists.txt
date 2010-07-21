@@ -45,7 +45,13 @@ IF(CMAKE_MRPT_HAS_xSENS)
 
 	ADD_DEFINITIONS(-D_LOG_TO_STDOUT)
 ENDIF(CMAKE_MRPT_HAS_xSENS)
-	
+# Build with link on SVS lib
+IF(CMAKE_MRPT_HAS_SVS)
+	TARGET_LINK_LIBRARIES(mrpt-hwdrivers dcap)
+	TARGET_LINK_LIBRARIES(mrpt-hwdrivers svs)
+	TARGET_LINK_LIBRARIES(mrpt-hwdrivers svscalc)
+	TARGET_LINK_LIBRARIES(mrpt-hwdrivers svscap)
+ENDIF(CMAKE_MRPT_HAS_SVS)
 IF(CMAKE_MRPT_HAS_ARIA)
 	# Ignore precompiled headers in xSens sources:
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)

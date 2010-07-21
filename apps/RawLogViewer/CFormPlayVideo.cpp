@@ -729,6 +729,84 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
             }
         }
 	}
+                 // disparity Images
+                {
+                CObservationDisparityImagesPtr obsImgD = sf->getObservationByClass<CObservationDisparityImages>();
+                if (obsImgD)
+                {
+                    nImgs++;
+
+                    // Left:
+                    {
+                        imgShow = &obsImgD->imageLeft;
+
+                        // Subsampling?
+                        if ( doReduceLargeImgs && imgShow->getWidth() > 650 )
+                        {
+                                auxImgForSubSampling = imgShow->scaleHalf();
+                                imgShow = &auxImgForSubSampling ;
+                        }
+
+                        if (firstFit)
+                        {
+                            pnLeft->SetMinSize( wxSize( imgShow->getWidth()+2,imgShow->getHeight()+2 ) );
+                            //Fit();
+                            // firstFit=false; // Done in the right pane below...
+                        }
+
+                        wxImage *wxIMG = mrpt::gui::MRPTImage2wxImage( *imgShow );
+                        imgShow->unload();  // for delayed-loaded rawlogs, save lots of memory!
+
+                        wxWindowDC  dc( pnLeft );
+                        wxMemoryDC  tmpDc;
+                        tmpDc.SelectObjectAsSource(wxBitmap( *wxIMG ));
+                        dc.Blit(0,0,wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
+                        delete wxIMG;
+
+                        lbCam1->SetLabel( _U( format( "%s - left", obsImgD->sensorLabel.c_str()).c_str() ));
+
+                                        // save:
+                                        displayedImgs[ 0 ] = obsImgD;
+
+                        doDelay= true;
+                    }
+
+                    // Right:
+                    {
+                        imgShow = &obsImgD->imageDisparity;
+
+                        // Subsampling?
+                        if ( doReduceLargeImgs && imgShow->getWidth() > 650 )
+                        {
+                                auxImgForSubSampling = imgShow->scaleHalf();
+                                imgShow = &auxImgForSubSampling ;
+                        }
+
+                        if (firstFit)
+                        {
+                            pnRight->SetMinSize( wxSize( imgShow->getWidth()+2,imgShow->getHeight()+2 ) );
+                            Fit();
+                            firstFit=false;
+                        }
+
+                        wxImage *wxIMG = mrpt::gui::MRPTImage2wxImage( *imgShow );
+                        imgShow->unload();  // for delayed-loaded rawlogs, save lots of memory!
+
+                        wxWindowDC  dc( pnRight );
+                        wxMemoryDC  tmpDc;
+                        tmpDc.SelectObjectAsSource(wxBitmap( *wxIMG ));
+                        dc.Blit(0,0,wxIMG->GetWidth(), wxIMG->GetHeight(), &tmpDc, 0, 0);
+                        delete wxIMG;
+
+                        lbCam2->SetLabel( _U( format( "%s - right", obsImgD->sensorLabel.c_str()).c_str() ));
+
+                                        // save:
+                                        displayedImgs[ 1 ] = obsImgD;
+
+                        doDelay= true;
+                    }
+                }
+                }
 
     return doDelay;
 }
@@ -805,6 +883,26 @@ void CFormPlayVideo::saveCamImage(int n)
 				o->imageLeft.saveToFile( fil );
 		else	o->imageRight.saveToFile( fil );
 	}
+        else if (IS_CLASS(displayedImgs[n],CObservationDisparityImages))
+               {
+                       CObservationDisparityImagesPtr o = CObservationDisparityImagesPtr( displayedImgs[n]);
+
+                       wxString defaultFilename;
+                       if (n==0)
+                                       defaultFilename = _U( format( "%s_left_%i.jpg",o->sensorLabel.c_str(),m_idxInRawlog ).c_str() );
+                       else	defaultFilename = _U( format( "%s_right_%i.jpg",o->sensorLabel.c_str(),m_idxInRawlog ).c_str() );
+
+                       wxFileDialog dialog(this, caption, defaultDir, defaultFilename,wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+
+                       if (dialog.ShowModal() != wxID_OK) return;
+
+                       string fil = string( dialog.GetPath().mb_str() );
+
+                       if (n==0)
+                                       o->imageLeft.saveToFile( fil );
+                       else	o->imageDisparity.saveToFile( fil );
+               }
+
 
 	WX_END_TRY
 }

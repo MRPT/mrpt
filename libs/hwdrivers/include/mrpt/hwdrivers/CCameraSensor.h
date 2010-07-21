@@ -43,6 +43,10 @@
 
 #include <mrpt/utils/CFileGZInputStream.h>
 
+#if MRPT_HAS_SVS
+#include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
+#endif
+
 #include <mrpt/gui/CDisplayWindow.h>
 
 namespace mrpt
@@ -229,7 +233,10 @@ namespace mrpt
 			int										m_bumblebee_camera_index;
 			mrpt::hwdrivers::TCaptureOptions_bumblebee	m_bumblebee_options;
 			int										m_bumblebee_monocam; // 0:Left, 1: Right, <0,>1 -> Stereo
-
+#if MRPT_HAS_SVS
+                        int                                                                             m_svs_camera_index;
+                        mrpt::hwdrivers::TCaptureOptions_SVS            m_svs_options;
+#endif
 			std::string								m_ffmpeg_url;
 
 			std::string								m_rawlog_file;
@@ -257,6 +264,10 @@ namespace mrpt
 			CImageGrabber_OpenCV 				*m_cap_cv;		//!< The OpenCV capture object.
 			CImageGrabber_dc1394 				*m_cap_dc1394;	//!< The dc1394 capture object.
 			CStereoGrabber_Bumblebee 			*m_cap_bumblebee;	//!< The bumblebee capture object.
+#if MRPT_HAS_SVS
+                        /** The svs capture object.  */
+                        mrpt::hwdrivers::CStereoGrabber_SVS        *m_cap_svs;
+#endif
 			CFFMPEG_InputStream					*m_cap_ffmpeg;	//!< The FFMPEG capture object
 			mrpt::utils::CFileGZInputStream		*m_cap_rawlog;	//!< The input file for rawlogs
 			CSwissRanger3DCamera				*m_cap_swissranger; //!< SR 3D camera object.
