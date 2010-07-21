@@ -710,8 +710,7 @@ void  CGasConcentrationGridMap2D::saveAsBitmapFile(const std::string &filName) c
 				break;
 
 			case mrKalmanFilter:
-			case mrKalmanApproximate:
-			case mrKalmanApproximate_deconv:
+			case mrKalmanApproximate:			
 				c = cell->mean;
 				break;
 
@@ -917,7 +916,7 @@ void  CGasConcentrationGridMap2D::resize(
 			printf("[CGasConcentrationGridMap2D::resize] Done\n");
 
 		} // end of Kalman Filter map
-		else if (m_mapType==mrKalmanApproximate || m_mapType==mrKalmanApproximate_deconv)
+		else if (m_mapType==mrKalmanApproximate )
 		{
 			// ------------------------------------------
 			//		Approximate-Kalman filter
@@ -1164,12 +1163,12 @@ void  CGasConcentrationGridMap2D::saveMetricMapRepresentationToFile(
 	fil = filNamePrefix + std::string("_mean.png");
 	saveAsBitmapFile( fil );
 
-	if ( m_mapType == mrKalmanApproximate || m_mapType==mrKalmanApproximate_deconv )
+	if ( m_mapType == mrKalmanApproximate )
 	{
 		m_stackedCov.saveToTextFile( filNamePrefix + std::string("_mean_compressed_cov.txt"), MATRIX_FORMAT_FIXED );
 	}
 
-	if ( m_mapType == mrKalmanFilter || m_mapType == mrKalmanApproximate || m_mapType==mrKalmanApproximate_deconv)
+	if ( m_mapType == mrKalmanFilter || m_mapType == mrKalmanApproximate )
 	{
 		recoverMeanAndCov();
 
@@ -1222,7 +1221,7 @@ void  CGasConcentrationGridMap2D::saveAsMatlab3DGraph(const std::string  &filNam
 
 	const float	std_times = 3;
 
-	ASSERT_( m_mapType == mrKalmanFilter || m_mapType==mrKalmanApproximate || m_mapType==mrKalmanApproximate_deconv);
+	ASSERT_( m_mapType == mrKalmanFilter || m_mapType==mrKalmanApproximate );
 
 	recoverMeanAndCov();
 
@@ -1367,7 +1366,7 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 	for (cy=0;cy<m_size_y;cy++)	ys[cy] = m_y_min + m_resolution * cy;
 
 	// Draw the surfaces:
-	if ( m_mapType == mrKalmanFilter || m_mapType==mrKalmanApproximate || m_mapType==mrKalmanApproximate_deconv)
+	if ( m_mapType == mrKalmanFilter || m_mapType==mrKalmanApproximate)
 	{
 		opengl::CSetOfTrianglesPtr obj = opengl::CSetOfTriangles::Create();
 		const float					std_times = 2;
@@ -1977,7 +1976,7 @@ void  CGasConcentrationGridMap2D::insertObservation_KF2(
   ---------------------------------------------------------------*/
 void  CGasConcentrationGridMap2D::recoverMeanAndCov() const
 {
-	if (!m_hasToRecoverMeanAndCov || (m_mapType!=mrKalmanApproximate && m_mapType!=mrKalmanApproximate_deconv) ) return;
+	if (!m_hasToRecoverMeanAndCov || (m_mapType!=mrKalmanApproximate ) ) return;
 	m_hasToRecoverMeanAndCov = false;
 
 	// Just recover the std of each cell:
