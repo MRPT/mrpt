@@ -219,7 +219,7 @@ int main()
 		FILE					*f_log = os::fopen(format("./log_%s.txt", fileNameStripInvalidChars(mrpt::system::dateTimeLocalToString(now())).c_str() ),"wt");
 		TTimeStamp				timStart = mrpt::system::getCurrentTime();
 		std::map<int, std::vector<float> > Sensor_array;
-		bool together = true;	//True -> Shows all sensor on same window. False -> Each sensor has hs own window
+		bool together = true;	//True -> Shows all sensor on same window. False -> Each sensor has his own window
 
 		/*
 		// Load configuration:

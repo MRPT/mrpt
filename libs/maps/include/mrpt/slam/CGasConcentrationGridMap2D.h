@@ -114,8 +114,7 @@ namespace slam
 		{
 			mrAchim = 0,
 			mrKalmanFilter,
-			mrKalmanApproximate,
-			mrKalmanApproximate_deconv
+			mrKalmanApproximate			
 		};
 
 
@@ -128,7 +127,6 @@ namespace slam
 			float				y_min = -2,
 			float				y_max = 2,
 			float				resolution = 0.1
-
 			);
 
 		/** Destructor */
@@ -229,7 +227,7 @@ namespace slam
 
 			/** [KF3 algortihm] The number of observations used to reduce noise on signal.
 			  */
-			uint16_t	winNoise_size;
+			size_t	winNoise_size;
 			
 			/** [KF3 algortihm] The decimate frecuency applied after noise filtering
 			  */

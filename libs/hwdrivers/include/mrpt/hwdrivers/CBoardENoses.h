@@ -115,6 +115,11 @@ namespace mrpt
 			  */
 			virtual ~CBoardENoses();
 
+			/** Set the active chamber (afected by poluted air) on the device
+			  * \return true on success, false on communications errors or device not found.
+			  */
+			bool	setActiveChamber( unsigned char chamber );
+
 			/** Query the firmware version on the device (can be used to test communications).
 			  * \return true on success, false on communications errors or device not found.
 			  */

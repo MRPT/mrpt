@@ -815,27 +815,42 @@ bool  CStream::receiveMessage( utils::CMessage &msg )
 			// Is a new byte for the frame:
 			nBytesInFrame += nBytesRx;
 
-			if (nBytesInFrame == (unsigned int)(buf[2]+4) ||
-			   nBytesInFrame == (nB + 5) )
+			unsigned int expectedLen = 0;
+
+			if (buf[0]==0x69)
+					expectedLen = buf[2]+4;
+			else	expectedLen = nB+4;
+
+			if (nBytesInFrame == expectedLen )
 			{
 				// Frame complete
 				// check for frame be ok:
 
-				// copy out data:
-				msg.type = buf[1];
-				if( buf[0] == 0x69 )
+				// End flag?
+				if (buf[nBytesInFrame-1]!=0x96)
 				{
-					msg.content.resize( buf[2] );
-					if (msg.content.size())
-						memcpy( &msg.content[0], &buf[3], buf[2] );
-				} // end if
-				if ( buf[0] == 0x79 )
+					// Error in frame!
+					nBytesInFrame=0;
+					return false;
+				}
+				else
 				{
-					msg.content.resize( nB );
-					if (msg.content.size())
-						memcpy( &msg.content[0], &buf[4], nB );
-				} // end if
-				return true;
+					// copy out data:
+					msg.type = buf[1];
+					if( buf[0] == 0x69 )
+					{
+						msg.content.resize( buf[2] );
+						if (msg.content.size())
+							memcpy( &msg.content[0], &buf[3], buf[2] );
+					} // end if
+					if ( buf[0] == 0x79 )
+					{
+						msg.content.resize( nB );
+						if (msg.content.size())
+							memcpy( &msg.content[0], &buf[4], nB );
+					} // end if
+					return true;
+				}
 			}
 		}
 	}

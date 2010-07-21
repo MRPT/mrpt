@@ -177,12 +177,13 @@ CStream *CBoardENoses::checkConnectionAndConnect()
 			return m_stream_SERIAL;
 		try
 		{
-			m_stream_SERIAL->setConfig(m_COM_baud);
 			m_stream_SERIAL->open(m_COM_port);
+			m_stream_SERIAL->setConfig(m_COM_baud);
 			mrpt::system::sleep(10);
 			m_stream_SERIAL->purgeBuffers();
 			mrpt::system::sleep(10);
-			m_stream_SERIAL->setTimeouts(10,1,10, 1,20);
+			//m_stream_SERIAL->setTimeouts(25,1,100, 1,20);
+			m_stream_SERIAL->setTimeouts(50,1,100, 1,20);
 			return m_stream_SERIAL;
 		}
 		catch(...)
@@ -218,17 +219,22 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 		//comms->sendMessage( msg );
 
 		// Wait for e-nose frame	[2 header, N sensors*Mchambers, 2 timestamp] of uint16_t
-		comms->receiveMessage( msg );
+		if (!comms->receiveMessage( msg ))
+		{
+			return false;
+		}
 
         //m_state = ssWorking;
 
 		// Copy to "uint16_t":
 		ASSERT_((msg.content.size() % 2)==0);
 
+		vector<uint16_t>	readings( msg.content.size() / 2 );	// divide by 2 to pass from byte to word
+
 		if (msg.content.size()>0)
 		{
 			// Copy to a vector of 16bit integers:
-			vector<uint16_t>	readings( msg.content.size() / 2 );	// divide by 2 to pass from byte to word
+			//vector<uint16_t>	readings( msg.content.size() / 2 );	// divide by 2 to pass from byte to word
 			memcpy( &readings[0],&msg.content[0],msg.content.size() * sizeof(msg.content[0]) );
 			
 			//HEADER Frame [ Nº of chambers/enoses (16b) , Active Chamber (16b)]
@@ -240,7 +246,7 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 			size_t wordsPereNose = (readings.size() - 4) / NumberOfChambers;						
 			
 
-			// Process them (some may be empty):
+			// Process each chamber
 			for (size_t i=0; i<NumberOfChambers; i++)
 			{
 				// ----------------------------------------------------------------------
@@ -268,10 +274,11 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 				newRead.isActive = false;
 				
 				// check if active chamber
-				if (i == (ActiveChamber-1))
+				if (i == (ActiveChamber))
 					newRead.isActive = true;
-
-				for (size_t idx=0 ; idx<(wordsPereNose-1)/2 ; idx++)
+				
+				//porcess each sensor on this chamber "i"
+				for (size_t idx=0 ; idx<wordsPereNose/2 ; idx++)
 				{
 					if ( readings[i*wordsPereNose + 2*idx + 2] != 0x0000 )	//not empty slot
 					{
@@ -303,6 +310,7 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 			// Set Timestamp
 			uint32_t *p = (uint32_t*)&readings[readings.size()-2];	//Get readings time from frame (always last 2 words)
 			obs.timestamp = mrpt::system::secondsToTimestamp(((double)*p)/1000);
+			
 			if (first_reading)
 			{
 				initial_timestamp = mrpt::system::getCurrentTime() - obs.timestamp;
@@ -312,15 +320,35 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 
 		} // end if message has data
 
-		// Set timestamp:
-		//obs.timestamp = mrpt::system::getCurrentTime();
+				
+		//CONTROL
+		bool correct = true;
+
+		if (obs.m_readings.size() != 4)
+				correct = false;
+		else
+		{
+			for (size_t ch=0; ch<obs.m_readings.size(); ch++)
+			{
+				if( (obs.m_readings[ch].sensorTypes.size() != 7) || (obs.m_readings[ch].readingsVoltage.size() != 7) )
+					correct = false;
+				else
+				{
+					
+				}
+			}
+		}
+
+		if (!correct)
+			printf("Error en la observacion"); //For debug
+
 
 		return !obs.m_readings.empty();	// Done OK!
 	}
-	catch(exception &)
+	catch(exception &e)
 	{
-		//cerr << "[CBoardENoses::getObservation] Returning false due to exception: " << endl;
-		//cerr << e.what() << endl;
+		cerr << "[CBoardENoses::getObservation] Returning false due to exception: " << endl;
+		cerr << e.what() << endl;
 		return false;
 	}
 	catch(...)
@@ -368,4 +396,34 @@ void CBoardENoses::initialize()
 	if (!checkConnectionAndConnect())
 		THROW_EXCEPTION("Couldn't connect to the eNose board");
 	*/
+}
+
+/*-------------------------------------------------------------
+					setActiveChamber
+-------------------------------------------------------------*/
+/** Send to the MCE-nose the next Active Chamber */
+
+bool CBoardENoses::setActiveChamber( unsigned char chamber )
+{
+	try
+	{
+		// Try to connect to the device:
+		CStream *comms = checkConnectionAndConnect();
+		if (!comms)
+			return false;
+		
+		// Send a byte to set the Active chamber on device.
+		// by default:  Byte_to_send = 101 _ _ 101
+		unsigned char buf[1];
+		buf[0] = ((chamber & 3) << 3) | 165;	 //165 = 101 00 101	
+
+		comms->WriteBuffer(buf,1);	// Exceptions will be raised on errors here
+	}
+	catch(...)
+	{
+		// Close everything and start again:
+		delete_safe(m_stream_SERIAL);
+		delete_safe(m_stream_FTDI);
+		return false;
+	}
 }

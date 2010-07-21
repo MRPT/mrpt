@@ -61,13 +61,13 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 	float		resolution ) :
 		CDynamicGrid<TGasConcentrationCell>( x_min,x_max,y_min,y_max,resolution ),
 		insertionOptions(),
-		m_mapType(mapType),
-		m_cov(0,0),
-		m_hasToRecoverMeanAndCov(true),
 		m_debug_dump(NULL),
 		decimate_count(1),
 		fixed_incT(0),
-		first_incT(true)
+		first_incT(true),
+		m_mapType(mapType),
+		m_cov(0,0),
+		m_hasToRecoverMeanAndCov(true)
 {
 	// Set the grid to initial values (and adjusts the KF covariance matrix!)
 	CMetricMap::clear();
@@ -136,9 +136,7 @@ void  CGasConcentrationGridMap2D::internal_clear()
 
 			//m_cov.saveToTextFile("cov_init.txt",1);
 		}
-		break;
-	case mrKalmanApproximate_deconv:
-		insertionOptions.m_lastObservations.clear();
+		break;	
 		// and continue with:
 	case mrKalmanApproximate:
 		{
@@ -581,7 +579,7 @@ void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
  ---------------------------------------------------------------*/
 CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 	sigma				( 0.15f ),
-	cutoffRadius		( sigma * 3 ),
+	cutoffRadius		( sigma * 3.0f ),
 
 	R_min				( 0 ),
 	R_max				( 3 ),
@@ -597,15 +595,15 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 	tauR						( 4 ),			//Time constant for the rise phase
 	tauD						( 12 ),			//Time constant for the decay phase
 	lastObservations_size		( 5 ),
+	winNoise_size				( 30 ),
+	decimate_value				( 2 ),
 	tauD_concentration			( 0 ),
 	tauD_value					( 0 ),
 	memory_speed				( 0 ),
-	memory_delay				( 0 ),
-	winNoise_size				( 30 ),
-	decimate_value				( 2 ),
+	memory_delay				( 0 ),	
 	enose_id					( 0 ),			//By default use the first enose
-	useMOSmodel					( 0 ),
-	save_maplog					( 1 )
+	save_maplog					( 1 ),
+	useMOSmodel					( 0 )	
 {
 }
 
@@ -1715,8 +1713,7 @@ void CGasConcentrationGridMap2D::predictMeasurement(
 		break;
 
 	case mrKalmanFilter:
-	case mrKalmanApproximate:
-	case mrKalmanApproximate_deconv:
+	case mrKalmanApproximate:	
 		{
 			if (m_hasToRecoverMeanAndCov)	recoverMeanAndCov();	// Just for KF2
 

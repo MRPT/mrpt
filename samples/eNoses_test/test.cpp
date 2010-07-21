@@ -81,9 +81,11 @@ int main()
 			if (! eNoses.getObservation( obs ) )
 			{
 				cout << "- Could not retrieve an observation from the eNoses..." << endl;
+				mrpt::system::sleep(25);
 			}
 			else
 			{
+
 				cout << obs.m_readings.size() << " eNoses:" << endl;
 
 				if (f_log) fprintf(f_log,"%f ", mrpt::system::timeDifference(timStart,obs.timestamp) );
@@ -121,9 +123,10 @@ int main()
 					printf("-----------------------------------------\n");
 				}
 				if (f_log) fprintf(f_log,"\n");
+			
+				mrpt::system::sleep(5);
 			}
 
-			mrpt::system::sleep(500);
 		}
 
 		if (f_log) os::fclose(f_log);
