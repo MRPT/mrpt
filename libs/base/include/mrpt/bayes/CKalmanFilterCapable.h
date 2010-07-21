@@ -83,6 +83,7 @@ namespace mrpt
 			bool		use_analytic_transition_jacobian;	//!< (default=true) If true, OnTransitionJacobian will be called; otherwise, the Jacobian will be estimated from a numeric approximation by calling several times to OnTransitionModel.
 			bool		use_analytic_observation_jacobian;	//!< (default=true) If true, OnObservationJacobians will be called; otherwise, the Jacobian will be estimated from a numeric approximation by calling several times to OnObservationModel.
 			bool		debug_verify_analytic_jacobians; //!< (default=false) If true, will compute all the Jacobians numerically and compare them to the analytical ones, throwing an exception on mismatch.
+			double		debug_verify_analytic_jacobians_threshold; //!< (default-1e-2) Sets the threshold for the difference between the analytic and the numerical jacobians
 		};
 
 		// Forward declaration:
@@ -528,7 +529,7 @@ namespace mrpt
 						{
 							KFMatrix_VxV dfv_dxv_gt(UNINITIALIZED_MATRIX);
 							OnTransitionJacobian(dfv_dxv_gt);
-							if ((dfv_dxv-dfv_dxv_gt).Abs().sumAll()>1e-2)
+							if ((dfv_dxv-dfv_dxv_gt).Abs().sumAll()>KF_options.debug_verify_analytic_jacobians_threshold)
 							{
 								std::cerr << "[KalmanFilter] ERROR: User analytical transition Jacobians are wrong: \n"
 									<< " Real dfv_dxv: \n" << dfv_dxv << "\n Analytical dfv_dxv:\n" << dfv_dxv_gt << "Diff:\n" << (dfv_dxv-dfv_dxv_gt) << "\n";
@@ -709,12 +710,12 @@ namespace mrpt
 							KFMatrix_OxV Hx_gt(UNINITIALIZED_MATRIX);
 							KFMatrix_OxF Hy_gt(UNINITIALIZED_MATRIX);
 							OnObservationJacobians(lm_idx,Hx_gt,Hy_gt);
-							if ((Hx-Hx_gt).Abs().sumAll()>1e-2) {
+							if ((Hx-Hx_gt).Abs().sumAll()>KF_options.debug_verify_analytic_jacobians_threshold) {
 								std::cerr << "[KalmanFilter] ERROR: User analytical observation Hx Jacobians are wrong: \n"
 									<< " Real Hx: \n" << Hx << "\n Analytical Hx:\n" << Hx_gt << "Diff:\n" << Hx-Hx_gt << "\n";
 								THROW_EXCEPTION("ERROR: User analytical observation Hx Jacobians are wrong (More details dumped to cerr)")
 							}
-							if ((Hy-Hy_gt).Abs().sumAll()>1e-2) {
+							if ((Hy-Hy_gt).Abs().sumAll()>KF_options.debug_verify_analytic_jacobians_threshold) {
 								std::cerr << "[KalmanFilter] ERROR: User analytical observation Hy Jacobians are wrong: \n"
 									<< " Real Hy: \n" << Hy << "\n Analytical Hx:\n" << Hy_gt << "Diff:\n" << Hy-Hy_gt << "\n";
 								THROW_EXCEPTION("ERROR: User analytical observation Hy Jacobians are wrong (More details dumped to cerr)")

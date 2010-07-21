@@ -80,6 +80,7 @@ void  TKF_options::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR( use_analytic_transition_jacobian, bool    , iniFile, section  );
 	MRPT_LOAD_CONFIG_VAR( use_analytic_observation_jacobian, bool    , iniFile, section  );
 	MRPT_LOAD_CONFIG_VAR( debug_verify_analytic_jacobians, bool    , iniFile, section  );
+	MRPT_LOAD_CONFIG_VAR( debug_verify_analytic_jacobians_threshold, double, iniFile, section );
 }
 
 /*---------------------------------------------------------------
@@ -92,7 +93,8 @@ TKF_options::TKF_options() :
 	enable_profiler	(false),
 	use_analytic_transition_jacobian	(true),
 	use_analytic_observation_jacobian	(true),
-	debug_verify_analytic_jacobians		(false)
+	debug_verify_analytic_jacobians		(false),
+	debug_verify_analytic_jacobians_threshold	(1e-2)
 {
 
 }
