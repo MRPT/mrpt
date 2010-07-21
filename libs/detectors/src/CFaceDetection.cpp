@@ -68,7 +68,7 @@ void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 //------------------------------------------------------------------------
 //							detectObjects
 //------------------------------------------------------------------------
-void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detectable_object &detected)
+void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vector_detectable_object &detected)
 {
 	MRPT_TRY_START
 
@@ -79,13 +79,13 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 	// Check if we are using a 3D Camera and 3D points are saved
 	if ( (IS_CLASS(obs, CObservation3DRangeScan )) && ( localDetected.size() > 0 ) )
 	{
-		CObservation3DRangeScan* o = static_cast<CObservation3DRangeScan*>( obs );
+		CObservation3DRangeScan* o = static_cast<CObservation3DRangeScan*>( const_cast<CObservation*>(obs) );
 
 		if ( o->hasPoints3D )
 		{
 			// Vector to save detected objects to delete if they aren't a face
 			vector<size_t> deleteDetected;
-
+			
 			// Check if all possible detected faces satisfy a serial of constrains
 			for ( unsigned int i = 0; i < localDetected.size(); i++ )
 			{
@@ -123,7 +123,7 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 						}
 					}
 				}
-
+				
 				// First check if we can adjust a plane to detected region as face, if yes it isn't a face!
 				if ( checkIfFacePlaneCov( points ) )
 					deleteDetected.push_back( i );
@@ -135,9 +135,10 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 					if ( !checkIfFaceRegions( &face, c2-c1, r2-r1 ) )
 						deleteDetected.push_back( i );
 				}
+				
 
 			}
-
+			
 			// Delete non faces
 			for ( unsigned int i = deleteDetected.size(); i > 0; i-- )
 				localDetected.erase( localDetected.begin() + deleteDetected[i-1] );
@@ -158,15 +159,6 @@ void CFaceDetection::detectObjects(mrpt::slam::CObservation *obs, vector_detecta
 
 	MRPT_TRY_END
 
-}
-
-
-//------------------------------------------------------------------------
-//							detectObjects
-//------------------------------------------------------------------------
-void CFaceDetection::detectObjects(CImage *img, vector_detectable_object &detected)
-{
-	cascadeClassifier.detectObjects( img, detected );
 }
 
 
@@ -428,4 +420,6 @@ void CFaceDetection::experimental_showMeasurements()
 	cout << "Max eigenVal: " << maxEigenVal << endl;
 	cout << "Mean eigenVal: " << meanEigenVal << endl;
 	cout << "Standard Desv: " << stdEigenVal << endl;
+
+	mrpt::system::pause();
 }

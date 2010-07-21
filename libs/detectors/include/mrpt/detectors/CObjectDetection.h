@@ -46,6 +46,7 @@ namespace mrpt
 
 		class DETECTORS_IMPEXP CObjectDetection	
 		{
+		public:
 			//virtual ~CObjectDetection();
 
 			/** Initialize the object with parameters loaded from the given config file. */
@@ -58,14 +59,21 @@ namespace mrpt
 			/** Initialize the object with parameters loaded from the given config source. */
 			virtual void init(const mrpt::utils::CConfigFileBase &cfg )=0;
 
-			inline void detectObjects(CObservationPtr obs, vector_detectable_object &detected) 
+			inline void detectObjects(const CObservationPtr obs, vector_detectable_object &detected) 
 			{ 
-				detectObjects(obs.pointer(), detected); 
+				detectObjects_Impl(obs.pointer(), detected); 
 			};
 
-			virtual void detectObjects(CObservation *obs, vector_detectable_object &detected)=0;
+			inline void detectObjects( const CObservation *obs, vector_detectable_object &detected)
+			{
+				detectObjects_Impl( obs, detected );
+			};			
 
-			virtual void detectObjects(CImage *img, vector_detectable_object &detected)=0;
+			void detectObjects(const CImage *img, vector_detectable_object &detected);
+
+		protected:
+
+			virtual void detectObjects_Impl( const CObservation *obs, vector_detectable_object &detected) = 0;			
 
 		}; // End of class
 	}

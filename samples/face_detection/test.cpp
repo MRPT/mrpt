@@ -119,7 +119,15 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 		if( !counter )
 			tictac.Tic();
 
-		CObservation3DRangeScanPtr o = CObservation3DRangeScanPtr(cam->getNextFrame());
+		CObservation3DRangeScanPtr o;
+		
+		try{
+			o = CObservation3DRangeScanPtr(cam->getNextFrame());
+		}
+		catch ( CExceptionEOF &)
+		{
+			break;
+		}
 		ASSERT_(o);
 
 		vector_detectable_object detected;
@@ -127,7 +135,7 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 		//CObservation3DRangeScanPtr o = CObservation3DRangeScanPtr(obs);
 			
 		faceDetector.detectObjects( o, detected );
-		
+			
 		
 		if ( detected.size() > 0 )
 		{	
@@ -206,6 +214,8 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 		mrpt::system::sleep(2);
 	}
 
+	faceDetector.experimental_showMeasurements();
+
 	cout << "Closing..." << endl;
 }
 
@@ -248,7 +258,7 @@ void TestCameraFaceDetection()
 		{
 			obs = cam->getNextFrame();
 		}
-		catch (CExceptionEOF &)
+		catch (CExceptionEOF &) // Check if eof, f.i. for RawLog files
 		{
 			break; 
 		}
@@ -322,7 +332,7 @@ void TestImagesFaceDetection(int argc, char *argv[])
 
 		tictac.Tic();
 
-		faceDetector.detectObjects( &(CImage(img)), detected );
+		faceDetector.detectObjects( &img, detected );
 
 		cout << "Detection time: " << tictac.Tac() << " s" << endl;
 
@@ -385,16 +395,11 @@ int main(int argc, char *argv[])
 		return 0;
 	} catch (std::exception &e)
 	{
-
-		faceDetector.experimental_showMeasurements();
-
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;
 	}
 	catch (...)
 	{
-		faceDetector.experimental_showMeasurements();
-
 		printf("Untyped exception!!");
 		return -1;
 	}

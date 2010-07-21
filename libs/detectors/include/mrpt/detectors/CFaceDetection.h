@@ -44,7 +44,7 @@ namespace mrpt
 		  * Methods and variables labeled as experimentals are temporals (for debug or testing
 		  * purposes) and may disappear in future versions.
 		  */
-		class DETECTORS_IMPEXP CFaceDetection: virtual public CObjectDetection
+		class DETECTORS_IMPEXP CFaceDetection: public CObjectDetection
 		{
 		public:
 		
@@ -54,15 +54,8 @@ namespace mrpt
 
 			virtual void init(const mrpt::utils::CConfigFileBase &cfg );
 
-			virtual void detectObjects(CObservation *obs, vector_detectable_object &detected);
+			virtual void detectObjects_Impl(const CObservation *obs, vector_detectable_object &detected);
 			
-			inline void detectObjects(CObservationPtr obs, vector_detectable_object &detected)
-			{
-				detectObjects(obs.pointer(), detected); 
-			}
-
-			virtual void detectObjects(CImage *img, vector_detectable_object &detected);
-
 			struct TOptions
 			{
 				int		confidenceThreshold;

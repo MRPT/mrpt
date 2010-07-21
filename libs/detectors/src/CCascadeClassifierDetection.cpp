@@ -89,24 +89,24 @@ void CCascadeClassifierDetection::init(const mrpt::utils::CConfigFileBase &confi
 //				detectObjects (*CObservation)
 // ------------------------------------------------------
 
-void CCascadeClassifierDetection::detectObjects(CObservation *obs, vector_detectable_object &detected)
+void CCascadeClassifierDetection::detectObjects_Impl(const CObservation *obs, vector_detectable_object &detected)
 {
 	// Obtain image from generic observation 
-	mrpt::utils::CImage *img = NULL;
+	const mrpt::utils::CImage *img = NULL;
 
 	if (IS_CLASS(obs,CObservationImage))
 	{
-		CObservationImage* o = static_cast<CObservationImage*>(obs);
+		const CObservationImage* o = static_cast<const CObservationImage*>(obs);
 		img = &o->image;
 	}
 	else if ( IS_CLASS(obs,CObservationStereoImages) )
 	{
-		CObservationStereoImages* o = static_cast<CObservationStereoImages*>(obs);
+		const CObservationStereoImages* o = static_cast<const CObservationStereoImages*>(obs);
 		img = &o->imageLeft;
 	}
 	else if (IS_CLASS(obs, CObservation3DRangeScan ) )
 	{
-		CObservation3DRangeScan* o = static_cast<CObservation3DRangeScan*>(obs);
+		const CObservation3DRangeScan* o = static_cast<const CObservation3DRangeScan*>(obs);
 		img = &o->intensityImage;
 	}
 	if (!img)
@@ -115,23 +115,13 @@ void CCascadeClassifierDetection::detectObjects(CObservation *obs, vector_detect
 	    return;	
 	}
 	
-	// Call more specific detector
-	detectObjects(img, detected);
-}
-
-// ------------------------------------------------------
-//				  detectObjects (*CImage)
-// ------------------------------------------------------
-
-void CCascadeClassifierDetection::detectObjects(CImage *img, vector_detectable_object &detected)
-{
 	vector<Rect> objects;
 
 	// Some needed preprocessing
-	img->grayscaleInPlace();
+	const CImage img_gray( *img, FAST_REF_OR_CONVERT_TO_GRAY );
 
 	// Convert to IplImage and copy it
-	IplImage *image = static_cast<IplImage*>(img->getAsIplImage());
+	IplImage *image = static_cast<IplImage*>(img_gray.getAsIplImage());
 
 	// Detect objects
 	CASCADE->detectMultiScale( cv::cvarrToMat(image), objects, m_options.scaleFactor,
@@ -149,4 +139,5 @@ void CCascadeClassifierDetection::detectObjects(CImage *img, vector_detectable_o
 
 		detected.push_back((CDetectableObjectPtr)obj);
 	}
+	
 }

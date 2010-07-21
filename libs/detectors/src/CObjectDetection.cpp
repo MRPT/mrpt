@@ -26,47 +26,20 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef CCascadeClassifierDetection_H
-#define CCascadeClassifierDetection_H
+#include <mrpt/detectors.h>  // Precompiled headers
+
+#include "do_opencv_includes.h"
 
 #include <mrpt/detectors/CObjectDetection.h>
+#include <mrpt/obs.h>
+#include <mrpt/slam/CObservationImage.h>
 
-namespace mrpt
+using namespace mrpt::detectors;
+
+void CObjectDetection::detectObjects(const CImage *img, vector_detectable_object &detected)
 {
-	namespace detectors
-	{
-		class DETECTORS_IMPEXP  CCascadeClassifierDetection: virtual public CObjectDetection
-		{
-		public:
-			
-			CCascadeClassifierDetection( );
-			
-			virtual ~CCascadeClassifierDetection(); 
-
-			/** Initialize cascade classifier detection */
-			virtual void init(const mrpt::utils::CConfigFileBase &cfg );
-
-			/** Detect objects in a *CObservation
-			 * \return A vector with detected objects 
-			 */
-
-		protected:
-
-			virtual void detectObjects_Impl(const CObservation *obs, vector_detectable_object &detected);
-
-			void * m_cascade; //!< Cascade classifier object
-
-			struct TOptions
-			{
-				std::string	cascadeFileName; 
-				double scaleFactor;	
-				int minNeighbors;
-				int flags;
-				int minSize;
-			}m_options; //!< Cascade classifier options
-
-		}; // End of class
-	}
+	mrpt::slam::CObservationImage o;
+	o.timestamp = mrpt::system::now();
+	o.image.setFromImageReadOnly(*img);
+	this->detectObjects_Impl(&o,detected);
 }
-
-#endif

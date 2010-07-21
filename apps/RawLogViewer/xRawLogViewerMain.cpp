@@ -5903,6 +5903,16 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 						img_to_save = &obsStereoImg->imageLeft;
 						img_to_save2 = &obsStereoImg->imageRight;
 					}
+					else
+					{
+						CObservation3DRangeScanPtr obs3D = SF->getObservationByClass<CObservation3DRangeScan>();
+						if ( obs3D )
+						{
+							img_to_save = &obs3D->intensityImage;
+						}
+
+					}
+					
 				}
 			} // end for each entry
 			else if ( rawlog.getType(countLoop) == CRawlog::etObservation )
@@ -5919,6 +5929,11 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 					CObservationStereoImagesPtr obsStereoImg = CObservationStereoImagesPtr(o);
 					img_to_save = &obsStereoImg->imageLeft;
 					img_to_save2 = &obsStereoImg->imageRight;
+				}
+				else if (IS_CLASS( o, CObservation3DRangeScan ))
+				{
+					CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(o);
+					img_to_save = &obs3D->intensityImage;
 				}
 			} // end for each entry
 
