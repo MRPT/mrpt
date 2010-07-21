@@ -101,7 +101,6 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	LIST(GET CMAKE_MRPT_GCC_VERSIONS 1 CMAKE_MRPT_GCC_VERSION_MINOR)
 
 	SET(CMAKE_MRPT_GCC_VERSION ${CMAKE_MRPT_GCC_VERSION_MAJOR}${CMAKE_MRPT_GCC_VERSION_MINOR})
-	MESSAGE(STATUS "Detected version of GNU GCC: ${CMAKE_MRPT_GCC_VERSION}")
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 
@@ -774,10 +773,10 @@ IF(wxWidgets_FOUND)
 	# Include wxWidgets macros
 	INCLUDE(${wxWidgets_USE_FILE})
 	# ${wxWidgets_LIBRARIES}  will contain the libraries that should be added through TARGET_LINK_LIBRARIES(...)
-	MESSAGE(STATUS "wxWidgets:")
-	MESSAGE(STATUS "   wxWidgets_LIBRARY_DIRS  : ${wxWidgets_LIBRARY_DIRS}")
-	MESSAGE(STATUS "   wxWidgets_CXX_FLAGS     : ${wxWidgets_CXX_FLAGS}")
-	MESSAGE(STATUS "   wxWidgets_INCLUDE_DIRS  : ${wxWidgets_INCLUDE_DIRS}")
+	#MESSAGE(STATUS "wxWidgets:")
+	#MESSAGE(STATUS "   wxWidgets_LIBRARY_DIRS  : ${wxWidgets_LIBRARY_DIRS}")
+	#MESSAGE(STATUS "   wxWidgets_CXX_FLAGS     : ${wxWidgets_CXX_FLAGS}")
+	#MESSAGE(STATUS "   wxWidgets_INCLUDE_DIRS  : ${wxWidgets_INCLUDE_DIRS}")
 
 	LINK_DIRECTORIES(${wxWidgets_LIBRARY_DIRS})
 
@@ -991,8 +990,7 @@ ELSE(MSVC OR BORLAND)
 	# ZLIB:
 	FIND_PACKAGE(ZLIB)
 	IF(ZLIB_FOUND)
-			MESSAGE(STATUS "Found library: zlib - Include: ${ZLIB_INCLUDE_DIR}")
-
+			#MESSAGE(STATUS "Found library: zlib - Include: ${ZLIB_INCLUDE_DIR}")
 			INCLUDE_DIRECTORIES("${ZLIB_INCLUDE_DIR}")
 			
 			APPEND_MRPT_LIBS(z)
@@ -1012,8 +1010,7 @@ ELSE(MSVC OR BORLAND)
 	# JPEG:
 	FIND_PACKAGE(JPEG)
 	IF(JPEG_FOUND)
-			MESSAGE(STATUS "Found library: jpeg  - Include: ${JPEG_INCLUDE_DIR}")
-
+			#MESSAGE(STATUS "Found library: jpeg  - Include: ${JPEG_INCLUDE_DIR}")
 			INCLUDE_DIRECTORIES("${JPEG_INCLUDE_DIR}")
 			
 			APPEND_MRPT_LIBS(jpeg)
@@ -1041,9 +1038,9 @@ IF(CMAKE_MRPT_HAS_OPENCV)
 	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR})
 	APPEND_MRPT_LIBS(${OpenCV_LIBRARIES})
 	
-	MESSAGE(STATUS "OpenCV:")
-	MESSAGE(STATUS "        OpenCV_LIBRARIES:   ${OpenCV_LIBRARIES}")
-	MESSAGE(STATUS "        OpenCV_INCLUDE_DIR: ${OpenCV_INCLUDE_DIR}")
+	#MESSAGE(STATUS "OpenCV:")
+	#MESSAGE(STATUS "        OpenCV_LIBRARIES:   ${OpenCV_LIBRARIES}")
+	#MESSAGE(STATUS "        OpenCV_INCLUDE_DIR: ${OpenCV_INCLUDE_DIR}")
 	
 	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OPENCV_EXE_LINKER_FLAGS}")
 
@@ -1543,13 +1540,13 @@ IF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 	SET(libmrpt_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-dev/usr/")
 	SET(mrpt_apps_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-apps/usr/")
 	SET(mrpt_doc_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-doc/usr/")
-	SET(mrpt_pkgconfig_INSTALL_PREFIX "/usr")
+	SET(mrpt_pkgconfig_INSTALL_PREFIX "/usr")	# Values when building a Debian package
 ELSE(CMAKE_MRPT_USE_DEB_POSTFIXS)
 	# Values under normal conditions -----------------------
 	SET(libmrpt_dev_INSTALL_PREFIX "")
 	SET(mrpt_apps_INSTALL_PREFIX "")
 	SET(mrpt_doc_INSTALL_PREFIX "")
-	SET(mrpt_pkgconfig_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+	SET(mrpt_pkgconfig_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}") 	# Values under normal conditions
 ENDIF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 
 
@@ -1624,15 +1621,6 @@ FOREACH(_LIB ${ALL_MRPT_LIBS})
 	SET(DECLARE_LIBS_DEPS "${DECLARE_LIBS_DEPS} set_property(GLOBAL PROPERTY \"${_LIB}_LIB_DEPS\" \"${_LIB_DEP}\")\n")
 ENDFOREACH(_LIB)
 
-
-# ----------------------------------------------------------------------------
-#   Generate the .pc file(s) for pkg-config
-# ----------------------------------------------------------------------------
-IF(UNIX)
-	MESSAGE(STATUS "Generating libmrpt.pc file for pkg-config...")
-	CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/pkgconfig/libmrpt.pc.in "${CMAKE_BINARY_DIR}/pkgconfig/libmrpt.pc" @ONLY)
-ENDIF(UNIX)
-
 # ----------------------------------------------------------------------------
 #   Generate the MRPTConfig.cmake file
 # ----------------------------------------------------------------------------
@@ -1692,7 +1680,6 @@ MARK_AS_ADVANCED(FORCE
 	CMAKE_BACKWARDS_COMPATIBILITY
 	wxWidgets_CONFIGURATION
 	wxWidgets_LIB_DIR
-#	wxWidgets_ROOT_DIR
 	wxWidgets_USE_REL_AND_DBG
 	wxWidgets_wxrc_EXECUTABLE
 )
@@ -1736,9 +1723,13 @@ ENDIF( BUILD_TESTING)
 # ----------------------------------------------------------------------------
 #   More installation commands:
 # ----------------------------------------------------------------------------
-IF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/libmrpt.pc")
-	INSTALL(FILES "${MRPT_BINARY_DIR}/pkgconfig/libmrpt.pc" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}lib${LIB_SUFFIX}/pkgconfig)
-ENDIF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/libmrpt.pc")
+FILE(GLOB MRPT_PKGCONFIG_PC_FILES "${MRPT_BINARY_DIR}/pkgconfig/libmrpt-*.pc")
+
+IF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/libmrpt-base.pc")
+	INSTALL(
+		FILES ${MRPT_PKGCONFIG_PC_FILES}
+		DESTINATION ${libmrpt_dev_INSTALL_PREFIX}lib${LIB_SUFFIX}/pkgconfig )
+ENDIF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/libmrpt-base.pc")
 
 # CMake will look for MRPTConfig.cmake at: /usr/share|lib/mrpt
 IF(WIN32)
@@ -1850,8 +1841,11 @@ INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION ${lib
 #   Sumary:
 # ----------------------------------------------------------------------------
 MESSAGE(STATUS "")
+IF(CMAKE_COMPILER_IS_GNUCXX)
+	SET(MRPT_GCC_VERSION_STR "(GCC version: ${CMAKE_MRPT_GCC_VERSION})")
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
-message(STATUS "Compiler:                  ${CMAKE_COMPILER}")
+message(STATUS "Compiler:                  ${CMAKE_CXX_COMPILER} ${MRPT_GCC_VERSION_STR} ")
 message(STATUS "  C++ flags (Release):       ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
 message(STATUS "  C++ flags (Debug):         ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG}")
 message(STATUS "  Executable link flags (Release):    ${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_EXE_LINKER_FLAGS_RELEASE}")

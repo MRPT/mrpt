@@ -38,6 +38,7 @@
 		- Many new stuff and improvements in mrpt-vision, e.g. mrpt::vision::CGenericFeatureTracker, mrpt::vision::CFeatureList, etc.
 		- (TODO) New command-line dataset manipulation tools: rawlog-edit, carmen2rawlog, rawlog2carmen.
 		- New library: mrpt-detectors
+		- (TODO) Fixed support for pkg-config with a new set of libmrpt-*.pc files (see new example MRPT/doc/mrpt_example1-with-Makefile).
 	- <b>Detailed list of changes:</b>
 		- Changes in applications:
 			- camera-calib can now open SwissRangers 3D cameras as well for real-time calibration.

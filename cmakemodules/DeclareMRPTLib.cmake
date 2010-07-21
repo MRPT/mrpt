@@ -213,4 +213,12 @@ endif(1)
 		ARCHIVE DESTINATION ${MRPT_PREFIX_INSTALL}lib${LIB_SUFFIX} COMPONENT main
 		)
 
+	# Generate the libmrpt-$NAME.pc file for pkg-config:
+	IF(UNIX)
+		# TODO: Declare some more vars, etc...
+		SET(mrpt_pkgconfig_LIBNAME ${name})
+		CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/pkgconfig/libmrpt.pc.in" "${CMAKE_BINARY_DIR}/pkgconfig/libmrpt-${name}.pc" @ONLY)
+	ENDIF(UNIX)
+
+
 endmacro(define_mrpt_lib)
