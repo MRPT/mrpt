@@ -293,6 +293,8 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face,
 	double meanDepth[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
 	double numPoints[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
 
+	//vector<TPoint3D> regions2[9];
+
 	for ( unsigned int i = y1; i <= y2; i++ )
 		for ( unsigned int j = x1; j <= x2; j++, cont++ )
 			if (*(face->confidenceImage.get_unsafe( j, i, 0 )) > m_options.confidenceThreshold )
@@ -312,9 +314,35 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face,
 				else
 					col = 2;
 
+				cout << ">" << face->points3D_x[cont] << "." << face->points3D_y[cont] << "." << face->points3D_z[cont] << endl;
+
 				meanDepth[row][col]+=face->points3D_x[cont];
 				++numPoints[row][col];
+
+				/*if ( row == 0 && col == 0 )
+					regions2[0].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else if ( row == 0 && col == 1 )
+					regions2[1].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else if ( row == 0 && col == 2 )
+					regions2[2].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else if ( row == 1 && col == 0 )
+					regions2[3].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else if ( row == 1 && col == 1 )
+					regions2[4].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else if ( row == 1 && col == 2 )
+					regions2[5].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else if ( row == 2 && col == 0 )
+					regions2[6].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else if ( row == 2 && col == 1 )
+					regions2[7].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else
+					regions2[8].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				*/
+
 			}
+	/*experimental_viewFacePointsScanned( *face );
+	experimental_viewFacePointsScanned( regions2[0] );
+	experimental_viewFacePointsScanned( regions2[1] );*/
 
 	// Create 9 regions and calculate
 	vector<vector<TPoint3D> > regions;
@@ -449,6 +477,8 @@ void CFaceDetection::experimental_viewFacePointsScanned( const vector_float &xs,
 	pntsMap.setAllPoints( xs, ys, zs );
 	
 	gl_points->loadFromPointsMap(&pntsMap);
+	
+	//gl_points->setColor(0,0.7,0.7,1);
 
 	win3D.unlockAccess3DScene();
 	win3D.repaint();
