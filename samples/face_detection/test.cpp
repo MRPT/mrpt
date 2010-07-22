@@ -393,6 +393,7 @@ int main(int argc, char *argv[])
 			TestCameraFaceDetection();
 		
 		return 0;
+
 	} catch (std::exception &e)
 	{
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;

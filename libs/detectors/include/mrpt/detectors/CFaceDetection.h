@@ -31,15 +31,17 @@
 
 #include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
+#include <mrpt/utils/CTimeLogger.h>
 
 namespace mrpt
 {
+
 	namespace slam { class CObservation3DRangeScan; }
 
 	namespace detectors
 	{
 		using namespace mrpt::slam;
-
+		
 		/** Specific class for face detection.
 		  * Methods and variables labeled as experimentals are temporals (for debug or testing
 		  * purposes) and may disappear in future versions.
@@ -90,6 +92,7 @@ namespace mrpt
 
 				vector_double	lessEigenVals;
 				vector_double	errorEstimations;
+				vector_double	meanRegions;
 
 				int				numPossibleFacesDetected;
 				int				numRealFacesDetected;
@@ -99,6 +102,8 @@ namespace mrpt
 				bool			saveMeasurementsToFile;
 
 			}m_measure;
+
+			CTimeLogger	m_timeLog;
 
 			
 

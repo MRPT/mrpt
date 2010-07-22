@@ -6036,10 +6036,12 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 					// Mono or stereo camera?
 					const string fil = (img_to_save2==NULL) ?  outAviFilename  : string(outAviFilename+string("_LEFT.avi"));
 
-					if (!videoOut[0].open(fil,FPS,TImageSize(img_to_save->getWidth(),img_to_save->getHeight()),"XVID"))
+					if (!videoOut[0].open(fil,FPS,TImageSize(img_to_save->getWidth(),img_to_save->getHeight()))) // Before was ,"XVID")
 						throw std::runtime_error("Error creating the AVI video file...");
 				}
-				videoOut[0] << (*img_to_save);
+				CImage  imgAux;
+				img_to_save->colorImage(imgAux);
+				videoOut[0] << imgAux;
 				nFrames++;
 				img_to_save->unload();
 			}
@@ -6056,7 +6058,9 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 					if (!videoOut[1].open(fil,FPS,TImageSize(img_to_save2->getWidth(),img_to_save2->getHeight()),"XVID"))
 						throw std::runtime_error("Error creating the AVI video file...");
 				}
-				videoOut[1] << (*img_to_save2);
+				CImage  imgAux;
+				img_to_save2->colorImage(imgAux);
+				videoOut[1] << imgAux;
 				nFrames++;
 				img_to_save2->unload();
 			}
@@ -6073,6 +6077,9 @@ void xRawLogViewerFrame::OnmnuCreateAVISelected(wxCommandEvent& event)
 	} // end while keep loading
 
 	progDia.Update( nEntries );
+
+	if (!errorMsg.empty())
+		wxMessageBox(_U(errorMsg.c_str() ), _("Error"));
 
 	wxMessageBox(_U( format("Saved %u images.",nFrames).c_str() ),_("Done"),wxOK,this);
 

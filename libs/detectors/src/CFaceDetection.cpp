@@ -50,6 +50,8 @@ CFaceDetection::CFaceDetection()
 {
 	m_measure.numPossibleFacesDetected = 0;
 	m_measure.numRealFacesDetected = 0;
+
+	m_timeLog.enable();
 }
 
 
@@ -76,17 +78,38 @@ void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 //------------------------------------------------------------------------
 void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vector_detectable_object &detected)
 {
-	MRPT_TRY_START
+	MRPT_START
 
 	// Detect possible faces
 	vector_detectable_object localDetected;
+
+	// To obtain experimental results
+	{
+		if ( m_measure.takeTime )
+			m_timeLog.enter("Detection time");
+	}
+
 	cascadeClassifier.detectObjects( obs, localDetected );
 
-	m_measure.numPossibleFacesDetected += localDetected.size();
+	// To obtain experimental results
+	{
+		if ( m_measure.takeTime )
+			m_timeLog.leave("Detection time");
+
+		if ( m_measure.takeMeasures )
+			m_measure.numPossibleFacesDetected += localDetected.size();
+	}
+	
 
 	// Check if we are using a 3D Camera and 3D points are saved
 	if ( (IS_CLASS(obs, CObservation3DRangeScan )) && ( localDetected.size() > 0 ) )
 	{
+		// To obtain experimental results
+		{
+			if ( m_measure.takeTime )
+				m_timeLog.enter("Check if real face time");
+		}
+
 		CObservation3DRangeScan* o = static_cast<CObservation3DRangeScan*>( const_cast<CObservation*>(obs) );
 
 		if ( o->hasPoints3D )
@@ -133,16 +156,16 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 				}
 				
 				// First check if we can adjust a plane to detected region as face, if yes it isn't a face!
-				if ( checkIfFacePlane( points ) )
+				if ( checkIfFacePlaneCov( points ) )
 					deleteDetected.push_back( i );
-				/*else
+				else
 				{
 					CObservation3DRangeScan face;
 					o->getZoneAsObs( face, r1, r2, c1, c2 );
 					//experimental_viewFacePointsScanned( face );
 					if ( !checkIfFaceRegions( &face, c2-c1, r2-r1 ) )
 						deleteDetected.push_back( i );
-				}*/
+				}
 				
 
 			}
@@ -159,15 +182,25 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 				CDetectable3DPtr( new CDetectable3D((CDetectable2DPtr)localDetected[i]) );
 			detected.push_back( object3d );
 		}
+		
+		// To obtain experimental results
+		{
+			if ( m_measure.takeTime )
+				m_timeLog.leave("Check if real face time");
+		}
 	}
 	else // Not using a 3D camera
 	{
 		detected = localDetected;
 	}
 
-	m_measure.numRealFacesDetected += detected.size();
+	// To obtain experimental results
+	{
+		if ( m_measure.takeMeasures )
+			m_measure.numRealFacesDetected += detected.size();
+	}
 
-	MRPT_TRY_END
+	MRPT_END
 
 }
 
@@ -198,6 +231,8 @@ bool CFaceDetection::checkIfFacePlane( const vector<TPoint3D> &points )
 //------------------------------------------------------------------------
 bool CFaceDetection::checkIfFacePlaneCov( const vector<TPoint3D> &points )
 {
+	MRPT_TRY_START
+
 	CMatrixDouble cov;
 	vector_double eVals;
 
@@ -231,6 +266,8 @@ bool CFaceDetection::checkIfFacePlaneCov( const vector<TPoint3D> &points )
 		return true;
 
 	return false;
+
+	MRPT_TRY_END
 }
 
 //------------------------------------------------------------------------
@@ -240,10 +277,12 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face,
 										 const unsigned int &faceWidth,
 										 const unsigned int &faceHeight )
 {
-	unsigned int x1 = ceil(faceWidth*0.1);
-	unsigned int x2 = floor(faceWidth*0.9);
-	unsigned int y1 = ceil(faceHeight*0.1);
-	unsigned int y2 = floor(faceHeight*0.9);
+	MRPT_START
+
+	unsigned int x1 = ceil(faceWidth*0.05);
+	unsigned int x2 = floor(faceWidth*0.95);
+	unsigned int y1 = ceil(faceHeight*0.05);
+	unsigned int y2 = floor(faceHeight*0.95);
 
 	unsigned int sectionVSize = floor((y2-y1)/3.0);
 	unsigned int sectionHSize = floor((x2-x1)/3.0);
@@ -259,16 +298,16 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face,
 			if (*(face->confidenceImage.get_unsafe( j, i, 0 )) > m_options.confidenceThreshold )
 			{
 				unsigned int row, col;
-				if ( i-y1 < sectionVSize - floor(sectionVSize*0.2) )
+				if ( i-y1 < sectionVSize - floor(sectionVSize*0.1) )
 					row = 0;
-				else if ( i-y1 < sectionVSize*2 + floor(sectionVSize*0.2) )
+				else if ( i-y1 < sectionVSize*2 + floor(sectionVSize*0.1) )
 					row = 1;
 				else
 					row = 2;
 
-				if ( j-x1 < sectionHSize - floor(sectionHSize*0.2) )
+				if ( j-x1 < sectionHSize - floor(sectionHSize*0.1) )
 					col = 0;
-				else if ( j-x1 < sectionHSize*2 + floor(sectionHSize*0.2) )
+				else if ( j-x1 < sectionHSize*2 + floor(sectionHSize*0.1) )
 					col = 1;
 				else
 					col = 2;
@@ -287,17 +326,25 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face,
 			else
 				meanDepth[i][j] /= numPoints[i][j];
 
-	ofstream f;
-	f.open("faceRegions.txt", ofstream::app);
-
-	f << meanDepth[0][0] << " . " << meanDepth[0][1] << " . " << meanDepth[0][2] << endl;
-	f << meanDepth[1][0] << " . " << meanDepth[1][1] << " . " << meanDepth[1][2] << endl;
-	f << meanDepth[2][0] << " . " << meanDepth[2][1] << " . " << meanDepth[2][2] << endl;
-	f << "- - - - - - - - - - - - - - - - - - - - - " << endl;
-
-	f.close();
+	// For experimental results
+	{
+		if ( m_measure.takeMeasures )
+		{
+			m_measure.meanRegions.push_back( meanDepth[0][0] );
+			m_measure.meanRegions.push_back( meanDepth[0][1] );
+			m_measure.meanRegions.push_back( meanDepth[0][2] );
+			m_measure.meanRegions.push_back( meanDepth[1][0] );
+			m_measure.meanRegions.push_back( meanDepth[1][1] );
+			m_measure.meanRegions.push_back( meanDepth[1][2] );
+			m_measure.meanRegions.push_back( meanDepth[2][0] );
+			m_measure.meanRegions.push_back( meanDepth[2][1] );
+			m_measure.meanRegions.push_back( meanDepth[2][2] );
+		}
+	}
 
 	return checkRegionsConstrains( meanDepth );
+
+	MRPT_END
 }
 
 
@@ -464,6 +511,78 @@ void CFaceDetection::experimental_showMeasurements()
 			f << "Standard Desv: " << stdEstimationErr << endl;
 		}
 	}
+
+
+	if ( m_measure.meanRegions.size() > 0 )
+	{
+		vector_double	meanRegions[9];
+		double			sumRegionsConstrains[9] = {0,0,0,0,0,0,0,0,0};
+
+		unsigned int N = m_measure.meanRegions.size();
+
+		for ( unsigned int i = 0; i < m_measure.meanRegions.size(); i++ )
+			meanRegions[i%9].push_back( m_measure.meanRegions[i] );
+
+		/*	Regions
+			0	1	2
+			3	4	5
+			6	7	8
+		*/
+		int passed = 0;
+		for ( unsigned int i = 0; i < (unsigned int)(N/9) ; i++ )
+		{
+			int col0 = 0, col2 = 0;
+			if ( meanRegions[0][i] < meanRegions[1][i] )
+			{
+				sumRegionsConstrains[0]+=1;
+				col0++;
+			}
+			if ( meanRegions[2][i] < meanRegions[1][i] )
+			{
+				sumRegionsConstrains[1]+=1;
+				col2++;
+			}
+			if ( meanRegions[3][i] < meanRegions[4][i] )
+			{
+				col0++;
+				sumRegionsConstrains[2]+=1;
+			}
+			if ( meanRegions[5][i] < meanRegions[4][i] )
+			{
+				sumRegionsConstrains[3]+=1;
+				col2++;
+			}
+			if ( meanRegions[6][i] < meanRegions[7][i] )
+			{
+				col0++;
+				sumRegionsConstrains[4]+=1;
+			}
+			if ( meanRegions[8][i] < meanRegions[7][i] )
+			{
+				sumRegionsConstrains[5]+=1;
+				col2++;
+			}
+
+			if ((( col0 >= 2)&&(col2 >=2)) || ( col0 == 3 ) || (col2 == 3) )
+				passed++;
+
+			
+		}
+
+		cout << endl << "Information about face regions restrictions: " << endl;
+		cout << "Regions:" << endl;
+		cout << "0 1 2" << endl;
+		cout << "3 4 5" << endl;
+		cout << "6 7 8" << endl;
+		cout << "Restriction #1 (0<1): " << sumRegionsConstrains[0]/(N/9) << endl;
+		cout << "Restriction #2 (2<1): " << sumRegionsConstrains[1]/(N/9) << endl;
+		cout << "Restriction #3 (3<4): " << sumRegionsConstrains[2]/(N/9) << endl;
+		cout << "Restriction #4 (5<4): " << sumRegionsConstrains[3]/(N/9) << endl;
+		cout << "Restriction #5 (6<7): " << sumRegionsConstrains[4]/(N/9) << endl;
+		cout << "Restriction #6 (8<7): " << sumRegionsConstrains[5]/(N/9) << endl;
+		cout << "Real faces: " << passed << endl;
+	}
+
 	cout << endl << "Data about number of faces" << endl;
 	cout << "Possible faces detected: " << m_measure.numPossibleFacesDetected << endl;
 	cout << "Real faces detected: " << m_measure.numRealFacesDetected << endl;
@@ -474,6 +593,9 @@ void CFaceDetection::experimental_showMeasurements()
 		f << "Possible faces detected: " << m_measure.numPossibleFacesDetected << endl;
 		f << "Real faces detected: " << m_measure.numRealFacesDetected << endl;
 	}
+
+	if ( m_measure.takeTime && m_measure.saveMeasurementsToFile )
+		f << endl << m_timeLog.getStatsAsText();
 
 	f.close(); 
 
