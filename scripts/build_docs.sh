@@ -70,6 +70,7 @@ MRPT_LIST_DIRECTORIES="$CUR_DIR/doc/doxygen-pages \
 	$CUR_DIR/libs/reactivenav/include \
 	$CUR_DIR/libs/slam/include \
 	$CUR_DIR/libs/topography/include \
+	$CUR_DIR/libs/detectors/include \
 	$CUR_DIR/libs/vision/include"
 
 # Checks
