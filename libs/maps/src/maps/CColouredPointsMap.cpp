@@ -885,6 +885,36 @@ void  CColouredPointsMap::setPoint(size_t index,float x,float y,float z)
 	mark_as_modified();
 }
 
+/** Changes a given point from map. First index is 0.
+ * \exception Throws std::exception on index out of bound.
+ */
+void  CColouredPointsMap::setPoint(size_t index,float x, float y, float z, float R, float G, float B)
+{
+	if (index>=this->x.size())
+		THROW_EXCEPTION("Index out of bounds");
+	this->x[index] = x;
+	this->y[index] = y;
+	this->z[index] = z;
+	this->m_color_R[index]=R;
+	this->m_color_G[index]=G;
+	this->m_color_B[index]=B;
+	mark_as_modified();
+}
+
+/** Changes just the color of a given point from the map. First index is 0.
+ * \exception Throws std::exception on index out of bound.
+ */
+void  CColouredPointsMap::setPointColor(size_t index,float R, float G, float B)
+{
+	if (index>=this->x.size())
+		THROW_EXCEPTION("Index out of bounds");
+	this->m_color_R[index]=R;
+	this->m_color_G[index]=G;
+	this->m_color_B[index]=B;
+	// mark_as_modified();  // No need to rebuild KD-trees, etc...
+}
+
+
 /*---------------------------------------------------------------
 Insert the contents of another map into this one, fusing the previous content with the new one.
  This means that points very close to existing ones will be "fused", rather than "added". This prevents
@@ -1364,6 +1394,18 @@ void  CColouredPointsMap::getPoint( size_t index, float &x, float &y, float &z, 
 	B = m_color_B[index];
 }
 
+/** Retrieves a point color (colors range is [0,1])
+  */
+void  CColouredPointsMap::getPointColor( size_t index, float &R, float &G, float &B ) const
+{
+	if (index >= this->x.size())
+		THROW_EXCEPTION("Index out of bounds");
+
+	R = m_color_R[index];
+	G = m_color_G[index];
+	B = m_color_B[index];
+}
+
 /*---------------------------------------------------------------
 					getPoint
  ---------------------------------------------------------------*/
@@ -1434,7 +1476,7 @@ bool CColouredPointsMap::colourFromObservation( const CObservationImage &obs, co
 	else { chR = 0; chG = 1; chB = 2; }
 
 	unsigned int n_proj = 0;
-	const float factor = 1.0/255;	// Normalize pixels: 
+	const float factor = 1.0/255;	// Normalize pixels:
 
 	// Get the colour of the projected points
 	for( itProPoints = projectedPoints.begin(), k = 0;

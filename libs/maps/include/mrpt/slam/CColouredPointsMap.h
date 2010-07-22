@@ -160,6 +160,16 @@ namespace mrpt
 			 */
 			virtual void  setPoint(size_t index,float x, float y, float z);
 
+			/** Changes a given point from map. First index is 0.
+			 * \exception Throws std::exception on index out of bound.
+			 */
+			void  setPoint(size_t index,float x, float y, float z, float R, float G, float B);
+
+			/** Changes just the color of a given point from the map. First index is 0.
+			 * \exception Throws std::exception on index out of bound.
+			 */
+			void  setPointColor(size_t index,float R, float G, float B);
+
 			/** Provides a way to insert individual points into the map:
 			  */
 			void  insertPoint( float x, float y, float z = 0 );
@@ -181,6 +191,10 @@ namespace mrpt
 			/** Retrieves a point and its color (colors range is [0,1])
 			  */
 			virtual void  getPoint( size_t index, float &x, float &y, float &z, float &R, float &G, float &B ) const;
+
+			/** Retrieves a point color (colors range is [0,1])
+			  */
+			void  getPointColor( size_t index, float &R, float &G, float &B ) const;
 
 			/** Returns true if the point map has a color field for each point */
 			virtual bool hasColorPoints() const { return true; }

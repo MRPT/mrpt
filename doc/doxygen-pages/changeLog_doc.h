@@ -58,6 +58,8 @@
 			- mrpt::hwdrivers::prepareVideoSourceFromUserSelection() now also displays as an option to grab images from SwissRanger 3D cameras.
 			- mrpt::hwdrivers::CCameraSensor can now open SwissRanger 3D cameras.
 			- mrpt::vision::CFeatureList now has KD-tree-based search.
+			- mrpt::slam::CColouredPointsMap:
+				- Added a few new methods to modify and retrieve the color of points already in the map. 
 			- mrpt::hwdrivers::CGenericSensor:
 				- Now has a generic interface for external image directories (it was only in CCameraSensor before), so more sensors can use this feature.
 				- The sensor label member is now "m_sensorLabel" in this base class, instead of replicating it in all children classes.
