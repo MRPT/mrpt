@@ -725,12 +725,12 @@ namespace mrpt
 
 					dh_dx.insertMatrix(i*OBS_SIZE,0, Hx);
 					if (FEAT_SIZE!=0)
-						dh_dx.insertMatrix(i*OBS_SIZE,VEH_SIZE+i*OBS_SIZE, Hy);
+						dh_dx.insertMatrix(i*OBS_SIZE,VEH_SIZE+i*FEAT_SIZE, Hy);
 
 					dh_dx_full.insertMatrix(i*OBS_SIZE,0, Hx);
 					if (FEAT_SIZE!=0)
 					{
-						dh_dx_full.insertMatrix(i*OBS_SIZE,VEH_SIZE+lm_idx*OBS_SIZE, Hy);
+						dh_dx_full.insertMatrix(i*OBS_SIZE,VEH_SIZE+lm_idx*FEAT_SIZE, Hy);
 
 						for (size_t k=0;k<FEAT_SIZE;k++)
 							idxs.push_back(k+VEH_SIZE+FEAT_SIZE*lm_idx);
