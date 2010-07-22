@@ -111,7 +111,7 @@ void  mrpt::topography::path_from_rtk_gps(
 		memFil.read_double("GPS_ORIGIN","lon_deg",0),
 		memFil.read_double("GPS_ORIGIN","height",0) );
 
-	ref_valid = ref.lat!=0 || ref.lon!=0 || ref.height !=0;
+	ref_valid = !ref.isClear();
 
 	// Do we have info for the consistency test?
 	const double std_0 = memFil.read_double("CONSISTENCY_TEST","std_0",0);

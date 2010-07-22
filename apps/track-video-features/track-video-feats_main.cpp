@@ -112,7 +112,16 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 	while( win->isOpen() ) // infinite loop, until we close the win
 	{
-		CObservationPtr obs = cam->getNextFrame();
+		CObservationPtr obs;
+		try 
+		{
+			obs= cam->getNextFrame();
+		} 
+		catch (CExceptionEOF &)
+		{	// End of a rawlog file.
+			break;
+		}
+
 		if (!obs)
 		{
 			cerr << "*Warning* getNextFrame() returned NULL!\n";

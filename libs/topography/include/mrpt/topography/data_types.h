@@ -92,8 +92,12 @@ namespace mrpt
 				getDegMinSec( deg,min,sec);
 				return mrpt::format("%ddeg %d' %.010f''",deg,min,sec );
 			}
+
 		};
 
+		bool TOPO_IMPEXP operator ==(const TCoords &a, const TCoords &o);
+		bool TOPO_IMPEXP operator !=(const TCoords &a, const TCoords &o);
+		
 		std::ostream TOPO_IMPEXP & operator<<( std::ostream& out, const TCoords &o );
 
 		struct TOPO_IMPEXP TEllipsoid
@@ -140,12 +144,16 @@ namespace mrpt
 			TGeodeticCoords() : lat(0),lon(0),height(0) {}
 			TGeodeticCoords(const double _lat, const double _lon, const double _height) : lat(_lat),lon(_lon),height(_height) {}
 
-			inline bool isClear() const { return lat==0 && lon==0 && height==0; }
+			inline bool isClear() const { return lat.getDecimalValue()==0 && lon.getDecimalValue()==0 && height==0; }
 
 			TCoords lat;	//!< Latitude (in degrees)
 			TCoords lon;	//!< Longitude (in degrees)
 			double  height;	//!< Geodetic height (in meters)
+
 		};
+
+		bool TOPO_IMPEXP operator ==(const TGeodeticCoords &a, const TGeodeticCoords &o);
+		bool TOPO_IMPEXP operator !=(const TGeodeticCoords &a, const TGeodeticCoords &o);
 
 		/** Parameters for a topographic transfomation
 		  * \sa TDatum10Params, transform7params

@@ -45,6 +45,12 @@ extern CStartUpClassesRegister  mrpt_topography_class_reg;
 const int dumm = mrpt_topography_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 
+bool mrpt::topography::operator ==(const TCoords &a, const TCoords &o) { return a.decimal_value==o.decimal_value; }
+bool mrpt::topography::operator !=(const TCoords &a, const TCoords &o) { return !(a==o); }
+bool mrpt::topography::operator ==(const TGeodeticCoords &a, const TGeodeticCoords &o) { return a.lat==o.lat && a.lon==o.lon && a.height==o.height; }
+bool mrpt::topography::operator !=(const TGeodeticCoords &a, const TGeodeticCoords &o) { return !(a==o); }
+
+
 //#define M_PI_TOPO 3.141592653589793
 //inline double DEG2RAD(const double x) { return x*M_PI_TOPO/180.0;	}
 

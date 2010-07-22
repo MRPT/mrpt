@@ -380,7 +380,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 	refCoords.lon = memFil.read_double("GPS_ORIGIN","lon_deg",0);
 	refCoords.height = memFil.read_double("GPS_ORIGIN","height",0);
 
-	bool ref_valid = refCoords.lat!=0 || refCoords.lon!=0 || refCoords.height !=0;
+	bool ref_valid = !refCoords.isClear();
 
 
     for (i=0;i<n;i++)
@@ -612,7 +612,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 		refCoords.lon = memFil.read_double("GPS_ORIGIN","lon_deg",0);
 		refCoords.height = memFil.read_double("GPS_ORIGIN","height",0);
 
-		ref_valid = refCoords.lat!=0 || refCoords.lon!=0 || refCoords.height !=0;
+		ref_valid = !refCoords.isClear();
 
 		CPose3D local_ENU;
 
