@@ -48,7 +48,8 @@ using namespace mrpt::opengl;
 //------------------------------------------------------------------------
 CFaceDetection::CFaceDetection()
 {
-
+	m_measure.numPossibleFacesDetected = 0;
+	m_measure.numRealFacesDetected = 0;
 }
 
 
@@ -59,7 +60,12 @@ void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 {
 	m_options.confidenceThreshold	= cfg.read_int( "FaceDetection", "confidenceThreshold", 125 );
 	m_options.planeThreshold		= cfg.read_double( "FaceDetection", "planeThreshold", 50 );
+	m_options.planeEigenValThreshold= cfg.read_double( "FaceDetection", "planeEigenValThreshold", 0 );
 	m_options.regionsThreshold		= cfg.read_double( "FaceDetection", "regionsThreshold", 0.5 );
+
+	m_measure.takeTime				= cfg.read_bool( "FaceDetection", "takeTime", false );
+	m_measure.takeMeasures			= cfg.read_bool( "FaceDetection", "takeMeasures", false );
+	m_measure.saveMeasurementsToFile= cfg.read_bool( "FaceDetection", "saveMeasurementsToFile", false );
 
 	cascadeClassifier.init( cfg );
 }
@@ -75,6 +81,8 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 	// Detect possible faces
 	vector_detectable_object localDetected;
 	cascadeClassifier.detectObjects( obs, localDetected );
+
+	m_measure.numPossibleFacesDetected += localDetected.size();
 
 	// Check if we are using a 3D Camera and 3D points are saved
 	if ( (IS_CLASS(obs, CObservation3DRangeScan )) && ( localDetected.size() > 0 ) )
@@ -111,7 +119,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 					{
 						 // TODO: Check if the point is valid
 						if ( ( confidence ) && 
-							( *(o->confidenceImage.get_unsafe( j+r1, k+c1, 0 )) > m_options.confidenceThreshold ))
+							( *(o->confidenceImage.get_unsafe( k+c1,j+r1, 0 )) > m_options.confidenceThreshold ))
 						{
 							int position = imgWidth*(j+r1) + c1 + k;
 							points.push_back( TPoint3D(o->points3D_x[position],o->points3D_y[position],o->points3D_z[position]) );
@@ -125,16 +133,16 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 				}
 				
 				// First check if we can adjust a plane to detected region as face, if yes it isn't a face!
-				if ( checkIfFacePlaneCov( points ) )
+				if ( checkIfFacePlane( points ) )
 					deleteDetected.push_back( i );
-				else
+				/*else
 				{
 					CObservation3DRangeScan face;
 					o->getZoneAsObs( face, r1, r2, c1, c2 );
 					//experimental_viewFacePointsScanned( face );
 					if ( !checkIfFaceRegions( &face, c2-c1, r2-r1 ) )
 						deleteDetected.push_back( i );
-				}
+				}*/
 				
 
 			}
@@ -157,6 +165,8 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 		detected = localDetected;
 	}
 
+	m_measure.numRealFacesDetected += detected.size();
+
 	MRPT_TRY_END
 
 }
@@ -172,10 +182,8 @@ bool CFaceDetection::checkIfFacePlane( const vector<TPoint3D> &points )
 
 	// To obtain experimental results
 	{
-		ofstream f;
-		f.open("planeEstimations.txt", ofstream::app);
-		f << (double)getRegressionPlane(points,plane) << endl;
-		f.close();
+		if ( m_measure.takeMeasures )
+			m_measure.errorEstimations.push_back( (double)getRegressionPlane(points,plane) );		
 	}
 
 	if ( getRegressionPlane(points,plane) < m_options.planeThreshold )
@@ -213,17 +221,14 @@ bool CFaceDetection::checkIfFacePlaneCov( const vector<TPoint3D> &points )
 
 	cov.eigenValues( eVals );
 
-	/*if ( eVals[0] < planeEigenValThreshold )
+	// To obtain experimental results
+	{
+		if ( m_measure.takeMeasures )
+			m_measure.lessEigenVals.push_back(eVals[0]);
+	}
+
+	if ( eVals[0] < m_options.planeEigenValThreshold )
 		return true;
-
-	//cout << "Eigen values: " << eVals[0] << ":" << eVals[1] << ":" << eVals[2] << endl;
-
-	m_exp.lessEigenVals.push_back(eVals[0]);
-
-	/*ofstream f;
-	f.open("planeEstimations.txt", ofstream::app);
-	f << (double)getRegressionPlane(points,plane) << endl;
-	f.close(); */
 
 	return false;
 }
@@ -409,17 +414,68 @@ void CFaceDetection::experimental_showMeasurements()
 	// This method execution time is not critical because it's executed only at the end
 	// or a few times in user application
 
-	// 
-	double meanEigenVal, stdEigenVal;
-	double minEigenVal = *min_element( m_exp.lessEigenVals.begin(), m_exp.lessEigenVals.end() );
-	double maxEigenVal = *max_element( m_exp.lessEigenVals.begin(), m_exp.lessEigenVals.end() );
-	
-	meanAndStd( m_exp.lessEigenVals, meanEigenVal, stdEigenVal );
+	ofstream f;
+	f.open("statistics.txt", ofstream::app);
 
-	cout << "Min eigenVal: " << minEigenVal << endl;
-	cout << "Max eigenVal: " << maxEigenVal << endl;
-	cout << "Mean eigenVal: " << meanEigenVal << endl;
-	cout << "Standard Desv: " << stdEigenVal << endl;
+	if ( m_measure.lessEigenVals.size() > 0 )
+	{
+		double meanEigenVal, stdEigenVal;
+		double minEigenVal = *min_element( m_measure.lessEigenVals.begin(), m_measure.lessEigenVals.end() );
+		double maxEigenVal = *max_element( m_measure.lessEigenVals.begin(), m_measure.lessEigenVals.end() );
+		
+		meanAndStd( m_measure.lessEigenVals, meanEigenVal, stdEigenVal );
+
+		cout << endl << "Statistical data about eigen values calculated of regions detected as faces" << endl;
+		cout << "Min eigenVal: " << minEigenVal << endl;
+		cout << "Max eigenVal: " << maxEigenVal << endl;
+		cout << "Mean eigenVal: " << meanEigenVal << endl;
+		cout << "Standard Desv: " << stdEigenVal << endl;
+		
+		if ( m_measure.saveMeasurementsToFile )		
+		{
+			f << endl << "Statistical data about eigen values calculated of regions detected as faces" << endl;
+			f << "Min eigenVal: " << minEigenVal << endl;
+			f << "Max eigenVal: " << maxEigenVal << endl;
+			f << "Mean eigenVal: " << meanEigenVal << endl;
+			f << "Standard Desv: " << stdEigenVal << endl;		
+		}
+	}
+	
+	if ( m_measure.errorEstimations.size() > 0 )
+	{
+		double meanEstimationErr, stdEstimationErr;
+		double minEstimationErr = *min_element( m_measure.errorEstimations.begin(), m_measure.errorEstimations.end() );
+		double maxEstimationErr = *max_element( m_measure.errorEstimations.begin(), m_measure.errorEstimations.end() );
+		
+		meanAndStd( m_measure.errorEstimations, meanEstimationErr, stdEstimationErr );
+
+		cout << endl << "Statistical data about estimation error adjusting a plane of regions detected as faces" << endl;
+		cout << "Min estimation: " << minEstimationErr << endl;
+		cout << "Max estimation: " << maxEstimationErr << endl;
+		cout << "Mean estimation: " << meanEstimationErr << endl;
+		cout << "Standard Desv: " << stdEstimationErr << endl;
+		
+		if ( m_measure.saveMeasurementsToFile )		
+		{
+			f << endl << "Statistical data about estimation error adjusting a plane of regions detected as faces" << endl;
+			f << "Min estimation: " << minEstimationErr << endl;
+			f << "Max estimation: " << maxEstimationErr << endl;
+			f << "Mean estimation: " << meanEstimationErr << endl;
+			f << "Standard Desv: " << stdEstimationErr << endl;
+		}
+	}
+	cout << endl << "Data about number of faces" << endl;
+	cout << "Possible faces detected: " << m_measure.numPossibleFacesDetected << endl;
+	cout << "Real faces detected: " << m_measure.numRealFacesDetected << endl;
+
+	if ( m_measure.saveMeasurementsToFile )
+	{
+		f << endl << "Data about number of faces" << endl;
+		f << "Possible faces detected: " << m_measure.numPossibleFacesDetected << endl;
+		f << "Real faces detected: " << m_measure.numRealFacesDetected << endl;
+	}
+
+	f.close(); 
 
 	mrpt::system::pause();
 }

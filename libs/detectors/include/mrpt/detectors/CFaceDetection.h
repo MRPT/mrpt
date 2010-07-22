@@ -60,13 +60,9 @@ namespace mrpt
 			{
 				int		confidenceThreshold;
 				double	planeThreshold;
+				double	planeEigenValThreshold;
 				double	regionsThreshold;
 			}m_options;
-
-			struct TExperimental
-			{
-				vector_double lessEigenVals;
-			}m_exp;
 
 			// Experimental methods
 			void experimental_showMeasurements();
@@ -87,6 +83,22 @@ namespace mrpt
 			void experimental_viewFacePointsScanned( const CObservation3DRangeScan &face );
 			
 			void experimental_viewFacePointsScanned( const vector<TPoint3D> &points );
+
+			struct TMeasurement
+			{	
+				bool			takeMeasures;
+
+				vector_double	lessEigenVals;
+				vector_double	errorEstimations;
+
+				int				numPossibleFacesDetected;
+				int				numRealFacesDetected;
+
+				bool			takeTime;
+
+				bool			saveMeasurementsToFile;
+
+			}m_measure;
 
 			
 

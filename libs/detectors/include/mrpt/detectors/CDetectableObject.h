@@ -69,8 +69,8 @@ namespace mrpt
 
 		public:
 
-			int m_x, m_y; //!< 2D Coordinates of detected object
-			int m_height, m_width; //!< Size of detected object
+			float m_x, m_y; //!< 2D Coordinates of detected object
+			float m_height, m_width; //!< Size of detected object
 
 			/** Extra constructor */
 			CDetectable2D( const int &x = 0, const int &y = 0, const int &height = 0, const int &width = 0 )
@@ -121,7 +121,7 @@ namespace mrpt
 			};
 
 				
-			int		m_z; //!< Z coordinate of detected object
+			float		m_z; //!< Z coordinate of detected object
 
 		}; // End of class
 	}
