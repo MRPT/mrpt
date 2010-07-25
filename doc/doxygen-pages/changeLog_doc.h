@@ -81,6 +81,7 @@
 			- Absolute pixel coordinates are now permited where previously there were only factors over width/height. See:
 				- mrpt::opengl::COpenGLViewport::setViewportPosition and mrpt::opengl::COpenGLViewport::getViewportPosition.
 				- mrpt::gui::CDisplayWindow3D::addTextMessage.
+				- CMyGLCanvasBase::renderTextBitmap (now accepts negative pixel coords as well, meaning to wrap).
 			- mrpt::hwdrivers::CGenericSensor::registerClass is now public.
 			- All MRPT containers (mrpt::vector_double, all kind of matrices, arrays, etc) now have two new methods for saving to and loading from text files "as vectors", i.e. even for matrices, all the elements are saved/loaded as a simple sequence:
 				- loadFromTextFileAsVector

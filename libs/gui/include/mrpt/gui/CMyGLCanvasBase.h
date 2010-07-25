@@ -173,7 +173,7 @@ namespace mrpt
 			unsigned long  m_LastRedraw;
 
 			/** Draws a text string on the screen.
-			  *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the viewport.
+			  *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the viewport. Negative numbers will wrap to the opposite side of the viewport (e.g. x=-10 means 10px fromt the right).
 			  *   - The text color is defined by (color_r,color_g,color_b), each float numbers in the range [0,1].
 			  *  \sa textBitmapWidth
 			  */

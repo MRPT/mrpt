@@ -297,6 +297,18 @@ void CMyGLCanvasBase::renderTextBitmap(
 #if MRPT_HAS_OPENGL_GLUT
     glDisable(GL_DEPTH_TEST);
 
+	// If (x,y) are negative, wrap to the opposite side:
+	if (screen_x<0 || screen_y<0)
+	{
+		// Size of the viewport:
+		GLint	win_dims[4];  // [2]:width ,[3]:height
+		glGetIntegerv( GL_VIEWPORT, win_dims );
+
+		if (screen_x<0) screen_x += win_dims[2];
+		if (screen_y<0) screen_y += win_dims[3];
+	}
+
+	// Draw text:
     glColor3f(color_r,color_g,color_b);
 
     // From: http://www.mesa3d.org/brianp/sig97/gotchas.htm
