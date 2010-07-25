@@ -25,18 +25,12 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-#if MRPT_HAS_SVS
 #ifndef CStereoGrabber_SVS_H
 #define CStereoGrabber_SVS_H
 
 #include <mrpt/slam/CObservationDisparityImages.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
-//#include <svsclass.h>
-//#include <dcs.h>
 
-
-
-#include <mrpt/config.h>
 
 namespace mrpt
 {
@@ -46,22 +40,22 @@ namespace mrpt
 
 		/** Options used when creating a STOC Videre Design camera capture object
 		  */
-                struct HWDRIVERS_IMPEXP TCaptureOptions_SVS
+		struct HWDRIVERS_IMPEXP TCaptureOptions_SVS
 		{
-                        TCaptureOptions_SVS(int _frame_width=640, int _frame_height=480 , double _framerate = 30, int _NDisp= 64,
-                                            int _Corrsize=15, int _LR = false, int _Thresh = 10, int _Unique = 13, int _Horopter = 0,int _SpeckleSize = 100);
+			TCaptureOptions_SVS(int _frame_width=640, int _frame_height=480 , double _framerate = 30, int _NDisp= 64,
+								int _Corrsize=15, int _LR = false, int _Thresh = 10, int _Unique = 13, int _Horopter = 0,int _SpeckleSize = 100);
 
 			int	frame_width, frame_height;	//!< Capture resolution (Default: 640x480)
                                                                         
 			bool getRectified;				//!< Indicates if the STOC camera must capture rectified images (Default: true -> rectified)
-                        double framerate;                               //!< STOC camera frame rate (Default: 30 fps)
-                        int                                 m_NDisp;	//!< number of STOC's disparities (Default: 64 )
-                        int                                 m_Corrsize; // correlation window size
-                        int                                 m_LR;	// no left-right check, not available
-                        int                                 m_Thresh;	// texture filter
-                        int                                 m_Unique;	// uniqueness filter
-                        int                                 m_Horopter;
-                        int                                 m_SpeckleSize;
+			double framerate;                               //!< STOC camera frame rate (Default: 30 fps)
+			int                                 m_NDisp;	//!< number of STOC's disparities (Default: 64 )
+			int                                 m_Corrsize; // correlation window size
+			int                                 m_LR;	// no left-right check, not available
+			int                                 m_Thresh;	// texture filter
+			int                                 m_Unique;	// uniqueness filter
+			int                                 m_Horopter;
+			int                                 m_SpeckleSize;
 
 		};
 
@@ -80,43 +74,37 @@ namespace mrpt
 		  *
 		  * \sa You'll probably want to use instead the most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
 		  */
-                class HWDRIVERS_IMPEXP  CStereoGrabber_SVS : public mrpt::utils::CUncopiable
+        class HWDRIVERS_IMPEXP  CStereoGrabber_SVS : public mrpt::utils::CUncopiable
 		{
 		protected:
-
-
 			bool			m_bInitialized;					//!< If this has been correctly initiated
 
-                        void                     *m_videoObject;
-                        void                     *m_stereoImage;
-                        void                 *m_disparityParams;
-//                        svsVideoImages                     *m_videoObject;
-//                        svsStereoImage                     *m_stereoImage;
-//                        svsDisparityParams                 *m_disparityParams;
-                        unsigned int                        m_resolutionX;
-                        unsigned int                        m_resolutionY;
+			void                     *m_videoObject;
+			void                     *m_stereoImage;
+			void                 *m_disparityParams;
+			//                        svsVideoImages                     *m_videoObject;
+			//                        svsStereoImage                     *m_stereoImage;
+			//                        svsDisparityParams                 *m_disparityParams;
+			unsigned int                        m_resolutionX;
+			unsigned int                        m_resolutionY;
 
+			unsigned char                      *m_ptrMat;
 
-                        unsigned char                      *m_ptrMat;
-
-                        bool                                m_status;
-                        bool                                m_initialized;
-
+			bool                                m_status;
+			bool                                m_initialized;
 
 
 		private:
 
-
-
 		public:
 
-                        TCaptureOptions_SVS	m_options;			
+			TCaptureOptions_SVS	m_options;			
 
 			/** Constructor: */
-                        CStereoGrabber_SVS( int cameraIndex = 0, const TCaptureOptions_SVS &options = TCaptureOptions_SVS() );
+			CStereoGrabber_SVS( int cameraIndex = 0, const TCaptureOptions_SVS &options = TCaptureOptions_SVS() );
 
 			/** Destructor */
-                        virtual ~CStereoGrabber_SVS(void);
+			virtual ~CStereoGrabber_SVS(void);
 
 			/** Grab stereo images, and return the pair of rectified images.
 			 * \param out_observation The object to be filled with sensed data.
@@ -127,8 +115,7 @@ namespace mrpt
 			 *
 			 * \return false on any error, true if all go fine.
 			*/
-                        bool  getStereoObservation( mrpt::slam::CObservationDisparityImages &out_observation );
-
+			bool  getStereoObservation( mrpt::slam::CObservationDisparityImages &out_observation );
 
 		};	// End of class
 
@@ -136,5 +123,4 @@ namespace mrpt
 } // End of NS
 
 
-#endif
 #endif

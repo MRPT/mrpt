@@ -27,12 +27,17 @@
    +---------------------------------------------------------------------------+ */
 #include <mrpt/hwdrivers.h>  // Only for precomp. headers, include all libmrpt-core headers.
 
-#if MRPT_HAS_SVS
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
-#include <cv.h>
-#include <svsclass.h>
-#include <dcs.h>
 
+
+#if MRPT_HAS_OPENCV
+#	include <cv.h>
+#endif
+
+#if MRPT_HAS_SVS
+#	include <svsclass.h>
+#	include <dcs.h>
+#endif
 
 using namespace std;
 using namespace mrpt;
@@ -51,8 +56,7 @@ CStereoGrabber_SVS::CStereoGrabber_SVS( int cameraIndex, const TCaptureOptions_S
         m_stereoImage(NULL),
         m_disparityParams(NULL)
 {
-
-
+#if MRPT_HAS_SVS
 
     // get the svsVideoImages object from the currently loaded camera interface
     m_videoObject =static_cast<svsVideoImages*>( getVideoObject());
@@ -147,10 +151,9 @@ CStereoGrabber_SVS::CStereoGrabber_SVS( int cameraIndex, const TCaptureOptions_S
 
     m_status = false;
 
-
-
-
-
+#else
+	THROW_EXCEPTION("This class requires MRPT built with Videre SVS library.")
+#endif
 }
 
 /*-------------------------------------------------------------
@@ -158,10 +161,9 @@ CStereoGrabber_SVS::CStereoGrabber_SVS( int cameraIndex, const TCaptureOptions_S
  -------------------------------------------------------------*/
 CStereoGrabber_SVS::~CStereoGrabber_SVS()
 {
-
+#if MRPT_HAS_SVS
     static_cast<svsVideoImages*>(m_videoObject)->Close();
-
-
+#endif // No need to raise an exception on "#else" since it's already raised upon construction.
 }
 
 /*-------------------------------------------------------------
@@ -169,7 +171,7 @@ CStereoGrabber_SVS::~CStereoGrabber_SVS()
  -------------------------------------------------------------*/
 bool  CStereoGrabber_SVS::getStereoObservation( mrpt::slam::CObservationDisparityImages &out_observation )
 {
-
+#if MRPT_HAS_SVS
     if ( (m_stereoImage = static_cast<svsVideoImages*>(m_videoObject)->GetImage(500)) &&  static_cast<svsStereoImage*>(m_stereoImage)->haveImages ) // 500 ms timeout //TODO adjust timeout with framerate
     {
 
@@ -205,11 +207,12 @@ bool  CStereoGrabber_SVS::getStereoObservation( mrpt::slam::CObservationDisparit
     return true;
     }
 
-
-
-
     return false;
      // All ok
+#else
+	// No need to raise an exception on "#else" since it's already raised upon construction.
+	return false;	// This shouldn't actually be never reached, just to please the compiler.
+#endif 
 }
 
 /*-------------------------------------------------------------
@@ -229,4 +232,4 @@ TCaptureOptions_SVS::TCaptureOptions_SVS(int _frame_width, int _frame_height , d
     m_Horopter      =_Horopter;
     m_SpeckleSize   =_SpeckleSize;
 }
-#endif
+
