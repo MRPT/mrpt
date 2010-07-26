@@ -1424,6 +1424,10 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
  	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-write-strings")
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-write-strings")
 
+	# Use "modern" C99 ! ;-)
+ 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+
+
 	IF(MRPT_BUILD_GCC_PEDANTIC)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
  		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")		
