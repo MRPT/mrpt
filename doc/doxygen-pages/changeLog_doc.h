@@ -36,7 +36,7 @@
 	- <b>Most important changes:</b>
 		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.		
 		- Many new stuff and improvements in mrpt-vision, e.g. mrpt::vision::CGenericFeatureTracker, mrpt::vision::CFeatureList, etc.
-		- (TODO) New command-line dataset manipulation tools: rawlog-edit, carmen2rawlog, rawlog2carmen.
+		- New command-line dataset manipulation tool: rawlog-edit.
 		- New library: mrpt-detectors
 		- (TODO) Fixed support for pkg-config with a new set of libmrpt-*.pc files (see new example MRPT/doc/mrpt_example1-with-Makefile).
 	- <b>Detailed list of changes:</b>
