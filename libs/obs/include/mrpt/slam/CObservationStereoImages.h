@@ -43,77 +43,67 @@ namespace mrpt
 namespace slam
 {
 	using namespace mrpt::utils;
-	//using namespace mrpt::vision;
-	//class CLandmarksMap;
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationStereoImages , CObservation,OBS_IMPEXP )
 
-	/** Declares a class derived from "CObservation" that encapsule a pair of images taken by a stereo camera.
-	     The next figure illustrate the coordinates reference systems involved in this class:<br>
-		 <center>
-		 <img src="CObservationStereoImages_figRefSystem.png">
-		 </center>
-	 *
-	 <br>
-	 <b>NOTE:</b> The images stored in this class are supposed to be UNDISTORTED images already.<br>
-	 * \sa CObservation
-	 */
+	/** Observation class for either a pair of left+right or left+disparity images from a stereo camera.
+	  *
+	  *  To find whether the observation contains a right image and/or a disparity image, see the
+	  *   fields hasImageDisparity and hasImageRight, respectively.
+	  *
+	  *   This figure illustrates the coordinate frames involved in this class:
+	  *
+	  *	 <center>
+	  *   <img src="CObservationStereoImages_figRefSystem.png">
+	  *  </center>
+	  *
+	  * \note The images stored in this class can be raw or undistorted images. In the latter case, the "distortion" params of the corresponding "leftCamera" and "rightCamera" fields should be all zeros.
+	  * \sa CObservation
+	  */
 	class OBS_IMPEXP CObservationStereoImages : public CObservation
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationStereoImages )
 
-		/** If buildAuxiliarMap is called before, this will contain the landmarks-map representation of the observation, for the robot located at the origin.
-		  */
-		//class CAuxMapWrapper
-		//{
-		//	CLandmarksMap	*auxMap;
-		//public:
-		//	CAuxMapWrapper() : auxMap(NULL)  { }
-		//	CAuxMapWrapper(const CAuxMapWrapper &o) : auxMap(NULL) {  }
-		//	CAuxMapWrapper & operator =(const CAuxMapWrapper &o) { clear(); return *this; }
-
-		//	~CAuxMapWrapper() { clear(); }
-
-		//	CLandmarksMap * get() { return auxMap; }
-		//	const CLandmarksMap * get() const { return auxMap; }
-
-		//	void set(CLandmarksMap	*m);
-
-		//	void clear();
-		//};
-		//mutable CAuxMapWrapper	m_auxMap;
-
-
 	 public:
-		/** Default Constructor.
-		 *
-		 */
+		/** Default Constructor */
 		CObservationStereoImages( );
 
-		/** Constructor.
-		 * \param iplImageLeft An OpenCV "IplImage*" object with the image to be loaded in the member "imageLeft", or NULL (default) for an empty image.
-		 * \param iplImageRight An OpenCV "IplImage*" object with the image to be loaded in the member "imageRight", or NULL (default) for an empty image.
-		 *
-		 */
-		CObservationStereoImages( void *iplImageLeft, void *iplImageRight );
+		/** Constructor from "IplImage*" images, which could be NULL.
+		  *  The fields hasImageDisparity and hasImageRight will be set to true/false depending on them being !=NULL.
+		  * Note that the IplImage's will be COPIED, so it's still the caller's reponsibility to free the original images,
+		  *  unless ownMemory is set to true: in that case the IplImage pointers are copied and those IplImage's will be automatically freed by this object.
+		  *
+		  */
+		CObservationStereoImages( void *iplImageLeft, void *iplImageRight, void *iplImageDisparity = NULL, bool ownMemory = false );
 
 		/** Destructor
 		 */
 		~CObservationStereoImages(  );
 
-		 /** The pose of the LEFT camera, relative to the robot.
-		  */
-		CPose3DQuat	cameraPose;
 
-		 /** Parameters for the left/right cameras: individual intrinsic and distortion parameters of the cameras.
-		   * See the <a href="http://www.mrpt.org/Camera_Parameters">tutorial</a> for a discussion of these parameters.
+		/** @name Main observation data members
+		    @{ */
+
+		/** Image from the left camera (this image will be ALWAYS present) */
+		mrpt::utils::CImage	imageLeft;
+
+		/** Image from the right camera, only contains a valid image if hasImageRight == true. */
+		mrpt::utils::CImage	imageRight;
+
+		/** Disparity image, only contains a valid image if hasImageDisparity == true.
+		  *  The relation between the actual disparity and pixels and each value in this image is... ???????????  */
+		mrpt::utils::CImage imageDisparity;
+
+		bool   hasImageDisparity; //!< Whether imageDisparity actually contains data (Default upon construction: false)
+		bool   hasImageRight;        //!< Whether imageRight actually contains data  (Default upon construction: true)
+
+		/** Parameters for the left/right cameras: individual intrinsic and distortion parameters of the cameras.
+		  * See the <a href="http://www.mrpt.org/Camera_Parameters">tutorial</a> for a discussion of these parameters.
 		  */
 		TCamera		leftCamera, rightCamera;
 
-		/** The pair of images.
-		  */
-		CImage		imageLeft, imageRight;
+		CPose3DQuat	cameraPose;		//!< The pose of the LEFT camera, relative to the robot.
 
 		/** The pose of the right camera, relative to the left one:
 		  *  Note that using the conventional reference coordinates for the left
@@ -122,9 +112,8 @@ namespace slam
 		  */
 		CPose3DQuat	rightCameraPose;
 
-		/** This method build the map in "m_auxMap", only the first time this is called.
-		  */
-//		const CLandmarksMap * buildAuxiliaryMap( CLandmark::TLandmarkID fID, const CLandmarksMap::TInsertionOptions *insOpts = NULL) const;
+		/** @} */
+
 
 		/** A general method to retrieve the sensor pose on the robot.
 		  *  Note that most sensors will return a full (6D) CPose3D, but see the derived classes for more details or special cases.
@@ -139,11 +128,9 @@ namespace slam
 		  */
 		void setSensorPose( const CPose3D &newSensorPose ) { cameraPose = newSensorPose; }
 
-		//void getRectifiedImages(
-
+		void swap( CObservationStereoImages &o); //!< Do an efficient swap of all data members of this object with "o".
 
 	}; // End of class def.
-
 
 	} // End of namespace
 } // End of namespace

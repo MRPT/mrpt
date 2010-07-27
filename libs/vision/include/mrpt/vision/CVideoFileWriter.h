@@ -89,6 +89,9 @@ namespace mrpt
 			  */
 			void close();
 
+			/** Return true if already successfully open with open() and not closed yet. */
+			bool isOpen() const;
+
 			/** Write image to the video file.
 			  * \exception std::exception On any error
 			  */

@@ -39,6 +39,7 @@
 		- New command-line dataset manipulation tool: rawlog-edit.
 		- New library: mrpt-detectors
 		- (TODO) Fixed support for pkg-config with a new set of libmrpt-*.pc files (see new example MRPT/doc/mrpt_example1-with-Makefile).
+		- Support for Videre Stereo cameras (By Cyril Gerber, thanks!)
 	- <b>Detailed list of changes:</b>
 		- Changes in applications:
 			- camera-calib can now open SwissRangers 3D cameras as well for real-time calibration.
@@ -98,6 +99,7 @@
 			- mrpt::topography::ENUToGeocentric
 			- mrpt::gui::CMyGLCanvasBase::textBitmapWidth, a new function to compute the width of a bitmap string.
 		- New classes:
+			- mrpt::hwdrivers::CStereoGrabber_SVS: New class to grab from a Videre Stereo camera (By Cyril Gerber, thanks!). Support has been also built into mrpt::hwdrivers::CCameraSensor.
 			- New hierarchy of computer vision detectors/detectable objects. See new namespace mrpt::detectors for the new library mrpt-detectors.
 			- mrpt::math::CSparseMatrix for efficient sparse matrix computations (based on code from robotvision & the CSparse library - see the class doc for more details and credits).
 			- New generalized KD-tree pattern class: mrpt::math::KDTreeCapable, previously used only for points of maps, now used in more places.

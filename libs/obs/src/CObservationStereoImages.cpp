@@ -31,8 +31,8 @@
 //#include <mrpt/slam/CObservationStereoImages.h>
 //#include <mrpt/slam/CLandmarksMap.h>
 
-using namespace mrpt::slam; 
-using namespace mrpt::utils; 
+using namespace mrpt::slam;
+using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
@@ -41,28 +41,27 @@ IMPLEMENTS_SERIALIZABLE(CObservationStereoImages, CObservation,mrpt::slam)
 /*---------------------------------------------------------------
 					Constructor
  ---------------------------------------------------------------*/
-CObservationStereoImages::CObservationStereoImages( void *iplImageLeft,void *iplImageRight ) :
-	//m_auxMap(),
-	cameraPose(),
-	leftCamera(),
-	rightCamera(),
-	imageLeft( iplImageLeft ),
-	imageRight( iplImageRight ),
-	rightCameraPose()
+CObservationStereoImages::CObservationStereoImages( void *iplImageLeft,void *iplImageRight, void *iplImageDisparity,bool ownMemory ) :
+	imageLeft( UNINITIALIZED_IMAGE ),
+	imageRight( UNINITIALIZED_IMAGE ),
+	imageDisparity( UNINITIALIZED_IMAGE ),
+	hasImageDisparity( iplImageDisparity!=NULL ),
+	hasImageRight( iplImageRight!=NULL )
 {
+	if (iplImageLeft)
+		ownMemory ? imageLeft.setFromIplImage(iplImageLeft) : imageLeft.loadFromIplImage(iplImageLeft);
+	if (iplImageRight)
+		ownMemory ? imageRight.setFromIplImage(iplImageRight) : imageRight.loadFromIplImage(iplImageRight);
+	if (iplImageDisparity)
+		ownMemory ? imageDisparity.setFromIplImage(iplImageDisparity) : imageDisparity.loadFromIplImage(iplImageDisparity);
 }
 
 /*---------------------------------------------------------------
 					Default Constructor
  ---------------------------------------------------------------*/
 CObservationStereoImages::CObservationStereoImages( ) :
-//	m_auxMap(),
-	cameraPose(),
-	leftCamera(),
-	rightCamera(),
-	imageLeft( NULL ),
-	imageRight( NULL ),
-	rightCameraPose()
+	hasImageDisparity(false),
+	hasImageRight(true)
 {
 }
 
@@ -79,14 +78,25 @@ CObservationStereoImages::~CObservationStereoImages(  )
 void  CObservationStereoImages::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version =5 ;
+		*version = 6 ;
 	else
 	{
 		// The data
-		out << cameraPose << leftCamera << rightCamera << imageLeft << imageRight;
+		out << cameraPose << leftCamera << rightCamera
+			<< imageLeft;
+
+		out << hasImageDisparity << hasImageRight;
+
+		if (hasImageRight)
+			out << imageRight;
+
+		if (hasImageDisparity)
+			out << imageDisparity;
+
 		out << timestamp;
 		out << rightCameraPose;
 		out << sensorLabel;
+
 	}
 }
 
@@ -97,6 +107,25 @@ void  CObservationStereoImages::readFromStream(CStream &in, int version)
 {
 	switch(version)
 	{
+	case 6:
+		{
+			in >> cameraPose >> leftCamera >> rightCamera
+				>> imageLeft;
+
+			in >> hasImageDisparity >> hasImageRight;
+
+			if (hasImageRight)
+				in >> imageRight;
+
+			if (hasImageDisparity)
+				in >> imageDisparity;
+
+			in >> timestamp;
+			in >> rightCameraPose;
+			in >> sensorLabel;
+		}
+		break;
+
 	case 0:
 	case 1:
 	case 2:
@@ -104,7 +133,10 @@ void  CObservationStereoImages::readFromStream(CStream &in, int version)
 	case 4:
 	case 5:
 		{
-//			m_auxMap.clear();
+			// This, for backwards compatibility before version 6:
+			hasImageRight = true;
+			hasImageDisparity = false;
+
 
 			if( version < 5 )
 			{
@@ -160,3 +192,22 @@ void  CObservationStereoImages::readFromStream(CStream &in, int version)
 	};
 }
 
+
+// Do an efficient swap of all data members of this object with "o".
+void CObservationStereoImages::swap( CObservationStereoImages &o)
+{
+	CObservation::swap(o);
+
+	imageLeft.swap(o.imageLeft);
+	imageRight.swap(o.imageRight);
+	imageDisparity.swap(o.imageDisparity);
+
+	std::swap(hasImageDisparity, o.hasImageDisparity);
+	std::swap(hasImageRight, o.hasImageRight);
+
+	std::swap(leftCamera,o.leftCamera);
+	std::swap(rightCamera, o.rightCamera);
+
+	std::swap(cameraPose, o.cameraPose);
+	std::swap(rightCameraPose, o.rightCameraPose);
+}

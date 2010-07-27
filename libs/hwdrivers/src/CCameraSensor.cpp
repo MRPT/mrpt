@@ -39,7 +39,6 @@
 #include <mrpt/slam/CRawlog.h>
 #include <mrpt/slam/CObservationImage.h>
 #include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservationDisparityImages.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/WxSubsystem.h>
 
@@ -78,12 +77,9 @@ CCameraSensor::CCameraSensor() :
 	m_bumblebee_camera_index(0),
 	m_bumblebee_options		(),
 	m_bumblebee_monocam		(-1),
-#if MRPT_HAS_SVS
-        m_svs_camera_index(0),
-        m_svs_options                   (),
-        m_cap_svs               (NULL),
-#endif
-
+	m_svs_camera_index(0),
+	m_svs_options                   (),
+	m_cap_svs               (NULL),
 	m_sr_open_from_usb		(true),
 	m_sr_save_3d			(true),
 	m_sr_save_range_img		(true),
@@ -160,14 +156,12 @@ void CCameraSensor::initialize()
 		cout << format("[CCameraSensor::initialize] bumblebee camera: %u...\n", (unsigned int)( m_bumblebee_camera_index ) );
 		m_cap_bumblebee = new CStereoGrabber_Bumblebee( m_bumblebee_camera_index, m_bumblebee_options );
 	}
-#if MRPT_HAS_SVS
-        else if(m_grabber_type=="svs")
-        {
-            cout << format("[CCameraSensor::initialize] SVS camera: %u...\n", (unsigned int)( m_svs_camera_index ) );
-            m_cap_svs = new CStereoGrabber_SVS( m_svs_camera_index, m_svs_options );
+	else if(m_grabber_type=="svs")
+	{
+		cout << format("[CCameraSensor::initialize] SVS camera: %u...\n", (unsigned int)( m_svs_camera_index ) );
+		m_cap_svs = new CStereoGrabber_SVS( m_svs_camera_index, m_svs_options );
 
-        }
-#endif
+	}
 	else if (m_grabber_type=="ffmpeg")
 	{
 		//m_cap_ffmpeg
@@ -258,9 +252,7 @@ void CCameraSensor::close()
 	delete_safe(m_cap_ffmpeg);
 	delete_safe(m_cap_rawlog);
 	delete_safe(m_cap_swissranger);
-#if MRPT_HAS_SVS
-        delete_safe(m_cap_svs);
-#endif
+	delete_safe(m_cap_svs);
 
 	m_state = CGenericSensor::ssInitializing;
 
@@ -336,23 +328,21 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	m_bumblebee_options.getRectified	= configSource.read_bool( iniSection, "bumblebee_get_rectified", m_bumblebee_options.getRectified );
 
 
-#if MRPT_HAS_SVS
-        // SVS options:
-        m_svs_camera_index                              = configSource.read_int( iniSection, "svs_camera_index", m_svs_camera_index );
-        m_svs_options.frame_width                       = configSource.read_int( iniSection, "svs_frame_width", m_svs_options.frame_width );
-        m_svs_options.frame_height                      = configSource.read_int( iniSection, "svs_frame_height", m_svs_options.frame_height );
-        m_svs_options.framerate                         = configSource.read_double(iniSection,"svs_framerate",m_svs_options.framerate );
-        m_svs_options.m_NDisp                           = configSource.read_int( iniSection, "svs_NDisp", m_svs_options.m_NDisp );
-        m_svs_options.m_Corrsize                        = configSource.read_int( iniSection, "svs_Corrsize", m_svs_options.m_Corrsize );
-        m_svs_options.m_LR                              = configSource.read_int( iniSection, "svs_LR", m_svs_options.m_LR );
-        m_svs_options.m_Thresh                          = configSource.read_int( iniSection, "svs_Thresh", m_svs_options.m_Thresh );
-        m_svs_options.m_Unique                          = configSource.read_int( iniSection, "svs_Unique", m_svs_options.m_Unique );
-        m_svs_options.m_Horopter                        = configSource.read_int( iniSection, "svs_Horopter", m_svs_options.m_Horopter );
-        m_svs_options.m_SpeckleSize                     = configSource.read_int( iniSection, "svs_SpeckleSize", m_svs_options.m_SpeckleSize );
+	// SVS options:
+	m_svs_camera_index                              = configSource.read_int( iniSection, "svs_camera_index", m_svs_camera_index );
+	m_svs_options.frame_width                       = configSource.read_int( iniSection, "svs_frame_width", m_svs_options.frame_width );
+	m_svs_options.frame_height                      = configSource.read_int( iniSection, "svs_frame_height", m_svs_options.frame_height );
+	m_svs_options.framerate                         = configSource.read_double(iniSection,"svs_framerate",m_svs_options.framerate );
+	m_svs_options.m_NDisp                           = configSource.read_int( iniSection, "svs_NDisp", m_svs_options.m_NDisp );
+	m_svs_options.m_Corrsize                        = configSource.read_int( iniSection, "svs_Corrsize", m_svs_options.m_Corrsize );
+	m_svs_options.m_LR                              = configSource.read_int( iniSection, "svs_LR", m_svs_options.m_LR );
+	m_svs_options.m_Thresh                          = configSource.read_int( iniSection, "svs_Thresh", m_svs_options.m_Thresh );
+	m_svs_options.m_Unique                          = configSource.read_int( iniSection, "svs_Unique", m_svs_options.m_Unique );
+	m_svs_options.m_Horopter                        = configSource.read_int( iniSection, "svs_Horopter", m_svs_options.m_Horopter );
+	m_svs_options.m_SpeckleSize                     = configSource.read_int( iniSection, "svs_SpeckleSize", m_svs_options.m_SpeckleSize );
 
-#endif
 
-        // FFmpeg options:
+	// FFmpeg options:
 	m_ffmpeg_url  = mrpt::system::trim( configSource.read_string( iniSection, "ffmpeg_url", m_ffmpeg_url ) );
 
 	// Rawlog options:
@@ -466,9 +456,6 @@ CObservationPtr CCameraSensor::getNextFrame()
 	CObservationImagePtr		obs;
 	CObservationStereoImagesPtr	stObs;
 	CObservation3DRangeScanPtr	obs3D;  // 3D range image, also with an intensity channel
-#if MRPT_HAS_SVS
-        CObservationDisparityImagesPtr  disObs;
-#endif
 	bool  capture_ok = false;
 
 	if (m_cap_cv)
@@ -526,22 +513,20 @@ CObservationPtr CCameraSensor::getNextFrame()
 			capture_ok = true;
 		}
 	}
-#if MRPT_HAS_SVS
-        else if (m_cap_svs)
-        {
-            disObs = CObservationDisparityImages::Create();
+	else if (m_cap_svs)
+	{
+		stObs = CObservationStereoImages::Create();
 
-            if(!m_cap_svs->getStereoObservation(*disObs))
-            {
-                // Error
-                m_state = CGenericSensor::ssError;
-                THROW_EXCEPTION("Error grabbing disparity images");
+		if(!m_cap_svs->getStereoObservation(*stObs))
+		{
+			// Error
+			m_state = CGenericSensor::ssError;
+			THROW_EXCEPTION("Error grabbing disparity images");
 
-            }
-            else capture_ok = true;
+		}
+		else capture_ok = true;
 
-        }
-#endif
+	}
 	else if (m_cap_ffmpeg)
 	{
 		obs = CObservationImage::Create();
@@ -559,11 +544,7 @@ CObservationPtr CCameraSensor::getNextFrame()
 		//  Assign to: obs && stObs
 
 		CSerializablePtr  newObs;
-#if MRPT_HAS_SVS
-        while (!obs.present() && !stObs.present() && !obs3D.present() && !disObs.present())
-#else
-            while (!obs.present() && !stObs.present() && !obs3D.present())
-#endif
+		while (!obs.present() && !stObs.present() && !obs3D.present())
 		{
 			*m_cap_rawlog  >> newObs;
 			if (IS_DERIVED( newObs, CObservation) )
@@ -578,10 +559,6 @@ CObservationPtr CCameraSensor::getNextFrame()
 					stObs = CObservationStereoImagesPtr(o);
 				else if (IS_CLASS(o,CObservation3DRangeScan))
 					obs3D = CObservation3DRangeScanPtr(o);
-#if MRPT_HAS_SVS
-                                else if(IS_CLASS(o,CObservationDisparityImages))
-                                    disObs = CObservationDisparityImagesPtr(o);
-#endif
 			}
 			else if (IS_CLASS( newObs, CSensoryFrame) )
 			{
@@ -609,21 +586,9 @@ CObservationPtr CCameraSensor::getNextFrame()
 						obs3D = CObservation3DRangeScanPtr(o);
 						break;
 					}
-#if MRPT_HAS_SVS
-                                        else if (IS_CLASS(o,CObservationDisparityImages))
-                                        {
-
-                                            disObs = CObservationDisparityImagesPtr(o);
-                                            break;
-                                        }
-#endif
 				}
 			}
-#if MRPT_HAS_SVS
-                        if (obs || stObs || obs3D || disObs )
-#else
 			if (obs || stObs || obs3D)
-#endif
 			{
 				// We must convert externally stored images into "normal in-memory" images.
 				const std::string old_dir = CImage::IMAGES_PATH_BASE; // Save current
@@ -638,15 +603,11 @@ CObservationPtr CCameraSensor::getNextFrame()
 				if (stObs && stObs->imageLeft.isExternallyStored())
 					stObs->imageLeft.loadFromFile( stObs->imageLeft.getExternalStorageFileAbsolutePath() );
 
-				if (stObs && stObs->imageRight.isExternallyStored())
+				if (stObs && stObs->hasImageRight && stObs->imageRight.isExternallyStored())
 					stObs->imageRight.loadFromFile( stObs->imageRight.getExternalStorageFileAbsolutePath() );
-#if MRPT_HAS_SVS
-                                if (disObs && disObs->imageLeft.isExternallyStored())
-                                    disObs->imageLeft.loadFromFile( disObs->imageLeft.getExternalStorageFileAbsolutePath() );
 
-                                if (disObs && disObs->imageDisparity.isExternallyStored())
-                                    disObs->imageDisparity.loadFromFile( disObs->imageDisparity.getExternalStorageFileAbsolutePath() );
-#endif
+				if (stObs && stObs->hasImageDisparity && stObs->imageDisparity.isExternallyStored())
+					stObs->imageDisparity.loadFromFile( stObs->imageDisparity.getExternalStorageFileAbsolutePath() );
 
 				CImage::IMAGES_PATH_BASE = old_dir; // Restore
 			}
@@ -670,11 +631,7 @@ CObservationPtr CCameraSensor::getNextFrame()
 	// Continue as normal:
 	m_camera_grab_decimator_counter = 0;
 
-#if MRPT_HAS_SVS
-        ASSERT_(obs || stObs || obs3D || disObs)
-#else
-        ASSERT_(obs || stObs || obs3D)
-#endif
+	ASSERT_(obs || stObs || obs3D)
 
 	// If we grabbed an image: prepare it and add it to the internal queue:
 	if (obs) {
@@ -685,13 +642,6 @@ CObservationPtr CCameraSensor::getNextFrame()
 		stObs->sensorLabel = m_sensorLabel;
 		stObs->setSensorPose( m_sensorPose );
 	}
-#if MRPT_HAS_SVS
-        else if(disObs){
-
-            disObs->sensorLabel = m_sensorLabel;
-            disObs->cameraPose = m_sensorPose;
-        }
-#endif
 	else {
 		obs3D->sensorLabel = m_sensorLabel;
 		obs3D->setSensorPose( m_sensorPose );
@@ -707,7 +657,8 @@ CObservationPtr CCameraSensor::getNextFrame()
 		else if (stObs)
 		{
 			if (stObs->imageLeft.isColor())   stObs->imageLeft.grayscaleInPlace();
-			if (stObs->imageRight.isColor())  stObs->imageRight.grayscaleInPlace();
+			if (stObs->hasImageRight && stObs->imageRight.isColor())  stObs->imageRight.grayscaleInPlace();
+			if (stObs->hasImageDisparity && stObs->imageDisparity.isColor())  stObs->imageDisparity.grayscaleInPlace();  // Shouldn't happen, but...
 		}
 		else if (obs3D)
 		{
@@ -740,14 +691,21 @@ CObservationPtr CCameraSensor::getNextFrame()
 			}
 			else
 			{
-				string filNameL = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_L_%f.%s", (double)timestampTotime_t( stObs->timestamp ), m_external_images_format.c_str() );
-				string filNameR = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_R_%f.%s", (double)timestampTotime_t( stObs->timestamp ), m_external_images_format.c_str() );
+				const string filNameL = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_L_%f.%s", (double)timestampTotime_t( stObs->timestamp ), m_external_images_format.c_str() );
+				const string filNameR = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_R_%f.%s", (double)timestampTotime_t( stObs->timestamp ), m_external_images_format.c_str() );
+				const string filNameD = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_D_%f.%s", (double)timestampTotime_t( stObs->timestamp ), m_external_images_format.c_str() );
 				//cout << "[CCameraSensor] Saving " << filName << endl;
 				stObs->imageLeft.saveToFile( m_path_for_external_images + string("/") + filNameL, m_external_images_jpeg_quality );
 				stObs->imageLeft.setExternalStorage( filNameL );
 
-				stObs->imageRight.saveToFile( m_path_for_external_images + string("/") + filNameR, m_external_images_jpeg_quality );
-				stObs->imageRight.setExternalStorage( filNameR );
+				if (stObs->hasImageRight) {
+					stObs->imageRight.saveToFile( m_path_for_external_images + string("/") + filNameR, m_external_images_jpeg_quality );
+					stObs->imageRight.setExternalStorage( filNameR );
+				}
+				if (stObs->hasImageDisparity) {
+					stObs->imageDisparity.saveToFile( m_path_for_external_images + string("/") + filNameD, m_external_images_jpeg_quality );
+					stObs->imageDisparity.setExternalStorage( filNameD );
+				}
 			}
 		}
 		else if (obs)
@@ -776,40 +734,6 @@ CObservationPtr CCameraSensor::getNextFrame()
 				obs->image.setExternalStorage( filName );
 			}
 		} // end else
-#if MRPT_HAS_SVS
-                else if (disObs)
-                {
-
-                    if (m_external_images_own_thread)
-                    {
-                        m_csToSaveList.enter();
-
-                        // Select the "m_toSaveList" with the shortest pending queue:
-                        size_t idx_min = 0;
-                        for (size_t i=0;i<m_toSaveList.size();++i)
-                            if (m_toSaveList[i].size()<m_toSaveList[idx_min].size())
-                                idx_min = i;
-                        // Insert:
-                        m_toSaveList[idx_min].insert( TListObsPair( disObs->timestamp, disObs ) );
-
-                        m_csToSaveList.leave();
-
-                        delayed_insertion_in_obs_queue = true;
-                    }
-                    else
-                    {
-                        string filNameL = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_L_%f.%s", (double)timestampTotime_t( disObs->timestamp ), m_external_images_format.c_str() );
-                        string filNameR = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_R_%f.%s", (double)timestampTotime_t( disObs->timestamp ), m_external_images_format.c_str() );
-                        //cout << "[CCameraSensor] Saving " << filName << endl;
-                        disObs->imageLeft.saveToFile( m_path_for_external_images + string("/") + filNameL, m_external_images_jpeg_quality );
-                        disObs->imageLeft.setExternalStorage( filNameL );
-
-                        disObs->imageDisparity.saveToFile( m_path_for_external_images + string("/") + filNameR, m_external_images_jpeg_quality );
-                        disObs->imageDisparity.setExternalStorage( filNameR );
-                    }
-
-                }
-#endif
 	}
 
 	// Show preview??
@@ -824,25 +748,11 @@ CObservationPtr CCameraSensor::getNextFrame()
 			{
 				string caption = string("Preview of ")+m_sensorLabel;
 				if (stObs) caption+="-LEFT";
-#if MRPT_HAS_SVS
-                                if (disObs)caption+="-LEFT";
-#endif
 				if (m_preview_decimation>1)
 					caption += format(" (decimation: %i)",m_preview_decimation);
 				m_preview_win1 = mrpt::gui::CDisplayWindow::Create(caption);
 			}
-#if MRPT_HAS_SVS
-                        if ((stObs && !m_preview_win2)||(disObs && !m_preview_win2))
-                        {
-                            string caption = string("Preview of ")+m_sensorLabel;
-                            if (stObs) caption+="-RIGHT";
-                            if (disObs)caption+="-DISPARITY";
-                            if (m_preview_decimation>1)
-                                caption += format(" (decimation: %i)",m_preview_decimation);
-                            m_preview_win2 = mrpt::gui::CDisplayWindow::Create(caption);
-                        }
-#else
-                        if (stObs && !m_preview_win2)
+			if (stObs && !m_preview_win2)
 			{
 				string caption = string("Preview of ")+m_sensorLabel;
 				if (stObs) caption+="-RIGHT";
@@ -850,7 +760,6 @@ CObservationPtr CCameraSensor::getNextFrame()
 					caption += format(" (decimation: %i)",m_preview_decimation);
 				m_preview_win2 = mrpt::gui::CDisplayWindow::Create(caption);
 			}
-#endif
 			// Monocular image or Left from a stereo pair:
 			if (m_preview_win1->isOpen())
 			{
@@ -859,10 +768,6 @@ CObservationPtr CCameraSensor::getNextFrame()
 					img = &stObs->imageLeft;
 				else if (obs)
 					img = &obs->image;
-#if MRPT_HAS_SVS
-                                else if (disObs)
-                                        img = &disObs->imageLeft;
-#endif
 				else
 					img = &obs3D->intensityImage;
 
@@ -880,7 +785,7 @@ CObservationPtr CCameraSensor::getNextFrame()
 			}
 
 			// Right from a stereo pair:
-			if (m_preview_win2 && m_preview_win2->isOpen() && stObs)
+			if (m_preview_win2 && m_preview_win2->isOpen() && stObs && stObs->hasImageRight)
 			{
 				// Apply image reduction?
 				if (m_preview_reduction>=2)
@@ -894,31 +799,27 @@ CObservationPtr CCameraSensor::getNextFrame()
 				else
 					m_preview_win2->showImage(stObs->imageRight);
 			}
-#if MRPT_HAS_SVS
-                        if (m_preview_win2 && m_preview_win2->isOpen() && (disObs))
-                        {
-                            // Apply image reduction?
-                            if (m_preview_reduction>=2)
-                            {
-                                    unsigned int w = disObs->imageDisparity.getWidth();
-                                    unsigned int h = disObs->imageDisparity.getHeight();
-                                    CImage auxImg;
-                                    disObs->imageDisparity.scaleImage(auxImg, w/m_preview_reduction, h/m_preview_reduction, IMG_INTERP_NN);
-                                    m_preview_win2->showImage(auxImg);
-                            }
-                            else
-                                    m_preview_win2->showImage(disObs->imageDisparity);
-                        }
-#endif
+
+			// Disparity from a stereo pair:
+			if (m_preview_win2 && m_preview_win2->isOpen() && stObs && stObs->hasImageDisparity)
+			{
+				// Apply image reduction?
+				if (m_preview_reduction>=2)
+				{
+					unsigned int w = stObs->imageDisparity.getWidth();
+					unsigned int h = stObs->imageDisparity.getHeight();
+					CImage auxImg;
+					stObs->imageDisparity.scaleImage(auxImg, w/m_preview_reduction, h/m_preview_reduction, IMG_INTERP_NN);
+					m_preview_win2->showImage(auxImg);
+				}
+				else
+					m_preview_win2->showImage(stObs->imageDisparity);
+			}
 		}
 	} // end show preview
 
 	if (delayed_insertion_in_obs_queue)
 		return CObservationPtr();
-#if MRPT_HAS_SVS
-    else if(disObs)
-        return CObservationPtr(disObs);
-#endif
 	else
 		return stObs ? CObservationPtr(stObs) : (obs ? CObservationPtr(obs) : CObservationPtr(obs3D));
 }
@@ -1120,14 +1021,21 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 			{
 				CObservationStereoImagesPtr stObs = CObservationStereoImagesPtr(i->second);
 
-				string filNameL = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_L_%f.%s", (double)timestampTotime_t( stObs->timestamp ), m_external_images_format.c_str() );
-				string filNameR = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_R_%f.%s", (double)timestampTotime_t( stObs->timestamp ), m_external_images_format.c_str() );
+				const string filNameL = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_L_%f.%s", (double)timestampTotime_t( stObs->timestamp ), m_external_images_format.c_str() );
+				const string filNameR = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_R_%f.%s", (double)timestampTotime_t( stObs->timestamp ), m_external_images_format.c_str() );
+				const string filNameD = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_D_%f.%s", (double)timestampTotime_t( stObs->timestamp ), m_external_images_format.c_str() );
 
 				stObs->imageLeft.saveToFile( m_path_for_external_images + string("/") + filNameL, m_external_images_jpeg_quality );
 				stObs->imageLeft.setExternalStorage( filNameL );
 
-				stObs->imageRight.saveToFile( m_path_for_external_images + string("/") + filNameR, m_external_images_jpeg_quality );
-				stObs->imageRight.setExternalStorage( filNameR );
+				if (stObs->hasImageRight) {
+					stObs->imageRight.saveToFile( m_path_for_external_images + string("/") + filNameR, m_external_images_jpeg_quality );
+					stObs->imageRight.setExternalStorage( filNameR );
+				}
+				if (stObs->hasImageDisparity) {
+					stObs->imageDisparity.saveToFile( m_path_for_external_images + string("/") + filNameD, m_external_images_jpeg_quality );
+					stObs->imageDisparity.setExternalStorage( filNameD );
+				}
 			}
 
 			// Append now:

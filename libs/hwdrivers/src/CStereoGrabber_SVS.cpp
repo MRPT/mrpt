@@ -30,8 +30,17 @@
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
 
 
+// OPENCV HEADERS: For old (1.X) and new (2.X) versions:
 #if MRPT_HAS_OPENCV
-#	include <cv.h>
+#	if MRPT_OPENCV_VERSION_NUM>=0x211
+#		define CV_NO_CVV_IMAGE   // Avoid CImage name crash
+#		include <opencv2/core/core.hpp>
+#	else
+#		include <cv.h>
+#	endif
+#	ifdef CImage	// For old OpenCV versions (<=1.0.0)
+#		undef CImage
+#	endif
 #endif
 
 #if MRPT_HAS_SVS
@@ -49,12 +58,12 @@ using namespace mrpt::hwdrivers;
  -------------------------------------------------------------*/
 CStereoGrabber_SVS::CStereoGrabber_SVS( int cameraIndex, const TCaptureOptions_SVS &options ) :
         m_bInitialized(false),
-        m_resolutionX( options.frame_width ),
-        m_resolutionY( options.frame_height ),
-        m_options( options ),
         m_videoObject(NULL),
         m_stereoImage(NULL),
-        m_disparityParams(NULL)
+        m_disparityParams(NULL),
+        m_resolutionX( options.frame_width ),
+        m_resolutionY( options.frame_height ),
+        m_options( options )
 {
 #if MRPT_HAS_SVS
 
@@ -169,7 +178,7 @@ CStereoGrabber_SVS::~CStereoGrabber_SVS()
 /*-------------------------------------------------------------
 					get the image
  -------------------------------------------------------------*/
-bool  CStereoGrabber_SVS::getStereoObservation( mrpt::slam::CObservationDisparityImages &out_observation )
+bool  CStereoGrabber_SVS::getStereoObservation( mrpt::slam::CObservationStereoImages &out_observation )
 {
 #if MRPT_HAS_SVS
     if ( (m_stereoImage = static_cast<svsVideoImages*>(m_videoObject)->GetImage(500)) &&  static_cast<svsStereoImage*>(m_stereoImage)->haveImages ) // 500 ms timeout //TODO adjust timeout with framerate
@@ -178,9 +187,9 @@ bool  CStereoGrabber_SVS::getStereoObservation( mrpt::slam::CObservationDisparit
                 //get disparity params
                 m_disparityParams = static_cast<svsVideoImages*>(m_videoObject)->GetDP();
 
-                int sizeOfMat = m_resolutionX * m_resolutionY;
+                const size_t sizeOfMat = m_resolutionX * m_resolutionY;
 
-                IplImage* ImageLeft = cvCreateImageHeader(cvSize(m_resolutionX,m_resolutionY),IPL_DEPTH_8U,1);
+                IplImage* ImageLeft =  cvCreateImageHeader(cvSize(m_resolutionX,m_resolutionY),IPL_DEPTH_8U,1);
                 IplImage* ImageDisparity = cvCreateImage(cvSize(m_resolutionX,m_resolutionY),IPL_DEPTH_8U,1);
 
                 unsigned char *ptrOutDisp;
@@ -189,21 +198,30 @@ bool  CStereoGrabber_SVS::getStereoObservation( mrpt::slam::CObservationDisparit
                 ptrDisp = static_cast<svsStereoImage*>(m_stereoImage)->Disparity();
                 ptrOutDisp = (unsigned char*) ImageDisparity->imageData;
 
+                ASSERT_(ImageDisparity->widthStep==ImageDisparity->width);  // JL: The code below assumes image_width == widthStep
+
                 for(int pix = 0;pix<sizeOfMat;pix++,ptrOutDisp++,ptrDisp++ )
                 {
-
                     if(*(ptrDisp)>0)
                     *(ptrOutDisp) =  (unsigned char)((*(ptrDisp)>>2)&0x00FF);
                     else
                         *(ptrOutDisp) = 0;
-
-
                 }
+
+                ImageLeft->widthStep=ImageLeft->width; // JL: The next line assumes this
                 ImageLeft->imageData =(char*) static_cast<svsStereoImage*>(m_stereoImage)->Left();
 
-                out_observation = CObservationDisparityImages(ImageLeft,ImageDisparity);
 
-                cvReleaseImage(&ImageDisparity);
+                // Create the object to be return (it will have a fresh timestamp if it's created now and here):
+                CObservationStereoImages ret_obj(
+					cvCloneImage( ImageLeft ),  // Create a new IplImage* which will be owned by the observation object.
+					NULL /*has no right*/,
+					ImageDisparity,
+					true /* own the memory, so we don't have to free it here */);
+
+                out_observation.swap(ret_obj); // Send as output (faster than a "=").
+
+                // cvReleaseImage(&Image Disparity); // No need anymore to release images...
     return true;
     }
 
@@ -212,7 +230,7 @@ bool  CStereoGrabber_SVS::getStereoObservation( mrpt::slam::CObservationDisparit
 #else
 	// No need to raise an exception on "#else" since it's already raised upon construction.
 	return false;	// This shouldn't actually be never reached, just to please the compiler.
-#endif 
+#endif
 }
 
 /*-------------------------------------------------------------

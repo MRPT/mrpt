@@ -118,6 +118,16 @@ void CVideoFileWriter::close()
 #endif
 }
 
+/* ----------------------------------------------------------
+						isOpen
+   ---------------------------------------------------------- */
+bool CVideoFileWriter::isOpen() const
+{
+#if MRPT_HAS_OPENCV
+	return (M_WRITER!=NULL);
+#endif
+}
+
 
 /* ----------------------------------------------------------
 						operator <<

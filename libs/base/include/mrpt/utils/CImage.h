@@ -656,11 +656,13 @@ namespace mrpt
 			  */
 			void  loadFromMemoryBuffer( unsigned int width, unsigned int height, unsigned int bytesPerRow, unsigned char *red, unsigned char *green, unsigned char *blue );
 
-			/** Reads the image from a OpenCV IplImage object (making a copy).
+			/** Reads the image from a OpenCV IplImage object (making a COPY).
 			  */
 			void  loadFromIplImage( void* iplImage );
 
 			/** Reads the image from a OpenCV IplImage object (WITHOUT making a copy).
+			  *   This object will own the memory of the passed object and free the IplImage upon destruction,
+			  *     so the caller CAN'T free the original object.
 			  *   This method provides a fast method to grab images from a camera without making a copy of every frame.
 			  */
 			void  setFromIplImage( void* iplImage );

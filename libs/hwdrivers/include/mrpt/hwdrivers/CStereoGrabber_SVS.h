@@ -28,7 +28,7 @@
 #ifndef CStereoGrabber_SVS_H
 #define CStereoGrabber_SVS_H
 
-#include <mrpt/slam/CObservationDisparityImages.h>
+#include <mrpt/slam/CObservationStereoImages.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
 
 
@@ -46,7 +46,7 @@ namespace mrpt
 								int _Corrsize=15, int _LR = false, int _Thresh = 10, int _Unique = 13, int _Horopter = 0,int _SpeckleSize = 100);
 
 			int	frame_width, frame_height;	//!< Capture resolution (Default: 640x480)
-                                                                        
+
 			bool getRectified;				//!< Indicates if the STOC camera must capture rectified images (Default: true -> rectified)
 			double framerate;                               //!< STOC camera frame rate (Default: 30 fps)
 			int                                 m_NDisp;	//!< number of STOC's disparities (Default: 64 )
@@ -63,12 +63,12 @@ namespace mrpt
 		  * NOTE:
 		  *		- Windows:
 		  *			- This class is not available.
-		  *			
+		  *
 		  *		- Linux:
 		  *			- This class is only available when compiling MRPT with "MRPT_HAS_SVS".
 		  *			- You must have the videre design's library.
 		  *			- Capture will be made in grayscale.
-		  * 			- The grabber must be launch in root. 
+		  * 			- The grabber must be launch in root.
 		  *
 		  * Once connected to a camera, you can call "getStereoObservation" to retrieve the Disparity images.
 		  *
@@ -79,12 +79,9 @@ namespace mrpt
 		protected:
 			bool			m_bInitialized;					//!< If this has been correctly initiated
 
-			void                     *m_videoObject;
-			void                     *m_stereoImage;
-			void                 *m_disparityParams;
-			//                        svsVideoImages                     *m_videoObject;
-			//                        svsStereoImage                     *m_stereoImage;
-			//                        svsDisparityParams                 *m_disparityParams;
+			void                     *m_videoObject;	// svsVideoImages*
+			void                     *m_stereoImage;	// svsStereoImage*
+			void                 *m_disparityParams;	// svsDisparityParams*
 			unsigned int                        m_resolutionX;
 			unsigned int                        m_resolutionY;
 
@@ -98,7 +95,7 @@ namespace mrpt
 
 		public:
 
-			TCaptureOptions_SVS	m_options;			
+			TCaptureOptions_SVS	m_options;
 
 			/** Constructor: */
 			CStereoGrabber_SVS( int cameraIndex = 0, const TCaptureOptions_SVS &options = TCaptureOptions_SVS() );
@@ -115,7 +112,7 @@ namespace mrpt
 			 *
 			 * \return false on any error, true if all go fine.
 			*/
-			bool  getStereoObservation( mrpt::slam::CObservationDisparityImages &out_observation );
+			bool  getStereoObservation( mrpt::slam::CObservationStereoImages &out_observation );
 
 		};	// End of class
 

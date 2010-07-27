@@ -250,6 +250,25 @@
 																	</object>
 																	<label>Right</label>
 																</object>
+																<object class="notebookpage">
+																	<object class="wxPanel" name="ID_PANEL24" variable="Panel10" member="yes">
+																		<object class="wxFlexGridSizer" variable="FlexGridSizer13" member="no">
+																			<cols>1</cols>
+																			<rows>1</rows>
+																			<growablecols>0</growablecols>
+																			<growablerows>0</growablerows>
+																			<object class="sizeritem">
+																				<object class="wxStaticBitmap" name="ID_STATICBITMAP7" subclass="wxStaticBitmapPopup" variable="bmpObsStereoDisp" member="yes">
+																					<pos>0,0</pos>
+																					<style>wxFULL_REPAINT_ON_RESIZE</style>
+																				</object>
+																				<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
+																				<option>1</option>
+																			</object>
+																		</object>
+																	</object>
+																	<label>Disparity</label>
+																</object>
 															</object>
 															<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 															<option>1</option>

@@ -275,6 +275,8 @@ private:
     static const long ID_PANEL13;
     static const long ID_STATICBITMAP3;
     static const long ID_PANEL14;
+    static const long ID_STATICBITMAP7;
+    static const long ID_PANEL24;
     static const long ID_NOTEBOOK2;
     static const long ID_PANEL10;
     static const long ID_PANEL11;
@@ -458,6 +460,7 @@ private:
     wxMenuItem* MenuItem15;
     wxMenuItem* MenuItem72;
     wxStaticText* StaticText1;
+    wxPanel* Panel10;
     wxToolBarToolBase* ToolBarItem7;
     wxPanel* pn3Dobs_3D;
     wxPanel* Panel2;
@@ -479,6 +482,7 @@ private:
     wxTextCtrl* memStats;
     wxMenuItem* MenuItem3;
     mpWindow* plotRangeBearing;
+    wxStaticBitmapPopup* bmpObsStereoDisp;
     wxMenu mnuTree;
     wxMenu* Menu20;
     wxPanel* Panel5;
