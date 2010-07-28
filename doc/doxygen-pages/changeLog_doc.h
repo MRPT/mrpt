@@ -38,7 +38,7 @@
 		- Many new stuff and improvements in mrpt-vision, e.g. mrpt::vision::CGenericFeatureTracker, mrpt::vision::CFeatureList, etc.
 		- New command-line dataset manipulation tool: rawlog-edit.
 		- New library: mrpt-detectors
-		- (TODO) Fixed support for pkg-config with a new set of libmrpt-*.pc files (see new example MRPT/doc/mrpt_example1-with-Makefile).
+		- Fixed support for pkg-config with a new set of libmrpt-*.pc files (see new example MRPT/doc/mrpt_example1-with-Makefile and <a href="http://www.mrpt.org/Compiling_custom_applications_in_Linux_with_a_Makefile_and_pkg-config" >this page</a>).
 		- Support for Videre Stereo cameras (By Cyril Gerber, thanks!)
 	- <b>Detailed list of changes:</b>
 		- Changes in applications:

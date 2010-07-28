@@ -1,53 +1,73 @@
-<html>
-<head>
-<title>Building and Installing Instructions</title>
-</head>
-<link rel="stylesheet" type="text/css" href="http://localhost/wiki.css">
-<body>
-<p><table width="99%">
-<tr>
-<td width="70%"></p>
-<p><b>Note:</b> This page describes how to compile the MRPT from the sources. If you are just interested in <b>Windows binaries</b>, go straight to the <a class="internal" href="http://localhost/Downloads "> download page</a> and get the win32 binary package. The list of <b>supported platforms and compilers</b> can be found <a class="extlink" href="http://babel.isa.uma.es/mrpt/index.php/Supported_Platforms">here</a>.</p>
-<p><br></p>
-<p>Please, report errors or doubts on MRPT compilation to <i>mrpt-help@lists.sourceforge.net</i>  (See the archive of <a class="extlink" href="http://sourceforge.net/mailarchive/forum.php?forum_name=mrpt-help">all messages</a>).</p>
-<p></td></p>
-<p><td>
-</p>
-<pre> <table align="right">
- <tr>
- <td>
- <center>
-</pre>
-<p><font color="blue"><b><big>Get from your repository:</big></b></font> <br>
-<ImageLink>
-target_url=<a class="external" href="http://babel.isa.uma.es/mrpt/index.php/MRPT_in_GNU/Linux_repositories">http://babel.isa.uma.es/mrpt/index.php/MRPT_in_GNU/Linux_repositories</a>
-image_url=<a class="external" href="http://babel.isa.uma.es/mrpt/images/e/ee/Linux-logos.png">http://babel.isa.uma.es/mrpt/images/e/ee/Linux-logos.png</a>
-caption=See installation instructions for <b>pre-compiled</b> and <b>development</b> MRPT packages.
-</ImageLink>
-</p>
-<pre> </center>
- </td>
- </tr>
- </table></pre>
-<p></td>
-</tr>
-</table></p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0039)http://www.mrpt.org/book/export/html/39 -->
+<HTML xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><HEAD><META http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-<p>__TOC__</p>
+    
+    <TITLE>Compiling MRPT</TITLE>
+    <!--<BASE href="http://www.mrpt.org">--><BASE href=".">
+    <LINK type="text/css" rel="stylesheet" href="./install_files/print.css">
+      </HEAD><BODY>
+              <DIV class="section-1">
+                <DIV class="section-2">
+                <DIV class="section-3">
+          
+    <DIV id="node-39" class="section-4">
+  <H1 class="book-heading">Compiling MRPT</H1>
+  
+<SCRIPT type="text/javascript">toc_collapse=0;</SCRIPT><DIV class="toc" id="toc">
+<DIV class="toc-title">Table of contents<SPAN class="toc-toggle-message">&nbsp;</SPAN></DIV>
+<DIV class="toc-list">
+<UL>
+	<LI class="toc-level-1"><A href="http://www.mrpt.org/#Prerequisites">1. Prerequisites</A>
+<UL>
+	<LI class="toc-level-2"><A href="http://www.mrpt.org/#On_Windows">1.1. On Windows</A></LI>
+	<LI class="toc-level-2"><A href="http://www.mrpt.org/#On_GNULinux">1.2. On GNU/Linux</A></LI>
+	<LI class="toc-level-2"><A href="http://www.mrpt.org/#On_Mac">1.3. On Mac</A></LI>
+</UL>
+</LI>
+	<LI class="toc-level-1"><A href="http://www.mrpt.org/#CMake_build_options">2. CMake build options</A>
+<UL>
+	<LI class="toc-level-2"><A href="http://www.mrpt.org/#Using_cmake-gui">2.1. Using cmake-gui</A></LI>
+	<LI class="toc-level-2"><A href="http://www.mrpt.org/#Using_cmake_from_the_console">2.2. Using cmake from the console</A></LI>
+	<LI class="toc-level-2"><A href="http://www.mrpt.org/#Interesting_build_options">2.3. Interesting build options</A></LI>
+</UL>
+</LI>
+	<LI class="toc-level-1"><A href="http://www.mrpt.org/#Generate_MakefilesIDE_Projects">3. Generate Makefiles/IDE Projects</A></LI>
+	<LI class="toc-level-1"><A href="http://www.mrpt.org/#Compile">4. Compile</A></LI>
+	<LI class="toc-level-1"><A href="http://www.mrpt.org/#Special_instructions_for_MinGW">5. Special instructions for MinGW</A></LI>
+</UL>
+</DIV>
+</DIV>
 
-<h2> Compiling on Windows </h2>
-<h3> Prerequisites - Windows </h3>
-<h4> CMake </h4>
-<p>To install the CMake build system, follow the instructions at <a class="external" href="http://www.cmake.org/HTML/Download.html.">http://www.cmake.org/HTML/Download.html.</a></p>
-<h4> wxWidgets </h4>
-<p>In addition to the following notes, read the project's wiki: <a class="external" href="http://wiki.wxwidgets.org/MSVC">http://wiki.wxwidgets.org/MSVC</a></p>
-<p>The source package for the wxWidgets library (named "wxALL" or "wxMSW", currently version 2.8.9) must be downloaded from <a class="extlink" href="http://www.wxwidgets.org/downloads/">here</a> and decompressed in a directory where CMake can find it (e.g. C:\wxWidgets). </p>
-<p>In Windows you'll have to manually modify the flag to compile the OpenGL support of wxWidgets. This is achieved by setting wxUSE_GLCANVAS to 1 (the default is 0). This is the part of the file 
-</p>
-<pre><b>wxwidgets\include\wx\msw\setup.h</b> 
-</pre>
-<p>that has to be modified:</p>
-<pre>// Setting wxUSE_GLCANVAS to 1 enables OpenGL support. You need to have OpenGL
+This page describes how to <B>build MRPT from sources</B>. If you want instead to install the binaries and getting quickly into developing your MRPT-based applications, go to the <A href="http://www.mrpt.org/download">download page</A> and grab the <B>binaries for your system</B>.
+
+Please, report <B>errors or doubts</B> on MRPT compilation to the <A href="http://www.mrpt.org/forum-users">mrpt-users forum</A>.
+
+
+<BR><BR><HR>
+<H2 id="Prerequisites">1. Prerequisites</H2><BR>
+
+<BR>
+<H3 id="On_Windows">1.1. On Windows</H3>
+<DIV style="float: right;"><IMG src="./install_files/icon_win.png"></DIV>
+<BR>
+
+<H4 id="CMake"> 1.1.1 CMake</H4>
+
+To install the CMake build system, follow the instructions at http://www.cmake.org/cmake/resources/software.html
+
+<BR>
+<H4 id="wxWidgets_"> 1.1.2 wxWidgets </H4>
+
+In addition to the following notes, read the project's wiki: http://wiki.wxwidgets.org/MSVC
+
+Also, if you want to build for 64bit (x64), be aware of the limited support of wxWidgets for this platform in Windows yet (read <A href="http://wiki.wxwidgets.org/Supporting_x64_and_Win32_within_one_solution">this</A>).
+
+The source package for the wxWidgets library (named "wxALL" or "wxMSW", currently version 2.8.11) must be downloaded from <A href="http://www.wxwidgets.org/downloads/">here</A> and decompressed in a directory where CMake can find it (e.g. C:\wxWidgets).
+
+In Windows <B>you'll have to manually modify the flag to compile the OpenGL support</B> of wxWidgets. This is achieved by setting <B>wxUSE_GLCANVAS to 1</B> (the default is 0). This is the part of the file <CODE>wxwidgets\include\wx\msw\setup.h </CODE> that has to be modified:
+
+<PRE class="brush: cpp">// Setting wxUSE_GLCANVAS to 1 enables OpenGL support. You need to have OpenGL
 // headers and libraries to be able to compile the library with wxUSE_GLCANVAS
 // set to 1. Note that for some compilers (notably Microsoft Visual C++) you
 // will need to manually add opengl32.lib and glu32.lib to the list of
@@ -56,447 +76,274 @@ caption=See installation instructions for <b>pre-compiled</b> and <b>development
 // Default is 0.
 //
 // Recommended setting: 1 if you intend to use OpenGL, 0 otherwise
-#define wxUSE_GLCANVAS       <b>1</b></pre>
+#define wxUSE_GLCANVAS       1
+</PRE>
 
-<p>Now, depending on the version of wxWidgets:</p>
-<h4></h4>
-=== wxWidgets < 2.9.0 =====<p>The wxWidgets library can be compiled by opening the Visual Studio project <b>wxwidgets\build\msw\wx.dsw</b>.
-Remember to compile, with <i>Build all</i> the configurations: </p>
-<ul><li> For compiling MRPT as static libraries (<i>BUILD_SHARED_LIBS=OFF</i>):
-<ul><li> <b>Release</b>
-</li><li> <b>Debug</b></li></ul></li></ul><ul><li> For compiling MRPT as dynamic libraries (<i>BUILD_SHARED_LIBS=ON</i>):
-<ul><li> <b>Release DLL</b>
-</li><li> <b>Debug DLL</b></li></ul></li></ul><b>Note:</b> If both ANSI and Unicode versions of wxWidgets have been compiled, make sure that <i>wxWidgets_CONFIGURATION</i> is set to <i>msw</i> instead of <i>mswu</i> to avoid some linking errors.<h4></h4>
-=== wxWidgets >= 2.9.0 =====<p>Compile wxWidgets by opening the Visual Studio solution <b>wxwidgets\build\msw\wx_vcX.sln</b>.</p>
-<p>Unless you want to build MRPT as static libs (.lib) instead of dynamic ones (.dll, the recommended way), 
-I recommend to compile wxWidgets in these configurations only:</p>
-<ul><li> <b>Release DLL</b>
-</li><li> <b>Debug DLL</b>
-</li><li> (In this case you will have to hit "Build All" several times until all libs are built. It seems the MSVC-project dependencies are not set properly!. If the odbc still doesn't compile, just ignore it).</li></ul><p><br></p>
-<h4> Boost </h4>
-<b>For MRPT>=0.7.2:</b> Boost is no longer required to build MRPT.
-<p>Boost libraries are optional when compiling MRPT since only these programs require it:
-<ul><li> simul-gridmap
-</li><li> grid-matching</li></ul><p>and they'll be not compiled if Boost is not found.</p>
-<p>Precompiled versions of Boost can be downloaded from <a class="external" href="http://www.boostpro.com/products/free/">http://www.boostpro.com/products/free/</a> for different Visual C++ compilers and configurations. If you prefer to compile from sources, follow instructions from <a class="external" href="http://www.boost.org/">http://www.boost.org/</a></p>
-<p>To avoid problems, download all the configurations (Multithread DLL, Multithread static, etc...) for your compiler version (VC7, VC8, etc...).</p>
-<p>And select (at least) these components for download:</p>
-<ul><li> Boost header files.
-</li><li> Boost ProgramOptions.</li></ul><p>Remember to include the <i>boost/lib</i> directory in the system PATH.</p>
-<p><br></p>
-<h4> OpenCV </h4>
-<p>It is recommended to compile MRPT against OpenCV 2.0.0 in order to enjoy the new features such as SURF descriptors.
-See the instructions in: <a class="external" href="http://opencv.willowgarage.com/wiki/InstallGuide">http://opencv.willowgarage.com/wiki/InstallGuide</a></p>
-<p>One interesting option is to compile a SVN snapshot of OpenCV:</p>
-<p>Checkout a fresh copy of the development branch by executing: (<b>NOV-2009: OpenCV hosting changed, this is the new SVN uri:</b>)</p>
-<pre>svn co https://code.ros.org/svn/opencv/trunk/opencv/ opencv</pre>
-<p>or use the graphical program TortoiseSVN. </p>
-<p>Then follow [https://code.ros.org/svn/opencv/trunk/opencv/INSTALL the compiling instructions].
-Once compiled with CMake, running "Configure" in MRPT's CMake project will automatically detect the OpenCV 1.1.0 directory and will use it. If it's not detected, set <code>OpenCV_DIR</code> to the build directory of OpenCV.</p>
+Now, depending on your version of wxWidgets, open the Visual Studio project (which may be <B>wxwidgets\build\msw\wx_dll.dsw</B> or  <B>wxwidgets\build\msw\wx_vcX.sln</B>).  I recommend to build, with "Build all", only these configurations:
 
-<p><br></p>
-<h4> FFmpeg for Win32 </h4>
-<p>The FFmpeg libraries are <b>optional</b>, and they are only needed if you want to use <a class="extlink" href="http://babel.isa.uma.es/mrpt/reference/svn/classmrpt_1_1hwdrivers_1_1_c_f_f_m_p_e_g___input_stream.html">CFFMPEG_InputStream</a>, mainly for supporting IP cameras.</p>
-<p>Directly download and decompress anywhere in your disk :
-<ul><li> <a class="extlink" href="http://ffmpeg.arrozcru.org/builds/shared/ffmpeg-r16537-gpl-lshared-win32.tar.bz2">this file</a> 
-</li><li> or <a class="extlink" href="http://babel.isa.uma.es/mrpt/downloads/ffmpeg-r16537-gpl-lshared-win32.tar.bz2">this local copy</a>,
-</li><li> or see the <a class="extlink" href="http://ffmpeg.arrozcru.org/builds/">"Unofficial win32 builds" web</a> for more recent releases.</li></ul>
-<p>Then when running CMake (cmake-gui), enable <code>MRPT_HAS_FFMPEG_WIN32</code>, press "Configure" and then set <code>FFMPEG_WIN32_ROOT_DIR</code> to the directory where FFmpeg binaries have been uncompressed (e.g. "c:\ffmpeg-r16537-gpl-lshared-win32").</p>
-<p>The FFmpeg DLLs will be required at runtime by programs compiled with MRPT under Windows, so make sure the directory <code> <FFmpeg>/bin</code> is in the system PATH. </p>
+<UL>
+<LI>DLL Unicode Release  (or just "DLL Release" in wxWidgets &gt;=2.9) </LI>
+<LI>DLL Unicode Debug (or just "DLL Debug" in wxWidgets &gt;=2.9) </LI>
+</UL>
 
-<p><br></p>
-<h3> Compiling MRPT (Under Windows) </h3>
-<p>The first step is to generate a makefile ("project", "solution") for your compiler. To achieve this execute the batch file </p>
-<pre>makefiles\win32_rebuild_XXXX_GUI.bat</pre>
-<p>according to your compiler. For example, for Visual Studio 2005, execute:
-</p>
-<pre>
-win32_rebuild_MSVC8_GUI.bat</pre>
-<p>CMake will be invoked and may ask you to configure some variables. Just select "configure" until the button "generate" enables, then press it to build the project files (more in the next section on customizing the CMake variables).</p>
-<p>The corresponding project files will be generated in a subdirectory of <code>makefiles</code> (e.g. <code>makefiles\MSVC8\MRPT_ALL.sln</code>).  <img src="http://localhost/images/installwin_cmake.png" alt="[ thumb ]"></p>
 
-<b>Note on wxWidgets:</b> If CMake doesn't localize your wxWidget directory, set it manually with the variable wxWidgets_ROOT_DIR and press "Configure" again. If even after that wxWidgets is not detected, enable the view of advanced variables and set manually wxWidtgets_LIB_DIR to your <i>wxWidgets\lib\vc_lib</i> (or <i>vc_dll</i>) directory.
-<p>Now, for MS Visual C++, open the solution <b>MRPT.sln</b> with the Visual Studio IDE, select the "Release" configuration, and compile the project "ALL_BUILD". For other compilers, invoke them from the console passing them the just generated makefiles. After compiling, the applications will be located in the <code>bin</code> directory and the C++ static library in <code>lib</code>.</p>
-<p>If you want to install the MRPT in Windows, that is, to create a program group with links to the applications, copy them and the C++ library to "Program Files", etc., you must get a binary installer from the download page. Alternatively, you can use the "PACKAGE" target from the build solution to build your own installer (this requires NSIS).</p>
-<p>After building the MRPT, it is advisable to associate the <a class="internal" href="http://localhost/Applications "> GUI applications</a> with their corresponding file extensions to open MRPT files directly from the Windows explorer.</p>
-<p><br></p>
+<BR>
+<H4 id="OpenCV">1.1.3 OpenCV</H4>
 
-<h3> Building user programs with MRPT C++ libraries </h3>
-<p>This may be the next step for those wanting to create their own programs using MRPT. </p>
-<p>The topic is covered in a <a class="internal" href="http://localhost/Writing applications with the MRPT C++ Library "> separate tutorial</a>.</p>
-<p><br></p>
+It is recommended to compile MRPT against <B>OpenCV 2.0.0</B> (or newer) in order to enjoy the new features such as SURF descriptors. See the instructions in: http://opencv.willowgarage.com/wiki/InstallGuide
 
-<h3> Specific instructions for MinGW (GCC compiler for Windows)  </h3>
-<ul><li> Install MinGW (Read this <a class="internal" href="http://localhost/Guide:Installing_MinGW_(GCC_for_Windows)">small manual</a>).</li></ul><ul><li> Before compiling MRPT with MinGW, it's strongly recommended to compile wxWidgets and OpenCV with MinGW:</li></ul><ul><li> Build wxWidgets. Open a command prompt and go to the directory <b>build/msw</b>. Then execute the following commands to rebuild the <b>Release and Debug</b> configurations (as shared libs), so CMake can correctly detect wxWidgets:
-</li></ul><pre>mingw32-make -f makefile.gcc SHARED=1 USE_OPENGL=1 BUILD=release 
-mingw32-make -f makefile.gcc SHARED=1 USE_OPENGL=1 BUILD=debug </pre>
-<ul><li> Build OpenCV. Use the new CMake build system (to be shipped with the next OpenCV 1.1.0 release), select the MinGW compiler and follow the generic OpenCV compilation instructions.</li></ul><ul><li> Open <b>cmake-gui</b> and select the source directory and an empty target (binary) directory. </li></ul><ul><li> Press <i>configure</i> and in the compilers dialog pick <b>MinGW Makefiles</b>. If you obtain an error like:
-</li></ul><pre>CMake Error: CMake was unable to find a build program corresponding to "MinGW Makefiles".  
-CMAKE_MAKE_PROGRAM is not set.  You probably need to select a different build tool.
-</pre>
-<p>it means MinGW is not correctly installed in the system. Review the installation process described above.</p>
-<ul><li> If everything goes fine, you'll see the new CMake variables remarked in red. Go through the <a class="internal" href="http://localhost/Building_and_Installing_Instructions">normal configuration process for MRPT</a>, and when you are satisfied, press <b>Generate</b>.</li></ul><ul><li> Open a console and in the newly created binary directory, invoke:</li></ul><pre>mingw32-make</pre>
-<p>either by writing the full path (e.g. <i>c:\MinGW\bin\mingw32-make</i>) or by adding the "bin" directory of your MinGW installation to the system <i>PATH</i>. This should start the normal build process.</p>
+One interesting option is to compile a SVN snapshot of OpenCV:
+Checkout a fresh copy of the development branch by executing: (NOV-2009: OpenCV hosting changed, this is the new SVN uri:)
 
-<p><br></p>
-<h2> Compiling on Linux </h2>
-<p>Remember that <a class="internal" href="http://localhost/MRPT_in_GNU/Linux_repositories "> precompiled packages exist</a>, so compiling from sources is not mandatory unless you want to change the default settings, hack MRPT sources or use the SIFT image descriptor (which was left out of Linux packages due to the incompatibility of its patent and free software).</p>
+<PRE class="bordered">svn co https://code.ros.org/svn/opencv/trunk/opencv/ opencv
+</PRE>
 
-<h3> Prerequisites - Linux </h3>
-<p>Some libraries are required to be installed in the system before compiling MRPT.</p>
-<p>It is next summarized how to install all of them for some popular distributions. To install in a different distribution simply install the required packages using the corresponding <a class="extlink" href="http://en.wikipedia.org/wiki/Package_management_system">package management tool</a> of your distribution. Note that the exact package names may vary across distributions.</p>
+or use the graphical program TortoiseSVN.
 
-<h4> About OpenCV  </h4>
- <p>You can compile MRPT against OpenCV 1.0.0, or 1.1.0, but <b>it won't compile with OpenCV 1.1.0-pre1</b>. To employ the new features such as SURF descriptors, you'll need the latest version of OpenCV.
-Until a new stable version of OpenCV is released (and integrated into each distro's repositories), this must be done by compiling a SVN snapshot:</p>
-<p>Checkout a fresh copy of the development branch by executing:</p>
-<pre>svn co https://opencvlibrary.svn.sourceforge.net/svnroot/opencvlibrary/trunk/opencv/ opencvlibrary-svn</pre>
-<p>And follow [https://opencvlibrary.svn.sourceforge.net/svnroot/opencvlibrary/trunk/opencv/INSTALL the compiling instructions].</p>
-<p>Under Linux, you'll need to <code>make</code> then <code>make install</code> OpenCV in order to MRPT to detect it and use the new version.</p>
+Then follow the <A href="https://code.ros.org/svn/opencv/trunk/opencv/INSTALL">compiling instructions</A>. 
 
-<p><br></p>
-<h4> Ubuntu, Debian </h4>
- <p>Invoke:</p>
-<pre> $ sudo apt-get install build-essential cmake libwxgtk2.8-dev \
+Once compiled with CMake, running "Configure" in MRPT's CMake project will automatically detect the OpenCV build directory (where you have generated the projects with CMake) and will use it. If it's not detected, set <B>OpenCV_DIR</B> to the build directory of OpenCV.
+
+<BR><BR>
+<H4 id="FFmpeg_for_Win32">1.1.4 FFmpeg for Win32</H4>
+The FFmpeg libraries are <B>optional</B>, and they are only needed if you want to use <A href="http://reference.mrpt.org/svn/classmrpt_1_1hwdrivers_1_1_c_f_f_m_p_e_g___input_stream.html">CFFMPEG_InputStream</A>, mainly for supporting IP cameras.
+
+Directly download and decompress anywhere in your disk :
+<UL>
+<LI> http://ffmpeg.arrozcru.org/builds/shared/ffmpeg-r16537-gpl-lshared-win32.tar.bz2 </LI>
+<LI> or this local copy:  http://babel.isa.uma.es/mrpt/downloads/ffmpeg-r16537-gpl-lshared-win32.tar.bz2 </LI>
+<LI> or see the "Unofficial win32 builds" web for more recent releases: http://ffmpeg.arrozcru.org/autobuilds/
+</LI></UL>
+
+Then when running CMake (cmake-gui), enable <CODE>MRPT_HAS_FFMPEG_WIN32</CODE>, press "Configure" and then set <CODE>FFMPEG_WIN32_ROOT_DIR</CODE> to the directory where FFmpeg binaries have been uncompressed (e.g. "c:\ffmpeg-r16537-gpl-lshared-win32").
+
+The FFmpeg DLLs will be required at runtime by programs compiled with MRPT under Windows, so make sure the directory <FFMPEG>/bin is in the <B>system PATH</B>.
+
+
+<BR><BR>
+<H3 id="On_GNULinux">1.2. On GNU/Linux</H3>
+<DIV style="float: right;"><IMG src="./install_files/icon_linux.png"></DIV>
+<BR>
+
+
+<H4 id="Dependencies">1.2.1. Dependencies</H4>
+<BR>
+
+These are the recommended libraries (the <B>development</B> packages!) that should exist in your system (see below for short instructions for Ubuntu/Debian/Fedora):
+<UL>
+<LI>OpenCV </LI>
+<LI>wxWidgets </LI>
+<LI>ffmpeg libraries (libavcodec, libswscale, etc.) </LI>
+<LI>Freeglut or glut </LI>
+<LI>zlib </LI>
+<LI>libftdi (optional) </LI>
+<LI>libdc1394-22 </LI>
+</UL>
+
+
+<H4 id="About_OpenCV">1.2.2. About OpenCV</H4>
+<BR>
+You can compile MRPT against OpenCV 1.0.0, 1.1.0 or &gt;=2.0.0, but it won't compile with OpenCV 1.1.0-pre1. 
+
+Install opencv libraries from your repositories or build it manually from SVN HEAD (I prefer this way...), by checking out a fresh copy of the development branch by executing: 
+
+<PRE class="bordered">svn co https://code.ros.org/svn/opencv/trunk/opencv/ opencv
+</PRE>
+
+And follow the compiling instructions.
+Under Linux, you'll <B>NOT</B> need to do a "make install" after building OpenCV, since setting the OpenCV_DIR variable in CMake while compiling MRPT is enough.
+
+
+<BR><BR>
+<H4 id="Ubuntu_Debian"> 1.2.2 Ubuntu, Debian</H4>
+<BR>
+Invoke:
+<PRE class="bordered"> $ sudo apt-get install build-essential cmake libwxgtk2.8-dev \
    libwxbase2.8-dbg libwxgtk2.8-dbg libftdi-dev libglut3-dev \
-   libhighgui-dev lib3ds-dev libboost-program-options-dev</pre>
-<p>If you have a modern Debian/Ubuntu, install this in addition to the packages above (they are not mandatory, but recommended):</p>
-<pre> $ sudo apt-get install libdc1394-22-dev libavformat-dev libswscale-dev</pre>
-<p>Note: If the version 2.8 of wxWidgets is not available in your distribution, it must be installed manually.</p>
-<h4> Fedora  </h4>
-<p>Execute:</p>
-<pre> $ su -c 'yum install gcc gcc-c++ make cmake wxGTK-devel opencv-devel freeglut-devel lib3ds-devel boost-devel'</pre>
-<h4> OpenSUSE </h4>
- 
-<p>For OpenSUSE 10.X, invoke:</p>
-<pre> $ sudo zypper install make gcc gcc-c++ cmake cmake-gui pkg-config \
-      zlib-devel wxGTK-devel wxGTK-gl libusb-devel freeglut-devel \
-      lib3ds boost-devel</pre>
-<p>For OpenSUSE 11.X, invoke:</p>
-<pre> $ sudo zypper install make gcc gcc-c++ cmake cmake-gui pkg-config \
-      zlib-devel wxGTK-devel wxGTK-gl libusb-devel freeglut-devel \
-      lib3ds-devel boost-devel</pre>
+   libhighgui-dev
+</PRE>
 
-<h4></h4>
-=== Installing OpenCV on OpenSUSE =====<p>OpenCV must be downloaded and compiled from sources manually in OpenSUSE. Download <a class="extlink" href="http://sourceforge.net/project/showfiles.php?group_id=22870&package_id=16948">the opencv-1.0.0.tar.gz Linux sources</a> and follow these steps:</p>
-- Install the dependencies. This will assure some packages required by OpenCV GUI and video grabbing. Invoke:<pre> $ sudo zypper install make gcc gcc-c++ wxGTK-devel libdc1394-devel libraw1394-devel libpng-devel libjpeg-devel</pre>
-<p>Optionally, if you enable the "Packman repository", the package ffmpeg should be also installed.</p>
-- Decompress the tarball:<pre> tar -xf opencv-1.0.0.tar.gz</pre>
-- Then go to the newly created directory and invoke the configure tool:<pre> ./configure</pre>
-<p>If everything goes ok, no error will be reported as all the dependencies are satisfied. Now compile and install OpenCV with:</p>
-<pre> make && sudo make install && sudo /sbin/ldconfig</pre>
-<h4> CentOS  </h4>
-<p>Some packages are available through <i>yum</i>, others are not. </p>
-<p>To install all the dependencies, follow these steps:</p>
-<ul><li> Execute:</li></ul><pre>$ su -c 'yum install gcc gcc-c++ make freeglut-devel boost-devel gtk2-devel libjpeg-devel libpng-devel libtiff-devel zlib-devel expat-devel'</pre>
+(Note: You'll need to add libcvaux-dev, only if that package exists in your distribution and you haven't compile OpenCV manually)
 
-<ul><li> Install CMake (<b>version 2.6 or newer</b>), preferably by compiling from sources:
-<ul><li> Execute:
-</li></ul></li></ul><pre>wget <a class="external" href="http://www.cmake.org/files/v2.6/cmake-2.6.2.tar.gz">http://www.cmake.org/files/v2.6/cmake-2.6.2.tar.gz</a>
-tar -xf cmake-2.6.2.tar.gz
-cd cmake-2.6.2
-./bootstrap
-make
-su -c 'make install'</pre>
+If you have a modern Debian/Ubuntu, install this in addition to the packages above (they are not mandatory, but <B>recommended</B>):
+<PRE class="bordered"> $ sudo apt-get install libdc1394-22-dev libavformat-dev libswscale-dev
+</PRE>
 
-<ul><li> Install OpenCV, either by compiling from sources or by downloading a RPM from:
-<ul><li> i386: 
-<ul><li> <a class="external" href="http://packages.sw.be/opencv/opencv-1.0.0-1.el5.rf.i386.rpm">http://packages.sw.be/opencv/opencv-1.0.0-1.el5.rf.i386.rpm</a>
-</li><li> <a class="external" href="http://packages.sw.be/opencv/opencv-devel-1.0.0-1.el5.rf.i386.rpm">http://packages.sw.be/opencv/opencv-devel-1.0.0-1.el5.rf.i386.rpm</a>
-</li></ul></li><li> x86_64: 
-<ul><li> <a class="external" href="http://packages.sw.be/opencv/opencv-1.0.0-1.el5.rf.x86_64.rpm">http://packages.sw.be/opencv/opencv-1.0.0-1.el5.rf.x86_64.rpm</a>
-</li><li> <a class="external" href="http://packages.sw.be/opencv/opencv-devel-1.0.0-1.el5.rf.x86_64.rpm">http://packages.sw.be/opencv/opencv-devel-1.0.0-1.el5.rf.x86_64.rpm</a>
-</li></ul></li><li> Install the RPM files with: 
-</li></ul></li></ul><pre>su -c 'rpm -i *.rpm'</pre>
-<ul><li> Install wxWidgets, either by compiling from sources or by downloading:
-<ul><li> i386: 
-<ul><li> <a class="external" href="http://packages.sw.be/wxGTK/wxGTK-2.8.9-1.el5.rf.i386.rpm">http://packages.sw.be/wxGTK/wxGTK-2.8.9-1.el5.rf.i386.rpm</a>
-</li><li> <a class="external" href="http://packages.sw.be/wxGTK/wxGTK-devel-2.8.9-1.el5.rf.i386.rpm">http://packages.sw.be/wxGTK/wxGTK-devel-2.8.9-1.el5.rf.i386.rpm</a>
-</li></ul></li><li> x86_64: 
-<ul><li> <a class="external" href="http://packages.sw.be/wxGTK/wxGTK-2.8.9-1.el5.rf.x86_64.rpm">http://packages.sw.be/wxGTK/wxGTK-2.8.9-1.el5.rf.x86_64.rpm</a>
-</li><li> <a class="external" href="http://packages.sw.be/wxGTK/wxGTK-devel-2.8.9-1.el5.rf.x86_64.rpm">http://packages.sw.be/wxGTK/wxGTK-devel-2.8.9-1.el5.rf.x86_64.rpm</a>
-</li></ul></li><li> Install the RPM files with: 
-</li></ul></li></ul><pre>su -c 'rpm -i *.rpm'</pre>
+Note: If the version 2.8 (or newer) of wxWidgets is not available in your distribution, it must be installed manually.
 
-<ul><li> Install lib3ds, either by compiling from sources or by downloading:
-<ul><li> i386: 
-<ul><li> <a class="external" href="http://packages.sw.be/lib3ds/lib3ds-1.2.0-1.el5.rf.i386.rpm">http://packages.sw.be/lib3ds/lib3ds-1.2.0-1.el5.rf.i386.rpm</a>
-</li></ul></li><li> x86_64: 
-<ul><li> <a class="external" href="http://packages.sw.be/lib3ds/lib3ds-1.2.0-1.el5.rf.x86_64.rpm">http://packages.sw.be/lib3ds/lib3ds-1.2.0-1.el5.rf.x86_64.rpm</a>
-</li></ul></li><li> Install the RPM files with: 
-</li></ul></li></ul><pre>su -c 'rpm -i *.rpm'</pre>
+<BR><BR>
+<H4 id="Fedora"> 1.2.3 Fedora</H4>
+<BR>
 
-<ul><li> Additionally, after compiling and installing MRPT (read below), you may need to disable SELinux to allow execution of the programs if you obtain errors like:
-</li></ul><pre>cannot restore segment prot after reloc: Permission denied 
-<ul><li> Solution: System -> Administration -> Security Level and Firewall -> SELinux -> Disabled.</li></ul><h4> Generic instructions </h4>
- <p>If your system is not covered by the GNU/Linux cases above, you'll have to install, either by compiling from sources or by installing with your package manager, at least these programs and libraries:</p>
-<ul><li> <b>Required</b>: 
-<ul><li> CMake.  <a class="external" href="http://www.cmake.org/">http://www.cmake.org/</a></li></ul></li></ul><ul><li> <b>Highly recommended</b>:
-<ul><li> OpenCV. <a class="external" href="http://sourceforge.net/projects/opencvlibrary/">http://sourceforge.net/projects/opencvlibrary/</a>
-</li><li> wxWidgets. <a class="external" href="http://www.wxwidgets.org/">http://www.wxwidgets.org/</a>  . If built from sources, remember to compile wx-gl by invoking:
-</li></ul></li></ul><pre>./configure --with-opengl</pre>
-<ul><li> <b>Optional</b>:
-<ul><li> lib3ds
-</li><li> libdc1394 2.0
-</li><li> FFmpeg (libavformat, libswscale)</li></ul></li></ul><p><hr></p>
-<p><br></p>
-<h3> Compiling MRPT (on GNU/Linux, or Unix) </h3>
-<h4> Decompress the source tarball </h4>
-<p>Extract the sources from the <b>tar.gz</b> file to a new directory: by invoking</p>
-<pre> $ tar -xvzf mrpt-0.7.0.tar.gz</pre>
-<p>, a new directory with all the sources will be created (for example <code>mrpt-0.7.0</code>).</p>
-<h4> Invoke ccmake to generate the Makefile's </h4>
-<p>Create a new, empty directory where the projects will be compiled. For example:</p>
-<pre> $ mkdir mrpt-release
- $ cd mrpt-release</pre>
-<p>And now invoke the ccmake GUI to configure MRPT.</p>
-<pre> $ ccmake ../mrpt-0.6.0</pre>
-<p>(If available, use cmake-gui, which provides a real Qt-based GUI). At the beginning, the CMake cache will be empty, so press 'c' (configure) to see the initial list of options:</p>
-<p><center>
-<img src="http://localhost/images/ccmake_init.png" alt="[ image ]">
-</center></p>
-<p>Change the parameters as desired (see the section on MRPT <a class="extlink" href="http://babel.isa.uma.es/mrpt/index.php/Building_and_Installing_Instructions#Build_options">CMake variables</a>), press configure until everything looks OK, then press 'g' (generate) to create the Makefile's.</p>
-<h4> Compile </h4>
-<p>To compile all the selected targets, just invoke:</p>
-<pre>   $ make</pre>
-<p>This will build the MRPT C++ libraries, and the applications (not the examples). The applications will be generated in the <code>bin</code> directory and the C++ static libraries in <code>lib</code>. </p>
-<p>After building the MRPT it is advisable to associate the <a class="internal" href="http://localhost/Applications "> GUI applications</a> with their corresponding file extensions in order to open files in several MRPT-defined formats directly from your OS file manager.</p>
-<p>To see the full list of make targets, type:</p>
-<pre>   $ make help</pre>
-<p>to obtain a list of targets.</p>
-<p>See the section on <a class="extlink" href="http://babel.isa.uma.es/mrpt/index.php/Building_and_Installing_Instructions#Build_options">build options</a> to compile the examples and more. It is <b>strongly recommended</b> to build with <b>MRPT_OPTIMIZE_NATIVE</b> enabled if not building for a Debug configuration (See the alternative <a class="extlink" href="http://babel.isa.uma.es/mrpt/index.php/Building_and_Installing_Instructions#Build_options">below</a> if you have a version of GCC <4.2).
-</p>
-<pre> 
-</pre>
-<p><br></p>
+Execute:
+<PRE class="bordered"> $ su -c 'yum install gcc gcc-c++ make cmake wxGTK-devel opencv-devel freeglut-devel'
+</PRE>
 
-<h3> Building user programs with MRPT C++ libraries </h3>
-<p>This may be the next step for those wanting to create their own programs using MRPT. </p>
-<p>The topic is covered in a <a class="internal" href="http://localhost/Writing applications with the MRPT C++ Library "> separate tutorial</a>.</p>
+<BR>
+<H4 id="OpenSUSE"> 1.2.4 OpenSUSE</H4>
+<BR>
 
-<p><br></p>
-<h2> Build options </h2>
-<p>A few options are selected automatically when invoking CMake depending on, for example, the libraries found in your system. However, you can manually change these and other parameters through the CMake graphical interfaces. To invoke it:</p>
-<ul><li> In <b>Linux</b>, go to the binary directory (where ccmake was invoked the first time) and type:</li></ul><pre>$ ccmake .</pre>
-<ul><li> In <b>Windows</b>, execute the following batch file, which calls <code>cmakesetup</code>:</li></ul><pre>makefiles\win32_rebuild_XXXX_GUI.bat</pre>
+For OpenSUSE 10.X, invoke:
+<PRE class="bordered"> $ sudo zypper install make gcc gcc-c++ cmake cmake-gui pkg-config \
+      zlib-devel wxGTK-devel wxGTK-gl libusb-devel freeglut-devel
+</PRE>
 
-<p>Currently the most useful options that can be selected manually, most of them between "ON"/"OFF", are:</p>
-<ul><li> For all platforms/compilers:
-<ul><li> <b>BUILD_SHARED_LIBS</b>: Build static libraries if set to OFF, or dynamic libraries (.so/.dll) otherwise. Default is OFF in Windows, ON in Linux.
-</li><li> <b>BUILD_EXAMPLES</b>: Whether you want to compile all the examples in the "/samples" directory. Default is OFF.
-</li><li> <b>MRPT_HAS_BUMBLEBEE</b>: To enable integration of the Bumblebee stereo camera SDK. You'll need the vendor provided "Triclops" and "Digiclops" libraries. After setting this option to "ON", the new configuration fields "BUMBLEBEE_DIGICLOPS_ROOT_DIR" and "BUMBLEBEE_TRICLOPS_ROOT_DIR" will appear where the correct corresponding paths must be entered.
-</li><li> <b>MRPT_ALWAYS_CHECKS_DEBUG</b>: If set to ON, additional security checks will be performed at run-time in many classes. Default is OFF.
-</li><li> <b>MRPT_ALWAYS_CHECKS_DEBUG_MATRICES</b>: If set to ON, additional security checks will be performed at run-time in several Matrix operations. Default is ON.
-</li><li> <b>MRPT_OCCUPANCY_GRID_CELLSIZE</b>: Can be either 8 or 16 (bits). The size of each cell in the class <a class="extlink" href="http://babel.isa.uma.es/mrpt/reference/stable/class_m_r_m_l_1_1_c_occupancy_grid_map2_d.html">mrpt::slam::COccupancyGridMap2D</a>. Default is 8 bits. More on this <a class="internal" href="http://localhost/Occupancy_Grids">here</a>.
-</li><li> <b>USER_EXTRA_CPP_FLAGS</b>: You can add here whatever additional flags to be passed to the compiler.
-</li><li> <b>MRPT_HAS_ASIAN_FONTS</b>: Enables Asian fonts in CMRPTCanvas (see <a class="internal" href="http://localhost/Implemented_2D_Fonts">wiki page</a>), but increases library size by 1.5Mb. Default is OFF.
-</li><li> <b>BUILD_xSENS</b>: Whether to use the CMT library for interfacing <a class="extlink" href="http://www.xsens.com/en/products/machine_motion/mti.php?">xSens inertial sensors</a>. Default is ON.</li></ul></li></ul><ul><li> Microsoft Visual Studio:
-<ul><li> <b>CMAKE_MRPT_HAS_VLD</b>: Whether to include the <a class="extlink" href="http://www.codeproject.com/KB/applications/visualleakdetector.aspx">Visual Leak Detector (VLK)</a>. Default is OFF. If enabled, the new variable ROOT_VISUAL_LEAK_DETECTOR will appear which must be pointed to the VLD root directory. 
-</li><li> <b>MRPT_HAS_FFMPEG_WIN32</b>: Enable this and (after running "Configure") then set <code>FFMPEG_WIN32_ROOT_DIR</code> to the directory where FFmpeg binaries have been uncompressed (e.g. "c:\ffmpeg-r16537-gpl-lshared-win32").</li></ul></li></ul><ul><li> GNU GCC compiler only:
-<ul><li> <b>MRPT_ENABLE_LIBSTD_PARALLEL_MODE</b>: Enables the GNU libstdc++ parallel mode (See <a class="external" href="http://gcc.gnu.org/onlinedocs/libstdc++/manual/parallel_mode.html).">http://gcc.gnu.org/onlinedocs/libstdc++/manual/parallel_mode.html).</a> Default is OFF.
-</li><li> <b>MRPT_ENABLE_PROFILING</b>: Enables generation of information required for profiling. Default is OFF.
-</li><li> <b>MRPT_OPTIMIZE_NATIVE</b>: Enables optimization for the current architecture (-mtune=native). Default is OFF for old GCC versions, ON for 4.2+. If you have an old version of GCC (<4.2), this option cannot be set since it's not recognized by the compiler. Instead, set USER_EXTRA_CPP_FLAGS to the optimization flags for your platform, for example: <code>-march=pentium4</code>.</li></ul></li></ul>
-<p><div align="center">
-<table border="0" cellspacing="10" cellpadding="0">
-	<tr>
-		<td align="center"><code>ccmake .</code><br>(Linux)</td>
-		<td align="center"><code>cmakesetup</code><br>(Windows)</td>
-	</tr></p>
-<p>	<tr>
-		<td align="center" valign="top">
-</p>
-<pre>               <img src="http://localhost/images/install_ccmake.png" alt="[ thumb ]">
-               </td>
-</pre>
-<p>		<td align="center" valign="top">
-</p>
-<pre>               <img src="http://localhost/images/installwin_cmakesetup.png" alt="[ thumb ]">
-               </td>
-</pre>
-<p>	</tr>
-</table>
-</div></p>
-<p><br></p>
-<h2> Summary of prerequisites </h2>
-<p>The following table summarizes the applications and libraries that you should have installed in your system before compiling the MRPT, according to the instructions above</p>
-<p><table width="95%" border="1" align="center" cellpadding="3" cellspacing="0" style="border:0px solid #000000;">
-	<tr>
-		<td align="center" bgcolor="#808080" style="border:1px solid #000000;border-bottom:0; border-right:0;">
-		 <font color="yellow"><b>Application/Library</b></font>
-		</td>
-		<td align="center" bgcolor="#808080" style="border:1px solid #000000;border-bottom:0; border-right:0;">
-		 <font color="yellow"><b>Optional?</b></font>
-		</td></p>
-<p>		<td width="35%" align="center" bgcolor="#808080" style="border:1px solid #000000;border-bottom:0; border-right:0;">
-		 <font color="yellow"><b>Required for...</b></font>
-		</td>
-		<td width="35%" align="center" bgcolor="#808080" style="border:1px solid #000000;border-bottom:0;">
-		 <font color="yellow"><b>Consequences of building MRPT without this...</b></font>
-		</td>
-	</tr>
-	<tr></p>
-<p>		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			C <b>and</b> C++ compiler<br>(GNU g++,MS Visual Studio,...)
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			<b>NO</b>
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;"></p>
-<p>			-
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-bottom:0;">
-			-
-		</td>
-	</tr>
-	<tr>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			<a class="extlink" href="http://www.cmake.org/">CMake</a> (2.6 or above)</p>
-<p>		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			<b>NO</b>
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			-
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-bottom:0;">
-			-
-		</td></p>
-<p>	</tr>
-	<tr>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			The <a class="extlink" href="http://www.wxwidgets.org/">wxWidgets</a> library
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			YES <b>(*)</b></p>
-<p>		</td>
-		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			Compiling the GUI applications and GUI classes within the MRPT C++ library.
-		</td>
-		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-bottom:0;">
-			Some applications will be not built and some classes will raise an exception if used, e.g.
-			the <a class="extlink" href="http://babel.isa.uma.es/mrpt/reference/stable/classmrpt_1_1gui_1_1_c_display_window.html">CDisplayWindow</a> class.
-		</td>
-	</tr>
-	<tr>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;"></p>
-<p>			The <a class="extlink" href="http://sourceforge.net/projects/opencvlibrary/">OpenCV library</a>
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			YES <b>(*)</b>
-		</td>
-		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			- Image loading/saving, manipulation & capturing.<br>
-		</td>
-		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-bottom:0;">
-			An exception will be raised when trying to load/save images. However there is limited image manipulation support through
-			the class <a class="extlink" href="http://babel.isa.uma.es/mrpt/reference/stable/classmrpt_1_1utils_1_1_c_m_r_p_t_image_float.html">CMRPTImageFloat</a>.
-		</td>
-	</tr>
-	<tr></p>
-<p>		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			The OpenGL and GLUT libraries
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			YES <b>(*)</b>
-		</td>
-		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			- 3D scene rendering.<br></p>
-<p>			- The 3DSceneViewer application.
-		</td>
-		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-bottom:0;">
-			The 3DSceneViewer application will be not compiled. An exception will raise if the class <a class="extlink" href="http://babel.isa.uma.es/mrpt/reference/stable/classmrpt_1_1gui_1_1_c_display_window3_d.html">CDisplayWindow3D</a> is used.
-		</td>
-	</tr>
-	<tr>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;"></p>
-<p>			The Digiclops & Triclops libraries (from <a class="extlink" href="http://www.ptgrey.com/products/stereo.asp">Point Grey Research Inc.</a>)
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			YES
-		</td>
-		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			Stereo image capture from Bumblebee camera.
-		</td>
-		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-bottom:0;">
-			An exception will be raised if the class <a class="extlink" href="http://babel.isa.uma.es/mrpt/reference/stable/classmrpt_1_1vision_1_1_c_stereo_grabber___bumblebee.html">CStereoGrabber_Bumblebee</a> is used.
-		</td></p>
-<p>	</tr>
-	<tr>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			FTDI headers<br>(Unix only)
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			YES
-		</td>
-		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;"></p>
-<p>			Access to FTDI USB chips through the <a class="extlink" href="http://babel.isa.uma.es/mrpt/reference/stable/classmrpt_1_1hwdrivers_1_1_c_interface_f_t_d_i.html">CInterfaceFTDI</a> class.
-		</td>
-		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-bottom:0;">
-			An exception will be raised if this class is used.
-		</td>
-	</tr>
-	<tr>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			<a class="extlink" href="http://www.codeblocks.org/">Code Blocks</a>
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			YES
-		</td>
-		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			Redesign the GUIs graphically.
-		</td>
-		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-bottom:0;"></p>
-<p>			You can still modify the GUIs by hand.
-		</td>
-	</tr>
-	<tr>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			<a class="extlink" href="http://nsis.sourceforge.net/"> NSIS</a> (Nullsoft Scriptable Install System)
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			YES
-		</td></p>
-<p>		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			Building the MRPT installer for Windows.
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-bottom:0;">
-			-
-		</td>
-	</tr>
-	<tr>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			<a class="extlink" href="http://www.boost.org/"> Boost</a>
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			YES
-		</td></p>
-<p>		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;border-bottom:0;">
-			Used for some programs only.
-		</td>
-		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-bottom:0;">
-			The following applications will not be built: <i>simul-gridmap</i>, <i>grid-matching</i>
-		</td>
-	</tr>
-	<tr>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;">
-			<a class="extlink" href="http://www.stack.nl/~dimitri/doxygen/">Doxygen</a>
-		</td></p>
-<p>		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;">
-			YES
-		</td>
-		<td align="left" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000; border-right:0;">
-			Rebuilding the MRPT documentation.
-		</td>
-		<td align="center" valign="middle" bgcolor="#E0E0E0" style="border:1px solid #000000;">
-			-
-		</td>
-	</tr></p>
-<p></table></p>
-<p><b>(*):</b> These elements are optional but <b>strongly recommended</b>: the functionality of the MRPT will be severely reduced without them.</p>
-<p><br></p>
-<h2> Other resources </h2>
-<h3> 한국어: 훈령 (Korean installation guide) </h3>
- <p>This blog contains translated building instructions:</p>
-<a class="external" href="http://blog.naver.com/PostView.nhn?blogId=hangondragon&logNo=20064072057&widgetTypeCall=true">http://blog.naver.com/PostView.nhn?blogId=hangondragon&logNo=20064072057&widgetTypeCall=true</a><p><br></p>
-</body>
-</html>
+For OpenSUSE 11.X, invoke:
+<PRE class="bordered"> $ sudo zypper install make gcc gcc-c++ cmake cmake-gui pkg-config \
+      zlib-devel wxGTK-devel wxGTK-gl libusb-devel freeglut-devel 
+</PRE>
+
+
+
+<BR><BR><BR>
+<H3 id="On_Mac">1.3. On Mac</H3>
+<DIV style="float: right;"><IMG src="./install_files/icon_macos.jpg"></DIV>
+<BR>
+
+Building under MacOS is not yet working 100%. Instructions will be given when we solve all the problems.
+
+
+<BR><BR>
+
+<BR><BR><HR>
+<H2 id="CMake_build_options">2. CMake build options</H2><BR>
+
+
+<BR><H3 id="Using_cmake-gui">2.1. Using cmake-gui</H3>
+<BR>
+
+Open cmake-gui (Available for Windows/Linux) and set the "source dir" to the root directory of the MRPT source package you have downloaded. 
+Set the "binary directory" to a <B>new, empty</B> directory where to generate the project files. 
+
+Press "configure", check for errors, tune the options as required (read below for a description of some options) and finally click "Generate".
+
+
+<BR><BR>
+
+<BR><H3 id="Using_cmake_from_the_console">2.2. Using cmake from the console</H3>
+
+This choice is available for Windows/Linux/MacOS.
+
+Go to a  <B>new, empty</B> directory where to generate the project/Makefiles files and run:
+
+<PRE class="bordered">$ cmake /home/.../MRPT
+</PRE>
+
+Replace "/home/.../MRPT" with your actual path to the MRPT source package you have just downloaded. 
+
+This will use all the default options. To tune them, invoke (available for Linux/MacOS):
+
+<PRE class="bordered">$ ccmake .
+</PRE>
+
+<DIV align="center">
+<A href="http://www.mrpt.org/sites/default/files/images/screenshot_cmake_console_linux.jpg">
+<IMG width="250" src="./install_files/screenshot_cmake_console_linux.preview.jpg">
+</A>
+<SMALL>(Click the image to see it at full size)</SMALL>
+</DIV>
+
+
+<BR><H3 id="Interesting_build_options">2.3. Interesting build options</H3>
+
+<B>For all platforms/compilers:</B>
+<UL>
+
+<LI><CODE> BUILD_SHARED_LIBS </CODE> : Build static libraries if set to OFF, or dynamic libraries (.so/.dll) otherwise. Default is ON, and it's <B>strongly recommended to always use shared libs</B> unless you have special need for static ones.</LI>
+
+<LI><CODE> BUILD_EXAMPLES </CODE> : Whether you want to compile all the examples in the "/samples" directory. Default is OFF.</LI>
+
+<LI><CODE>MRPT_ENABLE_EMBEDDED_ENABLED_PROFILER </CODE> : If enabled, all code blocks within macros "MRPT_BEGIN/MRPT_END" will be profiled and the statistics dumped to the console at the end of execution of any program. Default is OFF.</LI>
+
+<LI><CODE>MRPT_ALWAYS_CHECKS_DEBUG </CODE> : If set to ON, additional security checks will be performed at run-time in many classes. Default is OFF. </LI>
+
+<LI><CODE>MRPT_ALWAYS_CHECKS_DEBUG_MATRICES </CODE> : If set to ON, additional security checks will be performed at run-time in several Matrix operations. Default is ON.</LI>
+
+<LI><CODE>MRPT_OCCUPANCY_GRID_CELLSIZE </CODE> : Can be either 8 or 16 (bits). The size of each cell in the class mrpt::slam::COccupancyGridMap2D. Default is 8 bits. More on this <A href="http://www.mrpt.org/Occupancy_Grids">here</A>.</LI>
+
+<LI><CODE>USER_EXTRA_CPP_FLAGS </CODE> : You can add here whatever additional flags to be passed to the compiler.</LI>
+
+<LI><CODE>MRPT_HAS_ASIAN_FONTS </CODE> : Enables Asian fonts in CMRPTCanvas (see wiki page), but increases library size by 1.5Mb. Default is OFF.</LI>
+
+<LI><CODE>BUILD_xSENS </CODE> : Whether to use the CMT library for interfacing xSens inertial sensors. Default is ON.</LI>
+</UL>
+
+
+
+<BR>
+
+<B>For Windows only:</B>
+<UL>
+<LI><CODE>MRPT_HAS_FFMPEG_WIN32</CODE> : Enable this and (after running "Configure") then set FFMPEG_WIN32_ROOT_DIR to the directory where FFmpeg binaries have been uncompressed (e.g. "c:\ffmpeg-r16537-gpl-lshared-win32").</LI>
+<LI><CODE>MRPT_HAS_BUMBLEBEE </CODE> : To enable integration of the Bumblebee stereo camera SDK. You'll need the vendor provided "Triclops" and "Digiclops" libraries. After setting this option to "ON", the new configuration fields "BUMBLEBEE_DIGICLOPS_ROOT_DIR" and "BUMBLEBEE_TRICLOPS_ROOT_DIR" will appear where the correct corresponding paths must be entered.</LI>
+</UL>
+
+<BR>
+
+
+<B>For GNU GCC compiler only:</B>
+<UL>
+<LI><CODE>MRPT_ENABLE_LIBSTD_PARALLEL_MODE</CODE> : Enables the GNU libstdc++ parallel mode (See http://gcc.gnu.org/onlinedocs/libstdc++/manual/parallel_mode.html). Default is OFF.</LI>
+
+<LI><CODE>MRPT_ENABLE_PROFILING</CODE> : Enables generation of information required for profiling. Default is OFF.</LI>
+
+<LI><CODE>MRPT_OPTIMIZE_NATIVE</CODE> : Enables optimization for the current architecture (-mtune=native). Default is OFF for old GCC versions, ON for 4.2+. If you have an old version of GCC (&lt;4.2), this option cannot be set since it's not recognized by the compiler. Instead, set USER_EXTRA_CPP_FLAGS to the optimization flags for your platform, for example: -march=pentium4.</LI>
+
+</UL>
+
+
+<BR><BR><HR>
+<H2 id="Generate_MakefilesIDE_Projects">3. Generate Makefiles/IDE Projects</H2><BR>
+
+Just select your preferred Makefile/IDE system with CMake. Supported targets are 32/64 bit Visual Studio projects, Unix Makefiles, Codeblocks projects with MinGW, MinGW Makefiles, etc...
+
+
+<BR><BR><HR>
+<H2 id="Compile">4. Compile</H2><BR>
+
+
+Just build as usual: from Visual Studio click on "Build all" for the targets you want to build (Debug or Release), for Unix Makefiles invoke: 
+
+<PRE class="bordered">$ make -j2
+</PRE>
+
+After building everything, it's a good idea to run the tests by building the "test" target under Visual Studio or by "make test" in Unix/MacOS.
+
+<BR>
+
+<BR>
+<H2 id="Special_instructions_for_MinGW">5. Special instructions for MinGW</H2>
+
+<UL>
+
+<LI>Install MinGW: Recommended: http://www.tdragon.net/recentgcc/ </LI>
+
+<LI>Before compiling MRPT with MinGW, it's strongly recommended to compile wxWidgets and OpenCV with MinGW:</LI>
+<LI>Build wxWidgets. Open a command prompt and go to the directory build/msw. Then execute the following commands to rebuild the Release and Debug configurations (as shared libs), so CMake can correctly detect wxWidgets:
+<PRE class="bordered">mingw32-make -f makefile.gcc SHARED=1 USE_OPENGL=1 BUILD=release 
+mingw32-make -f makefile.gcc SHARED=1 USE_OPENGL=1 BUILD=debug 
+</PRE>
+</LI>
+
+<LI>Build OpenCV. Use its CMake build system, select the MinGW compiler and follow the generic OpenCV compilation instructions.</LI>
+
+<LI>Open cmake-gui and select the source directory and an empty target (binary) directory.</LI>
+
+<LI>Press configure and in the compilers dialog pick MinGW Makefiles. If you obtain an error like:
+<PRE>CMake Error: CMake was unable to find a build program corresponding to "MinGW Makefiles".  
+CMAKE_MAKE_PROGRAM is not set.  You probably need to select a different build tool.
+</PRE>
+it means MinGW is not correctly installed in the system. Review the installation process described above.</LI>
+
+<LI>If everything goes fine, you'll see the new CMake variables remarked in red. Go through the normal configuration process for MRPT, and when you are satisfied, press Generate.</LI>
+
+<LI>Open a console and in the newly created binary directory, invoke:
+<PRE>mingw32-make
+</PRE>
+either by writing the full path (e.g. c:\MinGW\bin\mingw32-make) or by adding the "bin" directory of your MinGW installation to the system PATH. This should start the normal build process.</LI>
+
+</UL></FFMPEG>  </DIV>
+    </DIV></DIV></DIV>
+  
+
+</BODY></HTML>

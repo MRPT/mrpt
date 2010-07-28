@@ -59,19 +59,7 @@ fi
 #  Paths relative to "MRPT/doc"
 # -------------------------------------------------------------------
 CUR_DIR=`pwd`
-MRPT_LIST_DIRECTORIES="$CUR_DIR/doc/doxygen-pages \
-	$CUR_DIR/libs/base/include \
-	$CUR_DIR/libs/gui/include \
-	$CUR_DIR/libs/hmtslam/include \
-	$CUR_DIR/libs/hwdrivers/include \
-	$CUR_DIR/libs/maps/include \
-	$CUR_DIR/libs/obs/include \
-	$CUR_DIR/libs/opengl/include \
-	$CUR_DIR/libs/reactivenav/include \
-	$CUR_DIR/libs/slam/include \
-	$CUR_DIR/libs/topography/include \
-	$CUR_DIR/libs/detectors/include \
-	$CUR_DIR/libs/vision/include"
+MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/)
 
 # Checks
 # --------------------------------

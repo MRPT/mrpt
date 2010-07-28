@@ -217,7 +217,18 @@ endif(1)
 	IF(UNIX)
 		# TODO: Declare some more vars, etc...
 		SET(mrpt_pkgconfig_LIBNAME ${name})
-		CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/pkgconfig/mrpt_template.pc.in" "${CMAKE_BINARY_DIR}/pkgconfig/mrpt-${name}.pc" @ONLY)
+		get_property(_lst_deps GLOBAL PROPERTY "mrpt-${name}_LIB_DEPS")
+		
+		# a comma-separated list of other mrpt-* dependencies.
+		SET(mrpt_pkgconfig_REQUIRES "")
+		FOREACH(DEP ${_lst_deps})
+			IF(NOT "${mrpt_pkgconfig_REQUIRES}" STREQUAL "")
+				SET(mrpt_pkgconfig_REQUIRES "${mrpt_pkgconfig_REQUIRES},")
+			ENDIF(NOT "${mrpt_pkgconfig_REQUIRES}" STREQUAL "")
+			SET(mrpt_pkgconfig_REQUIRES "${mrpt_pkgconfig_REQUIRES}${DEP}")
+		ENDFOREACH(DEP)
+
+		CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/parse-files/mrpt_template.pc.in" "${CMAKE_BINARY_DIR}/pkgconfig/mrpt-${name}.pc" @ONLY)
 	ENDIF(UNIX)
 
 
