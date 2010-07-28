@@ -43,8 +43,14 @@ IF(CMAKE_MRPT_HAS_xSENS)
 		set_source_files_properties(${xSens_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
 	ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 
+	# Avoid some annoying warnings:
+	IF (CMAKE_COMPILER_IS_GNUCXX)
+		set_source_files_properties(${xSens_FILES} PROPERTIES COMPILE_FLAGS "-Wno-variadic-macros")
+	ENDIF (CMAKE_COMPILER_IS_GNUCXX)
+
 	ADD_DEFINITIONS(-D_LOG_TO_STDOUT)
 ENDIF(CMAKE_MRPT_HAS_xSENS)
+
 # Build with link on SVS lib
 IF(CMAKE_MRPT_HAS_SVS)
 	TARGET_LINK_LIBRARIES(mrpt-hwdrivers dcap)
