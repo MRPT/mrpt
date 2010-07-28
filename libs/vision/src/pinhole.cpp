@@ -209,6 +209,75 @@ void mrpt::vision::pinhole::undistort_points(
 	MRPT_END
 }
 
+void mrpt::vision::pinhole::projectPoints_with_distortion(
+	const std::vector<mrpt::math::TPoint3D>  &P,
+	const mrpt::utils::TCamera  &params,
+	const CPose3DQuat &cameraPose,
+	std::vector<mrpt::vision::TPixelCoordf>  &pixels,
+	bool accept_points_behind
+	)
+{
+	MRPT_START
+
+	pixels.resize( P.size() );
+	std::vector<mrpt::math::TPoint3D>::const_iterator itPoints;
+	std::vector<mrpt::vision::TPixelCoordf>::iterator itPixels;
+	unsigned int k = 0;
+	for( itPoints = P.begin(), itPixels = pixels.begin(); itPoints != P.end(); ++itPoints, ++itPixels, ++k )
+	{
+		// Change the reference system to that wrt the camera
+		TPoint3D nP;
+		cameraPose.inverseComposePoint( itPoints->x, itPoints->y, itPoints->z, nP.x, nP.y, nP.z );
+
+		// Pinhole model:
+		const double x = nP.x/nP.z;
+		const double y = nP.y/nP.z;
+
+		// Radial distortion:
+		const double r2 = square(x)+square(y);
+		const double r4 = square(r2);
+		const double r6 = r2*r4;
+		const double A  = 1+params.dist[0]*r2+params.dist[1]*r4+params.dist[4]*r6;
+		const double B  = 2*x*y;
+		if( A > 0 && (accept_points_behind || nP.z > 0) )
+		{
+			itPixels->x = params.cx() + params.fx() * ( x*A + params.dist[2]*B + params.dist[3]*(r2+2*square(x)) );
+			itPixels->y = params.cy() + params.fy() * ( y*A + params.dist[3]*B + params.dist[2]*(r2+2*square(y)) );
+		}
+		else
+		{
+			itPixels->x = -1.0;
+			itPixels->y = -1.0;
+		}
+	} // end-for
+
+	MRPT_END
+}
+
+/* -------------------------------------------------------
+				projectPoint_with_distortion
+   ------------------------------------------------------- */
+void mrpt::vision::pinhole::projectPoint_with_distortion(
+	const mrpt::math::TPoint3D  &P,
+	const mrpt::utils::TCamera  &params,
+	mrpt::vision::TPixelCoordf  &pixel,
+	bool accept_points_behind
+	)
+{
+	// Pinhole model:
+	const double x = P.x/P.z;
+	const double y = P.y/P.z;
+
+	// Radial distortion:
+	const double r2 = square(x)+square(y);
+	const double r4 = square(r2);
+	const double r6 = r2*r4;
+
+	pixel.x = params.cx() + params.fx() *(  x*(1+params.dist[0]*r2+params.dist[1]*r4+params.dist[4]*r6) + 2*params.dist[2]*x*y+params.dist[3]*(r2+2*square(x))  );
+	pixel.y = params.cy() + params.fy() *(  y*(1+params.dist[0]*r2+params.dist[1]*r4+params.dist[4]*r6) + 2*params.dist[3]*x*y+params.dist[2]*(r2+2*square(y))  );
+}
+
+
 /* -------------------------------------------------------
 					undistortPixels
    ------------------------------------------------------- */
@@ -319,22 +388,3 @@ void mrpt::vision::pinhole::undistort_points(
 /* -------------------------------------------------------
 				projectPoint_with_distortion
    ------------------------------------------------------- */
-void mrpt::vision::pinhole::projectPoint_with_distortion(
-	const mrpt::math::TPoint3D  &P,
-	const mrpt::utils::TCamera  &params,
-	mrpt::vision::TPixelCoordf  &pixel,
-	bool accept_points_behind
-	)
-{
-	// Pinhole model:
-	const double x = P.x/P.z;
-	const double y = P.y/P.z;
-
-	// Radial distortion:
-	const double r2 = square(x)+square(y);
-	const double r4 = square(r2);
-	const double r6 = r2*r4;
-
-	pixel.x = params.cx() + params.fx() *(  x*(1+params.dist[0]*r2+params.dist[1]*r4+params.dist[4]*r6 + 2*params.dist[2]*x*y+params.dist[3]*(r2+2*square(x))  )  );
-	pixel.y = params.cy() + params.fy() *(  y*(1+params.dist[0]*r2+params.dist[1]*r4+params.dist[4]*r6 + 2*params.dist[3]*x*y+params.dist[2]*(r2+2*square(y)))  );
-}

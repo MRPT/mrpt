@@ -96,6 +96,15 @@ namespace mrpt
 				bool accept_points_behind = false
 				);
 
+			void VISION_IMPEXP projectPoints_with_distortion(
+				const std::vector<mrpt::math::TPoint3D>  &P,
+				const mrpt::utils::TCamera  &params,
+				const CPose3DQuat &cameraPose,
+				std::vector<mrpt::vision::TPixelCoordf>  &pixels,
+				bool accept_points_behind = false
+				);
+
+
 			/** Undistort a list of points given by their pixel coordinates, provided the camera matrix and distortion coefficients.
 			  * \param srcDistortedPixels [IN] The pixel coordinates as in the distorted image.
 			  * \param dstUndistortedPixels [OUT] The computed pixel coordinates without distortion.
