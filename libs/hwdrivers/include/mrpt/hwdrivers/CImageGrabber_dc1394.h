@@ -147,7 +147,7 @@ namespace mrpt
 			*/
 			virtual ~CImageGrabber_dc1394( );
 
-			/** Check whether the camera has been open succesfully. */
+			/** Check whether the camera has been open successfully. */
 			bool isOpen() const
 			{
 				return m_bInitialized;

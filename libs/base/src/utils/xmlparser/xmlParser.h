@@ -15,7 +15,7 @@
  * for enhancing "The Mobile Robot Programming Toolkit (MRPT)". All other projects
  * (not related to "The Mobile Robot Programming Toolkit (MRPT)") have to use this
  * code under the Aladdin Free Public License (AFPL)
- * See the file "AFPL-license.txt" for more informations about the AFPL license.
+ * See the file "AFPL-license.txt" for more information about the AFPL license.
  * (see http://www.artifex.com/downloads/doc/Public.htm for detailed AFPL terms)
  *
  * Redistribution and use in source and binary forms, with or without

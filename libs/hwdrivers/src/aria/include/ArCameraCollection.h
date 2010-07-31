@@ -297,7 +297,7 @@ public:
    * modified; must be non-NULL
    * @param position the ArListPos::Pos at which to put the callback
    * (beginning or end)
-   * @return bool true if the callback was succesfully added; false, otherwise.
+   * @return bool true if the callback was successfully added; false, otherwise.
   **/
   AREXPORT virtual bool addModifiedCB(ArFunctor *functor,
                                       ArListPos::Pos position = ArListPos::LAST);
@@ -305,7 +305,7 @@ public:
   /// Removes a callback from the modified notification list.
   /**
    * @param functor the ArFunctor * to be removed from the notification list
-   * @return bool true if the callback was succesfully removed; false, otherwise.
+   * @return bool true if the callback was successfully removed; false, otherwise.
   **/
   AREXPORT virtual bool removeModifiedCB(ArFunctor *functor);
 

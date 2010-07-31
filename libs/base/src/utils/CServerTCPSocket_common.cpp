@@ -134,8 +134,8 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 		ptrTimeout = &timeoutSelect;
 	}
 
-	// Wait for READ flag (meaning incomming connections):
-	if (m_verbose)	printf_debug("[CServerTCPSocket::accept] Waiting incomming connections\n" );
+	// Wait for READ flag (meaning incoming connections):
+	if (m_verbose)	printf_debug("[CServerTCPSocket::accept] Waiting incoming connections\n" );
 
 	int selRet = ::select(
 					 m_serverSock+1,// __nfds
@@ -152,14 +152,14 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 
 	if (selRet==0)
 	{
-		if (m_verbose)	printf_debug("[CServerTCPSocket::accept] Timeout waiting incomming connections\n" );
+		if (m_verbose)	printf_debug("[CServerTCPSocket::accept] Timeout waiting incoming connections\n" );
 
 		// Timeout:
 		return NULL;
 	}
 	else
 	{
-		if (m_verbose)	printf_debug("[CServerTCPSocket::accept] Incomming connection accepted\n" );
+		if (m_verbose)	printf_debug("[CServerTCPSocket::accept] Incoming connection accepted\n" );
 
 		// We have a new connection:
 		CClientTCPSocket	*ret = new CClientTCPSocket();
