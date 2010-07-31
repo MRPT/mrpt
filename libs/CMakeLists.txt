@@ -3,6 +3,7 @@
 # ------------------------------------------
 add_subdirectory(base)
 add_subdirectory(scanmatching)
+add_subdirectory(bayes)
 add_subdirectory(opengl)
 add_subdirectory(gui)
 add_subdirectory(topography)

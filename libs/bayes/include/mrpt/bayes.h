@@ -29,11 +29,14 @@
 #ifndef _mrpt_bayes_H
 #define _mrpt_bayes_H
 
-#include "bayes/CKalmanFilterCapable.h"
-#include "bayes/CParticleFilter.h"
-#include "bayes/CParticleFilterCapable.h"
-#include "bayes/CParticleFilterData.h"
-#include "bayes/CProbabilityParticle.h"
-#include "bayes/CRejectionSamplingCapable.h"
+// These headers are actually in mrpt-base (May be moved to mrpt-bayes someday?)
+#include <mrpt/bayes/CParticleFilterCapable.h>
+#include <mrpt/bayes/CParticleFilterData.h>
+#include <mrpt/bayes/CProbabilityParticle.h>
+
+// Headers fully within mrpt-bayes lib:
+#include <mrpt/bayes/CKalmanFilterCapable.h>
+#include <mrpt/bayes/CParticleFilter.h>
+#include <mrpt/bayes/CRejectionSamplingCapable.h>
 
 #endif

@@ -71,12 +71,21 @@ IF(BUILD_EXAMPLES)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
+	# === Depending on: mrpt-base, mrpt-bayes, mrpt-obs, mrpt-gui ===
+	#  list of examples for each directory:
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		bayesianTracking
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-bayes mrpt-obs mrpt-gui)
+	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+
 	# === Depending on: base, obs, maps, etc... ===
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		icp
 		rejectionSampling
-		bayesianTracking
 		stringList
 		benchmark-matrix
 		RangeOnlyLocalization_RejectionSampling

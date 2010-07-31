@@ -3,6 +3,7 @@ digraph MRPT_LIBS {
 	node [shape=box,style=filled, fillcolor="#D0D0D0",fontsize=12];
 	
 	base 		[label="mrpt-base",URL="mrpt-base.html"];
+	bayes 		[label="mrpt-bayes",URL="mrpt-bayes.html"];
 	opengl 		[label="mrpt-opengl", URL="mrpt-opengl.html"];
 	gui 		[label="mrpt-gui",URL="mrpt-gui.html"];
 	obs 		[label="mrpt-obs",URL="mrpt-obs.html"];
@@ -23,6 +24,8 @@ digraph MRPT_LIBS {
 	
 	
 	scanmatching -> base;
+
+	bayes -> base;
 	
 	opengl -> base;
 	
@@ -43,6 +46,7 @@ digraph MRPT_LIBS {
 	slam -> maps;
 	slam -> vision;
 	slam -> scanmatching;
+	slam -> bayes;
 	
 	detectors -> vision;
 	detectors -> maps;

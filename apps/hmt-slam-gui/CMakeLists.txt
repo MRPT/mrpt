@@ -57,7 +57,7 @@ IF(wxWidgets_FOUND AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically, 
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-hmtslam)
+	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-hmtslam mrpt-slam mrpt-bayes)
 
 	# ----------------------------------------------------------------------------
 	#   				INSTALL

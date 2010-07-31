@@ -32,7 +32,6 @@
 #include <mrpt/poses.h>
 #include <mrpt/synch.h>
 #include <mrpt/system/threads.h>
-#include <mrpt/bayes/CKalmanFilterCapable.h>
 #include <mrpt/reactivenav/CParameterizedTrajectoryGenerator.h>
 
 #include <mrpt/reactivenav/link_pragmas.h>
@@ -283,7 +282,7 @@ namespace mrpt
 		CCriticalSection	m_PTGs_cs;
 
 	public:
-		
+
 		mrpt::poses::CRobot2DPoseEstimator m_robotStateFilter; //!< Object maintained by the robot-tracking thread (All methods are thread-safe).
 
 

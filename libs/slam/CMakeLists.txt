@@ -17,6 +17,7 @@ define_mrpt_lib(
 	# Lib name
 	slam 		
 	# Dependencies
+	mrpt-bayes
 	mrpt-vision
 	mrpt-scanmatching
 	mrpt-maps

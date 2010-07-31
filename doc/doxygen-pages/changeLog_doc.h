@@ -36,7 +36,7 @@
 	- <b>Most important changes:</b>
 		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.		
 		- Changes in <a href="index.html#libs" >libraries</a>:
-			- New libraries: <a href="mrpt-detectors.html" > mrpt-detectors</a> and <a href="mrpt-scanmatching.html" >mrpt-scanmatching </a>.
+			- Further factorization: New libraries: <a href="mrpt-detectors.html" > mrpt-detectors</a>, <a href="mrpt-bayes.html" > mrpt-bayes</a> and <a href="mrpt-scanmatching.html" >mrpt-scanmatching </a>.
 			- Dependencies simplified - most notably, mrpt-gui is now not included by many libraries that did in previous versions (check the <a href="index.html#libs" > deps graph </a> ).
 			- <b>Important:</b> Due to this last change, you <b>may need</b> to add a <code>#include <mrpt/gui.h></code> when using mrpt::gui classes in places where formerly a <code>#include <mrpt/slam.h></code> was enough.
 		- Many new stuff and improvements in mrpt-vision, e.g. mrpt::vision::CGenericFeatureTracker, mrpt::vision::CFeatureList, etc.
@@ -46,7 +46,7 @@
 	- <b>Detailed list of changes:</b>
 		- Changes in build system:
 			- Fixed support for pkg-config with a new set of libmrpt-*.pc files (see new example MRPT/doc/mrpt_example1-with-Makefile and <a href="http://www.mrpt.org/Compiling_custom_applications_in_Linux_with_a_Makefile_and_pkg-config" >this page</a>).
-			- New libraries: <a href="mrpt-detectors.html" > mrpt-detectors</a> and <a href="mrpt-scanmatching.html" >mrpt-scanmatching </a>.
+			- Further factorization: New libraries: <a href="mrpt-detectors.html" > mrpt-detectors</a>, <a href="mrpt-bayes.html" > mrpt-bayes</a> and <a href="mrpt-scanmatching.html" >mrpt-scanmatching </a>.
 			- Dependencies simplified - most notably, mrpt-gui is now not included by many libraries that did in previous versions (check the <a href="index.html#libs" > deps graph </a> ).
 			- New CMake switch: "MRPT_BACKCOMPATIB_08X": Enabled by default; if disabled, some backward compatibility definitions are not declared. Useful to prepare code for future MRPT versions where deprecated definitions and names will be removed.
 		- Changes in applications:

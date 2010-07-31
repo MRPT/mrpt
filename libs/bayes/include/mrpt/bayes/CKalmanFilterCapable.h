@@ -42,6 +42,8 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileOutputStream.h>
 
+#include <mrpt/bayes/link_pragmas.h>
+
 
 namespace mrpt
 {
@@ -65,7 +67,7 @@ namespace mrpt
 
 		/** Generic options for the Kalman Filter algorithm in itself.
 		  */
-		struct BASE_IMPEXP TKF_options : public utils::CLoadableOptions
+		struct BAYES_IMPEXP TKF_options : public utils::CLoadableOptions
 		{
 			TKF_options();
 
