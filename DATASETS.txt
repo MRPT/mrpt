@@ -2,6 +2,3 @@ Some sample datasets are stored in MRPT/share/mrpt/datasets.
 
 More datasets are available for download at:
 http://www.mrpt.org/Downloads
-
-JLBC
-

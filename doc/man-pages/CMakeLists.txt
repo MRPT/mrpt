@@ -1,4 +1,4 @@
-INCLUDE(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 # ----------------------------------------------------------------------------
 # Targets for building man-pages of the MRPT
@@ -12,17 +12,20 @@ FIND_PROGRAM(PROG_GZIP gzip)
 IF (PROG_GZIP AND PROG_POD2MAN)
 	MARK_AS_ADVANCED(PROG_POD2MAN)
 	MARK_AS_ADVANCED(PROG_GZIP)
+	
+	# Make sure the output dir exists:
+	FILE(MAKE_DIRECTORY "${MRPT_BINARY_DIR}/man-pages")
 
 	# Macro for declaring man-pages targets:
 	MACRO(CREATE_MANPAGE_PROJECT appname)
 		add_custom_target(man_page_${appname}
-			COMMAND 			pod2man --center="Mobile Robot Programming Toolkit - MRPT"  ${MRPT_SOURCE_DIR}/man-pages/pod/${appname}.pod |gzip -c > ${MRPT_SOURCE_DIR}/man-pages/${appname}.1.gz
+			COMMAND 			pod2man --center="Mobile Robot Programming Toolkit - MRPT"  ${MRPT_SOURCE_DIR}/doc/man-pages/pod/${appname}.pod |gzip -c > ${MRPT_BINARY_DIR}/man-pages/${appname}.1.gz
 			WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
 			COMMENT 		"Generating MRPT man pages"
 			)
 		add_dependencies(man_pages_all man_page_${appname})
 		if (UNIX AND NOT CMAKE_MRPT_USE_DEB_POSTFIXS)
-			INSTALL(FILES "${MRPT_SOURCE_DIR}/man-pages/${appname}.1.gz" DESTINATION share/man/man1/ )
+			INSTALL(FILES "${MRPT_BINARY_DIR}/man-pages/${appname}.1.gz" DESTINATION share/man/man1/ )
 		endif(UNIX AND NOT CMAKE_MRPT_USE_DEB_POSTFIXS)
 	ENDMACRO(CREATE_MANPAGE_PROJECT)
 

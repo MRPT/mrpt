@@ -45,15 +45,21 @@ For questions on using or compiling MRPT, write in the help forums:
 
 3.1 *** FIVE SECONDS INSTRUCTIONS ***
 
- Linux   -> Invoke "ccmake ." at the root of the directory tree, 
-             select 'generate', then run "make".
-			 
- Windows -> Execute the appropriate script for your compiler from
-             those at "makefiles/win32_rebuild_XXXX.bat", select your
-			 configuration, select 'generate' and the project for your
-			 IDE will be generated at, for example, 'makefiles/MSVC8'.
+ 1) Invoke cmake-gui and select: 
+      Where source is          --> MRPT source root directory
+	  Where to build binaries  --> Pick a new, empty directory.
+	  
+   Note: If your platform doesn't support cmake-gui, open a console, 
+         chdir to a new empty directory and execute:
+		  $ ccmake <PATH_TO_MRPT_SOURCES>
 
- To build the examples -> Enable "BUILD_SAMPLES" from cmake-gui.
+ 2) Within cmake-gui (or ccmake), set all the build options as 
+    you desire, then press "Configure" and "Generate". To build 
+	the examples, enable "BUILD_SAMPLES".
+	
+ 3) Build with the IDE / compiler you selected from CMake (Visual Studio, 
+    GNU Make,...)
+ 
 
 3.2. Further details (RECOMMENDED!)
 
@@ -62,9 +68,7 @@ the MRPT C++ library, the samples, applications, and also how to regenerate the
 reference documentation. Probably a more updated version will be found at:
  http://www.mrpt.org/Building_and_Installing_Instructions
 
-See also "makefiles/README_win32.txt" and "makefiles/README_linux.txt".
  
-
 4. News / Changelog
 ------------------------------------------------------------------------------
 The last changes can be found in "doc/NEWS.html". The updated online version, 

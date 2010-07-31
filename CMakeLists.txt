@@ -260,15 +260,8 @@ endif()
 # ===================================================
 SET(BUILD_MONOSLAM OFF CACHE BOOL "Build library mrpt-monoslam")
 SET(BUILD_STEREOSLAM OFF CACHE BOOL "Build library mrpt-stereoslam")
-SET(BUILD_APPs_GUIs ON CACHE BOOL "Build GUI applications: SceneViewer, RawLogViewer, ReactiveNavigationDemo.")
-SET(BUILD_APPs_SLAM ON CACHE BOOL "Build applications XXX-SLAM")
-SET(BUILD_APPs_SIMUL ON CACHE BOOL "Build applications simul-XXX and GridmapNavSimul")
-
 MARK_AS_ADVANCED(BUILD_MONOSLAM)
 MARK_AS_ADVANCED(BUILD_STEREOSLAM )
-MARK_AS_ADVANCED(BUILD_APPs_GUIs)
-MARK_AS_ADVANCED(BUILD_APPs_SLAM)
-MARK_AS_ADVANCED(BUILD_APPs_SIMUL)
 
 # If some app is not in this package, do NOT build it:
 # =====================================================
@@ -1653,9 +1646,6 @@ add_subdirectory(rawlog-tools)
 # Documentation targets:
 #-----------------------------------
 add_subdirectory(doc)
-IF(UNIX)
-	add_subdirectory(man-pages)
-ENDIF(UNIX)
 
 # Add a "virtual" library, just for backward compatibility:
 #  "mrpt-core", which just maps into a dependence on "mrpt-topography" + "mrpt-slam".
@@ -1797,11 +1787,8 @@ ENDIF(WIN32)
 IF(WIN32)
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/doc" DESTINATION ./ PATTERN ".svn" EXCLUDE)
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/cmakemodules" DESTINATION ./ PATTERN ".svn" EXCLUDE)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/makefiles" DESTINATION ./ PATTERN ".svn" EXCLUDE)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/man-pages" DESTINATION ./ PATTERN ".svn" EXCLUDE)
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs" DESTINATION ./ PATTERN ".svn" EXCLUDE)
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/parse-files" DESTINATION ./ PATTERN ".svn" EXCLUDE)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/pkgconfig" DESTINATION ./ PATTERN ".svn" EXCLUDE)
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/samples" DESTINATION ./  PATTERN ".svn" EXCLUDE)
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share" DESTINATION ./  PATTERN ".svn" EXCLUDE)
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/scripts" DESTINATION ./  PATTERN ".svn" EXCLUDE)

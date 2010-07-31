@@ -6,7 +6,9 @@ INCLUDE(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake
 
 PROJECT(documentation)
 
-#MESSAGE(STATUS "Makefile for documentation")
+IF(UNIX)
+	add_subdirectory(man-pages)
+ENDIF(UNIX)
 
 FIND_PACKAGE(Doxygen)
 
