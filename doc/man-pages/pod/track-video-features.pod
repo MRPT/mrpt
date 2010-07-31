@@ -1,0 +1,46 @@
+=head1 NAME
+
+track-video-features - Demonstration of image feature detection and tracking
+
+=head1 SYNOPSIS
+
+track-video-features                        # Asks the user for video input
+track-video-features  I<path_to_video.avi>  # Use video file
+track-video-features  I<dataset.rawlog>     # Use images from rawlog
+
+=head1 DESCRIPTION
+
+B<track-video-features> is a command-line/GUI application which takes a video
+stream (from a live camera, a video file, or a robotics rawlog dataset) and 
+perform feature detection and tracking. 
+
+The application is conceived as a programming example for some mrpt-vision 
+classes, so for further details, check out the program source code.
+
+=head1 BUGS
+
+Please report bugs at http://www.mrpt.org/project/issues/MRPT
+
+=head1 SEE ALSO
+
+The application wiki page at http://www.mrpt.org/Applications
+
+=head1 AUTHORS
+
+B<track-video-features> is part of the Mobile Robot Programming Toolkit (MRPT), 
+and was originally written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3, or (at your option) any
+later version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
+=cut
+
