@@ -15,7 +15,6 @@ add_base_srcs(random)
 add_base_srcs(synch)
 add_base_srcs(system)
 add_base_srcs(utils)
-add_base_srcs(scan_matching)
 
 LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/utils/simpleini/*.c" "${MRPT_LIBS_ROOT}/base/src/utils/simpleini/*.h")
 LIST(APPEND base_EXTRA_SRCS_NAME 	"utils/simpleini" "utils/simpleini")

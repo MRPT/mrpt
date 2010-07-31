@@ -28,10 +28,8 @@
 
 #include <mrpt/slam.h>  // Precompiled header
 
-
-
 #include <mrpt/slam/CICP.h>
-#include <mrpt/scan_matching/scan_matching.h>
+#include <mrpt/scanmatching.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/utils/CTicTac.h>
 
@@ -242,7 +240,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 	float									umbral_dist,umbral_ang;
 	bool									keepApproaching;
 	CPose2D									grossEst = initialEstimationPDF.mean;
-	CMetricMap::TMatchingPairList			correspondences,old_correspondences;
+	mrpt::utils::TMatchingPairList			correspondences,old_correspondences;
 	float									correspondencesRatio;
 	CPose2D									lastMeanPose;
 
@@ -317,7 +315,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 				// Compute the estimated pose.
 				//  (Method from paper of J.Gonzalez, Martinez y Morales)
 				// ----------------------------------------------------------------------
-				scan_matching::leastSquareErrorRigidTransformation( correspondences,	gaussPdf->mean );
+				scanmatching::leastSquareErrorRigidTransformation( correspondences,	gaussPdf->mean );
 
 				// If matching has not changed, decrease the thresholds:
 				// --------------------------------------------------------
@@ -357,7 +355,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			// ----------------------------------------------
 			// METHOD 1: MSE linear estimation
 			// ----------------------------------------------
-			scan_matching::leastSquareErrorRigidTransformation(
+			scanmatching::leastSquareErrorRigidTransformation(
 				correspondences,
 				gaussPdf->mean,
 				&gaussPdf->cov );
@@ -385,7 +383,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 
 			// Fill out D:
 			double  rho2 = square( options.kernel_rho );
-			CMetricMap::TMatchingPairList::iterator	it;
+			mrpt::utils::TMatchingPairList::iterator	it;
 			size_t  i;
 			for (i=0, it=correspondences.begin();i<nCorrespondences;i++, it++)
 			{
@@ -536,7 +534,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 		//delete gaussPdf; gaussPdf=NULL;
 
 		SOG = CPosePDFSOG::Create();
-		scan_matching::robustRigidTransformation(
+		scanmatching::robustRigidTransformation(
 			correspondences,
 			*SOG,
 			options.normalizationStd,
@@ -587,7 +585,7 @@ CPosePDFPtr CICP::ICP_Method_LM(
 	double									umbral_dist,umbral_ang;
 	bool									keepIteratingICP;
 	CPose2D									grossEst = initialEstimationPDF.mean;
-	CMetricMap::TMatchingPairList			correspondences,old_correspondences;
+	mrpt::utils::TMatchingPairList			correspondences,old_correspondences;
 	float									correspondencesRatio;
 	CPose2D									lastMeanPose;
 	vector_float							other_xs_trans,other_ys_trans; // temporary container of "other" map (map2) transformed by "q"
@@ -681,7 +679,7 @@ CPosePDFPtr CICP::ICP_Method_LM(
 				// Compute "dJ_dq"
 				// ------------------------------------
 				double  rho2 = square( options.kernel_rho );
-				CMetricMap::TMatchingPairList::iterator	it;
+				mrpt::utils::TMatchingPairList::iterator	it;
 				vector_float::const_iterator other_x_trans,other_y_trans;
 				size_t  i;
 
@@ -1068,7 +1066,7 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 	float									umbral_dist,umbral_ang;
 	bool									keepApproaching;
 	CPose3D									grossEst = initialEstimationPDF.mean;
-	CMetricMap::TMatchingPairList			correspondences,old_correspondences;
+	mrpt::utils::TMatchingPairList			correspondences,old_correspondences;
 	float									correspondencesRatio;
 	CPose3D									lastMeanPose;
 
@@ -1139,7 +1137,7 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 				// Compute the estimated pose, using Horn's method.
 				// ----------------------------------------------------------------------
 				double transf_scale;
-				scan_matching::leastSquareErrorRigidTransformation6D( correspondences, gaussPdf->mean, transf_scale, false );
+				scanmatching::leastSquareErrorRigidTransformation6D( correspondences, gaussPdf->mean, transf_scale, false );
 
 				//cout << gaussPdf->mean << " scale: " << transf_scale << " corrs: " << correspondences.size() << endl;
 

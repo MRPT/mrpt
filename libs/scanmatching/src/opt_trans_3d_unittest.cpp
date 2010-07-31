@@ -26,15 +26,15 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/scanmatching.h>
+#include <mrpt/base.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::random;
-using namespace mrpt::scan_matching;
+using namespace mrpt::scanmatching;
 using namespace std;
 
 typedef std::vector< std::vector< double > > TPoints;
@@ -75,9 +75,9 @@ CPose3DQuat generate_points( TPoints &pA, TPoints &pB )
 // ------------------------------------------------------
 //				Generate a list of matched points
 // ------------------------------------------------------
-void generate_list_of_points( const TPoints &pA, const TPoints &pB, CMetricMap::TMatchingPairList &list )
+void generate_list_of_points( const TPoints &pA, const TPoints &pB, TMatchingPairList &list )
 {
-	CMetricMap::TMatchingPair		pair;
+	TMatchingPair		pair;
 	for( unsigned int i = 0; i < 5; ++i )
 	{
 		pair.this_idx	= pair.other_idx = i;
@@ -116,7 +116,7 @@ TEST(LSRigidTrans6D, CPose3D)
 	TPoints	pA, pB;										// The input points
 	CPose3DQuat qPose = generate_points( pA, pB );
 
-	CMetricMap::TMatchingPairList list;				
+	TMatchingPairList list;				
 	generate_list_of_points( pA, pB, list );			// Generate a list of matched points
 
 	CPose3D			out;								// Output CPose3D for the LSRigidTransformation
@@ -131,7 +131,7 @@ TEST(LSRigidTrans6D, CPose3D)
 	// --
 
 	/*bool res1 =*/ 
-	scan_matching::leastSquareErrorRigidTransformation6D( list, out, scale );
+	scanmatching::leastSquareErrorRigidTransformation6D( list, out, scale );
 	const double err = sqrt(	square(out.x() - quat_x) + square(out.y() - quat_y) + square(out.z() - quat_z) + 
 								square(out.yaw() - quat_yaw) + square(out.pitch() - quat_pitch) + square(out.roll() - quat_roll) );
 	EXPECT_TRUE( err< 1e-6 )
@@ -144,14 +144,14 @@ TEST(LSRigidTrans6D, CPose3DQuat)
 	TPoints	pA, pB;										// The input points
 	CPose3DQuat qPose = generate_points( pA, pB );
 
-	CMetricMap::TMatchingPairList list;				
+	TMatchingPairList list;				
 	generate_list_of_points( pA, pB, list );			// Generate a list of matched points
 
 	CPose3DQuat		outQuat;							// Output CPose3DQuat for the LSRigidTransformation
 	double			scale;								// Output scale value
 
 	/*bool res2 =*/ 
-	scan_matching::leastSquareErrorRigidTransformation6D( list, outQuat, scale );
+	scanmatching::leastSquareErrorRigidTransformation6D( list, outQuat, scale );
 
 	double err = 0.0;
 	if( (qPose[3]*outQuat[3] > 0 && qPose[4]*outQuat[4] > 0 && qPose[5]*outQuat[5] > 0 && qPose[6]*outQuat[6] > 0) ||

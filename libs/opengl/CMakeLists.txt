@@ -35,8 +35,10 @@ INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/opengl/src/glext")
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
 define_mrpt_lib(
-	opengl 		# Lib name
-	mrpt-base		# Dependencies: None
+	# Lib name
+	opengl 		
+	# Dependencies: 
+	mrpt-base		
 	)
 	
 # Ignore precompiled headers in some sources:

@@ -40,7 +40,6 @@
 #include <mrpt/slam/CObservationStereoImages.h>
 #include <mrpt/slam/CObservationBearingRange.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/ops_vectors.h>
@@ -57,7 +56,6 @@ using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::math;
 using namespace mrpt::system;
-using namespace mrpt::gui;
 using namespace std;
 
 

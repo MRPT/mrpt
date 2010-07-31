@@ -30,6 +30,7 @@
 #include <mrpt/vision.h>
 #include <mrpt/hwdrivers.h>
 #include <mrpt/slam.h>
+#include <mrpt/gui.h>
 
 //#include <mrpt/detectors/CObjectDetection.h>  // Already in <mrpt/detectors.h>
 //#include <mrpt/detectors/CCascadeClassifierDetection.h>

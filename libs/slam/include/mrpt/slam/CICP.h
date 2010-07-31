@@ -33,11 +33,6 @@
 
 namespace mrpt
 {
-	namespace poses
-	{
-		class	CPosePDFParticles;
-	}
-
 	namespace slam
 	{
 		using namespace poses;
@@ -56,7 +51,7 @@ namespace mrpt
 		 *
 		 *   See CICP::AlignPDF for the entry point of the algorithm, and CICP::TConfigParams for all the parameters to the method.
 		 *  The algorithm has been exteneded with multihypotheses-support for the correspondences, which generates a Sum-of-Gaussians (SOG)
-		 *    PDF as output. See scan_matching::robustRigidTransformation.
+		 *    PDF as output. See scanmatching::robustRigidTransformation.
 		 *
 		 * For further details on the method, check the wiki:
 		 *   http://www.mrpt.org/Scan_Matching_Algorithms

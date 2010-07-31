@@ -32,7 +32,7 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::gui;
 using namespace mrpt::system;
-using namespace mrpt::scan_matching;
+using namespace mrpt::scanmatching;
 using namespace std;
 
 extern void getTestImage(unsigned int img_index, mrpt::utils::CImage &out_img );

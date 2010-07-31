@@ -35,12 +35,20 @@
   <h2>Version 0.9.1: (In developement)</h2></a>
 	- <b>Most important changes:</b>
 		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.		
+		- Changes in <a href="index.html#libs" >libraries</a>:
+			- New libraries: <a href="mrpt-detectors.html" > mrpt-detectors</a> and <a href="mrpt-scanmatching.html" >mrpt-scanmatching </a>.
+			- Dependencies simplified - most notably, mrpt-gui is now not included by many libraries that did in previous versions (check the <a href="index.html#libs" > deps graph </a> ).
+			- <b>Important:</b> Due to this last change, you <b>may need</b> to add a <code>#include <mrpt/gui.h></code> when using mrpt::gui classes in places where formerly a <code>#include <mrpt/slam.h></code> was enough.
 		- Many new stuff and improvements in mrpt-vision, e.g. mrpt::vision::CGenericFeatureTracker, mrpt::vision::CFeatureList, etc.
-		- New command-line dataset manipulation tool: rawlog-edit.
-		- New library: mrpt-detectors
-		- Fixed support for pkg-config with a new set of libmrpt-*.pc files (see new example MRPT/doc/mrpt_example1-with-Makefile and <a href="http://www.mrpt.org/Compiling_custom_applications_in_Linux_with_a_Makefile_and_pkg-config" >this page</a>).
 		- Support for Videre Stereo cameras (By Cyril Gerber, thanks!)
+		- New command-line dataset manipulation tool: rawlog-edit.
+		- Fixed support for pkg-config with a new set of libmrpt-*.pc files (see new example MRPT/doc/mrpt_example1-with-Makefile and <a href="http://www.mrpt.org/Compiling_custom_applications_in_Linux_with_a_Makefile_and_pkg-config" >this page</a>).
 	- <b>Detailed list of changes:</b>
+		- Changes in build system:
+			- Fixed support for pkg-config with a new set of libmrpt-*.pc files (see new example MRPT/doc/mrpt_example1-with-Makefile and <a href="http://www.mrpt.org/Compiling_custom_applications_in_Linux_with_a_Makefile_and_pkg-config" >this page</a>).
+			- New libraries: <a href="mrpt-detectors.html" > mrpt-detectors</a> and <a href="mrpt-scanmatching.html" >mrpt-scanmatching </a>.
+			- Dependencies simplified - most notably, mrpt-gui is now not included by many libraries that did in previous versions (check the <a href="index.html#libs" > deps graph </a> ).
+			- New CMake switch: "MRPT_BACKCOMPATIB_08X": Enabled by default; if disabled, some backward compatibility definitions are not declared. Useful to prepare code for future MRPT versions where deprecated definitions and names will be removed.
 		- Changes in applications:
 			- camera-calib can now open SwissRangers 3D cameras as well for real-time calibration.
 			- rawlog-grabber: New config file optional argument: "rawlog_GZ_compress_level" to settle the desired GZ-compression level of rawlogs.
@@ -481,7 +489,7 @@
 	- New methods in matrix classes:
 		- add_Ac
 		- substract_Ac
-	- Slightly more efficient and more correct computation of covariance matrix in mrpt::scan_matching::leastSquareErrorRigidTransformation.
+	- Slightly more efficient and more correct computation of covariance matrix in mrpt::scanmatching::leastSquareErrorRigidTransformation.
 	- Fixed the internal detection of OpenCV version according to the newest convention used in OpenCV SVN. This should fix compiling errors in some Linux distributions.
 	- Reduction in the number of MRPT libraries: "mrpt-ann" and "mrpt-3ds" have disappeared (for all platforms), since their code is now integrated in "mrpt-core".
 	- <b>The following classes have been renamed</b> (and their corresponding header files as well). Note that typedefs with the old names will be maintained, but they are now deprecated and will disappear in future releases.
@@ -655,7 +663,7 @@
 		- Fonts used in mrpt::utils::CCanvas are now internally saved as gz-compressed data streams, automatically decompressed on first use. This saves ~1Mb in the .DLL/.so file for mrpt-core when compiled with Asian fonts.
 		- Two new gz-compression methods: mrpt::compress::zip::compress_gz_data_block and mrpt::compress::zip::decompress_gz_data_block
 		- Load/Save of matrices as text files moved from mrpt::math::CMatrixTemplateNumeric to mrpt::math::CMatrixTemplate.
-		- mrpt::scan_matching::robustRigidTransformation (and the program grid-matching) dynamically determine the number of RANSAC iterations by default.
+		- mrpt::scanmatching::robustRigidTransformation (and the program grid-matching) dynamically determine the number of RANSAC iterations by default.
 		- Exceptions now show a more detailed stack trace. See mrpt::system::stack_trace (requires wxWidgets and building in "Debug").
 		- Added methods to retrieve polygons (as defined in geometry.h) for some graphical classes.
 		- Added constructors to transparently swap between heavy and lightweight pose classes (heavy poses are intended to stop being used in some classes in the near future).

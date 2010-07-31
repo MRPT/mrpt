@@ -10,6 +10,7 @@ digraph MRPT_LIBS {
 	topography 	[label="mrpt-topography",URL="mrpt-topography.html"];
 	maps 		[label="mrpt-maps",URL="mrpt-maps.html"];
 	vision 		[label="mrpt-vision",URL="mrpt-vision.html"];
+	scanmatching 		[label="mrpt-scanmatching",URL="mrpt-scanmatching.html"];
 
 	slam 		[label="mrpt-slam",URL="mrpt-slam.html"];
 	
@@ -21,6 +22,8 @@ digraph MRPT_LIBS {
 	detectors	[label="mrpt-detectors (*)",URL="mrpt-detectors.html"];
 	
 	
+	scanmatching -> base;
+	
 	opengl -> base;
 	
 	obs -> opengl;
@@ -31,17 +34,19 @@ digraph MRPT_LIBS {
 	hwdrivers -> obs;
 	
 	topography -> obs;
+	topography -> scanmatching;
 	
 	vision -> obs;
-	vision -> gui;
 	
 	maps -> obs;
 
 	slam -> maps;
 	slam -> vision;
+	slam -> scanmatching;
 	
 	detectors -> vision;
 	detectors -> maps;
+	detectors -> gui;
 	
 	hmtslam -> slam;
 	
@@ -50,5 +55,5 @@ digraph MRPT_LIBS {
 	stereoslam -> vision;
 	
 	reactivenav -> maps;
-	reactivenav -> gui;
+	//reactivenav -> gui;
 }

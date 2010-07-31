@@ -39,7 +39,6 @@
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::utils;
-using namespace mrpt::gui;
 using namespace std;
 
 /** Perform feature tracking from "old_img" to "new_img", with a (possibly empty) list of previously tracked features "featureList".
@@ -363,12 +362,12 @@ MRPT_START;
 	CFeatureList		auxList;
 	CMatchedFeatureList mList;
 
-	CDisplayWindow		w1, w2;
-	w1.showImageAndPoints( inImg1, featureList );
+	//CDisplayWindow		w1, w2;
+	//w1.showImageAndPoints( inImg1, featureList );
 
 	fExt.options.featsType = featFAST;
 	fExt.detectFeatures( inImg2, auxList, 0, 200 );
-	w2.showImageAndPoints( inImg2, auxList );
+	//w2.showImageAndPoints( inImg2, auxList );
 
 	TMatchingOptions	opts;
 	opts.matching_method		= TMatchingOptions::mmSAD;

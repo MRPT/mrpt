@@ -30,8 +30,9 @@
 
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/poses/CPose3D.h>
 
-#include <mrpt/base/link_pragmas.h>
+#include <mrpt/scanmatching/link_pragmas.h>
 
 namespace mrpt
 {
@@ -45,10 +46,9 @@ namespace mrpt
 	/** A set of scan matching-related static functions.
 	 * \sa mrpt::slam::CICP
 	 */
-	namespace scan_matching
+	namespace scanmatching
 	{
 		using namespace mrpt::poses;
-		using namespace mrpt::slam;
 		using namespace mrpt::math;
 		using namespace mrpt::utils;
 
@@ -56,7 +56,7 @@ namespace mrpt
 		  * \param scales				A vector which will contain the computed output scale of the Horn method.
 		  * \param forceScaleToUnity	Whether or not force the scale employed to rotate the coordinate systems to one (rigid transformation).
 		  */
-		struct BASE_IMPEXP THornMethodOpts
+		struct SCANMATCHING_IMPEXP THornMethodOpts
 		{
 			vector_double scales;			// The vector of the computed scales
 			bool forceScaleToUnity;			// Whether or not force the scale employed to rotate the coordinate systems to one (rigid transformation)
@@ -73,7 +73,7 @@ namespace mrpt
 		  * \param opts				The options for the method.
 		  * \sa THornMethodOpts
 		  */
-		void BASE_IMPEXP HornMethod( 	
+		void SCANMATCHING_IMPEXP HornMethod( 	
 			const vector_double		&inVector,
 			vector_double		&outVector,				// The output vector
 			THornMethodOpts		&opts );
@@ -88,7 +88,7 @@ namespace mrpt
 		  *  Implemented by FAMD, 2007. Revised in 2010.
 		  * \sa robustRigidTransformation
 		  */
-		bool BASE_IMPEXP leastSquareErrorRigidTransformation6D(
+		bool SCANMATCHING_IMPEXP leastSquareErrorRigidTransformation6D(
 			const TMatchingPairList	&in_correspondences,
 			CPose3DQuat							&out_transformation,
 			double								&out_scale,
@@ -104,7 +104,7 @@ namespace mrpt
 		  *  Implemented by FAMD, 2007. Revised in 2010
 		  * \sa robustRigidTransformation
 		  */
-		inline bool BASE_IMPEXP leastSquareErrorRigidTransformation6D(
+		inline bool SCANMATCHING_IMPEXP leastSquareErrorRigidTransformation6D(
 			const TMatchingPairList	&in_correspondences,
 			CPose3D								&out_transformation,
 			double								&out_scale,
@@ -114,7 +114,7 @@ namespace mrpt
 
 			CPose3DQuat qAux(UNINITIALIZED_QUATERNION);		// Convert the CPose3D to CPose3DQuat
 
-			if( !scan_matching::leastSquareErrorRigidTransformation6D( in_correspondences, qAux, out_scale, forceScaleToUnity ) )
+			if( !scanmatching::leastSquareErrorRigidTransformation6D( in_correspondences, qAux, out_scale, forceScaleToUnity ) )
 				return false;
 			out_transformation = CPose3D( qAux );			// Convert back the CPose3DQuat to CPose3D
 			
@@ -140,7 +140,7 @@ namespace mrpt
 		  *  Implemented by FAMD, 2008.
 		  * \sa robustRigidTransformation
 		  */
-		bool BASE_IMPEXP leastSquareErrorRigidTransformation6DRANSAC(
+		bool SCANMATCHING_IMPEXP leastSquareErrorRigidTransformation6DRANSAC(
 			const TMatchingPairList	&in_correspondences,
 			CPose3D								&out_transformation,
 			double								&out_scale,
@@ -160,7 +160,7 @@ namespace mrpt
 		  * \return True if there are at least two correspondences, or false if one or none, thus we cannot establish any correspondence.
 		  * \sa robustRigidTransformation
 		  */
-		bool BASE_IMPEXP leastSquareErrorRigidTransformation(
+		bool SCANMATCHING_IMPEXP leastSquareErrorRigidTransformation(
 			TMatchingPairList	&in_correspondences,
 			CPose2D							&out_transformation,
 			CMatrixDouble33					*out_estimateCovariance = NULL );
@@ -174,7 +174,7 @@ namespace mrpt
 		  * \return True if there are at least two correspondences, or false if one or none, thus we cannot establish any correspondence.
 		  * \sa robustRigidTransformation
 		  */
-		bool BASE_IMPEXP leastSquareErrorRigidTransformation(
+		bool SCANMATCHING_IMPEXP leastSquareErrorRigidTransformation(
 			TMatchingPairList	&in_correspondences,
 			CPosePDFGaussian				&out_transformation );
 
@@ -204,7 +204,7 @@ namespace mrpt
 		  * \exception Raises a std::exception if the list "in_correspondences" has not a minimum of two correspondences.
 		  * \sa leastSquareErrorRigidTransformation
 		  */
-		void BASE_IMPEXP robustRigidTransformation(
+		void SCANMATCHING_IMPEXP robustRigidTransformation(
 			TMatchingPairList	&in_correspondences,
 			poses::CPosePDFSOG				&out_transformation,
 			float							normalizationStd,
@@ -222,6 +222,11 @@ namespace mrpt
 			);
 
 	}
+
+	
+#ifdef MRPT_BACKCOMPATIB_08X	// For backward compatibility
+	namespace scan_matching = scanmatching;
+#endif
 
 } // End of namespace
 

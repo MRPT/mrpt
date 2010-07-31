@@ -29,8 +29,8 @@
 #include <mrpt/slam.h>  // Precompiled header
 
 #include <mrpt/math/utils.h>
-#include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/gui/CDisplayWindowPlots.h>
+//#include <mrpt/gui/CDisplayWindow.h>
+//#include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CEnhancedMetaFile.h>
 #include <mrpt/slam/CGridMapAligner.h>
@@ -41,7 +41,7 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/slam/CLandmarksMap.h>
-#include <mrpt/scan_matching/scan_matching.h>
+#include <mrpt/scanmatching.h>
 #include <mrpt/poses/CPosePDFGrid.h>
 
 #include <mrpt/system/filesystem.h>
@@ -55,7 +55,6 @@ using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::random;
-using namespace mrpt::gui;
 using namespace std;
 
 /*---------------------------------------------------------------
@@ -121,10 +120,10 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 	ASSERT_( options.methodSelection==CGridMapAligner::amRobustMatch || options.methodSelection==CGridMapAligner::amModifiedRANSAC)
 
 	TReturnInfo								outInfo;
-	CMetricMap::TMatchingPairList			&correspondences = outInfo.correspondences; // Use directly this placeholder to save 1 variable & 1 copy.
-	CMetricMap::TMatchingPairList			largestConsensusCorrs;
+	mrpt::utils::TMatchingPairList			&correspondences = outInfo.correspondences; // Use directly this placeholder to save 1 variable & 1 copy.
+	mrpt::utils::TMatchingPairList			largestConsensusCorrs;
 
-	CMetricMap::TMatchingPairList::iterator	corrIt;
+	mrpt::utils::TMatchingPairList::iterator	corrIt;
 	CTicTac									*tictac=NULL;
 
 	CPose2D									grossEst = initialEstimationPDF.mean;
@@ -214,9 +213,13 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 		const double thres_max = options.threshold_max;
 		const double thres_delta = options.threshold_delta;
 
-		CDisplayWindowPlotsPtr	auxWin;
+		//CDisplayWindowPlotsPtr	auxWin;
 		if (options.debug_show_corrs)
-			auxWin = CDisplayWindowPlotsPtr( new CDisplayWindowPlots("Individual corr.") );
+		{
+			//auxWin = CDisplayWindowPlotsPtr( new CDisplayWindowPlots("Individual corr.") );
+			std::cerr << "Warning: options.debug_show_corrs has no effect since MRPT 0.9.1\n";
+		}
+			
 
 		for (size_t idx1=0;idx1<nLM1;idx1++)
 		{
@@ -257,6 +260,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				}
 			}
 
+#if 0
 			if (options.debug_show_corrs)
 			{
 				auxWin->setWindowTitle(format("Corr: %i - rest", int(idx1)));
@@ -272,6 +276,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				if (idx1==0) auxWin->axis_fit();
 				auxWin->waitForKey();
 			}
+#endif
 
 		} // end for idx1
 
@@ -338,7 +343,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 		correspondences.clear();
 		for (it1=idxs1.begin(),it2=idxs2.begin();it1!=idxs1.end();it1++,it2++)
 		{
-			CMetricMap::TMatchingPair	mp;
+			mrpt::utils::TMatchingPair	mp;
 			mp.this_idx = *it1;
 			mp.this_x   = lm1->landmarks.get(*it1)->pose_mean.x;
 			mp.this_y   = lm1->landmarks.get(*it1)->pose_mean.y;
@@ -361,7 +366,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 		// Compute the estimation using ALL the correspondences (NO ROBUST):
 		// ----------------------------------------------------------------------
-		if (! scan_matching::leastSquareErrorRigidTransformation(
+		if (! scanmatching::leastSquareErrorRigidTransformation(
 				correspondences,
 				outInfo.noRobustEstimation ) )
 		{
@@ -381,7 +386,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				RAD2DEG(outInfo.noRobustEstimation.phi() ));
 
 			// The list of SOG modes & their corresponding sub-sets of matchings:
-			map<CMetricMap::TMatchingPairList, CPosePDFSOG::TGaussianMode>  sog_modes;
+			map<mrpt::utils::TMatchingPairList, CPosePDFSOG::TGaussianMode>  sog_modes;
 
 			// ---------------------------------------------------------------
 			// Now, we have to choose between the methods:
@@ -396,7 +401,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 				// RANSAC over the found correspondences:
 				// -------------------------------------------------
-				scan_matching::robustRigidTransformation(
+				scanmatching::robustRigidTransformation(
 					correspondences,
 					*pdf_SOG,
 					options.ransac_SOG_sigma_m,
@@ -436,7 +441,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				// ====================================================
 				//             METHOD: "Modified" RANSAC
 				// ====================================================
-				CMetricMap::TMatchingPairList	all_corrs = correspondences;
+				mrpt::utils::TMatchingPairList	all_corrs = correspondences;
 
 				const size_t nCorrs = all_corrs.size();
 				ASSERT_(nCorrs>=2)
@@ -482,7 +487,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				{
 					trials++;
 
-					CMetricMap::TMatchingPairList	tentativeSubSet;
+					mrpt::utils::TMatchingPairList	tentativeSubSet;
 
 					// Pick 2 random correspondences:
 					uint32_t idx1,idx2;
@@ -523,7 +528,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 					// before proceeding with this hypothesis, is it an old one?
 					bool is_new_hyp = true;
-					for (map<CMetricMap::TMatchingPairList, CPosePDFSOG::TGaussianMode>::iterator itOldHyps=sog_modes.begin();itOldHyps!=sog_modes.end();++itOldHyps)
+					for (map<mrpt::utils::TMatchingPairList, CPosePDFSOG::TGaussianMode>::iterator itOldHyps=sog_modes.begin();itOldHyps!=sog_modes.end();++itOldHyps)
 					{
 						if (itOldHyps->first.contains( all_corrs[ idx1 ] ) &&
 							itOldHyps->first.contains( all_corrs[ idx2 ] ) )
@@ -556,7 +561,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 					CPosePDFGaussian temptPose;
 					do  // Incremently incorporate inliers:
 					{
-						if (!mrpt::scan_matching::leastSquareErrorRigidTransformation( tentativeSubSet, temptPose ))
+						if (!mrpt::scanmatching::leastSquareErrorRigidTransformation( tentativeSubSet, temptPose ))
 							continue; // Invalid matching...
 
 						// The computed cov is "normalized", i.e. must be multiplied by std^2_xy
@@ -699,7 +704,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 								used_landmarks1[ best_pair_ij.first  ] = true;
 								used_landmarks2[ best_pair_ij.second ] = true;
 
-								tentativeSubSet.push_back( CMetricMap::TMatchingPair(
+								tentativeSubSet.push_back( mrpt::utils::TMatchingPair(
 									best_pair_ij.first,
 									best_pair_ij.second,
 									p1_i_localx, p1_i_localy,0,  // MAP1
@@ -753,7 +758,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 				// Move SOG modes into pdf_SOG:
 				pdf_SOG->clear();
-				for (map<CMetricMap::TMatchingPairList, CPosePDFSOG::TGaussianMode>::const_iterator s=sog_modes.begin();s!=sog_modes.end();++s)
+				for (map<mrpt::utils::TMatchingPairList, CPosePDFSOG::TGaussianMode>::const_iterator s=sog_modes.begin();s!=sog_modes.end();++s)
 				{
 					cout << "SOG mode: " << s->second.mean << " inliers: " << s->first.size() << endl;
 					pdf_SOG->push_back(s->second);
@@ -791,7 +796,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				CEnhancedMetaFile::LINUX_IMG_WIDTH = m1->getSizeX() + m2->getSizeX() + 50;
 				CEnhancedMetaFile::LINUX_IMG_HEIGHT = max(m1->getSizeY(), m2->getSizeY()) + 50;
 
-				for (map<CMetricMap::TMatchingPairList, CPosePDFSOG::TGaussianMode>::const_iterator s=sog_modes.begin();s!=sog_modes.end();++s)
+				for (map<mrpt::utils::TMatchingPairList, CPosePDFSOG::TGaussianMode>::const_iterator s=sog_modes.begin();s!=sog_modes.end();++s)
 				{
 					COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 						format( "__debug_corrsGrid_%05u.emf",NN),

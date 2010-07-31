@@ -26,13 +26,15 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 #include <mrpt/slam.h>
+#include <mrpt/gui.h>
+#include <mrpt/scanmatching.h>
 
 using namespace mrpt::vision;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::gui;
 using namespace mrpt::system;
-using namespace mrpt::scan_matching;
+using namespace mrpt::scanmatching;
 using namespace mrpt::slam;
 using namespace std;
 
@@ -73,9 +75,9 @@ void generate_points( TPoints &pA, TPoints &pB )
 // ------------------------------------------------------
 //				Generate a list of matched points
 // ------------------------------------------------------
-void generate_list_of_points( const TPoints &pA, const TPoints &pB, CMetricMap::TMatchingPairList &list )
+void generate_list_of_points( const TPoints &pA, const TPoints &pB, TMatchingPairList &list )
 {
-	CMetricMap::TMatchingPair		pair;
+	TMatchingPair		pair;
 	for( unsigned int i = 0; i < 5; ++i )
 	{
 		pair.this_idx	= pair.other_idx = i;
@@ -113,7 +115,7 @@ double scan_matching_test_1( int a1, int a2 )
 	TPoints	pA, pB;
 	generate_points( pA, pB );
 
-	CMetricMap::TMatchingPairList list;
+	TMatchingPairList list;
 	generate_list_of_points( pA, pB, list );
 
 	CPose3D out;
@@ -138,7 +140,7 @@ double scan_matching_test_2( int a1, int a2 )
 	TPoints	pA, pB;
 	generate_points( pA, pB );
 
-	CMetricMap::TMatchingPairList list;
+	TMatchingPairList list;
 	generate_list_of_points( pA, pB, list );
 
 	CPose3DQuat out;

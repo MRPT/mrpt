@@ -27,6 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/slam.h>
+#include <mrpt/gui.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 
@@ -472,7 +473,7 @@ void do_grid_align()
 
 							// Save also as EMF:
 							/*{
-								CMetricMap::TMatchingPairList	corrs;
+								TMatchingPairList	corrs;
 								// How to get corrs!?
 
 								CEnhancedMetaFile::LINUX_IMG_WIDTH = grid1->getSizeX() + grid2->getSizeX() + 50;
@@ -548,7 +549,7 @@ void do_grid_align()
 
 				// GT transformation:
 				const CPose2D  GT_Ap( GT_Ax, GT_Ay, GT_Aphi);
-				CMetricMap::TMatchingPairList	gt_corrs;
+				TMatchingPairList	gt_corrs;
 
 				CFileOutputStream	fout_CORR("GT_EXP_CORR.txt", true);
 				CFileOutputStream	fout_NCORR("GT_EXP_NCORR.txt", true);
@@ -585,7 +586,7 @@ void do_grid_align()
 					if (dErrs[best_match]<0.20)
 					{
 						CLandmark *l2 = lm2->landmarks.get( best_match );
-						gt_corrs.push_back( CMetricMap::TMatchingPair(
+						gt_corrs.push_back( TMatchingPair(
 							i1,best_match,
 							l1->pose_mean.x,l1->pose_mean.y,l1->pose_mean.z,
 							l2->pose_mean.x,l2->pose_mean.y,l2->pose_mean.z ) );

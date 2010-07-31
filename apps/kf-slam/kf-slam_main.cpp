@@ -35,6 +35,7 @@
  ---------------------------------------------------------------*/
 
 #include <mrpt/slam.h>
+#include <mrpt/gui.h>
 #include <mrpt/slam/CRangeBearingKFSLAM.h>
 
 using namespace mrpt;

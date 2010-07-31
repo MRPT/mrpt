@@ -33,11 +33,9 @@
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
-using namespace mrpt::gui;
 using namespace mrpt::utils;
 using namespace mrpt::synch;
 using namespace std;
@@ -144,19 +142,6 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 #endif
 
 			} // end LMH's lock
-
-
-			// Show 3D view:
-			if (m_options.LOG_SHOW3D)
-			{
-				static CDisplayWindow3D   win3D("Local SLAM",500,500);
-
-				COpenGLScenePtr &scen = win3D.get3DSceneAndLock();
-				scen = sceneLSLAM;
-				scen->enableFollowCamera(false);
-				win3D.unlockAccess3DScene();
-				win3D.updateWindow();
-			}
 
 		}
 

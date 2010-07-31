@@ -28,6 +28,7 @@
 
 #include <mrpt/slam.h>
 #include <mrpt/hwdrivers/CServoeNeck.h>
+#include <mrpt/gui.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;

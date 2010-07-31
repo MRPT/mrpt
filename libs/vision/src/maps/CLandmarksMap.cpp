@@ -72,7 +72,6 @@ bool CLandmarksMap::_maxIDUpdated = false;
 						Constructor
   ---------------------------------------------------------------*/
 CLandmarksMap::CLandmarksMap() :
-	wind1(), wind2(),
 	landmarks(),
 	insertionOptions(),
 	likelihoodOptions(),
@@ -699,50 +698,15 @@ void  CLandmarksMap::loadSiftFeaturesFromStereoImageObservation( const CObservat
 
 	if( insertionOptions.PLOT_IMAGES )
 	{
-		// DETECTED FEATURES
-		if( !wind1 )
-			wind1 = mrpt::gui::CDisplayWindow::Create( "CLandmarkMap: Left image" );
-		if( !wind2 )
-			wind2 = mrpt::gui::CDisplayWindow::Create( "CLandmarkMap: Right image" );
-
-		wind1->showImageAndPoints( obs.imageLeft, leftSiftList );
-		wind2->showImageAndPoints( obs.imageRight, rightSiftList );
-
-		mrpt::system::pause();
-
-		// MATCHED FEATURES
-		vector_float					xL, yL, xR, yR;
-		unsigned int					k;
-		size_t							tam = matchesList.size();
-
-		xL.resize( tam );
-		yL.resize( tam );
-		xR.resize( tam );
-		yR.resize( tam );
-
-		for(k = 0, match = matchesList.begin(); match != matchesList.end(); match++, k++)
-		{
-			xL[k] = (match->first)->x;
-			yL[k] = (match->first)->y;
-
-			xR[k] = (match->second)->x;
-			yR[k] = (match->second)->y;
-
-		}
-		wind1->setPos( 680, 600 );
-		wind1->setWindowTitle("Left Image");
-		wind1->showImageAndPoints( obs.imageLeft, xL, yL );
-		wind2->setPos( 1100, 600 );
-		wind2->setWindowTitle("Right Image");
-		wind2->showImageAndPoints( obs.imageRight, xR, yR );
+		std::cerr << "Warning: insertionOptions.PLOT_IMAGES has no effect since MRPT 0.9.1\n";
 	}
 
 	//obs.imageLeft.saveToFile("LImage.jpg");
 	//obs.imageRight.saveToFile("RImage.jpg");
-	FILE *fmt;
-	fmt = os::fopen( "matchesRBPF.txt", "at" );
-	os::fprintf( fmt, "%d\n", (unsigned int)matchesList.size() );
-	os::fclose(fmt);
+	//FILE *fmt;
+	//fmt = os::fopen( "matchesRBPF.txt", "at" );
+	//os::fprintf( fmt, "%d\n", (unsigned int)matchesList.size() );
+	//os::fclose(fmt);
 	//matchesList.saveToTextFile("matches.txt");
 
 	// Feature Projection to 3D
@@ -769,72 +733,6 @@ void  CLandmarksMap::loadSiftFeaturesFromStereoImageObservation( const CObservat
 	printf("%u (out of %u) corrs!\n",static_cast<unsigned>(landmarks.size()), static_cast<unsigned>(numM) );
 
 	//CLandmarksMap::_maxMapID = fID;
-
-	/** DEBUG **
-	{
-		static int						debug_Counter = 0;
-		char							filStr[100];
-
-		try
-		{
-			// Save L+R images with correspondences
-			CImage					auxImg(obs.imageLeft);
-			unsigned int				i, color=0;
-
-			for (i=0;i<idxLeft.size();i++)
-			{
-				if ( survivalParts[i])
-				{
-					unsigned int	x = leftSiftList[idxLeft[i]].x;
-					unsigned int	y = leftSiftList[idxLeft[i]].y;
-
-					switch (i%3)
-					{
-						case 0:	color = 0x0000FF; break;
-						case 1:	color = 0x00FF00; break;
-						case 2:	color = 0xFF0000; break;
-					}
-
-					auxImg.rectangle(x-5,y-5,x+5,y+5,color,2);
-				}
-			}
-			os::sprintf(filStr,100,"debug_image_L_%04u.bmp", ++debug_Counter);
-			auxImg.saveToBMP(filStr);
-
-			auxImg = obs.imageRight;
-
-			for (i=0;i<idxRight.size();i++)
-			{
-				if ( survivalParts[i])
-				{
-					unsigned int	x = rightSiftList[idxRight[i]].x;
-					unsigned int	y = rightSiftList[idxRight[i]].y;
-
-					switch (i%3)
-					{
-						case 0:	color = 0x0000FF; break;
-						case 1:	color = 0x00FF00; break;
-						case 2:	color = 0xFF0000; break;
-					}
-
-					auxImg.rectangle(x-5,y-5,x+5,y+5,color,2);
-				}
-			}
-
-			os::sprintf(filStr,100,"debug_image_R_%04u.bmp", debug_Counter);
-			auxImg.saveToBMP(filStr);
-		}
-		catch (std::exception &e)
-		{
-			printf("[SavingDebugStereoImgs] WARNING: %s\n",e.what());
-		}
-		catch (...)
-		{
-			printf("[SavingDebugStereoImgs] WARNING: Runtime error\n");
-		}
-	}
-	**********/
-
 
 	// Project landmarks according to the ref. camera pose:
 	changeCoordinatesReference( obs.cameraPose );

@@ -1,16 +1,17 @@
 <map id="MRPT_LIBS" name="MRPT_LIBS">
-<area shape="rect" id="node1" href="mrpt-base.html" title="mrpt&#45;base" alt="" coords="392,485,475,533"/>
-<area shape="rect" id="node2" href="mrpt-opengl.html" title="mrpt&#45;opengl" alt="" coords="385,389,481,437"/>
-<area shape="rect" id="node3" href="mrpt-gui.html" title="mrpt&#45;gui" alt="" coords="348,293,420,341"/>
-<area shape="rect" id="node4" href="mrpt-obs.html" title="mrpt&#45;obs" alt="" coords="444,293,521,341"/>
-<area shape="rect" id="node5" href="mrpt-hwdrivers.html" title="mrpt&#45;hwdrivers" alt="" coords="200,197,315,245"/>
-<area shape="rect" id="node6" href="mrpt-topography.html" title="mrpt&#45;topography" alt="" coords="616,197,741,245"/>
-<area shape="rect" id="node7" href="mrpt-maps.html" title="mrpt&#45;maps" alt="" coords="453,197,541,245"/>
-<area shape="rect" id="node8" href="mrpt-vision.html" title="mrpt&#45;vision" alt="" coords="339,197,429,245"/>
-<area shape="rect" id="node9" href="mrpt-slam.html" title="mrpt&#45;slam" alt="" coords="333,101,416,149"/>
-<area shape="rect" id="node10" href="mrpt-hmtslam.html" title="mrpt&#45;hmtslam" alt="" coords="323,5,427,53"/>
-<area shape="rect" id="node11" href="mrpt-reactivenav.html" title="mrpt&#45;reactivenav" alt="" coords="597,101,720,149"/>
-<area shape="rect" id="node12" href="mrpt-monoslam.html" title="mrpt&#45;monoslam (*)" alt="" coords="5,101,144,149"/>
-<area shape="rect" id="node13" href="mrpt-stereoslam.html" title="mrpt&#45;stereoslam (*)" alt="" coords="168,101,309,149"/>
-<area shape="rect" id="node14" href="mrpt-detectors.html" title="mrpt&#45;detectors (*)" alt="" coords="440,101,573,149"/>
+<area shape="rect" id="node1" href="mrpt-base.html" title="mrpt&#45;base" alt="" coords="165,485,247,533"/>
+<area shape="rect" id="node2" href="mrpt-opengl.html" title="mrpt&#45;opengl" alt="" coords="226,389,322,437"/>
+<area shape="rect" id="node3" href="mrpt-gui.html" title="mrpt&#45;gui" alt="" coords="422,293,494,341"/>
+<area shape="rect" id="node4" href="mrpt-obs.html" title="mrpt&#45;obs" alt="" coords="235,293,313,341"/>
+<area shape="rect" id="node5" href="mrpt-hwdrivers.html" title="mrpt&#45;hwdrivers" alt="" coords="401,197,515,245"/>
+<area shape="rect" id="node6" href="mrpt-topography.html" title="mrpt&#45;topography" alt="" coords="25,197,150,245"/>
+<area shape="rect" id="node9" href="mrpt-scanmatching.html" title="mrpt&#45;scanmatching" alt="" coords="19,293,155,341"/>
+<area shape="rect" id="node7" href="mrpt-maps.html" title="mrpt&#45;maps" alt="" coords="174,197,262,245"/>
+<area shape="rect" id="node8" href="mrpt-vision.html" title="mrpt&#45;vision" alt="" coords="286,197,377,245"/>
+<area shape="rect" id="node10" href="mrpt-slam.html" title="mrpt&#45;slam" alt="" coords="158,101,241,149"/>
+<area shape="rect" id="node11" href="mrpt-hmtslam.html" title="mrpt&#45;hmtslam" alt="" coords="147,5,251,53"/>
+<area shape="rect" id="node12" href="mrpt-reactivenav.html" title="mrpt&#45;reactivenav" alt="" coords="11,101,134,149"/>
+<area shape="rect" id="node13" href="mrpt-monoslam.html" title="mrpt&#45;monoslam (*)" alt="" coords="587,101,726,149"/>
+<area shape="rect" id="node14" href="mrpt-stereoslam.html" title="mrpt&#45;stereoslam (*)" alt="" coords="422,101,563,149"/>
+<area shape="rect" id="node15" href="mrpt-detectors.html" title="mrpt&#45;detectors (*)" alt="" coords="265,101,398,149"/>
 </map>

@@ -30,6 +30,7 @@
 
 #include <mrpt/hwdrivers/CHokuyoURG.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/gui.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;

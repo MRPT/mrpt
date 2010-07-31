@@ -8,4 +8,5 @@ define_mrpt_lib(
 	mrpt-base
 	mrpt-obs
 	mrpt-opengl
+	mrpt-scanmatching
 	)

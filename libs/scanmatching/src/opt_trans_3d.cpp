@@ -26,10 +26,10 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled header
+#include <mrpt/scanmatching.h>  // Precompiled header
 
 
-#include <mrpt/scan_matching/scan_matching.h>
+#include <mrpt/scanmatching/scan_matching.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/random.h>
@@ -40,8 +40,7 @@
 #include <algorithm>
 
 using namespace mrpt;
-using namespace mrpt::scan_matching;
-using namespace mrpt::slam;
+using namespace mrpt::scanmatching;
 using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace std;
@@ -49,7 +48,7 @@ using namespace std;
 /*---------------------------------------------------------------
 	HornMethod
   ---------------------------------------------------------------*/
-void scan_matching::HornMethod( 	
+void scanmatching::HornMethod( 	
 	const vector_double		&inVector,
 	vector_double			&outVector,				// The output vector
 	THornMethodOpts			&opts )
@@ -175,7 +174,7 @@ void scan_matching::HornMethod(
 //*---------------------------------------------------------------
 //	leastSquareErrorRigidTransformation6D
 //  ---------------------------------------------------------------*/
-bool  scan_matching::leastSquareErrorRigidTransformation6D(
+bool  scanmatching::leastSquareErrorRigidTransformation6D(
 	const TMatchingPairList	&in_correspondences,
 	CPose3DQuat							&out_transformation,
 	double								&out_scale,

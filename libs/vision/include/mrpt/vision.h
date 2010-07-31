@@ -30,7 +30,6 @@
 #define __mrpt_vision_H
 
 #include <mrpt/obs.h> // dependencies
-#include <mrpt/gui.h> // dependencies
 
 #include <mrpt/vision/utils.h>
 #include <mrpt/vision/chessboard_camera_calib.h>

@@ -38,9 +38,6 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/gui/CDisplayWindow.h>
-
-#include <map>
 
 namespace mrpt
 {
@@ -86,10 +83,6 @@ namespace slam
 		DEFINE_SERIALIZABLE( CLandmarksMap )
 
 	private:
-		//void  importMapMaxID( CLandmarksMap &sourceMap );
-		/** Auxiliary windows for displaying images
-		  */
-		mrpt::gui::CDisplayWindowPtr	wind1, wind2;
 
 		virtual void 	internal_clear();
 

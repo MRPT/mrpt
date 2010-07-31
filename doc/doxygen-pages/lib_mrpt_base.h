@@ -101,12 +101,6 @@ This namespace includes threading tools such as critical sections, semaphores or
 that converts any variable into a pair variable-critical section.
 
 
-<h3>mrpt::scan_matching</h3>
-
-Under this name we find functions in charge of solving the optimization problem of aligning a set of correspondences, both in 2D and in 3D. 
-Note that this does not includes the iterative ICP algorithm, included in another library (mrpt-slam). 
-
-
 <h3>mrpt::system</h3>
 
 Here can be found functions for filesystem managing, watching directories, creating and handling threads in an OS-independent way, etc.

@@ -24,10 +24,10 @@ define_mrpt_lib(
 	# Lib name
 	vision 		
 	# Dependencies:
-	mrpt-gui
-	mrpt-obs		
-	mrpt-opengl  # Dep of the ones above.
-	mrpt-base  # Dep of the ones above.
+	mrpt-obs	
+	# Deps of deps:
+	mrpt-opengl  
+	mrpt-base
 	)
 
 	

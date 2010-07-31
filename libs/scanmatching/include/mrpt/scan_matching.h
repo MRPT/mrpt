@@ -29,6 +29,7 @@
 #ifndef __mrpt_scan_matching_H
 #define __mrpt_scan_matching_H
 
-#include <mrpt/scan_matching/scan_matching.h>
+// Old include file. Just include the new one:
+#include "scanmatching.h"
 
 #endif

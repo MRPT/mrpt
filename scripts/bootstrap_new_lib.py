@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # Python script to bootstrap the creation of a new library within MRPT
 #  Invoke without arguments from the MRPT root directory, that is:
 #   $ scripts/bootstrap_new_lib.py

@@ -43,7 +43,6 @@
 #include <mrpt/synch.h>
 #include <mrpt/system.h>
 #include <mrpt/utils.h>
-#include <mrpt/scan_matching.h>
 
 #endif
 

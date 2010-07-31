@@ -164,7 +164,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	CSensoryFramePtr					sf_i, sf_j;
 	CMultiMetricMap						*map_i=NULL,*map_j=NULL;
 	int									debug_CheckPoint = 0;
-	CPointsMap::TMatchingPairList		corrs;
+	mrpt::utils::TMatchingPairList		corrs;
 	static CPose3D						nullPose(0,0,0);
 
 	// Set options in graph partition:

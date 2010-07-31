@@ -183,7 +183,7 @@ namespace mrpt
 				CLandmarksMapPtr	landmarks_map1, landmarks_map2;
 
 				/** All the found correspondences (not consistent) */
-				CMetricMap::TMatchingPairList	correspondences;
+				mrpt::utils::TMatchingPairList	correspondences;
 
 				struct TPairPlusDistance
 				{

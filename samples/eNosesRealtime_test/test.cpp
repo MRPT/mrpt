@@ -29,6 +29,7 @@
 #include <mrpt/hwdrivers/CBoardENoses.h>
 #include <mrpt/utils.h>
 #include <mrpt/slam.h>
+#include <mrpt/gui.h>
 
 
 using namespace mrpt;

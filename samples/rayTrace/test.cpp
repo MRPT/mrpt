@@ -27,6 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/slam.h>
+#include <mrpt/gui.h>
 
 #define COLORR 1.0f
 #define COLORG 0.0f

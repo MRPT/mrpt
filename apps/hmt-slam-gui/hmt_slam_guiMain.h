@@ -266,10 +266,10 @@ class hmt_slam_guiFrame: public wxFrame
 class CItemData : public wxTreeItemData
 {
 public:
-	CSerializablePtr m_ptr;
+	mrpt::utils::CSerializablePtr m_ptr;
 	size_t          m_itemIndex;
 
-	CItemData( CSerializablePtr ptr, size_t itemIndex) : m_ptr(ptr), m_itemIndex(itemIndex)
+	CItemData( mrpt::utils::CSerializablePtr ptr, size_t itemIndex) : m_ptr(ptr), m_itemIndex(itemIndex)
 	{
 	}
 };

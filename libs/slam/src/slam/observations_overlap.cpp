@@ -55,7 +55,7 @@ double mrpt::slam::observationsOverlap(
 			otherObsPose = *pose_o2_wrt_o1;
 
 		const float maxDisForCorrespondence = 0.04f;
-		CMetricMap::TMatchingPairList	correspondences;
+		mrpt::utils::TMatchingPairList	correspondences;
 		float	correspondencesRatio;
 		static const CPoint3D pivotPoint(0,0,0);
 

@@ -18,9 +18,9 @@ define_mrpt_lib(
 	slam 		
 	# Dependencies
 	mrpt-vision
+	mrpt-scanmatching
 	mrpt-maps
 	# And deps of the deps:
-	mrpt-gui
 	mrpt-obs
 	mrpt-opengl
 	mrpt-base

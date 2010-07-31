@@ -237,6 +237,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #endif
 
 
+/* Backwards compatibility of MRPT APIs: */
+#cmakedefine MRPT_BACKCOMPATIB_08X 1
+
 // -------------------------------
 //			Some checks:
 // -------------------------------

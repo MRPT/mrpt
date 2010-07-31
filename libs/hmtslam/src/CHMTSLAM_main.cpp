@@ -294,7 +294,6 @@ CHMTSLAM::TOptions::TOptions()
 {
 	LOG_OUTPUT_DIR				= "";
 	LOG_FREQUENCY				= 1;
-	LOG_SHOW3D					= false;
 
 	SLAM_METHOD						= lsmRBPF_2DLASER;
 
@@ -326,7 +325,6 @@ void  CHMTSLAM::TOptions::loadFromConfigFile(
 {
 	MRPT_LOAD_CONFIG_VAR( LOG_OUTPUT_DIR, string,    source, section);
 	MRPT_LOAD_CONFIG_VAR( LOG_FREQUENCY,  int,     	source, section);
-	MRPT_LOAD_CONFIG_VAR( LOG_SHOW3D,  bool,     	source, section);
 
 	MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(SLAM_METHOD, int,  TLSlamMethod,  source, section);
 
@@ -366,7 +364,6 @@ void  CHMTSLAM::TOptions::dumpToTextStream(CStream	&out) const
 
 	LOADABLEOPTS_DUMP_VAR( LOG_OUTPUT_DIR,  string );
 	LOADABLEOPTS_DUMP_VAR( LOG_FREQUENCY, int);
-	LOADABLEOPTS_DUMP_VAR( LOG_SHOW3D, bool);
 
 	LOADABLEOPTS_DUMP_VAR( SLAM_METHOD, int);
 

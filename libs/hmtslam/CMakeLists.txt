@@ -4,10 +4,10 @@ define_mrpt_lib(
 	hmtslam
 	# Dependencies
 	mrpt-slam
+	# Deps of deps
 	mrpt-vision
 	mrpt-maps
 	mrpt-base
 	mrpt-obs 
-	mrpt-gui  
 	mrpt-opengl
 	)

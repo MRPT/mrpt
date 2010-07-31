@@ -8,7 +8,6 @@ define_mrpt_lib(
 	mrpt-vision
 	mrpt-maps
 	mrpt-gui
-	mrpt-slam
 	# And deps of the deps:
 	mrpt-base
 	mrpt-opengl

@@ -208,10 +208,11 @@ namespace mrpt
 			  */
 			virtual ~CMetricMap();
 
+#ifdef MRPT_BACKCOMPATIB_08X	// For backward compatibility
 			typedef mrpt::utils::TMatchingPair   	TMatchingPair;
 			typedef mrpt::utils::TMatchingPairPtr   TMatchingPairPtr;
 			typedef mrpt::utils::TMatchingPairList 	TMatchingPairList;
-
+#endif
 
 			/** Computes the matchings between this and another 2D points map.
 			   This includes finding:

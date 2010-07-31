@@ -1296,6 +1296,10 @@ CREATE_CMAKE_MRPT_DEFINE(MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER)
 CREATE_CMAKE_MRPT_DEFINE(MRPT_HAS_ASIAN_FONTS)
 CREATE_CMAKE_MRPT_DEFINE(CMAKE_MRPT_HAS_INOTIFY)
 
+# ------------------------------------
+#  Backward compatibility switches
+# ------------------------------------
+SET(MRPT_BACKCOMPATIB_08X ON CACHE BOOL "API backward compatible with 0.8.X")
 
 # ----------------------------------------------------------------------------
 #   				UPDATE CONFIG FILES & SCRIPTS:

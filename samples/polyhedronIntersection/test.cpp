@@ -27,6 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/slam.h>
+#include <mrpt/gui.h>
 
 using namespace std;
 using namespace mrpt;

@@ -786,9 +786,9 @@ float  CMultiMetricMap::getNewStaticPointsRatio(
 	size_t							nStaticPoints = 0;
 	size_t							nTotalPoints = points->getPointsCount();
 	CPoint2D								g,l;
-	CMetricMap::TMatchingPairList			correspondences;
+	mrpt::utils::TMatchingPairList			correspondences;
 	float									correspondencesRatio;
-	CMetricMap::TMatchingPairList::iterator	corrsIt;
+	mrpt::utils::TMatchingPairList::iterator	corrsIt;
 	static CPose2D							nullPose(0,0,0);
 
 

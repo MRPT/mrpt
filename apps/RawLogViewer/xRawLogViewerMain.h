@@ -61,6 +61,7 @@
 
 // General global variables:
 #include <mrpt/slam.h>
+#include <mrpt/gui.h>
 
 // A list of sensor labels (and the times they appear) in the currently loaded rawlog.
 struct TInfoPerSensorLabel
@@ -118,7 +119,7 @@ struct TAlogRecord
 {
 	std::string		label;
 	char   			type;  // 0: odo, 1: 2d laser, 2:3d laser, 3: image
-	vector_float   data;
+	mrpt::vector_float   data;
 	std::string		imgFile;
 	double          startElev, endElev;
 };

@@ -28,6 +28,7 @@
 
 #include <mrpt/topography.h>  // Precompiled headers
 
+#include <mrpt/scanmatching.h>
 #include <mrpt/obs.h>
 
 #if MRPT_HAS_WXWIDGETS
@@ -458,7 +459,7 @@ void  mrpt::topography::path_from_rtk_gps(
 
 				// "this" (reference map) -> GPS global coordinates
 				// "other" -> GPS local coordinates on the vehicle
-				mrpt::scan_matching::leastSquareErrorRigidTransformation6D( corrs,optimal_pose,optimal_scale, true ); // Force scale=1
+				mrpt::scanmatching::leastSquareErrorRigidTransformation6D( corrs,optimal_pose,optimal_scale, true ); // Force scale=1
 				//cout << "optimal pose: " << optimal_pose << " " << optimal_scale << endl;
 				//mrpt::system::pause();
 

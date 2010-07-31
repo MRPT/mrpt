@@ -33,7 +33,6 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/opengl.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/gui/CDisplayWindow.h>
 
 #include <mrpt/hmtslam/CHierarchicalMapMHPartition.h>
 #include <mrpt/hmtslam/CRobotPosesGraph.h>

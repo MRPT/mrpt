@@ -7,7 +7,6 @@ define_mrpt_lib(
 	# Dependencies
 	mrpt-maps
 	# Depts of the deps:
-	mrpt-gui
 	mrpt-obs
 	mrpt-opengl
 	mrpt-base

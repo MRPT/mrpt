@@ -26,10 +26,10 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled header
+#include <mrpt/scanmatching.h>  // Precompiled header
 
 
-#include <mrpt/scan_matching/scan_matching.h>
+#include <mrpt/scanmatching/scan_matching.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/random.h>
@@ -40,7 +40,7 @@
 #include <algorithm>
 
 using namespace mrpt;
-using namespace mrpt::scan_matching;
+using namespace mrpt::scanmatching;
 using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace std;
@@ -58,7 +58,7 @@ using namespace std;
 			- If if is compatible (ransac_maxErrorXY, ransac_maxErrorPHI), grow the "consensus set"
 			- If not, do not add it.
   ---------------------------------------------------------------*/
-void  scan_matching::robustRigidTransformation(
+void  scanmatching::robustRigidTransformation(
 	TMatchingPairList	&in_correspondences,
 	poses::CPosePDFSOG				&out_transformation,
 	float							normalizationStd,
@@ -276,7 +276,7 @@ void  scan_matching::robustRigidTransformation(
 						temptativeSubSet.erase( temptativeSubSet.begin() + (temptativeSubSet.size() -1) );
 
 						// Perform estimation:
-						scan_matching::leastSquareErrorRigidTransformation(
+						scanmatching::leastSquareErrorRigidTransformation(
 							subSet,
 							referenceEstimation.mean,
 							&referenceEstimation.cov );
@@ -307,7 +307,7 @@ void  scan_matching::robustRigidTransformation(
 					// Compute the temptative new estimation (matchIt will be removed after the test!):
 					temptativeSubSet.push_back( *matchIt );
 
-					scan_matching::leastSquareErrorRigidTransformation(
+					scanmatching::leastSquareErrorRigidTransformation(
 						temptativeSubSet,
 						temptativeEstimation.mean,
 						&temptativeEstimation.cov );
@@ -391,7 +391,7 @@ void  scan_matching::robustRigidTransformation(
 				// Find matching by approximate match in the X,Y,PHI means
 				// -------------------------------------------------------------------
 				// Recompute referenceEstimation from all the corrs:
-				scan_matching::leastSquareErrorRigidTransformation(
+				scanmatching::leastSquareErrorRigidTransformation(
 					subSet,
 					referenceEstimation.mean,
 					&referenceEstimation.cov );
@@ -444,7 +444,7 @@ void  scan_matching::robustRigidTransformation(
 						newSOGMode.log_w = 0; //log(1);
 				else	newSOGMode.log_w = log(static_cast<double>(subSet.size()));
 
-				scan_matching::leastSquareErrorRigidTransformation(
+				scanmatching::leastSquareErrorRigidTransformation(
 					subSet,
 					newSOGMode.mean,
 					&newSOGMode.cov );
@@ -479,7 +479,7 @@ void  scan_matching::robustRigidTransformation(
 					ransac_nSimulations = ransac_min_nSimulations;
 
 				//if (verbose)
-					cout << "[scan_matching::RANSAC] Iter #" << i << " Estimated number of iters: " << ransac_nSimulations << "  pNoOutliers = " << pNoOutliers << " #inliers: " << ninliers << endl;
+					cout << "[scanmatching::RANSAC] Iter #" << i << " Estimated number of iters: " << ransac_nSimulations << "  pNoOutliers = " << pNoOutliers << " #inliers: " << ninliers << endl;
 
 			}
 		}

@@ -21,8 +21,9 @@ define_mrpt_lib(
 	maps
 	# Dependencies:
 	mrpt-obs
-	mrpt-opengl  # Dep of the ones above.
-	mrpt-base  # Dep of the ones above.
+	# Deps of deps:
+	mrpt-opengl
+	mrpt-base
 	)
 
 # Ignore precompiled headers in some sources:

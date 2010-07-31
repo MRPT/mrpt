@@ -443,7 +443,6 @@ namespace mrpt
 
 				std::string	LOG_OUTPUT_DIR;		//!< [LOGGING] If it is not an empty string (""), a directory with that name will be created and log files save there.
 				int			LOG_FREQUENCY;		//!< [LOGGING] One SLAM iteration out of "LOGGING_logFrequency", a log file will be generated.
-				bool 		LOG_SHOW3D;			//!< [LOGGING] Display 3D view in real-time
 
 				/** [LSLAM] The method to use for local SLAM
 				  */
