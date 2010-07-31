@@ -32,7 +32,7 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</i></p>
 
   <a name="0.9.1">
-  <h2>Version 0.9.1: (In developement)</h2></a>
+  <h2>Version 0.9.1: Released 1-AUG-2010 (SVN 2076) </h2></a>
 	- <b>Most important changes:</b>
 		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.		
 		- Changes in <a href="index.html#libs" >libraries</a>:
