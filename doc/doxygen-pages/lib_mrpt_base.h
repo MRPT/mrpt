@@ -67,11 +67,11 @@ object. See mrpt::math::CMatrixView.   </li>
 <li><b>Arrays:</b> Fixed-size vectors, just like plain C arrays but with support for STL-like iterators and much more. See mrpt::math::CArrayDouble<>. </li>
 </ul>
 
-These contaners have a number of characteristics in common (STL-like iterators and typedefs, etc.) and can be 
+These containers have a number of characteristics in common (STL-like iterators and typedefs, etc.) and can be 
 mixed in operations without problems. For example, matrices of any kind can be operated together, a vector can be
 added to an array, or the results of a matrix operation stored in a matrix view. 
 
-Notice that fixed-size contaners should be preferred where possible, since they allow more compile-time optimizations.
+Notice that fixed-size containers should be preferred where possible, since they allow more compile-time optimizations.
 
 Apart from the containers, this namespace contains much more functionality:
 

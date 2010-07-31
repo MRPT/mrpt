@@ -8,7 +8,7 @@
 <hr>
 
 Implementations of stereo-vision visual odometry and SLAM. This library 
-is experimental and it's under developement.
+is experimental and it's under development.
 
 See the namespace mrpt::stereoslam
 

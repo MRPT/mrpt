@@ -246,7 +246,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
     wxFlexGridSizer* FlexGridSizer3;
     wxFlexGridSizer* FlexGridSizer5;
     wxStaticBoxSizer* StaticBoxSizer1;
-    
+
     Create(parent, id, _("Reactive Navigation Demo - Part of the MRPT project - J.L. Blanco (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     {
     wxIcon FrameIcon;
@@ -352,7 +352,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-    
+
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnStartClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnPauseClick);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnExitClick);
@@ -420,7 +420,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
 	iniEditorRobot->edText->SetValue( wxT("; ---------------------------------------------------------------\n; FILE: CONFIG_RobotDescription.ini\n;\n;  All robot dependant modules should look here to determine\n;   the actual running platform. The posibilities are:\n;\t-> \"Sancho\"\n;\t-> \"Sena\"\n;  Some physical description parameters are stored for each \n;    robot.\n;\n;  JLBC @ OCT-2005\n; ---------------------------------------------------------------\n[ROBOT_NAME]\nName=SYMCAR\n\n; -------------------------------\n;\t       SYMCAR\n; -------------------------------\n[SYMCAR]\nPLS_Pose_x=0 ; Laser range scaner 3D position in the robot\nPLS_Pose_y=0\nPLS_Pose_z=0.31\nPLS_Pose_yaw=0\t\t; Angles in degrees\nPLS_Pose_pitch=0\nPLS_Pose_roll=0\n\n") );
 
 	// VC2003 complains about the too big string:
-	wxString	auxStr = wxT("; ---------------------------------------------------------------\n; FILE: CONFIG_ReactiveNavigator.ini\n;\n;  In this file there are parameters to the reactive navigation\n;   module.\n;\n;  JLBC @ OCT-2005\n; ---------------------------------------------------------------\n\n\n[GLOBAL_CONFIG]\n; 0: VFF,  1: ND\nHOLONOMIC_METHOD=1\ndebugWindows=0\nALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100\n\n; ----------------------------------------------------\n;\tParameters for the \"Nearness diagram\" Holonomic method\n; ----------------------------------------------------\n[ND_CONFIG]\nfactorWeights=1.0 0.5 2.0 0.4\n; 1: Free space\n; 2: Dist. in sectors\n; 3: Closer to target (euclidean)\n; 4: Hysteresis\nWIDE_GAP_SIZE_PERCENT=0.50\nMAX_SECTOR_DIST_FOR_D2_PERCENT=0.25\n");
+	wxString	auxStr = wxT("; ---------------------------------------------------------------\n; FILE: CONFIG_ReactiveNavigator.ini\n;\n;  In this file there are parameters to the reactive navigation\n;   module.\n;\n;  JLBC @ OCT-2005\n; ---------------------------------------------------------------\n\n\n[GLOBAL_CONFIG]\n; 0: VFF,  1: ND\nHOLONOMIC_METHOD=1\nALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100\n\n; ----------------------------------------------------\n;\tParameters for the \"Nearness diagram\" Holonomic method\n; ----------------------------------------------------\n[ND_CONFIG]\nfactorWeights=1.0 0.5 2.0 0.4\n; 1: Free space\n; 2: Dist. in sectors\n; 3: Closer to target (euclidean)\n; 4: Hysteresis\nWIDE_GAP_SIZE_PERCENT=0.50\nMAX_SECTOR_DIST_FOR_D2_PERCENT=0.25\n");
 	auxStr << wxT("RISK_EVALUATION_SECTORS_PERCENT=0.25\nRISK_EVALUATION_DISTANCE=0.15\t\t; In normalized ps-meters [0,1]\nTARGET_SLOW_APPROACHING_DISTANCE=1.00\t; For stop gradually\nTOO_CLOSE_OBSTACLE=0.02\t\t\t; In normalized ps-meters\n\n\n; ----------------------------------------------------\n;\tParameters for the navigation on ROBOT: \"SYM_CAR\"\n; ----------------------------------------------------\n[SYMCAR]\nweights=0.5 0.05 0.5 2.0 0.5 0.1\n; 1: Free space\n; 2: Dist. in sectors\t\t\t\n; 3: Heading toward target\n; 4: Closer to target (euclidean)\n; 5: Hysteresis\n; 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=1.25\t; Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t; Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t\t; Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nrobotMax_V_mps=0.70\t\t\t; Speed limits\nrobotMax_W_degps=50\nROBOTMODEL_DELAY=0\t\t\t; The delay until motor reaction\nROBOTMODEL_TAU=0\t\t\t; The \"TAU\" time constant of a first order lowpass filter\n\nMAX_REFERENCE_DISTANCE=3.50\nWIDE_GAP_SIZE_PERCENT=0.40\nRISK_EVALUATION_DISTANCE=0.5\nRISK_EVALUATION_SECTORS_PERCENT=0.20\nMAX_SECTOR_DIST_FOR_D2_PERCENT=0.25\nRESOLUCION_REJILLA_X=0.03\nRESOLUCION_REJILLA_Y=0.03\n\nPTG_COUNT=3\n\n; \t\tC-PTGs:\n; ------------------------------------\nPTG0_Type=1\nPTG0_nAlfas=300\nPTG0_v_max_mps=0.7\nPTG0_w_max_gps=50\nPTG0_K=1.0\n\nPTG1_Type=1\nPTG1_nAlfas=300\nPTG1_v_max_mps=0.7\nPTG1_w_max_gps=20\nPTG1_K=1.0\n\n; \t     a-A type PTGs:\n; ------------------------------------\nPTG2_Type=2\nPTG2_nAlfas=300\nPTG2_v_max_mps=0.7\nPTG2_w_max_gps=50\nPTG2_cte_a0v_deg=10\nPTG2_cte_a0w_deg=40\n\n\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\n");
 	iniEditoreactivenav->edText->SetValue( auxStr );
 
@@ -813,3 +813,61 @@ void ReactiveNavigationDemoFrame::OncbInternalParamsClick(wxCommandEvent& event)
     edRobotCfgFile->Enable( cbInternalParams->GetValue() );
     edNavCfgFile->Enable( cbInternalParams->GetValue() );
 }
+
+
+
+// Debug windows:
+#if 0
+	if (m_debugWindows)
+	{
+		if (!m_debugWin_WS.present())
+			m_debugWin_WS = mrpt::gui::CDisplayWindowPlotsPtr( new mrpt::gui::CDisplayWindowPlots("[ReactiveNav] Workspace") );
+
+		// Plot obstacles:
+		{
+			vector_float xs,ys;
+			CSimplePointsMap	pointsTrans = WS_Obstacles;
+			pointsTrans.changeCoordinatesReference(curPose);
+
+			pointsTrans.getAllPoints(xs,ys);
+			m_debugWin_WS->plot(xs,ys,"b.3","obstacles");
+		}
+
+		// Plot robot shape:
+		{
+			vector_double xs,ys;
+			robotShape.getAllVertices(xs,ys);
+			if (!xs.empty()) { xs.push_back(xs[0]); ys.push_back(ys[0]); }
+			for (size_t i=0;i<xs.size();i++)
+			{
+				const CPoint2D  p = curPose + CPoint2D(xs[i],ys[i]);
+				xs[i] = p.x();
+				ys[i] = p.y();
+			}
+			m_debugWin_WS->plot(xs,ys,"r-2","shape");
+		}
+
+		// Plot current dir:
+		{
+
+			vector_double xs(2),ys(2);
+			xs[0] = curPose.x();
+			ys[0] = curPose.y();
+
+			xs[1] = curPose.x() + cos(cur_approx_heading_dir+curPose.phi()) * 1.5;
+			ys[1] = curPose.y() + sin(cur_approx_heading_dir+curPose.phi()) * 1.5;
+
+			m_debugWin_WS->plot(xs,ys,"b-","cur_dir");
+		}
+
+		// Plot target point:
+		{
+			vector_double xs,ys;
+			xs.push_back( m_navigationParams.target.x );
+			ys.push_back( m_navigationParams.target.y );
+			m_debugWin_WS->plot(xs,ys,"k.7","target");
+		}
+
+		m_debugWin_WS->axis_fit(true);
+	}
+#endif

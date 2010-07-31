@@ -30,7 +30,6 @@
 
 #include <mrpt/maps.h>
 #include <mrpt/poses.h>
-#include <mrpt/gui.h>
 #include <mrpt/math_mrpt.h>
 #include <mrpt/synch.h>
 #include <mrpt/reactivenav/link_pragmas.h>
@@ -224,7 +223,6 @@ namespace mrpt
 			CTicTac	timerForExecutionPeriod;
 
 			// Loaded from INI file:
-			bool    m_debugWindows;				//!< Show debug windows with the internal state, etc...
 			std::string robotName;				// El nombre del robot donde estamos
 			float   refDistance;				// "dmax" in papers.
 			float   colGridRes_x,colGridRes_y;  // Resolucion de la rejilla de distancias de choque precalculadas
@@ -269,9 +267,6 @@ namespace mrpt
 			/** The set of transformations to be used:
 			  */
 			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;
-
-			// Debug windows:
-			mrpt::gui::CDisplayWindowPlotsPtr	m_debugWin_WS;
 
 
 			// Steps for the reactive navigation sytem.

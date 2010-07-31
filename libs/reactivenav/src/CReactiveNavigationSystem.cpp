@@ -48,8 +48,7 @@ CReactiveNavigationSystem::CReactiveNavigationSystem(
     bool					enableConsoleOutput,
     bool					enableLogToFile)
 	:
-	CAbstractReactiveNavigationSystem(react_iterf_impl),
-	m_debugWindows(false)
+	CAbstractReactiveNavigationSystem(react_iterf_impl)
 {
 	// Initialize some members:
 	logFile				= NULL;
@@ -116,8 +115,6 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	// Load config from INI file:
 	// ------------------------------------------------------------
-	m_debugWindows = ini.read_bool("GLOBAL_CONFIG","debugWindows",false);
-
 	robotName = robotIni.read_string("ROBOT_NAME","Name", "", true );
 
 	unsigned int PTG_COUNT = ini.read_int(robotName,"PTG_COUNT",0, true );
@@ -681,61 +678,6 @@ void  CReactiveNavigationSystem::performNavigationStep()
 		meanExecutionPeriod = 0.3f * meanExecutionPeriod +
 		                      0.7f * min(1.0f, (float)timerForExecutionPeriod.Tac());
 
-
-		// Debug windows:
-		// ------------------------------
-		if (m_debugWindows)
-		{
-			if (!m_debugWin_WS.present())
-				m_debugWin_WS = mrpt::gui::CDisplayWindowPlotsPtr( new mrpt::gui::CDisplayWindowPlots("[ReactiveNav] Workspace") );
-
-			// Plot obstacles:
-			{
-				vector_float xs,ys;
-				CSimplePointsMap	pointsTrans = WS_Obstacles;
-				pointsTrans.changeCoordinatesReference(curPose);
-
-				pointsTrans.getAllPoints(xs,ys);
-				m_debugWin_WS->plot(xs,ys,"b.3","obstacles");
-			}
-
-			// Plot robot shape:
-			{
-				vector_double xs,ys;
-				robotShape.getAllVertices(xs,ys);
-				if (!xs.empty()) { xs.push_back(xs[0]); ys.push_back(ys[0]); }
-				for (size_t i=0;i<xs.size();i++)
-				{
-					const CPoint2D  p = curPose + CPoint2D(xs[i],ys[i]);
-					xs[i] = p.x();
-					ys[i] = p.y();
-				}
-				m_debugWin_WS->plot(xs,ys,"r-2","shape");
-			}
-
-			// Plot current dir:
-			{
-
-				vector_double xs(2),ys(2);
-				xs[0] = curPose.x();
-				ys[0] = curPose.y();
-
-				xs[1] = curPose.x() + cos(cur_approx_heading_dir+curPose.phi()) * 1.5;
-				ys[1] = curPose.y() + sin(cur_approx_heading_dir+curPose.phi()) * 1.5;
-
-				m_debugWin_WS->plot(xs,ys,"b-","cur_dir");
-			}
-
-			// Plot target point:
-			{
-				vector_double xs,ys;
-				xs.push_back( m_navigationParams.target.x );
-				ys.push_back( m_navigationParams.target.y );
-				m_debugWin_WS->plot(xs,ys,"k.7","target");
-			}
-
-			m_debugWin_WS->axis_fit(true);
-		}
 
 		timerForExecutionPeriod.Tic();
 

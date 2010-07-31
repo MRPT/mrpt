@@ -173,8 +173,8 @@ void CPRRTNavigator::thread_planner()
 
 		CPathPlannerAstar planner;
 		CPath pathini, pathoptimal;
-		int ret = planner.getOptimalSolution(pathini, pathoptimal);
-
+		//int ret =
+		planner.getOptimalSolution(pathini, pathoptimal);
 
 
 		// Run at XX Hz -------------------------------

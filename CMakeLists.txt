@@ -1641,10 +1641,6 @@ include(cmakemodules/DefineExamples.cmake REQUIRED)
 #-----------------------------------
 add_subdirectory(apps)
 
-#-----------------------------------
-# The rawlog tools:
-#-----------------------------------
-add_subdirectory(rawlog-tools)
 
 #-----------------------------------
 # Documentation targets:
