@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include <mrpt/bayes.h>  // Precompiled headers
 
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 
