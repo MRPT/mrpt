@@ -1140,6 +1140,12 @@ ELSE(UNIX)
 	ENDIF(MSVC)
 ENDIF(UNIX)
 
+# Leave at the user's choice to disable the SWR libs:
+OPTION(DISABLE_SWISSRANGER_3DCAM_LIBS "Disable the usage (if found) of SWR libs" "OFF")
+MARK_AS_ADVANCED(DISABLE_SWISSRANGER_3DCAM_LIBS)
+IF(DISABLE_SWISSRANGER_3DCAM_LIBS)
+	SET(CMAKE_MRPT_HAS_SWISSRANGE 0)
+ENDIF(DISABLE_SWISSRANGER_3DCAM_LIBS)
 
 # We have gz-streams is we have zlib:
 # ------------------------------------------
