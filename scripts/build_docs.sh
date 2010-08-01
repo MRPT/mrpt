@@ -12,6 +12,7 @@ genLATEX="NO"
 genRTF="NO"
 includeCounter="NO"
 skipSVN="NO"
+MRPT_USE_SEARCHENGINE="YES"
 
 emptyARGS=1
 errARGS=0
@@ -25,6 +26,7 @@ do
 			;;
 	c) 	outCHM="YES"
 		genHTML="YES"
+		MRPT_USE_SEARCHENGINE="NO"
 		emptyARGS=0 
 			;;
 	l)	genLATEX="YES"
@@ -99,6 +101,7 @@ printf "\tGenerate LATEX docs:\t\t%s\n" $genLATEX
 printf "\tGenerate RTF docs:\t\t%s\n" $genRTF
 printf "\tInclude web counter:\t\t%s\n" $includeCounter
 printf "\tSkip SVN number:\t\t%s\n" $skipSVN
+printf "\tPut a search box:\t\t%s\n" $MRPT_USE_SEARCHENGINE
 printf "\tSystem type:\t\t%s\n" $SYSTEM_TYPE
 echo ""
 echo "List of directories: $MRPT_LIST_DIRECTORIES"

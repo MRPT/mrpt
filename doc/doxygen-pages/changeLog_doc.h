@@ -126,6 +126,7 @@
 			- New global variable mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 		- BUGFIXES:
 			- <b>CRITICAL REGRESION FIXED</b>: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.
+			- Fixed annoying JavaScript error in CHM documentation.
 			- Fixed bug when accessing matrixes in CKalmanFilterCapable.h if the OBS_SIZE and the FEAT_SIZE parameters are different.
 			- Fixed crash (on non Win32) when calling mrpt::system::joinThread on an empty thread handle.
 			- Error in CStream-classes handling files larger than 4Gb.
