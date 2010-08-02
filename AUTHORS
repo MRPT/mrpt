@@ -57,6 +57,7 @@ the University of Malaga.
   
 * Adrien Barral - Robopec (France).
   - Driver for SICK LMS100 via ethernet (mrpt::hwdrivers::CLMS100eth)
+  - Driver for Phidget interface boards (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors)
 
 * Eduardo Fernandez Moral , University of Malaga.
   - Driver for Rovio mobile robot with webcam. 

@@ -76,7 +76,7 @@ namespace mrpt
 		 * 		GP2Y0A21** & SHARP-80cm & IR \\
 		 * 		\hline
 		 * \end{tabular}
-		 * 
+		 *
 		 * This isn't an event based implementation of the phidget library. That means that when an instanciation of a CPhidgetInterfaceKitProximitySensors is done, the constructor will block during
 		 * in the worst case 200ms, if the board isn't found, an exception will be thrown.
 		 * CObservation returned by this class is a CObservationRange. CObservationrange::minSensorDistance will be the minimum of the minimum of the sensor distances, e.g if you plug to the interface
@@ -105,12 +105,12 @@ namespace mrpt
 			  */
 			void  getObservation(mrpt::slam::CObservationRange	&outObservation);
 			/** Initialize the sensor according to the parameters previously read in the configuration file.
-			 * \exception throw an exception if the board could not be found.			
+			 * \exception throw an exception if the board could not be found.
 			 * \exception throw an exception if the process rate can't be set on one of the board channel.
 			 */
 			void initialize();
 
-			/** This method should be called periodically. Period depend on the process_rate in the configuration file.			
+			/** This method should be called periodically. Period depend on the process_rate in the configuration file.
 			 */
 			void  doProcess();
 
@@ -135,7 +135,7 @@ namespace mrpt
 			  * described in the configuration file.
 			  */
 			std::vector<mrpt::math::CPose3D>	m_sensorPoses;
-			
+
 			/** The board serial number read in the configuration file. -1 for any  board.
 			 */
 			int m_serialNumber;

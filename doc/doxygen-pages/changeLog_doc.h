@@ -31,6 +31,18 @@
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</i></p>
 
+  <a name="0.9.2">
+  <h2>Version 0.9.2: (Under development) </h2></a>
+	- New classes:
+		- New sensor driver for Phidget kit (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors), contributed by Adrien Barral (Robopec)
+	- New examples:
+		- phidgetProximitySensor
+	- BUG FIXES:
+		- 
+
+
+  <br> <hr> <br>
+
   <a name="0.9.1">
   <h2>Version 0.9.1: Released 1-AUG-2010 (SVN 2076) </h2></a>
 	- <b>Most important changes:</b>

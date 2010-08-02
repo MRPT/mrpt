@@ -66,10 +66,7 @@
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
-#if MRPT_HAS_SVS
-	#include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
-#endif
-#if MRPT_HAS_PHIDGET
-	#include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
-#endif
+#include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
+#include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
+
 #endif

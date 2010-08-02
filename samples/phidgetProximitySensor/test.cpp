@@ -43,10 +43,13 @@ using namespace std;
  */
 int main(int argc, char **argv)
 {
-	string confFileName; 
+	try
+	{
+
+	string confFileName;
 	if(argc < 2) confFileName = string("./conf.ini");
 	else confFileName = string(argv[1]);
-	
+
 
 	CPhidgetInterfaceKitProximitySensors ik;
 	string section("IK_1");
@@ -58,14 +61,21 @@ int main(int argc, char **argv)
 	{
 		ik.doProcess();
 		ik.getObservation(obs);
-		for(int i = 0 ; i < obs.sensedData.size() ; i ++)
+		for(size_t i = 0 ; i < obs.sensedData.size() ; i ++)
 		{
 			cout << obs.sensedData[i].sensedDistance << "\t";
 		}
 		cout << endl;
-		mrpt::system::sleep(10);		
+		mrpt::system::sleep(10);
 	}while(	!mrpt::system::os::kbhit() );
 
 	return 0;
+
+	}
+	catch(std::exception &e)
+	{
+		std::cerr << e.what();
+		return 1;
+	}
 }
 

@@ -59,7 +59,7 @@ CPhidgetInterfaceKitProximitySensors::CPhidgetInterfaceKitProximitySensors() :
 	m_carteInterfaceKit = new CPhidgetInterfaceKitHandle;
 	*((CPhidgetInterfaceKitHandle*)m_carteInterfaceKit) = 0;
 	m_sensorLabel = "PhidgetInterfaceKit";
-	
+
 	m_sensorIsPlugged.reserve(8);
 	m_minRange.reserve(8);
 	m_maxRange.reserve(8);
@@ -72,7 +72,7 @@ CPhidgetInterfaceKitProximitySensors::CPhidgetInterfaceKitProximitySensors() :
 		m_sensorIsPlugged[i]=false;
 	}
 #else
-	std::cout << "MRPT Was compiled withot the CPhidget support. Recompile MRPT to use this class" << endl;
+	THROW_EXCEPTION("MRPT Was compiled without the CPhidget support. Recompile MRPT to use this class")
 #endif
 }
 
@@ -102,11 +102,11 @@ void  CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
 		{
 			// the sensor is plugged :
 			// // check if the sensor type is supported.
-			if(sensorType == string("EZ1"))			
+			if(sensorType == string("EZ1"))
 			{
 				m_sensorType[i-1] = EZ1;
 				m_minRange[i-1] = 0.15;			// meters
-				m_maxRange[i-1] = 6.45;			// meters	
+				m_maxRange[i-1] = 6.45;			// meters
 			}else if(sensorType == string("SHARP-30cm"))
 			{
 				m_sensorType[i-1] = SHARP_30cm;
@@ -131,16 +131,16 @@ void  CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
 			string sensorNPoseYaw = format("pose%d_yaw", i);
 			string sensorNPosePitch = format("pose%d_pitch", i);
 			string sensorNPoseRoll = format("pose%d_roll", i);
-			
+
 			float x = configSource.read_float(iniSection, sensorNPoseX, 0.0);
 			float y = configSource.read_float(iniSection, sensorNPoseY, 0.0);
 			float z = configSource.read_float(iniSection, sensorNPoseZ, 0.0);
 			float yaw = configSource.read_float(iniSection, sensorNPoseYaw, 0.0);
 			float pitch = configSource.read_float(iniSection, sensorNPosePitch, 0.0);
 			float roll = configSource.read_float(iniSection, sensorNPoseRoll, 0.0);
-			
+
 			m_sensorPoses[i-1] = CPose3D(x,y,z,yaw,pitch,roll);
-		}		
+		}
 	}
 	if(display)
 	{	// width = 80;
@@ -160,7 +160,7 @@ void  CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
 			cout.width(9);
 			cout << i+1;
 			cout << " |";
-			cout.width(19);	
+			cout.width(19);
 			switch (m_sensorType[i])
 			{
 				case EZ1 :
@@ -280,7 +280,7 @@ void CPhidgetInterfaceKitProximitySensors::getObservation( mrpt::slam::CObservat
 	for(int i = 0 ; i < 8 ; i++)
 	{
 		if(m_sensorIsPlugged[i])
-		{			
+		{
 			mrpt::slam::CObservationRange::TMeasurement obsRange;
 			int err = CPhidgetInterfaceKit_getSensorValue(*((CPhidgetInterfaceKitHandle*)(m_carteInterfaceKit)), i, &sensorValue);
 			if(err>0)
@@ -304,8 +304,8 @@ void CPhidgetInterfaceKitProximitySensors::getObservation( mrpt::slam::CObservat
 					obsRange.sensedDistance = -1;
 					break;
 			}
-			
-			obsRange.sensorID = i;						
+
+			obsRange.sensorID = i;
 			obsRange.sensorPose = m_sensorPoses[i];		// The pose of the IR sensor on the robot
 			obs.sensedData.push_back( obsRange );
 		}
