@@ -245,6 +245,9 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
     outObservation.beamAperture = m_beamApperture;
     outObservation.maxRange = m_maxRange;
 
+	outObservation.scan.clear();
+	outObservation.validRange.clear();
+
     for(unsigned int i = 0 ; i < scanCount ; i++, next = strtok(NULL, " ", &tmp))
     {
         outObservation.scan.push_back(double(strtoul(next, NULL, 16))/1000.0);
