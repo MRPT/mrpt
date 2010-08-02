@@ -69,5 +69,7 @@
 #if MRPT_HAS_SVS
 	#include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
 #endif
-
+#if MRPT_HAS_PHIDGET
+	#include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
+#endif
 #endif

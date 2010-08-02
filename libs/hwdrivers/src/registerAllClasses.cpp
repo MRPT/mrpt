@@ -56,5 +56,8 @@ void registerAllClasses_mrpt_hwdrivers()
 	CBoardENoses::doRegister();
 	CNTRIPEmitter::doRegister();
 	CSwissRanger3DCamera::doRegister();
+#if MRPT_HAS_PHIDGET
+	CPhidgetInterfaceKitProximitySensors::doRegister();
+#endif
 }
 

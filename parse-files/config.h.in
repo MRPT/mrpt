@@ -72,6 +72,12 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
   */
 #define MRPT_HAS_BUMBLEBEE        ${CMAKE_MRPT_HAS_BUMBLEBEE}
 
+/** Define for including Phidget interface kit interface through the vendor's proprietary API (libPhidget).
+  * \sa CStereoGrabber_SVS
+  */
+#define MRPT_HAS_PHIDGET        ${CMAKE_MRPT_HAS_PHIDGET}
+
+
 /** Define for including SVS interface through the vendor's proprietary API.
   * \sa CStereoGrabber_SVS
   */

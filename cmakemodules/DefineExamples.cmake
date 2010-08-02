@@ -129,7 +129,7 @@ IF(BUILD_EXAMPLES)
 		coordinate_conversions
 		params-by-name		
 		checkerboardDetectors
-		multipleCheckerboards
+		multipleCheckerboards		
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-vision mrpt-gui mrpt-topography)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
@@ -166,6 +166,7 @@ IF(BUILD_EXAMPLES)
 			captureVideoOpenCV
 			captureVideoDC1394
 			enumerateCameras1394
+			phidgetProximitySensor
 			)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-hwdrivers)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
