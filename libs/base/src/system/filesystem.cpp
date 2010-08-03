@@ -346,7 +346,7 @@ std::string mrpt::system::fileNameStripInvalidChars( const std::string &filename
 
 
 /*---------------------------------------------------------------
-			fileNameStripInvalidChars
+			getFileSize
 ---------------------------------------------------------------*/
 uint64_t mrpt::system::getFileSize(const std::string &fileName)
 {

@@ -44,6 +44,7 @@
 
 #include <mrpt/obs.h>
 
+#include <mrpt/otherlibs/tclap/CmdLine.h>
 #include "CRawlogProcessor.h"
 
 
@@ -51,6 +52,7 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::system;
+using namespace mrpt::rawlogtools;
 using namespace std;
 
 // Declarations:

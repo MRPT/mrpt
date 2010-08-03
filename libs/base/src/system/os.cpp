@@ -389,7 +389,7 @@ bool  mrpt::system::vectorFromTextFile( std::vector<double> &vec, const std::str
 		if ( (!byRows) || (readed == 1) )
 			vec.push_back( number );
 	}
-	
+
 	return true;
 }
 
@@ -554,6 +554,28 @@ int os::_strcmpi(const char*str1,const char*str2) MRPT_NO_THROWS
     return ::strcasecmp( str1,str2 );
 #endif
 }
+
+/** An OS-independent version of strncmp.
+* \return It will return 0 when both strings are equal, casi sensitive.
+*/
+int os::_strncmp(const char*str1,const char*str2,size_t count) MRPT_NO_THROWS
+{
+    return ::strncmp( str1,str2,count);
+}
+
+/** An OS-independent version of strnicmp.
+* \return It will return 0 when both strings are equal, casi insensitive.
+*/
+int os::_strnicmp(const char*str1,const char*str2,size_t count) MRPT_NO_THROWS
+{
+#if defined(_MSC_VER)
+	return ::_strnicmp( str1,str2,count );
+#else
+    return ::strncasecmp( str1,str2,count );
+#endif
+}
+
+
 
 /*---------------------------------------------------------------
 						memcpy

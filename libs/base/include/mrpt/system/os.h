@@ -133,6 +133,16 @@ namespace mrpt
 			  */
 			int BASE_IMPEXP _strcmpi(const char*str1,const char*str2) MRPT_NO_THROWS;
 
+			/** An OS-independent version of strncmp.
+			  * \return It will return 0 when both strings are equal, casi sensitive.
+			  */
+			int BASE_IMPEXP _strncmp(const char*str1,const char*str2,size_t count) MRPT_NO_THROWS;
+
+			/** An OS-independent version of strnicmp.
+			  * \return It will return 0 when both strings are equal, casi insensitive.
+			  */
+			int BASE_IMPEXP _strnicmp(const char*str1,const char*str2,size_t count) MRPT_NO_THROWS;
+
 			/** An OS-independent version of strtoll.
 			  */
 			int64_t BASE_IMPEXP _strtoll(const char *nptr, char **endptr, int base);

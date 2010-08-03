@@ -276,3 +276,26 @@ std::string mrpt::system::rightPad(const std::string &str, const size_t total_le
 	return r;
 }
 
+/** Return true if the two strings are equal (case sensitive)  \sa StrCmpI  */
+bool mrpt::system::strCmp(const std::string &s1, const std::string &s2)
+{
+	return !mrpt::system::os::_strcmp(s1.c_str(),s2.c_str());
+}
+
+/** Return true if the two strings are equal (case insensitive)  \sa StrCmp */
+bool mrpt::system::strCmpI(const std::string &s1, const std::string &s2)
+{
+	return !mrpt::system::os::_strcmpi(s1.c_str(),s2.c_str());
+}
+
+/** Return true if "str" starts with "subStr" (case sensitive)  \sa strStartsI  */
+bool mrpt::system::strStarts(const std::string &s1, const std::string &s2)
+{
+	return !mrpt::system::os::_strncmp(s1.c_str(),s2.c_str(),s2.size()); // if s1 is shorter it's not a problem
+}
+
+/** Return true if "str" starts with "subStr" (case insensitive)  \sa strStarts */
+bool mrpt::system::strStartsI(const std::string &s1, const std::string &s2)
+{
+	return !mrpt::system::os::_strnicmp(s1.c_str(),s2.c_str(),s2.size()); // if s1 is shorter it's not a problem
+}

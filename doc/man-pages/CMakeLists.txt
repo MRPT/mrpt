@@ -59,7 +59,7 @@ IF (PROG_GZIP AND PROG_POD2MAN)
 	CREATE_MANPAGE_PROJECT(track-video-features)
 
 	CREATE_MANPAGE_PROJECT(rawlog-edit)
-#	CREATE_MANPAGE_PROJECT(carmen2rawlog)
+	CREATE_MANPAGE_PROJECT(carmen2rawlog)
 #	CREATE_MANPAGE_PROJECT(rawlog2carmen)
 
 	# stereo-calib-gui: only if MRPT_OPENCV_VERSION >= 1.1.0

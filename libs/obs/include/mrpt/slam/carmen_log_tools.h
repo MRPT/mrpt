@@ -25,44 +25,39 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-#ifndef mrpt_obs_H
-#define mrpt_obs_H
 
-#include <mrpt/opengl.h> // dependencies
+#ifndef CARMEN_LOG_TOOLS_H
+#define CARMEN_LOG_TOOLS_H
 
-// Observations:
+#include <mrpt/system/datetime.h>
 #include <mrpt/slam/CObservation.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CObservationRange.h>
-#include <mrpt/slam/CObservationImage.h>
-// #include <mrpt/slam/CObservationVisualLandmarks.h>  // This one is in mrpt-core
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservationStereoImagesFeatures.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
-#include <mrpt/slam/CObservationGasSensors.h>
-#include <mrpt/slam/CObservationGPS.h>
-#include <mrpt/slam/CObservationBatteryState.h>
-#include <mrpt/slam/CObservationIMU.h>
-#include <mrpt/slam/CObservationOdometry.h>
-#include <mrpt/slam/CObservationBearingRange.h>
-#include <mrpt/slam/CObservationComment.h>
-#include <mrpt/slam/CSensoryFrame.h>
 
-// Observations:
-#include <mrpt/slam/CAction.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
-
-
-// Others:
-#include <mrpt/slam/CRawlog.h>
-#include <mrpt/slam/carmen_log_tools.h>
-
-// Very basic classes for maps:
-#include <mrpt/slam/CMetricMap.h>
-#include <mrpt/slam/CSimpleMap.h>
+namespace mrpt
+{
+	namespace slam
+	{
+		/** Parse one line from an text input stream and interpret it as a CARMEN log entry,
+		  *  returning its MRPT observation representation.
+		  *
+		  * The first word in each line determines the type of that entry. Supported
+		  *  line entries in this class are the following:
+		  *		- "ODOM": An odometry entry. This function will return an mrpt::slam::CObservationOdometry
+		  *		- "RAWLASER": A laser scan entry. This function will return an mrpt::slam::CObservation2DRangeScan
+		  *		- "ROBOTLASER(.*)": A joint odometry-laser entry. This function will return both an mrpt::slam::CObservationOdometry and an mrpt::slam::CObservation2DRangeScan
+		  *
+		  *  \param time_start_log The real timestamp that corresponds to a "0" in the CARMEN log (you can get a mrpt::system::now() once and pass that same value with each call).
+		  *
+		  * References: http://carmen.sourceforge.net/doc/binary__loggerplayback.html
+		  *
+		  * \return true on success, false on end-of-file (EOF).
+		  * \exception std::runtime_error On any invalid line found.
+		  */
+		  bool carmen_log_parse_line(
+			std::istream &in_stream,
+			std::vector<mrpt::slam::CObservationPtr> &out_imported_observations,
+			const mrpt::system::TTimeStamp &time_start_log );
 
 
+	} // end NS
+} // end NS
 #endif

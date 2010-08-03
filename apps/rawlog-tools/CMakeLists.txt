@@ -29,8 +29,6 @@ DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-obs)
 
 
 
-if(0) # FUTURE WORK!!
-
 # ================================================
 # TARGET: carmen2rawlog
 # ================================================
@@ -50,6 +48,9 @@ INSTALL(TARGETS ${TMP_TARGET_NAME}
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-obs)
 
+
+
+if(0) # FUTURE WORK!!
 # ================================================
 # TARGET: rawlog2carmen
 # ================================================

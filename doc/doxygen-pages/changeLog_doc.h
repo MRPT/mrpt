@@ -33,8 +33,14 @@
 
   <a name="0.9.2">
   <h2>Version 0.9.2: (Under development) </h2></a>
+	- New applications:
+		- carmen2rawlog: A converter from CARMEN robotics logs to binary Rawlog dataset files. See http://www.mrpt.org/Applications
 	- New classes:
 		- New sensor driver for Phidget kit (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors), contributed by Adrien Barral (Robopec)
+	- New functions:
+		- mrpt::slam::carmen_log_parse_line() a tool to parse CARMEN logs.
+		- mrpt::system::strCmp, mrpt::system::strCmpI, mrpt::system::strStarts, mrpt::system::strStartsI
+		- mrpt::system::os::_strncmp, mrpt::system::os::_strnicmp
 	- New examples:
 		- phidgetProximitySensor
 	- BUG FIXES:

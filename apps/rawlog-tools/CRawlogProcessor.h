@@ -32,157 +32,162 @@
 #include <mrpt/slam/CRawlog.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
-
-/** A virtual class that implements the common stuff around parsing a rawlog file
-  * and (optionally) display a progress indicator to the console.
-  */
-class CRawlogProcessor
+namespace mrpt
 {
-protected:
-	mrpt::utils::CFileGZInputStream	& m_in_rawlog;
-	TCLAP::CmdLine			& m_cmdline;
-	bool					verbose;
-	mrpt::system::TTimeStamp m_last_console_update;
-	mrpt::utils::CTicTac	m_timParse;
-
-public:
-	uint64_t		m_filSize;
-	size_t			m_rawlogEntry;
-	double 			m_timToParse; // Public variable, at end will hold ellapsed time.
-
-	// Ctor
-	CRawlogProcessor(mrpt::utils::CFileGZInputStream &_in_rawlog, TCLAP::CmdLine &_cmdline, bool _verbose) :
-		m_in_rawlog(_in_rawlog),m_cmdline(_cmdline), verbose(_verbose), m_last_console_update( mrpt::system::now() ), m_rawlogEntry(0)
+	namespace rawlogtools
 	{
-		m_filSize = _in_rawlog.getTotalBytesCount();
-	}
-
-
-	// The main method:
-	void doProcessRawlog()
-	{
-		// The 3 different objects we can read from a rawlog:
-		mrpt::slam::CActionCollectionPtr actions;
-		mrpt::slam::CSensoryFramePtr     SF;
-		mrpt::slam::CObservationPtr      obs;
-
-		m_timParse.Tic();
-
-		// Parse the entire rawlog:
-		while (mrpt::slam::CRawlog::getActionObservationPairOrObservation(
-			m_in_rawlog,
-			actions,SF, obs,
-			m_rawlogEntry ) )
+		/** A virtual class that implements the common stuff around parsing a rawlog file
+		  * and (optionally) display a progress indicator to the console.
+		  */
+		class CRawlogProcessor
 		{
-			// Abort if the user presses ESC:
-			if (mrpt::system::os::kbhit())
-				if (27 == mrpt::system::os::getch())
+		protected:
+			mrpt::utils::CFileGZInputStream	& m_in_rawlog;
+			TCLAP::CmdLine			& m_cmdline;
+			bool					verbose;
+			mrpt::system::TTimeStamp m_last_console_update;
+			mrpt::utils::CTicTac	m_timParse;
+
+		public:
+			uint64_t		m_filSize;
+			size_t			m_rawlogEntry;
+			double 			m_timToParse; // Public variable, at end will hold ellapsed time.
+
+			// Ctor
+			CRawlogProcessor(mrpt::utils::CFileGZInputStream &_in_rawlog, TCLAP::CmdLine &_cmdline, bool _verbose) :
+				m_in_rawlog(_in_rawlog),m_cmdline(_cmdline), verbose(_verbose), m_last_console_update( mrpt::system::now() ), m_rawlogEntry(0)
+			{
+				m_filSize = _in_rawlog.getTotalBytesCount();
+			}
+
+
+			// The main method:
+			void doProcessRawlog()
+			{
+				// The 3 different objects we can read from a rawlog:
+				mrpt::slam::CActionCollectionPtr actions;
+				mrpt::slam::CSensoryFramePtr     SF;
+				mrpt::slam::CObservationPtr      obs;
+
+				m_timParse.Tic();
+
+				// Parse the entire rawlog:
+				while (mrpt::slam::CRawlog::getActionObservationPairOrObservation(
+					m_in_rawlog,
+					actions,SF, obs,
+					m_rawlogEntry ) )
 				{
-					std::cerr << "Aborted since user pressed ESC.\n";
-					break;
+					// Abort if the user presses ESC:
+					if (mrpt::system::os::kbhit())
+						if (27 == mrpt::system::os::getch())
+						{
+							std::cerr << "Aborted since user pressed ESC.\n";
+							break;
+						}
+
+					// Update status to the console?
+					const mrpt::system::TTimeStamp tNow = mrpt::system::now();
+					if ( mrpt::system::timeDifference(m_last_console_update,tNow)>0.25)
+					{
+						m_last_console_update = tNow;
+						uint64_t fil_pos = m_in_rawlog.getPosition();
+						if(verbose)
+						{
+							std::cout << mrpt::format("Progress: %7u objects --- Pos: %9sB/%c%9sB \r",
+							(unsigned int)m_rawlogEntry,
+							mrpt::system::unitsFormat(fil_pos).c_str(),
+							(fil_pos>m_filSize ? '>':' '),
+							mrpt::system::unitsFormat(m_filSize).c_str()
+							);  // \r -> don't go to the next line...
+
+							std::cout.flush();
+						}
+					}
+
+					// Do whatever:
+					processOneEntry(actions,SF,obs);
+
+					// Post process:
+					OnPostProcess(actions,SF,obs);
+
+					// Clear read objects:
+					actions.clear_unique();
+					SF.clear_unique();
+					obs.clear_unique();
+				}; // end while
+
+				if(verbose) std::cout << "\n"; // new line after the "\r".
+
+				m_timToParse = m_timParse.Tac();
+
+			} // end doProcessRawlog
+
+
+			// The virtual method of the user to be invoked for each read object:
+			//  Return false to abort and stop the read loop.
+			virtual bool processOneEntry(
+				mrpt::slam::CActionCollectionPtr &actions,
+				mrpt::slam::CSensoryFramePtr     &SF,
+				mrpt::slam::CObservationPtr      &obs) = 0;
+
+			// This method can be reimplemented to save the modified object to an output stream.
+			virtual void OnPostProcess(
+				mrpt::slam::CActionCollectionPtr &actions,
+				mrpt::slam::CSensoryFramePtr     &SF,
+				mrpt::slam::CObservationPtr      &obs)
+			{
+				// Default: Do nothing
+			}
+
+		}; // end CRawlogProcessor
+
+		/** A virtual class that implements the common stuff around parsing a rawlog file
+		  * and (optionally) display a progress indicator to the console.
+		  */
+		class CRawlogProcessorOnEachObservation : public CRawlogProcessor
+		{
+		public:
+			CRawlogProcessorOnEachObservation(mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) : CRawlogProcessor(in_rawlog,cmdline,verbose)
+			{
+			}
+
+			virtual bool processOneEntry(
+				mrpt::slam::CActionCollectionPtr &actions,
+				mrpt::slam::CSensoryFramePtr     &SF,
+				mrpt::slam::CObservationPtr      &obs)
+			{
+				// Process each observation individually, either from "obs" or each within a "SF":
+				for (size_t idxObs=0; true; idxObs++)
+				{
+					mrpt::slam::CObservationPtr  obs_indiv;
+					if (obs)
+					{
+						if (idxObs>0)  break;
+						obs_indiv = obs;
+					}
+					else if (SF)
+					{
+						if (idxObs>=SF->size()) break;
+						obs_indiv = SF->getObservationByIndex(idxObs);
+					}
+					else break; // shouldn't...
+
+					// Process "obs_indiv":
+					ASSERT_(obs_indiv)
+					if (!processOneObservation(obs_indiv))
+						return false;
 				}
 
-			// Update status to the console?
-			const mrpt::system::TTimeStamp tNow = mrpt::system::now();
-			if ( mrpt::system::timeDifference(m_last_console_update,tNow)>0.25)
-			{
-				m_last_console_update = tNow;
-				uint64_t fil_pos = m_in_rawlog.getPosition();
-				if(verbose)
-				{
-					std::cout << mrpt::format("Progress: %7u objects --- Pos: %9sB/%c%9sB \r",
-					(unsigned int)m_rawlogEntry,
-					mrpt::system::unitsFormat(fil_pos).c_str(),
-					(fil_pos>m_filSize ? '>':' '),
-					mrpt::system::unitsFormat(m_filSize).c_str()
-					);  // \r -> don't go to the next line...
-
-					std::cout.flush();
-				}
+				return true; // No error.
 			}
 
-			// Do whatever:
-			processOneEntry(actions,SF,obs);
+			// To be implemented by the user. Return false on any error to abort processing.
+			virtual bool processOneObservation(mrpt::slam::CObservationPtr  &obs) = 0;
 
-			// Post process:
-			OnPostProcess(actions,SF,obs);
+		}; // end CRawlogProcessorOnEachObservation
 
-			// Clear read objects:
-			actions.clear_unique();
-			SF.clear_unique();
-			obs.clear_unique();
-		}; // end while
-
-		if(verbose) std::cout << "\n"; // new line after the "\r".
-
-		m_timToParse = m_timParse.Tac();
-
-	} // end doProcessRawlog
-
-
-	// The virtual method of the user to be invoked for each read object:
-	//  Return false to abort and stop the read loop.
-	virtual bool processOneEntry(
-		mrpt::slam::CActionCollectionPtr &actions,
-		mrpt::slam::CSensoryFramePtr     &SF,
-		mrpt::slam::CObservationPtr      &obs) = 0;
-
-	// This method can be reimplemented to save the modified object to an output stream.
-	virtual void OnPostProcess(
-		mrpt::slam::CActionCollectionPtr &actions,
-		mrpt::slam::CSensoryFramePtr     &SF,
-		mrpt::slam::CObservationPtr      &obs)
-	{
-		// Default: Do nothing
-	}
-
-}; // end CRawlogProcessor
-
-/** A virtual class that implements the common stuff around parsing a rawlog file
-  * and (optionally) display a progress indicator to the console.
-  */
-class CRawlogProcessorOnEachObservation : public CRawlogProcessor
-{
-public:
-	CRawlogProcessorOnEachObservation(mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) : CRawlogProcessor(in_rawlog,cmdline,verbose)
-	{
-	}
-
-	virtual bool processOneEntry(
-		mrpt::slam::CActionCollectionPtr &actions,
-		mrpt::slam::CSensoryFramePtr     &SF,
-		mrpt::slam::CObservationPtr      &obs)
-	{
-		// Process each observation individually, either from "obs" or each within a "SF":
-		for (size_t idxObs=0; true; idxObs++)
-		{
-			mrpt::slam::CObservationPtr  obs_indiv;
-			if (obs)
-			{
-				if (idxObs>0)  break;
-				obs_indiv = obs;
-			}
-			else if (SF)
-			{
-				if (idxObs>=SF->size()) break;
-				obs_indiv = SF->getObservationByIndex(idxObs);
-			}
-			else break; // shouldn't...
-
-			// Process "obs_indiv":
-			ASSERT_(obs_indiv)
-			if (!processOneObservation(obs_indiv))
-				return false;
-		}
-
-		return true; // No error.
-	}
-
-	// To be implemented by the user. Return false on any error to abort processing.
-	virtual bool processOneObservation(mrpt::slam::CObservationPtr  &obs) = 0;
-
-}; // end CRawlogProcessorOnEachObservation
-
+	} // end NS
+} // end NS
 
 #endif
 

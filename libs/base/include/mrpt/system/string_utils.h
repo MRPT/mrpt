@@ -115,6 +115,18 @@ namespace mrpt
 		/** Enlarge the string with spaces up to the given length. */
 		std::string BASE_IMPEXP rightPad(const std::string &str, const size_t total_len, bool truncate_if_larger = false);
 
+		/** Return true if the two strings are equal (case sensitive)  \sa strCmpI  */
+		bool BASE_IMPEXP strCmp(const std::string &s1, const std::string &s2);
+
+		/** Return true if the two strings are equal (case insensitive)  \sa strCmp */
+		bool BASE_IMPEXP strCmpI(const std::string &s1, const std::string &s2);
+
+		/** Return true if "str" starts with "subStr" (case sensitive)  \sa strStartsI  */
+		bool BASE_IMPEXP strStarts(const std::string &s1, const std::string &s2);
+
+		/** Return true if "str" starts with "subStr" (case insensitive)  \sa strStarts */
+		bool BASE_IMPEXP strStartsI(const std::string &s1, const std::string &s2);
+
 		/** @} */
 	} // End of namespace
 } // End of namespace
