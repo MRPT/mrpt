@@ -66,25 +66,32 @@ CLMS100Eth::~CLMS100Eth()
 //    delete m_client;
 //    delete m_sensorPose;
 }
+
+void CLMS100Eth::initialize()
+{
+	if(!checkIsConnected())
+	{
+		THROW_EXCEPTION("Can't connect to LMS100 Ethernet Sensor check your configuration file.");
+	}
+	turnOn();
+}
+
 void CLMS100Eth::loadConfig_sensorSpecific( const mrpt::utils::CConfigFileBase &configSource,
                              const std::string	  &iniSection )
 {
     loadExclusionAreas(configSource, iniSection);
     float pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll;
-    bool faillNotFound = false;
-    pose_x = configSource.read_float(iniSection,"pose_x",0,faillNotFound);
-    if(faillNotFound) return;
-    pose_y = configSource.read_float(iniSection,"pose_y",0,faillNotFound);
-    if(faillNotFound) return;
-    pose_z = configSource.read_float(iniSection,"pose_z",0,faillNotFound);
-    if(faillNotFound) return;
-    pose_yaw = configSource.read_float(iniSection,"pose_yax",0,faillNotFound);
-    if(faillNotFound) return;
-    pose_pitch = configSource.read_float(iniSection,"pose_pitch",0,faillNotFound);
-    if(faillNotFound) return;
-    pose_roll = configSource.read_float(iniSection,"pose_roll",0,faillNotFound);
-    if(faillNotFound) return;
 
+    pose_x = configSource.read_float(iniSection,"pose_x",0,false);
+    pose_y = configSource.read_float(iniSection,"pose_y",0,false);
+    pose_z = configSource.read_float(iniSection,"pose_z",0,false);
+    pose_yaw = configSource.read_float(iniSection,"pose_yax",0,false);
+    pose_pitch = configSource.read_float(iniSection,"pose_pitch",0,false);
+    pose_roll = configSource.read_float(iniSection,"pose_roll",0,false);
+	m_ip = configSource.read_string(iniSection, "ip_address", "192.168.0.1", false);
+	m_port = configSource.read_int(iniSection, "TCP_port", 2111, false);
+	m_process_rate = configSource.read_int(iniSection, string("process_rate"), 10, false);
+	m_sensorLabel = configSource.read_string(iniSection, "sensorLabel", "SICK", false);
     m_sensorPose = CPose3D( pose_x, pose_y, pose_z,
         DEG2RAD( pose_yaw ),DEG2RAD( pose_pitch ), DEG2RAD( pose_roll ));
 
@@ -244,6 +251,8 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
     outObservation.sensorPose = m_sensorPose;
     outObservation.beamAperture = m_beamApperture;
     outObservation.maxRange = m_maxRange;
+	outObservation.timestamp				= mrpt::system::getCurrentTime();
+	outObservation.sensorLabel             = m_sensorLabel;
 
 	outObservation.scan.clear();
 	outObservation.validRange.clear();
@@ -287,5 +296,27 @@ void CLMS100Eth::doProcessSimple(bool &outThereIsObservation, CObservation2DRang
         outThereIsObservation = false;
         printf_debug("doProcessSimple failed\n");
     }
+}
 
+/*-------------------------------------------------------------*/
+void CLMS100Eth::doProcess( )
+{
+	CObservation2DRangeScanPtr obs= CObservation2DRangeScan::Create();
+	bool isThereObservation, hwError;
+	try
+	{
+		doProcessSimple(isThereObservation, *obs, hwError);
+		if(hwError) m_state = ssError;
+		else m_state = ssWorking;
+		// if at least one data have been sensed :
+		if(isThereObservation)
+		{
+			appendObservation( obs );
+		}
+	}
+	catch(...)
+	{
+		m_state = ssError;
+	    THROW_EXCEPTION("No observation received from the Phidget board!");
+	}
 }

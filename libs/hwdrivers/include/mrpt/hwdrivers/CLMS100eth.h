@@ -66,6 +66,8 @@ namespace mrpt
           *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
           * -------------------------------------------------------
           *   [supplied_section_name]
+		  *	  ip_address = 192.168.0.50 ;a string wich is the SICK's ip adress (default is 192.168.0.1)
+		  *   TCP_port = 1234			; an integer value : the tcp ip port on wich the sick is listening (default is 2111).
           *   pose_x=0.21	; Laser range scaner 3D position in the robot (meters)
           *   pose_y=0
           *   pose_z=0.34
@@ -108,6 +110,13 @@ namespace mrpt
                  */
                 void setSensorPose(CPose3D& _pose);
 
+				/** This method should be called periodically. Period depend on the process_rate in the configuration file.			
+			 	 */
+				void  doProcess();
+				
+				/** Initialize the sensor according to the parameters previously read in the configuration file.
+				 */
+				void initialize();
         private :
             string                  m_ip;
             unsigned int            m_port;
