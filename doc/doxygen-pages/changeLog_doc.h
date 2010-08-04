@@ -35,6 +35,9 @@
   <h2>Version 0.9.2: (Under development) </h2></a>
 	- New applications:
 		- carmen2rawlog: A converter from CARMEN robotics logs to binary Rawlog dataset files. See http://www.mrpt.org/Applications
+		- carmen2simplemap: A converter from CARMEN robotics logs to binary "simplemap" files. See http://www.mrpt.org/Applications
+	- Changes in applications:
+		- rawlog-edit: More operations supported. See http://www.mrpt.org/Applications
 	- New classes:
 		- New sensor driver for Phidget kit (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors), contributed by Adrien Barral (Robopec)
 	- New functions:

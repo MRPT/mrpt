@@ -147,7 +147,8 @@ namespace mrpt
 		class CRawlogProcessorOnEachObservation : public CRawlogProcessor
 		{
 		public:
-			CRawlogProcessorOnEachObservation(mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) : CRawlogProcessor(in_rawlog,cmdline,verbose)
+			CRawlogProcessorOnEachObservation(mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
+				CRawlogProcessor(in_rawlog,cmdline,verbose)
 			{
 			}
 
@@ -184,7 +185,72 @@ namespace mrpt
 			// To be implemented by the user. Return false on any error to abort processing.
 			virtual bool processOneObservation(mrpt::slam::CObservationPtr  &obs) = 0;
 
+
 		}; // end CRawlogProcessorOnEachObservation
+
+
+
+		/** A specialization of CRawlogProcessorOnEachObservation that handles the common case of
+		  *  filtering entries in a rawlog depending on the return value of a user function.
+		  */
+		class CRawlogProcessorFilterObservations : public CRawlogProcessorOnEachObservation
+		{
+		public:
+			CFileGZOutputStream 	&m_out_rawlog;
+			size_t  				m_entries_removed, m_entries_parsed;
+
+			CRawlogProcessorFilterObservations(mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose, CFileGZOutputStream &out_rawlog) :
+				CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose),
+				m_out_rawlog(out_rawlog),
+				m_entries_removed(0),
+				m_entries_parsed(0)
+			{
+			}
+
+			/** To be implemented by users: return false means the observation is  */
+			virtual bool tellIfThisObsPasses(mrpt::slam::CObservationPtr  &obs) = 0;
+
+			// Process each entry. Return false on any error to abort processing.
+			virtual bool processOneObservation(mrpt::slam::CObservationPtr  &obs)
+			{
+				if (!tellIfThisObsPasses(obs))
+				{
+					obs.clear(); // Free object (all aliases)
+					m_entries_removed++;
+				}
+				m_entries_parsed++;
+				return true;
+			}
+			// Save those entries which are not NULL.
+			virtual void OnPostProcess(
+				mrpt::slam::CActionCollectionPtr &actions,
+				mrpt::slam::CSensoryFramePtr     &SF,
+				mrpt::slam::CObservationPtr      &obs)
+			{
+				if (actions)
+				{
+					ASSERT_(actions && SF)
+					// Remove from SF those observations freed:
+					mrpt::slam::CSensoryFrame::iterator it = SF->begin();
+					while (it!=SF->end())
+					{
+						if ( (*it).present() )
+							it++;
+						else it = SF->erase(it);
+					}
+					// Save:
+					m_out_rawlog << actions << SF;
+				}
+				else
+				{
+					if (obs)
+						m_out_rawlog << obs;
+				}
+			}
+
+
+		}; // end CRawlogProcessorOnEachObservation
+
 
 	} // end NS
 } // end NS

@@ -41,6 +41,7 @@ namespace mrpt
 		/** \brief : An interface for the phidget Interface kit board (1018).
 		 *  \class CPhidgetInterfaceKitProximitySensors
 		 *  \author Adrien BARRAL - Robopec (aba@robopec.com).
+		 *
 		 * An interface for the Phidgets Interface kit board (part number 1018) on wich it could be plugged either an Sharp IR adaptater board
 	     * (phidget's part number : 1101),or a MaxBotix EZ-1 sonar (phidget's part number : 1118).
 		 * The configuration file describe what is plugged to this board, and the geometry of the sensors on the robots. See the exemple below.

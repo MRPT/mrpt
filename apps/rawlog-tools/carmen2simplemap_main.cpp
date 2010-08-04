@@ -28,9 +28,10 @@
    +---------------------------------------------------------------------------+ */
 
 // ===========================================================================
-//  Program: carmen2rawlog
+//  Program: carmen2simplemap
 //
-//  Intention: A converter from CARMEN log text files to binary Rawlog files
+//  Intention: A converter from CARMEN log text files (WITH ground truth/corrected poses)
+//    to "simplemaps" files.
 //  See the "--help" output for list of supported operations and further
 //   instructions.
 //
@@ -46,23 +47,24 @@
 
 using namespace mrpt;
 using namespace mrpt::utils;
+using namespace mrpt::poses;
 using namespace mrpt::slam;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;
 
 // Declare the supported command line switches ===========
-TCLAP::CmdLine cmd("carmen2rawlog", ' ', MRPT_getVersion().c_str());
+TCLAP::CmdLine cmd("carmen2simplemap", ' ', MRPT_getVersion().c_str());
 
 TCLAP::SwitchArg arg_overwrite("w","overwrite","Force overwrite target file without prompting.",cmd, false);
 TCLAP::SwitchArg arg_quiet("q","quiet","Terse output",cmd, false);
-TCLAP::ValueArg<std::string> arg_output_file("o","output","Output dataset (*.rawlog)",true,"","dataset_out.rawlog",cmd);
+TCLAP::ValueArg<std::string> arg_output_file("o","output","Output file (*.simplemap)",true,"","map.simplemap",cmd);
 TCLAP::ValueArg<std::string> arg_input_file ("i","input","Input dataset (required) (*.log)",true,"","carmen.log",cmd);
 
 TCLAP::ValueArg<int> arg_gz_level("z","compress-level","Output GZ-compress level (optional)",false,5,"0: none, 1-9: min-max",cmd);
 
 // Declarations:
-#define VERBOSE_COUT	if (verbose) cout << "[carmen2rawlog] "
+#define VERBOSE_COUT	if (verbose) cout << "[carmen2simplemap] "
 
 
 // -----------------------------------------------
@@ -77,7 +79,7 @@ int main(int argc, char **argv)
 			throw std::runtime_error(""); // should exit.
 
 		const string input_log  		= arg_input_file.getValue();
-		const string output_rawlog  	= arg_output_file.getValue();
+		const string output_file 	 	= arg_output_file.getValue();
 		const bool verbose 				= !arg_quiet.getValue();
 		const bool overwrite 			= arg_overwrite.getValue();
 		const int compress_level		= arg_gz_level.getValue();
@@ -86,31 +88,24 @@ int main(int argc, char **argv)
 		if (!mrpt::system::fileExists(input_log))
 			throw runtime_error(format("Input file doesn't exist: '%s'",input_log.c_str()));
 
-		if (mrpt::system::fileExists(output_rawlog) && !overwrite)
-			throw runtime_error(format("Output file already exist: '%s' (Use --overwrite to override)",output_rawlog.c_str()));
+		if (mrpt::system::fileExists(output_file) && !overwrite)
+			throw runtime_error(format("Output file already exist: '%s' (Use --overwrite to override)",output_file.c_str()));
 
 
 		VERBOSE_COUT << "Input log        : " << input_log << endl;
-		VERBOSE_COUT << "Output rawlog    : " << output_rawlog << " (Compression level: " << compress_level << ")\n";
+		VERBOSE_COUT << "Output map file  : " << output_file << " (Compression level: " << compress_level << ")\n";
 
 		// Open I/O streams:
 		std::ifstream   input_stream(input_log.c_str());
 		if (!input_stream.is_open())
 			throw runtime_error(format("Error opening for read: '%s'",input_log.c_str()));
 
-		mrpt::utils::CFileGZOutputStream out_rawlog;
-		if (!out_rawlog.open(output_rawlog,compress_level))
-			throw runtime_error(format("Error opening for write: '%s'",output_rawlog.c_str()));
-
-
 
 		// --------------------------------
 		// The main loop
 		// --------------------------------
 		vector<CObservationPtr>  importedObservations;
-		map<TTimeStamp,TPose2D>  groundTruthPoses;  // If found...
-		unsigned int  nSavedObs = 0;
-
+		mrpt::slam::CSimpleMap  theSimpleMap;
 		const mrpt::system::TTimeStamp  base_timestamp = mrpt::system::now();
 
 		const uint64_t totalInFileSize = mrpt::system::getFileSize(input_log);
@@ -118,19 +113,41 @@ int main(int argc, char **argv)
 
 		while ( carmen_log_parse_line(input_stream,importedObservations, base_timestamp) )
 		{
+			CPose2D  gt_pose;
+			bool  has_gt_pose = false;
+
 			for (size_t i=0;i<importedObservations.size();i++)
 			{
-				out_rawlog << *importedObservations[i];
-				nSavedObs++;
-
-				// by the way: if we have an "odometry" observation but it's not alone, it's probably
+				// If we have an "odometry" observation but it's not alone, it's probably
 				//  a "corrected" odometry from some SLAM program, so save it as ground truth:
 				if (importedObservations.size()>1 && IS_CLASS(importedObservations[i], CObservationOdometry) )
 				{
 					CObservationOdometryPtr odo = CObservationOdometryPtr(importedObservations[i]);
-					groundTruthPoses[odo->timestamp] = TPose2D(odo->odometry);
+					gt_pose = TPose2D(odo->odometry);
+					has_gt_pose = true;
+					break;
 				}
 			}
+
+			// Only if we have a valid pose, save it to the simple map:
+			if (has_gt_pose)
+			{
+				CSensoryFramePtr  SF = CSensoryFrame::Create();
+
+				for (size_t i=0;i<importedObservations.size();i++)
+				{
+					if (!IS_CLASS(importedObservations[i], CObservationOdometry) )  // Odometry was already used as positioning...
+					{
+						SF->insert(importedObservations[i]);
+					}
+				}
+
+				// Insert (observations, pose) pair:
+				CPosePDFGaussianPtr pos = CPosePDFGaussian::Create();
+				pos->mean = gt_pose;
+				theSimpleMap.insert(pos, SF);
+			}
+
 
 			// Update progress in the console:
 			// ----------------------------------
@@ -142,34 +159,23 @@ int main(int argc, char **argv)
 				const double progress_ratio =  double(curPos)/double(totalInFileSize);
 				static const int nBlocksTotal = 50;
 				const int nBlocks = progress_ratio * nBlocksTotal;
-				cout << "\rProgress: [" << string(nBlocks,'#') << string(nBlocksTotal-nBlocks,' ') << format("] %6.02f%% (%u objects)",progress_ratio*100, nSavedObs  );
+				cout << "\rProgress: [" << string(nBlocks,'#') << string(nBlocksTotal-nBlocks,' ') << format("] %6.02f%% (%u frames)",progress_ratio*100, static_cast<unsigned int>(theSimpleMap.size()) );
 				cout.flush();
 			}
 
 		};
 		cout << "\n";
 
-		// If we had ground-truth robot poses, save to file:
-		if (!groundTruthPoses.empty())
+		// Save final map object:
 		{
-			const string gt_filename = mrpt::system::fileNameChangeExtension(output_rawlog,"gt.txt");
-			cout << "Note: Saving ground truth pose information to '"<< gt_filename <<"'\n";
+			mrpt::utils::CFileGZOutputStream out_map;
+			if (!out_map.open(output_file,compress_level))
+				throw runtime_error(format("Error opening for write: '%s'",output_file.c_str()));
 
-			std::ofstream gt_file;
-			gt_file.open(gt_filename.c_str());
-			if (!gt_file.is_open())
-				throw std::runtime_error(format("Couldn't open output file for ground truth: '%s'",gt_filename.c_str()));
-			gt_file << "%          Ground truth positioning data \n"
-					   "%  Timestamp (sec)       x (m)    y (m)    phi (rad)  \n"
-			           "% ----------------------------------------------------\n";
-			for (map<TTimeStamp,TPose2D>::const_iterator it=groundTruthPoses.begin();it!=groundTruthPoses.end();++it)
-				gt_file << format("   %12.06f %9.03f %9.03f %9.04f\n",
-									mrpt::system::timestampToDouble(it->first),
-									it->second.x,
-									it->second.y,
-									it->second.phi);
+			cout << "Dumping simplemap object to file..."; cout.flush();
+			out_map << theSimpleMap;
+			cout << "Done\n";cout.flush();
 		}
-
 
 		// successful end of program.
 		return 0;

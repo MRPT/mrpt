@@ -107,6 +107,14 @@ namespace mrpt
 		  */
 		std::string BASE_IMPEXP fileNameStripInvalidChars( const std::string &filename);
 
+		/** Replace the filename extension by another one.
+		  *  Example:
+		  *   \code
+		  *     fileNameChangeExtension("cool.txt","bar") // -> "cool.bar"
+		  *   \endcode
+		  */
+		std::string BASE_IMPEXP fileNameChangeExtension( const std::string &filename, const std::string &newExtension );
+
 		/** Return the size of the given file, or size_t(-1) if some error is found accessing that file.
 		  */
 		uint64_t BASE_IMPEXP getFileSize(const std::string &fileName);

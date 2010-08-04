@@ -364,3 +364,18 @@ uint64_t mrpt::system::getFileSize(const std::string &fileName)
 	else	return uint64_t(filStat.st_size);
 #endif
 }
+
+/** Replace the filename extension by another one.  */
+std::string mrpt::system::fileNameChangeExtension( const std::string &filePath, const std::string &newExtension )
+{
+	if (filePath.size()<2) return filePath;
+
+	const size_t i_end = filePath.size()-1;
+
+	for (int i=int(i_end);i>0;i--)
+		if (filePath[i]=='.')
+			 return filePath.substr(0,i+1) + newExtension;
+
+	// No extension found: add it:
+	return filePath + string(".") + newExtension;
+}

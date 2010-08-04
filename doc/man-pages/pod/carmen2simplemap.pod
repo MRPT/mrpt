@@ -1,0 +1,43 @@
+=head1 NAME
+
+carmen2simplemap - Convert robotic datasets between CARMEN and simplemap formats
+
+=head1 SYNOPSIS
+
+carmen2simplemap -i I<in_file.log> -o I<out_file.simplemap>
+
+carmen2simplemap --help
+
+=head1 DESCRIPTION
+
+B<carmen2simplemap> is a command-line application to convert a CARMEN robotic 
+dataset (with corrected poses already in it) into the "simplemap" file format, 
+which can be then used to build metric maps (points, occupancy grids, etc.).
+
+=head1 BUGS
+
+Please report bugs at http://www.mrpt.org/project/issues/MRPT
+
+=head1 SEE ALSO
+
+The application wiki page at http://www.mrpt.org/Applications
+
+=head1 AUTHORS
+
+B<carmen2simplemap> is part of the Mobile Robot Programming Toolkit (MRPT), and 
+was originally written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3, or (at your option) any
+later version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
+=cut
+

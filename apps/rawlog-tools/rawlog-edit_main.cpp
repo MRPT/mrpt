@@ -66,6 +66,7 @@ typedef void (*TOperationFunctor)(CFileGZInputStream &in_rawlog, TCLAP::CmdLine 
 DECLARE_OP_FUNCTION(op_externalize);
 DECLARE_OP_FUNCTION(op_info);
 DECLARE_OP_FUNCTION(op_remove_label);
+DECLARE_OP_FUNCTION(op_keep_label);
 
 // Declare the supported command line switches ===========
 TCLAP::CmdLine cmd("rawlog-edit", ' ', MRPT_getVersion().c_str());
@@ -80,6 +81,30 @@ TCLAP::ValueArg<std::string> arg_external_img_extension("","image-format","Exter
 TCLAP::SwitchArg arg_overwrite("w","overwrite","Force overwrite target file without prompting.",cmd, false);
 
 TCLAP::SwitchArg arg_quiet("q","quiet","Terse output",cmd, false);
+
+
+
+// ======================================================================
+//  Search for a specific command-line argument.
+// Return false if not not set, an exception if args doesn't exist
+// ======================================================================
+template <typename T>
+bool getArgValue(TCLAP::CmdLine &cmdline, const std::string &arg_name, T &out_val)
+{
+	using namespace TCLAP;
+
+	std::list<Arg*>& args = cmdline.getArgList();
+	for (std::list<Arg*>::iterator it=args.begin();it!=args.end();++it)
+	{
+		if ( (*it)->getName() == arg_name)
+		{
+			TCLAP::ValueArg<T> *arg = static_cast<TCLAP::ValueArg<T> *>(*it);
+			out_val = arg->getValue();
+			return true;
+		}
+	}
+	return false;
+}
 
 
 // ======================================================================
@@ -101,8 +126,12 @@ int main(int argc, char **argv)
 		arg_ops.push_back(new TCLAP::SwitchArg("","info","Op: parse input file and dump information and statistics.",cmd, false) );
 		ops_functors["info"] = &op_info;
 
-		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","remove-label","Op: Remove all observation matching the given sensor label.",false,"","",cmd) );
+		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","remove-label","Op: Remove all observation matching the given sensor label.",false,"","label",cmd) );
 		ops_functors["remove-label"] = &op_remove_label;
+
+		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","keep-label","Op: Remove all observations not matching the given sensor label.",false,"","label",cmd) );
+		ops_functors["keep-label"] = &op_keep_label;
+
 		// --------------- End of list of possible operations --------
 
 
@@ -120,7 +149,9 @@ int main(int argc, char **argv)
 			if (arg_ops[i]->isSet())
 			{
 				if (selected_op.empty())
-						selected_op = arg_ops[i]->getName();
+				{
+					selected_op = arg_ops[i]->getName();
+				}
 				else	throw std::runtime_error(
 					"Exactly one operation must be indicated on command line.\n"
 					"Use --help to see the list of possible operations.");
@@ -179,7 +210,31 @@ int main(int argc, char **argv)
 
 	// end:
 	return ret_val;
-}
+} // end of main()
+
+
+/** Auxiliary struct that performs all the checks and create the
+     output rawlog stream, publishing it as "out_rawlog"
+*/
+struct TOutputRawlogCreator
+{
+	CFileGZOutputStream	out_rawlog;
+	std::string 		out_rawlog_filename;
+
+	TOutputRawlogCreator()
+	{
+		if (!arg_output_file.isSet())
+			throw runtime_error("This operation requires an output file. Use '-o file' or '--output file'.");
+
+		out_rawlog_filename = arg_output_file.getValue();
+		if (fileExists(out_rawlog_filename) && !arg_overwrite.getValue() )
+			throw runtime_error(string("*ABORTING*: Output file already exists: ") + out_rawlog_filename + string("\n. Select a different output path, remove the file or force overwrite with '-w' or '--overwrite'.") );
+
+		if (!out_rawlog.open(out_rawlog_filename))
+			throw runtime_error(string("*ABORTING*: Cannot open output file: ") + out_rawlog_filename );
+
+	}
+};
 
 // ======================================================================
 //		op_externalize
@@ -190,9 +245,11 @@ DECLARE_OP_FUNCTION(op_externalize)
 	class CRawlogProcessor_Externalize : public CRawlogProcessorOnEachObservation
 	{
 	protected:
-		CFileGZOutputStream out_rawlog;
+		TOutputRawlogCreator	outrawlog;
+		//CFileGZOutputStream out_rawlog;
+		//string output_rawlog;
+
 		string	imgFileExtension;
-		string output_rawlog;
 		string 	outDir;
 
 	public:
@@ -206,17 +263,10 @@ DECLARE_OP_FUNCTION(op_externalize)
 			entries_skipped  = 0;
 			imgFileExtension = arg_external_img_extension.getValue();
 
-			if (!arg_output_file.isSet())
-				throw runtime_error("This operation requires an output file. Use '-o file' or '--output file'.");
-
-			output_rawlog = arg_output_file.getValue();
-			if (fileExists(output_rawlog) && !arg_overwrite.getValue() )
-				throw runtime_error(string("*ABORTING*: Output file already exists: ") + output_rawlog + string("\n. Select a different output path, remove the file or force overwrite with '-w' or '--overwrite'.") );
-
 			// Create the default "/Images" directory.
-			const string out_rawlog_basedir = extractFileDirectory(output_rawlog);
+			const string out_rawlog_basedir = extractFileDirectory(outrawlog.out_rawlog_filename);
 
-			outDir = (out_rawlog_basedir.empty() ? string() : (out_rawlog_basedir+string("/") )) + extractFileName(output_rawlog) + string("_Images");
+			outDir = (out_rawlog_basedir.empty() ? string() : (out_rawlog_basedir+string("/") )) + extractFileName(outrawlog.out_rawlog_filename) + string("_Images");
 			if (directoryExists(outDir))
 				throw runtime_error(string("*ABORTING*: Output directory for images already exists: ") + outDir + string("\n. Select a different output path or remove the directory.") );
 
@@ -228,9 +278,6 @@ DECLARE_OP_FUNCTION(op_externalize)
 
 			// Add the final /
 			outDir+="/";
-
-			if (!out_rawlog.open(output_rawlog))
-				throw runtime_error(string("*ABORTING*: Cannot open output file: ") + output_rawlog );
 		}
 
 		bool processOneObservation(CObservationPtr  &obs)
@@ -326,8 +373,8 @@ DECLARE_OP_FUNCTION(op_externalize)
 		{
 			ASSERT_((actions && SF) || obs)
 			if (actions)
-					out_rawlog << actions << SF;
-			else	out_rawlog << obs;
+					outrawlog.out_rawlog << actions << SF;
+			else	outrawlog.out_rawlog << obs;
 		}
 
 	};
@@ -478,6 +525,92 @@ DECLARE_OP_FUNCTION(op_info)
 // ======================================================================
 DECLARE_OP_FUNCTION(op_remove_label)
 {
+	// A class to do this operation:
+	class CRawlogProcessor_RemoveLabel : public CRawlogProcessorFilterObservations
+	{
+	protected:
+		string m_filter_label;
+
+	public:
+		CRawlogProcessor_RemoveLabel(
+			mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose,
+			CFileGZOutputStream &out_rawlog,
+			const std::string &filter_label
+			) :
+				CRawlogProcessorFilterObservations(in_rawlog,cmdline,verbose, out_rawlog),
+				m_filter_label(filter_label)
+		{
+		}
+
+		/** To be implemented by users: return false means the observation is  */
+		virtual bool tellIfThisObsPasses(mrpt::slam::CObservationPtr  &obs)
+		{
+				return obs->sensorLabel!=m_filter_label;
+		}
+	};
+
+	// Process
+	// ---------------------------------
+	string filter_label;
+	if (!getArgValue<string>(cmdline,"remove-label",filter_label) || filter_label.empty() )
+		throw std::runtime_error("remove-label: This operation needs a non-empty argument.");
+
+	TOutputRawlogCreator	outrawlog;
+	CRawlogProcessor_RemoveLabel proc(in_rawlog,cmdline,verbose,outrawlog.out_rawlog,filter_label )	;
+	proc.doProcessRawlog();
+
+	// Dump statistics:
+	// ---------------------------------
+	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
+	VERBOSE_COUT << "Analyzed entries                  : " << proc.m_entries_parsed << "\n";
+	VERBOSE_COUT << "Removed entries                   : " << proc.m_entries_removed << "\n";
+
 }
 
+// ======================================================================
+//		op_keep_label
+// ======================================================================
+DECLARE_OP_FUNCTION(op_keep_label)
+{
+	// A class to do this operation:
+	class CRawlogProcessor_KeepLabel : public CRawlogProcessorFilterObservations
+	{
+	protected:
+		string m_filter_label;
+
+	public:
+		CRawlogProcessor_KeepLabel(
+			mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose,
+			CFileGZOutputStream &out_rawlog,
+			const std::string &filter_label
+			) :
+				CRawlogProcessorFilterObservations(in_rawlog,cmdline,verbose, out_rawlog),
+				m_filter_label(filter_label)
+		{
+		}
+
+		/** To be implemented by users: return false means the observation is  */
+		virtual bool tellIfThisObsPasses(mrpt::slam::CObservationPtr  &obs)
+		{
+				return obs->sensorLabel==m_filter_label;
+		}
+	};
+
+	// Process
+	// ---------------------------------
+	string filter_label;
+	if (!getArgValue<string>(cmdline,"keep-label",filter_label) || filter_label.empty() )
+		throw std::runtime_error("keep-label: This operation needs a non-empty argument.");
+
+	TOutputRawlogCreator	outrawlog;
+	CRawlogProcessor_KeepLabel proc(in_rawlog,cmdline,verbose,outrawlog.out_rawlog,filter_label )	;
+	proc.doProcessRawlog();
+
+	// Dump statistics:
+	// ---------------------------------
+	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
+	VERBOSE_COUT << "Analyzed entries                  : " << proc.m_entries_parsed << "\n";
+	VERBOSE_COUT << "Removed entries                   : " << proc.m_entries_removed << "\n";
+
+}
 

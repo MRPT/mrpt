@@ -4,16 +4,37 @@ rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
 
 =head1 SYNOPSIS
 
-   rawlog-edit  [--remove-label <>] [--info] [--externalize] [-q] [-w]
-                [--image-format <jpg,png,pgm,...>] [-o
-                <dataset_out.rawlog>] -i <dataset.rawlog> [--] [--version]
-                [-h]
+   rawlog-edit  [--keep-label <label>] [--remove-label <label>] [--info]
+                [--externalize] [-q] [-w] [--image-format <jpg,png,pgm
+                ,...>] [-o <dataset_out.rawlog>] -i <dataset.rawlog> [--]
+                [--version] [-h]
 
-=head1 EXAMPLES
 
- Quick overview of a dataset file:
- 
-   rawlog-edit --info -i my_dataset.rawlog
+=head1 USAGE EXAMPLES
+
+ Quick overview of a dataset file: 
+
+  rawlog-edit --info -i my_dataset.rawlog
+
+
+
+ Remove all observations named "REAR_LASER":
+
+  rawlog-edit --remove-label REAR_LASER -i my_dataset.rawlog -o modified.rawlog
+
+
+
+ Remove all observations not named "REAR_LASER":
+
+  rawlog-edit --keep-label REAR_LASER -i my_dataset.rawlog -o modified.rawlog
+
+
+ Convert all images to external storage mode:
+
+  rawlog-edit --externalize -i my_dataset.rawlog -o modified.rawlog
+  rawlog-edit --externalize --image-format jpg -i my_dataset.rawlog \
+               -o modified.rawlog
+
 
 =head1 DESCRIPTION
 
@@ -22,7 +43,10 @@ dataset files in the "rawlog" standardized format.
 
 These are the supported arguments and operations:
 
-   --remove-label <>
+   --keep-label <label>
+     Op: Remove all observations not matching the given sensor label.
+
+   --remove-label <label>
      Op: Remove all observation matching the given sensor label.
 
    --info
