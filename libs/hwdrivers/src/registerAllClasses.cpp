@@ -57,8 +57,6 @@ void registerAllClasses_mrpt_hwdrivers()
 	CNTRIPEmitter::doRegister();
 	CSwissRanger3DCamera::doRegister();
 	CLMS100Eth::doRegister();
-#if MRPT_HAS_PHIDGET
 	CPhidgetInterfaceKitProximitySensors::doRegister();
-#endif
 }
 
