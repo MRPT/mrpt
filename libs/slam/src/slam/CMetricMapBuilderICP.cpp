@@ -169,7 +169,12 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		{
 			float v,w;
 			if (obs->timestamp!=INVALID_TIMESTAMP)
-				m_lastPoseEst.getCurrentEstimate(initialEstimatedRobotPose,v,w, obs->timestamp);
+			{
+				if (!m_lastPoseEst.getCurrentEstimate(initialEstimatedRobotPose,v,w, obs->timestamp))
+				{	// couldn't had a good extrapolation estimate... we'll have to live with the latest pose:
+					m_lastPoseEst.getLatestRobotPose(initialEstimatedRobotPose);
+				}
+			}
 			else
 				m_lastPoseEst.getLatestRobotPose(initialEstimatedRobotPose);
 		}
@@ -297,8 +302,6 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			CPose2D  currentKnownRobotPose;
 			m_lastPoseEst.getLatestRobotPose(currentKnownRobotPose);
 
-			// Insert observations into the maps:
-			// --------------------------------------------------------------
 			this->accumulateRobotDisplacementCounters(currentKnownRobotPose - previousKnownRobotPose);
 		} // else, we do ICP pose correction
 
@@ -340,6 +343,8 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			// Insert the observation:
 			CPose2D  currentKnownRobotPose;
 			m_lastPoseEst.getLatestRobotPose(currentKnownRobotPose);
+
+			printf("INSERT POSE: %s\n",currentKnownRobotPose.asString().c_str());
 
 			CPose3D		estimatedPose3D(currentKnownRobotPose);
 			metricMap.insertObservationPtr(obs,&estimatedPose3D);

@@ -48,7 +48,7 @@
 	- New examples:
 		- phidgetProximitySensor
 	- BUG FIXES:
-		- 
+		- icp-slam: Fixed potential wrong processing of datasets in observations-only format where the odometry initial value is not (0,0,0).
 
 
   <br> <hr> <br>

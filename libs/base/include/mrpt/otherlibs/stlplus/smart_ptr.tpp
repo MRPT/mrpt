@@ -208,13 +208,13 @@ namespace stlplus
   // logical tests to see if there is anything contained in the pointer since it can be null
 
   template <typename T, typename C, typename COUNTER>
-  bool smart_ptr_base<T,C,COUNTER>::null(void) const
+  inline bool smart_ptr_base<T,C,COUNTER>::null(void) const
   {
     return m_holder->null();
   }
 
   template <typename T, typename C, typename COUNTER>
-  bool smart_ptr_base<T,C,COUNTER>::present(void) const
+  inline bool smart_ptr_base<T,C,COUNTER>::present(void) const
   {
     return !m_holder->null();
   }
@@ -235,28 +235,28 @@ namespace stlplus
   // dereference operators and functions
 
   template <typename T, typename C, typename COUNTER>
-  T& smart_ptr_base<T,C,COUNTER>::operator*(void) throw(null_dereference)
+  inline T& smart_ptr_base<T,C,COUNTER>::operator*(void) throw(null_dereference)
   {
     if (m_holder->null()) throw null_dereference("null pointer dereferenced in smart_ptr::operator*");
     return m_holder->value();
   }
 
   template <typename T, typename C, typename COUNTER>
-  const T& smart_ptr_base<T,C,COUNTER>::operator*(void) const throw(null_dereference)
+  inline const T& smart_ptr_base<T,C,COUNTER>::operator*(void) const throw(null_dereference)
   {
     if (m_holder->null()) throw null_dereference("null pointer dereferenced in smart_ptr::operator*");
     return m_holder->value();
   }
 
   template <typename T, typename C, typename COUNTER>
-  T* smart_ptr_base<T,C,COUNTER>::operator->(void) throw(null_dereference)
+  inline T* smart_ptr_base<T,C,COUNTER>::operator->(void) throw(null_dereference)
   {
     if (m_holder->null()) throw null_dereference("null pointer dereferenced in smart_ptr::operator->");
     return m_holder->pointer();
   }
 
   template <typename T, typename C, typename COUNTER>
-  const T* smart_ptr_base<T,C,COUNTER>::operator->(void) const throw(null_dereference)
+  inline const T* smart_ptr_base<T,C,COUNTER>::operator->(void) const throw(null_dereference)
   {
     if (m_holder->null()) throw null_dereference("null pointer dereferenced in smart_ptr::operator->");
     return m_holder->pointer();
@@ -266,20 +266,20 @@ namespace stlplus
   // explicit function forms of the above assignment dereference operators
 
   template <typename T, typename C, typename COUNTER>
-  void smart_ptr_base<T,C,COUNTER>::set_value(const T& data) throw(illegal_copy)
+  inline void smart_ptr_base<T,C,COUNTER>::set_value(const T& data) throw(illegal_copy)
   {
     m_holder->set(C()(data));
   }
 
   template <typename T, typename C, typename COUNTER>
-  T& smart_ptr_base<T,C,COUNTER>::value(void) throw(null_dereference)
+  inline T& smart_ptr_base<T,C,COUNTER>::value(void) throw(null_dereference)
   {
     if (m_holder->null()) throw null_dereference("null pointer dereferenced in smart_ptr::value");
     return m_holder->value();
   }
 
   template <typename T, typename C, typename COUNTER>
-  const T& smart_ptr_base<T,C,COUNTER>::value(void) const throw(null_dereference)
+  inline const T& smart_ptr_base<T,C,COUNTER>::value(void) const throw(null_dereference)
   {
     if (m_holder->null()) throw null_dereference("null pointer dereferenced in smart_ptr::value");
     return m_holder->value();
@@ -292,13 +292,13 @@ namespace stlplus
   }
 
   template <typename T, typename C, typename COUNTER>
-  T* smart_ptr_base<T,C,COUNTER>::pointer(void)
+  inline T* smart_ptr_base<T,C,COUNTER>::pointer(void)
   {
     return m_holder->pointer();
   }
 
   template <typename T, typename C, typename COUNTER>
-  const T* smart_ptr_base<T,C,COUNTER>::pointer(void) const
+  inline const T* smart_ptr_base<T,C,COUNTER>::pointer(void) const
   {
     return m_holder->pointer();
   }

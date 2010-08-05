@@ -67,7 +67,7 @@ CPosePDFPtr CICP::AlignPDF(
 {
 	MRPT_START;
 
-	static CTicTac	tictac;
+	CTicTac	tictac;
 	TReturnInfo		outInfo;
 	CPosePDFPtr		resultPDF;
 
@@ -248,8 +248,6 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 	bool									onlyKeepTheClosest = options.onlyClosestCorrespondences;
 
 	// Assure the class of the maps:
-	//ASSERT_(mm2->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
-	//CPointsMap			*m2 = (CPointsMap*)mm2;
 	const CMetricMap		*m2 = mm2;
 
 	// Asserts:
