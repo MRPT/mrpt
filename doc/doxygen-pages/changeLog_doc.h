@@ -38,6 +38,7 @@
 		- carmen2simplemap: A converter from CARMEN robotics logs to binary "simplemap" files. See http://www.mrpt.org/Applications
 	- Changes in applications:
 		- rawlog-edit: More operations supported. See http://www.mrpt.org/Applications
+		- RawLogViewer: Can now build "raw maps" from datasets in the "observations-only" format.
 	- New classes:
 		- New sensor driver for Phidget kit (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors), contributed by Adrien Barral (Robopec)
 	- New functions:

@@ -117,7 +117,7 @@ CFormRawMap::CFormRawMap(wxWindow* parent,wxWindowID id)
     wxFlexGridSizer* FlexGridSizer6;
     wxStaticBoxSizer* StaticBoxSizer1;
     wxFlexGridSizer* FlexGridSizer11;
-    
+
     Create(parent, wxID_ANY, _("Creation of \"raw map & paths\" from scans & odometry"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxMAXIMIZE_BOX, _T("wxID_ANY"));
     FlexGridSizer1 = new wxFlexGridSizer(2, 1, 0, 0);
     FlexGridSizer1->AddGrowableCol(0);
@@ -239,7 +239,7 @@ CFormRawMap::CFormRawMap(wxWindow* parent,wxWindowID id)
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-    
+
     Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&CFormRawMap::OnslFromCmdScrollThumbTrack);
     Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&CFormRawMap::OnslFromCmdScrollThumbTrack);
     Connect(ID_SLIDER2,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&CFormRawMap::OnslToCmdScrollThumbTrack);
@@ -512,6 +512,14 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& event)
 			break;
 		case CRawlog::etObservation:
 			{
+				// Always, process odometry:
+				const CObservation* obs = rawlog.getAsObservation(i).pointer();
+				if (IS_CLASS(obs,CObservationOdometry))
+				{
+					const CObservationOdometry* obsOdo = static_cast<const CObservationOdometry*>(obs);
+					curPose = obsOdo->odometry;
+				}
+
 				if (( (i>>1) % decimate)==0)
 				{
 					CPose3D		dumPose(curPose);

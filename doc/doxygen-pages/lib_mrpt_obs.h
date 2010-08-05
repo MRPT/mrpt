@@ -27,6 +27,9 @@ of "actions". See mrpt::slam::CAction.</li>
 The advantage of maintaining such a "simple map" instead a metric map is that the metric maps 
 can be rebuilt when needed with different parameters from the raw observations, which are never lost. </li>
 
+<li><b>CARMEN logs tools:</b> Utilities to read from CARMEN log files and load the observations there
+as MRPT observations. See mrpt::slam::carmen_log_parse_line and the applications: carmen2rawlog, carmen2simplemap. </li>
+
 </ul>
 
 

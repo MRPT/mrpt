@@ -39,12 +39,14 @@ using namespace mrpt::slam;
 using namespace mrpt::system;
 using namespace std;
 
-
+// Read the declaration in the .h file for documentation.
 bool mrpt::slam::carmen_log_parse_line(
 	std::istream &in_stream,
 	std::vector<mrpt::slam::CObservationPtr> &out_observations,
 	const mrpt::system::TTimeStamp &time_start_log )
 {
+	static TParametersString  global_log_params;  // global parameters loaded in previous calls.
+
 	out_observations.clear(); // empty output container
 
 	// Try to get line:
@@ -131,6 +133,7 @@ bool mrpt::slam::carmen_log_parse_line(
 
 			obsOdo_ptr->timestamp = obs_time;
 			obsOdo_ptr->odometry = CPose2D(globalRobotPose);
+			obsOdo_ptr->sensorLabel = "ODOMETRY";
 
 			out_observations.push_back(obsOdo_ptr);
 		}
@@ -138,21 +141,105 @@ bool mrpt::slam::carmen_log_parse_line(
 		// Send out laser observation:
 		out_observations.push_back(obsLaser_ptr);
 
-
 	} // end ROBOTLASER
 	else
-	if ( strStartsI(line, "RAWLASER") )
+	if ( strStartsI(line, "FLASER") || strStartsI(line,"RLASER") )
 	{
-		// RAWLASER message
+		// [F,R]LASER message
+		// FLASER num_readings [range_readings] x y theta odom_x odom_y odom_theta
 		// ---------------------------
+		std::istringstream  S;  // Read from the string as if it was a stream
+		S.str(line);
 
+		CObservation2DRangeScanPtr obsLaser_ptr = CObservation2DRangeScan::Create();
+		CObservation2DRangeScan* obsLaser = obsLaser_ptr.pointer(); // Faster access
+
+		// Parse:
+		size_t  nRanges;
+
+		if (! (S >> obsLaser->sensorLabel >> nRanges) )
+			THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (params):\n'%s'\n", line.c_str() )
+
+		// Params:
+		{
+			double maxRange = 81.0;
+			double resolutionDeg = 0.5;
+
+			if (line[0]=='F')
+			{	// front:
+				maxRange      = atof(global_log_params.getWithDefaultVal("robot_front_laser_max","81.0").c_str());
+				resolutionDeg = atof(global_log_params.getWithDefaultVal("laser_front_laser_resolution","0.5").c_str());
+			}
+			else if (line[0]=='R')
+			{	// rear:
+				maxRange      = atof(global_log_params.getWithDefaultVal("robot_rear_laser_max","81.0").c_str());
+				resolutionDeg = atof(global_log_params.getWithDefaultVal("laser_rear_laser_resolution","0.5").c_str());
+			}
+			obsLaser->maxRange = maxRange;
+			obsLaser->aperture = DEG2RAD(resolutionDeg) * nRanges;
+		}
+
+		obsLaser->scan.resize(nRanges);
+		obsLaser->validRange.resize(nRanges);
+
+		for(size_t i=0;i<nRanges;i++)
+		{
+			if (! (S >> obsLaser->scan[i]) )
+				THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (ranges):\n'%s'\n", line.c_str() )
+			// Valid value?
+			obsLaser->validRange[i] =  (obsLaser->scan[i]>=obsLaser->maxRange || obsLaser->scan[i]<=0 ) ? 0 : 1;
+		}
+
+		mrpt::math::TPose2D  globalLaserPose;
+		mrpt::math::TPose2D  globalRobotPose;
+		if (! ( S  >> globalLaserPose.x >> globalLaserPose.y >> globalLaserPose.phi
+				>> globalRobotPose.x >> globalRobotPose.y >> globalRobotPose.phi ) )
+					THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (poses):\n'%s'\n", line.c_str() )
+
+		// Compute pose of laser on the robot:
+		obsLaser->sensorPose = CPose3D( CPose2D(globalLaserPose) - CPose2D(globalRobotPose) );
+
+
+		double timestamp;
+		string robotName;
+		S  >> timestamp >> robotName;
+
+		const mrpt::system::TTimeStamp obs_time = time_start_log + mrpt::system::secondsToTimestamp(timestamp); // seconds -> times
+
+		obsLaser->timestamp = obs_time;
+
+		// Create odometry observation:
+		{
+			CObservationOdometryPtr obsOdo_ptr = CObservationOdometry::Create();
+
+			obsOdo_ptr->timestamp = obs_time;
+			obsOdo_ptr->odometry = CPose2D(globalRobotPose);
+			obsOdo_ptr->sensorLabel = "ODOMETRY";
+
+			out_observations.push_back(obsOdo_ptr);
+		}
+
+		// Send out laser observation:
+		out_observations.push_back(obsLaser_ptr);
 
 	} // end RAWLASER
 	else
-	if ( strStartsI(line, "ODOM") )
+	if ( strStartsI(line, "PARAM ") )
 	{
-		// RAWLASER message
+		// PARAM message
 		// ---------------------------
+		std::istringstream  S;  // Read from the string as if it was a stream
+		S.str(line);
+
+		string key, val;
+		S >> key; // This is "PARAM"
+
+		if (! (S >> key >> val) )
+			THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (PARAM):\n'%s'\n", line.c_str() )
+
+		if (!key.empty() && !val.empty() )
+
+		global_log_params[ lowerCase(key) ] = val;
 
 
 	} // end RAWLASER
