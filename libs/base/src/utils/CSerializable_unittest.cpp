@@ -108,7 +108,11 @@ TEST(SerializeTestBase, WriteReadToMem)
 		CLASS_ID(CPoint3D),
 		// Poses:
 		CLASS_ID(CPose3DPDFGaussian),
-		CLASS_ID(CPose3DQuatPDFGaussian)
+		CLASS_ID(CPose3DQuatPDFGaussian),
+		CLASS_ID(CNetworkOfPoses2D),
+		CLASS_ID(CNetworkOfPoses3D),
+		CLASS_ID(CNetworkOfPoses2DInf),
+		CLASS_ID(CNetworkOfPoses3DInf)
 		};
 
 	for (size_t i=0;i<sizeof(lstClasses)/sizeof(lstClasses[0]);i++)

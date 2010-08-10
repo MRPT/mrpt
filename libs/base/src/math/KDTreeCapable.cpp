@@ -196,17 +196,19 @@ size_t KDTreeCapable::kdTreeClosestPoint2D(
 	float   	  &out_y,
 	float		  &out_dist_sqr ) const
 {
+	MRPT_START
+
 	// First: Create the KD-Tree if required:
 	rebuild_kdTree(2); // 2d
 
 	if ( !KDTreeData.m_nTreeSize ) THROW_EXCEPTION("There are no points in the KD-tree.")
 
-    KDTreeData.m_QueryPoint[0]=x0;
-    KDTreeData.m_QueryPoint[1]=y0;
+	KDTreeData.m_QueryPoint[0]=x0;
+	KDTreeData.m_QueryPoint[1]=y0;
 
 	ANNidx my_NearNeighbourIndex;
 
-    KDTreeData.m_pDataTree->annkSearch(
+	KDTreeData.m_pDataTree->annkSearch(
 		KDTreeData.m_QueryPoint,
 		1,		// We want just ONE point
 		&my_NearNeighbourIndex,
@@ -219,6 +221,7 @@ size_t KDTreeCapable::kdTreeClosestPoint2D(
 	out_y = KDTreeData.m_DataPoints[idx][1];
 
 	return idx;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -228,18 +231,19 @@ float KDTreeCapable::kdTreeClosestPoint2DsqrError(
 	float   x0,
 	float   y0 ) const
 {
+	MRPT_START
 	// First: Create the KD-Tree if required:
 	rebuild_kdTree(2); // 2d
 
 	if ( !KDTreeData.m_nTreeSize ) THROW_EXCEPTION("There are no points in the KD-tree.")
 
-    KDTreeData.m_QueryPoint[0]=x0;
-    KDTreeData.m_QueryPoint[1]=y0;
+	KDTreeData.m_QueryPoint[0]=x0;
+	KDTreeData.m_QueryPoint[1]=y0;
 
-   	ANNidx my_NearNeighbourIndex;
+	ANNidx my_NearNeighbourIndex;
 
 	float  closestSqrErr;
-    KDTreeData.m_pDataTree->annkSearch(
+	KDTreeData.m_pDataTree->annkSearch(
 		KDTreeData.m_QueryPoint,
 		1,		// We want just ONE point
 		&my_NearNeighbourIndex,
@@ -247,6 +251,7 @@ float KDTreeCapable::kdTreeClosestPoint2DsqrError(
 		);
 
 	return closestSqrErr;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -262,6 +267,8 @@ void KDTreeCapable::kdTreeTwoClosestPoint2D(
 	float	&out_dist_sqr1,
 	float	&out_dist_sqr2 ) const
 {
+	MRPT_START
+
 	// First: Create the KD-Tree if required:
 	rebuild_kdTree(2); // 2d
 
@@ -291,6 +298,8 @@ void KDTreeCapable::kdTreeTwoClosestPoint2D(
 	size_t  idx2 = nearNeighbourIndices[1];
 	out_x2 = KDTreeData.m_DataPoints[idx2][0];
 	out_y2 = KDTreeData.m_DataPoints[idx2][1];
+
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -304,6 +313,8 @@ std::vector<size_t>  KDTreeCapable::kdTreeNClosestPoint2D(
 	std::vector<float>  &out_y,
 	std::vector<float>  &out_dist_sqr ) const
 {
+	MRPT_START
+
 	ASSERT_(N>0)
 
 	// First: Create the KD-Tree if required:
@@ -342,6 +353,8 @@ std::vector<size_t>  KDTreeCapable::kdTreeNClosestPoint2D(
 	}
 
 	return indices;
+
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -354,6 +367,8 @@ void KDTreeCapable::kdTreeNClosestPoint2DIdx(
 	std::vector<int>	&out_idx,
 	std::vector<float>  &out_dist_sqr ) const
 {
+	MRPT_START
+
 	ASSERT_(N>0)
 
 	// First: Create the KD-Tree if required:
@@ -385,6 +400,7 @@ void KDTreeCapable::kdTreeNClosestPoint2DIdx(
 		out_dist_sqr[k] = my_NearNeighbourDistances[k];
 	}
 
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -414,6 +430,8 @@ size_t KDTreeCapable::kdTreeClosestPoint3D(
 	float   &out_z,
 	float	&out_dist_sqr ) const
 {
+	MRPT_START
+
 	// First: Create the KD-Tree if required:
 	rebuild_kdTree(3); // 3d
 
@@ -440,6 +458,7 @@ size_t KDTreeCapable::kdTreeClosestPoint3D(
 	out_z = KDTreeData.m_DataPoints[idx][2];
 
 	return idx;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -455,6 +474,8 @@ void KDTreeCapable::kdTreeNClosestPoint3D(
 	std::vector<float>  &out_z,
 	std::vector<float>  &out_dist_sqr ) const
 {
+	MRPT_START
+
 	ASSERT_(N>0)
 
 	// First: Create the KD-Tree if required:
@@ -491,6 +512,7 @@ void KDTreeCapable::kdTreeNClosestPoint3D(
 		out_z[k]		= KDTreeData.m_DataPoints[idx][2];
 		out_dist_sqr[k] = my_NearNeighbourDistances[k];
 	}
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -504,6 +526,8 @@ void KDTreeCapable::kdTreeNClosestPoint3DIdx(
 	std::vector<int>	&out_idx,
 	std::vector<float>  &out_dist_sqr ) const
 {
+	MRPT_START
+
 	ASSERT_(N>0)
 
 	// First: Create the KD-Tree if required:
@@ -512,14 +536,13 @@ void KDTreeCapable::kdTreeNClosestPoint3DIdx(
 	if ( !KDTreeData.m_nTreeSize) THROW_EXCEPTION(format("KD-tree must have at least %u point",(unsigned int)N ))
 
 
-    KDTreeData.m_QueryPoint[0]=x0;
-    KDTreeData.m_QueryPoint[1]=y0;
+	KDTreeData.m_QueryPoint[0]=x0;
+	KDTreeData.m_QueryPoint[1]=y0;
 	KDTreeData.m_QueryPoint[2]=z0;
 
 	std::vector<ANNdist> my_NearNeighbourDistances( N );
 	std::vector<ANNidx> my_NearNeighbourIndices( N );
 
-    //tictac.Tic();
 	KDTreeData.m_pDataTree->annkSearch(
 		KDTreeData.m_QueryPoint,
 		N,		// We want N points
@@ -536,4 +559,6 @@ void KDTreeCapable::kdTreeNClosestPoint3DIdx(
 		out_idx[k]		= (int)my_NearNeighbourIndices[k];
 		out_dist_sqr[k] = my_NearNeighbourDistances[k];
 	}
+	MRPT_END
 }
+

@@ -21,7 +21,16 @@ A comprehensive collection of geometry-related classes to represent all kind of 
 (Euler angles, rotation matrices, quaternions), as well as networks of pose constrains (as used typically in SLAM problems). 
 
 There are also implemented representations for probability distributions over all of these transformations, in a generic way that
-allow mono and multi-modal Gaussians and particle-based representations. See mrpt::poses for the complete list of classes here.
+allow mono and multi-modal Gaussians and particle-based representations. 
+
+Graphs of pose constrains are also defined in this library, via a generic template mrpt::poses::CNetworkOfPoses<>. 
+Predefined typedefs exist for:
+ - CNetworkOfPoses2D     -> 2D graphs (x,y,phi), covariance matrix.
+ - CNetworkOfPoses3D     -> 3D graphs (x,y,z,yaw,pitch,roll), covariance matrix.
+ - CNetworkOfPoses2DInf  -> 2D graphs (x,y,phi), inverse covariance (information) matrix.
+ - CNetworkOfPoses3DInf  -> 3D graphs (x,y,z,yaw,pitch,roll), inverse covariance (information) matrix.
+
+See mrpt::poses for the complete list of classes here.
 
 
 <h3>mrpt::utils</h3>

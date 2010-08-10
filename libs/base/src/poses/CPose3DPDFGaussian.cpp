@@ -87,8 +87,17 @@ CPose3DPDFGaussian::CPose3DPDFGaussian( const CPose3D &init_Mean, const CMatrixD
   ---------------------------------------------------------------*/
 CPose3DPDFGaussian::CPose3DPDFGaussian( const CPosePDFGaussian &o )
 	 : mean( o.mean.x(),o.mean.y(),0,o.mean.phi(),0,0 ),
-	   cov(o.cov)
+	   cov()
 {
+	for (size_t i=0;i<3;i++)
+	{
+		const size_t ii= (i==2) ? 3 : i;
+		for (size_t j=0;j<3;j++)
+		{
+			const size_t jj= (j==2) ? 3 : j;
+			cov(ii,jj) = o.cov(i,j);
+		}
+	}
 }
 
 
@@ -522,6 +531,8 @@ void CPose3DPDFGaussian::jacobiansPoseComposition(
 	CMatrixDouble66	 &df_dx,
 	CMatrixDouble66	 &df_du)
 {
+	// See this techical report: http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
+
 	// Direct equations (for the covariances) in yaw-pitch-roll are too complex.
 	//  Make a way around them and consider instead this path:
 	//

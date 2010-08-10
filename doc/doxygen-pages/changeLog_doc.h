@@ -34,13 +34,23 @@
   <a name="0.9.2">
   <h2>Version 0.9.2: (Under development) </h2></a>
 	- New applications:
-		- carmen2rawlog: A converter from CARMEN robotics logs to binary Rawlog dataset files. See http://www.mrpt.org/Applications
-		- carmen2simplemap: A converter from CARMEN robotics logs to binary "simplemap" files. See http://www.mrpt.org/Applications
+		- carmen2rawlog: A converter from CARMEN robotics logs to binary Rawlog dataset files. See http://www.mrpt.org/Application:carmen2rawlog
+		- carmen2simplemap: A converter from CARMEN robotics logs to binary "simplemap" files. See http://www.mrpt.org/Application:carmen2simplemap
 	- Changes in applications:
-		- rawlog-edit: More operations supported. See http://www.mrpt.org/Applications
+		- rawlog-edit: More operations supported. See http://www.mrpt.org/Application:rawlog-edit
 		- RawLogViewer: Can now build "raw maps" from datasets in the "observations-only" format.
 	- New classes:
 		- New sensor driver for Phidget kit (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors), contributed by Adrien Barral (Robopec)
+		- New PDF classes for "information" (inverse covariance) forms:
+			- mrpt::poses::CPosePDFGaussianInf
+			- mrpt::poses::CPose3DPDFGaussianInf
+		- Data types for graph SLAM (only two of them existed before, and now they are all classes and support serialization):
+			- mrpt::poses::CPosePDFGaussian
+			- mrpt::poses::CPose3DPDFGaussian
+			- mrpt::poses::CPosePDFGaussianInf
+			- mrpt::poses::CPose3DPDFGaussianInf
+	- Changes in classes:
+		- mrpt::math::CDirectedGraph: Added a typedef TNodeID (=size_t) for use when referring to nodes instead of plain size_t's.
 	- New functions:
 		- mrpt::slam::carmen_log_parse_line() a tool to parse CARMEN logs.
 		- mrpt::system::strCmp, mrpt::system::strCmpI, mrpt::system::strStarts, mrpt::system::strStartsI
@@ -56,7 +66,7 @@
   <a name="0.9.1">
   <h2>Version 0.9.1: Released 1-AUG-2010 (SVN 2076) </h2></a>
 	- <b>Most important changes:</b>
-		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.		
+		- CRITICAL REGRESION FIXED: The program rbpf-slam did always crash at start-up in MRPT 0.9.0.
 		- Changes in <a href="index.html#libs" >libraries</a>:
 			- Further factorization: New libraries: <a href="mrpt-detectors.html" > mrpt-detectors</a>, <a href="mrpt-bayes.html" > mrpt-bayes</a> and <a href="mrpt-scanmatching.html" >mrpt-scanmatching </a>.
 			- Dependencies simplified - most notably, mrpt-gui is now not included by many libraries that did in previous versions (check the <a href="index.html#libs" > deps graph </a> ).
@@ -83,7 +93,7 @@
 				- New efficient constructor to build a grayscale version of another image, or a fast "link" if it was already grayscale. See CImage::CImage( img, FAST_REF_OR_CONVERT_TO_GRAY )
 			- Many classes: UNINITIALIZED_* which were #defines have been transformed into enums to keep all that stuff into MRPT namespaces.
 			- mrpt::reactivenav::CReactiveNavigationSystem does not have any longer the "debugWindows" option. This is done to remove the dependecy of mrpt-reactivenav on mrpt-gui.
-			- mrpt::vision::CFeatureExtraction has a new option FASTOptions.use_KLT_response. 
+			- mrpt::vision::CFeatureExtraction has a new option FASTOptions.use_KLT_response.
 			- mrpt::slam::CObservation now has virtual load() and unload() method to manually invoke delayed-load (actually only needed by 3D camera observations).
 			- stlplus::smart_ptr templates now have an extra template argument "COUNTER" which defaults to an thread-safe atomic counter but can be set to a plain "unsigned int" in time-critical apps which are known to work in a single thread.
 			- mrpt::utils::CStream now handles sizes as uint64_t instead of size_t, to allow files larger than 4Gb in 32bit systems.
@@ -91,7 +101,7 @@
 			- mrpt::hwdrivers::CCameraSensor can now open SwissRanger 3D cameras.
 			- mrpt::vision::CFeatureList now has KD-tree-based search.
 			- mrpt::slam::CColouredPointsMap:
-				- Added a few new methods to modify and retrieve the color of points already in the map. 
+				- Added a few new methods to modify and retrieve the color of points already in the map.
 			- mrpt::hwdrivers::CGenericSensor:
 				- Now has a generic interface for external image directories (it was only in CCameraSensor before), so more sensors can use this feature.
 				- The sensor label member is now "m_sensorLabel" in this base class, instead of replicating it in all children classes.

@@ -25,8 +25,8 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-#ifndef CPosePDFGaussian_H
-#define CPosePDFGaussian_H
+#ifndef CPosePDFGaussianInf_H
+#define CPosePDFGaussianInf_H
 
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
@@ -40,18 +40,21 @@ namespace poses
 	class CPose3DPDF;
 
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPosePDFGaussian, CPosePDF )
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPosePDFGaussianInf, CPosePDF )
 
-	/** Declares a class that represents a Probability Density  function (PDF) of a 2D pose \f$ p(\mathbf{x}) = [x ~ y ~ \phi ]^t \f$.
+	/** A Probability Density  function (PDF) of a 2D pose \f$ p(\mathbf{x}) = [x ~ y ~ \phi ]^t \f$ as a Gaussian with a mean and the inverse of the covariance.
 	 *
-	 *   This class implements that PDF using a mono-modal Gaussian distribution. See mrpt::poses::CPosePDF for more details.
+	 *   This class implements a PDF as a mono-modal Gaussian distribution in its <b>information form</b>, that is,
+	 *     keeping the inverse of the covariance matrix instead of the covariance matrix itself.
+	 *
+	 *  This class is the dual of CPosePDFGaussian.
      *
 	 * \sa CPose2D, CPosePDF, CPosePDFParticles
 	 */
-	class BASE_IMPEXP CPosePDFGaussian : public CPosePDF
+	class BASE_IMPEXP CPosePDFGaussianInf : public CPosePDF
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE( CPosePDFGaussian )
+		DEFINE_SERIALIZABLE( CPosePDFGaussianInf )
 
 	protected:
 		/** Assures the symmetry of the covariance matrix (eventually certain operations in the math-coprocessor lead to non-symmetric matrixes!)
@@ -62,28 +65,27 @@ namespace poses
 		/** @name Data fields
 			@{ */
 
-		CPose2D				mean;	//!< The mean value
-		CMatrixDouble33		cov;	//!< The 3x3 covariance matrix
+		CPose2D		mean;	//!< The mean value
+		CMatrixDouble33		cov_inv;	//!< The inverse of the 3x3 covariance matrix (the "information" matrix)
 
 		/** @} */
 
-		/** Default constructor
-		  */
-		CPosePDFGaussian();
 
-		/** Constructor
-		  */
-		explicit CPosePDFGaussian( const CPose2D &init_Mean );
+		/** Default constructor (mean=all zeros, inverse covariance=all zeros -> so be careful!) */
+		CPosePDFGaussianInf();
 
-		/** Constructor
-		  */
-		CPosePDFGaussian( const CPose2D &init_Mean, const CMatrixDouble33 &init_Cov );
+		/** Constructor with a mean value (inverse covariance=all zeros -> so be careful!) */
+		explicit CPosePDFGaussianInf( const CPose2D &init_Mean );
+
+		/** Constructor */
+		CPosePDFGaussianInf( const CPose2D &init_Mean, const CMatrixDouble33 &init_CovInv );
 
 	    /** Copy constructor, including transformations between other PDFs */
-		explicit CPosePDFGaussian( const CPosePDF &o ) { copyFrom( o ); }
+		explicit CPosePDFGaussianInf( const CPosePDF &o ) { copyFrom( o ); }
 
 		/** Copy constructor, including transformations between other PDFs */
-		explicit CPosePDFGaussian( const CPose3DPDF &o ) { copyFrom( o ); }
+		explicit CPosePDFGaussianInf( const CPose3DPDF &o ) { copyFrom( o ); }
+
 
 		 /** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF).
 		   * \sa getCovariance
@@ -118,15 +120,15 @@ namespace poses
 
 		/** Set \f$ this = x1 \ominus x0 \f$ , computing the mean using the "-" operator and the covariances through the corresponding Jacobians (For 'x0' and 'x1' being independent variables!).
 		  */
-		void inverseComposition( const CPosePDFGaussian &x, const CPosePDFGaussian &ref  );
+		void inverseComposition( const CPosePDFGaussianInf &x, const CPosePDFGaussianInf &ref  );
 
 		/** Set \f$ this = x1 \ominus x0 \f$ , computing the mean using the "-" operator and the covariances through the corresponding Jacobians (Given the 3x3 cross-covariance matrix of variables x0 and x1).
 		  */
 		void inverseComposition(
-			const CPosePDFGaussian &x1,
-			const CPosePDFGaussian &x0,
+			const CPosePDFGaussianInf &x1,
+			const CPosePDFGaussianInf &x0,
 			const CMatrixDouble33  &COV_01
-			  );
+			);
 
 		/** Draws a single sample from the distribution
 		  */
@@ -151,8 +153,7 @@ namespace poses
 		  */
 		void	 inverse(CPosePDF &o) const;
 
-		/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated).
-		  */
+		/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated). */
 		void  operator += ( CPose2D Ap);
 
 		/** Evaluates the PDF at a given point.
@@ -165,19 +166,15 @@ namespace poses
 
 		/** Computes the Mahalanobis distance between the centers of two Gaussians.
 		  */
-		double  mahalanobisDistanceTo( const CPosePDFGaussian& theOther );
-
-		/** Substitutes the diagonal elements if (square) they are below some given minimum values (Use this before bayesianFusion, for example, to avoid inversion of singular matrixes, etc...)
-		  */
-		void  assureMinCovariance( const double & minStdXY, const double &minStdPhi );
+		double  mahalanobisDistanceTo( const CPosePDFGaussianInf& theOther );
 
 		/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated) (see formulas in jacobiansPoseComposition ).
 		  */
-		void  operator += ( const CPosePDFGaussian &Ap);
+		void  operator += ( const CPosePDFGaussianInf &Ap);
 
 		/** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition (both the mean, and the covariance matrix are updated)
 		  */
-		inline void operator -=( const CPosePDFGaussian &ref  ) {
+		inline void operator -=( const CPosePDFGaussianInf &ref  ) {
 			this->inverseComposition(*this,ref);
 		}
 
@@ -197,8 +194,8 @@ namespace poses
 			\endcode
 		  */
 		static void jacobiansPoseComposition(
-			const CPosePDFGaussian &x,
-			const CPosePDFGaussian &u,
+			const CPosePDFGaussianInf &x,
+			const CPosePDFGaussianInf &u,
 			CMatrixDouble33			 &df_dx,
 			CMatrixDouble33			 &df_du);
 
@@ -208,28 +205,28 @@ namespace poses
 
 
 	/** Pose compose operator: RES = A (+) B , computing both the mean and the covariance */
-	inline CPosePDFGaussian operator +( const CPosePDFGaussian &a, const CPosePDFGaussian &b  ) {
-		CPosePDFGaussian res(a);
+	inline CPosePDFGaussianInf operator +( const CPosePDFGaussianInf &a, const CPosePDFGaussianInf &b  ) {
+		CPosePDFGaussianInf res(a);
 		res+=b;
 		return res;
 	}
 
 	/** Pose inverse compose operator: RES = A (-) B , computing both the mean and the covariance */
-	inline CPosePDFGaussian operator -( const CPosePDFGaussian &a, const CPosePDFGaussian &b  ) {
-		CPosePDFGaussian res;
+	inline CPosePDFGaussianInf operator -( const CPosePDFGaussianInf &a, const CPosePDFGaussianInf &b  ) {
+		CPosePDFGaussianInf res;
 		res.inverseComposition(a,b);
 		return res;
 	}
 
 	/** Dumps the mean and covariance matrix to a text stream.
 	  */
-	std::ostream BASE_IMPEXP & operator << (std::ostream & out, const CPosePDFGaussian& obj);
+	std::ostream BASE_IMPEXP & operator << (std::ostream & out, const CPosePDFGaussianInf& obj);
 
 	/** Returns the Gaussian distribution of \f$ \mathbf{C} \f$, for \f$ \mathbf{C} = \mathbf{A} \oplus \mathbf{B} \f$.
 	  */
-	poses::CPosePDFGaussian	BASE_IMPEXP operator + ( const mrpt::poses::CPose2D &A, const mrpt::poses::CPosePDFGaussian &B  );
+	poses::CPosePDFGaussianInf	BASE_IMPEXP operator + ( const mrpt::poses::CPose2D &A, const mrpt::poses::CPosePDFGaussianInf &B  );
 
-	bool BASE_IMPEXP operator==(const CPosePDFGaussian &p1,const CPosePDFGaussian &p2);
+	bool BASE_IMPEXP operator==(const CPosePDFGaussianInf &p1,const CPosePDFGaussianInf &p2);
 
 	} // End of namespace
 } // End of namespace

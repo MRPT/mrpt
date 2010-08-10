@@ -46,10 +46,15 @@ namespace mrpt
 		class CDirectedGraph
 		{
 		public:
+			typedef size_t TNodeID;  //!< The type for node IDs
+			static const TNodeID INVALID_TNODEID = static_cast<TNodeID>(-1);
+
 			typedef TYPE_EDGES type_edges;  //!< The type of the graph edges
-			typedef std::map< std::pair<size_t,size_t>, TYPE_EDGES > type_edges_map;  //!< The type of the member "edges"
+			typedef std::map< std::pair<TNodeID,TNodeID>, TYPE_EDGES > type_edges_map;  //!< The type of the member "edges"
 			typedef typename type_edges_map::const_iterator const_iterator;
 			typedef typename type_edges_map::iterator iterator;
+
+
 
 			/** The public member with the directed edges in the graph */
 			type_edges_map edges;
@@ -66,17 +71,17 @@ namespace mrpt
 			const_iterator end() const { return edges.end(); }
 
 			/** Insert an edge (from -> to) with the given edge value. */
-			void insertEdge(size_t from_nodeID, size_t to_nodeID,const TYPE_EDGES &edge_value )
+			inline void insertEdge(TNodeID from_nodeID, TNodeID to_nodeID,const TYPE_EDGES &edge_value )
 			{ edges.insert(std::make_pair(std::make_pair(from_nodeID,to_nodeID),edge_value) ); }
 
 			/** Test is the given directed edge exists. */
-			bool edgeExists(size_t from_nodeID, size_t to_nodeID) const
+			inline bool edgeExists(TNodeID from_nodeID, TNodeID to_nodeID) const
 			{ return edges.find(std::make_pair(from_nodeID,to_nodeID))!=edges.end(); }
 
 			/** Return a reference to the content of a given edge.
 			  * \exception std::exception if the given edge does not exist
 			  */
-			TYPE_EDGES & getEdge(size_t from_nodeID, size_t to_nodeID)
+			TYPE_EDGES & getEdge(TNodeID from_nodeID, TNodeID to_nodeID)
 			{
 				iterator it = edges.find(std::make_pair(from_nodeID,to_nodeID));
 				if (it==edges.end())
@@ -87,7 +92,7 @@ namespace mrpt
 			/** Return a reference to the content of a given edge.
 			  * \exception std::exception if the given edge does not exist
 			  */
-			const TYPE_EDGES & getEdge(size_t from_nodeID, size_t to_nodeID) const
+			const TYPE_EDGES & getEdge(TNodeID from_nodeID, TNodeID to_nodeID) const
 			{
 				const_iterator it = edges.find(std::make_pair(from_nodeID,to_nodeID));
 				if (it==edges.end())
@@ -97,14 +102,14 @@ namespace mrpt
 
 			/** Erase a given edge (it has no effect if the edge didn't exist)
 			  */
-			void eraseEdge(size_t from_nodeID, size_t to_nodeID)
+			inline void eraseEdge(TNodeID from_nodeID, TNodeID to_nodeID)
 			{
 				edges.erase(std::make_pair(from_nodeID,to_nodeID));
 			}
 
 			/** Return a list of all the node_ID's of the graph, generated from all the nodes that appear in the list of edges
 			  */
-			void getAllNodes( std::set<size_t> &lstNode_IDs) const
+			void getAllNodes( std::set<TNodeID> &lstNode_IDs) const
 			{
 				lstNode_IDs.clear();
 				for (typename type_edges_map::const_iterator it=edges.begin();it!=edges.end();++it)
@@ -115,7 +120,7 @@ namespace mrpt
 			}
 
 			/** Return the list of all neighbors of "nodeID", by creating a list of their node IDs. */
-			void getNeighborsOf(const size_t nodeID, std::set<size_t> &neighborIDs) const
+			void getNeighborsOf(const TNodeID nodeID, std::set<TNodeID> &neighborIDs) const
 			{
 				neighborIDs.clear();
 				for (typename type_edges_map::const_iterator it=edges.begin();it!=edges.end();++it)
