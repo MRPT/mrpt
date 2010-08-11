@@ -42,10 +42,11 @@
 //  Started: JLBC @ Jul-2010
 // ===========================================================================
 
-#include <mrpt/obs.h>
+#include "rawlog-edit-declarations.h"
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
-#include "CRawlogProcessor.h"
+
+typedef void (*TOperationFunctor)(mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose);
 
 
 using namespace mrpt;
@@ -55,18 +56,15 @@ using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace std;
 
-// Declarations:
-#define VERBOSE_COUT	if (verbose) cout << "[rawlog-edit] "
-
-typedef void (*TOperationFunctor)(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose);
-#define DECLARE_OP_FUNCTION(_NAME) void _NAME(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose)
-
-
 // Frwd. decl:
 DECLARE_OP_FUNCTION(op_externalize);
 DECLARE_OP_FUNCTION(op_info);
 DECLARE_OP_FUNCTION(op_remove_label);
 DECLARE_OP_FUNCTION(op_keep_label);
+
+// GPS-related funcs
+DECLARE_OP_FUNCTION(op_export_gps_kml);
+
 
 // Declare the supported command line switches ===========
 TCLAP::CmdLine cmd("rawlog-edit", ' ', MRPT_getVersion().c_str());
@@ -74,37 +72,12 @@ TCLAP::CmdLine cmd("rawlog-edit", ' ', MRPT_getVersion().c_str());
 TCLAP::ValueArg<std::string> arg_input_file ("i","input","Input dataset (required) (*.rawlog)",true,"","dataset.rawlog",cmd);
 TCLAP::ValueArg<std::string> arg_output_file("o","output","Output dataset (*.rawlog)",false,"","dataset_out.rawlog",cmd);
 
-//TCLAP::ValueArg<double> arg_Ax("X","Ax","In detect-test mode, displacement in X (m)",false,4,"X",cmd);
-
 TCLAP::ValueArg<std::string> arg_external_img_extension("","image-format","External image format",false,"jpg","jpg,png,pgm,...",cmd);
 
 TCLAP::SwitchArg arg_overwrite("w","overwrite","Force overwrite target file without prompting.",cmd, false);
 
 TCLAP::SwitchArg arg_quiet("q","quiet","Terse output",cmd, false);
 
-
-
-// ======================================================================
-//  Search for a specific command-line argument.
-// Return false if not not set, an exception if args doesn't exist
-// ======================================================================
-template <typename T>
-bool getArgValue(TCLAP::CmdLine &cmdline, const std::string &arg_name, T &out_val)
-{
-	using namespace TCLAP;
-
-	std::list<Arg*>& args = cmdline.getArgList();
-	for (std::list<Arg*>::iterator it=args.begin();it!=args.end();++it)
-	{
-		if ( (*it)->getName() == arg_name)
-		{
-			TCLAP::ValueArg<T> *arg = static_cast<TCLAP::ValueArg<T> *>(*it);
-			out_val = arg->getValue();
-			return true;
-		}
-	}
-	return false;
-}
 
 
 // ======================================================================
@@ -120,17 +93,35 @@ int main(int argc, char **argv)
 		// --------------- List of possible operations ---------------
 		map<string,TOperationFunctor>  ops_functors;
 
-		arg_ops.push_back(new TCLAP::SwitchArg("","externalize","Op: convert to external storage.",cmd, false) );
+		arg_ops.push_back(new TCLAP::SwitchArg("","externalize",
+			"Op: convert to external storage.\n"
+			"Requires: -o (or --output)\n"
+			"Optional: --image-format",cmd, false) );
 		ops_functors["externalize"] = &op_externalize;
 
-		arg_ops.push_back(new TCLAP::SwitchArg("","info","Op: parse input file and dump information and statistics.",cmd, false) );
+		arg_ops.push_back(new TCLAP::SwitchArg("","info",
+			"Op: parse input file and dump information and statistics.",cmd, false) );
 		ops_functors["info"] = &op_info;
 
-		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","remove-label","Op: Remove all observation matching the given sensor label.",false,"","label",cmd) );
+		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","remove-label",
+			"Op: Remove all observation matching the given sensor label(s)."
+			"Several labels can be provided separated by commas.\n"
+			"Requires: -o (or --output)",false,"","label[,label...]",cmd) );
 		ops_functors["remove-label"] = &op_remove_label;
 
-		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","keep-label","Op: Remove all observations not matching the given sensor label.",false,"","label",cmd) );
+		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","keep-label",
+			"Op: Remove all observations not matching the given sensor label(s)."
+			"Several labels can be provided separated by commas.\n"
+			"Requires: -o (or --output)",false,"","label[,label...]",cmd) );
 		ops_functors["keep-label"] = &op_keep_label;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","export-gps-kml",
+			"Op: Export GPS paths to Google Earth KML files.\n"
+			"Generates one .kml file for each different sensor label of GPS observations in the dataset. "
+			"The generated .kml files will be saved in the same path than the input rawlog, with the same "
+			"filename + each sensorLabel."
+			,cmd,false) );
+		ops_functors["export-gps-kml"] = &op_export_gps_kml;
 
 		// --------------- End of list of possible operations --------
 
@@ -213,404 +204,42 @@ int main(int argc, char **argv)
 } // end of main()
 
 
-/** Auxiliary struct that performs all the checks and create the
-     output rawlog stream, publishing it as "out_rawlog"
-*/
-struct TOutputRawlogCreator
-{
-	CFileGZOutputStream	out_rawlog;
-	std::string 		out_rawlog_filename;
-
-	TOutputRawlogCreator()
-	{
-		if (!arg_output_file.isSet())
-			throw runtime_error("This operation requires an output file. Use '-o file' or '--output file'.");
-
-		out_rawlog_filename = arg_output_file.getValue();
-		if (fileExists(out_rawlog_filename) && !arg_overwrite.getValue() )
-			throw runtime_error(string("*ABORTING*: Output file already exists: ") + out_rawlog_filename + string("\n. Select a different output path, remove the file or force overwrite with '-w' or '--overwrite'.") );
-
-		if (!out_rawlog.open(out_rawlog_filename))
-			throw runtime_error(string("*ABORTING*: Cannot open output file: ") + out_rawlog_filename );
-
-	}
-};
 
 // ======================================================================
-//		op_externalize
+//   See TOutputRawlogCreator declaration
 // ======================================================================
-DECLARE_OP_FUNCTION(op_externalize)
+TOutputRawlogCreator::TOutputRawlogCreator()
 {
-	// A class to do this operation:
-	class CRawlogProcessor_Externalize : public CRawlogProcessorOnEachObservation
+	if (!arg_output_file.isSet())
+		throw runtime_error("This operation requires an output file. Use '-o file' or '--output file'.");
+
+	out_rawlog_filename = arg_output_file.getValue();
+	if (fileExists(out_rawlog_filename) && !arg_overwrite.getValue() )
+		throw runtime_error(string("*ABORTING*: Output file already exists: ") + out_rawlog_filename + string("\n. Select a different output path, remove the file or force overwrite with '-w' or '--overwrite'.") );
+
+	if (!out_rawlog.open(out_rawlog_filename))
+		throw runtime_error(string("*ABORTING*: Cannot open output file: ") + out_rawlog_filename );
+}
+
+
+template <typename T>
+bool getArgValue(TCLAP::CmdLine &cmdline, const std::string &arg_name, T &out_val)
+{
+	using namespace TCLAP;
+
+	std::list<Arg*>& args = cmdline.getArgList();
+	for (std::list<Arg*>::iterator it=args.begin();it!=args.end();++it)
 	{
-	protected:
-		TOutputRawlogCreator	outrawlog;
-		//CFileGZOutputStream out_rawlog;
-		//string output_rawlog;
-
-		string	imgFileExtension;
-		string 	outDir;
-
-	public:
-		size_t  entries_converted;
-		size_t  entries_skipped; // Already external
-
-		CRawlogProcessor_Externalize(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
-			CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose)
+		if ( (*it)->getName() == arg_name)
 		{
-			entries_converted = 0;
-			entries_skipped  = 0;
-			imgFileExtension = arg_external_img_extension.getValue();
-
-			// Create the default "/Images" directory.
-			const string out_rawlog_basedir = extractFileDirectory(outrawlog.out_rawlog_filename);
-
-			outDir = (out_rawlog_basedir.empty() ? string() : (out_rawlog_basedir+string("/") )) + extractFileName(outrawlog.out_rawlog_filename) + string("_Images");
-			if (directoryExists(outDir))
-				throw runtime_error(string("*ABORTING*: Output directory for images already exists: ") + outDir + string("\n. Select a different output path or remove the directory.") );
-
-			VERBOSE_COUT << "Creating directory: " << outDir << endl;
-
-			mrpt::system::createDirectory( outDir );
-			if (!fileExists(outDir))
-				throw runtime_error(string("*ABORTING*: Couldn't create directory: ") + outDir );
-
-			// Add the final /
-			outDir+="/";
-		}
-
-		bool processOneObservation(CObservationPtr  &obs)
-		{
-			const string label_time = format("%s_%f", obs->sensorLabel.c_str(), timestampTotime_t(obs->timestamp) );
-			if (IS_CLASS(obs, CObservationStereoImages ) )
-			{
-				CObservationStereoImagesPtr obsSt = CObservationStereoImagesPtr(obs);
-				// save image to file & convert into external storage:
-				if (!obsSt->imageLeft.isExternallyStored())
-				{
-					const string fileName = string("img_") + label_time + string("_left.") + imgFileExtension;
-					obsSt->imageLeft.saveToFile( outDir + fileName );
-					obsSt->imageLeft.setExternalStorage( fileName );
-					entries_converted++;
-				}
-				else entries_skipped++;
-
-				if (!obsSt->imageRight.isExternallyStored())
-				{
-					const string fileName = string("img_") + label_time + string("_right.") + imgFileExtension;
-					obsSt->imageRight.saveToFile( outDir + fileName );
-					obsSt->imageRight.setExternalStorage( fileName );
-					entries_converted++;
-				}
-				else entries_skipped++;
-			}
-			else if (IS_CLASS(obs, CObservationImage ) )
-			{
-				CObservationImagePtr obsIm = CObservationImagePtr(obs);
-
-				if (!obsIm->image.isExternallyStored())
-				{
-					const string fileName = string("img_") + label_time +string(".")+ imgFileExtension;
-					obsIm->image.saveToFile( outDir + fileName );
-					obsIm->image.setExternalStorage( fileName );
-					entries_converted++;
-				}
-				else entries_skipped++;
-			}
-			else if (IS_CLASS(obs, CObservation3DRangeScan ) )
-			{
-				CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(obs);
-
-				// save images to file & convert into external storage:
-				// Intensity channel:
-				if (obs3D->hasIntensityImage && !obs3D->intensityImage.isExternallyStored())
-				{
-					const string fileName = string("3DCAM_") + label_time + string("_INT.") + imgFileExtension;
-					obs3D->intensityImage.saveToFile( outDir + fileName );
-					obs3D->intensityImage.setExternalStorage( fileName );
-					entries_converted++;
-				}
-				else entries_skipped++;
-
-				// Confidence channel:
-				if (obs3D->hasConfidenceImage && !obs3D->confidenceImage.isExternallyStored())
-				{
-					const string fileName = string("3DCAM_") + label_time + string("_CONF.") + imgFileExtension;
-					obs3D->confidenceImage.saveToFile( outDir + fileName );
-					obs3D->confidenceImage.setExternalStorage( fileName );
-					entries_converted++;
-				}
-				else entries_skipped++;
-
-				// 3D points:
-				if (obs3D->hasPoints3D && !obs3D->points3D_isExternallyStored())
-				{
-					const string fileName = string("3DCAM_") + label_time + string("_3D.bin");
-					obs3D->points3D_convertToExternalStorage(fileName, outDir);
-					entries_converted++;
-				}
-				else entries_skipped++;
-
-				// Range image:
-				if (obs3D->hasRangeImage  && !obs3D->rangeImage_isExternallyStored())
-				{
-					const string fileName = string("3DCAM_") + label_time + string("_RANGES.bin");
-					obs3D->rangeImage_convertToExternalStorage(fileName, outDir);
-					entries_converted++;
-				}
-				else entries_skipped++;
-			}
-
+			TCLAP::ValueArg<T> *arg = static_cast<TCLAP::ValueArg<T> *>(*it);
+			out_val = arg->getValue();
 			return true;
 		}
-
-		// This method can be reimplemented to save the modified object to an output stream.
-		virtual void OnPostProcess(
-			mrpt::slam::CActionCollectionPtr &actions,
-			mrpt::slam::CSensoryFramePtr     &SF,
-			mrpt::slam::CObservationPtr      &obs)
-		{
-			ASSERT_((actions && SF) || obs)
-			if (actions)
-					outrawlog.out_rawlog << actions << SF;
-			else	outrawlog.out_rawlog << obs;
-		}
-
-	};
-
-	// Process
-	// ---------------------------------
-	CRawlogProcessor_Externalize proc(in_rawlog,cmdline,verbose);
-	proc.doProcessRawlog();
-
-	// Dump statistics:
-	// ---------------------------------
-	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
-	VERBOSE_COUT << "Entries converted                 : " << proc.entries_converted << "\n";
-	VERBOSE_COUT << "Entries skipped (already external): " << proc.entries_skipped << "\n";
-
-}
-
-
-struct TInfoPerSensorLabel
-{
-	TInfoPerSensorLabel() : occurrences(0), tim_first(INVALID_TIMESTAMP),tim_last(INVALID_TIMESTAMP) {}
-
-	string		className;
-	size_t		occurrences;
-	TTimeStamp  tim_first, tim_last;
-};
-
-
-// ======================================================================
-//		op_info
-// ======================================================================
-DECLARE_OP_FUNCTION(op_info)
-{
-	// A class to do this operation:
-	class CRawlogProcessor_Info : public CRawlogProcessor
-	{
-	public:
-		// Stats to gather:
-		bool  has_actSF_format;
-		bool  has_obs_format;
-		size_t  nActions;
-		size_t  nSFs;
-		map<string,TInfoPerSensorLabel>   infoPerSensorLabel;
-
-		CRawlogProcessor_Info(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) : CRawlogProcessor(in_rawlog,cmdline,verbose)
-		{
-			has_actSF_format = false;
-			has_obs_format   = false;
-			nActions = 0;
-			nSFs     = 0;
-		}
-
-		virtual bool processOneEntry(
-			CActionCollectionPtr &actions,
-			CSensoryFramePtr     &SF,
-			CObservationPtr      &obs)
-		{
-			// Rawlog format: Normally only one of both should exist simultaneously!
-			if (actions || SF) has_actSF_format = true;
-			if (obs) has_obs_format = true;
-			if (actions) nActions++;
-			if (SF) nSFs++;
-
-			// Process each observation individually, either from "obs" or each within a "SF":
-			for (size_t idxObs=0; true; idxObs++)
-			{
-				CObservationPtr  obs_indiv;
-				if (obs)
-				{
-					if (idxObs>0)  break;
-					obs_indiv = obs;
-				}
-				else if (SF)
-				{
-					if (idxObs>=SF->size()) break;
-					obs_indiv = SF->getObservationByIndex(idxObs);
-				}
-				else break; // shouldn't...
-
-				// Process "obs_indiv":
-				ASSERT_(obs_indiv)
-				TInfoPerSensorLabel &d = infoPerSensorLabel[obs_indiv->sensorLabel];
-
-				d.className = obs_indiv->GetRuntimeClass()->className;
-				d.occurrences++;
-				if (d.tim_first==INVALID_TIMESTAMP)
-					d.tim_first = obs_indiv->timestamp;
-				d.tim_last = obs_indiv->timestamp;
-			}
-
-			// Clear read objects:
-			actions.clear_unique();
-			SF.clear_unique();
-			obs.clear_unique();
-
-			return true; // No error.
-		}
-
-	}; // end CRawlogProcessor_Info
-
-	// Process
-	// ---------------------------------
-	CRawlogProcessor_Info proc(in_rawlog,cmdline,verbose);
-	proc.doProcessRawlog();
-
-
-	// Dump statistics:
-	// ---------------------------------
-	cout << "Time to parse file (sec)          : " << proc.m_timToParse << "\n";
-	cout << "Physical file size                : " << mrpt::system::unitsFormat(proc.m_filSize) << "B\n";
-	cout << "Uncompressed file size            : " << mrpt::system::unitsFormat(in_rawlog.getPosition()) << "B\n";
-	cout << "Compression ratio                 : " << format("%.02f%%\n", 100.0*double(proc.m_filSize)/double(in_rawlog.getPosition()));
-	cout << "Overall number of objects         : " << proc.m_rawlogEntry << "\n";
-	cout << "Actions/SensoryFrame format       : " << (proc.has_actSF_format ? "Yes":"No") << "\n";
-	cout << "Observations format               : " << (proc.has_obs_format ? "Yes":"No") << "\n";
-
-	// By sensor labels:
-	cout << "All sensor labels                 : ";
-	for (map<string,TInfoPerSensorLabel>::const_iterator it=proc.infoPerSensorLabel.begin();it!=proc.infoPerSensorLabel.end();++it)
-	{
-		if (it!=proc.infoPerSensorLabel.begin()) cout << ", ";
-		cout << it->first;
 	}
-	cout << "\n";
-
-	for (map<std::string,TInfoPerSensorLabel>::const_iterator it=proc.infoPerSensorLabel.begin();it!=proc.infoPerSensorLabel.end();++it)
-	{
-		const TTimeStamp	tf = it->second.tim_first;
-		const TTimeStamp	tl = it->second.tim_last;
-		double Hz = 0, dur = 0;
-		if (tf!=INVALID_TIMESTAMP && tl!=INVALID_TIMESTAMP)
-		{
-			dur = mrpt::system::timeDifference(tf,tl);
-			Hz = double(it->second.occurrences>1 ? it->second.occurrences-1 : 1)/dur;
-		}
-		cout << "Sensor (Label/Occurs/Rate/Durat.) : " <<
-			format("%15s /%7u /%5.03f /%.03f\n",
-				it->first.c_str(),
-				(unsigned)it->second.occurrences,
-				Hz,
-				dur);
-	}
-
+	return false;
 }
 
-// ======================================================================
-//		op_remove_label
-// ======================================================================
-DECLARE_OP_FUNCTION(op_remove_label)
-{
-	// A class to do this operation:
-	class CRawlogProcessor_RemoveLabel : public CRawlogProcessorFilterObservations
-	{
-	protected:
-		string m_filter_label;
-
-	public:
-		CRawlogProcessor_RemoveLabel(
-			mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose,
-			CFileGZOutputStream &out_rawlog,
-			const std::string &filter_label
-			) :
-				CRawlogProcessorFilterObservations(in_rawlog,cmdline,verbose, out_rawlog),
-				m_filter_label(filter_label)
-		{
-		}
-
-		/** To be implemented by users: return false means the observation is  */
-		virtual bool tellIfThisObsPasses(mrpt::slam::CObservationPtr  &obs)
-		{
-				return obs->sensorLabel!=m_filter_label;
-		}
-	};
-
-	// Process
-	// ---------------------------------
-	string filter_label;
-	if (!getArgValue<string>(cmdline,"remove-label",filter_label) || filter_label.empty() )
-		throw std::runtime_error("remove-label: This operation needs a non-empty argument.");
-
-	TOutputRawlogCreator	outrawlog;
-	CRawlogProcessor_RemoveLabel proc(in_rawlog,cmdline,verbose,outrawlog.out_rawlog,filter_label )	;
-	proc.doProcessRawlog();
-
-	// Dump statistics:
-	// ---------------------------------
-	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
-	VERBOSE_COUT << "Analyzed entries                  : " << proc.m_entries_parsed << "\n";
-	VERBOSE_COUT << "Removed entries                   : " << proc.m_entries_removed << "\n";
-
-}
-
-// ======================================================================
-//		op_keep_label
-// ======================================================================
-DECLARE_OP_FUNCTION(op_keep_label)
-{
-	// A class to do this operation:
-	class CRawlogProcessor_KeepLabel : public CRawlogProcessorFilterObservations
-	{
-	protected:
-		string m_filter_label;
-
-	public:
-		CRawlogProcessor_KeepLabel(
-			mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose,
-			CFileGZOutputStream &out_rawlog,
-			const std::string &filter_label
-			) :
-				CRawlogProcessorFilterObservations(in_rawlog,cmdline,verbose, out_rawlog),
-				m_filter_label(filter_label)
-		{
-		}
-
-		/** To be implemented by users: return false means the observation is  */
-		virtual bool tellIfThisObsPasses(mrpt::slam::CObservationPtr  &obs)
-		{
-				return obs->sensorLabel==m_filter_label;
-		}
-	};
-
-	// Process
-	// ---------------------------------
-	string filter_label;
-	if (!getArgValue<string>(cmdline,"keep-label",filter_label) || filter_label.empty() )
-		throw std::runtime_error("keep-label: This operation needs a non-empty argument.");
-
-	TOutputRawlogCreator	outrawlog;
-	CRawlogProcessor_KeepLabel proc(in_rawlog,cmdline,verbose,outrawlog.out_rawlog,filter_label )	;
-	proc.doProcessRawlog();
-
-	// Dump statistics:
-	// ---------------------------------
-	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
-	VERBOSE_COUT << "Analyzed entries                  : " << proc.m_entries_parsed << "\n";
-	VERBOSE_COUT << "Removed entries                   : " << proc.m_entries_removed << "\n";
-
-}
-
+// Explicit instantations:
+template bool getArgValue<>(TCLAP::CmdLine &cmdline, const std::string &arg_name, std::string &out_val);
+template bool getArgValue<>(TCLAP::CmdLine &cmdline, const std::string &arg_name, double &out_val);
