@@ -22,6 +22,7 @@ ADD_EXECUTABLE(rawlog-edit
 	rawlog-edit_info.cpp
 	rawlog-edit_externalize.cpp
 	rawlog-edit_filters.cpp
+	rawlog-edit_cuts.cpp
 	)
 SET(TMP_TARGET_NAME "rawlog-edit")
 SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(RAWLOGTOOL) ${TMP_TARGET_NAME}")

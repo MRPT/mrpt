@@ -61,8 +61,7 @@ DECLARE_OP_FUNCTION(op_externalize);
 DECLARE_OP_FUNCTION(op_info);
 DECLARE_OP_FUNCTION(op_remove_label);
 DECLARE_OP_FUNCTION(op_keep_label);
-
-// GPS-related funcs
+DECLARE_OP_FUNCTION(op_cut);
 DECLARE_OP_FUNCTION(op_export_gps_kml);
 DECLARE_OP_FUNCTION(op_export_gps_txt);
 
@@ -74,6 +73,12 @@ TCLAP::ValueArg<std::string> arg_input_file ("i","input","Input dataset (require
 TCLAP::ValueArg<std::string> arg_output_file("o","output","Output dataset (*.rawlog)",false,"","dataset_out.rawlog",cmd);
 
 TCLAP::ValueArg<std::string> arg_external_img_extension("","image-format","External image format",false,"jpg","jpg,png,pgm,...",cmd);
+
+TCLAP::ValueArg<uint64_t> arg_from_index("","from-index","Starting index for --cut",false,0,"N0",cmd);
+TCLAP::ValueArg<uint64_t> arg_to_index  ("","to-index",  "End index for --cut",false,0,"N1",cmd);
+
+TCLAP::ValueArg<double> arg_from_time("","from-time","Starting time for --cut, as UNIX timestamp, optionally with fractions of seconds.",false,0,"T0",cmd);
+TCLAP::ValueArg<double> arg_to_time  ("","to-time",  "End time for --cut, as UNIX timestamp, optionally with fractions of seconds.",false,0,"T1",cmd);
 
 TCLAP::SwitchArg arg_overwrite("w","overwrite","Force overwrite target file without prompting.",cmd, false);
 
@@ -131,6 +136,14 @@ int main(int argc, char **argv)
 			"filename + each sensorLabel."
 			,cmd,false) );
 		ops_functors["export-gps-txt"] = &op_export_gps_txt;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","cut",
+			"Op: Cut a part of the input rawlog.\n"
+			"Requires: -o (or --output)\n"
+			"Requires: At least one of --from-index, --from-time, --to-index, --to-time. Use only one of the --from-* and --to-* at once.\n"
+			"If only a --from-* is given, the rawlog will be saved up to its end. If only a --to-* is given, the rawlog will be saved from its beginning.\n"
+			,cmd,false) );
+		ops_functors["cut"] = &op_cut;
 
 		// --------------- End of list of possible operations --------
 
@@ -241,6 +254,10 @@ bool getArgValue(TCLAP::CmdLine &cmdline, const std::string &arg_name, T &out_va
 	{
 		if ( (*it)->getName() == arg_name)
 		{
+			// Is it set?
+			if (!(*it)->isSet())
+				return false;
+
 			TCLAP::ValueArg<T> *arg = static_cast<TCLAP::ValueArg<T> *>(*it);
 			out_val = arg->getValue();
 			return true;
@@ -252,3 +269,5 @@ bool getArgValue(TCLAP::CmdLine &cmdline, const std::string &arg_name, T &out_va
 // Explicit instantations:
 template bool getArgValue<>(TCLAP::CmdLine &cmdline, const std::string &arg_name, std::string &out_val);
 template bool getArgValue<>(TCLAP::CmdLine &cmdline, const std::string &arg_name, double &out_val);
+template bool getArgValue<>(TCLAP::CmdLine &cmdline, const std::string &arg_name, size_t &out_val);
+template bool getArgValue<>(TCLAP::CmdLine &cmdline, const std::string &arg_name, int &out_val);

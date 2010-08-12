@@ -45,13 +45,17 @@ namespace slam
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation2DRangeScan, CObservation, OBS_IMPEXP)
 
-	/** Declares a class derived from "CObservation" that
-	       encapsules a 2D range scan measurement (typically from a laser scanner).
-		   This is prepared for accepting 180deg,360deg or any other aperture scan,
-		   as well as resolutions of 0.5deg,0.25deg or any other.
-	 *
-	 * \sa CObservation
-	 */
+	/** A "CObservation"-derived class that represents a 2D range scan measurement (typically from a laser scanner).
+	  *  The data structures are generic enough to hold a wide variety of 2D scanners and "3D" planar rotating 2D lasers.
+	  *
+	  *  These are the most important data fields:
+	  *    - CObservation2DRangeScan::scan -> A vector of float values with all the range measurements (in meters).
+	  *    - CObservation2DRangeScan::validRange -> A vector (of <b>identical size</b> than <i>scan<i>), has non-zeros for those ranges than are valid (i.e. will be zero for non-reflected rays, etc.)
+	  *    - CObservation2DRangeScan::aperture -> The field-of-view of the scanner, in radians (typically, M_PI = 180deg).
+	  *    - CObservation2DRangeScan::sensorPose -> The 6D location of the sensor on the robot reference frame (default=at the origin).
+	  *
+	  * \sa CObservation, CPointsMap
+	  */
 	class OBS_IMPEXP CObservation2DRangeScan : public CObservation
 	{
 		// This must be added to any CSerializable derived class:

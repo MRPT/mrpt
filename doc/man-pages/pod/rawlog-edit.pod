@@ -4,36 +4,56 @@ rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
 
 =head1 SYNOPSIS
 
-   rawlog-edit  [--keep-label <label>] [--remove-label <label>] [--info]
-                [--externalize] [-q] [-w] [--image-format <jpg,png,pgm
-                ,...>] [-o <dataset_out.rawlog>] -i <dataset.rawlog> [--]
-                [--version] [-h]
+ rawlog-edit  [--cut] [--export-gps-txt] [--export-gps-kml] 
+    [--keep-label <label[,label...]>] 
+    [--remove-label <label[,label...]>]
+    [--info] [--externalize] [-q] [-w] [--to-time <T1>]
+    [--from-time <T0>] [--to-index <N1>] [--from-index <N0>]
+    [--image-format <jpg,png,pgm,...>] [-o
+    <dataset_out.rawlog>] -i <dataset.rawlog> [--] [--version]
+    [-h]
 
 
 =head1 USAGE EXAMPLES
 
- Quick overview of a dataset file: 
+B<Quick overview of a dataset file:>
 
-  rawlog-edit --info -i my_dataset.rawlog
-
-
-
- Remove all observations named "REAR_LASER":
-
-  rawlog-edit --remove-label REAR_LASER -i my_dataset.rawlog -o modified.rawlog
+rawlog-edit --info -i I<in.rawlog> 
 
 
+B<Cut the entries [1000,2000] into another rawlog file:>
 
- Remove all observations not named "REAR_LASER":
+rawlog-edit --cut --from-index 1000 --to-index 2000 \
+             -i I<in.rawlog> -o I<out.rawlog>
 
-  rawlog-edit --keep-label REAR_LASER -i my_dataset.rawlog -o modified.rawlog
+
+B<Cut the entries from the beginning up to timestamp 1281619819:>
+
+rawlog-edit --cut --to-time 1281619819 \
+             -i I<in.rawlog> -o I<out.rawlog>
 
 
- Convert all images to external storage mode:
+B<Generate a Google Earth KML file with the GPS data in a dataset:>
 
-  rawlog-edit --externalize -i my_dataset.rawlog -o modified.rawlog
-  rawlog-edit --externalize --image-format jpg -i my_dataset.rawlog \
-               -o modified.rawlog
+rawlog-edit --export-gps-kml -i I<in.rawlog>
+   
+
+B<Remove all observations named "REAR_LASER":>
+
+rawlog-edit --remove-label REAR_LASER -i I<in.rawlog> -o I<out.rawlog>
+
+
+B<Remove all observations not named "REAR_LASER":>
+
+rawlog-edit --keep-label REAR_LASER -i I<in.rawlog> -o I<out.rawlog>
+
+
+B<Convert all images to external storage mode:>
+
+rawlog-edit --externalize -i I<in.rawlog> -o I<out.rawlog>
+
+rawlog-edit --externalize --image-format jpg -i I<in.rawlog> \
+             -o I<out.rawlog>
 
 
 =head1 DESCRIPTION
@@ -43,11 +63,46 @@ dataset files in the "rawlog" standardized format.
 
 These are the supported arguments and operations:
 
-   --keep-label <label>
-     Op: Remove all observations not matching the given sensor label.
+   --cut
+     Op: Cut a part of the input rawlog.
 
-   --remove-label <label>
-     Op: Remove all observation matching the given sensor label.
+     Requires: -o (or --output)
+
+     Requires: At least one of --from-index, --from-time, --to-index,
+     --to-time. Use only one of the --from-* and --to-* at once.
+
+     If only a --from-* is given, the rawlog will be saved up to its end.
+     If only a --to-* is given, the rawlog will be saved from its
+     beginning.
+
+
+   --export-gps-txt
+     Op: Export GPS readings to TXT files.
+
+     Generates one .txt file for each different sensor label of GPS
+     observations in the dataset. The generated .txt files will be saved in
+     the same path than the input rawlog, with the same filename + each
+     sensorLabel.
+
+   --export-gps-kml
+     Op: Export GPS paths to Google Earth KML files.
+
+     Generates one .kml file with different sections for each different
+     sensor label of GPS observations in the dataset. The generated .kml
+     files will be saved in the same path than the input rawlog, with the
+     same filename + each sensorLabel.
+
+   --keep-label <label[,label...]>
+     Op: Remove all observations not matching the given sensor
+     label(s).Several labels can be provided separated by commas.
+
+     Requires: -o (or --output)
+
+   --remove-label <label[,label...]>
+     Op: Remove all observation matching the given sensor label(s).Several
+     labels can be provided separated by commas.
+
+     Requires: -o (or --output)
 
    --info
      Op: parse input file and dump information and statistics.
@@ -55,11 +110,29 @@ These are the supported arguments and operations:
    --externalize
      Op: convert to external storage.
 
+     Requires: -o (or --output)
+
+     Optional: --image-format
+
    -q,  --quiet
      Terse output
 
    -w,  --overwrite
      Force overwrite target file without prompting.
+
+   --to-time <T1>
+     End time for --cut, as UNIX timestamp, optionally with fractions of
+     seconds.
+
+   --from-time <T0>
+     Starting time for --cut, as UNIX timestamp, optionally with fractions
+     of seconds.
+
+   --to-index <N1>
+     End index for --cut
+
+   --from-index <N0>
+     Starting index for --cut
 
    --image-format <jpg,png,pgm,...>
      External image format
@@ -78,6 +151,7 @@ These are the supported arguments and operations:
 
    -h,  --help
      Displays usage information and exits.
+
 
 
 =head1 BUGS
