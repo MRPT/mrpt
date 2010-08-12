@@ -40,6 +40,8 @@ namespace mrpt
 {
 	namespace poses
 	{
+		using mrpt::utils::TNodeID;
+
 		/** A network of links constraining the relative pose of pairs of nodes, indentified by their numeric IDs (of type TPoseID, actually a size_t).
 		  *  A link between nodes "i" and "j", that is, the pose \f$ p_{ij} \f$ or relative position of "j" with respect to "i",
 		  *   is maintained as a multivariate Gaussian distribution.
@@ -65,7 +67,7 @@ namespace mrpt
 
 			typedef mrpt::math::CDirectedGraph< CPOSE > BASE; //!< The base class "CDirectedGraph<CPOSE>"
 			typedef CPOSE type_poses;  //!< The type of PDF poses on the network links
-			typedef std::map<typename BASE::TNodeID,CPOSE> type_global_poses;  //!< A map of pose IDs to their global coordinates - can be used as second parameter of optimizePoseGraph_levmarq
+			typedef std::map<TNodeID,CPOSE> type_global_poses;  //!< A map of pose IDs to their global coordinates - can be used as second parameter of optimizePoseGraph_levmarq
 
 			/** @} */
 

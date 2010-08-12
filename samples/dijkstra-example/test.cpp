@@ -42,7 +42,7 @@ using namespace std;
 
 
 // adds a new edge to the graph. The edge is annotated with the relative position of the two nodes
-void addEdge(size_t from, size_t to, const map<CDijkstra<CPosePDFGaussian>::TNodeID,CPose2D> &real_poses,CNetworkOfPoses2D &graph_links,const CMatrixDouble33 &cov)
+void addEdge(TNodeID from, TNodeID to, const map<TNodeID,CPose2D> &real_poses,CNetworkOfPoses2D &graph_links,const CMatrixDouble33 &cov)
 {
 	CPose2D p = real_poses.find(to)->second - real_poses.find(from)->second;
 	graph_links.insertEdge(from,to,CPosePDFGaussian(p,cov));
@@ -62,7 +62,7 @@ void TestDijkstra()
 	CTicTac tictac;
 	CNetworkOfPoses2D	graph_links;
 	CNetworkOfPoses2D::type_global_poses	optimal_poses, optimal_poses_dijkstra;
-	map<CDijkstra<CPosePDFGaussian>::TNodeID,CPose2D>  real_poses;
+	map<TNodeID,CPose2D>  real_poses;
 
 	randomGenerator.randomize(444);
 

@@ -174,6 +174,11 @@ namespace mrpt
 		MRPT_DECLARE_TTYPENAME(uint8_t)
 		MRPT_DECLARE_TTYPENAME(int8_t)
 
+		// Note: size_t is purposely NOT here since it may be of different sizes
+		//  and serialization is about knowing exact sizes of all data types!
+
+
+
 		MRPT_DECLARE_TTYPENAME(std::string)
 
 

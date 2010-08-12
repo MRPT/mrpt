@@ -38,6 +38,8 @@ namespace mrpt
 {
 	namespace math
 	{
+		using mrpt::utils::TNodeID;
+
 		/** A directed graph with the argument of the template specifying the type of the annotations in the edges.
 		  *  This class only keeps a list of edges (in the member "edges"), so there is no information stored for each node but its existence referred by a node_ID.
 		  * \sa mrpt::math::CDijkstra, mrpt::poses::CNetworkOfPoses
@@ -46,7 +48,6 @@ namespace mrpt
 		class CDirectedGraph
 		{
 		public:
-			typedef size_t TNodeID;  //!< The type for node IDs
 			static const TNodeID INVALID_TNODEID = static_cast<TNodeID>(-1);
 
 			typedef TYPE_EDGES type_edges;  //!< The type of the graph edges

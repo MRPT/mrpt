@@ -63,9 +63,9 @@ namespace mrpt
 template <class CPOSE>
 double mrpt::slam::optimizePoseGraph_stogradesc(
 	const CNetworkOfPoses<CPOSE>  &pose_graph,
-	std::map<size_t,CPOSE>	      &optimal_poses,
+	std::map<TNodeID,CPOSE>	      &optimal_poses,
 	const size_t                   max_iterations,
-	const size_t                   origin_pose
+	const TNodeID                  origin_pose
 	)
 {
 	MRPT_START
@@ -81,16 +81,15 @@ double mrpt::slam::optimizePoseGraph_stogradesc(
 // Explicit instantations:
 template double SLAM_IMPEXP mrpt::slam::optimizePoseGraph_stogradesc(
 	const CNetworkOfPoses<CPosePDFGaussian> &pose_graph,
-	std::map<size_t,CPosePDFGaussian>	    &optimal_poses,
+	std::map<TNodeID,CPosePDFGaussian>	    &optimal_poses,
 	const size_t                   max_iterations,
-	const size_t  origin_pose );
+	const TNodeID  origin_pose );
 
 template double SLAM_IMPEXP mrpt::slam::optimizePoseGraph_stogradesc(
 	const CNetworkOfPoses<CPose3DPDFGaussian> &pose_graph,
-	std::map<size_t,CPose3DPDFGaussian>	    &optimal_poses,
+	std::map<TNodeID,CPose3DPDFGaussian>	    &optimal_poses,
 	const size_t                   max_iterations,
-	const size_t  origin_pose );
+	const TNodeID  origin_pose );
 
 //MRPT_TODO("Add specializations for graphs of 3D poses with quaternions as well.")
-
 

@@ -37,13 +37,14 @@ namespace mrpt
 	namespace math
 	{
 	    using namespace std;
+		using namespace mrpt::utils;
 
 		/** The Dijkstra algorithm for finding the shortest path between a given source node in a (weighted) directed graph and all other nodes.
 		  *  The constructor takes as input the graph (the set of directed edges) computes all the needed data, then
 		  *   successive calls to "getShortestPathTo" return the paths very efficiently.
 		  *
-		  *  Graphs are represented by instances of (or classes derived from) mrpt::math::CDirectedGraph , and node's IDs are size_t values,
-		  *   although the type TNodeID is also provided for clarity.
+		  *  Graphs are represented by instances of (or classes derived from) mrpt::math::CDirectedGraph , and node's IDs are uint64_t values,
+		  *   although the type mrpt::utils::TNodeID is also provided for clarity.
 		  *
 		  * See <a href="http://www.mrpt.org/Example:Dijkstra_optimal_path_search_in_graphs" > this page on the wiki</a> for a complete example.
 		  */
@@ -51,7 +52,6 @@ namespace mrpt
 		class CDijkstra
 		{
 		public:
-			typedef size_t TNodeID;  //!< The type for node IDs
 			typedef std::list<std::pair<TNodeID,TNodeID> >   TListEdges; //!< A list of edges used to describe a path on the graph
 
 			static const TNodeID INVALID_TNODEID = static_cast<TNodeID>(-1);

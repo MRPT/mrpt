@@ -191,9 +191,9 @@ namespace mrpt
 template <class CPOSE>
 double mrpt::slam::optimizePoseGraph_levmarq(
 	const CNetworkOfPoses<CPOSE>  &pose_graph,
-	std::map<size_t,CPOSE>	      &optimal_poses,
+	std::map<TNodeID,CPOSE>	      &optimal_poses,
 	const size_t                   max_iterations,
-	const size_t                   origin_pose
+	const TNodeID                  origin_pose
 	)
 {
 	MRPT_START
@@ -257,7 +257,7 @@ double mrpt::slam::optimizePoseGraph_levmarq(
 	vector_double  poses_initial;
 	poses_initial.resize(nGlobalPosesToOpt * CPOSE::state_length ,0);
 
-	std::set<size_t> lstNode_IDs;
+	std::set<TNodeID> lstNode_IDs;
 	pose_graph.getAllNodes( lstNode_IDs );
 
 	{
@@ -266,10 +266,10 @@ double mrpt::slam::optimizePoseGraph_levmarq(
 
 		CDijkstra<CPOSE>  dijkstra( pose_graph, nodeID_origin, lm_functor_edge_weight );
 
-		std::list<std::pair<size_t,size_t> >	pathEdges; // The optimal path for each node
+		std::list<std::pair<TNodeID,TNodeID> >	pathEdges; // The optimal path for each node
 
 		// Get the path from "nodeID_origin" to the rest of nodes:
-		for ( std::set<size_t>::const_iterator n=lstNode_IDs.begin();n!=lstNode_IDs.end();++n)
+		for ( std::set<TNodeID>::const_iterator n=lstNode_IDs.begin();n!=lstNode_IDs.end();++n)
 		{
 			// The origin does not appear in poses_initial:
 			if (*n == nodeID_origin) continue;
@@ -284,7 +284,7 @@ double mrpt::slam::optimizePoseGraph_levmarq(
 
 			ASSERT_(!pathEdges.empty())
 
-			for (std::list<std::pair<size_t,size_t> >::const_iterator itEdge = pathEdges.begin();itEdge!=pathEdges.end();++itEdge)
+			for (std::list<std::pair<TNodeID,TNodeID> >::const_iterator itEdge = pathEdges.begin();itEdge!=pathEdges.end();++itEdge)
 			{
 				typename CDirectedGraph<CPOSE>::const_iterator itEd = pose_graph.edges.find( *itEdge );
 				typename CPOSE::type_value incrPose = itEd->second.mean;
@@ -393,7 +393,7 @@ double mrpt::slam::optimizePoseGraph_levmarq(
 	// ---------------------------------------------------------------------------------
 	optimal_poses.clear();
 
-	for (std::set<size_t>::const_iterator n=lstNode_IDs.begin();n!=lstNode_IDs.end();++n)
+	for (std::set<TNodeID>::const_iterator n=lstNode_IDs.begin();n!=lstNode_IDs.end();++n)
 	{
 		CPOSE &p = optimal_poses[*n];
 
@@ -430,15 +430,15 @@ double mrpt::slam::optimizePoseGraph_levmarq(
 // Explicit instantations:
 template double SLAM_IMPEXP mrpt::slam::optimizePoseGraph_levmarq(
 	const CNetworkOfPoses<CPosePDFGaussian> &pose_graph,
-	std::map<size_t,CPosePDFGaussian>	    &optimal_poses,
+	std::map<TNodeID,CPosePDFGaussian>	    &optimal_poses,
 	const size_t                   max_iterations,
-	const size_t  origin_pose );
+	const TNodeID  origin_pose );
 
 template double SLAM_IMPEXP mrpt::slam::optimizePoseGraph_levmarq(
 	const CNetworkOfPoses<CPose3DPDFGaussian> &pose_graph,
-	std::map<size_t,CPose3DPDFGaussian>	    &optimal_poses,
+	std::map<TNodeID,CPose3DPDFGaussian>	    &optimal_poses,
 	const size_t                   max_iterations,
-	const size_t  origin_pose );
+	const TNodeID origin_pose );
 
 
 //MRPT_TODO("Add specializations for graphs of 3D poses with quaternions as well.")

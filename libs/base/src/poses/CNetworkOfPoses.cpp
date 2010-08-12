@@ -64,7 +64,6 @@ IMPLEMENTS_SERIALIZABLE( CNetworkOfPoses3DInf, CSerializable, mrpt::poses )
 	}
 
 
-
 DO_IMPLEMENT_READ_WRITE(CNetworkOfPoses2D)
 DO_IMPLEMENT_READ_WRITE(CNetworkOfPoses3D)
 DO_IMPLEMENT_READ_WRITE(CNetworkOfPoses2DInf)

@@ -52,7 +52,7 @@
 			- mrpt::poses::CPosePDFGaussianInf
 			- mrpt::poses::CPose3DPDFGaussianInf
 	- Changes in classes:
-		- mrpt::math::CDirectedGraph: Added a typedef TNodeID (=size_t) for use when referring to nodes instead of plain size_t's.
+		- Added a new type mrpt::utils::TNodeID, used in graph-related classes: mrpt::math::CDirectedGraph, mrpt::math::CDijkstra
 	- New functions:
 		- mrpt::slam::carmen_log_parse_line() a tool to parse CARMEN logs.
 		- mrpt::system::strCmp, mrpt::system::strCmpI, mrpt::system::strStarts, mrpt::system::strStartsI

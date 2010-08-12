@@ -66,7 +66,7 @@ namespace mrpt
 		public:
 			/** The type of the IDs of nodes.
 			  */
-			typedef	uint64_t TNodeID;
+			typedef	mrpt::utils::TNodeID  TNodeID;
 
 			/** The hypothesis IDs under which this node exists.
 			  */

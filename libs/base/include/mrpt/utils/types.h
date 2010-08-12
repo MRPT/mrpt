@@ -365,6 +365,8 @@ namespace mrpt
 		typedef TParameters<double>       TParametersDouble; //!< See the generic template mrpt::utils::TParameters
 		typedef TParameters<std::string>  TParametersString; //!< See the generic template mrpt::utils::TParameters
 
+		typedef uint64_t TNodeID;  //!< The type for node IDs in graphs of different types.
+
 	} // end namespace
 }
 

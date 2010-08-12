@@ -68,7 +68,7 @@ namespace mrpt
 		  * \return true on success, false on end-of-file (EOF).
 		  * \exception std::runtime_error On any invalid line found.
 		  */
-		  bool carmen_log_parse_line(
+		  bool OBS_IMPEXP carmen_log_parse_line(
 			std::istream &in_stream,
 			std::vector<mrpt::slam::CObservationPtr> &out_imported_observations,
 			const mrpt::system::TTimeStamp &time_start_log );

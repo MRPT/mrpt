@@ -55,9 +55,9 @@ namespace mrpt
 		template <class CPOSE>
 		double SLAM_IMPEXP optimizePoseGraph_levmarq(
 			const CNetworkOfPoses<CPOSE>  &pose_graph,
-			std::map<size_t,CPOSE>	      &optimal_poses,
+			std::map<TNodeID,CPOSE>	      &optimal_poses,
 			const size_t                   max_iterations = 100,
-			const size_t                   origin_pose = static_cast<size_t>(-1)
+			const TNodeID                   origin_pose = static_cast<TNodeID>(-1)
 			);
 
 		/** An algorithm for optimizing a network of 2D or 3D pose links based on stochastic gradient descent.
@@ -78,9 +78,9 @@ namespace mrpt
 		template <class CPOSE>
 		double SLAM_IMPEXP optimizePoseGraph_stogradesc(
 			const CNetworkOfPoses<CPOSE>  &pose_graph,
-			std::map<size_t,CPOSE>	      &optimal_poses,
+			std::map<TNodeID,CPOSE>	      &optimal_poses,
 			const size_t                   max_iterations = 100,
-			const size_t                   origin_pose = static_cast<size_t>(-1)
+			const TNodeID                   origin_pose = static_cast<TNodeID>(-1)
 			);
 
 	} // End of namespace

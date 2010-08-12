@@ -41,7 +41,7 @@ using namespace std;
 #define STD_XY    0.2
 #define STD_PHI   DEG2RAD(10)
 
-void addNoisyEdge(size_t from, size_t to, const std::vector<CPose2D> &real_poses,CNetworkOfPoses2D &graph_links,const CMatrixDouble33 &cov)
+void addNoisyEdge(TNodeID from, TNodeID to, const std::vector<CPose2D> &real_poses,CNetworkOfPoses2D &graph_links,const CMatrixDouble33 &cov)
 {
 	CPose2D p = real_poses[to] - real_poses[from];
 	p.x_incr( randomGenerator.drawGaussian1D(0,STD_XY) );
