@@ -64,6 +64,7 @@ DECLARE_OP_FUNCTION(op_keep_label);
 
 // GPS-related funcs
 DECLARE_OP_FUNCTION(op_export_gps_kml);
+DECLARE_OP_FUNCTION(op_export_gps_txt);
 
 
 // Declare the supported command line switches ===========
@@ -117,11 +118,19 @@ int main(int argc, char **argv)
 
 		arg_ops.push_back(new TCLAP::SwitchArg("","export-gps-kml",
 			"Op: Export GPS paths to Google Earth KML files.\n"
-			"Generates one .kml file for each different sensor label of GPS observations in the dataset. "
+			"Generates one .kml file with different sections for each different sensor label of GPS observations in the dataset. "
 			"The generated .kml files will be saved in the same path than the input rawlog, with the same "
 			"filename + each sensorLabel."
 			,cmd,false) );
 		ops_functors["export-gps-kml"] = &op_export_gps_kml;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","export-gps-txt",
+			"Op: Export GPS readings to TXT files.\n"
+			"Generates one .txt file for each different sensor label of GPS observations in the dataset. "
+			"The generated .txt files will be saved in the same path than the input rawlog, with the same "
+			"filename + each sensorLabel."
+			,cmd,false) );
+		ops_functors["export-gps-txt"] = &op_export_gps_txt;
 
 		// --------------- End of list of possible operations --------
 
