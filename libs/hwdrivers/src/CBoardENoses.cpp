@@ -30,7 +30,7 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/hwdrivers/CBoardENoses.h>
-#include <mrpt/math_mrpt.h>
+#include <mrpt/math.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;

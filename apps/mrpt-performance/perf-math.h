@@ -27,7 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/math_mrpt.h>
+#include <mrpt/math.h>
 #include <mrpt/utils/CTicTac.h>
 
 using namespace mrpt;

@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/math_mrpt.h>
+#include <mrpt/math.h>
 #include <mrpt/gui.h>
 
 using namespace mrpt::utils;

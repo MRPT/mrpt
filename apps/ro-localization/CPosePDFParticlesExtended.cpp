@@ -28,7 +28,7 @@
 
 
 #include <mrpt/random.h>
-#include <mrpt/math_mrpt.h>
+#include <mrpt/math.h>
 #include <mrpt/poses.h>
 #include <mrpt/maps.h>
 #include <mrpt/utils/CTicTac.h>

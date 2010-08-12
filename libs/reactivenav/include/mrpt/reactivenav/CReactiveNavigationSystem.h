@@ -30,7 +30,7 @@
 
 #include <mrpt/maps.h>
 #include <mrpt/poses.h>
-#include <mrpt/math_mrpt.h>
+#include <mrpt/math.h>
 #include <mrpt/synch.h>
 #include <mrpt/reactivenav/link_pragmas.h>
 

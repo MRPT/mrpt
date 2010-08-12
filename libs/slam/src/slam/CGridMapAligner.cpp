@@ -47,7 +47,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/math/CVectorTemplate.h>
-#include <mrpt/math_mrpt.h>
+#include <mrpt/math.h>
 #include <mrpt/random.h>
 
 using namespace mrpt::math;

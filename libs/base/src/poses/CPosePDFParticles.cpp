@@ -33,7 +33,7 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 
 #include <mrpt/random.h>
-#include <mrpt/math_mrpt.h>
+#include <mrpt/math.h>
 
 using namespace mrpt;
 using namespace mrpt::bayes;

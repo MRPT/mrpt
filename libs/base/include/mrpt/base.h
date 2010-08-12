@@ -36,7 +36,7 @@
 #include <mrpt/version.h>
 
 #include <mrpt/compress.h>
-#include <mrpt/math_mrpt.h>
+#include <mrpt/math.h>
 #include <mrpt/poses.h>
 #include <mrpt/random.h>
 #include <mrpt/synch.h>

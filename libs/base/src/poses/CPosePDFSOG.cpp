@@ -33,8 +33,7 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/math_mrpt.h>
-//#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/math.h>
 
 
 using namespace mrpt;

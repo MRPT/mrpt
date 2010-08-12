@@ -32,7 +32,7 @@
 //	#pragma warning(disable:4267)
 //#endif
 
-#include <mrpt/math_mrpt.h>
+#include <mrpt/math.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

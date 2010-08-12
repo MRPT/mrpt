@@ -30,7 +30,7 @@
 #include <mrpt/topography/conversions.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/math_mrpt.h>
+#include <mrpt/math.h>
 
 #include <mrpt/utils/CStartUpClassesRegister.h>
 

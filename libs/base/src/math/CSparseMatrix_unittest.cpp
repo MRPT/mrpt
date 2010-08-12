@@ -27,7 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/math_mrpt.h>
+#include <mrpt/math.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

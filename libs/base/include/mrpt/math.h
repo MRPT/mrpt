@@ -26,82 +26,52 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/utils.h>
-#include <mrpt/math.h>
+#ifndef _mrpt_math_H
+#define _mrpt_math_H
 
-using namespace mrpt;
-using namespace mrpt::utils;
-using namespace mrpt::math;
-using namespace std;
+#include "math/distributions.h"
+#include "math/transform_gaussian.h"
+#include "math/fourier.h"
+#include "math/utils.h"
+#include "math/ops_vectors.h"
+#include "math/ops_matrices.h"
+#include "math/ops_containers.h"
 
+#include "math/CMatrixViews.h"
 
-// The error function F(x):
-void myFunction( const vector_double &x, const vector_double &y, vector_double &out_f)
-{
-	out_f.resize(1);
+#include "math/CLevenbergMarquardt.h"
+#include "math/CQuaternion.h"
+#include "math/CQuaternion.h"
+#include "math/ransac.h"
+#include "math/ransac_applications.h"
+#include "math/dijkstra.h"
 
-	// 1-cos(x+1) *cos(x*y+1)
-	out_f[0] = 1 - cos(x[0]+1) * cos(x[0]*x[1]+1);
-}
+#include "math/CHistogram.h"
+#include "math/CMatrix.h"
+#include "math/CMatrixD.h"
+#include "math/CMatrixB.h"
+#include "math/CMatrixTemplateObjects.h"
+#include "math/CMatrixFixedNumeric.h"
+#include "math/CArray.h"
 
-// ------------------------------------------------------
-//				TestLM
-// ------------------------------------------------------
-void TestLM()
-{
-	vector_double		optimal_x;
-	vector_double		initial_x;
-	vector_double		increments_x;
-	vector_double		y;
+#include "math/graphs.h"
+#include "math/CGraphPartitioner.h"
+#include "math/CPolygon.h"
+#include "math/geometry.h"
+#include "math/CVectorTemplate.h"
 
-	CLevenbergMarquardt::TResultInfo	info;
-	CTicTac	tictac;
+#include "math/CSplineInterpolator1D.h"
 
-	initial_x.resize(2);
-	initial_x[0] = 1.4;	// x
-	initial_x[1] = 2.5;	// y
+#include "math/lightweight_geom_data.h"
+#include "math/CSparseMatrixTemplate.h"
+#include "math/CSparseMatrix.h"
 
-	increments_x.resize(2, 0.0001 );
+#include "math/CAStarAlgorithm.h"
+#include "math/CBinaryRelation.h"
+#include "math/CMonteCarlo.h"
+#include "math/jacobians.h"
 
-	double T;
-	size_t  N = 1;
+#include "math/KDTreeCapable.h"
+#include "math/kmeans.h"
 
-	tictac.Tic();
-	for (size_t k=0;k<N;k++)
-		CLevenbergMarquardt::execute(optimal_x, initial_x, myFunction, increments_x, y, info  );
-
-	T = tictac.Tac() / N;
-
-	cout << "Iterations: " << info.iterations_executed <<  endl;
-	cout << "Final sqr error: " << info.final_sqr_err << endl;
-
-	cout << endl << "Final optimized position: " << optimal_x << endl;
-
-	cout << "Time: " << T*1e6 << " us" << endl;
-
-	info.path.saveToTextFile("lm-path.txt");
-	cout << "Path saved to 'lm-path.txt'" << endl;
-
-}
-
-// ------------------------------------------------------
-//						MAIN
-// ------------------------------------------------------
-int main()
-{
-	try
-	{
-		TestLM();
-
-		return 0;
-	} catch (std::exception &e)
-	{
-		std::cout << "MRPT exception caught: " << e.what() << std::endl;
-		return -1;
-	}
-	catch (...)
-	{
-		printf("Untyped exception!!");
-		return -1;
-	}
-}
+#endif

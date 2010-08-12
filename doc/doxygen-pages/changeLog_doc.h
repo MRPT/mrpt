@@ -39,6 +39,8 @@
 	- Changes in applications:
 		- rawlog-edit: More operations supported. See http://www.mrpt.org/Application:rawlog-edit
 		- RawLogViewer: Can now build "raw maps" from datasets in the "observations-only" format.
+	- Changes in build system / compiling:
+		- Previous header <mrpt/math_mrpt.h> renamed <mrpt/math.h>. The old one still remains (probably until MRPT 1.0.0), but raises a warning on usage.
 	- New classes:
 		- New sensor driver for Phidget kit (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors), contributed by Adrien Barral (Robopec)
 		- New PDF classes for "information" (inverse covariance) forms:

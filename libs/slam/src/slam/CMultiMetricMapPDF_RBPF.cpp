@@ -42,7 +42,7 @@
 #include <mrpt/slam/CObservationBeaconRanges.h>
 #include <mrpt/slam/CSimplePointsMap.h>
 #include <mrpt/slam/CLandmarksMap.h>
-#include <mrpt/math_mrpt.h>
+#include <mrpt/math.h>
 
 #include <mrpt/slam/PF_aux_structs.h>
 

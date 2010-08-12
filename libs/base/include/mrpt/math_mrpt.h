@@ -26,52 +26,11 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_math_H
-#define _mrpt_math_H
+#ifndef _mrpt_math_old_H
+#define _mrpt_math_old_H
 
-#include "math/distributions.h"
-#include "math/transform_gaussian.h"
-#include "math/fourier.h"
-#include "math/utils.h"
-#include "math/ops_vectors.h"
-#include "math/ops_matrices.h"
-#include "math/ops_containers.h"
-
-#include "math/CMatrixViews.h"
-
-#include "math/CLevenbergMarquardt.h"
-#include "math/CQuaternion.h"
-#include "math/CQuaternion.h"
-#include "math/ransac.h"
-#include "math/ransac_applications.h"
-#include "math/dijkstra.h"
-
-#include "math/CHistogram.h"
-#include "math/CMatrix.h"
-#include "math/CMatrixD.h"
-#include "math/CMatrixB.h"
-#include "math/CMatrixTemplateObjects.h"
-#include "math/CMatrixFixedNumeric.h"
-#include "math/CArray.h"
-
-#include "math/graphs.h"
-#include "math/CGraphPartitioner.h"
-#include "math/CPolygon.h"
-#include "math/geometry.h"
-#include "math/CVectorTemplate.h"
-
-#include "math/CSplineInterpolator1D.h"
-
-#include "math/lightweight_geom_data.h"
-#include "math/CSparseMatrixTemplate.h"
-#include "math/CSparseMatrix.h"
-
-#include "math/CAStarAlgorithm.h"
-#include "math/CBinaryRelation.h"
-#include "math/CMonteCarlo.h"
-#include "math/jacobians.h"
-
-#include "math/KDTreeCapable.h"
-#include "math/kmeans.h"
+#include <mrpt/utils/utils_defs.h>
+MRPT_WARNING("This is an old header, please replace with <mrpt/math.h>");
+#include <mrpt/math.h>
 
 #endif

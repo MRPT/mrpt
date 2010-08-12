@@ -35,7 +35,7 @@
 #include <mrpt/slam/CSensoryFrame.h>
 
 #include <mrpt/random.h>
-#include <mrpt/math_mrpt.h>
+#include <mrpt/math.h>
 
 #include <mrpt/slam/PF_aux_structs.h>
 
