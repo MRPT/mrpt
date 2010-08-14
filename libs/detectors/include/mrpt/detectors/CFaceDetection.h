@@ -32,6 +32,9 @@
 #include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system.h>
+#include <mrpt/synch.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
 
 namespace mrpt
 {
@@ -41,6 +44,8 @@ namespace mrpt
 	namespace detectors
 	{
 		using namespace mrpt::slam;
+		using namespace mrpt::system;
+		using namespace mrpt::synch;
 		
 		/** Specific class for face detection.
 		  * Methods and variables labeled as experimentals are temporals (for debug or testing
@@ -54,6 +59,8 @@ namespace mrpt
 
 			CFaceDetection();
 
+			~CFaceDetection();
+
 			virtual void init(const mrpt::utils::CConfigFileBase &cfg );
 
 			virtual void detectObjects_Impl(const CObservation *obs, vector_detectable_object &detected);
@@ -64,27 +71,29 @@ namespace mrpt
 				double	planeThreshold;
 				double	planeEigenValThreshold;
 				double	regionsThreshold;
+				bool	multithread;
 			}m_options;
 
 			// Experimental methods
 			void experimental_showMeasurements();
-
+			
 		private:
 
-			bool checkIfFacePlane( const vector<TPoint3D> &points );
+			TThreadHandle		m_thread_checkIfFaceRegions;	//!< Thread that execute checkIfFaceRegions filter
+			TThreadHandle		m_thread_checkIfFacePlaneCov;	//!< Thread that execute checkIfFacePlaneCov filter
 
-			bool checkIfFacePlaneCov( const vector<TPoint3D> &points );
+			bool	m_checkIfFaceRegions_res;	//!< Save result of checkIfFaceRegions filter
+			bool	m_checkIfFacePlaneCov_res;	//!< Save result of checkIfFacePlaneCov filter
 
-			bool checkIfFaceRegions( CObservation3DRangeScan* face, const unsigned int &faceWidth, const unsigned int &faceHeight );
+			bool	m_end_checkIfFaceRegions;	//!< Indicates if thread_checkIfFaceRegions filter must finish its execution
+			bool	m_end_checkIfFacePlaneCov;	//!< Indicates if thread_checkIfFacePlaneCov filter must finish its execution
 
-			bool checkRegionsConstrains( const double values[3][3] );
+			CSemaphore m_enter_checkIfFaceRegions;	//!< Indicates to thread_checkIfFaceRegions that exist a new face to analyze
+			CSemaphore m_enter_checkIfFacePlaneCov;	//!< Indicates to thread_checkIfFacePlaneCov that exist a new face to analyze
+			CSemaphore m_leave_checkIfFaceRegions;	//!< Indicates to main thread that thread_checkIfFaceRegions has been completed analisis of the last face detected
+			CSemaphore m_leave_checkIfFacePlaneCov;	//!< Indicates to main thread that thread_checkIfFacePlaneCov has been completed analisis of the last face detected
 
-			// Experimental methods
-			void experimental_viewFacePointsScanned( const vector_float &xs, const vector_float &ys, const vector_float &zs );
-
-			void experimental_viewFacePointsScanned( const CObservation3DRangeScan &face );
-			
-			void experimental_viewFacePointsScanned( const vector<TPoint3D> &points );
+			CObservation3DRangeScan m_lastFaceDetected;	//!< Last face detected
 
 			struct TMeasurement
 			{	
@@ -105,6 +114,31 @@ namespace mrpt
 
 			CTimeLogger	m_timeLog;
 
+
+			bool checkIfFacePlane( const vector<TPoint3D> &points );
+
+			bool checkIfFacePlaneCov( CObservation3DRangeScan* face );
+
+			void thread_checkIfFacePlaneCov( );
+
+			static void dummy_checkIfFacePlaneCov( CFaceDetection *obj );
+
+			bool checkIfFaceRegions( CObservation3DRangeScan* face );
+
+			void thread_checkIfFaceRegions( );
+
+			static void dummy_checkIfFaceRegions( CFaceDetection *obj );
+
+			bool checkRegionsConstrains( const double values[3][3] );
+
+			// Experimental methods
+			void experimental_viewFacePointsScanned( const vector_float &xs, const vector_float &ys, const vector_float &zs );
+
+			void experimental_viewFacePointsScanned( const CObservation3DRangeScan &face );
+			
+			void experimental_viewFacePointsScanned( const vector<TPoint3D> &points );
+
+			void experimental_viewRegions( const vector<TPoint3D> regions[9] );
 			
 
 		}; // End of class

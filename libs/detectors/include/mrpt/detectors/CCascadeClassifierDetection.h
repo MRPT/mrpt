@@ -46,11 +46,11 @@ namespace mrpt
 			/** Initialize cascade classifier detection */
 			virtual void init(const mrpt::utils::CConfigFileBase &cfg );
 
+		protected:
+
 			/** Detect objects in a *CObservation
 			 * \return A vector with detected objects 
 			 */
-
-		protected:
 
 			virtual void detectObjects_Impl(const CObservation *obs, vector_detectable_object &detected);
 
