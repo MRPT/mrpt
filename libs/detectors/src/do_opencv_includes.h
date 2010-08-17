@@ -33,10 +33,9 @@
 
 #if MRPT_HAS_OPENCV
 	// OPENCV HEADERS
+#	define CV_NO_CVV_IMAGE // Avoid CImage name crash
 
 #	if MRPT_OPENCV_VERSION_NUM>=0x211
-#		define CV_NO_CVV_IMAGE   // Avoid CImage name crash
-
 #		include <opencv2/core/core.hpp>
 #		include <opencv2/highgui/highgui.hpp>
 #		include <opencv2/imgproc/imgproc.hpp>

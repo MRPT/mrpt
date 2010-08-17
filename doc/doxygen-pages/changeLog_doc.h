@@ -63,6 +63,7 @@
 		- phidgetProximitySensor
 	- BUG FIXES:
 		- icp-slam: Fixed potential wrong processing of datasets in observations-only format where the odometry initial value is not (0,0,0).
+		- Build errors with some OpenCV versions (<a href="http://www.mrpt.org/node/369" >Bug report & patch</a> by "iXce").
 
 
   <br> <hr> <br>
