@@ -160,19 +160,32 @@ void  CPosePDFGaussianInf::copyFrom(const CPose3DPDF &o)
 	// Convert to gaussian pdf:
 	mean = CPose2D(o.getMeanVal());
 
-	CMatrixDouble66 C(UNINITIALIZED_MATRIX);
-	o.getCovariance(C);
+	if (IS_CLASS(&o, CPose3DPDFGaussianInf))
+	{	// Cov is already in information form:
+		const CPose3DPDFGaussianInf *ptr = static_cast<const CPose3DPDFGaussianInf*>(&o);
+		cov_inv(0,0)=ptr->cov_inv(0,0);
+		cov_inv(1,1)=ptr->cov_inv(1,1);
+		cov_inv(2,2)=ptr->cov_inv(3,3);
+		cov_inv(0,1)=cov_inv(1,0)=ptr->cov_inv(0,1);
+		cov_inv(0,2)=cov_inv(2,0)=ptr->cov_inv(0,3);
+		cov_inv(1,2)=cov_inv(2,1)=ptr->cov_inv(1,3);
+	}
+	else
+	{
+		CMatrixDouble66 C(UNINITIALIZED_MATRIX);
+		o.getCovariance(C);
 
-	// Clip to 3x3:
-	CMatrixDouble33 o_cov(UNINITIALIZED_MATRIX);
-	o_cov(0,0)=C(0,0);
-	o_cov(1,1)=C(1,1);
-	o_cov(2,2)=C(3,3);
-	o_cov(0,1)=o_cov(1,0)=C(0,1);
-	o_cov(0,2)=o_cov(2,0)=C(0,3);
-	o_cov(1,2)=o_cov(2,1)=C(1,3);
+		// Clip to 3x3:
+		CMatrixDouble33 o_cov(UNINITIALIZED_MATRIX);
+		o_cov(0,0)=C(0,0);
+		o_cov(1,1)=C(1,1);
+		o_cov(2,2)=C(3,3);
+		o_cov(0,1)=o_cov(1,0)=C(0,1);
+		o_cov(0,2)=o_cov(2,0)=C(0,3);
+		o_cov(1,2)=o_cov(2,1)=C(1,3);
 
-	o_cov.inv_fast(this->cov_inv);
+		o_cov.inv_fast(this->cov_inv);
+	}
 }
 
 

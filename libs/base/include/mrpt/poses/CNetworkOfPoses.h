@@ -35,26 +35,40 @@
 #include <mrpt/math/graphs.h>
 
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/utils/CFileOutputStream.h>
 
 namespace mrpt
 {
 	namespace poses
 	{
 		using mrpt::utils::TNodeID;
+		template<class CPOSE> class CNetworkOfPoses;	// Forward decl. needed by detail functions.
 
-		/** A network of links constraining the relative pose of pairs of nodes, indentified by their numeric IDs (of type TPoseID, actually a size_t).
+		/** Internal functions for MRPT */
+		namespace detail
+		{
+			template<class CPOSE> void BASE_IMPEXP save_graph_of_poses_from_text_file(const CNetworkOfPoses<CPOSE> *g, const std::string &fil);
+			template<class CPOSE> void BASE_IMPEXP load_graph_of_poses_from_text_file(CNetworkOfPoses<CPOSE>*g, const std::string &fil);
+		}
+
+		/** A network of links constraining the relative pose of pairs of nodes, indentified by their numeric IDs (of type TPoseID).
 		  *  A link between nodes "i" and "j", that is, the pose \f$ p_{ij} \f$ or relative position of "j" with respect to "i",
 		  *   is maintained as a multivariate Gaussian distribution.
+		  *
+		  *  Two main members store all the information in this class:
+		  *		- \a edge  (in base class mrpt::math::CDirectedGraph<>::edge): A map from pairs of node ID -> pose constraints with uncertainty.
+		  *		- \a nodes : A map from node ID -> estimated pose of that node.
 		  *
 		  * Valid values for the argument CPOSE are CPosePDFGaussian and CPose3DPDFGaussian, which correspond to the
 		  *  typedefs CNetworkOfPoses2D and CNetworkOfPoses3D. There are also "information-form" versions which
 		  *  hold the inverse covariance matrices (see CNetworkOfPoses2DInf and CNetworkOfPoses3DInf).
-		  *
-		  * Access to the list of all edges can be done through normal std::map methods, plus the method mrpt::math::CDirectedGraph::insertEdge().
-		  *  See the base class mrpt::math::CDirectedGraph for a list of other utility methods.
+		  *  These information-form classes are <b>preferred for efficiency</b>.
 		  *
 		  *  This class is the base for representing networks of poses, which are the main data type of a series
 		  *   of SLAM algorithms implemented in the library mrpt-slam, in the namespace mrpt::graphslam.
+		  *
+		  *  For tools to visualize graphs as 2D/3D plots, see the namespace mrpt::opengl::graph_tools in the library mrpt-opengl.
 		  *
 		  * \sa CPosePDFGaussian,CPose3DPDFGaussian,CPose3DQuatPDFGaussian, mrpt::graphslam
 		  */
@@ -63,14 +77,99 @@ namespace mrpt
 		{
 		public:
 			/** @name Typedef's
-			    @ { */
+			    @{ */
 
-			typedef mrpt::math::CDirectedGraph< CPOSE > BASE; //!< The base class "CDirectedGraph<CPOSE>"
-			typedef CPOSE type_poses;  //!< The type of PDF poses on the network links
-			typedef std::map<TNodeID,CPOSE> type_global_poses;  //!< A map of pose IDs to their global coordinates - can be used as second parameter of optimizePoseGraph_levmarq
+			/** The base class "CDirectedGraph<CPOSE>" */
+			typedef mrpt::math::CDirectedGraph< CPOSE > BASE;
+
+			/** The type of PDF poses in the contraints (edges) */
+			typedef CPOSE                               contraint_t;
+
+			/** A map from pose IDs to their global coordinates estimates, with uncertainty */
+			typedef std::map<TNodeID,CPOSE>             global_poses_pdf_t;
+
+			/** A map from pose IDs to their global coordinates estimates, without uncertainty (the "most-likely value") */
+			typedef std::map<TNodeID,typename CPOSE::type_value> global_poses_t;
 
 			/** @} */
 
+
+			/** @name Data members
+			    @{ */
+
+			/** The nodes (vertices) of the graph, with their estimated "global" (with respect to \a root) position, without an associated covariance. */
+			global_poses_t  nodes;
+
+			/** The ID of the node that is the origin of coordinates, used as reference by all coordinates in \nodes. By default, root is the ID "0". */
+			TNodeID         root;
+
+			/** @} */
+
+
+			/** @name I/O file methods
+			    @{ */
+
+			/** Saves the graph to a file using MRPT's binary serialization format.
+			  * \sa loadFromBinaryFile, saveToTextFile
+			  * \exception On any error
+			  */
+			void saveToBinaryFile( const std::string &fileName ) const {
+				mrpt::utils::CFileOutputStream fil(fileName);
+				fil.WriteObject(this);
+			}
+
+			/** Loads the graph from a binary file.
+			  * \sa saveToBinaryFile, loadFromTextFile
+			  * \exception On any error
+			  */
+			void loadFromBinaryFile( const std::string &fileName ) {
+				mrpt::utils::CFileInputStream fil(fileName);
+				fil.ReadObject(this);
+			}
+
+			/** Saves to a text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a> )
+			  *  For 2D graphs only VERTEX2 & EDGE2 entries will be saved, and VERTEX3 & EDGE3 entries for 3D graphs.
+			  *  Note that EQUIV entries will not be saved, but instead several EDGEs will be stored between the same node IDs.
+			  * \sa saveToBinaryFile, loadFromTextFile
+			  * \exception On any error
+			  */
+			void saveToTextFile( const std::string &fileName ) const {
+				mrpt::poses::detail::save_graph_of_poses_from_text_file(this,fileName);
+			}
+
+			/** Loads from a text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a> )
+			  *   Recognized line entries are: VERTEX2, VERTEX3, EDGE2, EDGE3, EQUIV.
+			  *   If an unknown entry is found, a warning is dumped to std::cerr (only once for each unknown keyword).
+			  *   An exception will be raised if trying to load a 3D graph into a 2D class (in the opposite case, missing 3D data will default to zero).
+			  * \sa loadFromBinaryFile, saveToTextFile
+			  * \exception On any error, as a malformed line or loading a 3D graph in a 2D graph.
+			  */
+			void loadFromTextFile( const std::string &fileName ) {
+				mrpt::poses::detail::load_graph_of_poses_from_text_file(this,fileName);
+			}
+
+			/** @} */
+
+			/** @name Other methods
+			    @{ */
+
+			/** Empty all edges, nodes and set root to ID 0. */
+			inline void clear() {
+				BASE::edges.clear();
+				nodes.clear();
+				root = 0;
+			}
+
+			/** Return number of nodes in the list \nodes of global coordinates (may be differente that all nodes appearing in edges)
+			  * \sa mrpt::math::CDirectedGraph::countDifferentNodesInEdges
+			  */
+			inline size_t nodeCount() const { return nodes.size(); }
+
+			/**  @} */
+
+			/** Default constructor (just sets root to "0") */
+			inline CNetworkOfPoses() : root(0) { }
+			virtual ~CNetworkOfPoses() { }
 		};
 
 

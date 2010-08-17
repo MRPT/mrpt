@@ -37,7 +37,7 @@ Click on a library name to see a summary of its contents. Those marked as (*) ar
 Read also <a href="http://www.mrpt.org/Libraries_tree_layout" >the guide</a> to write new MRPT libraries.
 
 
-<div align="center">
+<div align="center" >
 \dot
 $MRPT_LIBS_DOT
 \enddot

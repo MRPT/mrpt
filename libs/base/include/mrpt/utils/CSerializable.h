@@ -241,8 +241,11 @@ namespace mrpt
 		#define DEFINE_SERIALIZABLE(class_name) \
 			DEFINE_MRPT_OBJECT(class_name) \
 		protected: \
+			/*! @name CSerializable virtual methods */ \
+			/*! @{ */ \
 			void  writeToStream(mrpt::utils::CStream &out, int *getVersion) const;\
-			void  readFromStream(mrpt::utils::CStream &in, int version);
+			void  readFromStream(mrpt::utils::CStream &in, int version); \
+			/*! @} */
 
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */

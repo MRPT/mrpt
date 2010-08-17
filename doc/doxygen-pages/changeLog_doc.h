@@ -40,6 +40,7 @@
 		- rawlog-edit: More operations supported. See http://www.mrpt.org/Application:rawlog-edit
 		- RawLogViewer: Can now build "raw maps" from datasets in the "observations-only" format.
 	- Changes in build system / compiling:
+		- Doxygen documentation: More macros expanded while generating docs: now docs are also generated for smart pointers and for RTTI & serialization stuff.
 		- Previous header <mrpt/math_mrpt.h> renamed <mrpt/math.h>. The old one still remains (probably until MRPT 1.0.0), but raises a warning on usage.
 	- New classes:
 		- New sensor driver for Phidget kit (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors), contributed by Adrien Barral (Robopec)
@@ -52,9 +53,10 @@
 			- mrpt::poses::CPosePDFGaussianInf
 			- mrpt::poses::CPose3DPDFGaussianInf
 	- Changes in classes:
+		- mrpt::poses::CNetworkOfPoses many improvements and new methods (see its documentation).
 		- Added a new type mrpt::utils::TNodeID, used in graph-related classes: mrpt::math::CDirectedGraph, mrpt::math::CDijkstra
 	- New functions:
-		- mrpt::slam::carmen_log_parse_line() a tool to parse CARMEN logs.
+		- mrpt::slam::carmen_log_parse_line() a tool for parsing CARMEN logs.
 		- mrpt::system::strCmp, mrpt::system::strCmpI, mrpt::system::strStarts, mrpt::system::strStartsI
 		- mrpt::system::os::_strncmp, mrpt::system::os::_strnicmp
 	- New examples:

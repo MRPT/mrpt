@@ -122,10 +122,10 @@ namespace mrpt
 		bool BASE_IMPEXP strCmpI(const std::string &s1, const std::string &s2);
 
 		/** Return true if "str" starts with "subStr" (case sensitive)  \sa strStartsI  */
-		bool BASE_IMPEXP strStarts(const std::string &s1, const std::string &s2);
+		bool BASE_IMPEXP strStarts(const std::string &str, const std::string &subStr);
 
 		/** Return true if "str" starts with "subStr" (case insensitive)  \sa strStarts */
-		bool BASE_IMPEXP strStartsI(const std::string &s1, const std::string &s2);
+		bool BASE_IMPEXP strStartsI(const std::string &str, const std::string &subStr);
 
 		/** @} */
 	} // End of namespace

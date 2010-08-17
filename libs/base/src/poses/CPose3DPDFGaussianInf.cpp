@@ -167,10 +167,19 @@ void  CPose3DPDFGaussianInf::copyFrom(const CPose3DPDF &o)
 {
 	if (this == &o) return;		// It may be used sometimes
 
-	// Convert to gaussian pdf:
-	CMatrixDouble66 cov(UNINITIALIZED_MATRIX);
-	o.getCovarianceAndMean(cov,mean);
-	cov.inv_fast(this->cov_inv);
+	if (IS_CLASS(&o, CPose3DPDFGaussianInf))
+	{	// It's my same class:
+		const CPose3DPDFGaussianInf *ptr = static_cast<const CPose3DPDFGaussianInf*>(&o);
+		mean    = ptr->mean;
+		cov_inv = ptr->cov_inv;
+	}
+	else
+	{
+		// Convert to gaussian pdf:
+		CMatrixDouble66 cov(UNINITIALIZED_MATRIX);
+		o.getCovarianceAndMean(cov,mean);
+		cov.inv_fast(this->cov_inv);
+	}
 }
 
 /*---------------------------------------------------------------
@@ -178,9 +187,28 @@ void  CPose3DPDFGaussianInf::copyFrom(const CPose3DPDF &o)
   ---------------------------------------------------------------*/
 void  CPose3DPDFGaussianInf::copyFrom(const CPosePDF &o)
 {
-	CPose3DPDFGaussian p(UNINITIALIZED_POSE);
-	p.copyFrom(o);
-	this->copyFrom(p);
+	if (IS_CLASS(&o, CPosePDFGaussianInf))
+	{	// cov is already inverted, but it's a 2D pose:
+		const CPosePDFGaussianInf *ptr = static_cast<const CPosePDFGaussianInf*>(&o);
+
+		mean = ptr->mean;
+
+		// 3x3 inv_cov -> 6x6 inv_cov
+		cov_inv.zeros();
+		cov_inv(0,0) = ptr->cov_inv(0,0);
+		cov_inv(1,1) = ptr->cov_inv(1,1);
+		cov_inv(3,3) = ptr->cov_inv(2,2);
+
+		cov_inv(0,1) = cov_inv(1,0) = ptr->cov_inv(0,1);
+		cov_inv(0,3) = cov_inv(3,0) = ptr->cov_inv(0,2);
+		cov_inv(1,3) = cov_inv(3,1) = ptr->cov_inv(1,2);
+	}
+	else
+	{
+		CPose3DPDFGaussian p(UNINITIALIZED_POSE);
+		p.copyFrom(o);
+		this->copyFrom(p);
+	}
 }
 
 /*---------------------------------------------------------------

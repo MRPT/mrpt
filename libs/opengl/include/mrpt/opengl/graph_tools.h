@@ -25,47 +25,27 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
+#ifndef opengl_graph_tools_H
+#define opengl_graph_tools_H
 
-#ifndef _mrpt_opengl_H
-#define _mrpt_opengl_H
-
-#include <mrpt/base.h> // dependencies
-
-#include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/opengl/COpenGLScene.h>
-#include <mrpt/opengl/COpenGLViewport.h>
-
-#include <mrpt/opengl/CArrow.h>
-#include <mrpt/opengl/CAxis.h>
-#include <mrpt/opengl/CBox.h>
-#include <mrpt/opengl/CCamera.h>
-#include <mrpt/opengl/CDisk.h>
-#include <mrpt/opengl/CEllipsoid.h>
-#include <mrpt/opengl/CGridPlaneXY.h>
-#include <mrpt/opengl/CGridPlaneXZ.h>
-#include <mrpt/opengl/CMesh.h>
-#include <mrpt/opengl/CPointCloud.h>
-#include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/opengl/CSetOfTriangles.h>
-#include <mrpt/opengl/CSetOfTexturedTriangles.h>
-#include <mrpt/opengl/CSimpleLine.h>
-#include <mrpt/opengl/CSphere.h>
-#include <mrpt/opengl/CText.h>
-#include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/opengl/C3DSScene.h>
-//#include <mrpt/opengl/CPlanarLaserScan.h>			// It's in the lib mrpt-maps now
-//#include <mrpt/opengl/CAngularObservationMesh.h>	// It's in the lib mrpt-maps now
-#include <mrpt/opengl/CCylinder.h>
-#include <mrpt/opengl/CPolyhedron.h>
-#include <mrpt/opengl/CGeneralizedCylinder.h>
-#include <mrpt/opengl/COpenGLStandardObject.h>
-#include <mrpt/opengl/CFBORender.h>
 
-#include <mrpt/opengl/stock_objects.h>
-#include <mrpt/opengl/pose_pdfs.h>
-#include <mrpt/opengl/graph_tools.h>
+namespace mrpt
+{
+	namespace opengl
+	{
+		/** Tool functions for graphs of pose constraints.  */
+		namespace stock_objects
+		{
+			/** @name Tool functions for graphs of pose constraints
+			    @{ */
+
+
+			/** @} */
+		}
+	}
+
+} // End of namespace
 
 
 #endif
