@@ -368,8 +368,8 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 			if ((*it)->m_show_name)
 			{
 				glDisable(GL_DEPTH_TEST);
+				glColor3f(1.f,1.f,1.f);  // Must be called BEFORE glRasterPos3f
 				glRasterPos3f(0.0f,0.0f,0.0f);
-				glColor3f(1.0f,1.0f,1.0f);
 
 				GLfloat		raster_pos[4];
 				glGetFloatv( GL_CURRENT_RASTER_POSITION, raster_pos);

@@ -83,7 +83,7 @@ void   CSetOfObjects::render() const
 			glRotated((*it)->m_yaw, 0.0, 0.0, 1.0);
 			glRotated((*it)->m_pitch, 0.0, 1.0, 0.0);
 			glRotated((*it)->m_roll, 1.0, 0.0, 0.0);
-			
+
 			// Do scaling after the other transformations!
 			glScalef((*it)->m_scale_x,(*it)->m_scale_y,(*it)->m_scale_z);
 
@@ -95,8 +95,8 @@ void   CSetOfObjects::render() const
 			if ((*it)->m_show_name)
 			{
 				glDisable(GL_DEPTH_TEST);
+				glColor3f(1.f,1.f,1.f);  // Must be called BEFORE glRasterPos3f
 				glRasterPos3f(0.0f,0.0f,0.0f);
-				glColor3f(1.0f,1.0f,1.0f);
 
 				GLfloat		raster_pos[4];
 				glGetFloatv( GL_CURRENT_RASTER_POSITION, raster_pos);
@@ -292,34 +292,39 @@ public:
 	~FSetColor()	{}
 };
 
-void CSetOfObjects::setColor(const mrpt::utils::TColorf &c)	{
+CRenderizable& CSetOfObjects::setColor(const mrpt::utils::TColorf &c)	{
 	for_each(m_objects.begin(),m_objects.end(),FSetColor(m_color_R=c.R,m_color_G=c.G,m_color_B=c.B,m_color_A=c.A));
+	return *this;
 }
 
-void CSetOfObjects::setColor(double r,double g,double b,double a)	{
+CRenderizable& CSetOfObjects::setColor(double r,double g,double b,double a)	{
 	for_each(m_objects.begin(),m_objects.end(),FSetColor(m_color_R=r,m_color_G=g,m_color_B=b,m_color_A=a));
+	return *this;
 }
 
 bool CSetOfObjects::contains(const CRenderizablePtr &obj) const	{
 	return find(m_objects.begin(),m_objects.end(),obj)!=m_objects.end();
 }
 
-void CSetOfObjects::setColorR(const double r)	{
+CRenderizable& CSetOfObjects::setColorR(const double r)	{
 	for(CListOpenGLObjects::iterator it=m_objects.begin();it!=m_objects.end();++it) (*it)->setColorR(m_color_R=r);
+	return *this;
 }
 
-void CSetOfObjects::setColorG(const double g)	{
+CRenderizable& CSetOfObjects::setColorG(const double g)	{
 	for(CListOpenGLObjects::iterator it=m_objects.begin();it!=m_objects.end();++it) (*it)->setColorG(m_color_G=g);
+	return *this;
 }
 
-void CSetOfObjects::setColorB(const double b)	{
+CRenderizable& CSetOfObjects::setColorB(const double b)	{
 	for(CListOpenGLObjects::iterator it=m_objects.begin();it!=m_objects.end();++it) (*it)->setColorB(m_color_B=b);
+	return *this;
 }
 
-void CSetOfObjects::setColorA(const double a)	{
+CRenderizable& CSetOfObjects::setColorA(const double a)	{
 	for(CListOpenGLObjects::iterator it=m_objects.begin();it!=m_objects.end();++it) (*it)->setColorA(m_color_A=a);
+	return *this;
 }
-
 
 
 /*---------------------------------------------------------------

@@ -67,12 +67,14 @@ namespace mrpt
 
 			TListPointColour	m_points;
 			float				m_pointSize; //!< By default is 1.0
+			bool				m_pointSmooth; //!< Default: false
 
 			/** Constructor
 			  */
 			CPointCloudColoured( ) :
 				m_points(),
-				m_pointSize(1)
+				m_pointSize(1),
+				m_pointSmooth(false)
 			{
 			}
 			/** Private, virtual destructor: only can be deleted from smart pointers */
@@ -96,13 +98,17 @@ namespace mrpt
 			inline void resize(size_t N) { m_points.resize(N); }
 
 			/** Read or write access to each individual point. */
-			TPointColour &operator [](size_t i) { return m_points[i]; }
+			inline TPointColour &operator [](size_t i) { return m_points[i]; }
 
 			inline size_t size() const { return m_points.size(); }
 			inline void clear() { m_points.clear(); }
 
 			inline void setPointSize(float pointSize) { m_pointSize = pointSize; }
 			inline float getPointSize() const { return m_pointSize; }
+
+			inline void enablePointSmooth(bool enable=true) { m_pointSmooth=enable; }
+			inline void disablePointSmooth() { m_pointSmooth=false; }
+			inline bool isPointSmoothEnabled() const { return m_pointSmooth; }
 
 			/** Load the points from a points map (passed as a pointer), depending on the type of point map passed: for the case of a mrpt::slam::CColouredPointMap the colours of individual points will be also copied.
 			  *  The possible classes accepted as arguments are: mrpt::slam::CColouredPointsMap, or in general any mrpt::slam::CPointsMap.

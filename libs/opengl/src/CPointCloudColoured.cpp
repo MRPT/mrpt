@@ -52,12 +52,15 @@ void   CPointCloudColoured::render() const
 
 	if ( m_color_A != 1.0 )
 	{
-		//glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
     glPointSize( m_pointSize );
+
+    if (m_pointSmooth)
+			glEnable ( GL_POINT_SMOOTH );
+	else 	glDisable( GL_POINT_SMOOTH );
 
     glBegin( GL_POINTS );
 
@@ -71,11 +74,12 @@ void   CPointCloudColoured::render() const
 
     glEnd();
 
+	// Undo flags:
 	if ( m_color_A != 1.0 )
-	{
-		//glEnable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
-	}
+
+	if (m_pointSmooth)
+		glDisable( GL_POINT_SMOOTH );
 
 	checkOpenGLError();
 #endif
@@ -89,12 +93,13 @@ void  CPointCloudColoured::writeToStream(CStream &out,int *version) const
 {
 
 	if (version)
-		*version = 1;
+		*version = 2;
 	else
 	{
 		writeToStreamRender(out);
 		out << m_points;
 		out << m_pointSize;
+		out << m_pointSmooth; // Added in v2
 	}
 }
 
@@ -107,9 +112,15 @@ void  CPointCloudColoured::readFromStream(CStream &in,int version)
 	switch(version)
 	{
 	case 1:
+	case 2:
 		{
 			readFromStreamRender(in);
 			in >> m_points >> m_pointSize;
+
+			if (version>=2)
+					in >> m_pointSmooth;
+			else 	m_pointSmooth = false;
+
 		} break;
 	case 0:
 		{

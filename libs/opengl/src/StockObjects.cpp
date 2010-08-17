@@ -28,8 +28,6 @@
 
 #include <mrpt/opengl.h>  // Precompiled header
 
-
-#include <mrpt/opengl.h>
 #include <mrpt/system.h>
 #include <mrpt/utils/CFileOutputStream.h>
 
@@ -249,6 +247,27 @@ CSetOfObjectsPtr stock_objects::CornerXYZSimple(float scale, float lineWidth)
 		lin->setLineWidth(lineWidth);
 		lin->setColor(0,0,1);
 		lin->setLineCoords(0,0,0, 0,0,scale);
+		ret->insert(lin);
+	}
+    return ret;
+}
+
+CSetOfObjectsPtr stock_objects::CornerXYSimple(float scale, float lineWidth)
+{
+	CSetOfObjectsPtr ret = CSetOfObjects::Create();
+
+	{
+		CSimpleLinePtr lin = CSimpleLine::Create();
+		lin->setLineWidth(lineWidth);
+		lin->setColor(1,0,0);
+		lin->setLineCoords(0,0,0, scale,0,0);
+		ret->insert(lin);
+	}
+	{
+		CSimpleLinePtr lin = CSimpleLine::Create();
+		lin->setLineWidth(lineWidth);
+		lin->setColor(0,1,0);
+		lin->setLineCoords(0,0,0, 0,scale,0);
 		ret->insert(lin);
 	}
     return ret;

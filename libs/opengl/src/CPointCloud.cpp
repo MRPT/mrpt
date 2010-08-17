@@ -49,6 +49,7 @@ CPointCloud::CPointCloud( ) :
     m_colorFromDepth(CPointCloud::None),
 	m_xs(),m_ys(),m_zs(),
 	m_pointSize(1),
+	m_pointSmooth(false),
 	m_min(0),
 	m_max(0),
 	m_minmax_valid(false),
@@ -98,7 +99,6 @@ void   CPointCloud::render() const
 
 	if ( m_color_A != 1.0 )
 	{
-		//glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
@@ -114,6 +114,9 @@ void   CPointCloud::render() const
 	if (AB) AB_1 = 1.0/AB;
 
     glPointSize( m_pointSize );
+    if (m_pointSmooth)
+			glEnable ( GL_POINT_SMOOTH );
+	else 	glDisable( GL_POINT_SMOOTH );
 
     glBegin( GL_POINTS );
 
@@ -139,10 +142,10 @@ void   CPointCloud::render() const
     glEnd();
 
 	if ( m_color_A != 1.0 )
-	{
-		//glEnable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
-	}
+
+	if (m_pointSmooth)
+		glDisable( GL_POINT_SMOOTH );
 
 	checkOpenGLError();
 #endif
@@ -156,7 +159,7 @@ void  CPointCloud::writeToStream(CStream &out,int *version) const
 {
 
 	if (version)
-		*version = 3;
+		*version = 4;
 	else
 	{
 		writeToStreamRender(out);
@@ -170,6 +173,9 @@ void  CPointCloud::writeToStream(CStream &out,int *version) const
 		// New in version 2:
 		out << m_colorFromDepth_min.R << m_colorFromDepth_min.G << m_colorFromDepth_min.B;
 		out << m_colorFromDepth_max.R << m_colorFromDepth_max.G << m_colorFromDepth_max.B;
+
+		// New in version 4:
+		out << m_pointSmooth;
 	}
 }
 
@@ -185,6 +191,7 @@ void  CPointCloud::readFromStream(CStream &in,int version)
 	case 1:
 	case 2:
 	case 3:
+	case 4:
 		{
 			m_minmax_valid = false;
 
@@ -219,6 +226,11 @@ void  CPointCloud::readFromStream(CStream &in,int version)
 				m_colorFromDepth_max.G = m_color_G;
 				m_colorFromDepth_max.B = m_color_B;
 			}
+
+			if (version>=4)
+					in >> m_pointSmooth;
+			else 	m_pointSmooth = false;
+
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

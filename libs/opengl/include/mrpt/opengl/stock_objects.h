@@ -45,15 +45,21 @@ namespace mrpt
 
 			/** Returns three arrows representing a X,Y,Z 3D corner.
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
-			  * \sa CornerXYZSimple
+			  * \sa CornerXYZSimple, CornerXYSimple
 			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP CornerXYZ(float scale=1.0);
 
 			/** Returns three arrows representing a X,Y,Z 3D corner (just thick lines instead of complex arrows for faster rendering than CornerXYZ).
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
-			  * \sa CornerXYZ
+			  * \sa CornerXYZ, CornerXYSimple
 			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP CornerXYZSimple(float scale=1.0, float lineWidth=1.0);
+
+			/** Returns two arrows representing a X,Y 2D corner (just thick lines, fast to render).
+			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
+			  * \sa CornerXYZSimple, CornerXYZ
+			  */
+			CSetOfObjectsPtr OPENGL_IMPEXP CornerXYSimple(float scale=1.0, float lineWidth=1.0);
 
 			/** Returns a high-quality 3D model of a SICK laser scanner (Model by Miguel Angel Espada Bernal)
 			  */

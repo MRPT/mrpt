@@ -211,7 +211,7 @@ void  CRenderizable::checkOpenGLError()
 /*--------------------------------------------------------------
 					setPose
   ---------------------------------------------------------------*/
-void CRenderizable::setPose( const mrpt::poses::CPose3D &o )
+CRenderizable& CRenderizable::setPose( const mrpt::poses::CPose3D &o )
 {
 	m_x = o.x();
 	m_y = o.y();
@@ -219,12 +219,13 @@ void CRenderizable::setPose( const mrpt::poses::CPose3D &o )
 	m_yaw = RAD2DEG( o.yaw() );
 	m_pitch = RAD2DEG( o.pitch() );
 	m_roll = RAD2DEG( o.roll() );
+	return *this;
 }
 
 /*--------------------------------------------------------------
 					setPose
   ---------------------------------------------------------------*/
-void CRenderizable::setPose( const mrpt::math::TPose3D &o )
+CRenderizable& CRenderizable::setPose( const mrpt::math::TPose3D &o )
 {
 	m_x = o.x;
 	m_y = o.y;
@@ -232,12 +233,13 @@ void CRenderizable::setPose( const mrpt::math::TPose3D &o )
 	m_yaw = RAD2DEG( o.yaw );
 	m_pitch = RAD2DEG( o.pitch );
 	m_roll = RAD2DEG( o.roll );
+	return *this;
 }
 
 /*--------------------------------------------------------------
 					setPose
   ---------------------------------------------------------------*/
-void CRenderizable::setPose( const mrpt::poses::CPoint3D &o )	//!< Set the 3D pose from a mrpt::poses::CPose3D object
+CRenderizable& CRenderizable::setPose( const mrpt::poses::CPoint3D &o )	//!< Set the 3D pose from a mrpt::poses::CPose3D object
 {
 	m_x = o.x();
 	m_y = o.y();
@@ -245,12 +247,13 @@ void CRenderizable::setPose( const mrpt::poses::CPoint3D &o )	//!< Set the 3D po
 	m_yaw = 0;
 	m_pitch = 0;
 	m_roll = 0;
+	return *this;
 }
 
 /*--------------------------------------------------------------
 					setPose
   ---------------------------------------------------------------*/
-void CRenderizable::setPose( const mrpt::poses::CPoint2D &o )	//!< Set the 3D pose from a mrpt::poses::CPose3D object
+CRenderizable& CRenderizable::setPose( const mrpt::poses::CPoint2D &o )	//!< Set the 3D pose from a mrpt::poses::CPose3D object
 {
 	m_x = o.x();
 	m_y = o.y();
@@ -258,6 +261,7 @@ void CRenderizable::setPose( const mrpt::poses::CPoint2D &o )	//!< Set the 3D po
 	m_yaw = 0;
 	m_pitch = 0;
 	m_roll = 0;
+	return *this;
 }
 
 
@@ -279,12 +283,13 @@ bool CRenderizable::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 /*--------------------------------------------------------------
 					setColor
   ---------------------------------------------------------------*/
-void CRenderizable::setColor( double R, double G, double B, double A)
+CRenderizable& CRenderizable::setColor( double R, double G, double B, double A)
 {
 	m_color_R = R;
 	m_color_G = G;
 	m_color_B = B;
 	m_color_A = A;
+	return *this;
 }
 
 CRenderizablePtr &mrpt::opengl::operator<<(CRenderizablePtr &r,const CPose3D &p)	{
@@ -313,3 +318,11 @@ void CRenderizable::renderTriangleWithNormal( const mrpt::math::TPoint3D &p1,con
 #endif
 }
 
+CRenderizable& CRenderizable::setColor( const mrpt::utils::TColorf &c)
+{
+	m_color_R = c.R;
+	m_color_G = c.G;
+	m_color_B = c.B;
+	m_color_A = c.A;
+	return *this;
+}

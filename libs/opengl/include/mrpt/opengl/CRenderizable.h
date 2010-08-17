@@ -98,18 +98,18 @@ namespace mrpt
 			  */
 			virtual void  render() const = 0;
 
-			void setPose( const mrpt::poses::CPose3D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object
-			void setPose( const mrpt::math::TPose3D &o );	//!< Set the 3D pose from a  mrpt::math::TPose3D object
-			void setPose( const mrpt::poses::CPoint3D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object
-			void setPose( const mrpt::poses::CPoint2D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object
+			CRenderizable& setPose( const mrpt::poses::CPose3D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
+			CRenderizable& setPose( const mrpt::math::TPose3D &o );	//!< Set the 3D pose from a  mrpt::math::TPose3D object (return a ref to this)
+			CRenderizable& setPose( const mrpt::poses::CPoint3D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
+			CRenderizable& setPose( const mrpt::poses::CPoint2D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
 
 			mrpt::math::TPose3D getPose() const;	//!< Returns the 3D pose of the object
 
-			/** Changes the location of the object, keeping untouched the orientation */
-			void setLocation(double x,double y,double z) { m_x=x; m_y=y; m_z=z; }
+			/** Changes the location of the object, keeping untouched the orientation  \return a ref to this */
+			inline CRenderizable& setLocation(double x,double y,double z) { m_x=x; m_y=y; m_z=z; return *this; }
 
-			/** Changes the location of the object, keeping untouched the orientation */
-			void setLocation(const mrpt::math::TPoint3D &p ) { m_x=p.x; m_y=p.y; m_z=p.z; }
+			/** Changes the location of the object, keeping untouched the orientation  \return a ref to this  */
+			inline CRenderizable& setLocation(const mrpt::math::TPoint3D &p ) { m_x=p.x; m_y=p.y; m_z=p.z; return *this;  }
 
 			double getPoseX() const { return m_x; } //!< Translation relative to parent coordinate origin.
 			double getPoseY() const { return m_y; } //!< Translation relative to parent coordinate origin.
@@ -123,29 +123,27 @@ namespace mrpt
 			double getColorB() const { return m_color_B; } //!< Color components in the range [0,1]
 			double getColorA() const { return m_color_A; } //!< Color components in the range [0,1]
 
-			virtual void setColorR(const double r)	{m_color_R=r;}	//!<Color components in the range [0,1]
-			virtual void setColorG(const double g)	{m_color_G=g;}	//!<Color components in the range [0,1]
-			virtual void setColorB(const double b)	{m_color_B=b;}	//!<Color components in the range [0,1]
-			virtual void setColorA(const double a)	{m_color_A=a;}	//!<Color components in the range [0,1]
+			virtual CRenderizable&  setColorR(const double r)	{m_color_R=r; return *this;}	//!<Color components in the range [0,1] \return a ref to this
+			virtual CRenderizable&  setColorG(const double g)	{m_color_G=g; return *this;}	//!<Color components in the range [0,1] \return a ref to this
+			virtual CRenderizable&  setColorB(const double b)	{m_color_B=b; return *this;}	//!<Color components in the range [0,1] \return a ref to this
+			virtual CRenderizable&  setColorA(const double a)	{m_color_A=a; return *this;}	//!<Color components in the range [0,1] \return a ref to this
 
-			inline  void setScale(float s)  { m_scale_x=m_scale_y=m_scale_z = s; } //!< Scale to apply to the object, in all three axes (default=1)
-			inline void setScale(float sx,float sy,float sz)  { m_scale_x=sx; m_scale_y=sy; m_scale_z = sz; } //!< Scale to apply to the object in each axis (default=1)
+			inline CRenderizable& setScale(float s)  { m_scale_x=m_scale_y=m_scale_z = s; return *this; } //!< Scale to apply to the object, in all three axes (default=1)  \return a ref to this
+			inline CRenderizable& setScale(float sx,float sy,float sz)  { m_scale_x=sx; m_scale_y=sy; m_scale_z = sz; return *this; } //!< Scale to apply to the object in each axis (default=1)  \return a ref to this
 			inline float getScaleX() const { return m_scale_x; }  //!< Get the current scaling factor in one axis
 			inline float getScaleY() const { return m_scale_y; }  //!< Get the current scaling factor in one axis
 			inline float getScaleZ() const { return m_scale_z; }  //!< Get the current scaling factor in one axis
 
 
 			inline mrpt::utils::TColorf getColor() const { return mrpt::utils::TColorf(m_color_R,m_color_G,m_color_B,m_color_A); }  //!< Returns the object color property as a TColorf
-			virtual void setColor( const mrpt::utils::TColorf &c) { m_color_R = c.R; m_color_G=c.G; m_color_B=c.B;m_color_A=c.A; }  //!< Changes the default object color
+			virtual CRenderizable& setColor( const mrpt::utils::TColorf &c);  //!< Changes the default object color \return a ref to this
 
-
-			/**
-			  * Simulation of ray-trace, given a pose. Returns true if the ray effectively collisions with the object (returning the distance to the origin of the ray in "dist"), or false in other case. "dist" variable yields undefined behaviour when false is returned
+			/** Simulation of ray-trace, given a pose. Returns true if the ray effectively collisions with the object (returning the distance to the origin of the ray in "dist"), or false in other case. "dist" variable yields undefined behaviour when false is returned
 			  */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
 
-			/** Set the color components of this object (R,G,B,Alpha, in the range 0-1) */
-			virtual void setColor( double R, double G, double B, double A=1);
+			/** Set the color components of this object (R,G,B,Alpha, in the range 0-1)  \return a ref to this */
+			virtual CRenderizable& setColor( double R, double G, double B, double A=1);
 
 		protected:
 			/** Checks glGetError and throws an exception if an error situation is found */

@@ -43,8 +43,9 @@ namespace mrpt
 
 
 		/** A cloud of points, all with the same color or each depending on its value along a particular coordinate axis.
+		  *  This class is just an OpenGL representation of a point cloud. For operating with maps of points, see mrpt::slam::CPointsMap and derived classes.
 		  *
-		  *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene, opengl::CPointCloudColoured
+		  *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene, opengl::CPointCloudColoured, mrpt::slam::CPointsMap
 		  */
 		class OPENGL_IMPEXP CPointCloud : public CRenderizable
 		{
@@ -53,21 +54,26 @@ namespace mrpt
 			enum Axis { None=0, Z, Y, X} m_colorFromDepth;
 			vector_float	m_xs,m_ys,m_zs;
 			float           m_pointSize; //!< By default is 1.0
+			bool			m_pointSmooth; //!< Default: false
 
 		public:
-			void enableColorFromX(bool v=true) { if(v) m_colorFromDepth=CPointCloud::X; }
-			void enableColorFromY(bool v=true) { if(v) m_colorFromDepth=CPointCloud::Y; }
-			void enableColorFromZ(bool v=true) { if(v) m_colorFromDepth=CPointCloud::Z; }
+			inline void enableColorFromX(bool v=true) { if(v) m_colorFromDepth=CPointCloud::X; }
+			inline void enableColorFromY(bool v=true) { if(v) m_colorFromDepth=CPointCloud::Y; }
+			inline void enableColorFromZ(bool v=true) { if(v) m_colorFromDepth=CPointCloud::Z; }
 
-			void resize(size_t N) { m_xs.resize(N); m_ys.resize(N); m_zs.resize(N);  }
-			void reserve(size_t N) { m_xs.reserve(N); m_ys.reserve(N); m_zs.reserve(N);  }
+			inline void resize(size_t N) { m_xs.resize(N); m_ys.resize(N); m_zs.resize(N);  }
+			inline void reserve(size_t N) { m_xs.reserve(N); m_ys.reserve(N); m_zs.reserve(N);  }
 
-			vector_float & getArrayX() {return m_xs;} //!< Get a reference to the internal array of X coordinates
-			vector_float & getArrayY() {return m_ys;} //!< Get a reference to the internal array of Y coordinates
-			vector_float & getArrayZ() {return m_zs;} //!< Get a reference to the internal array of Z coordinates
+			inline vector_float & getArrayX() {return m_xs;} //!< Get a reference to the internal array of X coordinates
+			inline vector_float & getArrayY() {return m_ys;} //!< Get a reference to the internal array of Y coordinates
+			inline vector_float & getArrayZ() {return m_zs;} //!< Get a reference to the internal array of Z coordinates
 
-			void setPointSize(float p) { m_pointSize=p; }  //!< By default is 1.0
-			float getPointSize() const { return m_pointSize; }
+			inline void setPointSize(float p) { m_pointSize=p; }  //!< By default is 1.0
+			inline float getPointSize() const { return m_pointSize; }
+
+			inline void enablePointSmooth(bool enable=true) { m_pointSmooth=enable; }
+			inline void disablePointSmooth() { m_pointSmooth=false; }
+			inline bool isPointSmoothEnabled() const { return m_pointSmooth; }
 
 			/** Empty the list of points. */
 			void clear();

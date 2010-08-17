@@ -55,8 +55,12 @@
 	- Changes in classes:
 		- mrpt::poses::CNetworkOfPoses many improvements and new methods (see its documentation).
 		- Added a new type mrpt::utils::TNodeID, used in graph-related classes: mrpt::math::CDirectedGraph, mrpt::math::CDijkstra
+		- mrpt::opengl::CPointCloud & mrpt::opengl::CPointCloudColoured now have an option to draw smoothed points (see mrpt::opengl::CPointCloud::enablePointSmooth).
+		- mrpt::utils::TColorf: New explicit copy constructor from a mrpt::utils::TColor
+		- mrpt::opengl::CRenderizable: Many "set" methods that returned "void" now return a reference to "this" so several calls can be chained (e.g. obj.setColor(...).setScale(1.0) )
 	- New functions:
 		- mrpt::slam::carmen_log_parse_line() a tool for parsing CARMEN logs.
+		- mrpt::opengl::stock_objects::CornerXYSimple()
 		- mrpt::system::strCmp, mrpt::system::strCmpI, mrpt::system::strStarts, mrpt::system::strStartsI
 		- mrpt::system::os::_strncmp, mrpt::system::os::_strnicmp
 	- New examples:
@@ -64,6 +68,7 @@
 	- BUG FIXES:
 		- icp-slam: Fixed potential wrong processing of datasets in observations-only format where the odometry initial value is not (0,0,0).
 		- Build errors with some OpenCV versions (<a href="http://www.mrpt.org/node/369" >Bug report & patch</a> by "iXce").
+		- FIXED: Text labels of CRenderizable classes inherited the color from the objects; now they're always white.
 
 
   <br> <hr> <br>

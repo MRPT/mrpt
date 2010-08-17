@@ -270,7 +270,7 @@ bool CSetOfTriangles::traceRayTriangle(const mrpt::poses::CPose3D &transf,double
 }
 */
 
-void CSetOfTriangles::setColor(double R,double G,double B,double A)	{
+CRenderizable& CSetOfTriangles::setColor(double R,double G,double B,double A)	{
 	m_color_R=R;
 	m_color_G=G;
 	m_color_B=B;
@@ -281,9 +281,10 @@ void CSetOfTriangles::setColor(double R,double G,double B,double A)	{
 		it->b[i]=B;
 		it->a[i]=A;
 	}
+	return *this;
 }
 
-void CSetOfTriangles::setColor(const mrpt::utils::TColorf &c)	{
+CRenderizable& CSetOfTriangles::setColor(const mrpt::utils::TColorf &c)	{
 	m_color_R=c.R;
 	m_color_G=c.G;
 	m_color_B=c.B;
@@ -294,26 +295,31 @@ void CSetOfTriangles::setColor(const mrpt::utils::TColorf &c)	{
 		it->b[i]=c.B;
 		it->a[i]=c.A;
 	}
+	return *this;
 }
 
-void CSetOfTriangles::setColorR(const double r)	{
+CRenderizable& CSetOfTriangles::setColorR(const double r)	{
 	m_color_R=r;
 	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->r[i]=r;
+	return *this;
 }
 
-void CSetOfTriangles::setColorG(const double g)	{
+CRenderizable& CSetOfTriangles::setColorG(const double g)	{
 	m_color_G=g;
 	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->g[i]=g;
+	return *this;
 }
 
-void CSetOfTriangles::setColorB(const double b)	{
+CRenderizable& CSetOfTriangles::setColorB(const double b)	{
 	m_color_B=b;
 	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->b[i]=b;
+	return *this;
 }
 
-void CSetOfTriangles::setColorA(const double a)	{
+CRenderizable& CSetOfTriangles::setColorA(const double a)	{
 	m_color_A=a;
 	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->a[i]=a;
+	return *this;
 }
 
 void CSetOfTriangles::getPolygons(std::vector<mrpt::math::TPolygon3D> &polys) const	{

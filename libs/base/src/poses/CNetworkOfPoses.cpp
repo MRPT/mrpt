@@ -42,13 +42,26 @@ namespace mrpt
 	{
 		namespace detail
 		{
+			// =================================================================
+			//                     save_graph_of_poses_from_text_file
+			// =================================================================
 			template<class CPOSE>
 			void save_graph_of_poses_from_text_file(const CNetworkOfPoses<CPOSE> *g, const std::string &fil)
 			{
-				THROW_EXCEPTION("TO DO");
+				std::ofstream  f;
+				f.open(fil.c_str());
+				if (!f.is_open())
+					THROW_EXCEPTION_CUSTOM_MSG1("Error opening file '%s' for writing",fil.c_str());
+
+
+				// 1st: Write all nodes:
+
 
 			} // end save_graph
 
+			// =================================================================
+			//                     load_graph_of_poses_from_text_file
+			// =================================================================
 			template<class CPOSE>
 			void load_graph_of_poses_from_text_file(CNetworkOfPoses<CPOSE>*g, const std::string &fil)
 			{

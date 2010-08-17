@@ -54,9 +54,9 @@ namespace mrpt
 			struct OPENGL_IMPEXP TTriangle
 			{
 				inline TTriangle() {  }
-				inline TTriangle(const mrpt::math::TPolygon3D &p)  {  
+				inline TTriangle(const mrpt::math::TPolygon3D &p)  {
 					ASSERT_(p.size()==3)
-					for (size_t i=0;i<3;i++) { 
+					for (size_t i=0;i<3;i++) {
 						x[i]=p[i].x; y[i]=p[i].y; z[i]=p[i].z; r[i]=g[i]=b[i]=a[i]=1; }
 				}
 				float	x[3],y[3],z[3];
@@ -132,34 +132,15 @@ namespace mrpt
 				m_triangles.reserve(t);
 			}
 
-			/**
-			  * Enables or disables transparency.
-			  */
+			/** Enables or disables transparency. */
 			inline void enableTransparency( bool v )	{ m_enableTransparency = v; }
-			/**
-			  * Changes the color to all the vertices in each triangle of the set.
-			  */
-			virtual void setColor(double R,double G,double B,double A);
-			/**
-			  * Changes the color to all the vertices in each triangle of the set.
-			  */
-			virtual void setColor(const mrpt::utils::TColorf &c);
-			/**
-			  * Changes the red color component to all the vertices in each triangle of the set.
-			  */
-			virtual void setColorR(const double r);
-			/**
-			  * Changes the green color component to all the vertices in each triangle of the set.
-			  */
-			virtual void setColorG(const double g);
-			/**
-			  * Changes the blue color component to all the vertices in each triangle of the set.
-			  */
-			virtual void setColorB(const double b);
-			/**
-			  * Changes the alpha color component to all the vertices in each triangle of the set.
-			  */
-			virtual void setColorA(const double a);
+
+			virtual CRenderizable& setColor(const mrpt::utils::TColorf &c);
+			virtual CRenderizable& setColor(double r,double g,double b,double a=1);
+			virtual CRenderizable& setColorR(const double r);
+			virtual CRenderizable& setColorG(const double g);
+			virtual CRenderizable& setColorB(const double b);
+			virtual CRenderizable& setColorA(const double a);
 
 			/** Render
 			  */
@@ -169,20 +150,20 @@ namespace mrpt
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
 
 			/**
-			  * Gets the polygon cache.  
+			  * Gets the polygon cache.
 			  * \sa insertTriangles
 			  */
 			void getPolygons(std::vector<mrpt::math::TPolygon3D> &polys) const;
-			
+
 			/**
 			  * Inserts a set of triangles, given in a container of either TTriangle's or TPolygon3D
 			  * \sa insertTriangle
 			  */
-			template<class CONTAINER> 
-			inline void insertTriangles(const CONTAINER &c)	 { 
-				this->insertTriangles(c.begin(),c.end()); 
+			template<class CONTAINER>
+			inline void insertTriangles(const CONTAINER &c)	 {
+				this->insertTriangles(c.begin(),c.end());
 			}
-			
+
 			/**
 			  * Gets the beginning iterator to this object.
 			  */

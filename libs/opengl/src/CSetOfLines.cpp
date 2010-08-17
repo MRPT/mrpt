@@ -60,14 +60,25 @@ void   CSetOfLines::render() const
 #if MRPT_HAS_OPENGL_GLUT
 	glLineWidth(mLineWidth);
 	checkOpenGLError();
+
+	if ( m_color_A != 1.0 )
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
 	glBegin(GL_LINES);
-	glColor4f(m_color_R,m_color_G,m_color_B,1.0f);
+	glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
 	for (std::vector<TSegment3D>::const_iterator it=mSegments.begin();it!=mSegments.end();++it)	{
 		glVertex3d(it->point1.x,it->point1.y,it->point1.z);
 		glVertex3d(it->point2.x,it->point2.y,it->point2.z);
 	}
 	glEnd();
 	checkOpenGLError();
+
+	if ( m_color_A != 1.0 )
+		glDisable(GL_BLEND);
+
 #endif
 }
 
