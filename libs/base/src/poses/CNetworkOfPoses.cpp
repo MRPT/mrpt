@@ -43,6 +43,57 @@ namespace mrpt
 	{
 		namespace detail
 		{
+			template <class POSE> void write_VERTEX_line(const TNodeID id, const POSE &p, std::ofstream &f);
+			template <> void write_VERTEX_line<CPose2D>(const TNodeID id, const CPose2D &p, std::ofstream &f)
+			{
+				//  VERTEX2 id x y phi
+				f << "VERTEX2 " << id << format(" %.04f %.04f %.04f\n",p.x(),p.y(),p.phi() );
+			}
+			template <> void write_VERTEX_line<CPose3D>(const TNodeID id, const CPose3D &p, std::ofstream &f)
+			{
+				//  VERTEX3 id x y z roll pitch yaw
+				// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
+				f << "VERTEX3 " << id << format(" %.04f %.04f %.04f %.04f %.04f %.04f\n",p.x(),p.y(),p.z(),p.roll(),p.pitch(),p.yaw() );
+			}
+
+			template <class EDGE> void write_EDGE_line( const std::pair<TNodeID,TNodeID> &edgeIDs,const EDGE & edge, std::ofstream &f);
+			template <> void write_EDGE_line<CPosePDFGaussianInf>( const std::pair<TNodeID,TNodeID> &edgeIDs,const CPosePDFGaussianInf & edge, std::ofstream &f)
+			{
+				//  EDGE2 to_id from_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
+				f << "EDGE2 " << edgeIDs.second << " " << edgeIDs.first << " " <<
+					//format(" %.06f %.06f %.06f %e %e %e %e %e %e\n",
+						edge.mean.x()<<" "<<edge.mean.y()<<" "<<edge.mean.phi()<<" "<<
+						edge.cov_inv(0,0)<<" "<<edge.cov_inv(0,1)<<" "<<edge.cov_inv(1,1)<<" "<<
+						edge.cov_inv(2,2)<<" "<<edge.cov_inv(0,2)<<" "<<edge.cov_inv(1,2) << endl;
+			}
+			template <> void write_EDGE_line<CPose3DPDFGaussianInf>( const std::pair<TNodeID,TNodeID> &edgeIDs,const CPose3DPDFGaussianInf & edge, std::ofstream &f)
+			{
+				//  EDGE3 to_id from_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
+				// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
+				f << "EDGE3 " << edgeIDs.second << " " << edgeIDs.first << " " <<
+					//format(" %.06f %.06f %.06f %.06f %.06f %.06f %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",
+						edge.mean.x()<<" "<<edge.mean.y()<<" "<<edge.mean.z()<<" "<<
+						edge.mean.roll()<<" "<<edge.mean.pitch()<<" "<<edge.mean.yaw()<<" "<<
+						edge.cov_inv(0,0)<<" "<<edge.cov_inv(0,1)<<" "<<edge.cov_inv(0,2)<<" "<<edge.cov_inv(0,5)<<" "<<edge.cov_inv(0,4)<<" "<<edge.cov_inv(0,3)<<" "<<
+						edge.cov_inv(1,1)<<" "<<edge.cov_inv(1,2)<<" "<<edge.cov_inv(1,5)<<" "<<edge.cov_inv(1,4)<<" "<<edge.cov_inv(1,3)<<" "<<
+						edge.cov_inv(2,2)<<" "<<edge.cov_inv(2,5)<<" "<<edge.cov_inv(2,4)<<" "<<edge.cov_inv(2,3)<<" "<<
+						edge.cov_inv(5,5)<<" "<<edge.cov_inv(5,4)<<" "<<edge.cov_inv(5,3)<<" "<<
+						edge.cov_inv(4,4)<<" "<<edge.cov_inv(4,3)<<" "<<
+						edge.cov_inv(3,3) << endl;
+			}
+			template <> void write_EDGE_line<CPosePDFGaussian>( const std::pair<TNodeID,TNodeID> &edgeIDs,const CPosePDFGaussian & edge, std::ofstream &f)
+			{
+				CPosePDFGaussianInf p;
+				p.copyFrom(edge);
+				write_EDGE_line(edgeIDs,p,f);
+			}
+			template <> void write_EDGE_line<CPose3DPDFGaussian>( const std::pair<TNodeID,TNodeID> &edgeIDs,const CPose3DPDFGaussian & edge, std::ofstream &f)
+			{
+				CPose3DPDFGaussianInf p;
+				p.copyFrom(edge);
+				write_EDGE_line(edgeIDs,p,f);
+			}
+
 			// =================================================================
 			//                     save_graph_of_poses_from_text_file
 			// =================================================================
@@ -54,11 +105,17 @@ namespace mrpt
 				if (!f.is_open())
 					THROW_EXCEPTION_CUSTOM_MSG1("Error opening file '%s' for writing",fil.c_str());
 
+				// 1st: Nodes
+				for (typename CNetworkOfPoses<CPOSE>::global_poses_t::const_iterator itNod = g->nodes.begin();itNod!=g->nodes.end();++itNod)
+					write_VERTEX_line(itNod->first, itNod->second, f);
 
-				// 1st: Write all nodes:
-
+				// 2nd: Edges:
+				for (typename CNetworkOfPoses<CPOSE>::const_iterator it=g->begin();it!=g->end();++it)
+					if (it->first.first!=it->first.second)	// Ignore self-edges, typically from importing files with EQUIV's
+						write_EDGE_line( it->first, it->second, f);
 
 			} // end save_graph
+
 
 			// Auxiliary method to determine 2D/3D graph type:
 			//  Only the specializations below are really defined.
@@ -344,6 +401,12 @@ template void BASE_IMPEXP mrpt::poses::detail::load_graph_of_poses_from_text_fil
 template void BASE_IMPEXP mrpt::poses::detail::load_graph_of_poses_from_text_file<CPose3DPDFGaussianInf>(CNetworkOfPoses<CPose3DPDFGaussianInf> *g, const std::string &fil);
 
 
+void  dijks_on_progress(size_t visitedCount)
+{
+	//if (visitedCount & 0x20 == 0 )
+		cout << "dijkstra: " << visitedCount << endl;
+}
+
 // --------------------------------------------------------------------------------
 //               dijkstra_nodes_estimate
 // --------------------------------------------------------------------------------
@@ -352,7 +415,10 @@ void CNetworkOfPoses<CPOSE>::dijkstra_nodes_estimate()
 {
 	MRPT_TRY_START
 
-	THROW_EXCEPTION("TO DO")
+	// Do Dijkstra shortest path from "root" to all other nodes:
+	mrpt::math::CDijkstra<CPOSE>  dijkstra(*this, this->root, NULL, &dijks_on_progress);
+
+
 
 	MRPT_TRY_END
 }

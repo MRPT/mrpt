@@ -100,7 +100,8 @@ namespace mrpt
 			CDijkstra(
 				const mrpt::math::CDirectedGraph<TYPE_EDGES> &graph,
 				const TNodeID	&source_node_ID,
-				double (*functor_edge_weight)(const TYPE_EDGES &edge) =  NULL
+				double (*functor_edge_weight)(const TYPE_EDGES &edge) =  NULL,
+				void   (*functor_on_progress)(size_t visitedCount) = NULL
 				)
 				: m_source_node_ID(source_node_ID)
 			{
@@ -156,10 +157,11 @@ namespace mrpt
 						}
 					}
 
-					ASSERT_(u!=lstNode_IDs.end());
+					ASSERT_(u!=lstNode_IDs.end())
 
 					visited[*u] = true;
 					visitedCount++;
+					if (functor_on_progress) (*functor_on_progress)(visitedCount);
 
 					// For each arc from "u":
 					std::set<TNodeID>	neighborsOfU;
