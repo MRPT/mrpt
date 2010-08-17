@@ -41,7 +41,7 @@ namespace mrpt
 			/** @name Tool functions for graphs of pose constraints
 			    @{ */
 
-			/** Returns an opengl objects representation of an arbitrary graph, as a network of 2D pose frames.
+			/** Returns an opengl objects representation of an arbitrary graph, as a network of 3D pose frames.
 			  *  Note that the "global" coordinates of each node are taken from mrpt::poses::CNetworkOfPoses::nodes, so
 			  *   if a node appears in "edges" but not in "nodes" it will be not displayed.
 			  *
@@ -67,9 +67,24 @@ namespace mrpt
 			  *        <td align="center" > 1 (do show) </td>
 			  *   </tr>
 			  *   <tr>
+			  *        <td align="center" ><code> edge_color </code></td>
+			  *        <td> If show_edges is !=0, the color of those edges as a hexadecimal int value 0xAARRGGBB with Alpha+RGB color (Alpha=0xFF:opaque,0x00:transparent).</td>
+			  *        <td align="center" > 0x400000FF </td>
+			  *   </tr>
+			  *   <tr>
+			  *        <td align="center" ><code> edge_width </code></td>
+			  *        <td> If show_edges is !=0, the width of edge lines.</td>
+			  *        <td align="center" > 2.0 </td>
+			  *   </tr>
+			  *   <tr>
 			  *        <td align="center" ><code> show_node_corners </code></td>
-			  *        <td> If set to !=0, draw a small 2D corner frame at each node (see mrpt::opengl::stock_objects::CornerXYSimple). </td>
+			  *        <td> If set to !=0, draw a small 3D corner frame at each node (see mrpt::opengl::stock_objects::CornerXYZSimple). </td>
 			  *        <td align="center" > 1 (do show) </td>
+			  *   </tr>
+			  *   <tr>
+			  *        <td align="center" ><code> nodes_corner_scale </code></td>
+			  *        <td> If show_node_corners!=0, the size (length) of te corner lines. </td>
+			  *        <td align="center" > 0.7 </td>
 			  *   </tr>
 			  *   <tr>
 			  *        <td align="center" ><code> nodes_point_size </code></td>
@@ -82,10 +97,11 @@ namespace mrpt
 			  *        <td align="center" > 0xA0A0A0 (light gray) </td>
 			  *   </tr>
 			  *	  </table>
-			  * \sa graph_visualize_3D
+			  *
+			  * \sa CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
 			  */
 			template<class CPOSE>
-			CSetOfObjectsPtr OPENGL_IMPEXP graph_visualize_2D(
+			CSetOfObjectsPtr OPENGL_IMPEXP graph_visualize(
 				const mrpt::poses::CNetworkOfPoses<CPOSE> &g,
 				const mrpt::utils::TParametersDouble &extra_params = mrpt::utils::TParametersDouble()
 				);

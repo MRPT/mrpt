@@ -35,8 +35,8 @@
 #include <mrpt/math/graphs.h>
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
 
 namespace mrpt
 {
@@ -97,7 +97,9 @@ namespace mrpt
 			/** @name Data members
 			    @{ */
 
-			/** The nodes (vertices) of the graph, with their estimated "global" (with respect to \a root) position, without an associated covariance. */
+			/** The nodes (vertices) of the graph, with their estimated "global" (with respect to \a root) position, without an associated covariance.
+			  * \sa dijkstra_nodes_estimate
+			  */
 			global_poses_t  nodes;
 
 			/** The ID of the node that is the origin of coordinates, used as reference by all coordinates in \nodes. By default, root is the ID "0". */
@@ -114,8 +116,8 @@ namespace mrpt
 			  * \exception On any error
 			  */
 			void saveToBinaryFile( const std::string &fileName ) const {
-				mrpt::utils::CFileOutputStream fil(fileName);
-				fil.WriteObject(this);
+				mrpt::utils::CFileGZOutputStream fil(fileName);
+				this->internal_writebinary(&fil);
 			}
 
 			/** Loads the graph from a binary file.
@@ -123,8 +125,8 @@ namespace mrpt
 			  * \exception On any error
 			  */
 			void loadFromBinaryFile( const std::string &fileName ) {
-				mrpt::utils::CFileInputStream fil(fileName);
-				fil.ReadObject(this);
+				mrpt::utils::CFileGZInputStream fil(fileName);
+				this->internal_readbinary(&fil);
 			}
 
 			/** Saves to a text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a> )
@@ -153,6 +155,18 @@ namespace mrpt
 			/** @name Other methods
 			    @{ */
 
+			/** Compute a simple estimation of the global coordinates of each node just from the information in all edges, sorted in a Dijkstra tree based on the current "root" node.
+			  *  Note that "global" coordinates are with respect to the node with the ID specified in \a root.
+			  * \sa node, root
+			  */
+			void dijkstra_nodes_estimate();
+
+			/** @} */
+
+
+			/** @name Other methods
+			    @{ */
+
 			/** Empty all edges, nodes and set root to ID 0. */
 			inline void clear() {
 				BASE::edges.clear();
@@ -167,10 +181,26 @@ namespace mrpt
 
 			/**  @} */
 
+			/** @name Ctors & Dtors
+			    @{ */
+
 			/** Default constructor (just sets root to "0") */
 			inline CNetworkOfPoses() : root(0) { }
 			virtual ~CNetworkOfPoses() { }
+			/** @} */
+
+		protected:
+			/** @name Internal emulation of CSerializable for a template class
+			    @{ */
+			virtual void internal_readbinary(mrpt::utils::CStream *in) = 0;
+			virtual void internal_writebinary(mrpt::utils::CStream *out) const =0;
+			/** @} */
 		};
+
+#define DEFINE_SERIALIZABLE_GRAPH  \
+		protected: \
+			virtual void internal_readbinary(mrpt::utils::CStream *in) { in->ReadObject(this); } \
+			virtual void internal_writebinary(mrpt::utils::CStream *out) const { out->WriteObject(this); } \
 
 
 		// Define serializable versions of the template above for each specific kind of "edge":
@@ -187,6 +217,7 @@ namespace mrpt
 		class CNetworkOfPoses2D : public CNetworkOfPoses<CPosePDFGaussian>, public mrpt::utils::CSerializable
 		{
 			DEFINE_SERIALIZABLE( CNetworkOfPoses2D )	// This must be added to any CSerializable derived class:
+			DEFINE_SERIALIZABLE_GRAPH
 		public:
 
 		};
@@ -197,6 +228,7 @@ namespace mrpt
 		class CNetworkOfPoses3D : public CNetworkOfPoses<CPose3DPDFGaussian>, public mrpt::utils::CSerializable
 		{
 			DEFINE_SERIALIZABLE( CNetworkOfPoses3D )	// This must be added to any CSerializable derived class:
+			DEFINE_SERIALIZABLE_GRAPH
 		public:
 
 		};
@@ -207,6 +239,7 @@ namespace mrpt
 		class CNetworkOfPoses2DInf : public CNetworkOfPoses<CPosePDFGaussianInf>, public mrpt::utils::CSerializable
 		{
 			DEFINE_SERIALIZABLE( CNetworkOfPoses2DInf )	// This must be added to any CSerializable derived class:
+			DEFINE_SERIALIZABLE_GRAPH
 		public:
 
 		};
@@ -217,6 +250,7 @@ namespace mrpt
 		class CNetworkOfPoses3DInf : public CNetworkOfPoses<CPose3DPDFGaussianInf>, public mrpt::utils::CSerializable
 		{
 			DEFINE_SERIALIZABLE( CNetworkOfPoses3DInf )	// This must be added to any CSerializable derived class:
+			DEFINE_SERIALIZABLE_GRAPH
 		public:
 
 		};

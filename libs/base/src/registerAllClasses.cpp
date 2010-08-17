@@ -81,6 +81,7 @@ void registerAllClasses_mrpt_base()
 
 	registerClass( CLASS_ID( CPosePDF ) );
 	registerClass( CLASS_ID( CPosePDFGaussian ) );
+	registerClass( CLASS_ID( CPosePDFGaussianInf ) );
 	registerClass( CLASS_ID( CPosePDFParticles ) );
 	registerClass( CLASS_ID( CPosePDFGrid ) );
 	registerClass( CLASS_ID( CPosePDFSOG ) );
@@ -94,6 +95,7 @@ void registerAllClasses_mrpt_base()
 	registerClass( CLASS_ID( CPose3DPDF ) );
 	registerClass( CLASS_ID( CPose3DQuatPDF ) );
 	registerClass( CLASS_ID( CPose3DPDFGaussian ) );
+	registerClass( CLASS_ID( CPose3DPDFGaussianInf ) );
 	registerClass( CLASS_ID( CPose3DPDFParticles ) );
 	registerClass( CLASS_ID( CPose3DPDFSOG ) );
 

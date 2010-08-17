@@ -60,7 +60,8 @@
 		- mrpt::opengl::CRenderizable: Many "set" methods that returned "void" now return a reference to "this" so several calls can be chained (e.g. obj.setColor(...).setScale(1.0) )
 	- New functions:
 		- mrpt::slam::carmen_log_parse_line() a tool for parsing CARMEN logs.
-		- mrpt::opengl::stock_objects::CornerXYSimple()
+		- mrpt::opengl::graph_tools::graph_visualize(), a visualizer of graphs of pose constraints.
+		- mrpt::opengl::stock_objects::CornerXYSimple() for 2D corners
 		- mrpt::system::strCmp, mrpt::system::strCmpI, mrpt::system::strStarts, mrpt::system::strStartsI
 		- mrpt::system::os::_strncmp, mrpt::system::os::_strnicmp
 	- New examples:
@@ -69,6 +70,7 @@
 		- icp-slam: Fixed potential wrong processing of datasets in observations-only format where the odometry initial value is not (0,0,0).
 		- Build errors with some OpenCV versions (<a href="http://www.mrpt.org/node/369" >Bug report & patch</a> by "iXce").
 		- FIXED: Text labels of CRenderizable classes inherited the color from the objects; now they're always white.
+		- mrpt::poses::CPosePDFGaussianInf & mrpt::poses::CPose3DPDFGaussianInf were not registered at startup with registerClass().
 
 
   <br> <hr> <br>

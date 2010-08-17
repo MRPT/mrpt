@@ -139,7 +139,7 @@ void  CPose3DPDFGaussianInf::readFromStream(CStream &in,int version)
 {
 	switch(version)
 	{
-	case 1:
+	case 0:
 		{
 			in >> mean;
 

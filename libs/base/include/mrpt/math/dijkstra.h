@@ -57,8 +57,6 @@ namespace mrpt
 		public:
 			typedef std::list<std::pair<TNodeID,TNodeID> >   TListEdges; //!< A list of edges used to describe a path on the graph
 
-			static const TNodeID INVALID_TNODEID = static_cast<TNodeID>(-1);
-
 		protected:
 
 			// Variables:
@@ -73,7 +71,7 @@ namespace mrpt
 
 			struct TPrevious
 			{
-				TPrevious() : id( INVALID_TNODEID ) { }
+				TPrevious() : id( INVALID_NODEID ) { }
 				TNodeID  id;
 			};
 
