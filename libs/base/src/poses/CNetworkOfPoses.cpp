@@ -401,7 +401,8 @@ template void BASE_IMPEXP mrpt::poses::detail::load_graph_of_poses_from_text_fil
 template void BASE_IMPEXP mrpt::poses::detail::load_graph_of_poses_from_text_file<CPose3DPDFGaussianInf>(CNetworkOfPoses<CPose3DPDFGaussianInf> *g, const std::string &fil);
 
 
-void  dijks_on_progress(size_t visitedCount)
+template <class GRAPH>
+void dijks_on_progress(const GRAPH &g, size_t visitedCount)
 {
 	//if ((visitedCount & 0x8F) == 0 ) 	cout << "dijkstra: " << visitedCount << endl;
 }

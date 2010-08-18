@@ -90,6 +90,7 @@ Apart from the containers, this namespace contains much more functionality:
 <li>Probability distribution functions. </li>
 <li>Statistics: mean, covariance, covariance of weighted samples, etc... from sets of data.</li>
 <li>A huge amount of geometry-related functions: Lines (mrpt::math::TLine3D), planes (mrpt::math::TPlane3D), segments, polygons, intersections between them, etc. </li>
+<li>Graph-related stuff: generic directed graphs (mrpt::math::CDirectedGraph) and trees (mrpt::math::CDirectedTree).</li>
 </ul>
 
 

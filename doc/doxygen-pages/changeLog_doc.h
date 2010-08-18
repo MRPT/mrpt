@@ -44,6 +44,7 @@
 		- Previous header <mrpt/math_mrpt.h> renamed <mrpt/math.h>. The old one still remains (probably until MRPT 1.0.0), but raises a warning on usage.
 	- New classes:
 		- New sensor driver for Phidget kit (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors), contributed by Adrien Barral (Robopec)
+		- mrpt::math::CDirectedTree template for directed tree-like graphs. Includes generic depth-first & breath-first visitors.
 		- New PDF classes for "information" (inverse covariance) forms:
 			- mrpt::poses::CPosePDFGaussianInf
 			- mrpt::poses::CPose3DPDFGaussianInf
@@ -54,7 +55,9 @@
 			- mrpt::poses::CPose3DPDFGaussianInf
 	- Changes in classes:
 		- mrpt::poses::CNetworkOfPoses has many improvements and new methods (see its documentation).
-		- mrpt::math::CDijkstra is now much faster (eg: 70x times faster for graphs of 4K nodes & 60K arcs).
+		- mrpt::math::CDijkstra:
+			- Algorithm is now much faster (eg: 70x times faster for graphs of 4K nodes & 60K arcs).
+			- Many changes in its interface, including new feedback functors, support for returning the built tree and many handy typedef's.
 		- Added a new type mrpt::utils::TNodeID, used in graph-related classes: mrpt::math::CDirectedGraph, mrpt::math::CDijkstra
 		- mrpt::opengl::CPointCloud & mrpt::opengl::CPointCloudColoured now have an option to draw smoothed points (see mrpt::opengl::CPointCloud::enablePointSmooth).
 		- mrpt::utils::TColorf: New explicit copy constructor from a mrpt::utils::TColor
