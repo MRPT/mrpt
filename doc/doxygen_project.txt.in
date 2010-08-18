@@ -229,5 +229,5 @@ SEARCHENGINE           = $MRPT_USE_SEARCHENGINE
 # When the SERVER_BASED_SEARCH tag is enabled the search engine will be implemented using a PHP enabled web server instead of at the web client using Javascript. Doxygen will generate the search PHP script and index
 # file to put on the web server. The advantage of the server based approach is that it scales better to large projects and allows full text search. The disadvances is that it is more difficult to setup
 # and does not have live searching capabilities.
-SERVER_BASED_SEARCH    = NO
+SERVER_BASED_SEARCH    = YES
 
