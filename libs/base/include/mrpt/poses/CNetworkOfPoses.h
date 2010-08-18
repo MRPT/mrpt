@@ -51,9 +51,10 @@ namespace mrpt
 			template<class CPOSE> void BASE_IMPEXP save_graph_of_poses_from_text_file(const CNetworkOfPoses<CPOSE> *g, const std::string &fil);
 			template<class CPOSE> void BASE_IMPEXP load_graph_of_poses_from_text_file(CNetworkOfPoses<CPOSE>*g, const std::string &fil);
 			template<class CPOSE> void BASE_IMPEXP graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE>*g);
+			template<class CPOSE> double BASE_IMPEXP graph_edge_sqerror(const CNetworkOfPoses<CPOSE>*g, const typename mrpt::math::CDirectedGraph<CPOSE>::edges_map_t::const_iterator &itEdge, bool ignoreCovariances );
 		}
 
-		/** A network of links constraining the relative pose of pairs of nodes, indentified by their numeric IDs (of type TPoseID).
+		/** A network of links constraining the relative pose of pairs of nodes, indentified by their numeric IDs (of type TNodeID).
 		  *  A link between nodes "i" and "j", that is, the pose \f$ p_{ij} \f$ or relative position of "j" with respect to "i",
 		  *   is maintained as a multivariate Gaussian distribution.
 		  *
@@ -153,20 +154,44 @@ namespace mrpt
 
 			/** @} */
 
-			/** @name Other methods
+			/** @name Utility methods
 			    @{ */
+
+			/** Computes the overall square error from all the pose constraints (edges) with respect to the global poses in \nodes 
+			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
+			  * \sa getEdgeSquareError
+			  * \exception std::exception On global poses not in \a nodes
+			  */
+			double getGlobalSquareError(bool ignoreCovariances = true) const { 
+				double sqErr=0;
+				const typename BASE::edges_map_t::const_iterator last_it=BASE::edges.end();
+				for (typename BASE::edges_map_t::const_iterator itEdge=BASE::edges.begin();itEdge!=last_it;++itEdge)
+					sqErr+=detail::graph_edge_sqerror(this,itEdge,ignoreCovariances);
+				return sqErr;
+			}
+
+			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \nodes 
+			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
+			  * \exception std::exception On global poses not in \a nodes
+			  */
+			inline double getEdgeSquareError(const typename BASE::edges_map_t::const_iterator &itEdge, bool ignoreCovariances = true) const { return detail::graph_edge_sqerror(this,itEdge,ignoreCovariances); }
+
+			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \nodes 
+			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
+			  * \exception std::exception On edge not existing or global poses not in \a nodes
+			  */
+			double getEdgeSquareError(const TNodeID from_id, const TNodeID to_id, bool ignoreCovariances = true ) const
+			{
+				const typename BASE::edges_map_t::const_iterator itEdge = BASE::edges.find( make_pair(from_id,to_id) );
+				ASSERTMSG_(itEdge!=BASE::edges.end(),format("Request for edge %u->%u that doesn't exist in graph.",static_cast<unsigned int>(from_id),static_cast<unsigned int>(to_id)));
+				return getEdgeSquareError(itEdge,ignoreCovariances);
+			}
 
 			/** Compute a simple estimation of the global coordinates of each node just from the information in all edges, sorted in a Dijkstra tree based on the current "root" node.
 			  *  Note that "global" coordinates are with respect to the node with the ID specified in \a root.
 			  * \sa node, root
 			  */
 			inline void dijkstra_nodes_estimate() { detail::graph_of_poses_dijkstra_init(this); }
-
-			/** @} */
-
-
-			/** @name Other methods
-			    @{ */
 
 			/** Empty all edges, nodes and set root to ID 0. */
 			inline void clear() {

@@ -160,25 +160,23 @@ namespace poses
 		double m_phi;	//!< The orientation of the pose, in radians.
 
 	 public:
-		 /** Constructor from an initial value of the pose.
-		  */
+		 /** Constructor from an initial value of the pose.*/
 		 CPose2D(const double& x=0,const double&y=0,const double& phi=0);
 
-		 /** Constructor from a CPoint2D object.
-		   */
+		 /** Constructor from a CPoint2D object. */
 		 CPose2D(const CPoint2D &);
 
-		 /** Aproximation!! Avoid its use, since information is lost.
-		   */
+		 /** Aproximation!! Avoid its use, since information is lost. */
 		 explicit CPose2D(const CPose3D &);
 
-		 /** Constructor from lightweight object.
-		  */
+		 /** Constructor from lightweight object. */
 		 CPose2D(const mrpt::math::TPose2D &);
 
-		 /** Constructor from CPoint3D with information loss.
-		  */
+		 /** Constructor from CPoint3D with information loss. */
 		 explicit CPose2D(const CPoint3D &);
+
+		 /** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
+		 inline CPose2D(TConstructorFlags_Poses constructor_dummy_param) {  m_is3D = false; }
 
 		 /** Get the phi angle of the 2D pose (in radians) */
 		 double phi() const { return m_phi; }
@@ -220,10 +218,19 @@ namespace poses
 		   */
 		 CPoint3D operator + (const CPoint3D& u) const ;
 
-		 /** The operator \f$ D = this \ominus b \f$  is the pose inverse compounding operator,
-		   *   the resulting pose D fulfils:  \f$ this = b \oplus D \f$, that is: \f$ b = a \oplus (b \ominus a) \f$
-		   */
-		 CPose2D  operator - (const CPose2D& b) const ;
+		/**  Makes \f$ this = A \ominus B \f$ this method is slightly more efficient than "this= A - B;" since it avoids the temporary object.
+		  *  \note A or B can be "this" without problems.
+		  * \sa composeFrom, composePoint
+		  */
+		void inverseComposeFrom(const CPose2D& A, const CPose2D& B );
+
+		/** Compute \f$ RET = this \oplus b \f$  */
+		inline CPose2D  operator - (const CPose2D& b) const
+		{
+			CPose2D ret(UNINITIALIZED_POSE);
+			ret.inverseComposeFrom(*this,b);
+			return ret;
+		}
 
 		 /** Scalar sum of components: This is diferent from poses
 		  *    composition, which is implemented as "+" operators in "CPose" derived classes.

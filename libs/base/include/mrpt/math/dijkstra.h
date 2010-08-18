@@ -198,16 +198,27 @@ namespace mrpt
 							}
 							ASSERT_(edge_ui!=graph.edges.end());
 							edge_ui_weight = (*functor_edge_weight)( graph, edge_ui->first.first,edge_ui->first.second, edge_ui->second );
+							edge_ui_found = true;
 						}
 
 						if ( (min_d+edge_ui_weight) < m_distances[i].dist) // the [] creates the entry if needed
 						{
 							m_distances[i].dist = m_distances_non_visited[i].dist = min_d+edge_ui_weight;
 							m_prev_node[i].id = u;
+							// If still not done above, detect the direction of the arc now:
+							if (!edge_ui_found)
+							{
+								edge_ui = graph.edges.find( make_pair(u,i) );
+								if ( edge_ui==graph.edges.end() ) {
+									edge_ui = graph.edges.find( make_pair(i,u));
+									edge_ui_reverse = true;
+								}
+								ASSERT_(edge_ui!=graph.edges.end());
+							}
+
 							if ( !edge_ui_reverse )
-								m_prev_arc[i] = make_pair(u,i);	// *u -> *i
-							else
-								m_prev_arc[i] = make_pair(i,u);	// *i -> *u
+									m_prev_arc[i] = make_pair(u,i);	// *u -> *i
+							else	m_prev_arc[i] = make_pair(i,u);	// *i -> *u
 						}
 					}
 				} while ( visitedCount<nNodes );
@@ -285,7 +296,7 @@ namespace mrpt
 					const TNodeID id_from = itArcs->second.first;
 					const TNodeID id_to   = itArcs->second.second;
 
-					std::list<TreeEdgeInfo> &edges = out_tree.edges_to_children[id_from];
+					std::list<TreeEdgeInfo> &edges = out_tree.edges_to_children[id==id_from ? id_to : id_from];
 					TreeEdgeInfo newEdge; 
 					newEdge.reverse = (id==id_from); // true: root towards leafs.
 					newEdge.id = id; 

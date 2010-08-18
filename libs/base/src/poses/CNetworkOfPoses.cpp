@@ -35,6 +35,7 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::system;
+using namespace mrpt::math;
 
 
 namespace mrpt
@@ -59,8 +60,9 @@ namespace mrpt
 			template <class EDGE> void write_EDGE_line( const std::pair<TNodeID,TNodeID> &edgeIDs,const EDGE & edge, std::ofstream &f);
 			template <> void write_EDGE_line<CPosePDFGaussianInf>( const std::pair<TNodeID,TNodeID> &edgeIDs,const CPosePDFGaussianInf & edge, std::ofstream &f)
 			{
-				//  EDGE2 to_id from_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
-				f << "EDGE2 " << edgeIDs.second << " " << edgeIDs.first << " " <<
+				//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
+				// **CAUTION** TORO docs say "from_id" "to_id" in the opposite order, but it seems from the data that this is the correct expected format.
+				f << "EDGE2 " << edgeIDs.first << " " << edgeIDs.second << " " <<
 					//format(" %.06f %.06f %.06f %e %e %e %e %e %e\n",
 						edge.mean.x()<<" "<<edge.mean.y()<<" "<<edge.mean.phi()<<" "<<
 						edge.cov_inv(0,0)<<" "<<edge.cov_inv(0,1)<<" "<<edge.cov_inv(1,1)<<" "<<
@@ -68,9 +70,10 @@ namespace mrpt
 			}
 			template <> void write_EDGE_line<CPose3DPDFGaussianInf>( const std::pair<TNodeID,TNodeID> &edgeIDs,const CPose3DPDFGaussianInf & edge, std::ofstream &f)
 			{
-				//  EDGE3 to_id from_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
+				//  EDGE3 from_id to_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
 				// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
-				f << "EDGE3 " << edgeIDs.second << " " << edgeIDs.first << " " <<
+				// **CAUTION** TORO docs say "from_id" "to_id" in the opposite order, but it seems from the data that this is the correct expected format.
+				f << "EDGE3 " << edgeIDs.first << " " << edgeIDs.second << " " <<
 					//format(" %.06f %.06f %.06f %.06f %.06f %.06f %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",
 						edge.mean.x()<<" "<<edge.mean.y()<<" "<<edge.mean.z()<<" "<<
 						edge.mean.roll()<<" "<<edge.mean.pitch()<<" "<<edge.mean.yaw()<<" "<<
@@ -211,9 +214,9 @@ namespace mrpt
 
 					// Recognized strings:
 					//  VERTEX2 id x y phi
-					//  EDGE2 to_id from_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
+					//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
 					//  VERTEX3 id x y z roll pitch yaw
-					//  EDGE3 to_id from_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
+					//  EDGE3 from_id to_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
 					//  EQUIV id1 id2
 					string key;
 					if ( !(s >> key) || key.empty() )
@@ -273,7 +276,7 @@ namespace mrpt
 					}
 					else if ( strCmpI(key,"EDGE2") )
 					{
-						//  EDGE2 to_id from_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
+						//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
 						//                                   s00   s01     s11    s22    s02    s12
 						//  Read values are:
 						//    [ s00 s01 s02 ]
@@ -281,7 +284,7 @@ namespace mrpt
 						//    [  -   -  s22 ]
 						//
 						TNodeID  to_id, from_id;
-						if (!(s>> to_id >> from_id))
+						if (!(s>> from_id >> to_id ))
 							THROW_EXCEPTION(format("Line %u: Error parsing EDGE2 line: '%s'", lineNum, lin.c_str() ) );
 
 						// EQUIV? Replace ID by new one.
@@ -317,9 +320,9 @@ namespace mrpt
 						if (!graph_is_3D)
 							THROW_EXCEPTION(format("Line %u: Try to load EDGE3 into a 2D graph: '%s'", lineNum, lin.c_str() ) );
 
-						//  EDGE3 to_id from_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
+						//  EDGE3 from_id to_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
 						TNodeID  to_id, from_id;
-						if (!(s>> to_id >> from_id))
+						if (!(s>> from_id >> to_id ))
 							THROW_EXCEPTION(format("Line %u: Error parsing EDGE3 line: '%s'", lineNum, lin.c_str() ) );
 
 						// EQUIV? Replace ID by new one.
@@ -408,19 +411,56 @@ void dijks_on_progress(const GRAPH &g, size_t visitedCount)
 }
 
 // --------------------------------------------------------------------------------
-//               dijkstra_nodes_estimate
+//               Implements: dijkstra_nodes_estimate
+//
+//	Compute a simple estimation of the global coordinates of each node just from the information in all edges, sorted in a Dijkstra tree based on the current "root" node.
+//	Note that "global" coordinates are with respect to the node with the ID specified in \a root.
 // --------------------------------------------------------------------------------
 template<class CPOSE> 
 void mrpt::poses::detail::graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE>*g)
 {
-	MRPT_TRY_START
+	MRPT_START
 
 	// Do Dijkstra shortest path from "root" to all other nodes:
-	mrpt::math::CDijkstra<CPOSE>  dijkstra(*g, g->root, NULL, &dijks_on_progress);
+	CDijkstra<CPOSE>  dijkstra(*g, g->root, NULL, &dijks_on_progress);
 
+	// Get the tree representation of the graph and traverse it 
+	//  from its root toward the leafs:
+	CDijkstra<CPOSE>::tree_graph_t  treeView;
+	dijkstra.getTreeGraph(treeView);
 
+	// This visitor class performs the real job of 
+	struct VisitorComputePoses : public CDijkstra<CPOSE>::tree_graph_t::Visitor
+	{
+		CNetworkOfPoses<CPOSE> * m_g; // The original graph
 
-	MRPT_TRY_END
+		VisitorComputePoses(CNetworkOfPoses<CPOSE> *g) : m_g(g) { }
+		virtual void OnVisitNode( const TNodeID parent_id, const typename tree_t::TEdgeInfo &edge_to_child, const size_t depth_level )
+		{
+			const TNodeID  child_id = edge_to_child.id;
+
+			// Compute the pose of "child_id" as parent_pose (+) edge_delta_pose, 
+			//  taking into account that that edge may be in reverse order and then have to invert the delta_pose:
+			if (!edge_to_child.reverse)
+			{	// pose_child = p_parent (+) p_delta
+				m_g->nodes[child_id].composeFrom( m_g->nodes[parent_id], edge_to_child.data->mean );
+			}
+			else
+			{	// pose_child = p_parent (+) [(-)p_delta]
+				m_g->nodes[child_id].composeFrom( m_g->nodes[parent_id], -edge_to_child.data->mean );
+			}
+		}
+	};
+
+	// Remove all global poses but for the root node, which is the origin:
+	g->nodes.clear();
+	g->nodes[g->root] = CPOSE::type_value();  // Typ: CPose2D() or CPose3D()
+
+	// Run the visit thru all nodes in the tree:
+	VisitorComputePoses  myVisitor(g);
+	treeView.visitBreadthFirst(treeView.root, myVisitor);
+
+	MRPT_END
 }
 
 // Explicit instantations:
@@ -429,6 +469,118 @@ template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<CPos
 template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<CPosePDFGaussianInf>(CNetworkOfPoses<CPosePDFGaussianInf>*g);
 template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<CPose3DPDFGaussianInf>(CNetworkOfPoses<CPose3DPDFGaussianInf>*g);
 
+
+// --------------------------------------------------------------------------------
+//               Implements: detail::graph_edge_sqerror
+//
+//	Compute the square error of a single edge, in comparison to the nodes global poses.
+// --------------------------------------------------------------------------------
+template<class CPOSE> 
+double mrpt::poses::detail::graph_edge_sqerror(
+	const CNetworkOfPoses<CPOSE>*g, 
+	const typename CDirectedGraph<CPOSE>::edges_map_t::const_iterator &itEdge, 
+	bool ignoreCovariances )
+{
+	MRPT_START
+	
+	// Get node IDs:
+	const TNodeID from_id = itEdge->first.first;
+	const TNodeID to_id   = itEdge->first.second;
+
+	// And their global poses as stored in "nodes"
+	typename CNetworkOfPoses<CPOSE>::global_poses_t::const_iterator itPoseFrom = g->nodes.find(from_id);
+	typename CNetworkOfPoses<CPOSE>::global_poses_t::const_iterator itPoseTo   = g->nodes.find(to_id);
+	ASSERTMSG_(itPoseFrom!=g->nodes.end(), format("Node %u doesn't have a global pose in 'nodes'.", static_cast<unsigned int>(from_id)))
+	ASSERTMSG_(itPoseTo!=g->nodes.end(), format("Node %u doesn't have a global pose in 'nodes'.", static_cast<unsigned int>(to_id)))
+
+	// The global poses:
+	const typename CPOSE::type_value &from_mean = itPoseFrom->second;
+	const typename CPOSE::type_value &to_mean   = itPoseTo->second;
+
+	// NODE_TO as seen from NODE_FROM:
+	typename CPOSE::type_value delta_pose;
+	delta_pose.inverseComposeFrom(to_mean,from_mean);
+
+	// The delta_pose as stored in the edge:
+	const CPOSE &edge_delta_pose = itEdge->second;
+	const typename CPOSE::type_value &edge_delta_pose_mean = edge_delta_pose.mean;
+
+	if (ignoreCovariances)
+	{	// Square Euclidean distance
+		double sqErr = 0;
+		for (size_t i=0;i<typename CPOSE::type_value::static_size;i++)
+			sqErr+= square( delta_pose[i] - edge_delta_pose_mean[i] );
+		return sqErr;
+	}
+	else
+	{
+		// Square Mahalanobis distance
+		THROW_EXCEPTION("TO DO")
+		return 0;
+	}
+	MRPT_END
+}
+
+// Explicit instantations:
+template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPosePDFGaussian>(const CNetworkOfPoses<CPosePDFGaussian>*g, const CDirectedGraph<CPosePDFGaussian>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
+template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPose3DPDFGaussian>(const CNetworkOfPoses<CPose3DPDFGaussian>*g, const CDirectedGraph<CPose3DPDFGaussian>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
+template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPosePDFGaussianInf>(const CNetworkOfPoses<CPosePDFGaussianInf>*g, const CDirectedGraph<CPosePDFGaussianInf>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
+template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPose3DPDFGaussianInf>(const CNetworkOfPoses<CPose3DPDFGaussianInf>*g, const CDirectedGraph<CPose3DPDFGaussianInf>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
+
+#if 0
+double TreeOptimizer2::error(const Edge* e) const{
+  const Vertex* v1=e->v1;
+  const Vertex* v2=e->v2;
+  
+  Pose p1=v1->pose;
+  Pose p2=v2->pose;
+  
+  DEBUG(2) << " p1=" << p1.x() << " " << p1.y() << " " << p1.theta() << endl;
+  DEBUG(2) << " p2=" << p2.x() << " " << p2.y() << " " << p2.theta() << endl;
+  
+  Transformation et=e->transformation;
+  Transformation t1(p1);
+  Transformation t2(p2);
+  
+  Transformation t12=t1*et;
+    
+  Pose p12=t12.toPoseType();
+  DEBUG(2) << " pt2=" << p12.x() << " " << p12.y() << " " << p12.theta() << endl;
+
+  Pose r(p12.x()-p2.x(), p12.y()-p2.y(), p12.theta()-p2.theta());
+  double angle=r.theta();
+  angle=atan2(sin(angle),cos(angle));
+  r.theta()=angle;
+  DEBUG(2) << " e=" << r.x() << " " << r.y() << " " << r.theta() << endl;
+    
+  InformationMatrix S=e->informationMatrix;
+  InformationMatrix R;
+  R.values[0][0]=t1.rotationMatrix[0][0];
+  R.values[0][1]=t1.rotationMatrix[0][1];
+  R.values[0][2]=0;
+      
+  R.values[1][0]=t1.rotationMatrix[1][0];
+  R.values[1][1]=t1.rotationMatrix[1][1];
+  R.values[1][2]=0;
+      
+  R.values[2][0]=0;
+  R.values[2][1]=0;
+  R.values[2][2]=1;
+
+  InformationMatrix W=R*S*R.transpose();
+
+  Pose r1=W*r;
+  return r.x()*r1.x()+r.y()*r1.y()+r.theta()*r1.theta();
+}
+
+double TreeOptimizer2::error() const{
+  double globalError=0.;
+  for (TreePoseGraph2::EdgeMap::const_iterator it=edges.begin(); it!=edges.end(); it++){
+    globalError+=error(it->second);
+  }
+  return globalError;
+}
+#endif
 
 //   Implementation of serialization stuff
 // --------------------------------------------------------------------------------

@@ -29,6 +29,7 @@
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
 
+using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::poses;
@@ -59,7 +60,7 @@ void TestGlobalOptimizationPosesGraph()
 {
 	CTicTac tictac;
 	CNetworkOfPoses2D	graph_links;
-	CNetworkOfPoses2D::type_global_poses	optimal_poses, optimal_poses_dijkstra;
+	CNetworkOfPoses2D::global_poses_pdf_t optimal_poses, optimal_poses_dijkstra;
 
 	randomGenerator.randomize(123);
 
@@ -96,33 +97,33 @@ void TestGlobalOptimizationPosesGraph()
 	// ----------------------------
 	// First pass: 
 	//  With max_iters=0 -> Return un-optimized, Dijkstra coordinates
-	mrpt::slam::optimizePoseGraph_levmarq(graph_links,optimal_poses_dijkstra,0);  
+	graphslam::optimizePoseGraph_levmarq(graph_links,optimal_poses_dijkstra,0);  
 
 	// Second pass: The real optimization
 	tictac.Tic();
-	mrpt::slam::optimizePoseGraph_levmarq(graph_links,optimal_poses,300);
+	graphslam::optimizePoseGraph_levmarq(graph_links,optimal_poses,300);
 	cout << "Time: " << tictac.Tac() * 1000 << " ms" << endl;
 	
 	// Dump resulting poses:
-	for (CNetworkOfPoses2D::type_global_poses::const_iterator i=optimal_poses_dijkstra.begin();i!=optimal_poses_dijkstra.end();++i)
+	for (CNetworkOfPoses2D::global_poses_pdf_t::const_iterator i=optimal_poses_dijkstra.begin();i!=optimal_poses_dijkstra.end();++i)
 		cout << "Node #" << i->first << " -> " << i->second.mean << endl;
 	
 	cout << endl;
 
-	for (CNetworkOfPoses2D::type_global_poses::const_iterator i=optimal_poses.begin();i!=optimal_poses.end();++i)
+	for (CNetworkOfPoses2D::global_poses_pdf_t::const_iterator i=optimal_poses.begin();i!=optimal_poses.end();++i)
 		cout << "Node #" << i->first << " -> " << i->second.mean << endl;
 
 
 	// Measure overall error:
 	double avr_err = 0;
-	for (CNetworkOfPoses2D::type_global_poses::const_iterator p=optimal_poses.begin();p!=optimal_poses.end();++p)
+	for (CNetworkOfPoses2D::global_poses_pdf_t::const_iterator p=optimal_poses.begin();p!=optimal_poses.end();++p)
 		avr_err += real_poses[p->first].sqrDistanceTo( p->second.mean );
 
 	avr_err/=optimal_poses.size();
 	avr_err = sqrt(avr_err);
 
 	double avr_err_dijks  = 0;
-	for (CNetworkOfPoses2D::type_global_poses::const_iterator p= optimal_poses_dijkstra.begin();p!=optimal_poses_dijkstra.end();++p)
+	for (CNetworkOfPoses2D::global_poses_pdf_t::const_iterator p= optimal_poses_dijkstra.begin();p!=optimal_poses_dijkstra.end();++p)
 		avr_err_dijks  += real_poses[p->first].sqrDistanceTo( p->second.mean );
 	avr_err_dijks/=optimal_poses.size();
 	avr_err_dijks = sqrt(avr_err_dijks);
@@ -153,7 +154,7 @@ void TestGlobalOptimizationPosesGraph()
 	scene2->insert( mrpt::opengl::CGridPlaneXY::Create(-40,40,-40,40,0,1) );
 
 	// Add one axis for each pose:
-	for (CNetworkOfPoses2D::type_global_poses::const_iterator p=optimal_poses.begin();p!=optimal_poses.end();++p)
+	for (CNetworkOfPoses2D::global_poses_pdf_t::const_iterator p=optimal_poses.begin();p!=optimal_poses.end();++p)
 	{
 		CSetOfObjectsPtr obj = opengl::stock_objects::CornerXYZ();
 		obj->setName(format("%u",(unsigned)p->first));

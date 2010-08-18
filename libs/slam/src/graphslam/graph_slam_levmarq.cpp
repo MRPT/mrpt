@@ -189,7 +189,7 @@ namespace mrpt
 					optimizePoseGraph_levmarq
   ---------------------------------------------------------------*/
 template <class CPOSE>
-double mrpt::slam::optimizePoseGraph_levmarq(
+double mrpt::graphslam::optimizePoseGraph_levmarq(
 	const CNetworkOfPoses<CPOSE>  &pose_graph,
 	std::map<TNodeID,CPOSE>	      &optimal_poses,
 	const size_t                   max_iterations,
@@ -264,7 +264,7 @@ double mrpt::slam::optimizePoseGraph_levmarq(
 
 		ASSERT_( nGlobalPosesToOpt == (lstNode_IDs.size()-1) );
 
-		CDijkstra<CPOSE>  dijkstra( pose_graph, nodeID_origin, lm_functor_edge_weight );
+		CDijkstra<CPOSE>  dijkstra( pose_graph, nodeID_origin ); //, lm_functor_edge_weight );
 
 		std::list<std::pair<TNodeID,TNodeID> >	pathEdges; // The optimal path for each node
 
@@ -428,13 +428,13 @@ double mrpt::slam::optimizePoseGraph_levmarq(
 
 
 // Explicit instantations:
-template double SLAM_IMPEXP mrpt::slam::optimizePoseGraph_levmarq(
+template double SLAM_IMPEXP mrpt::graphslam::optimizePoseGraph_levmarq(
 	const CNetworkOfPoses<CPosePDFGaussian> &pose_graph,
 	std::map<TNodeID,CPosePDFGaussian>	    &optimal_poses,
 	const size_t                   max_iterations,
 	const TNodeID  origin_pose );
 
-template double SLAM_IMPEXP mrpt::slam::optimizePoseGraph_levmarq(
+template double SLAM_IMPEXP mrpt::graphslam::optimizePoseGraph_levmarq(
 	const CNetworkOfPoses<CPose3DPDFGaussian> &pose_graph,
 	std::map<TNodeID,CPose3DPDFGaussian>	    &optimal_poses,
 	const size_t                   max_iterations,

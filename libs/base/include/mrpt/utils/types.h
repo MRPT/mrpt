@@ -248,7 +248,7 @@ namespace mrpt
 		struct BASE_IMPEXP TColorf
 		{
 			TColorf(float r=0,float g=0,float b=0, float alpha=1.0f) : R(r),G(g),B(b),A(alpha) { }
-			explicit TColorf(const TColor &col) : R(col.R*(1./255)),G(col.G*(1./255)),B(col.B*(1./255)),A(col.A*(1./255)) { }
+			explicit TColorf(const TColor &col) : R(col.R*(1.f/255)),G(col.G*(1.f/255)),B(col.B*(1.f/255)),A(col.A*(1.f/255)) { }
 			float R,G,B,A;
 		};
 

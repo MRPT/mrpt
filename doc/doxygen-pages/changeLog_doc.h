@@ -62,6 +62,7 @@
 		- mrpt::opengl::CPointCloud & mrpt::opengl::CPointCloudColoured now have an option to draw smoothed points (see mrpt::opengl::CPointCloud::enablePointSmooth).
 		- mrpt::utils::TColorf: New explicit copy constructor from a mrpt::utils::TColor
 		- mrpt::opengl::CRenderizable: Many "set" methods that returned "void" now return a reference to "this" so several calls can be chained (e.g. obj.setColor(...).setScale(1.0) )
+		- mrpt::gui::CDisplayWindow3D doesn't report ALT+Enter as a keystroke event anymore.
 	- New functions:
 		- mrpt::slam::carmen_log_parse_line() a tool for parsing CARMEN logs.
 		- mrpt::opengl::graph_tools::graph_visualize(), a visualizer of graphs of pose constraints.
@@ -71,6 +72,7 @@
 	- New examples:
 		- phidgetProximitySensor
 	- BUG FIXES:
+		- FIXED: mrpt::gui::CDisplayWindow3D crashes when hitting ALT+Enter for fullscreen when user is waiting for a key to close the window.
 		- icp-slam: Fixed potential wrong processing of datasets in observations-only format where the odometry initial value is not (0,0,0).
 		- Build errors with some OpenCV versions (<a href="http://www.mrpt.org/node/369" >Bug report & patch</a> by "iXce").
 		- FIXED: Text labels of CRenderizable classes inherited the color from the objects; now they're always white.

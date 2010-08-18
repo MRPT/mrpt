@@ -211,18 +211,15 @@ CPoint3D CPose2D::operator + (const CPoint3D& u)const
 The operator D="this"-b is the pose inverse compounding operator.
    The resulting pose "D" is the diference between this pose and "b"
  ---------------------------------------------------------------*/
-CPose2D  CPose2D::operator - (const CPose2D& b)const
+void CPose2D::inverseComposeFrom(const CPose2D& A, const CPose2D& B )
 {
-	double ccos = cos(b.m_phi);
-	double ssin = sin(b.m_phi);
+	const double ccos = cos(B.m_phi);
+	const double ssin = sin(B.m_phi);
 
-	return CPose2D(
-		 (m_x - b.m_x) * ccos + (m_y - b.m_y) * ssin,
-		-(m_x - b.m_x) * ssin + (m_y - b.m_y) * ccos,
-		m_phi - b.m_phi );
+	m_x = (A.m_x - B.m_x) * ccos + (A.m_y - B.m_y) * ssin;
+	m_y =-(A.m_x - B.m_x) * ssin + (A.m_y - B.m_y) * ccos;
+	m_phi = A.m_phi - B.m_phi;
 }
-
-
 
 /*---------------------------------------------------------------
  Scalar sum of components: This is diferent from poses

@@ -61,7 +61,7 @@ namespace mrpt
 
 
 template <class CPOSE>
-double mrpt::slam::optimizePoseGraph_stogradesc(
+double mrpt::graphslam::optimizePoseGraph_stogradesc(
 	const CNetworkOfPoses<CPOSE>  &pose_graph,
 	std::map<TNodeID,CPOSE>	      &optimal_poses,
 	const size_t                   max_iterations,
@@ -79,13 +79,13 @@ double mrpt::slam::optimizePoseGraph_stogradesc(
 
 
 // Explicit instantations:
-template double SLAM_IMPEXP mrpt::slam::optimizePoseGraph_stogradesc(
+template double SLAM_IMPEXP mrpt::graphslam::optimizePoseGraph_stogradesc(
 	const CNetworkOfPoses<CPosePDFGaussian> &pose_graph,
 	std::map<TNodeID,CPosePDFGaussian>	    &optimal_poses,
 	const size_t                   max_iterations,
 	const TNodeID  origin_pose );
 
-template double SLAM_IMPEXP mrpt::slam::optimizePoseGraph_stogradesc(
+template double SLAM_IMPEXP mrpt::graphslam::optimizePoseGraph_stogradesc(
 	const CNetworkOfPoses<CPose3DPDFGaussian> &pose_graph,
 	std::map<TNodeID,CPose3DPDFGaussian>	    &optimal_poses,
 	const size_t                   max_iterations,

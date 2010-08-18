@@ -168,6 +168,10 @@ void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(CDisplayWindow3D *m_
 					win->ShowFullScreen( !win->IsFullScreen() );
 				}
 			}
+			// Alt+Enter: Don't notify on this key stroke, since if we're switching to fullscreen 
+			//  and the user is waiting for a key to close the window, a runtime crash will occur, 
+			//  so return now:
+			return;
 		}
 
 		const int 				code = ev.GetKeyCode();

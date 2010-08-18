@@ -34,7 +34,8 @@
 
 namespace mrpt
 {
-	namespace slam
+	/** SLAM methods related to graphs of pose constraints */
+	namespace graphslam
 	{
 		/** An algorithm for optimizing a network of 2D or 3D pose links based on Levenberg-Marquardt error minimization.
 		  *  It is computed the list of optimal, consistent global coordinates for each node in the graph. Relative poses

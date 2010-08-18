@@ -45,6 +45,9 @@ CSetOfObjectsPtr graph_tools::graph_visualize(
 {
 	MRPT_TRY_START
 
+	// Is a 2D or 3D graph network?
+	const bool is_3D_graph = (CPOSE::state_length==6) || (CPOSE::state_length==7); // 6:XYZ+Euler, 7:XYZ+Quat
+
 	CSetOfObjectsPtr ret = CSetOfObjects::Create();
 
 	const bool   show_ID_labels           = 0!=extra_params.getWithDefaultVal("show_ID_labels", 0);
@@ -110,7 +113,8 @@ CSetOfObjectsPtr graph_tools::graph_visualize(
 		{
 			const CPose3D p = CPose3D(itNod->second); // Convert to 3D from whatever its real type.
 			CSetOfObjectsPtr gl_corner = show_node_corners ?
-				stock_objects::CornerXYZSimple(nodes_corner_scale, 1.0 /*line width*/ ) : CSetOfObjects::Create();
+				(is_3D_graph ? stock_objects::CornerXYZSimple(nodes_corner_scale, 1.0 /*line width*/ ) : stock_objects::CornerXYSimple(nodes_corner_scale, 1.0 /*line width*/ )) 
+				: CSetOfObjects::Create();
 			gl_corner->setPose( p );
 			if (show_ID_labels) // don't show IDs twice!
 			{
