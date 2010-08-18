@@ -47,10 +47,10 @@ CSetOfObjectsPtr graph_tools::graph_visualize(
 
 	CSetOfObjectsPtr ret = CSetOfObjects::Create();
 
-	const bool   show_ID_labels           = extra_params.getWithDefaultVal("show_ID_labels", false);
-	const bool   show_ground_grid         = extra_params.getWithDefaultVal("show_ground_grid", true);
-	const bool   show_edges               = extra_params.getWithDefaultVal("show_edges", true);
-	const bool   show_node_corners        = extra_params.getWithDefaultVal("show_node_corners", true);
+	const bool   show_ID_labels           = 0!=extra_params.getWithDefaultVal("show_ID_labels", 0);
+	const bool   show_ground_grid         = 0!=extra_params.getWithDefaultVal("show_ground_grid", 1);
+	const bool   show_edges               = 0!=extra_params.getWithDefaultVal("show_edges", 1);
+	const bool   show_node_corners        = 0!=extra_params.getWithDefaultVal("show_node_corners", 1);
 	const double nodes_point_size         = extra_params.getWithDefaultVal("nodes_point_size", 0. );
 	const double nodes_corner_scale       = extra_params.getWithDefaultVal("nodes_corner_scale", 0.7 );
 	const unsigned int nodes_point_color  = extra_params.getWithDefaultVal("nodes_point_color", (unsigned int)0xA0A0A0 );

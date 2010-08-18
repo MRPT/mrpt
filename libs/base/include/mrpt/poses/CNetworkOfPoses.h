@@ -50,6 +50,7 @@ namespace mrpt
 		{
 			template<class CPOSE> void BASE_IMPEXP save_graph_of_poses_from_text_file(const CNetworkOfPoses<CPOSE> *g, const std::string &fil);
 			template<class CPOSE> void BASE_IMPEXP load_graph_of_poses_from_text_file(CNetworkOfPoses<CPOSE>*g, const std::string &fil);
+			template<class CPOSE> void BASE_IMPEXP graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE>*g);
 		}
 
 		/** A network of links constraining the relative pose of pairs of nodes, indentified by their numeric IDs (of type TPoseID).
@@ -159,7 +160,7 @@ namespace mrpt
 			  *  Note that "global" coordinates are with respect to the node with the ID specified in \a root.
 			  * \sa node, root
 			  */
-			void dijkstra_nodes_estimate();
+			inline void dijkstra_nodes_estimate() { detail::graph_of_poses_dijkstra_init(this); }
 
 			/** @} */
 
@@ -214,7 +215,7 @@ namespace mrpt
 		/** The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian, also implementing serialization.
 		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
 		  */
-		class CNetworkOfPoses2D : public CNetworkOfPoses<CPosePDFGaussian>, public mrpt::utils::CSerializable
+		class BASE_IMPEXP CNetworkOfPoses2D : public CNetworkOfPoses<CPosePDFGaussian>, public mrpt::utils::CSerializable
 		{
 			DEFINE_SERIALIZABLE( CNetworkOfPoses2D )	// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE_GRAPH
@@ -225,7 +226,7 @@ namespace mrpt
 		/** The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian, also implementing serialization.
 		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
 		  */
-		class CNetworkOfPoses3D : public CNetworkOfPoses<CPose3DPDFGaussian>, public mrpt::utils::CSerializable
+		class BASE_IMPEXP CNetworkOfPoses3D : public CNetworkOfPoses<CPose3DPDFGaussian>, public mrpt::utils::CSerializable
 		{
 			DEFINE_SERIALIZABLE( CNetworkOfPoses3D )	// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE_GRAPH
@@ -236,7 +237,7 @@ namespace mrpt
 		/** The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf, also implementing serialization.
 		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
 		  */
-		class CNetworkOfPoses2DInf : public CNetworkOfPoses<CPosePDFGaussianInf>, public mrpt::utils::CSerializable
+		class BASE_IMPEXP CNetworkOfPoses2DInf : public CNetworkOfPoses<CPosePDFGaussianInf>, public mrpt::utils::CSerializable
 		{
 			DEFINE_SERIALIZABLE( CNetworkOfPoses2DInf )	// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE_GRAPH
@@ -247,7 +248,7 @@ namespace mrpt
 		/** The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussianInf, also implementing serialization.
 		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
 		  */
-		class CNetworkOfPoses3DInf : public CNetworkOfPoses<CPose3DPDFGaussianInf>, public mrpt::utils::CSerializable
+		class BASE_IMPEXP CNetworkOfPoses3DInf : public CNetworkOfPoses<CPose3DPDFGaussianInf>, public mrpt::utils::CSerializable
 		{
 			DEFINE_SERIALIZABLE( CNetworkOfPoses3DInf )	// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE_GRAPH

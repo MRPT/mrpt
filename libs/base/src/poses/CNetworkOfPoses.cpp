@@ -403,20 +403,19 @@ template void BASE_IMPEXP mrpt::poses::detail::load_graph_of_poses_from_text_fil
 
 void  dijks_on_progress(size_t visitedCount)
 {
-	//if (visitedCount & 0x20 == 0 )
-		cout << "dijkstra: " << visitedCount << endl;
+	//if ((visitedCount & 0x8F) == 0 ) 	cout << "dijkstra: " << visitedCount << endl;
 }
 
 // --------------------------------------------------------------------------------
 //               dijkstra_nodes_estimate
 // --------------------------------------------------------------------------------
-template <class CPOSE>
-void CNetworkOfPoses<CPOSE>::dijkstra_nodes_estimate()
+template<class CPOSE> 
+void mrpt::poses::detail::graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE>*g)
 {
 	MRPT_TRY_START
 
 	// Do Dijkstra shortest path from "root" to all other nodes:
-	mrpt::math::CDijkstra<CPOSE>  dijkstra(*this, this->root, NULL, &dijks_on_progress);
+	mrpt::math::CDijkstra<CPOSE>  dijkstra(*g, g->root, NULL, &dijks_on_progress);
 
 
 
@@ -424,10 +423,10 @@ void CNetworkOfPoses<CPOSE>::dijkstra_nodes_estimate()
 }
 
 // Explicit instantations:
-template class CNetworkOfPoses<CPosePDFGaussian>;
-template class CNetworkOfPoses<CPose3DPDFGaussian>;
-template class CNetworkOfPoses<CPosePDFGaussianInf>;
-template class CNetworkOfPoses<CPose3DPDFGaussianInf>;
+template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<CPosePDFGaussian>(CNetworkOfPoses<CPosePDFGaussian>*g);
+template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<CPose3DPDFGaussian>(CNetworkOfPoses<CPose3DPDFGaussian>*g);
+template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<CPosePDFGaussianInf>(CNetworkOfPoses<CPosePDFGaussianInf>*g);
+template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<CPose3DPDFGaussianInf>(CNetworkOfPoses<CPose3DPDFGaussianInf>*g);
 
 
 //   Implementation of serialization stuff

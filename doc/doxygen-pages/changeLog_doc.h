@@ -53,7 +53,8 @@
 			- mrpt::poses::CPosePDFGaussianInf
 			- mrpt::poses::CPose3DPDFGaussianInf
 	- Changes in classes:
-		- mrpt::poses::CNetworkOfPoses many improvements and new methods (see its documentation).
+		- mrpt::poses::CNetworkOfPoses has many improvements and new methods (see its documentation).
+		- mrpt::math::CDijkstra is now much faster (eg: 70x times faster for graphs of 4K nodes & 60K arcs).
 		- Added a new type mrpt::utils::TNodeID, used in graph-related classes: mrpt::math::CDirectedGraph, mrpt::math::CDijkstra
 		- mrpt::opengl::CPointCloud & mrpt::opengl::CPointCloudColoured now have an option to draw smoothed points (see mrpt::opengl::CPointCloud::enablePointSmooth).
 		- mrpt::utils::TColorf: New explicit copy constructor from a mrpt::utils::TColor

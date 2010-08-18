@@ -156,7 +156,7 @@ namespace mrpt
 				return aux.size();
 			}
 
-			/** Return the list of all neighbors of "nodeID", by creating a list of their node IDs. */
+			/** Return the list of all neighbors of "nodeID", by creating a list of their node IDs. \sa getAdjacencyMatrix */
 			void getNeighborsOf(const TNodeID nodeID, std::set<TNodeID> &neighborIDs) const
 			{
 				neighborIDs.clear();
@@ -166,6 +166,20 @@ namespace mrpt
 						neighborIDs.insert(it->first.second);
 					else if (it->first.second==nodeID)
 						neighborIDs.insert(it->first.first);
+				}
+			}
+
+			/** Return a map from node IDs to all its neighbors (that is, connected nodes, regardless of the edge direction) 
+			  *  This is a much more efficient method than calling getNeighborsOf() for each node in the graph.
+			  * \sa getNeighborsOf  
+			  */
+			void getAdjacencyMatrix( std::map<TNodeID, std::set<TNodeID> > &outAdjacency ) const
+			{
+				outAdjacency.clear();
+				for (typename edges_map_t::const_iterator it=edges.begin();it!=edges.end();++it)
+				{
+					outAdjacency[it->first.first].insert(it->first.second);
+					outAdjacency[it->first.second].insert(it->first.first);
 				}
 			}
 
