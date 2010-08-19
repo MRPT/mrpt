@@ -169,9 +169,9 @@ namespace mrpt
 				}
 			}
 
-			/** Return a map from node IDs to all its neighbors (that is, connected nodes, regardless of the edge direction) 
+			/** Return a map from node IDs to all its neighbors (that is, connected nodes, regardless of the edge direction)
 			  *  This is a much more efficient method than calling getNeighborsOf() for each node in the graph.
-			  * \sa getNeighborsOf  
+			  * \sa getNeighborsOf
 			  */
 			void getAdjacencyMatrix( std::map<TNodeID, std::set<TNodeID> > &outAdjacency ) const
 			{
@@ -212,7 +212,7 @@ namespace mrpt
 			typedef std::map<TNodeID,TListEdges>  TMapNode2ListEdges;
 
 			/** @name Data
-			    @{ */ 
+			    @{ */
 			TNodeID            root;               //!< The root of the tree
 			TMapNode2ListEdges edges_to_children;  //!< The edges of each node
 			/** @} */
@@ -226,7 +226,7 @@ namespace mrpt
 			/** Virtual base class for user-defined visitors */
 			struct Visitor
 			{
-				typedef typename CDirectedTree<TYPE_EDGES> tree_t;
+				typedef CDirectedTree<TYPE_EDGES> tree_t;
 
 				/** Virtual method to be implemented by the user and which will be called during the visit to a graph with visitDepthFirst or visitBreadthFirst
 				  *  Specifically, the method will be called once for each <b>edge</b> in the tree.
@@ -241,10 +241,10 @@ namespace mrpt
 			void visitDepthFirst( const TNodeID root, Visitor & user_visitor, const size_t root_depth_level =0 ) const
 			{
 				const size_t next_depth_level = root_depth_level+1;
-				TMapNode2ListEdges::const_iterator itChildren = edges_to_children.find(root);
+				typename TMapNode2ListEdges::const_iterator itChildren = edges_to_children.find(root);
 				if (itChildren==edges_to_children.end()) return; // No children
 				const TListEdges &children = itChildren->second;
-				for (TListEdges::const_iterator itEdge=children.begin();itEdge!=children.end();++itEdge)
+				for (typename TListEdges::const_iterator itEdge=children.begin();itEdge!=children.end();++itEdge)
 				{
 					user_visitor.OnVisitNode(root,*itEdge,next_depth_level);
 					visitDepthFirst(itEdge->id,user_visitor, next_depth_level); // Recursive depth-first call.
@@ -255,12 +255,12 @@ namespace mrpt
 			void visitBreadthFirst( const TNodeID root, Visitor & user_visitor, const size_t root_depth_level =0  ) const
 			{
 				const size_t next_depth_level = root_depth_level+1;
-				TMapNode2ListEdges::const_iterator itChildren = edges_to_children.find(root);
+				typename TMapNode2ListEdges::const_iterator itChildren = edges_to_children.find(root);
 				if (itChildren==edges_to_children.end()) return; // No children
 				const TListEdges &children = itChildren->second;
-				for (TListEdges::const_iterator itEdge=children.begin();itEdge!=children.end();++itEdge)
+				for (typename TListEdges::const_iterator itEdge=children.begin();itEdge!=children.end();++itEdge)
 					user_visitor.OnVisitNode(root,*itEdge,next_depth_level);
-				for (TListEdges::const_iterator itEdge=children.begin();itEdge!=children.end();++itEdge)
+				for (typename TListEdges::const_iterator itEdge=children.begin();itEdge!=children.end();++itEdge)
 					visitDepthFirst(itEdge->id,user_visitor,next_depth_level); // Recursive breath-first call.
 			}
 
@@ -281,13 +281,13 @@ namespace mrpt
 				{
 					std::ostringstream  &m_s;
 					CMyVisitor(std::ostringstream &s) : m_s(s) { }
-					virtual void OnVisitNode( const TNodeID parent, const tree_t::TEdgeInfo &edge_to_child, const size_t depth_level ) {
-						m_s << string(depth_level*5, ' ') << (edge_to_child.reverse ? "<-" : "->" ) //;
-							<< setw(3) << edge_to_child.id << endl;
+					virtual void OnVisitNode( const TNodeID parent, const typename mrpt::math::CDirectedTree<TYPE_EDGES>::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level ) {
+						m_s << std::string(depth_level*5, ' ') << (edge_to_child.reverse ? "<-" : "->" ) //;
+							<< std::setw(3) << edge_to_child.id << std::endl;
 					}
 				};
 				CMyVisitor myVisitor(s);
-				s << setw(3) << root << endl;
+				s << std::setw(3) << root << std::endl;
 				visitDepthFirst( root, myVisitor );
 				return s.str();
 			}

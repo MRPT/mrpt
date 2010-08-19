@@ -112,9 +112,14 @@ namespace poses
 		  */
 		void  changeCoordinatesReference( const CPose3D &newReferenceBase );
 
+		/** This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
+		  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object.
+		  */
+		void  changeCoordinatesReference( const CPose2D &newReferenceBase );
+
 		/** Rotate the covariance matrix by replacing it by \f$ \mathbf{R}~\mathbf{COV}~\mathbf{R}^t \f$, where \f$ \mathbf{R} = \left[ \begin{array}{ccc} \cos\alpha & -\sin\alpha & 0 \\ \sin\alpha & \cos\alpha & 0 \\ 0 & 0 & 1 \end{array}\right] \f$.
 		  */
-		void  rotateCov(const double& ang);
+		void  rotateCov(const double ang);
 
 		/** Set \f$ this = x1 \ominus x0 \f$ , computing the mean using the "-" operator and the covariances through the corresponding Jacobians (For 'x0' and 'x1' being independent variables!).
 		  */

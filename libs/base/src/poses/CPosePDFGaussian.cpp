@@ -221,16 +221,29 @@ void  CPosePDFGaussian::changeCoordinatesReference(const CPose3D &newReferenceBa
 /*---------------------------------------------------------------
 						changeCoordinatesReference
  ---------------------------------------------------------------*/
-void  CPosePDFGaussian::rotateCov(const double &ang)
+void  CPosePDFGaussian::changeCoordinatesReference(const CPose2D &newReferenceBase )
 {
-	CMatrixDouble33	rot;
+	// The mean:
+	mean = newReferenceBase + mean;
+	// The covariance:
+	rotateCov( newReferenceBase.phi() );
+}
 
-	rot(0,0)=rot(1,1)=cos(ang);
-	rot(0,1)=-sin(ang);
-	rot(1,0)=sin(ang);
-	rot(2,2)=1;
+/*---------------------------------------------------------------
+						changeCoordinatesReference
+ ---------------------------------------------------------------*/
+void  CPosePDFGaussian::rotateCov(const double ang)
+{
+	const double ccos = cos(ang);
+	const double ssin = sin(ang);
 
-	rot.multiply_HCHt( CMatrixDouble33(cov), cov );  // Output is cov, make a temporary copy ;-)
+	const double rot_vals[] = {
+		ccos, -ssin, 0.,
+		ssin, ccos,  0.,
+		0.  ,   0.,  1. };
+
+	const CMatrixDouble33 rot(rot_vals);
+	rot.multiply_HCHt( CMatrixDouble33(cov), cov );  // cov is I & O, make a temporary copy ;-)
 }
 
 /*---------------------------------------------------------------
@@ -337,18 +350,18 @@ void	 CPosePDFGaussian::inverse(CPosePDF &o) const
 	// The mean:
 	out->mean = CPose2D(0,0,0) - mean;
 
-	// The covariance: 
+	// The covariance:
 	const double ccos = ::cos(mean.phi());
 	const double ssin = ::sin(mean.phi());
-	
+
 	// jacobian:
 	const double H_values[] = {
 		-ccos, -ssin,  mean.x()*ssin-mean.y()*ccos,
 		 ssin, -ccos,  mean.x()*ccos+mean.y()*ssin,
-		 0   ,     0,  -1 
-		};	
+		 0   ,     0,  -1
+		};
 	const CMatrixDouble33 H(H_values);
-	
+
 	H.multiply_HCHt(this->cov, out->cov); // o.cov = H * cov * Ht
 }
 

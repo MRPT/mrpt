@@ -51,6 +51,7 @@ namespace mrpt
 			template<class CPOSE> void BASE_IMPEXP save_graph_of_poses_from_text_file(const CNetworkOfPoses<CPOSE> *g, const std::string &fil);
 			template<class CPOSE> void BASE_IMPEXP load_graph_of_poses_from_text_file(CNetworkOfPoses<CPOSE>*g, const std::string &fil);
 			template<class CPOSE> void BASE_IMPEXP graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE>*g);
+			template<class CPOSE> size_t BASE_IMPEXP graph_of_poses_collapse_dup_edges(CNetworkOfPoses<CPOSE>*g);
 			template<class CPOSE> double BASE_IMPEXP graph_edge_sqerror(const CNetworkOfPoses<CPOSE>*g, const typename mrpt::math::CDirectedGraph<CPOSE>::edges_map_t::const_iterator &itEdge, bool ignoreCovariances );
 		}
 
@@ -117,7 +118,7 @@ namespace mrpt
 			  * \sa loadFromBinaryFile, saveToTextFile
 			  * \exception On any error
 			  */
-			void saveToBinaryFile( const std::string &fileName ) const {
+			inline void saveToBinaryFile( const std::string &fileName ) const {
 				mrpt::utils::CFileGZOutputStream fil(fileName);
 				this->internal_writebinary(&fil);
 			}
@@ -126,7 +127,7 @@ namespace mrpt
 			  * \sa saveToBinaryFile, loadFromTextFile
 			  * \exception On any error
 			  */
-			void loadFromBinaryFile( const std::string &fileName ) {
+			inline void loadFromBinaryFile( const std::string &fileName ) {
 				mrpt::utils::CFileGZInputStream fil(fileName);
 				this->internal_readbinary(&fil);
 			}
@@ -137,7 +138,7 @@ namespace mrpt
 			  * \sa saveToBinaryFile, loadFromTextFile
 			  * \exception On any error
 			  */
-			void saveToTextFile( const std::string &fileName ) const {
+			inline void saveToTextFile( const std::string &fileName ) const {
 				mrpt::poses::detail::save_graph_of_poses_from_text_file(this,fileName);
 			}
 
@@ -145,11 +146,14 @@ namespace mrpt
 			  *   Recognized line entries are: VERTEX2, VERTEX3, EDGE2, EDGE3, EQUIV.
 			  *   If an unknown entry is found, a warning is dumped to std::cerr (only once for each unknown keyword).
 			  *   An exception will be raised if trying to load a 3D graph into a 2D class (in the opposite case, missing 3D data will default to zero).
+			  * \param fileName The file to load.
+			  * \param collapse_dup_edges If true, \a collapseDuplicatedEdges will be called automatically after loading (note that this operation may take significant time for very large graphs).
 			  * \sa loadFromBinaryFile, saveToTextFile
 			  * \exception On any error, as a malformed line or loading a 3D graph in a 2D graph.
 			  */
-			void loadFromTextFile( const std::string &fileName ) {
+			inline void loadFromTextFile( const std::string &fileName, bool collapse_dup_edges = true ) {
 				mrpt::poses::detail::load_graph_of_poses_from_text_file(this,fileName);
+				if (collapse_dup_edges) this->collapseDuplicatedEdges();
 			}
 
 			/** @} */
@@ -157,12 +161,24 @@ namespace mrpt
 			/** @name Utility methods
 			    @{ */
 
-			/** Computes the overall square error from all the pose constraints (edges) with respect to the global poses in \nodes 
+			/** Compute a simple estimation of the global coordinates of each node just from the information in all edges, sorted in a Dijkstra tree based on the current "root" node.
+			  *  Note that "global" coordinates are with respect to the node with the ID specified in \a root.
+			  * \sa node, root
+			  */
+			inline void dijkstra_nodes_estimate() { detail::graph_of_poses_dijkstra_init(this); }
+
+			/** Look for duplicated edges (even in opposite directions) between all pairs of nodes and fuse them.
+			  *  Upon return, only one edge remains between each pair of nodes with the mean & covariance (or information matrix) corresponding to the Bayesian fusion of all the Gaussians.
+			  * \return Overall number of removed edges.
+			  */
+			inline size_t collapseDuplicatedEdges() { return detail::graph_of_poses_collapse_dup_edges(this); }
+
+			/** Computes the overall square error from all the pose constraints (edges) with respect to the global poses in \nodes
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
 			  * \sa getEdgeSquareError
 			  * \exception std::exception On global poses not in \a nodes
 			  */
-			double getGlobalSquareError(bool ignoreCovariances = true) const { 
+			double getGlobalSquareError(bool ignoreCovariances = true) const {
 				double sqErr=0;
 				const typename BASE::edges_map_t::const_iterator last_it=BASE::edges.end();
 				for (typename BASE::edges_map_t::const_iterator itEdge=BASE::edges.begin();itEdge!=last_it;++itEdge)
@@ -170,28 +186,22 @@ namespace mrpt
 				return sqErr;
 			}
 
-			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \nodes 
+			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \nodes
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
 			  * \exception std::exception On global poses not in \a nodes
 			  */
 			inline double getEdgeSquareError(const typename BASE::edges_map_t::const_iterator &itEdge, bool ignoreCovariances = true) const { return detail::graph_edge_sqerror(this,itEdge,ignoreCovariances); }
 
-			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \nodes 
+			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \nodes
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
 			  * \exception std::exception On edge not existing or global poses not in \a nodes
 			  */
 			double getEdgeSquareError(const TNodeID from_id, const TNodeID to_id, bool ignoreCovariances = true ) const
 			{
-				const typename BASE::edges_map_t::const_iterator itEdge = BASE::edges.find( make_pair(from_id,to_id) );
+				const typename BASE::edges_map_t::const_iterator itEdge = BASE::edges.find( std::make_pair(from_id,to_id) );
 				ASSERTMSG_(itEdge!=BASE::edges.end(),format("Request for edge %u->%u that doesn't exist in graph.",static_cast<unsigned int>(from_id),static_cast<unsigned int>(to_id)));
 				return getEdgeSquareError(itEdge,ignoreCovariances);
 			}
-
-			/** Compute a simple estimation of the global coordinates of each node just from the information in all edges, sorted in a Dijkstra tree based on the current "root" node.
-			  *  Note that "global" coordinates are with respect to the node with the ID specified in \a root.
-			  * \sa node, root
-			  */
-			inline void dijkstra_nodes_estimate() { detail::graph_of_poses_dijkstra_init(this); }
 
 			/** Empty all edges, nodes and set root to ID 0. */
 			inline void clear() {

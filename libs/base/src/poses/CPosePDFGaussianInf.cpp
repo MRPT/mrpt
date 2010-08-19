@@ -222,23 +222,36 @@ void  CPosePDFGaussianInf::changeCoordinatesReference(const CPose3D &newReferenc
 /*---------------------------------------------------------------
 						changeCoordinatesReference
  ---------------------------------------------------------------*/
-void  CPosePDFGaussianInf::rotateCov(const double &ang)
+void  CPosePDFGaussianInf::changeCoordinatesReference(const CPose2D &newReferenceBase )
 {
-	CMatrixDouble33	rot;
+	// The mean:
+	mean = newReferenceBase + mean;
+	// The covariance:
+	rotateCov( newReferenceBase.phi() );
+}
 
 
-	rot(0,0)=rot(1,1)=cos(ang);
-	rot(0,1)=-sin(ang);
-	rot(1,0)=sin(ang);
-	rot(2,2)=1;
+/*---------------------------------------------------------------
+						changeCoordinatesReference
+ ---------------------------------------------------------------*/
+void  CPosePDFGaussianInf::rotateCov(const double ang)
+{
+	const double ccos = cos(ang);
+	const double ssin = sin(ang);
+
+	const double rot_vals[] = {
+		ccos, -ssin, 0.,
+		ssin, ccos,  0.,
+		0.  ,   0.,  1. };
+
+	const CMatrixDouble33 rot(rot_vals);
 
 	// NEW_COV = H C H^T
 	// NEW_COV^(-1) = (H C H^T)^(-1) = (H^T)^(-1) C^(-1) H^(-1)
-
 	// rot: Inverse of a rotation matrix is its trasposed.
 	//      But we need H^t^-1 -> H !! so rot stays unchanged:
 
-	rot.multiply_HCHt( CMatrixDouble33(cov_inv), cov_inv );  // Output is cov, make a temporary copy ;-)
+	rot.multiply_HCHt( CMatrixDouble33(cov_inv), cov_inv );  // cov is I & O, make a temporary copy ;-)
 }
 
 /*---------------------------------------------------------------

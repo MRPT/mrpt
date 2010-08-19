@@ -234,10 +234,10 @@ void  CPose3DPDFGaussianInf::changeCoordinatesReference( const CPose3D &newRefer
 {
 	MRPT_START
 
-	CMatrixDouble44	HM;
+	CMatrixDouble44	HM(UNINITIALIZED_MATRIX);
 	newReferenceBase.getHomogeneousMatrix(HM);
 
-	CMatrixDouble66   M = CMatrixDouble66(HM);	// Clip the 4x4 matrix
+	CMatrixDouble66   M = CMatrixDouble66(HM);
 
 	// The variance in yaw,pitch & roll is unmodified:
 	M.get_unsafe(3,3) = M.get_unsafe(4,4) = M.get_unsafe(5,5) = 1;

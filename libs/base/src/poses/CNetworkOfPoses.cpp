@@ -297,23 +297,26 @@ namespace mrpt
 							if (itEq!=lstEquivs.end()) from_id = itEq->second;
 						}
 
-						TPose2D  Ap_mean;
-						CMatrixDouble33 Ap_cov_inv;
-						if (!(s>>
-								Ap_mean.x >> Ap_mean.y >> Ap_mean.phi >>
-								Ap_cov_inv(0,0) >> Ap_cov_inv(0,1) >> Ap_cov_inv(1,1) >>
-								Ap_cov_inv(2,2) >> Ap_cov_inv(0,2) >> Ap_cov_inv(1,2) ))
-							THROW_EXCEPTION(format("Line %u: Error parsing EDGE2 line: '%s'", lineNum, lin.c_str() ) );
+						if (from_id!=to_id)	// Don't load self-edges! (probably come from an EQUIV)
+						{
+							TPose2D  Ap_mean;
+							CMatrixDouble33 Ap_cov_inv;
+							if (!(s>>
+									Ap_mean.x >> Ap_mean.y >> Ap_mean.phi >>
+									Ap_cov_inv(0,0) >> Ap_cov_inv(0,1) >> Ap_cov_inv(1,1) >>
+									Ap_cov_inv(2,2) >> Ap_cov_inv(0,2) >> Ap_cov_inv(1,2) ))
+								THROW_EXCEPTION(format("Line %u: Error parsing EDGE2 line: '%s'", lineNum, lin.c_str() ) );
 
-						// Complete low triangular part of inf matrix:
-						Ap_cov_inv(1,0) = Ap_cov_inv(0,1);
-						Ap_cov_inv(2,0) = Ap_cov_inv(0,2);
-						Ap_cov_inv(2,1) = Ap_cov_inv(1,2);
+							// Complete low triangular part of inf matrix:
+							Ap_cov_inv(1,0) = Ap_cov_inv(0,1);
+							Ap_cov_inv(2,0) = Ap_cov_inv(0,2);
+							Ap_cov_inv(2,1) = Ap_cov_inv(1,2);
 
-						// Convert to 2D cov, 3D cov or 3D inv_cov as needed:
-						typename CNetworkOfPoses<CPOSE>::edge_t  newEdge;
-						newEdge.copyFrom( CPosePDFGaussianInf( CPose2D(Ap_mean), Ap_cov_inv ) );
-						g->insertEdge(from_id, to_id, newEdge);
+							// Convert to 2D cov, 3D cov or 3D inv_cov as needed:
+							typename CNetworkOfPoses<CPOSE>::edge_t  newEdge;
+							newEdge.copyFrom( CPosePDFGaussianInf( CPose2D(Ap_mean), Ap_cov_inv ) );
+							g->insertEdge(from_id, to_id, newEdge);
+						}
 					}
 					else if ( strCmpI(key,"EDGE3") )
 					{
@@ -335,42 +338,45 @@ namespace mrpt
 							if (itEq!=lstEquivs.end()) from_id = itEq->second;
 						}
 
-						TPose3D  Ap_mean;
-						CMatrixDouble66 Ap_cov_inv;
-						// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
-						if (!(s>> Ap_mean.x >> Ap_mean.y >> Ap_mean.z >> Ap_mean.roll >> Ap_mean.pitch >> Ap_mean.yaw ))
-							THROW_EXCEPTION(format("Line %u: Error parsing EDGE3 line: '%s'", lineNum, lin.c_str() ) );
-
-						// **CAUTION** Indices are shuffled to the change YAW(3) <-> ROLL(5) in the order of the data.
-						if (!(s>>
-								Ap_cov_inv(0,0) >> Ap_cov_inv(0,1) >> Ap_cov_inv(0,2) >> Ap_cov_inv(0,5) >> Ap_cov_inv(0,4) >> Ap_cov_inv(0,3) >>
-								Ap_cov_inv(1,1) >> Ap_cov_inv(1,2) >> Ap_cov_inv(1,5) >> Ap_cov_inv(1,4) >> Ap_cov_inv(1,3) >>
-								Ap_cov_inv(2,2) >> Ap_cov_inv(2,5) >> Ap_cov_inv(2,4) >> Ap_cov_inv(2,3) >>
-								Ap_cov_inv(5,5) >> Ap_cov_inv(5,4) >> Ap_cov_inv(5,3) >>
-								Ap_cov_inv(4,4) >> Ap_cov_inv(4,3) >>
-								Ap_cov_inv(3,3) ))
+						if (from_id!=to_id)	// Don't load self-edges! (probably come from an EQUIV)
 						{
-							// Cov may be omitted in the file:
-							Ap_cov_inv.unit();
+							TPose3D  Ap_mean;
+							CMatrixDouble66 Ap_cov_inv;
+							// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
+							if (!(s>> Ap_mean.x >> Ap_mean.y >> Ap_mean.z >> Ap_mean.roll >> Ap_mean.pitch >> Ap_mean.yaw ))
+								THROW_EXCEPTION(format("Line %u: Error parsing EDGE3 line: '%s'", lineNum, lin.c_str() ) );
 
-							if (alreadyWarnedUnknowns.find("MISSING_3D")==alreadyWarnedUnknowns.end())
+							// **CAUTION** Indices are shuffled to the change YAW(3) <-> ROLL(5) in the order of the data.
+							if (!(s>>
+									Ap_cov_inv(0,0) >> Ap_cov_inv(0,1) >> Ap_cov_inv(0,2) >> Ap_cov_inv(0,5) >> Ap_cov_inv(0,4) >> Ap_cov_inv(0,3) >>
+									Ap_cov_inv(1,1) >> Ap_cov_inv(1,2) >> Ap_cov_inv(1,5) >> Ap_cov_inv(1,4) >> Ap_cov_inv(1,3) >>
+									Ap_cov_inv(2,2) >> Ap_cov_inv(2,5) >> Ap_cov_inv(2,4) >> Ap_cov_inv(2,3) >>
+									Ap_cov_inv(5,5) >> Ap_cov_inv(5,4) >> Ap_cov_inv(5,3) >>
+									Ap_cov_inv(4,4) >> Ap_cov_inv(4,3) >>
+									Ap_cov_inv(3,3) ))
 							{
-								alreadyWarnedUnknowns.insert("MISSING_3D");
-								cerr << "[CNetworkOfPoses::loadFromTextFile] " << fil << ":" << lineNum << ": Warning: Information matrix missing, assuming unity.\n";
-							}
-						}
-						else
-						{
-							// Complete low triangular part of inf matrix:
-							for (size_t r=1;r<6;r++)
-								for (size_t c=0;c<r;c++)
-									Ap_cov_inv(r,c) = Ap_cov_inv(c,r);
-						}
+								// Cov may be omitted in the file:
+								Ap_cov_inv.unit();
 
-						// Convert as needed:
-						typename CNetworkOfPoses<CPOSE>::edge_t  newEdge;
-						newEdge.copyFrom( CPose3DPDFGaussianInf( CPose3D(Ap_mean), Ap_cov_inv ) );
-						g->insertEdge(from_id, to_id, newEdge);
+								if (alreadyWarnedUnknowns.find("MISSING_3D")==alreadyWarnedUnknowns.end())
+								{
+									alreadyWarnedUnknowns.insert("MISSING_3D");
+									cerr << "[CNetworkOfPoses::loadFromTextFile] " << fil << ":" << lineNum << ": Warning: Information matrix missing, assuming unity.\n";
+								}
+							}
+							else
+							{
+								// Complete low triangular part of inf matrix:
+								for (size_t r=1;r<6;r++)
+									for (size_t c=0;c<r;c++)
+										Ap_cov_inv(r,c) = Ap_cov_inv(c,r);
+							}
+
+							// Convert as needed:
+							typename CNetworkOfPoses<CPOSE>::edge_t  newEdge;
+							newEdge.copyFrom( CPose3DPDFGaussianInf( CPose3D(Ap_mean), Ap_cov_inv ) );
+							g->insertEdge(from_id, to_id, newEdge);
+						}
 					}
 					else if ( strCmpI(key,"EQUIV") )
 					{
@@ -411,12 +417,37 @@ void dijks_on_progress(const GRAPH &g, size_t visitedCount)
 }
 
 // --------------------------------------------------------------------------------
+//               Implements: collapseDuplicatedEdges
+//
+// Look for duplicated edges (even in opposite directions) between all pairs of nodes and fuse them.
+//  Upon return, only one edge remains between each pair of nodes with the mean
+//   & covariance (or information matrix) corresponding to the Bayesian fusion of all the Gaussians.
+// --------------------------------------------------------------------------------
+template<class CPOSE>
+size_t mrpt::poses::detail::graph_of_poses_collapse_dup_edges(CNetworkOfPoses<CPOSE>*g)
+{
+	MRPT_START
+
+
+
+	return 0;
+	MRPT_END
+}
+
+// explicit instantiation:
+template size_t BASE_IMPEXP mrpt::poses::detail::graph_of_poses_collapse_dup_edges<CPosePDFGaussian>(CNetworkOfPoses<CPosePDFGaussian>*g);
+template size_t BASE_IMPEXP mrpt::poses::detail::graph_of_poses_collapse_dup_edges<CPose3DPDFGaussian>(CNetworkOfPoses<CPose3DPDFGaussian>*g);
+template size_t BASE_IMPEXP mrpt::poses::detail::graph_of_poses_collapse_dup_edges<CPosePDFGaussianInf>(CNetworkOfPoses<CPosePDFGaussianInf>*g);
+template size_t BASE_IMPEXP mrpt::poses::detail::graph_of_poses_collapse_dup_edges<CPose3DPDFGaussianInf>(CNetworkOfPoses<CPose3DPDFGaussianInf>*g);
+
+
+// --------------------------------------------------------------------------------
 //               Implements: dijkstra_nodes_estimate
 //
 //	Compute a simple estimation of the global coordinates of each node just from the information in all edges, sorted in a Dijkstra tree based on the current "root" node.
 //	Note that "global" coordinates are with respect to the node with the ID specified in \a root.
 // --------------------------------------------------------------------------------
-template<class CPOSE> 
+template<class CPOSE>
 void mrpt::poses::detail::graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE>*g)
 {
 	MRPT_START
@@ -424,22 +455,22 @@ void mrpt::poses::detail::graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE>*g)
 	// Do Dijkstra shortest path from "root" to all other nodes:
 	CDijkstra<CPOSE>  dijkstra(*g, g->root, NULL, &dijks_on_progress);
 
-	// Get the tree representation of the graph and traverse it 
+	// Get the tree representation of the graph and traverse it
 	//  from its root toward the leafs:
-	CDijkstra<CPOSE>::tree_graph_t  treeView;
+	typename CDijkstra<CPOSE>::tree_graph_t  treeView;
 	dijkstra.getTreeGraph(treeView);
 
-	// This visitor class performs the real job of 
+	// This visitor class performs the real job of
 	struct VisitorComputePoses : public CDijkstra<CPOSE>::tree_graph_t::Visitor
 	{
 		CNetworkOfPoses<CPOSE> * m_g; // The original graph
 
 		VisitorComputePoses(CNetworkOfPoses<CPOSE> *g) : m_g(g) { }
-		virtual void OnVisitNode( const TNodeID parent_id, const typename tree_t::TEdgeInfo &edge_to_child, const size_t depth_level )
+		virtual void OnVisitNode( const TNodeID parent_id, const typename CDijkstra<CPOSE>::tree_graph_t::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level )
 		{
 			const TNodeID  child_id = edge_to_child.id;
 
-			// Compute the pose of "child_id" as parent_pose (+) edge_delta_pose, 
+			// Compute the pose of "child_id" as parent_pose (+) edge_delta_pose,
 			//  taking into account that that edge may be in reverse order and then have to invert the delta_pose:
 			if (!edge_to_child.reverse)
 			{	// pose_child = p_parent (+) p_delta
@@ -454,7 +485,7 @@ void mrpt::poses::detail::graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE>*g)
 
 	// Remove all global poses but for the root node, which is the origin:
 	g->nodes.clear();
-	g->nodes[g->root] = CPOSE::type_value();  // Typ: CPose2D() or CPose3D()
+	g->nodes[g->root] = typename CPOSE::type_value();  // Typ: CPose2D() or CPose3D()
 
 	// Run the visit thru all nodes in the tree:
 	VisitorComputePoses  myVisitor(g);
@@ -470,19 +501,37 @@ template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<CPos
 template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<CPose3DPDFGaussianInf>(CNetworkOfPoses<CPose3DPDFGaussianInf>*g);
 
 
+// Auxiliary funcs:
+template <class VEC> inline double auxMaha2Dist(const VEC &err,const CPosePDFGaussianInf &p) {
+	return mrpt::math::multiply_HCHt_scalar(err,p.cov_inv); // err^t*cov_inv*err
+}
+template <class VEC> inline double auxMaha2Dist(const VEC &err,const CPose3DPDFGaussianInf &p) {
+	return mrpt::math::multiply_HCHt_scalar(err,p.cov_inv); // err^t*cov_inv*err
+}
+template <class VEC> inline double auxMaha2Dist(const VEC &err,const CPosePDFGaussian &p) {
+	CMatrixDouble33  COV_INV(UNINITIALIZED_MATRIX);
+	p.cov.inv(COV_INV);
+	return mrpt::math::multiply_HCHt_scalar(err,COV_INV); // err^t*cov_inv*err
+}
+template <class VEC> inline double auxMaha2Dist(const VEC &err,const CPose3DPDFGaussian &p) {
+	CMatrixDouble66 COV_INV(UNINITIALIZED_MATRIX);
+	p.cov.inv(COV_INV);
+	return mrpt::math::multiply_HCHt_scalar(err,COV_INV); // err^t*cov_inv*err
+}
+
 // --------------------------------------------------------------------------------
 //               Implements: detail::graph_edge_sqerror
 //
 //	Compute the square error of a single edge, in comparison to the nodes global poses.
 // --------------------------------------------------------------------------------
-template<class CPOSE> 
+template<class CPOSE>
 double mrpt::poses::detail::graph_edge_sqerror(
-	const CNetworkOfPoses<CPOSE>*g, 
-	const typename CDirectedGraph<CPOSE>::edges_map_t::const_iterator &itEdge, 
+	const CNetworkOfPoses<CPOSE>*g,
+	const typename CDirectedGraph<CPOSE>::edges_map_t::const_iterator &itEdge,
 	bool ignoreCovariances )
 {
 	MRPT_START
-	
+
 	// Get node IDs:
 	const TNodeID from_id = itEdge->first.first;
 	const TNodeID to_id   = itEdge->first.second;
@@ -497,26 +546,37 @@ double mrpt::poses::detail::graph_edge_sqerror(
 	const typename CPOSE::type_value &from_mean = itPoseFrom->second;
 	const typename CPOSE::type_value &to_mean   = itPoseTo->second;
 
-	// NODE_TO as seen from NODE_FROM:
-	typename CPOSE::type_value delta_pose;
-	delta_pose.inverseComposeFrom(to_mean,from_mean);
-
 	// The delta_pose as stored in the edge:
 	const CPOSE &edge_delta_pose = itEdge->second;
 	const typename CPOSE::type_value &edge_delta_pose_mean = edge_delta_pose.mean;
 
 	if (ignoreCovariances)
-	{	// Square Euclidean distance
+	{	// Square Euclidean distance: Just use the mean values, ignore covs.
+		// from_plus_delta = from_mean (+) edge_delta_pose_mean
+		typename CPOSE::type_value from_plus_delta(UNINITIALIZED_POSE);
+		from_plus_delta.composeFrom(from_mean, edge_delta_pose_mean);
+
 		double sqErr = 0;
-		for (size_t i=0;i<typename CPOSE::type_value::static_size;i++)
-			sqErr+= square( delta_pose[i] - edge_delta_pose_mean[i] );
+		for (size_t i=0;i<CPOSE::type_value::static_size;i++)
+			sqErr+= square( from_plus_delta[i] - to_mean[i] );
 		return sqErr;
 	}
 	else
 	{
 		// Square Mahalanobis distance
-		THROW_EXCEPTION("TO DO")
-		return 0;
+		// from_plus_delta = from_mean (+) edge_delta_pose (as a Gaussian)
+		CPOSE from_plus_delta = edge_delta_pose;
+		from_plus_delta.changeCoordinatesReference(from_mean);
+
+		// "from_plus_delta" is now a 3D or 6D Gaussian, to be compared to "to_mean":
+		//  We want to compute the squared Mahalanobis distance:
+		//       err^t * INV_COV * err
+		//
+		CArrayDouble<CPOSE::type_value::static_size> err;
+		for (size_t i=0;i<CPOSE::type_value::static_size;i++)
+			err[i] = from_plus_delta.mean[i] - to_mean[i];
+
+		return auxMaha2Dist(err,from_plus_delta);
 	}
 	MRPT_END
 }
@@ -526,61 +586,6 @@ template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPosePDFGaus
 template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPose3DPDFGaussian>(const CNetworkOfPoses<CPose3DPDFGaussian>*g, const CDirectedGraph<CPose3DPDFGaussian>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
 template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPosePDFGaussianInf>(const CNetworkOfPoses<CPosePDFGaussianInf>*g, const CDirectedGraph<CPosePDFGaussianInf>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
 template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPose3DPDFGaussianInf>(const CNetworkOfPoses<CPose3DPDFGaussianInf>*g, const CDirectedGraph<CPose3DPDFGaussianInf>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
-
-#if 0
-double TreeOptimizer2::error(const Edge* e) const{
-  const Vertex* v1=e->v1;
-  const Vertex* v2=e->v2;
-  
-  Pose p1=v1->pose;
-  Pose p2=v2->pose;
-  
-  DEBUG(2) << " p1=" << p1.x() << " " << p1.y() << " " << p1.theta() << endl;
-  DEBUG(2) << " p2=" << p2.x() << " " << p2.y() << " " << p2.theta() << endl;
-  
-  Transformation et=e->transformation;
-  Transformation t1(p1);
-  Transformation t2(p2);
-  
-  Transformation t12=t1*et;
-    
-  Pose p12=t12.toPoseType();
-  DEBUG(2) << " pt2=" << p12.x() << " " << p12.y() << " " << p12.theta() << endl;
-
-  Pose r(p12.x()-p2.x(), p12.y()-p2.y(), p12.theta()-p2.theta());
-  double angle=r.theta();
-  angle=atan2(sin(angle),cos(angle));
-  r.theta()=angle;
-  DEBUG(2) << " e=" << r.x() << " " << r.y() << " " << r.theta() << endl;
-    
-  InformationMatrix S=e->informationMatrix;
-  InformationMatrix R;
-  R.values[0][0]=t1.rotationMatrix[0][0];
-  R.values[0][1]=t1.rotationMatrix[0][1];
-  R.values[0][2]=0;
-      
-  R.values[1][0]=t1.rotationMatrix[1][0];
-  R.values[1][1]=t1.rotationMatrix[1][1];
-  R.values[1][2]=0;
-      
-  R.values[2][0]=0;
-  R.values[2][1]=0;
-  R.values[2][2]=1;
-
-  InformationMatrix W=R*S*R.transpose();
-
-  Pose r1=W*r;
-  return r.x()*r1.x()+r.y()*r1.y()+r.theta()*r1.theta();
-}
-
-double TreeOptimizer2::error() const{
-  double globalError=0.;
-  for (TreePoseGraph2::EdgeMap::const_iterator it=edges.begin(); it!=edges.end(); it++){
-    globalError+=error(it->second);
-  }
-  return globalError;
-}
-#endif
 
 //   Implementation of serialization stuff
 // --------------------------------------------------------------------------------
