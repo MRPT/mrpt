@@ -34,12 +34,13 @@
   <a name="0.9.2">
   <h2>Version 0.9.2: (Under development) </h2></a>
 	- New applications:
-		- carmen2rawlog: A converter from CARMEN robotics logs to binary Rawlog dataset files. See http://www.mrpt.org/Application:carmen2rawlog
-		- carmen2simplemap: A converter from CARMEN robotics logs to binary "simplemap" files. See http://www.mrpt.org/Application:carmen2simplemap
-		- graph-slam: A central application for all Graph-SLAM methods and tools. See http://www.mrpt.org/Application:graph-slam
+		- <a href="http://www.mrpt.org/Application:carmen2rawlog" >carmen2rawlog</a>: A converter from CARMEN robotics logs to binary Rawlog dataset files.
+		- <a href="http://www.mrpt.org/Application:carmen2simplemap" >carmen2simplemap</a>: A converter from CARMEN robotics logs to binary "simplemap" files.
+		- <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>: A central application for all Graph-SLAM methods and tools.
 	- Changes in applications:
-		- rawlog-edit: More operations supported. See http://www.mrpt.org/Application:rawlog-edit
+		- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: More operations supported.
 		- RawLogViewer: Can now build "raw maps" from datasets in the "observations-only" format.
+		- <a href="http://www.mrpt.org/Application:icp-slam" >icp-slam</a> and <a href="http://www.mrpt.org/Application:rbpf-slam" >rbpf-slam</a> now accept a second command-line argument for the dataset (rawlog) to load.
 	- Changes in build system / compiling:
 		- Doxygen documentation: More macros expanded while generating docs: now docs are also generated for smart pointers and for RTTI & serialization stuff.
 		- Previous header <mrpt/math_mrpt.h> renamed <mrpt/math.h>. The old one still remains (probably until MRPT 1.0.0), but raises a warning on usage.

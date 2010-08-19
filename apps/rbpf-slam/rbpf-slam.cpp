@@ -31,7 +31,8 @@
 	FILE: rbpf-slam.cpp
 	AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
 
-	See README.txt for instructions.
+	See README.txt for instructions or
+         http://www.mrpt.org/Application:rbpf-slam
   ---------------------------------------------------------------*/
 
 #include <mrpt/slam.h>
@@ -78,14 +79,14 @@ int main(int argc, char **argv)
 {
 	try
 	{
-		printf(" rbpf-slam version 0.3 - Part of the MRPT\n");
+		printf(" rbpf-slam - Part of the MRPT\n");
 		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
 		printf("-------------------------------------------------------------------\n");
 
 		// Process arguments:
 		if (argc<2)
 		{
-			printf("Usage: %s <config_file.ini>\n\n",argv[0]);
+			printf("Usage: %s <config_file.ini> [<dataset.rawlog>]\n\n",argv[0]);
 			mrpt::system::pause();
 			return -1;
 		}
@@ -93,12 +94,17 @@ int main(int argc, char **argv)
 		INI_FILENAME = std::string( argv[1] );
 		ASSERT_(fileExists(INI_FILENAME));
 
+		string override_rawlog_file; 
+		if (argc>=3)
+			override_rawlog_file = string(argv[2]);
+
+
 		CConfigFile		iniFile( INI_FILENAME );
 
 		// ------------------------------------------
 		//			Load config from file:
 		// ------------------------------------------
-		RAWLOG_FILE			 = iniFile.read_string("MappingApplication","rawlog_file","",  /*Force existence:*/ true);
+		RAWLOG_FILE			 = !override_rawlog_file.empty() ? override_rawlog_file : iniFile.read_string("MappingApplication","rawlog_file","",  /*Force existence:*/ true);
 		rawlog_offset		 = iniFile.read_int("MappingApplication","rawlog_offset",0);
 		OUT_DIR_STD			 = iniFile.read_string("MappingApplication","logOutput_dir","log_out",  /*Force existence:*/ true);
 		LOG_FREQUENCY		 = iniFile.read_int("MappingApplication","LOG_FREQUENCY",5,  /*Force existence:*/ true);

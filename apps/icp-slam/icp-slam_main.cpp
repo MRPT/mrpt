@@ -31,7 +31,8 @@
 	FILE: icp-slam_main.cpp
 	AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
 
-	See README.txt for instructions.
+	See README.txt for instructions or 
+          http://www.mrpt.org/Application:icp-slam
   ---------------------------------------------------------------*/
 
 #include <mrpt/slam.h>
@@ -47,7 +48,7 @@ using namespace mrpt::utils;
 using namespace std;
 
 // Forward declaration.
-void MapBuilding_ICP(const string &INI_FILENAME);
+void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_file);
 
 // ------------------------------------------------------
 //						MAIN
@@ -70,7 +71,7 @@ int main(int argc, char **argv)
 		// Process arguments:
 		if (argc<2 || showHelp )
 		{
-			printf("Usage: %s <config_file.ini>\n\n",argv[0]);
+			printf("Usage: %s <config_file.ini> [<dataset.rawlog>]\n\n",argv[0]);
 			if (!showHelp)
 			{
 				mrpt::system::pause();
@@ -82,8 +83,12 @@ int main(int argc, char **argv)
 		const string INI_FILENAME = string( argv[1] );
 		ASSERT_(fileExists(INI_FILENAME));
 
+		string override_rawlog_file; 
+		if (argc>=3)
+			override_rawlog_file = string(argv[2]);
+
 		// Run:
-		MapBuilding_ICP(INI_FILENAME);
+		MapBuilding_ICP(INI_FILENAME,override_rawlog_file);
 
 		//pause();
 		return 0;
@@ -114,8 +119,10 @@ int main(int argc, char **argv)
 
 // ------------------------------------------------------
 //				MapBuilding_ICP
+//  override_rawlog_file: If not empty, use that rawlog
+//  instead of that in the config file.
 // ------------------------------------------------------
-void MapBuilding_ICP(const string &INI_FILENAME)
+void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_file)
 {
 	MRPT_START
 
@@ -127,7 +134,7 @@ void MapBuilding_ICP(const string &INI_FILENAME)
 	// ------------------------------------------
 	//			Load config from file:
 	// ------------------------------------------
-	const string RAWLOG_FILE			 = iniFile.read_string("MappingApplication","rawlog_file","",  /*Force existence:*/ true);
+	const string RAWLOG_FILE			 = !override_rawlog_file.empty() ? override_rawlog_file : iniFile.read_string("MappingApplication","rawlog_file","",  /*Force existence:*/ true);
 	const unsigned int rawlog_offset		 = iniFile.read_int("MappingApplication","rawlog_offset",0,  /*Force existence:*/ true);
 	const string OUT_DIR_STD			 = iniFile.read_string("MappingApplication","logOutput_dir","log_out",  /*Force existence:*/ true);
 	const int LOG_FREQUENCY		 = iniFile.read_int("MappingApplication","LOG_FREQUENCY",5,  /*Force existence:*/ true);
