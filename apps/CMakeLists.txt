@@ -21,9 +21,11 @@ endif(EXISTS ${MRPT_SOURCE_DIR}/apps/hmt-slam)
 if(EXISTS ${MRPT_SOURCE_DIR}/apps/hmt-slam-gui)
 	add_subdirectory(hmt-slam-gui)
 endif(EXISTS ${MRPT_SOURCE_DIR}/apps/hmt-slam-gui)
+
 add_subdirectory(rbpf-slam)
 add_subdirectory(kf-slam)
 add_subdirectory(icp-slam)
+add_subdirectory(graph-slam)
 
 add_subdirectory(simul-beacons)
 add_subdirectory(simul-landmarks)

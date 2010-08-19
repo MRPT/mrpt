@@ -36,6 +36,7 @@
 	- New applications:
 		- carmen2rawlog: A converter from CARMEN robotics logs to binary Rawlog dataset files. See http://www.mrpt.org/Application:carmen2rawlog
 		- carmen2simplemap: A converter from CARMEN robotics logs to binary "simplemap" files. See http://www.mrpt.org/Application:carmen2simplemap
+		- graph-slam: A central application for all Graph-SLAM methods and tools. See http://www.mrpt.org/Application:graph-slam
 	- Changes in applications:
 		- rawlog-edit: More operations supported. See http://www.mrpt.org/Application:rawlog-edit
 		- RawLogViewer: Can now build "raw maps" from datasets in the "observations-only" format.

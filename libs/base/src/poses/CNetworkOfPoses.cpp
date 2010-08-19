@@ -427,10 +427,36 @@ template<class CPOSE>
 size_t mrpt::poses::detail::graph_of_poses_collapse_dup_edges(CNetworkOfPoses<CPOSE>*g)
 {
 	MRPT_START
+	typedef typename CNetworkOfPoses<CPOSE>::edges_map_t::iterator TEdgeIterator;
 
+	// Data structure: (id1,id2) -> all edges between them
+	//  (with id1 < id2)
+	typedef map<pair<TNodeID,TNodeID>, vector<TEdgeIterator> > TListAllEdges; // For god's sake... when will ALL compilers support auto!! :'-(
+	TListAllEdges lstAllEdges;
 
+	// Clasify all edges to identify duplicated ones:
+	for (TEdgeIterator itEd=g->edges.begin();itEd!=g->edges.end();++itEd)
+	{
+		// Build a pair <id1,id2> with id1 < id2:
+		const pair<TNodeID,TNodeID> arc_id = make_pair( std::min(itEd->first.first,itEd->first.second),std::max(itEd->first.first,itEd->first.second) );
+		// get (or create the first time) the list of edges between them:
+		vector<TEdgeIterator> &lstEdges = lstAllEdges[arc_id];
+		// And add this one:
+		lstEdges.push_back(itEd);
+	}
 
-	return 0;
+	// Now, remove all but the first edge:
+	size_t  nRemoved = 0;
+	for (typename TListAllEdges::const_iterator it=lstAllEdges.begin();it!=lstAllEdges.end();++it)
+	{
+		const size_t N = it->second.size();
+		for (size_t i=1;i<N;i++)  // i=0 is NOT removed
+			g->edges.erase( it->second[i] );
+
+		if (N>=2) nRemoved+=N-1;
+	}
+
+	return nRemoved;
 	MRPT_END
 }
 
@@ -502,22 +528,47 @@ template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<CPos
 
 
 // Auxiliary funcs:
-template <class VEC> inline double auxMaha2Dist(const VEC &err,const CPosePDFGaussianInf &p) {
+template <class VEC> inline double auxMaha2Dist(VEC &err,const CPosePDFGaussianInf &p) {
+	math::wrapToPiInPlace(err[2]);
 	return mrpt::math::multiply_HCHt_scalar(err,p.cov_inv); // err^t*cov_inv*err
 }
-template <class VEC> inline double auxMaha2Dist(const VEC &err,const CPose3DPDFGaussianInf &p) {
+template <class VEC> inline double auxMaha2Dist(VEC &err,const CPose3DPDFGaussianInf &p) {
+	math::wrapToPiInPlace(err[3]);
+	math::wrapToPiInPlace(err[4]);
+	math::wrapToPiInPlace(err[5]);
 	return mrpt::math::multiply_HCHt_scalar(err,p.cov_inv); // err^t*cov_inv*err
 }
-template <class VEC> inline double auxMaha2Dist(const VEC &err,const CPosePDFGaussian &p) {
+template <class VEC> inline double auxMaha2Dist(VEC &err,const CPosePDFGaussian &p) {
+	math::wrapToPiInPlace(err[2]);
 	CMatrixDouble33  COV_INV(UNINITIALIZED_MATRIX);
 	p.cov.inv(COV_INV);
 	return mrpt::math::multiply_HCHt_scalar(err,COV_INV); // err^t*cov_inv*err
 }
-template <class VEC> inline double auxMaha2Dist(const VEC &err,const CPose3DPDFGaussian &p) {
+template <class VEC> inline double auxMaha2Dist(VEC &err,const CPose3DPDFGaussian &p) {
+	math::wrapToPiInPlace(err[3]);
+	math::wrapToPiInPlace(err[4]);
+	math::wrapToPiInPlace(err[5]);
 	CMatrixDouble66 COV_INV(UNINITIALIZED_MATRIX);
 	p.cov.inv(COV_INV);
 	return mrpt::math::multiply_HCHt_scalar(err,COV_INV); // err^t*cov_inv*err
 }
+
+double auxEuclid2Dist(const CPose2D &p1,const CPose2D &p2) {
+	return
+		square(p1.x()-p2.x())+
+		square(p1.y()-p2.y())+
+		square( mrpt::math::wrapToPi(p1.phi()-p2.phi() ) );
+}
+double auxEuclid2Dist(const CPose3D &p1,const CPose3D &p2) {
+	return
+		square(p1.x()-p2.x())+
+		square(p1.y()-p2.y())+
+		square(p1.z()-p2.z())+
+		square( mrpt::math::wrapToPi(p1.yaw()-p2.yaw() ) )+
+		square( mrpt::math::wrapToPi(p1.pitch()-p2.pitch() ) )+
+		square( mrpt::math::wrapToPi(p1.roll()-p2.roll() ) );
+}
+
 
 // --------------------------------------------------------------------------------
 //               Implements: detail::graph_edge_sqerror
@@ -556,10 +607,8 @@ double mrpt::poses::detail::graph_edge_sqerror(
 		typename CPOSE::type_value from_plus_delta(UNINITIALIZED_POSE);
 		from_plus_delta.composeFrom(from_mean, edge_delta_pose_mean);
 
-		double sqErr = 0;
-		for (size_t i=0;i<CPOSE::type_value::static_size;i++)
-			sqErr+= square( from_plus_delta[i] - to_mean[i] );
-		return sqErr;
+		// (auxMaha2Dist will also take into account the 2PI wrapping)
+		return auxEuclid2Dist(from_plus_delta,to_mean);
 	}
 	else
 	{
@@ -576,6 +625,7 @@ double mrpt::poses::detail::graph_edge_sqerror(
 		for (size_t i=0;i<CPOSE::type_value::static_size;i++)
 			err[i] = from_plus_delta.mean[i] - to_mean[i];
 
+		// (auxMaha2Dist will also take into account the 2PI wrapping)
 		return auxMaha2Dist(err,from_plus_delta);
 	}
 	MRPT_END
