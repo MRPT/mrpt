@@ -7,7 +7,7 @@
 #   system in a path accesible to pkg-config. To check if pkg-config
 #   sees MRPT config files, execute:
 #      pkg-config --list-all | grep mrpt
-#   If no package appears, MRPT is not installed or anything else is wrong.
+#   If no package appears, MRPT is not installed or something else is wrong.
 #   ======================================================================
 #
 

@@ -442,7 +442,7 @@ namespace math
 	/** Operator ARRAY <- ARRAY + VECTORorARRAY  */
     template <typename T, std::size_t N, class VECTORLIKE>
     CArrayNumeric<T,N> operator +(const CArrayNumeric<T,N> &A, const VECTORLIKE &B) {
-    	ASSERT_(A.size()==B.size())
+    	ASSERT_EQUAL_(A.size(),B.size())
     	CArrayNumeric<T,N>  ret;
     	for (size_t i=0;i<N;i++) ret[i]=A[i]+B[i];
     	return ret;
@@ -451,7 +451,7 @@ namespace math
 	/** Operator ARRAY <- ARRAY - VECTORorARRAY  */
     template <typename T, std::size_t N, class VECTORLIKE>
     CArrayNumeric<T,N> operator -(const CArrayNumeric<T,N> &A, const VECTORLIKE &B) {
-    	ASSERT_(A.size()==B.size())
+    	ASSERT_EQUAL_(A.size(),B.size())
     	CArrayNumeric<T,N>  ret;
     	for (size_t i=0;i<N;i++) ret[i]=A[i]-B[i];
     	return ret;

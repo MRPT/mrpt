@@ -66,6 +66,7 @@
 		- mrpt::opengl::CRenderizable: Many "set" methods that returned "void" now return a reference to "this" so several calls can be chained (e.g. obj.setColor(...).setScale(1.0) )
 		- mrpt::gui::CDisplayWindow3D doesn't report ALT+Enter as a keystroke event anymore.
 	- New functions:
+		- New ASSERT macros: ASSERT_EQUAL_, ASSERT_NOT_EQUAL_, ASSERT_BELOW_, ASSERT_ABOVE_
 		- mrpt::slam::carmen_log_parse_line() a tool for parsing CARMEN logs.
 		- mrpt::opengl::graph_tools::graph_visualize(), a visualizer of graphs of pose constraints.
 		- mrpt::opengl::stock_objects::CornerXYSimple() for 2D corners

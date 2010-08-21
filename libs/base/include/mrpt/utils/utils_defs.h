@@ -53,12 +53,6 @@
 	#endif
 #endif
 
-#if defined(__BORLANDC__)
-	#pragma warn -8027	// (Compiler: Borland C++) Disable a warning for inline functions
-	#pragma warn -8012	// (Compiler: Borland C++) Disable a warning for override of virtual functions, while in reality there are many virtual function with different parameters
-	#pragma warn -8022
-#endif
-
 #include <mrpt/config.h>
 #include <mrpt/system/os.h>
 
@@ -70,7 +64,6 @@
 	 user's application.
    ----------------------------------------------- */
 #include <mrpt/base/link_pragmas.h>
-
 
 // A cross-compiler definition for "deprecated"-warnings
 #if defined(__GNUC__) && (__GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 >= 2))
@@ -103,7 +96,7 @@
 	#define MRPT_MSG_PRAGMA(_msg) MRPT_DO_PRAGMA(message (_msg))
 #else
 	#define MRPT_DO_PRAGMA(x)
-	#define MRPT_MSG_PRAGMA(_msg) 
+	#define MRPT_MSG_PRAGMA(_msg)
 #endif
 
 #define MRPT_WARNING(x) MRPT_MSG_PRAGMA("Warning: " #x)
@@ -371,11 +364,21 @@ namespace mrpt
 	#define MRPT_COMPILE_TIME_ASSERT(expression) \
 			typedef char BOOST_JOIN(MRPT_CTA, __LINE__)[::mrpt::utils::compile_time_assert<(bool)(expression)>::value];
 
+	/** Assert comparing two values, reporting their actual values upon failure */
+	#define ASSERT_EQUAL_( __A, __B)      { if (__A!=__B) { std::ostringstream s;s<<"ASSERT_EQUAL_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(s.str()) } }
+	#define ASSERT_NOT_EQUAL_( __A, __B)  { if (__A==__B) { std::ostringstream s;s<<"ASSERT_NOT_EQUAL_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(s.str()) } }
+	#define ASSERT_BELOW_( __A, __B)  { if (__A>=__B) { std::ostringstream s;s<<"ASSERT_BELOW_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(s.str()) } }
+	#define ASSERT_ABOVE_( __A, __B)  { if (__A<=__B) { std::ostringstream s;s<<"ASSERT_ABOVE_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(s.str()) } }
+
 #else
 #	define ASSERTMSG_(f,__ERROR_MSG)  { }
 #	define ASSERT_(f) { }
 #	define MRPT_CHECK_NORMAL_NUMBER(val) { }
 #	define MRPT_COMPILE_TIME_ASSERT(f) { }
+#	define ASSERT_EQUAL_( __A, __B) { }
+#	define ASSERT_NOT_EQUAL_( __A, __B) { }
+#	define ASSERT_BELOW_( __A, __B)  { }
+#	define ASSERT_ABOVE_( __A, __B)  { }
 #endif
 
 /** Defines an assertion mechanism - only when compiled in debug.
@@ -389,7 +392,6 @@ namespace mrpt
 #	define ASSERTDEB_(f) { }
 #	define ASSERTDEBMSG_(f,__ERROR_MSG) { }
 #endif
-
 
 
 /** Can be used to avoid "not used parameters" warnings from the compiler

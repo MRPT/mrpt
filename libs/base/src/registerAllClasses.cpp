@@ -112,7 +112,6 @@ void registerAllClasses_mrpt_base()
 	registerClass( CLASS_ID( CNetworkOfPoses3D ) );
 	registerClass( CLASS_ID( CNetworkOfPoses2DInf ) );
 	registerClass( CLASS_ID( CNetworkOfPoses3DInf ) );
-
 }
 
 
