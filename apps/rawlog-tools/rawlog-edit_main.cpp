@@ -64,6 +64,7 @@ DECLARE_OP_FUNCTION(op_keep_label);
 DECLARE_OP_FUNCTION(op_cut);
 DECLARE_OP_FUNCTION(op_export_gps_kml);
 DECLARE_OP_FUNCTION(op_export_gps_txt);
+DECLARE_OP_FUNCTION(op_sensors_pose);
 
 
 // Declare the supported command line switches ===========
@@ -144,6 +145,14 @@ int main(int argc, char **argv)
 			"If only a --from-* is given, the rawlog will be saved up to its end. If only a --to-* is given, the rawlog will be saved from its beginning.\n"
 			,cmd,false) );
 		ops_functors["cut"] = &op_cut;
+
+		arg_ops.push_back(new TCLAP::ValueArg<std::string>(
+			"","sensors-pose",
+			"Op: batch change the poses of sensors from a rawlog-grabber-like configuration file that specifies the pose of sensors by their sensorLabel names.\n"
+			"Requires: -o (or --output)\n"
+			,false,"","file.ini"
+			,cmd, false) );
+		ops_functors["sensors-pose"] = &op_sensors_pose;
 
 		// --------------- End of list of possible operations --------
 
