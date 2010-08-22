@@ -79,9 +79,13 @@ namespace mrpt
 			inline void clearEdges() { edges.clear(); } //!< Erase all edges
 
 
-			/** Insert an edge (from -> to) with the given edge value. */
+			/** Insert an edge (from -> to) with the given edge value. \sa insertEdgeAtEnd */
 			inline void insertEdge(TNodeID from_nodeID, TNodeID to_nodeID,const edge_t &edge_value )
 			{ edges.insert(std::make_pair(std::make_pair(from_nodeID,to_nodeID),edge_value) ); }
+
+			/** Insert an edge (from -> to) with the given edge value (more efficient version to be called if you know that the end will go at the end of the sorted std::multimap). \sa insertEdge */
+			inline void insertEdgeAtEnd(TNodeID from_nodeID, TNodeID to_nodeID,const edge_t &edge_value )
+			{ edges.insert(edges.end(),std::make_pair(std::make_pair(from_nodeID,to_nodeID),edge_value)); }
 
 			/** Test is the given directed edge exists. */
 			inline bool edgeExists(TNodeID from_nodeID, TNodeID to_nodeID) const
@@ -171,9 +175,13 @@ namespace mrpt
 
 			/** Return a map from node IDs to all its neighbors (that is, connected nodes, regardless of the edge direction)
 			  *  This is a much more efficient method than calling getNeighborsOf() for each node in the graph.
+			  *  Possible values for the template argument MAP_NODEID_SET_NODEIDS are:
+			  *    - std::map<TNodeID, std::set<TNodeID> >
+			  *    - mrpt::utils::map_as_vector<TNodeID, std::set<TNodeID> >
 			  * \sa getNeighborsOf
 			  */
-			void getAdjacencyMatrix( std::map<TNodeID, std::set<TNodeID> > &outAdjacency ) const
+			template <class MAP_NODEID_SET_NODEIDS>
+			void getAdjacencyMatrix( MAP_NODEID_SET_NODEIDS  &outAdjacency ) const
 			{
 				outAdjacency.clear();
 				for (typename edges_map_t::const_iterator it=edges.begin();it!=edges.end();++it)

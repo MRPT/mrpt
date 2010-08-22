@@ -29,6 +29,7 @@ ADD_EXECUTABLE(mrpt-performance
 	perf-scan_matching.h
 	perf-feature_extraction.h
 	perf-feature_matching.h
+	perf-graph.h
 	)
 
 SET(TMP_TARGET_NAME "mrpt-performance")

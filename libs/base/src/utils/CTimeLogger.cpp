@@ -174,3 +174,12 @@ CTimeLogger::TCallData::TCallData() :
 	mean_t	(0)
 {
 }
+
+
+double CTimeLogger::getMeanTime(const std::string &name)  const
+{
+	map<string,TCallData>::const_iterator it = m_data.find(name);
+	if (it==m_data.end())
+		 return 0;
+	else return it->second.n_calls ? it->second.mean_t/it->second.n_calls : 0;
+}

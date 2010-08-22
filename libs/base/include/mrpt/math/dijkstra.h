@@ -29,7 +29,7 @@
 #define  MRPT_DIJKSTRA_H
 
 #include <mrpt/math/graphs.h>
-#include <list>
+#include <mrpt/utils/stl_extensions.h>
 
 namespace mrpt
 {
@@ -49,15 +49,20 @@ namespace mrpt
 		  *  Input graphs are represented by instances of (or classes derived from) mrpt::math::CDirectedGraph, and node's IDs are uint64_t values,
 		  *   although the type mrpt::utils::TNodeID is also provided for clarity in the code.
 		  *
+		  *  The second template argument MAPS_IMPLEMENTATION allows choosing between a sparse std::map<> representation (using mrpt::utils::map_traits_stdmap)
+		  *   for several intermediary and final results, and an alternative (using mrpt::utils::map_traits_map_as_vector as argument)
+		  *   dense implementation which is much faster, but can be only used if the TNodeID's start in 0 or a low value.
+		  *
 		  * See <a href="http://www.mrpt.org/Example:Dijkstra_optimal_path_search_in_graphs" > this page </a> for a complete example.
 		  */
-		template<typename TYPE_EDGES>
+		template<class TYPE_EDGES, class MAPS_IMPLEMENTATION = map_traits_stdmap >
 		class CDijkstra
 		{
 		public:
 			typedef mrpt::math::CDirectedGraph<TYPE_EDGES>  graph_t;	//!< The type of a graph with TYPE_EDGES edges
 			typedef TYPE_EDGES                              edge_t;	    //!< The type of edge data in graph_t
-			typedef std::list<std::pair<TNodeID,TNodeID> >  TListEdges; //!< A list of edges used to describe a path on the graph
+			typedef std::list<std::pair<TNodeID,TNodeID> >  edge_list_t; //!< A list of edges used to describe a path on the graph
+			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID, std::set<TNodeID> >  list_all_neighbors_t; //!< A std::map (or a similar container according to MAPS_IMPLEMENTATION) with all the neighbors of every node.
 
 		protected:
 
@@ -77,14 +82,17 @@ namespace mrpt
 				TNodeID  id;
 			};
 
-			const mrpt::math::CDirectedGraph<TYPE_EDGES> & m_cached_graph;
-			std::map<TNodeID,TDistance>                    m_distances;
-			std::map<TNodeID,TDistance>                    m_distances_non_visited;
-			std::map<TNodeID,TPrevious>                    m_prev_node;
-			std::map<TNodeID, std::pair<TNodeID,TNodeID> > m_prev_arc;
-			TNodeID                                        m_source_node_ID;
-			std::set<TNodeID>                              m_lstNode_IDs;
-			std::map<TNodeID, std::set<TNodeID> >          m_allNeighbors;
+			// Cached input data:
+			const mrpt::math::CDirectedGraph<TYPE_EDGES>  & m_cached_graph;
+			const TNodeID                                   m_source_node_ID;
+
+			// Intermediary and final results:
+			typename MAPS_IMPLEMENTATION::template map<TNodeID,TDistance>                    m_distances; //!< All the distances
+			std::map<TNodeID,TDistance>                                                      m_distances_non_visited; // Use a std::map here in all cases.
+			typename MAPS_IMPLEMENTATION::template map<TNodeID,TPrevious>                    m_prev_node;
+			typename MAPS_IMPLEMENTATION::template map<TNodeID, std::pair<TNodeID,TNodeID> > m_prev_arc;
+			std::set<TNodeID>                                                                m_lstNode_IDs;
+			list_all_neighbors_t                                                             m_allNeighbors;
 
 		public:
 			/** Constructor, which takes the input graph and executes the entire Dijkstra algorithm from the given root node ID.
@@ -147,8 +155,8 @@ namespace mrpt
 				TNodeID u;
 				do  // The algorithm:
 				{
-					// Find the index of the minimum:
-					unsigned min_d = std::numeric_limits<unsigned>::max();
+					// Find the nodeID with the minimum known distance so far considered:
+					double min_d = std::numeric_limits<double>::max();
 					u = INVALID_NODEID;
 
 					// No need to check if the min. distance node is not visited yet, since we
@@ -161,7 +169,7 @@ namespace mrpt
 							min_d = itDist->second.dist;
 						}
 					}
-					ASSERT_(u!=INVALID_NODEID)
+					ASSERTMSG_(u!=INVALID_NODEID, "Graph is not fully connected!")
 
 					// Save distance (for possible future reference...) and remove this node from "non-visited":
 					m_distances[u]=m_distances_non_visited[u];
@@ -245,7 +253,7 @@ namespace mrpt
 			inline TNodeID getRootNodeID() const { return m_source_node_ID; }
 
 			/** Return the adjacency matrix of the input graph, which is cached at construction so if needed later just use this copy to avoid recomputing it \sa  mrpt::math::CDirectedGraph::getAdjacencyMatrix */
-			inline const std::map<TNodeID, std::set<TNodeID> > & getCachedAdjacencyMatrix() const { return m_allNeighbors; }
+			inline const list_all_neighbors_t & getCachedAdjacencyMatrix() const { return m_allNeighbors; }
 
 			/** Returns the shortest path between the source node passed in the constructor and the given target node.
 			  * The reconstructed path contains a list of arcs (all of them exist in the graph with the given direction), such as the
@@ -256,7 +264,7 @@ namespace mrpt
 			  */
 			void getShortestPathTo(
 				const TNodeID   target_node_ID,
-				TListEdges &out_path
+				edge_list_t &out_path
 				) const
 			{
 				out_path.clear();

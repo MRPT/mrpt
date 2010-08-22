@@ -440,6 +440,11 @@ namespace poses
 		// Use setFromValues().
 		// inline double &operator[](unsigned int i)
 
+		/** makes: this = p (+) this */
+		inline void  changeCoordinatesReference( const CPose3D & p ) { composeFrom(p,CPose3D(*this)); }
+
+		typedef CPose3D  type_value; //!< Used to emulate CPosePDF types, for example, in CNetworkOfPoses
+
 		/** @name STL-like methods and typedefs
 		   @{   */
 		typedef double         value_type;		//!< The type of the elements

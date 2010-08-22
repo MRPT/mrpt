@@ -38,12 +38,60 @@ using namespace mrpt::system;
 using namespace mrpt::math;
 
 
+// Helper macros to make less tedius defining explicit instantiations of detail functions:
+#define NO_CONST   // Just because a macro can't have an empty input!
+#define DO_EXPLICIT_INSTANTIATIONS_1(_RET,_NAM,__ARG1MOD) \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPose2D,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPose2D,map_traits_stdmap > *g); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPose3D,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPose3D,map_traits_stdmap > *g); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPosePDFGaussian,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPosePDFGaussian,map_traits_stdmap > *g); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPose3DPDFGaussian,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPose3DPDFGaussian,map_traits_stdmap > *g); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPosePDFGaussianInf,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPosePDFGaussianInf,map_traits_stdmap > *g); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPose3DPDFGaussianInf,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPose3DPDFGaussianInf,map_traits_stdmap > *g); \
+
+#define DO_EXPLICIT_INSTANTIATIONS_2(_RET,_NAM,__ARG1MOD, __ARG2) \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPose2D,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPose2D,map_traits_stdmap > *g, __ARG2); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPose3D,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPose3D,map_traits_stdmap > *g, __ARG2); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPosePDFGaussian,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPosePDFGaussian,map_traits_stdmap > *g, __ARG2); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPose3DPDFGaussian,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPose3DPDFGaussian,map_traits_stdmap > *g, __ARG2); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPosePDFGaussianInf,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPosePDFGaussianInf,map_traits_stdmap > *g, __ARG2); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPose3DPDFGaussianInf,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPose3DPDFGaussianInf,map_traits_stdmap > *g, __ARG2); \
+
+// Helper macros to make less tedius defining explicit instantiations of detail functions:
+#define DO_EXPLICIT_INSTANTIATIONS_3(_RET,_NAM,__ARG1MOD, __ARG2, __ARG3) \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPose2D,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPose2D,map_traits_stdmap > *g, __ARG2, __ARG3); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPose3D,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPose3D,map_traits_stdmap > *g, __ARG2, __ARG3); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPosePDFGaussian,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPosePDFGaussian,map_traits_stdmap > *g, __ARG2, __ARG3); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPose3DPDFGaussian,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPose3DPDFGaussian,map_traits_stdmap > *g, __ARG2, __ARG3); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPosePDFGaussianInf,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPosePDFGaussianInf,map_traits_stdmap > *g, __ARG2, __ARG3); \
+	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<CPose3DPDFGaussianInf,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<CPose3DPDFGaussianInf,map_traits_stdmap > *g, __ARG2, __ARG3); \
+
+
+
 namespace mrpt
 {
 	namespace poses
 	{
 		namespace detail
 		{
+
+			template <class POSE_PDF> struct TPosePDFHelper
+			{
+				static inline void copyFrom2D(POSE_PDF &p, const CPosePDFGaussianInf &pdf ) { p.copyFrom( pdf ); }
+				static inline void copyFrom3D(POSE_PDF &p, const CPose3DPDFGaussianInf &pdf ) { p.copyFrom( pdf ); }
+			};
+			template <> struct TPosePDFHelper<CPose2D>
+			{
+				static inline void copyFrom2D(CPose2D &p, const CPosePDFGaussianInf &pdf ) { p = pdf.mean; }
+				static inline void copyFrom3D(CPose2D &p, const CPose3DPDFGaussianInf &pdf ) { p = CPose2D(pdf.mean); }
+			};
+			template <> struct TPosePDFHelper<CPose3D>
+			{
+				static inline void copyFrom2D(CPose3D &p, const CPosePDFGaussianInf &pdf ) { p = pdf.mean; }
+				static inline void copyFrom3D(CPose3D &p, const CPose3DPDFGaussianInf &pdf ) { p = pdf.mean; }
+			};
+
+
+
 			template <class POSE> void write_VERTEX_line(const TNodeID id, const POSE &p, std::ofstream &f);
 			template <> void write_VERTEX_line<CPose2D>(const TNodeID id, const CPose2D &p, std::ofstream &f)
 			{
@@ -96,12 +144,26 @@ namespace mrpt
 				p.copyFrom(edge);
 				write_EDGE_line(edgeIDs,p,f);
 			}
+			template <> void write_EDGE_line<CPose2D>( const std::pair<TNodeID,TNodeID> &edgeIDs,const CPose2D & edge, std::ofstream &f)
+			{
+				CPosePDFGaussianInf p;
+				p.mean = edge;
+				p.cov_inv.unit();
+				write_EDGE_line(edgeIDs,p,f);
+			}
+			template <> void write_EDGE_line<CPose3D>( const std::pair<TNodeID,TNodeID> &edgeIDs,const CPose3D & edge, std::ofstream &f)
+			{
+				CPose3DPDFGaussianInf p;
+				p.mean = edge;
+				p.cov_inv.unit();
+				write_EDGE_line(edgeIDs,p,f);
+			}
 
 			// =================================================================
 			//                     save_graph_of_poses_from_text_file
 			// =================================================================
-			template<class CPOSE>
-			void save_graph_of_poses_from_text_file(const CNetworkOfPoses<CPOSE> *g, const std::string &fil)
+			template<class CPOSE,class POSES_MAP_TRAITS>
+			void save_graph_of_poses_from_text_file(const CNetworkOfPoses<CPOSE,POSES_MAP_TRAITS> *g, const std::string &fil)
 			{
 				std::ofstream  f;
 				f.open(fil.c_str());
@@ -109,11 +171,11 @@ namespace mrpt
 					THROW_EXCEPTION_CUSTOM_MSG1("Error opening file '%s' for writing",fil.c_str());
 
 				// 1st: Nodes
-				for (typename CNetworkOfPoses<CPOSE>::global_poses_t::const_iterator itNod = g->nodes.begin();itNod!=g->nodes.end();++itNod)
+				for (typename CNetworkOfPoses<CPOSE,POSES_MAP_TRAITS>::global_poses_t::const_iterator itNod = g->nodes.begin();itNod!=g->nodes.end();++itNod)
 					write_VERTEX_line(itNod->first, itNod->second, f);
 
 				// 2nd: Edges:
-				for (typename CNetworkOfPoses<CPOSE>::const_iterator it=g->begin();it!=g->end();++it)
+				for (typename CNetworkOfPoses<CPOSE,POSES_MAP_TRAITS>::const_iterator it=g->begin();it!=g->end();++it)
 					if (it->first.first!=it->first.second)	// Ignore self-edges, typically from importing files with EQUIV's
 						write_EDGE_line( it->first, it->second, f);
 
@@ -124,17 +186,19 @@ namespace mrpt
 			//  Only the specializations below are really defined.
 			template <class CPOSE> bool is_3D_graph_from_edge_type();
 
+			template <> bool is_3D_graph_from_edge_type<CPose2D>()   { return false; }
 			template <> bool is_3D_graph_from_edge_type<CPosePDFGaussian>()   { return false; }
 			template <> bool is_3D_graph_from_edge_type<CPosePDFGaussianInf>()   { return false; }
 
+			template <> bool is_3D_graph_from_edge_type<CPose3D>() { return true;  }
 			template <> bool is_3D_graph_from_edge_type<CPose3DPDFGaussian>() { return true;  }
 			template <> bool is_3D_graph_from_edge_type<CPose3DPDFGaussianInf>() { return true;  }
 
 			// =================================================================
 			//                     load_graph_of_poses_from_text_file
 			// =================================================================
-			template<class CPOSE>
-			void load_graph_of_poses_from_text_file(CNetworkOfPoses<CPOSE>*g, const std::string &fil)
+			template<class CPOSE,class POSES_MAP_TRAITS>
+			void load_graph_of_poses_from_text_file(CNetworkOfPoses<CPOSE,POSES_MAP_TRAITS>*g, const std::string &fil)
 			{
 				set<string>  alreadyWarnedUnknowns; // for unknown line types, show a warning to cerr just once.
 
@@ -314,7 +378,7 @@ namespace mrpt
 
 							// Convert to 2D cov, 3D cov or 3D inv_cov as needed:
 							typename CNetworkOfPoses<CPOSE>::edge_t  newEdge;
-							newEdge.copyFrom( CPosePDFGaussianInf( CPose2D(Ap_mean), Ap_cov_inv ) );
+							TPosePDFHelper<CPOSE>::copyFrom2D(newEdge, CPosePDFGaussianInf( CPose2D(Ap_mean), Ap_cov_inv ) );
 							g->insertEdge(from_id, to_id, newEdge);
 						}
 					}
@@ -374,7 +438,7 @@ namespace mrpt
 
 							// Convert as needed:
 							typename CNetworkOfPoses<CPOSE>::edge_t  newEdge;
-							newEdge.copyFrom( CPose3DPDFGaussianInf( CPose3D(Ap_mean), Ap_cov_inv ) );
+							TPosePDFHelper<CPOSE>::copyFrom3D(newEdge, CPose3DPDFGaussianInf( CPose3D(Ap_mean), Ap_cov_inv ) );
 							g->insertEdge(from_id, to_id, newEdge);
 						}
 					}
@@ -399,22 +463,8 @@ namespace mrpt
 }
 
 // Explicit instantations:
-template void BASE_IMPEXP mrpt::poses::detail::save_graph_of_poses_from_text_file<CPosePDFGaussian>(const CNetworkOfPoses<CPosePDFGaussian> *g, const std::string &fil);
-template void BASE_IMPEXP mrpt::poses::detail::save_graph_of_poses_from_text_file<CPose3DPDFGaussian>(const CNetworkOfPoses<CPose3DPDFGaussian> *g, const std::string &fil);
-template void BASE_IMPEXP mrpt::poses::detail::save_graph_of_poses_from_text_file<CPosePDFGaussianInf>(const CNetworkOfPoses<CPosePDFGaussianInf> *g, const std::string &fil);
-template void BASE_IMPEXP mrpt::poses::detail::save_graph_of_poses_from_text_file<CPose3DPDFGaussianInf>(const CNetworkOfPoses<CPose3DPDFGaussianInf> *g, const std::string &fil);
-
-template void BASE_IMPEXP mrpt::poses::detail::load_graph_of_poses_from_text_file<CPosePDFGaussian>(CNetworkOfPoses<CPosePDFGaussian> *g, const std::string &fil);
-template void BASE_IMPEXP mrpt::poses::detail::load_graph_of_poses_from_text_file<CPose3DPDFGaussian>(CNetworkOfPoses<CPose3DPDFGaussian> *g, const std::string &fil);
-template void BASE_IMPEXP mrpt::poses::detail::load_graph_of_poses_from_text_file<CPosePDFGaussianInf>(CNetworkOfPoses<CPosePDFGaussianInf> *g, const std::string &fil);
-template void BASE_IMPEXP mrpt::poses::detail::load_graph_of_poses_from_text_file<CPose3DPDFGaussianInf>(CNetworkOfPoses<CPose3DPDFGaussianInf> *g, const std::string &fil);
-
-
-template <class GRAPH>
-void dijks_on_progress(const GRAPH &g, size_t visitedCount)
-{
-	//if ((visitedCount & 0x8F) == 0 ) 	cout << "dijkstra: " << visitedCount << endl;
-}
+DO_EXPLICIT_INSTANTIATIONS_2(void, save_graph_of_poses_from_text_file, const, const std::string &fil )
+DO_EXPLICIT_INSTANTIATIONS_2(void, load_graph_of_poses_from_text_file, NO_CONST, const std::string &fil )
 
 // --------------------------------------------------------------------------------
 //               Implements: collapseDuplicatedEdges
@@ -423,11 +473,11 @@ void dijks_on_progress(const GRAPH &g, size_t visitedCount)
 //  Upon return, only one edge remains between each pair of nodes with the mean
 //   & covariance (or information matrix) corresponding to the Bayesian fusion of all the Gaussians.
 // --------------------------------------------------------------------------------
-template<class CPOSE>
-size_t mrpt::poses::detail::graph_of_poses_collapse_dup_edges(CNetworkOfPoses<CPOSE>*g)
+template<class CPOSE,class POSES_MAP_TRAITS>
+size_t mrpt::poses::detail::graph_of_poses_collapse_dup_edges(CNetworkOfPoses<CPOSE,POSES_MAP_TRAITS>*g)
 {
 	MRPT_START
-	typedef typename CNetworkOfPoses<CPOSE>::edges_map_t::iterator TEdgeIterator;
+	typedef typename CNetworkOfPoses<CPOSE,POSES_MAP_TRAITS>::edges_map_t::iterator TEdgeIterator;
 
 	// Data structure: (id1,id2) -> all edges between them
 	//  (with id1 < id2)
@@ -460,12 +510,26 @@ size_t mrpt::poses::detail::graph_of_poses_collapse_dup_edges(CNetworkOfPoses<CP
 	MRPT_END
 }
 
-// explicit instantiation:
-template size_t BASE_IMPEXP mrpt::poses::detail::graph_of_poses_collapse_dup_edges<CPosePDFGaussian>(CNetworkOfPoses<CPosePDFGaussian>*g);
-template size_t BASE_IMPEXP mrpt::poses::detail::graph_of_poses_collapse_dup_edges<CPose3DPDFGaussian>(CNetworkOfPoses<CPose3DPDFGaussian>*g);
-template size_t BASE_IMPEXP mrpt::poses::detail::graph_of_poses_collapse_dup_edges<CPosePDFGaussianInf>(CNetworkOfPoses<CPosePDFGaussianInf>*g);
-template size_t BASE_IMPEXP mrpt::poses::detail::graph_of_poses_collapse_dup_edges<CPose3DPDFGaussianInf>(CNetworkOfPoses<CPose3DPDFGaussianInf>*g);
+// explicit instantiations:
+DO_EXPLICIT_INSTANTIATIONS_1(size_t,graph_of_poses_collapse_dup_edges,NO_CONST)
 
+// Aux functions for graph_of_poses_dijkstra_init:
+//  Return the mean of a pose PDF, or the pose itself if it's not a PDF:
+template <class POSE> struct TMeanGetter {
+	static inline const typename POSE::type_value & getMean(const POSE &p) { return p.mean; }
+};
+template <> struct TMeanGetter<CPose2D> {
+	static inline const CPose2D & getMean(const CPose2D &p) { return p; }
+};
+template <> struct TMeanGetter<CPose3D> {
+	static inline const CPose3D & getMean(const CPose3D &p) { return p; }
+};
+
+template <class GRAPH>
+void dijks_on_progress(const GRAPH &g, size_t visitedCount)
+{
+	//if ((visitedCount & 0x8F) == 0 ) 	cout << "dijkstra: " << visitedCount << endl;
+}
 
 // --------------------------------------------------------------------------------
 //               Implements: dijkstra_nodes_estimate
@@ -473,25 +537,27 @@ template size_t BASE_IMPEXP mrpt::poses::detail::graph_of_poses_collapse_dup_edg
 //	Compute a simple estimation of the global coordinates of each node just from the information in all edges, sorted in a Dijkstra tree based on the current "root" node.
 //	Note that "global" coordinates are with respect to the node with the ID specified in \a root.
 // --------------------------------------------------------------------------------
-template<class CPOSE>
-void mrpt::poses::detail::graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE>*g)
+template<class CPOSE,class POSES_MAP_TRAITS>
+void mrpt::poses::detail::graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE,POSES_MAP_TRAITS>*g)
 {
 	MRPT_START
 
+	cout << "F: " << __CURRENT_FUNCTION_NAME__ << endl;
+
 	// Do Dijkstra shortest path from "root" to all other nodes:
-	CDijkstra<CPOSE>  dijkstra(*g, g->root, NULL, &dijks_on_progress);
+	CDijkstra<CPOSE,POSES_MAP_TRAITS>  dijkstra(*g, g->root, NULL, &dijks_on_progress);
 
 	// Get the tree representation of the graph and traverse it
 	//  from its root toward the leafs:
-	typename CDijkstra<CPOSE>::tree_graph_t  treeView;
+	typename CDijkstra<CPOSE,POSES_MAP_TRAITS>::tree_graph_t  treeView;
 	dijkstra.getTreeGraph(treeView);
 
 	// This visitor class performs the real job of
-	struct VisitorComputePoses : public CDijkstra<CPOSE>::tree_graph_t::Visitor
+	struct VisitorComputePoses : public CDijkstra<CPOSE,POSES_MAP_TRAITS>::tree_graph_t::Visitor
 	{
-		CNetworkOfPoses<CPOSE> * m_g; // The original graph
+		CNetworkOfPoses<CPOSE,POSES_MAP_TRAITS> * m_g; // The original graph
 
-		VisitorComputePoses(CNetworkOfPoses<CPOSE> *g) : m_g(g) { }
+		VisitorComputePoses(CNetworkOfPoses<CPOSE,POSES_MAP_TRAITS> *g) : m_g(g) { }
 		virtual void OnVisitNode( const TNodeID parent_id, const typename CDijkstra<CPOSE>::tree_graph_t::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level )
 		{
 			const TNodeID  child_id = edge_to_child.id;
@@ -500,11 +566,11 @@ void mrpt::poses::detail::graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE>*g)
 			//  taking into account that that edge may be in reverse order and then have to invert the delta_pose:
 			if (!edge_to_child.reverse)
 			{	// pose_child = p_parent (+) p_delta
-				m_g->nodes[child_id].composeFrom( m_g->nodes[parent_id], edge_to_child.data->mean );
+				m_g->nodes[child_id].composeFrom( m_g->nodes[parent_id],  TMeanGetter<CPOSE>::getMean( *edge_to_child.data ) );
 			}
 			else
 			{	// pose_child = p_parent (+) [(-)p_delta]
-				m_g->nodes[child_id].composeFrom( m_g->nodes[parent_id], -edge_to_child.data->mean );
+				m_g->nodes[child_id].composeFrom( m_g->nodes[parent_id], - TMeanGetter<CPOSE>::getMean( *edge_to_child.data ) );
 			}
 		}
 	};
@@ -521,11 +587,7 @@ void mrpt::poses::detail::graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE>*g)
 }
 
 // Explicit instantations:
-template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<CPosePDFGaussian>(CNetworkOfPoses<CPosePDFGaussian>*g);
-template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<CPose3DPDFGaussian>(CNetworkOfPoses<CPose3DPDFGaussian>*g);
-template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<CPosePDFGaussianInf>(CNetworkOfPoses<CPosePDFGaussianInf>*g);
-template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<CPose3DPDFGaussianInf>(CNetworkOfPoses<CPose3DPDFGaussianInf>*g);
-
+DO_EXPLICIT_INSTANTIATIONS_1(void,graph_of_poses_dijkstra_init,NO_CONST)
 
 // Auxiliary funcs:
 template <class VEC> inline double auxMaha2Dist(VEC &err,const CPosePDFGaussianInf &p) {
@@ -552,6 +614,18 @@ template <class VEC> inline double auxMaha2Dist(VEC &err,const CPose3DPDFGaussia
 	p.cov.inv(COV_INV);
 	return mrpt::math::multiply_HCHt_scalar(err,COV_INV); // err^t*cov_inv*err
 }
+// These two are for simulating maha2 distances for non-PDF types: fallback to squared-norm:
+template <class VEC> inline double auxMaha2Dist(VEC &err,const CPose2D &p) {
+	math::wrapToPiInPlace(err[2]);
+	return square(err[0])+square(err[1])+square(err[2]);
+}
+template <class VEC> inline double auxMaha2Dist(VEC &err,const CPose3D &p) {
+	math::wrapToPiInPlace(err[3]);
+	math::wrapToPiInPlace(err[4]);
+	math::wrapToPiInPlace(err[5]);
+	return square(err[0])+square(err[1])+square(err[2])+square(err[3])+square(err[4])+square(err[5]);
+}
+
 
 double auxEuclid2Dist(const CPose2D &p1,const CPose2D &p2) {
 	return
@@ -575,9 +649,9 @@ double auxEuclid2Dist(const CPose3D &p1,const CPose3D &p2) {
 //
 //	Compute the square error of a single edge, in comparison to the nodes global poses.
 // --------------------------------------------------------------------------------
-template<class CPOSE>
+template<class CPOSE,class POSES_MAP_TRAITS>
 double mrpt::poses::detail::graph_edge_sqerror(
-	const CNetworkOfPoses<CPOSE>*g,
+	const CNetworkOfPoses<CPOSE,POSES_MAP_TRAITS>*g,
 	const typename CDirectedGraph<CPOSE>::edges_map_t::const_iterator &itEdge,
 	bool ignoreCovariances )
 {
@@ -588,8 +662,8 @@ double mrpt::poses::detail::graph_edge_sqerror(
 	const TNodeID to_id   = itEdge->first.second;
 
 	// And their global poses as stored in "nodes"
-	typename CNetworkOfPoses<CPOSE>::global_poses_t::const_iterator itPoseFrom = g->nodes.find(from_id);
-	typename CNetworkOfPoses<CPOSE>::global_poses_t::const_iterator itPoseTo   = g->nodes.find(to_id);
+	typename CNetworkOfPoses<CPOSE,POSES_MAP_TRAITS>::global_poses_t::const_iterator itPoseFrom = g->nodes.find(from_id);
+	typename CNetworkOfPoses<CPOSE,POSES_MAP_TRAITS>::global_poses_t::const_iterator itPoseTo   = g->nodes.find(to_id);
 	ASSERTMSG_(itPoseFrom!=g->nodes.end(), format("Node %u doesn't have a global pose in 'nodes'.", static_cast<unsigned int>(from_id)))
 	ASSERTMSG_(itPoseTo!=g->nodes.end(), format("Node %u doesn't have a global pose in 'nodes'.", static_cast<unsigned int>(to_id)))
 
@@ -599,7 +673,7 @@ double mrpt::poses::detail::graph_edge_sqerror(
 
 	// The delta_pose as stored in the edge:
 	const CPOSE &edge_delta_pose = itEdge->second;
-	const typename CPOSE::type_value &edge_delta_pose_mean = edge_delta_pose.mean;
+	const typename CPOSE::type_value &edge_delta_pose_mean = TMeanGetter<CPOSE>::getMean( edge_delta_pose );
 
 	if (ignoreCovariances)
 	{	// Square Euclidean distance: Just use the mean values, ignore covs.
@@ -623,7 +697,7 @@ double mrpt::poses::detail::graph_edge_sqerror(
 		//
 		CArrayDouble<CPOSE::type_value::static_size> err;
 		for (size_t i=0;i<CPOSE::type_value::static_size;i++)
-			err[i] = from_plus_delta.mean[i] - to_mean[i];
+			err[i] = TMeanGetter<CPOSE>::getMean(from_plus_delta)[i] - to_mean[i];
 
 		// (auxMaha2Dist will also take into account the 2PI wrapping)
 		return auxMaha2Dist(err,from_plus_delta);
@@ -632,45 +706,21 @@ double mrpt::poses::detail::graph_edge_sqerror(
 }
 
 // Explicit instantations:
-template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPosePDFGaussian>(const CNetworkOfPoses<CPosePDFGaussian>*g, const CDirectedGraph<CPosePDFGaussian>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
-template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPose3DPDFGaussian>(const CNetworkOfPoses<CPose3DPDFGaussian>*g, const CDirectedGraph<CPose3DPDFGaussian>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
-template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPosePDFGaussianInf>(const CNetworkOfPoses<CPosePDFGaussianInf>*g, const CDirectedGraph<CPosePDFGaussianInf>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
-template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPose3DPDFGaussianInf>(const CNetworkOfPoses<CPose3DPDFGaussianInf>*g, const CDirectedGraph<CPose3DPDFGaussianInf>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
+//DO_EXPLICIT_INSTANTIATIONS_3(double, graph_edge_sqerror, const typename CDirectedGraph<CPOSE>::edges_map_t::const_iterator &itEdge, bool ignoreCovariances )
+
+template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPose2D,map_traits_stdmap >(const CNetworkOfPoses<CPose2D,map_traits_stdmap >*g, const CDirectedGraph<CPose2D>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
+template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPose3D,map_traits_stdmap >(const CNetworkOfPoses<CPose3D,map_traits_stdmap >*g, const CDirectedGraph<CPose3D>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
+template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPosePDFGaussian,map_traits_stdmap >(const CNetworkOfPoses<CPosePDFGaussian,map_traits_stdmap >*g, const CDirectedGraph<CPosePDFGaussian>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
+template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPose3DPDFGaussian,map_traits_stdmap >(const CNetworkOfPoses<CPose3DPDFGaussian,map_traits_stdmap >*g, const CDirectedGraph<CPose3DPDFGaussian>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
+template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPosePDFGaussianInf,map_traits_stdmap >(const CNetworkOfPoses<CPosePDFGaussianInf,map_traits_stdmap >*g, const CDirectedGraph<CPosePDFGaussianInf>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
+template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPose3DPDFGaussianInf,map_traits_stdmap >(const CNetworkOfPoses<CPose3DPDFGaussianInf,map_traits_stdmap >*g, const CDirectedGraph<CPose3DPDFGaussianInf>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
 
 //   Implementation of serialization stuff
 // --------------------------------------------------------------------------------
 IMPLEMENTS_SERIALIZABLE( CNetworkOfPoses2D, CSerializable, mrpt::poses )
 IMPLEMENTS_SERIALIZABLE( CNetworkOfPoses3D, CSerializable, mrpt::poses )
+IMPLEMENTS_SERIALIZABLE( CNetworkOfPoses2DCov, CSerializable, mrpt::poses )
+IMPLEMENTS_SERIALIZABLE( CNetworkOfPoses3DCov, CSerializable, mrpt::poses )
 IMPLEMENTS_SERIALIZABLE( CNetworkOfPoses2DInf, CSerializable, mrpt::poses )
 IMPLEMENTS_SERIALIZABLE( CNetworkOfPoses3DInf, CSerializable, mrpt::poses )
-
-// Use MRPT's STL-metaprogramming automatic serialization for the field "edges" & "nodes":
-#define DO_IMPLEMENT_READ_WRITE(_CLASS) \
-	void  _CLASS::writeToStream(CStream &out, int *version) const \
-	{ \
-		if (version) \
-			*version = 0; \
-		else \
-		{ \
-			out << nodes << edges << root;  \
-		} \
-	} \
-	void  _CLASS::readFromStream(CStream &in, int version) \
-	{ \
-		switch(version) \
-		{ \
-		case 0: \
-			{ \
-				in >> nodes >> edges >> root; \
-			} break; \
-		default: \
-			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version) \
-		}; \
-	}
-
-
-DO_IMPLEMENT_READ_WRITE(CNetworkOfPoses2D)
-DO_IMPLEMENT_READ_WRITE(CNetworkOfPoses3D)
-DO_IMPLEMENT_READ_WRITE(CNetworkOfPoses2DInf)
-DO_IMPLEMENT_READ_WRITE(CNetworkOfPoses3DInf)
 

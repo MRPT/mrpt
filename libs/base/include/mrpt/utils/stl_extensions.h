@@ -41,6 +41,8 @@
 #include <mrpt/utils/circular_buffer.h>
 #include <mrpt/utils/list_searchable.h>
 #include <mrpt/utils/bimap.h>
+#include <mrpt/utils/map_as_vector.h>
+#include <mrpt/utils/traits_map.h>
 
 
 namespace mrpt

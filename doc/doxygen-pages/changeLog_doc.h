@@ -39,6 +39,7 @@
 		- <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>: A central application for all Graph-SLAM methods and tools.
 	- Changes in applications:
 		- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: More operations supported.
+		- <a href="http://www.mrpt.org/Application:mrpt-performance" >mrpt-performance</a>: Added command-line arguments to filter what tests to run.
 		- RawLogViewer: Can now build "raw maps" from datasets in the "observations-only" format.
 		- <a href="http://www.mrpt.org/Application:icp-slam" >icp-slam</a> and <a href="http://www.mrpt.org/Application:rbpf-slam" >rbpf-slam</a> now accept a second command-line argument for the dataset (rawlog) to load.
 	- Changes in build system / compiling:
@@ -55,6 +56,7 @@
 			- mrpt::poses::CPose3DPDFGaussian
 			- mrpt::poses::CPosePDFGaussianInf
 			- mrpt::poses::CPose3DPDFGaussianInf
+		- mrpt::utils::map_as_vector a vector-based implementation of a std::map-like container.
 	- Changes in classes:
 		- mrpt::poses::CNetworkOfPoses has many improvements and new methods (see its documentation).
 		- mrpt::math::CDijkstra:
@@ -65,6 +67,7 @@
 		- mrpt::utils::TColorf: New explicit copy constructor from a mrpt::utils::TColor
 		- mrpt::opengl::CRenderizable: Many "set" methods that returned "void" now return a reference to "this" so several calls can be chained (e.g. obj.setColor(...).setScale(1.0) )
 		- mrpt::gui::CDisplayWindow3D doesn't report ALT+Enter as a keystroke event anymore.
+		- New method mrpt::utils::CTimeLogger::getMeanTime
 	- New functions:
 		- New ASSERT macros: ASSERT_EQUAL_, ASSERT_NOT_EQUAL_, ASSERT_BELOW_, ASSERT_ABOVE_
 		- mrpt::slam::carmen_log_parse_line() a tool for parsing CARMEN logs.

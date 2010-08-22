@@ -294,6 +294,11 @@ namespace poses
 		 	}
 		 }
 
+		/** makes: this = p (+) this */
+		inline void  changeCoordinatesReference( const CPose2D & p ) { composeFrom(p,CPose2D(*this)); }
+
+		typedef CPose2D  type_value; //!< Used to emulate CPosePDF types, for example, in CNetworkOfPoses
+
 		/** @name STL-like methods and typedefs
 		   @{   */
 		typedef double         value_type;		//!< The type of the elements

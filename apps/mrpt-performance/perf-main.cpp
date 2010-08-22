@@ -33,6 +33,8 @@
 
 #include <mrpt/slam.h>
 
+#include <mrpt/otherlibs/tclap/CmdLine.h>
+
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::system;
@@ -100,6 +102,7 @@ void getTestImage(unsigned int img_index, mrpt::utils::CImage &out_img )
 #include "perf-scan_matching.h"
 #include "perf-feature_extraction.h"
 #include "perf-feature_matching.h"
+#include "perf-graph.h"
 
 // ------------------------------------------------------
 //						MAIN
@@ -108,11 +111,24 @@ int main(int argc, char **argv)
 {
 	try
 	{
-		printf(" mrpt-performance - Part of the MRPT\n");
-		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
-		printf("-------------------------------------------------------------------\n");
+		TCLAP::CmdLine cmd("mrpt-performance", ' ', MRPT_getVersion().c_str());
+
+		TCLAP::ValueArg<std::string> arg_contains("c","match-contains","Run only the tests containing the given substring",false,"NAME","NAME",cmd);
+
+		// Parse arguments:
+		if (!cmd.parse( argc, argv ))
+			throw std::runtime_error(""); // should exit.
 
 		const std::string filName = "./mrpt-performance.html";
+
+		std::string  match_contains;
+		if (arg_contains.isSet())
+		{
+			cout << "Using match filter: " << match_contains << endl;
+			match_contains = arg_contains.getValue();
+		}
+
+
 		bool  doLog = true;
 
 		CTicTac  globalTime;
@@ -146,6 +162,7 @@ int main(int argc, char **argv)
 		register_tests_scan_matching();
 		register_tests_feature_extraction();
 		register_tests_feature_matching();
+		register_tests_graph();
 
 
 		if (doLog)
@@ -159,6 +176,11 @@ int main(int argc, char **argv)
 
 		for (std::list<TestData>::const_iterator it=lstTests.begin();it!=lstTests.end();it++)
 		{
+			// Filter tests?
+			if (!match_contains.empty())
+				if (string::npos==string(it->name).find(match_contains))
+					continue; // doesn't have the substring
+
 			printf("%-60s",it->name); cout.flush();
 
 			const double t = it->func(it->arg1,it->arg2); // Run it.
@@ -216,13 +238,16 @@ int main(int argc, char **argv)
 	}
 	catch (std::exception &e)
 	{
-		setConsoleColor(CONCOL_RED,true);
-		std::cerr << "Program finished for an exception!!" << std::endl;
-		setConsoleColor(CONCOL_NORMAL,true);
+		if (::strlen(e.what()))
+		{
+			setConsoleColor(CONCOL_RED,true);
+			std::cerr << "Program finished for an exception!!" << std::endl;
+			setConsoleColor(CONCOL_NORMAL,true);
 
-		std::cerr << e.what() << std::endl;
+			std::cerr << e.what() << std::endl;
 
-		mrpt::system::pause();
+			mrpt::system::pause();
+		}
 		return -1;
 	}
 	catch (...)

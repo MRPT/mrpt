@@ -84,6 +84,8 @@ namespace mrpt
 			inline double leave( const char *func_name ) {
 				return m_enabled ? do_leave(func_name) : 0;
 			}
+			/** Return the mean execution time of the given "section", or 0 if it hasn't ever been called "enter" with that section name */
+			double getMeanTime(const std::string &name) const;
 		}; // End of class def.
 
 
