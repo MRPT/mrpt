@@ -78,6 +78,7 @@
 	- New examples:
 		- phidgetProximitySensor
 	- BUG FIXES:
+		- Fixed bug in mrpt::utils::CImage::KLT_response: due to wrong signed numbers usage, responses were high in textureless parts of images.
 		- FIXED: mrpt::gui::CDisplayWindow3D crashes when hitting ALT+Enter for fullscreen when user is waiting for a key to close the window.
 		- icp-slam: Fixed potential wrong processing of datasets in observations-only format where the odometry initial value is not (0,0,0).
 		- Build errors with some OpenCV versions (<a href="http://www.mrpt.org/node/369" >Bug report & patch</a> by "iXce").

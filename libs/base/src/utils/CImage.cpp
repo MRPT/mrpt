@@ -2888,27 +2888,31 @@ float CImage::KLT_response(
 	const unsigned int max_y = y+half_window_size;
 
 	// Since min_* are "unsigned", checking "<" will detect negative numbers:
-	ASSERT_(min_x<img_w && max_x<img_w && min_y<img_h && max_y<img_h)
+	ASSERTMSG_(min_x<img_w && max_x<img_w && min_y<img_h && max_y<img_h, "Window is out of image bounds")
 
 	// Gradient sums: Use integers since they're much faster than doubles/floats!!
 	int32_t gxx = 0;
 	int32_t gxy = 0;
 	int32_t gyy = 0;
 
+	const int widthStep = srcImg->widthStep;
+
 	for (unsigned int yy = min_y; yy<=max_y; yy++)
+	{
+		const uint8_t* ptr = reinterpret_cast<const uint8_t*>(&srcImg->imageData[widthStep*yy+ min_x] );  //*VERY IMPORTANT*: Use unsigned
 		for (unsigned int xx = min_x; xx<=max_x; xx++)
 		{
-			const int32_t dx = srcImg->imageData[srcImg->widthStep*yy+ xx+1] - srcImg->imageData[srcImg->widthStep*yy+ xx-1];
-			const int32_t dy = srcImg->imageData[srcImg->widthStep*(yy+1)+ xx] - srcImg->imageData[srcImg->widthStep*(yy-1)+ xx];
-
+			const int32_t dx = ptr[+1]-ptr[-1];
+			const int32_t dy = ptr[+widthStep]-ptr[-widthStep];
 			gxx += dx * dx;
 			gxy += dx * dy;
 			gyy += dy * dy;
 		}
-
+		++ptr;
+	}
 
 	// Convert to float's and normalize in the way:
-	const float K = 1.0f/( (max_y-min_y+1) * (max_x-min_x+1) );
+	const float K = 0.5f/( (max_y-min_y+1) * (max_x-min_x+1) );
 	const float Gxx = gxx * K;
 	const float Gxy = gxy * K;
 	const float Gyy = gyy * K;
@@ -2916,7 +2920,11 @@ float CImage::KLT_response(
 	// Return the minimum eigenvalue of:
 	//    ( gxx  gxy )
 	//    ( gxy  gyy )
-	return 0.5f * (Gxx + Gyy - std::sqrt( (Gxx - Gyy)*(Gxx - Gyy) + 4*Gxy*Gxy)  );
+	// See, for example: mrpt::math::detail::eigenVectorsMatrix_special_2x2():
+	const float t  = Gxx+Gyy;         // Trace
+	const float de = Gxx*Gyy-Gxy*Gxy; // Det
+	// The smallest eigenvalue is:
+	return 0.5f * (t - std::sqrt( t*t - 4.0f*de ) );
 #else
 	return 0;
 #endif

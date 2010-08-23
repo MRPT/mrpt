@@ -113,6 +113,8 @@ TEST(Matrices,EigenVal2x2dyn)
 	CMatrixDouble  C1_V(2,2), C1_D(2,2);
 	C1.eigenVectors(C1_V,C1_D);
 
+	cout <<C1_D << endl;
+
 	CMatrixDouble  C1_RR = C1_V*C1_D*(~C1_V);
 	C1_RR-=C1;
 	EXPECT_TRUE(fabs(C1_RR.sumAll())<1e-4);
