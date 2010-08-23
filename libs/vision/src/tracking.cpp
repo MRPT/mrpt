@@ -83,7 +83,7 @@ void CGenericFeatureTracker::trackFeatures(
 	// (2nd STEP) For successfully followed features, check their KLT response??
 	// ========================================================
 	const int	check_KLT_response_every = extra_params.getWithDefaultVal("check_KLT_response_every",0);
-	const float minimum_KLT_response = extra_params.getWithDefaultVal("minimum_KLT_response",1000);
+	const float minimum_KLT_response = extra_params.getWithDefaultVal("minimum_KLT_response",50);
 	const unsigned int KLT_response_half_win = extra_params.getWithDefaultVal("KLT_response_half_win",4);
 
 	if (check_KLT_response_every>0 && ++m_check_KLT_counter>=size_t(check_KLT_response_every))
@@ -233,7 +233,7 @@ void CGenericFeatureTracker::trackFeatures(
 		const size_t patchSize = extra_params.getWithDefaultVal("add_new_feat_patch_size",11);
 		const int 	 offset		= (int)patchSize/2 + 1;
 
-		const float minimum_KLT_response_to_add = extra_params.getWithDefaultVal("minimum_KLT_response_to_add",1500);
+		const float minimum_KLT_response_to_add = extra_params.getWithDefaultVal("minimum_KLT_response_to_add",100);
 
 		for (size_t i=0;i<nNewToCheck && featureList.size()<maxNumFeatures;i++)
 		{

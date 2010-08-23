@@ -55,9 +55,20 @@ namespace mrpt
 		/** Input data used by some (Bundle-adjustment) methods in mrpt::vision
 		  *  \sa mrpt::vision::camera_calib_ba
 		  */
-		struct TSequenceFeatureObservations : public std::map<TFeatureID, TFeatureObservations>
+		struct VISION_IMPEXP TSequenceFeatureObservations : public std::map<TFeatureID, TFeatureObservations>
 		{
+			typedef std::map<TFeatureID, TFeatureObservations> BASE;
 
+			/** Saves all entries to a text file, with each line having this format: #FRAME_ID  #FEAT_ID  #PIXEL_X  #PIXEL_Y
+			  * The first line contains a comment line (starting with '%') explaining this format.
+			  * \sa loadFromTextFile \exception std::exception On I/O error  */
+			void saveToTextFile(const std::string &filName, bool skipFirstCommentLine = false) const;
+
+			/** Load from a text file, in the format described in \a saveToTextFile \exception std::exception On I/O or format error */
+			void loadFromTextFile(const std::string &filName);
+
+			/** Remove all those features that don't have a minimum number of observations from different camera frame IDs. \return the number of erased entries. */
+			size_t removeFewObservedFeatures(size_t minNumObservations = 3);
 		};
 
 		/** Data returned by  mrpt::vision::camera_calib_ba */

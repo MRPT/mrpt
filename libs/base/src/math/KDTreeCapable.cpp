@@ -85,21 +85,23 @@ void KDTreeCapable::rebuild_kdTree(size_t nDims) const
 		KDTreeData.m_nTreeSize = N;
 		KDTreeData.m_nDim      = nDims;
 
-		//allocate memory for query point and results
-		KDTreeData.m_QueryPoint = annAllocPt(  KDTreeData.m_nDim );
+		if (N)
+		{
+			//allocate memory for query point and results
+			KDTreeData.m_QueryPoint = annAllocPt(  KDTreeData.m_nDim );
 
-		//allocate memory for data points
-		KDTreeData.m_DataPoints = annAllocPts(KDTreeData.m_nTreeSize,KDTreeData.m_nDim);
+			//allocate memory for data points
+			KDTreeData.m_DataPoints = annAllocPts(KDTreeData.m_nTreeSize,KDTreeData.m_nDim);
 
-		// Create the list of points in ANN's format:
-		this->kdtree_fill_point_data(KDTreeData.m_DataPoints,nDims);
+			// Create the list of points in ANN's format:
+			this->kdtree_fill_point_data(KDTreeData.m_DataPoints,nDims);
 
-		//allocate memory for tree and build it
-		KDTreeData.m_pDataTree=new ANNkd_tree(
-			KDTreeData.m_DataPoints,
-			KDTreeData.m_nTreeSize,
-			KDTreeData.m_nDim );
-
+			//allocate memory for tree and build it
+			KDTreeData.m_pDataTree=new ANNkd_tree(
+				KDTreeData.m_DataPoints,
+				KDTreeData.m_nTreeSize,
+				KDTreeData.m_nDim );
+		}
 		m_KDTreeDataIsUpToDate = true;
 	}
 }
