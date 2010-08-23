@@ -340,7 +340,8 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	m_svs_options.m_Unique                          = configSource.read_int( iniSection, "svs_Unique", m_svs_options.m_Unique );
 	m_svs_options.m_Horopter                        = configSource.read_int( iniSection, "svs_Horopter", m_svs_options.m_Horopter );
 	m_svs_options.m_SpeckleSize                     = configSource.read_int( iniSection, "svs_SpeckleSize", m_svs_options.m_SpeckleSize );
-
+        m_svs_options.m_procesOnChip                    = configSource.read_bool( iniSection, "svs_procesOnChip",m_svs_options.m_procesOnChip);
+        m_svs_options.m_calDisparity                    = configSource.read_bool( iniSection, "svs_calDisparity",m_svs_options.m_calDisparity);
 
 	// FFmpeg options:
 	m_ffmpeg_url  = mrpt::system::trim( configSource.read_string( iniSection, "ffmpeg_url", m_ffmpeg_url ) );

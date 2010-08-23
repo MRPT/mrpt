@@ -43,7 +43,7 @@ namespace mrpt
 		struct HWDRIVERS_IMPEXP TCaptureOptions_SVS
 		{
 			TCaptureOptions_SVS(int _frame_width=640, int _frame_height=480 , double _framerate = 30, int _NDisp= 64,
-								int _Corrsize=15, int _LR = false, int _Thresh = 10, int _Unique = 13, int _Horopter = 0,int _SpeckleSize = 100);
+                                                                int _Corrsize=15, int _LR = false, int _Thresh = 10, int _Unique = 13, int _Horopter = 0,int _SpeckleSize = 100,bool _procesOnChip = true,bool _calDisparity = true);
 
 			int	frame_width, frame_height;	//!< Capture resolution (Default: 640x480)
 
@@ -56,6 +56,8 @@ namespace mrpt
 			int                                 m_Unique;	// uniqueness filter
 			int                                 m_Horopter;
 			int                                 m_SpeckleSize;
+                        bool                                m_procesOnChip;
+                        bool                                m_calDisparity;
 
 		};
 
@@ -82,6 +84,7 @@ namespace mrpt
 			void                     *m_videoObject;	// svsVideoImages*
 			void                     *m_stereoImage;	// svsStereoImage*
 			void                 *m_disparityParams;	// svsDisparityParams*
+                        void                   *m_processObject;        // svsStereoProcess
 			unsigned int                        m_resolutionX;
 			unsigned int                        m_resolutionY;
 
@@ -89,6 +92,8 @@ namespace mrpt
 
 			bool                                m_status;
 			bool                                m_initialized;
+                        bool                                m_procesOnChip;
+                        bool                                m_calDisparity;
 
 
 		private:
