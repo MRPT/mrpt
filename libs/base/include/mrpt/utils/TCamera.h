@@ -161,35 +161,45 @@ namespace mrpt
 				dist[4] = k3;
 			}
 
-			/** Get the value of the principal point x-coordinate (in pixels).
-			  */
-			inline double cx() const { return intrinsicParams.get_unsafe(0,2); }
-			/** Get the value of the principal point y-coordinate  (in pixels).
-			  */
-			inline double cy() const { return intrinsicParams.get_unsafe(1,2); }
-			/** Get the value of the focal length x-value (in pixels).
-			  */
-			inline double fx() const { return intrinsicParams.get_unsafe(0,0); }
-			/** Get the value of the focal length y-value (in pixels).
-			  */
-			inline double fy() const { return intrinsicParams.get_unsafe(1,1); }
+			/** Get the value of the principal point x-coordinate (in pixels). */
+			inline double cx() const { return intrinsicParams(0,2); }
+			/** Get the value of the principal point y-coordinate  (in pixels). */
+			inline double cy() const { return intrinsicParams(1,2); }
+			/** Get the value of the focal length x-value (in pixels). */
+			inline double fx() const { return intrinsicParams(0,0); }
+			/** Get the value of the focal length y-value (in pixels). */
+			inline double fy() const { return intrinsicParams(1,1); }
 
-			/** Get the value of the k1 distortion parameter.
-			  */
+			/** Set the value of the principal point x-coordinate (in pixels). */
+			inline void cx(double val) { intrinsicParams(0,2)=val; }
+			/** Set the value of the principal point y-coordinate  (in pixels). */
+			inline void cy(double val) { intrinsicParams(1,2)=val; }
+			/** Set the value of the focal length x-value (in pixels). */
+			inline void fx(double val) { intrinsicParams(0,0)=val; }
+			/** Set the value of the focal length y-value (in pixels). */
+			inline void fy(double val) { intrinsicParams(1,1)=val; }
+
+			/** Get the value of the k1 distortion parameter.  */
 			inline double k1() const { return dist[0]; }
-			/** Get the value of the k2 distortion parameter.
-			  */
+			/** Get the value of the k2 distortion parameter.  */
 			inline double k2() const { return dist[1]; }
-			/** Get the value of the p1 distortion parameter.
-			  */
+			/** Get the value of the p1 distortion parameter.  */
 			inline double p1() const { return dist[2]; }
-			/** Get the value of the p2 distortion parameter.
-			  */
+			/** Get the value of the p2 distortion parameter.  */
 			inline double p2() const { return dist[3]; }
-			/** Get the value of the p3 distortion parameter.
-			  */
+			/** Get the value of the k3 distortion parameter.  */
 			inline double k3() const { return dist[4]; }
 
+			/** Get the value of the k1 distortion parameter.  */
+			inline void k1(double val) { dist[0]=val; }
+			/** Get the value of the k2 distortion parameter.  */
+			inline void k2(double val) { dist[1]=val; }
+			/** Get the value of the p1 distortion parameter.  */
+			inline void p1(double val) { dist[2]=val; }
+			/** Get the value of the p2 distortion parameter.  */
+			inline void p2(double val) { dist[3]=val; }
+			/** Get the value of the k3 distortion parameter.  */
+			inline void k3(double val) { dist[4]=val; }
 		};
 
 	} // End of namespace

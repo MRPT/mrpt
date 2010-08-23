@@ -52,7 +52,9 @@ namespace mrpt
 		/** A collection of camera poses from which a given feature has been observed, and its pixel coordinates for each of them. */
 		typedef std::map<TCameraPoseID,mrpt::utils::TPixelCoordf> TFeatureObservations;
 
-		/** Input data used by some (Bundle-adjustment) methods in mrpt::vision
+		/** A complete sequence of observations of features from different camera frames (positions).
+		  *  This structure is the input to some (Bundle-adjustment) methods in mrpt::vision
+		  *  \note Pixel coordinates can be either "raw" or "undistorted". Read the doc of functions handling this structure to see what they expect.
 		  *  \sa mrpt::vision::camera_calib_ba
 		  */
 		struct VISION_IMPEXP TSequenceFeatureObservations : public std::map<TFeatureID, TFeatureObservations>

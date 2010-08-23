@@ -56,7 +56,7 @@
 			- mrpt::poses::CPose3DPDFGaussian
 			- mrpt::poses::CPosePDFGaussianInf
 			- mrpt::poses::CPose3DPDFGaussianInf
-		- mrpt::utils::map_as_vector a vector-based implementation of a std::map-like container.
+		- (TODO) mrpt::utils::map_as_vector a vector-based implementation of a std::map-like container.
 	- Changes in classes:
 		- mrpt::poses::CNetworkOfPoses has many improvements and new methods (see its documentation).
 		- mrpt::math::CDijkstra:
@@ -69,13 +69,16 @@
 		- mrpt::gui::CDisplayWindow3D doesn't report ALT+Enter as a keystroke event anymore.
 		- New method mrpt::utils::CTimeLogger::getMeanTime
 		- mrpt::vision::TSequenceFeatureObservations has load/save methods to text files.
+		- mrpt::utils::TCamera now has setter methods.
 	- New functions:
-		- New ASSERT macros: ASSERT_EQUAL_, ASSERT_NOT_EQUAL_, ASSERT_BELOW_, ASSERT_ABOVE_
+		- mrpt::vision::pinhole::undistort_point
+		- ostream text print << operators for mrpt::utils::TPixelCoordf and mrpt::utils::TPixelCoordf.
+		- New ASSERT macros: ASSERT_EQUAL_, ASSERT_NOT_EQUAL_, ASSERT_BELOW_, ASSERT_ABOVE_.
 		- mrpt::slam::carmen_log_parse_line() a tool for parsing CARMEN logs.
 		- mrpt::opengl::graph_tools::graph_visualize(), a visualizer of graphs of pose constraints.
-		- mrpt::opengl::stock_objects::CornerXYSimple() for 2D corners
-		- mrpt::system::strCmp, mrpt::system::strCmpI, mrpt::system::strStarts, mrpt::system::strStartsI
-		- mrpt::system::os::_strncmp, mrpt::system::os::_strnicmp
+		- mrpt::opengl::stock_objects::CornerXYSimple() for 2D corners.
+		- mrpt::system::strCmp, mrpt::system::strCmpI, mrpt::system::strStarts, mrpt::system::strStartsI.
+		- mrpt::system::os::_strncmp, mrpt::system::os::_strnicmp.
 	- New examples:
 		- phidgetProximitySensor
 	- BUG FIXES:

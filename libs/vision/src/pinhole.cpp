@@ -37,6 +37,7 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::vision::pinhole;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::math;
@@ -159,27 +160,32 @@ void mrpt::vision::pinhole::undistort_points(
 	std::vector<mrpt::vision::TPixelCoordf> &out_pixels,
 	const mrpt::math::CMatrixDouble33 & A,
 	const std::vector<double> & Dk )
+{	// Hub function:
+	TCamera cam;
+	cam.intrinsicParams = A;
+	ASSERT_(Dk.size()<=cam.dist.static_size)
+	for (size_t i=0;i<cam.dist.static_size;i++) cam.dist[i] = Dk[i];
+	undistort_points(in_dist_pixels,out_pixels,cam);
+}
+
+void mrpt::vision::pinhole::undistort_points(
+	const std::vector<mrpt::vision::TPixelCoordf>  &in_dist_pixels,
+	std::vector<mrpt::vision::TPixelCoordf> &out_pixels,
+	const mrpt::utils::TCamera  &cameraModel)
 {
 	MRPT_START
-
-	ASSERT_(size(A,1)==3);
-	ASSERT_(size(A,2)==3);
-	ASSERT_(Dk.size()==4 || Dk.size()==5);
-
-	vector_double k = Dk;
-	if (k.size()<5) k.resize(5);
 
 	// based on code from OpenCV 1.1.0, function cvUndistortPoints, file cvundistort.cpp
 	// Jose Luis: Great code clean up wrt opencv's since we assume C++ and availability of MRPT's matrices.
 	const size_t n = in_dist_pixels.size();
 	out_pixels.resize(n);
 
-    const double fx = A(0,0);
-    const double fy = A(1,1);
+    const double fx = cameraModel.fx();
+    const double fy = cameraModel.fy();
     const double ifx = 1./fx;
     const double ify = 1./fy;
-    const double cx = A(0,2);
-    const double cy = A(1,2);
+    const double cx = cameraModel.cx();
+    const double cy = cameraModel.cy();
 
     for( size_t i = 0; i < n; i++ )
     {
@@ -193,9 +199,9 @@ void mrpt::vision::pinhole::undistort_points(
         for( unsigned int j = 0; j < 5; j++ )
         {
             double r2 = x*x + y*y;
-            double icdist = 1./(1 + ((k[4]*r2 + k[1])*r2 + k[0])*r2);
-            double deltaX = 2*k[2]*x*y + k[3]*(r2 + 2*x*x);
-            double deltaY = k[2]*(r2 + 2*y*y) + 2*k[3]*x*y;
+            double icdist = 1./(1 + ((cameraModel.dist[4]*r2 + cameraModel.dist[1])*r2 + cameraModel.dist[0])*r2);
+            double deltaX = 2*cameraModel.dist[2]*x*y + cameraModel.dist[3]*(r2 + 2*x*x);
+            double deltaY = cameraModel.dist[2]*(r2 + 2*y*y) + 2*cameraModel.dist[3]*x*y;
             x = (x0 - deltaX)*icdist;
             y = (y0 - deltaY)*icdist;
         }
@@ -208,6 +214,51 @@ void mrpt::vision::pinhole::undistort_points(
 
 	MRPT_END
 }
+
+/** Undistort one point given by its pixel coordinates and the camera parameters.
+  * \sa undistort_points
+  */
+void mrpt::vision::pinhole::undistort_point(
+	const TPixelCoordf  &inPt,
+	TPixelCoordf        &outPt,
+	const mrpt::utils::TCamera  &cameraModel)
+{
+	MRPT_START
+
+
+	// based on code from OpenCV 1.1.0, function cvUndistortPoints, file cvundistort.cpp
+	// Jose Luis: Great code clean up wrt opencv's since we assume C++ and availability of MRPT's matrices.
+    const double fx = cameraModel.fx();
+    const double fy = cameraModel.fy();
+    const double ifx = 1./fx;
+    const double ify = 1./fy;
+    const double cx = cameraModel.cx();
+    const double cy = cameraModel.cy();
+
+	double x = inPt.x;
+	double y = inPt.y;
+
+	double x0 = x = (x - cx)*ifx;
+	double y0 = y = (y - cy)*ify;
+
+	// compensate distortion iteratively
+	for( unsigned int j = 0; j < 5; j++ )
+	{
+		double r2 = x*x + y*y;
+		double icdist = 1./(1 + ((cameraModel.dist[4]*r2 + cameraModel.dist[1])*r2 + cameraModel.dist[0])*r2);
+		double deltaX = 2*cameraModel.dist[2]*x*y + cameraModel.dist[3]*(r2 + 2*x*x);
+		double deltaY = cameraModel.dist[2]*(r2 + 2*y*y) + 2*cameraModel.dist[3]*x*y;
+		x = (x0 - deltaX)*icdist;
+		y = (y0 - deltaY)*icdist;
+	}
+
+	// Save undistorted pixel coords:
+	outPt.x = x*fx + cx;
+	outPt.y = y*fy + cy;
+
+	MRPT_END
+}
+
 
 void mrpt::vision::pinhole::projectPoints_with_distortion(
 	const std::vector<mrpt::math::TPoint3D>  &P,
@@ -281,7 +332,7 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 /* -------------------------------------------------------
 					undistortPixels
    ------------------------------------------------------- */
-//void mrpt::vision::pinhole::undistortPixels( 
+//void mrpt::vision::pinhole::undistortPixels(
 //	const std::vector<mrpt::vision::TPixelCoordf>	&inputPixels, 		/* distorted pixels in image */
 //	const mrpt::math::CMatrixDouble33				&intrinsicParams,	/* intrinsic parameters of the camera */
 //	const std::vector<double>						&distortionParams,	/* k1 k2 p1 p2 */
@@ -308,8 +359,8 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 //
 //	// Compute the undistortion params according to Heittilä code.
 //	// Generate a regular meshgrid of size 43x43 and distort them
-//	std::vector<mrpt::vision::TPixelCoordf>				grid;			// The 43x43 grid with distorted 
-//	std::vector<mrpt::vision::TPixelCoordf>::iterator	itGrid;		
+//	std::vector<mrpt::vision::TPixelCoordf>				grid;			// The 43x43 grid with distorted
+//	std::vector<mrpt::vision::TPixelCoordf>::iterator	itGrid;
 //
 //	grid.resize( 43 );
 //	unsigned int c;
@@ -326,7 +377,7 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 //			const double r2 = dx*dx + dy*dy;
 //			const double delta = k1*r2 + k2*r2*r2;
 //
-//			const double ncx = dx*(1+delta)+2*p1*dx*dy+p2*(r2+2*dx*dx); 
+//			const double ncx = dx*(1+delta)+2*p1*dx*dy+p2*(r2+2*dx*dx);
 //			const double ncy = dy*(1+delta)+p1*(r2+2*dy*dy)+2*p2*dx*dy;
 //
 //			(*itGrid)->x = ncx/pixelSize + cx;
@@ -341,8 +392,8 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 //	r2=dx.*dx+dy.*dy;
 //	delta=Rad1*r2+Rad2*r2.*r2;
 //
-//	cx=dx.*(1+delta)+2*Tan1*dx.*dy+Tan2*(r2+2*dx.*dx); 
-//	cy=dy.*(1+delta)+Tan1*(r2+2*dy.*dy)+2*Tan2*dx.*dy; 
+//	cx=dx.*(1+delta)+2*Tan1*dx.*dy+Tan2*(r2+2*dx.*dx);
+//	cy=dy.*(1+delta)+Tan1*(r2+2*dy.*dy)+2*Tan2*dx.*dy;
 //
 //	p=NDX*Asp*cx/Sx+Cpx;
 //	p(:,2)=NDY*cy/Sy+Cpy;
@@ -366,12 +417,12 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 //
 //	Q=1+(4*Rad1*r2+6*Rad2*r2.*r2+8*Tan1*cy+8*Tan2*cx);
 //
-//	dx=cx-(cx.*delta+2*Tan1*cx.*cy+Tan2*(r2+2*cx.*cx))./Q; 
-//	dy=cy-(cy.*delta+Tan1*(r2+2*cy.*cy)+2*Tan2*cx.*cy)./Q; 
+//	dx=cx-(cx.*delta+2*Tan1*cx.*cy+Tan2*(r2+2*cx.*cx))./Q;
+//	dy=cy-(cy.*delta+Tan1*(r2+2*cy.*cy)+2*Tan2*cx.*cy)./Q;
 //
 //
 //	r2=dx.*dx+dy.*dy;
-//	  
+//
 //	Tx=[dx.*r2 dx.*r2.*r2 2*dx.*dy r2+2*dx.*dx];
 //	Ty=[dy.*r2 dy.*r2.*r2 r2+2*dy.*dy 2*dx.*dy];
 //	T=[Tx;Ty];
@@ -385,6 +436,3 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 
 
 
-/* -------------------------------------------------------
-				projectPoint_with_distortion
-   ------------------------------------------------------- */
