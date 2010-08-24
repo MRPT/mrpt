@@ -177,6 +177,16 @@ namespace math	{
 		inline void insert(size_t row,size_t column,const T& obj)	{
 			operator()(row,column)=obj;
 		}
+
+		/** Inserts submatrix at a given location */
+		template <class MATRIX_LIKE>
+		inline void insertMatrix(size_t row,size_t column,const MATRIX_LIKE& mat)
+		{
+			for (size_t nr=0;nr<mat.getRowCount();nr++)
+				for (size_t nc=0;nc<mat.getColCount();nc++)
+					operator()(row+nr,column+nc)=mat(nr,nc);
+		}
+
 		//Public interface only supports const iterators. This way, no user of this class will be able to freely modify it contents.
 		/**
 		  * Returns an iterator which points to the starting point of the matrix. It's a const_iterator, so that the usar isn't able to modify the matrix content into an invalid state.

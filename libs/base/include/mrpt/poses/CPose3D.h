@@ -57,6 +57,8 @@ namespace poses
 	 *
 	 *  This class and CPose3DQuat are very similar, and they can be converted to the each other automatically via transformation constructors.
 	 *
+	 *  There are Lie algebra methods: \a exp and \a ln (see the methods for documentation).
+	 *
 
 <div align=center>
 
@@ -442,6 +444,31 @@ namespace poses
 
 		/** makes: this = p (+) this */
 		inline void  changeCoordinatesReference( const CPose3D & p ) { composeFrom(p,CPose3D(*this)); }
+
+
+		/** @name Lie Algebra methods
+		    @{ */
+
+		/** Exponentiate a Vector in the SE3 Lie Algebra to generate a new CPose3D (static method).
+		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
+		static CPose3D exp(const mrpt::math::CArrayDouble<6> & vect);
+
+		/** Exponentiate a vector in the Lie algebra to generate a new SO3 (a 3x3 rotation matrix).
+		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
+		static CMatrixDouble33 exp_rotation(const mrpt::math::CArrayDouble<3> & vect);
+
+
+		/** Take the logarithm of the 3x4 matrix defined by this pose, generating the corresponding vector in the SE3 Lie Algebra.
+		  * \note Method from TooN (C) Tom Drummond (GNU GPL)  */
+		mrpt::math::CArrayDouble<6> ln() const;
+
+		/** Take the logarithm of the 3x3 rotation matrix, generating the corresponding vector in the Lie Algebra.
+		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
+		CArrayDouble<3> ln_rotation() const;
+
+		/** @} */
+
+
 
 		typedef CPose3D  type_value; //!< Used to emulate CPosePDF types, for example, in CNetworkOfPoses
 

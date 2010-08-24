@@ -189,7 +189,6 @@ void  CCamModel::undistort_point(const mrpt::vision::TPixelCoordf &p, mrpt::visi
 	std::vector<TPixelCoordf> in_p(1), out_p;
 	in_p[0] = p;
 
-	// JL: TODO, check if output are correct pixel values or in the range [-1,1] ???
 	mrpt::vision::pinhole::undistort_points(
 		in_p,
 		out_p,

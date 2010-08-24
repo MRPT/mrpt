@@ -520,20 +520,20 @@ void CMatrixTemplateNumeric<T>::ones()
 /** Build an unit matrix.
 */
 template <class T>
-void CMatrixTemplateNumeric<T>::unit (const size_t row)
+void CMatrixTemplateNumeric<T>::unit (const size_t row,const T diag_vals)
 {
    setSize(row,row);
-   unit();
+   unit(diag_vals);
 }
 
 /** Build an unit matrix.
 */
 template <class T>
-void CMatrixTemplateNumeric<T>::unit()
+void CMatrixTemplateNumeric<T>::unit(const T diag_vals)
 {
 	for (size_t i=0; i < CMatrixTemplate<T>::m_Rows; i++)
 		for (size_t j=0; j < CMatrixTemplate<T>::m_Cols; j++)
-			CMatrixTemplate<T>::m_Val[i][j] = (i==j) ? 1 : 0;
+			CMatrixTemplate<T>::m_Val[i][j] = (i==j) ? diag_vals : T(0);
 }
 
 /** Solve the matrix as linear equations system.

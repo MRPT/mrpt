@@ -82,7 +82,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_PatchMatch );
 
 	tracker->enableTimeLogger(true); // Do time profiling.
-	
+
 	// Set of parameters common to any tracker implementation:
 	// To see all the existing params and documentation, see mrpt::vision::CGenericFeatureTracker
 	tracker->extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
@@ -106,6 +106,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	CImage		previous_image;
 
 	TSequenceFeatureObservations    feat_track_history;
+	bool							save_tracked_history = true; // Dump feat_track_history to a file at the end
+
 	TCameraPoseID 					curCamPoseId = 0;
 
 	cout << endl << "TO END THE PROGRAM: Close the window.\n";
@@ -113,10 +115,10 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	while( win->isOpen() ) // infinite loop, until we close the win
 	{
 		CObservationPtr obs;
-		try 
+		try
 		{
 			obs= cam->getNextFrame();
-		} 
+		}
 		catch (CExceptionEOF &)
 		{	// End of a rawlog file.
 			break;
@@ -160,6 +162,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		if (!hasResolution)
 		{
 			hasResolution = true;
+			// cameraParams.scaleToResolution()...
 			cameraParams.ncols = theImg.getWidth();
 			cameraParams.nrows = theImg.getHeight();
 		}
@@ -203,8 +206,13 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		for (CFeatureList::iterator itFeat = trackedFeats.begin();itFeat!=trackedFeats.end();++itFeat)
 		{
 			const CFeature &f = **itFeat;
-			TFeatureObservations &obs = feat_track_history[f.ID];
-			obs[curCamPoseId] = TPixelCoordf(f.x,f.y);
+
+			const TPixelCoordf pxRaw(f.x,f.y);
+			TPixelCoordf  pxUndist;
+			//mrpt::vision::pinhole::undistort_point(pxRaw,pxUndist, cameraParams);
+			pxUndist = pxRaw;
+
+			feat_track_history.push_back( TFeatureObservation(f.ID,curCamPoseId, pxUndist ) );
 		}
 		curCamPoseId++;
 
@@ -266,6 +274,15 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 		step_num++;
 	} // end infinite loop
+
+	// Save tracked feats:
+	if (save_tracked_history)
+	{
+		cout << "Saving tracked features to: tracked_feats.txt..."; cout.flush();
+		feat_track_history.saveToTextFile("./tracked_feats.txt");
+		cout << "Done!\n"; cout.flush();
+	}
+
 
 	return 0; // End ok.
 }

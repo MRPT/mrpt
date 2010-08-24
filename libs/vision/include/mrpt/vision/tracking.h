@@ -110,14 +110,14 @@ namespace mrpt
 		  *   <tr><td align="center" > add_new_feat_patch_size  </td>  <td align="center" > 11 </td>
 		  *      <td> If <i>add_new_features</i>==1,  for each new added feature, this is the size of the patch to be extracted around the keypoint (set to 0 if patches are not required at all).
 		  *          </td> </tr>
-		  *   <tr><td align="center" > minimum_KLT_response_to_add  </td>  <td align="center" > 50 </td>
+		  *   <tr><td align="center" > minimum_KLT_response_to_add  </td>  <td align="center" > 10 </td>
 		  *      <td> If <i>add_new_features</i>==1, this sets the minimum KLT response of candidate FAST features to be added in each frame, if they also fulfil the other restrictions (e.g. min.distance).
 		  *         </td> </tr>
 		  *   <tr><td align="center" > check_KLT_response_every  </td>  <td align="center" > 0 </td>
 		  *      <td> If >0, it will compute the KLT response at each feature point every <i>N</i> frames
 		  *            and those below <i>minimum_KLT_response</i> will be marked as "lost" in their "track_status" field.
 		  *        </td> </tr>
-		  *   <tr><td align="center" > minimum_KLT_response  </td>  <td align="center" > 50 </td>
+		  *   <tr><td align="center" > minimum_KLT_response  </td>  <td align="center" > 5 </td>
 		  *      <td> See explanation of <i>check_KLT_response_every</i>.
 		  *        </td> </tr>
 		  *   <tr><td align="center" > KLT_response_half_win  </td>  <td align="center" > 4 </td>

@@ -26,28 +26,13 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef __mrpt_vision_H
-#define __mrpt_vision_H
-
-#include <mrpt/obs.h> // dependencies
-
-#include <mrpt/vision/utils.h>
-#include <mrpt/vision/chessboard_camera_calib.h>
-#include <mrpt/vision/chessboard_find_corners.h>
-#include <mrpt/vision/pinhole.h>
-#include <mrpt/vision/CCamModel.h>
-#include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/vision/CVideoFileWriter.h>
-#include <mrpt/vision/camera_calib_ba.h>
-#include <mrpt/vision/tracking.h>
+#include <mrpt/vision.h>  // Precompiled headers
 #include <mrpt/vision/bundle_adjustment.h>
+#include "ba_internals.h"
 
-// Maps:
-#include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CLandmarksMap.h>
+using namespace std;
+using namespace mrpt;
+using namespace mrpt::vision;
+using namespace mrpt::utils;
+using namespace mrpt::math;
 
-// Obs:
-#include <mrpt/slam/CObservationVisualLandmarks.h>
-
-
-#endif

@@ -230,11 +230,11 @@ namespace mrpt
 			}
 
 
-			/** Make the matrix an identity matrix */
-			inline void unit() {
+			/** Make the matrix an identity matrix (the diagonal values can be 1.0 or any other value) */
+			inline void unit(const T diag_vals = 1) {
 				::memset(&m_Val[0],0,sizeof(m_Val));
 				for (size_t i=0;i<NROWS * NCOLS;i+=(NROWS+1))
-					m_Val[i] = 1;
+					m_Val[i] = diag_vals;
 			}
 
 			/** Make the matrix an identity matrix - this is a shortcut for unit(). */

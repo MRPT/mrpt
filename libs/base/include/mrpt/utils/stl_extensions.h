@@ -197,15 +197,31 @@ namespace mrpt
 			return std::string::npos;
 		}
 
-		/** Calls the standard "erase" method of a STL container, but also returns an iterator to the next element in the container (or ::end if none)
-		  */
-		template <class CONTAINER>
-		typename CONTAINER::iterator erase_return_next(CONTAINER &cont, typename CONTAINER::iterator &it)
+		/** Calls the standard "erase" method of a STL container, but also returns an iterator to the next element in the container (or ::end if none) */
+		template <class T> inline typename std::list<T>::iterator erase_return_next(std::list<T> &cont, typename std::list<T>::iterator &it)
 		{
-			typename CONTAINER::iterator itRet = it;
-			++itRet;
+			return cont.erase(it);
+		}
+		//! \overload
+		template <class K,class V> inline typename std::map<K,V>::iterator erase_return_next(std::map<K,V> &cont, typename std::map<K,V>::iterator &it)
+		{
+			typename std::map<K,V>::iterator itRet = it; ++itRet;
 			cont.erase(it);
 			return itRet;
+		}
+		//! \overload
+		template <class K,class V> inline typename std::multimap<K,V>::iterator erase_return_next(std::multimap<K,V> &cont, typename std::multimap<K,V>::iterator &it)
+		{
+			typename std::multimap<K,V>::iterator itRet = it; ++itRet;
+			cont.erase(it);
+			return itRet;
+		}
+		//! \overload
+		template <class T> inline typename std::vector<T>::iterator erase_return_next(std::vector<T> &cont, typename std::vector<T>::iterator &it)
+		{
+			typename std::vector<T>::iterator itRet = it;
+			cont.erase(it);
+			return ++itRet;
 		}
 
 		/** Generates a string for a vector in the format [A,B,C,...] to std::cout, and the fmt string for <b>each</b> vector element. */

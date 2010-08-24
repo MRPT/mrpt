@@ -693,3 +693,196 @@ void CPose3D::inverseComposePoint(const double gx,const double gy,const double g
 }
 
 
+/** Exponentiate a Vector in the SE3 Lie Algebra to generate a new CPose3D.
+  * \note Method from TooN (C) Tom Drummond (GNU GPL)
+  */
+CPose3D CPose3D::exp(const mrpt::math::CArrayDouble<6> & mu)
+{
+	static const double one_6th = 1.0/6.0;
+	static const double one_20th = 1.0/20.0;
+
+	CMatrixDouble44 HM; // For the result
+	HM(3,3)=1;
+
+	const CArrayDouble<3> mu_xyz = CArrayDouble<3>( mu.slice<0,3>() );
+	const CArrayDouble<3> w = CArrayDouble<3>( mu.slice<3,3>() );
+	const double theta_sq = w.squareNorm(); // CArrayDouble<3>(w).Square().sumAll(); // w*w;
+	const double theta = sqrt(theta_sq);
+	double A, B;
+
+	CArrayDouble<3> cross;
+	mrpt::math::crossProduct3D(w, mu_xyz, cross );
+
+	if (theta_sq < 1e-8) {
+		A = 1.0 - one_6th * theta_sq;
+		B = 0.5;
+		HM(0,3) = mu_xyz[0] + 0.5 * cross[0];
+		HM(1,3) = mu_xyz[1] + 0.5 * cross[1];
+		HM(2,3) = mu_xyz[2] + 0.5 * cross[2];
+	} else {
+		double C;
+		if (theta_sq < 1e-6) {
+			C = one_6th*(1.0 - one_20th * theta_sq);
+			A = 1.0 - theta_sq * C;
+			B = 0.5 - 0.25 * one_6th * theta_sq;
+		} else {
+			const double inv_theta = 1.0/theta;
+			A = sin(theta) * inv_theta;
+			B = (1 - cos(theta)) * (inv_theta * inv_theta);
+			C = (1 - A) * (inv_theta * inv_theta);
+		}
+
+		CArrayDouble<3> w_cross;	// = w^cross
+		mrpt::math::crossProduct3D(w, cross, w_cross );
+
+		HM(0,3) = mu_xyz[0] + B * cross[0] + C * w_cross[0];
+		HM(1,3) = mu_xyz[1] + B * cross[1] + C * w_cross[1];
+		HM(2,3) = mu_xyz[2] + B * cross[2] + C * w_cross[2];
+		//result.get_translation() = mu_xyz + B * cross + C * (w ^ cross);
+	}
+
+	// Write 3x3 rotation part in a submatrix view of HM:
+	CSubmatrixView<CMatrixDouble44,3,3> rot_part(HM,0,0);
+	mrpt::math::rodrigues_so3_exp(w, A, B, rot_part);
+
+	return CPose3D(HM);
+}
+
+
+/** Take the logarithm of the 3x3 rotation matrix, generating the corresponding vector in the Lie Algebra.
+  * \note Method from TooN (C) Tom Drummond (GNU GPL)
+  */
+CArrayDouble<3> CPose3D::ln_rotation() const
+{
+	CArrayDouble<3> result;
+
+	const double cos_angle = (m_HM(0,0)+m_HM(1,1)+m_HM(2,2)- 1.0) * 0.5;
+	result[0] = (m_HM(2,1)-m_HM(1,2))*0.5;
+	result[1] = (m_HM(0,2)-m_HM(2,0))*0.5;
+	result[2] = (m_HM(1,0)-m_HM(0,1))*0.5;
+
+	double sin_angle_abs = result.norm(); //sqrt(result*result);
+	if (cos_angle > M_SQRT1_2)
+	{            // [0 - Pi/4[ use asin
+		if(sin_angle_abs > 0){
+			result *= asin(sin_angle_abs) / sin_angle_abs;
+		}
+	}
+	else if( cos_angle > -M_SQRT1_2)
+	{    // [Pi/4 - 3Pi/4[ use acos, but antisymmetric part
+		double angle = acos(cos_angle);
+		result *= angle / sin_angle_abs;
+	}
+	else
+	{  // rest use symmetric part
+		// antisymmetric part vanishes, but still large rotation, need information from symmetric part
+		const double angle = M_PI - asin(sin_angle_abs);
+		const double d0 = m_HM(0,0) - cos_angle,
+			d1 = m_HM(1,1) - cos_angle,
+			d2 = m_HM(2,2) - cos_angle;
+		CArrayDouble<3> r2;
+		if(fabs(d0) > fabs(d1) && fabs(d0) > fabs(d2))
+		{ // first is largest, fill with first column
+			r2[0] = d0;
+			r2[1] = (m_HM(1,0)+m_HM(0,1))/2;
+			r2[2] = (m_HM(0,2)+m_HM(2,0))/2;
+		}
+		else if(fabs(d1) > fabs(d2))
+		{ 			    // second is largest, fill with second column
+			r2[0] = (m_HM(1,0)+m_HM(0,1))/2;
+			r2[1] = d1;
+			r2[2] = (m_HM(2,1)+m_HM(1,2))/2;
+		}
+		else
+		{							    // third is largest, fill with third column
+			r2[0] = (m_HM(0,2)+m_HM(2,0))/2;
+			r2[1] = (m_HM(2,1)+m_HM(1,2))/2;
+			r2[2] = d2;
+		}
+		// flip, if we point in the wrong direction!
+		if( (r2 * result).sumAll() < 0)
+			r2 *= -1;
+		//r2 *= 1.0/r2.norm();
+		//result = angle * r2;
+		result = r2;
+		result *= (angle/r2.norm());
+	}
+	return result;
+}
+
+/** Exponentiate a vector in the Lie algebra to generate a new SO3 (a 3x3 rotation matrix).
+  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
+CMatrixDouble33 CPose3D::exp_rotation(const mrpt::math::CArrayDouble<3> & w)
+{
+	using std::sqrt;
+	using std::sin;
+	using std::cos;
+
+	static const double one_6th = 1.0/6.0;
+	static const double one_20th = 1.0/20.0;
+
+	CMatrixDouble33 result;
+
+	const double theta_sq = w.squareNorm(); //w*w;
+	const double theta = sqrt(theta_sq);
+	double A, B;
+	//Use a Taylor series expansion near zero. This is required for
+	//accuracy, since sin t / t and (1-cos t)/t^2 are both 0/0.
+	if (theta_sq < 1e-8) {
+		A = 1.0 - one_6th * theta_sq;
+		B = 0.5;
+	} else {
+		if (theta_sq < 1e-6) {
+			B = 0.5 - 0.25 * one_6th * theta_sq;
+			A = 1.0 - theta_sq * one_6th*(1.0 - one_20th * theta_sq);
+		} else {
+			const double inv_theta = 1.0/theta;
+			A = sin(theta) * inv_theta;
+			B = (1 - cos(theta)) * (inv_theta * inv_theta);
+		}
+	}
+	mrpt::math::rodrigues_so3_exp(w, A, B, result);
+	return result;
+}
+
+/** Take the logarithm of the 3x4 matrix defined by this pose, generating the corresponding vector in the SE3 Lie Algebra.
+  * \note Method from TooN (C) Tom Drummond (GNU GPL)
+  */
+CArrayDouble<6> CPose3D::ln() const
+{
+	CArrayDouble<3> rot = this->ln_rotation();
+	const double theta =  rot.norm(); //sqrt(rot*rot);
+
+	double shtot = 0.5;
+	if(theta > 0.00001)
+		shtot = sin(theta*0.5)/theta;
+
+	// now do the rotation
+	CArrayDouble<3> rot_half = rot;
+	rot_half*=-0.5;
+	const CMatrixDouble33 halfrotator = CPose3D::exp_rotation(rot_half);
+
+	CArrayDouble<3> t;
+	t[0] = m_x;
+	t[1] = m_y;
+	t[2] = m_z;
+
+	CArrayDouble<3> rottrans; // = halfrotator * t;
+	halfrotator.multiply_Ab(t, rottrans);
+
+	if(theta > 0.001)
+	{
+		rottrans -= rot * ( (t * rot).sumAll() * (1-2*shtot) / rot.squareNorm() ); //(rot*rot));
+	}
+	else
+	{
+		rottrans -= rot * ((t * rot).sumAll()/24);
+	}
+
+	rottrans *= 1.0/(2 * shtot);
+
+	CArrayDouble<6> result;
+	::memcpy(&result[0], &rottrans[0], 3*sizeof(result[0]) );
+	::memcpy(&result[3], &rot[0], 3*sizeof(result[0]) );
+	return result;
+}

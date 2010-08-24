@@ -289,14 +289,14 @@ namespace mrpt
 
 		   /** Build an unit matrix.
 			*/
-		   void  unit (const size_t row);
+		   void  unit (const size_t row, const T diag_vals = 1);
 
 		   /** Build an unit matrix - this is a shortcut for unit(). */
-		   inline void eye(const size_t size) { this->unit(size); }
+		   inline void eye(const size_t size, const T diag_vals = 1) { this->unit(size,diag_vals); }
 
-		   /** Build an unit matrix.
+		   /** Build an unit matrix (the diagonal values can be 1.0 or any other value).
 			*/
-		   void  unit();
+		   void  unit(const T diag_vals = 1);
 
 		   /** Build an unit matrix - this is a shortcut for unit(). */
 		   inline void eye() { this->unit(); }

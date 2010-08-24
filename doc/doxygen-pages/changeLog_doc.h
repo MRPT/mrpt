@@ -33,61 +33,70 @@
 
   <a name="0.9.2">
   <h2>Version 0.9.2: (Under development) </h2></a>
-	- New applications:
-		- <a href="http://www.mrpt.org/Application:carmen2rawlog" >carmen2rawlog</a>: A converter from CARMEN robotics logs to binary Rawlog dataset files.
-		- <a href="http://www.mrpt.org/Application:carmen2simplemap" >carmen2simplemap</a>: A converter from CARMEN robotics logs to binary "simplemap" files.
-		- <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>: A central application for all Graph-SLAM methods and tools.
-	- Changes in applications:
-		- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: More operations supported.
-		- <a href="http://www.mrpt.org/Application:mrpt-performance" >mrpt-performance</a>: Added command-line arguments to filter what tests to run.
-		- RawLogViewer: Can now build "raw maps" from datasets in the "observations-only" format.
-		- <a href="http://www.mrpt.org/Application:icp-slam" >icp-slam</a> and <a href="http://www.mrpt.org/Application:rbpf-slam" >rbpf-slam</a> now accept a second command-line argument for the dataset (rawlog) to load.
-	- Changes in build system / compiling:
-		- Doxygen documentation: More macros expanded while generating docs: now docs are also generated for smart pointers and for RTTI & serialization stuff.
-		- Previous header <mrpt/math_mrpt.h> renamed <mrpt/math.h>. The old one still remains (probably until MRPT 1.0.0), but raises a warning on usage.
-	- New classes:
-		- New sensor driver for Phidget kit (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors), contributed by Adrien Barral (Robopec)
-		- mrpt::math::CDirectedTree template for directed tree-like graphs. Includes generic depth-first & breath-first visitors.
-		- New PDF classes for "information" (inverse covariance) forms:
-			- mrpt::poses::CPosePDFGaussianInf
-			- mrpt::poses::CPose3DPDFGaussianInf
-		- Data types for graph SLAM (only two of them existed before, and now they are all classes and support serialization):
-			- mrpt::poses::CPosePDFGaussian
-			- mrpt::poses::CPose3DPDFGaussian
-			- mrpt::poses::CPosePDFGaussianInf
-			- mrpt::poses::CPose3DPDFGaussianInf
-		- (TODO) mrpt::utils::map_as_vector a vector-based implementation of a std::map-like container.
-	- Changes in classes:
-		- mrpt::poses::CNetworkOfPoses has many improvements and new methods (see its documentation).
-		- mrpt::math::CDijkstra:
-			- Algorithm is now much faster (eg: 70x times faster for graphs of 4K nodes & 60K arcs).
-			- Many changes in its interface, including new feedback functors, support for returning the built tree and many handy typedef's.
-		- Added a new type mrpt::utils::TNodeID, used in graph-related classes: mrpt::math::CDirectedGraph, mrpt::math::CDijkstra
-		- mrpt::opengl::CPointCloud & mrpt::opengl::CPointCloudColoured now have an option to draw smoothed points (see mrpt::opengl::CPointCloud::enablePointSmooth).
-		- mrpt::utils::TColorf: New explicit copy constructor from a mrpt::utils::TColor
-		- mrpt::opengl::CRenderizable: Many "set" methods that returned "void" now return a reference to "this" so several calls can be chained (e.g. obj.setColor(...).setScale(1.0) )
-		- mrpt::gui::CDisplayWindow3D doesn't report ALT+Enter as a keystroke event anymore.
-		- New method mrpt::utils::CTimeLogger::getMeanTime
-		- mrpt::vision::TSequenceFeatureObservations has load/save methods to text files.
-		- mrpt::utils::TCamera now has setter methods.
-	- New functions:
-		- mrpt::vision::pinhole::undistort_point
-		- ostream text print << operators for mrpt::utils::TPixelCoordf and mrpt::utils::TPixelCoordf.
-		- New ASSERT macros: ASSERT_EQUAL_, ASSERT_NOT_EQUAL_, ASSERT_BELOW_, ASSERT_ABOVE_.
-		- mrpt::slam::carmen_log_parse_line() a tool for parsing CARMEN logs.
-		- mrpt::opengl::graph_tools::graph_visualize(), a visualizer of graphs of pose constraints.
-		- mrpt::opengl::stock_objects::CornerXYSimple() for 2D corners.
-		- mrpt::system::strCmp, mrpt::system::strCmpI, mrpt::system::strStarts, mrpt::system::strStartsI.
-		- mrpt::system::os::_strncmp, mrpt::system::os::_strnicmp.
-	- New examples:
-		- phidgetProximitySensor
-	- BUG FIXES:
-		- Fixed bug in mrpt::utils::CImage::KLT_response: due to wrong signed numbers usage, responses were high in textureless parts of images.
-		- FIXED: mrpt::gui::CDisplayWindow3D crashes when hitting ALT+Enter for fullscreen when user is waiting for a key to close the window.
-		- icp-slam: Fixed potential wrong processing of datasets in observations-only format where the odometry initial value is not (0,0,0).
-		- Build errors with some OpenCV versions (<a href="http://www.mrpt.org/node/369" >Bug report & patch</a> by "iXce").
-		- FIXED: Text labels of CRenderizable classes inherited the color from the objects; now they're always white.
-		- mrpt::poses::CPosePDFGaussianInf & mrpt::poses::CPose3DPDFGaussianInf were not registered at startup with registerClass().
+	- <b>Most important changes:</b>
+		- Basic support for Graph-SLAM. Among others, see mrpt::poses::CNetworkOfPoses and the program <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>
+		- First working versions of Sparse Bundle-Adjustment (see mrpt::vision::bundle_adj_full).
+		- New hardware supported: Phidget kits (contributed by Adrien Barral, Robopec).
+	- <b>Detailed list of changes:</b>
+		- New applications:
+			- <a href="http://www.mrpt.org/Application:carmen2rawlog" >carmen2rawlog</a>: A converter from CARMEN robotics logs to binary Rawlog dataset files.
+			- <a href="http://www.mrpt.org/Application:carmen2simplemap" >carmen2simplemap</a>: A converter from CARMEN robotics logs to binary "simplemap" files.
+			- <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>: A central application for all Graph-SLAM methods and tools.
+		- Changes in applications:
+			- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: More operations supported.
+			- <a href="http://www.mrpt.org/Application:mrpt-performance" >mrpt-performance</a>: Added command-line arguments to filter what tests to run.
+			- RawLogViewer: Can now build "raw maps" from datasets in the "observations-only" format.
+			- <a href="http://www.mrpt.org/Application:icp-slam" >icp-slam</a> and <a href="http://www.mrpt.org/Application:rbpf-slam" >rbpf-slam</a> now accept a second command-line argument for the dataset (rawlog) to load.
+		- Changes in build system / compiling:
+			- Doxygen documentation: More macros expanded while generating docs: now docs are also generated for smart pointers and for RTTI & serialization stuff.
+			- Previous header <mrpt/math_mrpt.h> renamed <mrpt/math.h>. The old one still remains (probably until MRPT 1.0.0), but raises a warning on usage.
+		- New classes:
+			- New sensor driver for Phidget kit (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors), contributed by Adrien Barral (Robopec)
+			- mrpt::math::CDirectedTree template for directed tree-like graphs. Includes generic depth-first & breath-first visitors.
+			- New PDF classes for "information" (inverse covariance) forms:
+				- mrpt::poses::CPosePDFGaussianInf
+				- mrpt::poses::CPose3DPDFGaussianInf
+			- Data types for graph SLAM (only two of them existed before, and now they are all classes and support serialization):
+				- mrpt::poses::CPosePDFGaussian
+				- mrpt::poses::CPose3DPDFGaussian
+				- mrpt::poses::CPosePDFGaussianInf
+				- mrpt::poses::CPose3DPDFGaussianInf
+			- (TODO) mrpt::utils::map_as_vector a vector-based implementation of a std::map-like container.
+		- Changes in classes:
+			- mrpt::poses::CNetworkOfPoses has many improvements and new methods (see its documentation).
+			- mrpt::math::CDijkstra:
+				- Algorithm is now much faster (eg: 70x times faster for graphs of 4K nodes & 60K arcs).
+				- Many changes in its interface, including new feedback functors, support for returning the built tree and many handy typedef's.
+			- Added a new type mrpt::utils::TNodeID, used in graph-related classes: mrpt::math::CDirectedGraph, mrpt::math::CDijkstra
+			- mrpt::opengl::CPointCloud & mrpt::opengl::CPointCloudColoured now have an option to draw smoothed points (see mrpt::opengl::CPointCloud::enablePointSmooth).
+			- mrpt::utils::TColorf: New explicit copy constructor from a mrpt::utils::TColor
+			- mrpt::opengl::CRenderizable: Many "set" methods that returned "void" now return a reference to "this" so several calls can be chained (e.g. obj.setColor(...).setScale(1.0) )
+			- mrpt::gui::CDisplayWindow3D doesn't report ALT+Enter as a keystroke event anymore.
+			- New method mrpt::utils::CTimeLogger::getMeanTime
+			- mrpt::vision::TSequenceFeatureObservations has load/save methods to text files.
+			- mrpt::utils::TCamera now has setter methods.
+			- New method: mrpt::math::CSparseMatrixTemplate::insertMatrix()
+			- New method: mrpt::math::CArrayNumeric::slice()
+			- New SO3 Lie algebra methods: mrpt::poses::CPose3D::exp(), mrpt::poses::CPose3D::ln(), ...
+		- New functions:
+			- mrpt::math::rodrigues_so3_exp
+			- mrpt::vision::pinhole::undistort_point
+			- ostream text print << operators for mrpt::utils::TPixelCoordf and mrpt::utils::TPixelCoordf.
+			- New ASSERT macros: ASSERT_EQUAL_, ASSERT_NOT_EQUAL_, ASSERT_BELOW_, ASSERT_ABOVE_.
+			- mrpt::slam::carmen_log_parse_line() a tool for parsing CARMEN logs.
+			- mrpt::opengl::graph_tools::graph_visualize(), a visualizer of graphs of pose constraints.
+			- mrpt::opengl::stock_objects::CornerXYSimple() for 2D corners.
+			- mrpt::system::strCmp, mrpt::system::strCmpI, mrpt::system::strStarts, mrpt::system::strStartsI.
+			- mrpt::system::os::_strncmp, mrpt::system::os::_strnicmp.
+		- New examples:
+			- phidgetProximitySensor
+		- BUG FIXES:
+			- Fixed bug in mrpt::utils::CImage::KLT_response: due to wrong signed numbers usage, responses were high in textureless parts of images.
+			- FIXED: mrpt::gui::CDisplayWindow3D crashes when hitting ALT+Enter for fullscreen when user is waiting for a key to close the window.
+			- icp-slam: Fixed potential wrong processing of datasets in observations-only format where the odometry initial value is not (0,0,0).
+			- Build errors with some OpenCV versions (<a href="http://www.mrpt.org/node/369" >Bug report & patch</a> by "iXce").
+			- FIXED: Text labels of CRenderizable classes inherited the color from the objects; now they're always white.
+			- mrpt::poses::CPosePDFGaussianInf & mrpt::poses::CPose3DPDFGaussianInf were not registered at startup with registerClass().
 
 
   <br> <hr> <br>

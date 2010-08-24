@@ -189,25 +189,28 @@ namespace poses
 		  */
 		double  mahalanobisDistanceTo( const CPose3DPDFGaussian& theOther);
 
-		/** This static method computes the pose composition Jacobians, with these formulas:
-			\code
-				df_dx =
-				[ 1, 0, 0, -sin(yaw)*cos(p)*xu+(-sin(yaw)*sin(p)*sin(r)-cos(yaw)*cos(r))*yu+(-sin(yaw)*sin(p)*cos(r)+cos(yaw)*sin(r))*zu, -cos(yaw)*sin(p)*xu+cos(yaw)*cos(p)*sin(r)*yu+cos(yaw)*cos(p)*cos(r)*zu, (cos(yaw)*sin(p)*cos(r)+sin(yaw)*sin(r))*yu+(-cos(yaw)*sin(p)*sin(r)+sin(yaw)*cos(r))*zu]
-				[ 0, 1, 0,    cos(yaw)*cos(p)*xu+(cos(yaw)*sin(p)*sin(r)-sin(yaw)*cos(r))*yu+(cos(yaw)*sin(p)*cos(r)+sin(yaw)*sin(r))*zu, -sin(yaw)*sin(p)*xu+sin(yaw)*cos(p)*sin(r)*yu+sin(yaw)*cos(p)*cos(r)*zu, (sin(yaw)*sin(p)*cos(r)-cos(yaw)*sin(r))*yu+(-sin(yaw)*sin(p)*sin(r)-cos(yaw)*cos(r))*zu]
-				[ 0, 0, 1,                                                                                                             0, -cos(p)*xu-sin(p)*sin(r)*yu-sin(p)*cos(r)*zu,                            cos(p)*cos(r)*yu-cos(p)*sin(r)*zu]
-				[ 0, 0, 0, 1, 0, 0]
-				[ 0, 0, 0, 0, 1, 0]
-				[ 0, 0, 0, 0, 0, 1]
-
-				df_du =
-				[ cos(yaw)*cos(p), cos(yaw)*sin(p)*sin(r)-sin(yaw)*cos(r), cos(yaw)*sin(p)*cos(r)+sin(yaw)*sin(r), 0, 0, 0]
-				[ sin(yaw)*cos(p), sin(yaw)*sin(p)*sin(r)+cos(yaw)*cos(r), sin(yaw)*sin(p)*cos(r)-cos(yaw)*sin(r), 0, 0, 0]
-				[ -sin(p),         cos(p)*sin(r),                          cos(p)*cos(r),                          0, 0, 0]
-				[ 0, 0, 0, 1, 0, 0]
-				[ 0, 0, 0, 0, 1, 0]
-				[ 0, 0, 0, 0, 0, 1]
-			\endcode
-		  */
+		/** This static method computes the pose composition Jacobians.
+		*
+		* See this techical report: http:///www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
+		*
+		* Direct equations (for the covariances) in yaw-pitch-roll are too complex.
+		*  Make a way around them and consider instead this path:
+		* \code
+		*      X(6D)       U(6D)
+		*        |           |
+		*        v           v
+		*      X(7D)       U(7D)
+		*        |           |
+		*        +--- (+) ---+
+		*              |
+		*              v
+		*            RES(7D)
+		*              |
+		*              v
+		*            RES(6D)
+		* \endcode
+		*
+		*/
 		static void jacobiansPoseComposition(
 			const CPose3D &x,
 			const CPose3D &u,

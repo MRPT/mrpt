@@ -82,6 +82,13 @@ protected:
 		const CPose3D p = p1+p2;
 		for (int i=0;i<6;i++) Y[i]=p[i];
 	}
+	static void func_inv_compose(const CArrayDouble<2*6> &x, const double &dummy, CArrayDouble<6> &Y)
+	{
+		const CPose3D p1(x[0],x[1],x[2],x[3],x[4],x[5]);
+		const CPose3D p2(x[6+0],x[6+1],x[6+2],x[6+3],x[6+4],x[6+5]);
+		const CPose3D p = p1-p2;
+		for (int i=0;i<6;i++) Y[i]=p[i];
+	}
 
 	void testPoseComposition(
 		double x,double y, double z, double yaw, double pitch, double roll, double std_scale,
@@ -176,6 +183,42 @@ protected:
 
 	}
 
+	void testPoseInverseComposition(
+		double x,double y, double z, double yaw, double pitch, double roll, double std_scale,
+		double x2,double y2, double z2, double yaw2, double pitch2, double roll2, double std_scale2 )
+	{
+		CPose3DPDFGaussian  p6pdf1 = generateRandomPose3DPDF(x,y,z,yaw,pitch,roll, std_scale);
+		CPose3DPDFGaussian  p6pdf2 = generateRandomPose3DPDF(x2,y2,z2,yaw2,pitch2,roll2, std_scale2);
+
+		CPose3DPDFGaussian  p6_comp = p6pdf1 - p6pdf2;
+
+		// Numeric approximation:
+		CArrayDouble<6> y_mean;
+		CMatrixFixedNumeric<double,6,6>  y_cov;
+		{
+			CArrayDouble<2*6> x_mean;
+			for (int i=0;i<6;i++) x_mean[i]=p6pdf1.mean[i];
+			for (int i=0;i<6;i++) x_mean[6+i]=p6pdf2.mean[i];
+
+			CMatrixFixedNumeric<double,12,12>  x_cov;
+			x_cov.insertMatrix(0,0, p6pdf1.cov);
+			x_cov.insertMatrix(6,6, p6pdf2.cov);
+
+			double DUMMY=0;
+			CArrayDouble<2*6> x_incrs;
+			x_incrs.assign(1e-6);
+			transform_gaussian_linear(x_mean,x_cov,func_inv_compose,DUMMY, y_mean,y_cov, x_incrs );
+		}
+		// Compare:
+		EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().mean(), 1e-5 )
+			<< "p1 mean: " << p6pdf1.mean << endl
+			<< "p2 mean: " << p6pdf2.mean << endl
+			<< "Numeric approximation of covariance: " << endl << y_cov << endl
+			<< "Returned covariance: " << endl << p6_comp.cov << endl;
+	}
+
+
+
 };
 
 /* TODO: Make tests for
@@ -217,11 +260,18 @@ TEST_F(Pose3DPDFGaussTests,CompositionJacobian)
 	testCompositionJacobian(1,2,3,DEG2RAD(20),DEG2RAD(80),DEG2RAD(70), -8,45,10,DEG2RAD(50),DEG2RAD(-10),DEG2RAD(-30) );
 }
 
-//TEST_F(Pose3DPDFGaussTests,CompositionAndInverseComposition)
-//{
-//	testPoseComposition(0,0,0,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1,  0,0,0,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
-//	testPoseComposition(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1,  -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
-//
-//	testPoseComposition(1,2,3,DEG2RAD(20),DEG2RAD(80),DEG2RAD(70), 0.1, -8,45,10,DEG2RAD(50),DEG2RAD(-10),DEG2RAD(30), 0.1 );
-//	testPoseComposition(1,2,3,DEG2RAD(20),DEG2RAD(80),DEG2RAD(70), 0.2, -8,45,10,DEG2RAD(50),DEG2RAD(-10),DEG2RAD(30), 0.2 );
-//}
+TEST_F(Pose3DPDFGaussTests,InverseComposition)
+{
+	testPoseInverseComposition(0,0,0,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1,  0,0,0,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
+	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1,  -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
+
+	testPoseInverseComposition(1,2,3,DEG2RAD(20),DEG2RAD(80),DEG2RAD(70), 0.1, -8,45,10,DEG2RAD(50),DEG2RAD(-10),DEG2RAD(30), 0.1 );
+	testPoseInverseComposition(1,2,3,DEG2RAD(20),DEG2RAD(80),DEG2RAD(70), 0.2, -8,45,10,DEG2RAD(50),DEG2RAD(-10),DEG2RAD(30), 0.2 );
+
+	testPoseInverseComposition(1,2,3,DEG2RAD(10),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
+	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(10),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
+	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(10), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
+	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(10),DEG2RAD(0),DEG2RAD(0), 0.1 );
+	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(10),DEG2RAD(0), 0.1 );
+	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(10), 0.1 );
+}

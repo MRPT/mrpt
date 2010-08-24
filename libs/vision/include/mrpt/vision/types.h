@@ -43,23 +43,39 @@ namespace mrpt
 		using namespace mrpt::math;
 		using namespace mrpt::utils;
 
-		/** Landmark ID */
-		typedef	uint64_t TLandmarkID;
 
-		/** Just an index type that uniquely identifies a camera frame. */
-		typedef uint64_t TCameraPoseID;
+		typedef	uint64_t TLandmarkID;   //!< Unique IDs for landmarks
+		typedef uint64_t TCameraPoseID; //!< Unique IDs for camera frames (poses)
 
-		/** A collection of camera poses from which a given feature has been observed, and its pixel coordinates for each of them. */
-		typedef std::map<TCameraPoseID,mrpt::utils::TPixelCoordf> TFeatureObservations;
+		typedef std::map<TCameraPoseID,TPose3D>  TFramePosesMap;        //!< A list of camera frames (6D poses) indexed by unique IDs.
+		typedef std::vector<TPose3D>             TFramePosesVec;        //!< A list of camera frames (6D poses), which assumes indexes are unique, consecutive IDs.
 
-		/** A complete sequence of observations of features from different camera frames (positions).
+		typedef std::map<TLandmarkID,TPoint3D>   TLandmarkLocationsMap; //!< A list of landmarks (3D points) indexed by unique IDs.
+		typedef std::vector<TPoint3D>            TLandmarkLocationsVec; //!< A list of landmarks (3D points), which assumes indexes are unique, consecutive IDs.
+
+		/** One feature observation entry, used within sequences with TSequenceFeatureObservations */
+		struct VISION_IMPEXP TFeatureObservation
+		{
+			inline TFeatureObservation() { }
+			inline TFeatureObservation(const TLandmarkID _id_feature, const TCameraPoseID  _id_frame, const TPixelCoordf _px) : id_feature(_id_feature), id_frame(_id_frame), px(_px) { }
+
+			TLandmarkID    id_feature;  //!< A unique ID of this feature
+			TCameraPoseID  id_frame;    //!< A unique ID of a "frame" (camera position) from where the feature was observed.
+			TPixelCoordf   px;          //!< The pixel coordinates of the observed feature
+		};
+
+		/** A complete sequence of observations of features from different camera frames (poses).
 		  *  This structure is the input to some (Bundle-adjustment) methods in mrpt::vision
 		  *  \note Pixel coordinates can be either "raw" or "undistorted". Read the doc of functions handling this structure to see what they expect.
-		  *  \sa mrpt::vision::camera_calib_ba
+		  *  \sa mrpt::vision::bundle_adj_full
 		  */
-		struct VISION_IMPEXP TSequenceFeatureObservations : public std::map<TFeatureID, TFeatureObservations>
+		struct VISION_IMPEXP TSequenceFeatureObservations : public std::vector<TFeatureObservation>
 		{
-			typedef std::map<TFeatureID, TFeatureObservations> BASE;
+			typedef std::vector<TFeatureObservation> BASE;
+
+			inline TSequenceFeatureObservations() {}
+			inline TSequenceFeatureObservations(size_t size) : BASE(size) {}
+			inline TSequenceFeatureObservations(const TSequenceFeatureObservations& o) : BASE(o) {}
 
 			/** Saves all entries to a text file, with each line having this format: #FRAME_ID  #FEAT_ID  #PIXEL_X  #PIXEL_Y
 			  * The first line contains a comment line (starting with '%') explaining this format.
@@ -69,8 +85,19 @@ namespace mrpt
 			/** Load from a text file, in the format described in \a saveToTextFile \exception std::exception On I/O or format error */
 			void loadFromTextFile(const std::string &filName);
 
-			/** Remove all those features that don't have a minimum number of observations from different camera frame IDs. \return the number of erased entries. */
+			/** Remove all those features that don't have a minimum number of observations from different camera frame IDs.
+			  * \return the number of erased entries.
+			  * \sa compressIDs */
 			size_t removeFewObservedFeatures(size_t minNumObservations = 3);
+
+			/** Rearrange frame and feature IDs such as they start at 0 and there are no gaps.
+			  * \param old2new_camIDs If provided, the mapping from old to new IDs is stored here.
+			  * \param old2new_lmIDs If provided, the mapping from old to new IDs is stored here.
+			  */
+			void compressIDs(
+				std::map<TCameraPoseID,TCameraPoseID>  *old2new_camIDs=NULL,
+				std::map<TLandmarkID,TLandmarkID>      *old2new_lmIDs=NULL );
+
 		};
 
 		/** Data returned by  mrpt::vision::camera_calib_ba */

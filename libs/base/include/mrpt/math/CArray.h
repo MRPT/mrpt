@@ -371,6 +371,17 @@ namespace math
 				CArray<T,N>::elems[i]-=o.elems[i];
 			return *this;
 		}
+
+    	/** Extract a slice of this array into a new one. */
+    	template <size_t startIdx,size_t nElements>
+    	inline CArrayNumeric<T,nElements> slice() const
+    	{
+    		ASSERT_BELOW_(startIdx+nElements-1,N)
+    		CArrayNumeric<T,nElements> ret;
+    		::memcpy(&ret[0], &CArray<T,N>::elems[startIdx], sizeof(T)*nElements);
+    		return ret;
+    	}
+
     };
 
 

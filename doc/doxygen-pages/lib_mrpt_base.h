@@ -91,6 +91,7 @@ Apart from the containers, this namespace contains much more functionality:
 <li>Statistics: mean, covariance, covariance of weighted samples, etc... from sets of data.</li>
 <li>A huge amount of geometry-related functions: Lines (mrpt::math::TLine3D), planes (mrpt::math::TPlane3D), segments, polygons, intersections between them, etc. </li>
 <li>Graph-related stuff: generic directed graphs (mrpt::math::CDirectedGraph) and trees (mrpt::math::CDirectedTree).</li>
+<li>PDF transformations (uncertainty propagation): See mrpt::math::transform_gaussian_linear, mrpt::math::transform_gaussian_montecarlo, mrpt::math::transform_gaussian_unscented.</li>
 </ul>
 
 

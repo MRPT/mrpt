@@ -50,7 +50,7 @@ namespace mrpt
 			  *
 			  * \note Points "behind" the camera (which couldn't be physically seen in the real world) are marked with pixel coordinates (-1,-1) to detect them as invalid, unless accept_points_behind is true. In that case they'll be projected normally.
 			  *
-			  * \sa projectPoints_with_distortion
+			  * \sa projectPoints_with_distortion, projectPoint_no_distortion
 			  */
 			void VISION_IMPEXP projectPoints_no_distortion(
 				const std::vector<mrpt::poses::CPoint3D> &in_points_3D,
@@ -59,6 +59,21 @@ namespace mrpt
 				std::vector<TPixelCoordf> &projectedPoints,
 				bool accept_points_behind = false
 				);
+
+			/** Project a single 3D point with global coordinates P into a camera at pose F, without distortion parameters.
+			  */
+			TPixelCoordf VISION_IMPEXP projectPoint_no_distortion(
+				const TCamera  &cam_params,
+				const TPose3D  &F,
+				const TPoint3D &P);
+
+			/** Project a single 3D point with global coordinates P into a camera at pose \f$ \ominus F \f$, without distortion parameters.
+			  */
+			TPixelCoordf VISION_IMPEXP projectPoint_no_distortion_inv(
+				const TCamera  &cam_params,
+				const TPose3D  &F,
+				const TPoint3D &P);
+
 
 			/** Project a set of 3D points into a camera at an arbitrary 6D pose using its calibration matrix and distortion parameters (radial and tangential distortions projection model)
 			  * \param in_points_3D [IN] The list of 3D points in world coordinates (meters) to project.
@@ -98,6 +113,7 @@ namespace mrpt
 				bool accept_points_behind = false
 				);
 
+			//! \overload
 			void VISION_IMPEXP projectPoints_with_distortion(
 				const std::vector<mrpt::math::TPoint3D>  &P,
 				const mrpt::utils::TCamera  &params,

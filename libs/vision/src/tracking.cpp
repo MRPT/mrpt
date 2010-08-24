@@ -83,7 +83,7 @@ void CGenericFeatureTracker::trackFeatures(
 	// (2nd STEP) For successfully followed features, check their KLT response??
 	// ========================================================
 	const int	check_KLT_response_every = extra_params.getWithDefaultVal("check_KLT_response_every",0);
-	const float minimum_KLT_response = extra_params.getWithDefaultVal("minimum_KLT_response",50);
+	const float minimum_KLT_response = extra_params.getWithDefaultVal("minimum_KLT_response",5);
 	const unsigned int KLT_response_half_win = extra_params.getWithDefaultVal("KLT_response_half_win",4);
 
 	if (check_KLT_response_every>0 && ++m_check_KLT_counter>=size_t(check_KLT_response_every))
@@ -227,13 +227,13 @@ void CGenericFeatureTracker::trackFeatures(
 		// For each new good feature, add it to the list of tracked ones only if it's pretty
 		//  isolated:
 
-		const size_t nNewToCheck = std::min( size_t(300), N );
+		const size_t nNewToCheck = std::min( size_t(1500), N );
 		const double threshold_sqr_dist_to_add_new = square(threshold_dist_to_add_new);
 		const size_t maxNumFeatures = extra_params.getWithDefaultVal("add_new_feat_max_features",100);
 		const size_t patchSize = extra_params.getWithDefaultVal("add_new_feat_patch_size",11);
 		const int 	 offset		= (int)patchSize/2 + 1;
 
-		const float minimum_KLT_response_to_add = extra_params.getWithDefaultVal("minimum_KLT_response_to_add",100);
+		const float minimum_KLT_response_to_add = extra_params.getWithDefaultVal("minimum_KLT_response_to_add",10);
 
 		for (size_t i=0;i<nNewToCheck && featureList.size()<maxNumFeatures;i++)
 		{

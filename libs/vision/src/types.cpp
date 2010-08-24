@@ -52,8 +52,7 @@ void TSequenceFeatureObservations::saveToTextFile(const std::string &filName, bo
 		     "%-------------------------------------\n";
 
 	for (BASE::const_iterator it=BASE::begin();it!=BASE::end();++it)
-		for (TFeatureObservations::const_iterator itF=it->second.begin();itF!=it->second.end();++itF)
-			f << setw(7) << itF->first << setw(7) << it->first << setw(13) << itF->second.x << setw(11) << itF->second.y << endl;
+			f << setw(7) << it->id_frame << setw(7) << it->id_feature << setw(13) << it->px.x << setw(11) << it->px.y << endl;
 
 	MRPT_END
 }
@@ -87,7 +86,7 @@ void TSequenceFeatureObservations::loadFromTextFile(const std::string &filName)
 		if (!(s >> camID >> featID >> px.x >> px.y))
 			THROW_EXCEPTION(format("%s:%u: Error parsing line: '%s'",filName.c_str(),linNum,lin.c_str()))
 
-		(*this)[featID][camID] = px;
+		BASE::push_back( TFeatureObservation(featID,camID,px) );
 	}
 
 
@@ -101,9 +100,15 @@ size_t TSequenceFeatureObservations::removeFewObservedFeatures(size_t minNumObse
 
 	size_t remCount = 0;
 
+	// 1st pass: Count total views
+	map<TLandmarkID,size_t>  numViews;
+	for (BASE::iterator it=BASE::begin();it!=BASE::end(); ++it )
+		numViews[it->id_feature]++;
+
+	// 2nd pass: Remove selected ones:
 	for (BASE::iterator it=BASE::begin();it!=BASE::end();  )
 	{
-		if (it->second.size()<minNumObservations)
+		if (numViews[it->id_feature]<minNumObservations)
 		{
 			it = mrpt::utils::erase_return_next(*this, it);
 			remCount++;
@@ -112,4 +117,55 @@ size_t TSequenceFeatureObservations::removeFewObservedFeatures(size_t minNumObse
 	}
 	return remCount;
 	MRPT_END
+}
+
+
+void TSequenceFeatureObservations::compressIDs(
+	std::map<TCameraPoseID,TCameraPoseID>  *old2new_camIDs,
+	std::map<TLandmarkID,TLandmarkID>      *old2new_lmIDs )
+{
+	// 1st pass: Make list of translation IDs.
+	std::map<TCameraPoseID,TCameraPoseID>  camIDs;
+	std::map<TLandmarkID,TLandmarkID>      lmIDs;
+
+	for (BASE::const_iterator it=BASE::begin();it!=BASE::end();++it)
+	{
+		const TFeatureID    f_ID = it->id_feature;
+		const TCameraPoseID c_ID = it->id_frame;
+
+		if (lmIDs.find(f_ID)==lmIDs.end())
+		{
+			TLandmarkID nextID = lmIDs.size();  // *IMPORTANT* Separate in 2 lines, otherwise lmIDs[] is called first (!?)
+			lmIDs[f_ID]=nextID;
+		}
+		if (camIDs.find(c_ID)==camIDs.end())
+		{
+			TCameraPoseID nextID = camIDs.size();  // *IMPORTANT* Separate in 2 lines, otherwise camIDs[] is called first (!?)
+			camIDs[c_ID]=nextID;
+		}
+	}
+
+	if (!camIDs.empty() && !lmIDs.empty())
+	{
+		ASSERT_EQUAL_(camIDs.rbegin()->second, camIDs.size()-1)
+		ASSERT_EQUAL_(lmIDs.rbegin()->second, lmIDs.size()-1)
+	}
+
+	// 2nd: Create a new list with the translated IDs:
+	const size_t N = BASE::size();
+	TSequenceFeatureObservations  newLst(N);
+	for (size_t i=0;i<N;++i)
+	{
+		newLst[i].id_feature = lmIDs [ (*this)[i].id_feature ];
+		newLst[i].id_frame   = camIDs[ (*this)[i].id_frame ];
+		newLst[i].px         = (*this)[i].px;
+	}
+
+	// And save that new list in "this":
+	this->swap(newLst);
+
+	// Return translations, if requested:
+	if (old2new_camIDs) old2new_camIDs->swap(camIDs);
+	if (old2new_lmIDs)  old2new_lmIDs->swap(lmIDs);
+
 }
