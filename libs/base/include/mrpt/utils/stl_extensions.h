@@ -217,6 +217,13 @@ namespace mrpt
 			return itRet;
 		}
 		//! \overload
+		template <class T> inline typename std::set<T>::iterator erase_return_next(std::set<T> &cont, typename std::set<T>::iterator &it)
+		{
+			typename std::set<T>::iterator itRet = it; ++itRet;
+			cont.erase(it);
+			return itRet;
+		}
+		//! \overload
 		template <class T> inline typename std::vector<T>::iterator erase_return_next(std::vector<T> &cont, typename std::vector<T>::iterator &it)
 		{
 			typename std::vector<T>::iterator itRet = it;

@@ -38,7 +38,6 @@
 #include <mrpt/vision/CCamModel.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/CVideoFileWriter.h>
-#include <mrpt/vision/camera_calib_ba.h>
 #include <mrpt/vision/tracking.h>
 #include <mrpt/vision/bundle_adjustment.h>
 
