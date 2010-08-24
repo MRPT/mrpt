@@ -86,7 +86,7 @@ CWindowDialogPlots::CWindowDialogPlots(
         wxDEFAULT_FRAME_STYLE,
         _T("id"));
 
-    SetClientSize(wxSize(300,300));
+    SetClientSize(initialSize);
 
 	wxIcon FrameIcon;
 	FrameIcon.CopyFromBitmap(mrpt::gui::WxSubsystem::getMRPTDefaultIcon());
@@ -501,7 +501,7 @@ CDisplayWindowPlots::CDisplayWindowPlots(
 		m_callback(NULL),
 		m_callback_param (NULL)
 {
-	CBaseGUIWindow::createWxWindow(400,300);
+	CBaseGUIWindow::createWxWindow(initialWidth,initialHeight);
 }
 
 /*---------------------------------------------------------------

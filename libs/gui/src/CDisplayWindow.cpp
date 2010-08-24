@@ -154,7 +154,7 @@ CWindowDialog::CWindowDialog(
         initialSize,
         wxDEFAULT_FRAME_STYLE,
         _T("id"));
-    SetClientSize(wxSize(672,539));
+    SetClientSize(initialSize);
 
 	wxIcon FrameIcon;
 	FrameIcon.CopyFromBitmap(mrpt::gui::WxSubsystem::getMRPTDefaultIcon());

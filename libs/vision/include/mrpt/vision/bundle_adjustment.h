@@ -65,9 +65,16 @@ namespace mrpt
 		  * This implementation is almost entirely an adapted version from RobotVision (at OpenSLAM.org) (C) by Hauke Strasdat (Imperial College London), licensed under GNU LGPL.
 		  *  See the related paper:  H. Strasdat, J.M.M. Montiel, A.J. Davison: "Scale Drift-Aware Large Scale Monocular SLAM", RSS2010, http://www.roboticsproceedings.org/rss06/p10.html
 		  *
+		  *  List of optional parameters in "extra_params":
+		  *		- "verbose" : Verbose output (default=0)
+		  *		- "max_iterations": Maximum number of iterations to run (default=50)
+		  *		- "robust_kernel": If !=0, use a robust kernel against outliers (default=1)
+		  *		- "mu": Initial mu for LevMarq (default=-1 -> autoguess)
+		  *		- "num_fix_frames": Number of first frame poses to don't optimize (keep unmodified as they come in)  (default=1: the first pose is the reference and is not modified)
+		  *		- "num_fix_points": Idem, for the landmarks positions (default=0: optimize all)
+		  *
 		  * \note In this function, all coordinates are absolute. Camera frames are such that +Z points forward from the focal point (see the figure in mrpt::slam::CObservationImage).
 		  * \note The first frame pose will be not updated since at least one frame must remain fixed.
-		  *
 		  *
 		  * \param observations [IN] All the feature observations (WITHOUT distortion), indexed by feature ID as lists of <frame_ID, (x,y)>. See TSequenceFeatureObservations.
 		  * \param camera_params [IN] The camera parameters, mainly used for the intrinsic 3x3 matrix. Distortion params are ignored since it's assumed that \a observations are already undistorted pixels.

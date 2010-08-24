@@ -28,8 +28,6 @@
 
 #include <mrpt/base.h>  // Precompiled headers
 
-
-
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose3D.h>
@@ -39,6 +37,11 @@
 
 #include <mrpt/math/utils.h>
 #include <mrpt/math/CMatrix.h>
+
+
+#ifndef M_SQRT1_2
+#define M_SQRT1_2 0.70710678118654752440
+#endif
 
 using namespace mrpt;
 using namespace mrpt::math;

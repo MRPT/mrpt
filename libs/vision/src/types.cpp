@@ -145,12 +145,6 @@ void TSequenceFeatureObservations::compressIDs(
 		}
 	}
 
-	if (!camIDs.empty() && !lmIDs.empty())
-	{
-		ASSERT_EQUAL_(camIDs.rbegin()->second, camIDs.size()-1)
-		ASSERT_EQUAL_(lmIDs.rbegin()->second, lmIDs.size()-1)
-	}
-
 	// 2nd: Create a new list with the translated IDs:
 	const size_t N = BASE::size();
 	TSequenceFeatureObservations  newLst(N);

@@ -81,15 +81,16 @@ double mrpt::vision::bundle_adj_full(
     const bool verbose            = 0!=extra_params.getWithDefaultVal("verbose",0);
     const double initial_mu       = extra_params.getWithDefaultVal("mu",-1);
     const size_t max_iters        = extra_params.getWithDefaultVal("max_iterations",50);
+	const size_t num_fix_frames   = extra_params.getWithDefaultVal("num_fix_frames",1);
+    const size_t num_fix_points   = extra_params.getWithDefaultVal("num_fix_points",0);
 
 	// Input data sizes:
     const size_t num_points = landmark_points.size();
     const size_t num_frames = frame_poses.size();
 	const size_t num_obs    = observations.size();
 
-    const size_t num_fix_frames = 1;
-    const size_t num_fix_points = 0;
 
+	ASSERT_(num_fix_frames>=1)
     ASSERT_ABOVE_(num_frames,num_fix_frames);
     ASSERT_ABOVE_(num_points,num_fix_points);
 
