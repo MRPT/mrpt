@@ -428,6 +428,10 @@ void mrpt::vision::ba_addToFrames(
 		// Use the Lie Algebra methods for the increment:
 		const CArrayDouble<6> incr(delta_val);
 		const CPose3D         incrPose = CPose3D::exp(incr);
+
+//		cout << "incr:" << incr << "\n" << incrPose.getHomogeneousMatrixVal();
+//		mrpt::system::pause();
+
 		//new_pose = incrPose + old_pose
 		new_pose.composeFrom(incrPose,old_pose);
 

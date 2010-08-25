@@ -236,6 +236,9 @@ namespace poses
 		   */
 		 void  getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const {  out_HM = m_HM; }
 
+		 inline const CMatrixDouble44 &getHomogeneousMatrixVal() const { return m_HM;}
+
+
 		 /** Get the 3x3 rotation matrix, the upper-left part of the 4x4 homogeneous matrix.
 		   * \sa getHomogeneousMatrix
 		   */

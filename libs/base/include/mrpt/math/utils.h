@@ -91,7 +91,7 @@ namespace mrpt
 		{
 			if (count<2)
 			{
-				out_vector.assign(1,last);
+				out_vector.assign(count,last);
 				return;
 			}
 			else

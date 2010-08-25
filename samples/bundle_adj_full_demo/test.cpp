@@ -28,14 +28,14 @@
 
 /* ===========================================================================
     EXAMPLE: bundle_adj_full_demo
-    PURPOSE: Demonstrate "mrpt::vision::bundle_adj_full" with a set of 
+    PURPOSE: Demonstrate "mrpt::vision::bundle_adj_full" with a set of
 	          simulated or real data. If the program is called without command
 			  line arguments, simulated measurements will be used.
 			  To use real data, invoke:
 			    bundle_adj_full_demo  <feats.txt> <cam_model.cfg>
 
 			  Where <feats.txt> is a "TSequenceFeatureObservations" saved as
-			  a text file, and <cam_model.cfg> is a .ini-like file with a 
+			  a text file, and <cam_model.cfg> is a .ini-like file with a
 			  section named "CAMERA" loadable by mrpt::utils::TCamera.
 
     DATE: 20-Aug-2010
@@ -53,7 +53,7 @@ using namespace mrpt::opengl;
 using namespace std;
 
 
-vector_double history_avr_err; 
+vector_double history_avr_err;
 
 // A feedback functor, which is called on each iteration by the optimizer to let us know on the progress:
 void my_BundleAdjustmentFeedbackFunctor(
@@ -84,7 +84,7 @@ void bundle_adj_full_demo(
 	cout << "Optimizing " << allObs.size() << " feature observations.\n";
 
 	TParametersDouble 		extra_params;
-	extra_params["max_iterations"]= 25;
+	extra_params["max_iterations"]= 250;
 	//extra_params["num_fix_frames"] = 1;
 	//extra_params["num_fix_points"] = 0;
 
@@ -99,7 +99,8 @@ void bundle_adj_full_demo(
 }
 
 mrpt::opengl::CSetOfObjectsPtr framePosesVecVisualize(
-	const TFramePosesVec &poses, 
+	const TFramePosesVec &poses,
+	const double  len,
 	const double  lineWidth);
 
 
@@ -114,7 +115,7 @@ int main(int argc, char **argv)
 		if (argc!=1 && argc!=3)
 		{
 			cout << "Usage:\n"
-				<< argv[0] << "     -> Simulation\n" 
+				<< argv[0] << "     -> Simulation\n"
 				<< argv[0] << " <feats.txt> <cam_model.cfg>\n";
 			return 1;
 		}
@@ -133,7 +134,7 @@ int main(int argc, char **argv)
 		{
 			random::CRandomGenerator rg(1234);
 
-			//  Simulation 
+			//  Simulation
 			// --------------------------
 			// The projective camera model:
 			camera_params.ncols = 800;
@@ -145,16 +146,18 @@ int main(int argc, char **argv)
 			// -------------------------------------
 			const size_t nPts = 100;  // # of 3D landmarks
 			const double L1 = 60;   // Draw random poses in the rectangle L1xL2xL3
-			const double L2 = 20; 
+			const double L2 = 10;
 			const double L3 = 10;
-			const double max_camera_dist = L1*2.0;
-			const double cameraPathEllipRadius1 = L1*2.0;
-			const double cameraPathEllipRadius2 = L2*2.0;
+			const double max_camera_dist = L1*4;
+
+			const double cameraPathLen = L1*1.2;
+			//const double cameraPathEllipRadius1 = L1*2;
+			//const double cameraPathEllipRadius2 = L2*2;
 			// Noise params:
-			const double STD_PX_ERROR= 0.10;
-			const double STD_PT3D    = 0.10;
-			const double STD_CAM_XYZ = 0.05;
-			const double STD_CAM_ANG = DEG2RAD(5);
+			const double STD_PX_ERROR= 0.10; // pixels
+			const double STD_PT3D    = 0.10; // meters
+			const double STD_CAM_XYZ = 0.05; // meters
+			const double STD_CAM_ANG = DEG2RAD(5); // degs
 
 
 			landmark_points_real.resize(nPts);
@@ -165,22 +168,21 @@ int main(int argc, char **argv)
 				landmark_points_real[i].z = rg.drawUniform(-L3,L3);
 			}
 
-			const double angStep = M_PI*2.0/40;
+			//const double angStep = M_PI*2.0/40;
+			const double camPosesSteps = 2*cameraPathLen/20;
 			frame_poses_real.clear();
 
-
-			for (double ang=0;ang<M_PI*2;ang+=angStep)
+			for (double x=-cameraPathLen;x<cameraPathLen;x+=camPosesSteps)
 			{
 				TPose3D  p;
-				p.x = cameraPathEllipRadius1 * cos(ang);
-				p.y = cameraPathEllipRadius2 * sin(ang);
+				p.x = x; //cameraPathEllipRadius1 * cos(ang);
+				p.y = 4*L2;  // cameraPathEllipRadius2 * sin(ang);
 				p.z = 0;
-				p.yaw = wrapToPi(ang+M_PI);
+				p.yaw = DEG2RAD(-90) - DEG2RAD(30)*x/cameraPathLen  ; // wrapToPi(ang+M_PI);
 				p.pitch = 0;
 				p.roll  = 0;
 				// Angles above is for +X pointing to the (0,0,0), but we want instead +Z pointing there, as typical in camera models:
-				p = TPose3D( CPose3D(p) + CPose3D(0,0,0,DEG2RAD(-90), 0, DEG2RAD(-90)) );
-				frame_poses_real.push_back(p);
+				frame_poses_real.push_back( CPose3D(p) + CPose3D(0,0,0,DEG2RAD(-90), 0, DEG2RAD(-90)) );
 			}
 
 			// Simulate the feature observations:
@@ -192,10 +194,10 @@ int main(int argc, char **argv)
 				for (size_t j=0;j<landmark_points_real.size();j++)
 				{
 					TPixelCoordf px = mrpt::vision::pinhole::projectPoint_no_distortion(camera_params, frame_poses_real[i], landmark_points_real[j]);
-					
+
 					px.x += rg.drawGaussian1D(0,STD_PX_ERROR);
 					px.y += rg.drawGaussian1D(0,STD_PX_ERROR);
-					
+
 					// Out of image?
 					if (px.x<0 || px.y<0 || px.x>camera_params.ncols || px.y>camera_params.nrows)
 						continue;
@@ -227,18 +229,20 @@ int main(int argc, char **argv)
 
 			// Add noise to the data:
 			frame_poses_noisy     = frame_poses_real;
-			landmark_points_noisy = landmark_points_real; 
+			landmark_points_noisy = landmark_points_real;
 			for (size_t i=0;i<landmark_points_noisy.size();i++)
 				landmark_points_noisy[i] += TPoint3D( rg.drawGaussian1D(0,STD_PT3D),rg.drawGaussian1D(0,STD_PT3D),rg.drawGaussian1D(0,STD_PT3D) );
 
 			for (size_t i=1;i<frame_poses_noisy.size();i++) // DON'T add error to frame[0], the global reference!
 			{
-				frame_poses_noisy[i].x += rg.drawGaussian1D(0,STD_CAM_XYZ);
-				frame_poses_noisy[i].y += rg.drawGaussian1D(0,STD_CAM_XYZ);
-				frame_poses_noisy[i].z += rg.drawGaussian1D(0,STD_CAM_XYZ);
-				frame_poses_noisy[i].yaw += rg.drawGaussian1D(0,STD_CAM_ANG);
-				frame_poses_noisy[i].pitch += rg.drawGaussian1D(0,STD_CAM_ANG);
-				frame_poses_noisy[i].roll += rg.drawGaussian1D(0,STD_CAM_ANG);
+				CPose3D bef = frame_poses_noisy[i];
+				frame_poses_noisy[i].setFromValues(
+					frame_poses_noisy[i].x() + rg.drawGaussian1D(0,STD_CAM_XYZ),
+					frame_poses_noisy[i].y() + rg.drawGaussian1D(0,STD_CAM_XYZ),
+					frame_poses_noisy[i].z() + rg.drawGaussian1D(0,STD_CAM_XYZ),
+					frame_poses_noisy[i].yaw()   + rg.drawGaussian1D(0,STD_CAM_ANG),
+					frame_poses_noisy[i].pitch() + rg.drawGaussian1D(0,STD_CAM_ANG),
+					frame_poses_noisy[i].roll()  + rg.drawGaussian1D(0,STD_CAM_ANG) );
 			}
 
 			// Optimize it:
@@ -255,8 +259,20 @@ int main(int argc, char **argv)
 		{
 			//  Real data
 			// --------------------------
+			const string feats_fil = string(argv[1]);
+			const string cam_fil   = string(argv[2]);
 
-			// ...
+			cout << "Loading observations from: " << feats_fil << "...";cout.flush();
+			allObs.loadFromTextFile(feats_fil);
+			cout << "Done.\n";
+
+			allObs.compressIDs();
+
+			ASSERT_(mrpt::system::fileExists(cam_fil))
+			cout << "Loading camera params from: " << cam_fil;
+			CConfigFile cfgCam(cam_fil);
+			camera_params.loadFromConfigFile("CAMERA",cfgCam);
+			cout << "Done.\n";
 
 			cout << "Initial gross estimate...";
 			mrpt::vision::ba_initial_estimate(
@@ -275,7 +291,7 @@ int main(int argc, char **argv)
 
 		COpenGLScenePtr &scene = win.get3DSceneAndLock();
 
-		
+
 		{	// Ground plane:
 			CGridPlaneXYPtr obj = CGridPlaneXY::Create(-200,200,-200,200,0, 5);
 			obj->setColor(0.7,0.7,0.7);
@@ -308,9 +324,9 @@ int main(int argc, char **argv)
 		}
 
 		// Camera Frames: estimated
-		scene->insert( framePosesVecVisualize(frame_poses_noisy, 1) );
-		scene->insert( framePosesVecVisualize(frame_poses_real, 1) );
-		scene->insert( framePosesVecVisualize(frame_poses, 3) );
+		scene->insert( framePosesVecVisualize(frame_poses_noisy,1.0,  1) );
+		scene->insert( framePosesVecVisualize(frame_poses_real,2.0,  1) );
+		scene->insert( framePosesVecVisualize(frame_poses,2.0, 3) );
 
 
 		win.setCameraZoom(100);
@@ -326,7 +342,7 @@ int main(int argc, char **argv)
 
 		cout << "Close the 3D window or press a key to exit.\n";
 		win.waitForKey();
-		
+
 		return 0;
 	} catch (std::exception &e)
 	{
@@ -342,14 +358,15 @@ int main(int argc, char **argv)
 
 
 mrpt::opengl::CSetOfObjectsPtr framePosesVecVisualize(
-	const TFramePosesVec &poses, 
+	const TFramePosesVec &poses,
+	const double  len,
 	const double  lineWidth)
 {
 	mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::CSetOfObjects::Create();
 
 	for (size_t i=0;i<poses.size();i++)
 	{
-		CSetOfObjectsPtr corner = opengl::stock_objects::CornerXYZSimple(2.0, lineWidth);
+		CSetOfObjectsPtr corner = opengl::stock_objects::CornerXYZSimple(len, lineWidth);
 		corner->setPose(poses[i]);
 		corner->setName(format("%u",(unsigned int)i ));
 		corner->enableShowName();

@@ -189,6 +189,8 @@ double mrpt::vision::bundle_adj_full(
         double rho = 0;
         do
         {
+			profiler.enter("COMPLETE_ITER");
+
 			VERBOSE_COUT << "mu: " <<mu<< endl;
 
 			I_muFrame.unit(mu);
@@ -204,7 +206,14 @@ double mrpt::vision::bundle_adj_full(
             	(V[i]+I_muPoint).inv_fast( V_inv[i] );
 
 
-            map<pair<TCameraPoseID,TLandmarkID>,Matrix_FxP>   W,Y;
+            typedef map<pair<TCameraPoseID,TLandmarkID>,Matrix_FxP>  WMap;
+            WMap   W,Y;
+
+            // For quick look-up of entries in W affecting a given point ID:
+            //map<TLandmarkID, vector<WMap::iterator> > W_entries;
+            vector<vector<WMap::iterator> >   W_entries(num_points);  // Index is "TLandmarkID"
+
+
 
             MyJacDataVec::const_iterator jac_iter = jac_data_vec.begin();
 			for (TSequenceFeatureObservations::const_iterator it_obs=observations.begin();it_obs!=observations.end();++it_obs)
@@ -222,79 +231,94 @@ double mrpt::vision::bundle_adj_full(
 					tmp.multiply_AtB(J_frame, J_point);
 
 					// W[ids] = J_f^T * J_p
-					W[id_pair] = tmp;
+					// Was: W[id_pair] = tmp;
+					const pair<WMap::iterator,bool> &retInsert = W.insert( make_pair(id_pair,tmp) );
+					ASSERT_(retInsert.second==true)
+					W_entries[feat_id].push_back(retInsert.first); // Keep the iterator
+
 					// Y[ids] = W[ids] * V^{-1}
 					Y[id_pair].multiply_AB(tmp, V_inv[feat_id-num_fix_points]);  // FIXME: if IDs don't start at 0 this will break!
 				}
 				++jac_iter;
 			}
 
-			vector_double  delta( len_free_frames + len_free_points );
-            vector_double  e    ( len_free_frames );
-
 			map<pair<TCameraPoseID,TLandmarkID>,Matrix_FxF>  YW_map;
-
 			for (size_t i=0; i<U.size(); ++i)
 				YW_map[make_pair<TCameraPoseID,TLandmarkID>(i,i)] = U_star[i];
 
+			vector_double  delta( len_free_frames + len_free_points );
+            vector_double  e    ( len_free_frames );
+
+
+			profiler.enter("e");
 			for (size_t j=0; j<num_free_frames; ++j)
 				::memcpy( &e[j*FrameDof], &eps_frame[j][0], sizeof(e[0])*FrameDof ); // e.slice(j*FrameDof,FrameDof) = AT(eps_frame,j);
 
-			for (size_t j=0; j<num_free_frames; ++j)
+			for (WMap::iterator Y_ij=Y.begin();Y_ij!=Y.end();++Y_ij)
 			{
-				for (size_t i=0; i<num_free_points; ++i)
+				const TLandmarkID  point_id = Y_ij->first.second;
+				const size_t i = Y_ij->first.second - num_fix_points; // point index
+				const size_t j = Y_ij->first.first  - num_fix_frames; // frame index
+
+				const vector<WMap::iterator> &iters = W_entries[point_id]; //->second;
+
+				for (size_t itIdx=0;itIdx<iters.size();itIdx++)
+				//for (size_t k=0; k<num_free_frames; ++k)
 				{
-					map<pair<TCameraPoseID,TLandmarkID>,Matrix_FxP>::iterator Y_ij;
-					Y_ij = Y.find(make_pair<TCameraPoseID,TLandmarkID>(j+num_fix_frames,i+num_fix_points));
-					if (Y_ij!=Y.end())
+					const WMap::iterator &W_ik = iters[itIdx];
+					const TLandmarkID k = W_ik->first.first-num_fix_frames;
+
+					//W_ik = W.find(make_pair<TCameraPoseID,TLandmarkID>(k+num_fix_frames,point_id ));
+					//if (W_ik!=W.end())
 					{
-						for (size_t k=0; k<num_free_frames; ++k)
-						{
-							map<pair<TCameraPoseID,TLandmarkID>,Matrix_FxP>::iterator W_ik;
-							W_ik = W.find(make_pair<TCameraPoseID,TLandmarkID>(k+num_fix_frames,i+num_fix_points));
-							if (W_ik!=W.end())
-							{
-								Matrix_FxF  YWt(UNINITIALIZED_MATRIX);		//-(Y_ij->second) * (W_ik->second).T();
-								YWt.multiply_ABt( Y_ij->second, W_ik->second );
-								YWt*=-1.0;
+						Matrix_FxF  YWt(UNINITIALIZED_MATRIX);		//-(Y_ij->second) * (W_ik->second).T();
+						YWt.multiply_ABt( Y_ij->second, W_ik->second );
+						//YWt*=-1.0; // The "-" sign is taken into account below:
 
-								const pair<TCameraPoseID,TLandmarkID> ids_jk = make_pair<TCameraPoseID,TLandmarkID>(j,k);
+						const pair<TCameraPoseID,TLandmarkID> ids_jk = make_pair<TCameraPoseID,TLandmarkID>(j,k);
 
-								map<pair<TCameraPoseID,TLandmarkID>,Matrix_FxF>::iterator it = YW_map.find(ids_jk);
-								if(it!=YW_map.end())
-									it->second += YWt;
-								else
-									YW_map[ids_jk] = YWt;
-							}
-						}
-
-						//e.slice(j*FrameDof,FrameDof) -= (Y_ij->second) * eps_point.slice(i*PointDof, PointDof);
-						CArrayDouble<PointDof>  v;
-						::memcpy(&v[0],&eps_point[i][0], PointDof*sizeof(v[0]) );
-						CArrayDouble<FrameDof>  r;
-						Y_ij->second.multiply_Ab(v,r);
-						for (size_t k=0;k<FrameDof;k++)
-							e[j*FrameDof+k]-=r[k];
+						map<pair<TCameraPoseID,TLandmarkID>,Matrix_FxF>::iterator it = YW_map.find(ids_jk);
+						if(it!=YW_map.end())
+							it->second -= YWt;  // += (-YWt);
+						else
+							YW_map[ids_jk] = YWt*(-1.0);
 					}
 				}
-			}
 
+				//e.slice(j*FrameDof,FrameDof) -= (Y_ij->second) * eps_point.slice(i*PointDof, PointDof);
+				CArrayDouble<FrameDof>  r;
+				Y_ij->second.multiply_Ab( eps_point[i] ,r);
+				for (size_t k=0;k<FrameDof;k++)
+					e[j*FrameDof+k]-=r[k];
+			}
+			profiler.leave("e");
+
+
+			profiler.enter("sS:ALL");
 			profiler.enter("sS:fill");
-			CSparseMatrixTemplate<double> sparseS( len_free_frames, len_free_frames);
+
+			VERBOSE_COUT << "Entries in YW_map:" << YW_map.size() << endl;
+
+			CSparseMatrix sS(len_free_frames, len_free_frames);
 
 			for (map<pair<TCameraPoseID,TLandmarkID>,Matrix_FxF>::const_iterator it= YW_map.begin(); it!=YW_map.end(); ++it)
 			{
 				const pair<TCameraPoseID,TLandmarkID> & ids = it->first;
+//			std::cout  << ids.first << "," << ids.second << std::endl;
 				const Matrix_FxF & YW = it->second;
-
-				sparseS.insertMatrix(ids.first*FrameDof,ids.second*FrameDof, YW);
+				sS.insert_submatrix(ids.first*FrameDof,ids.second*FrameDof, YW);
 			}
 			profiler.leave("sS:fill");
 
+//			CMatrixDouble M;
+//			sS.get_dense(M);
+//			M.saveToTextFile("S2.txt");
+//			mrpt::system::pause();
 
-			profiler.enter("sS:construct");
-			CSparseMatrix sS(sparseS);
-			profiler.leave("sS:construct");
+			// Compress the sparse matrix:
+			profiler.enter("sS:compress");
+			sS.compressFromTriplet();
+			profiler.leave("sS:compress");
 
 			try
 			{
@@ -307,9 +331,11 @@ double mrpt::vision::bundle_adj_full(
 				Ch.backsub(e,bck_res);
 				::memcpy(&delta[0],&bck_res[0],bck_res.size()*sizeof(bck_res[0]));	// delta.slice(0,...) = Ch.backsub(e);
 				profiler.leave("sS:backsub");
+				profiler.leave("sS:ALL");
 			}
 			catch (CExceptionNotDefPos &)
 			{
+				profiler.leave("sS:ALL");
 				// not positive definite so increase mu and try again
 				mu *= nu;
 				nu *= 2.;
@@ -330,7 +356,7 @@ double mrpt::vision::bundle_adj_full(
 
                 for (size_t j=0; j<num_free_frames; ++j)
                 {
-                	map<pair<TCameraPoseID,TLandmarkID>,Matrix_FxP>::iterator W_ij;
+                	WMap::iterator W_ij;
                 	W_ij = W.find(make_pair<TCameraPoseID,TLandmarkID>(j+num_fix_frames,i+num_fix_points));
 
                     if (W_ij!=W.end())
@@ -423,6 +449,8 @@ double mrpt::vision::bundle_adj_full(
                 nu *= 2.0;
                 stop = (mu>1e9);
             }
+
+			profiler.leave("COMPLETE_ITER");
         }
         while(rho<=0 && !stop);
 

@@ -63,16 +63,16 @@ namespace mrpt
 			/** Project a single 3D point with global coordinates P into a camera at pose F, without distortion parameters.
 			  */
 			TPixelCoordf VISION_IMPEXP projectPoint_no_distortion(
-				const TCamera  &cam_params,
-				const TPose3D  &F,
-				const TPoint3D &P);
+				const mrpt::utils::TCamera  &cam_params,
+				const mrpt::poses::CPose3D  &F,
+				const mrpt::math::TPoint3D &P);
 
 			/** Project a single 3D point with global coordinates P into a camera at pose \f$ \ominus F \f$, without distortion parameters.
 			  */
 			TPixelCoordf VISION_IMPEXP projectPoint_no_distortion_inv(
-				const TCamera  &cam_params,
-				const TPose3D  &F,
-				const TPoint3D &P);
+				const mrpt::utils::TCamera  &cam_params,
+				const mrpt::poses::CPose3D  &F,
+				const mrpt::math::TPoint3D &P);
 
 
 			/** Project a set of 3D points into a camera at an arbitrary 6D pose using its calibration matrix and distortion parameters (radial and tangential distortions projection model)

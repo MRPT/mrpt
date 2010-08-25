@@ -636,6 +636,8 @@ void  CDisplayWindowPlots::plot(
 		this->clf();
 	}
 
+	if (x.empty()) return;
+
 	std::string holdon_post;
 	if (m_holdon)
 		holdon_post = format("_fig_%u",static_cast<unsigned int>(m_holdon_cnt++));

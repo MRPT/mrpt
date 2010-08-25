@@ -159,12 +159,11 @@ camera at pose \f$ \ominus F \f$, without distortion parameters.
    ------------------------------------------------------- */
 TPixelCoordf pinhole::projectPoint_no_distortion_inv(
 	const TCamera  &params,
-	const TPose3D  &cam_pose,
+	const CPose3D  &cam_pose,
 	const TPoint3D &global_point)
 {
 	double x,y,z; // wrt cam (local coords)
-	const CPose3D p(cam_pose);
-	p.composePoint(   // Use INVERSE poses
+	cam_pose.composePoint(   // Use INVERSE poses
 		global_point.x,global_point.y,global_point.z,
 		x,y,z);
 
@@ -184,12 +183,11 @@ camera at pose F, without distortion parameters.
    ------------------------------------------------------- */
 TPixelCoordf pinhole::projectPoint_no_distortion(
 	const TCamera  &params,
-	const TPose3D  &cam_pose,
+	const CPose3D  &cam_pose,
 	const TPoint3D &global_point)
 {
 	double x,y,z; // wrt cam (local coords)
-	const CPose3D p(cam_pose);
-	p.inverseComposePoint(   // Use NON INVERSE poses
+	cam_pose.inverseComposePoint(   // Use NON INVERSE poses
 		global_point.x,global_point.y,global_point.z,
 		x,y,z);
 

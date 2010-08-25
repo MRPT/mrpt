@@ -75,8 +75,9 @@ CPose3D::CPose3D( const CPose3D &o)
 	: m_ypr_uptodate(o.m_ypr_uptodate), m_yaw(o.m_yaw),m_pitch(o.m_pitch),m_roll(o.m_roll), m_HM(o.m_HM)
 {
 	m_is3D = true;
-	//o.updateYawPitchRoll();
-	//setFromValues(o.m_x,o.m_y,o.m_z,o.m_yaw,o.m_pitch,o.m_roll);
+	m_x = o.m_x;
+	m_y = o.m_y;
+	m_z = o.m_z;
 }
 
 CPose3D::CPose3D(const mrpt::math::TPose3D &o)
@@ -88,16 +89,14 @@ CPose3D::CPose3D(const mrpt::math::TPose3D &o)
 
 CPose3D & CPose3D::operator =( const CPose3D &o)
 {
+	m_HM = o.m_HM;
 	m_x = o.m_x;
 	m_y = o.m_y;
 	m_z = o.m_z;
 	m_yaw = o.m_yaw;
 	m_pitch = o.m_pitch;
 	m_roll = o.m_roll;
-	m_HM   = o.m_HM;
-	o.updateYawPitchRoll();
 	m_ypr_uptodate = o.m_ypr_uptodate;
-//	setFromValues(o.m_x,o.m_y,o.m_z,o.m_yaw,o.m_pitch,o.m_roll);
 	return *this;
 }
 
@@ -602,8 +601,12 @@ void CPose3D::composeFrom(const CPose3D& A, const CPose3D& B )
 	//m_HM.multiply( A.m_HM, B.m_HM );
 	// In fact, we can just update the 3x4 part of the matrix:
 	for (int r=0;r<3;r++)
-		for (int c=0;c<4;c++)
+		for (int c=0;c<3;c++)
 			m_HM.get_unsafe(r,c) = A.m_HM.get_unsafe(r,0)*B.m_HM.get_unsafe(0,c)+A.m_HM.get_unsafe(r,1)*B.m_HM.get_unsafe(1,c)+A.m_HM.get_unsafe(r,2)*B.m_HM.get_unsafe(2,c);
+
+	// The translation part M(0:3,3)
+	for (int r=0;r<3;r++)
+			m_HM.get_unsafe(r,3) = A.m_HM.get_unsafe(r,0)*B.m_HM.get_unsafe(0,3)+A.m_HM.get_unsafe(r,1)*B.m_HM.get_unsafe(1,3)+A.m_HM.get_unsafe(r,2)*B.m_HM.get_unsafe(2,3)+ A.m_HM.get_unsafe(r,3);
 
 	// Update the x,y,z,yaw,pitch,roll fields:
 	m_x = m_HM.get_unsafe(0,3);

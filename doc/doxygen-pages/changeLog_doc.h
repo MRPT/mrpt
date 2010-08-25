@@ -95,6 +95,7 @@
 			- bundle_adj_full_demo
 			- se3
 		- BUG FIXES:
+			- mrpt::gui::CDisplayWindowPlots::plot(y) asserted on empty input vector (actually a bug in mrpt::math::linspace for len=0)
 			- mrpt::gui::CDisplayWindowPlots did ignore the construction-time width x height.
 			- Fixed bug in mrpt::utils::CImage::KLT_response: due to wrong signed numbers usage, responses were high in textureless parts of images.
 			- FIXED: mrpt::gui::CDisplayWindow3D crashes when hitting ALT+Enter for fullscreen when user is waiting for a key to close the window.

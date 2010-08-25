@@ -140,31 +140,7 @@ namespace mrpt
 				const std::string  &lineFormat = std::string("b-"),
 				const std::string  &plotName = std::string("plotXY") );
 
-			/** Adds a new layer with a 2D plot based on the vector Y, using a MATLAB-like syntax.
-			  *  Each call to this function creates a new plot, unless the plot name coincides with an already existing plot: in this case the X & Y points are used to update this existing layer (this also applies to using the default plot name).
-			  *  If "hold_on" is enabled, then every call will always create a new plot, even if no "plotName" is provided.
-			  *
-			  *  The lineFormat string is a combination of the following characters:
-			  * - Line styles:
-			  *		- '.': One point for each data point
-			  *		- '-': A continuous line
-			  *		- ':': A dashed line
-			  * - Colors:
-			  *		- k: black
-			  *		- r: red
-			  *		- g: green
-			  *		- b: blue
-			  *		- m: magenta
-			  *		- c: cyan
-			  * - Line width:
-			  *		- '1' to '9': The line width (default=1)
-			  *
-			  *  Examples:
-			  *   - 'r.' -> red points.
-			  *   - 'k3' or 'k-3' -> A black line with a line width of 3 pixels.
-			  * \note The method can be called with vectors of types: float, double.
-			  * \sa axis, axis_equal, axis_fit, clear, hold_on, hold_off
-			  */
+			//! \overload
 			template <typename T>
 			void GUI_IMPEXP plot(
 				const std::vector<T> &y,
@@ -206,19 +182,7 @@ namespace mrpt
 				const std::string  &plotName = std::string("plotEllipse"),
 				bool showName = false);
 
-			/** Plots a 2D ellipse given its mean, covariance matrix, and
-			  *  Each call to this function creates a new plot, unless the plot name coincides with an already existing plot: in this case the new values are used to update this existing layer (this also applies to using the default plot name).
-			  *  If "hold_on" is enabled, then every call will always create a new plot, even if no "plotName" is provided.
-			  *
-			  *  For a description of lineFormat see CDisplayWindowPlots::plot.
-			  *  The "quantiles" value determines the confidence interval for the ellipse:
-			  *     - 1 : 68.27% confidence interval
-			  *     - 2 : 95.45%
-			  *     - 3 : 99.73%
-			  *     - 4 : 99.994%
-			  * \note This method can be called with 2x2 fixed-sized or dynamic-size matrices of types: float or double.
-			  * \sa axis, axis_equal, axis_fit, hold_on, hold_off
-			  */
+			//! \overload
 			template <typename T>
 			void GUI_IMPEXP plotEllipse(
 				const T mean_x,
