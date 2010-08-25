@@ -80,6 +80,8 @@
 			- mrpt::poses::CPose3D:
 				- Much faster operations, as long as yaw(), pitch() & roll() are not explicitly called. These 3 angles are now not computed until really requested by the user, then cached.
 				- New SE3 Lie algebra methods: mrpt::poses::CPose3D::exp(), mrpt::poses::CPose3D::ln(), ...
+				- mrpt::poses::CPose3D::composePoint() now has an optional flag to compute faster, approximate Jacobians (for small rotations only!).
+			- New method: mrpt::hwdrivers::CSerialPort::ReadString
 		- New functions:
 			- mrpt::math::rodrigues_so3_exp
 			- mrpt::vision::pinhole::undistort_point

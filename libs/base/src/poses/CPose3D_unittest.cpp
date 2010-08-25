@@ -111,7 +111,7 @@ protected:
 	}
 
 	void test_composePointJacob(double x1,double y1,double z1, double yaw1,double pitch1,double roll1,
-	                 double x,double y,double z)
+	                 double x,double y,double z,  bool use_aprox = false)
 	{
 		const CPose3D 	p1(x1,y1,z1,yaw1,pitch1,roll1);
 		const CPoint3D 	p(x,y,z);
@@ -120,7 +120,7 @@ protected:
 		CMatrixFixedNumeric<double,3,6>  df_dpose;
 
 		TPoint3D pp;
-		p1.composePoint(x,y,z, pp.x,pp.y,pp.z, &df_dpoint, &df_dpose );
+		p1.composePoint(x,y,z, pp.x,pp.y,pp.z, &df_dpoint, &df_dpose, use_aprox );
 
 		// Numerical approx:
 		CMatrixFixedNumeric<double,3,3> num_df_dpoint(UNINITIALIZED_MATRIX);
@@ -142,14 +142,16 @@ protected:
 			numJacobs.extractMatrix(0,6, num_df_dpoint);
 		}
 
-		EXPECT_NEAR(0, (df_dpoint-num_df_dpoint).Abs().sumAll(), 3e-3 )
+		const double max_eror = use_aprox ? 0.1 : 3e-3;
+
+		EXPECT_NEAR(0, (df_dpoint-num_df_dpoint).Abs().sumAll(), max_eror )
 			<< "p1: " << p1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpoint: " << endl << num_df_dpoint << endl
 			<< "Implemented method: " << endl << df_dpoint << endl
 			<< "Error: " << endl << df_dpoint-num_df_dpoint << endl;
 
-		EXPECT_NEAR(0, (df_dpose-num_df_dpose).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_dpose-num_df_dpose).Abs().sumAll(), max_eror )
 			<< "p1: " << p1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpose: " << endl << num_df_dpose << endl
@@ -205,7 +207,7 @@ protected:
 	}
 
 
-	void test_default_values(const CPose3D &p)
+	void test_default_values(const CPose3D &p, const std::string & label)
 	{
 		EXPECT_EQ(p.x(),0);
 		EXPECT_EQ(p.y(),0);
@@ -215,9 +217,10 @@ protected:
 		EXPECT_EQ(p.roll(),0);
 		for (size_t i=0;i<4;i++)
 			for (size_t j=0;j<4;j++)
-				EXPECT_NEAR(p.getHomogeneousMatrixVal()(i,j), i==j ? 1.0 : 0.0, 1e-6 ) 
-					<< "Failed for (i,j)=" << i << "," << j << endl 
-					<< "Matrix is: " << endl << p.getHomogeneousMatrixVal() << endl;
+				EXPECT_NEAR(p.getHomogeneousMatrixVal()(i,j), i==j ? 1.0 : 0.0, 1e-8 )
+					<< "Failed for (i,j)=" << i << "," << j << endl
+					<< "Matrix is: " << endl << p.getHomogeneousMatrixVal() << endl
+					<< "case was: " << label << endl;
 	}
 
 };
@@ -227,23 +230,23 @@ TEST_F(Pose3DTests,DefaultValues)
 {
 	{
 		CPose3D   p;
-		test_default_values(p);
+		test_default_values(p, "Default");
 	}
 	{
 		CPose3D   p2;
 		CPose3D   p = p2;
-		test_default_values(p);
+		test_default_values(p, "p=p2");
 	}
 	{
 		CPose3D   p1,p2;
-		test_default_values(p1+p2);
+		test_default_values(p1+p2, "p1+p2");
 		CPose3D p = p1+p2;
-		test_default_values(p);
+		test_default_values(p, "p=p1+p2");
 	}
 	{
 		CPose3D   p1,p2;
 		CPose3D p = p1-p2;
-		test_default_values(p);
+		test_default_values(p,"p1-p2");
 	}
 }
 
@@ -297,6 +300,14 @@ TEST_F(Pose3DTests,ComposePointJacob)
 	test_composePointJacob(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10),   10,11,12 );
 	test_composePointJacob(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60),   10.0, 20.0, 30.0 );
 	test_composePointJacob(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40),  -5.0, -15.0, 8.0 );
+}
+
+TEST_F(Pose3DTests,ComposePointJacobApprox)
+{	// Test approximated Jacobians for very small rotations
+	test_composePointJacob(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),   10,11,12   , true );
+	test_composePointJacob(1.0,2.0,3.0, DEG2RAD(0.1),DEG2RAD(0),DEG2RAD(0),   10,11,12   , true );
+	test_composePointJacob(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0.1),DEG2RAD(0),   10,11,12   , true );
+	test_composePointJacob(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0.1),   10,11,12   , true );
 }
 
 TEST_F(Pose3DTests,InvComposePointJacob)

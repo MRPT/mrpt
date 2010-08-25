@@ -31,6 +31,7 @@
 
 #include <mrpt/config.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/stl_extensions.h>
 #include <queue>
 
@@ -152,6 +153,16 @@ namespace mrpt
 			 */
 			size_t  Read(void *Buffer, size_t Count);
 
+			/** Reads one text line from the serial port in POSIX "canonical mode".
+			  *  This method reads from the serial port until one of the characters in \a eol are found.
+			  * \param eol_chars A line reception is finished when one of these characters is found. Default: LF (10), CR (13).
+			  * \param total_timeout_ms If >0, the maximum number of milliseconds to wait.
+			  * \param out_timeout If provided, will hold true on return if a timeout ocurred, false on a valid read.
+			  * \return The read string, without the final
+			  * \exception std::exception On communication errors
+			  */
+			std::string ReadString(const int total_timeout_ms=-1, bool *out_timeout =NULL, const char *eol_chars = "\r\n");
+
 			/** Implements the virtual method responsible for writing to the stream.
 			 *  Write attempts to write up to Count bytes to Buffer, and returns the number of bytes actually written.
 			* \exception std::exception On communication errors
@@ -201,6 +212,8 @@ namespace mrpt
 			int				m_baudRate;
 			int				m_totalTimeout_ms,m_interBytesTimeout_ms;
 
+			CTicTac  		m_timer; //!< Used only in \a ReadString
+
 		#ifdef MRPT_OS_WINDOWS
 			// WINDOWS
 			void		*hCOM;
@@ -209,7 +222,7 @@ namespace mrpt
 			/** The file handle (-1: Not open)
 			  */
 			int 		hCOM;
-			size_t  ReadUnbuffered(void *Buffer, size_t Count);
+			// size_t  ReadUnbuffered(void *Buffer, size_t Count); // JL: Remove??
 		#endif
 
 		}; // end of class

@@ -261,6 +261,61 @@ size_t  CSerialPort::Read(void *Buffer, size_t Count)
 	return actuallyRead;
 }
 
+/** Reads one text line from the serial port in POSIX "canonical mode".
+  *  This method reads from the serial port until one of the characters in \a eol are found.
+  */
+std::string CSerialPort::ReadString(
+	const int total_timeout_ms,
+	bool *out_timeout,
+	const char *eol_chars)
+{
+    MRPT_TRY_START
+    // Calling ::ReadBuffer() many times would be even worse, so replicate its code here:
+
+    ASSERT_(eol_chars!=NULL)
+
+    // Port must be open!
+    if (!isOpen()) THROW_EXCEPTION("The port is not open yet!");
+
+    if (out_timeout) *out_timeout = false; // Will be set to true on timeout
+
+    m_timer.Tic();
+    string receivedStr; // Rx buffer
+
+    while ( total_timeout_ms<0 || ( m_timer.Tac()*1e3 < total_timeout_ms ) )
+    {
+		// Read just 1 byte:
+		char buf[1];
+
+		DWORD actuallyRead;
+		if (! ReadFile(
+					hCOM,         // Handle,
+					buf,          // Buffer
+					1,  // Max expected bytes
+					&actuallyRead, // Actually read bytes
+					NULL) )
+			THROW_EXCEPTION("Error reading from port!");
+
+		if (actuallyRead)
+		{	// Append to string, if it's not a control char:
+			if (!strchr(eol_chars, buf[0] ) )
+				receivedStr.push_back( buf[0] );
+			else
+			{	// end of string!
+				return receivedStr;
+			}
+		}
+		// If we are still here, string is not finished:
+		mrpt::system::sleep( 1 ); // Wait 1 more ms for new data to arrive.
+    }
+
+	// Timeout:
+    if (out_timeout) *out_timeout = true;
+    return receivedStr;
+    MRPT_TRY_END
+}
+
+
 /* -----------------------------------------------------
                 write
    ----------------------------------------------------- */

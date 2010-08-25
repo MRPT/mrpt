@@ -51,8 +51,6 @@
 #endif
 
 #include <map>
-
-#include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 
@@ -460,12 +458,10 @@ size_t  CSerialPort::Read(void *Buffer, size_t Count)
 
     // Use the "m_totalTimeout_ms" global timeout
     //  and the "m_interBytesTimeout_ms" for inter-bytes:
-    CTicTac tictac;
-
-    tictac.Tic();
+    m_timer.Tic();
 
     size_t  alreadyRead = 0;
-    int		leftTime = m_totalTimeout_ms - (int)(tictac.Tac()*1000);
+    int		leftTime = m_totalTimeout_ms - (int)(m_timer.Tac()*1000);
 
     while ( alreadyRead<Count && leftTime>=0 )
     {
@@ -508,7 +504,7 @@ size_t  CSerialPort::Read(void *Buffer, size_t Count)
 		}
 
 		// Reset interbytes timer:
-		leftTime = m_totalTimeout_ms - (int)(tictac.Tac()*1000);
+		leftTime = m_totalTimeout_ms - (int)(m_timer.Tac()*1000);
 		if (nRead>0)
 			leftTime = max(leftTime, m_interBytesTimeout_ms);
     }
@@ -518,6 +514,72 @@ size_t  CSerialPort::Read(void *Buffer, size_t Count)
 
     MRPT_TRY_END
 }
+
+/** Reads one text line from the serial port in POSIX "canonical mode".
+  *  This method reads from the serial port until one of the characters in \a eol are found.
+  */
+std::string CSerialPort::ReadString(
+	const int total_timeout_ms,
+	bool *out_timeout,
+	const char *eol_chars)
+{
+    MRPT_TRY_START
+    // Calling ::ReadBuffer() many times would be even worse, so replicate its code here:
+
+    ASSERT_(eol_chars!=NULL)
+
+    // Port must be open!
+    if (!isOpen()) THROW_EXCEPTION("The port is not open yet!");
+
+    if (out_timeout) *out_timeout = false; // Will be set to true on timeout
+
+    m_timer.Tic();
+    string receivedStr; // Rx buffer
+
+    while ( total_timeout_ms<0 || ( m_timer.Tac()*1e3 < total_timeout_ms ) )
+    {
+    	// Bytes waiting in the queue?
+		// Check if we are still connected or there is an error...
+		int waiting_bytes=0;
+		if ( ioctl(hCOM, FIONREAD, &waiting_bytes) < 0)
+		{
+			if (errno==EIO)
+			{	// The port has been disconnect (for USB ports)
+				this->close();
+				THROW_EXCEPTION("Error reading port before end of line")
+			}
+		}
+
+		// Are there any bytes??
+		int nRead=0;
+		if (waiting_bytes>0)
+		{
+			// Read just 1 byte:
+			char buf[1];
+			if ( ( nRead=::read(hCOM, buf, 1) ) <0 )
+			{
+				cerr << "[CSerialPort] Error reading from port..." << endl;
+			}
+			if (nRead)
+			{	// Append to string, if it's not a control char:
+				if (!strchr(eol_chars, buf[0] ) )
+					receivedStr.push_back( buf[0] );
+				else
+				{	// end of string!
+					return receivedStr;
+				}
+			}
+		}
+		// If we are still here, string is not finished:
+		mrpt::system::sleep( 1 ); // Wait 1 more ms for new data to arrive.
+    }
+
+	// Timeout:
+    if (out_timeout) *out_timeout = true;
+    return receivedStr;
+    MRPT_TRY_END
+}
+
 
 /* -----------------------------------------------------
                 write

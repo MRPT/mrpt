@@ -229,7 +229,11 @@ namespace poses
 		 CPose3D(const CPose3DQuat &);
 
 		 /** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
-		 inline CPose3D(TConstructorFlags_Poses constructor_dummy_param) : m_ypr_uptodate(false), m_HM(UNINITIALIZED_MATRIX)  {  m_is3D = true; }
+		 inline CPose3D(TConstructorFlags_Poses constructor_dummy_param) : m_ypr_uptodate(false), m_HM(UNINITIALIZED_MATRIX)
+		 {
+		 	m_is3D = true;  // At least initialize the 4th row of HM, since many methods assume it will be correct from the begining.
+			m_HM(3,0)=m_HM(3,1)=m_HM(3,2)=0; m_HM(3,3)=1;
+		 }
 
 		 /** Returns the corresponding 4x4 homogeneous transformation matrix for the point(translation) or pose (translation+orientation).
 		   * \sa getInverseHomogeneousMatrix, getRotationMatrix
@@ -292,10 +296,14 @@ namespace poses
             double &out_yaw,
             double &out_pitch ) const;
 
-		/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 3D points and P this 6D pose.  */
+		/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 3D points and P this 6D pose.
+		  *  If pointers are provided, the corresponding Jacobians are returned (see <a href="http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty" >this report</a>)
+		  *  Exact Jacobians are computed unless \a use_small_rot_approx is true, in that case a fastest linearized version is used (valid only for small rotations!).
+		  */
 		void composePoint(double lx,double ly,double lz, double &gx, double &gy, double &gz,
 			mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint=NULL,
-			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose=NULL) const;
+			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose=NULL,
+			bool use_small_rot_approx = false) const;
 
 		/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 3D points and P this 6D pose.
 		  * \note local_point is passed by value to allow global and local point to be the same variable

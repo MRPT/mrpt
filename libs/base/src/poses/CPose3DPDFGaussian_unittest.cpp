@@ -249,6 +249,7 @@ TEST_F(Pose3DPDFGaussTests,ToQuatGaussPDFAndBack)
 TEST_F(Pose3DPDFGaussTests,CompositionJacobian)
 {
 	testCompositionJacobian(0,0,0,DEG2RAD(2),DEG2RAD(0),DEG2RAD(0),  0,0,0,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
+	testCompositionJacobian(0,0,0,DEG2RAD(2),DEG2RAD(0),DEG2RAD(0),  0,0,0,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
 	testCompositionJacobian(1,2,3,DEG2RAD(2),DEG2RAD(0),DEG2RAD(0),  -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
 	testCompositionJacobian(1,-2,3,DEG2RAD(2),DEG2RAD(0),DEG2RAD(0),  -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
 	testCompositionJacobian(1,2,-3,DEG2RAD(2),DEG2RAD(0),DEG2RAD(0),  -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );

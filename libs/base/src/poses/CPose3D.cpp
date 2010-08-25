@@ -426,7 +426,8 @@ double CPose3D::distanceEuclidean6D( const CPose3D &o ) const
 ---------------------------------------------------------------*/
 void CPose3D::composePoint(double lx,double ly,double lz, double &gx, double &gy, double &gz,
 	mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint,
-	mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose) const
+	mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose,
+	bool use_small_rot_approx ) const
 {
 	// Jacob: df/dpoint
 	if (out_jacobian_df_dpoint)
@@ -437,38 +438,51 @@ void CPose3D::composePoint(double lx,double ly,double lz, double &gx, double &gy
 	// Jacob: df/dpose
 	if (out_jacobian_df_dpose)
 	{
-		updateYawPitchRoll();
-#	ifdef HAVE_SINCOS
-		double	cy,sy;
-		::sincos(m_yaw,&sy,&cy);
-		double	cp,sp;
-		::sincos(m_pitch,&sp,&cp);
-		double	cr,sr;
-		::sincos(m_roll,&sr,&cr);
-#	else
-		const double	cy = cos(m_yaw);
-		const double	sy = sin(m_yaw);
-		const double	cp = cos(m_pitch);
-		const double	sp = sin(m_pitch);
-		const double	cr = cos(m_roll);
-		const double	sr = sin(m_roll);
-#	endif
+		if (use_small_rot_approx)
+		{
+			// Linearized Jacobians around (yaw,pitch,roll)=(0,0,0):
+			const double nums[3*6] = {
+				1, 0, 0, -ly, lz,   0,
+				0, 1, 0,  lx,  0, -lz,
+				0, 0, 1,   0, -lx,  ly };
+			out_jacobian_df_dpose->loadFromArray(nums);
+		}
+		else
+		{
+			// Exact Jacobians:
+			updateYawPitchRoll();
+	#	ifdef HAVE_SINCOS
+			double	cy,sy;
+			::sincos(m_yaw,&sy,&cy);
+			double	cp,sp;
+			::sincos(m_pitch,&sp,&cp);
+			double	cr,sr;
+			::sincos(m_roll,&sr,&cr);
+	#	else
+			const double	cy = cos(m_yaw);
+			const double	sy = sin(m_yaw);
+			const double	cp = cos(m_pitch);
+			const double	sp = sin(m_pitch);
+			const double	cr = cos(m_roll);
+			const double	sr = sin(m_roll);
+	#	endif
 
-		const double nums[3*6] = {
-			1, 0, 0,
-				-lx*sy*cp+ly*(-sy*sp*sr-cy*cr)+lz*(-sy*sp*cr+cy*sr),   // d_x'/d_yaw
-				-lx*cy*sp+ly*(cy*cp*sr       )+lz*(cy*cp*cr      ),   // d_x'/d_pitch
-				          ly*(cy*sp*cr+sy*sr)+lz*(-cy*sp*sr+sy*cr),   // d_x'/d_roll
-			0, 1, 0,
-				 lx*cy*cp+ly*(cy*sp*sr-sy*cr)+lz*(cy*sp*cr+sy*sr),   // d_y'/d_yaw
-				-lx*sy*sp+ly*(sy*cp*sr)      +lz*(sy*cp*cr      ),   // d_y'/d_pitch
-				          ly*(sy*sp*cr-cy*sr)+lz*(-sy*sp*sr-cy*cr),   // d_y'/d_roll
-			0, 0, 1,
-				0,  // d_z' / d_yaw
-				-lx*cp-ly*sp*sr-lz*sp*cr,  // d_z' / d_pitch
-				ly*cp*cr-lz*cp*sr  // d_z' / d_roll
-			};
-		out_jacobian_df_dpose->loadFromArray(nums);
+			const double nums[3*6] = {
+				1, 0, 0,
+					-lx*sy*cp+ly*(-sy*sp*sr-cy*cr)+lz*(-sy*sp*cr+cy*sr),   // d_x'/d_yaw
+					-lx*cy*sp+ly*(cy*cp*sr       )+lz*(cy*cp*cr      ),   // d_x'/d_pitch
+							  ly*(cy*sp*cr+sy*sr)+lz*(-cy*sp*sr+sy*cr),   // d_x'/d_roll
+				0, 1, 0,
+					 lx*cy*cp+ly*(cy*sp*sr-sy*cr)+lz*(cy*sp*cr+sy*sr),   // d_y'/d_yaw
+					-lx*sy*sp+ly*(sy*cp*sr)      +lz*(sy*cp*cr      ),   // d_y'/d_pitch
+							  ly*(sy*sp*cr-cy*sr)+lz*(-sy*sp*sr-cy*cr),   // d_y'/d_roll
+				0, 0, 1,
+					0,  // d_z' / d_yaw
+					-lx*cp-ly*sp*sr-lz*sp*cr,  // d_z' / d_pitch
+					ly*cp*cr-lz*cp*sr  // d_z' / d_roll
+				};
+			out_jacobian_df_dpose->loadFromArray(nums);
+		}
 	}
 
 	gx=m_HM.get_unsafe(0,0)*lx+m_HM.get_unsafe(0,1)*ly+m_HM.get_unsafe(0,2)*lz+m_x;
