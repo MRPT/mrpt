@@ -45,6 +45,11 @@ the University of Malaga.
   - Some minor changes in: 3DSceneViewer and RawlogViewer applications.
   - Some image-related functions.
 
+* Adrien Barral - Robopec (France).
+  - Driver for SICK LMS100 via ethernet (mrpt::hwdrivers::CLMS100eth)
+  - Driver for Phidget interface boards (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors)
+  - Driver for KVH DSP-3000 Laser Gyro (see mrpt::hwdrivers::CGyroKVHDSP3000)
+
 * Paul Newman, Mobile Robotics Group, University of Oxford.
   - The Levenberg-Marquardt algorithm implemented in slam::CICP.
 
@@ -55,10 +60,6 @@ the University of Malaga.
   - New CRangeObservation for 3D point clouds.
   - Many hacks and optimizations in different parts of MRPT.
   
-* Adrien Barral - Robopec (France).
-  - Driver for SICK LMS100 via ethernet (mrpt::hwdrivers::CLMS100eth)
-  - Driver for Phidget interface boards (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors)
-
 * Eduardo Fernandez Moral , University of Malaga.
   - Driver for Rovio mobile robot with webcam. 
   - Some other functions.
