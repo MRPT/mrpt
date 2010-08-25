@@ -58,5 +58,6 @@ void registerAllClasses_mrpt_hwdrivers()
 	CSwissRanger3DCamera::doRegister();
 	CLMS100Eth::doRegister();
 	CPhidgetInterfaceKitProximitySensors::doRegister();
+	CGyroKVHDSP3000::doRegister();
 }
 

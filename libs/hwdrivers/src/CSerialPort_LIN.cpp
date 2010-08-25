@@ -352,7 +352,7 @@ void  CSerialPort::setConfig(
         // none
         port_settings.c_cflag &= ~(CRTSCTS) ;
     }
-
+    
     /* Write the new settings to the port.
      */
     if ( tcsetattr( hCOM,TCSANOW,&port_settings ) < 0 )

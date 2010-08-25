@@ -62,6 +62,7 @@
 #include <mrpt/hwdrivers/CRoboticHeadInterface.h>
 #include <mrpt/hwdrivers/CRovio.h>
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
+#include <mrpt/hwdrivers/CGyroKVHDSP3000.h>
 
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
