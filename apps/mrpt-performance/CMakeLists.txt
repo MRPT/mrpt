@@ -19,17 +19,19 @@ ADD_DEFINITIONS(-DMRPT_DATASET_DIR="${MRPT_SOURCE_DIR}/share/mrpt/datasets")
 # Define the executable target:
 ADD_EXECUTABLE(mrpt-performance
 	perf-main.cpp
-	perf-matrix.h
-	perf-gridmaps.h
-	perf-random.h
-	perf-math.h
-	perf-icp.h
-	perf-pointmaps.h
-	perf-images.h
-	perf-scan_matching.h
+	# Test files:
 	perf-feature_extraction.h
 	perf-feature_matching.h
 	perf-graph.h
+	perf-gridmaps.h
+	perf-icp.h
+	perf-images.h
+	perf-math.h
+	perf-matrix.h
+	perf-pointmaps.h
+	perf-poses.h
+	perf-random.h
+	perf-scan_matching.h
 	)
 
 SET(TMP_TARGET_NAME "mrpt-performance")

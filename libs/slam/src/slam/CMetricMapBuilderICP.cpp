@@ -344,7 +344,8 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			CPose2D  currentKnownRobotPose;
 			m_lastPoseEst.getLatestRobotPose(currentKnownRobotPose);
 
-			printf("INSERT POSE: %s\n",currentKnownRobotPose.asString().c_str());
+			if (options.verbose)
+				printf("[CMetricMapBuilderICP] Updating map from pose %s\n",currentKnownRobotPose.asString().c_str());
 
 			CPose3D		estimatedPose3D(currentKnownRobotPose);
 			metricMap.insertObservationPtr(obs,&estimatedPose3D);
@@ -496,7 +497,8 @@ void  CMetricMapBuilderICP::initialize(
 		SF->insertObservationsInto( &metricMap, &estimatedPose3D );
 	}
 
-	printf("[CMetricMapBuilderICP::loadCurrentMapFromFile] OK\n");
+	if (options.verbose)
+		printf("[CMetricMapBuilderICP::loadCurrentMapFromFile] OK\n");
 
 	MRPT_END
 }

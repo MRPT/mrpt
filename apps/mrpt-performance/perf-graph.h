@@ -130,31 +130,31 @@ void register_tests_graph()
 {
 	randomGenerator.randomize(1234);
 
-	lstTests.push_back( TestData("graph(2d): insertEdge x 10e3",graphs_test_populate<CPose2D>, 10e3,   100) );
-	lstTests.push_back( TestData("graph(2d pdf): insertEdge x 10e3",graphs_test_populate<CPosePDFGaussianInf>, 10e3,   100) );
-	lstTests.push_back( TestData("graph(2d): insertEdgeAtEnd x 10e3",graphs_test_populate_at_end<CPose2D>, 10e3,   100) );
-	lstTests.push_back( TestData("graph(2d pdf): insertEdgeAtEnd x 10e3",graphs_test_populate_at_end<CPosePDFGaussianInf>, 10e3,   100) );
+	lstTests.push_back( TestData("graph(2d): insertEdge x 1e3",graphs_test_populate<CPose2D>, 1e3,   100) );
+	lstTests.push_back( TestData("graph(2d): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPose2D>, 1e3,   100) );
+	lstTests.push_back( TestData("graph(2d pdf): insertEdge x 1e3",graphs_test_populate<CPosePDFGaussianInf>, 1e3,   100) );
+	lstTests.push_back( TestData("graph(2d pdf): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPosePDFGaussianInf>, 1e3,   100) );
 
-	lstTests.push_back( TestData("graph(2d): insertEdge x 10e4",graphs_test_populate<CPose2D>, 10e4,   25) );
-	lstTests.push_back( TestData("graph(2d pdf): insertEdge x 10e4",graphs_test_populate<CPosePDFGaussianInf>, 10e4,   25) );
-	lstTests.push_back( TestData("graph(2d): insertEdgeAtEnd x 10e4",graphs_test_populate_at_end<CPose2D>, 10e4,   25) );
-	lstTests.push_back( TestData("graph(2d pdf): insertEdgeAtEnd x 10e4",graphs_test_populate_at_end<CPosePDFGaussianInf>, 10e4,   25) );
+	lstTests.push_back( TestData("graph(2d): insertEdge x 1e4",graphs_test_populate<CPose2D>, 1e4,   25) );
+	lstTests.push_back( TestData("graph(2d): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPose2D>, 1e4,   25) );
+	lstTests.push_back( TestData("graph(2d pdf): insertEdge x 1e4",graphs_test_populate<CPosePDFGaussianInf>, 1e4,   25) );
+	lstTests.push_back( TestData("graph(2d pdf): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPosePDFGaussianInf>, 1e4,   25) );
 
-	lstTests.push_back( TestData("graph(3d): insertEdge x 10e3",graphs_test_populate<CPose3D>, 10e3,   100) );
-	lstTests.push_back( TestData("graph(3d pdf): insertEdge x 10e3",graphs_test_populate<CPose3DPDFGaussianInf>, 10e3,   100) );
-	lstTests.push_back( TestData("graph(3d): insertEdgeAtEnd x 10e3",graphs_test_populate_at_end<CPose3D>, 10e3,   100) );
-	lstTests.push_back( TestData("graph(3d pdf): insertEdgeAtEnd x 10e3",graphs_test_populate_at_end<CPose3DPDFGaussianInf>, 10e3,   100) );
+	lstTests.push_back( TestData("graph(3d): insertEdge x 1e3",graphs_test_populate<CPose3D>, 1e3,   100) );
+	lstTests.push_back( TestData("graph(3d): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPose3D>, 1e3,   100) );
+	lstTests.push_back( TestData("graph(3d pdf): insertEdge x 1e3",graphs_test_populate<CPose3DPDFGaussianInf>, 1e3,   100) );
+	lstTests.push_back( TestData("graph(3d pdf): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPose3DPDFGaussianInf>, 1e3,   100) );
 
-	lstTests.push_back( TestData("graph(3d): insertEdge x 10e4",graphs_test_populate<CPose3D>, 10e4,   25) );
-	lstTests.push_back( TestData("graph(3d pdf): insertEdge x 10e4",graphs_test_populate<CPose3DPDFGaussianInf>, 10e4,   25) );
-	lstTests.push_back( TestData("graph(3d): insertEdgeAtEnd x 10e4",graphs_test_populate_at_end<CPose3D>, 10e4,   25) );
-	lstTests.push_back( TestData("graph(3d pdf): insertEdgeAtEnd x 10e4",graphs_test_populate_at_end<CPose3DPDFGaussianInf>, 10e4,   25) );
+	lstTests.push_back( TestData("graph(3d): insertEdge x 1e4",graphs_test_populate<CPose3D>, 1e4,   25) );
+	lstTests.push_back( TestData("graph(3d): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPose3D>, 1e4,   25) );
+	lstTests.push_back( TestData("graph(3d pdf): insertEdge x 1e4",graphs_test_populate<CPose3DPDFGaussianInf>, 1e4,   25) );
+	lstTests.push_back( TestData("graph(3d pdf): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPose3DPDFGaussianInf>, 1e4,   25) );
 
 
-//	lstTests.push_back( TestData("graph(3d,map): dijkstra 10e2 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 10e2, 50) );
-//	lstTests.push_back( TestData("graph(3d,map): dijkstra 10e3 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 10e3, 50) );
-//	lstTests.push_back( TestData("graph(3d,map): dijkstra 10e4 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 10e4, 5) );
-//	  lstTests.push_back( TestData("graph(3d,vec): dijkstra 10e2 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 10e2, 50) );
-//	lstTests.push_back( TestData("graph(3d,vec): dijkstra 10e3 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 10e3, 50) );
-//	lstTests.push_back( TestData("graph(3d,vec): dijkstra 10e4 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 10e4, 5) );
+	lstTests.push_back( TestData("graph(3d,map): dijkstra 1e2 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 1e2, 50) );
+	lstTests.push_back( TestData("graph(3d,map): dijkstra 1e3 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 1e3, 50) );
+	lstTests.push_back( TestData("graph(3d,map): dijkstra 1e4 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 1e4, 5) );
+//	  lstTests.push_back( TestData("graph(3d,vec): dijkstra 1e2 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 1e2, 50) );
+//	lstTests.push_back( TestData("graph(3d,vec): dijkstra 1e3 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 1e3, 50) );
+//	lstTests.push_back( TestData("graph(3d,vec): dijkstra 1e4 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 1e4, 5) );
 }
