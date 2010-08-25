@@ -28,6 +28,8 @@
 
 #include <mrpt/vision.h>  // Precompiled headers
 #include <mrpt/vision/bundle_adjustment.h>
+#include <mrpt/utils/CTimeLogger.h>
+
 #include "ba_internals.h"
 
 using namespace std;
@@ -60,6 +62,7 @@ double mrpt::vision::bundle_adj_full(
 {
     MRPT_START
 
+
 	// Generic BA problem dimension numbers:
     static const unsigned int FrameDof = 6; // Poses: x y z yaw pitch roll
     static const unsigned int PointDof = 3; // Landmarks: x y z
@@ -84,6 +87,10 @@ double mrpt::vision::bundle_adj_full(
 	const size_t num_fix_frames   = extra_params.getWithDefaultVal("num_fix_frames",1);
     const size_t num_fix_points   = extra_params.getWithDefaultVal("num_fix_points",0);
 
+	const bool   enable_profiler  = 0!=extra_params.getWithDefaultVal("profiler",0);
+
+	mrpt::utils::CTimeLogger  profiler(enable_profiler);
+
 	// Input data sizes:
     const size_t num_points = landmark_points.size();
     const size_t num_frames = frame_poses.size();
@@ -96,8 +103,10 @@ double mrpt::vision::bundle_adj_full(
 
     // **CAUTION**: This BA implementation assumes "frame_poses" as *INVERSE* camera poses
     // Undo for the user:
-	for (TFramePosesVec::iterator it=frame_poses.begin();it!=frame_poses.end();++it)
-		*it = TPose3D( -CPose3D(*it) );
+	profiler.enter("inverse_all_poses");
+	for (size_t i=0;i<num_frames;i++)
+		frame_poses[i].inverse();
+	profiler.leave("inverse_all_poses");
 
 
     MyJacDataVec     jac_data_vec(num_obs);
@@ -105,22 +114,24 @@ double mrpt::vision::bundle_adj_full(
 
 
 	// prepare structure of sparse Jacobians:
-    MyJacDataVec::iterator it_jac = jac_data_vec.begin();
-    for (TSequenceFeatureObservations::const_iterator it_obs=observations.begin();it_obs!=observations.end();++it_obs)
+    for (size_t i=0;i<num_obs;i++)
     {
-		it_jac->frame_id = it_obs->id_frame;
-		it_jac->point_id = it_obs->id_feature;
-		++it_jac;
+		jac_data_vec[i].frame_id = observations[i].id_frame;
+		jac_data_vec[i].point_id = observations[i].id_feature;
     }
 
 	// Compute sparse Jacobians:
+	profiler.enter("compute_Jacobians");
     ba_compute_Jacobians(frame_poses, landmark_points, camera_params, jac_data_vec, num_fix_frames, num_fix_points);
+	profiler.leave("compute_Jacobians");
 
 
+	profiler.enter("reprojectionResiduals");
     double res = mrpt::vision::reprojectionResiduals(
 		observations, camera_params, frame_poses, landmark_points,
 		residual_vec,
 		use_robust_kernel, true /* inverse poses */ );
+	profiler.leave("reprojectionResiduals");
 
 	MRPT_CHECK_NORMAL_NUMBER(res)
 
@@ -140,7 +151,9 @@ double mrpt::vision::bundle_adj_full(
     vector<Matrix_PxP>   V         (num_free_points);
     vector<Array_P>      eps_point (num_free_points, arrP_zeros);
 
+	profiler.enter("calcUVeps");
 	ba_calcUVeps(observations,residual_vec,jac_data_vec, U,eps_frame,V,eps_point, num_fix_frames, num_fix_points );
+	profiler.leave("calcUVeps");
 
     double nu = 2;
     double eps = 1e-16; // 0.000000000000001;
@@ -266,6 +279,7 @@ double mrpt::vision::bundle_adj_full(
 				}
 			}
 
+			profiler.enter("sS:fill");
 			CSparseMatrixTemplate<double> sparseS( len_free_frames, len_free_frames);
 
 			for (map<pair<TCameraPoseID,TLandmarkID>,Matrix_FxF>::const_iterator it= YW_map.begin(); it!=YW_map.end(); ++it)
@@ -275,15 +289,24 @@ double mrpt::vision::bundle_adj_full(
 
 				sparseS.insertMatrix(ids.first*FrameDof,ids.second*FrameDof, YW);
 			}
+			profiler.leave("sS:fill");
 
 
+			profiler.enter("sS:construct");
 			CSparseMatrix sS(sparseS);
+			profiler.leave("sS:construct");
+
 			try
 			{
+				profiler.enter("sS:chol");
 				CSparseMatrix::CholeskyDecomp  Ch(sS);
+				profiler.leave("sS:chol");
+
+				profiler.enter("sS:backsub");
 				vector_double  bck_res;
 				Ch.backsub(e,bck_res);
 				::memcpy(&delta[0],&bck_res[0],bck_res.size()*sizeof(bck_res[0]));	// delta.slice(0,...) = Ch.backsub(e);
+				profiler.leave("sS:backsub");
 			}
 			catch (CExceptionNotDefPos &)
 			{
@@ -295,6 +318,8 @@ double mrpt::vision::bundle_adj_full(
 			}
 
             //VERBOSE_COUT << "delta: " << delta << endl;
+
+			profiler.enter("g");
 
             vector_double g(len_free_frames+len_free_points);
             ::memcpy(&g[0],&e[0],len_free_frames*sizeof(g[0])); //g.slice(0,FrameDof*(num_frames-num_fix_frames)) = e;
@@ -323,28 +348,35 @@ double mrpt::vision::bundle_adj_full(
                 ::memcpy(&delta[len_free_frames + i*PointDof], &Vi_tmp[0], sizeof(Vi_tmp[0])*PointDof ); // delta.slice((num_frames-num_fix_frames)*FrameDof + i*PointDof, PointDof) = V_inv[i] * tmp;
                 ::memcpy(&g[len_free_frames + i*PointDof], &eps_point[i][0], sizeof(eps_point[0][0])*PointDof ); // g.slice(, PointDof) = eps_point[i]; // .slice(PointDof*i,PointDof);
             }
+			profiler.leave("g");
 
 
 			// Vars for temptative new estimates:
 			TFramePosesVec        new_frame_poses;
 			TLandmarkLocationsVec new_landmark_points;
 
-            ba_addToFrames(
+			profiler.enter("ba_addToFrames");
+			ba_addToFrames(
 				frame_poses,
 				delta, 0,len_free_frames,
 				new_frame_poses, num_fix_frames, num_fix_points );
+			profiler.leave("ba_addToFrames");
 
+			profiler.enter("ba_addToPoints");
             ba_addToPoints(
 				landmark_points,
 				delta, len_free_frames, len_free_points,
 				new_landmark_points, num_fix_frames, num_fix_points );
+			profiler.leave("ba_addToPoints");
 
 
+			profiler.enter("reprojectionResiduals");
             double res_new = mrpt::vision::reprojectionResiduals(
 				observations, camera_params,
 				new_frame_poses, new_landmark_points,
 				residual_vec,
 				use_robust_kernel, true /* inverse poses */ );
+			profiler.leave("reprojectionResiduals");
 
 			MRPT_CHECK_NORMAL_NUMBER(res_new)
 
@@ -361,7 +393,9 @@ double mrpt::vision::bundle_adj_full(
 
                 res = res_new;
 
+				profiler.enter("compute_Jacobians");
 				ba_compute_Jacobians(frame_poses, landmark_points, camera_params, jac_data_vec, num_fix_frames, num_fix_points);
+				profiler.leave("compute_Jacobians");
 
 
 				// Reset to zeros:
@@ -370,7 +404,9 @@ double mrpt::vision::bundle_adj_full(
                 eps_frame.assign(num_free_frames, arrF_zeros);
                 eps_point.assign(num_free_points, arrP_zeros);
 
-                ba_calcUVeps(observations,residual_vec,jac_data_vec,U,eps_frame,V,eps_point, num_fix_frames, num_fix_points );
+				profiler.enter("calcUVeps");
+				ba_calcUVeps(observations,residual_vec,jac_data_vec,U,eps_frame,V,eps_point, num_fix_frames, num_fix_points );
+				profiler.leave("calcUVeps");
 
                 stop = norm_inf(g)<=eps;
                 mu *= max(1.0/3.0, 1-std::pow(2*rho-1,3.0) );
@@ -396,9 +432,10 @@ double mrpt::vision::bundle_adj_full(
 
     // **CAUTION**: This BA implementation assumes "frame_poses" as *INVERSE* camera poses
     // Undo for the user:
-	for (TFramePosesVec::iterator it=frame_poses.begin();it!=frame_poses.end();++it)
-		*it = TPose3D( -CPose3D(*it) );
-
+	profiler.enter("inverse_all_poses");
+	for (size_t i=0;i<num_frames;i++)
+		frame_poses[i].inverse();
+	profiler.leave("inverse_all_poses");
 
     return res;
 

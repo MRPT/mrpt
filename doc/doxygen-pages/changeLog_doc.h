@@ -77,7 +77,9 @@
 			- mrpt::utils::TCamera now has setter methods.
 			- New method: mrpt::math::CSparseMatrixTemplate::insertMatrix()
 			- New method: mrpt::math::CArrayNumeric::slice()
-			- New SO3 Lie algebra methods: mrpt::poses::CPose3D::exp(), mrpt::poses::CPose3D::ln(), ...
+			- mrpt::poses::CPose3D:
+				- Much faster operations, as long as yaw(), pitch() & roll() are not explicitly called. These 3 angles are now not computed until really requested by the user, then cached.
+				- New SE3 Lie algebra methods: mrpt::poses::CPose3D::exp(), mrpt::poses::CPose3D::ln(), ...
 		- New functions:
 			- mrpt::math::rodrigues_so3_exp
 			- mrpt::vision::pinhole::undistort_point
@@ -91,6 +93,7 @@
 		- New examples:
 			- phidgetProximitySensor
 			- bundle_adj_full_demo
+			- se3
 		- BUG FIXES:
 			- mrpt::gui::CDisplayWindowPlots did ignore the construction-time width x height.
 			- Fixed bug in mrpt::utils::CImage::KLT_response: due to wrong signed numbers usage, responses were high in textureless parts of images.

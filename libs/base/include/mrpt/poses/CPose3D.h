@@ -179,11 +179,15 @@ namespace poses
 		DEFINE_SERIALIZABLE( CPose3D )
 
 	protected:
-		double	m_yaw, m_pitch, m_roll;	//!< These variables are updated every time that the object homogeneous matrix is modified (construction, loading from values, pose composition, etc )
+		mutable bool 	m_ypr_uptodate;			//!< Whether yaw/pitch/roll members are up-to-date since the last homogeneous matrix update.
+		mutable double	m_yaw, m_pitch, m_roll;	//!< These variables are updated every time that the object homogeneous matrix is modified (construction, loading from values, pose composition, etc )
 		mutable CMatrixDouble44		m_HM;  //!< The homogeneous matrix
 
 		/** Rebuild the homog matrix from x,y,z and the angles. */
 		void  rebuildHomogeneousMatrix();
+
+		/** Updates Yaw/pitch/roll members from the HM  */
+		inline void updateYawPitchRoll() const { if (!m_ypr_uptodate) { m_ypr_uptodate=true; getYawPitchRoll( m_yaw, m_pitch, m_roll ); } }
 
 	 public:
 		 /** Default constructor, with all the coordinates to zero. */
@@ -225,16 +229,33 @@ namespace poses
 		 CPose3D(const CPose3DQuat &);
 
 		 /** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
-		 inline CPose3D(TConstructorFlags_Poses constructor_dummy_param) : m_HM(UNINITIALIZED_MATRIX)  {  m_is3D = true; }
+		 inline CPose3D(TConstructorFlags_Poses constructor_dummy_param) : m_ypr_uptodate(false), m_HM(UNINITIALIZED_MATRIX)  {  m_is3D = true; }
 
 		 /** Returns the corresponding 4x4 homogeneous transformation matrix for the point(translation) or pose (translation+orientation).
-		   * \sa getInverseHomogeneousMatrix
+		   * \sa getInverseHomogeneousMatrix, getRotationMatrix
 		   */
 		 void  getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const {  out_HM = m_HM; }
 
+		 /** Get the 3x3 rotation matrix, the upper-left part of the 4x4 homogeneous matrix.
+		   * \sa getHomogeneousMatrix
+		   */
+		 inline void getRotationMatrix( mrpt::math::CMatrixDouble33 & ROT ) const
+		 {	// Very fast extract of submatrix:
+			for (int c=0;c<3;c++) {
+				ROT.m_Val[c]=m_HM.m_Val[c];
+				ROT.m_Val[3+c]=m_HM.m_Val[4+c];
+				ROT.m_Val[6+c]=m_HM.m_Val[8+c];
+			}
+		 }
+
 		/** The operator \f$ a \oplus b \f$ is the pose compounding operator.
 		   */
-		 CPose3D  operator + (const CPose3D& b) const;
+		 inline CPose3D  operator + (const CPose3D& b) const
+		 {
+		   CPose3D   ret(UNINITIALIZED_POSE);
+		   ret.composeFrom(*this,b);
+		   return ret;
+		 }
 
 		/** The operator \f$ a \oplus b \f$ is the pose compounding operator.
 		   */
@@ -320,6 +341,8 @@ namespace poses
 			return ret;
 		}
 
+		/** Convert this pose into its inverse, saving the result in itself. */
+		void inverse();
 
 		// These three must be declared here because the next three virtual ones hide the base methods.
 		inline double x() const { return m_x; }  //!< Get the X coordinate
@@ -357,7 +380,7 @@ namespace poses
 			// The 3x3 rotation part:
 			mrpt::math::CQuaternion<typename VECTORLIKE::value_type> q( v[index_offset+3],v[index_offset+4],v[index_offset+5],v[index_offset+6] );
 			q.rotationMatrixNoResize(m_HM);
-			getYawPitchRoll( m_yaw, m_pitch, m_roll );
+			updateYawPitchRoll();
 			m_HM.get_unsafe(0,3)=m_x = v[index_offset+0];
 			m_HM.get_unsafe(1,3)=m_y = v[index_offset+1];
 			m_HM.get_unsafe(2,3)=m_z = v[index_offset+2];
@@ -379,11 +402,11 @@ namespace poses
 		/** Returns the three angles (yaw, pitch, roll), in radians, from the homogeneous matrix.
 		  * \sa setFromValues, yaw, pitch, roll
 		  */
-		void  getYawPitchRoll( double &yaw, double &pitch, double &roll );
+		void  getYawPitchRoll( double &yaw, double &pitch, double &roll ) const;
 
-		inline double yaw() const { return m_yaw; }  //!< Get the YAW angle (in radians)  \sa setFromValues
-		inline double pitch() const { return m_pitch; }  //!< Get the PITCH angle (in radians) \sa setFromValues
-		inline double roll() const { return m_roll; }  //!< Get the ROLL angle (in radians) \sa setFromValues
+		inline double yaw() const { updateYawPitchRoll(); return m_yaw; }  //!< Get the YAW angle (in radians)  \sa setFromValues
+		inline double pitch() const { updateYawPitchRoll(); return m_pitch; }  //!< Get the PITCH angle (in radians) \sa setFromValues
+		inline double roll() const { updateYawPitchRoll(); return m_roll; }  //!< Get the ROLL angle (in radians) \sa setFromValues
 
 		/** The euclidean distance between two poses taken as two 6-length vectors (angles in radians).
 		  */
@@ -406,7 +429,7 @@ namespace poses
 		 /** Returns a human-readable textual representation of the object (eg: "[x y z yaw pitch roll]", angles in degrees.)
 		   * \sa fromString
 		   */
-		void asString(std::string &s) const { s = mrpt::format("[%f %f %f %f %f %f]",m_x,m_y,m_z,RAD2DEG(m_yaw),RAD2DEG(m_pitch),RAD2DEG(m_roll)); }
+		void asString(std::string &s) const { updateYawPitchRoll(); s = mrpt::format("[%f %f %f %f %f %f]",m_x,m_y,m_z,RAD2DEG(m_yaw),RAD2DEG(m_pitch),RAD2DEG(m_roll)); }
 		inline std::string asString() const { std::string s; asString(s); return s; }
 
 		 /** Set the current object value from a string generated by 'asString' (eg: "[0.02 1.04 -0.8]" )
@@ -426,6 +449,7 @@ namespace poses
 
 		inline const double &operator[](unsigned int i) const
 		{
+			updateYawPitchRoll();
 			switch(i)
 			{
 				case 0:return m_x;
@@ -451,11 +475,11 @@ namespace poses
 
 		/** Exponentiate a Vector in the SE3 Lie Algebra to generate a new CPose3D (static method).
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
-		static CPose3D exp(const mrpt::math::CArrayDouble<6> & vect);
+		static CPose3D exp(const mrpt::math::CArrayNumeric<double,6> & vect);
 
 		/** Exponentiate a vector in the Lie algebra to generate a new SO3 (a 3x3 rotation matrix).
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
-		static CMatrixDouble33 exp_rotation(const mrpt::math::CArrayDouble<3> & vect);
+		static CMatrixDouble33 exp_rotation(const mrpt::math::CArrayNumeric<double,3> & vect);
 
 
 		/** Take the logarithm of the 3x4 matrix defined by this pose, generating the corresponding vector in the SE3 Lie Algebra.

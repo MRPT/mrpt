@@ -154,7 +154,7 @@ void register_tests_graph()
 //	lstTests.push_back( TestData("graph(3d,map): dijkstra 10e2 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 10e2, 50) );
 //	lstTests.push_back( TestData("graph(3d,map): dijkstra 10e3 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 10e3, 50) );
 //	lstTests.push_back( TestData("graph(3d,map): dijkstra 10e4 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 10e4, 5) );
-	lstTests.push_back( TestData("graph(3d,vec): dijkstra 10e2 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 10e2, 50) );
+//	  lstTests.push_back( TestData("graph(3d,vec): dijkstra 10e2 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 10e2, 50) );
 //	lstTests.push_back( TestData("graph(3d,vec): dijkstra 10e3 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 10e3, 50) );
 //	lstTests.push_back( TestData("graph(3d,vec): dijkstra 10e4 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 10e4, 5) );
 }

@@ -47,8 +47,8 @@ namespace mrpt
 		typedef	uint64_t TLandmarkID;   //!< Unique IDs for landmarks
 		typedef uint64_t TCameraPoseID; //!< Unique IDs for camera frames (poses)
 
-		typedef std::map<TCameraPoseID,TPose3D>  TFramePosesMap;        //!< A list of camera frames (6D poses) indexed by unique IDs.
-		typedef std::vector<TPose3D>             TFramePosesVec;        //!< A list of camera frames (6D poses), which assumes indexes are unique, consecutive IDs.
+		typedef std::map<TCameraPoseID,CPose3D>  TFramePosesMap;        //!< A list of camera frames (6D poses) indexed by unique IDs.
+		typedef std::vector<CPose3D>             TFramePosesVec;        //!< A list of camera frames (6D poses), which assumes indexes are unique, consecutive IDs.
 
 		typedef std::map<TLandmarkID,TPoint3D>   TLandmarkLocationsMap; //!< A list of landmarks (3D points) indexed by unique IDs.
 		typedef std::vector<TPoint3D>            TLandmarkLocationsVec; //!< A list of landmarks (3D points), which assumes indexes are unique, consecutive IDs.

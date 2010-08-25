@@ -63,7 +63,7 @@ void mrpt::vision::ba_initial_estimate(
 		const TFeatureID     feat_ID  = it->id_feature;
 		const TCameraPoseID  frame_ID = it->id_frame;
 
-		frame_poses[frame_ID]    = TPose3D(0,0,0,0,0,0);
+		frame_poses[frame_ID]    = CPose3D(0,0,0,0,0,0);
 		landmark_points[feat_ID] = TPoint3D(0,0,1);
 	}
 	MRPT_END
@@ -99,7 +99,7 @@ void mrpt::vision::ba_initial_estimate(
 	}
 
 	// Insert N copies of the same values:
-	frame_poses.assign(max_fr_id+1, TPose3D(0,0,0,0,0,0) );
+	frame_poses.assign(max_fr_id+1, CPose3D(0,0,0,0,0,0) );
 	landmark_points.assign(max_pt_id+1, TPoint3D(0,0,1) );
 
 	MRPT_END
@@ -111,13 +111,13 @@ void mrpt::vision::ba_initial_estimate(
   */
 void frameJac(
 	const TCamera  & camera_params,
-	const TPose3D  & cam_pose,
+	const CPose3D  & cam_pose,
 	const TPoint3D & landmark_global,
 	CMatrixFixedNumeric<double,2,6> & out_J)
 {
 	// JL says: This BA implementation assumes that we're estimating the **INVERSE** camera poses
 	double x,y,z; // wrt cam (local coords)
-	CPose3D(cam_pose).composePoint(
+	cam_pose.composePoint(
 		landmark_global.x,landmark_global.y,landmark_global.z,
 		x,y,z);
 
@@ -143,14 +143,13 @@ void frameJac(
 */
 void pointJac(
 	const TCamera  & camera_params,
-	const TPose3D  & cam_pose,
+	const CPose3D  & cam_pose,
 	const TPoint3D & landmark_global,
 	CMatrixFixedNumeric<double,2,3> & out_J)
 {
 	// JL says: This BA implementation assumes that we're estimating the **INVERSE** camera poses
 	double x,y,z; // wrt cam (local coords)
-	const CPose3D p(cam_pose);
-	p.composePoint(
+	cam_pose.composePoint(
 		landmark_global.x,landmark_global.y,landmark_global.z,
 		x,y,z);
 
@@ -167,12 +166,16 @@ void pointJac(
 	J_intrinsic(1,1) = camera_params.intrinsicParams(1,1);
 
 	CMatrixDouble33 ROT(UNINITIALIZED_MATRIX);
-	p.getHomogeneousMatrixVal().extractMatrix(0,0,ROT);
+	cam_pose.getRotationMatrix(ROT);
+	//p.getHomogeneousMatrixVal().extractMatrix(0,0,ROT);
 
-	CMatrixDouble23 J_x(UNINITIALIZED_MATRIX);
-	J_x.multiply_AB(tmp,ROT);  // J_x = tmp * T.get_rotation();
+//	CMatrixDouble23 J_x(UNINITIALIZED_MATRIX);
+//	J_x.multiply_AB(tmp,ROT);  // J_x = tmp * T.get_rotation();
 
-	out_J.multiply_AB(J_intrinsic, J_x); // return cam_pars.jacobian() * J_x;
+	// RET: cam_pars.jacobian() * Jx
+	//    = cam_pars.jacobian() * tmp * T.get_rotation();
+	//out_J.multiply_AB(J_intrinsic, J_x);
+	out_J.multiply_ABC(J_intrinsic,tmp,ROT);
 }
 
 /* -------------------------------------------------------------------------------------
@@ -192,7 +195,9 @@ void mrpt::vision::ba_compute_Jacobians(
 	// num_fix_frames & num_fix_points: Are relative to the order in frame_poses & landmark_points
 	ASSERT_(!frame_poses.empty() && !landmark_points.empty())
 
-	for (size_t i=0;i<jac_data_vec.size();i++)
+	const size_t N = jac_data_vec.size();
+
+	for (size_t i=0;i<N;i++)
 	{
 		JacData<6,3,2> &D = jac_data_vec[i];
 
@@ -202,18 +207,15 @@ void mrpt::vision::ba_compute_Jacobians(
 		ASSERTDEB_(i_f<frame_poses.size())
 		ASSERTDEB_(i_p<landmark_points.size())
 
-        const TFramePosesVec::value_type        & frame = frame_poses[i_f];
-        const TLandmarkLocationsVec::value_type & point = landmark_points[i_p];
-
 		if (i_f>=num_fix_frames)
 		{
-			frameJac(camera_params, frame, point,D.J_frame );
+			frameJac(camera_params, frame_poses[i_f], landmark_points[i_p], D.J_frame );
 			D.J_frame_valid = true;
 		}
 
 		if (i_p>=num_fix_points)
 		{
-			pointJac(camera_params, frame, point,D.J_point);
+			pointJac(camera_params, frame_poses[i_f], landmark_points[i_p], D.J_point);
 			D.J_point_valid = true;
 		}
 	}
@@ -420,13 +422,14 @@ void mrpt::vision::ba_addToFrames(
 
 	for (size_t i=num_fix_frames;i<frame_poses.size();i++)
 	{
-		const TPose3D &old_pose = frame_poses[i];
-		TPose3D       &new_pose = new_frame_poses[i];
+		const CPose3D &old_pose = frame_poses[i];
+		CPose3D       &new_pose = new_frame_poses[i];
 
 		// Use the Lie Algebra methods for the increment:
 		const CArrayDouble<6> incr(delta_val);
 		const CPose3D         incrPose = CPose3D::exp(incr);
-		new_pose = TPose3D( incrPose+CPose3D(old_pose) );
+		//new_pose = incrPose + old_pose
+		new_pose.composeFrom(incrPose,old_pose);
 
 		// Move to the next entry in delta:
 		delta_val+=6;

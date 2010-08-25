@@ -155,7 +155,7 @@ double poses_test_invcompose3Dpoint2(int a1, int a2)
 
 double poses_test_compose2D(int a1, int a2)
 {
-	const long N = 100000;
+	const long N = 500000;
 	CTicTac	 tictac;
 
 	CPose2D a(1.0,2.0,DEG2RAD(10));
@@ -173,7 +173,7 @@ double poses_test_compose2D(int a1, int a2)
 
 double poses_test_compose2D2(int a1, int a2)
 {
-	const long N = 100000;
+	const long N = 500000;
 	CTicTac	 tictac;
 
 	CPose2D a(1.0,2.0,DEG2RAD(10));
@@ -376,7 +376,7 @@ double poses_test_convert_ypr_quat_pdf(int a1, int a2)
 {
 	if (a1>=0)
 		mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION = a1!=0;
-	const long N = 10000; 
+	const long N = 10000;
 
 	CPose3D a_mean(1.0,2.0,3.0,DEG2RAD(10),DEG2RAD(50),DEG2RAD(-30));
 	CMatrixDouble66 a_cov;
@@ -411,7 +411,7 @@ double poses_test_convert_quat_ypr_pdf(int a1, int a2)
 	if (a1>=0)
 		mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION = a1!=0;
 
-	const long N = 2000; 
+	const long N = 2000;
 
 	CPose3D a_mean(1.0,2.0,3.0,DEG2RAD(10),DEG2RAD(50),DEG2RAD(-30));
 	CMatrixDouble66 a_cov;

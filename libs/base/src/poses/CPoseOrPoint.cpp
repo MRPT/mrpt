@@ -55,7 +55,7 @@ double  CPoseOrPoint::norm() const
   ---------------------------------------------------------------*/
 void CPoseOrPoint::getInverseHomogeneousMatrix(CMatrixDouble44 &out_HM)const
 {
-	CMatrixDouble44  ptrHM(UNINITIALIZED_MATRIX);
-	getHomogeneousMatrix(ptrHM);
-	math::homogeneousMatrixInverse( ptrHM, out_HM );
+	// Get current HM & inverse in-place:
+	getHomogeneousMatrix(out_HM);
+	math::homogeneousMatrixInverse(out_HM);
 }

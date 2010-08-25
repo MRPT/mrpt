@@ -733,6 +733,25 @@ namespace mrpt
 			MRPT_END;
 		}
 
+		//! \overload
+		template <class MATRIXLIKE>
+		inline void homogeneousMatrixInverse(MATRIXLIKE &M)
+		{
+			ASSERTDEB_( M.IsSquare() && size(M,1)==4);
+			// translation:
+			const double tx = -M(0,3);
+			const double ty = -M(1,3);
+			const double tz = -M(2,3);
+			M(0,3) = tx*M(0,0)+ty*M(1,0)+tz*M(2,0);
+			M(1,3) = tx*M(0,1)+ty*M(1,1)+tz*M(2,1);
+			M(2,3) = tx*M(0,2)+ty*M(1,2)+tz*M(2,2);
+			// 3x3 rotation part:
+			std::swap( M(1,0),M(0,1) );
+			std::swap( M(2,0),M(0,2) );
+			std::swap( M(1,2),M(2,1) );
+		}
+
+
 		/** Estimate the Jacobian of a multi-dimensional function around a point "x", using finite differences of a given size in each input dimension.
 		  *  The template argument USERPARAM is for the data can be passed to the functor.
 		  *   If it is not required, set to "int" or any other basic type.

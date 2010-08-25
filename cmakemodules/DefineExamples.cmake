@@ -47,6 +47,7 @@ IF(BUILD_EXAMPLES)
 		fileSystemWatcher
 		geometry3D
 		poses
+		se3
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

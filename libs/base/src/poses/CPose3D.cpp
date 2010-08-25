@@ -55,70 +55,90 @@ IMPLEMENTS_SERIALIZABLE(CPose3D, CPose,mrpt::poses)
 	Constructors
   ---------------------------------------------------------------*/
 CPose3D::CPose3D()
-	: m_yaw(),m_pitch(),m_roll()
+	: m_ypr_uptodate(true), m_yaw(0),m_pitch(0),m_roll(0)
 {
 	m_is3D = true;
-	setFromValues(0,0,0,0,0,0);
+	m_x = 0;
+	m_y = 0;
+	m_z = 0;
+	m_HM.unit();
 }
 
 CPose3D::CPose3D(const double x,const double y,const double z, const double yaw, const double pitch, const double roll)
-	: m_yaw(),m_pitch(),m_roll()
+	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll()
 {
 	m_is3D = true;
 	setFromValues(x,y,z,yaw,pitch,roll);
 }
 
 CPose3D::CPose3D( const CPose3D &o)
-	: m_yaw(),m_pitch(),m_roll()
+	: m_ypr_uptodate(o.m_ypr_uptodate), m_yaw(o.m_yaw),m_pitch(o.m_pitch),m_roll(o.m_roll), m_HM(o.m_HM)
 {
 	m_is3D = true;
-	setFromValues(o.m_x,o.m_y,o.m_z,o.m_yaw,o.m_pitch,o.m_roll);
+	//o.updateYawPitchRoll();
+	//setFromValues(o.m_x,o.m_y,o.m_z,o.m_yaw,o.m_pitch,o.m_roll);
+}
+
+CPose3D::CPose3D(const mrpt::math::TPose3D &o)
+	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll()
+{
+	m_is3D = true;
+	setFromValues(o.x,o.y,o.z,o.yaw,o.pitch,o.roll);
 }
 
 CPose3D & CPose3D::operator =( const CPose3D &o)
 {
-	setFromValues(o.m_x,o.m_y,o.m_z,o.m_yaw,o.m_pitch,o.m_roll);
+	m_x = o.m_x;
+	m_y = o.m_y;
+	m_z = o.m_z;
+	m_yaw = o.m_yaw;
+	m_pitch = o.m_pitch;
+	m_roll = o.m_roll;
+	m_HM   = o.m_HM;
+	o.updateYawPitchRoll();
+	m_ypr_uptodate = o.m_ypr_uptodate;
+//	setFromValues(o.m_x,o.m_y,o.m_z,o.m_yaw,o.m_pitch,o.m_roll);
 	return *this;
 }
 
 CPose3D::CPose3D(const CPose2D &p)
-	: m_yaw(),m_pitch(),m_roll()
+	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll()
 {
 	m_is3D = true;
 	setFromValues(p.x(),p.y(),0, p.phi());
 }
 
 CPose3D::CPose3D(const CPoint3D &p)
-	: m_yaw(),m_pitch(),m_roll()
+	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll()
 {
 	m_is3D = true;
 	setFromValues(p.x(),p.y(),p.z());
 }
 
 CPose3D::CPose3D(const math::CMatrixDouble & m)
-	: m_yaw(),m_pitch(),m_roll(),m_HM( CMatrixDouble44(m) )
+	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll(),m_HM( CMatrixDouble44(m) )
 {
 	m_is3D = true;
 	m_x = m_HM.get_unsafe(0,3);
 	m_y = m_HM.get_unsafe(1,3);
 	m_z = m_HM.get_unsafe(2,3);
-	getYawPitchRoll( m_yaw, m_pitch, m_roll );
+	//updateYawPitchRoll();
 }
 
 
 CPose3D::CPose3D(const math::CMatrixDouble44 &m)
-	: m_yaw(),m_pitch(),m_roll(),m_HM(m)
+	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll(),m_HM(m)
 {
 	m_is3D = true;
 	m_x = m_HM.get_unsafe(0,3);
 	m_y = m_HM.get_unsafe(1,3);
 	m_z = m_HM.get_unsafe(2,3);
-	getYawPitchRoll( m_yaw, m_pitch, m_roll );
+	//updateYawPitchRoll();
 }
 
 /** Constructor from a quaternion (which only represents the 3D rotation part) and a 3D displacement. */
 CPose3D::CPose3D(const mrpt::math::CQuaternionDouble &q, const double _x, const double _y, const double _z )
-	: m_yaw(),m_pitch(),m_roll(),m_HM( UNINITIALIZED_MATRIX )
+	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll(),m_HM( UNINITIALIZED_MATRIX )
 {
 	m_is3D = true;
 
@@ -129,7 +149,7 @@ CPose3D::CPose3D(const mrpt::math::CQuaternionDouble &q, const double _x, const 
 
 /** Constructor from a quaternion (which only represents the 3D rotation part) and a 3D displacement. */
 CPose3D::CPose3D(const CPose3DQuat &p )
-	: m_yaw(),m_pitch(),m_roll(),m_HM( UNINITIALIZED_MATRIX )
+	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll(),m_HM( UNINITIALIZED_MATRIX )
 {
 	m_is3D = true;
 
@@ -175,7 +195,7 @@ void  CPose3D::readFromStream(CStream &in,int version)
 			m_x = m_HM.get_unsafe(0,3);
 			m_y = m_HM.get_unsafe(1,3);
 			m_z = m_HM.get_unsafe(2,3);
-			getYawPitchRoll( m_yaw, m_pitch, m_roll );
+			updateYawPitchRoll();
 		} break;
 	case 1:
 		{
@@ -185,7 +205,7 @@ void  CPose3D::readFromStream(CStream &in,int version)
 			m_x = m_HM.get_unsafe(0,3);
 			m_y = m_HM.get_unsafe(1,3);
 			m_z = m_HM.get_unsafe(2,3);
-			getYawPitchRoll( m_yaw, m_pitch, m_roll );
+			updateYawPitchRoll();
 		} break;
 	case 2:
 		{
@@ -207,6 +227,7 @@ void  CPose3D::readFromStream(CStream &in,int version)
  */
 std::ostream& mrpt::poses::operator << (std::ostream& o, const CPose3D& p)
 {
+	p.updateYawPitchRoll();
 	o << "(x,y,z,yaw,pitch,roll)=(" << std::fixed << std::setprecision(4) << p.m_x << "," << p.m_y << "," << p.m_z <<  ","
 		<< std::setprecision(2) << RAD2DEG(p.m_yaw) << "deg," << RAD2DEG(p.m_pitch) << "deg," << RAD2DEG(p.m_roll) << "deg)";
 	return o;
@@ -217,7 +238,8 @@ std::ostream& mrpt::poses::operator << (std::ostream& o, const CPose3D& p)
 ---------------------------------------------------------------*/
 void  CPose3D::normalizeAngles()
 {
-	setFromValues(m_x,m_y,m_z,m_yaw,m_pitch,m_roll);
+	updateYawPitchRoll();
+	//setFromValues(m_x,m_y,m_z,m_yaw,m_pitch,m_roll);
 }
 
 
@@ -238,6 +260,8 @@ void  CPose3D::setFromValues(
 	this->m_yaw = mrpt::math::wrapToPi(yaw);
 	this->m_pitch = mrpt::math::wrapToPi(pitch);
 	this->m_roll = mrpt::math::wrapToPi(roll);
+
+	m_ypr_uptodate = true;
 
 	rebuildHomogeneousMatrix();
 }
@@ -283,6 +307,7 @@ void  CPose3D::rebuildHomogeneousMatrix()
 ---------------------------------------------------------------*/
 void CPose3D::operator *=(const double s)
 {
+	updateYawPitchRoll();
 	m_x*=s;
 	m_y*=s;
 	m_z*=s;
@@ -295,7 +320,7 @@ void CPose3D::operator *=(const double s)
 /*---------------------------------------------------------------
 		getYawPitchRoll
 ---------------------------------------------------------------*/
-void  CPose3D::getYawPitchRoll( double &yaw, double &pitch, double &roll )
+void  CPose3D::getYawPitchRoll( double &yaw, double &pitch, double &roll ) const
 {
 	ASSERTDEBMSG_( fabs(sqrt(square(m_HM(0,0))+square(m_HM(1,0))+square(m_HM(2,0))) - 1 ) < 1e-5, "Homogeneous matrix is not orthogonal & normalized!: "+m_HM.inMatlabFormat() )
 	ASSERTDEBMSG_( fabs(sqrt(square(m_HM(0,1))+square(m_HM(1,1))+square(m_HM(2,1))) - 1 ) < 1e-5, "Homogeneous matrix is not orthogonal & normalized!: "+m_HM.inMatlabFormat() )
@@ -370,6 +395,7 @@ void CPose3D::sphericalCoordinates(
 ---------------------------------------------------------------*/
 void CPose3D::addComponents(const CPose3D &p)
 {
+	updateYawPitchRoll();
 	m_x+=p.m_x;
 	m_y+=p.m_y;
 	m_z+=p.m_z;
@@ -384,6 +410,8 @@ void CPose3D::addComponents(const CPose3D &p)
 ---------------------------------------------------------------*/
 double CPose3D::distanceEuclidean6D( const CPose3D &o ) const
 {
+	updateYawPitchRoll();
+	o.updateYawPitchRoll();
 	return sqrt(
 		square( o.m_x - m_x ) +
 		square( o.m_y - m_y ) +
@@ -410,6 +438,7 @@ void CPose3D::composePoint(double lx,double ly,double lz, double &gx, double &gy
 	// Jacob: df/dpose
 	if (out_jacobian_df_dpose)
 	{
+		updateYawPitchRoll();
 #	ifdef HAVE_SINCOS
 		double	cy,sy;
 		::sincos(m_yaw,&sy,&cy);
@@ -467,6 +496,7 @@ void CPose3D::composePoint(double lx,double ly,double lz, double &gx, double &gy
 ---------------------------------------------------------------*/
 void CPose3D::getAsVector(vector_double &r) const
 {
+	updateYawPitchRoll();
 	r.resize(6);
 	r[0]=m_x;
 	r[1]=m_y;
@@ -476,18 +506,13 @@ void CPose3D::getAsVector(vector_double &r) const
 	r[5]=m_roll;
 }
 
-CPose3D::CPose3D(const mrpt::math::TPose3D &o):m_yaw(),m_pitch(),m_roll()
-{
-	m_is3D = true;
-	setFromValues(o.x,o.y,o.z,o.yaw,o.pitch,o.roll);
-}
 
 /*---------------------------------------------------------------
 		unary -
 ---------------------------------------------------------------*/
 CPose3D mrpt::poses::operator -(const CPose3D &b)
 {
-	CMatrixDouble44 B_INV;
+	CMatrixDouble44 B_INV(UNINITIALIZED_MATRIX);
 	b.getInverseHomogeneousMatrix( B_INV );
 	return CPose3D(B_INV);
 }
@@ -497,6 +522,7 @@ CPose3D mrpt::poses::operator -(const CPose3D &b)
 ---------------------------------------------------------------*/
 void CPose3D::getAsQuaternion(mrpt::math::CQuaternionDouble &q, mrpt::math::CMatrixFixedNumeric<double,4,3>   *out_dq_dr ) const
 {
+	updateYawPitchRoll();
 	// See: http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 	const double	cy = cos(m_yaw*0.5);
 	const double	sy = sin(m_yaw*0.5);
@@ -546,17 +572,6 @@ bool mrpt::poses::operator!=(const CPose3D &p1,const CPose3D &p2)
 
 
 /*---------------------------------------------------------------
-				pose3D = pose3D + pose3D
-  ---------------------------------------------------------------*/
-CPose3D  CPose3D::operator + (const CPose3D& b) const
-{
-	CMatrixDouble44 res_HM(UNINITIALIZED_MATRIX);
-	res_HM.multiply( m_HM, b.m_HM );
-	// Update the x,y,z,yaw,pitch,roll fields:
-	return CPose3D(res_HM);
-}
-
-/*---------------------------------------------------------------
 				point3D = pose3D + point3D
   ---------------------------------------------------------------*/
 CPoint3D  CPose3D::operator + (const CPoint3D& b) const
@@ -584,13 +599,29 @@ CPoint3D  CPose3D::operator + (const CPoint2D& b) const
   ---------------------------------------------------------------*/
 void CPose3D::composeFrom(const CPose3D& A, const CPose3D& B )
 {
-	m_HM.multiply( A.m_HM, B.m_HM );
+	//m_HM.multiply( A.m_HM, B.m_HM );
+	// In fact, we can just update the 3x4 part of the matrix:
+	for (int r=0;r<3;r++)
+		for (int c=0;c<4;c++)
+			m_HM.get_unsafe(r,c) = A.m_HM.get_unsafe(r,0)*B.m_HM.get_unsafe(0,c)+A.m_HM.get_unsafe(r,1)*B.m_HM.get_unsafe(1,c)+A.m_HM.get_unsafe(r,2)*B.m_HM.get_unsafe(2,c);
 
 	// Update the x,y,z,yaw,pitch,roll fields:
 	m_x = m_HM.get_unsafe(0,3);
 	m_y = m_HM.get_unsafe(1,3);
 	m_z = m_HM.get_unsafe(2,3);
-	getYawPitchRoll( m_yaw, m_pitch, m_roll );
+	m_ypr_uptodate=false;
+}
+
+/** Convert this pose into its inverse, saving the result in itself. */
+void CPose3D::inverse()
+{
+	mrpt::math::homogeneousMatrixInverse(m_HM); // Inverse of the HM.
+
+	// Update the x,y,z,yaw,pitch,roll fields:
+	m_x = m_HM.get_unsafe(0,3);
+	m_y = m_HM.get_unsafe(1,3);
+	m_z = m_HM.get_unsafe(2,3);
+	m_ypr_uptodate=false;
 }
 
 /*---------------------------------------------------------------
@@ -617,7 +648,7 @@ void CPose3D::inverseComposeFrom(const CPose3D& A, const CPose3D& B )
 	m_x = m_HM.get_unsafe(0,3);
 	m_y = m_HM.get_unsafe(1,3);
 	m_z = m_HM.get_unsafe(2,3);
-	getYawPitchRoll( m_yaw, m_pitch, m_roll );
+	m_ypr_uptodate=false;
 }
 
 /**  Computes the 3D point L such as \f$ L = G \ominus this \f$.
@@ -639,6 +670,8 @@ void CPose3D::inverseComposePoint(const double gx,const double gy,const double g
 	// Jacob: df/dpose
 	if (out_jacobian_df_dpose)
 	{
+		updateYawPitchRoll();
+
 #	ifdef HAVE_SINCOS
 		double	cy,sy;
 		::sincos(m_yaw,&sy,&cy);
@@ -699,7 +732,7 @@ void CPose3D::inverseComposePoint(const double gx,const double gy,const double g
 /** Exponentiate a Vector in the SE3 Lie Algebra to generate a new CPose3D.
   * \note Method from TooN (C) Tom Drummond (GNU GPL)
   */
-CPose3D CPose3D::exp(const mrpt::math::CArrayDouble<6> & mu)
+CPose3D CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu)
 {
 	static const double one_6th = 1.0/6.0;
 	static const double one_20th = 1.0/20.0;
@@ -815,7 +848,7 @@ CArrayDouble<3> CPose3D::ln_rotation() const
 
 /** Exponentiate a vector in the Lie algebra to generate a new SO3 (a 3x3 rotation matrix).
   * \note Method from TooN (C) Tom Drummond (GNU GPL) */
-CMatrixDouble33 CPose3D::exp_rotation(const mrpt::math::CArrayDouble<3> & w)
+CMatrixDouble33 CPose3D::exp_rotation(const mrpt::math::CArrayNumeric<double,3> & w)
 {
 	using std::sqrt;
 	using std::sin;

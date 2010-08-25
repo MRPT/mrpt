@@ -50,9 +50,9 @@ namespace mrpt
 			const size_t cur_iter,
 			const double cur_total_sq_error,
 			const size_t max_iters,
-			const TSequenceFeatureObservations & input_observations,
-			const TFramePosesVec & current_frame_estimate,
-			const TLandmarkLocationsVec & current_landmark_estimate );
+			const mrpt::vision::TSequenceFeatureObservations & input_observations,
+			const mrpt::vision::TFramePosesVec & current_frame_estimate,
+			const mrpt::vision::TLandmarkLocationsVec & current_landmark_estimate );
 
 
 		/** Sparse Levenberg-Marquart solution to bundle adjustment - optimizes all the camera frames & the landmark locations.
@@ -72,6 +72,7 @@ namespace mrpt
 		  *		- "mu": Initial mu for LevMarq (default=-1 -> autoguess)
 		  *		- "num_fix_frames": Number of first frame poses to don't optimize (keep unmodified as they come in)  (default=1: the first pose is the reference and is not modified)
 		  *		- "num_fix_points": Idem, for the landmarks positions (default=0: optimize all)
+		  *		- "profiler": If !=0, displays profiling information to the console at return.
 		  *
 		  * \note In this function, all coordinates are absolute. Camera frames are such that +Z points forward from the focal point (see the figure in mrpt::slam::CObservationImage).
 		  * \note The first frame pose will be not updated since at least one frame must remain fixed.
@@ -86,12 +87,12 @@ namespace mrpt
 		  * \return The final overall squared error.
 		  */
 		double VISION_IMPEXP bundle_adj_full(
-			const TSequenceFeatureObservations   & observations,
-			const TCamera                        & camera_params,
-			TFramePosesVec                       & frame_poses,
-			TLandmarkLocationsVec                & landmark_points,
+			const mrpt::vision::TSequenceFeatureObservations   & observations,
+			const mrpt::utils::TCamera                        & camera_params,
+			mrpt::vision::TFramePosesVec                       & frame_poses,
+			mrpt::vision::TLandmarkLocationsVec                & landmark_points,
 			const mrpt::utils::TParametersDouble & extra_params = mrpt::utils::TParametersDouble(),
-			const TBundleAdjustmentFeedbackFunctor user_feedback = NULL
+			const mrpt::vision::TBundleAdjustmentFeedbackFunctor user_feedback = NULL
 			);
 
 
@@ -100,17 +101,17 @@ namespace mrpt
 		  * \sa bundle_adj_full
 		  */
 		void VISION_IMPEXP ba_initial_estimate(
-			const TSequenceFeatureObservations   & observations,
-			const TCamera                        & camera_params,
-			TFramePosesVec                       & frame_poses,
-			TLandmarkLocationsVec                & landmark_points );
+			const mrpt::vision::TSequenceFeatureObservations   & observations,
+			const mrpt::utils::TCamera                        & camera_params,
+			mrpt::vision::TFramePosesVec                       & frame_poses,
+			mrpt::vision::TLandmarkLocationsVec                & landmark_points );
 
 		//! \overload
 		void VISION_IMPEXP ba_initial_estimate(
-			const TSequenceFeatureObservations   & observations,
-			const TCamera                        & camera_params,
-			TFramePosesMap                       & frame_poses,
-			TLandmarkLocationsMap                & landmark_points );
+			const mrpt::vision::TSequenceFeatureObservations   & observations,
+			const mrpt::utils::TCamera                        & camera_params,
+			mrpt::vision::TFramePosesMap                       & frame_poses,
+			mrpt::vision::TLandmarkLocationsMap                & landmark_points );
 
 
 		/** Compute reprojection error vector (used from within Bundle Adjustment methods, but can be used in general)
@@ -120,10 +121,10 @@ namespace mrpt
 		  *  \return Overall squared reprojection error.
 		  */
 		double VISION_IMPEXP reprojectionResiduals(
-			const TSequenceFeatureObservations   & observations,
-			const TCamera                        & camera_params,
-			const TFramePosesVec                 & frame_poses,
-			const TLandmarkLocationsVec          & landmark_points,
+			const mrpt::vision::TSequenceFeatureObservations   & observations,
+			const mrpt::utils::TCamera                        & camera_params,
+			const mrpt::vision::TFramePosesVec                 & frame_poses,
+			const mrpt::vision::TLandmarkLocationsVec          & landmark_points,
 			std::vector<mrpt::math::CArrayDouble<2> > & out_residuals,
 			bool  use_robust_kernel = true,
 			bool  frame_poses_are_inverse  = false
@@ -131,10 +132,10 @@ namespace mrpt
 
 		//! \overload
 		double VISION_IMPEXP reprojectionResiduals(
-			const TSequenceFeatureObservations   & observations,
-			const TCamera                        & camera_params,
-			const TFramePosesMap                 & frame_poses,
-			const TLandmarkLocationsMap          & landmark_points,
+			const mrpt::vision::TSequenceFeatureObservations   & observations,
+			const mrpt::utils::TCamera                        & camera_params,
+			const mrpt::vision::TFramePosesMap                 & frame_poses,
+			const mrpt::vision::TLandmarkLocationsMap          & landmark_points,
 			std::vector<mrpt::math::CArrayDouble<2> > & out_residuals,
 			bool  use_robust_kernel = true,
 			bool  frame_poses_are_inverse = false
