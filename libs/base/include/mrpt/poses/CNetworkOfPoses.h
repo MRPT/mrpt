@@ -60,25 +60,30 @@ namespace mrpt
 			template<class CPOSE,class MAPS_IMPLEMENTATION> double BASE_IMPEXP graph_edge_sqerror(const CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION>*g, const typename mrpt::math::CDirectedGraph<CPOSE>::edges_map_t::const_iterator &itEdge, bool ignoreCovariances );
 		}
 
-		/** A network of links constraining the relative pose of pairs of nodes, indentified by their numeric IDs (of type TNodeID).
-		  *  A link between nodes "i" and "j", that is, the pose \f$ p_{ij} \f$ or relative position of "j" with respect to "i",
-		  *   is maintained as a multivariate Gaussian distribution.
+		/** A directed graph of pose constraints, with edges being the relative pose between pairs of nodes indentified by their numeric IDs (of type TNodeID).
+		  *  A link or edge between two nodes "i" and "j", that is, the pose \f$ p_{ij} \f$, holds the relative position of "j" with respect to "i".
+		  *   These poses are stored in the edges in the format specified by the template argument CPOSE. Users should employ the following derived classes
+		  *   depending on the desired representation of edges:
+		  *      - mrpt::poses::CNetworkOfPoses2D    : 2D edges as a simple CPose2D (x y phi)
+		  *      - mrpt::poses::CNetworkOfPoses3D    : 3D edges as a simple CPose3D (x y z yaw pitch roll)
+		  *      - mrpt::poses::CNetworkOfPoses2DInf : 2D edges as a Gaussian PDF with information matrix ( CPosePDFGaussianInf )
+		  *      - mrpt::poses::CNetworkOfPoses3DInf : 3D edges as a Gaussian PDF with information matrix ( CPose3DPDFGaussianInf )
+		  *      - mrpt::poses::CNetworkOfPoses2DCov : 2D edges as a Gaussian PDF with covariance matrix ( CPosePDFGaussian ). It's more efficient to use the information matrix version instead!
+		  *      - mrpt::poses::CNetworkOfPoses3DCov : 3D edges as a Gaussian PDF with covariance matrix ( CPose3DPDFGaussian ). It's more efficient to use the information matrix version instead! 
 		  *
 		  *  Two main members store all the information in this class:
-		  *		- \a edge  (in base class mrpt::math::CDirectedGraph<>::edge): A map from pairs of node ID -> pose constraints with uncertainty.
-		  *		- \a nodes : A map from node ID -> estimated pose of that node.
+		  *		- \a edge  (in the base class mrpt::math::CDirectedGraph::edge): A map from pairs of node ID -> pose constraints.
+		  *		- \a nodes : A map from node ID -> estimated pose of that node (actually, read below on the template argument MAPS_IMPLEMENTATION).
 		  *
-		  * Valid values for the argument CPOSE are CPosePDFGaussian and CPose3DPDFGaussian, which correspond to the
-		  *  typedefs CNetworkOfPoses2D and CNetworkOfPoses3D. There are also "information-form" versions which
-		  *  hold the inverse covariance matrices (see CNetworkOfPoses2DInf and CNetworkOfPoses3DInf).
-		  *  These information-form classes are <b>preferred for efficiency</b>.
+		  *  Graphs can be loaded and saved to text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a> ), 
+		  *   using \a loadFromTextFile and \a saveToTextFile.
 		  *
 		  *  This class is the base for representing networks of poses, which are the main data type of a series
 		  *   of SLAM algorithms implemented in the library mrpt-slam, in the namespace mrpt::graphslam.
 		  *
 		  *  For tools to visualize graphs as 2D/3D plots, see the namespace mrpt::opengl::graph_tools in the library mrpt-opengl.
 		  *
-		  * \sa CPosePDFGaussian,CPose3DPDFGaussian,CPose3DQuatPDFGaussian, mrpt::graphslam
+		  * \sa mrpt::graphslam
 		  */
 		template<class CPOSE, class MAPS_IMPLEMENTATION = map_traits_stdmap >
 		class CNetworkOfPoses : public mrpt::math::CDirectedGraph< CPOSE >

@@ -64,11 +64,11 @@ namespace slam
 
 	/** This class stores measurements from an Inertial Measurement Unit (IMU), and/or its attitude estimation (integration of raw measurements).
 	 *
-	 *  The order of the 15 raw values in each entry of mrpt::slam::CObservationIMU::rawMeasurements is (you can use the "enum" symbolic names):
+	 *  The order of the 15 raw values in each entry of mrpt::slam::CObservationIMU::rawMeasurements is (you can use the TIMUDataIndex "enum" symbolic names):
 		<table>
-		<tr> <td> 0 </td> <td>IMU_X_ACC</td> <td> x-axis acceleration (m/sec²)</td> </tr>
-		<tr> <td> 1 </td> <td>IMU_Y_ACC</td> <td> y-axis acceleration (m/sec²)</td> </tr>
-		<tr> <td> 2 </td> <td>IMU_Z_ACC</td> <td> z-axis acceleration (m/sec²)</td> </tr>
+		<tr> <td> 0 </td> <td>IMU_X_ACC</td> <td> x-axis acceleration (m/sec<sup>2</sup>)</td> </tr>
+		<tr> <td> 1 </td> <td>IMU_Y_ACC</td> <td> y-axis acceleration (m/sec<sup>2</sup>)</td> </tr>
+		<tr> <td> 2 </td> <td>IMU_Z_ACC</td> <td> z-axis acceleration (m/sec<sup>2</sup>)</td> </tr>
 		<tr> <td> 3 </td> <td>IMU_YAW_VEL</td> <td> yaw angular velocity (rad/sec)</td> </tr>
 		<tr> <td> 4 </td> <td>IMU_PITCH_VEL</td> <td> pitch angular velocity (rad/sec)</td> </tr>
 		<tr> <td> 5 </td> <td>IMU_ROLL_VEL</td> <td> roll angular velocity (rad/sec)</td> </tr>

@@ -36,7 +36,7 @@
 	- <b>Most important changes:</b>
 		- Basic support for Graph-SLAM. Among others, see mrpt::poses::CNetworkOfPoses and the program <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>
 		- First working versions of Sparse Bundle-Adjustment (see mrpt::vision::bundle_adj_full).
-		- New hardware supported: Phidget kits (contributed by Adrien Barral, Robopec).
+		- New hardware supported: Phidget kits & Fiber Optic Gyro KVH DSP3000 (both contributed by Adrien Barral, Robopec).
 	- <b>Detailed list of changes:</b>
 		- New applications:
 			- <a href="http://www.mrpt.org/Application:carmen2rawlog" >carmen2rawlog</a>: A converter from CARMEN robotics logs to binary Rawlog dataset files.
@@ -51,16 +51,19 @@
 			- Doxygen documentation: More macros expanded while generating docs: now docs are also generated for smart pointers and for RTTI & serialization stuff.
 			- Previous header <mrpt/math_mrpt.h> renamed <mrpt/math.h>. The old one still remains (probably until MRPT 1.0.0), but raises a warning on usage.
 		- New classes:
-			- New sensor driver for Phidget kit (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors), contributed by Adrien Barral (Robopec)
+			- New sensor driver for Phidget kit (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors), contributed by Adrien Barral (Robopec).
+			- New sensor driver for Fiber Optic Gyro KVH DSP3000 (see mrpt::hwdrivers::CGyroKVHDSP3000),  contributed by Adrien Barral (Robopec).
 			- mrpt::math::CDirectedTree template for directed tree-like graphs. Includes generic depth-first & breath-first visitors.
 			- New PDF classes for "information" (inverse covariance) forms:
 				- mrpt::poses::CPosePDFGaussianInf
 				- mrpt::poses::CPose3DPDFGaussianInf
 			- Data types for graph SLAM (only two of them existed before, and now they are all classes and support serialization):
-				- mrpt::poses::CPosePDFGaussian
-				- mrpt::poses::CPose3DPDFGaussian
-				- mrpt::poses::CPosePDFGaussianInf
-				- mrpt::poses::CPose3DPDFGaussianInf
+				- mrpt::poses::CNetworkOfPoses2D 
+				- mrpt::poses::CNetworkOfPoses3D 
+				- mrpt::poses::CNetworkOfPoses2DInf
+				- mrpt::poses::CNetworkOfPoses3DInf
+				- mrpt::poses::CNetworkOfPoses2DCov 
+				- mrpt::poses::CNetworkOfPoses3DCov
 			- (TODO) mrpt::utils::map_as_vector a vector-based implementation of a std::map-like container.
 		- Changes in classes:
 			- mrpt::poses::CNetworkOfPoses has many improvements and new methods (see its documentation).
