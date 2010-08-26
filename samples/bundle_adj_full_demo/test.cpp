@@ -87,6 +87,7 @@ void bundle_adj_full_demo(
 	extra_params["max_iterations"]= 250;
 	//extra_params["num_fix_frames"] = 1;
 	//extra_params["num_fix_points"] = 0;
+	extra_params["profiler"] = 1;
 
 	mrpt::vision::bundle_adj_full(
 		allObs,
