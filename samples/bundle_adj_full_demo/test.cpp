@@ -267,6 +267,7 @@ int main(int argc, char **argv)
 			allObs.loadFromTextFile(feats_fil);
 			cout << "Done.\n";
 
+			//allObs.decimateCameraFrames(5);
 			allObs.compressIDs();
 
 			ASSERT_(mrpt::system::fileExists(cam_fil))

@@ -119,7 +119,41 @@ size_t TSequenceFeatureObservations::removeFewObservedFeatures(size_t minNumObse
 	MRPT_END
 }
 
+/** Remove one out of \a decimate_ratio camera frame IDs from the list.
+  * \sa After calling this you may want to call \a compressIDs */
+void TSequenceFeatureObservations::decimateCameraFrames(const size_t decimate_ratio)
+{
+	ASSERT_ABOVEEQ_(decimate_ratio,1)
+	if (decimate_ratio==1)
+		return; // =1 -> Delete no one!
 
+	// 1) Make sorted list of frame IDs:
+	set<TCameraPoseID>  frameIDs;
+	for (BASE::const_iterator it=BASE::begin();it!=BASE::end();++it)
+		frameIDs.insert(it->id_frame);
+
+	// 2) Leave in "frameIDs" just the IDs that will survive:
+	for (set<TCameraPoseID>::iterator it=frameIDs.begin();it!=frameIDs.end(); )
+	{
+		// Leave one:
+		++it;
+		// Remove "decimate_ratio-1"
+		for (size_t d=0;d<decimate_ratio-1 && it!=frameIDs.end();d++)
+			it=mrpt::utils::erase_return_next(frameIDs,it);
+	}
+
+	// 3) Make a new list of observations with only the desired data:
+	TSequenceFeatureObservations newLst;
+	newLst.reserve(BASE::size() / decimate_ratio);
+	for (BASE::const_iterator it=BASE::begin();it!=BASE::end();++it)
+		if (frameIDs.find(it->id_frame)!=frameIDs.end())
+			newLst.push_back(*it);
+
+	// Finally, save content in "this":
+	this->swap(newLst);
+}
+
+/** Rearrange frame and feature IDs such as they start at 0 and there are no gaps. */
 void TSequenceFeatureObservations::compressIDs(
 	std::map<TCameraPoseID,TCameraPoseID>  *old2new_camIDs,
 	std::map<TLandmarkID,TLandmarkID>      *old2new_lmIDs )

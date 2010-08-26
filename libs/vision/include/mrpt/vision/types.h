@@ -78,7 +78,8 @@ namespace mrpt
 			inline TSequenceFeatureObservations(const TSequenceFeatureObservations& o) : BASE(o) {}
 
 			/** Saves all entries to a text file, with each line having this format: #FRAME_ID  #FEAT_ID  #PIXEL_X  #PIXEL_Y
-			  * The first line contains a comment line (starting with '%') explaining this format.
+			  * The file is self-descripting, since the first line contains a comment line (starting with '%') explaining the format.
+			  * Generated files can be loaded from MATLAB.
 			  * \sa loadFromTextFile \exception std::exception On I/O error  */
 			void saveToTextFile(const std::string &filName, bool skipFirstCommentLine = false) const;
 
@@ -87,13 +88,17 @@ namespace mrpt
 
 			/** Remove all those features that don't have a minimum number of observations from different camera frame IDs.
 			  * \return the number of erased entries.
-			  * \sa compressIDs */
+			  * \sa After calling this you may want to call \a compressIDs */
 			size_t removeFewObservedFeatures(size_t minNumObservations = 3);
+
+			/** Remove all but one out of \a decimate_ratio camera frame IDs from the list (eg: from N camera pose IDs at return there will be just N/decimate_ratio)
+			  * The algorithm first builds a sorted list of frame IDs, then keep the lowest ID, remove the next "decimate_ratio-1", and so on.
+			  * \sa After calling this you may want to call \a compressIDs */
+			void decimateCameraFrames(const size_t decimate_ratio);
 
 			/** Rearrange frame and feature IDs such as they start at 0 and there are no gaps.
 			  * \param old2new_camIDs If provided, the mapping from old to new IDs is stored here.
-			  * \param old2new_lmIDs If provided, the mapping from old to new IDs is stored here.
-			  */
+			  * \param old2new_lmIDs If provided, the mapping from old to new IDs is stored here. */
 			void compressIDs(
 				std::map<TCameraPoseID,TCameraPoseID>  *old2new_camIDs=NULL,
 				std::map<TLandmarkID,TLandmarkID>      *old2new_lmIDs=NULL );
