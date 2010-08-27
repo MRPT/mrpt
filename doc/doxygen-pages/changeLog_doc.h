@@ -58,11 +58,11 @@
 				- mrpt::poses::CPosePDFGaussianInf
 				- mrpt::poses::CPose3DPDFGaussianInf
 			- Data types for graph SLAM (only two of them existed before, and now they are all classes and support serialization):
-				- mrpt::poses::CNetworkOfPoses2D 
-				- mrpt::poses::CNetworkOfPoses3D 
+				- mrpt::poses::CNetworkOfPoses2D
+				- mrpt::poses::CNetworkOfPoses3D
 				- mrpt::poses::CNetworkOfPoses2DInf
 				- mrpt::poses::CNetworkOfPoses3DInf
-				- mrpt::poses::CNetworkOfPoses2DCov 
+				- mrpt::poses::CNetworkOfPoses2DCov
 				- mrpt::poses::CNetworkOfPoses3DCov
 			- (TODO) mrpt::utils::map_as_vector a vector-based implementation of a std::map-like container.
 		- Changes in classes:
@@ -84,6 +84,7 @@
 				- Much faster operations, as long as yaw(), pitch() & roll() are not explicitly called. These 3 angles are now not computed until really requested by the user, then cached.
 				- New SE3 Lie algebra methods: mrpt::poses::CPose3D::exp(), mrpt::poses::CPose3D::ln(), ...
 				- mrpt::poses::CPose3D::composePoint() now has an optional flag to compute faster, approximate Jacobians (for small rotations only!).
+				- Methods composePoint() and inverseComposePoint() now can also compute the Jacobian with respect to se3 (the tangent space of SE(3) at a given pose).
 			- New method: mrpt::hwdrivers::CSerialPort::ReadString
 		- New functions:
 			- mrpt::math::rodrigues_so3_exp

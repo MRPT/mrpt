@@ -120,7 +120,7 @@ protected:
 		CMatrixFixedNumeric<double,3,6>  df_dpose;
 
 		TPoint3D pp;
-		p1.composePoint(x,y,z, pp.x,pp.y,pp.z, &df_dpoint, &df_dpose, use_aprox );
+		p1.composePoint(x,y,z, pp.x,pp.y,pp.z, &df_dpoint, &df_dpose, NULL,  use_aprox );
 
 		// Numerical approx:
 		CMatrixFixedNumeric<double,3,3> num_df_dpoint(UNINITIALIZED_MATRIX);
@@ -223,6 +223,82 @@ protected:
 					<< "case was: " << label << endl;
 	}
 
+	static void func_compose_point_se3(const CArrayDouble<6> &x, const CArrayDouble<3> &P, CArrayDouble<3> &Y)
+	{
+		CPose3D q = CPose3D::exp(x);
+		const CPoint3D 		p(P[0],P[1],P[2]);
+		const CPoint3D pp = q+p;
+		for (int i=0;i<3;i++) Y[i]=pp[i];
+	}
+
+	static void func_invcompose_point_se3(const CArrayDouble<6> &x, const CArrayDouble<3> &P, CArrayDouble<3> &Y)
+	{
+		CPose3D q = CPose3D::exp(x);
+		const CPoint3D 		p(P[0],P[1],P[2]);
+		const CPoint3D pp = p-q;
+		for (int i=0;i<3;i++) Y[i]=pp[i];
+	}
+
+
+	void test_composePointJacob_se3( const CPose3D &p, const TPoint3D x_l )
+	{
+		CMatrixFixedNumeric<double,3,6>  df_dse3;
+
+		TPoint3D pp;
+		p.composePoint(x_l.x,x_l.y,x_l.z, pp.x,pp.y,pp.z, NULL, NULL, &df_dse3);
+
+		// Numerical approx:
+		CMatrixFixedNumeric<double,3,6> num_df_dse3(UNINITIALIZED_MATRIX);
+		{
+			CArrayDouble<6> x_mean;
+			for (int i=0;i<6;i++) x_mean[i]=0;
+
+			CArrayDouble<3> P;
+			for (int i=0;i<3;i++) P[i]=pp[i];
+
+			CArrayDouble<6> x_incrs;
+			x_incrs.assign(1e-9);
+			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_compose_point_se3,x_incrs, P, num_df_dse3 );
+		}
+
+		EXPECT_NEAR(0, (df_dse3-num_df_dse3).Abs().sumAll(), 3e-3 )
+			<< "p: " << p << endl
+			<< "x_l:  " << x_l << endl
+			<< "Numeric approximation of df_dse3: " << endl <<num_df_dse3 << endl
+			<< "Implemented method: " << endl << df_dse3 << endl
+			<< "Error: " << endl << df_dse3-num_df_dse3 << endl;
+	}
+
+	void test_invComposePointJacob_se3( const CPose3D &p, const TPoint3D x_g )
+	{
+		CMatrixFixedNumeric<double,3,6>  df_dse3;
+
+		TPoint3D pp;
+		p.inverseComposePoint(x_g.x,x_g.y,x_g.z, pp.x,pp.y,pp.z, NULL, NULL, &df_dse3 );
+
+		// Numerical approx:
+		CMatrixFixedNumeric<double,3,6> num_df_dse3(UNINITIALIZED_MATRIX);
+		{
+			CArrayDouble<6> x_mean;
+			for (int i=0;i<6;i++) x_mean[i]=0;
+
+			CArrayDouble<3> P;
+			for (int i=0;i<3;i++) P[i]=pp[i];
+
+			CArrayDouble<6> x_incrs;
+			x_incrs.assign(1e-9);
+			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_invcompose_point_se3,x_incrs, P, num_df_dse3 );
+		}
+
+		EXPECT_NEAR(0, (df_dse3-num_df_dse3).Abs().sumAll(), 3e-3 )
+			<< "p: " << p << endl
+			<< "x_g:  " << x_g << endl
+			<< "Numeric approximation of df_dse3: " << endl <<num_df_dse3 << endl
+			<< "Implemented method: " << endl << df_dse3 << endl
+			<< "Error: " << endl << df_dse3-num_df_dse3 << endl;
+	}
+
+
 };
 
 // Elemental tests:
@@ -320,6 +396,27 @@ TEST_F(Pose3DTests,InvComposePointJacob)
 	test_invComposePointJacob(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10),   10,11,12 );
 	test_invComposePointJacob(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60),   10.0, 20.0, 30.0 );
 	test_invComposePointJacob(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40),  -5.0, -15.0, 8.0 );
+}
+
+TEST_F(Pose3DTests,ComposePointJacob_se3)
+{
+	test_composePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0)),   TPoint3D(10,11,12 ) );
+	test_composePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(0),DEG2RAD(0)),  TPoint3D( 10,11,12 ) );
+	test_composePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(10),DEG2RAD(0)),  TPoint3D( 10,11,12 ) );
+	test_composePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10)),  TPoint3D( 10,11,12 ) );
+	test_composePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60)),  TPoint3D( 10.0, 20.0, 30.0 ) );
+	test_composePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40)), TPoint3D( -5.0, -15.0, 8.0 ) );
+}
+TEST_F(Pose3DTests,InvComposePointJacob_se3)
+{
+	test_invComposePointJacob_se3(CPose3D(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0)),   TPoint3D( 0,0,0  ));
+	test_invComposePointJacob_se3(CPose3D(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0)),   TPoint3D( 10,11,12 ) );
+	test_invComposePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0)),   TPoint3D( 10,11,12  ));
+	test_invComposePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(0),DEG2RAD(0)),   TPoint3D( 10,11,12 ) );
+	test_invComposePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(10),DEG2RAD(0)),   TPoint3D( 10,11,12 ) );
+	test_invComposePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10)),   TPoint3D( 10,11,12 ) );
+	test_invComposePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60)),   TPoint3D( 10.0, 20.0, 30.0 ) );
+	test_invComposePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40)),  TPoint3D( -5.0, -15.0, 8.0 ) );
 }
 
 

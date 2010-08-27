@@ -49,8 +49,8 @@ namespace poses
 	 *
 	 *  Uncertainty of pose composition operations (\f$ y = x \oplus u \f$) is implemented in the methods "CPose3DQuatPDFGaussian::operator+=" and "CPose3DQuatPDFGaussian::jacobiansPoseComposition".
 	 *
-	 *  For further details on implemented methods and the theory behind them, see the report:
-	 *  * "6D poses as Euler angles, transformation matrices and quaternions: equivalences, compositions and uncertainty", Jose-Luis Blanco (Technical Report), 2010.
+	 *  For further details on implemented methods and the theory behind them,
+	 *  see <a href="http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty" >this report</a>.
 	 *
 	 * \sa CPose3DQuat, CPose3DQuatPDF, CPose3DPDF
 	 */

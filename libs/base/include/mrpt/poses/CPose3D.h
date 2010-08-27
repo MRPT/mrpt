@@ -297,12 +297,15 @@ namespace poses
             double &out_pitch ) const;
 
 		/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 3D points and P this 6D pose.
-		  *  If pointers are provided, the corresponding Jacobians are returned (see <a href="http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty" >this report</a>)
-		  *  Exact Jacobians are computed unless \a use_small_rot_approx is true, in that case a fastest linearized version is used (valid only for small rotations!).
+		  *  If pointers are provided, the corresponding Jacobians are returned.
+		  *  "out_jacobian_df_dse3" stands for the Jacobian with respect to the 6D locally Euclidean vector in the tangent space of SE(3).
+		  *  See <a href="http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty" >this report</a> for mathematical details.
+		  *  \param  If set to true, the Jacobian "out_jacobian_df_dpose" uses a fastest linearized appoximation (valid only for small rotations!).
 		  */
 		void composePoint(double lx,double ly,double lz, double &gx, double &gy, double &gz,
 			mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint=NULL,
 			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose=NULL,
+			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dse3=NULL,
 			bool use_small_rot_approx = false) const;
 
 		/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 3D points and P this 6D pose.
@@ -320,11 +323,15 @@ namespace poses
 		}
 
 		/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.
+		  *  If pointers are provided, the corresponding Jacobians are returned.
+		  *  "out_jacobian_df_dse3" stands for the Jacobian with respect to the 6D locally Euclidean vector in the tangent space of SE(3).
+		  *  See <a href="http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty" >this report</a> for mathematical details.
 		  * \sa composePoint, composeFrom
 		  */
 		void inverseComposePoint(const double gx,const double gy,const double gz,double &lx,double &ly,double &lz,
 			mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint=NULL,
-			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose=NULL) const;
+			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose=NULL,
+			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dse3=NULL ) const;
 
 		/**  Makes "this = A (+) B"; this method is slightly more efficient than "this= A + B;" since it avoids the temporary object.
 		  *  \note A or B can be "this" without problems.

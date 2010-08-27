@@ -427,6 +427,7 @@ double CPose3D::distanceEuclidean6D( const CPose3D &o ) const
 void CPose3D::composePoint(double lx,double ly,double lz, double &gx, double &gy, double &gz,
 	mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint,
 	mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose,
+	mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dse3,
 	bool use_small_rot_approx ) const
 {
 	// Jacob: df/dpoint
@@ -488,6 +489,16 @@ void CPose3D::composePoint(double lx,double ly,double lz, double &gx, double &gy
 	gx=m_HM.get_unsafe(0,0)*lx+m_HM.get_unsafe(0,1)*ly+m_HM.get_unsafe(0,2)*lz+m_x;
 	gy=m_HM.get_unsafe(1,0)*lx+m_HM.get_unsafe(1,1)*ly+m_HM.get_unsafe(1,2)*lz+m_y;
 	gz=m_HM.get_unsafe(2,0)*lx+m_HM.get_unsafe(2,1)*ly+m_HM.get_unsafe(2,2)*lz+m_z;
+
+	// Jacob: df/dse3
+	if (out_jacobian_df_dse3)
+	{
+		const double nums[3*6] = {
+			1, 0, 0,   0, gz, -gy,
+			0, 1, 0, -gz,  0,  gx,
+			0, 0, 1,  gy,-gx,   0 };
+		out_jacobian_df_dse3->loadFromArray(nums);
+	}
 }
 
 
@@ -559,7 +570,8 @@ void CPose3D::getAsQuaternion(mrpt::math::CQuaternionDouble &q, mrpt::math::CMat
 	q[3] = ccs-ssc;
 
 	// Compute 4x3 Jacobian: for details, see technical report:
-	//    "6D poses as Euler angles, transformation matrices and quaternions: equivalences, compositions and uncertainty", J.L. Blanco, 2010.
+	//   Parameterizations of SE(3) transformations: equivalences, compositions and uncertainty, J.L. Blanco (2010).
+	//   http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
 	if (out_dq_dr)
 	{
 		const double nums[4*3] = {
@@ -673,7 +685,9 @@ void CPose3D::inverseComposeFrom(const CPose3D& A, const CPose3D& B )
   */
 void CPose3D::inverseComposePoint(const double gx,const double gy,const double gz,double &lx,double &ly,double &lz,
 	mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint,
-	mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose) const
+	mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose,
+	mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dse3
+	)const
 {
 	CMatrixDouble44 B_INV(UNINITIALIZED_MATRIX);
 	getInverseHomogeneousMatrix( B_INV );
@@ -743,6 +757,16 @@ void CPose3D::inverseComposePoint(const double gx,const double gy,const double g
 	lx = B_INV.get_unsafe(0,0) * gx + B_INV.get_unsafe(0,1) * gy + B_INV.get_unsafe(0,2) * gz + B_INV.get_unsafe(0,3);
 	ly = B_INV.get_unsafe(1,0) * gx + B_INV.get_unsafe(1,1) * gy + B_INV.get_unsafe(1,2) * gz + B_INV.get_unsafe(1,3);
 	lz = B_INV.get_unsafe(2,0) * gx + B_INV.get_unsafe(2,1) * gy + B_INV.get_unsafe(2,2) * gz + B_INV.get_unsafe(2,3);
+
+	// Jacob: df/dse3
+	if (out_jacobian_df_dse3)
+	{
+		const double nums[3*6] = {
+			-1, 0, 0,   0,-lz,  ly,
+			0, -1, 0,  lz,  0, -lx,
+			0, 0, -1, -ly, lx,   0 };
+		out_jacobian_df_dse3->loadFromArray(nums);
+	}
 }
 
 
