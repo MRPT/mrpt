@@ -152,56 +152,6 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 
 
 /* -------------------------------------------------------
-				projectPoint_no_distortion_inv
-
-Project a single 3D point with global coordinates P into a
-camera at pose \f$ \ominus F \f$, without distortion parameters.
-   ------------------------------------------------------- */
-TPixelCoordf pinhole::projectPoint_no_distortion_inv(
-	const TCamera  &params,
-	const CPose3D  &cam_pose,
-	const TPoint3D &global_point)
-{
-	double x,y,z; // wrt cam (local coords)
-	cam_pose.composePoint(   // Use INVERSE poses
-		global_point.x,global_point.y,global_point.z,
-		x,y,z);
-
-	ASSERT_(z!=0)
-
-	// Pinhole model:
-	return TPixelCoordf(
-		params.cx() + params.fx() * x/z,
-		params.cy() + params.fy() * y/z );
-}
-
-/* -------------------------------------------------------
-				projectPoint_no_distortion
-
-Project a single 3D point with global coordinates P into a
-camera at pose F, without distortion parameters.
-   ------------------------------------------------------- */
-TPixelCoordf pinhole::projectPoint_no_distortion(
-	const TCamera  &params,
-	const CPose3D  &cam_pose,
-	const TPoint3D &global_point)
-{
-	double x,y,z; // wrt cam (local coords)
-	cam_pose.inverseComposePoint(   // Use NON INVERSE poses
-		global_point.x,global_point.y,global_point.z,
-		x,y,z);
-
-	ASSERT_(z!=0)
-
-	// Pinhole model:
-	return TPixelCoordf(
-		params.cx() + params.fx() * x/z,
-		params.cy() + params.fy() * y/z );
-}
-
-
-
-/* -------------------------------------------------------
 				undistort_points
    ------------------------------------------------------- */
 void mrpt::vision::pinhole::undistort_points(

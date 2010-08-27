@@ -61,19 +61,27 @@ namespace mrpt
 				);
 
 			/** Project a single 3D point with global coordinates P into a camera at pose F, without distortion parameters.
+			  *  The template argument INVERSE_CAM_POSE is related on how the camera pose "F" is stored:
+			  *		- INVERSE_CAM_POSE:false -> The local coordinates of the feature wrt the camera F are: \f$ P \ominus F \f$
+			  *		- INVERSE_CAM_POSE:true  -> The local coordinates of the feature wrt the camera F are: \f$ F \oplus P \f$
 			  */
-			TPixelCoordf VISION_IMPEXP projectPoint_no_distortion(
+			template <bool INVERSE_CAM_POSE>
+			inline TPixelCoordf projectPoint_no_distortion(
 				const mrpt::utils::TCamera  &cam_params,
 				const mrpt::poses::CPose3D  &F,
-				const mrpt::math::TPoint3D &P);
-
-			/** Project a single 3D point with global coordinates P into a camera at pose \f$ \ominus F \f$, without distortion parameters.
-			  */
-			TPixelCoordf VISION_IMPEXP projectPoint_no_distortion_inv(
-				const mrpt::utils::TCamera  &cam_params,
-				const mrpt::poses::CPose3D  &F,
-				const mrpt::math::TPoint3D &P);
-
+				const mrpt::math::TPoint3D &P)
+			{
+				double x,y,z; // wrt cam (local coords)
+				if (INVERSE_CAM_POSE)
+					F.composePoint(P.x,P.y,P.z,  x,y,z);
+				else
+					F.inverseComposePoint(P.x,P.y,P.z, x,y,z);
+				ASSERT_(z!=0)
+				// Pinhole model:
+				return TPixelCoordf(
+					cam_params.cx() + cam_params.fx() * x/z,
+					cam_params.cy() + cam_params.fy() * y/z );
+			}
 
 			/** Project a set of 3D points into a camera at an arbitrary 6D pose using its calibration matrix and distortion parameters (radial and tangential distortions projection model)
 			  * \param in_points_3D [IN] The list of 3D points in world coordinates (meters) to project.

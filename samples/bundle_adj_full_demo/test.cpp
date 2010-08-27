@@ -84,6 +84,7 @@ void bundle_adj_full_demo(
 	cout << "Optimizing " << allObs.size() << " feature observations.\n";
 
 	TParametersDouble 		extra_params;
+	// extra_params["verbose"] = 1;
 	extra_params["max_iterations"]= 250;
 	//extra_params["num_fix_frames"] = 1;
 	//extra_params["num_fix_points"] = 0;
@@ -155,7 +156,7 @@ int main(int argc, char **argv)
 			//const double cameraPathEllipRadius1 = L1*2;
 			//const double cameraPathEllipRadius2 = L2*2;
 			// Noise params:
-			const double STD_PX_ERROR= 0.10; // pixels
+			const double STD_PX_ERROR= 0; //0.10; // pixels
 			const double STD_PT3D    = 0.10; // meters
 			const double STD_CAM_XYZ = 0.05; // meters
 			const double STD_CAM_ANG = DEG2RAD(5); // degs
@@ -194,7 +195,7 @@ int main(int argc, char **argv)
 				// predict all landmarks:
 				for (size_t j=0;j<landmark_points_real.size();j++)
 				{
-					TPixelCoordf px = mrpt::vision::pinhole::projectPoint_no_distortion(camera_params, frame_poses_real[i], landmark_points_real[j]);
+					TPixelCoordf px = mrpt::vision::pinhole::projectPoint_no_distortion<false>(camera_params, frame_poses_real[i], landmark_points_real[j]);
 
 					px.x += rg.drawGaussian1D(0,STD_PX_ERROR);
 					px.y += rg.drawGaussian1D(0,STD_PX_ERROR);

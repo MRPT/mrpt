@@ -64,6 +64,20 @@ namespace mrpt
 			TPixelCoordf   px;          //!< The pixel coordinates of the observed feature
 		};
 
+		/** One relative feature observation entry, used with some relative bundle-adjustment functions.
+		  */
+		struct TRelativeFeaturePos
+		{
+			inline TRelativeFeaturePos() { }
+			inline TRelativeFeaturePos(const mrpt::vision::TCameraPoseID  _id_frame_base, const mrpt::math::TPoint3D _pos) : id_frame_base(_id_frame_base), pos(_pos) {  }
+
+			mrpt::vision::TCameraPoseID  id_frame_base;	//!< The ID of the camera frame which is the coordinate reference of \a pos
+			mrpt::math::TPoint3D         pos;  //!< The (x,y,z) location of the feature, wrt to the camera frame \a id_frame_base
+		};
+
+		/** An index of feature IDs and their relative locations */
+		typedef std::map<mrpt::vision::TFeatureID, TRelativeFeaturePos>  TRelativeFeaturePosMap;
+
 		/** A complete sequence of observations of features from different camera frames (poses).
 		  *  This structure is the input to some (Bundle-adjustment) methods in mrpt::vision
 		  *  \note Pixel coordinates can be either "raw" or "undistorted". Read the doc of functions handling this structure to see what they expect.

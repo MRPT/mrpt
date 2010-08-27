@@ -61,7 +61,6 @@ double mrpt::vision::bundle_adj_full(
 {
 	MRPT_START
 
-
 	// Generic BA problem dimension numbers:
 	static const unsigned int FrameDof = 6; // Poses: x y z yaw pitch roll
 	static const unsigned int PointDof = 3; // Landmarks: x y z
@@ -102,17 +101,8 @@ double mrpt::vision::bundle_adj_full(
 	ASSERT_ABOVEEQ_(num_frames,num_fix_frames);
 	ASSERT_ABOVEEQ_(num_points,num_fix_points);
 
-	// **CAUTION**: This BA implementation assumes "frame_poses" as *INVERSE* camera poses
-	// Undo for the user:
-	profiler.enter("inverse_all_poses");
-	for (size_t i=0; i<num_frames; i++)
-		frame_poses[i].inverse();
-	profiler.leave("inverse_all_poses");
-
-
 	MyJacDataVec     jac_data_vec(num_obs);
 	vector<Array_O>  residual_vec(num_obs);
-
 
 	// prepare structure of sparse Jacobians:
 	for (size_t i=0; i<num_obs; i++)
@@ -123,7 +113,7 @@ double mrpt::vision::bundle_adj_full(
 
 	// Compute sparse Jacobians:
 	profiler.enter("compute_Jacobians");
-	ba_compute_Jacobians(frame_poses, landmark_points, camera_params, jac_data_vec, num_fix_frames, num_fix_points);
+	ba_compute_Jacobians<false>(frame_poses, landmark_points, camera_params, jac_data_vec, num_fix_frames, num_fix_points);
 	profiler.leave("compute_Jacobians");
 
 
@@ -131,7 +121,7 @@ double mrpt::vision::bundle_adj_full(
 	double res = mrpt::vision::reprojectionResiduals(
 					 observations, camera_params, frame_poses, landmark_points,
 					 residual_vec,
-					 use_robust_kernel, true /* inverse poses */ );
+					 use_robust_kernel );
 	profiler.leave("reprojectionResiduals");
 
 	MRPT_CHECK_NORMAL_NUMBER(res)
@@ -396,7 +386,7 @@ double mrpt::vision::bundle_adj_full(
 								 observations, camera_params,
 								 new_frame_poses, new_landmark_points,
 								 residual_vec,
-								 use_robust_kernel, true /* inverse poses */ );
+								 use_robust_kernel );
 			profiler.leave("reprojectionResiduals");
 
 			MRPT_CHECK_NORMAL_NUMBER(res_new)
@@ -415,7 +405,7 @@ double mrpt::vision::bundle_adj_full(
 				res = res_new;
 
 				profiler.enter("compute_Jacobians");
-				ba_compute_Jacobians(frame_poses, landmark_points, camera_params, jac_data_vec, num_fix_frames, num_fix_points);
+				ba_compute_Jacobians<false>(frame_poses, landmark_points, camera_params, jac_data_vec, num_fix_frames, num_fix_points);
 				profiler.leave("compute_Jacobians");
 
 
@@ -453,15 +443,6 @@ double mrpt::vision::bundle_adj_full(
 			break;
 	}
 
-	// **CAUTION**: This BA implementation assumes "frame_poses" as *INVERSE* camera poses
-	// Undo for the user:
-	profiler.enter("inverse_all_poses");
-	for (size_t i=0; i<num_frames; i++)
-		frame_poses[i].inverse();
-	profiler.leave("inverse_all_poses");
-
 	return res;
-
 	MRPT_END
 }
-

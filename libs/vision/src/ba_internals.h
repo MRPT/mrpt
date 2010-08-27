@@ -65,16 +65,142 @@ namespace mrpt
 		};
 
 
+		/** The projective camera 2x6 Jacobian \f$ \frac{\partial h(f,p)}{\partial p} \f$ (wrt the 6D camera pose)
+		  * \note Jacobians as described in Ethan Eade's Phd thesis: http://mi.eng.cam.ac.uk/~ee231/thesis_revised.pdf (Appendix A)
+		  */
+		template <bool POSES_ARE_INVERSE>
+		void frameJac(
+			   const TCamera  & camera_params,
+			   const CPose3D  & cam_pose,
+			   const TPoint3D & landmark_global,
+			   CMatrixFixedNumeric<double,2,6> & out_J)
+		{
+			// JL says: This BA implementation assumes that we're estimating the **INVERSE** camera poses
+			double x,y,z; // wrt cam (local coords)
+			if (POSES_ARE_INVERSE)
+				cam_pose.composePoint(
+					   landmark_global.x,landmark_global.y,landmark_global.z,
+					   x,y,z);
+			else
+				cam_pose.inverseComposePoint(
+					   landmark_global.x,landmark_global.y,landmark_global.z,
+					   x,y,z);
+
+			const double z_2 = square(z);
+
+			ASSERT_(z!=0)
+
+			CMatrixDouble22 J_intrinsic;
+			J_intrinsic(0,0) = camera_params.intrinsicParams(0,0);
+			J_intrinsic(1,1) = camera_params.intrinsicParams(1,1);
+
+			if (POSES_ARE_INVERSE)
+			{
+				const double J_frame_vals[] = {
+					   1./z, 0   , -x/z_2, -x*y/z_2, 1+(square(x)/z_2), -y/z,
+					   0   , 1./z, -y/z_2, -(1+square(y)/z_2), x*y/z_2, x/z  };
+				const CMatrixFixedNumeric<double,2,6> J_frame(J_frame_vals);
+				out_J.multiply_AB(J_intrinsic, J_frame);
+			}
+			else
+			{
+				const double J_frame_vals[] = {
+					   -1./z, 0   , x/z_2, x*y/z_2, -1-(square(x)/z_2), y/z,
+					   0   , -1./z, y/z_2, (1+square(y)/z_2), -x*y/z_2, -x/z  };
+				const CMatrixFixedNumeric<double,2,6> J_frame(J_frame_vals);
+				out_J.multiply_AB(J_intrinsic, J_frame);
+			}
+		}
+
+		/**
+		* Jacobians as described in Ethan Eade's Phd thesis:
+		* http://mi.eng.cam.ac.uk/~ee231/thesis_revised.pdf , Appendix A
+		*/
+		template <bool POSES_ARE_INVERSE>
+		void pointJac(
+			const TCamera  & camera_params,
+			const CPose3D     & cam_pose,
+			const TPoint3D & landmark_global,
+			CMatrixFixedNumeric<double,2,3> & out_J )
+		{
+			TPoint3D l; // Local point, wrt camera
+
+			CMatrixDouble33 dp_point(UNINITIALIZED_MATRIX);
+
+			if (POSES_ARE_INVERSE)
+				cam_pose.composePoint(
+					landmark_global.x,landmark_global.y,landmark_global.z,
+					l.x,l.y,l.z,
+					&dp_point );
+			else
+				cam_pose.inverseComposePoint(
+					landmark_global.x,landmark_global.y,landmark_global.z,
+					l.x,l.y,l.z,
+					&dp_point );
+
+			const double z_2 = square(l.z);
+
+			ASSERT_(l.z!=0)
+			const double tmp_vals[] = {
+				1.0/l.z, 0    , -l.x/z_2,
+				0    , 1.0/l.z, -l.y/z_2 };
+			const CMatrixFixedNumeric<double,2,3> tmp(tmp_vals);
+
+			CMatrixDouble22 J_intrinsic;
+			J_intrinsic(0,0) = camera_params.intrinsicParams(0,0);
+			J_intrinsic(1,1) = camera_params.intrinsicParams(1,1);
+
+			// RET: cam_pars.jacobian() * Jx
+			//    = cam_pars.jacobian() * tmp * T.get_rotation();
+			//out_J.multiply_AB(J_intrinsic, J_x);
+			out_J.multiply_ABC(J_intrinsic,tmp, dp_point);
+		}
+
+
 		// === Compute sparse Jacobians ====
 		// Case: 6D poses + 3D points + 2D (x,y) observations
-		// For the case of *inverse* frame poses being estimated.
+		// For the case of *inverse* or *normal* frame poses being estimated.
+		// Made inline so immediate values in "poses_are_inverses" are propragated by the compiler
+		template <bool POSES_ARE_INVERSE>
 		void ba_compute_Jacobians(
 			const TFramePosesVec         & frame_poses,
 			const TLandmarkLocationsVec  & landmark_points,
 			const TCamera                & camera_params,
 			vector<JacData<6,3,2> >      & jac_data_vec,
 			const size_t                   num_fix_frames,
-			const size_t                   num_fix_points );
+			const size_t                   num_fix_points)
+		{
+			MRPT_START
+
+			// num_fix_frames & num_fix_points: Are relative to the order in frame_poses & landmark_points
+			ASSERT_(!frame_poses.empty() && !landmark_points.empty())
+
+			const size_t N = jac_data_vec.size();
+
+			for (size_t i=0;i<N;i++)
+			{
+				JacData<6,3,2> &D = jac_data_vec[i];
+
+				const TCameraPoseID  i_f = D.frame_id;
+				const TLandmarkID    i_p = D.point_id;
+
+				ASSERTDEB_(i_f<frame_poses.size())
+				ASSERTDEB_(i_p<landmark_points.size())
+
+				if (i_f>=num_fix_frames)
+				{
+					frameJac<POSES_ARE_INVERSE>(camera_params, frame_poses[i_f], landmark_points[i_p], D.J_frame);
+					D.J_frame_valid = true;
+				}
+
+				if (i_p>=num_fix_points)
+				{
+					pointJac<POSES_ARE_INVERSE>(camera_params, frame_poses[i_f], landmark_points[i_p], D.J_point);
+					D.J_point_valid = true;
+				}
+			}
+			MRPT_END
+		}
 
 		// Compute temporary matrices during BA:
 		void ba_calcUVeps(

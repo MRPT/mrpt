@@ -106,123 +106,6 @@ void mrpt::vision::ba_initial_estimate(
 }
 
 
-/** The projective camera 2x6 Jacobian \f$ \frac{\partial h(f,p)}{\partial p} \f$ (wrt the 6D camera pose)
-  * \note Jacobians as described in Ethan Eade's Phd thesis: http://mi.eng.cam.ac.uk/~ee231/thesis_revised.pdf (Appendix A)
-  */
-void frameJac(
-	const TCamera  & camera_params,
-	const CPose3D  & cam_pose,
-	const TPoint3D & landmark_global,
-	CMatrixFixedNumeric<double,2,6> & out_J)
-{
-	// JL says: This BA implementation assumes that we're estimating the **INVERSE** camera poses
-	double x,y,z; // wrt cam (local coords)
-	cam_pose.composePoint(
-		landmark_global.x,landmark_global.y,landmark_global.z,
-		x,y,z);
-
-	const double z_2 = square(z);
-
-	ASSERT_(z!=0)
-
-	const double J_frame_vals[] = {
-		1./z, 0   , -x/z_2, -x*y/z_2, 1+(square(x)/z_2), -y/z,
-		0   , 1./z, -y/z_2, -(1+square(y)/z_2), x*y/z_2, x/z  };
-	const CMatrixFixedNumeric<double,2,6> J_frame(J_frame_vals);
-
-	CMatrixDouble22 J_intrinsic;
-	J_intrinsic(0,0) = camera_params.intrinsicParams(0,0);
-	J_intrinsic(1,1) = camera_params.intrinsicParams(1,1);
-
-	out_J.multiply_AB(J_intrinsic, J_frame);
-}
-
-/**
-* Jacobians as described in Ethan Eade's Phd thesis:
-* http://mi.eng.cam.ac.uk/~ee231/thesis_revised.pdf , Appendix A
-*/
-void pointJac(
-	const TCamera  & camera_params,
-	const CPose3D  & cam_pose,
-	const TPoint3D & landmark_global,
-	CMatrixFixedNumeric<double,2,3> & out_J)
-{
-	// JL says: This BA implementation assumes that we're estimating the **INVERSE** camera poses
-	double x,y,z; // wrt cam (local coords)
-	cam_pose.composePoint(
-		landmark_global.x,landmark_global.y,landmark_global.z,
-		x,y,z);
-
-	const double z_2 = square(z);
-
-	ASSERT_(z!=0)
-	const double tmp_vals[] = {
-		1.0/z, 0    , -x/z_2,
-		0    , 1.0/z, -y/z_2 };
-	const CMatrixFixedNumeric<double,2,3> tmp(tmp_vals);
-
-	CMatrixDouble22 J_intrinsic;
-	J_intrinsic(0,0) = camera_params.intrinsicParams(0,0);
-	J_intrinsic(1,1) = camera_params.intrinsicParams(1,1);
-
-	CMatrixDouble33 ROT(UNINITIALIZED_MATRIX);
-	cam_pose.getRotationMatrix(ROT);
-	//p.getHomogeneousMatrixVal().extractMatrix(0,0,ROT);
-
-//	CMatrixDouble23 J_x(UNINITIALIZED_MATRIX);
-//	J_x.multiply_AB(tmp,ROT);  // J_x = tmp * T.get_rotation();
-
-	// RET: cam_pars.jacobian() * Jx
-	//    = cam_pars.jacobian() * tmp * T.get_rotation();
-	//out_J.multiply_AB(J_intrinsic, J_x);
-	out_J.multiply_ABC(J_intrinsic,tmp,ROT);
-}
-
-/* -------------------------------------------------------------------------------------
-                              ba_compute_Jacobians
-Case: 6D poses + 3D points + 2D (x,y) observations
-   ------------------------------------------------------------------------------------ */
-void mrpt::vision::ba_compute_Jacobians(
-	const TFramePosesVec            & frame_poses,
-	const TLandmarkLocationsVec     & landmark_points,
-	const TCamera                & camera_params,
-	std::vector<JacData<6,3,2> > & jac_data_vec,
-	const size_t                   num_fix_frames,
-	const size_t                   num_fix_points )
-{
-	MRPT_START
-
-	// num_fix_frames & num_fix_points: Are relative to the order in frame_poses & landmark_points
-	ASSERT_(!frame_poses.empty() && !landmark_points.empty())
-
-	const size_t N = jac_data_vec.size();
-
-	for (size_t i=0;i<N;i++)
-	{
-		JacData<6,3,2> &D = jac_data_vec[i];
-
-		const TCameraPoseID  i_f = D.frame_id;
-		const TLandmarkID    i_p = D.point_id;
-
-		ASSERTDEB_(i_f<frame_poses.size())
-		ASSERTDEB_(i_p<landmark_points.size())
-
-		if (i_f>=num_fix_frames)
-		{
-			frameJac(camera_params, frame_poses[i_f], landmark_points[i_p], D.J_frame );
-			D.J_frame_valid = true;
-		}
-
-		if (i_p>=num_fix_points)
-		{
-			pointJac(camera_params, frame_poses[i_f], landmark_points[i_p], D.J_point);
-			D.J_point_valid = true;
-		}
-	}
-
-	MRPT_END
-}
-
 /** pseudo-huber cost function */
 double kernel(double delta)
 {
@@ -241,8 +124,7 @@ double mrpt::vision::reprojectionResiduals(
 	const TFramePosesMap                 & frame_poses,
 	const TLandmarkLocationsMap          & landmark_points,
 	std::vector<mrpt::math::CArrayDouble<2> > & out_residuals,
-	bool  use_robust_kernel,
-	bool  frame_poses_are_inverse
+	bool  use_robust_kernel
 	)
 {
 	MRPT_START
@@ -267,9 +149,7 @@ double mrpt::vision::reprojectionResiduals(
 		const TFramePosesMap::mapped_type        & frame = itF->second;
 		const TLandmarkLocationsMap::mapped_type & point = itP->second;
 
-		const TPixelCoordf  z_pred = frame_poses_are_inverse ?
-			mrpt::vision::pinhole::projectPoint_no_distortion_inv(camera_params, frame, point) :
-			mrpt::vision::pinhole::projectPoint_no_distortion    (camera_params, frame, point);
+		const TPixelCoordf  z_pred = mrpt::vision::pinhole::projectPoint_no_distortion<false>(camera_params, frame, point);
 		const TPixelCoordf &z_meas = OBS.px;
 
 		CArrayDouble<2> delta;
@@ -295,8 +175,7 @@ double mrpt::vision::reprojectionResiduals(
 	const TFramePosesVec                 & frame_poses,
 	const TLandmarkLocationsVec          & landmark_points,
 	std::vector<mrpt::math::CArrayDouble<2> > & out_residuals,
-	bool  use_robust_kernel,
-	bool  frame_poses_are_inverse
+	bool  use_robust_kernel
 	)
 {
 	MRPT_START
@@ -319,9 +198,7 @@ double mrpt::vision::reprojectionResiduals(
 		const TFramePosesVec::value_type        & frame = frame_poses[i_f];
 		const TLandmarkLocationsVec::value_type & point = landmark_points[i_p];
 
-		const TPixelCoordf  z_pred = frame_poses_are_inverse ?
-			mrpt::vision::pinhole::projectPoint_no_distortion_inv(camera_params, frame, point) :
-			mrpt::vision::pinhole::projectPoint_no_distortion    (camera_params, frame, point);
+		const TPixelCoordf  z_pred = mrpt::vision::pinhole::projectPoint_no_distortion<false>(camera_params, frame, point);
 		const TPixelCoordf &z_meas = OBS.px;
 
 		CArrayDouble<2> delta;
@@ -433,7 +310,8 @@ void mrpt::vision::ba_addToFrames(
 //		mrpt::system::pause();
 
 		//new_pose = incrPose + old_pose
-		new_pose.composeFrom(incrPose,old_pose);
+		// x[+]d = x · exp(delta)
+		new_pose.composeFrom(old_pose,incrPose);
 
 		// Move to the next entry in delta:
 		delta_val+=6;
@@ -480,3 +358,5 @@ void mrpt::vision::ba_addToPoints(
 
 	MRPT_END
 }
+
+
