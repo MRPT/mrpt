@@ -672,7 +672,7 @@ namespace mrpt
 		/** @}
 		 */
 
-		/** @name Miscellaneous methods
+		/** @name Miscellaneous Geometry methods
 			@{
 		 */
 		/**
@@ -738,8 +738,6 @@ namespace mrpt
 		  * \throw std::logic_error if the lines do not fit in a single plane.
 		  */
 		void BASE_IMPEXP getAngleBisector(const TLine3D &l1,const TLine3D &l2,TLine3D &bis);
-		/** @}
-		 */
 
 		/**
 		  * Fast ray tracing method using polygons' properties.
@@ -774,17 +772,7 @@ namespace mrpt
 			vOut[2]=v0[0]*v1[1]-v0[1]*v1[0];
 		}
 
-		/** Computes the cross product of two 3D vectors, returning a vector normal to both.
-		  *  It uses the simple implementation:
-
-		    \f[  v_out = \left(
-					\begin{array}{c c c}
-					\hat{i} ~ \hat{j} ~ \hat{k} \\
-					x0 ~ y0 ~ z0 \\
-					x1 ~ y1 ~ z1 \\
-					\end{array} \right)
-			\f]
-		  */
+		//! \overload
 		template<class T>
 		inline void crossProduct3D(
 			const std::vector<T> &v0,
@@ -798,6 +786,57 @@ namespace mrpt
 			v_out[1] = -v0[0]*v1[2] + v0[2]*v1[0];
 			v_out[2] =  v0[0]*v1[1] - v0[1]*v1[0];
 		}
+
+		/** Computes the 3x3 skew symmetric matrix from a 3-vector or 3-array:
+		  * \f[  M([x ~ y ~ z]^\top) = \left(
+		  * 	\begin{array}{c c c}
+		  * 	0 & -z & y \\
+		  * 	z & 0 & -x \\
+		  * 	-y & x & 0
+		  * 	\end{array} \right)
+		  * \f]
+		  */
+		template<class VECTOR,class MATRIX>
+		inline void skew_symmetric3(const VECTOR &v,MATRIX& M)	{
+			ASSERT_(v.size()==3)
+			M.setSize(3,3);
+			M.set_unsafe(0,0, 0); M.set_unsafe(0,1, -v[2]); M.set_unsafe(0,2, v[1]);
+			M.set_unsafe(1,0, v[2]); M.set_unsafe(1,1, 0); M.set_unsafe(1,2, -v[0]);
+			M.set_unsafe(2,0, -v[1]); M.set_unsafe(2,1, v[0]); M.set_unsafe(2,2, 0);
+		}
+		//! \overload
+		template<class VECTOR>
+		inline mrpt::math::CMatrixDouble33 skew_symmetric3(const VECTOR &v)	{
+			mrpt::math::CMatrixDouble33 M(UNINITIALIZED_MATRIX);
+			skew_symmetric3(v,M);
+			return M;
+		}
+
+		/** Computes the negative version of a 3x3 skew symmetric matrix from a 3-vector or 3-array:
+		  * \f[  -M([x ~ y ~ z]^\top) = \left(
+		  * 	\begin{array}{c c c}
+		  * 	0 & z & -y \\
+		  * 	-z & 0 & x \\
+		  * 	y & -x & 0
+		  * 	\end{array} \right)
+		  * \f]
+		  */
+		template<class VECTOR,class MATRIX>
+		inline void skew_symmetric3_neg(const VECTOR &v,MATRIX& M)	{
+			ASSERT_(v.size()==3)
+			M.setSize(3,3);
+			M.set_unsafe(0,0, 0); M.set_unsafe(0,1, v[2]); M.set_unsafe(0,2, -v[1]);
+			M.set_unsafe(1,0, -v[2]); M.set_unsafe(1,1, 0); M.set_unsafe(1,2, v[0]);
+			M.set_unsafe(2,0, v[1]); M.set_unsafe(2,1, -v[0]); M.set_unsafe(2,2, 0);
+		}
+		//! \overload
+		template<class VECTOR>
+		inline mrpt::math::CMatrixDouble33 skew_symmetric3_neg(const VECTOR &v)	{
+			mrpt::math::CMatrixDouble33 M(UNINITIALIZED_MATRIX);
+			skew_symmetric3_neg(v,M);
+			return M;
+		}
+
 
 		/**
 		  * Returns true if two 2D vectors are parallel. The arguments may be points, arrays, etc.
@@ -1115,8 +1154,7 @@ namespace mrpt
 			}
 		}
 
-
-
+		/** @} */  // end of misc. geom. methods
 
 	} // End of namespace
 

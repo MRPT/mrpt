@@ -679,6 +679,12 @@ namespace mrpt
 			   * \sa getHomogeneousMatrix
 			   */
 			 void getInverseHomogeneousMatrix( math::CMatrixDouble44 &out_HM ) const;
+			 //! \overload
+			 inline mrpt::math::CMatrixDouble44 getInverseHomogeneousMatrix() const {
+			 	mrpt::math::CMatrixDouble44 M(UNINITIALIZED_MATRIX);
+			 	getInverseHomogeneousMatrix(M);
+			 	return M;
+			 }
 
 			 /** Returns the 2D distance from this pose/point to another given by its coordinates:
 			   * \sa distance2DToSquare,distance3DTo

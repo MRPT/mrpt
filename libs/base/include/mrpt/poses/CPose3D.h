@@ -254,6 +254,13 @@ namespace poses
 				ROT.m_Val[6+c]=m_HM.m_Val[8+c];
 			}
 		 }
+		 //! \overload
+		 inline mrpt::math::CMatrixDouble33 getRotationMatrix() const
+		 {
+		 	mrpt::math::CMatrixDouble33  ROT(UNINITIALIZED_MATRIX);
+		 	getRotationMatrix(ROT);
+		 	return ROT;
+		 }
 
 		/** The operator \f$ a \oplus b \f$ is the pose compounding operator.
 		   */
@@ -338,7 +345,7 @@ namespace poses
 		  */
 		void composeFrom(const CPose3D& A, const CPose3D& B );
 
-		/** Make \f$ this = this \oplus b \f$  */
+		/** Make \f$ this = this \oplus b \f$  (\a b can be "this" without problems) */
 		inline CPose3D&  operator += (const CPose3D& b)
 		{
 			composeFrom(*this,b);

@@ -626,18 +626,39 @@ void CPose3D::composeFrom(const CPose3D& A, const CPose3D& B )
 {
 	//m_HM.multiply( A.m_HM, B.m_HM );
 	// In fact, we can just update the 3x4 part of the matrix:
-	for (int r=0;r<3;r++)
-		for (int c=0;c<3;c++)
-			m_HM.get_unsafe(r,c) = A.m_HM.get_unsafe(r,0)*B.m_HM.get_unsafe(0,c)+A.m_HM.get_unsafe(r,1)*B.m_HM.get_unsafe(1,c)+A.m_HM.get_unsafe(r,2)*B.m_HM.get_unsafe(2,c);
+	if (this!=&A && this!=&B)
+	{
+		for (int r=0;r<3;r++)
+			for (int c=0;c<3;c++)
+				m_HM.get_unsafe(r,c) = A.m_HM.get_unsafe(r,0)*B.m_HM.get_unsafe(0,c)+A.m_HM.get_unsafe(r,1)*B.m_HM.get_unsafe(1,c)+A.m_HM.get_unsafe(r,2)*B.m_HM.get_unsafe(2,c);
 
-	// The translation part M(0:3,3)
-	for (int r=0;r<3;r++)
-			m_HM.get_unsafe(r,3) = A.m_HM.get_unsafe(r,0)*B.m_HM.get_unsafe(0,3)+A.m_HM.get_unsafe(r,1)*B.m_HM.get_unsafe(1,3)+A.m_HM.get_unsafe(r,2)*B.m_HM.get_unsafe(2,3)+ A.m_HM.get_unsafe(r,3);
+		// The translation part M(0:3,3)
+		for (int r=0;r<3;r++)
+				m_HM.get_unsafe(r,3) = A.m_HM.get_unsafe(r,0)*B.m_HM.get_unsafe(0,3)+A.m_HM.get_unsafe(r,1)*B.m_HM.get_unsafe(1,3)+A.m_HM.get_unsafe(r,2)*B.m_HM.get_unsafe(2,3)+ A.m_HM.get_unsafe(r,3);
+	}
+	else
+	{	// this = A or B -> Store HM in a temporary holder:
+		CMatrixDouble44  RES_HM(UNINITIALIZED_MATRIX);
+		for (int r=0;r<3;r++)
+			for (int c=0;c<3;c++)
+				RES_HM(r,c) = A.m_HM.get_unsafe(r,0)*B.m_HM.get_unsafe(0,c)+A.m_HM.get_unsafe(r,1)*B.m_HM.get_unsafe(1,c)+A.m_HM.get_unsafe(r,2)*B.m_HM.get_unsafe(2,c);
+
+		// The translation part M(0:3,3)
+		for (int r=0;r<3;r++)
+				RES_HM(r,3) = A.m_HM.get_unsafe(r,0)*B.m_HM.get_unsafe(0,3)+A.m_HM.get_unsafe(r,1)*B.m_HM.get_unsafe(1,3)+A.m_HM.get_unsafe(r,2)*B.m_HM.get_unsafe(2,3)+ A.m_HM.get_unsafe(r,3);
+
+		// And now, copy to "this":
+//		for (int r=0;r<3;r++)
+//			for (int c=0;c<4;c++)
+//				m_HM(r,c)=RES_HM(r,c);
+		for (int i=0;i<3*4;i++)
+			m_HM.m_Val[i] = RES_HM.m_Val[i];
+	}
 
 	// Update the x,y,z,yaw,pitch,roll fields:
-	m_x = m_HM.get_unsafe(0,3);
-	m_y = m_HM.get_unsafe(1,3);
-	m_z = m_HM.get_unsafe(2,3);
+	m_x = m_HM(0,3);
+	m_y = m_HM(1,3);
+	m_z = m_HM(2,3);
 	m_ypr_uptodate=false;
 }
 

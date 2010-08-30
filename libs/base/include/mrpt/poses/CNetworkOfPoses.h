@@ -69,19 +69,23 @@ namespace mrpt
 		  *      - mrpt::poses::CNetworkOfPoses2DInf : 2D edges as a Gaussian PDF with information matrix ( CPosePDFGaussianInf )
 		  *      - mrpt::poses::CNetworkOfPoses3DInf : 3D edges as a Gaussian PDF with information matrix ( CPose3DPDFGaussianInf )
 		  *      - mrpt::poses::CNetworkOfPoses2DCov : 2D edges as a Gaussian PDF with covariance matrix ( CPosePDFGaussian ). It's more efficient to use the information matrix version instead!
-		  *      - mrpt::poses::CNetworkOfPoses3DCov : 3D edges as a Gaussian PDF with covariance matrix ( CPose3DPDFGaussian ). It's more efficient to use the information matrix version instead! 
+		  *      - mrpt::poses::CNetworkOfPoses3DCov : 3D edges as a Gaussian PDF with covariance matrix ( CPose3DPDFGaussian ). It's more efficient to use the information matrix version instead!
 		  *
 		  *  Two main members store all the information in this class:
 		  *		- \a edge  (in the base class mrpt::math::CDirectedGraph::edge): A map from pairs of node ID -> pose constraints.
 		  *		- \a nodes : A map from node ID -> estimated pose of that node (actually, read below on the template argument MAPS_IMPLEMENTATION).
 		  *
-		  *  Graphs can be loaded and saved to text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a> ), 
+		  *  Graphs can be loaded and saved to text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a> ),
 		  *   using \a loadFromTextFile and \a saveToTextFile.
 		  *
 		  *  This class is the base for representing networks of poses, which are the main data type of a series
 		  *   of SLAM algorithms implemented in the library mrpt-slam, in the namespace mrpt::graphslam.
 		  *
 		  *  For tools to visualize graphs as 2D/3D plots, see the namespace mrpt::opengl::graph_tools in the library mrpt-opengl.
+		  *
+		  *  The template arguments are:
+		  *		- CPOSE: The type of the edges, which hold a relative pose (2D/3D, just a value or a Gaussian, etc.)
+		  *		- MAPS_IMPLEMENTATION: Can be either mrpt::utils::map_traits_stdmap or mrpt::utils::map_traits_map_as_vector. Determines the type of the list of global poses (member \a nodes).
 		  *
 		  * \sa mrpt::graphslam
 		  */
@@ -123,24 +127,6 @@ namespace mrpt
 
 			/** @name I/O file methods
 			    @{ */
-
-			/** Saves the graph to a file using MRPT's binary serialization format.
-			  * \sa loadFromBinaryFile, saveToTextFile
-			  * \exception On any error
-			  */
-			inline void saveToBinaryFile( const std::string &fileName ) const {
-				mrpt::utils::CFileGZOutputStream fil(fileName);
-				this->internal_writebinary(&fil);
-			}
-
-			/** Loads the graph from a binary file.
-			  * \sa saveToBinaryFile, loadFromTextFile
-			  * \exception On any error
-			  */
-			inline void loadFromBinaryFile( const std::string &fileName ) {
-				mrpt::utils::CFileGZInputStream fil(fileName);
-				this->internal_readbinary(&fil);
-			}
 
 			/** Saves to a text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a> )
 			  *  For 2D graphs only VERTEX2 & EDGE2 entries will be saved, and VERTEX3 & EDGE3 entries for 3D graphs.
@@ -232,21 +218,12 @@ namespace mrpt
 
 			/** Default constructor (just sets root to "0") */
 			inline CNetworkOfPoses() : root(0) { }
-			virtual ~CNetworkOfPoses() { }
-			/** @} */
-
-		protected:
-			/** @name Internal emulation of CSerializable for a template class
-			    @{ */
-			virtual void internal_readbinary(mrpt::utils::CStream *in) {  THROW_EXCEPTION("readbinary: not implemented") }
-			virtual void internal_writebinary(mrpt::utils::CStream *out) const { THROW_EXCEPTION("writebinary: not implemented") }
+			~CNetworkOfPoses() { }
 			/** @} */
 		};
 
 #define DEFINE_SERIALIZABLE_GRAPH  \
 		protected: \
-			virtual void internal_readbinary(mrpt::utils::CStream *in) { in->ReadObject(this); } \
-			virtual void internal_writebinary(mrpt::utils::CStream *out) const { out->WriteObject(this); } \
 			virtual void  writeToStream(CStream &out, int *version) const { \
 				if (version) *version = 0; \
 				else out << nodes << edges << root;  \

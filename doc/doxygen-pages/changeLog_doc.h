@@ -87,6 +87,7 @@
 				- Methods composePoint() and inverseComposePoint() now can also compute the Jacobian with respect to se3 (the tangent space of SE(3) at a given pose).
 			- New method: mrpt::hwdrivers::CSerialPort::ReadString
 		- New functions:
+			- mrpt::math::skew_symmetric3 & mrpt::math::skew_symmetric3_neg
 			- mrpt::math::rodrigues_so3_exp
 			- mrpt::vision::pinhole::undistort_point
 			- ostream text print << operators for mrpt::utils::TPixelCoordf and mrpt::utils::TPixelCoordf.
