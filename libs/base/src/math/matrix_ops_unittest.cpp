@@ -383,6 +383,82 @@ TEST(Matrices,inv_6x6_dyn)
 	CHECK_AND_RET_ERROR( isNaN(C(0,0)) || !isFinite(C(0,0)) || (AInv-C).Abs().sumAll() >1e-4,  "Error in inv, 6x6 dyn")
 }
 
+TEST(Matrices,transpose)
+{
+	const double dat_A[] = {
+		1,2,3,
+		4,5,6 };
+	const double dat_At[] = {
+		1,4,
+		2,5,
+		3,6};
+	const CMatrixDouble  A(2,3,dat_A);
+	const CMatrixDouble  At(3,2,dat_At);
+
+	EXPECT_EQ(A.t(), At);
+	EXPECT_EQ(~A, At);
+	EXPECT_EQ(A.t().t(), A);
+}
+
+TEST(Matrices,multiply_A_skew3)
+{
+	{
+		const double dat_A[] = {
+			1,2,3,
+			4,5,6 };
+		const CMatrixDouble  A(2,3,dat_A);
+		const vector_double  v = make_vector<3>(1.0,2.0,3.0);
+		const CMatrixDouble  S = CMatrixDouble( mrpt::math::skew_symmetric3(v) );
+
+		CMatrixDouble  R;
+		R.multiply_A_skew3(A,v);
+		EXPECT_EQ(R, A*S );
+	}
+	{
+		const double dat_A[] = {
+			1,2,3,
+			4,5,6 };
+		const double dat_v[] = { 1,2,3 };
+		const CMatrixFixedNumeric<double,2,3>  A(dat_A);
+		const CArrayDouble<3> v(dat_v);
+		const CMatrixFixedNumeric<double,3,3>  S = mrpt::math::skew_symmetric3(v);
+
+		CMatrixFixedNumeric<double,2,3> R;
+		R.multiply_A_skew3(A,v);
+		EXPECT_EQ(R, A*S );
+	}
+}
+
+TEST(Matrices,multiply_skew3_A)
+{
+	{
+		const double dat_A[] = {
+			1,2,
+			3,4,
+			5,6 };
+		const CMatrixDouble  A(3,2,dat_A);
+		const vector_double  v = make_vector<3>(1.0,2.0,3.0);
+		const CMatrixDouble  S = CMatrixDouble( mrpt::math::skew_symmetric3(v) );
+
+		CMatrixDouble  R;
+		R.multiply_skew3_A(v,A);
+		EXPECT_EQ(R, S*A );
+	}
+	{
+		const double dat_A[] = {
+			1,2,
+			3,4,
+			5,6 };
+		const double dat_v[] = { 1,2,3 };
+		const CMatrixFixedNumeric<double,3,2>  A(dat_A);
+		const CArrayDouble<3> v(dat_v);
+		const CMatrixFixedNumeric<double,3,3>  S = mrpt::math::skew_symmetric3(v);
+
+		CMatrixFixedNumeric<double,3,2> R;
+		R.multiply_skew3_A(v,A);
+		EXPECT_EQ(R, S*A );
+	}
+}
 
 
 TEST(Matrices,fromMatlabStringFormat)

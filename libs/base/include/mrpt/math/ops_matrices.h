@@ -251,6 +251,64 @@ namespace mrpt
 			return ret;
 		}
 
+		/** Return the transpose of a matrix */
+		template <class MAT1,class MAT2>
+		inline void matrix_transpose(const MAT1& m_in, MAT2 &m_out)
+		{
+			const size_t R=m_in.getRowCount();
+			const size_t C=m_in.getColCount();
+			m_out.setSize(C,R); // transpose
+			for (size_t i=0;i<R;i++)
+				for (size_t j=0;j<C;j++)
+					m_out.get_unsafe(j,i) = m_in.get_unsafe(i,j);
+		}
+		//! \overload
+		template <class MAT>
+		inline MAT_TYPE_TRANSPOSE_OF(MAT) matrix_transpose(const MAT& m)
+		{
+			MAT_TYPE_TRANSPOSE_OF(MAT) temp;
+			matrix_transpose(m,temp);
+			return temp;
+		}
+
+		/** Only for vectors/arrays "v" of length3, compute out = A * Skew(v), where Skew(v) is the skew symmetric matric generated from \a v (see mrpt::math::skew_symmetric3)
+		  */
+		template <class MAT_A,class SKEW_3VECTOR,class MAT_OUT>
+		void multiply_A_skew3(const MAT_A &A,const SKEW_3VECTOR &v, MAT_OUT &out)
+		{
+			MRPT_START
+			ASSERT_EQUAL_(size(A,2),3)
+			ASSERT_EQUAL_(v.size(),3)
+			const size_t N = size(A,1);
+			out.setSize(N,3);
+			for (size_t i=0;i<N;i++)
+			{
+				out.set_unsafe(i,0, A.get_unsafe(i,1)*v[2]-A.get_unsafe(i,2)*v[1] );
+				out.set_unsafe(i,1,-A.get_unsafe(i,0)*v[2]+A.get_unsafe(i,2)*v[0] );
+				out.set_unsafe(i,2, A.get_unsafe(i,0)*v[1]-A.get_unsafe(i,1)*v[0] );
+			}
+			MRPT_END
+		}
+
+		/** Only for vectors/arrays "v" of length3, compute out = Skew(v) * A, where Skew(v) is the skew symmetric matric generated from \a v (see mrpt::math::skew_symmetric3)
+		  */
+		template <class SKEW_3VECTOR,class MAT_A,class MAT_OUT>
+		void multiply_skew3_A(const SKEW_3VECTOR &v, const MAT_A &A,MAT_OUT &out)
+		{
+			MRPT_START
+			ASSERT_EQUAL_(size(A,1),3)
+			ASSERT_EQUAL_(v.size(),3)
+			const size_t N = size(A,2);
+			out.setSize(3,N);
+			for (size_t i=0;i<N;i++)
+			{
+				out.set_unsafe(0,i,-A.get_unsafe(1,i)*v[2]+A.get_unsafe(2,i)*v[1] );
+				out.set_unsafe(1,i, A.get_unsafe(0,i)*v[2]-A.get_unsafe(2,i)*v[0] );
+				out.set_unsafe(2,i,-A.get_unsafe(0,i)*v[1]+A.get_unsafe(1,i)*v[0] );
+			}
+			MRPT_END
+		}
+
 		/** Computes the vector v = A * a, where "a" is a column vector of the appropriate length. */
 		template<class MATRIX1, class OTHERVECTOR1,class OTHERVECTOR2>
 		void multiply_Ab(const MATRIX1 &m, const OTHERVECTOR1 &vIn,OTHERVECTOR2 &vOut,bool accumToOutput ) {
@@ -1159,6 +1217,7 @@ namespace mrpt
 		temp ^= pow;
 		return temp;
 	}
+
 
 	/** unary transpose operator ~ */
 	template <class MAT>

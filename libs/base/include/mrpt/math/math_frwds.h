@@ -254,6 +254,12 @@ namespace mrpt
 		/*! this = C<sup>T</sup> * C * f (with a matrix C and a scalar f). */\
 		template<typename MAT_A> inline void multiply_AtA_scalar(const MAT_A &A,typename MAT_A::value_type f)	{\
 			mrpt::math::detail::multiply_AtA_scalar(A,f,*this); }\
+		/*! this = A * skew(v), with \a v being a 3-vector (or 3-array) and skew(v) the skew symmetric matrix of v (see mrpt::math::skew_symmetric3) */\
+		template <class MAT_A,class SKEW_3VECTOR> void multiply_A_skew3(const MAT_A &A,const SKEW_3VECTOR &v) { \
+			mrpt::math::detail::multiply_A_skew3(A,v,*this); }\
+		/*! this = skew(v)*A, with \a v being a 3-vector (or 3-array) and skew(v) the skew symmetric matrix of v (see mrpt::math::skew_symmetric3) */\
+		template <class SKEW_3VECTOR,class MAT_A> void multiply_skew3_A(const SKEW_3VECTOR &v,const MAT_A &A) { \
+			mrpt::math::detail::multiply_skew3_A(v,A,*this); }\
 		/*! R = H<sup>T</sup> * C * H (with a symmetric matrix C) */ \
 		template <typename MAT_C, typename MAT_R> \
 		inline void multiply_HtCH(const MAT_C &C,MAT_R &R,bool accumResultInOutput=false,bool allow_submatrix_mult=false) const /*!< R = this<sup>T</sup> * C * this \sa detail::multiply_HtCH */  { \
@@ -320,6 +326,10 @@ namespace mrpt
 			if (!isSquare()) return false; else return std::abs(this->det())<=epsilon; } \
 		/*! The trace of this square matrix */ \
 		inline NUMTYPE trace() const { return mrpt::math::detail::trace(*this); }\
+		/*! Return the transpose of this matrix (store in given output matrix) */ \
+		template <class MAT_OUT> inline void t(MAT_OUT &m_out) const { return mrpt::math::detail::matrix_transpose(*this,m_out); } \
+		/*! Return the transpose of this matrix (return as new matrix) */ \
+		inline MAT_TYPE_TRANSPOSE_OF(mrpt_autotype) t() const { MAT_TYPE_TRANSPOSE_OF(mrpt_autotype) ret; mrpt::math::detail::matrix_transpose(*this,ret); return ret; } \
 		template <class MAT_OUT> \
 		void pseudoInverse( MAT_OUT &out ) const /*!< Pseudo inverse of this matrix M: out = (M<sup>T</sup> * M)^-1 * M<sup>T</sup> */ { \
 			mrpt_autotype A, Ainv; A.multiply_AtA(*this); A.inv_fast(Ainv); out.multiply_ABt(Ainv,*this); } \
@@ -405,7 +415,9 @@ namespace mrpt
 				bool chol(const MATRIX1 &in, MATRIX2 &out);
 			template<class MATRIX1>
 				typename MATRIX1::value_type trace(const MATRIX1 &m);
-
+			template<class MATRIX1,class MATRIX2>
+				void matrix_transpose(const MATRIX1& m_in, MATRIX2 &m_out);
+//			template <class MATRIX>	MAT_TYPE_TRANSPOSE_OF(MATRIX) void matrix_transpose(const MATRIX& m); // Can't be declared here for missing matrices_programming.h at this point..
 			template <class MATRIX1,class MATRIX2,class MATRIXRES>
 				void multiply_AB(const MATRIX1& m1,const MATRIX2& m2, MATRIXRES& RESULT );
 			template<class MATRIX1, class OTHERVECTOR1,class OTHERVECTOR2>
@@ -457,7 +469,10 @@ namespace mrpt
 				void multiply_AAt_scalar(const MAT_IN &in,typename MAT_IN::value_type scalar,MAT_OUT &out);
 			template<typename MAT_IN,typename MAT_OUT>
 				void multiply_AtA_scalar(const MAT_IN &in,typename MAT_IN::value_type scalar,MAT_OUT &out);
-
+			template <class MAT_A,class SKEW_3VECTOR,class MAT_OUT>
+				void multiply_A_skew3(const MAT_A &A,const SKEW_3VECTOR &v, MAT_OUT &out);
+			template <class SKEW_3VECTOR,class MAT_A,class MAT_OUT>
+				void multiply_skew3_A(const SKEW_3VECTOR &v,const MAT_A &A, MAT_OUT &out);
 
 			template<typename MatrixType> size_t rank(const MatrixType &m,typename MatrixType::value_type eps=1e-7);
 

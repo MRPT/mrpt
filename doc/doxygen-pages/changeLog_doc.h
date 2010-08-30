@@ -86,6 +86,7 @@
 				- mrpt::poses::CPose3D::composePoint() now has an optional flag to compute faster, approximate Jacobians (for small rotations only!).
 				- Methods composePoint() and inverseComposePoint() now can also compute the Jacobian with respect to se3 (the tangent space of SE(3) at a given pose).
 			- New method: mrpt::hwdrivers::CSerialPort::ReadString
+			- All matrices: New methods: t() (for transpose, apart of the old ~ operator), multiply_A_skew3().
 		- New functions:
 			- mrpt::math::skew_symmetric3 & mrpt::math::skew_symmetric3_neg
 			- mrpt::math::rodrigues_so3_exp
