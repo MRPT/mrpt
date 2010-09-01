@@ -41,10 +41,10 @@
 		- New applications:
 			- <a href="http://www.mrpt.org/Application:carmen2rawlog" >carmen2rawlog</a>: A converter from CARMEN robotics logs to binary Rawlog dataset files.
 			- <a href="http://www.mrpt.org/Application:carmen2simplemap" >carmen2simplemap</a>: A converter from CARMEN robotics logs to binary "simplemap" files.
-			- <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>: A central application for all Graph-SLAM methods and tools.
+			- (TODO) <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>: A central application for all Graph-SLAM methods and tools.
 		- Changes in applications:
 			- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: More operations supported.
-			- <a href="http://www.mrpt.org/Application:mrpt-performance" >mrpt-performance</a>: Added command-line arguments to filter what tests to run.
+			- <a href="http://www.mrpt.org/Application:mrpt-performance" >mrpt-performance</a>: Added command-line arguments to filter what tests to run, and more tests added.
 			- RawLogViewer: Can now build "raw maps" from datasets in the "observations-only" format.
 			- <a href="http://www.mrpt.org/Application:icp-slam" >icp-slam</a> and <a href="http://www.mrpt.org/Application:rbpf-slam" >rbpf-slam</a> now accept a second command-line argument for the dataset (rawlog) to load.
 		- Changes in build system / compiling:
@@ -65,6 +65,7 @@
 				- mrpt::poses::CNetworkOfPoses2DCov
 				- mrpt::poses::CNetworkOfPoses3DCov
 			- (TODO) mrpt::utils::map_as_vector a vector-based implementation of a std::map-like container.
+			- mrpt::utils::CTextFileLinesParser
 		- Changes in classes:
 			- mrpt::poses::CNetworkOfPoses has many improvements and new methods (see its documentation).
 			- mrpt::math::CDijkstra:

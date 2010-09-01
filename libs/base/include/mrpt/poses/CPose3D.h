@@ -520,6 +520,7 @@ namespace poses
 
 
 		typedef CPose3D  type_value; //!< Used to emulate CPosePDF types, for example, in CNetworkOfPoses
+		static inline bool is_3D() { return true; }
 
 		/** @name STL-like methods and typedefs
 		   @{   */

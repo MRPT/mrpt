@@ -84,6 +84,8 @@ namespace poses
 		  */
 		virtual void  bayesianFusion( const CPointPDF &p1, const CPointPDF &p2, const double &minMahalanobisDistToDrop = 0)  = 0 ;
 
+		static inline bool is_3D() { return true; }
+
 		/** Returns a 3D representation of this PDF.
 		  * \note Needs the mrpt-opengl library, and using mrpt::opengl::CSetOfObjectsPtr as template argument.
 		  */

@@ -231,7 +231,9 @@ namespace poses
 		 	}
 		 }
 
-		 /** @name STL-like methods and typedefs 
+		static inline bool is_3D() { return false; }
+
+		 /** @name STL-like methods and typedefs
 		   @{   */
 		typedef double         value_type;		//!< The type of the elements
 		typedef double&        reference;

@@ -73,7 +73,6 @@ namespace mrpt
 	{
 		namespace detail
 		{
-
 			template <class POSE_PDF> struct TPosePDFHelper
 			{
 				static inline void copyFrom2D(POSE_PDF &p, const CPosePDFGaussianInf &pdf ) { p.copyFrom( pdf ); }
@@ -182,18 +181,6 @@ namespace mrpt
 			} // end save_graph
 
 
-			// Auxiliary method to determine 2D/3D graph type:
-			//  Only the specializations below are really defined.
-			template <class CPOSE> bool is_3D_graph_from_edge_type();
-
-			template <> bool is_3D_graph_from_edge_type<CPose2D>()   { return false; }
-			template <> bool is_3D_graph_from_edge_type<CPosePDFGaussian>()   { return false; }
-			template <> bool is_3D_graph_from_edge_type<CPosePDFGaussianInf>()   { return false; }
-
-			template <> bool is_3D_graph_from_edge_type<CPose3D>() { return true;  }
-			template <> bool is_3D_graph_from_edge_type<CPose3DPDFGaussian>() { return true;  }
-			template <> bool is_3D_graph_from_edge_type<CPose3DPDFGaussianInf>() { return true;  }
-
 			// =================================================================
 			//                     load_graph_of_poses_from_text_file
 			// =================================================================
@@ -207,13 +194,9 @@ namespace mrpt
 
 				// Determine if it's a 2D or 3D graph, just to raise an error if loading a 3D graph in a 2D one, since
 				//  it would be an unintentional loss of information:
-				const bool graph_is_3D = is_3D_graph_from_edge_type<CPOSE>();
+				const bool graph_is_3D = CPOSE::is_3D();
 
-
-				std::ifstream  f;
-				f.open(fil.c_str());
-				if (!f.is_open())
-					THROW_EXCEPTION_CUSTOM_MSG1("Error opening file '%s' for reading",fil.c_str());
+				CTextFileLinesParser   filParser(fil);  // raises an exception on error
 
 				// -------------------------------------------
 				// 1st PASS: Read EQUIV entries only
@@ -223,21 +206,11 @@ namespace mrpt
 				map<TNodeID,TNodeID> lstEquivs; // List of EQUIV entries: NODEID -> NEWNODEID. NEWNODEID will be always the lowest ID number.
 
 				// Read & process lines each at once until EOF:
-				for (unsigned int lineNum = 1; !f.fail();  ++lineNum )
+				istringstream s;
+				while (filParser.getNextLine(s))
 				{
-					string lin;
-					getline(f,lin);
-
-					lin = mrpt::system::trim(lin);
-					if (lin.empty()) continue; // Ignore empty lines.
-
-					// Ignore comments lines, starting with "#" or "//".
-					if ( mrpt::system::strStarts(lin,"#") || mrpt::system::strStarts(lin,"//") )
-						continue;
-
-					// Parse the line as a string stream:
-					istringstream s;
-					s.str(lin);
+					const unsigned int lineNum = filParser.getCurrentLineNumber();
+					const string lin = s.str();
 
 					string key;
 					if ( !(s >> key) || key.empty() )
@@ -256,25 +229,13 @@ namespace mrpt
 				// -------------------------------------------
 				// 2nd PASS: Read all other entries
 				// -------------------------------------------
-				f.clear();
-				f.seekg(0);
+				filParser.rewind();
 
 				// Read & process lines each at once until EOF:
-				for (unsigned int lineNum = 1; !f.fail();  ++lineNum )
+				while (filParser.getNextLine(s))
 				{
-					string lin;
-					getline(f,lin);
-
-					lin = mrpt::system::trim(lin);
-					if (lin.empty()) continue; // Ignore empty lines.
-
-					// Ignore comments lines, starting with "#" or "//".
-					if ( mrpt::system::strStarts(lin,"#") || mrpt::system::strStarts(lin,"//") )
-						continue;
-
-					// Parse the line as a string stream:
-					istringstream s;
-					s.str(lin);
+					const unsigned int lineNum = filParser.getCurrentLineNumber();
+					const string lin = s.str();
 
 					// Recognized strings:
 					//  VERTEX2 id x y phi
@@ -542,7 +503,7 @@ void mrpt::poses::detail::graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE,POS
 {
 	MRPT_START
 
-	cout << "F: " << __CURRENT_FUNCTION_NAME__ << endl;
+//	cout << "F: " << __CURRENT_FUNCTION_NAME__ << endl;
 
 	// Do Dijkstra shortest path from "root" to all other nodes:
 	CDijkstra<CPOSE,POSES_MAP_TRAITS>  dijkstra(*g, g->root, NULL, &dijks_on_progress);

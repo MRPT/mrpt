@@ -252,6 +252,8 @@ namespace poses
 			) const;
 
 	public:
+		static inline bool is_3D() { return true; }
+
 		/** @name STL-like methods and typedefs
 		   @{   */
 		typedef double         value_type;		//!< The type of the elements

@@ -84,6 +84,7 @@
 #include <mrpt/utils/net_utils.h>
 #include <mrpt/utils/CLog.h>
 #include <mrpt/utils/CListOfClasses.h>
+#include <mrpt/utils/CTextFileLinesParser.h>
 
 #include <mrpt/utils/CRobotSimulator.h>
 

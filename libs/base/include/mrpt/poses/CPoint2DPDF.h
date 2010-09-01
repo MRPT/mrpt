@@ -60,7 +60,7 @@ namespace poses
 	 public:
 		 /** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF)
 		  */
-		MRPT_DECLARE_DEPRECATED_FUNCTION("**deprecated** Use getMean instead", 
+		MRPT_DECLARE_DEPRECATED_FUNCTION("**deprecated** Use getMean instead",
 		CPoint2D  getEstimatedPoint() const )
 		{
 			CPoint2D p;
@@ -78,6 +78,8 @@ namespace poses
 		  * \param minMahalanobisDistToDrop If set to different of 0, the result of very separate Gaussian modes (that will result in negligible components) in SOGs will be dropped to reduce the number of modes in the output.
 		  */
 		virtual void  bayesianFusion( const CPoint2DPDF &p1, const CPoint2DPDF &p2, const double &minMahalanobisDistToDrop = 0)  = 0 ;
+
+		static inline bool is_3D() { return false; }
 
 	}; // End of class def.
 

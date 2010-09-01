@@ -243,7 +243,11 @@ namespace poses
 		 		throw std::runtime_error("CPoint3D::operator[]: Index of bounds.");
 		 	}
 		 }
-		/** @name STL-like methods and typedefs 
+
+
+		static inline bool is_3D() { return true; }
+
+		/** @name STL-like methods and typedefs
 		   @{   */
 		typedef double         value_type;		//!< The type of the elements
 		typedef double&        reference;
