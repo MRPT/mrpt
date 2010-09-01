@@ -330,7 +330,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				{
                     CWindowDialog  *wnd = (CWindowDialog*) msg->source2D->getWxObject();
                     if (wnd)
-						wnd->SetLabel( _U(msg->str.c_str()) );
+						wnd->SetTitle( _U(msg->str.c_str()) );
                 }
                 break;
                 // DESTROY EXISTING WINDOW:
@@ -386,7 +386,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				{
                     C3DWindowDialog  *wnd = (C3DWindowDialog*) msg->source3D->getWxObject();
                     if (wnd)
-						wnd->SetLabel( _U(msg->str.c_str()) );
+						wnd->SetTitle( _U(msg->str.c_str()) );
                 }
                 break;
                 // FORCE REPAINT
@@ -481,7 +481,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				{
                 	CWindowDialogPlots *wnd = (CWindowDialogPlots*) msg->sourcePlots->getWxObject();
                     if (wnd)
-						wnd->SetLabel( _U(msg->str.c_str()) );
+						wnd->SetTitle( _U(msg->str.c_str()) );
                 }
                 break;
                 // Mouse pan

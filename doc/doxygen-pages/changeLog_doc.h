@@ -35,7 +35,7 @@
   <h2>Version 0.9.2: (Under development) </h2></a>
 	- <b>Most important changes:</b>
 		- Basic support for Graph-SLAM. Among others, see mrpt::poses::CNetworkOfPoses and the program <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>
-		- First working versions of Sparse Bundle-Adjustment (see mrpt::vision::bundle_adj_full).
+		- First working version of Sparse Bundle-Adjustment (see mrpt::vision::bundle_adj_full).
 		- New hardware supported: Phidget kits & Fiber Optic Gyro KVH DSP3000 (both contributed by Adrien Barral, Robopec).
 	- <b>Detailed list of changes:</b>
 		- New applications:
@@ -103,6 +103,7 @@
 			- bundle_adj_full_demo
 			- se3
 		- BUG FIXES:
+			- mrpt::gui::CBaseGUIWindow::setWindowTitle() didn't work (for some versions of wxWidgets only?).
 			- mrpt::gui::CDisplayWindowPlots::plot(y) asserted on empty input vector (actually a bug in mrpt::math::linspace for len=0)
 			- mrpt::gui::CDisplayWindowPlots did ignore the construction-time width x height.
 			- Fixed bug in mrpt::utils::CImage::KLT_response: due to wrong signed numbers usage, responses were high in textureless parts of images.

@@ -26,7 +26,6 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-//#include <mrpt/slam.h>
 #include <mrpt/base.h>
 #include <mrpt/vision.h>
 #include <mrpt/gui.h>
@@ -139,7 +138,7 @@ void TestExtractMatchProjectAndPaint()
 	cout << "Matching HARRIS features by CORRELATION" << endl;
 	nMatches = matchFeatures2( featsHarris_L, featsHarris_R, mHarris );
 	cout << "Matches found: " << mHarris.size() << endl;
-	
+
 	cout << "***************************************************" << endl;
 
 } // end TestExtractMatchProjectAndPaint
@@ -195,7 +194,7 @@ void TestMatchFeatures()
 	fExt.options.SIFTOptions.implementation = CFeatureExtraction::OpenCV;
 	fExt.detectFeatures( imL, featsSIFT_L );
 	cout << "Detected " << featsSIFT_L.size() << endl;
-	
+
 	cout << "Detecting SIFT features in RIGHT image" << endl;
 	fExt.options.featsType = featSIFT;
 	//fExt.options.SIFTOptions.implementation = CFeatureExtraction::Hess;
@@ -209,7 +208,7 @@ void TestMatchFeatures()
 	fExt.options.featsType = featSURF;
 	fExt.detectFeatures( imL, featsSURF_L );
 	cout << "Detected " << featsSURF_L.size() << endl;
-	
+
 	cout << "Detecting SURF features in RIGHT image" << endl;
 	fExt.detectFeatures( imR, featsSURF_R );
 	cout << "Detected " << featsSURF_R.size() << endl;
@@ -257,7 +256,7 @@ void TestMatchFeatures()
 	nMatches = matchFeatures2( featsSIFT_L, featsSIFT_R, mSIFT, opt );
 	cout << "Matches found: " << mSIFT.size() << endl;
 	cout << "***************************************************" << endl;
-	
+
 	// SURF
 	cout << "Matching SURF features by DESCRIPTOR" << endl;
 	opt.matching_method = TMatchingOptions::mmDescriptorSURF;
@@ -271,7 +270,7 @@ void TestMatchFeatures()
 	nMatches = matchFeatures2( featsFAST_L, featsFAST_R, mFAST_CC );
 	T = tictac.Tac();
 	cout << "[CC] Matches found: " << mFAST_CC.size() << " in " << T*1000.0f << " ms " << endl;
-	
+
 	opt.matching_method = TMatchingOptions::mmSAD;
 	tictac.Tic();
 	nMatches = matchFeatures2( featsFAST_L, featsFAST_R, mFAST_SAD, opt );
@@ -280,7 +279,7 @@ void TestMatchFeatures()
 	cout << "***************************************************" << endl;
 
 	wind2.showImagesAndMatchedPoints( imL, imR, mFAST_SAD, TColor(0,255,0) );
-	
+
 	mrpt::system::pause();
 
 } // end TestMatchFeatures
@@ -307,7 +306,7 @@ void TestExtractFeatures()
 
 	fExt.options.patchSize = 0;
 
-	cout << "Extracting Harris features... [f_harris.txt]" << endl;
+	cout << "Detect Harris features... [f_harris.txt]" << endl;
 	tictac.Tic();
 	fExt.options.featsType = featHarris;
 	fExt.detectFeatures( img, featsHarris );
@@ -315,13 +314,9 @@ void TestExtractFeatures()
 	cout << format("  %.03fms",tictac.Tac()*1000) << endl << endl;
 	featsHarris.saveToTextFile("f_harris.txt");
 	wind1.setWindowTitle("Harris detected features");
-	{
-		CImage img_aux = img;
-		img_aux.drawFeatures(featsHarris);
-		wind1.showImage( img_aux );
-	}
+	wind1.showImageAndPoints(img, featsHarris);
 
-	cout << "Extracting FAST features... [f_fast.txt]" << endl;
+	cout << "Detect FAST features... [f_fast.txt]" << endl;
 	tictac.Tic();
 	fExt.options.featsType = featFAST;
 	fExt.options.FASTOptions.threshold = 15; //150;
@@ -386,7 +381,7 @@ void TestExtractFeatures()
 
 	mrpt::system::pause();
 
-	return; 
+	return;
 }
 
 // ------------------------------------------------------
@@ -423,7 +418,7 @@ void TestExtractFeatures()
 //
 //	cout << "Matching features ..." << endl;
 //	cout << "Method #1" << endl;
-//	
+//
 //	tictac.Tic();
 //	unsigned int nMatches = mrpt::vision::matchFeatures2( fHarris1, fHarris2, fMatched );
 //	cout << format("  %.03fms",tictac.Tac()*1000) << endl;
@@ -485,7 +480,7 @@ void TestExtractFeatures()
 //
 //	mrpt::system::pause();
 //
-//	return; 
+//	return;
 //}
 
 // ------------------------------------------------------
@@ -526,7 +521,7 @@ void TestExtractFeaturesTile()
 	cout << "Extracting Harris features... [f_harris.txt]";
 
 	fExt.options.harrisOptions.tile_image = false;
-	
+
 	tictac.Tic();
 	fExt.detectFeatures( img, featsHarris );
 	cout << format("  %.03fms",tictac.Tac()*1000) << endl;
@@ -537,7 +532,7 @@ void TestExtractFeaturesTile()
 
 	mrpt::system::pause();
 
-	return; 
+	return;
 }
 
 int main(int argc, char **argv)
@@ -549,6 +544,11 @@ int main(int argc, char **argv)
 		//TestExtractFeaturesTile();
 		//TestRectifyImages();
 		//TestTrackFeatures();
+
+
+		CFeatureList  fs;
+		fs.loadFromTextFile("f_harris+sift.txt");
+		fs.saveToTextFile("f_harris+sift2.txt");
 
 		return 0;
 	} catch (std::exception &e)

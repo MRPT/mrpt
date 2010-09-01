@@ -215,14 +215,6 @@ namespace mrpt
 									unsigned int			nDesiredFeatures = 0,
 									const TImageROI			&ROI = TImageROI()) const;
 
-			//void  detectFeatures2(
-			//		const CImage			&img,
-			//		std::vector<CFeature>	&feats,
-			//		unsigned int			init_ID = 0,
-			//		unsigned int			nDesiredFeatures = 0,
-			//		const TImageROI			&ROI = TImageROI()) const;
-
-
 			/** Compute one (or more) descriptors for the given set of interest points onto the image, which may have been filled out manually or from \a detectFeatures
 			* \param in_img (input) The image from where to compute the descriptors.
 			* \param inout_features (input/output) The list of features whose descriptors are going to be computed.
@@ -249,6 +241,8 @@ namespace mrpt
 			* \param inList (input) The actual features in the image.
 			* \param outList (output) The list of new features (containing a patch for each one of them if options.patchsize > 0).
 			* \param nDesiredFeatures (op. input) Number of features to be extracted. Default: all possible.
+			*
+			*  \sa The more powerful class: mrpt::vision::CGenericFeatureTracker
 			*/
 			void  findMoreFeatures( const CImage &img,
 									const CFeatureList &inList,
@@ -390,14 +384,6 @@ namespace mrpt
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
 				const TImageROI			&ROI = TImageROI())  const;
-
-			//void  extractFeaturesFAST2(
-			//	const CImage			&img,
-			//	std::vector<CFeature>	&feats,
-			//	unsigned int			init_ID = 0,
-			//	unsigned int			nDesiredFeatures = 0,
-			//	const TImageROI			&ROI = TImageROI())  const;
-
 
 			// ------------------------------------------------------------------------------------
 			//								my_scale_space_extrema
