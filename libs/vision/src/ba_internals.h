@@ -75,6 +75,7 @@ namespace mrpt
 			   const TPoint3D & landmark_global,
 			   CMatrixFixedNumeric<double,2,6> & out_J)
 		{
+			THROW_EXCEPTION("FIXME!")
 			// JL says: This BA implementation assumes that we're estimating the **INVERSE** camera poses
 			double x,y,z; // wrt cam (local coords)
 			if (POSES_ARE_INVERSE)
@@ -214,27 +215,6 @@ namespace mrpt
 			const size_t                                  num_fix_frames,
 			const size_t                                  num_fix_points );
 
-
-
-		// new_val = val + delta[idx:(idx+num)]
-		void ba_addToFrames(
-			const TFramePosesVec & frame_poses,
-			const vector_double &delta,
-			const size_t         delta_first_idx,
-			const size_t         delta_num_vals,
-			TFramePosesVec       & new_frame_poses,
-			const size_t         num_fix_frames,
-			const size_t         num_fix_points );
-
-		// new_val = val + delta[idx:(idx+num)]
-		void ba_addToPoints(
-			const TLandmarkLocationsVec & landmark_points,
-			const vector_double       & delta,
-			const size_t                delta_first_idx,
-			const size_t                delta_num_vals,
-			TLandmarkLocationsVec        & new_landmark_points,
-			const size_t                num_fix_frames,
-			const size_t                num_fix_points );
 
 	}
 }

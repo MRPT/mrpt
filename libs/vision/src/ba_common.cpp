@@ -113,6 +113,40 @@ double kernel(double delta)
 	return fabs(2*square(b)*(sqrt(1+square(delta/b))-1));
 }
 
+// This function is what to do for each feature in the reprojection loops below.
+inline void reprojectionResidualsElement(
+	const TCamera  & camera_params,
+	const TFeatureObservation & OBS,
+	CArrayDouble<2>  & out_residual, 
+	const TFramePosesVec::value_type        & frame,
+	const TLandmarkLocationsVec::value_type & point,
+	double &sum,
+	const bool  use_robust_kernel )
+{
+	const TPixelCoordf  z_pred = mrpt::vision::pinhole::projectPoint_no_distortion<false>(camera_params, frame, point);
+	const TPixelCoordf &z_meas = OBS.px;
+
+	CArrayDouble<2> delta;
+	delta[0] = z_meas.x-z_pred.x;
+	delta[1] = z_meas.y-z_pred.y;
+
+	const double sum_2= square(delta[0])+square(delta[1]);
+	if (use_robust_kernel)
+	{
+		const double nrm = std::max(1e-11,std::sqrt(sum_2));
+		const double w = std::sqrt(kernel(nrm))/nrm;
+		delta *= w;
+		out_residual = delta;
+		sum += square(delta[0])+square(delta[1]);		
+	}
+	else
+	{
+		out_residual = delta;
+		sum += sum_2;
+	}
+}
+
+
 /** Compute reprojection error vector (used from within Bundle Adjustment methods, but can be used in general)
   *  See mrpt::vision::bundle_adj_full for a description of most parameters.
   *
@@ -149,19 +183,7 @@ double mrpt::vision::reprojectionResiduals(
 		const TFramePosesMap::mapped_type        & frame = itF->second;
 		const TLandmarkLocationsMap::mapped_type & point = itP->second;
 
-		const TPixelCoordf  z_pred = mrpt::vision::pinhole::projectPoint_no_distortion<false>(camera_params, frame, point);
-		const TPixelCoordf &z_meas = OBS.px;
-
-		CArrayDouble<2> delta;
-		delta[0] = z_meas.x-z_pred.x;
-		delta[1] = z_meas.y-z_pred.y;
-
-		const double sum_2= delta.squareNorm();
-		const double nrm = std::max(0.00000000001,sqrt(sum_2));
-		const double w = sqrt(kernel(nrm))/nrm;
-		delta *= w;
-		out_residuals[i] = delta;
-		sum += delta.Square().sumAll();
+		reprojectionResidualsElement(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel);
 	}
 
 	return sum;
@@ -197,20 +219,8 @@ double mrpt::vision::reprojectionResiduals(
 
 		const TFramePosesVec::value_type        & frame = frame_poses[i_f];
 		const TLandmarkLocationsVec::value_type & point = landmark_points[i_p];
-
-		const TPixelCoordf  z_pred = mrpt::vision::pinhole::projectPoint_no_distortion<false>(camera_params, frame, point);
-		const TPixelCoordf &z_meas = OBS.px;
-
-		CArrayDouble<2> delta;
-		delta[0] = z_meas.x-z_pred.x;
-		delta[1] = z_meas.y-z_pred.y;
-
-		const double sum_2= delta.squareNorm();
-		const double nrm = std::max(0.00000000001,sqrt(sum_2));
-		const double w = sqrt(kernel(nrm))/nrm;
-		delta *= w;
-		out_residuals[i] = delta;
-		sum += delta.Square().sumAll();
+		
+		reprojectionResidualsElement(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel);
 	}
 
 	return sum;
@@ -278,14 +288,13 @@ void mrpt::vision::ba_calcUVeps(
 	MRPT_END
 }
 
-void mrpt::vision::ba_addToFrames(
+void mrpt::vision::add_se3_deltas_to_frames(
     const TFramePosesVec  & frame_poses,
     const vector_double &delta,
     const size_t         delta_first_idx,
     const size_t         delta_num_vals,
     TFramePosesVec      & new_frame_poses,
-	const size_t         num_fix_frames,
-	const size_t         num_fix_points )
+	const size_t         num_fix_frames  )
 {
 	MRPT_START
 
@@ -306,12 +315,9 @@ void mrpt::vision::ba_addToFrames(
 		const CArrayDouble<6> incr(delta_val);
 		const CPose3D         incrPose = CPose3D::exp(incr);
 
-//		cout << "incr:" << incr << "\n" << incrPose.getHomogeneousMatrixVal();
-//		mrpt::system::pause();
-
-		//new_pose = incrPose + old_pose
-		// x[+]d = x · exp(delta)
-		new_pose.composeFrom(old_pose,incrPose);
+		//new_pose =  old_pose  [+] delta
+		//         = exp(delta) (+) old_pose
+		new_pose.composeFrom(incrPose, old_pose);
 
 		// Move to the next entry in delta:
 		delta_val+=6;
@@ -322,13 +328,12 @@ void mrpt::vision::ba_addToFrames(
 
 	MRPT_END
 }
-void mrpt::vision::ba_addToPoints(
+void mrpt::vision::add_3d_deltas_to_points(
     const TLandmarkLocationsVec  & landmark_points,
     const vector_double       & delta,
     const size_t                delta_first_idx,
     const size_t                delta_num_vals,
     TLandmarkLocationsVec     & new_landmark_points,
-	const size_t                num_fix_frames,
 	const size_t                num_fix_points )
 {
 	MRPT_START

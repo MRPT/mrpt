@@ -96,6 +96,11 @@ namespace mrpt
 			);
 
 
+		/** @} */
+
+
+		/** @name Bundle-Adjustment Auxiliary methods
+		    @{ */
 
 		/** Fills the frames & landmark points maps with an initial gross estimate from the sequence \a observations, so they can be fed to bundle adjustment methods.
 		  * \sa bundle_adj_full
@@ -138,6 +143,39 @@ namespace mrpt
 			std::vector<mrpt::math::CArrayDouble<2> > & out_residuals,
 			bool  use_robust_kernel = true
 			);
+
+
+		/** For each pose in the vector \a frame_poses, adds a "delta" increment to the manifold, with the "delta" given in the se(3) Lie algebra:
+		  *
+		  *    new_frame_poses[i] = frame_poses[i] [+] delta[(first_idx+6*i):(first_idx+6*i+5)]    , for every pose in \a frame_poses
+		  *
+		  *  With the left-multiplication convention of the manifold exp(delta) operator, that is:
+		  *
+		  *     p <-- p [+] delta ==>  p <-- exp(delta) * p
+		  *
+		  * \param delta_num_vals Used just for sanity check, must be equal to "frame_poses.size() * 6"
+		  */
+		void VISION_IMPEXP add_se3_deltas_to_frames(
+			const mrpt::vision::TFramePosesVec & frame_poses,
+			const mrpt::vector_double &delta,
+			const size_t         delta_first_idx,
+			const size_t         delta_num_vals,
+			mrpt::vision::TFramePosesVec       & new_frame_poses,
+			const size_t         num_fix_frames );
+
+		/** For each pose in the vector \a frame_poses, adds a "delta" increment to the manifold, with the "delta" given in the se(3) Lie algebra:
+		  *
+		  *    new_landmark_points[i] = landmark_points[i] + delta[(first_idx+3*i):(first_idx+3*i+2)]    , for every pose in \a landmark_points
+		  *
+		  * \param delta_num_vals Used just for sanity check, must be equal to "landmark_points.size() * 3"
+		  */
+		void VISION_IMPEXP add_3d_deltas_to_points(
+			const mrpt::vision::TLandmarkLocationsVec & landmark_points,
+			const mrpt::vector_double       & delta,
+			const size_t                delta_first_idx,
+			const size_t                delta_num_vals,
+			mrpt::vision::TLandmarkLocationsVec        & new_landmark_points,
+			const size_t                num_fix_points );
 
 		/** @} */
 	}

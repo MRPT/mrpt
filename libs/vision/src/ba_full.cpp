@@ -366,19 +366,19 @@ double mrpt::vision::bundle_adj_full(
 			TFramePosesVec        new_frame_poses;
 			TLandmarkLocationsVec new_landmark_points;
 
-			profiler.enter("ba_addToFrames");
-			ba_addToFrames(
+			profiler.enter("add_se3_deltas_to_frames");
+			add_se3_deltas_to_frames(
 				frame_poses,
 				delta, 0,len_free_frames,
-				new_frame_poses, num_fix_frames, num_fix_points );
-			profiler.leave("ba_addToFrames");
+				new_frame_poses, num_fix_frames );
+			profiler.leave("add_se3_deltas_to_frames");
 
-			profiler.enter("ba_addToPoints");
-			ba_addToPoints(
+			profiler.enter("add_3d_deltas_to_points");
+			add_3d_deltas_to_points(
 				landmark_points,
 				delta, len_free_frames, len_free_points,
-				new_landmark_points, num_fix_frames, num_fix_points );
-			profiler.leave("ba_addToPoints");
+				new_landmark_points, num_fix_points );
+			profiler.leave("add_3d_deltas_to_points");
 
 
 			profiler.enter("reprojectionResiduals");
