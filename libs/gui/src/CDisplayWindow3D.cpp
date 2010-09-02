@@ -107,6 +107,7 @@ namespace mrpt
 			CDisplayWindow3D *m_win3D;
 
 			void OnCharCustom( wxKeyEvent& event );
+			void OnMouseDown(wxMouseEvent& event);
 
 			void OnPreRender();
 			void OnPostRender();
@@ -137,7 +138,6 @@ namespace mrpt
 			}
 
 			static void display3D_processKeyEvent(CDisplayWindow3D *m_win3D, wxKeyEvent&ev);
-
 		};
 	}
 }
@@ -149,7 +149,10 @@ CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
     : CMyGLCanvasBase(parent,id,pos,size,style,name)
 {
 	m_win3D = win3D;
-	Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnCharCustom);
+	Connect(wxEVT_CHAR,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnCharCustom);
+
+	Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnMouseDown);
+	Connect(wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnMouseDown);
 }
 
 void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(CDisplayWindow3D *m_win3D, wxKeyEvent&ev)
@@ -168,8 +171,8 @@ void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(CDisplayWindow3D *m_
 					win->ShowFullScreen( !win->IsFullScreen() );
 				}
 			}
-			// Alt+Enter: Don't notify on this key stroke, since if we're switching to fullscreen 
-			//  and the user is waiting for a key to close the window, a runtime crash will occur, 
+			// Alt+Enter: Don't notify on this key stroke, since if we're switching to fullscreen
+			//  and the user is waiting for a key to close the window, a runtime crash will occur,
 			//  so return now:
 			return;
 		}
@@ -192,6 +195,18 @@ void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(CDisplayWindow3D *m_
 void CMyGLCanvas_DisplayWindow3D::OnCharCustom( wxKeyEvent& ev )
 {
 	CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(m_win3D, ev);
+}
+
+void CMyGLCanvas_DisplayWindow3D::OnMouseDown(wxMouseEvent& event)
+{
+	// Send the event:
+	if (m_win3D)
+	{
+		try {
+			m_win3D->publishEvent( mrptEventMouseDown(m_win3D, TPixelCoord(event.GetX(), event.GetY()), event.LeftDown(), event.RightDown() ) );
+		} catch(...) { }
+	}
+	event.Skip(); // so it's processed by the wx system!
 }
 
 
@@ -358,6 +373,7 @@ void C3DWindowDialog::OnChar(wxKeyEvent& ev)
 
 void C3DWindowDialog::OnResize(wxSizeEvent& event)
 {
+#if MRPT_HAS_OPENGL_GLUT
 	// Send the event:
 	if (m_win3D)
 	{
@@ -366,6 +382,7 @@ void C3DWindowDialog::OnResize(wxSizeEvent& event)
 		} catch(...) {}
 	}
 	event.Skip(); // so it's processed by the wx system!
+#endif
 }
 
 

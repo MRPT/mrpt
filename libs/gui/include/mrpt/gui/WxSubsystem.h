@@ -373,6 +373,7 @@ namespace mrpt
 				void OnChar(wxKeyEvent& event);
 				void OnKeyDown(wxKeyEvent& event);
 				void OnResize(wxSizeEvent& event);
+				void OnMouseDown(wxMouseEvent& event);
 
 				DECLARE_EVENT_TABLE()
 		}; // end class CWindowDialog
@@ -473,6 +474,7 @@ namespace mrpt
 				void OnMenuAbout(wxCommandEvent& event);
 				void OnChar(wxKeyEvent& event);
 				void OnResize(wxSizeEvent& event);
+				void OnMouseDown(wxMouseEvent& event);
 
 				DECLARE_EVENT_TABLE()
 		}; // end class CWindowDialog

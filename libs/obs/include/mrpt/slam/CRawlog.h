@@ -96,26 +96,17 @@ namespace mrpt
 				etObservation
 			};
 
-			/** Default constructor:
-			  */
+			/** Default constructor */
 			CRawlog();
 
-			/** Copy operator:
-			  * \sa moveFrom
-			  */
-			// No need from introduction of smart pointers
-			// CRawlog&  operator =(const CRawlog &o);
 
-			/** Destructor:
-			  */
+			/** Destructor: */
 			virtual ~CRawlog();
 
-			/** Clear the sequence of actions/observations, freeing the memory of all the objects in the list.
-			  */
+			/** Clear the sequence of actions/observations, freeing the memory of all the objects in the list. */
 			void  clear();
 
-			/** Clear the sequence of actions/observations, without deleting the objects themselves (USE ONLY IF YOU KNOW WHAT YOU DO, NORMALLY YOU'LL CALL "clear" INSTEAD).
-			  */
+			/** Clear the sequence of actions/observations, without deleting the objects themselves (USE ONLY IF YOU KNOW WHAT YOU DO, NORMALLY YOU'LL CALL "clear" INSTEAD). */
 			void  clearWithoutDelete();
 
 			/** Add an action to the sequence: a collection of just one element is created.
@@ -150,19 +141,18 @@ namespace mrpt
 
 			/** Load the contents from a file containing one of these possibilities:
 			  *		- A "CRawlog" object.
-			  *		- Directly "CSensoryFrame" and "CActionCollection" objects. In this case the method stops reading on EOF of an unrecogniced class name.
+			  *		- Directly the sequence of objects (pairs CSensoryFrame/CActionCollection or CObservation* objects). In this case the method stops reading on EOF of an unrecogniced class name.
 			  * \returns It returns false if the file does not exists.
 			  */
 			bool  loadFromRawLogFile( const std::string &fileName );
 
 			/** Saves the contents to a rawlog-file, compatible with RawlogViewer (As the sequence of internal objects).
-			  *  The file is saved with gz-commpressed is MRPT has gz-streams.
+			  *  The file is saved with gz-commpressed if MRPT has gz-streams.
 			  * \returns It returns false if the file does not exists.
 			  */
 			bool saveToRawLogFile( const std::string &fileName ) const;
 
-			/** Returns the number of actions / observations object in the sequence.
-			  */
+			/** Returns the number of actions / observations object in the sequence. */
 			size_t  size() const;
 
 			/** Returns the type of a given element.
@@ -209,8 +199,7 @@ namespace mrpt
 			CObservationPtr  getAsObservation( size_t index ) const;
 
 
-			/** A normal iterator, plus the extra methods "isAction", "isObservation" to determine the type of each entry in the sequence.
-			  */
+			/** A normal iterator, plus the extra method "getType" to determine the type of each entry in the sequence. */
 			class iterator
 			{
 			protected:
@@ -228,8 +217,10 @@ namespace mrpt
 
 				CSerializablePtr operator *() { return *m_it; }
 
-				iterator operator ++(int) {  m_it++; return *this; }
-				iterator operator --(int) {  m_it--; return *this; }
+				inline iterator  operator ++(int) { iterator aux =*this; m_it++; return aux; }  // Post
+				inline iterator& operator ++()    { m_it++; return *this; }  // Pre
+				inline iterator  operator --(int) { iterator aux = *this; m_it--; return aux; }  // Post
+				inline iterator& operator --()    { m_it--; return *this; }  // Pre
 
 				TEntryType getType() const
 				{
@@ -244,8 +235,7 @@ namespace mrpt
 				static iterator erase( TListObjects& lst, const iterator &it) { return lst.erase(it.m_it); }
 			};
 
-			/** A normal iterator, plus the extra methods "isAction", "isObservation" to determine the type of each entry in the sequence.
-			  */
+			/** A normal iterator, plus the extra method "getType" to determine the type of each entry in the sequence. */
 			class const_iterator
 			{
 			protected:
@@ -261,8 +251,10 @@ namespace mrpt
 
 				const CSerializablePtr operator *() const { return *m_it; }
 
-				const_iterator operator ++(int) {  m_it++; return *this; }
-				const_iterator operator --(int) {  m_it--; return *this; }
+				inline const_iterator  operator ++(int) { const_iterator aux =*this; m_it++; return aux; }  // Post
+				inline const_iterator& operator ++()    { m_it++; return *this; }  // Pre
+				inline const_iterator  operator --(int) { const_iterator aux = *this; m_it--; return aux; }  // Post
+				inline const_iterator& operator --()    { m_it--; return *this; }  // Pre
 
 				TEntryType getType() const
 				{

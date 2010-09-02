@@ -37,11 +37,15 @@ namespace mrpt
 	{
 		class CObservable;
 
-		/**  The basic event type for the observer-observable pattern in MRPT. 
+		/**  The basic event type for the observer-observable pattern in MRPT.
 		  *   You can sub-class this base class to create custom event types, then
 		  *    tell between them in runtime with isOfType<T>(), for example:
 		  * \code
-		  *   if (e.isOfType<mrptEventOnDestroy>()) { ... }
+		  *   if (e.isOfType<mrptEventOnDestroy>())
+		  *   {
+		  *     const mrptEventOnDestroy* ev = e.getAs<mrptEventOnDestroy>();
+		  *     ev-> ...
+		  *   }
 		  * \endcode
 		  *
 		  * \sa CObserver, CObservable
@@ -57,6 +61,9 @@ namespace mrpt
 			template <class EVENTTYPE>
 			inline bool isOfType() const { return dynamic_cast<const EVENTTYPE*>(this)!=NULL; }
 
+			template <class EVENTTYPE>
+			inline const EVENTTYPE* getAs() const { return dynamic_cast<const EVENTTYPE*>(this); }
+
 			mrpt::system::TTimeStamp  timestamp;
 
 		}; // End of class def.
@@ -70,7 +77,7 @@ namespace mrpt
 		public:
 			inline mrptEventOnDestroy(const CObservable *obj) : source_object(obj) { }
 
-			const CObservable *source_object; 
+			const CObservable *source_object;
 
 		}; // End of class def.
 

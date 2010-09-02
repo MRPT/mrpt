@@ -68,6 +68,7 @@
 				- mrpt::poses::CNetworkOfPoses3DCov
 			- (TODO) mrpt::utils::map_as_vector a vector-based implementation of a std::map-like container.
 			- mrpt::utils::CTextFileLinesParser
+			- New event for GUI windows: mrpt::gui::mrptEventMouseDown
 		- Changes in classes:
 			- mrpt::poses::CPoseOrPoint, mrpt::poses::CPose and mrpt::poses::CPoint are now templates and use the CRTP pattern instead of virtual functions, increasing the performance of all the derived classes.
 			- mrpt::poses::CNetworkOfPoses has many improvements and new methods (see its documentation).
@@ -107,6 +108,7 @@
 			- bundle_adj_full_demo
 			- se3
 		- BUG FIXES:
+			- Iterators in mrpt::slam::CRawlog only had the post-increment form, but actually implemented a pre-increment. Both, correct, versions now exist.
 			- mrpt::gui::CBaseGUIWindow::setWindowTitle() didn't work (for some versions of wxWidgets only?).
 			- mrpt::gui::CDisplayWindowPlots::plot(y) asserted on empty input vector (actually a bug in mrpt::math::linspace for len=0)
 			- mrpt::gui::CDisplayWindowPlots did ignore the construction-time width x height.

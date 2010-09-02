@@ -54,6 +54,7 @@ namespace mrpt
 		  *   This class can be observed (see mrpt::utils::CObserver) for the following events (see mrpt::utils::mrptEvent):
 		  *   - mrpt::gui::mrptEventWindowChar
 		  *   - mrpt::gui::mrptEventWindowResize
+		  *   - mrpt::gui::mrptEventMouseDown
 		  *
 		  *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked from the wxWidgets internal MRPT thread,
 		  *    so all your code in the handler must be thread safe.
@@ -170,8 +171,6 @@ namespace mrpt
 			CBaseGUIWindow *source_object;
 			int 			char_code; //!< The virtual key code, as defined in <mrpt/gui/keycodes.h> (a replication of wxWidgets key codes).
 			mrptKeyModifier key_modifiers; //!< Modifiers (Shift, Control, etc...)
-
-
 		}; // End of class def.
 
 		/**  An event sent by a window upon resize.
@@ -191,10 +190,33 @@ namespace mrpt
 
 			CBaseGUIWindow *source_object;
 			size_t new_width, new_height;
-
 		}; // End of class def.
 
+		/**  An event sent by a window upon a mouse click, giving the (x,y) pixel coordinates.
+		  *
+		  *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked from the wxWidgets internal MRPT thread,
+		  *    so all your code in the handler must be thread safe.
+		  *
+		  * \sa mrptEventMouseDown
+		  */
+		class GUI_IMPEXP mrptEventMouseDown : public mrptEvent
+		{
+		protected:
+			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+		public:
+			inline mrptEventMouseDown (
+				CBaseGUIWindow *obj,
+				mrpt::utils::TPixelCoord  _coords,
+				bool   _leftButton,
+				bool   _rightButton
+				) : source_object(obj), coords(_coords), leftButton(_leftButton), rightButton(_rightButton)
+			{ }
 
+			CBaseGUIWindow *source_object;
+			mrpt::utils::TPixelCoord  coords;
+			bool   leftButton;
+			bool   rightButton;
+		}; // End of class def.
 
 		/**  @} */
 

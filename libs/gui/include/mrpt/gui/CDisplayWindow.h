@@ -63,9 +63,11 @@ namespace mrpt
 
 			/** Class factory returning a smart pointer */
 			static CDisplayWindowPtr Create(
-				const std::string	&windowCaption = std::string() )
+				const std::string	&windowCaption = std::string(),
+				unsigned int initWidth = 400,
+				unsigned int initHeight = 400  )
 			{
-				return CDisplayWindowPtr(new CDisplayWindow(windowCaption));
+				return CDisplayWindowPtr(new CDisplayWindow(windowCaption,initWidth,initHeight));
 			}
 
 			/** Destructor
@@ -91,7 +93,7 @@ namespace mrpt
 				showImage(imgColor);
 				MRPT_END
 			}
-			
+
 			/** Show a given color or grayscale image on the window and print a set of points on it and a set of lines splitting the image in tiles.
 			 *  It adapts the size of the window to that of the image.
 			 *  The class of FEATURELIST can be: mrpt::vision::CFeatureList

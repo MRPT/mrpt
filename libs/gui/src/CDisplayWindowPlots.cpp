@@ -131,8 +131,11 @@ CWindowDialogPlots::CWindowDialogPlots(
 	Connect(wxID_ANY,wxEVT_SIZE,(wxObjectEventFunction)&CWindowDialogPlots::OnResize);
 
 	Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialogPlots::OnChar);
-	m_plot->Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialogPlots::OnChar,0,this);
+	m_plot->Connect(wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialogPlots::OnChar,0,this);
 	m_plot->Connect(wxEVT_MOTION,(wxObjectEventFunction)&CWindowDialogPlots::OnMouseMove,0,this);
+
+	m_plot->Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CWindowDialogPlots::OnMouseDown,NULL,this);
+	m_plot->Connect(wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&CWindowDialogPlots::OnMouseDown,NULL,this);
 
     // Increment number of windows:
     //int winCount =
@@ -226,9 +229,21 @@ void CWindowDialogPlots::OnResize(wxSizeEvent& event)
 			m_winPlots->publishEvent( mrptEventWindowResize(m_winPlots,event.GetSize().GetWidth(),event.GetSize().GetHeight()));
 		} catch(...) {}
 	}
-
 	event.Skip(); // so it's processed by the wx system!
 }
+
+void CWindowDialogPlots::OnMouseDown(wxMouseEvent& event)
+{
+	// Send the event:
+	if (m_winPlots)
+	{
+		try {
+			m_winPlots->publishEvent( mrptEventMouseDown(m_winPlots, TPixelCoord(event.GetX(), event.GetY()), event.LeftDown(), event.RightDown() ) );
+		} catch(...) { }
+	}
+	event.Skip(); // so it's processed by the wx system!
+}
+
 
 
 // Menu: Close
