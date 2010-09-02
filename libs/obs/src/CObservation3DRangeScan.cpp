@@ -554,6 +554,14 @@ void CObservation3DRangeScan::getZoneAsObs(
 	obs.hasPoints3D = hasPoints3D;
 	if ( hasPoints3D )
 	{
+		// Erase a possible previous content
+		if ( obs.points3D_x.size() > 0 )
+		{
+			obs.points3D_x.clear();
+			obs.points3D_y.clear();
+			obs.points3D_z.clear();
+		}
+
 		for ( unsigned int i = r1; i <= r2; i++ )
 			for ( unsigned int j = c1; j <= c2; j++ )
 			{

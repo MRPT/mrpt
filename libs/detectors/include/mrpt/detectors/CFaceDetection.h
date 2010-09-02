@@ -69,7 +69,8 @@ namespace mrpt
 			{
 				int		confidenceThreshold;
 				double	planeThreshold;
-				double	planeEigenValThreshold;
+				double	planeEigenValThreshold_down;
+				double	planeEigenValThreshold_up;
 				double	regionsThreshold;
 				bool	multithread;
 			}m_options;
@@ -103,6 +104,9 @@ namespace mrpt
 				vector_double	errorEstimations;
 				vector_double	meanRegions;
 
+				vector_double	sumDistances;
+
+				int				faceNum;
 				int				numPossibleFacesDetected;
 				int				numRealFacesDetected;
 
@@ -131,6 +135,8 @@ namespace mrpt
 
 			bool checkRegionsConstrains( const double values[3][3] );
 
+			bool checkIfDiagonalSurface( CObservation3DRangeScan* face );
+
 			// Experimental methods
 			void experimental_viewFacePointsScanned( const vector_float &xs, const vector_float &ys, const vector_float &zs );
 
@@ -138,7 +144,7 @@ namespace mrpt
 			
 			void experimental_viewFacePointsScanned( const vector<TPoint3D> &points );
 
-			void experimental_viewRegions( const vector<TPoint3D> regions[9] );
+			void experimental_viewRegions( const vector<TPoint3D> regions[9] );			
 			
 
 		}; // End of class
