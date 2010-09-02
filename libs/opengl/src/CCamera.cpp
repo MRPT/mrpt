@@ -101,14 +101,3 @@ void  CCamera::readFromStream(CStream &in,int version)
 
 	};
 }
-
-/*---------------------------------------------------------------
-					setPointingAt
-  ---------------------------------------------------------------*/
-void CCamera::setPointingAt(const mrpt::poses::CPoseOrPoint &p)
-{
-	m_pointingX=p.x();
-	m_pointingY=p.y();
-	m_pointingZ=p.is3DPoseOrPoint() ? p.z() : 0;
-}
-

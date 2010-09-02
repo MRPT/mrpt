@@ -417,7 +417,6 @@ namespace mrpt
 				typename MATRIX1::value_type trace(const MATRIX1 &m);
 			template<class MATRIX1,class MATRIX2>
 				void matrix_transpose(const MATRIX1& m_in, MATRIX2 &m_out);
-//			template <class MATRIX>	MAT_TYPE_TRANSPOSE_OF(MATRIX) void matrix_transpose(const MATRIX& m); // Can't be declared here for missing matrices_programming.h at this point..
 			template <class MATRIX1,class MATRIX2,class MATRIXRES>
 				void multiply_AB(const MATRIX1& m1,const MATRIX2& m2, MATRIXRES& RESULT );
 			template<class MATRIX1, class OTHERVECTOR1,class OTHERVECTOR2>

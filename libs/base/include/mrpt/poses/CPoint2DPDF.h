@@ -79,7 +79,8 @@ namespace poses
 		  */
 		virtual void  bayesianFusion( const CPoint2DPDF &p1, const CPoint2DPDF &p2, const double &minMahalanobisDistToDrop = 0)  = 0 ;
 
-		static inline bool is_3D() { return false; }
+		enum { is_3D_val = 0 };
+		static inline bool is_3D() { return is_3D_val!=0; }
 
 	}; // End of class def.
 

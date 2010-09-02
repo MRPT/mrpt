@@ -46,6 +46,9 @@
 
 #include <mrpt/slam/PF_aux_structs.h>
 
+
+MRPT_TODO("There is a serious bug!! Test case: gridmapping_optimal_sampling.in")
+
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::slam;
@@ -915,7 +918,7 @@ bool CMultiMetricMapPDF::PF_SLAM_implementation_skipRobotMovement() const
 
 
 /*---------------------------------------------------------------
- Evaluate the observation likelihood for one 
+ Evaluate the observation likelihood for one
    particle at a given location
  ---------------------------------------------------------------*/
 double CMultiMetricMapPDF::PF_SLAM_computeObservationLikelihoodForParticle(

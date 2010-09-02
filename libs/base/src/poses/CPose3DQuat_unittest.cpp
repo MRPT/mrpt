@@ -261,6 +261,10 @@ protected:
 		const CPose3DQuat q1 = p1;
 		const CPose3D p1r = q1;
 
+		EXPECT_NEAR(0, (p1.getHomogeneousMatrixVal()-q1.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-5) <<
+			"p1.getHomogeneousMatrixVal():\n" << p1.getHomogeneousMatrixVal() << endl <<
+			"q1.getHomogeneousMatrixVal():\n" << q1.getHomogeneousMatrixVal() << endl;
+
 		EXPECT_NEAR(0, (p1.getAsVectorVal()-p1r.getAsVectorVal()).Abs().sumAll(), 1e-5) <<
 			"p1: " << p1 << endl <<
 			"q1: " << q1 << endl <<
@@ -346,6 +350,8 @@ protected:
 
 TEST_F(Pose3DQuatTests,FromYPRAndBack)
 {
+	test_fromYPRAndBack(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));
+	test_fromYPRAndBack(1.0,2.0,3.0, DEG2RAD(90),DEG2RAD(0),DEG2RAD(0));
 	test_fromYPRAndBack(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60));
 	test_fromYPRAndBack(1.0,2.0,3.0, DEG2RAD(179),DEG2RAD(0),DEG2RAD(60));
 	test_fromYPRAndBack(1.0,2.0,3.0, DEG2RAD(-179),DEG2RAD(0),DEG2RAD(60));

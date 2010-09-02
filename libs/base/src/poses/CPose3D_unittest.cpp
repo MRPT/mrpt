@@ -45,6 +45,35 @@ protected:
 
 	virtual void TearDown() {  }
 
+	void test_inverse(double x1,double y1,double z1, double yaw1,double pitch1,double roll1)
+	{
+		const CPose3D p1(x1,y1,z1,yaw1,pitch1,roll1);
+
+		const CMatrixDouble44 HM  = p1.getHomogeneousMatrixVal();
+		const CMatrixDouble44 HMi = p1.getInverseHomogeneousMatrix();
+
+		CMatrixDouble44 I4; I4.unit();
+
+		EXPECT_NEAR( (HM*HMi-I4).Abs().sumAll(), 0, 1e-3 ) <<
+			"HM:\n"      << HM <<
+			"inv(HM):\n" << HMi <<
+			"inv(HM)*HM:\n" << HM*HMi << endl;
+
+		CPose3D p1_inv_inv = p1;
+
+		p1_inv_inv.inverse();
+		const CMatrixDouble44 HMi_from_p1_inv = p1_inv_inv.getHomogeneousMatrixVal();
+
+		p1_inv_inv.inverse();
+
+		EXPECT_NEAR( (p1.getAsVectorVal()-p1_inv_inv.getAsVectorVal()).Abs().sumAll(), 0, 1e-3 ) <<
+			"p1: "      << p1 <<
+			"p1_inv_inv: " << p1_inv_inv << endl;
+
+		EXPECT_EQ(HMi_from_p1_inv, HMi);
+	}
+
+
 	void test_compose(double x1,double y1,double z1, double yaw1,double pitch1,double roll1,
 	                 double x2,double y2,double z2, double yaw2,double pitch2,double roll2 )
 	{
@@ -75,7 +104,6 @@ protected:
 	{
 		const CPose3D  		p1(x1,y1,z1,yaw1,pitch1,roll1);
 		const CPoint3D  	p(x,y,z);
-
 		CPoint3D  p1_plus_p = p1 + p;
 
 		CPoint3D  p1_plus_p2;
@@ -349,8 +377,21 @@ TEST_F(Pose3DTests,OperatorBracket)
 }
 
 // More complex tests:
+TEST_F(Pose3DTests,InverseHM)
+{
+	test_inverse(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
+	test_inverse(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
+	test_inverse(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60) );
+	test_inverse(2.0,-5.0,8.0, DEG2RAD(40),DEG2RAD(-5),DEG2RAD(25) );
+}
+
 TEST_F(Pose3DTests,Compose)
 {
+	test_compose(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),
+	             0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));
+	test_compose(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),
+	             4.0,5.0,6.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));
+
 	test_compose(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60),
 	             2.0,-5.0,8.0, DEG2RAD(40),DEG2RAD(-5),DEG2RAD(25));
 

@@ -888,19 +888,25 @@ namespace mrpt
 		template <class MAT1,class MAT2>
 		void insertMatrixTransposeInto( MAT1 &M,const size_t nRow,const size_t nCol,const MAT2 &in)
 		{
-			ASSERTMSG_( (nRow+size(in,2) <= M.getRowCount() ) && (nCol+size(in,1)<= M.getColCount()), "insertMatrix: Row or Col index out of bounds")
-			for (size_t c=0;c<size(in,2);c++)
-				for (size_t r=0;r<size(in,1);r++)
+			const size_t mRows = size(in,1);
+			const size_t mCols = size(in,2);
+			ASSERT_BELOWEQ_( nRow+mCols, M.getRowCount() )
+			ASSERT_BELOWEQ_( nCol+mRows, M.getColCount() )
+			for (size_t c=0;c<mCols;c++)
+				for (size_t r=0;r<mRows;r++)
 					M.get_unsafe(nRow+c,nCol+r) = in.get_unsafe(r,c);
 		}
 
 		// Insert matrix
 		template <class MAT1,class MAT2>
-		void insertMatrixInto( MAT1 &M,const size_t nRow,const size_t nCol,const MAT2 &in)
+		inline void insertMatrixInto( MAT1 &M,const size_t nRow,const size_t nCol,const MAT2 &in)
 		{
-			ASSERTMSG_( (nRow+size(in,1) <= M.getRowCount() ) && (nCol+size(in,2) <= M.getColCount()), "insertMatrix: Row or Col index out of bounds")
-			for (size_t r=0;r<size(in,1);r++)
-				for (size_t c=0;c<size(in,2);c++)
+			const size_t mRows = size(in,1);
+			const size_t mCols = size(in,2);
+			ASSERT_BELOWEQ_( nRow+mRows, M.getRowCount() )
+			ASSERT_BELOWEQ_( nCol+mCols, M.getColCount() )
+			for (size_t r=0;r<mRows;r++)
+				for (size_t c=0;c<mCols;c++)
 					M.get_unsafe(nRow+r,nCol+c) = in.get_unsafe(r,c);
 		}
 
@@ -914,7 +920,8 @@ namespace mrpt
 		{
 			const size_t NR = outMat.getRowCount();
 			const size_t NC = outMat.getColCount();
-			ASSERTMSG_( (first_row+NR <= M.getRowCount() ) && (first_col+NC <= M.getColCount()), "extractMatrix: Row or Col index out of bounds")
+			ASSERT_BELOWEQ_( first_row+NR, M.getRowCount() )
+			ASSERT_BELOWEQ_( first_col+NC, M.getColCount() )
 			for (size_t r=0;r<NR;r++)
 				for (size_t c=0;c<NC;c++)
 					outMat.get_unsafe(r,c) = M.get_unsafe(first_row+r,first_col+c);

@@ -62,7 +62,16 @@ namespace mrpt
 
 		public:
 			void setPointingAt(float x,float y, float z) { m_pointingX=x; m_pointingY=y; m_pointingZ=z; }
-			void setPointingAt(const mrpt::poses::CPoseOrPoint &p);
+
+			template <class POSEORPOINT>
+			void setPointingAt(const POSEORPOINT &p)
+			{
+				m_pointingX=p.x();
+				m_pointingY=p.y();
+				m_pointingZ=p.is3DPoseOrPoint() ? p.m_coords[2] : 0;
+			}
+			inline void setPointingAt(const mrpt::math::TPoint3D &p) { setPointingAt(p.x,p.y,p.z); }
+
 
 			float getPointingAtX() const { return m_pointingX; }
 			float getPointingAtY() const { return m_pointingY; }

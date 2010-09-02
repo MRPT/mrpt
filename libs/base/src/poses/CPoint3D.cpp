@@ -39,43 +39,7 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 
-IMPLEMENTS_SERIALIZABLE(CPoint3D, CPoint,mrpt::poses)
-
-/*---------------------------------------------------------------
-	Constructors
-  ---------------------------------------------------------------*/
-CPoint3D::CPoint3D(const double x_,const double y_,const double z_)
-{
-	this->m_x		= x_;
-	this->m_y		= y_;
-	this->m_z		= z_;
-	m_is3D = true;
-}
-
-CPoint3D::CPoint3D( const CPoint2D &p)
-{
-	m_x  = p.x();
-	m_y  = p.y();
-	m_z  = p.z();
-	m_is3D = true;
-}
-
-CPoint3D::CPoint3D( const CPose3D &p)
-{
-	m_x  = p.x();
-	m_y  = p.y();
-	m_z  = p.z();
-	m_is3D = true;
-}
-
-CPoint3D::CPoint3D( const CPose2D &p)
-{
-	m_x  = p.x();
-	m_y  = p.y();
-	m_z  = 0;
-	m_is3D = true;
-}
-
+IMPLEMENTS_SERIALIZABLE(CPoint3D, CSerializable, mrpt::poses)
 
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of
@@ -88,7 +52,7 @@ void  CPoint3D::writeToStream(CStream &out,int *version) const
 	else
 	{
 		// The coordinates:
-		out << m_x << m_y << m_z;
+		out << m_coords[0] << m_coords[1] << m_coords[2];
 	}
 }
 
@@ -103,28 +67,19 @@ void  CPoint3D::readFromStream(CStream &in,int version)
 	case 0:
 		{
 			float f;
-			in >> f; m_x=f;
-			in >> f; m_y=f;
-			in >> f; m_z=f;
+			in >> f; m_coords[0]=f;
+			in >> f; m_coords[1]=f;
+			in >> f; m_coords[2]=f;
 		} break;
 	case 1:
 		{
 			// The coordinates:
-			in >> m_x >> m_y >> m_z;
+			in >> m_coords[0] >> m_coords[1] >> m_coords[2];
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
-
-/**  Textual output stream function.
- */
-std::ostream& poses::operator << (std::ostream& o, const CPoint3D& p)
-{
-	o << std::fixed << std::setprecision(3) << "(" << p.x() << "," << p.y() << "," << p.z() << ")";
-	return o;
-}
-
 
 /*---------------------------------------------------------------
 				point3D = point3D - pose3D
@@ -138,9 +93,9 @@ CPoint3D  CPoint3D::operator - (const CPose3D& b) const
 	b.getInverseHomogeneousMatrix( B_INV );
 
 	return CPoint3D(
-		B_INV.get_unsafe(0,0) * m_x + B_INV.get_unsafe(0,1) * m_y + B_INV.get_unsafe(0,2) * m_z + B_INV.get_unsafe(0,3),
-		B_INV.get_unsafe(1,0) * m_x + B_INV.get_unsafe(1,1) * m_y + B_INV.get_unsafe(1,2) * m_z + B_INV.get_unsafe(1,3),
-		B_INV.get_unsafe(2,0) * m_x + B_INV.get_unsafe(2,1) * m_y + B_INV.get_unsafe(2,2) * m_z + B_INV.get_unsafe(2,3) );
+		B_INV.get_unsafe(0,0) * m_coords[0] + B_INV.get_unsafe(0,1) * m_coords[1] + B_INV.get_unsafe(0,2) * m_coords[2] + B_INV.get_unsafe(0,3),
+		B_INV.get_unsafe(1,0) * m_coords[0] + B_INV.get_unsafe(1,1) * m_coords[1] + B_INV.get_unsafe(1,2) * m_coords[2] + B_INV.get_unsafe(1,3),
+		B_INV.get_unsafe(2,0) * m_coords[0] + B_INV.get_unsafe(2,1) * m_coords[1] + B_INV.get_unsafe(2,2) * m_coords[2] + B_INV.get_unsafe(2,3) );
 }
 
 /*---------------------------------------------------------------
@@ -148,7 +103,7 @@ CPoint3D  CPoint3D::operator - (const CPose3D& b) const
   ---------------------------------------------------------------*/
 CPoint3D  CPoint3D::operator - (const CPoint3D& b) const
 {
-	return CPoint3D( m_x-b.m_x, m_y-b.m_y, m_z-b.m_z );
+	return CPoint3D( m_coords[0]-b.m_coords[0], m_coords[1]-b.m_coords[1], m_coords[2]-b.m_coords[2] );
 }
 
 
@@ -157,7 +112,7 @@ CPoint3D  CPoint3D::operator - (const CPoint3D& b) const
   ---------------------------------------------------------------*/
 CPoint3D  CPoint3D::operator + (const CPoint3D& b) const
 {
-	return CPoint3D( m_x+b.m_x, m_y+b.m_y, m_z+b.m_z );
+	return CPoint3D( m_coords[0]+b.m_coords[0], m_coords[1]+b.m_coords[1], m_coords[2]+b.m_coords[2] );
 }
 
 /*---------------------------------------------------------------
@@ -165,31 +120,6 @@ CPoint3D  CPoint3D::operator + (const CPoint3D& b) const
   ---------------------------------------------------------------*/
 CPose3D	CPoint3D::operator + (const CPose3D& b) const
 {
-	return CPose3D( m_x+b.x(), m_y+b.y(),m_z+b.z(), b.yaw(), b.pitch(), b.roll() );
-}
-
-CPoint3D::CPoint3D(const mrpt::math::TPoint3D &o)	{
-	m_x=o.x;
-	m_y=o.y;
-	m_z=o.z;
-	m_is3D=true;
-}
-
- void CPoint3D::getAsVector(vector_double &v) const
- {
-	 v.resize(3);
-	 v[0]=m_x;
-	 v[1]=m_y;
-	 v[2]=m_z;
- }
-
-bool mrpt::poses::operator==(const CPoint3D &p1,const CPoint3D &p2)
-{
-	return (p1.x()==p2.x())&&(p1.y()==p2.y())&&(p1.z()==p2.z());
-}
-
-bool mrpt::poses::operator!=(const CPoint3D &p1,const CPoint3D &p2)
-{
-	return (p1.x()!=p2.x())||(p1.y()!=p2.y())||(p1.z()!=p2.z());
+	return CPose3D( m_coords[0]+b.x(), m_coords[1]+b.y(),m_coords[2]+b.z(), b.yaw(), b.pitch(), b.roll() );
 }
 

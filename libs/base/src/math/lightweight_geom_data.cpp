@@ -54,7 +54,6 @@ namespace mrpt	{	namespace math	{
 TPoint2D::TPoint2D(const TPose2D &p):x(p.x),y(p.y)	{}
 TPoint2D::TPoint2D(const TPoint3D &p):x(p.x),y(p.y)	{}
 TPoint2D::TPoint2D(const TPose3D &p):x(p.x),y(p.y)	{}
-TPoint2D::TPoint2D(const mrpt::poses::CPoseOrPoint &p):x(p.x()),y(p.y())	{}
 TPoint2D::TPoint2D(const mrpt::poses::CPoint2D &p):x(p.x()),y(p.y())	{}
 bool TPoint2D::operator<(const TPoint2D &p) const	{
 	if (x<p.x) return true;
@@ -135,6 +134,15 @@ void TPose3DQuat::fromString(const std::string &s)
 	for (size_t i=0;i<m.getColCount();i++)
 		(*this)[i] = m.get_unsafe(0,i);
 }
+
+
+// Text streaming:
+std::ostream & operator << (std::ostream& o, const TPoint2D & p) { return (o << CPoint2D(p)); }
+std::ostream & operator << (std::ostream& o, const TPoint3D & p) { return (o << CPoint3D(p)); }
+std::ostream & operator << (std::ostream& o, const TPose2D & p)  { return (o << CPose2D(p)); }
+std::ostream & operator << (std::ostream& o, const TPose3D & p)  { return (o << CPose3D(p)); }
+std::ostream & operator << (std::ostream& o, const TPose3DQuat & p) { return (o << CPose3DQuat(p)); }
+
 
 
 double TSegment2D::length() const	{

@@ -28,9 +28,10 @@
 #ifndef ScanMatching_H
 #define ScanMatching_H
 
+#include <mrpt/math.h>   // These 2 headers, in this order, are needed to avoid
+#include <mrpt/poses.h>  //  undefined classes errors in inline constructors of mrpt::poses classes.
+
 #include <mrpt/utils/TMatchingPair.h>
-#include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/poses/CPose3D.h>
 
 #include <mrpt/scanmatching/link_pragmas.h>
 
@@ -66,14 +67,14 @@ namespace mrpt
 		}; // end struct THornMethodOpts
 
 		/** This function implements the Horn method for computing the change in pose between two coordinate systems
-		  * \param inVector			A vector containing the coordinates of the input points in the format: 
+		  * \param inVector			A vector containing the coordinates of the input points in the format:
 									[x11 y11 z11, x12 y12 z12, x21 y21 z21, x22 y22 z22, x31 y31 z31, x32 y32 z32, ...  ]
 									where [xi1 yi1 zi1] and [xi2 yi2 zi2] represent the i-th pair of corresponding 3D points in the two coordinate systems "1" and "2"
 		  * \param outVector		A 7D vector containing the traslation and rotation (in a quaternion form) which indicates the change in pose of system "2" wrt "1".
 		  * \param opts				The options for the method.
 		  * \sa THornMethodOpts
 		  */
-		void SCANMATCHING_IMPEXP HornMethod( 	
+		void SCANMATCHING_IMPEXP HornMethod(
 			const vector_double		&inVector,
 			vector_double		&outVector,				// The output vector
 			THornMethodOpts		&opts );
@@ -117,7 +118,7 @@ namespace mrpt
 			if( !scanmatching::leastSquareErrorRigidTransformation6D( in_correspondences, qAux, out_scale, forceScaleToUnity ) )
 				return false;
 			out_transformation = CPose3D( qAux );			// Convert back the CPose3DQuat to CPose3D
-			
+
 			return true;
 
 			MRPT_END;
@@ -223,7 +224,7 @@ namespace mrpt
 
 	}
 
-	
+
 #ifdef MRPT_BACKCOMPATIB_08X	// For backward compatibility
 	namespace scan_matching = scanmatching;
 #endif

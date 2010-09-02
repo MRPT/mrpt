@@ -46,63 +46,24 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 
-IMPLEMENTS_SERIALIZABLE(CPose3DQuat, CPose,mrpt::poses)
-
-/*---------------------------------------------------------------
-	Default constructor
-  ---------------------------------------------------------------*/
-CPose3DQuat::CPose3DQuat() :
-	m_quat()
-{
-	m_is3D = true;
-	m_x = 0;
-	m_y = 0;
-	m_z = 0;
-}
-
-/** Constructor with initilization of the pose */
-CPose3DQuat::CPose3DQuat(const double x,const double y,const double z,const mrpt::math::CQuaternionDouble &q ) :
-	m_quat(q)
-{
-	m_is3D = true;
-	m_x = x;
-	m_y = y;
-	m_z = z;
-	m_quat.normalize();
-}
-
-CPose3DQuat::CPose3DQuat(TConstructorFlags_Quaternions constructor_dummy_param) : m_quat(UNINITIALIZED_QUATERNION)
-{
-	m_is3D = true;
-}
+IMPLEMENTS_SERIALIZABLE(CPose3DQuat, CSerializable, mrpt::poses)
 
 /** Constructor from a CPose3D */
 CPose3DQuat::CPose3DQuat(const CPose3D &p)
 {
-	m_is3D = true;
-	m_x = p.x();
-	m_y = p.y();
-	m_z = p.z();
+	x() = p.x();
+	y() = p.y();
+	z() = p.z();
 	p.getAsQuaternion(m_quat);
 }
-
-CPose3DQuat::CPose3DQuat(const mrpt::math::TPose3DQuat &p) : m_quat(p.qr,p.qx,p.qy,p.qz)
-{
-	m_is3D = true;
-	m_x = p.x;
-	m_y = p.y;
-	m_z = p.z;
-}
-
 
 /** Constructor from a 4x4 homogeneous transformation matrix.
   */
 CPose3DQuat::CPose3DQuat(const CMatrixDouble44 &M) : m_quat(UNINITIALIZED_QUATERNION)
 {
-	m_is3D = true;
-	m_x = M.get_unsafe(0,3);
-	m_y = M.get_unsafe(1,3);
-	m_z = M.get_unsafe(2,3);
+	m_coords[0] = M.get_unsafe(0,3);
+	m_coords[1] = M.get_unsafe(1,3);
+	m_coords[2] = M.get_unsafe(2,3);
 	CPose3D p(M);
 	p.getAsQuaternion(m_quat);
 }
@@ -113,9 +74,9 @@ CPose3DQuat::CPose3DQuat(const CMatrixDouble44 &M) : m_quat(UNINITIALIZED_QUATER
 void  CPose3DQuat::getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const
 {
 	m_quat.rotationMatrixNoResize(out_HM);
-	out_HM.get_unsafe(0,3) = m_x;
-	out_HM.get_unsafe(1,3) = m_y;
-	out_HM.get_unsafe(2,3) = m_z;
+	out_HM.get_unsafe(0,3) = m_coords[0];
+	out_HM.get_unsafe(1,3) = m_coords[1];
+	out_HM.get_unsafe(2,3) = m_coords[2];
 	out_HM.get_unsafe(3,0) = out_HM.get_unsafe(3,1) = out_HM.get_unsafe(3,2) = 0;
 	out_HM.get_unsafe(3,3) = 1;
 }
@@ -124,9 +85,9 @@ void  CPose3DQuat::getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const
 void CPose3DQuat::getAsVector(vector_double &v) const
 {
 	v.resize(7);
-	v[0] = m_x;
-	v[1] = m_y;
-	v[2] = m_z;
+	v[0] = m_coords[0];
+	v[1] = m_coords[1];
+	v[2] = m_coords[2];
 	v[3] = m_quat[0];
 	v[4] = m_quat[1];
 	v[5] = m_quat[2];
@@ -140,10 +101,10 @@ void CPose3DQuat::composeFrom(const CPose3DQuat& A, const CPose3DQuat& B )
 {
 	// The 3D point:
 	double gx,gy,gz;
-	A.m_quat.rotatePoint(B.m_x,B.m_y,B.m_z, gx,gy,gz);
-	this->m_x = A.m_x + gx;
-	this->m_y = A.m_y + gy;
-	this->m_z = A.m_z + gz;
+	A.m_quat.rotatePoint(B.m_coords[0],B.m_coords[1],B.m_coords[2], gx,gy,gz);
+	this->m_coords[0] = A.m_coords[0] + gx;
+	this->m_coords[1] = A.m_coords[1] + gy;
+	this->m_coords[2] = A.m_coords[2] + gz;
 
 	// The 3D rotation:
 	this->m_quat.crossProduct(A.m_quat,B.m_quat);
@@ -157,7 +118,7 @@ void CPose3DQuat::inverseComposeFrom(const CPose3DQuat& A, const CPose3DQuat& B 
 {
 	// The 3D point:
 	const CQuaternionDouble B_conj(B.m_quat.r(),-B.m_quat.x(),-B.m_quat.y(),-B.m_quat.z());
-	B_conj.rotatePoint(A.m_x-B.m_x,A.m_y-B.m_y,A.m_z-B.m_z,  this->m_x,this->m_y,this->m_z);
+	B_conj.rotatePoint(A.m_coords[0]-B.m_coords[0],A.m_coords[1]-B.m_coords[1],A.m_coords[2]-B.m_coords[2],  this->m_coords[0],this->m_coords[1],this->m_coords[2]);
 	// The 3D rotation:
 	this->m_quat.crossProduct(B_conj,A.m_quat);
 }
@@ -237,9 +198,9 @@ void CPose3DQuat::composePoint(const double lx,const double ly,const double lz,d
 
 	// function itself:
 	m_quat.rotatePoint(lx,ly,lz, gx,gy,gz);
-	gx+=m_x;
-	gy+=m_y;
-	gz+=m_z;
+	gx+=m_coords[0];
+	gy+=m_coords[1];
+	gz+=m_coords[2];
 }
 
 /**  Computes the 3D point G such as \f$ L = G \ominus this \f$.
@@ -315,9 +276,9 @@ void CPose3DQuat::inverseComposePoint(const double gx,const double gy,const doub
 
 			out_jacobian_df_dpose->loadFromArray(vals1);
 
-			const double Ax = 2*(gx - m_x);
-			const double Ay = 2*(gy - m_y);
-			const double Az = 2*(gz - m_z);
+			const double Ax = 2*(gx - m_coords[0]);
+			const double Ay = 2*(gy - m_coords[1]);
+			const double Az = 2*(gz - m_coords[2]);
 
 			const double vals[3*4] = {
 				-qy*Az + qz*Ay ,
@@ -347,7 +308,7 @@ void CPose3DQuat::inverseComposePoint(const double gx,const double gy,const doub
 	}
 
 	// function itself:
-	m_quat.inverseRotatePoint(gx-m_x,gy-m_y,gz-m_z,  lx,ly,lz);
+	m_quat.inverseRotatePoint(gx-m_coords[0],gy-m_coords[1],gz-m_coords[2],  lx,ly,lz);
 }
 
 /*---------------------------------------------------------------
@@ -355,9 +316,9 @@ void CPose3DQuat::inverseComposePoint(const double gx,const double gy,const doub
   ---------------------------------------------------------------*/
 void CPose3DQuat::operator *=(const double  s)
 {
-	m_x*=s;
-	m_y*=s;
-	m_z*=s;
+	m_coords[0]*=s;
+	m_coords[1]*=s;
+	m_coords[2]*=s;
 	m_quat[0]*=s;
 	m_quat[1]*=s;
 	m_quat[2]*=s;
@@ -374,7 +335,7 @@ void  CPose3DQuat::writeToStream(CStream &out,int *version) const
 		*version = 0;
 	else
 	{
-		out << m_x << m_y << m_z << m_quat[0] << m_quat[1] << m_quat[2] << m_quat[3];
+		out << m_coords[0] << m_coords[1] << m_coords[2] << m_quat[0] << m_quat[1] << m_quat[2] << m_quat[3];
 	}
 }
 
@@ -388,7 +349,7 @@ void  CPose3DQuat::readFromStream(CStream &in,int version)
 	{
 	case 0:
 		{
-			in >> m_x >> m_y >> m_z >> m_quat[0] >> m_quat[1] >> m_quat[2] >> m_quat[3];
+			in >> m_coords[0] >> m_coords[1] >> m_coords[2] >> m_quat[0] >> m_quat[1] >> m_quat[2] >> m_quat[3];
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -474,7 +435,7 @@ void CPose3DQuat::sphericalCoordinates(
  */
 std::ostream& mrpt::poses::operator << (std::ostream& o, const CPose3DQuat& p)
 {
-	o << "(x,y,z,qr,qx,qy,qz)=(" << std::fixed << std::setprecision(4) << p.m_x << "," << p.m_y << "," << p.m_z <<
+	o << "(x,y,z,qr,qx,qy,qz)=(" << std::fixed << std::setprecision(4) << p.m_coords[0] << "," << p.m_coords[1] << "," << p.m_coords[2] <<
 		"," << p.quat()[0] << "," << p.quat()[1] << "," << p.quat()[2] << "," << p.quat()[3] << ")";
 	return o;
 }

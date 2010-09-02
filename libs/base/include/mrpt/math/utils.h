@@ -677,7 +677,6 @@ namespace mrpt
 
 
 		/** Efficiently compute the inverse of a 4x4 homogeneous matrix by only transposing the rotation 3x3 part and solving the translation with dot products.
-		  *
 		  *  This is a generic template which works with:
 		  *    MATRIXLIKE: CMatrixTemplateNumeric, CMatrixFixedNumeric
 		  */
@@ -732,7 +731,34 @@ namespace mrpt
 
 			MRPT_END;
 		}
+		//! \overload
+		template <class IN_ROTMATRIX,class IN_XYZ, class OUT_ROTMATRIX, class OUT_XYZ>
+		void homogeneousMatrixInverse(
+			const IN_ROTMATRIX  & in_R,
+			const IN_XYZ        & in_xyz,
+			OUT_ROTMATRIX & out_R,
+			OUT_XYZ       & out_xyz
+			)
+		{
+			MRPT_START
+			ASSERT_( in_R.IsSquare() && size(in_R,1)==3 && in_xyz.size()==3)
+			out_R.setSize(3,3);
+			out_xyz.resize(3);
 
+			// translation part:
+			const double tx = -in_xyz[0];
+			const double ty = -in_xyz[1];
+			const double tz = -in_xyz[2];
+
+			out_xyz[0] = tx*in_R.get_unsafe(0,0)+ty*in_R.get_unsafe(1,0)+tz*in_R.get_unsafe(2,0);
+			out_xyz[1] = tx*in_R.get_unsafe(0,1)+ty*in_R.get_unsafe(1,1)+tz*in_R.get_unsafe(2,1);
+			out_xyz[2] = tx*in_R.get_unsafe(0,2)+ty*in_R.get_unsafe(1,2)+tz*in_R.get_unsafe(2,2);
+
+			// 3x3 rotation part: transpose
+			in_R.t(out_R);
+
+			MRPT_END
+		}
 		//! \overload
 		template <class MATRIXLIKE>
 		inline void homogeneousMatrixInverse(MATRIXLIKE &M)

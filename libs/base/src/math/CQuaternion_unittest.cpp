@@ -65,19 +65,14 @@ protected:
 		CPose3DQuat		q1 = p1;
 		CPose3D			p2 = q1;
 
-		CArrayDouble<6>  d = CArrayDouble<6>(p1);
-		d-=CArrayDouble<6>(p2);
-
-		EXPECT_NEAR(0,d.Abs().sumAll(), 1e-4) <<
+		EXPECT_NEAR(0,(p1.getRotationMatrix()-p2.getRotationMatrix()).Abs().sumAll(), 1e-4) <<
 			"ypr->quat->ypr failed with:" << endl
 			<< "  p1:" << p1 << endl
 			<< "  q1:" << q1 << endl
 			<< "  p2:" << p2 << endl;
 
 		CPose3D			p3(q1.quat(),q1[0],q1[1],q1[2] );
-		d=CArrayDouble<6>(p1);
-		d-=CArrayDouble<6>(p3);
-		EXPECT_NEAR(0,d.Abs().sumAll(), 1e-4) <<
+		EXPECT_NEAR(0,(p1.getRotationMatrix()-p3.getRotationMatrix()).Abs().sumAll(), 1e-4) <<
 			"pose constructor from quat failed with:" << endl
 			<< "  p1:" << p1 << endl
 			<< "  q1:" << q1 << endl
@@ -123,6 +118,7 @@ TEST_F(QuaternionTests,ToYPRAndBack)
 {
 	test_toYPRAndBack(DEG2RAD(20),DEG2RAD(30),DEG2RAD(40));
 	test_toYPRAndBack(DEG2RAD(20),DEG2RAD(30),DEG2RAD(40));
+	test_toYPRAndBack(DEG2RAD(30),DEG2RAD(90),DEG2RAD(0));
 	test_toYPRAndBack(DEG2RAD(-30),DEG2RAD(90),DEG2RAD(0));
 	test_toYPRAndBack(DEG2RAD(-30),DEG2RAD(88),DEG2RAD(60));
 	test_toYPRAndBack(DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60));

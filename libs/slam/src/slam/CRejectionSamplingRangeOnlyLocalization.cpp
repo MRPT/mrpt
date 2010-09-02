@@ -37,8 +37,8 @@
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
-using namespace mrpt::slam; 
-using namespace mrpt::random; 
+using namespace mrpt::slam;
+using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -73,7 +73,6 @@ void CRejectionSamplingRangeOnlyLocalization::RS_drawFromProposal( CPose2D &outS
 	// This is the point where the SENSOR is:
 	outSample.x( m_dataPerBeacon[m_drawIndex].beaconPosition.x + cos(ang) * R );
 	outSample.y( m_dataPerBeacon[m_drawIndex].beaconPosition.y + sin(ang) * R );
-	outSample.z( m_z_robot );
 
 	outSample.phi( randomGenerator.drawGaussian1D( m_oldPose.phi(), DEG2RAD(2) ) );
 

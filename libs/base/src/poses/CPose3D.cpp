@@ -49,7 +49,7 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 
-IMPLEMENTS_SERIALIZABLE(CPose3D, CPose,mrpt::poses)
+IMPLEMENTS_SERIALIZABLE(CPose3D, CSerializable ,mrpt::poses)
 
 /*---------------------------------------------------------------
 	Constructors
@@ -57,90 +57,63 @@ IMPLEMENTS_SERIALIZABLE(CPose3D, CPose,mrpt::poses)
 CPose3D::CPose3D()
 	: m_ypr_uptodate(true), m_yaw(0),m_pitch(0),m_roll(0)
 {
-	m_is3D = true;
-	m_x = 0;
-	m_y = 0;
-	m_z = 0;
-	m_HM.unit();
+	m_coords[0] =
+	m_coords[1] =
+	m_coords[2] = 0;
+	m_ROT.unit();
 }
 
 CPose3D::CPose3D(const double x,const double y,const double z, const double yaw, const double pitch, const double roll)
-	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll()
+	: m_ROT(UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
 {
-	m_is3D = true;
 	setFromValues(x,y,z,yaw,pitch,roll);
 }
 
-CPose3D::CPose3D( const CPose3D &o)
-	: m_ypr_uptodate(o.m_ypr_uptodate), m_yaw(o.m_yaw),m_pitch(o.m_pitch),m_roll(o.m_roll), m_HM(o.m_HM)
-{
-	m_is3D = true;
-	m_x = o.m_x;
-	m_y = o.m_y;
-	m_z = o.m_z;
-}
-
 CPose3D::CPose3D(const mrpt::math::TPose3D &o)
-	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll()
+	: m_ypr_uptodate(false)
 {
-	m_is3D = true;
 	setFromValues(o.x,o.y,o.z,o.yaw,o.pitch,o.roll);
 }
 
-CPose3D & CPose3D::operator =( const CPose3D &o)
-{
-	m_HM = o.m_HM;
-	m_x = o.m_x;
-	m_y = o.m_y;
-	m_z = o.m_z;
-	m_yaw = o.m_yaw;
-	m_pitch = o.m_pitch;
-	m_roll = o.m_roll;
-	m_ypr_uptodate = o.m_ypr_uptodate;
-	return *this;
-}
-
 CPose3D::CPose3D(const CPose2D &p)
-	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll()
+	: m_ypr_uptodate(false)
 {
-	m_is3D = true;
-	setFromValues(p.x(),p.y(),0, p.phi());
+	setFromValues(p.x(),p.y(),0, p.phi(),0,0);
 }
 
 CPose3D::CPose3D(const CPoint3D &p)
 	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll()
 {
-	m_is3D = true;
 	setFromValues(p.x(),p.y(),p.z());
 }
 
 CPose3D::CPose3D(const math::CMatrixDouble & m)
-	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll(),m_HM( CMatrixDouble44(m) )
+	: m_ROT( UNINITIALIZED_MATRIX ), m_ypr_uptodate(false)
 {
-	m_is3D = true;
-	m_x = m_HM.get_unsafe(0,3);
-	m_y = m_HM.get_unsafe(1,3);
-	m_z = m_HM.get_unsafe(2,3);
-	//updateYawPitchRoll();
+	ASSERT_ABOVEEQ_(mrpt::math::size(m,1),3);
+	ASSERT_ABOVEEQ_(mrpt::math::size(m,2),4);
+	for (int r=0;r<3;r++)
+		for (int c=0;c<3;c++)
+			m_ROT(r,c)=m.get_unsafe(r,c);
+	for (int r=0;r<3;r++)
+		m_coords[r] = m.get_unsafe(r,3);
 }
 
 
 CPose3D::CPose3D(const math::CMatrixDouble44 &m)
-	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll(),m_HM(m)
+	: m_ROT( UNINITIALIZED_MATRIX ), m_ypr_uptodate(false)
 {
-	m_is3D = true;
-	m_x = m_HM.get_unsafe(0,3);
-	m_y = m_HM.get_unsafe(1,3);
-	m_z = m_HM.get_unsafe(2,3);
-	//updateYawPitchRoll();
+	for (int r=0;r<3;r++)
+		for (int c=0;c<3;c++)
+			m_ROT(r,c)=m.get_unsafe(r,c);
+	for (int r=0;r<3;r++)
+		m_coords[r] = m.get_unsafe(r,3);
 }
 
 /** Constructor from a quaternion (which only represents the 3D rotation part) and a 3D displacement. */
 CPose3D::CPose3D(const mrpt::math::CQuaternionDouble &q, const double _x, const double _y, const double _z )
-	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll(),m_HM( UNINITIALIZED_MATRIX )
+	: m_ROT( UNINITIALIZED_MATRIX ), m_ypr_uptodate(false)
 {
-	m_is3D = true;
-
 	double yaw,pitch,roll;
 	q.rpy(roll,pitch,yaw);
 	this->setFromValues(_x,_y,_z,yaw,pitch,roll);
@@ -148,13 +121,13 @@ CPose3D::CPose3D(const mrpt::math::CQuaternionDouble &q, const double _x, const 
 
 /** Constructor from a quaternion (which only represents the 3D rotation part) and a 3D displacement. */
 CPose3D::CPose3D(const CPose3DQuat &p )
-	: m_ypr_uptodate(false), m_yaw(),m_pitch(),m_roll(),m_HM( UNINITIALIZED_MATRIX )
+	: m_ROT( UNINITIALIZED_MATRIX ), m_ypr_uptodate(false)
 {
-	m_is3D = true;
-
-	double yaw,pitch,roll;
-	p.quat().rpy(roll,pitch,yaw);
-	this->setFromValues(p.x(),p.y(),p.z(),yaw,pitch,roll);
+	// Extract XYZ + ROT from quaternion:
+	m_coords[0] = p.x();
+	m_coords[1] = p.y();
+	m_coords[2] = p.z();
+	p.quat().rotationMatrixNoResize(m_ROT);
 }
 
 /*---------------------------------------------------------------
@@ -168,7 +141,7 @@ void  CPose3D::writeToStream(CStream &out,int *version) const
 	else
 	{
 		// Just for the case the user has modified by hand (x,y,z,yaw,pitch,roll) directly:
-		const_cast<CPose3D*>(this)->rebuildHomogeneousMatrix();
+		const_cast<CPose3D*>(this)->rebuildRotationMatrix();
 		const CPose3DQuat  q(*this);
 		// The coordinates:
 		out << q[0] << q[1] << q[2] << q[3] << q[4] << q[5] << q[6];
@@ -188,23 +161,27 @@ void  CPose3D::readFromStream(CStream &in,int version)
 			// The coordinates:
 			CMatrix  HM2;
 			in >> HM2;
+			ASSERT_(mrpt::math::size(HM2,1)==4 && HM2.IsSquare())
 
-			m_HM = HM2;
+			m_ROT = CMatrixDouble33(HM2);
 
-			m_x = m_HM.get_unsafe(0,3);
-			m_y = m_HM.get_unsafe(1,3);
-			m_z = m_HM.get_unsafe(2,3);
-			updateYawPitchRoll();
+			m_coords[0] = HM2.get_unsafe(0,3);
+			m_coords[1] = HM2.get_unsafe(1,3);
+			m_coords[2] = HM2.get_unsafe(2,3);
+			m_ypr_uptodate = false;
 		} break;
 	case 1:
 		{
 			// The coordinates:
-			in >> m_HM;
+			CMatrixDouble44 HM;
+			in >> HM;
 
-			m_x = m_HM.get_unsafe(0,3);
-			m_y = m_HM.get_unsafe(1,3);
-			m_z = m_HM.get_unsafe(2,3);
-			updateYawPitchRoll();
+			m_ROT = CMatrixDouble33(HM);
+
+			m_coords[0] = HM.get_unsafe(0,3);
+			m_coords[1] = HM.get_unsafe(1,3);
+			m_coords[2] = HM.get_unsafe(2,3);
+			m_ypr_uptodate = false;
 		} break;
 	case 2:
 		{
@@ -212,9 +189,12 @@ void  CPose3D::readFromStream(CStream &in,int version)
 			CPose3DQuat p(UNINITIALIZED_QUATERNION);
 			in >>p[0]>>p[1]>>p[2]>>p[3]>>p[4]>>p[5]>>p[6];
 
-			double _yaw,_pitch,_roll;
-			p.quat().rpy(_roll,_pitch,_yaw);
-			this->setFromValues(p.x(),p.y(),p.z(),_yaw,_pitch,_roll);
+			// Extract XYZ + ROT from quaternion:
+			m_ypr_uptodate = false;
+			m_coords[0] = p.x();
+			m_coords[1] = p.y();
+			m_coords[2] = p.z();
+			p.quat().rotationMatrixNoResize(m_ROT);
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -226,9 +206,8 @@ void  CPose3D::readFromStream(CStream &in,int version)
  */
 std::ostream& mrpt::poses::operator << (std::ostream& o, const CPose3D& p)
 {
-	p.updateYawPitchRoll();
-	o << "(x,y,z,yaw,pitch,roll)=(" << std::fixed << std::setprecision(4) << p.m_x << "," << p.m_y << "," << p.m_z <<  ","
-		<< std::setprecision(2) << RAD2DEG(p.m_yaw) << "deg," << RAD2DEG(p.m_pitch) << "deg," << RAD2DEG(p.m_roll) << "deg)";
+	o << "(x,y,z,yaw,pitch,roll)=(" << std::fixed << std::setprecision(4) << p.m_coords[0] << "," << p.m_coords[1] << "," << p.m_coords[2] <<  ","
+		<< std::setprecision(2) << RAD2DEG(p.yaw()) << "deg," << RAD2DEG(p.pitch()) << "deg," << RAD2DEG(p.roll()) << "deg)";
 	return o;
 }
 
@@ -238,7 +217,6 @@ std::ostream& mrpt::poses::operator << (std::ostream& o, const CPose3D& p)
 void  CPose3D::normalizeAngles()
 {
 	updateYawPitchRoll();
-	//setFromValues(m_x,m_y,m_z,m_yaw,m_pitch,m_roll);
 }
 
 
@@ -253,32 +231,23 @@ void  CPose3D::setFromValues(
 	const double		pitch,
 	const double		roll)
 {
-	m_x = x0;
-	m_y = y0;
-	m_z = z0;
+	m_coords[0] = x0;
+	m_coords[1] = y0;
+	m_coords[2] = z0;
 	this->m_yaw = mrpt::math::wrapToPi(yaw);
 	this->m_pitch = mrpt::math::wrapToPi(pitch);
 	this->m_roll = mrpt::math::wrapToPi(roll);
 
 	m_ypr_uptodate = true;
 
-	rebuildHomogeneousMatrix();
+	rebuildRotationMatrix();
 }
 
 /*---------------------------------------------------------------
  Set the pose from 3D point and yaw/pitch/roll angles, in radians.
 ---------------------------------------------------------------*/
-void  CPose3D::rebuildHomogeneousMatrix()
+void  CPose3D::rebuildRotationMatrix()
 {
-	m_HM.get_unsafe(0,3)=m_x;
-	m_HM.get_unsafe(1,3)=m_y;
-	m_HM.get_unsafe(2,3)=m_z;
-
-	m_HM.get_unsafe(3,0)=
-	m_HM.get_unsafe(3,1)=
-	m_HM.get_unsafe(3,2)=0;
-	m_HM.get_unsafe(3,3)=1.0;
-
 #ifdef HAVE_SINCOS
 	double	cy,sy;
 	::sincos(m_yaw,&sy,&cy);
@@ -295,11 +264,13 @@ void  CPose3D::rebuildHomogeneousMatrix()
 	const double	sr = sin(m_roll);
 #endif
 
-	m_HM.get_unsafe(0,0)= cy*cp;	m_HM.get_unsafe(0,1)= cy*sp*sr-sy*cr;		m_HM.get_unsafe(0,2)= cy*sp*cr+sy*sr;
-	m_HM.get_unsafe(1,0)= sy*cp;	m_HM.get_unsafe(1,1)= sy*sp*sr+cy*cr;		m_HM.get_unsafe(1,2)= sy*sp*cr-cy*sr;
-	m_HM.get_unsafe(2,0)= -sp;		m_HM.get_unsafe(2,1)= cp*sr;				m_HM.get_unsafe(2,2)= cp*cr;
+	const double rot_vals[] = {
+		cy*cp,      cy*sp*sr-sy*cr,     cy*sp*cr+sy*sr,
+		sy*cp,      sy*sp*sr+cy*cr,     sy*sp*cr-cy*sr,
+		-sp,        cp*sr,              cp*cr
+		};
+	m_ROT.loadFromArray(rot_vals);
 }
-
 
 /*---------------------------------------------------------------
 		Scalar multiplication.
@@ -307,13 +278,13 @@ void  CPose3D::rebuildHomogeneousMatrix()
 void CPose3D::operator *=(const double s)
 {
 	updateYawPitchRoll();
-	m_x*=s;
-	m_y*=s;
-	m_z*=s;
+	m_coords[0]*=s;
+	m_coords[1]*=s;
+	m_coords[2]*=s;
 	m_yaw*=s;
 	m_pitch*=s;
 	m_roll*=s;
-	setFromValues(m_x,m_y,m_z,m_yaw,m_pitch,m_roll);
+	rebuildRotationMatrix();
 }
 
 /*---------------------------------------------------------------
@@ -321,15 +292,15 @@ void CPose3D::operator *=(const double s)
 ---------------------------------------------------------------*/
 void  CPose3D::getYawPitchRoll( double &yaw, double &pitch, double &roll ) const
 {
-	ASSERTDEBMSG_( fabs(sqrt(square(m_HM(0,0))+square(m_HM(1,0))+square(m_HM(2,0))) - 1 ) < 1e-5, "Homogeneous matrix is not orthogonal & normalized!: "+m_HM.inMatlabFormat() )
-	ASSERTDEBMSG_( fabs(sqrt(square(m_HM(0,1))+square(m_HM(1,1))+square(m_HM(2,1))) - 1 ) < 1e-5, "Homogeneous matrix is not orthogonal & normalized!: "+m_HM.inMatlabFormat() )
-	ASSERTDEBMSG_( fabs(sqrt(square(m_HM(0,2))+square(m_HM(1,2))+square(m_HM(2,2))) - 1 ) < 1e-5, "Homogeneous matrix is not orthogonal & normalized!: "+m_HM.inMatlabFormat() )
+	ASSERTDEBMSG_( fabs(sqrt(square(m_ROT(0,0))+square(m_ROT(1,0))+square(m_ROT(2,0))) - 1 ) < 1e-5, "Homogeneous matrix is not orthogonal & normalized!: "+m_HM.inMatlabFormat() )
+	ASSERTDEBMSG_( fabs(sqrt(square(m_ROT(0,1))+square(m_ROT(1,1))+square(m_ROT(2,1))) - 1 ) < 1e-5, "Homogeneous matrix is not orthogonal & normalized!: "+m_HM.inMatlabFormat() )
+	ASSERTDEBMSG_( fabs(sqrt(square(m_ROT(0,2))+square(m_ROT(1,2))+square(m_ROT(2,2))) - 1 ) < 1e-5, "Homogeneous matrix is not orthogonal & normalized!: "+m_HM.inMatlabFormat() )
 
 	// Pitch is in the range [-pi/2, pi/2 ], so this calculation is enough:
-	pitch =  atan2( - m_HM.get_unsafe(2,0), hypot( m_HM.get_unsafe(0,0),m_HM.get_unsafe(1,0) ) ); //asin( - m_HM.get_unsafe(2,0) );
+	pitch =  atan2( - m_ROT(2,0), hypot( m_ROT(0,0),m_ROT(1,0) ) ); //asin( - m_ROT(2,0) );
 
 	// Roll:
-	if ( (fabs(m_HM.get_unsafe(2,1))+fabs(m_HM.get_unsafe(2,2)))<10*std::numeric_limits<double>::epsilon() )
+	if ( (fabs(m_ROT(2,1))+fabs(m_ROT(2,2)))<10*std::numeric_limits<double>::epsilon() )
 	{
 		//Gimbal lock between yaw and roll. This one is arbitrarily forced to be zero.
 		//Check http://reference.mrpt.org/svn/classmrpt_1_1poses_1_1_c_pose3_d.html. If cos(pitch)==0, the homogeneous matrix is:
@@ -348,14 +319,14 @@ void  CPose3D::getYawPitchRoll( double &yaw, double &pitch, double &roll ) const
 		//Both cases are in a "gimbal lock" status. This happens because pitch is vertical.
 
 		roll = 0.0;
-		if (pitch>0) yaw=atan2(m_HM.get_unsafe(1,2),m_HM.get_unsafe(0,2));
-		else yaw=atan2(-m_HM.get_unsafe(1,2),-m_HM.get_unsafe(0,2));
+		if (pitch>0) yaw=atan2(m_ROT(1,2),m_ROT(0,2));
+		else yaw=atan2(-m_ROT(1,2),-m_ROT(0,2));
 	}
 	else
 	{
-		roll = atan2( m_HM.get_unsafe(2,1), m_HM.get_unsafe(2,2) );
+		roll = atan2( m_ROT(2,1), m_ROT(2,2) );
 		// Yaw:
-		yaw = atan2( m_HM.get_unsafe(1,0), m_HM.get_unsafe(0,0) );
+		yaw = atan2( m_ROT(1,0), m_ROT(0,0) );
 	}
 }
 
@@ -395,12 +366,13 @@ void CPose3D::sphericalCoordinates(
 void CPose3D::addComponents(const CPose3D &p)
 {
 	updateYawPitchRoll();
-	m_x+=p.m_x;
-	m_y+=p.m_y;
-	m_z+=p.m_z;
+	m_coords[0]+=p.m_coords[0];
+	m_coords[1]+=p.m_coords[1];
+	m_coords[2]+=p.m_coords[2];
 	m_yaw+=p.m_yaw;
 	m_pitch+=p.m_pitch;
 	m_roll+=p.m_roll;
+	rebuildRotationMatrix();
 }
 
 
@@ -412,9 +384,9 @@ double CPose3D::distanceEuclidean6D( const CPose3D &o ) const
 	updateYawPitchRoll();
 	o.updateYawPitchRoll();
 	return sqrt(
-		square( o.m_x - m_x ) +
-		square( o.m_y - m_y ) +
-		square( o.m_z - m_z ) +
+		square( o.m_coords[0] - m_coords[0] ) +
+		square( o.m_coords[1] - m_coords[1] ) +
+		square( o.m_coords[2] - m_coords[2] ) +
 		square( wrapToPi( o.m_yaw - m_yaw ) ) +
 		square( wrapToPi( o.m_pitch - m_pitch ) ) +
 		square( wrapToPi( o.m_roll - m_roll ) ) );
@@ -432,9 +404,7 @@ void CPose3D::composePoint(double lx,double ly,double lz, double &gx, double &gy
 {
 	// Jacob: df/dpoint
 	if (out_jacobian_df_dpoint)
-	{
-		m_HM.extractMatrix(0,0, *out_jacobian_df_dpoint);
-	}
+		*out_jacobian_df_dpoint = m_ROT;
 
 	// Jacob: df/dpose
 	if (out_jacobian_df_dpose)
@@ -486,9 +456,9 @@ void CPose3D::composePoint(double lx,double ly,double lz, double &gx, double &gy
 		}
 	}
 
-	gx=m_HM.get_unsafe(0,0)*lx+m_HM.get_unsafe(0,1)*ly+m_HM.get_unsafe(0,2)*lz+m_x;
-	gy=m_HM.get_unsafe(1,0)*lx+m_HM.get_unsafe(1,1)*ly+m_HM.get_unsafe(1,2)*lz+m_y;
-	gz=m_HM.get_unsafe(2,0)*lx+m_HM.get_unsafe(2,1)*ly+m_HM.get_unsafe(2,2)*lz+m_z;
+	gx=m_ROT(0,0)*lx+m_ROT(0,1)*ly+m_ROT(0,2)*lz+m_coords[0];
+	gy=m_ROT(1,0)*lx+m_ROT(1,1)*ly+m_ROT(1,2)*lz+m_coords[1];
+	gz=m_ROT(2,0)*lx+m_ROT(2,1)*ly+m_ROT(2,2)*lz+m_coords[2];
 
 	// Jacob: df/dse3
 	if (out_jacobian_df_dse3)
@@ -522,9 +492,9 @@ void CPose3D::getAsVector(vector_double &r) const
 {
 	updateYawPitchRoll();
 	r.resize(6);
-	r[0]=m_x;
-	r[1]=m_y;
-	r[2]=m_z;
+	r[0]=m_coords[0];
+	r[1]=m_coords[1];
+	r[2]=m_coords[2];
 	r[3]=m_yaw;
 	r[4]=m_pitch;
 	r[5]=m_roll;
@@ -587,14 +557,13 @@ void CPose3D::getAsQuaternion(mrpt::math::CQuaternionDouble &q, mrpt::math::CMat
 
 bool mrpt::poses::operator==(const CPose3D &p1,const CPose3D &p2)
 {
-	return (p1.x()==p2.x())&&(p1.y()==p2.y())&&(p1.z()==p2.z())&&(p1.yaw()==p2.yaw())&&(p1.pitch()==p2.pitch())&&(p1.roll()==p2.roll());
+	return (p1.m_coords==p2.m_coords)&&(p1.m_ROT==p2.m_ROT);
 }
 
 bool mrpt::poses::operator!=(const CPose3D &p1,const CPose3D &p2)
 {
-	return (p1.x()!=p2.x())||(p1.y()!=p2.y())||(p1.z()!=p2.z())||(p1.yaw()!=p2.yaw())||(p1.pitch()!=p2.pitch())||(p1.roll()!=p2.roll());
+	return (p1.m_coords!=p2.m_coords)||(p1.m_ROT!=p2.m_ROT);
 }
-
 
 /*---------------------------------------------------------------
 				point3D = pose3D + point3D
@@ -602,9 +571,9 @@ bool mrpt::poses::operator!=(const CPose3D &p1,const CPose3D &p2)
 CPoint3D  CPose3D::operator + (const CPoint3D& b) const
 {
 	return CPoint3D(
-		m_HM.get_unsafe(0,0)*b.x() + m_HM.get_unsafe(0,1)*b.y() +m_HM.get_unsafe(0,2)*b.z() + m_HM.get_unsafe(0,3),
-		m_HM.get_unsafe(1,0)*b.x() + m_HM.get_unsafe(1,1)*b.y() +m_HM.get_unsafe(1,2)*b.z() + m_HM.get_unsafe(1,3),
-		m_HM.get_unsafe(2,0)*b.x() + m_HM.get_unsafe(2,1)*b.y() +m_HM.get_unsafe(2,2)*b.z() + m_HM.get_unsafe(2,3) );
+		m_coords[0] + m_ROT(0,0)*b.x() + m_ROT(0,1)*b.y() +m_ROT(0,2)*b.z(),
+		m_coords[1] + m_ROT(1,0)*b.x() + m_ROT(1,1)*b.y() +m_ROT(1,2)*b.z(),
+		m_coords[2] + m_ROT(2,0)*b.x() + m_ROT(2,1)*b.y() +m_ROT(2,2)*b.z());
 }
 
 /*---------------------------------------------------------------
@@ -613,9 +582,9 @@ CPoint3D  CPose3D::operator + (const CPoint3D& b) const
 CPoint3D  CPose3D::operator + (const CPoint2D& b) const
 {
 	return CPoint3D(
-		m_HM.get_unsafe(0,0)*b.x() + m_HM.get_unsafe(0,1)*b.y() + m_HM.get_unsafe(0,3),
-		m_HM.get_unsafe(1,0)*b.x() + m_HM.get_unsafe(1,1)*b.y() + m_HM.get_unsafe(1,3),
-		m_HM.get_unsafe(2,0)*b.x() + m_HM.get_unsafe(2,1)*b.y() + m_HM.get_unsafe(2,3) );
+		m_coords[0] + m_ROT(0,0)*b.x() + m_ROT(0,1)*b.y(),
+		m_coords[1] + m_ROT(1,0)*b.x() + m_ROT(1,1)*b.y(),
+		m_coords[2] + m_ROT(2,0)*b.x() + m_ROT(2,1)*b.y());
 }
 
 
@@ -624,53 +593,26 @@ CPoint3D  CPose3D::operator + (const CPoint2D& b) const
   ---------------------------------------------------------------*/
 void CPose3D::composeFrom(const CPose3D& A, const CPose3D& B )
 {
-	//m_HM.multiply( A.m_HM, B.m_HM );
-	// In fact, we can just update the 3x4 part of the matrix:
-	if (this!=&A && this!=&B)
-	{
-		for (int r=0;r<3;r++)
-			for (int c=0;c<3;c++)
-				m_HM.get_unsafe(r,c) = A.m_HM.get_unsafe(r,0)*B.m_HM.get_unsafe(0,c)+A.m_HM.get_unsafe(r,1)*B.m_HM.get_unsafe(1,c)+A.m_HM.get_unsafe(r,2)*B.m_HM.get_unsafe(2,c);
+	//Was: m_HM.multiply( A.m_HM, B.m_HM );
+	m_ROT.multiply_AB( A.m_ROT, B.m_ROT );
 
-		// The translation part M(0:3,3)
-		for (int r=0;r<3;r++)
-				m_HM.get_unsafe(r,3) = A.m_HM.get_unsafe(r,0)*B.m_HM.get_unsafe(0,3)+A.m_HM.get_unsafe(r,1)*B.m_HM.get_unsafe(1,3)+A.m_HM.get_unsafe(r,2)*B.m_HM.get_unsafe(2,3)+ A.m_HM.get_unsafe(r,3);
-	}
-	else
-	{	// this = A or B -> Store HM in a temporary holder:
-		CMatrixDouble44  RES_HM(UNINITIALIZED_MATRIX);
-		for (int r=0;r<3;r++)
-			for (int c=0;c<3;c++)
-				RES_HM(r,c) = A.m_HM.get_unsafe(r,0)*B.m_HM.get_unsafe(0,c)+A.m_HM.get_unsafe(r,1)*B.m_HM.get_unsafe(1,c)+A.m_HM.get_unsafe(r,2)*B.m_HM.get_unsafe(2,c);
+	// The translation part HM(0:3,3)
+	for (int r=0;r<3;r++)
+		m_coords[r] = A.m_coords[r] + A.m_ROT(r,0)*B.m_coords[0]+A.m_ROT(r,1)*B.m_coords[1]+A.m_ROT(r,2)*B.m_coords[2];
 
-		// The translation part M(0:3,3)
-		for (int r=0;r<3;r++)
-				RES_HM(r,3) = A.m_HM.get_unsafe(r,0)*B.m_HM.get_unsafe(0,3)+A.m_HM.get_unsafe(r,1)*B.m_HM.get_unsafe(1,3)+A.m_HM.get_unsafe(r,2)*B.m_HM.get_unsafe(2,3)+ A.m_HM.get_unsafe(r,3);
-
-		// And now, copy to "this":
-//		for (int r=0;r<3;r++)
-//			for (int c=0;c<4;c++)
-//				m_HM(r,c)=RES_HM(r,c);
-		for (int i=0;i<3*4;i++)
-			m_HM.m_Val[i] = RES_HM.m_Val[i];
-	}
-
-	// Update the x,y,z,yaw,pitch,roll fields:
-	m_x = m_HM(0,3);
-	m_y = m_HM(1,3);
-	m_z = m_HM(2,3);
 	m_ypr_uptodate=false;
 }
 
 /** Convert this pose into its inverse, saving the result in itself. */
 void CPose3D::inverse()
 {
-	mrpt::math::homogeneousMatrixInverse(m_HM); // Inverse of the HM.
+	CMatrixDouble33  inv_rot(UNINITIALIZED_MATRIX);
+	CArrayDouble<3>  inv_xyz;
 
-	// Update the x,y,z,yaw,pitch,roll fields:
-	m_x = m_HM.get_unsafe(0,3);
-	m_y = m_HM.get_unsafe(1,3);
-	m_z = m_HM.get_unsafe(2,3);
+	mrpt::math::homogeneousMatrixInverse(m_ROT,m_coords, inv_rot, inv_xyz);
+
+	m_ROT = inv_rot;
+	m_coords = inv_xyz;
 	m_ypr_uptodate=false;
 }
 
@@ -679,6 +621,7 @@ void CPose3D::inverse()
  ---------------------------------------------------------------*/
 bool CPose3D::isHorizontal( const double tolerance  ) const
 {
+	updateYawPitchRoll();
 	return (fabs(m_pitch)<=tolerance) &&
 	       ( fabs(m_roll)<=tolerance || fabs(mrpt::math::wrapToPi( m_roll-M_PI))<=tolerance );
 }
@@ -690,14 +633,24 @@ bool CPose3D::isHorizontal( const double tolerance  ) const
   */
 void CPose3D::inverseComposeFrom(const CPose3D& A, const CPose3D& B )
 {
-	CMatrixDouble44 B_INV(UNINITIALIZED_MATRIX);
-	B.getInverseHomogeneousMatrix( B_INV );
+	// this    =    A  (-)  B
+	// HM_this = inv(HM_B) * HM_A
+	//
+	// [  R_b  | t_b ] -1   [  R_a  | t_a ]    [ R_b^t * Ra |    ..    ]
+	// [ ------+-----]    * [ ------+-----]  = [ ---------- +----------]
+	// [ 0 0 0 |  1  ]      [ 0 0 0 |  1  ]    [  0  0   0  |      1   ]
+	//
 
-	m_HM.multiply(B_INV,A.m_HM);
+	// XYZ part:
+	CMatrixDouble33  R_b_inv(UNINITIALIZED_MATRIX);
+	CArrayDouble<3>  t_b_inv;
+	mrpt::math::homogeneousMatrixInverse(B.m_ROT,B.m_coords,  R_b_inv,t_b_inv);
 
-	m_x = m_HM.get_unsafe(0,3);
-	m_y = m_HM.get_unsafe(1,3);
-	m_z = m_HM.get_unsafe(2,3);
+	for (int i=0;i<3;i++)
+		m_coords[i] = t_b_inv[i] + R_b_inv(i,0)*A.m_coords[0]+ R_b_inv(i,1)*A.m_coords[1]+ R_b_inv(i,2)*A.m_coords[2];
+
+	// Rot part:
+	m_ROT.multiply_AB( R_b_inv, A.m_ROT );
 	m_ypr_uptodate=false;
 }
 
@@ -710,18 +663,18 @@ void CPose3D::inverseComposePoint(const double gx,const double gy,const double g
 	mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dse3
 	)const
 {
-	CMatrixDouble44 B_INV(UNINITIALIZED_MATRIX);
-	getInverseHomogeneousMatrix( B_INV );
+	CMatrixDouble33  R_inv(UNINITIALIZED_MATRIX);
+	CArrayDouble<3>  t_inv;
+	mrpt::math::homogeneousMatrixInverse(m_ROT,m_coords,  R_inv,t_inv);
 
 	// Jacob: df/dpoint
 	if (out_jacobian_df_dpoint)
-	{
-		B_INV.extractMatrix(0,0, *out_jacobian_df_dpoint);
-	}
+		*out_jacobian_df_dpoint = R_inv;
 
 	// Jacob: df/dpose
 	if (out_jacobian_df_dpose)
 	{
+		// TODO: Perhaps this and the sin/cos's can be avoided if all needed terms are already in m_ROT ???
 		updateYawPitchRoll();
 
 #	ifdef HAVE_SINCOS
@@ -752,22 +705,22 @@ void CPose3D::inverseComposePoint(const double gx,const double gy,const double g
 		const double m31_dp = (cy*cp*cr );  		const double m32_dp = (sy*cp*cr ); 			const double m33_dp = -sp*cr;
 		const double m31_dr = (-cy*sp*sr+sy*cr);  	const double m32_dr = (-sy*sp*sr-cy*cr);  	const double m33_dr = -cp*sr;
 
-		const double Ax = gx-m_x;
-		const double Ay = gy-m_y;
-		const double Az = gz-m_z;
+		const double Ax = gx-m_coords[0];
+		const double Ay = gy-m_coords[1];
+		const double Az = gz-m_coords[2];
 
 		const double nums[3*6] = {
-			-m_HM.get_unsafe(0,0), -m_HM.get_unsafe(1,0), -m_HM.get_unsafe(2,0),
+			-m_ROT(0,0), -m_ROT(1,0), -m_ROT(2,0),
 				Ax*m11_dy + Ay*m12_dy + Az*m13_dy ,  // d_x'/d_yaw
 				Ax*m11_dp + Ay*m12_dp + Az*m13_dp,  // d_x'/d_pitch
 				Ax*m11_dr + Ay*m12_dr + Az*m13_dr,  // d_x'/d_roll
 
-			-m_HM.get_unsafe(0,1), -m_HM.get_unsafe(1,1), -m_HM.get_unsafe(2,1),
+			-m_ROT(0,1), -m_ROT(1,1), -m_ROT(2,1),
 				Ax*m21_dy + Ay*m22_dy + Az*m23_dy,  // d_x'/d_yaw
 				Ax*m21_dp + Ay*m22_dp + Az*m23_dp,  // d_x'/d_pitch
 				Ax*m21_dr + Ay*m22_dr + Az*m23_dr,  // d_x'/d_roll
 
-			-m_HM.get_unsafe(0,2), -m_HM.get_unsafe(1,2), -m_HM.get_unsafe(2,2),
+			-m_ROT(0,2), -m_ROT(1,2), -m_ROT(2,2),
 				Ax*m31_dy + Ay*m32_dy + Az*m33_dy,  // d_x'/d_yaw
 				Ax*m31_dp + Ay*m32_dp + Az*m33_dp,  // d_x'/d_pitch
 				Ax*m31_dr + Ay*m32_dr + Az*m33_dr,  // d_x'/d_roll
@@ -775,9 +728,9 @@ void CPose3D::inverseComposePoint(const double gx,const double gy,const double g
 		out_jacobian_df_dpose->loadFromArray(nums);
 	}
 
-	lx = B_INV.get_unsafe(0,0) * gx + B_INV.get_unsafe(0,1) * gy + B_INV.get_unsafe(0,2) * gz + B_INV.get_unsafe(0,3);
-	ly = B_INV.get_unsafe(1,0) * gx + B_INV.get_unsafe(1,1) * gy + B_INV.get_unsafe(1,2) * gz + B_INV.get_unsafe(1,3);
-	lz = B_INV.get_unsafe(2,0) * gx + B_INV.get_unsafe(2,1) * gy + B_INV.get_unsafe(2,2) * gz + B_INV.get_unsafe(2,3);
+	lx = t_inv[0] +  R_inv(0,0) * gx + R_inv(0,1) * gy + R_inv(0,2) * gz;
+	ly = t_inv[1] +  R_inv(1,0) * gx + R_inv(1,1) * gy + R_inv(1,2) * gz;
+	lz = t_inv[2] +  R_inv(2,0) * gx + R_inv(2,1) * gy + R_inv(2,2) * gz;
 
 	// Jacob: df/dse3
 	if (out_jacobian_df_dse3)
@@ -799,31 +752,43 @@ CPose3D CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu)
 	static const double one_6th = 1.0/6.0;
 	static const double one_20th = 1.0/20.0;
 
-	CMatrixDouble44 HM; // For the result
-	HM(3,3)=1;
+	// Resulting XYZ coords:
+	CArrayDouble<3> res_xyz;
 
-	const CArrayDouble<3> mu_xyz = CArrayDouble<3>( mu.slice<0,3>() );
-	const CArrayDouble<3> w = CArrayDouble<3>( mu.slice<3,3>() );
-	const double theta_sq = w.squareNorm(); // CArrayDouble<3>(w).Square().sumAll(); // w*w;
-	const double theta = sqrt(theta_sq);
+//	const CArrayDouble<3> mu_xyz = CArrayDouble<3>( mu.slice<0,3>() );
+	CArrayDouble<3> mu_xyz;
+	for (int i=0;i<3;i++) mu_xyz[i] = mu[i];
+
+//	const CArrayDouble<3> w = CArrayDouble<3>( mu.slice<3,3>() );
+	CArrayDouble<3> w;
+	for (int i=0;i<3;i++) w[i] = mu[3+i];
+
+	const double theta_sq = w.squareNorm(); // w*w;
+	const double theta = std::sqrt(theta_sq);
 	double A, B;
 
 	CArrayDouble<3> cross;
 	mrpt::math::crossProduct3D(w, mu_xyz, cross );
 
-	if (theta_sq < 1e-8) {
+	if (theta_sq < 1e-8)
+	{
 		A = 1.0 - one_6th * theta_sq;
 		B = 0.5;
-		HM(0,3) = mu_xyz[0] + 0.5 * cross[0];
-		HM(1,3) = mu_xyz[1] + 0.5 * cross[1];
-		HM(2,3) = mu_xyz[2] + 0.5 * cross[2];
-	} else {
+		res_xyz[0] = mu_xyz[0] + 0.5 * cross[0];
+		res_xyz[1] = mu_xyz[1] + 0.5 * cross[1];
+		res_xyz[2] = mu_xyz[2] + 0.5 * cross[2];
+	}
+	else
+	{
 		double C;
-		if (theta_sq < 1e-6) {
+		if (theta_sq < 1e-6)
+		{
 			C = one_6th*(1.0 - one_20th * theta_sq);
 			A = 1.0 - theta_sq * C;
 			B = 0.5 - 0.25 * one_6th * theta_sq;
-		} else {
+		}
+		else
+		{
 			const double inv_theta = 1.0/theta;
 			A = sin(theta) * inv_theta;
 			B = (1 - cos(theta)) * (inv_theta * inv_theta);
@@ -833,17 +798,17 @@ CPose3D CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu)
 		CArrayDouble<3> w_cross;	// = w^cross
 		mrpt::math::crossProduct3D(w, cross, w_cross );
 
-		HM(0,3) = mu_xyz[0] + B * cross[0] + C * w_cross[0];
-		HM(1,3) = mu_xyz[1] + B * cross[1] + C * w_cross[1];
-		HM(2,3) = mu_xyz[2] + B * cross[2] + C * w_cross[2];
 		//result.get_translation() = mu_xyz + B * cross + C * (w ^ cross);
+		res_xyz[0] = mu_xyz[0] + B * cross[0] + C * w_cross[0];
+		res_xyz[1] = mu_xyz[1] + B * cross[1] + C * w_cross[1];
+		res_xyz[2] = mu_xyz[2] + B * cross[2] + C * w_cross[2];
 	}
 
-	// Write 3x3 rotation part in a submatrix view of HM:
-	CSubmatrixView<CMatrixDouble44,3,3> rot_part(HM,0,0);
-	mrpt::math::rodrigues_so3_exp(w, A, B, rot_part);
+	// 3x3 rotation part:
+	CMatrixDouble33 res_ROT;
+	mrpt::math::rodrigues_so3_exp(w, A, B, res_ROT);
 
-	return CPose3D(HM);
+	return CPose3D(res_ROT, res_xyz);
 }
 
 
@@ -854,10 +819,10 @@ CArrayDouble<3> CPose3D::ln_rotation() const
 {
 	CArrayDouble<3> result;
 
-	const double cos_angle = (m_HM(0,0)+m_HM(1,1)+m_HM(2,2)- 1.0) * 0.5;
-	result[0] = (m_HM(2,1)-m_HM(1,2))*0.5;
-	result[1] = (m_HM(0,2)-m_HM(2,0))*0.5;
-	result[2] = (m_HM(1,0)-m_HM(0,1))*0.5;
+	const double cos_angle = (m_ROT.trace() - 1.0) * 0.5;
+	result[0] = (m_ROT(2,1)-m_ROT(1,2))*0.5;
+	result[1] = (m_ROT(0,2)-m_ROT(2,0))*0.5;
+	result[2] = (m_ROT(1,0)-m_ROT(0,1))*0.5;
 
 	double sin_angle_abs = result.norm(); //sqrt(result*result);
 	if (cos_angle > M_SQRT1_2)
@@ -875,26 +840,27 @@ CArrayDouble<3> CPose3D::ln_rotation() const
 	{  // rest use symmetric part
 		// antisymmetric part vanishes, but still large rotation, need information from symmetric part
 		const double angle = M_PI - asin(sin_angle_abs);
-		const double d0 = m_HM(0,0) - cos_angle,
-			d1 = m_HM(1,1) - cos_angle,
-			d2 = m_HM(2,2) - cos_angle;
+		const double
+			d0 = m_ROT(0,0) - cos_angle,
+			d1 = m_ROT(1,1) - cos_angle,
+			d2 = m_ROT(2,2) - cos_angle;
 		CArrayDouble<3> r2;
 		if(fabs(d0) > fabs(d1) && fabs(d0) > fabs(d2))
 		{ // first is largest, fill with first column
 			r2[0] = d0;
-			r2[1] = (m_HM(1,0)+m_HM(0,1))/2;
-			r2[2] = (m_HM(0,2)+m_HM(2,0))/2;
+			r2[1] = (m_ROT(1,0)+m_ROT(0,1))*0.5;
+			r2[2] = (m_ROT(0,2)+m_ROT(2,0))*0.5;
 		}
 		else if(fabs(d1) > fabs(d2))
 		{ 			    // second is largest, fill with second column
-			r2[0] = (m_HM(1,0)+m_HM(0,1))/2;
+			r2[0] = (m_ROT(1,0)+m_ROT(0,1))*0.5;
 			r2[1] = d1;
-			r2[2] = (m_HM(2,1)+m_HM(1,2))/2;
+			r2[2] = (m_ROT(2,1)+m_ROT(1,2))*0.5;
 		}
 		else
 		{							    // third is largest, fill with third column
-			r2[0] = (m_HM(0,2)+m_HM(2,0))/2;
-			r2[1] = (m_HM(2,1)+m_HM(1,2))/2;
+			r2[0] = (m_ROT(0,2)+m_ROT(2,0))*0.5;
+			r2[1] = (m_ROT(2,1)+m_ROT(1,2))*0.5;
 			r2[2] = d2;
 		}
 		// flip, if we point in the wrong direction!
@@ -919,8 +885,6 @@ CMatrixDouble33 CPose3D::exp_rotation(const mrpt::math::CArrayNumeric<double,3> 
 	static const double one_6th = 1.0/6.0;
 	static const double one_20th = 1.0/20.0;
 
-	CMatrixDouble33 result;
-
 	const double theta_sq = w.squareNorm(); //w*w;
 	const double theta = sqrt(theta_sq);
 	double A, B;
@@ -939,6 +903,8 @@ CMatrixDouble33 CPose3D::exp_rotation(const mrpt::math::CArrayNumeric<double,3> 
 			B = (1 - cos(theta)) * (inv_theta * inv_theta);
 		}
 	}
+
+	CMatrixDouble33 result(UNINITIALIZED_MATRIX);
 	mrpt::math::rodrigues_so3_exp(w, A, B, result);
 	return result;
 }
@@ -960,27 +926,22 @@ CArrayDouble<6> CPose3D::ln() const
 	rot_half*=-0.5;
 	const CMatrixDouble33 halfrotator = CPose3D::exp_rotation(rot_half);
 
-	CArrayDouble<3> t;
-	t[0] = m_x;
-	t[1] = m_y;
-	t[2] = m_z;
-
-	CArrayDouble<3> rottrans; // = halfrotator * t;
-	halfrotator.multiply_Ab(t, rottrans);
+	CArrayDouble<3> rottrans; // = halfrotator * xyz;
+	halfrotator.multiply_Ab(m_coords, rottrans);
 
 	if(theta > 0.001)
 	{
-		rottrans -= rot * ( (t * rot).sumAll() * (1-2*shtot) / rot.squareNorm() ); //(rot*rot));
+		rottrans -= rot * ( (m_coords * rot).sumAll() * (1-2*shtot) / rot.squareNorm() ); //(rot*rot));
 	}
 	else
 	{
-		rottrans -= rot * ((t * rot).sumAll()/24);
+		rottrans -= rot * ((m_coords * rot).sumAll()/24);
 	}
 
 	rottrans *= 1.0/(2 * shtot);
 
 	CArrayDouble<6> result;
-	::memcpy(&result[0], &rottrans[0], 3*sizeof(result[0]) );
-	::memcpy(&result[3], &rot[0], 3*sizeof(result[0]) );
+	for (int i=0;i<3;i++) result[i] = rottrans[i];
+	for (int i=0;i<3;i++) result[3+i] = rot[i];
 	return result;
 }

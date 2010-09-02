@@ -73,8 +73,8 @@ namespace slam
 		  *   member configuration variables.
 		  *
 		  * \param map		[IN] The occupancy gridmap used to the planning.
-		  * \param origin	[IN] The starting pose of the robot (given as a CPose2D, CPoint2D,...), in coordinates of "map".
-		  * \param target	[IN] The desired target pose for the robot (given as a CPose2D, CPoint2D,...), in coordinates of "map".
+		  * \param origin	[IN] The starting pose of the robot, in coordinates of "map".
+		  * \param target	[IN] The desired target pose for the robot, in coordinates of "map".
 		  * \param path		[OUT] The found path, in global coordinates relative to "map".
 		  * \param notFound	[OUT] Will be true if no path has been found.
 		  * \param maxSearchPathLength [IN] The maximum path length to search for, in meters (-1 = no limit)
@@ -83,8 +83,8 @@ namespace slam
 		  */
 		virtual void  computePath(
 				const COccupancyGridMap2D	&theMap,
-				const CPoseOrPoint			&origin,
-				const CPoseOrPoint			&target,
+				const CPose2D				&origin,
+				const CPose2D				&target,
 				std::deque<math::TPoint2D>	&path,
 				bool						&notFound,
 				float						maxSearchPathLength = -1

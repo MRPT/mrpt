@@ -37,6 +37,7 @@
 		- Basic support for Graph-SLAM. Among others, see mrpt::poses::CNetworkOfPoses and the program <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>
 		- First working version of Sparse Bundle-Adjustment (see mrpt::vision::bundle_adj_full).
 		- New hardware supported: Phidget kits & Fiber Optic Gyro KVH DSP3000 (both contributed by Adrien Barral, Robopec).
+		- Tons of performance optimizations, mostly in geometry classes.
 	- <b>Detailed list of changes:</b>
 		- New applications:
 			- <a href="http://www.mrpt.org/Application:carmen2rawlog" >carmen2rawlog</a>: A converter from CARMEN robotics logs to binary Rawlog dataset files.
@@ -67,6 +68,7 @@
 			- (TODO) mrpt::utils::map_as_vector a vector-based implementation of a std::map-like container.
 			- mrpt::utils::CTextFileLinesParser
 		- Changes in classes:
+			- mrpt::poses::CPoseOrPoint, mrpt::poses::CPose and mrpt::poses::CPoint are now templates and use the CRTP pattern instead of virtual functions, increasing the performance of all the derived classes.
 			- mrpt::poses::CNetworkOfPoses has many improvements and new methods (see its documentation).
 			- mrpt::math::CDijkstra:
 				- Algorithm is now much faster (eg: 70x times faster for graphs of 4K nodes & 60K arcs).

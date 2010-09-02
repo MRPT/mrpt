@@ -32,29 +32,21 @@
 
 namespace mrpt
 {
-namespace poses
-{
-
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPose, mrpt::utils::CSerializable )
-
-	/** A virtual base class to represent a pose in 2D or 3D.
-	 *
-	 *   For more information refer to the <a href="http://www.mrpt.org/2D_3D_Geometry">2D/3D Geometry tutorial</a> in the wiki.
-	 *
-	 * \sa CPoseOrPoint,CPose, CPoint
-	 */
-	class BASE_IMPEXP  CPose : public CPoseOrPoint
+	namespace poses
 	{
-		// This must be added to any CSerializable derived class:
-		DEFINE_VIRTUAL_SERIALIZABLE( CPose )
+		/** A base class for representing a pose in 2D or 3D.
+		 *   For more information refer to the <a href="http://www.mrpt.org/2D_3D_Geometry">2D/3D Geometry tutorial</a> online.
+		 * \note This class is based on the CRTP design pattern
+		 * \sa CPoseOrPoint, CPoint
+		 */
+		template <class DERIVEDCLASS>
+		class CPose : public CPoseOrPoint<DERIVEDCLASS>
+		{
+		public:
+			 /** The operator \f$ a \ominus b \f$ is the pose inverse compounding operator. */
+			 CPose3D  operator - (const CPose3D& b) const; // Implemented in CPose3D.h !!
 
-	public:
-		 /** The operator \f$ a \ominus b \f$ is the pose inverse compounding operator.
-		   */
-		 CPose3D  operator - (const CPose3D& b) const;
-
-	}; // End of class def.
-
+		}; // End of class def.
 
 	} // End of namespace
 } // End of namespace

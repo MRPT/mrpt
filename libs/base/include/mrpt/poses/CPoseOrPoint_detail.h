@@ -25,35 +25,50 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
+#ifndef CPOSEORPOINT_DETAIL_H
+#define CPOSEORPOINT_DETAIL_H
 
-#include <mrpt/base.h>  // Precompiled headers
-
-
-#include <mrpt/poses/CPose.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPoint3D.h>
-
-using namespace mrpt;
-using namespace mrpt::poses;
-using namespace mrpt::math;
-using namespace std;
-
-IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPose, CPoseOrPoint,mrpt::poses)
-
-
-/*---------------------------------------------------------------
-				pose3D = pose*D - pose3D
-  ---------------------------------------------------------------*/
-CPose3D  CPose::operator - (const CPose3D& b) const
+namespace mrpt
 {
-	CMatrixDouble44 B_INV(UNINITIALIZED_MATRIX);
-	b.getInverseHomogeneousMatrix( B_INV );
+	namespace poses
+	{
+		class CPoint2D;
+		class CPoint3D;
+		class CPose2D;
+		class CPose3D;
+		class CPose3DQuat;
 
-	CMatrixDouble44 HM(UNINITIALIZED_MATRIX);
-	getHomogeneousMatrix(HM);
+		/** Internal, auxiliary templates for MRPT classes */
+		namespace detail
+		{
+			template <class POSEORPOINT>  struct T3DTypeHelper; // generic version. Specialized below.
 
-	CMatrixDouble44 RES(UNINITIALIZED_MATRIX);
-	RES.multiply(B_INV,HM);
+			template <>  struct T3DTypeHelper<CPoint2D> { enum { is_3D_val = 0 }; };
+			template <>  struct T3DTypeHelper<CPoint3D> { enum { is_3D_val = 1 }; };
+			template <>  struct T3DTypeHelper<CPose2D> { enum { is_3D_val = 0 }; };
+			template <>  struct T3DTypeHelper<CPose3D> { enum { is_3D_val = 1 }; };
+			template <>  struct T3DTypeHelper<CPose3DQuat> { enum { is_3D_val = 1 }; };
 
-	return CPose3D( RES );
-}
+
+
+			template <class DERIVEDCLASS, int IS3D> struct pose_point_impl;  // generic template, specialized below:
+
+			// Extra members for 3D implementation:
+			template <class DERIVEDCLASS> struct pose_point_impl<DERIVEDCLASS,1>
+			{
+				inline double z() const /*!< Get Z coord. */ { return static_cast<const DERIVEDCLASS*>(this)->m_coords[2]; }
+				inline double &z() /*!< Get ref to Z coord. */ { return static_cast<DERIVEDCLASS*>(this)->m_coords[2]; }
+				inline void z(const double v) /*!< Set Z coord. */ { static_cast<DERIVEDCLASS*>(this)->m_coords[2]=v; }
+				inline void z_incr(const double v) /*!< Z+=v */ { static_cast<DERIVEDCLASS*>(this)->m_coords[2]+=v; }
+			};
+
+			// Extra members for 2D implementation:
+			template <class DERIVEDCLASS> struct pose_point_impl<DERIVEDCLASS,0>
+			{
+			};
+
+		} // End of namespace
+	} // End of namespace
+} // End of namespace
+
+#endif

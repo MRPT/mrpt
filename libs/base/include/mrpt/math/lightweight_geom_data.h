@@ -37,7 +37,7 @@
 
 namespace mrpt	{
 	namespace poses	{
-		class CPoseOrPoint;
+		template <class DERIVEDCLASS> class CPoseOrPoint;
 		class CPoint2D;
 		class CPoint3D;
 		class CPose2D;
@@ -89,14 +89,13 @@ namespace math	{
 		  */
 		explicit TPoint2D(const TPose3D &p);
 		/**
-		  * Constructor from CPoseOrPoint, losing information
+		  * Constructor from CPoseOrPoint, perhaps losing 3D information
 		  * \sa CPoseOrPoint,CPoint3D,CPose2D,CPose3D
 		  */
-		explicit TPoint2D(const mrpt::poses::CPoseOrPoint &p);
-		/**
-		  * Implicit constructor from heavyweight type.
-		  * \sa CPoint2D
-		  */
+		template <class DERIVEDCLASS>
+		explicit TPoint2D(const mrpt::poses::CPoseOrPoint<DERIVEDCLASS> &p) :x(p.x()),y(p.y())	{}
+
+		/** Implicit constructor from CPoint2D  */
 		TPoint2D(const mrpt::poses::CPoint2D &p);
 		/**
 		  * Constructor from coordinates.
@@ -571,6 +570,15 @@ namespace math	{
 		 static size_t size() { return 7; }
 	};
 #pragma pack(pop)
+
+	// Text streaming functions:
+	std::ostream BASE_IMPEXP & operator << (std::ostream& o, const TPoint2D & p);
+	std::ostream BASE_IMPEXP & operator << (std::ostream& o, const TPoint3D & p);
+	std::ostream BASE_IMPEXP & operator << (std::ostream& o, const TPose2D & p);
+	std::ostream BASE_IMPEXP & operator << (std::ostream& o, const TPose3D & p);
+	std::ostream BASE_IMPEXP & operator << (std::ostream& o, const TPose3DQuat & p);
+
+
 	/**
 	  * Unary minus operator for 3D points.
 	  */
@@ -2299,6 +2307,8 @@ namespace math	{
 	};
 
 #endif
+
+
 	//Streaming functions
 	/**
 	  * TPoint2D binary input.

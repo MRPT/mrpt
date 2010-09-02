@@ -67,9 +67,6 @@ void registerAllClasses_mrpt_base()
 	registerClass( CLASS_ID( CTypeSelector ) );
 	registerClass( CLASS_ID( CMemoryChunk ) );
 
-	registerClass( CLASS_ID( CPoseOrPoint ) );
-	registerClass( CLASS_ID( CPose ) );
-	registerClass( CLASS_ID( CPoint ) );
 	registerClass( CLASS_ID( CPoint2D ) );
 	registerClass( CLASS_ID( CPoint3D ) );
 	registerClass( CLASS_ID( CPose2D ) );

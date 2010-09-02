@@ -26,15 +26,15 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled header 
+#include <mrpt/slam.h>  // Precompiled header
 
 
 #include <mrpt/slam/CPathPlanningCircularRobot.h>
 
 using namespace mrpt;
-using namespace mrpt::slam; 
-using namespace mrpt::utils; 
-using namespace mrpt::math; 
+using namespace mrpt::slam;
+using namespace mrpt::utils;
+using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace std;
 
@@ -54,8 +54,8 @@ CPathPlanningCircularRobot::CPathPlanningCircularRobot() :
   ---------------------------------------------------------------*/
 void  CPathPlanningCircularRobot::computePath(
 	const COccupancyGridMap2D	&theMap,
-	const CPoseOrPoint			&origin_,
-	const CPoseOrPoint			&target_,
+	const CPose2D				&origin_,
+	const CPose2D				&target_,
 	std::deque<math::TPoint2D>	&path,
 	bool						&notFound,
 	float						maxSearchPathLength ) const

@@ -36,22 +36,25 @@ namespace mrpt
 {
 namespace poses
 {
+	using namespace mrpt::math;
+
 	class BASE_IMPEXP CPose3DQuat;
 
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPose3D, CPose )
+	DEFINE_SERIALIZABLE_PRE( CPose3D )
 
-	/** A class used to store a 3D pose.
-	 *    A class used to store a 3D (6D) pose, including the 3D coordinate
-	 *      point and orientation angles. It is used in many situations,
-	 *      from defining a robot pose, maps relative poses, sensors,...
-	 *		See introduction in documentation for the CPoseOrPoint class.
-			<br>For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint<br>
+	/** A class used to store a 3D pose (a 3D translation + a rotation in 3D).
+	 *   The 6D transformation in SE(3) stored in this class is kept in two
+	 *   separate containers: a 3-array for the translation, and a 3x3 rotation matrix.
 	 *
-	 *  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint, or refer
+	 *  The 6D pose is parameterized as a 6-vector: [x y z yaw pitch roll]. Note however,
+	 *   that the yaw/pitch/roll angles are only computed (on-demand and transparently)
+	 *   when the user requests them. Normally, rotations are handled via the 3x3 rotation matrix only.
+	 *
+	 *  For a complete descriptionan of Points/Poses, see mrpt::poses::CPoseOrPoint, or refer
 	 *    to the <a href="http://www.mrpt.org/2D_3D_Geometry">2D/3D Geometry tutorial</a> in the wiki.
 	 *
 	 *  To change the individual components of the pose, use CPose3D::setFromValues. This class assures that the internal
-	 *   4x4 homogeneous coordinate matrix is always up-to-date with the "x y z yaw pitch roll" members.
+	 *   3x3 rotation matrix is always up-to-date with the "yaw pitch roll" members.
 	 *
 	 *  Rotations in 3D can be also represented by quaternions. See mrpt::math::CQuaternion, and method CPose3D::getAsQuaternion.
 	 *
@@ -168,135 +171,128 @@ namespace poses
 	  *
 	 * \sa CPoseOrPoint,CPoint3D, mrpt::math::CQuaternion
 	 */
-	class BASE_IMPEXP CPose3D : public CPose
+	class BASE_IMPEXP CPose3D : public CPose<CPose3D>, public mrpt::utils::CSerializable
 	{
-		friend class CPose;
-		friend class CPose2D;
-		friend class CPoint;
-		friend std::ostream BASE_IMPEXP & operator << (std::ostream& o, const CPose3D& p);
+//		friend class CPose2D;
+//		friend class CPose3DQuat;
+//		friend class CPoint2D;
+//		friend class CPoint3D;
+		//template <class DERIVEDCLASS> friend class CPoseOrPoint;
+		//friend std::ostream BASE_IMPEXP & operator << (std::ostream& o, const CPose3D& p);
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPose3D )
 
+	public:
+		CArrayDouble<3>   m_coords; //!< The translation vector [x,y,z]
+		CMatrixDouble33   m_ROT;    //!< The 3x3 rotation matrix
+
 	protected:
-		mutable bool 	m_ypr_uptodate;			//!< Whether yaw/pitch/roll members are up-to-date since the last homogeneous matrix update.
-		mutable double	m_yaw, m_pitch, m_roll;	//!< These variables are updated every time that the object homogeneous matrix is modified (construction, loading from values, pose composition, etc )
-		mutable CMatrixDouble44		m_HM;  //!< The homogeneous matrix
+		mutable bool 	m_ypr_uptodate;			//!< Whether yaw/pitch/roll members are up-to-date since the last rotation matrix update.
+		mutable double	m_yaw, m_pitch, m_roll;	//!< These variables are updated every time that the object rotation matrix is modified (construction, loading from values, pose composition, etc )
 
-		/** Rebuild the homog matrix from x,y,z and the angles. */
-		void  rebuildHomogeneousMatrix();
+		/** Rebuild the homog matrix from the angles. */
+		void  rebuildRotationMatrix();
 
-		/** Updates Yaw/pitch/roll members from the HM  */
+		/** Updates Yaw/pitch/roll members from the m_ROT  */
 		inline void updateYawPitchRoll() const { if (!m_ypr_uptodate) { m_ypr_uptodate=true; getYawPitchRoll( m_yaw, m_pitch, m_roll ); } }
 
 	 public:
-		 /** Default constructor, with all the coordinates to zero. */
-		 CPose3D();
+		/** @name Constructors
+		    @{ */
 
-		 /** Constructor with initilization of the pose; (remember that angles are always given in radians!)  */
-		 CPose3D(const double x,const double  y,const double  z,const double  yaw=0, const double  pitch=0, const double roll=0);
+		/** Default constructor, with all the coordinates set to zero. */
+		CPose3D();
 
-		 /** Copy constructor.
+		/** Constructor with initilization of the pose; (remember that angles are always given in radians!)  */
+		CPose3D(const double x,const double  y,const double  z,const double  yaw=0, const double  pitch=0, const double roll=0);
+
+		/** Constructor from a 4x4 homogeneous matrix - the passed matrix can be actually of any size larger than or equal 3x4, since only those first values are used (the last row of a homogeneous 4x4 matrix are always fixed). */
+		explicit CPose3D(const math::CMatrixDouble &m);
+
+		/** Constructor from a 4x4 homogeneous matrix: */
+		explicit CPose3D(const math::CMatrixDouble44 &m);
+
+		/** Constructor from a 3x3 rotation matrix and a the translation given as a 3-vector, a 3-array, a CPoint3D or a TPoint3D */
+		template <class MATRIX33,class VECTOR3>
+		inline CPose3D(const MATRIX33 &rot, const VECTOR3& xyz) : m_ROT(UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
+		{
+			ASSERT_EQUAL_(size(rot,1),3); ASSERT_EQUAL_(size(rot,2),3);ASSERT_EQUAL_(xyz.size(),3)
+			for (int r=0;r<3;r++)
+				for (int c=0;c<3;c++)
+					m_ROT(r,c)=rot.get_unsafe(r,c);
+			for (int r=0;r<3;r++) m_coords[r]=xyz[r];
+		}
+		//! \overload
+		inline CPose3D(const CMatrixDouble33 &rot, const CArrayDouble<3>& xyz) : m_coords(xyz),m_ROT(rot), m_ypr_uptodate(false)
+		{ }
+
+		/** Constructor from a CPose2D object.
+		*/
+		CPose3D(const CPose2D &);
+
+		/** Constructor from a CPoint3D object.
+		*/
+		CPose3D(const CPoint3D &);
+
+		/** Constructor from lightweight object.
+		*/
+		CPose3D(const mrpt::math::TPose3D &);
+
+		/** Constructor from a quaternion (which only represents the 3D rotation part) and a 3D displacement. */
+		CPose3D(const mrpt::math::CQuaternionDouble &q, const double x, const double y, const double z );
+
+		/** Constructor from a CPose3DQuat. */
+		CPose3D(const CPose3DQuat &);
+
+		/** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
+		inline CPose3D(TConstructorFlags_Poses constructor_dummy_param) : m_ROT(UNINITIALIZED_MATRIX), m_ypr_uptodate(false) { }
+
+		/** @} */  // end Constructors
+
+
+
+		/** @name Access 3x3 rotation and 4x4 homogeneous matrices
+		    @{ */
+
+		/** Returns the corresponding 4x4 homogeneous transformation matrix for the point(translation) or pose (translation+orientation).
+		  * \sa getInverseHomogeneousMatrix, getRotationMatrix
 		  */
-		 CPose3D( const CPose3D &o);
+		inline void  getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const
+		{
+			out_HM.insertMatrix(0,0,m_ROT);
+			for (int i=0;i<3;i++) out_HM(i,3)=m_coords[i];
+			out_HM(3,0)=out_HM(3,1)=out_HM(3,2)=0.; out_HM(3,3)=1.;
+		}
 
-		 /** Copy operator.
-		  */
-		 CPose3D & operator=( const CPose3D &o);
+		inline CMatrixDouble44 getHomogeneousMatrixVal() const { CMatrixDouble44 M; getHomogeneousMatrix(M); return M;}
 
-		 /** Constructor from a 4x4 homogeneous matrix: */
-		 explicit CPose3D(const math::CMatrixDouble &m);
+		/** Get the 3x3 rotation matrix \sa getHomogeneousMatrix  */
+		inline void getRotationMatrix( mrpt::math::CMatrixDouble33 & ROT ) const { ROT = m_ROT; }
+		//! \overload
+		inline const mrpt::math::CMatrixDouble33 & getRotationMatrix() const { return m_ROT; }
 
-		 /** Constructor from a 4x4 homogeneous matrix: */
-		 explicit CPose3D(const math::CMatrixDouble44 &m);
-
-		 /** Constructor from a CPose2D object.
-		  */
-		 CPose3D(const CPose2D &);
-
-		 /** Constructor from a CPoint3D object.
-		  */
-		 CPose3D(const CPoint3D &);
-
-		 /** Constructor from lightweight object.
-		  */
-		 CPose3D(const mrpt::math::TPose3D &);
-
-		 /** Constructor from a quaternion (which only represents the 3D rotation part) and a 3D displacement. */
-		 CPose3D(const mrpt::math::CQuaternionDouble &q, const double x, const double y, const double z );
-
-		 /** Constructor from a CPose3DQuat. */
-		 CPose3D(const CPose3DQuat &);
-
-		 /** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
-		 inline CPose3D(TConstructorFlags_Poses constructor_dummy_param) : m_ypr_uptodate(false), m_HM(UNINITIALIZED_MATRIX)
-		 {
-		 	m_is3D = true;  // At least initialize the 4th row of HM, since many methods assume it will be correct from the begining.
-			m_HM(3,0)=m_HM(3,1)=m_HM(3,2)=0; m_HM(3,3)=1;
-		 }
-
-		 /** Returns the corresponding 4x4 homogeneous transformation matrix for the point(translation) or pose (translation+orientation).
-		   * \sa getInverseHomogeneousMatrix, getRotationMatrix
-		   */
-		 void  getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const {  out_HM = m_HM; }
-
-		 inline const CMatrixDouble44 &getHomogeneousMatrixVal() const { return m_HM;}
+		/** @} */  // end rot and HM
 
 
-		 /** Get the 3x3 rotation matrix, the upper-left part of the 4x4 homogeneous matrix.
-		   * \sa getHomogeneousMatrix
-		   */
-		 inline void getRotationMatrix( mrpt::math::CMatrixDouble33 & ROT ) const
-		 {	// Very fast extract of submatrix:
-			for (int c=0;c<3;c++) {
-				ROT.m_Val[c]=m_HM.m_Val[c];
-				ROT.m_Val[3+c]=m_HM.m_Val[4+c];
-				ROT.m_Val[6+c]=m_HM.m_Val[8+c];
-			}
-		 }
-		 //! \overload
-		 inline mrpt::math::CMatrixDouble33 getRotationMatrix() const
-		 {
-		 	mrpt::math::CMatrixDouble33  ROT(UNINITIALIZED_MATRIX);
-		 	getRotationMatrix(ROT);
-		 	return ROT;
-		 }
+		/** @name Pose-pose and pose-point compositions and operators
+		    @{ */
 
-		/** The operator \f$ a \oplus b \f$ is the pose compounding operator.
-		   */
-		 inline CPose3D  operator + (const CPose3D& b) const
-		 {
-		   CPose3D   ret(UNINITIALIZED_POSE);
-		   ret.composeFrom(*this,b);
-		   return ret;
-		 }
+		/** The operator \f$ a \oplus b \f$ is the pose compounding operator. */
+		inline CPose3D  operator + (const CPose3D& b) const
+		{
+			CPose3D   ret(UNINITIALIZED_POSE);
+			ret.composeFrom(*this,b);
+			return ret;
+		}
 
-		/** The operator \f$ a \oplus b \f$ is the pose compounding operator.
-		   */
-		 CPoint3D  operator + (const CPoint3D& b) const;
+		/** The operator \f$ a \oplus b \f$ is the pose compounding operator. */
+		CPoint3D  operator + (const CPoint3D& b) const;
 
-		/** The operator \f$ a \oplus b \f$ is the pose compounding operator.
-		   */
-		 CPoint3D  operator + (const CPoint2D& b) const;
+		/** The operator \f$ a \oplus b \f$ is the pose compounding operator. */
+		CPoint3D  operator + (const CPoint2D& b) const;
 
-		 /** Scalar sum of components: This is diferent from poses
-		  *    composition, which is implemented as "+" operators.
-		  * \sa normalizeAngles
-		  */
-		 void addComponents(const CPose3D &p);
-
-		 /** Rebuild the internal matrix & update the yaw/pitch/roll angles within the ]-PI,PI] range (Must be called after using addComponents)
-		  * \sa addComponents
-		   */
-		 void  normalizeAngles();
-
-		 /** Scalar multiplication of x,y,z,yaw,pitch & roll (angles will be wrapped to the ]-pi,pi] interval).
-		   */
-		 void operator *=(const double s);
-
-        /** Computes the spherical coordinates of a 3D point as seen from the 6D pose specified by this object.
-          *  For the coordinate system see the top of this page.
-          */
+        /** Computes the spherical coordinates of a 3D point as seen from the 6D pose specified by this object. For the coordinate system see the top of this page. */
         void sphericalCoordinates(
             const TPoint3D &point,
             double &out_range,
@@ -366,23 +362,32 @@ namespace poses
 			return ret;
 		}
 
-		/** Convert this pose into its inverse, saving the result in itself. */
+		/** Convert this pose into its inverse, saving the result in itself. \sa operator- */
 		void inverse();
 
-		// These three must be declared here because the next three virtual ones hide the base methods.
-		inline double x() const { return m_x; }  //!< Get the X coordinate
-		inline double y() const { return m_y; }  //!< Get the Y coordinate
-		inline double z() const { return m_z; }  //!< Get the Z coordinate
+		/** makes: this = p (+) this */
+		inline void  changeCoordinatesReference( const CPose3D & p ) { composeFrom(p,CPose3D(*this)); }
 
-		void x(const double x_) { m_HM.get_unsafe(0,3)= m_x=x_; }  //!< Set the X coordinate
-		void y(const double y_) { m_HM.get_unsafe(1,3)= m_y=y_; }  //!< Set the Y coordinate
-		void z(const double z_) { m_HM.get_unsafe(2,3)= m_z=z_; }  //!< Set the Z coordinate
+		/** @} */  // compositions
 
-		inline void x_incr(const double Ax) { m_HM.get_unsafe(0,3)= m_x+=Ax; }  //!< Increment the X coordinate
-		inline void y_incr(const double Ay) { m_HM.get_unsafe(1,3)= m_y+=Ay; }  //!< Increment the Y coordinate
-		inline void z_incr(const double Az) { m_HM.get_unsafe(2,3)= m_z+=Az; }  //!< Increment the Z coordinate
 
-		/** Set the pose from a 3D position (meters) and yaw/pitch/roll angles (radians) - This method recomputes the internal homogeneous coordinates matrix.
+		/** @name Access and modify contents
+			@{ */
+
+		/** Scalar sum of all 6 components: This is diferent from poses composition, which is implemented as "+" operators.
+		  * \sa normalizeAngles
+		  */
+		void addComponents(const CPose3D &p);
+
+		/** Rebuild the internal matrix & update the yaw/pitch/roll angles within the ]-PI,PI] range (Must be called after using addComponents)
+		  * \sa addComponents
+		  */
+		void  normalizeAngles();
+
+		/** Scalar multiplication of x,y,z,yaw,pitch & roll (angles will be wrapped to the ]-pi,pi] interval). */
+		void operator *=(const double s);
+
+		/** Set the pose from a 3D position (meters) and yaw/pitch/roll angles (radians) - This method recomputes the internal rotation matrix.
 		  * \sa getYawPitchRoll, setYawPitchRoll
 		  */
 		void  setFromValues(
@@ -401,19 +406,17 @@ namespace poses
 			const VECTORLIKE    &v,
 			const size_t        index_offset = 0)
 		{
-			ASSERT_(v.size()>=7)
+			ASSERT_ABOVEEQ_(v.size(), 7+index_offset)
 			// The 3x3 rotation part:
 			mrpt::math::CQuaternion<typename VECTORLIKE::value_type> q( v[index_offset+3],v[index_offset+4],v[index_offset+5],v[index_offset+6] );
-			q.rotationMatrixNoResize(m_HM);
-			updateYawPitchRoll();
-			m_HM.get_unsafe(0,3)=m_x = v[index_offset+0];
-			m_HM.get_unsafe(1,3)=m_y = v[index_offset+1];
-			m_HM.get_unsafe(2,3)=m_z = v[index_offset+2];
-			m_HM.get_unsafe(3,0)=m_HM.get_unsafe(3,1)=m_HM.get_unsafe(3,2)=0;
-			m_HM.get_unsafe(3,3)=1.0;
+			q.rotationMatrixNoResize(m_ROT);
+			m_ypr_uptodate=false;
+			m_coords[0] = v[index_offset+0];
+			m_coords[1] = v[index_offset+1];
+			m_coords[2] = v[index_offset+2];
 		}
 
-		/** Set the 3 angles of the 3D pose (in radians) - This method recomputes the internal homogeneous coordinates matrix.
+		/** Set the 3 angles of the 3D pose (in radians) - This method recomputes the internal rotation coordinates matrix.
 		  * \sa getYawPitchRoll, setFromValues
 		  */
 		inline void  setYawPitchRoll(
@@ -424,7 +427,7 @@ namespace poses
 			setFromValues(x(),y(),z(),yaw_,pitch_,roll_);
 		}
 
-		/** Returns the three angles (yaw, pitch, roll), in radians, from the homogeneous matrix.
+		/** Returns the three angles (yaw, pitch, roll), in radians, from the rotation matrix.
 		  * \sa setFromValues, yaw, pitch, roll
 		  */
 		void  getYawPitchRoll( double &yaw, double &pitch, double &roll ) const;
@@ -432,10 +435,6 @@ namespace poses
 		inline double yaw() const { updateYawPitchRoll(); return m_yaw; }  //!< Get the YAW angle (in radians)  \sa setFromValues
 		inline double pitch() const { updateYawPitchRoll(); return m_pitch; }  //!< Get the PITCH angle (in radians) \sa setFromValues
 		inline double roll() const { updateYawPitchRoll(); return m_roll; }  //!< Get the ROLL angle (in radians) \sa setFromValues
-
-		/** The euclidean distance between two poses taken as two 6-length vectors (angles in radians).
-		  */
-		double distanceEuclidean6D( const CPose3D &o ) const;
 
 		/** Returns a 1x6 vector with [x y z yaw pitch roll] */
 		void getAsVector(vector_double &v) const;
@@ -450,36 +449,14 @@ namespace poses
 			mrpt::math::CMatrixFixedNumeric<double,4,3>   *out_dq_dr = NULL
 			) const;
 
-
-		 /** Returns a human-readable textual representation of the object (eg: "[x y z yaw pitch roll]", angles in degrees.)
-		   * \sa fromString
-		   */
-		void asString(std::string &s) const { updateYawPitchRoll(); s = mrpt::format("[%f %f %f %f %f %f]",m_x,m_y,m_z,RAD2DEG(m_yaw),RAD2DEG(m_pitch),RAD2DEG(m_roll)); }
-		inline std::string asString() const { std::string s; asString(s); return s; }
-
-		 /** Set the current object value from a string generated by 'asString' (eg: "[0.02 1.04 -0.8]" )
-		   * \sa asString
-		   * \exception std::exception On invalid format
-		   */
-		 void fromString(const std::string &s) {
-		 	CMatrixDouble  m;
-		 	if (!m.fromMatlabStringFormat(s)) THROW_EXCEPTION("Malformed expression in ::fromString");
-			ASSERTMSG_(mrpt::math::size(m,1)==1 && mrpt::math::size(m,2)==6, "Wrong size of vector in ::fromString");
-		 	this->setFromValues(m.get_unsafe(0,0),m.get_unsafe(0,1),m.get_unsafe(0,2),DEG2RAD(m.get_unsafe(0,3)),DEG2RAD(m.get_unsafe(0,4)),DEG2RAD(m.get_unsafe(0,5)));
-		 }
-
-		 /** Return true if the 6D pose represents a Z axis almost exactly vertical (upwards or downwards), with a given tolerance (if set to 0 exact horizontality is tested).
-		   */
-		bool isHorizontal( const double tolerance=0) const;
-
 		inline const double &operator[](unsigned int i) const
 		{
 			updateYawPitchRoll();
 			switch(i)
 			{
-				case 0:return m_x;
-				case 1:return m_y;
-				case 2:return m_z;
+				case 0:return m_coords[0];
+				case 1:return m_coords[1];
+				case 2:return m_coords[2];
 				case 3:return m_yaw;
 				case 4:return m_pitch;
 				case 5:return m_roll;
@@ -487,12 +464,35 @@ namespace poses
 				throw std::runtime_error("CPose3D::operator[]: Index of bounds.");
 			}
 		}
-		// CPose3D CANNOT have a write [] operator, since it'd leave the object in an inconsistent state.
-		// Use setFromValues().
+		// CPose3D CANNOT have a write [] operator, since it'd leave the object in an inconsistent state (outdated rotation matrix).
+		// Use setFromValues() instead.
 		// inline double &operator[](unsigned int i)
 
-		/** makes: this = p (+) this */
-		inline void  changeCoordinatesReference( const CPose3D & p ) { composeFrom(p,CPose3D(*this)); }
+		/** Returns a human-readable textual representation of the object (eg: "[x y z yaw pitch roll]", angles in degrees.)
+		  * \sa fromString
+		  */
+		void asString(std::string &s) const { updateYawPitchRoll(); s = mrpt::format("[%f %f %f %f %f %f]",m_coords[0],m_coords[1],m_coords[2],RAD2DEG(m_yaw),RAD2DEG(m_pitch),RAD2DEG(m_roll)); }
+		inline std::string asString() const { std::string s; asString(s); return s; }
+
+		/** Set the current object value from a string generated by 'asString' (eg: "[x y z yaw pitch roll]", angles in deg. )
+		  * \sa asString
+		  * \exception std::exception On invalid format
+		  */
+		void fromString(const std::string &s) {
+		 	CMatrixDouble  m;
+		 	if (!m.fromMatlabStringFormat(s)) THROW_EXCEPTION("Malformed expression in ::fromString");
+			ASSERTMSG_(mrpt::math::size(m,1)==1 && mrpt::math::size(m,2)==6, "Wrong size of vector in ::fromString");
+		 	this->setFromValues(m.get_unsafe(0,0),m.get_unsafe(0,1),m.get_unsafe(0,2),DEG2RAD(m.get_unsafe(0,3)),DEG2RAD(m.get_unsafe(0,4)),DEG2RAD(m.get_unsafe(0,5)));
+		 }
+
+		/** Return true if the 6D pose represents a Z axis almost exactly vertical (upwards or downwards), with a given tolerance (if set to 0 exact horizontality is tested). */
+		bool isHorizontal( const double tolerance=0) const;
+
+		/** The euclidean distance between two poses taken as two 6-length vectors (angles in radians). */
+		double distanceEuclidean6D( const CPose3D &o ) const;
+
+		/** @} */  // modif. components
+
 
 
 		/** @name Lie Algebra methods
@@ -517,10 +517,9 @@ namespace poses
 
 		/** @} */
 
-
-
 		typedef CPose3D  type_value; //!< Used to emulate CPosePDF types, for example, in CNetworkOfPoses
-		static inline bool is_3D() { return true; }
+		enum { is_3D_val = 1 };
+		static inline bool is_3D() { return is_3D_val!=0; }
 
 		/** @name STL-like methods and typedefs
 		   @{   */
@@ -549,6 +548,21 @@ namespace poses
 
 	bool BASE_IMPEXP operator==(const CPose3D &p1,const CPose3D &p2);
 	bool BASE_IMPEXP operator!=(const CPose3D &p1,const CPose3D &p2);
+
+
+	// This is a member of CPose<>, but has to be defined here since in its header CPose3D is not declared yet.
+	/** The operator \f$ a \ominus b \f$ is the pose inverse compounding operator. */
+	template <class DERIVEDCLASS> CPose3D CPose<DERIVEDCLASS>::operator -(const CPose3D& b) const
+	{
+		CMatrixDouble44 B_INV(UNINITIALIZED_MATRIX);
+		b.getInverseHomogeneousMatrix( B_INV );
+		CMatrixDouble44 HM(UNINITIALIZED_MATRIX);
+		DERIVEDCLASS::getHomogeneousMatrix(HM);
+		CMatrixDouble44 RES(UNINITIALIZED_MATRIX);
+		RES.multiply(B_INV,HM);
+		return CPose3D( RES );
+	}
+
 
 	} // End of namespace
 } // End of namespace
