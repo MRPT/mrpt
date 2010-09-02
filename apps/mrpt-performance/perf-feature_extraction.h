@@ -54,7 +54,7 @@ double feature_extraction_test_Harris( int w, int h )
 	CFeatureExtraction	fExt;
 	CFeatureList		featsHarris;
 
-	const size_t		N = 100;
+	const size_t		N = 10;
 	fExt.options.featsType = featHarris;
 	tictac.Tic();
 	for (size_t i=0;i<N;i++)
@@ -62,7 +62,7 @@ double feature_extraction_test_Harris( int w, int h )
 
 	const double T = tictac.Tac()/N;
 
-	cout << "Harris: " << featsHarris.size();
+//	cout << "Harris: " << featsHarris.size();
 
 	return T;
 }
@@ -83,7 +83,7 @@ double feature_extraction_test_KLT( int w, int h )
 
 	CFeatureExtraction	fExt;
 	CFeatureList		featsKLT;
-	const size_t		N = 100;
+	const size_t		N = 10;
 
 	fExt.options.featsType				= featKLT;
 	fExt.options.KLTOptions.threshold	= 0.05f;
@@ -94,7 +94,7 @@ double feature_extraction_test_KLT( int w, int h )
 		fExt.detectFeatures( img, featsKLT );
 
 	const double T = tictac.Tac()/N;
-	cout << "SPIN: " << featsKLT.size();
+//	cout << "SPIN: " << featsKLT.size();
 	return T;
 }
 
@@ -114,7 +114,7 @@ double feature_extraction_test_SIFT( int w, int h )
 
 	CFeatureExtraction	fExt;
 	CFeatureList		featsSIFT;
-	const size_t		N = 20;
+	const size_t		N = 5;
 
 	fExt.options.featsType	= featSIFT;
 	fExt.options.SIFTOptions.implementation = CFeatureExtraction::Hess;
@@ -125,7 +125,7 @@ double feature_extraction_test_SIFT( int w, int h )
 
 	const double T = tictac.Tac()/N;
 
-	cout << "SIFT: " << featsSIFT.size();
+//	cout << "SIFT: " << featsSIFT.size();
 
 	return T;
 }
@@ -146,7 +146,7 @@ double feature_extraction_test_SIFT_desc( int w, int h )
 
 	CFeatureExtraction	fExt;
 	CFeatureList		featsHarris;
-	const size_t		N = 20;
+	const size_t		N = 5;
 
 	fExt.options.featsType	= featHarris;
 
@@ -158,7 +158,7 @@ double feature_extraction_test_SIFT_desc( int w, int h )
 
 	const double T = tictac.Tac()/N;
 
-	cout << "SIFT desc: " << featsHarris.size();
+//	cout << "SIFT desc: " << featsHarris.size();
 	return T;
 }
 
@@ -178,7 +178,7 @@ double feature_extraction_test_SURF( int w, int h )
 
 	CFeatureExtraction	fExt;
 	CFeatureList		featsSURF;
-	const size_t		N = 50;
+	const size_t		N = 10;
 
 	fExt.options.featsType					= featSURF;
 
@@ -188,7 +188,7 @@ double feature_extraction_test_SURF( int w, int h )
 
 	const double T = tictac.Tac()/N;
 
-	cout << "SURF: " << featsSURF.size();
+//	cout << "SURF: " << featsSURF.size();
 
 	return T;
 }
@@ -219,7 +219,7 @@ double feature_extraction_test_FAST( int w, int h )
 
 	const double T = tictac.Tac()/N;
 
-	cout << "FAST: " << featsFAST.size() << endl;
+//	cout << "FAST: " << featsFAST.size() << endl;
 	return T;
 }
 
@@ -238,7 +238,7 @@ double feature_extraction_test_Spin_desc( int w, int h )
 	getTestImage(0,img);	// img.loadFromFile("c:/temp/img_0000.jpg");
 	CFeatureExtraction	fExt;
 	CFeatureList		featsHarris;
-	const size_t		N = 100;
+	const size_t		N = 20;
 
 	fExt.options.SpinImagesOptions.radius				= 13;
 	fExt.options.SpinImagesOptions.hist_size_distance	= 10;
@@ -252,7 +252,7 @@ double feature_extraction_test_Spin_desc( int w, int h )
 
 	const double T = tictac.Tac()/N;
 
-	cout << "SPIN desc: " << featsHarris.size();
+//	cout << "SPIN desc: " << featsHarris.size();
 
 	return T;
 }

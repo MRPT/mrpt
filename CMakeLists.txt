@@ -958,7 +958,7 @@ ENDIF(PKG_CONFIG_FOUND)
 #The options for the user when using "cmakesetup" or "ccmake":
 # ---------------------------------------------------------------------------
 OPTION(MRPT_ALWAYS_CHECKS_DEBUG "Additional checks even in Release" "OFF")
-OPTION(MRPT_ALWAYS_CHECKS_DEBUG_MATRICES "Additional checks even in Release (Only in matrix classes)" "ON")
+OPTION(MRPT_ALWAYS_CHECKS_DEBUG_MATRICES "Additional checks even in Release (Only in matrix classes)" "OFF")
 OPTION(DISABLE_OPENCV "Disable the OpenCV library" "OFF")
 MARK_AS_ADVANCED(DISABLE_OPENCV)
 

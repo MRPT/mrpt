@@ -60,7 +60,7 @@ double feature_matching_test_Harris_CC( int w, int h )
 
 	size_t				nMatches;
 	TMatchingOptions	opt;
-	const size_t		N = 100;
+	const size_t		N = 20;
 
 	// HARRIS
 	tictac.Tic();
@@ -72,7 +72,7 @@ double feature_matching_test_Harris_CC( int w, int h )
 	}
 	const double T = tictac.Tac()/N;
 
-	cout << endl << "L: " << featsHarris_L.size() << " R: " << featsHarris_R.size() << " M: " << mHarris.size() << endl;
+//	cout << endl << "L: " << featsHarris_L.size() << " R: " << featsHarris_R.size() << " M: " << mHarris.size() << endl;
 
 
 	return T;
@@ -98,7 +98,7 @@ double feature_matching_test_Harris_SAD( int w, int h )
 
 	size_t				nMatches;
 	TMatchingOptions	opt;
-	const size_t		N = 100;
+	const size_t		N = 20;
 	opt.matching_method = TMatchingOptions::mmSAD;
 
 	// HARRIS
@@ -111,7 +111,7 @@ double feature_matching_test_Harris_SAD( int w, int h )
 	}
 	const double T = tictac.Tac()/N;
 
-	cout << endl << "L: " << featsHarris_L.size() << " R: " << featsHarris_R.size() << " M: " << mHarris.size() << endl;
+//	cout << endl << "L: " << featsHarris_L.size() << " R: " << featsHarris_R.size() << " M: " << mHarris.size() << endl;
 
 	return T;
 }
@@ -149,7 +149,7 @@ double feature_matching_test_SIFT( int w, int h )
 	}
 	const double T = tictac.Tac()/N;
 
-	cout << endl << "L: " << featsSIFT_L.size() << " R: " << featsSIFT_R.size() << " M: " << mSIFT.size() << endl;
+//	cout << endl << "L: " << featsSIFT_L.size() << " R: " << featsSIFT_R.size() << " M: " << mSIFT.size() << endl;
 
 	return T;
 }
@@ -174,7 +174,7 @@ double feature_matching_test_SURF( int w, int h )
 
 	size_t				nMatches;
 	TMatchingOptions	opt;
-	const size_t		N = 15;
+	const size_t		N = 10;
 	opt.matching_method = TMatchingOptions::mmDescriptorSURF;
 
 	// HARRIS
@@ -187,7 +187,7 @@ double feature_matching_test_SURF( int w, int h )
 	}
 	const double T = tictac.Tac()/N;
 
-	cout << endl << "L: " << featsSURF_L.size() << " R: " << featsSURF_R.size() << " M: " << mSURF.size() << endl;
+//	cout << endl << "L: " << featsSURF_L.size() << " R: " << featsSURF_R.size() << " M: " << mSURF.size() << endl;
 
 	return T;
 }
@@ -212,7 +212,7 @@ double feature_matching_test_FAST_CC( int w, int h )
 
 	size_t				nMatches;
 	TMatchingOptions	opt;
-	const size_t		N = 100;
+	const size_t		N = 20;
 
 	// HARRIS
 	tictac.Tic();
@@ -224,7 +224,7 @@ double feature_matching_test_FAST_CC( int w, int h )
 	}
 	const double T = tictac.Tac()/N;
 
-	cout << endl << "L: " << featsFAST_L.size() << " R: " << featsFAST_R.size() << " M: " << mFAST.size() << endl;
+//	cout << endl << "L: " << featsFAST_L.size() << " R: " << featsFAST_R.size() << " M: " << mFAST.size() << endl;
 
 	return T;
 }
@@ -249,7 +249,7 @@ double feature_matching_test_FAST_SAD( int w, int h )
 
 	size_t				nMatches;
 	TMatchingOptions	opt;
-	const size_t		N = 100;
+	const size_t		N = 20;
 	opt.matching_method			= TMatchingOptions::mmSAD;
 
 	// HARRIS
@@ -262,7 +262,7 @@ double feature_matching_test_FAST_SAD( int w, int h )
 	}
 	const double T = tictac.Tac()/N;
 
-	cout << endl << "L: " << featsFAST_L.size() << " R: " << featsFAST_R.size() << " M: " << mFAST.size() << endl;
+//	cout << endl << "L: " << featsFAST_L.size() << " R: " << featsFAST_R.size() << " M: " << mFAST.size() << endl;
 
 	return T;
 }

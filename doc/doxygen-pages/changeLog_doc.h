@@ -49,6 +49,7 @@
 			- RawLogViewer: Can now build "raw maps" from datasets in the "observations-only" format.
 			- <a href="http://www.mrpt.org/Application:icp-slam" >icp-slam</a> and <a href="http://www.mrpt.org/Application:rbpf-slam" >rbpf-slam</a> now accept a second command-line argument for the dataset (rawlog) to load.
 		- Changes in build system / compiling:
+			- By default, MRPT_ALWAYS_CHECKS_DEBUG_MATRICES is OFF. This allow programs to run faster in non Debug builds.
 			- Doxygen documentation: More macros expanded while generating docs: now docs are also generated for smart pointers and for RTTI & serialization stuff.
 			- Previous header <mrpt/math_mrpt.h> renamed <mrpt/math.h>. The old one still remains (probably until MRPT 1.0.0), but raises a warning on usage.
 		- New classes:
