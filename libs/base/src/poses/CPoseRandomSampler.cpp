@@ -73,12 +73,8 @@ CPoseRandomSampler::~CPoseRandomSampler()
   ---------------------------------------------------------------*/
 void CPoseRandomSampler::clear()
 {
-    if (m_pdf2D) {
-        delete m_pdf2D; m_pdf2D = NULL;
-    }
-    if (m_pdf3D) {
-        delete m_pdf3D; m_pdf3D = NULL;
-    }
+	mrpt::utils::delete_safe( m_pdf2D );
+	mrpt::utils::delete_safe( m_pdf3D );
 }
 
 /*---------------------------------------------------------------

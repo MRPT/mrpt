@@ -557,7 +557,7 @@ namespace poses
 		CMatrixDouble44 B_INV(UNINITIALIZED_MATRIX);
 		b.getInverseHomogeneousMatrix( B_INV );
 		CMatrixDouble44 HM(UNINITIALIZED_MATRIX);
-		DERIVEDCLASS::getHomogeneousMatrix(HM);
+		static_cast<const DERIVEDCLASS*>(this)->getHomogeneousMatrix(HM);
 		CMatrixDouble44 RES(UNINITIALIZED_MATRIX);
 		RES.multiply(B_INV,HM);
 		return CPose3D( RES );

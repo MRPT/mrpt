@@ -80,8 +80,8 @@ namespace mrpt
 			void getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const
 			{
 				out_HM.unit();
-				out_HM.get_unsafe(0,3)= DERIVEDCLASS::x();
-				out_HM.get_unsafe(1,3)= DERIVEDCLASS::y();
+				out_HM.get_unsafe(0,3)= static_cast<const DERIVEDCLASS*>(this)->x();
+				out_HM.get_unsafe(1,3)= static_cast<const DERIVEDCLASS*>(this)->y();
 				if (DERIVEDCLASS::is3DPoseOrPoint())
 					out_HM.get_unsafe(2,3)= static_cast<const DERIVEDCLASS*>(this)->m_coords[2];
 			}
@@ -92,8 +92,8 @@ namespace mrpt
 			void asString(std::string &s) const
 			{
 				s = (DERIVEDCLASS::is3DPoseOrPoint()) ?
-					mrpt::format("[%f %f]", DERIVEDCLASS::x(), DERIVEDCLASS::y()) :
-					mrpt::format("[%f %f %f]",DERIVEDCLASS::x(), DERIVEDCLASS::y(), static_cast<const DERIVEDCLASS*>(this)->m_coords[2]);
+					mrpt::format("[%f %f]", static_cast<const DERIVEDCLASS*>(this)->x(), static_cast<const DERIVEDCLASS*>(this)->y()) :
+					mrpt::format("[%f %f %f]",static_cast<const DERIVEDCLASS*>(this)->x(), static_cast<const DERIVEDCLASS*>(this)->y(), static_cast<const DERIVEDCLASS*>(this)->m_coords[2]);
 			}
 			inline std::string asString() const { std::string s; asString(s); return s; }
 
