@@ -15,6 +15,7 @@ PROJECT(mrpt_performance)
 # ---------------------------------------------
 
 ADD_DEFINITIONS(-DMRPT_DATASET_DIR="${MRPT_SOURCE_DIR}/share/mrpt/datasets")
+ADD_DEFINITIONS(-DMRPT_DOC_PERF_DIR="${MRPT_SOURCE_DIR}/doc/perf-data")
 
 # Define the executable target:
 ADD_EXECUTABLE(mrpt-performance
