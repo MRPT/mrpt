@@ -25,8 +25,8 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-#ifndef CSENSORIALFRAME_H
-#define CSENSORIALFRAME_H
+#ifndef CSENSORYFRAME_H
+#define CSENSORYFRAME_H
 
 #include <mrpt/slam/CObservation.h>
 #include <mrpt/utils/CSerializable.h>
@@ -43,32 +43,32 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSensoryFrame, mrpt::utils::CSerializable, OBS_IMPEXP )
 
 		/** Declares a class for storing a "sensory frame", a set of "observations" taken by the robot approximately at the same time as one "snapshot" of the environment.
-		 *	 It can contain "observations" of many different kinds.
-		 *
+		  *	 It can contain "observations" of many different kinds.
+		  *
 		  *  New observations can be added using:
 		  *
 		  * \code
-			  CObservationXXXPtr	o = CObservationXXX::Create();  // Create a smart pointer containing an object of class "CObservationXXX"
-			  o->(...)
-
-			  CSensoryFrame	 sf;
-			  sf.insert(o);
-			\endcode
-
-			The following methods are equivalent for adding new observations to a "sensory frame":
-				* CSensoryFrame::operator +=
-				* CSensoryFrame::push_back
-				* CSensoryFrame::insert
-
-			To examine the objects within a sensory frame, the following methods exist:
-				* CSensoryFrame::getObservationByClass : Looks for some specific observation class.
-				* CSensoryFrame::begin : To iterate over all observations.
-				* CSensoryFrame::getObservationByIndex : To query by index.
-
-			Notice that observations objects are automatically deleted on
-			Sensorial Frame destruction or clear.
-		 * \sa CObservation
-		 */
+		  * CObservationXXXPtr	o = CObservationXXX::Create();  // Create a smart pointer containing an object of class "CObservationXXX"
+		  * o->(...)
+		  * 
+		  * CSensoryFrame	 sf;
+		  * sf.insert(o);
+		  * \endcode
+		  * 
+		  * The following methods are equivalent for adding new observations to a "sensory frame":
+		  * - CSensoryFrame::operator +=
+		  * - CSensoryFrame::push_back
+		  * - CSensoryFrame::insert
+		  * 
+		  * To examine the objects within a sensory frame, the following methods exist:
+		  * - CSensoryFrame::getObservationByClass : Looks for some specific observation class.
+		  * - CSensoryFrame::begin : To iterate over all observations.
+		  * - CSensoryFrame::getObservationByIndex : To query by index.
+		  * 
+		  * Notice that contained observations objects are automatically deleted on
+		  *  this object's destruction or clear.
+		  * \sa CObservation
+		  */
 		class OBS_IMPEXP CSensoryFrame : public mrpt::utils::CSerializable
 		{
 			// This must be added to any CSerializable derived class:

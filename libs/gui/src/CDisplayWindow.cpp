@@ -73,7 +73,8 @@ CWindowDialog::wxMRPTImageControl::wxMRPTImageControl(
 	Connect(wxEVT_MOTION, wxMouseEventHandler(CWindowDialog::wxMRPTImageControl::OnMouseMove));
     Connect(wxID_ANY,wxEVT_LEFT_DOWN,wxMouseEventHandler(CWindowDialog::wxMRPTImageControl::OnMouseClick));
 
-	//Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::wxMRPTImageControl::OnChar);
+//	Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::wxMRPTImageControl::OnChar);
+//	Connect(wxID_ANY,wxEVT_KEY_DOWN,(wxObjectEventFunction)&CWindowDialog::wxMRPTImageControl::OnChar);
 }
 
 CWindowDialog::wxMRPTImageControl::~wxMRPTImageControl()
@@ -100,7 +101,7 @@ void CWindowDialog::wxMRPTImageControl::OnMouseClick(wxMouseEvent& ev)
 
 void CWindowDialog::wxMRPTImageControl::OnChar(wxKeyEvent & ev)
 {
-	//cout << "Yes\n";
+//	cout << "Yes\n";
 }
 
 void CWindowDialog::wxMRPTImageControl::AssignImage(wxBitmap *img)
@@ -190,15 +191,15 @@ CWindowDialog::CWindowDialog(
     Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&CWindowDialog::OnMenuAbout);
     Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&CWindowDialog::OnMenuSave);
 
-	//Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar);
-	//Connect(wxID_ANY,wxEVT_KEY_DOWN,(wxObjectEventFunction)&CWindowDialog::OnKeyDown);
+//	Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar);
+//	Connect(wxID_ANY,wxEVT_KEY_DOWN,(wxObjectEventFunction)&CWindowDialog::OnKeyDown);
 
 	//m_image->Connect(wxID_ANY,wxEVT_KEY_DOWN,(wxObjectEventFunction)&CWindowDialog::OnChar,NULL,this);
-	m_image->Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar,NULL,this);
-	m_image->Connect(wxID_ANY,wxEVT_SIZE,(wxObjectEventFunction)&CWindowDialog::OnResize,NULL,this);
+	m_image->Connect(wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar,NULL,this);
+	m_image->Connect(wxEVT_SIZE,(wxObjectEventFunction)&CWindowDialog::OnResize,NULL,this);
 
-	m_image->Connect(wxID_ANY,wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CWindowDialog::OnMouseDown,NULL,this);
-	m_image->Connect(wxID_ANY,wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&CWindowDialog::OnMouseDown,NULL,this);
+	m_image->Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CWindowDialog::OnMouseDown,NULL,this);
+	m_image->Connect(wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&CWindowDialog::OnMouseDown,NULL,this);
 
     // Increment number of windows:
     //int winCount =
@@ -229,11 +230,13 @@ void CWindowDialog::OnClose(wxCloseEvent& event)
 
 void CWindowDialog::OnKeyDown(wxKeyEvent& event)
 {
+//	std::cout << "KEYDOWN\n";
 	event.Skip(); // So OnChar event is produced.
 }
 
 void CWindowDialog::OnChar(wxKeyEvent& event)
 {
+//	std::cout << "CHAR\n";
 	if (m_win2D)
 	{
 		const int 				code = event.GetKeyCode();
@@ -248,7 +251,7 @@ void CWindowDialog::OnChar(wxKeyEvent& event)
 			m_win2D->publishEvent( mrptEventWindowChar(m_win2D,code,mod));
 		} catch(...){}
 	}
-	//event.Skip();
+	event.Skip();
 }
 
 void CWindowDialog::OnResize(wxSizeEvent& event)

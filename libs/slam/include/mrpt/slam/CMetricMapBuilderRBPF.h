@@ -164,7 +164,7 @@ namespace slam
 					CActionCollection	&action,
 					CSensoryFrame		&observations );
 
-		/** Fills "out_map" with the set of "poses"-"sensorial frames", thus the so far built map.
+		/** Fills "out_map" with the set of "poses"-"sensory-frames", thus the so far built map.
 		  */
 		void  getCurrentlyBuiltMap(CSimpleMap &out_map) const;
 
@@ -172,7 +172,7 @@ namespace slam
 		  */
 		CMultiMetricMap*   getCurrentlyBuiltMetricMap();
 
-		/** Returns just how many sensorial frames are stored in the currently build map.
+		/** Returns just how many sensory-frames are stored in the currently build map.
 		  */
 		unsigned int  getCurrentlyBuiltMapSize();
 

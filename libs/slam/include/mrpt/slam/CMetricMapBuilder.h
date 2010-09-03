@@ -99,11 +99,11 @@ namespace slam
 		 */
 		virtual void  processActionObservation( CActionCollection &action,CSensoryFrame	&observations ) = 0;
 
-		/** Fills "out_map" with the set of "poses"-"sensorial frames", thus the so far built map.
+		/** Fills "out_map" with the set of "poses"-"sensory-frames", thus the so far built map.
 		  */
 		virtual void  getCurrentlyBuiltMap(CSimpleMap &out_map) const = 0;
 
-		/** Returns just how many sensorial frames are stored in the currently build map.
+		/** Returns just how many sensory-frames are stored in the currently build map.
 		  */
 		virtual unsigned int  getCurrentlyBuiltMapSize() = 0;
 

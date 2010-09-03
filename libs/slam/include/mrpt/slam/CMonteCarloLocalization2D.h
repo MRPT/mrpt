@@ -94,7 +94,7 @@ namespace mrpt
 
 			 /** Update the m_particles, predicting the posterior of robot pose and map after a movement command.
 			  *  This method has additional configuration parameters in "options".
-			  *  Performs the update stage of the RBPF, using the sensed Sensorial Frame:
+			  *  Performs the update stage of the RBPF, using the sensed CSensoryFrame:
 			  *
 			  *   \param action This is a pointer to CActionCollection, containing the pose change the robot has been commanded.
 			  *   \param observation This must be a pointer to a CSensoryFrame object, with robot sensed observations.
@@ -108,7 +108,7 @@ namespace mrpt
 
 			 /** Update the m_particles, predicting the posterior of robot pose and map after a movement command.
 			  *  This method has additional configuration parameters in "options".
-			  *  Performs the update stage of the RBPF, using the sensed Sensorial Frame:
+			  *  Performs the update stage of the RBPF, using the sensed CSensoryFrame:
 			  *
 			  *   \param Action This is a pointer to CActionCollection, containing the pose change the robot has been commanded.
 			  *   \param observation This must be a pointer to a CSensoryFrame object, with robot sensed observations.
@@ -122,7 +122,7 @@ namespace mrpt
 
 			 /** Update the m_particles, predicting the posterior of robot pose and map after a movement command.
 			  *  This method has additional configuration parameters in "options".
-			  *  Performs the update stage of the RBPF, using the sensed Sensorial Frame:
+			  *  Performs the update stage of the RBPF, using the sensed CSensoryFrame:
 			  *
 			  *   \param Action This is a pointer to CActionCollection, containing the pose change the robot has been commanded.
 			  *   \param observation This must be a pointer to a CSensoryFrame object, with robot sensed observations.

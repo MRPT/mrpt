@@ -65,23 +65,23 @@ namespace mrpt
 		  *   when updating the 3D scene to be rendered. The process involves an internal critical section
 		  *   and it must always consist of these steps:
 		  *
-		  \code
-			CDisplayWindow3D	win("My window");
-
-			// Adquire the scene:
-			opengl::COpenGLScenePtr &ptrScene = win.get3DSceneAndLock();
-
-			// Modify the scene:
-			ptrScene->...
-			// or replace by another scene:
-			ptrScene = otherScene;
-
-			// Unlock it, so the window can use it for redraw:
-			win.unlockAccess3DScene();
-
-			// Update window, if required
-			win.forceRepaint();
-		  \endcode
+		  * \code
+		  *   CDisplayWindow3D	win("My window");
+		  *   
+		  *   // Adquire the scene:
+		  *   opengl::COpenGLScenePtr &ptrScene = win.get3DSceneAndLock();
+		  *   
+		  *   // Modify the scene:
+		  *   ptrScene->...
+		  *   // or replace by another scene:
+		  *   ptrScene = otherScene;
+		  *   
+		  *   // Unlock it, so the window can use it for redraw:
+		  *   win.unlockAccess3DScene();
+		  *   
+		  *   // Update window, if required
+		  *   win.forceRepaint();
+		  * \endcode
 		  *
 		  * An alternative way of updating the scene is by creating, before locking the 3D window, a new object
 		  *  of class COpenGLScene, then locking the window only for replacing the smart pointer. This may be
@@ -94,7 +94,7 @@ namespace mrpt
 		  *  For a list of supported events with the observer/observable pattern, see the discussion in mrpt::gui::CBaseGUIWindow.
 		  *
 		  *
-		  * \sa  The example /samples/display3D, the <a href="http://www.mrpt.org/Tutorial_3D_Scenes">tutorial on the wiki</a>.
+		  * \sa  The example /samples/display3D, the <a href="http://www.mrpt.org/Tutorial_3D_Scenes" > tutorial only</a>.
 		  */
 		class GUI_IMPEXP CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 		{
