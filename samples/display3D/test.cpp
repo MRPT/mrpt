@@ -187,7 +187,7 @@ void TestDisplay3D()
 		// Show management of (x,y) mouse coordinates and 3D rays:
 		// ------------------------------------------------------------
 		int mouse_x,mouse_y;
-		if (placeMode && win.getLastMousePosition(mouse_x,mouse_y))
+		if (placeMode && win.getLastMousePosition(mouse_x,mouse_y))  // See also: getLastMousePositionRay()
 		{
 			// Get the ray in 3D for the latest mouse (X,Y):
 			mrpt::math::TLine3D ray;

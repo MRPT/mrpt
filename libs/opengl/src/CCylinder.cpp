@@ -44,6 +44,11 @@ IMPLEMENTS_SERIALIZABLE(CCylinder,CRenderizable,mrpt::opengl)
   ---------------------------------------------------------------*/
 void CCylinder::render() const	{
 #if MRPT_HAS_OPENGL_GLUT
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+    glShadeModel(GL_SMOOTH);
+
 	glEnable (GL_BLEND);
 	checkOpenGLError();
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -59,6 +64,10 @@ void CCylinder::render() const	{
 	}
 	gluDeleteQuadric(obj);
 	glDisable(GL_BLEND);
+
+	glDisable(GL_LIGHTING);
+	glDisable(GL_LIGHT0);
+    glDisable(GL_COLOR_MATERIAL);
 #endif
 }
 

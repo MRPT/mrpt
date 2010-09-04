@@ -65,6 +65,7 @@ DECLARE_OP_FUNCTION(op_cut);
 DECLARE_OP_FUNCTION(op_export_gps_kml);
 DECLARE_OP_FUNCTION(op_export_gps_txt);
 DECLARE_OP_FUNCTION(op_sensors_pose);
+DECLARE_OP_FUNCTION(op_camera_params);
 
 
 // Declare the supported command line switches ===========
@@ -153,6 +154,14 @@ int main(int argc, char **argv)
 			,false,"","file.ini"
 			,cmd, false) );
 		ops_functors["sensors-pose"] = &op_sensors_pose;
+
+		arg_ops.push_back(new TCLAP::ValueArg<std::string>(
+			"","camera-params",
+			"Op: change the camera parameters of all CObservationImage's with the given SENSOR_LABEL, with new params loaded from the given file, section '[CAMERA_PARAMS]'.\n"
+			"Requires: -o (or --output)\n"
+			,false,"","SENSOR_LABEL,file.ini"
+			,cmd, false) );
+		ops_functors["camera-params"] = &op_camera_params;
 
 		// --------------- End of list of possible operations --------
 

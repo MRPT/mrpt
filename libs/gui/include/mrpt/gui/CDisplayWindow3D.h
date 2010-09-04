@@ -258,10 +258,13 @@ namespace mrpt
 			  */
 			void useCameraFromScene(bool useIt = true);
 
-			/** Gets the last x,y pixel coordinates of the mouse. \return False if the window is closed. */
+			/** Gets the 3D ray for the direction line of the pixel where the mouse cursor is at. \return False if the window is closed. \sa getLastMousePosition */
+			bool getLastMousePositionRay(mrpt::math::TLine3D &ray) const;
+
+			/** Gets the last x,y pixel coordinates of the mouse. \return False if the window is closed. \sa getLastMousePositionRay */
 			virtual bool getLastMousePosition(int &x, int &y) const;
 
-			/** Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) */
+			/** Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) \sa getLastMousePositionRay */
 			virtual void setCursorCross(bool cursorIsCross);
 
 			/** Start to save rendered images to disk.

@@ -704,6 +704,23 @@ bool CDisplayWindow3D::getLastMousePosition(int &x, int &y) const
 }
 
 /*---------------------------------------------------------------
+					getLastMousePositionRay
+ ---------------------------------------------------------------*/
+bool CDisplayWindow3D::getLastMousePositionRay(TLine3D &ray) const
+{
+	int x,y;
+	if (getLastMousePosition(x,y))
+	{
+		m_csAccess3DScene.enter();
+		m_3Dscene->getViewport("main")->get3DRayForPixelCoord(x,y,ray);
+		m_csAccess3DScene.leave();
+		return true;
+	}
+	else return false;
+}
+
+
+/*---------------------------------------------------------------
 					setCursorCross
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::setCursorCross(bool cursorIsCross)
