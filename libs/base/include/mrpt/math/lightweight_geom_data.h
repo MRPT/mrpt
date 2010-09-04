@@ -95,6 +95,9 @@ namespace math	{
 		template <class DERIVEDCLASS>
 		explicit TPoint2D(const mrpt::poses::CPoseOrPoint<DERIVEDCLASS> &p) :x(p.x()),y(p.y())	{}
 
+		/** Implicit transformation constructor from TPixelCoordf */
+		inline TPoint2D(const mrpt::utils::TPixelCoordf &p) :x(p.x),y(p.y)	{}
+
 		/** Implicit constructor from CPoint2D  */
 		TPoint2D(const mrpt::poses::CPoint2D &p);
 		/**

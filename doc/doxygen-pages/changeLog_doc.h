@@ -114,6 +114,7 @@
 			- bundle_adj_full_demo
 			- se3
 		- BUG FIXES:
+			- Fixed exception in mrpt::math::CLevenbergMarquardtTempl when saving the optimization path.
 			- Iterators in mrpt::slam::CRawlog only had the post-increment form, but actually implemented a pre-increment. Both, correct, versions now exist.
 			- mrpt::gui::CBaseGUIWindow::setWindowTitle() didn't work (for some versions of wxWidgets only?).
 			- mrpt::gui::CDisplayWindowPlots::plot(y) asserted on empty input vector (actually a bug in mrpt::math::linspace for len=0)

@@ -1173,7 +1173,7 @@ namespace mrpt
 			if (nRow>=size(m,1))
 				THROW_EXCEPTION("insertRow: Row index out of bounds");
 	#endif
-			ASSERT_( (size(m,2)-startingCol)==in.size() )
+			ASSERT_( (size(m,2)-startingCol)>=in.size() )
 			const size_t n = size(m,2) - startingCol ;
 			for (size_t i=0;i<n;i++)
 				m.set_unsafe(nRow,i+startingCol, static_cast<typename MAT::value_type>(in[i]) );
@@ -1186,7 +1186,7 @@ namespace mrpt
 			if (nCol>=size(m,2))
 				THROW_EXCEPTION("insertCol: Col index out of bounds");
 	#endif
-			ASSERT_( (size(m,1)-startingRow)==in.size() )
+			ASSERT_( (size(m,1)-startingRow)>=in.size() )
 			const size_t n = size(m,1) - startingRow;
 			for (size_t i=0;i<n;i++)
 				m.set_unsafe(i+startingRow,nCol, static_cast<typename MAT::value_type>(in[i]));
