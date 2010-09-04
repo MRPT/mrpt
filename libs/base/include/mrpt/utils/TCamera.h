@@ -32,6 +32,7 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/utils/CSerializable.h>
 
 namespace mrpt
@@ -106,6 +107,14 @@ namespace mrpt
 			  *  \exception std::exception on missing fields
 			  */
 			void loadFromConfigFile(const std::string &section, const mrpt::utils::CConfigFileBase &cfg );
+
+			/** Dumps all the parameters as a multi-line string, with the same format than \a saveToConfigFile.  \sa saveToConfigFile */
+			std::string dumpAsText()
+			{
+				mrpt::utils::CConfigFileMemory cfg;
+				saveToConfigFile("",cfg);
+				return cfg.getContent();
+			}
 
 
 			/** Set the matrix of intrinsic params of the camera from the individual values of focal length and principal point coordinates (in pixels)

@@ -74,6 +74,12 @@ namespace mrpt
 			 */
 			virtual ~CDisplayWindow();
 
+			/** Gets the last x,y pixel coordinates of the mouse. \return False if the window is closed. */
+			virtual bool getLastMousePosition(int &x, int &y) const;
+
+			/** Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) */
+			virtual void setCursorCross(bool cursorIsCross);
+
 			/** Show a given color or grayscale image on the window and print a set of points on it.
 			 *  It adapts the size of the window to that of the image.
 			 */

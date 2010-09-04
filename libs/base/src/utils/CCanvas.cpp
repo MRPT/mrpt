@@ -380,16 +380,22 @@ void  CCanvas::drawImage(
 ---------------------------------------------------------------*/
 void  CCanvas::cross(int x0,int y0, const mrpt::utils::TColor	color, char type, unsigned int size, unsigned int width)
 {
-	MRPT_UNUSED_PARAM(width);
-	if (type=='+')
+	switch(type)
 	{
-		line(x0-size,y0,x0+size,y0,color);
-		line(x0,y0-size,x0,y0+size,color);
-	}
-	else
-	{
-		line(x0-size,y0-size,x0+size,y0+size,color);
-		line(x0+size,y0-size,x0-size,y0+size,color);
+	case '+':
+		line(x0-size,y0,x0+size,y0,color,width);
+		line(x0,y0-size,x0,y0+size,color,width);
+		break;
+	case 'x':
+		line(x0-size,y0-size,x0+size,y0+size,color,width);
+		line(x0+size,y0-size,x0-size,y0+size,color,width);
+		break;
+	case ':':
+		line(x0-size,y0,x0-2,y0,color,width);
+		line(x0+2,y0,x0+size,y0,color,width);
+		line(x0,y0-size,x0,y0-2,color,width);
+		line(x0,y0+2,x0,y0+size,color,width);
+		break;
 	}
 }
 

@@ -67,18 +67,18 @@ namespace mrpt
 		  *
 		  * \code
 		  *   CDisplayWindow3D	win("My window");
-		  *   
+		  *
 		  *   // Adquire the scene:
 		  *   opengl::COpenGLScenePtr &ptrScene = win.get3DSceneAndLock();
-		  *   
+		  *
 		  *   // Modify the scene:
 		  *   ptrScene->...
 		  *   // or replace by another scene:
 		  *   ptrScene = otherScene;
-		  *   
+		  *
 		  *   // Unlock it, so the window can use it for redraw:
 		  *   win.unlockAccess3DScene();
-		  *   
+		  *
 		  *   // Update window, if required
 		  *   win.forceRepaint();
 		  * \endcode
@@ -259,10 +259,10 @@ namespace mrpt
 			void useCameraFromScene(bool useIt = true);
 
 			/** Gets the last x,y pixel coordinates of the mouse. \return False if the window is closed. */
-			bool getLastMousePosition(int &x, int &y) const;
+			virtual bool getLastMousePosition(int &x, int &y) const;
 
 			/** Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) */
-			void setCursorCross(bool cursorIsCross);
+			virtual void setCursorCross(bool cursorIsCross);
 
 			/** Start to save rendered images to disk.
 			  *  Images will be saved independently as png files, depending on

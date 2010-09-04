@@ -332,12 +332,12 @@ namespace mrpt
 				mrpt::synch::CCriticalSection	m_img_cs;
 				CDisplayWindow *m_win2D;
 
-				wxPoint m_last_mouse_point, m_last_mouse_click;
-				mrpt::synch::CCriticalSection	m_mouse_cs;
-
 			public:
 				wxMRPTImageControl(	wxWindow *parent,wxWindowID winID,int x, int y, int width, int height);
 				virtual ~wxMRPTImageControl();
+
+				wxPoint m_last_mouse_point, m_last_mouse_click;
+				//mrpt::synch::CCriticalSection	m_mouse_cs;
 
 				void AssignImage(wxBitmap *img); //!< Assigns this image. This object has the ownship of the image and will delete it when appropriate.
 				void GetBitmap(wxBitmap &bmp);
@@ -433,7 +433,8 @@ namespace mrpt
 				static const long           ID_MENU_PRINT;
 				bool                        m_firstSubmenu; //!< to know whether to insert a separator the first time.
 				std::map<long,long>			m_ID2ID; //!< wxIDs to user IDs for submenus.
-				mrpt::math::TPoint2D  m_curCursorPos;
+				mrpt::math::TPoint2D  		m_curCursorPos;  //!< In graph coords
+				wxPoint 					m_last_mouse_point; //!< In pixels
 
 				void OnMenuSelected(wxCommandEvent& ev);
 				void OnMouseMove(wxMouseEvent& event);

@@ -89,13 +89,13 @@ CWindowDialog::wxMRPTImageControl::~wxMRPTImageControl()
 
 void CWindowDialog::wxMRPTImageControl::OnMouseMove(wxMouseEvent& ev)
 {
-	mrpt::synch::CCriticalSectionLocker	lock(& m_mouse_cs);
+	//mrpt::synch::CCriticalSectionLocker	lock(& m_mouse_cs);
 	m_last_mouse_point = ev.GetPosition();
 }
 
 void CWindowDialog::wxMRPTImageControl::OnMouseClick(wxMouseEvent& ev)
 {
-	mrpt::synch::CCriticalSectionLocker	lock(& m_mouse_cs);
+	//mrpt::synch::CCriticalSectionLocker	lock(& m_mouse_cs);
 	m_last_mouse_click= ev.GetPosition();
 }
 
@@ -329,7 +329,6 @@ void CWindowDialog::OnMenuSave(wxCommandEvent& event)
 CDisplayWindow::CDisplayWindow( const std::string &windowCaption, unsigned int initWidth, unsigned int initHeight )
 	: CBaseGUIWindow(static_cast<void*>(this),200,299, windowCaption),
 	  m_enableCursorCoordinates( true )
-
 {
 	CBaseGUIWindow::createWxWindow(initWidth, initHeight);
 }
@@ -341,6 +340,33 @@ CDisplayWindow::~CDisplayWindow( )
 {
 	// All done in base class.
 }
+
+/** Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) */
+void CDisplayWindow::setCursorCross(bool cursorIsCross)
+{
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+	const CWindowDialog *win = (const CWindowDialog*) m_hwnd.get();
+	if (!win) return;
+	win->m_image->SetCursor( *(cursorIsCross ? wxCROSS_CURSOR : wxSTANDARD_CURSOR) );
+#endif
+}
+
+/*---------------------------------------------------------------
+					getLastMousePosition
+ ---------------------------------------------------------------*/
+bool CDisplayWindow::getLastMousePosition(int &x, int &y) const
+{
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+	const CWindowDialog *win = (const CWindowDialog*) m_hwnd.get();
+	if (!win) return false;
+	x = win->m_image->m_last_mouse_point.x;
+	y = win->m_image->m_last_mouse_point.y;
+	return true;
+#else
+    return false;
+#endif
+}
+
 
 
 /*---------------------------------------------------------------

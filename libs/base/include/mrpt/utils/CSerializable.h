@@ -145,6 +145,14 @@ namespace mrpt
 		  *   	cout << TTypeName<CPose2D>::get() << endl;                         // "CPose2D"
 		  *   	cout << TTypeName<mrpt::slam::COccupancyGridMap2D>::get() << endl; // "COccupancyGridMap2D"
 		  *  \endcode
+		  *
+		  *  Users can extend this for custom structs/classes with the macro DECLARE_CUSTOM_TTYPENAME:
+		  *  \code
+		  *     class MyClass { ... };
+		  *     DECLARE_CUSTOM_TTYPENAME(MyClass)
+		  *     cout << TTypeName<MyClass>::get() << endl;                          // "MyClass"
+		  *  \endcode
+		  *
 		  */
 		template<typename T>
 		struct TTypeName
@@ -153,6 +161,12 @@ namespace mrpt
 				return std::string( T::classinfo->className );
 			}
 		};
+
+		/** Identical to MRPT_DECLARE_TTYPENAME but intended for user code.
+		  * MUST be placed at the GLOBAL namespace.
+		  */
+		#define DECLARE_CUSTOM_TTYPENAME(_TYPE) \
+			namespace mrpt { namespace utils { MRPT_DECLARE_TTYPENAME(_TYPE) } }
 
 		#define MRPT_DECLARE_TTYPENAME(_TYPE) \
 			template<> struct TTypeName <_TYPE > { \

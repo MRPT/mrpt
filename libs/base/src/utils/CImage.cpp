@@ -527,6 +527,26 @@ void CImage::swap(CImage &o)
 }
 
 /*---------------------------------------------------------------
+					copyFromForceLoad
+
+ Copies from another image, and, if that one is externally
+  stored, the image file will be actually loaded into memory
+  in "this" object.
+ ---------------------------------------------------------------*/
+void CImage::copyFromForceLoad(const CImage &o)
+{
+	if (o.isExternallyStored())
+	{
+		// Load from that file:
+		this->loadFromFile( o.getExternalStorageFileAbsolutePath() );
+	}
+	else
+	{	// It's not external storage.
+		*this = o;
+	}
+}
+
+/*---------------------------------------------------------------
 					copyFastFrom
  ---------------------------------------------------------------*/
 void CImage::copyFastFrom( CImage &o )
@@ -1693,6 +1713,27 @@ void  CImage::setPixel(
 }
 
 /*---------------------------------------------------------------
+						line
+ ---------------------------------------------------------------*/
+void  CImage::line(
+	int				x0,
+	int				y0,
+	int				x1,
+	int				y1,
+	const mrpt::utils::TColor color,
+	unsigned int	width,
+	TPenStyle		penStyle)
+{
+#if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();   // For delayed loaded images stored externally
+	IplImage *ipl = ((IplImage*)img);
+	ASSERT_(ipl);
+
+	cvLine(ipl, cvPoint(x0,y0), cvPoint(x1,y1), CV_RGB(color.R,color.G,color.B), width );
+#endif
+}
+
+/*---------------------------------------------------------------
 						drawCircle
  ---------------------------------------------------------------*/
 void  CImage::drawCircle(
@@ -1703,28 +1744,12 @@ void  CImage::drawCircle(
 	unsigned int	width)
 {
 #if MRPT_HAS_OPENCV
-
-	#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
-	MRPT_START;
-	#endif
-
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
-
 	IplImage *ipl = ((IplImage*)img);
-
-	#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
 	ASSERT_(ipl);
-	#endif
 
 	cvCircle( ipl, cvPoint(x,y), radius, CV_RGB (color.R,color.G,color.B), width  );
-
-	#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
-	MRPT_END;
-	#endif
-#else
-	THROW_EXCEPTION("Method not available since MRPT has been compiled without OpenCV")
 #endif
-
 } // end
 
 /*---------------------------------------------------------------

@@ -219,7 +219,7 @@ namespace mrpt
 			* \param y0 The point y coordinate
 			* \param color The color of the cross
 			* \param size The size of the cross
-			* \param type The cross type. It could be: "x" or "+"
+			* \param type The cross type. It could be: 'x', '+' or ':'(like '+' but clear at the center dot)
 			* \param width The desired width of the cross (this is IGNORED yet)
 			*/
 			void  cross (int x0,int y0, const mrpt::utils::TColor	color,char type, unsigned int size=5, unsigned int width = 1);

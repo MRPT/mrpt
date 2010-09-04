@@ -131,7 +131,12 @@ using namespace std;
 #include <wx/string.h>
 #include <wx/stackwalk.h>
 #if wxUSE_STACKWALKER
+
 #include <mrpt/gui/WxSubsystem.h>
+//#include <wx/string.h>
+//#include <wx/log.h>
+//#include <wx/app.h>
+
 
 /** A custom class that build a string representation of the stack frames
   */

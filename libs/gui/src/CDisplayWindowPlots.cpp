@@ -278,6 +278,8 @@ void CWindowDialogPlots::OnMouseMove(wxMouseEvent& event)
 	event.GetPosition(&X,&Y);
     m_curCursorPos.x = m_plot->p2x(X);
     m_curCursorPos.y = m_plot->p2y(Y);
+	m_last_mouse_point.x = X;
+	m_last_mouse_point.y = Y;
     event.Skip();
 }
 
@@ -526,6 +528,33 @@ CDisplayWindowPlots::~CDisplayWindowPlots( )
 {
 	// All done in base class.
 }
+
+/** Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) */
+void CDisplayWindowPlots::setCursorCross(bool cursorIsCross)
+{
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+	const CWindowDialogPlots *win = (const CWindowDialogPlots*) m_hwnd.get();
+	if (!win) return;
+	win->m_plot->SetCursor( *(cursorIsCross ? wxCROSS_CURSOR : wxSTANDARD_CURSOR) );
+#endif
+}
+
+/*---------------------------------------------------------------
+					getLastMousePosition
+ ---------------------------------------------------------------*/
+bool CDisplayWindowPlots::getLastMousePosition(int &x, int &y) const
+{
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+	const CWindowDialogPlots *win = (const CWindowDialogPlots*) m_hwnd.get();
+	if (!win) return false;
+	x = win->m_last_mouse_point.x;
+	y = win->m_last_mouse_point.y;
+	return true;
+#else
+    return false;
+#endif
+}
+
 
 /*---------------------------------------------------------------
 					resize

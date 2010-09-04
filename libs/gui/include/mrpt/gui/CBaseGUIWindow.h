@@ -96,6 +96,7 @@ namespace mrpt
 
 		public:
 			/** CMD_DESTROY_WIN can be 299,399,499... See WxSubsystem */
+
 			CBaseGUIWindow(void* winobj_voidptr, int CMD_CREATE_WIN, int CMD_DESTROY_WIN, const std::string &initial_caption = std::string() );
 			virtual ~CBaseGUIWindow();
 
@@ -114,6 +115,12 @@ namespace mrpt
 			/** Changes the window title text.
 			  */
 			virtual void setWindowTitle( const std::string &str )=0;
+
+			/** Gets the last x,y pixel coordinates of the mouse. \return False if the window is closed. */
+			virtual bool getLastMousePosition(int &x, int &y) const = 0;
+
+			/** Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) */
+			virtual void setCursorCross(bool cursorIsCross) = 0;
 
 			/** Waits for any key to be pushed on the image or the console, and returns the key code.
 			  *  This method remove key strokes previous to its call, so it will always wait. To get

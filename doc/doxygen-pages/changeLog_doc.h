@@ -80,18 +80,24 @@
 			- mrpt::utils::TColorf: New explicit copy constructor from a mrpt::utils::TColor
 			- mrpt::opengl::CRenderizable: Many "set" methods that returned "void" now return a reference to "this" so several calls can be chained (e.g. obj.setColor(...).setScale(1.0) )
 			- mrpt::gui::CDisplayWindow3D doesn't report ALT+Enter as a keystroke event anymore.
+			- mrpt::gui::CBaseGUIWindow has new methods (implemented in all derived classes):
+				- getLastMousePosition()
+				- setCursorCross()
 			- New method mrpt::utils::CTimeLogger::getMeanTime
 			- mrpt::vision::TSequenceFeatureObservations has load/save methods to text files.
 			- mrpt::utils::TCamera now has setter methods.
 			- New method: mrpt::math::CSparseMatrixTemplate::insertMatrix()
 			- New method: mrpt::math::CArrayNumeric::slice()
+			- New method: mrpt::utils::CImage::copyFromForceLoad()
 			- mrpt::poses::CPose3D:
 				- Much faster operations, as long as yaw(), pitch() & roll() are not explicitly called. These 3 angles are now not computed until really requested by the user, then cached.
 				- New SE3 Lie algebra methods: mrpt::poses::CPose3D::exp(), mrpt::poses::CPose3D::ln(), ...
 				- mrpt::poses::CPose3D::composePoint() now has an optional flag to compute faster, approximate Jacobians (for small rotations only!).
 				- Methods composePoint() and inverseComposePoint() now can also compute the Jacobian with respect to se3 (the tangent space of SE(3) at a given pose).
 			- New method: mrpt::hwdrivers::CSerialPort::ReadString
-			- All matrices: New methods: t() (for transpose, apart of the old ~ operator), multiply_A_skew3().
+			- All matrices: New methods:
+				- t() (for transpose, apart of the old ~ operator)
+				- multiply_A_skew3().
 		- New functions:
 			- mrpt::math::skew_symmetric3 & mrpt::math::skew_symmetric3_neg
 			- mrpt::math::rodrigues_so3_exp

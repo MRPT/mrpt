@@ -131,7 +131,7 @@ namespace mrpt
 					bool			originTopLeft = true
 					);
 
-			/** Copy constructor, makes a full copy of the original image contents */
+			/** Copy constructor, makes a full copy of the original image contents (unless it was externally stored, in that case, this new image will just point to the same image file). */
 			CImage( const CImage &o );
 
 			/** Copy constructor */
@@ -227,6 +227,24 @@ namespace mrpt
 			/** Changes the property of the image stating if the top-left corner (vs. bottom-left) is the coordinate reference.
 			  */
 			void  setOriginTopLeft(bool val);
+
+			/** Draws a line.
+			  * \param x0 The starting point x coordinate
+			  * \param y0 The starting point y coordinate
+			  * \param x1 The end point x coordinate
+			  * \param y1 The end point y coordinate
+			  * \param color The color of the line
+			  * \param width The desired width of the line (this is IGNORED in this virtual class)
+			  *  This method may be redefined in some classes implementing this interface in a more appropiate manner.
+			  */
+			virtual void  line(
+				int				x0,
+				int				y0,
+				int				x1,
+				int				y1,
+				const mrpt::utils::TColor color,
+				unsigned int	width = 1,
+				TPenStyle		penStyle = psSolid);
 
 			/** Draws a circle of a given radius.
 			  * \param x The center - x coordinate in pixels.
@@ -443,7 +461,7 @@ namespace mrpt
 			/** @name Copy, move & swap  operations
 			    @{ */
 
-			/** Copy operator
+			/** Copy operator (if the image is externally stored, the writen image will be such as well).
 			  * \sa copyFastFrom
 			  */
 			CImage& operator = (const CImage& o);
@@ -452,6 +470,11 @@ namespace mrpt
 			  * \sa copyFastFrom
 			  */
 			CImage& operator = (const CImageFloat& o);
+
+			/** Copies from another image, and, if that one is externally stored, the image file will be actually loaded into memory in "this" object.
+			  * \sa operator =
+			  */
+			void copyFromForceLoad(const CImage &o);
 
 			/** Moves an image from another object, erasing the origin image in the process (this is much faster than copying)
 			  * \sa operator =
@@ -632,10 +655,15 @@ namespace mrpt
 					return tmp;
 			}
 
+			/** For external storage image objects only, this method makes sure the image is loaded in memory. Note that usually images are loaded on-the-fly on first access and there's no need to call this.
+			  * \unload
+			  */
+			inline void forceLoad() {  makeSureImageIsLoaded(); }
+
 			/** For external storage image objects only, this method unloads the image from memory (or does nothing if already unloaded).
 			  *  It does not need to be called explicitly, unless the user wants to save memory for images that will not be used often.
 			  *  If called for an image without the flag "external storage", it is simply ignored.
-			  * \sa setExternalStorage
+			  * \sa setExternalStorage, forceLoad
 			  */
 			void unload() MRPT_NO_THROWS;
 
