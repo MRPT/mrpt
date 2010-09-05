@@ -66,7 +66,7 @@ namespace mrpt
 
 
 		/** The projective camera 2x6 Jacobian \f$ \frac{\partial h(f,p)}{\partial p} \f$ (wrt the 6D camera pose)
-		  * \note Jacobians as described in Ethan Eade's Phd thesis: http://mi.eng.cam.ac.uk/~ee231/thesis_revised.pdf (Appendix A)
+		  * \note Jacobians as described in http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty  (Appendix A)
 		  */
 		template <bool POSES_ARE_INVERSE>
 		void frameJac(
@@ -75,7 +75,6 @@ namespace mrpt
 			   const TPoint3D & landmark_global,
 			   CMatrixFixedNumeric<double,2,6> & out_J)
 		{
-			THROW_EXCEPTION("FIXME!")
 			// JL says: This BA implementation assumes that we're estimating the **INVERSE** camera poses
 			double x,y,z; // wrt cam (local coords)
 			if (POSES_ARE_INVERSE)
@@ -87,35 +86,47 @@ namespace mrpt
 					   landmark_global.x,landmark_global.y,landmark_global.z,
 					   x,y,z);
 
-			const double z_2 = square(z);
-
 			ASSERT_(z!=0)
 
-			CMatrixDouble22 J_intrinsic;
-			J_intrinsic(0,0) = camera_params.intrinsicParams(0,0);
-			J_intrinsic(1,1) = camera_params.intrinsicParams(1,1);
+//			CMatrixDouble22 J_intrinsic;
+//			J_intrinsic(0,0) = camera_params.intrinsicParams(0,0);
+//			J_intrinsic(1,1) = camera_params.intrinsicParams(1,1);
 
 			if (POSES_ARE_INVERSE)
 			{
-				const double J_frame_vals[] = {
-					   1./z, 0   , -x/z_2, -x*y/z_2, 1+(square(x)/z_2), -y/z,
-					   0   , 1./z, -y/z_2, -(1+square(y)/z_2), x*y/z_2, x/z  };
-				const CMatrixFixedNumeric<double,2,6> J_frame(J_frame_vals);
-				out_J.multiply_AB(J_intrinsic, J_frame);
+//				const double z_2 = square(z);
+//				const double J_frame_vals[] = {
+//					   1./z, 0   , -x/z_2, -x*y/z_2, 1+(square(x)/z_2), -y/z,
+//					   0   , 1./z, -y/z_2, -(1+square(y)/z_2), x*y/z_2, x/z  };
+//				const CMatrixFixedNumeric<double,2,6> J_frame(J_frame_vals);
+//				out_J.multiply_AB(J_intrinsic, J_frame);
+
+				const double _z = 1.0/z;
+				const double _z2 = square(_z);
+				const double fx_z = camera_params.fx() *_z;
+				const double fy_z = camera_params.fy() *_z;
+				const double fx_z2 = camera_params.fx()*_z2;
+				const double fy_z2 = camera_params.fy()*_z2;
+				const double xy = x*y;
+
+				const double J_vals[] = {
+					fx_z,	0,		-fx_z2*x,	fx_z2*xy, 								-camera_params.fx()*(1+square(x*_z)),	fx_z*y,
+					0,		fy_z,	-fy_z2*y,	camera_params.fy()*(1+square(y*_z)),	-fy_z2*xy, 	fy_z*x };
+				out_J.loadFromArray(J_vals);
 			}
 			else
 			{
-				const double J_frame_vals[] = {
-					   -1./z, 0   , x/z_2, x*y/z_2, -1-(square(x)/z_2), y/z,
-					   0   , -1./z, y/z_2, (1+square(y)/z_2), -x*y/z_2, -x/z  };
-				const CMatrixFixedNumeric<double,2,6> J_frame(J_frame_vals);
-				out_J.multiply_AB(J_intrinsic, J_frame);
+				THROW_EXCEPTION("TODO")
+//				const double J_frame_vals[] = {
+//					   -1./z, 0   , x/z_2, x*y/z_2, -1-(square(x)/z_2), y/z,
+//					   0   , -1./z, y/z_2, (1+square(y)/z_2), -x*y/z_2, -x/z  };
+//				const CMatrixFixedNumeric<double,2,6> J_frame(J_frame_vals);
+//				out_J.multiply_AB(J_intrinsic, J_frame);
 			}
 		}
 
-		/**
-		* Jacobians as described in Ethan Eade's Phd thesis:
-		* http://mi.eng.cam.ac.uk/~ee231/thesis_revised.pdf , Appendix A
+		/** Jacobians wrt the point
+		  * \note Jacobians as described in http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty  (Appendix A)
 		*/
 		template <bool POSES_ARE_INVERSE>
 		void pointJac(
@@ -139,22 +150,17 @@ namespace mrpt
 					l.x,l.y,l.z,
 					&dp_point );
 
-			const double z_2 = square(l.z);
-
 			ASSERT_(l.z!=0)
+
+			const double _z = 1.0/l.z;
+			const double _z2 = square(_z);
+
 			const double tmp_vals[] = {
-				1.0/l.z, 0    , -l.x/z_2,
-				0    , 1.0/l.z, -l.y/z_2 };
+				camera_params.fx()*_z,                     0, -camera_params.fx()*l.x*_z2,
+				0                    , camera_params.fy()*_z, -camera_params.fy()*l.y*_z2 };
 			const CMatrixFixedNumeric<double,2,3> tmp(tmp_vals);
 
-			CMatrixDouble22 J_intrinsic;
-			J_intrinsic(0,0) = camera_params.intrinsicParams(0,0);
-			J_intrinsic(1,1) = camera_params.intrinsicParams(1,1);
-
-			// RET: cam_pars.jacobian() * Jx
-			//    = cam_pars.jacobian() * tmp * T.get_rotation();
-			//out_J.multiply_AB(J_intrinsic, J_x);
-			out_J.multiply_ABC(J_intrinsic,tmp, dp_point);
+			out_J.multiply_AB(tmp, dp_point);
 		}
 
 

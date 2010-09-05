@@ -131,7 +131,8 @@ namespace mrpt
 			const mrpt::vision::TFramePosesVec                 & frame_poses,
 			const mrpt::vision::TLandmarkLocationsVec          & landmark_points,
 			std::vector<mrpt::math::CArrayDouble<2> > & out_residuals,
-			bool  use_robust_kernel = true
+			const bool  frame_poses_are_inverse,
+			const bool  use_robust_kernel = true
 			);
 
 		//! \overload
@@ -141,7 +142,8 @@ namespace mrpt
 			const mrpt::vision::TFramePosesMap                 & frame_poses,
 			const mrpt::vision::TLandmarkLocationsMap          & landmark_points,
 			std::vector<mrpt::math::CArrayDouble<2> > & out_residuals,
-			bool  use_robust_kernel = true
+			const bool  frame_poses_are_inverse,
+			const bool  use_robust_kernel = true
 			);
 
 
