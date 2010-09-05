@@ -73,6 +73,12 @@ namespace mrpt
 				double	planeEigenValThreshold_up;
 				double	regionsThreshold;
 				bool	multithread;
+
+				bool	useCovFilter;
+				bool	useRegionsFilter;
+				bool	useSizeDistanceRelationFilter;
+				bool	useDiagonalDistanceFilter;
+
 			}m_options;
 
 			// Experimental methods
@@ -82,17 +88,21 @@ namespace mrpt
 
 			TThreadHandle		m_thread_checkIfFaceRegions;	//!< Thread that execute checkIfFaceRegions filter
 			TThreadHandle		m_thread_checkIfFacePlaneCov;	//!< Thread that execute checkIfFacePlaneCov filter
+			TThreadHandle		m_thread_checkIfDiagonalSurface;	//!< Thread that execute checkIfDiagonalSurface filter
 
 			bool	m_checkIfFaceRegions_res;	//!< Save result of checkIfFaceRegions filter
 			bool	m_checkIfFacePlaneCov_res;	//!< Save result of checkIfFacePlaneCov filter
+			bool	m_checkIfDiagonalSurface_res;	//!< Save result of checkIfDiagonalSurface filter
 
-			bool	m_end_checkIfFaceRegions;	//!< Indicates if thread_checkIfFaceRegions filter must finish its execution
-			bool	m_end_checkIfFacePlaneCov;	//!< Indicates if thread_checkIfFacePlaneCov filter must finish its execution
-
+			bool	m_end_threads;	//!< Indicates to all threads that must finish their execution
+			
 			CSemaphore m_enter_checkIfFaceRegions;	//!< Indicates to thread_checkIfFaceRegions that exist a new face to analyze
 			CSemaphore m_enter_checkIfFacePlaneCov;	//!< Indicates to thread_checkIfFacePlaneCov that exist a new face to analyze
+			CSemaphore m_enter_checkIfDiagonalSurface;	//!< Indicates to thread_checkIfDiagonalSurface that exist a new face to analyze
+
 			CSemaphore m_leave_checkIfFaceRegions;	//!< Indicates to main thread that thread_checkIfFaceRegions has been completed analisis of the last face detected
 			CSemaphore m_leave_checkIfFacePlaneCov;	//!< Indicates to main thread that thread_checkIfFacePlaneCov has been completed analisis of the last face detected
+			CSemaphore m_leave_checkIfDiagonalSurface;	//!< Indicates to main thread that thread_checkIfDiagonalSurface has been completed analisis of the last face detected
 
 			CObservation3DRangeScan m_lastFaceDetected;	//!< Last face detected
 
@@ -135,7 +145,11 @@ namespace mrpt
 
 			bool checkRegionsConstrains( const double values[3][3] );
 
+			void thread_checkIfDiagonalSurface( );
+
 			bool checkIfDiagonalSurface( CObservation3DRangeScan* face );
+
+			static void dummy_checkIfDiagonalSurface( CFaceDetection *obj );
 
 			// Experimental methods
 			void experimental_viewFacePointsScanned( const vector_float &xs, const vector_float &ys, const vector_float &zs );
