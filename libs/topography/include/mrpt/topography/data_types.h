@@ -54,6 +54,7 @@ namespace mrpt
 
 			inline TCoords( const int _deg, const int _min, const double _sec ) { setDegMinSec(_deg,_min,_sec); }
 			inline TCoords( const double dec ) { setFromDecimal(dec); }
+			inline TCoords() { setFromDecimal(0); }
 
 			/** Automatic conversion to a double value (read-only) */
 			inline operator double(void) const { return decimal_value; }
@@ -97,7 +98,7 @@ namespace mrpt
 
 		bool TOPO_IMPEXP operator ==(const TCoords &a, const TCoords &o);
 		bool TOPO_IMPEXP operator !=(const TCoords &a, const TCoords &o);
-		
+
 		std::ostream TOPO_IMPEXP & operator<<( std::ostream& out, const TCoords &o );
 
 		struct TOPO_IMPEXP TEllipsoid
