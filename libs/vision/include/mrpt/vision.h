@@ -40,6 +40,7 @@
 #include <mrpt/vision/CVideoFileWriter.h>
 #include <mrpt/vision/tracking.h>
 #include <mrpt/vision/bundle_adjustment.h>
+#include <mrpt/vision/CUndistortMap.h>
 
 // Maps:
 #include <mrpt/slam/CLandmark.h>

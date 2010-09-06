@@ -56,6 +56,7 @@
 			- New sensor driver for Phidget kit (see mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors), contributed by Adrien Barral (Robopec).
 			- New sensor driver for Fiber Optic Gyro KVH DSP3000 (see mrpt::hwdrivers::CGyroKVHDSP3000),  contributed by Adrien Barral (Robopec).
 			- mrpt::math::CDirectedTree template for directed tree-like graphs. Includes generic depth-first & breath-first visitors.
+			- mrpt::vision::CUndistortMap, a class for efficiently undistorting sequences of images with the same camera parameters.
 			- New PDF classes for "information" (inverse covariance) forms:
 				- mrpt::poses::CPosePDFGaussianInf
 				- mrpt::poses::CPose3DPDFGaussianInf

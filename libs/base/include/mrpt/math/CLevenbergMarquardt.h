@@ -68,6 +68,7 @@ namespace math
 		{
 			NUMTYPE		final_sqr_err;
 			size_t		iterations_executed;
+			VECTORTYPE	last_err_vector;		//!< The last error vector returned by the user-provided functor.
 			CMatrixTemplateNumeric<NUMTYPE>	path;	//!< Each row is the optimized value at each iteration.
 
 			/** This matrix can be used to obtain an estimate of the optimal parameters covariance matrix:
@@ -223,6 +224,7 @@ namespace math
 			// Output info:
 			out_info.final_sqr_err = F_x;
 			out_info.iterations_executed = iter;
+			out_info.last_err_vector = f_x;
 			if (returnPath) out_info.path.setSize(iter,N+1);
 
 			MRPT_END;
