@@ -78,7 +78,7 @@
 
   <!-- Layout definition for a namespace page -->
   <namespace>
-    <briefdescription visible="yes"/>
+    <briefdescription visible="no"/>
     <detaileddescription title=""/>
     <memberdecl>
       <nestednamespaces visible="yes" title=""/>

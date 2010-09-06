@@ -25,6 +25,8 @@ patch, with or without a set of descriptors.
 
 - mrpt::vision::CVideoFileWriter: A class to write video files.
 
+- mrpt::vision::CUndistortMap: A cache of the map for undistorting image, very efficient for sequences of images all with the same distortion parameters.
+
 - This library defines a new type of observation (mrpt::slam::CObservationVisualLandmarks)
   and a new type of map (mrpt::slam::CLandmarksMap).
 

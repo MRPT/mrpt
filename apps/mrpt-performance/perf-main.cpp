@@ -115,6 +115,10 @@ void getTestImage(unsigned int img_index, mrpt::utils::CImage &out_img )
 #include "perf-feature_matching.h"
 #include "perf-graph.h"
 
+
+#include "run_build_tables.h"
+
+
 // ------------------------------------------------------
 //						MAIN
 // ------------------------------------------------------
@@ -126,11 +130,15 @@ int main(int argc, char **argv)
 
 		TCLAP::ValueArg<std::string> arg_contains("c","match-contains","Run only the tests containing the given substring",false,"NAME","NAME",cmd);
 
+		TCLAP::SwitchArg arg_build_tables("t","tables","Don't run any test, instead build the tables of compared performances in SOURCE_DIR/doc/",cmd,false);
 		TCLAP::SwitchArg arg_release("r","release","Don't use the postfix 'dev' in the performance stats file",cmd,false);
 
 		// Parse arguments:
 		if (!cmd.parse( argc, argv ))
 			throw std::runtime_error(""); // should exit.
+
+		if (arg_build_tables.isSet())
+			return run_build_tables();
 
 		const std::string filName = "./mrpt-performance.html";
 

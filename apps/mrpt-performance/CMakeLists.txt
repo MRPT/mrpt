@@ -20,6 +20,7 @@ ADD_DEFINITIONS(-DMRPT_DOC_PERF_DIR="${MRPT_SOURCE_DIR}/doc/perf-data")
 # Define the executable target:
 ADD_EXECUTABLE(mrpt-performance
 	perf-main.cpp
+	run_build_tables.h
 	# Test files:
 	perf-feature_extraction.h
 	perf-feature_matching.h
@@ -43,7 +44,7 @@ SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(APP) ${TMP_T
 TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 
 # Dependencies on MRPT libraries:
-#  Just mention the top-level dependency, the rest will be detected automatically, 
+#  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-slam mrpt-gui mrpt-scanmatching)
 
