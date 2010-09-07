@@ -43,7 +43,7 @@ void TestMatrixIterators_copy()
 			4,5,6 };
 		M = numbers;
 		cout << "CMatrix (dynamic), std::copy ->  ";
-		ostream_iterator<int> out_it (cout,", ");
+		ostream_iterator<double> out_it (cout,", ");
 		copy ( M.begin(), M.end(), out_it );
 		cout << endl << "Complete matrix: " << endl << M << endl;
 	}
@@ -53,7 +53,7 @@ void TestMatrixIterators_copy()
 			4,5,6 };
 		CMatrixFixedNumeric<double,2,3> M(numbers);
 		cout << "CMatrix (fixed), std::copy ->  ";
-		ostream_iterator<int> out_it (cout,", ");
+		ostream_iterator<double> out_it (cout,", ");
 		copy ( M.begin(), M.end(), out_it );
 		cout << endl << "Complete matrix: " << endl << M << endl;
 	}
@@ -66,7 +66,7 @@ void TestMatrixIterators_copy()
 			4,5,6 };
 		M = numbers;
 		cout << "CMatrix (dyn), std::copy with reverse iters ->  ";
-		ostream_iterator<int> out_it (cout,", ");
+		ostream_iterator<double> out_it (cout,", ");
 		copy ( M.rbegin(), M.rend(), out_it );
 		cout << endl;
 	}
@@ -76,7 +76,7 @@ void TestMatrixIterators_copy()
 			4,5,6 };
 		CMatrixFixedNumeric<double,2,3> M(numbers);
 		cout << "CMatrix (fixed), std::copy with reverse iters ->  ";
-		ostream_iterator<int> out_it (cout,", ");
+		ostream_iterator<double> out_it (cout,", ");
 		copy ( M.rbegin(), M.rend(), out_it );
 		cout << endl;
 	}
@@ -224,8 +224,8 @@ void testContainerOps()
 	{
 		x+=y;
 	}
-	cout << mrpt::system::unitsFormat(t.Tac()/10000) << endl;
-	cout << x << endl;
+	cout << "Test: 10x10 matrix += 100-vector. Done in "<<mrpt::system::unitsFormat(t.Tac()/10000) << endl;
+//cout << x << endl;
 
 	// sum:
 	double Dumm1 = sum(x);
