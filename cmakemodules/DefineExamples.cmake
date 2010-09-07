@@ -111,7 +111,6 @@ IF(BUILD_EXAMPLES)
 		ransac-demo-applications
 		createVideoFile
 		polyhedronIntersection
-		optimize_pose_network
 		observer_pattern
 		smart_pointers_test
 		stl_containers_serialize

@@ -264,14 +264,15 @@ namespace mrpt
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */
 		#define DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE(class_name,_LINKAGE_) \
-			DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2(class_name,_LINKAGE_ class_name) \
+			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, CSerializable, _LINKAGE_ class_name) \
 			_LINKAGE_ ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, class_name##Ptr &pObj);
 
 
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */
 		#define DEFINE_SERIALIZABLE_PRE(class_name) \
-			DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE(class_name, BASE_IMPEXP )
+			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, CSerializable, BASE_IMPEXP class_name) \
+			BASE_IMPEXP ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, class_name##Ptr &pObj);
 
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */

@@ -93,7 +93,6 @@ void  CHolonomicVFF::navigate(
 			// Add repulsive force:
 			instantaneousForce.x( -cos(ang) * mod );
 			instantaneousForce.y( -sin(ang) * mod );
-			instantaneousForce.z( 0 );
 			resultantForce.AddComponents( instantaneousForce );
         }
 

@@ -794,6 +794,7 @@ int CDisplayWindow_WXAPP::OnExit()
   */
 void WxSubsystem::waitWxShutdownsIfNoWindows()
 {
+	MRPT_TODO("JL: Should get on this...");
 	// Just let know a global object that, at its destruction, it must  ....
 //
 //	// Any open windows?

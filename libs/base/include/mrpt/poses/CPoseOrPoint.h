@@ -146,13 +146,13 @@ namespace mrpt
 				if (b.is3DPoseOrPoint())
 				{
 					if (is3DPoseOrPoint())
-						  return  square(x()-b.x()) + square(y()-b.y()) + square(static_cast<const DERIVEDCLASS*>(this)->m_coords[2]-static_cast<const DERIVEDCLASS*>(&b)->m_coords[2]);
-					else  return  square(x()-b.x()) + square(y()-b.y()) + square(static_cast<const DERIVEDCLASS*>(&b)->m_coords[2]);
+						  return  square(x()-b.x()) + square(y()-b.y()) + square(static_cast<const DERIVEDCLASS*>(this)->m_coords[2]-static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
+					else  return  square(x()-b.x()) + square(y()-b.y()) + square(static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
 				}
 				else
 				{
 					if (is3DPoseOrPoint())
-						  return  square(x()-b.x()) + square(y()-b.y()) + square(static_cast<const DERIVEDCLASS*>(&b)->m_coords[2]);
+						  return  square(x()-b.x()) + square(y()-b.y()) + square(static_cast<const OTHERCLASS*>(&b)->m_coords[2]);
 					else  return  square(x()-b.x()) + square(y()-b.y());
 				}
 			}

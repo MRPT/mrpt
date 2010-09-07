@@ -52,9 +52,9 @@ namespace mrpt
 			template <class OTHERCLASS>
 			inline void AddComponents(const OTHERCLASS &b)
 			{
-				const int dims = std::min( DERIVEDCLASS::static_size, OTHERCLASS::is3DPoseOrPoint() ? 3:2);
+				const int dims = std::min( size_t(DERIVEDCLASS::static_size), size_t(OTHERCLASS::is3DPoseOrPoint() ? 3:2));
 				for (int i=0;i<dims;i++)
-					static_cast<DERIVEDCLASS*>(this)->m_coords[i]+= b->m_coords[i];
+					static_cast<DERIVEDCLASS*>(this)->m_coords[i]+= static_cast<const OTHERCLASS*>(&b)->m_coords[i];
 			}
 
 			/** Scalar multiplication. */

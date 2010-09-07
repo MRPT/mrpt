@@ -31,6 +31,7 @@
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/utils.h>
 
+using namespace mrpt::poses;
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::hmtslam;

@@ -38,6 +38,8 @@
 		- First working version of Sparse Bundle-Adjustment (see mrpt::vision::bundle_adj_full).
 		- New hardware supported: Phidget kits & Fiber Optic Gyro KVH DSP3000 (both contributed by Adrien Barral, Robopec).
 		- Tons of performance optimizations, mostly in geometry classes.
+		- <b>Backward incompatible changes:</b>
+			- In <=0.9.1, mrpt::poses::CPose2D for (x,y,phi) also contained a "z" field, which has been removed now. It didn't make sense at all but was there for implementation convenience. In the new implementation of poses there's no need anymore for that dummy "z" coordinate.
 	- <b>Detailed list of changes:</b>
 		- New applications:
 			- <a href="http://www.mrpt.org/Application:carmen2rawlog" >carmen2rawlog</a>: A converter from CARMEN robotics logs to binary Rawlog dataset files.

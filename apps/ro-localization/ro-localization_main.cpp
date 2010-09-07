@@ -689,7 +689,7 @@ void TestParticlesLocalization()
 							sphere->setLocation(
 								dist->auxEstimatePose.x(),
 								dist->auxEstimatePose.y(),
-								dist->auxEstimatePose.z()+0.05f );
+								0.05f );
 						}
 
 						if( !obj.present() )
@@ -718,7 +718,7 @@ void TestParticlesLocalization()
 						sphere->setRadius(0.05);
 						sphere->setName( "mean_parts" );
 
-						sphere->setLocation( pdfEstimation.x(), pdfEstimation.y(), pdfEstimation.z()+0.05);
+						sphere->setLocation( pdfEstimation.x(), pdfEstimation.y(), 0.05);
 
 						if( !obj.present() )
 						{
@@ -747,7 +747,7 @@ void TestParticlesLocalization()
 						sphere->setRadius(0.10);
 						sphere->setName("GT");
 
-						sphere->setLocation(GT_Pose.x(), GT_Pose.y(), GT_Pose.z() + 0.05);
+						sphere->setLocation(GT_Pose.x(), GT_Pose.y(), 0.05);
 
 						cout << "GT robot pose: " << GT_Pose << endl;
 

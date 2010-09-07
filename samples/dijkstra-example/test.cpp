@@ -40,20 +40,20 @@ using namespace mrpt::random;
 using namespace std;
 
 // The type of my Dijkstra problem:
-typedef CDijkstra<CNetworkOfPoses2D::edge_t> CMyDijkstra;
+typedef CDijkstra<CNetworkOfPoses2D::edge_t> CMyDijkstra;   // See other options in mrpt::poses::CNetworkOfPoses<>
 
 // adds a new edge to the graph. The edge is annotated with the relative position of the two nodes
-void addEdge(TNodeID from, TNodeID to, const map<TNodeID,CPose2D> &real_poses,CNetworkOfPoses2D &graph_links,const CMatrixDouble33 &cov)
+void addEdge(TNodeID from, TNodeID to, const map<TNodeID,CPose2D> &real_poses,CNetworkOfPoses2D &graph_links)
 {
 	CPose2D p = real_poses.find(to)->second - real_poses.find(from)->second;
-	graph_links.insertEdge(from,to,CPosePDFGaussian(p,cov));
+	graph_links.insertEdge(from,to, p );
 }
 
 // weight is the distance between two nodes.
 double myDijkstraWeight(const CMyDijkstra::graph_t &g, const TNodeID from,const TNodeID to, const CMyDijkstra::edge_t& edge)
 {
 //	return 1;					// Topological distance
-	return edge.mean.norm();	// Metric distance
+	return edge.norm();	// Metric distance
 }
 
 // ------------------------------------------------------
@@ -71,9 +71,6 @@ void TestDijkstra()
 	// ----------------------------
 	// Create a random graph:
 	// ----------------------------
-	CMatrixDouble33 cov;
-	cov.unit(); cov*=square(0.1);
-
 	const size_t N_VERTEX = 20;
 	const double DIST_THRES = 10;
 	const double NODES_XY_MAX = 15;
@@ -100,7 +97,7 @@ void TestDijkstra()
 		{
 			if (i==j) continue;
 			if ( real_poses[i].distanceTo(real_poses[j]) < DIST_THRES )
-				addEdge(i,j,real_poses,graph_links,cov);
+				addEdge(i,j,real_poses,graph_links);
 		}
 	}
 
@@ -117,7 +114,7 @@ void TestDijkstra()
 
 	cout << "Dijkstra took " << tictac.Tac()*1e3 << " ms for " << graph_links.edges.size() << " edges." << endl;
 
-	// Demo of getting the tree representation of 
+	// Demo of getting the tree representation of
 	//  the graph & visit its nodes:
 	// ---------------------------------------------------------
 	CMyDijkstra::tree_graph_t   graphAsTree;
@@ -145,7 +142,7 @@ void TestDijkstra()
 	cout << SOURCE_NODE << endl;
 	graphAsTree.visitBreadthFirst( SOURCE_NODE, myVisitor );
 
-	
+
 
 	// ----------------------------
 	// Display results graphically:
@@ -159,7 +156,7 @@ void TestDijkstra()
 	{
 		if (i==SOURCE_NODE) continue;
 
-		CDijkstra<CPosePDFGaussian>::TListEdges	  path;
+		CDijkstra<CPosePDFGaussian>::edge_list_t	  path;
 
 		myDijkstra.getShortestPathTo(i,path);
 
@@ -183,7 +180,7 @@ void TestDijkstra()
 		}
 
 		// Draw the shortest path:
-		for (CDijkstra<CPosePDFGaussian>::TListEdges::const_iterator a=path.begin();a!=path.end();++a)
+		for (CDijkstra<CPosePDFGaussian>::edge_list_t::const_iterator a=path.begin();a!=path.end();++a)
 		{
 			const CPose2D &p1 = real_poses[ a->first];
 			const CPose2D &p2 = real_poses[ a->second ];
@@ -202,6 +199,8 @@ void TestDijkstra()
 		cout << "Press any key to show next shortest path, close window to end...\n";
 		win.waitForKey();
 	}
+
+	win.clear();
 }
 
 int main()

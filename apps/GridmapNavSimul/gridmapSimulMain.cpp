@@ -764,9 +764,9 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 		// Update robot path GT/odo:
 		if (!robot_path_GT.empty())
 		{
-			gl_path_GT->insertPoint( robot_path_GT.rbegin()->x(), robot_path_GT.rbegin()->y(), robot_path_GT.rbegin()->z() );
+			gl_path_GT->insertPoint( robot_path_GT.rbegin()->x(), robot_path_GT.rbegin()->y(), 0 );
 			CPose2D  this_odo = pose_start + *robot_path_ODO.rbegin();
-			gl_path_ODO->insertPoint( this_odo.x(), this_odo.y(), this_odo.z() );
+			gl_path_ODO->insertPoint( this_odo.x(), this_odo.y(), 0 );
 		}
 
 		m_canvas->cameraPointingX = p.x();

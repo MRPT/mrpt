@@ -30,6 +30,8 @@
 
 #include <mrpt/utils/utils_defs.h>
 
+#include <mrpt/poses.h>  // Dependency
+
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/utils/CStringList.h>
 

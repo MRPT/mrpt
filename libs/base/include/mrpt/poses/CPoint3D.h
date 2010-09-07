@@ -162,13 +162,13 @@ namespace poses
 		explicit inline CPoint3D(const mrpt::math::CArrayDouble<3> &xyz) : m_coords(xyz) { }
 
 		/** Constructor from an CPoint2D object. */
-		inline CPoint3D( const CPoint2D &p) { m_coords[0]=p.x(); m_coords[1]=p.y(); m_coords[2]=0; }
+		CPoint3D( const CPoint2D &p);
 
 		/** Constructor from an CPose3D object. */
 		explicit inline CPoint3D( const CPose3D &p) { m_coords[0]=p.x(); m_coords[1]=p.y(); m_coords[2]=p.z(); }
 
 		/** Constructor from an CPose2D object. */
-		explicit inline CPoint3D( const CPose2D &p) { m_coords[0]=p.x(); m_coords[1]=p.y(); m_coords[2]=0; }
+		explicit CPoint3D( const CPose2D &p);
 
 		/** Constructor from lightweight object. */
 		inline CPoint3D(const mrpt::math::TPoint3D &p) { m_coords[0]=p.x; m_coords[1]=p.y; m_coords[2]=p.z; }
