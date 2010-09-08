@@ -67,7 +67,8 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 		first_incT(true),
 		m_mapType(mapType),
 		m_cov(0,0),
-		m_hasToRecoverMeanAndCov(true)
+		m_hasToRecoverMeanAndCov(true),
+		m_DM_lastCutOff(0)
 {
 	// Set the grid to initial values (and adjusts the KF covariance matrix!)
 	CMetricMap::clear();
@@ -86,9 +87,10 @@ void  CGasConcentrationGridMap2D::internal_clear()
 	switch (m_mapType)
 	{
 	case mrAchim:
+	case mrKernelDMV:
 		{
 			// Set the grid to initial values:
-			TGasConcentrationCell	def;
+			TGasConcentrationCell	def(0,0);
 			fill( def );
 		}
 		break;
@@ -128,7 +130,7 @@ void  CGasConcentrationGridMap2D::internal_clear()
 					}
 					else
 					{
-						m_cov(i,j) = std0sqr * exp( -0.5 * (res2 * static_cast<float>(square(cx1-cx2) +  square(cy1-cy2)))/KF_covSigma2 );
+						m_cov(i,j) = std0sqr * exp( -0.5 * (res2 * static_cast<double>(square(cx1-cx2) +  square(cy1-cy2)))/KF_covSigma2 );
 						m_cov(j,i) = m_cov(i,j);
 					}
 				} // for j
@@ -136,7 +138,7 @@ void  CGasConcentrationGridMap2D::internal_clear()
 
 			//m_cov.saveToTextFile("cov_init.txt",1);
 		}
-		break;	
+		break;
 		// and continue with:
 	case mrKalmanApproximate:
 		{
@@ -149,9 +151,7 @@ void  CGasConcentrationGridMap2D::internal_clear()
 			//printf("[CGasConcentrationGridMap2D::clear] Resetting compressed cov. matrix and cells\n");
 			TGasConcentrationCell	def(
 				insertionOptions.KF_defaultCellMeanValue,									// mean
-				insertionOptions.KF_initialCellStd,		// std
-				0,  // W:  m_eta_obs
-				0   // Wr: m_lambda_diag
+				insertionOptions.KF_initialCellStd		// std
 				);
 
 			fill( def );
@@ -185,12 +185,12 @@ void  CGasConcentrationGridMap2D::internal_clear()
 					// 2) W rest of the first row:
 					Acy = 0;
 					for (Acx=1;Acx<=W;Acx++)
-						*ptr++ = std0sqr * exp( -0.5 * (res2 * static_cast<float>(square(Acx) +  square(Acy)))/KF_covSigma2 );
+						*ptr++ = std0sqr * exp( -0.5 * (res2 * static_cast<double>(square(Acx) +  square(Acy)))/KF_covSigma2 );
 
 					// 3) The others W rows:
 					for (Acy=1;Acy<=W;Acy++)
 						for (Acx=-W;Acx<=W;Acx++)
-							*ptr++ = std0sqr * exp( -0.5 * (res2 * static_cast<float>(square(Acx) +  square(Acy)))/KF_covSigma2 );
+							*ptr++ = std0sqr * exp( -0.5 * (res2 * static_cast<double>(square(Acx) +  square(Acy)))/KF_covSigma2 );
 				}
 				else
 				{
@@ -345,23 +345,13 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 					save_log_map(iter->timestamp, iter->reading, iter->estimation, iter->k, iter->sensorPose.yaw(), iter->speed);
 			}
 
-
-
 			switch (m_mapType)
 			{
-				case mrAchim:
-					insertObservation_Achim(sensorReading,sensorPose);
-					break;
-
-				case mrKalmanFilter:
-					insertObservation_KF(sensorReading,sensorPose);
-					break;
-
-				case mrKalmanApproximate:
-					insertObservation_KF2(sensorReading,sensorPose);
-					break;
+				case mrKernelDM:           insertObservation_KernelDM_DMV(sensorReading,sensorPose, false); break;
+				case mrKernelDMV:          insertObservation_KernelDM_DMV(sensorReading,sensorPose, true); break;
+				case mrKalmanFilter:       insertObservation_KF(sensorReading,sensorPose); break;
+				case mrKalmanApproximate:  insertObservation_KF2(sensorReading,sensorPose);
 			};
-
 
 		} // for each e-nose obs.
 
@@ -377,16 +367,19 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 /*---------------------------------------------------------------
 					insertObservation_Achim
   ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::insertObservation_Achim(
+/** The implementation of "insertObservation" for Achim Lilienthal's map models DM & DM+V.
+* \param normReading Is a [0,1] normalized concentration reading.
+* \param sensorPose Is the sensor pose on the robot
+* \param is_DMV = false -> map type is Kernel DM; true -> map type is DM+V
+*/
+void  CGasConcentrationGridMap2D::insertObservation_KernelDM_DMV(
 	float			normReading,
-	const CPose3D	&sensorPose_ )
+	const CPose3D	&sensorPose_,
+	bool             is_DMV )
 {
 	MRPT_START;
 
-	TGasConcentrationCell		defCell(
-				insertionOptions.KF_defaultCellMeanValue,									// mean
-				insertionOptions.KF_initialCellStd		// std
-				);
+	static const TGasConcentrationCell defCell(0,0);
 
 	const TPose3D sensorPose= TPose3D(sensorPose_);
 	const TPose2D sensorPose2D = TPose2D( sensorPose );
@@ -400,61 +393,66 @@ void  CGasConcentrationGridMap2D::insertObservation_Achim(
 
 	// Compute the "parzen Gaussian" once only:
 	// -------------------------------------------------
-	static float			lastCutOff = 0;
-	static vector_float		gaussWindow;
 	int						Ac_cutoff = round(insertionOptions.cutoffRadius / m_resolution);
 	unsigned				Ac_all = 1+2*Ac_cutoff;
-	float					minWinValueAtCutOff = exp(-square(insertionOptions.cutoffRadius/insertionOptions.sigma) );
+	double					minWinValueAtCutOff = exp(-square(insertionOptions.cutoffRadius/insertionOptions.sigma) );
 
-	if ( lastCutOff!=insertionOptions.cutoffRadius ||
-			gaussWindow.size() != square(Ac_all) )
+	if ( m_DM_lastCutOff!=insertionOptions.cutoffRadius ||
+			m_DM_gaussWindow.size() != square(Ac_all) )
 	{
 		printf("[CGasConcentrationGridMap2D::insertObservation_Achim] Precomputing window %ux%u\n",Ac_all,Ac_all);
 
-		float	dist;
-		float	std = insertionOptions.sigma;
+		double	dist;
+		double	std = insertionOptions.sigma;
 
 		// Compute the window:
-		gaussWindow.resize(Ac_all*Ac_all);
-		lastCutOff=insertionOptions.cutoffRadius;
+		m_DM_gaussWindow.resize(Ac_all*Ac_all);
+		m_DM_lastCutOff=insertionOptions.cutoffRadius;
 
 		// Actually the array could be 1/4 of this size, but this
 		// way it's easier and it's late night now :-)
-		vector_float::iterator	it = gaussWindow.begin();
+		vector_float::iterator	it = m_DM_gaussWindow.begin();
         for (unsigned cx=0;cx<Ac_all;cx++)
 		{
 			for (unsigned cy=0;cy<Ac_all;cy++)
 			{
-				dist = m_resolution * sqrt( static_cast<float>(square( Ac_cutoff+1-cx ) + square( Ac_cutoff+1-cy ) ) );
-				*(it++) = exp( - square(dist/std) );
+				dist = m_resolution * sqrt( static_cast<double>(square( Ac_cutoff+1-cx ) + square( Ac_cutoff+1-cy ) ) );
+				*(it++) = std::exp( - square(dist/std) );
 			}
 		}
 
 		printf("[CGasConcentrationGridMap2D::insertObservation_Achim] Done!\n");
 	} // end of computing the gauss. window.
 
-	//	Fuse with current content of grid:
-	// -------------------------------------------------
+	//	Fuse with current content of grid (the MEAN of each cell):
+	// --------------------------------------------------------------
 	int						sensor_cx = x2idx( sensorPose.x );
 	int						sensor_cy = y2idx( sensorPose.y );
 	TGasConcentrationCell	*cell;
-	vector_float::iterator	windowIt = gaussWindow.begin();
+	vector_float::iterator	windowIt = m_DM_gaussWindow.begin();
 
 	for (int Acx=-Ac_cutoff;Acx<=Ac_cutoff;Acx++)
 	{
 		for (int Acy=-Ac_cutoff;Acy<=Ac_cutoff;Acy++,windowIt++)
 		{
-			float	windowValue = *windowIt;
+			double	windowValue = *windowIt;
 
 			if (windowValue>minWinValueAtCutOff)
 			{
 				cell = cellByIndex(sensor_cx+Acx,sensor_cy+Acy);
 				ASSERT_( cell!=NULL );
 
-				cell->w  += windowValue;
-				cell->wr += windowValue * normReading;
+				cell->dm_mean_w  += windowValue;
+				cell->dm_mean += windowValue * normReading;
 			}
 		}
+	}
+
+	if (is_DMV)
+	{
+		//	Fuse with current content of grid (the VARIANCE of each cell):
+		// --------------------------------------------------------------
+		THROW_EXCEPTION("TO DO!")
 	}
 
 	MRPT_END;
@@ -479,7 +477,7 @@ double	 CGasConcentrationGridMap2D::computeObservationLikelihood(
 void  CGasConcentrationGridMap2D::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 1;
+		*version = 2;
 	else
 	{
 		uint32_t	n;
@@ -516,6 +514,13 @@ void  CGasConcentrationGridMap2D::writeToStream(CStream &out, int *version) cons
 	}
 }
 
+// Aux struct used below (must be at global scope for STL):
+struct TOldCellTypeInVersion1
+{
+	float	mean, std;
+	float	w,wr;
+};
+
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
@@ -525,6 +530,7 @@ void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
 			uint32_t	n,i,j;
 
@@ -537,12 +543,31 @@ void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
 
 			// To assure compatibility: The size of each cell:
 			in >> n;
-			ASSERT_( n == static_cast<uint32_t>( sizeof( TGasConcentrationCell ) ));
 
-			// Save the map contents:
-			in >> n;
-			m_map.resize(n);
-			in.ReadBuffer( &m_map[0], sizeof(m_map[0])*m_map.size() );
+			if (version<2)
+			{	// Converter from old versions <=1
+				ASSERT_( n == static_cast<uint32_t>( sizeof( TOldCellTypeInVersion1 ) ));
+				// Load the map contents in an aux struct:
+				in >> n;
+				vector<TOldCellTypeInVersion1>  old_map(n);
+				in.ReadBuffer( &old_map[0], sizeof(old_map[0])*old_map.size() );
+
+				// Convert to newer format:
+				m_map.resize(n);
+				for (size_t k=0;k<n;k++)
+				{
+					m_map[k].kf_mean = (old_map[k].w!=0) ? old_map[k].wr : old_map[k].mean;
+					m_map[k].kf_std  = (old_map[k].w!=0) ? old_map[k].w  : old_map[k].std;
+				}
+			}
+			else
+			{
+				ASSERT_( n == static_cast<uint32_t>( sizeof( TGasConcentrationCell ) ));
+				// Load the map contents:
+				in >> n;
+				m_map.resize(n);
+				in.ReadBuffer( &m_map[0], sizeof(m_map[0])*m_map.size() );
+			}
 
 			// Version 1: Insertion options:
 			if (version>=1)
@@ -579,13 +604,13 @@ void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
  ---------------------------------------------------------------*/
 CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 	sigma				( 0.15f ),
-	cutoffRadius		( sigma * 3.0f ),
+	cutoffRadius		( sigma * 3.0 ),
 
 	R_min				( 0 ),
 	R_max				( 3 ),
 
 	KF_covSigma					( 0.35f ),		// in meters
-	KF_initialCellStd			( 1.0f ),		// std in normalized concentration units
+	KF_initialCellStd			( 1.0 ),		// std in normalized concentration units
 	KF_observationModelNoise	( 0.25f ),		// in normalized concentration units
 	KF_defaultCellMeanValue		( 0.25f ),
 	KF_W_size					( 4 ),
@@ -600,10 +625,10 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 	tauD_concentration			( 0 ),
 	tauD_value					( 0 ),
 	memory_speed				( 0 ),
-	memory_delay				( 0 ),	
+	memory_delay				( 0 ),
 	enose_id					( 0 ),			//By default use the first enose
-	save_maplog					( 1 ),
-	useMOSmodel					( 0 )	
+	save_maplog					( true ),
+	useMOSmodel					( false )
 {
 }
 
@@ -687,7 +712,7 @@ void  CGasConcentrationGridMap2D::saveAsBitmapFile(const std::string &filName) c
 
 	CImageFloat	imgFl;
 	unsigned int	x,y;
-	float			c;
+	double c;
 	const TGasConcentrationCell	*cell;
 
 	imgFl.resize(m_size_x,m_size_y);
@@ -703,15 +728,16 @@ void  CGasConcentrationGridMap2D::saveAsBitmapFile(const std::string &filName) c
 
 			switch (m_mapType)
 			{
-			case mrAchim:
-				if (cell->w>0)
-						c = cell->wr / cell->w;
+			case mrKernelDM:
+			case mrKernelDMV:
+				if (cell->dm_mean_w>0)
+						c = cell->dm_mean / cell->dm_mean_w;
 				else	c = 0;
 				break;
 
 			case mrKalmanFilter:
-			case mrKalmanApproximate:			
-				c = cell->mean;
+			case mrKalmanApproximate:
+				c = cell->kf_mean;
 				break;
 
 			default:
@@ -880,7 +906,7 @@ void  CGasConcentrationGridMap2D::resize(
 
 					bool	C2_isFromOldMap =	Acx_left<=cx2 && cx2<(Acx_left+old_sizeX) &&
 												Acy_bottom<=cy2 && cy2<(Acy_bottom+old_sizeY);
-					float	dist=0;
+					double	dist=0;
 
 					// If both cells were NOT in the old map??? --> Introduce default values:
 					if ( !C1_isFromOldMap || !C2_isFromOldMap )
@@ -892,7 +918,7 @@ void  CGasConcentrationGridMap2D::resize(
 						}
 						else
 						{
-							dist = m_resolution*sqrt( static_cast<float>( square(cx1-cx2) +  square(cy1-cy2) ));
+							dist = m_resolution*sqrt( static_cast<double>( square(cx1-cx2) +  square(cy1-cy2) ));
 							double K = sqrt(m_cov(i,i)*m_cov(j,j));
 
 							if ( isNaN( K ) )
@@ -961,12 +987,12 @@ void  CGasConcentrationGridMap2D::resize(
 				// 2) W rest of the first row:
 				int Acx, Acy = 0;
 				for (Acx=1;Acx<=W;Acx++)
-					*ptr++ = std0sqr * exp( -0.5 * (res2 * static_cast<float>(square(Acx) +  square(Acy)))/KF_covSigma2 );
+					*ptr++ = std0sqr * exp( -0.5 * (res2 * static_cast<double>(square(Acx) +  square(Acy)))/KF_covSigma2 );
 
 				// 3) The others W rows:
 				for (Acy=1;Acy<=W;Acy++)
 					for (Acx=-W;Acx<=W;Acx++)
-						*ptr++ = std0sqr * exp( -0.5 * (res2 * static_cast<float>(square(Acx) +  square(Acy)))/KF_covSigma2 );
+						*ptr++ = std0sqr * exp( -0.5 * (res2 * static_cast<double>(square(Acx) +  square(Acy)))/KF_covSigma2 );
 			}
 
 			// Go thru all the cells, from the bottom to the top so
@@ -979,10 +1005,10 @@ void  CGasConcentrationGridMap2D::resize(
 				const size_t			old_idx_of_i = (cx-Acx_left) + (cy-Acy_bottom)*old_sizeX;
 
 				TGasConcentrationCell	&cell = m_map[i];
-				if (cell.std<0)
+				if (cell.kf_std<0)
 				{
 					// "i" is a new cell, fix its std and fill out the compressed covariance:
-					cell.std = insertionOptions.KF_initialCellStd;
+					cell.kf_std = insertionOptions.KF_initialCellStd;
 
 					double	*new_row = m_stackedCov.get_unsafe_row(i);
 					memcpy( new_row,&template_row[0], sizeof(double)*K );
@@ -1015,7 +1041,7 @@ void  CGasConcentrationGridMap2D::insertObservation_KF(
 {
 	MRPT_START;
 
-	TGasConcentrationCell		defCell(
+	const TGasConcentrationCell defCell(
 				insertionOptions.KF_defaultCellMeanValue,	// mean
 				insertionOptions.KF_initialCellStd			// std
 				);
@@ -1047,7 +1073,7 @@ void  CGasConcentrationGridMap2D::insertObservation_KF(
 	ASSERT_(cell!=NULL);
 	size_t					N,i,j;
 
-	double		yk = normReading - cell->mean;		// Predicted observation mean
+	double		yk = normReading - cell->kf_mean;		// Predicted observation mean
 	double		sk = m_cov(cellIdx,cellIdx) + square(insertionOptions.KF_observationModelNoise);	// Predicted observation variance
 	double		sk_1 = 1.0 / sk;
 
@@ -1073,8 +1099,8 @@ void  CGasConcentrationGridMap2D::insertObservation_KF(
 	// Update mean values:
 	// ---------------------------------------------------------
 	for (i=0,it = m_map.begin();it!=m_map.end();it++,i++)
-		//it->mean =  it->mean + yk * sk_1 * m_cov.get_unsafe(i,cellIdx);
-		it->mean +=  yk * sk_1 * m_cov(i,cellIdx);
+		//it->kf_mean =  it->kf_mean + yk * sk_1 * m_cov.get_unsafe(i,cellIdx);
+		it->kf_mean +=  yk * sk_1 * m_cov(i,cellIdx);
 
 #if GASGRIDMAP_VERBOSE
 	printf("Done in %.03fms\n",	tictac.Tac()*1000 );
@@ -1130,7 +1156,7 @@ void  CGasConcentrationGridMap2D::insertObservation_KF(
 				}
 
 				ASSERT_( m_cov(i,i)>=0 );
-				m_map[ i ].std = sqrt( new_cov_ij );
+				m_map[ i ].kf_std = sqrt( new_cov_ij );
 			}
 			//ASSERT_( !isNaN( m_cov(i,j) ) );
 
@@ -1188,8 +1214,8 @@ void  CGasConcentrationGridMap2D::saveMetricMapRepresentationToFile(
 		for (size_t i=0;i<m_size_y;i++)
 			for (size_t j=0;j<m_size_x;j++)
 			{
-				MEAN(i,j)=cellByIndex(j,i)->mean;
-				STDs(i,j)=cellByIndex(j,i)->std;
+				MEAN(i,j)=cellByIndex(j,i)->kf_mean;
+				STDs(i,j)=cellByIndex(j,i)->kf_std;
 			}
 
 		MEAN.saveToTextFile( filNamePrefix + std::string("_mean.txt"), MATRIX_FORMAT_FIXED );
@@ -1219,7 +1245,7 @@ void  CGasConcentrationGridMap2D::saveAsMatlab3DGraph(const std::string  &filNam
 {
 	MRPT_START;
 
-	const float	std_times = 3;
+	const double std_times = 3;
 
 	ASSERT_( m_mapType == mrKalmanFilter || m_mapType==mrKalmanApproximate );
 
@@ -1270,7 +1296,7 @@ void  CGasConcentrationGridMap2D::saveAsMatlab3DGraph(const std::string  &filNam
 		{
             const TGasConcentrationCell	*cell = cellByIndex( cx,cy );
 			ASSERT_( cell!=NULL );
-			os::fprintf(f,"%e ", cell->mean  );
+			os::fprintf(f,"%e ", cell->kf_mean  );
 		} // for cx
 
 		if (cy<(m_size_y-1))
@@ -1286,8 +1312,8 @@ void  CGasConcentrationGridMap2D::saveAsMatlab3DGraph(const std::string  &filNam
 		{
             const TGasConcentrationCell	*cell = cellByIndex( cx,cy );
 			ASSERT_( cell!=NULL );
-			//os::fprintf(f,"%e ",  min(1.0f,max(0.0f,  cell->mean + std_times * cell->std ) ));
-			os::fprintf(f,"%e ",  max(0.0f,  cell->mean + std_times * cell->std ));
+			//os::fprintf(f,"%e ",  min(1.0,max(0.0,  cell->kf_mean + std_times * cell->kf_std ) ));
+			os::fprintf(f,"%e ",  max(0.0,  cell->kf_mean + std_times * cell->kf_std ));
 		} // for cx
 
 		if (cy<(m_size_y-1))
@@ -1304,7 +1330,7 @@ void  CGasConcentrationGridMap2D::saveAsMatlab3DGraph(const std::string  &filNam
 			const TGasConcentrationCell	*cell = cellByIndex( cx,cy );
 			ASSERT_(cell!=NULL);
 
-			os::fprintf(f,"%e ",  min(1.0f,max(0.0f,  cell->mean - std_times * cell->std ) ));
+			os::fprintf(f,"%e ",  min(1.0,max(0.0,  cell->kf_mean - std_times * cell->kf_std ) ));
 		} // for cx
 
 		if (cy<(m_size_y-1))
@@ -1326,7 +1352,7 @@ void  CGasConcentrationGridMap2D::saveAsMatlab3DGraph(const std::string  &filNam
 	os::fprintf(f,"set(gca,'PlotBoxAspectRatio',[%f %f %f]);\n",
 		m_x_max-m_x_min,
 		m_y_max-m_y_min,
-		4.0f );
+		4.0 );
 	os::fprintf(f,"view(-40,30)\n");
 	os::fprintf(f,"axis([%f %f %f %f 0 1]);\n",
 		m_x_min,
@@ -1369,19 +1395,19 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 	if ( m_mapType == mrKalmanFilter || m_mapType==mrKalmanApproximate)
 	{
 		opengl::CSetOfTrianglesPtr obj = opengl::CSetOfTriangles::Create();
-		const float					std_times = 2;
-		const float					z_aspect_ratio = 4;
+		const double  std_times = 2;
+		const double  z_aspect_ratio = 4;
 
 		//  Compute max/min values:
 		// ---------------------------------------
-		float	maxVal=0, minVal=1, AMaxMin;
+		double	maxVal=0, minVal=1, AMaxMin;
 		for (cy=1;cy<m_size_y;cy++)
 		{
 			for (cx=1;cx<m_size_x;cx++)
 			{
 				const TGasConcentrationCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-				minVal = min(minVal, cell_xy->mean);
-				maxVal = max(maxVal, cell_xy->mean);
+				minVal = min(minVal, cell_xy->kf_mean);
+				maxVal = max(maxVal, cell_xy->kf_mean);
 			}
 		}
 
@@ -1404,15 +1430,15 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 				const TGasConcentrationCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
 				const TGasConcentrationCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
 
-				float					c_xy	= min(1.0f,max(0.0f, cell_xy->mean - std_times*cell_xy->std ) );
-				float					c_x_1y	= min(1.0f,max(0.0f, cell_x_1y->mean - std_times*cell_x_1y->std ) );
-				float					c_xy_1	= min(1.0f,max(0.0f, cell_xy_1->mean - std_times*cell_xy_1->std ) );
-				float					c_x_1y_1= min(1.0f,max(0.0f, cell_x_1y_1->mean - std_times*cell_x_1y_1->std) );
+				double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean - std_times*cell_xy->kf_std ) );
+				double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean - std_times*cell_x_1y->kf_std ) );
+				double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean - std_times*cell_xy_1->kf_std ) );
+				double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean - std_times*cell_x_1y_1->kf_std) );
 
-				float					col_xy		= min(1.0f,max(0.0f, (cell_xy->mean-minVal)/AMaxMin ) );
-				float					col_x_1y	= min(1.0f,max(0.0f, (cell_x_1y->mean-minVal)/AMaxMin ) );
-				float					col_xy_1	= min(1.0f,max(0.0f, (cell_xy_1->mean-minVal)/AMaxMin ) );
-				float					col_x_1y_1	= min(1.0f,max(0.0f, (cell_x_1y_1->mean-minVal)/AMaxMin ) );
+				double col_xy		= min(1.0,max(0.0, (cell_xy->kf_mean-minVal)/AMaxMin ) );
+				double col_x_1y	= min(1.0,max(0.0, (cell_x_1y->kf_mean-minVal)/AMaxMin ) );
+				double col_xy_1	= min(1.0,max(0.0, (cell_xy_1->kf_mean-minVal)/AMaxMin ) );
+				double col_x_1y_1	= min(1.0,max(0.0, (cell_x_1y_1->kf_mean-minVal)/AMaxMin ) );
 
 				// Triangle #1:
 				//if ( fabs(c_xy-0.5f)<0.49f ||
@@ -1464,15 +1490,15 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 				const TGasConcentrationCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
 				const TGasConcentrationCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
 
-				float					c_xy	= min(1.0f,max(0.0f, cell_xy->mean ) );
-				float					c_x_1y	= min(1.0f,max(0.0f, cell_x_1y->mean ) );
-				float					c_xy_1	= min(1.0f,max(0.0f, cell_xy_1->mean ) );
-				float					c_x_1y_1= min(1.0f,max(0.0f, cell_x_1y_1->mean ) );
+				double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean ) );
+				double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean ) );
+				double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean ) );
+				double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean ) );
 
-				float					col_xy		= min(1.0f,max(0.0f, cell_xy->mean ) );
-				float					col_xy_1	= min(1.0f,max(0.0f, cell_xy_1->mean ) );
-				float					col_x_1y	= min(1.0f,max(0.0f, cell_x_1y->mean ) );
-				float					col_x_1y_1	= min(1.0f,max(0.0f, cell_x_1y_1->mean ) );
+				double col_xy		= min(1.0,max(0.0, cell_xy->kf_mean ) );
+				double col_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean ) );
+				double col_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean ) );
+				double col_x_1y_1	= min(1.0,max(0.0, cell_x_1y_1->kf_mean ) );
 
 				// Triangle #1:
 				triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
@@ -1513,15 +1539,15 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 				const TGasConcentrationCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
 				const TGasConcentrationCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
 
-				float					c_xy	= min(1.0f,max(0.0f, cell_xy->mean + std_times*cell_xy->std ) );
-				float					c_x_1y	= min(1.0f,max(0.0f, cell_x_1y->mean + std_times*cell_x_1y->std ) );
-				float					c_xy_1	= min(1.0f,max(0.0f, cell_xy_1->mean + std_times*cell_xy_1->std ) );
-				float					c_x_1y_1= min(1.0f,max(0.0f, cell_x_1y_1->mean + std_times*cell_x_1y_1->std) );
+				double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean + std_times*cell_xy->kf_std ) );
+				double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean + std_times*cell_x_1y->kf_std ) );
+				double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean + std_times*cell_xy_1->kf_std ) );
+				double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean + std_times*cell_x_1y_1->kf_std) );
 
-				float					col_xy		= min(1.0f,max(0.0f, (cell_xy->mean-minVal)/AMaxMin ) );
-				float					col_x_1y	= min(1.0f,max(0.0f, (cell_x_1y->mean-minVal)/AMaxMin ) );
-				float					col_xy_1	= min(1.0f,max(0.0f, (cell_xy_1->mean-minVal)/AMaxMin ) );
-				float					col_x_1y_1	= min(1.0f,max(0.0f, (cell_x_1y_1->mean-minVal)/AMaxMin ) );
+				double col_xy		= min(1.0,max(0.0, (cell_xy->kf_mean-minVal)/AMaxMin ) );
+				double col_x_1y	= min(1.0,max(0.0, (cell_x_1y->kf_mean-minVal)/AMaxMin ) );
+				double col_xy_1	= min(1.0,max(0.0, (cell_xy_1->kf_mean-minVal)/AMaxMin ) );
+				double col_x_1y_1	= min(1.0,max(0.0, (cell_x_1y_1->kf_mean-minVal)/AMaxMin ) );
 
 				// Triangle #1:
 				/*if ( fabs(c_xy-0.5f)<0.49f ||
@@ -1572,8 +1598,8 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 
 		//  Compute max/min values:
 		// ---------------------------------------
-		float	maxVal=0, minVal=1, AMaxMin;
-		float	c;
+		double 	maxVal=0, minVal=1, AMaxMin;
+		double c;
 		for (cy=1;cy<m_size_y;cy++)
 		{
 			for (cx=1;cx<m_size_x;cx++)
@@ -1602,15 +1628,15 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 				const TGasConcentrationCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
 				const TGasConcentrationCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
 
-				float					c_xy	= min(1.0f,max(0.0f, computeAchimCellValue(cell_xy) ) );
-				float					c_x_1y	= min(1.0f,max(0.0f, computeAchimCellValue(cell_x_1y) ) );
-				float					c_xy_1	= min(1.0f,max(0.0f, computeAchimCellValue(cell_xy_1) ) );
-				float					c_x_1y_1= min(1.0f,max(0.0f, computeAchimCellValue(cell_x_1y_1) ) );
+				double c_xy	= min(1.0,max(0.0, computeAchimCellValue(cell_xy) ) );
+				double c_x_1y	= min(1.0,max(0.0, computeAchimCellValue(cell_x_1y) ) );
+				double c_xy_1	= min(1.0,max(0.0, computeAchimCellValue(cell_xy_1) ) );
+				double c_x_1y_1= min(1.0,max(0.0, computeAchimCellValue(cell_x_1y_1) ) );
 
-				float					col_xy		= c_xy;
-				float					col_xy_1	= c_xy_1;
-				float					col_x_1y	= c_x_1y;
-				float					col_x_1y_1	= c_x_1y_1;
+				double col_xy		= c_xy;
+				double col_xy_1	= c_xy_1;
+				double col_x_1y	= c_x_1y;
+				double col_x_1y_1	= c_x_1y_1;
 
 				// Triangle #1:
 				triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
@@ -1677,9 +1703,9 @@ void  CGasConcentrationGridMap2D::auxParticleFilterCleanUp()
 /*---------------------------------------------------------------
 					computeAchimCellValue
  ---------------------------------------------------------------*/
-float CGasConcentrationGridMap2D::computeAchimCellValue (const TGasConcentrationCell *cell )
+double  CGasConcentrationGridMap2D::computeAchimCellValue (const TGasConcentrationCell *cell )
 {
-	return (cell->w>0) ? (cell->wr / cell->w) : 0;
+	return (cell->dm_mean_w>0) ? (cell->dm_mean / cell->dm_mean_w) : 0;
 }
 
 /*---------------------------------------------------------------
@@ -1712,7 +1738,7 @@ void CGasConcentrationGridMap2D::predictMeasurement(
 		break;
 
 	case mrKalmanFilter:
-	case mrKalmanApproximate:	
+	case mrKalmanApproximate:
 		{
 			if (m_hasToRecoverMeanAndCov)	recoverMeanAndCov();	// Just for KF2
 
@@ -1724,8 +1750,8 @@ void CGasConcentrationGridMap2D::predictMeasurement(
 			}
 			else
 			{
-				out_predict_response = cell->mean;
-				out_predict_response_variance = square( cell->std ) +  square(insertionOptions.KF_observationModelNoise);
+				out_predict_response = cell->kf_mean;
+				out_predict_response_variance = square( cell->kf_std ) +  square(insertionOptions.KF_observationModelNoise);
 			}
 		}
 		break;
@@ -1759,7 +1785,7 @@ void  CGasConcentrationGridMap2D::insertObservation_KF2(
 
 	m_hasToRecoverMeanAndCov = true;
 
-	TGasConcentrationCell		defCell(
+	const TGasConcentrationCell defCell(
 				insertionOptions.KF_defaultCellMeanValue,	// mean
 				-1	// Just to indicate that cells are new, next changed to: insertionOptions.KF_initialCellStd			// std
 				);
@@ -1803,7 +1829,7 @@ void  CGasConcentrationGridMap2D::insertObservation_KF2(
 	ASSERT_(cell!=NULL);
 
 	// Predicted observation mean
-	double		yk = normReading - cell->mean;
+	double		yk = normReading - cell->kf_mean;
 
 	// Predicted observation variance
 	double		sk =
@@ -1855,7 +1881,7 @@ void  CGasConcentrationGridMap2D::insertObservation_KF2(
 		{
 			ASSERT_(idx_c_in_idx>0);
 			const double cov_i_c = m_stackedCov(idx,idx_c_in_idx);
-			m_map[idx].mean += yk * sk_1 * cov_i_c;
+			m_map[idx].kf_mean += yk * sk_1 * cov_i_c;
 
 			// Save window indexes:
 			cross_covs_c_i[window_idx] = cov_i_c;
@@ -1885,7 +1911,7 @@ void  CGasConcentrationGridMap2D::insertObservation_KF2(
 			ASSERT_(idx_i_in_c>=0 && idx_i_in_c<int(K));
 
 			double cov_i_c = m_stackedCov(cellIdx,idx_i_in_c);
-			m_map[idx].mean += yk * sk_1 * cov_i_c;
+			m_map[idx].kf_mean += yk * sk_1 * cov_i_c;
 
 			// Save window indexes:
 			cross_covs_c_i[window_idx] = cov_i_c;
@@ -1982,7 +2008,7 @@ void  CGasConcentrationGridMap2D::recoverMeanAndCov() const
 	// Just recover the std of each cell:
 	const size_t	N = m_map.size();
 	for (size_t i=0;i<N;i++)
-		m_map_castaway_const()[i].std = sqrt( m_stackedCov(i,0) );
+		m_map_castaway_const()[i].kf_std = sqrt( m_stackedCov(i,0) );
 }
 
 
@@ -1991,7 +2017,7 @@ void CGasConcentrationGridMap2D::getMeanAndCov( vector_double &out_means, CMatri
 	const size_t N = BASE::m_map.size();
 	out_means.resize(N);
 	for (size_t i=0;i<N;++i)
-		out_means[i] = BASE::m_map[i].mean;
+		out_means[i] = BASE::m_map[i].kf_mean;
 
 	recoverMeanAndCov();
 	out_cov = m_cov;
@@ -2007,7 +2033,6 @@ void CGasConcentrationGridMap2D::CGasConcentration_estimation (
 	const	CPose3D	&sensorPose,
 	const	mrpt::system::TTimeStamp timestamp )
 {
-
 	int N;	//Memory efect delay
 
 	// Check if estimation posible (at least one previous reading)
@@ -2155,7 +2180,9 @@ void CGasConcentrationGridMap2D::noise_filtering (
 
 }
 
-///*---------------------------------------------------------------
+
+// JL for JGMonroy: All this can be removed, right???:
+// /* ---------------------------------------------------------------
 //					insertObservation_KF3
 //  ---------------------------------------------------------------*/
 //void  CGasConcentrationGridMap2D::insertObservation_KF3(
@@ -2244,7 +2271,7 @@ void CGasConcentrationGridMap2D::noise_filtering (
 //	//size_t					i,j;
 //
 //	// Predicted observation mean
-//	double		yk = normReading - cell->mean;
+//	double		yk = normReading - cell->kf_mean;
 //
 //	// Predicted observation variance
 //	double		sk =

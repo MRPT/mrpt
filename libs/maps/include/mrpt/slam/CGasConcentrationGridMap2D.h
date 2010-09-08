@@ -51,28 +51,40 @@ namespace slam
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CGasConcentrationGridMap2D , CMetricMap, MAPS_IMPEXP )
 
+	// Pragma defined to ensure no structure packing: since we'll serialize TGasConcentrationCell to streams, we want it not to depend on compiler options, etc.
+#pragma pack(push,1)
+
 	/** The contents of each cell in a CGasConcentrationGridMap2D map.
 	 **/
 	struct MAPS_IMPEXP TGasConcentrationCell
 	{
-		/** Constructor
-		  */
-		TGasConcentrationCell(
-			float Mean = 0.5f,
-			float Std = 0,
-			float W = 1e-20f,
-			float Wr = 0 ) : mean(Mean), std(Std),w(W),wr(Wr)
+		/** Constructor */
+		TGasConcentrationCell(double kfmean_dm_mean = 1e-20, double kfstd_dmmeanw = 0) :
+			kf_mean      (kfmean_dm_mean),
+			kf_std       (kfstd_dmmeanw),
+			dmv_var_mean (0)
+		{ }
+
+		// *Note*: Use unions to share memory between data fields, since only a set
+		//          of the variables will be used for each mapping strategy.
+		// You can access to a "TGasConcentrationCell *cell" like: cell->kf_mean, cell->kf_std, etc..
+		//  but accessing cell->kf_mean would also modify (i.e. ARE the same memory slot) cell->dm_mean, for example.
+
+		union
 		{
-		}
+			double kf_mean; //!< [KF-methods only] The mean value of this cell
+			double dm_mean; //!< [Kernel-methods only] The cumulative weighted readings of this cell
 
-		/** The mean and std values of the gas concentration for this cell.
-		  */
-		float	mean, std;
+		};
+		union
+		{
+			double kf_std;    //!< [KF-methods only] The standard deviation value of this cell
+			double dm_mean_w; //!< [Kernel-methods only] The cumulative weights (concentration = alpha * dm_mean / dm_mean_w + (1-alpha)*r0 )
+		};
 
-		/** The accumulated weight and weighted-readings (See Achim's references)
-		  */
-		float	w,wr;
+		double dmv_var_mean;   //!< [Kernel DM-V only] The cumulative weighted variance of this cell
 	};
+#pragma pack(pop)
 
 	/** The content of each m_lastObservations in KF3_deconv estimation
 		*/
@@ -88,7 +100,20 @@ namespace slam
 	};
 
 	/** CGasConcentrationGridMap2D represents a PDF of gas concentrations over a 2D area.
-	 **/
+	  *
+	  *  There are a number of methods available to build the gas grid-map, depending on the value of
+	  *    "TMapRepresentation maptype" passed in the constructor.
+	  *
+	  *  The following papers describe the mapping alternatives implemented here:
+	  *		- mrKernelDM: A kernel-based method:
+	  *		"Building gas concentration gridmaps with a mobile robot", Lilienthal, A. and Duckett, T., Robotics and Autonomous Systems, v.48, 2004.
+	  *
+	  *		- mrKernelDMV: A kernel-based method:
+	  *		"A Statistical Approach to Gas Distribution Modelling with Mobile Robots--The Kernel DM+ V Algorithm"
+	  * 	  , Lilienthal, A.J. and Reggente, M. and Trincavelli, M. and Blanco, J.L. and Gonzalez, J., IROS 2009.
+	  *
+	  * \sa mrpt::slam::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam,
+	  */
 	class MAPS_IMPEXP CGasConcentrationGridMap2D : public CMetricMap, public utils::CDynamicGrid<TGasConcentrationCell>
 	{
 		typedef utils::CDynamicGrid<TGasConcentrationCell> BASE;
@@ -102,21 +127,22 @@ namespace slam
 		  */
 		inline void clear() { CMetricMap::clear(); }
 
+		// This method is just used for the ::saveToTextFile() method in base class.
 		float cell2float(const TGasConcentrationCell& c) const
 		{
-			return c.mean;
+			return c.kf_mean;
 		}
-
 
 		/** The type of map representation to be used.
 		  */
 		enum TMapRepresentation
 		{
-			mrAchim = 0,
+			mrKernelDM = 0,   //
+			mrAchim = 0,      // Another alias for "mrKernelDM", for backward compatibility
 			mrKalmanFilter,
-			mrKalmanApproximate			
+			mrKalmanApproximate,
+			mrKernelDMV
 		};
-
 
 		/** Constructor
 		  */
@@ -228,10 +254,10 @@ namespace slam
 			/** [KF3 algortihm] The number of observations used to reduce noise on signal.
 			  */
 			size_t	winNoise_size;
-			
+
 			/** [KF3 algortihm] The decimate frecuency applied after noise filtering
 			  */
-			uint16_t	decimate_value;			
+			uint16_t	decimate_value;
 
 			/** [KF3 algortihm] Measured values of K= 1/tauD for different volatile concentrations
 			  */
@@ -246,11 +272,11 @@ namespace slam
 			/** [KF3 algortihm] id for the enose used to generate this map (must be < gasGrid_count)
 			  */
 			uint16_t enose_id;
-			
+
 			/** [useMOSmodel] If true save generated gas map as a log file
 			  */
 			bool save_maplog;
-	
+
 			/** [useMOSmodel] If true use MOS model before map algorithm
 				*/
 			bool useMOSmodel;
@@ -326,7 +352,7 @@ namespace slam
 		/** [useMOSmodel] Ofstream to save to file option "save_maplog"
 		  */
 		std::ofstream			*m_debug_dump;
-		
+
 		/** [useMOSmodel] Decimate value for oversampled enose readings
 		  */
 		uint16_t				decimate_count;
@@ -338,21 +364,32 @@ namespace slam
 
 		/** The map representation type of this map.
 		  */
-		TMapRepresentation		m_mapType;		
-		
+		TMapRepresentation		m_mapType;
 
-		/** The whole covariance matrix, used for the Kalman Filter map representation.
+
+
+		CMatrixD				m_cov;	//!< The whole covariance matrix, used for the Kalman Filter map representation.
+
+		/** The compressed band diagonal matrix for the KF2 implementation.
+		  *   The format is a Nx(W^2+2W+1) matrix, one row per cell in the grid map with the
+		  *    cross-covariances between each cell and half of the window around it in the grid.
 		  */
-		CMatrixD				m_cov;
+		CMatrixD		m_stackedCov;
 
+		mutable bool	m_hasToRecoverMeanAndCov;       //!< Only for the KF2 implementation.
 
-		/** The implementation of "insertObservation" for the Achim's map model.
+		float               m_DM_lastCutOff;    //!< Auxiliary vars for DM & DM+V methods
+		mrpt::vector_float	m_DM_gaussWindow;   //!< Auxiliary vars for DM & DM+V methods
+
+		/** The implementation of "insertObservation" for Achim Lilienthal's map models DM & DM+V.
 		  * \param normReading Is a [0,1] normalized concentration reading.
-		  * \param sensorPose Is the sensor pose
+		  * \param sensorPose Is the sensor pose on the robot
+		  * \param is_DMV = false -> map type is Kernel DM; true -> map type is DM+V
 		  */
-		void  insertObservation_Achim(
-			float			normReading,
-			const CPose3D	&sensorPose );
+		void  insertObservation_KernelDM_DMV(
+			float            normReading,
+			const CPose3D   &sensorPose,
+			bool             is_DMV );
 
 		/** The implementation of "insertObservation" for the (whole) Kalman Filter map model.
 		  * \param normReading Is a [0,1] normalized concentration reading.
@@ -369,7 +406,7 @@ namespace slam
 		void  insertObservation_KF2(
 			float			normReading,
 			const CPose3D	&sensorPose );
-		
+
 
 		/** Estimates the gas concentration based on readings and sensor model
 		  */
@@ -393,20 +430,12 @@ namespace slam
 			const float						estimation,
 			const float						k,
 			const double					yaw,
-			const float						speed);			
+			const float						speed);
 
 		/** Computes the average cell concentration, or 0 if it has never been observed:
 		  */
-		static float computeAchimCellValue (const TGasConcentrationCell *cell );
+		static double computeAchimCellValue (const TGasConcentrationCell *cell );
 
-
-		/** The compressed band diagonal matrix for the KF2 implementation.
-		  *   The format is a Nx(W^2+2W+1) matrix, one row per cell in the grid map with the
-		  *    cross-covariances between each cell and half of the window around it in the grid.
-		  */
-		CMatrixD		m_stackedCov;
-
-		mutable bool	m_hasToRecoverMeanAndCov;       //!< Only for the KF2 implementation.
 
 		/** In the KF2 implementation, takes the auxiliary matrices and from them update the cells' mean and std values.
 		  * \sa m_hasToRecoverMeanAndCov

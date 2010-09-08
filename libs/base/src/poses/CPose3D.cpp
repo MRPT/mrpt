@@ -163,7 +163,7 @@ void  CPose3D::readFromStream(CStream &in,int version)
 			in >> HM2;
 			ASSERT_(mrpt::math::size(HM2,1)==4 && HM2.IsSquare())
 
-			m_ROT = CMatrixDouble33(HM2);
+			HM2.extractMatrix(0,0, m_ROT);
 
 			m_coords[0] = HM2.get_unsafe(0,3);
 			m_coords[1] = HM2.get_unsafe(1,3);
@@ -176,7 +176,7 @@ void  CPose3D::readFromStream(CStream &in,int version)
 			CMatrixDouble44 HM;
 			in >> HM;
 
-			m_ROT = CMatrixDouble33(HM);
+			HM.extractMatrix(0,0, m_ROT);
 
 			m_coords[0] = HM.get_unsafe(0,3);
 			m_coords[1] = HM.get_unsafe(1,3);
