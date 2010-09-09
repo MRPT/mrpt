@@ -546,9 +546,9 @@ int main(int argc, char **argv)
 		//TestTrackFeatures();
 
 
-		CFeatureList  fs;
-		fs.loadFromTextFile("f_harris+sift.txt");
-		fs.saveToTextFile("f_harris+sift2.txt");
+//		CFeatureList  fs;
+//		fs.loadFromTextFile("f_harris+sift.txt");
+//		fs.saveToTextFile("f_harris+sift2.txt");
 
 		return 0;
 	} catch (std::exception &e)

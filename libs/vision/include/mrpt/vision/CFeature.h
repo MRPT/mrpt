@@ -127,7 +127,7 @@ namespace mrpt
 			float				response;		//!< A measure of the "goodness" of the feature (old name: KLT_val)
 			float				orientation;	//!< Main orientation of the feature
 			float				scale;			//!< Feature scale into the scale space
-			uint8_t				IDSourceImage;	//!< ID of the image from which the feature was extracted.
+			uint8_t				IDSourceImage;	//!< ID of the image from which the feature was extracted (JL says: ?????)
 
 			bool isPointFeature() const;		//!< Return false only for Blob detectors (SIFT, SURF)
 

@@ -110,6 +110,7 @@ namespace mrpt
 							continue;
 						// Parse the line as a string stream:
 						buf.str(lin);
+						buf.clear();
 						return true;
 					};
 					return false;

@@ -488,24 +488,41 @@ void CFeatureList::saveToTextFile( const std::string &filename, bool APPEND )
 	if( !f.open(filename,APPEND) )
 		THROW_EXCEPTION( "[CFeatureList::saveToTextFile] ERROR: File could not be open for writing" );
 
+	f.printf(
+		"%% Dump of mrpt::vision::CFeatureList. Each line format is:\n"
+		"%% ID TYPE X Y ORIENTATION SCALE TRACK_STATUS RESPONSE HAS_SIFT [SIFT] HAS_SURF [SURF]\n"
+		"%% \\---------------------- feature ------------------/ \\--------- descriptors -------/\n"
+		"%% with:\n"
+		"%%  TYPE  : The used detector: 0:KLT, 1: Harris, 2: BCD, 3: SIFT, 4: SURF, 5: Beacon, 6: FAST\n"
+		"%%  HAS_* : 1 if a descriptor of that type is associated to the feature. \n"
+		"%%  SIFT  : Present if HAS_SIFT=1: N DESC_0 ... DESC_N-1 \n"
+		"%%  SURF  : Present if HAS_SURF=1: N DESC_0 ... DESC_N-1 \n"
+		"%%-------------------------------------------------------------------------------------------\n");
+
 	for( CFeatureList::iterator it = this->begin(); it != this->end(); ++it )
 	{
-		f.printf("%d %d %.3f %.3f ", (unsigned int)(*it)->ID, (int)(*it)->get_type(), (*it)->x, (*it)->y );
-		f.printf("%.2f %.2f ", (*it)->orientation, (*it)->scale );
+		f.printf("%5u %2d %7.3f %7.3f %6.2f %6.2f %2d %6.3f ",
+				(unsigned int)(*it)->ID, (int)(*it)->get_type(), (*it)->x, (*it)->y,
+				(*it)->orientation, (*it)->scale,
+				(int)(*it)->track_status, (*it)->response );
 
+		f.printf("%2d ", int((*it)->descriptors.hasDescriptorSIFT() ? 1:0) );
 		if( (*it)->descriptors.hasDescriptorSIFT() )
+		{
+			f.printf("%4d ", int((*it)->descriptors.SIFT.size()) );
 			for( unsigned int k = 0; k < (*it)->descriptors.SIFT.size(); k++ )
-				f.printf( "%d ", (*it)->descriptors.SIFT[k]);
+				f.printf( "%4d ", (*it)->descriptors.SIFT[k]);
+		}
 
+		f.printf("%2d ", int((*it)->descriptors.hasDescriptorSURF() ? 1:0) );
 		if( (*it)->descriptors.hasDescriptorSURF() )
+		{
+			f.printf("%4d ", int((*it)->descriptors.SURF.size()) );
 			for( unsigned int k = 0; k < (*it)->descriptors.SURF.size(); k++ )
-				f.printf( "%.4f ", (*it)->descriptors.SURF[k]);
+				f.printf( "%8.5f ", (*it)->descriptors.SURF[k]);
+		}
 
-		if( (*it)->descriptors.hasDescriptorSpinImg() )
-			for( unsigned int k = 0; k < (*it)->descriptors.SpinImg.size(); k++ )
-				f.printf( "%.4f ", (*it)->descriptors.SpinImg[k]);
-
-		f.printf( "%d %.3f\n", (int)(*it)->track_status, (*it)->response );
+		f.printf( "\n");
 	} // end for
 
 	f.close();
@@ -514,37 +531,79 @@ void CFeatureList::saveToTextFile( const std::string &filename, bool APPEND )
 } // end saveToTextFile
 
 // --------------------------------------------------
-// saveToTextFile
+// loadFromTextFile
 // --------------------------------------------------
-// FORMAT: ID type x y orientation scale [descriptorSIFT] [descriptorSURF] KLT_status KLT_val
 void CFeatureList::loadFromTextFile( const std::string &filename )
 {
 	MRPT_START
 
-	CFileInputStream	f;
+	mrpt::utils::CTextFileLinesParser  parser(filename);
+	std::istringstream line;
 
-	int i = 0;		// ID counter
-
-	f.open(filename);
-
-	if( !f.fileOpenCorrectly() )
-		THROW_EXCEPTION( format("File %s could not be opened", filename.c_str()).c_str() );
-
-	while( !f.checkEOF() )
+	while( parser.getNextLine(line) )
 	{
-		CFeaturePtr feat = CFeature::Create();
-		string line;
-		f.readLine( line );
-		sscanf( line.c_str(), "%f %f\n", &(feat->x), &(feat->y) );
-		feat->ID = i;
-		push_back( feat );
-		i++;
+		try
+		{
+			CFeaturePtr feat_ptr = CFeature::Create();
+			CFeature*   feat = feat_ptr.pointer(); // for faster access
+
+ 			int _ID;
+			if (!(line >> _ID )) throw std::string("ID");
+			feat->ID   = TFeatureID(_ID);
+
+ 			int _type;
+			if (!(line >> _type)) throw std::string("type");
+			feat->type = TFeatureType(_type);
+
+			if (!(line >> feat->x >> feat->y )) throw std::string("x,y");
+			if (!(line >> feat->orientation )) throw std::string("orientation");
+			if (!(line >> feat->scale )) throw std::string("scale");
+
+ 			int _track_st;
+			if (!(line >> _track_st )) throw std::string("track_status");
+			feat->track_status = TFeatureTrackStatus(_track_st);
+
+			if (!(line >> feat->response )) throw std::string("response");
+
+			int hasSIFT;
+			if (!(line >> hasSIFT)) throw std::string("hasSIFT");
+			if (hasSIFT)
+			{
+				size_t N;
+				if (!(line >> N)) throw std::string("SIFT-len");
+				feat->descriptors.SIFT.resize(N);
+				for (size_t i=0;i<N;i++)
+				{
+					int val;
+					line >> val;
+					feat->descriptors.SIFT[i] = val; // DON'T read directly SIFT[i] since it's a uint8_t, interpreted as a cha
+				}
+
+				if (!line)  throw std::string("SIFT-data");
+			}
+
+			int hasSURF;
+			if (!(line >> hasSURF)) throw std::string("hasSURF");
+			if (hasSURF)
+			{
+				size_t N;
+				if (!(line >> N)) throw std::string("SURF-len");
+				feat->descriptors.SURF.resize(N);
+				for (size_t i=0;i<N;i++)
+					line >> feat->descriptors.SURF[i];
+				if (!line) throw  std::string("SURF-data");
+			}
+
+			push_back( feat_ptr );
+		}
+		catch(std::string &msg)
+		{
+			THROW_EXCEPTION(format("%s:%d: Error parsing features text file (%s).",filename.c_str(), (int)parser.getCurrentLineNumber(), msg.c_str() ))
+		}
 	}
 
-	f.close();
-
 	MRPT_END
-} // end saveToTextFile
+} // end loadFromTextFile
 
 // --------------------------------------------------
 // getByID()
