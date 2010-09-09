@@ -40,14 +40,11 @@
 
 namespace mrpt
 {
-	namespace poses { class CPose2D; }
-
 namespace slam
 {
 	using namespace mrpt::utils;
 	using namespace mrpt::poses;
 	using namespace mrpt::math;
-	class CObservation;
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CGasConcentrationGridMap2D , CMetricMap, MAPS_IMPEXP )
 
@@ -85,19 +82,6 @@ namespace slam
 		double dmv_var_mean;   //!< [Kernel DM-V only] The cumulative weighted variance of this cell
 	};
 #pragma pack(pop)
-
-	/** The content of each m_lastObservations in KF3_deconv estimation
-		*/
-	struct MAPS_IMPEXP TdataMap
-	{
-			float						reading;
-			mrpt::system::TTimeStamp	timestamp;
-			float						k;
-			CPose3D						sensorPose;
-			float						estimation;
-			float						reading_filtered;
-			float						speed;
-	};
 
 	/** CGasConcentrationGridMap2D represents a PDF of gas concentrations over a 2D area.
 	  *
@@ -241,35 +225,29 @@ namespace slam
 			float	tauR;
 			float	tauD;
 
-			/** [KF3 algortihm] The last N GasObservations, used for the Kalman Filter with deconvolution estimation.
-			  */
-			TdataMap new_Obs, new_ANS;
-			std::vector<TdataMap> m_lastObservations;
-			std::vector<TdataMap> antiNoise_window;
-
-			/** [KF3 algortihm] The number of observations to keep in m_lastObservations
+			/** [KF3 algorithm] The number of observations to keep in m_lastObservations
 			  */
 			uint16_t lastObservations_size;
 
-			/** [KF3 algortihm] The number of observations used to reduce noise on signal.
+			/** [KF3 algorithm] The number of observations used to reduce noise on signal.
 			  */
 			size_t	winNoise_size;
 
-			/** [KF3 algortihm] The decimate frecuency applied after noise filtering
+			/** [KF3 algorithm] The decimate frecuency applied after noise filtering
 			  */
 			uint16_t	decimate_value;
 
-			/** [KF3 algortihm] Measured values of K= 1/tauD for different volatile concentrations
+			/** [KF3 algorithm] Measured values of K= 1/tauD for different volatile concentrations
 			  */
 			vector_float tauD_concentration;
 			vector_float tauD_value;
 
-			/** [KF3 algortihm] Measured values of the delay (memory effect) for different robot speeds
+			/** [KF3 algorithm] Measured values of the delay (memory effect) for different robot speeds
 			  */
 			vector_float memory_speed;
 			vector_float memory_delay;
 
-			/** [KF3 algortihm] id for the enose used to generate this map (must be < gasGrid_count)
+			/** [KF3 algorithm] id for the enose used to generate this map (must be < gasGrid_count)
 			  */
 			uint16_t enose_id;
 
@@ -349,6 +327,24 @@ namespace slam
 
 	protected:
 
+		/** The content of each m_lastObservations in KF3_deconv estimation
+			*/
+		struct MAPS_IMPEXP TdataMap
+		{
+				float						reading;
+				mrpt::system::TTimeStamp	timestamp;
+				float						k;
+				CPose3D						sensorPose;
+				float						estimation;
+				float						reading_filtered;
+				float						speed;
+		};
+
+		/** [KF3 algorithm] The last N GasObservations, used for the Kalman Filter with deconvolution estimation. */
+		TdataMap m_new_Obs, m_new_ANS;
+		std::vector<TdataMap> m_lastObservations;
+		std::vector<TdataMap> m_antiNoise_window;
+
 		/** [useMOSmodel] Ofstream to save to file option "save_maplog"
 		  */
 		std::ofstream			*m_debug_dump;
@@ -362,11 +358,8 @@ namespace slam
 		double					fixed_incT;
 		bool					first_incT;
 
-		/** The map representation type of this map.
-		  */
-		TMapRepresentation		m_mapType;
-
-
+		/** The map representation type of this map, as passed in the constructor */
+		TMapRepresentation	m_mapType;
 
 		CMatrixD				m_cov;	//!< The whole covariance matrix, used for the Kalman Filter map representation.
 

@@ -332,11 +332,11 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 				}
 
 				//Gas concentration estimation based on FIRST ORDER + NONLINEAR COMPENSATIONS DYNAMICS
-				CGasConcentration_estimation(insertionOptions.antiNoise_window[insertionOptions.winNoise_size/2].reading_filtered, insertionOptions.antiNoise_window[insertionOptions.winNoise_size/2].sensorPose, insertionOptions.antiNoise_window[insertionOptions.winNoise_size/2].timestamp);
+				CGasConcentration_estimation(m_antiNoise_window[insertionOptions.winNoise_size/2].reading_filtered, m_antiNoise_window[insertionOptions.winNoise_size/2].sensorPose, m_antiNoise_window[insertionOptions.winNoise_size/2].timestamp);
 				decimate_count = 1;
 
 				//Use estimation to generate the map
-				std::vector<TdataMap>::iterator iter = insertionOptions.m_lastObservations.begin();
+				std::vector<TdataMap>::iterator iter = m_lastObservations.begin();
 				sensorReading = iter->estimation;
 				sensorPose = CPose2D(iter->sensorPose);
 
@@ -2036,50 +2036,50 @@ void CGasConcentrationGridMap2D::CGasConcentration_estimation (
 	int N;	//Memory efect delay
 
 	// Check if estimation posible (at least one previous reading)
-	if ( !insertionOptions.m_lastObservations.empty() )
+	if ( !m_lastObservations.empty() )
 	{
 
 		//Enose speed
-		double speed_x = sensorPose.x() - insertionOptions.new_Obs.sensorPose.x();
-		double speed_y = sensorPose.y() - insertionOptions.new_Obs.sensorPose.y();
-		double incT = mrpt::system::timeDifference(insertionOptions.new_Obs.timestamp,timestamp);
+		double speed_x = sensorPose.x() - m_new_Obs.sensorPose.x();
+		double speed_y = sensorPose.y() - m_new_Obs.sensorPose.y();
+		double incT = mrpt::system::timeDifference(m_new_Obs.timestamp,timestamp);
 
 		if ( (incT >0) & (!first_incT) ){	//not the same sample (initialization of buffers)
 			if (fixed_incT == 0)
 				fixed_incT = incT;
 			else
 				ASSERT_(fabs(incT - fixed_incT) < (double)(0.05));
-			insertionOptions.new_Obs.speed = (sqrt (speed_x*speed_x + speed_y*speed_y)) / incT;
+			m_new_Obs.speed = (sqrt (speed_x*speed_x + speed_y*speed_y)) / incT;
 		}
 		else
 		{
-			insertionOptions.new_Obs.speed = 0;
+			m_new_Obs.speed = 0;
 			if (incT > 0)
 				first_incT = false;
 		}
 
 
 		//slope>=0 -->Rise
-		if ( reading >= insertionOptions.new_Obs.reading )
+		if ( reading >= m_new_Obs.reading )
 		{
-			insertionOptions.new_Obs.k = 1.0/insertionOptions.tauR;
+			m_new_Obs.k = 1.0/insertionOptions.tauR;
             N = 1;	//Memory effect compensation
 		}
 		//slope<0 -->decay
 		else
 		{
 			//start decaying
-			if (insertionOptions.new_Obs.k == (float) (1.0/insertionOptions.tauR) ){
+			if (m_new_Obs.k == (float) (1.0/insertionOptions.tauR) ){
 				//Use amplitude or just value?
 				// Non-Linear compensation = f(sensor, amplitude, speed)
-				insertionOptions.new_Obs.k = 1.0/mrpt::math::leastSquareLinearFit((reading - insertionOptions.R_min),insertionOptions.tauD_concentration,insertionOptions.tauD_value,false);
+				m_new_Obs.k = 1.0/mrpt::math::leastSquareLinearFit((reading - insertionOptions.R_min),insertionOptions.tauD_concentration,insertionOptions.tauD_value,false);
 			}else{
 				//Do Nothing, keep the same tauD as last observation
 
 			}// end-if(start decaying)
 
 			//Dealy effect compensation
-			N = mrpt::math::leastSquareLinearFit(insertionOptions.new_Obs.speed ,insertionOptions.memory_speed, insertionOptions.memory_delay,false);
+			N = mrpt::math::leastSquareLinearFit(m_new_Obs.speed ,insertionOptions.memory_speed, insertionOptions.memory_delay,false);
 			N = round(N);
 
 			if (N >insertionOptions.lastObservations_size -1)
@@ -2091,48 +2091,48 @@ void CGasConcentrationGridMap2D::CGasConcentration_estimation (
 
 		//New estimation values -- Ziegler-Nichols model --
 		if( incT >0)
-			//Initially there may come repetetive values till antiNoise_window is completed.
-			insertionOptions.new_Obs.estimation = ( ((reading -insertionOptions.new_Obs.reading)/(incT* insertionOptions.new_Obs.k)) )+ reading;
+			//Initially there may come repetetive values till m_antiNoise_window is completed.
+			m_new_Obs.estimation = ( ((reading -m_new_Obs.reading)/(incT* m_new_Obs.k)) )+ reading;
 		else
-			insertionOptions.new_Obs.estimation = reading;
+			m_new_Obs.estimation = reading;
 
 
         //Prepare the New observation
-		insertionOptions.new_Obs.timestamp = timestamp ;
-		insertionOptions.new_Obs.reading = reading;
-		insertionOptions.new_Obs.sensorPose = sensorPose;
+		m_new_Obs.timestamp = timestamp ;
+		m_new_Obs.reading = reading;
+		m_new_Obs.sensorPose = sensorPose;
 
 	}else{
 		// First reading (use default values)
-		insertionOptions.new_Obs.k = 1.0/insertionOptions.tauR;
-		insertionOptions.new_Obs.reading = reading;
-		insertionOptions.new_Obs.timestamp = timestamp;
-		insertionOptions.new_Obs.speed = 0;
-		insertionOptions.new_Obs.sensorPose = sensorPose;
-		insertionOptions.new_Obs.estimation = reading;
+		m_new_Obs.k = 1.0/insertionOptions.tauR;
+		m_new_Obs.reading = reading;
+		m_new_Obs.timestamp = timestamp;
+		m_new_Obs.speed = 0;
+		m_new_Obs.sensorPose = sensorPose;
+		m_new_Obs.estimation = reading;
 		N = 1;
 
 		//initialize the queue
 		for (int i=0; i<insertionOptions.lastObservations_size; i++)
-			insertionOptions.m_lastObservations.push_back(insertionOptions.new_Obs);
+			m_lastObservations.push_back(m_new_Obs);
 
 	}//end-if estimation values
 
 
 
 	//Update m_lastObservations (due to memory efect)
-	if (insertionOptions.m_lastObservations[1].estimation == -20.0){
+	if (m_lastObservations[1].estimation == -20.0){
 		//Copy right
-		insertionOptions.m_lastObservations[1].estimation = insertionOptions.m_lastObservations[0].estimation;
+		m_lastObservations[1].estimation = m_lastObservations[0].estimation;
 	}
 
-	insertionOptions.m_lastObservations.erase( insertionOptions.m_lastObservations.begin() );	//Erase the first element (the oldest)
-	insertionOptions.m_lastObservations.push_back(insertionOptions.new_Obs);										//Add NULL obs as actual Obss
-	insertionOptions.m_lastObservations.rbegin()->estimation = -20.0;	//Non valid value to decect non valid observation
+	m_lastObservations.erase( m_lastObservations.begin() );	//Erase the first element (the oldest)
+	m_lastObservations.push_back(m_new_Obs);										//Add NULL obs as actual Obss
+	m_lastObservations.rbegin()->estimation = -20.0;	//Non valid value to decect non valid observation
 
 	//Modify queue estimation in the -Nth position
 	try{
-		insertionOptions.m_lastObservations.at(insertionOptions.lastObservations_size - N-1).estimation = insertionOptions.new_Obs.estimation;
+		m_lastObservations.at(insertionOptions.lastObservations_size - N-1).estimation = m_new_Obs.estimation;
 
 	}catch(...){
 		cout << "Error al acceder al array de m_readings \n" ;
@@ -2154,28 +2154,28 @@ void CGasConcentrationGridMap2D::noise_filtering (
 {
 	float partial_sum;
 
-	insertionOptions.new_ANS.reading = reading;
-	insertionOptions.new_ANS.timestamp = timestamp;
-	insertionOptions.new_ANS.sensorPose = sensorPose;
+	m_new_ANS.reading = reading;
+	m_new_ANS.timestamp = timestamp;
+	m_new_ANS.sensorPose = sensorPose;
 
-	if ( insertionOptions.antiNoise_window.empty() )
+	if ( m_antiNoise_window.empty() )
 	{
 		// First reading (use default values)
-		insertionOptions.new_ANS.reading_filtered = reading;
+		m_new_ANS.reading_filtered = reading;
 
 		//initialize the queue
-		insertionOptions.antiNoise_window.assign( insertionOptions.winNoise_size, insertionOptions.new_ANS );
+		m_antiNoise_window.assign( insertionOptions.winNoise_size, m_new_ANS );
 
 	}else{
-		insertionOptions.antiNoise_window.erase( insertionOptions.antiNoise_window.begin() );	//Erase the first element (the oldest)
-		insertionOptions.antiNoise_window.push_back(insertionOptions.new_ANS);
+		m_antiNoise_window.erase( m_antiNoise_window.begin() );	//Erase the first element (the oldest)
+		m_antiNoise_window.push_back(m_new_ANS);
 	}
 
 	//Average data to reduce noise
 	partial_sum = 0;
-	for (size_t i=0; i<insertionOptions.antiNoise_window.size(); i++)
-		partial_sum += insertionOptions.antiNoise_window.at(i).reading;
+	for (size_t i=0; i<m_antiNoise_window.size(); i++)
+		partial_sum += m_antiNoise_window.at(i).reading;
 
-	insertionOptions.antiNoise_window.at(insertionOptions.winNoise_size/2).reading_filtered = partial_sum / insertionOptions.winNoise_size;
+	m_antiNoise_window.at(insertionOptions.winNoise_size/2).reading_filtered = partial_sum / insertionOptions.winNoise_size;
 
 }
