@@ -319,7 +319,8 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 			// Normalization:
 			sensorReading = (sensorReading - insertionOptions.R_min) /( insertionOptions.R_max - insertionOptions.R_min );
 
-
+			
+			// MOD model
 			if(insertionOptions.useMOSmodel)
 			{
 				// Anti-Noise filtering

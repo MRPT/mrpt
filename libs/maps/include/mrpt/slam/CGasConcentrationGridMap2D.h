@@ -216,38 +216,38 @@ namespace slam
 			/** [KF2 algorithm] The size of the window of neighbor cells. */
 			uint16_t	KF_W_size;
 
-			/** [KF3 algortihm] The sensor type for the gas concentration map (0x0000 ->mean of all installed sensors, 0x2600, 0x6810, ...)
+			/** The sensor type for the gas concentration map (0x0000 ->mean of all installed sensors, 0x2600, 0x6810, ...)
 			  */
 			uint16_t	KF_sensorType;
 
-			/** Tau values for the rise (tauR) and decay (tauD) sensor's phases.
+			/** [useMOSmodel] Tau values for the rise (tauR) and decay (tauD) sensor's phases.
 			*/
 			float	tauR;
 			float	tauD;
 
-			/** [KF3 algorithm] The number of observations to keep in m_lastObservations
+			/** [useMOSmodel] The number of observations to keep in m_lastObservations
 			  */
 			uint16_t lastObservations_size;
 
-			/** [KF3 algorithm] The number of observations used to reduce noise on signal.
+			/** [useMOSmodel] The number of observations used to reduce noise on signal.
 			  */
 			size_t	winNoise_size;
 
-			/** [KF3 algorithm] The decimate frecuency applied after noise filtering
+			/** [useMOSmodel] The decimate frecuency applied after noise filtering
 			  */
 			uint16_t	decimate_value;
 
-			/** [KF3 algorithm] Measured values of K= 1/tauD for different volatile concentrations
+			/** [useMOSmodel] Measured values of K= 1/tauD for different volatile concentrations
 			  */
 			vector_float tauD_concentration;
 			vector_float tauD_value;
 
-			/** [KF3 algorithm] Measured values of the delay (memory effect) for different robot speeds
+			/** [useMOSmodel] Measured values of the delay (memory effect) for different robot speeds
 			  */
 			vector_float memory_speed;
 			vector_float memory_delay;
 
-			/** [KF3 algorithm] id for the enose used to generate this map (must be < gasGrid_count)
+			/** [useMOSmodel] id for the enose used to generate this map (must be < gasGrid_count)
 			  */
 			uint16_t enose_id;
 
@@ -327,7 +327,7 @@ namespace slam
 
 	protected:
 
-		/** The content of each m_lastObservations in KF3_deconv estimation
+		/** The content of each m_lastObservations in the estimation when using the option : MOS_MODEl (insertionOptions.useMOSmodel =1)
 			*/
 		struct MAPS_IMPEXP TdataMap
 		{
@@ -340,7 +340,7 @@ namespace slam
 				float						speed;
 		};
 
-		/** [KF3 algorithm] The last N GasObservations, used for the Kalman Filter with deconvolution estimation. */
+		/** [useMOSmodel] The last N GasObservations, used for the MOS MODEL estimation. */
 		TdataMap m_new_Obs, m_new_ANS;
 		std::vector<TdataMap> m_lastObservations;
 		std::vector<TdataMap> m_antiNoise_window;
