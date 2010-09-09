@@ -3801,7 +3801,7 @@ COccupancyGridMap2D::TInsertionOptions::TInsertionOptions() :
 	maxOccupancyUpdateCertainty			(  0.65f ),
 	considerInvalidRangesAsFreeSpace	(  true ),
 	decimation							( 1 ),
-	horizontalTolerance					( 0 ),
+	horizontalTolerance					( DEG2RAD(0.05) ),
 
 	CFD_features_gaussian_size			( 1 ),
 	CFD_features_median_size			( 3 ),

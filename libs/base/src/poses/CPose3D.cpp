@@ -621,9 +621,16 @@ void CPose3D::inverse()
  ---------------------------------------------------------------*/
 bool CPose3D::isHorizontal( const double tolerance  ) const
 {
+#if 0
+	// The angle of the Z axis defined by this rotation matrix with the canonical Z axis:
+	double ang = std::abs( std::atan2( hypot(m_ROT.get_unsafe(0,2),m_ROT.get_unsafe(1,2)), m_ROT.get_unsafe(2,2) ) );
+	if (ang>M_PI*0.5) ang=M_PI-ang;
+	return ang <= tolerance;
+#else
 	updateYawPitchRoll();
-	return (fabs(m_pitch)<=tolerance) &&
+	return (fabs(m_pitch)<=tolerance || M_PI-fabs(m_pitch) <=tolerance ) &&
 	       ( fabs(m_roll)<=tolerance || fabs(mrpt::math::wrapToPi( m_roll-M_PI))<=tolerance );
+#endif
 }
 
 

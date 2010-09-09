@@ -68,7 +68,10 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 		m_mapType(mapType),
 		m_cov(0,0),
 		m_hasToRecoverMeanAndCov(true),
-		m_DM_lastCutOff(0)
+		m_DM_lastCutOff(0),
+		m_average_normreadings_mean(0),
+		m_average_normreadings_var(0),
+		m_average_normreadings_count(0)
 {
 	// Set the grid to initial values (and adjusts the KF covariance matrix!)
 	CMetricMap::clear();
@@ -84,9 +87,13 @@ CGasConcentrationGridMap2D::~CGasConcentrationGridMap2D()
   ---------------------------------------------------------------*/
 void  CGasConcentrationGridMap2D::internal_clear()
 {
+	m_average_normreadings_mean  = 0;
+	m_average_normreadings_var   = 0;
+	m_average_normreadings_count = 0;
+
 	switch (m_mapType)
 	{
-	case mrAchim:
+	case mrKernelDM:
 	case mrKernelDMV:
 		{
 			// Set the grid to initial values:
@@ -319,8 +326,8 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 			// Normalization:
 			sensorReading = (sensorReading - insertionOptions.R_min) /( insertionOptions.R_max - insertionOptions.R_min );
 
-			
-			// MOD model
+
+			// MOS model
 			if(insertionOptions.useMOSmodel)
 			{
 				// Anti-Noise filtering
@@ -346,6 +353,16 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 					save_log_map(iter->timestamp, iter->reading, iter->estimation, iter->k, iter->sensorPose.yaw(), iter->speed);
 			}
 
+			// Update the gross estimates of mean/vars for the whole reading history (see IROS2009 paper):
+			m_average_normreadings_mean = (sensorReading + m_average_normreadings_count*m_average_normreadings_mean)/(1+m_average_normreadings_count);
+			m_average_normreadings_var  = (square(sensorReading - m_average_normreadings_mean) + m_average_normreadings_count*m_average_normreadings_var) /(1+m_average_normreadings_count);
+			m_average_normreadings_count++;
+
+#if 0
+			cout << "[DEBUG] m_average_normreadings_count: " << m_average_normreadings_count << " -> mean: " << m_average_normreadings_mean << " var: " <<  m_average_normreadings_var  << endl;
+#endif
+
+			// Finally, do the actual map update with that value:
 			switch (m_mapType)
 			{
 				case mrKernelDM:           insertObservation_KernelDM_DMV(sensorReading,sensorPose, false); break;
@@ -366,7 +383,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 }
 
 /*---------------------------------------------------------------
-					insertObservation_Achim
+					insertObservation_KernelDM_DMV
   ---------------------------------------------------------------*/
 /** The implementation of "insertObservation" for Achim Lilienthal's map models DM & DM+V.
 * \param normReading Is a [0,1] normalized concentration reading.
@@ -401,7 +418,7 @@ void  CGasConcentrationGridMap2D::insertObservation_KernelDM_DMV(
 	if ( m_DM_lastCutOff!=insertionOptions.cutoffRadius ||
 			m_DM_gaussWindow.size() != square(Ac_all) )
 	{
-		printf("[CGasConcentrationGridMap2D::insertObservation_Achim] Precomputing window %ux%u\n",Ac_all,Ac_all);
+		printf("[CGasConcentrationGridMap2D::insertObservation_KernelDM_DMV] Precomputing window %ux%u\n",Ac_all,Ac_all);
 
 		double	dist;
 		double	std = insertionOptions.sigma;
@@ -422,38 +439,36 @@ void  CGasConcentrationGridMap2D::insertObservation_KernelDM_DMV(
 			}
 		}
 
-		printf("[CGasConcentrationGridMap2D::insertObservation_Achim] Done!\n");
+		printf("[CGasConcentrationGridMap2D::insertObservation_KernelDM_DMV] Done!\n");
 	} // end of computing the gauss. window.
 
 	//	Fuse with current content of grid (the MEAN of each cell):
 	// --------------------------------------------------------------
-	int						sensor_cx = x2idx( sensorPose.x );
-	int						sensor_cy = y2idx( sensorPose.y );
+	const int sensor_cx = x2idx( sensorPose.x );
+	const int sensor_cy = y2idx( sensorPose.y );
 	TGasConcentrationCell	*cell;
 	vector_float::iterator	windowIt = m_DM_gaussWindow.begin();
 
 	for (int Acx=-Ac_cutoff;Acx<=Ac_cutoff;Acx++)
 	{
-		for (int Acy=-Ac_cutoff;Acy<=Ac_cutoff;Acy++,windowIt++)
+		for (int Acy=-Ac_cutoff;Acy<=Ac_cutoff;++Acy, ++windowIt)
 		{
-			double	windowValue = *windowIt;
+			const double windowValue = *windowIt;
 
 			if (windowValue>minWinValueAtCutOff)
 			{
 				cell = cellByIndex(sensor_cx+Acx,sensor_cy+Acy);
-				ASSERT_( cell!=NULL );
+				ASSERT_( cell!=NULL )
 
 				cell->dm_mean_w  += windowValue;
 				cell->dm_mean += windowValue * normReading;
+				if (is_DMV)
+				{
+					const double cell_var = square(normReading - computeMeanCellValue_DM_DMV(cell) );
+					cell->dmv_var_mean += windowValue * cell_var;
+				}
 			}
 		}
-	}
-
-	if (is_DMV)
-	{
-		//	Fuse with current content of grid (the VARIANCE of each cell):
-		// --------------------------------------------------------------
-		THROW_EXCEPTION("TO DO!")
 	}
 
 	MRPT_END;
@@ -478,7 +493,7 @@ double	 CGasConcentrationGridMap2D::computeObservationLikelihood(
 void  CGasConcentrationGridMap2D::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 2;
+		*version = 3;
 	else
 	{
 		uint32_t	n;
@@ -512,6 +527,9 @@ void  CGasConcentrationGridMap2D::writeToStream(CStream &out, int *version) cons
 			<< insertionOptions.KF_defaultCellMeanValue
 			<< insertionOptions.KF_W_size;
 
+		// New in v3:
+		out << m_average_normreadings_mean << m_average_normreadings_var << uint64_t(m_average_normreadings_count);
+
 	}
 }
 
@@ -532,6 +550,7 @@ void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
 	case 0:
 	case 1:
 	case 2:
+	case 3:
 		{
 			uint32_t	n,i,j;
 
@@ -591,6 +610,13 @@ void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
 					>> insertionOptions.KF_W_size;
 			}
 
+			if (version>=3)
+			{
+				uint64_t N;
+				in >> m_average_normreadings_mean >> m_average_normreadings_var >> N;
+				m_average_normreadings_count = N;
+			}
+
 			m_hasToRecoverMeanAndCov = true;
 		} break;
 	default:
@@ -629,7 +655,9 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 	memory_delay				( 0 ),
 	enose_id					( 0 ),			//By default use the first enose
 	save_maplog					( true ),
-	useMOSmodel					( false )
+	useMOSmodel					( false ),
+
+	dm_sigma_omega				( 0.05 )  // See IROS 2009 paper (a scale parameter for the confidence)
 {
 }
 
@@ -657,6 +685,7 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&o
 	out.printf("enose_id								= %u\n", (unsigned)enose_id);
 	out.printf("save_maplog		                        = %c\n", save_maplog ? 'Y':'N' );
 	out.printf("useMOSmodel								= %u\n", useMOSmodel);
+	out.printf("dm_sigma_omega	                        = %f\n", dm_sigma_omega);
 	out.printf("\n");
 }
 
@@ -692,6 +721,8 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 	enose_id				= iniFile.read_int(section.c_str(),"enose_id",enose_id);
 	save_maplog				= iniFile.read_bool(section.c_str(),"save_maplog",save_maplog);
 	useMOSmodel				= iniFile.read_bool(section.c_str(),"useMOSmodel",useMOSmodel);
+	MRPT_LOAD_CONFIG_VAR(dm_sigma_omega, double,   iniFile, section );
+
 
 
 
@@ -731,9 +762,7 @@ void  CGasConcentrationGridMap2D::saveAsBitmapFile(const std::string &filName) c
 			{
 			case mrKernelDM:
 			case mrKernelDMV:
-				if (cell->dm_mean_w>0)
-						c = cell->dm_mean / cell->dm_mean_w;
-				else	c = 0;
+				c = computeMeanCellValue_DM_DMV(cell);
 				break;
 
 			case mrKalmanFilter:
@@ -1190,6 +1219,24 @@ void  CGasConcentrationGridMap2D::saveMetricMapRepresentationToFile(
 	fil = filNamePrefix + std::string("_mean.png");
 	saveAsBitmapFile( fil );
 
+	if ( m_mapType == mrKernelDM || m_mapType == mrKernelDMV )
+	{
+		CMatrix  all_means(m_size_y,m_size_x);
+		CMatrix  all_vars(m_size_y,m_size_x);
+
+		for (size_t y=0;y<m_size_y;y++)
+			for (size_t x=0;x<m_size_x;x++)
+			{
+				const TGasConcentrationCell * cell =cellByIndex(x,y);
+				all_means(y,x) = computeMeanCellValue_DM_DMV(cell);
+				all_vars(y,x)  = computeVarCellValue_DM_DMV(cell);
+			}
+
+		all_means.saveToTextFile( filNamePrefix + std::string("_mean.txt"), MATRIX_FORMAT_FIXED );
+		if (m_mapType == mrKernelDMV)
+			all_vars.saveToTextFile( filNamePrefix + std::string("_var.txt"), MATRIX_FORMAT_FIXED );
+	}
+
 	if ( m_mapType == mrKalmanApproximate )
 	{
 		m_stackedCov.saveToTextFile( filNamePrefix + std::string("_mean_compressed_cov.txt"), MATRIX_FORMAT_FIXED );
@@ -1393,169 +1440,118 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 	for (cy=0;cy<m_size_y;cy++)	ys[cy] = m_y_min + m_resolution * cy;
 
 	// Draw the surfaces:
-	if ( m_mapType == mrKalmanFilter || m_mapType==mrKalmanApproximate)
+	switch(m_mapType)
 	{
-		opengl::CSetOfTrianglesPtr obj = opengl::CSetOfTriangles::Create();
-		const double  std_times = 2;
-		const double  z_aspect_ratio = 4;
-
-		//  Compute max/min values:
-		// ---------------------------------------
-		double	maxVal=0, minVal=1, AMaxMin;
-		for (cy=1;cy<m_size_y;cy++)
+	case mrKalmanFilter:
+	case mrKalmanApproximate:
 		{
-			for (cx=1;cx<m_size_x;cx++)
+			opengl::CSetOfTrianglesPtr obj = opengl::CSetOfTriangles::Create();
+			const double  std_times = 2;
+			const double  z_aspect_ratio = 4;
+
+			//  Compute max/min values:
+			// ---------------------------------------
+			double	maxVal=0, minVal=1, AMaxMin;
+			for (cy=1;cy<m_size_y;cy++)
 			{
-				const TGasConcentrationCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-				minVal = min(minVal, cell_xy->kf_mean);
-				maxVal = max(maxVal, cell_xy->kf_mean);
+				for (cx=1;cx<m_size_x;cx++)
+				{
+					const TGasConcentrationCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
+					minVal = min(minVal, cell_xy->kf_mean);
+					maxVal = max(maxVal, cell_xy->kf_mean);
+				}
 			}
-		}
 
-		AMaxMin = maxVal - minVal;
-		if (AMaxMin==0) AMaxMin=1;
+			AMaxMin = maxVal - minVal;
+			if (AMaxMin==0) AMaxMin=1;
 
 
-		// ---------------------------------------
-		//  BOTTOM LAYER:  mean - K*std
-		// ---------------------------------------
-		triag.a[0]=triag.a[1]=triag.a[2]= 0.8f;
+			// ---------------------------------------
+			//  BOTTOM LAYER:  mean - K*std
+			// ---------------------------------------
+			triag.a[0]=triag.a[1]=triag.a[2]= 0.8f;
 
-		for (cy=1;cy<m_size_y;cy++)
-		{
-			for (cx=1;cx<m_size_x;cx++)
+			for (cy=1;cy<m_size_y;cy++)
 			{
-				// Cell values:
-				const TGasConcentrationCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-				const TGasConcentrationCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
-				const TGasConcentrationCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
-				const TGasConcentrationCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
-
-				double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean - std_times*cell_xy->kf_std ) );
-				double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean - std_times*cell_x_1y->kf_std ) );
-				double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean - std_times*cell_xy_1->kf_std ) );
-				double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean - std_times*cell_x_1y_1->kf_std) );
-
-				double col_xy		= min(1.0,max(0.0, (cell_xy->kf_mean-minVal)/AMaxMin ) );
-				double col_x_1y	= min(1.0,max(0.0, (cell_x_1y->kf_mean-minVal)/AMaxMin ) );
-				double col_xy_1	= min(1.0,max(0.0, (cell_xy_1->kf_mean-minVal)/AMaxMin ) );
-				double col_x_1y_1	= min(1.0,max(0.0, (cell_x_1y_1->kf_mean-minVal)/AMaxMin ) );
-
-				// Triangle #1:
-				//if ( fabs(c_xy-0.5f)<0.49f ||
-				//	 fabs(c_x_1y-0.5f)<0.49f ||
-				//	 fabs(c_xy_1-0.5f)<0.49f ||
-				//	 fabs(c_x_1y_1-0.5f)<0.49f )
+				for (cx=1;cx<m_size_x;cx++)
 				{
-					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
-					triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = c_xy_1;
-					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = c_x_1y_1;
-					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-					jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
-					jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
+					// Cell values:
+					const TGasConcentrationCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
+					const TGasConcentrationCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
+					const TGasConcentrationCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
+					const TGasConcentrationCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
 
-					obj->insertTriangle( triag );
-				}
+					double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean - std_times*cell_xy->kf_std ) );
+					double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean - std_times*cell_x_1y->kf_std ) );
+					double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean - std_times*cell_xy_1->kf_std ) );
+					double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean - std_times*cell_x_1y_1->kf_std) );
 
-				// Triangle #2:
-				//if ( fabs(c_xy-0.5f)<0.49f ||
-				//	 fabs(c_x_1y-0.5f)<0.49f ||
-				//	 fabs(c_xy_1-0.5f)<0.49f ||
-				//	 fabs(c_x_1y_1-0.5f)<0.49f )
-				{
-					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
-					triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = c_x_1y_1;
-					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = c_x_1y;
+					double col_xy		= min(1.0,max(0.0, (cell_xy->kf_mean-minVal)/AMaxMin ) );
+					double col_x_1y	= min(1.0,max(0.0, (cell_x_1y->kf_mean-minVal)/AMaxMin ) );
+					double col_xy_1	= min(1.0,max(0.0, (cell_xy_1->kf_mean-minVal)/AMaxMin ) );
+					double col_x_1y_1	= min(1.0,max(0.0, (cell_x_1y_1->kf_mean-minVal)/AMaxMin ) );
 
-					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-					jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
-					jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
+					// Triangle #1:
+					//if ( fabs(c_xy-0.5f)<0.49f ||
+					//	 fabs(c_x_1y-0.5f)<0.49f ||
+					//	 fabs(c_xy_1-0.5f)<0.49f ||
+					//	 fabs(c_x_1y_1-0.5f)<0.49f )
+					{
+						triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
+						triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = c_xy_1;
+						triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = c_x_1y_1;
+						jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+						jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
+						jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
 
-					obj->insertTriangle( triag );
-				}
-			} // for cx
-		} // for cy
-/**/
-		// ---------------------------------------
-		//  MID LAYER:  mean
-		// ---------------------------------------
-/**/
-		triag.a[0]=triag.a[1]=triag.a[2]= 0.8f;
-		for (cy=1;cy<m_size_y;cy++)
-		{
-			for (cx=1;cx<m_size_x;cx++)
+						obj->insertTriangle( triag );
+					}
+
+					// Triangle #2:
+					//if ( fabs(c_xy-0.5f)<0.49f ||
+					//	 fabs(c_x_1y-0.5f)<0.49f ||
+					//	 fabs(c_xy_1-0.5f)<0.49f ||
+					//	 fabs(c_x_1y_1-0.5f)<0.49f )
+					{
+						triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
+						triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = c_x_1y_1;
+						triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = c_x_1y;
+
+						jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+						jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
+						jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
+
+						obj->insertTriangle( triag );
+					}
+				} // for cx
+			} // for cy
+	/**/
+			// ---------------------------------------
+			//  MID LAYER:  mean
+			// ---------------------------------------
+	/**/
+			triag.a[0]=triag.a[1]=triag.a[2]= 0.8f;
+			for (cy=1;cy<m_size_y;cy++)
 			{
-				// Cell values:
-				const TGasConcentrationCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-				const TGasConcentrationCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
-				const TGasConcentrationCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
-				const TGasConcentrationCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
-
-				double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean ) );
-				double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean ) );
-				double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean ) );
-				double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean ) );
-
-				double col_xy		= min(1.0,max(0.0, cell_xy->kf_mean ) );
-				double col_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean ) );
-				double col_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean ) );
-				double col_x_1y_1	= min(1.0,max(0.0, cell_x_1y_1->kf_mean ) );
-
-				// Triangle #1:
-				triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
-				triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_xy_1;
-				triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = z_aspect_ratio*c_x_1y_1;
-				jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-				jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
-				jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
-
-				obj->insertTriangle( triag );
-
-				// Triangle #2:
-				triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
-				triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_x_1y_1;
-				triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = z_aspect_ratio*c_x_1y;
-
-				jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-				jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
-				jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
-				obj->insertTriangle( triag );
-
-			} // for cx
-		} // for cy
-/**/
-
-		// ---------------------------------------
-		//  TOP LAYER:  mean + K*std
-		// ---------------------------------------
-		triag.a[0]=triag.a[1]=triag.a[2]= 0.5f;
-
-		for (cy=1;cy<m_size_y;cy++)
-		{
-			for (cx=1;cx<m_size_x;cx++)
-			{
-				// Cell values:
-				const TGasConcentrationCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-				const TGasConcentrationCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
-				const TGasConcentrationCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
-				const TGasConcentrationCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
-
-				double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean + std_times*cell_xy->kf_std ) );
-				double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean + std_times*cell_x_1y->kf_std ) );
-				double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean + std_times*cell_xy_1->kf_std ) );
-				double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean + std_times*cell_x_1y_1->kf_std) );
-
-				double col_xy		= min(1.0,max(0.0, (cell_xy->kf_mean-minVal)/AMaxMin ) );
-				double col_x_1y	= min(1.0,max(0.0, (cell_x_1y->kf_mean-minVal)/AMaxMin ) );
-				double col_xy_1	= min(1.0,max(0.0, (cell_xy_1->kf_mean-minVal)/AMaxMin ) );
-				double col_x_1y_1	= min(1.0,max(0.0, (cell_x_1y_1->kf_mean-minVal)/AMaxMin ) );
-
-				// Triangle #1:
-				/*if ( fabs(c_xy-0.5f)<0.49f ||
-					 fabs(c_x_1y-0.5f)<0.49f ||
-					 fabs(c_xy_1-0.5f)<0.49f ||
-					 fabs(c_x_1y_1-0.5f)<0.49f )*/
+				for (cx=1;cx<m_size_x;cx++)
 				{
+					// Cell values:
+					const TGasConcentrationCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
+					const TGasConcentrationCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
+					const TGasConcentrationCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
+					const TGasConcentrationCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
+
+					double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean ) );
+					double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean ) );
+					double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean ) );
+					double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean ) );
+
+					double col_xy		= min(1.0,max(0.0, cell_xy->kf_mean ) );
+					double col_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean ) );
+					double col_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean ) );
+					double col_x_1y_1	= min(1.0,max(0.0, cell_x_1y_1->kf_mean ) );
+
+					// Triangle #1:
 					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
 					triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_xy_1;
 					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = z_aspect_ratio*c_x_1y_1;
@@ -1564,14 +1560,8 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 					jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
 
 					obj->insertTriangle( triag );
-				}
 
-				// Triangle #2:
-				/*if ( fabs(c_xy-0.5f)<0.49f ||
-					 fabs(c_x_1y-0.5f)<0.49f ||
-					 fabs(c_xy_1-0.5f)<0.49f ||
-					 fabs(c_x_1y_1-0.5f)<0.49f )*/
-				{
+					// Triangle #2:
 					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
 					triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_x_1y_1;
 					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = z_aspect_ratio*c_x_1y;
@@ -1579,91 +1569,153 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
 					jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
 					jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
+					obj->insertTriangle( triag );
+
+				} // for cx
+			} // for cy
+	/**/
+
+			// ---------------------------------------
+			//  TOP LAYER:  mean + K*std
+			// ---------------------------------------
+			triag.a[0]=triag.a[1]=triag.a[2]= 0.5f;
+
+			for (cy=1;cy<m_size_y;cy++)
+			{
+				for (cx=1;cx<m_size_x;cx++)
+				{
+					// Cell values:
+					const TGasConcentrationCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
+					const TGasConcentrationCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
+					const TGasConcentrationCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
+					const TGasConcentrationCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
+
+					double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean + std_times*cell_xy->kf_std ) );
+					double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean + std_times*cell_x_1y->kf_std ) );
+					double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean + std_times*cell_xy_1->kf_std ) );
+					double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean + std_times*cell_x_1y_1->kf_std) );
+
+					double col_xy		= min(1.0,max(0.0, (cell_xy->kf_mean-minVal)/AMaxMin ) );
+					double col_x_1y	= min(1.0,max(0.0, (cell_x_1y->kf_mean-minVal)/AMaxMin ) );
+					double col_xy_1	= min(1.0,max(0.0, (cell_xy_1->kf_mean-minVal)/AMaxMin ) );
+					double col_x_1y_1	= min(1.0,max(0.0, (cell_x_1y_1->kf_mean-minVal)/AMaxMin ) );
+
+					// Triangle #1:
+					/*if ( fabs(c_xy-0.5f)<0.49f ||
+						 fabs(c_x_1y-0.5f)<0.49f ||
+						 fabs(c_xy_1-0.5f)<0.49f ||
+						 fabs(c_x_1y_1-0.5f)<0.49f )*/
+					{
+						triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
+						triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_xy_1;
+						triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = z_aspect_ratio*c_x_1y_1;
+						jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+						jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
+						jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
+
+						obj->insertTriangle( triag );
+					}
+
+					// Triangle #2:
+					/*if ( fabs(c_xy-0.5f)<0.49f ||
+						 fabs(c_x_1y-0.5f)<0.49f ||
+						 fabs(c_xy_1-0.5f)<0.49f ||
+						 fabs(c_x_1y_1-0.5f)<0.49f )*/
+					{
+						triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
+						triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_x_1y_1;
+						triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = z_aspect_ratio*c_x_1y;
+
+						jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+						jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
+						jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
+
+						obj->insertTriangle( triag );
+					}
+				} // for cx
+			} // for cy
+
+
+			obj->enableTransparency(true);;
+			outObj->insert( obj );
+		}
+		break; // end KF models
+
+	case mrKernelDM:
+	case mrKernelDMV:
+		{
+			// Draw for Kernel model:
+			// ----------------------------------
+			opengl::CSetOfTrianglesPtr obj = opengl::CSetOfTriangles::Create();
+			obj->enableTransparency(false);
+
+			//  Compute max/min values:
+			// ---------------------------------------
+			double 	maxVal=0, minVal=1, AMaxMin;
+			double c;
+			for (cy=1;cy<m_size_y;cy++)
+			{
+				for (cx=1;cx<m_size_x;cx++)
+				{
+					const TGasConcentrationCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
+					c = computeMeanCellValue_DM_DMV( cell_xy );
+					minVal = min(minVal, c);
+					maxVal = max(maxVal, c);
+				}
+			}
+
+			AMaxMin = maxVal - minVal;
+			if (AMaxMin==0) AMaxMin=1;
+
+			// ---------------------------------------
+			//  MID LAYER:  mean
+			// ---------------------------------------
+			triag.a[0]=triag.a[1]=triag.a[2]= 0.75f;	// alpha (transparency)
+			for (cy=1;cy<m_size_y;cy++)
+			{
+				for (cx=1;cx<m_size_x;cx++)
+				{
+					// Cell values:
+					const TGasConcentrationCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
+					const TGasConcentrationCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
+					const TGasConcentrationCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
+					const TGasConcentrationCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
+
+					double c_xy	= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_xy) ) );
+					double c_x_1y	= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_x_1y) ) );
+					double c_xy_1	= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_xy_1) ) );
+					double c_x_1y_1= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_x_1y_1) ) );
+
+					double col_xy		= c_xy;
+					double col_xy_1	= c_xy_1;
+					double col_x_1y	= c_x_1y;
+					double col_x_1y_1	= c_x_1y_1;
+
+					// Triangle #1:
+					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
+					triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = c_xy_1;
+					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = c_x_1y_1;
+					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+					jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
+					jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
 
 					obj->insertTriangle( triag );
-				}
-			} // for cx
-		} // for cy
 
+					// Triangle #2:
+					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
+					triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = c_x_1y_1;
+					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = c_x_1y;
 
-		obj->enableTransparency(true);;
-		outObj->insert( obj );
-
-	} // end draw "mrKalmanFilter"
-	else
-	{
-		// Draw for "mrAchim" model:
-		// ----------------------------------
-		opengl::CSetOfTrianglesPtr obj = opengl::CSetOfTriangles::Create();
-		obj->enableTransparency(false);
-
-		//  Compute max/min values:
-		// ---------------------------------------
-		double 	maxVal=0, minVal=1, AMaxMin;
-		double c;
-		for (cy=1;cy<m_size_y;cy++)
-		{
-			for (cx=1;cx<m_size_x;cx++)
-			{
-				const TGasConcentrationCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-				c = computeAchimCellValue( cell_xy );
-				minVal = min(minVal, c);
-				maxVal = max(maxVal, c);
-			}
+					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+					jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
+					jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
+					obj->insertTriangle( triag );
+				} // for cx
+			} // for cy
+			outObj->insert( obj );
 		}
-
-		AMaxMin = maxVal - minVal;
-		if (AMaxMin==0) AMaxMin=1;
-
-		// ---------------------------------------
-		//  MID LAYER:  mean
-		// ---------------------------------------
-		triag.a[0]=triag.a[1]=triag.a[2]= 0.75f;	// alpha (transparency)
-		for (cy=1;cy<m_size_y;cy++)
-		{
-			for (cx=1;cx<m_size_x;cx++)
-			{
-				// Cell values:
-				const TGasConcentrationCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-				const TGasConcentrationCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
-				const TGasConcentrationCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
-				const TGasConcentrationCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
-
-				double c_xy	= min(1.0,max(0.0, computeAchimCellValue(cell_xy) ) );
-				double c_x_1y	= min(1.0,max(0.0, computeAchimCellValue(cell_x_1y) ) );
-				double c_xy_1	= min(1.0,max(0.0, computeAchimCellValue(cell_xy_1) ) );
-				double c_x_1y_1= min(1.0,max(0.0, computeAchimCellValue(cell_x_1y_1) ) );
-
-				double col_xy		= c_xy;
-				double col_xy_1	= c_xy_1;
-				double col_x_1y	= c_x_1y;
-				double col_x_1y_1	= c_x_1y_1;
-
-				// Triangle #1:
-				triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
-				triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = c_xy_1;
-				triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = c_x_1y_1;
-				jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-				jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
-				jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
-
-				obj->insertTriangle( triag );
-
-				// Triangle #2:
-				triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
-				triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = c_x_1y_1;
-				triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = c_x_1y;
-
-				jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-				jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
-				jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
-				obj->insertTriangle( triag );
-			} // for cx
-		} // for cy
-		outObj->insert( obj );
-
-	} // end draw "mrAchim"
-
+		break; // end Kernel models
+	}; // end switch maptype
 }
 
 /*---------------------------------------------------------------
@@ -1702,11 +1754,25 @@ void  CGasConcentrationGridMap2D::auxParticleFilterCleanUp()
 }
 
 /*---------------------------------------------------------------
-					computeAchimCellValue
+					computeMeanCellValue_DM_DMV
  ---------------------------------------------------------------*/
-double  CGasConcentrationGridMap2D::computeAchimCellValue (const TGasConcentrationCell *cell )
+double  CGasConcentrationGridMap2D::computeMeanCellValue_DM_DMV (const TGasConcentrationCell *cell ) const
 {
-	return (cell->dm_mean_w>0) ? (cell->dm_mean / cell->dm_mean_w) : 0;
+	// A confidence measure:
+	const double alpha = 1.0 - std::exp(-square(cell->dm_mean_w/insertionOptions.dm_sigma_omega));
+	const double r_val = (cell->dm_mean_w>0) ? (cell->dm_mean / cell->dm_mean_w) : 0;
+	return alpha * r_val + (1-alpha) * m_average_normreadings_mean;
+}
+
+/*---------------------------------------------------------------
+					computeVarCellValue_DM_DMV
+ ---------------------------------------------------------------*/
+double CGasConcentrationGridMap2D::computeVarCellValue_DM_DMV (const TGasConcentrationCell *cell ) const
+{
+	// A confidence measure:
+	const double alpha = 1.0 - std::exp(-square(cell->dm_mean_w/insertionOptions.dm_sigma_omega));
+	const double r_val = (cell->dm_mean_w>0) ? (cell->dmv_var_mean / cell->dm_mean_w) : 0;
+	return alpha * r_val + (1-alpha) * m_average_normreadings_var;
 }
 
 /*---------------------------------------------------------------
@@ -1722,18 +1788,33 @@ void CGasConcentrationGridMap2D::predictMeasurement(
 
 	switch (m_mapType)
 	{
-	case mrAchim:
+	case mrKernelDM:
 		{
 			TGasConcentrationCell	*cell = cellByPos( x, y );
 			if (!cell)
 			{
-				out_predict_response = 0;
+				out_predict_response = m_average_normreadings_mean;
 				out_predict_response_variance = square( insertionOptions.KF_initialCellStd );
 			}
 			else
 			{
-				out_predict_response = computeAchimCellValue(cell);
+				out_predict_response = computeMeanCellValue_DM_DMV(cell);
 				out_predict_response_variance = square( insertionOptions.KF_initialCellStd );
+			}
+		}
+		break;
+	case mrKernelDMV:
+		{
+			TGasConcentrationCell	*cell = cellByPos( x, y );
+			if (!cell)
+			{
+				out_predict_response = m_average_normreadings_mean;
+				out_predict_response_variance = square( insertionOptions.KF_initialCellStd );
+			}
+			else
+			{
+				out_predict_response = computeMeanCellValue_DM_DMV(cell);
+				out_predict_response_variance = computeVarCellValue_DM_DMV(cell);
 			}
 		}
 		break;

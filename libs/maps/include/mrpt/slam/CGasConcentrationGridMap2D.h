@@ -259,6 +259,9 @@ namespace slam
 				*/
 			bool useMOSmodel;
 
+			/** [DM/DM+V methods] The scaling parameter for the confidence "alpha" values (see the IROS 2009 paper; see CGasConcentrationGridMap2D) */
+			double  dm_sigma_omega;
+
 		} insertionOptions;
 
 		/** Changes the size of the grid, maintaining previous contents.
@@ -371,8 +374,13 @@ namespace slam
 
 		mutable bool	m_hasToRecoverMeanAndCov;       //!< Only for the KF2 implementation.
 
-		float               m_DM_lastCutOff;    //!< Auxiliary vars for DM & DM+V methods
-		mrpt::vector_float	m_DM_gaussWindow;   //!< Auxiliary vars for DM & DM+V methods
+		/** @name Auxiliary vars for DM & DM+V methods
+		    @{ */
+		float               m_DM_lastCutOff;
+		mrpt::vector_float	m_DM_gaussWindow;
+		double				m_average_normreadings_mean, m_average_normreadings_var;
+		size_t              m_average_normreadings_count;
+		/** @} */
 
 		/** The implementation of "insertObservation" for Achim Lilienthal's map models DM & DM+V.
 		  * \param normReading Is a [0,1] normalized concentration reading.
@@ -425,9 +433,11 @@ namespace slam
 			const double					yaw,
 			const float						speed);
 
-		/** Computes the average cell concentration, or 0 if it has never been observed:
-		  */
-		static double computeAchimCellValue (const TGasConcentrationCell *cell );
+		/** Computes the average cell concentration, or the overall average value if it has never been observed  */
+		double computeMeanCellValue_DM_DMV (const TGasConcentrationCell *cell ) const;
+
+		/** Computes the estimated variance of the cell concentration, or the overall average variance if it has never been observed  */
+		double computeVarCellValue_DM_DMV (const TGasConcentrationCell *cell ) const;
 
 
 		/** In the KF2 implementation, takes the auxiliary matrices and from them update the cells' mean and std values.

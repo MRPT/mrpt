@@ -652,7 +652,7 @@ CPointsMap::TInsertionOptions::TInsertionOptions() :
 	disableDeletion				( true),
 	fuseWithExisting			( false),
 	isPlanarMap					( false),
-	horizontalTolerance			( 0 ),
+	horizontalTolerance			( DEG2RAD(0.05) ),
 	maxDistForInterpolatePoints	( 2.0f )
 {
 }

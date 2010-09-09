@@ -102,6 +102,7 @@
 			- All matrices: New methods:
 				- t() (for transpose, apart of the old ~ operator)
 				- multiply_A_skew3().
+			- mrpt::slam::CGasConcentrationGridMap2D now implements correctly the Kernel DM & DM+V methods as explained in the IROS 2009 paper (see class for refs).
 		- New functions:
 			- mrpt::math::skew_symmetric3 & mrpt::math::skew_symmetric3_neg
 			- mrpt::math::rodrigues_so3_exp
