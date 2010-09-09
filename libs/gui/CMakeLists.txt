@@ -3,8 +3,10 @@
 # -------------------------------------------------
 
 # Embedded version of mathplot:
-LIST(APPEND gui_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/gui/src/mathplots/*.cpp" "${MRPT_SOURCE_DIR}/libs/gui/include/mrpt/otherlibs/mathplot/*.h")
-LIST(APPEND gui_EXTRA_SRCS_NAME 	"mathplot" "mathplot")
+IF(CMAKE_MRPT_HAS_WXWIDGETS)
+	LIST(APPEND gui_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/gui/src/mathplots/*.cpp" "${MRPT_SOURCE_DIR}/libs/gui/include/mrpt/otherlibs/mathplot/*.h")
+	LIST(APPEND gui_EXTRA_SRCS_NAME 	"mathplot" "mathplot")
+ENDIF(CMAKE_MRPT_HAS_WXWIDGETS)
 
 
 # Embedded freeglut?

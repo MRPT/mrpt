@@ -245,7 +245,7 @@ int main(int argc, char ** argv)
 
         for (size_t i=0;i<nSteps;i++)
         {
-            printf("Generating step %i...",i);
+            cout << "Generating step " << i << "...\n";
             CSensoryFrame           SF;
             CActionCollection         acts;
 

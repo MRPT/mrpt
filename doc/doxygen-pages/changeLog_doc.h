@@ -118,6 +118,7 @@
 			- bundle_adj_full_demo
 			- se3
 		- BUG FIXES:
+			- Fixed minimal build, without OpenCV, wxWidgets and GL/GLUT.
 			- Fixed wrong saving/loading to/from text files for mrpt::vision::CFeatureList (thanks "me138" for noticing!)
 			- Fixed (aparently compiler/config-dependent) error when deserializing classes with an old deprecated name, i.e. registered with registerClassCustomName() (Thanks "ricardo" for reporting!)
 			- Fixed exception in mrpt::math::CLevenbergMarquardtTempl when saving the optimization path.
