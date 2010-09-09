@@ -96,7 +96,7 @@ namespace slam
 	  *		"A Statistical Approach to Gas Distribution Modelling with Mobile Robots--The Kernel DM+ V Algorithm"
 	  * 	  , Lilienthal, A.J. and Reggente, M. and Trincavelli, M. and Blanco, J.L. and Gonzalez, J., IROS 2009.
 	  *
-	  * \sa mrpt::slam::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam,
+	  * \sa mrpt::slam::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::slam::CMultiMetricMap
 	  */
 	class MAPS_IMPEXP CGasConcentrationGridMap2D : public CMetricMap, public utils::CDynamicGrid<TGasConcentrationCell>
 	{
@@ -452,6 +452,24 @@ namespace slam
 	};
 
 
+	} // End of namespace
+
+
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<slam::CGasConcentrationGridMap2D::TMapRepresentation>
+		{
+			typedef slam::CGasConcentrationGridMap2D::TMapRepresentation enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(slam::CGasConcentrationGridMap2D::mrKernelDM,          "mrKernelDM");
+				m_map.insert(slam::CGasConcentrationGridMap2D::mrKalmanFilter,      "mrKalmanFilter");
+				m_map.insert(slam::CGasConcentrationGridMap2D::mrKalmanApproximate, "mrKalmanApproximate");
+				m_map.insert(slam::CGasConcentrationGridMap2D::mrKernelDMV,         "mrKernelDMV");
+			}
+		};
 	} // End of namespace
 } // End of namespace
 

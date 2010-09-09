@@ -1049,7 +1049,7 @@ TMetricMapInitializer::CGasConcentrationGridMap2DOptions::CGasConcentrationGridM
 	min_y(-2),
 	max_y(2),
 	resolution(0.10f),
-	mapType(CGasConcentrationGridMap2D::mrKalmanFilter),
+	mapType(CGasConcentrationGridMap2D::mrKernelDM),
 	insertionOpts()
 {
 }
@@ -1230,7 +1230,7 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 		// [<sectionName>+"_gasGrid_##_creationOpts"]
 		subSectName = format("%s_gasGrid_%02u_creationOpts",sectionName.c_str(),i);
 		init.m_disableSaveAs3DObject = ini.read_bool(subSectName,"disableSaveAs3DObject",false);
-		init.gasGridMap_options.mapType = static_cast<CGasConcentrationGridMap2D::TMapRepresentation>(ini.read_int(subSectName,"mapType",static_cast<int>(init.gasGridMap_options.mapType) ));
+		init.gasGridMap_options.mapType = ini.read_enum<CGasConcentrationGridMap2D::TMapRepresentation>(subSectName,"mapType",init.gasGridMap_options.mapType);
 		init.gasGridMap_options.min_x	= ini.read_float(subSectName,"min_x",init.occupancyGridMap2D_options.min_x);
 		init.gasGridMap_options.max_x	= ini.read_float(subSectName,"max_x",init.occupancyGridMap2D_options.max_x);
 		init.gasGridMap_options.min_y	= ini.read_float(subSectName,"min_y",init.occupancyGridMap2D_options.min_y);
@@ -1313,7 +1313,7 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 		// [<sectionName>+"_heightGrid_##_creationOpts"]
 		subSectName = format("%s_heightGrid_%02u_creationOpts",sectionName.c_str(),i);
 		init.m_disableSaveAs3DObject = ini.read_bool(subSectName,"disableSaveAs3DObject",false);
-		init.heightMap_options.mapType = static_cast<CHeightGridMap2D::TMapRepresentation>(ini.read_int(subSectName,"mapType",static_cast<int>(init.heightMap_options.mapType) ));
+		init.heightMap_options.mapType = ini.read_enum<CHeightGridMap2D::TMapRepresentation>(subSectName,"mapType",init.heightMap_options.mapType);
 		init.heightMap_options.min_x	= ini.read_float(subSectName,"min_x",init.heightMap_options.min_x);
 		init.heightMap_options.max_x	= ini.read_float(subSectName,"max_x",init.heightMap_options.max_x);
 		init.heightMap_options.min_y	= ini.read_float(subSectName,"min_y",init.heightMap_options.min_y);
@@ -1457,7 +1457,7 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 		if (it->metricMapClassType==CLASS_ID(CGasConcentrationGridMap2D))
 		{
 			out.printf("m_disableSaveAs3DObject                   = %s\n",it->m_disableSaveAs3DObject ? "true":"false");
-			out.printf("MAP TYPE                                  = %i\n", static_cast<int>(it->gasGridMap_options.mapType) );
+			out.printf("MAP TYPE                                  = %s\n", mrpt::utils::TEnumType<CGasConcentrationGridMap2D::TMapRepresentation>::value2name(it->gasGridMap_options.mapType).c_str() );
 			out.printf("min_x                                     = %f\n", it->gasGridMap_options.min_x );
 			out.printf("max_x                                     = %f\n", it->gasGridMap_options.max_x );
 			out.printf("min_y                                     = %f\n", it->gasGridMap_options.min_y );
@@ -1470,7 +1470,7 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 		if (it->metricMapClassType==CLASS_ID(CHeightGridMap2D))
 		{
 			out.printf("m_disableSaveAs3DObject                   = %s\n",it->m_disableSaveAs3DObject ? "true":"false");
-			out.printf("MAP TYPE                                  = %i\n", static_cast<int>(it->heightMap_options.mapType) );
+			out.printf("MAP TYPE                                  = %s\n", mrpt::utils::TEnumType<CHeightGridMap2D::TMapRepresentation>::value2name(it->heightMap_options.mapType).c_str() );
 			out.printf("min_x                                     = %f\n", it->heightMap_options.min_x );
 			out.printf("max_x                                     = %f\n", it->heightMap_options.max_x );
 			out.printf("min_y                                     = %f\n", it->heightMap_options.min_y );

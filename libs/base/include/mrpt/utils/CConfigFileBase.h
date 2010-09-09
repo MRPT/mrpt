@@ -29,7 +29,7 @@
 #define  CConfigFileBase_H
 
 #include <mrpt/utils/utils_defs.h>
-
+#include <mrpt/utils/TEnumType.h>
 #include <mrpt/math/CMatrixTemplate.h>
 
 /*---------------------------------------------------------------
@@ -68,7 +68,7 @@ namespace utils
 		/** Returns a list with all the section names.
 		  */
 		virtual void getAllSections( vector_string	&sections ) const = 0 ;
-		
+
 		/** Returs a list with all the keys into a section.
 		  */
 		virtual void getAllKeys( const std::string section, vector_string	&keys ) const = 0;
@@ -96,7 +96,7 @@ namespace utils
 		/** Save a configuration parameter of type "size_t"
 		 */
 		void  write(const std::string &section, const std::string &name, size_t value);
-#endif		
+#endif
 
 		/** Save a configuration parameter of type "string"
 		 */
@@ -239,6 +239,47 @@ namespace utils
 			mrpt::math::CMatrixTemplate<T>	&outMatrix,
 			const mrpt::math::CMatrixTemplate<T> &defaultMatrix = mrpt::math::CMatrixTemplate<T>(0,0),
 			bool failIfNotFound = false ) const;
+
+		/** Reads an "enum" value, where the value in the config file can be either a numerical value or the symbolic name, for example:
+		  *   In the code:
+		  *  \code
+		  *    enum my_type_t { type_foo=0, type_bar };
+		  *  \endcode
+		  *  In the config file:
+		  *  \code
+		  *    [section]
+		  *    type   = type_bar   // Use the symbolic name, or
+		  *    type   = 1          // use the numerical value (both lines will be equivalent)
+		  *  \endcode
+		  *  Which can be loaded with:
+		  *  \code
+		  *    cfgfile.read_enum<my_type_t>("section","type", type_foo );
+		  *  \endcode
+		  *
+		  *  \note For an enum type to work with this template it is required that it defines a specialization of mrpt::utils::TEnumType
+		  */
+		template <typename ENUMTYPE>
+		ENUMTYPE read_enum(const std::string &section, const std::string &name, const ENUMTYPE &defaultValue, bool failIfNotFound = false) const
+		{
+			MRPT_START
+			const std::string sVal = read_string_first_word(section,name,"",failIfNotFound);
+			if (sVal.empty()) return defaultValue;
+			// Text or numeric value?
+			if (::isdigit(sVal[0]))
+			{	// Seems a number:
+				return static_cast<ENUMTYPE>(::atoi(&sVal[0]));
+			}
+			else
+			{	// Name look-up:
+				try {
+				return mrpt::utils::TEnumType<ENUMTYPE>::name2value(sVal);
+				} catch (std::exception &)
+				{
+					THROW_EXCEPTION(format("Invalid value '%s' for enum type while reading key='%s'.",sVal.c_str(),name.c_str()))
+				}
+			}
+			MRPT_END
+		}
 
 
 	}; // End of class def.

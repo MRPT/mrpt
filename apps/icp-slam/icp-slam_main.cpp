@@ -31,7 +31,7 @@
 	FILE: icp-slam_main.cpp
 	AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
 
-	See README.txt for instructions or 
+	See README.txt for instructions or
           http://www.mrpt.org/Application:icp-slam
   ---------------------------------------------------------------*/
 
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 		const string INI_FILENAME = string( argv[1] );
 		ASSERT_(fileExists(INI_FILENAME));
 
-		string override_rawlog_file; 
+		string override_rawlog_file;
 		if (argc>=3)
 			override_rawlog_file = string(argv[2]);
 
@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 
 		//pause();
 		return 0;
-	} 
+	}
 	catch (exception &e)
 	{
 		setConsoleColor(CONCOL_RED,true);
@@ -127,9 +127,6 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 	MRPT_START
 
 	CConfigFile				iniFile(INI_FILENAME);
-
-	TSetOfMetricMapInitializers  metricMapsOpts;
-	CICP::TConfigParams			icpOptions;
 
 	// ------------------------------------------
 	//			Load config from file:
@@ -180,9 +177,8 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 
 	printf("\n");
 
-	metricMapsOpts.dumpToConsole();
 	mapBuilder.ICP_params.dumpToConsole();
-
+	mapBuilder.ICP_options.dumpToConsole();
 
 
 	// Checks:
@@ -200,7 +196,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 	CFileGZInputStream					rawlogFile( RAWLOG_FILE.c_str() );
 
 
-	// Prepare output directory: 
+	// Prepare output directory:
 	// --------------------------------
 	deleteFilesInDirectory(OUT_DIR);
 	createDirectory(OUT_DIR);

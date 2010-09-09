@@ -120,6 +120,7 @@ void  CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
 
 void  CMetricMapBuilderICP::TConfigParams::dumpToTextStream( CStream	&out) const
 {
+	mapInitializers.dumpToTextStream(out);
 }
 
 /*---------------------------------------------------------------

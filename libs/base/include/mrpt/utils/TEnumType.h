@@ -25,80 +25,53 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-#ifndef mrpt_utils_H
-#define mrpt_utils_H
+#ifndef  mrpt_TEnumType_H
+#define  mrpt_TEnumType_H
 
 #include <mrpt/utils/utils_defs.h>
-
-#include <mrpt/poses.h>  // Dependency
-
-#include <mrpt/utils/CDebugOutputCapable.h>
-#include <mrpt/utils/CStringList.h>
-#include <mrpt/utils/TEnumType.h>
-
-// Smart pointers and RTTI:
-#include <mrpt/utils/CObject.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
-
-// CStream related classes:
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CMemoryStream.h>
-#include <mrpt/utils/CMemoryChunk.h>
-#include <mrpt/utils/CStdOutStream.h>
-#include <mrpt/utils/CFileStream.h>
-
-#include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/utils/CFileGZOutputStream.h>
-
-// TCP sockets:
-#include <mrpt/utils/CServerTCPSocket.h>
-#include <mrpt/utils/CClientTCPSocket.h>
-
-#include <mrpt/utils/CEnhancedMetaFile.h>
-#include <mrpt/utils/CCanvas.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CImageFloat.h>
-#include <mrpt/utils/CMappedImage.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/utils/CSimpleDatabase.h>
-#include <mrpt/utils/CPropertiesValuesList.h>
-#include <mrpt/utils/CMHPropertiesValuesList.h>
-#include <mrpt/utils/CTypeSelector.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CMessage.h>
-
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/utils/CThreadSafeQueue.h>
-#include <mrpt/utils/CMessageQueue.h>
-#include <mrpt/utils/CDynamicGrid.h>
-#include <mrpt/utils/CProbabilityDensityFunction.h>
-
-#include <mrpt/utils/CConsoleRedirector.h>
 #include <mrpt/utils/stl_extensions.h>
-#include <mrpt/utils/metaprogramming.h>
-#include <mrpt/utils/exceptions.h>
-#include <mrpt/utils/crc.h>
-#include <mrpt/utils/md5.h>
-#include <mrpt/utils/net_utils.h>
-#include <mrpt/utils/CLog.h>
-#include <mrpt/utils/CListOfClasses.h>
-#include <mrpt/utils/CTextFileLinesParser.h>
 
-#include <mrpt/utils/CRobotSimulator.h>
-
-#include <mrpt/utils/TCamera.h>
-#include <mrpt/utils/TMatchingPair.h>
-
-// Observer-Observable pattern:
-#include <mrpt/utils/CObservable.h>
-#include <mrpt/utils/CObserver.h>
-#include <mrpt/utils/mrptEvent.h>
+namespace mrpt
+{
+	namespace utils
+	{
+		/** Only specializations of this class are defined for each enum type of interest
+		  * \sa TEnumType
+		  */
+		template <typename ENUMTYPE>
+		struct TEnumTypeFiller
+		{
+			typedef ENUMTYPE enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map);
+		};
 
 
+		/** A helper class that can convert an enum value into its textual representation, and viceversa.  */
+		template <typename ENUMTYPE>
+		struct TEnumType
+		{
+			/** Gives the numerical name for a given enum text name \exception std::exception on unknown enum name */
+			static ENUMTYPE    name2value(const std::string &name)
+			{
+				if (getBimap().empty()) TEnumTypeFiller<ENUMTYPE>::fill(getBimap());
+				return getBimap().inverse(name);
+			}
+
+			/** Gives the textual name for a given enum value \exception std::exception on unknown enum value name */
+			static std::string value2name(const ENUMTYPE val)
+			{
+				if (getBimap().empty()) TEnumTypeFiller<ENUMTYPE>::fill(getBimap());
+				return getBimap().direct(val);
+			}
+
+			/** Singleton access */
+			static inline bimap<ENUMTYPE,std::string> &getBimap()
+			{
+				static bimap<ENUMTYPE,std::string> data;
+				return data;
+			}
+		};
+
+	} // End of namespace
+} // end of namespace
 #endif
-

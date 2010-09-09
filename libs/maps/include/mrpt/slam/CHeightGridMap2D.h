@@ -122,7 +122,6 @@ namespace mrpt
 				mrSlidingWindow
 			};
 
-
 			/** Constructor
 			  */
 			CHeightGridMap2D(
@@ -220,12 +219,12 @@ namespace mrpt
 			  */
 			TMapRepresentation	 getMapType();
 
-			
+
 			/** Gets the intersection between a 3D line and a Height Grid map (taking into account the different heights of each individual cell).
 			  */
 			bool intersectLine3D(const TLine3D &r1, TObject3D &obj) const;
-			
-			/** Computes the minimum and maximum height in the grid. 
+
+			/** Computes the minimum and maximum height in the grid.
 			  * \return False if there is no observed cell yet.
 			  */
 			bool getMinMaxHeight(float &z_min, float &z_max) const;
@@ -262,6 +261,21 @@ namespace mrpt
 		  */
 		extern MAPS_IMPEXP bool HEIGHTGRIDMAP_EXPORT3D_AS_MESH;
 	}
+
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<slam::CHeightGridMap2D::TMapRepresentation>
+		{
+			typedef slam::CHeightGridMap2D::TMapRepresentation enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(slam::CHeightGridMap2D::mrSimpleAverage,     "mrSimpleAverage");
+				m_map.insert(slam::CHeightGridMap2D::mrSlidingWindow,     "mrSlidingWindow");
+			}
+		};
+	} // End of namespace
 
 } // End of namespace
 
