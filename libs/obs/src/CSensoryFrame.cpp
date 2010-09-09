@@ -41,19 +41,6 @@ using namespace std;
 using namespace mrpt::utils::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE( CSensoryFrame, CSerializable, mrpt::slam )
-// -------------------------------------------------------------------------------
-//   The CSensoryFrame-HACK:		*** "Temporary" hack!! :-( ***
-//  The name of this class was previously "CSensorialFrame", so this 'hack' is
-//  needed to allow portability in the old serializations. This hack will
-//  be eventually removed when all old data become ported to the new format!
-//                                                          JLBC, 14/DEC/2007
-// -------------------------------------------------------------------------------
-CLASSINIT CSensoryFrame::_init_CSensorialFrame( (static_cast<TRuntimeClassId*>(&CSensoryFrame::classCSensorialFrame)) );
-TRuntimeClassId CSensoryFrame::classCSensorialFrame = {
-		"CSensorialFrame",
-		CSensoryFrame::CreateObject,
-		&CSensoryFrame::_GetBaseClass };
-
 
 /*---------------------------------------------------------------
 						Default constructor

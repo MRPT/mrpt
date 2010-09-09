@@ -52,11 +52,6 @@ namespace slam
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CSimpleMap )
-		// -------------------------------------------------------------------------------
-		//   HACK: For compatibility with old data (See CSimpleMap.cpp)
-		// -------------------------------------------------------------------------------
-		static mrpt::utils::CLASSINIT _init_CSensFrameProbSequence;
-		static mrpt::utils::TRuntimeClassId classCSensFrameProbSequence;
 
 	public:
 		/** Constructor
@@ -185,8 +180,10 @@ namespace slam
 	}; // End of class def.
 
 	// For compatibility with code < 0.9.0
+#if MRPT_BACKCOMPATIB_08X
 	typedef CSimpleMap		CSensFrameProbSequence;
 	typedef CSimpleMapPtr	CSensFrameProbSequencePtr;
+#endif
 
 
 	} // End of namespace

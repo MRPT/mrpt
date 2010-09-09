@@ -35,6 +35,9 @@ namespace mrpt
 {
 	namespace utils
 	{
+		/** @name RTTI classes and functions
+		    @{ */
+
 		class BASE_IMPEXP CObject;
 
 		/** A smart pointer to a CObject object
@@ -283,6 +286,8 @@ namespace mrpt
 				#class_name, NULL, &class_name::_GetBaseClass }; \
 			const mrpt::utils::TRuntimeClassId* class_name::GetRuntimeClass() const \
 				{ return CLASS_ID(class_name); }
+
+		/** @}  */   // end of RTTI
 
 	} // End of namespace
 } // End of namespace

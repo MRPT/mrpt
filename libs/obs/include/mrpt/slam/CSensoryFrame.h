@@ -50,21 +50,21 @@ namespace mrpt
 		  * \code
 		  * CObservationXXXPtr	o = CObservationXXX::Create();  // Create a smart pointer containing an object of class "CObservationXXX"
 		  * o->(...)
-		  * 
+		  *
 		  * CSensoryFrame	 sf;
 		  * sf.insert(o);
 		  * \endcode
-		  * 
+		  *
 		  * The following methods are equivalent for adding new observations to a "sensory frame":
 		  * - CSensoryFrame::operator +=
 		  * - CSensoryFrame::push_back
 		  * - CSensoryFrame::insert
-		  * 
+		  *
 		  * To examine the objects within a sensory frame, the following methods exist:
 		  * - CSensoryFrame::getObservationByClass : Looks for some specific observation class.
 		  * - CSensoryFrame::begin : To iterate over all observations.
 		  * - CSensoryFrame::getObservationByIndex : To query by index.
-		  * 
+		  *
 		  * Notice that contained observations objects are automatically deleted on
 		  *  this object's destruction or clear.
 		  * \sa CObservation
@@ -73,12 +73,6 @@ namespace mrpt
 		{
 			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CSensoryFrame )
-			// -------------------------------------------------------------------------------
-			//   HACK: For compatibility with old datasets (See CSensoryFrame.cpp)
-			// -------------------------------------------------------------------------------
-			static mrpt::utils::CLASSINIT _init_CSensorialFrame;
-			static mrpt::utils::TRuntimeClassId classCSensorialFrame;
-
 
 		public:
 			 /** Default constructor

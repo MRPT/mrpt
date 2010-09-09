@@ -886,7 +886,7 @@ bool CStream::getline(std::string &out_str)
 		}
 	}
 	catch(...)
-	{	// Any read error: 
+	{	// Any read error:
 		return false;
 	}
 }

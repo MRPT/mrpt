@@ -42,19 +42,6 @@ using namespace std;
 using namespace mrpt::utils::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE(CSimpleMap, CSerializable,mrpt::slam)
-// -------------------------------------------------------------------------------
-//  HACK:
-//  The name of this class was previously "CSensFrameProbSequence", so this 'hack' is
-//  needed to allow portability in the old serializations.
-// -------------------------------------------------------------------------------
-CLASSINIT CSimpleMap::_init_CSensFrameProbSequence( (static_cast<TRuntimeClassId*>(&CSimpleMap::classCSensFrameProbSequence)) );
-TRuntimeClassId CSimpleMap::classCSensFrameProbSequence = {
-		"CSensFrameProbSequence",
-		CSimpleMap::CreateObject,
-		&CSimpleMap::_GetBaseClass };
-
-	//
-
 
 /*---------------------------------------------------------------
 						Constructor

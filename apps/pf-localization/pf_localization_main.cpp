@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 {
 	try
 	{
-		printf(" ParticleFilter Localization - Version 0.2 - Part of the MRPT\n");
+		printf(" ParticleFilter Localization\n");
 		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
 		printf("-------------------------------------------------------------------\n");
 
