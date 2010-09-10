@@ -151,7 +151,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 		if ( m_measure.takeTime )
 			m_timeLog.leave("Detection time");
 
-		if ( m_measure.takeMeasures )
+		//if ( m_measure.takeMeasures )
 			m_measure.numPossibleFacesDetected += localDetected.size();
 	}
 	
@@ -250,15 +250,15 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 						remove = true;
 					}
 
-					/*if ( remove )
+					if ( remove )
 					{
 						ofstream f;
 						f.open("deleted.txt", ofstream::app);
 						f << "Deleted: " << m_measure.faceNum << endl;
 						f.close();
-					}*/
+					}
 
-					//m_measure.faceNum++;
+					m_measure.faceNum++;
 
 					// To obtain experimental results
 					{
@@ -296,7 +296,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 
 	// To obtain experimental results
 	{
-		if ( m_measure.takeMeasures )
+		//if ( m_measure.takeMeasures )
 			m_measure.numRealFacesDetected += detected.size();
 	}
 
@@ -469,14 +469,14 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face )
 	
 	unsigned int x1 = ceil(faceWidth*0.1);
 	unsigned int x2 = floor(faceWidth*0.9);
-	unsigned int y1 = ceil(faceHeight*0.1);
+	unsigned int y1 = ceil(faceHeight*0.05);
 	unsigned int y2 = floor(faceHeight*0.9);
 
 	unsigned int sectionVSize = floor((y2-y1)/3.0);
 	unsigned int sectionHSize = floor((x2-x1)/3.0);
 
 	vector<TPoint3D> points;
-	unsigned int cont = 0;
+	unsigned int cont = faceWidth*(y1-1);
 
 	double meanDepth[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
 	int numPoints[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
@@ -557,6 +557,7 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face )
 	cout << endl << meanDepth[2][0] << "\t" << meanDepth[2][1] << "\t" << meanDepth[2][2] << endl;*/
 	
 	//experimental_viewRegions( regions2 );
+	//experimental_viewFacePointsScanned( *face );
 	//cout << m_measure.faceNum;
 
 	// For experimental results
@@ -666,11 +667,11 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 
 	unsigned int x1 = ceil(faceWidth*0.2);
 	unsigned int x2 = floor(faceWidth*0.8);
-	unsigned int y1 = ceil(faceHeight*0.2);
-	unsigned int y2 = floor(faceHeight*0.8);
+	unsigned int y1 = ceil(faceHeight*0.05);
+	unsigned int y2 = floor(faceHeight*0.9);
 
 	vector<TPoint3D> points;
-	unsigned int cont = 0;
+	unsigned int cont = ( y1 <= 1 ? 0 : faceHeight*(y1-1));
 	CMatrixBool valids; 
 	
 	valids.setSize(faceHeight,faceWidth);
@@ -696,8 +697,10 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 	
 	double meanDepth = sumDepth / total;
 
-	/*if ( ( m_measure.faceNum == 317 ) || ( m_measure.faceNum == 470 ))
-		experimental_viewFacePointsScanned( points );*/
+	/*if (  m_measure.faceNum > 838 )
+		experimental_viewFacePointsScanned( *face );*/
+
+	//experimental_viewFacePointsScanned( points );
 
 	if ( m_options.useSizeDistanceRelationFilter )
 	{
@@ -707,6 +710,9 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 		{
 			if ( m_measure.takeTime )
 				m_timeLog.leave("Check if face plane: size-distance relation");
+
+			if ( m_options.useDiagonalDistanceFilter && m_measure.takeTime )
+				m_timeLog.leave("Check if face plane: diagonal distances");
 		}
 	
 		if ( maxFaceDistance > meanDepth )
@@ -716,22 +722,25 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 			return false;
 	}
 
-	/*ofstream f;
+	ofstream f;
 	f.open("relaciones1.txt", ofstream::app);
 	f << faceWidth << endl;
 	f.close();	
 
 	f.open("relaciones2.txt", ofstream::app);
 	f << meanDepth << endl;
-	f.close();	*/
+	f.close();	
 
 	//cout << m_measure.faceNum ;
 
 	//experimental_viewFacePointsScanned( points );	
-	
+
+
+
+
 	points.clear();
 
-	cont = 0;
+	cont = ( y1 <= 1 ? 0 : faceHeight*(y1-1));
 
 	for ( unsigned int i = y1; i <= y2; i++ )
 	{
@@ -754,6 +763,9 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 		cont += faceWidth-x2;
 	}
 	
+	/*if (  m_measure.faceNum > 838 )
+		experimental_viewFacePointsScanned( points );*/
+
 	//if ( ( m_measure.faceNum == 225 ) || ( m_measure.faceNum == 226 ) )
 	//experimental_viewFacePointsScanned( points );
 
@@ -815,7 +827,7 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 		if ( m_measure.takeMeasures )
 			m_measure.sumDistances.push_back( sumDistances );
 
-		/*ofstream f;
+		ofstream f;
 		f.open("distances.txt", ofstream::app);
 		//f << m_measure.faceNum << " " << sumDistances << endl;
 		f << sumDistances << endl;
@@ -823,10 +835,11 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 
 		f.open("distances2.txt", ofstream::app);
 		f << m_measure.faceNum << " " << sumDistances << endl;
-		f.close();		*/
+		f.close();	
 	}
 
-	double yMax = 3 + 3.8 / ( pow( meanDepth, 2 ) );
+	//double yMax = 3 + 3.8 / ( pow( meanDepth, 2 ) );
+	double yMax = 3 + 7 /( pow( meanDepth, 2) ) ;
 	double yMin = 1 + 3.8 / ( pow( meanDepth+7, 6 ) );
 		    
 	// To obtain experimental results
