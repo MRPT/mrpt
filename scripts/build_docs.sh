@@ -153,6 +153,10 @@ cp design_of_images/*.map images/
 cp screenshots/*.* images/
 cp images/*.* html/
 cp html_postbuild/*.* html/
+# Perf stats:
+rm html/perf-html/* 2> /dev/null
+mkdir html/perf-html 2> /dev/null
+cp perf-data/perf-html/*.html html/perf-html/
 printf "OK\n"
 
 # If we are in windows, run the HHC directly:

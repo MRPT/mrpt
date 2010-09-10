@@ -47,15 +47,10 @@ $MRPT_LIBS_DOT
 <br>
 <h2>Performance benchmarks</h2>
 
-The results of the benchmark "mrpt-performance" is published along 
-each MRPT version to keep track of changes in the speed of each algorithm.
+Extensive performance tests are automated thanks to the application "mrpt-performance". 
 
-These are the latest tests (all executed in the same computer):
-
-<ul>
-<li> On Windows @ 32bit, MSVC10 compiler (<a href="mrpt-performance_win32bit.html" target="_blank">see table</a>) </li>
-<li> On GNU/Linux @ 64bit, GCC compiler (<a href="mrpt-performance_linux64bit.html" target="_blank">see table</a>) </li>
-</ul>
+To see the results on different platforms, as well as a comparison between different 
+compilers and platforms, see the <a href="perf-html/"> performance page</a>.
 
 */
 

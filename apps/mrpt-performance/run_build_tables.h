@@ -9,6 +9,8 @@ struct TPerfField
 	vector<pair<string,double> >  all_perf_data;
 };
 
+bool func_comp_entries(const TPerfField &a, const TPerfField &b) { return a.config_name > b.config_name; }
+
 // ------------------------------------------------------
 //                     run_build_tables
 // ------------------------------------------------------
@@ -48,6 +50,8 @@ int run_build_tables()
 
 		cout << " Read: " << setw(30) << config_name << " with " << dat.all_perf_data.size() << " entries.\n";
 	}
+
+	std::sort(lstConfigurations.begin(),lstConfigurations.end(), func_comp_entries);
 
 	ASSERT_( directoryExists(PERF_DATA_DIR+string("/perf-html/") ) )
 
