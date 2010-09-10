@@ -795,6 +795,8 @@ int CDisplayWindow_WXAPP::OnExit()
 void WxSubsystem::waitWxShutdownsIfNoWindows()
 {
 	MRPT_TODO("JL: Should get on this...");
+	mrpt::system::sleep(50);  // Perhaps this is enough, even if not the optimal solution, it leaves time to the wx thread to exit.
+
 	// Just let know a global object that, at its destruction, it must  ....
 //
 //	// Any open windows?

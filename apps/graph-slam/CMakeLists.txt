@@ -15,6 +15,7 @@ PROJECT(graph_slam)
 # Define the executable target:
 ADD_EXECUTABLE(graph-slam
 	graph-slam_main.cpp
+	display_graph.cpp
 	)
 
 SET(TMP_TARGET_NAME "graph-slam")
@@ -25,7 +26,7 @@ SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(APP) ${TMP_T
 TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 
 # Dependencies on MRPT libraries:
-#  Just mention the top-level dependency, the rest will be detected automatically, 
+#  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-slam mrpt-gui)
 

@@ -98,7 +98,7 @@ namespace mrpt
 			  *   </tr>
 			  *	  </table>
 			  *
-			  * \sa CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
+			  * \sa mrpt::poses::CNetworkOfPoses2D, mrpt::poses::CNetworkOfPoses3D, mrpt::poses::CNetworkOfPoses2DInf, mrpt::poses::CNetworkOfPoses3DInf
 			  */
 			template<class CPOSE>
 			CSetOfObjectsPtr OPENGL_IMPEXP graph_visualize(

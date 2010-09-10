@@ -44,7 +44,7 @@
 		- New applications:
 			- <a href="http://www.mrpt.org/Application:carmen2rawlog" >carmen2rawlog</a>: A converter from CARMEN robotics logs to binary Rawlog dataset files.
 			- <a href="http://www.mrpt.org/Application:carmen2simplemap" >carmen2simplemap</a>: A converter from CARMEN robotics logs to binary "simplemap" files.
-			- (TODO) <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>: A central application for all Graph-SLAM methods and tools.
+			- <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>: A central application for all Graph-SLAM methods and tools.
 		- Changes in applications:
 			- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: More operations supported.
 			- <a href="http://www.mrpt.org/Application:mrpt-performance" >mrpt-performance</a>: Added command-line arguments to filter what tests to run, and more tests added.
