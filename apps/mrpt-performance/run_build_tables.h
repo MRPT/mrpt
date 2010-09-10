@@ -110,11 +110,11 @@ int run_build_tables()
 		for (size_t j=0;j<lstConfigurations.size();j++)
 		{
 			const TPerfField &P2 = lstConfigurations[j];
-			if (j>i)
-			{
-				fo.printf("  <td border=\"0\"></td>\n");
-				continue;
-			}
+//			if (j>i)
+//			{
+//				fo.printf("  <td border=\"0\"></td>\n");
+//				continue;
+//			}
 			string txt;
 			if (i==j)
 			{
@@ -197,7 +197,7 @@ int run_build_tables()
 		for (size_t j=0;j<lstConfigurations.size();j++)
 		{
 			TPerfField P2 = lstConfigurations[j];
-			if (j>=i)  continue;
+			if (j==i)  continue;
 			const string out_fil = PERF_DATA_DIR+format("/perf-html/comparison_%s_vs_%s.html",
 							P1.config_name.c_str(),
 							P2.config_name.c_str() );
@@ -206,8 +206,8 @@ int run_build_tables()
 
 
 			// Make sure P1 is the "more modern" version:
-			if ( P1.config_name < P2.config_name )
-				std::swap(P1,P2);
+//			if ( P1.config_name < P2.config_name )
+//				std::swap(P1,P2);
 
 			// Convert P2 data into a std::map<> for search efficiency:
 			map<string,double>  P2_dat;
@@ -233,10 +233,10 @@ int run_build_tables()
 						P1.config_name.c_str(),P2.config_name.c_str()
 					  );
 
-			for (size_t j=0;j<P1.all_perf_data.size();j++)  // vector<pair<string,double> >
+			for (size_t k=0;k<P1.all_perf_data.size();k++)  // vector<pair<string,double> >
 			{
-				const double t1 = P1.all_perf_data[j].second;
-				const string test_name = P1.all_perf_data[j].first;
+				const double t1 = P1.all_perf_data[k].second;
+				const string test_name = P1.all_perf_data[k].first;
 
 				const bool P2_has_this_one = P2_dat.find(test_name)!=P2_dat.end();
 
