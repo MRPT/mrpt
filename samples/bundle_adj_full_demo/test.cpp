@@ -64,7 +64,7 @@ void my_BundleAdjustmentFeedbackFunctor(
 	const TFramePosesVec & current_frame_estimate,
 	const TLandmarkLocationsVec & current_landmark_estimate )
 {
-	const double avr_err = std::sqrt(cur_total_sq_error)/input_observations.size();
+	const double avr_err = std::sqrt(cur_total_sq_error/input_observations.size());
 	history_avr_err.push_back(avr_err);
 	cout << "[PROGRESS] Iter: " << cur_iter << " avrg err in px: " << avr_err << endl;
 	cout.flush();
@@ -156,7 +156,7 @@ int main(int argc, char **argv)
 			//const double cameraPathEllipRadius1 = L1*2;
 			//const double cameraPathEllipRadius2 = L2*2;
 			// Noise params:
-			const double STD_PX_ERROR= 0; //0.10; // pixels
+			const double STD_PX_ERROR= 0.10; // pixels
 			const double STD_PT3D    = 0.10; // meters
 			const double STD_CAM_XYZ = 0.05; // meters
 			const double STD_CAM_ANG = DEG2RAD(5); // degs

@@ -75,7 +75,6 @@ namespace mrpt
 			   const TPoint3D & landmark_global,
 			   CMatrixFixedNumeric<double,2,6> & out_J)
 		{
-			// JL says: This BA implementation assumes that we're estimating the **INVERSE** camera poses
 			double x,y,z; // wrt cam (local coords)
 			if (POSES_ARE_INVERSE)
 				cam_pose.composePoint(
@@ -88,40 +87,45 @@ namespace mrpt
 
 			ASSERT_(z!=0)
 
-//			CMatrixDouble22 J_intrinsic;
-//			J_intrinsic(0,0) = camera_params.intrinsicParams(0,0);
-//			J_intrinsic(1,1) = camera_params.intrinsicParams(1,1);
+			const double _z = 1.0/z;
+			const double fx_z = camera_params.fx() *_z;
+			const double fy_z = camera_params.fy() *_z;
+			const double _z2 = square(_z);
+			const double fx_z2 = camera_params.fx()*_z2;
+			const double fy_z2 = camera_params.fy()*_z2;
 
 			if (POSES_ARE_INVERSE)
 			{
-//				const double z_2 = square(z);
-//				const double J_frame_vals[] = {
-//					   1./z, 0   , -x/z_2, -x*y/z_2, 1+(square(x)/z_2), -y/z,
-//					   0   , 1./z, -y/z_2, -(1+square(y)/z_2), x*y/z_2, x/z  };
-//				const CMatrixFixedNumeric<double,2,6> J_frame(J_frame_vals);
-//				out_J.multiply_AB(J_intrinsic, J_frame);
-
-				const double _z = 1.0/z;
-				const double _z2 = square(_z);
-				const double fx_z = camera_params.fx() *_z;
-				const double fy_z = camera_params.fy() *_z;
-				const double fx_z2 = camera_params.fx()*_z2;
-				const double fy_z2 = camera_params.fy()*_z2;
 				const double xy = x*y;
 
 				const double J_vals[] = {
-					fx_z,	0,		-fx_z2*x,	fx_z2*xy, 								-camera_params.fx()*(1+square(x*_z)),	fx_z*y,
-					0,		fy_z,	-fy_z2*y,	camera_params.fy()*(1+square(y*_z)),	-fy_z2*xy, 	fy_z*x };
+					fx_z,	0,		-fx_z2*x,	-fx_z2*xy, 								camera_params.fx()*(1+square(x*_z)),	-fx_z*y,
+					0,		fy_z,	-fy_z2*y,	-camera_params.fy()*(1+square(y*_z)),	fy_z2*xy, 	fy_z*x };
 				out_J.loadFromArray(J_vals);
 			}
 			else
 			{
-				THROW_EXCEPTION("TODO")
-//				const double J_frame_vals[] = {
-//					   -1./z, 0   , x/z_2, x*y/z_2, -1-(square(x)/z_2), y/z,
-//					   0   , -1./z, y/z_2, (1+square(y)/z_2), -x*y/z_2, -x/z  };
-//				const CMatrixFixedNumeric<double,2,6> J_frame(J_frame_vals);
-//				out_J.multiply_AB(J_intrinsic, J_frame);
+				const mrpt::math::CMatrixDouble33 & R = cam_pose.getRotationMatrix();
+
+				const double jac_proj_vals[] = {
+					fx_z,	0,		-fx_z2*x,
+					0,		fy_z,	-fy_z2*y };
+				const mrpt::math::CMatrixFixedNumeric<double,2,3>  jac_proj(jac_proj_vals);
+
+				const double p_x = cam_pose.x();
+				const double p_y = cam_pose.y();
+				const double p_z = cam_pose.z();
+				const double tx = landmark_global.x - p_x;
+				const double ty = landmark_global.y - p_y;
+				const double tz = landmark_global.z - p_z;
+
+				const double aux_vals[] = {
+					-R(0,0), -R(1,0), -R(2,0), tz * R(1,0) - ty * R(2,0) + R(1,0) * p_z - R(2,0) * p_y, tx * R(2,0) - tz * R(0,0) - R(0,0) * p_z + R(2,0) * p_x, ty * R(0,0) - tx * R(1,0) + R(0,0) * p_y - R(1,0) * p_x,
+					-R(0,1), -R(1,1), -R(2,1), tz * R(1,1) - ty * R(2,1) + R(1,1) * p_z - R(2,1) * p_y, tx * R(2,1) - tz * R(0,1) - R(0,1) * p_z + R(2,1) * p_x, ty * R(0,1) - tx * R(1,1) + R(0,1) * p_y - R(1,1) * p_x,
+					-R(0,2), -R(1,2), -R(2,2), tz * R(1,2) - ty * R(2,2) + R(1,2) * p_z - R(2,2) * p_y, tx * R(2,2) - tz * R(0,2) - R(0,2) * p_z + R(2,2) * p_x, ty * R(0,2) - tx * R(1,2) + R(0,2) * p_y - R(1,2) * p_x
+					};
+				const mrpt::math::CMatrixFixedNumeric<double,3,6>  vals(aux_vals);
+				out_J.multiply_AB(jac_proj, vals);
 			}
 		}
 
@@ -162,7 +166,6 @@ namespace mrpt
 
 			out_J.multiply_AB(tmp, dp_point);
 		}
-
 
 		// === Compute sparse Jacobians ====
 		// Case: 6D poses + 3D points + 2D (x,y) observations
