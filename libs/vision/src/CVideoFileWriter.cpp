@@ -125,6 +125,8 @@ bool CVideoFileWriter::isOpen() const
 {
 #if MRPT_HAS_OPENCV
 	return (M_WRITER!=NULL);
+#else
+	return false;
 #endif
 }
 
