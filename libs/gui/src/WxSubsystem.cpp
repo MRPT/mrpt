@@ -794,11 +794,11 @@ int CDisplayWindow_WXAPP::OnExit()
   */
 void WxSubsystem::waitWxShutdownsIfNoWindows()
 {
-	MRPT_TODO("JL: Should get on this...");
-	mrpt::system::sleep(50);  // Perhaps this is enough, even if not the optimal solution, it leaves time to the wx thread to exit.
+	// Sad JL says: Couldn't fint a better solution :-(
+	// Perhaps this is enough, even if not the optimal solution, it leaves time to the wx thread to exit:
+	mrpt::system::sleep(50);
 
-	// Just let know a global object that, at its destruction, it must  ....
-//
+//	// Just let know a global object that, at its destruction, it must  ....
 //	// Any open windows?
 //	int nOpenWnds;
 //	{
@@ -808,6 +808,8 @@ void WxSubsystem::waitWxShutdownsIfNoWindows()
 //
 //    if (!nOpenWnds && WxSubsystem::isConsoleApp)
 //    {
+//		cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Waiting for WxWidgets thread to shutdown...\n";
+//
 //    	// Then we must be shutting down in the wx thread (we are in the main MRPT application thread)...
 //    	// Wait until wx is safely shut down:
 //    	bool done=false;
@@ -817,7 +819,7 @@ void WxSubsystem::waitWxShutdownsIfNoWindows()
 //#else
 //			500;
 //#endif
-//    	while (!done && maxTimeout-- >0)
+//    	while (!done && --maxTimeout >0)
 //    	{
 //    		system::sleep(10);
 //			WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId.enter();
@@ -825,7 +827,7 @@ void WxSubsystem::waitWxShutdownsIfNoWindows()
 //			WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId.leave();
 //    	}
 //
-//    	if (!maxTimeout)
+//    	if (maxTimeout<=0)
 //    	{
 //    		cerr << "[WxSubsystem::waitWxShutdownsIfNoWindows] Timeout waiting for WxWidgets thread to shutdown!" << endl;
 //    	}
