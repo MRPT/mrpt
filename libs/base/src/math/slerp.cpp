@@ -26,53 +26,43 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_math_H
-#define _mrpt_math_H
+#include <mrpt/base.h>  // Precompiled headers
 
-#include <mrpt/math/distributions.h>
-#include <mrpt/math/transform_gaussian.h>
-#include <mrpt/math/fourier.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/math/ops_vectors.h>
-#include <mrpt/math/ops_matrices.h>
-#include <mrpt/math/ops_containers.h>
-
-#include <mrpt/math/CMatrixViews.h>
-
-#include <mrpt/math/CLevenbergMarquardt.h>
-#include <mrpt/math/CQuaternion.h>
-#include <mrpt/math/CQuaternion.h>
-#include <mrpt/math/ransac.h>
-#include <mrpt/math/ransac_applications.h>
-#include <mrpt/math/dijkstra.h>
-
-#include <mrpt/math/CHistogram.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/CMatrixB.h>
-#include <mrpt/math/CMatrixTemplateObjects.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CArray.h>
-
-#include <mrpt/math/graphs.h>
-#include <mrpt/math/CGraphPartitioner.h>
-#include <mrpt/math/CPolygon.h>
-#include <mrpt/math/geometry.h>
-#include <mrpt/math/CVectorTemplate.h>
-
-#include <mrpt/math/CSplineInterpolator1D.h>
-
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/math/CSparseMatrixTemplate.h>
-#include <mrpt/math/CSparseMatrix.h>
-
-#include <mrpt/math/CAStarAlgorithm.h>
-#include <mrpt/math/CBinaryRelation.h>
-#include <mrpt/math/CMonteCarlo.h>
-#include <mrpt/math/jacobians.h>
-
-#include <mrpt/math/KDTreeCapable.h>
-#include <mrpt/math/kmeans.h>
 #include <mrpt/math/slerp.h>
+#include <mrpt/poses.h>
 
-#endif
+using namespace mrpt;
+using namespace mrpt::poses;
+using namespace mrpt::math;
+
+
+void mrpt::math::slerp(
+	const CPose3D  & p0,
+	const CPose3D  & p1,
+	const double     t, 
+	CPose3D        & p)
+{
+	CQuaternionDouble q0,q1,q;
+	p0.getAsQuaternion(q0);
+	p1.getAsQuaternion(q1);
+	// The quaternion part (this will raise exception on t not in [0,1])
+	mrpt::math::slerp(q0,q1,t, q);	
+	// XYZ:
+	p.x( (1-t)*p0.x()+t*p1.x() );
+	p.y( (1-t)*p0.y()+t*p1.y() );
+	p.z( (1-t)*p0.z()+t*p1.z() );
+}
+	
+void mrpt::math::slerp(
+	const CPose3DQuat & q0,
+	const CPose3DQuat & q1,
+	const double        t, 
+	CPose3DQuat       & q)
+{
+	// The quaternion part (this will raise exception on t not in [0,1])
+	mrpt::math::slerp(q0.quat(), q1.quat(),t, q.quat());	
+	// XYZ:
+	q.x( (1-t)*q0.x()+t*q1.x() );
+	q.y( (1-t)*q0.y()+t*q1.y() );
+	q.z( (1-t)*q0.z()+t*q1.z() );
+}

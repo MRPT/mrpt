@@ -67,6 +67,7 @@ IF(BUILD_EXAMPLES)
 		textFonts
 		optimize-lm
 		kmeans
+		slerp_demo
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-gui)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

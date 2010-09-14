@@ -104,6 +104,7 @@
 				- multiply_A_skew3().
 			- mrpt::slam::CGasConcentrationGridMap2D now implements correctly the Kernel DM & DM+V methods as explained in the IROS 2009 paper (see class for refs).
 		- New functions:
+			- mrpt::math::slerp
 			- mrpt::math::skew_symmetric3 & mrpt::math::skew_symmetric3_neg
 			- mrpt::math::rodrigues_so3_exp
 			- mrpt::vision::pinhole::undistort_point
@@ -118,6 +119,7 @@
 			- phidgetProximitySensor
 			- bundle_adj_full_demo
 			- se3
+			- slerp_demo
 		- BUG FIXES:
 			- Fixed minimal build, without OpenCV, wxWidgets and GL/GLUT.
 			- Fixed wrong saving/loading to/from text files for mrpt::vision::CFeatureList (thanks "me138" for noticing!)
