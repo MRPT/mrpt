@@ -1406,6 +1406,29 @@ void  CColouredPointsMap::getPointColor( size_t index, float &R, float &G, float
 	B = m_color_B[index];
 }
 
+// This function is duplicated from "mrpt::vision::pinhole::projectPoint_with_distortion", to avoid
+//  a dependency on mrpt-vision.
+void aux_projectPoint_with_distortion(
+	const mrpt::math::TPoint3D  &P,
+	const mrpt::utils::TCamera  &params,
+	mrpt::utils::TPixelCoordf  &pixel,
+	bool accept_points_behind
+	)
+{
+	// Pinhole model:
+	const double x = P.x/P.z;
+	const double y = P.y/P.z;
+
+	// Radial distortion:
+	const double r2 = square(x)+square(y);
+	const double r4 = square(r2);
+	const double r6 = r2*r4;
+
+	pixel.x = params.cx() + params.fx() *(  x*(1+params.dist[0]*r2+params.dist[1]*r4+params.dist[4]*r6) + 2*params.dist[2]*x*y+params.dist[3]*(r2+2*square(x))  );
+	pixel.y = params.cy() + params.fy() *(  y*(1+params.dist[0]*r2+params.dist[1]*r4+params.dist[4]*r6) + 2*params.dist[3]*x*y+params.dist[2]*(r2+2*square(y))  );
+}
+
+
 /*---------------------------------------------------------------
 					getPoint
  ---------------------------------------------------------------*/
@@ -1427,7 +1450,6 @@ bool CColouredPointsMap::colourFromObservation( const CObservationImage &obs, co
 	vector_float::iterator	itx,ity,itz,itr,itg,itb;
 
 	// Projection related variables
-	std::vector<CPoint3D>				p3D;				// The set of 3D points
 	std::vector<TPixelCoordf>			projectedPoints;	// The set of projected points in the image
 	std::vector<TPixelCoordf>::iterator itProPoints;		// Iterator for projectedPoints
 	std::vector<int>					p_idx;
@@ -1435,40 +1457,23 @@ bool CColouredPointsMap::colourFromObservation( const CObservationImage &obs, co
 	std::vector<unsigned int>			p_proj;
 
 	// Get the N closest points
-	//kdTreeNClosestPoint3DIdx( cameraPoseW.x, cameraPoseW.y, cameraPoseW.z,  // query point
-	//						   2e5,											// number of points to search
-	//						   p_idx, p_dist );								// indexes and distances of the returned points
-
-	// Get the N closest points
 	kdTreeNClosestPoint2DIdx( cameraPoseW.x(), cameraPoseW.y(),					// query point
 							   200000,										// number of points to search
 							   p_idx, p_dist );								// indexes and distances of the returned points
 
 	// Fill p3D vector
-	unsigned int k = 0;
-	for( k = 0; k < p_idx.size(); k++ )
+	for( size_t k = 0; k < p_idx.size(); k++ )
 	{
 		float d = sqrt(p_dist[k]);
 		int idx = p_idx[k];
 		if( d < colorScheme.d_max && d < m_min_dist[idx] )
 		{
-			p3D.push_back( CPoint3D( x[idx], y[idx], z[idx] ) );
+			TPixelCoordf px;
+			aux_projectPoint_with_distortion(TPoint3D( x[idx], y[idx], z[idx] ),  obs.cameraParams, px, true);
+			projectedPoints.push_back(px);
 			p_proj.push_back(k);
 		} // end if
 	} // end for
-
-	//std::cout << "Projected #: " << p_proj.size();
-	// Distortion params
-
-	// Project the 3D points in the images assuming a distortion
-	MRPT_TODO("FIXME!");
-	//projectPoints_with_distortion(
-	//	p3D,
-	//	cameraPoseW,
-	//	obs.cameraParams.intrinsicParams,
-	//	obs.cameraParams.getDistortionParamsAsVector(),
-	//	projectedPoints
-	//	);
 
 	// Get channel order
 	unsigned int chR,chG,chB;
@@ -1479,6 +1484,7 @@ bool CColouredPointsMap::colourFromObservation( const CObservationImage &obs, co
 	const float factor = 1.0/255;	// Normalize pixels:
 
 	// Get the colour of the projected points
+	size_t k;
 	for( itProPoints = projectedPoints.begin(), k = 0;
 		 itProPoints != projectedPoints.end();
 		 itProPoints++, k++ )

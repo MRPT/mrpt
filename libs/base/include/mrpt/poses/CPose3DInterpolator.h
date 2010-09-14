@@ -33,6 +33,7 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/stl_extensions.h>
+#include <mrpt/utils/TEnumType.h>
 
 namespace mrpt
 {
@@ -44,25 +45,25 @@ namespace mrpt
 
 		/** A trajectory in time and in 6D (CPose3D) that interpolates using splines the intervals between a set of given time-referenced poses.
 		  *   To insert new points into the sequence, use the "insert" method, and for getting an interpolated point, use "interpolate" method. For example:
-		  \code
-				CPose3DInterpolator		path;
-
-				path.setInterpolationMethod( CPose3DInterpolator::imSpline );
-
-				path.insert( t0, CPose3D(...) );
-				path.insert( t1, CPose3D(...) );
-				path.insert( t2, CPose3D(...) );
-				path.insert( t3, CPose3D(...) );
-
-				CPose3D p;
-				bool valid;
-
-				cout << "Pose at t: " << path.interpolate(t,p,valid) << endl;
-		  \endcode
+		  * \code
+		  * CPose3DInterpolator		path;
+		  *
+		  * path.setInterpolationMethod( CPose3DInterpolator::imSplineSlerp );
+		  *
+		  * path.insert( t0, CPose3D(...) );
+		  * path.insert( t1, CPose3D(...) );
+		  * path.insert( t2, CPose3D(...) );
+		  * path.insert( t3, CPose3D(...) );
+		  *
+		  * CPose3D p;
+		  * bool valid;
+		  *
+		  * cout << "Pose at t: " << path.interpolate(t,p,valid) << endl;
+		  * \endcode
 		  *
 		  *  Time is represented with mrpt::system::TTimeStamp. See mrpt::system for methods and utilities to manage these time references.
 		  *
-		  *  See TInterpolatorMethod for the list of interpolation methods.
+		  *  See TInterpolatorMethod for the list of interpolation methods. The default method at constructor is "imLinearSlerp".
 		  *
 		  * \sa CPoseOrPoint
 		 */
@@ -87,6 +88,8 @@ namespace mrpt
 			   *  - imLinear4Neig: Linear interpolation using the linear fit of the 4 closer points (2 before + 2 after the query point).
 			   *  - imSSLLLL : Use Spline for X and Y, and Linear Least squares for Z, yaw, pitch and roll.
 			   *  - imSSLSLL : Use Spline for X, Y and yaw, and Linear Lesat squares for Z, pitch and roll.
+			   *  - imLinearSlerp: Linear for X,Y,Z, Slerp for 3D angles.
+			   *  - imSplineSlerp: Spline for X,Y,Z, Slerp for 3D angles.
 			   */
 			 enum TInterpolatorMethod
 			 {
@@ -94,7 +97,9 @@ namespace mrpt
 			 	imLinear2Neig,
 			 	imLinear4Neig,
 			 	imSSLLLL,
-				imSSLSLL
+				imSSLSLL,
+				imLinearSlerp,
+				imSplineSlerp
 			 };
 
 			 inline iterator begin() { return m_path.begin(); }
@@ -210,6 +215,25 @@ namespace mrpt
 
 		}; // End of class def.
 
+	} // End of namespace
+
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<poses::CPose3DInterpolator::TInterpolatorMethod>
+		{
+			typedef poses::CPose3DInterpolator::TInterpolatorMethod enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(poses::CPose3DInterpolator::imSpline,          "imSpline");
+				m_map.insert(poses::CPose3DInterpolator::imLinear2Neig,     "imLinear2Neig");
+				m_map.insert(poses::CPose3DInterpolator::imLinear4Neig,     "imLinear4Neig");
+				m_map.insert(poses::CPose3DInterpolator::imSSLLLL,          "imSSLLLL");
+				m_map.insert(poses::CPose3DInterpolator::imLinearSlerp,     "imLinearSlerp");
+				m_map.insert(poses::CPose3DInterpolator::imSplineSlerp,     "imSplineSlerp");
+			}
+		};
 	} // End of namespace
 } // End of namespace
 

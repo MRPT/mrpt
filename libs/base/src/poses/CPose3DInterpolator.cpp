@@ -47,7 +47,7 @@ IMPLEMENTS_SERIALIZABLE(CPose3DInterpolator, CSerializable, mrpt::poses)
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
-CPose3DInterpolator::CPose3DInterpolator() : m_method( CPose3DInterpolator::imSpline )
+CPose3DInterpolator::CPose3DInterpolator() : m_method( CPose3DInterpolator::imLinearSlerp )
 {
 	maxTimeInterpolation = -1.0;
 
@@ -270,7 +270,41 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 		}
 		break;
 
-		default: THROW_EXCEPTION("Unknown value for interpolation method!");
+	case imLinearSlerp:
+		{
+		int_x		= math::interpolate2points(td, ts[1],X[1],ts[2],X[2]);
+		int_y		= math::interpolate2points(td, ts[1],Y[1],ts[2],Y[2]);
+		int_z		= math::interpolate2points(td, ts[1],Z[1],ts[2],Z[2]);
+
+		const CPose3D aux1(0,0,0,yaw[1],pitch[1],roll[1]);
+		const CPose3D aux2(0,0,0,yaw[2],pitch[2],roll[2]);
+		CPose3D  q_interp;
+
+		const double ratio = (td-ts[1])/(ts[2]-ts[1]);
+		mrpt::math::slerp(aux1,aux2, ratio, q_interp);
+
+		q_interp.getYawPitchRoll(int_yaw,int_pitch,int_roll);
+		}
+		break;
+
+	case imSplineSlerp:
+		{
+		int_x		= math::spline(td, ts, X);
+		int_y		= math::spline(td, ts, Y);
+		int_z		= math::spline(td, ts, Z);
+
+		const CPose3D aux1(0,0,0,yaw[1],pitch[1],roll[1]);
+		const CPose3D aux2(0,0,0,yaw[2],pitch[2],roll[2]);
+		CPose3D  q_interp;
+
+		const double ratio = (td-ts[1])/(ts[2]-ts[1]);
+		mrpt::math::slerp(aux1,aux2, ratio, q_interp);
+
+		q_interp.getYawPitchRoll(int_yaw,int_pitch,int_roll);
+		}
+		break;
+
+	default: THROW_EXCEPTION("Unknown value for interpolation method!");
 	}; // end switch
 
 	out_interp.setFromValues(int_x, int_y, int_z, int_yaw, int_pitch, int_roll);
@@ -489,12 +523,12 @@ CPose3DInterpolator::TInterpolatorMethod CPose3DInterpolator::getInterpolationMe
   ---------------------------------------------------------------*/
 void CPose3DInterpolator::filter( unsigned int component, unsigned int samples )
 {
-	if (m_path.empty()) 
+	if (m_path.empty())
 		return;
-	
+
 	std::map< mrpt::system::TTimeStamp, CPose3D > aux;
 
-	int		ant, post; 
+	int		ant, post;
 	size_t	nitems = size();
 
 	post	= (samples%2) ? (unsigned int)(samples/2) : samples/2;
@@ -510,12 +544,12 @@ void CPose3DInterpolator::filter( unsigned int component, unsigned int samples )
 		asamples = samples;
 
 		it2 = m_path.begin();
-		if( k-ant > 0 ) 
+		if( k-ant > 0 )
 			advance( it2, k-ant );
 		else
 			asamples = samples+k-ant;
 
-		
+
 		if( k+post < (int)nitems )
 		{
 			it3 = m_path.begin();
@@ -528,10 +562,10 @@ void CPose3DInterpolator::filter( unsigned int component, unsigned int samples )
 		}
 
 		CPose3D auxPose;
-		
-		auxPose.setFromValues( 
-			it1->second.x(), it1->second.y(), it1->second.z(), 
-			it1->second.yaw(), it1->second.pitch(), it1->second.roll() 
+
+		auxPose.setFromValues(
+			it1->second.x(), it1->second.y(), it1->second.z(),
+			it1->second.yaw(), it1->second.pitch(), it1->second.roll()
 			);
 
 		filteredValue = 0;
@@ -550,17 +584,17 @@ void CPose3DInterpolator::filter( unsigned int component, unsigned int samples )
 
 		switch( component )
 		{
-			case 0:	
+			case 0:
 				auxPose.x( filteredValue/samples );		break;
-			case 1:	
+			case 1:
 				auxPose.y( filteredValue/samples );		break;
-			case 2:	
+			case 2:
 				auxPose.y( filteredValue/samples );		break;
-			case 3:	
+			case 3:
 				auxPose.setYawPitchRoll( filteredValue/samples, it1->second.pitch(), it1->second.roll() );	break;
-			case 4:	
+			case 4:
 				auxPose.setYawPitchRoll( it1->second.yaw(), filteredValue/samples, it1->second.roll() );	break;
-			case 5:	
+			case 5:
 				auxPose.setYawPitchRoll( it1->second.yaw(), it1->second.pitch(), filteredValue/samples );	break;
 		} // end switch
 		aux[it1->first] = auxPose;
