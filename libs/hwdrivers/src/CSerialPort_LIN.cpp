@@ -570,8 +570,13 @@ std::string CSerialPort::ReadString(
 				}
 			}
 		}
+		else
+		{
+			// we decide to move the sleep here to satisfy realtime requirement in the case where we are waiting a n-length string at a frequency
+			// greater than 1/n...
+			mrpt::system::sleep( 1 ); // Wait 1 more ms for new data to arrive.
+		}
 		// If we are still here, string is not finished:
-		mrpt::system::sleep( 1 ); // Wait 1 more ms for new data to arrive.
     }
 
 	// Timeout:

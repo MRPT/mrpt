@@ -95,8 +95,9 @@ namespace mrpt
 			  */
 			bool 			searchPortAndConnect();
 
-			int			m_serialPort;			//!< The serial port connection
+            CSerialPort*			m_serialPort;			//!< The serial port connection
 			GYRO_MODE		m_mode;
+			bool 						m_firstInteration;
 				        
 			mrpt::slam::CObservationIMUPtr		m_observationGyro;
 
