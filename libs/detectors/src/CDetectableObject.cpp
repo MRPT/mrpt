@@ -40,9 +40,6 @@ IMPLEMENTS_SERIALIZABLE(CDetectable2D, CDetectableObject,mrpt::detectors)
 IMPLEMENTS_SERIALIZABLE(CDetectable3D, CDetectable2D,mrpt::detectors)
 
 
-extern CStartUpClassesRegister  mrpt_detectors_class_reg;
-const int dumm2 = mrpt_detectors_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
-
 void CDetectable2D::readFromStream(CStream &in, int version)
 {
 

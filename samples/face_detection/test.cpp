@@ -115,6 +115,8 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 	double counter = 0;
 	mrpt::utils::CTicTac	tictac;
 
+	vector_double fps;
+
 	while (win.isOpen())
 	{
 		if( !counter )
@@ -210,10 +212,13 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 		{
 			double t = tictac.Tac();
 			cout << "Frame Rate: " << counter/t << " fps" << endl;
+			fps.push_back( counter/t );
 			counter = 0;
 		}
 		mrpt::system::sleep(2);
 	}
+
+	cout << "Fps mean: " << fps.sumAll() / fps.size() << endl;
 
 	faceDetector.experimental_showMeasurements();
 
@@ -361,7 +366,7 @@ void TestPrepareDetector()
 	lst.loadFromFile(myInitFile);
 	cfg.setContent(lst);
 	
-	int classifierType = cfg.read_bool( "Example", "classifierType", 0 );
+	int classifierType = cfg.read_int( "Example", "classifierType", 0 );
 	
 	if ( classifierType == 0 ) // Haar
 		cfg.write("CascadeClassifier","cascadeFileName", OPENCV_SRC_DIR + "/data/haarcascades/haarcascade_frontalface_alt2.xml");
