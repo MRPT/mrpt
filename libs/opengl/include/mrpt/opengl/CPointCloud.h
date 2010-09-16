@@ -57,9 +57,9 @@ namespace mrpt
 			bool			m_pointSmooth; //!< Default: false
 
 		public:
-			inline void enableColorFromX(bool v=true) { if(v) m_colorFromDepth=CPointCloud::X; }
-			inline void enableColorFromY(bool v=true) { if(v) m_colorFromDepth=CPointCloud::Y; }
-			inline void enableColorFromZ(bool v=true) { if(v) m_colorFromDepth=CPointCloud::Z; }
+			inline void enableColorFromX(bool v=true) { m_colorFromDepth = v ? CPointCloud::X : CPointCloud::None;  }
+			inline void enableColorFromY(bool v=true) { m_colorFromDepth = v ? CPointCloud::Y : CPointCloud::None; }
+			inline void enableColorFromZ(bool v=true) { m_colorFromDepth = v ? CPointCloud::Z : CPointCloud::None; }
 
 			inline void resize(size_t N) { m_xs.resize(N); m_ys.resize(N); m_zs.resize(N);  }
 			inline void reserve(size_t N) { m_xs.reserve(N); m_ys.reserve(N); m_zs.reserve(N);  }

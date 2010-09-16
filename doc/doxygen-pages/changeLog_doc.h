@@ -121,6 +121,7 @@
 			- se3
 			- slerp_demo
 		- BUG FIXES:
+			- mrpt::opengl::CPointCloud::enableColorFromX() didn't work for disabling the coloring of points.
 			- Fixed build without zlib in GNU/Linux.
 			- Fixed minimal build, without OpenCV, wxWidgets and GL/GLUT.
 			- Fixed wrong saving/loading to/from text files for mrpt::vision::CFeatureList (thanks "me138" for noticing!)
