@@ -160,7 +160,7 @@ void COpenGLViewport::insert( const CRenderizablePtr &newObject )
 void  COpenGLViewport::render( const int render_width, const int render_height  ) const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	CListOpenGLObjects::const_iterator		it=m_objects.end();
+	const CRenderizable *it = NULL; // Declared here for usage in the "catch"
 	try
 	{
 		// Change viewport:
@@ -336,12 +336,13 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
         glLoadIdentity();
 
         glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LESS); // GL_LEQUAL
+		glDepthFunc(GL_LEQUAL); //GL_LESS
 
-		for (it=objectsToRender->begin();it!=objectsToRender->end();it++)
+		for (CListOpenGLObjects::const_iterator	itP=objectsToRender->begin();itP!=objectsToRender->end();++itP)
 		{
-			if (!it->present()) continue;
-			if (!(*it)->isVisible()) continue;
+			if (!itP->present()) continue;
+			it = itP->pointer(); // Use plain pointers, faster than smart pointers:
+			if (!it->isVisible()) continue;
 
 			// 3D coordinates transformation:
 			glMatrixMode(GL_MODELVIEW);
@@ -352,20 +353,20 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 
 			// This is the right order so that the transformation results in the standard matrix.
 			// The order seems to be wrong, but it's not.
-			glTranslated((*it)->m_x, (*it)->m_y, (*it)->m_z);
-			glRotated((*it)->m_yaw, 0.0, 0.0, 1.0);
-			glRotated((*it)->m_pitch, 0.0, 1.0, 0.0);
-			glRotated((*it)->m_roll, 1.0, 0.0, 0.0);
+			glTranslated(it->m_x, it->m_y, it->m_z);
+			glRotated(it->m_yaw, 0.0, 0.0, 1.0);
+			glRotated(it->m_pitch, 0.0, 1.0, 0.0);
+			glRotated(it->m_roll, 1.0, 0.0, 0.0);
 
 			// Do scaling after the other transformations!
-			glScalef((*it)->m_scale_x,(*it)->m_scale_y,(*it)->m_scale_z);
+			glScalef(it->m_scale_x,it->m_scale_y,it->m_scale_z);
 
 			// Set color:
-			glColor4f( (*it)->m_color_R,(*it)->m_color_G,(*it)->m_color_B,(*it)->m_color_A);
+			glColor4f( it->m_color_R,it->m_color_G,it->m_color_B,it->m_color_A);
 
-			(*it)->render();
+			it->render();
 
-			if ((*it)->m_show_name)
+			if (it->m_show_name)
 			{
 				glDisable(GL_DEPTH_TEST);
 				glColor3f(1.f,1.f,1.f);  // Must be called BEFORE glRasterPos3f
@@ -382,7 +383,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 					font = GLUT_BITMAP_TIMES_ROMAN_10;
 
 				if (font)
-					CRenderizable::renderTextBitmap( (*it)->m_name.c_str(), font);
+					CRenderizable::renderTextBitmap( it->m_name.c_str(), font);
 
 				glEnable(GL_DEPTH_TEST);
 			}
@@ -423,8 +424,8 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 	catch(exception &e)
 	{
 		string		msg;
-		if (it!=m_objects.end())
-				msg = format("Exception while rendering a class '%s'\n%s", (*it)->GetRuntimeClass()->className, e.what() );
+		if (!it)
+				msg = format("Exception while rendering a class '%s'\n%s", it->GetRuntimeClass()->className, e.what() );
 		else	msg = format("Exception while rendering:\n%s", e.what() );
 
 		THROW_EXCEPTION(msg);
