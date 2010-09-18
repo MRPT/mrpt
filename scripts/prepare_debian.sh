@@ -156,12 +156,7 @@ cp debian/changelog ${MRPT_EXTERN_DEBIAN_DIR}changelog.new
 
 set +o verbose # echo off
 
-echo "Create source Deb package with 'debuild -S -sa'?? y/n..."
-read ans
-if [ ans = "y" ];
-then
-	debuild -S -sa
-fi
+echo "Now, you can build the source Deb package with 'debuild -S -sa'"
 
 cd ..
 ls -lh
