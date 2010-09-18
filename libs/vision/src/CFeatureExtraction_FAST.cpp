@@ -52,9 +52,9 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	MRPT_START
 
 #if MRPT_HAS_OPENCV
-#	if MRPT_OPENCV_VERSION_NUM < 0x200
-		THROW_EXCEPTION("This function requires OpenCV >= 2.0.0")
-#	else // MRPT_OPENCV_VERSION_NUM < 0x200
+#	if MRPT_OPENCV_VERSION_NUM < 0x210
+		THROW_EXCEPTION("This function requires OpenCV > 2.1.0")
+#	else
 
 	using namespace cv;
 
@@ -75,7 +75,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 
 	fastDetector.detect( theImg, cv_feats );
 
-#elif MRPT_OPENCV_VERSION_NUM >= 0x200
+#elif MRPT_OPENCV_VERSION_NUM >= 0x210
 
 	FAST(inImg_gray.getAs<IplImage>(), cv_feats, options.FASTOptions.threshold, options.FASTOptions.nonmax_suppression );
 
@@ -194,7 +194,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	}
 	//feats.resize( cont );  // JL: really needed???
 
-#	endif // else of MRPT_OPENCV_VERSION_NUM < 0x200
+#	endif
 #endif
 	MRPT_END
 }

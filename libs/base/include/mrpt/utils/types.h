@@ -39,10 +39,20 @@
 #include <iostream>
 #include <sstream>
 
+// Define macros in platform dependant stdint.h header:
+#ifndef __STDC_FORMAT_MACROS
+#	define __STDC_FORMAT_MACROS
+#endif
+#ifndef __STDC_CONSTANT_MACROS
+#	define __STDC_CONSTANT_MACROS
+#endif
+#ifndef __STDC_LIMIT_MACROS
+#	define __STDC_LIMIT_MACROS
+#endif
+
 // Standard elemental types:
 #include "pstdint.h"  // The "portable stdint header file"
 
-#define __STDC_FORMAT_MACROS
 #if HAVE_INTTYPES_H
 #	include <inttypes.h>
 #elif defined(_MSC_VER)

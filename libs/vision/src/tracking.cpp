@@ -177,7 +177,7 @@ void CGenericFeatureTracker::trackFeatures(
 	{
 		m_timlog.enter("[CGenericFeatureTracker] add new features");
 
-#if MRPT_OPENCV_VERSION_NUM >= 0x200
+#if MRPT_OPENCV_VERSION_NUM >= 0x210
 		using namespace cv;
 
 		// Look for new features:
@@ -189,7 +189,7 @@ void CGenericFeatureTracker::trackFeatures(
 	FastFeatureDetector fastDetector( m_detector_adaptive_thres, true /* non-max supres. */ );
 	const Mat new_img_gray_mat = cvarrToMat( cur_gray.getAs<IplImage>() );
 	fastDetector.detect( new_img_gray_mat, new_feats );
-# elif MRPT_OPENCV_VERSION_NUM >= 0x200
+# elif MRPT_OPENCV_VERSION_NUM >= 0x210
 	// Older version:
 	FAST(cur_gray.getAs<IplImage>(), new_feats, m_detector_adaptive_thres, true /* non-max supres. */ );
 # endif
@@ -275,7 +275,7 @@ void CGenericFeatureTracker::trackFeatures(
 			}
 		}
 #else
-	THROW_EXCEPTION("add_new_features requires OpenCV >=2.0.0")
+	THROW_EXCEPTION("add_new_features requires OpenCV >=2.1.0")
 #endif //MRPT_OPENCV_VERSION_NUM
 
 		m_timlog.leave("[CGenericFeatureTracker] add new features");

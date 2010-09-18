@@ -47,6 +47,7 @@
 
 #		include <opencv2/legacy/legacy.hpp>  // CvImage
 #	else
+		// For OpenCV <=2.1
 #		include <cv.h>
 #		include <highgui.h>
 #		include <cvaux.h>
