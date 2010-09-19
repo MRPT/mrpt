@@ -17,9 +17,9 @@ Copyright (C) 2006, 2007 MobileRobots Inc.
      along with this program; if not, write to the Free Software
      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-If you wish to redistribute ARIA under different terms, contact 
-MobileRobots for information about a commercial version of ARIA at 
-robots@mobilerobots.com or 
+If you wish to redistribute ARIA under different terms, contact
+MobileRobots for information about a commercial version of ARIA at
+robots@mobilerobots.com or
 MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 */
 
@@ -153,7 +153,7 @@ bool ArSocket::addrHost(struct in_addr &addr, char *host)
 
 std::string ArSocket::getHostName()
 {
-  char localhost[maxHostNameLen()];
+  char localhost[100];  // maxHostNameLen()];
 
   if (gethostname(localhost, sizeof(localhost)) == 1)
     return("");
@@ -163,7 +163,7 @@ std::string ArSocket::getHostName()
 
 bool ArSocket::connect(const char *host, int port, Type type)
 {
-  char localhost[maxHostNameLen()];
+  char localhost[100];  // maxHostNameLen()];
 
   if (!host)
   {
@@ -236,7 +236,7 @@ bool ArSocket::connect(const char *host, int port, Type type)
 bool ArSocket::open(int port, Type type, const char *openOnIP)
 {
   int ret;
-  char localhost[maxHostNameLen()];
+  char localhost[100];  // maxHostNameLen()];
 
   if ((type == TCP) && ((myFD=socket(AF_INET, SOCK_STREAM, 0)) < 0))
   {
@@ -253,7 +253,7 @@ bool ArSocket::open(int port, Type type, const char *openOnIP)
 
   myType=type;
 
-  /* MPL removed this since with what I Took out down below months ago 
+  /* MPL removed this since with what I Took out down below months ago
   if (gethostname(localhost, sizeof(localhost)) == 1)
   {
     myErrorStr="Failure to locate localhost";
@@ -265,17 +265,17 @@ bool ArSocket::open(int port, Type type, const char *openOnIP)
   /* MPL took this out since it was just overriding it with the
      INADDR_ANY anyways and it could cause slowdowns if a machine wasn't
      configured so lookups are quick
-  if (!hostAddr(localhost, mySin.sin_addr) && 
+  if (!hostAddr(localhost, mySin.sin_addr) &&
       !hostAddr("localhost", mySin.sin_addr))
     return(false); */
 
   if (openOnIP != NULL)
   {
-    
+
     if (!hostAddr(openOnIP, mySin.sin_addr))
     {
       ArLog::log(ArLog::Normal, "Couldn't find ip of %s to open on", openOnIP);
-      return(false); 
+      return(false);
     }
     else
     {
@@ -335,7 +335,7 @@ bool ArSocket::create(Type type)
 
 bool ArSocket::findValidPort(int startPort, const char *openOnIP)
 {
-  char localhost[maxHostNameLen()];
+  char localhost[100];  // maxHostNameLen()];
 
   /*
   if (gethostname(localhost, sizeof(localhost)) == 1)
@@ -350,19 +350,19 @@ bool ArSocket::findValidPort(int startPort, const char *openOnIP)
   {
     bzero(&mySin, sizeof(mySin));
     /*
-    if (!hostAddr(localhost, mySin.sin_addr) && 
+    if (!hostAddr(localhost, mySin.sin_addr) &&
 	!hostAddr("localhost", mySin.sin_addr))
       return(false);
     */
     setIPString();
-    
+
     if (openOnIP != NULL)
     {
-      
+
       if (!hostAddr(openOnIP, mySin.sin_addr))
       {
 	ArLog::log(ArLog::Normal, "Couldn't find ip of %s to open udp on", openOnIP);
-	return(false); 
+	return(false);
       }
       else
       {
@@ -373,7 +373,7 @@ bool ArSocket::findValidPort(int startPort, const char *openOnIP)
     {
       mySin.sin_addr.s_addr=htonl(INADDR_ANY);
     }
-    
+
     mySin.sin_family=AF_INET;
     mySin.sin_port=hostToNetOrder(startPort+i);
 
@@ -386,7 +386,7 @@ bool ArSocket::findValidPort(int startPort, const char *openOnIP)
 
 bool ArSocket::connectTo(const char *host, int port)
 {
-  char localhost[maxHostNameLen()];
+  char localhost[100];  // maxHostNameLen()];
 
   if (myFD < 0)
     return(false);
@@ -547,14 +547,14 @@ bool ArSocket::accept(ArSocket *sock)
 {
   socklen_t len;
   unsigned char *bytes;
-  
+
   len=sizeof(struct sockaddr_in);
   sock->myFD=::accept(myFD, (struct sockaddr*)&(sock->mySin), &len);
   sock->myType=myType;
   bytes = (unsigned char *)sock->inAddr();
-  sprintf(sock->myIPString, "%d.%d.%d.%d", bytes[0], bytes[1], bytes[2], 
+  sprintf(sock->myIPString, "%d.%d.%d.%d", bytes[0], bytes[1], bytes[2],
 	  bytes[3]);
-  if ((sock->myFD < 0 && !myNonBlocking) || 
+  if ((sock->myFD < 0 && !myNonBlocking) ||
       (sock->myFD < 0 && errno != EWOULDBLOCK && myNonBlocking))
   {
     myErrorStr="Failed to accept on socket";
@@ -607,7 +607,7 @@ unsigned int ArSocket::netToHostOrder(int i)
  *  data is ready to send to fill a TCP frame, rather then sending the
  *  packet immediately).
  *  @param flag true to turn on NoDelay, false to turn it off.
- *  @return true of the flag was successfully set, false if there was an 
+ *  @return true of the flag was successfully set, false if there was an
  *    error or this socket is not a TCP socket.
  */
 bool ArSocket::setNoDelay(bool flag)

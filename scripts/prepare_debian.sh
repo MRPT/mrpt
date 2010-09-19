@@ -5,6 +5,24 @@
 #set -o verbose # echo on
 set +o verbose # echo off
 
+APPEND_SVN_NUM=0
+IS_FOR_UBUNTU=0
+while getopts "su" OPTION
+do
+     case $OPTION in
+         s)
+             APPEND_SVN_NUM=1
+             ;;
+         u)
+             IS_FOR_UBUNTU=1
+             ;;
+         ?)
+             echo "Unknown command line argument!"
+             exit 1
+             ;;
+     esac
+done
+
 # Checks
 # --------------------------------
 if [ -f version_prefix.txt ];
@@ -52,8 +70,13 @@ else
 		MRPT_SVN_VERSION=${MRPT_SVN_VERSION:0:${#MRPT_SVN_VERSION}-1}
 	fi
 
-#	MRPT_VERSION_STR="${MRPT_VERSION_STR}svn${MRPT_SVN_VERSION}"
-	MRPT_VERSION_STR="${MRPT_VERSION_STR}"
+	if [ $APPEND_SVN_NUM == "1" ];
+	then
+		MRPT_VERSION_STR="${MRPT_VERSION_STR}svn${MRPT_SVN_VERSION}"
+	else
+		MRPT_VERSION_STR="${MRPT_VERSION_STR}"
+	fi
+
 	echo "Exporting to $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}"
 	svn export . $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
 fi
@@ -111,6 +134,12 @@ mkdir mrpt-${MRPT_VERSION_STR}/debian
 cp -r ${MRPT_EXTERN_DEBIAN_DIR}/* mrpt-${MRPT_VERSION_STR}/debian
 # Strip my custom files...
 rm mrpt-${MRPT_VERSION_STR}/debian/*.new 
+# debian/source file issues for old Ubuntu distros:
+if [ $IS_FOR_UBUNTU == "1" ];
+then
+	rm -fr mrpt-${MRPT_VERSION_STR}/debian/source
+fi
+
 
 # Prepare install files:
 cd mrpt-${MRPT_VERSION_STR}
