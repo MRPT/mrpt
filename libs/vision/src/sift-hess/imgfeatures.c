@@ -370,7 +370,11 @@ void draw_oxfd_feature( IplImage* img, struct feature* feat, CvScalar color )
 	cvInitMatHeader( &M, 2, 2, CV_64FC1, m, CV_AUTOSTEP );
 	cvInitMatHeader( &V, 2, 2, CV_64FC1, v, CV_AUTOSTEP );
 	cvInitMatHeader( &E, 2, 1, CV_64FC1, e, CV_AUTOSTEP );
+#if CV_MAJOR_VERSION==1
+	cvEigenVV( &M, &V, &E, DBL_EPSILON );
+#else
 	cvEigenVV( &M, &V, &E, DBL_EPSILON, -1,-1 );
+#endif
 	l1 = 1 / sqrt( e[1] );
 	l2 = 1 / sqrt( e[0] );
 	alpha = -atan2( v[1], v[0] );

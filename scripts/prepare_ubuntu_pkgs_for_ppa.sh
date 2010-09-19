@@ -31,6 +31,9 @@ MRPT_DEB_DIR="$HOME/mrpt_debian"
 MRPT_EXTERN_DEBIAN_DIR="$MRPTSRC/packaging/debian/"
 EMAIL4DEB="Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>"
 
+# Clean out dirs:
+rm -fr $MRPT_UBUNTU_OUT_DIR/
+
 # -------------------------------------------------------------------
 # And now create the custom packages for each Ubuntu distribution
 # -------------------------------------------------------------------
@@ -67,8 +70,7 @@ do
 	
 	# Make a copy of all these packages:
 	cd ..
-	rm -fr $MRPT_UBUNTU_OUT_DIR/
-	mkdir $MRPT_UBUNTU_OUT_DIR/$DEBIAN_DIST
+	mkdir -p $MRPT_UBUNTU_OUT_DIR/$DEBIAN_DIST
 	cp mrpt_* $MRPT_UBUNTU_OUT_DIR/$DEBIAN_DIST/
 	echo ">>>>>> Saving packages to: $MRPT_UBUNTU_OUT_DIR/$DEBIAN_DIST/"
 done

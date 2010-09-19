@@ -734,7 +734,11 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 // belong.
 void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const CvSize &pattern_size )
 {
+#if CV_MAJOR_VERSION==1
+	CvMemStorage* temp_storage = NULL;
+#else
 	cv::MemStorage temp_storage;  // JL: "Modernized" to use C++ STL stuff.
+#endif
 
 	CvPoint2D32f center = {0,0};
 
@@ -841,6 +845,9 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
     }
 
 	// done.
+#if CV_MAJOR_VERSION==1
+	 cvReleaseMemStorage(&temp_storage);
+#endif
 }
 
 
@@ -1889,7 +1896,13 @@ int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out
 
     // Create temporary storage for contours and the sequence of pointers to
 	// found quadrangles
-	cv::MemStorage	temp_storage = cvCreateMemStorage();
+#if CV_MAJOR_VERSION==1
+	CvMemStorage* temp_storage = NULL;
+#else
+	cv::MemStorage temp_storage;
+#endif
+
+	temp_storage = cvCreateMemStorage();
 
 	out_quads.clear();
 	out_corners.clear();
@@ -2046,6 +2059,10 @@ int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out
     }
 
 	cvClearSeq(root);
+
+#if CV_MAJOR_VERSION==1
+	cvReleaseMemStorage(&temp_storage);
+#endif
 
     return quad_count;
 }

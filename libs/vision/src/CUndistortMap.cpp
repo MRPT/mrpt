@@ -47,7 +47,7 @@ CUndistortMap::CUndistortMap()
 void CUndistortMap::setFromCamParams(const mrpt::utils::TCamera &campar)
 {
 	MRPT_START
-#if MRPT_HAS_OPENCV
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200
 	m_camera_params = campar;
 
 	// Convert to opencv's format:
@@ -72,7 +72,7 @@ void CUndistortMap::setFromCamParams(const mrpt::utils::TCamera &campar)
 
 	cv::initUndistortRectifyMap( inMat, distM, cv::Mat(), inMat, _mapx.size(), _mapx.type(), _mapx, _mapy );
 #else
-	THROW_EXCEPTION("MRPT built without OpenCV!")
+	THROW_EXCEPTION("MRPT built without OpenCV >=2.0.0!")
 #endif
 	MRPT_END
 }
@@ -85,7 +85,7 @@ void CUndistortMap::undistort(const mrpt::utils::CImage &in_img, mrpt::utils::CI
 	if (m_dat_mapx.empty())
 		THROW_EXCEPTION("Error: setFromCamParams() must be called prior to undistort().")
 
-#if MRPT_HAS_OPENCV
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200
 	CvMat mapx = cvMat(m_camera_params.nrows,m_camera_params.ncols,  CV_16SC2, const_cast<int16_t*>(&m_dat_mapx[0]) );  // Wrappers on the data as a CvMat's.
 	CvMat mapy = cvMat(m_camera_params.nrows,m_camera_params.ncols,  CV_16UC1, const_cast<uint16_t*>(&m_dat_mapy[0]) );
 
@@ -105,7 +105,7 @@ void CUndistortMap::undistort(mrpt::utils::CImage &in_out_img) const
 	if (m_dat_mapx.empty())
 		THROW_EXCEPTION("Error: setFromCamParams() must be called prior to undistort().")
 
-#if MRPT_HAS_OPENCV
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200
 	CvMat mapx = cvMat(m_camera_params.nrows,m_camera_params.ncols,  CV_16SC2, const_cast<int16_t*>(&m_dat_mapx[0]) );  // Wrappers on the data as a CvMat's.
 	CvMat mapy = cvMat(m_camera_params.nrows,m_camera_params.ncols,  CV_16UC1, const_cast<uint16_t*>(&m_dat_mapy[0]) );
 
