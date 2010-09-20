@@ -62,124 +62,14 @@ namespace poses
 	 *
 	 *  There are Lie algebra methods: \a exp and \a ln (see the methods for documentation).
 	 *
-
-<div align=center>
-
-<table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0
- style='border-collapse:collapse;border:none'>
- <tr style='height:15.8pt'>
-  <td width=676 colspan=2 style='width:507.25pt;border:solid windowtext 1.0pt;
-  background:#E6E6E6;padding:0cm 5.4pt 0cm 5.4pt;height:15.8pt'>
-  <p   align=center style='text-align:center'>poses::CPose3D</p>
-  </td>
- </tr>
- <tr style='height:15.8pt'>
-  <td width=350 style='width:262.65pt;border:solid windowtext 1.0pt;border-top:
-  none;padding:0cm 5.4pt 0cm 5.4pt;height:15.8pt'>
-  <p   align=center style='text-align:center'>Homogeneous
-  transfomation matrix</p>
-  </td>
-  <td width=326 style='width:244.6pt;border-top:none;border-left:none;
-  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0cm 5.4pt 0cm 5.4pt;height:15.8pt'>
-  <p   align=center style='text-align:center'>Spatial
-  representation</p>
-  </td>
- </tr>
- <tr style='height:202.65pt'>
-  <td width=350 style='width:262.65pt;border:solid windowtext 1.0pt;border-top:
-  none;padding:0cm 5.4pt 0cm 5.4pt;height:202.65pt'>
-  <div align=center>
-  <table  Table border=0 cellspacing=0 cellpadding=0 width=334
-   style='width:250.65pt;border-collapse:collapse'>
-   <tr style='height:16.65pt'>
-    <td width=66 style='width:49.65pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.65pt'>
-    <p   align=center style='text-align:center'>cycp</p>
-    </td>
-    <td width=99 style='width:74.15pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.65pt'>
-    <p   align=center style='text-align:center'>cyspsr-sycr</p>
-    </td>
-    <td width=87 style='width:65.55pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.65pt'>
-    <p   align=center style='text-align:center'>cyspcr+sysr</p>
-    </td>
-    <td width=82 style='width:61.3pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.65pt'>
-    <p   align=center style='text-align:center'>x</p>
-    </td>
-   </tr>
-   <tr style='height:17.25pt'>
-    <td width=66 style='width:49.65pt;padding:0cm 5.4pt 0cm 5.4pt;height:17.25pt'>
-    <p   align=center style='text-align:center'>sycp</p>
-    </td>
-    <td width=99 style='width:74.15pt;padding:0cm 5.4pt 0cm 5.4pt;height:17.25pt'>
-    <p   align=center style='text-align:center'>syspsr+cycr</p>
-    </td>
-    <td width=87 style='width:65.55pt;padding:0cm 5.4pt 0cm 5.4pt;height:17.25pt'>
-    <p   align=center style='text-align:center'>syspcr-cysr</p>
-    </td>
-    <td width=82 style='width:61.3pt;padding:0cm 5.4pt 0cm 5.4pt;height:17.25pt'>
-    <p   align=center style='text-align:center'>y</p>
-    </td>
-   </tr>
-   <tr style='height:19.65pt'>
-    <td width=66 style='width:49.65pt;padding:0cm 5.4pt 0cm 5.4pt;height:19.65pt'>
-    <p   align=center style='text-align:center'>-sp</p>
-    </td>
-    <td width=99 style='width:74.15pt;padding:0cm 5.4pt 0cm 5.4pt;height:19.65pt'>
-    <p   align=center style='text-align:center'>cpsr</p>
-    </td>
-    <td width=87 style='width:65.55pt;padding:0cm 5.4pt 0cm 5.4pt;height:19.65pt'>
-    <p   align=center style='text-align:center'>cpcr</p>
-    </td>
-    <td width=82 style='width:61.3pt;padding:0cm 5.4pt 0cm 5.4pt;height:19.65pt'>
-    <p   align=center style='text-align:center'>z</p>
-    </td>
-   </tr>
-   <tr style='height:11.0pt'>
-    <td width=66 style='width:49.65pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.0pt'>
-    <p   align=center style='text-align:center'>0</p>
-    </td>
-    <td width=99 style='width:74.15pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.0pt'>
-    <p   align=center style='text-align:center'>0</p>
-    </td>
-    <td width=87 style='width:65.55pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.0pt'>
-    <p   align=center style='text-align:center'>0</p>
-    </td>
-    <td width=82 style='width:61.3pt;padding:0cm 5.4pt 0cm 5.4pt;height:11.0pt'>
-    <p   align=center style='text-align:center'>1</p>
-    </td>
-   </tr>
-  </table>
-  </div>
-  <p   align=center style='text-align:center'><span lang=EN-GB>where:</span></p>
-  <p   align=center style='text-align:center'><span lang=EN-GB>cy
-  = cos Yaw ;  sy = sin Yaw</span></p>
-  <p   align=center style='text-align:center'><span lang=EN-GB>cp
-  = cos Pitch ; sp = sin Pitch</span></p>
-  <p   align=center style='text-align:center'><span lang=EN-GB>cr
-  = cos Roll ; sr = sin Roll</span></p>
-  </td>
-  <td width=326 style='width:244.6pt;border-top:none;border-left:none;
-  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0cm 5.4pt 0cm 5.4pt;height:202.65pt'>
-  <p   align=center style='text-align:center'><span lang=EN-GB><img  src="CPose3D.gif"></span></p>
-  </td>
- </tr>
-</table>
-
-</div>
-
-	  *
+	 *  <div align=center> 
+	 *   <img src="CPose3D.gif">
+	 *  </div>
+	 *
 	 * \sa CPoseOrPoint,CPoint3D, mrpt::math::CQuaternion
 	 */
 	class BASE_IMPEXP CPose3D : public CPose<CPose3D>, public mrpt::utils::CSerializable
 	{
-//		friend class CPose2D;
-//		friend class CPose3DQuat;
-//		friend class CPoint2D;
-//		friend class CPoint3D;
-		//template <class DERIVEDCLASS> friend class CPoseOrPoint;
-		//friend std::ostream BASE_IMPEXP & operator << (std::ostream& o, const CPose3D& p);
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPose3D )
 

@@ -43,108 +43,11 @@ namespace poses
 	 *  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint, or refer
 	 *    to the <a href="http://www.mrpt.org/2D_3D_Geometry">2D/3D Geometry tutorial</a> in the wiki.
 	 *
-
-<div align=center>
-
-<table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0
- style='border-collapse:collapse;border:none'>
- <tr>
-  <td width=576 colspan=2 style='width:432.2pt;border:solid windowtext 1.0pt;
-  background:#E6E6E6;padding:0cm 5.4pt 0cm 5.4pt'>
-  <p   align=center style='text-align:center'>poses::CPoint3D</p>
-  </td>
- </tr>
- <tr>
-  <td width=288 style='width:216.1pt;border:solid windowtext 1.0pt;border-top:
-  none;padding:0cm 5.4pt 0cm 5.4pt'>
-  <p   align=center style='text-align:center'>Homogeneous
-  transfomation matrix</p>
-  </td>
-  <td width=288 style='width:216.1pt;border-top:none;border-left:none;
-  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0cm 5.4pt 0cm 5.4pt'>
-  <p   align=center style='text-align:center'>Spatial
-  representation</p>
-  </td>
- </tr>
- <tr style='height:108.3pt'>
-  <td width=288 style='width:216.1pt;border:solid windowtext 1.0pt;border-top:
-  none;padding:0cm 5.4pt 0cm 5.4pt;height:108.3pt'>
-  <div align=center>
-  <table  Table border=0 cellspacing=0 cellpadding=0 width="46%"
-   style='width:46.84%;border-collapse:collapse'>
-   <tr style='height:16.5pt'>
-    <td width=32 style='width:24.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>1</p>
-    </td>
-    <td width=32 style='width:24.05pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>0</p>
-    </td>
-    <td width=32 style='width:24.05pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>0</p>
-    </td>
-    <td width=32 style='width:24.05pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>x</p>
-    </td>
-   </tr>
-   <tr style='height:16.5pt'>
-    <td width=32 style='width:24.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>0</p>
-    </td>
-    <td width=32 style='width:24.05pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>1</p>
-    </td>
-    <td width=32 style='width:24.05pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>0</p>
-    </td>
-    <td width=32 style='width:24.05pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>y</p>
-    </td>
-   </tr>
-   <tr style='height:16.5pt'>
-    <td width=32 style='width:24.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>0</p>
-    </td>
-    <td width=32 style='width:24.05pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>0</p>
-    </td>
-    <td width=32 style='width:24.05pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>1</p>
-    </td>
-    <td width=32 style='width:24.05pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>z</p>
-    </td>
-   </tr>
-   <tr style='height:16.5pt'>
-    <td width=32 style='width:24.0pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>0</p>
-    </td>
-    <td width=32 style='width:24.05pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>0</p>
-    </td>
-    <td width=32 style='width:24.05pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>0</p>
-    </td>
-    <td width=32 style='width:24.05pt;padding:0cm 5.4pt 0cm 5.4pt;height:16.5pt'>
-    <p   align=center style='text-align:center'>1</p>
-    </td>
-   </tr>
-  </table>
-  </div>
-  <p   align=center style='text-align:center'></p>
-  </td>
-  <td width=288 style='width:216.1pt;border-top:none;border-left:none;
-  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
-  padding:0cm 5.4pt 0cm 5.4pt;height:108.3pt'>
-  <p   align=center style='text-align:center'><img src="CPoint3D.gif"></p>
-  </td>
- </tr>
-</table>
-
-</div>
-
-
-	  * \sa CPoseOrPoint,CPose, CPoint
+	 *  <div align=center> 
+	 *   <img src="CPoint3D.gif">
+	 *  </div>
+	 *
+	 * \sa CPoseOrPoint,CPose, CPoint
 	 */
 	class BASE_IMPEXP  CPoint3D : public CPoint<CPoint3D>, public mrpt::utils::CSerializable
 	{

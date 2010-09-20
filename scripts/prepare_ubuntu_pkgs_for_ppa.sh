@@ -46,7 +46,6 @@ IDXS=$(seq 0 $(expr $count - 1))
 for IDX in ${IDXS};
 do
 	DEBIAN_DIST=${LST_DISTROS[$IDX]}
-#	VERSION_DIST=${VER_DISTROS[$IDX]}
 
 	# -------------------------------------------------------------------
 	# Call the standard "prepare_debian.sh" script:
@@ -58,7 +57,7 @@ do
 	echo "===== Distribution: ${DEBIAN_DIST}  ========="
 	cd ${MRPT_DEB_DIR}/mrpt-${MRPT_VER_MMP}svn${MRPT_VERSION_SVN}/debian
 	cp ${MRPT_EXTERN_DEBIAN_DIR}/changelog changelog
-	DEBCHANGE_CMD="--newversion 1:${MRPT_VERSION_STR}svn${MRPT_VERSION_SVN}-1~ppa1~$DEBIAN_DIST"
+	DEBCHANGE_CMD="--newversion 1:${MRPT_VERSION_STR}svn${MRPT_VERSION_SVN}-1~ppa1"
 	echo "Changing to a new Debian version: ${DEBCHANGE_CMD}"
 	echo "Adding a new entry to debian/changelog for distribution ${DEBIAN_DIST}"
 	DEBEMAIL=${EMAIL4DEB} debchange $DEBCHANGE_CMD --distribution ${DEBIAN_DIST} --force-distribution New version of upstream sources.
