@@ -37,7 +37,7 @@ using namespace mrpt::detectors;
 using namespace mrpt::slam;
 using namespace std;
 
-#if MRPT_HAS_OPENCV
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200
 using namespace cv;
 #endif
 
@@ -51,8 +51,8 @@ using namespace cv;
 CCascadeClassifierDetection::CCascadeClassifierDetection( )
 {
 	// Check if MRPT is using OpenCV
-#if !MRPT_HAS_OPENCV
-	THROW_EXCEPTION("CCascadeClassifierDetection class requires MRPT built against OpenCV")
+#if !MRPT_HAS_OPENCV ||  MRPT_OPENCV_VERSION_NUM<0x200
+	THROW_EXCEPTION("CCascadeClassifierDetection class requires MRPT built against OpenCV >=2.0")
 #endif
 }
 
@@ -62,7 +62,7 @@ CCascadeClassifierDetection::CCascadeClassifierDetection( )
 
 CCascadeClassifierDetection::~CCascadeClassifierDetection()
 {
-#if MRPT_HAS_OPENCV
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200
 	delete CASCADE;
 #endif
 }
@@ -73,7 +73,7 @@ CCascadeClassifierDetection::~CCascadeClassifierDetection()
 
 void CCascadeClassifierDetection::init(const mrpt::utils::CConfigFileBase &config)
 {
-#if MRPT_HAS_OPENCV
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200
 	// load configuration values
 	m_options.cascadeFileName		= config.read_string("CascadeClassifier","cascadeFilename","");
 	m_options.scaleFactor			= config.read_double("DetectionOptions","scaleFactor",1.1);
@@ -98,7 +98,7 @@ void CCascadeClassifierDetection::init(const mrpt::utils::CConfigFileBase &confi
 
 void CCascadeClassifierDetection::detectObjects_Impl(const CObservation *obs, vector_detectable_object &detected)
 {
-#if MRPT_HAS_OPENCV
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200
 	// Obtain image from generic observation
 	const mrpt::utils::CImage *img = NULL;
 
