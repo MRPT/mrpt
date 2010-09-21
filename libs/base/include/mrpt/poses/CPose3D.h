@@ -62,7 +62,7 @@ namespace poses
 	 *
 	 *  There are Lie algebra methods: \a exp and \a ln (see the methods for documentation).
 	 *
-	 *  <div align=center> 
+	 *  <div align=center>
 	 *   <img src="CPose3D.gif">
 	 *  </div>
 	 *
@@ -400,6 +400,11 @@ namespace poses
 		/** Take the logarithm of the 3x4 matrix defined by this pose, generating the corresponding vector in the SE3 Lie Algebra.
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL)  */
 		mrpt::math::CArrayDouble<6> ln() const;
+
+		/** Jacobian of the logarithm of the 3x4 matrix defined by this pose.
+		  * \note Method from TooN (C) Tom Drummond (GNU GPL)
+		  */
+		void ln_jacob(mrpt::math::CMatrixFixedNumeric<double,6,12> &J) const;
 
 		/** Take the logarithm of the 3x3 rotation matrix, generating the corresponding vector in the Lie Algebra.
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */

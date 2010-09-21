@@ -871,10 +871,8 @@ CArrayDouble<3> CPose3D::ln_rotation() const
 			r2[2] = d2;
 		}
 		// flip, if we point in the wrong direction!
-		if( (r2 * result).sumAll() < 0)
+		if( mrpt::math::dotProduct<CArrayDouble<3>,CArrayDouble<3> >(r2,result) < 0)
 			r2 *= -1;
-		//r2 *= 1.0/r2.norm();
-		//result = angle * r2;
 		result = r2;
 		result *= (angle/r2.norm());
 	}
@@ -951,4 +949,74 @@ CArrayDouble<6> CPose3D::ln() const
 	for (int i=0;i<3;i++) result[i] = rottrans[i];
 	for (int i=0;i<3;i++) result[3+i] = rot[i];
 	return result;
+}
+
+
+/** Jacobian of the logarithm of the 3x4 matrix defined by this pose.
+  * \note Method from TooN (C) Tom Drummond (GNU GPL)
+  */
+namespace mrpt
+{
+	namespace poses
+	{
+		template <class VEC3,class MAT33>
+		inline void deltaR(const MAT33& R, VEC3 &v)
+		{
+			v[0]=R(2,1)-R(1,2);
+			v[1]=R(0,2)-R(2,0);
+			v[2]=R(1,0)-R(0,1);
+		}
+	}
+}
+
+void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double,6,12> &J) const
+{
+	J.zeros();
+	THROW_EXCEPTION("TODO")
+	//J.template slice<0,0,3,9>() = dlnR_dR(T.get_rotation().get_matrix());
+	//J.template slice<3,0,3,9>() = dVinvt_dR(T);
+
+	const CMatrixDouble33 & R = m_ROT;
+	CArrayDouble<3> omega;
+	CMatrixDouble33 Omega(UNINITIALIZED_MATRIX);
+
+	CMatrixDouble33 V_inv(UNINITIALIZED_MATRIX);
+	V_inv.unit(); // Start with the identity_3
+
+	const double d = 0.5*( R(0,0)+R(1,1)+R(2,2)-1);
+	if (d>0.99999)
+	{
+		mrpt::poses::deltaR(R,omega);
+		omega*=0.5;
+		mrpt::math::skew_symmetric3(omega,Omega);
+		//V_inv = TooN::Identity(3)- 0.5*Omega + (1./12.)*(Omega*Omega);
+		CMatrixDouble33 Omega2(UNINITIALIZED_MATRIX);
+		Omega2.multiply_AAt(Omega);
+		Omega2*=1.0/12.0;
+
+		Omega*=0.5;
+
+		V_inv -= Omega;
+		V_inv -= Omega2;
+	}
+	else
+	{
+		mrpt::poses::deltaR(R,omega);
+
+		const double theta = acos(d);
+		omega *=theta/(2*std::sqrt(1-d*d));
+
+		mrpt::math::skew_symmetric3(omega,Omega);
+		//Omega = skew(omega);
+
+		CMatrixDouble33 Omega2(UNINITIALIZED_MATRIX);
+		Omega2.multiply_AAt(Omega);
+
+		Omega2 *= (1-theta/(2*std::tan(theta*0.5)))/square(theta);
+		Omega  *= 0.5;
+
+		V_inv -= Omega;
+		V_inv += Omega2;
+	}
+	//J.template slice<3,9,3,3>() = V_inv;
 }

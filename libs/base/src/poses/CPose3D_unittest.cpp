@@ -187,6 +187,16 @@ protected:
 			<< "Error: " << endl << df_dpose-num_df_dpose << endl;
 	}
 
+
+	void test_ExpLnEqual(double x1,double y1,double z1, double yaw1,double pitch1,double roll1)
+	{
+		const CPose3D p1(x1,y1,z1,yaw1,pitch1,roll1);
+
+		const CPose3D p2 = CPose3D::exp( p1.ln() );
+		EXPECT_NEAR((p1.getAsVectorVal()-p2.getAsVectorVal()).Abs().sumAll(),0, 1e-6 ) << "p1: " << p1 <<endl;
+	}
+
+
 	void test_invComposePointJacob(double x1,double y1,double z1, double yaw1,double pitch1,double roll1,
 	                 double x,double y,double z)
 	{
@@ -460,5 +470,13 @@ TEST_F(Pose3DTests,InvComposePointJacob_se3)
 	test_invComposePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40)),  TPoint3D( -5.0, -15.0, 8.0 ) );
 }
 
+TEST_F(Pose3DTests,ExpLnEqual)
+{
+	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
+	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(0),DEG2RAD(0) );
+	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(10),DEG2RAD(0) );
+	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10) );
+	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(-20),DEG2RAD(-30),DEG2RAD(-40) );
+}
 
 
