@@ -131,6 +131,7 @@ IF(BUILD_EXAMPLES)
 		params-by-name		
 		checkerboardDetectors
 		multipleCheckerboards		
+		voronoi_test
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-vision mrpt-gui mrpt-topography)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

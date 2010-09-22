@@ -103,6 +103,7 @@
 				- t() (for transpose, apart of the old ~ operator)
 				- multiply_A_skew3().
 			- mrpt::slam::CGasConcentrationGridMap2D now implements correctly the Kernel DM & DM+V methods as explained in the IROS 2009 paper (see class for refs).
+			- mrpt::utils::CDynamicGrid has new template method getAsMatrix().
 		- New functions:
 			- mrpt::math::slerp
 			- mrpt::math::skew_symmetric3 & mrpt::math::skew_symmetric3_neg
@@ -120,6 +121,7 @@
 			- bundle_adj_full_demo
 			- se3
 			- slerp_demo
+			- voronoi_demo
 		- BUG FIXES:
 			- mrpt::opengl::CPointCloud::enableColorFromX() didn't work for disabling the coloring of points.
 			- Fixed build without zlib in GNU/Linux.

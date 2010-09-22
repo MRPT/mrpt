@@ -93,8 +93,8 @@ COccupancyGridMap2D::COccupancyGridMap2D(
 		x_min(),x_max(),y_min(),y_max(), resolution(),
 		precomputedLikelihood(),
 		precomputedLikelihoodToBeRecomputed(true),
-		basis_map(),
-		voronoi_diagram(),
+		m_basis_map(),
+		m_voronoi_diagram(),
 		m_is_empty(true),
 		voroni_free_threshold(),
 		updateInfoChangeOnly(),
@@ -219,8 +219,8 @@ void  COccupancyGridMap2D::setSize(
     map.resize(size_x*size_y,p2l(default_value));
 
 	// Free these buffers also:
-	basis_map.clear();
-	voronoi_diagram.clear();
+	m_basis_map.clear();
+	m_voronoi_diagram.clear();
 
 	m_is_empty=true;
 
@@ -337,8 +337,8 @@ void  COccupancyGridMap2D::resizeGrid(float new_x_min,float new_x_max,float new_
 	map.swap( new_map );
 
 	// Free the other buffers:
-	basis_map.clear();
-	voronoi_diagram.clear();
+	m_basis_map.clear();
+	m_voronoi_diagram.clear();
 }
 
 /*---------------------------------------------------------------
@@ -351,8 +351,8 @@ void COccupancyGridMap2D::freeMap()
 	// Free map and sectors
     map.clear();
 
-	basis_map.clear();
-	voronoi_diagram.clear();
+	m_basis_map.clear();
+	m_voronoi_diagram.clear();
 
     size_x=size_y=0;
 
@@ -400,7 +400,10 @@ void  COccupancyGridMap2D::buildVoronoiDiagram(
 */
         // Iniciar voronoi:
 
-		voronoi_diagram.assign(size_x*size_y,0);
+		m_voronoi_diagram.setSize(x_min,x_max, y_min,y_max, resolution);  // assign(size_x*size_y,0);
+		ASSERT_EQUAL_(m_voronoi_diagram.getSizeX(), size_x);
+		ASSERT_EQUAL_(m_voronoi_diagram.getSizeY(), size_y);
+		m_voronoi_diagram.fill(0);
 
         // threshold en prob. de ocupado. Nosotros guardamos prob. de libre.
 //        voroni_free_threshold= 1.0f - threshold;
@@ -454,7 +457,10 @@ void  COccupancyGridMap2D::findCriticalPoints( float filter_distance )
 
 
         // Resize basis-points map & set to zero:
-        basis_map.assign(size_x*size_y, 0);
+		m_basis_map.setSize(x_min,x_max, y_min,y_max, resolution);	//m_basis_map.assign(size_x*size_y, 0);
+		ASSERT_EQUAL_(m_basis_map.getSizeX(), size_x);
+		ASSERT_EQUAL_(m_basis_map.getSizeY(), size_y);
+		m_basis_map.fill(0);
 
         // Lista temporary de candidatos:
 		std::vector<int>	temp_x,temp_y, temp_clear, temp_borrar;
@@ -597,7 +603,7 @@ void  COccupancyGridMap2D::findCriticalPoints( float filter_distance )
   ---------------------------------------------------------------*/
 int  COccupancyGridMap2D::computeClearance( int cx, int cy, int *basis_x, int *basis_y, int *nBasis, bool GetContourPoint ) const
 {
-	cellType	thresholdCellValue = p2l(0.5f);
+	static const cellType	thresholdCellValue = p2l(0.5f);
 
 	// Si la celda esta ocupada, clearance de cero!
 	if ( static_cast<unsigned>(cx)>=size_x || static_cast<unsigned>(cy)>=size_y )

@@ -37,7 +37,8 @@ namespace mrpt
         using namespace mrpt::system;
 
         /** A 2D grid of dynamic size which stores any kind of data at each cell.
-         */
+		  * \tparam T The type of each cell in the 2D grid.
+          */
         template <class T>
         class CDynamicGrid
         {
@@ -249,11 +250,11 @@ namespace mrpt
 
             /** Returns the horizontal size of grid map in cells count.
                 */
-            inline size_t getSizeX() { return m_size_x; }
+            inline size_t getSizeX() const { return m_size_x; }
 
             /** Returns the vertical size of grid map in cells count.
                 */
-            inline size_t getSizeY() { return m_size_y; }
+            inline size_t getSizeY() const { return m_size_y; }
 
             /** Returns the "x" coordinate of left side of grid map.
                 */
@@ -316,6 +317,23 @@ namespace mrpt
                 */
             inline int   x2idx(float x,float x_min) const { return static_cast<int>((x-m_x_min)/m_resolution ); }
             inline int   y2idx(float y, float y_min) const { return static_cast<int>((y-m_y_min)/m_resolution ); }
+
+			/** Get the entire grid as a matrix. 
+			  *  \tparam MAT The type of the matrix, typically a CMatrixDouble.
+			  *  \param[out] m The output matrix; will be set automatically to the correct size.
+			  *  Entry (cy,cx) in the matrix contains the grid cell with indices (cx,cy).
+			  * \note This method will compile only for cell types that can be converted to the type of the matrix elements (e.g. double).
+			  */
+			template <class MAT>
+			void getAsMatrix(MAT &m) const
+			{
+				m.setSize(m_size_y, m_size_x);
+				if (m_map.empty()) return;
+				const T* c = &m_map[0];
+				for (size_t cy=0;cy<m_size_y;cy++)
+					for (size_t cx=0;cx<m_size_x;cx++)
+						m.set_unsafe(cy,cx, *c++);
+			}
 
         };
 

@@ -33,6 +33,7 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CImageFloat.h>
+#include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/utils/TMatchingPair.h>
 
@@ -102,7 +103,7 @@ namespace slam
 	 *   Some implemented methods are:
 	 *		- Update of individual cells
 	 *		- Insertion of observations
-	 *		- Voronoi diagram and critical points
+	 *		- Voronoi diagram and critical points (\a buildVoronoiDiagram)
 	 *		- Saving and loading from/to a bitmap
 	 *		- Laser scans simulation for the map contents
 	 *		- Entropy and information methods (See computeEntropy)
@@ -155,16 +156,17 @@ namespace slam
 		std::vector<double>		precomputedLikelihood;
 		bool					precomputedLikelihoodToBeRecomputed;
 
-		/** Used for Voronoi calculation.Same struct as "map", but contains
-		 *    a "0" if not a basis point.
-		 */
-		std::vector<unsigned char>	basis_map;
+		//std::vector<unsigned char>	basis_map;
+		//std::vector<int>			voronoi_diagram;
 
-		/** Used to store the Voronoi diagram.Same struct as "map", but
-		 *    contains the distance of each cell to its closer obstacles
-		 *    in 1/100 of "units", or 0 if not into the Voronoi diagram.
+		/** Used for Voronoi calculation.Same struct as "map", but contains a "0" if not a basis point. */
+		CDynamicGrid<uint8_t>	m_basis_map;
+
+		/** Used to store the Voronoi diagram.
+		 *    Contains the distance of each cell to its closer obstacles
+		 *    in 1/100th distance units (i.e. in centimeters), or 0 if not into the Voronoi diagram.
 		 */
-		std::vector<int>			voronoi_diagram;
+		CDynamicGrid<uint16_t>	m_voronoi_diagram;
 
 		bool m_is_empty; //!< True upon construction; used by isEmpty()
 
@@ -558,11 +560,31 @@ namespace slam
 
 		/** Change a cell in the "basis" maps.Used for Voronoi calculation.
 		 */
-		inline void   setBasisCell(int x,int y,unsigned char value) { basis_map[x+y*size_x]=value; };
+		inline void   setBasisCell(int x,int y,uint8_t value) 
+		{ 
+			uint8_t *cell=m_basis_map.cellByIndex(x,y);
+#ifdef _DEBUG
+			ASSERT_ABOVEEQ_(x,0)
+			ASSERT_ABOVEEQ_(y,0)
+			ASSERT_BELOWEQ_(x,int(m_basis_map.getSizeX()))
+			ASSERT_BELOWEQ_(y,int(m_basis_map.getSizeY()))
+#endif
+			*cell = value;
+		}
 
 		/** Reads a cell in the "basis" maps.Used for Voronoi calculation.
 		 */
-		inline unsigned char  getBasisCell(int x,int y) const { return basis_map[x+y*size_x]; };
+		inline unsigned char  getBasisCell(int x,int y) const
+		{ 
+			const uint8_t *cell=m_basis_map.cellByIndex(x,y);
+#ifdef _DEBUG			
+			ASSERT_ABOVEEQ_(x,0)
+			ASSERT_ABOVEEQ_(y,0)
+			ASSERT_BELOWEQ_(x,int(m_basis_map.getSizeX()))
+			ASSERT_BELOWEQ_(y,int(m_basis_map.getSizeY()))
+#endif
+			return *cell;
+		}
 
 		/** Used for returning entropy related information
 		 * \sa computeEntropy
@@ -813,13 +835,8 @@ namespace slam
 		 */
 		void  computeEntropy( TEntropyInfo &info ) const;
 
-		/** Reads a the clearance of a cell, after building the Voronoi diagram.
-		 */
-		int    getVoroniClearance(int cx,int cy)  { return voronoi_diagram[cx+cy*size_x]; }
-
-		/** Used to set the clearance of a cell, while building the Voronoi diagram.
-		 */
-		void    setVoroniClearance(int cx,int cy,int dist)  { voronoi_diagram[cx+cy*size_x]=dist; }
+		/** @name Voronoi methods
+		    @{ */
 
 		/** Build the Voronoi diagram of the grid map.
 		 * \param threshold The threshold for binarizing the map.
@@ -828,16 +845,54 @@ namespace slam
 		 * \param x2 Right coordinate of area to be computed. Default, entire map.
 		 * \param y1 Top coordinate of area to be computed. Default, entire map.
 		 * \param y2 Bottom coordinate of area to be computed. Default, entire map.
-		 * \sa FindCriticalPoints
+		 * \sa findCriticalPoints
 		 */
 		void  buildVoronoiDiagram(float threshold, float robot_size,int x1=0,int x2=0, int y1=0,int y2=0);
+
+		/** Reads a the clearance of a cell (in centimeters), after building the Voronoi diagram with \a buildVoronoiDiagram */
+		inline uint16_t getVoroniClearance(int cx,int cy) const
+		{
+#ifdef _DEBUG			
+			ASSERT_ABOVEEQ_(cx,0)
+			ASSERT_ABOVEEQ_(cy,0)
+			ASSERT_BELOWEQ_(cx,int(m_voronoi_diagram.getSizeX()))
+			ASSERT_BELOWEQ_(cy,int(m_voronoi_diagram.getSizeY()))
+#endif
+			const uint16_t *cell=m_voronoi_diagram.cellByIndex(cx,cy);
+			return *cell;
+		}
+		
+	protected:
+		/** Used to set the clearance of a cell, while building the Voronoi diagram. */
+		inline void setVoroniClearance(int cx,int cy,uint16_t dist)
+		{ 
+			uint16_t *cell=m_voronoi_diagram.cellByIndex(cx,cy);
+#ifdef _DEBUG			
+			ASSERT_ABOVEEQ_(cx,0)
+			ASSERT_ABOVEEQ_(cy,0)
+			ASSERT_BELOWEQ_(cx,int(m_voronoi_diagram.getSizeX()))
+			ASSERT_BELOWEQ_(cy,int(m_voronoi_diagram.getSizeY()))
+#endif
+			*cell = dist;
+		}
+
+	public:
+
+		/** Return the auxiliary "basis" map built while building the Voronoi diagram \sa buildVoronoiDiagram */
+		inline const CDynamicGrid<uint8_t>	& getBasisMap() const { return m_basis_map; }
+
+		/** Return the Voronoi diagram; each cell contains the distance to its closer obstacle, or 0 if not part of the Voronoi diagram \sa buildVoronoiDiagram */
+		inline const CDynamicGrid<uint16_t>	& getVoronoiDiagram() const { return m_voronoi_diagram; }
 
 		/** Builds a list with the critical points from Voronoi diagram, which must
 		 *    must be built before calling this method.
 		 * \param filter_distance The minimum distance between two critical points.
-		 * \sa Build_VoronoiDiagram
+		 * \sa buildVoronoiDiagram
 		 */
 		void  findCriticalPoints( float filter_distance );
+
+		/** @} */ // End of Voronoi methods
+
 
 		/** Compute the clearance of a given cell, and returns its two first
 		 *   basis (closest obstacle) points.Used to build Voronoi and critical points.
@@ -1097,7 +1152,7 @@ namespace slam
 
 		/** The structure used to store the set of Voronoi diagram
 		 *    critical points.
-		 * \sa FindCriticalPoints
+		 * \sa findCriticalPoints
 		 */
 		struct MAPS_IMPEXP TCriticalPointsList
 		{
