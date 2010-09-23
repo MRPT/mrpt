@@ -140,8 +140,6 @@ void  CPose3D::writeToStream(CStream &out,int *version) const
 		*version = 2;
 	else
 	{
-		// Just for the case the user has modified by hand (x,y,z,yaw,pitch,roll) directly:
-		const_cast<CPose3D*>(this)->rebuildRotationMatrix();
 		const CPose3DQuat  q(*this);
 		// The coordinates:
 		out << q[0] << q[1] << q[2] << q[3] << q[4] << q[5] << q[6];
