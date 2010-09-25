@@ -98,6 +98,7 @@
 				- New SE3 Lie algebra methods: mrpt::poses::CPose3D::exp(), mrpt::poses::CPose3D::ln(), ...
 				- mrpt::poses::CPose3D::composePoint() now has an optional flag to compute faster, approximate Jacobians (for small rotations only!).
 				- Methods composePoint() and inverseComposePoint() now can also compute the Jacobian with respect to se3 (the tangent space of SE(3) at a given pose).
+				- New methods: setFrom12Vector(), getAs12Vector()
 			- New method: mrpt::hwdrivers::CSerialPort::ReadString
 			- All matrices: New methods:
 				- t() (for transpose, apart of the old ~ operator)

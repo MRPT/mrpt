@@ -950,9 +950,8 @@ CArrayDouble<6> CPose3D::ln() const
 }
 
 
-/** Jacobian of the logarithm of the 3x4 matrix defined by this pose.
-  * \note Method from TooN (C) Tom Drummond (GNU GPL)
-  */
+/* The following code fragments are from TooN and RobotVision packages.
+*/
 namespace mrpt
 {
 	namespace poses
@@ -964,15 +963,113 @@ namespace mrpt
 			v[1]=R(0,2)-R(2,0);
 			v[2]=R(1,0)-R(0,1);
 		}
+
+		template <typename VEC3,typename MAT3x3,typename MAT3x9>
+		inline void M3x9(
+			const VEC3   &a,
+			const MAT3x3 &B,
+			MAT3x9       &RES)
+		{
+			const double vals[] = {
+				a[0], -B(0,2), B(0,1), B(0,2), a[0], -B(0,0),-B(0,1), B(0,0), a[0],
+				a[1], -B(1,2), B(1,1), B(1,2), a[1], -B(1,0),-B(1,1), B(1,0), a[1],
+				a[2], -B(2,2), B(2,1), B(2,2), a[2], -B(2,0),-B(2,1), B(2,0), a[2]
+				};
+			RES.loadFromArray(vals);
+//			J.T()[0] = a;
+//			J.T()[1] = -B.T()[2];
+//			J.T()[2] = B.T()[1];
+//			J.T()[3] = B.T()[2];
+//			J.T()[4] = a;
+//			J.T()[5] = -B.T()[0];
+//			J.T()[6] = -B.T()[1];
+//			J.T()[7] = B.T()[0];
+//			J.T()[8] = a;
+		}
+
+		inline void dlnR_dR(const CMatrixDouble33 &R, CMatrixFixedNumeric<double,3,9> &M)
+		{
+			const double d = 0.5*(R(0,0)+R(1,1)+R(2,2)-1);
+			CArrayDouble<3>  a;
+			CMatrixDouble33  B(UNINITIALIZED_MATRIX);
+			if(d>0.99999)
+			{
+				a[0]=a[1]=a[2]=0;
+				B.unit(-0.5);
+			}
+			else
+			{
+				const double theta = acos(d);
+				const double d2 = square(d);
+				const double sq = std::sqrt(1-d2);
+				deltaR(R,a);
+				a *= (d*theta-sq)/(4*(sq*sq*sq));
+				B.unit( -theta/(2*sq) );
+			}
+			M3x9(a,B, M);
+		}
+
+		inline void dVinvt_dR(const CPose3D &P, CMatrixFixedNumeric<double,3,9> &J)
+		{
+			CArrayDouble<3>  a;
+			CMatrixDouble33  B(UNINITIALIZED_MATRIX);
+
+			const CMatrixDouble33 &R = P.getRotationMatrix();
+			const CArrayDouble<3> &t = P.m_coords;
+
+			const double d = 0.5*( R(0,0)+R(1,1)+R(2,2)-1);
+
+			if (d>0.9999)
+			{
+				a[0]=a[1]=a[2]=0;
+				B.zeros();
+			}
+			else
+			{
+				const double theta = acos(d);
+				const double theta2 = square(theta);
+				const double oned2 = (1-square(d));
+				const double sq = std::sqrt(oned2);
+				const double cot = 1./tan(0.5*theta);
+				const double csc2 = square(1./sin(0.5*theta));
+				THROW_EXCEPTION("TODO")
+//				TooN::Matrix<3,3,P> skewR = skew(deltaR(R));
+//				a = -(d*theta-sq)/(8*pow(sq,3))*skewR*t
+//				+ (((theta*sq-d*theta2)*(0.5*theta*cot-1))
+//				-theta*sq*((0.25*theta*cot)+0.125*theta2*csc2-1))
+//				/(4*theta2*Po2(oned2))*(skewR*skewR*t);
+//				B = -0.5*theta/(2*sq)*skew(t)
+//				- (theta*cot-2)/(8*oned2) * ddeltaRt_dR(T);
+			}
+			M3x9(a,B,J);
+		}
+
+
 	}
 }
 
 void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double,6,12> &J) const
 {
 	J.zeros();
-	THROW_EXCEPTION("TODO")
-	//J.template slice<0,0,3,9>() = dlnR_dR(T.get_rotation().get_matrix());
-	//J.template slice<3,0,3,9>() = dVinvt_dR(T);
+	// Jacobian structure 6x12:
+	// (3rows, for t)       [       d_Vinvt_dR (3x9)    |  Vinv (3x3)  ]
+	//                      [  -------------------------+------------- ]
+	// (3rows, for \omega)  [       d_lnR_dR   (3x9)    |    0 (3x3)   ]
+	//
+	//          derivs wrt:     R_col1 R_col2  R_col3   |       t
+	//
+	// (Will be explained better in: http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty )
+	//
+	{
+		CMatrixFixedNumeric<double,3,9> M(UNINITIALIZED_MATRIX);
+		dlnR_dR(m_ROT, M);
+		J.insertMatrix(3,0, M);  //J.template slice<0,0,3,9>() = dlnR_dR(T.get_rotation().get_matrix());
+	}
+	{
+		CMatrixFixedNumeric<double,3,9> M(UNINITIALIZED_MATRIX);
+		dVinvt_dR(*this,M);
+		J.insertMatrix(0,0, M);  //J.template slice<3,0,3,9>() = dVinvt_dR(T);
+	}
 
 	const CMatrixDouble33 & R = m_ROT;
 	CArrayDouble<3> omega;
@@ -1005,7 +1102,6 @@ void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double,6,12> &J) const
 		omega *=theta/(2*std::sqrt(1-d*d));
 
 		mrpt::math::skew_symmetric3(omega,Omega);
-		//Omega = skew(omega);
 
 		CMatrixDouble33 Omega2(UNINITIALIZED_MATRIX);
 		Omega2.multiply_AAt(Omega);
@@ -1016,5 +1112,5 @@ void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double,6,12> &J) const
 		V_inv -= Omega;
 		V_inv += Omega2;
 	}
-	//J.template slice<3,9,3,3>() = V_inv;
+	J.insertMatrix(0,9, V_inv);    //J.template slice<3,9,3,3>() = V_inv;
 }

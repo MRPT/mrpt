@@ -336,6 +336,87 @@ protected:
 			<< "Error: " << endl << df_dse3-num_df_dse3 << endl;
 	}
 
+	static void func_jacob_expe_e(
+		const CArrayDouble<6> &x,
+		const double &dummy, CArrayDouble<12> &Y)
+	{
+		const CPose3D p = CPose3D::exp(x);
+		const CMatrixDouble44 R = p.getHomogeneousMatrixVal();
+		p.getAs12Vector(Y);
+	}
+
+	// Check dexp(e)_de
+	void check_jacob_expe_e_at_0()
+	{
+		CArrayDouble<6> x_mean;
+		for (int i=0;i<6;i++) x_mean[i]=0;
+
+		double dummy;
+		CArrayDouble<6> x_incrs;
+		x_incrs.assign(1e-9);
+		CMatrixDouble numJacobs;
+		mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_jacob_expe_e,x_incrs,dummy, numJacobs );
+
+		// Theoretical matrix:
+		// [ 0   -[e1]_x ]
+		// [ 0   -[e2]_x ]
+		// [ 0   -[e3]_x ]
+		// [ I_3    0    ]
+		double vals[12*6] = {
+			0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 1,
+			0, 0, 0, 0,-1, 0,
+
+			0, 0, 0, 0, 0,-1,
+			0, 0, 0, 0, 0, 0,
+			0, 0, 0, 1, 0, 0,
+
+			0, 0, 0, 0, 1, 0,
+			0, 0, 0,-1, 0, 0,
+			0, 0, 0, 0, 0, 0,
+
+			1, 0, 0, 0, 0, 0,
+			0, 1, 0, 0, 0, 0,
+			0, 0, 1, 0, 0, 0
+		};
+		CMatrixFixedNumeric<double,12,6>  M(vals);
+
+		EXPECT_NEAR( (numJacobs-M).Abs().sumAll(), 0, 1e-9);
+	}
+
+	static void func_jacob_LnT_T(
+		const CArrayDouble<12> &x,
+		const double &dummy, CArrayDouble<6> &Y)
+	{
+		const CPose3D p(x);
+		Y = p.ln();
+	}
+
+	// Jacobian of Ln(T) wrt T
+	void check_jacob_LnT_T(double x1,double y1,double z1, double yaw1,double pitch1,double roll1)
+	{
+		const CPose3D p(x1,y1,z1,yaw1,pitch1,roll1);
+
+		CMatrixFixedNumeric<double,6,12> theor_jacob;
+		p.ln_jacob(theor_jacob);
+
+		CMatrixDouble numJacobs;
+		{
+			CArrayDouble<12> x_mean;
+			p.getAs12Vector(x_mean);
+
+			double dummy;
+			CArrayDouble<12> x_incrs;
+			x_incrs.assign(1e-9);
+			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_jacob_LnT_T,x_incrs,dummy, numJacobs );
+		}
+
+		EXPECT_NEAR( (numJacobs-theor_jacob).Abs().sumAll(), 0, 1e-3)
+			<< "Pose: " << p << endl
+			<< "Num. Jacob:\n" << numJacobs << endl
+			<< "Theor. Jacob:\n" << theor_jacob << endl;
+	}
+
 
 };
 
@@ -479,4 +560,16 @@ TEST_F(Pose3DTests,ExpLnEqual)
 	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(-20),DEG2RAD(-30),DEG2RAD(-40) );
 }
 
+TEST_F(Pose3DTests,Jacob_dExpe_de_at_0)
+{
+	check_jacob_expe_e_at_0();
+}
+
+TEST_F(Pose3DTests,Jacob_dLnT_dT)
+{
+	check_jacob_LnT_T(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
+	check_jacob_LnT_T(1.0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
+	check_jacob_LnT_T(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
+	check_jacob_LnT_T(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(20),DEG2RAD(30) );
+}
 

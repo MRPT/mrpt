@@ -138,6 +138,14 @@ namespace poses
 		/** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
 		inline CPose3D(TConstructorFlags_Poses constructor_dummy_param) : m_ROT(UNINITIALIZED_MATRIX), m_ypr_uptodate(false) { }
 
+		/** Constructor from an array with these 12 elements: [r11 r21 r31 r12 r22 r32 r13 r23 r33 tx ty tz]
+		  *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are the 3D translation of the pose
+		  *  \sa setFrom12Vector, getAs12Vector
+		  */
+		inline explicit CPose3D(const CArrayDouble<12> &vec12) : m_ROT( UNINITIALIZED_MATRIX ), m_ypr_uptodate(false) {
+			setFrom12Vector(vec12);
+		}
+
 		/** @} */  // end Constructors
 
 
@@ -315,6 +323,36 @@ namespace poses
 			const double		roll_)
 		{
 			setFromValues(x(),y(),z(),yaw_,pitch_,roll_);
+		}
+
+		/** Set pose from an array with these 12 elements: [r11 r21 r31 r12 r22 r32 r13 r23 r33 tx ty tz]
+		  *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are the 3D translation of the pose
+		  *  \sa getAs12Vector
+		  */
+		template <class ARRAYORVECTOR>
+		inline void setFrom12Vector(const ARRAYORVECTOR &vec12)
+		{
+			m_ROT.set_unsafe(0,0, vec12[0]); m_ROT.set_unsafe(0,1, vec12[3]); m_ROT.set_unsafe(0,2, vec12[6]);
+			m_ROT.set_unsafe(1,0, vec12[1]); m_ROT.set_unsafe(1,1, vec12[4]); m_ROT.set_unsafe(1,2, vec12[7]);
+			m_ROT.set_unsafe(2,0, vec12[2]); m_ROT.set_unsafe(2,1, vec12[5]); m_ROT.set_unsafe(2,2, vec12[8]);
+			m_coords[0] = vec12[ 9];
+			m_coords[1] = vec12[10];
+			m_coords[2] = vec12[11];
+		}
+
+		/** Get the pose representation as an array with these 12 elements: [r11 r21 r31 r12 r22 r32 r13 r23 r33 tx ty tz]
+		  *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are the 3D translation of the pose
+		  *  \sa setFrom12Vector
+		  */
+		template <class ARRAYORVECTOR>
+		inline void getAs12Vector(ARRAYORVECTOR &vec12) const
+		{
+			vec12[0] = m_ROT.get_unsafe(0,0); vec12[3] = m_ROT.get_unsafe(0,1); vec12[6] = m_ROT.get_unsafe(0,2);
+			vec12[1] = m_ROT.get_unsafe(1,0); vec12[4] = m_ROT.get_unsafe(1,1); vec12[7] = m_ROT.get_unsafe(1,2);
+			vec12[2] = m_ROT.get_unsafe(2,0); vec12[5] = m_ROT.get_unsafe(2,1); vec12[8] = m_ROT.get_unsafe(2,2);
+			vec12[ 9] = m_coords[0];
+			vec12[10] = m_coords[1];
+			vec12[11] = m_coords[2];
 		}
 
 		/** Returns the three angles (yaw, pitch, roll), in radians, from the rotation matrix.
