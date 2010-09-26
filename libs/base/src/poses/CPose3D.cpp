@@ -760,11 +760,9 @@ CPose3D CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu)
 	// Resulting XYZ coords:
 	CArrayDouble<3> res_xyz;
 
-//	const CArrayDouble<3> mu_xyz = CArrayDouble<3>( mu.slice<0,3>() );
 	CArrayDouble<3> mu_xyz;
 	for (int i=0;i<3;i++) mu_xyz[i] = mu[i];
 
-//	const CArrayDouble<3> w = CArrayDouble<3>( mu.slice<3,3>() );
 	CArrayDouble<3> w;
 	for (int i=0;i<3;i++) w[i] = mu[3+i];
 
@@ -810,7 +808,7 @@ CPose3D CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu)
 	}
 
 	// 3x3 rotation part:
-	CMatrixDouble33 res_ROT;
+	CMatrixDouble33 res_ROT(UNINITIALIZED_MATRIX);
 	mrpt::math::rodrigues_so3_exp(w, A, B, res_ROT);
 
 	return CPose3D(res_ROT, res_xyz);
@@ -915,7 +913,7 @@ CMatrixDouble33 CPose3D::exp_rotation(const mrpt::math::CArrayNumeric<double,3> 
 /** Take the logarithm of the 3x4 matrix defined by this pose, generating the corresponding vector in the SE3 Lie Algebra.
   * \note Method from TooN (C) Tom Drummond (GNU GPL)
   */
-CArrayDouble<6> CPose3D::ln() const
+void CPose3D::ln(CArrayDouble<6> &result) const
 {
 	CArrayDouble<3> rot = this->ln_rotation();
 	const double theta =  rot.norm(); //sqrt(rot*rot);
@@ -943,10 +941,8 @@ CArrayDouble<6> CPose3D::ln() const
 
 	rottrans *= 1.0/(2 * shtot);
 
-	CArrayDouble<6> result;
 	for (int i=0;i<3;i++) result[i] = rottrans[i];
 	for (int i=0;i<3;i++) result[3+i] = rot[i];
-	return result;
 }
 
 
@@ -1009,6 +1005,26 @@ namespace mrpt
 			M3x9(a,B, M);
 		}
 
+		inline CMatrixDouble33 ddeltaRt_dR(const CPose3D & P)
+		{
+			const CMatrixDouble33 &R = P.getRotationMatrix();
+			const CArrayDouble<3> &t = P.m_coords;
+
+			CArrayDouble<3>  abc;
+			deltaR(R,abc);
+			double a = abc[0];
+			double b = abc[1];
+			double c = abc[2];
+
+			const double vals[] = {
+				-b*t[1]-c*t[2], 2*b*t[0]-a*t[1], 2*c*t[0]-a*t[2],
+				-b*t[0]+2*a*t[1],-a*t[0]-c*t[2], 2*c*t[1]-b*t[2],
+				-c*t[0]+2*a*t[2],-c*t[1]+2*b*t[2],-a*t[0]-b*t[1]
+				};
+			return CMatrixDouble33(vals);
+		}
+
+
 		inline void dVinvt_dR(const CPose3D &P, CMatrixFixedNumeric<double,3,9> &J)
 		{
 			CArrayDouble<3>  a;
@@ -1032,14 +1048,38 @@ namespace mrpt
 				const double sq = std::sqrt(oned2);
 				const double cot = 1./tan(0.5*theta);
 				const double csc2 = square(1./sin(0.5*theta));
-				THROW_EXCEPTION("TODO")
-//				TooN::Matrix<3,3,P> skewR = skew(deltaR(R));
+
+				CMatrixDouble33 skewR(UNINITIALIZED_MATRIX);
+				CArrayDouble<3>  vr;
+				deltaR(R,vr);
+				mrpt::math::skew_symmetric3(vr,skewR);
+
+				CArrayDouble<3> skewR_t;
+				skewR.multiply_Ab(t,skewR_t);
+
+				skewR_t*= -(d*theta-sq)/(8*pow(sq,3));
+				a = skewR_t;
+
+				CMatrixDouble33  skewR2(UNINITIALIZED_MATRIX);
+				skewR2.multiply_AB(skewR,skewR);
+
+				CArrayDouble<3> skewR2_t;
+				skewR2.multiply_Ab(t,skewR2_t);
+				skewR2_t*= (((theta*sq-d*theta2)*(0.5*theta*cot-1))-theta*sq*((0.25*theta*cot)+0.125*theta2*csc2-1))/(4*theta2*square(oned2));
+				a += skewR2_t;
+
 //				a = -(d*theta-sq)/(8*pow(sq,3))*skewR*t
-//				+ (((theta*sq-d*theta2)*(0.5*theta*cot-1))
-//				-theta*sq*((0.25*theta*cot)+0.125*theta2*csc2-1))
-//				/(4*theta2*Po2(oned2))*(skewR*skewR*t);
+//					+ (((theta*sq-d*theta2)*(0.5*theta*cot-1))
+//					-theta*sq*((0.25*theta*cot)+0.125*theta2*csc2-1))
+//					/(4*theta2*Po2(oned2))*(skewR*skewR*t);
+
+				mrpt::math::skew_symmetric3(t,B);
+				B *=-0.5*theta/(2*sq);
+
+				B += -(theta*cot-2)/(8*oned2) * ddeltaRt_dR(P);
+
 //				B = -0.5*theta/(2*sq)*skew(t)
-//				- (theta*cot-2)/(8*oned2) * ddeltaRt_dR(T);
+//					- (theta*cot-2)/(8*oned2) * ddeltaRt_dR(T);
 			}
 			M3x9(a,B,J);
 		}

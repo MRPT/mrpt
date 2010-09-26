@@ -436,11 +436,17 @@ namespace poses
 
 
 		/** Take the logarithm of the 3x4 matrix defined by this pose, generating the corresponding vector in the SE3 Lie Algebra.
-		  * \note Method from TooN (C) Tom Drummond (GNU GPL)  */
-		mrpt::math::CArrayDouble<6> ln() const;
+		  * \note Method from TooN (C) Tom Drummond (GNU GPL)
+		  * \sa ln_jacob
+		  */
+		void ln(mrpt::math::CArrayDouble<6> &out_ln) const;
+
+		/// \overload
+		inline mrpt::math::CArrayDouble<6> ln() const { mrpt::math::CArrayDouble<6> ret; ln(ret); return ret; }
 
 		/** Jacobian of the logarithm of the 3x4 matrix defined by this pose.
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL)
+		  * \sa ln
 		  */
 		void ln_jacob(mrpt::math::CMatrixFixedNumeric<double,6,12> &J) const;
 

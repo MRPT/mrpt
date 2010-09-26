@@ -388,7 +388,8 @@ protected:
 		const CArrayDouble<12> &x,
 		const double &dummy, CArrayDouble<6> &Y)
 	{
-		const CPose3D p(x);
+		CPose3D p;
+		p.setFrom12Vector(x);
 		Y = p.ln();
 	}
 
@@ -407,14 +408,16 @@ protected:
 
 			double dummy;
 			CArrayDouble<12> x_incrs;
-			x_incrs.assign(1e-9);
+			x_incrs.assign(1e-6);
 			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_jacob_LnT_T,x_incrs,dummy, numJacobs );
 		}
 
 		EXPECT_NEAR( (numJacobs-theor_jacob).Abs().sumAll(), 0, 1e-3)
 			<< "Pose: " << p << endl
+			<< "Pose matrix:\n" << p.getHomogeneousMatrixVal()
 			<< "Num. Jacob:\n" << numJacobs << endl
-			<< "Theor. Jacob:\n" << theor_jacob << endl;
+			<< "Theor. Jacob:\n" << theor_jacob << endl
+			<< "ERR:\n" << theor_jacob-numJacobs << endl;
 	}
 
 
@@ -557,6 +560,7 @@ TEST_F(Pose3DTests,ExpLnEqual)
 	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(0),DEG2RAD(0) );
 	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(10),DEG2RAD(0) );
 	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10) );
+	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(80),DEG2RAD(5),DEG2RAD(5) );
 	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(-20),DEG2RAD(-30),DEG2RAD(-40) );
 }
 
@@ -568,8 +572,13 @@ TEST_F(Pose3DTests,Jacob_dExpe_de_at_0)
 TEST_F(Pose3DTests,Jacob_dLnT_dT)
 {
 	check_jacob_LnT_T(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
-	check_jacob_LnT_T(1.0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
-	check_jacob_LnT_T(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
-	check_jacob_LnT_T(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(20),DEG2RAD(30) );
+	// JL NOTE:
+	//  This function cannot be properly tested numerically, since the logm() implementation
+	//  is not generic and does NOT depends on all matrix entries, thus the numerical Jacobian
+	//  contains entire columns of zeros, even if the theorethical doesn't.
+//	check_jacob_LnT_T(1.0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
+//	check_jacob_LnT_T(1,2,3, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
+//	check_jacob_LnT_T(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
+//	check_jacob_LnT_T(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(20),DEG2RAD(30) );
 }
 
