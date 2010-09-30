@@ -186,7 +186,7 @@ namespace slam
 		  */
 		void filterByExclusionAreas( const TListExclusionAreas &areas );
 
-		/** Mark as invalid sensed points that fall within any of a set of "exclusion areas", given in coordinates relative to the vehicle (taking into account "sensorPose").
+		/** Mark as invalid sensed points that fall within any of a set of "exclusion areas", given in coordinates relative to the vehicle (taking into account "sensorPose"), AND such as the Z coordinate of the point falls in the range [min,max] associated to each exclusion polygon.
 		  * \sa C2DRangeFinderAbstract::loadExclusionAreas
 		  */
 		void filterByExclusionAreas( const TListExclusionAreasWithRanges &areas );
