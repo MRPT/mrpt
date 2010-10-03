@@ -61,7 +61,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 
 	// The size of things here (because size matters...)
 	typedef typename EDGE_TYPE::type_value edge_poses_type;
-	static const unsigned int DIMS_POSE = edge_poses_type::static_size;
+//	static const unsigned int DIMS_POSE = edge_poses_type::static_size;
 	typedef SE_traits<edge_poses_type::static_size> SE_TYPE;
 
 	// Some typedefs to make life easier:
@@ -114,7 +114,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 	//  we need the pair of Jacobians: { dh(xi,xj)_dxi, dh(xi,xj)_dxj },
 	//  which are "first" and "second" in each pair.
 	// Index of the map are the node IDs {i,j} for each contraint.
-	typedef pair<SE_TYPE::matrix_VxV_t,SE_TYPE::matrix_VxV_t>   TPairJacobs;
+	typedef pair<typename SE_TYPE::matrix_VxV_t,typename SE_TYPE::matrix_VxV_t>   TPairJacobs;
 
 	map<TPairNodeIDs,TPairJacobs>   lstJacobians;
 

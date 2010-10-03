@@ -52,19 +52,23 @@ protected:
 	};
 
 	static void func_numeric(
-		const CArrayDouble<2*SE_TYPE::VECTOR_SIZE> &x, 
-		const TParams &params, 
+		const CArrayDouble<2*SE_TYPE::VECTOR_SIZE> &x,
+		const TParams &params,
 		CArrayDouble<SE_TYPE::VECTOR_SIZE> &Y)
 	{
-		const CArrayNumeric<double,6> eps1 = x.slice<0,6>();
-		const CArrayNumeric<double,6> eps2 = x.slice<6,6>();
+		CArrayNumeric<double,6> eps1, eps2;
+		for (int i=0;i<6;i++)
+		{
+			eps1[i] = x[0+i];
+			eps2[i] = x[6+i];
+		}
 
 		const CPose3D 	P1 = CPose3D::exp(eps1) + params.P1;
 		const CPose3D 	P2 = CPose3D::exp(eps2) + params.P2;
 		const CPose3D 	&Pd = params.D;
 
 		const CPose3D   P1DP2inv(P1.getHomogeneousMatrixVal() * Pd.getHomogeneousMatrixVal() * P2.getInverseHomogeneousMatrix());
-		// Pseudo-logarithm: 
+		// Pseudo-logarithm:
 		for (int i=0;i<3;i++)	// X Y Z
 			Y[i] = P1DP2inv[i];
 
