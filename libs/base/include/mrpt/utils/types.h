@@ -381,6 +381,7 @@ namespace mrpt
 		typedef TParameters<std::string>  TParametersString; //!< See the generic template mrpt::utils::TParameters
 
 		typedef uint64_t TNodeID;  //!< The type for node IDs in graphs of different types.
+		typedef std::pair<TNodeID,TNodeID> TPairNodeIDs; //!< A pair of node IDs.
 		#define INVALID_NODEID  static_cast<TNodeID>(-1)
 
 	} // end namespace

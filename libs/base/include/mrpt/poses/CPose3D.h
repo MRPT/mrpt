@@ -426,16 +426,16 @@ namespace poses
 		/** @name Lie Algebra methods
 		    @{ */
 
-		/** Exponentiate a Vector in the SE3 Lie Algebra to generate a new CPose3D (static method).
+		/** Exponentiate a Vector in the SE(3) Lie Algebra to generate a new CPose3D (static method).
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
 		static CPose3D exp(const mrpt::math::CArrayNumeric<double,6> & vect);
 
-		/** Exponentiate a vector in the Lie algebra to generate a new SO3 (a 3x3 rotation matrix).
+		/** Exponentiate a vector in the Lie algebra to generate a new SO(3) (a 3x3 rotation matrix).
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
 		static CMatrixDouble33 exp_rotation(const mrpt::math::CArrayNumeric<double,3> & vect);
 
 
-		/** Take the logarithm of the 3x4 matrix defined by this pose, generating the corresponding vector in the SE3 Lie Algebra.
+		/** Take the logarithm of the 3x4 matrix defined by this pose, generating the corresponding vector in the SE(3) Lie Algebra.
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL)
 		  * \sa ln_jacob
 		  */
@@ -450,6 +450,11 @@ namespace poses
 		  */
 		void ln_jacob(mrpt::math::CMatrixFixedNumeric<double,6,12> &J) const;
 
+		/** Static function to compute the Jacobian of the SO(3) Logarithm function, evaluated at a given 3x3 rotation matrix R.
+		  * \sa ln, ln_jacob
+		  */
+		static void ln_rot_jacob(const CMatrixDouble33 &R, CMatrixFixedNumeric<double,3,9> &M);
+
 		/** Take the logarithm of the 3x3 rotation matrix, generating the corresponding vector in the Lie Algebra.
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
 		CArrayDouble<3> ln_rotation() const;
@@ -459,6 +464,7 @@ namespace poses
 		typedef CPose3D  type_value; //!< Used to emulate CPosePDF types, for example, in CNetworkOfPoses
 		enum { is_3D_val = 1 };
 		static inline bool is_3D() { return is_3D_val!=0; }
+		enum { rotation_dimensions = 3 };
 
 		/** @name STL-like methods and typedefs
 		   @{   */

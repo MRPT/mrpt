@@ -54,10 +54,10 @@ namespace mrpt
 		class CDirectedGraph
 		{
 		public:
-			typedef TYPE_EDGES                                            edge_t;  //!< The type of the graph edges
-			typedef std::multimap< std::pair<TNodeID,TNodeID>, edge_t >   edges_map_t;  //!< The type of the member \a edges
-			typedef typename edges_map_t::iterator                        iterator;
-			typedef typename edges_map_t::const_iterator                  const_iterator;
+			typedef TYPE_EDGES                             edge_t;  //!< The type of the graph edges
+			typedef std::multimap<TPairNodeIDs, edge_t >   edges_map_t;  //!< The type of the member \a edges
+			typedef typename edges_map_t::iterator         iterator;
+			typedef typename edges_map_t::const_iterator   const_iterator;
 
 			/** The public member with the directed edges in the graph */
 			edges_map_t   edges;

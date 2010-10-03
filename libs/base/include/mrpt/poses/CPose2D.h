@@ -206,6 +206,7 @@ namespace poses
 		typedef CPose2D  type_value; //!< Used to emulate CPosePDF types, for example, in CNetworkOfPoses
 		enum { is_3D_val = 0 };
 		static inline bool is_3D() { return is_3D_val!=0; }
+		enum { rotation_dimensions = 2 };
 
 		/** @name STL-like methods and typedefs
 		   @{   */

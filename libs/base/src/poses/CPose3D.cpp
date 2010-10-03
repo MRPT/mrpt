@@ -983,28 +983,6 @@ namespace mrpt
 //			J.T()[8] = a;
 		}
 
-		inline void dlnR_dR(const CMatrixDouble33 &R, CMatrixFixedNumeric<double,3,9> &M)
-		{
-			const double d = 0.5*(R(0,0)+R(1,1)+R(2,2)-1);
-			CArrayDouble<3>  a;
-			CMatrixDouble33  B(UNINITIALIZED_MATRIX);
-			if(d>0.99999)
-			{
-				a[0]=a[1]=a[2]=0;
-				B.unit(-0.5);
-			}
-			else
-			{
-				const double theta = acos(d);
-				const double d2 = square(d);
-				const double sq = std::sqrt(1-d2);
-				deltaR(R,a);
-				a *= (d*theta-sq)/(4*(sq*sq*sq));
-				B.unit( -theta/(2*sq) );
-			}
-			M3x9(a,B, M);
-		}
-
 		inline CMatrixDouble33 ddeltaRt_dR(const CPose3D & P)
 		{
 			const CMatrixDouble33 &R = P.getRotationMatrix();
@@ -1102,8 +1080,8 @@ void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double,6,12> &J) const
 	//
 	{
 		CMatrixFixedNumeric<double,3,9> M(UNINITIALIZED_MATRIX);
-		dlnR_dR(m_ROT, M);
-		J.insertMatrix(3,0, M);  //J.template slice<0,0,3,9>() = dlnR_dR(T.get_rotation().get_matrix());
+		ln_rot_jacob(m_ROT, M);
+		J.insertMatrix(3,0, M);  //J.template slice<0,0,3,9>() = ln_rot_jacob(T.get_rotation().get_matrix());
 	}
 	{
 		CMatrixFixedNumeric<double,3,9> M(UNINITIALIZED_MATRIX);
@@ -1153,4 +1131,26 @@ void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double,6,12> &J) const
 		V_inv += Omega2;
 	}
 	J.insertMatrix(0,9, V_inv);    //J.template slice<3,9,3,3>() = V_inv;
+}
+
+void CPose3D::ln_rot_jacob(const CMatrixDouble33 &R, CMatrixFixedNumeric<double,3,9> &M)
+{
+	const double d = 0.5*(R(0,0)+R(1,1)+R(2,2)-1);
+	CArrayDouble<3>  a;
+	CMatrixDouble33  B(UNINITIALIZED_MATRIX);
+	if(d>0.99999)
+	{
+		a[0]=a[1]=a[2]=0;
+		B.unit(-0.5);
+	}
+	else
+	{
+		const double theta = acos(d);
+		const double d2 = square(d);
+		const double sq = std::sqrt(1-d2);
+		deltaR(R,a);
+		a *= (d*theta-sq)/(4*(sq*sq*sq));
+		B.unit( -theta/(2*sq) );
+	}
+	M3x9(a,B, M);
 }

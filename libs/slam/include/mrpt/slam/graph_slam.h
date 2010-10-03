@@ -34,12 +34,37 @@
 
 namespace mrpt
 {
-	/** SLAM methods related to graphs of pose constraints 
-          * \sa mrpt::poses::CNetworkOfPoses    
+	/** SLAM methods related to graphs of pose constraints
+          * \sa mrpt::poses::CNetworkOfPoses
           */
 	namespace graphslam
 	{
-
+		/** Optimize a graph of pose constraints using the Sparse Pose Adjustment (SPA) sparse representation and a Levenberg-Marquartd optimizer.
+		  *  This method works for all types of graphs derived from \a CNetworkOfPoses (see its reference mrpt::poses::CNetworkOfPoses for the list).
+		  *  The input data are all the pose constraints in \a graph (graph.edges), and the gross first estimations of the "global" pose coordinates (in graph.nodes).
+		  *
+		  *  Note that these first coordinates can be obtained with mrpt::poses::CNetworkOfPoses::dijkstra_nodes_estimate().
+		  *
+		  * The method implemented in this file is based on this work:
+		  *  - "Efficient Sparse Pose Adjustment for 2D Mapping", Kurt Konolige et al., 2010.
+		  * , but generalized for not only 2D but 2D and 3D poses, and using on-manifold optimization.
+		  *
+		  * \param[in,out] graph The input edges and output poses.
+		  * \param[in] nodes_to_optimize The list of nodes whose global poses are to be optimized. If NULL (default), all the node IDs are optimized (but that marked as \a root in the graph).
+		  * \param[in] extra_params Optional parameters, see below.
+		  *
+		  * List of optional parameters by name in "extra_params":
+		  *		- "verbose": (default=0) If !=0, produce verbose ouput.
+		  *		- "max_iterations": (default=100) Maximum number of Lev-Marq. iterations.
+		  *
+		  * \tparam EDGE_TYPE The type of the edges. Typically users won't have to write this template argument by hand, since the compiler will auto-fit it depending on the type of the graph object.
+		  */
+		template <class EDGE_TYPE, class MAPS_IMPLEMENTATION>
+		void SLAM_IMPEXP optimize_graph_spa_levmarq(
+			mrpt::poses::CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION > & graph,
+			const std::set<mrpt::utils::TNodeID>            * nodes_to_optimize = NULL,
+			const mrpt::utils::TParametersDouble            & extra_params = mrpt::utils::TParametersDouble()
+			);
 
 
 	} // End of namespace

@@ -104,8 +104,8 @@ namespace mrpt
 				f << "VERTEX3 " << id << format(" %.04f %.04f %.04f %.04f %.04f %.04f\n",p.x(),p.y(),p.z(),p.roll(),p.pitch(),p.yaw() );
 			}
 
-			template <class EDGE> void write_EDGE_line( const std::pair<TNodeID,TNodeID> &edgeIDs,const EDGE & edge, std::ofstream &f);
-			template <> void write_EDGE_line<CPosePDFGaussianInf>( const std::pair<TNodeID,TNodeID> &edgeIDs,const CPosePDFGaussianInf & edge, std::ofstream &f)
+			template <class EDGE> void write_EDGE_line( const TPairNodeIDs &edgeIDs,const EDGE & edge, std::ofstream &f);
+			template <> void write_EDGE_line<CPosePDFGaussianInf>( const TPairNodeIDs &edgeIDs,const CPosePDFGaussianInf & edge, std::ofstream &f)
 			{
 				//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
 				// **CAUTION** TORO docs say "from_id" "to_id" in the opposite order, but it seems from the data that this is the correct expected format.
@@ -115,7 +115,7 @@ namespace mrpt
 						edge.cov_inv(0,0)<<" "<<edge.cov_inv(0,1)<<" "<<edge.cov_inv(1,1)<<" "<<
 						edge.cov_inv(2,2)<<" "<<edge.cov_inv(0,2)<<" "<<edge.cov_inv(1,2) << endl;
 			}
-			template <> void write_EDGE_line<CPose3DPDFGaussianInf>( const std::pair<TNodeID,TNodeID> &edgeIDs,const CPose3DPDFGaussianInf & edge, std::ofstream &f)
+			template <> void write_EDGE_line<CPose3DPDFGaussianInf>( const TPairNodeIDs &edgeIDs,const CPose3DPDFGaussianInf & edge, std::ofstream &f)
 			{
 				//  EDGE3 from_id to_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
 				// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
@@ -131,26 +131,26 @@ namespace mrpt
 						edge.cov_inv(4,4)<<" "<<edge.cov_inv(4,3)<<" "<<
 						edge.cov_inv(3,3) << endl;
 			}
-			template <> void write_EDGE_line<CPosePDFGaussian>( const std::pair<TNodeID,TNodeID> &edgeIDs,const CPosePDFGaussian & edge, std::ofstream &f)
+			template <> void write_EDGE_line<CPosePDFGaussian>( const TPairNodeIDs &edgeIDs,const CPosePDFGaussian & edge, std::ofstream &f)
 			{
 				CPosePDFGaussianInf p;
 				p.copyFrom(edge);
 				write_EDGE_line(edgeIDs,p,f);
 			}
-			template <> void write_EDGE_line<CPose3DPDFGaussian>( const std::pair<TNodeID,TNodeID> &edgeIDs,const CPose3DPDFGaussian & edge, std::ofstream &f)
+			template <> void write_EDGE_line<CPose3DPDFGaussian>( const TPairNodeIDs &edgeIDs,const CPose3DPDFGaussian & edge, std::ofstream &f)
 			{
 				CPose3DPDFGaussianInf p;
 				p.copyFrom(edge);
 				write_EDGE_line(edgeIDs,p,f);
 			}
-			template <> void write_EDGE_line<CPose2D>( const std::pair<TNodeID,TNodeID> &edgeIDs,const CPose2D & edge, std::ofstream &f)
+			template <> void write_EDGE_line<CPose2D>( const TPairNodeIDs &edgeIDs,const CPose2D & edge, std::ofstream &f)
 			{
 				CPosePDFGaussianInf p;
 				p.mean = edge;
 				p.cov_inv.unit();
 				write_EDGE_line(edgeIDs,p,f);
 			}
-			template <> void write_EDGE_line<CPose3D>( const std::pair<TNodeID,TNodeID> &edgeIDs,const CPose3D & edge, std::ofstream &f)
+			template <> void write_EDGE_line<CPose3D>( const TPairNodeIDs &edgeIDs,const CPose3D & edge, std::ofstream &f)
 			{
 				CPose3DPDFGaussianInf p;
 				p.mean = edge;

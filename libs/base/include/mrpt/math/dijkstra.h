@@ -61,7 +61,7 @@ namespace mrpt
 		public:
 			typedef mrpt::math::CDirectedGraph<TYPE_EDGES>  graph_t;	//!< The type of a graph with TYPE_EDGES edges
 			typedef TYPE_EDGES                              edge_t;	    //!< The type of edge data in graph_t
-			typedef std::list<std::pair<TNodeID,TNodeID> >  edge_list_t; //!< A list of edges used to describe a path on the graph
+			typedef std::list<TPairNodeIDs>  edge_list_t; //!< A list of edges used to describe a path on the graph
 			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID, std::set<TNodeID> >  list_all_neighbors_t; //!< A std::map (or a similar container according to MAPS_IMPLEMENTATION) with all the neighbors of every node.
 
 		protected:
@@ -87,12 +87,12 @@ namespace mrpt
 			const TNodeID                                   m_source_node_ID;
 
 			// Intermediary and final results:
-			typename MAPS_IMPLEMENTATION::template map<TNodeID,TDistance>                    m_distances; //!< All the distances
-			std::map<TNodeID,TDistance>                                                      m_distances_non_visited; // Use a std::map here in all cases.
-			typename MAPS_IMPLEMENTATION::template map<TNodeID,TPrevious>                    m_prev_node;
-			typename MAPS_IMPLEMENTATION::template map<TNodeID, std::pair<TNodeID,TNodeID> > m_prev_arc;
-			std::set<TNodeID>                                                                m_lstNode_IDs;
-			list_all_neighbors_t                                                             m_allNeighbors;
+			typename MAPS_IMPLEMENTATION::template map<TNodeID,TDistance>     m_distances; //!< All the distances
+			std::map<TNodeID,TDistance>                                       m_distances_non_visited; // Use a std::map here in all cases.
+			typename MAPS_IMPLEMENTATION::template map<TNodeID,TPrevious>     m_prev_node;
+			typename MAPS_IMPLEMENTATION::template map<TNodeID,TPairNodeIDs>  m_prev_arc;
+			std::set<TNodeID>                                                 m_lstNode_IDs;
+			list_all_neighbors_t                                              m_allNeighbors;
 
 		public:
 			/** Constructor, which takes the input graph and executes the entire Dijkstra algorithm from the given root node ID.
@@ -273,7 +273,7 @@ namespace mrpt
 				TNodeID nod = target_node_ID;
 				do
 				{
-					std::map<TNodeID, std::pair<TNodeID,TNodeID> >::const_iterator it = m_prev_arc.find(nod);
+					std::map<TNodeID, TPairNodeIDs >::const_iterator it = m_prev_arc.find(nod);
 					ASSERT_(it!=m_prev_arc.end())
 
 					out_path.push_front( it->second );
@@ -298,7 +298,7 @@ namespace mrpt
 
 				out_tree.clear();
 				out_tree.root = m_source_node_ID;
-				for (std::map<TNodeID, std::pair<TNodeID,TNodeID> >::const_iterator itArcs=m_prev_arc.begin();itArcs!=m_prev_arc.end();++itArcs)
+				for (std::map<TNodeID, TPairNodeIDs >::const_iterator itArcs=m_prev_arc.begin();itArcs!=m_prev_arc.end();++itArcs)
 				{	// For each saved arc in "m_prev_arc", recover the original data in the input graph and save it to the output tree structure.
 					const TNodeID id      = itArcs->first;
 					const TNodeID id_from = itArcs->second.first;
