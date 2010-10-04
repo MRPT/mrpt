@@ -51,6 +51,7 @@ CHokuyoURG::CHokuyoURG() :
     m_sensorPose(0,0,0),
     m_rx_buffer(40000),
 	m_verbose(true),
+	m_highSensMode(false),
     m_reduced_fov(0),
 	m_com_port(""),
 	m_I_am_owner_serial_port(false),
@@ -106,10 +107,6 @@ void  CHokuyoURG::doProcessSimple(
 		// No new data
 		return ;
 	}
-
-	// DEBUG
-//	cout << "sent: " << m_lastSentMeasCmd << endl;
-//	mrpt::system::vectorToBinaryFile( rcv_data, "rcv_data.txt");
 
 	// DECODE:
 	if (rcv_status0!='0' && rcv_status0!='9')
@@ -200,6 +197,8 @@ void  CHokuyoURG::loadConfig_sensorSpecific(
 		DEG2RAD( configSource.read_float(iniSection,"pose_roll",0) )
 		);
 
+	m_highSensMode = configSource.read_bool(iniSection,"HOKUYO_HS_mode",m_highSensMode);
+
 #ifdef MRPT_OS_WINDOWS
 	m_com_port = configSource.read_string(iniSection, "COM_port_WIN", m_com_port, true );
 #else
@@ -262,6 +261,9 @@ bool  CHokuyoURG::turnOn()
 	// Set the motor speed:
 	if (m_motorSpeed_rpm)
 		if (!setMotorSpeed( m_motorSpeed_rpm )) return false;
+
+	// Set HS mode:
+	setHighSensitivityMode(m_highSensMode);
 
 	// Display sensor information:
 	if (!displaySensorInfo(&m_sensor_info )) return false;
@@ -674,6 +676,46 @@ bool  CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 	printf_debug("OK\n");
 	return true;
 }
+
+/*-------------------------------------------------------------
+						setHighSensitivityMode
+-------------------------------------------------------------*/
+bool  CHokuyoURG::setHighSensitivityMode(bool enabled)
+{
+	char			cmd[20];
+	char			rcv_status0,rcv_status1;
+	char			rcv_data[100];
+	size_t			toWrite;
+	int				rcv_dataLength;
+
+	if (!checkCOMisOpen()) return false;
+
+	printf_debug("[CHokuyoURG::setHighSensitivityMode] Setting HS mode to: %s...", enabled ? "true":"false" );
+
+	// Send command:
+	os::sprintf(cmd,20, "HS%i\x0A",enabled ? 1:0);
+	toWrite = 4;
+
+	m_stream->WriteBuffer(cmd,toWrite);
+
+	// Receive response:
+	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
+	{
+		printf("ERROR!\n");
+		return false;
+	}
+
+	// DECODE:
+	if (rcv_status0!='0')
+	{
+		printf("ERROR!\n");
+		return false;
+	}
+
+	printf_debug("OK\n");
+	return true;
+}
+
 
 /*-------------------------------------------------------------
 						displayVersionInfo

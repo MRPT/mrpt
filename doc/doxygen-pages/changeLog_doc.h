@@ -75,6 +75,7 @@
 			- New metaprogramming class: mrpt::utils::TEnumType, allows converting between numerical and symbolic text values for enum types.
 			- New SE(2) and SE(3) geometry helper classes. See mrpt::poses::SE_traits
 		- Changes in classes:
+			- mrpt::hwdrivers::CHokuyoURG has new configuration variable "HOKUYO_HS_mode" to enable the high sensitivity mode.
 			- mrpt::poses::CPoseOrPoint, mrpt::poses::CPose and mrpt::poses::CPoint are now templates and use the CRTP pattern instead of virtual functions, increasing the performance of all the derived classes.
 			- mrpt::poses::CNetworkOfPoses has many improvements and new methods (see its documentation).
 			- mrpt::math::CDijkstra:

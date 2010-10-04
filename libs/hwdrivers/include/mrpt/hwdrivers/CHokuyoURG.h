@@ -47,12 +47,13 @@ namespace mrpt
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
 		  *    HOKUYO_motorSpeed_rpm=600
+		  *    //HOKUYO_HS_mode   = false    // Optional (un-comment line if used): Set/unset the High-sensitivity mode (not on all models/firmwares!)
 		  *    COM_port_WIN = COM3
 		  *    COM_port_LIN = ttyS0
-		  *    pose_x=0.21	; Laser range scaner 3D position in the robot (meters)
+		  *    pose_x=0.21	// Laser range scaner 3D position in the robot (meters)
 		  *    pose_y=0
 		  *    pose_z=0.34
-		  *    pose_yaw=0	; Angles in degrees
+		  *    pose_yaw=0	// Angles in degrees
 		  *    pose_pitch=0
 		  *    pose_roll=0
 		  *
@@ -85,23 +86,15 @@ namespace mrpt
 			};
 
 		private:
-			/** The first and last ranges to consider from the scan.
-			  */
-			int		m_firstRange,m_lastRange;
-
-			/** The motor speed (default=600rpm)
-			  */
-			int		m_motorSpeed_rpm;
-
-			/** The sensor 6D pose:
-			  */
-			poses::CPose3D	m_sensorPose;
-
+			int		m_firstRange,m_lastRange;   //!< The first and last ranges to consider from the scan.
+			int		m_motorSpeed_rpm;           //!< The motor speed (default=600rpm)
+			poses::CPose3D	m_sensorPose;       //!< The sensor 6D pose:
 			mrpt::utils::circular_buffer<uint8_t> m_rx_buffer; //!< Auxiliary buffer for readings
 
 			std::string     m_lastSentMeasCmd; //!< The last sent measurement command (MDXXX), including the last 0x0A.
 
 			bool 			m_verbose;
+			bool			m_highSensMode;  //!< High sensitivity [HS] mode (default: false)
 
 			/** Enables the SCIP2.0 protocol (this must be called at the very begining!).
 			  * \return false on any error
@@ -127,6 +120,11 @@ namespace mrpt
 			  * \return false on any error
 			  */
 			bool  setMotorSpeed(int motoSpeed_rpm);
+
+			/** Changes the high sensitivity mode (HS) (default: false)
+			  * \return false on any error
+			  */
+			bool  setHighSensitivityMode(bool enabled);
 
 			/** Ask to the device, and print to the debug stream, details about the firmware version,serial number,...
 			  * \return false on any error
