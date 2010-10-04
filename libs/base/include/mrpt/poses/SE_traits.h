@@ -40,10 +40,10 @@ namespace mrpt
 		/** A helper class for SE(2) and SE(3) geometry-related transformations, on-manifold optimization Jacobians, etc.
 		  * \sa SE_traits<2>, SE_traits<3>, CPose3D, CPose2D
 		  */
-		template <size_t DOF> struct SE_traits;
+		template <size_t DOF> struct BASE_IMPEXP SE_traits;
 
 		/** Specialization of SE for 3D poses \sa SE_traits */
-		template <> BASE_IMPEXP struct SE_traits<3>
+		template <> struct BASE_IMPEXP SE_traits<3>
 		{
 			enum { VECTOR_SIZE = 6 };
 			typedef CArrayDouble<VECTOR_SIZE> array_t;
@@ -64,10 +64,10 @@ namespace mrpt
 				matrix_VxV_t *df_de1, 
 				matrix_VxV_t *df_de2);
 
-		}; // end SE_traits<3>
+		}; // end SE_traits
 
 		/** Specialization of SE for 2D poses \sa SE_traits */
-		template <> BASE_IMPEXP struct SE_traits<2>
+		template <> struct BASE_IMPEXP SE_traits<2>
 		{
 			enum { VECTOR_SIZE = 3 };
 			typedef CArrayDouble<VECTOR_SIZE> array_t;
@@ -88,7 +88,7 @@ namespace mrpt
 				matrix_VxV_t *df_de1, 
 				matrix_VxV_t *df_de2);
 
-		}; // end SE_traits<3>
+		}; // end SE_traits
 
 
 	} // End of namespace
