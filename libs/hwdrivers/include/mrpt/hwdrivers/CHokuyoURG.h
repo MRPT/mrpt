@@ -121,11 +121,6 @@ namespace mrpt
 			  */
 			bool  setMotorSpeed(int motoSpeed_rpm);
 
-			/** Changes the high sensitivity mode (HS) (default: false)
-			  * \return false on any error
-			  */
-			bool  setHighSensitivityMode(bool enabled);
-
 			/** Ask to the device, and print to the debug stream, details about the firmware version,serial number,...
 			  * \return false on any error
 			  */
@@ -201,6 +196,11 @@ namespace mrpt
 			  *  Call with "0" to disable this reduction again (the default).
 			  */
 			void setReducedFOV(const double fov) { m_reduced_fov = fov; }
+
+			/** Changes the high sensitivity mode (HS) (default: false)
+			  * \return false on any error
+			  */
+			bool  setHighSensitivityMode(bool enabled);
 
 			void setVerbose(bool enable = true) { m_verbose = enable; }
 
