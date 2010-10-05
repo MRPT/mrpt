@@ -7,6 +7,7 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #
 #  December 2007, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
+PROJECT(map_partition)
 
 #MESSAGE(STATUS "Makefile for application: /apps/map-partition")
 

@@ -50,6 +50,7 @@
 			- <a href="http://www.mrpt.org/Application:mrpt-performance" >mrpt-performance</a>: Added command-line arguments to filter what tests to run, and more tests added.
 			- RawLogViewer: Can now build "raw maps" from datasets in the "observations-only" format.
 			- <a href="http://www.mrpt.org/Application:icp-slam" >icp-slam</a> and <a href="http://www.mrpt.org/Application:rbpf-slam" >rbpf-slam</a> now accept a second command-line argument for the dataset (rawlog) to load.
+			- <a href="http://www.mrpt.org/Application:map-partition">map-partition</a>: Fixed generation of a valid MATLAB script to easily visualize the results (Thanks Ricardo Vazquez Martin for reporting!).
 		- Changes in build system / compiling:
 			- By default, MRPT_ALWAYS_CHECKS_DEBUG_MATRICES is OFF. This allow programs to run faster in non Debug builds.
 			- Doxygen documentation: More macros expanded while generating docs: now docs are also generated for smart pointers and for RTTI & serialization stuff.

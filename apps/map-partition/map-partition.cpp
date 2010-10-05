@@ -61,7 +61,6 @@ void Test()
 	CSimpleMap		in_map, out_map;
 	CTicTac						tictac;
 	CIncrementalMapPartitioner	imp;
-	size_t						i,n;
 	std::vector<vector_uint>	parts;
 
 	deleteFilesInDirectory("./MAP-PARTITION_RESULTS");
@@ -104,8 +103,8 @@ void Test()
 
 	tictac.Tic();
 
-	n = in_map.size();
-	for (i=0;i<n;i++)
+	const size_t n = in_map.size();
+	for (size_t i=0;i<n;i++)
 	{
 		CSensoryFramePtr sf;
 		CPose3DPDFPtr posePDF;
@@ -138,7 +137,7 @@ void Test()
 	// Save in different maps:
 	// ------------------------------------
 	FILE	*f=os::fopen( format("MAP-PARTITION_RESULTS/out_partitions_%s.txt", extractFileName(MAP_FILE).c_str() ).c_str() ,"wt");
-	for (i=0;i<parts.size();i++)
+	for (size_t i=0;i<parts.size();i++)
 	{
 		for (size_t j=0;j<parts[i].size();j++)
 			fprintf(f,"%u ",parts[i][j]);
@@ -149,7 +148,7 @@ void Test()
 
 	printf("Saving output maps...");
 
-	for (i=0;i<parts.size();i++)
+	for (size_t i=0;i<parts.size();i++)
 	{
 		out_map.clear();
 		for (size_t j=0;j<parts[i].size();j++)
@@ -181,7 +180,7 @@ void Test()
 	CMatrix			B( A.getRowCount(), A.getColCount() );
 	vector_uint		rearrIndexes;
 	vector_uint		separations;
-	for (i=0;i<parts.size();i++)
+	for (size_t i=0;i<parts.size();i++)
 	{
 		uint32_t  maxIdx = 0;
 		for (size_t j=0;j<parts[i].size();j++)
@@ -203,8 +202,8 @@ void Test()
 		gui::CDisplayWindow		win2(" Rearranged adjacency matrix");
 		CImageFloat		imgFl( A );
 		CImageFloat		imgFl2( B );
-		imgFl.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_BEFORE.bmp");
-		imgFl2.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_AFTER.bmp");
+		imgFl.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_BEFORE.png");
+		imgFl2.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_AFTER.png");
 		win.showImage( imgFl );
 		win2.showImage( imgFl2 );
 		win.setPos(20,20);
@@ -213,23 +212,39 @@ void Test()
 		win2.waitForKey();
 	}
 
+	// The matlab script below will need "globalmap_grid.png":
+	{
+		COccupancyGridMap2D  gridmap(-10,10, -10,10, 0.05);
+		cout << "Building global gridmap needed by MATLAB script..."; cout.flush();
+		gridmap.loadFromSimpleMap(in_map);
+		gridmap.saveMetricMapRepresentationToFile("MAP-PARTITION_RESULTS/globalmap_grid");
+		cout << "Done.\n";
+	}
+
 	// ------------------------------------------------------------------
 	//			Generate MATLAB script
 	// ------------------------------------------------------------------
-	printf("Generating MATLAB script for visualizing results...");
-	f=os::fopen( "MAP-PARTITION_RESULTS/seePartitionResults.m" ,"wt");
-	fprintf(f,"clear all; close all; \n\nR=0.10;STEP=4;\n");
+	const std::string matlab_script_filename = "MAP-PARTITION_RESULTS/seePartitionResults.m";
+	printf("Generating MATLAB script for visualizing results: %s ...",matlab_script_filename.c_str() );
 
-	fprintf(f,"figure(1); hold on;\n");
-	fprintf(f,"\nim2=imread('../GRID.BMP');M = size(im2,1); MM = size(im2,2);\n");
-	fprintf(f,"for i=1:M,im(i,:)=im2(M-i+1,:);end;\n");
-	fprintf(f,"D=load('../GRID_LIMITS.TXT');\n");
-	fprintf(f,"imshow(linspace(D(1),D(2),MM),linspace(D(3),D(4),M),im);\n");
-	fprintf(f,"set(gca,'YDir','normal');\n\n");
-	fprintf(f,"set(gca,'Position',[0 0 1 1]);\n");
+	f=os::fopen(matlab_script_filename.c_str(),"wt");
+
+	fprintf(f,
+		"function []=seePartitionResults()\n"
+		"%% Script generated automatically by map-partition - Part of MRPT\n\n"
+		"R=0.20; %% Radius of robot shape\n"
+		"STEP=4;\n"
+		"figure(1); hold on;\n"
+		"\nim2=imread('globalmap_grid.png');M = size(im2,1); MM = size(im2,2);\n"
+		"for i=1:M,im(i,:)=im2(M-i+1,:);end;\n"
+		"D=load('globalmap_grid_limits.txt');\n"
+		"imshow(im,'XData',linspace(D(1),D(2),MM),'YData',linspace(D(3),D(4),M));\n"
+		"set(gca,'YDir','normal');\n\n"
+		"set(gca,'Position',[0 0 1 1]);\n"
+		);
 
 
-	for (i=0;i<parts.size();i++)
+	for (size_t i=0;i<parts.size();i++)
 	{
 		fprintf(f,"%% Partition #%03i\n", (unsigned int)i);
 		fprintf(f,"poses=[...\n");
@@ -263,19 +278,46 @@ void Test()
 		}
 		fprintf(f,"drawRobot(poses(1:STEP:end,:),R,'%c');\n", color);
 	}
-	fprintf(f,"axis equal;axis([-5 32 -2 15]);\n");
+	fprintf(f,"axis equal;axis tight;\n");
 
-	fprintf(f,"A=load('matrix_a.txt'); B=load('matrix_b.txt');\n");
+	fprintf(f,"A=load('matrix_A.txt'); B=load('matrix_B.txt');\n");
 	fprintf(f,"\n figure(2); subplot(121); imagesc(A); axis equal;colormap(gray);axis([1 length(A) 1 length(A)]);\n");
 	fprintf(f,"\n subplot(122);  imagesc(B); axis equal;hold on;colormap(gray);axis([1 length(A) 1 length(A)]);\n");
 
 	// Draw separation lines:
-	size_t	N = rearrIndexes.size();
-	for (i=0;i<(separations.size()-1);i++)
+	const size_t N = rearrIndexes.size();
+	for (size_t i=0;i<(separations.size()-1);i++)
 	{
 		fprintf(f,"plot([%i %i],[%i %i],'k');\n", 0, (unsigned int)N-1, separations[i],separations[i] );
 		fprintf(f,"plot([%i %i],[%i %i],'k');\n", separations[i],separations[i], 0, (unsigned int)N-1 );
 	}
+
+	// Add the auxiliary function: drawRobot()
+	fprintf(f,
+		"\n"
+		"end %% of the main function\n"
+		"\n"
+		"function [] = drawRobot(poses, radius, style)\n"
+		"%%  function [] = drawRobot(poses, radius, style)\n"
+		"%%   poses = Nx3, each row=(X,Y,PHI)\n"
+		"\n"
+		"n = size(poses,1);\n"
+		"if (size(poses,2)~=3),\n"
+		"    error('Poses must be a Nx3 matrix!');\n"
+		"end\n"
+		"p = linspace(0,2*pi,100);\n"
+		"x = radius*cos(p);\n"
+		"y = radius*sin(p);\n"
+		"for i=1:n,\n"
+		"    plot( poses(i,1)+x, poses(i,2)+y, style );\n"
+		"    if (i==1),\n"
+		"        hold on;\n"
+		"    end;\n"
+		"    plot( [poses(i,1) poses(i,1)+radius*cos(poses(i,3))], [poses(i,2) poses(i,2)+radius*sin(poses(i,3))], style );\n"
+		"end\n"
+		"end  %% end of function\n"
+		"\n"
+		);
 
 	fclose(f);
 	printf("Ok\n");
