@@ -77,6 +77,7 @@
 			- New SE(2) and SE(3) geometry helper classes. See mrpt::poses::SE_traits
 		- Changes in classes:
 			- mrpt::hwdrivers::CHokuyoURG has new configuration variable "HOKUYO_HS_mode" to enable the high sensitivity mode.
+			- removeObservationsByTimestamp() removed from mrpt::slam::CheightGridMap2D, which now doesn't have the "sliding window" insertion method. It was too memory intensive for large maps.
 			- mrpt::poses::CPoseOrPoint, mrpt::poses::CPose and mrpt::poses::CPoint are now templates and use the CRTP pattern instead of virtual functions, increasing the performance of all the derived classes.
 			- mrpt::poses::CNetworkOfPoses has many improvements and new methods (see its documentation).
 			- mrpt::math::CDijkstra:

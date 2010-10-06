@@ -137,8 +137,8 @@ bool  CHeightGridMap2D::internal_insertObservation(
 */
 
 		// Insert z's using the selected method:
-		const bool	doWindow = m_mapType==mrSlidingWindow;
-		const mrpt::system::TTimeStamp	tim = o->timestamp;
+//		const bool	doWindow = m_mapType==mrSlidingWindow;
+//		const mrpt::system::TTimeStamp	tim = o->timestamp;
 
 		for (i=0;i<N;i++)
 		{
@@ -166,10 +166,8 @@ bool  CHeightGridMap2D::internal_insertObservation(
 						cell->var = 1/(W) * (cell->v - pow(cell->u,2)/cell->w);
 				}
 
-				if (doWindow)
-				{
-					cell->history_Zs.insert( pair<TTimeStamp,float>(tim, z));
-				}
+				//if (doWindow)
+				//	cell->history_Zs.insert( pair<TTimeStamp,float>(tim, z));
 
 			} // end if really inserted
 		} // end for i
@@ -202,7 +200,7 @@ double	 CHeightGridMap2D::computeObservationLikelihood(
 void  CHeightGridMap2D::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
 		uint32_t	n;
@@ -220,7 +218,7 @@ void  CHeightGridMap2D::writeToStream(CStream &out, int *version) const
 		n = static_cast<uint32_t>(m_map.size());
 		out << n;
 		for (vector<THeightGridmapCell>::const_iterator it=m_map.begin();it!=m_map.end();++it)
-			out << it->h << it->w << it->history_Zs;
+			out << it->h << it->w; // This was removed in version 1: << it->history_Zs;
 
 		// Save the insertion options:
 		out << uint8_t(m_mapType);
@@ -239,6 +237,7 @@ void  CHeightGridMap2D::readFromStream(CStream &in, int version)
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
 			uint32_t	n,i,j;
 
@@ -257,9 +256,17 @@ void  CHeightGridMap2D::readFromStream(CStream &in, int version)
 			in >> n;
 			m_map.resize(n);
 			for (vector<THeightGridmapCell>::iterator it=m_map.begin();it!=m_map.end();++it)
-				in >> it->h >> it->w >> it->history_Zs;
+			{
+				in >> it->h >> it->w;
+				// Data member in version 0:
+				if (version==0)
+				{
+					std::multimap<mrpt::system::TTimeStamp,float>	history_Zs; 
+					in >> history_Zs; // Discarded now... 
+				}
+			}
 
-			// Version 1: Insertion options:
+			// Insertion options:
 			uint8_t	ty;
 			in  >> ty;
 			m_mapType = TMapRepresentation(ty);
@@ -464,30 +471,6 @@ float  CHeightGridMap2D::compute3DMatchingRatio(
  ---------------------------------------------------------------*/
 void  CHeightGridMap2D::auxParticleFilterCleanUp()
 {
-}
-
-/*---------------------------------------------------------------
-					auxParticleFilterCleanUp
- ---------------------------------------------------------------*/
-size_t CHeightGridMap2D::removeObservationsByTimestamp( const mrpt::system::TTimeStamp	&tim )
-{
-	MRPT_START
-	ASSERT_( m_mapType == mrSlidingWindow );
-	size_t	N = 0;
-
-	for (vector<THeightGridmapCell>::iterator it=m_map.begin();it!=m_map.end();++it)
-	{
-		multimap<mrpt::system::TTimeStamp,float>			 &H = it->history_Zs;
-		multimap<mrpt::system::TTimeStamp,float>::iterator p;
-		while ( (p=H.find(tim))!=H.end())
-		{
-			H.erase(p);
-			N++;
-		}
-	}
-	return N;
-
-	MRPT_END
 }
 
 /*---------------------------------------------------------------

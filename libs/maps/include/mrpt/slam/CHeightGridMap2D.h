@@ -61,7 +61,7 @@ namespace mrpt
 		{
 			/** Constructor
 			  */
-			THeightGridmapCell() : h(0), w(0), history_Zs()
+			THeightGridmapCell() : h(0), w(0)
 			{}
 
 			/** The current average height (in meters).
@@ -84,18 +84,13 @@ namespace mrpt
 			/** [mrSimpleAverage model] The accumulated weight: initially zero if un-observed, increased by one for each observation.
 			  */
 			uint32_t	w;
-
-			/** [mrSlidingWindow model] The history of indiviudal heights.
-			  */
-			std::multimap<mrpt::system::TTimeStamp,float>	history_Zs;
 		};
 
 		/** A mesh representation of a surface which keeps the estimated height for each (x,y) location.
 		  *  Important implemented features are the insertion of 2D laser scans (from arbitrary 6D poses) and the exportation as 3D scenes.
 		  *
-		  *   Each cell contains the up-to-date average height from measured falling in that cell. Two algorithms can be used here:
+		  *   Each cell contains the up-to-date average height from measured falling in that cell. Algorithms that can be used:
 		  *		- mrSimpleAverage: Each cell only stores the current average value.
-		  *		- mrSlidingWindow: Each cell keeps the average and all the individual measurements, so the can be removed by time using CHeightGridMap2D::removeObservationsByTimestamp . Do not use this model unless really required, since it's more memory demanding.
 		  */
 		class MAPS_IMPEXP CHeightGridMap2D : public CMetricMap, public utils::CDynamicGrid<THeightGridmapCell>
 		{
@@ -118,8 +113,8 @@ namespace mrpt
 			  */
 			enum TMapRepresentation
 			{
-				mrSimpleAverage = 0,
-				mrSlidingWindow
+				mrSimpleAverage = 0
+//				mrSlidingWindow
 			};
 
 			/** Constructor
@@ -146,11 +141,6 @@ namespace mrpt
 			 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
 			 */
 			 double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
-
-			 /** Remove all the points from the average of each cell which were inserted at exactly the given timestamp.
-			   *  \return The number of points removed.
-			   */
-			 size_t removeObservationsByTimestamp( const mrpt::system::TTimeStamp	&tim );
 
 			/** Parameters related with inserting observations into the map.
 			  */
@@ -272,7 +262,6 @@ namespace mrpt
 			static void fill(bimap<enum_t,std::string>  &m_map)
 			{
 				m_map.insert(slam::CHeightGridMap2D::mrSimpleAverage,     "mrSimpleAverage");
-				m_map.insert(slam::CHeightGridMap2D::mrSlidingWindow,     "mrSlidingWindow");
 			}
 		};
 	} // End of namespace
