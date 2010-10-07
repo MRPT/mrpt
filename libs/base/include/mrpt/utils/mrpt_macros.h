@@ -302,11 +302,8 @@
 	  */
 #	define MRPT_TRY_END	\
 	} \
-	catch (std::bad_alloc &e) \
-	{ \
-		std::cerr << "MRPT CRITICAL ERROR: Out of memory:\n" << e.what() << std::endl; \
-		exit(-1); throw std::runtime_error("dummy"); \
-	} \
+	catch (std::bad_alloc &) \
+	{ throw; } \
 	catch (std::exception &e) \
 	{ \
 		THROW_STACKED_EXCEPTION(e); \
@@ -321,11 +318,8 @@
 	  */
 #	define MRPT_TRY_END_WITH_CLEAN_UP(stuff)	\
 	} \
-	catch (std::bad_alloc &e) \
-	{ \
-		std::cerr << "MRPT CRITICAL ERROR: Out of memory:\n" << e.what() << std::endl; \
-		exit(-1); throw std::runtime_error("dummy"); \
-	} \
+	catch (std::bad_alloc &) \
+	{ throw; } \
 	catch (std::exception &e) \
 	{ \
 		{stuff} \
