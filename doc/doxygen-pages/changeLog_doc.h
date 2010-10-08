@@ -131,6 +131,7 @@
 			- Change in behavior upon an std::bad_alloc exception in MRPT_START / MRPT_END blocks: instead of dumping an error message to cerr and exit the program, just propragate the exception with throw() so the user can decide what to do in those cases.
 		- BUG FIXES:
 			- mrpt::opengl::CPointCloud::enableColorFromX() didn't work for disabling the coloring of points.
+			- Fixed build missing finite() function with GCC in some platforms (thanks Mike Davies for reporting!).
 			- Fixed build without zlib in GNU/Linux.
 			- Fixed minimal build, without OpenCV, wxWidgets and GL/GLUT.
 			- Fixed wrong saving/loading to/from text files for mrpt::vision::CFeatureList (thanks "me138" for noticing!)

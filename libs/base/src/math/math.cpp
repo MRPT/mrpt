@@ -1928,7 +1928,7 @@ bool mrpt::math::isFinite(double v) MRPT_NO_THROWS
 	#if defined(__BORLANDC__) || defined(_MSC_VER)
 		return 0!=_finite(f);
 	#else
-		return finite(f);
+		return isfinite(f);
 	#endif
 	}
 #endif
