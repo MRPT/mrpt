@@ -43,7 +43,7 @@ namespace mrpt
 		/** Look for the corners of a chessboard in the image using one of two different methods.
 		  *
 		  *  The search algorithm will be OpenCV's function cvFindChessboardCorners or its improved
-		  *   version published by M. Rufli, D. Scaramuzza, and R. Siegwart. See: See: http://asl.epfl.ch/~scaramuz/research/Davide_Scaramuzza_files/Research/OcamCalib_Tutorial.htm
+		  *   version published by M. Rufli, D. Scaramuzza, and R. Siegwart. See: http://robotics.ethz.ch/~scaramuzza/Davide_Scaramuzza_files/Research/OcamCalib_Tutorial.htm
 		  *    and the papers:
 		  *		- 1. Scaramuzza, D., Martinelli, A. and Siegwart, R. (2006), A Toolbox for Easily Calibrating Omnidirectional Cameras, Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems  (IROS 2006), Beijing, China, October 2006.
 		  *		- 2. Scaramuzza, D., Martinelli, A. and Siegwart, R., (2006). "A Flexible Technique for Accurate Omnidirectional Camera Calibration and Structure from Motion", Proceedings of IEEE International Conference of Vision Systems  (ICVS'06), New York, January 5-7, 2006.
@@ -66,12 +66,12 @@ namespace mrpt
 			std::vector<TPixelCoordf> 	&cornerCoords,
 			unsigned int  check_size_x,
 			unsigned int  check_size_y,
-			bool  normalize_image = true, 
+			bool  normalize_image = true,
 			bool  useScaramuzzaMethod = false );
 
 		/** Look for the corners of one or more chessboard/checkerboards in the image.
 		  *  This method uses an improved version of OpenCV's cvFindChessboardCorners published
-		  *   by M. Rufli, D. Scaramuzza, and R. Siegwart. See: See: http://asl.epfl.ch/~scaramuz/research/Davide_Scaramuzza_files/Research/OcamCalib_Tutorial.htm
+		  *   by M. Rufli, D. Scaramuzza, and R. Siegwart. See: http://robotics.ethz.ch/~scaramuzza/Davide_Scaramuzza_files/Research/OcamCalib_Tutorial.htm
 		  *    and the papers:
 		  *		- 1. Scaramuzza, D., Martinelli, A. and Siegwart, R. (2006), A Toolbox for Easily Calibrating Omnidirectional Cameras, Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems  (IROS 2006), Beijing, China, October 2006.
 		  *		- 2. Scaramuzza, D., Martinelli, A. and Siegwart, R., (2006). "A Flexible Technique for Accurate Omnidirectional Camera Calibration and Structure from Motion", Proceedings of IEEE International Conference of Vision Systems  (ICVS'06), New York, January 5-7, 2006.
