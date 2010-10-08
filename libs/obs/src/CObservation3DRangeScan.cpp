@@ -562,8 +562,8 @@ void CObservation3DRangeScan::getZoneAsObs(
 			obs.points3D_z.clear();
 		}
 
-		for ( unsigned int i = r1; i <= r2; i++ )
-			for ( unsigned int j = c1; j <= c2; j++ )
+		for ( unsigned int i = r1; i < r2; i++ )
+			for ( unsigned int j = c1; j < c2; j++ )
 			{
 				obs.points3D_x.push_back( points3D_x.at( cols*i + j ) );
 				obs.points3D_y.push_back( points3D_y.at( cols*i + j ) );
