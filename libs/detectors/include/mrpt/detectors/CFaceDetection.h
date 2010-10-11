@@ -128,6 +128,8 @@ namespace mrpt
 
 			CTimeLogger	m_timeLog;
 
+			vector<double> m_meanHist;
+
 
 			bool checkIfFacePlane( const vector<TPoint3D> &points );
 
@@ -165,6 +167,8 @@ namespace mrpt
 			void experimental_viewRegions( const vector<TPoint3D> regions[9], const TPoint3D meanPos[3][3] );		
 
 			void experimental_segmentFace( const CObservation3DRangeScan &face, CMatrixTemplate<bool> &region );
+
+			void experimental_calcHist( const CImage &face, CMatrixTemplate<unsigned int> &hist );
 
 		}; // End of class
 	}
