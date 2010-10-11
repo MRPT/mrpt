@@ -56,13 +56,14 @@ CColouredPointsMap mapa;
 //------------------------------------------------------------------------
 //							CFaceDetection
 //------------------------------------------------------------------------
-CFaceDetection::CFaceDetection() : m_enter_checkIfFacePlaneCov(0,1,"enter_checkIfFacePlaneCov"),
-								m_enter_checkIfFaceRegions(0,1,"enter_checkIfFaceRegions"),
-								m_enter_checkIfDiagonalSurface(0,1,"enter_checkIfDiagonalSurface"),
-								m_leave_checkIfFacePlaneCov(0,1,"leave_checkIfFacePlaneCov"),
-								m_leave_checkIfFaceRegions(0,1,"leave_checkIfFaceRegions"),	
-								m_leave_checkIfDiagonalSurface(0,1,"leave_checkIfDiagonalSurface"),	
-								m_end_threads(false)			
+CFaceDetection::CFaceDetection() :
+	m_end_threads(false),
+	m_enter_checkIfFaceRegions(0,1,"enter_checkIfFaceRegions"),
+	m_enter_checkIfFacePlaneCov(0,1,"enter_checkIfFacePlaneCov"),
+	m_enter_checkIfDiagonalSurface(0,1,"enter_checkIfDiagonalSurface"),
+	m_leave_checkIfFaceRegions(0,1,"leave_checkIfFaceRegions"),
+	m_leave_checkIfFacePlaneCov(0,1,"leave_checkIfFacePlaneCov"),
+	m_leave_checkIfDiagonalSurface(0,1,"leave_checkIfDiagonalSurface")
 {
 	m_measure.numPossibleFacesDetected = 0;
 	m_measure.numRealFacesDetected = 0;
@@ -76,7 +77,7 @@ CFaceDetection::CFaceDetection() : m_enter_checkIfFacePlaneCov(0,1,"enter_checkI
 //------------------------------------------------------------------------
 //							~CFaceDetection
 //------------------------------------------------------------------------
-CFaceDetection::~CFaceDetection() 			
+CFaceDetection::~CFaceDetection()
 {
 	// Stop filters threads
 
@@ -114,10 +115,10 @@ void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 	// Run filters threads
 	if ( m_options.multithread )
 	{
-		if ( m_options.useRegionsFilter ) 
+		if ( m_options.useRegionsFilter )
 			m_thread_checkIfFaceRegions = createThread( dummy_checkIfFaceRegions, this );
 		if ( m_options.useCovFilter )
-			m_thread_checkIfFacePlaneCov = createThread( dummy_checkIfFacePlaneCov, this );	
+			m_thread_checkIfFacePlaneCov = createThread( dummy_checkIfFacePlaneCov, this );
 		if ( m_options.useSizeDistanceRelationFilter || m_options.useDiagonalDistanceFilter )
 			m_thread_checkIfDiagonalSurface = createThread( dummy_checkIfDiagonalSurface, this );
 
@@ -125,7 +126,7 @@ void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 		m_checkIfFaceRegions_res	= true;
 		m_checkIfDiagonalSurface_res = true;
 	}
-	
+
 	cascadeClassifier.init( cfg );
 }
 
@@ -156,7 +157,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 		//if ( m_measure.takeMeasures )
 			m_measure.numPossibleFacesDetected += localDetected.size();
 	}
-	
+
 
 	// Check if we are using a 3D Camera and 3D points are saved
 	if ( (IS_CLASS(obs, CObservation3DRangeScan )) && ( localDetected.size() > 0 ) )
@@ -173,12 +174,12 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 		{
 			// Vector to save detected objects to delete if they aren't a face
 			vector<size_t> deleteDetected;
-			
+
 			// Check if all possible detected faces satisfy a serial of constrains
 			for ( unsigned int i = 0; i < localDetected.size(); i++ )
 			{
 				CDetectable2DPtr rec	= CDetectable2DPtr(localDetected[i]);
-				
+
 				// Calculate initial and final rows and columns
 				unsigned int r1 = rec->m_y;
 				unsigned int r2 = rec->m_y + rec->m_height;
@@ -194,7 +195,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 						if ( m_measure.takeTime )
 						m_timeLog.enter("Multithread filters aplication");
 					}
-					
+
 					// Semaphores signal
 					if ( m_options.useCovFilter )
 						m_enter_checkIfFacePlaneCov.release();
@@ -210,9 +211,9 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 						m_leave_checkIfFaceRegions.waitForSignal();
 					if ( m_options.useSizeDistanceRelationFilter || m_options.useDiagonalDistanceFilter )
 						m_leave_checkIfDiagonalSurface.waitForSignal();
-	
+
 					// Check resutls
-					if ( m_checkIfFacePlaneCov_res || !m_checkIfFaceRegions_res 
+					if ( m_checkIfFacePlaneCov_res || !m_checkIfFaceRegions_res
 						|| !m_checkIfDiagonalSurface_res )
 						deleteDetected.push_back( i );
 
@@ -223,7 +224,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 					}
 				}
 				else
-				{				
+				{
 					// To obtain experimental results
 					{
 						if ( m_measure.takeTime )
@@ -234,7 +235,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 					//CMatrixTemplate<bool> region;
 					//experimental_segmentFace( m_lastFaceDetected,  region);
 					/////////////////////////////////////////////////////
-					
+
 					//m_lastFaceDetected.intensityImage.saveToFile(format("%i.jpg",m_measure.faceNum));
 
 					bool remove = false;
@@ -252,7 +253,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 					}
 					else if ( ( m_options.useSizeDistanceRelationFilter || m_options.useDiagonalDistanceFilter )
 						&& !checkIfDiagonalSurface( &m_lastFaceDetected ) )
-					{					
+					{
 						deleteDetected.push_back( i );
 						remove = true;
 					}
@@ -272,11 +273,11 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 						if ( m_measure.takeTime )
 						m_timeLog.leave("Secuential filters aplication");
 					}
-				
-				}				
+
+				}
 
 			}
-			
+
 			// Delete non faces
 			for ( unsigned int i = deleteDetected.size(); i > 0; i-- )
 				localDetected.erase( localDetected.begin() + deleteDetected[i-1] );
@@ -285,11 +286,11 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 		// Convert 2d detected objects to 3d
 		for ( unsigned int i = 0; i < localDetected.size(); i++ )
 		{
-			CDetectable3DPtr object3d = 
+			CDetectable3DPtr object3d =
 				CDetectable3DPtr( new CDetectable3D((CDetectable2DPtr)localDetected[i]) );
 			detected.push_back( object3d );
 		}
-		
+
 		// To obtain experimental results
 		{
 			if ( m_measure.takeTime )
@@ -323,7 +324,7 @@ bool CFaceDetection::checkIfFacePlane( const vector<TPoint3D> &points )
 	// To obtain experimental results
 	{
 		if ( m_measure.takeMeasures )
-			m_measure.errorEstimations.push_back( (double)getRegressionPlane(points,plane) );		
+			m_measure.errorEstimations.push_back( (double)getRegressionPlane(points,plane) );
 	}
 
 	if ( getRegressionPlane(points,plane) < m_options.planeThreshold )
@@ -367,7 +368,7 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 	}
 
 	const unsigned int faceWidth = face->intensityImage.getWidth();
-	const unsigned int faceHeight = face->intensityImage.getHeight();	
+	const unsigned int faceHeight = face->intensityImage.getHeight();
 
 	const bool confidence = face->hasConfidenceImage;
 
@@ -379,7 +380,7 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 		{
 			CArrayDouble<3> aux;
 
-			if ( (!confidence) || (( confidence ) && 
+			if ( (!confidence) || (( confidence ) &&
 				( *(face->confidenceImage.get_unsafe( k, j, 0 )) > m_options.confidenceThreshold )) )
 			{
 				int position = faceWidth*j + k;
@@ -396,7 +397,7 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 	CMatrixDouble cov;
 	vector_double eVals;
 
-	cov = covVector( pointsVector ); 
+	cov = covVector( pointsVector );
 
 	cov.eigenValues( eVals );
 
@@ -473,7 +474,7 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face )
 		if ( m_measure.takeTime )
 		m_timeLog.enter("Check if face plane: regions");
 	}
-	
+
 	unsigned int x1 = ceil(faceWidth*0.1);
 	unsigned int x2 = floor(faceWidth*0.9);
 	unsigned int y1 = ceil(faceHeight*0.05);
@@ -488,7 +489,7 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face )
 	double meanDepth[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
 	int numPoints[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
 
-	vector<TPoint3D> regions2[9];	
+	// vector<TPoint3D> regions2[9];  // JL: Unused var
 
 	for ( unsigned int i = y1; i <= y2; i++ )
 	{
@@ -541,25 +542,25 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face )
 					regions2[7].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
 				else
 					regions2[8].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );*/
-			
+
 			}
 		}
 
 		cont += faceWidth-x2;
 	}
-	
+
 	for ( size_t i = 0; i < 3; i++ )
 		for ( size_t j = 0; j < 3; j++ )
 			if ( !numPoints[i][j] )
 				meanDepth[i][j] = 0;
 			else
-				meanDepth[i][j] /= numPoints[i][j];	
+				meanDepth[i][j] /= numPoints[i][j];
 
 	/*
 	cout << endl << meanDepth[0][0] << "\t" << meanDepth[0][1] << "\t" << meanDepth[0][2];
 	cout << endl << meanDepth[1][0] << "\t" << meanDepth[1][1] << "\t" << meanDepth[1][2];
 	cout << endl << meanDepth[2][0] << "\t" << meanDepth[2][1] << "\t" << meanDepth[2][2] << endl;*/
-	
+
 	//experimental_viewRegions( regions2 );
 	//experimental_viewFacePointsScanned( *face );
 	//cout << m_measure.faceNum;
@@ -607,18 +608,21 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 		if ( m_measure.takeTime )
 		m_timeLog.enter("Check if face plane: regions");
 	}
-	
+
 	/*unsigned int x1 = ceil(faceWidth*0.1);
 	unsigned int x2 = floor(faceWidth*0.9);
 	unsigned int y1 = ceil(faceHeight*0.05);
 	unsigned int y2 = floor(faceHeight*0.9);*/
 
 	unsigned int sectionVSize = faceHeight/3.0;
-	unsigned int sectionHSize = faceWidth/3.0;
+	//unsigned int sectionHSize = faceWidth/3.0; // JL: Unused var
 
 	vector<TPoint3D> points;
-	
-	TPoint3D meanPos[3][3] = { {(0,0,0),(0,0,0),(0,0,0)}, {(0,0,0),(0,0,0),(0,0,0)}, {(0,0,0),(0,0,0),(0,0,0)} };
+
+	TPoint3D meanPos[3][3] = {
+		{ TPoint3D(0,0,0),TPoint3D(0,0,0),TPoint3D(0,0,0)},
+		{ TPoint3D(0,0,0),TPoint3D(0,0,0),TPoint3D(0,0,0)},
+		{ TPoint3D(0,0,0),TPoint3D(0,0,0),TPoint3D(0,0,0)} };
 	int numPoints[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
 
 	vector<TPoint3D> regions2[9];
@@ -642,7 +646,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 
 			if ( ( c > end ) && ( region.get_unsafe( r, c ) ) )
 				end = c;
-			
+
 		}
 
 	if ( end == 0 ) end = faceWidth-1;
@@ -664,7 +668,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	experimental_calcHist( UpZone, hist );
 
 	size_t countHist = 0;
-	size_t meanHist = 0;
+	// size_t meanHist = 0; // JL: Unused var
 	for ( size_t i = 0; i < 60; i++ )
 	{
 		//cout << hist.get_unsafe(0,i) << " ";
@@ -678,14 +682,14 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	if ( countHist > 10 )
 	{
 		upLimit = floor(faceHeight*0.1);
-		downLimit = floor(faceHeight*0.9);		
+		downLimit = floor(faceHeight*0.9);
 	}
 
 	//meanHist = meanHist/countHist;
 	m_meanHist.push_back( countHist );
 
 	//system::pause();
-	
+
 	unsigned int cont = 0;
 
 	for ( unsigned int r = 0; r < faceHeight; r++ )
@@ -693,10 +697,10 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 		for ( unsigned int c = 0; c < faceWidth; c++, cont++ )
 		{
 			if ( ( r >= upLimit ) && ( r <= downLimit )
-				&& ( region.get_unsafe( r, c ) ) 
+				&& ( region.get_unsafe( r, c ) )
 				&& (*(face->confidenceImage.get_unsafe( c, r, 0 )) > m_options.confidenceThreshold )
 				&& ( *(face->intensityImage.get_unsafe( c, r )) > 50) )
-			{				
+			{
 				unsigned int row, col;
 				if ( r < sectionVSize + faceHeight*0.1)
 					row = 0;
@@ -712,7 +716,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 				else
 					col = 2;
 
-				
+
 				TPoint3D point( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont]);
 				meanPos[row][col] = meanPos[row][col] + point;
 
@@ -736,16 +740,16 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 					regions2[7].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
 				else
 					regions2[8].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-			
-			}				
 
-		}		
+			}
+
+		}
 	}
-	
+
 	vector<double> oldPointsX1;
 
-	size_t middle1;
-	size_t middle2;
+	size_t middle1=0;
+	size_t middle2=0;
 
 	if ( regions2[0].size() > 0 )
 	{
@@ -754,7 +758,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 
 		middle1 = floor((double)oldPointsX1.size()/2);
 		nth_element(oldPointsX1.begin(),oldPointsX1.begin()+middle1,oldPointsX1.end()); // Obtain center element
-	}	
+	}
 
 	vector<double> oldPointsX2;
 
@@ -772,7 +776,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 			if ( !numPoints[i][j] )
 				meanPos[i][j] = TPoint3D( 0, 0, 0 );
 			else
-				meanPos[i][j] = meanPos[i][j] / numPoints[i][j];	
+				meanPos[i][j] = meanPos[i][j] / numPoints[i][j];
 
 	if ( regions2[0].size() > 0  )
 		meanPos[0][0].x = oldPointsX1.at(middle1);
@@ -784,7 +788,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	cout << endl << meanDepth[0][0] << "\t" << meanDepth[0][1] << "\t" << meanDepth[0][2];
 	cout << endl << meanDepth[1][0] << "\t" << meanDepth[1][1] << "\t" << meanDepth[1][2];
 	cout << endl << meanDepth[2][0] << "\t" << meanDepth[2][1] << "\t" << meanDepth[2][2] << endl;*/
-	
+
 	//experimental_viewRegions( regions2, meanPos );
 	//experimental_viewFacePointsScanned( *face );
 	//cout << m_measure.faceNum;
@@ -835,7 +839,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 				{
 					face->intensityImage.setPixel( col, row, 255 );
 				}
-			}		
+			}
 		}
 
 		win.showImage(face->intensityImage);
@@ -954,10 +958,10 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 
 	vector<TPoint3D> points;
 	unsigned int cont = ( y1 == 0 ? 0 : faceHeight*(y1-1));
-	CMatrixBool valids; 
-	
+	CMatrixBool valids;
+
 	valids.setSize(faceHeight,faceWidth);
-	
+
 	int total = 0;
 	double sumDepth = 0;
 
@@ -976,7 +980,7 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 		}
 		cont += faceWidth-x2-1;
 	}
-	
+
 	double meanDepth = sumDepth / total;
 
 	/*if (  m_measure.faceNum > 838 )
@@ -996,7 +1000,7 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 			if ( m_options.useDiagonalDistanceFilter && m_measure.takeTime )
 				m_timeLog.leave("Check if face plane: diagonal distances");
 		}
-	
+
 		if ( maxFaceDistance > meanDepth )
 			return true;
 
@@ -1007,15 +1011,15 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 	ofstream f;
 	f.open("relaciones1.txt", ofstream::app);
 	f << faceWidth << endl;
-	f.close();	
+	f.close();
 
 	f.open("relaciones2.txt", ofstream::app);
 	f << meanDepth << endl;
-	f.close();	
+	f.close();
 
 	//cout << m_measure.faceNum ;
 
-	//experimental_viewFacePointsScanned( points );	
+	//experimental_viewFacePointsScanned( points );
 
 	points.clear();
 
@@ -1041,7 +1045,7 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 		}
 		cont += faceWidth-x2-1;
 	}
-	
+
 	/*if (  m_measure.faceNum > 838 )
 		experimental_viewFacePointsScanned( points );*/
 
@@ -1053,7 +1057,7 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 	int offsetIndex;
 
 	cont = 0;
-	
+
 	for ( unsigned int i = y1; i <= y2; i++ )
 	{
 		cont += x1;
@@ -1064,8 +1068,9 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 			{
 				//experimental_calcDiagDist( face, i, j, faceWidth, faceHeight, valids, distance );
 
-				distance = 0;				
+				distance = 0;
 				if ( ( i+1 <= y2 ) && ( j+1 <= x2 ) )
+				{
 					if ( valids.get_unsafe( i+1, j+1 ) )
 					{
 						TPoint3D p1( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] );
@@ -1094,6 +1099,7 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 								validOffset = false;
 						}
 					}
+				}
 
 				sumDistances += distance;
 			}
@@ -1110,24 +1116,24 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 		f.open("distances.txt", ofstream::app);
 		//f << m_measure.faceNum << " " << sumDistances << endl;
 		f << sumDistances << endl;
-		f.close();		
+		f.close();
 
 		f.open("distances2.txt", ofstream::app);
 		f << m_measure.faceNum << " " << sumDistances << endl;
-		f.close();	
+		f.close();
 	}
 
 	//double yMax = 3 + 3.8 / ( pow( meanDepth, 2 ) );
 	//double yMax = 3 + 7 /( pow( meanDepth, 2) ) ;
 	double yMax = 3 + 11.8 /( pow( meanDepth, 0.9) ) ;
 	double yMin = 1 + 3.8 / ( pow( meanDepth+7, 6 ) );
-		    
+
 	// To obtain experimental results
 	{
 		if ( m_measure.takeTime )
 		m_timeLog.leave("Check if face plane: diagonal distances");
 	}
-	
+
 	if (( sumDistances <= yMax ) && ( sumDistances >= yMin  ))
 		return true;
 
@@ -1181,7 +1187,7 @@ void CFaceDetection::experimental_viewFacePointsScanned( const vector_float &xs,
 	mrpt::gui::CDisplayWindow3D  win3D;
 
 	win3D.setWindowTitle("3D Face detected (Scanned points)");
-	
+
 	win3D.resize(400,300);
 
 	win3D.setCameraAzimuthDeg(140);
@@ -1196,13 +1202,13 @@ void CFaceDetection::experimental_viewFacePointsScanned( const vector_float &xs,
 
 	scene->insert( gl_points );
 	scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
-		
+
 	CColouredPointsMap pntsMap;
 
 	pntsMap.setAllPoints( xs, ys, zs );
-	
+
 	gl_points->loadFromPointsMap(&pntsMap);
-	
+
 	//gl_points->setColor(0,0.7,0.7,1);
 
 	/*static int i = 0;
@@ -1227,7 +1233,7 @@ void CFaceDetection::experimental_viewFacePointsScanned( const vector_float &xs,
 		CPose3D(),    // Initial gross estimate
 		&run_time,
 		&icp_info);
-		
+
 		cout << "ICP run took " << run_time << " secs." << endl;
 		cout << "Goodness: " << 100*icp_info.goodness << "%" << endl;
 	}
@@ -1245,7 +1251,7 @@ void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9]
 	mrpt::gui::CDisplayWindow3D  win3D;
 
 	win3D.setWindowTitle("3D Face detected (Scanned points)");
-	
+
 	win3D.resize(400,300);
 
 	win3D.setCameraAzimuthDeg(140);
@@ -1273,7 +1279,7 @@ void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9]
 	scene->insert( gl_points );
 	scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
 	scene->insert(mrpt::opengl::CAxis::Create(-5,-5,-5,5,5,5,2.5,3,true));
-		
+
 	CColouredPointsMap pntsMap;
 
 	vector_float xs, ys, zs;
@@ -1301,7 +1307,7 @@ void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9]
 	}
 
 	gl_points->loadFromPointsMap(&pntsMap);
-	
+
 	win3D.unlockAccess3DScene();
 	win3D.repaint();
 
@@ -1325,9 +1331,9 @@ void CFaceDetection::experimental_segmentFace( const CObservation3DRangeScan &fa
 	toExpand.setSize(faceHeight,faceWidth,true);
 
 	unsigned int cont = ( y1 <= 1 ? 0 : faceHeight*(y1-1));
-	
-	int total = 0;
-	int numPoints = 0;
+
+	//int total = 0;  // JL: Unused var
+	//int numPoints = 0; // JL: Unused var
 
 	mrpt::utils::CImage  img;
 	// Normalize the image
@@ -1347,7 +1353,7 @@ void CFaceDetection::experimental_segmentFace( const CObservation3DRangeScan &fa
 				//unsigned char *c = img.get_unsafe(i,j);
 				//size_t value = (size_t)*c;
 				//total += value;
-				//++numPoints;		
+				//++numPoints;
 				toExpand.set_unsafe(i,j,1);
 			}
 		}
@@ -1367,17 +1373,17 @@ void CFaceDetection::experimental_segmentFace( const CObservation3DRangeScan &fa
 		{
 			unsigned char *c = img.get_unsafe(row,col);
 			size_t value = (size_t)*c;
-			
+
 			if ( ( value < mean+7 ) && ( value > mean-7 ) )
 			{
 				region.set_unsafe( row, col, true );
 			}else{
 				img.setPixel( row, col, 0 );
 			}
-		}		
+		}
 	}
 */
-	
+
 	// REGIONS GROWING
 
 	bool newExpanded = true;
@@ -1410,7 +1416,7 @@ void CFaceDetection::experimental_segmentFace( const CObservation3DRangeScan &fa
 						}
 					}
 
-					if (( row < faceWidth-1 ) && ( toExpand.get_unsafe(row+1,col) != 2 )) 		
+					if (( row < faceWidth-1 ) && ( toExpand.get_unsafe(row+1,col) != 2 ))
 					{
 						unsigned char *c = img.get_unsafe(col, row+1);
 						int value2 = (int)*c;
@@ -1421,7 +1427,7 @@ void CFaceDetection::experimental_segmentFace( const CObservation3DRangeScan &fa
 						}
 					}
 
-					if (( col > 0) && ( toExpand.get_unsafe(row,col-1) != 2 )) 		
+					if (( col > 0) && ( toExpand.get_unsafe(row,col-1) != 2 ))
 					{
 						unsigned char *c = img.get_unsafe(col-1,row);
 						int value2 = (int)*c;
@@ -1432,7 +1438,7 @@ void CFaceDetection::experimental_segmentFace( const CObservation3DRangeScan &fa
 						}
 					}
 
-					if (( col < faceHeight-1) && ( toExpand.get_unsafe(row,col+1) != 2 )) 		
+					if (( col < faceHeight-1) && ( toExpand.get_unsafe(row,col+1) != 2 ))
 					{
 						unsigned char *c = img.get_unsafe(col+1,row);
 						int value2 = (int)*c;
@@ -1457,12 +1463,12 @@ void CFaceDetection::experimental_segmentFace( const CObservation3DRangeScan &fa
 			{
 				img.setPixel( col, row, 0 );
 			}
-		}		
+		}
 	}
 
 	/*CDisplayWindow  win("Live video");
-				
-	win.showImage( img );	
+
+	win.showImage( img );
 	system::pause();*/
 }
 
@@ -1494,7 +1500,7 @@ void CFaceDetection::experimental_showMeasurements()
 		double meanEigenVal, stdEigenVal;
 		double minEigenVal = *min_element( m_measure.lessEigenVals.begin(), m_measure.lessEigenVals.end() );
 		double maxEigenVal = *max_element( m_measure.lessEigenVals.begin(), m_measure.lessEigenVals.end() );
-		
+
 		meanAndStd( m_measure.lessEigenVals, meanEigenVal, stdEigenVal );
 
 		cout << endl << "Statistical data about eigen values calculated of regions detected as faces" << endl;
@@ -1502,14 +1508,14 @@ void CFaceDetection::experimental_showMeasurements()
 		cout << "Max eigenVal: " << maxEigenVal << endl;
 		cout << "Mean eigenVal: " << meanEigenVal << endl;
 		cout << "Standard Desv: " << stdEigenVal << endl;
-		
-		if ( m_measure.saveMeasurementsToFile )		
+
+		if ( m_measure.saveMeasurementsToFile )
 		{
 			f << endl << "Statistical data about eigen values calculated of regions detected as faces" << endl;
 			f << "Min eigenVal: " << minEigenVal << endl;
 			f << "Max eigenVal: " << maxEigenVal << endl;
 			f << "Mean eigenVal: " << meanEigenVal << endl;
-			f << "Standard Desv: " << stdEigenVal << endl;		
+			f << "Standard Desv: " << stdEigenVal << endl;
 		}
 	}
 
@@ -1518,7 +1524,7 @@ void CFaceDetection::experimental_showMeasurements()
 		double meanSumDist, stdSumDist;
 		double minSumDist = *min_element( m_measure.sumDistances.begin(), m_measure.sumDistances.end() );
 		double maxSumDist = *max_element( m_measure.sumDistances.begin(), m_measure.sumDistances.end() );
-		
+
 		meanAndStd( m_measure.sumDistances, meanSumDist, stdSumDist );
 
 		cout << endl << "Statistical data about sum of distances" << endl;
@@ -1526,23 +1532,23 @@ void CFaceDetection::experimental_showMeasurements()
 		cout << "Max sumDistances: " << maxSumDist << endl;
 		cout << "Mean sumDistances: " << meanSumDist << endl;
 		cout << "Standard Desv: " << stdSumDist << endl;
-		
-		if ( m_measure.saveMeasurementsToFile )		
+
+		if ( m_measure.saveMeasurementsToFile )
 		{
 			f << endl << "Statistical data about sum of distances" << endl;
 			f << "Min sumDistances: " << minSumDist << endl;
 			f << "Max sumDistances: " << maxSumDist << endl;
 			f << "Mean sumDistances: " << meanSumDist << endl;
-			f << "Standard Desv: " << stdSumDist << endl;	
+			f << "Standard Desv: " << stdSumDist << endl;
 		}
 	}
-	
+
 	if ( m_measure.errorEstimations.size() > 0 )
 	{
 		double meanEstimationErr, stdEstimationErr;
 		double minEstimationErr = *min_element( m_measure.errorEstimations.begin(), m_measure.errorEstimations.end() );
 		double maxEstimationErr = *max_element( m_measure.errorEstimations.begin(), m_measure.errorEstimations.end() );
-		
+
 		meanAndStd( m_measure.errorEstimations, meanEstimationErr, stdEstimationErr );
 
 		cout << endl << "Statistical data about estimation error adjusting a plane of regions detected as faces" << endl;
@@ -1550,8 +1556,8 @@ void CFaceDetection::experimental_showMeasurements()
 		cout << "Max estimation: " << maxEstimationErr << endl;
 		cout << "Mean estimation: " << meanEstimationErr << endl;
 		cout << "Standard Desv: " << stdEstimationErr << endl;
-		
-		if ( m_measure.saveMeasurementsToFile )		
+
+		if ( m_measure.saveMeasurementsToFile )
 		{
 			f << endl << "Statistical data about estimation error adjusting a plane of regions detected as faces" << endl;
 			f << "Min estimation: " << minEstimationErr << endl;
@@ -1580,7 +1586,7 @@ void CFaceDetection::experimental_showMeasurements()
 		int passed1 = 0, passed2 = 0;
 
 		double meanDiffRegions[9] = {0,0,0,0,0,0,0,0,0};
-		
+
 		for ( unsigned int i = 0; i < (unsigned int)(N/9) ; i++ )
 		{
 			int col0 = 0, col2 = 0;
@@ -1615,8 +1621,8 @@ void CFaceDetection::experimental_showMeasurements()
 				col2++;
 			}
 
-			if ( ( col0 >= 2) && (col2 >=2) ) 
-				passed1++;				
+			if ( ( col0 >= 2) && (col2 >=2) )
+				passed1++;
 			else if( ( col0 == 3 ) || (col2 == 3) )
 				passed2++;
 
@@ -1628,7 +1634,7 @@ void CFaceDetection::experimental_showMeasurements()
 			meanDiffRegions[6] += abs ( meanRegions[6][i] - meanRegions[4][i] );
 			meanDiffRegions[7] += abs ( meanRegions[7][i] - meanRegions[4][i] );
 			meanDiffRegions[8] += abs ( meanRegions[8][i] - meanRegions[4][i] );
-			
+
 		}
 
 		cout << endl << "Mean diff regions" << endl;
@@ -1696,7 +1702,7 @@ void CFaceDetection::experimental_showMeasurements()
 	if ( m_measure.takeTime && m_measure.saveMeasurementsToFile )
 		f << endl << m_timeLog.getStatsAsText();
 
-	f.close(); 
+	f.close();
 
 	mrpt::system::pause();
 }
