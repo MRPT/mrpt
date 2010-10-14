@@ -47,8 +47,6 @@
 #include <mrpt/slam/PF_aux_structs.h>
 
 
-MRPT_TODO("There is a serious bug!! Test case: gridmapping_optimal_sampling.in")
-
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::slam;

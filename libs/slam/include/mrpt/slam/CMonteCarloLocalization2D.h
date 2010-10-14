@@ -54,8 +54,10 @@ namespace mrpt
 		 */
 		class SLAM_IMPEXP CMonteCarloLocalization2D :
 			public CPosePDFParticles,
-			public PF_implementation<CPose2D>
+			public PF_implementation<CPose2D,CMonteCarloLocalization2D>
 		{
+			template <class PARTICLE_TYPE, class MYSELF> friend class PF_implementation;
+
 		public:
 			TMonteCarloLocalizationParams	options; //!< MCL parameters
 

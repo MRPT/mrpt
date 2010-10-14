@@ -78,9 +78,10 @@ namespace slam
 		public mrpt::utils::CSerializable,
 		public mrpt::bayes::CParticleFilterData<CRBPFParticleData>,
 		public mrpt::bayes::CParticleFilterCapable,
-		public mrpt::slam::PF_implementation<CRBPFParticleData>
+		public mrpt::slam::PF_implementation<CRBPFParticleData,CMultiMetricMapPDF>
 	{
 		friend class CMetricMapBuilderRBPF;
+		template <class PARTICLE_TYPE, class MYSELF> friend class PF_implementation;
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CMultiMetricMapPDF )
@@ -253,9 +254,12 @@ namespace slam
 		  */
 		void  rebuildAverageMap();
 
+
+
 	protected:
 			/** \name Virtual methods that the PF_implementations assume exist.
 			    @{ */
+
 			/** Return a pointer to the last robot pose in the i'th particle (or NULL if it's a path and it's empty). */
 			const TPose3D * getLastPose(const size_t i) const;
 

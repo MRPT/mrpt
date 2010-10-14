@@ -103,10 +103,10 @@ IMPLEMENTS_SERIALIZABLE( CRBPFParticleData,  CSerializable, mrpt::slam )
 #endif
 
 
-#if defined(_MSC_VER)
-#	pragma warning(push)
-#	pragma warning(disable:4355) // for the "this" argument below
-#endif
+//#if defined(_MSC_VER)
+//#	pragma warning(push)
+//#	pragma warning(disable:4355) // for the "this" argument below
+//#endif
 
 /*---------------------------------------------------------------
 				Constructor
@@ -115,7 +115,7 @@ CMultiMetricMapPDF::CMultiMetricMapPDF(
 	const bayes::CParticleFilter::TParticleFilterOptions    &opts,
 	const  mrpt::slam::TSetOfMetricMapInitializers		        *mapsInitializers,
 	const  TPredictionParams						        *predictionOptions) :
-		PF_implementation<CRBPFParticleData>(static_cast<mrpt::bayes::CParticleFilterData<CRBPFParticleData>&>(*this),static_cast<mrpt::bayes::CParticleFilterCapable&>(*this) ),
+//		PF_implementation<CRBPFParticleData>(static_cast<mrpt::bayes::CParticleFilterData<CRBPFParticleData>&>(*this),static_cast<mrpt::bayes::CParticleFilterCapable&>(*this) ),
 		averageMap( mapsInitializers ),
 		averageMapIsUpdated(false),
 		SFs(),
@@ -139,9 +139,9 @@ CMultiMetricMapPDF::CMultiMetricMapPDF(
 		options = *predictionOptions;
 }
 
-#if defined(_MSC_VER)
-#	pragma warning(pop)
-#endif
+//#if defined(_MSC_VER)
+//#	pragma warning(pop)
+//#endif
 
 /*---------------------------------------------------------------
 						clear

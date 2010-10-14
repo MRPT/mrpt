@@ -83,24 +83,24 @@ namespace mrpt
 
 #include <mrpt/slam/PF_implementations.h>
 
-#if defined(_MSC_VER)
-#	pragma warning(push)
-#	pragma warning(disable:4355) // for the "this" argument below
-#endif
+//#if defined(_MSC_VER)
+//#	pragma warning(push)
+//#	pragma warning(disable:4355) // for the "this" argument below
+//#endif
 
 /*---------------------------------------------------------------
 				ctor
  ---------------------------------------------------------------*/
 // Passing a "this" pointer at this moment is not a problem since it will be NOT access until the object is fully initialized
 CMonteCarloLocalization3D::CMonteCarloLocalization3D( size_t M ) :
-	CPose3DPDFParticles(M),
-	PF_implementation<CPose3D>( static_cast<mrpt::bayes::CParticleFilterData<CPose3D>&>(*this),static_cast<mrpt::bayes::CParticleFilterCapable&>(*this) )
+	CPose3DPDFParticles(M)
+	//,PF_implementation<CPose3D>( static_cast<mrpt::bayes::CParticleFilterData<CPose3D>&>(*this),static_cast<mrpt::bayes::CParticleFilterCapable&>(*this) )
 {
 }
 
-#if defined(_MSC_VER)
-#	pragma warning(pop)
-#endif
+//#if defined(_MSC_VER)
+//#	pragma warning(pop)
+//#endif
 
 /*---------------------------------------------------------------
 				Dtor

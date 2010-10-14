@@ -64,12 +64,14 @@ namespace mrpt
 		  *   On return=true, the "m_movementDrawer" member is loaded and ready to draw samples of the increment of pose since last step.
 		  *  This method is smart enough to accumulate CActionRobotMovement2D or CActionRobotMovement3D, whatever comes in.
 		  */
-		template <class PARTICLE_TYPE>
+		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
-		bool PF_implementation<PARTICLE_TYPE>::PF_SLAM_implementation_gatherActionsCheckBothActObs(
+		bool PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_gatherActionsCheckBothActObs(
 			const CActionCollection	* actions,
 			const CSensoryFrame		* sf )
 		{
+			MYSELF *me = static_cast<MYSELF*>(this);
+
 			if (actions!=NULL)	// A valid action?
 			{
 				{
@@ -107,7 +109,7 @@ namespace mrpt
 				}
 			}
 
-			const bool SFhasValidObservations = (sf==NULL) ? false : PF_SLAM_implementation_doWeHaveValidObservations(m_partdata.m_particles,sf);
+			const bool SFhasValidObservations = (sf==NULL) ? false : PF_SLAM_implementation_doWeHaveValidObservations(me->m_particles,sf);
 
 			// All the things we need?
 			if (! ((m_accumRobotMovement2DIsValid || m_accumRobotMovement3DIsValid) && SFhasValidObservations))
@@ -146,9 +148,9 @@ namespace mrpt
 		  *     Robot Localization," in Proc. IEEE International Conference on Robotics
 		  *     and Automation (ICRA'08), 2008, pp. 461–466.
 		  */
-		template <class PARTICLE_TYPE>
+		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
-		void PF_implementation<PARTICLE_TYPE>::PF_SLAM_implementation_pfAuxiliaryPFOptimal(
+		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfAuxiliaryPFOptimal(
 			const CActionCollection	* actions,
 			const CSensoryFrame		* sf,
 			const CParticleFilter::TParticleFilterOptions &PF_options,
@@ -164,9 +166,9 @@ namespace mrpt
 		  *
 		  * - BINTYPE: TPoseBin or whatever to discretize the sample space for KLD-sampling.
 		  */
-		template <class PARTICLE_TYPE>
+		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
-		void PF_implementation<PARTICLE_TYPE>::PF_SLAM_implementation_pfStandardProposal(
+		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfStandardProposal(
 			const CActionCollection	* actions,
 			const CSensoryFrame		* sf,
 			const CParticleFilter::TParticleFilterOptions &PF_options,
@@ -174,6 +176,8 @@ namespace mrpt
 		{
 			MRPT_START
 			typedef std::set<BINTYPE,typename BINTYPE::lt_operator> 	TSetStateSpaceBins;
+
+			MYSELF *me = static_cast<MYSELF*>(this);
 
 			// In this method we don't need the "PF_SLAM_implementation_gatherActionsCheckBothActObs" machinery,
 			//  since prediction & update are two independent stages well separated for this algorithm.
@@ -208,7 +212,7 @@ namespace mrpt
 				// Update particle poses:
 				if ( !PF_options.adaptiveSampleSize )
 				{
-					const size_t M = m_partdata.m_particles.size();
+					const size_t M = me->m_particles.size();
 					// -------------------------------------------------------------
 					// FIXED SAMPLE SIZE
 					// -------------------------------------------------------------
@@ -220,7 +224,7 @@ namespace mrpt
 						CPose3D finalPose = CPose3D(*getLastPose(i)) + incrPose;
 
 						// Update the particle with the new pose: this part is caller-dependant and must be implemented there:
-						PF_SLAM_implementation_custom_update_particle_with_new_pose( m_partdata.m_particles[i].d, TPose3D(finalPose) );
+						PF_SLAM_implementation_custom_update_particle_with_new_pose( me->m_particles[i].d, TPose3D(finalPose) );
 					}
 				}
 				else
@@ -238,7 +242,7 @@ namespace mrpt
 					const double epsilon_1 = 0.5 / KLD_options.KLD_epsilon;
 
 					// Prepare data for executing "fastDrawSample"
-					m_pfc.prepareFastDrawSample(PF_options);
+					me->prepareFastDrawSample(PF_options);
 
 					// The new particle set:
 					std::vector<TPose3D>	newParticles;
@@ -254,7 +258,7 @@ namespace mrpt
 						m_movementDrawer.drawSample( increment_i );
 
 						// generate the new particle:
-						const size_t drawn_idx = m_pfc.fastDrawSample(PF_options);
+						const size_t drawn_idx = me->fastDrawSample(PF_options);
 						const CPose3D newPose = CPose3D(*getLastPose(drawn_idx)) + increment_i;
 						const TPose3D newPose_s = newPose;
 
@@ -266,7 +270,7 @@ namespace mrpt
 						// Now, look if the particle falls in a new bin or not:
 						// --------------------------------------------------------
 						BINTYPE	p;
-						KLF_loadBinFromParticle<PARTICLE_TYPE,BINTYPE>(p,KLD_options, m_partdata.m_particles[drawn_idx].d, &newPose_s);
+						KLF_loadBinFromParticle<PARTICLE_TYPE,BINTYPE>(p,KLD_options, me->m_particles[drawn_idx].d, &newPose_s);
 
 						if (stateSpaceBins.find( p )==stateSpaceBins.end())
 						{
@@ -293,7 +297,7 @@ namespace mrpt
 					//   New are in "newParticles", "newParticlesWeight","newParticlesDerivedFromIdx"
 					// ---------------------------------------------------------------------------------
 					this->PF_SLAM_implementation_replaceByNewParticleSet(
-						m_partdata.m_particles,
+						me->m_particles,
 						newParticles,newParticlesWeight,newParticlesDerivedFromIdx );
 
 				} // end adaptive sample size
@@ -301,7 +305,7 @@ namespace mrpt
 
 			if (sf)
 			{
-				const size_t M = m_partdata.m_particles.size();
+				const size_t M = me->m_particles.size();
 				//	UPDATE STAGE
 				// ----------------------------------------------------------------------
 				// Compute all the likelihood values & update particles weight:
@@ -310,7 +314,7 @@ namespace mrpt
 					const TPose3D  *partPose= getLastPose(i); // Take the particle data:
 					CPose3D  partPose2 = CPose3D(*partPose);
 					const double obs_log_likelihood = PF_SLAM_computeObservationLikelihoodForParticle(PF_options,i,*sf,partPose2);
-					m_partdata.m_particles[i].log_w += obs_log_likelihood * PF_options.powFactor;
+					me->m_particles[i].log_w += obs_log_likelihood * PF_options.powFactor;
 				} // for each particle "i"
 
 				// Normalization of weights is done outside of this method automatically.
@@ -329,9 +333,9 @@ namespace mrpt
 		  *    Journal of the American Statistical Association 94 (446): 590–591. doi:10.2307/2670179.
 		  *
 		  */
-		template <class PARTICLE_TYPE>
+		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
-		void PF_implementation<PARTICLE_TYPE>::PF_SLAM_implementation_pfAuxiliaryPFStandard(
+		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfAuxiliaryPFStandard(
 			const CActionCollection	* actions,
 			const CSensoryFrame		* sf,
 			const CParticleFilter::TParticleFilterOptions &PF_options,
@@ -344,9 +348,9 @@ namespace mrpt
 		/*---------------------------------------------------------------
 					PF_SLAM_particlesEvaluator_AuxPFOptimal
 		 ---------------------------------------------------------------*/
-		template <class PARTICLE_TYPE>
+		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
-		double  PF_implementation<PARTICLE_TYPE>::PF_SLAM_particlesEvaluator_AuxPFOptimal(
+		double  PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_particlesEvaluator_AuxPFOptimal(
 			const CParticleFilter::TParticleFilterOptions &PF_options,
 			const CParticleFilterCapable	*obj,
 			size_t					index,
@@ -355,7 +359,8 @@ namespace mrpt
 		{
 			MRPT_START
 
-			const PF_implementation<PARTICLE_TYPE> *myObj = reinterpret_cast<const PF_implementation<PARTICLE_TYPE>*>( obj );
+			//const PF_implementation<PARTICLE_TYPE,MYSELF> *myObj = reinterpret_cast<const PF_implementation<PARTICLE_TYPE,MYSELF>*>( obj );
+			const MYSELF *me = static_cast<const MYSELF*>(obj);
 
 			// Compute the quantity:
 			//     w[i]·p(zt|z^{t-1},x^{[i],t-1})
@@ -366,16 +371,16 @@ namespace mrpt
 			size_t  N = PF_options.pfAuxFilterOptimal_MaximumSearchSamples;
 			ASSERT_(N>1)
 
-			const CPose3D oldPose = *myObj->getLastPose(index);
+			const CPose3D oldPose = *me->getLastPose(index);
 			vector_double   vectLiks(N,0);		// The vector with the individual log-likelihoods.
 			CPose3D			drawnSample;
 			for (size_t q=0;q<N;q++)
 			{
-				myObj->m_movementDrawer.drawSample(drawnSample);
+				me->m_movementDrawer.drawSample(drawnSample);
 				CPose3D	x_predict = oldPose + drawnSample;
 
 				// Estimate the mean...
-				indivLik = myObj->PF_SLAM_computeObservationLikelihoodForParticle(
+				indivLik = me->PF_SLAM_computeObservationLikelihoodForParticle(
 					PF_options,
 					index,
 					*static_cast<const CSensoryFrame*>(observation),
@@ -396,15 +401,15 @@ namespace mrpt
 			double avrgLogLik = math::averageLogLikelihood( vectLiks );
 
 			// Save into the object:
-			myObj->m_pfAuxiliaryPFOptimal_estimatedProb[index] = avrgLogLik; // log( accum / N );
-			myObj->m_pfAuxiliaryPFOptimal_maxLikelihood[index] = maxLik;
+			me->m_pfAuxiliaryPFOptimal_estimatedProb[index] = avrgLogLik; // log( accum / N );
+			me->m_pfAuxiliaryPFOptimal_maxLikelihood[index] = maxLik;
 
 			if (PF_options.pfAuxFilterOptimal_MLE)
-				myObj->m_pfAuxiliaryPFOptimal_maxLikDrawnMovement[index] = maxLikDraw;
+				me->m_pfAuxiliaryPFOptimal_maxLikDrawnMovement[index] = maxLikDraw;
 
 			// and compute the resulting probability of this particle:
 			// ------------------------------------------------------------
-			return myObj->m_partdata.m_particles[index].log_w + myObj->m_pfAuxiliaryPFOptimal_estimatedProb[index];
+			return me->m_particles[index].log_w + me->m_pfAuxiliaryPFOptimal_estimatedProb[index];
 
 			MRPT_END
 		} // end of PF_SLAM_particlesEvaluator_AuxPFOptimal
@@ -416,9 +421,9 @@ namespace mrpt
 		  * \param action MUST be a "const CPose3D*"
 		  * \param observation MUST be a "const CSensoryFrame*"
 		  */
-		template <class PARTICLE_TYPE>
+		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
-		double  PF_implementation<PARTICLE_TYPE>::PF_SLAM_particlesEvaluator_AuxPFStandard(
+		double  PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_particlesEvaluator_AuxPFStandard(
 			const CParticleFilter::TParticleFilterOptions &PF_options,
 			const CParticleFilterCapable	*obj,
 			size_t					index,
@@ -427,10 +432,11 @@ namespace mrpt
 		{
 			MRPT_START
 
-			const PF_implementation<PARTICLE_TYPE> *myObj = reinterpret_cast<const PF_implementation<PARTICLE_TYPE>*>( obj );
+			//const PF_implementation<PARTICLE_TYPE,MYSELF> *myObj = reinterpret_cast<const PF_implementation<PARTICLE_TYPE,MYSELF>*>( obj );
+			const MYSELF *myObj = static_cast<const MYSELF*>(obj);
 
 			// Take the previous particle weight:
-			const double cur_logweight = myObj->m_partdata.m_particles[index].log_w;
+			const double cur_logweight = myObj->m_particles[index].log_w;
 			const CPose3D oldPose = *myObj->getLastPose(index);
 
 			if (!PF_options.pfAuxFilterStandard_FirstStageWeightsMonteCarlo)
@@ -506,9 +512,9 @@ namespace mrpt
 		// USE_OPTIMAL_SAMPLING:
 		//   true -> PF_SLAM_implementation_pfAuxiliaryPFOptimal
 		//  false -> PF_SLAM_implementation_pfAuxiliaryPFStandard
-		template <class PARTICLE_TYPE>
+		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
-		void PF_implementation<PARTICLE_TYPE>::PF_SLAM_implementation_pfAuxiliaryPFStandardAndOptimal(
+		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfAuxiliaryPFStandardAndOptimal(
 			const CActionCollection	* actions,
 			const CSensoryFrame		* sf,
 			const CParticleFilter::TParticleFilterOptions &PF_options,
@@ -518,7 +524,9 @@ namespace mrpt
 			MRPT_START
 			typedef std::set<BINTYPE,typename BINTYPE::lt_operator> 	TSetStateSpaceBins;
 
-			const size_t M = m_partdata.m_particles.size();
+			MYSELF *me = static_cast<MYSELF*>(this);
+
+			const size_t M = me->m_particles.size();
 
 			// ----------------------------------------------------------------------
 			//	  We can execute optimal PF only when we have both, an action, and
@@ -551,11 +559,11 @@ namespace mrpt
 			m_movementDrawer.getSamplingMean3D(meanRobotMovement);
 
 			// Prepare data for executing "fastDrawSample"
-			typedef PF_implementation<PARTICLE_TYPE> TMyClass; // Use this longer declaration to avoid errors in old GCC.
+			typedef PF_implementation<PARTICLE_TYPE,MYSELF> TMyClass; // Use this longer declaration to avoid errors in old GCC.
 			CParticleFilterCapable::TParticleProbabilityEvaluator funcOpt = &TMyClass::template PF_SLAM_particlesEvaluator_AuxPFOptimal<BINTYPE>;
 			CParticleFilterCapable::TParticleProbabilityEvaluator funcStd = &TMyClass::template PF_SLAM_particlesEvaluator_AuxPFStandard<BINTYPE>;
 
-			m_pfc.prepareFastDrawSample(
+			me->prepareFastDrawSample(
 				PF_options,
 				USE_OPTIMAL_SAMPLING ? funcOpt : funcStd,
 				&meanRobotMovement,
@@ -609,7 +617,7 @@ namespace mrpt
 				newParticlesWeight.resize(M);
 				newParticlesDerivedFromIdx.resize(M);
 
-				const bool doResample = m_pfc.ESS() < PF_options.BETA;
+				const bool doResample = me->ESS() < PF_options.BETA;
 
 				for (size_t i=0;i<M;i++)
 				{
@@ -619,7 +627,7 @@ namespace mrpt
 					//   (a) Draw a "t-1" m_particles' index:
 					// ----------------------------------------------------------------
 					if (doResample)
-							k = m_pfc.fastDrawSample(PF_options);		// Based on weights of last step only!
+							k = me->fastDrawSample(PF_options);		// Based on weights of last step only!
 					else	k = i;
 
 					// Do one rejection sampling step:
@@ -661,11 +669,11 @@ namespace mrpt
 				// ------------------------------------------------------------------------------
 				TSetStateSpaceBins 			stateSpaceBinsLastTimestep;
 				std::vector<vector_uint>	stateSpaceBinsLastTimestepParticles;
-				typename BASE::CParticleList::iterator		partIt;
+				typename MYSELF::CParticleList::iterator		partIt;
 				unsigned int	partIndex;
 
 				printf( "[FIXED_SAMPLING] Computing...");
-				for (partIt = m_partdata.m_particles.begin(),partIndex=0; partIt!=m_partdata.m_particles.end(); ++partIt,++partIndex)
+				for (partIt = me->m_particles.begin(),partIndex=0; partIt!=me->m_particles.end(); ++partIt,++partIndex)
 				{
 					// Load the bin from the path data:
 					BINTYPE	p;
@@ -691,14 +699,14 @@ namespace mrpt
 				// ------------------------------------------------------------------------------
 				double		delta_1 = 1.0 - KLD_options.KLD_delta;
 				double		epsilon_1 = 0.5 / KLD_options.KLD_epsilon;
-				bool		doResample = m_pfc.ESS() < 0.5;
+				bool		doResample = me->ESS() < 0.5;
 				//double	maxLik = math::maximum(m_pfAuxiliaryPFOptimal_maxLikelihood); // For normalization purposes only
 
 				// The desired dynamic number of m_particles (to be modified dynamically below):
 				const size_t  minNumSamples_KLD = max((size_t)KLD_options.KLD_minSampleSize, (size_t)round(KLD_options.KLD_minSamplesPerBin*stateSpaceBinsLastTimestep.size()) );
 				size_t Nx = minNumSamples_KLD ;
 
-				const size_t Np1 = m_partdata.m_particles.size();
+				const size_t Np1 = me->m_particles.size();
 				vector_size_t oldPartIdxsStillNotPropragated(Np1);  // Use a list since we'll use "erase" a lot here.
 				for (size_t k=0;k<Np1;k++) oldPartIdxsStillNotPropragated[k]=k; //.push_back(k);
 
@@ -729,7 +737,7 @@ namespace mrpt
 					// ---------------------------------------------------------------------------
 					if (doResample)
 					{
-						k = m_pfc.fastDrawSample(PF_options);		// Based on weights of last step only!
+						k = me->fastDrawSample(PF_options);		// Based on weights of last step only!
 					}
 					else
 					{
@@ -742,7 +750,7 @@ namespace mrpt
 
 							const size_t idx = randomGenerator.drawUniform32bit() % stateSpaceBinsLastTimestepParticles[idxBinSpacePath].size();
 							k = stateSpaceBinsLastTimestepParticles[idxBinSpacePath][idx];
-							ASSERT_(k<m_partdata.m_particles.size());
+							ASSERT_(k<me->m_particles.size());
 
 							// Also erase it from the other permutation vector list:
 							oldPartIdxsStillNotPropragated.erase(std::find(oldPartIdxsStillNotPropragated.begin(),oldPartIdxsStillNotPropragated.end(),k));
@@ -766,7 +774,7 @@ namespace mrpt
 							else
 							{
 								// N>N_old -> Uniformly draw index:
-								k = randomGenerator.drawUniform32bit() % m_partdata.m_particles.size();
+								k = randomGenerator.drawUniform32bit() % me->m_particles.size();
 							}
 						}
 					}
@@ -792,7 +800,7 @@ namespace mrpt
 					// ----------------------------------------------------------------
 					BINTYPE	p;
 					const TPose3D  newPose_s = newPose;
-					KLF_loadBinFromParticle<PARTICLE_TYPE,BINTYPE>( p,KLD_options, m_partdata.m_particles[k].d, &newPose_s );
+					KLF_loadBinFromParticle<PARTICLE_TYPE,BINTYPE>( p,KLD_options, me->m_particles[k].d, &newPose_s );
 
 					// -----------------------------------------------------------------------------
 					// Look for the bin "p" into "stateSpaceBins": If it is not yet into the set,
@@ -831,12 +839,12 @@ namespace mrpt
 			//   New are in "newParticles", "newParticlesWeight","newParticlesDerivedFromIdx"
 			// ---------------------------------------------------------------------------------
 			this->PF_SLAM_implementation_replaceByNewParticleSet(
-				m_partdata.m_particles,
+				me->m_particles,
 				newParticles,newParticlesWeight,newParticlesDerivedFromIdx );
 
 
 			// In this PF_algorithm, we must do weight normalization by ourselves:
-			m_pfc.normalizeWeights();
+			me->normalizeWeights();
 
 			MRPT_END
 		} // end of PF_SLAM_implementation_pfAuxiliaryPFStandardAndOptimal
@@ -845,9 +853,9 @@ namespace mrpt
 		/* ------------------------------------------------------------------------
 							PF_SLAM_aux_perform_one_rejection_sampling_step
 		   ------------------------------------------------------------------------ */
-		template <class PARTICLE_TYPE>
+		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
-		void PF_implementation<PARTICLE_TYPE>::PF_SLAM_aux_perform_one_rejection_sampling_step(
+		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_aux_perform_one_rejection_sampling_step(
 			const bool		USE_OPTIMAL_SAMPLING,
 			const bool		doResample,
 			const double	maxMeanLik,
@@ -857,13 +865,15 @@ namespace mrpt
 			CPose3D			& out_newPose,
 			double			& out_newParticleLogWeight)
 		{
+			MYSELF *me = static_cast<MYSELF*>(this);
+
 			// ADD-ON: If the 'm_pfAuxiliaryPFOptimal_estimatedProb[k]' is **extremelly** low relative to the other m_particles,
 			//  resample only this particle with a copy of another one, uniformly:
 			while ( ( (USE_OPTIMAL_SAMPLING ? m_pfAuxiliaryPFOptimal_estimatedProb[k] : m_pfAuxiliaryPFStandard_estimatedProb[k] )
 						-maxMeanLik) < -PF_options.max_loglikelihood_dyn_range )
 			{
 				// Select another 'k' uniformly:
-				k = randomGenerator.drawUniform32bit() % m_partdata.m_particles.size();
+				k = randomGenerator.drawUniform32bit() % me->m_particles.size();
 				if (PF_options.verbose) cout << "[PF_implementation] Warning: Discarding very unlikely particle" << endl;
 			}
 
@@ -950,7 +960,7 @@ namespace mrpt
 					else
 					{
 						const double weightFact = m_pfAuxiliaryPFOptimal_estimatedProb[k] * PF_options.powFactor;
-						out_newParticleLogWeight = m_partdata.m_particles[k].log_w + weightFact;
+						out_newParticleLogWeight = me->m_particles[k].log_w + weightFact;
 					}
 				}
 				else
@@ -958,7 +968,7 @@ namespace mrpt
 					const double weightFact = (poseLogLik-m_pfAuxiliaryPFStandard_estimatedProb[k]) * PF_options.powFactor;
 					if (doResample)
 							out_newParticleLogWeight = weightFact;
-					else	out_newParticleLogWeight = weightFact + m_partdata.m_particles[k].log_w;
+					else	out_newParticleLogWeight = weightFact + me->m_particles[k].log_w;
 				}
 
 			}

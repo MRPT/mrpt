@@ -59,28 +59,23 @@ namespace mrpt
 
 		/** A set of common data shared by PF implementations for both SLAM and localization
 		  */
-		template <class PARTICLE_TYPE>
+		template <class PARTICLE_TYPE, class MYSELF>
 		class PF_implementation
 		{
 		public:
-			PF_implementation(
-					mrpt::bayes::CParticleFilterData<PARTICLE_TYPE> &pfd,
-					mrpt::bayes::CParticleFilterCapable				&pfc
-					) :
-				m_partdata(pfd),
-				m_pfc(pfc),
+			PF_implementation() :
 				m_accumRobotMovement2DIsValid(false),
 				m_accumRobotMovement3DIsValid(false)
 			{
 			}
 
-			typedef mrpt::bayes::CParticleFilterData<PARTICLE_TYPE> BASE;
-			typedef mrpt::bayes::CParticleFilterCapable				BASE2;
+			//typedef mrpt::bayes::CParticleFilterData<PARTICLE_TYPE> BASE;
+			//typedef mrpt::bayes::CParticleFilterCapable				BASE2;
 
 		protected:
 
-			BASE	&m_partdata;  //!< the particle filter data object, implementing CParticleFilterData<PARTICLE_TYPE>
-			BASE2	&m_pfc;  	  //!< the particle filter data object, implementing CParticleFilterCapable
+			//BASE	&m_partdata;  //!< the particle filter data object, implementing CParticleFilterData<PARTICLE_TYPE>
+			//BASE2	&m_pfc;  	  //!< the particle filter data object, implementing CParticleFilterCapable
 
 			/** \name Data members and methods used by generic PF implementations
 			    @{ */
@@ -194,7 +189,7 @@ namespace mrpt
 			  *  Note that more efficient specializations might exist for specific particle data structs.
 			  */
 			virtual void PF_SLAM_implementation_replaceByNewParticleSet(
-				typename BASE::CParticleList	 &old_particles,
+				typename CParticleFilterData<PARTICLE_TYPE>::CParticleList	 &old_particles,
 				const vector<TPose3D>		&newParticles,
 				const vector_double			&newParticlesWeight,
 				const vector<size_t>		&newParticlesDerivedFromIdx ) const
@@ -205,14 +200,14 @@ namespace mrpt
 				//   New are in "newParticles", "newParticlesWeight","newParticlesDerivedFromIdx"
 				// ---------------------------------------------------------------------------------
 				const size_t N = newParticles.size();
-				typename BASE::CParticleList newParticlesArray(N);
+				typename MYSELF::CParticleList newParticlesArray(N);
 
 				// For efficiency, just copy the "CParticleData" from the old particle into the
 				//  new one, but this can be done only once:
 				std::vector<bool>	oldParticleAlreadyCopied(old_particles.size(),false);
 
 				size_t i;
-				typename BASE::CParticleList::iterator	newPartIt;
+				typename MYSELF::CParticleList::iterator	newPartIt;
 				for (newPartIt=newParticlesArray.begin(),i=0;newPartIt!=newParticlesArray.end();newPartIt++,i++)
 				{
 					// The weight:
@@ -248,7 +243,7 @@ namespace mrpt
 
 				// Copy into "m_particles"
 				old_particles.resize( newParticlesArray.size() );
-				typename BASE::CParticleList::iterator	trgPartIt;
+				typename MYSELF::CParticleList::iterator	trgPartIt;
 				for (newPartIt=newParticlesArray.begin(),trgPartIt=old_particles.begin(); newPartIt!=newParticlesArray.end(); ++newPartIt, ++trgPartIt )
 				{
 					trgPartIt->log_w = newPartIt->log_w;
@@ -259,7 +254,7 @@ namespace mrpt
 
 
 			virtual bool PF_SLAM_implementation_doWeHaveValidObservations(
-				const typename  BASE::CParticleList	&particles,
+				const typename CParticleFilterData<PARTICLE_TYPE>::CParticleList	&particles,
 				const CSensoryFrame *sf) const
 			{
 				return true;	// By default, always process the SFs.

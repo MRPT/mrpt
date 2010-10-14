@@ -114,7 +114,7 @@ void CPoseRandomSampler::setPosePDF( const CPosePDF *pdf )
     }
     else
     {
-        THROW_EXCEPTION_CUSTOM_MSG1("Unsoported class: %s", m_pdf2D->GetRuntimeClass()->className );
+        THROW_EXCEPTION_CUSTOM_MSG1("Unsuported class: %s", m_pdf2D->GetRuntimeClass()->className );
     }
 
 

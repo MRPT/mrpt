@@ -127,9 +127,10 @@
 			- se3
 			- slerp_demo
 			- voronoi_demo
-		- Other:
+		- Others:
 			- Change in behavior upon an std::bad_alloc exception in MRPT_START / MRPT_END blocks: instead of dumping an error message to cerr and exit the program, just propragate the exception with throw() so the user can decide what to do in those cases.
 		- BUG FIXES:
+			- Fixed crash in particle filters (both localization and RBPF-SLAM) when using the "optimal particle filter algorithm".
 			- mrpt::opengl::CPointCloud::enableColorFromX() didn't work for disabling the coloring of points.
 			- Fixed build missing finite() function with GCC in some platforms (thanks Mike Davies for reporting!).
 			- Fixed build without zlib in GNU/Linux.
