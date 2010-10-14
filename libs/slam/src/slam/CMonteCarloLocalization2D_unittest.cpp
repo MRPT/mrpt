@@ -68,7 +68,7 @@ TEST(MonteCarlo2D, RunSampleDataset)
 	// Mandatory entries:
 	iniFile.read_vector(iniSectionName, "particles_count", vector_int(1,0), particles_count, /*Fail if not found*/true );
 	string		RAWLOG_FILE			= iniFile.read_string(iniSectionName,"rawlog_file","", /*Fail if not found*/true );
-	
+
 	RAWLOG_FILE = MRPT_GLOBAL_UNITTEST_SRC_DIR + string("/") + RAWLOG_FILE;
 
 	// Non-mandatory entries:
@@ -161,7 +161,6 @@ TEST(MonteCarlo2D, RunSampleDataset)
 
 
 		// Global stats for all the experiment loops:
-		int				nConvergenceTests = 0, nConvergenceOK = 0;
 		vector_double 	covergenceErrors;
 		covergenceErrors.reserve(NUM_REPS);
 		// --------------------------------------------------------------------
@@ -170,14 +169,6 @@ TEST(MonteCarlo2D, RunSampleDataset)
 		tictacGlobal.Tic();
 		for (int repetition = 0; repetition <NUM_REPS; repetition++)
 		{
-			// The experiment directory is:
-			const char  *OUT_DIR=NULL;
-			const char  *OUT_DIR_PARTS=NULL;
-			const char  *OUT_DIR_3D=NULL;
-			string      sOUT_DIR;
-			string      sOUT_DIR_PARTS;
-			string      sOUT_DIR_3D;
-
 			int						M = PARTICLE_COUNT;
 			CMonteCarloLocalization2D  pdf(M);
 
@@ -287,11 +278,9 @@ TEST(MonteCarlo2D, RunSampleDataset)
 	const double  final_pf_cov_trace = cov.trace();
 	const CPose2D final_pf_pose      = meanPose;
 
-	EXPECT_NEAR( (final_pf_pose-GT_endpose).norm(),0, 0.10 ) 
+	EXPECT_NEAR( (final_pf_pose-GT_endpose).norm(),0, 0.10 )
 		<< "Final pose: " << final_pf_pose << endl << "Expected: " << GT_endpose << endl;
 
-	EXPECT_TRUE(final_pf_cov_trace < 0.01 ) 
+	EXPECT_TRUE(final_pf_cov_trace < 0.01 )
 		<< "final_pf_cov_trace = " << final_pf_cov_trace << endl;
 }
-
-

@@ -40,8 +40,10 @@ using namespace std;
 // Load data from constant file and check for exact match.
 TEST(Base64, RandomEncDec)
 {
-	for (size_t i=0;i<10;i++)
+	for (size_t seed=0;seed<20000;seed++)
 	{
+		randomGenerator.randomize(seed);
+
 		const size_t block_len = randomGenerator.drawUniform32bit() % 567;
 
 		vector_byte  myData(block_len);
@@ -57,7 +59,11 @@ TEST(Base64, RandomEncDec)
 
 		// Compare data:
 		EXPECT_EQ(outData.size(),myData.size());
-		EXPECT_EQ(0,mrpt::math::maximum( outData - myData )) << "64-decoded data does not match original data!!\n";
+
+		if (!myData.empty())
+		{
+			EXPECT_EQ(0,mrpt::math::maximum( outData - myData )) << "64-decoded data does not match original data!!\n";
+		}
 	}
 }
 

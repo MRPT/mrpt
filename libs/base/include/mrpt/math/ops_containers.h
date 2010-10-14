@@ -248,11 +248,13 @@ namespace mrpt
 		}
 
 		/** Finds the maximum value (and the corresponding zero-based index) from a given container.
+		  * \exception std::exception On an empty input vector
 		  */
 		template <class CONTAINER>
 		typename CONTAINER::value_type
 		maximum(const CONTAINER &v, size_t *maxIndex)
 		{
+			ASSERT_ABOVE_(v.size(),0)
 			typename CONTAINER::const_iterator maxIt = std::max_element(v.begin(),v.end());
 			if (maxIndex) *maxIndex = std::distance(v.begin(),maxIt);
 			return *maxIt;
@@ -260,11 +262,13 @@ namespace mrpt
 
 		/** Finds the maximum value (and the corresponding zero-based index) from a given vector.
 		  * \sa maximum, minimum_maximum
+		  * \exception std::exception On an empty input vector
 		  */
 		template <class CONTAINER>
 		typename CONTAINER::value_type
 		minimum(const CONTAINER &v, size_t *minIndex)
 		{
+			ASSERT_ABOVE_(v.size(),0)
 			typename CONTAINER::const_iterator minIt = std::min_element(v.begin(),v.end());
 			if (minIndex) *minIndex = std::distance(v.begin(),minIt);
 			return *minIt;
@@ -272,6 +276,7 @@ namespace mrpt
 
 		/** Compute the minimum and maximum of a vector at once
 		  * \sa maximum, minimum
+		  * \exception std::exception On an empty input vector
 		  */
 		template <class CONTAINER>
 		void minimum_maximum(
@@ -281,6 +286,7 @@ namespace mrpt
 			size_t *minIndex,
 			size_t *maxIndex)
 		{
+			ASSERT_ABOVE_(v.size(),0)
 			const size_t N = v.size();
 			if (N)
 			{

@@ -1,3 +1,7 @@
+
+TO ADD: 
+  * Solves FTBFS error (Closes: 599989)
+
 mrpt (1:0.9.1-1) unstable; urgency=low
 
   * New version of upstream sources.

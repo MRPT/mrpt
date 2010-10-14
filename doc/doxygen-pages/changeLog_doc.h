@@ -130,6 +130,7 @@
 		- Others:
 			- Change in behavior upon an std::bad_alloc exception in MRPT_START / MRPT_END blocks: instead of dumping an error message to cerr and exit the program, just propragate the exception with throw() so the user can decide what to do in those cases.
 		- BUG FIXES:
+			- Fixed crash in mrpt::math::maximum() and minimum() for empty vectors. This also solves Debian FTBFS bug <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=599989" > #599989</a>.
 			- Fixed crash in particle filters (both localization and RBPF-SLAM) when using the "optimal particle filter algorithm".
 			- mrpt::opengl::CPointCloud::enableColorFromX() didn't work for disabling the coloring of points.
 			- Fixed build missing finite() function with GCC in some platforms (thanks Mike Davies for reporting!).
