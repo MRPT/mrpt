@@ -75,6 +75,7 @@
 			- New event for GUI windows: mrpt::gui::mrptEventMouseDown
 			- New metaprogramming class: mrpt::utils::TEnumType, allows converting between numerical and symbolic text values for enum types.
 			- New SE(2) and SE(3) geometry helper classes. See mrpt::poses::SE_traits
+			- Helper templates to handle poses and pose PDFs at build time. See <mrpt/poses/helper_templates.h>
 		- Changes in classes:
 			- mrpt::hwdrivers::CHokuyoURG has new configuration variable "HOKUYO_HS_mode" to enable the high sensitivity mode.
 			- removeObservationsByTimestamp() removed from mrpt::slam::CheightGridMap2D, which now doesn't have the "sliding window" insertion method. It was too memory intensive for large maps.

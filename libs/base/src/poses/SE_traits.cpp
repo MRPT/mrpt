@@ -116,3 +116,36 @@ void SE_traits<3>::jacobian_dP1DP2inv_depsilon(
 		CSubmatrixView<matrix_VxV_t,3,3>(J2,3,3).multiply_AB(dLnRot_dRot, aux);
 	}
 }
+
+
+
+/** Return one or both of the following 6x6 Jacobians, useful in graph-slam problems...
+  */
+void SE_traits<2>::jacobian_dP1DP2inv_depsilon(
+	const CPose2D &P1DP2inv,
+	matrix_VxV_t *df_de1, 
+	matrix_VxV_t *df_de2)
+{
+	if (df_de1)
+	{
+		matrix_VxV_t & J1 = *df_de1;
+		// This Jacobian has the structure:
+		//           [   I_3    |      -[d_t]_x      ]
+		//  Jacob1 = [ ---------+------------------- ]
+		//           [   0_3x3  |   dLnR_dR * (...)  ] 
+		//
+		J1.zeros();
+
+	}
+	if (df_de2)
+	{
+		// This Jacobian has the structure:
+		//           [    -R    |      0_3x3         ]
+		//  Jacob2 = [ ---------+------------------- ]
+		//           [   0_3x3  |   dLnR_dR * (...)  ] 
+		//
+		matrix_VxV_t & J2 = *df_de2;
+		J2.zeros();
+
+	}
+}

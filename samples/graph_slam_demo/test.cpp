@@ -40,8 +40,8 @@ using namespace mrpt::random;
 using namespace std;
 
 // This determines the kind of graph and poses to use:
-typedef CNetworkOfPoses2D   my_graph_t;
-//typedef CNetworkOfPoses3D   my_graph_t;
+//typedef CNetworkOfPoses2D   my_graph_t;
+typedef CNetworkOfPoses3D   my_graph_t;
 
 // adds a new edge to the graph. The edge is annotated with the relative position of the two nodes
 void addEdge(TNodeID from, TNodeID to, const my_graph_t::global_poses_t &real_poses,my_graph_t &graph)
@@ -115,8 +115,6 @@ void GraphSLAMDemo()
 	params["profiler"] = 1;
 
 	graphslam::optimize_graph_spa_levmarq(graph, NULL, params);
-
-
 
 
 }

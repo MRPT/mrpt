@@ -62,7 +62,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 	// The size of things here (because size matters...)
 	typedef typename EDGE_TYPE::type_value edge_poses_type;
 //	static const unsigned int DIMS_POSE = edge_poses_type::static_size;
-	typedef SE_traits<edge_poses_type::static_size> SE_TYPE;
+	typedef SE_traits<edge_poses_type::rotation_dimensions> SE_TYPE;
 
 	// Some typedefs to make life easier:
 	typedef CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION>  graph_t;
@@ -119,15 +119,49 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 	map<TPairNodeIDs,TPairJacobs>   lstJacobians;
 
 	// Note: We'll need those Jacobians{i->j} where at least one "i" or "j"
-	//        is a free variable (i.e. it's in nodes_to_optimize_auxlist)
+	//        is a free variable (i.e. it's in nodes_to_optimize)
+	for (typename graph_t::edges_map_t::const_iterator it=graph.edges.begin();it!=graph.edges.end();++it)
+	{
+		const TPairNodeIDs              &ids  = it->first;
+		const typename graph_t::edge_t  &edge = it->second;
 
-	MRPT_TODO("Continue here!")
-	//SE_TYPE::matrix_VxV_t   J1,J2;
-	//SE_TYPE::jacobian_dP1DP2inv_depsilon(P, &J1,&J2);
+		if (nodes_to_optimize->find(ids.first)==nodes_to_optimize->end() &&
+			nodes_to_optimize->find(ids.second)==nodes_to_optimize->end())
+				continue; // Skip this edge, none of the IDs are free variables.
 
+		// get the current global poses of both nodes in this constraint:
+		typename graph_t::global_poses_t::const_iterator itP1 = graph.nodes.find(ids.first);
+		typename graph_t::global_poses_t::const_iterator itP2 = graph.nodes.find(ids.second);
+		ASSERTDEBMSG_(itP1!=graph.nodes.end(),"Node1 in an edge does not have a global pose in 'graph.nodes'.")
+		ASSERTDEBMSG_(itP2!=graph.nodes.end(),"Node2 in an edge does not have a global pose in 'graph.nodes'.")
 
+		// Get a reference to both global poses (the type of these will end up being CPose2D or CPose3D):
+		const typename graph_t::contraint_t::type_value &P1 = itP1->second;
+		const typename graph_t::contraint_t::type_value &P2 = itP2->second;
+		const typename graph_t::contraint_t::type_value &EDGE_POSE  = mrpt::poses::getPoseMean<typename graph_t::contraint_t,typename graph_t::contraint_t::type_value>(edge);
+
+		// Compute the residual pose error of these pair of nodes + its constraint, 
+		//  that is: P1DP2inv = P1 * EDGE * inv(P2)
+		typename graph_t::contraint_t::type_value P1DP2inv(UNINITIALIZED_POSE);
+		{
+			typename graph_t::contraint_t::type_value P1D(UNINITIALIZED_POSE);
+			P1D.composeFrom(P1,EDGE_POSE);
+			const typename graph_t::contraint_t::type_value P2inv = -P2; // Pose inverse (NOT just switching signs!)
+			P1DP2inv.composeFrom(P1D,P2inv);
+		}
+
+		// Compute the jacobians:
+		std::pair<TPairNodeIDs,TPairJacobs> newMapEntry; 
+		newMapEntry.first = ids;
+		SE_TYPE::jacobian_dP1DP2inv_depsilon(P1DP2inv, &newMapEntry.second.first,&newMapEntry.second.second);
+
+		// And insert into map of jacobians:
+		lstJacobians.insert(lstJacobians.end(),newMapEntry );
+	}
 
 	profiler.leave("compute Jacobians");
+
+	MRPT_TODO("Continue here!")
 
 
 
@@ -137,6 +171,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 
 // Explicit instantations:
 template SLAM_IMPEXP void mrpt::graphslam::optimize_graph_spa_levmarq<CPose2D,map_traits_stdmap>(CNetworkOfPoses<CPose2D,map_traits_stdmap >&,const set<TNodeID>*, const mrpt::utils::TParametersDouble  &extra_params);
+template SLAM_IMPEXP void mrpt::graphslam::optimize_graph_spa_levmarq<CPose3D,map_traits_stdmap>(CNetworkOfPoses<CPose3D,map_traits_stdmap >&,const set<TNodeID>*, const mrpt::utils::TParametersDouble  &extra_params);
 
 
 

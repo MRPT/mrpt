@@ -25,42 +25,36 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
+#ifndef MRPT_POSES_HELPERS_H
+#define MRPT_POSES_HELPERS_H
 
-#ifndef _mrpt_poses_H
-#define _mrpt_poses_H
-
-#include <mrpt/poses/CPoseOrPoint.h>
-#include <mrpt/poses/CPose.h>
-#include <mrpt/poses/CPoint.h>
-#include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPose2DGridTemplate.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPointPDF.h>
+#include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/poses/CPosePDFGrid.h>
-#include <mrpt/poses/CPointPDFGaussian.h>
-#include <mrpt/poses/CPoint2DPDFGaussian.h>
-#include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/poses/CPointPDFParticles.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/poses/CPosePDFSOG.h>
-#include <mrpt/poses/CPointPDFSOG.h>
-#include <mrpt/poses/CPose3DPDFParticles.h>
-#include <mrpt/poses/CPoses2DSequence.h>
-#include <mrpt/poses/CPose3DPDFSOG.h>
-#include <mrpt/poses/CPoses3DSequence.h>
-#include <mrpt/poses/CPose3DInterpolator.h>
-#include <mrpt/poses/CPoseRandomSampler.h>
-#include <mrpt/poses/CNetworkOfPoses.h>
-#include <mrpt/poses/CRobot2DPoseEstimator.h>
-#include <mrpt/poses/CPose3DQuatPDFGaussian.h>
-#include <mrpt/poses/SE_traits.h>
-#include <mrpt/poses/helper_templates.h>
 
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPose3DQuatPDFGaussian.h>
+
+namespace mrpt
+{
+	namespace poses
+	{
+		/**  @name Helper templates to convert a pose or a pose PDF to its mean value at compile time.
+			 @{
+		  */
+		template <class POSE,class POSEMEAN> inline const POSEMEAN &getPoseMean(const POSE &p);
+
+		template <> inline const CPose2D &getPoseMean<CPose2D,CPose2D>(const CPose2D &p) { return p;}
+		template <> inline const CPose3D &getPoseMean<CPose3D,CPose3D>(const CPose3D &p) { return p;}
+		template <> inline const CPose3DQuat &getPoseMean<CPose3DQuat,CPose3DQuat>(const CPose3DQuat &p) { return p;}
+
+		template <> inline const CPose2D &getPoseMean<CPosePDFGaussian,CPose2D>(const CPosePDFGaussian &p) { return p.mean;}
+		template <> inline const CPose3D &getPoseMean<CPose3DPDFGaussian,CPose3D>(const CPose3DPDFGaussian &p) { return p.mean;}
+		template <> inline const CPose3DQuat &getPoseMean<CPose3DQuatPDFGaussian,CPose3DQuat>(const CPose3DQuatPDFGaussian &p) { return p.mean;}
+		/** @}  */
+
+	} // End of namespace
+} // End of namespace
 
 #endif
