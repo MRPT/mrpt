@@ -157,7 +157,7 @@ namespace mrpt
 			/** @name Utility methods
 			    @{ */
 
-			/** Compute a simple estimation of the global coordinates of each node just from the information in all edges, sorted in a Dijkstra tree based on the current "root" node.
+			/** Spanning tree computation of a simple estimation of the global coordinates of each node just from the information in all edges, sorted in a Dijkstra tree based on the current "root" node.
 			  *  Note that "global" coordinates are with respect to the node with the ID specified in \a root.
 			  * \sa node, root
 			  */

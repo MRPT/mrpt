@@ -66,6 +66,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 
 	// Some typedefs to make life easier:
 	typedef CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION>  graph_t;
+	typedef typename SE_TYPE::matrix_VxV_t                  matrix_VxV_t;
 	//typedef CArrayDouble<DIMS_POSE>            Array_O;
 	//typedef CArrayDouble<DIMS_POSE>            Array_P;
 	//typedef CMatrixFixedNumeric<double,DIMS_POSE,DIMS_POSE> Matrix_PxP;
@@ -95,10 +96,13 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 	}
 	profiler.leave("list nodeIDs to optimize");
 
+	// Number of nodes to optimize, or free variables:
+	const size_t nFreeNodes = nodes_to_optimize->size();
+
 	if (verbose)
 	{
-		cout << VERBOSE_PREFIX << nodes_to_optimize->size() << " nodes to optimize: ";
-		if (nodes_to_optimize->size()<14)
+		cout << VERBOSE_PREFIX << nFreeNodes << " nodes to optimize: ";
+		if (nFreeNodes<14)
 		{
 			ostream_iterator<TNodeID> out_it (cout,", ");
 			std::copy(nodes_to_optimize->begin(), nodes_to_optimize->end(), out_it );
@@ -114,7 +118,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 	//  we need the pair of Jacobians: { dh(xi,xj)_dxi, dh(xi,xj)_dxj },
 	//  which are "first" and "second" in each pair.
 	// Index of the map are the node IDs {i,j} for each contraint.
-	typedef pair<typename SE_TYPE::matrix_VxV_t,typename SE_TYPE::matrix_VxV_t>   TPairJacobs;
+	typedef pair<matrix_VxV_t,matrix_VxV_t>   TPairJacobs;
 
 	map<TPairNodeIDs,TPairJacobs>   lstJacobians;
 
@@ -158,8 +162,68 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 		// And insert into map of jacobians:
 		lstJacobians.insert(lstJacobians.end(),newMapEntry );
 	}
-
 	profiler.leave("compute Jacobians");
+
+
+	profiler.enter("build sparse H's map");
+	// Build sparse representation of the upper triangular part of 
+	//  the Hessian matrix H = J^t * J
+	// 
+	// Sparse memory structure is a vector of maps, such as:
+	//  - H_map[i]: corresponds to the i'th column of H. 
+	//              Here "i" corresponds to [0,N-1] indices of appearance in the map "*nodes_to_optimize".
+	//  - H_map[i][j] is the entry for the j'th row, actually, for the row associated to the pose with ID "j"
+	vector<map<TNodeID,matrix_VxV_t> >  H_map(nFreeNodes);
+
+	for (typename graph_t::edges_map_t::const_iterator it=graph.edges.begin();it!=graph.edges.end();++it)
+	{
+		// Sort IDs such as "i" < "j" and we can build just the upper triangular part of the Hessian:
+		const TNodeID i = std::min(it->first.first,it->first.second);
+		const TNodeID j = std::max(it->first.first,it->first.second);
+	
+		const set<TNodeID>::const_iterator itI = nodes_to_optimize->find(i);
+		const set<TNodeID>::const_iterator itJ = nodes_to_optimize->find(j);
+		const bool is_i_free_node = itI!=nodes_to_optimize->end();
+		const bool is_j_free_node = itJ!=nodes_to_optimize->end();
+
+		// Indices in the "H_map" vector:
+		const size_t idx_i = is_i_free_node ? std::distance(nodes_to_optimize->begin(),itI) : 0;
+		const size_t idx_j = is_j_free_node ? std::distance(nodes_to_optimize->begin(),itJ) : 0; 
+
+		// Leave the pair of Jacobians at hand:
+		map<TPairNodeIDs,TPairJacobs>::const_iterator itJacobPair = lstJacobians.find(it->first); // look for this pair of IDs
+		ASSERTDEBMSG_(itJacobPair!=lstJacobians.end(),"Needed Jacobian pair was not computed!")
+		// Take references to both Jacobians (wrt pose "i" and pose "j"), taking into account the possible 
+		// switch in their order:
+		const matrix_VxV_t &J1 = itJacobPair->first.first==i ? itJacobPair->second.first : itJacobPair->second.second;
+		const matrix_VxV_t &J2 = itJacobPair->first.first==i ? itJacobPair->second.second : itJacobPair->second.first;
+
+		// Is "i" a free (to be optimized) node? -> Ji^t * Inf *  Ji
+		if (is_i_free_node)
+		{
+			matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
+			MRPT_TODO("Take into account the case with information matrix")
+			JtJ.multiply_AtA(J1);
+			H_map[idx_i][i] += JtJ;
+		}
+		// Is "j" a free (to be optimized) node? -> Jj^t * Inf *  Jj
+		if (is_j_free_node)
+		{
+			matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
+			JtJ.multiply_AtA(J2);
+			H_map[idx_j][j] += JtJ;
+		}
+		// Are both "i" and "j" free nodes? -> Ji^t * Inf *  Jj
+		if (is_i_free_node && is_j_free_node)
+		{
+			matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
+			JtJ.multiply_AtB(J1,J2);
+			H_map[idx_j][i] += JtJ;
+		}
+	
+	}
+	profiler.leave("build sparse H's map");
+
 
 	MRPT_TODO("Continue here!")
 
