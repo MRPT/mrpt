@@ -67,17 +67,17 @@ void GraphSLAMDemo()
 	// ----------------------------
 	// Create a random graph:
 	// ----------------------------
-	const size_t N_VERTEX = 4;
-	const double DIST_THRES = 12;
-	const double NODES_XY_MAX = 10;
+	const size_t N_VERTEX = 20;
+	const double DIST_THRES = 15;
+	const double NODES_XY_MAX = 30;
 
 	// Level of noise in nodes initial positions:
-	const double STD_NOISE_NODE_XYZ = 0.01;
-	const double STD_NOISE_NODE_ANG = DEG2RAD(10);
+	const double STD_NOISE_NODE_XYZ = 0.04;
+	const double STD_NOISE_NODE_ANG = DEG2RAD(5);
 
 	// Level of noise in edges:
-	const double STD_NOISE_EDGE_XYZ = 0; //0.02;
-	const double STD_NOISE_EDGE_ANG = 0; //DEG2RAD(2);
+	const double STD_NOISE_EDGE_XYZ = 0.02;
+	const double STD_NOISE_EDGE_ANG = DEG2RAD(1);
 
 
 	for (TNodeID j=0;j<N_VERTEX;j++)
@@ -116,7 +116,7 @@ void GraphSLAMDemo()
 
 	// Add noise to edges & nodes:
 	for (my_graph_t::edges_map_t::iterator itEdge=graph.edges.begin();itEdge!=graph.edges.end();++itEdge)
-		itEdge->second += my_graph_t::edge_t( CPose3D( 
+		itEdge->second += my_graph_t::edge_t( CPose3D(
 			randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_XYZ),
 			randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_XYZ),
 			randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_XYZ),
@@ -144,6 +144,7 @@ void GraphSLAMDemo()
 	TParametersDouble  params;
 	params["verbose"]  = 1;
 	params["profiler"] = 1;
+	params["max_iterations"] = 100;
 
 	graphslam::optimize_graph_spa_levmarq(graph, NULL, params);
 
