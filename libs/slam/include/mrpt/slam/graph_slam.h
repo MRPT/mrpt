@@ -29,6 +29,7 @@
 #define GRAPH_SLAM_H
 
 #include <mrpt/poses/CNetworkOfPoses.h>
+#include <mrpt/poses/SE_traits.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
@@ -66,6 +67,30 @@ namespace mrpt
 			const mrpt::utils::TParametersDouble            & extra_params = mrpt::utils::TParametersDouble()
 			);
 
+
+
+		/** Auxiliary traits template for use among graph-slam problems to make life easier with these complicated, long data type names */
+		template <class EDGE_TYPE, class MAPS_IMPLEMENTATION>
+		struct graphslam_traits
+		{
+			typedef mrpt::poses::CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION>  graph_t;
+			typedef typename graph_t::edges_map_t::const_iterator   edge_const_iterator;
+			typedef typename EDGE_TYPE::type_value                  edge_poses_type;
+			typedef mrpt::poses::SE_traits<edge_poses_type::rotation_dimensions> SE_TYPE;
+			typedef typename SE_TYPE::matrix_VxV_t                  matrix_VxV_t;
+			typedef typename SE_TYPE::array_t                       Array_O; // An array of the correct size for an "observation" (i.e. a relative pose in an edge)
+			typedef std::pair<matrix_VxV_t,matrix_VxV_t>            TPairJacobs;
+
+			/** Auxiliary struct used in graph-slam implementation: It holds the relevant information for each of the constraints being taking into account. */
+			struct observation_info_t
+			{
+				typedef graphslam_traits<EDGE_TYPE,MAPS_IMPLEMENTATION> gst;
+				// Data:
+				typename gst::edge_const_iterator                     edge;
+				const typename gst::graph_t::contraint_t::type_value *edge_mean; 
+				typename gst::graph_t::contraint_t::type_value       *P1,*P2;
+			};
+		};
 
 	} // End of namespace
 } // End of namespace

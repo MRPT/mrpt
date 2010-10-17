@@ -352,6 +352,13 @@ namespace mrpt
 			return total;
 		}
 
+		/** Accumulate the squared-norm of a vector/array/matrix into "total" (this function is compatible with std::accumulate). */
+		template <class CONTAINER> 
+		typename CONTAINER::value_type squareNorm_accum(const typename CONTAINER::value_type total, const CONTAINER &v);
+		template <class CONTAINER> typename CONTAINER::value_type squareNorm_accum(const typename CONTAINER::value_type total, const CONTAINER &v) {
+			return total+squareNorm(v);
+		}
+
 		/** Compute the square norm of anything implementing [].
 		  \sa norm */
 		template<size_t N,class T,class U>

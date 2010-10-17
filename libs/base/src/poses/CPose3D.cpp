@@ -595,8 +595,18 @@ void CPose3D::composeFrom(const CPose3D& A, const CPose3D& B )
 	m_ROT.multiply_AB( A.m_ROT, B.m_ROT );
 
 	// The translation part HM(0:3,3)
-	for (int r=0;r<3;r++)
-		m_coords[r] = A.m_coords[r] + A.m_ROT(r,0)*B.m_coords[0]+A.m_ROT(r,1)*B.m_coords[1]+A.m_ROT(r,2)*B.m_coords[2];
+	if (this==&B)
+	{
+		// we need to make a temporary copy of the vector:
+		const CArrayDouble<3>  B_coords = B.m_coords;
+		for (int r=0;r<3;r++)
+			m_coords[r] = A.m_coords[r] + A.m_ROT(r,0)*B_coords[0]+A.m_ROT(r,1)*B_coords[1]+A.m_ROT(r,2)*B_coords[2];
+	}
+	else
+	{
+		for (int r=0;r<3;r++)
+			m_coords[r] = A.m_coords[r] + A.m_ROT(r,0)*B.m_coords[0]+A.m_ROT(r,1)*B.m_coords[1]+A.m_ROT(r,2)*B.m_coords[2];
+	}
 
 	m_ypr_uptodate=false;
 }

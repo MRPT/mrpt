@@ -35,6 +35,21 @@ using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
+/** A pseudo-Logarithm map in SE(3), where the output = [X,Y,Z, Ln(ROT)], that is, the normal 
+  *  SO(3) logarithm is used for the rotation components, but the translation is left unmodified.
+  */
+void SE_traits<3>::pseudo_ln(const CPose3D &P, array_t &x)
+{
+	x[0] = P.m_coords[0];
+	x[1] = P.m_coords[1];
+	x[2] = P.m_coords[2];
+	CArrayDouble<3> ln_rot = P.ln_rotation();
+	x[3] = ln_rot[0];
+	x[4] = ln_rot[1];
+	x[5] = ln_rot[2];
+}
+
+
 /** Return one or both of the following 6x6 Jacobians, useful in graph-slam problems...
   */
 void SE_traits<3>::jacobian_dP1DP2inv_depsilon(

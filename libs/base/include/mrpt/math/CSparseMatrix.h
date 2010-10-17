@@ -151,9 +151,6 @@ namespace mrpt
 			/** Fast copy the data from an existing "cs" CSparse data structure, copying the pointers and leaving NULLs in the source structure. */
 			void  copy_fast(cs  * const sm);
 
-			/** Insert an element into a "cs", without checking if the matrix is in Triplet format and without extending the matrix extension/limits if (row,col) is out of the current size. */
-			void insert_entry_fast(const size_t row, const size_t col, const double val );
-
 		public:
 
 			/** @name Constructors, destructor & copy operations
@@ -257,6 +254,9 @@ namespace mrpt
 			  * \sa isTriplet, compressFromTriplet
 			  */
 			void insert_entry(const size_t row, const size_t col, const double val );
+
+			/** ONLY for TRIPLET matrices: Insert an element into a "cs", without checking if the matrix is in Triplet format and without extending the matrix extension/limits if (row,col) is out of the current size. */
+			void insert_entry_fast(const size_t row, const size_t col, const double val );
 
 			/** ONLY for TRIPLET matrices: insert a given matrix (in any of the MRPT formats) at a given location of the sparse matrix.
 			  *  This method cannot be used once the matrix is in column-compressed form.

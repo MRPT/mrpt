@@ -39,9 +39,10 @@ using namespace mrpt::gui;
 using namespace mrpt::random;
 using namespace std;
 
-// This determines the kind of graph and poses to use:
+// This determines the kind of graph and poses to use -------------------
 //typedef CNetworkOfPoses2D   my_graph_t;
 typedef CNetworkOfPoses3D   my_graph_t;
+// ----------------------------------------------------------------------
 
 // adds a new edge to the graph. The edge is annotated with the relative position of the two nodes
 void addEdge(TNodeID from, TNodeID to, const my_graph_t::global_poses_t &real_poses,my_graph_t &graph)
@@ -71,12 +72,12 @@ void GraphSLAMDemo()
 	const double NODES_XY_MAX = 10;
 
 	// Level of noise in nodes initial positions:
-	const double STD_NOISE_NODE_XYZ = 0.20;
+	const double STD_NOISE_NODE_XYZ = 0.01;
 	const double STD_NOISE_NODE_ANG = DEG2RAD(10);
 
 	// Level of noise in edges:
-	const double STD_NOISE_EDGE_XYZ = 0.02;
-	const double STD_NOISE_EDGE_ANG = DEG2RAD(2);
+	const double STD_NOISE_EDGE_XYZ = 0; //0.02;
+	const double STD_NOISE_EDGE_ANG = 0; //DEG2RAD(2);
 
 
 	for (TNodeID j=0;j<N_VERTEX;j++)
@@ -97,9 +98,8 @@ void GraphSLAMDemo()
 	// Add some edges
 	for (TNodeID i=0;i<N_VERTEX;i++)
 	{
-		for (TNodeID j=0;j<N_VERTEX;j++)
+		for (TNodeID j=i+1;j<N_VERTEX;j++)
 		{
-			if (i==j) continue;
 			if ( real_node_poses[i].distanceTo(real_node_poses[j]) < DIST_THRES )
 				addEdge(i,j,real_node_poses,graph);
 		}
@@ -110,6 +110,9 @@ void GraphSLAMDemo()
 
 	// This is the ground truth graph (make a copy for later use):
 	const my_graph_t  graph_GT = graph;
+
+	cout << "graph nodes: " << graph_GT.nodeCount() << endl;
+	cout << "graph edges: " << graph_GT.edgeCount() << endl;
 
 	// Add noise to edges & nodes:
 	for (my_graph_t::edges_map_t::iterator itEdge=graph.edges.begin();itEdge!=graph.edges.end();++itEdge)

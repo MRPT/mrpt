@@ -56,8 +56,15 @@ namespace mrpt
 			/** Logarithm map in SE(3) */
 			static void ln(const CPose3D &P, array_t &x) { P.ln(x); } 
 
+			/** A pseudo-Logarithm map in SE(3), where the output = [X,Y,Z, Ln(ROT)], that is, the normal 
+			  *  SO(3) logarithm is used for the rotation components, but the translation is left unmodified.
+			  */
+			static void pseudo_ln(const CPose3D &P, array_t &x);
+
 			/** Return one or both of the following 6x6 Jacobians, useful in graph-slam problems:
-			  *   \f[  \frac{\partial }{\partial \epsilon}  \f]
+			  *   \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_1}  \f]
+			  *   \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_2}  \f]
+			  *  With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$ being increments in the linearized manifold for P1 and P2.
 			  */
 			static void jacobian_dP1DP2inv_depsilon(
 				const CPose3D &P1DP2inv,
@@ -80,8 +87,15 @@ namespace mrpt
 			/** Logarithm map in SE(2) */
 			static void ln(const CPose2D &P, array_t &x) { x[0] = P.x(); x[1] = P.y(); x[2] = P.phi();  } 
 
+			/** A pseudo-Logarithm map in SE(2), where the output = [X,Y, Ln(ROT)], that is, the normal 
+			  *  SO(2) logarithm is used for the rotation components, but the translation is left unmodified.
+			  */
+			static void pseudo_ln(const CPose2D &P, array_t &x) { ln(P,x); }
+
 			/** Return one or both of the following 3x3 Jacobians, useful in graph-slam problems:
-			  *   \f[  \frac{\partial }{\partial \epsilon}  \f]
+			  *   \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_1}  \f]
+			  *   \f[  \frac{\partial pseudoLn(P_1 D P_2^{-1}) }{\partial \epsilon_2}  \f]
+			  *  With \f$ \epsilon_1 \f$ and \f$ \epsilon_2 \f$ being increments in the linearized manifold for P1 and P2.
 			  */
 			static void jacobian_dP1DP2inv_depsilon(
 				const CPose2D &P1DP2inv,

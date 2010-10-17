@@ -556,6 +556,7 @@ namespace mrpt
 		template <class CONTAINER> void minimum_maximum(const CONTAINER &v,typename CONTAINER::mrpt_autotype::value_type & out_min,typename CONTAINER::mrpt_autotype::value_type& out_max,size_t *minIndex = static_cast<size_t*>(NULL), size_t *maxIndex = static_cast<size_t*>(NULL));
 		template <class CONTAINER> typename CONTAINER::value_type norm_inf(const CONTAINER &v, size_t *maxIndex = NULL);
 		template <class CONTAINER> typename CONTAINER::value_type squareNorm(const CONTAINER &v);
+		template <class CONTAINER> typename CONTAINER::value_type squareNorm_accum(const typename CONTAINER::value_type total, const CONTAINER &v);
 		template <class CONTAINER> inline typename CONTAINER::value_type norm(const CONTAINER &v);
 		template <class CONTAINER> inline double mean(const CONTAINER &v);
 		template <class CONTAINER> inline typename CONTAINER::value_type sum(const CONTAINER &v);
