@@ -265,7 +265,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 	for (size_t iter=0;iter<max_iters;++iter)
 	{
 		if (verbose )
-			cout << VERBOSE_PREFIX "Iter: " << iter << " ,total sqr. err: " << total_sqr_err  << ", avrg. err per edge: " << std::sqrt(total_sqr_err/nObservations) << endl;
+			cout << VERBOSE_PREFIX "Iter: " << iter << " ,total sqr. err: " << total_sqr_err  << ", avrg. err per edge: " << std::sqrt(total_sqr_err/nObservations) << " lambda: " << lambda << endl;
 
 		if (have_to_recompute_H_and_grad)  // This will be false only when the delta leads to a worst solution and only a change in lambda is needed.
 		{
@@ -555,14 +555,6 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 			}
 			const double l = (total_sqr_err - new_total_sqr_err) / denom;
 
-		//	// denom = h_lm^t * ( \lambda * h_lm - g )
-		//	VECTORTYPE	tmp(h_lm);
-		//	tmp *= lambda;
-		//	tmp -= g;
-		//	tmp*=h_lm;
-		//	double denom = math::sum(tmp);
-		//	double l = (F_x - F_xnew) / denom;
-
 			if (l>0)
 			{
 				// Accept the new point:
@@ -573,13 +565,14 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 				// Instruct to recompute H and grad from the new Jacobians.
 				have_to_recompute_H_and_grad = true;
 
-				lambda *= 0.5; // max(0.33, 1-pow(2*l-1,3) );
+				lambda *= std::max(0.33, 1-pow(2*l-1,3) );
 				v = 2;
 			}
 			else
 			{
 				// Nope...
 				// We have to revert the "graph.nodes" to "old_poses_backup"
+				if (verbose ) cout << VERBOSE_PREFIX "Retrying with a larger lambda...\n";
 
 				// Change params and try again:
 				lambda *= v;

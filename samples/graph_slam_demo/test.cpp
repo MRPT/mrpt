@@ -67,17 +67,17 @@ void GraphSLAMDemo()
 	// ----------------------------
 	// Create a random graph:
 	// ----------------------------
-	const size_t N_VERTEX = 20;
-	const double DIST_THRES = 15;
+	const size_t N_VERTEX = 10;
+	const double DIST_THRES = 20;
 	const double NODES_XY_MAX = 30;
 
 	// Level of noise in nodes initial positions:
-	const double STD_NOISE_NODE_XYZ = 0.04;
+	const double STD_NOISE_NODE_XYZ = 0.15;
 	const double STD_NOISE_NODE_ANG = DEG2RAD(5);
 
 	// Level of noise in edges:
-	const double STD_NOISE_EDGE_XYZ = 0.02;
-	const double STD_NOISE_EDGE_ANG = DEG2RAD(1);
+	const double STD_NOISE_EDGE_XYZ = 0; //0.02;
+	const double STD_NOISE_EDGE_ANG = 0; //DEG2RAD(1);
 
 
 	for (TNodeID j=0;j<N_VERTEX;j++)
@@ -144,7 +144,7 @@ void GraphSLAMDemo()
 	TParametersDouble  params;
 	params["verbose"]  = 1;
 	params["profiler"] = 1;
-	params["max_iterations"] = 100;
+	params["max_iterations"] = 10000;
 
 	graphslam::optimize_graph_spa_levmarq(graph, NULL, params);
 
@@ -153,6 +153,7 @@ void GraphSLAMDemo()
 	//  Display results:
 	// ----------------------------
 	CDisplayWindow3D  win("graph-slam demo results");
+	CDisplayWindow3D  win2("graph-slam demo initial state");
 
 	// The final optimized graph:
 	TParametersDouble  graph_render_params1;
@@ -178,20 +179,38 @@ void GraphSLAMDemo()
 	graph_render_params3["edge_width"] = 3;
 	graph_render_params3["nodes_corner_scale"] = 2;
 	CSetOfObjectsPtr gl_graph3 = mrpt::opengl::graph_tools::graph_visualize(graph_GT, graph_render_params3 );
+	CSetOfObjectsPtr gl_graph4 = mrpt::opengl::graph_tools::graph_visualize(graph_initial, graph_render_params3 );
 
 
-	win.addTextMessage(5,5   , "Ground truth: Thick corners & thick edges", TColorf(0,0,0), 1000 /* arbitrary, unique text label ID */, MRPT_GLUT_BITMAP_HELVETICA_12 );
+	win.addTextMessage(5,5   , "Ground truth: Big corners & thick edges", TColorf(0,0,0), 1000 /* arbitrary, unique text label ID */, MRPT_GLUT_BITMAP_HELVETICA_12 );
 	win.addTextMessage(5,5+15, "Initial graph: Gray thick points.", TColorf(0,0,0), 1001 /* arbitrary, unique text label ID */, MRPT_GLUT_BITMAP_HELVETICA_12 );
+	win.addTextMessage(5,5+30, "Final graph: Small corners & thin edges", TColorf(0,0,0), 1002 /* arbitrary, unique text label ID */, MRPT_GLUT_BITMAP_HELVETICA_12 );
 
-	COpenGLScenePtr &scene = win.get3DSceneAndLock();
-	scene->insert(gl_graph1);
-	scene->insert(gl_graph3);
-	scene->insert(gl_graph2);
-	win.unlockAccess3DScene();
-	win.repaint();
+	win2.addTextMessage(5,5   , "Ground truth: Big corners & thick edges", TColorf(0,0,0), 1000 /* arbitrary, unique text label ID */, MRPT_GLUT_BITMAP_HELVETICA_12 );
+	win2.addTextMessage(5,5+15, "Initial graph: Small corners & thin edges", TColorf(0,0,0), 1001 /* arbitrary, unique text label ID */, MRPT_GLUT_BITMAP_HELVETICA_12 );
+
+	{
+		COpenGLScenePtr &scene = win.get3DSceneAndLock();
+		scene->insert(gl_graph1);
+		scene->insert(gl_graph3);
+		scene->insert(gl_graph2);
+		win.unlockAccess3DScene();
+		win.repaint();
+	}
+
+	{
+		COpenGLScenePtr &scene = win2.get3DSceneAndLock();
+		scene->insert(gl_graph1);
+		scene->insert(gl_graph4);
+		win2.unlockAccess3DScene();
+		win2.repaint();
+	}
 
 	// wait end:
-	win.waitForKey();
+	while (win.isOpen() && win2.isOpen())
+	{
+		mrpt::system::sleep(10);
+	}
 }
 
 int main()
@@ -199,6 +218,7 @@ int main()
 	try
 	{
 		GraphSLAMDemo();
+		mrpt::system::sleep(20);
 		return 0;
 	} catch (exception &e)
 	{
