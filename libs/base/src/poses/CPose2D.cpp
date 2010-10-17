@@ -157,7 +157,7 @@ void CPose2D::composeFrom(const CPose2D &A, const CPose2D &B)
 	const double new_y = A.m_coords[1] + B.m_coords[0] * ssin + B.m_coords[1] * ccos;
 	m_coords[0] = new_x;
 	m_coords[1] = new_y;
-	m_phi = A.m_phi + B.m_phi;
+	m_phi = math::wrapToPi(A.m_phi + B.m_phi);
 }
 
 
@@ -217,7 +217,7 @@ void CPose2D::inverseComposeFrom(const CPose2D& A, const CPose2D& B )
 
 	m_coords[0] = (A.m_coords[0] - B.m_coords[0]) * ccos + (A.m_coords[1] - B.m_coords[1]) * ssin;
 	m_coords[1] =-(A.m_coords[0] - B.m_coords[0]) * ssin + (A.m_coords[1] - B.m_coords[1]) * ccos;
-	m_phi = A.m_phi - B.m_phi;
+	m_phi = math::wrapToPi(A.m_phi - B.m_phi);
 }
 
 /*---------------------------------------------------------------

@@ -73,6 +73,7 @@ template <class GRAPHTYPE> void display_graph(const GRAPHTYPE & g);
 
 DECLARE_OP_FUNCTION(op_view);
 DECLARE_OP_FUNCTION(op_dijkstra);
+DECLARE_OP_FUNCTION(op_levmarq);
 DECLARE_OP_FUNCTION(op_info);
 
 
@@ -90,8 +91,10 @@ TCLAP::SwitchArg arg_view("","view",
 			"If used together with another operation, the final obtained graph after the operation will be shown, not the input original one.\n"
 			,cmd, false);
 
-TCLAP::SwitchArg arg_quiet("q","quiet","Terse output",cmd, false);
-
+TCLAP::SwitchArg         arg_quiet("q","quiet","Terse output",cmd, false);
+TCLAP::ValueArg<int>     arg_max_iters("","max-iters","Maximum number of iterations (optional)",false,100,"N",cmd);
+TCLAP::ValueArg<double>  arg_initial_lambda("","initial-lambda","Initial lambda parameter (optional, lev-marq)",false,0,"val",cmd);
+TCLAP::SwitchArg         arg_no_span("","no-span","Don't use dijkstra initial spanning tree guess (optional)",cmd, false);
 
 
 // ======================================================================
@@ -106,6 +109,12 @@ int main(int argc, char **argv)
 	{
 		// --------------- List of possible operations ---------------
 		map<string,TOperationFunctor>  ops_functors;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","levmarq",
+			"Op: Optimizes the graph with sparse Levenberg-Marquartd using global coordinates (via mrpt::graphslam::optimize_graph_spa_levmarq).\n"
+			"   Can be used together with: --view, --output, --max-iters, --no-span, --initial-lambda"
+			,cmd, false) );
+		ops_functors["levmarq"] = &op_levmarq;
 
 		arg_ops.push_back(new TCLAP::SwitchArg("","dijkstra",
 			"Op: Executes CNetworkOfPoses::dijkstra_nodes_estimate() to estimate the global pose of nodes from a Dijkstra tree and the edge relative poses.\n"
@@ -273,3 +282,73 @@ IMPLEMENT_OP_FUNCTION(op_dijkstra)
 		display_graph(g);
 	}
 } // end op_dijkstra
+
+
+// -----------------------------------------------------------------------------------
+//  op: --levmarq
+//   Load and optimize a graph with the sparse Lev-Marq algorithm.
+// -----------------------------------------------------------------------------------
+IMPLEMENT_OP_FUNCTION(op_levmarq)
+{
+	const bool save_to_file  = arg_output_file.isSet();	// Output to file??
+	const bool display_3D    = arg_view.isSet();         // Output to 3D view??
+	const bool skip_dijkstra = arg_no_span.isSet();
+
+	if (!save_to_file && !display_3D)
+		std::cerr << "\n ** WARNING **: Neither --view nor --output specified. The result will not be saved anywhere.\n\n";
+
+	// Load:
+	GRAPHTYPE g;
+	g.loadFromTextFile(in_file);
+
+	// Find the first node ID and use it as root:
+	VERBOSE_COUT << "Making a list with all node IDs...\n";
+
+	set<TNodeID>  lstNodeIDs;
+	g.getAllNodes(lstNodeIDs);
+
+	ASSERT_(!lstNodeIDs.empty())
+
+	const TNodeID id_root = *lstNodeIDs.begin();
+	VERBOSE_COUT << "Using root node ID=" << id_root << endl;
+
+	g.root = id_root;
+
+	// Executes dijkstra (spanning tree) for initial guess?
+	// --------------------------------
+	if (!skip_dijkstra)
+	{
+		VERBOSE_COUT << "Executing Dijkstra...\n";
+		CTicTac  tictac;
+		tictac.Tic();
+
+		g.dijkstra_nodes_estimate();
+
+		VERBOSE_COUT << "Took: " << mrpt::system::formatTimeInterval(tictac.Tac()) << endl;
+	}
+
+	// Executes the optimization:
+	// --------------------------------
+	TParametersDouble  params;
+	params["verbose"]  = 1;
+	params["profiler"] = 1;
+	params["max_iterations"] = arg_max_iters.getValue();
+	params["initial_lambda"] = arg_initial_lambda.getValue();
+
+	graphslam::optimize_graph_spa_levmarq(g, NULL, params);
+
+
+	// Output:
+	if (save_to_file)
+	{
+		const string out_file = arg_output_file.getValue();
+		VERBOSE_COUT  << "Saving resulting graph to: " << out_file << endl;
+		g.saveToTextFile(out_file);
+	}
+	if (display_3D)
+	{
+		VERBOSE_COUT  << "Displaying resulting graph\n";
+		display_graph(g);
+	}
+} // end op_dijkstra
+

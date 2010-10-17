@@ -132,9 +132,12 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 	const size_t max_iters        = extra_params.getWithDefaultVal("max_iterations",50);
 	const bool   enable_profiler  = 0!=extra_params.getWithDefaultVal("profiler",0);
 	// LM params:
+	const double initial_lambda = extra_params.getWithDefaultVal("initial_lambda", 0);  // <=0: means auto guess
 	const double tau = extra_params.getWithDefaultVal("tau", 1e-3);
 	const double e1 = extra_params.getWithDefaultVal("e1",1e-8);
 	const double e2 = extra_params.getWithDefaultVal("e2",1e-8);
+
+	const double MIN_LAMBDA = extra_params.getWithDefaultVal("min_lambda",1e-290);
 
 	mrpt::utils::CTimeLogger  profiler(enable_profiler);
 	profiler.enter("optimize_graph_spa_levmarq (entire)");
@@ -252,8 +255,9 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 	vector_double grad(nFreeNodes*DIMS_POSE);
 	vector<map<TNodeID,typename gst::matrix_VxV_t> >  H_map(nFreeNodes);
 
-	double	lambda = -1; // <0 means it's not set yet (it will be set on iter=0)
-	double	v = 2;
+	double	lambda = initial_lambda; // Will be actually set on first iteration.
+	double  rho = 0.5; // value such as lambda is not modified in the first pass
+	double	v = 1; // was 2, changed since it's modified in the first pass.
 	bool    have_to_recompute_H_and_grad = true;
 
 	// -----------------------------------------------------------
@@ -264,9 +268,6 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 
 	for (size_t iter=0;iter<max_iters;++iter)
 	{
-		if (verbose )
-			cout << VERBOSE_PREFIX "Iter: " << iter << " ,total sqr. err: " << total_sqr_err  << ", avrg. err per edge: " << std::sqrt(total_sqr_err/nObservations) << " lambda: " << lambda << endl;
-
 		if (have_to_recompute_H_and_grad)  // This will be false only when the delta leads to a worst solution and only a change in lambda is needed.
 		{
 			have_to_recompute_H_and_grad = false;
@@ -339,57 +340,58 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 			//              Here "i" corresponds to [0,N-1] indices of appearance in the map "*nodes_to_optimize".
 			//  - H_map[i][j] is the entry for the j'th row, with "j" also in the range [0,N-1] as ordered in "*nodes_to_optimize".
 			// ======================================================================
-
-			for (typename gst::graph_t::edges_map_t::const_iterator it=graph.edges.begin();it!=graph.edges.end();++it)
 			{
-				// Sort IDs such as "i" < "j" and we can build just the upper triangular part of the Hessian:
-				const TNodeID i = std::min(it->first.first,it->first.second);
-				const TNodeID j = std::max(it->first.first,it->first.second);
+				size_t idxObs;
+				typename map<TPairNodeIDs,typename gst::TPairJacobs>::const_iterator itJacobPair;
 
-				const set<TNodeID>::const_iterator itI = nodes_to_optimize->find(i);
-				const set<TNodeID>::const_iterator itJ = nodes_to_optimize->find(j);
-				const bool is_i_free_node = itI!=nodes_to_optimize->end();
-				const bool is_j_free_node = itJ!=nodes_to_optimize->end();
-
-				// Indices in the "H_map" vector:
-				const size_t idx_i = is_i_free_node ? std::distance(nodes_to_optimize->begin(),itI) : 0;
-				const size_t idx_j = is_j_free_node ? std::distance(nodes_to_optimize->begin(),itJ) : 0;
-
-				// Leave the pair of Jacobians at hand:
-				typename map<TPairNodeIDs,typename gst::TPairJacobs>::const_iterator itJacobPair = lstJacobians.find(it->first); // look for this pair of IDs
-				ASSERTDEBMSG_(itJacobPair!=lstJacobians.end(),"Needed Jacobian pair was not computed!")
-				// Take references to both Jacobians (wrt pose "i" and pose "j"), taking into account the possible
-				// switch in their order:
-				const typename gst::matrix_VxV_t &J1 = itJacobPair->first.first==i ? itJacobPair->second.first : itJacobPair->second.second;
-				const typename gst::matrix_VxV_t &J2 = itJacobPair->first.first==i ? itJacobPair->second.second : itJacobPair->second.first;
-
-				// Is "i" a free (to be optimized) node? -> Ji^t * Inf *  Ji
-				if (is_i_free_node)
+				for (idxObs=0, itJacobPair=lstJacobians.begin();
+				     idxObs<nObservations;
+				     ++itJacobPair,++idxObs)
 				{
-					typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
-					MRPT_TODO("Take into account the case with information matrix")
-					JtJ.multiply_AtA(J1);
-					H_map[idx_i][idx_i] += JtJ;
-				}
-				// Is "j" a free (to be optimized) node? -> Jj^t * Inf *  Jj
-				if (is_j_free_node)
-				{
-					typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
-					JtJ.multiply_AtA(J2);
-					H_map[idx_j][idx_j] += JtJ;
-				}
-				// Are both "i" and "j" free nodes? -> Ji^t * Inf *  Jj
-				if (is_i_free_node && is_j_free_node)
-				{
-					typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
-					JtJ.multiply_AtB(J1,J2);
-					H_map[idx_j][idx_i] += JtJ;
+					// We sort IDs such as "i" < "j" and we can build just the upper triangular part of the Hessian.
+					const bool edge_straight = itJacobPair->first.first < itJacobPair->first.second;
+
+					// Indices in the "H_map" vector:
+					const size_t idx_i = edge_straight ? observationIndex_to_relatedFreeNodeIndex[idxObs].first  : observationIndex_to_relatedFreeNodeIndex[idxObs].second;
+					const size_t idx_j = edge_straight ? observationIndex_to_relatedFreeNodeIndex[idxObs].second : observationIndex_to_relatedFreeNodeIndex[idxObs].first;
+
+					const bool is_i_free_node = idx_i!=string::npos;
+					const bool is_j_free_node = idx_j!=string::npos;
+
+					// Take references to both Jacobians (wrt pose "i" and pose "j"), taking into account the possible
+					// switch in their order:
+
+					const typename gst::matrix_VxV_t &J1 = edge_straight ? itJacobPair->second.first : itJacobPair->second.second;
+					const typename gst::matrix_VxV_t &J2 = edge_straight ? itJacobPair->second.second : itJacobPair->second.first;
+
+					// Is "i" a free (to be optimized) node? -> Ji^t * Inf *  Ji
+					if (is_i_free_node)
+					{
+						typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
+						MRPT_TODO("Take into account the case with information matrix")
+						JtJ.multiply_AtA(J1);
+						H_map[idx_i][idx_i] += JtJ;
+					}
+					// Is "j" a free (to be optimized) node? -> Jj^t * Inf *  Jj
+					if (is_j_free_node)
+					{
+						typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
+						JtJ.multiply_AtA(J2);
+						H_map[idx_j][idx_j] += JtJ;
+					}
+					// Are both "i" and "j" free nodes? -> Ji^t * Inf *  Jj
+					if (is_i_free_node && is_j_free_node)
+					{
+						typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
+						JtJ.multiply_AtB(J1,J2);
+						H_map[idx_j][idx_i] += JtJ;
+					}
 				}
 			}
 			profiler.leave("optimize_graph_spa_levmarq.sp_H:build map");  // ------------------------------/
 
 			// Just in the first iteration, we need to calculate an estimate for the first value of "lamdba":
-			if (iter==0)
+			if (lambda<=0 && iter==0)
 			{
 				profiler.enter("optimize_graph_spa_levmarq.lambda_init");  // ---\  .
 				double H_diagonal_max = 0;
@@ -410,7 +412,23 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 #if 0
 			{ CMatrixDouble H; sp_H.get_dense(H); H.saveToTextFile("d:\\H.txt"); }
 #endif
+
+
+			// After recomputing H and the grad, we update lambda:
+			lambda *= std::max(0.333, 1-pow(2*rho-1,3.0) );
+			v = 2;
+
+			// JL: Additional ending condition: extremely small lambda:
+			if (lambda<MIN_LAMBDA)
+			{
+				if (verbose ) cout << VERBOSE_PREFIX "End condition #3: lambda < " << MIN_LAMBDA << "\n";
+				break;
+			}
+
 		} // end "have_to_recompute_H_and_grad"
+
+		if (verbose )
+			cout << VERBOSE_PREFIX "Iter: " << iter << " ,total sqr. err: " << total_sqr_err  << ", avrg. err per edge: " << std::sqrt(total_sqr_err/nObservations) << " lambda: " << lambda << endl;
 
 		profiler.enter("optimize_graph_spa_levmarq.sp_H:build"); // ------------------------------\  .
 		// Now, build the actual sparse matrix H:
@@ -468,6 +486,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 		catch (CExceptionNotDefPos &)
 		{
 			// not positive definite so increase mu and try again
+			if (verbose ) cout << VERBOSE_PREFIX "Got non-definite positive matrix, retrying with a larger lambda...\n";
 			lambda *= v;
 			v*= 2;
 			if (lambda>1e9)
@@ -553,9 +572,9 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 				aux+=grad;  // -= (-grad), read the why of the extra "-" sign above.
 				denom = mrpt::math::dotProduct<vector_double,vector_double>(delta,aux);
 			}
-			const double l = (total_sqr_err - new_total_sqr_err) / denom;
+			rho = (total_sqr_err - new_total_sqr_err) / denom;
 
-			if (l>0)
+			if (rho>0)
 			{
 				// Accept the new point:
 				std::swap(new_lstJacobians, lstJacobians);
@@ -564,16 +583,15 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 
 				// Instruct to recompute H and grad from the new Jacobians.
 				have_to_recompute_H_and_grad = true;
-
-				lambda *= std::max(0.33, 1-pow(2*l-1,3) );
-				v = 2;
 			}
 			else
 			{
 				// Nope...
 				// We have to revert the "graph.nodes" to "old_poses_backup"
-				if (verbose ) cout << VERBOSE_PREFIX "Retrying with a larger lambda...\n";
+				for (typename gst::graph_t::global_poses_t::const_iterator it=old_poses_backup.begin();it!=old_poses_backup.end();++it)
+					graph.nodes[it->first] = it->second;
 
+				if (verbose ) cout << VERBOSE_PREFIX "Got larger error=" << new_total_sqr_err << ", retrying with a larger lambda...\n";
 				// Change params and try again:
 				lambda *= v;
 				v*= 2;
