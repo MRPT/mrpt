@@ -99,8 +99,11 @@ namespace mrpt
 			/** The base class "CDirectedGraph<CPOSE>" */
 			typedef mrpt::math::CDirectedGraph< CPOSE > BASE;
 
-			/** The type of PDF poses in the contraints (edges) */
-			typedef CPOSE                               contraint_t;
+			/** The type of PDF poses in the contraints (edges) (=CPOSE template argument) */
+			typedef CPOSE                               constraint_t;
+
+			/** The type of map's implementation (=MAPS_IMPLEMENTATION template argument) */
+			typedef MAPS_IMPLEMENTATION                 maps_implementation_t;
 
 			/** A map from pose IDs to their global coordinates estimates, with uncertainty */
 			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,CPOSE>             global_poses_pdf_t;

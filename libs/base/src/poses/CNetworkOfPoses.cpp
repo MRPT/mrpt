@@ -267,7 +267,7 @@ namespace mrpt
 						// Add to map: ID -> absolute pose:
 						if (g->nodes.find(id)==g->nodes.end())
 						{
-							typename CNetworkOfPoses<CPOSE>::contraint_t::type_value & newNode = g->nodes[id];
+							typename CNetworkOfPoses<CPOSE>::constraint_t::type_value & newNode = g->nodes[id];
 							newNode = CPose2D(p2D); // Auto converted to CPose3D if needed
 						}
 					}
@@ -296,7 +296,7 @@ namespace mrpt
 						// Add to map: ID -> absolute pose:
 						if (g->nodes.find(id)==g->nodes.end())
 						{
-							g->nodes[id] = typename CNetworkOfPoses<CPOSE>::contraint_t::type_value( CPose3D(p3D) ); // Auto converted to CPose2D if needed
+							g->nodes[id] = typename CNetworkOfPoses<CPOSE>::constraint_t::type_value( CPose3D(p3D) ); // Auto converted to CPose2D if needed
 						}
 					}
 					else if ( strCmpI(key,"EDGE2") )

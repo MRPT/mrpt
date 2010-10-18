@@ -40,8 +40,8 @@ using namespace mrpt::random;
 using namespace std;
 
 // This determines the kind of graph and poses to use -------------------
-//typedef CNetworkOfPoses2D   my_graph_t;
-typedef CNetworkOfPoses3D   my_graph_t;
+typedef CNetworkOfPoses2D   my_graph_t;
+//typedef CNetworkOfPoses3D   my_graph_t;
 // ----------------------------------------------------------------------
 
 // adds a new edge to the graph. The edge is annotated with the relative position of the two nodes
@@ -49,6 +49,20 @@ void addEdge(TNodeID from, TNodeID to, const my_graph_t::global_poses_t &real_po
 {
 	my_graph_t::edge_t RelativePose = real_poses.find(to)->second - real_poses.find(from)->second;
 	graph.insertEdge(from,to, RelativePose );
+}
+
+vector_double  log_sq_err_evolution;
+
+template <class EDGE_TYPE, class MAPS_IMPLEMENTATION>
+void my_levmarq_feedback(
+	const typename mrpt::graphslam::graphslam_traits<EDGE_TYPE,MAPS_IMPLEMENTATION>::graph_t &graph,
+	const size_t iter,
+	const size_t max_iter,
+	const double cur_sq_error )
+{
+	log_sq_err_evolution.push_back(std::log(cur_sq_error));
+	if ((iter % 100)==0)
+		cout << "Progress: " << iter << " / " << max_iter << ", total sq err = " << cur_sq_error << endl;
 }
 
 // ------------------------------------------------------
@@ -67,25 +81,35 @@ void GraphSLAMDemo()
 	// ----------------------------
 	// Create a random graph:
 	// ----------------------------
-	const size_t N_VERTEX = 10;
-	const double DIST_THRES = 20;
-	const double NODES_XY_MAX = 30;
+	const size_t N_VERTEX = 50;
+	const double DIST_THRES = 7;
+	const double NODES_XY_MAX = 20;
 
 	// Level of noise in nodes initial positions:
-	const double STD_NOISE_NODE_XYZ = 0.15;
+	const double STD_NOISE_NODE_XYZ = 0.5;
 	const double STD_NOISE_NODE_ANG = DEG2RAD(5);
 
 	// Level of noise in edges:
-	const double STD_NOISE_EDGE_XYZ = 0; //0.02;
-	const double STD_NOISE_EDGE_ANG = 0; //DEG2RAD(1);
+	const double STD_NOISE_EDGE_XYZ = 0; //0.01;
+	const double STD_NOISE_EDGE_ANG = 0; //DEG2RAD(0.1);
 
 
 	for (TNodeID j=0;j<N_VERTEX;j++)
 	{
+#if 0  // Use random nodes
 		CPose2D p(
 			randomGenerator.drawUniform(-NODES_XY_MAX,NODES_XY_MAX),
 			randomGenerator.drawUniform(-NODES_XY_MAX,NODES_XY_MAX),
 			randomGenerator.drawUniform(-M_PI,M_PI) );
+#else
+		// Use evenly distributed nodes:
+		static double ang = 2*M_PI/N_VERTEX;
+		const double R = NODES_XY_MAX + 2 * (j % 2 ? 1:-1);
+		CPose2D p(
+			R*cos(ang*j),
+			R*sin(ang*j),
+			ang);
+#endif
 
 		// Save real pose:
 		real_node_poses[j] = p;
@@ -104,6 +128,9 @@ void GraphSLAMDemo()
 				addEdge(i,j,real_node_poses,graph);
 		}
 	}
+
+	// Cross-links:
+	addEdge(0,N_VERTEX/2,real_node_poses,graph);
 
 	// The root node (the origin of coordinates):
 	graph.root = TNodeID(0);
@@ -142,12 +169,14 @@ void GraphSLAMDemo()
 	//  Run graph slam:
 	// ----------------------------
 	TParametersDouble  params;
-	params["verbose"]  = 1;
+	//params["verbose"]  = 1;
 	params["profiler"] = 1;
+	//params["max_iterations"] = 100000;
 	params["max_iterations"] = 10000;
 
-	graphslam::optimize_graph_spa_levmarq(graph, NULL, params);
+	TResultInfoSpaLevMarq  levmarq_info;
 
+	graphslam::optimize_graph_spa_levmarq(graph, levmarq_info, NULL, params, &my_levmarq_feedback<my_graph_t::constraint_t,my_graph_t::maps_implementation_t>);
 
 	// ----------------------------
 	//  Display results:
@@ -200,14 +229,21 @@ void GraphSLAMDemo()
 
 	{
 		COpenGLScenePtr &scene = win2.get3DSceneAndLock();
-		scene->insert(gl_graph1);
+		scene->insert(gl_graph3);
 		scene->insert(gl_graph4);
 		win2.unlockAccess3DScene();
 		win2.repaint();
 	}
 
+	// Show progress of error:
+	CDisplayWindowPlots  win_err("Evolution of log(sq. error)");
+	win_err.plot(log_sq_err_evolution,"-b");
+	win_err.axis_fit();
+
+
 	// wait end:
-	while (win.isOpen() && win2.isOpen())
+	cout << "Close any window to end...\n";
+	while (win.isOpen() && win2.isOpen() && win_err.isOpen())
 	{
 		mrpt::system::sleep(10);
 	}

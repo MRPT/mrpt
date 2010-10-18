@@ -68,20 +68,20 @@ double computeJacobiansAndErrors(
 	{
 		const typename gst::observation_info_t & obs = lstObservationData[i];
 		typename gst::edge_const_iterator it = obs.edge;
-		const typename gst::graph_t::contraint_t::type_value* EDGE_POSE = obs.edge_mean;
-		typename gst::graph_t::contraint_t::type_value* P1 = obs.P1;
-		typename gst::graph_t::contraint_t::type_value* P2 = obs.P2;
+		const typename gst::graph_t::constraint_t::type_value* EDGE_POSE = obs.edge_mean;
+		typename gst::graph_t::constraint_t::type_value* P1 = obs.P1;
+		typename gst::graph_t::constraint_t::type_value* P2 = obs.P2;
 
 		const TPairNodeIDs                   &ids  = it->first;
 		//const typename gst::graph_t::edge_t  &edge = it->second;
 
 		// Compute the residual pose error of these pair of nodes + its constraint,
 		//  that is: P1DP2inv = P1 * EDGE * inv(P2)
-		typename gst::graph_t::contraint_t::type_value P1DP2inv(UNINITIALIZED_POSE);
+		typename gst::graph_t::constraint_t::type_value P1DP2inv(UNINITIALIZED_POSE);
 		{
-			typename gst::graph_t::contraint_t::type_value P1D(UNINITIALIZED_POSE);
+			typename gst::graph_t::constraint_t::type_value P1D(UNINITIALIZED_POSE);
 			P1D.composeFrom(*P1,*EDGE_POSE);
-			const typename gst::graph_t::contraint_t::type_value P2inv = -(*P2); // Pose inverse (NOT just switching signs!)
+			const typename gst::graph_t::constraint_t::type_value P2inv = -(*P2); // Pose inverse (NOT just switching signs!)
 			P1DP2inv.composeFrom(P1D,P2inv);
 		}
 
@@ -112,8 +112,10 @@ double computeJacobiansAndErrors(
 template <class EDGE_TYPE, class MAPS_IMPLEMENTATION>
 void mrpt::graphslam::optimize_graph_spa_levmarq(
 	CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION>  &graph,
+	TResultInfoSpaLevMarq                           &out_info,
 	const set<TNodeID>         * in_nodes_to_optimize,
-	const mrpt::utils::TParametersDouble  &extra_params
+	const mrpt::utils::TParametersDouble  &extra_params,
+	typename graphslam_traits<EDGE_TYPE,MAPS_IMPLEMENTATION>::TFunctorFeedback  functor_feedback
 	)
 {
 	MRPT_START
@@ -198,7 +200,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 		ASSERTDEBMSG_(itP1!=graph.nodes.end(),"Node1 in an edge does not have a global pose in 'graph.nodes'.")
 		ASSERTDEBMSG_(itP2!=graph.nodes.end(),"Node2 in an edge does not have a global pose in 'graph.nodes'.")
 
-		const typename gst::graph_t::contraint_t::type_value &EDGE_POSE  = mrpt::poses::getPoseMean<typename gst::graph_t::contraint_t,typename gst::graph_t::contraint_t::type_value>(edge);
+		const typename gst::graph_t::constraint_t::type_value &EDGE_POSE  = mrpt::poses::getPoseMean<typename gst::graph_t::constraint_t,typename gst::graph_t::constraint_t::type_value>(edge);
 
 		// Add all the data to the list of relevant observations:
 		typename gst::observation_info_t new_entry;
@@ -265,9 +267,12 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 	//  For notation and overall algorithm overview, see:
 	//  http://www.mrpt.org/Levenberg%E2%80%93Marquardt_algorithm
 	// -----------------------------------------------------------
+	size_t last_iter = 0;
 
 	for (size_t iter=0;iter<max_iters;++iter)
 	{
+		last_iter = iter;
+
 		if (have_to_recompute_H_and_grad)  // This will be false only when the delta leads to a worst solution and only a change in lambda is needed.
 		{
 			have_to_recompute_H_and_grad = false;
@@ -416,6 +421,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 
 			// After recomputing H and the grad, we update lambda:
 			lambda *= std::max(0.333, 1-pow(2*rho-1,3.0) );
+			utils::keep_max(lambda, 1e-200);  // JL: Avoids underflow!
 			v = 2;
 
 			// JL: Additional ending condition: extremely small lambda:
@@ -429,6 +435,13 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 
 		if (verbose )
 			cout << VERBOSE_PREFIX "Iter: " << iter << " ,total sqr. err: " << total_sqr_err  << ", avrg. err per edge: " << std::sqrt(total_sqr_err/nObservations) << " lambda: " << lambda << endl;
+
+		// Feedback to the user:
+		if (functor_feedback)
+		{
+			(*functor_feedback)(graph,iter,max_iters,total_sqr_err);
+		}
+
 
 		profiler.enter("optimize_graph_spa_levmarq.sp_H:build"); // ------------------------------\  .
 		// Now, build the actual sparse matrix H:
@@ -508,7 +521,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 			for (set<TNodeID>::const_iterator it=nodes_to_optimize->begin();it!=nodes_to_optimize->end();++it)
 			{
 				typename gst::graph_t::global_poses_t::const_iterator itP = graph.nodes.find(*it);
-				const typename gst::graph_t::contraint_t::type_value &P = itP->second;
+				const typename gst::graph_t::constraint_t::type_value &P = itP->second;
 				for (size_t i=0;i<DIMS_POSE;i++)
 					x_norm+=square(P[i]);
 			}
@@ -537,7 +550,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 				for (set<TNodeID>::const_iterator it=nodes_to_optimize->begin();it!=nodes_to_optimize->end();++it)
 				{
 					// exp_delta_i = Exp_SE( delta_i )
-					typename gst::graph_t::contraint_t::type_value exp_delta_pose(UNINITIALIZED_POSE);
+					typename gst::graph_t::constraint_t::type_value exp_delta_pose(UNINITIALIZED_POSE);
 					typename gst::Array_O exp_delta;
 					for (size_t i=0;i<DIMS_POSE;i++)
 						exp_delta[i]= - *delta_ptr++;  // The "-" sign is for the missing "-" carried all this time from above
@@ -601,15 +614,21 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 
 	} // end for each iter
 
-
 	profiler.leave("optimize_graph_spa_levmarq (entire)");
+
+
+	// Fill out basic output data:
+	// ------------------------------
+	out_info.num_iters = last_iter;
+	out_info.final_total_sq_error = total_sqr_err;
 
 	MRPT_END
 }
 
 // Explicit instantations:
-template SLAM_IMPEXP void mrpt::graphslam::optimize_graph_spa_levmarq<CPose2D,map_traits_stdmap>(CNetworkOfPoses<CPose2D,map_traits_stdmap >&,const set<TNodeID>*, const mrpt::utils::TParametersDouble  &extra_params);
-template SLAM_IMPEXP void mrpt::graphslam::optimize_graph_spa_levmarq<CPose3D,map_traits_stdmap>(CNetworkOfPoses<CPose3D,map_traits_stdmap >&,const set<TNodeID>*, const mrpt::utils::TParametersDouble  &extra_params);
+#define EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(_POSE,_MAP) template SLAM_IMPEXP void mrpt::graphslam::optimize_graph_spa_levmarq<_POSE,_MAP>(CNetworkOfPoses<_POSE,_MAP>&,TResultInfoSpaLevMarq &out_info, const set<TNodeID>*, const mrpt::utils::TParametersDouble  &extra_params,graphslam_traits<_POSE,_MAP>::TFunctorFeedback  functor_feedback);
 
+EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPose2D,map_traits_stdmap)
+EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPose3D,map_traits_stdmap)
 
 
