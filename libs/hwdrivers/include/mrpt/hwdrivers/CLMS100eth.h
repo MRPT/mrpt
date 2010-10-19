@@ -52,6 +52,10 @@ namespace mrpt
           * - Scan frequency : 25 Hz
           * - Max Range : 20m (imposed by hardware).
           *
+          * <b>Important note:</b> SICK LMS 1xx devices have two levels of configuration. In its present implementation, this class only handles one of them, so
+          *    <b>before using this class</b>, you must "pre-configure" your scanner with the SICK's software "SOAP" (this software ships with the device),
+          *    and set the framerate with this software. Of course, you have to pre-configure the device just once, then save that configuration in its flash memory.
+          *
           * To get a laser scan you must proceed like that :
           * \code
           *     CLMS200Eth laser(string("192.168.0.10"), 1234);
@@ -75,7 +79,7 @@ namespace mrpt
           *   pose_pitch=0
           *   pose_roll=0
           *  \endcode
-          * This class doesn't configure the SICK LMS sensor, it is recomended to configure the sensor via the 
+          * This class doesn't configure the SICK LMS sensor, it is recomended to configure the sensor via the
 	  * the SICK software : SOPAS.
           * \note This class was contributed by Adrien Barral - Robopec (France)
           */
@@ -110,10 +114,10 @@ namespace mrpt
                  */
                 void setSensorPose(CPose3D& _pose);
 
-				/** This method should be called periodically. Period depend on the process_rate in the configuration file.			
+				/** This method should be called periodically. Period depend on the process_rate in the configuration file.
 			 	 */
 				void  doProcess();
-				
+
 				/** Initialize the sensor according to the parameters previously read in the configuration file.
 				 */
 				void initialize();
