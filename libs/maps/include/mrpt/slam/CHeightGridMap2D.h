@@ -219,6 +219,9 @@ namespace mrpt
 			  */
 			bool getMinMaxHeight(float &z_min, float &z_max) const;
 
+			/** Return the number of cells with at least one height data inserted. */
+			size_t countObservedCells() const; 
+
 		protected:
 
 			/** The map representation type of this map.

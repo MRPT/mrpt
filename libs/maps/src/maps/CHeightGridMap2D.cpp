@@ -542,3 +542,22 @@ bool CHeightGridMap2D::intersectLine3D(const TLine3D &ray, TObject3D &obj) const
 	MRPT_END
 }
 
+
+/** Return the number of cells with at least one height data inserted. */
+size_t CHeightGridMap2D::countObservedCells() const
+{
+	switch (m_mapType)
+	{
+	case mrSimpleAverage:
+		{
+			size_t obsCells = 0;
+			const size_t N = m_map.size();
+			for (size_t i=0;i<N;i++)
+				if (m_map[i].w)
+					obsCells++;
+			return obsCells;
+		}
+		break;
+	default: THROW_EXCEPTION("countObservedCells() not implemented for this mapType (!?)")
+	};
+}
