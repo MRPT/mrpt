@@ -330,12 +330,14 @@ IMPLEMENT_OP_FUNCTION(op_levmarq)
 	// Executes the optimization:
 	// --------------------------------
 	TParametersDouble  params;
-	params["verbose"]  = 1;
-	params["profiler"] = 1;
+	params["verbose"]  = verbose;
+	params["profiler"] = verbose;
 	params["max_iterations"] = arg_max_iters.getValue();
 	params["initial_lambda"] = arg_initial_lambda.getValue();
 
-	graphslam::optimize_graph_spa_levmarq(g, NULL, params);
+	graphslam::TResultInfoSpaLevMarq  info;
+
+	graphslam::optimize_graph_spa_levmarq(g,info, NULL, params);
 
 
 	// Output:

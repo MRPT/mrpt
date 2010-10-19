@@ -4,14 +4,25 @@ graph-slam - Command-line Graph-SLAM hub application
 
 =head1 SYNOPSIS
 
- graph-slam  .... [-h]
+   graph-slam  [--info] [--dijkstra] [--levmarq] [--no-span]
+               [--initial-lambda <val>] [--max-iters <N>] [-q] [--view]
+               [--3d] [--2d] [-o <result.graph>] -i <test.graph> [--]
+               [--version] [-h]
 
 
 =head1 USAGE EXAMPLES
 
+B<View Dijkstra-based spanning tree coordinates estimation of a 2D graph file>
+
+graph-slam --2d --dijkstra --view -i I<in.graph>
+
 B<Visualization of a 2D (or 3D) graph file>
 
 graph-slam --2d [or --3d] --view -i I<in.graph>
+
+B<Levenberg-Marquartd optimization of a 3D graph and visualize result>
+
+graph-slam --3d --levmarq --view -i I<in.graph>
 
 
 =head1 DESCRIPTION
@@ -21,8 +32,54 @@ and execute Graph-SLAM methods on them.
 
 These are the supported arguments and operations:
 
+   --info
+     Op: Loads the graph and displays statistics and information on it.
+
+
+   --dijkstra
+     Op: Executes CNetworkOfPoses::dijkstra_nodes_estimate() to estimate
+     the global pose of nodes from a Dijkstra tree and the edge relative
+     poses.
+
+     Can be used together with: --view, --output
+
+   --levmarq
+     Op: Optimizes the graph with sparse Levenberg-Marquartd using global
+     coordinates (via mrpt::graphslam::optimize_graph_spa_levmarq).
+
+     Can be used together with: --view, --output, --max-iters, --no-span,
+     --initial-lambda
+
+   --no-span
+     Don't use dijkstra initial spanning tree guess (optional)
+
+   --initial-lambda <val>
+     Initial lambda parameter (optional, lev-marq)
+
+   --max-iters <N>
+     Maximum number of iterations (optional)
+
    -q,  --quiet
      Terse output
+
+   --view
+     Op: Visualize the graph in a 3D view. If used alone, represent VERTEX2
+     or VERTEX3 poses directly as stored in the input file. If used
+     together with another operation, the final obtained graph after the
+     operation will be shown, not the input original one.
+
+
+   --3d
+     Use 3D poses (Must use exactly one of --2d and --3d)
+
+   --2d
+     Use 2D poses (Must use exactly one of --2d and --3d)
+
+   -o <result.graph>,  --output <result.graph>
+     Output file (optional) (*.graph,*.graphbin)
+
+   -i <test.graph>,  --input <test.graph>
+     (required)  Input file (required) (*.graph,*.graphbin)
 
    --,  --ignore_rest
      Ignores the rest of the labeled arguments following this flag.
@@ -32,7 +89,6 @@ These are the supported arguments and operations:
 
    -h,  --help
      Displays usage information and exits.
-
 
 
 =head1 BUGS

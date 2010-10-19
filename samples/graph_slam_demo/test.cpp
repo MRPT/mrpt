@@ -164,6 +164,8 @@ void GraphSLAMDemo()
 
 	// This is the initial input graph (make a copy for later use):
 	const my_graph_t  graph_initial = graph;
+//	graph_GT.saveToTextFile("test_GT.graph");
+//	graph_initial.saveToTextFile("test.graph");
 
 	// ----------------------------
 	//  Run graph slam:
@@ -174,7 +176,7 @@ void GraphSLAMDemo()
 	//params["max_iterations"] = 100000;
 	params["max_iterations"] = 10000;
 
-	TResultInfoSpaLevMarq  levmarq_info;
+	graphslam::TResultInfoSpaLevMarq  levmarq_info;
 
 	graphslam::optimize_graph_spa_levmarq(graph, levmarq_info, NULL, params, &my_levmarq_feedback<my_graph_t::constraint_t,my_graph_t::maps_implementation_t>);
 
