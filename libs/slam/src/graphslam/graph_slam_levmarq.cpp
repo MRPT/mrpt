@@ -626,9 +626,10 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 }
 
 // Explicit instantations:
-#define EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(_POSE,_MAP) template SLAM_IMPEXP void mrpt::graphslam::optimize_graph_spa_levmarq<_POSE,_MAP>(CNetworkOfPoses<_POSE,_MAP>&,TResultInfoSpaLevMarq &out_info, const set<TNodeID>*, const mrpt::utils::TParametersDouble  &extra_params,graphslam_traits<_POSE,_MAP>::TFunctorFeedback  functor_feedback);
+#define EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(_POSE) \
+	template SLAM_IMPEXP void mrpt::graphslam::optimize_graph_spa_levmarq<_POSE,map_traits_stdmap>(CNetworkOfPoses<_POSE,map_traits_stdmap>&,TResultInfoSpaLevMarq &out_info, const set<TNodeID>*, const mrpt::utils::TParametersDouble  &extra_params,graphslam_traits<_POSE,map_traits_stdmap>::TFunctorFeedback  functor_feedback); \
+	template SLAM_IMPEXP void mrpt::graphslam::optimize_graph_spa_levmarq<_POSE,map_traits_map_as_vector>(CNetworkOfPoses<_POSE,map_traits_map_as_vector>&,TResultInfoSpaLevMarq &out_info, const set<TNodeID>*, const mrpt::utils::TParametersDouble  &extra_params,graphslam_traits<_POSE,map_traits_map_as_vector>::TFunctorFeedback  functor_feedback);
 
-EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPose2D,map_traits_stdmap)
-EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPose3D,map_traits_stdmap)
-
+EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPose2D)
+EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPose3D)
 

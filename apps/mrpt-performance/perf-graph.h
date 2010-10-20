@@ -42,17 +42,17 @@ using namespace std;
 //				Benchmark: Graphs
 // ------------------------------------------------------
 
-template <class EDGE_TYPE>
+template <class EDGE_TYPE,class MAPIMPL>
 double graphs_test_populate(int nEdges, int _N)
 {
 	const long N = _N;
 
-	std::vector< mrpt::poses::CNetworkOfPoses<EDGE_TYPE> > gs(N);
+	std::vector< mrpt::poses::CNetworkOfPoses<EDGE_TYPE,MAPIMPL> > gs(N);
 
 	CTicTac	 tictac;
 	for (long i=0;i<N;i++)
 	{
-		mrpt::poses::CNetworkOfPoses<EDGE_TYPE>  &g = gs[i];
+		mrpt::poses::CNetworkOfPoses<EDGE_TYPE,MAPIMPL>  &g = gs[i];
 		for (int j=0;j<nEdges;++j)
 		{
 			g.insertEdge(j,j+1, EDGE_TYPE() );
@@ -61,17 +61,17 @@ double graphs_test_populate(int nEdges, int _N)
 	return tictac.Tac()/N;
 }
 
-template <class EDGE_TYPE>
+template <class EDGE_TYPE,class MAPIMPL>
 double graphs_test_populate_at_end(int nEdges, int _N)
 {
 	const long N = _N;
 
-	std::vector< mrpt::poses::CNetworkOfPoses<EDGE_TYPE> > gs(N);
+	std::vector< mrpt::poses::CNetworkOfPoses<EDGE_TYPE,MAPIMPL> > gs(N);
 
 	CTicTac	 tictac;
 	for (long i=0;i<N;i++)
 	{
-		mrpt::poses::CNetworkOfPoses<EDGE_TYPE>  &g = gs[i];
+		mrpt::poses::CNetworkOfPoses<EDGE_TYPE,MAPIMPL>  &g = gs[i];
 		for (int j=0;j<nEdges;++j)
 		{
 			//g.insertEdgeAtEnd(j,j+1, EDGE_TYPE() );
@@ -130,31 +130,67 @@ void register_tests_graph()
 {
 	randomGenerator.randomize(1234);
 
-	lstTests.push_back( TestData("graph(2d): insertEdge x 1e3",graphs_test_populate<CPose2D>, 1e3,   100) );
-	lstTests.push_back( TestData("graph(2d): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPose2D>, 1e3,   100) );
-	lstTests.push_back( TestData("graph(2d pdf): insertEdge x 1e3",graphs_test_populate<CPosePDFGaussianInf>, 1e3,   100) );
-	lstTests.push_back( TestData("graph(2d pdf): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPosePDFGaussianInf>, 1e3,   100) );
+	lstTests.push_back( TestData("graph(2d,map): insertEdge x 1e3",graphs_test_populate<CPose2D,map_traits_stdmap>, 1e3,   1000) );
+	lstTests.push_back( TestData("graph(2d,vec): insertEdge x 1e3",graphs_test_populate<CPose2D,map_traits_map_as_vector>, 1e3,   1000) );
 
-	lstTests.push_back( TestData("graph(2d): insertEdge x 1e4",graphs_test_populate<CPose2D>, 1e4,   25) );
-	lstTests.push_back( TestData("graph(2d): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPose2D>, 1e4,   25) );
-	lstTests.push_back( TestData("graph(2d pdf): insertEdge x 1e4",graphs_test_populate<CPosePDFGaussianInf>, 1e4,   25) );
-	lstTests.push_back( TestData("graph(2d pdf): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPosePDFGaussianInf>, 1e4,   25) );
+	lstTests.push_back( TestData("graph(2d,map): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPose2D,map_traits_stdmap>, 1e3,   1000) );
+	lstTests.push_back( TestData("graph(2d,vec): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPose2D,map_traits_map_as_vector>, 1e3,   1000) );
 
-	lstTests.push_back( TestData("graph(3d): insertEdge x 1e3",graphs_test_populate<CPose3D>, 1e3,   100) );
-	lstTests.push_back( TestData("graph(3d): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPose3D>, 1e3,   100) );
-	lstTests.push_back( TestData("graph(3d pdf): insertEdge x 1e3",graphs_test_populate<CPose3DPDFGaussianInf>, 1e3,   100) );
-	lstTests.push_back( TestData("graph(3d pdf): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPose3DPDFGaussianInf>, 1e3,   100) );
+	lstTests.push_back( TestData("graph(2d-pdf,map): insertEdge x 1e3",graphs_test_populate<CPosePDFGaussianInf,map_traits_stdmap>, 1e3,   1000) );
+	lstTests.push_back( TestData("graph(2d-pdf,vec): insertEdge x 1e3",graphs_test_populate<CPosePDFGaussianInf,map_traits_map_as_vector>, 1e3,   1000) );
 
-	lstTests.push_back( TestData("graph(3d): insertEdge x 1e4",graphs_test_populate<CPose3D>, 1e4,   25) );
-	lstTests.push_back( TestData("graph(3d): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPose3D>, 1e4,   25) );
-	lstTests.push_back( TestData("graph(3d pdf): insertEdge x 1e4",graphs_test_populate<CPose3DPDFGaussianInf>, 1e4,   25) );
-	lstTests.push_back( TestData("graph(3d pdf): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPose3DPDFGaussianInf>, 1e4,   25) );
+	lstTests.push_back( TestData("graph(2d-pdf,map): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPosePDFGaussianInf,map_traits_stdmap>, 1e3,   1000) );
+	lstTests.push_back( TestData("graph(2d-pdf,vec): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPosePDFGaussianInf,map_traits_map_as_vector>, 1e3,   1000) );
+
+	lstTests.push_back( TestData("graph(2d,map): insertEdge x 1e4",graphs_test_populate<CPose2D,map_traits_stdmap>, 1e4,   250) );
+	lstTests.push_back( TestData("graph(2d,vec): insertEdge x 1e4",graphs_test_populate<CPose2D,map_traits_map_as_vector>, 1e4,   250) );
+
+	lstTests.push_back( TestData("graph(2d,map): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPose2D,map_traits_stdmap>, 1e4,   250) );
+	lstTests.push_back( TestData("graph(2d,vec): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPose2D,map_traits_map_as_vector>, 1e4,   250) );
+
+	lstTests.push_back( TestData("graph(2d-pdf,map): insertEdge x 1e4",graphs_test_populate<CPosePDFGaussianInf,map_traits_stdmap>, 1e4,   250) );
+	lstTests.push_back( TestData("graph(2d-pdf,vec): insertEdge x 1e4",graphs_test_populate<CPosePDFGaussianInf,map_traits_map_as_vector>, 1e4,   250) );
+
+	lstTests.push_back( TestData("graph(2d-pdf,map): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPosePDFGaussianInf,map_traits_stdmap>, 1e4,   250) );
+	lstTests.push_back( TestData("graph(2d pdf,vec): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPosePDFGaussianInf,map_traits_map_as_vector>, 1e4,   250) );
+
+	lstTests.push_back( TestData("graph(3d,map): insertEdge x 1e3",graphs_test_populate<CPose3D,map_traits_stdmap>, 1e3,   1000) );
+	lstTests.push_back( TestData("graph(3d,vec): insertEdge x 1e3",graphs_test_populate<CPose3D,map_traits_map_as_vector>, 1e3,   1000) );
+
+	lstTests.push_back( TestData("graph(3d,map): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPose3D,map_traits_stdmap>, 1e3,   1000) );
+	lstTests.push_back( TestData("graph(3d,vec): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPose3D,map_traits_map_as_vector>, 1e3,   1000) );
+
+	lstTests.push_back( TestData("graph(3d-pdf,map): insertEdge x 1e3",graphs_test_populate<CPose3DPDFGaussianInf,map_traits_stdmap>, 1e3,   1000) );
+	lstTests.push_back( TestData("graph(3d-pdf,vec): insertEdge x 1e3",graphs_test_populate<CPose3DPDFGaussianInf,map_traits_map_as_vector>, 1e3,   1000) );
+
+	lstTests.push_back( TestData("graph(3d-pdf,map): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPose3DPDFGaussianInf,map_traits_stdmap>, 1e3,   1000) );
+	lstTests.push_back( TestData("graph(3d-pdf,vec): insertEdgeAtEnd x 1e3",graphs_test_populate_at_end<CPose3DPDFGaussianInf,map_traits_map_as_vector>, 1e3,   1000) );
+
+	lstTests.push_back( TestData("graph(3d,map): insertEdge x 1e4",graphs_test_populate<CPose3D,map_traits_stdmap>, 1e4,   250) );
+	lstTests.push_back( TestData("graph(3d,vec): insertEdge x 1e4",graphs_test_populate<CPose3D,map_traits_map_as_vector>, 1e4,   250) );
+
+	lstTests.push_back( TestData("graph(3d,map): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPose3D,map_traits_stdmap>, 1e4,   250) );
+	lstTests.push_back( TestData("graph(3d,vec): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPose3D,map_traits_map_as_vector>, 1e4,   250) );
+
+	lstTests.push_back( TestData("graph(3d-pdf,map): insertEdge x 1e4",graphs_test_populate<CPose3DPDFGaussianInf,map_traits_stdmap>, 1e4,   250) );
+	lstTests.push_back( TestData("graph(3d-pdf,vec): insertEdge x 1e4",graphs_test_populate<CPose3DPDFGaussianInf,map_traits_map_as_vector>, 1e4,   250) );
+
+	lstTests.push_back( TestData("graph(3d-pdf,map): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPose3DPDFGaussianInf,map_traits_stdmap>, 1e4,   250) );
+	lstTests.push_back( TestData("graph(3d-pdf,vec): insertEdgeAtEnd x 1e4",graphs_test_populate_at_end<CPose3DPDFGaussianInf,map_traits_map_as_vector>, 1e4,   250) );
 
 
-	lstTests.push_back( TestData("graph(3d,map): dijkstra 1e2 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 1e2, 50) );
-	lstTests.push_back( TestData("graph(3d,map): dijkstra 1e3 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 1e3, 50) );
-	lstTests.push_back( TestData("graph(3d,map): dijkstra 1e4 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 1e4, 5) );
-//	  lstTests.push_back( TestData("graph(3d,vec): dijkstra 1e2 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 1e2, 50) );
-//	lstTests.push_back( TestData("graph(3d,vec): dijkstra 1e3 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 1e3, 50) );
-//	lstTests.push_back( TestData("graph(3d,vec): dijkstra 1e4 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 1e4, 5) );
+	lstTests.push_back( TestData("graph(3d,map): dijkstra 1e2 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 1e2, 500) );
+	lstTests.push_back( TestData("graph(3d,vec): dijkstra 1e2 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 1e2, 500) );
+
+	lstTests.push_back( TestData("graph(3d,map): dijkstra 1e3 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 1e3, 500) );
+	lstTests.push_back( TestData("graph(3d,vec): dijkstra 1e3 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 1e3, 500) );
+
+	lstTests.push_back( TestData("graph(3d,map): dijkstra 1e4 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 1e4, 50) );
+	lstTests.push_back( TestData("graph(3d,vec): dijkstra 1e4 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 1e4, 50) );
+
+	lstTests.push_back( TestData("graph(3d,map): dijkstra 1e5 nodes",graphs_dijkstra<CPose3D,map_traits_stdmap>, 1e5, 50) );
+	lstTests.push_back( TestData("graph(3d,vec): dijkstra 1e5 nodes",graphs_dijkstra<CPose3D,map_traits_map_as_vector>, 1e5, 50) );
+
+	lstTests.push_back( TestData("graph(2d,map): dijkstra 1e5 nodes",graphs_dijkstra<CPose2D,map_traits_stdmap>, 1e5, 50) );
+	lstTests.push_back( TestData("graph(2d,vec): dijkstra 1e5 nodes",graphs_dijkstra<CPose2D,map_traits_map_as_vector>, 1e5, 50) );
 }

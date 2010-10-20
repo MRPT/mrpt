@@ -100,9 +100,9 @@ namespace mrpt
 			  *
 			  * \sa mrpt::poses::CNetworkOfPoses2D, mrpt::poses::CNetworkOfPoses3D, mrpt::poses::CNetworkOfPoses2DInf, mrpt::poses::CNetworkOfPoses3DInf
 			  */
-			template<class CPOSE>
+			template<class CPOSE,class MAPIMPL>
 			CSetOfObjectsPtr OPENGL_IMPEXP graph_visualize(
-				const mrpt::poses::CNetworkOfPoses<CPOSE> &g,
+				const mrpt::poses::CNetworkOfPoses<CPOSE,MAPIMPL> &g,
 				const mrpt::utils::TParametersDouble &extra_params = mrpt::utils::TParametersDouble()
 				);
 

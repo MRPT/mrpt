@@ -34,7 +34,7 @@
   <a name="0.9.2">
   <h2>Version 0.9.2: (Under development) </h2></a>
 	- <b>Most important changes:</b>
-		- Basic support for Graph-SLAM. Among others, see mrpt::poses::CNetworkOfPoses and the program <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>
+		- Basic support for Graph-SLAM. Among others, see mrpt::poses::CNetworkOfPoses, the new namespace mrpt::graphslam and the program <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>
 		- First working version of Sparse Bundle-Adjustment (see mrpt::vision::bundle_adj_full).
 		- New hardware supported: Phidget kits & Fiber Optic Gyro KVH DSP3000 (both contributed by Adrien Barral, Robopec).
 		- Tons of performance optimizations, mostly in geometry classes.
@@ -70,7 +70,7 @@
 				- mrpt::poses::CNetworkOfPoses3DInf
 				- mrpt::poses::CNetworkOfPoses2DCov
 				- mrpt::poses::CNetworkOfPoses3DCov
-			- (TODO) mrpt::utils::map_as_vector a vector-based implementation of a std::map-like container.
+			- mrpt::utils::map_as_vector a vector-based implementation of a std::map-like container. It can be used as a map implementation optionally in the template mrpt::poses::CNetworkOfPoses<> 
 			- mrpt::utils::CTextFileLinesParser
 			- New event for GUI windows: mrpt::gui::mrptEventMouseDown
 			- New metaprogramming class: mrpt::utils::TEnumType, allows converting between numerical and symbolic text values for enum types.
@@ -111,6 +111,7 @@
 			- mrpt::slam::CGasConcentrationGridMap2D now implements correctly the Kernel DM & DM+V methods as explained in the IROS 2009 paper (see class for refs).
 			- mrpt::utils::CDynamicGrid has new template method getAsMatrix().
 		- New functions:
+			- mrpt::graphslam::optimize_graph_spa_levmarq , a graph-slam implementation in the new namespace mrpt::graphslam
 			- mrpt::math::slerp
 			- mrpt::math::skew_symmetric3 & mrpt::math::skew_symmetric3_neg
 			- mrpt::math::rodrigues_so3_exp

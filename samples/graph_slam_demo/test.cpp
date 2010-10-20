@@ -40,7 +40,11 @@ using namespace mrpt::random;
 using namespace std;
 
 // This determines the kind of graph and poses to use -------------------
+//typedef CNetworkOfPoses<CPose2D,map_traits_map_as_vector>   my_graph_t;
+//typedef CNetworkOfPoses<CPose2D,map_traits_stdmap>   my_graph_t;
 typedef CNetworkOfPoses2D   my_graph_t;
+
+//typedef CNetworkOfPoses<CPose3D,map_traits_map_as_vector>   my_graph_t;
 //typedef CNetworkOfPoses3D   my_graph_t;
 // ----------------------------------------------------------------------
 
@@ -173,8 +177,7 @@ void GraphSLAMDemo()
 	TParametersDouble  params;
 	//params["verbose"]  = 1;
 	params["profiler"] = 1;
-	//params["max_iterations"] = 100000;
-	params["max_iterations"] = 10000;
+	params["max_iterations"] = 3000; //10000;
 
 	graphslam::TResultInfoSpaLevMarq  levmarq_info;
 

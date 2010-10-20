@@ -78,11 +78,10 @@ namespace detail {
 #ifdef _DEBUG
 			ASSERTMSG_(m_matrix!=NULL,"non initialized iterator");
 			if (m_cur_col>=m_matrix->getColCount()) THROW_EXCEPTION("Column index out of range in iterator.")
-			if (!allow_end)
-			{
+			if (!allow_end) {
 				if (m_cur_row>=m_matrix->getRowCount()) { THROW_EXCEPTION("Row index out of range in iterator.") }
-				else if (m_cur_row>m_matrix->getRowCount())  THROW_EXCEPTION("Row index out of range in iterator.")
-			}
+			} else { 
+				if (m_cur_row>m_matrix->getRowCount())  THROW_EXCEPTION("Row index out of range in iterator.") }
 #endif
 		}
 

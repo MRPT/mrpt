@@ -37,9 +37,9 @@ using namespace mrpt::opengl;
 // ============================================
 //           graph_visualize
 // ============================================
-template<class CPOSE>
+template<class CPOSE,class MAPIMPL>
 CSetOfObjectsPtr graph_tools::graph_visualize(
-	const CNetworkOfPoses<CPOSE> &g,
+	const CNetworkOfPoses<CPOSE,MAPIMPL> &g,
 	const TParametersDouble &extra_params
 	)
 {
@@ -65,7 +65,7 @@ CSetOfObjectsPtr graph_tools::graph_visualize(
 		// Estimate bounding box.
 		TPoint3D  BB_min(-10.,-10.,0.), BB_max(10.,10.,0.);
 
-		for (typename CNetworkOfPoses<CPOSE>::global_poses_t::const_iterator itNod = g.nodes.begin();itNod!=g.nodes.end();++itNod)
+		for (typename CNetworkOfPoses<CPOSE,MAPIMPL>::global_poses_t::const_iterator itNod = g.nodes.begin();itNod!=g.nodes.end();++itNod)
 		{
 			const CPose3D p = CPose3D(itNod->second); // Convert to 3D from whatever its real type.
 
@@ -95,7 +95,7 @@ CSetOfObjectsPtr graph_tools::graph_visualize(
 		pnts->setPointSize(nodes_point_size);
 
 		// Add nodes:
-		for (typename CNetworkOfPoses<CPOSE>::global_poses_t::const_iterator itNod = g.nodes.begin();itNod!=g.nodes.end();++itNod)
+		for (typename CNetworkOfPoses<CPOSE,MAPIMPL>::global_poses_t::const_iterator itNod = g.nodes.begin();itNod!=g.nodes.end();++itNod)
 		{
 			const CPose3D p = CPose3D(itNod->second); // Convert to 3D from whatever its real type.
 			pnts->insertPoint(p.x(),p.y(), p.z() );
@@ -109,7 +109,7 @@ CSetOfObjectsPtr graph_tools::graph_visualize(
 	// Show a 2D corner at each node (or just an empty object with the ID label)
 	if (show_node_corners || show_ID_labels)
 	{
-		for (typename CNetworkOfPoses<CPOSE>::global_poses_t::const_iterator itNod = g.nodes.begin();itNod!=g.nodes.end();++itNod)
+		for (typename CNetworkOfPoses<CPOSE,MAPIMPL>::global_poses_t::const_iterator itNod = g.nodes.begin();itNod!=g.nodes.end();++itNod)
 		{
 			const CPose3D p = CPose3D(itNod->second); // Convert to 3D from whatever its real type.
 			CSetOfObjectsPtr gl_corner = show_node_corners ?
@@ -134,14 +134,14 @@ CSetOfObjectsPtr graph_tools::graph_visualize(
 		gl_edges->setColor( col8bit.R*(1./255), col8bit.G*(1./255), col8bit.B*(1./255), col_alpha*(1./255) );
 		gl_edges->setLineWidth( edge_width );
 
-		for (typename CNetworkOfPoses<CPOSE>::const_iterator itEd = g.begin();itEd!=g.end();++itEd)
+		for (typename CNetworkOfPoses<CPOSE,MAPIMPL>::const_iterator itEd = g.begin();itEd!=g.end();++itEd)
 		{
 			const TNodeID id1 = itEd->first.first;
 			const TNodeID id2 = itEd->first.second;
 
 			// Draw only if we have the global coords of both nodes:
-			typename CNetworkOfPoses<CPOSE>::global_poses_t::const_iterator itNod1 = g.nodes.find(id1);
-			typename CNetworkOfPoses<CPOSE>::global_poses_t::const_iterator itNod2 = g.nodes.find(id2);
+			typename CNetworkOfPoses<CPOSE,MAPIMPL>::global_poses_t::const_iterator itNod1 = g.nodes.find(id1);
+			typename CNetworkOfPoses<CPOSE,MAPIMPL>::global_poses_t::const_iterator itNod2 = g.nodes.find(id2);
 			if (itNod1!=g.nodes.end() && itNod2!=g.nodes.end())
 			{
 				const CPose3D p1 = CPose3D(itNod1->second);
@@ -159,10 +159,13 @@ CSetOfObjectsPtr graph_tools::graph_visualize(
 }
 
 // Explicit instantiations:
-template CSetOfObjectsPtr OPENGL_IMPEXP mrpt::opengl::graph_tools::graph_visualize<CPose2D>(const CNetworkOfPoses<CPose2D> &g,const TParametersDouble &extra_params );
-template CSetOfObjectsPtr OPENGL_IMPEXP mrpt::opengl::graph_tools::graph_visualize<CPose3D>(const CNetworkOfPoses<CPose3D> &g,const TParametersDouble &extra_params );
-template CSetOfObjectsPtr OPENGL_IMPEXP mrpt::opengl::graph_tools::graph_visualize<CPosePDFGaussian>(const CNetworkOfPoses<CPosePDFGaussian> &g,const TParametersDouble &extra_params );
-template CSetOfObjectsPtr OPENGL_IMPEXP mrpt::opengl::graph_tools::graph_visualize<CPose3DPDFGaussian>(const CNetworkOfPoses<CPose3DPDFGaussian> &g,const TParametersDouble &extra_params );
-template CSetOfObjectsPtr OPENGL_IMPEXP mrpt::opengl::graph_tools::graph_visualize<CPosePDFGaussianInf>(const CNetworkOfPoses<CPosePDFGaussianInf> &g,const TParametersDouble &extra_params );
-template CSetOfObjectsPtr OPENGL_IMPEXP mrpt::opengl::graph_tools::graph_visualize<CPose3DPDFGaussianInf>(const CNetworkOfPoses<CPose3DPDFGaussianInf> &g,const TParametersDouble &extra_params );
+#define DEFINE_EXPL_INSTNS(_CPOSE) \
+	template CSetOfObjectsPtr OPENGL_IMPEXP mrpt::opengl::graph_tools::graph_visualize<_CPOSE,mrpt::utils::map_traits_stdmap>(const CNetworkOfPoses<_CPOSE,mrpt::utils::map_traits_stdmap> &g,const TParametersDouble &extra_params ); \
+	template CSetOfObjectsPtr OPENGL_IMPEXP mrpt::opengl::graph_tools::graph_visualize<_CPOSE,mrpt::utils::map_traits_map_as_vector>(const CNetworkOfPoses<_CPOSE,mrpt::utils::map_traits_map_as_vector> &g,const TParametersDouble &extra_params );
 
+DEFINE_EXPL_INSTNS(CPose2D)
+DEFINE_EXPL_INSTNS(CPose3D)
+DEFINE_EXPL_INSTNS(CPosePDFGaussian)
+DEFINE_EXPL_INSTNS(CPose3DPDFGaussian)
+DEFINE_EXPL_INSTNS(CPosePDFGaussianInf)
+DEFINE_EXPL_INSTNS(CPose3DPDFGaussianInf)
