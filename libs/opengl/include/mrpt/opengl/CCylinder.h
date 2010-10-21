@@ -64,12 +64,6 @@ namespace opengl	{
 		static CCylinderPtr Create(const float baseRadius,const float topRadius,const float height=1,const int slices=10,const int stacks=10)	{
 			return CCylinderPtr(new CCylinder(baseRadius,topRadius,height,slices,stacks));
 		}
-		/**
-		  * Basic constructor with only one radius. Can only create cylinders, not cones or truncated cones.
-		  */
-		static CCylinderPtr Create(const float radius,const float height=1,const int slices=10,const int stacks=10)	{
-			return CCylinderPtr(new CCylinder(radius,radius,height,slices,stacks));
-		}
 		/** Render
 		  * \sa mrpt::opengl::CRenderizable
 		  */
@@ -123,58 +117,58 @@ namespace opengl	{
 		}
 		/**
 		  * Gets the bottom radius.
-		  */ 
+		  */
 		inline float getBottomRadius() const	{
 			return mBaseRadius;
 		}
 		/**
 		  * Gets the top radius.
-		  */ 
+		  */
 		inline float getTopRadius() const	{
 			return mTopRadius;
 		}
 		/**
 		  * Gets the cylinder's height.
-		  */ 
+		  */
 		inline float getHeight() const	{
 			return mHeight;
 		}
 		/**
 		  * Gets how many slices are used in the cylinder's lateral area and in its bases.
-		  */ 
+		  */
 		inline void setSlicesCount(uint32_t slices)	{
 			mSlices=slices;
 		}
 		/**
 		  * Gets how many stacks are used in the cylinder's lateral area.
-		  */ 
+		  */
 		inline void setStacksCount(uint32_t stacks)	{
 			mStacks=stacks;
 		}
 		/**
 		  * Sets the amount of slices used to display the object.
-		  */ 
+		  */
 		inline uint32_t getSlicesCount() const	{
 			return mSlices;
 		}
 		/**
 		  * Sets the amount of stacks used to display the object.
-		  */ 
+		  */
 		inline uint32_t getStacksCount() const	{
 			return mStacks;
 		}
 	private:
 		/**
 		  * Basic empty constructor. Set all parameters to default.
-		  */ 
+		  */
 		CCylinder():mBaseRadius(1),mTopRadius(1),mHeight(1),mSlices(10),mStacks(10),mHasTopBase(true),mHasBottomBase(true)	{};
 		/**
 		  * Complete constructor. Allows the configuration of every parameter.
-		  */ 
+		  */
 		CCylinder(const float baseRadius,const float topRadius,const float height,const int slices,const int stacks):mBaseRadius(baseRadius),mTopRadius(topRadius),mHeight(height),mSlices(slices),mStacks(stacks),mHasTopBase(true),mHasBottomBase(true)	{};
 		/**
 		  * Destructor.
-		  */ 
+		  */
 		virtual ~CCylinder() {};
 		/**
 		  * Gets the radius of the circunference located at certain height, returning false if the cylinder doesn't get that high.

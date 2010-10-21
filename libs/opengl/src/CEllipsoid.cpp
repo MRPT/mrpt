@@ -75,7 +75,7 @@ void   CEllipsoid::render() const
 			// Compute the new vectors for the ellipsoid:
 			CMatrixDouble 	M;
 			M.multiply_ABt(m_eigVal, m_eigVec);  // m_eigVal * (~m_eigVec)
-			M *= square(m_quantiles);
+			M *= m_quantiles;
 
 
 			glBegin( GL_LINES );
@@ -281,6 +281,7 @@ void CEllipsoid::setCovMatrix( const mrpt::math::CMatrixDouble &m, int resizeToS
 		m_eigVal.Sqrt();
 		// Do the scale at render to avoid recomputing the m_eigVal for different m_quantiles
 	}
+
 
 	MRPT_END
 }

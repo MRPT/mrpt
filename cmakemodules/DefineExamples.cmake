@@ -57,6 +57,7 @@ IF(BUILD_EXAMPLES)
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		display3D
+		opengl_objects_demo
 		imageBasics
 		imageCorrelation
 		random

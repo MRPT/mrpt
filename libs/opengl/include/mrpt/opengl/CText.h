@@ -61,14 +61,15 @@ namespace mrpt
 			void setFont(const std::string &s, int height ) { m_fontName=s; m_fontHeight=height; } //!< Sets the font (It has no effect yet!)
 			std::string getFont() const { return m_fontName; }
 
-			/** Render
-			  */
+			/** Render */
 			void  render() const;
 
-		private:
 
-			/** Constructor
-			  */
+			/** Class factory  */
+			static CTextPtr Create(const std::string &str = std::string("") ) { return CTextPtr( new CText(str) ); }
+
+		private:
+			/** Constructor */
 			CText( const std::string &str = std::string("") );
 
 			/** Private, virtual destructor: only can be deleted from smart pointers */

@@ -33,7 +33,7 @@
 
 namespace mrpt
 {
-	/** The namespace for 3D scene representation and rendering.
+	/** The namespace for 3D scene representation and rendering. See also the <a href="mrpt-opengl.html" > summary</a> of the mrpt-opengl library.
 	  */
 	namespace opengl
 	{
@@ -45,7 +45,7 @@ namespace mrpt
 		  *  The class can be understood as a program to be run over OpenGL, containing a sequence of viewport definitions,
 		  *   rendering primitives, etc...
 		  *
-		  *  In MRPT 0.5.5 this class has been re-structured to contain from 1 to any number of <b>Viewports</b>, each one
+		  *  It can contain from 1 up to any number of <b>Viewports</b>, each one
 		  *   associated a set of OpenGL objects and, optionally, a preferred camera position. Both orthogonal (2D/3D) and projection
 		  *   camera models can be used for each viewport independently, greatly increasing the possibilities of rendered scenes.
 		  *
@@ -172,7 +172,7 @@ namespace mrpt
 			  */
 			void dumpListOfObjects( utils::CStringList  &lst );
 
-			/** Saves the scene to a 3Dscene file, loadable by the application SceneViewer3D 
+			/** Saves the scene to a 3Dscene file, loadable by the application SceneViewer3D
 			  * \sa loadFromFile
 			  * \return false on any error.
 			  */

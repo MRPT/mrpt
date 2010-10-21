@@ -70,9 +70,6 @@ namespace mrpt
 			  */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
 
-			static CDiskPtr Create(float radius,uint32_t slices=50,uint32_t loops=4)	{
-				return CDiskPtr(new CDisk(radius,0,slices,loops));
-			}
 			static CDiskPtr Create(float radiusOut,float radiusIn,uint32_t slices=50,uint32_t loops=4)	{
 				return CDiskPtr(new CDisk(radiusOut,radiusIn,slices,loops));
 			}

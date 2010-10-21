@@ -44,8 +44,8 @@ namespace mrpt
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CMesh, CRenderizable, OPENGL_IMPEXP )
 
-		/** A set of connected colored triangles.
-		  *  This class can be used to draw any solid, arbitrarily complex object (without textures).
+		/** A planar (XY) grid where each cell has an associated height and, optionally, a texture map.
+		  *  A typical usage example would be an elevation map or a 3D model of a terrain.
 		  *  \sa opengl::COpenGLScene
 		  */
 		class OPENGL_IMPEXP CMesh : public CRenderizable
