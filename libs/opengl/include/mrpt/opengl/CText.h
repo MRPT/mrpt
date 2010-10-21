@@ -66,7 +66,7 @@ namespace mrpt
 
 
 			/** Class factory  */
-			static CTextPtr Create(const std::string &str = std::string("") ) { return CTextPtr( new CText(str) ); }
+			static CTextPtr Create(const std::string &str) { return CTextPtr( new CText(str) ); }
 
 		private:
 			/** Constructor */
