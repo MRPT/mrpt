@@ -43,6 +43,13 @@ namespace mrpt
 
 		/** A planar disk in the XY plane.
 		  *  \sa opengl::COpenGLScene
+		  *  
+		  *  <div align="center">
+		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+		  *   <tr> <td> mrpt::opengl::CDisk </td> <td> \image html preview_CDisk.png </td> </tr>
+		  *  </table>
+		  *  </div>
+		  *  
 		  */
 		class OPENGL_IMPEXP CDisk : public CRenderizable
 		{

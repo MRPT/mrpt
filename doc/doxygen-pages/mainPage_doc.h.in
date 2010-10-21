@@ -50,7 +50,7 @@ $MRPT_LIBS_DOT
 Extensive performance tests are automated thanks to the application "mrpt-performance". 
 
 To see the results on different platforms, as well as a comparison between different 
-compilers and platforms, see the <a href="perf-html/"> performance page</a>.
+compilers and platforms, see the <a href="perf-html/index.html"> performance page</a>.
 
 */
 

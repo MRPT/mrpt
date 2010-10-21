@@ -179,10 +179,10 @@ CSetOfObjectsPtr stock_objects::BumblebeeCamera()
 
 	camera->insert( rect );
 
-	CCylinderPtr lCam = opengl::CCylinder::Create( 0.01, 0.003, 10, 10 );
+	CCylinderPtr lCam = opengl::CCylinder::Create( 0.01,0.01, 0.003, 10, 10 );
 	lCam->setColor( 1,0,0 );
 
-	CCylinderPtr rCam = opengl::CCylinder::Create( 0.01, 0.003, 10, 10 );
+	CCylinderPtr rCam = opengl::CCylinder::Create( 0.01,0.01, 0.003, 10, 10 );
 	rCam->setPose( CPose3D(0.12,0,0) );
 	rCam->setColor( 0,0,0 );
 

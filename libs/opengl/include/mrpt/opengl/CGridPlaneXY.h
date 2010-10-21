@@ -42,6 +42,13 @@ namespace mrpt
 
 		/** A grid of lines over the XY plane.
 		  *  \sa opengl::COpenGLScene
+		  *  
+		  *  <div align="center">
+		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+		  *   <tr> <td> mrpt::opengl::CGridPlaneXY </td> <td> \image html preview_CGridPlaneXY.png </td> </tr>
+		  *  </table>
+		  *  </div>
+		  *  
 		  */
 		class OPENGL_IMPEXP CGridPlaneXY : public CRenderizable
 		{

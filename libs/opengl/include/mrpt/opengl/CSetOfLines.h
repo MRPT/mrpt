@@ -46,6 +46,13 @@ namespace mrpt
 
 		/** A set of independent lines (or segments), one line with its own start and end positions (X,Y,Z).
 		  *  \sa opengl::COpenGLScene
+		  *  
+		  *  <div align="center">
+		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+		  *   <tr> <td> mrpt::opengl::CSetOfLines </td> <td> \image html preview_CSetOfLines.png </td> </tr>
+		  *  </table>
+		  *  </div>
+		  *  
 		  */
 		class OPENGL_IMPEXP CSetOfLines : public CRenderizable
 		{

@@ -350,6 +350,77 @@ void TestOpenGLObjects()
 	}
 	off_x+=STEP_X;
 
+	// stock_objects::BumblebeeCamera
+	{
+		{
+			opengl::CSetOfObjectsPtr obj = opengl::stock_objects::BumblebeeCamera();
+			obj->setLocation(off_x,0,0);
+			theScene->insert( obj );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("stock_objects::BumblebeeCamera()");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
+	// stock_objects::CornerXYSimple
+	{
+		{
+			opengl::CSetOfObjectsPtr obj = opengl::stock_objects::CornerXYSimple(1,3);
+			obj->setLocation(off_x,0,0);
+			theScene->insert( obj );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("stock_objects::CornerXYSimple()");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
+	// stock_objects::CornerXYZSimple
+	{
+		{
+			opengl::CSetOfObjectsPtr obj = opengl::stock_objects::CornerXYZSimple(1,3);
+			obj->setLocation(off_x,0,0);
+			theScene->insert( obj );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("stock_objects::CornerXYZSimple()");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
+	// stock_objects::CornerXYZ
+	{
+		{
+			opengl::CSetOfObjectsPtr obj = opengl::stock_objects::CornerXYZ();
+			obj->setLocation(off_x,0,0);
+			theScene->insert( obj );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("stock_objects::CornerXYZ()");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
+	// stock_objects::RobotPioneer
+	{
+		{
+			opengl::CSetOfObjectsPtr obj = opengl::stock_objects::RobotPioneer();
+			obj->setLocation(off_x,0,0);
+			theScene->insert( obj );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("stock_objects::RobotPioneer()");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
+
 	win.setCameraZoom(150);
 
 	// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!

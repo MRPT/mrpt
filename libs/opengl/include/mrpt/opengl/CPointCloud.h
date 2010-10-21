@@ -46,6 +46,13 @@ namespace mrpt
 		  *  This class is just an OpenGL representation of a point cloud. For operating with maps of points, see mrpt::slam::CPointsMap and derived classes.
 		  *
 		  *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene, opengl::CPointCloudColoured, mrpt::slam::CPointsMap
+		  *  
+		  *  <div align="center">
+		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+		  *   <tr> <td> mrpt::opengl::CPointCloud </td> <td> \image html preview_CPointCloud.png </td> </tr>
+		  *  </table>
+		  *  </div>
+		  *  
 		  */
 		class OPENGL_IMPEXP CPointCloud : public CRenderizable
 		{

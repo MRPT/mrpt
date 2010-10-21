@@ -40,24 +40,44 @@ namespace mrpt
 		{
 			/** Returns a representation of a Pioneer II mobile base.
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
+			  *  <div align="center">
+			  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+			  *    <tr> <td> mrpt::opengl::stock_objects::RobotPioneer() </td> <td> \image html preview_stock_objects_RobotPioneer.png </td> </tr>
+			  *  </table>
+			  *  </div>
 			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP RobotPioneer();
 
 			/** Returns three arrows representing a X,Y,Z 3D corner.
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
 			  * \sa CornerXYZSimple, CornerXYSimple
+			  *  <div align="center">
+			  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+			  *    <tr> <td> mrpt::opengl::stock_objects::CornerXYZ() </td> <td> \image html preview_stock_objects_CornerXYZ.png </td> </tr>
+			  *  </table>
+			  *  </div>
 			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP CornerXYZ(float scale=1.0);
 
 			/** Returns three arrows representing a X,Y,Z 3D corner (just thick lines instead of complex arrows for faster rendering than CornerXYZ).
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
 			  * \sa CornerXYZ, CornerXYSimple
+			  *  <div align="center">
+			  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+			  *    <tr> <td> mrpt::opengl::stock_objects::CornerXYZSimple() </td> <td> \image html preview_stock_objects_CornerXYZSimple.png </td> </tr>
+			  *  </table>
+			  *  </div>
 			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP CornerXYZSimple(float scale=1.0, float lineWidth=1.0);
 
 			/** Returns two arrows representing a X,Y 2D corner (just thick lines, fast to render).
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
 			  * \sa CornerXYZSimple, CornerXYZ
+			  *  <div align="center">
+			  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+			  *    <tr> <td> mrpt::opengl::stock_objects::CornerXYSimple() </td> <td> \image html preview_stock_objects_CornerXYSimple.png </td> </tr>
+			  *  </table>
+			  *  </div>
 			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP CornerXYSimple(float scale=1.0, float lineWidth=1.0);
 
@@ -67,6 +87,11 @@ namespace mrpt
 
 			/** Returns a simple 3D model of a PointGrey Bumblebee stereo camera.
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
+			  *  <div align="center">
+			  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+			  *    <tr> <td> mrpt::opengl::stock_objects::BumblebeeCamera() </td> <td> \image html preview_stock_objects_BumblebeeCamera.png </td> </tr>
+			  *  </table>
+			  *  </div>
 			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP BumblebeeCamera();
 

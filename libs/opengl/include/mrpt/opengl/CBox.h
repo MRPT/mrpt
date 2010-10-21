@@ -40,6 +40,13 @@ namespace opengl	{
 	/** A solid or wireframe box in 3D, defined by 6 rectangular faces parallel to the planes X, Y and Z (note that the object can be translated and rotated afterwards as any other CRenderizable object using the "object pose" in the base class).
 	  *
 	  * \sa opengl::COpenGLScene,opengl::CRenderizable
+	  *  
+	  *  <div align="center">
+	  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+	  *   <tr> <td> mrpt::opengl::CBox </td> <td> \image html preview_CBox.png </td> </tr>
+	  *  </table>
+	  *  </div>
+	  *  
 	  */
 	class OPENGL_IMPEXP CBox :public CRenderizable	{
 		DEFINE_SERIALIZABLE(CBox)

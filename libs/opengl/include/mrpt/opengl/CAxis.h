@@ -41,6 +41,13 @@ namespace mrpt
 
 		/** Draw a 3D world axis, with coordinate marks at some regular interval
 		  *  \sa opengl::COpenGLScene
+		  *  
+		  *  <div align="center">
+		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+		  *  <tr> <td> mrpt::opengl::CAxis </td> <td> \image html preview_CAxis.png </td> </tr>
+		  *  </table>
+		  *  </div>
+		  *  
 		  */
 		class OPENGL_IMPEXP CAxis : public CRenderizable
 		{

@@ -42,6 +42,13 @@ namespace mrpt
 
 		/** A grid of lines over the XZ plane.
 		  *  \sa opengl::COpenGLScene
+		  *  
+		  *  <div align="center">
+		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+		  *   <tr> <td> mrpt::opengl::CGridPlaneXZ </td> <td> \image html preview_CGridPlaneXZ.png </td> </tr>
+		  *  </table>
+		  *  </div>
+		  *  
 		  */
 		class OPENGL_IMPEXP CGridPlaneXZ : public CRenderizable
 		{

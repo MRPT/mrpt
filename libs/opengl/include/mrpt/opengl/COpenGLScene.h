@@ -33,7 +33,7 @@
 
 namespace mrpt
 {
-	/** The namespace for 3D scene representation and rendering. See also the <a href="mrpt-opengl.html" > summary</a> of the mrpt-opengl library.
+	/** The namespace for 3D scene representation and rendering. See also the <a href="mrpt-opengl.html" > summary page</a> of the mrpt-opengl library for more info and thumbnails of many of the render primitive.
 	  */
 	namespace opengl
 	{

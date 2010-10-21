@@ -48,6 +48,13 @@ namespace mrpt
 		  *  To load from a points-map, see mrpt::slam::CPointsMap::loadIntoPointCloud().
 		  *
 		  *  \sa opengl::COpenGLScene, opengl::CPointCloud
+		  *  
+		  *  <div align="center">
+		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+		  *   <tr> <td> mrpt::opengl::CPointCloudColoured </td> <td> \image html preview_CPointCloudColoured.png </td> </tr>
+		  *  </table>
+		  *  </div>
+		  *  
 		  */
 		class OPENGL_IMPEXP CPointCloudColoured : public CRenderizable
 		{

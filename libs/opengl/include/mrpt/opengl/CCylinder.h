@@ -37,6 +37,13 @@ namespace opengl	{
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CCylinder,CRenderizable, OPENGL_IMPEXP)
 	/** A cylinder or cone whose base lies in the XY plane.
 	  * \sa opengl::COpenGLScene,opengl::CDisk
+	  *  
+	  *  <div align="center">
+	  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+	  *   <tr> <td> mrpt::opengl::CCylinder </td> <td> \image html preview_CCylinder.png </td> </tr>
+	  *  </table>
+	  *  </div>
+	  *  
 	  */
 	class OPENGL_IMPEXP CCylinder:public CRenderizable	{
 		DEFINE_SERIALIZABLE(CCylinder)
