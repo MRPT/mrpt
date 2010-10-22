@@ -50,11 +50,31 @@ typedef CNetworkOfPoses2D   my_graph_t;
 // ----------------------------------------------------------------------
 
 // adds a new edge to the graph. The edge is annotated with the relative position of the two nodes
-void addEdge(TNodeID from, TNodeID to, const my_graph_t::global_poses_t &real_poses,my_graph_t &graph)
+template <class GRAPH,bool EDGES_ARE_PDF = GRAPH::edge_t::is_PDF_val> struct EdgeAdders;
+
+// Non-PDF version:
+template <class GRAPH> struct EdgeAdders<GRAPH,false>
 {
-	my_graph_t::edge_t RelativePose = real_poses.find(to)->second - real_poses.find(from)->second;
-	graph.insertEdge(from,to, RelativePose );
-}
+	static void addEdge(TNodeID from, TNodeID to, const typename GRAPH::global_poses_t &real_poses,GRAPH &graph)
+	{
+		typename GRAPH::edge_t RelativePose(real_poses.find(to)->second - real_poses.find(from)->second);
+		graph.insertEdge(from,to, RelativePose );
+	}
+};
+// PDF version:
+template <class GRAPH> struct EdgeAdders<GRAPH,true>
+{
+	static void addEdge(TNodeID from, TNodeID to, const typename GRAPH::global_poses_t &real_poses,GRAPH &graph)
+	{
+		CMatrixFixedNumeric<double,3,3> default_cov_inv;
+		default_cov_inv.unit(square(3));
+
+		typename GRAPH::edge_t RelativePose(
+			real_poses.find(to)->second - real_poses.find(from)->second,
+			default_cov_inv);
+		graph.insertEdge(from,to, RelativePose );
+	}
+};
 
 vector_double  log_sq_err_evolution;
 
@@ -125,17 +145,19 @@ void GraphSLAMDemo()
 
 
 	// Add some edges
+	typedef EdgeAdders<my_graph_t> edge_adder_t;
+
 	for (TNodeID i=0;i<N_VERTEX;i++)
 	{
 		for (TNodeID j=i+1;j<N_VERTEX;j++)
 		{
 			if ( real_node_poses[i].distanceTo(real_node_poses[j]) < DIST_THRES )
-				addEdge(i,j,real_node_poses,graph);
+				edge_adder_t::addEdge(i,j,real_node_poses,graph);
 		}
 	}
 
 	// Cross-links:
-	addEdge(0,N_VERTEX/2,real_node_poses,graph);
+	edge_adder_t::addEdge(0,N_VERTEX/2,real_node_poses,graph);
 
 	// The root node (the origin of coordinates):
 	graph.root = TNodeID(0);
@@ -148,13 +170,17 @@ void GraphSLAMDemo()
 
 	// Add noise to edges & nodes:
 	for (my_graph_t::edges_map_t::iterator itEdge=graph.edges.begin();itEdge!=graph.edges.end();++itEdge)
-		itEdge->second += my_graph_t::edge_t( CPose3D(
+	{
+		const my_graph_t::edge_t::type_value delta_noise(CPose3D(
 			randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_XYZ),
 			randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_XYZ),
 			randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_XYZ),
 			randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_ANG),
 			randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_ANG),
-			randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_ANG) ) );
+			randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_ANG) ));
+		itEdge->second += my_graph_t::edge_t(delta_noise);
+	}
+
 
 	for (my_graph_t::global_poses_t::iterator itNode=graph.nodes.begin();itNode!=graph.nodes.end();++itNode)
 		if (itNode->first!=graph.root)

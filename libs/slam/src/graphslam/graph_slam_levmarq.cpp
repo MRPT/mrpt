@@ -632,4 +632,8 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 
 EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPose2D)
 EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPose3D)
+EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPosePDFGaussian)
+EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPosePDFGaussianInf)
+EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPose3DPDFGaussian)
+EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPose3DPDFGaussianInf)
 

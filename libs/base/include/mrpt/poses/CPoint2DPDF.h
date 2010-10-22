@@ -81,6 +81,8 @@ namespace poses
 
 		enum { is_3D_val = 0 };
 		static inline bool is_3D() { return is_3D_val!=0; }
+		enum { is_PDF_val = 1 };
+		static inline bool is_PDF() { return is_PDF_val!=0; }
 
 	}; // End of class def.
 

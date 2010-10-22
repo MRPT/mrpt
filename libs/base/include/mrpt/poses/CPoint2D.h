@@ -44,7 +44,7 @@ namespace poses
 	 *  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint, or refer
 	 *    to the <a href="http://www.mrpt.org/2D_3D_Geometry">2D/3D Geometry tutorial</a> in the wiki.
 	 *
-	 *  <div align=center> 
+	 *  <div align=center>
 	 *   <img src="CPoint2D.gif">
 	 *  </div>
 	 *
@@ -83,6 +83,8 @@ namespace poses
 
 		enum { is_3D_val = 0 };
 		static inline bool is_3D() { return is_3D_val!=0; }
+		enum { is_PDF_val = 0 };
+		static inline bool is_PDF() { return is_PDF_val!=0; }
 
 		 /** @name STL-like methods and typedefs
 		   @{   */

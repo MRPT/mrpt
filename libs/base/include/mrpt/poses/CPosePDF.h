@@ -88,6 +88,8 @@ namespace poses
 
 		enum { is_3D_val = 0 };
 		static inline bool is_3D() { return is_3D_val!=0; }
+		enum { is_PDF_val = 1 };
+		static inline bool is_PDF() { return is_PDF_val!=0; }
 
 		/** Returns a 3D representation of this PDF.
 		  * \note Needs the mrpt-opengl library, and using mrpt::opengl::CSetOfObjectsPtr as template argument.
