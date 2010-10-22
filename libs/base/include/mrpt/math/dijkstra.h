@@ -295,10 +295,11 @@ namespace mrpt
 			void getTreeGraph( tree_graph_t &out_tree ) const
 			{
 				typedef typename tree_graph_t::TEdgeInfo TreeEdgeInfo;
+				typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,TPairNodeIDs> node2pairs_map_t;
 
 				out_tree.clear();
 				out_tree.root = m_source_node_ID;
-				for (std::map<TNodeID, TPairNodeIDs >::const_iterator itArcs=m_prev_arc.begin();itArcs!=m_prev_arc.end();++itArcs)
+				for (typename node2pairs_map_t::const_iterator itArcs=m_prev_arc.begin();itArcs!=m_prev_arc.end();++itArcs)
 				{	// For each saved arc in "m_prev_arc", recover the original data in the input graph and save it to the output tree structure.
 					const TNodeID id      = itArcs->first;
 					const TNodeID id_from = itArcs->second.first;

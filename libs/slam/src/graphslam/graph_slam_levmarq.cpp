@@ -200,7 +200,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 		ASSERTDEBMSG_(itP1!=graph.nodes.end(),"Node1 in an edge does not have a global pose in 'graph.nodes'.")
 		ASSERTDEBMSG_(itP2!=graph.nodes.end(),"Node2 in an edge does not have a global pose in 'graph.nodes'.")
 
-		const typename gst::graph_t::constraint_t::type_value &EDGE_POSE  = mrpt::poses::getPoseMean<typename gst::graph_t::constraint_t,typename gst::graph_t::constraint_t::type_value>(edge);
+		const typename gst::graph_t::constraint_t::type_value &EDGE_POSE  = mrpt::poses::getPoseMean(edge);
 
 		// Add all the data to the list of relevant observations:
 		typename gst::observation_info_t new_entry;

@@ -35,6 +35,8 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussianInf.h>
+#include <mrpt/poses/CPose3DPDFGaussianInf.h>
 
 namespace mrpt
 {
@@ -43,15 +45,18 @@ namespace mrpt
 		/**  @name Helper templates to convert a pose or a pose PDF to its mean value at compile time.
 			 @{
 		  */
-		template <class POSE,class POSEMEAN> inline const POSEMEAN &getPoseMean(const POSE &p);
+		template <class POSE> inline const typename POSE::type_value &getPoseMean(const POSE &p);
 
-		template <> inline const CPose2D &getPoseMean<CPose2D,CPose2D>(const CPose2D &p) { return p;}
-		template <> inline const CPose3D &getPoseMean<CPose3D,CPose3D>(const CPose3D &p) { return p;}
-		template <> inline const CPose3DQuat &getPoseMean<CPose3DQuat,CPose3DQuat>(const CPose3DQuat &p) { return p;}
+		template <> inline const CPose2D &getPoseMean<CPose2D>(const CPose2D &p) { return p;}
+		template <> inline const CPose3D &getPoseMean<CPose3D>(const CPose3D &p) { return p;}
+		template <> inline const CPose3DQuat &getPoseMean<CPose3DQuat>(const CPose3DQuat &p) { return p;}
 
-		template <> inline const CPose2D &getPoseMean<CPosePDFGaussian,CPose2D>(const CPosePDFGaussian &p) { return p.mean;}
-		template <> inline const CPose3D &getPoseMean<CPose3DPDFGaussian,CPose3D>(const CPose3DPDFGaussian &p) { return p.mean;}
-		template <> inline const CPose3DQuat &getPoseMean<CPose3DQuatPDFGaussian,CPose3DQuat>(const CPose3DQuatPDFGaussian &p) { return p.mean;}
+		template <> inline const CPose2D &getPoseMean<CPosePDFGaussian>(const CPosePDFGaussian &p) { return p.mean;}
+		template <> inline const CPose3D &getPoseMean<CPose3DPDFGaussian>(const CPose3DPDFGaussian &p) { return p.mean;}
+		template <> inline const CPose3DQuat &getPoseMean<CPose3DQuatPDFGaussian>(const CPose3DQuatPDFGaussian &p) { return p.mean;}
+
+		template <> inline const CPose2D &getPoseMean<CPosePDFGaussianInf>(const CPosePDFGaussianInf &p) { return p.mean;}
+		template <> inline const CPose3D &getPoseMean<CPose3DPDFGaussianInf>(const CPose3DPDFGaussianInf &p) { return p.mean;}
 		/** @}  */
 
 	} // End of namespace

@@ -61,12 +61,6 @@ namespace poses
 	 */
 	class BASE_IMPEXP CPose3DQuat : public CPose<CPose3DQuat>, public mrpt::utils::CSerializable
 	{
-//		friend class CPose2D;
-//		friend class CPose3D;
-//		friend class CPoint2D;
-//		friend class CPoint3D;
-//		friend std::ostream BASE_IMPEXP & operator << (std::ostream& o, const CPose3DQuat& p);
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPose3DQuat )
 
@@ -258,8 +252,11 @@ namespace poses
 			) const;
 
 	public:
+		typedef CPose3DQuat type_value; //!< Used to emulate CPosePDF types, for example, in CNetworkOfPoses
 		enum { is_3D_val = 1 };
 		static inline bool is_3D() { return is_3D_val!=0; }
+		enum { rotation_dimensions = 3 };
+
 
 		/** @name STL-like methods and typedefs
 		   @{   */

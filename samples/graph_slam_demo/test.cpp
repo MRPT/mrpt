@@ -43,6 +43,7 @@ using namespace std;
 //typedef CNetworkOfPoses<CPose2D,map_traits_map_as_vector>   my_graph_t;
 //typedef CNetworkOfPoses<CPose2D,map_traits_stdmap>   my_graph_t;
 typedef CNetworkOfPoses2D   my_graph_t;
+//typedef CNetworkOfPoses2DInf  my_graph_t;
 
 //typedef CNetworkOfPoses<CPose3D,map_traits_map_as_vector>   my_graph_t;
 //typedef CNetworkOfPoses3D   my_graph_t;
