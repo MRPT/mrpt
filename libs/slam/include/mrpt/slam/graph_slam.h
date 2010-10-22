@@ -46,6 +46,7 @@ namespace mrpt
 		{
 			typedef mrpt::poses::CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION>  graph_t;
 			typedef typename graph_t::edges_map_t::const_iterator   edge_const_iterator;
+			typedef EDGE_TYPE                                       edge_t;
 			typedef typename EDGE_TYPE::type_value                  edge_poses_type;
 			typedef mrpt::poses::SE_traits<edge_poses_type::rotation_dimensions> SE_TYPE;
 			typedef typename SE_TYPE::matrix_VxV_t                  matrix_VxV_t;
@@ -92,6 +93,8 @@ namespace mrpt
 		  * List of optional parameters by name in "extra_params":
 		  *		- "verbose": (default=0) If !=0, produce verbose ouput.
 		  *		- "max_iterations": (default=100) Maximum number of Lev-Marq. iterations.
+		  *
+		  * \note The following graph types are supported: mrpt::poses::CNetworkOfPoses2D, mrpt::poses::CNetworkOfPoses3D, mrpt::poses::CNetworkOfPoses2DInf, mrpt::poses::CNetworkOfPoses3DInf
 		  *
 		  * \tparam EDGE_TYPE The type of the edges. Typically users won't have to write this template argument by hand, since the compiler will auto-fit it depending on the type of the graph object.
 		  * \tparam MAPS_IMPLEMENTATION The implementation for the map: NodeID -> node_pose. Read more on this in mrpt::poses::CNetworkOfPoses

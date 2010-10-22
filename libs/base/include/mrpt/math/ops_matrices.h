@@ -313,14 +313,22 @@ namespace mrpt
 		template<class MATRIX1, class OTHERVECTOR1,class OTHERVECTOR2>
 		void multiply_Ab(const MATRIX1 &m, const OTHERVECTOR1 &vIn,OTHERVECTOR2 &vOut,bool accumToOutput ) {
 			MRPT_START
-			size_t N=m.getRowCount();
-			size_t M=m.getColCount();
+			const size_t N=m.getRowCount(), M =m.getColCount();
 			ASSERT_(vIn.size()==M)
-			vOut.resize(N);
-			if (!accumToOutput) for (size_t i=0;i<N;++i) vOut[i]=typename OTHERVECTOR2::value_type(0);
-			for (size_t i=0;i<N;++i)	{
-				typename MATRIX1::value_type &accum=vOut[i];
-				for (size_t j=0;j<M;++j) accum+=m.get_unsafe(i,j)*vIn[j];
+			if (reinterpret_cast<const void*>(&vIn)!=reinterpret_cast<const void*>(&vOut)) {
+				vOut.resize(N);
+				for (size_t i=0;i<N;++i)	{
+					typename MATRIX1::value_type accum = accumToOutput ? (typename MATRIX1::value_type(vOut[i])) : 0;
+					for (size_t j=0;j<M;++j) accum+=m.get_unsafe(i,j)*vIn[j];
+					vOut[i]=accum;
+				}
+			} else { // in==out, we need to make a temporary copy:
+				const OTHERVECTOR1 cpy_in(vIn);
+				for (size_t i=0;i<N;++i)	{
+					typename MATRIX1::value_type accum = accumToOutput ? (typename MATRIX1::value_type(vOut[i])) : 0;
+					for (size_t j=0;j<M;++j) accum+=m.get_unsafe(i,j)*cpy_in[j];
+					vOut[i]=accum;
+				}
 			}
 			MRPT_END
 		}
@@ -329,14 +337,22 @@ namespace mrpt
 		template<class MATRIX1, class OTHERVECTOR1,class OTHERVECTOR2>
 		void multiply_Atb(const MATRIX1 &m, const OTHERVECTOR1 &vIn,OTHERVECTOR2 &vOut,bool accumToOutput ) {
 			MRPT_START
-			size_t N=m.getColCount();
-			size_t M=m.getRowCount();
+			const size_t N=m.getColCount(), M =m.getRowCount();
 			ASSERT_(vIn.size()==M)
-			vOut.resize(N);
-			if (!accumToOutput) for (size_t i=0;i<N;++i) vOut[i]=typename OTHERVECTOR2::value_type(0);
-			for (size_t i=0;i<N;++i)	{
-				typename MATRIX1::value_type &accum=vOut[i];
-				for (size_t j=0;j<M;++j) accum+=m.get_unsafe(j,i)*vIn[j];
+			if (reinterpret_cast<const void*>(&vIn)!=reinterpret_cast<const void*>(&vOut)) {
+				vOut.resize(N);
+				for (size_t i=0;i<N;++i)	{
+					typename MATRIX1::value_type accum = accumToOutput ? (typename MATRIX1::value_type(vOut[i])) : 0;
+					for (size_t j=0;j<M;++j) accum+=m.get_unsafe(j,i)*vIn[j];
+					vOut[i]=accum;
+				}
+			} else { // in==out, we need to make a temporary copy:
+				const OTHERVECTOR1 cpy_in(vIn);
+				for (size_t i=0;i<N;++i)	{
+					typename MATRIX1::value_type accum = accumToOutput ? (typename MATRIX1::value_type(vOut[i])) : 0;
+					for (size_t j=0;j<M;++j) accum+=m.get_unsafe(j,i)*cpy_in[j];
+					vOut[i]=accum;
+				}
 			}
 			MRPT_END
 		}
@@ -739,7 +755,7 @@ namespace mrpt
 			MRPT_END
 		}
 
-		/**	RES = A*B*C   \sa multiply_ABCt */
+		/**	RES = A*B*C   \sa multiply_ABCt, multiply_AtBC */
 		template <class MAT_A,class MAT_B,class MAT_C,class MAT_OUT>
 		void multiply_ABC(const MAT_A &A, const MAT_B &B, const MAT_C &C, MAT_OUT & RES)
 		{
@@ -780,6 +796,28 @@ namespace mrpt
 						sumAccumInner += A.get_unsafe(i,k) * B.get_unsafe(k,l);
 					for (size_t j=0;j<NCOLS;j++)
 						RES.get_unsafe(i,j) += sumAccumInner * C.get_unsafe(j,l);
+				}
+		}
+
+		/**	RES = (A^t)*B*C   \sa multiply_ABCt, multiply_ABC */
+		template <class MAT_A,class MAT_B,class MAT_C,class MAT_OUT>
+		void multiply_AtBC(const MAT_A &A, const MAT_B &B, const MAT_C &C, MAT_OUT & RES)
+		{
+			const size_t NROWS = A.getRowCount(); // A: (NROWS x N1)^t
+			const size_t N1    = B.getRowCount(); // B: N1 x N2
+			const size_t N2    = B.getColCount(); // C: NCOLS x N2
+			const size_t NCOLS = C.getColCount();
+			ASSERT_( A.getRowCount()==B.getRowCount() && B.getColCount()==C.getRowCount() )
+
+			RES.zeros();
+			for (size_t i=0;i<NROWS;i++)
+				for (size_t l=0;l<N2;l++)
+				{
+					typename MAT_OUT::value_type sumAccumInner = 0;
+					for (size_t k=0;k<N1;k++)
+						sumAccumInner += A.get_unsafe(k,i) * B.get_unsafe(k,l);
+					for (size_t j=0;j<NCOLS;j++)
+						RES.get_unsafe(i,j) += sumAccumInner * C.get_unsafe(l,j);
 				}
 		}
 

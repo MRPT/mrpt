@@ -44,9 +44,60 @@ using namespace std;
      - "Efficient Sparse Pose Adjustment for 2D Mapping", Kurt Konolige et al., 2010.
 
    But modified in:
-     - It's generalized for not only 2D but 2D and 3D poses.
+     - It's generalized for not only 2D but 2D and 3D poses, without covariances, with covariances and with information matrices.
 	 - It uses on-manifold optimization, specially different for the 3D case.
+
+   The entry point to the user is mrpt::graphslam::optimize_graph_spa_levmarq()
 */
+
+MRPT_TODO("Check: Large information matrices make convergence MUCH faster, why?")
+
+
+// An auxiliary struct to compute the pseudo-ln of a pose error, possibly modified with an information matrix.
+//  Specializations are below.
+template <class EDGE,class gst> struct AuxErrorEval;
+
+template <class gst> struct AuxErrorEval<CPose2D,gst> {
+	template <class POSE,class VEC> 
+	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { typename gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
+
+	template <class MAT,class EDGE_ITERATOR> 
+	static inline void 	multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtA(J1); }
+
+	template <class MAT,class EDGE_ITERATOR> 
+	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtB(J1,J2); }
+};
+
+template <class gst> struct AuxErrorEval<CPose3D,gst> {
+	template <class POSE,class VEC> 
+	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { typename gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
+
+	template <class MAT,class EDGE_ITERATOR> 
+	static inline void multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtA(J1); }
+
+	template <class MAT,class EDGE_ITERATOR> 
+	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtB(J1,J2); }
+};
+
+template <class gst> struct AuxErrorEval<CPosePDFGaussianInf,gst> {
+	template <class POSE,class VEC> 
+	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { typename gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
+
+	template <class MAT,class EDGE_ITERATOR> 
+	static inline void multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtBC(J1,edge->second.cov_inv,J1); }
+	template <class MAT,class EDGE_ITERATOR> 
+	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtBC(J1,edge->second.cov_inv,J2); }
+};
+
+template <class gst> struct AuxErrorEval<CPose3DPDFGaussianInf,gst> {
+	template <class POSE,class VEC> 
+	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { typename gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
+
+	template <class MAT,class EDGE_ITERATOR> 
+	static inline void multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtBC(J1,edge->second.cov_inv,J1); }
+	template <class MAT,class EDGE_ITERATOR> 
+	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtBC(J1,edge->second.cov_inv,J2); }
+};
 
 // Compute, at once, jacobians and the error vectors for each constraint in "lstObservationData", returns the overall squared error.
 template <class ET, class MI>
@@ -73,7 +124,7 @@ double computeJacobiansAndErrors(
 		typename gst::graph_t::constraint_t::type_value* P2 = obs.P2;
 
 		const TPairNodeIDs                   &ids  = it->first;
-		//const typename gst::graph_t::edge_t  &edge = it->second;
+		const typename gst::graph_t::edge_t  &edge = it->second;
 
 		// Compute the residual pose error of these pair of nodes + its constraint,
 		//  that is: P1DP2inv = P1 * EDGE * inv(P2)
@@ -88,7 +139,7 @@ double computeJacobiansAndErrors(
 		// Add to vector of errors:
 		{
 			errs.resize(errs.size()+1);
-			gst::SE_TYPE::pseudo_ln(P1DP2inv, errs[errs.size()-1]);
+			AuxErrorEval<gst::edge_t,gst>::computePseudoLnError(P1DP2inv, errs[errs.size()-1]);
 		}
 
 		// Compute the jacobians:
@@ -373,22 +424,21 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 					if (is_i_free_node)
 					{
 						typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
-						MRPT_TODO("Take into account the case with information matrix")
-						JtJ.multiply_AtA(J1);
+						AuxErrorEval<gst::edge_t,gst>::multiplyJtLambdaJ(J1,JtJ,lstObservationData[idxObs].edge);
 						H_map[idx_i][idx_i] += JtJ;
 					}
 					// Is "j" a free (to be optimized) node? -> Jj^t * Inf *  Jj
 					if (is_j_free_node)
 					{
 						typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
-						JtJ.multiply_AtA(J2);
+						AuxErrorEval<gst::edge_t,gst>::multiplyJtLambdaJ(J2,JtJ,lstObservationData[idxObs].edge);
 						H_map[idx_j][idx_j] += JtJ;
 					}
 					// Are both "i" and "j" free nodes? -> Ji^t * Inf *  Jj
 					if (is_i_free_node && is_j_free_node)
 					{
 						typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
-						JtJ.multiply_AtB(J1,J2);
+						AuxErrorEval<gst::edge_t,gst>::multiplyJ1tLambdaJ2(J1,J2,JtJ,lstObservationData[idxObs].edge);
 						H_map[idx_j][idx_i] += JtJ;
 					}
 				}
@@ -590,9 +640,9 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 			if (rho>0)
 			{
 				// Accept the new point:
-				std::swap(new_lstJacobians, lstJacobians);
-				std::swap(new_errs, errs);
-				std::swap(new_total_sqr_err, total_sqr_err);
+				new_lstJacobians.swap(lstJacobians);
+				new_errs.swap(errs);
+				std::swap( new_total_sqr_err, total_sqr_err);
 
 				// Instruct to recompute H and grad from the new Jacobians.
 				have_to_recompute_H_and_grad = true;
@@ -632,8 +682,6 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 
 EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPose2D)
 EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPose3D)
-EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPosePDFGaussian)
 EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPosePDFGaussianInf)
-EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPose3DPDFGaussian)
 EXPLICIT_INSTANTIATE_optimize_graph_spa_levmarq(CPose3DPDFGaussianInf)
 

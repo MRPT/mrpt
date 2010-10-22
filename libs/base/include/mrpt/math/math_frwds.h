@@ -273,6 +273,9 @@ namespace mrpt
 		template <class MAT_A,class MAT_B,class MAT_C> \
 		void multiply_ABCt(const MAT_A &A, const MAT_B &B, const MAT_C &C) /*!< this = A*B*(C<sup>T</sup>) */ { \
 			mrpt::math::detail::multiply_ABCt(A,B,C, *this); } \
+		template <class MAT_A,class MAT_B,class MAT_C> \
+		void multiply_AtBC(const MAT_A &A, const MAT_B &B, const MAT_C &C) /*!< this = A(<sup>T</sup>)*B*C */ { \
+			mrpt::math::detail::multiply_AtBC(A,B,C, *this); } \
 		template <class MAT_A,class MAT_B> \
 		inline void multiply_ABt(const MAT_A &A,const MAT_B &B) /*!< this = A * B<sup>T</sup> */ { \
 			mrpt::math::detail::multiply_ABt(A,B,*this); } \
@@ -453,6 +456,8 @@ namespace mrpt
 				void multiply_ABC(const MAT_A &A, const MAT_B &B, const MAT_C &C, MAT_OUT & RES);
 			template <class MAT_A,class MAT_B,class MAT_C,class MAT_OUT>
 				void multiply_ABCt(const MAT_A &A, const MAT_B &B, const MAT_C &C, MAT_OUT & RES);
+			template <class MAT_A,class MAT_B,class MAT_C,class MAT_OUT>
+				void multiply_AtBC(const MAT_A &A, const MAT_B &B, const MAT_C &C, MAT_OUT & RES);
 
 			template <class MAT_A,class MAT_B,class MAT_OUT>
 				void multiply_ABt(const MAT_A &A,const MAT_B &B, MAT_OUT &out);
