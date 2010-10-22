@@ -138,7 +138,7 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 		//CObservation3DRangeScanPtr o = CObservation3DRangeScanPtr(obs);
 			
 		faceDetector.detectObjects( o, detected );
-			
+				//static int x = 0;			
 		
 		if ( detected.size() > 0 )
 		{	
@@ -192,12 +192,16 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 
 				o->intensityImage.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );	
 
-				if ( showEachDetectedFace )
-					system::pause();
+				//x++;
+				//if (( showEachDetectedFace ) && ( x > 430 ) )
+					//system::pause();
 			}
 		}
 
 		win.showImage(o->intensityImage);			
+
+		/*if (( showEachDetectedFace ) && ( detected.size() ))
+				system::pause();*/
 
 		win3D.get3DSceneAndLock();
 		CColouredPointsMap pntsMap;

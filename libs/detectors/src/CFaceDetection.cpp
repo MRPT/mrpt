@@ -100,7 +100,7 @@ void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 	m_options.confidenceThreshold	= cfg.read_int( "FaceDetection", "confidenceThreshold", 240 );
 	m_options.planeThreshold		= cfg.read_double( "FaceDetection", "planeThreshold", 50 );
 	m_options.planeEigenValThreshold_up		= cfg.read_double( "FaceDetection", "planeEigenValThreshold_up", 0.011 );
-	m_options.planeEigenValThreshold_down	= cfg.read_double( "FaceDetection", "planeEigenValThreshold_down", 0.0004 );
+	m_options.planeEigenValThreshold_down	= cfg.read_double( "FaceDetection", "planeEigenValThreshold_down", 0.0002 );
 	m_options.regionsThreshold		= cfg.read_double( "FaceDetection", "regionsThreshold", 0.5 );
 	m_options.multithread			= cfg.read_bool( "FaceDetection", "multithread", true );
 	m_options.useCovFilter			= cfg.read_bool( "FaceDetection", "useCovFilter", true );
@@ -381,7 +381,8 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 			CArrayDouble<3> aux;
 
 			if ( (!confidence) || (( confidence ) &&
-				( *(face->confidenceImage.get_unsafe( k, j, 0 )) > m_options.confidenceThreshold )) )
+				( *(face->confidenceImage.get_unsafe( k, j, 0 )) > m_options.confidenceThreshold ) 
+				&& ( *(face->intensityImage.get_unsafe( k, j )) > 50 )))
 			{
 				int position = faceWidth*j + k;
 				aux[0] = face->points3D_x[position];
@@ -702,9 +703,9 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 				&& ( *(face->intensityImage.get_unsafe( c, r )) > 50) )
 			{
 				unsigned int row, col;
-				if ( r < sectionVSize + faceHeight*0.1)
+				if ( r < sectionVSize + upLimit*0.3)
 					row = 0;
-				else if ( r < sectionVSize*2 - faceHeight*0.1 )
+				else if ( r < sectionVSize*2 - upLimit*0.15 )
 					row = 1;
 				else
 					row = 2;
@@ -784,6 +785,8 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	if ( regions2[2].size() > 0 )
 		meanPos[0][2].x = oldPointsX2.at(middle2);
 
+	//experimental_viewRegions( regions2, meanPos );
+
 	/*
 	cout << endl << meanDepth[0][0] << "\t" << meanDepth[0][1] << "\t" << meanDepth[0][2];
 	cout << endl << meanDepth[1][0] << "\t" << meanDepth[1][1] << "\t" << meanDepth[1][2];
@@ -820,6 +823,10 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	res	 = res && checkRelativePosition( meanPos[0][0], meanPos[0][2], meanPos[0][1] );
 	res	 = res && checkRelativePosition( meanPos[0][0], meanPos[2][2], meanPos[1][1] );
 	res	 = res && checkRelativePosition( meanPos[2][0], meanPos[0][2], meanPos[1][1] );
+
+	//experimental_viewRegions( regions2, meanPos );
+
+	//cout << endl << endl << endl << m_measure.faceNum << endl << endl << endl;
 
 	if ( res )
 		return true; //cout << "BIEN" << endl;
@@ -866,6 +873,15 @@ bool CFaceDetection::checkRelativePosition( const TPoint3D &p1, const TPoint3D &
 	double y = p.x;
 
 	double yIdeal = y1 + ( ((x-x1)*(y2-y1)) / (x2-x1) );
+
+	//////////////////////////////////
+
+	double xaux = x2;
+	double yaux = y1;
+
+	cout << "Grados= " << RAD2DEG(acos( (xaux-x1)/(sqrt(pow(x1-x2,2)+pow(y1-y2,2))) )) << endl;
+
+	///////////////////////////////////////
 
 	if (  y < yIdeal )
 		return true;
@@ -983,7 +999,7 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 
 	double meanDepth = sumDepth / total;
 
-	/*if (  m_measure.faceNum > 838 )
+	/*if (  m_measure.faceNum == 434  )
 		experimental_viewFacePointsScanned( *face );*/
 
 	//experimental_viewFacePointsScanned( points );
@@ -1276,6 +1292,23 @@ void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9]
 			}
 	}
 
+	vector<TSegment3D> sgms;
+	sgms.push_back( TSegment3D(meanPos[0][0],meanPos[0][1]) );
+	sgms.push_back( TSegment3D(meanPos[0][1],meanPos[0][2]) );
+	sgms.push_back( TSegment3D(meanPos[1][0],meanPos[1][1]) );
+	sgms.push_back( TSegment3D(meanPos[1][1],meanPos[1][2]) );
+	sgms.push_back( TSegment3D(meanPos[2][0],meanPos[2][1]) );
+	sgms.push_back( TSegment3D(meanPos[2][1],meanPos[2][2]) );
+	sgms.push_back( TSegment3D(meanPos[0][0],meanPos[1][1]) );
+	sgms.push_back( TSegment3D(meanPos[1][1],meanPos[2][2]) );
+	sgms.push_back( TSegment3D(meanPos[2][0],meanPos[1][1]) );
+	sgms.push_back( TSegment3D(meanPos[1][1],meanPos[0][2]) );
+	mrpt::opengl::CSetOfLinesPtr lines = mrpt::opengl::CSetOfLines::Create( sgms );
+	lines->setColor(0,0,1,1);
+	lines->setLineWidth( 10 );
+
+	scene->insert( lines );
+
 	scene->insert( gl_points );
 	scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
 	scene->insert(mrpt::opengl::CAxis::Create(-5,-5,-5,5,5,5,2.5,3,true));
@@ -1307,6 +1340,7 @@ void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9]
 	}
 
 	gl_points->loadFromPointsMap(&pntsMap);
+	//gl_points->setColorA(0.5);
 
 	win3D.unlockAccess3DScene();
 	win3D.repaint();
