@@ -37,31 +37,14 @@ using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::math;
 
-
 // Helper macros to make less tedius defining explicit instantiations of detail functions:
-#define NO_CONST   // Just because a macro can't have an empty input!
-#define DO_1_INSTANCE_1(_CPOSE,_RET,_NAM,__ARG1MOD) \
-	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<_CPOSE,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<_CPOSE,map_traits_stdmap > *g); \
-	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<_CPOSE,map_traits_map_as_vector >(__ARG1MOD CNetworkOfPoses<_CPOSE,map_traits_map_as_vector > *g);
-#define DO_EXPLICIT_INSTANTIATIONS_1(_RET,_NAM,__ARG1MOD) \
-	DO_1_INSTANCE_1(CPose2D,_RET,_NAM,__ARG1MOD) \
-	DO_1_INSTANCE_1(CPose3D,_RET,_NAM,__ARG1MOD) \
-	DO_1_INSTANCE_1(CPosePDFGaussian,_RET,_NAM,__ARG1MOD) \
-	DO_1_INSTANCE_1(CPose3DPDFGaussian,_RET,_NAM,__ARG1MOD) \
-	DO_1_INSTANCE_1(CPosePDFGaussianInf,_RET,_NAM,__ARG1MOD) \
-	DO_1_INSTANCE_1(CPose3DPDFGaussianInf,_RET,_NAM,__ARG1MOD)
-
-#define DO_1_INSTANCE_2(_CPOSE,_RET,_NAM,__ARG1MOD, __ARG2) \
-	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<_CPOSE,map_traits_stdmap >(__ARG1MOD CNetworkOfPoses<_CPOSE,map_traits_stdmap > *g, __ARG2); \
-	template _RET BASE_IMPEXP mrpt::poses::detail::_NAM<_CPOSE,map_traits_map_as_vector >(__ARG1MOD CNetworkOfPoses<_CPOSE,map_traits_map_as_vector > *g, __ARG2); 
-#define DO_EXPLICIT_INSTANTIATIONS_2(_RET,_NAM,__ARG1MOD, __ARG2) \
-	DO_1_INSTANCE_2(CPose2D,_RET,_NAM,__ARG1MOD, __ARG2) \
-	DO_1_INSTANCE_2(CPose3D,_RET,_NAM,__ARG1MOD, __ARG2) \
-	DO_1_INSTANCE_2(CPosePDFGaussian,_RET,_NAM,__ARG1MOD, __ARG2) \
-	DO_1_INSTANCE_2(CPose3DPDFGaussian,_RET,_NAM,__ARG1MOD, __ARG2) \
-	DO_1_INSTANCE_2(CPosePDFGaussianInf,_RET,_NAM,__ARG1MOD, __ARG2) \
-	DO_1_INSTANCE_2(CPose3DPDFGaussianInf,_RET,_NAM,__ARG1MOD, __ARG2)
-	
+#define REPEAT_FOR_EACH_EDGETYPE(_DECL_) \
+	_DECL_(CPose2D) \
+	_DECL_(CPose3D) \
+	_DECL_(CPosePDFGaussian) \
+	_DECL_(CPose3DPDFGaussian) \
+	_DECL_(CPosePDFGaussianInf) \
+	_DECL_(CPose3DPDFGaussianInf)
 
 namespace mrpt
 {
@@ -420,8 +403,18 @@ namespace mrpt
 }
 
 // Explicit instantations:
-DO_EXPLICIT_INSTANTIATIONS_2(void, save_graph_of_poses_from_text_file, const, const std::string &fil )
-DO_EXPLICIT_INSTANTIATIONS_2(void, load_graph_of_poses_from_text_file, NO_CONST, const std::string &fil )
+#define DO_1_INSTANCE_save_graph_of_poses_from_text_file(_CPOSE) \
+	template void BASE_IMPEXP mrpt::poses::detail::save_graph_of_poses_from_text_file<_CPOSE,map_traits_stdmap >(const CNetworkOfPoses<_CPOSE,map_traits_stdmap >*g, const std::string &fil ); \
+	template void BASE_IMPEXP mrpt::poses::detail::save_graph_of_poses_from_text_file<_CPOSE,map_traits_map_as_vector >(const CNetworkOfPoses<_CPOSE,map_traits_map_as_vector >*g, const std::string &fil );
+
+REPEAT_FOR_EACH_EDGETYPE(DO_1_INSTANCE_save_graph_of_poses_from_text_file)
+
+#define DO_1_INSTANCE_load_graph_of_poses_from_text_file(_CPOSE) \
+	template void BASE_IMPEXP mrpt::poses::detail::load_graph_of_poses_from_text_file<_CPOSE,map_traits_stdmap >(CNetworkOfPoses<_CPOSE,map_traits_stdmap >*g, const std::string &fil ); \
+	template void BASE_IMPEXP mrpt::poses::detail::load_graph_of_poses_from_text_file<_CPOSE,map_traits_map_as_vector >(CNetworkOfPoses<_CPOSE,map_traits_map_as_vector >*g, const std::string &fil );
+
+REPEAT_FOR_EACH_EDGETYPE(DO_1_INSTANCE_load_graph_of_poses_from_text_file)
+
 
 // --------------------------------------------------------------------------------
 //               Implements: collapseDuplicatedEdges
@@ -468,7 +461,12 @@ size_t mrpt::poses::detail::graph_of_poses_collapse_dup_edges(CNetworkOfPoses<CP
 }
 
 // explicit instantiations:
-DO_EXPLICIT_INSTANTIATIONS_1(size_t,graph_of_poses_collapse_dup_edges,NO_CONST)
+#define DO_1_INSTANCE_graph_of_poses_collapse_dup_edges(_CPOSE) \
+	template size_t BASE_IMPEXP mrpt::poses::detail::graph_of_poses_collapse_dup_edges<_CPOSE,map_traits_stdmap >(CNetworkOfPoses<_CPOSE,map_traits_stdmap >*g); \
+	template size_t BASE_IMPEXP mrpt::poses::detail::graph_of_poses_collapse_dup_edges<_CPOSE,map_traits_map_as_vector >(CNetworkOfPoses<_CPOSE,map_traits_map_as_vector >*g);
+
+REPEAT_FOR_EACH_EDGETYPE(DO_1_INSTANCE_graph_of_poses_collapse_dup_edges)
+
 
 template <class GRAPH>
 void dijks_on_progress(const GRAPH &g, size_t visitedCount)
@@ -486,8 +484,6 @@ template<class CPOSE,class POSES_MAP_TRAITS>
 void mrpt::poses::detail::graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE,POSES_MAP_TRAITS>*g)
 {
 	MRPT_START
-
-//	cout << "F: " << __CURRENT_FUNCTION_NAME__ << endl;
 
 	// Do Dijkstra shortest path from "root" to all other nodes:
 	CDijkstra<CPOSE,POSES_MAP_TRAITS>  dijkstra(*g, g->root, NULL, &dijks_on_progress);
@@ -532,7 +528,12 @@ void mrpt::poses::detail::graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE,POS
 }
 
 // Explicit instantations:
-DO_EXPLICIT_INSTANTIATIONS_1(void,graph_of_poses_dijkstra_init,NO_CONST)
+#define DO_1_INSTANCE_graph_of_poses_dijkstra_init(_CPOSE) \
+	template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<_CPOSE,map_traits_stdmap >(CNetworkOfPoses<_CPOSE,map_traits_stdmap >*g); \
+	template void BASE_IMPEXP mrpt::poses::detail::graph_of_poses_dijkstra_init<_CPOSE,map_traits_map_as_vector >(CNetworkOfPoses<_CPOSE,map_traits_map_as_vector >*g);
+
+REPEAT_FOR_EACH_EDGETYPE(DO_1_INSTANCE_graph_of_poses_dijkstra_init)
+
 
 // Auxiliary funcs:
 template <class VEC> inline double auxMaha2Dist(VEC &err,const CPosePDFGaussianInf &p) {
@@ -655,14 +656,7 @@ double mrpt::poses::detail::graph_edge_sqerror(
 	template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<_CPOSE,map_traits_stdmap >(const CNetworkOfPoses<_CPOSE,map_traits_stdmap >*g, const CDirectedGraph<_CPOSE>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances ); \
 	template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<_CPOSE,map_traits_map_as_vector >(const CNetworkOfPoses<_CPOSE,map_traits_map_as_vector >*g, const CDirectedGraph<_CPOSE>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
 
-DO_1_INSTANCE_graph_edge_sqerror(CPose2D)
-DO_1_INSTANCE_graph_edge_sqerror(CPose3D)
-DO_1_INSTANCE_graph_edge_sqerror(CPosePDFGaussian)
-DO_1_INSTANCE_graph_edge_sqerror(CPose3DPDFGaussian)
-DO_1_INSTANCE_graph_edge_sqerror(CPosePDFGaussianInf)
-DO_1_INSTANCE_graph_edge_sqerror(CPose3DPDFGaussianInf)
-
-//template double BASE_IMPEXP mrpt::poses::detail::graph_edge_sqerror<CPose3DPDFGaussianInf,map_traits_stdmap >(const CNetworkOfPoses<CPose3DPDFGaussianInf,map_traits_stdmap >*g, const CDirectedGraph<CPose3DPDFGaussianInf>::edges_map_t::const_iterator &itEdge,bool ignoreCovariances );
+REPEAT_FOR_EACH_EDGETYPE(DO_1_INSTANCE_graph_edge_sqerror)
 
 //   Implementation of serialization stuff
 // --------------------------------------------------------------------------------

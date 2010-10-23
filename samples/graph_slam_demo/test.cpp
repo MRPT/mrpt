@@ -60,7 +60,7 @@ template <class GRAPH,bool EDGES_ARE_PDF = GRAPH::edge_t::is_PDF_val> struct Edg
 // Non-PDF version:
 template <class GRAPH> struct EdgeAdders<GRAPH,false>
 {
-	static const int DIM = typename GRAPH::edge_t::type_value::static_size;
+	static const int DIM = GRAPH::edge_t::type_value::static_size;
 	typedef CMatrixFixedNumeric<double,DIM,DIM> cov_t;
 
 	static void addEdge(TNodeID from, TNodeID to, const typename GRAPH::global_poses_t &real_poses,GRAPH &graph, const cov_t &COV_MAT)
@@ -72,7 +72,7 @@ template <class GRAPH> struct EdgeAdders<GRAPH,false>
 // PDF version:
 template <class GRAPH> struct EdgeAdders<GRAPH,true>
 {
-	static const int DIM = typename GRAPH::edge_t::type_value::static_size;
+	static const int DIM = GRAPH::edge_t::type_value::static_size;
 	typedef CMatrixFixedNumeric<double,DIM,DIM> cov_t;
 
 	static void addEdge(TNodeID from, TNodeID to, const typename GRAPH::global_poses_t &real_poses,GRAPH &graph, const cov_t &COV_MAT)
@@ -111,7 +111,7 @@ struct ExampleDemoGraphSLAM
 		my_graph_t  graph;
 
 		// The global poses of each node (without covariance):
-		my_graph_t::global_poses_t  real_node_poses;
+		typename my_graph_t::global_poses_t  real_node_poses;
 
 		randomGenerator.randomize(123);
 
@@ -143,7 +143,7 @@ struct ExampleDemoGraphSLAM
 
 		// Add some edges
 		typedef EdgeAdders<my_graph_t> edge_adder_t;
-		edge_adder_t::cov_t   inf_matrix;
+		typename edge_adder_t::cov_t   inf_matrix;
 		inf_matrix.unit(square(1.0/STD4EDGES_COV_MATRIX));
 
 		for (TNodeID i=0;i<N_VERTEX;i++)
@@ -162,7 +162,7 @@ struct ExampleDemoGraphSLAM
 			edge_adder_t::addEdge(0,N_VERTEX/2,real_node_poses,graph,inf_matrix);
 
 			// Tweak this last node to make it incompatible with the rest:
-			my_graph_t::edge_t &ed = graph.edges.find(make_pair<TNodeID,TNodeID>(0,N_VERTEX/2))->second; // It must exist, don't check errors...
+			typename my_graph_t::edge_t &ed = graph.edges.find(make_pair<TNodeID,TNodeID>(0,N_VERTEX/2))->second; // It must exist, don't check errors...
 			mrpt::poses::getPoseMean(ed).x( (1-ERROR_IN_INCOMPATIBLE_EDGE) * mrpt::poses::getPoseMean(ed).x() );
 		}
 
@@ -176,22 +176,22 @@ struct ExampleDemoGraphSLAM
 		cout << "graph edges: " << graph_GT.edgeCount() << endl;
 
 		// Add noise to edges & nodes:
-		for (my_graph_t::edges_map_t::iterator itEdge=graph.edges.begin();itEdge!=graph.edges.end();++itEdge)
+		for (typename my_graph_t::edges_map_t::iterator itEdge=graph.edges.begin();itEdge!=graph.edges.end();++itEdge)
 		{
-			const my_graph_t::edge_t::type_value delta_noise(CPose3D(
+			const typename my_graph_t::edge_t::type_value delta_noise(CPose3D(
 				randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_XYZ),
 				randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_XYZ),
 				randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_XYZ),
 				randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_ANG),
 				randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_ANG),
 				randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_ANG) ));
-			mrpt::poses::getPoseMean(itEdge->second) += my_graph_t::edge_t::type_value(delta_noise);
+			mrpt::poses::getPoseMean(itEdge->second) += typename my_graph_t::edge_t::type_value(delta_noise);
 		}
 
 
-		for (my_graph_t::global_poses_t::iterator itNode=graph.nodes.begin();itNode!=graph.nodes.end();++itNode)
+		for (typename my_graph_t::global_poses_t::iterator itNode=graph.nodes.begin();itNode!=graph.nodes.end();++itNode)
 			if (itNode->first!=graph.root)
-				mrpt::poses::getPoseMean(itNode->second) += my_graph_t::edge_t::type_value( CPose3D(
+				mrpt::poses::getPoseMean(itNode->second) += typename my_graph_t::edge_t::type_value( CPose3D(
 					randomGenerator.drawGaussian1D(0,STD_NOISE_NODE_XYZ),
 					randomGenerator.drawGaussian1D(0,STD_NOISE_NODE_XYZ),
 					randomGenerator.drawGaussian1D(0,STD_NOISE_NODE_XYZ),
@@ -221,11 +221,11 @@ struct ExampleDemoGraphSLAM
 
 		// Do the optimization
 		graphslam::optimize_graph_spa_levmarq(
-			graph, 
-			levmarq_info, 
+			graph,
+			levmarq_info,
 			NULL,  // List of nodes to optimize. NULL -> all but the root node.
-			params, 
-			&my_levmarq_feedback<my_graph_t::constraint_t,my_graph_t::maps_implementation_t>);
+			params,
+			&my_levmarq_feedback<typename my_graph_t::constraint_t,typename my_graph_t::maps_implementation_t>);
 
 		cout << "Global graph RMS error / edge = " << std::sqrt(graph.getGlobalSquareError(false)/graph.edgeCount()) << endl;
 		cout << "Global graph RMS error / edge = " << std::sqrt(graph.getGlobalSquareError(true)/graph.edgeCount()) << " (ignoring information matrices)." << endl;
@@ -319,7 +319,7 @@ int main()
 			"4.  CNetworkOfPoses3DInf \n";
 
 		cout << ">> ";
-	
+
 		int i=0;
 		{
 			string l;

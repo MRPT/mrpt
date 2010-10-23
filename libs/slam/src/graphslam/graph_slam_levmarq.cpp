@@ -58,44 +58,44 @@ MRPT_TODO("Check: Large information matrices make convergence MUCH faster, why?"
 template <class EDGE,class gst> struct AuxErrorEval;
 
 template <class gst> struct AuxErrorEval<CPose2D,gst> {
-	template <class POSE,class VEC> 
-	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { typename gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
+	template <class POSE,class VEC>
+	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
 
-	template <class MAT,class EDGE_ITERATOR> 
+	template <class MAT,class EDGE_ITERATOR>
 	static inline void 	multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtA(J1); }
 
-	template <class MAT,class EDGE_ITERATOR> 
+	template <class MAT,class EDGE_ITERATOR>
 	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtB(J1,J2); }
 };
 
 template <class gst> struct AuxErrorEval<CPose3D,gst> {
-	template <class POSE,class VEC> 
-	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { typename gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
+	template <class POSE,class VEC>
+	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
 
-	template <class MAT,class EDGE_ITERATOR> 
+	template <class MAT,class EDGE_ITERATOR>
 	static inline void multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtA(J1); }
 
-	template <class MAT,class EDGE_ITERATOR> 
+	template <class MAT,class EDGE_ITERATOR>
 	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtB(J1,J2); }
 };
 
 template <class gst> struct AuxErrorEval<CPosePDFGaussianInf,gst> {
-	template <class POSE,class VEC> 
-	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { typename gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
+	template <class POSE,class VEC>
+	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
 
-	template <class MAT,class EDGE_ITERATOR> 
+	template <class MAT,class EDGE_ITERATOR>
 	static inline void multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtBC(J1,edge->second.cov_inv,J1); }
-	template <class MAT,class EDGE_ITERATOR> 
+	template <class MAT,class EDGE_ITERATOR>
 	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtBC(J1,edge->second.cov_inv,J2); }
 };
 
 template <class gst> struct AuxErrorEval<CPose3DPDFGaussianInf,gst> {
-	template <class POSE,class VEC> 
-	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { typename gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
+	template <class POSE,class VEC>
+	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
 
-	template <class MAT,class EDGE_ITERATOR> 
+	template <class MAT,class EDGE_ITERATOR>
 	static inline void multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtBC(J1,edge->second.cov_inv,J1); }
-	template <class MAT,class EDGE_ITERATOR> 
+	template <class MAT,class EDGE_ITERATOR>
 	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtBC(J1,edge->second.cov_inv,J2); }
 };
 
@@ -124,7 +124,7 @@ double computeJacobiansAndErrors(
 		typename gst::graph_t::constraint_t::type_value* P2 = obs.P2;
 
 		const TPairNodeIDs                   &ids  = it->first;
-		const typename gst::graph_t::edge_t  &edge = it->second;
+		//const typename gst::graph_t::edge_t  &edge = it->second;
 
 		// Compute the residual pose error of these pair of nodes + its constraint,
 		//  that is: P1DP2inv = P1 * EDGE * inv(P2)
@@ -137,10 +137,8 @@ double computeJacobiansAndErrors(
 		}
 
 		// Add to vector of errors:
-		{
-			errs.resize(errs.size()+1);
-			AuxErrorEval<gst::edge_t,gst>::computePseudoLnError(P1DP2inv, errs[errs.size()-1]);
-		}
+		errs.resize(errs.size()+1);
+		AuxErrorEval<typename gst::edge_t,gst>::computePseudoLnError(P1DP2inv, errs[errs.size()-1]);
 
 		// Compute the jacobians:
 		std::pair<TPairNodeIDs,typename gst::TPairJacobs> newMapEntry;
@@ -424,21 +422,21 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 					if (is_i_free_node)
 					{
 						typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
-						AuxErrorEval<gst::edge_t,gst>::multiplyJtLambdaJ(J1,JtJ,lstObservationData[idxObs].edge);
+						AuxErrorEval<typename gst::edge_t,gst>::multiplyJtLambdaJ(J1,JtJ,lstObservationData[idxObs].edge);
 						H_map[idx_i][idx_i] += JtJ;
 					}
 					// Is "j" a free (to be optimized) node? -> Jj^t * Inf *  Jj
 					if (is_j_free_node)
 					{
 						typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
-						AuxErrorEval<gst::edge_t,gst>::multiplyJtLambdaJ(J2,JtJ,lstObservationData[idxObs].edge);
+						AuxErrorEval<typename gst::edge_t,gst>::multiplyJtLambdaJ(J2,JtJ,lstObservationData[idxObs].edge);
 						H_map[idx_j][idx_j] += JtJ;
 					}
 					// Are both "i" and "j" free nodes? -> Ji^t * Inf *  Jj
 					if (is_i_free_node && is_j_free_node)
 					{
 						typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
-						AuxErrorEval<gst::edge_t,gst>::multiplyJ1tLambdaJ2(J1,J2,JtJ,lstObservationData[idxObs].edge);
+						AuxErrorEval<typename gst::edge_t,gst>::multiplyJ1tLambdaJ2(J1,J2,JtJ,lstObservationData[idxObs].edge);
 						H_map[idx_j][idx_i] += JtJ;
 					}
 				}
