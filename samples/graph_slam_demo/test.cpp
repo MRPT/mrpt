@@ -52,8 +52,6 @@ const double STD4EDGES_COV_MATRIX       = 10;
 const double ERROR_IN_INCOMPATIBLE_EDGE = 0.3; // ratio [0,1]
 
 
-
-
 // Auxiliary class to add a new edge to the graph. The edge is annotated with the relative position of the two nodes
 template <class GRAPH,bool EDGES_ARE_PDF = GRAPH::edge_t::is_PDF_val> struct EdgeAdders;
 
@@ -158,7 +156,7 @@ struct ExampleDemoGraphSLAM
 		// Add an additional edge to deforme the graph?
 		if (add_extra_tightening_edge)
 		{
-			//inf_matrix.unit(square(1.0/0.01));
+			//inf_matrix.unit(square(1.0/(STD4EDGES_COV_MATRIX)));
 			edge_adder_t::addEdge(0,N_VERTEX/2,real_node_poses,graph,inf_matrix);
 
 			// Tweak this last node to make it incompatible with the rest:

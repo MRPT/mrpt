@@ -50,53 +50,105 @@ using namespace std;
    The entry point to the user is mrpt::graphslam::optimize_graph_spa_levmarq()
 */
 
-MRPT_TODO("Check: Large information matrices make convergence MUCH faster, why?")
-
+// This makes convergence MUCH faster...
+const double SCALE_HESIAN = 1e-4;
 
 // An auxiliary struct to compute the pseudo-ln of a pose error, possibly modified with an information matrix.
 //  Specializations are below.
 template <class EDGE,class gst> struct AuxErrorEval;
 
+// For graphs of 2D constraints (no information matrix)
 template <class gst> struct AuxErrorEval<CPose2D,gst> {
-	template <class POSE,class VEC>
-	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
+	template <class POSE,class VEC,class EDGE_ITERATOR>
+	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err,const EDGE_ITERATOR &edge) { gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
 
 	template <class MAT,class EDGE_ITERATOR>
-	static inline void 	multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtA(J1); }
+	static inline void 	multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtA(J1); JtJ*=SCALE_HESIAN; }
 
 	template <class MAT,class EDGE_ITERATOR>
-	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtB(J1,J2); }
+	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtB(J1,J2); JtJ*=SCALE_HESIAN; }
+
+	template <class JAC,class EDGE_ITERATOR,class VEC1,class VEC2>
+	static inline void multiply_Jt_W_err(const JAC &J,const EDGE_ITERATOR &edge,const VEC1 & ERR,VEC2 &OUT)
+	{
+		J.multiply_Atb(ERR,OUT, true /* accumulate in output */ );
+	}
 };
 
+// For graphs of 3D constraints (no information matrix)
 template <class gst> struct AuxErrorEval<CPose3D,gst> {
-	template <class POSE,class VEC>
-	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
+	template <class POSE,class VEC,class EDGE_ITERATOR>
+	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err,const EDGE_ITERATOR &edge) { gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
 
 	template <class MAT,class EDGE_ITERATOR>
-	static inline void multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtA(J1); }
+	static inline void multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtA(J1); JtJ*=SCALE_HESIAN; }
 
 	template <class MAT,class EDGE_ITERATOR>
-	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtB(J1,J2); }
+	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtB(J1,J2); JtJ*=SCALE_HESIAN; }
+
+	template <class JAC,class EDGE_ITERATOR,class VEC1,class VEC2>
+	static inline void multiply_Jt_W_err(const JAC &J,const EDGE_ITERATOR &edge,const VEC1 & ERR,VEC2 &OUT)
+	{
+		J.multiply_Atb(ERR,OUT, true /* accumulate in output */ );
+	}
 };
 
+// For graphs of 2D constraints (with information matrix)
 template <class gst> struct AuxErrorEval<CPosePDFGaussianInf,gst> {
-	template <class POSE,class VEC>
-	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
+	template <class POSE,class VEC,class EDGE_ITERATOR>
+	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err,const EDGE_ITERATOR &edge)
+	{
+		gst::SE_TYPE::pseudo_ln(P1DP2inv, err);
+	}
 
 	template <class MAT,class EDGE_ITERATOR>
-	static inline void multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtBC(J1,edge->second.cov_inv,J1); }
+	static inline void multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge)
+	{
+		JtJ.multiply_AtBC(J1,edge->second.cov_inv,J1);
+		JtJ*=SCALE_HESIAN;
+	}
 	template <class MAT,class EDGE_ITERATOR>
-	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtBC(J1,edge->second.cov_inv,J2); }
+	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge)
+	{
+		JtJ.multiply_AtBC(J1,edge->second.cov_inv,J2);
+		JtJ*=SCALE_HESIAN;
+	}
+
+	template <class JAC,class EDGE_ITERATOR,class VEC1,class VEC2>
+	static inline void multiply_Jt_W_err(const JAC &J,const EDGE_ITERATOR &edge,const VEC1 & ERR,VEC2 &OUT)
+	{
+		CMatrixDouble33 JtInf(UNINITIALIZED_MATRIX);
+		JtInf.multiply_AtB(J,edge->second.cov_inv);
+		JtInf.multiply_Ab(ERR,OUT, true /* accumulate in output */ );
+	}
 };
 
+// For graphs of 3D constraints (with information matrix)
 template <class gst> struct AuxErrorEval<CPose3DPDFGaussianInf,gst> {
-	template <class POSE,class VEC>
-	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err) { gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
+	template <class POSE,class VEC,class EDGE_ITERATOR>
+	static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err,const EDGE_ITERATOR &edge) { gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
 
 	template <class MAT,class EDGE_ITERATOR>
-	static inline void multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtBC(J1,edge->second.cov_inv,J1); }
+	static inline void multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge)
+	{
+		JtJ.multiply_AtBC(J1,edge->second.cov_inv,J1);
+		JtJ*=SCALE_HESIAN;
+	}
+
 	template <class MAT,class EDGE_ITERATOR>
-	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtBC(J1,edge->second.cov_inv,J2); }
+	static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge)
+	{
+		JtJ.multiply_AtBC(J1,edge->second.cov_inv,J2);
+		JtJ*=SCALE_HESIAN;
+	}
+
+	template <class JAC,class EDGE_ITERATOR,class VEC1,class VEC2>
+	static inline void multiply_Jt_W_err(const JAC &J,const EDGE_ITERATOR &edge,const VEC1 & ERR,VEC2 &OUT)
+	{
+		CMatrixDouble66 JtInf(UNINITIALIZED_MATRIX);
+		JtInf.multiply_AtB(J,edge->second.cov_inv);
+		JtInf.multiply_Ab(ERR,OUT, true /* accumulate in output */ );
+	}
 };
 
 // Compute, at once, jacobians and the error vectors for each constraint in "lstObservationData", returns the overall squared error.
@@ -124,7 +176,7 @@ double computeJacobiansAndErrors(
 		typename gst::graph_t::constraint_t::type_value* P2 = obs.P2;
 
 		const TPairNodeIDs                   &ids  = it->first;
-		//const typename gst::graph_t::edge_t  &edge = it->second;
+		const typename gst::graph_t::edge_t  &edge = it->second;
 
 		// Compute the residual pose error of these pair of nodes + its constraint,
 		//  that is: P1DP2inv = P1 * EDGE * inv(P2)
@@ -138,7 +190,7 @@ double computeJacobiansAndErrors(
 
 		// Add to vector of errors:
 		errs.resize(errs.size()+1);
-		AuxErrorEval<typename gst::edge_t,gst>::computePseudoLnError(P1DP2inv, errs[errs.size()-1]);
+		AuxErrorEval<typename gst::edge_t,gst>::computePseudoLnError(P1DP2inv, errs[errs.size()-1],edge);
 
 		// Compute the jacobians:
 		std::pair<TPairNodeIDs,typename gst::TPairJacobs> newMapEntry;
@@ -348,7 +400,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 				{
 					ASSERTDEB_(itJ->first==lstObservationData[idx_obs].edge->first) // make sure they're in the expected order!
 
-					//  grad[k] += J^t_{i->k} * errs_i
+					//  grad[k] += J^t_{i->k} * Inf.Matrix * errs_i
 					//    k: [0,nFreeNodes-1]     <-- IDs.first & IDs.second
 					//    i: [0,nObservations-1]  <--- idx_obs
 
@@ -357,16 +409,20 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 					const size_t idx2 = observationIndex_to_relatedFreeNodeIndex[idx_obs].second;
 
 					if (idx1!=string::npos)
-						itJ->second.first.multiply_Atb(
-							errs[idx_obs] /*in*/,
-							grad_parts[idx1] /*out*/,
-							true /* accumulate in output */ );
+						AuxErrorEval<typename gst::edge_t,gst>::multiply_Jt_W_err(
+							itJ->second.first /* J */,
+							lstObservationData[idx_obs].edge /* W */,
+							errs[idx_obs] /* err */,
+							grad_parts[idx1] /* out */
+							);
 
 					if (idx2!=string::npos)
-						itJ->second.second.multiply_Atb(
-							errs[idx_obs] /*in*/,
-							grad_parts[idx2] /*out*/,
-							true /* accumulate in output */ );
+						AuxErrorEval<typename gst::edge_t,gst>::multiply_Jt_W_err(
+							itJ->second.second /* J */,
+							lstObservationData[idx_obs].edge /* W */,
+							errs[idx_obs] /* err */,
+							grad_parts[idx2] /* out */
+							);
 				}
 			}
 
