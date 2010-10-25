@@ -196,6 +196,7 @@ namespace slam
 			/** Limits for normalization of sensor readings.
 			  */
             float	R_min,R_max;
+			float	VoltageDivider_Res;
 
 			/** [KF model] The "sigma" for the initial covariance value between cells (in meters).
 			  */

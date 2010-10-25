@@ -114,7 +114,121 @@ namespace slam
 		  * \sa getSensorPose
 		  */
 		void setSensorPose( const CPose3D &newSensorPose );
+		
 
+					/** Declares a class within "CObservationGasSensors" that represents a set of gas concentration readings from the modelation of a MOS gas sensor readings.
+					 * This class provides the parameters and functions to simulate the inverse model of a MOS gas sensor.
+					 *
+					 * \sa CObservationGasSensors
+					 */
+					class OBS_IMPEXP CMOSmodel
+					{
+
+					public:
+						/** Constructor
+						  */
+						CMOSmodel();
+						~CMOSmodel();
+
+						/** [useMOSmodel] The size of the mobile average window used to reduce noise on sensor reagings.
+						  */
+						size_t	winNoise_size;
+
+						/** [useMOSmodel] The decimate frecuency applied after noise filtering
+						  */
+						int	decimate_value;
+						
+						/** [useMOSmodel] Tau value for the rise (tauR) sensor phase.
+						*/
+						float	tauR;
+
+						/** [useMOSmodel] The number of observations to keep in m_lastObservations (Must be > max(delay) )
+						  */
+						unsigned int lastObservations_size;
+						
+						/** [useMOSmodel] Calibrated values of K= 1/tauD for different volatile concentrations
+						  */
+						vector_float	calibrated_tauD_voltages;
+						vector_float	calibrated_tauD_values;
+
+						/** [useMOSmodel] Calibrated values of the delay for different robot speeds
+						  */
+						vector_float	calibrated_delay_RobotSpeeds;
+						vector_float	calibrated_delay_values;
+
+						/** [useMOSmodel] If true save generated gas map as a log file
+						  */
+						bool save_maplog;	
+
+						/** Obtain an estimation of the gas distribution based on raw sensor readings
+						  */
+						bool get_GasDistribution_estimation(
+							float							&reading,
+							CPose3D							&sensorPose,
+							const mrpt::system::TTimeStamp	&timestamp );
+
+					protected:
+
+						/** The content of each m_lastObservations in the estimation when using the option : MOS_MODEl (useMOSmodel =1)
+							*/
+						struct OBS_IMPEXP TdataMap
+						{
+								float						reading;
+								mrpt::system::TTimeStamp	timestamp;
+								float						k;
+								CPose3D						sensorPose;
+								float						estimation;
+								float						reading_filtered;
+								float						speed;
+						}last_Obs, temporal_Obs;
+
+						/** [useMOSmodel] The last N GasObservations, used for the MOS MODEL estimation. 
+						  */
+						std::vector<TdataMap> m_lastObservations;
+
+						/** Vector to temporally store and averge readings to reduce noise
+						  */
+						std::vector<TdataMap> m_antiNoise_window;
+
+						/** [useMOSmodel] Ofstream to save to file option "save_maplog"
+						  */
+						std::ofstream			*m_debug_dump;
+
+						/** [useMOSmodel] Decimate value for oversampled enose readings
+						  */
+						uint16_t				decimate_count;
+
+						/** [useMOSmodel] To force e-nose samples to have fixed time increments
+						  */
+						double					fixed_incT;
+						bool					first_incT;
+						float					min_reading;
+
+						/** Estimates the gas concentration based on readings and sensor model
+						  */
+						void inverse_MOSmodeling (
+							const float							&reading,
+							const CPose3D					&sensorPose,
+							const mrpt::system::TTimeStamp	&timestamp);
+
+						/** Reduce noise by averaging with a mobile window of specific size (winNoise_size)
+						  */
+						void noise_filtering (
+							const float						&reading,
+							const CPose3D					&sensorPose,
+							const mrpt::system::TTimeStamp	&timestamp );
+					
+						/** Save the gas distribution estiamtion into a log file for offline representation
+						*/
+						void save_log_map(
+							const mrpt::system::TTimeStamp	&timestamp,
+							const float						&reading,
+							const float						&estimation,
+							const float						&k,
+							const double					&yaw,
+							const float						&speed);
+
+					}; //End of CMOSmodel class def.
 
 	}; // End of class def.
 

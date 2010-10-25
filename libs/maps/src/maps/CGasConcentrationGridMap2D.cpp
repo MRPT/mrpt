@@ -298,7 +298,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 			// Compute the 3D sensor pose in world coordinates:
 			CPose2D		sensorPose( CPose3D(robotPose2D) + it->eNosePoseOnTheRobot );
 
-			// Compute the sensor reading value:
+			// Compute the sensor reading value (Volts):
 			if (insertionOptions.KF_sensorType==0x0000){	//compute the mean
 				sensorReading = math::mean( it->readingsVoltage );
 			}
@@ -322,10 +322,12 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 				}
 			}
 
+			// Conversion Voltage(V)-->1/Resistance(1/Ohms)
+			//sensorReading = 1/ (5 * insertionOptions.VoltageDivider_Res /sensorReading - insertionOptions.VoltageDivider_Res);			
 
 			// Normalization:
 			sensorReading = (sensorReading - insertionOptions.R_min) /( insertionOptions.R_max - insertionOptions.R_min );
-
+			
 
 			// MOS model
 			if(insertionOptions.useMOSmodel)
@@ -646,6 +648,7 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 	KF_sensorType				( 0x0000 ),		//By default use the mean between all e-nose sensors
 	tauR						( 4 ),			//Time constant for the rise phase
 	tauD						( 12 ),			//Time constant for the decay phase
+	VoltageDivider_Res			( 10000 ),
 	lastObservations_size		( 5 ),
 	winNoise_size				( 30 ),
 	decimate_value				( 2 ),
@@ -709,6 +712,7 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 
 	//bool readed = true;
 	KF_sensorType			= iniFile.read_int(section.c_str(),"KF_sensorType",KF_sensorType);
+	VoltageDivider_Res		= iniFile.read_float(section.c_str(),"VoltageDivider_Res",VoltageDivider_Res);
 	tauR					= iniFile.read_float(section.c_str(),"tauR",tauR);
 	tauD					= iniFile.read_float(section.c_str(),"tauD",tauD);
 	winNoise_size			= iniFile.read_int(section.c_str(),"winNoise_size",winNoise_size);
@@ -2121,7 +2125,7 @@ void CGasConcentrationGridMap2D::CGasConcentration_estimation (
 	if ( !m_lastObservations.empty() )
 	{
 
-		//Enose speed
+		//Enose movement speed
 		double speed_x = sensorPose.x() - m_new_Obs.sensorPose.x();
 		double speed_y = sensorPose.y() - m_new_Obs.sensorPose.y();
 		double incT = mrpt::system::timeDifference(m_new_Obs.timestamp,timestamp);
@@ -2228,7 +2232,6 @@ void CGasConcentrationGridMap2D::CGasConcentration_estimation (
 /*---------------------------------------------------------------
 			noise_filtering
 ---------------------------------------------------------------*/
-// First order estimator model with non-linear dynamics compensation : x(i-N) =  ((y(i) -y(i-1))/(incT* k)) + y(i);
 void CGasConcentrationGridMap2D::noise_filtering (
 	float	reading,
 	const	CPose3D	&sensorPose,
