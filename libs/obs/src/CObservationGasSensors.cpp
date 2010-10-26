@@ -382,7 +382,7 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &readi
 			N = 1;
 
 			//populate the vector m_lastObservations
-			for (int i=0; i<lastObservations_size; i++)
+			for (unsigned int i=0; i<lastObservations_size; i++)
 				m_lastObservations.push_back(last_Obs);
 
 		}//end-if estimation values
@@ -408,8 +408,7 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &readi
 		m_lastObservations.at(lastObservations_size - N-1).estimation = last_Obs.estimation;
 
 	}catch(exception e){
-		printf("Error  in inverse_modeling: %s \n Delay_Samples: %i \n", e.what(), N );
-		mrpt::system::pause();
+		cerr << "**ERROR** " << e.what() << endl;		
 	}
 }
 
