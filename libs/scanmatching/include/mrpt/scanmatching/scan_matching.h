@@ -53,31 +53,26 @@ namespace mrpt
 		using namespace mrpt::math;
 		using namespace mrpt::utils;
 
-		/** This struct contains the options considered for the Horn method.
-		  * \param scales				A vector which will contain the computed output scale of the Horn method.
-		  * \param forceScaleToUnity	Whether or not force the scale employed to rotate the coordinate systems to one (rigid transformation).
-		  */
-		struct SCANMATCHING_IMPEXP THornMethodOpts
-		{
-			vector_double scales;			// The vector of the computed scales
-			bool forceScaleToUnity;			// Whether or not force the scale employed to rotate the coordinate systems to one (rigid transformation)
-
-			THornMethodOpts() : forceScaleToUnity( false ) {}
-
-		}; // end struct THornMethodOpts
-
 		/** This function implements the Horn method for computing the change in pose between two coordinate systems
-		  * \param inVector			A vector containing the coordinates of the input points in the format:
-									[x11 y11 z11, x12 y12 z12, x21 y21 z21, x22 y22 z22, x31 y31 z31, x32 y32 z32, ...  ]
-									where [xi1 yi1 zi1] and [xi2 yi2 zi2] represent the i-th pair of corresponding 3D points in the two coordinate systems "1" and "2"
-		  * \param outVector		A 7D vector containing the traslation and rotation (in a quaternion form) which indicates the change in pose of system "2" wrt "1".
-		  * \param opts				The options for the method.
+		  * \param[in] inPoints		A vector containing the coordinates of the input points in the format:
+		  *							[x11 y11 z11, x12 y12 z12, x21 y21 z21, x22 y22 z22, x31 y31 z31, x32 y32 z32, ...  ]
+		  *							where [xi1 yi1 zi1] and [xi2 yi2 zi2] represent the i-th pair of corresponding 3D points in the two coordinate systems "1" and "2"
+		  * \param[out] outQuat	A 7D vector containing the traslation and rotation (in a quaternion form) which indicates the change in pose of system "2" wrt "1".
+		  * \param[in]  forceScaleToUnity	Whether or not force the scale employed to rotate the coordinate systems to one (rigid transformation)
+		  *
+		  * \return The computed scale of the optimal transformation (will be 1.0 for a perfectly rigid translation + rotation).
 		  * \sa THornMethodOpts
 		  */
-		void SCANMATCHING_IMPEXP HornMethod(
-			const vector_double		&inVector,
-			vector_double		&outVector,				// The output vector
-			THornMethodOpts		&opts );
+		double SCANMATCHING_IMPEXP HornMethod(
+			const vector_double  &inPoints,
+			vector_double        &outQuat,
+			bool                 forceScaleToUnity = false );
+
+		//! \overload
+		double SCANMATCHING_IMPEXP HornMethod(
+			const vector_double      &inPoints,
+			mrpt::poses::CPose3DQuat &outQuat,
+			bool                      forceScaleToUnity  = false);
 
 		/** This method provides the closed-form solution of absolute orientation using unit quaternions to a set of over-constrained correspondences for finding the 6D rigid transformation between two cloud of 3D points.
 		  *  The output 3D pose is computed using the method described in "Closed-form solution of absolute orientation using unit quaternions", BKP Horn, Journal of the Optical Society of America, 1987.

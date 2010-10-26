@@ -28,8 +28,15 @@ hierarchy of classes, etc.
 
 This reference documentation is complementary to the <a href="http://www.mrpt.org/The_MRPT_book/" >MRPT book</a> available for download at the main web site.
 
-<br>
+<br><a name="perf">
+<h2>Performance benchmarks</h2>
 
+Extensive performance tests are automated by means of the application "mrpt-performance".  
+To see the results on different platforms, as well as a comparison between different 
+compilers and platforms, see the <a href="perf-html/index.html"> performance page</a>.
+
+
+<br>
 <a name="libs">
 <h2>Libraries / Modules</h2>
 
@@ -44,13 +51,6 @@ $MRPT_LIBS_DOT
 </div>
 
 
-<br>
-<h2>Performance benchmarks</h2>
-
-Extensive performance tests are automated thanks to the application "mrpt-performance". 
-
-To see the results on different platforms, as well as a comparison between different 
-compilers and platforms, see the <a href="perf-html/index.html"> performance page</a>.
 
 */
 

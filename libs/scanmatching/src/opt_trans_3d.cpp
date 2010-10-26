@@ -48,10 +48,10 @@ using namespace std;
 /*---------------------------------------------------------------
 	HornMethod
   ---------------------------------------------------------------*/
-void scanmatching::HornMethod( 	
+double scanmatching::HornMethod(
 	const vector_double		&inVector,
 	vector_double			&outVector,				// The output vector
-	THornMethodOpts			&opts )
+	bool forceScaleToUnity )
 {
 	MRPT_START;
 
@@ -61,36 +61,39 @@ void scanmatching::HornMethod(
 	outVector.resize( 7 );
 
 	// Compute the centroids
-	CPoint3D	cL, cR; 
-	size_t		nMatches = input.size()/6;
+	TPoint3D	cL(0,0,0), cR(0,0,0);
+
+	const size_t nMatches = input.size()/6;
+	ASSERT_EQUAL_(input.size()%6, 0)
+
 	for( unsigned int i = 0; i < nMatches; i++ )
 	{
-		cL.x_incr( input[i*6+3] );
-		cL.y_incr( input[i*6+4] );
-		cL.z_incr( input[i*6+5] );
+		cL.x += input[i*6+3];
+		cL.y += input[i*6+4];
+		cL.z += input[i*6+5];
 
-		cR.x_incr( input[i*6+0] );
-		cR.y_incr( input[i*6+1] );
-		cR.z_incr( input[i*6+2] );
+		cR.x += input[i*6+0];
+		cR.y += input[i*6+1];
+		cR.z += input[i*6+2];
 	}
 
+	ASSERT_ABOVE_(nMatches,0)
 	const double F = 1.0/nMatches;
 	cL *= F;
 	cR *= F;
 
-	CMatrixDouble33 S;
-	S.zeros();
+	CMatrixDouble33 S; // S.zeros(); // Zeroed by default
 
 	// Substract the centroid and compute the S matrix of cross products
 	for( unsigned int i = 0; i < nMatches; i++ )
 	{
-		input[i*6+3] -= cL.x();
-		input[i*6+4] -= cL.y();
-		input[i*6+5] -= cL.z();
+		input[i*6+3] -= cL.x;
+		input[i*6+4] -= cL.y;
+		input[i*6+5] -= cL.z;
 
-		input[i*6+0] -= cR.x();
-		input[i*6+1] -= cR.y();
-		input[i*6+2] -= cR.z();
+		input[i*6+0] -= cR.x;
+		input[i*6+1] -= cR.y;
+		input[i*6+2] -= cR.z;
 
 		S.get_unsafe(0,0) += input[i*6+3]*input[i*6+0];
 		S.get_unsafe(0,1) += input[i*6+3]*input[i*6+1];
@@ -106,8 +109,7 @@ void scanmatching::HornMethod(
 	}
 
 	// Construct the N matrix
-	CMatrixDouble44 N;
-	N.zeros();
+	CMatrixDouble44 N; // N.zeros(); // Zeroed by default
 
 	N.set_unsafe( 0,0,S.get_unsafe(0,0) + S.get_unsafe(1,1) + S.get_unsafe(2,2) );
 	N.set_unsafe( 0,1,S.get_unsafe(1,2) - S.get_unsafe(2,1) );
@@ -153,23 +155,39 @@ void scanmatching::HornMethod(
 		num += square( input[i*6+0] ) + square( input[i*6+1] ) + square( input[i*6+2] );
 		den += square( input[i*6+3] ) + square( input[i*6+4] ) + square( input[i*6+5] );
 	} // end-for
-	double s = sqrt( num/den );
+
+	// The scale:
+	double s = std::sqrt( num/den );
 
 	// Enforce scale to be 1
-	opts.scales.push_back( s );
-	if( opts.forceScaleToUnity )
+	if( forceScaleToUnity )
 		s = 1.0;
 
-	CPoint3D pp, aux;
-	q.composePoint( cL.x(), cL.y(), cL.z(), pp.x(), pp.y(), pp.z() );
+	TPoint3D pp;
+	q.composePoint( cL.x, cL.y, cL.z, pp.x, pp.y, pp.z );
 	pp*=s;
 
-	outVector[0] = cR.x() - pp.x();	// X
-	outVector[1] = cR.y() - pp.y();	// Y
-	outVector[2] = cR.z() - pp.z();	// Z
+	outVector[0] = cR.x - pp.x;	// X
+	outVector[1] = cR.y - pp.y;	// Y
+	outVector[2] = cR.z - pp.z;	// Z
 
+	return s; // return scale
 	MRPT_END;
 }
+
+//! \overload
+double scanmatching::HornMethod(
+	const vector_double      &inPoints,
+	mrpt::poses::CPose3DQuat &outQuat,
+	bool                      forceScaleToUnity )
+{
+	vector_double outV;
+	const double s = HornMethod(inPoints,outV,forceScaleToUnity);
+	for (int i=0;i<7;i++)
+		outQuat[i]=outV[i];
+	return s;
+}
+
 
 //*---------------------------------------------------------------
 //	leastSquareErrorRigidTransformation6D

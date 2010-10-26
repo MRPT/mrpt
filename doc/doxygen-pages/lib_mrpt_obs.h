@@ -7,7 +7,7 @@
 <h2>mrpt-obs</h2>
 <hr>
 
-In this library there are <b>four</b> key elements or groups of elements:
+In this library there are <b>five</b> key elements or groups of elements:
 
 <ul>
 

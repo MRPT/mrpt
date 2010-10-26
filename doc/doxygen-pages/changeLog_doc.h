@@ -131,6 +131,7 @@
 			- slerp_demo
 			- voronoi_demo
 		- Others:
+			- Change in interface of function mrpt::scanmatching::HornMethod()
 			- Change in behavior upon an std::bad_alloc exception in MRPT_START / MRPT_END blocks: instead of dumping an error message to cerr and exit the program, just propragate the exception with throw() so the user can decide what to do in those cases.
 		- BUG FIXES:
 			- Fixed wrong size of 2D ellipsoids in mrpt::opengl::CEllipsoid when "quantiles" != 1.

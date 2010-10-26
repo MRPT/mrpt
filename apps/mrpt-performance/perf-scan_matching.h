@@ -168,7 +168,6 @@ double scan_matching_test_3( int a1, int a2 )
 	vector_double inV;
 	generate_vector_of_points( pA, pB, inV );
 
-	THornMethodOpts opts;
 	vector_double qu;
 
 	const size_t	N = 100;
@@ -176,7 +175,7 @@ double scan_matching_test_3( int a1, int a2 )
 
 	tictac.Tic();
 	for (size_t i=0;i<N;i++)
-		HornMethod( inV, qu, opts );
+		HornMethod( inV, qu );
 
 	const double T = tictac.Tac()/N;
 	return T;

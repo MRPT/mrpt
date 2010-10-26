@@ -51,7 +51,7 @@ using namespace std;
 */
 
 // This makes convergence MUCH faster...
-const double SCALE_HESIAN = 1e-4;
+const double SCALE_HESIAN = 1e-2;
 
 // An auxiliary struct to compute the pseudo-ln of a pose error, possibly modified with an information matrix.
 //  Specializations are below.

@@ -209,7 +209,7 @@ struct ExampleDemoGraphSLAM
 		TParametersDouble  params;
 		//params["verbose"]  = 1;
 		params["profiler"] = 1;
-		params["max_iterations"] = 5000;
+		params["max_iterations"] = 100; //5000;
 
 		graphslam::TResultInfoSpaLevMarq  levmarq_info;
 		log_sq_err_evolution.clear();

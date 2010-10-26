@@ -54,14 +54,14 @@ CPose3DQuat generate_points( TPoints &pA, TPoints &pB )
 
 	pA.resize( 5 );		// A set of points at "A" reference system
 	pB.resize( 5 );		// A set of points at "B" reference system
-	
-	pA[0].resize(3);	pA[0][0] = 0.0;		pA[0][1] = 0.5;		pA[0][2] = 0.4;		
-	pA[1].resize(3);	pA[1][0] = 1.0;		pA[1][1] = 1.5;		pA[1][2] = -0.1;		
-	pA[2].resize(3);	pA[2][0] = 1.2;		pA[2][1] = 1.1;		pA[2][2] = 0.9;		
-	pA[3].resize(3);	pA[3][0] = 0.7;		pA[3][1] = 0.3;		pA[3][2] = 3.4;		
+
+	pA[0].resize(3);	pA[0][0] = 0.0;		pA[0][1] = 0.5;		pA[0][2] = 0.4;
+	pA[1].resize(3);	pA[1][0] = 1.0;		pA[1][1] = 1.5;		pA[1][2] = -0.1;
+	pA[2].resize(3);	pA[2][0] = 1.2;		pA[2][1] = 1.1;		pA[2][2] = 0.9;
+	pA[3].resize(3);	pA[3][0] = 0.7;		pA[3][1] = 0.3;		pA[3][2] = 3.4;
 	pA[4].resize(3);	pA[4][0] = 1.9;		pA[4][1] = 2.5;		pA[4][2] = -1.7;
 
-	CPose3DQuat qPose = CPose3D( Dx, Dy, Dz, yaw, pitch, roll ); 
+	CPose3DQuat qPose = CPose3D( Dx, Dy, Dz, yaw, pitch, roll );
 	for( unsigned int i = 0; i < 5; ++i )
 	{
 		pB[i].resize( 3 );
@@ -81,13 +81,13 @@ void generate_list_of_points( const TPoints &pA, const TPoints &pB, TMatchingPai
 	for( unsigned int i = 0; i < 5; ++i )
 	{
 		pair.this_idx	= pair.other_idx = i;
-		pair.this_x		= pA[i][0]; 
-		pair.this_y		= pA[i][1]; 
-		pair.this_z		= pA[i][2]; 
+		pair.this_x		= pA[i][0];
+		pair.this_y		= pA[i][1];
+		pair.this_z		= pA[i][2];
 
-		pair.other_x	= pB[i][0]; 
-		pair.other_y	= pB[i][1]; 
-		pair.other_z	= pB[i][2]; 
+		pair.other_x	= pB[i][0];
+		pair.other_y	= pB[i][1];
+		pair.other_z	= pB[i][2];
 
 		list.push_back( pair );
 	}
@@ -116,7 +116,7 @@ TEST(LSRigidTrans6D, CPose3D)
 	TPoints	pA, pB;										// The input points
 	CPose3DQuat qPose = generate_points( pA, pB );
 
-	TMatchingPairList list;				
+	TMatchingPairList list;
 	generate_list_of_points( pA, pB, list );			// Generate a list of matched points
 
 	CPose3D			out;								// Output CPose3D for the LSRigidTransformation
@@ -130,9 +130,9 @@ TEST(LSRigidTrans6D, CPose3D)
 	const double quat_z = qPose.z();
 	// --
 
-	/*bool res1 =*/ 
+	/*bool res1 =*/
 	scanmatching::leastSquareErrorRigidTransformation6D( list, out, scale );
-	const double err = sqrt(	square(out.x() - quat_x) + square(out.y() - quat_y) + square(out.z() - quat_z) + 
+	const double err = sqrt(	square(out.x() - quat_x) + square(out.y() - quat_y) + square(out.z() - quat_z) +
 								square(out.yaw() - quat_yaw) + square(out.pitch() - quat_pitch) + square(out.roll() - quat_roll) );
 	EXPECT_TRUE( err< 1e-6 )
 		<< "Applied quaternion: " << endl << qPose << endl
@@ -144,18 +144,18 @@ TEST(LSRigidTrans6D, CPose3DQuat)
 	TPoints	pA, pB;										// The input points
 	CPose3DQuat qPose = generate_points( pA, pB );
 
-	TMatchingPairList list;				
+	TMatchingPairList list;
 	generate_list_of_points( pA, pB, list );			// Generate a list of matched points
 
 	CPose3DQuat		outQuat;							// Output CPose3DQuat for the LSRigidTransformation
 	double			scale;								// Output scale value
 
-	/*bool res2 =*/ 
+	/*bool res2 =*/
 	scanmatching::leastSquareErrorRigidTransformation6D( list, outQuat, scale );
 
 	double err = 0.0;
 	if( (qPose[3]*outQuat[3] > 0 && qPose[4]*outQuat[4] > 0 && qPose[5]*outQuat[5] > 0 && qPose[6]*outQuat[6] > 0) ||
-		(qPose[3]*outQuat[3] < 0 && qPose[4]*outQuat[4] < 0 && qPose[5]*outQuat[5] < 0 && qPose[6]*outQuat[6] < 0) ) 
+		(qPose[3]*outQuat[3] < 0 && qPose[4]*outQuat[4] < 0 && qPose[5]*outQuat[5] < 0 && qPose[6]*outQuat[6] < 0) )
 	{
 		for( unsigned int i = 0; i < 7; ++i )
 			err += square( std::fabs(qPose[i])-std::fabs(outQuat[i]) );
@@ -181,14 +181,13 @@ TEST(LSRigidTrans6D, vector)
 	vector_double inV;
 	generate_vector_of_points( pA, pB, inV );			// Generate a vector of matched points
 
-	THornMethodOpts opts;								// Options for the Horn Method
 	vector_double	qu;									// Output quaternion for the Horn Method
 
-	HornMethod( inV, qu, opts );
+	HornMethod( inV, qu, false );
 
 	double err = 0.0;
-	if( (qPose[3]*qu[3] > 0 && qPose[4]*qu[4] > 0 && qPose[5]*qu[5] > 0 && qPose[6]*qu[6] > 0) || 
-		(qPose[3]*qu[3] < 0 && qPose[4]*qu[4] < 0 && qPose[5]*qu[5] < 0 && qPose[6]*qu[6] < 0) ) 
+	if( (qPose[3]*qu[3] > 0 && qPose[4]*qu[4] > 0 && qPose[5]*qu[5] > 0 && qPose[6]*qu[6] > 0) ||
+		(qPose[3]*qu[3] < 0 && qPose[4]*qu[4] < 0 && qPose[5]*qu[5] < 0 && qPose[6]*qu[6] < 0) )
 	{
 
 		for( unsigned int i = 0; i < 7; ++i )
@@ -204,4 +203,4 @@ TEST(LSRigidTrans6D, vector)
 			<< "Applied quaternion: " << endl << qPose << endl
 			<< "Out CPose3DQuat: " << endl << qu << endl;
 	}
-} // end 
+} // end

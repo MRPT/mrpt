@@ -157,7 +157,7 @@ protected:
 			);
 
 		// Do some basic checks on the results:
-		EXPECT_GE(levmarq_info.num_iters, 100U);
+		EXPECT_GE(levmarq_info.num_iters, 10U);
 		EXPECT_LE(levmarq_info.final_total_sq_error, 1e-2);
 
 	} // end test_ring_path
