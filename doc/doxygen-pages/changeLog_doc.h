@@ -32,7 +32,7 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</i></p>
 
   <a name="0.9.2">
-  <h2>Version 0.9.2: (Under development) </h2></a>
+  <h2>Version 0.9.2: 27-OCT-2010 </h2></a>
 	- <b>Most important changes:</b>
 		- Basic support for Graph-SLAM. Among others, see mrpt::poses::CNetworkOfPoses, the new namespace mrpt::graphslam and the program <a href="http://www.mrpt.org/Application:graph-slam" >graph-slam</a>
 		- First working version of Sparse Bundle-Adjustment (see mrpt::vision::bundle_adj_full).
