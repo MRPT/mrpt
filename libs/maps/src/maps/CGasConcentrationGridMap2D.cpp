@@ -642,25 +642,24 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 	KF_initialCellStd			( 1.0 ),		// std in normalized concentration units
 	KF_observationModelNoise	( 0.25f ),		// in normalized concentration units
 	KF_defaultCellMeanValue		( 0.25f ),
-	KF_W_size					( 4 ),
-
-	//Variables for MOS model implementation (only if useMOSmodel = true)
+	KF_W_size					( 4 ),	
 	KF_sensorType				( 0x0000 ),		//By default use the mean between all e-nose sensors
-	tauR						( 4 ),			//Time constant for the rise phase
-	tauD						( 12 ),			//Time constant for the decay phase
+	enose_id					( 0 ),			//By default use the first enose
+	useMOSmodel					( false ),
 	VoltageDivider_Res			( 10000 ),
-	lastObservations_size		( 5 ),
+
+	dm_sigma_omega				( 0.05 ),  // See IROS 2009 paper (a scale parameter for the confidence)
+
+	//MOSmodel parameters (only if useMOSmodel = true)	
+	tauR						( 4 ),			//Time constant for the rise phase		
 	winNoise_size				( 30 ),
 	decimate_value				( 2 ),
-	tauD_concentration			( 0 ),
-	tauD_value					( 0 ),
-	memory_speed				( 0 ),
-	memory_delay				( 0 ),
-	enose_id					( 0 ),			//By default use the first enose
-	save_maplog					( true ),
-	useMOSmodel					( false ),
-
-	dm_sigma_omega				( 0.05 )  // See IROS 2009 paper (a scale parameter for the confidence)
+	lastObservations_size		( 5 ),
+	calibrated_tauD_voltages	( 0 ),			//Voltages values of the sensorID at the calibration points.
+	calibrated_tauD_values		( 0 ),			//Tau_d
+	calibrated_delay_RobotSpeeds ( 0 ),			//[m/s]
+	calibrated_delay_values		( 0 ),			//Number of delayed samples before decimation	
+	save_maplog					( false )	
 {
 }
 
@@ -670,25 +669,31 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 void  CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
 {
 	out.printf("\n----------- [CGasConcentrationGridMap2D::TInsertionOptions] ------------ \n\n");
+	out.printf("sigma                                   = %f\n", sigma);	
+	out.printf("cutoffRadius                            = %f\n", cutoffRadius);
 	out.printf("R_min                                   = %f\n", R_min);
 	out.printf("R_max                                   = %f\n", R_max);
-	out.printf("sigma                                   = %f\n", sigma);
-	out.printf("cutoffRadius                            = %f\n", cutoffRadius);
 	out.printf("KF_covSigma                             = %f\n", KF_covSigma);
 	out.printf("KF_initialCellStd                       = %f\n", KF_initialCellStd);
 	out.printf("KF_observationModelNoise                = %f\n", KF_observationModelNoise);
 	out.printf("KF_defaultCellMeanValue                 = %f\n", KF_defaultCellMeanValue);
 	out.printf("KF_W_size                               = %u\n", (unsigned)KF_W_size);
 	out.printf("KF_sensorType                           = %u\n", (unsigned)KF_sensorType);
-	out.printf("tauR		                            = %f\n", tauR);
-	out.printf("tauD		                            = %f\n", tauD);
-	out.printf("lastObservations_size                   = %u\n", (unsigned)lastObservations_size);
+	out.printf("enose_id								= %u\n", (unsigned)enose_id);
+	out.printf("useMOSmodel								= %c\n", useMOSmodel ? 'Y':'N' );
+	out.printf("VoltageDivider_Res						= %f\n", VoltageDivider_Res);
+	out.printf("dm_sigma_omega	                        = %f\n", dm_sigma_omega);
+	//MOSmodel parameters
+	out.printf("tauR		                            = %f\n", tauR);	
 	out.printf("winNoise_size		                    = %u\n", (unsigned)winNoise_size);
 	out.printf("decimate_value		                    = %u\n", (unsigned)decimate_value);
-	out.printf("enose_id								= %u\n", (unsigned)enose_id);
+	out.printf("lastObservations_size                   = %u\n", (unsigned)lastObservations_size);
+	
+		//Need to dump the vector parameters (ToDo)
+	
 	out.printf("save_maplog		                        = %c\n", save_maplog ? 'Y':'N' );
-	out.printf("useMOSmodel								= %u\n", useMOSmodel);
-	out.printf("dm_sigma_omega	                        = %f\n", dm_sigma_omega);
+	
+	
 	out.printf("\n");
 }
 
@@ -709,33 +714,37 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 	KF_defaultCellMeanValue = iniFile.read_float(section.c_str(),"KF_defaultCellMeanValue",KF_defaultCellMeanValue);
 
 	MRPT_LOAD_CONFIG_VAR(KF_W_size, int,   iniFile, section );
-
-	//bool readed = true;
+	
 	KF_sensorType			= iniFile.read_int(section.c_str(),"KF_sensorType",KF_sensorType);
+	enose_id				= iniFile.read_int(section.c_str(),"enose_id",enose_id);
 	VoltageDivider_Res		= iniFile.read_float(section.c_str(),"VoltageDivider_Res",VoltageDivider_Res);
+	useMOSmodel				= iniFile.read_bool(section.c_str(),"useMOSmodel",useMOSmodel);
+
+	//MOSmodel parameters
+	
 	tauR					= iniFile.read_float(section.c_str(),"tauR",tauR);
-	tauD					= iniFile.read_float(section.c_str(),"tauD",tauD);
 	winNoise_size			= iniFile.read_int(section.c_str(),"winNoise_size",winNoise_size);
 	decimate_value			= iniFile.read_int(section.c_str(),"decimate_value",decimate_value);
-	iniFile.read_vector(section.c_str(),"tauD_concentration",tauD_concentration,tauD_concentration);
-	iniFile.read_vector(section.c_str(),"tauD_value",tauD_value,tauD_value);
-	iniFile.read_vector(section.c_str(),"memory_speed",memory_speed,memory_speed);
-	iniFile.read_vector(section.c_str(),"memory_delay",memory_delay,memory_delay);
-
-	enose_id				= iniFile.read_int(section.c_str(),"enose_id",enose_id);
+	lastObservations_size	= iniFile.read_int(section.c_str(),"lastObservations_size",lastObservations_size);
+	iniFile.read_vector(section.c_str(),"calibrated_tauD_voltages",calibrated_tauD_voltages,calibrated_tauD_voltages);
+	iniFile.read_vector(section.c_str(),"calibrated_tauD_values",calibrated_tauD_values,calibrated_tauD_values);
+	iniFile.read_vector(section.c_str(),"calibrated_delay_RobotSpeeds",calibrated_delay_RobotSpeeds,calibrated_delay_RobotSpeeds);
+	iniFile.read_vector(section.c_str(),"calibrated_delay_values",calibrated_delay_values,calibrated_delay_values);	
 	save_maplog				= iniFile.read_bool(section.c_str(),"save_maplog",save_maplog);
-	useMOSmodel				= iniFile.read_bool(section.c_str(),"useMOSmodel",useMOSmodel);
+
 	MRPT_LOAD_CONFIG_VAR(dm_sigma_omega, double,   iniFile, section );
 
 
-
-
-	//Update the values of delay according to decimation
-	for (size_t i=0; i<memory_delay.size(); i++){
-		memory_delay.at(i) = round( memory_delay[i]/decimate_value );
+	if (useMOSmodel)
+	{
+		//Update the values of delay according to decimation
+		for (size_t i = 0; i<calibrated_delay_values.size(); i++){
+			calibrated_delay_values.at(i) = round( calibrated_delay_values[i]/decimate_value );
+		}
+		//Get the lastObservations_size (Must be higher than max delay_value/decimate_value)
+		if ( lastObservations_size < *max_element(calibrated_delay_values.begin(), calibrated_delay_values.end()) )
+			lastObservations_size = *max_element( calibrated_delay_values.begin(), calibrated_delay_values.end() )+1 ;
 	}
-	//Get the lastObservations_size
-	lastObservations_size	=  *max_element( memory_delay.begin(), memory_delay.end() ) ;
 }
 
 
@@ -2158,14 +2167,14 @@ void CGasConcentrationGridMap2D::CGasConcentration_estimation (
 			if (m_new_Obs.k == (float) (1.0/insertionOptions.tauR) ){
 				//Use amplitude or just value?
 				// Non-Linear compensation = f(sensor, amplitude, speed)
-				m_new_Obs.k = 1.0/mrpt::math::leastSquareLinearFit((reading - insertionOptions.R_min),insertionOptions.tauD_concentration,insertionOptions.tauD_value,false);
+				m_new_Obs.k = 1.0/mrpt::math::leastSquareLinearFit((reading - insertionOptions.R_min),insertionOptions.calibrated_tauD_voltages,insertionOptions.calibrated_tauD_values,false);
 			}else{
 				//Do Nothing, keep the same tauD as last observation
 
 			}// end-if(start decaying)
 
 			//Dealy effect compensation
-			N = mrpt::math::leastSquareLinearFit(m_new_Obs.speed ,insertionOptions.memory_speed, insertionOptions.memory_delay,false);
+			N = mrpt::math::leastSquareLinearFit(m_new_Obs.speed ,insertionOptions.calibrated_delay_RobotSpeeds, insertionOptions.calibrated_delay_values,false);
 			N = round(N);
 
 			if (N >insertionOptions.lastObservations_size -1)

@@ -240,13 +240,13 @@ namespace slam
 
 			/** [useMOSmodel] Measured values of K= 1/tauD for different volatile concentrations
 			  */
-			vector_float tauD_concentration;
-			vector_float tauD_value;
+			vector_float calibrated_tauD_voltages;
+			vector_float calibrated_tauD_values;
 
 			/** [useMOSmodel] Measured values of the delay (memory effect) for different robot speeds
 			  */
-			vector_float memory_speed;
-			vector_float memory_delay;
+			vector_float calibrated_delay_RobotSpeeds;
+			vector_float calibrated_delay_values;
 
 			/** [useMOSmodel] id for the enose used to generate this map (must be < gasGrid_count)
 			  */
