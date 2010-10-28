@@ -1,6 +1,9 @@
+mrpt (1:0.9.2-1) unstable; urgency=low
 
-TO ADD: 
+  * New version of upstream sources.
   * Solves FTBFS error (Closes: 599989)
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Thu, 28 Oct 2010 10:47:31 +0200
 
 mrpt (1:0.9.1-1) unstable; urgency=low
 
