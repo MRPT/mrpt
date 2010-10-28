@@ -38,10 +38,12 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 # And now create the custom packages for each Ubuntu distribution
 # -------------------------------------------------------------------
 LST_DISTROS=(jaunty karmic lucid maverick)
-#LST_DISTROS=(jaunty)
 
 count=${#LST_DISTROS[@]}
 IDXS=$(seq 0 $(expr $count - 1))
+
+cp ${MRPT_EXTERN_DEBIAN_DIR}/changelog /tmp/my_changelog
+
 
 for IDX in ${IDXS};
 do
@@ -56,15 +58,23 @@ do
 	echo 
 	echo "===== Distribution: ${DEBIAN_DIST}  ========="
 	cd ${MRPT_DEB_DIR}/mrpt-${MRPT_VER_MMP}svn${MRPT_VERSION_SVN}/debian
-	cp ${MRPT_EXTERN_DEBIAN_DIR}/changelog changelog
+	#cp ${MRPT_EXTERN_DEBIAN_DIR}/changelog changelog
+	cp /tmp/my_changelog changelog
 	DEBCHANGE_CMD="--newversion 1:${MRPT_VERSION_STR}svn${MRPT_VERSION_SVN}-1~ppa1"
 	echo "Changing to a new Debian version: ${DEBCHANGE_CMD}"
 	echo "Adding a new entry to debian/changelog for distribution ${DEBIAN_DIST}"
 	DEBEMAIL=${EMAIL4DEB} debchange $DEBCHANGE_CMD --distribution ${DEBIAN_DIST} --force-distribution New version of upstream sources.
 
+	cp changelog /tmp/my_changelog 
+
 	echo "Now, let's build the source Deb package with 'debuild -S -sa':"
 	cd ..
-	debuild -S -sa
+	if [ $IDX == "0" ];
+	then
+		debuild -S -sa
+	else
+		debuild -S -sd
+	fi
 	
 	# Make a copy of all these packages:
 	cd ..
