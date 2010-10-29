@@ -33,7 +33,10 @@
 
   <a name="0.9.3">
   <h2>Version 0.9.3: (Under development) </h2></a>
-	- (...)
+	- List of changes:
+		- (...)
+	- <b>BUG FIXES:</b>
+		- Fixed exception when rendering a mrpt::opengl::CPointCloud with no points in it.
 
 
   <br> <hr> <br>
