@@ -153,6 +153,8 @@ namespace mrpt
 
 			bool checkIfDiagonalSurface( CObservation3DRangeScan* face );
 
+			bool checkIfDiagonalSurface2( CObservation3DRangeScan* face );
+
 			static void dummy_checkIfDiagonalSurface( CFaceDetection *obj );
 
 			bool checkRelativePosition( const TPoint3D &p1, const TPoint3D &p2, const TPoint3D &p );
@@ -168,7 +170,8 @@ namespace mrpt
 
 			void experimental_segmentFace( const CObservation3DRangeScan &face, CMatrixTemplate<bool> &region );
 
-			void experimental_calcHist( const CImage &face, CMatrixTemplate<unsigned int> &hist );
+			void experimental_calcHist( const CImage &face, const size_t &c1, const size_t &r1, const size_t &c2, 
+										const size_t &r2, CMatrixTemplate<unsigned int> &hist );
 
 		}; // End of class
 	}
