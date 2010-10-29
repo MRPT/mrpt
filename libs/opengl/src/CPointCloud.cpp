@@ -76,8 +76,10 @@ void   CPointCloud::render() const
 		if (!m_minmax_valid)
 		{
 			m_minmax_valid = true;
-			math::minimum_maximum( m_colorFromDepth == CPointCloud::Z ? m_zs :
-				(m_colorFromDepth == CPointCloud::Y ? m_ys : m_xs), m_min, m_max);
+			if (!m_zs.empty())
+				math::minimum_maximum( m_colorFromDepth == CPointCloud::Z ? m_zs :
+					(m_colorFromDepth == CPointCloud::Y ? m_ys : m_xs), m_min, m_max);
+			else m_max=m_min=0;
 
 			A = m_max - m_min;
 			if (std::abs(A)<1e-4)
