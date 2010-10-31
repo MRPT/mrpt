@@ -962,10 +962,10 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 
 	const float max_desv = 0.2;
 
-	unsigned int x1 = ceil(faceWidth*0.2);
-	unsigned int x2 = floor(faceWidth*0.8);
-	unsigned int y1 = ceil(faceHeight*0.05);
-	unsigned int y2 = floor(faceHeight*0.9);
+	unsigned int x1 = ceil(faceWidth*0.25);
+	unsigned int x2 = floor(faceWidth*0.75);
+	unsigned int y1 = ceil(faceHeight*0.15);
+	unsigned int y2 = floor(faceHeight*0.85);
 
 	vector<TPoint3D> points;
 	unsigned int cont = ( y1 == 0 ? 0 : faceHeight*(y1-1));
@@ -1040,14 +1040,14 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 			return true;
 	}
 
-	/*ofstream f;
-	f.open("relaciones1.txt", ofstream::app);
+	ofstream f;
+	/*f.open("relaciones1.txt", ofstream::app);
 	f << faceWidth << endl;
-	f.close();
+	f.close();*/
 
 	f.open("relaciones2.txt", ofstream::app);
 	f << meanDepth << endl;
-	f.close();*/
+	f.close();
 
 	//cout << m_measure.faceNum ;
 
@@ -1063,9 +1063,9 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 
 		for ( unsigned int j = x1; j <= x2; j++, cont++ )
 		{
-			if ( (*(face->confidenceImage.get_unsafe( j, i, 0 )) > m_options.confidenceThreshold )
-				&& ( face->points3D_x[cont] > meanDepth - max_desv )
-				&& ( face->points3D_x[cont] < meanDepth + max_desv ) )
+			if ( (*(face->confidenceImage.get_unsafe( j, i, 0 )) > m_options.confidenceThreshold ) )
+				//&& ( face->points3D_x[cont] > meanDepth - max_desv )
+				//&& ( face->points3D_x[cont] < meanDepth + max_desv ) )
 			{
 				valids.set_unsafe( i, j, true );
 				points.push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
@@ -1144,7 +1144,7 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 		if ( m_measure.takeMeasures )
 			m_measure.sumDistances.push_back( sumDistances );
 
-		/*ofstream f;
+		ofstream f;
 		f.open("distances.txt", ofstream::app);
 		//f << m_measure.faceNum << " " << sumDistances << endl;
 		f << sumDistances << endl;
@@ -1152,13 +1152,13 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 
 		f.open("distances2.txt", ofstream::app);
 		f << m_measure.faceNum << " " << sumDistances << endl;
-		f.close();*/
+		f.close();
 	}
 
 	//double yMax = 3 + 3.8 / ( pow( meanDepth, 2 ) );
 	//double yMax = 3 + 7 /( pow( meanDepth, 2) ) ;
-	double yMax = 3 + 11.8 /( pow( meanDepth, 0.9) ) ;
-	double yMin = 1 + 3.8 / ( pow( meanDepth+7, 6 ) );
+	double yMax = 3 + 6 /( pow( meanDepth, 2) ) ;
+	double yMin = 1 + 3.8 / ( pow( meanDepth+1.2, 2 ) );
 
 	// To obtain experimental results
 	{
@@ -1224,7 +1224,7 @@ bool CFaceDetection::checkIfDiagonalSurface2( CObservation3DRangeScan* face )
 
 	for ( unsigned int row = 0; row < faceHeight; row++ )
 	{
-		for ( unsigned int col = 0; col <= faceWidth; col++, cont++ )
+		for ( unsigned int col = 0; col < faceWidth; col++, cont++ )
 		{
 			if ( ( region.get_unsafe( row, col ) ) &&
 				(*(face->confidenceImage.get_unsafe( col, row, 0 )) > m_options.confidenceThreshold ))
@@ -1277,14 +1277,14 @@ bool CFaceDetection::checkIfDiagonalSurface2( CObservation3DRangeScan* face )
 			return true;
 	}
 
-	/*ofstream f;
-	f.open("relaciones1.txt", ofstream::app);
+	ofstream f;
+	/*f.open("relaciones1.txt", ofstream::app);
 	f << faceWidth << endl;
-	f.close();
+	f.close();*/
 
 	f.open("relaciones2.txt", ofstream::app);
 	f << meanDepth << endl;
-	f.close();*/
+	f.close();
 
 	//cout << m_measure.faceNum ;
 
@@ -1306,7 +1306,7 @@ bool CFaceDetection::checkIfDiagonalSurface2( CObservation3DRangeScan* face )
 
 	for ( unsigned int i = 0; i < faceHeight; i++ )
 	{
-		for ( unsigned int j = 0; j <= faceWidth; j++, cont++ )
+		for ( unsigned int j = 0; j < faceWidth; j++, cont++ )
 		{
 			if ( region.get_unsafe( i, j ) )
 			{
@@ -1353,13 +1353,13 @@ bool CFaceDetection::checkIfDiagonalSurface2( CObservation3DRangeScan* face )
 		if ( m_measure.takeMeasures )
 			m_measure.sumDistances.push_back( sumDistances );
 
-		/*ofstream f;
+		ofstream f;
 		f.open("distances.txt", ofstream::app);
 		//f << m_measure.faceNum << " " << sumDistances << endl;
 		f << sumDistances << endl;
 		f.close();
 
-		f.open("distances2.txt", ofstream::app);
+		/*f.open("distances2.txt", ofstream::app);
 		f << m_measure.faceNum << " " << sumDistances << endl;
 		f.close();*/
 	}
