@@ -826,6 +826,89 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	res	 = res && checkRelativePosition( meanPos[0][0], meanPos[2][2], meanPos[1][1] );
 	res	 = res && checkRelativePosition( meanPos[2][0], meanPos[0][2], meanPos[1][1] );
 
+
+	// A experimental region to calculate normals
+	// TODO:
+	//	- Calulcate orientation of each normal
+	//	- Create a matrix of possible orientations and each normal vote for a orientation
+	//	- Normalize obtained matrix (values of all its positions sums one)
+	//	- Compare with a "usual" matrix of a real face
+
+	/****************************************
+	
+	cont = 0;
+
+	setEpsilon(0.000000000000000000000000000000000000000000000000000000000000005);
+
+	vector<double> x,y,z;
+	bool resOk = true;
+
+	for ( unsigned int r = 0; r < faceHeight-1; r++ )
+	{
+		for ( unsigned int c = 0; c < faceWidth-1; c++, cont++ )
+		{			
+			TPoint3D point1( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont]);		
+			TPoint3D point2( face->points3D_x[cont+1], face->points3D_y[cont+1], face->points3D_z[cont+1]);		
+			TPoint3D point3( face->points3D_x[cont+faceWidth], face->points3D_y[cont+faceWidth], face->points3D_z[cont+faceWidth]);		
+
+			double dx1=point2.x-point1.x;
+			double dy1=point2.y-point1.y;
+			double dz1=point2.z-point1.z;
+			double dx2=point3.x-point1.x;
+			double dy2=point3.y-point1.y;
+			double dz2=point3.z-point1.z;
+			double coefs[3];
+			coefs[0]=dy1*dz2-dy2*dz1;
+			coefs[1]=dz1*dx2-dz2*dx1;
+			coefs[2]=dx1*dy2-dx2*dy1;
+			if (abs(coefs[0])<geometryEpsilon&&abs(coefs[1])<geometryEpsilon&&abs(coefs[2])<geometryEpsilon)
+			{
+				resOk = false;
+				break;
+			}
+
+			//try{
+			TPlane plane( point1, point2, point3 );
+			//}catch (...){
+			//}
+
+			double norm[3];
+			plane.getNormalVector( norm );
+			plane.getUnitaryNormalVector( norm );
+			x.push_back( norm[0] );
+			y.push_back( norm[1] );
+			z.push_back( norm[2] );
+		}
+	}
+
+	if ( resOk ){
+
+	double mean;
+	double std1,std2,std3;
+
+	ofstream f;
+	f.open("x.txt", ofstream::app);
+	//f << mean(x) << endl;
+	meanAndStd( x, mean, std1 );
+	f << std1 << endl;
+	f.close();
+	f.open("y.txt", ofstream::app);
+	meanAndStd( y, mean, std2 );
+	//f << mean(y) << endl;
+	f << std2 << endl;
+	f.close();
+	f.open("z.txt", ofstream::app);
+	meanAndStd( z, mean, std3 );
+	//f << mean(z) << endl;
+	f << std3 << endl;
+	f.close();
+	f.open("all.txt", ofstream::app);
+	//f << mean(z) << endl;
+	f << std1+std2+std3 << endl;
+	f.close();
+	}
+	***********************************************/
+
 	//experimental_viewRegions( regions2, meanPos );
 
 	//cout << endl << meanPos[0][0] << "\t" << meanPos[0][1] << "\t" << meanPos[0][2];
