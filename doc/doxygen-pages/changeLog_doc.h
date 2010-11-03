@@ -33,11 +33,41 @@
 
   <a name="0.9.3">
   <h2>Version 0.9.3: (Under development) </h2></a>
-	- List of changes:
+	- <b>Most important changes:</b>
 		- (...)
+	- <b>Detailed list of changes:</b>
+		- Changes in classes:
+			- CDisplayWindow::showImageAndPoints() now als displays the index of the feature (if required).
+			- CFeature now has new members:
+				- detph. The computed 3D distance from the camera to the 3D real feature.
+				- multiScales. A vector containing the set of different scales at which the SIFT-like descriptor must be computed.
+				- multiOrientations. For each scale in multiScales there is a vector containing the main orientations of the feature.
+				- descriptors.multiSIFTDescriptors. For each scale and orientation there is a SIFT-like descriptor.
+				- hasDescriptorMultiSIFT(). Indicates if the multi-resolution SIFT-like descriptor has been computed for this feature.
+		- Changes in functions:
+			- mrpt::vision::matchFeatures(). Implemented a new method for managing ambiguous matches, now taking into account which of the conflicting matches is the most probable.
+		- New structures:
+			- TMultiResDescMatchOptions. Struct containing the options when matching multi-resolution SIFT-like descriptors.
+			- TMultiResDescOptions. Struct containing the options when computing the multi-resolution SIFT-like descriptors.
+
+		- New functions:
+			- mrpt::vision::computeGradient(). Computes the gradient of certain pixel within the image.
+			- mrpt::vision::computeMainOrientations(). Computes the main orientations (within 80% of the peak value of orientation histogram) of a certain point within an image (for using in SIFT-based algorithms)
+			- mrpt::vision::computeHistogramOfOrientations(). Computes the SIFT-like descriptor of a certain point within an image at the base scale, i.e. its rotated orientation histogram.
+			- mrpt::vision::interpolateHistEntry(). Inserts the orientation value of a certain pixel within the keypoint neighbourhood into the histogram of orientations.
+			- mrpt::vision::computeMultiResolutionDescriptors(). Computes the multi-resolution SIFT-like descriptor of a set of matched features
+			- mrpt::vision::matchMultiResolutionFeatures(). Matches two CFeatureList containing mulit-resolution descriptors.
+			- mrpt::vision::setProperScales(). Computes the initial and final scales where to look when finding a match between multi-resolution features.
+			- mrpt::vision::computeSAD(). Calculates the Sum of Absolutes Differences (range [0,1]) between two patches.
+		- New examples:
+			- keypoint_matching. It contains three different methods:
+				- Feature extraction and stereo matching process from a pair of images. It show stadistics about the number of detected and matched features for each method.
+				- Feature extraction, stereo matching and re-projection to 3D from a pair of images.
+				- Feature extraction and computation of the matching score for each feature in list1 and for each in list2 with four different methods: FAST, NCC, SIFT and SURF. Graphical results are shown.
 	- <b>BUG FIXES:</b>
 		- Fixed exception when rendering a mrpt::opengl::CPointCloud with no points in it.
-
+		- Fixed bad computation of SAD in mrpt::vision::matchFeatures() because bad usage of IplImage fields <i>width</i> and <i>widthstep</i>.
+		- Fixed vision::CImage::update_patch(). Row and column checkings of the patch position were wrongly related to image width and height, respectively.
 
   <br> <hr> <br>
 
