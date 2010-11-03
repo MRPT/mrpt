@@ -134,6 +134,7 @@ IF(BUILD_EXAMPLES)
 		multipleCheckerboards		
 		voronoi_test
 		graph_slam_demo
+		keypoint_matching
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-vision mrpt-gui mrpt-topography)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

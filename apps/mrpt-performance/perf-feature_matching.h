@@ -68,7 +68,7 @@ double feature_matching_test_Harris_CC( int w, int h )
 	{
 		fExt.detectFeatures( imL, featsHarris_L, 0, NFEATS );
 		fExt.detectFeatures( imR, featsHarris_R, 0, NFEATS );
-		nMatches = matchFeatures2( featsHarris_L, featsHarris_R, mHarris );
+		nMatches = matchFeatures( featsHarris_L, featsHarris_R, mHarris );
 	}
 	const double T = tictac.Tac()/N;
 
@@ -107,7 +107,7 @@ double feature_matching_test_Harris_SAD( int w, int h )
 	{
 		fExt.detectFeatures( imL, featsHarris_L, 0, NFEATS );
 		fExt.detectFeatures( imR, featsHarris_R, 0, NFEATS );
-		nMatches = matchFeatures2( featsHarris_L, featsHarris_R, mHarris, opt );
+		nMatches = matchFeatures( featsHarris_L, featsHarris_R, mHarris, opt );
 	}
 	const double T = tictac.Tac()/N;
 
@@ -145,7 +145,7 @@ double feature_matching_test_SIFT( int w, int h )
 	{
 		fExt.detectFeatures( imL, featsSIFT_L, 0, NFEATS );
 		fExt.detectFeatures( imR, featsSIFT_R, 0, NFEATS );
-		nMatches = matchFeatures2( featsSIFT_L, featsSIFT_R, mSIFT, opt );
+		nMatches = matchFeatures( featsSIFT_L, featsSIFT_R, mSIFT, opt );
 	}
 	const double T = tictac.Tac()/N;
 
@@ -183,7 +183,7 @@ double feature_matching_test_SURF( int w, int h )
 	{
 		fExt.detectFeatures( imL, featsSURF_L, 0, NFEATS );
 		fExt.detectFeatures( imR, featsSURF_R, 0, NFEATS );
-		nMatches = matchFeatures2( featsSURF_L, featsSURF_R, mSURF, opt );
+		nMatches = matchFeatures( featsSURF_L, featsSURF_R, mSURF, opt );
 	}
 	const double T = tictac.Tac()/N;
 
@@ -220,7 +220,7 @@ double feature_matching_test_FAST_CC( int w, int h )
 	{
 		fExt.detectFeatures( imL, featsFAST_L, 0, NFEATS );
 		fExt.detectFeatures( imR, featsFAST_R, 0, NFEATS );
-		nMatches = matchFeatures2( featsFAST_L, featsFAST_R, mFAST, opt );
+		nMatches = matchFeatures( featsFAST_L, featsFAST_R, mFAST, opt );
 	}
 	const double T = tictac.Tac()/N;
 
@@ -258,7 +258,7 @@ double feature_matching_test_FAST_SAD( int w, int h )
 	{
 		fExt.detectFeatures( imL, featsFAST_L, 0, NFEATS );
 		fExt.detectFeatures( imR, featsFAST_R, 0, NFEATS );
-		nMatches = matchFeatures2( featsFAST_L, featsFAST_R, mFAST, opt );
+		nMatches = matchFeatures( featsFAST_L, featsFAST_R, mFAST, opt );
 	}
 	const double T = tictac.Tac()/N;
 

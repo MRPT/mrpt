@@ -83,7 +83,7 @@ namespace mrpt
 			/** Show a given color or grayscale image on the window and print a set of points on it.
 			 *  It adapts the size of the window to that of the image.
 			 */
-			void  showImageAndPoints( const CImage &img, const vector_float &x, const vector_float &y, const TColor &color = TColor::red );
+			void  showImageAndPoints( const CImage &img, const vector_float &x, const vector_float &y, const TColor &color = TColor::red, const bool &showNumbers = false );
 
 			/** Show a given color or grayscale image on the window and print a set of points on it.
 			 *  It adapts the size of the window to that of the image.
@@ -130,7 +130,7 @@ namespace mrpt
 			 *  MATCHEDLIST can be of the class: mrpt::vision::CMatchedFeatureList, or any STL container of pairs of anything having ".x" and ".y" (e.g. mrpt::math::TPoint2D)
 			 */
 			template <class MATCHEDLIST>
-			void  showImagesAndMatchedPoints( const	CImage &img1, const	CImage &img2, const MATCHEDLIST &mList, const TColor &color = TColor::red )
+			void  showImagesAndMatchedPoints( const	CImage &img1, const	CImage &img2, const MATCHEDLIST &mList, const TColor &color = TColor::red, bool showNumbers = false )
 			{
 				MRPT_START
 
@@ -140,12 +140,20 @@ namespace mrpt
 				imgColor.joinImagesHorz( img1, img2 );
 
 				unsigned int w = img1.getWidth();
+                unsigned int nf = 0;
 
-				for( typename MATCHEDLIST::const_iterator i = mList.begin(); i != mList.end(); ++i )
+				for( typename MATCHEDLIST::const_iterator i = mList.begin(); i != mList.end(); ++i, ++nf )
 				{
 					imgColor.drawCircle( round( i->first->x ), round( i->first->y ), 4, color );
 					imgColor.drawCircle( round( i->second->x + w ), round( i->second->y ), 4, color );
-					imgColor.line( round( i->first->x ), round( i->first->y ), round( i->second->x + w ), round( i->second->y ), color );
+					//imgColor.line( round( i->first->x ), round( i->first->y ), round( i->second->x + w ), round( i->second->y ), color );
+					if( showNumbers )
+					{
+					    char buf[15];
+					    mrpt::system::os::sprintf( buf, 15, "%d", nf );
+                        imgColor.textOut( round( i->first->x ) - 10, round( i->first->y ), buf, color );
+                        imgColor.textOut( round( i->second->x + w ) + 10, round( i->second->y ), buf, color );
+                    }
 				}
 				showImage(imgColor);
 

@@ -372,7 +372,7 @@ MRPT_START;
 	TMatchingOptions	opts;
 	opts.matching_method		= TMatchingOptions::mmSAD;
 	opts.useEpipolarRestriction = false;
-	matchFeatures2( featureList, auxList, mList, opts );
+	matchFeatures( featureList, auxList, mList, opts );
 
 	featureList.resize( mList.size() );
 	CMatchedFeatureList::iterator	itmList;

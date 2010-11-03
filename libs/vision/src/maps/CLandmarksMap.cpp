@@ -228,7 +228,7 @@ double	 CLandmarksMap::computeObservationLikelihood(
 		CLandmarksMap	auxMap;
 		auxMap.insertionOptions = insertionOptions;
 		auxMap.loadSiftFeaturesFromStereoImageObservation( *o, CLandmarksMap::_mapMaxID );
-		auxMap.changeCoordinatesReference( robotPose3D ); 
+		auxMap.changeCoordinatesReference( robotPose3D );
 #endif
 
 		//auxMap.saveToMATLABScript3D("observationMap.m");
@@ -485,7 +485,7 @@ bool  CLandmarksMap::internal_insertObservation( const CObservation *obs, const 
 		CLandmarksMap	auxMap;
 		auxMap.insertionOptions = insertionOptions;
 		auxMap.loadSiftFeaturesFromStereoImageObservation( *o, CLandmarksMap::_mapMaxID );
-		auxMap.changeCoordinatesReference( robotPose3D ); 
+		auxMap.changeCoordinatesReference( robotPose3D );
 #endif
 
 		fuseWith( auxMap );

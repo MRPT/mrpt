@@ -398,6 +398,7 @@ StereoCalib( const char* imageList, int nx, int ny, int useUncalibrated )
                 CvMat part;
                 cvRemap( img1, img1r, mx1, my1 );
                 cvRemap( img2, img2r, mx2, my2 );
+
                 if( !isVerticalStereo || useUncalibrated != 0 )
                 {
               // When the stereo camera is oriented vertically,

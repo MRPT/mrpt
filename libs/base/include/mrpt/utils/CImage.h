@@ -409,6 +409,12 @@ namespace mrpt
 				rectifyImageInPlace(cam);
 			}
 
+			/** Rectify an image (undistorts and rectification) from a stereo pair according to a pair of precomputed rectification maps
+			  * \param mapX, mapY   [IN] The pre-computed maps of the rectification (should be computed beforehand)
+			  * \sa vision::computeStereoRectificationMaps
+			  */
+            void rectifyImageInPlace( void *mapX, void *mapY );
+
 			/** Filter the image with a Median filter with a window size WxW, returning the filtered image in out_img  */
 			void filterMedian( CImage &out_img, int W=3 ) const;
 

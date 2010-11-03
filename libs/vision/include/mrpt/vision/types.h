@@ -283,8 +283,12 @@ namespace mrpt
 			float	EDSD_RATIO;					//!< Boundary Ratio between the two lowest SURF EDSD
 
 			// SAD
-			double	minSAD_TH;
-			double  SAD_RATIO;
+			double	maxSAD_TH;                  //!< Minimum Euclidean Distance Between Sum of Absolute Differences
+			double  SAD_RATIO;                  //!< Boundary Ratio between the two highest SAD
+
+			// To estimate depth
+			bool    estimateDepth;              //!< Whether or not estimate the 3D position of the real features for the matches (only with parallelOpticalAxis by now).
+            double  fx,cx,cy,baseline;          //!< Intrinsic parameters of the stereo rig
 
 			/** Constructor
 			  */

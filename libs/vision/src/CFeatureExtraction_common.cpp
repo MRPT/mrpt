@@ -363,6 +363,8 @@ void CFeatureExtraction::TOptions::dumpToTextStream(CStream	&out) const
 
 	LOADABLEOPTS_DUMP_VAR(FASTOptions.threshold,int)
 	LOADABLEOPTS_DUMP_VAR(FASTOptions.nonmax_suppression,bool)
+	LOADABLEOPTS_DUMP_VAR(FASTOptions.min_distance,float)
+	LOADABLEOPTS_DUMP_VAR(FASTOptions.use_KLT_response,bool)
 
 	LOADABLEOPTS_DUMP_VAR(SpinImagesOptions.hist_size_distance,int)
 	LOADABLEOPTS_DUMP_VAR(SpinImagesOptions.hist_size_intensity,int)
@@ -409,6 +411,8 @@ void CFeatureExtraction::TOptions::loadFromConfigFile(
 
 	MRPT_LOAD_CONFIG_VAR(FASTOptions.threshold,int,  iniFile,section)
 	MRPT_LOAD_CONFIG_VAR(FASTOptions.nonmax_suppression,bool,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(FASTOptions.min_distance,float,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(FASTOptions.use_KLT_response,bool,  iniFile,section)
 
 	MRPT_LOAD_CONFIG_VAR(SpinImagesOptions.hist_size_distance,int,  iniFile,section)
 	MRPT_LOAD_CONFIG_VAR(SpinImagesOptions.hist_size_intensity,int,  iniFile,section)

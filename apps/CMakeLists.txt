@@ -55,6 +55,10 @@ IF (BUILD_STEREOSLAM AND EXISTS "${MRPT_SOURCE_DIR}/apps/vOdometry")
 	add_subdirectory(vOdometry)
 ENDIF (BUILD_STEREOSLAM AND EXISTS "${MRPT_SOURCE_DIR}/apps/vOdometry")
 
+IF (BUILD_STEREOSLAM AND EXISTS "${MRPT_SOURCE_DIR}/apps/multiResLocalization")
+	add_subdirectory(multiResLocalization)
+ENDIF (BUILD_STEREOSLAM AND EXISTS "${MRPT_SOURCE_DIR}/apps/multiResLocalization")
+
 if(BUILD_MONOSLAM)
 	add_subdirectory(mono-slam)
 endif(BUILD_MONOSLAM)

@@ -42,9 +42,96 @@ namespace mrpt
 	{
 		using namespace mrpt::utils;
 		using namespace mrpt::math;
+		using namespace std;
 
 		class CFeatureList;
 		class CMatchedFeatureList;
+
+        /** Struct containing the options when matching multi-resolution SIFT-like descriptors
+		*/
+		struct VISION_IMPEXP TMultiResDescMatchOptions : public mrpt::utils::CLoadableOptions
+		{
+            bool            useOriFilter;           //!< Whether or not use the filter based on orientation test
+            double          oriThreshold;           //!< The threshold for the orientation test
+
+            bool            useDepthFilter;         //!< Whether or not use the filter based on the depth test
+
+            double          matchingThreshold;      //!< The absolute threshold in descriptor distance for considering a match
+            double          matchingRatioThreshold; //!< The ratio between the two lowest distances threshold for considering a match
+            unsigned int    lowScl1, lowScl2;       //!< The lowest scales in the two features to be taken into account in the matching process
+            unsigned int    highScl1, highScl2;     //!< The highest scales in the two features to be taken into account in the matching process
+
+            int             searchAreaSize;         //!< Size of the squared area where to search for a match.
+
+            /** Default constructor
+              */
+            TMultiResDescMatchOptions() :
+                useOriFilter( true ), oriThreshold( 0.2 ),
+                useDepthFilter( true ), matchingThreshold( 1e4 ), matchingRatioThreshold( 0.5 ),
+                lowScl1(0), lowScl2(0), highScl1(6), highScl2(6), searchAreaSize(20) {}
+
+            TMultiResDescMatchOptions(
+                const bool &_useOriFilter, const double &_oriThreshold, const bool &_useDepthFilter,
+                const double &_th, const double &_th2, const unsigned int &_lwscl1, const unsigned int &_lwscl2,
+                const unsigned int &_hwscl1, const unsigned int &_hwscl2, const int &_searchAreaSize ) :
+                useOriFilter( _useOriFilter ), oriThreshold( _oriThreshold ), useDepthFilter( _useDepthFilter ),
+                matchingThreshold ( _th ), matchingRatioThreshold ( _th2 ), lowScl1( _lwscl1 ), lowScl2( _lwscl2 ),
+                highScl1( _hwscl1 ), highScl2( _hwscl2 ), searchAreaSize( _searchAreaSize ) {}
+
+            void  loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section );
+			void  saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section );
+            void  dumpToTextStream( mrpt::utils::CStream &out) const;
+
+		}; // end TMultiResDescMatchOptions
+
+        /** Struct containing the options when computing the multi-resolution SIFT-like descriptors
+		*/
+        struct VISION_IMPEXP TMultiResDescOptions : public mrpt::utils::CLoadableOptions
+        {
+            unsigned int    basePSize;          //!< The size of the base patch
+            vector<double>  scales;             //!< The set of scales relatives to the base patch
+            unsigned int    comLScl, comHScl;   //!< The subset of scales for which to compute the descriptors
+            double          sg1, sg2, sg3;      //!< The sigmas for the Gaussian kernels
+
+            double          fx,cx,cy,baseline;  //!< Intrinsic stereo pair parameters for computing the depth of the feature
+
+            double          cropValue;          //!< The SIFT-like descriptor is cropped at this value during normalization
+
+            /** Default constructor
+              */
+            TMultiResDescOptions() :
+                basePSize(23), sg1 (0.5), sg2(7.5), sg3(8.0), fx(0.0), cx(0.0), cy(0.0), baseline(0.0), cropValue(0.2)
+            {
+                scales.resize(7);
+                scales[0] = 0.5;
+                scales[1] = 0.8;
+                scales[2] = 1.0;
+                scales[3] = 1.2;
+                scales[4] = 1.5;
+                scales[5] = 1.8;
+                scales[6] = 2.0;
+                comLScl = 0;
+                comHScl = 6;
+            }
+
+            TMultiResDescOptions( const unsigned int &_basePSize, const vector<double> &_scales,
+                const unsigned int &_comLScl, const unsigned int &_comHScl,
+                const double &_sg1, const double &_sg2, const double &_sg3,
+                const double &_fx, const double &_cx, const double &_cy, const double &_baseline, const double &_cropValue ):
+                basePSize( _basePSize ), comLScl( _comLScl ), comHScl( _comHScl ),
+                sg1( _sg1 ), sg2( _sg2 ), sg3( _sg3 ),
+                fx( _fx ), cx( _cx ), cy( _cy ), baseline( _baseline ), cropValue( _cropValue )
+            {
+                scales.resize( _scales.size() );
+                for(unsigned int k = 0; k < _scales.size(); ++k)
+                    scales[k] = _scales[k];
+            }
+
+            void  loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section );
+			void  saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section );
+            void  dumpToTextStream( mrpt::utils::CStream &out) const;
+
+        }; // end TMultiResDescOptions
 
 		/** Definition of a feature ID
 		*/
@@ -129,6 +216,10 @@ namespace mrpt
 			float				scale;			//!< Feature scale into the scale space
 			uint8_t				IDSourceImage;	//!< ID of the image from which the feature was extracted (JL says: ?????)
 
+            double                  depth;              //!< The estimated depth in 3D of this feature wrt the camera that took its image
+            vector<double>          multiScales;        //!< A set of scales where the multi-resolution descriptor has been computed
+            vector<vector<double> > multiOrientations;  //!< A vector of main orientations (there is a vector of orientations for each scale)
+
 			bool isPointFeature() const;		//!< Return false only for Blob detectors (SIFT, SURF)
 
 			/** All the possible descriptors this feature may have */
@@ -136,19 +227,23 @@ namespace mrpt
 			{
 				TDescriptors();  // Initialization
 
-				std::vector<unsigned char>	SIFT;			//!< Feature descriptor
-				std::vector<float>			SURF;			//!< Feature descriptor
-				std::vector<float>			SpinImg;		//!< The 2D histogram as a single row
-				uint16_t					SpinImg_range_rows;  //!< The number of rows (corresponding to range bins in the 2D histogram) of the original matrix from which SpinImg was extracted as a vector.
-				mrpt::math::CMatrix			PolarImg;		//!< A polar image centered at the interest point
-				mrpt::math::CMatrix			LogPolarImg;	//!< A log-polar image centered at the interest point
-				bool						polarImgsNoRotation; //!< If set to true (manually, default=false) the call to "descriptorDistanceTo" will not consider all the rotations between polar image descriptors (PolarImg, LogPolarImg)
+				std::vector<unsigned char>	    SIFT;			        //!< Feature descriptor
+				std::vector<float>			    SURF;			        //!< Feature descriptor
+				std::vector<float>			    SpinImg;		        //!< The 2D histogram as a single row
+				uint16_t					    SpinImg_range_rows;     //!< The number of rows (corresponding to range bins in the 2D histogram) of the original matrix from which SpinImg was extracted as a vector.
+				mrpt::math::CMatrix			    PolarImg;		        //!< A polar image centered at the interest point
+				mrpt::math::CMatrix			    LogPolarImg;	        //!< A log-polar image centered at the interest point
+				bool						    polarImgsNoRotation;    //!< If set to true (manually, default=false) the call to "descriptorDistanceTo" will not consider all the rotations between polar image descriptors (PolarImg, LogPolarImg)
+				vector<vector<vector<int> > >   multiSIFTDescriptors;   //!< A set of SIFT-like descriptors for each orientation and scale of the multiResolution feature (there is a vector of descriptors for each scale)
 
-				bool hasDescriptorSIFT() const { return !SIFT.empty(); };          //!< Whether this feature has this kind of descriptor
-				bool hasDescriptorSURF() const { return !SURF.empty(); }          //!< Whether this feature has this kind of descriptor
-				bool hasDescriptorSpinImg() const { return !SpinImg.empty(); };       //!< Whether this feature has this kind of descriptor
-				bool hasDescriptorPolarImg() const { return size(PolarImg,1)>0; } ;      //!< Whether this feature has this kind of descriptor
-				bool hasDescriptorLogPolarImg() const { return size(LogPolarImg,1)>0; } ;      //!< Whether this feature has this kind of descriptor
+				bool hasDescriptorSIFT() const { return !SIFT.empty(); };                       //!< Whether this feature has this kind of descriptor
+				bool hasDescriptorSURF() const { return !SURF.empty(); }                        //!< Whether this feature has this kind of descriptor
+				bool hasDescriptorSpinImg() const { return !SpinImg.empty(); };                 //!< Whether this feature has this kind of descriptor
+				bool hasDescriptorPolarImg() const { return size(PolarImg,1)>0; } ;             //!< Whether this feature has this kind of descriptor
+				bool hasDescriptorLogPolarImg() const { return size(LogPolarImg,1)>0; } ;       //!< Whether this feature has this kind of descriptor
+				bool hasDescriptorMultiSIFT() const {
+                    return (multiSIFTDescriptors.size() > 0 && multiSIFTDescriptors[0].size() > 0); //!< Whether this feature has this kind of descriptor
+                }
 			}
 			descriptors;
 
@@ -246,6 +341,9 @@ namespace mrpt
 			/** Save feature list to a text file */
 			void loadFromTextFile( const std::string &fileName );
 
+			/** Copies the content of another CFeatureList inside this one. The inner features are also copied. */
+			void copyListFrom( const CFeatureList &otherList );
+
 			/** Get the maximum ID into the list */
 			TFeatureID getMaxID() const;
 
@@ -325,6 +423,9 @@ namespace mrpt
 
 			/** Save list of matched features to a text file */
 			void saveToTextFile(const std::string &fileName);
+
+            /** Returns the matching features as two separate CFeatureLists */
+			void getBothFeatureLists( CFeatureList &list1, CFeatureList &list2 );
 
 			/** Constructor */
 			CMatchedFeatureList();

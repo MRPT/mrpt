@@ -1765,7 +1765,7 @@ void CImage::update_patch(const CImage &patch,
 	ASSERT_(ipl_int);
 	ASSERT_(ipl_ext);
 	// We check that patch do not jut out of the image.
-	if(row_+ipl_ext->width > getWidth() || col_+ipl_ext->height > getHeight())
+	if(row_+ipl_ext->height > getHeight() || col_+ipl_ext->width > getWidth())
 	{
 	    THROW_EXCEPTION("Error : Patch jut out of image")
 	}
@@ -2406,6 +2406,36 @@ void CImage::swapRB()
     ASSERT_(img!=NULL);
 	IplImage *ptr=(IplImage*)img;
 	cvConvertImage(ptr,ptr,CV_CVTIMG_SWAP_RB);
+#endif
+}
+
+/*---------------------------------------------------------------
+                    rectifyImageInPlace
+ ---------------------------------------------------------------*/
+void CImage::rectifyImageInPlace( void *mapX, void *mapY )
+{
+#if MRPT_HAS_OPENCV
+    makeSureImageIsLoaded();   // For delayed loaded images stored externally
+    ASSERT_(img!=NULL);
+
+    IplImage *srcImg = static_cast<IplImage *>( getAsIplImage() );	// Source Image
+	IplImage *outImg;												// Output Image
+	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
+
+    cv::Mat *_mapX, *_mapY;
+    _mapX = static_cast<cv::Mat*>(mapX);
+    _mapY = static_cast<cv::Mat*>(mapY);
+
+//    cv::Mat outMat( getHeight(), getWidth(), CV_64F );
+
+    cv::Mat outMat = outImg;
+    cv::Mat auxMat = srcImg;
+    cv::remap( auxMat, outMat, *_mapX, *_mapY, cv::INTER_CUBIC );
+
+//    IplImage iplim = IplImage(outMat);
+
+    releaseIpl();
+    img = outImg;
 #endif
 }
 

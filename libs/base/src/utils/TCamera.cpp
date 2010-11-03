@@ -124,12 +124,18 @@ void TCamera::loadFromConfigFile(const std::string &section,  const mrpt::utils:
 	ncols = out_res[0];
 	nrows = out_res[1];
 
-	setIntrinsicParamsFromValues(
-		cfg.read_double(section,"fx",0, true),
-		cfg.read_double(section,"fy",0, true),
-		cfg.read_double(section,"cx",0, true),
-		cfg.read_double(section,"cy",0, true)
-		);
+	double fx, fy, cx, cy;
+    fx = cfg.read_double(section,"fx",0, true);
+    fy = cfg.read_double(section,"fy",0, true);
+    cx = cfg.read_double(section,"cx",0, true);
+    cy = cfg.read_double(section,"cy",0, true);
+
+    if( fx < 2.0 ) fx *= ncols;
+    if( fy < 2.0 ) fy *= nrows;
+    if( cx < 2.0 ) cx *= ncols;
+    if( cy < 2.0 ) cy *= nrows;
+
+	setIntrinsicParamsFromValues( fx, fy, cx, cy );
 
 	vector_double dists;
 	cfg.read_vector(section,"dist",vector_double(), dists, true);

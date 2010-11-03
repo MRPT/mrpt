@@ -47,6 +47,170 @@ IMPLEMENTS_SERIALIZABLE(CFeature, CSerializable, mrpt::vision)
 extern CStartUpClassesRegister  mrpt_vision_class_reg;
 const int dumm = mrpt_vision_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
+// --------------------------------------------------
+//			loadFromConfigFile
+// --------------------------------------------------
+/**  Load all the params from a config source, in the format described in saveToConfigFile()
+  */
+void TMultiResDescMatchOptions::loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section )
+{
+
+    useOriFilter = cfg.read_bool(section,"useOriFilter",true,false);
+    oriThreshold = cfg.read_double(section,"oriThreshold",0.2,false);
+
+    useDepthFilter = cfg.read_bool(section,"useDepthFilter",true,false);
+
+    matchingThreshold = cfg.read_double(section,"matchingThreshold",1e4,false);
+    matchingRatioThreshold = cfg.read_double(section,"matchingRatioThreshold",0.5,false);
+
+    lowScl1 = cfg.read_int(section,"lowScl1",0,false);
+    lowScl2 = cfg.read_int(section,"lowScl1",0,false);
+    highScl1 = cfg.read_int(section,"highScl1",6,false);
+    highScl2 = cfg.read_int(section,"highScl2",6,false);
+
+    searchAreaSize = cfg.read_double(section,"searchAreaSize",20,false);
+}
+
+// --------------------------------------------------
+//			saveToConfigFile
+// --------------------------------------------------
+void TMultiResDescMatchOptions::saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section )
+{
+	if( useOriFilter )
+	{
+	    cfg.write(section,"useOriFilter", "true" );
+	    cfg.write(section,"oriThreshold", oriThreshold );
+    }
+    else
+	    cfg.write(section,"useOriFilter", "false" );
+
+    if( useDepthFilter )
+	    cfg.write(section,"useDepthFilter", "true" );
+    else
+	    cfg.write(section,"useDepthFilter", "false" );
+
+	cfg.write(section,"matchingThreshold", matchingThreshold );
+	cfg.write(section,"matchingRatioThreshold", matchingRatioThreshold );
+	cfg.write(section,"lowScl1", lowScl1 );
+	cfg.write(section,"lowScl2", lowScl2 );
+	cfg.write(section,"highScl1", highScl1 );
+	cfg.write(section,"highScl2", highScl2 );
+
+	cfg.write(section,"searchAreaSize", searchAreaSize );
+} // end-saveToConfigFile
+
+// --------------------------------------------------
+//			dumpToTextStream
+// --------------------------------------------------
+void TMultiResDescMatchOptions::dumpToTextStream( mrpt::utils::CStream &out) const
+{
+    out.printf("\n----------- [vision::TMultiResDescMatchOptions] ------------ \n");
+	out.printf("Use orientation filter?:        ");
+	if( useOriFilter )
+	{
+	    out.printf("Yes\n");
+	    out.printf("· Orientation threshold:        %.1f º\n", RAD2DEG(oriThreshold) );
+    }
+    else
+	    out.printf("No\n");
+    out.printf("Use depth filter?:              ");
+    if( useDepthFilter )
+	    out.printf("Yes\n");
+    else
+    {
+	    out.printf("No\n" );
+    	out.printf("Lowest scale in list1:          %d\n", lowScl1 );
+        out.printf("Highest scale in list1:         %d\n", highScl1 );
+        out.printf("Lowest scale in list2:          %d\n", lowScl2 );
+        out.printf("Highest scale in list2:         %d\n", highScl2 );
+    }
+	out.printf("Matching threshold:             %.2f\n", matchingThreshold );
+	out.printf("Matching ratio threshold:       %.2f\n", matchingRatioThreshold );
+	out.printf("Size of the search window:      %d px\n", searchAreaSize );
+	out.printf("-------------------------------------------------------- \n");
+} // end-dumpToTextStream
+
+// --------------------------------------------------
+//			loadFromConfigFile
+// --------------------------------------------------
+/**  Load all the params from a config source, in the format described in saveToConfigFile()
+  */
+void TMultiResDescOptions::loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section )
+{
+    basePSize = cfg.read_double(section,"basePSize", 23, false );
+    comLScl = cfg.read_int(section,"comLScl", 0, false );
+    comHScl = cfg.read_int(section,"comHScl", 6, false );
+    sg1 = cfg.read_double(section,"sg1", 0.5, false );
+    sg2 = cfg.read_double(section,"sg2", 7.5, false );
+    sg3 = cfg.read_double(section,"sg3", 8.0, false );
+
+    fx = cfg.read_double(section,"fx",0.0, false);
+    cx = cfg.read_double(section,"cx",0.0, false);
+    cy = cfg.read_double(section,"cy",0.0, false);
+    baseline = cfg.read_double(section,"baseline",0.0, false);
+
+    vector<double> scales;
+    cfg.read_vector(section,"scales",vector<double>(),scales,false);
+    if(scales.size() < 1)
+    {
+        scales.resize(7);
+        scales[0] = 0.5;
+        scales[1] = 0.8;
+        scales[2] = 1.0;
+        scales[3] = 1.2;
+        scales[4] = 1.5;
+        scales[5] = 1.8;
+        scales[6] = 2.0;
+    } // end-if
+}
+
+// --------------------------------------------------
+//			saveToConfigFile
+// --------------------------------------------------
+void TMultiResDescOptions::saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section )
+{
+	cfg.write(section,"basePSize", basePSize);
+	cfg.write(section,"comLScl", comLScl );
+	cfg.write(section,"comHScl", comHScl );
+	cfg.write(section,"sg1", sg1 );
+	cfg.write(section,"sg2", sg2 );
+	cfg.write(section,"sg3", sg3 );
+
+	cfg.write(section,"fx", fx );
+	cfg.write(section,"cx", cx );
+	cfg.write(section,"cy", cy );
+	cfg.write(section,"baseline", baseline );
+
+    char buf[300];
+    for(unsigned int k = 0; k < scales.size(); ++k)
+        mrpt::system::os::sprintf( buf, 300, "%.2f ", scales[k] );
+	cfg.write(section,"scales", buf );
+} // end-saveToConfigFile
+
+// --------------------------------------------------
+//			dumpToTextStream
+// --------------------------------------------------
+void  TMultiResDescOptions::dumpToTextStream( mrpt::utils::CStream &out) const
+{
+    out.printf("\n----------- [vision::TMultiResDescOptions] ------------ \n");
+    out.printf("Base patch size:                %d px\n", basePSize);
+	out.printf("Lowest scale to compute:        %d\n", comLScl );
+	out.printf("Highest scale to compute:       %d\n", comHScl );
+	out.printf("Image smoothing sigma:          %.2f px\n", sg1 );
+	out.printf("Orientation histogram sigma:    %.2f\n", sg2 );
+	out.printf("Descriptor histogram sigma:     %.2f\n", sg3 );
+
+	out.printf("Focal length:                   %.2f px\n", fx );
+	out.printf("Principal point (cx):           %.2f px\n", cx );
+	out.printf("Principal point (cy):           %.2f px\n", cy );
+	out.printf("Baseline:                       %.2f m\n", baseline );
+
+	out.printf("Scales:                         ");
+    for(unsigned int k = 0; k < scales.size(); ++k)
+        out.printf( "%.2f ", scales[k] );
+    out.printf("\n");
+    out.printf("-------------------------------------------------------- \n");
+} // end-dumpToTextStream
 
 void  CFeature::writeToStream(CStream &out,int *version) const
 {
@@ -606,6 +770,18 @@ void CFeatureList::loadFromTextFile( const std::string &filename )
 } // end loadFromTextFile
 
 // --------------------------------------------------
+// copyListFrom()
+// --------------------------------------------------
+void CFeatureList::copyListFrom( const CFeatureList &otherList )
+{
+    this->resize( otherList.size() );
+    CFeatureList::const_iterator it1;
+    CFeatureList::iterator it2;
+    for( it1 = otherList.begin(), it2 = this->begin(); it1 != otherList.end(); ++it1, ++it2 )
+        (*it2).copy(*it1);
+} // end-copyListFrom
+
+// --------------------------------------------------
 // getByID()
 // --------------------------------------------------
 CFeaturePtr CFeatureList::getByID( TFeatureID ID ) const
@@ -704,6 +880,22 @@ void CMatchedFeatureList::saveToTextFile(const std::string &filename)
 
 	} // end for
 	os::fclose( f );
+}
+
+// --------------------------------------------------
+//			getBothFeatureLists
+// --------------------------------------------------
+void CMatchedFeatureList::getBothFeatureLists( CFeatureList &list1, CFeatureList &list2 )
+{
+    list1.resize( this->size() );
+    list2.resize( this->size() );
+
+    unsigned int k = 0;
+    for( CMatchedFeatureList::iterator it = this->begin(); it != this->end(); ++it, ++k )
+    {
+        list1[k] = it->first;
+        list2[k] = it->second;
+    } // end for
 }
 
 // --------------------------------------------------

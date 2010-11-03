@@ -396,7 +396,7 @@ void  CDisplayWindow::showImage( const	CImage& img )
 /*---------------------------------------------------------------
 					showImageAndPoints
  ---------------------------------------------------------------*/
-void  CDisplayWindow::showImageAndPoints( const CImage &img, const vector_float &x, const vector_float &y, const TColor &color )
+void  CDisplayWindow::showImageAndPoints( const CImage &img, const vector_float &x, const vector_float &y, const TColor &color, const bool &showNumbers )
 {
 #if MRPT_HAS_WXWIDGETS
 	MRPT_START;
@@ -406,8 +406,16 @@ void  CDisplayWindow::showImageAndPoints( const CImage &img, const vector_float 
 	img.colorImage( imgColor );	// Create a colorimage
 	//imgColor = img;	// Make a copy of the image
 	for(unsigned int i = 0; i < x.size(); i++)
-		imgColor.cross(round(x[i]),round(y[i]),color,'+');
+	{
+	    imgColor.cross(round(x[i]),round(y[i]),color,'+');
 
+        if( showNumbers )
+        {
+            char buf[15];
+            mrpt::system::os::sprintf( buf, 15, "%d", i );
+            imgColor.textOut( round(x[i]) - 10, round(y[i]), buf, color );
+        }
+	} // end-for
 	showImage(imgColor);
 	MRPT_END;
 #endif
