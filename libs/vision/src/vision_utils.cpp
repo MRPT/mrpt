@@ -45,8 +45,8 @@
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/geometry.h>
-#include <Eigen/Core>
-using namespace Eigen;
+//#include <Eigen/Core>
+//using namespace Eigen;
 
 #include "do_opencv_includes.h"
 
@@ -1126,7 +1126,7 @@ int vision::computeMainOrientations( const CImage &image,
 
     // Local variables:
     const unsigned int NBINS    = 36;
-    const int hPatchSize        = floor(patchSize/2);
+    const int hPatchSize        = patchSize/2;
 
     vector<double> oris( NBINS, 0.0 );
     int mx = (int)x, my = (int)y;
@@ -1293,7 +1293,7 @@ void vision::computeHistogramOfOrientations(
 	double  sin_t           = sin( orientation );
 	double  bins_per_rad    = n / M_2PI;
 	double  exp_denom       = opts.sg3*opts.sg3*2;
-	int     radius          = floor(patchSize/2);
+	int     radius          = patchSize/2;
 	vector<double> oris( 128, 0.0 );
 
 //     For each pixel in the 23x23 patch:

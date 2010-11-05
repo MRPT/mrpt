@@ -388,7 +388,7 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	map_fps_bb[7.5]		= FLYCAPTURE_FRAMERATE_7_5;
 	map_fps_bb[15]		= FLYCAPTURE_FRAMERATE_15;
 	map_fps_bb[30]		= FLYCAPTURE_FRAMERATE_30;
-	map_fps_bb[50]		= FLYCAPTURE_FRAMERATE_50;
+//	map_fps_bb[50]		= FLYCAPTURE_FRAMERATE_50;
 	map_fps_bb[60]		= FLYCAPTURE_FRAMERATE_60;
 	map_fps_bb[120]		= FLYCAPTURE_FRAMERATE_120;
 	map_fps_bb[240]		= FLYCAPTURE_FRAMERATE_240;
