@@ -68,6 +68,7 @@
 		- Fixed exception when rendering a mrpt::opengl::CPointCloud with no points in it.
 		- Fixed bad computation of SAD in mrpt::vision::matchFeatures() because bad usage of IplImage fields <i>width</i> and <i>widthstep</i>.
 		- Fixed vision::CImage::update_patch(). Row and column checkings of the patch position were wrongly related to image width and height, respectively.
+		- Fixed CVE-2010-0280: Array index error in Jan Eric Kyprianidis lib3ds 1.x, as used in Google SketchUp 7.x before 7.1 M2, allows remote attackers to cause a denial of service (memory corruption) or possibly execute arbitrary code via crafted structures in a 3DS file, probably related to mesh.c. (Thanks to Silvio Cesare for reporting here: https://bugzilla.redhat.com/show_bug.cgi?id=650786 ).
 
   <br> <hr> <br>
 

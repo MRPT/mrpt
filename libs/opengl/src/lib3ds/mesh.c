@@ -87,8 +87,11 @@ face_array_read(Lib3dsMesh *mesh, Lib3dsIo *io)
             faces=lib3ds_io_read_word(io);
             for (i=0; i<faces; ++i) {
               index=lib3ds_io_read_word(io);
-              ASSERT(index<mesh->faces);
-              strcpy(mesh->faceL[index].material, name);
+              if (index<mesh->faces) {
+	                strncpy(mesh->faceL[index].material, name, 64);
+	              } else {
+	                // TODO warning
+	              }
             }
           }
           break;
