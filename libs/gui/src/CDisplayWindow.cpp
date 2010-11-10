@@ -404,7 +404,6 @@ void  CDisplayWindow::showImageAndPoints( const CImage &img, const vector_float 
 
 	CImage imgColor(1,1,3);
 	img.colorImage( imgColor );	// Create a colorimage
-	//imgColor = img;	// Make a copy of the image
 	for(unsigned int i = 0; i < x.size(); i++)
 	{
 	    imgColor.cross(round(x[i]),round(y[i]),color,'+');

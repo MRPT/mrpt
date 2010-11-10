@@ -178,6 +178,12 @@ namespace mrpt
 			  */
 			void  insertPoint( CPoint3D p );
 
+			/** Remove from the map the points which z is outside the range [z_min,z_max].
+			  *
+			  * \exception std::exception If z_min > z_max.
+			  */
+			void  filterByHeight( const double &z_min, const double &z_max );
+
 			/** Remove from the map the points marked in a bool's array as "true".
 			  *
 			  * \exception std::exception If mask size is not equal to points count.
