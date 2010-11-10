@@ -262,7 +262,16 @@ namespace mrpt
 			 TColourOptions	colorScheme;	//!< The options employed when inserting laser scans in the map.
 
 			 void resetPointsMinDist( float defValue = 2000.0f ); //!< Reset the minimum-observed-distance buffer for all the points to a predefined value
-
+			
+			 /** The minimum and maximum height for a certain laser scan to be inserted into this map
+				\sa bFilterByHeight
+			  */
+			double z_min, z_max;
+			
+			 /** Whether or not filter the input points by height
+			    \sa z_min, z_max
+			 */
+			bool bFilterByHeight;
 		}; // End of class def.
 
 	} // End of namespace

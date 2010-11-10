@@ -279,37 +279,42 @@ void  CColouredPointsMap::loadFromRangeScan(
 								float i_x = lx_1 + q*(lx-lx_1)/nInterpol;
 								float i_y = ly_1 + q*(ly-ly_1)/nInterpol;
 								float i_z = lz_1 + q*(lz-lz_1)/nInterpol;
-
-								x.push_back( i_x );
-								y.push_back( i_y );
-								z.push_back( i_z );
-								pointWeight.push_back( 1 );
-								m_color_R.push_back(pR);
-								m_color_G.push_back(pG);
-								m_color_B.push_back(pB);
-								m_min_dist.push_back(1e4);
-							}
+								if( !bFilterByHeight || ( i_z >= z_min && i_z <= z_max ) )
+								{
+									x.push_back( i_x );
+									y.push_back( i_y );
+									z.push_back( i_z );
+									pointWeight.push_back( 1 );
+									m_color_R.push_back(pR);
+									m_color_G.push_back(pG);
+									m_color_B.push_back(pB);
+									m_min_dist.push_back(1e4);
+								} // end if
+							} // end for
 						} // End of interpolate:
 					}
 
-					x.push_back( lx );
-					y.push_back( ly );
-					z.push_back( lz );
-					pointWeight.push_back( 1 );
-					m_color_R.push_back(pR);
-					m_color_G.push_back(pG);
-					m_color_B.push_back(pB);
-					m_min_dist.push_back(1e4);
+					if( !bFilterByHeight || (lz >= z_min && lz <= z_max ) )
+					{
+						x.push_back( lx );
+						y.push_back( ly );
+						z.push_back( lz );
+						pointWeight.push_back( 1 );
+						m_color_R.push_back(pR);
+						m_color_G.push_back(pG);
+						m_color_B.push_back(pB);
+						m_min_dist.push_back(1e4);
 
-					lastPointWasInserted = true;
+						lastPointWasInserted = true;
 
-					lx_2 = lx_1;
-					ly_2 = ly_1;
-					lz_2 = lz_1;
+						lx_2 = lx_1;
+						ly_2 = ly_1;
+						lz_2 = lz_1;
 
-					lx_1 = lx;
-					ly_1 = ly;
-					lz_1 = lz;
+						lx_1 = lx;
+						ly_1 = ly;
+						lz_1 = lz;
+					}
 				}
 
 			}
@@ -322,14 +327,17 @@ void  CColouredPointsMap::loadFromRangeScan(
 		// The last point
 		if (lastPointWasValid && !lastPointWasInserted)
 		{
-			x.push_back( lx );
-			y.push_back( ly );
-			z.push_back( lz );
-			pointWeight.push_back( 1 );
-			m_color_R.push_back(pR);
-			m_color_G.push_back(pG);
-			m_color_B.push_back(pB);
-			m_min_dist.push_back(1e4);
+			if( !bFilterByHeight || (lz >= z_min && lz <= z_max ) )
+			{
+				x.push_back( lx );
+				y.push_back( ly );
+				z.push_back( lz );
+				pointWeight.push_back( 1 );
+				m_color_R.push_back(pR);
+				m_color_G.push_back(pG);
+				m_color_B.push_back(pB);
+				m_min_dist.push_back(1e4);
+			}
 		}
 	}
 }
@@ -1219,6 +1227,9 @@ bool  CColouredPointsMap::internal_insertObservation(
 				// ----------------------------------------------------------
 				applyDeletionMask( checkForDeletion );
 			}
+
+			//if( bFilterByHeight )
+			//    filterByHeight( z_min, z_max );
 
 			return true;
 		}
