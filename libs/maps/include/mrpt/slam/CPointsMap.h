@@ -180,15 +180,7 @@ namespace slam
 			  */
 			float	maxDistForInterpolatePoints;
 
-            /** The minimum and maximum values of z coord to be inserted
-			  */
-			float   z_min, z_max;
-
-			/** If set to true (default=false), inserted points are "fused" with previously existent ones. This shrink the size of the points map, but its slower.
-			  */
-			bool	filterByHeight;
-
-		 };
+   		 };
 
 		TInsertionOptions insertionOptions; //!< The options used when inserting observations in the map
 

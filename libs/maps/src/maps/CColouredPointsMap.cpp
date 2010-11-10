@@ -1068,22 +1068,6 @@ void  CColouredPointsMap::insertPoint( CPoint3D p )
 }
 
 /*---------------------------------------------------------------
-						filterByHeight
- ---------------------------------------------------------------*/
-void  CColouredPointsMap::filterByHeight( const double &z_min, const double &z_max )
-{
-    ASSERT_( z_min <= z_max );
-
-    size_t nPts = getPointsCount();
-    std::vector<bool> mask(nPts);
-    for( int k = 0; k < (int)nPts; ++k )
-    if( z[k] < z_min || z[k] > z_max )
-            mask[k] = true;
-
-    applyDeletionMask(mask);
-}
-
-/*---------------------------------------------------------------
 						applyDeletionMask
  ---------------------------------------------------------------*/
 void  CColouredPointsMap::applyDeletionMask( std::vector<bool> &mask )
@@ -1235,9 +1219,6 @@ bool  CColouredPointsMap::internal_insertObservation(
 				// ----------------------------------------------------------
 				applyDeletionMask( checkForDeletion );
 			}
-
-			if( insertionOptions.filterByHeight )
-			    filterByHeight( insertionOptions.z_min, insertionOptions.z_max );
 
 			return true;
 		}
