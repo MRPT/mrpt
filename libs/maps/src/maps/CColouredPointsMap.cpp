@@ -52,9 +52,11 @@ IMPLEMENTS_SERIALIZABLE(CColouredPointsMap, CPointsMap,mrpt::slam)
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
-CColouredPointsMap::CColouredPointsMap()
+CColouredPointsMap::CColouredPointsMap() :
+	z_min(-10),
+	z_max(10),
+	bFilterByHeight(false)
 {
-	reserve( 400 );
 }
 
 /*---------------------------------------------------------------

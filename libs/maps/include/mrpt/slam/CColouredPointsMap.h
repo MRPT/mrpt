@@ -262,16 +262,33 @@ namespace mrpt
 			 TColourOptions	colorScheme;	//!< The options employed when inserting laser scans in the map.
 
 			 void resetPointsMinDist( float defValue = 2000.0f ); //!< Reset the minimum-observed-distance buffer for all the points to a predefined value
-			
+
+			/** @name Filter-by-height stuff
+				@{ */
+		public:
+			/** Enable/disable the filter-by-height functionality \sa setHeightFilterLevels \note Default upon construction is disabled. */
+			inline void enableFilterByHeight(bool enable=true) { bFilterByHeight=enable; }
+			/** Return whether filter-by-height is enabled \sa enableFilterByHeight */
+			inline bool isFilterByHeightEnabled() const  { return bFilterByHeight; }
+
+			/** Set the min/max Z levels for points to be actually inserted in the map (only if \a enableFilterByHeight() was called before). */
+			inline void setHeightFilterLevels(const double _z_min, const double _z_max) { z_min=_z_min; z_max=_z_max; }
+			/** Get the min/max Z levels for points to be actually inserted in the map \sa enableFilterByHeight, setHeightFilterLevels */
+			inline void getHeightFilterLevels(double &_z_min, double &_z_max) const { _z_min=z_min; _z_max=z_max; }
+
+		private:
 			 /** The minimum and maximum height for a certain laser scan to be inserted into this map
 				\sa bFilterByHeight
 			  */
 			double z_min, z_max;
-			
+
 			 /** Whether or not filter the input points by height
 			    \sa z_min, z_max
 			 */
 			bool bFilterByHeight;
+
+			/** @} */
+
 		}; // End of class def.
 
 	} // End of namespace
