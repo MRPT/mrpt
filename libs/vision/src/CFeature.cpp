@@ -143,13 +143,12 @@ void TMultiResDescOptions::loadFromConfigFile( const mrpt::utils::CConfigFileBas
     sg1 = cfg.read_double(section,"sg1", 0.5, false );
     sg2 = cfg.read_double(section,"sg2", 7.5, false );
     sg3 = cfg.read_double(section,"sg3", 8.0, false );
-
+    computeDepth = cfg.read_bool(section,"computeDepth", true, false );
     fx = cfg.read_double(section,"fx",0.0, false);
     cx = cfg.read_double(section,"cx",0.0, false);
     cy = cfg.read_double(section,"cy",0.0, false);
     baseline = cfg.read_double(section,"baseline",0.0, false);
 
-    vector<double> scales;
     cfg.read_vector(section,"scales",vector<double>(),scales,false);
     if(scales.size() < 1)
     {
@@ -176,6 +175,7 @@ void TMultiResDescOptions::saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, 
 	cfg.write(section,"sg2", sg2 );
 	cfg.write(section,"sg3", sg3 );
 
+    cfg.write(section,"computeDepth", computeDepth ? "true" : "false" );
 	cfg.write(section,"fx", fx );
 	cfg.write(section,"cx", cx );
 	cfg.write(section,"cy", cy );
@@ -199,11 +199,17 @@ void  TMultiResDescOptions::dumpToTextStream( mrpt::utils::CStream &out) const
 	out.printf("Image smoothing sigma:          %.2f px\n", sg1 );
 	out.printf("Orientation histogram sigma:    %.2f\n", sg2 );
 	out.printf("Descriptor histogram sigma:     %.2f\n", sg3 );
-
-	out.printf("Focal length:                   %.2f px\n", fx );
-	out.printf("Principal point (cx):           %.2f px\n", cx );
-	out.printf("Principal point (cy):           %.2f px\n", cy );
-	out.printf("Baseline:                       %.2f m\n", baseline );
+    out.printf("Compute depth:                  ");
+    if( computeDepth )
+    {
+        out.printf("Yes\n");
+        out.printf("Focal length:                   %.2f px\n", fx );
+        out.printf("Principal point (cx):           %.2f px\n", cx );
+        out.printf("Principal point (cy):           %.2f px\n", cy );
+        out.printf("Baseline:                       %.2f m\n", baseline );
+    }
+    else
+        out.printf("No\n");
 
 	out.printf("Scales:                         ");
     for(unsigned int k = 0; k < scales.size(); ++k)
@@ -211,6 +217,87 @@ void  TMultiResDescOptions::dumpToTextStream( mrpt::utils::CStream &out) const
     out.printf("\n");
     out.printf("-------------------------------------------------------- \n");
 } // end-dumpToTextStream
+
+void CFeature::dumpToTextStream( mrpt::utils::CStream &out) const
+{
+
+    out.printf("\n----------- [vision::CFeature] ------------ \n");
+    out.printf("Feature ID:                     %d\n", (int)ID);
+	out.printf("Coordinates:                    (%.2f,%.2f) px\n", x, y );
+	out.printf("PatchSize:                      %d\n", patchSize );
+	out.printf("Type:                           ");
+	switch( type )
+	{
+	    case -1: out.printf("Not defined\n"); break;
+	    case 0: out.printf("KLT\n"); break;
+	    case 1: out.printf("Harris\n"); break;
+	    case 2: out.printf("BCD\n"); break;
+	    case 3: out.printf("SIFT\n"); break;
+	    case 4: out.printf("SURF\n"); break;
+	    case 5: out.printf("Beacon\n"); break;
+	    case 6: out.printf("FAST\n"); break;
+	}
+	out.printf("Status:                         ");
+	switch( track_status )
+	{
+	    case 0: out.printf("Idle\n"); break;
+	    case 1: out.printf("[KLT] Out of bounds [KLT]\n"); break;
+	    case 2: out.printf("[KLT] Determinant too small\n"); break;
+	    case 3: out.printf("[KLT] Residue is too big\n"); break;
+	    case 4: out.printf("[KLT] Residue is maximum\n"); break;
+	    case 5: out.printf("[KLT] Tracked\n"); break;
+	    case 6: out.printf("[KLT] Maximum iteration reached\n"); break;
+	    case 10: out.printf("[KLT] Lost\n"); break;
+	}
+
+	out.printf("Response:                       %.2f\n", response );
+	out.printf("Main orientation:               %.2f\n", orientation );
+	out.printf("Main scale:                     %.2f\n", scale );
+	out.printf("# frames seen:                  %d\n", nTimesSeen );
+	out.printf("# frames not seen:              %d\n", nTimesNotSeen );
+	out.printf("# frames since last seen:       %d\n", nTimesLastSeen );
+	out.printf("Depth:                          %.2f m\n", depth );
+	out.printf("Is point feature?:              ");
+	isPointFeature() ? out.printf("Yes\n") : out.printf("No\n");
+
+	out.printf("Has SIFT descriptor?:           ");
+    descriptors.hasDescriptorSIFT() ? out.printf("Yes\n") : out.printf("No\n");
+	out.printf("Has SURF descriptor?:           ");
+	descriptors.hasDescriptorSURF() ? out.printf("Yes\n") : out.printf("No\n");
+	out.printf("Has Spin image descriptor?:     ");
+	descriptors.hasDescriptorSpinImg() ? out.printf("Yes\n") : out.printf("No\n");
+	out.printf("Has Polar descriptor?:          ");
+	descriptors.hasDescriptorPolarImg() ? out.printf("Yes\n") : out.printf("No\n");
+	out.printf("Has Log Polar descriptor?:      ");
+	descriptors.hasDescriptorLogPolarImg() ? out.printf("Yes\n") : out.printf("No\n");
+
+	out.printf("Has multiscale?:                ");
+    if( !descriptors.hasDescriptorMultiSIFT() )
+        out.printf("No\n");
+    else
+    {
+        out.printf("Yes\n");
+        for( int k = 0; k < (int)multiScales.size(); ++k )
+        {
+            out.printf(" · Scale %d: %.2f\n", k, multiScales[k] );
+            for( int m = 0; m < (int)multiOrientations[k].size(); ++m )
+            {
+                out.printf(" ·· Orientation %d: %.2f\n", m, multiOrientations[k][m] );
+                out.printf(" ·· [D] " );
+                for( int n = 0; n < (int)descriptors.multiSIFTDescriptors[k][m].size(); ++n )
+                    out.printf("%d ", descriptors.multiSIFTDescriptors[k][m][n] );
+                out.printf("\n");
+            }
+        }
+    } // end else
+    out.printf("-------------------------------------------------------- \n");
+} // end dumpToTextStream
+
+void CFeature::dumpToConsole() const
+{
+    CStdOutStream myOut;
+    dumpToTextStream( myOut );
+}
 
 void  CFeature::writeToStream(CStream &out,int *version) const
 {
@@ -283,6 +370,7 @@ void  CFeature::readFromStream(CStream &in,int version)
 CFeature::CFeature(): x(0.0f), y(0.0f), ID(0), patchSize(21), type(featNotDefined),
 	track_status(status_IDLE), response(0.0),
 	orientation(0.0), scale(0.0), IDSourceImage(0),
+	nTimesSeen(1), nTimesNotSeen(0), nTimesLastSeen(0),
 	descriptors()
 {}
 

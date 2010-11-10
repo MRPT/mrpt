@@ -345,16 +345,19 @@ namespace mrpt
 			  * \param rightImage       [IN]    The image from where the list2 was extracted. It's used to compute the descriptor of these features if necessary.
 			  * \param leftMatchingIdx  [OUT]   The indexes within list1 of the matches found.
 			  * \param rightMatchingIdx [OUT]   The indexes within list2 of the matches found.
+			  * \param outScales        [OUT]   The scales of list1 where the matches were found.
 			  * \param matchOpts        [IN]    The options structure for the matching process.
 			  * \param computeOpts      [IN]    The options structure for the descriptor computation process.
+			  * \return The number of matches found
 			  * \sa TMultiResDescMatchOptions, TMultiResDescOptions
               */
-            void VISION_IMPEXP matchMultiResolutionFeatures(
+            int VISION_IMPEXP matchMultiResolutionFeatures(
                                         const CFeatureList              & list1,
                                         const CFeatureList              & list2,
                                         const CImage                    & rightImage,
                                         vector<int>                     & leftMatchingIdx,
                                         vector<int>                     & rightMatchingIdx,
+                                        vector<int>                     & outScales,
                                         const TMultiResDescMatchOptions & matchOpts,
                                         const TMultiResDescOptions      & computeOpts );
 
@@ -371,9 +374,10 @@ namespace mrpt
 			  * \param lori_corrs       [OUT]   The orientation of the features in list1 where a match was found (if any).
 			  * \param rori_corrs       [OUT]   The orientation of the features in list2 where a match was found (if any).
 			  * \param opts             [IN]    The options structure for the matching process.
+              * \return The number of matches found
 			  * \sa TMultiResDescMatchOptions
               */
-            void VISION_IMPEXP matchMultiResolutionFeatures(
+            int VISION_IMPEXP matchMultiResolutionFeatures(
                                         const CFeatureList              & list1,
                                         const CFeatureList              & list2,
                                         vector<int>                     & idx_right_corrs,
@@ -383,6 +387,30 @@ namespace mrpt
                                         vector<double>                  & lori_corrs,
                                         vector<double>                  & rori_corrs,
                                         const TMultiResDescMatchOptions & opts );
+
+            int VISION_IMPEXP matchMultiResolutionFeatures(
+                                        CMatchedFeatureList             & mList1,
+                                        CMatchedFeatureList             & mList2,
+                                        const CImage                    & leftImage,
+                                        const CImage                    & rightImage,
+                                        const TMultiResDescMatchOptions & matchOpts,
+                                        const TMultiResDescOptions      & computeOpts );
+
+            /** Computes more multi-resolution SIFT-like descriptors for a feature using its position in a new image. This
+              * is called when we have found a match between a feature and itself in a new frame but it has been found in
+              * a boundary scale. We now expand the range of scales, orientations and descriptors for that feature.
+			  * \param inputFeat    [IN]    The feature in the new frame.
+			  * \param image        [IN]    The new frame.
+			  * \param outputFeat   [OUT]   The base feature (detected in the base frame).
+			  * \param lowerScales  [IN]    If we should find descriptors for lower scales or for higher ones.
+			  * \param opts         [IN]    The options for computing the new descriptors.
+              */
+            int VISION_IMPEXP computeMoreDescriptors(
+                                        const CFeature              & inputFeat,
+                                        const CImage                & image,
+                                        CFeature                    & outputFeat,
+                                        const bool                  & lowerScales,
+                                        const TMultiResDescOptions  & opts );
 
             /** Computes the initial and final scales where to look when finding a match between multi-resolution features.
               * Both features must have their "depth" member properly computed.

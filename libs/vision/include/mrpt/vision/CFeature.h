@@ -92,7 +92,7 @@ namespace mrpt
             vector<double>  scales;             //!< The set of scales relatives to the base patch
             unsigned int    comLScl, comHScl;   //!< The subset of scales for which to compute the descriptors
             double          sg1, sg2, sg3;      //!< The sigmas for the Gaussian kernels
-
+            bool            computeDepth;       //!< Whether or not compute the depth of the feature
             double          fx,cx,cy,baseline;  //!< Intrinsic stereo pair parameters for computing the depth of the feature
 
             double          cropValue;          //!< The SIFT-like descriptor is cropped at this value during normalization
@@ -100,7 +100,7 @@ namespace mrpt
             /** Default constructor
               */
             TMultiResDescOptions() :
-                basePSize(23), sg1 (0.5), sg2(7.5), sg3(8.0), fx(0.0), cx(0.0), cy(0.0), baseline(0.0), cropValue(0.2)
+                basePSize(23), sg1 (0.5), sg2(7.5), sg3(8.0), computeDepth(true), fx(0.0), cx(0.0), cy(0.0), baseline(0.0), cropValue(0.2)
             {
                 scales.resize(7);
                 scales[0] = 0.5;
@@ -117,10 +117,10 @@ namespace mrpt
             TMultiResDescOptions( const unsigned int &_basePSize, const vector<double> &_scales,
                 const unsigned int &_comLScl, const unsigned int &_comHScl,
                 const double &_sg1, const double &_sg2, const double &_sg3,
-                const double &_fx, const double &_cx, const double &_cy, const double &_baseline, const double &_cropValue ):
+                const bool &_computeDepth, const double &_fx, const double &_cx, const double &_cy, const double &_baseline, const double &_cropValue ):
                 basePSize( _basePSize ), comLScl( _comLScl ), comHScl( _comHScl ),
                 sg1( _sg1 ), sg2( _sg2 ), sg3( _sg3 ),
-                fx( _fx ), cx( _cx ), cy( _cy ), baseline( _baseline ), cropValue( _cropValue )
+                computeDepth( _computeDepth ), fx( _fx ), cx( _cx ), cy( _cy ), baseline( _baseline ), cropValue( _cropValue )
             {
                 scales.resize( _scales.size() );
                 for(unsigned int k = 0; k < _scales.size(); ++k)
@@ -215,10 +215,13 @@ namespace mrpt
 			float				orientation;	//!< Main orientation of the feature
 			float				scale;			//!< Feature scale into the scale space
 			uint8_t				IDSourceImage;	//!< ID of the image from which the feature was extracted (JL says: ?????)
+			int                 nTimesSeen;     //!< Number of frames it has been seen in a sequence of images.
+			int                 nTimesNotSeen;  //!< Number of frames it has not been seen in a sequence of images.
+			int                 nTimesLastSeen; //!< Number of frames since it was seen for the last time.
 
-            double                  depth;              //!< The estimated depth in 3D of this feature wrt the camera that took its image
-            vector<double>          multiScales;        //!< A set of scales where the multi-resolution descriptor has been computed
-            vector<vector<double> > multiOrientations;  //!< A vector of main orientations (there is a vector of orientations for each scale)
+            double                 depth;              //!< The estimated depth in 3D of this feature wrt the camera that took its image
+            deque<double>          multiScales;        //!< A set of scales where the multi-resolution descriptor has been computed
+            deque<vector<double> > multiOrientations;  //!< A vector of main orientations (there is a vector of orientations for each scale)
 
 			bool isPointFeature() const;		//!< Return false only for Blob detectors (SIFT, SURF)
 
@@ -234,7 +237,7 @@ namespace mrpt
 				mrpt::math::CMatrix			    PolarImg;		        //!< A polar image centered at the interest point
 				mrpt::math::CMatrix			    LogPolarImg;	        //!< A log-polar image centered at the interest point
 				bool						    polarImgsNoRotation;    //!< If set to true (manually, default=false) the call to "descriptorDistanceTo" will not consider all the rotations between polar image descriptors (PolarImg, LogPolarImg)
-				vector<vector<vector<int> > >   multiSIFTDescriptors;   //!< A set of SIFT-like descriptors for each orientation and scale of the multiResolution feature (there is a vector of descriptors for each scale)
+				deque<vector<vector<int> > >   multiSIFTDescriptors;   //!< A set of SIFT-like descriptors for each orientation and scale of the multiResolution feature (there is a vector of descriptors for each scale)
 
 				bool hasDescriptorSIFT() const { return !SIFT.empty(); };                       //!< Whether this feature has this kind of descriptor
 				bool hasDescriptorSURF() const { return !SURF.empty(); }                        //!< Whether this feature has this kind of descriptor
@@ -296,6 +299,11 @@ namespace mrpt
 			/** Get the type of the feature
 			*/
 			TFeatureType get_type() const { return type; }
+
+			/** Dump feature information into a text stream */
+			void dumpToTextStream( mrpt::utils::CStream &out) const;
+
+			void dumpToConsole() const;
 
 			/** Constructor
 			*/

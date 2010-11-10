@@ -50,9 +50,6 @@
 
 #include "do_opencv_includes.h"
 
-const int FEAT_FREE = -1;
-
-
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::utils;
@@ -69,7 +66,26 @@ using namespace std;
 const int NOT_ASIG = 0;
 const int ASG_FEAT = 1;
 const int AMB_FEAT = 2;
+const int FEAT_FREE = -1;
 
+void _updateCounter( const vector<int> &idx, CFeatureList &list)
+{
+    ASSERT_( idx.size() == list.size() );
+
+    for( int k = 0; k < (int)idx.size(); ++k )
+    {
+        if( idx[k] == FEAT_FREE )
+        {
+            list[k]->nTimesNotSeen++;
+            list[k]->nTimesLastSeen++;
+        }
+        else
+        {
+            list[k]->nTimesSeen++;
+            list[k]->nTimesLastSeen = 0;
+        }
+    }
+}
 /*-------------------------------------------------------------
 					buildIntrinsicParamsMatrix
 -------------------------------------------------------------*/
@@ -1366,15 +1382,17 @@ void vision::computeHistogramOfOrientations(
 /*-------------------------------------------------------------
 					matchMultiResolutionFeatures
 -------------------------------------------------------------*/
-void vision::matchMultiResolutionFeatures(
+int vision::matchMultiResolutionFeatures(
         const CFeatureList              & list1,
         const CFeatureList              & list2,
         const CImage                    & rightImage,
         vector<int>                     & leftMatchingIdx,
         vector<int>                     & rightMatchingIdx,
+        vector<int>                     & outScales,
         const TMultiResDescMatchOptions & matchOpts,
         const TMultiResDescOptions      & computeOpts )
 {
+    MRPT_START
     // "List1" has a set of features with their depths computed
     // "List2" has a set of FAST features detected in the next frame (with their depths)
     // We perform a prediction of the "List1" features and try to find its matches within List2
@@ -1391,11 +1409,13 @@ void vision::matchMultiResolutionFeatures(
 
     // General variables
     CTimeLogger logger;
-    //logger.disable();
+    logger.disable();
 
     // Preliminary tasks
-    leftMatchingIdx.clear();
-    rightMatchingIdx.clear();
+    leftMatchingIdx.resize(list1.size(),FEAT_FREE);
+    rightMatchingIdx.resize(list2.size(),FEAT_FREE);
+    outScales.resize(list1.size(),-1);
+    vector<double> dist_corrs(list1.size(),1.0);
 
     // Local variables
     int hWindow = matchOpts.searchAreaSize/2;   // Half of the search window width
@@ -1403,17 +1423,17 @@ void vision::matchMultiResolutionFeatures(
     int imageH = rightImage.getHeight();        // Image height
     int leftFeatCounter = 0;
     int rightFeatCounter = 0;                   // Counter for features
-    vector<int> preCandidate;
     vector<double> orientations;
     int patchSize = computeOpts.basePSize;
-    int minDist = 1e6;
-    int minIdx = -1;
-    double maxResponse = 0;
+    int minDist, minIdx, minScale;
+    double maxResponse;
+    int nMatches = 0;
 
     CFeatureList::const_iterator it1, it2;
-
+//    cout << "Starting the loop" << endl;
     for( leftFeatCounter = 0, it1 = list1.begin(); it1 != list1.end(); ++it1, ++leftFeatCounter )
     {
+//        cout << leftFeatCounter << endl;
         if( !(*it1)->descriptors.hasDescriptorMultiSIFT() )
             continue;
 
@@ -1424,7 +1444,10 @@ void vision::matchMultiResolutionFeatures(
 
         minDist = 1e6;
         minIdx  = -1;
+        minScale = -1;
         maxResponse = 0;
+        int ridx = 0;
+
         for( rightFeatCounter = 0, it2 = list2.begin(); it2 != list2.end(); ++it2, ++rightFeatCounter )
         {
             // FILTER 1: Search region
@@ -1432,9 +1455,9 @@ void vision::matchMultiResolutionFeatures(
                 continue;
 
             // Compute main orientations
-            logger.enter("cmorientation");
+//            logger.enter("cmorientation");
             vision::computeMainOrientations( rightImage, (*it2)->x, (*it2)->y, patchSize, orientations, computeOpts.sg2 );
-            logger.leave("cmorientation");
+//            logger.leave("cmorientation");
 
             // Compute the proper scales where to look for
             int firstScale = max( 0, (int)matchOpts.lowScl1 );
@@ -1452,7 +1475,7 @@ void vision::matchMultiResolutionFeatures(
                             // Orientation check passed
                             // FILTER 3: Feature response
                             // has it a better score than its 8 neighbours?
-                            logger.enter("non-max");
+//                            logger.enter("non-max");
                             std::vector< int > out_idx;
                             std::vector< float > out_dist_sqr;
                             maxResponse = (*it2)->response;
@@ -1478,9 +1501,9 @@ void vision::matchMultiResolutionFeatures(
                             // Candidate found at scale "k1" and orientation "k2" (list1) and orientation "k3" (list2)
                             // Compute descriptor
                             vector<int> desc;
-                            logger.enter("chorientations");
+//                            logger.enter("chorientations");
                             vision::computeHistogramOfOrientations( rightImage, (*it2)->x, (*it2)->y, patchSize, orientations[k3], desc, computeOpts );
-                            logger.leave("chorientations");
+//                            logger.leave("chorientations");
 
                             // FILTER 4: Descriptor distance
                             int dist = 0;
@@ -1489,25 +1512,62 @@ void vision::matchMultiResolutionFeatures(
 
                             if( dist < minDist )
                             {
-                                minDist = dist;
-                                minIdx = rightFeatCounter;
+                                minDist     = dist;
+                                ridx        = rightFeatCounter;
                                 maxResponse = (*it2)->response;
+                                minScale    = k1;
+
+//                                minauxfscale = auxfscale;
+//                                minauxlscale = auxlscale;
+
+//                                mindepth1    = (*it1)->depth;
+//                                mindepth2    = (*it2)->depth;
                             }
                         } // end if
         } // end for it2
         if( minDist < matchOpts.matchingThreshold )
         {
+            // AVOID COLLISIONS IN A GOOD MANNER
+            int auxIdx = rightMatchingIdx[ ridx ];
+		    if( auxIdx != FEAT_FREE && minDist < dist_corrs[ auxIdx ] )
+		    {
+                // We've found a better match
+                dist_corrs[ leftFeatCounter ]       = minDist;
+                leftMatchingIdx[ leftFeatCounter ]  = ridx;
+                rightMatchingIdx[ ridx ]            = leftFeatCounter;
+                outScales[ leftFeatCounter ]        = minScale;
+                dist_corrs[ auxIdx ]                = 1.0;
+                leftMatchingIdx[ auxIdx ]           = FEAT_FREE;
+//                cout << "Better match at scale: " << minScale << endl;
+		    } // end-if
+		    else
+		    {
+////		        cout << "New match found: [R] " << minRightIdx << " with [L] " << minLeftIdx << "(" << minVal << ")" << endl;
+		        rightMatchingIdx[ ridx ]            = leftFeatCounter;
+		        leftMatchingIdx[ leftFeatCounter ]  = ridx;
+		        dist_corrs[ leftFeatCounter ]       = minDist;
+		        outScales[ leftFeatCounter ]        = minScale;
+		        nMatches++;
+//		        cout << "Match found at scale: " << minScale << endl;
+		    }
             // Match found
-            leftMatchingIdx.push_back( leftFeatCounter );
-            rightMatchingIdx.push_back( minIdx );
+//            leftMatchingIdx.push_back( leftFeatCounter );
+//            rightMatchingIdx.push_back( minIdx );
+//            outScales.push_back( minScale );
+//
+//            cout << "Match found: [" << leftFeatCounter << "," << minIdx;
+//            cout << "] at scale " << minScale << " [" << minauxfscale << "," << minauxlscale << "]";
+//            cout << " with depths: [" << mindepth1 << "," << mindepth2 << "]" << endl;
         } // end if
     } // end for it1
+    return nMatches;
+    MRPT_END
 } // end matchMultiResolutionFeatures
 
 /*-------------------------------------------------------------
 					matchMultiResolutionFeatures
 -------------------------------------------------------------*/
-void vision::matchMultiResolutionFeatures(
+int vision::matchMultiResolutionFeatures(
         const CFeatureList                          & list1,
         const CFeatureList                          & list2,
         vector<int>                                 & idx_right_corrs,
@@ -1542,7 +1602,7 @@ void vision::matchMultiResolutionFeatures(
     ASSERT_( list_size1 > 0 && list_size2 > 0 );
 
     // prepare the output vectors
-    const int FEAT_FREE = -1;
+    int nMatchesFound = 0;
 
     vector<int> idx_left_corrs( list_size1, FEAT_FREE );
 
@@ -1579,7 +1639,7 @@ void vision::matchMultiResolutionFeatures(
 
 
     CFeatureList::const_iterator  it1, it2;
-    unsigned int                                lFeat, rFeat = 0;
+    unsigned int                  lFeat, rFeat = 0;
     for( it2 = list2.begin(); it2 != list2.end(); ++it2, ++rFeat )
     {
         mrpt::system::os::sprintf( buf, 50, "imgs/dist_%d.txt", rFeat );
@@ -1593,57 +1653,16 @@ void vision::matchMultiResolutionFeatures(
         {
             // STEP 1
             // Loop regarding the scale will be done from 'firstScale' to 'lastScale' (both included)
-            unsigned int firstScale = 0, lastScale = (*it1)->multiScales.size()-1;
+            int firstScale = max( 0, (int)opts.lowScl1 );
+            int lastScale = min( (int)(*it1)->multiScales.size()-1, (int)opts.highScl1 );
             if( opts.useDepthFilter )
+                vision::setProperScales( (*it1), (*it2), firstScale, lastScale );
+
+            for( int ii = 0; ii < (int)(*it2)->multiOrientations[0].size(); ++ii )  // Orientations of scale 0
             {
-                size_t numScales = (*it1)->multiScales.size();
-                ASSERT_( numScales > 1 );
-
-                // Determine the range of scale where to look for in the list1
-                double smin = ((*it2)->depth-0.2*(*it1)->depth)/(*it1)->depth;
-                double smax = ((*it2)->depth+0.2*(*it1)->depth)/(*it1)->depth;
-
-                if( smin < (*it1)->multiScales[1] )
-                    firstScale = 0;
-                else
+                for( int jj = firstScale; jj <= lastScale; ++jj )
                 {
-                    if( smin > (*it1)->multiScales[numScales-2] )
-                        firstScale = numScales-2;
-                    else    // it is in between the limits
-                    {
-                        for( unsigned int k = 2; k <= numScales-2; ++k )
-                            if( smin > (*it1)->multiScales[k] )
-                            {
-                                firstScale = k-1;
-                                break;
-                            } // end if
-                    } // end else
-                } // end else
-
-
-                if( smax < (*it1)->multiScales[0] )
-                    lastScale = 1;
-                else
-                {
-                    if( smax > (*it1)->multiScales[numScales-2] )
-                        lastScale = numScales-1;
-                    else
-                    {
-                        for( unsigned int k = 1; k < (*it1)->multiScales.size(); ++k )
-                            if( smax < (*it1)->multiScales[k] )
-                            {
-                                lastScale = k;
-                                break;
-                            } // end if
-                    } // end else
-                } // end else
-                ASSERT_( firstScale >= 0 && lastScale < numScales && firstScale < lastScale );
-            } // end-for-useDepthFilter
-            for( unsigned int ii = 0; ii < (*it2)->multiOrientations[0].size(); ++ii )  // Orientations of scale 0
-            {
-                for( unsigned int jj = firstScale; jj <= lastScale; ++jj )
-                {
-                    for( unsigned int kk = 0; kk < (*it1)->multiOrientations[jj].size(); ++kk )
+                    for( int kk = 0; kk < (int)(*it1)->multiOrientations[jj].size(); ++kk )
                     {
                         // STEP 2
                         if( opts.useOriFilter && fabs( (*it1)->multiOrientations[jj][kk] - (*it2)->multiOrientations[0][ii] ) > opts.oriThreshold &&
@@ -1658,11 +1677,11 @@ void vision::matchMultiResolutionFeatures(
                             dist += square( (*it1)->descriptors.multiSIFTDescriptors[jj][kk][n] - (*it2)->descriptors.multiSIFTDescriptors[0][ii][n] );
 
                         //logger.enter("saveToFile");
-                        mrpt::system::os::fprintf( f, "%d 1.0 %.3f %d %.1f %.3f %d %.4f %.4f\n",
-                            rFeat, (*it2)->multiOrientations[0][ii],
-                            lFeat, (*it1)->multiScales[jj], (*it1)->multiOrientations[jj][kk],
-                            dist,
-                            (*it1)->depth, (*it2)->depth );
+//                        mrpt::system::os::fprintf( f, "%d 1.0 %.3f %d %.1f %.3f %d %.4f %.4f\n",
+//                            rFeat, (*it2)->multiOrientations[0][ii],
+//                            lFeat, (*it1)->multiScales[jj], (*it1)->multiOrientations[jj][kk],
+//                            dist,
+//                            (*it1)->depth, (*it2)->depth );
                         //logger.leave("saveToFile");
                         if( dist < min_dist )
                         {
@@ -1716,11 +1735,252 @@ void vision::matchMultiResolutionFeatures(
                 lori_corrs[ lidx ]      = lori;
                 rori_corrs[ ridx ]      = rori;
             }
+            ++nMatchesFound;
         } // end-if-a match has been found
-        mrpt::system::os::fclose( f );
         // TO DO: STEP 5 OF THE ALGORITHM
     } // end-for-it2
+
+    return nMatchesFound;
 } // end-vision::matchMultiResolutionFeatures
+
+/*-------------------------------------------------------------
+					matchMultiResolutionFeatures
+-------------------------------------------------------------*/
+int  vision::matchMultiResolutionFeatures(
+        CMatchedFeatureList             & mList1,
+        CMatchedFeatureList             & mList2,
+        const CImage                    & leftImage,
+        const CImage                    & rightImage,
+        const TMultiResDescMatchOptions & matchOpts,
+        const TMultiResDescOptions      & computeOpts )
+{
+    // "mList1" has a set of matched features with their depths computed
+    // "mList2" has a set of matched FAST features detected in the next frame at scale 1.0 (with their depths)
+    // We perform a prediction of the "mList1" features and try to find its matches within mList2
+    // --------------------------------------------------------
+    // Algortihm summary:
+    // --------------------------------------------------------
+    // For each feature in List1 we find a search region: by now a fixed window e.g. 20x20 pixels
+    // TO DO: Non-maximal supression according to the feature score
+    // From the remaining set, we compute the main orientation and check its consistency with the List1 feature
+    // NEW: compute the corresponding feature in right image and compute its depth
+    // From the remaining set, we compute the descriptor at scale 1.0 and determine the set of scales where to look for
+    // If the distance between descriptors is below a certain threshold, we've found a match.
+    // --------------------------------------------------------
+
+    // General variables
+    CTimeLogger logger;
+    //logger.disable();
+
+    const int LAST_SEEN_TH = 5;
+
+    ASSERT_( mList1.size() > 0 && mList2.size() > 0 );
+
+    CFeatureList baseList1, baseList2;
+    mList1.getBothFeatureLists( baseList1, baseList2 );
+
+    CFeatureList auxList1, auxList2;
+    mList2.getBothFeatureLists( auxList1, auxList2 );
+
+    vector<int> leftIdx1, leftIdx2, rightIdx1, rightIdx2;
+    vector<int> scales1, scales2;
+    // Left image
+    int nM1 = matchMultiResolutionFeatures( baseList1, auxList1, leftImage, leftIdx1, leftIdx2, scales1, matchOpts, computeOpts );
+    _updateCounter(leftIdx1,baseList1);     //Update counters
+    _updateCounter(leftIdx2,auxList1);
+
+    // Right image
+    int nM2 = matchMultiResolutionFeatures( baseList2, auxList2, rightImage, rightIdx1, rightIdx2, scales2, matchOpts, computeOpts );
+    _updateCounter(rightIdx1,baseList2);    //Update counters
+    _updateCounter(rightIdx2,auxList2);
+
+//    cout << "Left matches: " << nM1 << " out of " << baseList1.size() << "," << auxList1.size() << endl;
+//    cout << "Right matches: " << nM2 << " out of " << baseList2.size() << "," << auxList2.size() << endl;
+
+    int nScales = baseList1[0]->multiScales.size()-1;
+
+    CMatchedFeatureList::iterator itMatch;
+    int m;
+    for( m = 0, itMatch = mList1.begin(); itMatch != mList1.end(); ++m )
+    {
+        if( itMatch->first->nTimesLastSeen > LAST_SEEN_TH || itMatch->second->nTimesLastSeen > LAST_SEEN_TH )
+            itMatch = mList1.erase( itMatch );
+        else
+        {
+            // We've found a tracked match
+            // We have found the match in both frames! Check out the scales!
+            if( scales1[m] == 0 )
+            {
+                cout << "Left feature " << m << " found in scale 0!" << endl;
+                int res = computeMoreDescriptors( (*auxList1[m]), leftImage, (*itMatch->first), true, computeOpts );
+            }
+            else
+            {
+                if( scales1[m] == nScales )
+                {
+                    cout << "Left feature found in scale " << nScales << "!" << endl; //computeMoreDescriptors( auxList1[k1], leftImage, false, itMatch->first );
+                    int res = computeMoreDescriptors( (*auxList1[m]), leftImage, (*itMatch->first), false, computeOpts );
+                }
+            }
+            itMatch->first->dumpToConsole();
+            mrpt::system::pause();
+            if( scales2[m] == 0 )
+                cout << "Right feature " << m << " found in scale 0!" << endl; //computeMoreDescriptors( auxList2[k2], rightImage, true, itMatch->second );
+            else
+            {
+                if( scales2[m] == nScales )
+                    cout << "Right feature found in scale " << nScales << "!" << endl; //computeMoreDescriptors( auxList2[k2], rightImage, false, itMatch->second );
+            }
+            ++itMatch;
+        } // end-else
+    } // end-for
+    return mList1.size();
+} // end matchMultiResolutionFeatures
+
+/*-------------------------------------------------------------
+					computeMoreDescriptors
+-------------------------------------------------------------*/
+int vision::computeMoreDescriptors(
+                const CFeature              & inputFeat,
+                const CImage                & image,
+                CFeature                    & outputFeat,
+                const bool                  & lowerScales,
+                const TMultiResDescOptions  & opts )
+{
+    MRPT_START
+    //**************************************************************************
+    // Pre-smooth the image with sigma = sg1 (typically 0.5)
+    //**************************************************************************
+    cv::Mat tempImg1;
+    IplImage aux1;
+
+    cv::Mat inImg1 = static_cast<IplImage*>(image.getAsIplImage());
+
+    cv::GaussianBlur( inImg1, tempImg1, cvSize(0,0), opts.sg1 /*sigmaX*/, opts.sg1 /*sigmaY*/ );
+    aux1 = tempImg1;
+    CImage smLeftImg( &aux1 );
+    //--------------------------------------------------------------------------
+
+    unsigned int a = opts.basePSize;
+
+    int largestSize = round(a*opts.scales[opts.scales.size()-1]);
+    largestSize = largestSize%2 ? largestSize : largestSize+1;          // round to the closest odd number
+    int hLargestSize = largestSize/2;
+
+    unsigned int npSize;
+    unsigned int hpSize;
+
+    // We don't take into account the matching if it is too close to the image border (the largest patch cannot be extracted)
+    if( inputFeat.x+hLargestSize > smLeftImg.getWidth()-1 || inputFeat.x-hLargestSize < 0 ||
+        inputFeat.y+hLargestSize > smLeftImg.getHeight()-1 || inputFeat.y-hLargestSize < 0 )
+            return 0;
+
+    int iniScale = 0, endScale = 0;
+
+    cout << "Smooth done" << endl;
+
+    if( lowerScales )
+    {
+        cout << "Lower scales" << endl;
+        outputFeat.multiScales.push_front( 0.8*outputFeat.multiScales[0] );
+        outputFeat.multiScales.push_front( 0.5*outputFeat.multiScales[0] );
+
+        iniScale = 0;
+        endScale = 2;
+
+        for( int k = 1; k >= 0; --k )
+        {
+            npSize = round( a*outputFeat.multiScales[k] );
+            npSize = npSize%2 ? npSize : npSize+1;          // round to the closest odd number
+            hpSize = npSize/2;                              // half size of the patch
+
+            cout << "For scale " << k << endl;
+
+            CImage tPatch;
+
+            // LEFT IMAGE:
+            smLeftImg.extract_patch( tPatch, inputFeat.x-hpSize, inputFeat.y-hpSize, npSize, npSize );
+
+            cv::Mat out_mat_patch;
+            // The size is a+2xa+2 because we have to compute the gradient (magnitude and orientation) in every pixel within the axa patch so we need
+            // one more row and column. For instance, for a 23x23 patch we need a 25x25 patch.
+            cv::resize( cv::Mat( static_cast<IplImage*>(tPatch.getAsIplImage()) ), out_mat_patch, cv::Size(a+2,a+2) );
+            IplImage aux_img = IplImage(out_mat_patch);
+            CImage rsPatch( &aux_img );
+
+            cout << "Patch extracted and resized" << endl;
+
+            vector<double> auxOriVector;
+            vision::computeMainOrientations(
+                            rsPatch, a/2+1, a/2+1, a,
+                            auxOriVector, opts.sg2 );
+
+            cout << "Orientation computed" << endl;
+
+            vector< vector<int> > auxDescVector;
+            auxDescVector.resize( auxOriVector.size() );
+            for( unsigned int m = 0; m < auxOriVector.size(); ++m )
+            {
+                cout << "Descriptor for orientation " << auxOriVector[m];
+                computeHistogramOfOrientations(
+                            rsPatch,
+                            a/2+1, a/2+1, a,
+                            auxOriVector[m],
+                            auxDescVector[m], opts );
+                cout << " ...done" << endl;
+            } // end-for
+            outputFeat.multiOrientations.push_front( auxOriVector );
+            outputFeat.descriptors.multiSIFTDescriptors.push_front( auxDescVector );
+        } // end-for
+    }
+    else
+    {
+        size_t nCurrScales = outputFeat.multiScales.size();
+        outputFeat.multiScales.push_back( 1.2*outputFeat.multiScales[nCurrScales-1] );
+        outputFeat.multiScales.push_back( 1.5*outputFeat.multiScales[nCurrScales-1] );
+        outputFeat.multiScales.push_back( 1.8*outputFeat.multiScales[nCurrScales-1] );
+        outputFeat.multiScales.push_back( 2.0*outputFeat.multiScales[nCurrScales-1] );
+
+        for( int k = nCurrScales; k < (int)outputFeat.multiScales.size(); ++k )
+        {
+            npSize = round( a*outputFeat.multiScales[k] );
+            npSize = npSize%2 ? npSize : npSize+1;          // round to the closest odd number
+            hpSize = npSize/2;                              // half size of the patch
+
+            CImage tPatch;
+
+            // LEFT IMAGE:
+            smLeftImg.extract_patch( tPatch, inputFeat.x-hpSize, inputFeat.y-hpSize, npSize, npSize );
+
+            cv::Mat out_mat_patch;
+            // The size is a+2xa+2 because we have to compute the gradient (magnitude and orientation) in every pixel within the axa patch so we need
+            // one more row and column. For instance, for a 23x23 patch we need a 25x25 patch.
+            cv::resize( cv::Mat( static_cast<IplImage*>(tPatch.getAsIplImage()) ), out_mat_patch, cv::Size(a+2,a+2) );
+            IplImage aux_img = IplImage(out_mat_patch);
+            CImage rsPatch( &aux_img );
+
+            vector<double> auxOriVector;
+            vision::computeMainOrientations(
+                            rsPatch, a/2+1, a/2+1, a,
+                            auxOriVector, opts.sg2 );
+
+            vector< vector<int> > auxDescVector;
+            auxDescVector.resize( auxOriVector.size() );
+            for( unsigned int m = 0; m < auxOriVector.size(); ++m )
+            {
+                computeHistogramOfOrientations(
+                            rsPatch,
+                            a/2+1, a/2+1, a,
+                            auxOriVector[m],
+                            auxDescVector[m], opts );
+            } // end-for
+            outputFeat.multiOrientations.push_back( auxOriVector );
+            outputFeat.descriptors.multiSIFTDescriptors.push_back( auxDescVector );
+        } // end-for
+    } // end else
+    return 1;
+    MRPT_END
+} // end-computeMoreDescriptors
 
 /*-------------------------------------------------------------
 					setProperScales
@@ -1741,20 +2001,20 @@ void vision::setProperScales( const CFeaturePtr &feat1, const CFeaturePtr &feat2
         firstScale = 0;
     else
     {
-        if( smin > feat1->multiScales[numScales-2] )
+        if( smin > feat1->multiScales[numScales-3] )
             firstScale = numScales-2;
         else    // it is in between the limits
         {
-            for( int k = 2; k <= (int)numScales-2; ++k )
-                if( smin > feat1->multiScales[k] )
+            for( int k = 1; k <= (int)numScales-3; ++k )
+                if( smin >= feat1->multiScales[k] )
                 {
-                    firstScale = k-1;
+                    firstScale = k;
                     break;
                 } // end if
         } // end else
     } // end else
 
-    if( smax < feat1->multiScales[0] )
+    if( smax < feat1->multiScales[1] )
         lastScale = 1;
     else
     {
@@ -1762,12 +2022,14 @@ void vision::setProperScales( const CFeaturePtr &feat1, const CFeaturePtr &feat2
             lastScale = numScales-1;
         else
         {
-            for( int k = 1; k < (int)feat1->multiScales.size(); ++k )
-                if( smax < feat1->multiScales[k] )
+            for( int k = 1; k <= (int)numScales-2; ++k )
+            {
+                if( smax <= feat1->multiScales[k] )
                 {
                     lastScale = k;
                     break;
                 } // end if
+            }
         } // end else
     } // end else
     ASSERT_( firstScale >= 0 && lastScale < (int)numScales && firstScale < lastScale );
@@ -1884,7 +2146,7 @@ void vision::setProperScales( const CFeaturePtr &feat1, const CFeaturePtr &feat2
 -------------------------------------------------------------*/
 void vision::computeMultiResolutionDescriptors(
         const CImage &imageLeft, const CImage &imageRight,
-        CMatchedFeatureList &matchedFeats,                      // input and output!
+        CMatchedFeatureList &matchedFeats,
         const TMultiResDescOptions &opts )
 {
     MRPT_START
@@ -1935,14 +2197,17 @@ void vision::computeMultiResolutionDescriptors(
         // We have found a proper match to obtain the multi-descriptor
         // Compute the depth and store the coords:
         tlogger.enter("compute depth");
-        double disp = itMatch->first->x - itMatch->second->x;
-        double aux  = opts.baseline/disp;
-        double x3D  = (itMatch->first->x-opts.cx)*aux;
-        double y3D  = (itMatch->first->y-opts.cy)*aux;
-        double z3D  = opts.fx*aux;
+        if( opts.computeDepth )
+        {
+            double disp = itMatch->first->x - itMatch->second->x;
+            double aux  = opts.baseline/disp;
+            double x3D  = (itMatch->first->x-opts.cx)*aux;
+            double y3D  = (itMatch->first->y-opts.cy)*aux;
+            double z3D  = opts.fx*aux;
 
-        itMatch->first->depth     = sqrt( x3D*x3D + y3D*y3D + z3D*z3D );
-        itMatch->second->depth    = sqrt( (x3D-opts.baseline)*(x3D-opts.baseline) + y3D*y3D + z3D*z3D );
+            itMatch->first->depth     = sqrt( x3D*x3D + y3D*y3D + z3D*z3D );
+            itMatch->second->depth    = sqrt( (x3D-opts.baseline)*(x3D-opts.baseline) + y3D*y3D + z3D*z3D );
+        }
         tlogger.leave("compute depth");
 
         tlogger.enter("cp scales");
@@ -2042,7 +2307,7 @@ void vision::computeMultiResolutionDescriptors(
 -------------------------------------------------------------*/
 void vision::computeMultiResolutionDescriptors(
         const CImage &image,
-        CFeatureList &list,                      // input and output!
+        CFeatureList &list,
         const TMultiResDescOptions &opts )
 {
     MRPT_START
