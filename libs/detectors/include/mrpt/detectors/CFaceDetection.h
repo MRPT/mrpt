@@ -166,6 +166,8 @@ namespace mrpt
 			
 			void experimental_viewFacePointsScanned( const vector<TPoint3D> &points );
 
+			void experimental_viewFacePointsAndEigenVects(  const vector<CArrayDouble<3> > &pointsVector, const CMatrixDouble &eigenVect, const vector_double &eigenVal );
+
 			void experimental_viewRegions( const vector<TPoint3D> regions[9], const TPoint3D meanPos[3][3] );		
 
 			void experimental_segmentFace( const CObservation3DRangeScan &face, CMatrixTemplate<bool> &region );

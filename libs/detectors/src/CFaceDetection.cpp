@@ -239,7 +239,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 					//experimental_segmentFace( m_lastFaceDetected,  region);
 					/////////////////////////////////////////////////////
 
-					//m_lastFaceDetected.intensityImage.saveToFile(format("%i.jpg",m_measure.faceNum));
+					m_lastFaceDetected.intensityImage.saveToFile(format("%i.jpg",m_measure.faceNum));
 
 					bool remove = false;
 
@@ -380,15 +380,18 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 	// To fill with valid points
 	vector<CArrayDouble<3> > pointsVector;
 
+	CMatrixTemplate<bool> region; // To save the segmented region
+	experimental_segmentFace( *face,  region);
+
 	for ( unsigned int j = 0; j < faceHeight; j++ )
 	{
 		for ( unsigned int k = 0; k < faceWidth; k++ )
 		{
 			CArrayDouble<3> aux;
 
-			if ( (!confidence) || (( confidence ) &&
+			if ( region.get_unsafe( j,k ) && (( (!confidence) || (( confidence ) &&
 				( *(face->confidenceImage.get_unsafe( k, j, 0 )) > m_options.confidenceThreshold )	
-				&& ( *(face->intensityImage.get_unsafe( k, j )) > 50 )))	// Don't take in account dark pixels
+				&& ( *(face->intensityImage.get_unsafe( k, j )) > 50 )))))	// Don't take in account dark pixels
 			{
 				int position = faceWidth*j + k;
 				aux[0] = face->points3D_x[position];
@@ -407,11 +410,16 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 
 	// To obtain the covariance vector and eigenvalues
 	CMatrixDouble cov;
+	CMatrixDouble eVects, m_eVals;
 	vector_double eVals;
 
 	cov = covVector( pointsVector );
 
 	cov.eigenValues( eVals );
+
+	cov.eigenVectors( eVects, m_eVals );
+
+	experimental_viewFacePointsAndEigenVects( pointsVector, eVects, eVals );
 
 	// To obtain experimental results
 	{
@@ -1583,6 +1591,80 @@ void CFaceDetection::experimental_viewFacePointsScanned( const vector_float &xs,
 	}
 
 	i++;*/
+
+	win3D.unlockAccess3DScene();
+	win3D.repaint();
+
+	system::pause();
+}
+
+void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CArrayDouble<3> > &pointsVector, const CMatrixDouble &eigenVect, const vector_double &eigenVal )
+{
+
+	vector_float xs, ys, zs;
+	
+	size_t size = pointsVector.size();
+
+	xs.resize( size ); 
+	ys.resize( size ); 
+	zs.resize( size );
+
+	for ( size_t i = 0; i < size; i++ )
+	{
+		xs[i] = pointsVector[i][0];
+		ys[i] = pointsVector[i][1];
+		zs[i] = pointsVector[i][2];
+	}
+
+	TPoint3D center( sum(xs)/size, sum(ys)/size, sum(zs)/size );
+
+	mrpt::gui::CDisplayWindow3D  win3D;
+
+	win3D.setWindowTitle("3D Face detected (Scanned points)");
+
+	win3D.resize(400,300);
+
+	win3D.setCameraAzimuthDeg(140);
+	win3D.setCameraElevationDeg(20);
+	win3D.setCameraZoom(6.0);
+	win3D.setCameraPointingToPoint(2.5,0,0);
+
+	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	gl_points->setPointSize(4.5);
+
+	mrpt::opengl::COpenGLScenePtr scene = win3D.get3DSceneAndLock();
+
+	CSpherePtr sphere = CSphere::Create(0.005);
+	sphere->setLocation( center );
+	sphere->setColor( TColorf(0,1,0) );
+	scene->insert( sphere );
+
+	//TPoint3D E1( eigenVect.get_unsafe(0,0), eigenVect.get_unsafe(1,0), eigenVect.get_unsafe(2,0) );
+	//TPoint3D E2( eigenVect.get_unsafe(0,1), eigenVect.get_unsafe(1,1), eigenVect.get_unsafe(2,1) );
+	//TPoint3D E3( eigenVect.get_unsafe(0,2), eigenVect.get_unsafe(1,2), eigenVect.get_unsafe(2,2) );
+
+	TPoint3D E1( eigenVect.get_unsafe(0,0), eigenVect.get_unsafe(0,1), eigenVect.get_unsafe(0,2) );
+	TPoint3D E2( eigenVect.get_unsafe(1,0), eigenVect.get_unsafe(1,1), eigenVect.get_unsafe(1,2) );
+	TPoint3D E3( eigenVect.get_unsafe(2,0), eigenVect.get_unsafe(2,1), eigenVect.get_unsafe(2,2) );
+
+	vector<TSegment3D> sgms;
+	sgms.push_back( TSegment3D(center,center + E1*eigenVal[0]*100) );
+	sgms.push_back( TSegment3D(center,center + E2*eigenVal[1]*100) );
+	sgms.push_back( TSegment3D(center,center + E3*eigenVal[2]*100) );
+	mrpt::opengl::CSetOfLinesPtr lines = mrpt::opengl::CSetOfLines::Create( sgms );
+	lines->setColor(0,0,1,1);
+	lines->setLineWidth( 10 );
+
+	scene->insert( lines );
+
+	scene->insert( gl_points );
+	scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
+
+	CColouredPointsMap pntsMap;
+
+	pntsMap.setAllPoints( xs, ys, zs );
+
+	gl_points->loadFromPointsMap(&pntsMap);
 
 	win3D.unlockAccess3DScene();
 	win3D.repaint();
