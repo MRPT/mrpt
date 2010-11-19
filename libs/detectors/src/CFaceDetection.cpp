@@ -239,7 +239,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 					//experimental_segmentFace( m_lastFaceDetected,  region);
 					/////////////////////////////////////////////////////
 
-					m_lastFaceDetected.intensityImage.saveToFile(format("%i.jpg",m_measure.faceNum));
+					//m_lastFaceDetected.intensityImage.saveToFile(format("%i.jpg",m_measure.faceNum));
 
 					bool remove = false;
 
@@ -419,8 +419,6 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 
 	cov.eigenVectors( eVects, m_eVals );
 
-	experimental_viewFacePointsAndEigenVects( pointsVector, eVects, eVals );
-
 	// To obtain experimental results
 	{
 		if ( m_measure.takeMeasures )
@@ -430,15 +428,20 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 			m_timeLog.leave("Check if face plane: covariance");
 
 			// Uncomment if you want to analyze the calculated eigenvalues
-			/*ofstream f;
-			f.open("eigenvalues.txt", ofstream::app);
+			ofstream f;
+			/*f.open("eigenvalues.txt", ofstream::app);
 			f << m_measure.faceNum << " " << eVals[0] << endl;
-			f.close();
+			f.close();*/
 
 			f.open("eigenvalues2.txt", ofstream::app);
-			f << eVals[0] << endl;
-			f.close();*/
+			//cout << eVals[0] << " " << eVals[1] << " " << eVals[2] << " > " ;
+			//cout << eVals[0]/eVals[2] << endl;
+			f << eVals[0]/eVals[2] << endl;
+			f.close();
 	}
+
+	if ( m_measure.faceNum > 40000767 )
+		experimental_viewFacePointsAndEigenVects( pointsVector, eVects, eVals );
 
 	// Check if the less eigenvalue is out of the permited area
 	if ( ( eVals[0] > m_options.planeEigenValThreshold_down )
@@ -614,11 +617,10 @@ bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face )
 	MRPT_END
 }
 
-
 //------------------------------------------------------------------------
 //							checkIfFaceRegions2
 //------------------------------------------------------------------------
-bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
+bool CFaceDetection::checkIfFaceRegions3( CObservation3DRangeScan* face )
 {
 	MRPT_START
 
@@ -827,13 +829,337 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	//	
 	//	6. To check subregions constrains
 	//
+	vector<double> dist(5);
+	size_t res = checkRelativePosition( meanPos[1][0], meanPos[1][2], meanPos[1][1], dist[0] );
+	res	 += res && checkRelativePosition( meanPos[2][0], meanPos[2][2], meanPos[2][1], dist[1] );
+	res	 += res && checkRelativePosition( meanPos[0][0], meanPos[0][2], meanPos[0][1], dist[2] );
+	res	 += res && checkRelativePosition( meanPos[0][0], meanPos[2][2], meanPos[1][1], dist[3] );
+	res	 += res && checkRelativePosition( meanPos[2][0], meanPos[0][2], meanPos[1][1], dist[4] );
 
-	bool res = checkRelativePosition( meanPos[1][0], meanPos[1][2], meanPos[1][1] );
-	res	 = res && checkRelativePosition( meanPos[2][0], meanPos[2][2], meanPos[2][1] );
-	res	 = res && checkRelativePosition( meanPos[0][0], meanPos[0][2], meanPos[0][1] );
-	res	 = res && checkRelativePosition( meanPos[0][0], meanPos[2][2], meanPos[1][1] );
-	res	 = res && checkRelativePosition( meanPos[2][0], meanPos[0][2], meanPos[1][1] );
+	ofstream f;
+	f.open("dist.txt", ofstream::app);
+	f << sum(dist) << endl;
+	f.close();
 
+	bool real = false;
+	if ( !res )
+		real = true;
+	else if (( res = 1 ) && ( sum(dist) > 0.04 ))
+		real = true;
+
+	f.open("tam.txt",ofstream::app);
+	f << meanPos[0][1].distanceTo( meanPos[2][1] ) << endl;
+	f.close();
+
+
+	//experimental_viewRegions( regions2, meanPos );
+
+	//cout << endl << meanPos[0][0] << "\t" << meanPos[0][1] << "\t" << meanPos[0][2];
+	//	cout << endl << meanPos[1][0] << "\t" << meanPos[1][1] << "\t" << meanPos[1][2];
+	//	cout << endl << meanPos[2][0] << "\t" << meanPos[2][1] << "\t" << meanPos[2][2] << endl;
+	
+
+	// To obtain experimental results
+	{
+		if ( m_measure.takeTime )
+		m_timeLog.leave("Check if face plane: regions");
+	}
+
+	if ( real )
+		return true; // Filter passed
+	else
+	{
+
+		// Uncomment if you want to known what regions was discarted by this filter
+		/*ofstream f;
+		f.open("deletedSTRUCTURES.txt", ofstream::app);
+		f << m_measure.faceNum << endl;
+		f.close();*/
+
+		return false; // Filter not passed
+	}	
+
+	MRPT_END
+}
+
+
+//------------------------------------------------------------------------
+//							checkIfFaceRegions2
+//------------------------------------------------------------------------
+bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
+{
+	MRPT_START
+
+	// To obtain experimental results
+	{
+		if ( m_measure.takeTime )
+		m_timeLog.enter("Check if face plane: regions");
+	}
+
+	// To obtain region size
+	const unsigned int faceWidth = face->intensityImage.getWidth();
+	const unsigned int faceHeight = face->intensityImage.getHeight();
+
+	// Initial vertical size of a region
+	unsigned int sectionVSize = faceHeight/3.0;
+
+	// Steps of this filter
+	//	1. To segment the region detected as face using a regions growing algorithm 
+	//	2. To obtain the first and last column to work (a profile face detected can have a lateral area without to use)
+	//	3. To calculate the histogram of the upper zone of the region for determine if we use it (if this zone present
+	//		a lot of dark pixels the measurements can be wrong)
+	//	4. To obtain the coordinates of pixels that form each subregion
+	//	5. To calculate medians or means of each subregion
+	//	6. To check subregions constrains
+	
+	vector<TPoint3D> points;
+
+	TPoint3D meanPos[3][3] = {
+		{ TPoint3D(0,0,0),TPoint3D(0,0,0),TPoint3D(0,0,0)},
+		{ TPoint3D(0,0,0),TPoint3D(0,0,0),TPoint3D(0,0,0)},
+		{ TPoint3D(0,0,0),TPoint3D(0,0,0),TPoint3D(0,0,0)} };
+	int numPoints[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
+
+	vector<TPoint3D> regions2[9];
+
+	//
+	//	1. To segment the region detected as face using a regions growing algorithm
+	//
+	
+	CMatrixTemplate<bool> region; // To save the segmented region
+	experimental_segmentFace( *face,  region);
+
+	//
+	//	2. To obtain the first and last column to work (a profile face detected can have a lateral area without to use)
+	//
+
+	size_t start=faceWidth, end=0;
+
+	for ( size_t r = 0; r < region.getRowCount() ; r++ )
+		for ( size_t c = 1; c < region.getColCount() ; c++ )
+		{
+			if ( ( !(region.get_unsafe( r, c-1 )) ) && ( region.get_unsafe( r, c )) )
+			{
+				if ( c < start )
+					start = c;
+			}
+			else if ( ( region.get_unsafe( r, c-1 ) ) && ( !(region.get_unsafe( r, c )) ) )
+				if ( c > end )
+					end = c;
+
+			if ( ( c > end ) && ( region.get_unsafe( r, c ) ) )
+				end = c;
+
+		}
+
+	if ( end == 0 ) end = faceWidth-1;	// Check if the end has't changed
+	if ( end < 3*(faceWidth/4) ) end = 3*(faceWidth/4); // To avoid spoiler
+	if ( start == faceWidth ) start = 0;	// Check if the start has't changed
+	if ( start > faceWidth/4 ) start = faceWidth/4;	// To avoid spoiler
+
+	//cout << "Start: " << start << " End: " << end << endl;
+
+	// To use the start and end calculated to obtain the final regions limits
+	unsigned int utilWidth = faceWidth - start - ( faceWidth - end );
+	unsigned int c1 = ceil( utilWidth/3.0 + start );
+	unsigned int c2 = ceil( 2*(utilWidth/3.0) + start );
+
+	//
+	//	3. To calculate the histogram of the upper zone of the region for determine if we use it
+	//
+
+	CMatrixTemplate<unsigned int> hist;
+	hist.setSize(1,256,true);	
+	experimental_calcHist( face->intensityImage, start, 0, end, ceil(faceHeight*0.1), hist );
+
+	size_t countHist = 0;
+	for ( size_t i = 0; i < 60; i++ )
+	{
+		countHist += hist.get_unsafe(0,i);	
+	}
+
+	size_t upLimit = 0;
+	size_t downLimit = faceHeight-1;
+
+	if ( countHist > 10 )
+	{
+		upLimit = floor(faceHeight*0.1);
+		//downLimit = floor(faceHeight*0.9);
+	}
+
+	// Uncomment it if you want to analyze the number of pixels that have more dark that the 60 gray tone
+	//m_meanHist.push_back( countHist );	
+
+	//
+	//	4. To obtain the coordinates of pixels that form each region
+	//
+
+	unsigned int cont = 0;
+
+	for ( unsigned int r = 0; r < faceHeight; r++ )
+	{
+		for ( unsigned int c = 0; c < faceWidth; c++, cont++ )
+		{
+			if ( ( r >= upLimit ) && ( r <= downLimit )
+				&& ( region.get_unsafe( r, c ) )
+				&& (*(face->confidenceImage.get_unsafe( c, r, 0 )) > m_options.confidenceThreshold )
+				&& ( *(face->intensityImage.get_unsafe( c, r )) > 50) )
+			{
+				unsigned int row, col;
+				if ( r < sectionVSize + upLimit*0.3)
+					row = 0;
+				else if ( r < sectionVSize*2 - upLimit*0.15 )
+					row = 1;
+				else
+					row = 2;
+
+				if ( c < c1)
+					col = 0;
+				else if ( c < c2 )
+					col = 1;
+				else
+					col = 2;
+
+
+				TPoint3D point( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont]);
+				meanPos[row][col] = meanPos[row][col] + point;
+
+				++numPoints[row][col];
+
+				if ( row == 0 && col == 0 )
+					regions2[0].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else if ( row == 0 && col == 1 )
+					regions2[1].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else if ( row == 0 && col == 2 )
+					regions2[2].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else if ( row == 1 && col == 0 )
+					regions2[3].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else if ( row == 1 && col == 1 )
+					regions2[4].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else if ( row == 1 && col == 2 )
+					regions2[5].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else if ( row == 2 && col == 0 )
+					regions2[6].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else if ( row == 2 && col == 1 )
+					regions2[7].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+				else
+					regions2[8].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
+
+			}
+
+		}
+	}
+
+	//
+	//	5. To calculate medians or means of each subregion
+	//
+
+	vector<double> oldPointsX1;
+
+	size_t middle1=0;
+	size_t middle2=0;
+
+	if ( regions2[0].size() > 0 )
+	{
+		for ( size_t i = 0; i < regions2[0].size(); i++ )
+			oldPointsX1.push_back( regions2[0][i].x );
+
+		middle1 = floor((double)oldPointsX1.size()/2);
+		nth_element(oldPointsX1.begin(),oldPointsX1.begin()+middle1,oldPointsX1.end()); // Obtain center element
+	}
+
+	vector<double> oldPointsX2;
+
+	if ( regions2[2].size() > 0 )
+	{
+		for ( size_t i = 0; i < regions2[2].size(); i++ )
+			oldPointsX2.push_back( regions2[2][i].x );
+
+		middle2 = floor((double)oldPointsX2.size()/2);
+		nth_element(oldPointsX2.begin(),oldPointsX2.begin()+middle2,oldPointsX2.end()); // Obtain center element
+	}
+
+	for ( size_t i = 0; i < 3; i++ )
+		for ( size_t j = 0; j < 3; j++ )
+			if ( !numPoints[i][j] )
+				meanPos[i][j] = TPoint3D( 0, 0, 0 );
+			else
+				meanPos[i][j] = meanPos[i][j] / numPoints[i][j];
+
+	if ( regions2[0].size() > 0  )
+		meanPos[0][0].x = oldPointsX1.at(middle1);
+
+	if ( regions2[2].size() > 0 )
+		meanPos[0][2].x = oldPointsX2.at(middle2);
+
+	//	
+	//	6. To check subregions constrains
+	//
+
+	double min_dist = 10, max_dist = 0;
+	TPoint3D camera(0,0,0);
+
+	for ( size_t i = 0; i < regions2[4].size(); ++i )
+	{
+		double distance = camera.distanceTo( regions2[4][i] );
+
+		if ( distance > max_dist )
+			max_dist = distance;
+		if ( distance < min_dist )
+			min_dist = distance;
+	}
+
+	double difference = max_dist - min_dist;
+	double ratio = 1 / difference;
+
+	meanPos[1][1] = TPoint3D(0,0,0);
+	double pond = 0;
+	
+	for ( size_t i = 0; i < regions2[4].size(); i++ )
+	{
+		double distance = camera.distanceTo( regions2[4][i] );
+
+		double ratio = (2*(max_dist - distance))/difference;
+
+		TPoint3D p = (regions2[4][i]);
+		meanPos[1][1] = meanPos[1][1] + p*ratio;
+		pond += ratio;
+	}
+
+	meanPos[1][1] = meanPos[1][1]/pond;
+
+	
+
+	vector<double> dist;
+	dist.resize(5);
+	size_t res = checkRelativePosition( meanPos[1][0], meanPos[1][2], meanPos[1][1], dist[0] );
+	res	 = res + checkRelativePosition( meanPos[2][0], meanPos[2][2], meanPos[2][1], dist[1] );
+	res	 = res + checkRelativePosition( meanPos[0][0], meanPos[0][2], meanPos[0][1], dist[2] );
+	res	 = res + checkRelativePosition( meanPos[0][0], meanPos[2][2], meanPos[1][1], dist[3] );
+	res	 = res + checkRelativePosition( meanPos[2][0], meanPos[0][2], meanPos[1][1], dist[4] );
+
+	/*ofstream f;
+	f.open("dist.txt", ofstream::app);
+	f << sum(dist) << endl;
+	f.close();*/
+
+	bool real = false;
+	if ( !res )
+		real = true;
+	else if (( res = 1 ) && ( sum(dist) > 0.04 ))
+		real = true;
+
+	double size = meanPos[0][1].distanceTo( meanPos[2][1] );
+
+	if ( ( size > 0.16 ) || ( size < 0.07 ) )
+		real = false;
+
+	if ( ( sum(dist) < 0.05 ) || ( sum(dist) > 0.45 ) )
+		real = false;
+
+	/*f.open("tam.txt",ofstream::app);
+	f << meanPos[0][1].distanceTo( meanPos[2][1] ) << endl;
+	f.close();*/
 
 	// A experimental region to calculate normals
 	// TODO:
@@ -842,7 +1168,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	//	- Normalize obtained matrix (values of all its positions sums one)
 	//	- Compare with a "usual" matrix of a real face
 
-	/****************************************
+	/************************************a****
 	
 	cont = 0;
 
@@ -930,7 +1256,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 		m_timeLog.leave("Check if face plane: regions");
 	}
 
-	if ( res )
+	if ( real )
 		return true; // Filter passed
 	else
 	{
@@ -947,7 +1273,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	MRPT_END
 }
 
-bool CFaceDetection::checkRelativePosition( const TPoint3D &p1, const TPoint3D &p2, const TPoint3D &p )
+size_t CFaceDetection::checkRelativePosition( const TPoint3D &p1, const TPoint3D &p2, const TPoint3D &p, double &dist )
 {
 	double x1 = -p1.y;
 	double y1 = p1.x;
@@ -969,10 +1295,12 @@ bool CFaceDetection::checkRelativePosition( const TPoint3D &p1, const TPoint3D &
 
 	///////////////////////////////////////
 
+	dist = yIdeal-y;
+
 	if (  y < yIdeal )
-		return true;
+		return 0;
 	else
-		return false;
+		return 1;
 }
 
 

@@ -139,6 +139,8 @@ namespace mrpt
 
 			static void dummy_checkIfFacePlaneCov( CFaceDetection *obj );
 
+			bool checkIfFaceRegions3( CObservation3DRangeScan* face );
+
 			bool checkIfFaceRegions2( CObservation3DRangeScan* face );
 
 			bool checkIfFaceRegions( CObservation3DRangeScan* face );
@@ -157,7 +159,7 @@ namespace mrpt
 
 			static void dummy_checkIfDiagonalSurface( CFaceDetection *obj );
 
-			bool checkRelativePosition( const TPoint3D &p1, const TPoint3D &p2, const TPoint3D &p );
+			size_t checkRelativePosition( const TPoint3D &p1, const TPoint3D &p2, const TPoint3D &p, double &dist );
 
 			// Experimental methods
 			void experimental_viewFacePointsScanned( const vector_float &xs, const vector_float &ys, const vector_float &zs );
