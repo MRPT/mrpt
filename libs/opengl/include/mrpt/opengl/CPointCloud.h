@@ -59,7 +59,7 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CPointCloud )
 		protected:
 			enum Axis { None=0, Z, Y, X} m_colorFromDepth;
-			vector_float	m_xs,m_ys,m_zs;
+			std::vector<float>	m_xs,m_ys,m_zs;
 			float           m_pointSize; //!< By default is 1.0
 			bool			m_pointSmooth; //!< Default: false
 
@@ -71,9 +71,9 @@ namespace mrpt
 			inline void resize(size_t N) { m_xs.resize(N); m_ys.resize(N); m_zs.resize(N);  }
 			inline void reserve(size_t N) { m_xs.reserve(N); m_ys.reserve(N); m_zs.reserve(N);  }
 
-			inline vector_float & getArrayX() {return m_xs;} //!< Get a reference to the internal array of X coordinates
-			inline vector_float & getArrayY() {return m_ys;} //!< Get a reference to the internal array of Y coordinates
-			inline vector_float & getArrayZ() {return m_zs;} //!< Get a reference to the internal array of Z coordinates
+			inline std::vector<float> & getArrayX() {return m_xs;} //!< Get a reference to the internal array of X coordinates
+			inline std::vector<float> & getArrayY() {return m_ys;} //!< Get a reference to the internal array of Y coordinates
+			inline std::vector<float> & getArrayZ() {return m_zs;} //!< Get a reference to the internal array of Z coordinates
 
 			inline void setPointSize(float p) { m_pointSize=p; }  //!< By default is 1.0
 			inline float getPointSize() const { return m_pointSize; }
@@ -102,20 +102,20 @@ namespace mrpt
 			{
 				MRPT_START
 
-				size_t N = pointsList.size();
+				const size_t N = pointsList.size();
 
 				m_xs.resize(N);
 				m_ys.resize(N);
 				m_zs.resize(N);
 
-				vector_float::iterator X, Y, Z;
+				size_t idx;
 				typename LISTOFPOINTS::const_iterator it;
 
-				for ( it=pointsList.begin(), X=m_xs.begin(), Y=m_ys.begin(),Z=m_zs.begin(); it!=pointsList.end(); it++, X++, Y++, Z++)
+				for ( idx=0,it=pointsList.begin() ; idx<N ; ++idx,++it)
 				{
-					*X = (*it).x;
-					*Y = (*it).y;
-					*Z = (*it).z;
+					m_xs[idx]=it->x;
+					m_ys[idx]=it->y;
+					m_zs[idx]=it->z;
 				}
 
 				MRPT_END

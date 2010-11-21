@@ -276,8 +276,8 @@ bool DemoFeatures()
 		winPlots.plot(distances,".4k","all_dists");
 
 		double min_dist=0,max_dist=0;
-		size_t min_dist_idx=0;
-		mrpt::math::minimum_maximum(distances,min_dist,max_dist,&min_dist_idx);
+		size_t min_dist_idx=0, max_dist_idx=0;
+		distances.minimum_maximum(min_dist,max_dist,&min_dist_idx,&max_dist_idx);
 
 		const double dist_std = mrpt::math::stddev(distances);
 
@@ -307,17 +307,26 @@ bool DemoFeatures()
 				}else if (desc_to_compute==descLogPolarImages) {
 					auxImg1.setFromMatrix( feats1[i1]->descriptors.LogPolarImg );
 					auxImg2.setFromMatrix( feats2[min_dist_idx]->descriptors.LogPolarImg );
-				}else if (desc_to_compute==descSpinImages) {
-					CMatrixFloat M1(
-						feats1[i1]->descriptors.SpinImg_range_rows,
-						feats1[i1]->descriptors.SpinImg.size()/feats1[i1]->descriptors.SpinImg_range_rows,
-						feats1[i1]->descriptors.SpinImg);
-					CMatrixFloat M2(
-						feats2[min_dist_idx]->descriptors.SpinImg_range_rows,
-						feats2[min_dist_idx]->descriptors.SpinImg.size()/feats2[min_dist_idx]->descriptors.SpinImg_range_rows,
-						feats2[min_dist_idx]->descriptors.SpinImg);
-					auxImg1.setFromMatrix( M1 );
-					auxImg2.setFromMatrix( M2 );
+				}else if (desc_to_compute==descSpinImages)
+				{
+					{
+						const size_t nR = feats1[i1]->descriptors.SpinImg_range_rows;
+						const size_t nC = feats1[i1]->descriptors.SpinImg.size()/feats1[i1]->descriptors.SpinImg_range_rows;
+						CMatrixFloat M1(nR,nC);
+						for (size_t r=0;r<nR;r++)
+							for (size_t c=0;c<nC;c++)
+								M1(r,c)=feats1[i1]->descriptors.SpinImg[c+r*nC];
+						auxImg1.setFromMatrix( M1 );
+					}
+					{
+						const size_t nR = feats2[min_dist_idx]->descriptors.SpinImg_range_rows;
+						const size_t nC = feats2[min_dist_idx]->descriptors.SpinImg.size()/feats2[min_dist_idx]->descriptors.SpinImg_range_rows;
+						CMatrixFloat M2(nR,nC);
+						for (size_t r=0;r<nR;r++)
+							for (size_t c=0;c<nC;c++)
+								M2(r,c)=feats2[min_dist_idx]->descriptors.SpinImg[c+r*nC];
+						auxImg2.setFromMatrix( M2 );
+					}
 				}
 
 				while (auxImg1.getWidth()<100 && auxImg1.getHeight()<100)

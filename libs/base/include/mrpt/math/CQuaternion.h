@@ -30,14 +30,12 @@
 #define CQuaternion_H
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/math/CArray.h>
 
 namespace mrpt
 {
 	namespace math
 	{
-
 		// For use with a constructor of CQuaternion
 		enum TConstructorFlags_Quaternions
 		{
@@ -61,7 +59,7 @@ namespace mrpt
 		template <class T>
 		class CQuaternion : public CArrayNumeric<T,4>
 		{
-			typedef CArrayNumeric<T,4> BASE;
+			typedef CArrayNumeric<T,4> Base;
 		public:
 	/* @{ Constructors
 	 */
@@ -85,7 +83,7 @@ namespace mrpt
 			(*this)[1] = x;
 			(*this)[2] = y;
 			(*this)[3] = z;
-			ASSERTDEBMSG_(std::abs(normSqr()-1.0)<1e-5, format("Initialization data for quaternion is not normalized: %f %f %f %f -> sqrNorm=%f",r,x,y,z,normSqr()) );
+			ASSERTDEBMSG_(std::abs(normSqr()-1.0)<1e-5, mrpt::format("Initialization data for quaternion is not normalized: %f %f %f %f -> sqrNorm=%f",r,x,y,z,normSqr()) );
 		}
 
 		/* @}
@@ -165,13 +163,13 @@ namespace mrpt
 		}
 
 		/** Return the squared norm of the quaternion */
-		inline double normSqr() const { return square(r()) + square(x()) + square(y()) + square(z()); }
+		inline double normSqr() const { return mrpt::utils::square(r()) + mrpt::utils::square(x()) + mrpt::utils::square(y()) + mrpt::utils::square(z()); }
 
 		/**	Normalize this quaternion, so its norm becomes the unitity.
 		  */
 		inline void normalize()
 		{
-			const T qq = 1.0/sqrt( normSqr() );
+			const T qq = 1.0/std::sqrt( normSqr() );
 			for (unsigned int i=0;i<4;i++)
 				(*this)[i] *= qq;
 		}
@@ -182,7 +180,7 @@ namespace mrpt
 		template <class MATRIXLIKE>
 		void  normalizationJacobian(MATRIXLIKE &J) const
 		{
-			const T n = 1.0/pow(normSqr(),T(1.5));
+			const T n = 1.0/std::pow(normSqr(),T(1.5));
 			J.setSize(4,4);
 			J.get_unsafe(0,0)=x()*x()+y()*y()+z()*z();
 			J.get_unsafe(0,1)=-r()*x();
@@ -271,6 +269,9 @@ namespace mrpt
 		template <class MATRIXLIKE>
 		void rpy_and_jacobian(T &roll, T &pitch, T &yaw, MATRIXLIKE *out_dr_dq = NULL, bool resize_out_dr_dq_to3x4 = true ) const
 		{
+			using mrpt::utils::square;
+			using std::sqrt;
+
 			if (out_dr_dq && resize_out_dr_dq_to3x4)
 				out_dr_dq->setSize(3,4);
 			const T discr = r()*y()-x()*z();

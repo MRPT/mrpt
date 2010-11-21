@@ -27,7 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/slam.h>
+#include <mrpt/base.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -38,13 +38,117 @@ using namespace mrpt::utils::metaprogramming;
 using namespace std;
 
 
-
 const double   dat_A[] = { 4, 5, 8, -2, 1, 3 };
 const double   dat_B[] = { 2, 6, 9, 8 };
 const double   dat_Cok[] = {53,64, -2,32, 29,30  };
 
 
 #define CHECK_AND_RET_ERROR(_COND_,_MSG_)    EXPECT_FALSE(_COND_) << _MSG_;
+
+
+TEST(Matrices, setSize)
+{
+	{
+		CMatrixFixedNumeric<double,6,6>  M;
+		EXPECT_TRUE( (M.array() == 0).all() );
+	}
+	{
+		CMatrixDouble  M(5,5);
+		EXPECT_TRUE( (M.array() == 0).all() );
+	}
+	{
+		CMatrixDouble  M(5,5);
+		M.setSize(6,5);
+		EXPECT_TRUE( (M.array() == 0).all() );
+	}
+	{
+		CMatrixDouble  M(5,5);
+		M.setSize(10,5);
+		EXPECT_TRUE( (M.array() == 0).all() );
+	}
+	{
+		CMatrixDouble  M(5,5);
+		M.setSize(5,6);
+		EXPECT_TRUE( (M.array() == 0).all() );
+	}
+	{
+		CMatrixDouble  M(5,5);
+		M.setSize(6,6);
+		EXPECT_TRUE( (M.array() == 0).all() );
+	}
+	{
+		CMatrixDouble  M(5,5);
+		M.setSize(10,10);
+		EXPECT_TRUE( (M.array() == 0).all() );
+	}
+}
+
+TEST(Matrices, extractSubmatrixSymmetricalBlocks)
+{
+	{
+		const double vals[] = {
+			1,2,3,4,5,6,7,8,
+			8,9,10,11,12,13,14,15,
+			1,2,3,4,5,6,7,8,
+			8,9,10,11,12,13,14,15,
+			1,2,3,4,5,6,7,8,
+			8,9,10,11,12,13,14,15,
+			1,2,3,4,5,6,7,8,
+			8,9,10,11,12,13,14,15 };
+		const CMatrixFixedNumeric<double,8,8>  M(vals);
+
+		std::vector<size_t> vs;
+		vs.push_back(1);
+		vs.push_back(3);
+
+		CMatrixDouble E;
+		M.extractSubmatrixSymmetricalBlocks(2,vs,E);
+
+		const double valsE[] = {
+			3,4,7,8,
+			10,11,14,15,
+			3,4,7,8,
+			10,11,14,15 };
+		const CMatrixDouble44  E_expected(valsE);
+
+		EXPECT_TRUE( E_expected == E );
+	}
+}
+
+TEST(Matrices, extractSubmatrixSymmetrical)
+{
+	{
+		const double vals[] = {
+			1,2,3,4,5,6,7,8,
+			8,9,10,11,12,13,14,15,
+			1,2,3,4,5,6,7,8,
+			8,9,10,11,12,13,14,15,
+			1,2,3,4,5,6,7,8,
+			8,9,10,11,12,13,14,15,
+			1,2,3,4,5,6,7,8,
+			8,9,10,11,12,13,14,15 };
+		const CMatrixFixedNumeric<double,8,8>  M(vals);
+
+		std::vector<size_t> vs;
+		vs.push_back(2);
+		vs.push_back(3);
+		vs.push_back(6);
+		vs.push_back(7);
+
+		CMatrixDouble E;
+		M.extractSubmatrixSymmetrical(vs,E);
+
+		const double valsE[] = {
+			3,4,7,8,
+			10,11,14,15,
+			3,4,7,8,
+			10,11,14,15 };
+		const CMatrixDouble44  E_expected(valsE);
+
+		EXPECT_TRUE( E_expected == E );
+	}
+}
+
 
 TEST(Matrices, A_times_B_dyn)
 {
@@ -110,12 +214,11 @@ TEST(Matrices,EigenVal2x2dyn)
 	const double   dat_C1[] = {  14.6271,  5.8133, 5.8133, 16.8805 };
 	CMatrixDouble  C1(2,2, dat_C1);
 
-	CMatrixDouble  C1_V(2,2), C1_D(2,2);
+	Eigen::MatrixXd C1_V,C1_D;
 	C1.eigenVectors(C1_V,C1_D);
 
-	CMatrixDouble  C1_RR = C1_V*C1_D*(~C1_V);
-	C1_RR-=C1;
-	EXPECT_TRUE(fabs(C1_RR.sumAll())<1e-4);
+	CMatrixDouble  C1_RR = C1_V * C1_D * C1_V.transpose();
+	EXPECT_NEAR( (C1_RR-C1).Abs().sum(),0,1e-4);
 }
 
 TEST(Matrices,EigenVal3x3dyn)
@@ -123,12 +226,11 @@ TEST(Matrices,EigenVal3x3dyn)
 	const double   dat_C1[] = {  8,6,1, 6,9,4, 1,4,10 };
 	CMatrixDouble  C1(3,3, dat_C1);
 
-	CMatrixDouble  C1_V(3,3), C1_D(3,3);
+	Eigen::MatrixXd C1_V,C1_D;
 	C1.eigenVectors(C1_V,C1_D);
 
-	CMatrixDouble  C1_RR = C1_V*C1_D*(~C1_V);
-	C1_RR-=C1;
-	EXPECT_TRUE(fabs(C1_RR.sumAll())<1e-4);
+	CMatrixDouble  C1_RR = C1_V*C1_D*C1_V.transpose();
+	EXPECT_NEAR( (C1_RR-C1).Abs().sum(),0,1e-4);
 }
 
 TEST(Matrices,EigenVal2x2fix)
@@ -136,12 +238,11 @@ TEST(Matrices,EigenVal2x2fix)
 	const double   dat_C1[] = {  14.6271,  5.8133, 5.8133, 16.8805 };
 	CMatrixDouble22  C1(dat_C1);
 
-	CMatrixDouble22  C1_V, C1_D;
+	Eigen::Matrix2d C1_V,C1_D;
 	C1.eigenVectors(C1_V,C1_D);
 
 	CMatrixDouble22  C1_RR = C1_V*C1_D*(~C1_V);
-	C1_RR-=C1;
-	EXPECT_TRUE(fabs(C1_RR.sumAll())<1e-4);
+	EXPECT_NEAR( (C1_RR-C1).Abs().sum(),0,1e-4);
 }
 
 TEST(Matrices,EigenVal3x3fix)
@@ -153,9 +254,41 @@ TEST(Matrices,EigenVal3x3fix)
 	C1.eigenVectors(C1_V,C1_D);
 
 	CMatrixDouble33  C1_RR = C1_V*C1_D*(~C1_V);
-	C1_RR-=C1;
-	EXPECT_TRUE(fabs(C1_RR.sumAll())<1e-4);
+	EXPECT_NEAR( (C1_RR-C1).Abs().sum(),0,1e-4);
 }
+
+// Compare the two ways of computing matrix eigenvectors: generic & for symmetric matrices:
+TEST(Matrices,EigenVal4x4_sym_vs_generic)
+{
+	const double   dat_C1[] = {
+		13.737245,10.248641,-5.839599,11.108320,
+		10.248641,14.966139,-5.259922,11.662222,
+		-5.839599,-5.259922,9.608822,-4.342505,
+		11.108320,11.662222,-4.342505,12.121940 };
+	const CMatrixDouble44  C1(dat_C1);
+
+	CMatrixDouble44 eigvecs_sym, eigvecs_gen, eigvals_symM, eigvals_genM;
+	vector_double   eigvals_sym, eigvals_gen;
+
+	C1.eigenVectorsVec(eigvecs_gen,eigvals_gen);
+	C1.eigenVectorsSymmetricVec(eigvecs_sym,eigvals_sym);
+
+	eigvals_symM.setZero();eigvals_symM.diagonal() = eigvals_sym;
+	eigvals_genM.setZero();eigvals_genM.diagonal() = eigvals_gen;
+
+	EXPECT_NEAR( (C1-eigvecs_gen*eigvals_genM*(~eigvecs_gen)).Abs().sum(),0,1e-5)
+		<< "eigvecs_gen*eigvals_gen*(~eigvecs_gen):\n" << eigvecs_gen*eigvals_genM*(~eigvecs_gen)
+		<< "C1:\n" << C1;
+
+	EXPECT_NEAR( (C1-eigvecs_sym*eigvals_symM*(~eigvecs_sym)).Abs().sum(),0,1e-5)
+		<< "eigvecs_sym*eigvals_sym*(~eigvecs_sym):\n" << eigvecs_sym*eigvals_symM*(~eigvecs_sym)
+		<< "C1:\n" << C1;
+
+	EXPECT_NEAR( (eigvals_gen-eigvals_sym).Abs().sum(),0,1e-5)
+		<< "eigvals_gen:\n" << eigvals_gen
+		<< "eigvals_sym:\n" << eigvals_sym;
+}
+
 
 TEST(Matrices,HCHt_3x2_2x2_2x3)
 {
@@ -171,20 +304,20 @@ TEST(Matrices,HCHt_3x2_2x2_2x3)
 	CMatrixDouble R;
 	H.multiply_HCHt(C,R);
 
-	EXPECT_TRUE(fabs((R_REAL-R).Abs().sumAll())<1e-4);
+	EXPECT_NEAR( (R_REAL-R).Abs().sum(),0,1e-4);
 }
 
 TEST(Matrices,HCHt_scalar_1x2_2x2_2x1)
 {
 	const double   dat_H[] = {  0.2, -0.3 };
-	CMatrixDouble  H(1,2, dat_H);
+	CMatrixDouble H(1,2, dat_H);
 
 	const double   dat_C[] = {  0.8, -0.1, -0.1, 0.8 };
-	CMatrixDouble  C(2,2, dat_C);
+	CMatrixDouble C(2,2, dat_C);
 
 	const double r = H.multiply_HCHt_scalar(C);
 
-	const double r2 = (H*C*(~H))(0,0);
+	const double r2 = (H*C*H.transpose()).eval()(0,0);
 	CHECK_AND_RET_ERROR(fabs(r-r2)>1e-4,  "Error in HCHt_scalar: 1x2 * 2x2 * 2x1")
 }
 
@@ -425,7 +558,7 @@ TEST(Matrices,multiply_A_skew3)
 
 		CMatrixFixedNumeric<double,2,3> R;
 		R.multiply_A_skew3(A,v);
-		EXPECT_EQ(R, A*S );
+		EXPECT_TRUE(R== A*S );
 	}
 }
 
@@ -442,7 +575,7 @@ TEST(Matrices,multiply_skew3_A)
 
 		CMatrixDouble  R;
 		R.multiply_skew3_A(v,A);
-		EXPECT_EQ(R, S*A );
+		EXPECT_TRUE(R == S*A );
 	}
 	{
 		const double dat_A[] = {
@@ -456,7 +589,7 @@ TEST(Matrices,multiply_skew3_A)
 
 		CMatrixFixedNumeric<double,3,2> R;
 		R.multiply_skew3_A(v,A);
-		EXPECT_EQ(R, S*A );
+		EXPECT_TRUE(R == S*A );
 	}
 }
 
@@ -464,7 +597,11 @@ TEST(Matrices,multiply_skew3_A)
 TEST(Matrices,fromMatlabStringFormat)
 {
 	const char* mat1 = "[1 2 3;-3 -6 -5]";
+	const double vals1[] = {1,2,3,-3,-6,-5};
+
 	const char* mat2 = " [ 	  -8.2	 9.232 ; -2e+2		+6 ; 1.000  7 ] ";    // With tabs and spaces...
+	const double vals2[] = {-8.2, 9.232, -2e+2, +6, 1.000 ,7};
+
 	const char* mat3 = "[9]";
 	const char* mat4 = "[1 2 3 4 5 6 7 9 10  ; 1 2 3 4 5 6 7 8 9 10 11]";   // An invalid matrix
 	const char* mat5 = "[  ]";  // Empty
@@ -472,17 +609,33 @@ TEST(Matrices,fromMatlabStringFormat)
 
 	CMatrixDouble	M1,M2,M3, M4, M5, M6;
 
-	if (! M1.fromMatlabStringFormat(mat1) )
+	if (! M1.fromMatlabStringFormat(mat1) ||
+		(CMatrixFixedNumeric<double,2,3>(vals1)-M1).Abs().sumAll() > 1e-4 )
 		GTEST_FAIL() << mat1;
 
-	if (! M2.fromMatlabStringFormat(mat2) )
+	{
+		CMatrixFixedNumeric<double,2,3> M1b;
+		if (! M1b.fromMatlabStringFormat(mat1) ||
+			(CMatrixFixedNumeric<double,2,3>(vals1)-M1b).Abs().sumAll() > 1e-4 )
+			GTEST_FAIL() << mat1;
+	}
+
+	if (! M2.fromMatlabStringFormat(mat2) ||
+		(CMatrixFixedNumeric<double,3,2>(vals2)-M2).Abs().sumAll() > 1e-4 )
 		GTEST_FAIL() << mat2;
+
+	{
+		CMatrixFixedNumeric<double,3,2> M2b;
+		if (! M2b.fromMatlabStringFormat(mat2) ||
+			(CMatrixFixedNumeric<double,3,2>(vals2)-M2b).Abs().sumAll() > 1e-4 )
+			GTEST_FAIL() << mat2;
+	}
 
 	if (! M3.fromMatlabStringFormat(mat3) )
 		GTEST_FAIL() << mat3;
 
 	// This one MUST BE detected as WRONG:
-	if ( M4.fromMatlabStringFormat(mat4) )
+	if ( M4.fromMatlabStringFormat(mat4, false /*dont dump errors to cerr*/) )
 		GTEST_FAIL() << mat4;
 
 	if (! M5.fromMatlabStringFormat(mat5) || size(M5,1)!=0 || size(M5,2)!=0 )
@@ -566,7 +719,7 @@ namespace detail_testMatrixDivide
 		return 0;
 	}
 
-	template<typename T,typename ConstIt,typename It> void for_eachEX(ConstIt begin1,const ConstIt &end1,ConstIt leftSource,ConstIt rightSource,It leftDest,It rightDest,void (T::*leftFun)(const T &,T &) const,void (T::*rightFun)(const T &,T &) const)	{
+	template<typename T,typename T2,typename T3,typename ConstIt,typename It> void for_eachEX(ConstIt begin1,const ConstIt &end1,ConstIt leftSource,ConstIt rightSource,It leftDest,It rightDest,void (T::*leftFun)(const T2 &,T3 &) const,void (T::*rightFun)(const T2 &,T3 &) const)	{
 		while (begin1!=end1)	{
 			//cout << "l" << endl << (*begin1) << endl << *leftSource <<endl;
 			//cout << "det b: " << begin1->det() << endl;
@@ -607,7 +760,8 @@ TEST(Matrices,divide)
 	EXPECT_TRUE(0==accumulate(itDouble(leftOps.begin(),leftCheck.begin()),itDouble(leftOps.end(),leftCheck.end()),accumulate(itDouble(rightOps.begin(),rightCheck.begin()),itDouble(rightOps.end(),rightCheck.end()),0,&compareAndSum),&compareAndSum));
 }
 
-
+// JL: Disabled as of porting to Eigen...
+#if 0
 namespace detail_testMatrixMaha
 {
 	// Start of auxiliary code/data for text matrix_mahalanobis =========================
@@ -721,9 +875,9 @@ TEST(Matrices,mahalanobis)
 
 	CTicTac time;
 	vector<CMatrixTemplateNumeric<NumericType> > matrices(howMany,CMatrixTemplateNumeric<NumericType>(matrixSize,matrixSize));
-	vector<vector<NumericType> > vectors(howMany,vector<NumericType>(matrixSize));
-	vector<NumericType> res1(howMany);
-	vector<NumericType> res2(howMany);
+	vector<mrpt::dynamicsize_vector<NumericType> > vectors(howMany,mrpt::dynamicsize_vector<NumericType>(matrixSize));
+	mrpt::dynamicsize_vector<NumericType> res1(howMany);
+	mrpt::dynamicsize_vector<NumericType> res2(howMany);
 	generate(matrices.begin(),matrices.end(),PositiveSemidefiniteGenerator<NumericType>(matrixSize));
 	generate(vectors.begin(),vectors.end(),RandomVectorGenerator<NumericType>(matrixSize));
 	time.Tic();
@@ -734,4 +888,138 @@ TEST(Matrices,mahalanobis)
 	t=time.Tac();
 	EXPECT_TRUE(0==accumulate(itDouble(res1.begin(),res2.begin()),itDouble(res1.end(),res2.end()),NumericType(0.0),&compareAndSum<NumericType>));
 }
+#endif
+
+
+TEST(Matrices,meanAndStd)
+{
+	MRPT_TODO("Do this test...")
+}
+
+TEST(Matrices,meanAndStdAll)
+{
+	MRPT_TODO("Do this test...")
+}
+
+TEST(Matrices,laplacian)
+{
+	MRPT_TODO("Do this test...")
+}
+
+TEST(Matrices,largestEigenvector)
+{
+	{
+		const double   dat_C1[] = {
+			13.737245,10.248641,-5.839599,11.108320,
+			10.248641,14.966139,-5.259922,11.662222,
+			-5.839599,-5.259922,9.608822,-4.342505,
+			11.108320,11.662222,-4.342505,12.121940 };
+		const CMatrixDouble44  C1(dat_C1);
+
+		const double dat_REAL_EIGVEC[] = { 0.54800  , 0.57167,  -0.29604 ,  0.53409 };
+		const Eigen::Matrix<double,4,1>  REAL_EIGVEC(dat_REAL_EIGVEC);
+		//const double REAL_LARGEST_EIGENVALUE =  38.40966;
+
+		Eigen::MatrixXd lev;
+		C1.largestEigenvector(lev,1e-3, 20);
+		EXPECT_NEAR( (REAL_EIGVEC-lev).array().abs().sum(), 0, 1e-3);
+	}
+}
+
+TEST(Matrices,powerOperator)
+{
+	MRPT_TODO("Do this test...")
+}
+
+TEST(Matrices,loadFromTextFile)
+{
+	{
+		const std::string s1 =
+			"1 2 3\n"
+			"4 5 6";
+		std::stringstream  s(s1);
+		CMatrixDouble M;
+		bool retval = false;
+		try { M.loadFromTextFile(s); retval=true; } catch(std::exception &e) { std::cerr << e.what() << std::endl; }
+		EXPECT_TRUE(retval) << "string:\n" << s1 << endl;
+		EXPECT_EQ(M.rows(),2);
+		EXPECT_EQ(M.cols(),3);
+	}
+	{
+		const std::string s1 =
+			"1 \t 2\n"
+			"  4 \t\t 1    ";
+		std::stringstream  s(s1);
+		CMatrixDouble M;
+		bool retval = false;
+		try { M.loadFromTextFile(s); retval=true; } catch(std::exception &e) { std::cerr << e.what() << std::endl; }
+		EXPECT_TRUE(retval) << "string:\n" << s1 << endl;
+		EXPECT_EQ(M.rows(),2);
+		EXPECT_EQ(M.cols(),2);
+	}
+	{
+		const std::string s1 =
+			"1 2";
+		std::stringstream  s(s1);
+		CMatrixDouble M;
+		bool retval = false;
+		try { M.loadFromTextFile(s); retval=true; } catch(std::exception &e) { std::cerr << e.what() << std::endl; }
+		EXPECT_TRUE(retval) << "string:\n" << s1 << endl;
+		EXPECT_EQ(M.rows(),1);
+		EXPECT_EQ(M.cols(),2);
+	}
+	{
+		const std::string s1 =
+			"1 2 3\n"
+			"4 5 6\n";
+		std::stringstream  s(s1);
+		CMatrixFixedNumeric<double,2,3> M;
+		bool retval = false;
+		try { M.loadFromTextFile(s); retval=true; } catch(std::exception &e) { std::cerr << e.what() << std::endl; }
+		EXPECT_TRUE(retval) << "string:\n" << s1 << endl;
+		EXPECT_EQ(M.rows(),2);
+		EXPECT_EQ(M.cols(),3);
+	}
+	{
+		const std::string s1 =
+			"1 2 3\n"
+			"4 5\n";
+		std::stringstream  s(s1);
+		CMatrixFixedNumeric<double,2,3> M;
+		bool retval = false;
+		try { M.loadFromTextFile(s); retval=true; } catch(std::exception &) { }
+		EXPECT_FALSE(retval) << "string:\n" << s1 << endl;
+	}
+	{
+		const std::string s1 =
+			"1 2 3\n"
+			"4 5\n";
+		std::stringstream  s(s1);
+		CMatrixDouble M;
+		bool retval = false;
+		try { M.loadFromTextFile(s); retval=true; } catch(std::exception &) { }
+		EXPECT_FALSE(retval) << "string:\n" << s1 << endl;
+	}
+	{
+		const std::string s1 =
+			"  \n";
+		std::stringstream  s(s1);
+		CMatrixFixedNumeric<double,2,3> M;
+		bool retval = false;
+		try { M.loadFromTextFile(s); retval=true; } catch(std::exception &) { }
+		EXPECT_FALSE(retval) << "string:\n" << s1 << endl;
+	}
+	{
+		const std::string s1 =
+			"1 2 3\n"
+			"1 2 3\n"
+			"1 2 3";
+		std::stringstream  s(s1);
+		CMatrixFixedNumeric<double,2,3> M;
+		bool retval = false;
+		try { M.loadFromTextFile(s); retval=true; } catch(std::exception &) { }
+		EXPECT_FALSE(retval) << "string:\n" << s1 << endl;
+	}
+}
+
 

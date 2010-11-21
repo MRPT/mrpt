@@ -399,9 +399,9 @@ void  vision::filterBadCorrsByDistance( TMatchingPairList &feat_list, unsigned i
 	MRPT_START;
 
 	TMatchingPairList::iterator	itPair;
-	CMatrix									dist;
-	float									v_mean, v_std;
-	unsigned int							count = 0;
+	CMatrix	dist;
+	double  v_mean, v_std;
+	unsigned int count = 0;
 
 	dist.setSize( feat_list.size(), 1 );
 	//v_mean.resize(1);

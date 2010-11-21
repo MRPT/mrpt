@@ -184,7 +184,7 @@ namespace math
 					tmp *= lambda;
 					tmp -= g;
 					tmp*=h_lm;
-					double denom = math::sum(tmp);
+					double denom = tmp.sum();
 					double l = (F_x - F_xnew) / denom;
 
 					//cout << "l:" << l << endl << tmp;

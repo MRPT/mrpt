@@ -244,14 +244,13 @@ void  CPosePDFGaussianInf::rotateCov(const double ang)
 		ssin, ccos,  0.,
 		0.  ,   0.,  1. };
 
-	const CMatrixDouble33 rot(rot_vals);
+	const CMatrixFixedNumeric<double,3,3> rot(rot_vals);
 
 	// NEW_COV = H C H^T
 	// NEW_COV^(-1) = (H C H^T)^(-1) = (H^T)^(-1) C^(-1) H^(-1)
 	// rot: Inverse of a rotation matrix is its trasposed.
 	//      But we need H^t^-1 -> H !! so rot stays unchanged:
-
-	rot.multiply_HCHt( CMatrixDouble33(cov_inv), cov_inv );  // cov is I & O, make a temporary copy ;-)
+	cov_inv = rot * cov_inv * rot.transpose();
 }
 
 /*---------------------------------------------------------------
@@ -327,8 +326,8 @@ void  CPosePDFGaussianInf::bayesianFusion(const  CPosePDF &p1_,const  CPosePDF &
 	const CMatrixDouble33& C1_inv = p1->cov_inv;
 	const CMatrixDouble33& C2_inv = p2->cov_inv;
 
-	CMatrixDouble31	x1 = p1->mean;
-	CMatrixDouble31	x2 = p2->mean;
+	CMatrixDouble31	x1 = CMatrixDouble31(p1->mean);
+	CMatrixDouble31	x2 = CMatrixDouble31(p2->mean);
 
 	this->cov_inv = C1_inv + C2_inv;
 
@@ -367,16 +366,16 @@ void	 CPosePDFGaussianInf::inverse(CPosePDF &o) const
 		 ssin, -ccos,  mean.x()*ccos+mean.y()*ssin,
 		 0   ,     0,  -1
 		};
-	const CMatrixDouble33 H(H_values);
+	const CMatrixFixedNumeric<double,3,3> H(H_values);
 
-	H.multiply_HCHt(this->cov_inv, out->cov_inv); // o.cov = H * cov * Ht. It's the same with inverse covariances.
+	out->cov_inv = H * cov_inv * H.transpose();  // o.cov = H * cov * Ht. It's the same with inverse covariances.
 }
 
 
 /*---------------------------------------------------------------
 							+=
  ---------------------------------------------------------------*/
-void  CPosePDFGaussianInf::operator += ( CPose2D Ap)
+void  CPosePDFGaussianInf::operator += ( const CPose2D &Ap)
 {
 	mean = mean + Ap;
 	rotateCov( Ap.phi() );
@@ -387,13 +386,10 @@ void  CPosePDFGaussianInf::operator += ( CPose2D Ap)
  ---------------------------------------------------------------*/
 double  CPosePDFGaussianInf::evaluatePDF( const CPose2D &x ) const
 {
-	CMatrixDouble31	X = x;
-	CMatrixDouble31	MU = mean;
+	CMatrixDouble31	X = CMatrixDouble31(x);
+	CMatrixDouble31	MU = CMatrixDouble31(mean);
 
-	CMatrixDouble33 cov(UNINITIALIZED_MATRIX);
-	this->cov_inv.inv(cov);
-
-	return math::normalPDF( X, MU, cov );
+	return math::normalPDF( X, MU, cov_inv.inverse() );
 }
 
 /*---------------------------------------------------------------
@@ -401,8 +397,8 @@ double  CPosePDFGaussianInf::evaluatePDF( const CPose2D &x ) const
  ---------------------------------------------------------------*/
 double  CPosePDFGaussianInf::evaluateNormalizedPDF( const CPose2D &x ) const
 {
-	CMatrixDouble31	X = x;
-	CMatrixDouble31	MU = mean;
+	CMatrixDouble31	X = CMatrixDouble31(x);
+	CMatrixDouble31	MU = CMatrixDouble31(mean);
 
 	CMatrixDouble33 cov(UNINITIALIZED_MATRIX);
 	this->cov_inv.inv(cov);
@@ -543,7 +539,7 @@ void CPosePDFGaussianInf::jacobiansPoseComposition(
 	[ 0, 1,  cos(phi_x)*x_u-sin(phi_x)*y_u ]
 	[ 0, 0,                              1 ]
 */
-	df_dx.unit();
+	df_dx.unit(3,1.0);
 
 	const double   xu = u.mean.x();
 	const double   yu = u.mean.y();

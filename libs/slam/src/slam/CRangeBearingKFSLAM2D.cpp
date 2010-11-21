@@ -145,7 +145,7 @@ void CRangeBearingKFSLAM2D::getCurrentState(
 
     // Full state:
     out_fullState.resize( m_xkk.size() );
-    for (i=0;i<m_xkk.size();i++)
+	for (KFVector::Index i=0;i<m_xkk.size();i++)
 		out_fullState[i] = m_xkk[i];
 
 	// Full cov:
@@ -231,7 +231,7 @@ void  CRangeBearingKFSLAM2D::OnTransitionModel(
 
 	// Do not update the vehicle pose & its covariance until we have some landmakrs in the map,
 	// otherwise, we are imposing a lower bound to the best uncertainty from now on:
-	if (m_xkk.size() == get_vehicle_size() )
+	if (size_t(m_xkk.size()) == get_vehicle_size() )
 	{
 		out_skipPrediction = true;
 		return;
@@ -275,7 +275,7 @@ void  CRangeBearingKFSLAM2D::OnTransitionJacobian( KFMatrix_VxV  &F ) const
 	else
 	{
 		// No odometry at all:
-		F.unit(); // Unit diagonal
+		F.setIdentity(); // Unit diagonal
 		return;
 	}
 
@@ -285,7 +285,7 @@ void  CRangeBearingKFSLAM2D::OnTransitionJacobian( KFMatrix_VxV  &F ) const
 	const kftype Ax = Ap.x;
 	const kftype Ay = Ap.y;
 
-	F.unit(); // Unit diagonal
+	F.setIdentity(); // Unit diagonal
 
 	F.get_unsafe(0,2) = -Ax*sy-Ay*cy;
 	F.get_unsafe(1,2) =  Ax*cy-Ay*sy;
@@ -311,7 +311,7 @@ void  CRangeBearingKFSLAM2D::OnTransitionNoise( KFMatrix_VxV &Q ) const
 	{
 		// Use constant Q:
 		Q.zeros();
-		ASSERT_(options.stds_Q_no_odo.size()==Q.getColCount())
+		ASSERT_(size_t(options.stds_Q_no_odo.size())==Q.getColCount())
 
 		for (size_t i=0;i<3;i++)
 			Q.get_unsafe(i,i) = square( options.stds_Q_no_odo[i]);
@@ -340,7 +340,7 @@ void  CRangeBearingKFSLAM2D::OnTransitionNoise( KFMatrix_VxV &Q ) const
 
 void CRangeBearingKFSLAM2D::OnObservationModel(
 	const vector_size_t       &idx_landmarks_to_predict,
-	std::vector<KFArray_OBS>  &out_predictions ) const
+	vector_KFArray_OBS  &out_predictions ) const
 {
 	MRPT_START
 
@@ -501,9 +501,9 @@ void CRangeBearingKFSLAM2D::OnObservationJacobians(
   * \note It is assumed that the observations are independent, i.e. there are NO cross-covariances between them.
   */
 void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
-	std::vector<KFArray_OBS>    &Z,
+	vector_KFArray_OBS    &Z,
 	vector_int                  &data_association,
-	const vector<KFArray_OBS>   &all_predictions,
+	const vector_KFArray_OBS   &all_predictions,
 	const KFMatrix              &S,
 	const vector_size_t         &lm_indices_in_S,
 	const KFMatrix_OxO          &R
@@ -1049,7 +1049,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationNoise(KFMatrix_OxO &out_R) const
   * \sa OnGetObservations, OnDataAssociation
   */
 void CRangeBearingKFSLAM2D::OnPreComputingPredictions(
-	const vector<KFArray_OBS>	&prediction_means,
+	const vector_KFArray_OBS	&prediction_means,
 	vector_size_t				&out_LM_indices_to_predict ) const
 {
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();

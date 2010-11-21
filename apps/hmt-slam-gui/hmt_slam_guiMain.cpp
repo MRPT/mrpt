@@ -621,7 +621,7 @@ void hmt_slam_guiFrame::rebuildTreeView()
 	// List of hypotheses:
 	cbHypos->Clear();
 
-	for ( std::map< THypothesisID, CLocalMetricHypothesis >::const_iterator l= m_hmtslam->m_LMHs.begin();l!=m_hmtslam->m_LMHs.end();++l)
+	for ( aligned_containers<THypothesisID, CLocalMetricHypothesis>::map_t::const_iterator l= m_hmtslam->m_LMHs.begin();l!=m_hmtslam->m_LMHs.end();++l)
 		cbHypos->Append( _U( format("%i",(int)l->first).c_str()) );
 
 	cbHypos->SetSelection(0);

@@ -41,7 +41,6 @@
 
 #include <mrpt/opengl/C3DSScene.h>
 #include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/math/CVectorTemplate.h>
 
 #include <mrpt/compress/zip.h>
 #include <mrpt/system/filesystem.h>

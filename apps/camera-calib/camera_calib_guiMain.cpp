@@ -170,7 +170,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	wxFlexGridSizer* FlexGridSizer1;
 	wxFlexGridSizer* FlexGridSizer17;
 	wxStaticBoxSizer* StaticBoxSizer5;
-	
+
 	Create(parent, id, _("Camera calibration GUI - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX, _T("id"));
 	FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer1->AddGrowableCol(1);
@@ -237,7 +237,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	FlexGridSizer17->Add(edSizeY, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StaticBoxSizer4->Add(FlexGridSizer17, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	FlexGridSizer6->Add(StaticBoxSizer4, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 2);
-	wxString __wxRadioBoxChoices_1[2] = 
+	wxString __wxRadioBoxChoices_1[2] =
 	{
 		_("OpenCV\'s default"),
 		_("Scaramuzza et al.\'s")
@@ -351,7 +351,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
-	
+
 	Connect(ID_BUTTON8,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnCaptureNowClick);
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&camera_calib_guiDialog::OnAddImage);
 	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&camera_calib_guiDialog::OnListClear);
@@ -520,7 +520,7 @@ void camera_calib_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 		camera_params,
 		normalize_image,
 		NULL /* MSE */,
-		false /* skip draw */, 
+		false /* skip draw */,
 		useScaramuzzaAlternativeDetector);
 
 
@@ -673,7 +673,7 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 	// Draw the board:
 	for (unsigned int k=0;k<it->second.detected_corners.size();k++)
 	{
-		imgCheck.cross(it->second.detected_corners[k].x()*zoomVal, it->second.detected_corners[k].y()*zoomVal, TColor::blue, 3 );
+		imgCheck.cross(it->second.detected_corners[k].x *zoomVal, it->second.detected_corners[k].y *zoomVal, TColor::blue, 3 );
 		imgCheck.drawCircle( it->second.projectedPoints_distorted[k].x*zoomVal, it->second.projectedPoints_distorted[k].y*zoomVal, 4, TColor(0,255,64) );
 	}
 	imgCheck.drawCircle( 10,10, 4, TColor(0,255,64) );
@@ -770,7 +770,7 @@ void camera_calib_guiDialog::OnbtnManualRectClick(wxCommandEvent& event)
 		return;
 	}
 
-	
+
 	s = wxGetTextFromUser(_("Focus length in X pixel size (fx):"),_("Manual parameters"),wxString::Format(wxT("%.07f"),camera_params.intrinsicParams(0,0)), this );
 	if (s.IsEmpty()) return;
 	if (!s.ToDouble(&camera_params.intrinsicParams(0,0))) { wxMessageBox(_("Invalid number")); return; }

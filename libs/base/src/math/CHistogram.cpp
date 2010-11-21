@@ -96,7 +96,7 @@ double CHistogram::getBinRatio(const size_t index) const
 /*---------------------------------------------------------------
 					getHistogram
  ---------------------------------------------------------------*/
-void CHistogram::getHistogram( std::vector<double> &x, std::vector<double> &hits ) const
+void CHistogram::getHistogram( vector_double &x, vector_double &hits ) const
 {
 	linspace(m_min,m_max,m_bins.size(), x);
 	metaprogramming::copy_container_typecasting(m_bins,hits);
@@ -106,7 +106,7 @@ void CHistogram::getHistogram( std::vector<double> &x, std::vector<double> &hits
 /*---------------------------------------------------------------
 					getHistogramNormalized
  ---------------------------------------------------------------*/
-void CHistogram::getHistogramNormalized( std::vector<double> &x, std::vector<double> &hits ) const
+void CHistogram::getHistogramNormalized( vector_double &x, vector_double &hits ) const
 {
 	const size_t N = m_bins.size();
 	linspace(m_min,m_max,N, x);

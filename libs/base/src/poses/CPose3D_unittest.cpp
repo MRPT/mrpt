@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/base.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -52,7 +52,7 @@ protected:
 		const CMatrixDouble44 HM  = p1.getHomogeneousMatrixVal();
 		const CMatrixDouble44 HMi = p1.getInverseHomogeneousMatrix();
 
-		CMatrixDouble44 I4; I4.unit();
+		CMatrixDouble44 I4; I4.unit(4,1.0);
 
 		EXPECT_NEAR( (HM*HMi-I4).Abs().sumAll(), 0, 1e-3 ) <<
 			"HM:\n"      << HM <<
@@ -70,7 +70,7 @@ protected:
 			"p1: "      << p1 <<
 			"p1_inv_inv: " << p1_inv_inv << endl;
 
-		EXPECT_EQ(HMi_from_p1_inv, HMi);
+		EXPECT_TRUE(HMi_from_p1_inv==HMi);
 	}
 
 

@@ -40,8 +40,8 @@ namespace synch
 class MT_buffer
 {
 private:
-	vector_byte			m_data;
-	CCriticalSection	m_cs;
+	vector_byte       m_data;
+	CCriticalSection  m_cs;
 
 public:
 	MT_buffer()  //!< Default constructor

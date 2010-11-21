@@ -30,7 +30,6 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/utils_defs.h>
 
@@ -40,15 +39,38 @@ namespace mrpt
 	namespace math
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CMatrixD, mrpt::utils::CSerializable )
+		//DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CMatrixD, mrpt::utils::CSerializable )
+		//DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, BASE_IMPEXP )
+		DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(CMatrixD, mrpt::utils::CSerializable, CMatrixD)
+		BASE_IMPEXP ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, CMatrixDPtr &pObj);
+
 
 		/**  This class is a "CSerializable" wrapper for "CMatrixTemplateNumeric<double>".
 		 */
-		class BASE_IMPEXP CMatrixD : public mrpt::utils::CSerializable, public CMatrixTemplateNumeric<double>
+		class CMatrixD : public mrpt::utils::CSerializable, public CMatrixTemplateNumeric<double>
 		{
 			// This must be added to any CSerializable derived class:
-			DEFINE_SERIALIZABLE( CMatrixD )
-		public:
+			//DEFINE_SERIALIZABLE( CMatrixD )
+			//DEFINE_MRPT_OBJECT(CMatrixD)
+		protected:
+			static  const mrpt::utils::TRuntimeClassId* _GetBaseClass();
+			static mrpt::utils::CLASSINIT _init_CMatrixD;
+		public: 
+			/*! A typedef for the associated smart pointer */ 
+			typedef CMatrixDPtr SmartPtr; 
+			static BASE_IMPEXP  mrpt::utils::TRuntimeClassId  classCMatrixD; 
+			static BASE_IMPEXP  const mrpt::utils::TRuntimeClassId *classinfo; 
+			virtual BASE_IMPEXP  const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const; 
+			static  BASE_IMPEXP mrpt::utils::CObject* CreateObject(); 
+			static BASE_IMPEXP CMatrixDPtr Create(); 
+			virtual BASE_IMPEXP mrpt::utils::CObject *duplicate() const; 
+		protected:
+			/*! @name CSerializable virtual methods */
+			/*! @{ */
+			BASE_IMPEXP void writeToStream(mrpt::utils::CStream &out, int *getVersion) const;
+			BASE_IMPEXP void readFromStream(mrpt::utils::CStream &in, int version);
+			/*! @} */
+
 		public:
 			/** Constructor */
 			CMatrixD() : CMatrixTemplateNumeric<double>(1,1)
@@ -68,6 +90,16 @@ namespace mrpt
 			{
 				*this = m;
 			}
+
+			/*! Assignment operator from any other Eigen class */
+			template<typename OtherDerived>
+			inline CMatrixD & operator= (const Eigen::MatrixBase <OtherDerived>& other) {
+				CMatrixTemplateNumeric<double>::operator=(other);
+				return *this;
+			}
+			/*! Constructor from any other Eigen class */
+			template<typename OtherDerived>
+			inline CMatrixD(const Eigen::MatrixBase <OtherDerived>& other) : CMatrixTemplateNumeric<double>(other) { }
 
 			/** Constructor from a TPose2D, which generates a 3x1 matrix \f$ [x y \phi]^T \f$
 			   */

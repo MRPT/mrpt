@@ -51,7 +51,8 @@ double matrix_test_unit_dyn(int a1, int a2)
 	CTicTac	 tictac;
 	for (long i=0;i<N;i++)
 	{
-		C.unit();
+		C.resize(a1,a1);
+		C.setIdentity();
 	}
 	return tictac.Tac()/N;
 }
@@ -65,7 +66,8 @@ double matrix_test_unit_fix(int a1, int a2)
 	CTicTac	 tictac;
 	for (long i=0;i<N;i++)
 	{
-		C.unit();
+		C.resize(DIM,DIM);
+		C.setIdentity();
 	}
 	return tictac.Tac()/N;
 }
@@ -119,7 +121,8 @@ double matrix_test_inv_dyn(int a1, int a2)
 	CTicTac	 tictac;
 	for (long i=0;i<N;i++)
 	{
-		A.inv(A2);
+		//A.inv(A2);
+		A2 = A.inverse().eval();
 	}
 	return tictac.Tac()/N;
 }
@@ -134,7 +137,8 @@ double matrix_test_inv_fix(int a1, int a2)
 	CTicTac	 tictac;
 	for (long i=0;i<N;i++)
 	{
-		A.inv(A2);
+		//A.inv(A2);
+		A2 = A.inverse().eval();
 	}
 	return tictac.Tac()/N;
 }

@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/base.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -40,7 +40,7 @@ using namespace std;
 // Load data from constant file and check for exact match.
 TEST(Base64, RandomEncDec)
 {
-	for (size_t seed=0;seed<20000;seed++)
+	for (size_t seed=0;seed<500;seed++)
 	{
 		randomGenerator.randomize(seed);
 
@@ -62,7 +62,7 @@ TEST(Base64, RandomEncDec)
 
 		if (!myData.empty())
 		{
-			EXPECT_EQ(0,mrpt::math::maximum( outData - myData )) << "64-decoded data does not match original data!!\n";
+			EXPECT_TRUE(outData == myData ) << "64-decoded data does not match original data!!\n";
 		}
 	}
 }

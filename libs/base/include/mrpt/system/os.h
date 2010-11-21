@@ -40,24 +40,7 @@
 #include <mrpt/base/link_pragmas.h>  // DLL import/export definitions
 
 #include <mrpt/utils/types.h>  // This must be AFTER <utils_impexp.h>
-
-// Define a decl. modifier for printf-like format checks at compile time:
-#ifdef __GNUC__
-#	define MRPT_printf_format_check(_FMT_,_VARARGS_)  __attribute__ ((__format__ (__printf__, _FMT_,_VARARGS_)))
-#else
-#	define MRPT_printf_format_check(_FMT_,_VARARGS_)
-#endif
-
-// Define a decl. modifier for scanf-like format checks at compile time:
-#ifdef __GNUC__
-#	define MRPT_scanf_format_check(_FMT_,_VARARGS_)  __attribute__ ((__format__ (__scanf__, _FMT_,_VARARGS_)))
-#else
-#	define MRPT_scanf_format_check(_FMT_,_VARARGS_)
-#endif
-
-
-/** Used after member declarations */
-#define MRPT_NO_THROWS		throw()
+#include <mrpt/utils/mrpt_macros.h>  // This must be AFTER <utils_impexp.h>
 
 /** Represents an invalid timestamp, where applicable.
   */

@@ -123,9 +123,9 @@ namespace mrpt
  ---------------------------------------------------------------*/
 template <typename NUMTYPE>
 void mrpt::math::ransac_detect_3D_planes(
-	const vector<NUMTYPE>  &x,
-	const vector<NUMTYPE>  &y,
-	const vector<NUMTYPE>  &z,
+	const Eigen::Matrix<NUMTYPE,Eigen::Dynamic,1>  &x,
+	const Eigen::Matrix<NUMTYPE,Eigen::Dynamic,1>  &y,
+	const Eigen::Matrix<NUMTYPE,Eigen::Dynamic,1>  &z,
 	vector<pair<size_t,TPlane> >   &out_detected_planes,
 	const double           threshold,
 	const size_t           min_inliers_for_valid_plane
@@ -195,34 +195,20 @@ void mrpt::math::ransac_detect_3D_planes(
 
 
 // Template explicit instantiations:
-template void BASE_IMPEXP mrpt::math::ransac_detect_3D_planes<float>(
-	const vector<float>  &x,
-	const vector<float>  &y,
-	const vector<float>  &z,
-	vector<pair<size_t,TPlane> >   &out_detected_planes,
-	const double           threshold,
-	const size_t           min_inliers_for_valid_plane
-	);
-template void BASE_IMPEXP mrpt::math::ransac_detect_3D_planes<double>(
-	const vector<double>  &x,
-	const vector<double>  &y,
-	const vector<double>  &z,
-	vector<pair<size_t,TPlane> >   &out_detected_planes,
-	const double           threshold,
-	const size_t           min_inliers_for_valid_plane
-	);
+#define EXPLICIT_INST_ransac_detect_3D_planes(_TYPE_) \
+	template void BASE_IMPEXP mrpt::math::ransac_detect_3D_planes<_TYPE_>( \
+	const Eigen::Matrix<_TYPE_,Eigen::Dynamic,1>  &x, \
+	const Eigen::Matrix<_TYPE_,Eigen::Dynamic,1>  &y, \
+	const Eigen::Matrix<_TYPE_,Eigen::Dynamic,1>  &z, \
+	vector<pair<size_t,TPlane> >   &out_detected_planes, \
+	const double           threshold, \
+	const size_t           min_inliers_for_valid_plane);
 
+EXPLICIT_INST_ransac_detect_3D_planes(float)
+EXPLICIT_INST_ransac_detect_3D_planes(double)
 #ifdef HAVE_LONG_DOUBLE
-template void BASE_IMPEXP mrpt::math::ransac_detect_3D_planes<long double>(
-	const vector<long double>  &x,
-	const vector<long double>  &y,
-	const vector<long double>  &z,
-	vector<pair<size_t,TPlane> >   &out_detected_planes,
-	const double           threshold,
-	const size_t           min_inliers_for_valid_plane
-	);
+EXPLICIT_INST_ransac_detect_3D_planes(long double)
 #endif
-
 
 
 
@@ -312,8 +298,8 @@ namespace mrpt
  ---------------------------------------------------------------*/
 template <typename NUMTYPE>
 void mrpt::math::ransac_detect_2D_lines(
-	const std::vector<NUMTYPE>  &x,
-	const std::vector<NUMTYPE>  &y,
+	const Eigen::Matrix<NUMTYPE,Eigen::Dynamic,1>  &x,
+	const Eigen::Matrix<NUMTYPE,Eigen::Dynamic,1>  &y,
 	std::vector<std::pair<size_t,TLine2D> >   &out_detected_lines,
 	const double           threshold,
 	const size_t           min_inliers_for_valid_line
@@ -379,29 +365,18 @@ void mrpt::math::ransac_detect_2D_lines(
 }
 
 // Template explicit instantiations:
-template void BASE_IMPEXP mrpt::math::ransac_detect_2D_lines<float>(
-	const std::vector<float>  &x,
-	const std::vector<float>  &y,
-	std::vector<std::pair<size_t,TLine2D> >   &out_detected_lines,
-	const double           threshold,
-	const size_t           min_inliers_for_valid_line
-	);
-template void BASE_IMPEXP mrpt::math::ransac_detect_2D_lines<double>(
-	const std::vector<double>  &x,
-	const std::vector<double>  &y,
-	std::vector<std::pair<size_t,TLine2D> >   &out_detected_lines,
-	const double           threshold,
-	const size_t           min_inliers_for_valid_line
-	);
+#define EXPLICIT_INSTANT_ransac_detect_2D_lines(_TYPE_) \
+	template void BASE_IMPEXP mrpt::math::ransac_detect_2D_lines<_TYPE_>( \
+		const Eigen::Matrix<_TYPE_,Eigen::Dynamic,1>  &x, \
+		const Eigen::Matrix<_TYPE_,Eigen::Dynamic,1>  &y, \
+		std::vector<std::pair<size_t,TLine2D> >   &out_detected_lines, \
+		const double           threshold, \
+		const size_t           min_inliers_for_valid_line );  \
 
+EXPLICIT_INSTANT_ransac_detect_2D_lines(float)
+EXPLICIT_INSTANT_ransac_detect_2D_lines(double)
 #ifdef HAVE_LONG_DOUBLE
-template void BASE_IMPEXP mrpt::math::ransac_detect_2D_lines<long double>(
-	const std::vector<long double>  &x,
-	const std::vector<long double>  &y,
-	std::vector<std::pair<size_t,TLine2D> >   &out_detected_lines,
-	const double           threshold,
-	const size_t           min_inliers_for_valid_line
-	);
+	EXPLICIT_INSTANT_ransac_detect_2D_lines(long double)
 #endif
 
 

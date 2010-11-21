@@ -2193,8 +2193,8 @@ void  CImage::cross_correlation_FFT(
 		false);
 
 	// Remove the bias now:
-	i2 -= biasThisImg;
-	i1 -= biasInImg;
+	i2.array() -= biasThisImg;
+	i1.array() -= biasInImg;
 
 	// Fill the "padded zeros" with copies of the images:
 //	SAVE_MATRIX(i1); SAVE_MATRIX(i2);

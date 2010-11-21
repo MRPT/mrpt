@@ -103,7 +103,7 @@ void  CObservation2DRangeScan::writeToStream(CStream &out, int *version) const
 void CObservation2DRangeScan::truncateByDistanceAndAngle(float min_distance, float max_angle, float min_height, float max_height, float h )
 {
 	// FILTER OUT INVALID POINTS!!
-	vector_float::iterator		itScan;
+	std::vector<float>::iterator		itScan;
 	std::vector<char>::iterator itValid;
 	CPose3D						pose;
 	unsigned int				k;
@@ -269,7 +269,7 @@ void CObservation2DRangeScan::filterByExclusionAreas( const TListExclusionAreasW
 	}
 
 	std::vector<char>::iterator   valid_it;
-	vector_float::const_iterator  scan_it;
+	std::vector<float>::const_iterator  scan_it;
 
 	for (scan_it=scan.begin(), valid_it=validRange.begin(); scan_it!=scan.end(); scan_it++, valid_it++)
 	{

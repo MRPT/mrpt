@@ -46,11 +46,12 @@ namespace mrpt
 			- fomWrite (creates the file if it didn't exist, otherwise truncates it).
 			- fomAppend (creates the file if it didn't exist)
 		  */
-		typedef std::ios_base::openmode TFileOpenModes;
-
-		static const TFileOpenModes fomRead		= std::ios_base::in;
-		static const TFileOpenModes fomWrite	= std::ios_base::out | std::ios_base::trunc;
-		static const TFileOpenModes fomAppend	= std::ios_base::app | std::ios_base::out;
+		typedef int TFileOpenModes;
+		enum {
+			fomRead   = 1,
+			fomWrite  = 2,
+			fomAppend = 4
+		};
 
 		/** This CStream derived class allow using a file as a read/write binary stream, creating it if the file didn't exist.
 		 *   The default behavior can be change to open as read, write, read and write,... in the constructor.

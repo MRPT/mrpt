@@ -167,6 +167,8 @@ namespace mrpt
 				/** The meat is here: only feasible loop closures from "cur_area" are included here, with associated data.
 				  */
 				std::map< CHMHMapNode::TNodeID, TBI_info >	loopClosureData;
+
+				//EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			};
 			typedef stlplus::smart_ptr<TMessageLSLAMfromTBI>	TMessageLSLAMfromTBIPtr;
 
@@ -409,7 +411,7 @@ namespace mrpt
 			/** @name The important data.
 				@{ */
 			CHierarchicalMHMap									m_map;	//!< The hiearchical, multi-hypothesis graph-based map.
-			std::map< THypothesisID, CLocalMetricHypothesis >	m_LMHs;	//!< The list of LMHs at each instant.
+			aligned_containers<THypothesisID, CLocalMetricHypothesis>::map_t m_LMHs;	//!< The list of LMHs at each instant.
 			/** @} */
 
 			/** Called from LSLAM thread when log files must be created.

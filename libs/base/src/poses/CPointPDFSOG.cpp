@@ -122,7 +122,7 @@ void CPointPDFSOG::getCovarianceAndMean(CMatrixDouble33 &estCov, CPoint3D &p) co
 	{
 		// 1) Get the mean:
 		double		w,sumW = 0;
-		CMatrixDouble31	estMean = p;
+		CMatrixDouble31	estMean = CMatrixDouble31(p);
 
 		CListGaussianModes::const_iterator	it;
 
@@ -133,7 +133,7 @@ void CPointPDFSOG::getCovarianceAndMean(CMatrixDouble33 &estCov, CPoint3D &p) co
 			sumW += w = exp(it->log_w);
 
 			// estCov += w * ( it->val.cov + ((estMean_i-estMean)*(~(estMean_i-estMean))) );
-			CMatrixDouble31 estMean_i = it->val.mean;
+			CMatrixDouble31 estMean_i = CMatrixDouble31(it->val.mean);
 			estMean_i -=estMean;
 			partCov.multiply_AAt(estMean_i);
 			partCov+=it->val.cov;
@@ -400,16 +400,16 @@ void  CPointPDFSOG::bayesianFusion(const  CPointPDF &p1_, const CPointPDF &p2_,c
 
 				newKernel.val = auxGaussianProduct; // Copy mean & cov
 
-				CMatrixDouble33		covInv_i= !auxSOG_Kernel_i.cov;
-				CMatrixDouble31		eta_i = auxSOG_Kernel_i.mean;
+				CMatrixDouble33		covInv_i= auxSOG_Kernel_i.cov.inv();
+				CMatrixDouble31		eta_i = CMatrixDouble31(auxSOG_Kernel_i.mean);
 				eta_i = covInv_i * eta_i;
 
-				CMatrixDouble33		new_covInv_i = !newKernel.val.cov;
-				CMatrixDouble31		new_eta_i = newKernel.val.mean;
+				CMatrixDouble33		new_covInv_i = newKernel.val.cov.inv();
+				CMatrixDouble31		new_eta_i = CMatrixDouble31(newKernel.val.mean);
 				new_eta_i = new_covInv_i * new_eta_i;
 
-				double		a_i	    = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (~eta_i * auxSOG_Kernel_i.cov * eta_i)(0,0) );
-				double		new_a_i = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (~new_eta_i * newKernel.val.cov * new_eta_i)(0,0) );
+				double		a_i	    = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (eta_i.transpose() * auxSOG_Kernel_i.cov * eta_i)(0,0) );
+				double		new_a_i = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (new_eta_i.transpose() * newKernel.val.cov * new_eta_i)(0,0) );
 
 				newKernel.log_w	   = (it1)->log_w + (it2)->log_w + a + a_i - new_a_i ;
 
@@ -540,14 +540,14 @@ double  CPointPDFSOG::evaluatePDF(
 	if (!sumOverAllZs)
 	{
 		// Normal evaluation:
-		CMatrixDouble31 X = x;
+		CMatrixDouble31 X = CMatrixDouble31(x);
 		double	ret = 0;
 
 		CMatrixDouble31 MU;
 
 		for (CListGaussianModes::const_iterator it=m_modes.begin();it!=m_modes.end();++it)
 		{
-			MU = it->val.mean;
+			MU = CMatrixDouble31(it->val.mean);
 			ret+= exp(it->log_w) * math::normalPDF( X, MU, it->val.cov );
 		}
 

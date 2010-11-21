@@ -32,7 +32,6 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/vision/CFeature.h>
-#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/math/utils.h>
 
 using namespace mrpt;
@@ -616,7 +615,7 @@ float CFeature::internal_distanceBetweenPolarImages(
 	} // end for delta
 
 	size_t minDistIdx;
-	minDist = mrpt::math::minimum(distances,&minDistIdx);
+	minDist = distances.minimum(&minDistIdx);
 
 	double dist_mean,dist_std;
 	mrpt::math::meanAndStd(distances,dist_mean,dist_std);
@@ -1007,10 +1006,13 @@ bool CFeature::getFirstDescriptorAsMatrix(mrpt::math::CMatrixFloat &desc) const
 	}
 	else if (descriptors.hasDescriptorSURF())
 	{
-		desc = CMatrixFloat(
-			descriptors.SpinImg_range_rows,
-			descriptors.SpinImg.size() / descriptors.SpinImg_range_rows,
-			descriptors.SpinImg);
+		const size_t nR = descriptors.SpinImg_range_rows;
+		const size_t nC = descriptors.SpinImg.size() / descriptors.SpinImg_range_rows;
+		desc.resize(nR,nC);
+		std::vector<float>::const_iterator itD = descriptors.SpinImg.begin();
+		for (size_t r=0;r<nR;r++)
+			for (size_t c=0;c<nC;c++)
+				desc.coeffRef(r,c) = *itD++;
 		return true;
 	}
 	else if (descriptors.hasDescriptorPolarImg())

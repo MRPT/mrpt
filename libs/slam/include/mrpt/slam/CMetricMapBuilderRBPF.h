@@ -147,11 +147,6 @@ namespace slam
 		CPose3DPDFPtr  getCurrentPoseEstimation() const;
 
 		/** Returns the current most-likely path estimation (the path associated to the most likely particle).
-		  *  This version ignore any 3D pose components. Use the full CPose3D-based version if full 3D data is needed.
-		  */
-		void  getCurrentMostLikelyPath( std::deque<CPose2D> &outPath ) const;
-
-		/** Returns the current most-likely path estimation (the path associated to the most likely particle).
 		  */
 		void  getCurrentMostLikelyPath( std::deque<TPose3D> &outPath ) const;
 

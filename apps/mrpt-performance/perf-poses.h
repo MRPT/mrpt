@@ -382,7 +382,7 @@ double poses_test_convert_ypr_quat_pdf(int a1, int a2)
 	CMatrixDouble66 a_cov;
 
 	{
-		CMatrixDouble66 v;
+		CMatrixFixedNumeric<double,6,8> v;
 		mrpt::random::randomGenerator.randomize(1234);
 		mrpt::random::randomGenerator.drawGaussian1DMatrix(v);
 		v*=0.1;
@@ -416,7 +416,7 @@ double poses_test_convert_quat_ypr_pdf(int a1, int a2)
 	CPose3D a_mean(1.0,2.0,3.0,DEG2RAD(10),DEG2RAD(50),DEG2RAD(-30));
 	CMatrixDouble66 a_cov;
 	{
-		CMatrixDouble66 v;
+		CMatrixFixedNumeric<double,6,8> v;
 		mrpt::random::randomGenerator.randomize(1234);
 		mrpt::random::randomGenerator.drawGaussian1DMatrix(v);
 		v*=0.1;

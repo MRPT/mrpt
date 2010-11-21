@@ -136,10 +136,9 @@ namespace slam
 		void  getCurrentlyBuiltMap(CSimpleMap &out_map) const;
 
 
-		 /** (DEPRECATED) Returns the 2D points of current local map: This is for backward compatibility with the non-BABEL GUI,
-		   *  should be removed when a new GUI integrated into BABEL becomes available.
+		 /** Returns the 2D points of current local map
 		   */
-		 void  getCurrentMapPoints( vector_float &x, vector_float &y);
+		void  getCurrentMapPoints( mrpt::vector<float> &x, mrpt::vector<float> &y);
 
 		/** Returns the map built so far. NOTE that for efficiency a pointer to the internal object is passed, DO NOT delete nor modify the object in any way, if desired, make a copy of ir with "duplicate()".
 		  */

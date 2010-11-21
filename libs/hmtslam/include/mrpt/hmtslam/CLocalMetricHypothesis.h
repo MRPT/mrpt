@@ -185,7 +185,7 @@ namespace mrpt
 
 			/** Returns the i'th particle hypothesis for the current robot pose.  */
 			const CPose3D * getCurrentPose(const size_t &particleIdx) const;
-			
+
 			/** Returns the i'th particle hypothesis for the current robot pose.  */
 			CPose3D * getCurrentPose(const size_t &particleIdx);
 
@@ -240,11 +240,11 @@ namespace mrpt
 
 			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			  */
-			mutable vector_double				m_maxLikelihood;
+			mutable vector<double>				m_maxLikelihood;
 
 			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			  */
-			mutable std::vector<CPose2D>		m_movementDraws;
+			mutable std::vector<CPose2D,Eigen::aligned_allocator<CPose2D> >		m_movementDraws;
 
 			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			  */
@@ -252,7 +252,7 @@ namespace mrpt
 
 			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			  */
-			mutable std::vector<CPose2D>		m_movementDrawMaximumLikelihood;
+			mutable StdVector_CPose2D		m_movementDrawMaximumLikelihood;
 
 
 		 /** The following implements:

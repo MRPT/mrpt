@@ -1802,7 +1802,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			dummMap.insertionOptions.minDistBetweenLaserPoints = 0;
 			dummMap.insertObservation( obs.pointer() );
 
-			vector_float    Xs,Ys;
+			vector<float>    Xs,Ys;
 			dummMap.getAllPoints(Xs,Ys);
 
 			lyScan2D->SetData(Xs,Ys);
@@ -1983,7 +1983,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 						// Plot the 2D pose samples:
 						unsigned int                    N = 1000;
 						vector<vector_double>       samples;
-						vector_float                    xs(N),ys(N),ps(N),dumm(N,0.1f);
+						vector<float>                    xs(N),ys(N),ps(N),dumm(N,0.1f);
 
 						// Draw a set of random (x,y,phi) samples:
 						act->poseChange->drawManySamples( N, samples );
@@ -2049,7 +2049,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 								{
 									cout << format("e-nose #%u:\n",(unsigned)j);
 
-									vector_float::iterator it;
+									vector<float>::iterator it;
 									vector_int::iterator   itKind;
 
 									ASSERT_( obs->m_readings[j].readingsVoltage.size() == obs->m_readings[j].sensorTypes.size());
@@ -2122,7 +2122,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 										// The plot:
 										size_t nPts = obs->sensedData.size();
-										vector_float    Xs(nPts),Ys(nPts),Zs(nPts);
+										vector<float>    Xs(nPts),Ys(nPts),Zs(nPts);
 										for (size_t k=0;k<nPts;k++)
 										{
 											float R      = obs->sensedData[k].range;
@@ -2332,13 +2332,13 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 															// Assign only those points above a certain threshold:
 															const int confThreshold =   obs->hasConfidenceImage ? slid3DcamConf->GetValue() : 0;
 
-															vector_float  &obs_xs = obs->points3D_x;
-															vector_float  &obs_ys = obs->points3D_y;
-															vector_float  &obs_zs = obs->points3D_z;
+															vector<float>  &obs_xs = obs->points3D_x;
+															vector<float>  &obs_ys = obs->points3D_y;
+															vector<float>  &obs_zs = obs->points3D_z;
 
-															vector_float &xs = pnts->getArrayX();
-															vector_float &ys = pnts->getArrayY();
-															vector_float &zs = pnts->getArrayZ();
+															vector<float> &xs = pnts->getArrayX();
+															vector<float> &ys = pnts->getArrayY();
+															vector<float> &zs = pnts->getArrayZ();
 
 															if (confThreshold==0)
 															{
@@ -3786,7 +3786,7 @@ void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent& event)
 	unsigned long indx_filt;
 	strIndex.ToULong( &indx_filt );
 
-	vector_float	lastValidRanges;
+	vector<float>	lastValidRanges;
 
 	wxBusyCursor        waitCursor;
 	long				i,n= (long)rawlog.size();
@@ -4448,8 +4448,7 @@ void xRawLogViewerFrame::OnMenuItem47Selected(wxCommandEvent& event)
 
 			CPose2D estMean(odo_x,odo_y,odo_phi);
 			CMatrixDouble33 estCov;
-			estCov.unit();
-			estCov *= 1e-6f;
+			estCov.unit(3,1e-6);
 
 			CActionRobotMovement2D newAct;
 			newAct.estimationMethod = CActionRobotMovement2D::emScan2DMatching;
@@ -5413,9 +5412,9 @@ void xRawLogViewerFrame::OnMenuBatchLaserExclusionZones(wxCommandEvent& event)
 
 			for(;;)
 			{
-				vector_double x,y;
-				cfg.read_vector( *it, format("exclusionZone%u_x",N), vector_double(0), x);
-				cfg.read_vector( *it, format("exclusionZone%u_y",N++), vector_double(0), y);
+				vector<double> x,y;
+				cfg.read_vector( *it, format("exclusionZone%u_x",N), vector<double>(0), x);
+				cfg.read_vector( *it, format("exclusionZone%u_y",N++), vector<double>(0), y);
 
 				if (!x.empty() && !y.empty())
 				{

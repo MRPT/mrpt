@@ -121,7 +121,7 @@ CRobotSimulator			the_robot(0,0);
 COccupancyGridMap2D		the_grid;
 CJoystick				joystick;
 
-std::deque<CPose2D>		robot_path_GT, robot_path_ODO;
+StdVector_CPose2D		robot_path_GT, robot_path_ODO;
 CPose2D					lastOdo, pose_start;
 bool					we_are_closing = false;
 long					decimation = 1;

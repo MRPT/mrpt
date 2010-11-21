@@ -27,7 +27,9 @@
    +---------------------------------------------------------------------------+ */
 #ifndef CBINARYRELATION_H_
 #define CBINARYRELATION_H_
+
 #include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/math/matrix_adaptors.h>
 
 #include <set>
 #include <iterator>
@@ -35,30 +37,6 @@
 #include <utility>
 
 namespace mrpt	{	namespace math	{
-
-	/** Internal classes not to be directly used by the user. */
-	// Forward declarations:
-	template<typename T,typename U,bool UIsObject> class CBinaryRelation;
-	namespace detail
-	{
-		/**
-		  * This template is a trick to switch the type of a variable using a boolean variable in the template. It's easy to extend its functionality to several
-		  * types, using a unsigned char instead of a bool.
-		  */
-		template<typename U,bool B> class MatrixWrapper;
-
-		// partial specializations:
-		template<typename U> class MatrixWrapper<U,true>	{
-		public:
-			typedef CMatrixTemplateObjects<U> MatrixType;
-		};
-		template<typename U> class MatrixWrapper<U,false>	{
-		public:
-			typedef CMatrixTemplate<U> MatrixType;
-		};
-
-		template<typename T,typename U,bool UIsObject,typename FunctionType> inline void applyFunction(CBinaryRelation<T,U,UIsObject> &o, FunctionType fun,size_t e1,size_t e2,const T &T1,const T &T2);
-	}
 
 	/**
 	  * This class models a binary relation through the elements of any given set. I.e. for each pair of elements (A,B) it assigns two values, f(A,B) and f(B,A).

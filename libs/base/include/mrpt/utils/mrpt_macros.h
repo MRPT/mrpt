@@ -30,6 +30,8 @@
 #error "This file is intended for include from utils_defs.h only!"
 #endif
 
+#ifndef MRPT_MACROS_H
+#define MRPT_MACROS_H
 
 // A cross-compiler definition for "deprecated"-warnings
 #if defined(__GNUC__) && (__GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 >= 2))
@@ -375,3 +377,23 @@
 #	define M_2PIl (2.0L*3.14159265358979323846264338327950288L)
 #endif
 
+
+// Define a decl. modifier for printf-like format checks at compile time:
+#ifdef __GNUC__
+#	define MRPT_printf_format_check(_FMT_,_VARARGS_)  __attribute__ ((__format__ (__printf__, _FMT_,_VARARGS_)))
+#else
+#	define MRPT_printf_format_check(_FMT_,_VARARGS_)
+#endif
+
+// Define a decl. modifier for scanf-like format checks at compile time:
+#ifdef __GNUC__
+#	define MRPT_scanf_format_check(_FMT_,_VARARGS_)  __attribute__ ((__format__ (__scanf__, _FMT_,_VARARGS_)))
+#else
+#	define MRPT_scanf_format_check(_FMT_,_VARARGS_)
+#endif
+
+
+/** Used after member declarations */
+#define MRPT_NO_THROWS		throw()
+
+#endif

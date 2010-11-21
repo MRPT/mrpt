@@ -68,7 +68,8 @@ bool slamdemoApp::OnInit()
 	}
 	else
 	{
-		mrpt::utils::delete_safe(win);
+		delete win;
+		win=NULL;
 		return false; // Exit now.
 	}
 }

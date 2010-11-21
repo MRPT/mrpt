@@ -102,7 +102,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		ASSERT_(firstArea);
 		LMH->m_nodeIDmemberships[currentPoseID] = firstArea->getID();
 
-		// Set annotation for the reference pose: 
+		// Set annotation for the reference pose:
 		firstArea->m_annotations.setElemental( NODE_ANNOTATION_REF_POSEID,  currentPoseID , LMH->m_ID);
 		m_parent->m_map_cs.leave();
 	}
@@ -308,8 +308,8 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	LMH->m_movementDrawsIdx = (unsigned int)floor(randomGenerator.drawUniform(0.0f,((float)size_movementDraws)-0.01f));
 
 	robotMovement->prepareFastDrawSingleSamples();
-	for (std::vector<CPose2D>::iterator	it = LMH->m_movementDraws.begin(); it!=LMH->m_movementDraws.end(); ++it)
-		robotMovement->fastDrawSingleSample( *it );
+	for (size_t i=0;i<LMH->m_movementDraws.size();i++)
+		robotMovement->fastDrawSingleSample( LMH->m_movementDraws[i] );
 
 	LMH->m_pfAuxiliaryPFOptimal_estimatedProb.resize(M);
 	LMH->m_maxLikelihood.clear();
@@ -337,8 +337,8 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	//  where X is the robot pose prior (as implemented in
 	//  the aux. function "particlesEvaluator_AuxPFOptimal"),
 	//  and also the "m_maxLikelihood" filled with the maximum lik. values.
-	vector<CPose2D>			newParticles;
-	vector_double			newParticlesWeight;
+	StdVector_CPose2D		newParticles;
+	vector<double>			newParticlesWeight;
 	vector<size_t>			newParticlesDerivedFromIdx;
 
 	// We need the (aproximate) maximum likelihood value for each
@@ -355,7 +355,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	unsigned int					statsTrialsCount = 0, statsTrialsSuccess = 0;
 	std::vector<bool>				maxLikMovementDrawHasBeenUsed(M, false);
 	unsigned int					statsWarningsAccProbAboveOne = 0;
-	double							maxMeanLik = math::maximum( LMH->m_pfAuxiliaryPFOptimal_estimatedProb ); // For normalization purposes only
+	//double							maxMeanLik = math::maximum( LMH->m_pfAuxiliaryPFOptimal_estimatedProb ); // For normalization purposes only
 
 	ASSERT_(!PF_options.adaptiveSampleSize);
 
@@ -606,11 +606,11 @@ double  CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 
 	// This is done to avoid floating point overflow!!
 	double maxLogLik = math::maximum( vectLiks );
-	vectLiks -= maxLogLik; // Maximum log-lik = 0 (max linear likelihood=1)
+	vectLiks.array() -= maxLogLik; // Maximum log-lik = 0 (max linear likelihood=1)
 
 	//      average_lik    =      \sum(e^liks)   * e^maxLik  /     N
 	// log( average_lik  ) = log( \sum(e^liks) ) + maxLik   - log( N )
-	double avrgLogLik = log( math::sum( math::Exp(vectLiks) ) ) + maxLogLik - log( (double)N );
+	double avrgLogLik = log( vectLiks.array().exp().sum() ) + maxLogLik - log( (double)N );
 
 	// Save into the object:
 	myObj->m_pfAuxiliaryPFOptimal_estimatedProb[index] = avrgLogLik; // log( accum / N );
@@ -789,7 +789,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	// All the needed things?
 	if (!LMH->m_accumRobotMovementIsValid || !SFhasValidObservations)
 		return; // Nothing we can do here...
-	ASSERT_(sf!=NULL); 
+	ASSERT_(sf!=NULL);
 	ASSERT_(!PF_options.adaptiveSampleSize);
 
 	// OK, we have all we need, let's start!
@@ -822,12 +822,12 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	CSimplePointsMap	localMapPoints;
 
 	ASSERT_( LMH->m_particles[0].d->metricMaps.m_gridMaps.size() > 0);
-	float	minDistBetweenPointsInLocalMaps = 0.02f; //3.0f * m_particles[0].d->metricMaps.m_gridMaps[0]->getResolution();
+	//float	minDistBetweenPointsInLocalMaps = 0.02f; //3.0f * m_particles[0].d->metricMaps.m_gridMaps[0]->getResolution();
 
 	// Build local map:
 	localMapPoints.clear();
 	localMapPoints.insertionOptions.minDistBetweenLaserPoints =  0.02;
-	sf->insertObservationsInto( &localMapPoints ); 
+	sf->insertObservationsInto( &localMapPoints );
 
 	// Process the particles
 	const size_t M = LMH->m_particles.size();
@@ -857,7 +857,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 				mapalign = part.d->metricMaps.m_pointsMaps[0].pointer();
 			else if (!part.d->metricMaps.m_gridMaps.empty())
 				mapalign = part.d->metricMaps.m_gridMaps[0].pointer();
-			else 
+			else
 				THROW_EXCEPTION("There is no point or grid map. At least one needed for ICP.");
 
 			// Use ICP to align to each particle's map:
@@ -884,13 +884,13 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 			// -------------------------------------------------------------------------------------------
 			// Set the gaussian pose:
 			CPose3DPDFGaussian finalEstimatedPoseGauss( icpEstimation );
-			
+
 			CPose3D noisy_increment;
 			finalEstimatedPoseGauss.drawSingleSample(noisy_increment);
-			
+
 			CPose3D new_pose;
 			new_pose.composeFrom(*part_pose,noisy_increment);
-			
+
 			CPose2D new_pose2d = CPose2D(new_pose);
 
 			// Add the pose to the path:
@@ -898,8 +898,8 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 
 			// Update the weight:
 			// ---------------------------------------------------------------------------
-			const double log_lik = 
-				PF_options.powFactor * 
+			const double log_lik =
+				PF_options.powFactor *
 				auxiliarComputeObservationLikelihood(
 					PF_options,
 					LMH,

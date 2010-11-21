@@ -36,7 +36,6 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 
-#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/system/string_utils.h>
 
 #include <mrpt/compress/zip.h>

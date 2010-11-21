@@ -77,7 +77,7 @@ namespace slam
 
 		/** The range values of the scan, in meters.
 		  */
-		vector_float	    scan;
+		std::vector<float>	    scan;
 
 		/** It's false (=0) on no reflected rays, referenced to elements in "scan"
 		  *  (Added in the streamming version #1 of the class)

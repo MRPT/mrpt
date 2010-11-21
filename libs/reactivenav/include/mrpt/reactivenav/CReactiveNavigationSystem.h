@@ -71,6 +71,8 @@ namespace mrpt
 		class REACTIVENAV_IMPEXP  CReactiveNavigationSystem : public CAbstractReactiveNavigationSystem
 		{
 		public:
+			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+		public:
 			/** Constructor
 			 *  \param configINIFile The file to load the configuration from. See loadConfigFile
 			 *  \param robotConfigFile The file to load the robot specific configuration from.
@@ -158,6 +160,7 @@ namespace mrpt
 			// ------------------------------------------------------
 			//					PRIVATE DEFINITIONS
 			// ------------------------------------------------------
+			std::vector<float>		prevV,prevW,prevSelPTG;
 
             /** This defines the 'behavior' of the navigator (see posible values in TNavigatorBehavior)
               */
@@ -229,7 +232,7 @@ namespace mrpt
 			float   robotMax_V_mps;				// Max. vel del robot en m/s
 			float   robotMax_W_degps;              // Max. vel del robot en rad/s
 			float	ROBOTMODEL_TAU,ROBOTMODEL_DELAY; // Params for the motor system modelation
-			vector_float weights; // length: 6 [0,5]
+			std::vector<float> weights; // length: 6 [0,5]
 			float	minObstaclesHeight, maxObstaclesHeight; // The range of "z" coordinates for obstacles to be considered
 			float	DIST_TO_TARGET_FOR_SENDING_EVENT;
 
@@ -263,6 +266,52 @@ namespace mrpt
 			  */
 			math::CPolygon		robotShape;
 			bool				collisionGridsMustBeUpdated;
+
+			/** For taken the dynamics of the robot into account.
+			  */
+			class CDynamicWindow
+			{
+			public:
+				float	v_max, v_min;	//  m/sec
+				float	w_max, w_min;	//  rad/sec
+
+			private:
+				float	c1,c2,c3,c4;	// Curvature of corners.
+
+			public:
+
+				/** Finds the max/min curvatures in the DW.
+				  */
+				void  findMinMaxCurvatures(float &minCurv, float &maxCurv);
+
+				/** Returns the corner which is closer (in curvature, and abs. values) to the desired command.
+				  */
+				void  findBestApproximation(float desV,float desW, float &outV,float &outW);
+
+			private:
+				/** Find the closest cut of a line with the DW
+				  */
+				bool  findClosestCut( float cmd_v, float cmd_w,	// IN
+												float &out_v,float &out_w);	// OUT
+
+			};
+
+
+
+			/** @name Variables for CReactiveNavigationSystem::performNavigationStep 
+			    @{ */
+			mrpt::utils::CTicTac				totalExecutionTime, executionTime, tictac;
+			std::vector<vector_double>			TP_Obstacles;
+			std::vector<poses::CPoint2D,Eigen::aligned_allocator<poses::CPoint2D> >			TP_Targets;		// Target location (x,y) in TP-Space
+			std::vector<THolonomicMovement>		holonomicMovements;
+			std::vector<float>					times_TP_transformations, times_HoloNav;
+			std::vector<bool>					valid_TP;
+			float								meanExecutionTime;
+			float								meanTotalExecutionTime;
+			int									nLastSelectedPTG;
+			CDynamicWindow						DW;
+			int                                 m_decimateHeadingEstimate;
+			/** @} */
 
 			/** The set of transformations to be used:
 			  */
@@ -311,35 +360,6 @@ namespace mrpt
 
 			// Para casos de errores:
 			void			Error_ParadaDeEmergencia( const char *msg );
-
-			/** For taken the dynamics of the robot into account.
-			  */
-			class CDynamicWindow
-			{
-			public:
-				float	v_max, v_min;	//  m/sec
-				float	w_max, w_min;	//  rad/sec
-
-			private:
-				float	c1,c2,c3,c4;	// Curvature of corners.
-
-			public:
-
-				/** Finds the max/min curvatures in the DW.
-				  */
-				void  findMinMaxCurvatures(float &minCurv, float &maxCurv);
-
-				/** Returns the corner which is closer (in curvature, and abs. values) to the desired command.
-				  */
-				void  findBestApproximation(float desV,float desW, float &outV,float &outW);
-
-			private:
-				/** Find the closest cut of a line with the DW
-				  */
-				bool  findClosestCut( float cmd_v, float cmd_w,	// IN
-												float &out_v,float &out_w);	// OUT
-
-			};
 
 		};
 	}

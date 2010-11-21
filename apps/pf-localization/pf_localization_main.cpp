@@ -291,7 +291,6 @@ void TestParticlesLocalization(const std::string &ini_fil)
 		// Global stats for all the experiment loops:
 		int				nConvergenceTests = 0, nConvergenceOK = 0;
 		vector_double 	covergenceErrors;
-		covergenceErrors.reserve(NUM_REPS);
 		// --------------------------------------------------------------------
 		//					EXPERIMENT REPETITIONS LOOP
 		// --------------------------------------------------------------------

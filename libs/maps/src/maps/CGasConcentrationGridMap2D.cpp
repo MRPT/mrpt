@@ -313,7 +313,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 				}
 
 				if (i<it->sensorTypes.size()){
-					sensorReading = it->readingsVoltage.at(i);
+					sensorReading = it->readingsVoltage[i];
 				}
 				else
 				{
@@ -431,7 +431,7 @@ void  CGasConcentrationGridMap2D::insertObservation_KernelDM_DMV(
 
 		// Actually the array could be 1/4 of this size, but this
 		// way it's easier and it's late night now :-)
-		vector_float::iterator	it = m_DM_gaussWindow.begin();
+		vector<float>::iterator	it = m_DM_gaussWindow.begin();
         for (unsigned cx=0;cx<Ac_all;cx++)
 		{
 			for (unsigned cy=0;cy<Ac_all;cy++)
@@ -449,7 +449,7 @@ void  CGasConcentrationGridMap2D::insertObservation_KernelDM_DMV(
 	const int sensor_cx = x2idx( sensorPose.x );
 	const int sensor_cy = y2idx( sensorPose.y );
 	TGasConcentrationCell	*cell;
-	vector_float::iterator	windowIt = m_DM_gaussWindow.begin();
+	vector<float>::iterator	windowIt = m_DM_gaussWindow.begin();
 
 	for (int Acx=-Ac_cutoff;Acx<=Ac_cutoff;Acx++)
 	{
@@ -738,8 +738,8 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 	if (useMOSmodel)
 	{
 		//Update the values of delay according to decimation
-		for (size_t i = 0; i<calibrated_delay_values.size(); i++){
-			calibrated_delay_values.at(i) = round( calibrated_delay_values[i]/decimate_value );
+		for (int i = 0; i<calibrated_delay_values.size(); i++){
+			calibrated_delay_values[i] = round( calibrated_delay_values[i]/decimate_value );
 		}
 		//Get the lastObservations_size (Must be higher than max delay_value/decimate_value)
 		if ( lastObservations_size < *max_element(calibrated_delay_values.begin(), calibrated_delay_values.end()) )
@@ -1327,7 +1327,7 @@ void  CGasConcentrationGridMap2D::saveAsMatlab3DGraph(const std::string  &filNam
 
 
 	unsigned int	cx,cy;
-	vector_float	xs,ys;
+	vector<float>	xs,ys;
 
 	// xs: array of X-axis values
 	os::fprintf(f,"xs = [");
@@ -1442,7 +1442,7 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 	opengl::CSetOfTriangles::TTriangle		triag;
 
 	unsigned int	cx,cy;
-	vector_float	xs,ys;
+	vector<float>	xs,ys;
 
 	// xs: array of X-axis values
 	xs.resize( m_size_x );

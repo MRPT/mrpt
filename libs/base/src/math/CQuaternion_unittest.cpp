@@ -27,7 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/slam.h>
+#include <mrpt/base.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

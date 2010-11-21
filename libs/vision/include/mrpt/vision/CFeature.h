@@ -242,8 +242,8 @@ namespace mrpt
 				bool hasDescriptorSIFT() const { return !SIFT.empty(); };                       //!< Whether this feature has this kind of descriptor
 				bool hasDescriptorSURF() const { return !SURF.empty(); }                        //!< Whether this feature has this kind of descriptor
 				bool hasDescriptorSpinImg() const { return !SpinImg.empty(); };                 //!< Whether this feature has this kind of descriptor
-				bool hasDescriptorPolarImg() const { return size(PolarImg,1)>0; } ;             //!< Whether this feature has this kind of descriptor
-				bool hasDescriptorLogPolarImg() const { return size(LogPolarImg,1)>0; } ;       //!< Whether this feature has this kind of descriptor
+				bool hasDescriptorPolarImg() const { return PolarImg.rows()!=0; } ;             //!< Whether this feature has this kind of descriptor
+				bool hasDescriptorLogPolarImg() const { return LogPolarImg.rows()!=0; } ;       //!< Whether this feature has this kind of descriptor
 				bool hasDescriptorMultiSIFT() const {
                     return (multiSIFTDescriptors.size() > 0 && multiSIFTDescriptors[0].size() > 0); //!< Whether this feature has this kind of descriptor
                 }

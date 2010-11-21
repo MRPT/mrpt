@@ -149,7 +149,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent,wxWindowID id)
     wxStaticBoxSizer* boxRanges;
     wxFlexGridSizer* FlexGridSizer10;
     wxFlexGridSizer* FlexGridSizer9;
-    
+
     Create(parent, wxID_ANY, _("Modify motion model parameters"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX, _T("wxID_ANY"));
     SetClientSize(wxSize(1032,558));
     FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
@@ -367,7 +367,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent,wxWindowID id)
     FlexGridSizer1->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     SetSizer(FlexGridSizer1);
     FlexGridSizer1->SetSizeHints(this);
-    
+
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CFormMotionModel::OnbtnOkClick);
     Connect(ID_BUTTON10,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CFormMotionModel::OnbtnResetGaussClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CFormMotionModel::OnbtnGaussOKClick);
@@ -784,7 +784,7 @@ void CFormMotionModel::drawRandomSamples()
     // Plot the 2D pose samples:
     unsigned int                    N = 1000;
     std::vector<vector_float>       samples;
-    vector_float                    xs(N),ys(N),ps(N),dumm(N,0.1f);
+    vector<float>                    xs(N),ys(N),ps(N),dumm(N,0.1f);
 
     CActionRobotMovement2D          act;
     CPose2D  odo(

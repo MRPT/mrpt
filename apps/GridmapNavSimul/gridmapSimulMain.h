@@ -50,8 +50,7 @@ class CMyGLCanvas;
 
 class gridmapSimulFrame: public wxFrame
 {
-    public:
-
+	public:
         gridmapSimulFrame(wxWindow* parent,wxWindowID id = -1);
         virtual ~gridmapSimulFrame();
 

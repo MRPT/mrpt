@@ -381,7 +381,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
 	plot->AddLayer( lyTarget );
 
 	{
-		vector_float xs(5),ys(5);
+		vector<float> xs(5),ys(5);
 		float CS = 0.4f;  // Cross size
 		xs[0] = -CS;   ys[0] = -CS;
 		xs[1] =  CS;   ys[1] =  CS;
@@ -765,10 +765,10 @@ void ReactiveNavigationDemoFrame::reloadRobotShape()
 		if (!iniReactive || !configRobotIni) return;
 
 		string robotName = configRobotIni->read_string("ROBOT_NAME","Name","SENA");
-		vector_float xs,ys;
+		vector<float> xs,ys;
 
-		iniReactive->read_vector(robotName,"RobotModel_shape2D_xs",vector_float(0), xs, true );
-		iniReactive->read_vector(robotName,"RobotModel_shape2D_ys",vector_float(0), ys, true );
+		iniReactive->read_vector(robotName,"RobotModel_shape2D_xs",vector<float>(0), xs, true );
+		iniReactive->read_vector(robotName,"RobotModel_shape2D_ys",vector<float>(0), ys, true );
 
 		delete iniReactive; iniReactive=NULL;
 		delete configRobotIni; configRobotIni=NULL;
@@ -825,7 +825,7 @@ void ReactiveNavigationDemoFrame::OncbInternalParamsClick(wxCommandEvent& event)
 
 		// Plot obstacles:
 		{
-			vector_float xs,ys;
+			vector<float> xs,ys;
 			CSimplePointsMap	pointsTrans = WS_Obstacles;
 			pointsTrans.changeCoordinatesReference(curPose);
 
@@ -835,7 +835,7 @@ void ReactiveNavigationDemoFrame::OncbInternalParamsClick(wxCommandEvent& event)
 
 		// Plot robot shape:
 		{
-			vector_double xs,ys;
+			vector<double> xs,ys;
 			robotShape.getAllVertices(xs,ys);
 			if (!xs.empty()) { xs.push_back(xs[0]); ys.push_back(ys[0]); }
 			for (size_t i=0;i<xs.size();i++)
@@ -850,7 +850,7 @@ void ReactiveNavigationDemoFrame::OncbInternalParamsClick(wxCommandEvent& event)
 		// Plot current dir:
 		{
 
-			vector_double xs(2),ys(2);
+			vector<double> xs(2),ys(2);
 			xs[0] = curPose.x();
 			ys[0] = curPose.y();
 
@@ -862,7 +862,7 @@ void ReactiveNavigationDemoFrame::OncbInternalParamsClick(wxCommandEvent& event)
 
 		// Plot target point:
 		{
-			vector_double xs,ys;
+			vector<double> xs,ys;
 			xs.push_back( m_navigationParams.target.x );
 			ys.push_back( m_navigationParams.target.y );
 			m_debugWin_WS->plot(xs,ys,"k.7","target");

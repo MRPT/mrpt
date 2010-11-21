@@ -46,7 +46,7 @@ namespace mrpt
 		{
 		public:
 			CPose2D			pose;
-			vector_double	state;
+			vector<double>	state;
 		};
 
 #define DUMMY_LINKAGE
@@ -244,7 +244,7 @@ namespace mrpt
 
 			/** Appends (pose-composition) a given pose "p" to each particle
 			  */
-			void  operator += ( CPose2D Ap);
+			void  operator += ( const CPose2D &Ap);
 
 			/** Appends (add to the list) a set of particles to the existing ones, and then normalize weights.
 			  */

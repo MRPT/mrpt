@@ -440,7 +440,7 @@ void  CActionRobotMovement2D::computeFromOdometry_modelGaussian(
 
 	// Build the odometry noise matrix:
 	double	Al = odometryIncrement.norm();
-	CMatrixDouble31 ODO_INCR =odometryIncrement;
+	CMatrixDouble31 ODO_INCR = CMatrixDouble31(odometryIncrement);
 	CMatrixDouble33 C_ODO;
 	C_ODO(0,0) =square( o.gausianModel.minStdXY + o.gausianModel.a1*Al + o.gausianModel.a2*fabs( odometryIncrement.phi() ) );
 	C_ODO(1,1) =square( o.gausianModel.minStdXY + o.gausianModel.a1*Al + o.gausianModel.a2*fabs( odometryIncrement.phi() ) );

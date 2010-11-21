@@ -203,8 +203,8 @@ void CParameterizedTrajectoryGenerator::simulateTrajectories(
                 flag1 = flag2 = false;
 
                 // Ventana deslizante de ultimos comandos:
-                vector_float    last_cmd_vs, last_cmd_ws;
-                vector_float    last_vs, last_ws;
+                vector<float>   last_cmd_vs, last_cmd_ws;
+                vector<float>   last_vs, last_ws;
                 int             M = 5;
 
 				// cmd_v[i] = cmd_v[k-i]

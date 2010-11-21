@@ -203,14 +203,13 @@ bool  scanmatching::leastSquareErrorRigidTransformation6D(
 	if( in_correspondences.size() < 3 )
 		THROW_EXCEPTION( "[leastSquareErrorRigidTransformation6D]: Error: at least 3 correspondences must be provided" );
 
-	CPoint3D					cL, cR;
-	CMatrixD					S, N;
-	CMatrixD					Z, D;
+	CPoint3D cL, cR;
+	CMatrixD S, N;
+	CMatrixD Z, D;
 
-	std::vector<double>			v;
-	int							nMatches = in_correspondences.size();
-
-	double						s;					// Scale
+	vector_double v;
+	const size_t nMatches = in_correspondences.size();
+	double s; // Scale
 
 	// Compute the centroid
 	TMatchingPairList::const_iterator	itMatch;

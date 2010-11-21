@@ -87,7 +87,7 @@ CScanAnimation::CScanAnimation(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	wxFlexGridSizer* FlexGridSizer7;
 	wxFlexGridSizer* FlexGridSizer6;
 	wxFlexGridSizer* FlexGridSizer1;
-	
+
 	Create(parent, wxID_ANY, _("Animate laser scans"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER, _T("wxID_ANY"));
 	FlexGridSizer1 = new wxFlexGridSizer(4, 1, 0, 0);
 	FlexGridSizer1->AddGrowableCol(0);
@@ -175,7 +175,7 @@ CScanAnimation::CScanAnimation(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
-	
+
 	Connect(ID_RADIOBUTTON1,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&CScanAnimation::OnrbLoadedSelect);
 	Connect(ID_RADIOBUTTON2,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&CScanAnimation::OnrbFile);
 	Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanAnimation::OnbtnPickInputClick);
@@ -299,7 +299,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 	}
 
 	// Draw points:
-	vector_float xs,ys;
+	vector<float> xs,ys;
 	pointMap.getAllPoints(xs,ys);
 	m_lyMapPoints->SetData( xs, ys );
 

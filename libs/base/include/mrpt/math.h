@@ -37,8 +37,6 @@
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/ops_containers.h>
 
-#include <mrpt/math/CMatrixViews.h>
-
 #include <mrpt/math/CLevenbergMarquardt.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/CQuaternion.h>
@@ -58,7 +56,6 @@
 #include <mrpt/math/CGraphPartitioner.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/math/CVectorTemplate.h>
 
 #include <mrpt/math/CSplineInterpolator1D.h>
 

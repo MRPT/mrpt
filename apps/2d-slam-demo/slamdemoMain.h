@@ -215,6 +215,10 @@ class slamdemoFrame: public wxFrame
         DECLARE_EVENT_TABLE()
 
 
+		// This is needed in all classes having Eigen::Matrix'es or any other class containing them:
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+
 		// Layers in GT plot -------------
 		mpFXYVector	 *m_lyGTMap;
 		mpPolygon	 *m_lyGTRobot;
@@ -292,7 +296,7 @@ class slamdemoFrame: public wxFrame
 			size_t    jcbb_iters;
 		};
 
-		std::deque<THistoric>  m_historicData;	//!< A registry of all data for the simulation, used to compute errors, etc..
+		std::vector<THistoric, Eigen::aligned_allocator<THistoric> >  m_historicData;	//!< A registry of all data for the simulation, used to compute errors, etc..
 
 		/** Reset the simulator and re-generate the ground truth map
 		  *  map_type can be:

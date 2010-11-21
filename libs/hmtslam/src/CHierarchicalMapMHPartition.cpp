@@ -933,12 +933,12 @@ void  CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 		{
 			// Minimum added noise:
 			poseIt->setFromValues(
-				samplIt->at(0) + additionalNoiseXYratio * randomGenerator.drawGaussian1D_normalized(),
-				samplIt->at(1) + additionalNoiseXYratio * randomGenerator.drawGaussian1D_normalized(),
-				samplIt->at(2),
-				samplIt->at(3) + additionalNoisePhiRad * randomGenerator.drawGaussian1D_normalized(),
-				samplIt->at(4),
-				samplIt->at(5)
+				(*samplIt)[0] + additionalNoiseXYratio * randomGenerator.drawGaussian1D_normalized(),
+				(*samplIt)[1] + additionalNoiseXYratio * randomGenerator.drawGaussian1D_normalized(),
+				(*samplIt)[2],
+				(*samplIt)[3] + additionalNoisePhiRad * randomGenerator.drawGaussian1D_normalized(),
+				(*samplIt)[4],
+				(*samplIt)[5]
 				);
 
 			// Pose composition:
@@ -1116,11 +1116,13 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 		outScene.insert( obj );
 	}
 
-	std::map<CHMHMapNode::TNodeID,CPose3DPDFGaussian>	nodesPoses;			// The ref. pose of each area
-	std::map<CHMHMapNode::TNodeID,CPose3DPDFGaussian>::iterator	it;
+	typedef std::map<CHMHMapNode::TNodeID,CPose3DPDFGaussian, std::less<CHMHMapNode::TNodeID>,Eigen::aligned_allocator<std::pair<const CHMHMapNode::TNodeID,CPose3DPDFGaussian> > > TMapID2PosePDF;
+	TMapID2PosePDF	nodesPoses;			// The ref. pose of each area
+	TMapID2PosePDF::iterator	it;
 
-	std::map<CHMHMapNode::TNodeID,CPose2D>			nodesMeanPoses;		// The mean pose of the observations in the area
-	std::map<CHMHMapNode::TNodeID,CPose2D>::iterator	it2;
+	typedef std::map<CHMHMapNode::TNodeID,CPose2D, std::less<CHMHMapNode::TNodeID>,Eigen::aligned_allocator<std::pair<const CHMHMapNode::TNodeID,CPose2D> > > TMapID2Pose2D;
+	TMapID2Pose2D	nodesMeanPoses;		// The mean pose of the observations in the area
+	TMapID2Pose2D::iterator	it2;
 
 	// Only those nodes in the "hypothesisID" are computed.
 	computeGloballyConsistentNodeCoordinates( nodesPoses, idReferenceNode, hypothesisID, numberOfIterationsForOptimalGlobalPoses);
@@ -1285,13 +1287,11 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 	MRPT_END;
 }
 
-
-
 /*---------------------------------------------------------------
 			computeGloballyConsistentNodeCoordinates
   ---------------------------------------------------------------*/
 void  CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
-	std::map<CHMHMapNode::TNodeID,CPose3DPDFGaussian>		&nodePoses,
+	std::map<CHMHMapNode::TNodeID,CPose3DPDFGaussian, std::less<CHMHMapNode::TNodeID>, Eigen::aligned_allocator<std::pair<const CHMHMapNode::TNodeID,CPose3DPDFGaussian> > >		&nodePoses,
 	const CHMHMapNode::TNodeID							&idReferenceNode,
 	const THypothesisID										&hypothesisID,
 	const unsigned int									&numberOfIterations) const
@@ -1308,8 +1308,8 @@ void  CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 
 	// 1) Compute a first estimate of the ORIENTATION in GLOBAL COODINATES of each node
 	// --------------------------------------------------------------------------------
-	std::map<CHMHMapNode::TNodeID,CPose2D>			approxNodesPoses;			// The ref. pose of each area
-	std::map<CHMHMapNode::TNodeID,CMatrixDouble>	approxNodesPoseCov;			// Only for the case of "numberOfIterations==0"!!
+	aligned_containers<CHMHMapNode::TNodeID,CPose2D>::map_t approxNodesPoses;			// The ref. pose of each area
+	aligned_containers<CHMHMapNode::TNodeID,CMatrixDouble>::map_t approxNodesPoseCov;			// Only for the case of "numberOfIterations==0"!!
 
 	size_t											nAreaNodes=0;
 
@@ -1340,7 +1340,7 @@ void  CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 								nodesIt->first,
 								posePDF,
 								hypothesisID,
-								nMonteCarloSamples_for_FirstAprox ); 
+								nMonteCarloSamples_for_FirstAprox );
 								/*0.15f,
 								DEG2RAD(5.0f) );*/
 
@@ -1384,7 +1384,7 @@ void  CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 		// Initialize the input matrix of objects:
 		{
 			CPosePDFGaussian	defaultBigCovariance;
-			defaultBigCovariance.cov.unit();
+			defaultBigCovariance.cov.setIdentity();
 			defaultBigCovariance.cov *= square( 1000.0f ); // a large 'sigma', in meters
 			defaultBigCovariance.mean = CPose2D(0,0,0);
 

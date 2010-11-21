@@ -110,15 +110,15 @@ namespace mrpt
 				/** Fills the given vector with independent, uniformly distributed samples.
 				  * \sa drawUniform
   				  */
-				template <class T>
+				template <class VEC>
 				void drawUniformVector(
-					std::vector<T> & v,
+					VEC & v,
 					const  double unif_min = 0,
 					const  double unif_max = 1 )
 				{
 					const size_t N = v.size();
 					for (size_t c=0;c<N;c++)
-						v[c] = static_cast<T>( drawUniform(unif_min,unif_max) );
+						v[c] = static_cast<typename VEC::value_type>( drawUniform(unif_min,unif_max) );
 				}
 
 			/** @} */
@@ -161,15 +161,15 @@ namespace mrpt
 				/** Fills the given vector with independent, 1D-normally distributed samples.
 				  * \sa drawGaussian1D
   				  */
-				template <class T>
+				template <class VEC>
 				void drawGaussian1DVector(
-					std::vector<T> & v,
+					VEC & v,
 					const double mean = 0,
 					const double std = 1 )
 				{
 					const size_t N = v.size();
 					for (size_t c=0;c<N;c++)
-						v[c] = static_cast<T>( drawGaussian1D(mean,std) );
+						v[c] = static_cast<typename VEC::value_type>( drawGaussian1D(mean,std) );
 				}
 
 				/** Generate multidimensional random samples according to a given covariance matrix.
@@ -184,152 +184,42 @@ namespace mrpt
 					const std::vector<T>*  mean = NULL
 					);
 
-				 /** Generate a given number of multidimensional random samples according to a given covariance matrix.
-				 * \param cov The covariance matrix where to draw the samples from.
-				 * \param desiredSamples The number of samples to generate.
-				 * \param samplesLikelihoods If desired, set to a valid pointer to a vector, where it will be stored the likelihoods of having obtained each sample: the product of the gaussian-pdf for each independent variable.
-				 * \param ret The output list of samples
-				 * \param mean The mean, or zeros if mean==NULL.
-				 *
-				 * \exception std::exception On invalid covariance matrix
-				 *
-				 * \sa drawGaussianMultivariate
-				 */
-				 template <typename VECTORLIKE, typename MATRIXLIKE>
-				 void  drawGaussianMultivariateMany(
-					std::vector< VECTORLIKE >	&ret,
-					size_t						desiredSamples,
-					const MATRIXLIKE	&cov,
-					const VECTORLIKE*	mean = NULL,
-					VECTORLIKE			*samplesLikelihoods = NULL)
-				{
-					typename VECTORLIKE::iterator  liks_it = samplesLikelihoods ? samplesLikelihoods->begin() : typename VECTORLIKE::iterator();
-					const size_t dim = cov.getColCount();
-					MATRIXLIKE Z,D;
-
-					MRPT_START;
-
-					if (samplesLikelihoods)
-						samplesLikelihoods->assign(desiredSamples, 0);
-
-					ret.resize(desiredSamples);
-					ASSERT_(cov.getRowCount() == cov.getColCount() )
-
-					if (mean) ASSERT_(mean->size() == dim )
-
-
-					/** Computes the eigenvalues/eigenvector decomposition of this matrix,
-					*    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
-					*	  eigenvectors and the diagonal matrix D contains the eigenvalues
-					*    as diagonal elements, sorted in <i>ascending</i> order.
-					*/
-					cov.eigenVectors( Z, D );
-
-					// Scale eigenvectors with eigenvalues:
-					// Efficient implementation of: D.Sqrt(); Z = Z * D;
-					for (size_t i=0;i<dim;i++)
-					{
-						const typename VECTORLIKE::value_type eig_sqrt = std::sqrt(D.get_unsafe(i,i));
-						for (size_t j=0;j<dim;j++)
-							Z.get_unsafe(j,i)*=eig_sqrt;
-					}
-
-					for (typename std::vector<VECTORLIKE>::iterator ret_it=ret.begin();ret_it!=ret.end();ret_it++)
-					{
-						size_t		i;
-						double	likelihood_1, likelihood_all;
-
-						// Reset vector to 0:
-						ret_it->assign(dim,0);
-						likelihood_all = 1.0;
-
-						if (samplesLikelihoods)
-						{
-							// Save likelihoods also:
-							// ------------------------------
-							for (i=0;i<dim;i++)
-							{
-								const typename VECTORLIKE::value_type	rnd = this->drawGaussian1D_normalized(&likelihood_1);
-								for (size_t d=0;d<dim;d++)	(*ret_it)[d]+=Z.get_unsafe(d,i)*rnd;
-
-								// Product of each independent gaussian sample:
-								likelihood_all *= likelihood_1;
-							}
-							if (mean)
-								for (size_t d=0;d<dim;d++)	(*ret_it)[d]+=(*mean)[d];
-
-							// Save the total likelihood of the generated vector:
-							*liks_it = static_cast<typename VECTORLIKE::value_type>(likelihood_all);
-							liks_it++;
-						}
-						else
-						{
-							// DO NOT save likelihoods also, just the samples
-							// ----------------------------------------------------
-							for (i=0;i<dim;i++)
-							{
-								const typename VECTORLIKE::value_type rnd = this->drawGaussian1D_normalized();
-								for (size_t d=0;d<dim;d++)	(*ret_it)[d]+=Z.get_unsafe(d,i)*rnd;
-							}
-							if (mean)
-								for (size_t d=0;d<dim;d++)	(*ret_it)[d]+=(*mean)[d];
-						}
-
-					} // For each vector sample to generate...
-
-					MRPT_END_WITH_CLEAN_UP( \
-						printf("\nEXCEPTION: Dumping variables for debuging:\n"); \
-						std::cout << "Z:\n" << Z << "D:\n" << D << "Cov:\n" << cov; \
-						try \
-						{
-							cov.eigenVectors(Z,D); \
-							std::cout << "Original Z:" << Z << "Original D:" << D;  \
-						} \
-						catch(...) {}; \
-						);
-
-				}
-
 
 				/** Generate multidimensional random samples according to a given covariance matrix.
 				 *  Mean is assumed to be zero if mean==NULL.
 				 * \exception std::exception On invalid covariance matrix
 				 * \sa drawGaussianMultivariateMany
 				 */
-				 template <class VECTORLIKE,typename T,size_t N>
+				 template <class VECTORLIKE,class MATRIX>
 				 void  drawGaussianMultivariate(
 					VECTORLIKE	&out_result,
-					const CMatrixFixedNumeric<T,N,N> &cov,
+					const MATRIX &cov,
 					const VECTORLIKE* mean = NULL
 					)
 				{
-					if (mean) ASSERT_(mean->size()==N)
+					const size_t N = cov.rows();
+					ASSERT_(cov.rows()==cov.cols())
+					if (mean) ASSERT_EQUAL_(size_t(mean->size()),N)
 
-					CMatrixFixedNumeric<T,N,N>	Z,D;
+					typename MATRIX::PlainObject Z,D;
+					Z.resizeLike(cov);
+					D.resizeLike(cov);
 
 					// Set size of output vector:
 					out_result.assign(N,0);
-
-					/** Computes the eigenvalues/eigenvector decomposition of this matrix,
-					*    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
-					*	  eigenvectors and the diagonal matrix D contains the eigenvalues
-					*    as diagonal elements, sorted in <i>ascending</i> order.
-					*/
 					cov.eigenVectors( Z, D );
 
 					// Scale eigenvectors with eigenvalues:
 					// Efficient implementation of: D.Sqrt(); Z = Z * D;
 					for (size_t i=0;i<N;i++)
 					{
-						const T eig_sqrt = std::sqrt(D.get_unsafe(i,i));
+						const double eig_sqrt = std::sqrt(D.get_unsafe(i,i));
 						for (size_t j=0;j<N;j++)
 							Z.get_unsafe(j,i)*=eig_sqrt;
 					}
-
-
 					for (size_t i=0;i<N;i++)
 					{
-						T rnd = drawGaussian1D_normalized();
+						double rnd = drawGaussian1D_normalized();
 						for (size_t d=0;d<N;d++)
 							out_result[d]+= ( Z(d,i)* rnd );
 					}
@@ -344,44 +234,39 @@ namespace mrpt
 				 * \param ret The output list of samples
 				 * \param mean The mean, or zeros if mean==NULL.
 				 */
-				 template <typename T,size_t N>
+				 template <typename VECTOR_OF_VECTORS,typename COVMATRIX>
 				 void  drawGaussianMultivariateMany(
-					std::vector< std::vector<T> >	&ret,
-					size_t							desiredSamples,
-					const CMatrixFixedNumeric<T,N,N> &cov,
-					const std::vector<T>*			mean = NULL )
+					VECTOR_OF_VECTORS	&ret,
+					size_t               desiredSamples,
+					const COVMATRIX     &cov,
+					const typename VECTOR_OF_VECTORS::value_type *mean = NULL )
 				{
-					if (mean) ASSERT_(mean->size()==N)
+					ASSERT_EQUAL_(cov.cols(),cov.rows())
+					if (mean) ASSERT_EQUAL_(mean->size(),cov.cols())
 
-					CMatrixFixedNumeric<T,N,N>	Z,D;
+					// Compute eigenvalues/eigenvectors of cov:
+					Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject> eigensolver(cov);
 
-					/** Computes the eigenvalues/eigenvector decomposition of this matrix,
-					*    so that: M = Z · D · Z<sup>T</sup>, where columns in Z are the
-					*	  eigenvectors and the diagonal matrix D contains the eigenvalues
-					*    as diagonal elements, sorted in <i>ascending</i> order.
-					*/
-					cov.eigenVectors( Z, D );
+					typename Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject>::MatrixType eigVecs = eigensolver.eigenvectors();
+					typename Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject>::RealVectorType eigVals = eigensolver.eigenvalues();
 
 					// Scale eigenvectors with eigenvalues:
-					// Efficient implementation of: D.Sqrt(); Z = Z * D;
-					for (size_t i=0;i<N;i++)
-					{
-						const T eig_sqrt = std::sqrt(D.get_unsafe(i,i));
-						for (size_t j=0;j<N;j++)
-							Z.get_unsafe(j,i)*=eig_sqrt;
-					}
+					// D.Sqrt(); Z = Z * D; (for each column)
+					eigVals = eigVals.array().sqrt();
+					for (typename COVMATRIX::Index i=0;i<eigVecs.cols();i++)
+						eigVecs.col(i) *= eigVals[i];
 
 					// Set size of output vector:
 					ret.resize(desiredSamples);
-
+					const size_t N = cov.cols();
 					for (size_t k=0;k<desiredSamples;k++)
 					{
 						ret[k].assign(N,0);
 						for (size_t i=0;i<N;i++)
 						{
-							T rnd = drawGaussian1D_normalized();
+							typename COVMATRIX::Scalar rnd = drawGaussian1D_normalized();
 							for (size_t d=0;d<N;d++)
-								ret[k][d]+= ( Z.get_unsafe(d,i)* rnd );
+								ret[k][d]+= eigVecs.coeff(d,i) * rnd;
 						}
 						if (mean)
 							for (size_t d=0;d<N;d++)
@@ -398,13 +283,13 @@ namespace mrpt
 
 				/** Returns a random permutation of a vector: all the elements of the input vector are in the output but at random positions.
 				  */
-				template <class T>
-				void  permuteVector(
-					const std::vector<T> &in_vector,
-					std::vector<T>       &out_result)
+				template <class VEC>
+				void  permuteVector(const VEC &in_vector, VEC &out_result)
 				{
 					out_result = in_vector;
-					std::random_shuffle( out_result.begin(),out_result.end()  );
+					const size_t N = out_result.size();
+					if (N>1)
+						std::random_shuffle( &out_result[0],&out_result[N-1] );
 				}
 
 			/** @} */

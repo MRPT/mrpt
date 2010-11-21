@@ -69,6 +69,9 @@ namespace mrpt
 	class REACTIVENAV_IMPEXP CPRRTNavigator
 	{
 	public:
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+	public:
 		CPRRTNavigator();	//!< Constructor
         virtual ~CPRRTNavigator();	//!< Destructor
 
@@ -268,7 +271,7 @@ namespace mrpt
 		//  this is a temporary variable. We'll let the planning thread to build
 		//  a CSimplePointsMap object with these points.
 		//mrpt::slam::CSimplePointsMap	m_last_obstacles;
-		vector_float		m_last_obstacles_x,m_last_obstacles_y;
+		std::vector<float>	m_last_obstacles_x,m_last_obstacles_y;
 		TTimeStamp			m_last_obstacles_time;
 		CCriticalSection	m_last_obstacles_cs;
 

@@ -33,6 +33,8 @@
 #include <algorithm>
 #include <iterator>
 
+#if 0
+
 // Macro for defining iterator/const_iterator/.... in any dynamic-like matrix.
 #define DECLARE_MRPT_MATRIX_ITERATORS \
 	/*! @name Iterator stuff @{ */ \
@@ -80,7 +82,7 @@ namespace detail {
 			if (m_cur_col>=m_matrix->getColCount()) THROW_EXCEPTION("Column index out of range in iterator.")
 			if (!allow_end) {
 				if (m_cur_row>=m_matrix->getRowCount()) { THROW_EXCEPTION("Row index out of range in iterator.") }
-			} else { 
+			} else {
 				if (m_cur_row>m_matrix->getRowCount())  THROW_EXCEPTION("Row index out of range in iterator.") }
 #endif
 		}
@@ -313,10 +315,10 @@ namespace detail {
 
 	/** @} */
 
-
 } // end namespace
 } // end namespace
 } // end namespace
 
+#endif
 
 #endif

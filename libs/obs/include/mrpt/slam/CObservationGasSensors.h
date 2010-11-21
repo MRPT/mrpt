@@ -72,7 +72,7 @@ namespace slam
 
 			/** The set of readings (in volts) from the array of sensors (size of "sensorTypes" is the same that the size of "readingsVoltage")
 			  */
-			vector_float	readingsVoltage;
+			std::vector<float>	readingsVoltage;
 
 			/** The kind of sensors in the array (size of "sensorTypes" is the same that the size of "readingsVoltage")
 			  *  The meaning of values for types of sensors is as follows:
@@ -114,7 +114,7 @@ namespace slam
 		  * \sa getSensorPose
 		  */
 		void setSensorPose( const CPose3D &newSensorPose );
-		
+
 
 					/** Declares a class within "CObservationGasSensors" that represents a set of gas concentration readings from the modelation of a MOS gas sensor readings.
 					 * This class provides the parameters and functions to simulate the inverse model of a MOS gas sensor.
@@ -137,7 +137,7 @@ namespace slam
 						/** [useMOSmodel] The decimate frecuency applied after noise filtering
 						  */
 						int	decimate_value;
-						
+
 						/** [useMOSmodel] Tau value for the rise (tauR) sensor phase.
 						*/
 						float	tauR;
@@ -145,7 +145,7 @@ namespace slam
 						/** [useMOSmodel] The number of observations to keep in m_lastObservations (Must be > max(delay) )
 						  */
 						unsigned int lastObservations_size;
-						
+
 						/** [useMOSmodel] Calibrated values of K= 1/tauD for different volatile concentrations
 						  */
 						vector_float	calibrated_tauD_voltages;
@@ -158,7 +158,7 @@ namespace slam
 
 						/** [useMOSmodel] If true save generated gas map as a log file
 						  */
-						bool save_maplog;	
+						bool save_maplog;
 
 						/** Obtain an estimation of the gas distribution based on raw sensor readings
 						  */
@@ -182,7 +182,7 @@ namespace slam
 								float						speed;
 						}last_Obs, temporal_Obs;
 
-						/** [useMOSmodel] The last N GasObservations, used for the MOS MODEL estimation. 
+						/** [useMOSmodel] The last N GasObservations, used for the MOS MODEL estimation.
 						  */
 						std::vector<TdataMap> m_lastObservations;
 
@@ -217,7 +217,7 @@ namespace slam
 							const float						&reading,
 							const CPose3D					&sensorPose,
 							const mrpt::system::TTimeStamp	&timestamp );
-					
+
 						/** Save the gas distribution estiamtion into a log file for offline representation
 						*/
 						void save_log_map(

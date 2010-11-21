@@ -581,7 +581,7 @@ void do_grid_align()
 					}
 
 					size_t best_match=0;
-					mrpt::math::minimum(dErrs,&best_match);
+					dErrs.minimum(&best_match);
 					double MIN_DESCR_DIST = mrpt::math::minimum(D);
 					if (dErrs[best_match]<0.20)
 					{

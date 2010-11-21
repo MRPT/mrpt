@@ -321,7 +321,12 @@ void CWindowDialogPlots::plot(
 	}
 
 	// Set data:
-	theLayer->SetData( x,y );
+	{
+		std::vector<float> x_(x.size()),y_(x.size());
+		::memcpy(&x_[0],&x[0],sizeof(x[0])*x_.size());
+		::memcpy(&y_[0],&y[0],sizeof(y[0])*y_.size());
+		theLayer->SetData( x_,y_ );
+	}
 
 	// Line style:
 	// -------------------
@@ -657,55 +662,6 @@ void  CDisplayWindowPlots::axis_equal( bool enabled )
 #endif
 }
 
-
-/*---------------------------------------------------------------
-					plot
- ---------------------------------------------------------------*/
-template <typename T>
-void  CDisplayWindowPlots::plot(
-	const std::vector<T> &x,
-	const std::vector<T> &y,
-	const std::string  &lineFormat,
-	const std::string  &plotName )
-{
-	MRPT_START
-#if MRPT_HAS_WXWIDGETS
-	if (!isOpen()) return;
-
-	ASSERT_(x.size() == y.size());
-
-	if (m_holdon_just_disabled)
-	{
-		m_holdon_just_disabled=false;
-		this->clf();
-	}
-
-	if (x.empty()) return;
-
-	std::string holdon_post;
-	if (m_holdon)
-		holdon_post = format("_fig_%u",static_cast<unsigned int>(m_holdon_cnt++));
-
-    // Send a request to destroy this object:
-    WxSubsystem::TRequestToWxMainThread *REQ = new WxSubsystem::TRequestToWxMainThread[1];
-    REQ->sourcePlots = this;
-    REQ->OPCODE   = 420;
-    REQ->str      = lineFormat;
-    REQ->plotName = plotName + holdon_post;
-
-	metaprogramming::copy_container_typecasting(x,REQ->vector_x);
-	metaprogramming::copy_container_typecasting(y,REQ->vector_y);
-
-	WxSubsystem::pushPendingWxRequest( REQ );
-#endif
-	MRPT_END
-}
-
-// Instantiations:
-template void  GUI_IMPEXP CDisplayWindowPlots::plot(const std::vector<float> &x,const std::vector<float> &y,const std::string  &lineFormat,const std::string  &plotName );
-template void  GUI_IMPEXP CDisplayWindowPlots::plot(const std::vector<double> &x,const std::vector<double> &y,const std::string  &lineFormat,const std::string  &plotName );
-
-
 /*---------------------------------------------------------------
 					axis
  ---------------------------------------------------------------*/
@@ -944,22 +900,46 @@ void CDisplayWindowPlots::image(
 }
 
 /*---------------------------------------------------------------
-					plot
+					internal_plot
  ---------------------------------------------------------------*/
-template <typename T>
-void CDisplayWindowPlots::plot(
-	const std::vector<T> &y,
+void CDisplayWindowPlots::internal_plot(
+	vector_float &x,
+	vector_float &y,
 	const std::string  &lineFormat,
-	const std::string  &plotName  )
+	const std::string  &plotName)
 {
-	vector<T> x;
- 	mrpt::math::linspace(static_cast<T>(1),static_cast<T>(y.size()),y.size(),x);
-	plot(x,y,lineFormat,plotName);
+	MRPT_START
+#if MRPT_HAS_WXWIDGETS
+	if (!isOpen()) return;
+
+	ASSERT_EQUAL_(x.size(),y.size());
+
+	if (m_holdon_just_disabled)
+	{
+		m_holdon_just_disabled=false;
+		this->clf();
+	}
+
+	if (x.empty()) return;
+
+	std::string holdon_post;
+	if (m_holdon)
+		holdon_post = format("_fig_%u",static_cast<unsigned int>(m_holdon_cnt++));
+
+    // Send a request to destroy this object:
+    WxSubsystem::TRequestToWxMainThread *REQ = new WxSubsystem::TRequestToWxMainThread[1];
+    REQ->sourcePlots = this;
+    REQ->OPCODE   = 420;
+    REQ->str      = lineFormat;
+    REQ->plotName = plotName + holdon_post;
+    REQ->vector_x.swap(x);
+    REQ->vector_y.swap(y);
+
+	WxSubsystem::pushPendingWxRequest( REQ );
+#endif
+	MRPT_END
 }
 
-// Instantiations:
-template void GUI_IMPEXP CDisplayWindowPlots::plot(const std::vector<float> &y,const std::string  &lineFormat,const std::string  &plotName  );
-template void GUI_IMPEXP CDisplayWindowPlots::plot(const std::vector<double> &y,const std::string  &lineFormat,const std::string  &plotName  );
 
 
 /*---------------------------------------------------------------

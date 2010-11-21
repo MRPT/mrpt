@@ -33,7 +33,6 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/ops_matrices.h>
-#include <mrpt/math/matrices_metaprogramming.h>
 #include <mrpt/math/jacobians.h>
 #include <mrpt/random.h>
 
@@ -79,14 +78,14 @@ namespace mrpt
 			W_cov[0]  = W_mean[0]+(1-alpha*alpha+beta);
 
 			// Generate X_i samples:
-			MAT_TYPE_SAMESIZE_OF(MATLIKE1) L;
+			MATLIKE1 L;
 			const bool valid = x_cov.chol(L);
 			if (!valid) throw std::runtime_error("transform_gaussian_unscented: Singular covariance matrix in Cholesky.");
 			L*= sqrt(c);
 
 			// Propagate the samples X_i -> Y_i:
 			// We don't need to store the X sigma points: just use one vector to compute all the Y sigma points:
-			std::vector<VECTORLIKE3> Y(1+2*Nx); // 2Nx+1 sigma points
+			std::vector<VECTORLIKE3, Eigen::aligned_allocator<VECTORLIKE3> > Y(1+2*Nx); // 2Nx+1 sigma points
 			VECTORLIKE1 X = x_mean;
 			functor(X,fixed_param,Y[0]);
 			VECTORLIKE1 delta; // i'th row of L:
@@ -156,9 +155,9 @@ namespace mrpt
 			// Mean: simple propagation:
 			functor(x_mean,fixed_param,y_mean);
 			// Cov: COV = H C Ht
-			MAT_TYPE_JACOBIAN_OF(VECTORLIKE1,VECTORLIKE3) H;
+			Eigen::Matrix<double,VECTORLIKE3::RowsAtCompileTime,VECTORLIKE1::RowsAtCompileTime> H;
 			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,functor,x_increments,fixed_param,H);
-			H.multiply_HCHt(x_cov,y_cov);
+			y_cov = H * x_cov * H.transpose();
 			MRPT_END
 		}
 

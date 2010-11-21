@@ -40,11 +40,7 @@
 #include "../wx-common/CMyRedirector.h"
 
 // For CV_VERSION
-#include <mrpt/config.h>
-
-
-#include <mrpt/system/os.h>
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/base.h>
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -165,6 +161,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 
 		cout << "MRPT version:           " << MRPT_getVersion() << endl;
 		cout << "MRPT compilation date:  " << MRPT_getCompilationDate() << endl;
+ 		cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << endl;
 		cout << "wxWidgets version:      " << wxVer.mb_str() << endl;
  		cout << "OpenCV version:         ";
 #if MRPT_HAS_OPENCV

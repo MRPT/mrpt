@@ -494,24 +494,17 @@ void CPose3DQuatPDFGaussian::jacobiansPoseComposition(
 		};
 
 	// df_dx(0:3,3:7) = vals2 * NORM_JACOB
-	CSubmatrixView<CMatrixDouble77,3,4>(df_dx, 0,3).multiply(
-		CMatrixFixedNumeric<double,3,4>(vals2),
-		norm_jacob_x);
-
+	df_dx.block(0,3, 3,4).noalias() = CMatrixFixedNumeric<double,3,4>(vals2) * norm_jacob_x;
 	// second part:
 	{
-		const double aux33_data[4*4] = {
+		const double aux44_data[4*4] = {
 			q2r,-q2x,-q2y,-q2z,
 			q2x, q2r, q2z,-q2y,
 			q2y,-q2z, q2r, q2x,
 			q2z, q2y,-q2x, q2r };
 
-		const CMatrixDouble44 aux33(aux33_data);
-
-		CSubmatrixView<CMatrixDouble77,4,4>  aux33out(df_dx, 3,3);
-		aux33out.multiply(norm_jacob,aux33);
+		df_dx.block(3,3, 4,4).noalias() =  norm_jacob * CMatrixFixedNumeric<double,4,4>(aux44_data);
 	}
-
 
 	// df_du ===================================================
 	df_du.zeros();
@@ -531,16 +524,15 @@ void CPose3DQuatPDFGaussian::jacobiansPoseComposition(
 
 	// Second part:
 	{
-		const double aux33_data[4*4] = {
+		const double aux44_data[4*4] = {
 			qr,-qx,-qy,-qz,
 			qx, qr,-qz, qy,
 			qy, qz, qr,-qx,
 			qz,-qy, qx, qr };
 
-		const CMatrixDouble44 aux33(aux33_data);
-
-		CSubmatrixView<CMatrixDouble77,4,4>  aux33out(df_du, 3,3);
-		aux33out.multiply(norm_jacob,aux33);
+//		std::cout  << "x.quat:\n" << x.quat() << std::endl;
+//		std::cout  << "aux44:\n" << CMatrixFixedNumeric<double,4,4>(aux44_data) << std::endl;
+		df_du.block(3,3, 4,4).noalias() = norm_jacob * CMatrixFixedNumeric<double,4,4>(aux44_data);
 	}
 
 	if (out_x_oplus_u)
@@ -586,7 +578,7 @@ void  CPose3DQuatPDFGaussian::operator -= ( const CPose3DQuatPDFGaussian &Ap)
  ---------------------------------------------------------------*/
 double  CPose3DQuatPDFGaussian::evaluatePDF( const CPose3DQuat &x ) const
 {
-	return mrpt::math::normalPDF(x,this->mean,this->cov);
+	return mrpt::math::normalPDF(CMatrixDouble71(x), CMatrixDouble71(this->mean), this->cov);
 }
 
 /*---------------------------------------------------------------
@@ -594,7 +586,7 @@ double  CPose3DQuatPDFGaussian::evaluatePDF( const CPose3DQuat &x ) const
  ---------------------------------------------------------------*/
 double  CPose3DQuatPDFGaussian::evaluateNormalizedPDF( const CPose3DQuat &x ) const
 {
-	return mrpt::math::normalPDF(x,this->mean,this->cov, true);
+	return mrpt::math::normalPDF(CMatrixDouble71(x),CMatrixDouble71(this->mean),this->cov, true);
 }
 
 /*---------------------------------------------------------------
@@ -616,7 +608,7 @@ double  CPose3DQuatPDFGaussian::mahalanobisDistanceTo( const CPose3DQuatPDFGauss
 {
 	MRPT_START
 	const CMatrixDouble77	COV2 = cov + theOther.cov;
-	return mrpt::math::mahalanobisDistance(this->mean - theOther.mean, COV2);
+	return mrpt::math::mahalanobisDistance( CMatrixDouble71(this->mean) - CMatrixDouble71(theOther.mean), COV2);
 	MRPT_END
 }
 

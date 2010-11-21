@@ -29,6 +29,17 @@
 #ifndef MRPT_CONFIG_H
 #define MRPT_CONFIG_H
 
+
+/** Tell Eigen libray to include MRPT's plugin for Eigen::MatrixBase
+  */
+#define EIGEN_MATRIXBASE_PLUGIN ${EIGEN_MATRIXBASE_PLUGIN}
+
+
+/** Implementation of the methods declared above, if needed
+  */
+#define EIGEN_MATRIXBASE_PLUGIN_POST_IMPL ${EIGEN_MATRIXBASE_PLUGIN_POST_IMPL}
+
+
 /** A string with the 3 digits version number of MRPT - This is intended for
   *  autolinking pragmas only, such as they know the complete name of DLLs.
   * This is only for Windows. In Unix it should be an empty string.

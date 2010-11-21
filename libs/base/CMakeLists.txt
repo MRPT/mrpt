@@ -32,6 +32,10 @@ LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/math/CSparse/*.c" "${MR
 LIST(APPEND base_EXTRA_SRCS_NAME 	"math/CSparse" "math/CSparse")
 INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/CSparse/")
 
+# Eigen library
+LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/include/Eigen/*")
+LIST(APPEND base_EXTRA_SRCS_NAME 	"eigen_lib")
+
 # kmeans++
 LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/math/kmeans++/*.cpp" "${MRPT_LIBS_ROOT}/base/src/math/kmeans++/*.h")
 LIST(APPEND base_EXTRA_SRCS_NAME 	"math/kmeans" "math/kmeans")

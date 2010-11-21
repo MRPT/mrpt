@@ -592,7 +592,7 @@ namespace mrpt
 			//  the aux. function "PF_SLAM_particlesEvaluator_AuxPFStandard").
 			//
 			vector<TPose3D>			newParticles;
-			vector_double			newParticlesWeight;
+			vector<double>			newParticlesWeight;
 			vector<size_t>			newParticlesDerivedFromIdx;
 
 			// We need the (aproximate) maximum likelihood value for each

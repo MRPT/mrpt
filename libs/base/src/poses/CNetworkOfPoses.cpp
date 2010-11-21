@@ -126,14 +126,14 @@ namespace mrpt
 			{
 				CPosePDFGaussianInf p;
 				p.mean = edge;
-				p.cov_inv.unit();
+				p.cov_inv.unit(3,1.0);
 				write_EDGE_line(edgeIDs,p,f);
 			}
 			template <> void write_EDGE_line<CPose3D>( const TPairNodeIDs &edgeIDs,const CPose3D & edge, std::ofstream &f)
 			{
 				CPose3DPDFGaussianInf p;
 				p.mean = edge;
-				p.cov_inv.unit();
+				p.cov_inv.unit(6,1.0);
 				write_EDGE_line(edgeIDs,p,f);
 			}
 
@@ -360,7 +360,7 @@ namespace mrpt
 									Ap_cov_inv(3,3) ))
 							{
 								// Cov may be omitted in the file:
-								Ap_cov_inv.unit();
+								Ap_cov_inv.unit(6,1.0);
 
 								if (alreadyWarnedUnknowns.find("MISSING_3D")==alreadyWarnedUnknowns.end())
 								{

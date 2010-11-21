@@ -105,7 +105,7 @@ void  CSickLaserSerial::doProcessSimple(
 		return;
 	}
 
-	vector_float 	ranges;
+	vector<float> 	ranges;
 	unsigned char	LMS_stat;
 	bool			is_mm_mode;
 
@@ -277,7 +277,7 @@ bool CSickLaserSerial::tryToOpenComms(std::string *err_msg)
 					waitContinuousSampleFrame
 -------------------------------------------------------------*/
 bool  CSickLaserSerial::waitContinuousSampleFrame(
-	vector_float 	&out_ranges_meters,
+	vector<float> 	&out_ranges_meters,
 	unsigned char 	&LMS_status,
     bool 			&is_mm_mode )
 {

@@ -378,7 +378,7 @@ namespace slam
 		/** @name Auxiliary vars for DM & DM+V methods
 		    @{ */
 		float               m_DM_lastCutOff;
-		mrpt::vector_float	m_DM_gaussWindow;
+		std::vector<float>	m_DM_gaussWindow;
 		double				m_average_normreadings_mean, m_average_normreadings_var;
 		size_t              m_average_normreadings_count;
 		/** @} */

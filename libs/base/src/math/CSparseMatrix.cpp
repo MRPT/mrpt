@@ -74,7 +74,7 @@ void  CSparseMatrix::copy_fast(cs  * const sm)
 	// This method will work for either triplet or compressed format:
 
 	// Free previous contents, if any.
-	internal_free_mem(); 
+	internal_free_mem();
 
 	// Fast copy / Move:
 	sparse_matrix.m = sm->m;
@@ -141,7 +141,7 @@ void CSparseMatrix::construct_from_existing_cs(const cs &sm)
 	sparse_matrix.x = (double*)malloc(sizeof(double)*sm.nzmax);
 }
 
-/** Create an initially empty sparse matrix, in the "triplet" form. 
+/** Create an initially empty sparse matrix, in the "triplet" form.
 *  Notice that you must call "compressFromTriplet" after populating the matrix and before using the math operatons on this matrix.
 *  The initial size can be later on extended with insert_entry() or setRowCount() & setColCount().
 */
@@ -210,9 +210,9 @@ void CSparseMatrix::multiply_AB(const CSparseMatrix & A,const CSparseMatrix & B)
 	cs_spfree(sm);
 }
 
-void CSparseMatrix::multiply_Ab(const std::vector<double> &b, std::vector<double> &out_res) const
+void CSparseMatrix::multiply_Ab(const mrpt::vector_double &b, mrpt::vector_double &out_res) const
 {
-	ASSERT_(b.size() == getColCount());
+	ASSERT_EQUAL_(int(b.size()), int(getColCount()))
 	out_res.resize( getRowCount() );
 	const double * y = &(b[0]);
 	double * x = &(out_res[0]);
@@ -241,7 +241,7 @@ void CSparseMatrix::cs2dense(const cs& SM, CMatrixDouble &d_M)
 	}
 	else
 	{	// Column compressed format:
-		ASSERT_(SM.x)  // JL: Could it be NULL and be OK??? 
+		ASSERT_(SM.x)  // JL: Could it be NULL and be OK???
 
 		for (int j = 0 ; j < SM.n ; j++)
         {
@@ -262,7 +262,7 @@ void CSparseMatrix::compressFromTriplet()
 {
 	if (!isTriplet())
 		THROW_EXCEPTION("compressFromTriplet(): Matrix is already in column-compressed format.")
-	
+
 	cs * sm = cs_compress(&this->sparse_matrix);
 	copy_fast(sm);
 	cs_spfree(sm); // This will release just the "cs" structure itself, not the internal buffers, now set to NULL.
@@ -280,14 +280,14 @@ bool CSparseMatrix::saveToTextFile_dense(const std::string &filName)
 		dense.saveToTextFile(filName);
 		return true;
 	}
-	catch(...) { return false; } 
+	catch(...) { return false; }
 }
 
 
 
 // ===============  START OF:   CSparseMatrix::CholeskyDecomp  inner class  ==============================
 
-/** Constructor from a square semidefinite-positive sparse matrix. 
+/** Constructor from a square semidefinite-positive sparse matrix.
 *   The actual Cholesky decomposition takes places in this constructor.
 *  \exception std::runtime_error On non-square input matrix.
 *  \exception mrpt::math::CExceptionNotDefPos On non-semidefinite-positive matrix as input.
@@ -326,10 +326,10 @@ void CSparseMatrix::CholeskyDecomp::get_L(CMatrixDouble &L) const
 
 /** Return the vector from a back-substitution step that solves: Ux=b   */
 void CSparseMatrix::CholeskyDecomp::backsub(
-	const std::vector<double> &b, 
-	std::vector<double> &sol) const
+	const mrpt::vector_double &b,
+	mrpt::vector_double &sol) const
 {
-	std::vector<double> tmp = b;
+	mrpt::vector_double tmp = b;
 	sol = b;
 
 	cs_ipvec(m_symbolic_structure->pinv,&b[0],&tmp[0],b.size());

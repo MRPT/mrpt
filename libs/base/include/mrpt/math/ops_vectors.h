@@ -30,7 +30,6 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CVectorTemplate.h>
 
 // Many of the functions originally in this file are now in ops_containers.h
 #include <mrpt/math/ops_containers.h>
@@ -43,59 +42,80 @@ namespace mrpt
 	namespace math
 	{
 
-		/** \name Generic vector element-wise operations
+		/** \name Generic std::vector element-wise operations
 		  * @{
 		  */
 
 		/** a*=b (element-wise multiplication) */
-		template <class VECTOR1,class VECTOR2>
-		inline RET_CONT1_ASSERT_MRPTVECTORS(VECTOR1,VECTOR2)
-		operator *=(VECTOR1&a, const VECTOR2 &b)
+		template <typename T1,typename T2>
+		inline std::vector<T1>& operator *=(std::vector<T1>&a, const std::vector<T2>&b)
 		{
-			ASSERT_(a.size()==b.size());
-			typename VECTOR1::iterator ita = a.begin();
-			typename VECTOR2::const_iterator itb = b.begin();
-			const typename VECTOR1::iterator last=a.end();
-			while (ita!=last) { *(ita++)*=*(itb++); }
+			ASSERT_EQUAL_(a.size(),b.size())
+			const size_t N=a.size();
+			for (size_t i=0;i<N;i++) a[i]*=b[i];
 			return a;
 		}
 
-		/** return a*b  (element-wise multiplication for vectors) */
-		template <class VECTOR1,class VECTOR2>
-		inline RET_CONT1_ASSERT_MRPTVECTORS(VECTOR1,VECTOR2)
-		operator *(const VECTOR1 &a, const VECTOR2 &b)
+		/** a*=k (multiplication by a constant) */
+		template <typename T1>
+		inline std::vector<T1>& operator *=(std::vector<T1>&a, const T1 b)
 		{
-			VECTOR1 ret = a;
-			ret*=b;
-			return ret;
-		}
-
-		/** a/=b (element-wise division) */
-		template <class VECTOR1,class VECTOR2>
-		inline RET_CONT1_ASSERT_MRPTVECTORS(VECTOR1,VECTOR2)
-		operator /=(VECTOR1&a, const VECTOR2 &b)
-		{
-			ASSERT_(a.size()==b.size());
-			typename VECTOR1::iterator ita = a.begin();
-			typename VECTOR2::const_iterator itb = b.begin();
-			const typename VECTOR1::iterator last=a.end();
-			while (ita!=last) { *(ita++)/=*(itb++); }
+			const size_t N=a.size();
+			for (size_t i=0;i<N;i++) a[i]*=b;
 			return a;
 		}
 
-		/** return a/b  (element-wise division for vectors) */
-		template <class VECTOR1,class VECTOR2>
-		inline RET_CONT1_ASSERT_MRPTVECTORS(VECTOR1,VECTOR2)
-		operator /(const VECTOR1 &a, const VECTOR2 &b)
+		/** a*b (element-wise multiplication) */
+		template <typename T1,typename T2>
+		inline std::vector<T1> operator *(const std::vector<T1>&a, const std::vector<T2>&b)
 		{
-			VECTOR1 ret = a;
-			ret/=b;
+			ASSERT_EQUAL_(a.size(),b.size())
+			const size_t N=a.size();
+			std::vector<T1> ret(N);
+			for (size_t i=0;i<N;i++) ret[i]=a[i]*b[i];
 			return ret;
 		}
 
+		/** a+=b (element-wise sum) */
+		template <typename T1,typename T2>
+		inline std::vector<T1>& operator +=(std::vector<T1>&a, const std::vector<T2>&b)
+		{
+			ASSERT_EQUAL_(a.size(),b.size())
+			const size_t N=a.size();
+			for (size_t i=0;i<N;i++) a[i]+=b[i];
+			return a;
+		}
 
+		/** a+=b (sum a constant) */
+		template <typename T1>
+		inline std::vector<T1>& operator +=(std::vector<T1>&a, const T1 b)
+		{
+			const size_t N=a.size();
+			for (size_t i=0;i<N;i++) a[i]+=b;
+			return a;
+		}
+
+		/** a+b (element-wise sum) */
+		template <typename T1,typename T2>
+		inline std::vector<T1> operator +(const std::vector<T1>&a, const std::vector<T2>&b)
+		{
+			ASSERT_EQUAL_(a.size(),b.size())
+			const size_t N=a.size();
+			std::vector<T1> ret(N);
+			for (size_t i=0;i<N;i++) ret[i]=a[i]+b[i];
+			return ret;
+		}
+
+		template <typename T1,typename T2>
+		inline std::vector<T1> operator -(const std::vector<T1> &v1, const std::vector<T2>&v2) {
+			ASSERT_EQUAL_(v1.size(),v2.size())
+			std::vector<T1> res(v1.size());
+			for (size_t i=0;i<v1.size();i++) res[i]=v1[i]-v2[i];
+			return res;
+		}
 
 		/** @} */
+
 
 		/** A template function for printing out the contents of a std::vector variable.
 			*/
@@ -139,8 +159,6 @@ namespace mrpt
 			if (N) istrm.ReadBuffer(&a[0],N*sizeof(T));
 			return istrm;
 		}
-
-
 
 
 	} // End of math namespace

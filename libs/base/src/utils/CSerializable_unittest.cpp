@@ -145,7 +145,7 @@ TEST(SerializeTestBase, CArray)
 	{
 		CMemoryStream  buf;
 		CArrayDouble<5>  a, b;
-		for (size_t i=0;i<a.size();i++) a[i] = i+10;
+		for (CArrayDouble<5>::Index i=0;i<a.size();i++) a[i] = i+10;
 
 		buf << a;
 		buf.Seek(0);

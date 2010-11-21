@@ -38,6 +38,7 @@ namespace mrpt
 {
 namespace math
 {
+	// ----------------  CArray -------------------------
 	/** A STL container (as wrapper) for arrays of constant size defined at compile time - <b>Users will most likely prefer to use CArrayPOD and its derived classes instead</b>.
 	 *
 	 * This code is an adapted version from Boost, modifed for its integration
@@ -64,8 +65,10 @@ namespace math
 	 * 29 Sep 2000 - Initial Revision (Nico Josuttis)
 	 *
 	 * Jan 30, 2004
+	 * 
+	 * \note This class DOES NOT support mathematical operations on its elements: it's a generic container, it doesn't assume they are numerical.
 	 *
-     * \sa CArrayPOD, CArrayFloat, CArrayDouble, CArrayInt, CArray
+     * \sa CArrayNumeric (for another, non-related base template class that DOES support maths)
 	 */
     template <typename T, std::size_t N>
     class CArray {
@@ -308,82 +311,37 @@ namespace math
         return !(x<y);
     }
 
-	// ----------------  CArrayPOD -------------------------
 
-    /** A CArray for Plain Old Datatypes (POD), that is, int's, double's, etc or struct's with only PODs.
-      *  Many methods are defined in this class that assume that each element of the array is simple so
-      *   it can be, for example, copied with memcpy(), so only use this class to store POD types.
-      * \sa CArrayNumeric, CArray
-      */
-    template <typename T, std::size_t N>
-    class CArrayPOD : public CArray<T,N>
-    {
-	public:
-    	CArrayPOD() {}  //!< Default constructor
-    	/** Constructor from initial values ptr[0]-ptr[N-1] */
-    	CArrayPOD(const T*ptr)
-    	{
-    		if (!ptr) THROW_EXCEPTION("ptr is a NULL pointer.")
-    		::memcpy(&CArray<T,N>::elems[0],ptr,sizeof(T)*N);
-    	}
 
-		/** Initialization from a vector-like source, that is, anything implementing operator[]. */
-    	template <class ARRAYLIKE>
-    	explicit CArrayPOD(const ARRAYLIKE &obj) {
-    		for (size_t i=0;i<N;i++)
-				this->operator[](i) = static_cast<T>(obj[i]);
-    	}
-
-    };
 
 	// ----------------  CArrayNumeric -------------------------
 
-    /** A CArrayPOD for numeric types, supporting several mathematical operations.
-      * \sa CArrayFloat, CArrayDouble, CArrayInt, CArrayPOD, CArray
+    /** CArrayNumeric is an array for numeric types supporting several mathematical operations (actually, just a wrapper on Eigen::Matrix<T,N,1>)
+      * \sa CArrayFloat, CArrayDouble, CArray
       */
     template <typename T, std::size_t N>
-    class CArrayNumeric : public CArrayPOD<T,N>
+    class CArrayNumeric : public Eigen::Matrix<T,N,1>
     {
 	public:
-		//typedef CArrayPOD<T,N> BASE;
-		typedef CArrayNumeric<T,N> mrpt_autotype;
-		DECLARE_MRPT_CONTAINER_TYPES
-		DECLARE_MRPT_CONTAINER_IS_VECTOR_FIXED(N)
-		DECLARE_COMMON_CONTAINERS_MEMBERS(T)
+		typedef Eigen::Matrix<T,N,1> Base;
 
     	CArrayNumeric() {}  //!< Default constructor
     	/** Constructor from initial values ptr[0]-ptr[N-1] */
-    	CArrayNumeric(const T*ptr) : CArrayPOD<T,N>(ptr) {}
+    	CArrayNumeric(const T*ptr) : Eigen::Matrix<T,N,1>(ptr) {}
+
+		MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CArrayNumeric)
 
 		/** Initialization from a vector-like source, that is, anything implementing operator[]. */
     	template <class ARRAYLIKE>
-    	explicit CArrayNumeric(const ARRAYLIKE &obj) : CArrayPOD<T,N>(obj) {}
+    	explicit CArrayNumeric(const ARRAYLIKE &obj) : Eigen::Matrix<T,N,1>(obj) {}
 
-    	/** Add: this+=other */
-    	CArrayNumeric<T,N> & operator += (const CArrayNumeric<T,N>&o) {
-    		for (size_t i=0;i<N;i++)
-				CArray<T,N>::elems[i]+=o.elems[i];
+		template<typename OtherDerived>
+		inline CArrayNumeric<T,N> & operator= (const Eigen::MatrixBase <OtherDerived>& other) {
+			Base::operator=(other);
 			return *this;
 		}
-    	/** Substract: this-=other */
-    	CArrayNumeric<T,N> & operator -= (const CArrayNumeric<T,N>&o) {
-    		for (size_t i=0;i<N;i++)
-				CArray<T,N>::elems[i]-=o.elems[i];
-			return *this;
-		}
-
-    	/** Extract a slice of this array into a new one. */
-    	template <size_t startIdx,size_t nElements>
-    	inline CArrayNumeric<T,nElements> slice() const
-    	{
-    		ASSERT_BELOW_(startIdx+nElements-1,N)
-    		CArrayNumeric<T,nElements> ret;
-    		::memcpy(&ret[0], &CArray<T,N>::elems[startIdx], sizeof(T)*nElements);
-    		return ret;
-    	}
 
     };
-
 
 	// --------------  Partial specializations of CArrayNumeric -----------
 
@@ -393,11 +351,18 @@ namespace math
     class CArrayFloat : public CArrayNumeric<float,N>
     {
 	public:
+		typedef CArrayNumeric<float,N> Base;
+		typedef CArrayFloat<N> mrpt_autotype;
+
     	CArrayFloat() {}  //!< Default constructor
     	CArrayFloat(const float*ptr) : CArrayNumeric<float,N>(ptr) {} //!< Constructor from initial values ptr[0]-ptr[N-1]
+
+		MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CArrayFloat)
+
 		/** Initialization from a vector-like source, that is, anything implementing operator[]. */
     	template <class ARRAYLIKE>
     	explicit CArrayFloat(const ARRAYLIKE &obj) : CArrayNumeric<float,N>(obj) {}
+		MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(CArrayFloat) // Implements ctor and "operator =" for any other Eigen class
     };
 
     /** A partial specialization of CArrayNumeric for double numbers.
@@ -406,12 +371,18 @@ namespace math
     class CArrayDouble : public CArrayNumeric<double,N>
     {
 	public:
+		typedef CArrayNumeric<double,N> Base;
+		typedef CArrayDouble<N> mrpt_autotype;
+
     	CArrayDouble() {}  //!< Default constructor
     	CArrayDouble(const double*ptr) : CArrayNumeric<double,N>(ptr) {} //!< Constructor from initial values ptr[0]-ptr[N-1]
+
+		MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CArrayDouble)
 
 		/** Initialization from a vector-like source, that is, anything implementing operator[]. */
     	template <class ARRAYLIKE>
     	explicit CArrayDouble(const ARRAYLIKE &obj) : CArrayNumeric<double,N>(obj) {}
+		MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(CArrayDouble) // Implements ctor and "operator =" for any other Eigen class
     };
 
     /** A partial specialization of CArrayNumeric for int numbers.
@@ -420,8 +391,12 @@ namespace math
     class CArrayInt : public CArrayNumeric<int,N>
     {
 	public:
+		typedef CArrayNumeric<int,N> Base;
+		typedef CArrayInt<N> mrpt_autotype;
+
     	CArrayInt() {}  //!< Default constructor
     	CArrayInt(const int*ptr) : CArrayNumeric<int,N>(ptr) {} //!< Constructor from initial values ptr[0]-ptr[N-1]
+		MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(CArrayInt) // Implements ctor and "operator =" for any other Eigen class
     };
 
     /** A partial specialization of CArrayNumeric for unsigned int numbers.
@@ -430,66 +405,29 @@ namespace math
     class CArrayUInt : public CArrayNumeric<unsigned int,N>
     {
 	public:
+		typedef CArrayNumeric<unsigned int,N> Base;
+		typedef CArrayUInt<N> mrpt_autotype;
+
     	CArrayUInt() {}  //!< Default constructor
     	CArrayUInt(const unsigned int*ptr) : CArrayNumeric<unsigned int,N>(ptr) {} //!< Constructor from initial values ptr[0]-ptr[N-1]
+		MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(CArrayUInt) // Implements ctor and "operator =" for any other Eigen class
     };
 
 	/** Auxiliary class used in CMatrixTemplate:size(), CMatrixTemplate::resize(), CMatrixFixedNumeric::size(), CMatrixFixedNumeric::resize(), to mimic the behavior of STL-containers */
-	struct CMatrixTemplateSize : public CArrayPOD<size_t,2>
+	struct CMatrixTemplateSize : public Eigen::Matrix<size_t,2,1>
 	{
-		inline CMatrixTemplateSize() : CArrayPOD<size_t,2>() {}
-		inline CMatrixTemplateSize(const size_t *d) : CArrayPOD<size_t,2>(d) {}
+		typedef Eigen::Matrix<size_t,2,1> Base;
+		typedef CMatrixTemplateSize mrpt_autotype;
 
-		inline bool operator==(const CMatrixTemplateSize&o) const { return CArrayPOD<size_t,2>::elems[0]==o[0] && CArrayPOD<size_t,2>::elems[1]==o[1]; }
+		inline CMatrixTemplateSize() : Eigen::Matrix<size_t,2,1>() {}
+		inline CMatrixTemplateSize(const size_t *d) : Eigen::Matrix<size_t,2,1>(d) {}
+
+		inline bool operator==(const CMatrixTemplateSize&o) const { return Eigen::Matrix<size_t,2,1>::operator()(0)==o[0] && Eigen::Matrix<size_t,2,1>::operator()(1)==o[1]; }
 		inline bool operator!=(const CMatrixTemplateSize&o) const { return !(*this==o); }
 		/** This operator allows the size(N,M) to be compared with a plain size_t N*M  */
-		inline operator size_t(void) const { return CArrayPOD<size_t,2>::elems[0]*CArrayPOD<size_t,2>::elems[1]; }
+		inline operator size_t(void) const { return Eigen::Matrix<size_t,2,1>::operator()(0)*Eigen::Matrix<size_t,2,1>::operator()(1); }
+		MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(CMatrixTemplateSize) // Implements ctor and "operator =" for any other Eigen class
 	};
-
-
-	/** @{ \name Array operators
-	  */
-
-	/** Operator ARRAY <- ARRAY + VECTORorARRAY  */
-    template <typename T, std::size_t N, class VECTORLIKE>
-    CArrayNumeric<T,N> operator +(const CArrayNumeric<T,N> &A, const VECTORLIKE &B) {
-    	ASSERT_EQUAL_(A.size(),B.size())
-    	CArrayNumeric<T,N>  ret;
-    	for (size_t i=0;i<N;i++) ret[i]=A[i]+B[i];
-    	return ret;
-    }
-
-	/** Operator ARRAY <- ARRAY - VECTORorARRAY  */
-    template <typename T, std::size_t N, class VECTORLIKE>
-    CArrayNumeric<T,N> operator -(const CArrayNumeric<T,N> &A, const VECTORLIKE &B) {
-    	ASSERT_EQUAL_(A.size(),B.size())
-    	CArrayNumeric<T,N>  ret;
-    	for (size_t i=0;i<N;i++) ret[i]=A[i]-B[i];
-    	return ret;
-    }
-
-	/** Dot product: ARRAY <- ARRAY .* VECTORorARRAY  */
-    template <typename T, std::size_t N, class VECTORLIKE>
-    CArrayNumeric<T,N> operator *(const CArrayNumeric<T,N> &A, const VECTORLIKE &B) {
-    	ASSERT_(A.size()==B.size())
-    	CArrayNumeric<T,N>  ret;
-    	for (size_t i=0;i<N;i++) ret[i]=A[i]*B[i];
-    	return ret;
-    }
-
-	/** Textual output stream function.
-	  *    Use only for text output, for example:  "std::cout << mat;"
-	  */
-	template <typename T,size_t N>
-	std::ostream& operator << (std::ostream& ostrm, const CArray<T,N>& a)
-	{
-		ostrm << std::setprecision(4);
-		for (size_t i=0; i < N; i++) ostrm << std::setw(13) << a[i];
-		return ostrm;
-	}
-
-	/** @} */
-
 
 } // End of namespace
 
@@ -507,14 +445,5 @@ namespace math
 
 } // End of namespace
 
-
-namespace std
-{
-    // global swap()
-    template<class T, std::size_t N>
-    inline void swap (mrpt::math::CArray<T,N>& x, mrpt::math::CArray<T,N>& y) {
-        x.swap(y);
-    }
-}
 
 #endif

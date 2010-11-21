@@ -30,7 +30,6 @@
 
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/math/CArray.h>
 #include <mrpt/math/utils.h>
 
@@ -98,7 +97,7 @@ namespace mrpt
 			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
 			void runOneKalmanIteration_addNewLandmarks(
 				CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj,
-				std::vector<typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::KFArray_OBS> Z,
+				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::vector_KFArray_OBS &Z,
 				const mrpt::vector_int		&data_association,
 				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R
 				);
@@ -106,7 +105,7 @@ namespace mrpt
 			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 			void runOneKalmanIteration_addNewLandmarks(
 				CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE> &obj,
-				std::vector<typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::KFArray_OBS> Z,
+				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::vector_KFArray_OBS& Z,
 				const mrpt::vector_int       &data_association,
 				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R
 				);
@@ -167,7 +166,7 @@ namespace mrpt
 			typedef CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>  KFCLASS;  //!< My class, in a shorter name!
 
 			// ---------- Many useful typedefs to short the notation a bit... --------
-			typedef CVectorTemplate<KFTYPE>          KFVector;
+			typedef mrpt::dynamicsize_vector<KFTYPE> KFVector;
 			typedef CMatrixTemplateNumeric<KFTYPE>   KFMatrix;
 
 			typedef CMatrixFixedNumeric<KFTYPE,VEH_SIZE,VEH_SIZE>   KFMatrix_VxV;
@@ -187,6 +186,7 @@ namespace mrpt
 			typedef CArrayNumeric<KFTYPE,VEH_SIZE>  KFArray_VEH;
 			typedef CArrayNumeric<KFTYPE,ACT_SIZE>  KFArray_ACT;
 			typedef CArrayNumeric<KFTYPE,OBS_SIZE>  KFArray_OBS;
+			typedef std::vector<KFArray_OBS,Eigen::aligned_allocator<KFArray_OBS> > vector_KFArray_OBS;
 			typedef CArrayNumeric<KFTYPE,FEAT_SIZE> KFArray_FEAT;
 
 			inline size_t getStateVectorLength() const { return m_xkk.size(); }
@@ -267,7 +267,7 @@ namespace mrpt
 			  * \sa OnGetObservations, OnDataAssociation
 			  */
 			virtual void OnPreComputingPredictions(
-				const std::vector<KFArray_OBS>	&in_all_prediction_means,
+				const vector_KFArray_OBS &in_all_prediction_means,
 				mrpt::vector_size_t				&out_LM_indices_to_predict ) const
 			{
 				// Default: all of them:
@@ -294,9 +294,9 @@ namespace mrpt
 			  * \note It is assumed that the observations are independent, i.e. there are NO cross-covariances between them.
 			  */
 			virtual void OnGetObservationsAndDataAssociation(
-				std::vector<KFArray_OBS>    &out_z,
-				mrpt::vector_int                  &out_data_association,
-				const std::vector<KFArray_OBS>   &in_all_predictions,
+				vector_KFArray_OBS			&out_z,
+				mrpt::vector_int            &out_data_association,
+				const vector_KFArray_OBS	&in_all_predictions,
 				const KFMatrix              &in_S,
 				const vector_size_t         &in_lm_indices_in_S,
 				const KFMatrix_OxO          &in_R
@@ -308,7 +308,7 @@ namespace mrpt
 			  */
 			virtual void OnObservationModel(
 				const mrpt::vector_size_t       &idx_landmarks_to_predict,
-				std::vector<KFArray_OBS>  &out_predictions
+				vector_KFArray_OBS  &out_predictions
 				) const = 0;
 
 			/** Implements the observation Jacobians \f$ \frac{\partial h_i}{\partial x} \f$ and (when applicable) \f$ \frac{\partial h_i}{\partial y_i} \f$.
@@ -445,14 +445,14 @@ namespace mrpt
 			//  "Local" variables to runOneKalmanIteration, declared here to avoid
 			//   allocating them over and over again with each call.
 			//  (The variables that go into the stack remains in the function body)
-			vector<KFArray_OBS>   	all_predictions;
+			vector_KFArray_OBS		all_predictions;
 			vector_size_t  			predictLMidxs;
 			KFMatrix 				dh_dx;
 			KFMatrix 				dh_dx_full;
 			vector_size_t 			idxs;
 			KFMatrix  				S;
 			KFMatrix 				Pkk_subset;
-			vector<KFArray_OBS> 	Z;		// Each entry is one observation:
+			vector_KFArray_OBS 		Z;		// Each entry is one observation:
 			KFMatrix 				K; 		// Kalman gain
 			KFMatrix 				S_1; 	// Inverse of S
 			KFMatrix 				dh_dx_full_obs;
@@ -471,8 +471,8 @@ namespace mrpt
 				m_timLogger.enable(KF_options.enable_profiler || KF_options.verbose);
 				m_timLogger.enter("KF:complete_step");
 
-				ASSERT_(m_xkk.size()==m_pkk.getColCount())
-				ASSERT_(m_xkk.size()>=VEH_SIZE)
+				ASSERT_(size_t(m_xkk.size())==m_pkk.getColCount())
+				ASSERT_(size_t(m_xkk.size())>=VEH_SIZE)
 
 				// =============================================================
 				//  1. CREATE ACTION MATRIX u FROM ODOMETRY
@@ -548,19 +548,10 @@ namespace mrpt
 					// ====================================
 					//  3.1:  Pxx submatrix
 					// ====================================
-					KFMatrix_VxV Pkk_new = Q; // Add transition uncertainty
-					//Pkk_new = dfv_dxv * m_pkk.extractMatrix(0,0,VEH_SIZE,VEH_SIZE) * ~dfv_dxv + Q;
-
-					// Perform a the multiplication over a sub-matrix of Pkk:
-					dfv_dxv.multiply_HCHt(
-						m_pkk,		// C
-						Pkk_new, 	// Output here
-						true,		// Accumulate to contents (Q)
-						true		// It's a submatrix
-					);
-
 					// Replace old covariance:
-					m_pkk.insertMatrix(0,0, Pkk_new );
+					m_pkk.block(0,0,VEH_SIZE,VEH_SIZE) =
+						Q +
+						dfv_dxv * m_pkk.block(0,0,VEH_SIZE,VEH_SIZE) * dfv_dxv.transpose();
 
 					// ====================================
 					//  3.2:  All Pxy_i
@@ -609,7 +600,7 @@ namespace mrpt
 				//  can decide if their covariances (more costly) must be computed as well:
 				all_predictions.resize(N_map);
 				OnObservationModel(
-					mrpt::math::sequence<size_t,1>(0,N_map),
+					mrpt::math::sequenceStdVec<size_t,1>(0,N_map),
 					all_predictions);
 
 				const double tim_pred_obs = m_timLogger.leave("KF:3.predict all obs");
@@ -831,8 +822,8 @@ namespace mrpt
 							for (size_t IKF_iteration=0;IKF_iteration<nKF_iterations;IKF_iteration++)
 							{
 								// Compute ytilde = OBS - PREDICTION
-								KFVector      ytilde;
-								ytilde.reserve(OBS_SIZE*N_upd);
+								KFVector  ytilde(OBS_SIZE*N_upd);
+								size_t    ytilde_idx = 0;
 
 								// TODO: Use a Matrix view of "dh_dx_full" instead of creating a copy into "dh_dx_full_obs"
 								dh_dx_full_obs.zeros(N_upd*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_map ); // Init to zeros.
@@ -866,7 +857,7 @@ namespace mrpt
 										KFArray_OBS ytilde_i = Z[i];
 										OnSubstractObservationVectors(ytilde_i,all_predictions[predictLMidxs[assoc_idx_in_pred]]);
 										for (size_t k=0;k<OBS_SIZE;k++)
-											ytilde.push_back( ytilde_i[k] );
+											ytilde[ytilde_idx++] = ytilde_i[k];
 									}
 									// Extract the subset that is involved in this observation:
 									S.extractSubmatrixSymmetrical(S_idxs,S_observed);
@@ -990,7 +981,7 @@ namespace mrpt
 								const size_t idx_off = VEH_SIZE + idxInTheFilter*FEAT_SIZE; // The offset in m_xkk & Pkk.
 
 								// Compute just the part of the Jacobian that we need using the current updated m_xkk:
-								vector<KFArray_OBS> pred_obs;
+								vector_KFArray_OBS  pred_obs;
 								OnObservationModel( vector_size_t(1,idxInTheFilter),pred_obs);
 								ASSERTDEB_(pred_obs.size()==1);
 
@@ -1305,7 +1296,7 @@ namespace mrpt
 									else
 									{
 										// IKF:
-										std::vector<KFTYPE> HAx(OBS_SIZE);
+										mrpt::dynamicsize_vector<KFTYPE> HAx(OBS_SIZE);
 										size_t o,q;
 										// HAx = H*(x0-xi)
 										for (o=0;o<OBS_SIZE;o++)
@@ -1452,7 +1443,7 @@ namespace mrpt
 				KFArray_OBS &out_x)
 			{
 				vector_size_t  idxs_to_predict(1,dat.second);
-				std::vector<KFArray_OBS>  prediction;
+				vector_KFArray_OBS prediction;
 				// Overwrite (temporarily!) the affected part of the state vector:
 				::memcpy(&dat.first->m_xkk[0],&x[0],sizeof(x[0])*VEH_SIZE);
 				dat.first->OnObservationModel(idxs_to_predict,prediction);
@@ -1465,7 +1456,7 @@ namespace mrpt
 				KFArray_OBS &out_x)
 			{
 				vector_size_t  idxs_to_predict(1,dat.second);
-				std::vector<KFArray_OBS>  prediction;
+				vector_KFArray_OBS  prediction;
 				const size_t lm_idx_in_statevector = VEH_SIZE+FEAT_SIZE*dat.second;
 				// Overwrite (temporarily!) the affected part of the state vector:
 				::memcpy(&dat.first->m_xkk[lm_idx_in_statevector],&x[0],sizeof(x[0])*FEAT_SIZE);
@@ -1479,7 +1470,7 @@ namespace mrpt
 			template <size_t _VEH_SIZE, size_t _OBS_SIZE, size_t _FEAT_SIZE, size_t _ACT_SIZE, typename _KFTYPE>
 			friend void detail::runOneKalmanIteration_addNewLandmarks(
 				CKalmanFilterCapable<_VEH_SIZE,_OBS_SIZE,_FEAT_SIZE,_ACT_SIZE,_KFTYPE> &obj,
-				std::vector<typename CKalmanFilterCapable<_VEH_SIZE,_OBS_SIZE,_FEAT_SIZE,_ACT_SIZE,_KFTYPE>::KFArray_OBS> Z,
+				const typename CKalmanFilterCapable<_VEH_SIZE,_OBS_SIZE,_FEAT_SIZE,_ACT_SIZE,_KFTYPE>::vector_KFArray_OBS &Z,
 				const vector_int       &data_association,
 				const typename CKalmanFilterCapable<_VEH_SIZE,_OBS_SIZE,_FEAT_SIZE,_ACT_SIZE,_KFTYPE>::KFMatrix_OxO		&R
 				);
@@ -1492,7 +1483,7 @@ namespace mrpt
 			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
 			void runOneKalmanIteration_addNewLandmarks(
 				CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj,
-				std::vector<typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::KFArray_OBS> Z,
+				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::vector_KFArray_OBS & Z,
 				const vector_int       &data_association,
 				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R
 				)
@@ -1596,7 +1587,7 @@ namespace mrpt
 			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 			void runOneKalmanIteration_addNewLandmarks(
 				CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE> &obj,
-				std::vector<typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::KFArray_OBS> Z,
+				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::vector_KFArray_OBS & Z,
 				const vector_int       &data_association,
 				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R
 				)

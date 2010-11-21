@@ -105,7 +105,7 @@ double joint_pdf_metric (
 	// Extract submatrix of the covariances involved here:
 	//  COV = PREDICTIONS_COV(INDX,INDX) + OBSERVATIONS_COV(INDX2,INDX2)
 	// ----------------------------------------------------------------------
-	CMatrixTemplateNumeric<T>	COV(0,0);
+	Eigen::Matrix<T,Eigen::Dynamic,Eigen::Dynamic> COV;
 	Y_predictions_cov.extractSubmatrixSymmetricalBlocks(
 		info.length_O, // dims of cov. submatrices
 		indices_pred,
@@ -115,7 +115,7 @@ double joint_pdf_metric (
 	// Mean:
 	// The same for the vector of "errors" or "innovation" between predictions and observations:
 	// ----------------------------------------------------------------------
-	std::vector<T> innovations(N * info.length_O);
+	mrpt::dynamicsize_vector<T> innovations(N * info.length_O);
 	T *dst_ptr= &innovations[0];
 	for (map<size_t,size_t>::const_iterator it=info.currentAssociation.begin();it!=info.currentAssociation.end();++it)
 	{
@@ -307,7 +307,7 @@ void mrpt::slam::data_association_full_covariance(
 	ASSERT_( nObservations!=0 )
 	ASSERT_( length_O == size(Y_predictions_mean,2))
 	ASSERT_( length_O*nPredictions == size(Y_predictions_cov,1))
-	ASSERT_( Y_predictions_cov.IsSquare() )
+	ASSERT_( Y_predictions_cov.isSquare() )
 
 	ASSERT_( chi2quantile>0 && chi2quantile<1 )
 	ASSERT_( metric==metricMaha || metric==metricML )
@@ -359,7 +359,7 @@ void mrpt::slam::data_association_full_covariance(
 
 	CMatrixDouble pred_i_cov(length_O,length_O);
 
-	std::vector<CMatrixDouble::value_type>  diff_means_i_j(length_O);
+	mrpt::dynamicsize_vector<CMatrixDouble::value_type>  diff_means_i_j(length_O);
 
 	for (size_t j=0;j<nObservations;++j)
 	{

@@ -58,7 +58,7 @@ extern TTimeStamp		rawlog_first_timestamp;
 void parseGeneralVector(
 	const 	 std::string &str,
 	size_t   idx,
-	vector_float &outVector);
+	vector<float> &outVector);
 
 void goToNextToken(char *&str);
 void goToTheLastToken(char *&str);
@@ -616,7 +616,7 @@ void xRawLogViewerFrame::OnImportRTL(wxCommandEvent& event)
 				}
 				else if ( strLine[0] == 'O' )
 				{
-					vector_float  rawdata;
+					vector<float>  rawdata;
 					parseGeneralVector(strLine,2, rawdata);
 					if (rawdata.size()==4)
 					{
@@ -635,7 +635,7 @@ void xRawLogViewerFrame::OnImportRTL(wxCommandEvent& event)
 					newRecord.endElev = 0;
 					newRecord.startElev = 0;
 
-					vector_float  rawdata;
+					vector<float>  rawdata;
 					parseGeneralVector(strLine,2, rawdata);
 
 					if (rawdata.size()>10)
@@ -712,7 +712,7 @@ void xRawLogViewerFrame::OnImportRTL(wxCommandEvent& event)
 void parseMOOSVector(
 	const 	 std::string &str,
 	size_t   idx,
-	vector_float &outVector)
+	vector<float> &outVector)
 {
 	ASSERT_( str[idx]=='[' );
 
@@ -740,7 +740,7 @@ void parseMOOSVector(
 void parseGeneralVector(
 	const 	 std::string &str,
 	size_t   idx,
-	vector_float &outVector)
+	vector<float> &outVector)
 {
 	outVector.clear();
 	outVector.reserve(400);
@@ -1112,7 +1112,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 					0
 				);
 
-				vector_float::iterator q;
+				vector<float>::iterator q;
 				vector<char>::iterator v;
 
 				for (q=obs->scan.begin(),v=obs->validRange.begin();q!=obs->scan.end();q++,v++)
@@ -1308,7 +1308,7 @@ void xRawLogViewerFrame::OnGenGasTxt(wxCommandEvent& event)
 					}
 
 					//Run each sensor on Enose
-					for (vector_float::iterator it=obs->m_readings[j].readingsVoltage.begin();it!=obs->m_readings[j].readingsVoltage.end();++it)
+					for (vector<float>::iterator it=obs->m_readings[j].readingsVoltage.begin();it!=obs->m_readings[j].readingsVoltage.end();++it)
 					{
 						::fprintf(f,"%f ",*it);
 						lineCount++;

@@ -237,9 +237,9 @@ void  CBeacon::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 
 			size_t	i,N = m_locationMC.m_particles.size();
 
-			vector_float &xs = obj->getArrayX();
-			vector_float &ys = obj->getArrayY();
-			vector_float &zs = obj->getArrayZ();
+			vector<float> &xs = obj->getArrayX();
+			vector<float> &ys = obj->getArrayY();
+			vector<float> &zs = obj->getArrayZ();
 
 			xs.resize( N );
 			ys.resize( N );

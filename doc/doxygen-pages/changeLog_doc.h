@@ -34,8 +34,15 @@
   <a name="0.9.3">
   <h2>Version 0.9.3: (Under development) </h2></a>
 	- <b>Most important changes:</b>
-		- (...)
+		- MRPT now relies entirely on Eigen (version 3) for matrix and vector classes.
 	- <b>Detailed list of changes:</b>
+		- Changes related to mathematics, matrices and containers:
+			- All is now based on the Eigen library, v3. See <a href="http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes" >this page</a> for a more complete description of all the changes and the reasons of this big change.
+			- Matrices constructors from poses (TPose2D,...) now are explicit. Example: Previous code "CMatrixDouble31 m = myPose2D;" won't build now, should be: "CMatrixDouble31 m = CMatrixDouble31(myPose2D);"
+			- CVectorFloat and CVectorDouble are not synonymous with mrpt::vector_float and mrpt::vector_double.
+			- mrpt::math::meanAndCov() overloads have been separated into: meanAndCovVec() and meanAndCovMat()
+			- method unit() in matrices was inconsistent between fixed and dynamic sized matrices. It's now unified (see Eigen::Matrix::unit)
+			- Types mrpt::vector_float  and std::vector<float> (or the "double" versions) are not interchangeable any more. Read more on this in the link above.
 		- Changes in classes:
 			- CDisplayWindow::showImageAndPoints() now als displays the index of the feature (if required).
 			- CFeature now has new members:
@@ -49,7 +56,6 @@
 		- New structures:
 			- TMultiResDescMatchOptions. Struct containing the options when matching multi-resolution SIFT-like descriptors.
 			- TMultiResDescOptions. Struct containing the options when computing the multi-resolution SIFT-like descriptors.
-
 		- New functions:
 			- mrpt::vision::computeGradient(). Computes the gradient of certain pixel within the image.
 			- mrpt::vision::computeMainOrientations(). Computes the main orientations (within 80% of the peak value of orientation histogram) of a certain point within an image (for using in SIFT-based algorithms)
@@ -64,11 +70,11 @@
 				- Feature extraction and stereo matching process from a pair of images. It show stadistics about the number of detected and matched features for each method.
 				- Feature extraction, stereo matching and re-projection to 3D from a pair of images.
 				- Feature extraction and computation of the matching score for each feature in list1 and for each in list2 with four different methods: FAST, NCC, SIFT and SURF. Graphical results are shown.
-	- <b>BUG FIXES:</b>
-		- Fixed exception when rendering a mrpt::opengl::CPointCloud with no points in it.
-		- Fixed bad computation of SAD in mrpt::vision::matchFeatures() because bad usage of IplImage fields <i>width</i> and <i>widthstep</i>.
-		- Fixed vision::CImage::update_patch(). Row and column checkings of the patch position were wrongly related to image width and height, respectively.
-		- Fixed CVE-2010-0280: Array index error in Jan Eric Kyprianidis lib3ds 1.x, as used in Google SketchUp 7.x before 7.1 M2, allows remote attackers to cause a denial of service (memory corruption) or possibly execute arbitrary code via crafted structures in a 3DS file, probably related to mesh.c. (Thanks to Silvio Cesare for reporting here: https://bugzilla.redhat.com/show_bug.cgi?id=650786 ).
+		- <b>BUG FIXES:</b>
+			- Fixed exception when rendering a mrpt::opengl::CPointCloud with no points in it.
+			- Fixed bad computation of SAD in mrpt::vision::matchFeatures() because bad usage of IplImage fields <i>width</i> and <i>widthstep</i>.
+			- Fixed vision::CImage::update_patch(). Row and column checkings of the patch position were wrongly related to image width and height, respectively.
+			- Fixed CVE-2010-0280: Array index error in Jan Eric Kyprianidis lib3ds 1.x, as used in Google SketchUp 7.x before 7.1 M2, allows remote attackers to cause a denial of service (memory corruption) or possibly execute arbitrary code via crafted structures in a 3DS file, probably related to mesh.c. (Thanks to Silvio Cesare for reporting here: https://bugzilla.redhat.com/show_bug.cgi?id=650786 ).
 
   <br> <hr> <br>
 
@@ -111,7 +117,7 @@
 				- mrpt::poses::CNetworkOfPoses3DInf
 				- mrpt::poses::CNetworkOfPoses2DCov
 				- mrpt::poses::CNetworkOfPoses3DCov
-			- mrpt::utils::map_as_vector a vector-based implementation of a std::map-like container. It can be used as a map implementation optionally in the template mrpt::poses::CNetworkOfPoses<> 
+			- mrpt::utils::map_as_vector a vector-based implementation of a std::map-like container. It can be used as a map implementation optionally in the template mrpt::poses::CNetworkOfPoses<>
 			- mrpt::utils::CTextFileLinesParser
 			- New event for GUI windows: mrpt::gui::mrptEventMouseDown
 			- New metaprogramming class: mrpt::utils::TEnumType, allows converting between numerical and symbolic text values for enum types.

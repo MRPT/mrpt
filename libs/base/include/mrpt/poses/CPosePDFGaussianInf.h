@@ -159,7 +159,7 @@ namespace poses
 		void	 inverse(CPosePDF &o) const;
 
 		/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated). */
-		void  operator += ( CPose2D Ap);
+		void  operator += ( const CPose2D &Ap);
 
 		/** Evaluates the PDF at a given point.
 		  */

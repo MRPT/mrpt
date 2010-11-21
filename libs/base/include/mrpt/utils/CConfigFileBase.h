@@ -31,6 +31,7 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/system/string_utils.h>
 
 /*---------------------------------------------------------------
 	Class
@@ -157,88 +158,62 @@ namespace utils
 		 */
 		std::string  read_string_first_word(const std::string &section, const std::string &name, const std::string &defaultValue, bool failIfNotFound = false) const;
 
-		/** Reads a configuration parameter of type "std::vector<unsigned int>"
+		/** Reads a configuration parameter of type vector, stored in the file as a string: "[v1 v2 v3 ... ]", where spaces could also be commas.
          * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
 		 */
+		template <class VECTOR_TYPE>
 		void  read_vector(
-			const std::string					&section,
-			const std::string					&name,
-			const std::vector<uint32_t>		&defaultValue,
-			std::vector<uint32_t>			&outValues,
-			bool failIfNotFound = false) const;
+			const std::string  & section,
+			const std::string  & name,
+			const VECTOR_TYPE  & defaultValue,
+			VECTOR_TYPE        & outValues,
+			bool                 failIfNotFound = false) const
+		{
+			std::string aux ( readString(section, name, "",failIfNotFound ) );
+			// Parse the text into a vector:
+			std::vector<std::string>	tokens;
+			mrpt::system::tokenize( aux,"[], \t",tokens);
 
-		/** Reads a configuration parameter of type "std::vector<int>"
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
-		void  read_vector(
-			const std::string			&section,
-			const std::string			&name,
-			const std::vector<int32_t>		&defaultValue,
-			std::vector<int32_t>			&outValues,
-			bool failIfNotFound = false) const;
+			if (tokens.size()==0)
+			{
+				outValues = defaultValue;
+			}
+			else
+			{
+				// Parse to numeric type:
+				const size_t N = tokens.size();
+				outValues.resize( N );
+				for (size_t i=0;i<N;i++)
+				{
+					std::stringstream ss(tokens[i]);
+					ss >> outValues[i];
+				}
+			}
+		}
 
-		/** Reads a configuration parameter of type "std::vector<unsigned int>"
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
-		void  read_vector(
-			const std::string					&section,
-			const std::string					&name,
-			const std::vector<uint64_t>		&defaultValue,
-			std::vector<uint64_t>			&outValues,
-			bool failIfNotFound = false) const;
-
-		/** Reads a configuration parameter of type "std::vector<int>"
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
-		void  read_vector(
-			const std::string			&section,
-			const std::string			&name,
-			const std::vector<int64_t>		&defaultValue,
-			std::vector<int64_t>			&outValues,
-			bool failIfNotFound = false) const;
-
-
-		/** Reads a configuration parameter of type "std::vector<float>"
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
-		void  read_vector(
-			const std::string			&section,
-			const std::string			&name,
-			const std::vector<float>	&defaultValue,
-			std::vector<float>			&outValues,
-			bool failIfNotFound = false) const;
-
-		/** Reads a configuration parameter of type "std::vector<double>"
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
-		void  read_vector(
-			const std::string			&section,
-			const std::string			&name,
-			const std::vector<double>	&defaultValue,
-			std::vector<double>			&outValues,
-			bool failIfNotFound = false ) const;
-
-		/** Reads a configuration parameter of type "std::vector<bool>"
-         * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
-		 */
-		void  read_vector(
-			const std::string			&section,
-			const std::string			&name,
-			const std::vector<bool>		&defaultValue,
-			std::vector<bool>			&outValues,
-			bool failIfNotFound = false ) const;
 
 		/** Reads a configuration parameter as a matrix written in a matlab-like format - for example: "[2 3 4 ; 7 8 9]"
 		 *  This template method can be instantiated for matrices of the types: int, long, unsinged int, unsigned long, float, double, long double
          * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
 		 */
-		 template <class T>
+		 template <class MATRIX_TYPE>
 		 void read_matrix(
 			const std::string			&section,
 			const std::string			&name,
-			mrpt::math::CMatrixTemplate<T>	&outMatrix,
-			const mrpt::math::CMatrixTemplate<T> &defaultMatrix = mrpt::math::CMatrixTemplate<T>(0,0),
-			bool failIfNotFound = false ) const;
+			MATRIX_TYPE	&outMatrix,
+			const MATRIX_TYPE &defaultMatrix = MATRIX_TYPE(),
+			bool failIfNotFound = false ) const
+		{
+			std::string aux = readString(section, name, "",failIfNotFound );
+			if (aux.empty())
+				outMatrix = defaultMatrix;
+			else
+			{
+				// Parse the text into a vector:
+				if (!outMatrix.fromMatlabStringFormat(aux))
+					THROW_EXCEPTION_CUSTOM_MSG1("Error parsing matrix: '%s'",aux.c_str())
+			}
+		}
 
 		/** Reads an "enum" value, where the value in the config file can be either a numerical value or the symbolic name, for example:
 		  *   In the code:

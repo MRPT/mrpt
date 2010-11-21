@@ -106,10 +106,10 @@ namespace mrpt
 			typedef MAPS_IMPLEMENTATION                 maps_implementation_t;
 
 			/** A map from pose IDs to their global coordinates estimates, with uncertainty */
-			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,CPOSE>             global_poses_pdf_t;
+			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,CPOSE, std::less<TNodeID>, Eigen::aligned_allocator<std::pair<const TNodeID,CPOSE> > >     global_poses_pdf_t;
 
 			/** A map from pose IDs to their global coordinates estimates, without uncertainty (the "most-likely value") */
-			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,typename CPOSE::type_value> global_poses_t;
+			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,typename CPOSE::type_value, std::less<TNodeID>, Eigen::aligned_allocator<std::pair<TNodeID,typename CPOSE::type_value> > > global_poses_t;
 
 			/** @} */
 

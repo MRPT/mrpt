@@ -108,7 +108,7 @@ namespace mrpt
 
 		 /** The info for each applied PTG: must contain "nPTGs·nSecDistances" elements
 		   */
-		 std::vector<TInfoPerPTG>	infoPerPTG;
+		 std::vector<TInfoPerPTG, Eigen::aligned_allocator<TInfoPerPTG> >	infoPerPTG;
 
 		 /**  The selected PTG.
 		   */

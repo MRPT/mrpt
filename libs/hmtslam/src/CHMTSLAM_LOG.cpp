@@ -77,7 +77,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 			COpenGLScenePtr	sceneLSLAM = COpenGLScene::Create();
 
 			// Look for the most likely LMH:
-			std::map< THypothesisID, CLocalMetricHypothesis >::iterator  it;
+			aligned_containers<THypothesisID, CLocalMetricHypothesis>::map_t::iterator  it;
 			for ( it = m_LMHs.begin();it!=m_LMHs.end();it++)
 			{
 				if (!bestLMH)

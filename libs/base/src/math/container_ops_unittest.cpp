@@ -27,7 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/slam.h>
+#include <mrpt/base.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -36,37 +36,5 @@ using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::utils::metaprogramming;
 using namespace std;
-
-
-TEST(Containers,saveAndLoadTextFile)
-{
-	const string fil = mrpt::system::getTempFileName();
-
-	const double vals[10] = { 1,2,3,4,5,6,7,8,9,10 };
-
-	{
-		vector_double v;
-		loadVector(v,vals);
-		v.saveToTextFileAsVector(fil,MATRIX_FORMAT_ENG, false);
-		CMatrixFixedNumeric<double,5,2> M;
-		M.loadFromTextFileAsVector(fil);
-		mrpt::system::deleteFile(fil);
-
-		vector_double diff = (v-M);
-		EXPECT_EQ( diff.Abs().sumAll(), 0 );
-	}
-	{
-		vector_double v;
-		loadVector(v,vals);
-		v.saveToTextFileAsVector(fil,MATRIX_FORMAT_ENG, true);
-		CMatrixFixedNumeric<double,5,2> M;
-		M.loadFromTextFileAsVector(fil);
-		mrpt::system::deleteFile(fil);
-
-		vector_double diff = (v-M);
-		EXPECT_EQ( diff.Abs().sumAll(), 0 );
-	}
-}
-
 
 

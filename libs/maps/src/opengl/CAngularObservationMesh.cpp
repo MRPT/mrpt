@@ -88,7 +88,7 @@ void CAngularObservationMesh::updateMesh() const	{
 	}	else for (size_t i=0;i<numRows;i++) pitchs[i]=pitchBounds[i];
 	const bool rToL=scanSet[0].rightToLeft;
 	for (size_t i=0;i<numRows;i++)	{
-		const vector_float scan=scanSet[i].scan;
+		const std::vector<float> &scan=scanSet[i].scan;
 		const std::vector<char> valid=scanSet[i].validRange;
 		const double pitchIncr=scanSet[i].deltaPitch;
 		const double aperture=scanSet[i].aperture;
@@ -223,7 +223,7 @@ void CAngularObservationMesh::generatePointCloud(CPointsMap *out_map) const {
 	out_map->clear();
 /*	size_t numRows=scanSet.size();
 	if ((pitchBounds.size()!=numRows)&&(pitchBounds.size()!=2)) return;
-	vector_double pitchs(numRows);
+	std::vector<double> pitchs(numRows);
 	if (pitchBounds.size()==2)	{
 		double p1=pitchBounds[0];
 		double p2=pitchBounds[1];
@@ -264,7 +264,7 @@ void CAngularObservationMesh::readFromStream(CStream &in,int version)	{
 	meshUpToDate=false;
 }
 
-void CAngularObservationMesh::TDoubleRange::values(vector_double &vals) const	{
+void CAngularObservationMesh::TDoubleRange::values(std::vector<double> &vals) const	{
 	double value=initialValue();
 	double incr=increment();
 	size_t am=amount();
@@ -285,7 +285,7 @@ class FAddUntracedLines	{
 public:
 	CSetOfLinesPtr &lins;
 	const CPoint3D &pDist;
-	vector_double pitchs;
+	std::vector<double> pitchs;
 	FAddUntracedLines(CSetOfLinesPtr &l,const CPoint3D &p,const vector<double> &pi):lins(l),pDist(p),pitchs()	{
 		pitchs.reserve(pi.size());
 		for (vector<double>::const_reverse_iterator it=pi.rbegin();it!=pi.rend();++it) pitchs.push_back(*it);

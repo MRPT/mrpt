@@ -1569,170 +1569,6 @@ void  math::dft2_complex(
 	MRPT_END;
 }
 
-/***************************************************AJOGD********************************************/
-/*---------------------------------------------------------------
-						qr_decomposition
- ---------------------------------------------------------------*/
-template<class T>
-void	math::qr_decomposition(
-				CMatrixTemplateNumeric<T>	&A,
-				CMatrixTemplateNumeric<T>	&R,
-				CMatrixTemplateNumeric<T>	&Q,
-				CVectorTemplate<T>			&c,
-				int								&sing)
-{
-	MRPT_START;
-
-	size_t i,j,k;
-	T scale,sigma,sum,tau;
-	const size_t n = A.getRowCount();
-	CVectorTemplate<T>	d;
-	sing=0;
-	c.resize(0);
-	d.resize(0);
-	R=A;
-
-	for (k = 0 ; k < n ; k++)
-	{
-		scale = 0.0f;
-		//Calculate the maximun element of a i'th column
-		for (i = k ; i < n ; i++)
-			scale = max(scale,fabs(A(i,k)));
-		if (scale == 0.0f)
-		{
-			sing = 1;
-			c.push_back(0.0f);
-			d.push_back(0.0f);
-		}
-		else
-		{
-			for ( i = k ; i < n ; i++)
-				R(i,k) /= scale;
-			for ( sum = 0.0f, i = k ; i < n ; i++)
-				sum += square(R(i,k));
-			if( R(k,k) >= 0 )	sigma = fabs(sqrt(sum));
-			else				sigma = -fabs(sqrt(sum));
-			R(k,k) += sigma;
-			c.push_back(sigma*R(k,k));
-			d.push_back( -scale * sigma );
-			for ( j = k+1 ; j < n ; j++)
-			{
-				for (sum = 0.0f, i=k ; i < n ; i++)
-					sum += R(i,k)*R(i,j);
-				tau = sum / c[k];
-				for (i=k; i < n ; i++)
-					R(i,j) -=tau*R(i,k);
-			}
-		}
-	}
-	//Do R upper triangle matrix
-	Q.setSize(n,n);
-	CMatrixTemplateNumeric<T>	aux;
-	aux = R;
-	for (i=0; i<n-1 ; i++)
-	{
-		Q(i,i) = aux(i,i);
-		aux(i,i) = d[i];
-		for (j=i+1 ; j<n; j++)
-		{
-			Q(j,i) = aux(j,i);
-			aux(j,i) = 0.0;
-		}
-	}
-	Q(i,i) = aux(i,i);
-	aux(i,i) = -d[i];
-	aux.extractMatrix(0,0,n,n, R);
-
-	if (A(n-1,n-1)==0.0)
-		sing=1;
-
-	MRPT_END;
-}
-
-// Template instantiation:
-template void BASE_IMPEXP math::qr_decomposition<float>(CMatrixTemplateNumeric<float>	&A,CMatrixTemplateNumeric<float>	&R,CMatrixTemplateNumeric<float>	&Q,	CVectorTemplate<float>	&c,int &sing);
-template void BASE_IMPEXP math::qr_decomposition<double>(CMatrixTemplateNumeric<double>	&A,CMatrixTemplateNumeric<double>	&R,CMatrixTemplateNumeric<double>	&Q,	CVectorTemplate<double>	&c,int &sing);
-#ifdef HAVE_LONG_DOUBLE
-template void BASE_IMPEXP math::qr_decomposition<long double>(CMatrixTemplateNumeric<long double>	&A,CMatrixTemplateNumeric<long double>	&R,CMatrixTemplateNumeric<long double>	&Q,	CVectorTemplate<long double>	&c,int &sing);
-#endif
-
-
-/*---------------------------------------------------------------
-						UpdateCholesky
- ---------------------------------------------------------------*/
-
-template<class T>
-void math::UpdateCholesky(
-				CMatrixTemplateNumeric<T>	&chol,
-				CVectorTemplate<T>			&r1Modification)
-{
-	MRPT_START;
-
-	if (chol.getRowCount() != chol.getColCount())
-		THROW_EXCEPTION("UpdateCholesky Error, input matrix is not square");
-	CVectorTemplate<T> sgivens,cgivens;
-	sgivens.resize(chol.getRowCount());
-	cgivens.resize(chol.getRowCount());
-	T temp0,temp1;
-	T h,sq,af,ag;
-
-	for(size_t j = 0; j < chol.getRowCount(); ++j) // process the jth column of chol
-	{
-		// apply the previous Givens rotations k = 1,...,j-1 to column j
-		for(size_t k = 0; k < j; ++k)
-		{
-			//GivensRotation
-			temp0 = cgivens[k] * chol(k,j) + sgivens[k] * r1Modification[j];
-			temp1 = -sgivens[k] * chol(k,j) + cgivens[k] * r1Modification[j];
-			chol(k,j) = temp0;
-			r1Modification[j] = temp1;
-		}
-
-		// determine the jth Given's rotation
-		///////////////
-		af = chol(j,j)>=0 ? chol(j,j) : -chol(j,j);
-		ag = r1Modification[j]>=0 ? r1Modification[j] : -r1Modification[j];
-		if (ag<af)
-		{
-			h = r1Modification[j]/chol(j,j);
-			sq = sqrt(1.0+h*h);
-			if (chol(j,j)<0)
-				sq = -sq;           // make return value non-negative
-			cgivens[j] = 1.0/sq;
-			sgivens[j] = h/sq;
-		}
-		else
-		{
-			h = chol(j,j)/r1Modification[j];
-			sq = sqrt(1.0+h*h);
-			if (r1Modification[j]<0)
-				sq = -sq;
-			sgivens[j] = 1.0/sq;
-			cgivens[j] = h/sq;
-		}
-		if ((chol(j,j)==0) && (r1Modification[j]==0))
-		{
-			cgivens[j]=1.0;
-			sgivens[j]=0.0;
-		}
-		///////////////
-
-		// apply the jth Given's rotation
-		chol(j,j) =  cgivens[j] * chol(j,j) + sgivens[j] * r1Modification[j];
-		r1Modification[j] = 0.0;
-	}
-	MRPT_END;
-}
-
-// Template instantiation:
-template void BASE_IMPEXP math::UpdateCholesky<float>(CMatrixTemplateNumeric<float>	&chol,CVectorTemplate<float> &r1Modification);
-template void BASE_IMPEXP math::UpdateCholesky<double>(CMatrixTemplateNumeric<double>	&chol,CVectorTemplate<double> &r1Modification);
-
-#ifdef HAVE_LONG_DOUBLE
-template void BASE_IMPEXP math::UpdateCholesky<long double>(CMatrixTemplateNumeric<long double>	&chol,CVectorTemplate<long double> &r1Modification);
-#endif
-
-
 /*---------------------------------------------------------------
 						idft2_complex
  ---------------------------------------------------------------*/
@@ -2049,7 +1885,7 @@ double math::averageWrap2Pi(const vector_double &angles )
 
 	// First: XY
 	// -----------------------------------
-	for (size_t i=0;i<angles.size();i++)
+	for (vector_double::Index i=0;i<angles.size();i++)
 	{
 		double phi = angles[i];
 		if (abs(phi)>1.5707963267948966192313216916398)
@@ -2082,7 +1918,7 @@ double math::averageWrap2Pi(const vector_double &angles )
 }
 
 // Spline
-double math::spline(const double t, const std::vector<double> &x, const std::vector<double> &y, bool wrap2pi)
+double math::spline(const double t, const vector_double &x, const vector_double &y, bool wrap2pi)
 {
 	// Check input data
 	ASSERT_( x.size() == 4 && y.size() == 4 );
@@ -2175,14 +2011,14 @@ double math::spline(const double t, const std::vector<double> &x, const std::vec
 
 string math::MATLAB_plotCovariance2D(
 	const CMatrixFloat  &cov,
-	const CVectorFloat  &mean,
+	const vector_float  &mean,
     const float         &stdCount,
 	const string        &style,
 	const size_t		&nEllipsePoints )
 {
 	MRPT_START
 	CMatrixD        cov2(cov);
-	CVectorDouble   mean2(2);
+	vector_double   mean2(2);
 	mean2[0]=mean[0];
 	mean2[1]=mean[1];
 
@@ -2193,7 +2029,7 @@ string math::MATLAB_plotCovariance2D(
 
 string math::MATLAB_plotCovariance2D(
 	const CMatrixDouble  &cov,
-	const CVectorDouble  &mean,
+	const vector_double  &mean,
     const float         &stdCount,
 	const string        &style,
 	const size_t		&nEllipsePoints )
@@ -2225,7 +2061,7 @@ string math::MATLAB_plotCovariance2D(
 
 	cov.eigenVectors(eigVec,eigVal);
 	eigVal.Sqrt();
-	M = eigVal * (~eigVec);
+	M = eigVal * eigVec.transpose();
 
 	// Compute the points of the ellipsoid:
 	// ----------------------------------------------
@@ -2332,7 +2168,7 @@ double mrpt::math::interpolate2points(const double x, const double x0, const dou
   */
 void mrpt::math::unwrap2PiSequence(vector_double &x)
 {
-	for (size_t i=0;i<x.size();i++)
+	for (vector_double::Index i=0;i<x.size();i++)
 	{
 		mrpt::math::wrapToPiInPlace(x[i]); // assure it's in the -pi,pi range.
 		if (!i) continue;

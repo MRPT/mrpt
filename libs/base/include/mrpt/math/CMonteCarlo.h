@@ -59,7 +59,7 @@ namespace mrpt	{	namespace math	{
 		mrpt::random::CRandomGenerator gen;
 		class CStatisticalAnalyzer	{
 		private:
-			mrpt_base_vector<NUM> data;
+			Eigen::Matrix<NUM,Eigen::Dynamic,1> data;
 		public:
 			template<typename VEC> inline CStatisticalAnalyzer(const VEC &v1):data(v1.begin(),v1.end())	{}
 			template<typename VEC> inline void setData(const VEC &v1)	{

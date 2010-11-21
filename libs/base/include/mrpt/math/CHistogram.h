@@ -84,11 +84,11 @@ namespace math
 
 		/**	Add all the elements from a MRPT container to the histogram. If an element is out of [min,max] it is ignored. */
 		template <typename VECTOR_OR_MAT>
-		inline RET_VOID_ASSERT_MRPTCONTAINER(VECTOR_OR_MAT)
-		add(const VECTOR_OR_MAT &x)
+		inline void add(const VECTOR_OR_MAT &x)
 		{
-			for (typename VECTOR_OR_MAT::const_iterator it=x.begin();it!=x.end();++it)
-				this->add(static_cast<const double>(*it));
+			const size_t N = x.array().size();
+			for (size_t i=0;i<N;i++)
+				this->add(static_cast<const double>(x.array()[i]));
 		}
 
 		/** Retuns the elements count into the selected bin index, where first one is 0.
@@ -105,12 +105,12 @@ namespace math
 		/** Returns the list of bin centers & hit counts
 		  * \sa getHistogramNormalized
 		  */
-		void getHistogram( std::vector<double> &x, std::vector<double> &hits ) const;
+		void getHistogram( vector_double &x, vector_double &hits ) const;
 
 		/** Returns the list of bin centers & hit counts, normalized such as the integral of the histogram, interpreted as a density PDF, amounts to 1.
 		  * \sa getHistogram
 		  */
-		void getHistogramNormalized( std::vector<double> &x, std::vector<double> &hits ) const;
+		void getHistogramNormalized( vector_double &x, vector_double &hits ) const;
 
 
 	}; // End of class def.

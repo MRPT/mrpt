@@ -56,8 +56,8 @@ namespace mrpt
 
 		#define MRPTSTL_SERIALIZABLE_SEQ_CONTAINER( CONTAINER )  \
 			/** Template method to serialize a sequential STL container  */ \
-			template <class T> \
-			CStream& operator << (CStream& out, const CONTAINER<T> &obj) \
+			template <class T,class _Ax> \
+			CStream& operator << (CStream& out, const CONTAINER<T,_Ax> &obj) \
 			{ \
 				out << string(#CONTAINER) << TTypeName<T>::get(); \
 				out << static_cast<uint32_t>(obj.size()); \
@@ -65,8 +65,8 @@ namespace mrpt
 				return out; \
 			} \
 			/** Template method to deserialize a sequential STL container */ \
-			template <class T>  \
-			CStream& operator >> (CStream& in, CONTAINER<T> &obj) \
+			template <class T,class _Ax>  \
+			CStream& operator >> (CStream& in, CONTAINER<T,_Ax> &obj) \
 			{ \
 				obj.clear(); \
 				string pref,stored_T; \
@@ -84,18 +84,18 @@ namespace mrpt
 
 		#define MRPTSTL_SERIALIZABLE_ASSOC_CONTAINER( CONTAINER )  \
 			/** Template method to serialize an associative STL container  */ \
-			template <class K,class V> \
-			CStream& operator << (CStream& out, const CONTAINER<K,V> &obj) \
+			template <class K,class V, class _Pr, class _Alloc> \
+			CStream& operator << (CStream& out, const CONTAINER<K,V,_Pr,_Alloc> &obj) \
 			{ \
 				out << string(#CONTAINER) << TTypeName<K>::get() << TTypeName<V>::get(); \
 				out << static_cast<uint32_t>(obj.size()); \
-				for (typename CONTAINER<K,V>::const_iterator it=obj.begin();it!=obj.end();++it) \
+				for (typename CONTAINER<K,V,_Pr,_Alloc>::const_iterator it=obj.begin();it!=obj.end();++it) \
 					out << it->first << it->second; \
 				return out; \
 			} \
 			/** Template method to deserialize an associative STL container */ \
-			template <class K,class V>  \
-			CStream& operator >> (CStream& in, CONTAINER<K,V> &obj) \
+			template <class K,class V, class _Pr, class _Alloc>  \
+			CStream& operator >> (CStream& in, CONTAINER<K,V,_Pr,_Alloc> &obj) \
 			{ \
 				obj.clear(); \
 				string pref,stored_K,stored_V; \
@@ -112,7 +112,7 @@ namespace mrpt
 					K 	key_obj; \
 					in >> key_obj; \
 					/* Create an pair (Key, empty), then read directly into the ".second": */ \
-					typename CONTAINER<K,V>::iterator it_new = obj.insert(obj.begin(), std::make_pair(key_obj, V()) ); \
+					typename CONTAINER<K,V,_Pr,_Alloc>::iterator it_new = obj.insert(obj.begin(), std::make_pair(key_obj, V()) ); \
 					in >> it_new->second; \
 				} \
 				return in; \
@@ -128,18 +128,18 @@ namespace mrpt
 
 		#define MRPTSTL_SERIALIZABLE_SIMPLE_ASSOC_CONTAINER( CONTAINER )  \
 			/** Template method to serialize an associative STL container  */ \
-			template <class K> \
-			CStream& operator << (CStream& out, const CONTAINER<K> &obj) \
+			template <class K,class _Pr,class _Alloc> \
+			CStream& operator << (CStream& out, const CONTAINER<K,_Pr,_Alloc> &obj) \
 			{ \
 				out << string(#CONTAINER) << TTypeName<K>::get(); \
 				out << static_cast<uint32_t>(obj.size()); \
-				for (typename CONTAINER<K>::const_iterator it=obj.begin();it!=obj.end();++it) \
+				for (typename CONTAINER<K,_Pr,_Alloc>::const_iterator it=obj.begin();it!=obj.end();++it) \
 					out << *it; \
 				return out; \
 			} \
 			/** Template method to deserialize an associative STL container */ \
-			template <class K>  \
-			CStream& operator >> (CStream& in, CONTAINER<K> &obj) \
+			template <class K,class _Pr,class _Alloc>  \
+			CStream& operator >> (CStream& in, CONTAINER<K,_Pr,_Alloc> &obj) \
 			{ \
 				obj.clear(); \
 				string pref,stored_K; \
@@ -236,7 +236,21 @@ namespace mrpt
 		std::string sprintf_vector(const char *fmt, const std::vector<T> &V )
 		{
 			std::string ret = "[";
-			size_t N = V.size();
+			const size_t N = V.size();
+			for (size_t i=0;i<N;i++)
+			{
+				ret+= format(fmt,V[i]);
+				if (i!=(N-1)) ret+= ",";
+			}
+			ret+="]";
+			return ret;
+		}
+		/// @overload
+		template <typename Derived>
+		std::string sprintf_vector(const char *fmt, const Eigen::MatrixBase<Derived> &V )
+		{
+			std::string ret = "[";
+			const size_t N = V.size();
 			for (size_t i=0;i<N;i++)
 			{
 				ret+= format(fmt,V[i]);

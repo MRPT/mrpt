@@ -172,7 +172,10 @@ namespace mrpt
 			static  mrpt::utils::CObject* CreateObject(); \
 			static class_name##Ptr Create(); \
 			virtual mrpt::utils::CObject *duplicate() const; \
-			/*! @} */
+			/*! @} */ \
+		public: \
+			EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
+
 
 		// This macro is a workaround to avoid possibly empty arguments to MACROS (when _LINKAGE_ evals to nothing...)
 		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, _LINKAGE_ ) \

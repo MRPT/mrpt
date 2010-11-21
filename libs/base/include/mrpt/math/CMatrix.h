@@ -31,24 +31,44 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/utils/CStream.h>
 
 namespace mrpt
 {
-
 	namespace math
 	{
-
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CMatrix, mrpt::utils::CSerializable )
+		//DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CMatrix, mrpt::utils::CSerializable )
+		//DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, BASE_IMPEXP )
+		DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(CMatrix, mrpt::utils::CSerializable, CMatrix)
+		BASE_IMPEXP ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, CMatrixPtr &pObj);
 
 		/**  This class is a "CSerializable" wrapper for "CMatrixFloat".
 		 */
-		class BASE_IMPEXP CMatrix : public mrpt::utils::CSerializable, public CMatrixFloat
+		class CMatrix : public mrpt::utils::CSerializable, public CMatrixFloat
 		{
 			// This must be added to any CSerializable derived class:
-			DEFINE_SERIALIZABLE( CMatrix )
+			//DEFINE_SERIALIZABLE( CMatrix )
+			//DEFINE_MRPT_OBJECT(CMatrix)
+		protected:
+			static  const mrpt::utils::TRuntimeClassId* _GetBaseClass();
+			static mrpt::utils::CLASSINIT _init_CMatrix;
+		public: 
+			/*! A typedef for the associated smart pointer */ 
+			typedef CMatrixPtr SmartPtr; 
+			static BASE_IMPEXP  mrpt::utils::TRuntimeClassId  classCMatrix; 
+			static BASE_IMPEXP  const mrpt::utils::TRuntimeClassId *classinfo; 
+			virtual BASE_IMPEXP  const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const; 
+			static  BASE_IMPEXP mrpt::utils::CObject* CreateObject(); 
+			static BASE_IMPEXP CMatrixPtr Create(); 
+			virtual BASE_IMPEXP mrpt::utils::CObject *duplicate() const; 
+		protected:
+			/*! @name CSerializable virtual methods */
+			/*! @{ */
+			BASE_IMPEXP void writeToStream(mrpt::utils::CStream &out, int *getVersion) const;
+			BASE_IMPEXP void readFromStream(mrpt::utils::CStream &in, int version);
+			/*! @} */
+
 		public:
 			/** Constructor  */
 			CMatrix() : CMatrixFloat(1,1)
@@ -94,6 +114,16 @@ namespace mrpt
 				CMatrixFloat::operator =(m);
 				return *this;
 			}
+
+			/*! Assignment operator from any other Eigen class */
+			template<typename OtherDerived>
+			inline CMatrix & operator= (const Eigen::MatrixBase <OtherDerived>& other) {
+				CMatrixTemplateNumeric<float>::operator=(other);
+				return *this;
+			}
+			/*! Constructor from any other Eigen class */
+			template<typename OtherDerived>
+			inline CMatrix(const Eigen::MatrixBase <OtherDerived>& other) : CMatrixTemplateNumeric<float>(other) { }
 
 		}; // end of class definition
 

@@ -385,7 +385,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
 	plot->AddLayer( lyPlannedPath );
 
 	{
-		vector_float xs(5),ys(5);
+		vector<float> xs(5),ys(5);
 		float CS = 0.4f;  // Cross size
 		xs[0] = -CS;   ys[0] = -CS;
 		xs[1] =  CS;   ys[1] =  CS;
@@ -722,7 +722,7 @@ void ReactiveNavigationDemoFrame::OntimSimulateTrigger(wxTimerEvent& event)
 			);
 
 		// Build the points map:
-		vector_float xs,ys,zs;
+		vector<float> xs,ys,zs;
 		laserScan.buildAuxPointsMap<CPointsMap>()->getAllPoints(xs,ys,zs);
 
 		lyLaserPoints->setPoints(xs,ys);
@@ -747,7 +747,7 @@ void ReactiveNavigationDemoFrame::OntimSimulateTrigger(wxTimerEvent& event)
 		REAC::CPRRTNavigator::TPlannedPath path;
 		navigator.getCurrentPlannedPath( path );
 
-		vector_float xs,ys;
+		vector<float> xs,ys;
 		for (REAC::CPRRTNavigator::TPlannedPath::const_iterator i=path.begin();i!=path.end();i++)
 		{
 			// Draw a small arrow in the robot direction:
@@ -816,7 +816,7 @@ void ReactiveNavigationDemoFrame::reloadRobotShape()
 		ASSERT_(size(mShape,1)==2)
 		ASSERT_(size(mShape,2)>=3)
 
-		vector_double xs,ys;
+		vector<double> xs,ys;
 		mShape.extractRow(0,xs);
 		mShape.extractRow(1,ys);
 

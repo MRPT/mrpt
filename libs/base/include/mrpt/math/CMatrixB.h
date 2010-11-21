@@ -30,7 +30,6 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CVectorTemplate.h>
 
 namespace mrpt
 {
@@ -58,13 +57,6 @@ namespace mrpt
 			  */
 			CMatrixB( const CMatrixBool &m ) : CMatrixBool(m)
 			{
-			}
-
-			/** Copy constructor
-			  */
-			CMatrixB( const CMatrixTemplateNumeric<bool> &m ) : CMatrixBool(0,0)
-			{
-				*this = m;
 			}
 
 			/** Assignment operator for float matrixes

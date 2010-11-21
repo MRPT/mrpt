@@ -197,7 +197,7 @@ namespace opengl	{
 			  * Gets a vector with every value in the range.
 			  * \throw std::logic_error on invalid range type.
 			  */
-			void values(vector_double &vals) const;
+			void values(std::vector<double> &vals) const;
 			/**
 			  * Returns the direction of the scan. True if the increment is positive, false otherwise.
 			  * \throw std::logic_error on invalid range type.
@@ -251,11 +251,11 @@ namespace opengl	{
 		/**
 		  * Observation pitch range. When containing exactly two elements, they represent the bounds.
 		  */
-		vector<double> pitchBounds;
+		std::vector<double> pitchBounds;
 		/**
 		  * Actual scan set which is used to generate the mesh.
 		  */
-		vector<CObservation2DRangeScan> scanSet;
+		std::vector<CObservation2DRangeScan> scanSet;
 		/**
 		  * Basic constructor.
 		  */
@@ -359,10 +359,10 @@ namespace opengl	{
 		protected:
 			const CPose3D &initial;
 			const T &e;
-			vector<double> &values;
+			std::vector<double> &values;
 			std::vector<char> &valid;
 		public:
-			FTrace1D(const T &s,const CPose3D &p,vector_double &v,std::vector<char> &v2):initial(p),e(s),values(v),valid(v2)	{}
+			FTrace1D(const T &s,const CPose3D &p,std::vector<double> &v,std::vector<char> &v2):initial(p),e(s),values(v),valid(v2)	{}
 			void operator()(double yaw)	{
 				double dist;
 				const CPose3D pNew=initial+CPose3D(0.0,0.0,0.0,yaw,0.0,0.0);
@@ -389,11 +389,11 @@ namespace opengl	{
 		public:
 			FTrace2D(const T &s,const CPose3D &p,CAngularObservationMeshPtr &om,const CAngularObservationMesh::TDoubleRange &y,std::vector<CObservation2DRangeScan> &obs,const CPose3D &b):e(s),initial(p),caom(om),yaws(y),vObs(obs),pBase(b)	{}
 			void operator()(double pitch)	{
-				vector_double yValues;
+				std::vector<double> yValues;
 				yaws.values(yValues);
 				CObservation2DRangeScan o=CObservation2DRangeScan();
 				const CPose3D pNew=initial+CPose3D(0,0,0,0,pitch,0);
-				vector_double values;
+				std::vector<double> values;
 				std::vector<char> valid;
 				size_t nY=yValues.size();
 				values.reserve(nY);
@@ -416,7 +416,7 @@ namespace opengl	{
 		  * \sa mrpt::opengl::CRenderizable,mrpt::opengl::COpenGLScene.
 		  */
 		template<class T> static void trace2DSetOfRays(const T &e,const CPose3D &initial,CAngularObservationMeshPtr &caom,const TDoubleRange &pitchs,const TDoubleRange &yaws)	{
-			vector_double pValues;
+			vector<double> pValues;
 			pitchs.values(pValues);
 			std::vector<CObservation2DRangeScan> vObs;
 			vObs.reserve(pValues.size());
@@ -432,9 +432,9 @@ namespace opengl	{
 		  * \sa mrpt::opengl::CRenderizable,mrpt::opengl::COpenGLScene.
 		  */
 		template<class T> static void trace1DSetOfRays(const T &e,const CPose3D &initial,CObservation2DRangeScan &obs,const TDoubleRange &yaws)	{
-			vector_double yValues;
+			std::vector<double> yValues;
 			yaws.values(yValues);
-			vector_double scanValues;
+			std::vector<double> scanValues;
 			std::vector<char> valid;
 			size_t nV=yaws.amount();
 			scanValues.reserve(nV);

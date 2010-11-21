@@ -60,7 +60,7 @@ CPose3D::CPose3D()
 	m_coords[0] =
 	m_coords[1] =
 	m_coords[2] = 0;
-	m_ROT.unit();
+	m_ROT.unit(3,1.0);
 }
 
 CPose3D::CPose3D(const double x,const double y,const double z, const double yaw, const double pitch, const double roll)
@@ -159,9 +159,9 @@ void  CPose3D::readFromStream(CStream &in,int version)
 			// The coordinates:
 			CMatrix  HM2;
 			in >> HM2;
-			ASSERT_(mrpt::math::size(HM2,1)==4 && HM2.IsSquare())
+			ASSERT_(mrpt::math::size(HM2,1)==4 && HM2.isSquare())
 
-			HM2.extractMatrix(0,0, m_ROT);
+			m_ROT = HM2.block(0,0,3,3).cast<double>();
 
 			m_coords[0] = HM2.get_unsafe(0,3);
 			m_coords[1] = HM2.get_unsafe(1,3);
@@ -174,7 +174,7 @@ void  CPose3D::readFromStream(CStream &in,int version)
 			CMatrixDouble44 HM;
 			in >> HM;
 
-			HM.extractMatrix(0,0, m_ROT);
+			m_ROT = HM.block(0,0,3,3);
 
 			m_coords[0] = HM.get_unsafe(0,3);
 			m_coords[1] = HM.get_unsafe(1,3);
@@ -942,11 +942,11 @@ void CPose3D::ln(CArrayDouble<6> &result) const
 
 	if(theta > 0.001)
 	{
-		rottrans -= rot * ( (m_coords * rot).sumAll() * (1-2*shtot) / rot.squareNorm() ); //(rot*rot));
+		rottrans -= rot * ( m_coords.dot(rot) * (1-2*shtot) / rot.squareNorm() ); //(rot*rot));
 	}
 	else
 	{
-		rottrans -= rot * ((m_coords * rot).sumAll()/24);
+		rottrans -= rot * ( m_coords.dot(rot)/24);
 	}
 
 	rottrans *= 1.0/(2 * shtot);
@@ -1104,7 +1104,7 @@ void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double,6,12> &J) const
 	CMatrixDouble33 Omega(UNINITIALIZED_MATRIX);
 
 	CMatrixDouble33 V_inv(UNINITIALIZED_MATRIX);
-	V_inv.unit(); // Start with the identity_3
+	V_inv.unit(3,1.0); // Start with the identity_3
 
 	const double d = 0.5*( R(0,0)+R(1,1)+R(2,2)-1);
 	if (d>0.99999)
@@ -1151,7 +1151,7 @@ void CPose3D::ln_rot_jacob(const CMatrixDouble33 &R, CMatrixFixedNumeric<double,
 	if(d>0.99999)
 	{
 		a[0]=a[1]=a[2]=0;
-		B.unit(-0.5);
+		B.unit(3,-0.5);
 	}
 	else
 	{
@@ -1160,7 +1160,7 @@ void CPose3D::ln_rot_jacob(const CMatrixDouble33 &R, CMatrixFixedNumeric<double,
 		const double sq = std::sqrt(1-d2);
 		deltaR(R,a);
 		a *= (d*theta-sq)/(4*(sq*sq*sq));
-		B.unit( -theta/(2*sq) );
+		B.unit(3, -theta/(2*sq) );
 	}
 	M3x9(a,B, M);
 }

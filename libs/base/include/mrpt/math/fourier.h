@@ -30,7 +30,6 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CVectorTemplate.h>
 
 /*---------------------------------------------------------------
 		Namespace
@@ -39,7 +38,7 @@ namespace mrpt
 {
 	namespace math
 	{
-		
+
 		/** @name Fourier functions
 		@{ */
 

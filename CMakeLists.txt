@@ -62,24 +62,20 @@ INCLUDE(cmakemodules/UtilsMacros.cmake REQUIRED)
 # ----------------------------------------------------------------------------
 #  Autodetect if we are in a SVN repository
 # ----------------------------------------------------------------------------
-FIND_PROGRAM(SVNVERSION_PATH svnversion)
-MARK_AS_ADVANCED(force SVNVERSION_PATH)
-IF(SVNVERSION_PATH)
-	MESSAGE(STATUS "Extracting svn version, please wait...")
-	execute_process(COMMAND ${SVNVERSION_PATH} -n ${MRPT_SOURCE_DIR} OUTPUT_VARIABLE SVNVERSION_RESULT)
-
-	IF(SVNVERSION_RESULT MATCHES "exported")
-		# This is NOT a svn repository:
-		SET(CMAKE_MRPT_SVNVERSION "")
-	ELSE(SVNVERSION_RESULT MATCHES "exported")
-		SET(CMAKE_MRPT_SVNVERSION " svn:${SVNVERSION_RESULT}")
-	ENDIF(SVNVERSION_RESULT MATCHES "exported")
-
-	MESSAGE(STATUS "SVNVERSION: ${CMAKE_MRPT_SVNVERSION}")
-ELSE(SVNVERSION_PATH)
-	# We don't have svnversion:
-	SET(CMAKE_MRPT_SVNVERSION "")
-ENDIF(SVNVERSION_PATH)
+#FIND_PROGRAM(SVNVERSION_PATH svnversion)
+#MARK_AS_ADVANCED(force SVNVERSION_PATH)
+#IF(SVNVERSION_PATH)
+#	MESSAGE(STATUS "Extracting svn version, please wait...")
+#	execute_process(COMMAND ${SVNVERSION_PATH} -n ${MRPT_SOURCE_DIR} OUTPUT_VARIABLE SVNVERSION_RESULT)
+#	IF(SVNVERSION_RESULT MATCHES "exported")
+#		SET(CMAKE_MRPT_SVNVERSION "") # This is NOT a svn repository:
+#	ELSE(SVNVERSION_RESULT MATCHES "exported")
+#		SET(CMAKE_MRPT_SVNVERSION " svn:${SVNVERSION_RESULT}")
+#	ENDIF(SVNVERSION_RESULT MATCHES "exported")
+#	MESSAGE(STATUS "SVNVERSION: ${CMAKE_MRPT_SVNVERSION}")
+#ELSE(SVNVERSION_PATH)
+#	SET(CMAKE_MRPT_SVNVERSION "") # We don't have svnversion:
+#ENDIF(SVNVERSION_PATH)
 
 # ----------------------------------------------------------------------------
 # Detect GNU version:
@@ -326,6 +322,10 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 SET(MRPT_ENABLE_PRECOMPILED_HDRS ON CACHE BOOL "Enable precompiled headers (thru 'mrpt/LIB.h')")
 MARK_AS_ADVANCED(MRPT_ENABLE_PRECOMPILED_HDRS)
 
+# Eigen library plugins:
+# ===================================================
+SET(EIGEN_MATRIXBASE_PLUGIN "<mrpt/math/eigen_plugins.h>" CACHE STRING "Eigen plugin header")
+SET(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL "<mrpt/math/eigen_plugins_impl.h>" CACHE STRING "Eigen plugin implementation header")
 
 # MRPT_TRY_START/END blocks
 # ===================================================
@@ -1456,8 +1456,9 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 
 	# High level of warnings. 
 	# The -Wno-long-long is required in 64bit systems when including sytem headers.
- 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-write-strings")
- 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-write-strings")
+	# The -Wno-variadic-macros was needed for Eigen3, StdVector.h
+ 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-write-strings -Wno-variadic-macros")
+ 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-write-strings -Wno-variadic-macros")
 
 	# Use "modern" C99 ! ;-)
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")

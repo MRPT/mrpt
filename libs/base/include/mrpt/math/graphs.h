@@ -55,7 +55,8 @@ namespace mrpt
 		{
 		public:
 			typedef TYPE_EDGES                             edge_t;  //!< The type of the graph edges
-			typedef std::multimap<TPairNodeIDs, edge_t >   edges_map_t;  //!< The type of the member \a edges
+			typedef Eigen::aligned_allocator<std::pair<const TPairNodeIDs, edge_t> > edge_entries_allocator_t; //!< Allocator of \a edges_map_t
+			typedef std::multimap<TPairNodeIDs, edge_t, std::less<TPairNodeIDs>,edge_entries_allocator_t>   edges_map_t;  //!< The type of the member \a edges
 			typedef typename edges_map_t::iterator         iterator;
 			typedef typename edges_map_t::const_iterator   const_iterator;
 
@@ -81,11 +82,21 @@ namespace mrpt
 
 			/** Insert an edge (from -> to) with the given edge value. \sa insertEdgeAtEnd */
 			inline void insertEdge(TNodeID from_nodeID, TNodeID to_nodeID,const edge_t &edge_value )
-			{ edges.insert(std::make_pair(std::make_pair(from_nodeID,to_nodeID),edge_value) ); }
+			{
+				EIGEN_ALIGN16 typename edges_map_t::value_type entry(
+					std::make_pair(from_nodeID,to_nodeID),
+					edge_value);
+				edges.insert(entry);
+			}
 
 			/** Insert an edge (from -> to) with the given edge value (more efficient version to be called if you know that the end will go at the end of the sorted std::multimap). \sa insertEdge */
 			inline void insertEdgeAtEnd(TNodeID from_nodeID, TNodeID to_nodeID,const edge_t &edge_value )
-			{ edges.insert(edges.end(),std::make_pair(std::make_pair(from_nodeID,to_nodeID),edge_value)); }
+			{
+				EIGEN_ALIGN16 typename edges_map_t::value_type entry(
+					std::make_pair(from_nodeID,to_nodeID),
+					edge_value);
+				edges.insert(edges.end(), entry);
+			}
 
 			/** Test is the given directed edge exists. */
 			inline bool edgeExists(TNodeID from_nodeID, TNodeID to_nodeID) const

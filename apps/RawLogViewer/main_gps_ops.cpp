@@ -92,7 +92,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 	// Only RTK fixed?
 	bool only_rtk =  wxYES==wxMessageBox(_("Take into account 'rtk' (modes 4-5) readings only?"),_("GPS path"),wxYES_NO );
 
-	vector_float  xs,ys,zs;
+	vector<float>  xs,ys,zs;
 	double  overall_distance = 0;
 
 	for (i=0;i<n;i++)

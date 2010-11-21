@@ -77,8 +77,9 @@ void   CPointCloud::render() const
 		{
 			m_minmax_valid = true;
 			if (!m_zs.empty())
-				math::minimum_maximum( m_colorFromDepth == CPointCloud::Z ? m_zs :
-					(m_colorFromDepth == CPointCloud::Y ? m_ys : m_xs), m_min, m_max);
+				mrpt::math::minimum_maximum(
+					m_colorFromDepth == CPointCloud::Z ? m_zs : (m_colorFromDepth == CPointCloud::Y ? m_ys : m_xs),
+					m_min, m_max);
 			else m_max=m_min=0;
 
 			A = m_max - m_min;
@@ -93,11 +94,6 @@ void   CPointCloud::render() const
 
 		A_1  = 1.0/A;
 	}
-
-    vector<float>::const_iterator itX,itY,itZ;
-    vector<float>::const_iterator & itDepth = m_colorFromDepth == CPointCloud::Z ? itZ :
-		(m_colorFromDepth == CPointCloud::Y ? itY : itX);
-
 
 	if ( m_color_A != 1.0 )
 	{
@@ -124,14 +120,15 @@ void   CPointCloud::render() const
 
     glColor4f( m_color_R,m_color_G,m_color_B,m_color_A );
 
-    for (itX=m_xs.begin(), itY=m_ys.begin(), itZ=m_zs.begin();
-           itX!=m_xs.end();
-         itX++,itY++,itZ++)
+	const size_t N=m_xs.size();
+    for (size_t i=0;i<N;i++)
     {
-		if ( m_colorFromDepth && A>0 )
+		if ( m_colorFromDepth!=None && A>0 )
 		{
-			float	f = (*itDepth - m_min) * A_1;
-			f=max(0.0f,min(1.0f,f));
+			const float depthCol = (m_colorFromDepth==X ? m_xs[i] : (m_colorFromDepth==Y ? m_ys[i] : m_zs[i]));
+
+			float	f = (depthCol - m_min) * A_1;
+			f=std::max(0.0f,min(1.0f,f));
 
 			glColor4f(
 				m_colorFromDepth_min.R + f*AR,
@@ -139,7 +136,7 @@ void   CPointCloud::render() const
 				m_colorFromDepth_min.B + f*AB,
 				m_color_A );
 		}
-		glVertex3f( *itX,*itY,*itZ );
+		glVertex3f( m_xs[i],m_ys[i],m_zs[i] );
     }
     glEnd();
 

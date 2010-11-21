@@ -134,13 +134,13 @@ double & CSplineInterpolator1D::query( double x, double &y, bool &out_valid ) co
 	// ---------------------------------------
 	//    SPLINE INTERPOLATION
 	// ---------------------------------------
-	vector<double>	xs(4);
+	vector_double	xs(4);
 	xs[0] = p1.first;
 	xs[1] = p2.first;
 	xs[2] = p3.first;
 	xs[3] = p4.first;
 
-	vector<double>	ys(4);
+	vector_double	ys(4);
 	ys[0] = p1.second;
 	ys[1] = p2.second;
 	ys[2] = p3.second;

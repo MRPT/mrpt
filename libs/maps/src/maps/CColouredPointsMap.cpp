@@ -163,7 +163,7 @@ void  CColouredPointsMap::loadFromRangeScan(
 		// ------------------------------------------------------
 		//		Pass range scan to a set of 2D points:
 		// ------------------------------------------------------
-		vector_float		scan_x,scan_y;
+		std::vector<float>		scan_x,scan_y;
 		double		Ang, dA;
 		if (rangeScan.rightToLeft)
 		{
@@ -179,8 +179,8 @@ void  CColouredPointsMap::loadFromRangeScan(
 		scan_x.resize( sizeRangeScan );
 		scan_y.resize( sizeRangeScan );
 
-		vector_float::iterator		 scan_x_it, scan_y_it;
-		vector_float::const_iterator scan_it;
+		std::vector<float>::iterator		 scan_x_it, scan_y_it;
+		std::vector<float>::const_iterator scan_it;
 
 		for ( scan_x_it=scan_x.begin(),
 			  scan_y_it=scan_y.begin(),
@@ -1460,7 +1460,7 @@ bool CColouredPointsMap::colourFromObservation( const CObservationImage &obs, co
 	unsigned int imgW = obs.image.getWidth();
 	unsigned int imgH = obs.image.getHeight();
 
-	vector_float::iterator	itx,ity,itz,itr,itg,itb;
+	std::vector<float>::iterator	itx,ity,itz,itr,itg,itb;
 
 	// Projection related variables
 	std::vector<TPixelCoordf>			projectedPoints;	// The set of projected points in the image
@@ -1539,41 +1539,5 @@ bool  CColouredPointsMap::save3D_and_colour_to_text_file(const std::string &file
 	os::fclose(f);
 	return true;
 
-}
-
-
-
-/*---------------------------------------------------------------
-					setAllPoints
- ---------------------------------------------------------------*/
-void CColouredPointsMap::setAllPoints(const vector_float &X,const vector_float &Y,const vector_float &Z)
-{
-	const size_t N = X.size();
-	this->x = X;
-	this->y = Y;
-	this->z = Z;
-	pointWeight.assign(N,1);
-	m_color_R.assign(N,1);
-	m_color_G.assign(N,1);
-	m_color_B.assign(N,1);
-
-	mark_as_modified();
-}
-
-/*---------------------------------------------------------------
-					setAllPoints
- ---------------------------------------------------------------*/
-void CColouredPointsMap::setAllPoints(const vector_float &X,const vector_float &Y)
-{
-	const size_t N = X.size();
-	this->x = X;
-	this->y = Y;
-	this->z.assign(X.size(),0);
-	pointWeight.assign(N,1);
-	m_color_R.assign(N,1);
-	m_color_G.assign(N,1);
-	m_color_B.assign(N,1);
-
-	mark_as_modified();
 }
 

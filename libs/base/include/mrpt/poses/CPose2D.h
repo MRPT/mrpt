@@ -51,6 +51,7 @@ namespace poses
 	 */
 	class BASE_IMPEXP CPose2D : public CPose<CPose2D>, public mrpt::utils::CSerializable
 	{
+	public:
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPose2D )
 
@@ -239,6 +240,9 @@ namespace poses
 
 	bool BASE_IMPEXP operator==(const CPose2D &p1,const CPose2D &p2);
 	bool BASE_IMPEXP operator!=(const CPose2D &p1,const CPose2D &p2);
+
+	typedef std::vector<CPose2D,Eigen::aligned_allocator<CPose2D> > StdVector_CPose2D; //!< Eigen aligment-compatible container
+	typedef std::deque<CPose2D,Eigen::aligned_allocator<CPose2D> >  StdDeque_CPose2D; //!< Eigen aligment-compatible container
 
 	} // End of namespace
 } // End of namespace

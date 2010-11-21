@@ -817,11 +817,8 @@ void  vision::deleteRepeatedFeats( CFeatureList & feat_list )
 -------------------------------------------------------------*/
 void vision::getDispersion( const CFeatureList &list, vector_float &std, vector_float &mean )
 {
-	std.clear();
-	mean.clear();
-
-	std.resize(2,0);
-	mean.resize(2,0);
+	std.assign(2,0);
+	mean.assign(2,0);
 
 	CFeatureList::const_iterator it;
 	double varx = 0, vary = 0;

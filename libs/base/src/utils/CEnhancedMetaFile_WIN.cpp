@@ -36,7 +36,6 @@
 
 #include <MRPT/UTILS/CEnhancedMetaFile.h>
 #include <mrpt/system/os.h>
-#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CImageFloat.h>
 

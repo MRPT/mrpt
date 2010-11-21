@@ -418,7 +418,7 @@ void  CPosePDFParticles::drawSingleSample( CPose2D &outPart ) const
 /*---------------------------------------------------------------
 						+=
  ---------------------------------------------------------------*/
-void  CPosePDFParticles::operator += ( CPose2D Ap)
+void  CPosePDFParticles::operator += ( const CPose2D &Ap)
 {
 	CParticleList::iterator	it;
 

@@ -168,13 +168,13 @@ void  CFeatureExtraction::internal_computeSpinImageDescriptors(
 		} // end px
 
 		// Normalize:
-		hist2d.normalize(); // [0,1]
+		hist2d.normalize(0,1); // [0,1]
 
 #if 0
 		{	// Debug
 			static int n=0;
 			CMatrixDouble AA(hist2d);
-			AA.normalize();
+			AA.normalize(0,1);
 			CImage  aux_img( AA );
 			aux_img.saveToFile( format("spin_feat_%04i.png",n) );
 			CImage  aux_img2 = in_img;

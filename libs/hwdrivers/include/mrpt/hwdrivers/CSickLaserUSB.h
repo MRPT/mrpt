@@ -79,7 +79,7 @@ namespace mrpt
 			poses::CPose3D		m_sensorPose;
 
 			bool 	checkControllerIsConnected();
-			bool  	waitContinuousSampleFrame( vector_float &ranges, unsigned char &LMS_status, uint32_t &out_board_timestamp, bool &is_mm_mode );
+			bool  	waitContinuousSampleFrame( std::vector<float> &ranges, unsigned char &LMS_status, uint32_t &out_board_timestamp, bool &is_mm_mode );
 
 		protected:
 			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)

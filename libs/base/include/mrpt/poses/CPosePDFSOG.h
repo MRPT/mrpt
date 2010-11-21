@@ -75,11 +75,14 @@ namespace mrpt
 				/** The log-weight
 				  */
 				double		log_w;
+
+			public:
+			  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			};
 
-			typedef std::deque<TGaussianMode> CListGaussianModes;
-			typedef std::deque<TGaussianMode>::const_iterator const_iterator;
-			typedef std::deque<TGaussianMode>::iterator iterator;
+			typedef std::vector<TGaussianMode,Eigen::aligned_allocator<TGaussianMode> > CListGaussianModes;
+			typedef CListGaussianModes::const_iterator const_iterator;
+			typedef CListGaussianModes::iterator iterator;
 
 		protected:
 			/** Assures the symmetry of the covariance matrix (eventually certain operations in the math-coprocessor lead to non-symmetric matrixes!)
@@ -207,7 +210,7 @@ namespace mrpt
 
 			/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated).
 			  */
-			void  operator += ( const CPose2D Ap);
+			void  operator += ( const CPose2D &Ap);
 
 			/** Evaluates the PDF at a given point.
 			  */

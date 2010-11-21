@@ -111,8 +111,8 @@ void  CPosePDFParticlesExtended::copyFrom(const CPosePDF &o)
 	{
 		CPosePDFGaussian	*pdf = (CPosePDFGaussian*) &o;
 		int					M = (int)m_particles.size();
-		std::vector<vector_double>			parts;
-		std::vector<vector_double>::iterator partsIt;
+		std::vector<vector<double> >			parts;
+		std::vector<vector<double> >::iterator partsIt;
 
 		randomGenerator.drawGaussianMultivariateMany(parts,M,pdf->cov);
 
@@ -249,7 +249,7 @@ TExtendedCPose2D  CPosePDFParticlesExtended::getEstimatedPoseState() const
 		est.pose.x_incr( (p.x() * w));
 		est.pose.y_incr( (p.y() * w));
 
-		vector_double	auxVec (m_particles[i].d->state);
+		vector<double>	auxVec (m_particles[i].d->state);
 		auxVec *= w;
 		est.state += auxVec;
 
@@ -546,7 +546,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 
 	// Precompute a list of "random" samples from the movement model:
 	deque<TExtendedCPose2D*>	newParticles;
-	vector_double				newParticlesWeight;
+	vector<double>				newParticlesWeight;
 
 	// We need the (aproximate) maximum likelihood value for each
 	//  previous particle [i]:
@@ -554,7 +554,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 	//     max{ p( z^t | data^[i], x_(t-1)^[i], u_(t) ) }
 	//
 	// We store "-1" if the max. value has not been computed yet:
-	vector_double					maxLikelihood(M, -1e300 );
+	vector<double>					maxLikelihood(M, -1e300 );
 	CPose2D							movementDraw;
 	TExtendedCPose2D 				newPose,oldPose;
 	double							acceptanceProb,newPoseLikelihood,ratioLikLik;
@@ -596,7 +596,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 					newPose.pose = oldPose.pose + m_movementDrawer.drawSample(drawnSample);
 					// Prediction of the BIAS "state vector":
 					newPose.state = oldPose.state;
-					for (size_t q=0;q<newPose.state.size();q++)
+					for (size_t q=0;q<size_t(newPose.state.size());q++)
 						offsetTransitionModel( newPose.state[q] );
 
 					// Likelihood:
@@ -620,7 +620,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 				newPose.pose = oldPose.pose + m_movementDrawer.drawSample(drawnSample);
 				// Prediction of the BIAS "state vector":
 				newPose.state = oldPose.state;
-				for (size_t q=0;q<newPose.state.size();q++)
+				for (size_t q=0;q<size_t(newPose.state.size());q++)
 					offsetTransitionModel( newPose.state[q] );
 
 				// Compute acceptance probability:
@@ -670,7 +670,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 
 	CParticleList::iterator	itDest;
 	deque<TExtendedCPose2D*>::const_iterator itSrc;
-	vector_double::iterator itW;
+	vector<double>::iterator itW;
 
 	for (itDest=m_particles.begin(), itSrc = newParticles.begin(), itW = newParticlesWeight.begin();
 			itDest!=m_particles.end();
@@ -975,7 +975,7 @@ void  CPosePDFParticlesExtended::resetUniform(
 		m_particles[i].d->state.resize(state_min.size());
 		m_particles[i].d->state.resize(state_max.size());
 
-		for (unsigned int k=0;k<state_min.size();k++)
+		for (int k=0;k<state_min.size();k++)
 			m_particles[i].d->state[k] = randomGenerator.drawUniform( state_min[k], state_max[k] );
 
 		m_particles[i].log_w=0;
@@ -1078,7 +1078,7 @@ void  CPosePDFParticlesExtended::drawManySamples( size_t N, std::vector<vector_d
 /*---------------------------------------------------------------
 						+=
  ---------------------------------------------------------------*/
-void  CPosePDFParticlesExtended::operator += ( CPose2D Ap)
+void  CPosePDFParticlesExtended::operator += ( const CPose2D &Ap)
 {
 	CParticleList::iterator	it;
 
@@ -1247,7 +1247,7 @@ double  CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
 
 			// Introduce bias:
 			ASSERT_( obserDumm.sensedData.size() == x->state.size() );
-			for (size_t k=0;k<obserDumm.sensedData.size();k++)
+			for (size_t k=0;k<size_t(obserDumm.sensedData.size());k++)
 				obserDumm.sensedData[k].sensedDistance -= x->state[k];
 
 			// Substitute:

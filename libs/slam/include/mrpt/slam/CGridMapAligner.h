@@ -196,7 +196,7 @@ namespace mrpt
 
 				std::vector<TPairPlusDistance>  correspondences_dists_maha;	//!< Mahalanobis distance for each potential correspondence
 
-				vector_double	icp_goodness_all_sog_modes;	//!< The ICP goodness of all potential SOG modes at the stage "sog2", thus before the removing of "bad" ICP matches.
+				std::vector<double>	icp_goodness_all_sog_modes;	//!< The ICP goodness of all potential SOG modes at the stage "sog2", thus before the removing of "bad" ICP matches.
 			};
 
 			/** The method for aligning a pair of 2D points map.

@@ -451,7 +451,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& event)
     wxTheApp->Yield();  // Let the app. process messages
     size_t count = 0;
 
-    vector_float    pathX,pathY;
+    vector<float>    pathX,pathY;
     bool            abort = false;
 
     robot_path.clear();
@@ -568,7 +568,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& event)
 			decimation = nPts / 100000;
 		}
 
-		vector_float    Xs,Ys;
+		vector<float>    Xs,Ys;
 		thePntsMap->getAllPoints(Xs,Ys, decimation );
 
 		lyPoints->SetData(Xs,Ys);
@@ -715,7 +715,7 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent& event)
 
     for (int pathIter = 0;!abort && pathIter<nPaths;pathIter++)
     {
-        vector_float    pathX,pathY,pathPhi;
+        vector<float>    pathX,pathY,pathPhi;
         CPose2D         curPose(0,0,0);
 
         // Initial pose:
@@ -937,7 +937,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent& event)
 
     // Load into the graphs:
     // ----------------------------------
-	vector_float			pathX,pathY;
+	vector<float>			pathX,pathY;
 	pathX.reserve(robot_path.size());
 	pathY.reserve(robot_path.size());
 
@@ -980,7 +980,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent& event)
 			decimation = nPts / 100000;
 		}
 
-		vector_float    Xs,Ys;
+		vector<float>    Xs,Ys;
 		thePntsMap->getAllPoints(Xs,Ys, decimation );
 
 		lyPoints->SetData(Xs,Ys);
@@ -1137,7 +1137,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent& event)
 
 
 
-		ASSERT_( size(COV_sensor_local,1)==6 && COV_sensor_local.IsSquare() );
+		ASSERT_( size(COV_sensor_local,1)==6 && COV_sensor_local.isSquare() );
 
 		vector_string::iterator				itStr;
 		std::vector<FILE*>					outFiles( the_labels.size() );
@@ -1178,7 +1178,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent& event)
 						}
 						else
 						{
-							veh_pose.cov.unit();
+							veh_pose.cov.setIdentity();
 							veh_pose.cov*=1e-6;
 						}
 

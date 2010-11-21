@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/base.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -71,7 +71,7 @@ protected:
 		// Convert back to a 6x6 representation:
 		CPose3DPDFGaussian  p2ypr = CPose3DPDFGaussian(p1quat);
 
-		EXPECT_NEAR(0,(p2ypr.cov - p1ypr.cov).Abs().mean(), 1e-3)
+		EXPECT_NEAR(0,(p2ypr.cov - p1ypr.cov).Abs().mean(), 1e-2)
 			<< "p1ypr: " << endl << p1ypr << endl
 			<< "p1quat : " << endl << p1quat << endl
 			<< "p2ypr : " << endl << p2ypr << endl;
@@ -120,7 +120,7 @@ protected:
 
 		}
 		// Compare:
-		EXPECT_NEAR(0, (y_cov-p7_comp.cov).Abs().mean(), 1e-5 )
+		EXPECT_NEAR(0, (y_cov-p7_comp.cov).Abs().mean(), 1e-2 )
 			<< "p1 mean: " << p7pdf1.mean << endl
 			<< "p2 mean: " << p7pdf2.mean << endl
 			<< "Numeric approximation of covariance: " << endl << y_cov << endl
@@ -206,7 +206,7 @@ protected:
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (y_cov-p7_inv.cov).Abs().mean(), 1e-5 )
+		EXPECT_NEAR(0, (y_cov-p7_inv.cov).Abs().mean(), 1e-2 )
 			<< "p1 mean: " << p7pdf1.mean << endl
 			<< "inv mean: " << p7_inv.mean << endl
 			<< "Numeric approximation of covariance: " << endl << y_cov << endl
@@ -243,7 +243,7 @@ protected:
 
 		}
 		// Compare:
-		EXPECT_NEAR(0, (y_cov-p7_comp.cov).Abs().mean(), 1e-5 )
+		EXPECT_NEAR(0, (y_cov-p7_comp.cov).Abs().mean(), 1e-2 )
 			<< "p1 mean: " << p7pdf1.mean << endl
 			<< "p2 mean: " << p7pdf2.mean << endl
 			<< "Numeric approximation of covariance: " << endl << y_cov << endl

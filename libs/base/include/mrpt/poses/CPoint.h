@@ -79,7 +79,7 @@ namespace mrpt
 			  */
 			void getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const
 			{
-				out_HM.unit();
+				out_HM.unit(4,1.0);
 				out_HM.get_unsafe(0,3)= static_cast<const DERIVEDCLASS*>(this)->x();
 				out_HM.get_unsafe(1,3)= static_cast<const DERIVEDCLASS*>(this)->y();
 				if (DERIVEDCLASS::is3DPoseOrPoint())
@@ -111,8 +111,8 @@ namespace mrpt
 					static_cast<DERIVEDCLASS*>(this)->m_coords[i] = m.get_unsafe(0,i);
 			}
 
-			inline const double &operator[](unsigned int i) const { return static_cast<const DERIVEDCLASS*>(this)->m_coords.at(i); }
-			inline       double &operator[](unsigned int i)       { return static_cast<DERIVEDCLASS*>(this)->m_coords.at(i); }
+			inline const double &operator[](unsigned int i) const { return static_cast<const DERIVEDCLASS*>(this)->m_coords[i]; }
+			inline       double &operator[](unsigned int i)       { return static_cast<DERIVEDCLASS*>(this)->m_coords[i]; }
 
 			/** @} */
 

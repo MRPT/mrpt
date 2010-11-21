@@ -569,8 +569,8 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
 	INIT_PLOT_TIME(plotDaTN)
 	INIT_PLOT_TIME(plotDaTP)
 
-	vector_float robot_shape_xs(3);
-	vector_float robot_shape_ys(3);
+	vector<float> robot_shape_xs(3);
+	vector<float> robot_shape_ys(3);
 	robot_shape_xs[0] =0;	robot_shape_ys[0] =-0.10;
 	robot_shape_xs[1] =0;	robot_shape_ys[1] = 0.10;
 	robot_shape_xs[2] =0.2;	robot_shape_ys[2] = 0;
@@ -990,8 +990,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap )
 {
 	// The area visible by the sensor (used in multiple graphs):
 	const size_t AREA_SEGS = 100;
-	vector_float xs_area(AREA_SEGS+1);
-	vector_float ys_area(AREA_SEGS+1);
+	vector<float> xs_area(AREA_SEGS+1);
+	vector<float> ys_area(AREA_SEGS+1);
 	for (size_t i=0;i<AREA_SEGS;i++)
 	{
 		double a = options.sensor_fov*(-0.5+double(i)/(AREA_SEGS-1));
@@ -1005,7 +1005,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap )
 	// GT Map ----------------------
 	if (alsoGTMap)
 	{
-		vector_float xs,ys;
+		vector<float> xs,ys;
 		for (CLandmarksMap::TCustomSequenceLandmarks::iterator i=m_GT_map.landmarks.begin();i!=m_GT_map.landmarks.end();++i)
 		{
 			xs.push_back( i->pose_mean.x );
@@ -1226,8 +1226,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap )
 	// IC graph ------------------------------------------
 	{
 		// Draw sensor ranges in the R-B plane:
-		vector_float xs_area_RG(5);
-		vector_float ys_area_RG(5);
+		vector<float> xs_area_RG(5);
+		vector<float> ys_area_RG(5);
 		xs_area_RG[0] = -RAD2DEG(options.sensor_fov)*0.5; ys_area_RG[0] = 0;
 		xs_area_RG[1] =  RAD2DEG(options.sensor_fov)*0.5; ys_area_RG[1] = 0;
 		xs_area_RG[2] =  RAD2DEG(options.sensor_fov)*0.5; ys_area_RG[2] = options.sensor_max_range;
@@ -1288,7 +1288,7 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap )
 			}
 			else
 			{	// Full cov. predictions:
-				ASSERT_(da.Y_pred_covs.IsSquare() && da.Y_pred_covs.getColCount()==obs_size*da.predictions_IDs.size());
+				ASSERT_(da.Y_pred_covs.isSquare() && da.Y_pred_covs.getColCount()==obs_size*da.predictions_IDs.size());
 				cov->SetCovarianceMatrix(
 					RAD2DEGSQ*da.Y_pred_covs(obs_size*i+1,obs_size*i+1),
 					RAD2DEG( da.Y_pred_covs(obs_size*i+1,obs_size*i+0) ),
@@ -1320,8 +1320,8 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap )
 					const double hr = da.Y_pred_means(p,0);
 					const double ha = da.Y_pred_means(p,1);
 
-					vector_float xs(2);
-					vector_float ys(2);
+					vector<float> xs(2);
+					vector<float> ys(2);
 					xs[0] = RAD2DEG(ha); ys[0] = hr;
 					xs[1] = RAD2DEG(ha_o); ys[1] = hr_o;
 

@@ -185,15 +185,15 @@ void  CPointPDFGaussian::bayesianFusion( const CPointPDFGaussian &p1, const CPoi
 	CMatrixDouble	x1(3,1),x2(3,1),x(3,1);
 	CMatrixDouble	C1( p1.cov );
 	CMatrixDouble	C2( p2.cov );
-	CMatrixDouble	C1_inv( !C1 );
-	CMatrixDouble	C2_inv( !C2 );
+	CMatrixDouble	C1_inv = C1.inv();
+	CMatrixDouble	C2_inv = C2.inv();
 	CMatrixDouble	C;
 
 	x1(0,0) = p1.mean.x(); x1(1,0) = p1.mean.y(); x1(2,0) = p1.mean.z();
 	x2(0,0) = p2.mean.x(); x2(1,0) = p2.mean.y(); x2(2,0) = p2.mean.z();
 
 
-	C = !(C1_inv + C2_inv);
+	C = (C1_inv + C2_inv).inv();
 	cov = C;
 
 	x = C * ( C1_inv*x1 + C2_inv*x2 );

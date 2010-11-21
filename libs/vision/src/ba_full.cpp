@@ -77,9 +77,9 @@ double mrpt::vision::bundle_adj_full(
 
 	// Typedefs for this specific BA problem:
 	typedef JacData<FrameDof,PointDof,ObsDim>  MyJacData;
-	typedef vector<MyJacData>                  MyJacDataVec;
+	typedef vector<MyJacData,Eigen::aligned_allocator<MyJacData> >  MyJacDataVec;
 
-	typedef CArrayDouble<ObsDim>               Array_O;
+	typedef CArray<double,ObsDim>              Array_O;
 	typedef CArrayDouble<FrameDof>             Array_F;
 	typedef CArrayDouble<PointDof>             Array_P;
 	typedef CMatrixFixedNumeric<double,FrameDof,FrameDof> Matrix_FxF;
@@ -158,10 +158,10 @@ double mrpt::vision::bundle_adj_full(
 	const size_t len_free_frames = FrameDof * num_free_frames;
 	const size_t len_free_points = PointDof * num_free_points;
 
-	vector<Matrix_FxF>   U         (num_free_frames);
-	vector<Array_F>      eps_frame (num_free_frames, arrF_zeros);
-	vector<Matrix_PxP>   V         (num_free_points);
-	vector<Array_P>      eps_point (num_free_points, arrP_zeros);
+	vector<Matrix_FxF,Eigen::aligned_allocator<Matrix_FxF> >   U         (num_free_frames);
+	vector<Array_F,Eigen::aligned_allocator<Array_F> >         eps_frame (num_free_frames, arrF_zeros);
+	vector<Matrix_PxP,Eigen::aligned_allocator<Matrix_PxP> >   V         (num_free_points);
+	vector<Array_P,Eigen::aligned_allocator<Array_P> >         eps_point (num_free_points, arrP_zeros);
 
 	profiler.enter("calcUVeps");
 	ba_calcUVeps(observations,residual_vec,jac_data_vec, U,eps_frame,V,eps_point, num_fix_frames, num_fix_points );
@@ -209,11 +209,11 @@ double mrpt::vision::bundle_adj_full(
 
 			VERBOSE_COUT << "mu: " <<mu<< endl;
 
-			I_muFrame.unit(mu);
-			I_muPoint.unit(mu);
+			I_muFrame.unit(FrameDof,mu);
+			I_muPoint.unit(PointDof,mu);
 
-			vector<Matrix_FxF>   U_star(num_free_frames, I_muFrame);
-			vector<Matrix_PxP>   V_inv (num_free_points);
+			vector<Matrix_FxF,Eigen::aligned_allocator<Matrix_FxF> >   U_star(num_free_frames, I_muFrame);
+			vector<Matrix_PxP,Eigen::aligned_allocator<Matrix_PxP> >   V_inv (num_free_points);
 
 			for (size_t i=0; i<U_star.size(); ++i)
 				U_star[i] += U[i];

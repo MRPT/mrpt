@@ -234,19 +234,19 @@ bool CRejectionSamplingRangeOnlyLocalization::setParams(
 				cell=grid.cellByPos(
 					m_dataPerBeacon[i].beaconPosition.x + cos(a)*R,
 					m_dataPerBeacon[i].beaconPosition.y + sin(a)*R ); ASSERT_(cell!=NULL);
-				if (countNonZero(*cell)>1) { maxA=max(maxA,a);minA=min(minA,a); }
+				if ( std::count(cell->begin(),cell->end(),true)>1) { maxA=max(maxA,a);minA=min(minA,a); }
 				// Radius R :
 				R = m_dataPerBeacon[i].radiusAtRobotPlane;
 				cell=grid.cellByPos(
 					m_dataPerBeacon[i].beaconPosition.x + cos(a)*R,
 					m_dataPerBeacon[i].beaconPosition.y + sin(a)*R ); ASSERT_(cell!=NULL);
-				if (countNonZero(*cell)>1) { maxA=max(maxA,a);minA=min(minA,a); }
+				if (std::count(cell->begin(),cell->end(),true)>1) { maxA=max(maxA,a);minA=min(minA,a); }
 				// Radius R + 3*SIGMA:
 				R = m_dataPerBeacon[i].radiusAtRobotPlane + 3.0f*m_sigmaRanges;
 				cell=grid.cellByPos(
 					m_dataPerBeacon[i].beaconPosition.x + cos(a)*R,
 					m_dataPerBeacon[i].beaconPosition.y + sin(a)*R ); ASSERT_(cell!=NULL);
-				if (countNonZero(*cell)>1) { maxA=max(maxA,a);minA=min(minA,a); }
+				if (std::count(cell->begin(),cell->end(),true)>1) { maxA=max(maxA,a);minA=min(minA,a); }
 			} // end for a
 			m_dataPerBeacon[i].minAngle=max(-M_PIf, minA-Aa );
 			m_dataPerBeacon[i].maxAngle=min( M_PIf, maxA+Aa );

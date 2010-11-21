@@ -89,12 +89,15 @@ void  CObservationImage::readFromStream(CStream &in, int version)
 			{
 				CMatrix	 intrinsicParams, distortionParams;
 				in >> distortionParams >> intrinsicParams;
-				
+
 				if (size(distortionParams,1)==1 && size(distortionParams,2)==5)
-					cameraParams.setDistortionParamsVector( CMatrixDouble15(distortionParams) );
+				{
+					const CMatrixDouble15 p = distortionParams.cast<double>();
+					cameraParams.setDistortionParamsVector(p);
+				}
 				else 	cameraParams.dist.assign(0);
 
-				cameraParams.intrinsicParams = CMatrixDouble33(intrinsicParams);
+				cameraParams.intrinsicParams = intrinsicParams.block(0,0,3,3).cast<double>();
 			}
 
 			in >> image;

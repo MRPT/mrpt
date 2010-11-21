@@ -277,24 +277,6 @@ CPose3DPDFPtr CMetricMapBuilderRBPF::getCurrentPoseEstimation() const
 /*---------------------------------------------------------------
 						getCurrentMostLikelyPath
   ---------------------------------------------------------------*/
-void  CMetricMapBuilderRBPF::getCurrentMostLikelyPath( std::deque<CPose2D> &outPath ) const
-{
-	std::deque<TPose3D> aux_path;
-	getCurrentMostLikelyPath(aux_path);
-
-	outPath.resize( aux_path.size() );
-
-	std::transform(aux_path.begin(),aux_path.end(), outPath.begin(), ObjectConvert<CPose2D>() );
-
-	/*std::deque<CPose3D>::iterator i;
-	std::deque<CPose2D>::iterator j;
-	for(i=aux_path.begin(),j=outPath.begin();i!=aux_path.end();i++,j++)
-		*j = *i;   */
-}
-
-/*---------------------------------------------------------------
-						getCurrentMostLikelyPath
-  ---------------------------------------------------------------*/
 void  CMetricMapBuilderRBPF::getCurrentMostLikelyPath( std::deque<TPose3D> &outPath ) const
 {
 	double maxW = -1, w;

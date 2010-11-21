@@ -28,11 +28,11 @@
 
 #include <mrpt/base.h>  // Precompiled headers
 
+MRPT_TODO("JL says: Delete this class")
 
 #include <mrpt/utils/CImageFloat.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/math/CVectorTemplate.h>
 
 
 using namespace mrpt::utils;

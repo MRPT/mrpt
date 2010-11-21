@@ -787,6 +787,16 @@ namespace mrpt
 			v_out[2] =  v0[0]*v1[1] - v0[1]*v1[0];
 		}
 
+		//! \overload (returning a vector of size 3 by value).
+		template<class VEC1,class VEC2>
+		inline Eigen::Matrix<double,3,1> crossProduct3D(const VEC1 &v0,const VEC2 &v1)	{
+			Eigen::Matrix<double,3,1> vOut;
+			vOut[0]=v0[1]*v1[2]-v0[2]*v1[1];
+			vOut[1]=v0[2]*v1[0]-v0[0]*v1[2];
+			vOut[2]=v0[0]*v1[1]-v0[1]*v1[0];
+			return vOut;
+		}
+
 		/** Computes the 3x3 skew symmetric matrix from a 3-vector or 3-array:
 		  * \f[  M([x ~ y ~ z]^\top) = \left(
 		  * 	\begin{array}{c c c}
@@ -1094,13 +1104,7 @@ namespace mrpt
 			}
 
 			// 3rd perpendicular vector: cross product of the two last vectors:
-
-			/*
-			CMatrixColumnAccessor<T> v2(P,2);
-			crossProduct3D(CMatrixColumnAccessor<T>(P,0),CMatrixColumnAccessor<T>(P,1),v2);
-			*/
-			CMatrixColumnAccessor<CMatrixTemplateNumeric<T> > outCol = getColumnAccessor(P,2);
-			crossProduct3D(getColumnAccessor(P,0),getColumnAccessor(P,1),outCol); // 3rd param cannot be embedded since it's &, not const &.
+			P.col(2) = crossProduct3D(P.col(0),P.col(1));
 
 			return P;
 			MRPT_END;

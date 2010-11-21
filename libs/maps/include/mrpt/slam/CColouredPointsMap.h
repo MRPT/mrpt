@@ -56,10 +56,10 @@ namespace mrpt
 
 		protected:
 			/** The color data */
-			vector_float	m_color_R,m_color_G,m_color_B;
+			vector<float>	m_color_R,m_color_G,m_color_B;
 
 			/** Minimum distance from where the points have been seen */
-			vector_float	m_min_dist;
+			vector<float>	m_min_dist;
 
 			/** Clear the map, erasing all the points.
 			 */
@@ -210,11 +210,40 @@ namespace mrpt
 			  */
 			void reserve(size_t newLength);
 
-			/** Set all the points at once from vectors with X,Y and Z coordinates.  */
-			void setAllPoints(const vector_float &X,const vector_float &Y,const vector_float &Z);
+			/** Set all the points at once from vectors with X,Y and Z coordinates (if Z is not provided, it will be set to all zeros).
+			  * RGB field of all points will be set to white color.
+			  * \tparam VECTOR can be mrpt::vector_float or std::vector<float> or any other column or row Eigen::Matrix.
+			  */
+			template <typename VECTOR>
+			inline void setAllPointsTemplate(const VECTOR &X,const VECTOR &Y,const VECTOR &Z = VECTOR())
+			{
+				const size_t N = X.size();
+				ASSERT_EQUAL_(X.size(),Y.size())
+				ASSERT_(Z.size()==0 || Z.size()==X.size())
+				x.resize(N); y.resize(N); z.resize(N);
+				const bool z_valid = Z.empty();
+				if (z_valid) for (size_t i=0;i<N;i++) { this->x[i]=X[i]; this->y[i]=Y[i]; this->z[i]=Z[i]; }
+				else         for (size_t i=0;i<N;i++) { this->x[i]=X[i]; this->y[i]=Y[i]; this->z[i]=0; }
+				pointWeight.assign(N,1);
+				m_color_R.assign(N,1);
+				m_color_G.assign(N,1);
+				m_color_B.assign(N,1);
+				mark_as_modified();
+			}
 
-			/** Set all the points at once from vectors with X and Y coordinates (Z=0).  */
-			void setAllPoints(const vector_float &X,const vector_float &Y);
+			/** Set all the points at once from vectors with X,Y and Z coordinates. \sa getAllPoints */
+			virtual void setAllPoints(const std::vector<float> &X,const std::vector<float> &Y,const std::vector<float> &Z)
+			{
+				setAllPointsTemplate(X,Y,Z);
+			}
+
+			/** Set all the points at once from vectors with X and Y coordinates (Z=0). \sa getAllPoints */
+			virtual void setAllPoints(const std::vector<float> &X,const std::vector<float> &Y)
+			{
+				setAllPointsTemplate(X,Y);
+			}
+
+
 
 			/** Override of the default 3D scene builder to account for the individual points' color.
 			  * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE

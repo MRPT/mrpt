@@ -161,7 +161,7 @@ TEST(MonteCarlo2D, RunSampleDataset)
 
 
 		// Global stats for all the experiment loops:
-		vector_double 	covergenceErrors;
+		vector<double> 	covergenceErrors;
 		covergenceErrors.reserve(NUM_REPS);
 		// --------------------------------------------------------------------
 		//					EXPERIMENT REPETITIONS LOOP

@@ -126,10 +126,10 @@ void C2DRangeFinderAbstract::loadExclusionAreas(
 
 	for(;;)
 	{
-		vector_double x,y, z_range;
-		configSource.read_vector( iniSection, format("exclusionZone%u_x",N), vector_double(0), x);
-		configSource.read_vector( iniSection, format("exclusionZone%u_y",N), vector_double(0), y);
-		configSource.read_vector( iniSection, format("exclusionZone%u_z",N++), vector_double(0), z_range);
+		vector<double> x,y, z_range;
+		configSource.read_vector( iniSection, format("exclusionZone%u_x",N), vector<double>(0), x);
+		configSource.read_vector( iniSection, format("exclusionZone%u_y",N), vector<double>(0), y);
+		configSource.read_vector( iniSection, format("exclusionZone%u_z",N++), vector<double>(0), z_range);
 
 		if (!x.empty() && !y.empty())
 		{

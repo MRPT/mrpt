@@ -151,84 +151,6 @@ CStream& utils::operator << (CStream&out, const char *s)
 	return out;
 }
 
-CStream& utils::operator << (CStream&out,const  vector_int &a)
-{
-	uint32_t n = (uint32_t) a.size();
-	out << n;
-	if (n)
-		out.WriteBuffer( (void*)&a[0], (int)(sizeof(a[0])*n) );
-	return out;
-}
-
-CStream& utils::operator << (CStream&out,const  vector_uint &a)
-{
-	uint32_t n = (uint32_t) a.size();
-	out << n;
-	if (n)
-		out.WriteBuffer( (void*)&a[0], (int)(sizeof(a[0])*n) );
-	return out;
-}
-
-CStream& utils::operator << (CStream&out,const  vector_word &a)
-{
-	uint32_t n = (uint32_t) a.size();
-	out << n;
-	if (n)
-		out.WriteBuffer( (void*)&a[0], (int)(sizeof(a[0])*n) );
-	return out;
-}
-
-CStream& utils::operator << (CStream&out,const  vector_signed_word &a)
-{
-	uint32_t n = (uint32_t) a.size();
-	out << n;
-	if (n)
-		out.WriteBuffer( (void*)&a[0], (int)(sizeof(a[0])*n) );
-	return out;
-}
-CStream& utils::operator << (CStream&out,const  vector_long &a)
-{
-	uint32_t n = (uint32_t) a.size();
-	out << n;
-	if (n)
-		out.WriteBuffer( (void*)&a[0], (int)(sizeof(a[0])*n) );
-	return out;
-}
-
-CStream& utils::operator << (CStream&out,const  vector_float &a)
-{
-	uint32_t n = (uint32_t) a.size();
-	out << n;
-	if (n)
-		out.WriteBuffer( (void*)&a[0], (int)(sizeof(a[0])*n) );
-	return out;
-}
-
-CStream& utils::operator << (CStream&out,const  vector_double &a)
-{
-	uint32_t n = (uint32_t) a.size();
-	out << n;
-	if (n)
-		out.WriteBuffer( (void*)&a[0], (int)(sizeof(a[0])*n) );
-	return out;
-}
-
-CStream& utils::operator << (CStream&out,const  vector_byte &a)
-{
-	uint32_t n = (uint32_t) a.size();
-	out << n;
-	if (n)
-		out.WriteBuffer( (void*)&a[0], (int)(sizeof(a[0])*n) );
-	return out;
-}
-CStream& utils::operator << (CStream&out,const  vector_signed_byte &a)
-{
-	uint32_t n = (uint32_t) a.size();
-	out << n;
-	if (n)
-		out.WriteBuffer( (void*)&a[0], (int)(sizeof(a[0])*n) );
-	return out;
-}
 
 CStream& utils::operator << (CStream&out,const  vector_bool &a)
 {
@@ -320,93 +242,57 @@ CStream& CStream::operator >> (CSerializable &obj)
 			Reads an elemental data type from the stream.
  ---------------------------------------------------------------*/
 
-CStream& utils::operator>>(CStream&in, vector_int &a)
+namespace mrpt
 {
-	uint32_t   n;
-	in >> n;
-	a.resize(n);
-	if (n)
-		in.ReadBuffer( (void*)&a[0], sizeof(a[0])*n);
-	return in;
+	namespace utils
+	{
+		// For backward compatibility, since in MRPT<0.8.1 vector_XXX and std::vector<XXX> were exactly equivalent, now there're not.
+		namespace detail {
+			template <typename VEC> inline CStream& writeStdVectorToStream(CStream&s, const VEC &v) {
+				const uint32_t n = static_cast<uint32_t>(v.size());
+				s << n; if (n) s.WriteBuffer( (void*)&v[0], (int)(sizeof(v[0])*n) );
+				return s;
+			}
+			template <typename VEC> inline CStream& readStdVectorToStream(CStream&s, VEC &v) {
+				uint32_t n; s >> n;
+				v.resize(n); if (n) s.ReadBuffer( (void*)&v[0], (int)(sizeof(v[0])*n) );
+				return s;
+			}
+		}
+	}
 }
 
-CStream& utils::operator>>(CStream&in, vector_uint &a)
-{
-	uint32_t   n;
-	in >> n;
-	a.resize(n);
-	if (n)
-		in.ReadBuffer( (void*)&a[0], sizeof(a[0])*n);
-	return in;
-}
+// Write:
+CStream& utils::operator << (CStream&s, const vector_float  &a) { return detail::writeStdVectorToStream(s,a); }
+CStream& utils::operator << (CStream&s, const vector_double &a) { return detail::writeStdVectorToStream(s,a); }
+CStream& utils::operator << (CStream&s, const std::vector<float>  &a) { return detail::writeStdVectorToStream(s,a); }
+CStream& utils::operator << (CStream&s, const std::vector<double> &a) { return detail::writeStdVectorToStream(s,a); }
 
-CStream& utils::operator>>(CStream&in, vector_word &a)
-{
-	uint32_t   n;
-	in >> n;
-	a.resize(n);
-	if (n)
-		in.ReadBuffer( (void*)&a[0], sizeof(a[0])*n);
-	return in;
-}
-CStream& utils::operator>>(CStream&in, vector_signed_word &a)
-{
-	uint32_t   n;
-	in >> n;
-	a.resize(n);
-	if (n)
-		in.ReadBuffer( (void*)&a[0], sizeof(a[0])*n);
-	return in;
-}
+CStream& utils::operator << (CStream&s, const vector_int &a) { return detail::writeStdVectorToStream(s,a); }
+CStream& utils::operator << (CStream&s, const vector_uint &a) { return detail::writeStdVectorToStream(s,a); }
+CStream& utils::operator << (CStream&s, const vector_word &a) { return detail::writeStdVectorToStream(s,a); }
+CStream& utils::operator << (CStream&s, const vector_signed_word &a) { return detail::writeStdVectorToStream(s,a); }
+CStream& utils::operator << (CStream&s, const vector_long &a) { return detail::writeStdVectorToStream(s,a); }
+CStream& utils::operator << (CStream&s, const vector_byte  &a) { return detail::writeStdVectorToStream(s,a); }
+CStream& utils::operator << (CStream&s, const vector_signed_byte  &a) { return detail::writeStdVectorToStream(s,a); }
 
-CStream& utils::operator>>(CStream&in, vector_long &a)
-{
-	uint32_t   n;
-	in >> n;
-	a.resize(n);
-	if (n)
-		in.ReadBuffer( (void*)&a[0], sizeof(a[0])*n);
-	return in;
-}
+// Read:
+CStream& utils::operator >> (CStream&s, std::vector<float>  &a) { return detail::readStdVectorToStream(s,a); }
+CStream& utils::operator >> (CStream&s, std::vector<double> &a) { return detail::readStdVectorToStream(s,a); }
+CStream& utils::operator >> (CStream&s, vector_float &a) { return detail::readStdVectorToStream(s,a); }
+CStream& utils::operator >> (CStream&s, vector_double &a) { return detail::readStdVectorToStream(s,a); }
+CStream& utils::operator >> (CStream&s, vector_int &a) { return detail::readStdVectorToStream(s,a); }
+CStream& utils::operator >> (CStream&s, vector_uint &a) { return detail::readStdVectorToStream(s,a); }
+CStream& utils::operator >> (CStream&s, vector_word &a) { return detail::readStdVectorToStream(s,a); }
+CStream& utils::operator >> (CStream&s, vector_signed_word &a) { return detail::readStdVectorToStream(s,a); }
+CStream& utils::operator >> (CStream&s, vector_long &a) { return detail::readStdVectorToStream(s,a); }
+CStream& utils::operator >> (CStream&s, vector_byte &a) { return detail::readStdVectorToStream(s,a); }
+CStream& utils::operator >> (CStream&s, vector_signed_byte &a) { return detail::readStdVectorToStream(s,a); }
 
-CStream& utils::operator>>(CStream&in, vector_float &a)
-{
-	uint32_t   n;
-	in >> n;
-	a.resize(n);
-	if (n)
-		in.ReadBuffer( (void*)&a[0], sizeof(a[0])*n);
-	return in;
-}
-
-CStream& utils::operator>>(CStream&in, vector_double &a)
-{
-	uint32_t   n;
-	in >> n;
-	a.resize(n);
-	if (n)
-		in.ReadBuffer( (void*)&a[0], sizeof(a[0])*n);
-	return in;
-}
-
-CStream& utils::operator>>(CStream&in, vector_byte &a)
-{
-	uint32_t   n;
-	in >> n;
-	a.resize(n);
-	if (n)
-		in.ReadBuffer( (void*)&a[0], sizeof(a[0])*n);
-	return in;
-}
-CStream& utils::operator>>(CStream&in, vector_signed_byte &a)
-{
-	uint32_t   n;
-	in >> n;
-	a.resize(n);
-	if (n)
-		in.ReadBuffer( (void*)&a[0], sizeof(a[0])*n);
-	return in;
-}
+#if MRPT_WORD_SIZE!=32  // If it's 32 bit, size_t <=> uint32_t
+CStream& utils::operator << (CStream&s, const std::vector<size_t> &a) { return detail::writeStdVectorToStream(s,a); }
+CStream& utils::operator >> (CStream&s, std::vector<size_t> &a) { return detail::readStdVectorToStream(s,a); }
+#endif
 
 CStream& utils::operator>>(CStream&in, vector_bool &a)
 {

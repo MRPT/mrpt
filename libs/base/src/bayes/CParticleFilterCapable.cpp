@@ -402,7 +402,7 @@ void  CParticleFilterCapable::prepareFastDrawSample(
 		// Save the log likelihoods:
 		for (i=0;i<M;i++)	m_fastDrawAuxiliary.PDF[i] = partEvaluator(PF_options, this,i,action,observation);
 		// "Normalize":
-		m_fastDrawAuxiliary.PDF -= math::maximum( m_fastDrawAuxiliary.PDF );
+		m_fastDrawAuxiliary.PDF.array() -= math::maximum( m_fastDrawAuxiliary.PDF );
 		for (i=0;i<M;i++)	SUM += m_fastDrawAuxiliary.PDF[i] = exp( m_fastDrawAuxiliary.PDF[i] );
 		ASSERT_(SUM>=0);
 		MRPT_CHECK_NORMAL_NUMBER(SUM);

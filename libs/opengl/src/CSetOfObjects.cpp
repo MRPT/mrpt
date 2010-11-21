@@ -31,7 +31,6 @@
 
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/math/CVectorTemplate.h>
 
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/poses/CPose3D.h>

@@ -116,7 +116,7 @@ CScanMatching::CScanMatching(wxWindow* parent,wxWindowID id)
 	wxFlexGridSizer* FlexGridSizer12;
 	wxFlexGridSizer* FlexGridSizer5;
 	wxStaticBoxSizer* StaticBoxSizer1;
-	
+
 	Create(parent, wxID_ANY, _("Scan Matching Experimenting Module"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("wxID_ANY"));
 	SetMinSize(wxSize(200,200));
 	FlexGridSizer1 = new wxFlexGridSizer(1, 1, 0, 0);
@@ -259,7 +259,7 @@ CScanMatching::CScanMatching(wxWindow* parent,wxWindowID id)
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
-	
+
 	Connect(ID_BITMAPBUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CScanMatching::OnbtnHelpClick);
 	Connect(ID_RADIOBUTTON1,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&CScanMatching::OChangeSelectedMapType);
 	Connect(ID_RADIOBUTTON2,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&CScanMatching::OChangeSelectedMapType);
@@ -472,7 +472,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent& event)
 		lyRefPt->SetPen( wxPen(wxColour(0,0,255),3) );
 		lyRefPt->SetContinuity( false );
 
-		vector_float xs,ys;
+		vector<float> xs,ys;
 		refMapPt.getAllPoints(xs,ys);
 		lyRefPt->SetData( xs, ys );
 
@@ -487,7 +487,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent& event)
 		lyNewPt->SetContinuity( false );
 		lyNewPt->ShowName(false);
 
-		vector_float xs,ys;
+		vector<float> xs,ys;
 		newMapPt.getAllPoints(xs,ys);
 		lyNewPt->setPoints( xs, ys, false );
 
@@ -501,7 +501,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent& event)
 		lyNewRobotPose->SetPen( wxPen(wxColor(0,0,0),2 ) );
 		lyNewRobotPose->SetContinuity(true);
 		lyNewRobotPose->ShowName(true);
-		vector_float xs,ys;
+		vector<float> xs,ys;
 		xs.push_back(0); ys.push_back(0);
 		xs.push_back(1); ys.push_back(0);
 		xs.push_back(0); ys.push_back(0);

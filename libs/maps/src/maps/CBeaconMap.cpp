@@ -526,7 +526,7 @@ bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPo
 								COV2.setSize(2,2);
 								if (COV2.det()==0)
 								{
-									COV.unit();
+									COV.setIdentity();
 									COV*= square( 0.01f );
 									if (insertionOptions.minElevation_deg == insertionOptions.maxElevation_deg )
 										COV(2,2) = 0;	// We are in a 2D map:
@@ -579,11 +579,8 @@ bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPo
 								beac->m_locationGauss.mean.y_incr(K(1,0) * y );
 								beac->m_locationGauss.mean.z_incr( K(2,0) * y );
 
-								CMatrixDouble33	I;
-								I.unit();
-
-								beac->m_locationGauss.cov = (I - K*H) * beac->m_locationGauss.cov;
-								beac->m_locationGauss.cov.force_symmetry();
+								beac->m_locationGauss.cov = (Eigen::Matrix<double,3,3>::Identity() - K*H) * beac->m_locationGauss.cov;
+								//beac->m_locationGauss.cov.force_symmetry();
 							}
 						}
 						break;
@@ -626,12 +623,8 @@ bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPo
 								it->val.mean.y_incr( K(1,0) * y );
 								it->val.mean.z_incr( K(2,0) * y );
 
-
-								CMatrixDouble33	I;
-								I.unit();
-
-								it->val.cov = (I - K*H) * it->val.cov;
-								it->val.cov.force_symmetry();
+								it->val.cov = (Eigen::Matrix<double,3,3>::Identity() - K*H) * it->val.cov;
+								//it->val.cov.force_symmetry();
 
 								// Update the weight of this mode:
 								// ----------------------------------

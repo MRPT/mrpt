@@ -72,7 +72,7 @@ WARN_LOGFILE           =
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = $MRPT_LIST_DIRECTORIES
-FILE_PATTERNS          = *.h *.cpp *.hpp *.tpp
+FILE_PATTERNS          = *.h *.cpp *.hpp *.tpp *.
 RECURSIVE              = YES
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO

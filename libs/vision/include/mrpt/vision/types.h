@@ -122,7 +122,7 @@ namespace mrpt
 		/** Data returned by  mrpt::vision::camera_calib_ba */
 		struct VISION_IMPEXP TCamCalibBAResults
 		{
-			std::vector<mrpt::poses::CPose3DQuat>  	camera_poses;
+			std::vector<mrpt::poses::CPose3DQuat,Eigen::aligned_allocator<mrpt::poses::CPose3DQuat> >  	camera_poses;
 			std::vector<mrpt::math::TPoint3D>		landmark_positions;
 		};
 

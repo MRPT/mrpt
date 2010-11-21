@@ -49,22 +49,37 @@ CFileStream::CFileStream() : m_f()
 /*---------------------------------------------------------------
 							Constructor
  ---------------------------------------------------------------*/
-CFileStream::CFileStream( const string &fileName, TFileOpenModes mode ) : m_f()
+CFileStream::CFileStream( const string &fileName, TFileOpenModes mode_ ) : m_f()
 {
-	MRPT_START;
+	MRPT_START
+
+	std::ios_base::openmode mode = std::ios_base::in;
+	if (mode_==fomRead) mode = std::ios_base::in;
+	else if (mode_==fomWrite) mode  = std::ios_base::out | std::ios_base::trunc;
+	else if (mode_==fomAppend) mode = std::ios_base::app | std::ios_base::out;
+	else if (mode_==(fomRead|fomWrite))   mode = std::ios_base::in | std::ios_base::out | std::ios_base::trunc;
+	else if (mode_==(fomAppend|fomWrite)) mode = std::ios_base::in | std::ios_base::out | std::ios_base::app;
+
 	// Try to open the file:
 	m_f.open(fileName.c_str(), mode);
 	if (!m_f.is_open())
 		THROW_EXCEPTION_CUSTOM_MSG1( "Error creating/opening: '%s'",fileName.c_str() );
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
 							open
  ---------------------------------------------------------------*/
-bool CFileStream::open(const std::string &fileName, TFileOpenModes mode)
+bool CFileStream::open(const std::string &fileName, TFileOpenModes mode_)
 {
 	MRPT_START;
+
+	std::ios_base::openmode mode = std::ios_base::in;
+	if (mode_==fomRead) mode = std::ios_base::in;
+	else if (mode_==fomWrite) mode  = std::ios_base::out | std::ios_base::trunc;
+	else if (mode_==fomAppend) mode = std::ios_base::app | std::ios_base::out;
+	else if (mode_==(fomRead|fomWrite))   mode = std::ios_base::in | std::ios_base::out | std::ios_base::trunc;
+	else if (mode_==(fomAppend|fomWrite)) mode = std::ios_base::in | std::ios_base::out | std::ios_base::app;
 
 	if (m_f.is_open())
 		m_f.close();

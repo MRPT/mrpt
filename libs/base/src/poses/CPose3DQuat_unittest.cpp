@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/base.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -345,6 +345,49 @@ protected:
 	}
 
 
+	static void func_normalizeJacob(const CArrayDouble<4> &x, const double &dummy, CArrayDouble<4> &Y)
+	{
+		CQuaternionDouble q;
+		for (int i=0;i<4;i++) q[i]=x[i];
+		q.normalize();
+		for (int i=0;i<4;i++) Y[i]=q[i];
+	}
+
+	void test_normalizeJacob(double yaw1,double pitch1,double roll1)
+	{
+		const CPose3D pp(0,0,0,yaw1,pitch1,roll1);
+		CQuaternionDouble q1;
+		pp.getAsQuaternion(q1);
+
+		CMatrixFixedNumeric<double,4,4> df_dpose(UNINITIALIZED_MATRIX);
+		q1.normalizationJacobian(df_dpose);
+
+
+		// Numerical approximation:
+		CMatrixFixedNumeric<double,4,4> num_df_dpose(UNINITIALIZED_MATRIX);
+		{
+			CArrayDouble<4> x_mean;
+			for (int i=0;i<4;i++) x_mean[i]=q1[i];
+
+			double DUMMY=0;
+			CArrayDouble<4> x_incrs;
+			x_incrs.assign(1e-5);
+			CMatrixDouble numJacobs;
+			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_normalizeJacob,x_incrs, DUMMY, numJacobs );
+
+			numJacobs.extractMatrix(0,0, num_df_dpose);
+		}
+
+
+		// Compare:
+		EXPECT_NEAR(0, (df_dpose-num_df_dpose).Abs().sumAll(), 3e-3 )
+			<< "q1: " << q1 << endl
+			<< "Numeric approximation of df_dpose: " << endl << num_df_dpose << endl
+			<< "Implemented method: " << endl << df_dpose << endl
+			<< "Error: " << endl << df_dpose-num_df_dpose << endl;
+	}
+
+
 };
 
 
@@ -429,6 +472,16 @@ TEST_F(Pose3DQuatTests,SphericalCoordsJacobian)
 	test_sphericalCoords(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10),   10,11,12 );
 	test_sphericalCoords(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60),   10.0, 20.0, 30.0 );
 	test_sphericalCoords(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40),  -5.0, -15.0, 8.0 );
+}
+
+TEST_F(Pose3DQuatTests,NormalizationJacobian)
+{
+	test_normalizeJacob(DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));
+	test_normalizeJacob(DEG2RAD(10),DEG2RAD(0),DEG2RAD(0));
+	test_normalizeJacob(DEG2RAD(0),DEG2RAD(10),DEG2RAD(0));
+	test_normalizeJacob(DEG2RAD(0),DEG2RAD(0),DEG2RAD(10));
+	test_normalizeJacob(DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60));
+	test_normalizeJacob(DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40));
 }
 
 

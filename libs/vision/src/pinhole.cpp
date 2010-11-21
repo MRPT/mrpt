@@ -58,7 +58,7 @@ void mrpt::vision::pinhole::projectPoints_no_distortion(
 	MRPT_START
 
 	// Do NOT distort points:
-	static const vector_double distortion_dummy(4,0);
+	static const std::vector<double> distortion_dummy(4,0);
 
 	projectPoints_with_distortion(
 		in_points_3D,

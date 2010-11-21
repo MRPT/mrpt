@@ -28,7 +28,6 @@
 
 #include <mrpt/opengl.h>  // Precompiled header
 
-#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/poses/CPose3D.h>
 
 #include <mrpt/opengl/CMesh.h>

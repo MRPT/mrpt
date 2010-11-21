@@ -461,8 +461,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 						beacMap->get(0).m_typePDF=CBeacon::pdfGauss;
 						beacMap->get(0).m_locationSOG.clear();
 						beacMap->get(0).m_locationGauss.mean = fixedBeacon;
-						beacMap->get(0).m_locationGauss.cov.unit();
-						beacMap->get(0).m_locationGauss.cov *= 1e-6f;
+						beacMap->get(0).m_locationGauss.cov.unit(3, 1e-6);
 					}
 				}
 			} // end if there is no odometry

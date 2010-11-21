@@ -206,7 +206,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				unsigned int k;
 				for( y = 0, k = 0; y < check_size.height; y++ )
 					for( x = 0; x < check_size.width; x++, k++ )
-						dat.detected_corners.push_back( mrpt::poses::CPoint2D( corners_list[valid_detected_imgs*CORNERS_COUNT + k].x, corners_list[valid_detected_imgs*CORNERS_COUNT + k].y ) );
+						dat.detected_corners.push_back( mrpt::utils::TPixelCoordf( corners_list[valid_detected_imgs*CORNERS_COUNT + k].x, corners_list[valid_detected_imgs*CORNERS_COUNT + k].y ) );
 
 				// Draw the checkerboard in the corresponding image:
 				// ----------------------------------------------------
@@ -318,7 +318,9 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 			0 );
 
 		// Load matrix:
-		out_camera_params.intrinsicParams = CMatrixFloat33( CMatrixDouble33( proj_matrix ) );
+		//out_camera_params.intrinsicParams = CMatrixDouble33( CMatrixFloat33( proj_matrix ) );
+		out_camera_params.intrinsicParams = CMatrixFloat33( proj_matrix ).cast<double>();
+
 		out_camera_params.dist.assign(0);
 		for (int i=0;i<4;i++)
 			out_camera_params.dist[i] = distortion[i];
@@ -426,7 +428,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				}
 
 				// Accumulate error:
-				sqrErr+=dat.detected_corners[p].distance2DToSquare(px_d,py_d); // Error relative to the original (distorted) image.
+				sqrErr+=square(px_d-dat.detected_corners[p].x)+square(py_d-dat.detected_corners[p].y); // Error relative to the original (distorted) image.
 			}
 		}
 

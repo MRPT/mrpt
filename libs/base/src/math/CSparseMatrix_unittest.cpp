@@ -59,7 +59,7 @@ void generateRandomSparseMatrix(size_t N, size_t M, size_t nEntries,  CSparseMat
 void do_test_init_to_unit(size_t N)
 {
 	CMatrixDouble	 dense1;
-	dense1.unit(N);
+	dense1.unit(N,1.0);
 
 	CSparseMatrix SM(dense1);
 
@@ -227,7 +227,7 @@ TEST(SparseMatrix, CholeskyDecomp)
 	CMatrixDouble Ud; // Upper triangle
 	D.chol(Ud);
 
-	const double err = ((~Ud)-L).Abs().mean();
+	const double err = ((Ud.transpose())-L).Abs().mean();
 	EXPECT_TRUE(err<1e-8);
 }
 

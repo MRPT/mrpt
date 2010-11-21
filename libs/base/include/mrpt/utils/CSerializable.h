@@ -211,21 +211,22 @@ namespace mrpt
 
 		// These ones act as a "translation" between vector_XXX types and their base classes:
 		#define MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(_CONT) \
-			template<> struct TTypeName <_CONT> : TTypeName<std::vector<_CONT::value_type> > { };
+			template<> struct TTypeName <_CONT> : TTypeName<std::vector<_CONT::Scalar> > { };
 
-		MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(vector_signed_byte )
-		MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(vector_signed_word)
-		MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(vector_int)
-		MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(vector_long)
 		MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(vector_float)
 		MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(vector_double)
-		MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(vector_byte)
-		MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(vector_word)
-		MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(vector_uint)
 
-        #if MRPT_WORD_SIZE!=32  // If it's 32 bit, size_t <=> uint32_t
-		MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(vector_size_t)
-        #endif
+		// These ones are not needed since typedef's of "std::vector<>" are automatically supported
+		//MRPT_DECLARE_TTYPENAME_MAP_FOR_STDVECTOR(vector_signed_byte )
+		//MRPT_DECLARE_TTYPENAME_MAP_FOR_STDVECTOR(vector_signed_word)
+		//MRPT_DECLARE_TTYPENAME_MAP_FOR_STDVECTOR(vector_int)
+		//MRPT_DECLARE_TTYPENAME_MAP_FOR_STDVECTOR(vector_long)
+		//MRPT_DECLARE_TTYPENAME_MAP_FOR_STDVECTOR(vector_byte)
+		//MRPT_DECLARE_TTYPENAME_MAP_FOR_STDVECTOR(vector_word)
+		//MRPT_DECLARE_TTYPENAME_MAP_FOR_STDVECTOR(vector_uint)
+        //#if MRPT_WORD_SIZE!=32  // If it's 32 bit, size_t <=> uint32_t
+		//MRPT_DECLARE_TTYPENAME_MAP_FOR_STDVECTOR(vector_size_t)
+        //#endif
 
 
 		#define MRPT_DECLARE_TTYPENAME_CONTAINER_ASSOC(_CONTAINER) \

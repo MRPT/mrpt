@@ -39,6 +39,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <ctime>
+
 // Define macros in platform dependant stdint.h header:
 #ifndef __STDC_FORMAT_MACROS
 #	define __STDC_FORMAT_MACROS
@@ -65,169 +67,88 @@
 	#include <mmintrin.h>
 #endif
 
-//!< See ops_containers.h
-#define DECLARE_MRPT_CONTAINER_TYPES \
-		template <class ANOTHERCONT> struct mrpt_container { \
-			typedef void void_type; \
-			typedef ANOTHERCONT dum_type; \
-			typedef mrpt_autotype cont_type; \
-			typedef typename mrpt_autotype::value_type element_type; \
-		};
-
-#define COMMON_DECLARE_MRPT_CONTAINER_IS_MATRIX \
-		typedef void mrpt_matrix_tag; \
-		template <class ANOTHERCONT> struct mrpt_matrix_tag_templ { typedef void void_type; typedef ANOTHERCONT dum_type; typedef mrpt_autotype cont_type; \
-		};
-
-#define DECLARE_MRPT_CONTAINER_IS_MATRIX \
-		COMMON_DECLARE_MRPT_CONTAINER_IS_MATRIX \
-		enum dummy_enum {  mrpt_matrix_type_ncols = -1, \
-				mrpt_matrix_type_nrows = -1 }; \
-
-#define DECLARE_MRPT_CONTAINER_IS_MATRIX_FIXED(NROWS,NCOLS) \
-		COMMON_DECLARE_MRPT_CONTAINER_IS_MATRIX \
-		enum dummy_enum {  mrpt_matrix_type_ncols = NCOLS, \
-				mrpt_matrix_type_nrows = NROWS };
-
-
-#define DECLARE_MRPT_CONTAINER_IS_VECTOR \
-		typedef void mrpt_vector_tag; \
-		template <class ANOTHERCONT> struct mrpt_vector_tag_templ { typedef void void_type; typedef ANOTHERCONT dum_type; typedef mrpt_autotype cont_type; }; \
-		enum dummy_enum {  mrpt_vector_type_len = -1 }; \
-
-#define DECLARE_MRPT_CONTAINER_IS_VECTOR_FIXED(LEN) \
-		typedef void mrpt_vector_tag; \
-		template <class ANOTHERCONT> struct mrpt_vector_tag_templ { typedef void void_type; typedef ANOTHERCONT dum_type; typedef mrpt_autotype cont_type; }; \
-		enum dummy_enum {  mrpt_vector_type_len = LEN }; \
-
-/** A metaprogramming approach to assure that one type is a MRPT containers, to limit the scope of generic templates.
-  *  If the type fulfills the condition, the macro expands into a simple "void" which can be used in function declarations. */
-#define RET_VOID_ASSERT_MRPTCONTAINER(_CONTAINER) \
-	typename _CONTAINER::template mrpt_container<void>::void_type
-
-/** A metaprogramming approach to assure that two types are MRPT containers, to limit the scope of generic templates.
-  *  If both types fulfill the condition, the macro expands into a simple "void" which can be used in function declarations. */
-#define RET_VOID_ASSERT_MRPTCONTAINERS(_CONTAINER1,_CONTAINER2) \
-	typename _CONTAINER1::template mrpt_container<typename _CONTAINER2::mrpt_autotype>::void_type
-
-/** A metaprogramming approach to assure that two types are MRPT containers, to limit the scope of generic templates.
-  *  If both types fulfill the condition, the macro expands into a "_CONTAINER1" type which can be used in function declarations. */
-#define RET_CONT1_ASSERT_MRPTCONTAINERS(_CONTAINER1,_CONTAINER2) \
-	typename _CONTAINER1::template mrpt_container<typename _CONTAINER2::mrpt_autotype>::cont_type
-
-/** A metaprogramming approach to assure that two types are MRPT containers, to limit the scope of generic templates.
-  *  If both types fulfill the condition, the macro expands into the type of "_CONTAINER1"'s elements, which can be used in function declarations. */
-#define RET_ELEMENT_ASSERT_MRPTCONTAINERS(_CONTAINER1,_CONTAINER2) \
-	typename _CONTAINER1::template mrpt_container<typename _CONTAINER2::mrpt_autotype>::element_type
-
-/** A metaprogramming approach to assure that one type is a MRPT container, to limit the scope of generic templates.
-  *  If the type fulfills the condition, the macro expands into a "_CONTAINER" type which can be used in function declarations. */
-#define RET_CONT_ASSERT_MRPTCONTAINER(_CONTAINER) \
-	typename _CONTAINER::mrpt_autotype
-
-/** A metaprogramming approach to assure that one type is a MRPT container, to limit the scope of generic templates.
-  *  If the type fulfills the condition, the macro expands into the type of each "_CONTAINER"'s elements, which can be used in function declarations. */
-#define RET_ELEMENT_ASSERT_MRPTCONTAINER(_CONTAINER) \
-	typename _CONTAINER::mrpt_autotype::value_type
-
-/** A metaprogramming approach to assure that one type is a MRPT container, to limit the scope of generic templates.
-  *  If the type fulfills the condition, the macro expands into the type "_RETTYPE", which can be used in function declarations. */
-#define RET_TYPE_ASSERT_MRPTCONTAINER(_CONTAINER,_RETTYPE) \
-	typename _CONTAINER::template mrpt_container<_RETTYPE>::dum_type
-
-/** A metaprogramming approach to assure that a type is a MRPT matrix, to limit the scope of generic templates.
-  *  If the type fulfills the condition, the macro expands into a simple "void" which can be used in function declarations. */
-#define RET_VOID_ASSERT_MRPTMATRIX(_MATRIX) \
-	typename _MATRIX::template mrpt_matrix_tag_templ<void>::void_type
-
-/** A metaprogramming approach to assure that a type is a MRPT matrix, to limit the scope of generic templates.
-  *  If the type fulfills the condition, the macro expands into the type "_RETTYPE", which can be used in function declarations. */
-#define RET_TYPE_ASSERT_MRPTMATRIX(_MATRIX,_RETTYPE) \
-	typename _MATRIX::template mrpt_matrix_tag_templ<_RETTYPE>::dum_type
-
-/** A metaprogramming approach to assure that a type is a MRPT matrix, to limit the scope of generic templates.
-  *  If both types fulfill the condition, the macro expands into the type of _MATRIX which can be used in function declarations. */
-#define RET_MAT_ASSERT_MRPTMATRIX(_MATRIX) \
-	typename _MATRIX::template mrpt_matrix_tag_templ<void>::cont_type
-
-/** A metaprogramming approach to assure that two types are MRPT matrices, to limit the scope of generic templates.
-  *  If both types fulfill the condition, the macro expands into a simple "void" which can be used in function declarations. */
-#define RET_VOID_ASSERT_MRPTMATRICES(_MATRIX1,_MATRIX2) \
-	typename _MATRIX1::template mrpt_matrix_tag_templ<typename _MATRIX2::mrpt_matrix_tag>::void_type
-
-/** A metaprogramming approach to assure that two types are MRPT matrices, to limit the scope of generic templates.
-  *  If both types fulfill the condition, the macro expands into the type of _MATRIX1 which can be used in function declarations. */
-#define RET_MAT1_ASSERT_MRPTMATRICES(_MATRIX1,_MATRIX2) \
-	typename _MATRIX1::template mrpt_matrix_tag_templ<typename _MATRIX2::mrpt_matrix_tag>::cont_type
-
-
-
-/** A metaprogramming approach to assure that two types are MRPT vectors, to limit the scope of generic templates.
-  *  If both types fulfill the condition, the macro expands into a "_CONTAINER1" type which can be used in function declarations. */
-#define RET_CONT1_ASSERT_MRPTVECTORS(_VECTOR1,_VECTOR2) \
-	typename _VECTOR1::template mrpt_vector_tag_templ<typename _VECTOR2::mrpt_vector_tag>::cont_type
-
-
-// needed here for DECLARE_COMMON_CONTAINERS_MEMBERS
+// needed here for a few basic types used in Eigen MRPT's plugin:
 #include <mrpt/math/math_frwds.h>
 
+// --------------------------------------------------
+// Include the Eigen3 library headers, including
+//  MRPT's extensions:
+// --------------------------------------------------
+#include <iostream> // These headers are assumed by <mrpt/math/eigen_plugins.h>:
+#include <fstream>
+#include <sstream>
+#ifdef EIGEN_CORE_H
+#	error **FATAL ERROR**: MRPT headers must be included before Eigen headers.
+#endif
+#define EIGEN_USE_NEW_STDVECTOR
+#include <Eigen/Dense>
+#include <Eigen/StdVector>
+#include <Eigen/StdDeque>
+
+#if !EIGEN_VERSION_AT_LEAST(2,90,0)
+#error MRPT needs version 3.0.0-beta of Eigen or newer
+#endif
+
+// Template implementations that need to be after all Eigen includes:
+#include EIGEN_MATRIXBASE_PLUGIN_POST_IMPL
+// --------------------------------------------------
+//  End of Eigen includes
+// --------------------------------------------------
+
+
+// This must be put inside any MRPT class that inherits from an Eigen class:
+#define MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(_CLASS_) \
+	/*! Assignment operator from any other Eigen class */ \
+    template<typename OtherDerived> \
+    inline mrpt_autotype & operator= (const Eigen::MatrixBase <OtherDerived>& other) { \
+        Base::operator=(other); \
+        return *this; \
+    } \
+	/*! Constructor from any other Eigen class */ \
+    template<typename OtherDerived> \
+	inline _CLASS_(const Eigen::MatrixBase <OtherDerived>& other) : Base(other) { } \
 
 namespace mrpt
 {
-	/** Numeric vectors compatible with mrpt/math/ops_containers.h:  */
-	template <typename _TYPE>
-	struct mrpt_base_vector : public std::vector<_TYPE>
+	template <typename T>
+	struct dynamicsize_vector : public Eigen::Matrix<T,Eigen::Dynamic,1>
 	{
-		inline mrpt_base_vector() : std::vector<_TYPE>() {}
-		inline mrpt_base_vector(const std::vector<_TYPE> &o) : std::vector<_TYPE>(o) {}
-		inline mrpt_base_vector<_TYPE> & operator =(const std::vector<_TYPE> &o) { std::vector<_TYPE>::operator =(o); return *this; }
-		inline mrpt_base_vector(size_t N) : std::vector<_TYPE>(N) { }
-		inline mrpt_base_vector(size_t N,_TYPE val) : std::vector<_TYPE>(N,val) { }
-		template<typename ITERATOR> inline mrpt_base_vector(const ITERATOR &b,const ITERATOR &e):std::vector<_TYPE>(b,e)	{}
-		typedef mrpt_base_vector<_TYPE> mrpt_autotype;
-		DECLARE_MRPT_CONTAINER_TYPES
-		DECLARE_MRPT_CONTAINER_IS_VECTOR
-		DECLARE_COMMON_CONTAINERS_MEMBERS(_TYPE)
+		typedef Eigen::Matrix<T,Eigen::Dynamic,1> Base;
+		typedef dynamicsize_vector<T> mrpt_autotype;
+		MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(dynamicsize_vector)
+
+		/** Default constructor: empty vector */
+		inline dynamicsize_vector() : Base() {}
+		/** Constructor, initializes to a given initial size */
+		inline dynamicsize_vector(size_t N) : Base(N,1) { Base::setZero(); }
+		/** Constructor, initializes to a given initial size, all elements to a given value */
+		inline dynamicsize_vector(size_t N, T init_val) : Base(N,1) { Base::assign(init_val); }
+		/** Constructor, initializes from a std::vector<> of scalars */
+		template <typename R>
+		inline dynamicsize_vector(const std::vector<R>& v) : Base(v.size(),1) { for (size_t i=0;i<v.size();i++) (*this)[i]=v[i]; }
+		/** Overloaded resize method that mimics std::vector::resize(SIZE,DEFAULT_VALUE) instead of resize(nrows,ncols) \note This method exists for backward compatibility in MRPT  */
+		inline void resize(const size_t N, const T default_val) { Base::resize(N,1); Base::setConstant(default_val); }
+		/** Normal resize of the vector (preserving old contents). */
+		inline void resize(const size_t N) { Base::conservativeResize(N); }
 	};
 
-	typedef mrpt_base_vector<float>		vector_float;
-	typedef mrpt_base_vector<double>	vector_double;
 
-	typedef mrpt_base_vector<int8_t>	vector_signed_byte;
-	typedef mrpt_base_vector<int16_t>	vector_signed_word;
-	typedef mrpt_base_vector<int32_t>	vector_int;
-	typedef mrpt_base_vector<int64_t>	vector_long;
-	typedef mrpt_base_vector<size_t>	vector_size_t;
-	typedef mrpt_base_vector<uint8_t>	vector_byte;
-	typedef mrpt_base_vector<uint16_t>	vector_word;
-	typedef mrpt_base_vector<uint32_t>	vector_uint;
+	typedef dynamicsize_vector<float>  vector_float;
+	typedef dynamicsize_vector<double> vector_double;
 
-	typedef std::vector<bool> 			vector_bool;	//!<  A type for passing a vector of bools.
-	typedef std::vector<std::string> 	vector_string;	//!<  A type for passing a vector of strings.
+	typedef std::vector<int8_t>      vector_signed_byte;
+	typedef std::vector<int16_t>     vector_signed_word;
+	typedef std::vector<int32_t>     vector_int;
+	typedef std::vector<int64_t>     vector_long;
+	typedef std::vector<size_t>      vector_size_t;
+	typedef std::vector<uint8_t>     vector_byte;
+	typedef std::vector<uint16_t>    vector_word;
+	typedef std::vector<uint32_t>	 vector_uint;
+	typedef std::vector<bool>        vector_bool;	//!<  A type for passing a vector of bools.
+	typedef std::vector<std::string> vector_string;	//!<  A type for passing a vector of strings.
 
 	namespace utils
 	{
-		// Functors:   Ret: NO  In:1-3
-		typedef void (*TFunctor_noRet_1inputs)(const void *);	//!< A generic functor type for functions accepting 1 input arguments and returning nothing.
-		typedef void (*TFunctor_noRet_2inputs)(const void *,const void *);	//!< A generic functor type for functions accepting 2 input arguments and returning nothing.
-		typedef void (*TFunctor_noRet_3inputs)(const void *,const void *,const void *);	//!< A generic functor type for functions accepting 3 input arguments and returning nothing.
-		// Functors:  Ret: double  In:1-3
-		typedef double (*TFunctor_retDouble_1inputs)(const void *);	//!< A generic functor type for functions accepting 1 input arguments and returning a double value.
-		typedef double (*TFunctor_retDouble_2inputs)(const void *,const void *);	//!< A generic functor type for functions accepting 2 input arguments and returning a double value.
-		typedef double (*TFunctor_retDouble_3inputs)(const void *,const void *,const void *);	//!< A generic functor type for functions accepting 3 input arguments and returning a double value.
-		// Functors:  Ret: vector  In: vector
-		typedef void (*TFunctor_retVecDbl_inpVecDbl)(const vector_double &in, vector_double &out);	//!< A generic functor type for functions accepting 1 vector and returning 1 vector.
-		typedef void (*TFunctor_retVecFlt_inpVecFlt)(const vector_float &in, vector_float &out);	//!< A generic functor type for functions accepting 1 vector and returning 1 vector.
-		typedef void (*TFunctor_retVecInt_inpVecInt)(const vector_int &in, vector_int &out);	//!< A generic functor type for functions accepting 1 vector and returning 1 vector.
-		// Functors:  Ret: vector  In: 2 x vector
-		typedef void (*TFunctor_retVecDbl_inp2VecDbl)(const vector_double &x,const vector_double &y, vector_double &out);	//!< A generic functor type for functions accepting 2 vectors and returning 1 vector.
-		typedef void (*TFunctor_retVecFlt_inp2VecFlt)(const vector_float &x,const vector_float &y, vector_float &out);		//!< A generic functor type for functions accepting 2 vectors and returning 1 vector.
-		typedef void (*TFunctor_retVecInt_inp2VecInt)(const vector_int &x,const vector_int &y, vector_int &out);	//!< A generic functor type for functions accepting 2 vectors and returning 1 vector.
-		// Functors:  Ret: double  In: vectors
-		typedef double (*TFunctor_retDbl_inp1VecDbl)(const vector_double &in1);	//!< A generic functor type for functions accepting 1 vector and returning 1 double.
-		typedef double (*TFunctor_retDbl_inp2VecDbl)(const vector_double &in1,const vector_double &in2);	//!< A generic functor type for functions accepting 2 vectors and returning 1 double.
-		typedef double (*TFunctor_retDbl_inp3VecDbl)(const vector_double &in1,const vector_double &in2,const vector_double &in3);	//!< A generic functor type for functions accepting 3 vectors and returning 1 double.
-
 		/** For performing type casting from a pointer to its numeric value.
 		*/
 		#if defined(_MSC_VER) && (_MSC_VER>=1300)

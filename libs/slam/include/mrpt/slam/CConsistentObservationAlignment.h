@@ -54,16 +54,18 @@ namespace mrpt
 		 *    for a global optimal estimation of laser range scan poses, but in
 		 *    this case it has been extended to include any type of
 		 *    observations as long as points-map-like operators are implemented over them.
-			<br>
-			 <b>This class work in the following way:</b><br>
-			  The input is a set of observations with associated "global" poses. This is
-			   supplied with a "CSimpleMap" object, but the probabilistic poses
-			   are ignored since only the mean values for the pose of each node are taken.<br>
-			  After invoking the algorithm with CConsistentObservationAlignment::execute(),
-			   a new "CSimpleMap" object is returned, where the
-			  NOTE: The first node on the input map is used as reference and therefore
-					  its pose is the only one which will never change.
-
+		 *    <br>
+ 		 *    <b>This class work in the following way:</b><br>
+		 *      The input is a set of observations with associated "global" poses. This is
+		 *       supplied with a "CSimpleMap" object, but the probabilistic poses
+		 *       are ignored since only the mean values for the pose of each node are taken.<br>
+		 *      After invoking the algorithm with CConsistentObservationAlignment::execute(),
+		 *       a new "CSimpleMap" object is returned, where the
+		 *      NOTE: The first node on the input map is used as reference and therefore
+		 *    		  its pose is the only one which will never change.
+		 *    
+	     * \note This class is superseded by more modern implementations of graph-slam. See mrpt::graphslam
+		 *
 		 * \sa CSimpleMap, CPosePDF, CObservation, utils::CDebugOutputCapable
 		 */
 		class SLAM_IMPEXP CConsistentObservationAlignment : public mrpt::utils::CDebugOutputCapable

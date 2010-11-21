@@ -29,8 +29,8 @@
 #define CRangeBearingKFSLAM2D_H
 
 #include <mrpt/utils/CDebugOutputCapable.h>
-#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/opengl.h>
@@ -244,9 +244,9 @@ namespace mrpt
 			  * \note It is assumed that the observations are independent, i.e. there are NO cross-covariances between them.
 			  */
 			void OnGetObservationsAndDataAssociation(
-				std::vector<KFArray_OBS>    &out_z,
+				vector_KFArray_OBS    &out_z,
 				vector_int                  &out_data_association,
-				const vector<KFArray_OBS>   &in_all_predictions,
+				const vector_KFArray_OBS   &in_all_predictions,
 				const KFMatrix              &in_S,
 				const vector_size_t         &in_lm_indices_in_S,
 				const KFMatrix_OxO          &in_R
@@ -254,7 +254,7 @@ namespace mrpt
 
 			void OnObservationModel(
 				const vector_size_t       &idx_landmarks_to_predict,
-				std::vector<KFArray_OBS>  &out_predictions
+				vector_KFArray_OBS  &out_predictions
 				) const;
 
 			/** Implements the observation Jacobians \f$ \frac{\partial h_i}{\partial x} \f$ and (when applicable) \f$ \frac{\partial h_i}{\partial y_i} \f$.
@@ -292,7 +292,7 @@ namespace mrpt
 			  * \sa OnGetObservations, OnDataAssociation
 			  */
 			void OnPreComputingPredictions(
-				const vector<KFArray_OBS>	&in_all_prediction_means,
+				const vector_KFArray_OBS	&in_all_prediction_means,
 				vector_size_t				&out_LM_indices_to_predict ) const;
 
 			/** If applicable to the given problem, this method implements the inverse observation model needed to extend the "map" with a new "element".

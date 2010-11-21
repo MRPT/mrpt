@@ -82,7 +82,7 @@ namespace mrpt
 
 
 			bool    tryToOpenComms(std::string *err_msg=NULL);	//!< Tries to open the com port and setup all the LMS protocol. Returns true if OK or already open.
-			bool  	waitContinuousSampleFrame( vector_float &ranges, unsigned char &LMS_status, bool &is_mm_mode );
+			bool  	waitContinuousSampleFrame( std::vector<float> &ranges, unsigned char &LMS_status, bool &is_mm_mode );
 
 
 			bool LMS_setupSerialComms();	//!< Assures laser is connected and operating at 38400, in its case returns true.

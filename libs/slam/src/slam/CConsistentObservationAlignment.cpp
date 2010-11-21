@@ -217,7 +217,7 @@ void  CConsistentObservationAlignment::execute(
 				// Not enought matching to take it into account:
 				// -------------------------------------------------
 				DCij[j][i]->mean = D_initial;
-				DCij[j][i]->cov.unit();
+				DCij[j][i]->cov.setIdentity();
 				DCij[j][i]->cov(0,0) = 100.0f;
 				DCij[j][i]->cov(1,1) = 100.0f;
 				DCij[j][i]->cov(2,2) = 1.0f;
@@ -228,7 +228,7 @@ void  CConsistentObservationAlignment::execute(
 				// -------------------------------------------------
 				atLeastOneStrongLink[i] = true;
 				atLeastOneStrongLink[j] = true;
-				DCij[j][i]->cov.unit();
+				DCij[j][i]->cov.setIdentity();
 				DCij[j][i]->cov(0,0) = 0.01f;
 				DCij[j][i]->cov(1,1) = 0.01f;
 				DCij[j][i]->cov(2,2) = 0.01f;
@@ -343,7 +343,7 @@ void  CConsistentObservationAlignment::execute(
 		{
 			if ((i+1)!=j)
 			{
-				CMatrixDouble31	pose = DCij[i+1][j]->mean;
+				CMatrixDouble31	pose = CMatrixDouble31( DCij[i+1][j]->mean );
 
 				m31 += (!DCij[i+1][j]->cov )*pose;
 			}
@@ -359,8 +359,8 @@ void  CConsistentObservationAlignment::execute(
 
 	// Perform the consistent, global estimation:
 	// ----------------------------------------------------------------------
-	CMatrixD		CovX = !G;
-	CMatrixD		X = CovX * B;
+	CMatrixD  CovX = G.inv();
+	CMatrixD  X = CovX * B;
 
 	// Generate the output map:
 	// ----------------------------------------------------------------------
@@ -497,7 +497,7 @@ void  CConsistentObservationAlignment::optimizeUserSuppliedData(
 	if (n<1)
 	{
 		out_OptimalPoses(0,0)->mean = CPose2D(0,0,0);
-		out_OptimalPoses(0,0)->cov  = CMatrix(3,3);
+		out_OptimalPoses(0,0)->cov.setConstant(0);
 		return;
 	}
 
@@ -559,7 +559,7 @@ void  CConsistentObservationAlignment::optimizeUserSuppliedData(
 		{
 			if ((i+1)!=j)
 			{
-				CMatrixDouble31	pose = in_PoseConstraints(i+1,j)->mean;
+				CMatrixDouble31	pose = CMatrixDouble31(in_PoseConstraints(i+1,j)->mean);
 				pose *= -1;
 				CMatrixDouble33	cov2 = in_PoseConstraints(i+1,j)->cov;
 

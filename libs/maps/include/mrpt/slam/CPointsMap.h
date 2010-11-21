@@ -366,8 +366,26 @@ namespace slam
 		/** Returns a copy of the 2D/3D points as a std::vector of float coordinates.
 		  * If decimation is greater than 1, only 1 point out of that number will be saved in the output, effectively performing a subsampling of the points.
 		  * \sa getPointsBufferRef_x, getPointsBufferRef_y, getPointsBufferRef_z
+		  * \tparam VECTOR can be std::vector<float or double> or any row/column Eigen::Array or Eigen::Matrix (this includes mrpt::vector_float and mrpt::vector_double).
 		  */
-		void  getAllPoints( std::vector<float> &xs, std::vector<float> &ys,std::vector<float> &zs, size_t decimation = 1 ) const;
+		template <class VECTOR>
+		void  getAllPoints( VECTOR &xs, VECTOR &ys, VECTOR &zs, size_t decimation = 1 ) const
+		{
+			MRPT_START
+			ASSERT_(decimation>0)
+			const size_t Nout = x.size() / decimation;
+			xs.resize(Nout);
+			ys.resize(Nout);
+			zs.resize(Nout);
+			size_t idx_in, idx_out;
+			for (idx_in=0,idx_out=0;idx_out<Nout;++idx_in,++idx_out)
+			{
+				xs[idx_out]=x[idx_in];
+				ys[idx_out]=y[idx_in];
+				zs[idx_out]=z[idx_in];
+			}
+			MRPT_END
+		}
 
 		inline void getAllPoints(std::vector<TPoint3D> &ps,size_t decimation=1) const	{
 			std::vector<float> dmy1,dmy2,dmy3;
@@ -416,10 +434,9 @@ namespace slam
 		virtual void reserve(size_t newLength) = 0;
 
 		/** Set all the points at once from vectors with X,Y and Z coordinates. \sa getAllPoints */
-		virtual void setAllPoints(const vector_float &X,const vector_float &Y,const vector_float &Z) = 0;
-
+		virtual void setAllPoints(const std::vector<float> &X,const std::vector<float> &Y,const std::vector<float> &Z) = 0;
 		/** Set all the points at once from vectors with X and Y coordinates (Z=0). \sa getAllPoints */
-		virtual void setAllPoints(const vector_float &X,const vector_float &Y) = 0;
+		virtual void setAllPoints(const std::vector<float> &X,const std::vector<float> &Y) = 0;
 
 		/** Delete points out of the given "z" axis range have been removed.
 		  */

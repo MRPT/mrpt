@@ -249,7 +249,7 @@ void CPose2D::operator *= (const double s)
 ---------------------------------------------------------------*/
 void  CPose2D::getHomogeneousMatrix(CMatrixDouble44& m) const
 {
-	m.unit();
+	m.unit(4,1.0);
 
 	m.set_unsafe(0,3, m_coords[0] );
 	m.set_unsafe(1,3, m_coords[1] );

@@ -72,9 +72,9 @@ namespace poses
 			double		log_w;
 		};
 
-		typedef std::deque<TGaussianMode> TModesList;
-		typedef std::deque<TGaussianMode>::const_iterator const_iterator;
-		typedef std::deque<TGaussianMode>::iterator iterator;
+		typedef std::vector<TGaussianMode,Eigen::aligned_allocator<TGaussianMode> > TModesList;
+		typedef TModesList::const_iterator const_iterator;
+		typedef TModesList::iterator iterator;
 
 	protected:
 		/** Assures the symmetry of the covariance matrix (eventually certain operations in the math-coprocessor lead to non-symmetric matrixes!)

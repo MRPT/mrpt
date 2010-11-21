@@ -486,7 +486,7 @@ void TestParticlesLocalization()
 				particle_matrix(step,10)=GT_Pose.y();
 				particle_matrix(step,11)=GT_Pose.phi();
 
-				ASSERT_( meanState.state.size() == nBeaconsInMap );
+				ASSERT_EQUAL_( size_t(meanState.state.size()), size_t(nBeaconsInMap) );
 				for (size_t l=0;l<nBeaconsInMap;l++)
 					particle_matrix(step,12+l)= meanState.state[l];
 				//----------------------------------------------

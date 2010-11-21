@@ -248,7 +248,7 @@ namespace mrpt
 			   * \sa computeCoordinatesTransformationBetweenNodes
 			   */
 			void  computeGloballyConsistentNodeCoordinates(
-				std::map<CHMHMapNode::TNodeID,CPose3DPDFGaussian>		&nodePoses,
+				std::map<CHMHMapNode::TNodeID,CPose3DPDFGaussian, std::less<CHMHMapNode::TNodeID>, Eigen::aligned_allocator<std::pair<const CHMHMapNode::TNodeID,CPose3DPDFGaussian> > >		&nodePoses,
 				const CHMHMapNode::TNodeID							&idReferenceNode,
 				const THypothesisID										&hypothesisID,
 				const unsigned int									&numberOfIterations = 2) const;

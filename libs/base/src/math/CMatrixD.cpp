@@ -51,11 +51,11 @@ void  CMatrixD::writeToStream(CStream &out, int *out_Version) const
 	else
 	{
 		// First, write the number of rows and columns:
-		out << (uint32_t)m_Rows << (uint32_t)m_Cols;
+		out << (uint32_t)rows() << (uint32_t)cols();
 
-		if (m_Rows>0 && m_Cols>0)
-			for (unsigned int i=0;i<m_Rows;i++)
-				out.WriteBuffer(m_Val[i],sizeof(m_Val[0][0])*m_Cols);
+		if (rows()>0 && cols()>0)
+			for (Index i=0;i<rows();i++)
+				out.WriteBuffer(&coeff(i,0),sizeof(Scalar)*cols());
 	}
 
 }
@@ -77,8 +77,8 @@ void  CMatrixD::readFromStream(CStream &in, int version)
 			setSize(nRows,nCols);
 
 			if (nRows>0 && nCols>0)
-				for (unsigned int i=0;i<nRows;i++)
-					in.ReadBuffer(m_Val[i],sizeof(m_Val[0][0])*m_Cols);
+				for (Index i=0;i<rows();i++)
+					in.ReadBuffer(&coeffRef(i,0),sizeof(Scalar)*nCols);
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

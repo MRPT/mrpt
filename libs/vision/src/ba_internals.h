@@ -62,6 +62,8 @@ namespace mrpt
 			CMatrixFixedNumeric<double,ObsDim,FrameDof>  J_frame;
 			CMatrixFixedNumeric<double,ObsDim,PointDof>  J_point;
 			bool J_frame_valid, J_point_valid;
+
+			EIGEN_MAKE_ALIGNED_OPERATOR_NEW  // Needed by any struct having Eigen::Matrix<> fields
 		};
 
 
@@ -176,7 +178,7 @@ namespace mrpt
 			const TFramePosesVec         & frame_poses,
 			const TLandmarkLocationsVec  & landmark_points,
 			const TCamera                & camera_params,
-			vector<JacData<6,3,2> >      & jac_data_vec,
+			vector<JacData<6,3,2>,Eigen::aligned_allocator<JacData<6,3,2> > >      & jac_data_vec,
 			const size_t                   num_fix_frames,
 			const size_t                   num_fix_points)
 		{
@@ -215,12 +217,12 @@ namespace mrpt
 		// Compute temporary matrices during BA:
 		void ba_calcUVeps(
 			const TSequenceFeatureObservations          & observations,
-			const vector<CArrayDouble<2> >              & residual_vec,
-			const vector<JacData<6,3,2> >               & jac_data_vec,
-			vector<CMatrixFixedNumeric<double,6,6> >    & U,
-			vector<CArrayDouble<6> >                    & eps_frame,
-			vector<CMatrixFixedNumeric<double,3,3> >    & V,
-			vector<CArrayDouble<3> >                    & eps_point,
+			const vector<CArray<double,2> >              & residual_vec,
+			const vector<JacData<6,3,2>, Eigen::aligned_allocator<JacData<6,3,2> > >               & jac_data_vec,
+			vector<CMatrixFixedNumeric<double,6,6>, Eigen::aligned_allocator<CMatrixFixedNumeric<double,6,6> > >    & U,
+			vector<CArrayDouble<6>, Eigen::aligned_allocator<CArrayDouble<6> > >                    & eps_frame,
+			vector<CMatrixFixedNumeric<double,3,3>, Eigen::aligned_allocator<CMatrixFixedNumeric<double,3,3> > >    & V,
+			vector<CArrayDouble<3>, Eigen::aligned_allocator<CArrayDouble<3> > >                    & eps_point,
 			const size_t                                  num_fix_frames,
 			const size_t                                  num_fix_points );
 

@@ -30,7 +30,6 @@
 
 #include <mrpt/random.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/math/CMatrixViews.h>
 #include <mrpt/math/transform_gaussian.h>
 
 #include <mrpt/poses/CPose3DPDFGaussian.h>
@@ -429,12 +428,12 @@ void  CPose3DPDFGaussian::drawManySamples(
 
 	for (vector<vector_double>::iterator it=outSamples.begin();it!=outSamples.end();++it)
 	{
-		it->at(0) += mean.x();
-		it->at(1) += mean.y();
-		it->at(2) += mean.z();
-		it->at(3) = math::wrapToPi( it->at(3) + mean.yaw() );
-		it->at(4) = math::wrapToPi( it->at(4) + mean.pitch() );
-		it->at(5) = math::wrapToPi( it->at(5) + mean.roll() );
+		(*it)[0] += mean.x();
+		(*it)[1] += mean.y();
+		(*it)[2] += mean.z();
+		(*it)[3] = math::wrapToPi( (*it)[3] + mean.yaw() );
+		(*it)[4] = math::wrapToPi( (*it)[4] + mean.pitch() );
+		(*it)[5] = math::wrapToPi( (*it)[5] + mean.roll() );
 	}
 
 	MRPT_END;
@@ -742,22 +741,19 @@ double  CPose3DPDFGaussian::mahalanobisDistanceTo( const CPose3DPDFGaussian& the
 	MRPT_START
 
 	CMatrixDouble66	COV_ = cov + theOther.cov;
-	CMatrixDouble16	MU   = CMatrixDouble16(theOther.mean) - CMatrixDouble16(mean);
+	CMatrixDouble61	MU   = CMatrixDouble61(theOther.mean) - CMatrixDouble61(mean);
 
 	for (int i=0;i<6;i++)
 	{
 		if (COV_.get_unsafe(i,i)==0)
 		{
-			if (MU.get_unsafe(0,i)!=0)
+			if (MU.get_unsafe(i,0)!=0)
 					return std::numeric_limits<double>::infinity();
 			else COV_.get_unsafe(i,i) = 1;  // Any arbitrary value since MU(i)=0, and this value doesn't affect the result.
 		}
 	}
 
-	CMatrixDouble66	COV_inv;
-	COV_.inv(COV_inv);
-
-	return std::sqrt( MU.multiply_HCHt_scalar(COV_inv) );
+	return std::sqrt( MU.multiply_HtCH_scalar(COV_.inv()) );
 
 	MRPT_END
 }

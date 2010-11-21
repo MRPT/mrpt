@@ -391,7 +391,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			// Draw static stuff:
 			win->plot( make_vector<1,double>(0),make_vector<1,double>(0),"r.5",  "central_dot");
 
-			vector_float xs,ys;
+			vector<float> xs,ys;
 			for (size_t i=0;i<100;++i)
 			{
 				xs.push_back(cos(i*2*M_PI/100));
@@ -401,7 +401,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		}
 		// Draw dynamic stuff:
 		const CLogFileRecord::TInfoPerPTG &pI = log.infoPerPTG[nPTG];
-		vector_float xs,ys;
+		vector<float> xs,ys;
 
 		const size_t nAlphas = pI.TP_Obstacles.size();
 		ASSERT_(nAlphas>0)

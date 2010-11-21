@@ -86,7 +86,7 @@ namespace mrpt
 					}
 					else
 					{
-						ASSERTMSG_(dims==it->size(),"All points must have the same dimensionality.")
+						ASSERTMSG_(size_t(dims)==size_t(it->size()),"All points must have the same dimensionality.")
 					}
 
 					::memcpy(trg_ptr, &(*it)[0], dims*sizeof(typename TInnerVector::value_type));

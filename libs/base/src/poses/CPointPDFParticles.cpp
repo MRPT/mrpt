@@ -290,7 +290,7 @@ double CPointPDFParticles::computeKurtosis()
 	mu4*=1.0/m_particles.size();
 
 	// Kurtosis's
-	kurts = mu4 / var;
+	kurts.array() = mu4.array() / var.array();
 
 	return math::maximum(kurts);
 

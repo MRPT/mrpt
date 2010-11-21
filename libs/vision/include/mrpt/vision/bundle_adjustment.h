@@ -130,7 +130,7 @@ namespace mrpt
 			const mrpt::utils::TCamera                        & camera_params,
 			const mrpt::vision::TFramePosesVec                 & frame_poses,
 			const mrpt::vision::TLandmarkLocationsVec          & landmark_points,
-			std::vector<mrpt::math::CArrayDouble<2> > & out_residuals,
+			std::vector<CArray<double,2> > & out_residuals,
 			const bool  frame_poses_are_inverse,
 			const bool  use_robust_kernel = true
 			);
@@ -141,7 +141,7 @@ namespace mrpt
 			const mrpt::utils::TCamera                        & camera_params,
 			const mrpt::vision::TFramePosesMap                 & frame_poses,
 			const mrpt::vision::TLandmarkLocationsMap          & landmark_points,
-			std::vector<mrpt::math::CArrayDouble<2> > & out_residuals,
+			std::vector<CArray<double,2> > & out_residuals,
 			const bool  frame_poses_are_inverse,
 			const bool  use_robust_kernel = true
 			);

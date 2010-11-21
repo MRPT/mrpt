@@ -404,16 +404,16 @@ void  CDisplayWindow::showImageAndPoints( const CImage &img, const vector_float 
 
 	CImage imgColor(1,1,3);
 	img.colorImage( imgColor );	// Create a colorimage
-	for(unsigned int i = 0; i < x.size(); i++)
+	for(vector_float::Index i = 0; i < x.size(); i++)
 	{
-	    imgColor.cross(round(x[i]),round(y[i]),color,'+');
+		imgColor.cross(round(x[i]),round(y[i]),color,'+');
 
-        if( showNumbers )
-        {
-            char buf[15];
-            mrpt::system::os::sprintf( buf, 15, "%d", i );
-            imgColor.textOut( round(x[i]) - 10, round(y[i]), buf, color );
-        }
+		if( showNumbers )
+		{
+			char buf[15];
+			mrpt::system::os::sprintf( buf, 15, "%d", int(i) );
+			imgColor.textOut( round(x[i]) - 10, round(y[i]), buf, color );
+		}
 	} // end-for
 	showImage(imgColor);
 	MRPT_END;

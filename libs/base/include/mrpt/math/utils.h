@@ -31,7 +31,6 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/math/CHistogram.h>
 
 #include <mrpt/math/ops_vectors.h>
@@ -86,8 +85,8 @@ namespace mrpt
 
 		/** Generates an equidistant sequence of numbers given the first one, the last one and the desired number of points.
 		  \sa sequence */
-		template<typename T,typename K>
-		void linspace(T first,T last, size_t count, std::vector<K> &out_vector)
+		template<typename T,typename VECTOR>
+		void linspace(T first,T last, size_t count, VECTOR &out_vector)
 		{
 			if (count<2)
 			{
@@ -100,23 +99,34 @@ namespace mrpt
 				const T incr = (last-first)/T(count-1);
 				T c = first;
 				for (size_t i=0;i<count;i++,c+=incr)
-					out_vector[i] = K(c);
+					out_vector[i] = static_cast<typename VECTOR::value_type>(c);
 			}
 		}
 
 		/** Generates an equidistant sequence of numbers given the first one, the last one and the desired number of points.
 		  \sa sequence */
 		template<class T>
-		inline std::vector<T> linspace(T first,T last, size_t count)
+		inline Eigen::Matrix<T,Eigen::Dynamic,1> linspace(T first,T last, size_t count)
 		{
-			std::vector<T> ret;
+			Eigen::Matrix<T,Eigen::Dynamic,1> ret;
 			mrpt::math::linspace(first,last,count,ret);
 			return ret;
 		}
 
-		/** Generates a sequence of values [first,first+STEP,first+2*STEP,...]   \sa linspace */
+		/** Generates a sequence of values [first,first+STEP,first+2*STEP,...]   \sa linspace, sequenceStdVec */
 		template<class T,T STEP>
-		inline std::vector<T> sequence(T first,size_t length)
+		inline Eigen::Matrix<T,Eigen::Dynamic,1> sequence(T first,size_t length)
+		{
+			Eigen::Matrix<T,Eigen::Dynamic,1> ret(length);
+			if (!length) return ret;
+			size_t i=0;
+			while (length--) { ret[i++]=first; first+=STEP; }
+			return ret;
+		}
+
+		/** Generates a sequence of values [first,first+STEP,first+2*STEP,...]   \sa linspace, sequence */
+		template<class T,T STEP>
+		inline std::vector<T> sequenceStdVec(T first,size_t length)
 		{
 			std::vector<T> ret(length);
 			if (!length) return ret;
@@ -126,17 +136,19 @@ namespace mrpt
 		}
 
 		/** Generates a vector of all ones of the given length. */
-		template<class T>
-		std::vector<T> ones(size_t count)
+		template<class T> inline Eigen::Matrix<T,Eigen::Dynamic,1> ones(size_t count)
 		{
-			return std::vector<T>(count,1);
+			Eigen::Matrix<T,Eigen::Dynamic,1> v(count);
+			v.setOnes();
+			return v;
 		}
 
 		/** Generates a vector of all zeros of the given length. */
-		template<class T>
-		std::vector<T> zeros(size_t count)
+		template<class T> inline Eigen::Matrix<T,Eigen::Dynamic,1> zeros(size_t count)
 		{
-			return std::vector<T>(count,0);
+			Eigen::Matrix<T,Eigen::Dynamic,1> v(count);
+			v.setZero();
+			return v;
 		}
 
 
@@ -187,83 +199,21 @@ namespace mrpt
 		/** Normalize a vector, such as its norm is the unity.
 		  *  If the vector has a null norm, the output is a null vector.
 		  */
-		template<class T>
-			void normalize(const std::vector<T> &v, std::vector<T> &out_v)
+		template<class VEC1,class VEC2>
+		void normalize(const VEC1 &v, VEC2 &out_v)
 		{
-			T	total=0;
-			typename std::vector<T>::const_iterator it;
-			for (it=v.begin(); it!=v.end();it++)
-				total += square(*it);
-			total = ::sqrt(total);
+			typename VEC1::value_type total=0;
+			const size_t N = v.size();
+			for (size_t i=0;i<N;i++)
+				total += square(v[i]);
+			total = std::sqrt(total);
 			if (total)
 			{
-				out_v.resize(v.size());
-				typename std::vector<T>::iterator q;
-				for (it=v.begin(),q=out_v.begin(); q!=out_v.end();it++,q++)
-					*q = *it / total;
+				out_v = v * (1.0/total);
 			}
 			else out_v.assign(v.size(),0);
 		}
 
-		/** Computes the mean vector and covariance from a list of values given as a vector of vectors, where each row is a sample.
-		  * \param v The set of data, as a vector of N vectors of M elements.
-		  * \param out_mean The output M-vector for the estimated mean.
-		  * \param out_cov The output MxM matrix for the estimated covariance matrix.
-		  * \sa math::mean,math::stddev, math::cov
-		  */
-		template<class VECTOR_OF_VECTOR, class VECTORLIKE, class MATRIXLIKE>
-		void  meanAndCovVector(
-			const VECTOR_OF_VECTOR &v,
-			VECTORLIKE &out_mean,
-			MATRIXLIKE &out_cov
-			)
-		{
-			const size_t N = v.size();
-			ASSERTMSG_(N>0,"The input vector contains no elements");
-			const double N_inv = 1.0/N;
-
-			const size_t M = v[0].size();
-			ASSERTMSG_(M>0,"The input vector contains rows of length 0");
-
-			// First: Compute the mean
-			out_mean.assign(M,0);
-			for (size_t i=0;i<N;i++)
-				for (size_t j=0;j<M;j++)
-					out_mean[j]+=v[i][j];
-			out_mean*=N_inv;
-
-			// Second: Compute the covariance
-			//  Save only the above-diagonal part, then after averaging
-			//  duplicate that part to the other half.
-			out_cov.zeros(M,M);
-			for (size_t i=0;i<N;i++)
-			{
-				for (size_t j=0;j<M;j++)
-					out_cov.get_unsafe(j,j)+=square(v[i][j]-out_mean[j]);
-
-				for (size_t j=0;j<M;j++)
-					for (size_t k=j+1;k<M;k++)
-						out_cov.get_unsafe(j,k)+=(v[i][j]-out_mean[j])*(v[i][k]-out_mean[k]);
-			}
-			for (size_t j=0;j<M;j++)
-				for (size_t k=j+1;k<M;k++)
-					out_cov.get_unsafe(k,j) = out_cov.get_unsafe(j,k);
-			out_cov*=N_inv;
-		}
-
-		/** Computes the covariance matrix from a list of values given as a vector of vectors, where each row is a sample.
-		  * \param v The set of data, as a vector of N vectors of M elements.
-		  * \param out_cov The output MxM matrix for the estimated covariance matrix.
-		  * \sa math::mean,math::stddev, math::cov, meanAndCovVector
-		  */
-		template<class VECTOR_OF_VECTOR>
-		inline CMatrixDouble covVector( const VECTOR_OF_VECTOR &v )
-		{
-			vector_double m;
-			CMatrixDouble C;
-			meanAndCovVector(v,m,C);
-			return C;
-		}
 
 		/** Computes covariances and mean of any vector of containers, given optional weights for the different samples.
 		  * \param elements Any kind of vector of vectors/arrays, eg. std::vector<vector_double>, with all the input samples, each sample in a "row".
@@ -583,45 +533,45 @@ namespace mrpt
 		}
 
 
-		/**	Matrix QR decomposition. A = QR, where R is upper triangular and Q is orthogonal, that is, ~QQ = 1
-		  * If A is a LxM dimension matrix, this function only return the LxL upper triangular matrix R instead of LxM pseudo-upper
-		  * triangular matrix (been L<=M)
-		  * This function has been extracted from "Numerical Recipes in C".
-		  *	/param A is the original matrix to decompose
-		  * /param c,Q. The orthogonal matrix Q is represented as a product of n-1 Householder matrices Q1,...Qn-1, where Qj = 1 - u[j] x u[j]/c[j]
-		  *				The i'th component of u[j] is zero for i = 1,...,j-1 while the nonzero components are returned in Q(i,j) for i=j,...,n
-		  *	/param R is the upper triangular matrix
-		  *	/param sign returns as true (1) is singularity is encountered during the decomposition, but the decomposition is still complete
-		  *				in this case; otherwise it returns false (0)
-		  */
+//		/**	Matrix QR decomposition. A = QR, where R is upper triangular and Q is orthogonal, that is, ~QQ = 1
+//		  * If A is a LxM dimension matrix, this function only return the LxL upper triangular matrix R instead of LxM pseudo-upper
+//		  * triangular matrix (been L<=M)
+//		  * This function has been extracted from "Numerical Recipes in C".
+//		  *	/param A is the original matrix to decompose
+//		  * /param c,Q. The orthogonal matrix Q is represented as a product of n-1 Householder matrices Q1,...Qn-1, where Qj = 1 - u[j] x u[j]/c[j]
+//		  *				The i'th component of u[j] is zero for i = 1,...,j-1 while the nonzero components are returned in Q(i,j) for i=j,...,n
+//		  *	/param R is the upper triangular matrix
+//		  *	/param sign returns as true (1) is singularity is encountered during the decomposition, but the decomposition is still complete
+//		  *				in this case; otherwise it returns false (0)
+//		  */
+//
+//			template<class T>
+//			void BASE_IMPEXP qr_decomposition(
+//				CMatrixTemplateNumeric<T>	&A,
+//				CMatrixTemplateNumeric<T>	&R,
+//				CMatrixTemplateNumeric<T>	&Q,
+//				CVectorTemplate<T>			&c,
+//				int								&sing);
+//
 
-			template<class T>
-			void BASE_IMPEXP qr_decomposition(
-				CMatrixTemplateNumeric<T>	&A,
-				CMatrixTemplateNumeric<T>	&R,
-				CMatrixTemplateNumeric<T>	&Q,
-				CVectorTemplate<T>			&c,
-				int								&sing);
+//		/**If R = CHOL(A) is the original Cholesky factorization of A, then R1 = CHOLUPDATE(R,X) returns the upper triangular
+//		  * Cholesky factor of A + X*X', where X is a column vector of appropriate length.
+//		  */
+//		template<class T>
+//			void BASE_IMPEXP UpdateCholesky(
+//				CMatrixTemplateNumeric<T>	&chol,
+//				CVectorTemplate<T>			&r1Modification);
 
-
-		/**If R = CHOL(A) is the original Cholesky factorization of A, then R1 = CHOLUPDATE(R,X) returns the upper triangular
-		  * Cholesky factor of A + X*X', where X is a column vector of appropriate length.
-		  */
-		template<class T>
-			void BASE_IMPEXP UpdateCholesky(
-				CMatrixTemplateNumeric<T>	&chol,
-				CVectorTemplate<T>			&r1Modification);
-
-		/** Compute the two eigenvalues of a 2x2 matrix.
-		  * \param in_matrx The 2x2 input matrix.
-		  * \param min_eigenvalue (out) The minimum eigenvalue of the matrix.
-		  * \param max_eigenvalue (out) The maximum eigenvalue of the matrix.
-		  * by FAMD, MAR-2007
-		  */
-		void BASE_IMPEXP  computeEigenValues2x2(
-			const CMatrixFloat	&in_matrix,
-			float								&min_eigenvalue,
-			float								&max_eigenvalue );
+//		/** Compute the two eigenvalues of a 2x2 matrix.
+//		  * \param in_matrx The 2x2 input matrix.
+//		  * \param min_eigenvalue (out) The minimum eigenvalue of the matrix.
+//		  * \param max_eigenvalue (out) The maximum eigenvalue of the matrix.
+//		  * by FAMD, MAR-2007
+//		  */
+//		void BASE_IMPEXP  computeEigenValues2x2(
+//			const CMatrixFloat	&in_matrix,
+//			float								&min_eigenvalue,
+//			float								&max_eigenvalue );
 
 		/** A numerically-stable method to compute average likelihood values with strongly different ranges (unweighted likelihoods: compute the arithmetic mean).
 		  *  This method implements this equation:
@@ -656,7 +606,7 @@ namespace mrpt
 		  */
 		std::string BASE_IMPEXP  MATLAB_plotCovariance2D(
 			const CMatrixFloat  &cov22,
-			const CVectorFloat  &mean,
+			const vector_float  &mean,
 			const float         &stdCount,
 			const std::string   &style = std::string("b"),
 			const size_t        &nEllipsePoints = 30 );
@@ -670,7 +620,7 @@ namespace mrpt
 		  */
 		std::string BASE_IMPEXP  MATLAB_plotCovariance2D(
 			const CMatrixDouble  &cov22,
-			const CVectorDouble  &mean,
+			const vector_double  &mean,
 			const float         &stdCount,
 			const std::string   &style = std::string("b"),
 			const size_t        &nEllipsePoints = 30 );
@@ -680,11 +630,11 @@ namespace mrpt
 		  *  This is a generic template which works with:
 		  *    MATRIXLIKE: CMatrixTemplateNumeric, CMatrixFixedNumeric
 		  */
-		template <class MATRIXLIKE1,class MATRIXLIKE2> RET_VOID_ASSERT_MRPTMATRICES(MATRIXLIKE1,MATRIXLIKE2)
-		homogeneousMatrixInverse(const MATRIXLIKE1 &M, MATRIXLIKE2 &out_inverse_M)
+		template <class MATRIXLIKE1,class MATRIXLIKE2>
+		void homogeneousMatrixInverse(const MATRIXLIKE1 &M, MATRIXLIKE2 &out_inverse_M)
 		{
 			MRPT_START;
-			ASSERT_( M.IsSquare() && size(M,1)==4);
+			ASSERT_( M.isSquare() && size(M,1)==4);
 
 			/* Instead of performing a generic 4x4 matrix inversion, we only need to
 			  transpose the rotation part, then replace the translation part by
@@ -741,7 +691,7 @@ namespace mrpt
 			)
 		{
 			MRPT_START
-			ASSERT_( in_R.IsSquare() && size(in_R,1)==3 && in_xyz.size()==3)
+			ASSERT_( in_R.isSquare() && size(in_R,1)==3 && in_xyz.size()==3)
 			out_R.setSize(3,3);
 			out_xyz.resize(3);
 
@@ -755,7 +705,7 @@ namespace mrpt
 			out_xyz[2] = tx*in_R.get_unsafe(0,2)+ty*in_R.get_unsafe(1,2)+tz*in_R.get_unsafe(2,2);
 
 			// 3x3 rotation part: transpose
-			in_R.t(out_R);
+			out_R = in_R.transpose();
 
 			MRPT_END
 		}
@@ -763,7 +713,7 @@ namespace mrpt
 		template <class MATRIXLIKE>
 		inline void homogeneousMatrixInverse(MATRIXLIKE &M)
 		{
-			ASSERTDEB_( M.IsSquare() && size(M,1)==4);
+			ASSERTDEB_( M.isSquare() && size(M,1)==4);
 			// translation:
 			const double tx = -M(0,3);
 			const double ty = -M(1,3);
@@ -840,12 +790,12 @@ namespace mrpt
 		  *  If the point "x" is out of the range [x0,x1], the closest extreme "ys" value is returned.
 		  * \sa spline, interpolate2points
 		  */
-		template <class T>
+		template <class T,class VECTOR>
 		T interpolate(
-			const T					&x,
-			const std::vector<T>	&ys,
-			const T					&x0,
-			const T					&x1 )
+			const T			&x,
+			const VECTOR	&ys,
+			const T			&x0,
+			const T			&x1 )
 		{
 			MRPT_START
 			ASSERT_(x1>x0); ASSERT_(!ys.empty());
@@ -870,7 +820,7 @@ namespace mrpt
 		  *  If wrap2pi is true, output "y" values are wrapped to ]-pi,pi] (It is assumed that input "y" values already are in the correct range).
 		  * \sa leastSquareLinearFit
 		  */
-		double BASE_IMPEXP  spline(const double t, const std::vector<double> &x, const std::vector<double> &y, bool wrap2pi = false);
+		double BASE_IMPEXP  spline(const double t, const vector_double &x, const vector_double &y, bool wrap2pi = false);
 
 		/** Interpolates or extrapolates using a least-square linear fit of the set of values "x" and "y", evaluated at a single point "t".
 		  *  The vectors x and y must have size >=2, and all values of "x" must be different.
@@ -892,7 +842,7 @@ namespace mrpt
 			typedef typename VECTORLIKE::value_type NUM;
 
 			// X= [1 columns of ones, x' ]
-			const NUM x_min = mrpt::math::minimum(x);
+			const NUM x_min = x.minimum();
 			CMatrixTemplateNumeric<NUM> Xt(2,N);
 			for (size_t i=0;i<N;i++)
 			{
@@ -946,7 +896,7 @@ namespace mrpt
 
 			// X= [1 columns of ones, x' ]
 			typedef typename VECTORLIKE3::value_type NUM;
-			const NUM x_min = mrpt::math::minimum(x);
+			const NUM x_min = x.minimum();
 			CMatrixTemplateNumeric<NUM> Xt(2,N);
 			for (size_t i=0;i<N;i++)
 			{
@@ -1022,12 +972,12 @@ namespace mrpt
 			#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 				ASSERT_( !X.empty() );
 				ASSERT_( X.size()==MU.size() );
-				ASSERT_( X.size()==size(COV,1) && COV.IsSquare() );
+				ASSERT_( X.size()==size(COV,1) && COV.isSquare() );
 			#endif
 			const size_t N = X.size();
-			std::vector<typename VECTORLIKE1::value_type> X_MU(N);
+			mrpt::dynamicsize_vector<typename VECTORLIKE1::value_type> X_MU(N);
 			for (size_t i=0;i<N;i++) X_MU[i]=X[i]-MU[i];
-			return detail::multiply_HCHt_scalar(X_MU, COV.inv() );
+			return multiply_HCHt_scalar(X_MU, COV.inv() );
 			MRPT_END
 		}
 
@@ -1060,7 +1010,7 @@ namespace mrpt
 			#if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 				ASSERT_( !mean_diffs.empty() );
 				ASSERT_( mean_diffs.size()==size(COV1,1));
-				ASSERT_( COV1.IsSquare() && COV2.IsSquare() );
+				ASSERT_( COV1.isSquare() && COV2.isSquare() );
 				ASSERT_( size(COV1,1)==size(COV2,1));
 			#endif
 			const size_t N = size(COV1,1);
@@ -1069,7 +1019,7 @@ namespace mrpt
 			COV.substract_An(CROSS_COV12,2);
 			MAT1 COV_inv;
 			COV.inv_fast(COV_inv);
-			return detail::multiply_HCHt_scalar(mean_diffs,COV_inv);
+			return multiply_HCHt_scalar(mean_diffs,COV_inv);
 			MRPT_END
 		}
 
@@ -1093,11 +1043,9 @@ namespace mrpt
 		inline typename MATRIXLIKE::value_type
 		mahalanobisDistance2(const VECTORLIKE &delta_mu,const MATRIXLIKE &cov)
 		{
-			ASSERTDEB_(cov.IsSquare())
+			ASSERTDEB_(cov.isSquare())
 			ASSERTDEB_(cov.getColCount()==delta_mu.size())
-			MATRIXLIKE C_inv;
-			cov.inv(C_inv);
-			return detail::multiply_HCHt_scalar(delta_mu,C_inv);
+			return multiply_HCHt_scalar(delta_mu,cov.inverse());
 		}
 
 		/** Computes the mahalanobis distance between a point and a Gaussian, given the covariance matrix and the vector with the difference between the mean and the point.
@@ -1193,7 +1141,7 @@ namespace mrpt
 			T 					&log_pdf_out)
 		{
 			MRPT_START
-			ASSERTDEB_(cov.IsSquare())
+			ASSERTDEB_(cov.isSquare())
 			ASSERTDEB_(cov.getColCount()==diff_mean.size())
 			MATRIXLIKE C_inv;
 			cov.inv(C_inv);

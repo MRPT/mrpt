@@ -60,7 +60,7 @@ namespace mrpt
 				intrinsicParams.set_unsafe(0,2,356.2368);
 				intrinsicParams.set_unsafe(1,2,252.9216);
 				intrinsicParams.set_unsafe(2,2,1);
-				for (size_t i=0;i<dist.static_size;i++)
+				for (size_t i=0;i<dist.SizeAtCompileTime ;i++)
 					dist[i] = 0;
 			}
 
@@ -135,8 +135,8 @@ namespace mrpt
 			}
 
 			/** Get a vector with the distortion params of the camera  */
-			inline vector_double getDistortionParamsAsVector () const {
-				mrpt::vector_double  v(5);
+			inline std::vector<double> getDistortionParamsAsVector () const {
+				std::vector<double>  v(5);
 				for (size_t i=0;i<5;i++)
 					v[i] = dist[i];
 				return v;
@@ -154,8 +154,8 @@ namespace mrpt
 			void setDistortionParamsVector( const VECTORLIKE &distParVector )
 			{
 				ASSERT_(distParVector.size()==4 || distParVector.size()==5)
-				dist[4] = 0; // Default value
-				for (size_t i=0;i<distParVector.size();i++)
+				dist[4] = 0; // Default value 
+				for (typename VECTORLIKE::Index i=0;i<distParVector.size();i++)
 					dist[i] = distParVector[i];
 			}
 

@@ -31,10 +31,8 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CVectorTemplate.h>
 
 #include <mrpt/math/ops_matrices.h>
-#include <mrpt/math/matrices_metaprogramming.h>
 
 /*---------------------------------------------------------------
 		Namespace
@@ -59,7 +57,7 @@ namespace mrpt
 		  *  \param  scaled_pdf If set to true, the PDF will be scaled to be in the range [0,1].
 		  */
 		template <class VECTORLIKE1,class VECTORLIKE2,class MATRIXLIKE>
-		inline typename MATRIXLIKE::value_type 
+		inline typename MATRIXLIKE::value_type
 			normalPDF(
 				const VECTORLIKE1  & x,
 				const VECTORLIKE2  & mu,
@@ -68,11 +66,9 @@ namespace mrpt
 		{
 			MRPT_START
 			typedef typename MATRIXLIKE::value_type T;
-			ASSERTDEB_(cov.IsSquare())
+			ASSERTDEB_(cov.isSquare())
 			ASSERTDEB_(cov.getColCount()==x.size() && cov.getColCount()==mu.size())
-			MAT_TYPE_SAMESIZE_OF(MATRIXLIKE)  C_inv(UNINITIALIZED_MATRIX);
-			cov.inv(C_inv);
-			T ret = ::exp( static_cast<T>(-0.5) * mrpt::math::multiply_HCHt_scalar((x-mu),C_inv) );
+			T ret = ::exp( static_cast<T>(-0.5) * mrpt::math::multiply_HCHt_scalar((x-mu), cov.inverse() ) );
 			return scaled_pdf ? ret : ret / (::pow(static_cast<T>(M_2PI),static_cast<T>( size(cov,1) )) * ::sqrt(cov.det()));
 			MRPT_END
 		}
@@ -84,11 +80,9 @@ namespace mrpt
 		normalPDF(const VECTORLIKE &d,const MATRIXLIKE &cov)
 		{
 			MRPT_START
-			ASSERTDEB_(cov.IsSquare())
+			ASSERTDEB_(cov.isSquare())
 			ASSERTDEB_(cov.getColCount()==d.size())
-			MATRIXLIKE C_inv;
-			cov.inv(C_inv);
-			return std::exp( static_cast<typename MATRIXLIKE::value_type>(-0.5)*mrpt::math::multiply_HCHt_scalar(d,C_inv))
+			return std::exp( static_cast<typename MATRIXLIKE::value_type>(-0.5)*mrpt::math::multiply_HCHt_scalar(d,cov.inverse()))
 			/ (::pow(
 					static_cast<typename MATRIXLIKE::value_type>(M_2PI),
 					static_cast<typename MATRIXLIKE::value_type>(cov.getColCount()))
@@ -106,7 +100,7 @@ namespace mrpt
 			const VECTORLIKE2 &mu1, const MATRIXLIKE2 &cov1)
 		{
 			MRPT_START
-			ASSERT_(mu0.size()==mu1.size() && mu0.size()==size(cov0,1) && mu0.size()==size(cov1,1) && cov0.IsSquare() && cov1.IsSquare() )
+			ASSERT_(mu0.size()==mu1.size() && mu0.size()==size(cov0,1) && mu0.size()==size(cov1,1) && cov0.isSquare() && cov1.isSquare() )
 			const size_t N = mu0.size();
 			MATRIXLIKE2 cov1_inv;
 			cov1.inv(cov1_inv);
@@ -313,7 +307,7 @@ namespace mrpt
 			const vector_double H = mrpt::math::histogram(data,x_min,x_max,histogramNumBins);
 			vector_double Hc;
 			cumsum(H,Hc); // CDF
-			Hc*=1.0/maximum(Hc);
+			Hc*=1.0/Hc.maximum();
 
 			vector_double::iterator it_low  = std::lower_bound(Hc.begin(),Hc.end(),confidenceInterval);   ASSERT_(it_low!=Hc.end())
 			vector_double::iterator it_high = std::upper_bound(Hc.begin(),Hc.end(),1-confidenceInterval); ASSERT_(it_high!=Hc.end())

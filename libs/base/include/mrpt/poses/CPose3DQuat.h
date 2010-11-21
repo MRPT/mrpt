@@ -278,8 +278,8 @@ namespace poses
 		inline void assign(const size_t N, const double val)
 		{
 			if (N!=7) throw std::runtime_error("CPose3DQuat::assign: Try to resize to length!=7.");
-			m_coords.assign(val);
-			m_quat.assign(val);
+			m_coords.fill(val);
+			m_quat.fill(val);
 		}
 
 		struct iterator : public std::iterator<std::random_access_iterator_tag,value_type>
@@ -433,8 +433,7 @@ namespace poses
 		/** @} */
 		//! See ops_containers.h
 		typedef CPose3DQuat  mrpt_autotype;
-		DECLARE_MRPT_CONTAINER_TYPES
-
+		//DECLARE_MRPT_CONTAINER_TYPES
 
 	}; // End of class def.
 

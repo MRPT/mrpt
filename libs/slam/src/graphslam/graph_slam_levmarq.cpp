@@ -156,8 +156,8 @@ template <class ET, class MI>
 double computeJacobiansAndErrors(
 	const typename graphslam_traits<ET,MI>::graph_t &graph,
 	const vector<typename graphslam_traits<ET,MI>::observation_info_t>  &lstObservationData,
-	map<TPairNodeIDs,typename graphslam_traits<ET,MI>::TPairJacobs>   &lstJacobians,
-	vector<typename graphslam_traits<ET,MI>::Array_O> &errs
+	typename graphslam_traits<ET,MI>::map_pairIDs_pairJacobs_t   &lstJacobians,
+	vector<typename graphslam_traits<ET,MI>::Array_O, Eigen::aligned_allocator<typename graphslam_traits<ET,MI>::Array_O> > &errs
 	)
 {
 	typedef graphslam_traits<ET,MI> gst;
@@ -193,7 +193,7 @@ double computeJacobiansAndErrors(
 		AuxErrorEval<typename gst::edge_t,gst>::computePseudoLnError(P1DP2inv, errs[errs.size()-1],edge);
 
 		// Compute the jacobians:
-		std::pair<TPairNodeIDs,typename gst::TPairJacobs> newMapEntry;
+		EIGEN_ALIGN16 std::pair<TPairNodeIDs,typename gst::TPairJacobs> newMapEntry;
 		newMapEntry.first = ids;
 		gst::SE_TYPE::jacobian_dP1DP2inv_depsilon(P1DP2inv, &newMapEntry.second.first,&newMapEntry.second.second);
 
@@ -324,9 +324,9 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 	//  we need the pair of Jacobians: { dh(xi,xj)_dxi, dh(xi,xj)_dxj },
 	//  which are "first" and "second" in each pair.
 	// Index of the map are the node IDs {i,j} for each contraint.
-	map<TPairNodeIDs,typename gst::TPairJacobs>   lstJacobians;
+	typename gst::map_pairIDs_pairJacobs_t   lstJacobians;
 	// The vector of errors: err_k = SE(2/3)::pseudo_Ln( P_i * EDGE_ij * inv(P_j) )
-	vector<typename gst::Array_O> errs; // Separated vectors for each edge. i \in [0,nObservations-1], in same order than lstObservationData
+	vector<typename gst::Array_O, Eigen::aligned_allocator<typename gst::Array_O> > errs; // Separated vectors for each edge. i \in [0,nObservations-1], in same order than lstObservationData
 
 	// ===================================
 	// Compute Jacobians & errors
@@ -344,7 +344,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 	vector<pair<size_t,size_t> >  observationIndex_to_relatedFreeNodeIndex; // "relatedFreeNodeIndex" means into [0,nFreeNodes-1], or "-1" if that node is fixed, as ordered in "nodes_to_optimize"
 	observationIndex_to_relatedFreeNodeIndex.reserve(nObservations);
 	ASSERTDEB_(lstJacobians.size()==nObservations)
-	for (typename map<TPairNodeIDs,typename gst::TPairJacobs>::const_iterator itJ=lstJacobians.begin();itJ!=lstJacobians.end();++itJ)
+	for (typename gst::map_pairIDs_pairJacobs_t::const_iterator itJ=lstJacobians.begin();itJ!=lstJacobians.end();++itJ)
 	{
 		const TNodeID id1 = itJ->first.first;
 		const TNodeID id2 = itJ->first.second;
@@ -356,7 +356,8 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 
 	// other important vars for the main loop:
 	vector_double grad(nFreeNodes*DIMS_POSE);
-	vector<map<TNodeID,typename gst::matrix_VxV_t> >  H_map(nFreeNodes);
+	typedef map<TNodeID,typename gst::matrix_VxV_t, less<TNodeID>, Eigen::aligned_allocator<pair<const TNodeID,typename gst::matrix_VxV_t> > > map_ID2matrix_VxV_t;
+	vector<map_ID2matrix_VxV_t>  H_map(nFreeNodes);
 
 	double	lambda = initial_lambda; // Will be actually set on first iteration.
 	double  rho = 0.5; // value such as lambda is not modified in the first pass
@@ -385,14 +386,14 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 			//   grad_i = \sum_k J^t_{k->i} errs_k
 			// that is: g_i is the "dot-product" of the i'th (transposed) block-column of J and the vector of errors "errs"
 			profiler.enter("optimize_graph_spa_levmarq.grad"); // ------------------------------\  .
-			vector<typename gst::Array_O> grad_parts(nFreeNodes, array_O_zeros);
+			vector<typename gst::Array_O, Eigen::aligned_allocator<typename gst::Array_O> > grad_parts(nFreeNodes, array_O_zeros);
 
 			// "lstJacobians" is sorted in the same order than "lstObservationData":
 			ASSERT_EQUAL_(lstJacobians.size(),lstObservationData.size())
 
 			{
 				size_t idx_obs;
-				typename map<TPairNodeIDs,typename gst::TPairJacobs>::const_iterator itJ;
+				typename gst::map_pairIDs_pairJacobs_t::const_iterator itJ;
 
 				for (idx_obs=0, itJ=lstJacobians.begin();
 					itJ!=lstJacobians.end();
@@ -452,7 +453,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 			// ======================================================================
 			{
 				size_t idxObs;
-				typename map<TPairNodeIDs,typename gst::TPairJacobs>::const_iterator itJacobPair;
+				typename gst::map_pairIDs_pairJacobs_t::const_iterator itJacobPair;
 
 				for (idxObs=0, itJacobPair=lstJacobians.begin();
 				     idxObs<nObservations;
@@ -505,7 +506,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 				profiler.enter("optimize_graph_spa_levmarq.lambda_init");  // ---\  .
 				double H_diagonal_max = 0;
 				for (size_t i=0;i<nFreeNodes;i++)
-					for (typename map<TNodeID,typename gst::matrix_VxV_t>::const_iterator it=H_map[i].begin();it!=H_map[i].end();++it)
+					for (typename map_ID2matrix_VxV_t::const_iterator it=H_map[i].begin();it!=H_map[i].end();++it)
 					{
 						const size_t j = it->first; // entry submatrix is for (i,j).
 						if (i==j)
@@ -555,7 +556,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 		{
 			const size_t i_offset = i*DIMS_POSE;
 
-			for (typename map<TNodeID,typename gst::matrix_VxV_t>::const_iterator it=H_map[i].begin();it!=H_map[i].end();++it)
+			for (typename map_ID2matrix_VxV_t::const_iterator it=H_map[i].begin();it!=H_map[i].end();++it)
 			{
 				const size_t j = it->first; // entry submatrix is for (i,j).
 				const size_t j_offset = j*DIMS_POSE;
@@ -670,8 +671,8 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 			// =============================================================
 			// Compute Jacobians & errors with the new "graph.nodes" info:
 			// =============================================================
-			map<TPairNodeIDs,typename gst::TPairJacobs>   new_lstJacobians;
-			vector<typename gst::Array_O>                 new_errs;
+			typename gst::map_pairIDs_pairJacobs_t  new_lstJacobians;
+			vector<typename gst::Array_O,Eigen::aligned_allocator<typename gst::Array_O> >                 new_errs;
 
 			profiler.enter("optimize_graph_spa_levmarq.Jacobians&err");// ------------------------------\  .
 			double new_total_sqr_err = computeJacobiansAndErrors<EDGE_TYPE,MAPS_IMPLEMENTATION>(

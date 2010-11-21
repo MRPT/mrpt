@@ -121,7 +121,7 @@ void CHMTSLAM::thread_LSLAM()
 				// -----------------------------------------
 				ASSERT_(!obj->m_LMHs.empty());
 
-				std::map< THypothesisID, CLocalMetricHypothesis >::iterator  it;
+				aligned_containers<THypothesisID, CLocalMetricHypothesis>::map_t::iterator  it;
 
 				ASSERT_(obj->m_LSLAM_method);
 
@@ -302,7 +302,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		printf_debug("[LSLAM_proc_msg_AA] Beginning of Msg from AA processing...              [\n" );
 #endif
 		// Get the corresponding LMH:
-		std::map< THypothesisID, CLocalMetricHypothesis >::iterator  itLMH = m_LMHs.find( myMsg.hypothesisID );
+		aligned_containers<THypothesisID, CLocalMetricHypothesis>::map_t::iterator  itLMH = m_LMHs.find( myMsg.hypothesisID );
 		ASSERT_( itLMH!=m_LMHs.end() );
 		CLocalMetricHypothesis	*LMH = &itLMH->second;
 

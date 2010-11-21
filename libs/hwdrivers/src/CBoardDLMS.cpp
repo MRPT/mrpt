@@ -213,7 +213,7 @@ void CBoardDLMS::doProcess()
 					// --------------------------------
 					// Fill the vector of measurements
 					// --------------------------------
-					vector_float::iterator			itScan;
+					vector<float>::iterator			itScan;
 					vector<unsigned char>::iterator	itCont;
 					vector<char>::iterator			itValid;
 

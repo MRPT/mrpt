@@ -241,12 +241,12 @@ void CObservation3DRangeScan::load() const
 		CMatrixFloat M;
 		M.loadFromTextFile(fil);
 
-		M.extractRow(0,const_cast<vector_float&>(points3D_x));
-		M.extractRow(1,const_cast<vector_float&>(points3D_y));
-		M.extractRow(2,const_cast<vector_float&>(points3D_z));
+		M.extractRow(0,const_cast<std::vector<float>&>(points3D_x));
+		M.extractRow(1,const_cast<std::vector<float>&>(points3D_y));
+		M.extractRow(2,const_cast<std::vector<float>&>(points3D_z));
 #else
 		mrpt::utils::CFileGZInputStream f(fil);
-		f >> const_cast<vector_float&>(points3D_x) >> const_cast<vector_float&>(points3D_y) >> const_cast<vector_float&>(points3D_z);
+		f >> const_cast<std::vector<float>&>(points3D_x) >> const_cast<std::vector<float>&>(points3D_y) >> const_cast<std::vector<float>&>(points3D_z);
 #endif
 	}
 
@@ -419,8 +419,7 @@ namespace mrpt
 				const size_t nR = obs.rangeImage.getRowCount();
 
 
-				err.clear();
-				err.reserve( nC*nR/square(CALIB_DECIMAT) );
+				err = vector_double(); // .resize( nC*nR/square(CALIB_DECIMAT) );
 
 				for (size_t r=0;r<nR;r+=CALIB_DECIMAT)
 				{

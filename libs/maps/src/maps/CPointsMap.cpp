@@ -314,7 +314,7 @@ void  CPointsMap::computeMatchingWith2D(
 	float			        x_local, y_local,z_local;
 	unsigned int			globalIdx,localIdx;
 
-	vector_float					x_locals(nLocalPoints),y_locals(nLocalPoints),z_locals(nLocalPoints);
+	vector<float>					x_locals(nLocalPoints),y_locals(nLocalPoints),z_locals(nLocalPoints);
 
 	float 		*x_locals_it,*y_locals_it,*z_locals_it;
 	const float *x_other_it,*y_other_it,*z_other_it,*x_global_it,*y_global_it; //,*z_global_it;
@@ -797,9 +797,9 @@ float  CPointsMap::compute3DMatchingRatio(
 	size_t					nLocalPoints = otherMap->size();
 	size_t					nGlobalPoints = this->size();
 	size_t					nOtherMapPointsWithCorrespondence = 0;	// Number of points with one corrs. at least
-	vector_float			x_locals,y_locals,z_locals;
-	vector_float::iterator	x_locals_it,y_locals_it,z_locals_it;
-	vector_float::const_iterator	x_other_it,y_other_it,z_other_it,x_global_it,y_global_it,z_global_it;
+	vector<float>			x_locals,y_locals,z_locals;
+	vector<float>::iterator	x_locals_it,y_locals_it,z_locals_it;
+	vector<float>::const_iterator	x_other_it,y_other_it,z_other_it,x_global_it,y_global_it,z_global_it;
 
 	float					local_x_min= std::numeric_limits<float>::max(), local_x_max= -std::numeric_limits<float>::max();
 	float					global_x_min=std::numeric_limits<float>::max(), global_x_max= -std::numeric_limits<float>::max();
@@ -975,7 +975,7 @@ float  CPointsMap::getLargestDistanceFromOrigin() const
 	if (!m_largestDistanceFromOriginIsUpdated)
 	{
 		// NO: Update it:
-		vector_float::const_iterator    X,Y,Z;
+		vector<float>::const_iterator    X,Y,Z;
 		float	maxDistSq = 0, d;
 		for (X=x.begin(),Y=y.begin(),Z=z.begin();X!=x.end();X++,Y++,Z++)
 		{
@@ -993,31 +993,6 @@ float  CPointsMap::getLargestDistanceFromOrigin() const
 /*---------------------------------------------------------------
 						getAllPoints
 ---------------------------------------------------------------*/
-void  CPointsMap::getAllPoints( vector<float> &xs, vector<float> &ys,vector<float> &zs, size_t decimation ) const
-{
-	MRPT_START;
-	ASSERT_(decimation>0);
-
-	size_t N = x.size() / decimation;
-
-	xs.resize(N);
-	ys.resize(N);
-	zs.resize(N);
-
-	vector_float::const_iterator    X,Y,Z;
-	vector_float::iterator    		oX,oY,oZ;
-	for (X=x.begin(),Y=y.begin(),Z=z.begin(),oX=xs.begin(),oY=ys.begin(),oZ=zs.begin();oX!=xs.end();X+=decimation,Y+=decimation,Z+=decimation,oX++,oY++,oZ++)
-	{
-		*oX=*X;
-		*oY=*Y;
-		*oZ=*Z;
-	}
-	MRPT_END;
-}
-
-/*---------------------------------------------------------------
-						getAllPoints
----------------------------------------------------------------*/
 void  CPointsMap::getAllPoints( vector<float> &xs, vector<float> &ys, size_t decimation  ) const
 {
 	MRPT_START;
@@ -1028,8 +1003,8 @@ void  CPointsMap::getAllPoints( vector<float> &xs, vector<float> &ys, size_t dec
 	xs.resize(N);
 	ys.resize(N);
 
-	vector_float::const_iterator    X,Y;
-	vector_float::iterator    		oX,oY;
+	vector<float>::const_iterator    X,Y;
+	vector<float>::iterator    		oX,oY;
 	for (X=x.begin(),Y=y.begin(),oX=xs.begin(),oY=ys.begin();oX!=xs.end();X+=decimation,Y+=decimation,oX++,oY++)
 	{
 		*oX=*X;
@@ -1133,7 +1108,7 @@ void CPointsMap::boundingBox(
 	float &min_z,  float &max_z
 	) const
 {
-	vector_float::const_iterator xi, yi, zi;
+	vector<float>::const_iterator xi, yi, zi;
 
 	if (x.empty())
 	{
@@ -1197,7 +1172,7 @@ void  CPointsMap::computeMatchingWith3D(
 
 	unsigned int			globalIdx,localIdx;
 
-	vector_float					x_locals,y_locals,z_locals;
+	vector<float>					x_locals,y_locals,z_locals;
 
 	float 		*x_locals_it,*y_locals_it,*z_locals_it;
 	const float *x_other_it,*y_other_it,*z_other_it,*x_global_it,*y_global_it,*z_global_it;

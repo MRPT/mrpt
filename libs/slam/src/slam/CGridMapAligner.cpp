@@ -46,7 +46,6 @@
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/math.h>
 #include <mrpt/random.h>
 
@@ -225,7 +224,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 		{
 			//vector_float  	corrs_indiv;
 			vector<pair<size_t,float> >  corrs_indiv;  // (index, distance); Index is used to recover the original index after sorting.
-			vector_float corrs_indiv_only;
+			vector<float> corrs_indiv_only;
 			corrs_indiv.reserve(nLM2);
 			corrs_indiv_only.reserve(nLM2);
 
@@ -586,7 +585,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 						Hq(1,1) = 1;
 
 						CPoint2D p2_j_local;
-						vector_float  matches_x,matches_y, matches_dist;
+						vector<float>  matches_x,matches_y, matches_dist;
 						std::vector<size_t> matches_idx;
 
 						CPoint2DPDFGaussian  pdf_M2_j;
@@ -1038,7 +1037,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
 		delete tictac;
 	}
 
-	bestCrossCorr.adjustRange(0,1);
+	bestCrossCorr.normalize(0,1);
 	CImageFloat	aux( bestCrossCorr );
 	aux.saveToFile("_debug_best_corr.bmp");
 
@@ -1048,8 +1047,8 @@ CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
 #endif
 
 	// Transform the best corr matrix peak into coordinates:
-	size_t		uMax,vMax;
-	bestCrossCorr.find_index_max_value(uMax,vMax,currentMaxCorr);
+	CMatrix::Index  uMax,vMax;
+	currentMaxCorr = bestCrossCorr.maxCoeff(&uMax,&vMax);
 
 	PDF->mean.x( m1->idx2x( uMax ) );
 	PDF->mean.y( m1->idx2y( vMax ) );

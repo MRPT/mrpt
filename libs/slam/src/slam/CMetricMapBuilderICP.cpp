@@ -508,8 +508,8 @@ void  CMetricMapBuilderICP::initialize(
 						getCurrentMapPoints
   ---------------------------------------------------------------*/
 void  CMetricMapBuilderICP::getCurrentMapPoints(
-			vector_float		&x,
-			vector_float		&y)
+	mrpt::vector<float>		&x,
+	mrpt::vector<float>		&y)
 {
 	// Critical section: We are using our global metric map
 	enterCriticalSection();

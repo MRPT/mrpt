@@ -101,9 +101,9 @@ namespace slam
 
 
 		bool hasPoints3D; 								//!< true means the field points3D contains valid data.
-		vector_float points3D_x;   //!< If hasPoints3D=true, the X coordinates of the 3D point cloud detected by the camera.
-		vector_float points3D_y;   //!< If hasPoints3D=true, the Y coordinates of the 3D point cloud detected by the camera.
-		vector_float points3D_z;   //!< If hasPoints3D=true, the Z coordinates of the 3D point cloud detected by the camera.
+		std::vector<float> points3D_x;   //!< If hasPoints3D=true, the X coordinates of the 3D point cloud detected by the camera.
+		std::vector<float> points3D_y;   //!< If hasPoints3D=true, the Y coordinates of the 3D point cloud detected by the camera.
+		std::vector<float> points3D_z;   //!< If hasPoints3D=true, the Z coordinates of the 3D point cloud detected by the camera.
 
 		// 3D points external storage functions ---------
 		inline bool points3D_isExternallyStored() const { return m_points3D_external_stored; }

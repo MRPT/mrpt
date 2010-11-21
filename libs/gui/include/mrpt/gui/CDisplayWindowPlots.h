@@ -70,6 +70,26 @@ namespace mrpt
 			TCallbackMenu m_callback;
 			void		*m_callback_param;
 
+			void internal_plot(vector_float &x,vector_float &y,const std::string  &lineFormat,const std::string  &plotName);
+			template <typename VECTOR1,typename VECTOR2>
+			void internal_plot_interface(const VECTOR1 &x,const VECTOR2 &y,const std::string  &lineFormat,const std::string  &plotName)
+			{
+				vector_float x1(x.size()), y1(y.size());
+				const size_t N1=size_t(x.size());
+				for (size_t i=0;i<N1;i++) x1[i]=x[i];
+				const size_t N2=size_t(y.size());
+				for (size_t i=0;i<N2;i++) y1[i]=y[i];
+				this->internal_plot(x1,y1,lineFormat,plotName);
+			}
+			template <typename VECTOR1>
+			void internal_plot_interface(const VECTOR1 &y,const std::string  &lineFormat,const std::string  &plotName)
+			{
+				const size_t N=size_t(y.size());
+				vector_float x1(N),y1(N);
+				for (size_t i=0;i<N;i++) { x1[i]=i; y1[i]=y[i]; }
+				this->internal_plot(x1,y1,lineFormat,plotName);
+			}
+
 		public:
 
 			/** Constructor
@@ -138,31 +158,28 @@ namespace mrpt
 			  *   - 'k3' or 'k-3' -> A black line with a line width of 3 pixels.
 			  * \note The vectors x & y can be of types: float or double.
 			  * \sa axis, axis_equal, axis_fit, clear, hold_on, hold_off
+			  * \tparam VECTOR Can be std::vector<float/double> or mrpt::dynamicsize_vector<float/double> or a column/row Eigen::Matrix<>
 			  */
-			template <typename T>
-			void GUI_IMPEXP plot(
-				const std::vector<T> &x,
-				const std::vector<T> &y,
-				const std::string  &lineFormat = std::string("b-"),
-				const std::string  &plotName = std::string("plotXY") );
+			template <typename T1,typename T2> inline void plot(const std::vector<T1> &x,const std::vector<T2> &y,const std::string  &lineFormat = std::string("b-"),const std::string  &plotName = std::string("plotXY") ) { this->internal_plot_interface(x,y,lineFormat,plotName); }
+			//! \overload
+			template <typename T1,typename Derived2> inline void plot(const std::vector<T1> &x,const Eigen::MatrixBase<Derived2> &y,const std::string  &lineFormat = std::string("b-"),const std::string  &plotName = std::string("plotXY") ) { this->internal_plot_interface(x,y,lineFormat,plotName); }
+			//! \overload
+			template <typename Derived1,typename T2> inline void plot(const Eigen::MatrixBase<Derived1> &x,const std::vector<T2> &y,const std::string  &lineFormat = std::string("b-"),const std::string  &plotName = std::string("plotXY") ) { this->internal_plot_interface(x,y,lineFormat,plotName); }
+			//! \overload
+			template <typename Derived1,typename Derived2> inline void plot(const Eigen::MatrixBase<Derived1> &x,const Eigen::MatrixBase<Derived2> &y,const std::string  &lineFormat = std::string("b-"),const std::string  &plotName = std::string("plotXY") ) { this->internal_plot_interface(x,y,lineFormat,plotName); }
 
 			//! \overload
-			template <typename T>
-			void GUI_IMPEXP plot(
-				const std::vector<T> &y,
-				const std::string  &lineFormat = std::string("b-"),
-				const std::string  &plotName = std::string("plotXY") );
+			template <typename T> void plot(const std::vector<T> &y,const std::string  &lineFormat = std::string("b-"),const std::string  &plotName = std::string("plotXY") ) { this->internal_plot_interface(y,lineFormat,plotName); }
+			//! \overload
+			template <typename Derived> void plot(const Eigen::MatrixBase<Derived> &y,const std::string  &lineFormat = std::string("b-"),const std::string  &plotName = std::string("plotXY") ) { this->internal_plot_interface(y,lineFormat,plotName); }
 
-			/** Set the view area according to the passed coordinated.
-			  */
+			/** Set the view area according to the passed coordinated. */
 			void axis( float x_min, float x_max, float y_min, float y_max, bool aspectRatioFix = false );
 
-			/** Enable/disable the fixed X/Y aspect ratio fix feature (default=disabled).
-			  */
+			/** Enable/disable the fixed X/Y aspect ratio fix feature (default=disabled). */
 			void axis_equal(bool enable=true);
 
-			/** Fix automatically the view area according to existing graphs.
-			  */
+			/** Fix automatically the view area according to existing graphs. */
 			void axis_fit(bool aspectRatioFix=false);
 
 			/** Plots a 2D ellipse given its mean, covariance matrix, and

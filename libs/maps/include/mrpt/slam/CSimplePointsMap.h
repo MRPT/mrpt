@@ -123,7 +123,7 @@ namespace mrpt
 			 */
 			void  insertAnotherMap(
 										CPointsMap			*otherMap,
-										CPose2D				otherPose);
+										const CPose2D		&otherPose);
 
 			/** Changes a given point from map, as a 2D point. First index is 0.
 			 * \exception Throws std::exception on index out of bound.
@@ -172,12 +172,34 @@ namespace mrpt
 			  */
 			void reserve(size_t newLength);
 
+			/** Set all the points at once from vectors with X,Y and Z coordinates (if Z is not provided, it will be set to all zeros).
+			  * \tparam VECTOR can be mrpt::vector_float or std::vector<float> or any other column or row Eigen::Matrix.
+			  */
+			template <typename VECTOR>
+			inline void setAllPointsTemplate(const VECTOR &X,const VECTOR &Y,const VECTOR &Z = VECTOR())
+			{
+				const size_t N = X.size();
+				ASSERT_EQUAL_(X.size(),Y.size())
+				ASSERT_(Z.size()==0 || Z.size()==X.size())
+				x.resize(N); y.resize(N); z.resize(N);
+				const bool z_valid = Z.empty();
+				if (z_valid) for (size_t i=0;i<N;i++) { this->x[i]=X[i]; this->y[i]=Y[i]; this->z[i]=Z[i]; }
+				else         for (size_t i=0;i<N;i++) { this->x[i]=X[i]; this->y[i]=Y[i]; this->z[i]=0; }
+				pointWeight.assign(N,1);
+				mark_as_modified();
+			}
 
-			/** Set all the points at once from vectors with X,Y and Z coordinates.  */
-			void setAllPoints(const vector_float &X,const vector_float &Y,const vector_float &Z);
+			/** Set all the points at once from vectors with X,Y and Z coordinates. \sa getAllPoints */
+			virtual void setAllPoints(const std::vector<float> &X,const std::vector<float> &Y,const std::vector<float> &Z)
+			{
+				setAllPointsTemplate(X,Y,Z);
+			}
 
-			/** Set all the points at once from vectors with X and Y coordinates (Z=0).  */
-			void setAllPoints(const vector_float &X,const vector_float &Y);
+			/** Set all the points at once from vectors with X and Y coordinates (Z=0). \sa getAllPoints */
+			virtual void setAllPoints(const std::vector<float> &X,const std::vector<float> &Y)
+			{
+				setAllPointsTemplate(X,Y);
+			}
 
 			/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it. 
 				* Otherwise, return NULL

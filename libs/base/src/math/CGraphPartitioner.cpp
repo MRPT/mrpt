@@ -30,7 +30,6 @@
 
 
 #include <mrpt/math/CGraphPartitioner.h>
-#include <mrpt/math/CVectorTemplate.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

@@ -242,8 +242,8 @@ void  CPosePDFGaussian::rotateCov(const double ang)
 		ssin, ccos,  0.,
 		0.  ,   0.,  1. };
 
-	const CMatrixDouble33 rot(rot_vals);
-	rot.multiply_HCHt( CMatrixDouble33(cov), cov );  // cov is I & O, make a temporary copy ;-)
+	const CMatrixFixedNumeric<double,3,3> rot(rot_vals);
+	cov = rot * cov * rot.transpose();
 }
 
 /*---------------------------------------------------------------
@@ -320,8 +320,8 @@ void  CPosePDFGaussian::bayesianFusion(const  CPosePDF &p1_,const  CPosePDF &p2_
 	CMatrixDouble33	C2_inv;
 	C2.inv(C2_inv);
 
-	CMatrixDouble31	x1 = p1->mean;
-	CMatrixDouble31	x2 = p2->mean;
+	CMatrixDouble31	x1 = CMatrixDouble31(p1->mean);
+	CMatrixDouble31	x2 = CMatrixDouble31(p2->mean);
 
 
 	CMatrixDouble33	auxC = C1_inv + C2_inv;
@@ -360,16 +360,16 @@ void	 CPosePDFGaussian::inverse(CPosePDF &o) const
 		 ssin, -ccos,  mean.x()*ccos+mean.y()*ssin,
 		 0   ,     0,  -1
 		};
-	const CMatrixDouble33 H(H_values);
+	const CMatrixFixedNumeric<double,3,3> H(H_values);
 
-	H.multiply_HCHt(this->cov, out->cov); // o.cov = H * cov * Ht
+	out->cov = H * cov * H.transpose();  // o.cov = H * cov * Ht
 }
 
 
 /*---------------------------------------------------------------
 							+=
  ---------------------------------------------------------------*/
-void  CPosePDFGaussian::operator += ( CPose2D Ap)
+void  CPosePDFGaussian::operator += ( const CPose2D &Ap)
 {
 	mean = mean + Ap;
 	rotateCov( Ap.phi() );
@@ -380,8 +380,8 @@ void  CPosePDFGaussian::operator += ( CPose2D Ap)
  ---------------------------------------------------------------*/
 double  CPosePDFGaussian::evaluatePDF( const CPose2D &x ) const
 {
-	CMatrixDouble31	X = x;
-	CMatrixDouble31	MU = mean;
+	CMatrixDouble31	X = CMatrixDouble31	(x);
+	CMatrixDouble31	MU = CMatrixDouble31(mean);
 
 	return math::normalPDF( X, MU, this->cov );
 }
@@ -391,8 +391,8 @@ double  CPosePDFGaussian::evaluatePDF( const CPose2D &x ) const
  ---------------------------------------------------------------*/
 double  CPosePDFGaussian::evaluateNormalizedPDF( const CPose2D &x ) const
 {
-	CMatrixDouble31	X = x;
-	CMatrixDouble31	MU = mean;
+	CMatrixDouble31	X = CMatrixDouble31(x);
+	CMatrixDouble31	MU = CMatrixDouble31(mean);
 
 	return math::normalPDF( X, MU, this->cov ) / math::normalPDF( MU, MU, this->cov );
 }
@@ -571,7 +571,7 @@ void CPosePDFGaussian::jacobiansPoseComposition(
 	[ 0, 1,  cos(phi_x)*x_u-sin(phi_x)*y_u ]
 	[ 0, 0,                              1 ]
 */
-	df_dx.unit();
+	df_dx.unit(3,1.0);
 
 	const double   xu = u.mean.x();
 	const double   yu = u.mean.y();

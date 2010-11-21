@@ -117,7 +117,7 @@ void CPosePDFSOG::getCovarianceAndMean(CMatrixDouble33 &estCov, CPose2D &estMean
 	{
 		// 1) Get the mean:
 		double		w,sumW = 0;
-		CMatrixDouble31	estMeanMat = estMean2D;
+		CMatrixDouble31	estMeanMat = CMatrixDouble31(estMean2D);
 		const_iterator	it;
 
 		CMatrixDouble33 temp;
@@ -127,7 +127,7 @@ void CPosePDFSOG::getCovarianceAndMean(CMatrixDouble33 &estCov, CPose2D &estMean
 		{
 			sumW += w = exp((it)->log_w);
 
-			estMean_i = (it)->mean;
+			estMean_i = CMatrixDouble31( (it)->mean );
 			estMean_i -= estMeanMat;
 
 			temp.multiply_AAt(estMean_i);
@@ -278,7 +278,7 @@ void  CPosePDFSOG::changeCoordinatesReference(const CPose3D &newReferenceBase_ )
 	newReferenceBase.getHomogeneousMatrix(HM);
 
 	// Clip the 4x4 matrix
-	CMatrixDouble33	M = CMatrixDouble33(HM);
+	CMatrixDouble33	M = HM.block(0,0, 3,3).eval();
 
 	// The variance in phi is unmodified:
 	M(0,2) = 0; M(1,2) = 0;
@@ -336,7 +336,6 @@ void  CPosePDFSOG::drawManySamples(
 	MRPT_START;
 	MRPT_UNUSED_PARAM(N);
 	MRPT_UNUSED_PARAM(outSamples);
-//	std::vector<vector_float>	rndSamples;
 
 	THROW_EXCEPTION("Not implemented yet!!");
 
@@ -367,12 +366,12 @@ void  CPosePDFSOG::bayesianFusion(const  CPosePDF &p1_,const  CPosePDF &p2_, con
 	CMatrixDouble33	covInv;
 	p2->cov.inv(covInv);
 
-	CMatrixDouble31	eta = p2->mean;
+	CMatrixDouble31	eta = CMatrixDouble31(p2->mean);
 	eta = covInv * eta;
 
 	// Normal distribution canonical form constant:
 	// See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
-	double				a = -0.5*( 3*log(M_2PI) - log( covInv.det() ) + (~eta * p2->cov * eta)(0,0) );
+	double				a = -0.5*( 3*log(M_2PI) - log( covInv.det() ) + (eta.transpose() * p2->cov * eta)(0,0) );
 
 	this->m_modes.clear();
 	for (const_iterator it =p1->m_modes.begin();it!=p1->m_modes.end();++it)
@@ -396,17 +395,17 @@ void  CPosePDFSOG::bayesianFusion(const  CPosePDF &p1_,const  CPosePDF &p2_, con
 		CMatrixDouble33	covInv_i;
 		auxSOG_Kernel_i.cov.inv(covInv_i);
 
-		CMatrixDouble31	eta_i = auxSOG_Kernel_i.mean;
+		CMatrixDouble31	eta_i = CMatrixDouble31(auxSOG_Kernel_i.mean);
 		eta_i = covInv_i * eta_i;
 
 		CMatrixDouble33 new_covInv_i;
 		newKernel.cov.inv(new_covInv_i);
 
-		CMatrixDouble31	new_eta_i = newKernel.mean;
+		CMatrixDouble31	new_eta_i = CMatrixDouble31(newKernel.mean);
 		new_eta_i = new_covInv_i * new_eta_i;
 
-		double		a_i	    = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (~eta_i * auxSOG_Kernel_i.cov * eta_i)(0,0) );
-		double		new_a_i = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (~new_eta_i * newKernel.cov * new_eta_i)(0,0) );
+		double		a_i	    = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (eta_i.transpose() * auxSOG_Kernel_i.cov * eta_i)(0,0) );
+		double		new_a_i = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (new_eta_i.transpose() * newKernel.cov * new_eta_i)(0,0) );
 
 		//newKernel.w	   = (it)->w * exp( a + a_i - new_a_i );
 		newKernel.log_w	   = (it)->log_w + a + a_i - new_a_i;
@@ -447,7 +446,7 @@ void	 CPosePDFSOG::inverse(CPosePDF &o)  const
 /*---------------------------------------------------------------
 							+=
  ---------------------------------------------------------------*/
-void  CPosePDFSOG::operator += ( const CPose2D Ap)
+void  CPosePDFSOG::operator += ( const CPose2D &Ap)
 {
 	for (iterator it=m_modes.begin();it!=m_modes.end();++it)
 		(it)->mean = (it)->mean + Ap;
@@ -465,13 +464,13 @@ double  CPosePDFSOG::evaluatePDF(
 	if (!sumOverAllPhis)
 	{
 		// Normal evaluation:
-		CMatrixDouble31	X = x;
+		CMatrixDouble31	X = CMatrixDouble31(x);
 		CMatrixDouble31	MU;
 		double	ret = 0;
 
 		for (const_iterator it=m_modes.begin();it!=m_modes.end();++it)
 		{
-			MU = (it)->mean;
+			MU = CMatrixDouble31((it)->mean);
 			ret+= exp((it)->log_w) * math::normalPDF( X, MU, (it)->cov );
 		}
 
@@ -507,13 +506,13 @@ double  CPosePDFSOG::evaluatePDF(
  ---------------------------------------------------------------*/
 double  CPosePDFSOG::evaluateNormalizedPDF( const CPose2D &x ) const
 {
-	CMatrixDouble31	X = x;
+	CMatrixDouble31	X = CMatrixDouble31(x);
 	CMatrixDouble31	MU;
 	double	ret = 0;
 
 	for (const_iterator it=m_modes.begin();it!=m_modes.end();++it)
 	{
-		MU = (it)->mean;
+		MU = CMatrixDouble31((it)->mean);
 		ret+= exp((it)->log_w) * math::normalPDF( X, MU, (it)->cov ) / math::normalPDF( MU, MU, (it)->cov );
 	}
 
@@ -637,7 +636,7 @@ void CPosePDFSOG::mergeModes( double max_KLd, bool verbose  )
 		CMatrixDouble33  min_Bij_COV;
 		size_t  best_j = 0;
 
-		CMatrixDouble31  MUi = m_modes[i].mean;
+		CMatrixDouble31  MUi = CMatrixDouble31(m_modes[i].mean);
 
 		// Compute B(i,j), j=[i+1,N-1]  (the discriminant)
 		for (size_t j=0;j<N;j++)
@@ -649,7 +648,7 @@ void CPosePDFSOG::mergeModes( double max_KLd, bool verbose  )
 			CMatrixDouble33  Pij = m_modes[i].cov * (Wi*Wij_);
 			Pij.add_Ac(m_modes[j].cov, Wj*Wij_ );
 
-			CMatrixDouble31  MUij = m_modes[j].mean;
+			CMatrixDouble31  MUij = CMatrixDouble31(m_modes[j].mean);
 			MUij-=MUi;
 			// Account for circular dimensions:
 			mrpt::math::wrapToPiInPlace( MUij(2,0) );
@@ -750,7 +749,7 @@ void CPosePDFSOG::getMostLikelyCovarianceAndMean(CMatrixDouble33 &cov,CPose2D &m
 	}
 	else
 	{
-		cov.unit();
+		cov.unit(3,1.0);
 		cov*=1e20;
 		mean_point = CPose2D(0,0,0);
 	}

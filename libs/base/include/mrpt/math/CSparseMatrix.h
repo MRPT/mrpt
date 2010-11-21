@@ -215,7 +215,7 @@ namespace mrpt
 
 			void add_AB(const CSparseMatrix & A,const CSparseMatrix & B); //!< this = A+B
 			void multiply_AB(const CSparseMatrix & A,const CSparseMatrix & B); //!< this = A*B
-			void multiply_Ab(const std::vector<double> &b, std::vector<double> &out_res) const; //!< out_res = this * b
+			void multiply_Ab(const mrpt::vector_double &b, mrpt::vector_double &out_res) const; //!< out_res = this * b
 
 			inline CSparseMatrix operator + (const CSparseMatrix & other) const
 			{
@@ -229,8 +229,8 @@ namespace mrpt
 				RES.multiply_AB(*this,other);
 				return RES;
 			}
-			inline std::vector<double> operator * (const std::vector<double> & other) const {
-				std::vector<double> res;
+			inline mrpt::vector_double operator * (const mrpt::vector_double & other) const {
+				mrpt::vector_double res;
 				multiply_Ab(other,res);
 				return res;
 			}
@@ -359,10 +359,10 @@ namespace mrpt
 				void get_L(CMatrixDouble &out_L) const;
 
 				/** Return the vector from a back-substitution step that solves: Ux=b   */
-				inline std::vector<double> backsub(const std::vector<double> &b) const { std::vector<double> res; backsub(b,res); return res; }
+				inline mrpt::vector_double backsub(const mrpt::vector_double &b) const { mrpt::vector_double res; backsub(b,res); return res; }
 
 				/** Return the vector from a back-substitution step that solves: Ux=b   */
-				void backsub(const std::vector<double> &b, std::vector<double> &result_x) const;
+				void backsub(const mrpt::vector_double &b, mrpt::vector_double &result_x) const;
 
 				/** Update the Cholesky factorization from an updated vesion of the original input, square definite-positive sparse matrix.
 				  *  NOTE: This new matrix MUST HAVE exactly the same sparse structure than the original one.

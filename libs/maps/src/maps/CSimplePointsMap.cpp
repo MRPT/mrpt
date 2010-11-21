@@ -145,7 +145,7 @@ void  CSimplePointsMap::loadFromRangeScan(
 		// ------------------------------------------------------
 		//		Pass range scan to a set of 2D points:
 		// ------------------------------------------------------
-		vector_float		scan_x,scan_y;
+		vector<float>		scan_x,scan_y;
 		double		Ang, dA;
 		if (rangeScan.rightToLeft)
 		{
@@ -161,8 +161,8 @@ void  CSimplePointsMap::loadFromRangeScan(
 		scan_x.resize( sizeRangeScan );
 		scan_y.resize( sizeRangeScan );
 
-		vector_float::iterator		 scan_x_it, scan_y_it;
-		vector_float::const_iterator scan_it;
+		vector<float>::iterator		 scan_x_it, scan_y_it;
+		vector<float>::const_iterator scan_it;
 
 		for ( scan_x_it=scan_x.begin(),
 			  scan_y_it=scan_y.begin(),
@@ -1087,11 +1087,11 @@ bool  CSimplePointsMap::internal_insertObservation(
 					insertAnotherMap
  ---------------------------------------------------------------*/
 void  CSimplePointsMap::insertAnotherMap(	CPointsMap			*otherMap,
-													CPose2D				otherPose)
+											const CPose2D		&otherPose)
 {
 	size_t							N_this = size();
 	size_t							N_other = otherMap->size();
-	vector_float::iterator					xs,ys,zs;
+	vector<float>::iterator					xs,ys,zs;
 	std::vector<uint32_t>::iterator	ws;
 	CPoint3D								p,pp;
 
@@ -1137,31 +1137,4 @@ void CSimplePointsMap::reserve(size_t newLength)
 	y.reserve( newLength );
 	z.reserve( newLength );
 	pointWeight.reserve( newLength );
-}
-
-
-/*---------------------------------------------------------------
-					setAllPoints
- ---------------------------------------------------------------*/
-void CSimplePointsMap::setAllPoints(const vector_float &X,const vector_float &Y,const vector_float &Z)
-{
-	this->x = X;
-	this->y = Y;
-	this->z = Z;
-	pointWeight.assign(X.size(),1);
-
-	mark_as_modified();
-}
-
-/*---------------------------------------------------------------
-					setAllPoints
- ---------------------------------------------------------------*/
-void CSimplePointsMap::setAllPoints(const vector_float &X,const vector_float &Y)
-{
-	this->x = X;
-	this->y = Y;
-	this->z.assign(X.size(),0);
-	pointWeight.assign(X.size(),1);
-
-	mark_as_modified();
 }

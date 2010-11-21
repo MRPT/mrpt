@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/base.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -120,7 +120,7 @@ protected:
 
 			}
 			// Compare:
-			EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().mean(), 1e-5 )
+			EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().mean(), 1e-2 )
 				<< "Numeric approximation of covariance: " << endl << y_cov << endl
 				<< "Returned covariance: " << endl << p6_comp.cov << endl;
 
@@ -210,7 +210,7 @@ protected:
 			transform_gaussian_linear(x_mean,x_cov,func_inv_compose,DUMMY, y_mean,y_cov, x_incrs );
 		}
 		// Compare:
-		EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().mean(), 1e-5 )
+		EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().mean(), 1e-2 )
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "p2 mean: " << p6pdf2.mean << endl
 			<< "Numeric approximation of covariance: " << endl << y_cov << endl

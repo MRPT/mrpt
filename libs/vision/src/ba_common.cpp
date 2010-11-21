@@ -118,7 +118,7 @@ template <bool POSES_INVERSE>
 inline void reprojectionResidualsElement(
 	const TCamera  & camera_params,
 	const TFeatureObservation & OBS,
-	CArrayDouble<2>  & out_residual,
+	CArray<double,2>  & out_residual,
 	const TFramePosesVec::value_type        & frame,
 	const TLandmarkLocationsVec::value_type & point,
 	double &sum,
@@ -127,7 +127,7 @@ inline void reprojectionResidualsElement(
 	const TPixelCoordf  z_pred = mrpt::vision::pinhole::projectPoint_no_distortion<POSES_INVERSE>(camera_params, frame, point);
 	const TPixelCoordf &z_meas = OBS.px;
 
-	CArrayDouble<2> delta;
+	CArray<double,2> delta;
 	delta[0] = z_meas.x-z_pred.x;
 	delta[1] = z_meas.y-z_pred.y;
 
@@ -136,7 +136,8 @@ inline void reprojectionResidualsElement(
 	{
 		const double nrm = std::max(1e-11,std::sqrt(sum_2));
 		const double w = std::sqrt(kernel(nrm))/nrm;
-		delta *= w;
+		delta[0] *= w;
+		delta[1] *= w;
 		out_residual = delta;
 		sum += square(delta[0])+square(delta[1]);
 	}
@@ -158,7 +159,7 @@ double mrpt::vision::reprojectionResiduals(
 	const TCamera                        & camera_params,
 	const TFramePosesMap                 & frame_poses,
 	const TLandmarkLocationsMap          & landmark_points,
-	std::vector<mrpt::math::CArrayDouble<2> > & out_residuals,
+	std::vector<CArray<double,2> > & out_residuals,
 	const bool  frame_poses_are_inverse,
 	const bool  use_robust_kernel
 	)
@@ -201,7 +202,7 @@ double mrpt::vision::reprojectionResiduals(
 	const TCamera                        & camera_params,
 	const TFramePosesVec                 & frame_poses,
 	const TLandmarkLocationsVec          & landmark_points,
-	std::vector<mrpt::math::CArrayDouble<2> > & out_residuals,
+	std::vector<CArray<double,2> > & out_residuals,
 	const bool  frame_poses_are_inverse,
 	const bool  use_robust_kernel
 	)
@@ -240,12 +241,12 @@ double mrpt::vision::reprojectionResiduals(
 // Compute temporary matrices during BA:
 void mrpt::vision::ba_calcUVeps(
 	const TSequenceFeatureObservations          & observations,
-	const vector<CArrayDouble<2> >              & residual_vec,
-	const vector<JacData<6,3,2> >               & jac_data_vec,
-	vector<CMatrixFixedNumeric<double,6,6> >    & U,
-	vector<CArrayDouble<6> >                    & eps_frame,
-	vector<CMatrixFixedNumeric<double,3,3> >    & V,
-	vector<CArrayDouble<3> >                    & eps_point,
+	const vector<CArray<double,2> >              & residual_vec,
+	const vector<JacData<6,3,2>, Eigen::aligned_allocator<JacData<6,3,2> > >               & jac_data_vec,
+	vector<CMatrixFixedNumeric<double,6,6>, Eigen::aligned_allocator<CMatrixFixedNumeric<double,6,6> > >    & U,
+	vector<CArrayDouble<6>, Eigen::aligned_allocator<CArrayDouble<6> > >                    & eps_frame,
+	vector<CMatrixFixedNumeric<double,3,3>, Eigen::aligned_allocator<CMatrixFixedNumeric<double,3,3> > >    & V,
+	vector<CArrayDouble<3>, Eigen::aligned_allocator<CArrayDouble<3> > >                    & eps_point,
 	const size_t                                  num_fix_frames,
 	const size_t                                  num_fix_points )
 {
@@ -260,7 +261,7 @@ void mrpt::vision::ba_calcUVeps(
 		const TFeatureID     i_p  = OBS.id_feature;
 		const TCameraPoseID  i_f  = OBS.id_frame;
 
-		const CArrayDouble<2> & RESID = residual_vec[i];
+		const Eigen::Matrix<double,2,1> RESID( &residual_vec[i][0] );
 		const JacData<6,3,2>  & JACOB = jac_data_vec[i];
 		ASSERTDEB_(JACOB.frame_id==i_f && JACOB.point_id==i_p)
 

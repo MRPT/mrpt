@@ -48,7 +48,11 @@ CReactiveNavigationSystem::CReactiveNavigationSystem(
     bool					enableConsoleOutput,
     bool					enableLogToFile)
 	:
-	CAbstractReactiveNavigationSystem(react_iterf_impl)
+	CAbstractReactiveNavigationSystem(react_iterf_impl),
+	meanExecutionTime(0.1f),
+	meanTotalExecutionTime(0.1f),
+	nLastSelectedPTG(-1),
+	m_decimateHeadingEstimate(0)
 {
 	// Initialize some members:
 	logFile				= NULL;
@@ -129,7 +133,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(ROBOTMODEL_DELAY,float,  ini,robotName);
 
 
-	ini.read_vector( robotName, "weights", vector_float(0), weights, true );
+	ini.read_vector( robotName, "weights", vector<float>(0), weights, true );
 	ASSERT_(weights.size()==6);
 
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(minObstaclesHeight,float,  ini,robotName);
@@ -161,10 +165,10 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	// Load robot shape:
 	// ---------------------------------------------
 	math::CPolygon		shape;
-	vector_float        xs,ys;
+	vector<float>        xs,ys;
 
-	ini.read_vector(robotName,"RobotModel_shape2D_xs",vector_float(0), xs, true );
-	ini.read_vector(robotName,"RobotModel_shape2D_ys",vector_float(0), ys, true );
+	ini.read_vector(robotName,"RobotModel_shape2D_xs",vector<float>(0), xs, true );
+	ini.read_vector(robotName,"RobotModel_shape2D_ys",vector<float>(0), ys, true );
 	ASSERT_(xs.size()==ys.size());
 
 	// Add to polygon
@@ -343,32 +347,18 @@ void CReactiveNavigationSystem::enableLogFile(bool enable)
   ---------------------------------------------------------------*/
 void  CReactiveNavigationSystem::performNavigationStep()
 {
-	static utils::CTicTac						totalExecutionTime, executionTime, tictac;
-	static mrpt::slam::CSimplePointsMap			WS_Obstacles;
-	static CLogFileRecord						newLogRec;
-	static std::vector<THolonomicMovement>		selectedHolonomicMovements;
-	static std::vector<vector_double>			TP_Obstacles;
+	mrpt::slam::CSimplePointsMap			WS_Obstacles;
+	CLogFileRecord							newLogRec;
 	float										targetDist;
 	poses::CPoint2D								relTarget;		// The target point, relative to current robot pose.
-	static std::vector<poses::CPoint2D>			TP_Targets;		// Target location (x,y) in TP-Space
 	poses::CPose2D								curPose;
 	float										curVL;			// en metros/seg
 	float										curW;			// en rad/segundo
-	static std::vector<THolonomicMovement>		holonomicMovements;
 	THolonomicMovement							selectedHolonomicMovement;
 	float										cmd_v=0,cmd_w=0;	// The non-holonomic command
 	float 										desired_cmd_v, desired_cmd_w;
 	std::vector<CHolonomicLogFileRecordPtr>		HLFRs;
-	static std::vector<float>					times_TP_transformations, times_HoloNav;
-	static std::vector<bool>					valid_TP;
-	static float								meanExecutionTime = 0.1f;
-	static float								meanTotalExecutionTime= 0.1f;
 	int											nSelectedPTG;
-	static vector_float							prevV,prevW,prevSelPTG;
-	static int									nLastSelectedPTG = -1;
-	static CDynamicWindow						DW;
-//	static TNavigatorBehavior					lastStepBehavior;
-//	TNavigatorBehavior							saveLastBehavior;
 
 	float cur_approx_heading_dir = 0;
 
@@ -594,10 +584,9 @@ void  CReactiveNavigationSystem::performNavigationStep()
 			// Compute the approximate heading direction
 			// ----------------------------------------------------------------
 			{
-				static int nCnt=0;
-				if (++nCnt>10)
+				if (++m_decimateHeadingEstimate>10)
 				{
-					nCnt=0;
+					m_decimateHeadingEstimate=0;
 
 					float x=1;
 					float y=0;
@@ -1418,7 +1407,7 @@ bool  CReactiveNavigationSystem::CDynamicWindow::findClosestCut( float cmd_v, fl
 	//float desiredCurv	= cmd_w / cmd_v;
 
 	// Find the 1..4 cuts:
-	vector_float	vs,ws;
+	vector<float>	vs,ws;
 	vs.reserve(4);
 	ws.reserve(4);
 	float			v,w;

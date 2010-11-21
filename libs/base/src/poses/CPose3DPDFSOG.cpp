@@ -182,11 +182,11 @@ void CPose3DPDFSOG::getCovarianceAndMean(CMatrixDouble66 &estCovOut,CPose3D &mea
 		const_iterator	it;
 
 		CMatrixDouble66		MMt;
-		CMatrixFixedNumeric<double,6,1> estMean_i;
+		CMatrixDouble61 estMean_i;
 		for (it=m_modes.begin();it!=m_modes.end();it++)
 		{
 			sumW += w = exp((it)->log_w);
-			estMean_i = (it)->val.mean;
+			estMean_i = CMatrixDouble61((it)->val.mean);
 			MMt.multiply_AAt(estMean_i);
 			MMt+=(it)->val.cov;
 			MMt*=w;

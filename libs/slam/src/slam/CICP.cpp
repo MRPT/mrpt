@@ -796,8 +796,7 @@ CPosePDFPtr CICP::ICP_Method_LM(
 						C(i,i) *= (1+lambda);	// Levenberg-Maquardt heuristic
 					//	C(i,i) += lambda;		// Levenberg  heuristic
 
-					C.inv_fast( C_inv );
-					C_inv.force_symmetry();
+					C_inv = C.inv();
 
 					// LM_delta = C_inv * dJ_dq * sq_errors
 					vector_float dJsq, LM_delta;
@@ -962,7 +961,7 @@ CPosePDFPtr CICP::ICP_Method_LM(
 
 	} // end of "if m2 is not empty"
 
-	return CPosePDFGaussianPtr( new CPosePDFGaussian(q, CMatrixDouble33(C_inv) ) );
+	return CPosePDFGaussianPtr( new CPosePDFGaussian(q, C_inv.cast<double>() ) );
 	MRPT_END;
 }
 

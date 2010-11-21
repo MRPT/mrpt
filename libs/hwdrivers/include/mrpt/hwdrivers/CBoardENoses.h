@@ -90,7 +90,7 @@ namespace mrpt
 			CSerialPort		*m_stream_SERIAL;
 
 			/** The 3D pose of the master + N slave eNoses on the robot (meters & radians) */
-			vector_float	enose_poses_x,enose_poses_y,enose_poses_z,enose_poses_yaw,enose_poses_pitch,enose_poses_roll;
+			std::vector<float>	enose_poses_x,enose_poses_y,enose_poses_z,enose_poses_yaw,enose_poses_pitch,enose_poses_roll;
 
 			/** Tries to connect to the USB device (if disconnected).
 			  * \return NULL on error, otherwise a stream to be used for comms.

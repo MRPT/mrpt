@@ -167,7 +167,9 @@ void Run_KF_SLAM()
 	CActionCollectionPtr	action;
 	CSensoryFramePtr		observations;
 	size_t			rawlogEntry = 0, step = 0;
-	deque<CPose3DQuat>          meanPath; // The estimated path
+
+	typedef vector<CPose3DQuat, Eigen::aligned_allocator<CPose3DQuat> > TListCPose3DQuat;
+	TListCPose3DQuat  meanPath; // The estimated path
 
 	CPose3DQuatPDFGaussian		robotPose;
 	std::vector<CPoint3D>	LMs;
@@ -213,7 +215,7 @@ void Run_KF_SLAM()
 			// Save mean pose:
 			if (!(step % SAVE_LOG_FREQUENCY))
 			{
-				CMatrixDouble  p= robotPose.mean;
+				const CMatrixDouble71  p= CMatrixDouble71(robotPose.mean);
 				p.saveToTextFile(OUT_DIR+format("/robot_pose_%05u.txt",(unsigned int)step));
 			}
 
@@ -253,7 +255,7 @@ void Run_KF_SLAM()
 					}
 
 					int path_decim = 0;
-					for (deque<CPose3DQuat>::iterator it=meanPath.begin();it!=meanPath.end();++it)
+					for (TListCPose3DQuat::iterator it=meanPath.begin();it!=meanPath.end();++it)
 					{
 						linesPath->appendLine(
 							x0,y0,z0,
@@ -350,12 +352,12 @@ void Run_KF_SLAM()
 						format("Estimated pose: (x y z qr qx qy qz) = %s", robotPose.mean.asString().c_str() ), 
 						TColorf(1,1,1), 1, MRPT_GLUT_BITMAP_HELVETICA_12 );
 
-					static vector_double estHz_vals;
+					static vector<double> estHz_vals;
 					const double curHz = 1.0/std::max(1e-9,tim_kf_iter);
 					estHz_vals.push_back(curHz);
 					if (estHz_vals.size()>50)
 						estHz_vals.erase(estHz_vals.begin());
-					const double meanHz = estHz_vals.mean();
+					const double meanHz = mrpt::math::mean(estHz_vals);
 
 									
 					win3d->addTextMessage(
@@ -412,7 +414,7 @@ void Run_KF_SLAM()
 
         // Replace by absolute values:
         H.Abs();
-        CMatrix H2(H); H2.adjustRange(0,1);
+        CMatrix H2(H); H2.normalize(0,1);
         CImageFloat   imgF(H2);
         imgF.saveToFile(OUT_DIR+string("/information_matrix_final.png"));
 

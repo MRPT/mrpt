@@ -252,6 +252,7 @@ bool CObservationGasSensors::CMOSmodel::get_GasDistribution_estimation(float &re
 	}catch(...){
 		cout << "Error when decimating \n" ;
 		mrpt::system::pause();
+		return false;
 	}
 }
 

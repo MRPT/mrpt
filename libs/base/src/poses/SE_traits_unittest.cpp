@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/base.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -71,7 +71,7 @@ protected:
 		const POSE_TYPE 	P2 = incr2 + params.P2;
 		const POSE_TYPE 	&Pd = params.D;
 
-		const CPose3D   P1DP2inv_(P1.getHomogeneousMatrixVal() * Pd.getHomogeneousMatrixVal() * P2.getInverseHomogeneousMatrix());
+		const CPose3D   P1DP2inv_(CMatrixDouble44(P1.getHomogeneousMatrixVal() * Pd.getHomogeneousMatrixVal() * P2.getInverseHomogeneousMatrix()));
 		const POSE_TYPE P1DP2inv(P1DP2inv_);
 
 		// Pseudo-logarithm:
@@ -91,7 +91,7 @@ protected:
 		const POSE_TYPE   Pd(Pd_);
 		const POSE_TYPE   P2(P2_);
 
-		const CPose3D   P1DP2inv_(P1.getHomogeneousMatrixVal() * Pd.getHomogeneousMatrixVal() * P2.getInverseHomogeneousMatrix());
+		const CPose3D   P1DP2inv_( CMatrixDouble44(P1.getHomogeneousMatrixVal() * Pd.getHomogeneousMatrixVal() * P2.getInverseHomogeneousMatrix()));
 		const POSE_TYPE P1DP2inv(P1DP2inv_); // Convert to 2D if needed
 
 		static const int DIMS = SE_TYPE::VECTOR_SIZE;

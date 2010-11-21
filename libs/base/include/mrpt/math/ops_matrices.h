@@ -36,11 +36,8 @@
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CVectorTemplate.h>
 
 #include <mrpt/math/ops_containers.h>		// Many generic operations
-#include <mrpt/math/ops_matrices_eigen.h>	// Eigenvectors are apart because it's a mess of code...
-#include <mrpt/math/matrices_metaprogramming.h>  // TMatrixProductType, ...
 
 #include <mrpt/utils/metaprogramming.h>  // for copy_container_typecasting()
 
@@ -54,12 +51,15 @@ namespace mrpt
 {
 	namespace math
 	{
+		/** @name Operators for binary streaming of MRPT matrices
+		    @{ */
+
 		/** Read operator from a CStream. The format is compatible with that of CMatrix & CMatrixD */
 		template <size_t NROWS,size_t NCOLS>
 		mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in, CMatrixFixedNumeric<float,NROWS,NCOLS> & M) {
 			CMatrix  aux;
 			in.ReadObject(&aux);
-			ASSERTMSG_(M.size()==aux.size(), format("Size mismatch: deserialized is %ux%u, expected is %ux%u",(unsigned)aux.getRowCount(),(unsigned)aux.getColCount(),(unsigned)NROWS,(unsigned)NCOLS))
+			ASSERTMSG_(M.cols()==aux.cols() && M.rows()==aux.rows(), format("Size mismatch: deserialized is %ux%u, expected is %ux%u",(unsigned)aux.getRowCount(),(unsigned)aux.getColCount(),(unsigned)NROWS,(unsigned)NCOLS))
 			M = aux;
 			return in;
 		}
@@ -68,7 +68,7 @@ namespace mrpt
 		mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in, CMatrixFixedNumeric<double,NROWS,NCOLS> & M) {
 			CMatrixD  aux;
 			in.ReadObject(&aux);
-			ASSERTMSG_(M.size()==aux.size(), format("Size mismatch: deserialized is %ux%u, expected is %ux%u",(unsigned)aux.getRowCount(),(unsigned)aux.getColCount(),(unsigned)NROWS,(unsigned)NCOLS))
+			ASSERTMSG_(M.cols()==aux.cols() && M.rows()==aux.rows(), format("Size mismatch: deserialized is %ux%u, expected is %ux%u",(unsigned)aux.getRowCount(),(unsigned)aux.getColCount(),(unsigned)NROWS,(unsigned)NCOLS))
 			M = aux;
 			return in;
 		}
@@ -88,40 +88,217 @@ namespace mrpt
 			return out;
 		}
 
-		/** Equal comparison (==)  */
-		template <class T,size_t NROWS, size_t NCOLS>
-		bool operator == (const CMatrixFixedNumeric<T,NROWS,NCOLS>& M1, const CMatrixFixedNumeric<T,NROWS,NCOLS>& M2)
+		/** @} */  // end MRPT matrices stream operators
+
+
+		/** @name Operators for text streaming of MRPT matrices
+		    @{ */
+
+
+		/** Dumps the matrix to a text ostream, adding a final "\n" to Eigen's default output. */
+		template <typename T,size_t NROWS,size_t NCOLS>
+		inline std::ostream & operator << (std::ostream & s, const CMatrixFixedNumeric<T,NROWS,NCOLS>& m)
 		{
-			for (size_t i=0; i < NROWS; i++)
-				for (size_t j=0; j < NCOLS; j++)
-					if (M1.get_unsafe(i,j)!=M2.get_unsafe(i,j))
-						return false;
-			return true;
+			Eigen::IOFormat  fmt; fmt.matSuffix="\n";
+			return s << m.format(fmt);
 		}
 
-		/** Textual output stream function.
-		  *    Use only for text output, for example:  "std::cout << mat;"
+		/** Dumps the matrix to a text ostream, adding a final "\n" to Eigen's default output. */
+		template<typename T>
+		inline std::ostream & operator << (std::ostream & s, const CMatrixTemplateNumeric<T>& m)
+		{
+			Eigen::IOFormat  fmt; fmt.matSuffix="\n";
+			return s << m.format(fmt);
+		}
+
+		/** Dumps the vector as a row to a text ostream, with the format: "[v1 v2 v3... vN]" */
+		template<typename T>
+		inline std::ostream & operator << (std::ostream & s, const mrpt::dynamicsize_vector<T>& m)
+		{
+			Eigen::IOFormat  fmt; fmt.rowSeparator=""; fmt.matPrefix="["; fmt.matSuffix="]";
+			return s << m.format(fmt);
+		}
+
+		/** @} */  // end MRPT matrices stream operators
+
+
+		/** Transpose operator for matrices */
+		template <class Derived>
+		inline Eigen::Transpose<Derived> operator ~(const Eigen::MatrixBase<Derived> &m) {
+			return m.transpose();
+		}
+
+		/** Unary inversion operator. */
+		template <class Derived>
+		inline typename Eigen::MatrixBase<Derived>::PlainObject operator !(const Eigen::MatrixBase<Derived> &m) {
+			return m.inv();
+		}
+
+		/** @} */  // end MRPT matrices operators
+
+
+		/** R = H * C * H^t (with C symmetric) */
+		template <typename MAT_H, typename MAT_C, typename MAT_R>
+		inline void multiply_HCHt(
+			const MAT_H &H,
+			const MAT_C &C,
+			MAT_R &R,
+			bool accumResultInOutput ) //	bool allow_submatrix_mult)
+		{
+			if (accumResultInOutput)
+			     R += ( (H * C.template selfadjointView<Eigen::Lower>()).eval() * H.adjoint()).eval().template selfadjointView<Eigen::Lower>();
+			else
+			     R  = ( (H * C.template selfadjointView<Eigen::Lower>()).eval() * H.adjoint()).eval().template selfadjointView<Eigen::Lower>();
+		}
+
+		/** r (a scalar) = H * C * H^t (with a vector H and a symmetric matrix C) */
+		template <typename VECTOR_H, typename MAT_C>
+		typename MAT_C::value_type
+		multiply_HCHt_scalar(const VECTOR_H &H, const MAT_C &C)
+		{
+			return (H.matrix().adjoint() * C * H.matrix()).eval()(0,0);
+		}
+
+		/** R = H^t * C * H  (with C symmetric) */
+		template <typename MAT_H, typename MAT_C, typename MAT_R>
+		void multiply_HtCH(
+			const MAT_H &H,
+			const MAT_C &C,
+			MAT_R &R,
+			bool accumResultInOutput) // bool allow_submatrix_mult)
+		{
+			if (accumResultInOutput)
+			     R += ( (H.adjoint() * C.template selfadjointView<Eigen::Lower>()).eval() * H).eval().template selfadjointView<Eigen::Lower>();
+			else
+			     R  = ( (H.adjoint() * C.template selfadjointView<Eigen::Lower>()).eval() * H).eval().template selfadjointView<Eigen::Lower>();
+		}
+
+
+		/** Computes the mean vector and covariance from a list of samples in an NxM matrix, where each row is a sample, so the covariance is MxM.
+		  * \param v The set of data as a NxM matrix, of types: CMatrixTemplateNumeric or CMatrixFixedNumeric
+		  * \param out_mean The output M-vector for the estimated mean.
+		  * \param out_cov The output MxM matrix for the estimated covariance matrix, this can also be either a fixed-size of dynamic size matrix.
+		  * \sa mrpt::math::meanAndCovVec, math::mean,math::stddev, math::cov
 		  */
-		template <class MATRIX>
-		RET_TYPE_ASSERT_MRPTMATRIX(MATRIX, std::ostream)& // This expands into "std::ostream &"
-		operator << (std::ostream& ostrm, const MATRIX& m)
+		template<class MAT_IN,class VECTOR, class MAT_OUT>
+		void meanAndCovMat(
+			const MAT_IN & v,
+			VECTOR       & out_mean,
+			MAT_OUT      & out_cov
+			)
 		{
-			ostrm << std::setprecision(4);
-			for (size_t i=0; i < m.getRowCount(); i++)
+			const size_t N = v.rows();
+			ASSERTMSG_(N>0,"The input matrix contains no elements");
+			const double N_inv = 1.0/N;
+
+			const size_t M = v.cols();
+			ASSERTMSG_(M>0,"The input matrix contains rows of length 0");
+
+			// First: Compute the mean
+			out_mean.assign(M,0);
+			for (size_t i=0;i<N;i++)
+				for (size_t j=0;j<M;j++)
+					out_mean[j]+=v.coeff(i,j);
+			out_mean*=N_inv;
+
+			// Second: Compute the covariance
+			//  Save only the above-diagonal part, then after averaging
+			//  duplicate that part to the other half.
+			out_cov.zeros(M,M);
+			for (size_t i=0;i<N;i++)
 			{
-				for (size_t j=0; j < m.getColCount(); j++)
-					ostrm << std::setw(13) << m(i,j);
-				ostrm << std::endl;
+				for (size_t j=0;j<M;j++)
+					out_cov.get_unsafe(j,j)+=square(v.get_unsafe(i,j)-out_mean[j]);
+
+				for (size_t j=0;j<M;j++)
+					for (size_t k=j+1;k<M;k++)
+						out_cov.get_unsafe(j,k)+=(v.get_unsafe(i,j)-out_mean[j])*(v.get_unsafe(i,k)-out_mean[k]);
 			}
-			return ostrm;
+			for (size_t j=0;j<M;j++)
+				for (size_t k=j+1;k<M;k++)
+					out_cov.get_unsafe(k,j) = out_cov.get_unsafe(j,k);
+			out_cov*=N_inv;
 		}
 
+		/** Computes the covariance matrix from a list of samples in an NxM matrix, where each row is a sample, so the covariance is MxM.
+		  * \param v The set of data, as a NxM matrix.
+		  * \param out_cov The output MxM matrix for the estimated covariance matrix.
+		  * \sa math::mean,math::stddev, math::cov
+		  */
+		template<class MATRIX>
+		inline Eigen::Matrix<typename MATRIX::Scalar,MATRIX::ColsAtCompileTime,MATRIX::ColsAtCompileTime>
+			cov( const MATRIX &v )
+		{
+			Eigen::Matrix<double,MATRIX::ColsAtCompileTime,1> m;
+			Eigen::Matrix<typename MATRIX::Scalar,MATRIX::ColsAtCompileTime,MATRIX::ColsAtCompileTime>  C;
+			meanAndCovMat(v,m,C);
+			return C;
+		}
 
+		/** A useful macro for saving matrixes to a file while debugging. */
+		#define SAVE_MATRIX(M) M.saveToTextFile(#M ".txt");
+
+
+		/** Only for vectors/arrays "v" of length3, compute out = A * Skew(v), where Skew(v) is the skew symmetric matric generated from \a v (see mrpt::math::skew_symmetric3)
+		  */
+		template <class MAT_A,class SKEW_3VECTOR,class MAT_OUT>
+		void multiply_A_skew3(const MAT_A &A,const SKEW_3VECTOR &v, MAT_OUT &out)
+		{
+			MRPT_START
+			ASSERT_EQUAL_(size(A,2),3)
+			ASSERT_EQUAL_(v.size(),3)
+			const size_t N = size(A,1);
+			out.setSize(N,3);
+			for (size_t i=0;i<N;i++)
+			{
+				out.set_unsafe(i,0, A.get_unsafe(i,1)*v[2]-A.get_unsafe(i,2)*v[1] );
+				out.set_unsafe(i,1,-A.get_unsafe(i,0)*v[2]+A.get_unsafe(i,2)*v[0] );
+				out.set_unsafe(i,2, A.get_unsafe(i,0)*v[1]-A.get_unsafe(i,1)*v[0] );
+			}
+			MRPT_END
+		}
+
+		/** Only for vectors/arrays "v" of length3, compute out = Skew(v) * A, where Skew(v) is the skew symmetric matric generated from \a v (see mrpt::math::skew_symmetric3)
+		  */
+		template <class SKEW_3VECTOR,class MAT_A,class MAT_OUT>
+		void multiply_skew3_A(const SKEW_3VECTOR &v, const MAT_A &A,MAT_OUT &out)
+		{
+			MRPT_START
+			ASSERT_EQUAL_(size(A,1),3)
+			ASSERT_EQUAL_(v.size(),3)
+			const size_t N = size(A,2);
+			out.setSize(3,N);
+			for (size_t i=0;i<N;i++)
+			{
+				out.set_unsafe(0,i,-A.get_unsafe(1,i)*v[2]+A.get_unsafe(2,i)*v[1] );
+				out.set_unsafe(1,i, A.get_unsafe(0,i)*v[2]-A.get_unsafe(2,i)*v[0] );
+				out.set_unsafe(2,i,-A.get_unsafe(0,i)*v[1]+A.get_unsafe(1,i)*v[0] );
+			}
+			MRPT_END
+		}
 
 
 	// ------ Implementatin of detail functions -------------
 	namespace detail
 	{
+		/** Extract a submatrix - The output matrix must be set to the required size before call. */
+		template <class MATORG, class MATDEST>
+		void extractMatrix(
+			const MATORG &M,
+			const size_t first_row,
+			const size_t first_col,
+			MATDEST &outMat)
+		{
+			const size_t NR = outMat.getRowCount();
+			const size_t NC = outMat.getColCount();
+			ASSERT_BELOWEQ_( first_row+NR, M.getRowCount() )
+			ASSERT_BELOWEQ_( first_col+NC, M.getColCount() )
+			for (size_t r=0;r<NR;r++)
+				for (size_t c=0;c<NC;c++)
+					outMat.get_unsafe(r,c) = M.get_unsafe(first_row+r,first_col+c);
+		}
+
+#if 0
 		/** Cholesky factorization: in = out' · out  (Upper triangular version: M=U'*U )
 		  *	Given a positive-definite symmetric matrix, this routine constructs its Cholesky decomposition.
 		  * On input, only the upper triangle of "IN" need be given; it is not modified.
@@ -164,59 +341,6 @@ namespace mrpt
 			return true;
 		} // end "chol"
 
-		/** Save matrix to a text file, compatible with MATLAB text format (see also the methods of matrix classes themselves).
-			* \param theMatrix It can be a CMatrixTemplate or a CMatrixFixedNumeric.
-			* \param file The target filename.
-			* \param fileFormat See TMatrixTextFileFormat. The format of the numbers in the text file.
-			* \param appendMRPTHeader Insert this header to the file "% File generated by MRPT. Load with MATLAB with: VAR=load(FILENAME);"
-			* \param userHeader Additional text to be written at the head of the file. Typically MALAB comments "% This file blah blah". Final end-of-line is not needed.
-			* \sa loadFromTextFile, CMatrixTemplate::inMatlabFormat, SAVE_MATRIX
-			*/
-		template <class MAT>
-		void saveMatrixToTextFile(
-			const MAT &theMatrix,
-			const std::string &file,
-			TMatrixTextFileFormat fileFormat,
-			bool    appendMRPTHeader,
-			const std::string &userHeader
-			)
-		{
-			using namespace mrpt::system;
-
-			MRPT_START;
-
-			FILE	*f=os::fopen(file.c_str(),"wt");
-			if (!f)
-				THROW_EXCEPTION_CUSTOM_MSG1("saveToTextFile: Error opening file '%s' for writing a matrix as text.", file.c_str());
-
-			if (!userHeader.empty())
-				fprintf(f,"%s",userHeader.c_str() );
-
-			if (appendMRPTHeader)
-				fprintf(f,"%% File generated with MRPT %s at %s\n%%-----------------------------------------------------------------\n",
-					mrpt::system::MRPT_getVersion().c_str(),
-					mrpt::system::dateTimeLocalToString( mrpt::system::now() ).c_str() );
-
-			for (size_t i=0; i < theMatrix.getRowCount(); i++)
-			{
-				for (size_t j=0; j < theMatrix.getColCount(); j++)
-				{
-					switch(fileFormat)
-					{
-					case MATRIX_FORMAT_ENG: os::fprintf(f,"%.16e",static_cast<double>(theMatrix(i,j))); break;
-					case MATRIX_FORMAT_FIXED: os::fprintf(f,"%.16f",static_cast<double>(theMatrix(i,j))); break;
-					case MATRIX_FORMAT_INT: os::fprintf(f,"%i",static_cast<int>(theMatrix(i,j))); break;
-					default:
-						THROW_EXCEPTION("Unsupported value for the parameter 'fileFormat'!");
-					};
-					// Separating blank space
-					if (j<(theMatrix.getColCount()-1)) os::fprintf(f," ");
-				}
-				os::fprintf(f,"\n");
-			}
-			os::fclose(f);
-			MRPT_END;
-		}
 
 		/** Dump matrix in matlab format.
 		  *  This template method can be instantiated for matrices of the types: int, long, unsinged int, unsigned long, float, double, long double
@@ -243,7 +367,7 @@ namespace mrpt
 		template<class MATRIX1>
 		typename MATRIX1::value_type trace(const MATRIX1 &m)
 		{
-			if (!m.IsSquare()) throw std::logic_error("Error in trace: matrix is not square");
+			if (!m.isSquare()) throw std::logic_error("Error in trace: matrix is not square");
 			const size_t N = size(m,1);
 			typename MATRIX1::value_type ret=0;
 			for (size_t i=0;i<N;i++)
@@ -271,43 +395,6 @@ namespace mrpt
 			return temp;
 		}
 
-		/** Only for vectors/arrays "v" of length3, compute out = A * Skew(v), where Skew(v) is the skew symmetric matric generated from \a v (see mrpt::math::skew_symmetric3)
-		  */
-		template <class MAT_A,class SKEW_3VECTOR,class MAT_OUT>
-		void multiply_A_skew3(const MAT_A &A,const SKEW_3VECTOR &v, MAT_OUT &out)
-		{
-			MRPT_START
-			ASSERT_EQUAL_(size(A,2),3)
-			ASSERT_EQUAL_(v.size(),3)
-			const size_t N = size(A,1);
-			out.setSize(N,3);
-			for (size_t i=0;i<N;i++)
-			{
-				out.set_unsafe(i,0, A.get_unsafe(i,1)*v[2]-A.get_unsafe(i,2)*v[1] );
-				out.set_unsafe(i,1,-A.get_unsafe(i,0)*v[2]+A.get_unsafe(i,2)*v[0] );
-				out.set_unsafe(i,2, A.get_unsafe(i,0)*v[1]-A.get_unsafe(i,1)*v[0] );
-			}
-			MRPT_END
-		}
-
-		/** Only for vectors/arrays "v" of length3, compute out = Skew(v) * A, where Skew(v) is the skew symmetric matric generated from \a v (see mrpt::math::skew_symmetric3)
-		  */
-		template <class SKEW_3VECTOR,class MAT_A,class MAT_OUT>
-		void multiply_skew3_A(const SKEW_3VECTOR &v, const MAT_A &A,MAT_OUT &out)
-		{
-			MRPT_START
-			ASSERT_EQUAL_(size(A,1),3)
-			ASSERT_EQUAL_(v.size(),3)
-			const size_t N = size(A,2);
-			out.setSize(3,N);
-			for (size_t i=0;i<N;i++)
-			{
-				out.set_unsafe(0,i,-A.get_unsafe(1,i)*v[2]+A.get_unsafe(2,i)*v[1] );
-				out.set_unsafe(1,i, A.get_unsafe(0,i)*v[2]-A.get_unsafe(2,i)*v[0] );
-				out.set_unsafe(2,i,-A.get_unsafe(0,i)*v[1]+A.get_unsafe(1,i)*v[0] );
-			}
-			MRPT_END
-		}
 
 		/** Computes the vector v = A * a, where "a" is a column vector of the appropriate length. */
 		template<class MATRIX1, class OTHERVECTOR1,class OTHERVECTOR2>
@@ -535,135 +622,6 @@ namespace mrpt
 					for (size_t k=1;k<N;++k) C.get_unsafe(i,j)+=A.get_unsafe(k,i)*B.get_unsafe(k,j);
 				}
 			}
-		}
-
-
-		/** R = H * C * H^t (with C symmetric) */
-		template <typename MAT_H, typename MAT_C, typename MAT_R>
-		void multiply_HCHt(
-			const MAT_H &H,
-			const MAT_C &C,
-			MAT_R &R,
-			bool accumResultInOutput,
-			bool allow_submatrix_mult)
-		{
-			MRPT_START
-
-			ASSERTMSG_( (void*)&C != (void*)&H, "C and H must be different matrices." )
-			ASSERTMSG_( (void*)&R != (void*)&H, "R and H must be different matrices." )
-			ASSERTMSG_( (void*)&C != (void*)&R,  "C and R must be different matrices.")
-			ASSERT_(C.IsSquare())
-
-			if (allow_submatrix_mult)
-				 ASSERT_(C.getRowCount()>=H.getColCount())
-			else ASSERT_(C.getRowCount()==H.getColCount())
-
-			const size_t N=H.getRowCount();
-			const size_t M=H.getColCount();
-
-			R.setSize(N,N); // Set output size. For fixed size matrices this does nothing.
-
-			// Create R with the type of MAT_H * MAT_C
-			MAT_TYPE_PRODUCT_OF(MAT_H,MAT_C) R_;
-			R_.setSize(N,M);
-
-			// First compute R_ = H * C:
-			for (size_t i=0;i<N;i++)
-				for (size_t j=0;j<M;j++)
-				{
-					typename MAT_H::value_type sumAccum = 0;
-					for (size_t l=0;l<M;l++)
-						sumAccum += H.get_unsafe(i,l) * C.get_unsafe(l,j);
-					R_.get_unsafe(i,j)  = sumAccum;
-				}
-
-			// Now compute R = R_ * (H^t):
-			for (size_t i=0;i<N;i++)
-				for (size_t j=i;j<N;j++)
-				{
-					typename MAT_H::value_type sumAccum = accumResultInOutput ? R.get_unsafe(i,j) : 0;
-					for (size_t l=0;l<M;l++)
-						sumAccum += R_.get_unsafe(i,l) * H.get_unsafe(j,l);
-					R.get_unsafe(i,j) = R.get_unsafe(j,i) = sumAccum;
-				}
-			MRPT_END
-		}
-
-		/** r (a scalar) = H * C * H^t (with a vector H and a symmetric matrix C) */
-		template <typename VECTOR_H, typename MAT_C>
-		typename MAT_C::value_type
-		multiply_HCHt_scalar(const VECTOR_H &H, const MAT_C &C)
-		{
-			MRPT_START
-			ASSERT_( C.IsSquare() )
-
-			const size_t M = H.size();
-
-			// This is 1xM matrix, C is a MxM matrix
-			ASSERT_( size(C,1)==M );
-
-			typename VECTOR_H::value_type sumAccum = 0;
-			typename VECTOR_H::const_iterator itL=H.begin();
-			for (size_t l=0;l<M; ++l, ++itL)
-			{
-				typename VECTOR_H::value_type sumAccumInner = 0;
-				typename VECTOR_H::const_iterator it;
-				size_t k;
-				for (k=0,it=H.begin();it!=H.end();++it,++k)
-					sumAccumInner += *it * C.get_unsafe(k,l);
-				sumAccum += sumAccumInner * (*itL);
-			}
-			return sumAccum;
-			MRPT_END
-		}
-
-		/** R = H^t * C * H  (with C symmetric) */
-		template <typename MAT_H, typename MAT_C, typename MAT_R>
-		void multiply_HtCH(
-			const MAT_H &H,
-			const MAT_C &C,
-			MAT_R &R,
-			bool accumResultInOutput,
-			bool allow_submatrix_mult)
-		{
-			MRPT_START
-
-			ASSERTMSG_( (void*)&C != (void*)&H, "C and H must be different matrices." )
-			ASSERTMSG_( (void*)&R != (void*)&H, "R and H must be different matrices." )
-			ASSERTMSG_( (void*)&C != (void*)&R,  "C and R must be different matrices.")
-			ASSERT_(C.IsSquare())
-
-			if (allow_submatrix_mult)
-				 ASSERT_(C.getRowCount()>=H.getRowCount())
-			else ASSERT_(C.getRowCount()==H.getRowCount())
-
-			R.setSize( H.getColCount(), H.getColCount()); // Set output size. For fixed size matrices this does nothing.
-
-			MAT_H R_;
-
-			const size_t M=H.getRowCount();
-			const size_t N=H.getColCount();
-
-			// First compute R_ = H * C:
-			for (size_t i=0;i<N;i++)
-				for (size_t j=0;j<M;j++)
-				{
-					typename MAT_H::value_type sumAccum = 0;
-					for (size_t l=0;l<M;l++)
-						sumAccum += H.get_unsafe(l,i) * C.get_unsafe(l,j);
-					R_.get_unsafe(i,j)  = sumAccum;
-				}
-
-			// Now compute R = R_ * (H^t):
-			for (size_t i=0;i<N;i++)
-				for (size_t j=i;j<N;j++)
-				{
-					typename MAT_H::value_type sumAccum = accumResultInOutput ? R.get_unsafe(i,j) : 0;
-					for (size_t l=0;l<M;l++)
-						sumAccum += R_.get_unsafe(i,l) * H.get_unsafe(l,j);
-					R.get_unsafe(i,j) = R.get_unsafe(j,i) = sumAccum;
-				}
-			MRPT_END
 		}
 
 		/**
@@ -948,23 +906,6 @@ namespace mrpt
 					M.get_unsafe(nRow+r,nCol+c) = in.get_unsafe(r,c);
 		}
 
-		/** Extract a submatrix - The output matrix must be set to the required size before call. */
-		template <class MATORG, class MATDEST>
-		void extractMatrix(
-			const MATORG &M,
-			const size_t first_row,
-			const size_t first_col,
-			MATDEST &outMat)
-		{
-			const size_t NR = outMat.getRowCount();
-			const size_t NC = outMat.getColCount();
-			ASSERT_BELOWEQ_( first_row+NR, M.getRowCount() )
-			ASSERT_BELOWEQ_( first_col+NC, M.getColCount() )
-			for (size_t r=0;r<NR;r++)
-				for (size_t c=0;c<NC;c++)
-					outMat.get_unsafe(r,c) = M.get_unsafe(first_row+r,first_col+c);
-		}
-
 
 		/** @name Matrix inverses - Implementation
 			@{ */
@@ -1034,7 +975,7 @@ namespace mrpt
 			return;
 #else
 			typedef typename MATRIXIN::value_type T;
-			ASSERTMSG_(M.IsSquare(),"Inversion of non-square matrix")
+			ASSERTMSG_(M.isSquare(),"Inversion of non-square matrix")
 			// Check this here for dynamic-size matrices:
 			const size_t NROWS = M.getRowCount();
 			if (NROWS==3) return invMatrix_special_3x3(M,out_inv);
@@ -1126,7 +1067,7 @@ namespace mrpt
 		detMatrix(const MATRIX& M)
 		{
 			typedef typename MATRIX::value_type T;
-			ASSERTMSG_(M.IsSquare(),"Inversion of non-square matrix")
+			ASSERTMSG_(M.isSquare(),"Inversion of non-square matrix")
 			// Check this here for dynamic-size matrices:
 			const size_t NROWS = M.getRowCount();
 			if (NROWS==3) return detMatrix_special_3x3(M);
@@ -1278,14 +1219,6 @@ namespace mrpt
 		return temp;
 	}
 
-	/** Unary inversion operator. */
-	template <class MATRIX>
-	inline RET_MAT_ASSERT_MRPTMATRIX(MATRIX)
-	operator !(const MATRIX &m) {
-		RET_MAT_ASSERT_MRPTMATRIX(MATRIX) ret(UNINITIALIZED_MATRIX);
-		m.inv(ret);
-		return ret;
-	}
 
 
 	// Operator * uses MAT_TYPE_PRODUCT_OF to manage these four cases:
@@ -1309,69 +1242,6 @@ namespace mrpt
 		return RES;
 	}
 
-	/** Computes the mean vector and covariance from a list of samples in an NxM matrix, where each row is a sample, so the covariance is MxM.
-	  * \param v The set of data as a NxM matrix, of types: CMatrixTemplateNumeric or CMatrixFixedNumeric
-	  * \param out_mean The output M-vector for the estimated mean.
-	  * \param out_cov The output MxM matrix for the estimated covariance matrix, this can also be either a fixed-size of dynamic size matrix.
-	  * \sa math::mean,math::stddev, math::cov
-	  */
-	template<class MAT_IN, class MAT_OUT>
-	void meanAndCov(
-		const MAT_IN &v,
-		vector_double	&out_mean,
-		MAT_OUT 		&out_cov
-		)
-	{
-		const size_t N = v.getRowCount();
-		ASSERTMSG_(N>0,"The input matrix contains no elements");
-		const double N_inv = 1.0/N;
-
-		const size_t M = v.getColCount();
-		ASSERTMSG_(M>0,"The input matrix contains rows of length 0");
-
-		// First: Compute the mean
-		out_mean.assign(M,0);
-		for (size_t i=0;i<N;i++)
-			for (size_t j=0;j<M;j++)
-				out_mean[j]+=v.get_unsafe(i,j);
-		out_mean*=N_inv;
-
-		// Second: Compute the covariance
-		//  Save only the above-diagonal part, then after averaging
-		//  duplicate that part to the other half.
-		out_cov.zeros(M,M);
-		for (size_t i=0;i<N;i++)
-		{
-			for (size_t j=0;j<M;j++)
-				out_cov.get_unsafe(j,j)+=square(v.get_unsafe(i,j)-out_mean[j]);
-
-			for (size_t j=0;j<M;j++)
-				for (size_t k=j+1;k<M;k++)
-					out_cov.get_unsafe(j,k)+=(v.get_unsafe(i,j)-out_mean[j])*(v.get_unsafe(i,k)-out_mean[k]);
-		}
-		for (size_t j=0;j<M;j++)
-			for (size_t k=j+1;k<M;k++)
-				out_cov.get_unsafe(k,j) = out_cov.get_unsafe(j,k);
-		out_cov*=N_inv;
-	}
-
-	/** Computes the covariance matrix from a list of samples in an NxM matrix, where each row is a sample, so the covariance is MxM.
-	  * \param v The set of data, as a NxM matrix.
-	  * \param out_cov The output MxM matrix for the estimated covariance matrix.
-	  * \sa math::mean,math::stddev, math::cov
-	  */
-	template<class MATRIX>
-	inline MAT_TYPE_COVARIANCE_OF(MATRIX) cov( const MATRIX &v )
-	{
-		vector_double m;
-		MAT_TYPE_COVARIANCE_OF(MATRIX) C;
-		meanAndCov(v,m,C);
-		return C;
-	}
-
-	/** A useful macro for saving matrixes to a file while debugging. */
-	#define SAVE_MATRIX(M) \
-		M.saveToTextFile(mrpt::format("%s.txt",#M));
 
 
 	// ------ Implementatin of Vicinity templates -------------
@@ -1691,6 +1561,7 @@ namespace mrpt
 			JointAccessor<JointVerticalAccessor<MAT2,MAT1> > ja=JointAccessor<JointVerticalAccessor<MAT2,MAT1> >(jva);
 			pivotUntilIdentity(ja);
 		}
+#endif
 
 	} // end of detail namespace
 
