@@ -83,6 +83,8 @@ namespace mrpt
 
 			// Experimental methods
 			void experimental_showMeasurements();
+
+			void debug_returnResults( const vector_uint &falsePositives, const vector_uint &ignore, unsigned int &falsePositivesDeleted, unsigned int &realFacesDeleted );
 			
 		private:
 
@@ -117,6 +119,7 @@ namespace mrpt
 				vector_double	sumDistances;
 
 				int				faceNum;
+				vector_uint		deletedRegions;
 				int				numPossibleFacesDetected;
 				int				numRealFacesDetected;
 
@@ -176,6 +179,8 @@ namespace mrpt
 
 			void experimental_calcHist( const CImage &face, const size_t &c1, const size_t &r1, const size_t &c2, 
 										const size_t &r2, CMatrixTemplate<unsigned int> &hist );
+
+			
 
 		}; // End of class
 	}

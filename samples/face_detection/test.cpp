@@ -53,6 +53,11 @@ string   myInitFile( MRPT_EXAMPLES_BASE_DIRECTORY + string("face_detection/FACE_
 CFaceDetection faceDetector;	// Face detector object
 
 bool showEachDetectedFace;	// If using a 3D face detection (actually with swissrange) and we want stop every a face is detected for analize it.
+bool batchMode;
+vector<string> rawlogs;
+vector<vector_uint> falsePositives;
+vector<vector_uint> ignore;
+string rawlogsDir;
 
 #ifdef MRPT_OPENCV_SRC_DIR
 	static string OPENCV_SRC_DIR = MRPT_OPENCV_SRC_DIR;
@@ -359,6 +364,71 @@ void TestImagesFaceDetection(int argc, char *argv[])
 	}
 }
 
+void BatchMode()
+{
+	for ( size_t i = 0; i < rawlogs.size() ; i++ )
+	{
+		CRawlog rawlog;
+		
+		rawlog.loadFromRawLogFile( string( rawlogsDir + rawlogs[i] + ".rawlog" ) );
+
+		cout << "Processing Rawlog: " << rawlogs[i] << endl;
+
+		const unsigned int size = rawlog.size();
+
+		// PROCESS RAWLOG
+		for	( unsigned int j = 0; j < size; j++ )
+		{
+			CObservation3DRangeScanPtr o = 	(CObservation3DRangeScanPtr)rawlog.getAsObservation( j );
+
+			ASSERT_(o);
+
+			vector_detectable_object detected;		
+			
+			faceDetector.detectObjects( o, detected );
+		
+			/*if( ++counter == 10 )
+			{
+				double t = tictac.Tac();
+				cout << "Frame Rate: " << counter/t << " fps" << endl;
+				fps.push_back( counter/t );
+				counter = 0;
+			}*/
+			mrpt::system::sleep(2);
+		}
+
+		unsigned int falsePositivesDeleted, realFacesDeleted;
+		faceDetector.debug_returnResults( falsePositives[i], ignore[i], falsePositivesDeleted, realFacesDeleted );
+		cout << "False positives deleted: " << falsePositivesDeleted << endl;
+		cout << "Real faces delted: " << realFacesDeleted << endl << endl;
+		
+	}
+	
+	//faceDetector.experimental_showMeasurements();
+
+	system::pause();
+}
+
+void mySplit ( const string &str)
+{
+  char * cstr, *p;
+
+  cstr = new char [str.size()+1];
+  strcpy (cstr, str.c_str());
+
+  // cstr now contains a c-string copy of str
+
+  p=strtok (cstr," ");
+  while (p!=NULL)
+  {
+    string part( p );
+	rawlogs.push_back( part );
+    p=strtok(NULL," ");
+  }
+
+  delete[] cstr;    
+}
+
 // ------------------------------------------------------
 //					TestPrepareDetector
 // ------------------------------------------------------
@@ -380,6 +450,25 @@ void TestPrepareDetector()
 		throw  std::runtime_error("Incorrect cascade classifier type.");
 
 	showEachDetectedFace = cfg.read_bool( "Example", "showEachDetectedFace", 0 );
+	batchMode = cfg.read_bool( "Example", "batchMode", false );
+
+	if ( batchMode )
+	{
+		string str = cfg.read_string( "Example", "rawlogs", "noRawlogs" );
+		mySplit( str );
+
+		size_t numRawlogs = rawlogs.size();
+		falsePositives.resize( numRawlogs );
+		ignore.resize( numRawlogs );
+
+		for ( size_t i = 0; i < numRawlogs; i++ )
+		{
+			cfg.read_vector( rawlogs[i], "falsePositives", vector_uint(), falsePositives[i] );
+			cfg.read_vector( rawlogs[i], "ignore", vector_uint(), ignore[i] );
+		}
+
+		rawlogsDir = cfg.read_string( "Example", "rawlogsDir", "" );
+	}
 
 	faceDetector.init( cfg );
 }
@@ -397,11 +486,16 @@ int main(int argc, char *argv[])
 
 		TestPrepareDetector();
 
-		if ( argc > 1 )
-			TestImagesFaceDetection( argc, argv );
+		if ( batchMode )
+			BatchMode();
 		else
-			TestCameraFaceDetection();
-		
+		{
+			if ( argc > 1 )
+				TestImagesFaceDetection( argc, argv );
+			else
+				TestCameraFaceDetection();
+		}
+
 		return 0;
 
 	} catch (std::exception &e)
