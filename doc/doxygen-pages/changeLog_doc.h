@@ -43,6 +43,7 @@
 			- mrpt::math::meanAndCov() overloads have been separated into: meanAndCovVec() and meanAndCovMat()
 			- method unit() in matrices was inconsistent between fixed and dynamic sized matrices. It's now unified (see Eigen::Matrix::unit)
 			- Types mrpt::vector_float  and std::vector<float> (or the "double" versions) are not interchangeable any more. Read more on this in the link above.
+			- These examples have been removed: benchmark-matrix, math_iterators_test, matrix_views
 		- Changes in classes:
 			- CDisplayWindow::showImageAndPoints() now als displays the index of the feature (if required).
 			- CFeature now has new members:

@@ -61,7 +61,7 @@ void Test_STL_containers_serialize()
 	map< double, pair<CPose3DPDFGaussian, set<double> > >	 big_var3;
 
 	big_var1[0.4].first.mean = CPose3D(1,2,3);
-	big_var1[0.4].first.cov.unit();
+	big_var1[0.4].first.cov.setIdentity();
 	big_var1[0.8].first.mean = -big_var1[0.4].first.mean;
 	big_var1[0.8].second.first= TPoint3D(1,2,3);
 	big_var1[0.8].second.second.insert( 5 );

@@ -29,8 +29,8 @@
 #define  CClientTCPSocket_H
 
 #include <mrpt/config.h>
-#include <mrpt/system/os.h>
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/system/os.h>
 #include <mrpt/utils/CStream.h>
 
 namespace mrpt

@@ -90,7 +90,6 @@ IF(BUILD_EXAMPLES)
 		icp
 		rejectionSampling
 		stringList
-		benchmark-matrix
 		RangeOnlyLocalization_RejectionSampling
 		consistent_global_optimization
 		benchmark-gridmaps
@@ -123,8 +122,6 @@ IF(BUILD_EXAMPLES)
 		setOfTexturedTrianglesTest
 		gui_windows_events
 		a_starAlgorithm
-		math_iterators_test
-		matrix_views
 		quaternions
 		unscented_transform_test
 		grab3Dvideo

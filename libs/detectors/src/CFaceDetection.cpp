@@ -1827,7 +1827,7 @@ bool CFaceDetection::checkIfDiagonalSurface2( CObservation3DRangeScan* face )
 
 void CFaceDetection::experimental_viewFacePointsScanned( const CObservation3DRangeScan &face )
 {
-	vector_float xs, ys, zs;
+	vector<float> xs, ys, zs;
 
 	unsigned int N = face.points3D_x.size();
 
@@ -1847,7 +1847,7 @@ void CFaceDetection::experimental_viewFacePointsScanned( const CObservation3DRan
 
 void CFaceDetection::experimental_viewFacePointsScanned( const vector<TPoint3D> &points )
 {
-	vector_float xs, ys, zs;
+	vector<float> xs, ys, zs;
 
 	unsigned int N = points.size();
 
@@ -1865,7 +1865,7 @@ void CFaceDetection::experimental_viewFacePointsScanned( const vector<TPoint3D> 
 	experimental_viewFacePointsScanned( xs, ys, zs );
 }
 
-void CFaceDetection::experimental_viewFacePointsScanned( const vector_float &xs, const vector_float &ys, const vector_float &zs )
+void CFaceDetection::experimental_viewFacePointsScanned( const vector<float> &xs, const vector<float> &ys, const vector<float> &zs )
 {
 	mrpt::gui::CDisplayWindow3D  win3D;
 
@@ -1932,9 +1932,9 @@ void CFaceDetection::experimental_viewFacePointsScanned( const vector_float &xs,
 void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CArrayDouble<3> > &pointsVector, const CMatrixDouble &eigenVect, const vector_double &eigenVal )
 {
 
-	vector_float xs, ys, zs;
+	vector<float> xs, ys, zs;
 	
-	size_t size = pointsVector.size();
+	const size_t size = pointsVector.size();
 
 	xs.resize( size ); 
 	ys.resize( size ); 
@@ -2074,7 +2074,7 @@ void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9]
 
 	CColouredPointsMap pntsMap;
 
-	vector_float xs, ys, zs;
+	vector<float> xs, ys, zs;
 
 	for ( size_t i = 0; i < 9; i++ )
 		for ( unsigned int j = 0; j < regions[i].size(); j++ )
@@ -2373,7 +2373,7 @@ void CFaceDetection::experimental_showMeasurements()
 
 		unsigned int N = m_measure.meanRegions.size();
 
-		for ( unsigned int i = 0; i < m_measure.meanRegions.size(); i++ )
+		for ( vector_double::Index i = 0; i < m_measure.meanRegions.size(); i++ )
 			meanRegions[i%9].push_back( m_measure.meanRegions[i] );
 
 		/*	Regions

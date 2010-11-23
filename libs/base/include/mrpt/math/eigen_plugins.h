@@ -71,7 +71,9 @@ public:
 		}
 	}
 
-	/** Make the matrix an identity matrix - this is a shortcut for unit(). */
+	/** Make the matrix an identity matrix  */
+	EIGEN_STRONG_INLINE void unit() { derived().setIdentity(); }
+	/** Make the matrix an identity matrix  */
 	EIGEN_STRONG_INLINE void eye() { derived().setIdentity(); }
 
 	/** Set all elements to zero */

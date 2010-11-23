@@ -28,8 +28,6 @@
 
 #include <mrpt/base.h>  // Precompiled headers
 
-
-
 #include <mrpt/math/CSplineInterpolator1D.h>
 #include <mrpt/math/utils.h>
 
@@ -44,38 +42,8 @@ IMPLEMENTS_SERIALIZABLE(CSplineInterpolator1D, CSerializable, mrpt::math)
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
-CSplineInterpolator1D::CSplineInterpolator1D(
-	const std::vector<double> &initial_x,
-	const std::vector<double> &initial_y,
-	bool  wrap2pi
-	) : m_wrap2pi(wrap2pi)
-{
-	setXY(initial_x, initial_y);
-}
-
-/*---------------------------------------------------------------
-						Constructor
-  ---------------------------------------------------------------*/
 CSplineInterpolator1D::CSplineInterpolator1D( bool  wrap2pi ) : m_wrap2pi(wrap2pi)
 {
-}
-
-/*---------------------------------------------------------------
-						setXY
-  ---------------------------------------------------------------*/
-void CSplineInterpolator1D::setXY( const std::vector<double> &x, const std::vector<double> &y,bool clearPreviousContent )
-{
-	MRPT_START;
-	if (clearPreviousContent)
-		m_x2y.clear();
-
-	ASSERT_(x.size()==y.size());
-	size_t n = x.size();
-
-	for (size_t i=0;i<n;i++)
-		m_x2y[ x[i] ] = y[i];
-
-	MRPT_END;
 }
 
 /*---------------------------------------------------------------
@@ -183,18 +151,3 @@ void  CSplineInterpolator1D::readFromStream(CStream &in, int version)
 	};
 }
 
-/*---------------------------------------------------------------
-						queryVector
-  ---------------------------------------------------------------*/
-bool CSplineInterpolator1D::queryVector( const vector_double &x, vector_double &out_y ) const
-{
-	size_t n = x.size();
-	out_y.resize(n);
-	bool valid, anyValid=false;
-	for (size_t i =0;i<n;i++)
-	{
-		query( x[i], out_y[i], valid );
-		if (valid) anyValid=true;
-	}
-	return anyValid;
-}

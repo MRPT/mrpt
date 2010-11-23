@@ -83,12 +83,21 @@ namespace math
 		void	add(const double x);
 
 		/**	Add all the elements from a MRPT container to the histogram. If an element is out of [min,max] it is ignored. */
-		template <typename VECTOR_OR_MAT>
-		inline void add(const VECTOR_OR_MAT &x)
+		template <typename Derived>
+		inline void add(const Eigen::MatrixBase<Derived> &x)
 		{
-			const size_t N = x.array().size();
+			const size_t N = x.size();
 			for (size_t i=0;i<N;i++)
-				this->add(static_cast<const double>(x.array()[i]));
+				this->add(static_cast<const double>(x[i]));
+		}
+
+		//! \overload
+		template <typename T>
+		inline void add(const std::vector<T> &x)
+		{
+			const size_t N = x.size();
+			for (size_t i=0;i<N;i++)
+				this->add(static_cast<const double>(x[i]));
 		}
 
 		/** Retuns the elements count into the selected bin index, where first one is 0.

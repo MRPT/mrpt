@@ -42,15 +42,11 @@ string   myDataDir( MRPT_EXAMPLES_BASE_DIRECTORY + string("matrix/") );
 void TestInitMatrix()
 {
 	// Initialize a matrix from a C array:
-	CMatrixDouble   M(2,3);
 	const double numbers[] = {
 		1,2,3,
 		4,5,6 };
-	M = numbers;
+	CMatrixDouble   M(2,3,numbers);
 	cout << "Initialized matrix (I): " << endl << M << endl;
-
-	CMatrixDouble  N(2,3,numbers);
-	cout << "Initialized matrix (II): " << endl << N << endl;
 
 	const double numbers2[] = { 0.5, 4.5, 6.7, 8.9, 15.2 };
 	vector_double  v1;
@@ -152,32 +148,6 @@ void TestMatrixTemplate()
 //	cout << "A:\n" << Q;
 
 }
-
-// ------------------------------------------------------
-//				TestSVD
-// ------------------------------------------------------
-void TestSVD()
-{
-	CMatrixDouble		A;			// Adjacency matrix
-	CMatrixDouble		U,V;			// Adjacency matrix
-	vector_double	w;
-
-	cout << "TestSVD:" << endl << "----------------------------------------" << endl;
-	A.loadFromTextFile(myDataDir+string("matrix1.txt"));
-	cout << "loaded A: " << endl << A;
-
-	A.svd(U,w,V);
-
-	cout << "U:\n" << U << "\n";
-	cout << "V:\n" << V << "\n";
-
-	printf("w=[");
-	for (unsigned int i=0;i<w.size();i++)
-		printf("%f ",w[i]);
-	printf("]\n");
-
-}
-
 
 // ------------------------------------------------------
 //				TestEigenvector
@@ -321,7 +291,6 @@ int main()
 		TestHCH();
 		TestChol();
 		TestEigenvector();
-		TestSVD();
 		TestCov();
 
 		return 0;

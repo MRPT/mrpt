@@ -134,9 +134,9 @@ public:
 	  * \note It is assumed that the observations are independent, i.e. there are NO cross-covariances between them.
 	  */
 	void OnGetObservationsAndDataAssociation(
-		std::vector<KFArray_OBS>    &out_z,
-		vector_int                  &out_data_association,
-		const vector<KFArray_OBS>   &in_all_predictions,
+		vector_KFArray_OBS			&out_z,
+		mrpt::vector_int            &out_data_association,
+		const vector_KFArray_OBS	&in_all_predictions,
 		const KFMatrix              &in_S,
 		const vector_size_t         &in_lm_indices_in_S,
 		const KFMatrix_OxO          &in_R
@@ -147,8 +147,8 @@ public:
 		  * \param out_predictions The predicted observations.
 		  */
 		void OnObservationModel(
-			const vector_size_t       &idx_landmarks_to_predict,
-			std::vector<KFArray_OBS>  &out_predictions
+			const vector_size_t &idx_landmarks_to_predict,
+			vector_KFArray_OBS  &out_predictions
 			) const;
 
 		/** Implements the observation Jacobians \f$ \frac{\partial h_i}{\partial x} \f$ and (when applicable) \f$ \frac{\partial h_i}{\partial y_i} \f$.
@@ -482,9 +482,9 @@ void CRangeBearing::OnGetObservationNoise(KFMatrix_OxO &R) const
 }
 
 void CRangeBearing::OnGetObservationsAndDataAssociation(
-	std::vector<KFArray_OBS>    &out_z,
-	vector_int                  &out_data_association,
-	const vector<KFArray_OBS>   &in_all_predictions,
+	vector_KFArray_OBS			&out_z,
+	mrpt::vector_int            &out_data_association,
+	const vector_KFArray_OBS	&in_all_predictions,
 	const KFMatrix              &in_S,
 	const vector_size_t         &in_lm_indices_in_S,
 	const KFMatrix_OxO          &in_R
@@ -504,7 +504,7 @@ void CRangeBearing::OnGetObservationsAndDataAssociation(
   */
 void CRangeBearing::OnObservationModel(
 	const vector_size_t       &idx_landmarks_to_predict,
-	std::vector<KFArray_OBS>  &out_predictions
+	vector_KFArray_OBS	&out_predictions
 	) const
 {
 	// predicted bearing:

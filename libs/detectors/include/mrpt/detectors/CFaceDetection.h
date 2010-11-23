@@ -165,7 +165,7 @@ namespace mrpt
 			size_t checkRelativePosition( const TPoint3D &p1, const TPoint3D &p2, const TPoint3D &p, double &dist );
 
 			// Experimental methods
-			void experimental_viewFacePointsScanned( const vector_float &xs, const vector_float &ys, const vector_float &zs );
+			void experimental_viewFacePointsScanned( const std::vector<float> &xs, const std::vector<float> &ys, const std::vector<float> &zs );
 
 			void experimental_viewFacePointsScanned( const CObservation3DRangeScan &face );
 			

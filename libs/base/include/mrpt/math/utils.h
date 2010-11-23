@@ -917,15 +917,15 @@ namespace mrpt
 			XtXinvXt.multiply_Ab(y,B);
 
 			ASSERT_(B.size()==2)
-
-			outs.resize(ts.size());
+				
+			const size_t tsN = size_t(ts.size());
+			outs.resize(tsN);
 			if (!wrap2pi)
-				for (size_t k=0;k<ts.size();k++)
+				for (size_t k=0;k<tsN;k++)
 					outs[k] = B[0] + B[1]*(ts[k]-x_min);
 			else
-				for (size_t k=0;k<ts.size();k++)
+				for (size_t k=0;k<tsN;k++)
 					outs[k] = mrpt::math::wrapToPi( B[0] + B[1]*(ts[k]-x_min) );
-
 			MRPT_END
 		}
 
@@ -949,7 +949,16 @@ namespace mrpt
 				v[i] = static_cast<T>(theArray[i]);
 			return v;
 		}
-
+		//! \overload
+		template <typename Derived, typename At, size_t N>
+		Eigen::MatrixBase<Derived>& loadVector( Eigen::MatrixBase<Derived> &v, At (&theArray)[N] )
+		{
+			MRPT_COMPILE_TIME_ASSERT(N!=0)
+			v.resize(N);
+			for (size_t i=0; i < N; i++)
+				v[i] = static_cast<typename Derived::Scalar>(theArray[i]);
+			return v;
+		}
 
 		/** Modify a sequence of angle values such as no consecutive values have a jump larger than PI in absolute value.
 		  * \sa wrapToPi

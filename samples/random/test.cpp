@@ -94,7 +94,7 @@ void TestRandomGenerators()
 		win2.plot(x,y,"b");
 
 		vector_double y_real(y.size());
-		for (size_t k=0;k<y_real.size();k++)
+		for (vector_double::Index k=0;k<y_real.size();k++)
 			y_real[k] = mrpt::math::normalPDF(x[k],0,1);
 		win2.plot(x,y_real,"k-","real");
 
@@ -116,7 +116,7 @@ void TestRandomGenerators()
 		win3.plot(x,y,"b");
 
 		vector_double y_real(y.size());
-		for (size_t k=0;k<y_real.size();k++)
+		for (vector_double::Index k=0;k<y_real.size();k++)
 			y_real[k] = mrpt::math::normalPDF(x[k],3,2);
 		win3.plot(x,y_real,"k-","real");
 
