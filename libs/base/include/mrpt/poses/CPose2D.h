@@ -241,8 +241,8 @@ namespace poses
 	bool BASE_IMPEXP operator==(const CPose2D &p1,const CPose2D &p2);
 	bool BASE_IMPEXP operator!=(const CPose2D &p1,const CPose2D &p2);
 
-	typedef std::vector<CPose2D,Eigen::aligned_allocator<CPose2D> > StdVector_CPose2D; //!< Eigen aligment-compatible container
-	typedef std::deque<CPose2D,Eigen::aligned_allocator<CPose2D> >  StdDeque_CPose2D; //!< Eigen aligment-compatible container
+	typedef mrpt::aligned_containers<CPose2D>::vector_t		StdVector_CPose2D; //!< Eigen aligment-compatible container
+	typedef mrpt::aligned_containers<CPose2D>::deque_t 		StdDeque_CPose2D; //!< Eigen aligment-compatible container
 
 	} // End of namespace
 } // End of namespace

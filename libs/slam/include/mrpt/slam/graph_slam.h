@@ -52,12 +52,10 @@ namespace mrpt
 			typedef typename SE_TYPE::matrix_VxV_t                  matrix_VxV_t;
 			typedef typename SE_TYPE::array_t                       Array_O; // An array of the correct size for an "observation" (i.e. a relative pose in an edge)
 			typedef std::pair<matrix_VxV_t,matrix_VxV_t>            TPairJacobs;
-			typedef std::map<
+			typedef typename mrpt::aligned_containers<
 				mrpt::utils::TPairNodeIDs,
-				TPairJacobs, 
-				std::less<mrpt::utils::TPairNodeIDs>, 
-				Eigen::aligned_allocator<std::pair<const mrpt::utils::TPairNodeIDs,TPairJacobs> > 
-				>  map_pairIDs_pairJacobs_t;
+				TPairJacobs
+				>::map_t  map_pairIDs_pairJacobs_t;
 
 			/** Auxiliary struct used in graph-slam implementation: It holds the relevant information for each of the constraints being taking into account. */
 			struct observation_info_t

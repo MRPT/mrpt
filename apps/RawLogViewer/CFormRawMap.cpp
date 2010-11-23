@@ -463,6 +463,8 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& event)
 
     for (i=first;!abort && i<=last;i++)
     {
+    	bool addNewPathEntry = false;
+
     	switch( rawlog.getType(i) )
         {
 		case CRawlog::etActionCollection:
@@ -492,13 +494,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& event)
 					THROW_EXCEPTION_CUSTOM_MSG1("ERROR: Odometry not found at step %d!",(int)i);
 
 				curPose = curPose + poseIncrement;
-				pathX.push_back( curPose.x() );
-				pathY.push_back( curPose.y() );
-
-				if ( last_tim != INVALID_TIMESTAMP )
-				{
-					robot_path.insert( last_tim, curPose );
-				}
+				addNewPathEntry=true;
 			}
 			break;
 		case CRawlog::etSensoryFrame:
@@ -508,6 +504,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& event)
 					CPose3D		dumPose(curPose);
 					rawlog.getAsObservations(i)->insertObservationsInto( &theMap, &dumPose );
 				}
+				addNewPathEntry=true;
 			}
 			break;
 		case CRawlog::etObservation:
@@ -526,10 +523,19 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& event)
 					theMap.insertObservation( rawlog.getAsObservation(i).pointer(), &dumPose );
 					last_tim = rawlog.getAsObservation(i)->timestamp;
 				}
+				addNewPathEntry=true;
 			}
 			break;
-
         }; // end switch
+
+		if (addNewPathEntry)
+		{
+			pathX.push_back( curPose.x() );
+			pathY.push_back( curPose.y() );
+			if ( last_tim != INVALID_TIMESTAMP )
+				robot_path.insert( last_tim, curPose );
+		}
+
 
         if ((count++ % 50)==0)
         {

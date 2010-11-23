@@ -102,7 +102,7 @@ namespace poses
 	private:
 		/** The internal sequence of poses, stored as relative, incremental poses, thus each one is situated just at the end point of last one, where the first one is referenced to (0,0,0deg)
 		 */
-		std::vector<CPose2D, Eigen::aligned_allocator<CPose2D> >	poses;
+		mrpt::aligned_containers<CPose2D>::vector_t	poses;
 
 	}; // End of class def.
 

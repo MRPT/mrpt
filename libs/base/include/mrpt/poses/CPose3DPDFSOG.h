@@ -72,7 +72,7 @@ namespace poses
 			double		log_w;
 		};
 
-		typedef std::vector<TGaussianMode,Eigen::aligned_allocator<TGaussianMode> > TModesList;
+		typedef mrpt::aligned_containers<TGaussianMode>::vector_t  TModesList;
 		typedef TModesList::const_iterator const_iterator;
 		typedef TModesList::iterator iterator;
 
@@ -85,7 +85,7 @@ namespace poses
 		  *  Note that no weight can be zero!!
 		  *  We must use pointers to satisfy the mem-alignment of the matrixes
 		  */
-		TModesList   m_modes; 
+		TModesList   m_modes;
 
 	 public:
 		/** Default constructor

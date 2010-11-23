@@ -110,6 +110,7 @@
 
 namespace mrpt
 {
+	/** The base class of MRPT vectors, actually, Eigen column matrices of dynamic size with specialized constructors that resemble std::vector. */
 	template <typename T>
 	struct dynamicsize_vector : public Eigen::Matrix<T,Eigen::Dynamic,1>
 	{
@@ -146,6 +147,17 @@ namespace mrpt
 	typedef std::vector<uint32_t>	 vector_uint;
 	typedef std::vector<bool>        vector_bool;	//!<  A type for passing a vector of bools.
 	typedef std::vector<std::string> vector_string;	//!<  A type for passing a vector of strings.
+
+	/** Helper types for STL containers with Eigen memory allocators. */
+	template <class TYPE1,class TYPE2=TYPE1>
+	struct aligned_containers
+	{
+		typedef std::pair<TYPE1,TYPE2> pair_t;
+		typedef std::vector<TYPE1, Eigen::aligned_allocator<TYPE1> > vector_t;
+		typedef std::deque<TYPE1, Eigen::aligned_allocator<TYPE1> > deque_t;
+		typedef std::map<TYPE1,TYPE2,std::less<TYPE1>,Eigen::aligned_allocator<std::pair<const TYPE1,TYPE2> > > map_t;
+		typedef std::multimap<TYPE1,TYPE2,std::less<TYPE1>,Eigen::aligned_allocator<std::pair<const TYPE1,TYPE2> > > multimap_t;
+	};
 
 	namespace utils
 	{

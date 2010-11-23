@@ -80,7 +80,7 @@ namespace mrpt
 			  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			};
 
-			typedef std::vector<TGaussianMode,Eigen::aligned_allocator<TGaussianMode> > CListGaussianModes;
+			typedef mrpt::aligned_containers<TGaussianMode>::vector_t	CListGaussianModes;
 			typedef CListGaussianModes::const_iterator const_iterator;
 			typedef CListGaussianModes::iterator iterator;
 

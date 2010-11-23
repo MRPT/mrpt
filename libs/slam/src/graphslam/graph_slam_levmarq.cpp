@@ -157,7 +157,7 @@ double computeJacobiansAndErrors(
 	const typename graphslam_traits<ET,MI>::graph_t &graph,
 	const vector<typename graphslam_traits<ET,MI>::observation_info_t>  &lstObservationData,
 	typename graphslam_traits<ET,MI>::map_pairIDs_pairJacobs_t   &lstJacobians,
-	vector<typename graphslam_traits<ET,MI>::Array_O, Eigen::aligned_allocator<typename graphslam_traits<ET,MI>::Array_O> > &errs
+	typename mrpt::aligned_containers<typename graphslam_traits<ET,MI>::Array_O>::vector_t &errs
 	)
 {
 	typedef graphslam_traits<ET,MI> gst;
@@ -326,7 +326,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 	// Index of the map are the node IDs {i,j} for each contraint.
 	typename gst::map_pairIDs_pairJacobs_t   lstJacobians;
 	// The vector of errors: err_k = SE(2/3)::pseudo_Ln( P_i * EDGE_ij * inv(P_j) )
-	vector<typename gst::Array_O, Eigen::aligned_allocator<typename gst::Array_O> > errs; // Separated vectors for each edge. i \in [0,nObservations-1], in same order than lstObservationData
+	typename mrpt::aligned_containers<typename gst::Array_O>::vector_t  errs; // Separated vectors for each edge. i \in [0,nObservations-1], in same order than lstObservationData
 
 	// ===================================
 	// Compute Jacobians & errors
@@ -356,7 +356,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 
 	// other important vars for the main loop:
 	vector_double grad(nFreeNodes*DIMS_POSE);
-	typedef map<TNodeID,typename gst::matrix_VxV_t, less<TNodeID>, Eigen::aligned_allocator<pair<const TNodeID,typename gst::matrix_VxV_t> > > map_ID2matrix_VxV_t;
+	typedef typename mrpt::aligned_containers<TNodeID,typename gst::matrix_VxV_t>::map_t  map_ID2matrix_VxV_t;
 	vector<map_ID2matrix_VxV_t>  H_map(nFreeNodes);
 
 	double	lambda = initial_lambda; // Will be actually set on first iteration.
@@ -386,7 +386,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 			//   grad_i = \sum_k J^t_{k->i} errs_k
 			// that is: g_i is the "dot-product" of the i'th (transposed) block-column of J and the vector of errors "errs"
 			profiler.enter("optimize_graph_spa_levmarq.grad"); // ------------------------------\  .
-			vector<typename gst::Array_O, Eigen::aligned_allocator<typename gst::Array_O> > grad_parts(nFreeNodes, array_O_zeros);
+			typename mrpt::aligned_containers<typename gst::Array_O>::vector_t  grad_parts(nFreeNodes, array_O_zeros);
 
 			// "lstJacobians" is sorted in the same order than "lstObservationData":
 			ASSERT_EQUAL_(lstJacobians.size(),lstObservationData.size())
@@ -672,7 +672,7 @@ void mrpt::graphslam::optimize_graph_spa_levmarq(
 			// Compute Jacobians & errors with the new "graph.nodes" info:
 			// =============================================================
 			typename gst::map_pairIDs_pairJacobs_t  new_lstJacobians;
-			vector<typename gst::Array_O,Eigen::aligned_allocator<typename gst::Array_O> >                 new_errs;
+			typename mrpt::aligned_containers<typename gst::Array_O>::vector_t   new_errs;
 
 			profiler.enter("optimize_graph_spa_levmarq.Jacobians&err");// ------------------------------\  .
 			double new_total_sqr_err = computeJacobiansAndErrors<EDGE_TYPE,MAPS_IMPLEMENTATION>(

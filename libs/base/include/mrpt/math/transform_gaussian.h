@@ -85,7 +85,7 @@ namespace mrpt
 
 			// Propagate the samples X_i -> Y_i:
 			// We don't need to store the X sigma points: just use one vector to compute all the Y sigma points:
-			std::vector<VECTORLIKE3, Eigen::aligned_allocator<VECTORLIKE3> > Y(1+2*Nx); // 2Nx+1 sigma points
+			typename mrpt::aligned_containers<VECTORLIKE3>::vector_t Y(1+2*Nx); // 2Nx+1 sigma points
 			VECTORLIKE1 X = x_mean;
 			functor(X,fixed_param,Y[0]);
 			VECTORLIKE1 delta; // i'th row of L:

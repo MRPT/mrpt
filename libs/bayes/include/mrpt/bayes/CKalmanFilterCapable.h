@@ -186,7 +186,7 @@ namespace mrpt
 			typedef CArrayNumeric<KFTYPE,VEH_SIZE>  KFArray_VEH;
 			typedef CArrayNumeric<KFTYPE,ACT_SIZE>  KFArray_ACT;
 			typedef CArrayNumeric<KFTYPE,OBS_SIZE>  KFArray_OBS;
-			typedef std::vector<KFArray_OBS,Eigen::aligned_allocator<KFArray_OBS> > vector_KFArray_OBS;
+			typedef typename mrpt::aligned_containers<KFArray_OBS>::vector_t  vector_KFArray_OBS;
 			typedef CArrayNumeric<KFTYPE,FEAT_SIZE> KFArray_FEAT;
 
 			inline size_t getStateVectorLength() const { return m_xkk.size(); }

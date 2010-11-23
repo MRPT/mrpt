@@ -54,9 +54,10 @@
 				- hasDescriptorMultiSIFT(). Indicates if the multi-resolution SIFT-like descriptor has been computed for this feature.
 		- Changes in functions:
 			- mrpt::vision::matchFeatures(). Implemented a new method for managing ambiguous matches, now taking into account which of the conflicting matches is the most probable.
-		- New structures:
+		- New structures/classes:
 			- TMultiResDescMatchOptions. Struct containing the options when matching multi-resolution SIFT-like descriptors.
 			- TMultiResDescOptions. Struct containing the options when computing the multi-resolution SIFT-like descriptors.
+			- mrpt::aligned_containers<>: A helper template to ease the declaration of STL containers with the correct Eigen aligned allocators.
 		- New functions:
 			- mrpt::vision::computeGradient(). Computes the gradient of certain pixel within the image.
 			- mrpt::vision::computeMainOrientations(). Computes the main orientations (within 80% of the peak value of orientation histogram) of a certain point within an image (for using in SIFT-based algorithms)
@@ -72,6 +73,7 @@
 				- Feature extraction, stereo matching and re-projection to 3D from a pair of images.
 				- Feature extraction and computation of the matching score for each feature in list1 and for each in list2 with four different methods: FAST, NCC, SIFT and SURF. Graphical results are shown.
 		- <b>BUG FIXES:</b>
+			- RawlogViewer, module "Raw-map": It didn't display or save the robot path for observations-only rawlogs.
 			- Fixed exception when rendering a mrpt::opengl::CPointCloud with no points in it.
 			- Fixed bad computation of SAD in mrpt::vision::matchFeatures() because bad usage of IplImage fields <i>width</i> and <i>widthstep</i>.
 			- Fixed vision::CImage::update_patch(). Row and column checkings of the patch position were wrongly related to image width and height, respectively.

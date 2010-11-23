@@ -55,8 +55,7 @@ namespace mrpt
 		{
 		public:
 			typedef TYPE_EDGES                             edge_t;  //!< The type of the graph edges
-			typedef Eigen::aligned_allocator<std::pair<const TPairNodeIDs, edge_t> > edge_entries_allocator_t; //!< Allocator of \a edges_map_t
-			typedef std::multimap<TPairNodeIDs, edge_t, std::less<TPairNodeIDs>,edge_entries_allocator_t>   edges_map_t;  //!< The type of the member \a edges
+			typedef typename mrpt::aligned_containers<TPairNodeIDs,edge_t>::multimap_t	edges_map_t;  //!< The type of the member \a edges
 			typedef typename edges_map_t::iterator         iterator;
 			typedef typename edges_map_t::const_iterator   const_iterator;
 

@@ -62,7 +62,7 @@ namespace mrpt
 			    @{ */
 			typedef KEY                                     key_type;
 			typedef std::pair<KEY,VALUE>                    value_type;
-			typedef std::vector<value_type, Eigen::aligned_allocator<value_type> > vec_t;
+			typedef typename mrpt::aligned_containers<value_type>::vector_t  vec_t;
 			typedef typename vec_t::size_type               size_type;
 			typedef typename vec_t::iterator                iterator;
 			typedef typename vec_t::const_iterator          const_iterator;
