@@ -72,7 +72,7 @@ WARN_LOGFILE           =
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = $MRPT_LIST_DIRECTORIES
-FILE_PATTERNS          = *.h *.cpp *.hpp *.tpp *.
+FILE_PATTERNS          = *.h *.cpp *.hpp *.tpp 
 RECURSIVE              = YES
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO
@@ -135,6 +135,13 @@ PDF_HYPERLINKS         = YES
 USE_PDFLATEX           = NO
 LATEX_BATCHMODE        = NO
 LATEX_HIDE_INDICES     = NO
+
+# The EXTRA_PACKAGES tag can be to specify one or more names of LaTeX
+# packages that should be included in the LaTeX output.
+
+EXTRA_PACKAGES         = amssymb \
+                         amsmath
+
 #---------------------------------------------------------------------------
 # configuration options related to the RTF output
 #---------------------------------------------------------------------------
@@ -178,7 +185,7 @@ MACRO_EXPANSION        = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = $MRPT_LIST_DIRECTORIES
 INCLUDE_FILE_PATTERNS  = 
-PREDEFINED             = _WIN32
+PREDEFINED             = _WIN32 EIGEN_PARSED_BY_DOXYGEN EIGEN_MATRIXBASE_PLUGIN=<mrpt/math/eigen_plugins.h>
 EXPAND_ONLY_PREDEF     = YES
 EXPAND_AS_DEFINED      = DECLARE_COMMON_CONTAINERS_MEMBERS DECLARE_COMMON_MATRIX_MEMBERS DECLARE_MRPT_CONTAINER_TYPES DECLARE_MRPT_CONTAINER_IS_MATRIX DEFINE_MRPT_OBJECT DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2 DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_NO_LINKAGE DEFINE_MRPT_OBJECT_PRE DEFINE_SERIALIZABLE DEFINE_SERIALIZABLE_PRE DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2 DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE DEFINE_VIRTUAL_MRPT_OBJECT DEFINE_VIRTUAL_SERIALIZABLE 
 SKIP_FUNCTION_MACROS   = YES

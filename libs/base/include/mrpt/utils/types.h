@@ -77,7 +77,7 @@
 #include <iostream> // These headers are assumed by <mrpt/math/eigen_plugins.h>:
 #include <fstream>
 #include <sstream>
-#ifdef EIGEN_CORE_H
+#ifdef EIGEN_MAJOR_VERSION
 #	error **FATAL ERROR**: MRPT headers must be included before Eigen headers.
 #endif
 #define EIGEN_USE_NEW_STDVECTOR
