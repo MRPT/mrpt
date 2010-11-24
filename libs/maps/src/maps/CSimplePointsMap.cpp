@@ -87,7 +87,7 @@ void  CSimplePointsMap::loadFromRangeScan(
 	const CObservation2DRangeScan		&rangeScan,
 	const CPose3D						*robotPose )
 {
-	register int	i;
+	int	i;
 	CPose3D			sensorPose3D;
 
 	mark_as_modified();
@@ -110,30 +110,29 @@ void  CSimplePointsMap::loadFromRangeScan(
 
 	// For a great gain in efficiency:
 	if ( x.size()+2*sizeRangeScan > x.capacity() )
-	{
-		reserve( (size_t) (x.size() * 1.2f) + 3*sizeRangeScan );
-	}
-
-	// --------------------------------------------------------------------------
-	//  SPECIAL CASE OF HORIZONTAL SCAN: QUICKER IMPLEMENTATION
-	// --------------------------------------------------------------------------
-	CMatrixDouble44	HM;
-	sensorPose3D.getHomogeneousMatrix(HM);
+		reserve( x.size() + (x.size()>>2) + 3*sizeRangeScan );
 
 	// --------------------------------------------------------------------------
 	//		GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION
 	// --------------------------------------------------------------------------
 	{
+		CMatrixDouble33	ROT;
+		sensorPose3D.getRotationMatrix(ROT);
+
+		MRPT_CHECK_NORMAL_NUMBER( sensorPose3D.x() )
+		MRPT_CHECK_NORMAL_NUMBER( sensorPose3D.y() )
+		MRPT_CHECK_NORMAL_NUMBER( sensorPose3D.z() )
+
 		// For quicker access:
-		float		m00 = HM.get_unsafe(0,0);
-		float		m01 = HM.get_unsafe(0,1);
-		float		m03 = HM.get_unsafe(0,3);
-		float		m10 = HM.get_unsafe(1,0);
-		float		m11 = HM.get_unsafe(1,1);
-		float		m13 = HM.get_unsafe(1,3);
-		float		m20 = HM.get_unsafe(2,0);
-		float		m21 = HM.get_unsafe(2,1);
-		float		m23 = HM.get_unsafe(2,3);
+		float		m00 = ROT.get_unsafe(0,0);
+		float		m01 = ROT.get_unsafe(0,1);
+		float		m03 = sensorPose3D.x();
+		float		m10 = ROT.get_unsafe(1,0);
+		float		m11 = ROT.get_unsafe(1,1);
+		float		m13 = sensorPose3D.y();
+		float		m20 = ROT.get_unsafe(2,0);
+		float		m21 = ROT.get_unsafe(2,1);
+		float		m23 = sensorPose3D.z();
 
 		float		lx_1,ly_1,lz_1,lx,ly,lz;		// Punto anterior y actual:
 		float		lx_2,ly_2,lz_2;				// Punto antes del anterior
@@ -160,6 +159,8 @@ void  CSimplePointsMap::loadFromRangeScan(
 
 		scan_x.resize( sizeRangeScan );
 		scan_y.resize( sizeRangeScan );
+
+		MRPT_TODO("Possible optization: use vector_float with precomputed cos/sin table.")
 
 		vector<float>::iterator		 scan_x_it, scan_y_it;
 		vector<float>::const_iterator scan_it;
@@ -235,9 +236,9 @@ void  CSimplePointsMap::loadFromRangeScan(
 						} // End of interpolate:
 					}
 
-					x.push_back( lx ); MRPT_CHECK_NORMAL_NUMBER(lx);
-					y.push_back( ly ); MRPT_CHECK_NORMAL_NUMBER(ly);
-					z.push_back( lz ); MRPT_CHECK_NORMAL_NUMBER(lz);
+					x.push_back( lx );
+					y.push_back( ly );
+					z.push_back( lz );
 					pointWeight.push_back( 1 );
 
 					lastPointWasInserted = true;
@@ -255,7 +256,6 @@ void  CSimplePointsMap::loadFromRangeScan(
 
 			// Save for next iteration:
 			lastPointWasValid = rangeScan.validRange[i] != 0;
-
 		}
 
 		// The last point
@@ -309,22 +309,26 @@ void  CSimplePointsMap::loadFromRangeScan(
 	//		GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION
 	// --------------------------------------------------------------------------
 	{
-		CMatrixDouble44	HM;
-		sensorPose3D.getHomogeneousMatrix(HM);
+		CMatrixDouble33	ROT;
+		sensorPose3D.getRotationMatrix(ROT);
+
+		MRPT_CHECK_NORMAL_NUMBER( sensorPose3D.x() )
+		MRPT_CHECK_NORMAL_NUMBER( sensorPose3D.y() )
+		MRPT_CHECK_NORMAL_NUMBER( sensorPose3D.z() )
 
 		// For quicker access:
-		float		m00 = HM.get_unsafe(0,0);
-		float		m01 = HM.get_unsafe(0,1);
-		float		m02 = HM.get_unsafe(0,2);
-		float		m03 = HM.get_unsafe(0,3);
-		float		m10 = HM.get_unsafe(1,0);
-		float		m11 = HM.get_unsafe(1,1);
-		float		m12 = HM.get_unsafe(1,2);
-		float		m13 = HM.get_unsafe(1,3);
-		float		m20 = HM.get_unsafe(2,0);
-		float		m21 = HM.get_unsafe(2,1);
-		float		m22 = HM.get_unsafe(2,2);
-		float		m23 = HM.get_unsafe(2,3);
+		float		m00 = ROT.get_unsafe(0,0);
+		float		m01 = ROT.get_unsafe(0,1);
+		float		m02 = ROT.get_unsafe(0,2);
+		float		m03 = sensorPose3D.x();
+		float		m10 = ROT.get_unsafe(1,0);
+		float		m11 = ROT.get_unsafe(1,1);
+		float		m12 = ROT.get_unsafe(1,2);
+		float		m13 = sensorPose3D.y();
+		float		m20 = ROT.get_unsafe(2,0);
+		float		m21 = ROT.get_unsafe(2,1);
+		float		m22 = ROT.get_unsafe(2,2);
+		float		m23 = sensorPose3D.z();
 
 		float		lx_1,ly_1,lz_1,lx,ly,lz;	// Last and current point.
 

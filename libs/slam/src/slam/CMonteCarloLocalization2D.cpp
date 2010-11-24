@@ -236,7 +236,7 @@ void CMonteCarloLocalization2D::PF_SLAM_implementation_replaceByNewParticleSet(
 	const vector_double		&newParticlesWeight,
 	const vector<size_t>	&newParticlesDerivedFromIdx )  const
 {
-	ASSERT_(newParticlesWeight.size()==newParticles.size())
+	ASSERT_EQUAL_(size_t(newParticlesWeight.size()),size_t(newParticles.size()))
 
 	// ---------------------------------------------------------------------------------
 	// Substitute old by new particle set:
