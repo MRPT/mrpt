@@ -476,7 +476,7 @@ void CPose3DQuatPDFGaussian::jacobiansPoseComposition(
 	df_dx.set_unsafe(1,1, 1);
 	df_dx.set_unsafe(2,2, 1);
 
-	const double vals2[3*4] = {
+	EIGEN_ALIGN16 const double vals2[3*4] = {
 		2*(-qz*ay +qy*az  ),
 		2*(qy*ay + qz*az  ),
 		2*(-2*qy*ax + qx*ay +qr*az  ),
@@ -497,7 +497,7 @@ void CPose3DQuatPDFGaussian::jacobiansPoseComposition(
 	df_dx.block(0,3, 3,4).noalias() = (CMatrixFixedNumeric<double,3,4>(vals2) * norm_jacob_x).eval();
 	// second part:
 	{
-		const double aux44_data[4*4] = {
+		EIGEN_ALIGN16 const double aux44_data[4*4] = {
 			q2r,-q2x,-q2y,-q2z,
 			q2x, q2r, q2z,-q2y,
 			q2y,-q2z, q2r, q2x,
@@ -524,7 +524,7 @@ void CPose3DQuatPDFGaussian::jacobiansPoseComposition(
 
 	// Second part:
 	{
-		const double aux44_data[4*4] = {
+		EIGEN_ALIGN16 const double aux44_data[4*4] = {
 			qr,-qx,-qy,-qz,
 			qx, qr,-qz, qy,
 			qy, qz, qr,-qx,

@@ -239,7 +239,7 @@ void  CPosePDFGaussianInf::rotateCov(const double ang)
 	const double ccos = cos(ang);
 	const double ssin = sin(ang);
 
-	const double rot_vals[] = {
+	EIGEN_ALIGN16 const double rot_vals[] = {
 		ccos, -ssin, 0.,
 		ssin, ccos,  0.,
 		0.  ,   0.,  1. };
@@ -361,7 +361,7 @@ void	 CPosePDFGaussianInf::inverse(CPosePDF &o) const
 	const double ssin = ::sin(mean.phi());
 
 	// jacobian:
-	const double H_values[] = {
+	EIGEN_ALIGN16 const double H_values[] = {
 		-ccos, -ssin,  mean.x()*ssin-mean.y()*ccos,
 		 ssin, -ccos,  mean.x()*ccos+mean.y()*ssin,
 		 0   ,     0,  -1
