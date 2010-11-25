@@ -40,6 +40,7 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/math/CMatrix.h>
 
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::utils;
@@ -189,10 +190,7 @@ void CPose3DQuat::composePoint(const double lx,const double ly,const double lz,d
 			CMatrixDouble44  norm_jacob(UNINITIALIZED_MATRIX);
 			this->quat().normalizationJacobian(norm_jacob);
 
-			CMatrixFixedNumeric<double,3,4> df_pose_sub(UNINITIALIZED_MATRIX);
-			df_pose_sub.multiply(CMatrixFixedNumeric<double,3,4>(vals), norm_jacob );
-
-			out_jacobian_df_dpose->insertMatrix(0,3,df_pose_sub);
+			out_jacobian_df_dpose->insertMatrix(0,3, (CMatrixFixedNumeric<double,3,4>(vals)*norm_jacob).eval() );
 		}
 	}
 
@@ -300,10 +298,7 @@ void CPose3DQuat::inverseComposePoint(const double gx,const double gy,const doub
 			CMatrixDouble44  norm_jacob(UNINITIALIZED_MATRIX);
 			this->quat().normalizationJacobian(norm_jacob);
 
-			CMatrixFixedNumeric<double,3,4> df_pose_sub(UNINITIALIZED_MATRIX);
-			df_pose_sub.multiply(CMatrixFixedNumeric<double,3,4>(vals), norm_jacob );
-
-			out_jacobian_df_dpose->insertMatrix(0,3,df_pose_sub);
+			out_jacobian_df_dpose->insertMatrix(0,3, (CMatrixFixedNumeric<double,3,4>(vals)*norm_jacob).eval() );
 		}
 	}
 
@@ -435,8 +430,18 @@ void CPose3DQuat::sphericalCoordinates(
  */
 std::ostream& mrpt::poses::operator << (std::ostream& o, const CPose3DQuat& p)
 {
-	o << "(x,y,z,qr,qx,qy,qz)=(" << std::fixed << std::setprecision(4) << p.m_coords[0] << "," << p.m_coords[1] << "," << p.m_coords[2] <<
-		"," << p.quat()[0] << "," << p.quat()[1] << "," << p.quat()[2] << "," << p.quat()[3] << ")";
+	const std::streamsize old_pre = o.precision();
+	const ios_base::fmtflags old_flags = o.flags();
+	o << "(x,y,z,qr,qx,qy,qz)=(" << std::fixed << std::setprecision(4)
+		<< p.m_coords[0] << ","
+		<< p.m_coords[1] << ","
+		<< p.m_coords[2] << ","
+		<< p.quat()[0] << ","
+		<< p.quat()[1] << ","
+		<< p.quat()[2] << ","
+		<< p.quat()[3] << ")";
+	o.flags(old_flags);
+	o.precision(old_pre);
 	return o;
 }
 

@@ -122,9 +122,13 @@ namespace mrpt
 		template <class T>
 		std::ostream& operator << (std::ostream& out, const std::vector<T> &d)
 		{
+			const std::streamsize old_pre = out.precision();
+			const std::ios_base::fmtflags old_flags = out.flags();
 			out << "[" << std::fixed << std::setprecision(4);
 			copy(d.begin(),d.end(), std::ostream_iterator<T>(out," "));
 			out << "]";
+			out.flags(old_flags);
+			out.precision(old_pre);
 			return out;
 		}
 
@@ -133,9 +137,13 @@ namespace mrpt
 		template <class T>
 		std::ostream& operator << (std::ostream& out, std::vector<T> *d)
 		{
-			out << "[";
+			const std::streamsize old_pre = out.precision();
+			const std::ios_base::fmtflags old_flags = out.flags();
+			out << "[" << std::fixed << std::setprecision(4);
 			copy(d->begin(),d->end(), std::ostream_iterator<T>(out," "));
 			out << "]";
+			out.flags(old_flags);
+			out.precision(old_pre);
 			return out;
 		}
 

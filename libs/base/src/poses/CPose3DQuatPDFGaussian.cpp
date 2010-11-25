@@ -494,7 +494,7 @@ void CPose3DQuatPDFGaussian::jacobiansPoseComposition(
 		};
 
 	// df_dx(0:3,3:7) = vals2 * NORM_JACOB
-	df_dx.block(0,3, 3,4).noalias() = CMatrixFixedNumeric<double,3,4>(vals2) * norm_jacob_x;
+	df_dx.block(0,3, 3,4).noalias() = (CMatrixFixedNumeric<double,3,4>(vals2) * norm_jacob_x).eval();
 	// second part:
 	{
 		const double aux44_data[4*4] = {
@@ -503,7 +503,7 @@ void CPose3DQuatPDFGaussian::jacobiansPoseComposition(
 			q2y,-q2z, q2r, q2x,
 			q2z, q2y,-q2x, q2r };
 
-		df_dx.block(3,3, 4,4).noalias() =  norm_jacob * CMatrixFixedNumeric<double,4,4>(aux44_data);
+		df_dx.block(3,3, 4,4).noalias() =  (norm_jacob * CMatrixFixedNumeric<double,4,4>(aux44_data)).eval();
 	}
 
 	// df_du ===================================================
@@ -532,7 +532,7 @@ void CPose3DQuatPDFGaussian::jacobiansPoseComposition(
 
 //		std::cout  << "x.quat:\n" << x.quat() << std::endl;
 //		std::cout  << "aux44:\n" << CMatrixFixedNumeric<double,4,4>(aux44_data) << std::endl;
-		df_du.block(3,3, 4,4).noalias() = norm_jacob * CMatrixFixedNumeric<double,4,4>(aux44_data);
+		df_du.block(3,3, 4,4).noalias() = (norm_jacob * CMatrixFixedNumeric<double,4,4>(aux44_data)).eval();
 	}
 
 	if (out_x_oplus_u)

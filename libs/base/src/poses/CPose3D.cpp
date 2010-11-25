@@ -204,8 +204,12 @@ void  CPose3D::readFromStream(CStream &in,int version)
  */
 std::ostream& mrpt::poses::operator << (std::ostream& o, const CPose3D& p)
 {
+	const std::streamsize old_pre = o.precision();
+	const std::ios_base::fmtflags old_flags = o.flags();
 	o << "(x,y,z,yaw,pitch,roll)=(" << std::fixed << std::setprecision(4) << p.m_coords[0] << "," << p.m_coords[1] << "," << p.m_coords[2] <<  ","
 		<< std::setprecision(2) << RAD2DEG(p.yaw()) << "deg," << RAD2DEG(p.pitch()) << "deg," << RAD2DEG(p.roll()) << "deg)";
+	o.flags(old_flags);
+	o.precision(old_pre);
 	return o;
 }
 

@@ -243,7 +243,7 @@ void  CPosePDFGaussian::rotateCov(const double ang)
 		0.  ,   0.,  1. };
 
 	const CMatrixFixedNumeric<double,3,3> rot(rot_vals);
-	cov = rot * cov * rot.transpose();
+	cov = (rot * cov * rot.transpose()).eval();
 }
 
 /*---------------------------------------------------------------
@@ -362,7 +362,7 @@ void	 CPosePDFGaussian::inverse(CPosePDF &o) const
 		};
 	const CMatrixFixedNumeric<double,3,3> H(H_values);
 
-	out->cov = H * cov * H.transpose();  // o.cov = H * cov * Ht
+	out->cov.noalias() = (H * cov * H.transpose()).eval();  // o.cov = H * cov * Ht
 }
 
 
