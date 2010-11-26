@@ -38,6 +38,20 @@ using namespace std;
 #include <mrpt/examples_config.h>
 string   myDataDir( MRPT_EXAMPLES_BASE_DIRECTORY + string("matrix/") );
 
+template <typename Derived, typename At, size_t N>
+Eigen::MatrixBase<Derived>& loadVector2( Eigen::MatrixBase<Derived> &v, At (&theArray)[N] )
+{
+	MRPT_COMPILE_TIME_ASSERT(N!=0)
+	cout << "N: " << N << endl;
+	//v.resize(N);
+	v.derived().conservativeResize(N);
+	cout << "done\n";
+	cout << "v: " << v << " ok\n";
+	for (size_t i=0; i < N; i++)
+		v[i] = static_cast<typename Derived::Scalar>(theArray[i]);
+	return v;
+}
+
 
 void TestInitMatrix()
 {
@@ -49,8 +63,9 @@ void TestInitMatrix()
 	cout << "Initialized matrix (I): " << endl << M << endl;
 
 	const double numbers2[] = { 0.5, 4.5, 6.7, 8.9, 15.2 };
-	vector_double  v1;
-	loadVector(v1, numbers2);
+	//vector_double  v1;
+	Eigen::Matrix<double,Eigen::Dynamic,1> v1;
+	loadVector2(v1, numbers2);
 	cout << "Initialized double vector: " << v1 << endl;
 
 	vector_int  v2;
@@ -95,13 +110,13 @@ void TestHCH()
 
 	// The same for a row vector:
 	H.loadFromTextFile(myDataDir+string("H_row.txt"));
+	cout << "Loaded H: "  << endl << H;
 	cout << "H*C*(~H) = " << H.multiply_HCHt_scalar(C) << endl;
 	cout << "Should be= 31.434"<< endl;
 
 	CMatrixFixedNumeric<double,1,5>  Hfix;
 	Hfix.loadFromTextFile(myDataDir+string("H_row.txt"));
 	cout << "Again, loaded as a fixed matrix: "  << endl << Hfix;
-
 }
 
 // ------------------------------------------------------

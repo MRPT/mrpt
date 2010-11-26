@@ -607,6 +607,9 @@ TEST(Matrices,fromMatlabStringFormat)
 	const char* mat5 = "[  ]";  // Empty
 	const char* mat6 = "[ -405.200 42.232 ; 1219.600    -98.696 ]";  // M1 * M2
 
+	const char* mat13 = "[9 8 7]";
+	const char* mat31 = "[9; 8; 7]";
+
 	CMatrixDouble	M1,M2,M3, M4, M5, M6;
 
 	if (! M1.fromMatlabStringFormat(mat1) ||
@@ -621,6 +624,7 @@ TEST(Matrices,fromMatlabStringFormat)
 	}
 
 	if (! M2.fromMatlabStringFormat(mat2) ||
+		M2.cols()!=2 || M2.rows()!=3 ||
 		(CMatrixFixedNumeric<double,3,2>(vals2)-M2).Abs().sumAll() > 1e-4 )
 		GTEST_FAIL() << mat2;
 
@@ -633,6 +637,35 @@ TEST(Matrices,fromMatlabStringFormat)
 
 	if (! M3.fromMatlabStringFormat(mat3) )
 		GTEST_FAIL() << mat3;
+
+	{
+		vector_double m;
+		if (! m.fromMatlabStringFormat(mat3) || m.size()!=1 ) GTEST_FAIL() << "vector_double:" << mat3;
+	}
+	{
+		CArrayDouble<1> m;
+		if (! m.fromMatlabStringFormat(mat3) ) GTEST_FAIL() << "CArrayDouble<1>:" << mat3;
+	}
+
+	{
+		vector_double m;
+		if (! m.fromMatlabStringFormat(mat31) || m.size()!=3 ) GTEST_FAIL() << "vector_double:" << mat31;
+	}
+	{
+		CArrayDouble<3> m;
+		m.fromMatlabStringFormat(mat3);
+		cout << "vals: " << m << endl;
+		if (! m.fromMatlabStringFormat(mat3) ) GTEST_FAIL() << "CArrayDouble<3>:" << mat31;
+	}
+
+	{
+		Eigen::Matrix<double,1,3> m;
+		if (! m.fromMatlabStringFormat(mat13) ) GTEST_FAIL() << "Matrix<double,1,3>:" << mat13;
+	}
+	{
+		Eigen::Matrix<double,1,Eigen::Dynamic> m;
+		if (! m.fromMatlabStringFormat(mat13) || m.size()!=3 ) GTEST_FAIL() << "Matrix<double,1,Dynamic>:" << mat13;
+	}
 
 	// This one MUST BE detected as WRONG:
 	if ( M4.fromMatlabStringFormat(mat4, false /*dont dump errors to cerr*/) )
@@ -920,7 +953,7 @@ TEST(Matrices,largestEigenvector)
 		const Eigen::Matrix<double,4,1>  REAL_EIGVEC(dat_REAL_EIGVEC);
 		//const double REAL_LARGEST_EIGENVALUE =  38.40966;
 
-		Eigen::MatrixXd lev;
+		mrpt::vector_double lev;
 		C1.largestEigenvector(lev,1e-3, 20);
 		EXPECT_NEAR( (REAL_EIGVEC-lev).array().abs().sum(), 0, 1e-3);
 	}

@@ -67,7 +67,7 @@ namespace mrpt
 			MRPT_START
 			typedef typename MATRIXLIKE::value_type T;
 			ASSERTDEB_(cov.isSquare())
-			ASSERTDEB_(cov.getColCount()==x.size() && cov.getColCount()==mu.size())
+			ASSERTDEB_(size_t(cov.getColCount())==size_t(x.size()) && size_t(cov.getColCount())==size_t(mu.size()))
 			T ret = ::exp( static_cast<T>(-0.5) * mrpt::math::multiply_HCHt_scalar((x-mu), cov.inverse() ) );
 			return scaled_pdf ? ret : ret / (::pow(static_cast<T>(M_2PI),static_cast<T>( size(cov,1) )) * ::sqrt(cov.det()));
 			MRPT_END
@@ -81,7 +81,7 @@ namespace mrpt
 		{
 			MRPT_START
 			ASSERTDEB_(cov.isSquare())
-			ASSERTDEB_(cov.getColCount()==d.size())
+			ASSERTDEB_(size_t(cov.getColCount())==size_t(d.size()))
 			return std::exp( static_cast<typename MATRIXLIKE::value_type>(-0.5)*mrpt::math::multiply_HCHt_scalar(d,cov.inverse()))
 			/ (::pow(
 					static_cast<typename MATRIXLIKE::value_type>(M_2PI),
@@ -100,7 +100,7 @@ namespace mrpt
 			const VECTORLIKE2 &mu1, const MATRIXLIKE2 &cov1)
 		{
 			MRPT_START
-			ASSERT_(mu0.size()==mu1.size() && mu0.size()==size(cov0,1) && mu0.size()==size(cov1,1) && cov0.isSquare() && cov1.isSquare() )
+			ASSERT_(size_t(mu0.size())==size_t(mu1.size()) && size_t(mu0.size())==size_t(size(cov0,1)) && size_t(mu0.size())==size_t(size(cov1,1)) && cov0.isSquare() && cov1.isSquare() )
 			const size_t N = mu0.size();
 			MATRIXLIKE2 cov1_inv;
 			cov1.inv(cov1_inv);

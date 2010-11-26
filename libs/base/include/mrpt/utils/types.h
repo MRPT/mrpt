@@ -121,16 +121,16 @@ namespace mrpt
 		/** Default constructor: empty vector */
 		inline dynamicsize_vector() : Base() {}
 		/** Constructor, initializes to a given initial size */
-		inline dynamicsize_vector(size_t N) : Base(N,1) { Base::setZero(); }
+		inline dynamicsize_vector(size_t N) : Base(N,1) { Base::derived().setZero(); }
 		/** Constructor, initializes to a given initial size, all elements to a given value */
-		inline dynamicsize_vector(size_t N, T init_val) : Base(N,1) { Base::assign(init_val); }
+		inline dynamicsize_vector(size_t N, T init_val) : Base(N,1) { Base::derived().assign(init_val); }
 		/** Constructor, initializes from a std::vector<> of scalars */
 		template <typename R>
 		inline dynamicsize_vector(const std::vector<R>& v) : Base(v.size(),1) { for (size_t i=0;i<v.size();i++) (*this)[i]=v[i]; }
 		/** Overloaded resize method that mimics std::vector::resize(SIZE,DEFAULT_VALUE) instead of resize(nrows,ncols) \note This method exists for backward compatibility in MRPT  */
-		inline void resize(const size_t N, const T default_val) { Base::resize(N,1); Base::setConstant(default_val); }
+		inline void resize(const size_t N, const T default_val) { Base::derived().resize(N,1); Base::derived().setConstant(default_val); }
 		/** Normal resize of the vector (preserving old contents). */
-		inline void resize(const size_t N) { Base::conservativeResize(N); }
+		inline void resize(const size_t N) { Base::derived().conservativeResize(N); }
 	};
 
 

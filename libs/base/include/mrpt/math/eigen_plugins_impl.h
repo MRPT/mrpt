@@ -34,6 +34,50 @@
 //   in the "plug-in" headers "eigen_plugins.h" within Eigen::MatrixBase<>
 // -------------------------------------------------------------------------
 
+namespace internal_mrpt
+{
+	// Generic version for all kind of matrices:
+	template<int R, int C>
+	struct MatOrVecResizer
+	{
+		template <typename S, int Opt, int MaxR, int MaxC>
+		static inline void doit(Eigen::Matrix<S,R,C,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
+		{
+			mat.derived().conservativeResize(new_rows,new_cols);
+		}
+	};
+	// Specialization for column matrices:
+	template<int R>
+	struct MatOrVecResizer<R,1>
+	{
+		template <typename S, int Opt, int MaxR, int MaxC>
+		static inline void doit(Eigen::Matrix<S,R,1,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
+		{
+			mat.derived().conservativeResize(new_rows);
+		}
+	};
+	// Specialization for row matrices:
+	template<int C>
+	struct MatOrVecResizer<1,C>
+	{
+		template <typename S, int Opt, int MaxR, int MaxC>
+		static inline void doit(Eigen::Matrix<S,1,C,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
+		{
+			mat.derived().conservativeResize(new_cols);
+		}
+	};
+	template<>
+	struct MatOrVecResizer<1,1>
+	{
+		template <typename S, int Opt, int MaxR, int MaxC>
+		static inline void doit(Eigen::Matrix<S,1,1,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
+		{
+			mat.derived().conservativeResize(new_cols);
+		}
+	};
+}
+
+
 /** Compute the eigenvectors and eigenvalues, both returned as matrices: eigenvectors are the columns, and eigenvalues
   */
 template <class Derived>
@@ -166,9 +210,9 @@ bool Eigen::MatrixBase<Derived>::fromMatlabStringFormat(const std::string &s, bo
 			}
 
 			// Append to the matrix:
-			if ( Derived::RowsAtCompileTime==Eigen::Dynamic )
-				derived().conservativeResize(nRow+1,N);
-			else if (int(nRow)>=Derived::RowsAtCompileTime)
+			if ( Derived::RowsAtCompileTime==Eigen::Dynamic || Derived::ColsAtCompileTime==Eigen::Dynamic )
+				internal_mrpt::MatOrVecResizer<Derived::RowsAtCompileTime,Derived::ColsAtCompileTime>::doit(derived(),nRow+1,N);
+			else if (Derived::RowsAtCompileTime!=Eigen::Dynamic && int(nRow)>=Derived::RowsAtCompileTime)
 			{
 				if (dumpErrorMsgToStdErr)
 					std::cerr << "[fromMatlabStringFormat] Read more rows than the capacity of the fixed sized matrix.\n";
@@ -306,9 +350,9 @@ void Eigen::MatrixBase<Derived>::loadFromTextFile(std::istream &f)
 				throw std::runtime_error("loadFromTextFile: The matrix in the text file does not have the same number of columns in all rows");
 
 			// Append to the matrix:
-			if ( Derived::RowsAtCompileTime==Eigen::Dynamic)
-				derived().conservativeResize(nRows+1,i);
-			else if (int(nRows)>=Derived::RowsAtCompileTime)
+			if ( Derived::RowsAtCompileTime==Eigen::Dynamic || Derived::ColsAtCompileTime==Eigen::Dynamic )
+				internal_mrpt::MatOrVecResizer<Derived::RowsAtCompileTime,Derived::ColsAtCompileTime>::doit(derived(),nRows+1,i);
+			else if (Derived::RowsAtCompileTime!=Eigen::Dynamic && int(nRows)>=Derived::RowsAtCompileTime)
 				throw std::runtime_error("loadFromTextFile: Read more rows than the capacity of the fixed sized matrix.");
 
 			for (size_t q=0;q<i;q++)

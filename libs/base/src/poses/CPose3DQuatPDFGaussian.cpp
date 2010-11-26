@@ -447,7 +447,6 @@ void CPose3DQuatPDFGaussian::jacobiansPoseComposition(
 	)
 {
 	// For the derivation of the formulas, see the tech. report cited in the header file.
-
 	const double   qr = x.quat().r();
 	const double   qx = x.quat().x(); const double qx2 = square(qx);
 	const double   qy = x.quat().y(); const double qy2 = square(qy);
@@ -461,7 +460,7 @@ void CPose3DQuatPDFGaussian::jacobiansPoseComposition(
 	const double   q2y = u.quat().y();
 	const double   q2z = u.quat().z();
 
-	const CPose3DQuat  x_plus_u = x + u;  // needed for the normalization Jacobian:
+	CPose3DQuat  x_plus_u = x + u;  // needed for the normalization Jacobian:
 	CMatrixDouble44  norm_jacob(UNINITIALIZED_MATRIX);
 	x_plus_u.quat().normalizationJacobian(norm_jacob);
 
@@ -495,6 +494,7 @@ void CPose3DQuatPDFGaussian::jacobiansPoseComposition(
 
 	// df_dx(0:3,3:7) = vals2 * NORM_JACOB
 	df_dx.block(0,3, 3,4).noalias() = (CMatrixFixedNumeric<double,3,4>(vals2) * norm_jacob_x).eval();
+
 	// second part:
 	{
 		EIGEN_ALIGN16 const double aux44_data[4*4] = {
@@ -530,8 +530,10 @@ void CPose3DQuatPDFGaussian::jacobiansPoseComposition(
 			qy, qz, qr,-qx,
 			qz,-qy, qx, qr };
 
-//		std::cout  << "x.quat:\n" << x.quat() << std::endl;
-//		std::cout  << "aux44:\n" << CMatrixFixedNumeric<double,4,4>(aux44_data) << std::endl;
+		// ******** DON'T ASK ME WHY, IF THIS CODE IS NOT HERE, RESULT IS WRONG IN GCC (WTF!!!!) **********
+		std::stringstream s; s << CMatrixFixedNumeric<double,4,4>(aux44_data);
+		// ************************************************************************************************
+
 		df_du.block(3,3, 4,4).noalias() = (norm_jacob * CMatrixFixedNumeric<double,4,4>(aux44_data)).eval();
 	}
 

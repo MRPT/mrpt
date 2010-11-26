@@ -917,7 +917,7 @@ namespace mrpt
 			XtXinvXt.multiply_Ab(y,B);
 
 			ASSERT_(B.size()==2)
-				
+
 			const size_t tsN = size_t(ts.size());
 			outs.resize(tsN);
 			if (!wrap2pi)
@@ -951,12 +951,12 @@ namespace mrpt
 		}
 		//! \overload
 		template <typename Derived, typename At, size_t N>
-		Eigen::MatrixBase<Derived>& loadVector( Eigen::MatrixBase<Derived> &v, At (&theArray)[N] )
+		Eigen::MatrixBase<Derived>& loadVector( Eigen::EigenBase<Derived> &v, At (&theArray)[N] )
 		{
 			MRPT_COMPILE_TIME_ASSERT(N!=0)
-			v.resize(N);
+			v.derived().resize(N);
 			for (size_t i=0; i < N; i++)
-				v[i] = static_cast<typename Derived::Scalar>(theArray[i]);
+				(v.derived())[i] = static_cast<typename Derived::Scalar>(theArray[i]);
 			return v;
 		}
 

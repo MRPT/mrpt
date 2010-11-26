@@ -30,14 +30,16 @@
 // Note: This file will be included within the body of Eigen::MatrixBase
 // -------------------------------------------------------------------------
 public:
+	/** @name MRPT plugin: Types
+	  *  @{ */
 	typedef Scalar value_type; //!< Type of the elements
-
 	// size is constant
 	enum { static_size = RowsAtCompileTime*ColsAtCompileTime };
+	/** @} */
 
-	/** @name Basic iterators
-	  *   These iterators are intended for 1D matrices only, i.e. column or row vectors.
-	  */
+
+	/** @name MRPT plugin: Basic iterators. These iterators are intended for 1D matrices only, i.e. column or row vectors.
+	  *  @{ */
 	typedef Scalar* iterator;
 	typedef const Scalar* const_iterator;
 
@@ -47,6 +49,10 @@ public:
 	EIGEN_STRONG_INLINE const_iterator end() const   { return &(derived().data()[size()-1]); }
 
 	/** @} */
+
+
+	/** @name MRPT plugin: Set/get/load/save and other miscelaneous methods
+	  *  @{ */
 
 	/*! Fill all the elements with a given value */
 	EIGEN_STRONG_INLINE void fill(const Scalar v) { derived().setConstant(v); }
@@ -224,6 +230,18 @@ public:
 		return m;
 	}
 
+	/** [VECTORS OR MATRICES] Finds the maximum value (and the corresponding zero-based index) from a given container.
+	  * \exception std::exception On an empty input vector
+	  */
+	void find_index_max_value(size_t &u,size_t &v,Scalar &valMax) const
+	{
+		if (cols()==0 || rows()==0) throw std::runtime_error("find_index_max_value: container is empty");
+		Index idx1,idx2;
+		valMax = derived().maxCoeff(&idx1,&idx2);
+		u = idx1; v = idx2;
+	}
+
+
 	/** [VECTORS ONLY] Finds the minimum value (and the corresponding zero-based index) from a given container.
 	  * \sa maximum, minimum_maximum
 	  * \exception std::exception On an empty input vector  */
@@ -290,7 +308,7 @@ public:
 	EIGEN_STRONG_INLINE void setSize(size_t row, size_t col)
 	{
 #ifdef _DEBUG
-		if ((Derived::RowsAtCompileTime!=Eigen::Dynamic && Derived::RowsAtCompileTime!=row) || (Derived::ColsAtCompileTime!=Eigen::Dynamic && Derived::ColsAtCompileTime!=col)) {
+		if ((Derived::RowsAtCompileTime!=Eigen::Dynamic && Derived::RowsAtCompileTime!=int(row)) || (Derived::ColsAtCompileTime!=Eigen::Dynamic && Derived::ColsAtCompileTime!=int(col))) {
 			std::stringstream ss; ss << "setSize: Trying to change a fixed sized matrix from " << rows() << "x" << cols() << " to " << row << "x" << col;
 			throw std::runtime_error(ss.str());
 		}
@@ -433,6 +451,16 @@ public:
 		}
 		derived().conservativeResize(rows()-idxsToRemove.size(),NoChange);
 	}
+
+	/** Transpose */
+	EIGEN_STRONG_INLINE Eigen::Transpose<Derived> t() const { return derived().transpose(); }
+
+	EIGEN_STRONG_INLINE PlainObject inv() const { PlainObject outMat = derived().inverse().eval(); return outMat; }
+	template <class MATRIX> EIGEN_STRONG_INLINE void inv(MATRIX &outMat) const { outMat = derived().inverse().eval(); }
+	template <class MATRIX> EIGEN_STRONG_INLINE void inv_fast(MATRIX &outMat) const { outMat = derived().inverse().eval(); }
+	EIGEN_STRONG_INLINE Scalar det() const { return derived().determinant(); }
+
+	/** @} */  // end miscelaneous
 
 
 	/** @name Multiply and extra addition functions
@@ -639,14 +667,6 @@ public:
 
 	/** @} */  // end eigenvalues
 
-	/** Transpose */
-	EIGEN_STRONG_INLINE Eigen::Transpose<Derived> t() const { return derived().transpose(); }
-
-	EIGEN_STRONG_INLINE PlainObject inv() const { PlainObject outMat = derived().inverse().eval(); return outMat; }
-	template <class MATRIX> EIGEN_STRONG_INLINE void inv(MATRIX &outMat) const { outMat = derived().inverse().eval(); }
-	template <class MATRIX> EIGEN_STRONG_INLINE void inv_fast(MATRIX &outMat) const { outMat = derived().inverse().eval(); }
-	EIGEN_STRONG_INLINE Scalar det() const { return derived().determinant(); }
-
 
 
 	/** @name Linear algebra & decomposition-based methods
@@ -705,6 +725,8 @@ public:
 		const Scalar minMaxDelta_ = (valMax-valMin)/minMaxDelta;
 		this->array() = (this->array()-curMin)*minMaxDelta_+valMin;
 	}
+	//! \overload
+	inline void adjustRange(Scalar valMin, Scalar valMax) { normalize(valMin,valMax); }
 
 	/** @} */  // end Scalar
 
