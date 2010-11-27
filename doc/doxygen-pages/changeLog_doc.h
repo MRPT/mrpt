@@ -36,7 +36,7 @@
 	- <b>Most important changes:</b>
 		- MRPT now relies entirely on Eigen (version 3) for matrix and vector classes.
 	- <b>Detailed list of changes:</b>
-		- Changes related to mathematics, matrices and containers:
+		- Changes related to mathematics, matrices and containers and the port to Eigen:
 			- All is now based on the Eigen library, v3. See <a href="http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes" >this page</a> for a more complete description of all the changes and the reasons of this big change.
 			- Matrices constructors from poses (TPose2D,...) now are explicit. Example: Previous code "CMatrixDouble31 m = myPose2D;" won't build now, should be: "CMatrixDouble31 m = CMatrixDouble31(myPose2D);"
 			- CVectorFloat and CVectorDouble are not synonymous with mrpt::vector_float and mrpt::vector_double.
@@ -44,9 +44,12 @@
 			- method unit() in matrices was inconsistent between fixed and dynamic sized matrices. It's now unified (see Eigen::Matrix::unit)
 			- Types mrpt::vector_float  and std::vector<float> (or the "double" versions) are not interchangeable any more. Read more on this in the link above.
 			- These examples have been removed: benchmark-matrix, math_iterators_test, matrix_views
+		- Deleted classes:
+			- mrpt::slam::CConsistentObservationAlignment: It implemented the Lu & Milios algorithm, now superseded by graph-slam methods. See the mrpt::graphslam namespace.
+			- (TODO) mrpt::utils::CImageFloat: For real images with float pixels, it's better to directly use OpenCV. For matrices, there're many other matrix classes better suited for that.
 		- Changes in classes:
-			- CDisplayWindow::showImageAndPoints() now als displays the index of the feature (if required).
-			- CFeature now has new members:
+			- mrpt::gui::CDisplayWindow::showImageAndPoints() now also displays the index of the feature (if required).
+			- mrpt::vision::CFeature now has new members:
 				- detph. The computed 3D distance from the camera to the 3D real feature.
 				- multiScales. A vector containing the set of different scales at which the SIFT-like descriptor must be computed.
 				- multiOrientations. For each scale in multiScales there is a vector containing the main orientations of the feature.
@@ -67,12 +70,14 @@
 			- mrpt::vision::matchMultiResolutionFeatures(). Matches two CFeatureList containing mulit-resolution descriptors.
 			- mrpt::vision::setProperScales(). Computes the initial and final scales where to look when finding a match between multi-resolution features.
 			- mrpt::vision::computeSAD(). Calculates the Sum of Absolutes Differences (range [0,1]) between two patches.
+			- mrpt::system::createThread now also has overloaded versions for the thread functions having arguments passed by reference.
 		- New examples:
 			- keypoint_matching. It contains three different methods:
 				- Feature extraction and stereo matching process from a pair of images. It show stadistics about the number of detected and matched features for each method.
 				- Feature extraction, stereo matching and re-projection to 3D from a pair of images.
 				- Feature extraction and computation of the matching score for each feature in list1 and for each in list2 with four different methods: FAST, NCC, SIFT and SURF. Graphical results are shown.
 		- <b>BUG FIXES:</b>
+			- mrpt::utils::net::DNS_resolve_async didn't work properly.
 			- RawlogViewer, module "Raw-map": It didn't display or save the robot path for observations-only rawlogs.
 			- Fixed exception when rendering a mrpt::opengl::CPointCloud with no points in it.
 			- Fixed bad computation of SAD in mrpt::vision::matchFeatures() because bad usage of IplImage fields <i>width</i> and <i>widthstep</i>.

@@ -199,15 +199,11 @@ namespace mrpt
 		template<typename T> inline TThreadHandle createThread(void (*func)(T),T param)	{
 			return detail::ThreadCreateFunctor<T>::createThread(func,param);
 		}
-
-        /** Creates a new thread from a function (or static method) with no parameters.
-          *  This function creates, and start, a new thread running some code given by a function.
-          *  The thread function should end by returning as normal.
-          * \param func The function with the code to run in the thread.
-          * \return A structure that represents the thread (it contains its ID and, in Windows, its HANDLE).
-          * \exception std::exception If the operation fails
-          * \sa createThreadFromObjectMethod, joinThread, changeThreadPriority
-          */
+        //! \overload
+		template<typename T> inline TThreadHandle createThread(void (*func)(T&),T& param)	{
+			return detail::ThreadCreateFunctor<T&>::createThread(func,param);
+		}
+        //! \overload
 		inline TThreadHandle createThread(void (*func)(void))	{
 			return detail::ThreadCreateFunctorNoParams::createThread(func);
 		}
@@ -238,28 +234,12 @@ namespace mrpt
 		inline TThreadHandle createThreadFromObjectMethod(CLASS *obj, void (CLASS::*func)(PARAM), PARAM param)	{
 			return detail::ThreadCreateObjectFunctor<CLASS,PARAM>::createThread(obj,func,param);
 		}
-
-        /** Creates a new thread running a non-static method (so it will have access to "this") from another method of the same class - without parameters.
-          *  This function creates, and start, a new thread running some code given by a function.
-          *  The thread function should end by returning as normal.
-          *  Example of usage:
-          *
-          *  \code
-          *    class MyClass {
-          *    public:
-          *      void myThread();
-          *      void someMethod() {
-          *         createThreadFromObjectMethod( this, &MyClass::myThread );
-          *         ....
-          *      }
-          *    };
-          *  \endcode
-          *
-          * \param func The function with the code to run in the thread.
-          * \return A structure that represents the thread (it contains its ID and, in Windows, its HANDLE).
-          * \exception std::exception If the operation fails
-          * \sa createThread, joinThread, changeThreadPriority
-          */
+        //! \overload 
+		template <typename CLASS,typename PARAM>
+		inline TThreadHandle createThreadFromObjectMethod(CLASS *obj, void (CLASS::*func)(PARAM), PARAM &param)	{
+			return detail::ThreadCreateObjectFunctor<CLASS,PARAM&>::createThread(obj,func,param);
+		}
+        //! \overload 
 		template <typename CLASS>
 		inline TThreadHandle createThreadFromObjectMethod(CLASS *obj, void (CLASS::*func)(void))	{
 			return detail::ThreadCreateObjectFunctorNoParams<CLASS>::createThread(obj,func);

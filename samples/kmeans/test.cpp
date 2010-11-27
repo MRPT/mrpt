@@ -54,7 +54,7 @@ void TestKMeans()
 	while (win.isOpen())
 	{
 		// Generate N clusters of random points:
-		vector< CPointType >  points;
+		mrpt::aligned_containers<CPointType>::vector_t  points;
 		const size_t nClusters = 2 + (randomGenerator.drawUniform32bit() % 4);
 
 		for (size_t cl=0;cl<nClusters;cl++)
@@ -75,7 +75,7 @@ void TestKMeans()
 		}
 
 		// do k-means
-		vector< CPointType >	centers;
+		mrpt::aligned_containers<CPointType>::vector_t	centers;
 		vector<int>				assignments;
 		tictac.Tic();
 

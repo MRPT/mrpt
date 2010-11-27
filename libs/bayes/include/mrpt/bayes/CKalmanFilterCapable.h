@@ -484,7 +484,7 @@ namespace mrpt
 				m_timLogger.leave("KF:1.OnGetAction");
 
 				// Sanity check:
-				if (FEAT_SIZE) ASSERTDEB_( (m_xkk.size() - VEH_SIZE) % FEAT_SIZE == 0 );
+				if (FEAT_SIZE) { ASSERTDEB_( (((m_xkk.size()-VEH_SIZE)/FEAT_SIZE)*FEAT_SIZE)== (m_xkk.size()-VEH_SIZE) ) }
 
 				// =============================================================
 				//  2. PREDICTION OF NEW POSE xv_{k+1|k}
@@ -870,7 +870,7 @@ namespace mrpt
 									KFArray_OBS ytilde_i = Z[0];
 									OnSubstractObservationVectors(ytilde_i,all_predictions[0]);
 									for (size_t k=0;k<OBS_SIZE;k++)
-										ytilde.push_back( ytilde_i[k] );
+										ytilde[ytilde_idx++] = ytilde_i[k];
 									// Extract the subset that is involved in this observation:
 									S_observed = S;
 								}
@@ -894,13 +894,7 @@ namespace mrpt
 								if (nKF_iterations==1)
 								{
 									m_timLogger.enter("KF:8.update stage:2.FULLKF:update xkk");
-
-									K.multiply_Ab(  //m_xkk += K * ytilde;
-										ytilde,
-										m_xkk,
-										true /* Accumulate in output */
-										);
-
+									m_xkk += K * ytilde;
 									m_timLogger.leave("KF:8.update stage:2.FULLKF:update xkk");
 								}
 								else

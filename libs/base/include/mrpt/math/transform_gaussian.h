@@ -93,7 +93,7 @@ namespace mrpt
 			size_t row=1;
 			for (size_t i=0;i<Nx;i++)
 			{
-				L.extractRow(i,delta);
+				L.extractRow(i,delta.transpose());
 				X=x_mean;X-=delta;
 				functor(X,fixed_param,Y[row++]);
 				X=x_mean;X+=delta;
@@ -120,13 +120,13 @@ namespace mrpt
 			VECTORLIKE2 &y_mean,
 			MATLIKE2    &y_cov,
 			const size_t  num_samples = 1000,
-			std::vector<VECTORLIKE3>   *out_samples_y = NULL
+			typename mrpt::aligned_containers<VECTORLIKE3>::vector_t   *out_samples_y = NULL
 			)
 		{
 			MRPT_START
-			std::vector<VECTORLIKE1> samples_x;
+			typename mrpt::aligned_containers<VECTORLIKE1>::vector_t samples_x;
 			mrpt::random::randomGenerator.drawGaussianMultivariateMany(samples_x,num_samples,x_cov,&x_mean);
-			std::vector<VECTORLIKE3> samples_y(num_samples);
+			typename mrpt::aligned_containers<VECTORLIKE3>::vector_t samples_y(num_samples);
 			for (size_t i=0;i<num_samples;i++)
 				functor(samples_x[i],fixed_param,samples_y[i]);
 			mrpt::math::covariancesAndMean(samples_y,y_cov,y_mean);

@@ -105,7 +105,7 @@ void Test_SUT()
 	// Do Montecarlo for comparison:
 	N = 10;
 
-	std::vector<CArrayDouble<3> > MC_samples;
+	mrpt::aligned_containers<CArrayDouble<3> >::vector_t MC_samples;
 
 	tictac.Tic();
 	for (size_t i=0;i<N;i++)

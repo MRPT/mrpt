@@ -415,7 +415,7 @@ void  CHolonomicND::searchBestGap(
     const int freeSectorsNearTarget = 10;  // 3
     bool theyAreFree = true, caseD1 = false;
     if (TargetSector>(unsigned int)freeSectorsNearTarget &&
-		TargetSector<(obstacles.size()-freeSectorsNearTarget) )
+		TargetSector<(unsigned int)(obstacles.size()-freeSectorsNearTarget) )
     {
         for (int j=-freeSectorsNearTarget;j<=freeSectorsNearTarget;j++)
                 if (obstacles[ TargetSector + j ]<0.95*TargetDist)

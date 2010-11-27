@@ -164,7 +164,6 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << "Jose Luis Blanco (C) 2005-2010\n";
 		cout << "For bug reports or to collaborate: <jlblanco@ctima.uma.es>\n";
 
-		cout << "Program version:        " << SLAMDEMO_VERSION << endl;
 		cout << "MRPT version:           " << MRPT_getVersion() << endl;
 		cout << "MRPT compilation date:  " << MRPT_getCompilationDate() << endl;
  		cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << endl;
@@ -179,7 +178,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << "This program was inspired by a MATLAB version written by J. Neira and J. Tardos.\n";
     }
 
-    lbProgName->SetLabel( _U( format("2D SLAM Demo %s",SLAMDEMO_VERSION).c_str() ) );
+    lbProgName->SetLabel( wxT("2D SLAM Demo") );
 	lbProgName->SetForegroundColour( wxColour(0,0,128) );
 
     FlexGridSizer1->RecalcSizes();

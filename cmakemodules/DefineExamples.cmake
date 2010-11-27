@@ -91,7 +91,6 @@ IF(BUILD_EXAMPLES)
 		rejectionSampling
 		stringList
 		RangeOnlyLocalization_RejectionSampling
-		consistent_global_optimization
 		benchmark-gridmaps
 		gridMapLikelihoodCharacterization
 		pathPlanning

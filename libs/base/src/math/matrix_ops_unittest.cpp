@@ -653,9 +653,7 @@ TEST(Matrices,fromMatlabStringFormat)
 	}
 	{
 		CArrayDouble<3> m;
-		m.fromMatlabStringFormat(mat3);
-		cout << "vals: " << m << endl;
-		if (! m.fromMatlabStringFormat(mat3) ) GTEST_FAIL() << "CArrayDouble<3>:" << mat31;
+		if (! m.fromMatlabStringFormat(mat31) ) GTEST_FAIL() << "CArrayDouble<3>:" << mat31;
 	}
 
 	{

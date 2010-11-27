@@ -42,6 +42,7 @@ using namespace std;
 // ------------------------------------------------------
 //				Benchmark Matrices
 // ------------------------------------------------------
+/*
 template <typename T>
 double matrix_test_unit_dyn(int a1, int a2)
 {
@@ -71,6 +72,7 @@ double matrix_test_unit_fix(int a1, int a2)
 	}
 	return tictac.Tac()/N;
 }
+*/
 
 template <typename T,size_t DIM1,size_t DIM2, size_t DIM3>
 double matrix_test_mult_dyn(int a1, int a2)
@@ -122,7 +124,7 @@ double matrix_test_inv_dyn(int a1, int a2)
 	for (long i=0;i<N;i++)
 	{
 		//A.inv(A2);
-		A2 = A.inverse().eval();
+//		A2 = A.inverse().eval();
 	}
 	return tictac.Tac()/N;
 }
@@ -138,7 +140,7 @@ double matrix_test_inv_fix(int a1, int a2)
 	for (long i=0;i<N;i++)
 	{
 		//A.inv(A2);
-		A2 = A.inverse().eval();
+//		A2 = A.inverse().eval();
 	}
 	return tictac.Tac()/N;
 }
@@ -938,6 +940,7 @@ void register_tests_matrices()
 {
 	randomGenerator.randomize(1234);
 
+/*
 	lstTests.push_back( TestData("matrix: unit, dyn[float], 3x3",matrix_test_unit_dyn<float>,3) );
 	lstTests.push_back( TestData("matrix: unit, dyn[double], 3x3",matrix_test_unit_dyn<double>,3) );
 	lstTests.push_back( TestData("matrix: unit, dyn[float], 6x6",matrix_test_unit_dyn<float>,6) );
@@ -947,7 +950,8 @@ void register_tests_matrices()
 	lstTests.push_back( TestData("matrix: unit, fix[double,3,3]",matrix_test_unit_fix<double,3>) );
 	lstTests.push_back( TestData("matrix: unit, fix[float,6,6]",matrix_test_unit_fix<float,6>) );
 	lstTests.push_back( TestData("matrix: unit, fix[double,6,6]",matrix_test_unit_fix<double,6>) );
-
+*/
+/*
 	lstTests.push_back( TestData("matrix: multiply, dyn[float ], 3x3 * 3x3",matrix_test_mult_dyn<float,3,3,3>) );
 	lstTests.push_back( TestData("matrix: multiply, fix[float ], 3x3 * 3x3",matrix_test_mult_fix<float,3,3,3>) );
 	lstTests.push_back( TestData("matrix: multiply, dyn[double], 3x3 * 3x3",matrix_test_mult_dyn<double,3,3,3>) );
@@ -960,8 +964,9 @@ void register_tests_matrices()
 	lstTests.push_back( TestData("matrix: multiply, fix[float ], 10x40 * 40x10",matrix_test_mult_fix<float,10,40,10>) );
 	lstTests.push_back( TestData("matrix: multiply, dyn[double], 10x40 * 40x10",matrix_test_mult_dyn<double,10,40,10>) );
 	lstTests.push_back( TestData("matrix: multiply, fix[double], 10x40 * 40x10",matrix_test_mult_fix<double,10,40,10>) );
+*/
 
-
+/*
 	lstTests.push_back( TestData("matrix: inv, dyn[float ] 3x3",matrix_test_inv_dyn<float,3>) );
 	lstTests.push_back( TestData("matrix: inv, fix[float ] 3x3",matrix_test_inv_fix<float,3>) );
 	lstTests.push_back( TestData("matrix: inv, dyn[double] 3x3",matrix_test_inv_dyn<double,3>) );
@@ -978,7 +983,7 @@ void register_tests_matrices()
 	lstTests.push_back( TestData("matrix: inv, fix[float ] 40x40",matrix_test_inv_fix<float,40>) );
 	lstTests.push_back( TestData("matrix: inv, dyn[double] 40x40",matrix_test_inv_dyn<double,40>) );
 	lstTests.push_back( TestData("matrix: inv, fix[double] 40x40",matrix_test_inv_fix<double,40>) );
-
+*/
 
 	lstTests.push_back( TestData("matrix: det, dyn[float ] 2x2",matrix_test_det_dyn<float,2>) );
 	lstTests.push_back( TestData("matrix: det, fix[float ] 2x2",matrix_test_det_fix<float,2>) );

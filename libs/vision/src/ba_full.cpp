@@ -222,7 +222,7 @@ double mrpt::vision::bundle_adj_full(
 				(V[i]+I_muPoint).inv_fast( V_inv[i] );
 
 
-			typedef map<pair<TCameraPoseID,TLandmarkID>,Matrix_FxP>  WMap;
+			typedef aligned_containers<pair<TCameraPoseID,TLandmarkID>,Matrix_FxP>::map_t  WMap;
 			WMap   W,Y;
 
 			// For quick look-up of entries in W affecting a given point ID:
@@ -255,7 +255,7 @@ double mrpt::vision::bundle_adj_full(
 				++jac_iter;
 			}
 
-			map<pair<TCameraPoseID,TLandmarkID>,Matrix_FxF>  YW_map;
+			aligned_containers<pair<TCameraPoseID,TLandmarkID>,Matrix_FxF>::map_t  YW_map;
 			for (size_t i=0; i<U.size(); ++i)
 				YW_map[make_pair<TCameraPoseID,TLandmarkID>(i,i)] = U_star[i];
 
@@ -287,7 +287,7 @@ double mrpt::vision::bundle_adj_full(
 
 					const pair<TCameraPoseID,TLandmarkID> ids_jk = make_pair<TCameraPoseID,TLandmarkID>(j,k);
 
-					map<pair<TCameraPoseID,TLandmarkID>,Matrix_FxF>::iterator it = YW_map.find(ids_jk);
+					aligned_containers<pair<TCameraPoseID,TLandmarkID>,Matrix_FxF>::map_t::iterator it = YW_map.find(ids_jk);
 					if(it!=YW_map.end())
 						it->second -= YWt;  // += (-YWt);
 					else
@@ -309,7 +309,7 @@ double mrpt::vision::bundle_adj_full(
 
 			CSparseMatrix sS(len_free_frames, len_free_frames);
 
-			for (map<pair<TCameraPoseID,TLandmarkID>,Matrix_FxF>::const_iterator it= YW_map.begin(); it!=YW_map.end(); ++it)
+			for (aligned_containers<pair<TCameraPoseID,TLandmarkID>,Matrix_FxF>::map_t::const_iterator it= YW_map.begin(); it!=YW_map.end(); ++it)
 			{
 				const pair<TCameraPoseID,TLandmarkID> & ids = it->first;
 				const Matrix_FxF & YW = it->second;
@@ -411,7 +411,7 @@ double mrpt::vision::bundle_adj_full(
 
 			MRPT_CHECK_NORMAL_NUMBER(res_new)
 
-			rho = (res-res_new)/ (delta*(mu*delta+g)).sumAll();
+			rho = (res-res_new)/ (delta.array()*(mu*delta + g).array() ).sum();
 
 			if(rho>0)
 			{

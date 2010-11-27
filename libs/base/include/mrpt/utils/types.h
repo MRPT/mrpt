@@ -131,6 +131,8 @@ namespace mrpt
 		inline void resize(const size_t N, const T default_val) { Base::derived().resize(N,1); Base::derived().setConstant(default_val); }
 		/** Normal resize of the vector (preserving old contents). */
 		inline void resize(const size_t N) { Base::derived().conservativeResize(N); }
+		/** Reset the vector to a 0-length */
+		inline void clear() { *this = dynamicsize_vector<T>(); }
 	};
 
 

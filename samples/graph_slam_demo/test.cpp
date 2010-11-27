@@ -142,7 +142,7 @@ struct ExampleDemoGraphSLAM
 		// Add some edges
 		typedef EdgeAdders<my_graph_t> edge_adder_t;
 		typename edge_adder_t::cov_t   inf_matrix;
-		inf_matrix.unit(square(1.0/STD4EDGES_COV_MATRIX));
+		inf_matrix.unit(typename edge_adder_t::cov_t::RowsAtCompileTime, square(1.0/STD4EDGES_COV_MATRIX));
 
 		for (TNodeID i=0;i<N_VERTEX;i++)
 		{

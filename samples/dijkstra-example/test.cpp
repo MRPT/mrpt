@@ -43,7 +43,7 @@ using namespace std;
 typedef CDijkstra<CNetworkOfPoses2D::edge_t> CMyDijkstra;   // See other options in mrpt::poses::CNetworkOfPoses<>
 
 // adds a new edge to the graph. The edge is annotated with the relative position of the two nodes
-void addEdge(TNodeID from, TNodeID to, const map<TNodeID,CPose2D> &real_poses,CNetworkOfPoses2D &graph_links)
+void addEdge(TNodeID from, TNodeID to, const aligned_containers<TNodeID,CPose2D>::map_t &real_poses,CNetworkOfPoses2D &graph_links)
 {
 	CPose2D p = real_poses.find(to)->second - real_poses.find(from)->second;
 	graph_links.insertEdge(from,to, p );
@@ -64,7 +64,7 @@ void TestDijkstra()
 	CTicTac tictac;
 	CNetworkOfPoses2D	graph_links;
 	CNetworkOfPoses2D::global_poses_t optimal_poses, optimal_poses_dijkstra;
-	map<TNodeID,CPose2D>  real_poses;
+	aligned_containers<TNodeID,CPose2D>::map_t  real_poses;
 
 	randomGenerator.randomize(10);
 

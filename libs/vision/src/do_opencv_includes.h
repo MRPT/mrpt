@@ -46,6 +46,7 @@
 #		include <opencv2/objdetect/objdetect.hpp>
 
 #		include <opencv2/legacy/legacy.hpp>  // CvImage
+#		include <opencv2/legacy/compat.hpp>
 #	else
 		// For OpenCV <=2.1
 #		include <cv.h>

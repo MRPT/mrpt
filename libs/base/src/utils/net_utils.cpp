@@ -406,7 +406,7 @@ struct TDNSThreadData
 	CThreadSafeVariable<std::string>  out_solved_ip;  // Will be set to NULL by the caller if the function returns.
 };
 
-void thread_DNS_solver_async(TDNSThreadData dat); // Frd decl.
+void thread_DNS_solver_async(TDNSThreadData &dat); // Frd decl.
 
 
 
@@ -455,7 +455,7 @@ bool net::DNS_resolve_async(
 	}
 }
 
-void thread_DNS_solver_async(TDNSThreadData param)
+void thread_DNS_solver_async(TDNSThreadData &param)
 {
 	// Windows-specific stuff:
 #ifdef MRPT_OS_WINDOWS

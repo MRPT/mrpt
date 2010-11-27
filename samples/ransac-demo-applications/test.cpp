@@ -204,7 +204,7 @@ void TestRANSACLines()
 		vector_double lx(2),ly(2);
 		lx[0] = -15;
 		lx[1] = 15;
-		for (size_t q=0;q<lx.size();q++)
+		for (vector_double::Index q=0;q<lx.size();q++)
 			ly[q] = -(p->second.coefs[2]+p->second.coefs[0]*lx[q])/p->second.coefs[1];
 		win2.plot(lx,ly,"r-1",format("line_%u",n++));
 	}

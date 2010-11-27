@@ -171,7 +171,7 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 						}
 						else
 						{
-							vector_float xs, ys, zs;
+							vector<float> xs, ys, zs;
 							unsigned int i = 0;
 							for ( unsigned int j = 0; j < face.confidenceImage.getHeight(); j++ )
 								for ( unsigned int k = 0; k < face.confidenceImage.getWidth(); k++, i++ )

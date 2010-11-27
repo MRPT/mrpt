@@ -951,7 +951,7 @@ namespace mrpt
 		}
 		//! \overload
 		template <typename Derived, typename At, size_t N>
-		Eigen::MatrixBase<Derived>& loadVector( Eigen::EigenBase<Derived> &v, At (&theArray)[N] )
+		Eigen::EigenBase<Derived>& loadVector( Eigen::EigenBase<Derived> &v, At (&theArray)[N] )
 		{
 			MRPT_COMPILE_TIME_ASSERT(N!=0)
 			v.derived().resize(N);

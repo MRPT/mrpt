@@ -29,8 +29,6 @@
 #ifndef SLAMDEMOMAIN_H
 #define SLAMDEMOMAIN_H
 
-#define SLAMDEMO_VERSION  "1.0"
-
 //(*Headers(slamdemoFrame)
 #include <wx/grid.h>
 #include <wx/toolbar.h>

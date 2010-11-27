@@ -67,11 +67,6 @@ void Test_TypeName()
 	cout << "Type: " << TTypeName<CArrayNumeric<double,3> >::get() << endl;
 	cout << "Type: " << TTypeName<CArrayDouble<5> >::get() << endl;
 
-	cout << "Jacob of R^5 => R^3: " << TTypeName<MAT_TYPEDECL_JACOBIAN_OF( CArrayDouble<5>, CArrayDouble<3>)>::get() << endl;
-	cout << "Jacob of DYN => R^3: " << TTypeName<MAT_TYPEDECL_JACOBIAN_OF( vector_double, CArrayDouble<3>)>::get() << endl;
-	cout << "Jacob of R^4 => DYN: " << TTypeName<MAT_TYPEDECL_JACOBIAN_OF( CArrayDouble<4>,vector_double)>::get() << endl;
-	cout << "Jacob of DYN => DYN: " << TTypeName<MAT_TYPEDECL_JACOBIAN_OF( vector_double, vector_double)>::get() << endl;
-
 }
 
 

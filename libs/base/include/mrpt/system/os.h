@@ -167,22 +167,20 @@ namespace mrpt
 		* \return Returns false on any error, true on everything OK.
 		*/
 		bool  BASE_IMPEXP vectorToTextFile( const std::vector<float> &vec, const std::string &fileName, bool append = false, bool byRows=false );
-
-		/** A useful function for debuging, which saves a std::vector into a text file (compat. with MATLAB)
-		* \return Returns false on any error, true on everything OK.
-		*/
+		//! \overload
 		bool  BASE_IMPEXP vectorToTextFile( const std::vector<double> &vec, const std::string &fileName, bool append = false, bool byRows=false );
-
-		/** A useful function for debuging, which saves a std::vector into a text file (compat. with MATLAB)
-		* \return Returns false on any error, true on everything OK.
-		*/
+		//! \overload
 		bool  BASE_IMPEXP vectorToTextFile( const std::vector<int> &vec, const std::string &fileName, bool append = false, bool byRows=false );
-
-		/** A useful function for debuging, which saves a std::vector into a text file (compat. with MATLAB)
-		* \return Returns false on any error, true on everything OK.
-		* \sa vectorToBinaryFile
-		*/
+		//! \overload
 		bool  BASE_IMPEXP vectorToTextFile( const std::vector<size_t> &vec, const std::string &fileName, bool append = false, bool byRows=false );
+		//! \overload
+		template <class Derived>
+		bool vectorToTextFile( const Eigen::MatrixBase<Derived> &vec, const std::string &fileName ) { 
+			try {
+				vec.saveToTextFile(fileName); 
+				return true;
+			} catch(...) {return false;}
+		}
 
 		/** Load a std::vector from a text file (compat. with MATLAB)
 		* \return Returns false on any error, true on everything OK.
