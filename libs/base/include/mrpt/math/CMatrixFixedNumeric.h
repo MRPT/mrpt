@@ -87,6 +87,19 @@ namespace mrpt
 				*this = b;
 			}
 
+			/** == comparison of two matrices; it differs from default Eigen operator in that returns false if matrices are of different sizes instead of raising an assert. */
+			template <typename Derived>
+			inline bool operator ==(const Eigen::MatrixBase<Derived>& m2) const
+			{
+				return Base::cols()==m2.cols() && 
+					   Base::rows()==m2.rows() && 
+					   Base::cwiseEqual(m2).all();
+			}
+			/** != comparison of two matrices; it differs from default Eigen operator in that returns true if matrices are of different sizes instead of raising an assert. */
+			template <typename Derived>
+			inline bool operator !=(const Eigen::MatrixBase<Derived>& m2) const { return !((*this)==m2); }
+
+
 		}; // end of class definition ------------------------------
 
 		/** @name Typedefs for common sizes
