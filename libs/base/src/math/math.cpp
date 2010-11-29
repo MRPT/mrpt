@@ -2061,7 +2061,7 @@ string math::MATLAB_plotCovariance2D(
 
 	cov.eigenVectors(eigVec,eigVal);
 	eigVal.Sqrt();
-	M = eigVal * eigVec.transpose();
+	M = eigVal * eigVec.adjoint();
 
 	// Compute the points of the ellipsoid:
 	// ----------------------------------------------

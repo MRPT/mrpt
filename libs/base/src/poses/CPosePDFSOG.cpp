@@ -371,7 +371,7 @@ void  CPosePDFSOG::bayesianFusion(const  CPosePDF &p1_,const  CPosePDF &p2_, con
 
 	// Normal distribution canonical form constant:
 	// See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
-	double				a = -0.5*( 3*log(M_2PI) - log( covInv.det() ) + (eta.transpose() * p2->cov * eta)(0,0) );
+	double				a = -0.5*( 3*log(M_2PI) - log( covInv.det() ) + (eta.adjoint() * p2->cov * eta)(0,0) );
 
 	this->m_modes.clear();
 	for (const_iterator it =p1->m_modes.begin();it!=p1->m_modes.end();++it)
@@ -404,8 +404,8 @@ void  CPosePDFSOG::bayesianFusion(const  CPosePDF &p1_,const  CPosePDF &p2_, con
 		CMatrixDouble31	new_eta_i = CMatrixDouble31(newKernel.mean);
 		new_eta_i = new_covInv_i * new_eta_i;
 
-		double		a_i	    = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (eta_i.transpose() * auxSOG_Kernel_i.cov * eta_i)(0,0) );
-		double		new_a_i = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (new_eta_i.transpose() * newKernel.cov * new_eta_i)(0,0) );
+		double		a_i	    = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (eta_i.adjoint() * auxSOG_Kernel_i.cov * eta_i)(0,0) );
+		double		new_a_i = -0.5*( 3*log(M_2PI) - log( new_covInv_i.det() ) + (new_eta_i.adjoint() * newKernel.cov * new_eta_i)(0,0) );
 
 		//newKernel.w	   = (it)->w * exp( a + a_i - new_a_i );
 		newKernel.log_w	   = (it)->log_w + a + a_i - new_a_i;

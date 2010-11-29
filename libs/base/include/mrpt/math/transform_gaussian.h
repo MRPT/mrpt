@@ -93,7 +93,7 @@ namespace mrpt
 			size_t row=1;
 			for (size_t i=0;i<Nx;i++)
 			{
-				L.extractRow(i,delta.transpose());
+				L.extractRowAsCol(i,delta);
 				X=x_mean;X-=delta;
 				functor(X,fixed_param,Y[row++]);
 				X=x_mean;X+=delta;
@@ -157,7 +157,7 @@ namespace mrpt
 			// Cov: COV = H C Ht
 			Eigen::Matrix<double,VECTORLIKE3::RowsAtCompileTime,VECTORLIKE1::RowsAtCompileTime> H;
 			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,functor,x_increments,fixed_param,H);
-			y_cov = H * x_cov * H.transpose();
+			H.multiply_HCHt(x_cov, y_cov);
 			MRPT_END
 		}
 

@@ -19,7 +19,7 @@ Interesting stuff in this library:
 
 - Data association: The NN and the JCBB algorithms, as very generic templates. See data_association.h
 
-- Graph-SLAM: See graph_slam.h
+- Graph-SLAM: See the namespace mrpt::graphslam
 
 
 

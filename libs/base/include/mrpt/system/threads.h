@@ -200,7 +200,7 @@ namespace mrpt
 			return detail::ThreadCreateFunctor<T>::createThread(func,param);
 		}
         //! \overload
-		template<typename T> inline TThreadHandle createThread(void (*func)(T&),T& param)	{
+		template<typename T> inline TThreadHandle createThreadRef(void (*func)(T&),T& param)	{
 			return detail::ThreadCreateFunctor<T&>::createThread(func,param);
 		}
         //! \overload
@@ -234,12 +234,12 @@ namespace mrpt
 		inline TThreadHandle createThreadFromObjectMethod(CLASS *obj, void (CLASS::*func)(PARAM), PARAM param)	{
 			return detail::ThreadCreateObjectFunctor<CLASS,PARAM>::createThread(obj,func,param);
 		}
-        //! \overload 
+        //! \overload
 		template <typename CLASS,typename PARAM>
-		inline TThreadHandle createThreadFromObjectMethod(CLASS *obj, void (CLASS::*func)(PARAM), PARAM &param)	{
+		inline TThreadHandle createThreadFromObjectMethodRef(CLASS *obj, void (CLASS::*func)(PARAM), PARAM &param)	{
 			return detail::ThreadCreateObjectFunctor<CLASS,PARAM&>::createThread(obj,func,param);
 		}
-        //! \overload 
+        //! \overload
 		template <typename CLASS>
 		inline TThreadHandle createThreadFromObjectMethod(CLASS *obj, void (CLASS::*func)(void))	{
 			return detail::ThreadCreateObjectFunctorNoParams<CLASS>::createThread(obj,func);

@@ -71,15 +71,12 @@ MRPT defines a number of generic <i> math containers</i>, which are:
 
 <ul>
 <li><b>Matrices:</b> Dynamic-size matrices (see mrpt::math::CMatrixDouble) and compile-time fixed-size matrices (see mrpt::math::CMatrixFixedNumeric, mrpt::math::CMatrixDouble33, etc.).  </li>
-<li><b>Matrix views:</b> Proxy classes that allow operating on the transpose, a part of, or the diagonal of another matrix as if it was a plain matrix
-object. See mrpt::math::CMatrixView.   </li>
 <li><b>Vectors:</b> Dynamic-size vectors. See mrpt::vector_double, which inherits from a standard STL vector<double>.  </li>
 <li><b>Arrays:</b> Fixed-size vectors, just like plain C arrays but with support for STL-like iterators and much more. See mrpt::math::CArrayDouble<>. </li>
 </ul>
 
-These containers have a number of characteristics in common (STL-like iterators and typedefs, etc.) and can be
-mixed in operations without problems. For example, matrices of any kind can be operated together, a vector can be
-added to an array, or the results of a matrix operation stored in a matrix view.
+For a more in-depth description of these types, and their relation to the base Eigen classes,
+read <a href="http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes" >this page</a>.
 
 Notice that fixed-size containers should be preferred where possible, since they allow more compile-time optimizations.
 

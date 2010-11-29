@@ -250,7 +250,7 @@ void  CPosePDFGaussianInf::rotateCov(const double ang)
 	// NEW_COV^(-1) = (H C H^T)^(-1) = (H^T)^(-1) C^(-1) H^(-1)
 	// rot: Inverse of a rotation matrix is its trasposed.
 	//      But we need H^t^-1 -> H !! so rot stays unchanged:
-	cov_inv = (rot * cov_inv * rot.transpose()).eval();
+	cov_inv = (rot * cov_inv * rot.adjoint()).eval();
 }
 
 /*---------------------------------------------------------------
@@ -368,7 +368,7 @@ void	 CPosePDFGaussianInf::inverse(CPosePDF &o) const
 		};
 	const CMatrixFixedNumeric<double,3,3> H(H_values);
 
-	out->cov_inv.noalias() = (H * cov_inv * H.transpose()).eval();  // o.cov = H * cov * Ht. It's the same with inverse covariances.
+	out->cov_inv.noalias() = (H * cov_inv * H.adjoint()).eval();  // o.cov = H * cov * Ht. It's the same with inverse covariances.
 }
 
 

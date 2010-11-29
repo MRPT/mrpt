@@ -428,7 +428,7 @@ public:
 	EIGEN_STRONG_INLINE void insertMatrix(size_t r,size_t c, const MAT &m) { derived().block(r,c,m.rows(),m.cols())=m; }
 
 	template <typename MAT>
-	EIGEN_STRONG_INLINE void insertMatrixTranspose(size_t r,size_t c, const MAT &m) { derived().block(r,c,m.cols(),m.rows())=m.transpose(); }
+	EIGEN_STRONG_INLINE void insertMatrixTranspose(size_t r,size_t c, const MAT &m) { derived().block(r,c,m.cols(),m.rows())=m.adjoint(); }
 
 	template <typename MAT> EIGEN_STRONG_INLINE void insertRow(size_t nRow, const MAT & aRow) { this->row(nRow) = aRow; }
 	template <typename MAT> EIGEN_STRONG_INLINE void insertCol(size_t nCol, const MAT & aCol) { this->col(nCol) = aCol; }
@@ -453,7 +453,7 @@ public:
 	}
 
 	/** Transpose */
-	EIGEN_STRONG_INLINE Eigen::Transpose<Derived> t() const { return derived().transpose(); }
+	EIGEN_STRONG_INLINE Eigen::Transpose<Derived> t() const { return derived().adjoint(); }
 
 	EIGEN_STRONG_INLINE PlainObject inv() const { PlainObject outMat = derived().inverse().eval(); return outMat; }
 	template <class MATRIX> EIGEN_STRONG_INLINE void inv(MATRIX &outMat) const { outMat = derived().inverse().eval(); }
@@ -473,17 +473,17 @@ public:
 	/*! Substract c (scalar) times A to this matrix: this -= A * c  */
 	template<typename OTHERMATRIX> EIGEN_STRONG_INLINE void substract_Ac(const OTHERMATRIX &m,const Scalar c)	{ (*this) -= c*m; }
 
-	/*! Substract A transposed to this matrix: this -= A.transpose() */
-	template<typename OTHERMATRIX> EIGEN_STRONG_INLINE void substract_At(const OTHERMATRIX &m)	{ (*this) -= m.transpose(); }
+	/*! Substract A transposed to this matrix: this -= A.adjoint() */
+	template<typename OTHERMATRIX> EIGEN_STRONG_INLINE void substract_At(const OTHERMATRIX &m)	{ (*this) -= m.adjoint(); }
 
 	/*! Substract n (integer) times A to this matrix: this -= A * n  */
 	template<typename OTHERMATRIX> EIGEN_STRONG_INLINE void substract_An(const OTHERMATRIX& m, const size_t n)	{ this->noalias() -= n * m; }
 
 	/*! this += A + A<sup>T</sup>  */
-	template<typename OTHERMATRIX> EIGEN_STRONG_INLINE void add_AAt(const OTHERMATRIX &A) { this->noalias() += A; this->noalias() += A.transpose(); }
+	template<typename OTHERMATRIX> EIGEN_STRONG_INLINE void add_AAt(const OTHERMATRIX &A) { this->noalias() += A; this->noalias() += A.adjoint(); }
 
 	/*! this -= A + A<sup>T</sup>  */ \
-	template<typename OTHERMATRIX> EIGEN_STRONG_INLINE void substract_AAt(const OTHERMATRIX &A)	{ this->noalias() -= A; this->noalias() -= A.transpose(); }
+	template<typename OTHERMATRIX> EIGEN_STRONG_INLINE void substract_AAt(const OTHERMATRIX &A)	{ this->noalias() -= A; this->noalias() -= A.adjoint(); }
 
 
 	template <class MATRIX1,class MATRIX2> EIGEN_STRONG_INLINE void multiply( const MATRIX1& A, const MATRIX2 &B ) /*!< this = A * B */ { (*this)= A*B; }
@@ -495,7 +495,7 @@ public:
 
 	template <typename MATRIX1,typename MATRIX2>
 	EIGEN_STRONG_INLINE void multiply_AtB(const MATRIX1 &A,const MATRIX2 &B) /*!< this=A^t * B */ {
-		*this = A.transpose() * B;
+		*this = A.adjoint() * B;
 	}
 
 	/*! Computes the vector vOut = this * vIn, where "vIn" is a column vector of the appropriate length. */
@@ -508,45 +508,45 @@ public:
 	/*! Computes the vector vOut = this<sup>T</sup> * vIn, where "vIn" is a column vector of the appropriate length. */ \
 	template<typename OTHERVECTOR1,typename OTHERVECTOR2>
 	EIGEN_STRONG_INLINE void multiply_Atb(const OTHERVECTOR1 &vIn,OTHERVECTOR2 &vOut,bool accumToOutput = false) const {
-		if (accumToOutput) vOut.noalias() += this->transpose() * vIn;
-		else vOut = this->transpose() * vIn;
+		if (accumToOutput) vOut.noalias() += this->adjoint() * vIn;
+		else vOut = this->adjoint() * vIn;
 	}
 
 	template <typename MAT_C, typename MAT_R>
 	EIGEN_STRONG_INLINE void multiply_HCHt(const MAT_C &C,MAT_R &R,bool accumResultInOutput=false) const /*!< R = this * C * this<sup>T</sup>  */ {
 		if (accumResultInOutput)
-		      R.noalias() += (*this) * C * this->transpose();
-		else  R.noalias()  = (*this) * C * this->transpose();
+		      R.noalias() += (*this) * C * this->adjoint();
+		else  R.noalias()  = (*this) * C * this->adjoint();
 	}
 
 	template <typename MAT_C, typename MAT_R>
 	EIGEN_STRONG_INLINE void multiply_HtCH(const MAT_C &C,MAT_R &R,bool accumResultInOutput=false) const /*!< R = this<sup>T</sup> * C * this  */ {
 		if (accumResultInOutput)
-		      R.noalias() += this->transpose() * C * (*this);
-		else  R.noalias()  = this->transpose() * C * (*this);
+		      R.noalias() += this->adjoint() * C * (*this);
+		else  R.noalias()  = this->adjoint() * C * (*this);
 	}
 
 	/*! R = H * C * H<sup>T</sup> (with a vector H and a symmetric matrix C) In fact when H is a vector, multiply_HCHt_scalar and multiply_HtCH_scalar are exactly equivalent */
 	template <typename MAT_C>
 	EIGEN_STRONG_INLINE Scalar multiply_HCHt_scalar(const MAT_C &C) const {
-		return ( (*this) * C * this->transpose() ).eval()(0,0);
+		return ( (*this) * C * this->adjoint() ).eval()(0,0);
 	}
 
 	/*! R = H<sup>T</sup> * C * H (with a vector H and a symmetric matrix C) In fact when H is a vector, multiply_HCHt_scalar and multiply_HtCH_scalar are exactly equivalent */
 	template <typename MAT_C>
 	EIGEN_STRONG_INLINE Scalar multiply_HtCH_scalar(const MAT_C &C) const {
-		return ( this->transpose() * C * (*this) ).eval()(0,0);
+		return ( this->adjoint() * C * (*this) ).eval()(0,0);
 	}
 
 	/*! this = C * C<sup>T</sup> * f (with a matrix C and a scalar f). */
 	template<typename MAT_A>
 	EIGEN_STRONG_INLINE void multiply_AAt_scalar(const MAT_A &A,typename MAT_A::value_type f)	{
-		*this = (A * A.transpose()) * f;
+		*this = (A * A.adjoint()) * f;
 	}
 
 	/*! this = C<sup>T</sup> * C * f (with a matrix C and a scalar f). */
 	template<typename MAT_A> EIGEN_STRONG_INLINE void multiply_AtA_scalar(const MAT_A &A,typename MAT_A::value_type f)	{
-		*this = (A.transpose() * A) * f;
+		*this = (A.adjoint() * A) * f;
 	}
 
 	/*! this = A * skew(v), with \a v being a 3-vector (or 3-array) and skew(v) the skew symmetric matrix of v (see mrpt::math::skew_symmetric3) */
@@ -571,27 +571,27 @@ public:
 
 	template <class MAT_A,class MAT_B,class MAT_C>
 	void multiply_ABCt(const MAT_A &A, const MAT_B &B, const MAT_C &C) /*!< this = A*B*(C<sup>T</sup>) */ {
-		*this = A*B*C.transpose();
+		*this = A*B*C.adjoint();
 	}
 
 	template <class MAT_A,class MAT_B,class MAT_C>
 	void multiply_AtBC(const MAT_A &A, const MAT_B &B, const MAT_C &C) /*!< this = A(<sup>T</sup>)*B*C */ {
-		*this = A.transpose()*B*C;
+		*this = A.adjoint()*B*C;
 	}
 
 	template <class MAT_A,class MAT_B>
 	EIGEN_STRONG_INLINE void multiply_ABt(const MAT_A &A,const MAT_B &B) /*!< this = A * B<sup>T</sup> */ {
-		*this = A*B.transpose();
+		*this = A*B.adjoint();
 	}
 
 	template <class MAT_A>
 	EIGEN_STRONG_INLINE void multiply_AAt(const MAT_A &A) /*!< this = A * A<sup>T</sup> */ {
-		*this = A*A.transpose();
+		*this = A*A.adjoint();
 	}
 
 	template <class MAT_A>
 	EIGEN_STRONG_INLINE void multiply_AtA(const MAT_A &A) /*!< this = A<sup>T</sup> * A */ {
-		*this = A.transpose()*A;
+		*this = A.adjoint()*A;
 	}
 
 	template <class MAT_A,class MAT_B>
@@ -731,24 +731,29 @@ public:
 	/** @} */  // end Scalar
 
 
-	template <class VECTOR> EIGEN_STRONG_INLINE void extractRow(size_t nRow, VECTOR &v, size_t startingCol = 0) const
-	{
+	/** Extract one row from the matrix into a row vector */
+	template <class OtherDerived> EIGEN_STRONG_INLINE void extractRow(size_t nRow, Eigen::EigenBase<OtherDerived> &v, size_t startingCol = 0) const {
 		v = derived().block(nRow,startingCol,1,cols()-startingCol);
 	}
-
-	template <class VECTOR> EIGEN_STRONG_INLINE void extractCol(size_t nCol, VECTOR &v, size_t startingRow = 0) const
-	{
-		v = derived().block(startingRow,nCol,rows()-startingRow,1);
-	}
-
-	template <typename T> inline void extractRow(size_t nRow, std::vector<T> &v, size_t startingCol = 0) const
-	{
+	//! \overload
+	template <typename T> inline void extractRow(size_t nRow, std::vector<T> &v, size_t startingCol = 0) const {
 		const size_t N = cols()-startingCol;
 		v.resize(N);
 		for (size_t i=0;i<N;i++) v[i]=(*this)(nRow,startingCol+i);
 	}
-	template <typename T> inline void extractCol(size_t nCol, std::vector<T> &v, size_t startingRow = 0) const
+	/** Extract one row from the matrix into a column vector */
+	template <class VECTOR> EIGEN_STRONG_INLINE void extractRowAsCol(size_t nRow, VECTOR &v, size_t startingCol = 0) const
 	{
+		v = derived().adjoint().block(startingCol,nRow,cols()-startingCol,1);
+	}
+
+
+	/** Extract one column from the matrix into a column vector */
+	template <class VECTOR> EIGEN_STRONG_INLINE void extractCol(size_t nCol, VECTOR &v, size_t startingRow = 0) const {
+		v = derived().block(startingRow,nCol,rows()-startingRow,1);
+	}
+	//! \overload
+	template <typename T> inline void extractCol(size_t nCol, std::vector<T> &v, size_t startingRow = 0) const {
 		const size_t N = rows()-startingRow;
 		v.resize(N);
 		for (size_t i=0;i<N;i++) v[i]=(*this)(startingRow+i,nCol);

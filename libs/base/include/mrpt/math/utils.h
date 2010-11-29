@@ -705,7 +705,7 @@ namespace mrpt
 			out_xyz[2] = tx*in_R.get_unsafe(0,2)+ty*in_R.get_unsafe(1,2)+tz*in_R.get_unsafe(2,2);
 
 			// 3x3 rotation part: transpose
-			out_R = in_R.transpose();
+			out_R = in_R.adjoint();
 
 			MRPT_END
 		}

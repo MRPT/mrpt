@@ -302,14 +302,14 @@ void  vision::projectMatchedFeatures(
 						// Form the Ai value
 						if( i <= Na )
 						{
-							L.extractRow( i-1, vAux );						// Extract the proper row
+							L.extractRowAsCol( i-1, vAux );						// Extract the proper row
 							myPoint[0] = meanA[0] + vAux[0];
 							myPoint[1] = meanA[1] + vAux[1];
 							myPoint[2] = meanA[2] + vAux[2];
 						}
 						else
 						{
-							L.extractRow( (i-Na)-1, vAux );					// Extract the proper row
+							L.extractRowAsCol( (i-Na)-1, vAux );					// Extract the proper row
 							myPoint[0] = meanA[0] - vAux[0];
 							myPoint[1] = meanA[1] - vAux[1];
 							myPoint[2] = meanA[2] - vAux[2];
@@ -411,7 +411,7 @@ void  vision::projectMatchedFeatures(
 						// Form the Ai value
 						if( i <= Na )
 						{
-							L.extractRow( i-1, vAux );						// Extract the proper row
+							L.extractRowAsCol( i-1, vAux );						// Extract the proper row
 							myPoint = meanA + vAux;
 							//myPoint[0] = meanA[0] + vAux[0];
 							//myPoint[1] = meanA[1] + vAux[1];
@@ -419,7 +419,7 @@ void  vision::projectMatchedFeatures(
 						}
 						else
 						{
-							L.extractRow( (i-Na)-1, vAux );					// Extract the proper row
+							L.extractRowAsCol( (i-Na)-1, vAux );					// Extract the proper row
 							myPoint = meanA - vAux;
 							//myPoint[0] = meanA[0] - vAux[0];
 							//myPoint[1] = meanA[1] - vAux[1];
@@ -600,14 +600,14 @@ void  vision::projectMatchedFeatures(
 						// Form the Ai value
 						if( i <= Na )
 						{
-							L.extractRow( i-1, vAux );						// Extract the proper row
+							L.extractRowAsCol( i-1, vAux );						// Extract the proper row
 							myPoint[0] = meanA[0] + vAux[0];
 							myPoint[1] = meanA[1] + vAux[1];
 							myPoint[2] = meanA[2] + vAux[2];
 						}
 						else
 						{
-							L.extractRow( (i-Na)-1, vAux );					// Extract the proper row
+							L.extractRowAsCol( (i-Na)-1, vAux );					// Extract the proper row
 							myPoint[0] = meanA[0] - vAux[0];
 							myPoint[1] = meanA[1] - vAux[1];
 							myPoint[2] = meanA[2] - vAux[2];
@@ -709,7 +709,7 @@ void  vision::projectMatchedFeatures(
 						// Form the Ai value
 						if( i <= Na )
 						{
-							L.extractRow( i-1, vAux );						// Extract the proper row
+							L.extractRowAsCol( i-1, vAux );						// Extract the proper row
 							myPoint = meanA + vAux;
 							//myPoint[0] = meanA[0] + vAux[0];
 							//myPoint[1] = meanA[1] + vAux[1];
@@ -717,7 +717,7 @@ void  vision::projectMatchedFeatures(
 						}
 						else
 						{
-							L.extractRow( (i-Na)-1, vAux );					// Extract the proper row
+							L.extractRowAsCol( (i-Na)-1, vAux );					// Extract the proper row
 							myPoint = meanA - vAux;
 							//myPoint[0] = meanA[0] - vAux[0];
 							//myPoint[1] = meanA[1] - vAux[1];
