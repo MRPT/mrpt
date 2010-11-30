@@ -37,7 +37,6 @@
 #include <MRPT/UTILS/CEnhancedMetaFile.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CImageFloat.h>
 
 #include <windows.h>
 
@@ -263,100 +262,6 @@ void  CEnhancedMetaFile::selectTextFont(
 void  CEnhancedMetaFile::setPixel( int x, int y, size_t color)
 {
 	::SetPixel((HDC)m_hdc.get(),x*m_scale,y*m_scale,color);
-}
-
-/*---------------------------------------------------------------
-						drawImage
----------------------------------------------------------------*/
-void  CEnhancedMetaFile::drawImage(
-	int								x,
-	int								y,
-	const utils::CImageFloat	&img )
-{
-	try
-	{
-		LPBITMAPINFO		pBmpInfo = (LPBITMAPINFO) new unsigned char[sizeof(BITMAPINFOHEADER) + (256 * sizeof(RGBQUAD))];
-
-		unsigned int		imgWidth = (unsigned int)img.getWidth();
-		unsigned int		imgHeight = (unsigned int)img.getHeight();
-
-		pBmpInfo->bmiHeader.biSize			= sizeof( BITMAPINFOHEADER );
-		pBmpInfo->bmiHeader.biWidth			= imgWidth;
-		pBmpInfo->bmiHeader.biHeight		= imgHeight;
-		pBmpInfo->bmiHeader.biPlanes		= 1;
-		pBmpInfo->bmiHeader.biBitCount		= 8;
-		pBmpInfo->bmiHeader.biCompression	= BI_RGB;
-		pBmpInfo->bmiHeader.biSizeImage		= 0;
-		pBmpInfo->bmiHeader.biXPelsPerMeter	=
-		pBmpInfo->bmiHeader.biYPelsPerMeter	= 0;
-		pBmpInfo->bmiHeader.biClrUsed		= 0;
-		pBmpInfo->bmiHeader.biClrImportant	= 0;
-
-		// Palette
-		for (unsigned char i=0; i<255; i++)
-		{
-			pBmpInfo->bmiColors[i].rgbRed      = i;
-			pBmpInfo->bmiColors[i].rgbGreen    = i;
-			pBmpInfo->bmiColors[i].rgbBlue     = i;
-			pBmpInfo->bmiColors[i].rgbReserved = 0;
-		}
-
-
-		unsigned int	lineBytes = imgWidth;
-		if (lineBytes % 2) lineBytes++;
-		if (lineBytes % 4) lineBytes+=2;
-
-		BYTE			*ptrBits = new BYTE[lineBytes * imgHeight];
-
-		for (unsigned int py=0;py<imgHeight;py++)
-		{
-			for (unsigned int px=0;px<imgWidth;px++)
-			{
-				BYTE c = (BYTE)floor((*img(px,py)) * 255);
-				ptrBits[(py*lineBytes+px)+0] = c;
-			}
-		}
-
-		HBITMAP	hBitmap = CreateDIBitmap(
-			(HDC)m_hdc.get(),
-			&pBmpInfo->bmiHeader,
-			CBM_INIT,
-			ptrBits,
-			pBmpInfo,
-			DIB_RGB_COLORS);
-
-		ASSERT_(hBitmap!=NULL);
-
-		BITMAP bm;
-		GetObject(hBitmap,sizeof(bm),&bm);
-
-		HDC hdcMem = CreateCompatibleDC( (HDC)m_hdc.get() );
-		HBITMAP hbmT = (HBITMAP)SelectObject(hdcMem,hBitmap);
-
-		BitBlt(
-			(HDC)m_hdc.get(),
-			x,
-			y,
-			(int)(m_scale*imgWidth),
-			(int)(m_scale*imgHeight),
-			hdcMem,
-			0,
-			0,
-			SRCCOPY);
-
-		SelectObject(hdcMem,hbmT);
-		DeleteDC(hdcMem);
-
-		// Free mem:
-		// ---------------------------------------
-		DeleteObject( hBitmap );
-		delete[] pBmpInfo;
-		delete[] ptrBits;
-	}
-	catch(...)
-	{
-		THROW_EXCEPTION("Unexpected runtime error!!");
-	}
 }
 
 /*---------------------------------------------------------------

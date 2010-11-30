@@ -107,7 +107,6 @@ namespace mrpt
 		 */
 		class BASE_IMPEXP CImage : public mrpt::utils::CSerializable, public CCanvas
 		{
-			friend class CImageFloat;
 			DEFINE_SERIALIZABLE( CImage )
 		public:
 
@@ -133,9 +132,6 @@ namespace mrpt
 
 			/** Copy constructor, makes a full copy of the original image contents (unless it was externally stored, in that case, this new image will just point to the same image file). */
 			CImage( const CImage &o );
-
-			/** Copy constructor */
-			CImage( const CImageFloat &o );
 
 			/** Fast constructor that leaves the image uninitialized (the internal IplImage pointer set to NULL).
 			  *  Use only when you know the image will be soon be assigned another image.
@@ -167,6 +163,16 @@ namespace mrpt
 			  * \sa loadFromIplImage, setFromIplImage
 			  */
 			CImage( void *iplImage );
+
+			/** Explicit constructor from a matrix, interpreted as grayscale intensity values, in the range [0,1] (normalized=true) or [0,255] (normalized=false)
+			  * \sa setFromMatrix
+			  */
+			template <typename Derived>
+			explicit inline CImage(const Eigen::MatrixBase<Derived> &m, bool matrix_is_normalized) 
+			{
+				this->setFromMatrix(m,matrix_is_normalized);
+			}
+
 
 			/** Destructor: */
 			virtual ~CImage( );
@@ -472,11 +478,6 @@ namespace mrpt
 			  */
 			CImage& operator = (const CImage& o);
 
-			/** Copy operator from a gray-scale, float image:
-			  * \sa copyFastFrom
-			  */
-			CImage& operator = (const CImageFloat& o);
-
 			/** Copies from another image, and, if that one is externally stored, the image file will be actually loaded into memory in "this" object.
 			  * \sa operator =
 			  */
@@ -717,13 +718,31 @@ namespace mrpt
 			/** Set the image from a matrix, interpreted as grayscale intensity values, in the range [0,1] (normalized=true) or [0,255] (normalized=false)
 			  * \sa getAsMatrix
 			  */
-			void setFromMatrix(const mrpt::math::CMatrixFloat &m, bool matrix_is_normalized=true);
-
-			/** Set the image from a matrix, interpreted as grayscale intensity values, in the range [0,1] (normalized=true) or [0,255] (normalized=false)
-			  * \sa getAsMatrix
-			  */
-			void setFromMatrix(const mrpt::math::CMatrixDouble &m, bool matrix_is_normalized=true);
-
+			template <typename Derived>
+			void setFromMatrix(const Eigen::MatrixBase<Derived> &m, bool matrix_is_normalized=true)
+			{
+				MRPT_START
+				makeSureImageIsLoaded();   // For delayed loaded images stored externally
+				ASSERT_(img)
+				const unsigned int lx = m.cols();
+				const unsigned int ly = m.rows();
+				this->changeSize(lx,ly,1,true);
+				if (matrix_is_normalized) {  // Matrix: [0,1]
+					for (unsigned int y=0;y<ly;y++) {
+						unsigned char *pixels = this->get_unsafe(0,y,0);
+						for (unsigned int x=0;x<lx;x++)
+							(*pixels++) = static_cast<unsigned char>( m.get_unsafe(y,x) * 255 );
+					}
+				}
+				else {  // Matrix: [0,255]
+					for (unsigned int y=0;y<ly;y++) {
+						unsigned char *pixels = this->get_unsafe(0,y,0);
+						for (unsigned int x=0;x<lx;x++)
+							(*pixels++) = static_cast<unsigned char>( m.get_unsafe(y,x) );
+					}
+				}
+				MRPT_END
+			}
 
 			/** Reads the image from a binary stream containing a binary jpeg file.
 			 * \exception std::exception On pixel coordinates out of bounds

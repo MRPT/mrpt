@@ -33,7 +33,6 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CImageFloat.h>
 #include <mrpt/utils/CTicTac.h>
 
 #include <mrpt/gui/WxSubsystem.h>

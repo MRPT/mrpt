@@ -142,17 +142,6 @@ namespace utils
 			bool				bold = false,
 			bool				italic = false );
 
-		/** Draws an image as a bitmap at a given position.
-		  * \param x0 The top-left corner x coordinates on this canvas where the image is to be drawn
-		  * \param y0 The top-left corner y coordinates on this canvas where the image is to be drawn
-		  * \param img The image to be drawn in this canvas
-		  * This method actually calls internally to "drawImage" with a "CImage" parameter.
-		  */
-		virtual void  drawImage(
-			int								x,
-			int								y,
-			const utils::CImageFloat	&img );
-
 		/** Draws an image as a bitmap at a given position, with some custom scale and rotation changes.
 		  * \param x0 The top-left corner x coordinates on this canvas where the image is to be drawn
 		  * \param y0 The top-left corner y coordinates on this canvas where the image is to be drawn

@@ -35,7 +35,6 @@
 #include <mrpt/system/os.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CImageFloat.h>
 #include <mrpt/utils/color_maps.h>
 
 #include <mrpt/opengl.h>
@@ -239,7 +238,7 @@ void CGasConcentrationGridMap2D::save_log_map(
 
 	double time = mrpt::system::timestampTotime_t(timestamp);
 	char buffer [50];
-	sprintf (buffer, "./log_MOSmodel_MAP_%X.txt",insertionOptions.KF_sensorType);
+	sprintf (buffer, "./log_MOSmodel_MAP_%X.txt",insertionOptions.sensorType);
 
 	if (!m_debug_dump)
 		m_debug_dump=new ofstream(buffer);
@@ -299,7 +298,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 			CPose2D		sensorPose( CPose3D(robotPose2D) + it->eNosePoseOnTheRobot );
 
 			// Compute the sensor reading value (Volts):
-			if (insertionOptions.KF_sensorType==0x0000){	//compute the mean
+			if (insertionOptions.sensorType==0x0000){	//compute the mean
 				sensorReading = math::mean( it->readingsVoltage );
 			}
 			else
@@ -308,7 +307,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 				size_t i;
 				for (i=0; i<it->sensorTypes.size(); i++)
 				{
-					if (it->sensorTypes.at(i) == int(insertionOptions.KF_sensorType) )
+					if (it->sensorTypes.at(i) == int(insertionOptions.sensorType) )
 						break;
 				}
 
@@ -323,11 +322,11 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 			}
 
 			// Conversion Voltage(V)-->1/Resistance(1/Ohms)
-			//sensorReading = 1/ (5 * insertionOptions.VoltageDivider_Res /sensorReading - insertionOptions.VoltageDivider_Res);			
+			//sensorReading = 1/ (5 * insertionOptions.VoltageDivider_Res /sensorReading - insertionOptions.VoltageDivider_Res);
 
 			// Normalization:
 			sensorReading = (sensorReading - insertionOptions.R_min) /( insertionOptions.R_max - insertionOptions.R_min );
-			
+
 
 			// MOS model
 			if(insertionOptions.useMOSmodel)
@@ -632,34 +631,34 @@ void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
 					TInsertionOptions
  ---------------------------------------------------------------*/
 CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
+	sensorType				( 0x0000 ),		//By default use the mean between all e-nose sensors
+
 	sigma				( 0.15f ),
 	cutoffRadius		( sigma * 3.0 ),
-
 	R_min				( 0 ),
 	R_max				( 3 ),
+	dm_sigma_omega				( 0.05 ),  // See IROS 2009 paper (a scale parameter for the confidence)
 
 	KF_covSigma					( 0.35f ),		// in meters
 	KF_initialCellStd			( 1.0 ),		// std in normalized concentration units
 	KF_observationModelNoise	( 0.25f ),		// in normalized concentration units
 	KF_defaultCellMeanValue		( 0.25f ),
-	KF_W_size					( 4 ),	
-	KF_sensorType				( 0x0000 ),		//By default use the mean between all e-nose sensors
-	enose_id					( 0 ),			//By default use the first enose
+	KF_W_size					( 4 ),
+
+	//MOSmodel parameters (only if useMOSmodel = true)
 	useMOSmodel					( false ),
-	VoltageDivider_Res			( 10000 ),
-
-	dm_sigma_omega				( 0.05 ),  // See IROS 2009 paper (a scale parameter for the confidence)
-
-	//MOSmodel parameters (only if useMOSmodel = true)	
-	tauR						( 4 ),			//Time constant for the rise phase		
+	tauR						( 4 ),			//Time constant for the rise phase
+	tauD						( 4 ),
+	lastObservations_size		( 5 ),
 	winNoise_size				( 30 ),
 	decimate_value				( 2 ),
-	lastObservations_size		( 5 ),
 	calibrated_tauD_voltages	( 0 ),			//Voltages values of the sensorID at the calibration points.
 	calibrated_tauD_values		( 0 ),			//Tau_d
 	calibrated_delay_RobotSpeeds ( 0 ),			//[m/s]
-	calibrated_delay_values		( 0 ),			//Number of delayed samples before decimation	
-	save_maplog					( false )	
+	calibrated_delay_values		( 0 ),			//Number of delayed samples before decimation
+	enose_id					( 0 ),			//By default use the first enose
+	save_maplog					( false )
+	//VoltageDivider_Res			( 10000 ),
 {
 }
 
@@ -669,7 +668,7 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 void  CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
 {
 	out.printf("\n----------- [CGasConcentrationGridMap2D::TInsertionOptions] ------------ \n\n");
-	out.printf("sigma                                   = %f\n", sigma);	
+	out.printf("sigma                                   = %f\n", sigma);
 	out.printf("cutoffRadius                            = %f\n", cutoffRadius);
 	out.printf("R_min                                   = %f\n", R_min);
 	out.printf("R_max                                   = %f\n", R_max);
@@ -678,22 +677,22 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&o
 	out.printf("KF_observationModelNoise                = %f\n", KF_observationModelNoise);
 	out.printf("KF_defaultCellMeanValue                 = %f\n", KF_defaultCellMeanValue);
 	out.printf("KF_W_size                               = %u\n", (unsigned)KF_W_size);
-	out.printf("KF_sensorType                           = %u\n", (unsigned)KF_sensorType);
+	out.printf("sensorType                           = %u\n", (unsigned)sensorType);
 	out.printf("enose_id								= %u\n", (unsigned)enose_id);
 	out.printf("useMOSmodel								= %c\n", useMOSmodel ? 'Y':'N' );
-	out.printf("VoltageDivider_Res						= %f\n", VoltageDivider_Res);
+	//out.printf("VoltageDivider_Res						= %f\n", VoltageDivider_Res);
 	out.printf("dm_sigma_omega	                        = %f\n", dm_sigma_omega);
 	//MOSmodel parameters
-	out.printf("tauR		                            = %f\n", tauR);	
+	out.printf("tauR		                            = %f\n", tauR);
 	out.printf("winNoise_size		                    = %u\n", (unsigned)winNoise_size);
 	out.printf("decimate_value		                    = %u\n", (unsigned)decimate_value);
 	out.printf("lastObservations_size                   = %u\n", (unsigned)lastObservations_size);
-	
+
 		//Need to dump the vector parameters (ToDo)
-	
+
 	out.printf("save_maplog		                        = %c\n", save_maplog ? 'Y':'N' );
-	
-	
+
+
 	out.printf("\n");
 }
 
@@ -714,14 +713,26 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 	KF_defaultCellMeanValue = iniFile.read_float(section.c_str(),"KF_defaultCellMeanValue",KF_defaultCellMeanValue);
 
 	MRPT_LOAD_CONFIG_VAR(KF_W_size, int,   iniFile, section );
-	
-	KF_sensorType			= iniFile.read_int(section.c_str(),"KF_sensorType",KF_sensorType);
+
+	{
+		int tmpSensorType = iniFile.read_int(section.c_str(),"sensorType",-1);
+		if (tmpSensorType>=0)
+		{
+			// Valid number found:
+			sensorType = tmpSensorType;
+		}
+		else
+		{ // fall back to old name, or default to current value:
+			sensorType = iniFile.read_int(section.c_str(),"KF_sensorType",sensorType);
+		}
+	}
+
 	enose_id				= iniFile.read_int(section.c_str(),"enose_id",enose_id);
-	VoltageDivider_Res		= iniFile.read_float(section.c_str(),"VoltageDivider_Res",VoltageDivider_Res);
+	//VoltageDivider_Res		= iniFile.read_float(section.c_str(),"VoltageDivider_Res",VoltageDivider_Res);
 	useMOSmodel				= iniFile.read_bool(section.c_str(),"useMOSmodel",useMOSmodel);
 
 	//MOSmodel parameters
-	
+
 	tauR					= iniFile.read_float(section.c_str(),"tauR",tauR);
 	winNoise_size			= iniFile.read_int(section.c_str(),"winNoise_size",winNoise_size);
 	decimate_value			= iniFile.read_int(section.c_str(),"decimate_value",decimate_value);
@@ -729,7 +740,7 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 	iniFile.read_vector(section.c_str(),"calibrated_tauD_voltages",calibrated_tauD_voltages,calibrated_tauD_voltages);
 	iniFile.read_vector(section.c_str(),"calibrated_tauD_values",calibrated_tauD_values,calibrated_tauD_values);
 	iniFile.read_vector(section.c_str(),"calibrated_delay_RobotSpeeds",calibrated_delay_RobotSpeeds,calibrated_delay_RobotSpeeds);
-	iniFile.read_vector(section.c_str(),"calibrated_delay_values",calibrated_delay_values,calibrated_delay_values);	
+	iniFile.read_vector(section.c_str(),"calibrated_delay_values",calibrated_delay_values,calibrated_delay_values);
 	save_maplog				= iniFile.read_bool(section.c_str(),"save_maplog",save_maplog);
 
 	MRPT_LOAD_CONFIG_VAR(dm_sigma_omega, double,   iniFile, section );
@@ -755,12 +766,11 @@ void  CGasConcentrationGridMap2D::saveAsBitmapFile(const std::string &filName) c
 {
 	MRPT_START;
 
-	CImageFloat	imgFl;
 	unsigned int	x,y;
 	double c;
 	const TGasConcentrationCell	*cell;
 
-	imgFl.resize(m_size_x,m_size_y);
+	mrpt::math::CMatrixDouble cells_mat(m_size_y,m_size_x);
 
 	recoverMeanAndCov();	// Only has effects for KF2 method
 
@@ -790,10 +800,11 @@ void  CGasConcentrationGridMap2D::saveAsBitmapFile(const std::string &filName) c
 			if (c<0) c=0;
 			if (c>1) c=1;
 
-			*imgFl(x,m_size_y-1-y) = c;
+			cells_mat(m_size_y-1-y,x) = c;
 		}
 	}
 
+	CImage	imgFl(cells_mat, true /* vals are normalized in [0,1] */);
 	imgFl.saveToFile(filName);
 
 	MRPT_END;
@@ -1290,7 +1301,7 @@ void  CGasConcentrationGridMap2D::saveMetricMapRepresentationToFile(
 
 		// And also as bitmap:
 		STDs.normalize();
-		CImageFloat	img_cov(STDs);
+		CImage	img_cov(STDs, true);
 		img_cov.saveToFile(filNamePrefix + std::string("_cells_std.png"), true /* vertical flip */);
 
 		// Save the 3D graphs:

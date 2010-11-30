@@ -32,7 +32,6 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CImageFloat.h>
 #include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/utils/TMatchingPair.h>
@@ -1063,10 +1062,6 @@ namespace slam
 			MRPT_END
 		}
 
-
-		/** Returns the grid as a float image, where each pixel is a cell
-		  */
-		void  getAsImage( utils::CImageFloat	&img, bool verticalFlip = false ) const;
 
 		/** Returns the grid as a 8-bit graylevel image, where each pixel is a cell (output image is RGB only if forceRGB is true)
 		  *  If "tricolor" is true, only three gray levels will appear in the image: gray for unobserved cells, and black/white for occupied/empty cells respectively.

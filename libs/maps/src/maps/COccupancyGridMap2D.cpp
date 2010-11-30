@@ -1050,25 +1050,6 @@ bool  COccupancyGridMap2D::saveAsBitmapFile(const std::string &file) const
 					getAsImage
   ---------------------------------------------------------------*/
 void  COccupancyGridMap2D::getAsImage(
-	utils::CImageFloat	&img,
-	bool verticalFlip ) const
-{
-	img.resize(size_x,size_y);
-
-	if (!verticalFlip)
-		for (unsigned int y=0;y<size_y;y++)
-			for (unsigned int x=0;x<size_x;x++)
-				(*img(x,y)) = l2p( map[x+(size_y-1-y)*size_x] );
-	else
-		for (unsigned int y=0;y<size_y;y++)
-			for (unsigned int x=0;x<size_x;x++)
-				(*img(x,y)) = l2p( map[x+y*size_x] );
-}
-
-/*---------------------------------------------------------------
-					getAsImage
-  ---------------------------------------------------------------*/
-void  COccupancyGridMap2D::getAsImage(
 	utils::CImage	&img,
 	bool verticalFlip,
 	bool forceRGB,
@@ -3990,7 +3971,7 @@ bool  COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 {
 	MRPT_START;
 
-	CImageFloat		img1,img2;
+	CImage			img1,img2;
 	CImage			img(10,10,3,true);
 	TColor 			lineColor;
 	unsigned int	i,n , lx1, ly1, lx2, ly2, Ay1, Ay2;
@@ -4079,7 +4060,7 @@ bool  COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 	MRPT_START;
 
 	CEnhancedMetaFile				emf(fileName,1);
-	CImageFloat		img1,img2;
+	CImage			img1,img2;
 	TColor			lineColor;
 	unsigned int	i,n , lx1, ly1, lx2, ly2, Ay1, Ay2;
 	unsigned int	px, py;

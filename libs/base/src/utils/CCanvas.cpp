@@ -32,7 +32,6 @@
 #include <mrpt/utils/CCanvas.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CImageFloat.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 
@@ -347,32 +346,6 @@ void  CCanvas::drawImage(
 	MRPT_END;
 }
 
-/*---------------------------------------------------------------
-						drawImage
----------------------------------------------------------------*/
-void  CCanvas::drawImage(
-	int								x,
-	int								y,
-	const utils::CImageFloat	&img )
-{
-	CImage		aux(img);
-	drawImage( x,y,aux);
-}
-
-
-/*---------------------------------------------------------------
-						filledRectangle
----------------------------------------------------------------*/
-void  CCanvas::drawImage(
-	int						x,
-	int						y,
-	const utils::CImageFloat	&img,
-	float					rotation,
-	float					scale )
-{
-	CImage		aux(img);
-	drawImage( x,y,aux,rotation,scale);
-}
 
 /*---------------------------------------------------------------
 						cross

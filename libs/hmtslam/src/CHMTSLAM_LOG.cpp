@@ -135,7 +135,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 						{
 							A.adjustRange();
 							A.saveToTextFile( format("%s/ASSO/mostLikelyLMH_ASSO_%05u.txt", m_options.LOG_OUTPUT_DIR.c_str(), nIteration ) );
-							CImageFloat(A).saveToFile( format("%s/ASSO/mostLikelyLMH_ASSO_%05u.png", m_options.LOG_OUTPUT_DIR.c_str(), nIteration ) );
+							CImage(A,true).saveToFile( format("%s/ASSO/mostLikelyLMH_ASSO_%05u.png", m_options.LOG_OUTPUT_DIR.c_str(), nIteration ) );
 						}
 					}
 				} // end lock partitioner's CS

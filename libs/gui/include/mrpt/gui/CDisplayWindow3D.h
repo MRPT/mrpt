@@ -38,12 +38,6 @@
   ---------------------------------------------------------------*/
 namespace mrpt
 {
-	namespace utils
-	{
-		class CImage;
-		class CImageFloat;
-	}
-
 	namespace gui
 	{
 		using namespace mrpt::utils;

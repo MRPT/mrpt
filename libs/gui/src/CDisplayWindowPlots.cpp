@@ -36,7 +36,6 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CImageFloat.h>
 #include <mrpt/utils/metaprogramming.h>
 
 #include <mrpt/gui/WxSubsystem.h>

@@ -36,7 +36,6 @@
 
 #include <mrpt/utils/CEnhancedMetaFile.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CImageFloat.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -149,21 +148,6 @@ void  CEnhancedMetaFile::setPixel( int x, int y, size_t color)
     MRPT_TRY_START;
 
     ((CImage*)m_hdc.get())->setPixel(x,y, color);
-
-    MRPT_TRY_END;
-}
-
-/*---------------------------------------------------------------
-						drawImage
----------------------------------------------------------------*/
-void  CEnhancedMetaFile::drawImage(
-	int								x,
-	int								y,
-	const CImageFloat	&img )
-{
-    MRPT_TRY_START;
-
-    ((CImage*)m_hdc.get())->drawImage(x,y,img);
 
     MRPT_TRY_END;
 }

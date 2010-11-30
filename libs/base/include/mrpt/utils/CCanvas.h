@@ -42,7 +42,6 @@ namespace mrpt
 	namespace utils
 	{
 		class CImage;
-		class CImageFloat;
 
 		/** This virtual class defines the interface of any object accepting drawing primitives on it.
 		 *
@@ -59,7 +58,7 @@ namespace mrpt
 		 *
 		 *  For an example of each font check the <a href="http://www.mrpt.org/Implemented_2D_Fonts">corresponding wiki page</a>.
 		 *
-		 * \sa CImage, CImageFloat
+		 * \sa CImage
 		 */
 		class BASE_IMPEXP CCanvas
 		{
@@ -236,32 +235,6 @@ namespace mrpt
 				int						x,
 				int						y,
 				const utils::CImage	&img,
-				float					rotation,
-				float					scale );
-
-			/** Draws an image as a bitmap at a given position.
-			  * \param x0 The top-left corner x coordinates on this canvas where the image is to be drawn
-			  * \param y0 The top-left corner y coordinates on this canvas where the image is to be drawn
-			  * \param img The image to be drawn in this canvas
-			  * This method actually calls internally to "drawImage" with a "CImage" parameter.
-			  */
-			void  drawImage(
-				int								x,
-				int								y,
-				const utils::CImageFloat	&img );
-
-			/** Draws an image as a bitmap at a given position, with some custom scale and rotation changes.
-			  * \param x0 The top-left corner x coordinates on this canvas where the image is to be drawn
-			  * \param y0 The top-left corner y coordinates on this canvas where the image is to be drawn
-			  * \param rotation The rotation in radians, positive values being anti-clockwise direction, 0 is the normal position.
-			  * \param scale The scale factor, e.g. 2 means twice the original size.
-			  * \param img The image to be drawn in this canvas
-			  * This method actually calls internally to "drawImage" with a "CImage" parameter.
-			  */
-			void  drawImage(
-				int						x,
-				int						y,
-				const utils::CImageFloat	&img,
 				float					rotation,
 				float					scale );
 

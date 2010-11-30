@@ -415,7 +415,7 @@ void Run_KF_SLAM()
         // Replace by absolute values:
         H.Abs();
         CMatrix H2(H); H2.normalize(0,1);
-        CImageFloat   imgF(H2);
+        CImage   imgF(H2, true);
         imgF.saveToFile(OUT_DIR+string("/information_matrix_final.png"));
 
 

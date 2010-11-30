@@ -29,7 +29,6 @@
 #define CFeatureExtraction_H
 
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CImageFloat.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/vision/utils.h>
 #include <mrpt/vision/CFeature.h>

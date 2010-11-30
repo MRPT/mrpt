@@ -554,8 +554,8 @@ void  CMetricMapBuilderICP::saveCurrentEstimationToImage(const std::string &file
 {
 	MRPT_START;
 
-	CImageFloat			imgFl;
-	size_t					nPoses = m_estRobotPath.size();
+	CImage        img;
+	const size_t  nPoses = m_estRobotPath.size();
 
 	ASSERT_( metricMap.m_gridMaps.size()>0 );
 
@@ -564,16 +564,16 @@ void  CMetricMapBuilderICP::saveCurrentEstimationToImage(const std::string &file
 
 	// grid map as bitmap:
 	// ----------------------------------
-	metricMap.m_gridMaps[0]->getAsImage( imgFl );
+	metricMap.m_gridMaps[0]->getAsImage( img );
 
 	// Draw paths (using vectorial plots!) over the EMF file:
 	// -------------------------------------------------
 //	float					SCALE = 1000;
 	CEnhancedMetaFile		EMF( file, 1000 );
 
-	EMF.drawImage( 0,0, imgFl );
+	EMF.drawImage( 0,0, img );
 
-	unsigned int imgHeight = imgFl.getHeight();
+	unsigned int imgHeight = img.getHeight();
 
 	// Path hypothesis:
 	// ----------------------------------

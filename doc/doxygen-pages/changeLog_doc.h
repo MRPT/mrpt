@@ -46,7 +46,7 @@
 			- These examples have been removed: benchmark-matrix, math_iterators_test, matrix_views
 		- Deleted classes:
 			- mrpt::slam::CConsistentObservationAlignment: It implemented the Lu & Milios algorithm, now superseded by graph-slam methods. See the mrpt::graphslam namespace.
-			- (TODO) mrpt::utils::CImageFloat: For real images with float pixels, it's better to directly use OpenCV. For matrices, there're many other matrix classes better suited for that.
+			- mrpt::utils::CImageFloat: For real images with float pixels, it's better to directly use OpenCV. For matrices, there're many other matrix classes better suited for that. There is now also a new explicit constructor in mrpt::utils::CImage able of converting matrices into images, covering the possibly unique utility of the deleted class.
 		- Changes in classes:
 			- mrpt::gui::CDisplayWindow::showImageAndPoints() now also displays the index of the feature (if required).
 			- mrpt::vision::CFeature now has new members:

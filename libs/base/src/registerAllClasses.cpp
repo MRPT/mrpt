@@ -56,10 +56,6 @@ void registerAllClasses_mrpt_base()
 	registerClass( CLASS_ID( CImage ) );
 	registerClassCustomName( "CMRPTImage", CLASS_ID( CImage ) );
 
-//   Hack to enable compatibility with an older name of this class:
-	registerClass( CLASS_ID( CImageFloat) );
-	registerClassCustomName( "CMRPTImageFloat", CLASS_ID( CImageFloat ) );
-
 	registerClass( CLASS_ID( CSimpleDatabase ) );
 	registerClass( CLASS_ID( CSimpleDatabaseTable ) );
 	registerClass( CLASS_ID( CPropertiesValuesList ) );

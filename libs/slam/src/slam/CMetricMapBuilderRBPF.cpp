@@ -367,26 +367,16 @@ void  CMetricMapBuilderRBPF::drawCurrentEstimationToImage( utils::CCanvas *img )
 				1,
 				true);
 	}
-	{
-		CImageFloat *obj = dynamic_cast<CImageFloat*>( img );
-		if (obj)
-		{
-			currentMetricMapEstimation->m_gridMaps[0]->getAsImage( *obj, true );
-			alreadyCopiedImage = true;
-			imgHeight = obj->getHeight();
-		}
-	}
-
 	if (!alreadyCopiedImage)
 	{
-		CImageFloat			imgFl;
+		CImage imgGrid;
 
 		// grid map as bitmap:
 		// ----------------------------------
-		currentMetricMapEstimation->m_gridMaps[0]->getAsImage( imgFl );
+		currentMetricMapEstimation->m_gridMaps[0]->getAsImage( imgGrid );
 
-		img->drawImage( 0,0, imgFl );
-		imgHeight = imgFl.getHeight();
+		img->drawImage( 0,0, imgGrid );
+		imgHeight = imgGrid.getHeight();
 	}
 
 	int		x1=0,x2=0,y1=0,y2=0;
@@ -450,7 +440,7 @@ void  CMetricMapBuilderRBPF::saveCurrentEstimationToImage(const std::string &fil
 	}
 	else
 	{
-		CImageFloat		img(1,1);
+		CImage  img(1,1,  CH_GRAY );
 		drawCurrentEstimationToImage( &img );
 		img.saveToFile(file);
 	}

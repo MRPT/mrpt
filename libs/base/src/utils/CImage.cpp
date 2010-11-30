@@ -30,7 +30,6 @@
 
 
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CImageFloat.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/utils/CFileInputStream.h>
@@ -470,19 +469,6 @@ CImage::CImage( const CImage &o ) :
 }
 
 /*---------------------------------------------------------------
-						Copy/Transform constructor
- ---------------------------------------------------------------*/
-CImage::CImage( const CImageFloat &o ) :
-	img(NULL),
-	m_imgIsReadOnly(false),
-	m_imgIsExternalStorage(false)
-{
-	MRPT_START;
-	*this = o;
-	MRPT_END;
-}
-
-/*---------------------------------------------------------------
 						Copy operator
  ---------------------------------------------------------------*/
 CImage& CImage::operator = (const CImage& o)
@@ -583,71 +569,6 @@ void CImage::copyFastFrom( CImage &o )
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 
-	MRPT_END;
-}
-
-/*---------------------------------------------------------------
-						Copy operator
- ---------------------------------------------------------------*/
-CImage& CImage::operator = (const CImageFloat& o)
-{
-	MRPT_START;
-
-#if MRPT_HAS_OPENCV
-	bool	I_was_color;
-
-	if (img)
-			I_was_color = isColor();
-	else	I_was_color = false;
-
-	releaseIpl();
-	m_imgIsExternalStorage=false;
-	m_imgIsReadOnly=false;
-
-
-	unsigned int nRows = o.m_height;
-	unsigned int nCols = o.m_width;
-
-	// New image:
-	changeSize( nCols, nRows, I_was_color? 3:1, true );
-
-	// Copy contents:
-	if (!isColor())
-	{
-		for (unsigned int row=0;row<nRows;row++)
-		{
-			unsigned char	*ptrDest = (unsigned char*) & ((IplImage*)img)->imageData[ row * ((IplImage*)img)->widthStep ];
-			float			*ptrSrc  = o.m_img + row * o.m_width;
-
-			for (unsigned int col=0;col<nCols;col++)
-			{
-				short  s = (short)(255*(*ptrSrc++));
-				(*ptrDest++) = s<0 ? ((unsigned char)(255+s)):((unsigned char)s);
-			}
-		}
-	}
-	else
-	{
-		for (unsigned int row=0;row<nRows;row++)
-		{
-			unsigned char	*ptrDest = (unsigned char*) &((IplImage*)img)->imageData[ row * ((IplImage*)img)->widthStep ];
-			float			*ptrSrc  = o.m_img + row * o.m_width;
-
-			for (unsigned int col=0;col<nCols;col++)
-			{
-				short  s = (short)(255*(*ptrSrc++));
-				unsigned char c = s<0 ? ((unsigned char)(255+s)):((unsigned char)s);
-				(*ptrDest++) = c;
-				(*ptrDest++) = c;
-				(*ptrDest++) = c;
-			}
-		}
-	}
-#else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
-#endif
-
-	return *this;
 	MRPT_END;
 }
 
@@ -2060,79 +1981,6 @@ void  CImage::getAsMatrix(
 	MRPT_END;
 #endif
 }
-
-/*---------------------------------------------------------------
-						setFromMatrix
- ---------------------------------------------------------------*/
-void CImage::setFromMatrix(const mrpt::math::CMatrixDouble &m, bool matrix_is_normalized)
-{
-#if MRPT_HAS_OPENCV
-	MRPT_START
-	makeSureImageIsLoaded();   // For delayed loaded images stored externally
-	ASSERT_(img);
-
-	const size_t lx = m.getColCount();
-	const size_t ly = m.getRowCount();
-	this->changeSize(lx,ly,1,true);
-
-	if (matrix_is_normalized)
-	{  // Matrix: [0,1]
-		for (size_t y=0;y<ly;y++)
-		{
-			unsigned char	*pixels = this->get_unsafe(0,y,0);
-			for (size_t x=0;x<lx;x++)
-				(*pixels++) = static_cast<unsigned char>( m.get_unsafe(y,x) * 255  );
-		}
-	}
-	else
-	{  // Matrix: [0,255]
-		for (size_t y=0;y<ly;y++)
-		{
-			unsigned char	*pixels = this->get_unsafe(0,y,0);
-			for (size_t x=0;x<lx;x++)
-				(*pixels++) = static_cast<unsigned char>( m.get_unsafe(y,x) );
-		}
-	}
-	MRPT_END
-#endif
-}
-
-/*---------------------------------------------------------------
-						setFromMatrix
- ---------------------------------------------------------------*/
-void CImage::setFromMatrix(const mrpt::math::CMatrixFloat &m, bool matrix_is_normalized)
-{
-#if MRPT_HAS_OPENCV
-	MRPT_START
-	makeSureImageIsLoaded();   // For delayed loaded images stored externally
-	ASSERT_(img);
-
-	const size_t lx = m.getColCount();
-	const size_t ly = m.getRowCount();
-	this->changeSize(lx,ly,1,true);
-
-	if (matrix_is_normalized)
-	{  // Matrix: [0,1]
-		for (size_t y=0;y<ly;y++)
-		{
-			unsigned char	*pixels = this->get_unsafe(0,y,0);
-			for (size_t x=0;x<lx;x++)
-				(*pixels++) = static_cast<unsigned char>( m.get_unsafe(y,x) * 255 );
-		}
-	}
-	else
-	{  // Matrix: [0,255]
-		for (size_t y=0;y<ly;y++)
-		{
-			unsigned char	*pixels = this->get_unsafe(0,y,0);
-			for (size_t x=0;x<lx;x++)
-				(*pixels++) = static_cast<unsigned char>( m.get_unsafe(y,x) );
-		}
-	}
-	MRPT_END
-#endif
-}
-
 
 /*---------------------------------------------------------------
 						cross_correlation_FFT

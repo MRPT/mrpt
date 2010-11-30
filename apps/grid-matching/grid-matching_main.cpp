@@ -82,7 +82,6 @@ unsigned int N_ITERS		= 1;
 void do_grid_align()
 {
 	CImage				img1,img2;
-	CImageFloat			imgf1,imgf2;
 
 	randomGenerator.randomize();
 
@@ -398,8 +397,8 @@ void do_grid_align()
 					if (SAVE_SOG_ALL_MAPS_OVERLAP_HYPOTHESES)
 					{
 						CPosePDFSOG::iterator	it;
-						size_t								nNode;
-						CImageFloat						imgGrid1, imgCanvas;
+						size_t	nNode;
+						CImage	imgGrid1, imgCanvas;
 						grid1->resizeGrid( min(grid1->getXMin(),-60.0f), max(grid1->getXMax(),60.0f), min(-40.0f,grid1->getYMin()), max(30.0f,grid1->getYMax()) );
 						grid1->getAsImage( imgGrid1, true );
 						int			imgGrid1LY = imgGrid1.getHeight();

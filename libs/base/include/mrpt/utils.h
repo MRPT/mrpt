@@ -60,7 +60,6 @@
 #include <mrpt/utils/CEnhancedMetaFile.h>
 #include <mrpt/utils/CCanvas.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CImageFloat.h>
 #include <mrpt/utils/CMappedImage.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>

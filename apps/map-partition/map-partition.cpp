@@ -200,12 +200,12 @@ void Test()
 	{
 		gui::CDisplayWindow		win("Adjacency matrix");
 		gui::CDisplayWindow		win2(" Rearranged adjacency matrix");
-		CImageFloat		imgFl( A );
-		CImageFloat		imgFl2( B );
-		imgFl.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_BEFORE.png");
-		imgFl2.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_AFTER.png");
-		win.showImage( imgFl );
-		win2.showImage( imgFl2 );
+		CImage	img( A, true /* normalized in range [0,1] */ );
+		CImage	img2( B, true /* normalized in range [0,1] */ );
+		img.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_BEFORE.png");
+		img2.saveToFile("MAP-PARTITION_RESULTS/ADJ_MATRIX_AFTER.png");
+		win.showImage( img );
+		win2.showImage( img2 );
 		win.setPos(20,20);
 		win2.setPos((int)(40+A.getColCount()),20);
 		cout << "Press any key to continue..." << endl;

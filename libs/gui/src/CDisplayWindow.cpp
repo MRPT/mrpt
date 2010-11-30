@@ -32,7 +32,6 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CImageFloat.h>
 
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>

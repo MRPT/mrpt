@@ -171,97 +171,57 @@ namespace slam
 		  */
 		struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
 		{
-			/** Default values loader:
-			  */
-			TInsertionOptions();
+			TInsertionOptions();	//!< Default values loader
 
-			/** See utils::CLoadableOptions
-			  */
+			/** See utils::CLoadableOptions */
 			void  loadFromConfigFile(
 				const mrpt::utils::CConfigFileBase  &source,
 				const std::string &section);
 
-			/** See utils::CLoadableOptions
-			  */
-			void  dumpToTextStream(CStream	&out) const;
+			void  dumpToTextStream(CStream	&out) const; //!< See utils::CLoadableOptions
 
-			/** The sigma of the "Parzen"-kernel Gaussian
-			  */
-			float	sigma;
+			/** @name For all mapping methods
+			    @{ */
+			uint16_t sensorType;	//!< The sensor type for the gas concentration map (0x0000 ->mean of all installed sensors, 0x2600, 0x6810, ...)
+			/** @} */
 
-			/** The cutoff radius for updating cells.
-			  */
-			float	cutoffRadius;
+			/** @name Kernel methods (mrKernelDM, mrKernelDMV)
+			    @{ */
+			float	sigma;	//!< The sigma of the "Parzen"-kernel Gaussian
+			float	cutoffRadius;	//!< The cutoff radius for updating cells.
+            float	R_min,R_max;	//!< Limits for normalization of sensor readings.
+			double	dm_sigma_omega;	//!< [DM/DM+V methods] The scaling parameter for the confidence "alpha" values (see the IROS 2009 paper; see CGasConcentrationGridMap2D) */
+			/** @} */
 
-			/** Limits for normalization of sensor readings.
-			  */
-            float	R_min,R_max;
-			float	VoltageDivider_Res;
+			/** @name Kalman-filter methods (mrKalmanFilter, mrKalmanApproximate)
+			    @{ */
+			float	KF_covSigma;	//!< The "sigma" for the initial covariance value between cells (in meters).
+			float	KF_initialCellStd;	//!< The initial standard deviation of each cell's concentration (will be stored both at each cell's structure and in the covariance matrix as variances in the diagonal) (in normalized concentration units).
+			float	KF_observationModelNoise;	//!< The sensor model noise (in normalized concentration units).
+			float	KF_defaultCellMeanValue;	//!< The default value for the mean of cells' concentration.
+			uint16_t	KF_W_size;	//!< [mrKalmanApproximate] The size of the window of neighbor cells.
+			/** @} */
 
-			/** [KF model] The "sigma" for the initial covariance value between cells (in meters).
-			  */
-			float	KF_covSigma;
+			/** @name Parameters of the "MOS model"
+			    @{ */
+			bool useMOSmodel;	//!< If true use MOS model before map algorithm
 
-			/** [KF model] The initial standard deviation of each cell's concentration (will be stored both at each cell's structure and in the covariance matrix as variances in the diagonal) (in normalized concentration units).
-			  */
-			float	KF_initialCellStd;
+			float	tauR;	//!< Tau values for the rise sensor's phases.
+			float	tauD;	//!< Tau values for the decay (tauD) sensor's phases.
 
-			/** [KF model] The sensor model noise (in normalized concentration units).
-			  */
-			float	KF_observationModelNoise;
+			uint16_t lastObservations_size;	//!< The number of observations to keep in m_lastObservations
+			size_t	winNoise_size;	//!< The number of observations used to reduce noise on signal.
+			uint16_t	decimate_value;	//!< The decimate frecuency applied after noise filtering
 
-			/** [KF model] The default value for the mean of cells' concentration.
-			  */
-			float	KF_defaultCellMeanValue;
-
-			/** [KF2 algorithm] The size of the window of neighbor cells. */
-			uint16_t	KF_W_size;
-
-			/** The sensor type for the gas concentration map (0x0000 ->mean of all installed sensors, 0x2600, 0x6810, ...)
-			  */
-			uint16_t	KF_sensorType;
-
-			/** [useMOSmodel] Tau values for the rise (tauR) and decay (tauD) sensor's phases.
-			*/
-			float	tauR;
-			float	tauD;
-
-			/** [useMOSmodel] The number of observations to keep in m_lastObservations
-			  */
-			uint16_t lastObservations_size;
-
-			/** [useMOSmodel] The number of observations used to reduce noise on signal.
-			  */
-			size_t	winNoise_size;
-
-			/** [useMOSmodel] The decimate frecuency applied after noise filtering
-			  */
-			uint16_t	decimate_value;
-
-			/** [useMOSmodel] Measured values of K= 1/tauD for different volatile concentrations
-			  */
-			vector_float calibrated_tauD_voltages;
+			vector_float calibrated_tauD_voltages;	//!< Measured values of K= 1/tauD for different volatile concentrations
 			vector_float calibrated_tauD_values;
 
-			/** [useMOSmodel] Measured values of the delay (memory effect) for different robot speeds
-			  */
-			vector_float calibrated_delay_RobotSpeeds;
+			vector_float calibrated_delay_RobotSpeeds;	//!< Measured values of the delay (memory effect) for different robot speeds
 			vector_float calibrated_delay_values;
 
-			/** [useMOSmodel] id for the enose used to generate this map (must be < gasGrid_count)
-			  */
-			uint16_t enose_id;
-
-			/** [useMOSmodel] If true save generated gas map as a log file
-			  */
-			bool save_maplog;
-
-			/** [useMOSmodel] If true use MOS model before map algorithm
-				*/
-			bool useMOSmodel;
-
-			/** [DM/DM+V methods] The scaling parameter for the confidence "alpha" values (see the IROS 2009 paper; see CGasConcentrationGridMap2D) */
-			double  dm_sigma_omega;
+			uint16_t enose_id;	//!< id for the enose used to generate this map (must be < gasGrid_count)
+			bool save_maplog;	//!< If true save generated gas map as a log file
+			/** @} */ // end: Parameters of the "MOS model"
 
 		} insertionOptions;
 

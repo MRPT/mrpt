@@ -218,7 +218,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 			//auxWin = CDisplayWindowPlotsPtr( new CDisplayWindowPlots("Individual corr.") );
 			std::cerr << "Warning: options.debug_show_corrs has no effect since MRPT 0.9.1\n";
 		}
-			
+
 
 		for (size_t idx1=0;idx1<nLM1;idx1++)
 		{
@@ -294,7 +294,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				CMatrixFloat	descriptor1;
 				lm1->landmarks.get(it->first)->features[0]->getFirstDescriptorAsMatrix(descriptor1);
 
-				im1 = CImageFloat( descriptor1 );
+				im1 = CImage( descriptor1, true );
 
 				const size_t FEAT_W = im1.getWidth();
 				const size_t FEAT_H = im1.getHeight();
@@ -315,7 +315,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 					CMatrixFloat	descriptor2;
 					lm2->landmarks.get( *it_j )->features[0]->getFirstDescriptorAsMatrix(descriptor2);
-					im2 = CImageFloat( descriptor2 );
+					im2 = CImage( descriptor2, true );
 					img_compose.drawImage(10+FEAT_W,5 + j*(FEAT_H+5), im2 );
 				}
 				fil+=".png";
@@ -323,18 +323,6 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 			} // end for map
 
 		}
-
-#if 0
-		{
-			CDisplayWindow	win1;
-			CORR.adjustRange();
-			CImageFloat	imgCorr(CORR);
-			imgCorr.saveToFile("__debug_corr_mat.png");
-			win1.showImage( imgCorr );
-			win1.waitForKey();
-		}
-#endif
-
 
 		// ------------------------------------------------------------------
 		// Create the list of correspondences from the lists: idxs1 & idxs2
@@ -1023,7 +1011,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
 
 #ifdef CORRELATION_SHOW_DEBUG
 			outCrossCorr.adjustRange(0,1);
-			CImageFloat	aux( outCrossCorr );
+			CImage	aux( outCrossCorr, true );
 			win->showImage(aux);
 			win2->showImage(map2_img);
 			mrpt::system::sleep(5);
@@ -1038,8 +1026,8 @@ CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
 	}
 
 	bestCrossCorr.normalize(0,1);
-	CImageFloat	aux( bestCrossCorr );
-	aux.saveToFile("_debug_best_corr.bmp");
+	CImage aux( bestCrossCorr, true );
+	aux.saveToFile("_debug_best_corr.png");
 
 #ifdef CORRELATION_SHOW_DEBUG
 	delete win;
