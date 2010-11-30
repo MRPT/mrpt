@@ -133,8 +133,9 @@ namespace mrpt
 		inline void resize(const size_t N) { Base::derived().conservativeResize(N); }
 		/** Reset the vector to a 0-length */
 		inline void clear() { *this = dynamicsize_vector<T>(); }
+		/** DOES NOTHING (it's here for backward compatibility) */
+		inline void reserve(size_t dummy_size) { }
 	};
-
 
 	typedef dynamicsize_vector<float>  vector_float;
 	typedef dynamicsize_vector<double> vector_double;
