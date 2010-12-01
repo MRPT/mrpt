@@ -85,9 +85,7 @@ void TestImageConversion()
 
 	CImage			imgSmall( img );
 	CImage			imgSmall2( imgSmall.scaleHalf() );
-	CImage			imgSmall3( imgSmall2.grayscale() );
-
-	CImageFloat		imgGray; imgGray = imgSmall3;
+	CImage			imgGray( imgSmall2.grayscale() );
 
 	// Test some draw capabilities:
 	// ---------------------------------

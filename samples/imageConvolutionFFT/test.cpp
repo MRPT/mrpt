@@ -116,7 +116,7 @@ void TestImageConvolutionFFT()
 
 	res_R.adjustRange(0,1);
 
-	CImageFloat		imgR(res_R);
+	CImage imgR(res_R, true);
 	winR.showImage(imgR);
 	winR.waitForKey();
 

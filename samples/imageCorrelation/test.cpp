@@ -106,8 +106,8 @@ void TestImageFFT()
 	printf("Peak found at (%u,%u)=%f\n",(unsigned)u,(unsigned)v,valMaxF);
 
 	imgCorr *= 1.0f/valMaxF;
-	CImageFloat		imFl(imgCorr);
-	imFl.saveToFile("_OUT_CORRELATION_FFT.BMP");
+	CImage	imFl(imgCorr, true);
+	imFl.saveToFile("_OUT_CORRELATION_FFT.png");
 
 
 	// Repeat using OpenCV correlation:
