@@ -41,11 +41,10 @@ namespace math
 {
 	/** An implementation of the Levenberg-Marquardt algorithm for least-square minimization.
 	 *
-	 *  Refer to the <a href="http://www.mrpt.org/Levenberg%E2%80%93Marquardt_algorithm">wiki page</a> for more details on the algorithm and usage.
+	 *  Refer to this <a href="http://www.mrpt.org/Levenberg%E2%80%93Marquardt_algorithm">page</a> for more details on the algorithm and its usage.
 	 *
-	 *  The parameters of the template are:
-	 *   - NUMTYPE: The numeric type for all the operations (float, double, or long double)
-	 *   - USERPARAM: The type of the "y" input to the user supplied evaluation functor. Default type is a vector of NUMTYPE.
+	 * \tparam NUMTYPE The numeric type for all the operations (float, double, or long double)
+	 * \tparam USERPARAM The type of the "y" input to the user supplied evaluation functor. Default type is a vector of NUMTYPE.
 	 */
 	template <typename VECTORTYPE = mrpt::vector_double, class USERPARAM = VECTORTYPE >
 	class CLevenbergMarquardtTempl : public mrpt::utils::CDebugOutputCapable
@@ -72,9 +71,7 @@ namespace math
 			CMatrixTemplateNumeric<NUMTYPE>	path;	//!< Each row is the optimized value at each iteration.
 
 			/** This matrix can be used to obtain an estimate of the optimal parameters covariance matrix:
-			  *
 			  *  \f[ COV = H M H^\top \f]
-			  *
 			  *  With COV the covariance matrix of the optimal parameters, H this matrix, and M the covariance of the input (observations).
 			  */
  			//CMatrixTemplateNumeric<NUMTYPE> H;
@@ -146,8 +143,8 @@ namespace math
 
 			if (returnPath)	{
 				out_info.path.setSize(maxIter,N+1);
-				out_info.path.insertRow(iter,x);
-			}	else out_info.path.setSize(0,0);
+				out_info.path.block(iter,0,1,N) = x.transpose();
+			}	else out_info.path = Eigen::Matrix<NUMTYPE,Eigen::Dynamic,Eigen::Dynamic>(); // Empty matrix
 
 			while (!found && ++iter<maxIter)
 			{
@@ -183,11 +180,9 @@ namespace math
 					VECTORTYPE	tmp(h_lm);
 					tmp *= lambda;
 					tmp -= g;
-					tmp*=h_lm;
+					tmp.array() *=h_lm.array();
 					double denom = tmp.sum();
 					double l = (F_x - F_xnew) / denom;
-
-					//cout << "l:" << l << endl << tmp;
 
 					if (l>0) // There is an improvement:
 					{
@@ -215,7 +210,7 @@ namespace math
 
 
 					if (returnPath)	{
-						out_info.path.insertRow(iter,x);
+						out_info.path.block(iter,0,1,x.size()) = x.transpose();
 						out_info.path(iter,x.size()) = F_x;
 					}
 				}

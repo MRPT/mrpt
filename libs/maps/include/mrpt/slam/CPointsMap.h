@@ -131,54 +131,21 @@ namespace slam
 		  */
 		 struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
 		 {
-			/** Initilization of default parameters
-			 */
+			/** Initilization of default parameters */
 			TInsertionOptions( );
-			virtual ~TInsertionOptions() {}
-
-			/** See utils::CLoadableOptions
-			  */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase  &source,
-				const std::string &section);
-
-			/** See utils::CLoadableOptions
-			  */
+			/** See utils::CLoadableOptions */
+			void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source,const std::string &section);
+			/** See utils::CLoadableOptions */
 			void  dumpToTextStream(CStream	&out) const;
 
-
-			/** The minimum distance between points (in 3D): If two points are too close, one of them is not inserted into the map. Default is 0.02 meters.
-			  */
-			float	minDistBetweenLaserPoints;
-
-			/** Applicable to "loadFromRangeScan" only! If set to false, the points from the scan are loaded, clearing all previous content. Default is false.
-			  */
-			bool	addToExistingPointsMap;
-
-			/** If set to true, far points (<1m) are interpolated with samples at "minDistSqrBetweenLaserPoints" intervals (Default is false).
-			  */
-			bool	also_interpolate;
-
-			/** If set to false (default=true) points in the same plane as the inserted scan and inside the free space, are erased: i.e. they don't exist yet.
-			  */
-			bool	disableDeletion;
-
-			/** If set to true (default=false), inserted points are "fused" with previously existent ones. This shrink the size of the points map, but its slower.
-			  */
-			bool	fuseWithExisting;
-
-			/** If set to true, only HORIZONTAL (in the XY plane) measurements will be inserted in the map (Default value is false, thus 3D maps are generated).
-			  * \sa	horizontalTolerance
-			  */
-			bool	isPlanarMap;
-
-			/** The tolerance in rads in pitch & roll for a laser scan to be considered horizontal, considered only when isPlanarMap=true (default=0).
-			  */
-			float	horizontalTolerance;
-
-            /** The maximum distance between two points to interpolate between them (ONLY when also_interpolate=true)
-			  */
-			float	maxDistForInterpolatePoints;
+			float   minDistBetweenLaserPoints;   //!< The minimum distance between points (in 3D): If two points are too close, one of them is not inserted into the map. Default is 0.02 meters.
+			bool    addToExistingPointsMap;      //!< Applicable to "loadFromRangeScan" only! If set to false, the points from the scan are loaded, clearing all previous content. Default is false.
+			bool    also_interpolate;            //!< If set to true, far points (<1m) are interpolated with samples at "minDistSqrBetweenLaserPoints" intervals (Default is false).
+			bool    disableDeletion;             //!< If set to false (default=true) points in the same plane as the inserted scan and inside the free space, are erased: i.e. they don't exist yet.
+			bool    fuseWithExisting;            //!< If set to true (default=false), inserted points are "fused" with previously existent ones. This shrink the size of the points map, but its slower.
+			bool    isPlanarMap;                 //!< If set to true, only HORIZONTAL (in the XY plane) measurements will be inserted in the map (Default value is false, thus 3D maps are generated). \sa	horizontalTolerance
+			float   horizontalTolerance;	     //!< The tolerance in rads in pitch & roll for a laser scan to be considered horizontal, considered only when isPlanarMap=true (default=0).
+			float   maxDistForInterpolatePoints; //!< The maximum distance between two points to interpolate between them (ONLY when also_interpolate=true)
 
    		 };
 
@@ -378,7 +345,7 @@ namespace slam
 			ys.resize(Nout);
 			zs.resize(Nout);
 			size_t idx_in, idx_out;
-			for (idx_in=0,idx_out=0;idx_out<Nout;++idx_in,++idx_out)
+			for (idx_in=0,idx_out=0;idx_out<Nout;idx_in+=decimation,++idx_out)
 			{
 				xs[idx_out]=x[idx_in];
 				ys[idx_out]=y[idx_in];

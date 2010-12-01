@@ -403,7 +403,7 @@ public:
 		for (Index i=0;i<cols();i++)
 		{
 			outMeanVector[i]= col(i).array().sum() * N_inv;
-			outStdVector[i] = (col(i).array()-outMeanVector[i]).sum() * N_;
+			outStdVector[i] = std::sqrt( (col(i).array()-outMeanVector[i]).square().sum() * N_ );
 		}
 	}
 
@@ -420,7 +420,7 @@ public:
 		if (N==0) throw std::runtime_error("meanAndStdAll: Empty container.");
 		const double N_ = unbiased_variance ? (N>1 ? 1.0/(N-1) : 1.0) : 1.0/N;
 		outMean = derived().array().sum()/static_cast<double>(size());
-		outStd  = (this->array() - outMean).sum()*N_;
+		outStd  = std::sqrt( (this->array() - outMean).square().sum()*N_);
 	}
 
 	/** Insert matrix "m" into this matrix at indices (r,c), that is, (*this)(r,c)=m(0,0) and so on */
