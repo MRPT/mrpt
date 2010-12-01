@@ -115,7 +115,7 @@ namespace mrpt
 		template<typename T>
 		inline std::ostream & operator << (std::ostream & s, const mrpt::dynamicsize_vector<T>& m)
 		{
-			Eigen::IOFormat  fmt; fmt.rowSeparator=""; fmt.matPrefix="["; fmt.matSuffix="]";
+			Eigen::IOFormat  fmt; fmt.rowSeparator=" "; fmt.matPrefix="["; fmt.matSuffix="]";
 			return s << m.format(fmt);
 		}
 
