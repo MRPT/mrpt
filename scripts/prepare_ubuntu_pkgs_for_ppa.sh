@@ -1,7 +1,7 @@
 #!/bin/bash
 # Creates a set of packages for each different Ubuntu distribution, with the 
 # intention of uploading them to: 
-#   https://launchpad.net/~joseluisblancoc/+archive/ppa-mrpt
+#   https://launchpad.net/~joseluisblancoc/+archive/mrpt
 #
 # JLBC, 2010
 
@@ -69,12 +69,12 @@ do
 
 	echo "Now, let's build the source Deb package with 'debuild -S -sa':"
 	cd ..
-#	if [ $IDX == "0" ];
-#	then
+	if [ $IDX == "0" ];
+	then
 		debuild -S -sa
-#	else
-#		debuild -S -sd
-#	fi
+	else
+		debuild -S -sd
+	fi
 	
 	# Make a copy of all these packages:
 	cd ..
