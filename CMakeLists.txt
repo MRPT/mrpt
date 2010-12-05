@@ -313,7 +313,13 @@ ENDIF(BUILD_XSENS)
 
 # Build the XBox Kinect support (via libfreenect)
 # ===================================================
-SET(BUILD_KINECT ON CACHE BOOL "Build support for Xbox Kinect (with embedded libfreenect)")
+IF(MSVC)  # For now Kinect doesn't build in MSVC!
+	SET(BUILD_KINECT_DEF_VAL OFF)
+ELSE(MSVC)
+	SET(BUILD_KINECT_DEF_VAL ON)
+ENDIF(MSVC)
+
+SET(BUILD_KINECT ${BUILD_KINECT_DEF_VAL} CACHE BOOL "Build support for Xbox Kinect (with embedded libfreenect)")
 IF(BUILD_KINECT)
 	# Check deps on Linux/Windows!!!
 	SET(CMAKE_MRPT_HAS_KINECT 0)  # Will be set to 1 only if all conditions are OK
@@ -324,20 +330,30 @@ IF(BUILD_KINECT)
 			MESSAGE(SEND_ERROR "pkg-config is required! Please install it.")
 		ELSE(NOT PKG_CONFIG_FOUND)
 			PKG_CHECK_MODULES(PKG_LIBUSB10 libusb-1.0)
-#			PKG_CHECK_MODULES(PKG_LIBXI xi)
-#			PKG_CHECK_MODULES(PKG_LIBXMU xmu)
 
-			IF(PKG_LIBUSB10_FOUND) # AND PKG_LIBXI_FOUND AND PKG_LIBXMU_FOUND)
-				SET(CMAKE_MRPT_HAS_KINECT 1)  # All requisites OK.
-			ELSE(PKG_LIBUSB10_FOUND) # AND PKG_LIBXI_FOUND AND PKG_LIBXMU_FOUND)
+			IF(PKG_LIBUSB10_FOUND)
+				SET(CMAKE_MRPT_HAS_KINECT 1)
+			ELSE(PKG_LIBUSB10_FOUND)
 				MESSAGE(SEND_ERROR "BUILD_KINECT requires libusb-1.0. Install it or disable BUILD_KINECT")
-			ENDIF(PKG_LIBUSB10_FOUND) # AND PKG_LIBXI_FOUND AND PKG_LIBXMU_FOUND)
+			ENDIF(PKG_LIBUSB10_FOUND)
 		ENDIF(NOT PKG_CONFIG_FOUND)
 
 	ELSEIF(WIN32)
 		# Kinect for Win32 ---------
-		MESSAGE(SEND_ERROR "Sorry! Kinect is not supported for Win32 yet! Please, disable BUILD_KINECT.")
-
+		FIND_FILE(LIBUSB10_H "libusb.h")
+		FIND_FILE(LIBUSB10_LIB "libusb-1.0${CMAKE_STATIC_LIBRARY_SUFFIX}")
+		IF (LIBUSB10_H AND LIBUSB10_LIB)
+			get_filename_component(LIBUSB_INCL_DIR "${LIBUSB10_H}" PATH)
+			INCLUDE_DIRECTORIES("${LIBUSB_INCL_DIR}")
+			APPEND_MRPT_LIBS("${LIBUSB10_LIB}")
+			
+			#MESSAGE(STATUS "LIBUSB1.0 HEADER: ${LIBUSB_INCL_DIR}")
+			#MESSAGE(STATUS "LIBUSB1.0 LIB: ${LIBUSB10_LIB}")
+	
+			SET(CMAKE_MRPT_HAS_KINECT 1)
+		ELSE(LIBUSB10_H AND LIBUSB10_LIB)
+			MESSAGE(SEND_ERROR "Kinect needs libusb-1.0: Download it from http://www.libusb.org/wiki/windows_backend and set LIBUSB10_H and LIBUSB10_LIB pointing to libusb.h and libusb-1.0${CMAKE_STATIC_LIBRARY_SUFFIX}")
+		ENDIF(LIBUSB10_H AND LIBUSB10_LIB)
 	ELSE(UNIX)
 		MESSAGE(SEND_ERROR "Sorry! Kinect is supported on Unix or Win32 only. Please, disable BUILD_KINECT.")
 	ENDIF(UNIX)

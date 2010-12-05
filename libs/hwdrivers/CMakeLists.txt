@@ -21,8 +21,8 @@ IF(CMAKE_MRPT_HAS_KINECT)
 		"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/*.h"
 		)
 	LIST(APPEND hwdrivers_EXTRA_SRCS_NAME 
-		"XBox_Kinect"
-		"XBox_Kinect"
+		"kinect"
+		"kinect"
 		)
 ENDIF(CMAKE_MRPT_HAS_KINECT)
 
@@ -66,13 +66,8 @@ ENDIF(CMAKE_MRPT_HAS_xSENS)
 IF(CMAKE_MRPT_HAS_KINECT)
 	# Ignore precompiled headers in KINECT sources:
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-		set_source_files_properties(${XBox_Kinect} PROPERTIES COMPILE_FLAGS "/Y-")
+		set_source_files_properties(${kinect_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
 	ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-
-	# Avoid some annoying warnings:
-#	IF (CMAKE_COMPILER_IS_GNUCXX)
-#		set_source_files_properties(${XBox_Kinect} PROPERTIES COMPILE_FLAGS "-Wno-variadic-macros")
-#	ENDIF (CMAKE_COMPILER_IS_GNUCXX)
 ENDIF(CMAKE_MRPT_HAS_KINECT)
 
 # build with link on Phidget21 lib
