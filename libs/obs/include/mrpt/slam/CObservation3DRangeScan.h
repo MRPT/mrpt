@@ -56,13 +56,19 @@ namespace slam
 	 *
 	 *  The 2D images and matrices are stored as common images, with an up->down rows order and left->right, as usual.
 	 *   Optionally, the intensity and confidence channels can be set to delayed-load images for off-rawlog storage so it saves
-	 *   memory by having loaded in memory just the needed images. See the methods load() and unload(). 
+	 *   memory by having loaded in memory just the needed images. See the methods load() and unload().
 	 *  Due to the intensive storage requirements of this kind of observations, this observation is the only one in MRPT
 	 *   for which it's recommended to always call "load()" and "unload()" before and after using the observation, *ONLY* when
 	 *   the observation was read from a rawlog dataset, in order to make sure that all the externally stored data fields are
 	 *   loaded and ready in memory.
 	 *
-	 *  A class that grabs observations of this type is mrpt::hwdrivers::CSwissRanger3DCamera
+	 *  Classes that grab observations of this type are:
+	 *		- mrpt::hwdrivers::CSwissRanger3DCamera
+	 *		- mrpt::hwdrivers::CKinect
+	 *
+	 *  There are two sets of calibration parameters (in some cameras, like SwissRanger, both are the same):
+	 *		- cameraParams: Projection parameters of the depth camera.
+	 *		- cameraParamsIntensity: Projection parameters of the intensity (gray-level or RGB) camera.
 	 *
 	 *  \note Starting at serialization version 2 (MRPT 0.9.1+), the confidence channel is stored as an image instead of a matrix to optimize memory and disk space.
 	 *  \note Starting at serialization version 3 (MRPT 0.9.1+), the 3D point cloud and the rangeImage can both be stored externally to save rawlog space.
@@ -76,10 +82,10 @@ namespace slam
 
 	protected:
 		bool			m_points3D_external_stored; //!< If set to true, m_points3D_external_file is valid.
-		std::string		m_points3D_external_file;   //!< 3D points are in CImage::IMAGES_PATH_BASE+<this_file_name> 
+		std::string		m_points3D_external_file;   //!< 3D points are in CImage::IMAGES_PATH_BASE+<this_file_name>
 
 		bool			m_rangeImage_external_stored; //!< If set to true, m_rangeImage_external_file is valid.
-		std::string		m_rangeImage_external_file;   //!< rangeImage is in CImage::IMAGES_PATH_BASE+<this_file_name> 
+		std::string		m_rangeImage_external_file;   //!< rangeImage is in CImage::IMAGES_PATH_BASE+<this_file_name>
 
 	public:
 		CObservation3DRangeScan( );				//!< Default constructor
@@ -92,11 +98,11 @@ namespace slam
 		  *  If all the data were alredy loaded or this object has no externally stored data fields, calling this method has no effects.
 		  * \sa unload
 		  */
-		virtual void load() const;   
+		virtual void load() const;
 		/** Unload all images, for the case they being delayed-load images stored in external files (othewise, has no effect).
 		  * \sa load
 		  */
-		virtual void unload(); 
+		virtual void unload();
 		/** @} */
 
 
@@ -133,12 +139,13 @@ namespace slam
 		// ---------
 
 		bool hasIntensityImage; 			//!< true means the field intensityImage contains valid data
-		mrpt::utils::CImage intensityImage; 	//!< If hasIntensityImage=true, a gray-level intensity image of the same size than "rangeImage"
+		mrpt::utils::CImage intensityImage; 	//!< If hasIntensityImage=true, a color or gray-level intensity image of the same size than "rangeImage"
 
 		bool hasConfidenceImage; 			//!< true means the field confidenceImage contains valid data
 		mrpt::utils::CImage confidenceImage;  //!< If hasConfidenceImage=true, an image with the "confidence" value [range 0-255] as estimated by the capture drivers.
 
-		mrpt::utils::TCamera	cameraParams;	//!< Projection parameters of the camera.
+		mrpt::utils::TCamera	cameraParams;	//!< Projection parameters of the depth camera.
+		mrpt::utils::TCamera	cameraParamsIntensity;	//!< Projection parameters of the intensity (graylevel or RGB) camera.
 
 
 		float  	maxRange;	//!< The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
@@ -162,7 +169,7 @@ namespace slam
 
 		void getZoneAsObs( CObservation3DRangeScan &obs, const unsigned int &r1, const unsigned int &r2, const unsigned int &c1, const unsigned int &c2 );
 
-		/** A Levenberg-Marquart-based optimizer to recover the calibration parameters of a 3D camera given a range (depth) image and the corresponding 3D point cloud. 
+		/** A Levenberg-Marquart-based optimizer to recover the calibration parameters of a 3D camera given a range (depth) image and the corresponding 3D point cloud.
 		  * \param camera_offset The offset (in meters) in the +X direction of the point cloud. It's 1cm for SwissRanger SR4000.
 		  * \return The final average reprojection error per pixel (typ <0.05 px)
 		  */

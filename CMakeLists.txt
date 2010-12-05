@@ -311,6 +311,42 @@ ELSE(BUILD_XSENS)
 	SET(CMAKE_MRPT_HAS_xSENS 0)
 ENDIF(BUILD_XSENS)
 
+# Build the XBox Kinect support (via libfreenect)
+# ===================================================
+SET(BUILD_KINECT ON CACHE BOOL "Build support for Xbox Kinect (with embedded libfreenect)")
+IF(BUILD_KINECT)
+	# Check deps on Linux/Windows!!!
+	SET(CMAKE_MRPT_HAS_KINECT 0)  # Will be set to 1 only if all conditions are OK
+
+	IF(UNIX)
+		# Kinect for Linux ---------
+		IF(NOT PKG_CONFIG_FOUND)
+			MESSAGE(SEND_ERROR "pkg-config is required! Please install it.")
+		ELSE(NOT PKG_CONFIG_FOUND)
+			PKG_CHECK_MODULES(PKG_LIBUSB10 libusb-1.0)
+			PKG_CHECK_MODULES(PKG_LIBXI xi)
+			PKG_CHECK_MODULES(PKG_LIBXMU xmu)
+
+			IF(PKG_LIBUSB10_FOUND AND PKG_LIBXI_FOUND AND PKG_LIBXMU_FOUND)
+				SET(CMAKE_MRPT_HAS_KINECT 1)  # All requisites OK.
+			ELSE(PKG_LIBUSB10_FOUND AND PKG_LIBXI_FOUND AND PKG_LIBXMU_FOUND)
+				MESSAGE(SEND_ERROR "BUILD_KINECT requires libusb-1.0, libxi and libxmu. Install them or disable BUILD_KINECT")
+			ENDIF(PKG_LIBUSB10_FOUND AND PKG_LIBXI_FOUND AND PKG_LIBXMU_FOUND)
+		ENDIF(NOT PKG_CONFIG_FOUND)
+
+	ELSEIF(WIN32)
+		# Kinect for Win32 ---------
+		MESSAGE(SEND_ERROR "Sorry! Kinect is not supported for Win32 yet! Please, disable BUILD_KINECT.")
+
+	ELSE(UNIX)
+		MESSAGE(SEND_ERROR "Sorry! Kinect is supported on Unix or Win32 only. Please, disable BUILD_KINECT.")
+	ENDIF(UNIX)
+
+ELSE(BUILD_KINECT)
+	SET(CMAKE_MRPT_HAS_KINECT 0)
+ENDIF(BUILD_KINECT)
+
+
 # Enable GCC profiling (GCC only)
 # ===================================================
 IF(CMAKE_COMPILER_IS_GNUCXX)
@@ -1963,7 +1999,7 @@ SHOW_CONFIG_LINE("Has OpenGL & GLUT:                      " CMAKE_MRPT_HAS_OPENG
 SHOW_CONFIG_LINE("Has xSENS MTi library (inertial sensor) " CMAKE_MRPT_HAS_xSENS)
 SHOW_CONFIG_LINE("Has libdc1394-2 (FireWire capture)      " CMAKE_MRPT_HAS_LIBDC1394_2)
 SHOW_CONFIG_LINE("Has SwissRanger 3/4000 3D camera        " CMAKE_MRPT_HAS_SWISSRANGE )
-
+SHOW_CONFIG_LINE("Has Xbox Kinect (via libfreenect)       " CMAKE_MRPT_HAS_KINECT)
 
 
 SHOW_CONFIG_LINE_SYSTEM("Has OpenCV (Image manipulation)         " CMAKE_MRPT_HAS_OPENCV "Version: ${MRPT_OPENCV_VERSION}")

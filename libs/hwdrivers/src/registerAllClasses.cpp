@@ -59,5 +59,6 @@ void registerAllClasses_mrpt_hwdrivers()
 	CLMS100Eth::doRegister();
 	CPhidgetInterfaceKitProximitySensors::doRegister();
 	CGyroKVHDSP3000::doRegister();
+	CKinect::doRegister();
 }
 

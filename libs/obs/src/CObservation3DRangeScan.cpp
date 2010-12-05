@@ -58,6 +58,7 @@ CObservation3DRangeScan::CObservation3DRangeScan( ) :
 	hasIntensityImage(false),
 	hasConfidenceImage(false),
 	cameraParams(),
+	cameraParamsIntensity(),
 	maxRange( 5.0f ),
 	sensorPose(),
 	stdError( 0.01f )
@@ -77,7 +78,7 @@ CObservation3DRangeScan::~CObservation3DRangeScan()
 void  CObservation3DRangeScan::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 3;
+		*version = 4;
 	else
 	{
 		// The data
@@ -101,6 +102,7 @@ void  CObservation3DRangeScan::writeToStream(CStream &out, int *version) const
 		out << hasConfidenceImage; if (hasConfidenceImage) out << confidenceImage;
 
 		out << cameraParams; // New in v2
+		out << cameraParamsIntensity; // New in v4
 
 		out << stdError;
 		out << timestamp;
@@ -123,6 +125,7 @@ void  CObservation3DRangeScan::readFromStream(CStream &in, int version)
 	case 1:
 	case 2:
 	case 3:
+	case 4:
 		{
 			uint32_t		N;
 
@@ -176,6 +179,11 @@ void  CObservation3DRangeScan::readFromStream(CStream &in, int version)
 				if (version>=2)
 				{
 					in >> cameraParams;
+
+					if (version>=4)
+						in >> cameraParamsIntensity;
+					else
+						cameraParamsIntensity = cameraParams;
 				}
 			}
 

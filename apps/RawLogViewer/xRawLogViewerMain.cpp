@@ -2291,7 +2291,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 															else cout << " (embedded)." << endl;
 														}
 
-														cout << "Has intensity data? " << (obs->hasIntensityImage ? "YES": "NO");
+														cout << endl << "Has intensity data? " << (obs->hasIntensityImage ? "YES": "NO");
 														if (obs->hasIntensityImage)
 														{
 															if (obs->intensityImage.isExternallyStored())
@@ -2299,7 +2299,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 															else cout << " (embedded)." << endl;
 														}
 
-														cout << "Has confidence data? " << (obs->hasConfidenceImage ? "YES": "NO");
+														cout << endl << "Has confidence data? " << (obs->hasConfidenceImage ? "YES": "NO");
 														if (obs->hasConfidenceImage)
 														{
 															if (obs->confidenceImage.isExternallyStored())
@@ -2307,7 +2307,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 															else cout << " (embedded)." << endl;
 														}
 
-														cout << endl;
+														cout << endl << endl;
 														cout << "Camera calibration parameters:" << endl;
 														{
 															CConfigFileMemory cfg;

@@ -752,7 +752,7 @@ void  CImage::loadFromMemoryBuffer(
 	m_imgIsReadOnly = false;
 	m_imgIsExternalStorage=false;
 
-	if ( ((IplImage*)img)->widthStep == ((IplImage*)img)->width)
+	if ( ((IplImage*)img)->widthStep == ((IplImage*)img)->width * ((IplImage*)img)->nChannels )
 	{
 		// Copy the image data:
 		memcpy( ((IplImage*)img)->imageData,

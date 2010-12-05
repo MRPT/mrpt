@@ -69,5 +69,6 @@
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
+#include <mrpt/hwdrivers/CKinect.h>
 
 #endif

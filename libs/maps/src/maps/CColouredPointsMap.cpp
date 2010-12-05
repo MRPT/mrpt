@@ -447,6 +447,8 @@ void  CColouredPointsMap::loadFromRangeScan(
 
 		const float K_8u = 1.0f/255;
 
+		const bool hasColorIntensityImg = hasValidIntensityImage && rangeScan.intensityImage.isColor();
+
 		// running indices for the image pixels for the gray levels:
 		unsigned int img_idx_x = 0, img_idx_y = 0;
 
@@ -487,6 +489,14 @@ void  CColouredPointsMap::loadFromRangeScan(
 					break;
 				case cmFromIntensityImage:
 					{
+						if (hasColorIntensityImg)
+						{
+							const uint8_t *c= rangeScan.intensityImage.get_unsafe(img_idx_x, img_idx_y, 0);
+							pR= c[2] * K_8u;
+							pG= c[1] * K_8u;
+							pB= c[0] * K_8u;
+						}
+						else
 						if (hasValidIntensityImage)
 						{
 							uint8_t c= *rangeScan.intensityImage.get_unsafe(img_idx_x, img_idx_y, 0);

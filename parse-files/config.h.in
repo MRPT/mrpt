@@ -97,6 +97,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /* do we have MESA Imaging SwissRange 3D camera driver? */
 #define MRPT_HAS_SWISSRANGE       ${CMAKE_MRPT_HAS_SWISSRANGE}
 
+/* do we have support for XBox Kinect? */
+#define MRPT_HAS_KINECT       ${CMAKE_MRPT_HAS_KINECT}
+
 
 /** The file ftdi.h exists (Linux only) */
 #define MRPT_HAS_FTDI             ${CMAKE_MRPT_HAS_FTDI}

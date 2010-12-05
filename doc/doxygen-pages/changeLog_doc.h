@@ -35,6 +35,8 @@
   <h2>Version 0.9.3: (Under development) </h2></a>
 	- <b>Most important changes:</b>
 		- MRPT now relies entirely on Eigen (version 3) for matrix and vector classes.
+		- New hardware supported: 
+			- Xbox Kinect. See mrpt::hwdrivers::CKinect and the documentation therein.
 	- <b>Detailed list of changes:</b>
 		- Changes related to mathematics, matrices and containers and the port to Eigen:
 			- All is now based on the Eigen library, v3. See <a href="http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes" >this page</a> for a more complete description of all the changes and the reasons of this big change.
@@ -58,6 +60,7 @@
 		- Changes in functions:
 			- mrpt::vision::matchFeatures(). Implemented a new method for managing ambiguous matches, now taking into account which of the conflicting matches is the most probable.
 		- New structures/classes:
+			- mrpt::hwdrivers::CKinect: Support for grabbing XBox Kinect. Read the class documentation for more details.
 			- TMultiResDescMatchOptions. Struct containing the options when matching multi-resolution SIFT-like descriptors.
 			- TMultiResDescOptions. Struct containing the options when computing the multi-resolution SIFT-like descriptors.
 			- mrpt::aligned_containers<>: A helper template to ease the declaration of STL containers with the correct Eigen aligned allocators.
