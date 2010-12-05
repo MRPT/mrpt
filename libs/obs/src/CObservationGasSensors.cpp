@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers 
+#include <mrpt/obs.h>   // Precompiled headers
 
 
 
@@ -202,16 +202,19 @@ void CObservationGasSensors::setSensorPose( const CPose3D &newSensorPose )
  */
 
 CObservationGasSensors::CMOSmodel::CMOSmodel():
-		winNoise_size(30),
-		decimate_count(1),
-		decimate_value(6),
-		min_reading(10),
-		lastObservations_size(10),
-		first_incT(true),
-		fixed_incT(0),
-		m_debug_dump(NULL),
-		save_maplog(false)		
-{	
+	winNoise_size(30),
+	decimate_value(6),
+	tauR(),
+	lastObservations_size(10),
+	save_maplog(false),
+	last_Obs(),
+	temporal_Obs(),
+	m_debug_dump(NULL),
+	decimate_count(1),
+	fixed_incT(0),
+	first_incT(true),
+	min_reading(10)
+{
 }
 
 
@@ -224,16 +227,16 @@ CObservationGasSensors::CMOSmodel::~CMOSmodel()
  ---------------------------------------------------------------*/
 bool CObservationGasSensors::CMOSmodel::get_GasDistribution_estimation(float &reading, CPose3D &sensorPose, const mrpt::system::TTimeStamp	&timestamp )
 {
-	try{		
+	try{
 		//Noise filtering
 		noise_filtering(reading, sensorPose, timestamp);
-		
+
 		//Decimate
 		if ( decimate_count != decimate_value ){
 			decimate_count++;
 			return false;
 		}
-		
+
 		//Gas concentration estimation based on FIRST ORDER + NONLINEAR COMPENSATIONS DYNAMICS
 		inverse_MOSmodeling( m_antiNoise_window[winNoise_size/2].reading_filtered, m_antiNoise_window[winNoise_size/2].sensorPose, m_antiNoise_window[winNoise_size/2].timestamp);
 		decimate_count = 1;
@@ -261,15 +264,15 @@ bool CObservationGasSensors::CMOSmodel::get_GasDistribution_estimation(float &re
  ---------------------------------------------------------------*/
 void CObservationGasSensors::CMOSmodel::noise_filtering(const float &reading, const CPose3D &sensorPose, const	mrpt::system::TTimeStamp &timestamp )
 {
-	try{		
+	try{
 		//Store values in the temporal Observation
 		temporal_Obs.reading = reading;
 		temporal_Obs.timestamp = timestamp;
 		temporal_Obs.sensorPose = sensorPose;
 
 		// If first reading from E-nose
-		if ( m_antiNoise_window.empty() ) 
-		{	
+		if ( m_antiNoise_window.empty() )
+		{
 			// use default values
 			temporal_Obs.reading_filtered = reading;
 
@@ -283,7 +286,7 @@ void CObservationGasSensors::CMOSmodel::noise_filtering(const float &reading, co
 		}
 
 		//Average data to reduce noise (Noise Filtering)
-		float partial_sum = 0;	
+		float partial_sum = 0;
 		for (size_t i=0; i<m_antiNoise_window.size(); i++)
 			partial_sum += m_antiNoise_window.at(i).reading;
 
@@ -304,7 +307,7 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &readi
 {
 	try{
 		unsigned int N;	//Memory efect delay
-		
+
 		//update minimum reading
 		if (reading < min_reading)
 			min_reading = reading;
@@ -316,7 +319,7 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &readi
 			double speed_x = sensorPose.x() - last_Obs.sensorPose.x();
 			double speed_y = sensorPose.y() - last_Obs.sensorPose.y();
 			double incT = mrpt::system::timeDifference(last_Obs.timestamp,timestamp);
-			
+
 			//Assure the samples are provided at constant rate (important for the correct gas distribution estimation)
 			if ( (incT >0) & (!first_incT) ){	//not the same sample (initialization of buffers)
 				if (fixed_incT == 0)
@@ -338,12 +341,12 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &readi
 			{
 				last_Obs.k = 1.0/tauR;
 				N = 1;	//Delay effect compensation
-			}		
+			}
 			else //slope<0 -->decay
 			{
 				//start decaying
 				if (last_Obs.k == (float) (1.0/tauR) ){
-					//Use the amplitude of the reading to calculate the tauD time constant for the next decaying phase				
+					//Use the amplitude of the reading to calculate the tauD time constant for the next decaying phase
 					last_Obs.k = 1.0 / mrpt::math::leastSquareLinearFit((reading - min_reading),calibrated_tauD_voltages,calibrated_tauD_values,false);
 				}else{
 					//Do Nothing, keep the same tauD as last observation (we are in the same decaying phase)
@@ -390,13 +393,13 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &readi
 
 
 
-		/* Update m_lastObservations 
+		/* Update m_lastObservations
 		   due to the delay in the sensor response, the gas estimation of the last_Obs may be introduced in any position of m_lastObservations
 		   In order o maintain the time flow, only the last_Obs.estimation is not introduced in order.
 		 */
 
 		//-20 is a dummy value, just to detect a non-valid esimation for this Observation
-		if (m_lastObservations[1].estimation == -20.0){	
+		if (m_lastObservations[1].estimation == -20.0){
 			//Copy right
 			m_lastObservations[1].estimation = m_lastObservations[0].estimation;
 		}
@@ -409,7 +412,7 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &readi
 		m_lastObservations.at(lastObservations_size - N-1).estimation = last_Obs.estimation;
 
 	}catch(exception e){
-		cerr << "**ERROR** " << e.what() << endl;		
+		cerr << "**ERROR** " << e.what() << endl;
 	}
 }
 

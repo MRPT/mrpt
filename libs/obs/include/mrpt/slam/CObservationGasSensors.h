@@ -130,38 +130,22 @@ namespace slam
 						CMOSmodel();
 						~CMOSmodel();
 
-						/** [useMOSmodel] The size of the mobile average window used to reduce noise on sensor reagings.
-						  */
-						size_t	winNoise_size;
+						/** @name MOS-model parameters
+						  *  @{  */
 
-						/** [useMOSmodel] The decimate frecuency applied after noise filtering
-						  */
-						int	decimate_value;
+						size_t        winNoise_size;              //!< The size of the mobile average window used to reduce noise on sensor reagings.
+						int           decimate_value;             //!< [useMOSmodel] The decimate frecuency applied after noise filtering
+						float         tauR;                       //!< Tau value for the rise (tauR) sensor phase.
+						unsigned int  lastObservations_size;      //!< The number of observations to keep in m_lastObservations (Must be > max(delay) )
+						vector_float  calibrated_tauD_voltages;   //!< Calibrated values of K= 1/tauD for different volatile concentrations
+						vector_float  calibrated_tauD_values;     //!< Calibrated values of K= 1/tauD for different volatile concentrations
+						vector_float  calibrated_delay_RobotSpeeds; //!< Calibrated values of the delay for different robot speeds
+						vector_float  calibrated_delay_values;      //!< Calibrated values of the delay for different robot speeds
+						bool          save_maplog;                //!< If true save generated gas map as a log file
 
-						/** [useMOSmodel] Tau value for the rise (tauR) sensor phase.
-						*/
-						float	tauR;
+						/** @} */
 
-						/** [useMOSmodel] The number of observations to keep in m_lastObservations (Must be > max(delay) )
-						  */
-						unsigned int lastObservations_size;
-
-						/** [useMOSmodel] Calibrated values of K= 1/tauD for different volatile concentrations
-						  */
-						vector_float	calibrated_tauD_voltages;
-						vector_float	calibrated_tauD_values;
-
-						/** [useMOSmodel] Calibrated values of the delay for different robot speeds
-						  */
-						vector_float	calibrated_delay_RobotSpeeds;
-						vector_float	calibrated_delay_values;
-
-						/** [useMOSmodel] If true save generated gas map as a log file
-						  */
-						bool save_maplog;
-
-						/** Obtain an estimation of the gas distribution based on raw sensor readings
-						  */
+						/** Obtain an estimation of the gas distribution based on raw sensor readings  */
 						bool get_GasDistribution_estimation(
 							float							&reading,
 							CPose3D							&sensorPose,
@@ -180,29 +164,16 @@ namespace slam
 								float						estimation;
 								float						reading_filtered;
 								float						speed;
-						}last_Obs, temporal_Obs;
+						};
 
-						/** [useMOSmodel] The last N GasObservations, used for the MOS MODEL estimation.
-						  */
-						std::vector<TdataMap> m_lastObservations;
-
-						/** Vector to temporally store and averge readings to reduce noise
-						  */
-						std::vector<TdataMap> m_antiNoise_window;
-
-						/** [useMOSmodel] Ofstream to save to file option "save_maplog"
-						  */
-						std::ofstream			*m_debug_dump;
-
-						/** [useMOSmodel] Decimate value for oversampled enose readings
-						  */
-						uint16_t				decimate_count;
-
-						/** [useMOSmodel] To force e-nose samples to have fixed time increments
-						  */
-						double					fixed_incT;
-						bool					first_incT;
-						float					min_reading;
+						TdataMap              last_Obs, temporal_Obs; //!< The content of each m_lastObservations in the estimation when using the option : MOS_MODEl (useMOSmodel =1)
+						std::vector<TdataMap> m_lastObservations;  //!< The last N GasObservations, used for the MOS MODEL estimation.
+						std::vector<TdataMap> m_antiNoise_window;  //!< Vector to temporally store and averge readings to reduce noise
+						std::ofstream        *m_debug_dump;     //!< Ofstream to save to file option "save_maplog"
+						uint16_t              decimate_count; //!< Decimate value for oversampled enose readings
+						double                fixed_incT;  //!< To force e-nose samples to have fixed time increments
+						bool                  first_incT;  //!< To force e-nose samples to have fixed time increments
+						float                 min_reading;
 
 						/** Estimates the gas concentration based on readings and sensor model
 						  */

@@ -1782,12 +1782,14 @@ int  vision::matchMultiResolutionFeatures(
     vector<int> leftIdx1, leftIdx2, rightIdx1, rightIdx2;
     vector<int> scales1, scales2;
     // Left image
-    int nM1 = matchMultiResolutionFeatures( baseList1, auxList1, leftImage, leftIdx1, leftIdx2, scales1, matchOpts, computeOpts );
+    //int nM1 =
+    matchMultiResolutionFeatures( baseList1, auxList1, leftImage, leftIdx1, leftIdx2, scales1, matchOpts, computeOpts );
     _updateCounter(leftIdx1,baseList1);     //Update counters
     _updateCounter(leftIdx2,auxList1);
 
     // Right image
-    int nM2 = matchMultiResolutionFeatures( baseList2, auxList2, rightImage, rightIdx1, rightIdx2, scales2, matchOpts, computeOpts );
+    //int nM2 =
+    matchMultiResolutionFeatures( baseList2, auxList2, rightImage, rightIdx1, rightIdx2, scales2, matchOpts, computeOpts );
     _updateCounter(rightIdx1,baseList2);    //Update counters
     _updateCounter(rightIdx2,auxList2);
 
@@ -1809,14 +1811,16 @@ int  vision::matchMultiResolutionFeatures(
             if( scales1[m] == 0 )
             {
                 cout << "Left feature " << m << " found in scale 0!" << endl;
-                int res = computeMoreDescriptors( (*auxList1[m]), leftImage, (*itMatch->first), true, computeOpts );
+                //int res =
+                computeMoreDescriptors( (*auxList1[m]), leftImage, (*itMatch->first), true, computeOpts );
             }
             else
             {
                 if( scales1[m] == nScales )
                 {
                     cout << "Left feature found in scale " << nScales << "!" << endl; //computeMoreDescriptors( auxList1[k1], leftImage, false, itMatch->first );
-                    int res = computeMoreDescriptors( (*auxList1[m]), leftImage, (*itMatch->first), false, computeOpts );
+                    //int res =
+                    computeMoreDescriptors( (*auxList1[m]), leftImage, (*itMatch->first), false, computeOpts );
                 }
             }
             itMatch->first->dumpToConsole();
