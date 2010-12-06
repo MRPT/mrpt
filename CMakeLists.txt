@@ -311,57 +311,6 @@ ELSE(BUILD_XSENS)
 	SET(CMAKE_MRPT_HAS_xSENS 0)
 ENDIF(BUILD_XSENS)
 
-# Build the XBox Kinect support (via libfreenect)
-# ===================================================
-IF(MSVC)  # For now Kinect doesn't build in MSVC!
-	SET(BUILD_KINECT_DEF_VAL OFF)
-ELSE(MSVC)
-	SET(BUILD_KINECT_DEF_VAL ON)
-ENDIF(MSVC)
-
-SET(BUILD_KINECT ${BUILD_KINECT_DEF_VAL} CACHE BOOL "Build support for Xbox Kinect (with embedded libfreenect)")
-IF(BUILD_KINECT)
-	# Check deps on Linux/Windows!!!
-	SET(CMAKE_MRPT_HAS_KINECT 0)  # Will be set to 1 only if all conditions are OK
-
-	IF(UNIX)
-		# Kinect for Linux ---------
-		IF(NOT PKG_CONFIG_FOUND)
-			MESSAGE(SEND_ERROR "pkg-config is required! Please install it.")
-		ELSE(NOT PKG_CONFIG_FOUND)
-			PKG_CHECK_MODULES(PKG_LIBUSB10 libusb-1.0)
-
-			IF(PKG_LIBUSB10_FOUND)
-				SET(CMAKE_MRPT_HAS_KINECT 1)
-			ELSE(PKG_LIBUSB10_FOUND)
-				MESSAGE(SEND_ERROR "BUILD_KINECT requires libusb-1.0. Install it or disable BUILD_KINECT")
-			ENDIF(PKG_LIBUSB10_FOUND)
-		ENDIF(NOT PKG_CONFIG_FOUND)
-
-	ELSEIF(WIN32)
-		# Kinect for Win32 ---------
-		FIND_FILE(LIBUSB10_H "libusb.h")
-		FIND_FILE(LIBUSB10_LIB "libusb-1.0${CMAKE_STATIC_LIBRARY_SUFFIX}")
-		IF (LIBUSB10_H AND LIBUSB10_LIB)
-			get_filename_component(LIBUSB_INCL_DIR "${LIBUSB10_H}" PATH)
-			INCLUDE_DIRECTORIES("${LIBUSB_INCL_DIR}")
-			APPEND_MRPT_LIBS("${LIBUSB10_LIB}")
-			
-			#MESSAGE(STATUS "LIBUSB1.0 HEADER: ${LIBUSB_INCL_DIR}")
-			#MESSAGE(STATUS "LIBUSB1.0 LIB: ${LIBUSB10_LIB}")
-	
-			SET(CMAKE_MRPT_HAS_KINECT 1)
-		ELSE(LIBUSB10_H AND LIBUSB10_LIB)
-			MESSAGE(SEND_ERROR "Kinect needs libusb-1.0: Download it from http://www.libusb.org/wiki/windows_backend and set LIBUSB10_H and LIBUSB10_LIB pointing to libusb.h and libusb-1.0${CMAKE_STATIC_LIBRARY_SUFFIX}")
-		ENDIF(LIBUSB10_H AND LIBUSB10_LIB)
-	ELSE(UNIX)
-		MESSAGE(SEND_ERROR "Sorry! Kinect is supported on Unix or Win32 only. Please, disable BUILD_KINECT.")
-	ENDIF(UNIX)
-
-ELSE(BUILD_KINECT)
-	SET(CMAKE_MRPT_HAS_KINECT 0)
-ENDIF(BUILD_KINECT)
-
 
 # Enable GCC profiling (GCC only)
 # ===================================================
@@ -1223,6 +1172,57 @@ ENDIF(DISABLE_SWISSRANGER_3DCAM_LIBS)
 # We have gz-streams is we have zlib:
 # ------------------------------------------
 SET(CMAKE_MRPT_HAS_GZ_STREAMS ${CMAKE_MRPT_HAS_ZLIB})
+
+
+# Build the XBox Kinect support (via libfreenect)
+# ===================================================
+SET(BUILD_KINECT ON CACHE BOOL "Build support for Xbox Kinect (with embedded libfreenect)")
+IF(BUILD_KINECT)
+	# Check deps on Linux/Windows!!!
+	SET(CMAKE_MRPT_HAS_KINECT 0)  # Will be set to 1 only if all conditions are OK
+
+	IF(UNIX)
+		# Kinect for Linux ---------
+		IF(NOT PKG_CONFIG_FOUND)
+			MESSAGE(SEND_ERROR "pkg-config is required! Please install it.")
+		ELSE(NOT PKG_CONFIG_FOUND)
+			PKG_CHECK_MODULES(PKG_LIBUSB10 libusb-1.0)
+
+			IF(PKG_LIBUSB10_FOUND)
+				SET(CMAKE_MRPT_HAS_KINECT 1)
+			ELSE(PKG_LIBUSB10_FOUND)
+				MESSAGE(SEND_ERROR "BUILD_KINECT requires libusb-1.0. Install it or disable BUILD_KINECT")
+			ENDIF(PKG_LIBUSB10_FOUND)
+		ENDIF(NOT PKG_CONFIG_FOUND)
+
+	ELSEIF(WIN32)
+		# Kinect for Win32 ---------
+		# Look for "CL NUI Platform"		
+		FIND_PATH(BASE_CLNUI_SDK_DIR  "Code Laboratories/CL NUI Platform/SDK/")
+		MARK_AS_ADVANCED(BASE_CLNUI_SDK_DIR)
+		
+		IF(BASE_CLNUI_SDK_DIR)
+			SET(CLNUI_SDK_DIR "${BASE_CLNUI_SDK_DIR}/Code Laboratories/CL NUI Platform/SDK/" CACHE PATH "Path to CL NUI Platform/SDK/ directory")
+			MESSAGE(STATUS "Kinect CL NUI SDK found in: ${CLNUI_SDK_DIR}")
+		ELSE(BASE_CLNUI_SDK_DIR)
+			SET(CLNUI_SDK_DIR "" CACHE PATH "Path to CL NUI Platform/SDK/ directory")
+		ENDIF(BASE_CLNUI_SDK_DIR)
+		
+		IF (EXISTS "${CLNUI_SDK_DIR}/Include/CLNUIDevice.h")
+			SET(CMAKE_MRPT_HAS_KINECT 1)
+			INCLUDE_DIRECTORIES("${CLNUI_SDK_DIR}/Include")
+			APPEND_MRPT_LIBS("${CLNUI_SDK_DIR}/Lib/CLNUIDevice.lib")
+		ELSE (EXISTS "${CLNUI_SDK_DIR}/Include/CLNUIDevice.h")
+			MESSAGE(STATUS "*** ERROR *** CL NUI Platform needed for Kinect. Please, install it and set CLNUI_SDK_DIR or disable BUILD_KINECT")
+		ENDIF (EXISTS "${CLNUI_SDK_DIR}/Include/CLNUIDevice.h")
+		
+	ELSE(UNIX)
+		MESSAGE(SEND_ERROR "Sorry! Kinect is supported on Unix or Win32 only. Please, disable BUILD_KINECT.")
+	ENDIF(UNIX)
+
+ELSE(BUILD_KINECT)
+	SET(CMAKE_MRPT_HAS_KINECT 0)
+ENDIF(BUILD_KINECT)
 
 
 # WXWIDGETS+GL: Add libraries

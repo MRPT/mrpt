@@ -16,14 +16,17 @@ ENDIF(CMAKE_MRPT_HAS_xSENS)
 
 # Build Xbox Kinect?
 IF(CMAKE_MRPT_HAS_KINECT)
-	LIST(APPEND hwdrivers_EXTRA_SRCS
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/*.c"
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/*.h"
-		)
-	LIST(APPEND hwdrivers_EXTRA_SRCS_NAME 
-		"kinect"
-		"kinect"
-		)
+	# Add libfreenect, only for Kinect in Unices.
+	IF (UNIX)
+		LIST(APPEND hwdrivers_EXTRA_SRCS
+			"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/*.c"
+			"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/*.h"
+			)
+		LIST(APPEND hwdrivers_EXTRA_SRCS_NAME 
+			"kinect"
+			"kinect"
+			)
+	ENDIF(UNIX)
 ENDIF(CMAKE_MRPT_HAS_KINECT)
 
 # Build ARIA?
@@ -64,10 +67,7 @@ IF(CMAKE_MRPT_HAS_xSENS)
 ENDIF(CMAKE_MRPT_HAS_xSENS)
 
 IF(CMAKE_MRPT_HAS_KINECT)
-	# Ignore precompiled headers in KINECT sources:
-	IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-		set_source_files_properties(${kinect_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
-	ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+	# something special to do??...
 ENDIF(CMAKE_MRPT_HAS_KINECT)
 
 # build with link on Phidget21 lib

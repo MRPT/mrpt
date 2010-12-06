@@ -37,29 +37,50 @@ using namespace mrpt::synch;
 IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 
 
-#if MRPT_HAS_KINECT
+#if MRPT_KINECT_WITH_LIBFREENECT
 #	include "libfreenect/libfreenect.h"
+#	define KINECT_W FREENECT_FRAME_W
+#	define KINECT_H FREENECT_FRAME_H
+#elif MRPT_KINECT_WITH_CLNUI
+#	include <CLNUIDevice.h>
+#	define KINECT_W 640
+#	define KINECT_H 480
 #endif
 
-// Macros to convert the opaque pointers in the class header:
-#define f_ctx  reinterpret_cast<freenect_context*>(m_f_ctx)
-#define f_ctx_ptr  reinterpret_cast<freenect_context**>(&m_f_ctx)
-#define f_dev  reinterpret_cast<freenect_device*>(m_f_dev)
-#define f_dev_ptr  reinterpret_cast<freenect_device**>(&m_f_dev)
 
 
-// GLOBAL DATA USED TO REFER A "freenect_device*" TO ITS MRPT OBJECT
-// ----------------------------------------------------------------------
-struct TInfoPerSensor
-{
-	TInfoPerSensor() : running_obj(NULL),tim_latest_depth(0),tim_latest_rgb(0) { }
+#if MRPT_KINECT_WITH_LIBFREENECT
+	// Macros to convert the opaque pointers in the class header:
+	#define f_ctx  reinterpret_cast<freenect_context*>(m_f_ctx)
+	#define f_ctx_ptr  reinterpret_cast<freenect_context**>(&m_f_ctx)
+	#define f_dev  reinterpret_cast<freenect_device*>(m_f_dev)
+	#define f_dev_ptr  reinterpret_cast<freenect_device**>(&m_f_dev)
 
-	CKinect                 *running_obj; //!< My parent object
-	CObservation3DRangeScan  latest_obs;
-	uint32_t                 tim_latest_depth, tim_latest_rgb; // 0 = not updated
-};
-std::map<freenect_device*,TInfoPerSensor> m_info_per_sensor;
-CCriticalSection                          m_info_per_sensor_cs;
+
+	// GLOBAL DATA USED TO REFER A "freenect_device*" TO ITS MRPT OBJECT
+	// ----------------------------------------------------------------------
+	struct TInfoPerSensor
+	{
+		TInfoPerSensor() : running_obj(NULL),tim_latest_depth(0),tim_latest_rgb(0) { }
+
+		CKinect                 *running_obj; //!< My parent object
+		CObservation3DRangeScan  latest_obs;
+		uint32_t                 tim_latest_depth, tim_latest_rgb; // 0 = not updated
+	};
+	std::map<freenect_device*,TInfoPerSensor> m_info_per_sensor;
+	CCriticalSection                          m_info_per_sensor_cs;
+
+#endif // MRPT_KINECT_WITH_LIBFREENECT
+
+
+#if MRPT_KINECT_WITH_CLNUI
+	// Macros to convert the opaque pointers in the class header:
+	#define clnui_motor  reinterpret_cast<CLNUIMotor>(m_clnui_motor)
+	#define clnui_cam    reinterpret_cast<CLNUICamera>(m_clnui_cam)
+
+#endif // MRPT_KINECT_WITH_CLNUI
+
+
 
 // Look-up table for converting range raw uint16_t numbers to ranges:
 bool  range2meters_done = false;
@@ -93,8 +114,17 @@ CKinect::CKinect()  :
 	m_preview_window_decimation(1),
 	m_preview_decim_counter_range(0),
 	m_preview_decim_counter_rgb(0),
+
+#if MRPT_KINECT_WITH_LIBFREENECT
 	m_f_ctx(NULL), // The "freenect_context", or NULL if closed
 	m_f_dev(NULL), // The "freenect_device", or NULL if closed
+#endif
+
+#if MRPT_KINECT_WITH_CLNUI
+	m_clnui_cam(NULL),
+	m_clnui_motor(NULL),
+#endif
+
 	m_user_device_number(0),
 	m_grab_image(true),
 	m_grab_depth(true),
@@ -111,8 +141,8 @@ CKinect::CKinect()  :
 
 	// =========== Default params ===========
 	// ----- RGB -----
-	m_cameraParamsRGB.ncols = FREENECT_FRAME_W;
-	m_cameraParamsRGB.nrows = FREENECT_FRAME_H;
+	m_cameraParamsRGB.ncols = KINECT_W;
+	m_cameraParamsRGB.nrows = KINECT_H;
 
 	m_cameraParamsRGB.cx(328.94272028759258);
 	m_cameraParamsRGB.cy(267.48068171871557);
@@ -122,8 +152,8 @@ CKinect::CKinect()  :
 	m_cameraParamsRGB.dist.zeros();
 
 	// ----- Depth -----
-	m_cameraParamsDepth.ncols = FREENECT_FRAME_W;
-	m_cameraParamsDepth.nrows = FREENECT_FRAME_H;
+	m_cameraParamsDepth.ncols = KINECT_W;
+	m_cameraParamsDepth.nrows = KINECT_H;
 
 	m_cameraParamsDepth.cx(339.30781);
 	m_cameraParamsDepth.cy(242.7391);
@@ -213,12 +243,18 @@ void  CKinect::loadConfig_sensorSpecific(
 
 bool CKinect::isOpen() const
 {
+#if MRPT_KINECT_WITH_LIBFREENECT
 	return f_dev != NULL;
+#endif
+
+#if MRPT_KINECT_WITH_CLNUI
+	return m_clnui_cam != NULL;
+#endif
 }
 
 
+#if MRPT_KINECT_WITH_LIBFREENECT
 // ========  GLOBAL CALLBACK FUNCTIONS ========
-#if MRPT_HAS_KINECT
 void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 {
 	uint16_t *depth = reinterpret_cast<uint16_t *>(v_depth);
@@ -232,9 +268,9 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 			ips.tim_latest_depth = timestamp;
 
 			ips.latest_obs.hasRangeImage = true;
-			ips.latest_obs.rangeImage.setSize(FREENECT_FRAME_H,FREENECT_FRAME_W);
-			for (int r=0;r<FREENECT_FRAME_H;r++)
-				for (int c=0;c<FREENECT_FRAME_W;c++)
+			ips.latest_obs.rangeImage.setSize(KINECT_H,KINECT_W);
+			for (int r=0;r<KINECT_H;r++)
+				for (int c=0;c<KINECT_W;c++)
 				{
 					// For now, quickly save the depth as it comes from the sensor, it'll
 					//  transformed later on in getNextObservation()
@@ -261,8 +297,8 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 
 			ips.latest_obs.hasIntensityImage = true;
 			ips.latest_obs.intensityImage.loadFromMemoryBuffer(
-				FREENECT_FRAME_W,
-				FREENECT_FRAME_H,
+				KINECT_W,
+				KINECT_H,
 				CH_RGB,
 				reinterpret_cast<unsigned char*>(rgb),
 				true );
@@ -270,16 +306,20 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 	}
 
 }
-#endif
 // ========  END OF GLOBAL CALLBACK FUNCTIONS ========
+#endif // MRPT_KINECT_WITH_LIBFREENECT
 
 
 void CKinect::open()
 {
-#if MRPT_HAS_KINECT
 	if (isOpen())
 		close();
 
+	// Alloc memory, if this is the first time:
+	m_buf_depth.resize(KINECT_W*KINECT_H*3);
+	m_buf_rgb.resize(KINECT_W*KINECT_H*3);
+
+#if MRPT_KINECT_WITH_LIBFREENECT  // ----> libfreenect
 	// Try to open the device:
 	if (freenect_init(f_ctx_ptr, NULL) < 0)
 		THROW_EXCEPTION("freenect_init() failed")
@@ -309,12 +349,8 @@ void CKinect::open()
 	}
 
 	// Save resolution:
-	m_cameraParamsRGB.ncols = FREENECT_FRAME_W;
-	m_cameraParamsRGB.nrows = FREENECT_FRAME_H;
-
-	// Alloc memory, if this is the first time:
-	m_buf_depth.resize(m_cameraParamsRGB.ncols*m_cameraParamsRGB.nrows*3);
-	m_buf_rgb.resize(m_cameraParamsRGB.ncols*m_cameraParamsRGB.nrows*3);
+	m_cameraParamsRGB.ncols = KINECT_W;
+	m_cameraParamsRGB.nrows = KINECT_H;
 
 	// Setup:
 	setTiltAngleDegrees(0);
@@ -330,12 +366,31 @@ void CKinect::open()
 	freenect_start_depth(f_dev);
 	freenect_start_video(f_dev);
 
-#endif
+#endif // MRPT_KINECT_WITH_LIBFREENECT 
+
+#if MRPT_KINECT_WITH_CLNUI  // ----->  CL NUI SDK
+	// Open handles:
+	m_clnui_motor = CreateNUIMotor();
+	if (!m_clnui_motor)
+		THROW_EXCEPTION("Can't open Kinect camera (m_clnui_motor()==NULL)")
+
+	m_clnui_cam   = CreateNUICamera();
+	if (!m_clnui_cam)
+		THROW_EXCEPTION("Can't open Kinect camera (CreateNUICamera()==NULL)")
+
+	//PCHAR pStr = GetNUIMotorSerial(m_clnui_motor);
+
+	bool ret = StartNUICamera(clnui_cam);
+	if (!ret)
+		THROW_EXCEPTION("Can't start grabbing from Kinect camera (StartNUICamera failed)")
+
+#endif // MRPT_KINECT_WITH_CLNUI  
+
 }
 
 void CKinect::close()
 {
-#if MRPT_HAS_KINECT
+#if MRPT_KINECT_WITH_LIBFREENECT
 	if (f_dev)
 	{
 		freenect_stop_depth(f_dev);
@@ -355,7 +410,24 @@ void CKinect::close()
 	if (f_ctx)
 		freenect_shutdown(f_ctx);
 	m_f_ctx = NULL;
-#endif
+#endif // MRPT_KINECT_WITH_LIBFREENECT
+
+#if MRPT_KINECT_WITH_CLNUI
+	// Stop grabbing & close handles:
+	if (m_clnui_cam)
+	{
+		StopNUICamera(clnui_cam);
+		mrpt::system::sleep(10);
+		DestroyNUICamera(clnui_cam);
+		m_clnui_cam   = NULL;
+	}
+
+	if (m_clnui_motor)
+	{
+		DestroyNUIMotor(clnui_motor);
+		m_clnui_motor = NULL;
+	}
+#endif // MRPT_KINECT_WITH_CLNUI
 }
 
 
@@ -371,9 +443,10 @@ void CKinect::getNextObservation(
 	bool &there_is_obs,
 	bool &hardware_error )
 {
-#if MRPT_HAS_KINECT
 	there_is_obs=false;
 	hardware_error = false;
+
+#if MRPT_KINECT_WITH_LIBFREENECT
 
 	static const double max_wait_seconds = 0.1;
 	static const TTimeStamp max_wait = mrpt::system::secondsToTimestamp(max_wait_seconds);
@@ -422,6 +495,34 @@ void CKinect::getNextObservation(
 		_out_obs.swap(ips->latest_obs);
 	}
 
+#elif MRPT_KINECT_WITH_CLNUI
+
+	const int waitTimeout = 200;
+	const bool there_is_rgb   = GetNUICameraColorFrameRGB24(m_clnui_cam, &m_buf_rgb[0],waitTimeout);
+	const bool there_is_depth = GetNUICameraDepthFrameRAW(m_clnui_cam, (PUSHORT)&m_buf_depth[0],waitTimeout);
+	
+	there_is_obs = there_is_rgb && there_is_depth;
+
+	if (!there_is_obs)
+		return;
+
+	// We DO have a fresh new observation:
+	{
+		CObservation3DRangeScan  newObs;
+
+		newObs.hasConfidenceImage = false;
+
+		newObs.hasRangeImage      = true;
+
+		newObs.hasIntensityImage  = true;
+		newObs.intensityImage.loadFromMemoryBuffer(KINECT_W,KINECT_H,true,&m_buf_rgb[0]);
+
+		// Save the observation to the user's object:
+		_out_obs.swap(newObs);
+	}
+
+#endif  // end MRPT_KINECT_WITH_CLNUI
+
 	// Set common data into observation:
 	// --------------------------------------
 	_out_obs.sensorLabel = m_sensorLabel;
@@ -435,9 +536,9 @@ void CKinect::getNextObservation(
 	if ( _out_obs.hasRangeImage )
 	{
 		_out_obs.hasPoints3D = true;
-		_out_obs.points3D_x.resize( FREENECT_FRAME_W * FREENECT_FRAME_H );
-		_out_obs.points3D_y.resize( FREENECT_FRAME_W * FREENECT_FRAME_H );
-		_out_obs.points3D_z.resize( FREENECT_FRAME_W * FREENECT_FRAME_H );
+		_out_obs.points3D_x.resize( KINECT_W * KINECT_H );
+		_out_obs.points3D_y.resize( KINECT_W * KINECT_H );
+		_out_obs.points3D_z.resize( KINECT_W * KINECT_H );
 
 		// originally based on:
 		// depth2cloud.py  - convert Kinect depth image into 3D point cloud, in PLY format
@@ -452,8 +553,8 @@ void CKinect::getNextObservation(
 		const float r_fx_inv = 1.0f/m_cameraParamsDepth.fx();
 		const float r_fy_inv = 1.0f/m_cameraParamsDepth.fy();
 
-		for (int r=0;r<FREENECT_FRAME_H;r++)
-			for (int c=0;c<FREENECT_FRAME_W;c++)
+		for (int r=0;r<KINECT_H;r++)
+			for (int c=0;c<KINECT_W;c++)
 			{
 				*xs = _out_obs.rangeImage.coeff(r,c);
 				*zs++ = (r_cy - r) * (*xs) * r_fx_inv;
@@ -495,8 +596,7 @@ void CKinect::getNextObservation(
 		if (m_win_int) m_win_int.clear();
 	}
 
-	return;
-#endif
+
 }
 
 
@@ -520,21 +620,30 @@ void CKinect::setPathForExternalImages( const std::string &directory )
 /** Change tilt angle \note Sensor must be open first. */
 void CKinect::setTiltAngleDegrees(double angle)
 {
-#if MRPT_HAS_KINECT
 	ASSERTMSG_(isOpen(),"Sensor must be open first")
 
+#if MRPT_KINECT_WITH_LIBFREENECT
 	freenect_set_tilt_degs(f_dev,angle);
+#elif MRPT_KINECT_WITH_CLNUI
+	//...
 #endif
+
 }
 
 double CKinect::getTiltAngleDegrees()
 {
-#if MRPT_HAS_KINECT
 	ASSERTMSG_(isOpen(),"Sensor must be open first")
 
+#if MRPT_KINECT_WITH_FREENECT
 	freenect_update_tilt_state(f_dev);
 	freenect_raw_tilt_state *ts=freenect_get_tilt_state(f_dev);
 	return freenect_get_tilt_degs(ts);
+
+#elif MRPT_KINECT_WITH_CLNUI
+
+	// ...
+
+	return 0;
 #else
 	return 0;
 #endif

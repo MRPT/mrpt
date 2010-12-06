@@ -36,6 +36,22 @@
 
 #include <mrpt/hwdrivers/link_pragmas.h>
 
+// MRPT implements a common interface to Kinect disregarding the 
+//  actual underlying library. These macros are defined for internal 
+//  MRPT usage to know which library to use:
+#if MRPT_HAS_KINECT
+#	if defined(_MSC_VER)
+#		define MRPT_KINECT_WITH_CLNUI        1
+#		define MRPT_KINECT_WITH_LIBFREENECT  0
+#	else
+#		define MRPT_KINECT_WITH_CLNUI        0
+#		define MRPT_KINECT_WITH_LIBFREENECT  1
+#	endif
+#else
+#		define MRPT_KINECT_WITH_CLNUI        0
+#		define MRPT_KINECT_WITH_LIBFREENECT  0
+#endif
+
 namespace mrpt
 {
 	namespace hwdrivers
@@ -201,8 +217,15 @@ namespace mrpt
 			size_t      m_preview_decim_counter_range, m_preview_decim_counter_rgb;
 			mrpt::gui::CDisplayWindowPtr  m_win_range, m_win_int;
 
+#if MRPT_KINECT_WITH_LIBFREENECT
 			void *m_f_ctx;  //!< The "freenect_context", or NULL if closed
 			void *m_f_dev;  //!< The "freenect_device", or NULL if closed
+#endif
+
+#if MRPT_KINECT_WITH_CLNUI
+			void *m_clnui_cam;   //!< The "CLNUICamera" or NULL if closed
+			void *m_clnui_motor; //!< The "CLNUIMotor" or NULL if closed
+#endif
 
 			mrpt::utils::TCamera  	m_cameraParamsRGB;  //!< Params for the RGB camera
 			mrpt::utils::TCamera  	m_cameraParamsDepth;  //!< Params for the Depth camera
