@@ -26,6 +26,15 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
+/*
+  Example  : kinect_3d_view
+  Web page : http://www.mrpt.org/Kinect_and_MRPT
+
+  Purpose  : Demonstrate grabbing from CKinect, multi-threading
+             and live 3D rendering.
+*/
+
+
 #include <mrpt/hwdrivers.h>
 #include <mrpt/gui.h>
 #include <mrpt/maps.h>
@@ -58,12 +67,9 @@ void thread_grabbing(TThreadParam &p)
 		CKinect  kinect;
 
 		// Set params:
-	//	kinect.setSave3D(true);
-	//	kinect.setSaveRangeImage(true);
-	//	kinect.setSaveIntensityImage(true);
-	//	kinect.setSaveConfidenceImage(false);
-
-		//kinect.enablePreviewWindow(true);
+		// kinect.enableGrab3DPoints(true);
+		// kinect.enablePreviewRGB(true);
+		//...
 
 		// Open:
 		cout << "Calling CKinect::initialize()...";
@@ -141,6 +147,7 @@ void Test_Kinect()
 	win3D.setCameraAzimuthDeg(140);
 	win3D.setCameraElevationDeg(20);
 	win3D.setCameraZoom(8.0);
+	win3D.setFOV(90);
 	win3D.setCameraPointingToPoint(2.5,0,0);
 
 	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
@@ -159,8 +166,8 @@ void Test_Kinect()
 		scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
 		scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 
-		const int VW_WIDTH = 200;
-		const int VW_HEIGHT = 150;
+		const int VW_WIDTH = 250;	// Size of the viewport into the window, in pixel units.
+		const int VW_HEIGHT = aspect_ratio*VW_WIDTH;
 		const int VW_GAP = 10;
 
 		// Create the Opengl objects for the planar images, as textured planes, each in a separate viewport:
@@ -183,7 +190,6 @@ void Test_Kinect()
 		viewInt->getCamera().setAzimuthDegrees(90);
 		viewInt->getCamera().setElevationDegrees(90);
 		viewInt->getCamera().setZoomDistance(1.0);
-
 
 		win3D.unlockAccess3DScene();
 		win3D.repaint();
@@ -240,7 +246,7 @@ void Test_Kinect()
 
 
 			win3D.get3DSceneAndLock();
-				win3D.addTextMessage(-100,-20, format("%.02f Hz", thrPar.Hz ), TColorf(0,1,1), 100, MRPT_GLUT_BITMAP_HELVETICA_12 );
+				win3D.addTextMessage(-100,-20, format("%.02f Hz", thrPar.Hz ), TColorf(0,1,1), 100, MRPT_GLUT_BITMAP_HELVETICA_18 );
 			win3D.unlockAccess3DScene();
 
 			win3D.repaint();
@@ -271,12 +277,12 @@ void Test_Kinect()
 		}
 
 		win3D.get3DSceneAndLock();
-		win3D.addTextMessage(10,15,
+		win3D.addTextMessage(10,10,
 			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, '0'-'6'-select LED mode, mouse: orbit 3D, ESC: quit"),
-				TColorf(0,0,1), 110, MRPT_GLUT_BITMAP_HELVETICA_12 );
-		win3D.addTextMessage(10,35,
+				TColorf(0,0,1), 110, MRPT_GLUT_BITMAP_HELVETICA_18 );
+		win3D.addTextMessage(10,45,
 			format("Tilt angle: %.01f deg", thrPar.tilt_ang_deg),
-				TColorf(0,0,1), 111, MRPT_GLUT_BITMAP_HELVETICA_12 );
+				TColorf(0,0,1), 111, MRPT_GLUT_BITMAP_HELVETICA_18 );
 		win3D.unlockAccess3DScene();
 
 		mrpt::system::sleep(1);

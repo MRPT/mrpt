@@ -3366,7 +3366,7 @@ void vision::computeStereoRectificationMaps(
 
     CImage im1out( dst_img );
     CImage im2out( dst_img2 );
-    /**/
+    / * */
     // *****************************************************************
 
     // WITH NEW OPENCV VERSION
