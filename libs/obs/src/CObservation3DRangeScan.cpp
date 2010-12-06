@@ -584,3 +584,37 @@ void CObservation3DRangeScan::getZoneAsObs(
 
 	obs.cameraParams = cameraParams;
 }
+
+
+void CObservation3DRangeScan::project3DPointsFromDepthImage()
+{
+	if (!hasRangeImage) return;
+
+	const int W = rangeImage.cols();
+	const int H = rangeImage.rows();
+
+	hasPoints3D = true;
+	points3D_x.resize( W*H );
+	points3D_y.resize( W*H );
+	points3D_z.resize( W*H );
+
+
+	float *xs= &points3D_x[0];
+	float *ys= &points3D_y[0];
+	float *zs= &points3D_z[0];
+
+	const float r_cx =  cameraParams.cx();
+	const float r_cy = cameraParams.cy();
+	const float r_fx_inv = 1.0f/cameraParams.fx();
+	const float r_fy_inv = 1.0f/cameraParams.fy();
+
+	for (int r=0;r<H;r++)
+		for (int c=0;c<W;c++)
+		{
+			*xs = rangeImage.coeff(r,c);
+			*zs++ = (r_cy - r) * (*xs) * r_fx_inv;
+			*ys++ = (r_cx - c) * (*xs) * r_fy_inv;
+			xs++;
+		}
+
+}

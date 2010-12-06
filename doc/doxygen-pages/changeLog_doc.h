@@ -36,7 +36,7 @@
 	- <b>Most important changes:</b>
 		- MRPT now relies entirely on Eigen (version 3) for matrix and vector classes.
 		- New hardware supported: 
-			- Xbox Kinect. See mrpt::hwdrivers::CKinect and the documentation therein.
+			- Xbox Kinect. See mrpt::hwdrivers::CKinect and this page: http://www.mrpt.org/Kinect_and_MRPT
 	- <b>Detailed list of changes:</b>
 		- Changes related to mathematics, matrices and containers and the port to Eigen:
 			- All is now based on the Eigen library, v3. See <a href="http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes" >this page</a> for a more complete description of all the changes and the reasons of this big change.

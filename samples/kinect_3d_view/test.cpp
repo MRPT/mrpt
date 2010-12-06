@@ -66,8 +66,9 @@ void thread_grabbing(TThreadParam &p)
 		//kinect.enablePreviewWindow(true);
 
 		// Open:
-		cout << "Calling CKinect::initialize()...\n";
+		cout << "Calling CKinect::initialize()...";
 		kinect.initialize();
+		cout << "OK\n";
 
 		CTicTac tictac;
 		int nImgs = 0;

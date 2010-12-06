@@ -79,10 +79,10 @@ namespace mrpt
 		  *   You can convert the 3D observation into a 3D point cloud with this piece of code:
 		  *
 		  * \code
-		  *   mrpt::slam::CObservation3DRangeScan  obs3D;
-		  *	  mrpt::slam::CColouredPointsMap       pntsMap;
-		  *	  pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
-		  *	  pntsMap.loadFromRangeScan(obs3D);
+		  * mrpt::slam::CObservation3DRangeScan  obs3D;
+		  * mrpt::slam::CColouredPointsMap       pntsMap;
+		  * pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
+		  * pntsMap.loadFromRangeScan(obs3D);
 		  * \endcode
 		  *
 		  *   Then the point cloud mrpt::slam::CColouredPointsMap can be converted into an OpenGL object for
@@ -97,7 +97,7 @@ namespace mrpt
 		  * <h2>Platform-specific comments</h2><hr>
 		  *   For more details, refer to <a href="http://openkinect.org/wiki/Main_Page" >libfreenect</a> documentation:
 		  *		- Linux: You'll need root privileges to access Kinect. Or, install <code> MRPT/scripts/51-kinect.rules </code> in <code>/etc/udev/rules.d/</code> to allow access to all users.
-		  *		- Windows: (write me!)
+		  *		- Windows: Install CL NUI SDK: http://codelaboratories.com/nui
 		  *		- MacOS: (write me!)
 		  *
 		  *
@@ -200,6 +200,22 @@ namespace mrpt
 			/** Get the col count in the camera images, loaded automatically upon camera open(). */
 			inline size_t getColCount() const { return m_cameraParamsRGB.ncols; }
 
+			/** Enable/disable the grabbing of the RGB channel */
+			inline void enableGrabRGB(bool enable=true) { m_grab_image=enable; }
+			inline bool isGrabRGBEnabled() const { return m_grab_image; }
+
+			/** Enable/disable the grabbing of the depth channel */
+			inline void enableGrabDepth(bool enable=true) { m_grab_depth=enable; }
+			inline bool isGrabDepthEnabled() const { return m_grab_depth; }
+
+			/** Enable/disable the grabbing of the inertial data */
+			inline void enableGrabAccelerometers(bool enable=true) { m_grab_IMU=enable; }
+			inline bool isGrabAccelerometersEnabled() const { return m_grab_IMU; }
+
+			/** Enable/disable the grabbing of the 3D point clouds */
+			inline void enableGrab3DPoints(bool enable=true) { m_grab_3D_points=enable; }
+			inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
+
 			/** @} */
 
 		protected:
@@ -234,7 +250,7 @@ namespace mrpt
 
 			int  m_user_device_number; //!< Number of device to open (0:first,...)
 
-			bool  m_grab_image, m_grab_depth, m_grab_IMU ; //!< Default: all true
+			bool  m_grab_image, m_grab_depth, m_grab_3D_points, m_grab_IMU ; //!< Default: all true
 
 		private:
 			std::vector<uint8_t> m_buf_depth, m_buf_rgb; //!< Temporary buffers for image grabbing.

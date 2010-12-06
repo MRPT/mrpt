@@ -70,6 +70,8 @@ namespace slam
 	 *		- cameraParams: Projection parameters of the depth camera.
 	 *		- cameraParamsIntensity: Projection parameters of the intensity (gray-level or RGB) camera.
 	 *
+	 *  3D point clouds can be generated at any moment after grabbing with CObservation3DRangeScan::project3DPointsFromDepthImage()
+	 *
 	 *  \note Starting at serialization version 2 (MRPT 0.9.1+), the confidence channel is stored as an image instead of a matrix to optimize memory and disk space.
 	 *  \note Starting at serialization version 3 (MRPT 0.9.1+), the 3D point cloud and the rangeImage can both be stored externally to save rawlog space.
 	 *
@@ -105,6 +107,15 @@ namespace slam
 		virtual void unload();
 		/** @} */
 
+		/** Compute the 3D points coordinates from the depth image (\a rangeImage) and the depth camera camera parameters (\a cameraParams).
+		  *  The formulas for the i'th point, with rangeImage pixel coordinates (r,c) are:
+		  * \code
+		  *   x(i) = rangeImage(r,c)
+		  *   y(i) = (r_cx - c) * x(i) / r_fy
+		  *   z(i) = (r_cy - r) * x(i) / r_fx
+		  * \endcode
+		  */
+		void project3DPointsFromDepthImage();
 
 		bool hasPoints3D; 								//!< true means the field points3D contains valid data.
 		std::vector<float> points3D_x;   //!< If hasPoints3D=true, the X coordinates of the 3D point cloud detected by the camera.

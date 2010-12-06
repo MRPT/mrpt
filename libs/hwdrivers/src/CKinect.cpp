@@ -47,6 +47,12 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 #	define KINECT_H 480
 #endif
 
+#if MRPT_KINECT_WITH_LIBFREENECT
+#	define MRPT_KINECT_DEPTH_10BIT
+#elif MRPT_KINECT_WITH_CLNUI
+#	define MRPT_KINECT_DEPTH_11BIT
+#endif
+
 
 
 #if MRPT_KINECT_WITH_LIBFREENECT
@@ -84,19 +90,29 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 
 // Look-up table for converting range raw uint16_t numbers to ranges:
 bool  range2meters_done = false;
-#define RANGES_TABLE       1024   // 10bit,   2048 : 11bit
-#define RANGES_TABLE_MASK  0x03FF // 10bit //0x07FF
+#ifdef MRPT_KINECT_DEPTH_10BIT
+#	define RANGES_TABLE       1024   // 10bit
+#	define RANGES_TABLE_MASK  0x03FF // 10bit 
+#else
+#	define RANGES_TABLE       2048
+#	define RANGES_TABLE_MASK  0x07FF
+#endif
 
 mrpt::vector_float range2meters(RANGES_TABLE);
 
 void calculate_range2meters()
 {
+#ifdef MRPT_KINECT_DEPTH_10BIT
 	const float k1 = 1.1863f;
 	const float k2 = 2842.5f;
 	const float k3 = 0.1236f;
 
 	for (size_t i=0; i<RANGES_TABLE; i++)
 			range2meters[i] = k3 * tanf(i/k2 + k1);
+#else
+	for (size_t i=0; i<RANGES_TABLE; i++)
+		range2meters[i] = 1.0f / (i * (-0.0030711016) + 3.3309495161);
+#endif
 
 	// Minimum/Maximum range means error:
 	range2meters[0] = 0;
@@ -128,6 +144,7 @@ CKinect::CKinect()  :
 	m_user_device_number(0),
 	m_grab_image(true),
 	m_grab_depth(true),
+	m_grab_3D_points(true),
 	m_grab_IMU(true)
 {
 	if (!range2meters_done)	// Build LUT:
@@ -275,7 +292,7 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 					// For now, quickly save the depth as it comes from the sensor, it'll
 					//  transformed later on in getNextObservation()
 					const uint16_t v = *depth++;
-					ips.latest_obs.rangeImage.coeffRef(r,c) = range2meters[v % RANGES_TABLE_MASK]; // It's >= RANGES_TABLE
+					ips.latest_obs.rangeImage.coeffRef(r,c) = range2meters[v % RANGES_TABLE_MASK];
 				}
 		}
 	}
@@ -512,10 +529,30 @@ void CKinect::getNextObservation(
 
 		newObs.hasConfidenceImage = false;
 
-		newObs.hasRangeImage      = true;
+		// Set intensity image ----------------------
+		if (m_grab_image)
+		{
+			newObs.hasIntensityImage  = true;
+			newObs.intensityImage.loadFromMemoryBuffer(KINECT_W,KINECT_H,true,&m_buf_rgb[0]);
+		}
 
-		newObs.hasIntensityImage  = true;
-		newObs.intensityImage.loadFromMemoryBuffer(KINECT_W,KINECT_H,true,&m_buf_rgb[0]);
+		// Set range image --------------------------
+		if (m_grab_depth)
+		{
+			newObs.hasRangeImage = true;
+			newObs.rangeImage.setSize(KINECT_H,KINECT_W);
+			PUSHORT depthPtr = (PUSHORT)&m_buf_depth[0];
+			for (int r=0;r<KINECT_H;r++)
+				for (int c=0;c<KINECT_W;c++)
+				{
+					const uint16_t v = (*depthPtr++);
+					newObs.rangeImage.coeffRef(r,c) = range2meters[v % RANGES_TABLE_MASK];
+				}
+		}
+
+		// Save 3D point cloud ---------------------
+		// 3d points are generated above, in the code common to libfreenect & CL NUI.
+
 
 		// Save the observation to the user's object:
 		_out_obs.swap(newObs);
@@ -533,34 +570,10 @@ void CKinect::getNextObservation(
 	_out_obs.cameraParamsIntensity = m_cameraParamsRGB;
 
 	// 3D point cloud:
-	if ( _out_obs.hasRangeImage )
+	if ( _out_obs.hasRangeImage && m_grab_3D_points )
 	{
-		_out_obs.hasPoints3D = true;
-		_out_obs.points3D_x.resize( KINECT_W * KINECT_H );
-		_out_obs.points3D_y.resize( KINECT_W * KINECT_H );
-		_out_obs.points3D_z.resize( KINECT_W * KINECT_H );
+		_out_obs.project3DPointsFromDepthImage();
 
-		// originally based on:
-		// depth2cloud.py  - convert Kinect depth image into 3D point cloud, in PLY format
-		//   Ben Bongalon (ben@borglabs.com)
-		// See also: http://nicolas.burrus.name/index.php/Research/KinectCalibration
-		float *xs= &_out_obs.points3D_x[0];
-		float *ys= &_out_obs.points3D_y[0];
-		float *zs= &_out_obs.points3D_z[0];
-
-		const float r_cx = m_cameraParamsDepth.cx();
-		const float r_cy = m_cameraParamsDepth.cy();
-		const float r_fx_inv = 1.0f/m_cameraParamsDepth.fx();
-		const float r_fy_inv = 1.0f/m_cameraParamsDepth.fy();
-
-		for (int r=0;r<KINECT_H;r++)
-			for (int c=0;c<KINECT_W;c++)
-			{
-				*xs = _out_obs.rangeImage.coeff(r,c);
-				*zs++ = (r_cy - r) * (*xs) * r_fx_inv;
-				*ys++ = (r_cx - c) * (*xs) * r_fy_inv;
-				xs++;
-			}
 	}
 
 	// preview in real-time?
