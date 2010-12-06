@@ -27,17 +27,19 @@
    +---------------------------------------------------------------------------+ */
 
 /*
-  Example  : kinect_3d_view
-  Web page : http://www.mrpt.org/Kinect_and_MRPT
+  Application  : kinect-icp-slam
+  Web page     : http://www.mrpt.org/Kinect_and_MRPT
 
-  Purpose  : Demonstrate grabbing from CKinect, multi-threading
-             and live 3D rendering.
+  Purpose      : Demonstrate grabbing from CKinect, multi-threading, live 3D
+				  rendering and 3D ICP for building points of maps.
+
 */
 
 
 #include <mrpt/hwdrivers.h>
 #include <mrpt/gui.h>
 #include <mrpt/maps.h>
+#include <mrpt/slam/CICP.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -140,9 +142,27 @@ void Test_Kinect()
 	TThreadParam thrPar;
 	mrpt::system::TThreadHandle thHandle= mrpt::system::createThreadRef(thread_grabbing ,thrPar);
 
+	// Global points map:
+	CColouredPointsMap  globalPtsMap;
+	globalPtsMap.insertionOptions.minDistBetweenLaserPoints = 0.03;
+	globalPtsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;  // Take points color from RGB+D observations
+
+	// ICP running object:
+	mrpt::slam::CICP  icp;
+	icp.options.thresholdDist = 0.10;
+	icp.options.thresholdAng  = DEG2RAD(5);
+	icp.options.smallestThresholdDist = 0.04;
+	icp.options.ALFA = 0.5;
+	icp.options.maxIterations = 30;
+
+
+	// Current global pose, updated with each ICP run:
+	mrpt::poses::CPose3D  currentCamPose;
+
+
 	// Create window and prepare OpenGL object in the scene:
 	// --------------------------------------------------------
-	mrpt::gui::CDisplayWindow3D  win3D("Kinect 3D view",900,700);
+	mrpt::gui::CDisplayWindow3D  win3D("kinect-icp-slam 3D view",800,600);
 
 	win3D.setCameraAzimuthDeg(140);
 	win3D.setCameraElevationDeg(20);
@@ -153,6 +173,9 @@ void Test_Kinect()
 	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(2.5);
 
+	mrpt::opengl::CPointCloudColouredPtr gl_points_map = mrpt::opengl::CPointCloudColoured::Create();
+	gl_points_map->setPointSize(1.0);
+
 	const double aspect_ratio =  480.0 / 640.0; // kinect.getRowCount() / double( kinect.getColCount() );
 
 	mrpt::opengl::CTexturedPlanePtr gl_img_range 			=  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
@@ -162,6 +185,7 @@ void Test_Kinect()
 		mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
 
 		// Create the Opengl object for the point cloud:
+		scene->insert( gl_points_map );
 		scene->insert( gl_points );
 		scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
 		scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
@@ -230,16 +254,39 @@ void Test_Kinect()
 				win3D.unlockAccess3DScene();
 			}
 
-			// Show 3D points:
+
+			// Show 3D points, at the current camera 3D pose "currentCamPose"
+			// ---------------------------------------------------------------------
 			if (last_obs->hasPoints3D )
 			{
-				//mrpt::slam::CSimplePointsMap  pntsMap;
-				CColouredPointsMap pntsMap;
-				pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
-				pntsMap.loadFromRangeScan(*last_obs);
+				CColouredPointsMap localPntsMap;
+				localPntsMap.insertionOptions.minDistBetweenLaserPoints = 0.03;
+				localPntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
+				localPntsMap.loadFromRangeScan(*last_obs);
+
+				// Run ICP to localize this frame in the 3D global map:
+				// ---------------------------------------------------------------------
+				if (!globalPtsMap.empty())
+				{
+					// Register 3D point cloud against global map:
+					float             runningTime;
+					CICP::TReturnInfo info;
+
+					CPose3DPDFPtr alignedPosePdf = icp.Align3D(
+						&globalPtsMap,
+						&localPntsMap,
+						CPose3D(), // currentCamPose, // Initial gross estimation
+						&runningTime,
+						&info );
+
+					// Keep the mean of the pose:
+					currentCamPose = alignedPosePdf->getMeanVal();
+					cout << "cur pose: " << currentCamPose <<  " nIters:" <<  info.nIterations << " goodness:" << info.goodness << endl;
+				}
 
 				win3D.get3DSceneAndLock();
-					gl_points->loadFromPointsMap(&pntsMap);
+					gl_points->loadFromPointsMap(&localPntsMap);
+					gl_points->setPose(currentCamPose);
 				win3D.unlockAccess3DScene();
 				win3D.repaint();
 			}
@@ -263,6 +310,17 @@ void Test_Kinect()
 			switch(key)
 			{
 				// Some of the keys are processed in this thread:
+				case 's':
+					// Insert 3D observation into map:
+					cout << "Adding frame to the map at pose: " << currentCamPose << endl;
+
+					globalPtsMap.insertObservation(last_obs.pointer(),&currentCamPose);
+
+					win3D.get3DSceneAndLock();
+						gl_points_map->loadFromPointsMap(&globalPtsMap);
+					win3D.unlockAccess3DScene();
+
+					break;
 				case 'o':
 					win3D.setCameraZoom( win3D.getCameraZoom() * 1.2 );
 					win3D.repaint();
@@ -280,8 +338,9 @@ void Test_Kinect()
 
 		win3D.get3DSceneAndLock();
 		win3D.addTextMessage(10,10,
-			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, '0'-'6'-select LED mode, mouse: orbit 3D, ESC: quit"),
+			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, mouse: orbit 3D, ESC: quit"),
 				TColorf(0,0,1), 110, MRPT_GLUT_BITMAP_HELVETICA_18 );
+
 		win3D.addTextMessage(10,45,
 			format("Tilt angle: %.01f deg", thrPar.tilt_ang_deg),
 				TColorf(0,0,1), 111, MRPT_GLUT_BITMAP_HELVETICA_18 );

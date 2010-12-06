@@ -457,6 +457,10 @@ const long CPanelCameraSelection::ID_CHECKBOX4 = wxNewId();
 const long CPanelCameraSelection::ID_CHECKBOX5 = wxNewId();
 const long CPanelCameraSelection::ID_CHECKBOX6 = wxNewId();
 const long CPanelCameraSelection::ID_PANEL1 = wxNewId();
+const long CPanelCameraSelection::ID_CHECKBOX7 = wxNewId();
+const long CPanelCameraSelection::ID_CHECKBOX8 = wxNewId();
+const long CPanelCameraSelection::ID_CHECKBOX9 = wxNewId();
+const long CPanelCameraSelection::ID_PANEL8 = wxNewId();
 const long CPanelCameraSelection::ID_NOTEBOOK1 = wxNewId();
 const long CPanelCameraSelection::ID_CHECKBOX2 = wxNewId();
 //*)
@@ -469,15 +473,18 @@ END_EVENT_TABLE()
 CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 {
 	//(*Initialize(CPanelCameraSelection)
+	wxStaticBoxSizer* StaticBoxSizer2;
 	wxFlexGridSizer* FlexGridSizer1;
 	wxFlexGridSizer* FlexGridSizer2;
 	wxFlexGridSizer* FlexGridSizer11;
+	wxFlexGridSizer* FlexGridSizer4;
 	wxFlexGridSizer* FlexGridSizer3;
 	wxFlexGridSizer* FlexGridSizer16;
 	wxFlexGridSizer* FlexGridSizer10;
 	wxFlexGridSizer* FlexGridSizer13;
 	wxFlexGridSizer* FlexGridSizer18;
 	wxFlexGridSizer* FlexGridSizer12;
+	wxFlexGridSizer* FlexGridSizer5;
 	wxStaticBoxSizer* StaticBoxSizer1;
 
 	Create(parent, id, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("id"));
@@ -593,7 +600,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer18->Fit(Panel1);
 	FlexGridSizer18->SetSizeHints(Panel1);
 	pnSwissRanger = new wxPanel(pagesCameras, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
-	FlexGridSizer2 = new wxFlexGridSizer(3, 2, 0, 0);
+	FlexGridSizer2 = new wxFlexGridSizer(2, 3, 0, 0);
 	wxString __wxRadioBoxChoices_2[2] =
 	{
 	_("USB"),
@@ -625,6 +632,25 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	pnSwissRanger->SetSizer(FlexGridSizer2);
 	FlexGridSizer2->Fit(pnSwissRanger);
 	FlexGridSizer2->SetSizeHints(pnSwissRanger);
+	pnKinect = new wxPanel(pagesCameras, ID_PANEL8, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL8"));
+	FlexGridSizer4 = new wxFlexGridSizer(2, 3, 0, 0);
+	StaticBoxSizer2 = new wxStaticBoxSizer(wxHORIZONTAL, pnKinect, _("Channels to grab: "));
+	FlexGridSizer5 = new wxFlexGridSizer(4, 1, 0, 0);
+	cbKinect_Int = new wxCheckBox(pnKinect, ID_CHECKBOX7, _("Intensity"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX7"));
+	cbKinect_Int->SetValue(true);
+	cbKinect_Int->Disable();
+	FlexGridSizer5->Add(cbKinect_Int, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
+	cbKinect_3D = new wxCheckBox(pnKinect, ID_CHECKBOX8, _("3D point cloud"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX8"));
+	cbKinect_3D->SetValue(false);
+	FlexGridSizer5->Add(cbKinect_3D, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
+	cbKinect_Depth = new wxCheckBox(pnKinect, ID_CHECKBOX9, _("Depth image"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX9"));
+	cbKinect_Depth->SetValue(false);
+	FlexGridSizer5->Add(cbKinect_Depth, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
+	StaticBoxSizer2->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
+	FlexGridSizer4->Add(StaticBoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
+	pnKinect->SetSizer(FlexGridSizer4);
+	FlexGridSizer4->Fit(pnKinect);
+	FlexGridSizer4->SetSizeHints(pnKinect);
 	pagesCameras->AddPage(Panel2, _("Camera (opencv)"), false);
 	pagesCameras->AddPage(Panel3, _("Camera (FFmpeg)"), false);
 	pagesCameras->AddPage(Panel4, _("Camera (custom)"), false);
@@ -632,6 +658,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	pagesCameras->AddPage(Panel6, _("Rawlog file"), false);
 	pagesCameras->AddPage(Panel1, _("Bumblebee"), false);
 	pagesCameras->AddPage(pnSwissRanger, _("SwissRanger ToF"), false);
+	pagesCameras->AddPage(pnKinect, _("Kinect"), false);
 	FlexGridSizer1->Add(pagesCameras, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	cbGrayscale = new wxCheckBox(this, ID_CHECKBOX2, _("Capture in grayscale"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
 	cbGrayscale->SetValue(true);
@@ -830,6 +857,18 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
 			cfg->write(sect,"sr_grab_3d", cbSR_ch3D->GetValue() );
 			cfg->write(sect,"sr_grab_range", cbSR_chRange->GetValue() );
 			cfg->write(sect,"sr_grab_confidence", cbSR_chConf->GetValue() );
+		}
+		break;
+
+		// Kinect
+		// -----------------------------------
+	case 7:
+		{
+			cfg->write(sect,"grabber_type","kinect");
+
+			cfg->write(sect,"kinect_grab_intensity", cbKinect_Int->GetValue() );
+			cfg->write(sect,"kinect_grab_3d", cbKinect_3D->GetValue() );
+			cfg->write(sect,"kinect_grab_range", cbKinect_Depth->GetValue() );
 		}
 		break;
 

@@ -20,7 +20,8 @@ Build-Depends: debhelper (>= 5),
                graphviz,
                texlive | tetex,
                subversion,
-               libdc1394-22-dev
+               libdc1394-22-dev,
+               libusb-1.0-dev
 Standards-Version: 3.9.1
 Homepage: http://www.mrpt.org/
 
@@ -350,6 +351,7 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
   - rawlog-edit
   - navlog-viewer: GUI viewer of navigation logs.
   - features-matching: Computer vision demo.
+  - kinect-icp-slam: Example 3D mapping with Xbox Kinect
   - mono-slam   (Experimental!)
   - prrt-navigator-demo   (Experimental!)
 

@@ -85,6 +85,10 @@ CCameraSensor::CCameraSensor() :
 	m_sr_save_intensity_img	(true),
 	m_sr_save_confidence	(true),
 
+	m_kinect_save_3d		(true),
+	m_kinect_save_range_img (true),
+	m_kinect_save_intensity_img(true),
+
 	m_external_images_own_thread(false),
 	m_cap_cv			(NULL),
 	m_cap_dc1394		(NULL),
@@ -93,6 +97,7 @@ CCameraSensor::CCameraSensor() :
 	m_cap_ffmpeg		(NULL),
 	m_cap_rawlog		(NULL),
 	m_cap_swissranger	(NULL),
+	m_cap_kinect        (NULL),
 	m_camera_grab_decimator (0),
 	m_camera_grab_decimator_counter(0),
 	m_preview_counter	(0),
@@ -200,6 +205,28 @@ void CCameraSensor::initialize()
 			throw e;
 		}
 	}
+	else if (m_grabber_type=="kinect")
+	{
+		cout << "[CCameraSensor::initialize] Kinect camera...\n";
+		m_cap_kinect = new CKinect();
+
+		m_cap_kinect->enableGrab3DPoints( m_kinect_save_3d );
+		m_cap_kinect->enableGrabDepth ( m_kinect_save_range_img );
+		m_cap_kinect->enableGrabRGB( m_kinect_save_intensity_img );
+
+		if (!m_path_for_external_images.empty())
+			m_cap_kinect->setPathForExternalImages( m_path_for_external_images );
+
+		// Open it:
+		try
+		{
+			m_cap_kinect->initialize(); // This will launch an exception if needed.
+		} catch (std::exception &e)
+		{
+			m_state = CGenericSensor::ssError;
+			throw e;
+		}
+	}
 	else if (m_grabber_type=="rawlog")
 	{
 		//m_cap_rawlog
@@ -252,6 +279,7 @@ void CCameraSensor::close()
 	delete_safe(m_cap_ffmpeg);
 	delete_safe(m_cap_rawlog);
 	delete_safe(m_cap_swissranger);
+	delete_safe(m_cap_kinect);
 	delete_safe(m_cap_svs);
 
 	m_state = CGenericSensor::ssInitializing;
@@ -358,6 +386,10 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	m_sr_save_intensity_img = configSource.read_bool( iniSection, "sr_grab_grayscale", m_sr_save_intensity_img );
 	m_sr_save_range_img = configSource.read_bool( iniSection, "sr_grab_range", m_sr_save_range_img );
 	m_sr_save_confidence = configSource.read_bool( iniSection, "sr_grab_confidence", m_sr_save_confidence );
+
+	m_kinect_save_3d = configSource.read_bool( iniSection, "kinect_grab_3d", m_kinect_save_3d );
+	m_kinect_save_intensity_img = configSource.read_bool( iniSection, "kinect_grab_intensity", m_kinect_save_intensity_img );
+	m_kinect_save_range_img = configSource.read_bool( iniSection, "kinect_grab_range", m_kinect_save_range_img );
 
 	// Special stuff: FPS
 	map<double,grabber_dc1394_framerate_t>	map_fps;
@@ -490,6 +522,20 @@ CObservationPtr CCameraSensor::getNextFrame()
 		{	// Error
 			m_state = CGenericSensor::ssError;
 			THROW_EXCEPTION("Error grabbing image from SwissRanger camera.");
+		}
+		else capture_ok = true;
+	}
+	else if (m_cap_kinect)
+	{
+		obs3D = CObservation3DRangeScan::Create();
+
+		bool there_is_obs, hardware_error;
+		m_cap_kinect->getNextObservation(*obs3D, there_is_obs, hardware_error);
+
+		if (!there_is_obs || hardware_error)
+		{	// Error
+			m_state = CGenericSensor::ssError;
+			THROW_EXCEPTION("Error grabbing image from Kinect camera.");
 		}
 		else capture_ok = true;
 	}

@@ -38,6 +38,8 @@
 		- New hardware supported: 
 			- Xbox Kinect. See mrpt::hwdrivers::CKinect and this page: http://www.mrpt.org/Kinect_and_MRPT
 	- <b>Detailed list of changes:</b>
+		- New application:
+			- <a href="http://www.mrpt.org/Application:kinect-3d-slam" >kinect-3d-slam</a>.
 		- Changes related to mathematics, matrices and containers and the port to Eigen:
 			- All is now based on the Eigen library, v3. See <a href="http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes" >this page</a> for a more complete description of all the changes and the reasons of this big change.
 			- Matrices constructors from poses (TPose2D,...) now are explicit. Example: Previous code "CMatrixDouble31 m = myPose2D;" won't build now, should be: "CMatrixDouble31 m = CMatrixDouble31(myPose2D);"

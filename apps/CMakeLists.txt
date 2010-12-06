@@ -26,6 +26,7 @@ add_subdirectory(rbpf-slam)
 add_subdirectory(kf-slam)
 add_subdirectory(icp-slam)
 add_subdirectory(graph-slam)
+add_subdirectory(kinect-3d-slam)
 
 add_subdirectory(simul-beacons)
 add_subdirectory(simul-landmarks)

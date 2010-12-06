@@ -29,16 +29,16 @@
 #define CPANELCAMERASELECTION_H
 
 //(*Headers(CPanelCameraSelection)
-#include <wx/notebook.h>
-#include <wx/sizer.h>
-#include <wx/stattext.h>
-#include <wx/radiobox.h>
-#include <wx/textctrl.h>
-#include <wx/checkbox.h>
 #include <wx/spinctrl.h>
-#include <wx/panel.h>
-#include <wx/choice.h>
+#include <wx/checkbox.h>
+#include <wx/sizer.h>
+#include <wx/notebook.h>
 #include <wx/button.h>
+#include <wx/panel.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+#include <wx/choice.h>
+#include <wx/radiobox.h>
 //*)
 
 class CPanelCameraSelection: public wxPanel
@@ -49,46 +49,50 @@ class CPanelCameraSelection: public wxPanel
 		virtual ~CPanelCameraSelection();
 
 		//(*Declarations(CPanelCameraSelection)
-		wxTextCtrl* edRawlogLabel;
-		wxStaticText* StaticText10;
-		wxStaticText* StaticText9;
-		wxPanel* Panel5;
-		wxButton* btnBrowseRawlogDir;
-		wxRadioBox* rbBumblebeeSel;
-		wxButton* btnBrowseVideo;
-		wxStaticText* StaticText2;
-		wxPanel* Panel4;
-		wxCheckBox* cbSR_chConf;
-		wxStaticText* StaticText6;
-		wxSpinCtrl* opencvCamIndex;
-		wxTextCtrl* edIPcamURL;
-		wxStaticText* StaticText8;
-		wxStaticText* StaticText11;
-		wxTextCtrl* edCustomCamConfig;
-		wxTextCtrl* edSR_IP;
-		wxPanel* Panel1;
-		wxChoice* cbOpencvCamType;
-		wxStaticText* StaticText1;
-		wxStaticText* StaticText3;
-		wxRadioBox* rbSR_usb;
-		wxPanel* Panel6;
-		wxButton* btnBrowseRawlog;
-		wxPanel* Panel3;
-		wxCheckBox* cbGrayscale;
-		wxCheckBox* cbSR_chRange;
-		wxStaticText* StaticText5;
-		wxStaticText* StaticText7;
-		wxTextCtrl* edVideoFile;
-		wxCheckBox* cbBumblebeeRectif;
-		wxCheckBox* cbSR_chIntensity;
 		wxNotebook* pagesCameras;
+		wxPanel* Panel1;
+		wxPanel* Panel6;
 		wxPanel* pnSwissRanger;
-		wxTextCtrl* edRawlogFile;
-		wxTextCtrl* edRawlogImgDir;
-		wxPanel* Panel2;
+		wxTextCtrl* edCustomCamConfig;
+		wxCheckBox* cbSR_chRange;
+		wxCheckBox* cbSR_chIntensity;
+		wxTextCtrl* edIPcamURL;
 		wxCheckBox* cbSR_ch3D;
-		wxStaticText* StaticText4;
+		wxRadioBox* rbSR_usb;
+		wxStaticText* StaticText1;
+		wxStaticText* StaticText10;
+		wxButton* btnBrowseVideo;
+		wxPanel* Panel2;
+		wxCheckBox* cbKinect_3D;
+		wxStaticText* StaticText3;
+		wxPanel* Panel4;
+		wxTextCtrl* edRawlogFile;
+		wxButton* btnBrowseRawlog;
 		wxChoice* cbOpencvResolution;
+		wxPanel* Panel5;
+		wxStaticText* StaticText8;
+		wxPanel* Panel3;
+		wxStaticText* StaticText7;
+		wxCheckBox* cbGrayscale;
+		wxChoice* cbOpencvCamType;
+		wxCheckBox* cbKinect_Depth;
+		wxPanel* pnKinect;
+		wxRadioBox* rbBumblebeeSel;
+		wxTextCtrl* edRawlogLabel;
+		wxStaticText* StaticText4;
+		wxCheckBox* cbSR_chConf;
+		wxCheckBox* cbKinect_Int;
+		wxStaticText* StaticText5;
+		wxStaticText* StaticText2;
+		wxTextCtrl* edSR_IP;
+		wxStaticText* StaticText6;
+		wxCheckBox* cbBumblebeeRectif;
+		wxButton* btnBrowseRawlogDir;
+		wxTextCtrl* edRawlogImgDir;
+		wxSpinCtrl* opencvCamIndex;
+		wxStaticText* StaticText9;
+		wxStaticText* StaticText11;
+		wxTextCtrl* edVideoFile;
 		//*)
 
 	protected:
@@ -132,6 +136,10 @@ class CPanelCameraSelection: public wxPanel
 		static const long ID_CHECKBOX5;
 		static const long ID_CHECKBOX6;
 		static const long ID_PANEL1;
+		static const long ID_CHECKBOX7;
+		static const long ID_CHECKBOX8;
+		static const long ID_CHECKBOX9;
+		static const long ID_PANEL8;
 		static const long ID_NOTEBOOK1;
 		static const long ID_CHECKBOX2;
 		//*)

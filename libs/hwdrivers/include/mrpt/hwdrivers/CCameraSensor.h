@@ -40,6 +40,7 @@
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
+#include <mrpt/hwdrivers/CKinect.h>
 
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
@@ -85,7 +86,7 @@ namespace mrpt
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
 		  *    // Select one of the grabber implementations -----------------------
-		  *    grabber_type       = opencv | dc1394 | bumblebee | ffmpeg | rawlog | swissranger
+		  *    grabber_type       = opencv | dc1394 | bumblebee | ffmpeg | rawlog | swissranger | kinect
 		  *
 		  *    // Options for any grabber_type ------------------------------------
 		  *    preview_decimation = 0     // N<=0 (or not present): No preview; N>0, display 1 out of N captured frames.
@@ -159,6 +160,11 @@ namespace mrpt
 		  *    sr_grab_3d         = true            // whether to save the 3D points
 		  *    sr_grab_range      = true            // whether to save the range image
 		  *    sr_grab_confidence = true            // whether to save the confidence image
+		  *
+		  *    // Options for grabber_type= kinect -------------------------------------
+		  *    kinect_grab_intensity  = true            // whether to save the intensity (RGB) channel
+		  *    kinect_grab_3d         = true            // whether to save the 3D points
+		  *    kinect_grab_range      = true            // whether to save the depth image
 		  *
 		  *  \endcode
 		  *
@@ -247,6 +253,10 @@ namespace mrpt
 			bool 			m_sr_save_intensity_img; //!< Save the 2D intensity image (default: true)
 			bool 			m_sr_save_confidence;	//!< Save the estimated confidence 2D image (default: false)
 
+			bool 			m_kinect_save_3d;			//!< Save the 3D point cloud (default: true)
+			bool 			m_kinect_save_range_img;	//!< Save the 2D range image (default: true)
+			bool 			m_kinect_save_intensity_img; //!< Save the 2D intensity image (default: true)
+
 			bool				m_external_images_own_thread; //!< Whether to launch independent thread
 
 			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
@@ -265,6 +275,7 @@ namespace mrpt
 			CFFMPEG_InputStream					*m_cap_ffmpeg;	//!< The FFMPEG capture object
 			mrpt::utils::CFileGZInputStream		*m_cap_rawlog;	//!< The input file for rawlogs
 			CSwissRanger3DCamera				*m_cap_swissranger; //!< SR 3D camera object.
+			CKinect                             *m_cap_kinect;    //!< Kinect camera object.
 			// =========================
 
 			int			m_camera_grab_decimator;

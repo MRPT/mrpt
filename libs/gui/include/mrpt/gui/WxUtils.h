@@ -171,92 +171,101 @@ namespace mrpt
 				const std::string &sect,
 				mrpt::utils::CConfigFileBase *cfg ) const;
 
-			//(*Declarations(CPanelCameraSelection)
-			wxNotebook* pagesCameras;
-			wxPanel* Panel1;
-			wxPanel* Panel6;
-			wxPanel* pnSwissRanger;
-			wxTextCtrl* edCustomCamConfig;
-			wxCheckBox* cbSR_chRange;
-			wxCheckBox* cbSR_chIntensity;
-			wxTextCtrl* edIPcamURL;
-			wxCheckBox* cbSR_ch3D;
-			wxRadioBox* rbSR_usb;
-			wxStaticText* StaticText1;
-			wxStaticText* StaticText10;
-			wxButton* btnBrowseVideo;
-			wxPanel* Panel2;
-			wxStaticText* StaticText3;
-			wxPanel* Panel4;
-			wxTextCtrl* edRawlogFile;
-			wxButton* btnBrowseRawlog;
-			wxChoice* cbOpencvResolution;
-			wxPanel* Panel5;
-			wxStaticText* StaticText8;
-			wxPanel* Panel3;
-			wxStaticText* StaticText7;
-			wxCheckBox* cbGrayscale;
-			wxChoice* cbOpencvCamType;
-			wxRadioBox* rbBumblebeeSel;
-			wxTextCtrl* edRawlogLabel;
-			wxStaticText* StaticText4;
-			wxCheckBox* cbSR_chConf;
-			wxStaticText* StaticText5;
-			wxStaticText* StaticText2;
-			wxTextCtrl* edSR_IP;
-			wxStaticText* StaticText6;
-			wxCheckBox* cbBumblebeeRectif;
-			wxButton* btnBrowseRawlogDir;
-			wxTextCtrl* edRawlogImgDir;
-			wxSpinCtrl* opencvCamIndex;
-			wxStaticText* StaticText9;
-			wxStaticText* StaticText11;
-			wxTextCtrl* edVideoFile;
-			//*)
-		protected:
+		//(*Declarations(CPanelCameraSelection)
+		wxNotebook* pagesCameras;
+		wxPanel* Panel1;
+		wxPanel* Panel6;
+		wxPanel* pnSwissRanger;
+		wxTextCtrl* edCustomCamConfig;
+		wxCheckBox* cbSR_chRange;
+		wxCheckBox* cbSR_chIntensity;
+		wxTextCtrl* edIPcamURL;
+		wxCheckBox* cbSR_ch3D;
+		wxRadioBox* rbSR_usb;
+		wxStaticText* StaticText1;
+		wxStaticText* StaticText10;
+		wxButton* btnBrowseVideo;
+		wxPanel* Panel2;
+		wxCheckBox* cbKinect_3D;
+		wxStaticText* StaticText3;
+		wxPanel* Panel4;
+		wxTextCtrl* edRawlogFile;
+		wxButton* btnBrowseRawlog;
+		wxChoice* cbOpencvResolution;
+		wxPanel* Panel5;
+		wxStaticText* StaticText8;
+		wxPanel* Panel3;
+		wxStaticText* StaticText7;
+		wxCheckBox* cbGrayscale;
+		wxChoice* cbOpencvCamType;
+		wxCheckBox* cbKinect_Depth;
+		wxPanel* pnKinect;
+		wxRadioBox* rbBumblebeeSel;
+		wxTextCtrl* edRawlogLabel;
+		wxStaticText* StaticText4;
+		wxCheckBox* cbSR_chConf;
+		wxCheckBox* cbKinect_Int;
+		wxStaticText* StaticText5;
+		wxStaticText* StaticText2;
+		wxTextCtrl* edSR_IP;
+		wxStaticText* StaticText6;
+		wxCheckBox* cbBumblebeeRectif;
+		wxButton* btnBrowseRawlogDir;
+		wxTextCtrl* edRawlogImgDir;
+		wxSpinCtrl* opencvCamIndex;
+		wxStaticText* StaticText9;
+		wxStaticText* StaticText11;
+		wxTextCtrl* edVideoFile;
+		//*)
 
-			//(*Identifiers(CPanelCameraSelection)
-			static const long ID_STATICTEXT1;
-			static const long ID_SPINCTRL1;
-			static const long ID_STATICTEXT3;
-			static const long ID_CHOICE1;
-			static const long ID_STATICTEXT6;
-			static const long ID_CHOICE2;
-			static const long ID_PANEL2;
-			static const long ID_STATICTEXT7;
-			static const long ID_TEXTCTRL1;
-			static const long ID_PANEL3;
-			static const long ID_TEXTCTRL6;
-			static const long ID_PANEL4;
-			static const long ID_STATICTEXT8;
-			static const long ID_TEXTCTRL2;
-			static const long ID_BUTTON7;
-			static const long ID_PANEL5;
-			static const long ID_STATICTEXT9;
-			static const long ID_TEXTCTRL3;
-			static const long ID_BUTTON8;
-			static const long ID_STATICTEXT5;
-			static const long ID_TEXTCTRL7;
-			static const long ID_BUTTON9;
-			static const long ID_STATICTEXT10;
-			static const long ID_TEXTCTRL8;
-			static const long ID_STATICTEXT11;
-			static const long ID_PANEL6;
-			static const long ID_RADIOBOX1;
-			static const long ID_CHECKBOX1;
-			static const long ID_STATICTEXT2;
-			static const long ID_PANEL7;
-			static const long ID_RADIOBOX2;
-			static const long ID_STATICTEXT4;
-			static const long ID_TEXTCTRL4;
-			static const long ID_CHECKBOX3;
-			static const long ID_CHECKBOX4;
-			static const long ID_CHECKBOX5;
-			static const long ID_CHECKBOX6;
-			static const long ID_PANEL1;
-			static const long ID_NOTEBOOK1;
-			static const long ID_CHECKBOX2;
-			//*)
+	protected:
+
+		//(*Identifiers(CPanelCameraSelection)
+		static const long ID_STATICTEXT1;
+		static const long ID_SPINCTRL1;
+		static const long ID_STATICTEXT3;
+		static const long ID_CHOICE1;
+		static const long ID_STATICTEXT6;
+		static const long ID_CHOICE2;
+		static const long ID_PANEL2;
+		static const long ID_STATICTEXT7;
+		static const long ID_TEXTCTRL1;
+		static const long ID_PANEL3;
+		static const long ID_TEXTCTRL6;
+		static const long ID_PANEL4;
+		static const long ID_STATICTEXT8;
+		static const long ID_TEXTCTRL2;
+		static const long ID_BUTTON7;
+		static const long ID_PANEL5;
+		static const long ID_STATICTEXT9;
+		static const long ID_TEXTCTRL3;
+		static const long ID_BUTTON8;
+		static const long ID_STATICTEXT5;
+		static const long ID_TEXTCTRL7;
+		static const long ID_BUTTON9;
+		static const long ID_STATICTEXT10;
+		static const long ID_TEXTCTRL8;
+		static const long ID_STATICTEXT11;
+		static const long ID_PANEL6;
+		static const long ID_RADIOBOX1;
+		static const long ID_CHECKBOX1;
+		static const long ID_STATICTEXT2;
+		static const long ID_PANEL7;
+		static const long ID_RADIOBOX2;
+		static const long ID_STATICTEXT4;
+		static const long ID_TEXTCTRL4;
+		static const long ID_CHECKBOX3;
+		static const long ID_CHECKBOX4;
+		static const long ID_CHECKBOX5;
+		static const long ID_CHECKBOX6;
+		static const long ID_PANEL1;
+		static const long ID_CHECKBOX7;
+		static const long ID_CHECKBOX8;
+		static const long ID_CHECKBOX9;
+		static const long ID_PANEL8;
+		static const long ID_NOTEBOOK1;
+		static const long ID_CHECKBOX2;
+		//*)
 
 		private:
 
