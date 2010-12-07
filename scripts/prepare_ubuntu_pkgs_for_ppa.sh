@@ -37,7 +37,8 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 # -------------------------------------------------------------------
 # And now create the custom packages for each Ubuntu distribution
 # -------------------------------------------------------------------
-LST_DISTROS=(jaunty karmic lucid maverick)
+#LST_DISTROS=(jaunty karmic lucid maverick)
+LST_DISTROS=maverick
 
 count=${#LST_DISTROS[@]}
 IDXS=$(seq 0 $(expr $count - 1))
@@ -63,7 +64,7 @@ do
 	DEBCHANGE_CMD="--newversion 1:${MRPT_VERSION_STR}svn${MRPT_VERSION_SVN}-1~ppa1~${DEBIAN_DIST}"
 	echo "Changing to a new Debian version: ${DEBCHANGE_CMD}"
 	echo "Adding a new entry to debian/changelog for distribution ${DEBIAN_DIST}"
-	DEBEMAIL=${EMAIL4DEB} debchange $DEBCHANGE_CMD --distribution ${DEBIAN_DIST} --force-distribution New version of upstream sources.
+	DEBEMAIL=${EMAIL4DEB} debchange $DEBCHANGE_CMD -b --distribution ${DEBIAN_DIST} --force-distribution New version of upstream sources.
 
 	cp changelog /tmp/my_changelog 
 

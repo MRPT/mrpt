@@ -36,8 +36,8 @@
 
 #include <mrpt/hwdrivers/link_pragmas.h>
 
-// MRPT implements a common interface to Kinect disregarding the 
-//  actual underlying library. These macros are defined for internal 
+// MRPT implements a common interface to Kinect disregarding the
+//  actual underlying library. These macros are defined for internal
 //  MRPT usage to know which library to use:
 #if MRPT_HAS_KINECT
 #	if defined(_MSC_VER)
@@ -200,6 +200,19 @@ namespace mrpt
 			/** Get the col count in the camera images, loaded automatically upon camera open(). */
 			inline size_t getColCount() const { return m_cameraParamsRGB.ncols; }
 
+			/** Get a const reference to the depth camera calibration parameters */
+			const mrpt::utils::TCamera  & getCameraParamsIntensity() const { return m_cameraParamsRGB; }
+			void setCameraParamsIntensity(const mrpt::utils::TCamera  &p) { m_cameraParamsRGB=p; }
+
+			/** Get a const reference to the depth camera calibration parameters */
+			const mrpt::utils::TCamera  & getCameraParamsDepth() const { return m_cameraParamsDepth; }
+			void setCameraParamsDepth(const mrpt::utils::TCamera  &p) { m_cameraParamsDepth=p; }
+
+			/** Set the pose of the intensity camera wrt the depth camera */
+			void setRelativePoseIntensityWrtDepth(const mrpt::poses::CPose3D &p) { m_relativePoseIntensityWRTDepth=p; }
+			const mrpt::poses::CPose3D &getRelativePoseIntensityWrtDepth() const { return m_relativePoseIntensityWRTDepth; }
+
+
 			/** Enable/disable the grabbing of the RGB channel */
 			inline void enableGrabRGB(bool enable=true) { m_grab_image=enable; }
 			inline bool isGrabRGBEnabled() const { return m_grab_image; }
@@ -245,6 +258,7 @@ namespace mrpt
 
 			mrpt::utils::TCamera  	m_cameraParamsRGB;  //!< Params for the RGB camera
 			mrpt::utils::TCamera  	m_cameraParamsDepth;  //!< Params for the Depth camera
+			mrpt::poses::CPose3D    m_relativePoseIntensityWRTDepth; //!< See mrpt::slam::CObservation3DRangeScan for a diagram of this pose
 
 			double  m_maxRange; //!< Sensor max range (meters)
 

@@ -59,6 +59,7 @@ CObservation3DRangeScan::CObservation3DRangeScan( ) :
 	hasConfidenceImage(false),
 	cameraParams(),
 	cameraParamsIntensity(),
+	relativePoseIntensityWRTDepth(),
 	maxRange( 5.0f ),
 	sensorPose(),
 	stdError( 0.01f )
@@ -103,6 +104,7 @@ void  CObservation3DRangeScan::writeToStream(CStream &out, int *version) const
 
 		out << cameraParams; // New in v2
 		out << cameraParamsIntensity; // New in v4
+		out << relativePoseIntensityWRTDepth; // New in v4
 
 		out << stdError;
 		out << timestamp;
@@ -181,9 +183,15 @@ void  CObservation3DRangeScan::readFromStream(CStream &in, int version)
 					in >> cameraParams;
 
 					if (version>=4)
-						in >> cameraParamsIntensity;
+					{
+						in >> cameraParamsIntensity
+						   >> relativePoseIntensityWRTDepth;
+					}
 					else
+					{
 						cameraParamsIntensity = cameraParams;
+						relativePoseIntensityWRTDepth = CPose3D();
+					}
 				}
 			}
 

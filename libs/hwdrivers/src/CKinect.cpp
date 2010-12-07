@@ -95,7 +95,7 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 bool  range2meters_done = false;
 #ifdef MRPT_KINECT_DEPTH_10BIT
 #	define RANGES_TABLE       1024   // 10bit
-#	define RANGES_TABLE_MASK  0x03FF // 10bit 
+#	define RANGES_TABLE_MASK  0x03FF // 10bit
 #else
 #	define RANGES_TABLE       2048
 #	define RANGES_TABLE_MASK  0x07FF
@@ -144,6 +144,7 @@ CKinect::CKinect()  :
 	m_clnui_motor(NULL),
 #endif
 
+	m_relativePoseIntensityWRTDepth(0,-0.02,0, DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90)),
 	m_user_device_number(0),
 	m_grab_image(true),
 	m_grab_depth(true),
@@ -388,7 +389,7 @@ void CKinect::open()
 	freenect_start_depth(f_dev);
 	freenect_start_video(f_dev);
 
-#endif // MRPT_KINECT_WITH_LIBFREENECT 
+#endif // MRPT_KINECT_WITH_LIBFREENECT
 
 #if MRPT_KINECT_WITH_CLNUI  // ----->  CL NUI SDK
 	// Open handles:
@@ -406,7 +407,7 @@ void CKinect::open()
 	if (!ret)
 		THROW_EXCEPTION("Can't start grabbing from Kinect camera (StartNUICamera failed)")
 
-#endif // MRPT_KINECT_WITH_CLNUI  
+#endif // MRPT_KINECT_WITH_CLNUI
 
 }
 
@@ -522,7 +523,7 @@ void CKinect::getNextObservation(
 	const int waitTimeout = 200;
 	const bool there_is_rgb   = GetNUICameraColorFrameRGB24(m_clnui_cam, &m_buf_rgb[0],waitTimeout);
 	const bool there_is_depth = GetNUICameraDepthFrameRAW(m_clnui_cam, (PUSHORT)&m_buf_depth[0],waitTimeout);
-	
+
 	there_is_obs = there_is_rgb && there_is_depth;
 
 	if (!there_is_obs)
@@ -570,6 +571,7 @@ void CKinect::getNextObservation(
 	_out_obs.sensorLabel = m_sensorLabel;
 	_out_obs.timestamp = mrpt::system::now();
 	_out_obs.sensorPose = m_sensorPoseOnRobot;
+	_out_obs.relativePoseIntensityWRTDepth = m_relativePoseIntensityWRTDepth;
 
 	_out_obs.cameraParams          = m_cameraParamsDepth;
 	_out_obs.cameraParamsIntensity = m_cameraParamsRGB;

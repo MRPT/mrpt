@@ -178,7 +178,7 @@ fi
 echo "Adding a new entry to debian/changelog..."
 echo DEBEMAIL="Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>" debchange $DEBCHANGE_CMD --distribution unstable --force-distribution New version of upstream sources.
 
-DEBEMAIL="Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>" debchange $DEBCHANGE_CMD --distribution unstable --force-distribution New version of upstream sources.
+DEBEMAIL="Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>" debchange $DEBCHANGE_CMD -b --distribution unstable --force-distribution New version of upstream sources.
 
 echo "Copying back the new changelog to a temporary file in: ${MRPT_EXTERN_DEBIAN_DIR}changelog.new"
 cp debian/changelog ${MRPT_EXTERN_DEBIAN_DIR}changelog.new

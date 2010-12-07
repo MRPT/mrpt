@@ -51,8 +51,16 @@ namespace slam
 	 *    - 2D intensity image (as a CImage): A logarithmic A-law compression is used to convert the original 16bit intensity to a more standard 8bit graylevel.
 	 *    - 2D confidence image (as a CImage): For each pixel, a 0x00 and a 0xFF mean the lowest and highest confidence levels, respectively.
 	 *
-	 *  The coordinates of the 3D point cloud are in meters with respect to the front face of the camera (i.e. a small offset ~1cm in front of the physical focal point),
+	 *  The coordinates of the 3D point cloud are in meters with respect to the depth camera origin of coordinates
+	 *    (in SwissRanger, the front face of the camera: a small offset ~1cm in front of the physical focal point),
 	 *    with the +X axis pointing forward, +Y pointing left-hand and +Z pointing up.
+	 *  The field CObservation3DRangeScan::relativePoseIntensityWRTDepth describes the change of coordinates from
+	 *    the depth camera to the intensity (RGB or grayscale) camera. In a SwissRanger camera, both cameras coincide,
+	 *    but in Microsoft Kinect there is a difference, as shown in this figure:
+	 *
+	 *  <div align=center>
+	 *   <img src="CObservation3DRangeScan_figRefSystem.png">
+	 *  </div>
 	 *
 	 *  The 2D images and matrices are stored as common images, with an up->down rows order and left->right, as usual.
 	 *   Optionally, the intensity and confidence channels can be set to delayed-load images for off-rawlog storage so it saves
@@ -157,6 +165,12 @@ namespace slam
 
 		mrpt::utils::TCamera	cameraParams;	//!< Projection parameters of the depth camera.
 		mrpt::utils::TCamera	cameraParamsIntensity;	//!< Projection parameters of the intensity (graylevel or RGB) camera.
+
+		/** Relative pose of the intensity camera wrt the depth camera (which is the coordinates origin for this observation).
+		  *  In a SwissRanger camera, this will be (0,0,0,0,0,0) since both cameras coincide.
+		  *  In a Kinect, this will include a small lateral displacement and a rotation, according to the drawing on the top of this page.
+		  */
+		mrpt::poses::CPose3D    relativePoseIntensityWRTDepth;
 
 
 		float  	maxRange;	//!< The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
