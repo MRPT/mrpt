@@ -45,6 +45,9 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 #	include <CLNUIDevice.h>
 #	define KINECT_W 640
 #	define KINECT_H 480
+#else
+#	define KINECT_W 640
+#	define KINECT_H 480
 #endif
 
 #if MRPT_KINECT_WITH_LIBFREENECT
@@ -262,11 +265,13 @@ bool CKinect::isOpen() const
 {
 #if MRPT_KINECT_WITH_LIBFREENECT
 	return f_dev != NULL;
+#elif MRPT_KINECT_WITH_CLNUI
+	return m_clnui_cam != NULL;
+#else
+	return false;
 #endif
 
-#if MRPT_KINECT_WITH_CLNUI
-	return m_clnui_cam != NULL;
-#endif
+#
 }
 
 
