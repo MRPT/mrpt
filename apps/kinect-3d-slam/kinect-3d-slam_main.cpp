@@ -27,11 +27,13 @@
    +---------------------------------------------------------------------------+ */
 
 /*
-  Application  : kinect-icp-slam
+  Application  : kinect-3d-slam
   Web page     : http://www.mrpt.org/Kinect_and_MRPT
 
   Purpose      : Demonstrate grabbing from CKinect, multi-threading, live 3D
-				  rendering and 3D ICP for building points of maps.
+				  rendering and features tracking.
+
+  Started by Jose Luis Blanco, Dec 6th, 2010.
 
 */
 
@@ -39,10 +41,13 @@
 #include <mrpt/hwdrivers.h>
 #include <mrpt/gui.h>
 #include <mrpt/maps.h>
-#include <mrpt/slam/CICP.h>
+#include <mrpt/vision.h>
+#include <mrpt/scanmatching.h>
 
 using namespace mrpt;
+using namespace mrpt::vision;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
@@ -142,27 +147,49 @@ void Test_Kinect()
 	TThreadParam thrPar;
 	mrpt::system::TThreadHandle thHandle= mrpt::system::createThreadRef(thread_grabbing ,thrPar);
 
+
+	// Feature tracking variables:
+	CFeatureList	trackedFeats;
+	unsigned int	step_num = 0;
+
+	bool  SHOW_FEAT_IDS = true;
+	bool  SHOW_RESPONSES = true;
+
+	CGenericFeatureTrackerAutoPtr  tracker;
+
+	// "CFeatureTracker_KL" is by far the most robust implementation for now:
+	tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_KL );
+	tracker->enableTimeLogger(true); // Do time profiling.
+
+	// Set of parameters common to any tracker implementation:
+	// To see all the existing params and documentation, see mrpt::vision::CGenericFeatureTracker
+	//  http://reference.mrpt.org/svn/structmrpt_1_1vision_1_1_c_generic_feature_tracker.html
+	tracker->extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
+	tracker->extra_params["add_new_feat_min_separation"]  = 25;
+	tracker->extra_params["add_new_feat_max_features"]    = 150;
+	tracker->extra_params["add_new_feat_patch_size"]      = 21;
+
+	tracker->extra_params["minimum_KLT_response_to_add"]      = 50;
+	tracker->extra_params["check_KLT_response_every"]	= 5;	// Re-check the KLT-response to assure features are in good points.
+	tracker->extra_params["minimum_KLT_response"]	= 20;	// Re-check the KLT-response to assure features are in good points.
+
+	tracker->extra_params["update_patches_every"]		= 0;  // Update patches
+
+
+	// Specific params for "CFeatureTracker_KL"
+	tracker->extra_params["window_width"]  = 5;
+	tracker->extra_params["window_height"] = 5;
+
+
 	// Global points map:
 	CColouredPointsMap  globalPtsMap;
-	globalPtsMap.insertionOptions.minDistBetweenLaserPoints = 0.03;
 	globalPtsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;  // Take points color from RGB+D observations
-
-	// ICP running object:
-	mrpt::slam::CICP  icp;
-	icp.options.thresholdDist = 0.10;
-	icp.options.thresholdAng  = DEG2RAD(5);
-	icp.options.smallestThresholdDist = 0.04;
-	icp.options.ALFA = 0.5;
-	icp.options.maxIterations = 30;
-
-
-	// Current global pose, updated with each ICP run:
-	mrpt::poses::CPose3D  currentCamPose;
+	// globalPtsMap.colorScheme.scheme = CColouredPointsMap::cmFromHeightRelativeToSensorGray;
 
 
 	// Create window and prepare OpenGL object in the scene:
 	// --------------------------------------------------------
-	mrpt::gui::CDisplayWindow3D  win3D("kinect-icp-slam 3D view",800,600);
+	mrpt::gui::CDisplayWindow3D  win3D("kinect-3d-slam 3D view",800,600);
 
 	win3D.setCameraAzimuthDeg(140);
 	win3D.setCameraElevationDeg(20);
@@ -173,13 +200,17 @@ void Test_Kinect()
 	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(2.5);
 
+	mrpt::opengl::CSetOfObjectsPtr gl_curFeats = mrpt::opengl::CSetOfObjects::Create();
+	mrpt::opengl::CSetOfObjectsPtr gl_keyframes = mrpt::opengl::CSetOfObjects::Create();
+
 	mrpt::opengl::CPointCloudColouredPtr gl_points_map = mrpt::opengl::CPointCloudColoured::Create();
-	gl_points_map->setPointSize(1.0);
+	gl_points_map->setPointSize(2.0);
 
 	const double aspect_ratio =  480.0 / 640.0; // kinect.getRowCount() / double( kinect.getColCount() );
 
-	mrpt::opengl::CTexturedPlanePtr gl_img_range 			=  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
-	mrpt::opengl::CTexturedPlanePtr gl_img_intensity 		=  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
+	mrpt::opengl::CTexturedPlanePtr gl_img_intensity =  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
+
+	mrpt::opengl::CSetOfObjectsPtr gl_cur_cam_corner = mrpt::opengl::stock_objects::CornerXYZSimple(0.4,4);
 
 	{
 		mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
@@ -187,40 +218,39 @@ void Test_Kinect()
 		// Create the Opengl object for the point cloud:
 		scene->insert( gl_points_map );
 		scene->insert( gl_points );
+		scene->insert( gl_curFeats );
 		scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
-		scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 
-		const int VW_WIDTH = 250;	// Size of the viewport into the window, in pixel units.
+		scene->insert( gl_cur_cam_corner );
+
+		const int VW_WIDTH = 350;	// Size of the viewport into the window, in pixel units.
 		const int VW_HEIGHT = aspect_ratio*VW_WIDTH;
-		const int VW_GAP = 10;
 
-		// Create the Opengl objects for the planar images, as textured planes, each in a separate viewport:
-		win3D.addTextMessage(30,-10-1*(VW_GAP+VW_HEIGHT),"Range data",TColorf(1,1,1), 1, MRPT_GLUT_BITMAP_HELVETICA_12 );
-		opengl::COpenGLViewportPtr viewRange = scene->createViewport("view2d_range");
-		scene->insert( gl_img_range, "view2d_range");
-		viewRange->setViewportPosition(5,-10-1*(VW_GAP+VW_HEIGHT), VW_WIDTH,VW_HEIGHT);
-		viewRange->setTransparent(true);
-		viewRange->getCamera().setOrthogonal(true);
-		viewRange->getCamera().setAzimuthDegrees(90);
-		viewRange->getCamera().setElevationDegrees(90);
-		viewRange->getCamera().setZoomDistance(1.0);
-
-		win3D.addTextMessage(30, -10-2*(VW_GAP+VW_HEIGHT),"Intensity data",TColorf(1,1,1), 2, MRPT_GLUT_BITMAP_HELVETICA_12 );
+		// Create the Opengl objects for the planar images each in a separate viewport:
 		opengl::COpenGLViewportPtr viewInt = scene->createViewport("view2d_int");
 		scene->insert( gl_img_intensity, "view2d_int");
-		viewInt->setViewportPosition(5, -10-2*(VW_GAP+VW_HEIGHT), VW_WIDTH,VW_HEIGHT );
+		viewInt->setViewportPosition(2,2, VW_WIDTH,VW_HEIGHT);
 		viewInt->setTransparent(true);
 		viewInt->getCamera().setOrthogonal(true);
 		viewInt->getCamera().setAzimuthDegrees(90);
 		viewInt->getCamera().setElevationDegrees(90);
-		viewInt->getCamera().setZoomDistance(1.0);
+		viewInt->getCamera().setZoomDistance(0.6);
 
 		win3D.unlockAccess3DScene();
 		win3D.repaint();
 	}
 
 
+
+	CImage	previous_image;
+
+	map<TFeatureID, TPoint3D>   lastVisibleFeats;
+	std::vector<TPose3D>        camera_key_frames_path;  // The 6D path of the Kinect camera.
+	CPose3D                     currentCamPose_wrt_last; // wrt last pose in "camera_key_frames_path"
+
+	bool gl_keyframes_must_refresh = true;  // Need to update gl_keyframes from camera_key_frames_path??
 	CObservation3DRangeScanPtr  last_obs;
+	string str_status;
 
 	while (win3D.isOpen() && !thrPar.quit)
 	{
@@ -231,62 +261,205 @@ void Test_Kinect()
 			// It IS a new observation:
 			last_obs = possiblyNewObs;
 
+			// Feature tracking -------------------------------------------
+			ASSERT_(last_obs->hasIntensityImage)
+
+			CImage theImg;  // The grabbed image:
+			theImg = last_obs->intensityImage;
+
+			// Do tracking:
+			if (step_num>1)  // we need "previous_image" to be valid.
+			{
+				tracker->trackFeatures(previous_image, theImg, trackedFeats);
+
+				// Remove those now out of the image plane:
+				CFeatureList::iterator itFeat = trackedFeats.begin();
+				while (itFeat!=trackedFeats.end())
+				{
+					const TFeatureTrackStatus status = (*itFeat)->track_status;
+					bool eras = (status_TRACKED!=status && status_IDLE!=status);
+					if (!eras)
+					{
+						// Also, check if it's too close to the image border:
+						const float x= (*itFeat)->x;
+						const float y= (*itFeat)->y;
+						static const float MIN_DIST_MARGIN_TO_STOP_TRACKING = 10;
+						if (x<MIN_DIST_MARGIN_TO_STOP_TRACKING  || y<MIN_DIST_MARGIN_TO_STOP_TRACKING ||
+							x>(last_obs->cameraParamsIntensity.ncols-MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
+							y>(last_obs->cameraParamsIntensity.nrows-MIN_DIST_MARGIN_TO_STOP_TRACKING))
+						{
+							eras = true;
+						}
+					}
+					if (eras)	// Erase or keep?
+						itFeat = trackedFeats.erase(itFeat);
+					else ++itFeat;
+				}
+			}
+
+			// Create list of 3D features in space, wrt current camera pose:
+			// --------------------------------------------------------------------
+			map<TFeatureID, TPoint3D>  curVisibleFeats;
+			for (CFeatureList::iterator itFeat = trackedFeats.begin();itFeat!=trackedFeats.end();++itFeat)
+			{
+				// Pixel coordinates in the intensity image:
+				const int int_x= (*itFeat)->x;
+				const int int_y= (*itFeat)->y;
+
+				// Convert to pixel coords in the range image:
+				//  APPROXIMATION: Assume coordinates are equal (that's not exact!!)
+				const int x = int_x;
+				const int y = int_y;
+
+				// Does this (x,y) have valid range data?
+				const float d = last_obs->rangeImage(y,x);
+				if (d>0.05 && d<10.0)
+				{
+					ASSERT_( size_t(last_obs->rangeImage.cols()*last_obs->rangeImage.rows()) == last_obs->points3D_x.size() )
+					const size_t nPt = last_obs->rangeImage.cols() * y + x;
+					curVisibleFeats[(*itFeat)->ID] = TPoint3D( last_obs->points3D_x[nPt],last_obs->points3D_y[nPt],last_obs->points3D_z[nPt] );
+				}
+			}
+
+			// Load local points map from 3D points + color:
+			CColouredPointsMap localPntsMap;
+			localPntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
+			localPntsMap.loadFromRangeScan(*last_obs);
+
+			// Estimate our current camera pose from feature2feature matching:
+			// --------------------------------------------------------------------
+			if (!lastVisibleFeats.empty())
+			{
+				TMatchingPairList  corrs; // pairs of correspondences
+
+				for (map<TFeatureID, TPoint3D>::const_iterator itCur= curVisibleFeats.begin();itCur!=curVisibleFeats.end();++itCur)
+				{
+					map<TFeatureID, TPoint3D>::const_iterator itFound = lastVisibleFeats.find(itCur->first);
+					if (itFound!=lastVisibleFeats.end())
+					{
+						corrs.push_back( TMatchingPair(
+							itFound->first,
+							itCur->first,
+							itFound->second.x,itFound->second.y,itFound->second.z,
+							itCur->second.x,itCur->second.y,itCur->second.z
+							));
+					}
+				}
+
+				if (corrs.size()>=3)
+				{
+					// Find matchings:
+					CPose3D  relativePose;
+					double  scale;
+					vector_int  inliers_idx;
+					const bool register_ok = mrpt::scanmatching::leastSquareErrorRigidTransformation6DRANSAC( //leastSquareErrorRigidTransformation6D(
+						corrs,  // in correspondences
+						relativePose, // out relative pose
+						scale,  // out scale
+						inliers_idx,
+						3 // minimum inliers
+						);
+
+					str_status = mrpt::format("%d corrs | inliers: %d | rel.pose: %s ", int(corrs.size()), int(inliers_idx.size()), relativePose.asString().c_str() );
+
+					if (register_ok && std::abs(scale-1.0)<0.1)
+					{
+						// Seems a good match:
+						if ( ( relativePose.norm() > 0.10 ||
+							std::abs(relativePose.yaw())>DEG2RAD(10) ||
+							std::abs(relativePose.pitch())>DEG2RAD(10) ||
+							std::abs(relativePose.roll())>DEG2RAD(10) ))
+						{
+							// Accept this as a new key-frame pose ------------
+							// Append new global pose of this key-frame:
+
+							const CPose3D new_keyframe_global = CPose3D(*camera_key_frames_path.rbegin()) + relativePose;
+
+							camera_key_frames_path.push_back( TPose3D(new_keyframe_global) );
+
+							gl_keyframes_must_refresh = true;
+
+							currentCamPose_wrt_last = CPose3D();  // It's (0,0,0) since the last key-frame is the current pose!
+							lastVisibleFeats = curVisibleFeats;
+
+							cout << "Adding new key-frame: pose="<< new_keyframe_global << endl;
+
+							// Update global map: append another map at a given position:
+							globalPtsMap.insertObservation(last_obs.pointer(),&new_keyframe_global);
+							win3D.get3DSceneAndLock();
+								gl_points_map->loadFromPointsMap(&globalPtsMap);
+							win3D.unlockAccess3DScene();
+						}
+						else
+						{
+							currentCamPose_wrt_last = relativePose;
+							//cout << "cur pose: " << currentCamPose_wrt_last << endl;
+						}
+					}
+				}
+			}
+
+			if (camera_key_frames_path.empty() || lastVisibleFeats.empty())
+			{
+				// First iteration:
+				camera_key_frames_path.clear();
+				camera_key_frames_path.push_back(TPose3D(0,0,0,0,0,0));
+				gl_keyframes_must_refresh = true;
+				lastVisibleFeats = curVisibleFeats;
+
+				// Update global map:
+				globalPtsMap.clear();
+				globalPtsMap.insertObservation(last_obs.pointer() );
+
+				win3D.get3DSceneAndLock();
+					gl_points_map->loadFromPointsMap(&globalPtsMap);
+				win3D.unlockAccess3DScene();
+			}
+
+
+			// Save the image for the next step:
+			previous_image = theImg;
+
+			// Draw marks on the RGB image:
+			theImg.selectTextFont("10x20");
+			{	// Tracked feats:
+				theImg.drawFeatures(trackedFeats, TColor(0,0,255), SHOW_FEAT_IDS, SHOW_RESPONSES);
+				theImg.textOut(3,22,format("# feats: %u", (unsigned int)trackedFeats.size()  ),TColor(200,20,20) );
+			}
+
 			// Update visualization ---------------------------------------
 
-			// Show ranges as 2D:
-			if (last_obs->hasRangeImage )
-			{
-				mrpt::utils::CImage  img;
-				// Normalize the image
-				const CMatrixFloat  range2D = last_obs->rangeImage * (1.0/ 5.0); //kinect.getMaxRange());
-				img.setFromMatrix(range2D);
+			// Show intensity image
+			win3D.get3DSceneAndLock();
+				//gl_img_intensity->assignImage(last_obs->intensityImage);
+				gl_img_intensity->assignImage(theImg);
+			win3D.unlockAccess3DScene();
 
-				win3D.get3DSceneAndLock();
-					gl_img_range->assignImage_fast(img);
-				win3D.unlockAccess3DScene();
-			}
-
-			// Show intensity image:
-			if (last_obs->hasIntensityImage )
-			{
-				win3D.get3DSceneAndLock();
-					gl_img_intensity->assignImage(last_obs->intensityImage);
-				win3D.unlockAccess3DScene();
-			}
-
-
-			// Show 3D points, at the current camera 3D pose "currentCamPose"
+			// Show 3D points & current visible feats, at the current camera 3D pose "currentCamPose_wrt_last"
 			// ---------------------------------------------------------------------
 			if (last_obs->hasPoints3D )
 			{
-				CColouredPointsMap localPntsMap;
-				localPntsMap.insertionOptions.minDistBetweenLaserPoints = 0.03;
-				localPntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
-				localPntsMap.loadFromRangeScan(*last_obs);
-
-				// Run ICP to localize this frame in the 3D global map:
-				// ---------------------------------------------------------------------
-				if (!globalPtsMap.empty())
-				{
-					// Register 3D point cloud against global map:
-					float             runningTime;
-					CICP::TReturnInfo info;
-
-					CPose3DPDFPtr alignedPosePdf = icp.Align3D(
-						&globalPtsMap,
-						&localPntsMap,
-						CPose3D(), // currentCamPose, // Initial gross estimation
-						&runningTime,
-						&info );
-
-					// Keep the mean of the pose:
-					currentCamPose = alignedPosePdf->getMeanVal();
-					cout << "cur pose: " << currentCamPose <<  " nIters:" <<  info.nIterations << " goodness:" << info.goodness << endl;
-				}
-
+				const CPose3D curGlobalPose = CPose3D(*camera_key_frames_path.rbegin()) + currentCamPose_wrt_last;
 				win3D.get3DSceneAndLock();
+					// All 3D points:
 					gl_points->loadFromPointsMap(&localPntsMap);
-					gl_points->setPose(currentCamPose);
+					gl_points->setPose(curGlobalPose);
+					gl_cur_cam_corner->setPose(curGlobalPose);
+
+					// Current visual landmarks:
+					gl_curFeats->clear();
+					for (map<TFeatureID, TPoint3D>::const_iterator it=curVisibleFeats.begin();it!=curVisibleFeats.end();++it)
+					{
+						static double D = 0.02;
+						mrpt::opengl::CBoxPtr box = mrpt::opengl::CBox::Create(TPoint3D(-D,-D,-D),TPoint3D(D,D,D));
+						box->setWireframe(true);
+						box->setName(format("%d",int(it->first)));
+						box->enableShowName(true);
+						box->setLocation(it->second);
+						gl_curFeats->insert(box);
+					}
+					gl_curFeats->setPose(curGlobalPose);
+
 				win3D.unlockAccess3DScene();
 				win3D.repaint();
 			}
@@ -298,7 +471,24 @@ void Test_Kinect()
 
 			win3D.repaint();
 
+			step_num++;
+
 		} // end update visualization:
+
+		if (gl_keyframes_must_refresh)
+		{
+			gl_keyframes_must_refresh = false;
+			cout << "Updating gl_keyframes with " << camera_key_frames_path.size() << " frames.\n";
+			win3D.get3DSceneAndLock();
+				gl_keyframes->clear();
+				for (size_t i=0;i<camera_key_frames_path.size();i++)
+				{
+					CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZSimple(0.3,3);
+					obj->setPose( camera_key_frames_path[i]);
+					gl_keyframes->insert(obj);
+				}
+			win3D.unlockAccess3DScene();
+		}
 
 
 		// Process possible keyboard commands:
@@ -310,12 +500,11 @@ void Test_Kinect()
 			switch(key)
 			{
 				// Some of the keys are processed in this thread:
-				case 's':
-					// Insert 3D observation into map:
-					cout << "Adding frame to the map at pose: " << currentCamPose << endl;
-
-					globalPtsMap.insertObservation(last_obs.pointer(),&currentCamPose);
-
+				case 'r':
+					lastVisibleFeats.clear();
+					camera_key_frames_path.clear();
+					gl_keyframes_must_refresh = true;
+					globalPtsMap.clear();
 					win3D.get3DSceneAndLock();
 						gl_points_map->loadFromPointsMap(&globalPtsMap);
 					win3D.unlockAccess3DScene();
@@ -337,13 +526,11 @@ void Test_Kinect()
 		}
 
 		win3D.get3DSceneAndLock();
-		win3D.addTextMessage(10,10,
-			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, mouse: orbit 3D, ESC: quit"),
-				TColorf(0,0,1), 110, MRPT_GLUT_BITMAP_HELVETICA_18 );
-
-		win3D.addTextMessage(10,45,
-			format("Tilt angle: %.01f deg", thrPar.tilt_ang_deg),
-				TColorf(0,0,1), 111, MRPT_GLUT_BITMAP_HELVETICA_18 );
+		win3D.addTextMessage(2,-30,
+			format("'r': reset, 'o'/'i': zoom out/in, mouse: orbit 3D, ESC: quit"),
+				TColorf(1,1,1), 110, MRPT_GLUT_BITMAP_HELVETICA_12 );
+		win3D.addTextMessage(2,-50,str_status,
+				TColorf(1,1,1), 111, MRPT_GLUT_BITMAP_HELVETICA_12 );
 		win3D.unlockAccess3DScene();
 
 		mrpt::system::sleep(1);
