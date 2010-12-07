@@ -60,24 +60,6 @@ INCLUDE(cmakemodules/UtilsMacros.cmake REQUIRED)
 
 
 # ----------------------------------------------------------------------------
-#  Autodetect if we are in a SVN repository
-# ----------------------------------------------------------------------------
-#FIND_PROGRAM(SVNVERSION_PATH svnversion)
-#MARK_AS_ADVANCED(force SVNVERSION_PATH)
-#IF(SVNVERSION_PATH)
-#	MESSAGE(STATUS "Extracting svn version, please wait...")
-#	execute_process(COMMAND ${SVNVERSION_PATH} -n ${MRPT_SOURCE_DIR} OUTPUT_VARIABLE SVNVERSION_RESULT)
-#	IF(SVNVERSION_RESULT MATCHES "exported")
-#		SET(CMAKE_MRPT_SVNVERSION "") # This is NOT a svn repository:
-#	ELSE(SVNVERSION_RESULT MATCHES "exported")
-#		SET(CMAKE_MRPT_SVNVERSION " svn:${SVNVERSION_RESULT}")
-#	ENDIF(SVNVERSION_RESULT MATCHES "exported")
-#	MESSAGE(STATUS "SVNVERSION: ${CMAKE_MRPT_SVNVERSION}")
-#ELSE(SVNVERSION_PATH)
-#	SET(CMAKE_MRPT_SVNVERSION "") # We don't have svnversion:
-#ENDIF(SVNVERSION_PATH)
-
-# ----------------------------------------------------------------------------
 # Detect GNU version:
 # ----------------------------------------------------------------------------
 IF(CMAKE_COMPILER_IS_GNUCXX)
@@ -180,7 +162,7 @@ IF(WIN32)
 	DESTINATION .)
 		
 	SET(CPACK_PACKAGE_EXECUTABLES 
-		"camera-calib;Camera calibration GUI;features-matching;Visual feature matching;GridmapNavSimul;Gridmap simulator;RawLogViewer;RawLog Viewer;ReactiveNavigationDemo;Reactive navigation demo;prrt-navigator-demo;PRRT robot navigator demo;SceneViewer3D;Scene Viewer 3D;2d-slam-demo;2D KF-SLAM Simulator;navlog-viewer;Viewer of navigation log files;kinect-icp-slam;Live ICP-SLAM with Kinect")
+		"camera-calib;Camera calibration GUI;features-matching;Visual feature matching;GridmapNavSimul;Gridmap simulator;RawLogViewer;RawLog Viewer;ReactiveNavigationDemo;Reactive navigation demo;prrt-navigator-demo;PRRT robot navigator demo;SceneViewer3D;Scene Viewer 3D;2d-slam-demo;2D KF-SLAM Simulator;navlog-viewer;Viewer of navigation log files;kinect-3d-slam;Simple live 3D-SLAM with Kinect")
 		
 	IF (EXISTS "${MRPT_SOURCE_DIR}/apps/hmt-slam-gui")
 		SET(CPACK_PACKAGE_EXECUTABLES "${CPACK_PACKAGE_EXECUTABLES};hmt-slam-gui;HMT-SLAM visual interface")
