@@ -2792,6 +2792,7 @@ float CImage::KLT_response(
 
 	// Since min_* are "unsigned", checking "<" will detect negative numbers:
 	ASSERTMSG_(min_x<img_w && max_x<img_w && min_y<img_h && max_y<img_h, "Window is out of image bounds")
+//	ASSERTMSG_(min_x<img_w && min_x>0 && max_x<(img_w-1) && min_y<img_h && min_y>0 && max_y<(img_h-1), "Window is out of image bounds")
 
 	// Gradient sums: Use integers since they're much faster than doubles/floats!!
 	int32_t gxx = 0;
