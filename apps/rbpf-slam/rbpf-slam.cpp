@@ -430,7 +430,7 @@ void MapBuilding_RBPF()
 
 						if ( meanPose.distanceTo(lastMeanPose)>minDistBtwPoses )
 						{
-							CMatrixDouble33 COV3 = CMatrixDouble33(COV);
+							CMatrixDouble33 COV3 = COV.block(0,0,3,3);
 
 							minDistBtwPoses = 6 * sqrt(COV3(0,0)+COV3(1,1));
 

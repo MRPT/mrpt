@@ -35,6 +35,12 @@
 
   Started by Jose Luis Blanco, Dec 6th, 2010.
 
+Note: This is a very *simple* approach to SLAM. It would be better to first select
+      3d points in the 3D point-cloud, then project them into the image plane
+	  and then track them (instead of directly choosing poins in the image plane), 
+	  since in that case the (x,y) to 3D correspondence would be much more accurate. 
+	  Feel free to modify or improve this example as you need!
+
 */
 
 
@@ -510,6 +516,13 @@ void Test_Kinect()
 					win3D.unlockAccess3DScene();
 
 					break;
+				case 's':
+					{
+						const std::string s = "point_cloud.txt";
+						cout << "Dumping 3D point-cloud to: " << s << endl;
+						globalPtsMap.save3D_to_text_file(s);
+						break;
+					}
 				case 'o':
 					win3D.setCameraZoom( win3D.getCameraZoom() * 1.2 );
 					win3D.repaint();
@@ -527,7 +540,7 @@ void Test_Kinect()
 
 		win3D.get3DSceneAndLock();
 		win3D.addTextMessage(2,-30,
-			format("'r': reset, 'o'/'i': zoom out/in, mouse: orbit 3D, ESC: quit"),
+			format("'s':save point cloud, 'r': reset, 'o'/'i': zoom out/in, mouse: orbit 3D, ESC: quit"),
 				TColorf(1,1,1), 110, MRPT_GLUT_BITMAP_HELVETICA_12 );
 		win3D.addTextMessage(2,-50,str_status,
 				TColorf(1,1,1), 111, MRPT_GLUT_BITMAP_HELVETICA_12 );

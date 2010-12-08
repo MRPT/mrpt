@@ -329,7 +329,7 @@ void do_grid_align()
 
 				float		stdPhi = sqrt(estimateCOV(2,2));
 
-				CMatrixDouble22	estimateCOV22 = CMatrixDouble22(estimateCOV);
+				CMatrixDouble22	estimateCOV22 = estimateCOV.block(0,0,2,2);
 				float		stdXY  = sqrt(estimateCOV22.det());
 
 				float		Axy			= estimateMean.distance2DTo(GT_Ax,GT_Ay);
