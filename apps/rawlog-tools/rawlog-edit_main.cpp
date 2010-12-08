@@ -272,13 +272,10 @@ bool getArgValue(TCLAP::CmdLine &cmdline, const std::string &arg_name, T &out_va
 	{
 		if ( (*it)->getName() == arg_name)
 		{
-			// Is it set?
-			if (!(*it)->isSet())
-				return false;
-
+			// Is it set? Return the default value anyway:
 			TCLAP::ValueArg<T> *arg = static_cast<TCLAP::ValueArg<T> *>(*it);
 			out_val = arg->getValue();
-			return true;
+			return (*it)->isSet();
 		}
 	}
 	return false;

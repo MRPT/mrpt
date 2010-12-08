@@ -87,7 +87,7 @@ namespace mrpt
 			  */
 			CMatrix( const CMatrixTemplateNumeric<double> &m ) : CMatrixFloat(0,0)
 			{
-				*this = m;
+				*this = m.eval().cast<float>();
 			}
 
 			/** Constructor from a TPose2D, which generates a 3x1 matrix \f$ [x y \phi]^T \f$

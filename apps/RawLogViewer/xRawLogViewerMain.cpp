@@ -2308,12 +2308,21 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 														}
 
 														cout << endl << endl;
-														cout << "Camera calibration parameters:" << endl;
+														cout << "Depth camera calibration parameters:" << endl;
 														{
 															CConfigFileMemory cfg;
-															obs->cameraParams.saveToConfigFile("CALIB-PARAMS",cfg);
+															obs->cameraParams.saveToConfigFile("DEPTH_CAM_PARAMS",cfg);
 															cout << cfg.getContent() << endl;
 														}
+														cout << endl << "Intensity camera calibration parameters:" << endl;
+														{
+															CConfigFileMemory cfg;
+															obs->cameraParamsIntensity.saveToConfigFile("INTENSITY_CAM_PARAMS",cfg);
+															cout << cfg.getContent() << endl;
+														}
+														cout << endl << endl << "Pose of the intensity cam. wrt the depth cam:\n" 
+															<< obs->relativePoseIntensityWRTDepth << endl
+															<< obs->relativePoseIntensityWRTDepth.getHomogeneousMatrixVal() << endl;
 
 														// Update 3D view ==========
 													#if RAWLOGVIEWER_HAS_3D

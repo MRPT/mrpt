@@ -88,7 +88,7 @@ namespace mrpt
 			  */
 			CMatrixD( const CMatrixFloat &m ) : CMatrixTemplateNumeric<double>(0,0)
 			{
-				*this = m;
+				*this = m.eval().cast<double>();
 			}
 
 			/*! Assignment operator from any other Eigen class */
