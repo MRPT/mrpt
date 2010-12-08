@@ -166,7 +166,7 @@ void  CPointPDFGaussian::saveToTextFile(const std::string &file) const
 void  CPointPDFGaussian::changeCoordinatesReference(const CPose3D &newReferenceBase )
 {
 	// Clip the 4x4 matrix
-	CMatrixDouble33 M = CMatrixDouble33( newReferenceBase.getHomogeneousMatrixVal() );
+	CMatrixDouble33 M = newReferenceBase.getRotationMatrix();
 
 	// The mean:
 	mean = newReferenceBase + mean;
@@ -251,8 +251,8 @@ double  CPointPDFGaussian::productIntegralWith2D( const CPointPDFGaussian &p) co
 	//   Gaussians variables amounts to simply the evaluation of
 	//   a normal PDF at (0,0), with mean=M1-M2 and COV=COV1+COV2
 	// ---------------------------------------------------------------
-	CMatrixDouble22 C = CMatrixDouble22(cov);
-	C+=CMatrixDouble22(p.cov);	// Sum of covs:
+	CMatrixDouble22 C = cov.block(0,0,2,2);
+	C+=p.cov.block(0,0,2,2);	// Sum of covs:
 
 	CMatrixDouble22 C_inv;
 	C.inv(C_inv);
@@ -341,10 +341,10 @@ double CPointPDFGaussian::mahalanobisDistanceTo( const CPointPDFGaussian & other
 	}
 	else
 	{
-		CMatrixDouble22 C = CMatrixDouble22(COV);
+		CMatrixDouble22 C = COV.block(0,0,2,2);
 		CMatrixDouble22 COV_inv;
 		C.inv(COV_inv);
-		CMatrixDouble12 deltaX2 = CMatrixDouble12(deltaX);
+		CMatrixDouble12 deltaX2 = deltaX.block(0,0,1,2);
 		return std::sqrt( deltaX2.multiply_HCHt_scalar(COV_inv) );
 	}
 

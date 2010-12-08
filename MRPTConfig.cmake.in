@@ -63,6 +63,17 @@ IF(MRPT_USE_LIBS)
 	LIST(APPEND MRPT_FIND_COMPONENTS ${MRPT_USE_LIBS})
 ENDIF(MRPT_USE_LIBS)
 
+
+# ======================================================
+# Include directories where Eigen3 headers are. Only 
+#  if mrpt hasn't been "installed" (make install) *and*
+#  it's has been selected to employ the system version
+#  of Eigen3.
+# ======================================================
+IF (NOT @MRPT_CONFIGFILE_IS_INSTALL@ AND NOT @EIGEN_USE_EMBEDDED_VERSION@)
+	INCLUDE_DIRECTORIES("@MRPT_EIGEN_INCLUDE_DIR@")
+ENDIF (NOT @MRPT_CONFIGFILE_IS_INSTALL@ AND NOT @EIGEN_USE_EMBEDDED_VERSION@)
+
 # ======================================================
 # Include directories to add to the user project:
 # ======================================================

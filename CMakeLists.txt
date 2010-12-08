@@ -310,6 +310,34 @@ MARK_AS_ADVANCED(MRPT_ENABLE_PRECOMPILED_HDRS)
 SET(EIGEN_MATRIXBASE_PLUGIN "<mrpt/math/eigen_plugins.h>" CACHE STRING "Eigen plugin header")
 SET(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL "<mrpt/math/eigen_plugins_impl.h>" CACHE STRING "Eigen plugin implementation header")
 
+MARK_AS_ADVANCED(EIGEN_MATRIXBASE_PLUGIN)
+MARK_AS_ADVANCED(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL)
+
+# An embedded version of Eigen3 will be always here:
+
+SET(EIGEN_USE_EMBEDDED_VERSION ON CACHE BOOL "Use embedded Eigen3 version or system version")
+IF (EIGEN_USE_EMBEDDED_VERSION)
+	# Include embedded version headers:
+	SET(MRPT_EIGEN_INCLUDE_DIR "${MRPT_SOURCE_DIR}/otherlibs/eigen3/")
+ELSE(EIGEN_USE_EMBEDDED_VERSION)
+	# Find Eigen headers in the system:
+	IF(NOT PKG_CONFIG_FOUND)
+		#SET(MRPT_EIGEN_INCLUDE_DIR "${MRPT_SOURCE_DIR}/otherlibs/eigen3/")
+		MESSAGE(SEND_ERROR "TODO!!")
+	ELSE(NOT PKG_CONFIG_FOUND)
+		# Find eigen3 with pkg-config:
+		PKG_CHECK_MODULES(PKG_EIGEN3 eigen3)
+		IF(PKG_EIGEN3_FOUND)
+			MESSAGE(SEND_ERROR "TODO!!")			
+		ELSE(PKG_EIGEN3_FOUND)
+			MESSAGE(SEND_ERROR "TODO!!")			
+		ENDIF(PKG_EIGEN3_FOUND)
+	ENDIF(NOT PKG_CONFIG_FOUND)
+ENDIF(EIGEN_USE_EMBEDDED_VERSION)
+
+INCLUDE_DIRECTORIES("${MRPT_EIGEN_INCLUDE_DIR}")
+
+
 # MRPT_TRY_START/END blocks
 # ===================================================
 SET(MRPT_HAS_STACKED_EXCEPTIONS ON CACHE BOOL "Enable MRPT_TRY_START/END blocks (disable it for speed up).")
@@ -1744,6 +1772,7 @@ SET(THE_MRPT_SOURCE_DIR "${MRPT_SOURCE_DIR}")
 SET(THE_MRPT_LIBS_INCL_DIR "${THE_MRPT_SOURCE_DIR}/libs")
 SET(THE_CMAKE_BINARY_DIR "${CMAKE_BINARY_DIR}")
 SET(THE_MRPT_CONFIG_FILE_INCLUDE_DIR "${MRPT_CONFIG_FILE_INCLUDE_DIR}")
+SET(MRPT_CONFIGFILE_IS_INSTALL 0)
 
 CONFIGURE_FILE("${MRPT_SOURCE_DIR}/MRPTConfig.cmake.in"
                "${MRPT_BINARY_DIR}/MRPTConfig.cmake" @ONLY IMMEDIATE )
@@ -1752,6 +1781,7 @@ CONFIGURE_FILE("${MRPT_SOURCE_DIR}/MRPTConfig.cmake.in"
 #   Generate the MRPTConfig.cmake file for unix
 #      installation in CMAKE_INSTALL_PREFIX
 # ----------------------------------------------------------------------------
+SET(MRPT_CONFIGFILE_IS_INSTALL 1)
 IF(WIN32)
 	SET(THE_MRPT_SOURCE_DIR "\${THIS_MRPT_CONFIG_PATH}")
 	SET(THE_MRPT_LIBS_INCL_DIR "${THE_MRPT_SOURCE_DIR}/libs")
@@ -1949,6 +1979,10 @@ ENDIF(UNIX)
 INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/ )
 INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/ )
 
+# If using embedded version, install embeded version as part of mrpt-base's headers:
+IF (EIGEN_USE_EMBEDDED_VERSION)
+	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}include/mrpt/base/include/ PATTERN ".svn" EXCLUDE)
+ENDIF (EIGEN_USE_EMBEDDED_VERSION)
 
 # ----------------------------------------------------------------------------
 #   Sumary:

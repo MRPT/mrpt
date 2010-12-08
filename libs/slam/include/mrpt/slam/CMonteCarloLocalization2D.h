@@ -56,7 +56,7 @@ namespace mrpt
 			public CPosePDFParticles,
 			public PF_implementation<CPose2D,CMonteCarloLocalization2D>
 		{
-			template <class PARTICLE_TYPE, class MYSELF> friend class PF_implementation;
+			//template <class PARTICLE_TYPE, class MYSELF> friend class PF_implementation;
 
 		public:
 			TMonteCarloLocalizationParams	options; //!< MCL parameters
@@ -136,7 +136,7 @@ namespace mrpt
 				const mrpt::slam::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
-		protected:
+		//protected:
 			/** \name Virtual methods that the PF_implementations assume exist.
 			    @{ */
 			/** Return a pointer to the last robot pose in the i'th particle (or NULL if it's a path and it's empty). */

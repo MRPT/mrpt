@@ -101,12 +101,12 @@
 	/*! Assignment operator from any other Eigen class */ \
     template<typename OtherDerived> \
     inline mrpt_autotype & operator= (const Eigen::MatrixBase <OtherDerived>& other) { \
-        Base::operator=(other); \
+        Base::operator=(other.template cast<typename Base::Scalar>()); \
         return *this; \
     } \
 	/*! Constructor from any other Eigen class */ \
     template<typename OtherDerived> \
-	inline _CLASS_(const Eigen::MatrixBase <OtherDerived>& other) : Base(other) { } \
+	inline _CLASS_(const Eigen::MatrixBase <OtherDerived>& other) : Base(other.template cast<typename Base::Scalar>()) { } \
 
 namespace mrpt
 {

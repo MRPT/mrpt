@@ -43,7 +43,8 @@ namespace internal_mrpt
 		template <typename S, int Opt, int MaxR, int MaxC>
 		static inline void doit(Eigen::Matrix<S,R,C,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
 		{
-			mat.derived().conservativeResize(new_rows,new_cols);
+			::mrpt::math::detail::TAuxResizer<Eigen::Matrix<S,R,C,Opt,MaxR,MaxC>,Eigen::Matrix<S,R,C,Opt,MaxR,MaxC>::SizeAtCompileTime>::internal_resize(mat,new_rows,new_cols);
+			//mat.derived().conservativeResize(new_rows,new_cols);
 		}
 	};
 	// Specialization for column matrices:
@@ -53,7 +54,8 @@ namespace internal_mrpt
 		template <typename S, int Opt, int MaxR, int MaxC>
 		static inline void doit(Eigen::Matrix<S,R,1,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
 		{
-			mat.derived().conservativeResize(new_rows);
+			::mrpt::math::detail::TAuxResizer<Eigen::Matrix<S,R,1,Opt,MaxR,MaxC>,Eigen::Matrix<S,R,1,Opt,MaxR,MaxC>::SizeAtCompileTime>::internal_resize(mat,new_rows);
+			//mat.derived().conservativeResize(new_rows);
 		}
 	};
 	// Specialization for row matrices:
@@ -63,7 +65,8 @@ namespace internal_mrpt
 		template <typename S, int Opt, int MaxR, int MaxC>
 		static inline void doit(Eigen::Matrix<S,1,C,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
 		{
-			mat.derived().conservativeResize(new_cols);
+			::mrpt::math::detail::TAuxResizer<Eigen::Matrix<S,1,C,Opt,MaxR,MaxC>,Eigen::Matrix<S,1,C,Opt,MaxR,MaxC>::SizeAtCompileTime>::internal_resize(mat,new_cols);
+			//mat.derived().conservativeResize(new_cols);
 		}
 	};
 	template<>
@@ -72,11 +75,11 @@ namespace internal_mrpt
 		template <typename S, int Opt, int MaxR, int MaxC>
 		static inline void doit(Eigen::Matrix<S,1,1,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
 		{
-			mat.derived().conservativeResize(new_cols);
+			::mrpt::math::detail::TAuxResizer<Eigen::Matrix<S,1,1,Opt,MaxR,MaxC>,Eigen::Matrix<S,1,1,Opt,MaxR,MaxC>::SizeAtCompileTime>::internal_resize(mat,new_cols);
+			//mat.derived().conservativeResize(new_cols);
 		}
 	};
 }
-
 
 /** Compute the eigenvectors and eigenvalues, both returned as matrices: eigenvectors are the columns, and eigenvalues
   */

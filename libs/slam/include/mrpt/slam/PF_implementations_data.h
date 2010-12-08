@@ -172,6 +172,7 @@ namespace mrpt
 			/** @} */
 
 
+		public:
 			/** \name Virtual methods that the PF_implementations assume exist.
 			    @{ */
 

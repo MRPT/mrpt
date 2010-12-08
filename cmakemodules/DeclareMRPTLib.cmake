@@ -228,6 +228,12 @@ endif(1)
 			SET(mrpt_pkgconfig_REQUIRES "${mrpt_pkgconfig_REQUIRES}${DEP}")
 		ENDFOREACH(DEP)
 
+		# Special case: For mrpt-base, mark "eigen3" as a pkg-config dependency only 
+		#  if we are instructed to do so: (EIGEN_USE_EMBEDDED_VERSION=OFF)
+		IF(NOT EIGEN_USE_EMBEDDED_VERSION)
+			SET(mrpt_pkgconfig_REQUIRES "${mrpt_pkgconfig_REQUIRES},eigen3")
+		ENDIF(NOT EIGEN_USE_EMBEDDED_VERSION)
+
 		CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/parse-files/mrpt_template.pc.in" "${CMAKE_BINARY_DIR}/pkgconfig/mrpt-${name}.pc" @ONLY)
 	ENDIF(UNIX)
 

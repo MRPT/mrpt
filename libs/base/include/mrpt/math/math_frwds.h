@@ -69,6 +69,22 @@ namespace mrpt
 		struct TPose3D;
 		struct TPose3DQuat;
 
+		namespace detail
+		{
+			/** Internal resize which compiles to nothing on fixed-size matrices. */
+			template <typename MAT,int TypeSizeAtCompileTime>
+			struct TAuxResizer {
+				static inline void internal_resize(MAT &obj, size_t row, size_t col) { }
+				static inline void internal_resize(MAT &obj, size_t nsize) { }
+			};
+			template <typename MAT>
+			struct TAuxResizer<MAT,-1> {
+				static inline void internal_resize(MAT &obj, size_t row, size_t col) { obj.derived().conservativeResize(row,col); }
+				static inline void internal_resize(MAT &obj, size_t nsize) { obj.derived().conservativeResize(nsize); }
+			};
+		}
+
+
 		/*! Selection of the number format in CMatrixTemplate::saveToTextFile
 		  */
 		enum TMatrixTextFileFormat

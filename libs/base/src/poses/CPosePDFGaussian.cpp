@@ -182,7 +182,7 @@ void  CPosePDFGaussian::copyFrom(const CPose3DPDF &o)
 	C(2,0)=C(0,2) = C(0,3);
 	C(2,1)=C(1,2) = C(1,3);
 	C(2,2)=         C(3,3);
-	cov = CMatrixDouble33(C);
+	cov = C.block(0,0,3,3);
 }
 
 

@@ -81,7 +81,7 @@ namespace slam
 		public mrpt::slam::PF_implementation<CRBPFParticleData,CMultiMetricMapPDF>
 	{
 		friend class CMetricMapBuilderRBPF;
-		template <class PARTICLE_TYPE, class MYSELF> friend class PF_implementation;
+		//template <class PARTICLE_TYPE, class MYSELF> friend class PF_implementation;
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CMultiMetricMapPDF )
@@ -256,7 +256,8 @@ namespace slam
 
 
 
-	protected:
+	//protected:
+	public:
 			/** \name Virtual methods that the PF_implementations assume exist.
 			    @{ */
 

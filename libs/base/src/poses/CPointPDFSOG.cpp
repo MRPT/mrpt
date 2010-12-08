@@ -353,7 +353,7 @@ void  CPointPDFSOG::bayesianFusion(const  CPointPDF &p1_, const CPointPDF &p2_,c
 		// Normal distribution canonical form constant:
 		// See: http://www-static.cc.gatech.edu/~wujx/paper/Gaussian.pdf
 		double a = -0.5*( 3*log(M_2PI) - log( covInv.det() ) +
-		            eta.multiply_HCHt_scalar(c)); // (~eta * (*it1).val.cov * eta)(0,0) );
+		            eta.multiply_HtCH_scalar(c)); // (~eta * (*it1).val.cov * eta)(0,0) );
 
 		for (CListGaussianModes::const_iterator it2 =p2->m_modes.begin();it2!=p2->m_modes.end();++it2)
 		{

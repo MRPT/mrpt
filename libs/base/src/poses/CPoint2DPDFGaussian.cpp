@@ -135,7 +135,7 @@ void  CPoint2DPDFGaussian::saveToTextFile(const std::string &file) const
 void  CPoint2DPDFGaussian::changeCoordinatesReference(const CPose3D &newReferenceBase )
 {
 	// Clip the 4x4 matrix
-	CMatrixDouble22 M = CMatrixDouble22( newReferenceBase.getHomogeneousMatrixVal() );
+	CMatrixDouble22 M = newReferenceBase.getRotationMatrix().block(0,0,2,2);
 
 	// The mean:
 	mean = CPoint2D( newReferenceBase +mean );
@@ -199,7 +199,7 @@ double  CPoint2DPDFGaussian::productIntegralWith( const CPoint2DPDFGaussian &p) 
 
 	return std::pow( M_2PI, -0.5*state_length )
 		* (1.0/std::sqrt( C.det() ))
-		* exp( -0.5* MU.multiply_HCHt_scalar(C_inv) );
+		* exp( -0.5* MU.multiply_HtCH_scalar(C_inv) );
 
 	MRPT_END
 }
