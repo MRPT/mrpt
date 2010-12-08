@@ -67,51 +67,51 @@ int main(){
 			cout << endl << "Enter absolute position to move: ";		
 			cin >> auxF1;
 			auxF2 = DEG2RAD(auxF1);
-			ptu->moveToAbsPos(NULL,auxF2);
+			ptu->moveToAbsPos(0,auxF2);
 			
 		} else if (c == "mr") {
 
 			cout << endl << "Enter relative position to move: ";		
 			cin >> auxF1;
 			auxF2 = DEG2RAD(auxF1);
-			ptu->moveToOffPos(NULL,auxF2);
+			ptu->moveToOffPos(0,auxF2);
 
 		} else if (c == "apos") {
 
-			ptu->absPosQ(NULL,auxD1);
+			ptu->absPosQ(0,auxD1);
 			auxD1 = RAD2DEG(auxD1);
 			printf("\nActual abs pos: %f", auxD1);
 
 		} else if (c == "rpos") {
 
-			ptu->offPosQ(NULL,auxD1);
+			ptu->offPosQ(0,auxD1);
 			auxD1 = RAD2DEG(auxD1);
 			cout << endl << "Actual off pos: " << auxD1;
 
 		}else if (c == "halt") {
 			
-			if (ptu->halt(NULL)) 
+			if (ptu->halt(0)) 
 				cout << endl << "Stoped";
 
 		} else if (c == "maxlimit") {
 
-			ptu->maxPosQ(NULL,auxD1);
+			ptu->maxPosQ(0,auxD1);
 			cout << endl << "Max travel limit: " << auxD1;
 		
 		} else if (c == "minlimit") {
 
-			ptu->minPosQ(NULL,auxD1);
+			ptu->minPosQ(0,auxD1);
 			cout << endl << "Min travel limit: " << auxD1;
 
 		} else if (c == "setlimits") {
 
 			cout << endl << "Enter new travel limits: ";		
 			cin >> auxD2 >> auxD3;
-			ptu->setLimits(NULL,auxD2,auxD3);
+			ptu->setLimits(0,auxD2,auxD3);
 		
 		} else if (c == "speed") {
 
-			ptu->speedQ(NULL,auxD1);
+			ptu->speedQ(0,auxD1);
 			auxF1 = RAD2DEG(auxD1);
 			cout << endl << "Actual speed: " << auxF1;
 
@@ -120,7 +120,7 @@ int main(){
 			cout << endl << "Enter new Tu speed: ";		
 			cin >> auxF1;
 			auxF2 = DEG2RAD(auxF1);
-			ptu->speed(NULL,auxF2);
+			ptu->speed(0,auxF2);
 
 		} else if (c=="changedir") {
 			

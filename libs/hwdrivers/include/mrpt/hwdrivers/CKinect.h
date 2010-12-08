@@ -85,6 +85,14 @@ namespace mrpt
 		  *    - Camera parameters for the RGB camera. See CKinect::setCameraParamsIntensity()
 		  *    - Camera parameters for the depth camera. See CKinect::setCameraParamsDepth()
 		  *    - The 3D relative pose of the two cameras. See CKinect::setRelativePoseIntensityWrtDepth()
+		  *  
+		  * <h2>Coordinates convention</h2><hr>
+		  *   The origin of coordinates is the focal point of the depth camera, with the axes oriented as in the 
+		  *   diagram shown in mrpt::slam::CObservation3DRangeScan. Notice in that picture that the RGB camera is 
+		  *   assumed to have axes as usual in computer vision, which differ from those for the depth camera.
+		  *
+		  *   The X,Y,Z axes used to report the data from accelerometers coincide with those of the depth camera 
+		  *    (e.g. the camera standing on a table would have an ACC_Z=-9.8m/s2).
 		  *
 		  * <h2>Some general comments</h2><hr>
 		  *		- Depth is grabbed in 10bit depth, and a range N it's converted to meters as: range(m) = 0.1236 * tan(N/2842.5 + 1.1863)

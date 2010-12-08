@@ -35,8 +35,7 @@
   <h2>Version 0.9.3: (Under development) </h2></a>
 	- <b>Most important changes:</b>
 		- MRPT now relies entirely on Eigen (version 3) for matrix and vector classes.
-		- New hardware supported: 
-			- Xbox Kinect. See mrpt::hwdrivers::CKinect and this page: http://www.mrpt.org/Kinect_and_MRPT
+		- Support for Microsoft Xbox Kinect. See mrpt::hwdrivers::CKinect and this page: http://www.mrpt.org/Kinect_and_MRPT
 	- <b>Detailed list of changes:</b>
 		- New application:
 			- <a href="http://www.mrpt.org/Application:kinect-3d-slam" >kinect-3d-slam</a>.

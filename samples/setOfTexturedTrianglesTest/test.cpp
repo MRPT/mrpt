@@ -86,13 +86,13 @@ void TestDisplay3D()
 		opengl::CSetOfTexturedTrianglesPtr obj = opengl::CSetOfTexturedTriangles::Create();
 		opengl::CSetOfTexturedTriangles::TTriangle tri;
 
-		tri = opengl::CSetOfTexturedTriangles::TTriangle::TTriangle(
+		tri = opengl::CSetOfTexturedTriangles::TTriangle(
 					opengl::CSetOfTexturedTriangles::TVertex( -2.0, -2.0, 0,   0, 256 ),	// 3D coord (x,y,z) Pixel coord (u,v)
 					opengl::CSetOfTexturedTriangles::TVertex(  2.0, -2.0, 0, 256, 256 ),
 					opengl::CSetOfTexturedTriangles::TVertex(  2.0,  2.0, 0, 256,   0 ) );
 		obj->insertTriangle(tri);
 
-		tri = opengl::CSetOfTexturedTriangles::TTriangle::TTriangle(
+		tri = opengl::CSetOfTexturedTriangles::TTriangle(
 					opengl::CSetOfTexturedTriangles::TVertex( -2.0,  2.0, 1,   0,   0 ),
 					opengl::CSetOfTexturedTriangles::TVertex(  2.0,  2.0, 0, 256,   0 ),
 					opengl::CSetOfTexturedTriangles::TVertex( -2.0, -2.0, 0,   0, 256 ) );

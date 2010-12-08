@@ -57,7 +57,8 @@ void TestCheckerboardDetectors()
 	// Detect:
 	timlog.enter("findChessboardCorners [OpenCV]");
 
-	bool detectOk1 = mrpt::vision::findChessboardCorners(
+	//bool detectOk1 = 
+	mrpt::vision::findChessboardCorners(
 		img,
 		cornerCoords,
 		checkerboard_size_x, checkerboard_size_y,
@@ -74,7 +75,8 @@ void TestCheckerboardDetectors()
 
 	timlog.enter("findChessboardCorners [Scaramuzza]");
 
-	bool detectOk2 = mrpt::vision::findChessboardCorners(
+	//bool detectOk2 = 
+	mrpt::vision::findChessboardCorners(
 		img,
 		cornerCoords,
 		checkerboard_size_x, checkerboard_size_y,

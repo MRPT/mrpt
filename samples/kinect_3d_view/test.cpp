@@ -299,7 +299,7 @@ void Test_Kinect()
 
 		win3D.get3DSceneAndLock();
 		win3D.addTextMessage(10,10,
-			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, '0'-'6'-select LED mode, mouse: orbit 3D, ESC: quit"),
+			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, mouse: orbit 3D, ESC: quit"),
 				TColorf(0,0,1), 110, MRPT_GLUT_BITMAP_HELVETICA_18 );
 		win3D.addTextMessage(10,35,
 			format("Tilt angle: %.01f deg", thrPar.tilt_ang_deg),

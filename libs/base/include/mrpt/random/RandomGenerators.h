@@ -242,7 +242,7 @@ namespace mrpt
 					const typename VECTOR_OF_VECTORS::value_type *mean = NULL )
 				{
 					ASSERT_EQUAL_(cov.cols(),cov.rows())
-					if (mean) ASSERT_EQUAL_(mean->size(),cov.cols())
+					if (mean) ASSERT_EQUAL_(size_t(mean->size()),size_t(cov.cols()))
 
 					// Compute eigenvalues/eigenvectors of cov:
 					Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject> eigensolver(cov);

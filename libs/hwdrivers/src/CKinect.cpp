@@ -201,7 +201,7 @@ void CKinect::doProcess()
 	if (thereIs)
 	{
 		m_state = ssWorking;
-		
+
 		vector<CSerializablePtr> objs;
 		if (m_grab_image || m_grab_depth || m_grab_3D_points)  objs.push_back(newObs);
 		if (m_grab_IMU)  objs.push_back(newObs_imu);
@@ -612,9 +612,9 @@ void CKinect::getNextObservation(
 				getNextObservation (with IMU)
 ----------------------------------------------------- */
 void CKinect::getNextObservation(
-	mrpt::slam::CObservation3DRangeScan &out_obs, 
+	mrpt::slam::CObservation3DRangeScan &out_obs,
 	mrpt::slam::CObservationIMU         &out_obs_imu,
-	bool &there_is_obs, 
+	bool &there_is_obs,
 	bool &hardware_error )
 {
 	// First, try getting the RGB+Depth data:
@@ -627,7 +627,24 @@ void CKinect::getNextObservation(
 		bool  has_good_acc=false;
 
 #if MRPT_KINECT_WITH_LIBFREENECT
-		MRPT_TODO("read accs.")
+		{
+			freenect_update_tilt_state(f_dev);
+			freenect_raw_tilt_state* state = freenect_get_tilt_state(f_dev);
+			if (state)
+			{
+				has_good_acc = true;
+				double lx,ly,lz;
+				freenect_get_mks_accel(state, &lx, &ly, &lz);
+
+				// Convert to a unified coordinate system:
+				// +x: forward
+				// +y: left
+				// +z: upward
+				acc_x = -lz;
+				acc_y = -lx;
+				acc_z = -ly;
+			}
+		}
 #elif MRPT_KINECT_WITH_CLNUI
 		{
 			SHORT x, y, z;
@@ -636,7 +653,11 @@ void CKinect::getNextObservation(
 				has_good_acc = true;
 
 				//the documentation for the accelerometer (http://www.kionix.com/Product%20Sheets/KXSD9%20Product%20Brief.pdf)
-				//states there are 819 counts/g
+				//states there are 819 counts/g.
+				// Also: Convert to a unified coordinate system:
+				// +x: forward
+				// +y: left
+				// +z: upward
 				acc_x = x * 9.80665 / 819;
 				acc_y = y * 9.80665 / 819;
 				acc_z = z * 9.80665 / 819;
@@ -650,8 +671,8 @@ void CKinect::getNextObservation(
 			out_obs_imu.sensorLabel = out_obs.sensorLabel + "_IMU";
 			out_obs_imu.timestamp   = out_obs.timestamp;
 			out_obs_imu.sensorPose = out_obs.sensorPose;
-			
-			for (size_t i=0;i<out_obs_imu.dataIsPresent.size();i++) 
+
+			for (size_t i=0;i<out_obs_imu.dataIsPresent.size();i++)
 				out_obs_imu.dataIsPresent[i] = false;
 
 			out_obs_imu.dataIsPresent[IMU_X_ACC] = true;

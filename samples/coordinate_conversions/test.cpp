@@ -492,7 +492,7 @@ void Examples_05()
 	TGeodeticCoords CANI_96833( TCoords(37,33,6.94237).getDecimalValue(), TCoords(-4,3,28.81611).getDecimalValue(), 897.626 );
 	TGeodeticCoords HALC_92543( TCoords(37,53,11.26838).getDecimalValue(), TCoords(-4,2,44.35794).getDecimalValue(), 530.446 );
 
-	const TEllipsoid ellip = TEllipsoid::TEllipsoid( 6378137, 6356752.31424518, "USER" );
+	const TEllipsoid ellip = TEllipsoid( 6378137, 6356752.31424518, "USER" );
 
 	//A2
 	int			UTMZone; 
