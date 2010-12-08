@@ -355,8 +355,6 @@ void  CColouredPointsMap::loadFromRangeScan(
 {
 	CPose3D		sensorPose3D;
 
-	MRPT_TODO("Rethink!")
-
 	mark_as_modified();
 
 	// If robot pose is supplied, compute sensor pose relative to it.
@@ -452,7 +450,17 @@ void  CColouredPointsMap::loadFromRangeScan(
 		const bool hasColorIntensityImg = hasValidIntensityImage && rangeScan.intensityImage.isColor();
 
 		// running indices for the image pixels for the gray levels:
+		// If both range & intensity images coincide (e.g. SwissRanger), then we can just
+		// assign 3D points to image pixels one-to-one, but that's not the case if
+		//
+		const bool simple_3d_to_color_relation = (std::abs(rangeScan.relativePoseIntensityWRTDepth.norm())<1e-5);
 		unsigned int img_idx_x = 0, img_idx_y = 0;
+
+		// Will be used just if simple_3d_to_color_relation=false
+		const float cx = rangeScan.cameraParamsIntensity.cx();
+		const float cy = rangeScan.cameraParamsIntensity.cy();
+		const float fx = rangeScan.cameraParamsIntensity.fx();
+		const float fy = rangeScan.cameraParamsIntensity.fy();
 
 		for (size_t i=0;i<sizeRangeScan;i++)
 		{
@@ -491,7 +499,33 @@ void  CColouredPointsMap::loadFromRangeScan(
 					break;
 				case cmFromIntensityImage:
 					{
-						if (hasColorIntensityImg)
+						// Do we have to project the 3D point into the image plane??
+						bool hasValidColor = false;
+						if (simple_3d_to_color_relation)
+						{
+							hasValidColor=true;
+						}
+						else
+						{
+							// Do projection:
+							TPoint3D  pt; // pt_wrt_colorcam;
+							rangeScan.relativePoseIntensityWRTDepth.inverseComposePoint(
+								scan_x,scan_y,scan_z,
+								pt.x,pt.y,pt.z);
+
+							// Project to image plane:
+							if (pt.z)
+							{
+								img_idx_x = cx + fx * pt.x/pt.z;
+								img_idx_y = cy + fy * pt.y/pt.z;
+
+								hasValidColor=
+									img_idx_x>=0 && img_idx_x<imgW &&
+									img_idx_y>=0 && img_idx_y<imgH;
+							}
+						}
+
+						if (hasValidColor && hasColorIntensityImg)
 						{
 							const uint8_t *c= rangeScan.intensityImage.get_unsafe(img_idx_x, img_idx_y, 0);
 							pR= c[2] * K_8u;
@@ -499,7 +533,7 @@ void  CColouredPointsMap::loadFromRangeScan(
 							pB= c[0] * K_8u;
 						}
 						else
-						if (hasValidIntensityImage)
+						if (hasValidColor && hasValidIntensityImage)
 						{
 							uint8_t c= *rangeScan.intensityImage.get_unsafe(img_idx_x, img_idx_y, 0);
 							pR=pG=pB= c * K_8u;
@@ -545,8 +579,8 @@ void  CColouredPointsMap::loadFromRangeScan(
 				lastPointWasValid = false;
 			}
 
-			// Advance the color pointer:
-			if (hasValidIntensityImage)
+			// Advance the color pointer (just for simple cases, e.g. SwissRanger, not for Kinect)
+			if (simple_3d_to_color_relation && hasValidIntensityImage)
 			{
 				if (++img_idx_x>=imgW)
 				{
