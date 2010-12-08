@@ -297,3 +297,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	You may use and modify the code as you see fit, but please 
 	maintain a reference in the comments to this implementation:
       http://www.stanford.edu/~darthur/kmpp.zip
+
+ * The Eigen C++ library for Linear Algebra.
+   Benoît Jacob and Gaël Guennebaud.
+   Eigen is Free Software. It is licensed under the LGPL3+. 
+   As an alternative license choice, Eigen is also licensed under the GPL2+.
+   http://eigen.tuxfamily.org/
+ 
+ * libfreenect.
+ The libfreenect project is covered under a dual Apache v2/GPL v2
+ license. The licensing criteria are listed below, as well as at the
+ top of each source file in the repo.
+   http://www.openkinect.org
+   
+ Copyright (c) 2010 individual OpenKinect contributors. See the CONTRIB
+ file for details.
+
+ This code is licensed to you under the terms of the Apache License,
+ version 2.0, or, at your option, the terms of the GNU General Public
+ License, version 2.0. See the APACHE20 and GPL2 files for the text of
+ the licenses, or the following URLs:
+ http://www.apache.org/licenses/LICENSE-2.0
+ http://www.gnu.org/licenses/gpl-2.0.txt
+ 

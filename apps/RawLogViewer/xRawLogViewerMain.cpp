@@ -2395,31 +2395,43 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 													#endif
 
 														// Update intensity image ======
-														if (obs->hasIntensityImage)
 														{
-															CImage im = obs->intensityImage;
-
+															CImage im;
+															if (obs->hasIntensityImage)
+																 im = obs->intensityImage;
+															else im.resize(10,10,CH_GRAY, true);
 															wxImage *img = mrpt::gui::MRPTImage2wxImage( im );
-															bmp3Dobs_int->SetBitmap( wxBitmap(*img) );
+															if (img->IsOk())
+																bmp3Dobs_int->SetBitmap( wxBitmap(*img) );
 															bmp3Dobs_int->Refresh();
 															delete img;
 															obs->intensityImage.unload(); // For externally-stored datasets
 														}
 														// Update depth image ======
-														if (obs->hasRangeImage)
 														{
 															CImage  auxImg;
-															auxImg.setFromMatrix(obs->rangeImage);
+															if (obs->hasRangeImage)
+																auxImg.setFromMatrix(obs->rangeImage);
+															else auxImg.resize(10,10, CH_GRAY, true );
+
 															wxImage *img = mrpt::gui::MRPTImage2wxImage( auxImg );
-															bmp3Dobs_depth->SetBitmap( wxBitmap(*img) );
+															if (img->IsOk())
+																bmp3Dobs_depth->SetBitmap( wxBitmap(*img) );
 															bmp3Dobs_depth->Refresh();
 															delete img;
 														}
 														// Update confidence image ======
-														if (obs->hasConfidenceImage)
 														{
-															wxImage *img = mrpt::gui::MRPTImage2wxImage( obs->confidenceImage );
-															bmp3Dobs_conf->SetBitmap( wxBitmap(*img) );
+															wxImage *img; 
+															if (obs->hasConfidenceImage)
+																img = mrpt::gui::MRPTImage2wxImage( obs->confidenceImage );
+															else
+															{
+																mrpt::utils::CImage dumm(10,10);
+																img = mrpt::gui::MRPTImage2wxImage( dumm );
+															}
+															if (img->IsOk())
+																bmp3Dobs_conf->SetBitmap( wxBitmap(*img) );
 															bmp3Dobs_conf->Refresh();
 															delete img;
 															obs->confidenceImage.unload(); // For externally-stored datasets

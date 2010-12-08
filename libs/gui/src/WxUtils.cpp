@@ -88,7 +88,8 @@ wxImage * mrpt::gui::MRPTImage2wxImage( const mrpt::utils::CImage &img )
 		IplImage *the_input_img = image;
 
 		image = cvCreateImage( cvSize(the_input_img->width,the_input_img->height),the_input_img->depth, 3 );
-		cvConvertImage(the_input_img, image, options); // convert image
+		if (the_input_img->width && the_input_img->height)
+			cvConvertImage(the_input_img, image, options); // convert image
 
 		if (free_image_at_end) cvReleaseImage(&the_input_img);
 		free_image_at_end = true; // for "image"

@@ -187,9 +187,10 @@ void CKinect::doProcess()
 {
 	bool	thereIs, hwError;
 
-	CObservation3DRangeScanPtr newObs = CObservation3DRangeScan::Create();
+	CObservation3DRangeScanPtr newObs     = CObservation3DRangeScan::Create();
+	CObservationIMUPtr         newObs_imu = CObservationIMU::Create();
 
-	getNextObservation( *newObs, thereIs, hwError );
+	getNextObservation( *newObs, *newObs_imu, thereIs, hwError );
 
 	if (hwError)
 	{
@@ -200,7 +201,12 @@ void CKinect::doProcess()
 	if (thereIs)
 	{
 		m_state = ssWorking;
-		appendObservation( newObs );
+		
+		vector<CSerializablePtr> objs;
+		if (m_grab_image || m_grab_depth || m_grab_3D_points)  objs.push_back(newObs);
+		if (m_grab_IMU)  objs.push_back(newObs_imu);
+
+		appendObservations( objs );
 	}
 }
 
@@ -234,12 +240,16 @@ void  CKinect::loadConfig_sensorSpecific(
 
 	m_user_device_number = configSource.read_int(iniSection,"device_number",m_user_device_number );
 
-	MRPT_TODO("go on")
-//	m_save_3d = configSource.read_bool(iniSection,"save_3d",m_save_3d);
+	m_grab_image = configSource.read_bool(iniSection,"grab_image",m_grab_image);
+	m_grab_depth = configSource.read_bool(iniSection,"grab_depth",m_grab_depth);
+	m_grab_3D_points = configSource.read_bool(iniSection,"grab_3D_points",m_grab_3D_points);
+	m_grab_IMU = configSource.read_bool(iniSection,"grab_IMU ",m_grab_IMU );
 
-//	m_external_images_format = mrpt::utils::trim( configSource.read_string( iniSection, "external_images_format", m_external_images_format ) );
-//	m_external_images_jpeg_quality = configSource.read_int( iniSection, "external_images_jpeg_quality", m_external_images_jpeg_quality );
-
+	{
+		std::string s = configSource.read_string(iniSection,"relativePoseIntensityWRTDepth","");
+		if (!s.empty())
+			m_relativePoseIntensityWRTDepth.fromString(s);
+	}
 }
 
 bool CKinect::isOpen() const
@@ -596,8 +606,63 @@ void CKinect::getNextObservation(
 		if (m_win_range) m_win_range.clear();
 		if (m_win_int) m_win_int.clear();
 	}
+}
 
+/* -----------------------------------------------------
+				getNextObservation (with IMU)
+----------------------------------------------------- */
+void CKinect::getNextObservation(
+	mrpt::slam::CObservation3DRangeScan &out_obs, 
+	mrpt::slam::CObservationIMU         &out_obs_imu,
+	bool &there_is_obs, 
+	bool &hardware_error )
+{
+	// First, try getting the RGB+Depth data:
+	getNextObservation(out_obs,there_is_obs, hardware_error);
 
+	// If successful, fill out the accelerometer data:
+	if (there_is_obs && this->m_grab_IMU)
+	{
+		double acc_x=0,acc_y=0,acc_z=0; // In m/s^2
+		bool  has_good_acc=false;
+
+#if MRPT_KINECT_WITH_LIBFREENECT
+		MRPT_TODO("read accs.")
+#elif MRPT_KINECT_WITH_CLNUI
+		{
+			SHORT x, y, z;
+			if (GetNUIMotorAccelerometer( clnui_motor, x,y,z))
+			{
+				has_good_acc = true;
+
+				//the documentation for the accelerometer (http://www.kionix.com/Product%20Sheets/KXSD9%20Product%20Brief.pdf)
+				//states there are 819 counts/g
+				acc_x = x * 9.80665 / 819;
+				acc_y = y * 9.80665 / 819;
+				acc_z = z * 9.80665 / 819;
+			}
+		}
+#endif
+
+		// Common part for any implementation:
+		if (has_good_acc)
+		{
+			out_obs_imu.sensorLabel = out_obs.sensorLabel + "_IMU";
+			out_obs_imu.timestamp   = out_obs.timestamp;
+			out_obs_imu.sensorPose = out_obs.sensorPose;
+			
+			for (size_t i=0;i<out_obs_imu.dataIsPresent.size();i++) 
+				out_obs_imu.dataIsPresent[i] = false;
+
+			out_obs_imu.dataIsPresent[IMU_X_ACC] = true;
+			out_obs_imu.dataIsPresent[IMU_Y_ACC] = true;
+			out_obs_imu.dataIsPresent[IMU_Z_ACC] = true;
+
+			out_obs_imu.rawMeasurements[IMU_X_ACC] = acc_x;
+			out_obs_imu.rawMeasurements[IMU_Y_ACC] = acc_y;
+			out_obs_imu.rawMeasurements[IMU_Z_ACC] = acc_z;
+		}
+	}
 }
 
 
@@ -626,7 +691,9 @@ void CKinect::setTiltAngleDegrees(double angle)
 #if MRPT_KINECT_WITH_LIBFREENECT
 	freenect_set_tilt_degs(f_dev,angle);
 #elif MRPT_KINECT_WITH_CLNUI
-	//...
+	// JL: I deduced this formula empirically, since CLNUI seems not to have documented this API!!
+	const short int send_angle =  ( (angle<-31) ? -31 : ((angle>31) ? 31 : angle) ) * (0x4000)/31.0;
+	SetNUIMotorPosition(clnui_motor, send_angle);
 #endif
 
 }
@@ -641,9 +708,7 @@ double CKinect::getTiltAngleDegrees()
 	return freenect_get_tilt_degs(ts);
 
 #elif MRPT_KINECT_WITH_CLNUI
-
-	// ...
-
+	// TODO: Does CL NUI provides this??
 	return 0;
 #else
 	return 0;

@@ -43,6 +43,7 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::math;
 using namespace mrpt::gui;
+using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace std;
 
@@ -57,7 +58,8 @@ struct TThreadParam
 	volatile double tilt_ang_deg;
 	volatile double Hz;
 
-	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScanPtr> new_obs;
+	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScanPtr> new_obs;     // RGB+D (+3D points)
+	mrpt::synch::CThreadSafeVariable<CObservationIMUPtr>         new_obs_imu; // Accelerometers
 };
 
 void thread_grabbing(TThreadParam &p)
@@ -83,12 +85,15 @@ void thread_grabbing(TThreadParam &p)
 		while (there_is_obs && !p.quit)
 		{
 			// Grab new observation from the camera:
-			CObservation3DRangeScanPtr  obs = CObservation3DRangeScan::Create(); // Smart pointer to observation
-			kinect.getNextObservation(*obs,there_is_obs,hard_error);
+			CObservation3DRangeScanPtr  obs     = CObservation3DRangeScan::Create(); // Smart pointers to observations
+			CObservationIMUPtr          obs_imu = CObservationIMU::Create();       
+
+			kinect.getNextObservation(*obs,*obs_imu,there_is_obs,hard_error);
 
 			if (!hard_error && there_is_obs)
 			{
 				p.new_obs.set(obs);
+				p.new_obs_imu.set(obs_imu);
 			}
 
 			if (p.pushed_key!=0)
@@ -96,13 +101,13 @@ void thread_grabbing(TThreadParam &p)
 				switch (p.pushed_key)
 				{
 					case 's':
-						p.tilt_ang_deg-=2;
-						if (p.tilt_ang_deg<-30) p.tilt_ang_deg=-30;
+						p.tilt_ang_deg-=1;
+						if (p.tilt_ang_deg<-31) p.tilt_ang_deg=-31;
 						kinect.setTiltAngleDegrees(p.tilt_ang_deg);
 						break;
 					case 'w':
-						p.tilt_ang_deg+=2;
-						if (p.tilt_ang_deg>30) p.tilt_ang_deg=30;
+						p.tilt_ang_deg+=1;
+						if (p.tilt_ang_deg>31) p.tilt_ang_deg=31;
 						kinect.setTiltAngleDegrees(p.tilt_ang_deg);
 						break;
 					case 27:
@@ -142,7 +147,7 @@ void Test_Kinect()
 
 	// Create window and prepare OpenGL object in the scene:
 	// --------------------------------------------------------
-	mrpt::gui::CDisplayWindow3D  win3D("Kinect 3D view",900,700);
+	mrpt::gui::CDisplayWindow3D  win3D("Kinect 3D view",800,600);
 
 	win3D.setCameraAzimuthDeg(140);
 	win3D.setCameraElevationDeg(20);
@@ -197,6 +202,7 @@ void Test_Kinect()
 
 
 	CObservation3DRangeScanPtr  last_obs;
+	CObservationIMUPtr          last_obs_imu;
 
 	while (win3D.isOpen() && !thrPar.quit)
 	{
@@ -205,7 +211,8 @@ void Test_Kinect()
 			(!last_obs  || possiblyNewObs->timestamp!=last_obs->timestamp ) )
 		{
 			// It IS a new observation:
-			last_obs = possiblyNewObs;
+			last_obs     = possiblyNewObs;
+			last_obs_imu = thrPar.new_obs_imu.get();
 
 			// Update visualization ---------------------------------------
 
@@ -245,9 +252,21 @@ void Test_Kinect()
 			}
 
 
+			// Estimated grabbing rate:
 			win3D.get3DSceneAndLock();
-				win3D.addTextMessage(-100,-20, format("%.02f Hz", thrPar.Hz ), TColorf(0,1,1), 100, MRPT_GLUT_BITMAP_HELVETICA_18 );
+				win3D.addTextMessage(-100,-20, format("%.02f Hz", thrPar.Hz ), TColorf(1,1,1), 100, MRPT_GLUT_BITMAP_HELVETICA_18 );
 			win3D.unlockAccess3DScene();
+
+			// Do we have accelerometer data?
+			if (last_obs_imu && last_obs_imu->dataIsPresent[IMU_X_ACC])
+			{
+				;
+				win3D.get3DSceneAndLock();
+					win3D.addTextMessage(10,60, 
+						format("Acc: x=%.02f y=%.02f z=%.02f", last_obs_imu->rawMeasurements[IMU_X_ACC], last_obs_imu->rawMeasurements[IMU_Y_ACC], last_obs_imu->rawMeasurements[IMU_Z_ACC] ), 
+						TColorf(0,0,1), 102, MRPT_GLUT_BITMAP_HELVETICA_18 );
+				win3D.unlockAccess3DScene();
+			}
 
 			win3D.repaint();
 
@@ -282,7 +301,7 @@ void Test_Kinect()
 		win3D.addTextMessage(10,10,
 			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, '0'-'6'-select LED mode, mouse: orbit 3D, ESC: quit"),
 				TColorf(0,0,1), 110, MRPT_GLUT_BITMAP_HELVETICA_18 );
-		win3D.addTextMessage(10,45,
+		win3D.addTextMessage(10,35,
 			format("Tilt angle: %.01f deg", thrPar.tilt_ang_deg),
 				TColorf(0,0,1), 111, MRPT_GLUT_BITMAP_HELVETICA_18 );
 		win3D.unlockAccess3DScene();

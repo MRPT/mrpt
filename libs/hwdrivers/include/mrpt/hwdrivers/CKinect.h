@@ -29,8 +29,8 @@
 #define mrpt_CKinect_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/slam/CObservationImage.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/slam/CObservationIMU.h>
 
 #include <mrpt/gui/CDisplayWindow.h>
 
@@ -71,15 +71,22 @@ namespace mrpt
 		/** A class for grabing "range images", intensity images and other information from an Xbox Kinect sensor.
 		  *
 		  *  <h2>Configuration and usage:</h2> <hr>
-		  * Data is returned as observations of type mrpt::slam::CObservation3DRangeScan. See that class for
-		  *   documentation on its fields.
+		  * Data is returned as observations of type mrpt::slam::CObservation3DRangeScan (and mrpt::slam::CObservationIMU for accelerometers data). 
+		  *  See those classes for documentation on their fields.
 		  *
 		  * As with any other CGenericSensor class, the normal sequence of methods to be called is:
-		  *   - loadConfig() - Or calls to the individual setXXX() to configure the sensor parameters.
-		  *   - initialize() - to start the communication with the sensor.
-		  *   - call getNextObservation() for getting the data.
+		  *   - CGenericSensor::loadConfig() - Or calls to the individual setXXX() to configure the sensor parameters.
+		  *   - CKinect::initialize() - to start the communication with the sensor.
+		  *   - call CKinect::getNextObservation() for getting the data.
 		  *
-		  * <h2>Some general comments</h2><br>
+		  * <h2>Calibration parameters</h2><hr>
+		  *  For an accurate transformation of depth images to 3D points, you'll have to calibrate your Kinect, and supply
+		  *   the following <b>threee pieces of information</b> (default calibration data will be used otherwise, but they'll be not optimal for all sensors!):
+		  *    - Camera parameters for the RGB camera. See CKinect::setCameraParamsIntensity()
+		  *    - Camera parameters for the depth camera. See CKinect::setCameraParamsDepth()
+		  *    - The 3D relative pose of the two cameras. See CKinect::setRelativePoseIntensityWrtDepth()
+		  *
+		  * <h2>Some general comments</h2><hr>
 		  *		- Depth is grabbed in 10bit depth, and a range N it's converted to meters as: range(m) = 0.1236 * tan(N/2842.5 + 1.1863)
 		  *		- This sensor can be also used from within rawlog-grabber to grab datasets within a robot with more sensors.
 		  *		- There is no built-in threading support, so if you use this class manually (not with-in rawlog-grabber),
@@ -137,10 +144,15 @@ namespace mrpt
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
-		  *    sensorLabel  = KINECT         // A text description
-		  *    preview_window  = true        // Show a window with a preview of the grabbed data in real-time
+		  *    sensorLabel     = KINECT       // A text description
+		  *    preview_window  = false        // Show a window with a preview of the grabbed data in real-time
 		  *
 		  *    device_number   = 0           // Device index to open (0:first Kinect, 1:second Kinect,...)
+		  *    
+		  *    grab_image      = true        // Grab the RGB image channel? (Default=true)
+		  *    grab_depth      = true        // Grab the depth channel? (Default=true)
+		  *    grab_3D_points  = true        // Grab the 3D point cloud? (Default=true) If disabled, points can be generated later on.
+		  *    grab_IMU        = true        // Grab the accelerometers? (Default=true)
 		  *
 		  *    // Calibration matrix of the RGB camera:
 		  *    rgb_cx        = 328.9427     // (cx,cy): Optical center, pixels
@@ -202,7 +214,19 @@ namespace mrpt
 			  *
 			  * \sa doProcess
 			  */
-			void getNextObservation( mrpt::slam::CObservation3DRangeScan &out_obs, bool &there_is_obs, bool &hardware_error );
+			void getNextObservation( 
+				mrpt::slam::CObservation3DRangeScan &out_obs, 
+				bool &there_is_obs, 
+				bool &hardware_error );
+
+			/** \overload 
+			  * \note This method also grabs data from the accelerometers, returning them in out_obs_imu
+			  */
+			void getNextObservation(
+				mrpt::slam::CObservation3DRangeScan &out_obs, 
+				mrpt::slam::CObservationIMU         &out_obs_imu,
+				bool &there_is_obs, 
+				bool &hardware_error );
 
 			/**  Set the path where to save off-rawlog image files (this class DOES take into account this path).
 			  *  An  empty string (the default value at construction) means to save images embedded in the rawlog, instead of on separate files.
