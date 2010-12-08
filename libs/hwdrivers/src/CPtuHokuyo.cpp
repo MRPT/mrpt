@@ -404,7 +404,7 @@ bool CPtuHokuyo::continuousScan(char &axis, const double &velocity, double &init
 		}
 
 		const double defSpeed = 5; // Default speed
-		ptu->speed(NULL,DEG2RAD(defSpeed));
+		ptu->speed(0,DEG2RAD(defSpeed));
 
 		ptu->reset();
 
@@ -819,7 +819,7 @@ void CPtuHokuyo::initialize(){
 	} else if (m_ptu_type == 1) {
 
 		const double defSpeed = 26; // Default speed
-		ptu->speed(NULL,DEG2RAD(defSpeed));
+		ptu->speed(0,DEG2RAD(defSpeed));
 
 		ptu->reset();
 

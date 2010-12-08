@@ -50,13 +50,6 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 #	define KINECT_H 480
 #endif
 
-#if MRPT_KINECT_WITH_LIBFREENECT
-#	define MRPT_KINECT_DEPTH_10BIT
-#elif MRPT_KINECT_WITH_CLNUI
-#	define MRPT_KINECT_DEPTH_11BIT
-#endif
-
-
 
 #if MRPT_KINECT_WITH_LIBFREENECT
 	// Macros to convert the opaque pointers in the class header:
@@ -64,7 +57,6 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 	#define f_ctx_ptr  reinterpret_cast<freenect_context**>(&m_f_ctx)
 	#define f_dev  reinterpret_cast<freenect_device*>(m_f_dev)
 	#define f_dev_ptr  reinterpret_cast<freenect_device**>(&m_f_dev)
-
 
 	// GLOBAL DATA USED TO REFER A "freenect_device*" TO ITS MRPT OBJECT
 	// ----------------------------------------------------------------------
@@ -86,42 +78,27 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 	// Macros to convert the opaque pointers in the class header:
 	#define clnui_motor  reinterpret_cast<CLNUIMotor>(m_clnui_motor)
 	#define clnui_cam    reinterpret_cast<CLNUICamera>(m_clnui_cam)
-
 #endif // MRPT_KINECT_WITH_CLNUI
 
 
 
-// Look-up table for converting range raw uint16_t numbers to ranges:
-bool  range2meters_done = false;
-#ifdef MRPT_KINECT_DEPTH_10BIT
-#	define RANGES_TABLE       1024   // 10bit
-#	define RANGES_TABLE_MASK  0x03FF // 10bit
-#else
-#	define RANGES_TABLE       2048
-#	define RANGES_TABLE_MASK  0x07FF
-#endif
-
-mrpt::vector_float range2meters(RANGES_TABLE);
-
-void calculate_range2meters()
+void CKinect::calculate_range2meters()
 {
 #ifdef MRPT_KINECT_DEPTH_10BIT
 	const float k1 = 1.1863f;
 	const float k2 = 2842.5f;
 	const float k3 = 0.1236f;
 
-	for (size_t i=0; i<RANGES_TABLE; i++)
-			range2meters[i] = k3 * tanf(i/k2 + k1);
+	for (size_t i=0; i<KINECT_RANGES_TABLE_LEN; i++)
+			m_range2meters[i] = k3 * tanf(i/k2 + k1);
 #else
-	for (size_t i=0; i<RANGES_TABLE; i++)
-		range2meters[i] = 1.0f / (i * (-0.0030711016) + 3.3309495161);
+	for (size_t i=0; i<KINECT_RANGES_TABLE_LEN; i++)
+		m_range2meters[i] = 1.0f / (i * (-0.0030711016) + 3.3309495161);
 #endif
 
 	// Minimum/Maximum range means error:
-	range2meters[0] = 0;
-	range2meters[RANGES_TABLE-1] = 0;
-
-	range2meters_done = true;
+	m_range2meters[0] = 0;
+	m_range2meters[KINECT_RANGES_TABLE_LEN-1] = 0;
 }
 
 /*-------------------------------------------------------------
@@ -151,11 +128,10 @@ CKinect::CKinect()  :
 	m_grab_3D_points(true),
 	m_grab_IMU(true)
 {
-	if (!range2meters_done)	// Build LUT:
-		calculate_range2meters();
+	calculate_range2meters();
 
 	// Get maximum range:
-	m_maxRange=range2meters[RANGES_TABLE-2];  // Recall: r[Max-1] means error.
+	m_maxRange=m_range2meters[KINECT_RANGES_TABLE_LEN-2];  // Recall: r[Max-1] means error.
 
 	// Default label:
 	m_sensorLabel = "KINECT";
@@ -246,20 +222,24 @@ void  CKinect::loadConfig_sensorSpecific(
 
 	m_preview_window = configSource.read_bool(iniSection,"preview_window",m_preview_window);
 
+	m_cameraParamsRGB.cx( configSource.read_double(iniSection,"rgb_cx", m_cameraParamsRGB.cx() ) );
+	m_cameraParamsRGB.cy( configSource.read_double(iniSection,"rgb_cy", m_cameraParamsRGB.cy() ) );
+	m_cameraParamsRGB.fx( configSource.read_double(iniSection,"rgb_fx", m_cameraParamsRGB.fx() ) );
+	m_cameraParamsRGB.fy( configSource.read_double(iniSection,"rgb_fy", m_cameraParamsRGB.fy() ) );
+
+	m_cameraParamsDepth.cx( configSource.read_double(iniSection,"d_cx", m_cameraParamsDepth.cx() ) );
+	m_cameraParamsDepth.cy( configSource.read_double(iniSection,"d_cy", m_cameraParamsDepth.cy() ) );
+	m_cameraParamsDepth.fx( configSource.read_double(iniSection,"d_fx", m_cameraParamsDepth.fx() ) );
+	m_cameraParamsDepth.fy( configSource.read_double(iniSection,"d_fy", m_cameraParamsDepth.fy() ) );
+
+	m_user_device_number = configSource.read_int(iniSection,"device_number",m_user_device_number );
+
 	MRPT_TODO("go on")
 //	m_save_3d = configSource.read_bool(iniSection,"save_3d",m_save_3d);
 
 //	m_external_images_format = mrpt::utils::trim( configSource.read_string( iniSection, "external_images_format", m_external_images_format ) );
 //	m_external_images_jpeg_quality = configSource.read_int( iniSection, "external_images_jpeg_quality", m_external_images_jpeg_quality );
 
-	try
-	{
-		m_cameraParamsRGB.loadFromConfigFile(iniSection, configSource);
-	}
-	catch(std::exception &)
-	{
-		// If there's some missing field, just keep the default values.
-	}
 }
 
 bool CKinect::isOpen() const
@@ -292,13 +272,14 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 
 			ips.latest_obs.hasRangeImage = true;
 			ips.latest_obs.rangeImage.setSize(KINECT_H,KINECT_W);
+			const CKinect::TDepth2RangeArray &r2m = ips.running_obj->getRawDepth2RangeConversion();
 			for (int r=0;r<KINECT_H;r++)
 				for (int c=0;c<KINECT_W;c++)
 				{
 					// For now, quickly save the depth as it comes from the sensor, it'll
 					//  transformed later on in getNextObservation()
 					const uint16_t v = *depth++;
-					ips.latest_obs.rangeImage.coeffRef(r,c) = range2meters[v % RANGES_TABLE_MASK];
+					ips.latest_obs.rangeImage.coeffRef(r,c) = r2m[v % KINECT_RANGES_TABLE_MASK];
 				}
 		}
 	}
@@ -552,7 +533,7 @@ void CKinect::getNextObservation(
 				for (int c=0;c<KINECT_W;c++)
 				{
 					const uint16_t v = (*depthPtr++);
-					newObs.rangeImage.coeffRef(r,c) = range2meters[v % RANGES_TABLE_MASK];
+					newObs.rangeImage.coeffRef(r,c) = m_range2meters[v % KINECT_RANGES_TABLE_MASK];
 				}
 		}
 

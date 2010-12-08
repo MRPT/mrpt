@@ -355,6 +355,8 @@ void  CColouredPointsMap::loadFromRangeScan(
 {
 	CPose3D		sensorPose3D;
 
+	MRPT_TODO("Rethink!")
+
 	mark_as_modified();
 
 	// If robot pose is supplied, compute sensor pose relative to it.

@@ -59,7 +59,7 @@ CObservation3DRangeScan::CObservation3DRangeScan( ) :
 	hasConfidenceImage(false),
 	cameraParams(),
 	cameraParamsIntensity(),
-	relativePoseIntensityWRTDepth(),
+	relativePoseIntensityWRTDepth(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90)),
 	maxRange( 5.0f ),
 	sensorPose(),
 	stdError( 0.01f )

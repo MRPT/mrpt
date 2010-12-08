@@ -52,6 +52,18 @@
 #		define MRPT_KINECT_WITH_LIBFREENECT  0
 #endif
 
+// Depth of Kinect ranges:
+#if MRPT_KINECT_WITH_LIBFREENECT
+#	define MRPT_KINECT_DEPTH_10BIT
+#	define KINECT_RANGES_TABLE_LEN    1024
+#	define KINECT_RANGES_TABLE_MASK   0x03FF
+#elif MRPT_KINECT_WITH_CLNUI
+#	define MRPT_KINECT_DEPTH_11BIT
+#	define KINECT_RANGES_TABLE_LEN    2048
+#	define KINECT_RANGES_TABLE_MASK   0x07FF
+#endif
+
+
 namespace mrpt
 {
 	namespace hwdrivers
@@ -94,6 +106,24 @@ namespace mrpt
 		  *  \endcode
 		  *
 		  *
+		  * <h2>Raw depth to range conversion</h2><hr>
+		  *  At construction, this class builds an internal array for converting raw 10 or 11bit depths into ranges in meters.
+		  *   Users can read that array or modify it (if you have a better calibration, for example) by calling CKinect::getRawDepth2RangeConversion().
+		  *   If you replace it, remember to set the first and last entries (index 0 and KINECT_RANGES_TABLE_LEN-1) to zero, to indicate that those are invalid ranges.
+		  *
+		  *  <table width="100%" >
+		  *  <tr>
+		  *  <td align="center" >
+		  *   <img src="kinect_depth2range_10bit.png" > <br>
+		  *    R(d) = k3 * tan(d/k2 + k1); <br>
+		  *    k1 = 1.1863,  k2 = 2842.5, k3 = 0.1236 <br>
+		  *  </td>
+		  *  <td align="center" >
+		  *  </td>
+		  *  </tr>
+		  *  </table>
+		  *
+		  *
 		  * <h2>Platform-specific comments</h2><hr>
 		  *   For more details, refer to <a href="http://openkinect.org/wiki/Main_Page" >libfreenect</a> documentation:
 		  *		- Linux: You'll need root privileges to access Kinect. Or, install <code> MRPT/scripts/51-kinect.rules </code> in <code>/etc/udev/rules.d/</code> to allow access to all users.
@@ -108,7 +138,25 @@ namespace mrpt
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
 		  *    sensorLabel  = KINECT         // A text description
-		  *    preview_window  = true       // Show a window with a preview of the grabbed data in real-time
+		  *    preview_window  = true        // Show a window with a preview of the grabbed data in real-time
+		  *
+		  *    device_number   = 0           // Device index to open (0:first Kinect, 1:second Kinect,...)
+		  *
+		  *    // Calibration matrix of the RGB camera:
+		  *    rgb_cx        = 328.9427     // (cx,cy): Optical center, pixels
+		  *    rgb_cy        = 267.4807
+		  *    rgb_fx        = 529.2151     // (fx,fy): Focal distance, pixels
+		  *    rgb_fy        = 525.5639
+		  *
+		  *    // Calibration matrix of the Depth camera:
+		  *    d_cx          = 339.3078     // (cx,cy): Optical center, pixels
+		  *    d_cy          = 242.7391
+		  *    d_fx          = 594.2143     // (fx,fy): Focal distance, pixels
+		  *    d_fy          = 591.0405
+		  *
+		  *    // The relative pose of the RGB camera wrt the depth camera.
+		  *    //  (See mrpt::slam::CObservation3DRangeScan for a 3D diagram of this pose)
+		  *    relativePoseIntensityWRTDepth  =  [0 -0.02 0 -90 0 -90]   //  [x(m) y(m) z(m) yaw(deg) pitch(deg) roll(deg)]
 		  *
 		  *    pose_x=0	// Camera position in the robot (meters)
 		  *    pose_y=0
@@ -128,6 +176,9 @@ namespace mrpt
 			DEFINE_GENERIC_SENSOR(CKinect)
 
 		public:
+			typedef float TDepth2RangeArray[KINECT_RANGES_TABLE_LEN]; //!< A typedef for an array that converts raw depth to ranges in meters.
+
+
 			CKinect();	 //!< Default ctor
 			~CKinect();	 //!< Default ctor
 
@@ -201,17 +252,22 @@ namespace mrpt
 			inline size_t getColCount() const { return m_cameraParamsRGB.ncols; }
 
 			/** Get a const reference to the depth camera calibration parameters */
-			const mrpt::utils::TCamera  & getCameraParamsIntensity() const { return m_cameraParamsRGB; }
-			void setCameraParamsIntensity(const mrpt::utils::TCamera  &p) { m_cameraParamsRGB=p; }
+			inline const mrpt::utils::TCamera  & getCameraParamsIntensity() const { return m_cameraParamsRGB; }
+			inline void setCameraParamsIntensity(const mrpt::utils::TCamera  &p) { m_cameraParamsRGB=p; }
 
 			/** Get a const reference to the depth camera calibration parameters */
-			const mrpt::utils::TCamera  & getCameraParamsDepth() const { return m_cameraParamsDepth; }
-			void setCameraParamsDepth(const mrpt::utils::TCamera  &p) { m_cameraParamsDepth=p; }
+			inline const mrpt::utils::TCamera  & getCameraParamsDepth() const { return m_cameraParamsDepth; }
+			inline void setCameraParamsDepth(const mrpt::utils::TCamera  &p) { m_cameraParamsDepth=p; }
 
-			/** Set the pose of the intensity camera wrt the depth camera */
-			void setRelativePoseIntensityWrtDepth(const mrpt::poses::CPose3D &p) { m_relativePoseIntensityWRTDepth=p; }
-			const mrpt::poses::CPose3D &getRelativePoseIntensityWrtDepth() const { return m_relativePoseIntensityWRTDepth; }
+			/** Set the pose of the intensity camera wrt the depth camera \sa See mrpt::slam::CObservation3DRangeScan for a 3D diagram of this pose */
+			inline void setRelativePoseIntensityWrtDepth(const mrpt::poses::CPose3D &p) { m_relativePoseIntensityWRTDepth=p; }
+			inline const mrpt::poses::CPose3D &getRelativePoseIntensityWrtDepth() const { return m_relativePoseIntensityWRTDepth; }
 
+			/** Get a reference to the array that convert raw depth values (10 or 11 bit) into ranges in meters, so it can be read or replaced by the user.
+			  *  If you replace it, remember to set the first and last entries (index 0 and KINECT_RANGES_TABLE_LEN-1) to zero, to indicate that those are invalid ranges.
+			  */
+			inline       TDepth2RangeArray & getRawDepth2RangeConversion()       { return m_range2meters; }
+			inline const TDepth2RangeArray & getRawDepth2RangeConversion() const { return m_range2meters; }
 
 			/** Enable/disable the grabbing of the RGB channel */
 			inline void enableGrabRGB(bool enable=true) { m_grab_image=enable; }
@@ -268,6 +324,9 @@ namespace mrpt
 
 		private:
 			std::vector<uint8_t> m_buf_depth, m_buf_rgb; //!< Temporary buffers for image grabbing.
+			TDepth2RangeArray   m_range2meters; //!< The table raw depth -> range in meters
+
+			void calculate_range2meters(); //!< Compute m_range2meters at construction
 
 		};	// End of class
 

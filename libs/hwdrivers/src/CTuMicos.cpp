@@ -393,7 +393,7 @@ bool CTuMicos::version(char * sVersion) {
 
 void CTuMicos::nversion(double &nVersion) {
 
-	if(!radQuerry(NULL,'n',nVersion))
+	if(!radQuerry(0,'n',nVersion))
 		throw std::runtime_error("INCORRECT VERSION");
 }
 
@@ -465,7 +465,7 @@ bool CTuMicos::changeMotionDir() {
 	char command[300]="";
 
 	// Otains actual motion dir
-	if (!radQuerry(NULL,'c',motionDir))
+	if (!radQuerry(0,'c',motionDir))
 		return false;
 
 	if(!motionDir)
@@ -702,7 +702,7 @@ bool CTuMicos::resolution(void) {
 
 double CTuMicos::status( double &rad ) {
 
-	return radQuerry(NULL,'s',rad);
+	return radQuerry(0,'s',rad);
 
 }
 
@@ -861,7 +861,7 @@ int CTuMicos::checkErrors(){
 
 	double code=0;
 
-	radQuerry(NULL,'e',code);
+	radQuerry(0,'e',code);
 
 	if ((int)code == 0) {
 

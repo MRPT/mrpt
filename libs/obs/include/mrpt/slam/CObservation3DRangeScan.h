@@ -55,8 +55,9 @@ namespace slam
 	 *    (in SwissRanger, the front face of the camera: a small offset ~1cm in front of the physical focal point),
 	 *    with the +X axis pointing forward, +Y pointing left-hand and +Z pointing up.
 	 *  The field CObservation3DRangeScan::relativePoseIntensityWRTDepth describes the change of coordinates from
-	 *    the depth camera to the intensity (RGB or grayscale) camera. In a SwissRanger camera, both cameras coincide,
-	 *    but in Microsoft Kinect there is a difference, as shown in this figure:
+	 *    the depth camera to the intensity (RGB or grayscale) camera. In a SwissRanger camera both cameras coincide,
+	 *    so this pose is just a rotation (0,0,0,-90deg,0,-90deg). But in
+	 *    Microsoft Kinect there is also an offset, as shown in this figure:
 	 *
 	 *  <div align=center>
 	 *   <img src="CObservation3DRangeScan_figRefSystem.png">
