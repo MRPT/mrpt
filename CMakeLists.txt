@@ -313,8 +313,6 @@ SET(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL "<mrpt/math/eigen_plugins_impl.h>" CACHE S
 MARK_AS_ADVANCED(EIGEN_MATRIXBASE_PLUGIN)
 MARK_AS_ADVANCED(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL)
 
-# An embedded version of Eigen3 will be always here:
-
 SET(EIGEN_USE_EMBEDDED_VERSION ON CACHE BOOL "Use embedded Eigen3 version or system version")
 IF (EIGEN_USE_EMBEDDED_VERSION)
 	# Include embedded version headers:
@@ -337,12 +335,19 @@ ENDIF(EIGEN_USE_EMBEDDED_VERSION)
 
 INCLUDE_DIRECTORIES("${MRPT_EIGEN_INCLUDE_DIR}")
 
+# Create variables just for the final summary of the configuration (see bottom of this file):
+SET(CMAKE_MRPT_HAS_EIGEN 1)        # Always, it's a fundamental dep.!
+
 # Create numeric (0/1) variable EIGEN_USE_EMBEDDED_VERSION_BOOL for the .cmake.in file:
 IF(EIGEN_USE_EMBEDDED_VERSION)
 	SET(EIGEN_USE_EMBEDDED_VERSION_BOOL 1)
+	SET(CMAKE_MRPT_HAS_EIGEN_SYSTEM 0)
 ELSE(EIGEN_USE_EMBEDDED_VERSION)
 	SET(EIGEN_USE_EMBEDDED_VERSION_BOOL 0)
+	SET(CMAKE_MRPT_HAS_EIGEN_SYSTEM 1)
 ENDIF(EIGEN_USE_EMBEDDED_VERSION)
+
+
 
 
 # MRPT_TRY_START/END blocks
@@ -2029,6 +2034,8 @@ ENDIF(CMAKE_MRPT_64BIT_COMPILE_MODE)
 SHOW_CONFIG_LINE("Is system big endian?                   " CMAKE_MRPT_IS_BIG_ENDIAN)
 SHOW_CONFIG_LINE("Use MMX/SSE2?                           " CMAKE_MRPT_HAS_SSE2)
 #SHOW_CONFIG_LINE("Use OpenMP?                             " CMAKE_MRPT_HAS_OPENMP)
+
+SHOW_CONFIG_LINE_SYSTEM("Has eigen3                              " CMAKE_MRPT_HAS_EIGEN)
 
 IF(NOT UNIX)	# In fact, it's not "support for Bumblebee" but for it thru PGR vendor libraries. 
 	SHOW_CONFIG_LINE("Has PGR Digiclops/Triclops              " CMAKE_MRPT_HAS_BUMBLEBEE)
