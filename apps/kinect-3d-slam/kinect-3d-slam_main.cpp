@@ -225,6 +225,7 @@ void Test_Kinect()
 		scene->insert( gl_points_map );
 		scene->insert( gl_points );
 		scene->insert( gl_curFeats );
+		scene->insert( gl_keyframes );
 		scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
 
 		scene->insert( gl_cur_cam_corner );
@@ -256,7 +257,7 @@ void Test_Kinect()
 
 	bool gl_keyframes_must_refresh = true;  // Need to update gl_keyframes from camera_key_frames_path??
 	CObservation3DRangeScanPtr  last_obs;
-	string str_status;
+	string str_status, str_status2;
 
 	while (win3D.isOpen() && !thrPar.quit)
 	{
@@ -367,6 +368,7 @@ void Test_Kinect()
 						);
 
 					str_status = mrpt::format("%d corrs | inliers: %d | rel.pose: %s ", int(corrs.size()), int(inliers_idx.size()), relativePose.asString().c_str() );
+					str_status2 = string( inliers_idx.size()==0 ? "LOST! Please, press 'r' to restart" : "" );
 
 					if (register_ok && std::abs(scale-1.0)<0.1)
 					{
@@ -484,7 +486,7 @@ void Test_Kinect()
 		if (gl_keyframes_must_refresh)
 		{
 			gl_keyframes_must_refresh = false;
-			cout << "Updating gl_keyframes with " << camera_key_frames_path.size() << " frames.\n";
+			//cout << "Updating gl_keyframes with " << camera_key_frames_path.size() << " frames.\n";
 			win3D.get3DSceneAndLock();
 				gl_keyframes->clear();
 				for (size_t i=0;i<camera_key_frames_path.size();i++)
@@ -539,11 +541,10 @@ void Test_Kinect()
 		}
 
 		win3D.get3DSceneAndLock();
-		win3D.addTextMessage(2,-30,
-			format("'s':save point cloud, 'r': reset, 'o'/'i': zoom out/in, mouse: orbit 3D, ESC: quit"),
+		win3D.addTextMessage(2,-30,format("'s':save point cloud, 'r': reset, 'o'/'i': zoom out/in, mouse: orbit 3D, ESC: quit"),
 				TColorf(1,1,1), 110, MRPT_GLUT_BITMAP_HELVETICA_12 );
-		win3D.addTextMessage(2,-50,str_status,
-				TColorf(1,1,1), 111, MRPT_GLUT_BITMAP_HELVETICA_12 );
+		win3D.addTextMessage(2,-50,str_status,  TColorf(1,1,1), 111, MRPT_GLUT_BITMAP_HELVETICA_12 );
+		win3D.addTextMessage(2,-70,str_status2, TColorf(1,1,1), 112, MRPT_GLUT_BITMAP_HELVETICA_18 );
 		win3D.unlockAccess3DScene();
 
 		mrpt::system::sleep(1);
