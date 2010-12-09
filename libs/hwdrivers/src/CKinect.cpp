@@ -658,9 +658,9 @@ void CKinect::getNextObservation(
 				// +x: forward
 				// +y: left
 				// +z: upward
-				acc_x = x * 9.80665 / 819;
-				acc_y = y * 9.80665 / 819;
-				acc_z = z * 9.80665 / 819;
+				acc_x = -y * 9.80665 / 819;
+				acc_y = -x * 9.80665 / 819;
+				acc_z = -z * 9.80665 / 819;
 			}
 		}
 #endif
