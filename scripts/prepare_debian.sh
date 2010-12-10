@@ -7,7 +7,8 @@ set +o verbose # echo off
 
 APPEND_SVN_NUM=0
 IS_FOR_UBUNTU=0
-while getopts "su" OPTION
+APPEND_LINUX_DISTRO=""
+while getopts "sud:" OPTION
 do
      case $OPTION in
          s)
@@ -15,6 +16,9 @@ do
              ;;
          u)
              IS_FOR_UBUNTU=1
+             ;;
+         d)
+             APPEND_LINUX_DISTRO=$OPTARG
              ;;
          ?)
              echo "Unknown command line argument!"
@@ -72,9 +76,9 @@ else
 
 	if [ $APPEND_SVN_NUM == "1" ];
 	then
-		MRPT_VERSION_STR="${MRPT_VERSION_STR}svn${MRPT_SVN_VERSION}"
+		MRPT_VERSION_STR="${MRPT_VERSION_STR}svn${MRPT_SVN_VERSION}${APPEND_LINUX_DISTRO}"
 	else
-		MRPT_VERSION_STR="${MRPT_VERSION_STR}"
+		MRPT_VERSION_STR="${MRPT_VERSION_STR}${APPEND_LINUX_DISTRO}"
 	fi
 
 	echo "Exporting to $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}"
