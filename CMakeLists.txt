@@ -313,22 +313,30 @@ SET(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL "<mrpt/math/eigen_plugins_impl.h>" CACHE S
 MARK_AS_ADVANCED(EIGEN_MATRIXBASE_PLUGIN)
 MARK_AS_ADVANCED(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL)
 
-SET(EIGEN_USE_EMBEDDED_VERSION ON CACHE BOOL "Use embedded Eigen3 version or system version")
+# By default: Use system version if pkg-config says it exists:
+SET(DEFAULT_EIGEN_USE_EMBEDDED_VERSION ON)
+IF(PKG_CONFIG_FOUND)
+	PKG_CHECK_MODULES(PKG_EIGEN3 eigen3)	# Find eigen3 with pkg-config:
+	IF(PKG_EIGEN3_FOUND)
+		SET(DEFAULT_EIGEN_USE_EMBEDDED_VERSION OFF)
+	ENDIF(PKG_EIGEN3_FOUND)
+ENDIF(PKG_CONFIG_FOUND)
+
+SET(EIGEN_USE_EMBEDDED_VERSION ${DEFAULT_EIGEN_USE_EMBEDDED_VERSION} CACHE BOOL "Use embedded Eigen3 version or system version")
 IF (EIGEN_USE_EMBEDDED_VERSION)
 	# Include embedded version headers:
 	SET(MRPT_EIGEN_INCLUDE_DIR "${MRPT_SOURCE_DIR}/otherlibs/eigen3/")
 ELSE(EIGEN_USE_EMBEDDED_VERSION)
 	# Find Eigen headers in the system:
 	IF(NOT PKG_CONFIG_FOUND)
-		#SET(MRPT_EIGEN_INCLUDE_DIR "${MRPT_SOURCE_DIR}/otherlibs/eigen3/")
-		MESSAGE(SEND_ERROR "TODO!!")
+		MESSAGE(SEND_ERROR "pkg-config is required for this operation!")
 	ELSE(NOT PKG_CONFIG_FOUND)
 		# Find eigen3 with pkg-config:
 		PKG_CHECK_MODULES(PKG_EIGEN3 eigen3)
 		IF(PKG_EIGEN3_FOUND)
-			MESSAGE(SEND_ERROR "TODO!!")			
+			SET(MRPT_EIGEN_INCLUDE_DIR "${PKG_EIGEN3_INCLUDE_DIRS}")
 		ELSE(PKG_EIGEN3_FOUND)
-			MESSAGE(SEND_ERROR "TODO!!")			
+			MESSAGE(SEND_ERROR "pkg-config was unable to find eigen3: install libeigen3-dev or enable EIGEN_USE_EMBEDDED_VERSION")
 		ENDIF(PKG_EIGEN3_FOUND)
 	ENDIF(NOT PKG_CONFIG_FOUND)
 ENDIF(EIGEN_USE_EMBEDDED_VERSION)
@@ -545,6 +553,7 @@ IF(UNIX)
 	ENDIF(FTDI_CONFIG_FILE)
 	# This option will be available only on Linux, hence it's declared here:
 	OPTION(DISABLE_FTDI "Do not use the USB driver for FTDI chips" 0)
+	MARK_AS_ADVANCED(DISABLE_FTDI)
 ELSE(UNIX)
 	# In windows we always have FTDI support (at compile time at least...)
 	SET(CMAKE_MRPT_HAS_FTDI 1)
@@ -1480,12 +1489,15 @@ SET(USER_EXTRA_CPP_FLAGS "" CACHE STRING "Put extra compiler options here if des
 # 			Set the maximum level of warnings:
 # ----------------------------------------------------------------------------
 SET( MRPT_EXTRA_WARNINGS OFF CACHE BOOL "Enable extra warnings apart from -Wall")
+MARK_AS_ADVANCED(MRPT_EXTRA_WARNINGS)
 
 # Should be set to true for development
 SET( MRPT_WARNINGS_ARE_ERRORS OFF CACHE BOOL "Treat warnings as errors")
+MARK_AS_ADVANCED(MRPT_WARNINGS_ARE_ERRORS)
 
 # Whole program optimization?
 SET( MRPT_WHOLE_PROGRAM_OPTIMIZATION OFF CACHE BOOL "Flags for whole program optimization.")
+MARK_AS_ADVANCED(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 
 # Include Asian fonts in utils::CMRPTCanvas ?
 SET( MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in utils::CMRPTCanvas (increases library size).")
@@ -1529,6 +1541,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	ENDIF(APPLE)
 
 	SET( MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
+	MARK_AS_ADVANCED(MRPT_BUILD_GCC_PEDANTIC)
 
 	# High level of warnings. 
 	# The -Wno-long-long is required in 64bit systems when including sytem headers.
@@ -1993,7 +2006,7 @@ INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION ${lib
 
 # If using embedded version, install embeded version as part of mrpt-base's headers:
 IF (EIGEN_USE_EMBEDDED_VERSION)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}include/mrpt/base/include/ PATTERN ".svn" EXCLUDE)
+	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/Eigen" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}include/mrpt/base/include/ PATTERN ".svn" EXCLUDE)
 ENDIF (EIGEN_USE_EMBEDDED_VERSION)
 
 # ----------------------------------------------------------------------------
@@ -2035,7 +2048,7 @@ SHOW_CONFIG_LINE("Is system big endian?                   " CMAKE_MRPT_IS_BIG_EN
 SHOW_CONFIG_LINE("Use MMX/SSE2?                           " CMAKE_MRPT_HAS_SSE2)
 #SHOW_CONFIG_LINE("Use OpenMP?                             " CMAKE_MRPT_HAS_OPENMP)
 
-SHOW_CONFIG_LINE_SYSTEM("Has eigen3                              " CMAKE_MRPT_HAS_EIGEN)
+SHOW_CONFIG_LINE_SYSTEM("Has eigen3                              " CMAKE_MRPT_HAS_EIGEN "Version: ${PKG_EIGEN3_VERSION}")
 
 IF(NOT UNIX)	# In fact, it's not "support for Bumblebee" but for it thru PGR vendor libraries. 
 	SHOW_CONFIG_LINE("Has PGR Digiclops/Triclops              " CMAKE_MRPT_HAS_BUMBLEBEE)
@@ -2070,5 +2083,11 @@ MESSAGE(STATUS "")
 
 # Final warnings:
 IF (NOT CMAKE_MRPT_HAS_OPENCV AND NOT DISABLE_OPENCV)
-	MESSAGE(STATUS "**WARNING**: It's STRONGLY recommended to build MRPT with OpenCV support. To do so, set OpenCV_DIR to its CMake build dir.")
+	MESSAGE(STATUS "")
+	MESSAGE(STATUS "***********************************************************************")
+	MESSAGE(STATUS "* WARNING: It's STRONGLY recommended to build MRPT with OpenCV support.")
+	MESSAGE(STATUS "*  To do so, set OpenCV_DIR to its CMake build dir. If you want to go ")
+	MESSAGE(STATUS "*  on without OpenCV, proceed to build instead. ")
+	MESSAGE(STATUS "***********************************************************************")
+	MESSAGE(STATUS "")
 ENDIF(NOT CMAKE_MRPT_HAS_OPENCV AND NOT DISABLE_OPENCV)

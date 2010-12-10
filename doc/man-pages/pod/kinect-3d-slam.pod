@@ -1,0 +1,42 @@
+=head1 NAME
+
+kinect-3d-slam - Demo for Kinect sensor and 3D SLAM
+
+=head1 SYNOPSIS
+
+kinect-3d-slam
+
+=head1 DESCRIPTION
+
+B<kinect-3d-slam> is a very simple implementation of 3D Simultaneous  
+Localization and Mapping (SLAM) with a live Kinect sensor. It tracks
+image features and employ the depth information to estimate the 
+motion of the sensor and reconstruct a 3D point cloud of the environment.
+
+=head1 BUGS
+
+Please report bugs at http://www.mrpt.org/project/issues/MRPT
+
+=head1 SEE ALSO
+
+The application wiki page at http://www.mrpt.org/Kinect_and_MRPT
+
+=head1 AUTHORS
+
+B<kinect-3d-slam> is part of the Mobile Robot Programming Toolkit (MRPT), and was originally 
+written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3, or (at your option) any
+later version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
+=cut
+
