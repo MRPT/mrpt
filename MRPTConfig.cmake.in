@@ -72,6 +72,12 @@ IF (NOT @MRPT_CONFIGFILE_IS_INSTALL@ OR NOT @EIGEN_USE_EMBEDDED_VERSION_BOOL@)
 	INCLUDE_DIRECTORIES("@MRPT_EIGEN_INCLUDE_DIR@")
 ENDIF (NOT @MRPT_CONFIGFILE_IS_INSTALL@ OR NOT @EIGEN_USE_EMBEDDED_VERSION_BOOL@)
 
+# If using GCC and -Wall, eigen3 headers raise some warnings: silent them:
+IF(CMAKE_COMPILER_IS_GNUCXX)
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-long-long -Wno-variadic-macros")
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+
+
 # ======================================================
 # Include directories to add to the user project:
 # ======================================================
