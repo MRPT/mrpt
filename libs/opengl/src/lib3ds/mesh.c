@@ -573,8 +573,8 @@ lib3ds_mesh_dump(Lib3dsMesh *mesh)
   ASSERT(mesh);
   printf("  %s vertices=%ld faces=%ld\n",
     mesh->name,
-    mesh->points,
-    mesh->faces
+    (long int)mesh->points,
+    (long int)mesh->faces
   );
   printf("  matrix:\n");
   lib3ds_matrix_dump(mesh->matrix);

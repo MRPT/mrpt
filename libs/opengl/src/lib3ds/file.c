@@ -1963,6 +1963,7 @@ file_bounding_box_of_nodes_impl(Lib3dsNode *node, Lib3dsFile *file, Lib3dsBool i
       }
       break;
     */
+	default: break;
   }
   {
     Lib3dsNode *p=node->childs;

@@ -62,7 +62,7 @@ lib3ds_chunk_debug_dump(Lib3dsChunk *c)
       lib3ds_chunk_level,
       lib3ds_chunk_name(c->chunk),
       c->chunk,
-      c->size
+      (long unsigned int)c->size
     );
   }
 }

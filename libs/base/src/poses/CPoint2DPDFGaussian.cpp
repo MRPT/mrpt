@@ -141,7 +141,7 @@ void  CPoint2DPDFGaussian::changeCoordinatesReference(const CPose3D &newReferenc
 	mean = CPoint2D( newReferenceBase +mean );
 
 	// The covariance:
-	M.multiply_HCHt(CMatrixDouble22(cov), cov); // save in cov
+	cov = M*cov*M.transpose();
 }
 
 /*---------------------------------------------------------------
@@ -220,6 +220,7 @@ void CPoint2DPDFGaussian::drawSingleSample(CPoint2D &outSample) const
 {
 	MRPT_START
 
+	// Eigen3 emits an out-of-array warning here, but it seems to be a false warning? (WTF)
 	vector_double vec;
 	randomGenerator.drawGaussianMultivariate(vec,cov);
 
@@ -252,15 +253,11 @@ void  CPoint2DPDFGaussian::bayesianFusion( const CPoint2DPDF &p1_, const CPoint2
 double CPoint2DPDFGaussian::mahalanobisDistanceTo( const CPoint2DPDFGaussian & other ) const
 {
 	// The difference in means:
-	CMatrixDouble12 deltaX;
-	deltaX.get_unsafe(0,0) = other.mean.x() - mean.x();
-	deltaX.get_unsafe(0,1) = other.mean.y() - mean.y();
+	Eigen::Matrix<double,2,1> deltaX;
+	deltaX[0] = other.mean.x() - mean.x();
+	deltaX[1] = other.mean.y() - mean.y();
 
 	// The inverse of the combined covs:
-	CMatrixDouble22 COV = other.cov;
-	COV += this->cov;
-
-	CMatrixDouble22 COV_inv;
-	COV.inv(COV_inv);
-	return sqrt( deltaX.multiply_HCHt_scalar(COV_inv) );
+	return std::sqrt( deltaX.multiply_HtCH_scalar( (other.cov + this->cov).inverse() ) );
 }
+

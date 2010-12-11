@@ -1575,6 +1575,7 @@ int vision::matchMultiResolutionFeatures(
         vector<double>                              & rori_corrs,
         const TMultiResDescMatchOptions             & opts )
 {
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x211
     CTimeLogger logger;
     //logger.disable();
     // *************************************************************
@@ -1738,6 +1739,9 @@ int vision::matchMultiResolutionFeatures(
     } // end-for-it2
 
     return nMatchesFound;
+#else
+	THROW_EXCEPTION("This function requires OpenCV 2.1+")
+#endif
 } // end-vision::matchMultiResolutionFeatures
 
 /*-------------------------------------------------------------
@@ -1848,6 +1852,8 @@ int vision::computeMoreDescriptors(
                 const bool                  & lowerScales,
                 const TMultiResDescOptions  & opts )
 {
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x211
+
     MRPT_START
     //**************************************************************************
     // Pre-smooth the image with sigma = sg1 (typically 0.5)
@@ -1981,6 +1987,10 @@ int vision::computeMoreDescriptors(
     } // end else
     return 1;
     MRPT_END
+#else
+	THROW_EXCEPTION("This function needs OpenCV 2.1+")
+	return 0;
+#endif
 } // end-computeMoreDescriptors
 
 /*-------------------------------------------------------------
@@ -2150,6 +2160,8 @@ void vision::computeMultiResolutionDescriptors(
         CMatchedFeatureList &matchedFeats,
         const TMultiResDescOptions &opts )
 {
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x211
+
     MRPT_START
     CTimeLogger tlogger;
     tlogger.disable();
@@ -2301,6 +2313,9 @@ void vision::computeMultiResolutionDescriptors(
         good_matches++;
     } // end matches for
     MRPT_END
+#else
+	THROW_EXCEPTION("This function needs OpenCV 2.1+")
+#endif
 } // end-vision::computeMultiResolutionDescriptors
 
 /*-------------------------------------------------------------
@@ -2311,6 +2326,7 @@ void vision::computeMultiResolutionDescriptors(
         CFeatureList &list,
         const TMultiResDescOptions &opts )
 {
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x211
     MRPT_START
     CTimeLogger tlogger;
     tlogger.disable();
@@ -2402,7 +2418,9 @@ void vision::computeMultiResolutionDescriptors(
         } // end scales for
     } // end matches for
     MRPT_END
-
+#else
+	THROW_EXCEPTION("This function needs OpenCV 2.1+")
+#endif
 } // end computeMultiResolutionDescriptors
 
 /*************************************** END FAMD ********************************************/

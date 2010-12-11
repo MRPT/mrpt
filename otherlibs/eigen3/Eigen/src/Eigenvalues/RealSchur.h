@@ -247,7 +247,7 @@ RealSchur<MatrixType>& RealSchur<MatrixType>::compute(const MatrixType& matrix, 
     {
       m_matT.coeffRef(iu,iu) = m_matT.coeff(iu,iu) + exshift;
       if (iu > 0) 
-	m_matT.coeffRef(iu, iu-1) = Scalar(0);
+        m_matT.coeffRef(iu, iu-1) = Scalar(0);
       iu--;
       iter = 0;
     }
@@ -259,7 +259,8 @@ RealSchur<MatrixType>& RealSchur<MatrixType>::compute(const MatrixType& matrix, 
     }
     else // No convergence yet
     {
-      Vector3s firstHouseholderVector, shiftInfo;
+      // The firstHouseholderVector vector has to be initialized to something to get rid of a silly GCC warning (-O1 -Wall -DNDEBUG )
+      Vector3s firstHouseholderVector(0,0,0), shiftInfo;
       computeShift(iu, iter, exshift, shiftInfo);
       iter = iter + 1; 
       if (iter > m_maxIterations) break;
@@ -443,7 +444,7 @@ inline void RealSchur<MatrixType>::performFrancisQRStep(Index il, Index im, Inde
       m_matT.block(k, k, 3, size-k).applyHouseholderOnTheLeft(ess, tau, workspace);
       m_matT.block(0, k, std::min(iu,k+3) + 1, 3).applyHouseholderOnTheRight(ess, tau, workspace);
       if (computeU)
-	m_matU.block(0, k, size, 3).applyHouseholderOnTheRight(ess, tau, workspace);
+        m_matU.block(0, k, size, 3).applyHouseholderOnTheRight(ess, tau, workspace);
     }
   }
 

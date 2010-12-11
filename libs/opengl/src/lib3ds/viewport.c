@@ -380,7 +380,7 @@ lib3ds_viewport_dump(Lib3dsViewport *vp)
   printf("      position:    %d,%d\n",
   	vp->layout.position[0], vp->layout.position[1]);
   printf("      size:        %d,%d\n", vp->layout.size[0], vp->layout.size[1]);
-  printf("      views:       %ld\n", vp->layout.views);
+  printf("      views:       %ld\n", (long int)vp->layout.views);
   if (vp->layout.views > 0 && vp->layout.viewL != NULL) {
     for(i=0, view=vp->layout.viewL; i < vp->layout.views; ++i, ++view) {
       printf("        view %d:\n", i);

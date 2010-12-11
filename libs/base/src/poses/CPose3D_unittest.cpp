@@ -70,7 +70,9 @@ protected:
 			"p1: "      << p1 <<
 			"p1_inv_inv: " << p1_inv_inv << endl;
 
-		EXPECT_TRUE(HMi_from_p1_inv==HMi);
+		EXPECT_NEAR((HMi_from_p1_inv-HMi).Abs().sumAll(),0, 1e-4)
+			<< "HMi_from_p1_inv:\n" << HMi_from_p1_inv
+			<< "HMi:\n" << HMi << endl;
 	}
 
 

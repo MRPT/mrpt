@@ -1378,7 +1378,7 @@ lib3ds_morph_track_read(Lib3dsMorphTrack *track, Lib3dsIo *io)
 {
   /* This function was written by Stephane Denis on 5-18-04 */
     int i;
-    Lib3dsMorphKey *k, *pk;
+    Lib3dsMorphKey *k, *pk=NULL;
     int keys;
     track->flags=lib3ds_io_read_word(io);
     lib3ds_io_read_dword(io);
@@ -1547,6 +1547,8 @@ lib3ds_dump_tracks(Lib3dsNode *node)
     case LIB3DS_SPOT_NODE:
       printf("pos: ");
       lib3ds_lin3Track_dump(&node->data.spot.pos_track);
+      break;
+    default: 
       break;
   }
 }
