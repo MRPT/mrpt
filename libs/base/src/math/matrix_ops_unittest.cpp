@@ -277,18 +277,26 @@ TEST(Matrices,EigenVal4x4_sym_vs_generic)
 	eigvals_genM.setZero();eigvals_genM.diagonal() = eigvals_gen;
 
 	EXPECT_NEAR( (C1-eigvecs_gen*eigvals_genM*(~eigvecs_gen)).Abs().sum(),0,1e-5)
-		<< "eigvecs_gen*eigvals_gen*(~eigvecs_gen):\n" << eigvecs_gen*eigvals_genM*(~eigvecs_gen)
-		<< "C1:\n" << C1;
+		<< endl << endl
+		<< "eigvecs_gen*eigvals_gen*(~eigvecs_gen):\n" << eigvecs_gen*eigvals_genM*(~eigvecs_gen) << endl
+		<< "C1:\n" << C1 << endl
+		<< "eigvals_sym:\n" <<  eigvals_sym << endl
+		<< "eigvals_gen:\n" << eigvals_gen << endl
+		<< "eigvals_symM:\n" <<  eigvals_symM << endl
+		<< "eigvals_genM:\n" << eigvals_genM << endl
+		<< "eigvecs_gen:\n" << eigvecs_gen << endl
+		<< "eigvecs_sym:\n" << eigvecs_sym << endl<< endl;
 
 	EXPECT_NEAR( (C1-eigvecs_sym*eigvals_symM*(~eigvecs_sym)).Abs().sum(),0,1e-5)
-		<< "eigvecs_sym*eigvals_sym*(~eigvecs_sym):\n" << eigvecs_sym*eigvals_symM*(~eigvecs_sym)
-		<< "C1:\n" << C1;
+		<< endl << endl
+		<< "eigvecs_sym*eigvals_sym*(~eigvecs_sym):\n" << eigvecs_sym*eigvals_symM*(~eigvecs_sym) << endl
+		<< "C1:\n" << C1 << endl;
 
 	EXPECT_NEAR( (eigvals_gen-eigvals_sym).Abs().sum(),0,1e-5)
-		<< "eigvals_gen:\n" << eigvals_gen
-		<< "eigvals_sym:\n" << eigvals_sym;
+		<< endl << endl
+		<< "eigvals_gen:\n" << eigvals_gen<< endl
+		<< "eigvals_sym:\n" << eigvals_sym << endl;
 }
-
 
 TEST(Matrices,HCHt_3x2_2x2_2x3)
 {
