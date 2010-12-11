@@ -295,13 +295,20 @@ bool CFFMPEG_InputStream::retrieveFrame( mrpt::utils::CImage &out_img )
         if(packet.stream_index==ctx->videoStream)
         {
             // Decode video frame
+#if LIBAVCODEC_VERSION_MAJOR>52 || (LIBAVCODEC_VERSION_MAJOR==52 && LIBAVCODEC_VERSION_MINOR>=72)
+            avcodec_decode_video2(
+				ctx->pCodecCtx,
+				ctx->pFrame,
+				&frameFinished,
+                &packet);
+#else
             avcodec_decode_video(
 				ctx->pCodecCtx,
 				ctx->pFrame,
 				&frameFinished,
                 packet.data,
                 packet.size);
-
+#endif
             // Did we get a video frame?
             if(frameFinished)
             {
