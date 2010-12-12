@@ -47,6 +47,10 @@ namespace mrpt
 		  *
 		  *  To load from a points-map, CPointCloudColoured::loadFromPointsMap().
 		  *
+		  *   This class uses two smart optimizations while rendering to efficiently draw clouds of millions of points:
+		  *		- It uses octrees to avoid drawing parts of the point cloud out of the screen.
+		  *		- For each visible octree node (a 3D cube), it decimates the points if the density of points per square pixel is above a given limit (See mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL).
+		  *
 		  *  \sa opengl::COpenGLScene, opengl::CPointCloud
 		  *
 		  *  <div align="center">
@@ -84,13 +88,16 @@ namespace mrpt
 
 			float				m_pointSize; //!< By default is 1.0
 			bool				m_pointSmooth; //!< Default: false
+			mutable volatile size_t	m_last_rendered_count, m_last_rendered_count_ongoing;
 
 			/** Constructor
 			  */
 			CPointCloudColoured( ) :
 				m_points(),
 				m_pointSize(1),
-				m_pointSmooth(false)
+				m_pointSmooth(false),
+				m_last_rendered_count(0),
+				m_last_rendered_count_ongoing(0)
 			{
 			}
 			/** Private, virtual destructor: only can be deleted from smart pointers */
@@ -187,6 +194,9 @@ namespace mrpt
 				markAllPointsAsNew();
 			}
 
+			/** Get the number of elements actually rendered in the last render event. */
+			size_t getActuallyRendered() const { return m_last_rendered_count; }
+
 			/** @} */
 
 
@@ -207,7 +217,7 @@ namespace mrpt
 			void  render() const;
 
 			/** Render a subset of points (required by octree renderer) */
-			void  render_subset(const bool all, const std::vector<size_t>& idxs, const float largest_node_size_in_pixels ) const;
+			void  render_subset(const bool all, const std::vector<size_t>& idxs, const float render_area_sqpixels ) const;
 
 		};
 

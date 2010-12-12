@@ -95,6 +95,7 @@ namespace mrpt
 			// This must be added to any CObject derived class:
 			DEFINE_MRPT_OBJECT( CDisplayWindow3D )
 
+		protected:
 			friend class C3DWindowDialog;
 			friend class CMyGLCanvas_DisplayWindow3D;
 
@@ -127,6 +128,9 @@ namespace mrpt
 			void  doRender();
 
 			mrpt::system::TTimeStamp 	m_lastFullScreen;
+
+			std::vector<double>         m_last_FPSs; //!< \sa getRenderingFPS
+			synch::CCriticalSection     m_last_FPSs_cs;
 
 		public:
 			/** Constructor
@@ -338,6 +342,12 @@ namespace mrpt
 			  * \sa addTextMessage
 			  */
 			void clearTextMessages();
+
+			/** Set the rendering FPS (users don't call this, the method is for internal MRPT objects only) \sa getRenderingFPS */
+			void setRenderingFPS(double FPS);
+
+			/** Get the average Frames Per Second (FPS) value from the last 250 rendering events */
+			double getRenderingFPS() const;
 
 		}; // End of class def.
 	} // End of namespace

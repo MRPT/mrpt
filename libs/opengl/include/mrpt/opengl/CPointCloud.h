@@ -47,6 +47,10 @@ namespace mrpt
 		  *
 		  *  To load from a points-map, CPointCloud::loadFromPointsMap().
 		  *
+		  *   This class uses two smart optimizations while rendering to efficiently draw clouds of millions of points:
+		  *		- It uses octrees to avoid drawing parts of the point cloud out of the screen.
+		  *		- For each visible octree node (a 3D cube), it decimates the points if the density of points per square pixel is above a given limit (See mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL).
+		  *
 		  *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene, opengl::CPointCloudColoured, mrpt::slam::CPointsMap
 		  *
 		  *  <div align="center">
@@ -66,6 +70,8 @@ namespace mrpt
 			std::vector<float>	m_xs,m_ys,m_zs;
 			float           m_pointSize; //!< By default is 1.0
 			bool			m_pointSmooth; //!< Default: false
+
+			mutable volatile size_t m_last_rendered_count, m_last_rendered_count_ongoing;
 
 			void markAllPointsAsNew(); //!< Do needed internal work if all points are new (octree rebuilt,...)
 
@@ -160,6 +166,9 @@ namespace mrpt
 				MRPT_END
 			}
 
+			/** Get the number of elements actually rendered in the last render event. */
+			size_t getActuallyRendered() const { return m_last_rendered_count; }
+
 			/** @} */
 
 
@@ -186,7 +195,7 @@ namespace mrpt
 
 
 			/** Render a subset of points (required by octree renderer) */
-			void  render_subset(const bool all, const std::vector<size_t>& idxs, const float largest_node_size_in_pixels ) const;
+			void  render_subset(const bool all, const std::vector<size_t>& idxs, const float render_area_sqpixels ) const;
 
 		private:
 			/** Constructor */
@@ -205,6 +214,21 @@ namespace mrpt
 		};
 
 	} // end namespace
+
+	
+	namespace global_settings
+	{
+		/** Affects to these classes:
+		  *		- mrpt::opengl::CPointCloud
+		  *		- mrpt::opengl::CPointCloudColoured
+		  *  
+		  *	Default value = 0.2
+		  *
+		  *  Read the documentation of those classes for further information.
+		  */
+		extern OPENGL_IMPEXP float OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL;
+	}
+
 
 } // End of namespace
 

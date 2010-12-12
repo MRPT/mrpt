@@ -265,25 +265,38 @@ namespace math	{
 		 static size_t size() { return 3; }
 	};
 
+	/** Lightweight 3D point (float version).
+	  * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3D
+	  */
+	struct BASE_IMPEXP TPoint3Df
+	{
+		float x;
+		float y;
+		float z;
+
+		inline TPoint3Df() { }
+		inline TPoint3Df(const float xx,const float yy,const float zz) : x(xx), y(yy),z(zz) { }
+		inline TPoint3Df & operator +=(const TPoint3Df &p) { x+=p.x; y+=p.y; z+=p.z; return *this; }
+		inline TPoint3Df   operator *(const float s) { return TPoint3Df(x*s,y*s,z*s); }
+	};
+
 	/**
 	  * Lightweight 3D point. Allows coordinate access using [] operator.
 	  * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3Df
 	  */
 	struct BASE_IMPEXP TPoint3D	{
-		/**
-		  * X coordinate.
-		  */
-		double x;
-		/**
-		  * Y coordinate.
-		  */
-		double y;
-		/**
-		  * Z coordinate.
-		  */
-		double z;
-		/**
-		  * Implicit constructor from TPoint2D. Zeroes the z.
+		double x; //!< X coordinate
+		double y; //!< Y coordinate
+		double z; //!< Z coordinate
+
+		/** Constructor from coordinates.  */
+		inline TPoint3D(double xx,double yy,double zz):x(xx),y(yy),z(zz)	{}
+		/** Default fast constructor. Initializes to garbage. */
+		inline TPoint3D()	{}
+		/** Explicit constructor from coordinates.  */
+		explicit inline TPoint3D(const TPoint3Df &p):x(p.x),y(p.y),z(p.z) {}
+
+		/** Implicit constructor from TPoint2D. Zeroes the z.
 		  * \sa TPoint2D
 		  */
 		TPoint3D(const TPoint2D &p);
@@ -307,14 +320,6 @@ namespace math	{
 		  * \sa mrpt::poses::CPose3D.
 		  */
 		explicit TPoint3D(const mrpt::poses::CPose3D &p);
-		/**
-		  * Constructor from coordinates.
-		  */
-		inline TPoint3D(double xx,double yy,double zz):x(xx),y(yy),z(zz)	{}
-		/**
-		  * Default fast constructor. Initializes to garbage.
-		  */
-		inline TPoint3D()	{}
 		/**
 		  * Unsafe coordinate access using operator[]. Intended for loops.
 		  */
@@ -412,21 +417,6 @@ namespace math	{
 		   */
 		 void fromString(const std::string &s);
 		 static size_t size() { return 3; }
-	};
-
-	/** Lightweight 3D point (float version).
-	  * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3Df
-	  */
-	struct BASE_IMPEXP TPoint3Df
-	{
-		float x;
-		float y;
-		float z;
-
-		inline TPoint3Df() { }
-		inline TPoint3Df(const float xx,const float yy,const float zz) : x(xx), y(yy),z(zz) { }
-		inline TPoint3Df & operator +=(const TPoint3Df &p) { x+=p.x; y+=p.y; z+=p.z; return *this; }
-		inline TPoint3Df   operator *(const float s) { return TPoint3Df(x*s,y*s,z*s); }
 	};
 
 	/**

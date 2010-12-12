@@ -152,20 +152,6 @@ namespace mrpt
 
 			static void	renderTextBitmap( const char *str, void *fontStyle );
 
-		protected:
-			/** Checks glGetError and throws an exception if an error situation is found */
-			static void checkOpenGLError();
-			/** Can be used by derived classes to draw a triangle with a normal vector computed automatically - to be called within a glBegin()-glEnd() block. */
-			static void renderTriangleWithNormal( const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2,const mrpt::math::TPoint3D &p3 );
-
-			void  writeToStreamRender(utils::CStream &out) const;
-			void  readFromStreamRender(utils::CStream &in);
-
-			/** Returns the lowest, free texture name.  */
-			static unsigned int getNewTextureNumber();
-			static void releaseTextureName(unsigned int i);
-
-
 			/** Information about the rendering process being issued. \sa See getCurrentRenderingInfo for more details */
 			struct OPENGL_IMPEXP TRenderInfo
 			{
@@ -190,10 +176,24 @@ namespace mrpt
 				void projectPointPixels(float x,float y,float z, float &proj_x_px, float &proj_y_px, float &proj_z_depth) const
 				{
 					projectPoint(x,y,z,proj_x_px,proj_y_px,proj_z_depth);
-					proj_x_px*=static_cast<float>(vp_width);
-					proj_y_px*=static_cast<float>(vp_height);
+					proj_x_px = (proj_x_px+1.0f)*(vp_width/2);
+					proj_y_px = (proj_y_px+1.0f)*(vp_height/2);
 				}
 			};
+
+		protected:
+			/** Checks glGetError and throws an exception if an error situation is found */
+			static void checkOpenGLError();
+			/** Can be used by derived classes to draw a triangle with a normal vector computed automatically - to be called within a glBegin()-glEnd() block. */
+			static void renderTriangleWithNormal( const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2,const mrpt::math::TPoint3D &p3 );
+
+			void  writeToStreamRender(utils::CStream &out) const;
+			void  readFromStreamRender(utils::CStream &in);
+
+			/** Returns the lowest, free texture name.  */
+			static unsigned int getNewTextureNumber();
+			static void releaseTextureName(unsigned int i);
+
 
 			/** Gather useful information on the render parameters.
 			  *  It can be called from within the render() method of derived classes, and
@@ -206,7 +206,7 @@ namespace mrpt
 			  *  const float rend_x = M(0,3)/M(3,3);
 			  *  const float rend_y = M(1,3)/M(3,3);
 			  * \endcode
-			  *  where (rend_x,rend_y) are both in the range [0,1].
+			  *  where (rend_x,rend_y) are both in the range [-1,1].
 			  */
 			void getCurrentRenderingInfo(TRenderInfo &ri) const;
 

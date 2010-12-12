@@ -58,6 +58,7 @@
 				- multiOrientations. For each scale in multiScales there is a vector containing the main orientations of the feature.
 				- descriptors.multiSIFTDescriptors. For each scale and orientation there is a SIFT-like descriptor.
 				- hasDescriptorMultiSIFT(). Indicates if the multi-resolution SIFT-like descriptor has been computed for this feature.
+			- New method mrpt::gui::CDisplayWindow3D::getRenderingFPS()
 			- Both mrpt::opengl::CPointCloud and mrpt::opengl::CPointCloudColoured are now much more optimized to render huge point clouds:
 				- (TODO) Smart rendering based on Octrees to determine which volumes are within the frustum.
 				- (TODO) For each octree volume, smart decimation of the points from the points-to-eye distance: why rendering 1e6 points that will all be seen in a 10x10 pixel area?
@@ -84,6 +85,7 @@
 				- Feature extraction and stereo matching process from a pair of images. It show stadistics about the number of detected and matched features for each method.
 				- Feature extraction, stereo matching and re-projection to 3D from a pair of images.
 				- Feature extraction and computation of the matching score for each feature in list1 and for each in list2 with four different methods: FAST, NCC, SIFT and SURF. Graphical results are shown.
+			- octree_render_huge_pointcloud
 		- <b>BUG FIXES:</b>
 			- mrpt::utils::net::DNS_resolve_async didn't work properly.
 			- RawlogViewer, module "Raw-map": It didn't display or save the robot path for observations-only rawlogs.

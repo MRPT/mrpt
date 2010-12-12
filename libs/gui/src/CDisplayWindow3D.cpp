@@ -248,9 +248,11 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRender()
 
 void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)
 {
+	if (m_win3D) m_win3D->setRenderingFPS(At>0 ? 1.0/At : 1e9);
+
 	// If we are requested to do so, grab images to disk as they are rendered:
 	string grabFile = m_win3D->grabImageGetNextFile();
-	if (!grabFile.empty() || m_win3D->isCapturingImgs() )
+	if (m_win3D && !grabFile.empty() || m_win3D->isCapturingImgs() )
 	{
 		int w,h;
 		dc.GetSize(&w, &h);
@@ -420,10 +422,9 @@ CDisplayWindow3D::CDisplayWindow3D(
 	: CBaseGUIWindow(static_cast<void*>(this),300,399, windowCaption),
       m_grab_imgs_prefix(),
       m_grab_imgs_idx(0),
-      m_is_capturing_imgs(false)
+      m_is_capturing_imgs(false),
+	  m_lastFullScreen (mrpt::system::now())
 {
-	m_lastFullScreen = mrpt::system::now();
-
 	m_3Dscene = COpenGLScene::Create();
 	CBaseGUIWindow::createWxWindow(initialWindowWidth,initialWindowHeight);
 }
@@ -848,4 +849,22 @@ void CDisplayWindow3D::clearTextMessages()
         WxSubsystem::pushPendingWxRequest( REQ );
 	}
 #endif
+}
+
+void CDisplayWindow3D::setRenderingFPS(double FPS) 
+{
+	mrpt::synch::CCriticalSectionLocker lock(&m_last_FPSs_cs); 
+
+	m_last_FPSs.push_back(FPS); 
+	if (m_last_FPSs.size()>250)
+		m_last_FPSs.erase(m_last_FPSs.begin());
+}
+
+double CDisplayWindow3D::getRenderingFPS() const 
+{ 
+	mrpt::synch::CCriticalSectionLocker lock(&m_last_FPSs_cs); 
+
+	if (m_last_FPSs.empty())
+	     return 0;
+	else return mrpt::math::mean( m_last_FPSs );
 }

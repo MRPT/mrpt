@@ -242,7 +242,7 @@ void TestOpenGLObjects()
 		obj->enablePointSmooth();
 		obj->enableColorFromY();
 
-		for (int i=0;i<200000;i++)
+		for (int i=0;i<200;i++)
 			obj->insertPoint(
 				mrpt::random::randomGenerator.drawUniform(-5,5),
 				mrpt::random::randomGenerator.drawUniform(-5,5),

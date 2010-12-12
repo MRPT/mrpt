@@ -50,6 +50,7 @@ void   CPointCloudColoured::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	octree_assure_uptodate(); // Rebuild octree if needed
+	m_last_rendered_count_ongoing = 0;
 
 	// Info needed by octree renderer:
 	TRenderInfo ri;
@@ -69,8 +70,7 @@ void   CPointCloudColoured::render() const
 
     glBegin( GL_POINTS );
 
-	// Render all points recursively:
-	octree_recursive_render(OCTREE_ROOT_NODE, ri );
+	octree_render(ri); // Render all points recursively:
 
     glEnd();
 
@@ -81,20 +81,25 @@ void   CPointCloudColoured::render() const
 	if (m_pointSmooth)
 		glDisable( GL_POINT_SMOOTH );
 
+	m_last_rendered_count = m_last_rendered_count_ongoing;
+
 	checkOpenGLError();
 #endif
 }
 
 /** Render a subset of points (required by octree renderer) */
-void  CPointCloudColoured::render_subset(const bool all, const std::vector<size_t>& idxs, const float largest_node_size_in_pixels ) const
+void  CPointCloudColoured::render_subset(const bool all, const std::vector<size_t>& idxs, const float render_area_sqpixels ) const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	MRPT_TODO("Use largest_node_size_in_pixels")
-	const size_t decimation = 1;
+	const size_t N  = all ? m_points.size() : idxs.size();
+	const size_t decimation = std::max(1.0f, static_cast<float>(N / (mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL * render_area_sqpixels)) );
+
+	m_last_rendered_count_ongoing += N/decimation;
+
+	m_last_rendered_count_ongoing += (all ? m_points.size() : idxs.size())/decimation;
 
 	if (all)
 	{
-		const size_t N = m_points.size();
 		for (size_t i=0;i<N;i+=decimation)
 		{
 			const TPointColour &p = m_points[i];
@@ -104,7 +109,6 @@ void  CPointCloudColoured::render_subset(const bool all, const std::vector<size_
 	}
 	else
 	{
-		const size_t N = idxs.size();
 		for (size_t i=0;i<N;i+=decimation)
 		{
 			const TPointColour &p = m_points[idxs[i]];

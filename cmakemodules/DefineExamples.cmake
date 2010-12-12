@@ -58,6 +58,7 @@ IF(BUILD_EXAMPLES)
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		display3D
 		opengl_objects_demo
+		octree_render_huge_pointcloud
 		imageBasics
 		imageCorrelation
 		random

@@ -40,6 +40,9 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
+float mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL = 0.2f;
+
+
 IMPLEMENTS_SERIALIZABLE( CPointCloud, CRenderizable, mrpt::opengl )
 
 /*---------------------------------------------------------------
@@ -50,6 +53,8 @@ CPointCloud::CPointCloud( ) :
 	m_xs(),m_ys(),m_zs(),
 	m_pointSize(1),
 	m_pointSmooth(false),
+	m_last_rendered_count(0),
+	m_last_rendered_count_ongoing(0),
 	m_min(0),
 	m_max(0),
 	m_max_m_min(0),
@@ -72,8 +77,7 @@ void   CPointCloud::render() const
     ASSERT_(m_xs.size() == m_zs.size());
 
 	octree_assure_uptodate(); // Rebuild octree if needed
-
-	//octree_debug_dump_tree(std::cout); // DEBUG *****
+	m_last_rendered_count_ongoing = 0;
 
 	// Info needed by octree renderer:
 	TRenderInfo ri;
@@ -128,8 +132,7 @@ void   CPointCloud::render() const
 
     glColor4f( m_color_R,m_color_G,m_color_B,m_color_A ); // The default if m_colorFromDepth=false
 
-	// Render all points recursively:
-	octree_recursive_render(OCTREE_ROOT_NODE, ri );
+	octree_render(ri); // Render all points recursively:
 
     glEnd();
 
@@ -138,6 +141,9 @@ void   CPointCloud::render() const
 
 	if (m_pointSmooth)
 		glDisable( GL_POINT_SMOOTH );
+
+
+	m_last_rendered_count = m_last_rendered_count_ongoing;
 
 	checkOpenGLError();
 #endif
@@ -165,15 +171,17 @@ inline void CPointCloud::internal_render_one_point(size_t i) const
 
 
 /** Render a subset of points (required by octree renderer) */
-void  CPointCloud::render_subset(const bool all, const std::vector<size_t>& idxs, const float largest_node_size_in_pixels ) const
+void  CPointCloud::render_subset(const bool all, const std::vector<size_t>& idxs, const float render_area_sqpixels ) const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	MRPT_TODO("Use largest_node_size_in_pixels")
-	const size_t decimation = 1;
+
+	const size_t N = (all ? m_xs.size() : idxs.size());
+	const size_t decimation = std::max(1.0f, static_cast<float>(N / (mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL * render_area_sqpixels)) );
+
+	m_last_rendered_count_ongoing += N/decimation;
 
 	if (all)
 	{
-		const size_t N=m_xs.size();
 		for (size_t i=0;i<N;i++)
 			internal_render_one_point(i);
 	}
