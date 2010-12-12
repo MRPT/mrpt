@@ -349,6 +349,9 @@ void CRenderizable::getCurrentRenderingInfo(TRenderInfo &ri) const
 	GLfloat  mat_mod[16];
 	glGetFloatv(GL_MODELVIEW_MATRIX,mat_mod);
 	ri.model_matrix = Eigen::Matrix<float,4,4,Eigen::ColMajor>(mat_mod);
+
+	// PROJ * MODEL
+	ri.full_matrix = ri.proj_matrix * ri.model_matrix;
 #endif
 }
 

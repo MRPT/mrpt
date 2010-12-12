@@ -425,6 +425,8 @@ namespace math	{
 
 		inline TPoint3Df() { }
 		inline TPoint3Df(const float xx,const float yy,const float zz) : x(xx), y(yy),z(zz) { }
+		inline TPoint3Df & operator +=(const TPoint3Df &p) { x+=p.x; y+=p.y; z+=p.z; return *this; }
+		inline TPoint3Df   operator *(const float s) { return TPoint3Df(x*s,y*s,z*s); }
 	};
 
 	/**

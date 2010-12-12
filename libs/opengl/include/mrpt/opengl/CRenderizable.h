@@ -166,18 +166,47 @@ namespace mrpt
 			static void releaseTextureName(unsigned int i);
 
 
-			/** Information about the rendering process being issued.
-			  *  \sa getCurrentRenderingInfo
-			  */
+			/** Information about the rendering process being issued. \sa See getCurrentRenderingInfo for more details */
 			struct OPENGL_IMPEXP TRenderInfo
 			{
 				int vp_x, vp_y, vp_width, vp_height;    //!< Rendering viewport geometry (in pixels)
 				Eigen::Matrix<float,4,4,Eigen::ColMajor>  proj_matrix;  //!< The 4x4 projection matrix
 				Eigen::Matrix<float,4,4,Eigen::ColMajor>  model_matrix;  //!< The 4x4 model transformation matrix
+				Eigen::Matrix<float,4,4,Eigen::ColMajor>  full_matrix;  //!< PROJ * MODEL
+
+				/** Computes the normalized coordinates (range=[0,1]) on the current rendering viewport of a
+				  * point with local coordinates (wrt to the current model matrix) of (x,y,z).
+				  *  The output proj_z_depth is the real distance from the eye to the point.
+				  */
+				void projectPoint(float x,float y,float z, float &proj_x, float &proj_y, float &proj_z_depth) const
+				{
+					const Eigen::Matrix<float,4,1,Eigen::ColMajor> proj = full_matrix * Eigen::Matrix<float,4,1,Eigen::ColMajor>(x,y,z,1);
+					proj_x = proj[2] ? proj[0]/proj[2] : 0;
+					proj_y = proj[2] ? proj[1]/proj[2] : 0;
+					proj_z_depth = proj[3];
+				}
+
+				/** Exactly like projectPoint but the (x,y) projected coordinates are given in pixels instead of normalized coordinates. */
+				void projectPointPixels(float x,float y,float z, float &proj_x_px, float &proj_y_px, float &proj_z_depth) const
+				{
+					projectPoint(x,y,z,proj_x_px,proj_y_px,proj_z_depth);
+					proj_x_px*=static_cast<float>(vp_width);
+					proj_y_px*=static_cast<float>(vp_height);
+				}
 			};
 
 			/** Gather useful information on the render parameters.
-			  *  It can be called from within the render() method of derived classes.
+			  *  It can be called from within the render() method of derived classes, and
+			  *   the returned matrices can be used to determine whether a given point (lx,ly,lz)
+			  *   in local coordinates wrt the object being rendered falls within the screen or not:
+			  * \code
+			  *  TRenderInfo ri;
+			  *  getCurrentRenderingInfo(ri);
+			  *  Eigen::Matrix<float,4,4> M= ri.proj_matrix * ri.model_matrix * HomogeneousMatrix(lx,ly,lz);
+			  *  const float rend_x = M(0,3)/M(3,3);
+			  *  const float rend_y = M(1,3)/M(3,3);
+			  * \endcode
+			  *  where (rend_x,rend_y) are both in the range [0,1].
 			  */
 			void getCurrentRenderingInfo(TRenderInfo &ri) const;
 

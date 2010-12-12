@@ -30,8 +30,8 @@
 #define opengl_CPointCloudColoured_H
 
 #include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/stl_extensions.h>
+#include <mrpt/opengl/COctreePointRenderer.h>
+//#include <mrpt/utils/stl_extensions.h>
 
 namespace mrpt
 {
@@ -56,7 +56,9 @@ namespace mrpt
 		  *  </div>
 		  *
 		  */
-		class OPENGL_IMPEXP CPointCloudColoured : public CRenderizable
+		class OPENGL_IMPEXP CPointCloudColoured :
+			public CRenderizable,
+			public COctreePointRenderer<CPointCloudColoured>
 		{
 			DEFINE_SERIALIZABLE( CPointCloudColoured )
 
@@ -102,9 +104,7 @@ namespace mrpt
 			    @{ */
 
 			/** Inserts a new point into the point cloud. */
-			inline void push_back(float x,float y,float z, float R, float G, float B) {
-				m_points.push_back(TPointColour(x,y,z,R,G,B));
-			}
+			void push_back(float x,float y,float z, float R, float G, float B);
 
 			/** Set the number of points, with undefined contents */
 			inline void resize(size_t N) { m_points.resize(N); }
@@ -126,6 +126,14 @@ namespace mrpt
 				ASSERT_BELOW_(i,size())
 #endif
 				return m_points[i];
+			}
+
+			/** Read access to each individual point (checks for "i" in the valid range only in Debug). */
+			inline mrpt::math::TPoint3Df getPointf(size_t i) const {
+#ifdef _DEBUG
+				ASSERT_BELOW_(i,size())
+#endif
+				return mrpt::math::TPoint3Df(m_points[i].x,m_points[i].y,m_points[i].z);
 			}
 
 			/** Write an individual point (checks for "i" in the valid range only in Debug). */
@@ -197,6 +205,9 @@ namespace mrpt
 
 			/** Render */
 			void  render() const;
+
+			/** Render a subset of points (required by octree renderer) */
+			void  render_subset(const bool all, const std::vector<size_t>& idxs, const float largest_node_size_in_pixels ) const;
 
 		};
 

@@ -52,6 +52,8 @@ CPointCloud::CPointCloud( ) :
 	m_pointSmooth(false),
 	m_min(0),
 	m_max(0),
+	m_max_m_min(0),
+	m_max_m_min_inv(0),
 	m_minmax_valid(false),
 	m_colorFromDepth_min(0,0,0),
 	m_colorFromDepth_max(0,0,1)
@@ -66,11 +68,16 @@ CPointCloud::CPointCloud( ) :
 void   CPointCloud::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-
     ASSERT_(m_xs.size() == m_ys.size());
     ASSERT_(m_xs.size() == m_zs.size());
 
-	float A=0, A_1=0;
+	octree_assure_uptodate(); // Rebuild octree if needed
+
+	//octree_debug_dump_tree(std::cout); // DEBUG *****
+
+	// Info needed by octree renderer:
+	TRenderInfo ri;
+	getCurrentRenderingInfo(ri);
 
 	if ( m_colorFromDepth )
 	{
@@ -83,17 +90,17 @@ void   CPointCloud::render() const
 					m_min, m_max);
 			else m_max=m_min=0;
 
-			A = m_max - m_min;
-			if (std::abs(A)<1e-4)
-					A=-1;
-			else	m_min = m_max - A * 1.01f;
+			m_max_m_min = m_max - m_min;
+			if (std::abs(m_max_m_min)<1e-4)
+					m_max_m_min=-1;
+			else	m_min = m_max - m_max_m_min * 1.01f;
 		}
 		else
 		{
-			A = m_max - m_min;
+			m_max_m_min = m_max - m_min;
 		}
 
-		A_1  = 1.0/A;
+		m_max_m_min_inv  = 1.0/m_max_m_min;
 	}
 
 	if ( m_color_A != 1.0 )
@@ -104,13 +111,13 @@ void   CPointCloud::render() const
 
 
 	// Slopes of color interpolation:
-	const float AR = m_colorFromDepth_max.R - m_colorFromDepth_min.R;
-	const float AG = m_colorFromDepth_max.G - m_colorFromDepth_min.G;
-	const float AB = m_colorFromDepth_max.B - m_colorFromDepth_min.B;
-	float AR_1,AG_1,AB_1;
-	if (AR) AR_1 = 1.0/AR;
-	if (AG) AG_1 = 1.0/AG;
-	if (AB) AB_1 = 1.0/AB;
+	m_col_slop.R = m_colorFromDepth_max.R - m_colorFromDepth_min.R;
+	m_col_slop.G  = m_colorFromDepth_max.G - m_colorFromDepth_min.G;
+	m_col_slop.B  = m_colorFromDepth_max.B - m_colorFromDepth_min.B;
+
+	m_col_slop_inv.R = m_col_slop.R!=0 ? 1.0f/m_col_slop.R : 0;
+	m_col_slop_inv.G = m_col_slop.G!=0 ? 1.0f/m_col_slop.G : 0;
+	m_col_slop_inv.B = m_col_slop.B!=0 ? 1.0f/m_col_slop.B : 0;
 
     glPointSize( m_pointSize );
     if (m_pointSmooth)
@@ -119,26 +126,11 @@ void   CPointCloud::render() const
 
     glBegin( GL_POINTS );
 
-    glColor4f( m_color_R,m_color_G,m_color_B,m_color_A );
+    glColor4f( m_color_R,m_color_G,m_color_B,m_color_A ); // The default if m_colorFromDepth=false
 
-	const size_t N=m_xs.size();
-    for (size_t i=0;i<N;i++)
-    {
-		if ( m_colorFromDepth!=None && A>0 )
-		{
-			const float depthCol = (m_colorFromDepth==X ? m_xs[i] : (m_colorFromDepth==Y ? m_ys[i] : m_zs[i]));
+	// Render all points recursively:
+	octree_recursive_render(OCTREE_ROOT_NODE, ri );
 
-			float	f = (depthCol - m_min) * A_1;
-			f=std::max(0.0f,min(1.0f,f));
-
-			glColor4f(
-				m_colorFromDepth_min.R + f*AR,
-				m_colorFromDepth_min.G + f*AG,
-				m_colorFromDepth_min.B + f*AB,
-				m_color_A );
-		}
-		glVertex3f( m_xs[i],m_ys[i],m_zs[i] );
-    }
     glEnd();
 
 	if ( m_color_A != 1.0 )
@@ -150,6 +142,50 @@ void   CPointCloud::render() const
 	checkOpenGLError();
 #endif
 }
+
+inline void CPointCloud::internal_render_one_point(size_t i) const
+{
+#if MRPT_HAS_OPENGL_GLUT
+	if ( m_colorFromDepth!=None && m_max_m_min>0 )
+	{
+		const float depthCol = (m_colorFromDepth==X ? m_xs[i] : (m_colorFromDepth==Y ? m_ys[i] : m_zs[i]));
+
+		float	f = (depthCol - m_min) * m_max_m_min_inv;
+		f=std::max(0.0f,min(1.0f,f));
+
+		glColor4f(
+			m_colorFromDepth_min.R + f*m_col_slop_inv.R,
+			m_colorFromDepth_min.G + f*m_col_slop_inv.G,
+			m_colorFromDepth_min.B + f*m_col_slop_inv.B,
+			m_color_A );
+	}
+	glVertex3f( m_xs[i],m_ys[i],m_zs[i] );
+#endif
+}
+
+
+/** Render a subset of points (required by octree renderer) */
+void  CPointCloud::render_subset(const bool all, const std::vector<size_t>& idxs, const float largest_node_size_in_pixels ) const
+{
+#if MRPT_HAS_OPENGL_GLUT
+	MRPT_TODO("Use largest_node_size_in_pixels")
+	const size_t decimation = 1;
+
+	if (all)
+	{
+		const size_t N=m_xs.size();
+		for (size_t i=0;i<N;i++)
+			internal_render_one_point(i);
+	}
+	else
+	{
+		const size_t N = idxs.size();
+		for (size_t i=0;i<N;i+=decimation)
+			internal_render_one_point(idxs[i]);
+	}
+#endif
+}
+
 
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of
@@ -258,6 +294,8 @@ void CPointCloud::insertPoint( float x,float y, float z )
 	m_ys.push_back(y);
 	m_zs.push_back(z);
 
+	m_minmax_valid = false;
+	markAllPointsAsNew();  // DEBUG!!
 
 	MRPT_TODO("octree update...")
 }
@@ -272,6 +310,9 @@ void CPointCloud::setPoint(size_t i, const float x,const float y, const float z)
 	m_ys[i] = y;
 	m_zs[i] = z;
 
+	m_minmax_valid = false;
+	markAllPointsAsNew();  // DEBUG!!
+
 	MRPT_TODO("octree update...")
 }
 
@@ -282,9 +323,7 @@ void  CPointCloud::setGradientColors( const mrpt::utils::TColorf &colorMin, cons
 {
 	m_colorFromDepth_min = colorMin;
 	m_colorFromDepth_max = colorMax;
-
 }
-
 
 // Do needed internal work if all points are new (octree rebuilt,...)
 void CPointCloud::markAllPointsAsNew()

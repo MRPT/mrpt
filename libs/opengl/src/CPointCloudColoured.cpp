@@ -49,6 +49,11 @@ IMPLEMENTS_SERIALIZABLE( CPointCloudColoured, CRenderizable, mrpt::opengl )
 void   CPointCloudColoured::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
+	octree_assure_uptodate(); // Rebuild octree if needed
+
+	// Info needed by octree renderer:
+	TRenderInfo ri;
+	getCurrentRenderingInfo(ri);
 
 	if ( m_color_A != 1.0 )
 	{
@@ -64,13 +69,8 @@ void   CPointCloudColoured::render() const
 
     glBegin( GL_POINTS );
 
-    glColor4f( m_color_R,m_color_G,m_color_B,m_color_A );
-
-    for (const_iterator i=begin();i!=end();++i)
-    {
-		glColor4f( i->R,i->G,i->B,m_color_A );
-		glVertex3f( i->x,i->y,i->z );
-    }
+	// Render all points recursively:
+	octree_recursive_render(OCTREE_ROOT_NODE, ri );
 
     glEnd();
 
@@ -84,6 +84,37 @@ void   CPointCloudColoured::render() const
 	checkOpenGLError();
 #endif
 }
+
+/** Render a subset of points (required by octree renderer) */
+void  CPointCloudColoured::render_subset(const bool all, const std::vector<size_t>& idxs, const float largest_node_size_in_pixels ) const
+{
+#if MRPT_HAS_OPENGL_GLUT
+	MRPT_TODO("Use largest_node_size_in_pixels")
+	const size_t decimation = 1;
+
+	if (all)
+	{
+		const size_t N = m_points.size();
+		for (size_t i=0;i<N;i+=decimation)
+		{
+			const TPointColour &p = m_points[i];
+			glColor4f( p.R, p.G, p.B,m_color_A );
+			glVertex3f( p.x,p.y,p.z );
+		}
+	}
+	else
+	{
+		const size_t N = idxs.size();
+		for (size_t i=0;i<N;i+=decimation)
+		{
+			const TPointColour &p = m_points[idxs[i]];
+			glColor4f( p.R, p.G, p.B,m_color_A );
+			glVertex3f( p.x,p.y,p.z );
+		}
+	}
+#endif
+}
+
 
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of
@@ -137,6 +168,7 @@ void  CPointCloudColoured::readFromStream(CStream &in,int version)
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
+	markAllPointsAsNew();
 }
 
 CStream& mrpt::opengl::operator >> (CStream& in,  CPointCloudColoured::TPointColour &o)
@@ -161,8 +193,21 @@ void CPointCloudColoured::setPoint(size_t i, const TPointColour &p )
 #endif
 	m_points[i] = p;
 
+	markAllPointsAsNew();  // DEBUG!!
+
 	MRPT_TODO("octree update...")
 }
+
+/** Inserts a new point into the point cloud. */
+void CPointCloudColoured::push_back(float x,float y,float z, float R, float G, float B)
+{
+	m_points.push_back(TPointColour(x,y,z,R,G,B));
+
+	markAllPointsAsNew();  // DEBUG!!
+
+	MRPT_TODO("octree update...")
+}
+
 
 // Do needed internal work if all points are new (octree rebuilt,...)
 void CPointCloudColoured::markAllPointsAsNew()

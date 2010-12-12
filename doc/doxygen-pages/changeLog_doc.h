@@ -67,7 +67,8 @@
 			- mrpt::hwdrivers::CKinect: Support for grabbing XBox Kinect. Read the class documentation for more details.
 			- TMultiResDescMatchOptions. Struct containing the options when matching multi-resolution SIFT-like descriptors.
 			- TMultiResDescOptions. Struct containing the options when computing the multi-resolution SIFT-like descriptors.
-			- mrpt::aligned_containers<>: A helper template to ease the declaration of STL containers with the correct Eigen aligned allocators.
+			- mrpt::aligned_containers: A helper template to ease the declaration of STL containers with the correct Eigen aligned allocators.
+			- mrpt::opengl::CRenderizable::TRenderInfo: Helper struct to help OpenGL objects to render more efficiently by predicting their rendering conditions
 		- New functions:
 			- mrpt::vision::computeGradient(). Computes the gradient of certain pixel within the image.
 			- mrpt::vision::computeMainOrientations(). Computes the main orientations (within 80% of the peak value of orientation histogram) of a certain point within an image (for using in SIFT-based algorithms)

@@ -30,7 +30,7 @@
 #define opengl_CPointCloud_H
 
 #include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/utils/CImage.h>
+#include <mrpt/opengl/COctreePointRenderer.h>
 
 namespace mrpt
 {
@@ -56,7 +56,9 @@ namespace mrpt
 		  *  </div>
 		  *
 		  */
-		class OPENGL_IMPEXP CPointCloud : public CRenderizable
+		class OPENGL_IMPEXP CPointCloud :
+			public CRenderizable,
+			public COctreePointRenderer<CPointCloud>
 		{
 			DEFINE_SERIALIZABLE( CPointCloud )
 		protected:
@@ -112,6 +114,14 @@ namespace mrpt
 				ASSERT_BELOW_(i,size())
 #endif
 				return mrpt::math::TPoint3D(m_xs[i],m_ys[i],m_zs[i]);
+			}
+
+			/** Read access to each individual point (checks for "i" in the valid range only in Debug). */
+			inline mrpt::math::TPoint3Df getPointf(size_t i) const {
+#ifdef _DEBUG
+				ASSERT_BELOW_(i,size())
+#endif
+				return mrpt::math::TPoint3Df(m_xs[i],m_ys[i],m_zs[i]);
 			}
 
 			/** Write an individual point (checks for "i" in the valid range only in Debug). */
@@ -175,6 +185,9 @@ namespace mrpt
 			void  render() const;
 
 
+			/** Render a subset of points (required by octree renderer) */
+			void  render_subset(const bool all, const std::vector<size_t>& idxs, const float largest_node_size_in_pixels ) const;
+
 		private:
 			/** Constructor */
 			CPointCloud();
@@ -182,10 +195,13 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CPointCloud() { }
 
-			mutable float  m_min, m_max; 	//!< Buffer for min/max coords when m_colorFromDepth is true.
+			mutable float  m_min, m_max,m_max_m_min,m_max_m_min_inv; 	//!< Buffer for min/max coords when m_colorFromDepth is true.
+			mutable mrpt::utils::TColorf m_col_slop,m_col_slop_inv; //!< Color linear function slope
 			mutable bool   m_minmax_valid;
 
 			mrpt::utils::TColorf	m_colorFromDepth_min, m_colorFromDepth_max;	//!< The colors used to interpolate when m_colorFromDepth is true.
+
+			inline void internal_render_one_point(size_t i) const;
 		};
 
 	} // end namespace
