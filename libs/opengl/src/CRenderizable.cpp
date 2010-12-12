@@ -297,8 +297,6 @@ CRenderizablePtr &mrpt::opengl::operator<<(CRenderizablePtr &r,const CPose3D &p)
 	return r;
 }
 
-
-
 void CRenderizable::renderTriangleWithNormal( const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2,const mrpt::math::TPoint3D &p3 )
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -326,3 +324,31 @@ CRenderizable& CRenderizable::setColor( const mrpt::utils::TColorf &c)
 	m_color_A = c.A;
 	return *this;
 }
+
+
+/** Gather useful information on the render parameters.
+  *  It can be called from within the render() method of derived classes.
+  */
+void CRenderizable::getCurrentRenderingInfo(TRenderInfo &ri) const
+{
+#if MRPT_HAS_OPENGL_GLUT
+	// Viewport geometry:
+	GLint	win_dims[4];
+	glGetIntegerv( GL_VIEWPORT, win_dims );
+	ri.vp_x      = win_dims[0];
+	ri.vp_y      = win_dims[1];
+	ri.vp_width  = win_dims[2];
+	ri.vp_height = win_dims[3];
+
+	// Get the inverse camera position:
+	GLfloat  mat_proj[16];
+	glGetFloatv(GL_PROJECTION_MATRIX,mat_proj);
+	ri.proj_matrix = Eigen::Matrix<float,4,4,Eigen::ColMajor>(mat_proj);
+
+	// Get the model transformation:
+	GLfloat  mat_mod[16];
+	glGetFloatv(GL_MODELVIEW_MATRIX,mat_mod);
+	ri.model_matrix = Eigen::Matrix<float,4,4,Eigen::ColMajor>(mat_mod);
+#endif
+}
+

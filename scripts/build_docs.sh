@@ -62,7 +62,8 @@ fi
 #  Paths relative to "$MRPT_ROOT"
 # -------------------------------------------------------------------
 CUR_DIR=`pwd`
-EIGEN_INDIV_FILES="$CUR_DIR/libs/base/include/Eigen/src/Core/ base/include/Eigen/Array $CUR_DIR/libs/base/include/Eigen/Dense $CUR_DIR/libs/base/include/Eigen/Geometry     $CUR_DIR/libs/base/include/Eigen/QR  $CUR_DIR/libs/base/include/Eigen/StdDeque   $CUR_DIR/libs/base/include/Eigen/Cholesky  $CUR_DIR/libs/base/include/Eigen/Eigen    $CUR_DIR/libs/base/include/Eigen/Householder  $CUR_DIR/libs/base/include/Eigen/QtAlignedMalloc  $CUR_DIR/libs/base/include/Eigen/StdList  $CUR_DIR/libs/base/include/Eigen/Eigen2Support  $CUR_DIR/libs/base/include/Eigen/Jacobi       $CUR_DIR/libs/base/include/Eigen/Sparse           $CUR_DIR/libs/base/include/Eigen/StdVector $CUR_DIR/libs/base/include/Eigen/Core           $CUR_DIR/libs/base/include/Eigen/Eigenvalues    $CUR_DIR/libs/base/include/Eigen/LU  $CUR_DIR/libs/base/include/Eigen/SVD"
+EIGEN_BASE_DIR="$CUR_DIR/otherlibs/eigen3/Eigen"
+EIGEN_INDIV_FILES="$EIGEN_BASE_DIR $EIGEN_BASE_DIR/Dense $EIGEN_BASE_DIR/Eigenvalues $EIGEN_BASE_DIR/Cholesky $EIGEN_BASE_DIR/QR"
 
 MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/ $EIGEN_INDIV_FILES)
 

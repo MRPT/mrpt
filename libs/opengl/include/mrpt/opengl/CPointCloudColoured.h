@@ -45,16 +45,16 @@ namespace mrpt
 
 		/** A cloud of points, each one with an individual colour (R,G,B). The alpha component is shared by all the points and is stored in the base member m_color_A.
 		  *
-		  *  To load from a points-map, see mrpt::slam::CPointsMap::loadIntoPointCloud().
+		  *  To load from a points-map, CPointCloudColoured::loadFromPointsMap().
 		  *
 		  *  \sa opengl::COpenGLScene, opengl::CPointCloud
-		  *  
+		  *
 		  *  <div align="center">
 		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
 		  *   <tr> <td> mrpt::opengl::CPointCloudColoured </td> <td> \image html preview_CPointCloudColoured.png </td> </tr>
 		  *  </table>
 		  *  </div>
-		  *  
+		  *
 		  */
 		class OPENGL_IMPEXP CPointCloudColoured : public CRenderizable
 		{
@@ -63,16 +63,23 @@ namespace mrpt
 		public:
 			struct TPointColour
 			{
-				TPointColour( float _x=0,float _y=0,float _z=0,float _R=0,float _G=0,float _B=0 ) :
-					x(_x),y(_y),z(_z),R(_R),G(_G),B(_B)
-				{ }
+				inline TPointColour() { }
+				inline TPointColour(float _x,float _y,float _z,float _R,float _G,float _B ) : x(_x),y(_y),z(_z),R(_R),G(_G),B(_B) { }
 				float x,y,z,R,G,B;	// Float is precission enough for rendering
 			};
 
 		private:
 			typedef std::vector<TPointColour> TListPointColour;
-
 			TListPointColour	m_points;
+
+			typedef TListPointColour::iterator iterator;
+			typedef TListPointColour::const_iterator const_iterator;
+			inline iterator begin() { return m_points.begin(); }
+			inline const_iterator begin() const { return m_points.begin(); }
+			inline iterator end() { return m_points.end(); }
+			inline const_iterator end() const { return m_points.end(); }
+
+
 			float				m_pointSize; //!< By default is 1.0
 			bool				m_pointSmooth; //!< Default: false
 
@@ -87,35 +94,47 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CPointCloudColoured() { }
 
-		public:
-			typedef TListPointColour::iterator iterator;
-			typedef TListPointColour::const_iterator const_iterator;
+			void markAllPointsAsNew(); //!< Do needed internal work if all points are new (octree rebuilt,...)
 
-			inline iterator begin() { return m_points.begin(); }
-			inline const_iterator begin() const { return m_points.begin(); }
-			inline iterator end() { return m_points.end(); }
-			inline const_iterator end() const { return m_points.end(); }
+		public:
+
+			/** @name Read/Write of the list of points to render
+			    @{ */
 
 			/** Inserts a new point into the point cloud. */
 			inline void push_back(float x,float y,float z, float R, float G, float B) {
 				m_points.push_back(TPointColour(x,y,z,R,G,B));
 			}
 
-			inline void reserve(size_t N) { m_points.reserve(N); }
+			/** Set the number of points, with undefined contents */
 			inline void resize(size_t N) { m_points.resize(N); }
 
-			/** Read or write access to each individual point. */
-			inline TPointColour &operator [](size_t i) { return m_points[i]; }
+			/** Like STL std::vector's reserve */
+			inline void reserve(size_t N) { m_points.reserve(N); }
 
-			inline size_t size() const { return m_points.size(); }
-			inline void clear() { m_points.clear(); }
+			/** Read access to each individual point (checks for "i" in the valid range only in Debug). */
+			inline const TPointColour &operator [](size_t i) const {
+#ifdef _DEBUG
+				ASSERT_BELOW_(i,size())
+#endif
+				return m_points[i];
+			}
 
-			inline void setPointSize(float pointSize) { m_pointSize = pointSize; }
-			inline float getPointSize() const { return m_pointSize; }
+			/** Read access to each individual point (checks for "i" in the valid range only in Debug). */
+			inline const TPointColour &getPoint(size_t i) const {
+#ifdef _DEBUG
+				ASSERT_BELOW_(i,size())
+#endif
+				return m_points[i];
+			}
 
-			inline void enablePointSmooth(bool enable=true) { m_pointSmooth=enable; }
-			inline void disablePointSmooth() { m_pointSmooth=false; }
-			inline bool isPointSmoothEnabled() const { return m_pointSmooth; }
+			/** Write an individual point (checks for "i" in the valid range only in Debug). */
+			inline void setPoint(size_t i, const TPointColour &p );
+
+			inline size_t size() const { return m_points.size(); } //!< Return the number of points
+
+			inline void clear() { m_points.clear(); markAllPointsAsNew(); }  //!< Erase all the points
+
 
 			/** Load the points from a points map (passed as a pointer), depending on the type of point map passed: for the case of a mrpt::slam::CColouredPointMap the colours of individual points will be also copied.
 			  *  The possible classes accepted as arguments are: mrpt::slam::CColouredPointsMap, or in general any mrpt::slam::CPointsMap.
@@ -157,10 +176,26 @@ namespace mrpt
 						m_points[i].B = m_color_B;
 					}
 				}
+				markAllPointsAsNew();
 			}
 
-			/** Render
-			  */
+			/** @} */
+
+
+			/** @name Modify the appearance of the rendered points
+			    @{ */
+
+			inline void setPointSize(float pointSize) { m_pointSize = pointSize; }
+			inline float getPointSize() const { return m_pointSize; }
+
+			inline void enablePointSmooth(bool enable=true) { m_pointSmooth=enable; }
+			inline void disablePointSmooth() { m_pointSmooth=false; }
+			inline bool isPointSmoothEnabled() const { return m_pointSmooth; }
+
+			/** @} */
+
+
+			/** Render */
 			void  render() const;
 
 		};

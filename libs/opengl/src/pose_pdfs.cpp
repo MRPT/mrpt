@@ -179,16 +179,13 @@ CSetOfObjectsPtr mrpt::opengl::posePDF2opengl<CPointPDF,CSetOfObjectsPtr>(const 
 		const size_t N=p->size();
 
 		obj->resize(N);
-		vector<float> &x= obj->getArrayX();
-		vector<float> &y= obj->getArrayY();
-		vector<float> &z= obj->getArrayZ();
 		obj->setColor(POINT_COLOR);
 		for (size_t i=0;i<N;i++)
-		{
-			x[i]=p->m_particles[i].d->x;
-			y[i]=p->m_particles[i].d->y;
-			z[i]=p->m_particles[i].d->z;
-		}
+			obj->setPoint(
+				i,
+				p->m_particles[i].d->x,
+				p->m_particles[i].d->y,
+				p->m_particles[i].d->z );
 		outObj->insert( obj );
 	}
 

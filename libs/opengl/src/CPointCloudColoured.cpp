@@ -151,3 +151,21 @@ CStream& mrpt::opengl::operator << (CStream& out, const CPointCloudColoured::TPo
 	out << o.x << o.y << o.z << o.R << o.G << o.B;
 	return out;
 }
+
+
+/** Write an individual point (checks for "i" in the valid range only in Debug). */
+void CPointCloudColoured::setPoint(size_t i, const TPointColour &p )
+{
+#ifdef _DEBUG
+	ASSERT_BELOW_(i,size())
+#endif
+	m_points[i] = p;
+
+	MRPT_TODO("octree update...")
+}
+
+// Do needed internal work if all points are new (octree rebuilt,...)
+void CPointCloudColoured::markAllPointsAsNew()
+{
+	MRPT_TODO("octree update...")
+}

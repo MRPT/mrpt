@@ -74,6 +74,9 @@ namespace mrpt
 			bool					m_visible; //!< Is the object visible? (default=true)
 
  		public:
+			/** @name Changes the appearance of the object to render
+			    @{ */
+
 			void setName(const std::string &n) { m_name=n; }	//!< Changes the name of the object
 			std::string getName() const { return m_name; }		//!< Returns the name of the object
 
@@ -81,22 +84,6 @@ namespace mrpt
 			inline void setVisibility(bool visible=true) /** Set object visibility (default=true) \sa isVisible */  { m_visible=visible; }
 
 			void enableShowName(bool showName=true) { m_show_name=showName; }	//!< Enables or disables showing the name of the object as a label when rendering
-
-			static void	renderTextBitmap( const char *str, void *fontStyle );
-
-			/** Default constructor:  */
-			CRenderizable();
-			virtual ~CRenderizable() { }
-
-			/** Interface for the stlplus smart pointer class. */
-			inline CRenderizable * clone() const
-			{
-				return static_cast<CRenderizable*>( this->duplicate() );
-			}
-
-			/** This virtual method in the base class performs common tasks like coordinates transformation,color,...
-			  */
-			virtual void  render() const = 0;
 
 			CRenderizable& setPose( const mrpt::poses::CPose3D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
 			CRenderizable& setPose( const mrpt::math::TPose3D &o );	//!< Set the 3D pose from a  mrpt::math::TPose3D object (return a ref to this)
@@ -138,12 +125,32 @@ namespace mrpt
 			inline mrpt::utils::TColorf getColor() const { return mrpt::utils::TColorf(m_color_R,m_color_G,m_color_B,m_color_A); }  //!< Returns the object color property as a TColorf
 			virtual CRenderizable& setColor( const mrpt::utils::TColorf &c);  //!< Changes the default object color \return a ref to this
 
+			/** Set the color components of this object (R,G,B,Alpha, in the range 0-1)  \return a ref to this */
+			virtual CRenderizable& setColor( double R, double G, double B, double A=1);
+
+			/** @} */
+
+
+			/** Default constructor:  */
+			CRenderizable();
+			virtual ~CRenderizable() { }
+
+			/** Interface for the stlplus smart pointer class. */
+			inline CRenderizable * clone() const
+			{
+				return static_cast<CRenderizable*>( this->duplicate() );
+			}
+
+			/** Implements the rendering of 3D objects in each class derived from CRenderizable.
+			  */
+			virtual void  render() const = 0;
+
+
 			/** Simulation of ray-trace, given a pose. Returns true if the ray effectively collisions with the object (returning the distance to the origin of the ray in "dist"), or false in other case. "dist" variable yields undefined behaviour when false is returned
 			  */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
 
-			/** Set the color components of this object (R,G,B,Alpha, in the range 0-1)  \return a ref to this */
-			virtual CRenderizable& setColor( double R, double G, double B, double A=1);
+			static void	renderTextBitmap( const char *str, void *fontStyle );
 
 		protected:
 			/** Checks glGetError and throws an exception if an error situation is found */
@@ -157,6 +164,22 @@ namespace mrpt
 			/** Returns the lowest, free texture name.  */
 			static unsigned int getNewTextureNumber();
 			static void releaseTextureName(unsigned int i);
+
+
+			/** Information about the rendering process being issued.
+			  *  \sa getCurrentRenderingInfo
+			  */
+			struct OPENGL_IMPEXP TRenderInfo
+			{
+				int vp_x, vp_y, vp_width, vp_height;    //!< Rendering viewport geometry (in pixels)
+				Eigen::Matrix<float,4,4,Eigen::ColMajor>  proj_matrix;  //!< The 4x4 projection matrix
+				Eigen::Matrix<float,4,4,Eigen::ColMajor>  model_matrix;  //!< The 4x4 model transformation matrix
+			};
+
+			/** Gather useful information on the render parameters.
+			  *  It can be called from within the render() method of derived classes.
+			  */
+			void getCurrentRenderingInfo(TRenderInfo &ri) const;
 
 		};
 		/**

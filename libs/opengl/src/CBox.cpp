@@ -67,8 +67,8 @@ void CBox::render() const	{
 		glLineWidth(m_lineWidth); checkOpenGLError();
 		glBegin(GL_LINE_STRIP);
 		glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
-		
-		glVertex3d(m_corner_min.x,m_corner_min.y,m_corner_min.z); 
+
+		glVertex3d(m_corner_min.x,m_corner_min.y,m_corner_min.z);
 		glVertex3d(m_corner_max.x,m_corner_min.y,m_corner_min.z);
 		glVertex3d(m_corner_max.x,m_corner_min.y,m_corner_max.z);
 		glVertex3d(m_corner_min.x,m_corner_min.y,m_corner_max.z);
@@ -78,31 +78,31 @@ void CBox::render() const	{
 
 		glBegin(GL_LINE_STRIP);
 		glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
-		
-		glVertex3d(m_corner_min.x,m_corner_max.y,m_corner_min.z); 
+
+		glVertex3d(m_corner_min.x,m_corner_max.y,m_corner_min.z);
 		glVertex3d(m_corner_max.x,m_corner_max.y,m_corner_min.z);
 		glVertex3d(m_corner_max.x,m_corner_max.y,m_corner_max.z);
 		glVertex3d(m_corner_min.x,m_corner_max.y,m_corner_max.z);
 		glVertex3d(m_corner_min.x,m_corner_max.y,m_corner_min.z);
 
 		glEnd();
-	
+
 		glBegin(GL_LINE_STRIP);
 		glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
-		glVertex3d(m_corner_min.x,m_corner_min.y,m_corner_min.z); 
+		glVertex3d(m_corner_min.x,m_corner_min.y,m_corner_min.z);
 		glVertex3d(m_corner_min.x,m_corner_max.y,m_corner_min.z);
 		glVertex3d(m_corner_min.x,m_corner_max.y,m_corner_max.z);
 		glVertex3d(m_corner_min.x,m_corner_min.y,m_corner_max.z);
 		glEnd();
-		
+
 		glBegin(GL_LINE_STRIP);
 		glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
-		glVertex3d(m_corner_max.x,m_corner_min.y,m_corner_min.z); 
+		glVertex3d(m_corner_max.x,m_corner_min.y,m_corner_min.z);
 		glVertex3d(m_corner_max.x,m_corner_max.y,m_corner_min.z);
 		glVertex3d(m_corner_max.x,m_corner_max.y,m_corner_max.z);
 		glVertex3d(m_corner_max.x,m_corner_min.y,m_corner_max.z);
 		glEnd();
-	
+
 	}
 	else
 	{
@@ -111,21 +111,21 @@ void CBox::render() const	{
 		glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
 
 		// Front face:
-		renderTriangleWithNormal( 
+		renderTriangleWithNormal(
 			TPoint3D(m_corner_max.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_max.x,m_corner_min.y,m_corner_max.z) );
-		renderTriangleWithNormal( 
+		renderTriangleWithNormal(
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_max.z),
 			TPoint3D(m_corner_max.x,m_corner_min.y,m_corner_max.z) );
 
 		// Back face:
-		renderTriangleWithNormal( 
+		renderTriangleWithNormal(
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_min.z),
 			TPoint3D(m_corner_min.x,m_corner_max.y,m_corner_min.z),
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_max.z) );
-		renderTriangleWithNormal( 
+		renderTriangleWithNormal(
 			TPoint3D(m_corner_min.x,m_corner_max.y,m_corner_min.z),
 			TPoint3D(m_corner_min.x,m_corner_max.y,m_corner_max.z),
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_max.z) );
@@ -159,7 +159,7 @@ void CBox::render() const	{
 			TPoint3D(m_corner_min.x,m_corner_max.y,m_corner_min.z),
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_min.z) );
-			
+
 		// Top face:
 		renderTriangleWithNormal(
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_max.z),
@@ -188,10 +188,10 @@ void CBox::writeToStream(CStream &out,int *version) const	{
 	else	{
 		writeToStreamRender(out);
 		//version 0
-		out << 
-			m_corner_min.x << m_corner_min.y << m_corner_min.z << 
-			m_corner_max.x << m_corner_max.y << m_corner_max.z << 
-			m_wireframe << m_lineWidth;		
+		out <<
+			m_corner_min.x << m_corner_min.y << m_corner_min.z <<
+			m_corner_max.x << m_corner_max.y << m_corner_max.z <<
+			m_wireframe << m_lineWidth;
 	}
 }
 
@@ -204,8 +204,8 @@ void CBox::readFromStream(CStream &in,int version)	{
 		case 0:
 			readFromStreamRender(in);
 			in >>
-			m_corner_min.x >> m_corner_min.y >> m_corner_min.z >> 
-			m_corner_max.x >> m_corner_max.y >> m_corner_max.z >> 
+			m_corner_min.x >> m_corner_min.y >> m_corner_min.z >>
+			m_corner_max.x >> m_corner_max.y >> m_corner_max.z >>
 			m_wireframe >> m_lineWidth;
 			break;
 		default:
@@ -214,7 +214,7 @@ void CBox::readFromStream(CStream &in,int version)	{
 }
 
 void CBox::setBoxCorners(const mrpt::math::TPoint3D &corner1, const mrpt::math::TPoint3D &corner2)
-{ 
+{
 	// Order the coordinates so we always have the min/max in their right position:
 	m_corner_min.x = std::min(corner1.x,corner2.x);
 	m_corner_min.y = std::min(corner1.y,corner2.y);
@@ -226,7 +226,7 @@ void CBox::setBoxCorners(const mrpt::math::TPoint3D &corner1, const mrpt::math::
 }
 
 
-bool CBox::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	
+bool CBox::traceRay(const mrpt::poses::CPose3D &o,double &dist) const
 {
 	THROW_EXCEPTION("TO DO")
 }

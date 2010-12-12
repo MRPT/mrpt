@@ -56,6 +56,7 @@ CPointCloud::CPointCloud( ) :
 	m_colorFromDepth_min(0,0,0),
 	m_colorFromDepth_max(0,0,1)
 {
+	markAllPointsAsNew();
 }
 
 
@@ -192,8 +193,6 @@ void  CPointCloud::readFromStream(CStream &in,int version)
 	case 3:
 	case 4:
 		{
-			m_minmax_valid = false;
-
 			readFromStreamRender(in);
 			if (version>=3)
 			{
@@ -236,6 +235,7 @@ void  CPointCloud::readFromStream(CStream &in,int version)
 
 	};
 
+	markAllPointsAsNew();
 }
 
 /*---------------------------------------------------------------
@@ -246,6 +246,7 @@ void CPointCloud::clear()
 	m_xs.clear();
 	m_ys.clear();
 	m_zs.clear();
+	markAllPointsAsNew();
 }
 
 /*---------------------------------------------------------------
@@ -256,6 +257,22 @@ void CPointCloud::insertPoint( float x,float y, float z )
 	m_xs.push_back(x);
 	m_ys.push_back(y);
 	m_zs.push_back(z);
+
+
+	MRPT_TODO("octree update...")
+}
+
+/** Write an individual point (checks for "i" in the valid range only in Debug). */
+void CPointCloud::setPoint(size_t i, const float x,const float y, const float z)
+{
+#ifdef _DEBUG
+	ASSERT_BELOW_(i,size())
+#endif
+	m_xs[i] = x;
+	m_ys[i] = y;
+	m_zs[i] = z;
+
+	MRPT_TODO("octree update...")
 }
 
 /*---------------------------------------------------------------
@@ -269,3 +286,10 @@ void  CPointCloud::setGradientColors( const mrpt::utils::TColorf &colorMin, cons
 }
 
 
+// Do needed internal work if all points are new (octree rebuilt,...)
+void CPointCloud::markAllPointsAsNew()
+{
+	m_minmax_valid = false;
+
+	MRPT_TODO("octree update...")
+}

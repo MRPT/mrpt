@@ -58,6 +58,9 @@
 				- multiOrientations. For each scale in multiScales there is a vector containing the main orientations of the feature.
 				- descriptors.multiSIFTDescriptors. For each scale and orientation there is a SIFT-like descriptor.
 				- hasDescriptorMultiSIFT(). Indicates if the multi-resolution SIFT-like descriptor has been computed for this feature.
+			- Both mrpt::opengl::CPointCloud and mrpt::opengl::CPointCloudColoured are now much more optimized to render huge point clouds:
+				- (TODO) Smart rendering based on Octrees to determine which volumes are within the frustum.
+				- (TODO) For each octree volume, smart decimation of the points from the points-to-eye distance: why rendering 1e6 points that will all be seen in a 10x10 pixel area?
 		- Changes in functions:
 			- mrpt::vision::matchFeatures(). Implemented a new method for managing ambiguous matches, now taking into account which of the conflicting matches is the most probable.
 		- New structures/classes:
