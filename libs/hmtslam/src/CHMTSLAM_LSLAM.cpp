@@ -856,7 +856,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				// ------------------------------------------------------
 				CHMHMapNode::TNodeID area_a_ID = partIdx2Areas[idx_area_a];
 				CHMHMapNodePtr area_a =  m_map.getNodeByID(area_a_ID);
-				ASSERT_(area_a!=NULL);
+				ASSERT_(area_a);
 
 				// Look for the closest area & it's reference pose:
 				// -------------------------------------------------------------

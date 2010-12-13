@@ -36,19 +36,25 @@ using namespace std;
 
 void TestGPS_coords()
 {
-	const double lat0 = RAD2DEG( 0.6408472493152757 );
-	const double lon0 = RAD2DEG(-0.0780454933097760 );
-	const double h0   = 53.200600; // meters
+	const mrpt::topography::TGeodeticCoords p0(
+		RAD2DEG( 0.6408472493152757 ), // lat
+		RAD2DEG(-0.0780454933097760 ), // lon
+		53.200600 // height meters
+		);
 
-	const double lat1 = RAD2DEG( 0.6408615769267271 );
-	const double lon1 = RAD2DEG(-0.0780621148947297 );
-	const double h1   = 56.210100; // meters
+	const mrpt::topography::TGeodeticCoords p1(
+		RAD2DEG( 0.6408615769267271 ), // lat
+		RAD2DEG(-0.0780621148947297 ), // lon
+		56.210100 // meters
+		);
 
-	cout << "Point 0: lon=" << lon0 << " lat=" << lat0 << " h=" << h0 << endl;
-	cout << "Point 1: lon=" << lon1 << " lat=" << lat1 << " h=" << h1 << endl;
+	cout << "Point 0: lat=" << p0.lat << " lon=" << p0.lon << " alt="<< p0.height << endl;
+	cout << "Point 1: lat=" << p1.lat << " lon=" << p1.lon << " alt="<< p1.height << endl;
 
 	mrpt::poses::TPoint3D   p;
-	mrpt::topography::coordinatesTransformation_WGS84(lon1,lat1,h1, p.x,p.y,p.z, lon0,lat0,h0);
+	mrpt::topography::geodeticToENU_WGS84(p1,p, p0);
+
+	// OLD: coordinatesTransformation_WGS84(lon1,lat1,h1, p.x,p.y,p.z, lon0,lat0,h0);
 
 	cout << "ENU XYZ coords: " << p << endl;
 
@@ -82,7 +88,9 @@ void TestGeoid2Geocentric()
 	cout << format("Point: lon=%.012f lat=%.012f h=%.04f\n",lon0,lat0,h0);
 
 	mrpt::poses::TPoint3D   p;
-	mrpt::topography::coordinatesTransformation_WGS84_geocentric(lon0,lat0,h0, p.x,p.y,p.z);
+	mrpt::topography::geodeticToGeocentric_WGS84(
+		mrpt::topography::TGeodeticCoords(lon0,lat0,h0),
+		p);
 
 	cout << "In geocentric coords: " << p << endl;
 }
@@ -108,7 +116,3 @@ int main()
 		return -1;
 	}
 }
-
-
-
-

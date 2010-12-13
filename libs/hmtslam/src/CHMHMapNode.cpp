@@ -62,7 +62,7 @@ CHMHMapNode::CHMHMapNode(
 			m_ID++; /* = (((uint64_t)randomGenerator.drawUniform(0.0f,0xFFFF)) << 32) |
 				(((uint64_t)randomGenerator.drawUniform(0.0f,0xFFFF)) << 16) |
 				(((uint64_t)randomGenerator.drawUniform(0.0f,0xFFFF)));*/
-		} while (m_parent->getNodeByID(m_ID)!=NULL);
+		} while (m_parent->getNodeByID(m_ID));
 	}
 }
 

@@ -147,20 +147,16 @@ int main(int argc, char **argv)
 			,cmd,false) );
 		ops_functors["cut"] = &op_cut;
 
-		arg_ops.push_back(new TCLAP::ValueArg<std::string>(
-			"","sensors-pose",
+		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","sensors-pose",
 			"Op: batch change the poses of sensors from a rawlog-grabber-like configuration file that specifies the pose of sensors by their sensorLabel names.\n"
-			"Requires: -o (or --output)\n"
-			,false,"","file.ini"
-			,cmd, false) );
+			"Requires: -o (or --output)\n",
+			false,"","file.ini",cmd) );
 		ops_functors["sensors-pose"] = &op_sensors_pose;
 
-		arg_ops.push_back(new TCLAP::ValueArg<std::string>(
-			"","camera-params",
+		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","camera-params",
 			"Op: change the camera parameters of all CObservationImage's with the given SENSOR_LABEL, with new params loaded from the given file, section '[CAMERA_PARAMS]'.\n"
 			"Requires: -o (or --output)\n"
-			,false,"","SENSOR_LABEL,file.ini"
-			,cmd, false) );
+			,false,"","SENSOR_LABEL,file.ini",cmd) );
 		ops_functors["camera-params"] = &op_camera_params;
 
 		// --------------- End of list of possible operations --------
