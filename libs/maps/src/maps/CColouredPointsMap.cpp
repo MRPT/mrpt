@@ -889,9 +889,17 @@ void  CColouredPointsMap::readFromStream(CStream &in, int version)
   ---------------------------------------------------------------*/
 void  CColouredPointsMap::internal_clear()
 {
-	x.clear();
-	y.clear();
-	z.clear();
+	// This swap() thing is the only way to really deallocate the memory.
+	{ vector<float> empt;  x.swap(empt); }
+	{ vector<float> empt;  y.swap(empt); }
+	{ vector<float> empt;  z.swap(empt); }
+
+	{ vector<float> empt;  m_color_R.swap(empt); }
+	{ vector<float> empt;  m_color_G.swap(empt); }
+	{ vector<float> empt;  m_color_B.swap(empt); }
+
+	{ vector<float> empt;  m_min_dist.swap(empt); }
+
 	mark_as_modified();
 }
 

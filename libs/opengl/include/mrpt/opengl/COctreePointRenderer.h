@@ -49,7 +49,7 @@ namespace mrpt
 			/** Default ctor */
 			COctreePointRenderer() :
 				m_octree_has_to_rebuild_all(true),
-				m_visible_octree_nodes(0), 
+				m_visible_octree_nodes(0),
 				m_visible_octree_nodes_ongoing(0),
 				m_nonempty_nodes(0),
 				m_nonempty_nodes_ongoing(0)
@@ -75,6 +75,9 @@ namespace mrpt
 				const_cast<COctreePointRenderer<Derived>*>(this)->internal_octree_assure_uptodate();
 			}
 
+			/** Called from the derived class if we have to rebuild the entire node tree. */
+			inline void octree_mark_as_outdated() { m_octree_has_to_rebuild_all=true; }
+
 			/** Render the entire octree recursively.
 			  * Should be called from children's render() method.
 			  */
@@ -83,7 +86,9 @@ namespace mrpt
 				m_visible_octree_nodes_ongoing = 0;
 				m_nonempty_nodes_ongoing       = 0;
 
-				octree_recursive_render(OCTREE_ROOT_NODE,ri);
+				TPixelCoordf cr_px[8];
+				float        cr_z[8];
+				octree_recursive_render(OCTREE_ROOT_NODE,ri, cr_px, cr_z, false /* corners are not computed for this first iteration */ );
 
 				m_visible_octree_nodes = m_visible_octree_nodes_ongoing;
 				m_nonempty_nodes       = m_nonempty_nodes_ongoing;
@@ -95,9 +100,9 @@ namespace mrpt
 			  */
 			struct OPENGL_IMPEXP TNode
 			{
-				TNode() : 
-					bb_min( std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max() ), 
-					bb_max(-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max() ) 
+				TNode() :
+					bb_min( std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), std::numeric_limits<float>::max() ),
+					bb_max(-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max() )
 				{ }
 
 				bool                  is_leaf;     //!< true: it's a leaf and \a pts has valid indices; false: \a children is valid.
@@ -114,11 +119,15 @@ namespace mrpt
 				size_t                child_id[8]; //!< [is_leaf=false] The indices in \a m_octree_nodes of the 8 children.
 
 				/** update bounding box with a new point: */
-				inline void update_bb(const mrpt::math::TPoint3Df &p) 
+				inline void update_bb(const mrpt::math::TPoint3Df &p)
 				{
 					keep_min(bb_min.x, p.x); keep_min(bb_min.y, p.y); keep_min(bb_min.z, p.z);
 					keep_max(bb_max.x, p.x); keep_max(bb_max.y, p.y); keep_max(bb_max.z, p.z);
 				}
+
+				inline float getCornerX(int i) const { return (i & 0x01)==0 ? bb_min.x : bb_max.x; }
+				inline float getCornerY(int i) const { return (i & 0x02)==0 ? bb_min.y : bb_max.y; }
+				inline float getCornerZ(int i) const { return (i & 0x04)==0 ? bb_min.z : bb_max.z; }
 
 				void setBBFromOrderInParent(const TNode &parent, int my_child_index)
 				{
@@ -176,56 +185,169 @@ namespace mrpt
 			volatile mutable size_t m_nonempty_nodes, m_nonempty_nodes_ongoing;
 
 			/** Render a given node. */
-			void octree_recursive_render(size_t node_idx, const mrpt::opengl::CRenderizable::TRenderInfo &ri ) const
+			void octree_recursive_render(
+				size_t node_idx,
+				const mrpt::opengl::CRenderizable::TRenderInfo &ri,
+				TPixelCoordf cr_px[8],
+				float        cr_z[8],
+				bool         corners_are_all_computed = true
+				) const
 			{
 				const TNode &node = m_octree_nodes[node_idx];
 
-				// Is this node visible?
-				bool is_visible = true;
-
-				// Render:
-				if (is_visible)
+				if (!corners_are_all_computed)
 				{
-					if (node.is_leaf)
-					{	// Render this leaf node:
-						if (!node.pts.empty())
+					for (int i=0;i<8;i++)
+					{
+						// project point:
+						ri.projectPointPixels(
+							node.getCornerX(i),node.getCornerY(i),node.getCornerZ(i),
+							cr_px[i].x,cr_px[i].y,cr_z[i]);
+					}
+				}
+
+				// If all "Z"'s are negative, the entire node's box is BEHIND the image plane:
+				if (cr_z[0]<0 &&cr_z[1]<0 &&cr_z[2]<0 &&cr_z[3]<0 &&cr_z[4]<0 &&cr_z[5]<0 &&cr_z[6]<0 &&cr_z[7]<0)
+					return;		// Stop recursion.
+
+				// Keep the on-screen bounding box of this node:
+				TPixelCoordf px_min( std::numeric_limits<float>::max(),std::numeric_limits<float>::max()), px_max(-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max());
+				for (int i=0;i<8;i++)
+				{
+					keep_min(px_min.x,cr_px[i].x); keep_min(px_min.y,cr_px[i].y);
+					keep_max(px_max.x,cr_px[i].x); keep_max(px_max.y,cr_px[i].y);
+				}
+
+				// Check if the node has points and is visible:
+				if (node.is_leaf)
+				{	// Render this leaf node:
+					if (!node.pts.empty())
+					{
+						m_nonempty_nodes_ongoing++;
+
+						// Check visibility of the node:
+						// 1) If the eye is within the box, go on:
+						bool is_visible =
+								ri.camera_position.x>node.bb_min.x && ri.camera_position.x<node.bb_max.x &&
+								ri.camera_position.y>node.bb_min.y && ri.camera_position.y<node.bb_max.y &&
+								ri.camera_position.z>node.bb_min.z && ri.camera_position.z<node.bb_max.z;
+
+						// 2) Is at least a part of the octree node WITHIN the image?
+						if (!is_visible)
+							is_visible = !( px_min.x>=ri.vp_width || px_min.y>=ri.vp_height || px_max.x<0 || px_max.y<0);
+
+						if (is_visible)
 						{
-							m_nonempty_nodes_ongoing++;
+							m_visible_octree_nodes_ongoing++;
 
-							// Project the 8 corners of the node box in pixel units:
-							TPixelCoordf px_corners[8];
-							float depth_z;
-							ri.projectPointPixels( node.bb_min.x,node.bb_min.y,node.bb_min.z, px_corners[0].x,px_corners[0].y,depth_z);
-							ri.projectPointPixels( node.bb_max.x,node.bb_min.y,node.bb_min.z, px_corners[1].x,px_corners[1].y,depth_z);
-							ri.projectPointPixels( node.bb_min.x,node.bb_max.y,node.bb_min.z, px_corners[2].x,px_corners[2].y,depth_z);
-							ri.projectPointPixels( node.bb_max.x,node.bb_max.y,node.bb_min.z, px_corners[3].x,px_corners[3].y,depth_z);
-							ri.projectPointPixels( node.bb_min.x,node.bb_min.y,node.bb_max.z, px_corners[4].x,px_corners[4].y,depth_z);
-							ri.projectPointPixels( node.bb_max.x,node.bb_min.y,node.bb_max.z, px_corners[5].x,px_corners[5].y,depth_z);
-							ri.projectPointPixels( node.bb_min.x,node.bb_max.y,node.bb_max.z, px_corners[6].x,px_corners[6].y,depth_z);
-							ri.projectPointPixels( node.bb_max.x,node.bb_max.y,node.bb_max.z, px_corners[7].x,px_corners[7].y,depth_z);
-							// Keep the extremes:
-							TPixelCoordf px_min( std::numeric_limits<float>::max(),std::numeric_limits<float>::max()), px_max(-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max());
-							for (int i=0;i<8;i++)
-							{
-								keep_min(px_min.x,px_corners[i].x); keep_min(px_min.y,px_corners[i].y);
-								keep_max(px_max.x,px_corners[i].x); keep_max(px_max.y,px_corners[i].y);
-							}
-
-							// Is the entire octree out of the image?
-							if (!( px_min.x>=ri.vp_width || px_min.y>=ri.vp_height || px_max.x<0 || px_max.y<0))
-							{
-								m_visible_octree_nodes_ongoing++;
-
-								const float render_area_sqpixels = std::abs(px_min.x-px_max.x) * std::abs(px_min.y-px_max.y);
-								octree_derived().render_subset(node.all,node.pts,render_area_sqpixels);
-							}
+							const float render_area_sqpixels = std::abs(px_min.x-px_max.x) * std::abs(px_min.y-px_max.y);
+							octree_derived().render_subset(node.all,node.pts,render_area_sqpixels);
 						}
 					}
-					else
-					{	// Render children nodes:
-						for (int i=0;i<8;i++)
-							octree_recursive_render(node.child_id[i],ri);
+				}
+				else
+				{	// Render children nodes:
+					// If ALL my 8 corners are invisible, stop recursion:
+					if ( px_min.x>=ri.vp_width || px_min.y>=ri.vp_height || px_max.x<0 || px_max.y<0)
+						return;
+
+					// Precompute the 19 (3*9-8) intermediary points so children don't have to compute them several times:
+					const TPoint3Df p_Xm_Ym_Zm ( node.bb_min.x, node.bb_min.y, node.bb_min.z ); // 0
+					const TPoint3Df p_X0_Ym_Zm ( node.center.x, node.bb_min.y, node.bb_min.z );
+					const TPoint3Df p_Xp_Ym_Zm ( node.bb_max.x, node.bb_min.y, node.bb_min.z ); // 1
+					const TPoint3Df p_Xm_Y0_Zm ( node.bb_min.x, node.center.y, node.bb_min.z );
+					const TPoint3Df p_X0_Y0_Zm ( node.center.x, node.center.y, node.bb_min.z );
+					const TPoint3Df p_Xp_Y0_Zm ( node.bb_max.x, node.center.y, node.bb_min.z );
+					const TPoint3Df p_Xm_Yp_Zm ( node.bb_min.x, node.bb_max.y, node.bb_min.z ); // 2
+					const TPoint3Df p_X0_Yp_Zm ( node.center.x, node.bb_max.y, node.bb_min.z );
+					const TPoint3Df p_Xp_Yp_Zm ( node.bb_max.x, node.bb_max.y, node.bb_min.z ); // 3
+
+					const TPoint3Df p_Xm_Ym_Z0 ( node.bb_min.x, node.bb_min.y, node.center.z );
+					const TPoint3Df p_X0_Ym_Z0 ( node.center.x, node.bb_min.y, node.center.z );
+					const TPoint3Df p_Xp_Ym_Z0 ( node.bb_max.x, node.bb_min.y, node.center.z );
+					const TPoint3Df p_Xm_Y0_Z0 ( node.bb_min.x, node.center.y, node.center.z );
+					const TPoint3Df p_X0_Y0_Z0 ( node.center.x, node.center.y, node.center.z );
+					const TPoint3Df p_Xp_Y0_Z0 ( node.bb_max.x, node.center.y, node.center.z );
+					const TPoint3Df p_Xm_Yp_Z0 ( node.bb_min.x, node.bb_max.y, node.center.z );
+					const TPoint3Df p_X0_Yp_Z0 ( node.center.x, node.bb_max.y, node.center.z );
+					const TPoint3Df p_Xp_Yp_Z0 ( node.bb_max.x, node.bb_max.y, node.center.z );
+
+					const TPoint3Df p_Xm_Ym_Zp ( node.bb_min.x, node.bb_min.y, node.bb_max.z ); // 4
+					const TPoint3Df p_X0_Ym_Zp ( node.center.x, node.bb_min.y, node.bb_max.z );
+					const TPoint3Df p_Xp_Ym_Zp ( node.bb_min.x, node.bb_min.y, node.bb_max.z ); // 5
+					const TPoint3Df p_Xm_Y0_Zp ( node.bb_min.x, node.center.y, node.bb_max.z );
+					const TPoint3Df p_X0_Y0_Zp ( node.center.x, node.center.y, node.bb_max.z );
+					const TPoint3Df p_Xp_Y0_Zp ( node.bb_max.x, node.center.y, node.bb_max.z );
+					const TPoint3Df p_Xm_Yp_Zp ( node.bb_min.x, node.bb_max.y, node.bb_max.z ); // 6
+					const TPoint3Df p_X0_Yp_Zp ( node.center.x, node.bb_max.y, node.bb_max.z );
+					const TPoint3Df p_Xp_Yp_Zp ( node.bb_max.x, node.bb_max.y, node.bb_max.z ); // 7
+
+					// Project all these points:
+#define PROJ_SUB_NODE(POSTFIX) \
+					TPixelCoordf px_##POSTFIX; \
+					float        depth_##POSTFIX; \
+					ri.projectPointPixels( p_##POSTFIX.x, p_##POSTFIX.y, p_##POSTFIX.z, px_##POSTFIX.x,px_##POSTFIX.y,depth_##POSTFIX);
+
+#define PROJ_SUB_NODE_ALREADY_DONE(INDEX, POSTFIX) \
+					const TPixelCoordf px_##POSTFIX = cr_px[INDEX]; \
+					float        depth_##POSTFIX = cr_z[INDEX];
+
+					PROJ_SUB_NODE_ALREADY_DONE(0,Xm_Ym_Zm)
+					PROJ_SUB_NODE(X0_Ym_Zm)
+					PROJ_SUB_NODE_ALREADY_DONE(1, Xp_Ym_Zm)
+
+					PROJ_SUB_NODE(Xm_Y0_Zm)
+					PROJ_SUB_NODE(X0_Y0_Zm)
+					PROJ_SUB_NODE(Xp_Y0_Zm)
+
+					PROJ_SUB_NODE_ALREADY_DONE(2, Xm_Yp_Zm)
+					PROJ_SUB_NODE(X0_Yp_Zm)
+					PROJ_SUB_NODE_ALREADY_DONE(3, Xp_Yp_Zm)
+
+					PROJ_SUB_NODE(Xm_Ym_Z0)
+					PROJ_SUB_NODE(X0_Ym_Z0)
+					PROJ_SUB_NODE(Xp_Ym_Z0)
+					PROJ_SUB_NODE(Xm_Y0_Z0)
+					PROJ_SUB_NODE(X0_Y0_Z0)
+					PROJ_SUB_NODE(Xp_Y0_Z0)
+					PROJ_SUB_NODE(Xm_Yp_Z0)
+					PROJ_SUB_NODE(X0_Yp_Z0)
+					PROJ_SUB_NODE(Xp_Yp_Z0)
+
+					PROJ_SUB_NODE_ALREADY_DONE(4, Xm_Ym_Zp)
+					PROJ_SUB_NODE(X0_Ym_Zp)
+					PROJ_SUB_NODE_ALREADY_DONE(5, Xp_Ym_Zp)
+
+					PROJ_SUB_NODE(Xm_Y0_Zp)
+					PROJ_SUB_NODE(X0_Y0_Zp)
+					PROJ_SUB_NODE(Xp_Y0_Zp)
+
+					PROJ_SUB_NODE_ALREADY_DONE(6, Xm_Yp_Zp)
+					PROJ_SUB_NODE(X0_Yp_Zp)
+					PROJ_SUB_NODE_ALREADY_DONE(7, Xp_Yp_Zp)
+
+					// Recursive call children nodes:
+#define DO_RECURSE_CHILD(INDEX, SEQ0,SEQ1,SEQ2,SEQ3,SEQ4,SEQ5,SEQ6,SEQ7) \
+					{ \
+						TPixelCoordf child_cr_px[8] = { px_##SEQ0,px_##SEQ1,px_##SEQ2,px_##SEQ3,px_##SEQ4,px_##SEQ5,px_##SEQ6,px_##SEQ7 }; \
+						float        child_cr_z[8]  = { depth_##SEQ0,depth_##SEQ1,depth_##SEQ2,depth_##SEQ3,depth_##SEQ4,depth_##SEQ5,depth_##SEQ6,depth_##SEQ7 }; \
+						this->octree_recursive_render(node.child_id[INDEX],ri,child_cr_px, child_cr_z); \
 					}
+
+					//                     0         1         2         3          4         5        6         7
+					DO_RECURSE_CHILD(0, Xm_Ym_Zm, X0_Ym_Zm, Xm_Y0_Zm, X0_Y0_Zm, Xm_Ym_Z0, X0_Ym_Z0, Xm_Y0_Z0, X0_Y0_Z0 )
+					DO_RECURSE_CHILD(1, X0_Ym_Zm, Xp_Ym_Zm, X0_Y0_Zm, Xp_Y0_Zm, X0_Ym_Z0, Xp_Ym_Z0, X0_Y0_Z0, Xp_Y0_Z0 )
+					DO_RECURSE_CHILD(2, Xm_Y0_Zm, X0_Y0_Zm, Xm_Yp_Zm, X0_Yp_Zm, Xm_Y0_Z0, X0_Y0_Z0, Xm_Yp_Z0, X0_Yp_Z0 )
+					DO_RECURSE_CHILD(3, X0_Y0_Zm, Xp_Y0_Zm, X0_Yp_Zm, Xp_Yp_Zm, X0_Y0_Z0, Xp_Y0_Z0, X0_Yp_Z0, Xp_Yp_Z0 )
+					DO_RECURSE_CHILD(4, Xm_Ym_Z0, X0_Ym_Z0, Xm_Y0_Z0, X0_Y0_Z0, Xm_Ym_Zp, X0_Ym_Zp, Xm_Y0_Zp, X0_Y0_Zp )
+					DO_RECURSE_CHILD(5, X0_Ym_Z0, Xp_Ym_Z0, X0_Y0_Z0, Xp_Y0_Z0, X0_Ym_Zp, Xp_Ym_Zp, X0_Y0_Zp, Xp_Y0_Zp )
+					DO_RECURSE_CHILD(6, Xm_Y0_Z0, X0_Y0_Z0, Xm_Yp_Z0, X0_Yp_Z0, Xm_Y0_Zp, X0_Y0_Zp, Xm_Yp_Zp, X0_Yp_Zp )
+					DO_RECURSE_CHILD(7, X0_Y0_Z0, Xp_Y0_Z0, X0_Yp_Z0, Xp_Yp_Z0, X0_Y0_Zp, Xp_Y0_Zp, X0_Yp_Zp, Xp_Yp_Zp )
+
+#undef DO_RECURSE_CHILD
+#undef PROJ_SUB_NODE
+#undef PROJ_SUB_NODE_ALREADY_DONE
+
 				}
 			}
 
@@ -263,7 +385,7 @@ namespace mrpt
 					{
 						if (all_pts)
 							 for (size_t i=0;i<N;i++) node.update_bb( octree_derived().getPointf(i) );
-						else for (size_t i=0;i<N;i++) node.update_bb( octree_derived().getPointf(node.pts[i]) );					
+						else for (size_t i=0;i<N;i++) node.update_bb( octree_derived().getPointf(node.pts[i]) );
 					}
 				}
 				else
@@ -272,14 +394,14 @@ namespace mrpt
 					// Compute the mean of all elements:
 					mrpt::math::TPoint3Df mean(0,0,0);
 					if (all_pts)
-						for (size_t i=0;i<N;i++) 
+						for (size_t i=0;i<N;i++)
 						{
 							mrpt::math::TPoint3Df p = octree_derived().getPointf(i);
 							mean+= p;
 							if (has_to_compute_bb) node.update_bb( p );
 						}
-					else 
-						for (size_t i=0;i<N;i++) 
+					else
+						for (size_t i=0;i<N;i++)
 						{
 							mrpt::math::TPoint3Df p = octree_derived().getPointf(node.pts[i]);
 							mean+= p;
@@ -295,7 +417,7 @@ namespace mrpt
 					m_octree_nodes.resize(children_idx_base + 8 );
 					for (int i=0;i<8;i++)
 						node.child_id[i] = children_idx_base + i;
-					
+
 					// Set the bounding-boxes of my children (we already know them):
 					for (int i=0;i<8;i++)
 						m_octree_nodes[children_idx_base + i].setBBFromOrderInParent(node,i);
@@ -364,9 +486,9 @@ namespace mrpt
 			/** Returns a graphical representation of all the bounding boxes of the octree (leaf) nodes.
 			  */
 			void octree_get_graphics_boundingboxes(
-				mrpt::opengl::CSetOfObjects &gl_bb, 
+				mrpt::opengl::CSetOfObjects &gl_bb,
 				const double lines_width = 1,
-				const TColorf lines_color = TColorf(1,1,1) ) const 
+				const TColorf lines_color = TColorf(1,1,1) ) const
 			{
 				octree_assure_uptodate();
 				gl_bb.clear();
@@ -398,8 +520,8 @@ namespace mrpt
 					{
 						o << "leaf, ";
 						if (node.all) { o << "(all)\n"; total_elements+=octree_derived().size(); }
-						else { o << node.pts.size() << " elements; "; total_elements+=node.pts.size(); } 
-						
+						else { o << node.pts.size() << " elements; "; total_elements+=node.pts.size(); }
+
 					}
 					else
 					{

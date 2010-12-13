@@ -36,9 +36,9 @@ using namespace mrpt::math;
 
 void insertRandomPoints_uniform(
 	const size_t N,
-	opengl::CPointCloudPtr &gl, 
-	const mrpt::math::TPoint3D &p_min,
-	const mrpt::math::TPoint3D &p_max)
+	opengl::CPointCloudPtr &gl,
+	const TPoint3D &p_min,
+	const TPoint3D &p_max)
 {
 	for (size_t i=0;i<N;i++)
 		gl->insertPoint(
@@ -47,11 +47,35 @@ void insertRandomPoints_uniform(
 			random::randomGenerator.drawUniform(p_min.z,p_max.z) );
 }
 
+void insertRandomPoints_screw(
+	const size_t N,
+	opengl::CPointCloudPtr &gl,
+	const TPoint3D &p_start,
+	const TPoint3D &p_end)
+{
+	TPoint3D d = p_end-p_start;
+	d*= 1.0/N;
+
+	TPoint3D up(0,0,1);
+	TPoint3D lat;
+	mrpt::math::crossProduct3D(d,up, lat);
+	lat*=1.0/lat.norm();
+
+	TPoint3D p = p_start;
+	for (size_t i=0;i<N;i++)
+	{
+		const double ang = i*0.01;
+		TPoint3D pp = p + up * 30*cos(ang) + lat * 30*sin(ang);
+		gl->insertPoint(pp.x,pp.y,pp.z);
+		p+=d;
+	}
+}
+
 void insertRandomPoints_gauss(
 	const size_t N,
-	opengl::CPointCloudPtr &gl, 
-	const mrpt::math::TPoint3D &p_mean,
-	const mrpt::math::TPoint3D &p_stddevs)
+	opengl::CPointCloudPtr &gl,
+	const TPoint3D &p_mean,
+	const TPoint3D &p_stddevs)
 {
 	for (size_t i=0;i<N;i++)
 		gl->insertPoint(
@@ -66,62 +90,70 @@ void insertRandomPoints_gauss(
 // ------------------------------------------------------
 void TestOctreeRenderHugePointCloud()
 {
+	// Change this in your program as needed:
+	//mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL = 0.1f;
+
+
 	CDisplayWindow3D	win("Demo of MRPT's octree pointclouds",640,480);
 
 	COpenGLScenePtr &theScene = win.get3DSceneAndLock();
-
-//	theScene->insert( mrpt::opengl::CGridPlaneXY::Create(-10000,10000,-10000,10000,0, 100 ) );
 
 	// CPointCloud
 	opengl::CPointCloudPtr gl_pointcloud = opengl::CPointCloud::Create();
 	theScene->insert( gl_pointcloud );
 
-	gl_pointcloud->setPointSize(2.0);
+	gl_pointcloud->setPointSize(3.0);
 	gl_pointcloud->enablePointSmooth();
 	gl_pointcloud->enableColorFromZ();
 
 	// Set the list of all points:
-	const double R1 = 500;
-	const double R2 = 30;
-	const double H  = 100;
-	const size_t nSteps = 200;
 
-	for (float a=0;a<2*M_PI;a+=2*M_PI/nSteps)
-		insertRandomPoints_gauss(
-			1e3,
-			gl_pointcloud, 
-			TPoint3D(R1*0.5+ R1*cos(a) - R2*cos(4*a), R1*0.5+ R1*sin(a) - R2*sin(4*a),H*cos(8*a)), 
-			TPoint3D(2,2,0.6)
-			);
+	const double L = 1e3;
 
-	insertRandomPoints_uniform(
-		1e6, 
-		gl_pointcloud, 
-		TPoint3D(-20,-20,-5), 
-		TPoint3D(1000,20,5) 
-		);
+	cout << "Building point cloud..."; cout.flush();
 
-	insertRandomPoints_uniform(
-		1e6, 
-		gl_pointcloud, 
-		TPoint3D(1000-20,-20,-5), 
-		TPoint3D(1000+20,1000+20,5) 
-		);
+	for (int XX=-10;XX<=10;XX++)
+	{
+		const double off_x = XX * 2*L;
 
-	insertRandomPoints_uniform(
-		1e6, 
-		gl_pointcloud, 
-		TPoint3D(-20,1000-20,-5), 
-		TPoint3D(1000,1000+20,5)
-		);
+		for (int YY=-10;YY<=10;YY++)
+		{
+			const double off_y = YY * 2*L;
 
-	insertRandomPoints_uniform(
-		1e6, 
-		gl_pointcloud, 
-		TPoint3D(-20,-20,-5), 
-		TPoint3D(+20,1000+20,5) 
-		);
+			insertRandomPoints_screw(
+				1e4,
+				gl_pointcloud,
+				TPoint3D(off_x+0,off_y+0,0),
+				TPoint3D(off_x+L,off_y+0,500)
+				);
 
+			insertRandomPoints_screw(
+				1e4,
+				gl_pointcloud,
+				TPoint3D(off_x+L,off_y+0,500),
+				TPoint3D(off_x+L,off_y+L,-500)
+				);
+
+			insertRandomPoints_screw(
+				1e4,
+				gl_pointcloud,
+				TPoint3D(off_x+L,off_y+L,-500),
+				TPoint3D(off_x+0,off_y+L,500)
+				);
+
+			insertRandomPoints_screw(
+				1e4,
+				gl_pointcloud,
+				TPoint3D(off_x+0,off_y+L,500),
+				TPoint3D(off_x+0,off_y+0,0)
+				);
+
+		}
+	}
+
+	cout << "Done.\n"; cout.flush();
+
+	printf("Point count: %e\n", (double)gl_pointcloud->size());
 
 	// Draw the octree bounding boxes:
 	mrpt::opengl::CSetOfObjectsPtr gl_bb = mrpt::opengl::CSetOfObjects::Create();
@@ -131,7 +163,10 @@ void TestOctreeRenderHugePointCloud()
 	//gl_pointcloud->octree_debug_dump_tree(std::cout);
 
 	win.setCameraZoom(600);
-	//win.setMaxRange(100000);
+	{
+		mrpt::opengl::COpenGLViewportPtr view=theScene->getViewport("main");
+		view->setViewportClipDistances(0.1, 1e6);
+	}
 
 	// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
 	win.unlockAccess3DScene();
@@ -147,27 +182,28 @@ void TestOctreeRenderHugePointCloud()
 		{
 			switch (win.getPushedKey())
 			{
-			case 'q': 
+			case 'q':
 				end=true;
 				break;
-			case 'b': 
+			case 'b':
 				gl_bb->setVisibility( !gl_bb->isVisible() );
 				break;
 			};
 		}
-		
+
 		// Update the texts on the gl display:
-		string s = mrpt::format("FPS=%5.02f | Points=%.02e | Actually rendered=%.02e | Visib.oct.nodes: %u/%u",
-			win.getRenderingFPS(), 
-			(double)gl_pointcloud->size(),
+		string s = mrpt::format("FPS=%5.02f | Rendered points=%.02e/%.02e (%.02f%%) | Visib.oct.nodes: %u/%u",
+			win.getRenderingFPS(),
 			(double)gl_pointcloud->getActuallyRendered(),
+			(double)gl_pointcloud->size(),
+			100*double(gl_pointcloud->getActuallyRendered())/double(gl_pointcloud->size()),
 			(unsigned int)gl_pointcloud->octree_get_visible_nodes(),
 			(unsigned int)gl_pointcloud->octree_get_nonempty_node_count()
 			);
 
 		win.get3DSceneAndLock();
-			win.addTextMessage(5,5, s, TColorf(1,0,0),0, MRPT_GLUT_BITMAP_HELVETICA_12 );
-			win.addTextMessage(5,35, "'b': switch bounding-boxes visible, 'q': quit", TColorf(1,0,0),1, MRPT_GLUT_BITMAP_HELVETICA_12 );
+			win.addTextMessage(5,5, s, TColorf(1,1,1),0, MRPT_GLUT_BITMAP_HELVETICA_18 );
+			win.addTextMessage(5,35, "'b': switch bounding-boxes visible, 'q': quit", TColorf(1,1,1),1, MRPT_GLUT_BITMAP_HELVETICA_18 );
 		win.unlockAccess3DScene();
 		win.repaint();
 
@@ -183,7 +219,7 @@ int main()
 	{
 		TestOctreeRenderHugePointCloud();
 
-		mrpt::system::sleep(50);
+		mrpt::system::sleep(500);
 
 		return 0;
 	} catch (std::exception &e)

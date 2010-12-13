@@ -268,7 +268,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 						f << "Deleted: " << m_measure.faceNum << endl;
 						f.close();*/
 						m_measure.deletedRegions.push_back( m_measure.faceNum );
-	
+
 					}
 
 					m_measure.faceNum++;
@@ -286,7 +286,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 			// Delete non faces
 			for ( unsigned int i = deleteDetected.size(); i > 0; i-- )
 				localDetected.erase( localDetected.begin() + deleteDetected[i-1] );
-		}						
+		}
 
 		// Convert 2d detected objects to 3d
 		for ( unsigned int i = 0; i < localDetected.size(); i++ )
@@ -371,7 +371,7 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 		if ( m_measure.takeTime )
 		m_timeLog.enter("Check if face plane: covariance");
 	}
-	
+
 	// Get face region size
 	const unsigned int faceWidth = face->intensityImage.getWidth();
 	const unsigned int faceHeight = face->intensityImage.getHeight();
@@ -392,7 +392,7 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 			CArrayDouble<3> aux;
 
 			if ( region.get_unsafe( j,k ) && (( (!confidence) || (( confidence ) &&
-				( *(face->confidenceImage.get_unsafe( k, j, 0 )) > m_options.confidenceThreshold )	
+				( *(face->confidenceImage.get_unsafe( k, j, 0 )) > m_options.confidenceThreshold )
 				&& ( *(face->intensityImage.get_unsafe( k, j )) > 50 )))))	// Don't take in account dark pixels
 			{
 				int position = faceWidth*j + k;
@@ -447,7 +447,7 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 
 	// Check if the less eigenvalue is out of the permited area
 	//if ( ( eVals[0] > m_options.planeEigenValThreshold_down )
-	//	&& ( eVals[0] < m_options.planeEigenValThreshold_up ) ) 
+	//	&& ( eVals[0] < m_options.planeEigenValThreshold_up ) )
 	if ( eVals[0]/eVals[2] > 0.06 )
 	{
 
@@ -641,14 +641,14 @@ bool CFaceDetection::checkIfFaceRegions3( CObservation3DRangeScan* face )
 	unsigned int sectionVSize = faceHeight/3.0;
 
 	// Steps of this filter
-	//	1. To segment the region detected as face using a regions growing algorithm 
+	//	1. To segment the region detected as face using a regions growing algorithm
 	//	2. To obtain the first and last column to work (a profile face detected can have a lateral area without to use)
 	//	3. To calculate the histogram of the upper zone of the region for determine if we use it (if this zone present
 	//		a lot of dark pixels the measurements can be wrong)
 	//	4. To obtain the coordinates of pixels that form each subregion
 	//	5. To calculate medians or means of each subregion
 	//	6. To check subregions constrains
-	
+
 	vector<TPoint3D> points;
 
 	TPoint3D meanPos[3][3] = {
@@ -662,7 +662,7 @@ bool CFaceDetection::checkIfFaceRegions3( CObservation3DRangeScan* face )
 	//
 	//	1. To segment the region detected as face using a regions growing algorithm
 	//
-	
+
 	CMatrixTemplate<bool> region; // To save the segmented region
 	experimental_segmentFace( *face,  region);
 
@@ -706,13 +706,13 @@ bool CFaceDetection::checkIfFaceRegions3( CObservation3DRangeScan* face )
 	//
 
 	CMatrixTemplate<unsigned int> hist;
-	hist.setSize(1,256,true);	
+	hist.setSize(1,256,true);
 	experimental_calcHist( face->intensityImage, start, 0, end, ceil(faceHeight*0.1), hist );
 
 	size_t countHist = 0;
 	for ( size_t i = 0; i < 60; i++ )
 	{
-		countHist += hist.get_unsafe(0,i);	
+		countHist += hist.get_unsafe(0,i);
 	}
 
 	size_t upLimit = 0;
@@ -725,7 +725,7 @@ bool CFaceDetection::checkIfFaceRegions3( CObservation3DRangeScan* face )
 	}
 
 	// Uncomment it if you want to analyze the number of pixels that have more dark that the 60 gray tone
-	//m_meanHist.push_back( countHist );	
+	//m_meanHist.push_back( countHist );
 
 	//
 	//	4. To obtain the coordinates of pixels that form each region
@@ -829,7 +829,7 @@ bool CFaceDetection::checkIfFaceRegions3( CObservation3DRangeScan* face )
 	if ( regions2[2].size() > 0 )
 		meanPos[0][2].x = oldPointsX2.at(middle2);
 
-	//	
+	//
 	//	6. To check subregions constrains
 	//
 	vector<double> dist(5);
@@ -860,7 +860,7 @@ bool CFaceDetection::checkIfFaceRegions3( CObservation3DRangeScan* face )
 	//cout << endl << meanPos[0][0] << "\t" << meanPos[0][1] << "\t" << meanPos[0][2];
 	//	cout << endl << meanPos[1][0] << "\t" << meanPos[1][1] << "\t" << meanPos[1][2];
 	//	cout << endl << meanPos[2][0] << "\t" << meanPos[2][1] << "\t" << meanPos[2][2] << endl;
-	
+
 
 	// To obtain experimental results
 	{
@@ -880,7 +880,7 @@ bool CFaceDetection::checkIfFaceRegions3( CObservation3DRangeScan* face )
 		f.close();*/
 
 		return false; // Filter not passed
-	}	
+	}
 
 	MRPT_END
 }
@@ -907,14 +907,14 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	unsigned int sectionVSize = faceHeight/3.0;
 
 	// Steps of this filter
-	//	1. To segment the region detected as face using a regions growing algorithm 
+	//	1. To segment the region detected as face using a regions growing algorithm
 	//	2. To obtain the first and last column to work (a profile face detected can have a lateral area without to use)
 	//	3. To calculate the histogram of the upper zone of the region for determine if we use it (if this zone present
 	//		a lot of dark pixels the measurements can be wrong)
 	//	4. To obtain the coordinates of pixels that form each subregion
 	//	5. To calculate medians or means of each subregion
 	//	6. To check subregions constrains
-	
+
 	vector<TPoint3D> points;
 
 	TPoint3D meanPos[3][3] = {
@@ -928,7 +928,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	//
 	//	1. To segment the region detected as face using a regions growing algorithm
 	//
-	
+
 	CMatrixTemplate<bool> region; // To save the segmented region
 	experimental_segmentFace( *face,  region);
 
@@ -972,13 +972,13 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	//
 
 	CMatrixTemplate<unsigned int> hist;
-	hist.setSize(1,256,true);	
+	hist.setSize(1,256,true);
 	experimental_calcHist( face->intensityImage, start, 0, end, ceil(faceHeight*0.1), hist );
 
 	size_t countHist = 0;
 	for ( size_t i = 0; i < 60; i++ )
 	{
-		countHist += hist.get_unsafe(0,i);	
+		countHist += hist.get_unsafe(0,i);
 	}
 
 	size_t upLimit = 0;
@@ -991,7 +991,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	}
 
 	// Uncomment it if you want to analyze the number of pixels that have more dark that the 60 gray tone
-	//m_meanHist.push_back( countHist );	
+	//m_meanHist.push_back( countHist );
 
 	//
 	//	4. To obtain the coordinates of pixels that form each region
@@ -1095,7 +1095,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	if ( regions2[2].size() > 0 )
 		meanPos[0][2].x = oldPointsX2.at(middle2);
 
-	//	
+	//
 	//	6. To check subregions constrains
 	//
 
@@ -1113,11 +1113,11 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	}
 
 	double difference = max_dist - min_dist;
-	double ratio = 1 / difference;
+	//double ratio = 1 / difference;
 
 	meanPos[1][1] = TPoint3D(0,0,0);
 	double pond = 0;
-	
+
 	for ( size_t i = 0; i < regions2[4].size(); i++ )
 	{
 		double distance = camera.distanceTo( regions2[4][i] );
@@ -1131,7 +1131,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 
 	meanPos[1][1] = meanPos[1][1]/pond;
 
-	
+
 
 	vector<double> dist;
 	dist.resize(5);
@@ -1172,7 +1172,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	//	- Compare with a "usual" matrix of a real face
 
 	/************************************a****
-	
+
 	cont = 0;
 
 	setEpsilon(0.000000000000000000000000000000000000000000000000000000000000005);
@@ -1183,10 +1183,10 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	for ( unsigned int r = 0; r < faceHeight-1; r++ )
 	{
 		for ( unsigned int c = 0; c < faceWidth-1; c++, cont++ )
-		{			
-			TPoint3D point1( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont]);		
-			TPoint3D point2( face->points3D_x[cont+1], face->points3D_y[cont+1], face->points3D_z[cont+1]);		
-			TPoint3D point3( face->points3D_x[cont+faceWidth], face->points3D_y[cont+faceWidth], face->points3D_z[cont+faceWidth]);		
+		{
+			TPoint3D point1( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont]);
+			TPoint3D point2( face->points3D_x[cont+1], face->points3D_y[cont+1], face->points3D_z[cont+1]);
+			TPoint3D point3( face->points3D_x[cont+faceWidth], face->points3D_y[cont+faceWidth], face->points3D_z[cont+faceWidth]);
 
 			double dx1=point2.x-point1.x;
 			double dy1=point2.y-point1.y;
@@ -1251,7 +1251,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 	//cout << endl << meanPos[0][0] << "\t" << meanPos[0][1] << "\t" << meanPos[0][2];
 	//	cout << endl << meanPos[1][0] << "\t" << meanPos[1][1] << "\t" << meanPos[1][2];
 	//	cout << endl << meanPos[2][0] << "\t" << meanPos[2][1] << "\t" << meanPos[2][2] << endl;
-	
+
 
 	// To obtain experimental results
 	{
@@ -1271,7 +1271,7 @@ bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
 		f.close();*/
 
 		return false; // Filter not passed
-	}	
+	}
 
 	MRPT_END
 }
@@ -1382,7 +1382,7 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 	const unsigned int faceWidth = face->intensityImage.getWidth();
 	const unsigned int faceHeight = face->intensityImage.getHeight();
 
-	const float max_desv = 0.2;
+	//const float max_desv = 0.2;
 
 	unsigned int x1 = ceil(faceWidth*0.25);
 	unsigned int x2 = floor(faceWidth*0.75);
@@ -1454,7 +1454,7 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 
 			//if ( !m_options.useDiagonalDistanceFilter )
 				return false;
-			//else 
+			//else
 			//	res = false;
 		}
 
@@ -1591,7 +1591,7 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 	if ((( sumDistances <= yMax ) && ( sumDistances >= yMin  ))&&( res ) )
 	{
 		/* Uncomment if you want to analyze the real size of each studied region
-		/*ofstream f;
+		/ *ofstream f;
 		f.open("sizes.txt", ofstream::app);
 		double h = meanDepth/cos(DEG2RAD(faceHeight*0.2361111111111111));
 		double realHigh = sin(DEG2RAD(faceHeight*0.2361111111111111))*h;
@@ -1609,7 +1609,7 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 		f << m_measure.faceNum << endl;
 		f.close();
 	}*/
-	
+
 	return false;
 
 
@@ -1631,10 +1631,10 @@ bool CFaceDetection::checkIfDiagonalSurface2( CObservation3DRangeScan* face )
 		if ( m_options.useSizeDistanceRelationFilter && m_measure.takeTime )
 			m_timeLog.enter("Check if face plane: size-distance relation");
 	}
-	
+
 	const unsigned int faceWidth = face->intensityImage.getWidth();
 	const unsigned int faceHeight = face->intensityImage.getHeight();
-	
+
 	CMatrixTemplate<bool> region; // To save the segmented region
 	experimental_segmentFace( *face,  region);
 
@@ -1655,7 +1655,7 @@ bool CFaceDetection::checkIfDiagonalSurface2( CObservation3DRangeScan* face )
 				total++;
 				points.push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
 			}
-		}		
+		}
 	}
 
 	double meanDepth = sumDepth / total;
@@ -1691,7 +1691,7 @@ bool CFaceDetection::checkIfDiagonalSurface2( CObservation3DRangeScan* face )
 
 			//if ( !m_options.useDiagonalDistanceFilter )
 				return false;
-			//else 
+			//else
 			//	res = false;
 		}
 
@@ -1800,7 +1800,7 @@ bool CFaceDetection::checkIfDiagonalSurface2( CObservation3DRangeScan* face )
 	if ((( sumDistances <= yMax ) && ( sumDistances >= yMin  ))&&( res ) )
 	{
 		/* Uncomment if you want to analyze the real size of each studied region
-		/*ofstream f;
+		/ *ofstream f;
 		f.open("sizes.txt", ofstream::app);
 		double h = meanDepth/cos(DEG2RAD(faceHeight*0.2361111111111111));
 		double realHigh = sin(DEG2RAD(faceHeight*0.2361111111111111))*h;
@@ -1818,7 +1818,7 @@ bool CFaceDetection::checkIfDiagonalSurface2( CObservation3DRangeScan* face )
 		f << m_measure.faceNum << endl;
 		f.close();
 	}*/
-	
+
 	return false;
 
 
@@ -1933,11 +1933,11 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CAr
 {
 
 	vector<float> xs, ys, zs;
-	
+
 	const size_t size = pointsVector.size();
 
-	xs.resize( size ); 
-	ys.resize( size ); 
+	xs.resize( size );
+	ys.resize( size );
 	zs.resize( size );
 
 	for ( size_t i = 0; i < size; i++ )
@@ -1996,7 +1996,7 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CAr
 	scene->insert( arrow2 );
 	scene->insert( arrow3 );
 
-						
+
 	//sgms.push_back( TSegment3D(center,center + E1*eigenVal[0]*100) );
 	//sgms.push_back( TSegment3D(center,center + E2*eigenVal[1]*100) );
 	//sgms.push_back( TSegment3D(center,center + E3*eigenVal[2]*100) );
@@ -2269,7 +2269,7 @@ void CFaceDetection::experimental_segmentFace( const CObservation3DRangeScan &fa
 	}
 }
 
-void CFaceDetection::experimental_calcHist( const CImage &face, const size_t &c1, const size_t &r1, const size_t &c2, 
+void CFaceDetection::experimental_calcHist( const CImage &face, const size_t &c1, const size_t &r1, const size_t &c2,
 											const size_t &r2, CMatrixTemplate<unsigned int> &hist )
 {
 	TImageSize size;
@@ -2513,13 +2513,13 @@ void CFaceDetection::debug_returnResults( const vector_uint &falsePositives, con
 	unsigned int ignoredDetected = 0;
 
 	falsePositivesDeleted = 0;
-	
+
 	for ( unsigned int i = 0; i < numDeleted; i++ )
-	{	
+	{
 		unsigned int region = m_measure.deletedRegions[i];
 
 		bool falsePositive = false;
-		
+
 		unsigned int j = 0;
 		while (!falsePositive && ( j < numFalsePositives ) )
 		{
@@ -2529,7 +2529,7 @@ void CFaceDetection::debug_returnResults( const vector_uint &falsePositives, con
 
 		if ( falsePositive )
 			falsePositivesDeleted++;
-		else 
+		else
 		{
 			bool igno = false;
 

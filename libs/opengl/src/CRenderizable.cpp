@@ -345,6 +345,16 @@ void CRenderizable::getCurrentRenderingInfo(TRenderInfo &ri) const
 	glGetFloatv(GL_PROJECTION_MATRIX,mat_proj);
 	ri.proj_matrix = Eigen::Matrix<float,4,4,Eigen::ColMajor>(mat_proj);
 
+	// Extract the camera position:
+	Eigen::Matrix<float,4,1> cam_pose_hm = ri.proj_matrix.inverse().col(3);
+	if (cam_pose_hm[3]!=0)
+	{
+		ri.camera_position.x = cam_pose_hm[0]/cam_pose_hm[3];
+		ri.camera_position.y = cam_pose_hm[1]/cam_pose_hm[3];
+		ri.camera_position.z = cam_pose_hm[2]/cam_pose_hm[3];
+	}
+	else ri.camera_position= mrpt::math::TPoint3Df(0,0,0);
+
 	// Get the model transformation:
 	GLfloat  mat_mod[16];
 	glGetFloatv(GL_MODELVIEW_MATRIX,mat_mod);

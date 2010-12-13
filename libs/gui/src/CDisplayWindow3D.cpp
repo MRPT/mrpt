@@ -252,7 +252,7 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(double At, wxPaintDC &
 
 	// If we are requested to do so, grab images to disk as they are rendered:
 	string grabFile = m_win3D->grabImageGetNextFile();
-	if (m_win3D && !grabFile.empty() || m_win3D->isCapturingImgs() )
+	if (m_win3D && (!grabFile.empty() || m_win3D->isCapturingImgs()) )
 	{
 		int w,h;
 		dc.GetSize(&w, &h);
@@ -851,18 +851,18 @@ void CDisplayWindow3D::clearTextMessages()
 #endif
 }
 
-void CDisplayWindow3D::setRenderingFPS(double FPS) 
+void CDisplayWindow3D::setRenderingFPS(double FPS)
 {
-	mrpt::synch::CCriticalSectionLocker lock(&m_last_FPSs_cs); 
+	mrpt::synch::CCriticalSectionLocker lock(&m_last_FPSs_cs);
 
-	m_last_FPSs.push_back(FPS); 
+	m_last_FPSs.push_back(FPS);
 	if (m_last_FPSs.size()>250)
 		m_last_FPSs.erase(m_last_FPSs.begin());
 }
 
-double CDisplayWindow3D::getRenderingFPS() const 
-{ 
-	mrpt::synch::CCriticalSectionLocker lock(&m_last_FPSs_cs); 
+double CDisplayWindow3D::getRenderingFPS() const
+{
+	mrpt::synch::CCriticalSectionLocker lock(&m_last_FPSs_cs);
 
 	if (m_last_FPSs.empty())
 	     return 0;

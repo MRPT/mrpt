@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header  
+#include <mrpt/maps.h>  // Precompiled header
 
 
 
@@ -235,22 +235,14 @@ void  CBeacon::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 
 			obj->setPointSize(2.5);
 
-			size_t	i,N = m_locationMC.m_particles.size();
+			const size_t N = m_locationMC.m_particles.size();
+			obj->resize(N);
 
-			vector<float> &xs = obj->getArrayX();
-			vector<float> &ys = obj->getArrayY();
-			vector<float> &zs = obj->getArrayZ();
-
-			xs.resize( N );
-			ys.resize( N );
-			zs.resize( N );
-
-			for (i=0;i<N;i++)
-			{
-				xs[i] = m_locationMC.m_particles[i].d->x;
-				ys[i] = m_locationMC.m_particles[i].d->y;
-				zs[i] = m_locationMC.m_particles[i].d->z;
-			}
+			for (size_t i=0;i<N;i++)
+				obj->setPoint(i,
+					m_locationMC.m_particles[i].d->x,
+					m_locationMC.m_particles[i].d->y,
+					m_locationMC.m_particles[i].d->z );
 
 			outObj->insert( obj );
 		}

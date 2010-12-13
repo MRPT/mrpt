@@ -40,7 +40,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-float mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL = 0.2f;
+float mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL = 0.01f;
 
 
 IMPLEMENTS_SERIALIZABLE( CPointCloud, CRenderizable, mrpt::opengl )
@@ -176,7 +176,7 @@ void  CPointCloud::render_subset(const bool all, const std::vector<size_t>& idxs
 #if MRPT_HAS_OPENGL_GLUT
 
 	const size_t N = (all ? m_xs.size() : idxs.size());
-	const size_t decimation = std::max(1.0f, static_cast<float>(N / (mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL * render_area_sqpixels)) );
+	const size_t decimation = mrpt::utils::round( std::max(1.0f, static_cast<float>(N / (mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL * render_area_sqpixels)) ) );
 
 	m_last_rendered_count_ongoing += N/decimation;
 
@@ -337,6 +337,5 @@ void  CPointCloud::setGradientColors( const mrpt::utils::TColorf &colorMin, cons
 void CPointCloud::markAllPointsAsNew()
 {
 	m_minmax_valid = false;
-
-	MRPT_TODO("octree update...")
+	octree_mark_as_outdated();
 }

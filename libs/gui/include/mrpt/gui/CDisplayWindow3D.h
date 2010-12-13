@@ -100,7 +100,7 @@ namespace mrpt
 			friend class CMyGLCanvas_DisplayWindow3D;
 
 
-			float m_minRange,m_maxRange,m_FOV;
+			float m_FOV;
 
 
 			/** Internal OpenGL object (see general discussion in about usage of this object)
@@ -131,6 +131,8 @@ namespace mrpt
 
 			std::vector<double>         m_last_FPSs; //!< \sa getRenderingFPS
 			synch::CCriticalSection     m_last_FPSs_cs;
+
+			void internalSetMinMaxRange();
 
 		public:
 			/** Constructor
@@ -178,14 +180,6 @@ namespace mrpt
 			  */
 			void  updateWindow() { forceRepaint(); }
 
-			/** Return the camera min range (z) (used for gluPerspective).
-			  */
-			float getMinRange() const { return m_minRange; };
-
-			/** Return the camera max range (z) (used for gluPerspective).
-			  */
-			float getMaxRange() const { return m_maxRange; };
-
 			/** Return the camera field of view (in degrees) (used for gluPerspective).
 			  */
 			float getFOV() const { return m_FOV; };
@@ -193,12 +187,12 @@ namespace mrpt
 			/** Changes the camera min range (z) (used for gluPerspective).
 			  *  The window is not updated with this method, call "forceRepaint" to update the 3D view.
 			  */
-			void setMinRange(float v) { m_minRange=v; };
+			void setMinRange(float v);
 
 			/** Changes the camera max range (z) (used for gluPerspective).
 			  *  The window is not updated with this method, call "forceRepaint" to update the 3D view.
 			  */
-			void setMaxRange(float v) { m_maxRange=v; };
+			void setMaxRange(float v);
 
 			/** Changes the camera field of view (in degrees) (used for gluPerspective).
 			  *  The window is not updated with this method, call "forceRepaint" to update the 3D view.

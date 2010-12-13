@@ -87,6 +87,7 @@
 				- Feature extraction and computation of the matching score for each feature in list1 and for each in list2 with four different methods: FAST, NCC, SIFT and SURF. Graphical results are shown.
 			- octree_render_huge_pointcloud
 		- <b>BUG FIXES:</b>
+			- Doing a clear() on mrpt::slam::CColouredPointsMap didn't actually clear the internal vectors for RGB+Distance values.
 			- mrpt::utils::net::DNS_resolve_async didn't work properly.
 			- RawlogViewer, module "Raw-map": It didn't display or save the robot path for observations-only rawlogs.
 			- Fixed exception when rendering a mrpt::opengl::CPointCloud with no points in it.

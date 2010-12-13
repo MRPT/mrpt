@@ -269,6 +269,7 @@ namespace mrpt
 				  *		- 350: Force refresh
 				  *		- 360: Add a 2D text message: vector_x: [0]:x, [1]:y, [2,3,4]:R G B, "x": enum of desired font. "y": unique index, "str": String.
 				  *		- 361: Clear all 2D text messages.
+				  *		- 370: Change min/max range: min=vector_x[0], max=vector_x[1]
 				  *     - 399: Delete the window associated with this source object.
 				  *
 				  *  For CDisplayWindowPlots:

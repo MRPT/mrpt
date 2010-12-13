@@ -159,6 +159,7 @@ namespace mrpt
 				Eigen::Matrix<float,4,4,Eigen::ColMajor>  proj_matrix;  //!< The 4x4 projection matrix
 				Eigen::Matrix<float,4,4,Eigen::ColMajor>  model_matrix;  //!< The 4x4 model transformation matrix
 				Eigen::Matrix<float,4,4,Eigen::ColMajor>  full_matrix;  //!< PROJ * MODEL
+				mrpt::math::TPoint3Df   camera_position;  //!< The 3D location of the camera
 
 				/** Computes the normalized coordinates (range=[0,1]) on the current rendering viewport of a
 				  * point with local coordinates (wrt to the current model matrix) of (x,y,z).

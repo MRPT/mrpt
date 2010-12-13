@@ -648,9 +648,11 @@ void  CSimplePointsMap::readFromStream(CStream &in, int version)
   ---------------------------------------------------------------*/
 void  CSimplePointsMap::internal_clear()
 {
-	x.clear();
-	y.clear();
-	z.clear();
+	// This swap() thing is the only way to really deallocate the memory.
+	{ vector<float> empt;  x.swap(empt); }
+	{ vector<float> empt;  y.swap(empt); }
+	{ vector<float> empt;  z.swap(empt); }
+
 	mark_as_modified();
 }
 

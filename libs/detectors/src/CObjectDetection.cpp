@@ -40,7 +40,8 @@ extern CStartUpClassesRegister  mrpt_detectors_class_reg;
 
 void CObjectDetection::detectObjects(const CImage *img, vector_detectable_object &detected)
 {
-	static const int dumm2 = mrpt_detectors_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
+	//static const int dumm2 =
+	mrpt_detectors_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 	mrpt::slam::CObservationImage o;
 	o.timestamp = mrpt::system::now();
