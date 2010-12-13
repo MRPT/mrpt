@@ -228,9 +228,9 @@ CMyGLCanvasBase::CMyGLCanvasBase(wxWindow *parent, wxWindowID id,const wxPoint& 
     cameraElevationDeg 	= 45;
     cameraAzimuthDeg	= 45;
 
-    clearColorR 		= 0.5f;
-    clearColorG			= 0.5f;
-    clearColorB			= 0.5f;
+    clearColorR 		= 0.1f;
+    clearColorG			= 0.1f;
+    clearColorB			= 0.1f;
 
 
     Connect(wxID_ANY,wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CMyGLCanvasBase::OnLeftDown);
@@ -278,7 +278,7 @@ int CMyGLCanvasBase::textBitmapWidth(
 #if MRPT_HAS_OPENGL_GLUT
 	if (str.empty()) return 0;
 	return glutBitmapLength(aux_mrptfont2glutfont(font), (const unsigned char*)str.c_str() );
-#else 
+#else
 	return 10;
 #endif
 }

@@ -188,14 +188,49 @@ namespace mrpt
 			  */
 			bool traceRay(const mrpt::poses::CPose3D&o,double &dist) const;
 
+
+			/** Recursive depth-first visit all objects in all viewports of the scene, calling the user-supplied function
+			  *  The passed function must accept only one argument of type "const mrpt::opengl::CRenderizablePtr &"
+			  */
+			template <typename FUNCTOR>
+			void visitAllObjects( FUNCTOR functor) const
+			{
+				MRPT_START
+				for (TListViewports::const_iterator it = m_viewports.begin();it!=m_viewports.end();++it)
+					for (COpenGLViewport::const_iterator itO = (*it)->begin();itO!=(*it)->end();++itO)
+						internal_visitAllObjects(functor, *itO);
+				MRPT_END
+			}
+
+			/** Recursive depth-first visit all objects in all viewports of the scene, calling the user-supplied function
+			  *  The passed function must accept a first argument of type "const mrpt::opengl::CRenderizablePtr &"
+			  *  and a second one of type EXTRA_PARAM
+			  */
+			template <typename FUNCTOR,typename EXTRA_PARAM>
+			inline void visitAllObjects( FUNCTOR functor, const EXTRA_PARAM &userParam) const {
+				visitAllObjects( std::bind2nd(functor,userParam) );
+			}
+
 		protected:
 			bool		m_followCamera;
 
 			typedef std::vector<COpenGLViewportPtr> TListViewports;
 
-			/**  The list of viewports, indexed by name.
-			  */
-			TListViewports		m_viewports;
+			TListViewports		m_viewports;	//!< The list of viewports, indexed by name.
+
+
+			template <typename FUNCTOR>
+			static void internal_visitAllObjects(FUNCTOR functor, const CRenderizablePtr &o)
+			{
+				(*functor)(o);
+				if (IS_CLASS(o,CSetOfObjects))
+				{
+					CSetOfObjectsPtr obj = CSetOfObjectsPtr(o);
+					for (CSetOfObjects::const_iterator it=obj->begin();it!=obj->end();++it)
+						internal_visitAllObjects(functor,*it);
+				}
+			}
+
 		};
 		/**
 		  * Inserts an openGL object into a scene. Allows call chaining.

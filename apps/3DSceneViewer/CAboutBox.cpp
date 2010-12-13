@@ -164,13 +164,12 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
     {
 		CMyRedirector myRedirector( lbInfo );
 
-		cout << "  3D Scene Viewer Application\n";
+		cout << " SceneViewer3D\n";
 		cout << "--------------------------------\n";
 		cout << "Jose Luis Blanco (C) 2005-2010\n";
 		cout << "For bug reports or to collaborate: <jlblanco@ctima.uma.es>\n";
 		cout << "http://www.isa.uma.es/jlblanco\n\n";
 
-		cout << "Version:                " << SCENEVIEWER_VERSION << endl;
 		cout << "MRPT version:           " << MRPT_getVersion() << endl;
 		cout << "MRPT compilation date:  " << MRPT_getCompilationDate() << endl;
  		cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << endl;
@@ -178,7 +177,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << "wxMathPlot version:     0.03\n";
     }
 
-    lbProgName->SetLabel( _U( format("Scene Viewer %s",SCENEVIEWER_VERSION).c_str() ) );
+    lbProgName->SetLabel( _("SceneViewer3D"));
 	lbProgName->SetForegroundColour( wxColour(0,0,128) );
 
     FlexGridSizer1->RecalcSizes();

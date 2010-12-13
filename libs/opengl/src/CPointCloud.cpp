@@ -40,7 +40,9 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-float mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL = 0.01f;
+float  mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL = 0.01f;
+size_t mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE            = 1e5;
+size_t mrpt::global_settings::OCTREE_RENDER_MAX_OVERALL_POINTS_ON_SCREEN   = 5e6;
 
 
 IMPLEMENTS_SERIALIZABLE( CPointCloud, CRenderizable, mrpt::opengl )

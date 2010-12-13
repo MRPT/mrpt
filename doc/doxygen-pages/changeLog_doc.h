@@ -37,8 +37,6 @@
 		- MRPT now relies entirely on Eigen (version 3) for matrix and vector classes.
 		- Support for Microsoft Xbox Kinect. See mrpt::hwdrivers::CKinect and this page: http://www.mrpt.org/Kinect_and_MRPT
 	- <b>Detailed list of changes:</b>
-		- New application:
-			- <a href="http://www.mrpt.org/Application:kinect-3d-slam" >kinect-3d-slam</a>.
 		- Changes related to mathematics, matrices and containers and the port to Eigen:
 			- All is now based on the Eigen library, v3. See <a href="http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes" >this page</a> for a more complete description of all the changes and the reasons of this big change.
 			- Matrices constructors from poses (TPose2D,...) now are explicit. Example: Previous code "CMatrixDouble31 m = myPose2D;" won't build now, should be: "CMatrixDouble31 m = CMatrixDouble31(myPose2D);"
@@ -47,6 +45,10 @@
 			- method unit() in matrices was inconsistent between fixed and dynamic sized matrices. It's now unified (see Eigen::Matrix::unit)
 			- Types mrpt::vector_float  and std::vector<float> (or the "double" versions) are not interchangeable any more. Read more on this in the link above.
 			- These examples have been removed: benchmark-matrix, math_iterators_test, matrix_views
+		- New application:
+			- <a href="http://www.mrpt.org/Application:kinect-3d-slam" >kinect-3d-slam</a>.
+		- Changes in applications:
+			- SceneViewer3D: Now has new options to visualize and tune the octree structures of point clouds.
 		- Deleted classes:
 			- mrpt::slam::CConsistentObservationAlignment: It implemented the Lu & Milios algorithm, now superseded by graph-slam methods. See the mrpt::graphslam namespace.
 			- mrpt::utils::CImageFloat: For real images with float pixels, it's better to directly use OpenCV. For matrices, there're many other matrix classes better suited for that. There is now also a new explicit constructor in mrpt::utils::CImage able of converting matrices into images, covering the possibly unique utility of the deleted class.
@@ -62,6 +64,7 @@
 			- Both mrpt::opengl::CPointCloud and mrpt::opengl::CPointCloudColoured are now much more optimized to render huge point clouds:
 				- (TODO) Smart rendering based on Octrees to determine which volumes are within the frustum.
 				- (TODO) For each octree volume, smart decimation of the points from the points-to-eye distance: why rendering 1e6 points that will all be seen in a 10x10 pixel area?
+			- New method mrpt::opengl::COpenGLScene::visitAllObjects()
 		- Changes in functions:
 			- mrpt::vision::matchFeatures(). Implemented a new method for managing ambiguous matches, now taking into account which of the conflicting matches is the most probable.
 		- New structures/classes:

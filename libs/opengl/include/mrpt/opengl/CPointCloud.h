@@ -215,19 +215,6 @@ namespace mrpt
 
 	} // end namespace
 
-	
-	namespace global_settings
-	{
-		/** Affects to these classes:
-		  *		- mrpt::opengl::CPointCloud
-		  *		- mrpt::opengl::CPointCloudColoured
-		  *  
-		  *	Default value = 0.2
-		  *
-		  *  Read the documentation of those classes for further information.
-		  */
-		extern OPENGL_IMPEXP float OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL;
-	}
 
 
 } // End of namespace

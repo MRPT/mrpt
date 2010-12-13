@@ -51,6 +51,19 @@
 					<handler function="OnMenuOptions" entry="EVT_MENU" />
 				</object>
 				<object class="separator" />
+				<object class="wxMenu" name="ID_MENUITEM16" variable="MenuItem17" member="yes">
+					<label>Point clouds octrees...</label>
+					<object class="wxMenuItem" name="ID_MENUITEM15" variable="mnuItemShowCloudOctrees" member="yes">
+						<label>Show/hide bounding boxes</label>
+						<handler function="OnmnuItemShowCloudOctreesSelected" entry="EVT_MENU" />
+						<checkable>1</checkable>
+					</object>
+					<object class="wxMenuItem" name="ID_MENUITEM17" variable="mnuItemChangeMaxPointsPerOctreeNode" member="yes">
+						<label>Change octree parameters...</label>
+						<handler function="OnmnuItemChangeMaxPointsPerOctreeNodeSelected" entry="EVT_MENU" />
+					</object>
+				</object>
+				<object class="separator" />
 				<object class="wxMenuItem" name="ID_MENUITEM11" variable="MenuItem13" member="no">
 					<label>Delete all objects</label>
 					<handler function="OnMenuDeleteAll" entry="EVT_MENU" />

@@ -1763,7 +1763,11 @@ include(cmakemodules/DefineExamples.cmake REQUIRED)
 #-----------------------------------
 # The applications:
 #-----------------------------------
-add_subdirectory(apps)
+SET( BUILD_APPLICATIONS ON CACHE BOOL "If you only want the MRPT libraries, disable this.")
+IF(BUILD_APPLICATIONS)
+	add_subdirectory(apps)
+ENDIF(BUILD_APPLICATIONS)
+
 
 
 #-----------------------------------

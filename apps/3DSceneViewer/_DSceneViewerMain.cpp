@@ -293,6 +293,14 @@ void CMyGLCanvas::OnCharCustom( wxKeyEvent& event )
     	{
     	}
     }
+
+    if (evkey==WXK_UP || evkey==WXK_DOWN)
+    {
+    	// Move the camera forward-backward:
+    	// ...
+    	//Refresh(false);
+    }
+
 }
 
 //(*IdInit(_DSceneViewerFrame)
@@ -304,6 +312,9 @@ const long _DSceneViewerFrame::ID_MENUITEM12 = wxNewId();
 const long _DSceneViewerFrame::idMenuQuit = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM4 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM3 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM15 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM17 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM16 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM11 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM9 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM8 = wxNewId();
@@ -365,7 +376,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     wxMenuItem* MenuItem4;
     wxMenuItem* MenuItem13;
     wxMenu* Menu2;
-    
+
     Create(parent, id, _("3DSceneViewer - Part of the MRPT project - Jose Luis Blanco (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetClientSize(wxSize(672,539));
     {
@@ -395,6 +406,13 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     Menu3->Append(MenuItem6);
     MenuItem5 = new wxMenuItem(Menu3, ID_MENUITEM3, _("Options..."), wxEmptyString, wxITEM_NORMAL);
     Menu3->Append(MenuItem5);
+    Menu3->AppendSeparator();
+    MenuItem17 = new wxMenu();
+    mnuItemShowCloudOctrees = new wxMenuItem(MenuItem17, ID_MENUITEM15, _("Show/hide bounding boxes"), wxEmptyString, wxITEM_CHECK);
+    MenuItem17->Append(mnuItemShowCloudOctrees);
+    mnuItemChangeMaxPointsPerOctreeNode = new wxMenuItem(MenuItem17, ID_MENUITEM17, _("Change octree parameters..."), wxEmptyString, wxITEM_NORMAL);
+    MenuItem17->Append(mnuItemChangeMaxPointsPerOctreeNode);
+    Menu3->Append(ID_MENUITEM16, _("Point clouds octrees..."), MenuItem17, wxEmptyString);
     Menu3->AppendSeparator();
     MenuItem13 = new wxMenuItem(Menu3, ID_MENUITEM11, _("Delete all objects"), wxEmptyString, wxITEM_NORMAL);
     Menu3->Append(MenuItem13);
@@ -443,7 +461,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     timLoadFileCmdLine.SetOwner(this, ID_TIMER1);
     timLoadFileCmdLine.Start(50, true);
     Center();
-    
+
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
     Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
     Connect(ID_MENUITEM5,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnReload);
@@ -452,6 +470,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnQuit);
     Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuBackColor);
     Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuOptions);
+    Connect(ID_MENUITEM15,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected);
+    Connect(ID_MENUITEM17,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected);
     Connect(ID_MENUITEM11,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuDeleteAll);
     Connect(ID_MENUITEM9,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuAddSICK);
     Connect(ID_MENUITEM6,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnInsert3DS);
@@ -1088,4 +1108,69 @@ void _DSceneViewerFrame::OnMenuItem14Selected(wxCommandEvent& event)
 void _DSceneViewerFrame::OnMenuCameraTrackingArbitrary(wxCommandEvent& event)
 {
 	m_dlg_tracking->Show();
+}
+
+void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(wxCommandEvent& event)
+{
+	wxString sRet1 = wxGetTextFromUser(
+		_("Max. number of points in an octree node before split:"),
+		_("Enter new value"),
+		wxString::Format(_("%e"),(double)mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE),
+		this);
+
+	wxString sRet2 = wxGetTextFromUser(
+		_("Max. density of points in each octree (points/pixel^2):"),
+		_("Enter new value"),
+		wxString::Format(_("%e"),(double)mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL),
+		this);
+
+	wxString sRet3 = wxGetTextFromUser(
+		_("Overall maximum points on screen at once::"),
+		_("Enter new value"),
+		wxString::Format(_("%e"),(double)mrpt::global_settings::OCTREE_RENDER_MAX_OVERALL_POINTS_ON_SCREEN),
+		this);
+
+	double N1,N2,N3;
+	if (sRet1.ToDouble(&N1) && sRet2.ToDouble(&N2) && sRet3.ToDouble(&N3))
+	{
+		mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = N1;
+		mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL = N2;
+		mrpt::global_settings::OCTREE_RENDER_MAX_OVERALL_POINTS_ON_SCREEN = N3;
+
+		// Redo the octrees:
+		clear_all_octrees_in_scene();
+		Refresh(false);
+	}
+	else
+		wxMessageBox(_("Invalid number!"));
+}
+
+void func_clear_octrees(const mrpt::opengl::CRenderizablePtr &o)
+{
+	if (IS_CLASS(o,CPointCloud))
+	{
+		CPointCloudPtr obj = CPointCloudPtr(o);
+		obj->octree_mark_as_outdated();
+	}
+	else
+	if (IS_CLASS(o,CPointCloudColoured))
+	{
+		CPointCloudColouredPtr obj = CPointCloudColouredPtr(o);
+		obj->octree_mark_as_outdated();
+	}
+}
+
+void _DSceneViewerFrame::clear_all_octrees_in_scene()
+{
+	{
+		mrpt::synch::CCriticalSectionLocker lock(&critSec_UpdateScene);
+		m_canvas->m_openGLScene->visitAllObjects( &func_clear_octrees );
+	}
+}
+
+// Show/hide the octree bounding boxes of the point clouds:
+void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event)
+{
+	// ...
+
 }

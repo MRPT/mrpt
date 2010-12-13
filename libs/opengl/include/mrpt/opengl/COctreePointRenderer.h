@@ -35,6 +35,30 @@
 
 namespace mrpt
 {
+	namespace global_settings
+	{
+		/** Default value = 0.01 points/px^2. Affects to these classes (read their docs for further details):
+		  *		- mrpt::opengl::CPointCloud
+		  *		- mrpt::opengl::CPointCloudColoured
+		  */
+		extern OPENGL_IMPEXP float OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL;
+
+		/** Default value = 1e5. Maximum number of elements in each octree node before spliting. Affects to these classes (read their docs for further details):
+		  *		- mrpt::opengl::CPointCloud
+		  *		- mrpt::opengl::CPointCloudColoured
+		  */
+		extern OPENGL_IMPEXP size_t OCTREE_RENDER_MAX_POINTS_PER_NODE;
+
+		/** Default value = 5e6. Maximum number of points to render on an opengl viewport for one single point cloud object.
+		  *  If the object has more points, they are decimated.
+		  *  Affects to these classes (read their docs for further details):
+		  *		- mrpt::opengl::CPointCloud
+		  *		- mrpt::opengl::CPointCloudColoured
+		  */
+		extern OPENGL_IMPEXP size_t OCTREE_RENDER_MAX_OVERALL_POINTS_ON_SCREEN;
+	}
+
+
 	namespace opengl
 	{
 		using namespace mrpt::utils;
@@ -62,7 +86,6 @@ namespace mrpt
 
 
 			enum { OCTREE_ROOT_NODE = 0 };
-			enum { OCTREE_MAX_ELEMENTS_PER_NODE = 100000 };
 
 		protected:
 			// Helper methods in any CRTP template
@@ -74,9 +97,6 @@ namespace mrpt
 			{
 				const_cast<COctreePointRenderer<Derived>*>(this)->internal_octree_assure_uptodate();
 			}
-
-			/** Called from the derived class if we have to rebuild the entire node tree. */
-			inline void octree_mark_as_outdated() { m_octree_has_to_rebuild_all=true; }
 
 			/** Render the entire octree recursively.
 			  * Should be called from children's render() method.
@@ -221,7 +241,7 @@ namespace mrpt
 				// Check if the node has points and is visible:
 				if (node.is_leaf)
 				{	// Render this leaf node:
-					if (!node.pts.empty())
+					if (node.all || !node.pts.empty())
 					{
 						m_nonempty_nodes_ongoing++;
 
@@ -374,7 +394,7 @@ namespace mrpt
 
 				const bool has_to_compute_bb = (node_id ==OCTREE_ROOT_NODE);
 
-				if (N<=OCTREE_MAX_ELEMENTS_PER_NODE)
+				if (N<=mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE)
 				{
 					// No need to split this node:
 					node.is_leaf = true;
@@ -482,6 +502,9 @@ namespace mrpt
 
 			/** Return the number of visible octree nodes in the last render event. */
 			size_t octree_get_visible_nodes() const { return m_visible_octree_nodes; }
+
+			/** Called from the derived class (or the user) to indicate we have/want to rebuild the entire node tree (for example, after modifying the point cloud or any global octree parameter) */
+			inline void octree_mark_as_outdated() { m_octree_has_to_rebuild_all=true; }
 
 			/** Returns a graphical representation of all the bounding boxes of the octree (leaf) nodes.
 			  */

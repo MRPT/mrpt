@@ -43,8 +43,6 @@
 
 
 class CDlgCamTracking;
-#define SCENEVIEWER_VERSION  "1.1"
-
 
 #include <mrpt/gui/CMyGLCanvasBase.h>
 
@@ -109,6 +107,8 @@ class _DSceneViewerFrame: public wxFrame
         void OnMenuDeleteAll(wxCommandEvent& event);
         void OnMenuItem14Selected(wxCommandEvent& event);
         void OnMenuCameraTrackingArbitrary(wxCommandEvent& event);
+        void OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event);
+        void OnmnuItemChangeMaxPointsPerOctreeNodeSelected(wxCommandEvent& event);
         //*)
 
 		void OntimAutoplay(wxTimerEvent& event);
@@ -122,6 +122,9 @@ class _DSceneViewerFrame: public wxFrame
         static const long idMenuQuit;
         static const long ID_MENUITEM4;
         static const long ID_MENUITEM3;
+        static const long ID_MENUITEM15;
+        static const long ID_MENUITEM17;
+        static const long ID_MENUITEM16;
         static const long ID_MENUITEM11;
         static const long ID_MENUITEM9;
         static const long ID_MENUITEM8;
@@ -160,13 +163,16 @@ class _DSceneViewerFrame: public wxFrame
         wxToolBarToolBase* btnAutoplay;
         wxTimer timLoadFileCmdLine;
         wxToolBarToolBase* ToolBarItem2;
+        wxMenuItem* mnuItemShowCloudOctrees;
         wxMenuItem* MenuItem9;
         wxToolBarToolBase* ToolBarItem10;
         wxToolBarToolBase* btnOrtho;
         wxToolBar* ToolBar1;
+        wxMenuItem* mnuItemChangeMaxPointsPerOctreeNode;
         wxToolBarToolBase* ToolBarItem4;
         wxMenuItem* MenuItem5;
         wxToolBarToolBase* ToolBarItem1;
+        wxMenu* MenuItem17;
         wxMenuItem* MenuItem10;
         wxToolBarToolBase* btnRecord;
         wxToolBarToolBase* ToolBarItem3;
@@ -189,6 +195,7 @@ class _DSceneViewerFrame: public wxFrame
 		int maxv;
 		void loadFromFile( const std::string &fil, bool isInASequence = false );
 		void updateTitle();
+		void clear_all_octrees_in_scene();
 
 
 		CDlgCamTracking *m_dlg_tracking;
