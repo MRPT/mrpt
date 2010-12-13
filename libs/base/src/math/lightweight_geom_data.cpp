@@ -148,11 +148,10 @@ std::ostream & operator << (std::ostream& o, const TPose3DQuat & p) { return (o 
 double TSegment2D::length() const	{
 	return math::distance(point1,point2);
 }
-//double TSegment2D::distance(const TPoint2D &point) const	{
-//	return min(min(math::distance(point,point1),math::distance(point,point2)),TLine2D(*this).distance(point));
-//}
-//Bug fixed:
-double TSegment2D::distance(const TPoint2D &point) const	{
+double TSegment2D::distance(const TPoint2D &point) const {
+	return std::abs(signedDistance(point));
+}
+double TSegment2D::signedDistance(const TPoint2D &point) const	{
 	//It is reckoned whether the perpendicular line to the TSegment2D which passes through point crosses or not the referred segment,
 	//or what is the same, whether point makes an obtuse triangle with the segment or not (being the longest segment one between the point and either end of TSegment2D).
 	double d1, d2, d3, ds1, ds2, ds3;
@@ -163,9 +162,9 @@ double TSegment2D::distance(const TPoint2D &point) const	{
 	ds2 = square(d2);
 	ds3 = square(d3);
 	if ( ds1 > (ds2 + ds3) || ds2 > (ds1 + ds3) )
-		return min(d1,d2);
-
-	return TLine2D(*this).distance(point);
+		 // Fix sign:
+		 return min(d1,d2) * ( TLine2D(*this).signedDistance(point)<0 ? -1:1);
+	else return TLine2D(*this).signedDistance(point);
 }
 bool TSegment2D::contains(const TPoint2D &point) const	{
 	return abs(math::distance(point1,point)+math::distance(point2,point)-math::distance(point1,point2))<geometryEpsilon;
