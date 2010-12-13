@@ -54,10 +54,12 @@ CHokuyoURG::CHokuyoURG() :
 	m_highSensMode(false),
     m_reduced_fov(0),
 	m_com_port(""),
+	m_ip_dir(""),
+	m_port_dir(""),
 	m_I_am_owner_serial_port(false),
 	m_timeStartUI( 0 )
 {
-	m_sensorLabel = "Hokuyo";
+	m_sensorLabel = "Hokuyo";	
 }
 
 /*-------------------------------------------------------------
@@ -205,6 +207,9 @@ void  CHokuyoURG::loadConfig_sensorSpecific(
 	m_com_port = configSource.read_string(iniSection, "COM_port_LIN", m_com_port, true );
 #endif
 
+	m_ip_dir = configSource.read_string(iniSection, "IP_DIR", m_ip_dir );
+	m_port_dir = configSource.read_string(iniSection, "PORT_DIR", m_port_dir );
+
 	// Parent options:
 	this->loadExclusionAreas(configSource,iniSection);
 }
@@ -220,40 +225,69 @@ bool  CHokuyoURG::turnOn()
 	if (!checkCOMisOpen()) return false;
 
 	// If we are over a serial link, set it up:
-	CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-	if (COM!=NULL)
+	if ( m_ip_dir == "" )
 	{
-		// It is a COM:
-		COM->setConfig( 19200 );
-		COM->setTimeouts(100,0,200,0,0);
+		CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
 
-		// Assure the laser is off and quiet:
-		switchLaserOff();
-		mrpt::system::sleep(10);
+		if (COM!=NULL)
+		{
+			// It is a COM:
+			COM->setConfig( 19200 );
+			COM->setTimeouts(100,0,200,0,0);
+	
+			// Assure the laser is off and quiet:
+			switchLaserOff();
+			mrpt::system::sleep(10);
 
-		COM->purgeBuffers();
-		mrpt::system::sleep(10);
+			COM->purgeBuffers();
+			mrpt::system::sleep(10);
+	
+			COM->setConfig( 115200 );
+			switchLaserOff();
+			mrpt::system::sleep(10);
+			COM->purgeBuffers();
+			mrpt::system::sleep(10);
+			COM->setConfig( 19200 );
+		}
 
-		COM->setConfig( 115200 );
-		switchLaserOff();
-		mrpt::system::sleep(10);
-		COM->purgeBuffers();
-		mrpt::system::sleep(10);
-		COM->setConfig( 19200 );
-	}
-
-	// Enable SCIP 2.0
-	enableSCIP20();
-
-	if (COM!=NULL)
-	{
-		// Set 115200 baud rate:
-		setHighBaudrate();
+		// Enable SCIP 2.0
 		enableSCIP20();
-		COM->setConfig( 115200 );
+
+		if (COM!=NULL)
+		{
+			// Set 115200 baud rate:
+			setHighBaudrate();
+			enableSCIP20();
+			COM->setConfig( 115200 );
+		}
+	}
+	else
+	{
+		CClientTCPSocket* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
+
+		// Enable SCIP 2.0
+		//enableSCIP20();
+
+		if ( COM!=NULL )
+		{
+			// Assure the laser is off and quiet:
+			switchLaserOff();
+			mrpt::system::sleep(10);
+
+			//COM->purgeBuffers();
+			mrpt::system::sleep(10);
+	
+			switchLaserOff();
+			mrpt::system::sleep(10);
+			//COM->purgeBuffers();			
+		}
+
+		// Enable SCIP 2.0
+		//enableSCIP20();
+	
 	}
 
-	if (!enableSCIP20()) return false;
+	//if (!enableSCIP20()) return false;
 
 	// Turn on the laser:
 	if (!switchLaserOn()) return false;
@@ -359,7 +393,7 @@ bool CHokuyoURG::assureBufferHasBytes(const size_t nDesiredBytes)
 	else
 	{
 		// Try to read more bytes:
-		uint8_t       buf[128];
+		uint8_t       buf[8];
 		const size_t  to_read=std::min(m_rx_buffer.available(),sizeof(buf));
 
 		try
@@ -913,55 +947,115 @@ bool  CHokuyoURG::checkCOMisOpen()
 
 	if (m_stream)
 	{
-		// Has the port been disconected (USB serial ports)??
-		CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-		if (COM!=NULL)
+		// Socket or USB connection?
+		if ( !m_ip_dir.empty() && !m_port_dir.empty() )
 		{
-			if (COM->isOpen())
-				return true;
+			// Has the port been disconected (USB serial ports)??
+			CClientTCPSocket* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
 
-			// It has been disconnected... try to reconnect:
-			cerr << "[CHokuyoURG] Serial port connection lost! Trying to reconnect..." << endl;
+			if (COM!=NULL)
+			{
+				if (COM->isConnected())
+					return true;
 
-			try
-			{
-				COM->open();
-				// OK, reconfigure the laser:
-				turnOn();
-				return true;
+				// It has been disconnected... try to reconnect:
+				cerr << "[CHokuyoURG] Socket connection lost! trying to reconnect..." << endl;
+
+				try
+				{
+					COM->connect(m_ip_dir,atoi(m_port_dir.c_str()));
+					// OK, reconfigure the laser:
+					turnOn();
+					return true;
+				}
+				catch (...)
+				{
+					// Not yet..
+					return false;
+				}
 			}
-			catch (...)
+			else
 			{
-				// Not yet..
-				return false;
-			}
+				return true;		// Assume OK
+			}			
 		}
 		else
 		{
-			return true;		// Assume OK
+			// Has the port been disconected (USB serial ports)??
+			CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
+			if (COM!=NULL)
+			{
+				if (COM->isOpen())
+					return true;
+
+				// It has been disconnected... try to reconnect:
+				cerr << "[CHokuyoURG] Serial port connection lost! Trying to reconnect..." << endl;
+
+				try
+				{
+					COM->open();
+					// OK, reconfigure the laser:
+					turnOn();
+					return true;
+				}
+				catch (...)
+				{
+					// Not yet..
+					return false;
+				}
+			}
+			else
+			{
+				return true;		// Assume OK
+			}
 		}
 	}
 	else
 	{
-		if (m_com_port.empty())
+		if ( m_com_port.empty() && m_ip_dir.empty() && m_port_dir.empty() )
 		{
-			THROW_EXCEPTION("No stream bound to the laser nor COM serial port name provided in 'm_com_port'");
+			THROW_EXCEPTION("No stream bound to the laser nor COM serial port or ip and port provided in 'm_com_port','m_ip_dir' and 'm_port_dir'");
 		}
 
-		// Try to open the serial port:
-		CSerialPort		*theCOM = new CSerialPort(m_com_port, true);
-
-		if (!theCOM->isOpen())
+		if ( !m_ip_dir.empty() && !m_port_dir.empty() )
 		{
-			cerr << "[CHokuyoURG] Cannot open serial port '" << m_com_port << "'" << endl;
-			delete theCOM;
-			return false;
+			// Try to open the serial port:
+			CClientTCPSocket	*theCOM = new CClientTCPSocket();
+
+			theCOM->connect( m_ip_dir, atoi(m_port_dir.c_str()) );
+
+			if (!theCOM->isConnected())
+			{
+				cerr << "[CHokuyoURG] Cannot connect with the server '" << m_com_port << "'" << endl;
+				delete theCOM;
+				return false;
+			}
+
+			// Bind:
+			bindIO( theCOM );
+
+			//m_I_am_owner_serial_port=true;
+
 		}
 
-		// Bind:
-		bindIO( theCOM );
+		else
+		{
+			// Try to open the serial port:
+			CSerialPort		*theCOM = new CSerialPort(m_com_port, true);
 
-		m_I_am_owner_serial_port=true;
+			if (!theCOM->isOpen())
+			{
+				cerr << "[CHokuyoURG] Cannot open serial port '" << m_com_port << "'" << endl;
+				delete theCOM;
+				return false;
+			}
+
+			// Bind:
+			bindIO( theCOM );
+
+			m_I_am_owner_serial_port=true;
+
+		}
 
 		return true;
 	}
