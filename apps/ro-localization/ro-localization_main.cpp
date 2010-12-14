@@ -547,16 +547,10 @@ void TestParticlesLocalization()
 					parts->setName( "part");
 					parts->enableColorFromZ(false);
 
-					parts->getArrayX().resize( pdf.size() );
-					parts->getArrayY().resize( pdf.size() );
-					parts->getArrayZ().resize( pdf.size(), 0.05f );
+					parts->resize( pdf.size() );
 
 					for (size_t i=0;i<pdf.size();i++)
-					{
-						parts->getArrayX()[i] = pdf.m_particles[i].d->pose.x();
-						parts->getArrayY()[i] = pdf.m_particles[i].d->pose.y();
-						parts->getArrayZ()[i] = 0;
-					}
+						parts->setPoint(i,pdf.m_particles[i].d->pose.x(),pdf.m_particles[i].d->pose.y(), 0);
 
 					if( !obj.present() )
 					{

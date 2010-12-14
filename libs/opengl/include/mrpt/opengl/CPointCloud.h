@@ -47,9 +47,8 @@ namespace mrpt
 		  *
 		  *  To load from a points-map, CPointCloud::loadFromPointsMap().
 		  *
-		  *   This class uses two smart optimizations while rendering to efficiently draw clouds of millions of points:
-		  *		- It uses octrees to avoid drawing parts of the point cloud out of the screen.
-		  *		- For each visible octree node (a 3D cube), it decimates the points if the density of points per square pixel is above a given limit (See mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL).
+		  *   This class uses smart optimizations while rendering to efficiently draw clouds of millions of points, 
+		  *   as described in this page: http://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
 		  *
 		  *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene, opengl::CPointCloudColoured, mrpt::slam::CPointsMap
 		  *
@@ -94,6 +93,16 @@ namespace mrpt
 				m_xs = x;
 				m_ys = y;
 				m_zs = z;
+				markAllPointsAsNew();
+			}
+
+			/** Set the list of (X,Y,Z) point coordinates, DESTROYING the contents of the input vectors (via swap) */
+			void setAllPointsFast(std::vector<float> &x, std::vector<float> &y, std::vector<float> &z)
+			{
+				this->clear();
+				m_xs.swap(x);
+				m_ys.swap(y);
+				m_zs.swap(z);
 				markAllPointsAsNew();
 			}
 

@@ -109,6 +109,7 @@ class _DSceneViewerFrame: public wxFrame
         void OnMenuCameraTrackingArbitrary(wxCommandEvent& event);
         void OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event);
         void OnmnuItemChangeMaxPointsPerOctreeNodeSelected(wxCommandEvent& event);
+        void OnmnuSceneStatsSelected(wxCommandEvent& event);
         //*)
 
 		void OntimAutoplay(wxTimerEvent& event);
@@ -119,6 +120,7 @@ class _DSceneViewerFrame: public wxFrame
         static const long ID_MENUITEM5;
         static const long ID_MENUITEM7;
         static const long ID_MENUITEM12;
+        static const long ID_MENUITEM18;
         static const long idMenuQuit;
         static const long ID_MENUITEM4;
         static const long ID_MENUITEM3;
@@ -153,33 +155,33 @@ class _DSceneViewerFrame: public wxFrame
         static const long ID_TIMER_AUTOPLAY;
 
         //(*Declarations(_DSceneViewerFrame)
-        wxMenu* MenuItem11;
-        wxToolBarToolBase* ToolBarItem5;
-        wxStatusBar* StatusBar1;
-        wxMenuItem* MenuItem16;
-        wxToolBarToolBase* ToolBarItem11;
-        wxToolBarToolBase* ToolBarItem6;
-        wxMenu* Menu3;
-        wxToolBarToolBase* btnAutoplay;
-        wxTimer timLoadFileCmdLine;
-        wxToolBarToolBase* ToolBarItem2;
-        wxMenuItem* mnuItemShowCloudOctrees;
-        wxMenuItem* MenuItem9;
-        wxToolBarToolBase* ToolBarItem10;
         wxToolBarToolBase* btnOrtho;
-        wxToolBar* ToolBar1;
-        wxMenuItem* mnuItemChangeMaxPointsPerOctreeNode;
         wxToolBarToolBase* ToolBarItem4;
-        wxMenuItem* MenuItem5;
-        wxToolBarToolBase* ToolBarItem1;
-        wxMenu* MenuItem17;
-        wxMenuItem* MenuItem10;
-        wxToolBarToolBase* btnRecord;
-        wxToolBarToolBase* ToolBarItem3;
-        wxMenuItem* MenuItem6;
-        wxMenuItem* MenuItem7;
         wxMenuItem* MenuItem8;
+        wxToolBar* ToolBar1;
+        wxMenuItem* MenuItem7;
+        wxToolBarToolBase* ToolBarItem3;
+        wxMenuItem* MenuItem5;
+        wxToolBarToolBase* ToolBarItem11;
+        wxToolBarToolBase* btnRecord;
+        wxToolBarToolBase* btnAutoplay;
+        wxMenu* Menu3;
+        wxToolBarToolBase* ToolBarItem10;
         wxMenuItem* MenuItem14;
+        wxMenuItem* mnuItemChangeMaxPointsPerOctreeNode;
+        wxMenuItem* MenuItem10;
+        wxToolBarToolBase* ToolBarItem6;
+        wxToolBarToolBase* ToolBarItem1;
+        wxStatusBar* StatusBar1;
+        wxMenuItem* MenuItem6;
+        wxToolBarToolBase* ToolBarItem5;
+        wxTimer timLoadFileCmdLine;
+        wxMenuItem* MenuItem16;
+        wxMenuItem* MenuItem9;
+        wxMenuItem* mnuItemShowCloudOctrees;
+        wxToolBarToolBase* ToolBarItem2;
+        wxMenu* MenuItem11;
+        wxMenu* MenuItem17;
         //*)
 
 		CMyGLCanvas	*m_canvas;

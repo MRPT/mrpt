@@ -64,7 +64,7 @@ namespace mrpt
 		using namespace mrpt::utils;
 
 		/** Template class that implements the data structure and algorithms for Octree-based efficient rendering.
-		  *  \sa mrpt::opengl::CPointCloud, mrpt::opengl::CPointCloudColoured
+		  *  \sa mrpt::opengl::CPointCloud, mrpt::opengl::CPointCloudColoured, http://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
 		  */
 		template <class Derived>
 		class COctreePointRenderer
@@ -74,9 +74,7 @@ namespace mrpt
 			COctreePointRenderer() :
 				m_octree_has_to_rebuild_all(true),
 				m_visible_octree_nodes(0),
-				m_visible_octree_nodes_ongoing(0),
-				m_nonempty_nodes(0),
-				m_nonempty_nodes_ongoing(0)
+				m_visible_octree_nodes_ongoing(0)
 			{ }
 
 			/** Copy ctor */
@@ -104,14 +102,12 @@ namespace mrpt
 			void octree_render(const mrpt::opengl::CRenderizable::TRenderInfo &ri ) const
 			{
 				m_visible_octree_nodes_ongoing = 0;
-				m_nonempty_nodes_ongoing       = 0;
-
+				
 				TPixelCoordf cr_px[8];
 				float        cr_z[8];
 				octree_recursive_render(OCTREE_ROOT_NODE,ri, cr_px, cr_z, false /* corners are not computed for this first iteration */ );
 
 				m_visible_octree_nodes = m_visible_octree_nodes_ongoing;
-				m_nonempty_nodes       = m_nonempty_nodes_ongoing;
 			}
 
 		private:
@@ -202,7 +198,6 @@ namespace mrpt
 
 			// Counters of visible octrees for each render:
 			volatile mutable size_t m_visible_octree_nodes, m_visible_octree_nodes_ongoing;
-			volatile mutable size_t m_nonempty_nodes, m_nonempty_nodes_ongoing;
 
 			/** Render a given node. */
 			void octree_recursive_render(
@@ -210,7 +205,9 @@ namespace mrpt
 				const mrpt::opengl::CRenderizable::TRenderInfo &ri,
 				TPixelCoordf cr_px[8],
 				float        cr_z[8],
-				bool         corners_are_all_computed = true
+				bool         corners_are_all_computed = true,
+				bool         trust_me_youre_visible   = false,
+				float        approx_area_sqpixels     = 0
 				) const
 			{
 				const TNode &node = m_octree_nodes[node_idx];
@@ -226,16 +223,24 @@ namespace mrpt
 					}
 				}
 
-				// If all "Z"'s are negative, the entire node's box is BEHIND the image plane:
-				if (cr_z[0]<0 &&cr_z[1]<0 &&cr_z[2]<0 &&cr_z[3]<0 &&cr_z[4]<0 &&cr_z[5]<0 &&cr_z[6]<0 &&cr_z[7]<0)
-					return;		// Stop recursion.
-
-				// Keep the on-screen bounding box of this node:
 				TPixelCoordf px_min( std::numeric_limits<float>::max(),std::numeric_limits<float>::max()), px_max(-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max());
-				for (int i=0;i<8;i++)
+				if (!trust_me_youre_visible)
 				{
-					keep_min(px_min.x,cr_px[i].x); keep_min(px_min.y,cr_px[i].y);
-					keep_max(px_max.x,cr_px[i].x); keep_max(px_max.y,cr_px[i].y);
+					// Keep the on-screen bounding box of this node:
+					for (int i=0;i<8;i++)
+					{
+						keep_min(px_min.x,cr_px[i].x); keep_min(px_min.y,cr_px[i].y);
+						keep_max(px_max.x,cr_px[i].x); keep_max(px_max.y,cr_px[i].y);
+					}
+					
+					const bool any_cr_zs_neg = (cr_z[0]<0 ||cr_z[1]<0 ||cr_z[2]<0 ||cr_z[3]<0 ||cr_z[4]<0 ||cr_z[5]<0 ||cr_z[6]<0 ||cr_z[7]<0);
+					const bool any_cr_zs_pos = (cr_z[0]>0 ||cr_z[1]>0 ||cr_z[2]>0 ||cr_z[3]>0 ||cr_z[4]>0 ||cr_z[5]>0 ||cr_z[6]>0 ||cr_z[7]>0);
+					const bool box_crosses_image_plane = any_cr_zs_neg && any_cr_zs_neg;
+
+					// If all 8 corners are way out of the screen (and all "cr_z" have the same sign),
+					// this node and all the children are not visible:
+					if (!box_crosses_image_plane && ( px_min.x>=ri.vp_width || px_min.y>=ri.vp_height || px_max.x<0 || px_max.y<0) )
+						return; // Not visible
 				}
 
 				// Check if the node has points and is visible:
@@ -243,131 +248,148 @@ namespace mrpt
 				{	// Render this leaf node:
 					if (node.all || !node.pts.empty())
 					{
-						m_nonempty_nodes_ongoing++;
+						// If we are here, it seems at least a part of the Box is visible:
+						m_visible_octree_nodes_ongoing++;
 
-						// Check visibility of the node:
-						// 1) If the eye is within the box, go on:
-						bool is_visible =
-								ri.camera_position.x>node.bb_min.x && ri.camera_position.x<node.bb_max.x &&
-								ri.camera_position.y>node.bb_min.y && ri.camera_position.y<node.bb_max.y &&
-								ri.camera_position.z>node.bb_min.z && ri.camera_position.z<node.bb_max.z;
+						const float render_area_sqpixels = trust_me_youre_visible ? 
+							approx_area_sqpixels 
+							: 							
+							std::abs(px_min.x-px_max.x) * std::abs(px_min.y-px_max.y);
 
-						// 2) Is at least a part of the octree node WITHIN the image?
-						if (!is_visible)
-							is_visible = !( px_min.x>=ri.vp_width || px_min.y>=ri.vp_height || px_max.x<0 || px_max.y<0);
-
-						if (is_visible)
-						{
-							m_visible_octree_nodes_ongoing++;
-
-							const float render_area_sqpixels = std::abs(px_min.x-px_max.x) * std::abs(px_min.y-px_max.y);
-							octree_derived().render_subset(node.all,node.pts,render_area_sqpixels);
-						}
+						octree_derived().render_subset(node.all,node.pts,render_area_sqpixels);
 					}
 				}
 				else
 				{	// Render children nodes:
-					// If ALL my 8 corners are invisible, stop recursion:
-					if ( px_min.x>=ri.vp_width || px_min.y>=ri.vp_height || px_max.x<0 || px_max.y<0)
-						return;
+					// If ALL my 8 corners are within the screen, tell our children that they 
+					//  won't need to compute anymore, since all of them and their children are visible as well:
+					bool children_are_all_visible_for_sure = true;
 
-					// Precompute the 19 (3*9-8) intermediary points so children don't have to compute them several times:
-					const TPoint3Df p_Xm_Ym_Zm ( node.bb_min.x, node.bb_min.y, node.bb_min.z ); // 0
-					const TPoint3Df p_X0_Ym_Zm ( node.center.x, node.bb_min.y, node.bb_min.z );
-					const TPoint3Df p_Xp_Ym_Zm ( node.bb_max.x, node.bb_min.y, node.bb_min.z ); // 1
-					const TPoint3Df p_Xm_Y0_Zm ( node.bb_min.x, node.center.y, node.bb_min.z );
-					const TPoint3Df p_X0_Y0_Zm ( node.center.x, node.center.y, node.bb_min.z );
-					const TPoint3Df p_Xp_Y0_Zm ( node.bb_max.x, node.center.y, node.bb_min.z );
-					const TPoint3Df p_Xm_Yp_Zm ( node.bb_min.x, node.bb_max.y, node.bb_min.z ); // 2
-					const TPoint3Df p_X0_Yp_Zm ( node.center.x, node.bb_max.y, node.bb_min.z );
-					const TPoint3Df p_Xp_Yp_Zm ( node.bb_max.x, node.bb_max.y, node.bb_min.z ); // 3
-
-					const TPoint3Df p_Xm_Ym_Z0 ( node.bb_min.x, node.bb_min.y, node.center.z );
-					const TPoint3Df p_X0_Ym_Z0 ( node.center.x, node.bb_min.y, node.center.z );
-					const TPoint3Df p_Xp_Ym_Z0 ( node.bb_max.x, node.bb_min.y, node.center.z );
-					const TPoint3Df p_Xm_Y0_Z0 ( node.bb_min.x, node.center.y, node.center.z );
-					const TPoint3Df p_X0_Y0_Z0 ( node.center.x, node.center.y, node.center.z );
-					const TPoint3Df p_Xp_Y0_Z0 ( node.bb_max.x, node.center.y, node.center.z );
-					const TPoint3Df p_Xm_Yp_Z0 ( node.bb_min.x, node.bb_max.y, node.center.z );
-					const TPoint3Df p_X0_Yp_Z0 ( node.center.x, node.bb_max.y, node.center.z );
-					const TPoint3Df p_Xp_Yp_Z0 ( node.bb_max.x, node.bb_max.y, node.center.z );
-
-					const TPoint3Df p_Xm_Ym_Zp ( node.bb_min.x, node.bb_min.y, node.bb_max.z ); // 4
-					const TPoint3Df p_X0_Ym_Zp ( node.center.x, node.bb_min.y, node.bb_max.z );
-					const TPoint3Df p_Xp_Ym_Zp ( node.bb_min.x, node.bb_min.y, node.bb_max.z ); // 5
-					const TPoint3Df p_Xm_Y0_Zp ( node.bb_min.x, node.center.y, node.bb_max.z );
-					const TPoint3Df p_X0_Y0_Zp ( node.center.x, node.center.y, node.bb_max.z );
-					const TPoint3Df p_Xp_Y0_Zp ( node.bb_max.x, node.center.y, node.bb_max.z );
-					const TPoint3Df p_Xm_Yp_Zp ( node.bb_min.x, node.bb_max.y, node.bb_max.z ); // 6
-					const TPoint3Df p_X0_Yp_Zp ( node.center.x, node.bb_max.y, node.bb_max.z );
-					const TPoint3Df p_Xp_Yp_Zp ( node.bb_max.x, node.bb_max.y, node.bb_max.z ); // 7
-
-					// Project all these points:
-#define PROJ_SUB_NODE(POSTFIX) \
-					TPixelCoordf px_##POSTFIX; \
-					float        depth_##POSTFIX; \
-					ri.projectPointPixels( p_##POSTFIX.x, p_##POSTFIX.y, p_##POSTFIX.z, px_##POSTFIX.x,px_##POSTFIX.y,depth_##POSTFIX);
-
-#define PROJ_SUB_NODE_ALREADY_DONE(INDEX, POSTFIX) \
-					const TPixelCoordf px_##POSTFIX = cr_px[INDEX]; \
-					float        depth_##POSTFIX = cr_z[INDEX];
-
-					PROJ_SUB_NODE_ALREADY_DONE(0,Xm_Ym_Zm)
-					PROJ_SUB_NODE(X0_Ym_Zm)
-					PROJ_SUB_NODE_ALREADY_DONE(1, Xp_Ym_Zm)
-
-					PROJ_SUB_NODE(Xm_Y0_Zm)
-					PROJ_SUB_NODE(X0_Y0_Zm)
-					PROJ_SUB_NODE(Xp_Y0_Zm)
-
-					PROJ_SUB_NODE_ALREADY_DONE(2, Xm_Yp_Zm)
-					PROJ_SUB_NODE(X0_Yp_Zm)
-					PROJ_SUB_NODE_ALREADY_DONE(3, Xp_Yp_Zm)
-
-					PROJ_SUB_NODE(Xm_Ym_Z0)
-					PROJ_SUB_NODE(X0_Ym_Z0)
-					PROJ_SUB_NODE(Xp_Ym_Z0)
-					PROJ_SUB_NODE(Xm_Y0_Z0)
-					PROJ_SUB_NODE(X0_Y0_Z0)
-					PROJ_SUB_NODE(Xp_Y0_Z0)
-					PROJ_SUB_NODE(Xm_Yp_Z0)
-					PROJ_SUB_NODE(X0_Yp_Z0)
-					PROJ_SUB_NODE(Xp_Yp_Z0)
-
-					PROJ_SUB_NODE_ALREADY_DONE(4, Xm_Ym_Zp)
-					PROJ_SUB_NODE(X0_Ym_Zp)
-					PROJ_SUB_NODE_ALREADY_DONE(5, Xp_Ym_Zp)
-
-					PROJ_SUB_NODE(Xm_Y0_Zp)
-					PROJ_SUB_NODE(X0_Y0_Zp)
-					PROJ_SUB_NODE(Xp_Y0_Zp)
-
-					PROJ_SUB_NODE_ALREADY_DONE(6, Xm_Yp_Zp)
-					PROJ_SUB_NODE(X0_Yp_Zp)
-					PROJ_SUB_NODE_ALREADY_DONE(7, Xp_Yp_Zp)
-
-					// Recursive call children nodes:
-#define DO_RECURSE_CHILD(INDEX, SEQ0,SEQ1,SEQ2,SEQ3,SEQ4,SEQ5,SEQ6,SEQ7) \
-					{ \
-						TPixelCoordf child_cr_px[8] = { px_##SEQ0,px_##SEQ1,px_##SEQ2,px_##SEQ3,px_##SEQ4,px_##SEQ5,px_##SEQ6,px_##SEQ7 }; \
-						float        child_cr_z[8]  = { depth_##SEQ0,depth_##SEQ1,depth_##SEQ2,depth_##SEQ3,depth_##SEQ4,depth_##SEQ5,depth_##SEQ6,depth_##SEQ7 }; \
-						this->octree_recursive_render(node.child_id[INDEX],ri,child_cr_px, child_cr_z); \
+					if (!trust_me_youre_visible) // Trust my parent... otherwise:
+					{
+						for (int i=0;i<8;i++) 
+						{
+							if (!( cr_px[i].x>=0 && cr_px[i].y>=0 && cr_px[i].x<ri.vp_width && cr_px[i].y<ri.vp_height ))
+							{
+								children_are_all_visible_for_sure = false;
+								break;
+							}
+						}
 					}
 
-					//                     0         1         2         3          4         5        6         7
-					DO_RECURSE_CHILD(0, Xm_Ym_Zm, X0_Ym_Zm, Xm_Y0_Zm, X0_Y0_Zm, Xm_Ym_Z0, X0_Ym_Z0, Xm_Y0_Z0, X0_Y0_Z0 )
-					DO_RECURSE_CHILD(1, X0_Ym_Zm, Xp_Ym_Zm, X0_Y0_Zm, Xp_Y0_Zm, X0_Ym_Z0, Xp_Ym_Z0, X0_Y0_Z0, Xp_Y0_Z0 )
-					DO_RECURSE_CHILD(2, Xm_Y0_Zm, X0_Y0_Zm, Xm_Yp_Zm, X0_Yp_Zm, Xm_Y0_Z0, X0_Y0_Z0, Xm_Yp_Z0, X0_Yp_Z0 )
-					DO_RECURSE_CHILD(3, X0_Y0_Zm, Xp_Y0_Zm, X0_Yp_Zm, Xp_Yp_Zm, X0_Y0_Z0, Xp_Y0_Z0, X0_Yp_Z0, Xp_Yp_Z0 )
-					DO_RECURSE_CHILD(4, Xm_Ym_Z0, X0_Ym_Z0, Xm_Y0_Z0, X0_Y0_Z0, Xm_Ym_Zp, X0_Ym_Zp, Xm_Y0_Zp, X0_Y0_Zp )
-					DO_RECURSE_CHILD(5, X0_Ym_Z0, Xp_Ym_Z0, X0_Y0_Z0, Xp_Y0_Z0, X0_Ym_Zp, Xp_Ym_Zp, X0_Y0_Zp, Xp_Y0_Zp )
-					DO_RECURSE_CHILD(6, Xm_Y0_Z0, X0_Y0_Z0, Xm_Yp_Z0, X0_Yp_Z0, Xm_Y0_Zp, X0_Y0_Zp, Xm_Yp_Zp, X0_Yp_Zp )
-					DO_RECURSE_CHILD(7, X0_Y0_Z0, Xp_Y0_Z0, X0_Yp_Z0, Xp_Yp_Z0, X0_Y0_Zp, Xp_Y0_Zp, X0_Yp_Zp, Xp_Yp_Zp )
+					// If all children are visible, it's easy:
+					if (children_are_all_visible_for_sure)
+					{
+						TPixelCoordf child_cr_px[8]; // No need to initialize
+						float        child_cr_z[8];  // No need to initialize
+						
+						// Approximate area of the children nodes:
+						const float approx_child_area = trust_me_youre_visible ?
+							approx_area_sqpixels/8.0f 
+							:
+							std::abs(px_min.x-px_max.x) * std::abs(px_min.y-px_max.y) / 8.0f;
 
+						for (int i=0;i<8;i++)
+							this->octree_recursive_render(node.child_id[i],ri,child_cr_px, child_cr_z, true,  true, approx_child_area); \
+					}
+					else
+					{
+						// Precompute the 19 (3*9-8) intermediary points so children don't have to compute them several times:
+						const TPoint3Df p_Xm_Ym_Zm ( node.bb_min.x, node.bb_min.y, node.bb_min.z ); // 0
+						const TPoint3Df p_X0_Ym_Zm ( node.center.x, node.bb_min.y, node.bb_min.z );
+						const TPoint3Df p_Xp_Ym_Zm ( node.bb_max.x, node.bb_min.y, node.bb_min.z ); // 1
+						const TPoint3Df p_Xm_Y0_Zm ( node.bb_min.x, node.center.y, node.bb_min.z );
+						const TPoint3Df p_X0_Y0_Zm ( node.center.x, node.center.y, node.bb_min.z );
+						const TPoint3Df p_Xp_Y0_Zm ( node.bb_max.x, node.center.y, node.bb_min.z );
+						const TPoint3Df p_Xm_Yp_Zm ( node.bb_min.x, node.bb_max.y, node.bb_min.z ); // 2
+						const TPoint3Df p_X0_Yp_Zm ( node.center.x, node.bb_max.y, node.bb_min.z );
+						const TPoint3Df p_Xp_Yp_Zm ( node.bb_max.x, node.bb_max.y, node.bb_min.z ); // 3
+
+						const TPoint3Df p_Xm_Ym_Z0 ( node.bb_min.x, node.bb_min.y, node.center.z );
+						const TPoint3Df p_X0_Ym_Z0 ( node.center.x, node.bb_min.y, node.center.z );
+						const TPoint3Df p_Xp_Ym_Z0 ( node.bb_max.x, node.bb_min.y, node.center.z );
+						const TPoint3Df p_Xm_Y0_Z0 ( node.bb_min.x, node.center.y, node.center.z );
+						const TPoint3Df p_X0_Y0_Z0 ( node.center.x, node.center.y, node.center.z );
+						const TPoint3Df p_Xp_Y0_Z0 ( node.bb_max.x, node.center.y, node.center.z );
+						const TPoint3Df p_Xm_Yp_Z0 ( node.bb_min.x, node.bb_max.y, node.center.z );
+						const TPoint3Df p_X0_Yp_Z0 ( node.center.x, node.bb_max.y, node.center.z );
+						const TPoint3Df p_Xp_Yp_Z0 ( node.bb_max.x, node.bb_max.y, node.center.z );
+
+						const TPoint3Df p_Xm_Ym_Zp ( node.bb_min.x, node.bb_min.y, node.bb_max.z ); // 4
+						const TPoint3Df p_X0_Ym_Zp ( node.center.x, node.bb_min.y, node.bb_max.z );
+						const TPoint3Df p_Xp_Ym_Zp ( node.bb_min.x, node.bb_min.y, node.bb_max.z ); // 5
+						const TPoint3Df p_Xm_Y0_Zp ( node.bb_min.x, node.center.y, node.bb_max.z );
+						const TPoint3Df p_X0_Y0_Zp ( node.center.x, node.center.y, node.bb_max.z );
+						const TPoint3Df p_Xp_Y0_Zp ( node.bb_max.x, node.center.y, node.bb_max.z );
+						const TPoint3Df p_Xm_Yp_Zp ( node.bb_min.x, node.bb_max.y, node.bb_max.z ); // 6
+						const TPoint3Df p_X0_Yp_Zp ( node.center.x, node.bb_max.y, node.bb_max.z );
+						const TPoint3Df p_Xp_Yp_Zp ( node.bb_max.x, node.bb_max.y, node.bb_max.z ); // 7
+
+						// Project all these points:
+#define PROJ_SUB_NODE(POSTFIX) \
+						TPixelCoordf px_##POSTFIX; \
+						float        depth_##POSTFIX; \
+						ri.projectPointPixels( p_##POSTFIX.x, p_##POSTFIX.y, p_##POSTFIX.z, px_##POSTFIX.x,px_##POSTFIX.y,depth_##POSTFIX);
+
+#define PROJ_SUB_NODE_ALREADY_DONE(INDEX, POSTFIX) \
+						const TPixelCoordf px_##POSTFIX = cr_px[INDEX]; \
+						float        depth_##POSTFIX = cr_z[INDEX];
+
+						PROJ_SUB_NODE_ALREADY_DONE(0,Xm_Ym_Zm)
+						PROJ_SUB_NODE(X0_Ym_Zm)
+						PROJ_SUB_NODE_ALREADY_DONE(1, Xp_Ym_Zm)
+
+						PROJ_SUB_NODE(Xm_Y0_Zm)
+						PROJ_SUB_NODE(X0_Y0_Zm)
+						PROJ_SUB_NODE(Xp_Y0_Zm)
+
+						PROJ_SUB_NODE_ALREADY_DONE(2, Xm_Yp_Zm)
+						PROJ_SUB_NODE(X0_Yp_Zm)
+						PROJ_SUB_NODE_ALREADY_DONE(3, Xp_Yp_Zm)
+
+						PROJ_SUB_NODE(Xm_Ym_Z0)
+						PROJ_SUB_NODE(X0_Ym_Z0)
+						PROJ_SUB_NODE(Xp_Ym_Z0)
+						PROJ_SUB_NODE(Xm_Y0_Z0)
+						PROJ_SUB_NODE(X0_Y0_Z0)
+						PROJ_SUB_NODE(Xp_Y0_Z0)
+						PROJ_SUB_NODE(Xm_Yp_Z0)
+						PROJ_SUB_NODE(X0_Yp_Z0)
+						PROJ_SUB_NODE(Xp_Yp_Z0)
+
+						PROJ_SUB_NODE_ALREADY_DONE(4, Xm_Ym_Zp)
+						PROJ_SUB_NODE(X0_Ym_Zp)
+						PROJ_SUB_NODE_ALREADY_DONE(5, Xp_Ym_Zp)
+
+						PROJ_SUB_NODE(Xm_Y0_Zp)
+						PROJ_SUB_NODE(X0_Y0_Zp)
+						PROJ_SUB_NODE(Xp_Y0_Zp)
+
+						PROJ_SUB_NODE_ALREADY_DONE(6, Xm_Yp_Zp)
+						PROJ_SUB_NODE(X0_Yp_Zp)
+						PROJ_SUB_NODE_ALREADY_DONE(7, Xp_Yp_Zp)
+
+						// Recursive call children nodes:
+#define DO_RECURSE_CHILD(INDEX, SEQ0,SEQ1,SEQ2,SEQ3,SEQ4,SEQ5,SEQ6,SEQ7) \
+						{ \
+							TPixelCoordf child_cr_px[8] = { px_##SEQ0,px_##SEQ1,px_##SEQ2,px_##SEQ3,px_##SEQ4,px_##SEQ5,px_##SEQ6,px_##SEQ7 }; \
+							float        child_cr_z[8]  = { depth_##SEQ0,depth_##SEQ1,depth_##SEQ2,depth_##SEQ3,depth_##SEQ4,depth_##SEQ5,depth_##SEQ6,depth_##SEQ7 }; \
+							this->octree_recursive_render(node.child_id[INDEX],ri,child_cr_px, child_cr_z); \
+						}
+
+						//                     0         1         2         3          4         5        6         7
+						DO_RECURSE_CHILD(0, Xm_Ym_Zm, X0_Ym_Zm, Xm_Y0_Zm, X0_Y0_Zm, Xm_Ym_Z0, X0_Ym_Z0, Xm_Y0_Z0, X0_Y0_Z0 )
+						DO_RECURSE_CHILD(1, X0_Ym_Zm, Xp_Ym_Zm, X0_Y0_Zm, Xp_Y0_Zm, X0_Ym_Z0, Xp_Ym_Z0, X0_Y0_Z0, Xp_Y0_Z0 )
+						DO_RECURSE_CHILD(2, Xm_Y0_Zm, X0_Y0_Zm, Xm_Yp_Zm, X0_Yp_Zm, Xm_Y0_Z0, X0_Y0_Z0, Xm_Yp_Z0, X0_Yp_Z0 )
+						DO_RECURSE_CHILD(3, X0_Y0_Zm, Xp_Y0_Zm, X0_Yp_Zm, Xp_Yp_Zm, X0_Y0_Z0, Xp_Y0_Z0, X0_Yp_Z0, Xp_Yp_Z0 )
+						DO_RECURSE_CHILD(4, Xm_Ym_Z0, X0_Ym_Z0, Xm_Y0_Z0, X0_Y0_Z0, Xm_Ym_Zp, X0_Ym_Zp, Xm_Y0_Zp, X0_Y0_Zp )
+						DO_RECURSE_CHILD(5, X0_Ym_Z0, Xp_Ym_Z0, X0_Y0_Z0, Xp_Y0_Z0, X0_Ym_Zp, Xp_Ym_Zp, X0_Y0_Zp, Xp_Y0_Zp )
+						DO_RECURSE_CHILD(6, Xm_Y0_Z0, X0_Y0_Z0, Xm_Yp_Z0, X0_Yp_Z0, Xm_Y0_Zp, X0_Y0_Zp, Xm_Yp_Zp, X0_Yp_Zp )
+						DO_RECURSE_CHILD(7, X0_Y0_Z0, Xp_Y0_Z0, X0_Yp_Z0, Xp_Yp_Z0, X0_Y0_Zp, Xp_Y0_Zp, X0_Yp_Zp, Xp_Yp_Zp )
 #undef DO_RECURSE_CHILD
 #undef PROJ_SUB_NODE
 #undef PROJ_SUB_NODE_ALREADY_DONE
-
+					} // end "children_are_all_visible_for_sure"=false
 				}
 			}
 
@@ -496,9 +518,6 @@ namespace mrpt
 
 			/** Return the number of octree nodes (all of them, including the empty ones) \sa octree_get_nonempty_node_count */
 			size_t octree_get_node_count() const { return m_octree_nodes.size(); }
-
-			/** Return the number of non-empty octree nodes (those having at least one rendering element) */
-			size_t octree_get_nonempty_node_count() const { return m_nonempty_nodes; }
 
 			/** Return the number of visible octree nodes in the last render event. */
 			size_t octree_get_visible_nodes() const { return m_visible_octree_nodes; }

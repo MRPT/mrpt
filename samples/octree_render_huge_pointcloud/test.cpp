@@ -198,7 +198,7 @@ void TestOctreeRenderHugePointCloud()
 			(double)gl_pointcloud->size(),
 			100*double(gl_pointcloud->getActuallyRendered())/double(gl_pointcloud->size()),
 			(unsigned int)gl_pointcloud->octree_get_visible_nodes(),
-			(unsigned int)gl_pointcloud->octree_get_nonempty_node_count()
+			(unsigned int)gl_pointcloud->octree_get_node_count()
 			);
 
 		win.get3DSceneAndLock();

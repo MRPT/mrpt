@@ -163,10 +163,8 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 	winGPSPath = CDisplayWindow3D::Create(format("GPS path, %i points (%s) %.03f meters length", int(M), the_label.c_str(), overall_distance ) );
 
 	COpenGLScene scene;
-	CPointCloudPtr  gl_path = CPointCloudPtr( CPointCloud::Create() );
-	gl_path->getArrayX() = xs;
-	gl_path->getArrayY() = ys;
-	gl_path->getArrayZ() = zs;
+	CPointCloudPtr  gl_path = CPointCloud::Create();
+	gl_path->setAllPoints(xs,ys,zs);
 	gl_path->setColor(0,0,1);
 
 	gl_path->setPointSize(3);

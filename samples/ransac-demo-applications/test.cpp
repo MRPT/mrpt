@@ -123,9 +123,13 @@ void TestRANSACPlanes()
 		points->setPointSize(3);
 		points->enableColorFromZ();
 
-		metaprogramming::copy_container_typecasting(xs,points->getArrayX());
-		metaprogramming::copy_container_typecasting(ys,points->getArrayY());
-		metaprogramming::copy_container_typecasting(zs,points->getArrayZ());
+		// Convert double -> float:
+		vector<float> xsf,ysf,zsf;
+		metaprogramming::copy_container_typecasting(xs,xsf);
+		metaprogramming::copy_container_typecasting(ys,ysf);
+		metaprogramming::copy_container_typecasting(zs,zsf);
+
+		points->setAllPoints(xsf,ysf,zsf);
 
 		scene->insert( points );
 	}

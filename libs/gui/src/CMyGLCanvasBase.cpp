@@ -228,9 +228,9 @@ CMyGLCanvasBase::CMyGLCanvasBase(wxWindow *parent, wxWindowID id,const wxPoint& 
     cameraElevationDeg 	= 45;
     cameraAzimuthDeg	= 45;
 
-    clearColorR 		= 0.1f;
-    clearColorG			= 0.1f;
-    clearColorB			= 0.1f;
+    clearColorR 		= 0.4f;
+    clearColorG			= 0.4f;
+    clearColorB			= 0.4f;
 
 
     Connect(wxID_ANY,wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CMyGLCanvasBase::OnLeftDown);

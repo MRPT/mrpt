@@ -31,12 +31,12 @@
 #include <wx/app.h>
 
 //(*InternalHeaders(_DSceneViewerFrame)
-#include <wx/string.h>
-#include <wx/intl.h>
+#include <wx/artprov.h>
 #include <wx/bitmap.h>
 #include <wx/icon.h>
+#include <wx/intl.h>
 #include <wx/image.h>
-#include <wx/artprov.h>
+#include <wx/string.h>
 //*)
 
 #include "CDialogOptions.h"
@@ -309,6 +309,7 @@ const long _DSceneViewerFrame::ID_MENUITEM2 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM5 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM7 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM12 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM18 = wxNewId();
 const long _DSceneViewerFrame::idMenuQuit = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM4 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM3 = wxNewId();
@@ -369,20 +370,21 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     wxMenuItem* MenuItem2;
     wxMenu* MenuItem15;
     wxMenuItem* MenuItem1;
+    wxMenuItem* MenuItem4;
+    wxMenuItem* MenuItem13;
     wxMenu* Menu1;
     wxMenuItem* MenuItem12;
     wxMenuItem* MenuItem3;
+    wxMenuItem* mnuSceneStats;
     wxMenuBar* MenuBar1;
-    wxMenuItem* MenuItem4;
-    wxMenuItem* MenuItem13;
     wxMenu* Menu2;
-
+    
     Create(parent, id, _("3DSceneViewer - Part of the MRPT project - Jose Luis Blanco (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetClientSize(wxSize(672,539));
     {
-    wxIcon FrameIcon;
-    FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
-    SetIcon(FrameIcon);
+    	wxIcon FrameIcon;
+    	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
+    	SetIcon(FrameIcon);
     }
     MenuBar1 = new wxMenuBar();
     Menu1 = new wxMenu();
@@ -397,6 +399,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     Menu1->AppendSeparator();
     MenuItem14 = new wxMenuItem(Menu1, ID_MENUITEM12, _("Take snapshot...\tF2"), _("Saves the current window image to a file"), wxITEM_NORMAL);
     Menu1->Append(MenuItem14);
+    mnuSceneStats = new wxMenuItem(Menu1, ID_MENUITEM18, _("Scene stats..."), wxEmptyString, wxITEM_NORMAL);
+    Menu1->Append(mnuSceneStats);
     Menu1->AppendSeparator();
     MenuItem1 = new wxMenuItem(Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
     Menu1->Append(MenuItem1);
@@ -461,12 +465,13 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     timLoadFileCmdLine.SetOwner(this, ID_TIMER1);
     timLoadFileCmdLine.Start(50, true);
     Center();
-
+    
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
     Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
     Connect(ID_MENUITEM5,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnReload);
     Connect(ID_MENUITEM7,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuSave);
     Connect(ID_MENUITEM12,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItem14Selected);
+    Connect(ID_MENUITEM18,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSceneStatsSelected);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnQuit);
     Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuBackColor);
     Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuOptions);
@@ -1140,6 +1145,9 @@ void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(wxCommand
 		// Redo the octrees:
 		clear_all_octrees_in_scene();
 		Refresh(false);
+		
+		wxCommandEvent dumm;  // Redraw bounding-boxes:
+		OnmnuItemShowCloudOctreesSelected(dumm);
 	}
 	else
 		wxMessageBox(_("Invalid number!"));
@@ -1168,9 +1176,140 @@ void _DSceneViewerFrame::clear_all_octrees_in_scene()
 	}
 }
 
+struct TSceneStats
+{
+	void clear()
+	{
+		nPoints=0;
+		nObjects=0;
+		nOctreeVisible=0;
+		nOctreeTotal=0;
+	}
+
+	size_t  nPoints;
+	size_t  nObjects;
+	size_t  nOctreeVisible,nOctreeTotal;
+};
+
+TSceneStats sceneStats;
+
+void func_gather_stats(const mrpt::opengl::CRenderizablePtr &o)
+{
+	sceneStats.nObjects++;
+
+	if (IS_CLASS(o,CPointCloud))
+	{
+		CPointCloudPtr obj = CPointCloudPtr(o);
+		sceneStats.nPoints +=obj->size();
+		sceneStats.nOctreeVisible+=obj->octree_get_visible_nodes();
+		sceneStats.nOctreeTotal+=obj->octree_get_node_count();
+	}
+	else
+	if (IS_CLASS(o,CPointCloudColoured))
+	{
+		CPointCloudColouredPtr obj = CPointCloudColouredPtr(o);
+		sceneStats.nPoints +=obj->size();
+		sceneStats.nOctreeVisible+=obj->octree_get_visible_nodes();
+		sceneStats.nOctreeTotal+=obj->octree_get_node_count();
+	}
+}
+
+// Gather stats on the scene:
+void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent& event)
+{
+    try
+    {
+		wxBusyCursor wait;
+		sceneStats.clear();
+
+		mrpt::synch::CCriticalSectionLocker lock(&critSec_UpdateScene);
+		m_canvas->m_openGLScene->visitAllObjects( &func_gather_stats );
+
+		std::stringstream  ss;
+		ss << "Number of objects: " << sceneStats.nObjects << endl
+		   << format("Overall points (in point clouds): %e",double(sceneStats.nPoints)) << endl
+		   << "Total octree nodes   (in point clouds): " << sceneStats.nOctreeTotal << endl
+		   << "Visible octree nodes (in point clouds): " << sceneStats.nOctreeVisible << endl;
+
+		wxMessageBox(_U(ss.str().c_str()), _("Scene statistics"));
+    }
+    catch(std::exception &e)
+    {
+        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+    }
+}
+
+
+static const std::string name_octrees_bb_globj = "__3dsceneviewer_gl_octree_bb__";
+CSetOfObjectsPtr aux_gl_octrees_bb;
+
+void func_get_octbb(const mrpt::opengl::CRenderizablePtr &o)
+{
+	if (IS_CLASS(o,CPointCloud))
+	{
+		CPointCloudPtr obj = CPointCloudPtr(o);
+		CSetOfObjectsPtr new_bb = CSetOfObjects::Create();
+		obj->octree_get_graphics_boundingboxes(*new_bb);
+		aux_gl_octrees_bb->insert(new_bb );
+	}
+	else
+	if (IS_CLASS(o,CPointCloudColoured))
+	{
+		CPointCloudColouredPtr obj = CPointCloudColouredPtr(o);
+		CSetOfObjectsPtr new_bb = CSetOfObjects::Create();
+		obj->octree_get_graphics_boundingboxes(*new_bb);
+		aux_gl_octrees_bb->insert(new_bb );
+	}
+}
+
+
 // Show/hide the octree bounding boxes of the point clouds:
 void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event)
 {
-	// ...
+	const bool show_hide = mnuItemShowCloudOctrees->IsChecked();
+	
+    try
+    {
+		wxBusyCursor wait;
+		
+		{
+			mrpt::synch::CCriticalSectionLocker lock(&critSec_UpdateScene);
+			m_canvas->m_openGLScene->visitAllObjects( &func_gather_stats );
 
+			CSetOfObjectsPtr gl_octrees_bb;
+
+			// Get object from scene, or creat upon first usage:
+			{
+				CRenderizablePtr obj = m_canvas->m_openGLScene->getByName(name_octrees_bb_globj);
+				if (obj)
+					gl_octrees_bb = CSetOfObjectsPtr(obj);
+				else  
+				{
+					gl_octrees_bb = CSetOfObjects::Create();
+					gl_octrees_bb->setName( name_octrees_bb_globj );
+					m_canvas->m_openGLScene->insert(gl_octrees_bb);
+				}
+			}
+
+			// Show or hide, clear first anyway:
+			gl_octrees_bb->clear();
+
+			if (show_hide)
+			{
+				// Show:
+				aux_gl_octrees_bb = gl_octrees_bb;
+
+				m_canvas->m_openGLScene->visitAllObjects( func_get_octbb );
+
+				aux_gl_octrees_bb.clear_unique();
+			}
+		}
+
+		Refresh(false);
+    }
+    catch(std::exception &e)
+    {
+        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+    }
 }
+

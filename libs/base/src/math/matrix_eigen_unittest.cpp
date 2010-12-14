@@ -45,6 +45,7 @@ using namespace std;
 		#define	__CURRENT_FUNCTION_NAME__	__PRETTY_FUNCTION__
 #endif
 
+#if 0
 
 template <int ColRowOrder>
 void do_test_EigenVal4x4_sym_vs_generic_eigen()
@@ -86,3 +87,5 @@ TEST(MatricesEigen,EigenVal4x4_sym_vs_generic)
 	do_test_EigenVal4x4_sym_vs_generic_eigen<Eigen::ColMajor>();
 	do_test_EigenVal4x4_sym_vs_generic_eigen<Eigen::RowMajor>();
 }
+
+#endif

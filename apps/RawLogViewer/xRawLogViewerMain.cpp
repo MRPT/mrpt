@@ -2341,25 +2341,17 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 															// Assign only those points above a certain threshold:
 															const int confThreshold =   obs->hasConfidenceImage ? slid3DcamConf->GetValue() : 0;
 
-															vector<float>  &obs_xs = obs->points3D_x;
-															vector<float>  &obs_ys = obs->points3D_y;
-															vector<float>  &obs_zs = obs->points3D_z;
-
-															vector<float> &xs = pnts->getArrayX();
-															vector<float> &ys = pnts->getArrayY();
-															vector<float> &zs = pnts->getArrayZ();
+															const vector<float>  &obs_xs = obs->points3D_x;
+															const vector<float>  &obs_ys = obs->points3D_y;
+															const vector<float>  &obs_zs = obs->points3D_z;
 
 															if (confThreshold==0)
 															{
-																xs = obs_xs;
-																ys = obs_ys;
-																zs = obs_zs;
+																pnts->setAllPoints(obs_xs,obs_ys,obs_zs);
 															}
 															else
 															{
-																xs.clear();
-																ys.clear();
-																zs.clear();
+																pnts->clear();
 
 																size_t i=0;
 
@@ -2376,11 +2368,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 																	{
 																		unsigned char conf = *ptr_lin++;
 																		if (conf>=confThreshold)
-																		{
-																			xs.push_back(obs_xs[i]);
-																			ys.push_back(obs_ys[i]);
-																			zs.push_back(obs_zs[i]);
-																		}
+																			pnts->insertPoint(obs_xs[i],obs_ys[i],obs_zs[i]);
 																	}
 																}
 															}
