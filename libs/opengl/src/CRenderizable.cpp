@@ -52,28 +52,27 @@ extern CStartUpClassesRegister  mrpt_opengl_class_reg;
 const int dumm = mrpt_opengl_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 
-// This is not the ideal solution, since in theory two threads
-// could create 2 different cs objects. But we cannot declare
-// this object as static & global since we are not sure about
-// the destroy order of all global objects!  (JLBC OCT-2008)
-struct TTextureNamesInfo
+#define MAX_GL_TEXTURE_IDS       0x10000
+#define MAX_GL_TEXTURE_IDS_MASK  0x0FFFF
+
+struct TOpenGLNameBooker
 {
 private:
-	TTextureNamesInfo() :
-		freeTextureNames(1000,false),
-		csTextureNames(),
-		texturesInUseCount(0)
+	TOpenGLNameBooker() :
+		freeTextureNames(MAX_GL_TEXTURE_IDS,false),
+		next_free_texture(1),   // 0 is a reserved number!!
+		cs()
 	{
 	}
 
 public:
 	std::vector<bool>		freeTextureNames;
-	synch::CCriticalSection	csTextureNames;
-	int						texturesInUseCount;
+	unsigned int			next_free_texture;
+	synch::CCriticalSection	cs;
 
-	static TTextureNamesInfo & instance()
+	static TOpenGLNameBooker & instance()
 	{
-		static TTextureNamesInfo dat;
+		static TOpenGLNameBooker dat;
 		return dat;
 	}
 };
@@ -90,48 +89,46 @@ CRenderizable::CRenderizable() :
 {
 }
 
+// Destructor:
+CRenderizable::~CRenderizable()
+{
+}
+
+
+
 /** Returns the lowest, free texture name.
   */
 unsigned int CRenderizable::getNewTextureNumber()
 {
-	MRPT_START;
+	MRPT_START
 
-	CCriticalSectionLocker lock ( &TTextureNamesInfo::instance().csTextureNames );
-	const size_t N = TTextureNamesInfo::instance().freeTextureNames.size();
-	for (size_t i = 1;i<N;i++)
+	TOpenGLNameBooker &booker = TOpenGLNameBooker::instance();
+
+	CCriticalSectionLocker lock ( &booker.cs );
+
+	unsigned int ret = booker.next_free_texture;
+	unsigned int tries = 0;
+	while (ret!=0 && booker.freeTextureNames[ret])
 	{
-		if (!TTextureNamesInfo::instance().freeTextureNames[i])
-		{
-			TTextureNamesInfo::instance().freeTextureNames[i] = true;
-			TTextureNamesInfo::instance().texturesInUseCount++;
-			return i;
-		}
+		ret = ++ret % MAX_GL_TEXTURE_IDS_MASK;
+
+		if (++tries>=MAX_GL_TEXTURE_IDS) 
+			THROW_EXCEPTION_CUSTOM_MSG1("Maximum number of textures (%u) excedeed! (are you deleting them?)", (unsigned int)MAX_GL_TEXTURE_IDS);
 	}
-	THROW_EXCEPTION("Maximum number of textures (1000) excedeed! (are you deleting them?)");
-	MRPT_END;
+
+	booker.freeTextureNames[ret] = true; // mark as used.
+	booker.next_free_texture = ret+1;
+	return ret;
+	MRPT_END
 }
 
 void CRenderizable::releaseTextureName(unsigned int i)
 {
-#if MRPT_HAS_OPENGL_GLUT
-	MRPT_START;
-	CCriticalSectionLocker lock ( &TTextureNamesInfo::instance().csTextureNames );
-
-	// Actually, we DONT have to call this since we are doing a manual
-	//  allocation of texture numbers:
-	//glDeleteTextures( 1, &i);
-
-	TTextureNamesInfo::instance().freeTextureNames[i] = false;
-	TTextureNamesInfo::instance().texturesInUseCount--;
-
-	if (! TTextureNamesInfo::instance().texturesInUseCount )
-	{
-		// This was the last texture:
-	}
-
-	MRPT_END;
-#endif
+	TOpenGLNameBooker &booker = TOpenGLNameBooker::instance();
+	CCriticalSectionLocker lock ( &booker.cs );
+	booker.freeTextureNames[i] = false;
 }
+
 
 void  CRenderizable::writeToStreamRender(CStream &out) const
 {
@@ -365,3 +362,14 @@ void CRenderizable::getCurrentRenderingInfo(TRenderInfo &ri) const
 #endif
 }
 
+/*---------------------------------------------------------------
+					renderTextBitmap
+  ---------------------------------------------------------------*/
+void	CRenderizable::renderTextBitmap( const char *str, void *fontStyle )
+{
+#if MRPT_HAS_OPENGL_GLUT
+	MRPT_START;
+	while ( *str ) glutBitmapCharacter( fontStyle ,*(str++) );
+	MRPT_END;
+#endif
+}

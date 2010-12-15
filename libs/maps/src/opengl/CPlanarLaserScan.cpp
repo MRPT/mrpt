@@ -51,7 +51,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CPlanarLaserScan, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CPlanarLaserScan, CRenderizableDisplayList, mrpt::opengl )
 
 
 /*---------------------------------------------------------------
@@ -74,6 +74,7 @@ CPlanarLaserScan::CPlanarLaserScan() :
   ---------------------------------------------------------------*/
 void CPlanarLaserScan::clear()
 {
+	CRenderizableDisplayList::notifyChange();
 	m_scan.scan.clear();
 	m_scan.validRange.clear();
 }
@@ -82,7 +83,7 @@ void CPlanarLaserScan::clear()
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void   CPlanarLaserScan::render() const
+void   CPlanarLaserScan::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	ASSERT_(m_scan.scan.size()==m_scan.validRange.size());

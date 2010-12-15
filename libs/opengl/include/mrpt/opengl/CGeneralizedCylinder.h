@@ -28,7 +28,7 @@
 #ifndef opengl_CGeneralizedCylinder_H
 #define opengl_CGeneralizedCylinder_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/opengl/CPolyhedron.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/math/geometry.h>
@@ -39,11 +39,11 @@ namespace opengl	{
 	using namespace mrpt::math;
 	class OPENGL_IMPEXP CGeneralizedCylinder;
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CGeneralizedCylinder,CRenderizable, OPENGL_IMPEXP)
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CGeneralizedCylinder,CRenderizableDisplayList, OPENGL_IMPEXP)
 	/**
 	  * This object represents any figure obtained by extruding any profile along a given axis. The profile should lie over a x=0 plane, and the axis must be roughly perpendicular to this plane. In particular, it should be almost perpendicular to the Z axis.
 	  */
-	class OPENGL_IMPEXP CGeneralizedCylinder:public CRenderizable	{
+	class OPENGL_IMPEXP CGeneralizedCylinder:public CRenderizableDisplayList	{
 		DEFINE_SERIALIZABLE(CGeneralizedCylinder)
 	public:
 		/**
@@ -159,7 +159,7 @@ namespace opengl	{
 		  * Render.
 		  * \sa mrpt::opengl::CRenderizable
 		  */
-		void render() const;
+		void render_dl() const;
 		/**
 		  * Ray tracing.
 		  * \sa mrpt::opengl::CRenderizable.
@@ -191,6 +191,7 @@ namespace opengl	{
 			generatePoses(a,axis);
 			meshUpToDate=false;
 			fullyVisible=true;
+			CRenderizableDisplayList::notifyChange();
 		}
 		/**
 		  * Get cylinder's profile.
@@ -204,6 +205,7 @@ namespace opengl	{
 		inline void setGeneratrix(const std::vector<TPoint3D> g)	{
 			generatrix=g;
 			meshUpToDate=false;
+			CRenderizableDisplayList::notifyChange();
 		}
 		/**
 		  * Returns true if each section is a closed polygon.
@@ -217,6 +219,7 @@ namespace opengl	{
 		inline void setClosed(bool c=true)	{
 			closed=c;
 			meshUpToDate=false;
+			CRenderizableDisplayList::notifyChange();
 		}
 		/**
 		  * Get a polyhedron containing the starting point of the cylinder (its "base").
@@ -274,6 +277,7 @@ namespace opengl	{
 		  */
 		inline void setAllSectionsVisible()	{
 			fullyVisible=true;
+			CRenderizableDisplayList::notifyChange();
 		}
 		/**
 		  * Hides all sections.
@@ -282,6 +286,7 @@ namespace opengl	{
 			fullyVisible=false;
 			firstSection=pointer;
 			lastSection=pointer;
+			CRenderizableDisplayList::notifyChange();
 		}
 		/**
 		  * Sets which sections are visible.
@@ -292,6 +297,7 @@ namespace opengl	{
 			if (first>last||last>getNumberOfSections()) throw std::logic_error("Wrong bound definition");
 			firstSection=first;
 			lastSection=last;
+			CRenderizableDisplayList::notifyChange();
 		}
 		/**
 		  * Adds another visible section at the start of the cylinder. The cylinder must have an invisble section to display.
@@ -301,6 +307,7 @@ namespace opengl	{
 		inline void addVisibleSectionAtStart()	{
 			if (fullyVisible||firstSection==0) throw std::logic_error("No more sections");
 			firstSection--;
+			CRenderizableDisplayList::notifyChange();
 		}
 		/**
 		  * Adds another visible section at the end of the cylinder. The cylinder must have an invisible section to display.
@@ -310,6 +317,7 @@ namespace opengl	{
 		inline void addVisibleSectionAtEnd()	{
 			if (fullyVisible||lastSection==getNumberOfSections()) throw std::logic_error("No more sections");
 			lastSection++;
+			CRenderizableDisplayList::notifyChange();
 		}
 		/**
 		  * Removes a visible section from the start of the currently visible set.

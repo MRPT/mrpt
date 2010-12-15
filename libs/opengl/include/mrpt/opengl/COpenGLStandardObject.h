@@ -28,7 +28,7 @@
 #ifndef opengl_COpenGLStandardObject_H
 #define opengl_COpenGLStandardObject_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/geometry.h>
 
 #include <mrpt/utils/stl_extensions.h>
@@ -39,11 +39,11 @@ namespace mrpt	{
 		using namespace mrpt::utils;
 		using namespace mrpt::math;
 		class OPENGL_IMPEXP COpenGLStandardObject;
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(COpenGLStandardObject,CRenderizable, OPENGL_IMPEXP)
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(COpenGLStandardObject,CRenderizableDisplayList, OPENGL_IMPEXP)
 		/**
 		  * Objects of this class represent a generic openGL object without specific geometric properties.
 		  */
-		class OPENGL_IMPEXP COpenGLStandardObject:public CRenderizable	{
+		class OPENGL_IMPEXP COpenGLStandardObject:public CRenderizableDisplayList	{
 			DEFINE_SERIALIZABLE(COpenGLStandardObject)
 		protected:
 			/**
@@ -68,7 +68,7 @@ namespace mrpt	{
 			  * Render.
 			  * \sa mrpt::opengl::CRenderizable
 			  */
-			virtual void render() const;
+			virtual void render_dl() const;
 			/**
 			  * Ray Tracing. Will always return false, since objects of this class are not intended to have geometric properties.
 			  * \sa mrpt::opengl::CRenderizable
@@ -87,12 +87,14 @@ namespace mrpt	{
 			  */
 			inline void enable(_GLENUM flag)	{
 				if (find(enabled.begin(),enabled.end(),flag)==enabled.end()) enabled.push_back(flag);
+				CRenderizableDisplayList::notifyChange();
 			}
 			/**
 			  * Disable some openGL flag.
 			  */
 			inline void disable(_GLENUM flag)	{
 				std::remove(enabled.begin(),enabled.end(),flag);
+				CRenderizableDisplayList::notifyChange();
 			}
 			/**
 			  * Check whether an openGL will be enabled during the rendering of this object.
@@ -111,12 +113,14 @@ namespace mrpt	{
 			  */
 			inline void setFlags(const std::vector<_GLENUM> &v)	{
 				enabled=v;
+				CRenderizableDisplayList::notifyChange();
 			}
 			/**
 			  * Set the normal vector to this object.
 			  */
 			inline void setNormal(const float (&n)[3])	{
 				for (size_t i=0;i<3;i++) normal[i]=n[i];
+				CRenderizableDisplayList::notifyChange();
 			}
 			/**
 			  * Gets the normal vector to this object.

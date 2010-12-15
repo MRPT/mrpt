@@ -102,13 +102,25 @@ namespace mrpt
 			void octree_render(const mrpt::opengl::CRenderizable::TRenderInfo &ri ) const
 			{
 				m_visible_octree_nodes_ongoing = 0;
-				
+
+				// Stage 1: Build list of visible octrees
+				m_render_queue.clear();
+				m_render_queue.reserve(m_octree_nodes.size());
+
 				TPixelCoordf cr_px[8];
 				float        cr_z[8];
 				octree_recursive_render(OCTREE_ROOT_NODE,ri, cr_px, cr_z, false /* corners are not computed for this first iteration */ );
 
 				m_visible_octree_nodes = m_visible_octree_nodes_ongoing;
+
+				// Stage 2: Render them all
+				for (size_t i=0;i<m_render_queue.size();i++)
+				{
+					const TNode & node = m_octree_nodes[ m_render_queue[i].node_id ];
+					octree_derived().render_subset( node.all,node.pts,m_render_queue[i].render_area_sqpixels);
+				}
 			}
+
 
 		private:
 			/** The structure for each octree spatial node. Each node can either be a leaf of has 8 children nodes.
@@ -193,6 +205,16 @@ namespace mrpt
 				}
 			};
 
+			struct OPENGL_IMPEXP TRenderQueueElement
+			{
+				inline TRenderQueueElement(const size_t id, float area_sq) : node_id(id), render_area_sqpixels(area_sq) {  }
+
+				size_t  node_id;              //!< The node ID to render
+				float   render_area_sqpixels; //!< The approximate size of the octree on the screen (squared pixels).
+			};
+			mutable std::vector<TRenderQueueElement>  m_render_queue; //!< The list of elements that really are visible and will be rendered.
+
+
 			bool  m_octree_has_to_rebuild_all;
 			std::deque<TNode>  m_octree_nodes; //!< First one [0] is always the root node
 
@@ -256,7 +278,8 @@ namespace mrpt
 							: 							
 							std::abs(px_min.x-px_max.x) * std::abs(px_min.y-px_max.y);
 
-						octree_derived().render_subset(node.all,node.pts,render_area_sqpixels);
+						// OK: Add to list of rendering-pending:
+						m_render_queue.push_back( TRenderQueueElement(node_idx,render_area_sqpixels) );
 					}
 				}
 				else

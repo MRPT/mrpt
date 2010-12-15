@@ -423,7 +423,8 @@ CDisplayWindow3D::CDisplayWindow3D(
       m_grab_imgs_prefix(),
       m_grab_imgs_idx(0),
       m_is_capturing_imgs(false),
-	  m_lastFullScreen (mrpt::system::now())
+	  m_lastFullScreen (mrpt::system::now()),
+	  m_last_FPS(10)
 {
 	m_3Dscene = COpenGLScene::Create();
 	CBaseGUIWindow::createWxWindow(initialWindowWidth,initialWindowHeight);
@@ -853,18 +854,6 @@ void CDisplayWindow3D::clearTextMessages()
 
 void CDisplayWindow3D::setRenderingFPS(double FPS)
 {
-	mrpt::synch::CCriticalSectionLocker lock(&m_last_FPSs_cs);
-
-	m_last_FPSs.push_back(FPS);
-	if (m_last_FPSs.size()>250)
-		m_last_FPSs.erase(m_last_FPSs.begin());
-}
-
-double CDisplayWindow3D::getRenderingFPS() const
-{
-	mrpt::synch::CCriticalSectionLocker lock(&m_last_FPSs_cs);
-
-	if (m_last_FPSs.empty())
-	     return 0;
-	else return mrpt::math::mean( m_last_FPSs );
+	const double ALPHA = 0.99;
+	m_last_FPS = ALPHA*m_last_FPS+(1-ALPHA)*FPS;
 }

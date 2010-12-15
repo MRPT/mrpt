@@ -58,7 +58,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( C3DSScene, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( C3DSScene, CRenderizableDisplayList, mrpt::opengl )
 
 
 void render_node(Lib3dsNode *node,Lib3dsFile	*file);
@@ -67,7 +67,7 @@ void light_update(Lib3dsLight *l,Lib3dsFile	*file);
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void   C3DSScene::render() const
+void   C3DSScene::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
@@ -556,12 +556,14 @@ C3DSScene::~C3DSScene()
   ---------------------------------------------------------------*/
 void   C3DSScene::clear()
 {
+	CRenderizableDisplayList::notifyChange();
 	m_3dsfile.set( new TImpl3DS() );
 }
 
 void C3DSScene::loadFrom3DSFile( const std::string &filepath )
 {
 	clear();
+	CRenderizableDisplayList::notifyChange();
 
 	Lib3dsFile *file=0;
 
@@ -689,6 +691,7 @@ void C3DSScene::evaluateAnimation( double time_anim )
 {
 	if (m_3dsfile->file)
 	{
+		CRenderizableDisplayList::notifyChange();
 		lib3ds_file_eval( (Lib3dsFile*) m_3dsfile->file, time_anim );
 	}
 }

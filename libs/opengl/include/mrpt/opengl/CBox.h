@@ -28,14 +28,14 @@
 #ifndef opengl_CBox_H
 #define opengl_CBox_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt	{
 namespace opengl	{
 
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CBox,CRenderizable, OPENGL_IMPEXP)
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CBox,CRenderizableDisplayList, OPENGL_IMPEXP)
 	
 	/** A solid or wireframe box in 3D, defined by 6 rectangular faces parallel to the planes X, Y and Z (note that the object can be translated and rotated afterwards as any other CRenderizable object using the "object pose" in the base class).
 	  *
@@ -48,7 +48,7 @@ namespace opengl	{
 	  *  </div>
 	  *  
 	  */
-	class OPENGL_IMPEXP CBox :public CRenderizable	{
+	class OPENGL_IMPEXP CBox :public CRenderizableDisplayList	{
 		DEFINE_SERIALIZABLE(CBox)
 
 	protected:
@@ -66,7 +66,7 @@ namespace opengl	{
 		/** Render
 		  * \sa mrpt::opengl::CRenderizable
 		  */
-		void render() const;
+		void render_dl() const;
 		
 		/**
 		  * Ray tracing.
@@ -74,10 +74,10 @@ namespace opengl	{
 		  */
 		virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
 		
-		inline void setLineWidth(float width) { m_lineWidth = width; }
+		inline void setLineWidth(float width) { m_lineWidth = width; CRenderizableDisplayList::notifyChange(); }
 		inline float getLineWidth() const { return m_lineWidth; }
 		
-		inline void setWireframe(bool is_wireframe=true) { m_wireframe = is_wireframe; }
+		inline void setWireframe(bool is_wireframe=true) { m_wireframe = is_wireframe; CRenderizableDisplayList::notifyChange(); }
 		inline bool isWireframe() const { return m_wireframe; }
 
 		/** Set the position and size of the box, from two corners in 3D */

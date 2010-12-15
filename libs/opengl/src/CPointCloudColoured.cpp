@@ -68,10 +68,9 @@ void   CPointCloudColoured::render() const
 			glEnable ( GL_POINT_SMOOTH );
 	else 	glDisable( GL_POINT_SMOOTH );
 
+
     glBegin( GL_POINTS );
-
 	octree_render(ri); // Render all points recursively:
-
     glEnd();
 
 	// Undo flags:

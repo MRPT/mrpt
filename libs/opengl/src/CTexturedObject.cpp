@@ -40,7 +40,7 @@ using namespace mrpt::math;
 using namespace std;
 
 
-IMPLEMENTS_VIRTUAL_SERIALIZABLE( CTexturedObject, CRenderizable, mrpt::opengl )
+IMPLEMENTS_VIRTUAL_SERIALIZABLE( CTexturedObject, CRenderizableDisplayList, mrpt::opengl )
 
 /*---------------------------------------------------------------
 							CTexturedObject
@@ -61,6 +61,8 @@ void  CTexturedObject::assignImage(
 {
 	MRPT_START
 
+	CRenderizableDisplayList::notifyChange();
+
 	unloadTexture();
 
 	// Make a copy:
@@ -80,6 +82,8 @@ void  CTexturedObject::assignImage(
 {
 	MRPT_START;
 
+	CRenderizableDisplayList::notifyChange();
+
 	unloadTexture();
 
 	// Make a copy:
@@ -98,6 +102,8 @@ void  CTexturedObject::assignImage_fast(
 	CImage& imgAlpha )
 {
 	MRPT_START;
+	
+	CRenderizableDisplayList::notifyChange();
 
 	unloadTexture();
 
@@ -117,6 +123,8 @@ void  CTexturedObject::assignImage_fast(
 	CImage& img )
 {
 	MRPT_START;
+
+	CRenderizableDisplayList::notifyChange();
 
 	unloadTexture();
 
@@ -155,15 +163,6 @@ void  CTexturedObject::loadTextureInOpenGL() const
 		// select our current texture
 		glBindTexture( GL_TEXTURE_2D, m_glTextureName );
 		checkOpenGLError();
-
-/*		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		checkOpenGLError();
-		glPixelStorei(GL_PACK_ALIGNMENT, 1);
-		checkOpenGLError();
-*/
-		// select modulate to mix texture with color for shading
-//		glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-//		checkOpenGLError();
 
 		// when texture area is small, bilinear filter the closest mipmap
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR ); //_MIPMAP_NEAREST );
@@ -360,8 +359,15 @@ void  CTexturedObject::writeToStreamTexturedObject(CStream &out) const
 	if (m_enableTransparency) out << m_textureImageAlpha;
 }
 
+void  CTexturedObject::render_dl() const
+{
+	render_pre();
+	render_texturedobj();
+	render_post();
+}
 
-void  CTexturedObject::render_texture_pre() const
+
+void  CTexturedObject::render_pre() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
@@ -386,7 +392,7 @@ void  CTexturedObject::render_texture_pre() const
 #endif
 }
 
-void  CTexturedObject::render_texture_post() const
+void  CTexturedObject::render_post() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
@@ -404,6 +410,7 @@ void  CTexturedObject::render_texture_post() const
 
 	glDisable(GL_TEXTURE_2D);
 	checkOpenGLError();
+
 	MRPT_END
 #endif
 }
@@ -416,6 +423,8 @@ void  CTexturedObject::readFromStreamTexturedObject(CStream &in)
 {
 	uint8_t version;
 	in >> version;
+
+	CRenderizableDisplayList::notifyChange();
 
 	switch(version)
 	{

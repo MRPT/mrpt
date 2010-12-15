@@ -43,9 +43,11 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CMesh, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CMesh, CRenderizableDisplayList, mrpt::opengl )
 
 void CMesh::updateTriangles() const	{
+	CRenderizableDisplayList::notifyChange();
+
 	float cR[3],cG[3],cB[3];
 	const size_t cols=Z.getColCount();
 	const size_t rows=Z.getRowCount();
@@ -114,7 +116,7 @@ void CMesh::updateTriangles() const	{
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void CMesh::render() const	{
+void CMesh::render_dl() const	{
 #if MRPT_HAS_OPENGL_GLUT
 	if (m_enableTransparency)	{
 		glEnable(GL_BLEND);
@@ -160,6 +162,8 @@ void  CMesh::assignImage(
 	// Make a copy:
 	m_textureImage = img;
 	m_enableTransparency = false;
+
+	CRenderizableDisplayList::notifyChange();
 
 	MRPT_END;
 }
@@ -237,6 +241,8 @@ void CMesh::updateColorsMatrix() const
 {
 	if (!m_modified_Z) return;
 
+	CRenderizableDisplayList::notifyChange();
+
 	const size_t cols = Z.getColCount();
 	const size_t rows = Z.getRowCount();
 
@@ -295,18 +301,21 @@ void CMesh::setZ( const mrpt::math::CMatrixTemplateNumeric<float> &in_Z )
 	Z=in_Z;
 	m_modified_Z = true;
 	trianglesUpToDate=false;
+	CRenderizableDisplayList::notifyChange();
 }
 
 void CMesh::setMask( const mrpt::math::CMatrixTemplateNumeric<float> &in_mask )
 {
 	mask = in_mask;
 	trianglesUpToDate=false;
+	CRenderizableDisplayList::notifyChange();
 }
 
 void CMesh::setUV( const mrpt::math::CMatrixTemplateNumeric<float> &in_U, const mrpt::math::CMatrixTemplateNumeric<float> &in_V)
 {
 	U=in_U;
 	V=in_V;
+	CRenderizableDisplayList::notifyChange();
 }
 
 bool CMesh::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
@@ -330,4 +339,5 @@ void CMesh::updatePolygons() const	{
 	tmpPolys.resize(N);
 	transform(actualMesh.begin(),actualMesh.end(),tmpPolys.begin(),createPolygonFromTriangle);
 	polygonsUpToDate=true;
+	CRenderizableDisplayList::notifyChange();
 }

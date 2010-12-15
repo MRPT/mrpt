@@ -129,8 +129,7 @@ namespace mrpt
 
 			mrpt::system::TTimeStamp 	m_lastFullScreen;
 
-			std::vector<double>         m_last_FPSs; //!< \sa getRenderingFPS
-			synch::CCriticalSection     m_last_FPSs_cs;
+			double   m_last_FPS; //!< \sa getRenderingFPS
 
 			void internalSetMinMaxRange();
 
@@ -341,7 +340,7 @@ namespace mrpt
 			void setRenderingFPS(double FPS);
 
 			/** Get the average Frames Per Second (FPS) value from the last 250 rendering events */
-			double getRenderingFPS() const;
+			double getRenderingFPS() const { return m_last_FPS; }
 
 		}; // End of class def.
 	} // End of namespace

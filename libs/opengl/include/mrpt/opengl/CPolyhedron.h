@@ -28,7 +28,7 @@
 #ifndef opengl_CPolyhedron_H
 #define opengl_CPolyhedron_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/utils/stl_extensions.h>
 #include <mrpt/math/geometry.h>
 
@@ -41,7 +41,7 @@ namespace opengl	{
 	class OPENGL_IMPEXP CPolyhedron;
 
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CPolyhedron,CRenderizable, OPENGL_IMPEXP)
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CPolyhedron,CRenderizableDisplayList, OPENGL_IMPEXP)
 	/**
 	  * This class represents arbitrary polyhedra. The class includes a set of static methods to create common polyhedrons. The class includes many methods to create standard polyhedra, not intended to be fast but to be simple. For example, the dodecahedron is not created efficiently: first, an icosahedron is created, and a duality operator is applied to it, which yields the dodecahedron. This way, code is much smaller, although much slower. This is not a big problem, since polyhedron creation does not usually take a significant amount of time (they are created once and rendered many times).
 	  * Polyhedra information and models have been gotten from the Wikipedia, http://wikipedia.org
@@ -54,7 +54,7 @@ namespace opengl	{
 	  *  </div>
 	  *  
 	  */
-	class OPENGL_IMPEXP CPolyhedron:public CRenderizable	{
+	class OPENGL_IMPEXP CPolyhedron:public CRenderizableDisplayList	{
 		DEFINE_SERIALIZABLE(CPolyhedron)
 	public:
 		/**
@@ -602,7 +602,7 @@ namespace opengl	{
 		  * Render
 		  * \sa CRenderizable
 		  */
-		void render() const;
+		void render_dl() const;
 		/**
 		  * Ray trace
 		  * \sa CRenderizable
@@ -667,6 +667,7 @@ namespace opengl	{
 		  */
 		inline void setWireframe(bool enabled=true)	{
 			mWireframe=enabled;
+			CRenderizableDisplayList::notifyChange();
 		}
 		/**
 		  * Gets the wireframe lines width.
@@ -679,6 +680,7 @@ namespace opengl	{
 		  */
 		inline void setLineWidth(double lineWidth)	{
 			mLineWidth=lineWidth;
+			CRenderizableDisplayList::notifyChange();
 		}
 		/**
 		  * Gets the polyhedron as a set of polygons.

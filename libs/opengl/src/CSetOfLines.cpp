@@ -39,7 +39,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CSetOfLines, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CSetOfLines, CRenderizableDisplayList, mrpt::opengl )
 
 
 /*---------------------------------------------------------------
@@ -48,6 +48,7 @@ IMPLEMENTS_SERIALIZABLE( CSetOfLines, CRenderizable, mrpt::opengl )
 void CSetOfLines::setLineByIndex(size_t index,const mrpt::math::TSegment3D &segm)	{
 	MRPT_START
 	if (index>=mSegments.size()) THROW_EXCEPTION("Index out of bounds");
+	CRenderizableDisplayList::notifyChange();
 	mSegments[index]=segm;
 	MRPT_END
 }
@@ -55,7 +56,7 @@ void CSetOfLines::setLineByIndex(size_t index,const mrpt::math::TSegment3D &segm
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void   CSetOfLines::render() const
+void   CSetOfLines::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glLineWidth(mLineWidth);
@@ -88,16 +89,6 @@ void   CSetOfLines::render() const
   ---------------------------------------------------------------*/
 void  CSetOfLines::writeToStream(CStream &out,int *version) const
 {
-
-/*	if (version)
-		*version = 1;
-	else
-	{
-		writeToStreamRender(out);
-		out << m_x0 << m_y0 << m_z0;
-		out << m_x1 << m_y1 << m_z1;
-		out << mLineWidth;
-	}*/
 	if (version) *version=2;
 	else	{
 		writeToStreamRender(out);
@@ -116,12 +107,6 @@ void  CSetOfLines::readFromStream(CStream &in,int version)
 	case 0:
 	case 1:
 		{
-/*			readFromStreamRender(in);
-			in >> m_x0 >> m_y0 >> m_z0
-			   >> m_x1 >> m_y1 >> m_z1;
-			if (version>=1)
-				in >> mLineWidth;
-			else mLineWidth=1;*/
 			readFromStreamRender(in);
 			vector_float x0,y0,z0,x1,y1,z1;
 			in>>x0>>y0>>z0>>x1>>y1>>z1;

@@ -42,7 +42,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CTexturedPlane, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CTexturedPlane, CTexturedObject, mrpt::opengl )
 
 /*---------------------------------------------------------------
 							CTexturedPlane
@@ -73,12 +73,10 @@ CTexturedPlane::~CTexturedPlane()
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void   CTexturedPlane::render() const
+void   CTexturedPlane::render_texturedobj() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
-
-	render_texture_pre();
 
 	// Compute the exact texture coordinates:
 	m_tex_x_min = ((float)m_fill_x_left) / r_width;
@@ -102,9 +100,6 @@ void   CTexturedPlane::render() const
 
 	glEnd();
 	checkOpenGLError();
-
-
-	render_texture_post();
 
 	MRPT_END
 #endif

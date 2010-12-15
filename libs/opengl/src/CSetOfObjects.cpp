@@ -76,6 +76,9 @@ void   CSetOfObjects::render() const
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 
+			glPushAttrib(GL_ALL_ATTRIB_BITS);
+			//CRenderizable::checkOpenGLError();
+
 			// This is the right order so that the transformation results in the standard matrix.
 			// The order seems to be wrong, but it's not.
 			glTranslated((*it)->m_x, (*it)->m_y, (*it)->m_z);
@@ -89,7 +92,9 @@ void   CSetOfObjects::render() const
 			// Set color:
 			glColor4f( (*it)->getColorR(),(*it)->getColorG(),(*it)->getColorB(),(*it)->getColorA());
 
+
 			(*it)->render();
+
 
 			if ((*it)->m_show_name)
 			{
@@ -115,6 +120,9 @@ void   CSetOfObjects::render() const
 
 			glPopMatrix();
 			checkOpenGLError();
+
+			glPopAttrib();
+			//CRenderizable::checkOpenGLError();
 		}
 	}
 	catch(exception &e)
@@ -215,17 +223,6 @@ void CSetOfObjects::insert( const CRenderizablePtr &newObject )
 }
 
 
-/*---------------------------------------------------------------
-					renderTextBitmap
-  ---------------------------------------------------------------*/
-void	CRenderizable::renderTextBitmap( const char *str, void *fontStyle )
-{
-#if MRPT_HAS_OPENGL_GLUT
-	MRPT_START;
-	while ( *str ) glutBitmapCharacter( fontStyle ,*(str++) );
-	MRPT_END;
-#endif
-}
 
 
 /*--------------------------------------------------------------

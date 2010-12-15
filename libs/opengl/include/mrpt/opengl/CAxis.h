@@ -28,7 +28,7 @@
 #ifndef opengl_CAxis_H
 #define opengl_CAxis_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 
 namespace mrpt
 {
@@ -37,7 +37,7 @@ namespace mrpt
 		class OPENGL_IMPEXP CAxis;
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CAxis, CRenderizable, OPENGL_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CAxis, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** Draw a 3D world axis, with coordinate marks at some regular interval
 		  *  \sa opengl::COpenGLScene
@@ -49,7 +49,7 @@ namespace mrpt
 		  *  </div>
 		  *  
 		  */
-		class OPENGL_IMPEXP CAxis : public CRenderizable
+		class OPENGL_IMPEXP CAxis : public CRenderizableDisplayList
 		{
 			DEFINE_SERIALIZABLE( CAxis )
 		protected:
@@ -64,14 +64,15 @@ namespace mrpt
 			{
 				m_xmin=xmin; m_ymin=ymin; m_zmin=zmin;
 				m_xmax=xmax; m_ymax=ymax; m_zmax=zmax;
+				CRenderizableDisplayList::notifyChange();
 			}
 
-			void setFrequency(float f) { ASSERT_(f>0); m_frecuency=f; } //!< Changes the frequency of the "ticks"
+			void setFrequency(float f) { ASSERT_(f>0); m_frecuency=f; CRenderizableDisplayList::notifyChange(); } //!< Changes the frequency of the "ticks"
 
-			void setLineWidth(float w) { m_lineWidth=w; }
+			void setLineWidth(float w) { m_lineWidth=w; CRenderizableDisplayList::notifyChange(); }
 			float getLineWidth() const { return  m_lineWidth;}
 
-			void enableTickMarks(bool v=true) { m_marks=v; }
+			void enableTickMarks(bool v=true) { m_marks=v; CRenderizableDisplayList::notifyChange(); }
 
 
 			/** Class factory  */
@@ -85,7 +86,7 @@ namespace mrpt
 
 			/** Render
 			  */
-			void  render() const;
+			void  render_dl() const;
 
 	private:
 			/** Constructor

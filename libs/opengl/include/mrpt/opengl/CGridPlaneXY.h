@@ -29,7 +29,7 @@
 #ifndef opengl_CGridPlaneXY_H
 #define opengl_CGridPlaneXY_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 
 namespace mrpt
 {
@@ -38,7 +38,7 @@ namespace mrpt
 		class OPENGL_IMPEXP CGridPlaneXY;
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CGridPlaneXY , CRenderizable, OPENGL_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CGridPlaneXY , CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A grid of lines over the XY plane.
 		  *  \sa opengl::COpenGLScene
@@ -50,7 +50,7 @@ namespace mrpt
 		  *  </div>
 		  *  
 		  */
-		class OPENGL_IMPEXP CGridPlaneXY : public CRenderizable
+		class OPENGL_IMPEXP CGridPlaneXY : public CRenderizableDisplayList
 		{
 			DEFINE_SERIALIZABLE( CGridPlaneXY )
 
@@ -60,11 +60,13 @@ namespace mrpt
 			float	m_plane_z;
 			float	m_frequency;
 
+
 		public:
 			void setPlaneLimits(float xmin,float xmax, float ymin, float ymax)
 			{
 				m_xMin=xmin; m_xMax = xmax;
 				m_yMin=ymin; m_yMax = ymax;
+				CRenderizableDisplayList::notifyChange();
 			}
 
 			void getPlaneLimits(float &xmin,float &xmax, float &ymin, float &ymax) const
@@ -73,15 +75,15 @@ namespace mrpt
 				ymin=m_yMin; ymax=m_yMax;
 			}
 
-			void setPlaneZcoord(float z) { m_plane_z=z; }
+			void setPlaneZcoord(float z) { CRenderizableDisplayList::notifyChange(); m_plane_z=z;  }
 			float getPlaneZcoord() const { return m_plane_z; }
 
-			void setGridFrequency(float freq) { ASSERT_(freq>0); m_frequency=freq; }
+			void setGridFrequency(float freq) { ASSERT_(freq>0); m_frequency=freq; CRenderizableDisplayList::notifyChange(); }
 			float getGridFrequency() const { return m_frequency; }
 
 
 			/** Render */
-			void  render() const;
+			virtual void  render_dl() const;
 
 			/** Class factory  */
 			static CGridPlaneXYPtr Create(

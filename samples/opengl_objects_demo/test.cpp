@@ -34,11 +34,14 @@ using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 
+
 // ------------------------------------------------------
 //				TestOpenGLObjects
 // ------------------------------------------------------
 void TestOpenGLObjects()
 {
+mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 10000;
+
 	CDisplayWindow3D	win("Demo of MRPT's OpenGL objects",640,480);
 
 	COpenGLScenePtr &theScene = win.get3DSceneAndLock();
@@ -59,6 +62,7 @@ void TestOpenGLObjects()
 		theScene->insert(gl_txt);
 	}
 	off_x+=STEP_X;
+
 
 	// XZ Grid
 	{
@@ -242,7 +246,8 @@ void TestOpenGLObjects()
 		obj->enablePointSmooth();
 		obj->enableColorFromY();
 
-		for (int i=0;i<200;i++)
+
+		for (int i=0;i<100000;i++)
 			obj->insertPoint(
 				mrpt::random::randomGenerator.drawUniform(-5,5),
 				mrpt::random::randomGenerator.drawUniform(-5,5),
@@ -316,6 +321,7 @@ void TestOpenGLObjects()
 	}
 	off_x+=STEP_X;
 
+#if 1
 	// CText
 	{
 		{
@@ -420,6 +426,7 @@ void TestOpenGLObjects()
 	}
 	off_x+=STEP_X;
 
+#endif
 
 	win.setCameraZoom(150);
 
@@ -427,8 +434,13 @@ void TestOpenGLObjects()
 	win.unlockAccess3DScene();
 	win.repaint();
 
-	cout << "Close the window or press any key to end.\n";
-	win.waitForKey();
+	cout << "Close the window to end.\n";
+	while (win.isOpen())
+	{
+		win.addTextMessage(5,5, format("%.02fFPS", win.getRenderingFPS()));
+		mrpt::system::sleep(2);
+		win.repaint();
+	}
 }
 
 // ------------------------------------------------------

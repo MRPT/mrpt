@@ -44,7 +44,7 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CPolyhedron,CRenderizable,mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CPolyhedron,CRenderizableDisplayList,mrpt::opengl)
 
 //Auxiliary data and code
 template<class T> class FCreatePolygonFromFace	{
@@ -792,7 +792,7 @@ CPolyhedronPtr CPolyhedron::CreateJohnsonSolidWithConstantBase(uint32_t numBaseE
 							render
   ---------------------------------------------------------------*/
 
-void CPolyhedron::render() const	{
+void CPolyhedron::render_dl() const	{
 #if MRPT_HAS_OPENGL_GLUT
 	if (mWireframe)	{
 		glLineWidth(mLineWidth);

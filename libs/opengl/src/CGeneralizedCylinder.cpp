@@ -40,7 +40,7 @@ using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CGeneralizedCylinder,CRenderizable,mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CGeneralizedCylinder,CRenderizableDisplayList,mrpt::opengl)
 
 void CGeneralizedCylinder::TQuadrilateral::calculateNormal()	{
 	double ax=points[1].x-points[0].x;
@@ -83,7 +83,7 @@ void CGeneralizedCylinder::getMeshIterators(const vector<TQuadrilateral> &m,vect
 	}
 }
 
-void CGeneralizedCylinder::render() const	{
+void CGeneralizedCylinder::render_dl() const	{
 #if MRPT_HAS_OPENGL_GLUT
 	if (!meshUpToDate) updateMesh();
 	checkOpenGLError();
@@ -128,6 +128,8 @@ bool CGeneralizedCylinder::traceRay(const CPose3D &o,double &dist) const	{
 }
 
 void CGeneralizedCylinder::updateMesh() const	{
+	CRenderizableDisplayList::notifyChange();
+
 	size_t A=axis.size();
 	vector<TPoint3D> genX=generatrix;
 	if (closed&&genX.size()>2) genX.push_back(genX[0]);
@@ -271,6 +273,7 @@ void CGeneralizedCylinder::getClosedSection(size_t index1,size_t index2,mrpt::op
 }
 
 void CGeneralizedCylinder::removeVisibleSectionAtStart()	{
+	CRenderizableDisplayList::notifyChange();
 	if (fullyVisible)	{
 		if (!getNumberOfSections()) throw std::logic_error("No more sections");
 		fullyVisible=false;
@@ -280,6 +283,7 @@ void CGeneralizedCylinder::removeVisibleSectionAtStart()	{
 	else firstSection++;
 }
 void CGeneralizedCylinder::removeVisibleSectionAtEnd()	{
+	CRenderizableDisplayList::notifyChange();
 	if (fullyVisible)	{
 		if (!getNumberOfSections()) throw std::logic_error("No more sections");
 		fullyVisible=false;
@@ -290,6 +294,8 @@ void CGeneralizedCylinder::removeVisibleSectionAtEnd()	{
 }
 
 void CGeneralizedCylinder::updatePolys() const	{
+	CRenderizableDisplayList::notifyChange();
+
 	if (!meshUpToDate) updateMesh();
 	size_t N=mesh.size();
 	polys.resize(N);

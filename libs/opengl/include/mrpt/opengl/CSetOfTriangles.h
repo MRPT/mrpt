@@ -28,7 +28,7 @@
 #ifndef opengl_CSetOfTriangles_H
 #define opengl_CSetOfTriangles_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/geometry.h>
 
 namespace mrpt
@@ -38,13 +38,13 @@ namespace mrpt
 		class OPENGL_IMPEXP CSetOfTriangles;
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfTriangles, CRenderizable, OPENGL_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfTriangles, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A set of colored triangles.
 		  *  This class can be used to draw any solid, arbitrarily complex object (without textures).
 		  *  \sa opengl::COpenGLScene, CSetOfTexturedTriangles
 		  */
-		class OPENGL_IMPEXP CSetOfTriangles : public CRenderizable
+		class OPENGL_IMPEXP CSetOfTriangles : public CRenderizableDisplayList
 		{
 			DEFINE_SERIALIZABLE( CSetOfTriangles )
 		public:
@@ -96,7 +96,7 @@ namespace mrpt
 			/**
 			  * Clear this object.
 			  */
-			inline void clearTriangles() { m_triangles.clear();polygonsUpToDate=false; }
+			inline void clearTriangles() { m_triangles.clear();polygonsUpToDate=false; CRenderizableDisplayList::notifyChange(); }
 			/**
 			  * Get triangle count.
 			  */
@@ -108,7 +108,7 @@ namespace mrpt
 			/**
 			  * Inserts a triangle into the set.
 			  */
-			inline void insertTriangle( const TTriangle &t ) { m_triangles.push_back(t);polygonsUpToDate=false; }
+			inline void insertTriangle( const TTriangle &t ) { m_triangles.push_back(t);polygonsUpToDate=false; CRenderizableDisplayList::notifyChange(); }
 			/**
 			  * Inserts a set of triangles, bounded by iterators, into this set.
 			  * \sa insertTriangle
@@ -116,6 +116,7 @@ namespace mrpt
 			template<class InputIterator> inline void insertTriangles(const InputIterator &begin,const InputIterator &end)	{
 				m_triangles.insert(m_triangles.end(),begin,end);
 				polygonsUpToDate=false;
+				CRenderizableDisplayList::notifyChange();
 			}
 			/**
 			  * Inserts an existing CSetOfTriangles into this one.
@@ -124,16 +125,18 @@ namespace mrpt
 				reserve(m_triangles.size()+p->m_triangles.size());
 				m_triangles.insert(m_triangles.end(),p->m_triangles.begin(),p->m_triangles.end());
 				polygonsUpToDate=false;
+				CRenderizableDisplayList::notifyChange();
 			}
 			/**
 			  * Reserves memory for certain number of triangles, avoiding multiple memory allocation calls.
 			  */
 			inline void reserve(size_t t)	{
 				m_triangles.reserve(t);
+				CRenderizableDisplayList::notifyChange();
 			}
 
 			/** Enables or disables transparency. */
-			inline void enableTransparency( bool v )	{ m_enableTransparency = v; }
+			inline void enableTransparency( bool v )	{ m_enableTransparency = v; CRenderizableDisplayList::notifyChange(); }
 
 			virtual CRenderizable& setColor(const mrpt::utils::TColorf &c);
 			virtual CRenderizable& setColor(double r,double g,double b,double a=1);
@@ -144,7 +147,8 @@ namespace mrpt
 
 			/** Render
 			  */
-			void  render() const;
+			void  render_dl() const;
+
 			/** Ray tracing
 			  */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
@@ -162,6 +166,7 @@ namespace mrpt
 			template<class CONTAINER>
 			inline void insertTriangles(const CONTAINER &c)	 {
 				this->insertTriangles(c.begin(),c.end());
+				CRenderizableDisplayList::notifyChange();
 			}
 
 			/**

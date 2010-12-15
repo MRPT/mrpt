@@ -42,12 +42,12 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CEllipsoid, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CEllipsoid, CRenderizableDisplayList, mrpt::opengl )
 
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void   CEllipsoid::render() const
+void   CEllipsoid::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START;
@@ -264,6 +264,8 @@ void CEllipsoid::setCovMatrix( const mrpt::math::CMatrixDouble &m, int resizeToS
 	if (m_cov==m_prevComputedCov)
 		return; // Done.
 
+	CRenderizableDisplayList::notifyChange();
+
 	// Handle the special case of an ellipsoid of volume = 0
 	if (m_cov.det()==0)
 	{
@@ -271,7 +273,6 @@ void CEllipsoid::setCovMatrix( const mrpt::math::CMatrixDouble &m, int resizeToS
 		m_prevComputedCov = m_cov;
 		m_eigVec.zeros(3,3);
 		m_eigVal.zeros(3,3);
-		// THROW_EXCEPTION("Singular covariance matrix.")
 	}
 	else
 	{
@@ -288,5 +289,6 @@ void CEllipsoid::setCovMatrix( const mrpt::math::CMatrixDouble &m, int resizeToS
 
 void CEllipsoid::setCovMatrix( const mrpt::math::CMatrixFloat &m, int resizeToSize)
 {
+	CRenderizableDisplayList::notifyChange();
 	setCovMatrix( CMatrixDouble(m), resizeToSize);
 }

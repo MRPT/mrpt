@@ -42,13 +42,13 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CSetOfTriangles, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CSetOfTriangles, CRenderizableDisplayList, mrpt::opengl )
 
 
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void   CSetOfTriangles::render() const
+void   CSetOfTriangles::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 
@@ -271,6 +271,7 @@ bool CSetOfTriangles::traceRayTriangle(const mrpt::poses::CPose3D &transf,double
 */
 
 CRenderizable& CSetOfTriangles::setColor(double R,double G,double B,double A)	{
+	CRenderizableDisplayList::notifyChange();
 	m_color_R=R;
 	m_color_G=G;
 	m_color_B=B;
@@ -285,6 +286,7 @@ CRenderizable& CSetOfTriangles::setColor(double R,double G,double B,double A)	{
 }
 
 CRenderizable& CSetOfTriangles::setColor(const mrpt::utils::TColorf &c)	{
+	CRenderizableDisplayList::notifyChange();
 	m_color_R=c.R;
 	m_color_G=c.G;
 	m_color_B=c.B;
@@ -299,24 +301,28 @@ CRenderizable& CSetOfTriangles::setColor(const mrpt::utils::TColorf &c)	{
 }
 
 CRenderizable& CSetOfTriangles::setColorR(const double r)	{
+	CRenderizableDisplayList::notifyChange();
 	m_color_R=r;
 	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->r[i]=r;
 	return *this;
 }
 
 CRenderizable& CSetOfTriangles::setColorG(const double g)	{
+	CRenderizableDisplayList::notifyChange();
 	m_color_G=g;
 	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->g[i]=g;
 	return *this;
 }
 
 CRenderizable& CSetOfTriangles::setColorB(const double b)	{
+	CRenderizableDisplayList::notifyChange();
 	m_color_B=b;
 	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->b[i]=b;
 	return *this;
 }
 
 CRenderizable& CSetOfTriangles::setColorA(const double a)	{
+	CRenderizableDisplayList::notifyChange();
 	m_color_A=a;
 	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->a[i]=a;
 	return *this;
@@ -340,4 +346,5 @@ void CSetOfTriangles::updatePolygons() const	{
 		tmpPolygons[i]=tmp;
 	}
 	polygonsUpToDate=true;
+	CRenderizableDisplayList::notifyChange();
 }

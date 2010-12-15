@@ -65,6 +65,7 @@
 				- (TODO) Smart rendering based on Octrees to determine which volumes are within the frustum.
 				- (TODO) For each octree volume, smart decimation of the points from the points-to-eye distance: why rendering 1e6 points that will all be seen in a 10x10 pixel area?
 			- New method mrpt::opengl::COpenGLScene::visitAllObjects()
+			- Many mrpt::opengl classes now are derived from a display-list-cached base class (mrpt::opengl::CRenderizableDisplayList)
 		- Changes in functions:
 			- mrpt::vision::matchFeatures(). Implemented a new method for managing ambiguous matches, now taking into account which of the conflicting matches is the most probable.
 		- New structures/classes:
@@ -73,6 +74,7 @@
 			- TMultiResDescOptions. Struct containing the options when computing the multi-resolution SIFT-like descriptors.
 			- mrpt::aligned_containers: A helper template to ease the declaration of STL containers with the correct Eigen aligned allocators.
 			- mrpt::opengl::CRenderizable::TRenderInfo: Helper struct to help OpenGL objects to render more efficiently by predicting their rendering conditions
+			- mrpt::opengl::CRenderizableDisplayList, a class to automate the caching of OpenGL objects via Display Lists.
 		- New functions:
 			- mrpt::vision::computeGradient(). Computes the gradient of certain pixel within the image.
 			- mrpt::vision::computeMainOrientations(). Computes the main orientations (within 80% of the peak value of orientation histogram) of a certain point within an image (for using in SIFT-based algorithms)

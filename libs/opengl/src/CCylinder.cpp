@@ -37,12 +37,12 @@ using namespace mrpt::opengl;
 using namespace mrpt::utils;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CCylinder,CRenderizable,mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CCylinder,CRenderizableDisplayList,mrpt::opengl)
 
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void CCylinder::render() const	{
+void CCylinder::render_dl() const	{
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);

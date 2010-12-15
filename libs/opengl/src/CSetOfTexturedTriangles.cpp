@@ -39,7 +39,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 
-IMPLEMENTS_SERIALIZABLE( CSetOfTexturedTriangles, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CSetOfTexturedTriangles, CRenderizableDisplayList, mrpt::opengl )
 
 /*---------------------------------------------------------------
 							~CTexturedPlane
@@ -51,12 +51,10 @@ CSetOfTexturedTriangles::~CSetOfTexturedTriangles()
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void   CSetOfTexturedTriangles::render() const
+void   CSetOfTexturedTriangles::render_texturedobj() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
-
-	render_texture_pre();
 
 	glShadeModel(GL_SMOOTH);
 
@@ -85,8 +83,6 @@ void   CSetOfTexturedTriangles::render() const
 	}
 
 	glEnd();
-
-	render_texture_post();
 
 	MRPT_END
 #endif

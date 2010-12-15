@@ -28,7 +28,7 @@
 #ifndef opengl_CSphere_H
 #define opengl_CSphere_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 
 namespace mrpt
 {
@@ -37,7 +37,7 @@ namespace mrpt
 		class OPENGL_IMPEXP CSphere;
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSphere, CRenderizable, OPENGL_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSphere, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A solid or wire-frame sphere.
 		  *  \sa opengl::COpenGLScene
@@ -49,7 +49,7 @@ namespace mrpt
 		  *  </div>
 		  *  
 		  */
-		class OPENGL_IMPEXP CSphere : public CRenderizable
+		class OPENGL_IMPEXP CSphere : public CRenderizableDisplayList
 		{
 			DEFINE_SERIALIZABLE( CSphere )
 
@@ -59,13 +59,15 @@ namespace mrpt
 			bool			m_keepRadiusIndependentEyeDistance;
 
 		public:
-			void setRadius(float r) { m_radius=r; }
+			void setRadius(float r) { m_radius=r; CRenderizableDisplayList::notifyChange(); }
 			float getRadius() const {return m_radius; }
 
-			void setNumberDivsLongitude(int N) { m_nDivsLongitude=N; }
-			void setNumberDivsLatitude(int N) { m_nDivsLatitude=N; }
-			void enableRadiusIndependentOfEyeDistance(bool v=true)  { m_keepRadiusIndependentEyeDistance=v; }
+			void setNumberDivsLongitude(int N) { m_nDivsLongitude=N; CRenderizableDisplayList::notifyChange(); }
+			void setNumberDivsLatitude(int N) { m_nDivsLatitude=N;  CRenderizableDisplayList::notifyChange();}
+			void enableRadiusIndependentOfEyeDistance(bool v=true)  { m_keepRadiusIndependentEyeDistance=v; CRenderizableDisplayList::notifyChange(); }
 
+			/** \sa CRenderizableDisplayList */
+			virtual bool should_skip_display_list_cache() const { return m_keepRadiusIndependentEyeDistance; }
 
 			/** Class factory  */
 			static CSpherePtr Create(
@@ -77,7 +79,8 @@ namespace mrpt
 			}
 
 			/** Render */
-			void  render() const;
+			void  render_dl() const;
+
 			/** Ray tracing
 			  */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;

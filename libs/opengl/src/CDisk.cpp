@@ -41,12 +41,12 @@ using namespace std;
 
 
 
-IMPLEMENTS_SERIALIZABLE( CDisk, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CDisk, CRenderizableDisplayList, mrpt::opengl )
 
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void   CDisk::render() const
+void   CDisk::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable (GL_BLEND);

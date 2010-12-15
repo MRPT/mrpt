@@ -28,7 +28,7 @@
 #ifndef opengl_CTexturedObject_H
 #define opengl_CTexturedObject_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/math/geometry.h>
 
@@ -39,12 +39,12 @@ namespace mrpt
 		class OPENGL_IMPEXP CTexturedObject;
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CTexturedObject, CRenderizable, OPENGL_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CTexturedObject, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A base class for all OpenGL objects with loadable textures.
 		  *  \sa opengl::COpenGLScene, opengl::CTexturedPlane, opengl::CSetOfTexturedTriangles
 		  */
-		class OPENGL_IMPEXP CTexturedObject : public CRenderizable
+		class OPENGL_IMPEXP CTexturedObject : public CRenderizableDisplayList
 		{
 			DEFINE_VIRTUAL_SERIALIZABLE( CTexturedObject )
 
@@ -62,8 +62,10 @@ namespace mrpt
 			virtual ~CTexturedObject();
 			void unloadTexture();
 
-			void  render_texture_pre()  const;
-			void  render_texture_post() const;
+			virtual void  render_pre()  const;
+			virtual void  render_post() const;
+			
+			virtual void  render_texturedobj() const = 0;  //!< Must be implemented by derived classes
 
 			void  writeToStreamTexturedObject(mrpt::utils::CStream &out) const;
 			void  readFromStreamTexturedObject(mrpt::utils::CStream &in);
@@ -92,6 +94,8 @@ namespace mrpt
 			  *  Calling this method more than once has no effects. If you use one thread, this method will be automatically called when rendering, so there is no need to explicitly call it.
 			  */
 			void loadTextureInOpenGL() const;
+
+			virtual void  render_dl() const;
 
 		};
 

@@ -43,13 +43,13 @@ using namespace mrpt::math;
 using namespace std;
 
 
-IMPLEMENTS_SERIALIZABLE( CArrow, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CArrow, CRenderizableDisplayList, mrpt::opengl )
 
 
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void   CArrow::render() const
+void   CArrow::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable(GL_LIGHTING);

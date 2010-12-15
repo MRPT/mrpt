@@ -29,7 +29,7 @@
 #ifndef opengl_CPlanarLaserScan_H
 #define opengl_CPlanarLaserScan_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/slam/CObservation.h>
@@ -44,7 +44,7 @@ namespace mrpt
 		class CPlanarLaserScan;
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CPlanarLaserScan, CRenderizable, MAPS_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CPlanarLaserScan, CRenderizableDisplayList, MAPS_IMPEXP )
 
 		/** This object renders a 2D laser scan by means of three elements: the points, the line along end-points and the 2D scanned surface.
 		  *  You can change the public members :
@@ -58,7 +58,7 @@ namespace mrpt
 		  *
 		  *  \sa mrpt::opengl::CPointCloud, opengl::COpenGLScene
 		  */
-		class MAPS_IMPEXP CPlanarLaserScan : public CRenderizable
+		class MAPS_IMPEXP CPlanarLaserScan : public CRenderizableDisplayList
 		{
 			DEFINE_SERIALIZABLE( CPlanarLaserScan )
 		protected:
@@ -111,13 +111,14 @@ namespace mrpt
 
 			void setScan( const mrpt::slam::CObservation2DRangeScan	&scan)
 			{
+				CRenderizableDisplayList::notifyChange();
 				m_cache_valid = false;
 				m_scan = scan;
 			}
 
 			/** Render
 			  */
-			void  render() const;
+			void  render_dl() const;
 
 		private:
 			/** Constructor

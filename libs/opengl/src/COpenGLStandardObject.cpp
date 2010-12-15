@@ -36,7 +36,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 
-IMPLEMENTS_SERIALIZABLE(COpenGLStandardObject,CRenderizable,mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(COpenGLStandardObject,CRenderizableDisplayList,mrpt::opengl)
 
 #define COMPILE_TIME_ASSERT(N,expr)   \
 	char dummy_constraint##N[expr]
@@ -55,7 +55,7 @@ void renderFunc(TPoint3D p)	{
 #endif
 }
 
-void COpenGLStandardObject::render()	const	{
+void COpenGLStandardObject::render_dl()	const	{
 #if MRPT_HAS_OPENGL_GLUT
 	for_each(enabled.begin(),enabled.end(),glEnable);
 	glShadeModel(GL_SMOOTH);

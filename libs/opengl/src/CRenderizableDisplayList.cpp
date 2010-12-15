@@ -28,89 +28,86 @@
 
 #include <mrpt/opengl.h>  // Precompiled header
 
-
-#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 
 #include "opengl_internals.h"
 
+
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
-using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CGridPlaneXY, CRenderizableDisplayList, mrpt::opengl )
+IMPLEMENTS_VIRTUAL_SERIALIZABLE( CRenderizableDisplayList, CRenderizable, mrpt::opengl )
 
+// Default constructor:
+CRenderizableDisplayList::CRenderizableDisplayList() :
+	m_dl(INVALID_DISPLAY_LIST_ID),
+	m_dl_recreate(true)
+{
+}
 
-/*---------------------------------------------------------------
-					render_dl
-  ---------------------------------------------------------------*/
-void   CGridPlaneXY::render_dl() const
+// Destructor:
+CRenderizableDisplayList::~CRenderizableDisplayList()
+{
+	// If we had an associated display list:
+	if (m_dl!=INVALID_DISPLAY_LIST_ID)
+	{
+		// Delete the graphical memory:
+#if MRPT_HAS_OPENGL_GLUT
+		glDeleteLists(m_dl, 1);
+#endif
+	}
+}
+
+// This is the virtual rendering method CRenderizable expects from us.
+// We call our derived class to save the list, then just call that list:
+void   CRenderizableDisplayList::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	glLineWidth(1);
-
-	glBegin(GL_LINES);
-
-	MRPT_START;
-
-	ASSERT_(m_frequency>=0);
-
-	for (float y=m_yMin;y<=m_yMax;y+=m_frequency)
+	if (should_skip_display_list_cache())
 	{
-		glVertex3f( m_xMin,y,m_plane_z );
-		glVertex3f( m_xMax,y,m_plane_z );
+		// The object is in a state where caching a display list is not preferred, so render directly:
+		render_dl();
 	}
-
-	for (float x=m_xMin;x<=m_xMax;x+=m_frequency)
-	{
-		glVertex3f( x,m_yMin,m_plane_z );
-		glVertex3f( x,m_yMax,m_plane_z );
-	}
-
-	MRPT_END_WITH_CLEAN_UP( glEnd(); )
-
-	glEnd();
-
-#endif
-}
-
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-     CSerializable objects
-  ---------------------------------------------------------------*/
-void  CGridPlaneXY::writeToStream(CStream &out,int *version) const
-{
-
-	if (version)
-		*version = 0;
 	else
 	{
-		writeToStreamRender(out);
-		out << m_xMin << m_xMax;
-		out << m_yMin << m_yMax << m_plane_z;
-		out << m_frequency;
-	}
-}
+		if (m_dl==INVALID_DISPLAY_LIST_ID)
+			m_dl = glGenLists(1);  // Assign list ID upon first usage.
 
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void  CGridPlaneXY::readFromStream(CStream &in,int version)
-{
-
-	switch(version)
-	{
-	case 0:
+		if (m_dl_recreate)
 		{
-			readFromStreamRender(in);
-			in >> m_xMin >> m_xMax;
-			in >> m_yMin >> m_yMax >> m_plane_z;
-			in >> m_frequency;
-		} break;
-	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			m_dl_recreate = false;
+			glNewList(m_dl,GL_COMPILE);
 
-	};
+			// Call derived class:
+			render_dl();
+
+			glEndList();
+		}
+
+		// Call the list:
+		glCallList(m_dl);
+	}
+#endif 
 }
 
+
+CRenderizable& CRenderizableDisplayList::setColor( double R, double G, double B, double A)
+{
+	m_color_R = R;
+	m_color_G = G;
+	m_color_B = B;
+	m_color_A = A;
+	notifyChange();
+	return *this;
+}
+
+CRenderizable& CRenderizableDisplayList::setColor( const mrpt::utils::TColorf &c)
+{
+	m_color_R = c.R;
+	m_color_G = c.G;
+	m_color_B = c.B;
+	m_color_A = c.A;
+	return *this;
+}

@@ -39,12 +39,12 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CSimpleLine, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CSimpleLine, CRenderizableDisplayList, mrpt::opengl )
 
 /*---------------------------------------------------------------
-							render
+							render_dl
   ---------------------------------------------------------------*/
-void   CSimpleLine::render() const
+void   CSimpleLine::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable (GL_BLEND);

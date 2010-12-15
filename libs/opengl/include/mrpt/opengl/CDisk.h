@@ -28,7 +28,7 @@
 #ifndef opengl_CDisk_H
 #define opengl_CDisk_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/geometry.h>
 
@@ -39,7 +39,7 @@ namespace mrpt
 		class OPENGL_IMPEXP CDisk;
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDisk, CRenderizable, OPENGL_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDisk, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A planar disk in the XY plane.
 		  *  \sa opengl::COpenGLScene
@@ -51,7 +51,7 @@ namespace mrpt
 		  *  </div>
 		  *  
 		  */
-		class OPENGL_IMPEXP CDisk : public CRenderizable
+		class OPENGL_IMPEXP CDisk : public CRenderizableDisplayList
 		{
 			DEFINE_SERIALIZABLE( CDisk )
 
@@ -60,18 +60,18 @@ namespace mrpt
 			uint32_t	m_nSlices, m_nLoops;
 
 		public:
-			void setDiskRadius(float outRadius, float inRadius=0) { m_radiusIn=inRadius; m_radiusOut=outRadius; }
+			void setDiskRadius(float outRadius, float inRadius=0) { m_radiusIn=inRadius; m_radiusOut=outRadius; CRenderizableDisplayList::notifyChange(); }
 
 			float getInRadius() const { return m_radiusIn; }
 			float getOutRadius() const { return m_radiusOut; }
 
-			void setSlicesCount(uint32_t N) { m_nSlices=N; }  //!< Default=50
-			void setLoopsCount(uint32_t N) { m_nLoops=N; }  //!< Default=4
+			void setSlicesCount(uint32_t N) { m_nSlices=N; CRenderizableDisplayList::notifyChange(); }  //!< Default=50
+			void setLoopsCount(uint32_t N) { m_nLoops=N; CRenderizableDisplayList::notifyChange(); }  //!< Default=4
 
 
 			/** Render
 			  */
-			void  render() const;
+			void  render_dl() const;
 
 			/** Ray tracing
 			  */

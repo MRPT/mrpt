@@ -40,10 +40,10 @@ using namespace mrpt::system;
 using namespace mrpt::utils;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CAxis, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CAxis, CRenderizableDisplayList, mrpt::opengl )
 
 
-void   CAxis::render() const
+void   CAxis::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START;

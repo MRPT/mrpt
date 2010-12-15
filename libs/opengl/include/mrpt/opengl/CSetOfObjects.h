@@ -76,7 +76,6 @@ namespace mrpt
 			}
 			/** Insert a new object to the list.
 			  */
-			//void insert( mrpt::opengl::CRenderizable* newObject );
 			void insert( const CRenderizablePtr &newObject );
 
 			/** Inserts a set of objects, bounded by iterators, into the list.

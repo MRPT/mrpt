@@ -56,7 +56,7 @@ using namespace std;
 #endif // MRPT_HAS_OPENGL_GLUT
 
 
-IMPLEMENTS_SERIALIZABLE( COpenGLScene, CSerializable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( COpenGLScene, CRenderizableDisplayList, mrpt::opengl )
 
 
 /*---------------------------------------------------------------

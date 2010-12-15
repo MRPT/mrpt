@@ -28,7 +28,7 @@
 #ifndef opengl_C3DSScene_H
 #define opengl_C3DSScene_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/utils/CMemoryChunk.h>
 
@@ -39,13 +39,13 @@ namespace mrpt
 		class OPENGL_IMPEXP C3DSScene;
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( C3DSScene, CRenderizable, OPENGL_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( C3DSScene, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** This element keeps a set of objects imported from a 3DStudio file (.3ds).
 		  *  This class uses the opensource library <a href="http://lib3ds.sourceforge.net/">lib3ds</a> internally.
 		  *  \sa opengl::COpenGLScene
 		  */
-		class OPENGL_IMPEXP C3DSScene : public CRenderizable
+		class OPENGL_IMPEXP C3DSScene : public CRenderizableDisplayList
 		{
 			DEFINE_SERIALIZABLE( C3DSScene )
 
@@ -54,7 +54,7 @@ namespace mrpt
 
 			/** Render child objects.
 			  */
-			void  render() const;
+			void  render_dl() const;
 
 			/**  Loads a scene from a 3DS file (3D Studio format) into this object, from either plain .3ds format, or in gzip compressed .3ds.gz format.
 			  *    Previous contents are lost.
@@ -74,7 +74,7 @@ namespace mrpt
 			void evaluateAnimation( double time_anim );
 
 			/** Enables an extra ambient light */
-			void enableExtraAmbientLight(bool enable=true) { m_enable_extra_lighting=enable; }
+			void enableExtraAmbientLight(bool enable=true) { m_enable_extra_lighting=enable; CRenderizableDisplayList::notifyChange(); }
 
 			/* Simulation of ray-trace. */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;

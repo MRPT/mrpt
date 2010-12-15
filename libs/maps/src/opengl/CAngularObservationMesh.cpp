@@ -50,7 +50,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
-IMPLEMENTS_SERIALIZABLE(CAngularObservationMesh,CRenderizable,mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CAngularObservationMesh,CRenderizableDisplayList,mrpt::opengl)
 
 void CAngularObservationMesh::addTriangle(const TPoint3D &p1,const TPoint3D &p2,const TPoint3D &p3) const	{
 	const TPoint3D *arr[3]={&p1,&p2,&p3};
@@ -65,9 +65,12 @@ void CAngularObservationMesh::addTriangle(const TPoint3D &p1,const TPoint3D &p2,
 		t.a[i]=m_color_A;
 	}
 	triangles.push_back(t);
+	CRenderizableDisplayList::notifyChange();
 }
 
 void CAngularObservationMesh::updateMesh() const	{
+	CRenderizableDisplayList::notifyChange();
+
 	size_t numRows=scanSet.size();
 	triangles.clear();
 	if (numRows<=1)	{
@@ -128,7 +131,7 @@ void CAngularObservationMesh::updateMesh() const	{
 	meshUpToDate=true;
 }
 
-void CAngularObservationMesh::render() const	{
+void CAngularObservationMesh::render_dl() const	{
 #if MRPT_HAS_OPENGL_GLUT
 	if (mEnableTransparency)	{
 		glEnable(GL_BLEND);
@@ -169,6 +172,8 @@ bool CAngularObservationMesh::traceRay(const mrpt::poses::CPose3D &o,double &dis
 }
 
 bool CAngularObservationMesh::setScanSet(const std::vector<CObservation2DRangeScan> &scans)	{
+	CRenderizableDisplayList::notifyChange();
+
 	//Returns false if the scan is inconsistent
 	if (scans.size()>0)	{
 		size_t setSize=scans[0].scan.size();
@@ -184,12 +189,16 @@ bool CAngularObservationMesh::setScanSet(const std::vector<CObservation2DRangeSc
 }
 
 void CAngularObservationMesh::setPitchBounds(const double initial,const double final)	{
+	CRenderizableDisplayList::notifyChange();
+
 	pitchBounds.clear();
 	pitchBounds.push_back(initial);
 	pitchBounds.push_back(final);
 	meshUpToDate=false;
 }
 void CAngularObservationMesh::setPitchBounds(const std::vector<double> bounds)	{
+	CRenderizableDisplayList::notifyChange();
+
 	pitchBounds=bounds;
 	meshUpToDate=false;
 }

@@ -27,7 +27,8 @@
    +---------------------------------------------------------------------------+ */
 #ifndef opengl_CAngularObservationMesh_H
 #define opengl_CAngularObservationMesh_H
-#include <mrpt/opengl/CRenderizable.h>
+
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/math/CMatrixB.h>
@@ -44,7 +45,7 @@ namespace opengl	{
 	using namespace mrpt::slam;
 	using namespace mrpt::poses;
 
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CAngularObservationMesh,CRenderizable, MAPS_IMPEXP)
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CAngularObservationMesh,CRenderizableDisplayList, MAPS_IMPEXP)
 
 	/**
 	  * A mesh built from a set of 2D laser scan observations.
@@ -52,7 +53,7 @@ namespace opengl	{
 	  * Each scan has a CPose3D identifying the origin of the scan, which ideally is the
 	  * same for every one of them.
 	  */
-	class MAPS_IMPEXP CAngularObservationMesh:public CRenderizable	{
+	class MAPS_IMPEXP CAngularObservationMesh:public CRenderizableDisplayList	{
 		DEFINE_SERIALIZABLE(CAngularObservationMesh)
 	public:
 		/**
@@ -272,6 +273,7 @@ namespace opengl	{
 		  */
 		inline void setWireframe(bool enabled=true)	{
 			mWireframe=enabled;
+			CRenderizableDisplayList::notifyChange();
 		}
 		/**
 		  * Returns whether the object may be transparent or not.
@@ -284,12 +286,13 @@ namespace opengl	{
 		  */
 		inline void enableTransparency(bool enabled=true)	{
 			mEnableTransparency=enabled;
+			CRenderizableDisplayList::notifyChange();
 		}
 		/**
 		  * Renderizes the object.
 		  * \sa mrpt::opengl::CRenderizable
 		  */
-		virtual void render() const;
+		virtual void render_dl() const;
 		/**
 		  * Traces a ray to the object, returning the distance to a given pose through its X axis.
 		  * \sa mrpt::opengl::CRenderizable,trace2DSetOfRays,trace1DSetOfRays

@@ -28,7 +28,7 @@
 #ifndef opengl_CArrow_H
 #define opengl_CArrow_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 
 namespace mrpt
 {
@@ -37,7 +37,7 @@ namespace mrpt
 		class OPENGL_IMPEXP CArrow;
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CArrow, CRenderizable, OPENGL_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CArrow, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A 3D arrow
 		  *  \sa opengl::COpenGLScene
@@ -49,7 +49,7 @@ namespace mrpt
 		  *  </div>
 		  *  
 		  */
-		class OPENGL_IMPEXP CArrow : public CRenderizable
+		class OPENGL_IMPEXP CArrow : public CRenderizableDisplayList
 		{
 			DEFINE_SERIALIZABLE( CArrow )
 		protected:
@@ -68,15 +68,16 @@ namespace mrpt
 			{
 				m_x0=x0;  m_y0 = y0;  m_z0=z0;
 				m_x1=x1;  m_y1 = y1;  m_z1=z1;
+				CRenderizableDisplayList::notifyChange();
 			}
-			void setHeadRatio(float rat) { m_headRatio=rat; }
-			void setSmallRadius(float rat) { m_smallRadius=rat; }
-			void setLargeRadius(float rat) { m_largeRadius=rat; }
-			void setArrowYawPitchRoll(float yaw,float pitch, float roll ) { m_arrow_yaw=yaw; m_arrow_pitch=pitch; m_arrow_roll=roll; }
+			void setHeadRatio(float rat) { m_headRatio=rat; CRenderizableDisplayList::notifyChange(); }
+			void setSmallRadius(float rat) { m_smallRadius=rat; CRenderizableDisplayList::notifyChange(); }
+			void setLargeRadius(float rat) { m_largeRadius=rat; CRenderizableDisplayList::notifyChange(); }
+			void setArrowYawPitchRoll(float yaw,float pitch, float roll ) { m_arrow_yaw=yaw; m_arrow_pitch=pitch; m_arrow_roll=roll; CRenderizableDisplayList::notifyChange(); }
 
 			/** Render
 			  */
-			void  render() const;
+			void  render_dl() const;
 
 			/** Class factory  */
 			static CArrowPtr Create(

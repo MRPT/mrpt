@@ -28,7 +28,7 @@
 #ifndef opengl_CSimpleLine_H
 #define opengl_CSimpleLine_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 
 namespace mrpt
 {
@@ -37,12 +37,12 @@ namespace mrpt
 		class OPENGL_IMPEXP CSimpleLine;
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSimpleLine, CRenderizable, OPENGL_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSimpleLine, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A line segment
 		  *  \sa opengl::COpenGLScene
 		  */
-		class OPENGL_IMPEXP CSimpleLine : public CRenderizable
+		class OPENGL_IMPEXP CSimpleLine : public CRenderizableDisplayList
 		{
 			DEFINE_SERIALIZABLE( CSimpleLine )
 
@@ -51,13 +51,14 @@ namespace mrpt
 			float	m_x1,m_y1,m_z1;
             float	m_lineWidth;
 		public:
-			void setLineWidth(float w) { m_lineWidth=w; }
+			void setLineWidth(float w) { m_lineWidth=w; CRenderizableDisplayList::notifyChange(); }
 			float getLineWidth() const { return  m_lineWidth;}
 
 			void setLineCoords(float x0,float y0,float z0, float x1, float y1, float z1)
 			{
 				m_x0=x0; m_y0=y0; m_z0=z0;
 				m_x1=x1; m_y1=y1; m_z1=z1;
+				CRenderizableDisplayList::notifyChange();
 			}
 
 			void getLineCoords(float &x0,float &y0,float &z0, float &x1, float &y1, float &z1) const
@@ -68,7 +69,7 @@ namespace mrpt
 
 			/** Render
 			  */
-			void  render() const;
+			void  render_dl() const;
 
 		private:
 			/** Constructor

@@ -29,7 +29,7 @@
 #ifndef opengl_CMesh_H
 #define opengl_CMesh_H
 
-#include <mrpt/opengl/CRenderizable.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/color_maps.h>
@@ -42,7 +42,7 @@ namespace mrpt
 		class OPENGL_IMPEXP CMesh;
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CMesh, CRenderizable, OPENGL_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CMesh, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A planar (XY) grid where each cell has an associated height and, optionally, a texture map.
 		  *  A typical usage example would be an elevation map or a 3D model of a terrain.
@@ -55,7 +55,7 @@ namespace mrpt
 		  *  </div>
 		  *  
 		  */
-		class OPENGL_IMPEXP CMesh : public CRenderizable
+		class OPENGL_IMPEXP CMesh : public CRenderizableDisplayList
 		{
 			DEFINE_SERIALIZABLE( CMesh )
 		protected:
@@ -89,6 +89,7 @@ namespace mrpt
 			{
 				xMin=xmin; xMax = xmax;
 				yMin=ymin; yMax = ymax;
+				CRenderizableDisplayList::notifyChange();
 			}
 
 			void getGridLimits(float &xmin,float &xmax, float &ymin, float &ymax) const
@@ -97,28 +98,25 @@ namespace mrpt
 				ymin=yMin; ymax=yMax;
 			}
 
-			void enableTransparency( bool v )	{ m_enableTransparency = v; }
-			void enableWireFrame( bool v ) 		{ m_isWireFrame = v; }
+			void enableTransparency( bool v )	{ m_enableTransparency = v; CRenderizableDisplayList::notifyChange(); }
+			void enableWireFrame( bool v ) 		{ m_isWireFrame = v; CRenderizableDisplayList::notifyChange(); }
 			void enableColorFromZ( bool v, mrpt::utils::TColormap	colorMap = mrpt::utils::cmJET )
 			{
 				m_colorFromZ = v;
 				m_colorMap   = colorMap;
+				CRenderizableDisplayList::notifyChange();
 			}
 
 			/** This method sets the matrix of heights for each position (cell) in the mesh grid */
 			void setZ( const mrpt::math::CMatrixTemplateNumeric<float> &in_Z );
 
 			/** Returns a reference to the internal Z matrix, allowing changing it efficiently */
-			//mrpt::math::CMatrixFloat & getZ();
 			inline void getZ(mrpt::math::CMatrixFloat &out) const	{
-				//out=CMatrixTemplateNumeric<float>(Z);
 				out=Z;
 			}
 
 			/** Returns a reference to the internal mask matrix, allowing changing it efficiently */
-			//mrpt::math::CMatrixFloat & getMask();
 			inline void getMask(mrpt::math::CMatrixFloat &out) const	{
-				//out=CMatrixTemplateNumeric<float>(mask);
 				out=mask;
 			}
 
@@ -128,33 +126,25 @@ namespace mrpt
 			/** Sets the (u,v) texture coordinates (in range [0,1]) for each cell */
 			void setUV( const mrpt::math::CMatrixTemplateNumeric<float> &in_U, const mrpt::math::CMatrixTemplateNumeric<float> &in_V);
 
-			inline float getXMin() const	{
-				return xMin;
-			}
-			inline float getXMax() const	{
-				return xMax;
-			}
-			inline float getYMin() const	{
-				return yMin;
-			}
-			inline float getYMax() const	{
-				return yMax;
-			}
+			inline float getXMin() const	{ return xMin; }
+			inline float getXMax() const	{ return xMax; }
+			inline float getYMin() const	{ return yMin; }
+			inline float getYMax() const	{ return yMax; }
 			inline void setXMin(const float &nxm)	{
 				xMin=nxm;
-				trianglesUpToDate=false;
+				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
 			inline void setXMax(const float &nxm)	{
 				xMax=nxm;
-				trianglesUpToDate=false;
+				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
 			inline void setYMin(const float &nym)	{
 				yMin=nym;
-				trianglesUpToDate=false;
+				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
 			inline void setYMax(const float &nym)	{
 				yMax=nym;
-				trianglesUpToDate=false;
+				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
 			inline void getXBounds(float &min,float &max) const	{
 				min=xMin;
@@ -167,12 +157,12 @@ namespace mrpt
 			inline void setXBounds(const float &min,const float &max)	{
 				xMin=min;
 				xMax=max;
-				trianglesUpToDate=false;
+				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
 			inline void setYBounds(const float &min,const float &max)	{
 				yMin=min;
 				yMax=max;
-				trianglesUpToDate=false;
+				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
 
 
@@ -184,12 +174,11 @@ namespace mrpt
 
 			/** Render
 			  */
-			void  render() const;
+			void  render_dl() const;
 
 			/** Assigns a texture image, and disable transparency.
 			  */
-			void  assignImage(
-				const utils::CImage&	img );
+			void  assignImage(const utils::CImage&	img );
 
 			/** Trace ray
 			  */

@@ -86,20 +86,19 @@ namespace mrpt
 			};
 
 		protected:
-			//mutable bool		m_init;
-
 			/** Triangle array. */
 			std::vector<TTriangle>	m_triangles;
 
-		public:
-			void clearTriangles( ) { m_triangles.clear(); }
-			size_t getTrianglesCount( ) const { return m_triangles.size(); }
-			void getTriangle( size_t idx, TTriangle &t ) const { ASSERT_(idx<m_triangles.size()); t = m_triangles[idx]; }
-			void insertTriangle( const TTriangle &t ) { m_triangles.push_back(t); }
+			/** Render */
+			void  render_texturedobj( ) const;
 
-			/** Render
-			  */
-			void  render( ) const;
+		public:
+			void clearTriangles( ) { m_triangles.clear(); CRenderizableDisplayList::notifyChange(); }
+			size_t getTrianglesCount( ) const { return m_triangles.size(); }
+			const TTriangle & getTriangle( size_t idx) const { ASSERT_(idx<m_triangles.size()); return m_triangles[idx];  }
+			void getTriangle( size_t idx, TTriangle &t ) const { ASSERT_(idx<m_triangles.size()); t = m_triangles[idx]; CRenderizableDisplayList::notifyChange(); }
+			void insertTriangle( const TTriangle &t ) { m_triangles.push_back(t); CRenderizableDisplayList::notifyChange(); }
+
 
 			/** Ray Trace
 			  */

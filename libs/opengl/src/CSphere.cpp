@@ -41,12 +41,12 @@ using namespace mrpt::math;
 using namespace std;
 
 
-IMPLEMENTS_SERIALIZABLE( CSphere, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CSphere, CRenderizableDisplayList, mrpt::opengl )
 
 /*---------------------------------------------------------------
-							render
+							render_dl
   ---------------------------------------------------------------*/
-void   CSphere::render() const
+void   CSphere::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	glEnable(GL_LIGHTING);

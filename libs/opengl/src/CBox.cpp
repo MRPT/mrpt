@@ -38,12 +38,12 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CBox,CRenderizable,mrpt::opengl)
+IMPLEMENTS_SERIALIZABLE(CBox,CRenderizableDisplayList,mrpt::opengl)
 
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void CBox::render() const	{
+void CBox::render_dl() const	{
 #if MRPT_HAS_OPENGL_GLUT
 	if (m_color_A!=1.0)
 	{
@@ -215,6 +215,8 @@ void CBox::readFromStream(CStream &in,int version)	{
 
 void CBox::setBoxCorners(const mrpt::math::TPoint3D &corner1, const mrpt::math::TPoint3D &corner2)
 {
+	CRenderizableDisplayList::notifyChange();
+
 	// Order the coordinates so we always have the min/max in their right position:
 	m_corner_min.x = std::min(corner1.x,corner2.x);
 	m_corner_min.y = std::min(corner1.y,corner2.y);

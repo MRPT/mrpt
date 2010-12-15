@@ -133,7 +133,7 @@ namespace mrpt
 
 			/** Default constructor:  */
 			CRenderizable();
-			virtual ~CRenderizable() { }
+			virtual ~CRenderizable();
 
 			/** Interface for the stlplus smart pointer class. */
 			inline CRenderizable * clone() const
@@ -151,7 +151,7 @@ namespace mrpt
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
 
 			static void	renderTextBitmap( const char *str, void *fontStyle );
-
+			
 			/** Information about the rendering process being issued. \sa See getCurrentRenderingInfo for more details */
 			struct OPENGL_IMPEXP TRenderInfo
 			{
@@ -191,7 +191,7 @@ namespace mrpt
 			void  writeToStreamRender(utils::CStream &out) const;
 			void  readFromStreamRender(utils::CStream &in);
 
-			/** Returns the lowest, free texture name.  */
+			/** Returns the lowest next free texture name (avoid using OpenGL's own function since we may call them from different threads and seem it's not cool).  */
 			static unsigned int getNewTextureNumber();
 			static void releaseTextureName(unsigned int i);
 

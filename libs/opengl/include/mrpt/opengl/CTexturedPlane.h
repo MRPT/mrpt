@@ -57,6 +57,8 @@ namespace mrpt
 			void updatePoly() const;
 			void unloadTexture();
 
+			void  render_texturedobj() const;
+
 		public:
 			/** Set the texture coordinates of the four corners (in the range 0-1). */
 			void setTextureCornerCoords( float tex_x_min, float tex_x_max, float tex_y_min, float tex_y_max)
@@ -65,6 +67,7 @@ namespace mrpt
 				m_tex_x_max=tex_x_max;
 				m_tex_y_min=tex_y_min;
 				m_tex_y_max=tex_y_max;
+				CRenderizableDisplayList::notifyChange();
 			}
 
 			/** Set the coordinates of the four corners that define the plane on the XY plane. */
@@ -73,11 +76,9 @@ namespace mrpt
 				m_xMin = xMin; m_xMax = xMax;
 				m_yMin = yMin; m_yMax = yMax;
 				polygonUpToDate=false;
+				CRenderizableDisplayList::notifyChange();
 			}
 
-			/** Render
-			  */
-			void  render() const;
 
 			/** Class factory  */
 			static CTexturedPlanePtr Create(

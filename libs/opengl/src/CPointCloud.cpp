@@ -68,6 +68,8 @@ CPointCloud::CPointCloud( ) :
 	markAllPointsAsNew();
 }
 
+GLuint m_DL_id = -1;
+
 
 /*---------------------------------------------------------------
 							render
@@ -75,6 +77,18 @@ CPointCloud::CPointCloud( ) :
 void   CPointCloud::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
+	//if (m_DL_id!=-1)
+	//{
+	//	glCallList(m_DL_id);
+	//	return;
+	//}
+	//m_DL_id = glGenLists(1);
+
+	//// start list
+	//glNewList(m_DL_id,GL_COMPILE);
+
+
+
     ASSERT_(m_xs.size() == m_ys.size());
     ASSERT_(m_xs.size() == m_zs.size());
 
@@ -130,12 +144,11 @@ void   CPointCloud::render() const
 			glEnable ( GL_POINT_SMOOTH );
 	else 	glDisable( GL_POINT_SMOOTH );
 
+
+
     glBegin( GL_POINTS );
-
     glColor4f( m_color_R,m_color_G,m_color_B,m_color_A ); // The default if m_colorFromDepth=false
-
 	octree_render(ri); // Render all points recursively:
-
     glEnd();
 
 	if ( m_color_A != 1.0 )

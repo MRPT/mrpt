@@ -38,12 +38,12 @@ using namespace mrpt::opengl;
 using namespace mrpt::utils;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CGridPlaneXZ, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CGridPlaneXZ, CRenderizableDisplayList, mrpt::opengl )
 
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void   CGridPlaneXZ::render() const
+void   CGridPlaneXZ::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START;
