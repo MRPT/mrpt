@@ -144,13 +144,13 @@ void TestParticlesLocalization(const std::string &ini_fil)
 
 
 
-	printf("\n-------------------------------------------------------------\n");
-	printf("\t RAWLOG_FILE = \t %s\n",RAWLOG_FILE.c_str());
-	printf("\t MAP_FILE = \t %s\n",MAP_FILE.c_str());
-	printf("\t GT_FILE = \t %s\n",GT_FILE.c_str());
-	printf("\t OUT_DIR_PREFIX = \t %s\n",OUT_DIR_PREFIX.c_str());
-	printf("\t #particles = \t "); cout << particles_count << "\n";
-	printf("-------------------------------------------------------------\n");
+	cout<< "-------------------------------------------------------------\n"
+		<< "\t RAWLOG_FILE = \t "   << RAWLOG_FILE << endl
+		<< "\t MAP_FILE = \t "      << MAP_FILE << endl
+		<< "\t GT_FILE = \t "       << GT_FILE << endl
+		<< "\t OUT_DIR_PREFIX = \t "<< OUT_DIR_PREFIX << endl
+		<< "\t #particles = \t "    << particles_count << endl
+		<< "-------------------------------------------------------------\n";
 	pfOptions.dumpToConsole();
 	mapList.dumpToConsole();
 
@@ -185,7 +185,7 @@ void TestParticlesLocalization(const std::string &ini_fil)
 			// It's a ".simplemap":
 			// -------------------------
 			printf("Loading '.simplemap' file...");
-			CFileGZInputStream(MAP_FILE.c_str()) >> simpleMap;
+			CFileGZInputStream(MAP_FILE) >> simpleMap;
 			printf("Ok\n");
 
 			ASSERT_( simpleMap.size()>0 );
@@ -244,10 +244,9 @@ void TestParticlesLocalization(const std::string &ini_fil)
 	CDisplayWindow3DPtr	win3D;
 	if (SHOW_PROGRESS_3D_REAL_TIME)
 	{
-		win3D = CDisplayWindow3D::Create("PF localization @ MRPT C++ Library (C) 2004-2008", 1000, 600);
+		win3D = CDisplayWindow3D::Create("pf-localization - The MRPT project", 1000, 600);
 		win3D->setCameraZoom(20);
 		win3D->setCameraAzimuthDeg(-45);
-
 	}
 
 	// Create the 3D scene and get the map only once, later we'll modify only the particles, etc..
@@ -297,54 +296,44 @@ void TestParticlesLocalization(const std::string &ini_fil)
 		tictacGlobal.Tic();
 		for (int repetition = 0; repetition <NUM_REPS; repetition++)
 		{
-			printf("\n-------------------------------------------------------------\n");
-			printf("      RUNNING FOR %u INITIAL PARTICLES  - Repetition %u / %u\n", PARTICLE_COUNT,1+repetition,NUM_REPS);
-			printf("-------------------------------------------------------------\n\n");
+			cout << "\n-------------------------------------------------------------\n"
+			     << "      RUNNING FOR "<< PARTICLE_COUNT << " INITIAL PARTICLES  - Repetition " << 1+repetition << " / " << NUM_REPS << "\n"
+			     <<"-------------------------------------------------------------\n\n";
 
 
 			// The experiment directory is:
-			const char  *OUT_DIR=NULL;
-			const char  *OUT_DIR_PARTS=NULL;
-			const char  *OUT_DIR_3D=NULL;
-			string      sOUT_DIR;
-			string      sOUT_DIR_PARTS;
-			string      sOUT_DIR_3D;
+			string      sOUT_DIR, sOUT_DIR_PARTS, sOUT_DIR_3D;
 
 			if (!SAVE_STATS_ONLY)
 			{
 				sOUT_DIR        = format("%s_%03u",OUT_DIR_PREFIX.c_str(),repetition );
-				OUT_DIR        = sOUT_DIR.c_str();
+				sOUT_DIR_PARTS  = format("%s/particles", sOUT_DIR.c_str());
+				sOUT_DIR_3D = format("%s/3D", sOUT_DIR.c_str());
 
-				sOUT_DIR_PARTS  = format("%s/particles", OUT_DIR);
-				OUT_DIR_PARTS  = sOUT_DIR_PARTS.c_str();
+				printf("Creating directory: %s\n",sOUT_DIR.c_str());
+				createDirectory( sOUT_DIR );
+				ASSERT_(fileExists(sOUT_DIR));
+				deleteFiles(format("%s/*.*",sOUT_DIR.c_str()));
 
-				sOUT_DIR_3D = format("%s/3D", OUT_DIR);
-				OUT_DIR_3D  = sOUT_DIR_3D.c_str();
+				printf("Creating directory: %s\n",sOUT_DIR_PARTS.c_str());
+				createDirectory( sOUT_DIR_PARTS );
+				ASSERT_(fileExists(sOUT_DIR_PARTS));
+				deleteFiles(format("%s/*.*",sOUT_DIR_PARTS.c_str()));
 
-				printf("Creating directory: %s\n",OUT_DIR);
-				createDirectory( OUT_DIR );
-				ASSERT_(fileExists(OUT_DIR));
-				deleteFiles(format("%s/*.*",OUT_DIR));
+				printf("Creating directory: %s\n",sOUT_DIR_3D.c_str());
+				createDirectory( sOUT_DIR_3D );
+				ASSERT_(fileExists(sOUT_DIR_3D));
+				deleteFiles(format("%s/*.*",sOUT_DIR_3D.c_str()));
 
-				printf("Creating directory: %s\n",OUT_DIR_PARTS);
-				createDirectory( OUT_DIR_PARTS );
-				ASSERT_(fileExists(OUT_DIR_PARTS));
-				deleteFiles(format("%s/*.*",OUT_DIR_PARTS));
-
-				printf("Creating directory: %s\n",OUT_DIR_3D);
-				createDirectory( OUT_DIR_3D );
-				ASSERT_(fileExists(OUT_DIR_3D));
-				deleteFiles(format("%s/*.*",OUT_DIR_3D));
-
-				metricMap.m_gridMaps[0]->saveAsBitmapFile(format("%s/gridmap.png",OUT_DIR));
-				CFileOutputStream(format("%s/gridmap_limits.txt",OUT_DIR)).printf(
+				metricMap.m_gridMaps[0]->saveAsBitmapFile(format("%s/gridmap.png",sOUT_DIR.c_str()));
+				CFileOutputStream(format("%s/gridmap_limits.txt",sOUT_DIR.c_str())).printf(
 					"%f %f %f %f",
 					metricMap.m_gridMaps[0]->getXMin(),metricMap.m_gridMaps[0]->getXMax(),
 					metricMap.m_gridMaps[0]->getYMin(),metricMap.m_gridMaps[0]->getYMax() );
 
 				// Save the landmarks for plot in matlab:
 				if (metricMap.m_landmarksMap)
-					metricMap.m_landmarksMap->saveToMATLABScript2D(format("%s/plot_landmarks_map.m",OUT_DIR));
+					metricMap.m_landmarksMap->saveToMATLABScript2D(format("%s/plot_landmarks_map.m",sOUT_DIR.c_str()));
 			}
 
 			int						M = PARTICLE_COUNT;
@@ -404,9 +393,9 @@ void TestParticlesLocalization(const std::string &ini_fil)
 
 			if (!SAVE_STATS_ONLY)
 			{
-				f_cov_est.open(OUT_DIR+string("/cov_est.txt"));
-				f_pf_stats.open(OUT_DIR+string("/PF_stats.txt"));
-				f_odo_est.open(OUT_DIR+string("/odo_est.txt"));
+				f_cov_est.open(sOUT_DIR.c_str()+string("/cov_est.txt"));
+				f_pf_stats.open(sOUT_DIR.c_str()+string("/PF_stats.txt"));
+				f_odo_est.open(sOUT_DIR.c_str()+string("/odo_est.txt"));
 			}
 
 			TTimeStamp cur_obs_timestamp;
@@ -740,16 +729,16 @@ void TestParticlesLocalization(const std::string &ini_fil)
 					if (!SAVE_STATS_ONLY && SCENE3D_FREQ!=-1 && (step % SCENE3D_FREQ)==0)
 					{
 						// Save 3D scene:
-						CFileGZOutputStream(format("%s/progress_%03u.3Dscene",OUT_DIR_3D,(unsigned)step)) << scene;
+						CFileGZOutputStream(format("%s/progress_%03u.3Dscene",sOUT_DIR_3D.c_str(),(unsigned)step)) << scene;
 
 						// Generate text files for matlab:
 						// ------------------------------------
-						pdf.saveToTextFile(format("%s/particles_%03u.txt",OUT_DIR_PARTS,(unsigned)step));
+						pdf.saveToTextFile(format("%s/particles_%03u.txt",sOUT_DIR_PARTS.c_str(),(unsigned)step));
 
 						if (IS_CLASS(*observations->begin(),CObservation2DRangeScan))
 						{
 							CObservation2DRangeScanPtr o = CObservation2DRangeScanPtr( *observations->begin() );
-							vectorToTextFile(o->scan , format("%s/observation_scan_%03u.txt",OUT_DIR_PARTS,(unsigned)step) );
+							vectorToTextFile(o->scan , format("%s/observation_scan_%03u.txt",sOUT_DIR_PARTS.c_str(),(unsigned)step) );
 						}
 					}
 

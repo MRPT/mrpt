@@ -92,10 +92,10 @@ public:
 	virtual void generateChildren(const CCoinDistribution &s,vector<CCoinDistribution> &sols)	{	//Get all the children of a solution.
 		//Complex classes might want to define a copy constructor (note how the vector in the following line is created by cloning this object four times).
 		sols=vector<CCoinDistribution>(4,s);
-		sols[0].coins2++;	//Misma soluci髇, m醩 una moneda de 2.
-		sols[1].coins7++;	//Misma soluci髇, m醩 una moneda de 7.
-		sols[2].coins8++;	//Misma soluci髇, m醩 una moneda de 8...
-		sols[3].coins19++;	//Y misma soluci髇, m醩 una moneda de 19.
+		sols[0].coins2++;	//Misma soluci贸n, m谩s una moneda de 2.
+		sols[1].coins7++;	//Misma soluci贸n, m谩s una moneda de 7.
+		sols[2].coins8++;	//Misma soluci贸n, m谩s una moneda de 8...
+		sols[3].coins19++;	//Y misma soluci贸n, m谩s una moneda de 19.
 	}
 	virtual double getHeuristic(const CCoinDistribution &s)	{	//Heuristic cost of the remaining part of the solution.
 		//Check the documentation of CAStarAlgorithm to know which characteristics does this function need to comply.

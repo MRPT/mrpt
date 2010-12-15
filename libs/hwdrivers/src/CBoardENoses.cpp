@@ -236,15 +236,15 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 			// Copy to a vector of 16bit integers:
 			//vector<uint16_t>	readings( msg.content.size() / 2 );	// divide by 2 to pass from byte to word
 			memcpy( &readings[0],&msg.content[0],msg.content.size() * sizeof(msg.content[0]) );
-			
-			//HEADER Frame [ Nº of chambers/enoses (16b) , Active Chamber (16b)]
+
+			//HEADER Frame [ NÂº of chambers/enoses (16b) , Active Chamber (16b)]
 			size_t NumberOfChambers = (size_t)readings[0];
 			size_t ActiveChamber = (size_t)readings[1];
 
-			// Sensors readings info			
+			// Sensors readings info
 			ASSERT_( ((readings.size() - 4) % NumberOfChambers)==0 );
-			size_t wordsPereNose = (readings.size() - 4) / NumberOfChambers;						
-			
+			size_t wordsPereNose = (readings.size() - 4) / NumberOfChambers;
+
 
 			// Process each chamber
 			for (size_t i=0; i<NumberOfChambers; i++)
@@ -252,7 +252,7 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 				// ----------------------------------------------------------------------
 				// Each "i" comprises a complete Enose reading: Gas sensors + temperature
 				// ----------------------------------------------------------------------
-				
+
 				// Do we have the sensor position?
 				if (i<enose_poses_x.size())
 				{
@@ -272,11 +272,11 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 				newRead.readingsVoltage.clear();
 				newRead.hasTemperature = false;
 				newRead.isActive = false;
-				
+
 				// check if active chamber
 				if (i == (ActiveChamber))
 					newRead.isActive = true;
-				
+
 				//porcess each sensor on this chamber "i"
 				for (size_t idx=0 ; idx<wordsPereNose/2 ; idx++)
 				{
@@ -294,11 +294,11 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 							newRead.sensorTypes.push_back( readings[i*wordsPereNose + 2*idx + 2] );
 
 							// Pass from ADC value[12bits] to [0-2.5] volt range:
-							newRead.readingsVoltage.push_back( ( readings[i*wordsPereNose + 2*idx + 3] * 5.0f) / 4096.0f  );							
+							newRead.readingsVoltage.push_back( ( readings[i*wordsPereNose + 2*idx + 3] * 5.0f) / 4096.0f  );
 						}
 					}
 				} // end for each sensor on this eNose
-		
+
 				// Add to observations:
 				if ( !newRead.sensorTypes.empty() )
 					obs.m_readings.push_back( newRead );
@@ -310,7 +310,7 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 			// Set Timestamp
 			uint32_t *p = (uint32_t*)&readings[readings.size()-2];	//Get readings time from frame (always last 2 words)
 			obs.timestamp = mrpt::system::secondsToTimestamp(((double)*p)/1000);
-			
+
 			if (first_reading)
 			{
 				initial_timestamp = mrpt::system::getCurrentTime() - obs.timestamp;
@@ -320,7 +320,7 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 
 		} // end if message has data
 
-				
+
 		//CONTROL
 		bool correct = true;
 
@@ -334,7 +334,7 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 					correct = false;
 				else
 				{
-					
+
 				}
 			}
 		}
@@ -411,11 +411,11 @@ bool CBoardENoses::setActiveChamber( unsigned char chamber )
 		CStream *comms = checkConnectionAndConnect();
 		if (!comms)
 			return false;
-		
+
 		// Send a byte to set the Active chamber on device.
 		// by default:  Byte_to_send = 101 _ _ 101
 		unsigned char buf[1];
-		buf[0] = ((chamber & 3) << 3) | 165;	 //165 = 101 00 101	
+		buf[0] = ((chamber & 3) << 3) | 165;	 //165 = 101 00 101
 
 		comms->WriteBuffer(buf,1);	// Exceptions will be raised on errors here
 		return true;

@@ -267,7 +267,7 @@ Computes the data-association between the prediction of a set of landmarks and t
 *
 * \param Z_observations_mean [IN] An MxO matrix with the M observations, each row containing the observation "mean".
 * \param Y_predictions_mean [IN ] An NxO matrix with the N predictions, each row containing the mean of one prediction.
-* \param Y_predictions_cov [IN ] An N·OxN·O matrix with the full covariance matrix of all the N predictions.
+* \param Y_predictions_cov [IN ] An NÂ·OxNÂ·O matrix with the full covariance matrix of all the N predictions.
 
 * \param predictions_mean [IN] The list of predicted locations of landmarks/features, indexed by their ID. The 2D/3D locations are in the same coordinate framework than "observations".
 * \param predictions_cov [IN] The full covariance matrix of predictions, in blocks of 2x2 matrices. The order of the submatrices is the appearance order of lanmarks in "predictions_mean".

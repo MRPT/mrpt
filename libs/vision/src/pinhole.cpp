@@ -356,7 +356,7 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 //
 //	CMatrixFixedNumeric<double,43,43> dx, dy;
 //
-//	// Compute the undistortion params according to Heittil‰ code.
+//	// Compute the undistortion params according to Heittil√§ code.
 //	// Generate a regular meshgrid of size 43x43 and distort them
 //	std::vector<mrpt::vision::TPixelCoordf>				grid;			// The 43x43 grid with distorted
 //	std::vector<mrpt::vision::TPixelCoordf>::iterator	itGrid;

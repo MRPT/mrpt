@@ -1652,7 +1652,7 @@ int main()
 					distance += sqrt( square( pto_r[0] - flow_klt[seed_feat[i]->ID]->x ) + square(pto_r[1] - flow_klt[seed_feat[i]->ID]->y ) );
 				}
 			}
-			distance /= ( seed_feat.size() - 3 );		//Distancia media de los píxeles del entorno
+			distance /= ( seed_feat.size() - 3 );		//Distancia media de los pÃ­xeles del entorno
 
 			if ( distance < 2 )
 				seed_plane = true;

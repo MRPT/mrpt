@@ -1303,7 +1303,7 @@ void  CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 	vector<CHMHMapNode::TNodeID> listNodes;
 
 	const CHMHMapNodePtr refNode = getNodeByID( idReferenceNode );
-	ASSERT_(refNode!=NULL);
+	ASSERT_(refNode);
 	ASSERT_(refNode->m_nodeType.isType("Area"));
 
 	// 1) Compute a first estimate of the ORIENTATION in GLOBAL COODINATES of each node
