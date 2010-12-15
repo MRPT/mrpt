@@ -110,7 +110,8 @@ unsigned int CRenderizable::getNewTextureNumber()
 	unsigned int tries = 0;
 	while (ret!=0 && booker.freeTextureNames[ret])
 	{
-		ret = ++ret % MAX_GL_TEXTURE_IDS_MASK;
+		ret++;
+		ret = ret % MAX_GL_TEXTURE_IDS_MASK;
 
 		if (++tries>=MAX_GL_TEXTURE_IDS) 
 			THROW_EXCEPTION_CUSTOM_MSG1("Maximum number of textures (%u) excedeed! (are you deleting them?)", (unsigned int)MAX_GL_TEXTURE_IDS);

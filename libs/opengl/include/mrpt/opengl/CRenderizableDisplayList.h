@@ -34,7 +34,7 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		enum { INVALID_DISPLAY_LIST_ID = -1 };
+		#define INVALID_DISPLAY_LIST_ID  static_cast<unsigned int>(-1)
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRenderizableDisplayList, CRenderizable, OPENGL_IMPEXP )
