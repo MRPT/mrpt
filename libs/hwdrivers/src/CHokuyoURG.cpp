@@ -55,7 +55,7 @@ CHokuyoURG::CHokuyoURG() :
     m_reduced_fov(0),
 	m_com_port(""),
 	m_ip_dir(""),
-	m_port_dir(""),
+	m_port_dir(0),
 	m_I_am_owner_serial_port(false),
 	m_timeStartUI( 0 )
 {
@@ -208,7 +208,7 @@ void  CHokuyoURG::loadConfig_sensorSpecific(
 #endif
 
 	m_ip_dir = configSource.read_string(iniSection, "IP_DIR", m_ip_dir );
-	m_port_dir = configSource.read_string(iniSection, "PORT_DIR", m_port_dir );
+	m_port_dir = configSource.read_int(iniSection, "PORT_DIR", m_port_dir );
 
 	// Parent options:
 	this->loadExclusionAreas(configSource,iniSection);
@@ -225,7 +225,7 @@ bool  CHokuyoURG::turnOn()
 	if (!checkCOMisOpen()) return false;
 
 	// If we are over a serial link, set it up:
-	if ( m_ip_dir == "" )
+	if ( m_ip_dir.empty() )
 	{
 		CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
 
@@ -393,12 +393,23 @@ bool CHokuyoURG::assureBufferHasBytes(const size_t nDesiredBytes)
 	else
 	{
 		// Try to read more bytes:
-		uint8_t       buf[8];
+		uint8_t       buf[128];
 		const size_t  to_read=std::min(m_rx_buffer.available(),sizeof(buf));
 
 		try
 		{
-			size_t nRead = m_stream->ReadBuffer(buf,to_read);
+			size_t nRead;
+
+			if ( !m_ip_dir.empty() )
+			{
+				CClientTCPSocket	*client = dynamic_cast<CClientTCPSocket*>(m_stream);
+				nRead = client->readAsync( buf, to_read, 100, 10 );
+			}
+			else
+			{
+				nRead = m_stream->ReadBuffer(buf,to_read);				
+			}
+
 			m_rx_buffer.push_many(buf,nRead);
 		}
 		catch (std::exception &)
@@ -948,7 +959,7 @@ bool  CHokuyoURG::checkCOMisOpen()
 	if (m_stream)
 	{
 		// Socket or USB connection?
-		if ( !m_ip_dir.empty() && !m_port_dir.empty() )
+		if ( !m_ip_dir.empty() && m_port_dir )
 		{
 			// Has the port been disconected (USB serial ports)??
 			CClientTCPSocket* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
@@ -963,7 +974,7 @@ bool  CHokuyoURG::checkCOMisOpen()
 
 				try
 				{
-					COM->connect(m_ip_dir,atoi(m_port_dir.c_str()));
+					COM->connect( m_ip_dir, m_port_dir );
 					// OK, reconfigure the laser:
 					turnOn();
 					return true;
@@ -1012,17 +1023,17 @@ bool  CHokuyoURG::checkCOMisOpen()
 	}
 	else
 	{
-		if ( m_com_port.empty() && m_ip_dir.empty() && m_port_dir.empty() )
+		if ( m_com_port.empty() && m_ip_dir.empty() && !m_port_dir )
 		{
 			THROW_EXCEPTION("No stream bound to the laser nor COM serial port or ip and port provided in 'm_com_port','m_ip_dir' and 'm_port_dir'");
 		}
 
-		if ( !m_ip_dir.empty() && !m_port_dir.empty() )
+		if ( !m_ip_dir.empty() && m_port_dir )
 		{
 			// Try to open the serial port:
 			CClientTCPSocket	*theCOM = new CClientTCPSocket();
 
-			theCOM->connect( m_ip_dir, atoi(m_port_dir.c_str()) );
+			theCOM->connect( m_ip_dir, m_port_dir );
 
 			if (!theCOM->isConnected())
 			{
@@ -1034,7 +1045,7 @@ bool  CHokuyoURG::checkCOMisOpen()
 			// Bind:
 			bindIO( theCOM );
 
-			//m_I_am_owner_serial_port=true;
+			m_I_am_owner_serial_port=true;
 
 		}
 

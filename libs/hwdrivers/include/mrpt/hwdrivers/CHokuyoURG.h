@@ -188,8 +188,9 @@ namespace mrpt
 
 			/** If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser.  */
 			void setSerialPort(const std::string &port_name) { m_com_port = port_name; }
-
-			void setIPandPort(const std::string &ip, const std::string &port) { m_ip_dir = ip; m_port_dir = port; }
+			
+			/** Set the ip direction and port to connect using Ethernet communication */
+			void setIPandPort(const std::string &ip, const unsigned int &port) { m_ip_dir = ip; m_port_dir = port; }
 
 			/** Returns the currently set serial port \sa setSerialPort */
 			const std::string getSerialPort() { return m_com_port; }
@@ -216,8 +217,8 @@ namespace mrpt
 
 			std::string		m_com_port;		//!< If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser.
 
-			std::string		m_ip_dir;
-			std::string		m_port_dir;
+			std::string		m_ip_dir;	//!< If set to non-empty and m_port_dir too, the program will try to connect to a Hokuyo using Ethernet communication
+			unsigned int	m_port_dir;	//!< If set to non-empty and m_ip_dir too, the program will try to connect to a Hokuyo using Ethernet communication	
 
 			/** The information gathered when the laser is first open */
 			TSensorInfo		m_sensor_info;
