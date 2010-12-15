@@ -49,6 +49,7 @@
 			- <a href="http://www.mrpt.org/Application:kinect-3d-slam" >kinect-3d-slam</a>.
 		- Changes in applications:
 			- SceneViewer3D: Now has new options to visualize and tune the octree structures of point clouds.
+			- <a href="http://www.mrpt.org/Application:GridmapNavSimul" >GridmapNavSimul</a>: Now can load a custom grid map and save rawlogs in the two existing formats.
 		- Deleted classes:
 			- mrpt::slam::CConsistentObservationAlignment: It implemented the Lu & Milios algorithm, now superseded by graph-slam methods. See the mrpt::graphslam namespace.
 			- mrpt::utils::CImageFloat: For real images with float pixels, it's better to directly use OpenCV. For matrices, there're many other matrix classes better suited for that. There is now also a new explicit constructor in mrpt::utils::CImage able of converting matrices into images, covering the possibly unique utility of the deleted class.

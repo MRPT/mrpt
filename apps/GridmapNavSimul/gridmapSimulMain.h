@@ -66,6 +66,9 @@ class gridmapSimulFrame: public wxFrame
         void OnAbout(wxCommandEvent& event);
         void OnbtnResimulateClick(wxCommandEvent& event);
         //*)
+		void OnMenuLoadMap(wxCommandEvent& event);
+
+		void update_grid_map_3d();
 
         //(*Identifiers(gridmapSimulFrame)
         static const long ID_STATICTEXT1;
@@ -94,6 +97,7 @@ class gridmapSimulFrame: public wxFrame
         static const long ID_STATICTEXT4;
         static const long ID_BUTTON4;
         static const long ID_CHECKBOX1;
+        static const long ID_CHECKBOX_RAWLOG_FORMAT;
         static const long ID_STATICTEXT6;
         static const long ID_STATICTEXT7;
         static const long ID_BUTTON6;
@@ -113,6 +117,7 @@ class gridmapSimulFrame: public wxFrame
         static const long ID_SPLITTERWINDOW1;
         static const long ID_TIMER1;
         static const long ID_MENUITEM1;
+        static const long ID_MENUITEM_LOADMAP;
         static const long ID_MENUITEM2;
         static const long ID_MENUITEM3;
         //*)
@@ -121,6 +126,7 @@ class gridmapSimulFrame: public wxFrame
         //(*Declarations(gridmapSimulFrame)
         wxTextCtrl* edSpan;
         wxMenuItem* MenuItem1;
+        wxMenuItem* MenuItemLoadMap;
         wxTextCtrl* edOutGT;
         wxButton* btnExplore;
         wxSpinCtrl* edDecimate;
@@ -131,6 +137,7 @@ class gridmapSimulFrame: public wxFrame
         wxMenu* Menu1;
         wxButton* btnSetLaser;
         wxCheckBox* cbJoy;
+        wxCheckBox* cbRawlogSFformat;
         wxTextCtrl* edAys;
         wxStaticText* StaticText1;
         wxStaticText* StaticText10;

@@ -102,7 +102,7 @@ void  CTexturedObject::assignImage_fast(
 	CImage& imgAlpha )
 {
 	MRPT_START;
-	
+
 	CRenderizableDisplayList::notifyChange();
 
 	unloadTexture();
@@ -154,6 +154,7 @@ void  CTexturedObject::loadTextureInOpenGL() const
 			checkOpenGLError();
 			return;
 		}
+
 
 		// Reserve the new one --------------------------
 

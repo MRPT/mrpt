@@ -221,6 +221,7 @@ const long gridmapSimulFrame::ID_TEXTCTRL11 = wxNewId();
 const long gridmapSimulFrame::ID_STATICTEXT4 = wxNewId();
 const long gridmapSimulFrame::ID_BUTTON4 = wxNewId();
 const long gridmapSimulFrame::ID_CHECKBOX1 = wxNewId();
+const long gridmapSimulFrame::ID_CHECKBOX_RAWLOG_FORMAT = wxNewId();
 const long gridmapSimulFrame::ID_STATICTEXT6 = wxNewId();
 const long gridmapSimulFrame::ID_STATICTEXT7 = wxNewId();
 const long gridmapSimulFrame::ID_BUTTON6 = wxNewId();
@@ -240,6 +241,7 @@ const long gridmapSimulFrame::ID_PANEL5 = wxNewId();
 const long gridmapSimulFrame::ID_SPLITTERWINDOW1 = wxNewId();
 const long gridmapSimulFrame::ID_TIMER1 = wxNewId();
 const long gridmapSimulFrame::ID_MENUITEM1 = wxNewId();
+const long gridmapSimulFrame::ID_MENUITEM_LOADMAP = wxNewId();
 const long gridmapSimulFrame::ID_MENUITEM2 = wxNewId();
 const long gridmapSimulFrame::ID_MENUITEM3 = wxNewId();
 //*)
@@ -417,7 +419,13 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
     FlexGridSizer10->Add(edOutFile, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnExplore = new wxButton(Panel5, ID_BUTTON3, _("Browse..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
     FlexGridSizer10->Add(btnExplore, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer10->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+
+    //FlexGridSizer10->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	cbRawlogSFformat = new wxCheckBox(Panel5, ID_CHECKBOX_RAWLOG_FORMAT, _("Act/SF format"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX_RAWLOG_FORMAT"));
+    cbRawlogSFformat->SetValue(false);
+    FlexGridSizer10->Add(cbRawlogSFformat, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+
+
     FlexGridSizer10->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText15 = new wxStaticText(Panel5, ID_STATICTEXT15, _("Output groundtruth:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT15"));
     FlexGridSizer10->Add(StaticText15, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
@@ -455,6 +463,10 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
     MenuItem1 = new wxMenuItem(Menu1, ID_MENUITEM1, _("Set &output rawlog file..."), wxEmptyString, wxITEM_NORMAL);
     MenuItem1->SetBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE")),wxART_MENU));
     Menu1->Append(MenuItem1);
+
+    MenuItemLoadMap = new wxMenuItem(Menu1, ID_MENUITEM_LOADMAP, _("Load &gridmap..."), wxEmptyString, wxITEM_NORMAL);
+    Menu1->Append(MenuItemLoadMap);
+
     MenuItem2 = new wxMenuItem(Menu1, ID_MENUITEM2, _("&Quit"), wxEmptyString, wxITEM_NORMAL);
     MenuItem2->SetBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_MENU));
     Menu1->Append(MenuItem2);
@@ -476,6 +488,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&gridmapSimulFrame::OnbtnExploreClick);
     Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&gridmapSimulFrame::OntimRunTrigger);
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&gridmapSimulFrame::OnbtnExploreClick);
+    Connect(ID_MENUITEM_LOADMAP,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&gridmapSimulFrame::OnMenuLoadMap);
     Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&gridmapSimulFrame::OnbtnQuitClick);
     Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&gridmapSimulFrame::OnAbout);
     //*)
@@ -504,8 +517,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
 	// Populate scene:
 	m_canvas->m_openGLScene->insert( mrpt::opengl::CGridPlaneXY::Create(-100,100,-100,100,0,5) );
 
-	gl_grid = CSetOfObjects::Create();
-	the_grid.getAs3DObject( gl_grid );
+	update_grid_map_3d();
 	m_canvas->m_openGLScene->insert( gl_grid );
 
 	// paths:
@@ -554,6 +566,13 @@ gridmapSimulFrame::~gridmapSimulFrame()
 {
     //(*Destroy(gridmapSimulFrame)
     //*)
+}
+
+void gridmapSimulFrame::update_grid_map_3d()
+{
+	if (!gl_grid) gl_grid = CSetOfObjects::Create();
+	gl_grid->clear();
+	the_grid.getAs3DObject( gl_grid );
 }
 
 void gridmapSimulFrame::OnbtnQuitClick(wxCommandEvent& event)
@@ -702,32 +721,53 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 
 			if (outs.fileOpenCorrectly() && 0==(decimation_count++ % decimation) )
 			{
-				// Action:
-				CActionCollection acts;
-				CActionRobotMovement2D	act;
-				CActionRobotMovement2D::TMotionModelOptions	opts;
+				// Desired rawlog format?
+				const bool  is_sf_format = cbRawlogSFformat->GetValue();
 
-				TTimeStamp	tim_now = mrpt::system::now();
-
-				opts.modelSelection = CActionRobotMovement2D::mmGaussian;
-
+				const TTimeStamp	tim_now = mrpt::system::now();
 				CPose2D  odo_now;
 				the_robot.getOdometry(odo_now);
 
-				CPose2D  Aodom = odo_now - lastOdo;
-				lastOdo = odo_now;
+				if(is_sf_format)
+				{
+					// Action:
+					CActionCollection acts;
+					CActionRobotMovement2D	act;
+					CActionRobotMovement2D::TMotionModelOptions	opts;
 
-				act.computeFromOdometry(Aodom, opts);
-				act.timestamp = tim_now;
 
-				acts.insert(act);
-				outs << acts;
+					opts.modelSelection = CActionRobotMovement2D::mmGaussian;
 
-				// Observation:
-				CSensoryFrame	sf;
-				the_scan.timestamp = act.timestamp;
-				sf.insert( CObservation2DRangeScanPtr( new CObservation2DRangeScan(the_scan)) );
-				outs << sf;
+					CPose2D  Aodom = odo_now - lastOdo;
+					lastOdo = odo_now;
+
+					act.computeFromOdometry(Aodom, opts);
+					act.timestamp = tim_now;
+
+					acts.insert(act);
+					outs << acts;
+
+					// Observation:
+					CSensoryFrame	sf;
+					the_scan.timestamp = act.timestamp;
+					sf.insert( CObservation2DRangeScanPtr( new CObservation2DRangeScan(the_scan)) );
+					outs << sf;
+				}
+				else
+				{
+					// Observations only format:
+					mrpt::slam::CObservationOdometry odo_obs;
+					odo_obs.timestamp = tim_now;
+					odo_obs.sensorLabel = "odometry";
+
+					odo_obs.odometry = odo_now;
+
+					odo_obs.hasVelocities = true;
+					odo_obs.velocityLin = the_robot.getV();
+					odo_obs.velocityAng = the_robot.getW();
+
+					outs << odo_obs << the_scan;
+				}
 
 
 				// And save to a text file the GT robot pose:
@@ -842,6 +882,69 @@ void gridmapSimulFrame::OnbtnEndClick(wxCommandEvent& event)
 {
 	btnStart->Enable(true);
 	btnEnd->Enable(false);
+}
+
+void gridmapSimulFrame::OnMenuLoadMap(wxCommandEvent& event)
+{
+	WX_START_TRY
+
+	wxFileDialog dlg(
+		this,
+		_("Select grid map to load"),
+		_("."),
+		_("grid.png"),
+		wxT("Image files (*.png,*.jpg,*.gif)|*.png;*.jpg;*.gif|Binary gridmap files (*.gridmap,*.gridmap.gz)|*.gridmap;*.gridmap.gz|All files (*.*)|*.*"),
+		wxFD_OPEN | wxFD_FILE_MUST_EXIST );
+
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+
+	const wxString sFil =  dlg.GetPath();
+	const std::string fil = std::string(sFil.mb_str());
+
+	const std::string fil_ext = mrpt::system::extractFileExtension(fil,true);
+
+	if (mrpt::system::lowerCase(fil_ext)=="gridmap")
+	{
+		CFileGZInputStream f(fil);
+		f >> the_grid;
+		update_grid_map_3d();
+	}
+	else
+	{
+		// Try loading the image:
+		CImage img;
+		if (!img.loadFromFile(fil, 0 /* force grayscale */ ))
+		{
+			wxMessageBox(_("Error"),_("Can't load the image file (check its format)."));
+		}
+		else
+		{
+			// We also need the size of each pixel:
+			double cx =-1;
+			double cy =-1;
+			double cell_size = 0.05;
+
+			const wxString sCellSize = wxGetTextFromUser(_("Enter the size (in meters) of each pixel:"),_("Grid parameters"),_("0.05"), this);
+			const wxString sCX = wxGetTextFromUser(_("Enter the central pixel (x-coordinate), or -1 = the image center:"),_("Grid parameters"),_("-1"), this);
+			const wxString sCY = wxGetTextFromUser(_("Enter the central pixel (y-coordinate), or -1 = the image center:"),_("Grid parameters"),_("-1"), this);
+
+			if (sCellSize.ToDouble(&cell_size) && sCX.ToDouble(&cx) && sCY.ToDouble(&cy) )
+			{
+				if (the_grid.loadFromBitmap(img,cell_size,cx,cy))
+				{
+					update_grid_map_3d();
+					wxMessageBox(_("OK"),_("Map loaded!"));
+				}
+				else
+					wxMessageBox(_("Error"),_("Can't load the image file into the gridmap..."));
+			}
+			else
+				wxMessageBox(_("Error"),_("Error parsing the numbers you entered..."));
+		}
+	}
+
+	WX_END_TRY
 }
 
 void gridmapSimulFrame::OnbtnExploreClick(wxCommandEvent& event)
