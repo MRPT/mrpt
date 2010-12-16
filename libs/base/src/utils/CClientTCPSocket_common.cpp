@@ -36,7 +36,9 @@
 using namespace mrpt::utils;
 using namespace mrpt::system;
 
-#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+#ifdef MRPT_OS_WINDOWS
+	#include <winsock.h>
+#else
 	#define  INVALID_SOCKET		(-1)
 	#include <sys/socket.h>
 	#include <unistd.h>
@@ -47,10 +49,6 @@ using namespace mrpt::system;
 	#include <netdb.h>
 	#include <arpa/inet.h>
 	#include <netinet/in.h>
-#endif
-
-#ifdef MRPT_OS_WINDOWS
-	#include <winsock.h>
 #endif
 
 unsigned int CClientTCPSocket::DNS_LOOKUP_TIMEOUT_MS = 3000;
@@ -473,4 +471,26 @@ size_t  CClientTCPSocket::writeAsync(
 	return alreadyWritten;
 
 	MRPT_END;
+}
+
+
+
+/*---------------------------------------------------------------
+						getReadPendingBytes
+ ---------------------------------------------------------------*/
+size_t  CClientTCPSocket::getReadPendingBytes()
+{
+	if (m_hSock == INVALID_SOCKET)   return 0;  // The socket is not connected!
+	unsigned long ret=0;
+	if (
+#ifdef MRPT_OS_WINDOWS
+	ioctlsocket(m_hSock,FIONREAD,&ret)
+#else
+	ioctl(m_hSock, FIONREAD, &ret)
+#endif
+	)
+	{
+		  THROW_EXCEPTION( "Error invoking ioctlsocket(FIONREAD)" )
+	}
+	else  return ret;
 }

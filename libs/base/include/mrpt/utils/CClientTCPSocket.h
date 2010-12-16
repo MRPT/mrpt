@@ -206,6 +206,9 @@ namespace utils
 			const unsigned int	timeoutBetween_ms = 1000
 			);
 
+		/** Return the number of bytes already in the receive queue (they can be read without waiting) */
+		size_t  getReadPendingBytes();
+
 	}; // End of class def.
 
 	} // End of namespace

@@ -96,6 +96,10 @@ void thread_client()
 
 		printf("[Client] Connected. Waiting for a message...\n");
 
+//		cout << "pending: " << sock.getReadPendingBytes() << endl;
+//		mrpt::system::sleep(4000);
+//		cout << "pending: " << sock.getReadPendingBytes() << endl;
+
 		CMessage	msg;
 		bool ok = sock.receiveMessage( msg, 2000,2000);
 

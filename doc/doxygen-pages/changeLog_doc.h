@@ -63,8 +63,9 @@
 				- hasDescriptorMultiSIFT(). Indicates if the multi-resolution SIFT-like descriptor has been computed for this feature.
 			- New method mrpt::gui::CDisplayWindow3D::getRenderingFPS()
 			- Both mrpt::opengl::CPointCloud and mrpt::opengl::CPointCloudColoured are now much more optimized to render huge point clouds:
-				- (TODO) Smart rendering based on Octrees to determine which volumes are within the frustum.
-				- (TODO) For each octree volume, smart decimation of the points from the points-to-eye distance: why rendering 1e6 points that will all be seen in a 10x10 pixel area?
+				- Smart rendering based on Octrees to determine which volumes are within the frustum.
+				- For each octree volume, smart decimation of the points from the points-to-eye distance: why rendering 1e6 points that will all be seen in a 10x10 pixel area?
+			- New method mrpt::utils::CClientTCPSocket::getReadPendingBytes()
 			- New method mrpt::opengl::COpenGLScene::visitAllObjects()
 			- Many mrpt::opengl classes now are derived from a display-list-cached base class (mrpt::opengl::CRenderizableDisplayList)
 		- Changes in functions:
