@@ -48,14 +48,6 @@ namespace mrpt
 		  *		- mrpt::opengl::CPointCloudColoured
 		  */
 		extern OPENGL_IMPEXP size_t OCTREE_RENDER_MAX_POINTS_PER_NODE;
-
-		/** Default value = 5e6. Maximum number of points to render on an opengl viewport for one single point cloud object.
-		  *  If the object has more points, they are decimated.
-		  *  Affects to these classes (read their docs for further details):
-		  *		- mrpt::opengl::CPointCloud
-		  *		- mrpt::opengl::CPointCloudColoured
-		  */
-		extern OPENGL_IMPEXP size_t OCTREE_RENDER_MAX_OVERALL_POINTS_ON_SCREEN;
 	}
 
 

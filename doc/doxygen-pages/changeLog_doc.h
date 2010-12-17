@@ -32,7 +32,7 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</i></p>
 
   <a name="0.9.3">
-  <h2>Version 0.9.3: (Under development) </h2></a>
+  <h2>Version 0.9.3 - (Version 1.0.0-Release_Candidate_1): Released 18-DEC-2010 (SVN 233*) </h2></a>
 	- <b>Most important changes:</b>
 		- MRPT now relies entirely on Eigen (version 3) for matrix and vector classes.
 		- Support for Microsoft Xbox Kinect. See mrpt::hwdrivers::CKinect and this page: http://www.mrpt.org/Kinect_and_MRPT
