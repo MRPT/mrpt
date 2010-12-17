@@ -296,7 +296,7 @@ namespace mrpt
 				out_mean = mrpt::math::sum(v) / static_cast<double>(N);
 				// Compute the std:
 				double	vector_std=0;
-				for (size_t i=0;i<N;i++) vector_std += mrpt::utils::square( v[i]-out_mean);
+				for (size_t i=0;i<N;i++) vector_std += mrpt::utils::square( v(i)-out_mean);
 				out_std = std::sqrt(vector_std  / static_cast<double>(N - (unbiased ? 1:0)) );
 			}
 		}

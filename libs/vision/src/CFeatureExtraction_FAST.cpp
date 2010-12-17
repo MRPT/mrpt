@@ -43,11 +43,12 @@ using namespace std;
 *								extractFeaturesFAST												*
 ************************************************************************************************/
 void  CFeatureExtraction::extractFeaturesFAST(
-	const mrpt::utils::CImage			&inImg,
-	CFeatureList			&feats,
-	unsigned int			init_ID,
-	unsigned int			nDesiredFeatures,
-	const TImageROI			&ROI )  const
+	const mrpt::utils::CImage	& inImg,
+	CFeatureList			    & feats,
+	unsigned int			    init_ID,
+	unsigned int			    nDesiredFeatures,
+	const TImageROI			    & ROI,
+	const CMatrixBool           & mask )  const
 {
 	MRPT_START
 
@@ -69,11 +70,33 @@ void  CFeatureExtraction::extractFeaturesFAST(
 
 #if MRPT_OPENCV_VERSION_NUM >= 0x211
 
+//    cv::Mat *mask ;
+//    if( _mask )
+//       mask = static_cast<cv::Mat*>(_mask);
+
 	FastFeatureDetector fastDetector( options.FASTOptions.threshold, options.FASTOptions.nonmax_suppression );
-
 	const Mat theImg = cvarrToMat( inImg_gray.getAs<IplImage>() );
+    if( options.useMask )
+    {
+        cout << "using mask" << endl;
+        size_t maskW = mask.getColCount(), maskH = mask.getRowCount();
+        ASSERT_( maskW == inImg_gray.getWidth() && maskH == inImg_gray.getHeight() );
 
-	fastDetector.detect( theImg, cv_feats );
+        // Convert Mask into CV type
+        cv::Mat cvMask;
+        cvMask = cv::Mat::ones( maskH, maskW, CV_8UC1 );
+        for( int ii = 0; ii < int(maskW); ++ii )
+            for( int jj = 0; jj < int(maskH); ++jj )
+            {
+                if( !mask.get_unsafe(jj,ii) )
+                {
+                    cvMask.at<char>(ii,jj) = (char)0;
+                }
+            }
+        fastDetector.detect( theImg, cv_feats, cvMask );
+    }
+    else
+        fastDetector.detect( theImg, cv_feats );
 
 #elif MRPT_OPENCV_VERSION_NUM >= 0x210
 
@@ -136,7 +159,10 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	unsigned int	i			= 0;
 	unsigned int	cont		= 0;
 	TFeatureID		nextID		= init_ID;
-	feats.clear();
+
+    if( !options.addNewFeatures )
+        feats.clear();
+
 	while( cont != nMax && i!=N )
 	{
 		// Take the next feature fromt the ordered list of good features:

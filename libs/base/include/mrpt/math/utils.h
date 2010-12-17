@@ -75,6 +75,8 @@ namespace mrpt
         /** Returns true if the number is non infinity.  */
         bool  BASE_IMPEXP isFinite(double f) MRPT_NO_THROWS;
 
+        void BASE_IMPEXP medianFilter( const std::vector<double> &inV, std::vector<double> &outV, const int &winSize, const int &numberOfSigmas = 2 );
+
 #ifdef HAVE_LONG_DOUBLE
 		/** Returns true if the number is NaN. */
         bool  BASE_IMPEXP isNaN(long double f) MRPT_NO_THROWS;

@@ -32,6 +32,7 @@
 #include <mrpt/obs.h> // dependencies
 
 #include <mrpt/vision/utils.h>
+#include <mrpt/vision/multiDesc_utils.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/pinhole.h>

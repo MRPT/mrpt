@@ -922,8 +922,6 @@ namespace mrpt
 	} // end namespace
 } // end namespace
 
-
-
 /*---------------------------------------------------------------
 						normalPDF
  ---------------------------------------------------------------*/
@@ -2178,3 +2176,40 @@ void mrpt::math::unwrap2PiSequence(vector_double &x)
 		if (Ap<-M_PI) x[i]+=M_2PI;
 	}
 }
+
+/*---------------------------------------------------------------
+                    median filter of a vector
+ ---------------------------------------------------------------*/
+//template<typename VECTOR>
+void mrpt::math::medianFilter( const std::vector<double> &inV, std::vector<double> &outV, const int &_winSize, const int &numberOfSigmas )
+{
+    ASSERT_( (int)inV.size() >= _winSize );
+    ASSERT_( _winSize >= 2 );                    // The minimum window size is 3 elements
+    int winSize = _winSize;
+
+    if( !winSize%2 )                            // We use an odd number of elements for the window size
+        winSize++;
+
+    size_t sz = inV.size();
+    outV.resize( sz );
+
+    std::vector<double> aux(winSize);
+    int mpoint = winSize/2;
+    for( int k = 0; k < (int)sz; ++k )
+    {
+        aux.clear();
+
+        int idx_to_start    = max( 0, k-mpoint );                                   // Dealing with the boundaries
+        int n_elements      = min( min( winSize, int(sz+mpoint-k) ), k+mpoint+1 );
+
+        aux.resize(n_elements);
+        for( int m = idx_to_start, n = 0; m < idx_to_start+n_elements; ++m, ++n )
+            aux[n] = inV[m];
+
+        std::sort( aux.begin(), aux.end() );
+
+        size_t  auxSz       = aux.size();
+        int     auxMPoint   = auxSz*0.5;
+        outV[k] = auxSz%2 ? aux[auxMPoint] : 0.5*(aux[auxMPoint-1]+aux[auxMPoint]);     // If the window is even, take the mean value of the middle points
+    } // end-for
+} // end medianFilter

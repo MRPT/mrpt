@@ -63,7 +63,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
 	MRPT_START;
 
 	unsigned int N = (unsigned int)in_correspondences.size();
-	
+
 	// -------------------------------------------
 	// Thresholds
 	// -------------------------------------------
@@ -87,11 +87,15 @@ bool  scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
 	double			scale;								// Output scale
 
 	n		= ransac_minSetSize;						// Minimum number of points to fit the model
-	d		= round( N*ransac_maxSetSizePct );			// Minimum number of points to be considered a good set
+	d		= round( N*0.5/*ransac_maxSetSizePct*/ );			// Minimum number of points to be considered a good set
 	max_it	= ransac_nmaxSimulations;					// Maximum number of iterations
 
 	if( d < n )
-		return false;
+	{
+	    cout << "Minimum number of points to be considered a good set is < Minimum number of points to fit the model" << endl;
+	    return false;
+	}
+
 
 	// -------------------------------------------
 	// MAIN loop
@@ -118,7 +122,10 @@ bool  scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
 
 		bool res = leastSquareErrorRigidTransformation6D( mbInliers, mbOut, scale, forceScaleToUnity );
 		if( !res )
-			return false;
+		{
+		    cout << "leastSquareErrorRigidTransformation6D returned false" << endl;
+		    return false;
+		}
 
 		// Maybe inliers Output
 		mbOut_vec[0] = mbOut.x();
@@ -141,7 +148,11 @@ bool  scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
 			bool res = leastSquareErrorRigidTransformation6D( mbInliers, csOut, scale, forceScaleToUnity );	// Compute
 			mbInliers.erase( mbInliers.end()-1 );											// Erase
 			if( !res )
-				return false;
+            {
+                cout << "leastSquareErrorRigidTransformation6D returned false" << endl;
+                return false;
+            }
+
 			// Is this point a supporter of the initial inlier group?
 			if( fabs( mbOut_vec[0] - csOut.x() ) < th[0] && fabs( mbOut_vec[1] - csOut.y() ) < th[1] &&
 				fabs( mbOut_vec[2] - csOut.z() ) < th[2] && fabs( mbOut_vec[3] - csOut.yaw() ) < th[3] &&
@@ -170,7 +181,10 @@ bool  scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
 			CPose3D		cIOut;
 			bool res = leastSquareErrorRigidTransformation6D( cSetInliers, cIOut, scale, forceScaleToUnity );	// Compute output
 			if( !res )
-				return false;
+            {
+                cout << "leastSquareErrorRigidTransformation6D returned false" << endl;
+                return false;
+            }
 
 			// Compute error for consensus_set
 			double err = sqrt( square( mbOut_vec[0] - cIOut.x() ) + square( mbOut_vec[1] - cIOut.y() ) + square( mbOut_vec[2] - cIOut.z() ) +
@@ -195,7 +209,10 @@ bool  scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
 	} // end 'iterations' for
 
 	if( max_size == 0 )
-		return false;
+    {
+        cout << "maximum size is == 0" << endl;
+        return false;
+    }
 
 	MRPT_END;
 

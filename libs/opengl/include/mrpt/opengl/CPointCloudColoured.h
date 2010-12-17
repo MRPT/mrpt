@@ -47,7 +47,7 @@ namespace mrpt
 		  *
 		  *  To load from a points-map, CPointCloudColoured::loadFromPointsMap().
 		  *
-		  *   This class uses smart optimizations while rendering to efficiently draw clouds of millions of points, 
+		  *   This class uses smart optimizations while rendering to efficiently draw clouds of millions of points,
 		  *   as described in this page: http://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
 		  *
 		  *  \sa opengl::COpenGLScene, opengl::CPointCloud
@@ -143,7 +143,7 @@ namespace mrpt
 			}
 
 			/** Write an individual point (checks for "i" in the valid range only in Debug). */
-			inline void setPoint(size_t i, const TPointColour &p );
+			void setPoint(size_t i, const TPointColour &p );
 
 			inline size_t size() const { return m_points.size(); } //!< Return the number of points
 

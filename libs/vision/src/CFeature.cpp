@@ -56,6 +56,10 @@ void TMultiResDescMatchOptions::loadFromConfigFile( const mrpt::utils::CConfigFi
 
     useOriFilter = cfg.read_bool(section,"useOriFilter",true,false);
     oriThreshold = cfg.read_double(section,"oriThreshold",0.2,false);
+    lastSeenThreshold = cfg.read_int(section,"lastSeenThreshold",10,false);
+    timesSeenThreshold = cfg.read_int(section,"timesSeenThreshold",5,false);
+    minFeaturesToFind = cfg.read_int(section,"minFeaturesToFind",5,false);
+    minFeaturesToBeLost = cfg.read_int(section,"minFeaturesToBeLost",5,false);
 
     useDepthFilter = cfg.read_bool(section,"useDepthFilter",true,false);
 
@@ -96,6 +100,10 @@ void TMultiResDescMatchOptions::saveToConfigFile( mrpt::utils::CConfigFileBase &
 	cfg.write(section,"highScl2", highScl2 );
 
 	cfg.write(section,"searchAreaSize", searchAreaSize );
+	cfg.write(section,"lastSeenThreshold", lastSeenThreshold );
+	cfg.write(section,"timesSeenThreshold", timesSeenThreshold );
+	cfg.write(section,"minFeaturesToFind", minFeaturesToFind );
+	cfg.write(section,"minFeaturesToBeLost", minFeaturesToBeLost );
 } // end-saveToConfigFile
 
 // --------------------------------------------------
@@ -123,6 +131,10 @@ void TMultiResDescMatchOptions::dumpToTextStream( mrpt::utils::CStream &out) con
         out.printf("Lowest scale in list2:          %d\n", lowScl2 );
         out.printf("Highest scale in list2:         %d\n", highScl2 );
     }
+	out.printf("#frames last seen threshold:    %d\n", lastSeenThreshold );
+	out.printf("#frames to be stable threshold: %d\n", timesSeenThreshold );
+	out.printf("min. # features in system:      %d\n", minFeaturesToFind );
+	out.printf("min. # features to be lost:     %d\n", minFeaturesToBeLost );
 	out.printf("Matching threshold:             %.2f\n", matchingThreshold );
 	out.printf("Matching ratio threshold:       %.2f\n", matchingRatioThreshold );
 	out.printf("Size of the search window:      %d px\n", searchAreaSize );
@@ -147,6 +159,8 @@ void TMultiResDescOptions::loadFromConfigFile( const mrpt::utils::CConfigFileBas
     cx = cfg.read_double(section,"cx",0.0, false);
     cy = cfg.read_double(section,"cy",0.0, false);
     baseline = cfg.read_double(section,"baseline",0.0, false);
+    computeHashCoeffs = cfg.read_bool(section,"computeHashCoeffs", false, false );
+
 
     cfg.read_vector(section,"scales",vector<double>(),scales,false);
     if(scales.size() < 1)
@@ -179,6 +193,7 @@ void TMultiResDescOptions::saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, 
 	cfg.write(section,"cx", cx );
 	cfg.write(section,"cy", cy );
 	cfg.write(section,"baseline", baseline );
+    cfg.write(section,"computeHashCoeffs", computeHashCoeffs ? "true" : "false" );
 
     char buf[300];
     for(unsigned int k = 0; k < scales.size(); ++k)
@@ -207,6 +222,12 @@ void  TMultiResDescOptions::dumpToTextStream( mrpt::utils::CStream &out) const
         out.printf("Principal point (cy):           %.2f px\n", cy );
         out.printf("Baseline:                       %.2f m\n", baseline );
     }
+    else
+        out.printf("No\n");
+
+    out.printf("Compute Hash Coeffs:            ");
+    if( computeHashCoeffs )
+        out.printf("Yes\n");
     else
         out.printf("No\n");
 
@@ -255,7 +276,9 @@ void CFeature::dumpToTextStream( mrpt::utils::CStream &out) const
 	out.printf("# frames seen:                  %d\n", nTimesSeen );
 	out.printf("# frames not seen:              %d\n", nTimesNotSeen );
 	out.printf("# frames since last seen:       %d\n", nTimesLastSeen );
+	out.printf("Initial Depth:                  %.2f m\n", initialDepth );
 	out.printf("Depth:                          %.2f m\n", depth );
+	out.printf("3D point:                       (%.2f,%.2f,%.2f) m\n", p3D.x, p3D.y, p3D.z );
 	out.printf("Is point feature?:              ");
 	isPointFeature() ? out.printf("Yes\n") : out.printf("No\n");
 
@@ -275,7 +298,7 @@ void CFeature::dumpToTextStream( mrpt::utils::CStream &out) const
         out.printf("No\n");
     else
     {
-        out.printf("Yes\n");
+        out.printf("Yes [%d]\n", (int)multiScales.size());
         for( int k = 0; k < (int)multiScales.size(); ++k )
         {
             out.printf(" · Scale %d: %.2f\n", k, multiScales[k] );
@@ -286,10 +309,10 @@ void CFeature::dumpToTextStream( mrpt::utils::CStream &out) const
                 for( int n = 0; n < (int)descriptors.multiSIFTDescriptors[k][m].size(); ++n )
                     out.printf("%d ", descriptors.multiSIFTDescriptors[k][m][n] );
                 out.printf("\n");
+                out.printf(" ·· HASH coefficients %d,%d,%d\n", multiHashCoeffs[k][m][0], multiHashCoeffs[k][m][1],multiHashCoeffs[k][m][2] );
             }
         }
     } // end else
-    out.printf("-------------------------------------------------------- \n");
 } // end dumpToTextStream
 
 void CFeature::dumpToConsole() const
@@ -301,7 +324,7 @@ void CFeature::dumpToConsole() const
 void  CFeature::writeToStream(CStream &out,int *version) const
 {
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
 		// The coordinates:
@@ -316,13 +339,23 @@ void  CFeature::writeToStream(CStream &out,int *version) const
 			<< orientation
 			<< scale
 			<< IDSourceImage
+            << nTimesSeen
+            << nTimesNotSeen
+            << nTimesLastSeen
+            << depth
+            << initialDepth
+            << p3D
+            << multiScales
+            << multiOrientations
+            << multiHashCoeffs
 			<< descriptors.SIFT
 			<< descriptors.SURF
 			<< descriptors.SpinImg
 			<< descriptors.SpinImg_range_rows
 			<< descriptors.PolarImg
 			<< descriptors.LogPolarImg
-			<< descriptors.polarImgsNoRotation;
+			<< descriptors.polarImgsNoRotation
+			<< descriptors.multiSIFTDescriptors;
 	}
 }
 
@@ -331,6 +364,7 @@ void  CFeature::readFromStream(CStream &in,int version)
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
 			// The coordinates:
 			uint32_t aux_type, aux_KLTS;
@@ -344,16 +378,30 @@ void  CFeature::readFromStream(CStream &in,int version)
 				>> response
 				>> orientation
 				>> scale
-				>> IDSourceImage
-				>> descriptors.SIFT
+				>> IDSourceImage;
+            if( version > 0 )
+            {
+                in  >> nTimesSeen
+                    >> nTimesNotSeen
+                    >> nTimesLastSeen
+                    >> depth
+                    >> initialDepth
+                    >> p3D
+                    >> multiScales
+                    >> multiOrientations
+                    >> multiHashCoeffs;
+            }
+            in  >> descriptors.SIFT
 				>> descriptors.SURF
 				>> descriptors.SpinImg
 				>> descriptors.SpinImg_range_rows
 				>> descriptors.PolarImg
 				>> descriptors.LogPolarImg
 				>> descriptors.polarImgsNoRotation;
+            if( version > 0 )
+                in  >> descriptors.multiSIFTDescriptors;
 
-			type		= (TFeatureType)aux_type;
+			type		    = (TFeatureType)aux_type;
 			track_status	= (TKLTFeatureStatus)aux_KLTS;
 		} break;
 	default:
@@ -369,8 +417,8 @@ void  CFeature::readFromStream(CStream &in,int version)
 CFeature::CFeature(): x(0.0f), y(0.0f), ID(0), patchSize(21), type(featNotDefined),
 	track_status(status_IDLE), response(0.0),
 	orientation(0.0), scale(0.0), IDSourceImage(0),
-	nTimesSeen(1), nTimesNotSeen(0), nTimesLastSeen(0),
-	descriptors()
+	nTimesSeen(1), nTimesNotSeen(0), nTimesLastSeen(0), depth( 0 ), initialDepth( 0 ), p3D(),
+	multiScales(), multiOrientations(), multiHashCoeffs(), descriptors()
 {}
 
 // Ctor
@@ -696,7 +744,67 @@ float CFeature::descriptorLogPolarImgDistanceTo(
 	MRPT_END
 } // end descriptorPolarImgDistanceTo
 
+// --------------------------------------------------
+//              saveToTextFile
+// --------------------------------------------------
+void CFeature::saveToTextFile( const std::string &filename, bool APPEND )
+{
+	MRPT_START
+//    "%% Dump of mrpt::vision::CFeatureList. Each line format is:\n"
+//    "%% ID TYPE X Y ORIENTATION SCALE TRACK_STATUS RESPONSE HAS_SIFT [SIFT] HAS_SURF [SURF]\n"
+//    "%% \\---------------------- feature ------------------/ \\--------- descriptors -------/\n"
+//    "%% with:\n"
+//    "%%  TYPE  : The used detector: 0:KLT, 1: Harris, 2: BCD, 3: SIFT, 4: SURF, 5: Beacon, 6: FAST\n"
+//    "%%  HAS_* : 1 if a descriptor of that type is associated to the feature. \n"
+//    "%%  SIFT  : Present if HAS_SIFT=1: N DESC_0 ... DESC_N-1 \n"
+//    "%%  SURF  : Present if HAS_SURF=1: N DESC_0 ... DESC_N-1 \n"
+//    "%%-------------------------------------------------------------------------------------------\n");
+	CFileOutputStream	f;
 
+	if( !f.open(filename,APPEND) )
+		THROW_EXCEPTION( "[CFeature::saveToTextFile] ERROR: File could not be open for writing" );
+
+    f.printf("%5u %2d %7.3f %7.3f %6.2f %6.2f %2d %6.3f ",
+            (unsigned int)this->ID, (int)this->get_type(), this->x, this->y,
+            this->orientation, this->scale,
+            (int)this->track_status, this->response );
+
+    f.printf("%2d ", int(this->descriptors.hasDescriptorSIFT() ? 1:0) );
+    if( this->descriptors.hasDescriptorSIFT() )
+    {
+        f.printf("%4d ", int(this->descriptors.SIFT.size()) );
+        for( unsigned int k = 0; k < this->descriptors.SIFT.size(); k++ )
+            f.printf( "%4d ", this->descriptors.SIFT[k]);
+    }
+
+    f.printf("%2d ", int(this->descriptors.hasDescriptorSURF() ? 1:0) );
+    if( this->descriptors.hasDescriptorSURF() )
+    {
+        f.printf("%4d ", int(this->descriptors.SURF.size()) );
+        for( unsigned int k = 0; k < this->descriptors.SURF.size(); k++ )
+            f.printf( "%8.5f ", this->descriptors.SURF[k]);
+    }
+
+    f.printf("%2d ", int(this->descriptors.hasDescriptorMultiSIFT() ? 1:0) );
+    if( this->descriptors.hasDescriptorMultiSIFT() )
+    {
+        for( int k = 0; k < int(this->multiScales.size()); ++k )
+        {
+            for( int m = 0; m < int(this->multiOrientations[k].size()); ++m )
+            {
+                f.printf("%.2f %6.2f ", this->multiScales[k], this->multiOrientations[k][m] );
+                f.printf("%4d ", int(this->descriptors.multiSIFTDescriptors[k][m].size()) );
+                for( unsigned int n = 0; n < this->descriptors.multiSIFTDescriptors[k][m].size(); ++n )
+                    f.printf( "%4d ", this->descriptors.multiSIFTDescriptors[k][m][n]);
+            }
+        } // end-for
+    } // end-if
+
+    f.printf( "\n");
+	f.close();
+
+	MRPT_END
+} // end saveToTextFile
 
 /****************************************************
 			   Class CFEATURELIST
@@ -874,11 +982,31 @@ void CFeatureList::copyListFrom( const CFeatureList &otherList )
 CFeaturePtr CFeatureList::getByID( TFeatureID ID ) const
 {
 	for( CFeatureList::const_iterator it = begin(); it != end(); ++it )
-	{
 		if( (*it)->ID == ID )
 			return (*it);
-	}
+
 	return CFeaturePtr();
+} // end getByID
+
+// --------------------------------------------------
+// getByID()
+// --------------------------------------------------
+void CFeatureList::getByMultiIDs( const vector<TFeatureID> &IDs, vector<CFeaturePtr> &out, vector<int> &outIndex ) const
+{
+    out.clear();
+    outIndex.clear();
+    out.reserve( IDs.size() );
+    outIndex.reserve( IDs.size() );
+
+    int counter = 0;
+	for( CFeatureList::const_iterator it = begin(); it != end(); ++it, ++counter )
+	    for( int k = 0; k < int(IDs.size()); ++k )
+            if( (*it)->ID == IDs[k] )
+            {
+                out.push_back( *it );
+                outIndex.push_back( counter );
+                break;
+            }
 } // end getByID
 
 // --------------------------------------------------
@@ -939,7 +1067,7 @@ TFeatureID CFeatureList::getMaxID() const
 // --------------------------------------------------
 // CONSTRUCTOR
 // --------------------------------------------------
-CMatchedFeatureList::CMatchedFeatureList(){}
+CMatchedFeatureList::CMatchedFeatureList() : m_leftMaxID(0), m_rightMaxID(0) {}
 
 // --------------------------------------------------
 // DESTRUCTOR
@@ -972,8 +1100,63 @@ void CMatchedFeatureList::saveToTextFile(const std::string &filename)
 // --------------------------------------------------
 //			getBothFeatureLists
 // --------------------------------------------------
+CFeaturePtr CMatchedFeatureList::getByID( const TFeatureID & ID, const TListIdx &idx )
+{
+    CMatchedFeatureList::iterator it;
+    for( it = begin(); it != end(); ++it )
+    {
+        CFeaturePtr feat = (idx == firstList) ? it->first : it->second;
+        if( feat->ID == ID )
+            return feat;
+    }
+    return CFeaturePtr();
+}
+
+// --------------------------------------------------
+// updateMaxID()
+// --------------------------------------------------
+void CMatchedFeatureList::updateMaxID( const TListIdx &idx )
+{
+    MRPT_START
+    TFeatureID maxID1 = begin()->first->ID;
+    TFeatureID maxID2 = begin()->second->ID;
+    for(CMatchedFeatureList::const_iterator itList = begin(); itList != end(); itList++)
+    {
+        if( idx == firstList || idx == bothLists )
+            mrpt::utils::keep_max(maxID1, itList->first->ID);
+        if( idx == secondList || idx == bothLists )
+            mrpt::utils::keep_max(maxID2, itList->second->ID);
+    }
+    if( idx == firstList || idx == bothLists )
+        m_leftMaxID = maxID1;
+    if( idx == secondList || idx == bothLists )
+        m_rightMaxID = maxID2;
+    MRPT_END
+}
+
+// --------------------------------------------------
+// getMaxID()
+// --------------------------------------------------
+void CMatchedFeatureList::getMaxID( const TListIdx &idx, TFeatureID & firstListID, TFeatureID & secondListID )
+{
+	MRPT_START
+	ASSERT_( !empty() )
+    if( idx == firstList || idx == bothLists )
+        if( m_leftMaxID == 0 )
+            updateMaxID( firstList );
+	if( idx == secondList || idx == bothLists )
+        if( m_rightMaxID == 0 )
+            updateMaxID( secondList );
+    firstListID = m_leftMaxID;
+    secondListID = m_rightMaxID;
+	MRPT_END
+} // end getMaxID()
+// --------------------------------------------------
+//			getBothFeatureLists
+// --------------------------------------------------
 void CMatchedFeatureList::getBothFeatureLists( CFeatureList &list1, CFeatureList &list2 )
 {
+    MRPT_START
     list1.resize( this->size() );
     list2.resize( this->size() );
 
@@ -983,6 +1166,7 @@ void CMatchedFeatureList::getBothFeatureLists( CFeatureList &list1, CFeatureList
         list1[k] = it->first;
         list2[k] = it->second;
     } // end for
+    MRPT_END
 }
 
 // --------------------------------------------------

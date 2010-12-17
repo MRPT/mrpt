@@ -163,6 +163,9 @@ namespace mrpt
 
 			TUnc_Prop_Method uncPropagation;
 
+			/** Stereo Fundamental matrix */
+			CMatrixDouble33 F;
+
 			/** Intrinsic parameters
 			  */
 			CMatrixDouble33	K;
@@ -262,6 +265,7 @@ namespace mrpt
 			bool	hasFundamentalMatrix;		//!< Whether or not there is a fundamental matrix
 			bool	parallelOpticalAxis;		//!< Whether or not the stereo rig has the optical axes parallel
 			bool	useXRestriction;			//!< Whether or not employ the x-coord restriction for finding correspondences (bumblebee camera, for example)
+			bool    addMatches;                 //!< Whether or not to add the matches found into the input matched list (if false the input list will be cleared before being filled with the new matches)
 
 			CMatrixDouble33 F;
 
@@ -286,9 +290,10 @@ namespace mrpt
 			double	maxSAD_TH;                  //!< Minimum Euclidean Distance Between Sum of Absolute Differences
 			double  SAD_RATIO;                  //!< Boundary Ratio between the two highest SAD
 
-			// To estimate depth
+//			// To estimate depth
 			bool    estimateDepth;              //!< Whether or not estimate the 3D position of the real features for the matches (only with parallelOpticalAxis by now).
-            double  fx,cx,cy,baseline;          //!< Intrinsic parameters of the stereo rig
+			double  maxDepthThreshold;          //!< The maximum allowed depth for the matching. If its computed depth is larger than this, the match won't be considered.
+//            double  fx,cx,cy,baseline;          //!< Intrinsic parameters of the stereo rig
 
 			/** Constructor
 			  */
@@ -305,6 +310,119 @@ namespace mrpt
 			void  dumpToTextStream(CStream	&out) const;
 
 		}; // end struct TMatchingOptions
+
+        /** Struct containing the output after matching multi-resolution SIFT-like descriptors
+		*/
+        struct VISION_IMPEXP TMultiResMatchingOutput
+        {
+            int                     nMatches;
+
+            std::vector<int>        firstListCorrespondences;    //!< Contains the indexes within the second list corresponding to the first one.
+            std::vector<int>        secondListCorrespondences;   //!< Contains the indexes within the first list corresponding to the second one.
+            std::vector<int>        firstListFoundScales;        //!< Contains the scales of the first list where the correspondence was found.
+            std::vector<double>     firstListDistance;           //!< Contains the distances between the descriptors.
+
+            TMultiResMatchingOutput() : nMatches(0),
+                firstListCorrespondences(), secondListCorrespondences(),
+                firstListFoundScales(), firstListDistance() {}
+
+        }; // end struct TMultiResMatchingOutput
+
+        /** Struct containing the options when matching multi-resolution SIFT-like descriptors
+		*/
+		struct VISION_IMPEXP TMultiResDescMatchOptions : public mrpt::utils::CLoadableOptions
+		{
+            bool            useOriFilter;           //!< Whether or not use the filter based on orientation test
+            double          oriThreshold;           //!< The threshold for the orientation test
+
+            bool            useDepthFilter;         //!< Whether or not use the filter based on the depth test
+
+            double          matchingThreshold;      //!< The absolute threshold in descriptor distance for considering a match
+            double          matchingRatioThreshold; //!< The ratio between the two lowest distances threshold for considering a match
+            unsigned int    lowScl1, lowScl2;       //!< The lowest scales in the two features to be taken into account in the matching process
+            unsigned int    highScl1, highScl2;     //!< The highest scales in the two features to be taken into account in the matching process
+
+            int             searchAreaSize;         //!< Size of the squared area where to search for a match.
+            int             lastSeenThreshold;      //!< The allowed number of frames since a certain feature was seen for the last time.
+            int             timesSeenThreshold;     //!< The minimum number of frames for a certain feature to be considered stable.
+
+            int             minFeaturesToFind;      //!< The minimum number of features allowed in the system. If current number is below this value, more features will be found.
+            int             minFeaturesToBeLost;    //!< The minimum number of features allowed in the system to not be considered to be lost.
+
+            /** Default constructor
+              */
+            TMultiResDescMatchOptions() :
+                useOriFilter( true ), oriThreshold( 0.2 ),
+                useDepthFilter( true ), matchingThreshold( 1e4 ), matchingRatioThreshold( 0.5 ),
+                lowScl1(0), lowScl2(0), highScl1(6), highScl2(6), searchAreaSize(20), lastSeenThreshold(10), timesSeenThreshold(5),
+                minFeaturesToFind(30), minFeaturesToBeLost(5) {}
+
+            TMultiResDescMatchOptions(
+                const bool &_useOriFilter, const double &_oriThreshold, const bool &_useDepthFilter,
+                const double &_th, const double &_th2, const unsigned int &_lwscl1, const unsigned int &_lwscl2,
+                const unsigned int &_hwscl1, const unsigned int &_hwscl2, const int &_searchAreaSize, const int &_lsth, const int &_tsth,
+                const int &_minFeaturesToFind, const int &_minFeaturesToBeLost ) :
+                useOriFilter( _useOriFilter ), oriThreshold( _oriThreshold ), useDepthFilter( _useDepthFilter ),
+                matchingThreshold ( _th ), matchingRatioThreshold ( _th2 ), lowScl1( _lwscl1 ), lowScl2( _lwscl2 ),
+                highScl1( _hwscl1 ), highScl2( _hwscl2 ), searchAreaSize( _searchAreaSize ), lastSeenThreshold( _lsth ), timesSeenThreshold( _tsth ),
+                minFeaturesToFind( _minFeaturesToFind ), minFeaturesToBeLost(_minFeaturesToBeLost)  {}
+
+            void  loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section );
+			void  saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section );
+            void  dumpToTextStream( mrpt::utils::CStream &out) const;
+
+		}; // end TMultiResDescMatchOptions
+
+        /** Struct containing the options when computing the multi-resolution SIFT-like descriptors
+		*/
+        struct VISION_IMPEXP TMultiResDescOptions : public mrpt::utils::CLoadableOptions
+        {
+            unsigned int    basePSize;          //!< The size of the base patch
+            vector<double>  scales;             //!< The set of scales relatives to the base patch
+            unsigned int    comLScl, comHScl;   //!< The subset of scales for which to compute the descriptors
+            double          sg1, sg2, sg3;      //!< The sigmas for the Gaussian kernels
+            bool            computeDepth;       //!< Whether or not compute the depth of the feature
+            double          fx,cx,cy,baseline;  //!< Intrinsic stereo pair parameters for computing the depth of the feature
+            bool            computeHashCoeffs;  //!< Whether or not compute the coefficients for mantaining a HASH table of descriptors (for relocalization)
+
+            double          cropValue;          //!< The SIFT-like descriptor is cropped at this value during normalization
+
+            /** Default constructor
+              */
+            TMultiResDescOptions() :
+                basePSize(23), sg1 (0.5), sg2(7.5), sg3(8.0), computeDepth(true), fx(0.0), cx(0.0), cy(0.0), baseline(0.0), computeHashCoeffs(false), cropValue(0.2)
+            {
+                scales.resize(7);
+                scales[0] = 0.5;
+                scales[1] = 0.8;
+                scales[2] = 1.0;
+                scales[3] = 1.2;
+                scales[4] = 1.5;
+                scales[5] = 1.8;
+                scales[6] = 2.0;
+                comLScl = 0;
+                comHScl = 6;
+            }
+
+            TMultiResDescOptions( const unsigned int &_basePSize, const vector<double> &_scales,
+                const unsigned int &_comLScl, const unsigned int &_comHScl,
+                const double &_sg1, const double &_sg2, const double &_sg3,
+                const bool &_computeDepth, const double &_fx, const double &_cx, const double &_cy, const double &_baseline, const bool &_computeHashCoeffs, const double &_cropValue ):
+                basePSize( _basePSize ), comLScl( _comLScl ), comHScl( _comHScl ),
+                sg1( _sg1 ), sg2( _sg2 ), sg3( _sg3 ),
+                computeDepth( _computeDepth ), fx( _fx ), cx( _cx ), cy( _cy ), baseline( _baseline ), computeHashCoeffs( _computeHashCoeffs), cropValue( _cropValue )
+            {
+                scales.resize( _scales.size() );
+                for(unsigned int k = 0; k < _scales.size(); ++k)
+                    scales[k] = _scales[k];
+            }
+
+            void  loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section );
+			void  saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section );
+            void  dumpToTextStream( mrpt::utils::CStream &out) const;
+
+        }; // end TMultiResDescOptions
+
 
 	}
 }

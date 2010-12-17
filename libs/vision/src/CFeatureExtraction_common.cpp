@@ -61,11 +61,12 @@ struct sort_pred {
 *								extractFeatures  									        *
 ************************************************************************************************/
 void  CFeatureExtraction::detectFeatures(
-		const CImage			&img,
-		CFeatureList			&feats,
-		unsigned int			init_ID,
-		unsigned int			nDesiredFeatures,
-		const TImageROI			&ROI) const
+		const CImage			& img,
+		CFeatureList			& feats,
+		const unsigned int		init_ID,
+		const unsigned int		nDesiredFeatures,
+		const TImageROI			& ROI,
+		const CMatrixBool       & mask) const
 {
 	switch( options.featsType )
 	{
@@ -196,7 +197,7 @@ void  CFeatureExtraction::detectFeatures(
 			break;
 
 		case featFAST:
-			extractFeaturesFAST(img, feats, init_ID, nDesiredFeatures, ROI);
+			extractFeaturesFAST(img, feats, init_ID, nDesiredFeatures, ROI, mask);
 			break;
 
 		default:
@@ -288,6 +289,8 @@ CFeatureExtraction::TOptions::TOptions()
 	featsType		= featKLT;				// Default Method: Kanade-Lucas-Tomasi
 	patchSize		= 21;					// Patch size
 	FIND_SUBPIXEL	= true;					// Find subpixel
+	useMask         = false;                // Use mask for finding features
+	addNewFeatures  = false;                // Add to existing feature list
 
 	// Harris Options
 	harrisOptions.k				= 0.04f;
@@ -346,6 +349,8 @@ void CFeatureExtraction::TOptions::dumpToTextStream(CStream	&out) const
 	LOADABLEOPTS_DUMP_VAR(featsType,int)
 	LOADABLEOPTS_DUMP_VAR(patchSize, int)
 	LOADABLEOPTS_DUMP_VAR(FIND_SUBPIXEL, bool)
+	LOADABLEOPTS_DUMP_VAR(useMask, bool)
+	LOADABLEOPTS_DUMP_VAR(addNewFeatures, bool)
 
 	LOADABLEOPTS_DUMP_VAR(harrisOptions.k,double)
 	LOADABLEOPTS_DUMP_VAR(harrisOptions.radius,int)
@@ -393,6 +398,8 @@ void CFeatureExtraction::TOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR_CAST(featsType, int, TFeatureType, iniFile,section)
 	MRPT_LOAD_CONFIG_VAR(patchSize, int,  iniFile, section)
 	MRPT_LOAD_CONFIG_VAR(FIND_SUBPIXEL, bool,  iniFile, section)
+	MRPT_LOAD_CONFIG_VAR(useMask, bool,  iniFile, section)
+	MRPT_LOAD_CONFIG_VAR(addNewFeatures, bool,  iniFile, section)
 
 	//string sect = section;
 	MRPT_LOAD_CONFIG_VAR(harrisOptions.k,double,  iniFile,section)

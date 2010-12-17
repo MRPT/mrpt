@@ -34,17 +34,19 @@
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/poses/CPose3DQuat.h>
 
 namespace mrpt
 {
 	namespace utils
 	{
 		using namespace mrpt::math;
+		using namespace mrpt::poses;
 
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( TCamera, mrpt::utils::CSerializable )
 
 		/** Structure to hold the parameters of a pinhole camera model.
-		  *  The parameters obtained for one camera resolution can be used for any other resolution by menas of the method TCamera::scaleToResolution()
+		  *  The parameters obtained for one camera resolution can be used for any other resolution by means of the method TCamera::scaleToResolution()
 		  *
 		  * \sa mrpt::vision::CCamModel, the application <a href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui</a> for calibrating a camera
 		 */
@@ -154,7 +156,7 @@ namespace mrpt
 			void setDistortionParamsVector( const VECTORLIKE &distParVector )
 			{
 				ASSERT_(distParVector.size()==4 || distParVector.size()==5)
-				dist[4] = 0; // Default value 
+				dist[4] = 0; // Default value
 				for (typename VECTORLIKE::Index i=0;i<distParVector.size();i++)
 					dist[i] = distParVector[i];
 			}
@@ -209,7 +211,91 @@ namespace mrpt
 			inline void p2(double val) { dist[3]=val; }
 			/** Get the value of the k3 distortion parameter.  */
 			inline void k3(double val) { dist[4]=val; }
+		}; // end class TCamera
+
+				DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( TStereoCamera, mrpt::utils::CSerializable )
+
+		enum TStereoCameraModel
+		{
+		    Bumblebee = 0,
+		    Custom,
+		    Uncalibrated
 		};
+
+		/** Structure to hold the parameters of a pinhole stereo camera model.
+		  *  The parameters obtained for one camera resolution can be used for any other resolution by means of the method TCamera::scaleToResolution()
+		  *
+		  * \sa mrpt::vision::CCamModel, the application <a href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui</a> for calibrating a camera
+		 */
+        class BASE_IMPEXP TStereoCamera : public mrpt::utils::CSerializable
+		{
+            DEFINE_SERIALIZABLE( TStereoCamera )
+
+        public:
+
+		    TStereoCameraModel  model;
+		    TCamera             leftCamera, rightCamera;
+		    CPose3DQuat         rightCameraPose;
+
+            // Default constructor:
+            // Bumblebee with 640x480 images
+		    TStereoCamera() : model( Bumblebee )
+		    {
+		        leftCamera.ncols = rightCamera.ncols = 640;
+		        leftCamera.nrows = rightCamera.nrows = 480;
+
+                leftCamera.setIntrinsicParamsFromValues(
+                    0.81945957*leftCamera.ncols, 1.09261276*leftCamera.nrows,
+                    0.499950781*leftCamera.ncols, 0.506134245*leftCamera.nrows );
+                leftCamera.setDistortionParamsFromValues( -3.627383e-001, 2.099672e-001, 0, 0, -8.575903e-002 );
+
+                rightCamera.setIntrinsicParamsFromValues(
+                            0.822166309*leftCamera.ncols, 1.096221745*leftCamera.nrows,
+                            0.507065918*leftCamera.ncols, 0.524686589*leftCamera.nrows );
+                rightCamera.setDistortionParamsFromValues( -3.782850e-001, 2.539438e-001, 0, 0, -1.279638e-001 );
+
+                leftCamera.focalLengthMeters = rightCamera.focalLengthMeters = 0.0038;      // 3.8 mm
+
+                // Camera pose
+                CMatrixDouble44 A;
+                A.set_unsafe(0,0,9.999777e-001);    A.set_unsafe(0,1,-6.262494e-003);   A.set_unsafe(0,2,2.340592e-003);    A.set_unsafe(0,3,1.227338e-001);
+                A.set_unsafe(1,0,6.261120e-003);    A.set_unsafe(1,1,9.999802e-001);    A.set_unsafe(1,2,5.939072e-004);    A.set_unsafe(1,3,-3.671682e-004);
+                A.set_unsafe(2,0,-2.344265e-003);   A.set_unsafe(2,1,-5.792392e-004);   A.set_unsafe(2,2,9.999971e-001);    A.set_unsafe(2,3,-1.499571e-004);
+                A.set_unsafe(3,0,0);                A.set_unsafe(3,1,0);                A.set_unsafe(3,2,0);                A.set_unsafe(3,3,0);
+                rightCameraPose = CPose3DQuat( A );
+		    }
+
+		    /**  Save as a config block:
+			  *  \code
+			  *  [SECTION]
+			  *  resolution = [NCOLS NROWS]
+			  *  cx         = CX
+			  *  cy         = CY
+			  *  fx         = FX
+			  *  fy         = FY
+			  *  dist       = [K1 K2 T1 T2 K3]
+			  *  focal_length = FOCAL_LENGTH
+			  *  \endcode
+			  */
+			void saveToConfigFile( const std::string &section, mrpt::utils::CConfigFileBase &cfg ) const;
+
+			/**  Load all the params from a config source, in the format used in saveToConfigFile(), that is:
+			  *
+			  *  \code
+			  *  [SECTION]
+			  *  resolution = [NCOLS NROWS]
+			  *  cx         = CX
+			  *  cy         = CY
+			  *  fx         = FX
+			  *  fy         = FY
+			  *  dist       = [K1 K2 T1 T2 K3]
+			  *  focal_length = FOCAL_LENGTH  [optional field]
+			  *  \endcode
+			  *  \exception std::exception on missing fields
+			  */
+			void loadFromConfigFile(const std::string &section, const mrpt::utils::CConfigFileBase &cfg );
+
+		}; // end class TStereoCamera
 
 	} // End of namespace
 } // end of namespace

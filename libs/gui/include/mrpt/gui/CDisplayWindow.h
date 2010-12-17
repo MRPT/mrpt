@@ -150,8 +150,9 @@ namespace mrpt
 					if( showNumbers )
 					{
 					    char buf[15];
-					    mrpt::system::os::sprintf( buf, 15, "%d", nf );
+					    mrpt::system::os::sprintf( buf, 15, "%d[%u]", nf, (unsigned int)i->first->ID );
                         imgColor.textOut( round( i->first->x ) - 10, round( i->first->y ), buf, color );
+                        mrpt::system::os::sprintf( buf, 15, "%d[%u]", nf, (unsigned int)i->second->ID );
                         imgColor.textOut( round( i->second->x + w ) + 10, round( i->second->y ), buf, color );
                     }
 				}

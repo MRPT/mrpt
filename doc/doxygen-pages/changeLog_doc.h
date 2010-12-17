@@ -56,10 +56,14 @@
 		- Changes in classes:
 			- mrpt::gui::CDisplayWindow::showImageAndPoints() now also displays the index of the feature (if required).
 			- mrpt::vision::CFeature now has new members:
+				- nTimesSeen, nTimesNotSeen, nTimesLastSeen. Counters for performing tracking of the feature visibility.
+				- initialDepth. The computed 3D distance from the camera to the 3D real feature the first time it was seen.
 				- detph. The computed 3D distance from the camera to the 3D real feature.
+				- p3D. The 3D coordinates of this feature when projected into 3D space.
 				- multiScales. A vector containing the set of different scales at which the SIFT-like descriptor must be computed.
 				- multiOrientations. For each scale in multiScales there is a vector containing the main orientations of the feature.
 				- descriptors.multiSIFTDescriptors. For each scale and orientation there is a SIFT-like descriptor.
+				- multiHashCoeffs. For each descriptor, a 3-d vector containing its Hash coefficients computed through the Haar wavelets. 
 				- hasDescriptorMultiSIFT(). Indicates if the multi-resolution SIFT-like descriptor has been computed for this feature.
 			- New method mrpt::gui::CDisplayWindow3D::getRenderingFPS()
 			- Both mrpt::opengl::CPointCloud and mrpt::opengl::CPointCloudColoured are now much more optimized to render huge point clouds:
@@ -86,6 +90,8 @@
 			- mrpt::vision::matchMultiResolutionFeatures(). Matches two CFeatureList containing mulit-resolution descriptors.
 			- mrpt::vision::setProperScales(). Computes the initial and final scales where to look when finding a match between multi-resolution features.
 			- mrpt::vision::computeSAD(). Calculates the Sum of Absolutes Differences (range [0,1]) between two patches.
+			- mrpt::vision::computeMoreDescriptors(). Computes and adds more multi-resolution descriptor to certain feature at lower or upper scales.
+			- mrpt::vision::setProperScales(). Determines the range of scales where to look according to the depth of the involved features.
 			- mrpt::system::createThread now also has overloaded versions for the thread functions having arguments passed by reference.
 		- New examples:
 			- keypoint_matching. It contains three different methods:

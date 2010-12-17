@@ -31,13 +31,13 @@
 	For information about objects in this file, see the appropriate header:
 	\ref Cmtpacket.h
 
-	\section FileCopyright Copyright Notice 
+	\section FileCopyright Copyright Notice
 	Copyright (C) Xsens Technologies B.V., 2006.  All rights reserved.
-	
+
 	This source code is intended for use only by Xsens Technologies BV and
 	those that have explicit written permission to use it from
 	Xsens Technologies BV.
-	
+
 	THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 	KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
@@ -182,6 +182,9 @@ uint16_t Packet::getFPValueSize(const uint16_t index) const
 			ds = 4;
 			break;
 
+        default:
+            ds = 0;
+            break;
 	}
 	return ds;
 }
@@ -236,7 +239,7 @@ uint16_t Packet::getDataSize(const uint16_t index) const
 				m_infoList[i].m_rawGpsPressureAge = totalOffset + 2;
 				m_infoList[i].m_size += 3;
 				totalOffset += 3;
-				
+
 				m_infoList[i].m_rawGpsGpsData = totalOffset;
 				m_infoList[i].m_rawGpsItow = totalOffset;
 				m_infoList[i].m_rawGpsLatitude = totalOffset + 4;
@@ -434,7 +437,7 @@ CmtShortVector Packet::getRawAcc(const uint16_t index) const
 	if (containsRawAcc(index))
 		for (uint16_t i=0;i<3;++i)
 			buffer.m_data[i] = m_msg.getDataShort(m_infoList[index].m_rawAcc + (2*i));
-	
+
 	return buffer;
 }
 bool Packet::containsRawAcc(const uint16_t index) const
@@ -470,7 +473,7 @@ CmtShortVector Packet::getRawGyr(const uint16_t index) const
 	if (containsRawGyr(index))
 		for (uint16_t i=0;i<3;++i)
 			buffer.m_data[i] = m_msg.getDataShort(m_infoList[index].m_rawGyr + (2*i));
-	
+
 	return buffer;
 }
 bool Packet::containsRawGyr(const uint16_t index) const
@@ -506,7 +509,7 @@ CmtShortVector Packet::getRawMag(const uint16_t index) const
 	if (containsRawMag(index))
 		for (uint16_t i=0;i<3;++i)
 			buffer.m_data[i] = m_msg.getDataShort(m_infoList[index].m_rawMag + (2*i));
-	
+
 	return buffer;
 }
 bool Packet::containsRawMag(const uint16_t index) const
@@ -540,7 +543,7 @@ uint16_t Packet::getRawTemp(const uint16_t index) const
 {
 	if (!containsRawTemp(index))
 		return 0;
-	
+
 	return m_msg.getDataShort(m_infoList[index].m_rawTemp);
 }
 bool Packet::containsRawTemp(const uint16_t index) const
@@ -673,7 +676,7 @@ bool Packet::updateRawGpsData(const CmtRawGpsData& data, const uint16_t index)
 		m_infoList[index].m_rawGpsVacc = m_infoList[index].m_rawGpsData + 3 + 32;
 		m_infoList[index].m_rawGpsSacc = m_infoList[index].m_rawGpsData + 3 + 36;
 		m_infoList[index].m_rawGpsGpsAge = m_infoList[index].m_rawGpsData + 3 + 40;
-		
+
 		m_infoList[index].m_size += (2+1) + (40 + 1);
 	}
 	// update
@@ -985,7 +988,7 @@ CmtMatrix Packet::getOriMatrix(const uint16_t index) const
 		for (int32_t i=0;i<3;++i)
 			for (int32_t j=0;j<3;++j, k+=ds)
 				buffer.m_data[i][j] = m_msg.getDataFPValue(m_formatList[index].m_outputSettings, m_infoList[index].m_oriMat+k);
-	}	
+	}
 	else
 		memset(&buffer, 0, sizeof(buffer));
 

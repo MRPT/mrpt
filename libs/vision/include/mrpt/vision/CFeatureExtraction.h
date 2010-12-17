@@ -103,6 +103,14 @@ namespace mrpt
 				  */
 				unsigned int patchSize;
 
+				/** Whether to use a mask for determining the regions where not to look for keypoints (default=false).
+				  */
+				bool useMask;
+
+				/** Whether to add the found features to the input feature list or clear it before adding them (default=false).
+				  */
+				bool addNewFeatures;
+
 				/** Indicates if subpixel accuracy is desired for the extracted points (only applicable to KLT and Harris features)
 				  */
 				bool FIND_SUBPIXEL;
@@ -208,11 +216,12 @@ namespace mrpt
 			*
 			* \sa computeDescriptors
 			*/
-			void  detectFeatures(	const CImage		&img,
-									CFeatureList			&feats,
-									unsigned int			init_ID = 0,
-									unsigned int			nDesiredFeatures = 0,
-									const TImageROI			&ROI = TImageROI()) const;
+			void  detectFeatures(	const CImage		    & img,
+									CFeatureList			& feats,
+									const unsigned int		init_ID = 0,
+									const unsigned int		nDesiredFeatures = 0,
+									const TImageROI			& ROI = TImageROI(),
+                                    const CMatrixBool       & mask = CMatrixBool()) const;
 
 			/** Compute one (or more) descriptors for the given set of interest points onto the image, which may have been filled out manually or from \a detectFeatures
 			* \param in_img (input) The image from where to compute the descriptors.
@@ -382,7 +391,8 @@ namespace mrpt
 				CFeatureList			&feats,
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
-				const TImageROI			&ROI = TImageROI())  const;
+				const TImageROI			&ROI = TImageROI(),
+                const CMatrixBool       & mask = CMatrixBool())  const;
 
 			// ------------------------------------------------------------------------------------
 			//								my_scale_space_extrema
