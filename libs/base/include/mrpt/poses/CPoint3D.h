@@ -29,13 +29,12 @@
 #define CPOINT3D_H
 
 #include <mrpt/poses/CPoint.h>
+#include <mrpt/poses/CPose3D.h>
 
 namespace mrpt
 {
 namespace poses
 {
-    class CPose3D;
-
 	DEFINE_SERIALIZABLE_PRE( CPoint3D )
 
 	/** A class used to store a 3D point.

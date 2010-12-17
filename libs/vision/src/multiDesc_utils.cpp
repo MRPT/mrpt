@@ -988,7 +988,7 @@ TMultiResMatchingOutput vision::matchMultiResolutionFeatures(
 //            (*it2)->descriptors.multiSIFTDescriptors.resize( 1 );
 //            (*it2)->multiHashCoeffs.resize( 1 );
             vector<double> thisOris;
-            if( vision::computeMainOrientations( rightImage, (*it2)->x, (*it2)->y, patchSize, thisOris, computeOpts.sg2 ) == -1 )
+            if( !vision::computeMainOrientations( rightImage, (*it2)->x, (*it2)->y, patchSize, thisOris, computeOpts.sg2 )  )
             {
 //                if( (*it2)->ID == 193 )
 //                {
@@ -1429,7 +1429,7 @@ int vision::computeMoreDescriptors(
 
 //            cout << " ::: Patch extracted and resized" << endl;
             vector<double> auxOriVector;
-            if( vision::computeMainOrientations( rsPatch, a/2+1, a/2+1, a, auxOriVector, opts.sg2 ) == -1)
+            if( !vision::computeMainOrientations( rsPatch, a/2+1, a/2+1, a, auxOriVector, opts.sg2 ))
             {
                 cout << "computeMainOrientations = -1" << endl;
                 mrpt::system::pause();
