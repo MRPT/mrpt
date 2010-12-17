@@ -196,9 +196,8 @@ void CPointCloudColoured::setPoint(size_t i, const TPointColour &p )
 #endif
 	m_points[i] = p;
 
-	markAllPointsAsNew();  // DEBUG!!
-
-	MRPT_TODO("octree update...")
+	// JL: TODO note: Well, this can be clearly done much more efficiently but...I don't have time! :-(
+	markAllPointsAsNew();
 }
 
 /** Inserts a new point into the point cloud. */
@@ -206,9 +205,8 @@ void CPointCloudColoured::push_back(float x,float y,float z, float R, float G, f
 {
 	m_points.push_back(TPointColour(x,y,z,R,G,B));
 
-	markAllPointsAsNew();  // DEBUG!!
-
-	MRPT_TODO("octree update...")
+	// JL: TODO note: Well, this can be clearly done much more efficiently but...I don't have time! :-(
+	markAllPointsAsNew();
 }
 
 

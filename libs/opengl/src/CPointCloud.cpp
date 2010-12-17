@@ -318,9 +318,9 @@ void CPointCloud::insertPoint( float x,float y, float z )
 	m_zs.push_back(z);
 
 	m_minmax_valid = false;
-	markAllPointsAsNew();  // DEBUG!!
 
-	MRPT_TODO("octree update...")
+	// JL: TODO note: Well, this can be clearly done much more efficiently but...I don't have time! :-(
+	markAllPointsAsNew();
 }
 
 /** Write an individual point (checks for "i" in the valid range only in Debug). */
@@ -334,9 +334,9 @@ void CPointCloud::setPoint(size_t i, const float x,const float y, const float z)
 	m_zs[i] = z;
 
 	m_minmax_valid = false;
-	markAllPointsAsNew();  // DEBUG!!
 
-	MRPT_TODO("octree update...")
+	// JL: TODO note: Well, this can be clearly done much more efficiently but...I don't have time! :-(
+	markAllPointsAsNew();
 }
 
 /*---------------------------------------------------------------

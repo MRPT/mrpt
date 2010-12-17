@@ -26,12 +26,11 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/base.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
-using namespace mrpt::slam;
 using namespace std;
 
 
@@ -46,7 +45,7 @@ void Test_TypeName()
 	cout << "Type: " << TTypeName<int32_t>::get() << endl;
 	cout << "Type: " << TTypeName<double>::get() << endl;
 	cout << "Type: " << TTypeName<CPose2D>::get() << endl;
-	cout << "Type: " << TTypeName<mrpt::slam::COccupancyGridMap2D>::get() << endl;
+//	cout << "Type: " << TTypeName<mrpt::slam::COccupancyGridMap2D>::get() << endl;
 
 	cout << "Type: " << TTypeName<vector_double>::get() << endl;
 	cout << "Type: " << TTypeName<vector<int32_t> >::get() << endl;
@@ -59,13 +58,15 @@ void Test_TypeName()
 
 	cout << "Type: " << TTypeName<map< double, set<int32_t> > >::get() << endl;
 
-	cout << "Type: " << TTypeName<set< multimap<double, pair<CPose3DPDFGaussian, COccupancyGridMap2D> > > >::get() << endl;
+	cout << "Type: " << TTypeName<set< multimap<double, pair<CPose3DPDFGaussian, /*COccupancyGridMap2D*/ CPose2D > > > >::get() << endl;
 
 	cout << "Type: " << TTypeName<CMatrixDouble33>::get() << endl;
 	cout << "Type: " << TTypeName<map<CMatrixDouble13,CMatrixFloat> >::get() << endl;
 
 	cout << "Type: " << TTypeName<CArrayNumeric<double,3> >::get() << endl;
 	cout << "Type: " << TTypeName<CArrayDouble<5> >::get() << endl;
+
+	cout << "Type: " << TTypeName< deque<vector<vector<int32_t> > > >::get() << endl;
 
 }
 

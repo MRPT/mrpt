@@ -48,6 +48,7 @@ IF(BUILD_EXAMPLES)
 		geometry3D
 		poses
 		se3
+		type_name
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
@@ -115,7 +116,6 @@ IF(BUILD_EXAMPLES)
 		observer_pattern
 		smart_pointers_test
 		stl_containers_serialize
-		type_name
 		polygonSplit
 		dijkstra-example
 		fbo_render_test

@@ -152,6 +152,12 @@ namespace mrpt
 		  *     DECLARE_CUSTOM_TTYPENAME(MyClass)
 		  *     cout << TTypeName<MyClass>::get() << endl;                          // "MyClass"
 		  *  \endcode
+		  *  
+		  *  The following types are NOT ALLOWED since they have platform-dependant sizes:
+		  *  - int, unsigned int
+		  *  - long, unsigned long
+		  *  - short, unsigned short
+		  *  - size_t
 		  *
 		  */
 		template<typename T>
@@ -187,11 +193,6 @@ namespace mrpt
 		MRPT_DECLARE_TTYPENAME(int16_t)
 		MRPT_DECLARE_TTYPENAME(uint8_t)
 		MRPT_DECLARE_TTYPENAME(int8_t)
-
-		// Note: size_t is purposely NOT here since it may be of different sizes
-		//  and serialization is about knowing exact sizes of all data types!
-
-
 
 		MRPT_DECLARE_TTYPENAME(std::string)
 

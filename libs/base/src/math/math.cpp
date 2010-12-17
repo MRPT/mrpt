@@ -2187,7 +2187,7 @@ void mrpt::math::medianFilter( const std::vector<double> &inV, std::vector<doubl
     ASSERT_( _winSize >= 2 );                    // The minimum window size is 3 elements
     int winSize = _winSize;
 
-    if( !winSize%2 )                            // We use an odd number of elements for the window size
+    if( !(winSize%2) )                            // We use an odd number of elements for the window size
         winSize++;
 
     size_t sz = inV.size();

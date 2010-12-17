@@ -462,8 +462,8 @@ void vision::normalizeImage(
 
     image.getAsMatrix( im );
 
-    double m = mrpt::math::mean( im );
-    double s = mrpt::math::stddev( im );
+	double m,s;
+    im.meanAndStdAll(m,s);
 
     for( int k1 = 0; k1 < (int)nim.cols(); ++k1 )
         for( int k2 = 0; k2 < (int)nim.rows(); ++k2 )

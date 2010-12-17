@@ -710,9 +710,9 @@ void vision::computeHistogramOfOrientations(
                 const unsigned int                  y,
                 const unsigned int                  patchSize,
                 const double                        & orientation,
-                vector<int>                         & descriptor,
+                vector<int32_t>                     & descriptor,
                 const TMultiResDescOptions          & opts,
-                vector<int>                         & hashCoeffs )
+                vector<int32_t>                     & hashCoeffs )
 {
     MRPT_START
     CTimeLogger tlogger;
@@ -1093,7 +1093,7 @@ TMultiResMatchingOutput vision::matchMultiResolutionFeatures(
 
                                 (*it2)->multiOrientations[0].push_back( thisOris[k3] );
 
-                                vector<int> thisDesc, thisHash;
+                                vector<int32_t> thisDesc, thisHash;
                                 computeHistogramOfOrientations(
                                             rightImage,
                                             (*it2)->x, (*it2)->y,
@@ -1436,8 +1436,8 @@ int vision::computeMoreDescriptors(
             }
 
 //            cout << " ::: Orientation computed" << endl;
-            vector< vector<int> > auxDescVector;
-            vector< vector<int> > auxHashCoeffs;
+            vector< vector<int32_t> > auxDescVector;
+            vector< vector<int32_t> > auxHashCoeffs;
             auxDescVector.resize( auxOriVector.size() );
             auxHashCoeffs.resize( auxOriVector.size() );
             for( unsigned int m = 0; m < auxOriVector.size(); ++m )
@@ -1501,8 +1501,8 @@ int vision::computeMoreDescriptors(
 
 //            cout << " ::: Orientation computed" << endl;
 
-            vector< vector<int> > auxDescVector;
-            vector< vector<int> > auxCoefVector;
+            vector< vector<int32_t> > auxDescVector;
+            vector< vector<int32_t> > auxCoefVector;
             auxDescVector.resize( auxOriVector.size() );
             auxCoefVector.resize( auxOriVector.size() );
             for( unsigned int m = 0; m < auxOriVector.size(); ++m )

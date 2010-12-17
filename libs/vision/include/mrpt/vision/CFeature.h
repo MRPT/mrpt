@@ -145,7 +145,7 @@ namespace mrpt
             TPoint3D                        p3D;                //!< The estimated 3D point of this feature wrt its camera
             deque<double>                   multiScales;        //!< A set of scales where the multi-resolution descriptor has been computed
             deque<vector<double> >          multiOrientations;  //!< A vector of main orientations (there is a vector of orientations for each scale)
-            deque<vector<vector<int> > >    multiHashCoeffs;    //!< A set of vectors containing the coefficients for a HASH table of descriptors
+            deque<vector<vector<int32_t> > >    multiHashCoeffs;    //!< A set of vectors containing the coefficients for a HASH table of descriptors
 			bool isPointFeature() const;		                //!< Return false only for Blob detectors (SIFT, SURF)
 
 			/** All the possible descriptors this feature may have */
@@ -153,14 +153,14 @@ namespace mrpt
 			{
 				TDescriptors();  // Initialization
 
-				std::vector<unsigned char>	    SIFT;			        //!< Feature descriptor
+				std::vector<uint8_t>	        SIFT;			        //!< Feature descriptor
 				std::vector<float>			    SURF;			        //!< Feature descriptor
 				std::vector<float>			    SpinImg;		        //!< The 2D histogram as a single row
 				uint16_t					    SpinImg_range_rows;     //!< The number of rows (corresponding to range bins in the 2D histogram) of the original matrix from which SpinImg was extracted as a vector.
 				mrpt::math::CMatrix			    PolarImg;		        //!< A polar image centered at the interest point
 				mrpt::math::CMatrix			    LogPolarImg;	        //!< A log-polar image centered at the interest point
 				bool						    polarImgsNoRotation;    //!< If set to true (manually, default=false) the call to "descriptorDistanceTo" will not consider all the rotations between polar image descriptors (PolarImg, LogPolarImg)
-				deque<vector<vector<int> > >    multiSIFTDescriptors;   //!< A set of SIFT-like descriptors for each orientation and scale of the multiResolution feature (there is a vector of descriptors for each scale)
+				deque<vector<vector<int32_t> > >    multiSIFTDescriptors;   //!< A set of SIFT-like descriptors for each orientation and scale of the multiResolution feature (there is a vector of descriptors for each scale)
 
 				bool hasDescriptorSIFT() const { return !SIFT.empty(); };                       //!< Whether this feature has this kind of descriptor
 				bool hasDescriptorSURF() const { return !SURF.empty(); }                        //!< Whether this feature has this kind of descriptor

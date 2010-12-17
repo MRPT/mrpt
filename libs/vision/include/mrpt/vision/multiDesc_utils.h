@@ -148,9 +148,9 @@ namespace mrpt
                                     const unsigned int              y,
                                     const unsigned int              patchSize,
                                     const double                    & orientation,
-                                    vector<int>                     & descriptor,
+                                    vector<int32_t>                     & descriptor,
                                     const TMultiResDescOptions      & opts,
-                                    vector<int>                     & hashCoeffs );
+                                    vector<int32_t>                     & hashCoeffs );
 
         /** Matches two CFeatureList containing mulit-resolution descriptors. The first list is taken as a base, i.e. its features must contain multi-resolution descriptors
           * at a set of different scales. The second list doesn't need to contain such information because it will be computed if necessary according to the
