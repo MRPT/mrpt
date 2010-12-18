@@ -111,7 +111,7 @@ void Run_KF_SLAM()
 	bool  SAVE_MAP_REPRESENTATIONS = cfgFile.read_bool("MappingApplication","SAVE_MAP_REPRESENTATIONS", true);
 	bool  SHOW_3D_LIVE = cfgFile.read_bool("MappingApplication","SHOW_3D_LIVE", false);
 	
-	bool  FORCE_IGNORE_ODOMETRY = cfgFile.read_bool("MappingApplication","FORCE_IGNORE_ODOMETRY", false);
+//	bool  FORCE_IGNORE_ODOMETRY = cfgFile.read_bool("MappingApplication","FORCE_IGNORE_ODOMETRY", false);
 
 
 	string OUT_DIR = cfgFile.read_string("MappingApplication","logOutput_dir","OUT_KF-SLAM");

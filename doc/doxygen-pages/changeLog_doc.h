@@ -32,10 +32,12 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</i></p>
 
   <a name="0.9.3">
-  <h2>Version 0.9.3 - (Version 1.0.0-Release_Candidate_1): Released 18-DEC-2010 (SVN 233*) </h2></a>
+  <h2>Version 0.9.3 - (Version 1.0.0-Release_Candidate_1): Released 18-DEC-2010 (SVN 2336) </h2></a>
 	- <b>Most important changes:</b>
 		- MRPT now relies entirely on Eigen (version 3) for matrix and vector classes.
 		- Support for Microsoft Xbox Kinect. See mrpt::hwdrivers::CKinect and this page: http://www.mrpt.org/Kinect_and_MRPT
+		- Many new functions in mrpt::vision (by F.A. Moreno).
+		- More efficient rendering of all mrpt::opengl classes thru automatic caching of OpenGL display lists.
 	- <b>Detailed list of changes:</b>
 		- Changes related to mathematics, matrices and containers and the port to Eigen:
 			- All is now based on the Eigen library, v3. See <a href="http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes" >this page</a> for a more complete description of all the changes and the reasons of this big change.
@@ -50,6 +52,7 @@
 		- Changes in applications:
 			- SceneViewer3D: Now has new options to visualize and tune the octree structures of point clouds.
 			- <a href="http://www.mrpt.org/Application:GridmapNavSimul" >GridmapNavSimul</a>: Now can load a custom grid map and save rawlogs in the two existing formats.
+			- <a href="http://www.mrpt.org/Application:pf-localization" >pf-localization</a>: Now can also handle observations-only rawlogs.
 		- Deleted classes:
 			- mrpt::slam::CConsistentObservationAlignment: It implemented the Lu & Milios algorithm, now superseded by graph-slam methods. See the mrpt::graphslam namespace.
 			- mrpt::utils::CImageFloat: For real images with float pixels, it's better to directly use OpenCV. For matrices, there're many other matrix classes better suited for that. There is now also a new explicit constructor in mrpt::utils::CImage able of converting matrices into images, covering the possibly unique utility of the deleted class.

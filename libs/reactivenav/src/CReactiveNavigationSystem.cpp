@@ -717,7 +717,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 		}
 
 		const size_t nVerts = robotShape.size();
-		if (newLogRec.robotShape_x.size() != nVerts)
+		if (size_t(newLogRec.robotShape_x.size()) != nVerts)
 		{
 			newLogRec.robotShape_x.resize(nVerts);
 			newLogRec.robotShape_y.resize(nVerts);
@@ -874,7 +874,7 @@ void CReactiveNavigationSystem::STEP3_SpaceTransformer(
 		const size_t Ki = in_PTG->getAlfaValuesCount();
 
 		// Ver si hay espacio ya reservado en los TP-Obstacles:
-		if ( out_TPObstacles.size() != Ki )
+		if ( size_t(out_TPObstacles.size()) != Ki )
 			out_TPObstacles.resize( Ki );
 
 		// Coger "k"s y "distances" a las que choca cada punto de obstaculo

@@ -32,7 +32,8 @@
 	FILE: pf_localization_main.cpp
 	AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
 
-	See README.txt for instructions.
+	For instructions and more:
+	 http://www.mrpt.org/Application:pf-localization
   ---------------------------------------------------------------*/
 
 #include <mrpt/slam.h>
@@ -49,7 +50,7 @@ using namespace mrpt::random;
 using namespace std;
 
 // Forward declaration:
-void TestParticlesLocalization(const std::string &iniFilename);
+void do_pf_localization(const std::string &iniFilename,const std::string &cmdline_rawlog_file);
 void getGroundTruth( CPose2D &expectedPose, size_t rawlogEntry, const CMatrixDouble &GT, const TTimeStamp &cur_time);
 
 
@@ -60,18 +61,23 @@ int main(int argc, char **argv)
 {
 	try
 	{
-		printf(" ParticleFilter Localization\n");
+		printf(" pf-localization\n");
 		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
 		printf("-------------------------------------------------------------------\n");
 
 		// Process arguments:
-		if (argc<2)
+		if (argc!=2 && argc!=3)
 		{
-			printf("Usage: %s <config.ini>\n\n",argv[0]);
-			return -1;
+			printf("Usage: %s <config.ini> [rawlog_file.rawlog]\n\n",argv[0]);
+			return 1;
 		}
 
-		TestParticlesLocalization( argv[1] );
+		// Optional 2º param:
+		std::string cmdline_rawlog_file;
+		if (argc==3)
+			cmdline_rawlog_file=std::string(argv[2]);
+
+		do_pf_localization( argv[1], cmdline_rawlog_file );
 
 		return 0;
 	}
@@ -92,9 +98,9 @@ int main(int argc, char **argv)
 
 
 // ------------------------------------------------------
-//				TestParticlesLocalization
+//				do_pf_localization
 // ------------------------------------------------------
-void TestParticlesLocalization(const std::string &ini_fil)
+void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_rawlog_file)
 {
 	ASSERT_( fileExists(ini_fil) );
 
@@ -109,8 +115,13 @@ void TestParticlesLocalization(const std::string &ini_fil)
 
 	// Mandatory entries:
 	iniFile.read_vector(iniSectionName, "particles_count", vector_int(1,0), particles_count, /*Fail if not found*/true );
-	string		RAWLOG_FILE			= iniFile.read_string(iniSectionName,"rawlog_file","", /*Fail if not found*/true );
 	string		OUT_DIR_PREFIX		= iniFile.read_string(iniSectionName,"logOutput_dir","", /*Fail if not found*/true );
+
+
+	string		RAWLOG_FILE;
+	if (cmdline_rawlog_file.empty())
+		 RAWLOG_FILE = iniFile.read_string(iniSectionName,"rawlog_file","", /*Fail if not found*/true );
+	else RAWLOG_FILE = cmdline_rawlog_file;
 
 	// Non-mandatory entries:
 	string		MAP_FILE			= iniFile.read_string(iniSectionName,"map_file","" );
@@ -126,6 +137,14 @@ void TestParticlesLocalization(const std::string &ini_fil)
 	bool 		SHOW_PROGRESS_3D_REAL_TIME = iniFile.read_bool(iniSectionName,"SHOW_PROGRESS_3D_REAL_TIME",false);
 	int			SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS = iniFile.read_int(iniSectionName,"SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS",1);
 	double 		STATS_CONF_INTERVAL = iniFile.read_double(iniSectionName,"STATS_CONF_INTERVAL",0.2);
+
+	// Default odometry uncertainty parameters in "dummy_odom_params" depending on how fast the robot moves, etc...
+	//  Only used for observations-only rawlogs:
+	CActionRobotMovement2D::TMotionModelOptions dummy_odom_params;
+	dummy_odom_params.modelSelection = CActionRobotMovement2D::mmGaussian;
+	dummy_odom_params.gausianModel.minStdXY  = iniFile.read_double("DummyOdometryParams","minStdXY",0.04);
+	dummy_odom_params.gausianModel.minStdPHI = DEG2RAD(iniFile.read_double("DummyOdometryParams","minStdPHI", 2.0));
+
 
 	// PF-algorithm Options:
 	// ---------------------------
@@ -159,8 +178,6 @@ void TestParticlesLocalization(const std::string &ini_fil)
 	// --------------------------------------------------------------------
 	CTicTac		tictac,tictacGlobal;
 	CSimpleMap	simpleMap;
-	CRawlog		rawlog;
-	size_t		rawlogEntry, rawlogEntries;
 	CParticleFilter::TParticleFilterStats	PF_stats;
 
 	// Load the set of metric maps to consider in the experiments:
@@ -216,8 +233,7 @@ void TestParticlesLocalization(const std::string &ini_fil)
 	// Load the rawlog:
 	// --------------------------
 	printf("Opening the rawlog file...");
-	rawlog.loadFromRawLogFile(RAWLOG_FILE);
-	rawlogEntries = rawlog.size();
+	CFileGZInputStream rawlog_in_stream(RAWLOG_FILE);
 	printf("OK\n");
 
 
@@ -349,7 +365,7 @@ void TestParticlesLocalization(const std::string &ini_fil)
 			PF.m_options = pfOptions;
 
 			size_t	step = 0;
-			rawlogEntry = 0;
+			size_t rawlogEntry = 0;
 
 			// Initialize the PDF:
 			// -----------------------------
@@ -383,8 +399,6 @@ void TestParticlesLocalization(const std::string &ini_fil)
 			// -----------------------------
 			//		Particle filter
 			// -----------------------------
-			CActionCollectionPtr action;
-			CSensoryFramePtr     observations;
 			CPose2D				pdfEstimation, odometryEstimation;
 			CMatrixDouble		cov;
 			bool				end = false;
@@ -400,7 +414,7 @@ void TestParticlesLocalization(const std::string &ini_fil)
 
 			TTimeStamp cur_obs_timestamp;
 
-			while (rawlogEntry<(rawlogEntries-1) && !end)
+			while (!end)
 			{
 				// Finish if ESC is pushed:
 				if (os::kbhit())
@@ -409,8 +423,46 @@ void TestParticlesLocalization(const std::string &ini_fil)
 
 				// Load pose change from the rawlog:
 				// ----------------------------------------
-				if (!rawlog.getActionObservationPair(action, observations, rawlogEntry ))
-					THROW_EXCEPTION("End of rawlog");
+				CActionCollectionPtr action;
+				CSensoryFramePtr     observations;
+				CObservationPtr 	 obs;
+
+				if (!CRawlog::getActionObservationPairOrObservation(
+					rawlog_in_stream,      // In stream
+					action,	observations,  // Out pair <action,SF>, or:
+					obs,                   // Out single observation
+					rawlogEntry            // In/Out index counter.
+					))
+				{
+					end = true;
+					continue;
+				}
+
+				// Determine if we are reading a Act-SF or an Obs-only rawlog:
+				if (obs)
+				{
+					// It's an observation-only rawlog: build an auxiliary pair of action-SF, since
+					//  montecarlo-localization only accepts those pairs as input:
+
+					// SF: Just one observation:
+					// ------------------------------------------------------
+					observations = CSensoryFrame::Create();
+					observations->insert(obs);
+
+					// ActionCollection: Just one action with a dummy odometry
+					// ------------------------------------------------------
+					action       = CActionCollection::Create();
+
+					CActionRobotMovement2D dummy_odom;
+
+					// TODO: Another good idea would be to take CObservationOdometry objects and use that information, if available.
+					dummy_odom.computeFromOdometry(CPose2D(0,0,0),dummy_odom_params);
+					action->insert(dummy_odom);
+				}
+				else
+				{
+					// Already in Act-SF format, nothing else to do!
+				}
 
 				CPose2D		expectedPose; // Ground truth
 
@@ -572,7 +624,10 @@ void TestParticlesLocalization(const std::string &ini_fil)
 
 					// Avrg. error:
 					// ----------------------------------------
-					odometryEstimation = odometryEstimation + action->getBestMovementEstimation()->poseChange->getMeanVal();
+					CActionRobotMovement2DPtr best_mov_estim = action->getBestMovementEstimation();
+					if (best_mov_estim)
+						odometryEstimation = odometryEstimation + best_mov_estim->poseChange->getMeanVal();
+
 					pdf.getMean( pdfEstimation );
 
 					getGroundTruth(expectedPose, rawlogEntry, GT, cur_obs_timestamp );
