@@ -37,5 +37,6 @@
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
 #include <mrpt/hmtslam/CHMHMapNode.h>
 #include <mrpt/hmtslam/CHMHMapArc.h>
+#include <mrpt/opengl.h> // Needed by many classes (put here to avoid a MSVC9 internal compiler error...)
 
 #endif

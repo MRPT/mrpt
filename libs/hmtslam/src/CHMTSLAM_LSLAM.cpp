@@ -30,7 +30,8 @@
 
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/random.h>
-#include <mrpt/math.h>
+#include <mrpt/math/distributions.h>
+
 #include <mrpt/utils/CFileOutputStream.h>
 
 #include <mrpt/system/os.h>

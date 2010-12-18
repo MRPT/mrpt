@@ -30,7 +30,6 @@
 #include <mrpt/hmtslam.h> // Precomp header
 
 #include <mrpt/poses/CPose3DPDFParticles.h>
-#include <mrpt/opengl.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

@@ -38,7 +38,6 @@
 #include <mrpt/utils/CFileStream.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/system/os.h>
-#include <mrpt/math.h>
 #include <mrpt/utils/CTicTac.h>
 
 using namespace mrpt;

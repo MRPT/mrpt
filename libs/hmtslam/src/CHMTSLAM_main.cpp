@@ -44,12 +44,12 @@
 
 #include <mrpt/hmtslam.h> // Precomp header
 
-
 #include <mrpt/utils/CFileStream.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/synch.h>
 #include <mrpt/utils/CMemoryStream.h>
-#include <mrpt/opengl.h>
+
 #include <mrpt/system/os.h>
 
 using namespace mrpt::slam;

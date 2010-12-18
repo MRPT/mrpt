@@ -28,27 +28,25 @@
 
 #include <mrpt/hmtslam.h> // Precomp header
 
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CText.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CSimpleLine.h>
+
 #include <mrpt/random.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/math/geometry.h>
-#include <mrpt/opengl.h>
-#include <mrpt/utils/CTicTac.h>
-
-#include <mrpt/hmtslam/CHierarchicalMapMHPartition.h>
-#include <mrpt/hmtslam/CRobotPosesGraph.h>
-
-#include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPosePDFSOG.h>
-#include <mrpt/slam/CGridMapAligner.h>
-#include <mrpt/slam/CLandmarksMap.h>
 #include <mrpt/slam/CConsistentObservationAlignment.h>
 
+//#include <mrpt/hmtslam/CHierarchicalMapMHPartition.h>
+//#include <mrpt/hmtslam/CRobotPosesGraph.h>
+//#include <mrpt/poses/CPosePDFParticles.h>
+//#include <mrpt/slam/CSimpleMap.h>
+//#include <mrpt/poses/CPosePDFParticles.h>
+//#include <mrpt/poses/CPosePDFGaussian.h>
+//#include <mrpt/poses/CPosePDFSOG.h>
 
-
-#include <mrpt/utils.h>
+//#include <mrpt/utils.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -309,18 +307,12 @@ void  CHierarchicalMapMHPartition::saveAreasDiagramForMATLAB(
 
 					os::fprintf(f,"line([%f %f],[%f,%f]);\n", x1,x2,y1,y2);
 				}
-
 			}
 		}
-
 	}
 
-
-
 	os::fprintf(f,"axis equal; zoom on;");
-
 	os::fclose(f);
-
 	MRPT_END;
 */
 }
@@ -1286,6 +1278,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 
 	MRPT_END;
 }
+
 
 /*---------------------------------------------------------------
 			computeGloballyConsistentNodeCoordinates
