@@ -511,7 +511,7 @@ void  CGasConcentrationGridMap2D::writeToStream(CStream &out, int *version) cons
 		// Save the map contents:
 		n = static_cast<uint32_t>(m_map.size());
 		out << n;
-		out.WriteBuffer( &m_map[0], sizeof(m_map[0])*m_map.size() );
+		out.WriteBuffer( &m_map[0], sizeof(m_map[0])*m_map.size() );  // TODO: Do this endianness safe!!
 
 		// Version 1: Save the insertion options:
 		out << uint8_t(m_mapType)

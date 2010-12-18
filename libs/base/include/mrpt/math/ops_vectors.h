@@ -152,7 +152,7 @@ namespace mrpt
 		mrpt::utils::CStream& operator << (mrpt::utils::CStream& ostrm, const CArrayNumeric<T,N>& a)
 		{
 			ostrm << mrpt::utils::TTypeName< CArrayNumeric<T,N> >::get();
-			if (N) ostrm.WriteBuffer(&a[0],N*sizeof(T));
+			if (N) ostrm.WriteBufferFixEndianness<T>(&a[0],N);
 			return ostrm;
 		}
 
@@ -164,7 +164,7 @@ namespace mrpt
 			std::string nam;
 			istrm >> nam;
 			ASSERTMSG_(nam==namExpect, format("Error deserializing: expected '%s', got '%s'", namExpect.c_str(),nam.c_str() ) )
-			if (N) istrm.ReadBuffer(&a[0],N*sizeof(T));
+			if (N) istrm.ReadBufferFixEndianness<T>(&a[0],N);
 			return istrm;
 		}
 

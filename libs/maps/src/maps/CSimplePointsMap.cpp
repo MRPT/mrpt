@@ -535,10 +535,10 @@ void  CSimplePointsMap::writeToStream(CStream &out, int *version) const
 
 		if (n>0)
 		{
-			out.WriteBuffer(&x[0],sizeof(x[0])*n);
-			out.WriteBuffer(&y[0],sizeof(x[0])*n);
-			out.WriteBuffer(&z[0],sizeof(x[0])*n);
-			out.WriteBuffer(&pointWeight[0],sizeof(pointWeight[0])*n);
+			out.WriteBufferFixEndianness(&x[0],n);
+			out.WriteBufferFixEndianness(&y[0],n);
+			out.WriteBufferFixEndianness(&z[0],n);
+			out.WriteBufferFixEndianness(&pointWeight[0],n);
 		}
 
 		// version 2: options saved too
@@ -592,17 +592,17 @@ void  CSimplePointsMap::readFromStream(CStream &in, int version)
 
 			if (n>0)
 			{
-				in.ReadBuffer(&x[0],sizeof(x[0])*n);
-				in.ReadBuffer(&y[0],sizeof(x[0])*n);
-				in.ReadBuffer(&z[0],sizeof(x[0])*n);
+				in.ReadBufferFixEndianness(&x[0],n);
+				in.ReadBufferFixEndianness(&y[0],n);
+				in.ReadBufferFixEndianness(&z[0],n);
 
 				// Version 1: weights are also stored:
 				// Version 4: Type becomes long int -> uint32_t for portability!!
 				if (version>=1)
 				{
 					if (version>=4)
-							in.ReadBuffer(&pointWeight[0],sizeof(pointWeight[0])*n);
-					else	in.ReadBuffer(&pointWeight[0],sizeof(unsigned long)*n);
+							in.ReadBufferFixEndianness(&pointWeight[0],n);
+					else	in.ReadBufferFixEndianness((unsigned long*)(&pointWeight[0]),n);
 				}
 			}
 

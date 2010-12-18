@@ -72,6 +72,7 @@
 			- New method mrpt::utils::CClientTCPSocket::getReadPendingBytes()
 			- New method mrpt::opengl::COpenGLScene::visitAllObjects()
 			- Many mrpt::opengl classes now are derived from a display-list-cached base class (mrpt::opengl::CRenderizableDisplayList)
+			- mrpt::utils::CStream now has two new methods (mrpt::utils::CStream::ReadBufferFixEndianness & mrpt::utils::CStream::WriteBufferFixEndianness) to correctly handle arrays of elemental data types so they are saved in MRPT endianness standard (see http://www.mrpt.org/Serialization).
 		- Changes in functions:
 			- mrpt::vision::matchFeatures(). Implemented a new method for managing ambiguous matches, now taking into account which of the conflicting matches is the most probable.
 		- New structures/classes:
@@ -100,6 +101,7 @@
 				- Feature extraction and computation of the matching score for each feature in list1 and for each in list2 with four different methods: FAST, NCC, SIFT and SURF. Graphical results are shown.
 			- octree_render_huge_pointcloud
 		- <b>BUG FIXES:</b>
+			- Serialization dumps of many objects (observations, maps,...) should be now compatible between big and little endian architectures.
 			- Doing a clear() on mrpt::slam::CColouredPointsMap didn't actually clear the internal vectors for RGB+Distance values.
 			- mrpt::utils::net::DNS_resolve_async didn't work properly.
 			- RawlogViewer, module "Raw-map": It didn't display or save the robot path for observations-only rawlogs.

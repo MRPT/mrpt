@@ -1192,8 +1192,12 @@ void  COccupancyGridMap2D::writeToStream(CStream &out, int *version) const
 
 		out << size_x << size_y << x_min << x_max << y_min << y_max << resolution;
 		ASSERT_(size_x*size_y==map.size());
-		out.WriteBuffer(&map[0], sizeof(map[0])*size_x*size_y);
 
+#ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
+		out.WriteBuffer(&map[0], sizeof(map[0])*size_x*size_y);
+#else
+		out.WriteBufferFixEndianness(&map[0], size_x*size_y);
+#endif
 
 		// insertionOptions:
 		out <<	insertionOptions.mapAltitude
@@ -1281,7 +1285,11 @@ void  COccupancyGridMap2D::readFromStream(CStream &in, int version)
 			if (bitsPerCellStream==MyBitsPerCell)
 			{
 				// Perfect:
+			#ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
 				in.ReadBuffer(&map[0], sizeof(map[0])*map.size());
+			#else
+				in.ReadBufferFixEndianness(&map[0], map.size());
+			#endif
 			}
 			else
 			{

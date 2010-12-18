@@ -92,9 +92,9 @@ void  CObservation3DRangeScan::writeToStream(CStream &out, int *version) const
 			out << N;
 			if (N)
 			{
-				out.WriteBuffer( &points3D_x[0], sizeof(points3D_x[0])*N );
-				out.WriteBuffer( &points3D_y[0], sizeof(points3D_y[0])*N );
-				out.WriteBuffer( &points3D_z[0], sizeof(points3D_z[0])*N );
+				out.WriteBufferFixEndianness( &points3D_x[0], N );
+				out.WriteBufferFixEndianness( &points3D_y[0], N );
+				out.WriteBufferFixEndianness( &points3D_z[0], N );
 			}
 		}
 
@@ -146,9 +146,9 @@ void  CObservation3DRangeScan::readFromStream(CStream &in, int version)
 
 				if (N)
 				{
-					in.ReadBuffer( &points3D_x[0], sizeof(points3D_x[0])*N);
-					in.ReadBuffer( &points3D_y[0], sizeof(points3D_x[0])*N);
-					in.ReadBuffer( &points3D_z[0], sizeof(points3D_x[0])*N);
+					in.ReadBufferFixEndianness( &points3D_x[0], N);
+					in.ReadBufferFixEndianness( &points3D_y[0], N);
+					in.ReadBufferFixEndianness( &points3D_z[0], N);
 
 					if (version==0)
 					{
@@ -241,11 +241,15 @@ void CObservation3DRangeScan::swap(CObservation3DRangeScan &o)
 	std::swap(hasConfidenceImage,o.hasConfidenceImage);
 	confidenceImage.swap(o.confidenceImage);
 
+	std::swap(relativePoseIntensityWRTDepth, o.relativePoseIntensityWRTDepth);
+
+	std::swap(cameraParams,o.cameraParams);
+	std::swap(cameraParamsIntensity, o.cameraParamsIntensity);
+
 	std::swap(maxRange, o.maxRange);
 	std::swap(sensorPose, o.sensorPose);
 	std::swap(stdError, o.stdError);
 
-	std::swap(cameraParams,o.cameraParams);
 }
 
 void CObservation3DRangeScan::load() const

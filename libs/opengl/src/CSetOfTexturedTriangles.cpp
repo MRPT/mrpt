@@ -106,8 +106,9 @@ void  CSetOfTexturedTriangles::writeToStream(CStream &out, int *version) const
 		n = (uint32_t)m_triangles.size();
 
 		out << n;
-		if (n)
-			out.WriteBuffer( &m_triangles[0], n*sizeof(TTriangle) );
+
+		for (uint32_t i=0;i<n;i++)
+			m_triangles[i].writeToStream(out);
 	}
 }
 
@@ -144,8 +145,9 @@ void  CSetOfTexturedTriangles::readFromStream(CStream &in, int version)
 			uint32_t n;
 			in >> n;
 			m_triangles.resize(n);
-			if (n)
-				in.ReadBuffer( &m_triangles[0], n*sizeof(TTriangle) );
+
+			for (uint32_t i=0;i<n;i++)
+				m_triangles[i].readFromStream(in);
 
 		} break;
 	default:

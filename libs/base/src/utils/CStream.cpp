@@ -97,14 +97,14 @@ void  CStream::WriteBuffer(const void *Buffer, size_t Count)
 #if MRPT_IS_BIG_ENDIAN
 	// Big endian system: Convert into little-endian for streaming
 	#define IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE( T ) \
-		CStream& utils::operator<<(CStream&out, const T &a) \
+		inline CStream& utils::operator<<(CStream&out, const T &a) \
 		{ \
 			T b; \
 			mrpt::utils::reverseBytes(a,b); \
 			out.WriteBuffer( (void*)&b, sizeof(b) ); \
 			return out; \
 		} \
-		CStream& utils::operator>>(CStream&in, T &a) \
+		inline CStream& utils::operator>>(CStream&in, T &a) \
 		{ \
 			T b; \
 			in.ReadBuffer( (void*)&b, sizeof(a) ); \
@@ -114,12 +114,12 @@ void  CStream::WriteBuffer(const void *Buffer, size_t Count)
 #else
 	// Little endian system:
 	#define IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE( T ) \
-		CStream& utils::operator<<(CStream&out, const T &a) \
+		inline CStream& utils::operator<<(CStream&out, const T &a) \
 		{ \
 			out.WriteBuffer( (void*)&a, sizeof(a) ); \
 			return out; \
 		} \
-		CStream& utils::operator>>(CStream&in, T &a) \
+		inline CStream& utils::operator>>(CStream&in, T &a) \
 		{ \
 			in.ReadBuffer( (void*)&a, sizeof(a) ); \
 			return in; \
@@ -250,12 +250,12 @@ namespace mrpt
 		namespace detail {
 			template <typename VEC> inline CStream& writeStdVectorToStream(CStream&s, const VEC &v) {
 				const uint32_t n = static_cast<uint32_t>(v.size());
-				s << n; if (n) s.WriteBuffer( (void*)&v[0], (int)(sizeof(v[0])*n) );
+				s << n; if (n) s.WriteBufferFixEndianness( &v[0],n );
 				return s;
 			}
 			template <typename VEC> inline CStream& readStdVectorToStream(CStream&s, VEC &v) {
 				uint32_t n; s >> n;
-				v.resize(n); if (n) s.ReadBuffer( (void*)&v[0], (int)(sizeof(v[0])*n) );
+				v.resize(n); if (n) s.ReadBufferFixEndianness( &v[0], n );
 				return s;
 			}
 		}

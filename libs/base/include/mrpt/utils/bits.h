@@ -167,12 +167,19 @@ namespace mrpt
 		inline const R* getAs(const stlplus::smart_ptr_clone<P> &o) { return static_cast<const R*>( & (*o) ); }
 
 		/** Reverse the order of the bytes of a given type (useful for transforming btw little/big endian)  */
-		template <class T> void reverseBytes(const T &v_in, T& v_out)
+		template <class T> inline void reverseBytesInPlace(T& v_in_out)
 		{
-			v_out = v_in;
-			uint8_t *ptr = reinterpret_cast<uint8_t*>(&v_out);
+			uint8_t *ptr = reinterpret_cast<uint8_t*>(&v_in_out);
 			std::reverse(ptr,ptr+sizeof(T));
 		}
+
+		/** Reverse the order of the bytes of a given type (useful for transforming btw little/big endian)  */
+		template <class T> inline void reverseBytes(const T &v_in, T& v_out)
+		{
+			v_out = v_in;
+			reverseBytesInPlace(v_out);
+		}
+		
 
 		/** If the second argument is below the first one, set the first argument to this lower value. */
 		template <typename T,typename K>

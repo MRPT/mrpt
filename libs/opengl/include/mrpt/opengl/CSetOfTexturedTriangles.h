@@ -52,37 +52,36 @@ namespace mrpt
 			  */
 			struct OPENGL_IMPEXP TVertex
 			{
-			/** Default constructor.
-			  */
+				/** Default constructor. */
 				TVertex( ) :
 					m_x(0.0), m_y(0.0), m_z(0.0), m_u(0), m_v(0) { }
-			/** Constructor.
-			  */
-				TVertex(float x, float y, float z, unsigned int u, unsigned int v) :
+				/** Constructor. */
+				TVertex(float x, float y, float z, uint32_t u, uint32_t v) :
 					m_x(x), m_y(y), m_z(z), m_u(u), m_v(v) { }
-			/** 3D vertex coordinates.
-			  */
+				/** 3D vertex coordinates.  */
 				float			m_x, m_y, m_z;
-			/** 2D texture coordinates. Notice that the texture coordinates are 2D pixels!!!
-			  */
-				unsigned int	m_u, m_v;
+				/** 2D texture coordinates. Notice that the texture coordinates are 2D pixels!!! */
+				uint32_t	m_u, m_v;
+
+				void writeToStream(CStream &out) const { out << m_x << m_y << m_z  << m_u << m_v; }
+				void readFromStream(CStream &in) { in >> m_x >> m_y >> m_z >> m_u >> m_v; }
 			};
 
 			/** Triangle. This structure encapsulates the triangle vertices.
 			  */
 			struct OPENGL_IMPEXP TTriangle
 			{
-			/** Default constructor.
-			  */
+			/** Default constructor.  */
 				TTriangle( ) :
 					m_v1(), m_v2(), m_v3() { }
-			/** Constructor.
-			  */
+			/** Constructor. */
 				TTriangle(TVertex v1, TVertex v2, TVertex v3) :
 					m_v1(v1), m_v2(v2), m_v3(v3) { }
-			/** Vertices.
-			  */
+			/** Vertices.  */
 				TVertex	m_v1, m_v2, m_v3;
+
+				void writeToStream(CStream &out) const {  m_v1.writeToStream(out); m_v2.writeToStream(out); m_v3.writeToStream(out); }
+				void readFromStream(CStream &in) { m_v1.readFromStream(in); m_v2.readFromStream(in);  m_v3.readFromStream(in); }
 			};
 
 		protected:

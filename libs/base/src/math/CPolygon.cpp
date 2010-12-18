@@ -60,7 +60,7 @@ void  CPolygon::writeToStream(CStream &out, int *version) const
 
 		// Vertices:
 		if (n)
-			out.WriteBuffer( &TPolygon2D::operator[](0), n*sizeof(TPolygon2D::operator[](0)));
+			out.WriteBufferFixEndianness<double>( (double*)&TPolygon2D::operator[](0), 2*n);
 	}
 
 }
@@ -123,7 +123,7 @@ void  CPolygon::readFromStream(CStream &in, int version)
 
 			// The vertexs arrays:
 			if (n>0)
-				in.ReadBuffer( (void*)&TPolygon2D::operator[](0), n*sizeof(TPolygon2D::operator[](0)));
+				in.ReadBufferFixEndianness<double>( (double*)&TPolygon2D::operator[](0), 2*n);
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

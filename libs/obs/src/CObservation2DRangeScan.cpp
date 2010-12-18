@@ -84,7 +84,7 @@ void  CObservation2DRangeScan::writeToStream(CStream &out, int *version) const
 		ASSERT_(validRange.size() == scan.size() );
 		if (N)
 		{
-			out.WriteBuffer( &scan[0], sizeof(scan[0])*N );
+			out.WriteBufferFixEndianness( &scan[0], N );
 			out.WriteBuffer( &validRange[0],sizeof(validRange[0])*N );
 		}
 		out << stdError;
@@ -148,7 +148,7 @@ void  CObservation2DRangeScan::readFromStream(CStream &in, int version)
 
 			scan.resize(N);
 			if (N)
-				in.ReadBuffer( &scan[0], sizeof(scan[0])*N);
+				in.ReadBufferFixEndianness( &scan[0], N);
 
 			if (version>=1)
 			{

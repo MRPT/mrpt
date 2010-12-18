@@ -81,28 +81,89 @@ namespace mrpt
 			 */
 			virtual ~CStream();
 
-			/** Reads a block of bytes from the stream into Buffer, and returns the amound of bytes actually read.
+			/** Reads a block of bytes from the stream into Buffer
 			 *	\exception std::exception On any error, or if ZERO bytes are read.
+			 *  \return The amound of bytes actually read.
+			 * \note This method is endianness-dependent. 
+			 * \sa ReadBufferImmediate ; Important, see: ReadBufferFixEndianness, 
 			 */
 			size_t  ReadBuffer(void *Buffer, size_t Count);
 
+			/** Reads a sequence of elemental datatypes, taking care of reordering their bytes from the MRPT stream standard (little endianness) to the format of the running architecture.
+			 *  \param ElementCount The number of elements (not bytes) to read.
+			 *  \param ptr A pointer to the first output element in an array (or std::vector<>, etc...).
+			 *  \return The amound of *bytes* (not elements) actually read (under error situations, the last element may be invalid if the data stream abruptly ends).
+			 *  Example of usage:
+			 *  \code
+			 *   uint32_t  N;
+			 *   s >> N;
+			 *   vector<float>  vec(N);
+			 *   if (N) 
+			 *     s.ReadBufferFixEndianness<float>(&vec[0],N);
+			 *  \endcode
+			 *	\exception std::exception On any error, or if ZERO bytes are read.
+			 * \sa ReadBufferFixEndianness, ReadBuffer
+			 */
+			template <typename T>
+			size_t  ReadBufferFixEndianness(T *ptr, size_t ElementCount)
+			{
+			#if !MRPT_IS_BIG_ENDIAN
+				// little endian: no conversion needed.
+				return ReadBuffer(ptr,ElementCount*sizeof(T));
+			#else
+				// big endian: convert.
+				const size_t nread = ReadBuffer(ptr,ElementCount*sizeof(T));
+				for (size_t i=0;i<ElementCount;i++) mrpt::utils::reverseBytesInPlace(ptr[i]);
+				return nread;
+			#endif
+			}
+
+
 			/** Reads a block of bytes from the stream into Buffer, and returns the amound of bytes actually read, without waiting for more extra bytes to arrive (just those already enqued in the stream).
 			 *  Note that this method will fallback to ReadBuffer() in most CStream classes but in some hardware-related  classes.
-			 *
 			 *	\exception std::exception On any error, or if ZERO bytes are read.
 			 */
-			virtual size_t  ReadBufferImmediate(void *Buffer, size_t Count)
-			{
-				return ReadBuffer(Buffer, Count);
-			}
+			virtual size_t  ReadBufferImmediate(void *Buffer, size_t Count) { return ReadBuffer(Buffer, Count); }
 
 			/** Writes a block of bytes to the stream from Buffer.
 			 *	\exception std::exception On any error
+			 *  \sa Important, see: WriteBufferFixEndianness
+			 * \note This method is endianness-dependent. 
 			 */
 			void  WriteBuffer (const void *Buffer, size_t Count);
 
-			/** Copies a specified number of bytes from one stream to another.
+
+
+			/** Writes a sequence of elemental datatypes, taking care of reordering their bytes from the running architecture to MRPT stream standard (little endianness).
+			 *  \param ElementCount The number of elements (not bytes) to write.
+			 *  \param ptr A pointer to the first input element in an array (or std::vector<>, etc...).
+			 *  Example of usage:
+			 *  \code
+			 *   vector<float>  vec = ...
+			 *   uint32_t N = vec.size();
+			 *   s << N
+			 *   if (N) 
+			 *     s.WriteBufferFixEndianness<float>(&vec[0],N);
+			 *  \endcode
+
+			/** Writes a block of bytes to the stream from Buffer.
+			 *	\exception std::exception On any error
+			 *  \sa WriteBuffer
 			 */
+			template <typename T>
+			void WriteBufferFixEndianness(const T *ptr, size_t ElementCount)
+			{
+			#if !MRPT_IS_BIG_ENDIAN
+				// little endian: no conversion needed.
+				return WriteBuffer(ptr,ElementCount*sizeof(T));
+			#else
+				// big endian: the individual "<<" functions already convert endiannes
+				for (size_t i=0;i<ElementCount;i++) (*this) << ptr[i];
+			#endif
+			}
+
+
+			/** Copies a specified number of bytes from one stream to another. */
 			size_t  CopyFrom(CStream* Source, size_t Count);
 
 			/** Introduces a pure virtual method for moving to a specified position in the streamed resource.

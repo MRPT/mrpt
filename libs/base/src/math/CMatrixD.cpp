@@ -55,7 +55,7 @@ void  CMatrixD::writeToStream(CStream &out, int *out_Version) const
 
 		if (rows()>0 && cols()>0)
 			for (Index i=0;i<rows();i++)
-				out.WriteBuffer(&coeff(i,0),sizeof(Scalar)*cols());
+				out.WriteBufferFixEndianness<Scalar>(&coeff(i,0),cols());
 	}
 
 }
@@ -78,7 +78,7 @@ void  CMatrixD::readFromStream(CStream &in, int version)
 
 			if (nRows>0 && nCols>0)
 				for (Index i=0;i<rows();i++)
-					in.ReadBuffer(&coeffRef(i,0),sizeof(Scalar)*nCols);
+					in.ReadBufferFixEndianness<Scalar>(&coeffRef(i,0),nCols);
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
