@@ -145,9 +145,7 @@ namespace mrpt
 			 *   if (N) 
 			 *     s.WriteBufferFixEndianness<float>(&vec[0],N);
 			 *  \endcode
-
-			/** Writes a block of bytes to the stream from Buffer.
-			 *	\exception std::exception On any error
+			 *  \exception std::exception On any error
 			 *  \sa WriteBuffer
 			 */
 			template <typename T>
