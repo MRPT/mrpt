@@ -15,6 +15,14 @@
 
 The packages are in $(HOME)/mrpt_release and $(HOME)/mrpt_debian
 
+Now for windows binary packages:
+> Extract mrpt-0.9.3.zip
+> Build in Debug all the mrpt-* libs.
+> Run cmake again (this is to add the debug libs to the list of files to package!).
+> Now build ALL in Release + "make test".
+> If all OK: Build package
+> Install package, test to build "mrpt_example1" with it.
+
 2) DEBIAN PACKAGE
 > Go to mrpt_debian/debian
 > Edit changelog and copy it to my SVN.
