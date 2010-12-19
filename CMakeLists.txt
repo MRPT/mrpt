@@ -1950,13 +1950,6 @@ IF(WIN32)
 			INSTALL(FILES "${F}" DESTINATION bin)
 		ENDFOREACH(F)
 	ENDIF (EXISTS "${FFMPEG_WIN32_ROOT_DIR}/bin")	
-
-	# CL NUI:
-	IF ("${CMAKE_MRPT_HAS_KINECT}")
-		IF (EXISTS "${CLNUI_SDK_DIR}/Bin/CLNUIDevice.dll")
-			INSTALL(FILES "${CLNUI_SDK_DIR}/Bin/CLNUIDevice.dll" DESTINATION bin)
-		ENDIF (EXISTS "${CLNUI_SDK_DIR}/Bin/CLNUIDevice.dll")
-	ENDIF ("${CMAKE_MRPT_HAS_KINECT}")
 	
 	# Extra optional DLLs to be installed in the "bin" folder:
 	file(TO_CMAKE_PATH "$ENV{MRPT_EXTRA_DLLS_TO_INSTALL}" MRPT_EXTRA_DLLS_TO_INSTALL)
@@ -2012,12 +2005,14 @@ ENDIF(UNIX)
 
 
 # Config-dependent headers:
-INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/ )
-INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/ )
+INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
+INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
 
 # If using embedded version, install embeded version as part of mrpt-base's headers:
 IF (EIGEN_USE_EMBEDDED_VERSION)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/Eigen" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}include/mrpt/base/include/ PATTERN ".svn" EXCLUDE)
+	INSTALL(
+		DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/Eigen" 
+		DESTINATION "${libmrpt_dev_INSTALL_PREFIX}libs/base/include/" PATTERN ".svn" EXCLUDE)
 ENDIF (EIGEN_USE_EMBEDDED_VERSION)
 
 # ----------------------------------------------------------------------------
