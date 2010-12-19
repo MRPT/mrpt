@@ -5,8 +5,8 @@ It was downloaded from http://www.mrpt.org/
 
 Upstream Authors:
 
-   The MRPT was written by the MAPIR group at the University of Malaga,
-   and it's released under the GNU GPL v3:
+   The MRPT was written by the MAPIR group at the University of Malaga, 
+   and it's released under the GNU GPL v3:  
 
    This package is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -22,14 +22,14 @@ Upstream Authors:
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 
-The Debian packaging is Copyright 2010, Jose Luis Blanco <joseluisblancoc@gmail.com>
+The Debian packaging is Copyright 2010, Jose Luis Blanco <joseluisblancoc@gmail.com> 
 and is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
 
 
 MRPT contains portions of code from other authors:
 
  * ARIA
-    http://www.activrobots.com/SOFTWARE/aria.html
+    http://www.activrobots.com/SOFTWARE/aria.html 
     Copyright ActivMedia Robotics, LLC and MobileRobots, Inc.
     MobileRobots Advanced Robotics Interface for Applications
     Published under the GNU GPL v2.
@@ -50,11 +50,11 @@ MRPT contains portions of code from other authors:
 
 	Copyright (c) 2006, Brodie Thiesfield
 
-	Permission is hereby granted, free of charge, to any person obtaining a
+	Permission is hereby granted, free of charge, to any person obtaining a 
 	copy of this software and associated documentation files (the "Software"),
-	to deal in the Software without restriction, including without limitation
-	the rights to use, copy, modify, merge, publish, distribute, sublicense,
-	and/or sell copies of the Software, and to permit persons to whom the
+	to deal in the Software without restriction, including without limitation 
+	the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+	and/or sell copies of the Software, and to permit persons to whom the 
 	Software is furnished to do so, subject to the following conditions:
 
 	The above copyright notice and this permission notice shall be included in
@@ -69,18 +69,18 @@ MRPT contains portions of code from other authors:
 	THE SOFTWARE.
 
 
- * xmlparser
+ * xmlparser 
      http://www.applied-mathematics.net/tools/xmlParser.html
      BSD-style license sent by the author through personal communication.
-
+	 
 Copyright (c) 2002, Frank Vanden Berghen
 All rights reserved.
 
 The following license terms apply to projects that are in some way related to
-the "The Mobile Robot Programming Toolkit (MRPT)" project, including
-applications using "The Mobile Robot Programming Toolkit (MRPT)" and tools
-developed for enhancing "The Mobile Robot Programming Toolkit (MRPT)". All
-other projects (not related to "The Mobile Robot Programming Toolkit (MRPT)")
+the "The Mobile Robot Programming Toolkit (MRPT)" project, including 
+applications using "The Mobile Robot Programming Toolkit (MRPT)" and tools 
+developed for enhancing "The Mobile Robot Programming Toolkit (MRPT)". All 
+other projects (not related to "The Mobile Robot Programming Toolkit (MRPT)") 
 have to use this code under the Aladdin Free Public License (AFPL)
 See the file "AFPL-license.txt" for more information about the AFPL license.
 (see http://www.artifex.com/downloads/doc/Public.htm for detailed AFPL terms)
@@ -108,16 +108,16 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
- * wxMathPlot
+ * wxMathPlot 
     http://sourceforge.net/projects/wxmathplot/
     A framework for mathematical graph plotting in wxWindows.
     Published under the wxWindows Library Licence.
     The original author is David Schalig <mrhill@users.sourceforge.net>.
-    From June 2007 the project is maintained by Davide Rondini.
+    From June 2007 the project is maintained by Davide Rondini. 
       <cdron@users.sourceforge.net>.
-    Authors can be contacted via the wxMathPlot's homepage at
+    Authors can be contacted via the wxMathPlot's homepage at 
       http://sourceforge.net/projects/wxmathplot
-    Contributors: Jose Luis Blanco, Val Greene.
+    Contributors: Jose Luis Blanco, Val Greene. 
 
      WXWINDOWS LIBRARY LICENCE
 
@@ -135,7 +135,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     You should have received a copy of the GNU Library General Public Licence
     along with this software, usually in a file named COPYING.LIB. If not,
-    write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+    write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, 
     Boston, MA 02110-1301, USA.
 
     EXCEPTION NOTICE
@@ -168,36 +168,36 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  * STLplus
     http://stlplus.sourceforge.net/
-    Copyright (C) 1999-2004 Southampton University, 2004-2008 Andy Rushton.
+    Copyright (C) 1999-2004 Southampton University, 2004-2008 Andy Rushton. 
     All rights reserved.
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions
+    Redistribution and use in source and binary forms, with or without 
+    modification, are permitted provided that the following conditions 
     are met:
-    * Redistributions of source code must retain the above Copyright notice,
+    * Redistributions of source code must retain the above Copyright notice, 
       this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above Copyright notice,
+    * Redistributions in binary form must reproduce the above Copyright notice, 
       this list of conditions and the following disclaimer in the documentation
       and/or other materials provided with the distribution.
     * Neither the name of the STLplus library nor the names of its contributors
-      may be used to endorse or promote products derived from this software
+      may be used to endorse or promote products derived from this software 
       without specific prior written permission.
 
-    This software is provided by the Copyright holders and contributors "as is"
-    and any express or implied warranties, including, but not limited to, the
-    implied warranties of merchantability and fitness for a particular purpose
-    are disclaimed. In no event shall the Copyright owner or contributors be
-    liable for any direct, indirect, incidental, special, exemplary, or
-    consequential damages (including, but not limited to, procurement of
-    substitute goods or services; loss of use, data, or profits; or business
-    interruption) however caused and on any theory of liability, whether in
-    contract, strict liability, or tort (including negligence or otherwise)
-    arising in any way out of the use of this software, even if advised of the
+    This software is provided by the Copyright holders and contributors "as is" 
+    and any express or implied warranties, including, but not limited to, the 
+    implied warranties of merchantability and fitness for a particular purpose 
+    are disclaimed. In no event shall the Copyright owner or contributors be 
+    liable for any direct, indirect, incidental, special, exemplary, or 
+    consequential damages (including, but not limited to, procurement of 
+    substitute goods or services; loss of use, data, or profits; or business 
+    interruption) however caused and on any theory of liability, whether in 
+    contract, strict liability, or tort (including negligence or otherwise) 
+    arising in any way out of the use of this software, even if advised of the 
     possibility of such damage.
 
 
  * ISO C9x  compliant inttypes.h for Microsoft Visual Studio
-    Based on ISO/IEC 9899:TC2 Committee draft (May 6, 2005) WG14/N1124
+    Based on ISO/IEC 9899:TC2 Committee draft (May 6, 2005) WG14/N1124 
    Copyright (c) 2006 Alexander Chemeris
 
     Redistribution and use in source and binary forms, with or without
@@ -209,7 +209,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       2. Redistributions in binary form must reproduce the above copyright
          notice, this list of conditions and the following disclaimer in the
          documentation and/or other materials provided with the distribution.
-
+    
       3. The name of the author may be used to endorse or promote products
          derived from this software without specific prior written permission.
 
@@ -217,19 +217,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Copyright (C) Xsens Technologies B.V., 2006.  All rights reserved.
 
-    Permission is granted by Xsens Technologies to distribute this
-    code as part of MRPT sources.
-
+    Permission is granted by Xsens Technologies to distribute this 
+    code as part of MRPT sources. 
+	
     This source code is intended for use only by Xsens Technologies BV and
     those that have explicit written permission to use it from
     Xsens Technologies BV.
-
+	
     THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
     KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
     IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
     PARTICULAR PURPOSE.
-
- * MD5 implementation:
+	
+ * MD5 implementation: 
     converted to C++ class by Frank Thilo (thilo@unix-ag.org)
     for bzflag (http://www.bzflag.org)
       based on:
@@ -238,7 +238,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     Copyright (C) 1991-2, RSA Data Security, Inc. Created 1991. All
     rights reserved.
-
+    
     License to copy and use this software is granted provided that it
     is identified as the "RSA Data Security, Inc. MD5 Message-Digest
     Algorithm" in all material mentioning or referencing this software
@@ -248,16 +248,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     that such works are identified as "derived from the RSA Data
     Security, Inc. MD5 Message-Digest Algorithm" in all material
     mentioning or referencing the derived work.
-
+    
     RSA Data Security, Inc. makes no representations concerning either
     the merchantability of this software or the suitability of this
     software for any particular purpose. It is provided "as is"
     without express or implied warranty of any kind.
-
+    
  * Google test suite: gtest
     Copyright 2008, Google Inc.
     All rights reserved.
-
+    
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
     met:
@@ -284,7 +284,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
- * The CSparse library for sparse matrix manipulation.
+ * The CSparse library for sparse matrix manipulation. 
     CSPARSE: a Concise Sparse matrix package.
     Copyright (c) 2006, Timothy A. Davis.
     http://www.cise.ufl.edu/research/sparse/CSparse
@@ -294,22 +294,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  * The kmeans++ implementation, by David Arthur (Standford, 2007).
    No explicit license, but this note:
-	You may use and modify the code as you see fit, but please
+	You may use and modify the code as you see fit, but please 
 	maintain a reference in the comments to this implementation:
       http://www.stanford.edu/~darthur/kmpp.zip
 
  * The Eigen C++ library for Linear Algebra.
    Benoit Jacob and Gael Guennebaud.
-   Eigen is Free Software. It is licensed under the LGPL3+.
+   Eigen is Free Software. It is licensed under the LGPL3+. 
    As an alternative license choice, Eigen is also licensed under the GPL2+.
    http://eigen.tuxfamily.org/
-
+ 
  * libfreenect.
  The libfreenect project is covered under a dual Apache v2/GPL v2
  license. The licensing criteria are listed below, as well as at the
  top of each source file in the repo.
    http://www.openkinect.org
-
+   
  Copyright (c) 2010 individual OpenKinect contributors. See the CONTRIB
  file for details.
 
