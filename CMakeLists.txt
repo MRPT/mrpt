@@ -2012,7 +2012,7 @@ INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION "${li
 IF (EIGEN_USE_EMBEDDED_VERSION)
 	INSTALL(
 		DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/Eigen" 
-		DESTINATION "${libmrpt_dev_INSTALL_PREFIX}/include/mrpt/base/include/" PATTERN ".svn" EXCLUDE)
+		DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/base/include/" PATTERN ".svn" EXCLUDE)
 ENDIF (EIGEN_USE_EMBEDDED_VERSION)
 
 # ----------------------------------------------------------------------------
