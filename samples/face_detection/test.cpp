@@ -366,19 +366,28 @@ void TestImagesFaceDetection(int argc, char *argv[])
 
 void BatchMode()
 {
+
+	vector<double> frame_rates;
+
 	for ( size_t i = 0; i < rawlogs.size() ; i++ )
 	{
 		CRawlog rawlog;
 		
 		rawlog.loadFromRawLogFile( string( rawlogsDir + rawlogs[i] + ".rawlog" ) );
 
-		cout << "Processing Rawlog: " << rawlogs[i] << endl;
+		cout << "Processing Rawlog [" << i+1 << "/" << rawlogs.size() << "]: " << rawlogs[i] << endl;
 
 		const unsigned int size = rawlog.size();
 
+		mrpt::utils::CTicTac	tictac;
+		size_t counter = 0;
+
 		// PROCESS RAWLOG
-		for	( unsigned int j = 0; j < size; j++ )
+		for	( unsigned int j = 1; j < size; j++ )
 		{
+			if (!counter)
+				tictac.Tic();
+
 			CObservation3DRangeScanPtr o = 	(CObservation3DRangeScanPtr)rawlog.getAsObservation( j );
 
 			ASSERT_(o);
@@ -387,13 +396,13 @@ void BatchMode()
 			
 			faceDetector.detectObjects( o, detected );
 		
-			/*if( ++counter == 10 )
+			if( ++counter == 10 )
 			{
 				double t = tictac.Tac();
-				cout << "Frame Rate: " << counter/t << " fps" << endl;
-				fps.push_back( counter/t );
+				frame_rates.push_back( counter/t );				
 				counter = 0;
-			}*/
+			}
+		
 			mrpt::system::sleep(2);
 		}
 
@@ -403,6 +412,8 @@ void BatchMode()
 		cout << "Real faces delted: " << realFacesDeleted << endl << endl;
 		
 	}
+
+	cout << "Mean frame rate: " << sum(frame_rates)/frame_rates.size();
 	
 	//faceDetector.experimental_showMeasurements();
 

@@ -68,10 +68,6 @@ namespace mrpt
 			struct TOptions
 			{
 				int		confidenceThreshold;
-				double	planeThreshold;
-				double	planeEigenValThreshold_down;
-				double	planeEigenValThreshold_up;
-				double	regionsThreshold;
 				bool	multithread;
 
 				bool	useCovFilter;
@@ -79,7 +75,19 @@ namespace mrpt
 				bool	useSizeDistanceRelationFilter;
 				bool	useDiagonalDistanceFilter;
 
+				bool	batchMode;
+
 			}m_options;
+
+			struct TTestsOptions
+			{
+				double	planeThreshold;
+				double	planeTest_eigenVal_top;
+				double	planeTest_eigenVal_bottom;
+				double	regionsTest_sumDistThreshold_top;				
+				double	regionsTest_sumDistThreshold_bottom;				
+
+			}m_testsOptions;
 
 			// Experimental methods
 			void experimental_showMeasurements();
@@ -129,12 +137,15 @@ namespace mrpt
 
 			}m_measure;
 
+			// To take measures abaout execution time
 			CTimeLogger	m_timeLog;
 
 			vector<double> m_meanHist;
 
 
-			bool checkIfFacePlane( const vector<TPoint3D> &points );
+			// Test to check if a candidate region is a real face
+
+			bool checkIfFacePlane( CObservation3DRangeScan* face );
 
 			bool checkIfFacePlaneCov( CObservation3DRangeScan* face );
 
@@ -142,9 +153,6 @@ namespace mrpt
 
 			static void dummy_checkIfFacePlaneCov( CFaceDetection *obj );
 
-			bool checkIfFaceRegions3( CObservation3DRangeScan* face );
-
-			bool checkIfFaceRegions2( CObservation3DRangeScan* face );
 
 			bool checkIfFaceRegions( CObservation3DRangeScan* face );
 
@@ -152,7 +160,8 @@ namespace mrpt
 
 			static void dummy_checkIfFaceRegions( CFaceDetection *obj );
 
-			bool checkRegionsConstrains( const double values[3][3] );
+			size_t checkRelativePosition( const TPoint3D &p1, const TPoint3D &p2, const TPoint3D &p, double &dist );
+
 
 			void thread_checkIfDiagonalSurface( );
 
@@ -162,9 +171,8 @@ namespace mrpt
 
 			static void dummy_checkIfDiagonalSurface( CFaceDetection *obj );
 
-			size_t checkRelativePosition( const TPoint3D &p1, const TPoint3D &p2, const TPoint3D &p, double &dist );
+			// Experimental methods to view 3D points
 
-			// Experimental methods
 			void experimental_viewFacePointsScanned( const std::vector<float> &xs, const std::vector<float> &ys, const std::vector<float> &zs );
 
 			void experimental_viewFacePointsScanned( const CObservation3DRangeScan &face );
@@ -175,7 +183,11 @@ namespace mrpt
 
 			void experimental_viewRegions( const vector<TPoint3D> regions[9], const TPoint3D meanPos[3][3] );		
 
+			// Segmentation methods
+
 			void experimental_segmentFace( const CObservation3DRangeScan &face, CMatrixTemplate<bool> &region );
+
+			// Histogram methods
 
 			void experimental_calcHist( const CImage &face, const size_t &c1, const size_t &r1, const size_t &c2, 
 										const size_t &r2, CMatrixTemplate<unsigned int> &hist );

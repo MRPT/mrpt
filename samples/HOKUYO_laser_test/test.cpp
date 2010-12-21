@@ -49,24 +49,55 @@ void Test_HOKUYO()
 {
 	CHokuyoURG		laser;
 
-	string 			serName;
-	cout << "HOKUYO laser range finder test application." << endl << endl;
+	string 			serName, type;
 
-	if (SERIAL_NAME.empty())
+	string			ip;
+
+	unsigned int	port;
+
+	cout << "Specify the type of the Hokuyo connection, usb or ethernet: ";
+	getline(cin,type);
+
+	while ( (lowerCase(type) != "usb" ) && ( lowerCase(type) != "ethernet" ) )
 	{
-        cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, ttyACM0): ";
-        getline(cin,serName);
+		cout << "Incorrect type" << endl;
+		cout << "Specify the type of the Hokuyo connection, usb or ethernet: ";
+		getline(cin,type);
+	}
+
+	cout << endl << endl << "HOKUYO laser range finder test application." << endl << endl;
+
+	if ( lowerCase(type) == "usb" )
+	{
+		if (SERIAL_NAME.empty())
+		{
+			cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, ttyACM0): ";
+			getline(cin,serName);
+		}
+		else
+		{
+			cout << "Using serial port: " << SERIAL_NAME << endl;
+			serName = SERIAL_NAME;
+		}
+
+		// Set the laser serial port:
+		laser.setSerialPort( serName );
+
 	}
 	else
 	{
-        cout << "Using serial port: " << SERIAL_NAME << endl;
-	    serName = SERIAL_NAME;
+		cout << "Enter the ip direction: ";
+		getline(cin,ip);
+
+		cout << "Enter the port number: ";
+		cin >> port;
+
+		// Set the laser serial port:
+		laser.setIPandPort( ip, port );
+
 	}
 
-	// Set the laser serial port:
-	laser.setSerialPort( serName );
-
-	// Config: Use defaults + selected serial port
+	// Config: Use defaults + selected port ( serial or ethernet )
 
 	printf("[TEST] Turning laser ON...\n");
 	if (laser.turnOn())

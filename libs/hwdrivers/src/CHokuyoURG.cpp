@@ -250,9 +250,6 @@ bool  CHokuyoURG::turnOn()
 			COM->setConfig( 19200 );
 		}
 
-		// Enable SCIP 2.0
-		enableSCIP20();
-
 		if (COM!=NULL)
 		{
 			// Set 115200 baud rate:
@@ -265,8 +262,6 @@ bool  CHokuyoURG::turnOn()
 	{
 		CClientTCPSocket* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
 
-		// Enable SCIP 2.0
-		//enableSCIP20();
 
 		if ( COM!=NULL )
 		{
@@ -274,20 +269,17 @@ bool  CHokuyoURG::turnOn()
 			switchLaserOff();
 			mrpt::system::sleep(10);
 
-			//COM->purgeBuffers();
+			purgeBuffers();
 			mrpt::system::sleep(10);
 	
 			switchLaserOff();
 			mrpt::system::sleep(10);
-			//COM->purgeBuffers();			
+			purgeBuffers();			
 		}
-
-		// Enable SCIP 2.0
-		//enableSCIP20();
 	
 	}
 
-	//if (!enableSCIP20()) return false;
+	if (!enableSCIP20()) return false;
 
 	// Turn on the laser:
 	if (!switchLaserOn()) return false;
@@ -1096,10 +1088,32 @@ void CHokuyoURG::purgeBuffers()
 {
 	if (!checkCOMisOpen()) return;
 
-	CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-	if (COM!=NULL)
+	if ( m_ip_dir.empty() )
 	{
-		COM->purgeBuffers();
+		CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
+		if (COM!=NULL)
+		{
+			COM->purgeBuffers();
+		}
+	}
+	else  // Socket connection
+	{
+		CClientTCPSocket* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
+
+		size_t to_read = COM->getReadPendingBytes();
+
+		if ( to_read )
+		{
+
+			void *buf = malloc(sizeof(uint8_t)*to_read);
+			
+			size_t nRead = m_stream->ReadBuffer(buf,to_read);
+
+			if ( nRead != to_read )
+				THROW_EXCEPTION("Error in purge buffers: read and expected number of bytes are different.");
+
+			free( buf );
+		}
 	}
 }
 

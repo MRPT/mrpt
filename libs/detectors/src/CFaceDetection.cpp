@@ -97,16 +97,18 @@ CFaceDetection::~CFaceDetection()
 //------------------------------------------------------------------------
 void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 {
-	m_options.confidenceThreshold	= cfg.read_int( "FaceDetection", "confidenceThreshold", 240 );
-	m_options.planeThreshold		= cfg.read_double( "FaceDetection", "planeThreshold", 50 );
-	m_options.planeEigenValThreshold_up		= cfg.read_double( "FaceDetection", "planeEigenValThreshold_up", 0.011 );
-	m_options.planeEigenValThreshold_down	= cfg.read_double( "FaceDetection", "planeEigenValThreshold_down", 0.0002 );
-	m_options.regionsThreshold		= cfg.read_double( "FaceDetection", "regionsThreshold", 0.5 );
+	m_options.confidenceThreshold	= cfg.read_int( "FaceDetection", "confidenceThreshold", 240 );		
 	m_options.multithread			= cfg.read_bool( "FaceDetection", "multithread", true );
 	m_options.useCovFilter			= cfg.read_bool( "FaceDetection", "useCovFilter", true );
 	m_options.useRegionsFilter		= cfg.read_bool( "FaceDetection", "useRegionsFilter", true );
 	m_options.useSizeDistanceRelationFilter	= cfg.read_bool( "FaceDetection", "useSizeDistanceRelationFilter", true );
 	m_options.useDiagonalDistanceFilter		= cfg.read_bool( "FaceDetection", "useDiagonalDistanceFilter", true );
+
+	m_testsOptions.planeThreshold		= cfg.read_double( "FaceDetection", "planeThreshold", 50 );
+	m_testsOptions.planeTest_eigenVal_top		= cfg.read_double( "FaceDetection", "planeTest_eigenVal_top", 0.011 );
+	m_testsOptions.planeTest_eigenVal_bottom	= cfg.read_double( "FaceDetection", "planeTest_eigenVal_bottom", 0.0002 );
+	m_testsOptions.regionsTest_sumDistThreshold_top		= cfg.read_double( "FaceDetection", "regionsTest_sumDistThreshold_top", 0.5 );
+	m_testsOptions.regionsTest_sumDistThreshold_bottom		= cfg.read_double( "FaceDetection", "regionsTest_sumDistThreshold_bottom", 0.04 );
 
 	m_measure.takeTime				= cfg.read_bool( "FaceDetection", "takeTime", false );
 	m_measure.takeMeasures			= cfg.read_bool( "FaceDetection", "takeMeasures", false );
@@ -249,7 +251,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 						deleteDetected.push_back( i );
 						remove = true;
 					}
-					else if ( m_options.useRegionsFilter && !checkIfFaceRegions2( &m_lastFaceDetected ) )
+					else if ( m_options.useRegionsFilter && !checkIfFaceRegions( &m_lastFaceDetected ) )
 					{
 						deleteDetected.push_back( i );
 						remove = true;
@@ -321,8 +323,18 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 //------------------------------------------------------------------------
 //  						checkIfFacePlane
 //------------------------------------------------------------------------
-bool CFaceDetection::checkIfFacePlane( const vector<TPoint3D> &points )
+bool CFaceDetection::checkIfFacePlane( CObservation3DRangeScan *face )
 {
+
+	vector<TPoint3D> points;
+
+	size_t N = face->points3D_x.size();	
+
+	points.resize( N );
+
+	for ( size_t i = 0; i < N; i++ )
+		points[i] = TPoint3D( face->points3D_x.at(i), face->points3D_y.at(i), face->points3D_z.at(i) );	
+
 	// Try to ajust a plane
 	TPlane plane;
 
@@ -332,7 +344,7 @@ bool CFaceDetection::checkIfFacePlane( const vector<TPoint3D> &points )
 			m_measure.errorEstimations.push_back( (double)getRegressionPlane(points,plane) );
 	}
 
-	if ( getRegressionPlane(points,plane) < m_options.planeThreshold )
+	if ( getRegressionPlane(points,plane) < m_testsOptions.planeThreshold )
 		return true;
 
 	return false;
@@ -481,149 +493,18 @@ void CFaceDetection::thread_checkIfFaceRegions( )
 			break;
 
 		// Perform filter
-		m_checkIfFaceRegions_res = checkIfFaceRegions2( &m_lastFaceDetected );
+		m_checkIfFaceRegions_res = checkIfFaceRegions( &m_lastFaceDetected );
 
 		m_leave_checkIfFaceRegions.release();
 	}
 }
 
+
 //------------------------------------------------------------------------
 //							checkIfFaceRegions
 //------------------------------------------------------------------------
+
 bool CFaceDetection::checkIfFaceRegions( CObservation3DRangeScan* face )
-{
-	MRPT_START
-
-	const unsigned int faceWidth = face->intensityImage.getWidth();
-	const unsigned int faceHeight = face->intensityImage.getHeight();
-
-	// To obtain experimental results
-	{
-		if ( m_measure.takeTime )
-		m_timeLog.enter("Check if face plane: regions");
-	}
-
-	unsigned int x1 = ceil(faceWidth*0.1);
-	unsigned int x2 = floor(faceWidth*0.9);
-	unsigned int y1 = ceil(faceHeight*0.05);
-	unsigned int y2 = floor(faceHeight*0.9);
-
-	unsigned int sectionVSize = faceHeight/3.0;
-	unsigned int sectionHSize = faceWidth/3.0;
-
-	vector<TPoint3D> points;
-	unsigned int cont = faceWidth*(y1-1);
-
-	double meanDepth[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
-	int numPoints[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
-
-	// vector<TPoint3D> regions2[9];  // JL: Unused var
-
-	for ( unsigned int i = y1; i <= y2; i++ )
-	{
-		cont += x1;
-
-		for ( unsigned int j = x1; j <= x2; j++, cont++ )
-		{
-			if (*(face->confidenceImage.get_unsafe( j, i, 0 )) > m_options.confidenceThreshold )
-			{
-				unsigned int row, col;
-				if ( i-y1 < sectionVSize - floor(sectionVSize*0.1) )
-					row = 0;
-				else if ( i-y1 < sectionVSize*2 + floor(sectionVSize*0.1) )
-					row = 1;
-				else
-					row = 2;
-
-				if ( j-x1 < sectionHSize - floor(sectionHSize*0.1) )
-					col = 0;
-				else if ( j-x1 < sectionHSize*2 + floor(sectionHSize*0.1) )
-					col = 1;
-				else
-					col = 2;
-
-
-				//cout << ">" << face->points3D_x[cont] << "." << face->points3D_y[cont] << "." << face->points3D_z[cont] << endl;
-
-				//meanDepth[row][col]+=face->points3D_x[cont];
-
-				TPoint3D point(face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] );
-				meanDepth[row][col] += point.distanceTo(TPoint3D(0,0,0));
-
-				++numPoints[row][col];
-
-				/*if ( row == 0 && col == 0 )
-					regions2[0].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else if ( row == 0 && col == 1 )
-					regions2[1].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else if ( row == 0 && col == 2 )
-					regions2[2].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else if ( row == 1 && col == 0 )
-					regions2[3].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else if ( row == 1 && col == 1 )
-					regions2[4].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else if ( row == 1 && col == 2 )
-					regions2[5].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else if ( row == 2 && col == 0 )
-					regions2[6].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else if ( row == 2 && col == 1 )
-					regions2[7].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else
-					regions2[8].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );*/
-
-			}
-		}
-
-		cont += faceWidth-x2;
-	}
-
-	for ( size_t i = 0; i < 3; i++ )
-		for ( size_t j = 0; j < 3; j++ )
-			if ( !numPoints[i][j] )
-				meanDepth[i][j] = 0;
-			else
-				meanDepth[i][j] /= numPoints[i][j];
-
-	/*
-	cout << endl << meanDepth[0][0] << "\t" << meanDepth[0][1] << "\t" << meanDepth[0][2];
-	cout << endl << meanDepth[1][0] << "\t" << meanDepth[1][1] << "\t" << meanDepth[1][2];
-	cout << endl << meanDepth[2][0] << "\t" << meanDepth[2][1] << "\t" << meanDepth[2][2] << endl;*/
-
-	//experimental_viewRegions( regions2 );
-	//experimental_viewFacePointsScanned( *face );
-	//cout << m_measure.faceNum;
-
-	// For experimental results
-	{
-		if ( m_measure.takeMeasures )
-		{
-			m_measure.meanRegions.push_back( meanDepth[0][0] );
-			m_measure.meanRegions.push_back( meanDepth[0][1] );
-			m_measure.meanRegions.push_back( meanDepth[0][2] );
-			m_measure.meanRegions.push_back( meanDepth[1][0] );
-			m_measure.meanRegions.push_back( meanDepth[1][1] );
-			m_measure.meanRegions.push_back( meanDepth[1][2] );
-			m_measure.meanRegions.push_back( meanDepth[2][0] );
-			m_measure.meanRegions.push_back( meanDepth[2][1] );
-			m_measure.meanRegions.push_back( meanDepth[2][2] );
-		}
-	}
-
-	// To obtain experimental results
-	{
-		if ( m_measure.takeTime )
-		m_timeLog.leave("Check if face plane: regions");
-	}
-
-	return checkRegionsConstrains( meanDepth );
-
-	MRPT_END
-}
-
-//------------------------------------------------------------------------
-//							checkIfFaceRegions2
-//------------------------------------------------------------------------
-bool CFaceDetection::checkIfFaceRegions3( CObservation3DRangeScan* face )
 {
 	MRPT_START
 
@@ -887,394 +768,8 @@ bool CFaceDetection::checkIfFaceRegions3( CObservation3DRangeScan* face )
 
 
 //------------------------------------------------------------------------
-//							checkIfFaceRegions2
+//							checkRelativePosition
 //------------------------------------------------------------------------
-bool CFaceDetection::checkIfFaceRegions2( CObservation3DRangeScan* face )
-{
-	MRPT_START
-
-	// To obtain experimental results
-	{
-		if ( m_measure.takeTime )
-		m_timeLog.enter("Check if face plane: regions");
-	}
-
-	// To obtain region size
-	const unsigned int faceWidth = face->intensityImage.getWidth();
-	const unsigned int faceHeight = face->intensityImage.getHeight();
-
-	// Initial vertical size of a region
-	unsigned int sectionVSize = faceHeight/3.0;
-
-	// Steps of this filter
-	//	1. To segment the region detected as face using a regions growing algorithm
-	//	2. To obtain the first and last column to work (a profile face detected can have a lateral area without to use)
-	//	3. To calculate the histogram of the upper zone of the region for determine if we use it (if this zone present
-	//		a lot of dark pixels the measurements can be wrong)
-	//	4. To obtain the coordinates of pixels that form each subregion
-	//	5. To calculate medians or means of each subregion
-	//	6. To check subregions constrains
-
-	vector<TPoint3D> points;
-
-	TPoint3D meanPos[3][3] = {
-		{ TPoint3D(0,0,0),TPoint3D(0,0,0),TPoint3D(0,0,0)},
-		{ TPoint3D(0,0,0),TPoint3D(0,0,0),TPoint3D(0,0,0)},
-		{ TPoint3D(0,0,0),TPoint3D(0,0,0),TPoint3D(0,0,0)} };
-	int numPoints[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
-
-	vector<TPoint3D> regions2[9];
-
-	//
-	//	1. To segment the region detected as face using a regions growing algorithm
-	//
-
-	CMatrixTemplate<bool> region; // To save the segmented region
-	experimental_segmentFace( *face,  region);
-
-	//
-	//	2. To obtain the first and last column to work (a profile face detected can have a lateral area without to use)
-	//
-
-	size_t start=faceWidth, end=0;
-
-	for ( size_t r = 0; r < region.getRowCount() ; r++ )
-		for ( size_t c = 1; c < region.getColCount() ; c++ )
-		{
-			if ( ( !(region.get_unsafe( r, c-1 )) ) && ( region.get_unsafe( r, c )) )
-			{
-				if ( c < start )
-					start = c;
-			}
-			else if ( ( region.get_unsafe( r, c-1 ) ) && ( !(region.get_unsafe( r, c )) ) )
-				if ( c > end )
-					end = c;
-
-			if ( ( c > end ) && ( region.get_unsafe( r, c ) ) )
-				end = c;
-
-		}
-
-	if ( end == 0 ) end = faceWidth-1;	// Check if the end has't changed
-	if ( end < 3*(faceWidth/4) ) end = 3*(faceWidth/4); // To avoid spoiler
-	if ( start == faceWidth ) start = 0;	// Check if the start has't changed
-	if ( start > faceWidth/4 ) start = faceWidth/4;	// To avoid spoiler
-
-	//cout << "Start: " << start << " End: " << end << endl;
-
-	// To use the start and end calculated to obtain the final regions limits
-	unsigned int utilWidth = faceWidth - start - ( faceWidth - end );
-	unsigned int c1 = ceil( utilWidth/3.0 + start );
-	unsigned int c2 = ceil( 2*(utilWidth/3.0) + start );
-
-	//
-	//	3. To calculate the histogram of the upper zone of the region for determine if we use it
-	//
-
-	CMatrixTemplate<unsigned int> hist;
-	hist.setSize(1,256,true);
-	experimental_calcHist( face->intensityImage, start, 0, end, ceil(faceHeight*0.1), hist );
-
-	size_t countHist = 0;
-	for ( size_t i = 0; i < 60; i++ )
-	{
-		countHist += hist.get_unsafe(0,i);
-	}
-
-	size_t upLimit = 0;
-	size_t downLimit = faceHeight-1;
-
-	if ( countHist > 10 )
-	{
-		upLimit = floor(faceHeight*0.1);
-		//downLimit = floor(faceHeight*0.9);
-	}
-
-	// Uncomment it if you want to analyze the number of pixels that have more dark that the 60 gray tone
-	//m_meanHist.push_back( countHist );
-
-	//
-	//	4. To obtain the coordinates of pixels that form each region
-	//
-
-	unsigned int cont = 0;
-
-	for ( unsigned int r = 0; r < faceHeight; r++ )
-	{
-		for ( unsigned int c = 0; c < faceWidth; c++, cont++ )
-		{
-			if ( ( r >= upLimit ) && ( r <= downLimit )
-				&& ( region.get_unsafe( r, c ) )
-				&& (*(face->confidenceImage.get_unsafe( c, r, 0 )) > m_options.confidenceThreshold )
-				&& ( *(face->intensityImage.get_unsafe( c, r )) > 50) )
-			{
-				unsigned int row, col;
-				if ( r < sectionVSize + upLimit*0.3)
-					row = 0;
-				else if ( r < sectionVSize*2 - upLimit*0.15 )
-					row = 1;
-				else
-					row = 2;
-
-				if ( c < c1)
-					col = 0;
-				else if ( c < c2 )
-					col = 1;
-				else
-					col = 2;
-
-
-				TPoint3D point( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont]);
-				meanPos[row][col] = meanPos[row][col] + point;
-
-				++numPoints[row][col];
-
-				if ( row == 0 && col == 0 )
-					regions2[0].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else if ( row == 0 && col == 1 )
-					regions2[1].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else if ( row == 0 && col == 2 )
-					regions2[2].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else if ( row == 1 && col == 0 )
-					regions2[3].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else if ( row == 1 && col == 1 )
-					regions2[4].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else if ( row == 1 && col == 2 )
-					regions2[5].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else if ( row == 2 && col == 0 )
-					regions2[6].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else if ( row == 2 && col == 1 )
-					regions2[7].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-				else
-					regions2[8].push_back( TPoint3D( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont] ) );
-
-			}
-
-		}
-	}
-
-	//
-	//	5. To calculate medians or means of each subregion
-	//
-
-	vector<double> oldPointsX1;
-
-	size_t middle1=0;
-	size_t middle2=0;
-
-	if ( regions2[0].size() > 0 )
-	{
-		for ( size_t i = 0; i < regions2[0].size(); i++ )
-			oldPointsX1.push_back( regions2[0][i].x );
-
-		middle1 = floor((double)oldPointsX1.size()/2);
-		nth_element(oldPointsX1.begin(),oldPointsX1.begin()+middle1,oldPointsX1.end()); // Obtain center element
-	}
-
-	vector<double> oldPointsX2;
-
-	if ( regions2[2].size() > 0 )
-	{
-		for ( size_t i = 0; i < regions2[2].size(); i++ )
-			oldPointsX2.push_back( regions2[2][i].x );
-
-		middle2 = floor((double)oldPointsX2.size()/2);
-		nth_element(oldPointsX2.begin(),oldPointsX2.begin()+middle2,oldPointsX2.end()); // Obtain center element
-	}
-
-	for ( size_t i = 0; i < 3; i++ )
-		for ( size_t j = 0; j < 3; j++ )
-			if ( !numPoints[i][j] )
-				meanPos[i][j] = TPoint3D( 0, 0, 0 );
-			else
-				meanPos[i][j] = meanPos[i][j] / numPoints[i][j];
-
-	if ( regions2[0].size() > 0  )
-		meanPos[0][0].x = oldPointsX1.at(middle1);
-
-	if ( regions2[2].size() > 0 )
-		meanPos[0][2].x = oldPointsX2.at(middle2);
-
-	//
-	//	6. To check subregions constrains
-	//
-
-	double min_dist = 10, max_dist = 0;
-	TPoint3D camera(0,0,0);
-
-	for ( size_t i = 0; i < regions2[4].size(); ++i )
-	{
-		double distance = camera.distanceTo( regions2[4][i] );
-
-		if ( distance > max_dist )
-			max_dist = distance;
-		if ( distance < min_dist )
-			min_dist = distance;
-	}
-
-	double difference = max_dist - min_dist;
-	//double ratio = 1 / difference;
-
-	meanPos[1][1] = TPoint3D(0,0,0);
-	double pond = 0;
-
-	for ( size_t i = 0; i < regions2[4].size(); i++ )
-	{
-		double distance = camera.distanceTo( regions2[4][i] );
-
-		double ratio = (2*(max_dist - distance))/difference;
-
-		TPoint3D p = (regions2[4][i]);
-		meanPos[1][1] = meanPos[1][1] + p*ratio;
-		pond += ratio;
-	}
-
-	meanPos[1][1] = meanPos[1][1]/pond;
-
-
-
-	vector<double> dist;
-	dist.resize(5);
-	size_t res = checkRelativePosition( meanPos[1][0], meanPos[1][2], meanPos[1][1], dist[0] );
-	res	 = res + checkRelativePosition( meanPos[2][0], meanPos[2][2], meanPos[2][1], dist[1] );
-	res	 = res + checkRelativePosition( meanPos[0][0], meanPos[0][2], meanPos[0][1], dist[2] );
-	res	 = res + checkRelativePosition( meanPos[0][0], meanPos[2][2], meanPos[1][1], dist[3] );
-	res	 = res + checkRelativePosition( meanPos[2][0], meanPos[0][2], meanPos[1][1], dist[4] );
-
-	/*ofstream f;
-	f.open("dist.txt", ofstream::app);
-	f << sum(dist) << endl;
-	f.close();*/
-
-	bool real = false;
-	if ( !res )
-		real = true;
-	else if (( res = 1 ) && ( sum(dist) > 0.04 ))
-		real = true;
-
-	double size = meanPos[0][1].distanceTo( meanPos[2][1] );
-
-	if ( ( size > 0.16 ) || ( size < 0.07 ) )
-		real = false;
-
-	if ( ( sum(dist) < 0.05 ) || ( sum(dist) > 0.45 ) )
-		real = false;
-
-	/*f.open("tam.txt",ofstream::app);
-	f << meanPos[0][1].distanceTo( meanPos[2][1] ) << endl;
-	f.close();*/
-
-	// A experimental region to calculate normals
-	// TODO:
-	//	- Calulcate orientation of each normal
-	//	- Create a matrix of possible orientations and each normal vote for a orientation
-	//	- Normalize obtained matrix (values of all its positions sums one)
-	//	- Compare with a "usual" matrix of a real face
-
-	/************************************a****
-
-	cont = 0;
-
-	setEpsilon(0.000000000000000000000000000000000000000000000000000000000000005);
-
-	vector<double> x,y,z;
-	bool resOk = true;
-
-	for ( unsigned int r = 0; r < faceHeight-1; r++ )
-	{
-		for ( unsigned int c = 0; c < faceWidth-1; c++, cont++ )
-		{
-			TPoint3D point1( face->points3D_x[cont], face->points3D_y[cont], face->points3D_z[cont]);
-			TPoint3D point2( face->points3D_x[cont+1], face->points3D_y[cont+1], face->points3D_z[cont+1]);
-			TPoint3D point3( face->points3D_x[cont+faceWidth], face->points3D_y[cont+faceWidth], face->points3D_z[cont+faceWidth]);
-
-			double dx1=point2.x-point1.x;
-			double dy1=point2.y-point1.y;
-			double dz1=point2.z-point1.z;
-			double dx2=point3.x-point1.x;
-			double dy2=point3.y-point1.y;
-			double dz2=point3.z-point1.z;
-			double coefs[3];
-			coefs[0]=dy1*dz2-dy2*dz1;
-			coefs[1]=dz1*dx2-dz2*dx1;
-			coefs[2]=dx1*dy2-dx2*dy1;
-			if (abs(coefs[0])<geometryEpsilon&&abs(coefs[1])<geometryEpsilon&&abs(coefs[2])<geometryEpsilon)
-			{
-				resOk = false;
-				break;
-			}
-
-			//try{
-			TPlane plane( point1, point2, point3 );
-			//}catch (...){
-			//}
-
-			double norm[3];
-			plane.getNormalVector( norm );
-			plane.getUnitaryNormalVector( norm );
-			x.push_back( norm[0] );
-			y.push_back( norm[1] );
-			z.push_back( norm[2] );
-		}
-	}
-
-	if ( resOk ){
-
-	double mean;
-	double std1,std2,std3;
-
-	ofstream f;
-	f.open("x.txt", ofstream::app);
-	//f << mean(x) << endl;
-	meanAndStd( x, mean, std1 );
-	f << std1 << endl;
-	f.close();
-	f.open("y.txt", ofstream::app);
-	meanAndStd( y, mean, std2 );
-	//f << mean(y) << endl;
-	f << std2 << endl;
-	f.close();
-	f.open("z.txt", ofstream::app);
-	meanAndStd( z, mean, std3 );
-	//f << mean(z) << endl;
-	f << std3 << endl;
-	f.close();
-	f.open("all.txt", ofstream::app);
-	//f << mean(z) << endl;
-	f << std1+std2+std3 << endl;
-	f.close();
-	}
-	***********************************************/
-
-	//experimental_viewRegions( regions2, meanPos );
-
-	//cout << endl << meanPos[0][0] << "\t" << meanPos[0][1] << "\t" << meanPos[0][2];
-	//	cout << endl << meanPos[1][0] << "\t" << meanPos[1][1] << "\t" << meanPos[1][2];
-	//	cout << endl << meanPos[2][0] << "\t" << meanPos[2][1] << "\t" << meanPos[2][2] << endl;
-
-
-	// To obtain experimental results
-	{
-		if ( m_measure.takeTime )
-		m_timeLog.leave("Check if face plane: regions");
-	}
-
-	if ( real )
-		return true; // Filter passed
-	else
-	{
-
-		// Uncomment if you want to known what regions was discarted by this filter
-		/*ofstream f;
-		f.open("deletedSTRUCTURES.txt", ofstream::app);
-		f << m_measure.faceNum << endl;
-		f.close();*/
-
-		return false; // Filter not passed
-	}
-
-	MRPT_END
-}
 
 size_t CFaceDetection::checkRelativePosition( const TPoint3D &p1, const TPoint3D &p2, const TPoint3D &p, double &dist )
 {
@@ -1307,41 +802,6 @@ size_t CFaceDetection::checkRelativePosition( const TPoint3D &p1, const TPoint3D
 }
 
 
-//------------------------------------------------------------------------
-//						 checkRegionsConstrains
-//------------------------------------------------------------------------
-bool CFaceDetection::checkRegionsConstrains( const double values[3][3] )
-{
-	// This matrix put, for instance, in 0,0 an 1 if this region is farther that 0,1 region
-	double satisfy[3][3] = { {0,0,0}, {0,0,0}, {0,0,0} };
-
-	if ( values[0][0] > values[0][1] )
-		satisfy[0][0] = 1;
-	if ( values[0][2] > values[0][1] )
-		satisfy[0][2] = 1;
-	if ( values[1][0] > values[1][1] )
-		satisfy[1][0] = 1;
-	if ( values[1][2] > values[1][1] )
-		satisfy[1][2] = 1;
-	if ( values[2][0] > values[2][1] )
-		satisfy[2][0] = 1;
-	if ( values[2][2] > values[2][1] )
-		satisfy[2][2] = 1;
-
-	size_t sumCol0	= satisfy[0][0] + satisfy[1][0] + satisfy[2][0];
-	size_t sumCol2	= satisfy[0][2] + satisfy[1][2] + satisfy[2][2];
-	//size_t sumFil0 = satisfy[0][0] + satisfy[0][1] + satisfy[0][2];
-	//size_t sumFil2 = satisfy[2][0] + satisfy[2][1] + satisfy[2][2];
-
-	// We can choose any constrain to require to a candidate face scan
-	if ( ( sumCol0 >= 2 ) && ( sumCol2 >= 2 ) ) // Frontal faces
-		return true;
-	if ( ( sumCol0 == 3 ) || ( sumCol2 == 3 ) ) // Profile faces
-		return true;
-
-	return false;
-}
-
 void CFaceDetection::dummy_checkIfDiagonalSurface( CFaceDetection *obj )
 {
 	obj->thread_checkIfDiagonalSurface( );
@@ -1363,9 +823,11 @@ void CFaceDetection::thread_checkIfDiagonalSurface( )
 	}
 }
 
+
 //------------------------------------------------------------------------
 //							checkIfDiagonalSurface
 //------------------------------------------------------------------------
+
 bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 {
 	MRPT_START
@@ -1616,9 +1078,11 @@ bool CFaceDetection::checkIfDiagonalSurface( CObservation3DRangeScan* face )
 	MRPT_END
 }
 
+
 //------------------------------------------------------------------------
-//							checkIfDiagonalSurface
+//							checkIfDiagonalSurface2
 //------------------------------------------------------------------------
+
 bool CFaceDetection::checkIfDiagonalSurface2( CObservation3DRangeScan* face )
 {
 	MRPT_START
@@ -1825,6 +1289,11 @@ bool CFaceDetection::checkIfDiagonalSurface2( CObservation3DRangeScan* face )
 	MRPT_END
 }
 
+
+//------------------------------------------------------------------------
+//					experimental_viewFacePointsScanned
+//------------------------------------------------------------------------
+
 void CFaceDetection::experimental_viewFacePointsScanned( const CObservation3DRangeScan &face )
 {
 	vector<float> xs, ys, zs;
@@ -1845,6 +1314,11 @@ void CFaceDetection::experimental_viewFacePointsScanned( const CObservation3DRan
 	experimental_viewFacePointsScanned( xs, ys, zs );
 }
 
+
+//------------------------------------------------------------------------
+//					experimental_ViewFacePointsScanned
+//------------------------------------------------------------------------
+
 void CFaceDetection::experimental_viewFacePointsScanned( const vector<TPoint3D> &points )
 {
 	vector<float> xs, ys, zs;
@@ -1864,6 +1338,11 @@ void CFaceDetection::experimental_viewFacePointsScanned( const vector<TPoint3D> 
 
 	experimental_viewFacePointsScanned( xs, ys, zs );
 }
+
+
+//------------------------------------------------------------------------
+//					experimental_viewFacePointsScanned
+//------------------------------------------------------------------------
 
 void CFaceDetection::experimental_viewFacePointsScanned( const vector<float> &xs, const vector<float> &ys, const vector<float> &zs )
 {
@@ -1928,6 +1407,11 @@ void CFaceDetection::experimental_viewFacePointsScanned( const vector<float> &xs
 
 	system::pause();
 }
+
+
+//------------------------------------------------------------------------
+//				experimental_viewFacePointsAndEigenVects
+//------------------------------------------------------------------------
 
 void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CArrayDouble<3> > &pointsVector, const CMatrixDouble &eigenVect, const vector_double &eigenVal )
 {
@@ -2021,6 +1505,11 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CAr
 	system::pause();
 }
 
+
+//------------------------------------------------------------------------
+//						experimental_viewRegions
+//------------------------------------------------------------------------
+
 void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9], const TPoint3D meanPos[3][3] )
 {
 	mrpt::gui::CDisplayWindow3D  win3D;
@@ -2106,6 +1595,11 @@ void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9]
 
 	system::pause();
 }
+
+
+//------------------------------------------------------------------------
+//						experimental_segmentFace
+//------------------------------------------------------------------------
 
 void CFaceDetection::experimental_segmentFace( const CObservation3DRangeScan &face, CMatrixTemplate<bool> &region )
 {
@@ -2269,6 +1763,11 @@ void CFaceDetection::experimental_segmentFace( const CObservation3DRangeScan &fa
 	}
 }
 
+
+//------------------------------------------------------------------------
+//						experimental_calcHist
+//------------------------------------------------------------------------
+
 void CFaceDetection::experimental_calcHist( const CImage &face, const size_t &c1, const size_t &r1, const size_t &c2,
 											const size_t &r2, CMatrixTemplate<unsigned int> &hist )
 {
@@ -2284,6 +1783,11 @@ void CFaceDetection::experimental_calcHist( const CImage &face, const size_t &c1
 		}
 
 }
+
+
+//------------------------------------------------------------------------
+//					experimental_showMeasurements
+//------------------------------------------------------------------------
 
 void CFaceDetection::experimental_showMeasurements()
 {
@@ -2365,112 +1869,6 @@ void CFaceDetection::experimental_showMeasurements()
 		}
 	}
 
-
-	if ( m_measure.meanRegions.size() > 0 )
-	{
-		vector_double	meanRegions[9];
-		double			sumRegionsConstrains[9] = {0,0,0,0,0,0,0,0,0};
-
-		unsigned int N = m_measure.meanRegions.size();
-
-		for ( vector_double::Index i = 0; i < m_measure.meanRegions.size(); i++ )
-			meanRegions[i%9].push_back( m_measure.meanRegions[i] );
-
-		/*	Regions
-			0	1	2
-			3	4	5
-			6	7	8
-		*/
-		int passed1 = 0, passed2 = 0;
-
-		double meanDiffRegions[9] = {0,0,0,0,0,0,0,0,0};
-
-		for ( unsigned int i = 0; i < (unsigned int)(N/9) ; i++ )
-		{
-			int col0 = 0, col2 = 0;
-			if ( meanRegions[0][i] > meanRegions[1][i] )
-			{
-				sumRegionsConstrains[0]+=1;
-				col0++;
-			}
-			if ( meanRegions[2][i] > meanRegions[1][i] )
-			{
-				sumRegionsConstrains[1]+=1;
-				col2++;
-			}
-			if ( meanRegions[3][i] > meanRegions[4][i] )
-			{
-				col0++;
-				sumRegionsConstrains[2]+=1;
-			}
-			if ( meanRegions[5][i] > meanRegions[4][i] )
-			{
-				sumRegionsConstrains[3]+=1;
-				col2++;
-			}
-			if ( meanRegions[6][i] > meanRegions[7][i] )
-			{
-				col0++;
-				sumRegionsConstrains[4]+=1;
-			}
-			if ( meanRegions[8][i] > meanRegions[7][i] )
-			{
-				sumRegionsConstrains[5]+=1;
-				col2++;
-			}
-
-			if ( ( col0 >= 2) && (col2 >=2) )
-				passed1++;
-			else if( ( col0 == 3 ) || (col2 == 3) )
-				passed2++;
-
-			meanDiffRegions[0] += abs ( meanRegions[0][i] - meanRegions[4][i] );
-			meanDiffRegions[1] += abs ( meanRegions[1][i] - meanRegions[4][i] );
-			meanDiffRegions[2] += abs ( meanRegions[2][i] - meanRegions[4][i] );
-			meanDiffRegions[3] += abs ( meanRegions[3][i] - meanRegions[4][i] );
-			meanDiffRegions[5] += abs ( meanRegions[5][i] - meanRegions[4][i] );
-			meanDiffRegions[6] += abs ( meanRegions[6][i] - meanRegions[4][i] );
-			meanDiffRegions[7] += abs ( meanRegions[7][i] - meanRegions[4][i] );
-			meanDiffRegions[8] += abs ( meanRegions[8][i] - meanRegions[4][i] );
-
-		}
-
-		cout << endl << "Mean diff regions" << endl;
-		for ( size_t i = 0; i < 9; i++ )
-			cout << "Region " << i << ": " << meanDiffRegions[i]/(N/9) << endl;
-
-		cout << endl << "Information about face regions restrictions: " << endl;
-		cout << "Regions:" << endl;
-		cout << "0 1 2" << endl;
-		cout << "3 4 5" << endl;
-		cout << "6 7 8" << endl;
-		cout << "Restriction #1 (0>1): " << sumRegionsConstrains[0]/(N/9) << endl;
-		cout << "Restriction #2 (2>1): " << sumRegionsConstrains[1]/(N/9) << endl;
-		cout << "Restriction #3 (3>4): " << sumRegionsConstrains[2]/(N/9) << endl;
-		cout << "Restriction #4 (5>4): " << sumRegionsConstrains[3]/(N/9) << endl;
-		cout << "Restriction #5 (6>7): " << sumRegionsConstrains[4]/(N/9) << endl;
-		cout << "Restriction #6 (8>7): " << sumRegionsConstrains[5]/(N/9) << endl;
-		cout << "Satisfy frontal restrictions: " << passed1 << endl;
-		cout << "Satisfy profile restrictions: " << passed2 << endl;
-
-		if ( m_measure.saveMeasurementsToFile )
-		{
-			f << endl << "Information about face regions restrictions: " << endl;
-			f << "Regions:" << endl;
-			f << "0 1 2" << endl;
-			f << "3 4 5" << endl;
-			f << "6 7 8" << endl;
-			f << "Restriction #1 (0>1): " << sumRegionsConstrains[0]/(N/9) << endl;
-			f << "Restriction #2 (2>1): " << sumRegionsConstrains[1]/(N/9) << endl;
-			f << "Restriction #3 (3>4): " << sumRegionsConstrains[2]/(N/9) << endl;
-			f << "Restriction #4 (5>4): " << sumRegionsConstrains[3]/(N/9) << endl;
-			f << "Restriction #5 (6>7): " << sumRegionsConstrains[4]/(N/9) << endl;
-			f << "Restriction #6 (8>7): " << sumRegionsConstrains[5]/(N/9) << endl;
-			f << "Satisfy frontal restrictions: " << passed1 << endl;
-			f << "Satisfy profile restrictions: " << passed2 << endl;
-		}
-	}
-
 	cout << endl << "Data about number of faces" << endl;
 	cout << "Possible faces detected: " << m_measure.numPossibleFacesDetected << endl;
 	cout << "Real faces detected: " << m_measure.numRealFacesDetected << endl;
@@ -2504,6 +1902,11 @@ void CFaceDetection::experimental_showMeasurements()
 
 	mrpt::system::pause();
 }
+
+
+//------------------------------------------------------------------------
+//						debug_returnResults
+//------------------------------------------------------------------------
 
 void CFaceDetection::debug_returnResults( const vector_uint &falsePositives, const vector_uint &ignore, unsigned int &falsePositivesDeleted, unsigned int &realFacesDeleted )
 {
