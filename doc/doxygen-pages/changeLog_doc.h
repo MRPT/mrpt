@@ -33,7 +33,8 @@
 
   <a name="0.9.4">
   <h2>Version 0.9.4 - (Version 1.0.0-Release_Candidate_2): UNDER DEVELOPMENT </h2></a>
-        - ...
+        - BUG FIXES:
+		- Octree-based rendering of point cloud didn't discard all invisible nodes, not doing an optimal rendering.
 
 
 

@@ -249,7 +249,7 @@ namespace mrpt
 					
 					const bool any_cr_zs_neg = (cr_z[0]<0 ||cr_z[1]<0 ||cr_z[2]<0 ||cr_z[3]<0 ||cr_z[4]<0 ||cr_z[5]<0 ||cr_z[6]<0 ||cr_z[7]<0);
 					const bool any_cr_zs_pos = (cr_z[0]>0 ||cr_z[1]>0 ||cr_z[2]>0 ||cr_z[3]>0 ||cr_z[4]>0 ||cr_z[5]>0 ||cr_z[6]>0 ||cr_z[7]>0);
-					const bool box_crosses_image_plane = any_cr_zs_neg && any_cr_zs_neg;
+					const bool box_crosses_image_plane = any_cr_zs_pos && any_cr_zs_neg;
 
 					// If all 8 corners are way out of the screen (and all "cr_z" have the same sign),
 					// this node and all the children are not visible:
