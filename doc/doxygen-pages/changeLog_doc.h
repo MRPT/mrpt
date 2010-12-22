@@ -33,6 +33,14 @@
 
   <a name="0.9.4">
   <h2>Version 0.9.4 - (Version 1.0.0-Release_Candidate_2): UNDER DEVELOPMENT </h2></a>
+	- Changes in applications:
+		- <a href="http://www.mrpt.org/Application:rawlog-grabber" >rawlog-grabber</a>: Added "hokuyo_UXM.ini" to support HOKUYO UXM laser series.
+	- Build system:
+		- Fixed compiling with MSVC 2005 (Patch by Z.P.Gaal)
+	- Changes in classes:
+		- mrpt::hwdrivers::CHokuyoURG now support ethernet connection (tested in HOKUYO UXM series)[JRRS].
+	- Changes in examples:
+		- hokuyo_laser_test. Now it's possible to choose between USB and Ethernet connection.
         - BUG FIXES:
 		- Octree-based rendering of point cloud didn't discard all invisible nodes, not doing an optimal rendering.
 
@@ -61,12 +69,10 @@
 			- SceneViewer3D: Now has new options to visualize and tune the octree structures of point clouds.
 			- <a href="http://www.mrpt.org/Application:GridmapNavSimul" >GridmapNavSimul</a>: Now can load a custom grid map and save rawlogs in the two existing formats.
 			- <a href="http://www.mrpt.org/Application:pf-localization" >pf-localization</a>: Now can also handle observations-only rawlogs.
-			- <a href="http://www.mrpt.org/Application:rawlog-grabber" >rawlog-grabber</a>: Added "hokuyo_UXM.ini" to support HOKUYO UXM laser series.
 		- Deleted classes:
 			- mrpt::slam::CConsistentObservationAlignment: It implemented the Lu & Milios algorithm, now superseded by graph-slam methods. See the mrpt::graphslam namespace.
 			- mrpt::utils::CImageFloat: For real images with float pixels, it's better to directly use OpenCV. For matrices, there're many other matrix classes better suited for that. There is now also a new explicit constructor in mrpt::utils::CImage able of converting matrices into images, covering the possibly unique utility of the deleted class.
 		- Changes in classes:
-			- mrpt::hwdrivers::CHokuyoURG now support ethernet connection (tested in HOKUYO UXM series)[JRRS].
 			- mrpt::gui::CDisplayWindow::showImageAndPoints() now also displays the index of the feature (if required).
 			- mrpt::vision::CFeature now has new members:
 				- nTimesSeen, nTimesNotSeen, nTimesLastSeen. Counters for performing tracking of the feature visibility.
@@ -107,8 +113,6 @@
 			- mrpt::vision::computeMoreDescriptors(). Computes and adds more multi-resolution descriptor to certain feature at lower or upper scales.
 			- mrpt::vision::setProperScales(). Determines the range of scales where to look according to the depth of the involved features.
 			- mrpt::system::createThread now also has overloaded versions for the thread functions having arguments passed by reference.
-		- Changes in examples:
-			- hokuyo_laser_test. Now it's possible to choose between USB and Ethernet connection.
 		- New examples:
 			- keypoint_matching. It contains three different methods:
 				- Feature extraction and stereo matching process from a pair of images. It show stadistics about the number of detected and matched features for each method.
