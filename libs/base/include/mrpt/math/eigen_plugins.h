@@ -434,23 +434,52 @@ public:
 	template <typename MAT> EIGEN_STRONG_INLINE void insertRow(size_t nRow, const MAT & aRow) { this->row(nRow) = aRow; }
 	template <typename MAT> EIGEN_STRONG_INLINE void insertCol(size_t nCol, const MAT & aCol) { this->col(nCol) = aCol; }
 
+	/** Remove columns of the matrix.*/
 	EIGEN_STRONG_INLINE void removeColumns(const std::vector<size_t> &idxsToRemove)
 	{
-		for (size_t i=0;i<idxsToRemove.size();i++)
-		{
-			const size_t nC = cols()-idxsToRemove[i] - 1 - i;
-			derived().block(0,idxsToRemove[i],rows(),nC) = derived().block(0,idxsToRemove[i]+1,rows(),nC).eval();
-		}
-		derived().conservativeResize(NoChange,cols()-idxsToRemove.size());
+		std::vector<size_t> idxs = idxsToRemove;
+		std::sort( idxs.begin(), idxs.end() );
+		std::vector<size_t>::iterator itEnd = std::unique( idxs.begin(), idxs.end() );
+		idxs.resize( itEnd - idxs.begin() );
+
+		unsafeRemoveColumns( idxs );
 	}
+
+	/** Remove columns of the matrix. The unsafe version assumes that, the indices are sorted in ascending order. */
+	EIGEN_STRONG_INLINE void unsafeRemoveColumns(const std::vector<size_t> &idxs)
+	{
+		size_t k = 1;
+		for (std::vector<size_t>::const_reverse_iterator it = idxs.rbegin(); it != idxs.rend(); it++, k++)
+		{
+			const size_t nC = cols() - *it - k;
+			if( nC > 0 )
+				derived().block(0,*it,rows(),nC) = derived().block(0,*it+1,rows(),nC).eval();
+		}
+		derived().conservativeResize(NoChange,cols()-idxs.size());
+	}
+
+	/** Remove rows of the matrix. */
 	EIGEN_STRONG_INLINE void removeRows(const std::vector<size_t> &idxsToRemove)
 	{
-		for (size_t i=0;i<idxsToRemove.size();i++)
+		std::vector<size_t> idxs = idxsToRemove;
+		std::sort( idxs.begin(), idxs.end() );
+		std::vector<size_t>::iterator itEnd = std::unique( idxs.begin(), idxs.end() );
+		idxs.resize( itEnd - idxs.begin() );
+
+		unsafeRemoveRows( idxs );
+	}
+
+	/** Remove rows of the matrix. The unsafe version assumes that, the indices are sorted in ascending order. */
+	EIGEN_STRONG_INLINE void unsafeRemoveRows(const std::vector<size_t> &idxs)
+	{		
+		size_t k = 1;
+		for (std::vector<size_t>::reverse_iterator it = idxs.rbegin(); it != idxs.rend(); it++, k++)
 		{
-			const size_t nR = rows()-idxsToRemove[i] - 1 - i;
-			derived().block(idxsToRemove[i],0,nR,cols()) = derived().block(idxsToRemove[i]+1,0,nR,cols()).eval();
+			const size_t nR = rows() - *it - k;
+			if( nR > 0 )
+				derived().block(*it,0,nR,cols()) = derived().block(*it+1,0,nR,cols()).eval();
 		}
-		derived().conservativeResize(rows()-idxsToRemove.size(),NoChange);
+		derived().conservativeResize(rows()-idxs.size(),NoChange);
 	}
 
 	/** Transpose */
