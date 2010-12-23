@@ -71,7 +71,7 @@ namespace mrpt
 		/** A class for grabing "range images", intensity images and other information from an Xbox Kinect sensor.
 		  *
 		  *  <h2>Configuration and usage:</h2> <hr>
-		  * Data is returned as observations of type mrpt::slam::CObservation3DRangeScan (and mrpt::slam::CObservationIMU for accelerometers data). 
+		  * Data is returned as observations of type mrpt::slam::CObservation3DRangeScan (and mrpt::slam::CObservationIMU for accelerometers data).
 		  *  See those classes for documentation on their fields.
 		  *
 		  * As with any other CGenericSensor class, the normal sequence of methods to be called is:
@@ -85,13 +85,13 @@ namespace mrpt
 		  *    - Camera parameters for the RGB camera. See CKinect::setCameraParamsIntensity()
 		  *    - Camera parameters for the depth camera. See CKinect::setCameraParamsDepth()
 		  *    - The 3D relative pose of the two cameras. See CKinect::setRelativePoseIntensityWrtDepth()
-		  *  
+		  *
 		  * <h2>Coordinates convention</h2><hr>
-		  *   The origin of coordinates is the focal point of the depth camera, with the axes oriented as in the 
-		  *   diagram shown in mrpt::slam::CObservation3DRangeScan. Notice in that picture that the RGB camera is 
+		  *   The origin of coordinates is the focal point of the depth camera, with the axes oriented as in the
+		  *   diagram shown in mrpt::slam::CObservation3DRangeScan. Notice in that picture that the RGB camera is
 		  *   assumed to have axes as usual in computer vision, which differ from those for the depth camera.
 		  *
-		  *   The X,Y,Z axes used to report the data from accelerometers coincide with those of the depth camera 
+		  *   The X,Y,Z axes used to report the data from accelerometers coincide with those of the depth camera
 		  *    (e.g. the camera standing on a table would have an ACC_Z=-9.8m/s2).
 		  *
 		  * <h2>Some general comments</h2><hr>
@@ -156,7 +156,7 @@ namespace mrpt
 		  *    preview_window  = false        // Show a window with a preview of the grabbed data in real-time
 		  *
 		  *    device_number   = 0           // Device index to open (0:first Kinect, 1:second Kinect,...)
-		  *    
+		  *
 		  *    grab_image      = true        // Grab the RGB image channel? (Default=true)
 		  *    grab_depth      = true        // Grab the depth channel? (Default=true)
 		  *    grab_3D_points  = true        // Grab the 3D point cloud? (Default=true) If disabled, points can be generated later on.
@@ -222,18 +222,18 @@ namespace mrpt
 			  *
 			  * \sa doProcess
 			  */
-			void getNextObservation( 
-				mrpt::slam::CObservation3DRangeScan &out_obs, 
-				bool &there_is_obs, 
+			void getNextObservation(
+				mrpt::slam::CObservation3DRangeScan &out_obs,
+				bool &there_is_obs,
 				bool &hardware_error );
 
-			/** \overload 
+			/** \overload
 			  * \note This method also grabs data from the accelerometers, returning them in out_obs_imu
 			  */
 			void getNextObservation(
-				mrpt::slam::CObservation3DRangeScan &out_obs, 
+				mrpt::slam::CObservation3DRangeScan &out_obs,
 				mrpt::slam::CObservationIMU         &out_obs_imu,
-				bool &there_is_obs, 
+				bool &there_is_obs,
 				bool &hardware_error );
 
 			/**  Set the path where to save off-rawlog image files (this class DOES take into account this path).
@@ -319,6 +319,15 @@ namespace mrpt
 
 			/** @} */
 
+
+#if MRPT_KINECT_WITH_LIBFREENECT
+			// Auxiliary getters/setters (we can't declare the libfreenect callback as friend since we
+			//   want to avoid including the API headers here).
+			inline CObservation3DRangeScan & internal_latest_obs() { return m_latest_obs; }
+			inline volatile uint32_t & internal_tim_latest_depth() { return m_tim_latest_depth; }
+			inline volatile uint32_t & internal_tim_latest_rgb()   { return m_tim_latest_rgb; }
+#endif
+
 		protected:
 			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
 			  *  \exception This method must throw an exception with a descriptive message if some critical parameter is missing or has an invalid value.
@@ -337,6 +346,10 @@ namespace mrpt
 #if MRPT_KINECT_WITH_LIBFREENECT
 			void *m_f_ctx;  //!< The "freenect_context", or NULL if closed
 			void *m_f_dev;  //!< The "freenect_device", or NULL if closed
+
+			// Data fields for use with the callback function:
+			CObservation3DRangeScan  m_latest_obs;
+			volatile uint32_t                 m_tim_latest_depth, m_tim_latest_rgb; // 0 = not updated
 #endif
 
 #if MRPT_KINECT_WITH_CLNUI
@@ -359,6 +372,9 @@ namespace mrpt
 			TDepth2RangeArray   m_range2meters; //!< The table raw depth -> range in meters
 
 			void calculate_range2meters(); //!< Compute m_range2meters at construction
+
+		public:
+			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 		};	// End of class
 

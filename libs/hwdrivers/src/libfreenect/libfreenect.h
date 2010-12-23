@@ -63,7 +63,7 @@ typedef enum {
 	FREENECT_VIDEO_IR_10BIT = 3,
 	FREENECT_VIDEO_IR_10BIT_PACKED = 4,
 	FREENECT_VIDEO_YUV_RGB = 5,
-	FREENECT_VIDEO_YUV_RAW = 6
+	FREENECT_VIDEO_YUV_RAW = 6,
 } freenect_video_format;
 
 typedef enum {
@@ -80,7 +80,7 @@ typedef enum {
 	FREENECT_DEPTH_11BIT = 0,
 	FREENECT_DEPTH_10BIT = 1,
 	FREENECT_DEPTH_11BIT_PACKED = 2,
-	FREENECT_DEPTH_10BIT_PACKED = 3
+	FREENECT_DEPTH_10BIT_PACKED = 3,
 } freenect_depth_format;
 
 typedef enum {
@@ -116,7 +116,7 @@ typedef enum {
 	FREENECT_LOG_INFO,
 	FREENECT_LOG_DEBUG,
 	FREENECT_LOG_SPEW,
-	FREENECT_LOG_FLOOD
+	FREENECT_LOG_FLOOD,
 } freenect_loglevel;
 
 int freenect_init(freenect_context **ctx, freenect_usb_context *usb_ctx);

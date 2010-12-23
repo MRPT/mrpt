@@ -57,20 +57,6 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 	#define f_ctx_ptr  reinterpret_cast<freenect_context**>(&m_f_ctx)
 	#define f_dev  reinterpret_cast<freenect_device*>(m_f_dev)
 	#define f_dev_ptr  reinterpret_cast<freenect_device**>(&m_f_dev)
-
-	// GLOBAL DATA USED TO REFER A "freenect_device*" TO ITS MRPT OBJECT
-	// ----------------------------------------------------------------------
-	struct TInfoPerSensor
-	{
-		TInfoPerSensor() : running_obj(NULL),tim_latest_depth(0),tim_latest_rgb(0) { }
-
-		CKinect                 *running_obj; //!< My parent object
-		CObservation3DRangeScan  latest_obs;
-		uint32_t                 tim_latest_depth, tim_latest_rgb; // 0 = not updated
-	};
-	std::map<freenect_device*,TInfoPerSensor> m_info_per_sensor;
-	CCriticalSection                          m_info_per_sensor_cs;
-
 #endif // MRPT_KINECT_WITH_LIBFREENECT
 
 
@@ -114,6 +100,8 @@ CKinect::CKinect()  :
 #if MRPT_KINECT_WITH_LIBFREENECT
 	m_f_ctx(NULL), // The "freenect_context", or NULL if closed
 	m_f_dev(NULL), // The "freenect_device", or NULL if closed
+	m_tim_latest_depth(0),
+	m_tim_latest_rgb(0),
 #endif
 
 #if MRPT_KINECT_WITH_CLNUI
@@ -272,53 +260,41 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 {
 	uint16_t *depth = reinterpret_cast<uint16_t *>(v_depth);
 
-	{
-		CCriticalSectionLocker lock(&m_info_per_sensor_cs);
-		std::map<freenect_device*,TInfoPerSensor>::iterator it=m_info_per_sensor.find(dev);
-		if (it!=m_info_per_sensor.end())
+	CKinect *obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
+
+	// Update of the timestamps at the end:
+	CObservation3DRangeScan &obs = obj->internal_latest_obs();
+
+	obs.hasRangeImage = true;
+	obs.rangeImage.setSize(KINECT_H,KINECT_W);
+	const CKinect::TDepth2RangeArray &r2m = obj->getRawDepth2RangeConversion();
+	for (int r=0;r<KINECT_H;r++)
+		for (int c=0;c<KINECT_W;c++)
 		{
-			TInfoPerSensor &ips = it->second;
-			ips.tim_latest_depth = timestamp;
-
-			ips.latest_obs.hasRangeImage = true;
-			ips.latest_obs.rangeImage.setSize(KINECT_H,KINECT_W);
-			const CKinect::TDepth2RangeArray &r2m = ips.running_obj->getRawDepth2RangeConversion();
-			for (int r=0;r<KINECT_H;r++)
-				for (int c=0;c<KINECT_W;c++)
-				{
-					// For now, quickly save the depth as it comes from the sensor, it'll
-					//  transformed later on in getNextObservation()
-					const uint16_t v = *depth++;
-					ips.latest_obs.rangeImage.coeffRef(r,c) = r2m[v % KINECT_RANGES_TABLE_MASK];
-				}
+			// For now, quickly save the depth as it comes from the sensor, it'll
+			//  transformed later on in getNextObservation()
+			const uint16_t v = *depth++;
+			obs.rangeImage.coeffRef(r,c) = r2m[v % KINECT_RANGES_TABLE_MASK];
 		}
-	}
-
-
-//	for (int i=0; i<FREENECT_FRAME_PIX; i++)
+	obj->internal_tim_latest_depth() = timestamp;
 
 }
 
 void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 {
-	{
-		CCriticalSectionLocker lock(&m_info_per_sensor_cs);
-		std::map<freenect_device*,TInfoPerSensor>::iterator it=m_info_per_sensor.find(dev);
-		if (it!=m_info_per_sensor.end())
-		{
-			TInfoPerSensor &ips = it->second;
-			ips.tim_latest_rgb  = timestamp;
+	CKinect *obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
 
-			ips.latest_obs.hasIntensityImage = true;
-			ips.latest_obs.intensityImage.loadFromMemoryBuffer(
-				KINECT_W,
-				KINECT_H,
-				CH_RGB,
-				reinterpret_cast<unsigned char*>(rgb),
-				true );
-		}
-	}
+	// Update of the timestamps at the end:
+	CObservation3DRangeScan &obs = obj->internal_latest_obs();
 
+	obs.hasIntensityImage = true;
+	obs.intensityImage.loadFromMemoryBuffer(
+		KINECT_W,
+		KINECT_H,
+		CH_RGB,
+		reinterpret_cast<unsigned char*>(rgb),
+		true );
+	obj->internal_tim_latest_rgb() = timestamp;
 }
 // ========  END OF GLOBAL CALLBACK FUNCTIONS ========
 #endif // MRPT_KINECT_WITH_LIBFREENECT
@@ -356,12 +332,6 @@ void CKinect::open()
 	if (freenect_open_device(f_ctx, f_dev_ptr, m_user_device_number) < 0)
 		THROW_EXCEPTION_CUSTOM_MSG1("Error opening Kinect sensor with index: %d",m_user_device_number)
 
-	// Register my f_dev for the callback functions:
-	{
-		CCriticalSectionLocker lock(&m_info_per_sensor_cs);
-		m_info_per_sensor[f_dev].running_obj = this;
-	}
-
 	// Save resolution:
 	m_cameraParamsRGB.ncols = KINECT_W;
 	m_cameraParamsRGB.nrows = KINECT_H;
@@ -376,6 +346,9 @@ void CKinect::open()
 	freenect_set_depth_format(f_dev, FREENECT_DEPTH_10BIT); // FREENECT_DEPTH_11BIT);
 	freenect_set_video_buffer(f_dev, &m_buf_rgb[0]);
 	// freenect_set_depth_buffer(f_dev, &m_buf_depth[0]);  // JL: not needed??
+
+	// Set user data = pointer to "this":
+	freenect_set_user(f_dev, this);
 
 	freenect_start_depth(f_dev);
 	freenect_start_video(f_dev);
@@ -410,14 +383,6 @@ void CKinect::close()
 		freenect_stop_depth(f_dev);
 		freenect_stop_video(f_dev);
 		freenect_close_device(f_dev);
-
-		// Un-register from global list for the callbacks:
-		mrpt::system::sleep(20);
-		{
-			CCriticalSectionLocker lock(&m_info_per_sensor_cs);
-			freenect_device *the_dev  = f_dev;
-			m_info_per_sensor.erase(the_dev);
-		}
 	}
 	m_f_dev = NULL;
 
@@ -466,35 +431,24 @@ void CKinect::getNextObservation(
 	static const TTimeStamp max_wait = mrpt::system::secondsToTimestamp(max_wait_seconds);
 
 	// Mark previous observation's timestamp as out-dated:
-	TInfoPerSensor *ips; // We'll use this direct pointer to avoid the map::find in the inner loop, below:
-	{
-		CCriticalSectionLocker lock(&m_info_per_sensor_cs);
-		std::map<freenect_device*,TInfoPerSensor>::iterator it=m_info_per_sensor.find(f_dev);
-		ASSERT_(it!=m_info_per_sensor.end())
-		ips = &it->second;
+	m_latest_obs.hasPoints3D        = false;
+	m_latest_obs.hasRangeImage      = false;
+	m_latest_obs.hasIntensityImage  = false;
+	m_latest_obs.hasConfidenceImage = false;
 
-		ips->latest_obs.hasPoints3D        = false;
-		ips->latest_obs.hasRangeImage      = false;
-		ips->latest_obs.hasIntensityImage  = false;
-		ips->latest_obs.hasConfidenceImage = false;
-
-		ips->tim_latest_rgb   = 0;
-		ips->tim_latest_depth = 0;
-	}
+	m_tim_latest_rgb   = 0;
+	m_tim_latest_depth = 0;
 
 	const TTimeStamp tim0 = mrpt::system::now();
 
 	while (freenect_process_events(f_ctx)>=0 && mrpt::system::now()<(tim0+max_wait) )
 	{
 		// Got a new frame?
+		if ( (!m_grab_image || m_tim_latest_rgb!=0) &&
+			 (!m_grab_depth || m_tim_latest_depth!=0) )
 		{
-			CCriticalSectionLocker lock(&m_info_per_sensor_cs);
-			if ( (!m_grab_image || ips->tim_latest_rgb!=0) &&
-				 (!m_grab_depth || ips->tim_latest_depth!=0) )
-			{
-				there_is_obs=true;
-				break;
-			}
+			there_is_obs=true;
+			break;
 		}
 	}
 
@@ -504,10 +458,7 @@ void CKinect::getNextObservation(
 	// We DO have a fresh new observation:
 
 	// Quick save the observation to the user's object:
-	{
-		CCriticalSectionLocker lock(&m_info_per_sensor_cs);
-		_out_obs.swap(ips->latest_obs);
-	}
+	_out_obs.swap(m_latest_obs);
 
 #elif MRPT_KINECT_WITH_CLNUI
 

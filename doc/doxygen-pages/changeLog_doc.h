@@ -38,6 +38,8 @@
 	- Build system:
 		- Fixed compiling with MSVC 2005 (Patch by Z.P.Gaal)
 	- Changes in classes:
+		- Improvement in Kinect Linux driver (libfreenect), avoiding intensive usage of critical sections (Thanks, "Gonzales" - see: http://www.mrpt.org/node/491 )
+		- Kinect: Embedded libfreenect library updated to latest GIT revision (12/DEC/2010).
 		- mrpt::hwdrivers::CHokuyoURG now support ethernet connection (tested in HOKUYO UXM series)[JRRS].
 	- Changes in examples:
 		- hokuyo_laser_test. Now it's possible to choose between USB and Ethernet connection.
