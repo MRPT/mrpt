@@ -42,7 +42,7 @@ namespace mrpt
 		using namespace mrpt::slam;
 		using namespace mrpt::utils;
 
-		typedef vector<CDetectableObjectPtr> vector_detectable_object;
+		typedef std::vector<CDetectableObjectPtr> vector_detectable_object;
 
 		class DETECTORS_IMPEXP CObjectDetection	
 		{

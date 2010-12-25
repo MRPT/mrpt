@@ -53,7 +53,7 @@ namespace mrpt	{
 			/**
 			  * Set of points in which consists this object.
 			  */
-			vector<TPoint3D> vertices;
+			std::vector<TPoint3D> vertices;
 			/**
 			  * Granularity of the openGL elements. 3 for GL_TRIANGLES, 4 for GL_QUADS, and so on. Setting it to 0 will generate a single openGL object.
 			  */
@@ -61,7 +61,7 @@ namespace mrpt	{
 			/**
 			  * Set of openGL properties enabled in the rendering of this object.
 			  */
-			vector<_GLENUM> enabled;
+			std::vector<_GLENUM> enabled;
 			float normal[3];
 		public:
 			/**
@@ -78,7 +78,7 @@ namespace mrpt	{
 			  * Creation of object from type, vertices, chunk size and a list of enabled openGL flags.
 			  * \throw std::logic_error if the number of vertices is not an exact multiple of the chunk size.
 			  */
-			static COpenGLStandardObjectPtr Create(_GLENUM t,const std::vector<TPoint3D> &v,uint32_t cs=0,const vector<_GLENUM> &en=vector<_GLENUM>())	{
+			static COpenGLStandardObjectPtr Create(_GLENUM t,const std::vector<TPoint3D> &v,uint32_t cs=0,const std::vector<_GLENUM> &en=std::vector<_GLENUM>())	{
 				if (cs!=0&&v.size()%cs!=0) throw std::logic_error("Vertices vector does not match chunk size");
 				return COpenGLStandardObjectPtr(new COpenGLStandardObject(t,v,cs,en));
 			}
@@ -138,7 +138,7 @@ namespace mrpt	{
 			/**
 			  * Baic empty constructor, initializes to default.
 			  */
-			COpenGLStandardObject():type(0),vertices(std::vector<TPoint3D>(0)),chunkSize(0),enabled(vector<_GLENUM>())	{
+			COpenGLStandardObject():type(0),vertices(std::vector<TPoint3D>(0)),chunkSize(0),enabled(std::vector<_GLENUM>())	{
 				for (size_t i=0;i<3;i++) normal[i]=0.0;
 			}
 			/**

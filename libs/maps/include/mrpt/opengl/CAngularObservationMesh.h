@@ -419,7 +419,7 @@ namespace opengl	{
 		  * \sa mrpt::opengl::CRenderizable,mrpt::opengl::COpenGLScene.
 		  */
 		template<class T> static void trace2DSetOfRays(const T &e,const CPose3D &initial,CAngularObservationMeshPtr &caom,const TDoubleRange &pitchs,const TDoubleRange &yaws)	{
-			vector<double> pValues;
+			std::vector<double> pValues;
 			pitchs.values(pValues);
 			std::vector<CObservation2DRangeScan> vObs;
 			vObs.reserve(pValues.size());

@@ -140,7 +140,7 @@ namespace mrpt
 			// To take measures abaout execution time
 			CTimeLogger	m_timeLog;
 
-			vector<double> m_meanHist;
+			std::vector<double> m_meanHist;
 
 
 			// Test to check if a candidate region is a real face
@@ -177,11 +177,11 @@ namespace mrpt
 
 			void experimental_viewFacePointsScanned( const CObservation3DRangeScan &face );
 			
-			void experimental_viewFacePointsScanned( const vector<TPoint3D> &points );
+			void experimental_viewFacePointsScanned( const std::vector<TPoint3D> &points );
 
-			void experimental_viewFacePointsAndEigenVects(  const vector<CArrayDouble<3> > &pointsVector, const CMatrixDouble &eigenVect, const vector_double &eigenVal );
+			void experimental_viewFacePointsAndEigenVects(  const std::vector<CArrayDouble<3> > &pointsVector, const CMatrixDouble &eigenVect, const vector_double &eigenVal );
 
-			void experimental_viewRegions( const vector<TPoint3D> regions[9], const TPoint3D meanPos[3][3] );		
+			void experimental_viewRegions( const std::vector<TPoint3D> regions[9], const TPoint3D meanPos[3][3] );		
 
 			// Segmentation methods
 

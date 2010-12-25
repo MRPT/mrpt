@@ -39,6 +39,7 @@ namespace mrpt
 {
 	namespace vision
 	{
+		using std::vector;
 		using namespace mrpt::slam;
 		using namespace mrpt::math;
 		using namespace mrpt::utils;

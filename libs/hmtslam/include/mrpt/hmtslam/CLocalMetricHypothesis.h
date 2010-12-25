@@ -240,7 +240,7 @@ namespace mrpt
 
 			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			  */
-			mutable vector<double>				m_maxLikelihood;
+			mutable std::vector<double>				m_maxLikelihood;
 
 			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			  */

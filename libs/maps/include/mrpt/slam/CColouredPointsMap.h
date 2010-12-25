@@ -56,10 +56,10 @@ namespace mrpt
 
 		protected:
 			/** The color data */
-			vector<float>	m_color_R,m_color_G,m_color_B;
+			std::vector<float>	m_color_R,m_color_G,m_color_B;
 
 			/** Minimum distance from where the points have been seen */
-			vector<float>	m_min_dist;
+			std::vector<float>	m_min_dist;
 
 			/** Clear the map, erasing all the points.
 			 */

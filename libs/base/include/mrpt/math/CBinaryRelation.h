@@ -37,6 +37,7 @@
 #include <utility>
 
 namespace mrpt	{	namespace math	{
+	using std::vector;
 
 	/**
 	  * This class models a binary relation through the elements of any given set. I.e. for each pair of elements (A,B) it assigns two values, f(A,B) and f(B,A).

@@ -245,9 +245,9 @@ namespace mrpt
 					me->prepareFastDrawSample(PF_options);
 
 					// The new particle set:
-					std::vector<TPose3D>	newParticles;
-					vector_double			newParticlesWeight;
-					vector<size_t>			newParticlesDerivedFromIdx;
+					std::vector<TPose3D>  newParticles;
+					vector_double         newParticlesWeight;
+					std::vector<size_t>   newParticlesDerivedFromIdx;
 
 					CPose3D	 increment_i;
 					size_t N = 1;

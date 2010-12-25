@@ -35,6 +35,7 @@ namespace mrpt
 {
 	namespace math
 	{
+		using std::vector;
 
 		/** @name RANSAC detectors
 			@{
@@ -75,7 +76,7 @@ namespace mrpt
 		template <class POINTSMAP>
 		inline void ransac_detect_3D_planes(
 			const POINTSMAP * points_map,
-			vector<pair<size_t,TPlane> >   &out_detected_planes,
+			std::vector<std::pair<size_t,TPlane> >   &out_detected_planes,
 			const double           threshold,
 			const size_t           min_inliers_for_valid_plane
 			)

@@ -45,6 +45,7 @@ namespace mrpt
 {
 	namespace math
 	{
+		using std::vector;
 		using namespace mrpt::utils;
 		using namespace mrpt::poses;
 

@@ -29,6 +29,7 @@
 #define CObservation3DRangeScan_H
 
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/CImage.h>
 #include <mrpt/slam/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>

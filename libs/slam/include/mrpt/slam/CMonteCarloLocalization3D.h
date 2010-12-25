@@ -123,9 +123,9 @@ namespace mrpt
 			// We'll redefine this one:
 			void PF_SLAM_implementation_replaceByNewParticleSet(
 				CParticleList	&old_particles,
-				const vector<TPose3D>	&newParticles,
+				const std::vector<TPose3D>	&newParticles,
 				const vector_double		&newParticlesWeight,
-				const vector<size_t>	&newParticlesDerivedFromIdx )  const;
+				const std::vector<size_t>	&newParticlesDerivedFromIdx )  const;
 
 			/** Evaluate the observation likelihood for one particle at a given location */
 			double PF_SLAM_computeObservationLikelihoodForParticle(

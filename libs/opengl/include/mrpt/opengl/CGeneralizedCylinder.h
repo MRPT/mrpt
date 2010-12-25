@@ -36,6 +36,7 @@
 
 namespace mrpt	{
 namespace opengl	{
+	using namespace std;
 	using namespace mrpt::math;
 	class OPENGL_IMPEXP CGeneralizedCylinder;
 	// This must be added to any CSerializable derived class:

@@ -265,7 +265,7 @@ namespace math	{
 				const pair<size_t,size_t> &i=it->first;
 				if (i.first>=nRows||i.second>=nCols) toErase.push_back(it->first);
 			}
-			for (vector<pair<size_t,size_t> >::const_iterator it=toErase.begin();it!=toErase.end();++it) objectList.erase(*it);
+			for (std::vector<pair<size_t,size_t> >::const_iterator it=toErase.begin();it!=toErase.end();++it) objectList.erase(*it);
 		}
 		/**
 		  * Extracts a submatrix form the matrix.
