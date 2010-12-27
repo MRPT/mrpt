@@ -1206,10 +1206,29 @@ ENDIF(DISABLE_SWISSRANGER_3DCAM_LIBS)
 # ------------------------------------------
 SET(CMAKE_MRPT_HAS_GZ_STREAMS ${CMAKE_MRPT_HAS_ZLIB})
 
+# Look for the libusb1 lib
+# ------------------------------
+IF(UNIX)
+	IF(PKG_CONFIG_FOUND)
+        	PKG_CHECK_MODULES(PKG_LIBUSB10 libusb-1.0)
+	ENDIF(PKG_CONFIG_FOUND)
+ENDIF(UNIX)
+
 
 # Build the XBox Kinect support (via libfreenect)
 # ===================================================
-SET(BUILD_KINECT ON CACHE BOOL "Build support for Xbox Kinect (with embedded libfreenect)")
+# Deduce default ON/OFF state of Kinect support:
+IF (UNIX)
+	IF (PKG_LIBUSB10_FOUND)
+		SET(BUILD_KINECT_DEFAULT ON)
+	ELSE(PKG_LIBUSB10_FOUND)
+		SET(BUILD_KINECT_DEFAULT OFF)
+	ENDIF(PKG_LIBUSB10_FOUND)
+ELSE(UNIX)
+	SET(BUILD_KINECT_DEFAULT OFF)
+ENDIF(UNIX)
+
+SET(BUILD_KINECT ${BUILD_KINECT_DEFAULT} CACHE BOOL "Build support for Xbox Kinect")
 IF(BUILD_KINECT)
 	# Check deps on Linux/Windows!!!
 	SET(CMAKE_MRPT_HAS_KINECT 0)  # Will be set to 1 only if all conditions are OK
@@ -1217,10 +1236,8 @@ IF(BUILD_KINECT)
 	IF(UNIX)
 		# Kinect for Linux ---------
 		IF(NOT PKG_CONFIG_FOUND)
-			MESSAGE(SEND_ERROR "pkg-config is required! Please install it.")
+			MESSAGE(SEND_ERROR "Kinect support: pkg-config is required! Please install it.")
 		ELSE(NOT PKG_CONFIG_FOUND)
-			PKG_CHECK_MODULES(PKG_LIBUSB10 libusb-1.0)
-
 			IF(PKG_LIBUSB10_FOUND)
 				SET(CMAKE_MRPT_HAS_KINECT 1)
 				#MESSAGE(STATUS "PKG_LIBUSB10_LIBRARIES: ${PKG_LIBUSB10_LIBRARIES}")
