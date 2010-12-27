@@ -471,7 +471,7 @@ public:
 
 	/** Remove rows of the matrix. The unsafe version assumes that, the indices are sorted in ascending order. */
 	EIGEN_STRONG_INLINE void unsafeRemoveRows(const std::vector<size_t> &idxs)
-	{		
+	{
 		size_t k = 1;
 		for (std::vector<size_t>::reverse_iterator it = idxs.rbegin(); it != idxs.rend(); it++, k++)
 		{
@@ -483,7 +483,7 @@ public:
 	}
 
 	/** Transpose */
-	EIGEN_STRONG_INLINE Eigen::Transpose<Derived> t() const { return derived().adjoint(); }
+	EIGEN_STRONG_INLINE const AdjointReturnType t() const { return derived().adjoint(); }
 
 	EIGEN_STRONG_INLINE PlainObject inv() const { PlainObject outMat = derived().inverse().eval(); return outMat; }
 	template <class MATRIX> EIGEN_STRONG_INLINE void inv(MATRIX &outMat) const { outMat = derived().inverse().eval(); }

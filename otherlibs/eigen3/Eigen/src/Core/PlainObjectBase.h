@@ -67,9 +67,13 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     using Base::Flags;
 
     friend  class Eigen::Map<Derived, Unaligned>;
-    typedef class Eigen::Map<Derived, Unaligned>  UnalignedMapType;
+    typedef Eigen::Map<Derived, Unaligned>  MapType;
+    friend  class Eigen::Map<const Derived, Unaligned>;
+    typedef const Eigen::Map<const Derived, Unaligned> ConstMapType;
     friend  class Eigen::Map<Derived, Aligned>;
-    typedef class Eigen::Map<Derived, Aligned>    AlignedMapType;
+    typedef Eigen::Map<Derived, Aligned> AlignedMapType;
+    friend  class Eigen::Map<const Derived, Aligned>;
+    typedef const Eigen::Map<const Derived, Aligned> ConstAlignedMapType;
 
   protected:
     DenseStorage<Scalar, Base::MaxSizeAtCompileTime, Base::RowsAtCompileTime, Base::ColsAtCompileTime, Options> m_storage;
@@ -107,6 +111,19 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     }
 
     EIGEN_STRONG_INLINE Scalar& coeffRef(Index index)
+    {
+      return m_storage.data()[index];
+    }
+
+    EIGEN_STRONG_INLINE const Scalar& coeffRef(Index row, Index col) const
+    {
+      if(Flags & RowMajorBit)
+        return m_storage.data()[col + row * m_storage.cols()];
+      else // column-major
+        return m_storage.data()[row + col * m_storage.rows()];
+    }
+
+    EIGEN_STRONG_INLINE const Scalar& coeffRef(Index index) const
     {
       return m_storage.data()[index];
     }
@@ -376,29 +393,29 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
       * \see class Map
       */
     //@{
-    inline static const UnalignedMapType Map(const Scalar* data)
-    { return UnalignedMapType(data); }
-    inline static UnalignedMapType Map(Scalar* data)
-    { return UnalignedMapType(data); }
-    inline static const UnalignedMapType Map(const Scalar* data, Index size)
-    { return UnalignedMapType(data, size); }
-    inline static UnalignedMapType Map(Scalar* data, Index size)
-    { return UnalignedMapType(data, size); }
-    inline static const UnalignedMapType Map(const Scalar* data, Index rows, Index cols)
-    { return UnalignedMapType(data, rows, cols); }
-    inline static UnalignedMapType Map(Scalar* data, Index rows, Index cols)
-    { return UnalignedMapType(data, rows, cols); }
+    inline static ConstMapType Map(const Scalar* data)
+    { return ConstMapType(data); }
+    inline static MapType Map(Scalar* data)
+    { return MapType(data); }
+    inline static ConstMapType Map(const Scalar* data, Index size)
+    { return ConstMapType(data, size); }
+    inline static MapType Map(Scalar* data, Index size)
+    { return MapType(data, size); }
+    inline static ConstMapType Map(const Scalar* data, Index rows, Index cols)
+    { return ConstMapType(data, rows, cols); }
+    inline static MapType Map(Scalar* data, Index rows, Index cols)
+    { return MapType(data, rows, cols); }
 
-    inline static const AlignedMapType MapAligned(const Scalar* data)
-    { return AlignedMapType(data); }
+    inline static ConstAlignedMapType MapAligned(const Scalar* data)
+    { return ConstAlignedMapType(data); }
     inline static AlignedMapType MapAligned(Scalar* data)
     { return AlignedMapType(data); }
-    inline static const AlignedMapType MapAligned(const Scalar* data, Index size)
-    { return AlignedMapType(data, size); }
+    inline static ConstAlignedMapType MapAligned(const Scalar* data, Index size)
+    { return ConstAlignedMapType(data, size); }
     inline static AlignedMapType MapAligned(Scalar* data, Index size)
     { return AlignedMapType(data, size); }
-    inline static const AlignedMapType MapAligned(const Scalar* data, Index rows, Index cols)
-    { return AlignedMapType(data, rows, cols); }
+    inline static ConstAlignedMapType MapAligned(const Scalar* data, Index rows, Index cols)
+    { return ConstAlignedMapType(data, rows, cols); }
     inline static AlignedMapType MapAligned(Scalar* data, Index rows, Index cols)
     { return AlignedMapType(data, rows, cols); }
     //@}
@@ -509,7 +526,7 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
       * data pointers.
       */
     template<typename OtherDerived>
-    void _swap(DenseBase<OtherDerived> EIGEN_REF_TO_TEMPORARY other)
+    void _swap(DenseBase<OtherDerived> const & other)
     {
       enum { SwapPointers = internal::is_same<Derived, OtherDerived>::value && Base::SizeAtCompileTime==Dynamic };
       internal::matrix_swap_impl<Derived, OtherDerived, bool(SwapPointers)>::run(this->derived(), other.const_cast_derived());
@@ -531,6 +548,9 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
         INVALID_MATRIX_TEMPLATE_PARAMETERS)
     }
 #endif
+
+private:
+    enum { ThisConstantIsPrivateInPlainObjectBase };
 };
 
 template <typename Derived, typename OtherDerived, bool IsVector>

@@ -124,7 +124,7 @@ namespace mrpt
 
 		/** Transpose operator for matrices */
 		template <class Derived>
-		inline Eigen::Transpose<Derived> operator ~(const Eigen::MatrixBase<Derived> &m) {
+		inline const typename Eigen::MatrixBase<Derived>::AdjointReturnType operator ~(const Eigen::MatrixBase<Derived> &m) {
 			return m.adjoint();
 		}
 

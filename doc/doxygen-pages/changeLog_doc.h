@@ -36,7 +36,10 @@
 	- Changes in applications:
 		- <a href="http://www.mrpt.org/Application:rawlog-grabber" >rawlog-grabber</a>: Added "hokuyo_UXM.ini" to support HOKUYO UXM laser series.
 	- Build system:
+		- Linux/Mac: Don't enable BUILD_KINECT by default if libusb1-dev is not present. 
 		- Fixed compiling with MSVC 2005 (Patch by Z.P.Gaal)
+		- Fixed compiling under MIPS/SPARC/S930/... due to a bug in Eigen3-beta (patch sent upstream and fixed in local copy).
+		- Fixed build errors against latest changes in eigen3 (before their release version).
 	- Changes in classes:
 		- Improvement in Kinect Linux driver (libfreenect), avoiding intensive usage of critical sections (Thanks, "Gonzales" - see: http://www.mrpt.org/node/491 )
 		- Kinect: Embedded libfreenect library updated to latest GIT revision (12/DEC/2010).

@@ -51,6 +51,8 @@ template<typename Derived> struct EigenBase
 
   inline Derived& const_cast_derived() const
   { return *static_cast<Derived*>(const_cast<EigenBase*>(this)); }
+  inline const Derived& const_derived() const
+  { return *static_cast<const Derived*>(this); }
 
   /** \returns the number of rows. \sa cols(), RowsAtCompileTime */
   inline Index rows() const { return derived().rows(); }

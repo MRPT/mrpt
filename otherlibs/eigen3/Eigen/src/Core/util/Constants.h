@@ -128,8 +128,10 @@ const unsigned int LinearAccessBit = 0x10;
   * Means the expression has a coeffRef() method, i.e. is writable as its individual coefficients are directly addressable.
   * This rules out read-only expressions.
   *
-  * Note that DirectAccessBit implies LvalueBit, but the converse is false: LvalueBit doesn't imply DirectAccessBit because
-  * DirectAccessBit means that the whole memory layout is a plain strided array.
+  * Note that DirectAccessBit and LvalueBit are mutually orthogonal, as there are examples of expression having one but note
+  * the other:
+  *   \li writable expressions that don't have a very simple memory layout as a strided array, have LvalueBit but not DirectAccessBit
+  *   \li Map-to-const expressions, for example Map<const Matrix>, have DirectAccessBit but not LvalueBit
   *
   * Expressions having LvalueBit also have their coeff() method returning a const reference instead of returning a new value.
   */
@@ -137,14 +139,12 @@ const unsigned int LvalueBit = 0x20;
 
 /** \ingroup flags
   *
-  * Means that the underlying array of coefficients can be directly accessed. This means two things.
-  * 
-  * First, this means LvalueBit, i.e. this means that the expression has a coeffRef() method, i.e. is writable as its
-  * individual coefficients are directly addressable. This rules out read-only expressions.
-  *
-  * Second, the memory layout of the array of coefficients must be exactly the natural one suggested by rows(), cols(),
+  * Means that the underlying array of coefficients can be directly accessed as a plain strided array. The memory layout
+  * of the array of coefficients must be exactly the natural one suggested by rows(), cols(),
   * outerStride(), innerStride(), and the RowMajorBit. This rules out expressions such as Diagonal, whose coefficients,
   * though referencable, do not have such a regular memory layout.
+  *
+  * See the comment on LvalueBit for an explanation of how LvalueBit and DirectAccessBit are mutually orthogonal.
   */
 const unsigned int DirectAccessBit = 0x40;
 
@@ -242,7 +242,7 @@ enum {
 };
 
 enum AccessorLevels {
-  ReadOnlyAccessors, WriteAccessors, DirectAccessors
+  ReadOnlyAccessors, WriteAccessors, DirectAccessors, DirectWriteAccessors
 };
 
 enum DecompositionOptions {

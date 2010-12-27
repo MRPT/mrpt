@@ -130,7 +130,7 @@ template<typename _MatrixType, int _UpLo> class LDLT
     }
 
     /** \returns the coefficients of the diagonal matrix D */
-    inline Diagonal<MatrixType,0> vectorD(void) const
+    inline Diagonal<const MatrixType> vectorD(void) const
     {
       eigen_assert(m_isInitialized && "LDLT is not initialized.");
       return m_matrix.diagonal();

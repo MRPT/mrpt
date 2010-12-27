@@ -176,7 +176,8 @@ class sparse_diagonal_product_inner_iterator_selector
   public:
     inline sparse_diagonal_product_inner_iterator_selector(
               const SparseDiagonalProductType& expr, Index outer)
-      : Base(expr.lhs().innerVector(outer) .cwiseProduct(expr.rhs().diagonal().transpose()), 0)
+      : Base(expr.lhs().innerVector(outer) .cwiseProduct(expr.rhs().const_cast_derived().diagonal().transpose()), 0)
+       // the const_cast_derived above is to get it to compile. once Sparse is const correct, that shouldn't be needed anymore.
     {}
 };
 

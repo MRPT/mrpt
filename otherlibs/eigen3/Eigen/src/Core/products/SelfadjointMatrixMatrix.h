@@ -423,8 +423,8 @@ struct SelfadjointProductMatrix<Lhs,LhsMode,false,Rhs,RhsMode,false>
       internal::traits<Dest>::Flags&RowMajorBit  ? RowMajor : ColMajor>
       ::run(
         lhs.rows(), rhs.cols(),                 // sizes
-        &lhs.coeff(0,0),    lhs.outerStride(),  // lhs info
-        &rhs.coeff(0,0),    rhs.outerStride(),  // rhs info
+        &lhs.coeffRef(0,0),    lhs.outerStride(),  // lhs info
+        &rhs.coeffRef(0,0),    rhs.outerStride(),  // rhs info
         &dst.coeffRef(0,0), dst.outerStride(),  // result info
         actualAlpha                             // alpha
       );

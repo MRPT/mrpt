@@ -71,26 +71,26 @@ struct traits<HouseholderSequence<VectorsType,CoeffsType,Side> >
 template<typename VectorsType, typename CoeffsType, int Side>
 struct hseq_side_dependent_impl
 {
-  typedef Block<VectorsType, Dynamic, 1> EssentialVectorType;
+  typedef Block<const VectorsType, Dynamic, 1> EssentialVectorType;
   typedef HouseholderSequence<VectorsType, CoeffsType, OnTheLeft> HouseholderSequenceType;
   typedef typename VectorsType::Index Index;
   static inline const EssentialVectorType essentialVector(const HouseholderSequenceType& h, Index k)
   {
     Index start = k+1+h.m_shift;
-    return Block<VectorsType,Dynamic,1>(h.m_vectors, start, k, h.rows()-start, 1);
+    return Block<const VectorsType,Dynamic,1>(h.m_vectors, start, k, h.rows()-start, 1);
   }
 };
 
 template<typename VectorsType, typename CoeffsType>
 struct hseq_side_dependent_impl<VectorsType, CoeffsType, OnTheRight>
 {
-  typedef Transpose<Block<VectorsType, 1, Dynamic> > EssentialVectorType;
+  typedef Transpose<Block<const VectorsType, 1, Dynamic> > EssentialVectorType;
   typedef HouseholderSequence<VectorsType, CoeffsType, OnTheRight> HouseholderSequenceType;
   typedef typename VectorsType::Index Index;
   static inline const EssentialVectorType essentialVector(const HouseholderSequenceType& h, Index k)
   {
     Index start = k+1+h.m_shift;
-    return Block<VectorsType,1,Dynamic>(h.m_vectors, k, start, 1, h.rows()-start).transpose();
+    return Block<const VectorsType,1,Dynamic>(h.m_vectors, k, start, 1, h.rows()-start).transpose();
   }
 };
 

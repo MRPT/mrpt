@@ -93,6 +93,7 @@ template<typename Derived> class MatrixBase
     using Base::operator/=;
 
     typedef typename Base::CoeffReturnType CoeffReturnType;
+    typedef typename Base::ConstTransposeReturnType ConstTransposeReturnType;
     typedef typename Base::RowXpr RowXpr;
     typedef typename Base::ColXpr ColXpr;
 #endif // not EIGEN_PARSED_BY_DOXYGEN
@@ -128,8 +129,8 @@ template<typename Derived> class MatrixBase
     typedef CwiseNullaryOp<internal::scalar_constant_op<Scalar>,Derived> ConstantReturnType;
     /** \internal the return type of MatrixBase::adjoint() */
     typedef typename internal::conditional<NumTraits<Scalar>::IsComplex,
-                        CwiseUnaryOp<internal::scalar_conjugate_op<Scalar>, Eigen::Transpose<Derived> >,
-                        Transpose<Derived>
+                        CwiseUnaryOp<internal::scalar_conjugate_op<Scalar>, ConstTransposeReturnType>,
+                        ConstTransposeReturnType
                      >::type AdjointReturnType;
     /** \internal Return type of eigenvalues() */
     typedef Matrix<std::complex<RealScalar>, internal::traits<Derived>::ColsAtCompileTime, 1, ColMajor> EigenvaluesReturnType;
@@ -212,23 +213,34 @@ template<typename Derived> class MatrixBase
     const AdjointReturnType adjoint() const;
     void adjointInPlace();
 
-    Diagonal<Derived,0> diagonal();
-    const Diagonal<Derived,0> diagonal() const;
+    typedef Diagonal<Derived> DiagonalReturnType;
+    DiagonalReturnType diagonal();
+    typedef const Diagonal<const Derived> ConstDiagonalReturnType;
+    ConstDiagonalReturnType diagonal() const;
 
-    template<int Index> Diagonal<Derived,Index> diagonal();
-    template<int Index> const Diagonal<Derived,Index> diagonal() const;
+    template<int Index> struct DiagonalIndexReturnType { typedef Diagonal<Derived,Index> Type; };
+    template<int Index> struct ConstDiagonalIndexReturnType { typedef const Diagonal<const Derived,Index> Type; };
 
-    Diagonal<Derived, Dynamic> diagonal(Index index);
-    const Diagonal<Derived, Dynamic> diagonal(Index index) const;
+    template<int Index> typename DiagonalIndexReturnType<Index>::Type diagonal();
+    template<int Index> typename ConstDiagonalIndexReturnType<Index>::Type diagonal() const;
+
+    typename DiagonalIndexReturnType<Dynamic>::Type diagonal(Index index);
+    typename ConstDiagonalIndexReturnType<Dynamic>::Type diagonal(Index index) const;
 
     template<unsigned int Mode> TriangularView<Derived, Mode> part();
     template<unsigned int Mode> const TriangularView<Derived, Mode> part() const;
 
-    template<unsigned int Mode> TriangularView<Derived, Mode> triangularView();
-    template<unsigned int Mode> const TriangularView<Derived, Mode> triangularView() const;
+    template<unsigned int Mode> struct TriangularViewReturnType { typedef TriangularView<Derived, Mode> Type; };
+    template<unsigned int Mode> struct ConstTriangularViewReturnType { typedef const TriangularView<const Derived, Mode> Type; };
 
-    template<unsigned int UpLo> SelfAdjointView<Derived, UpLo> selfadjointView();
-    template<unsigned int UpLo> const SelfAdjointView<Derived, UpLo> selfadjointView() const;
+    template<unsigned int Mode> typename TriangularViewReturnType<Mode>::Type triangularView();
+    template<unsigned int Mode> typename ConstTriangularViewReturnType<Mode>::Type triangularView() const;
+
+    template<unsigned int UpLo> struct SelfAdjointViewReturnType { typedef SelfAdjointView<Derived, UpLo> Type; };
+    template<unsigned int UpLo> struct ConstSelfAdjointViewReturnType { typedef const SelfAdjointView<const Derived, UpLo> Type; };
+
+    template<unsigned int UpLo> typename SelfAdjointViewReturnType<UpLo>::Type selfadjointView();
+    template<unsigned int UpLo> typename ConstSelfAdjointViewReturnType<UpLo>::Type selfadjointView() const;
 
     const SparseView<Derived> sparseView(const Scalar& m_reference = Scalar(0),
                                          typename NumTraits<Scalar>::Real m_epsilon = NumTraits<Scalar>::dummy_precision()) const;
@@ -345,13 +357,13 @@ template<typename Derived> class MatrixBase
     enum {
       SizeMinusOne = SizeAtCompileTime==Dynamic ? Dynamic : SizeAtCompileTime-1
     };
-    typedef Block<Derived,
+    typedef Block<const Derived,
                   internal::traits<Derived>::ColsAtCompileTime==1 ? SizeMinusOne : 1,
-                  internal::traits<Derived>::ColsAtCompileTime==1 ? 1 : SizeMinusOne> StartMinusOne;
+                  internal::traits<Derived>::ColsAtCompileTime==1 ? 1 : SizeMinusOne> ConstStartMinusOne;
     typedef CwiseUnaryOp<internal::scalar_quotient1_op<typename internal::traits<Derived>::Scalar>,
-                StartMinusOne > HNormalizedReturnType;
+                ConstStartMinusOne > HNormalizedReturnType;
 
-    HNormalizedReturnType hnormalized() const;
+    const HNormalizedReturnType hnormalized() const;
 
     // put this as separate enum value to work around possible GCC 4.3 bug (?)
     enum { HomogeneousReturnTypeDirection = ColsAtCompileTime==1?Vertical:Horizontal };

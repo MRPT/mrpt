@@ -91,7 +91,7 @@ SelfAdjointView<MatrixType,UpLo>& SelfAdjointView<MatrixType,UpLo>
     typename internal::remove_all<typename internal::conj_expr_if<IsRowMajor ^ UBlasTraits::NeedToConjugate,_ActualUType>::type>::type,
     typename internal::remove_all<typename internal::conj_expr_if<IsRowMajor ^ VBlasTraits::NeedToConjugate,_ActualVType>::type>::type,
     (IsRowMajor ? int(UpLo==Upper ? Lower : Upper) : UpLo)>
-    ::run(const_cast<Scalar*>(_expression().data()),_expression().outerStride(),actualU,actualV,actualAlpha);
+    ::run(_expression().const_cast_derived().data(),_expression().outerStride(),actualU,actualV,actualAlpha);
 
   return *this;
 }

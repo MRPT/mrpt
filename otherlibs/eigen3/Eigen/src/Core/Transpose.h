@@ -46,7 +46,7 @@ struct traits<Transpose<MatrixType> > : traits<MatrixType>
 {
   typedef typename MatrixType::Scalar Scalar;
   typedef typename nested<MatrixType>::type MatrixTypeNested;
-  typedef typename remove_reference<MatrixTypeNested>::type _MatrixTypeNested;
+  typedef typename remove_reference<MatrixTypeNested>::type MatrixTypeNestedPlain;
   typedef typename traits<MatrixType>::StorageKind StorageKind;
   typedef typename traits<MatrixType>::XprKind XprKind;
   enum {
@@ -54,8 +54,11 @@ struct traits<Transpose<MatrixType> > : traits<MatrixType>
     ColsAtCompileTime = MatrixType::RowsAtCompileTime,
     MaxRowsAtCompileTime = MatrixType::MaxColsAtCompileTime,
     MaxColsAtCompileTime = MatrixType::MaxRowsAtCompileTime,
-    Flags = int(_MatrixTypeNested::Flags & ~NestByRefBit) ^ RowMajorBit,
-    CoeffReadCost = _MatrixTypeNested::CoeffReadCost,
+    FlagsLvalueBit = is_lvalue<MatrixType>::value ? LvalueBit : 0,
+    Flags0 = MatrixTypeNestedPlain::Flags & ~(LvalueBit | NestByRefBit),
+    Flags1 = Flags0 | FlagsLvalueBit,
+    Flags = Flags1 ^ RowMajorBit,
+    CoeffReadCost = MatrixTypeNestedPlain::CoeffReadCost,
     InnerStrideAtCompileTime = inner_stride_at_compile_time<MatrixType>::ret,
     OuterStrideAtCompileTime = outer_stride_at_compile_time<MatrixType>::ret
   };
@@ -122,12 +125,24 @@ template<typename MatrixType> class TransposeImpl<MatrixType,Dense>
 
     inline Scalar& coeffRef(Index row, Index col)
     {
-      return const_cast_derived().nestedExpression().coeffRef(col, row);
+      EIGEN_STATIC_ASSERT_LVALUE(MatrixType)
+      return derived().nestedExpression().const_cast_derived().coeffRef(col, row);
     }
 
     inline Scalar& coeffRef(Index index)
     {
-      return const_cast_derived().nestedExpression().coeffRef(index);
+      EIGEN_STATIC_ASSERT_LVALUE(MatrixType)
+      return derived().nestedExpression().const_cast_derived().coeffRef(index);
+    }
+
+    inline const Scalar& coeffRef(Index row, Index col) const
+    {
+      return derived().nestedExpression().coeffRef(col, row);
+    }
+
+    inline const Scalar& coeffRef(Index index) const
+    {
+      return derived().nestedExpression().coeffRef(index);
     }
 
     inline const CoeffReturnType coeff(Index row, Index col) const
@@ -149,7 +164,7 @@ template<typename MatrixType> class TransposeImpl<MatrixType,Dense>
     template<int LoadMode>
     inline void writePacket(Index row, Index col, const PacketScalar& x)
     {
-      const_cast_derived().nestedExpression().template writePacket<LoadMode>(col, row, x);
+      derived().nestedExpression().const_cast_derived().template writePacket<LoadMode>(col, row, x);
     }
 
     template<int LoadMode>
@@ -161,7 +176,7 @@ template<typename MatrixType> class TransposeImpl<MatrixType,Dense>
     template<int LoadMode>
     inline void writePacket(Index index, const PacketScalar& x)
     {
-      const_cast_derived().nestedExpression().template writePacket<LoadMode>(index, x);
+      derived().nestedExpression().const_cast_derived().template writePacket<LoadMode>(index, x);
     }
 };
 
@@ -197,7 +212,7 @@ DenseBase<Derived>::transpose()
   *
   * \sa transposeInPlace(), adjoint() */
 template<typename Derived>
-inline const Transpose<Derived>
+inline const typename DenseBase<Derived>::ConstTransposeReturnType
 DenseBase<Derived>::transpose() const
 {
   return derived();
@@ -226,7 +241,8 @@ template<typename Derived>
 inline const typename MatrixBase<Derived>::AdjointReturnType
 MatrixBase<Derived>::adjoint() const
 {
-  return this->transpose();
+  return this->transpose(); // in the complex case, the .conjugate() is be implicit here
+                            // due to implicit conversion to return type
 }
 
 /***************************************************************************

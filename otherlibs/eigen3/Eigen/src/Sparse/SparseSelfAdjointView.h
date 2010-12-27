@@ -75,7 +75,6 @@ template<typename MatrixType, unsigned int UpLo> class SparseSelfAdjointView
 
     inline SparseSelfAdjointView(const MatrixType& matrix) : m_matrix(matrix)
     {
-      eigen_assert(internal::are_flags_consistent<UpLo>::ret);
       eigen_assert(rows()==cols() && "SelfAdjointView is only for squared matrices");
     }
 
@@ -120,6 +119,14 @@ template<typename MatrixType, unsigned int UpLo> class SparseSelfAdjointView
     template<typename DestScalar> void evalTo(SparseMatrix<DestScalar>& _dest) const
     {
       internal::permute_symm_to_fullsymm<UpLo>(m_matrix, _dest);
+    }
+    
+    template<typename DestScalar> void evalTo(DynamicSparseMatrix<DestScalar>& _dest) const
+    {
+      // TODO directly evaluate into _dest;
+      SparseMatrix<DestScalar> tmp(_dest.rows(),_dest.cols());
+      internal::permute_symm_to_fullsymm<UpLo>(m_matrix, tmp);
+      _dest = tmp;
     }
     
     /** \returns an expression of P^-1 H P */
@@ -291,7 +298,7 @@ void permute_symm_to_fullsymm(const MatrixType& mat, SparseMatrix<typename Matri
   
   Dest& dest(_dest.derived());
   enum {
-    StorageOrderMatch = Dest::IsRowMajor == MatrixType::IsRowMajor
+    StorageOrderMatch = int(Dest::IsRowMajor) == int(MatrixType::IsRowMajor)
   };
   eigen_assert(perm==0);
   Index size = mat.rows();

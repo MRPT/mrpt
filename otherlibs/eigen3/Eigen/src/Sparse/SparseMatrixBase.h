@@ -573,7 +573,7 @@ template<typename Derived> class SparseMatrixBase : public EigenBase<Derived>
     { return typename internal::eval<Derived>::type(derived()); }
 
 //     template<typename OtherDerived>
-//     void swap(MatrixBase<OtherDerived> EIGEN_REF_TO_TEMPORARY other);
+//     void swap(MatrixBase<OtherDerived> const & other);
 
 //     template<unsigned int Added>
 //     const SparseFlagged<Derived, Added, 0> marked() const;
