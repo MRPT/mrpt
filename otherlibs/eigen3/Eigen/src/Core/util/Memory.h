@@ -601,7 +601,7 @@ public:
 #  if defined(__PIC__) && defined(__i386__)
 #    define EIGEN_CPUID(abcd,func,id) \
        __asm__ __volatile__ ("xchgl %%ebx, %%esi;cpuid; xchgl %%ebx,%%esi": "=a" (abcd[0]), "=S" (abcd[1]), "=c" (abcd[2]), "=d" (abcd[3]) : "a" (func), "c" (id));
-#  elif !defined(__arm__) && !defined(__powerpc__)
+#  elif !defined(__arm__) && !defined(__powerpc__) && !defined(__mips__) && !defined(__sparc__) && !defined(__sh__) && !defined(__s390__) && !defined(__m68k__) && !defined(__ia64__) && !defined(__hppa__)
 #    define EIGEN_CPUID(abcd,func,id) \
        __asm__ __volatile__ ("cpuid": "=a" (abcd[0]), "=b" (abcd[1]), "=c" (abcd[2]), "=d" (abcd[3]) : "a" (func), "c" (id) );
 #  endif
