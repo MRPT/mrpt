@@ -333,6 +333,11 @@ template<typename T, int n=1, typename PlainObject = typename eval<T>::type> str
   >::type type;
 };
 
+template<unsigned int Flags> struct are_flags_consistent
+{
+  enum { ret = EIGEN_IMPLIES(bool(Flags&DirectAccessBit), bool(Flags&LvalueBit)) };
+};
+
 template<typename Derived, typename XprKind = typename traits<Derived>::XprKind>
 struct dense_xpr_base
 {
@@ -375,6 +380,19 @@ struct special_scalar_op_base<Derived,Scalar,OtherScalar,true>  : public DenseCo
   inline friend const CwiseUnaryOp<scalar_multiple2_op<Scalar,OtherScalar>, Derived>
   operator*(const OtherScalar& scalar, const Derived& matrix)
   { return static_cast<const special_scalar_op_base&>(matrix).operator*(scalar); }
+};
+
+template<typename ExpressionType> struct HNormalizedReturnType {
+
+  enum {
+    SizeAtCompileTime = ExpressionType::SizeAtCompileTime,
+    SizeMinusOne = SizeAtCompileTime==Dynamic ? Dynamic : SizeAtCompileTime-1
+  };
+  typedef Block<ExpressionType,
+                traits<ExpressionType>::ColsAtCompileTime==1 ? SizeMinusOne : 1,
+                traits<ExpressionType>::ColsAtCompileTime==1 ? 1 : SizeMinusOne> StartMinusOne;
+  typedef CwiseUnaryOp<scalar_quotient1_op<typename traits<ExpressionType>::Scalar>,
+              StartMinusOne > Type;
 };
 
 template<typename XprType, typename CastType> struct cast_return_type
@@ -440,13 +458,6 @@ struct plain_diag_type
     MatrixDiagType,
     ArrayDiagType 
   >::type type;
-};
-
-template<typename ExpressionType>
-struct is_lvalue
-{
-  enum { value = !bool(is_const<ExpressionType>::value) &&
-                 bool(traits<ExpressionType>::Flags & LvalueBit) };
 };
 
 } // end namespace internal

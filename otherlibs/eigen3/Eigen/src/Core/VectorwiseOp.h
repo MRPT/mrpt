@@ -183,8 +183,7 @@ template<typename ExpressionType, int Direction> class VectorwiseOp
     typedef typename ExpressionType::RealScalar RealScalar;
     typedef typename ExpressionType::Index Index;
     typedef typename internal::conditional<internal::must_nest_by_value<ExpressionType>::ret,
-        ExpressionType, ExpressionType&>::type ExpressionTypeNested;
-    typedef typename internal::remove_all<ExpressionTypeNested>::type ExpressionTypeNestedCleaned;
+        ExpressionType, const ExpressionType&>::type ExpressionTypeNested;
 
     template<template<typename _Scalar> class Functor,
                       typename Scalar=typename internal::traits<ExpressionType>::Scalar> struct ReturnType
@@ -246,7 +245,7 @@ template<typename ExpressionType, int Direction> class VectorwiseOp
 
   public:
 
-    inline VectorwiseOp(ExpressionType& matrix) : m_matrix(matrix) {}
+    inline VectorwiseOp(const ExpressionType& matrix) : m_matrix(matrix) {}
 
     /** \internal */
     inline const ExpressionType& _expression() const { return m_matrix; }
@@ -445,9 +444,9 @@ template<typename ExpressionType, int Direction> class VectorwiseOp
     }
 
     /** Returns the expression of the sum of the vector \a other to each subvector of \c *this */
-    template<typename OtherDerived> EIGEN_STRONG_INLINE
+    template<typename OtherDerived> EIGEN_STRONG_INLINE 
     CwiseBinaryOp<internal::scalar_sum_op<Scalar>,
-                  ExpressionTypeNestedCleaned,
+                  ExpressionType,
                   typename ExtendedType<OtherDerived>::Type>
     operator+(const DenseBase<OtherDerived>& other) const
     {
@@ -458,7 +457,7 @@ template<typename ExpressionType, int Direction> class VectorwiseOp
     /** Returns the expression of the difference between each subvector of \c *this and the vector \a other */
     template<typename OtherDerived>
     CwiseBinaryOp<internal::scalar_difference_op<Scalar>,
-                  ExpressionTypeNestedCleaned,
+                  ExpressionType,
                   typename ExtendedType<OtherDerived>::Type>
     operator-(const DenseBase<OtherDerived>& other) const
     {
@@ -479,13 +478,13 @@ template<typename ExpressionType, int Direction> class VectorwiseOp
                                              : internal::traits<ExpressionType>::ColsAtCompileTime,
       HNormalized_SizeMinusOne = HNormalized_Size==Dynamic ? Dynamic : HNormalized_Size-1
     };
-    typedef Block<const ExpressionType,
+    typedef Block<ExpressionType,
                   Direction==Vertical   ? int(HNormalized_SizeMinusOne)
                                         : int(internal::traits<ExpressionType>::RowsAtCompileTime),
                   Direction==Horizontal ? int(HNormalized_SizeMinusOne)
                                         : int(internal::traits<ExpressionType>::ColsAtCompileTime)>
             HNormalized_Block;
-    typedef Block<const ExpressionType,
+    typedef Block<ExpressionType,
                   Direction==Vertical   ? 1 : int(internal::traits<ExpressionType>::RowsAtCompileTime),
                   Direction==Horizontal ? 1 : int(internal::traits<ExpressionType>::ColsAtCompileTime)>
             HNormalized_Factors;
@@ -496,7 +495,7 @@ template<typename ExpressionType, int Direction> class VectorwiseOp
                   Direction==Horizontal ? HNormalized_SizeMinusOne : 1> >
             HNormalizedReturnType;
 
-    const HNormalizedReturnType hnormalized() const;
+    HNormalizedReturnType hnormalized() const;
 
   protected:
     ExpressionTypeNested m_matrix;
@@ -510,7 +509,7 @@ template<typename ExpressionType, int Direction> class VectorwiseOp
   * \sa rowwise(), class VectorwiseOp
   */
 template<typename Derived>
-inline const typename DenseBase<Derived>::ConstColwiseReturnType
+inline const VectorwiseOp<Derived,Vertical>
 DenseBase<Derived>::colwise() const
 {
   return derived();
@@ -521,7 +520,7 @@ DenseBase<Derived>::colwise() const
   * \sa rowwise(), class VectorwiseOp
   */
 template<typename Derived>
-inline typename DenseBase<Derived>::ColwiseReturnType
+inline VectorwiseOp<Derived,Vertical>
 DenseBase<Derived>::colwise()
 {
   return derived();
@@ -535,7 +534,7 @@ DenseBase<Derived>::colwise()
   * \sa colwise(), class VectorwiseOp
   */
 template<typename Derived>
-inline const typename DenseBase<Derived>::ConstRowwiseReturnType
+inline const VectorwiseOp<Derived,Horizontal>
 DenseBase<Derived>::rowwise() const
 {
   return derived();
@@ -546,7 +545,7 @@ DenseBase<Derived>::rowwise() const
   * \sa colwise(), class VectorwiseOp
   */
 template<typename Derived>
-inline typename DenseBase<Derived>::RowwiseReturnType
+inline VectorwiseOp<Derived,Horizontal>
 DenseBase<Derived>::rowwise()
 {
   return derived();

@@ -169,22 +169,6 @@
 // required for __cpuid, needs to be included after cmath
 #if defined(_MSC_VER) && (defined(_M_IX86)||defined(_M_X64))
   #include <intrin.h>
-  // When available, intrin.h pulls in all SSE headers which allows us
-  // to check which SSE level is supported on MSVC systems
-  #ifndef EIGEN_DONT_VECTORIZE
-    #ifdef _INCLUDED_PMM
-      #define EIGEN_VECTORIZE_SSE3
-    #endif
-    #ifdef _INCLUDED_TMM
-      #define EIGEN_VECTORIZE_SSSE3
-    #endif
-    #ifdef _INCLUDED_SMM
-      #define EIGEN_VECTORIZE_SSE4_1
-    #endif
-    #ifdef _INCLUDED_NMM
-      #define EIGEN_VECTORIZE_SSE4_2
-    #endif
-  #endif
 #endif
 
 #if (defined(_CPPUNWIND) || defined(__EXCEPTIONS)) && !defined(EIGEN_NO_EXCEPTIONS)
@@ -289,7 +273,6 @@ using std::size_t;
 #include "src/Core/NoAlias.h"
 #include "src/Core/PlainObjectBase.h"
 #include "src/Core/Matrix.h"
-#include "src/Core/Array.h"
 #include "src/Core/CwiseBinaryOp.h"
 #include "src/Core/CwiseUnaryOp.h"
 #include "src/Core/CwiseNullaryOp.h"
@@ -344,6 +327,7 @@ using std::size_t;
 #include "src/Core/Reverse.h"
 #include "src/Core/ArrayBase.h"
 #include "src/Core/ArrayWrapper.h"
+#include "src/Core/Array.h"
 
 } // namespace Eigen
 

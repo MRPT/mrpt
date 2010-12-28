@@ -96,13 +96,9 @@ struct traits<Block<XprType, BlockRows, BlockCols, InnerPanel, HasDirectAccess> 
                         ? PacketAccessBit : 0,
     MaskAlignedBit = (InnerPanel && (OuterStrideAtCompileTime!=Dynamic) && ((OuterStrideAtCompileTime % packet_traits<Scalar>::size) == 0)) ? AlignedBit : 0,
     FlagsLinearAccessBit = (RowsAtCompileTime == 1 || ColsAtCompileTime == 1) ? LinearAccessBit : 0,
-    FlagsLvalueBit = is_lvalue<XprType>::value ? LvalueBit : 0,
-    FlagsRowMajorBit = IsRowMajor ? RowMajorBit : 0,
-    Flags0 = traits<XprType>::Flags & ( (HereditaryBits & ~RowMajorBit) |
-                                        DirectAccessBit |
-                                        MaskPacketAccessBit |
-                                        MaskAlignedBit),
-    Flags = Flags0 | FlagsLinearAccessBit | FlagsLvalueBit | FlagsRowMajorBit
+    Flags0 = traits<XprType>::Flags & (HereditaryBits | MaskPacketAccessBit | LvalueBit | DirectAccessBit | MaskAlignedBit),
+    Flags1 = Flags0 | FlagsLinearAccessBit,
+    Flags = (Flags1 & ~RowMajorBit) | (IsRowMajor ? RowMajorBit : 0)
   };
 };
 }
@@ -167,13 +163,6 @@ template<typename XprType, int BlockRows, int BlockCols, bool InnerPanel, bool H
 
     inline Scalar& coeffRef(Index row, Index col)
     {
-      EIGEN_STATIC_ASSERT_LVALUE(XprType)
-      return m_xpr.const_cast_derived()
-               .coeffRef(row + m_startRow.value(), col + m_startCol.value());
-    }
-
-    inline const Scalar& coeffRef(Index row, Index col) const
-    {
       return m_xpr.const_cast_derived()
                .coeffRef(row + m_startRow.value(), col + m_startCol.value());
     }
@@ -184,14 +173,6 @@ template<typename XprType, int BlockRows, int BlockCols, bool InnerPanel, bool H
     }
 
     inline Scalar& coeffRef(Index index)
-    {
-      EIGEN_STATIC_ASSERT_LVALUE(XprType)
-      return m_xpr.const_cast_derived()
-             .coeffRef(m_startRow.value() + (RowsAtCompileTime == 1 ? 0 : index),
-                       m_startCol.value() + (RowsAtCompileTime == 1 ? index : 0));
-    }
-
-    inline const Scalar& coeffRef(Index index) const
     {
       return m_xpr.const_cast_derived()
              .coeffRef(m_startRow.value() + (RowsAtCompileTime == 1 ? 0 : index),
@@ -265,8 +246,8 @@ class Block<XprType,BlockRows,BlockCols, InnerPanel,true>
 
     /** Column or Row constructor
       */
-    inline Block(XprType& xpr, Index i)
-      : Base(&xpr.coeffRef(
+    inline Block(const XprType& xpr, Index i)
+      : Base(&xpr.const_cast_derived().coeffRef(
               (BlockRows==1) && (BlockCols==XprType::ColsAtCompileTime) ? i : 0,
               (BlockRows==XprType::RowsAtCompileTime) && (BlockCols==1) ? i : 0),
              BlockRows==1 ? 1 : xpr.rows(),
@@ -281,8 +262,8 @@ class Block<XprType,BlockRows,BlockCols, InnerPanel,true>
 
     /** Fixed-size constructor
       */
-    inline Block(XprType& xpr, Index startRow, Index startCol)
-      : Base(&xpr.coeffRef(startRow,startCol)), m_xpr(xpr)
+    inline Block(const XprType& xpr, Index startRow, Index startCol)
+      : Base(&xpr.const_cast_derived().coeffRef(startRow,startCol)), m_xpr(xpr)
     {
       eigen_assert(startRow >= 0 && BlockRows >= 1 && startRow + BlockRows <= xpr.rows()
              && startCol >= 0 && BlockCols >= 1 && startCol + BlockCols <= xpr.cols());
@@ -291,10 +272,10 @@ class Block<XprType,BlockRows,BlockCols, InnerPanel,true>
 
     /** Dynamic-size constructor
       */
-    inline Block(XprType& xpr,
+    inline Block(const XprType& xpr,
           Index startRow, Index startCol,
           Index blockRows, Index blockCols)
-      : Base(&xpr.coeffRef(startRow,startCol), blockRows, blockCols),
+      : Base(&xpr.const_cast_derived().coeffRef(startRow,startCol), blockRows, blockCols),
         m_xpr(xpr)
     {
       eigen_assert((RowsAtCompileTime==Dynamic || RowsAtCompileTime==blockRows)

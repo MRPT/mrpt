@@ -79,7 +79,7 @@ public:
   inline Scalar& w() { return this->derived().coeffs().coeffRef(3); }
 
   /** \returns a read-only vector expression of the imaginary part (x,y,z) */
-  inline const VectorBlock<const Coefficients,3> vec() const { return coeffs().template head<3>(); }
+  inline const VectorBlock<Coefficients,3> vec() const { return coeffs().template head<3>(); }
 
   /** \returns a vector expression of the imaginary part (x,y,z) */
   inline VectorBlock<Coefficients,3> vec() { return coeffs().template head<3>(); }
@@ -298,42 +298,6 @@ traits<Quaternion<_Scalar> >
 };
 }
 
-/** \brief Quaternion expression mapping a constant memory buffer
-  *
-  * \param _Scalar the type of the Quaternion coefficients
-  * \param PacketAccess see class Map
-  *
-  * This is a specialization of class Map for Quaternion. This class allows to view
-  * a 4 scalar memory buffer as an Eigen's Quaternion object.
-  *
-  * \sa class Map, class Quaternion, class QuaternionBase
-  */
-template<typename _Scalar, int PacketAccess>
-class Map<const Quaternion<_Scalar>, PacketAccess >
-  : public QuaternionBase<Map<const Quaternion<_Scalar>, PacketAccess> >
-{
-    typedef QuaternionBase<Map<Quaternion<_Scalar>, PacketAccess> > Base;
-
-  public:
-    typedef _Scalar Scalar;
-    typedef typename internal::traits<Map>::Coefficients Coefficients;
-    EIGEN_INHERIT_ASSIGNMENT_EQUAL_OPERATOR(Map)
-    using Base::operator*=;
-
-    /** Constructs a Mapped Quaternion object from the pointer \a coeffs
-      *
-      * The pointer \a coeffs must reference the four coeffecients of Quaternion in the following order:
-      * \code *coeffs == {x, y, z, w} \endcode
-      *
-      * If the template parameter PacketAccess is set to Aligned, then the pointer coeffs must be aligned. */
-    EIGEN_STRONG_INLINE Map(const Scalar* coeffs) : m_coeffs(coeffs) {}
-
-    inline const Coefficients& coeffs() const { return m_coeffs;}
-
-  protected:
-    const Coefficients m_coeffs;
-};
-
 /** \brief Expression of a quaternion from a memory buffer
   *
   * \param _Scalar the type of the Quaternion coefficients
@@ -362,10 +326,10 @@ class Map<Quaternion<_Scalar>, PacketAccess >
       * \code *coeffs == {x, y, z, w} \endcode
       *
       * If the template parameter PacketAccess is set to Aligned, then the pointer coeffs must be aligned. */
-    EIGEN_STRONG_INLINE Map(Scalar* coeffs) : m_coeffs(coeffs) {}
+    EIGEN_STRONG_INLINE Map(const Scalar* coeffs) : m_coeffs(coeffs) {}
 
-    inline Coefficients& coeffs() { return m_coeffs; }
-    inline const Coefficients& coeffs() const { return m_coeffs; }
+    inline Coefficients& coeffs() { return m_coeffs;}
+    inline const Coefficients& coeffs() const { return m_coeffs;}
 
   protected:
     Coefficients m_coeffs;

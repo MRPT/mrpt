@@ -95,11 +95,10 @@ template<typename Derived> class TriangularBase : public EigenBase<Derived>
       EIGEN_ONLY_USED_FOR_DEBUG(row);
       EIGEN_ONLY_USED_FOR_DEBUG(col);
       eigen_assert(col>=0 && col<cols() && row>=0 && row<rows());
-      const int mode = int(Mode) & ~SelfAdjoint;
-      eigen_assert((mode==Upper && col>=row)
-                || (mode==Lower && col<=row)
-                || ((mode==StrictlyUpper || mode==UnitUpper) && col>row)
-                || ((mode==StrictlyLower || mode==UnitLower) && col<row));
+      eigen_assert(   (Mode==Upper && col>=row)
+                || (Mode==Lower && col<=row)
+                || ((Mode==StrictlyUpper || Mode==UnitUpper) && col>row)
+                || ((Mode==StrictlyLower || Mode==UnitLower) && col<row));
     }
 
     #ifdef EIGEN_INTERNAL_DEBUGGING
@@ -182,7 +181,7 @@ template<typename _MatrixType, unsigned int _Mode> class TriangularView
     };
 
     inline TriangularView(const MatrixType& matrix) : m_matrix(matrix)
-    {}
+    { eigen_assert(internal::are_flags_consistent<Mode>::ret); }
 
     inline Index rows() const { return m_matrix.rows(); }
     inline Index cols() const { return m_matrix.cols(); }
@@ -261,10 +260,7 @@ template<typename _MatrixType, unsigned int _Mode> class TriangularView
 
     /** \sa MatrixBase::transpose() */
     inline TriangularView<Transpose<MatrixType>,TransposeMode> transpose()
-    {
-      EIGEN_STATIC_ASSERT_LVALUE(MatrixType)
-      return m_matrix.const_cast_derived().transpose();
-    }
+    { return m_matrix.transpose(); }
     /** \sa MatrixBase::transpose() const */
     inline const TriangularView<Transpose<MatrixType>,TransposeMode> transpose() const
     { return m_matrix.transpose(); }
@@ -324,13 +320,13 @@ template<typename _MatrixType, unsigned int _Mode> class TriangularView
     }
 
     template<typename OtherDerived>
-    void swap(TriangularBase<OtherDerived> const & other)
+    void swap(TriangularBase<OtherDerived> EIGEN_REF_TO_TEMPORARY other)
     {
       TriangularView<SwapWrapper<MatrixType>,Mode>(const_cast<MatrixType&>(m_matrix)).lazyAssign(other.derived());
     }
 
     template<typename OtherDerived>
-    void swap(MatrixBase<OtherDerived> const & other)
+    void swap(MatrixBase<OtherDerived> EIGEN_REF_TO_TEMPORARY other)
     {
       TriangularView<SwapWrapper<MatrixType>,Mode>(const_cast<MatrixType&>(m_matrix)).lazyAssign(other.derived());
     }
@@ -705,8 +701,7 @@ EIGEN_DEPRECATED TriangularView<Derived, Mode> MatrixBase<Derived>::part()
   */
 template<typename Derived>
 template<unsigned int Mode>
-typename MatrixBase<Derived>::template TriangularViewReturnType<Mode>::Type
-MatrixBase<Derived>::triangularView()
+TriangularView<Derived, Mode> MatrixBase<Derived>::triangularView()
 {
   return derived();
 }
@@ -714,8 +709,7 @@ MatrixBase<Derived>::triangularView()
 /** This is the const version of MatrixBase::triangularView() */
 template<typename Derived>
 template<unsigned int Mode>
-typename MatrixBase<Derived>::template ConstTriangularViewReturnType<Mode>::Type
-MatrixBase<Derived>::triangularView() const
+const TriangularView<Derived, Mode> MatrixBase<Derived>::triangularView() const
 {
   return derived();
 }

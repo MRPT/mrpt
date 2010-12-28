@@ -356,13 +356,12 @@ namespace internal {
 template<typename MatrixType, typename CoeffVectorType>
 void tridiagonalization_inplace(MatrixType& matA, CoeffVectorType& hCoeffs)
 {
+  eigen_assert(matA.rows()==matA.cols());
+  eigen_assert(matA.rows()==hCoeffs.size()+1);
   typedef typename MatrixType::Index Index;
   typedef typename MatrixType::Scalar Scalar;
   typedef typename MatrixType::RealScalar RealScalar;
   Index n = matA.rows();
-  eigen_assert(n==matA.cols());
-  eigen_assert(n==hCoeffs.size()+1 || n==1);
-  
   for (Index i = 0; i<n-1; ++i)
   {
     Index remainingSize = n-i-1;
@@ -548,7 +547,7 @@ template<typename MatrixType> struct TridiagonalizationMatrixTReturnType
     {
       result.setZero();
       result.template diagonal<1>() = m_matrix.template diagonal<-1>().conjugate();
-      result.diagonal() = m_matrix.diagonal();
+      result.template diagonal() = m_matrix.template diagonal();
       result.template diagonal<-1>() = m_matrix.template diagonal<-1>();
     }
 

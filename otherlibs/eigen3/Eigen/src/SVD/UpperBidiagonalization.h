@@ -48,12 +48,12 @@ template<typename _MatrixType> class UpperBidiagonalization
     typedef Matrix<Scalar, ColsAtCompileTime, 1> DiagVectorType;
     typedef Matrix<Scalar, ColsAtCompileTimeMinusOne, 1> SuperDiagVectorType;
     typedef HouseholderSequence<
-              const MatrixType,
-              CwiseUnaryOp<internal::scalar_conjugate_op<Scalar>, Diagonal<const MatrixType,0> >
+              MatrixType,
+              CwiseUnaryOp<internal::scalar_conjugate_op<Scalar>, Diagonal<MatrixType,0> >
             > HouseholderUSequenceType;
     typedef HouseholderSequence<
-              const MatrixType,
-              Diagonal<const MatrixType,1>,
+              MatrixType,
+              Diagonal<MatrixType,1>,
               OnTheRight
             > HouseholderVSequenceType;
     
@@ -78,16 +78,16 @@ template<typename _MatrixType> class UpperBidiagonalization
     const MatrixType& householder() const { return m_householder; }
     const BidiagonalType& bidiagonal() const { return m_bidiagonal; }
     
-    const HouseholderUSequenceType householderU() const
+    HouseholderUSequenceType householderU() const
     {
       eigen_assert(m_isInitialized && "UpperBidiagonalization is not initialized.");
       return HouseholderUSequenceType(m_householder, m_householder.diagonal().conjugate());
     }
 
-    const HouseholderVSequenceType householderV() // const here gives nasty errors and i'm lazy
+    HouseholderVSequenceType householderV() // const here gives nasty errors and i'm lazy
     {
       eigen_assert(m_isInitialized && "UpperBidiagonalization is not initialized.");
-      return HouseholderVSequenceType(m_householder, m_householder.const_derived().template diagonal<1>(),
+      return HouseholderVSequenceType(m_householder, m_householder.template diagonal<1>(),
                                       false, m_householder.cols()-1, 1);
     }
     

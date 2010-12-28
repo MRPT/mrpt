@@ -30,22 +30,16 @@
 
 /** \internal expression type of a column */
 typedef Block<Derived, internal::traits<Derived>::RowsAtCompileTime, 1, !IsRowMajor> ColXpr;
-typedef const Block<const Derived, internal::traits<Derived>::RowsAtCompileTime, 1, !IsRowMajor> ConstColXpr;
 /** \internal expression type of a row */
 typedef Block<Derived, 1, internal::traits<Derived>::ColsAtCompileTime, IsRowMajor> RowXpr;
-typedef const Block<const Derived, 1, internal::traits<Derived>::ColsAtCompileTime, IsRowMajor> ConstRowXpr;
 /** \internal expression type of a block of whole columns */
 typedef Block<Derived, internal::traits<Derived>::RowsAtCompileTime, Dynamic, !IsRowMajor> ColsBlockXpr;
-typedef const Block<const Derived, internal::traits<Derived>::RowsAtCompileTime, Dynamic, !IsRowMajor> ConstColsBlockXpr;
 /** \internal expression type of a block of whole rows */
 typedef Block<Derived, Dynamic, internal::traits<Derived>::ColsAtCompileTime, IsRowMajor> RowsBlockXpr;
-typedef const Block<const Derived, Dynamic, internal::traits<Derived>::ColsAtCompileTime, IsRowMajor> ConstRowsBlockXpr;
 /** \internal expression type of a block of whole columns */
 template<int N> struct NColsBlockXpr { typedef Block<Derived, internal::traits<Derived>::RowsAtCompileTime, N, !IsRowMajor> Type; };
-template<int N> struct ConstNColsBlockXpr { typedef const Block<const Derived, internal::traits<Derived>::RowsAtCompileTime, N, !IsRowMajor> Type; };
 /** \internal expression type of a block of whole rows */
 template<int N> struct NRowsBlockXpr { typedef Block<Derived, N, internal::traits<Derived>::ColsAtCompileTime, IsRowMajor> Type; };
-template<int N> struct ConstNRowsBlockXpr { typedef const Block<const Derived, N, internal::traits<Derived>::ColsAtCompileTime, IsRowMajor> Type; };
 
 
 #endif // not EIGEN_PARSED_BY_DOXYGEN
@@ -72,9 +66,9 @@ inline Block<Derived> block(Index startRow, Index startCol, Index blockRows, Ind
 }
 
 /** This is the const version of block(Index,Index,Index,Index). */
-inline const Block<const Derived> block(Index startRow, Index startCol, Index blockRows, Index blockCols) const
+inline const Block<Derived> block(Index startRow, Index startCol, Index blockRows, Index blockCols) const
 {
-  return Block<const Derived>(derived(), startRow, startCol, blockRows, blockCols);
+  return Block<Derived>(derived(), startRow, startCol, blockRows, blockCols);
 }
 
 
@@ -96,9 +90,9 @@ inline Block<Derived> topRightCorner(Index cRows, Index cCols)
 }
 
 /** This is the const version of topRightCorner(Index, Index).*/
-inline const Block<const Derived> topRightCorner(Index cRows, Index cCols) const
+inline const Block<Derived> topRightCorner(Index cRows, Index cCols) const
 {
-  return Block<const Derived>(derived(), 0, cols() - cCols, cRows, cCols);
+  return Block<Derived>(derived(), 0, cols() - cCols, cRows, cCols);
 }
 
 /** \returns an expression of a fixed-size top-right corner of *this.
@@ -118,9 +112,9 @@ inline Block<Derived, CRows, CCols> topRightCorner()
 
 /** This is the const version of topRightCorner<int, int>().*/
 template<int CRows, int CCols>
-inline const Block<const Derived, CRows, CCols> topRightCorner() const
+inline const Block<Derived, CRows, CCols> topRightCorner() const
 {
-  return Block<const Derived, CRows, CCols>(derived(), 0, cols() - CCols);
+  return Block<Derived, CRows, CCols>(derived(), 0, cols() - CCols);
 }
 
 
@@ -142,9 +136,9 @@ inline Block<Derived> topLeftCorner(Index cRows, Index cCols)
 }
 
 /** This is the const version of topLeftCorner(Index, Index).*/
-inline const Block<const Derived> topLeftCorner(Index cRows, Index cCols) const
+inline const Block<Derived> topLeftCorner(Index cRows, Index cCols) const
 {
-  return Block<const Derived>(derived(), 0, 0, cRows, cCols);
+  return Block<Derived>(derived(), 0, 0, cRows, cCols);
 }
 
 /** \returns an expression of a fixed-size top-left corner of *this.
@@ -164,9 +158,9 @@ inline Block<Derived, CRows, CCols> topLeftCorner()
 
 /** This is the const version of topLeftCorner<int, int>().*/
 template<int CRows, int CCols>
-inline const Block<const Derived, CRows, CCols> topLeftCorner() const
+inline const Block<Derived, CRows, CCols> topLeftCorner() const
 {
-  return Block<const Derived, CRows, CCols>(derived(), 0, 0);
+  return Block<Derived, CRows, CCols>(derived(), 0, 0);
 }
 
 
@@ -187,9 +181,9 @@ inline Block<Derived> bottomRightCorner(Index cRows, Index cCols)
 }
 
 /** This is the const version of bottomRightCorner(Index, Index).*/
-inline const Block<const Derived> bottomRightCorner(Index cRows, Index cCols) const
+inline const Block<Derived> bottomRightCorner(Index cRows, Index cCols) const
 {
-  return Block<const Derived>(derived(), rows() - cRows, cols() - cCols, cRows, cCols);
+  return Block<Derived>(derived(), rows() - cRows, cols() - cCols, cRows, cCols);
 }
 
 /** \returns an expression of a fixed-size bottom-right corner of *this.
@@ -209,9 +203,9 @@ inline Block<Derived, CRows, CCols> bottomRightCorner()
 
 /** This is the const version of bottomRightCorner<int, int>().*/
 template<int CRows, int CCols>
-inline const Block<const Derived, CRows, CCols> bottomRightCorner() const
+inline const Block<Derived, CRows, CCols> bottomRightCorner() const
 {
-  return Block<const Derived, CRows, CCols>(derived(), rows() - CRows, cols() - CCols);
+  return Block<Derived, CRows, CCols>(derived(), rows() - CRows, cols() - CCols);
 }
 
 
@@ -232,9 +226,9 @@ inline Block<Derived> bottomLeftCorner(Index cRows, Index cCols)
 }
 
 /** This is the const version of bottomLeftCorner(Index, Index).*/
-inline const Block<const Derived> bottomLeftCorner(Index cRows, Index cCols) const
+inline const Block<Derived> bottomLeftCorner(Index cRows, Index cCols) const
 {
-  return Block<const Derived>(derived(), rows() - cRows, 0, cRows, cCols);
+  return Block<Derived>(derived(), rows() - cRows, 0, cRows, cCols);
 }
 
 /** \returns an expression of a fixed-size bottom-left corner of *this.
@@ -254,9 +248,9 @@ inline Block<Derived, CRows, CCols> bottomLeftCorner()
 
 /** This is the const version of bottomLeftCorner<int, int>().*/
 template<int CRows, int CCols>
-inline const Block<const Derived, CRows, CCols> bottomLeftCorner() const
+inline const Block<Derived, CRows, CCols> bottomLeftCorner() const
 {
-  return Block<const Derived, CRows, CCols>(derived(), rows() - CRows, 0);
+  return Block<Derived, CRows, CCols>(derived(), rows() - CRows, 0);
 }
 
 
@@ -276,9 +270,9 @@ inline RowsBlockXpr topRows(Index n)
 }
 
 /** This is the const version of topRows(Index).*/
-inline ConstRowsBlockXpr topRows(Index n) const
+inline const RowsBlockXpr topRows(Index n) const
 {
-  return ConstRowsBlockXpr(derived(), 0, 0, n, cols());
+  return RowsBlockXpr(derived(), 0, 0, n, cols());
 }
 
 /** \returns a block consisting of the top rows of *this.
@@ -298,9 +292,9 @@ inline typename NRowsBlockXpr<N>::Type topRows()
 
 /** This is the const version of topRows<int>().*/
 template<int N>
-inline typename ConstNRowsBlockXpr<N>::Type topRows() const
+inline const typename NRowsBlockXpr<N>::Type topRows() const
 {
-  return typename ConstNRowsBlockXpr<N>::Type(derived(), 0, 0, N, cols());
+  return typename NRowsBlockXpr<N>::Type(derived(), 0, 0, N, cols());
 }
 
 
@@ -320,9 +314,9 @@ inline RowsBlockXpr bottomRows(Index n)
 }
 
 /** This is the const version of bottomRows(Index).*/
-inline ConstRowsBlockXpr bottomRows(Index n) const
+inline const RowsBlockXpr bottomRows(Index n) const
 {
-  return ConstRowsBlockXpr(derived(), rows() - n, 0, n, cols());
+  return RowsBlockXpr(derived(), rows() - n, 0, n, cols());
 }
 
 /** \returns a block consisting of the bottom rows of *this.
@@ -342,9 +336,9 @@ inline typename NRowsBlockXpr<N>::Type bottomRows()
 
 /** This is the const version of bottomRows<int>().*/
 template<int N>
-inline typename ConstNRowsBlockXpr<N>::Type bottomRows() const
+inline const typename NRowsBlockXpr<N>::Type bottomRows() const
 {
-  return typename ConstNRowsBlockXpr<N>::Type(derived(), rows() - N, 0, N, cols());
+  return typename NRowsBlockXpr<N>::Type(derived(), rows() - N, 0, N, cols());
 }
 
 
@@ -365,9 +359,9 @@ inline RowsBlockXpr middleRows(Index startRow, Index numRows)
 }
 
 /** This is the const version of middleRows(Index,Index).*/
-inline ConstRowsBlockXpr middleRows(Index startRow, Index numRows) const
+inline const RowsBlockXpr middleRows(Index startRow, Index numRows) const
 {
-  return ConstRowsBlockXpr(derived(), startRow, 0, numRows, cols());
+  return RowsBlockXpr(derived(), startRow, 0, numRows, cols());
 }
 
 /** \returns a block consisting of a range of rows of *this.
@@ -388,9 +382,9 @@ inline typename NRowsBlockXpr<N>::Type middleRows(Index startRow)
 
 /** This is the const version of middleRows<int>().*/
 template<int N>
-inline typename ConstNRowsBlockXpr<N>::Type middleRows(Index startRow) const
+inline const typename NRowsBlockXpr<N>::Type middleRows(Index startRow) const
 {
-  return typename ConstNRowsBlockXpr<N>::Type(derived(), startRow, 0, N, cols());
+  return typename NRowsBlockXpr<N>::Type(derived(), startRow, 0, N, cols());
 }
 
 
@@ -410,9 +404,9 @@ inline ColsBlockXpr leftCols(Index n)
 }
 
 /** This is the const version of leftCols(Index).*/
-inline ConstColsBlockXpr leftCols(Index n) const
+inline const ColsBlockXpr leftCols(Index n) const
 {
-  return ConstColsBlockXpr(derived(), 0, 0, rows(), n);
+  return ColsBlockXpr(derived(), 0, 0, rows(), n);
 }
 
 /** \returns a block consisting of the left columns of *this.
@@ -432,9 +426,9 @@ inline typename NColsBlockXpr<N>::Type leftCols()
 
 /** This is the const version of leftCols<int>().*/
 template<int N>
-inline typename ConstNColsBlockXpr<N>::Type leftCols() const
+inline const typename NColsBlockXpr<N>::Type leftCols() const
 {
-  return typename ConstNColsBlockXpr<N>::Type(derived(), 0, 0, rows(), N);
+  return typename NColsBlockXpr<N>::Type(derived(), 0, 0, rows(), N);
 }
 
 
@@ -454,9 +448,9 @@ inline ColsBlockXpr rightCols(Index n)
 }
 
 /** This is the const version of rightCols(Index).*/
-inline ConstColsBlockXpr rightCols(Index n) const
+inline const ColsBlockXpr rightCols(Index n) const
 {
-  return ConstColsBlockXpr(derived(), 0, cols() - n, rows(), n);
+  return ColsBlockXpr(derived(), 0, cols() - n, rows(), n);
 }
 
 /** \returns a block consisting of the right columns of *this.
@@ -476,9 +470,9 @@ inline typename NColsBlockXpr<N>::Type rightCols()
 
 /** This is the const version of rightCols<int>().*/
 template<int N>
-inline typename ConstNColsBlockXpr<N>::Type rightCols() const
+inline const typename NColsBlockXpr<N>::Type rightCols() const
 {
-  return typename ConstNColsBlockXpr<N>::Type(derived(), 0, cols() - N, rows(), N);
+  return typename NColsBlockXpr<N>::Type(derived(), 0, cols() - N, rows(), N);
 }
 
 
@@ -499,9 +493,9 @@ inline ColsBlockXpr middleCols(Index startCol, Index numCols)
 }
 
 /** This is the const version of middleCols(Index,Index).*/
-inline ConstColsBlockXpr middleCols(Index startCol, Index numCols) const
+inline const ColsBlockXpr middleCols(Index startCol, Index numCols) const
 {
-  return ConstColsBlockXpr(derived(), 0, startCol, rows(), numCols);
+  return ColsBlockXpr(derived(), 0, startCol, rows(), numCols);
 }
 
 /** \returns a block consisting of a range of columns of *this.
@@ -522,9 +516,9 @@ inline typename NColsBlockXpr<N>::Type middleCols(Index startCol)
 
 /** This is the const version of middleCols<int>().*/
 template<int N>
-inline typename ConstNColsBlockXpr<N>::Type middleCols(Index startCol) const
+inline const typename NColsBlockXpr<N>::Type middleCols(Index startCol) const
 {
-  return typename ConstNColsBlockXpr<N>::Type(derived(), 0, startCol, rows(), N);
+  return typename NColsBlockXpr<N>::Type(derived(), 0, startCol, rows(), N);
 }
 
 
@@ -553,9 +547,9 @@ inline Block<Derived, BlockRows, BlockCols> block(Index startRow, Index startCol
 
 /** This is the const version of block<>(Index, Index). */
 template<int BlockRows, int BlockCols>
-inline const Block<const Derived, BlockRows, BlockCols> block(Index startRow, Index startCol) const
+inline const Block<Derived, BlockRows, BlockCols> block(Index startRow, Index startCol) const
 {
-  return Block<const Derived, BlockRows, BlockCols>(derived(), startRow, startCol);
+  return Block<Derived, BlockRows, BlockCols>(derived(), startRow, startCol);
 }
 
 /** \returns an expression of the \a i-th column of *this. Note that the numbering starts at 0.
@@ -570,9 +564,9 @@ inline ColXpr col(Index i)
 }
 
 /** This is the const version of col(). */
-inline ConstColXpr col(Index i) const
+inline const ColXpr col(Index i) const
 {
-  return ConstColXpr(derived(), i);
+  return ColXpr(derived(), i);
 }
 
 /** \returns an expression of the \a i-th row of *this. Note that the numbering starts at 0.
@@ -587,9 +581,9 @@ inline RowXpr row(Index i)
 }
 
 /** This is the const version of row(). */
-inline ConstRowXpr row(Index i) const
+inline const RowXpr row(Index i) const
 {
-  return ConstRowXpr(derived(), i);
+  return RowXpr(derived(), i);
 }
 
 #endif // EIGEN_BLOCKMETHODS_H

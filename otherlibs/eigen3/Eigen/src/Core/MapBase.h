@@ -26,11 +26,6 @@
 #ifndef EIGEN_MAPBASE_H
 #define EIGEN_MAPBASE_H
 
-#define EIGEN_STATIC_ASSERT_LINEAR_ACCESS(Derived) \
-      EIGEN_STATIC_ASSERT(int(internal::traits<Derived>::Flags) & LinearAccessBit, \
-                          YOU_ARE_TRYING_TO_USE_AN_INDEX_BASED_ACCESSOR_ON_AN_EXPRESSION_THAT_DOES_NOT_SUPPORT_THAT)
-
-
 /** \class MapBase
   * \ingroup Core_Module
   *
@@ -38,7 +33,7 @@
   *
   * \sa class Map, class Block
   */
-template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
+template<typename Derived> class MapBase
   : public internal::dense_xpr_base<Derived>::type
 {
   public:
@@ -50,16 +45,12 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
       SizeAtCompileTime = Base::SizeAtCompileTime
     };
 
+
     typedef typename internal::traits<Derived>::StorageKind StorageKind;
     typedef typename internal::traits<Derived>::Index Index;
     typedef typename internal::traits<Derived>::Scalar Scalar;
     typedef typename internal::packet_traits<Scalar>::type PacketScalar;
     typedef typename NumTraits<Scalar>::Real RealScalar;
-    typedef typename internal::conditional<
-                         bool(internal::is_lvalue<Derived>::value),
-                         Scalar *,
-                         const Scalar *>::type
-                     PointerType;
 
     using Base::derived;
 //    using Base::RowsAtCompileTime;
@@ -72,6 +63,10 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
     using Base::Flags;
     using Base::IsRowMajor;
 
+    using Base::CoeffReadCost;
+
+//    using Base::derived;
+    using Base::const_cast_derived;
     using Base::rows;
     using Base::cols;
     using Base::size;
@@ -79,6 +74,11 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
     using Base::coeffRef;
     using Base::lazyAssign;
     using Base::eval;
+//    using Base::operator=;
+    using Base::operator+=;
+    using Base::operator-=;
+    using Base::operator*=;
+    using Base::operator/=;
 
     using Base::innerStride;
     using Base::outerStride;
@@ -98,27 +98,28 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
       * \sa innerStride(), outerStride()
       */
     inline const Scalar* data() const { return m_data; }
+    inline Scalar* data() { return const_cast<Scalar*>(m_data); }
 
     inline const Scalar& coeff(Index row, Index col) const
     {
       return m_data[col * colStride() + row * rowStride()];
     }
 
+    inline Scalar& coeffRef(Index row, Index col)
+    {
+      return const_cast<Scalar*>(m_data)[col * colStride() + row * rowStride()];
+    }
+
     inline const Scalar& coeff(Index index) const
     {
-      EIGEN_STATIC_ASSERT_LINEAR_ACCESS(Derived)
+      eigen_assert(Derived::IsVectorAtCompileTime || (internal::traits<Derived>::Flags & LinearAccessBit));
       return m_data[index * innerStride()];
     }
 
-    inline const Scalar& coeffRef(Index row, Index col) const
+    inline Scalar& coeffRef(Index index)
     {
-      return this->m_data[col * colStride() + row * rowStride()];
-    }
-
-    inline const Scalar& coeffRef(Index index) const
-    {
-      EIGEN_STATIC_ASSERT_LINEAR_ACCESS(Derived)
-      return this->m_data[index * innerStride()];
+      eigen_assert(Derived::IsVectorAtCompileTime || (internal::traits<Derived>::Flags & LinearAccessBit));
+      return const_cast<Scalar*>(m_data)[index * innerStride()];
     }
 
     template<int LoadMode>
@@ -131,17 +132,30 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
     template<int LoadMode>
     inline PacketScalar packet(Index index) const
     {
-      EIGEN_STATIC_ASSERT_LINEAR_ACCESS(Derived)
       return internal::ploadt<PacketScalar, LoadMode>(m_data + index * innerStride());
     }
 
-    inline MapBase(PointerType data) : m_data(data), m_rows(RowsAtCompileTime), m_cols(ColsAtCompileTime)
+    template<int StoreMode>
+    inline void writePacket(Index row, Index col, const PacketScalar& x)
+    {
+      internal::pstoret<Scalar, PacketScalar, StoreMode>
+               (const_cast<Scalar*>(m_data) + (col * colStride() + row * rowStride()), x);
+    }
+
+    template<int StoreMode>
+    inline void writePacket(Index index, const PacketScalar& x)
+    {
+      internal::pstoret<Scalar, PacketScalar, StoreMode>
+        (const_cast<Scalar*>(m_data) + index * innerStride(), x);
+    }
+
+    inline MapBase(const Scalar* data) : m_data(data), m_rows(RowsAtCompileTime), m_cols(ColsAtCompileTime)
     {
       EIGEN_STATIC_ASSERT_FIXED_SIZE(Derived)
       checkSanity();
     }
 
-    inline MapBase(PointerType data, Index size)
+    inline MapBase(const Scalar* data, Index size)
             : m_data(data),
               m_rows(RowsAtCompileTime == Dynamic ? size : Index(RowsAtCompileTime)),
               m_cols(ColsAtCompileTime == Dynamic ? size : Index(ColsAtCompileTime))
@@ -152,7 +166,7 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
       checkSanity();
     }
 
-    inline MapBase(PointerType data, Index rows, Index cols)
+    inline MapBase(const Scalar* data, Index rows, Index cols)
             : m_data(data), m_rows(rows), m_cols(cols)
     {
       eigen_assert( (data == 0)
@@ -160,6 +174,14 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
                   && cols >= 0 && (ColsAtCompileTime == Dynamic || ColsAtCompileTime == cols)));
       checkSanity();
     }
+
+    Derived& operator=(const MapBase& other)
+    {
+      Base::operator=(other);
+      return derived();
+    }
+
+    using Base::operator=;
 
   protected:
 
@@ -172,76 +194,9 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
         && "data is not aligned");
     }
 
-    PointerType m_data;
+    const Scalar* EIGEN_RESTRICT m_data;
     const internal::variable_if_dynamic<Index, RowsAtCompileTime> m_rows;
     const internal::variable_if_dynamic<Index, ColsAtCompileTime> m_cols;
 };
-
-template<typename Derived> class MapBase<Derived, WriteAccessors>
-  : public MapBase<Derived, ReadOnlyAccessors>
-{
-  public:
-
-    typedef MapBase<Derived, ReadOnlyAccessors> Base;
-
-    typedef typename Base::Scalar Scalar;
-    typedef typename Base::PacketScalar PacketScalar;
-    typedef typename Base::Index Index;
-    typedef typename Base::PointerType PointerType;
-
-    using Base::derived;
-    using Base::rows;
-    using Base::cols;
-    using Base::size;
-    using Base::coeff;
-    using Base::coeffRef;
-
-    using Base::innerStride;
-    using Base::outerStride;
-    using Base::rowStride;
-    using Base::colStride;
-
-    inline const Scalar* data() const { return this->m_data; }
-    inline Scalar* data() { return this->m_data; } // no const-cast here so non-const-correct code will give a compile error
-
-    inline Scalar& coeffRef(Index row, Index col)
-    {
-      return this->m_data[col * colStride() + row * rowStride()];
-    }
-
-    inline Scalar& coeffRef(Index index)
-    {
-      EIGEN_STATIC_ASSERT_LINEAR_ACCESS(Derived)
-      return this->m_data[index * innerStride()];
-    }
-
-    template<int StoreMode>
-    inline void writePacket(Index row, Index col, const PacketScalar& x)
-    {
-      internal::pstoret<Scalar, PacketScalar, StoreMode>
-               (this->m_data + (col * colStride() + row * rowStride()), x);
-    }
-
-    template<int StoreMode>
-    inline void writePacket(Index index, const PacketScalar& x)
-    {
-      EIGEN_STATIC_ASSERT_LINEAR_ACCESS(Derived)
-      internal::pstoret<Scalar, PacketScalar, StoreMode>
-                (this->m_data + index * innerStride(), x);
-    }
-
-    inline MapBase(PointerType data) : Base(data) {}
-    inline MapBase(PointerType data, Index size) : Base(data, size) {}
-    inline MapBase(PointerType data, Index rows, Index cols) : Base(data, rows, cols) {}
-
-    Derived& operator=(const MapBase& other)
-    {
-      Base::Base::operator=(other);
-      return derived();
-    }
-
-    using Base::Base::operator=;
-};
-
 
 #endif // EIGEN_MAPBASE_H

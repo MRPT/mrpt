@@ -57,39 +57,23 @@ namespace internal {
 
 template<int Rows, int Cols, int Depth> struct product_type_selector;
 
-template<int Size, int MaxSize> struct product_size_category
-{
-  enum { is_large = MaxSize == Dynamic ||
-                    Size >= EIGEN_CACHEFRIENDLY_PRODUCT_THRESHOLD,
-         value = is_large  ? Large
-               : Size == 1 ? 1
-                           : Small
-  };
-};
-
 template<typename Lhs, typename Rhs> struct product_type
 {
   typedef typename remove_all<Lhs>::type _Lhs;
   typedef typename remove_all<Rhs>::type _Rhs;
   enum {
-    MaxRows  = _Lhs::MaxRowsAtCompileTime,
-    Rows  = _Lhs::RowsAtCompileTime,
-    MaxCols  = _Rhs::MaxColsAtCompileTime,
-    Cols  = _Rhs::ColsAtCompileTime,
-    MaxDepth = EIGEN_SIZE_MIN_PREFER_FIXED(_Lhs::MaxColsAtCompileTime,
-                                           _Rhs::MaxRowsAtCompileTime),
-    Depth = EIGEN_SIZE_MIN_PREFER_FIXED(_Lhs::ColsAtCompileTime,
-                                        _Rhs::RowsAtCompileTime),
-    LargeThreshold = EIGEN_CACHEFRIENDLY_PRODUCT_THRESHOLD
+    Rows  = _Lhs::MaxRowsAtCompileTime,
+    Cols  = _Rhs::MaxColsAtCompileTime,
+    Depth = EIGEN_SIZE_MIN_PREFER_FIXED(_Lhs::MaxColsAtCompileTime,_Rhs::MaxRowsAtCompileTime)
   };
 
   // the splitting into different lines of code here, introducing the _select enums and the typedef below,
   // is to work around an internal compiler error with gcc 4.1 and 4.2.
 private:
   enum {
-    rows_select = product_size_category<Rows,MaxRows>::value,
-    cols_select = product_size_category<Cols,MaxCols>::value,
-    depth_select = product_size_category<Depth,MaxDepth>::value
+    rows_select   = Rows == Dynamic || Rows >=EIGEN_CACHEFRIENDLY_PRODUCT_THRESHOLD ? Large : (Rows==1   ? 1 : Small),
+    cols_select   = Cols == Dynamic || Cols >=EIGEN_CACHEFRIENDLY_PRODUCT_THRESHOLD ? Large : (Cols==1   ? 1 : Small),
+    depth_select  = Depth == Dynamic || Depth>=EIGEN_CACHEFRIENDLY_PRODUCT_THRESHOLD ? Large : (Depth==1  ? 1 : Small)
   };
   typedef product_type_selector<rows_select, cols_select, depth_select> selector;
 
@@ -224,6 +208,8 @@ class GeneralProduct<Lhs, Rhs, InnerProduct>
       Base::coeffRef(0,0) = (lhs.transpose().cwiseProduct(rhs)).sum();
     }
 
+    typename Base::Scalar value() const { return Base::coeff(0,0); }
+
     /** Convertion to scalar */
     operator const typename Base::Scalar() const {
       return Base::coeff(0,0);
@@ -353,7 +339,7 @@ struct gemv_selector<OnTheLeft,StorageOrder,BlasCompatible>
     Transpose<Dest> destT(dest);
     enum { OtherStorageOrder = StorageOrder == RowMajor ? ColMajor : RowMajor };
     gemv_selector<OnTheRight,OtherStorageOrder,BlasCompatible>
-      ::run(GeneralProduct<Transpose<const typename ProductType::_RhsNested>,Transpose<const typename ProductType::_LhsNested>, GemvProduct>
+      ::run(GeneralProduct<Transpose<typename ProductType::_RhsNested>,Transpose<typename ProductType::_LhsNested>, GemvProduct>
         (prod.rhs().transpose(), prod.lhs().transpose()), destT, alpha);
   }
 };
@@ -442,8 +428,8 @@ template<> struct gemv_selector<OnTheRight,RowMajor,true>
     typedef typename ProductType::LhsBlasTraits LhsBlasTraits;
     typedef typename ProductType::RhsBlasTraits RhsBlasTraits;
 
-    typename add_const<ActualLhsType>::type actualLhs = LhsBlasTraits::extract(prod.lhs());
-    typename add_const<ActualRhsType>::type actualRhs = RhsBlasTraits::extract(prod.rhs());
+    ActualLhsType actualLhs = LhsBlasTraits::extract(prod.lhs());
+    ActualRhsType actualRhs = RhsBlasTraits::extract(prod.rhs());
 
     ResScalar actualAlpha = alpha * LhsBlasTraits::extractScalarFactor(prod.lhs())
                                   * RhsBlasTraits::extractScalarFactor(prod.rhs());
@@ -457,7 +443,7 @@ template<> struct gemv_selector<OnTheRight,RowMajor,true>
 
     RhsScalar* rhs_data;
     if (DirectlyUseRhs)
-       rhs_data = const_cast<RhsScalar*>(&actualRhs.coeffRef(0));
+       rhs_data = &actualRhs.const_cast_derived().coeffRef(0);
     else
     {
       rhs_data = ei_aligned_stack_new(RhsScalar, actualRhs.size());
@@ -467,7 +453,7 @@ template<> struct gemv_selector<OnTheRight,RowMajor,true>
     general_matrix_vector_product
       <Index,LhsScalar,RowMajor,LhsBlasTraits::NeedToConjugate,RhsScalar,RhsBlasTraits::NeedToConjugate>::run(
         actualLhs.rows(), actualLhs.cols(),
-        &actualLhs.coeffRef(0,0), actualLhs.outerStride(),
+        &actualLhs.const_cast_derived().coeffRef(0,0), actualLhs.outerStride(),
         rhs_data, 1,
         &dest.coeffRef(0,0), dest.innerStride(),
         actualAlpha);

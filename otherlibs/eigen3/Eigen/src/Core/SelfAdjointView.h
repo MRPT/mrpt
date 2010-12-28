@@ -80,7 +80,7 @@ template<typename MatrixType, unsigned int UpLo> class SelfAdjointView
     typedef typename MatrixType::PlainObject PlainObject;
 
     inline SelfAdjointView(const MatrixType& matrix) : m_matrix(matrix)
-    {}
+    { eigen_assert(internal::are_flags_consistent<Mode>::ret); }
 
     inline Index rows() const { return m_matrix.rows(); }
     inline Index cols() const { return m_matrix.cols(); }
@@ -282,16 +282,14 @@ struct triangular_assignment_selector<Derived1, Derived2, SelfAdjoint|Lower, Dyn
 
 template<typename Derived>
 template<unsigned int UpLo>
-typename MatrixBase<Derived>::template ConstSelfAdjointViewReturnType<UpLo>::Type
-MatrixBase<Derived>::selfadjointView() const
+const SelfAdjointView<Derived, UpLo> MatrixBase<Derived>::selfadjointView() const
 {
   return derived();
 }
 
 template<typename Derived>
 template<unsigned int UpLo>
-typename MatrixBase<Derived>::template SelfAdjointViewReturnType<UpLo>::Type
-MatrixBase<Derived>::selfadjointView()
+SelfAdjointView<Derived, UpLo> MatrixBase<Derived>::selfadjointView()
 {
   return derived();
 }

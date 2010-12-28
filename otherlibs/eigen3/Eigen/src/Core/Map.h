@@ -82,7 +82,6 @@ template<typename PlainObjectType, int MapOptions, typename StrideType>
 struct traits<Map<PlainObjectType, MapOptions, StrideType> >
   : public traits<PlainObjectType>
 {
-  typedef traits<PlainObjectType> TraitsBase;
   typedef typename PlainObjectType::Index Index;
   typedef typename PlainObjectType::Scalar Scalar;
   enum {
@@ -102,15 +101,13 @@ struct traits<Map<PlainObjectType, MapOptions, StrideType> >
                            || HasNoOuterStride
                            || ( OuterStrideAtCompileTime!=Dynamic
                            && ((static_cast<int>(sizeof(Scalar))*OuterStrideAtCompileTime)%16)==0 ) ),
-    Flags0 = TraitsBase::Flags,
+    Flags0 = traits<PlainObjectType>::Flags,
     Flags1 = IsAligned ? (int(Flags0) | AlignedBit) : (int(Flags0) & ~AlignedBit),
-    Flags2 = (bool(HasNoStride) || bool(PlainObjectType::IsVectorAtCompileTime))
-           ? int(Flags1) : int(Flags1 & ~LinearAccessBit),
-    Flags3 = is_lvalue<PlainObjectType>::value ? int(Flags2) : (int(Flags2) & ~LvalueBit),
-    Flags = KeepsPacketAccess ? int(Flags3) : (int(Flags3) & ~PacketAccessBit)
+    Flags2 = HasNoStride ? int(Flags1) : int(Flags1 & ~LinearAccessBit),
+    Flags = KeepsPacketAccess ? int(Flags2) : (int(Flags2) & ~PacketAccessBit)
   };
 private:
-  enum { Options }; // Expressions don't have Options
+  enum { Options }; // Expressions don't support Options
 };
 }
 
@@ -122,9 +119,6 @@ template<typename PlainObjectType, int MapOptions, typename StrideType> class Ma
     typedef MapBase<Map> Base;
 
     EIGEN_DENSE_PUBLIC_INTERFACE(Map)
-
-    typedef typename Base::PointerType PointerType;
-
 
     inline Index innerStride() const
     {
@@ -144,7 +138,7 @@ template<typename PlainObjectType, int MapOptions, typename StrideType> class Ma
       * \param data pointer to the array to map
       * \param stride optional Stride object, passing the strides.
       */
-    inline Map(PointerType data, const StrideType& stride = StrideType())
+    inline Map(const Scalar* data, const StrideType& stride = StrideType())
       : Base(data), m_stride(stride)
     {
       PlainObjectType::Base::_check_template_params();
@@ -156,7 +150,7 @@ template<typename PlainObjectType, int MapOptions, typename StrideType> class Ma
       * \param size the size of the vector expression
       * \param stride optional Stride object, passing the strides.
       */
-    inline Map(PointerType data, Index size, const StrideType& stride = StrideType())
+    inline Map(const Scalar* data, Index size, const StrideType& stride = StrideType())
       : Base(data, size), m_stride(stride)
     {
       PlainObjectType::Base::_check_template_params();
@@ -169,7 +163,7 @@ template<typename PlainObjectType, int MapOptions, typename StrideType> class Ma
       * \param cols the number of columns of the matrix expression
       * \param stride optional Stride object, passing the strides.
       */
-    inline Map(PointerType data, Index rows, Index cols, const StrideType& stride = StrideType())
+    inline Map(const Scalar* data, Index rows, Index cols, const StrideType& stride = StrideType())
       : Base(data, rows, cols), m_stride(stride)
     {
       PlainObjectType::Base::_check_template_params();
@@ -183,17 +177,10 @@ template<typename PlainObjectType, int MapOptions, typename StrideType> class Ma
 };
 
 template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
-inline Array<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>
-  ::Array(const Scalar *data)
-{
-  _set_noalias(Eigen::Map<const Array>(data));
-}
-
-template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
 inline Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>
   ::Matrix(const Scalar *data)
 {
-  _set_noalias(Eigen::Map<const Matrix>(data));
+  _set_noalias(Eigen::Map<Matrix>(data));
 }
 
 #endif // EIGEN_MAP_H

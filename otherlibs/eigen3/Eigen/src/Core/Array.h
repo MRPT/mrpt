@@ -230,7 +230,7 @@ class Array
       * data pointers.
       */
     template<typename OtherDerived>
-    void swap(ArrayBase<OtherDerived> const & other)
+    void swap(ArrayBase<OtherDerived> EIGEN_REF_TO_TEMPORARY other)
     { this->_swap(other.derived()); }
 
     inline Index innerStride() const { return 1; }
