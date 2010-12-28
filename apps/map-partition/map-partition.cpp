@@ -166,7 +166,7 @@ void Test()
 
 	printf("Ok\n");
 
-	CMatrix		A;
+	CMatrixDouble A;
 	imp.getAdjacencyMatrix( A);
 	A.saveToTextFile( "MAP-PARTITION_RESULTS/matrix_A.txt", MATRIX_FORMAT_FIXED);
 
