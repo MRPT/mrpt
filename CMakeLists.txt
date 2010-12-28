@@ -58,6 +58,13 @@ LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakemodules")
 # Useful macros:
 INCLUDE(cmakemodules/UtilsMacros.cmake REQUIRED)
 
+# Detect machine architecture, on UNIX:
+if(UNIX)
+	execute_process(COMMAND uname -m
+		OUTPUT_VARIABLE CMAKE_MRPT_ARCH
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+	message(STATUS "Architecture uname -m: ${CMAKE_MRPT_ARCH}")
+endif(UNIX)
 
 # ----------------------------------------------------------------------------
 # Detect GNU version:
@@ -1597,11 +1604,15 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 
 
 	# "-mtune=native" generates code optimized for the detected current processor.
+	set(opt_native_def OFF)
 	IF (CMAKE_MRPT_GCC_VERSION GREATER 41)
-		SET( MRPT_OPTIMIZE_NATIVE ON CACHE BOOL "GCC optimizations for current processor (-mtune=native). Requires GCC 4.2+")
-	ELSE (CMAKE_MRPT_GCC_VERSION GREATER 41)
-		SET( MRPT_OPTIMIZE_NATIVE OFF CACHE BOOL "GCC optimizations for current processor (-mtune=native). Requires GCC 4.2+")
+		if (WIN32 OR "${CMAKE_MRPT_ARCH}" MATCHES ".*86" OR "${CMAKE_MRPT_ARCH}" MATCHES "amd64")
+			set(opt_native_def ON)
+		endif (WIN32 OR "${CMAKE_MRPT_ARCH}" MATCHES ".*86" OR "${CMAKE_MRPT_ARCH}" MATCHES "amd64")
 	ENDIF (CMAKE_MRPT_GCC_VERSION GREATER 41)
+
+	SET( MRPT_OPTIMIZE_NATIVE ${opt_native_def} CACHE BOOL "GCC optimizations for current processor (-mtune=native). Requires GCC 4.2+")
+
 
 	IF(CMAKE_BUILD_TYPE STREQUAL "Debug")  # Not in debug!
 		SET(MRPT_OPTIMIZE_NATIVE OFF)
@@ -2059,7 +2070,7 @@ FOREACH(_LIB ${ALL_MRPT_LIBS})
 ENDFOREACH(_LIB)
 MESSAGE(STATUS "")
 
-MESSAGE(STATUS "Resulting configuration for ${CMAKE_MRPT_COMPLETE_NAME}:")
+MESSAGE(STATUS "Resulting configuration for ${CMAKE_MRPT_COMPLETE_NAME}")
 MESSAGE(STATUS "-----------------------------------------------------------------")
 SHOW_CONFIG_LINE("Will MRPT be built as a shared library? " CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF)
 SHOW_CONFIG_LINE("Additional checks even in Release       " CMAKE_MRPT_ALWAYS_CHECKS_DEBUG)
