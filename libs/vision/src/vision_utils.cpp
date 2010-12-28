@@ -886,6 +886,7 @@ double vision::computeSAD(
                     const CImage                & patch1,
                     const CImage                & patch2 )
 {
+#if MRPT_HAS_OPENCV
     IplImage *im1 = static_cast<IplImage*>(patch1.getAsIplImage());
     IplImage *im2 = static_cast<IplImage*>(patch2.getAsIplImage());
 
@@ -895,7 +896,9 @@ double vision::computeSAD(
         for( unsigned int jj = 0; jj < (unsigned int)im1->width; ++jj )    // Cols
             res += fabs((double)(im1->imageData[ii*im1->widthStep+jj]) - ((double)(im2->imageData[ii*im2->widthStep+jj])) );
     return res/(255.0f*im1->width*im1->height);
-
+#else
+    return 0;
+#endif
 } // end computeSAD
 
 /*-------------------------------------------------------------
