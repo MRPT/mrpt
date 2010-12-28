@@ -55,10 +55,10 @@ namespace mrpt
 		 *
 		 * For further details on the method, check the wiki:
 		 *   http://www.mrpt.org/Scan_Matching_Algorithms
-		 *  
+		 *
 		 *  For a paper explaining the used equations, see for example:
-		 *   J. Martinez, J. Gonzalez, J. Morales, A. Mandow, A. Garcia-Cerezo, 
-		 *   "Genetic and ICP Laser Point Matching for 2D Mobile Robot Motion Estimation", 
+		 *   J. Martinez, J. Gonzalez, J. Morales, A. Mandow, A. Garcia-Cerezo,
+		 *   "Genetic and ICP Laser Point Matching for 2D Mobile Robot Motion Estimation",
 		 *    Journal of Field Robotics, vol. 23, no. 1, 2006. ( http://babel.isa.uma.es/~jlblanco/papers/martinez2006gil.pdf )
 		 *
 		 * \sa CMetricMapsAlignmentAlgorithm
@@ -165,6 +165,9 @@ namespace mrpt
 				/** The initial value of the lambda parameter in the LM method (default=1e-4).
 				  */
 				float			LM_initial_lambda;
+
+				/** Skip the computation of the covariance (saves some time) (default=false) */
+				bool			skip_cov_calculation;
 
 			};
 

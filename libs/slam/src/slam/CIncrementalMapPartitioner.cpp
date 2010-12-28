@@ -567,7 +567,7 @@ void  CIncrementalMapPartitioner::removeSetOfNodes(vector_uint	indexesToRemove, 
 
 	// Update the A matrix:
 	// ---------------------------------------------------
-	CMatrix		newA(nNew,nNew);
+	CMatrixDouble  newA(nNew,nNew);
 	for (i=0;i<nNew;i++)
 		for (j=0;j<nNew;j++)
 			newA(i,j)=m_A(indexesToStay[i],indexesToStay[j]);
@@ -620,14 +620,6 @@ void  CIncrementalMapPartitioner::removeSetOfNodes(vector_uint	indexesToRemove, 
 	// All done!
 
 	MRPT_END;
-}
-
-/*---------------------------------------------------------------
-				getAdjacencyMatrix
-  ---------------------------------------------------------------*/
-void  CIncrementalMapPartitioner::getAdjacencyMatrix( CMatrix &outMatrix ) const
-{
-	outMatrix = m_A;
 }
 
 /*---------------------------------------------------------------

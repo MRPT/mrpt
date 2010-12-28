@@ -74,9 +74,7 @@ void   CEllipsoid::render_dl() const
 
 			// Compute the new vectors for the ellipsoid:
 			CMatrixDouble 	M;
-			M.multiply_ABt(m_eigVal, m_eigVec);  // m_eigVal * (~m_eigVec)
-			M *= m_quantiles;
-
+			M.noalias() = double(m_quantiles) * m_eigVal * m_eigVec.adjoint();
 
 			glBegin( GL_LINES );
 
@@ -192,7 +190,7 @@ void  CEllipsoid::readFromStream(CStream &in,int version)
 			if (version==0)
 			{
 				CMatrix c;
-				in >> c; m_cov = c;
+				in >> c; m_cov = c.cast<double>();
 			}
 			else
 			{

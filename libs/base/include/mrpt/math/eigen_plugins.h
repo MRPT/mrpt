@@ -276,15 +276,6 @@ public:
 	/*! Sum all the elements, returning a value of the same type than the container  */
 	EIGEN_STRONG_INLINE Scalar sumAll() const { return derived().sum(); }
 
-	/*! Sum all the elements, returning a value of a custom type (this could be used to avoid overflow with containers of integers) */
-	template <typename RET_TYPE>
-	EIGEN_STRONG_INLINE RET_TYPE sumAllRetType() const {
-		if(SizeAtCompileTime==0 || (SizeAtCompileTime==Dynamic && size()==0))
-			return Scalar(0);
-		return this->redux(Eigen::internal::scalar_sum_op<RET_TYPE>());
-	}
-
-
 	/** Computes the laplacian of this square graph weight matrix.
 	  *  The laplacian matrix is L = D - W, with D a diagonal matrix with the degree of each node, W the
 	  */

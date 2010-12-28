@@ -164,9 +164,12 @@ namespace slam
 		  */
 		void  removeSetOfNodes(vector_uint	indexesToRemove, bool changeCoordsRef = true);
 
-		/** Returns a copy of the internal adjacency matrix.
-		  */
-		void  getAdjacencyMatrix( CMatrix &outMatrix ) const;
+		/** Returns a copy of the internal adjacency matrix.  */
+		template <class MATRIX>
+		void  getAdjacencyMatrix( MATRIX &outMatrix ) const { outMatrix = m_A; }
+
+		/** Returns a const ref to the internal adjacency matrix.  */
+		const CMatrixDouble & getAdjacencyMatrix( ) const { return m_A; }
 
 		/** Read-only access to the sequence of Sensory Frames
 		  */

@@ -146,7 +146,7 @@ void  CPosePDFGaussian::readFromStream(CStream &in,int version)
 		{
 			CMatrix		auxCov;
 			in >> mean >> auxCov;
-			cov = auxCov;
+			cov = auxCov.cast<double>();
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

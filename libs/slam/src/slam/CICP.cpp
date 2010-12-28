@@ -133,7 +133,9 @@ CICP::TConfigParams::TConfigParams() :
 	use_kernel					( true ),
 	Axy_aprox_derivatives		( 0.05f ),
 
-	LM_initial_lambda			( 1e-4f )
+	LM_initial_lambda			( 1e-4f ),
+
+	skip_cov_calculation		(false)
 {
 }
 
@@ -206,7 +208,7 @@ void  CICP::TConfigParams::dumpToTextStream(CStream	&out) const
 	out.printf("use_kernel                              = %c\n",use_kernel  ? 'Y':'N');
 	out.printf("Axy_aprox_derivatives                   = %f\n",Axy_aprox_derivatives );
 	out.printf("LM_initial_lambda                       = %f\n",LM_initial_lambda);
-
+	out.printf("skip_cov_calculation                    = %c\n",skip_cov_calculation ? 'Y':'N');
 	out.printf("\n");
 }
 
@@ -347,7 +349,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 		// -------------------------------------------------
 		//   Obtain the covariance matrix of the estimation
 		// -------------------------------------------------
-		if (nCorrespondences)
+		if (!options.skip_cov_calculation && nCorrespondences)
 		{
 #if 0
 			// ----------------------------------------------
@@ -430,16 +432,12 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			} // end for each corresp.
 
 			// COV = ( D*D^T + lamba*I )^-1
-			CMatrixDouble  DDt_(3,3);
-			DDt_.multiply_AAt(D);
-
-			CMatrixDouble33  DDt = CMatrixDouble33(DDt_);
+			CMatrixDouble33  DDt = D*D.transpose();
 
 			for (i=0;i<3;i++)
-				DDt.get_unsafe( i,i ) += 6000.0f;  // Lambda...
+				DDt.get_unsafe( i,i ) += 6000.0;  // Lambda...
 
 			DDt.inv(gaussPdf->cov);
-			//gaussPdf->cov.force_symmetry();
 #endif
 		}
 
@@ -1173,7 +1171,7 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 		// -------------------------------------------------
 		//   Obtain the covariance matrix of the estimation
 		// -------------------------------------------------
-		if (nCorrespondences)
+		if (!options.skip_cov_calculation && nCorrespondences)
 		{
 			// ...
 		}

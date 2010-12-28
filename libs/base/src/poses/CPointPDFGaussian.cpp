@@ -114,7 +114,7 @@ void  CPointPDFGaussian::readFromStream(CStream &in,int version)
 			mean = TPoint3D(m);
 
 			CMatrix c;
-			in >> c; cov = c;
+			in >> c; cov = c.cast<double>();
 		} break;
 	case 1:
 		{

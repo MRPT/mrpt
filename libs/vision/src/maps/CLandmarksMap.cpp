@@ -593,7 +593,7 @@ void  CLandmarksMap::loadSiftFeaturesFromImageObservation( const CObservationIma
 	CPoint3D								dir;	// Unitary, director vector
 	float									d = insertionOptions.SIFTsLoadDistanceOfTheMean;
 	float									width = insertionOptions.SIFTsLoadEllipsoidWidth;
-	CMatrix									P(3,3),D(3,3);
+	CMatrixDouble33							P,D;
 	CLandmark								lm;
 
 	vision::CFeatureExtraction				fExt;
@@ -630,7 +630,7 @@ void  CLandmarksMap::loadSiftFeaturesFromImageObservation( const CObservationIma
 		P = math::generateAxisBaseFromDirection( dir.x(),dir.y(),dir.z() );
 
 		// Diagonal matrix (with the "size" of the ellipsoid)
-		D(0,0) = square( 0.5f * d );
+		D(0,0) = square( 0.5 * d );
 		D(1,1) = square( width );
 		D(2,2) = square( width );
 

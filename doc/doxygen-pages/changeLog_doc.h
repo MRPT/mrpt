@@ -44,6 +44,7 @@
 		- Improvement in Kinect Linux driver (libfreenect), avoiding intensive usage of critical sections (Thanks, "Gonzales" - see: http://www.mrpt.org/node/491 )
 		- Kinect: Embedded libfreenect library updated to latest GIT revision (12/DEC/2010).
 		- mrpt::hwdrivers::CHokuyoURG now support ethernet connection (tested in HOKUYO UXM series)[JRRS].
+		- mrpt::slam::CICP has a new option: skip_cov_calculation that can save some time in some cases.
 	- Changes in examples:
 		- hokuyo_laser_test. Now it's possible to choose between USB and Ethernet connection.
         - BUG FIXES:
