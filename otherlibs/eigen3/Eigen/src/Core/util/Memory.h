@@ -597,17 +597,17 @@ public:
 
 //---------- Cache sizes ----------
 #if defined(__GNUC__) && ( defined(__i386__) || defined(__amd64__) )
-# if defined(__PIC__)
-# define EIGEN_CPUID(abcd,func,id) \
-__asm__ __volatile__ ("xchgl %%ebx, %%esi;cpuid; xchgl %%ebx,%%esi": "=a" (abcd[0]), "=S" (abcd[1]), "=c" (abcd[2]), "=d" (abcd[3]) : "a" (func), "c" (id));
+#  if defined(__PIC__)
+#    define EIGEN_CPUID(abcd,func,id) \
+        __asm__ __volatile__ ("xchgl %%ebx, %%esi;cpuid; xchgl %%ebx,%%esi": "=a" (abcd[0]), "=S" (abcd[1]), "=c" (abcd[2]), "=d" (abcd[3]) : "a" (func), "c" (id));
 # else
 # define EIGEN_CPUID(abcd,func,id) \
-__asm__ __volatile__ ("cpuid": "=a" (abcd[0]), "=b" (abcd[1]), "=c" (abcd[2]), "=d" (abcd[3]) : "a" (func), "c" (id) );
+       __asm__ __volatile__ ("cpuid": "=a" (abcd[0]), "=b" (abcd[1]), "=c" (abcd[2]), "=d" (abcd[3]) : "a" (func), "c" (id) );
 # endif
 #elif defined(_MSC_VER)
-# if (_MSC_VER > 1500) /* newer than MSVC++ 9.0 */ || (_MSC_VER == 1500 && _MSC_FULL_VER >= 150030729) /* MSVC++ 9.0 with SP1*/
-# define EIGEN_CPUID(abcd,func,id) __cpuidex((int*)abcd,func,id)
-# endif
+#  if (_MSC_VER > 1500) /* newer than MSVC++ 9.0 */ || (_MSC_VER == 1500 && _MSC_FULL_VER >= 150030729) /* MSVC++ 9.0 with SP1*/
+#    define EIGEN_CPUID(abcd,func,id) __cpuidex((int*)abcd,func,id)
+#  endif
 #endif
 
 namespace internal {

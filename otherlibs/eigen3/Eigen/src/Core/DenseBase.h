@@ -291,13 +291,13 @@ template<typename Derived> class DenseBase
     template<int Size> struct ConstFixedSegmentReturnType { typedef const VectorBlock<const Derived, Size> Type; };
     
     SegmentReturnType segment(Index start, Index size);
-    ConstSegmentReturnType segment(Index start, Index size) const;
+    typename DenseBase<Derived>::ConstSegmentReturnType segment(Index start, Index size) const;
 
     SegmentReturnType head(Index size);
-    ConstSegmentReturnType head(Index size) const;
+    typename DenseBase<Derived>::ConstSegmentReturnType head(Index size) const;
 
     SegmentReturnType tail(Index size);
-    ConstSegmentReturnType tail(Index size) const;
+    typename DenseBase<Derived>::ConstSegmentReturnType tail(Index size) const;
 
     template<int Size> typename FixedSegmentReturnType<Size>::Type head();
     template<int Size> typename ConstFixedSegmentReturnType<Size>::Type head() const;

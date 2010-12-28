@@ -35,6 +35,7 @@
    ------------------------------------ */
 #if defined(_MSC_VER)
 	#pragma warning(disable:4786) // (Compiler: Visual C++) Disable warning for too long debug names:
+	#pragma warning(disable:4503) // (Compiler: Visual C++ 2010) Disable warning for too long decorated name
 	#pragma warning(disable:4702) // (Compiler: Visual C++) Disable warning for unreachable code (I don't know why some of these errors appear in the STANDARD LIBRARY headers with Visual Studio 2003!):
 	#pragma warning(disable:4244) // (Compiler: Visual C++) Conversion double->float
 	#pragma warning(disable:4305)

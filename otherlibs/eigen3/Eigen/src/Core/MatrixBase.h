@@ -224,8 +224,8 @@ template<typename Derived> class MatrixBase
     template<int Index> typename DiagonalIndexReturnType<Index>::Type diagonal();
     template<int Index> typename ConstDiagonalIndexReturnType<Index>::Type diagonal() const;
 
-    typename DiagonalIndexReturnType<Dynamic>::Type diagonal(Index index);
-    typename ConstDiagonalIndexReturnType<Dynamic>::Type diagonal(Index index) const;
+	typename MatrixBase<Derived>::template DiagonalIndexReturnType<Dynamic>::Type diagonal(Index index);
+	typename MatrixBase<Derived>::template ConstDiagonalIndexReturnType<Dynamic>::Type diagonal(Index index) const;
 
     template<unsigned int Mode> TriangularView<Derived, Mode> part();
     template<unsigned int Mode> const TriangularView<Derived, Mode> part() const;
