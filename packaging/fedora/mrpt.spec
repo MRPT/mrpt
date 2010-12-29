@@ -1,10 +1,10 @@
 Summary: Libraries and programs for mobile robot SLAM and navigation
 Name: mrpt
-Version: 0.7.0
-Release: 0.1.20090529svn1047%{?dist}
+Version: 0.9.4
+Release: 0.1.20101229svn2363%{?dist}
 License: GPLv3+
 Group: Development/Libraries
-URL: http://babel.isa.uma.es/mrpt/
+URL: http://www.mrpt.org/
 
 # Tarballs at http://babel.isa.uma.es/mrpt/src-repo/ are the same that those
 # at SourceForge (http://downloads.sourceforge.net/mrpt/mrpt-%{version}.tar.gz) 
@@ -15,7 +15,7 @@ URL: http://babel.isa.uma.es/mrpt/
 # following commands to generate the tarball:
 #  svn export http://babel.isa.uma.es/mrpt-browse-code/mrpt-0.7.0 mrpt-0.7.0
 #  tar -czvf mrpt-0.7.0-20090529svn1047.tar.gz mrpt-0.70
-Source: http://babel.isa.uma.es/mrpt/src-repo/mrpt-0.7.0-20090529svn1047.tar.gz
+Source: http://archive.mrpt.org/fedora-packages/mrpt-0.9.4-20101229svn2363.tar.gz
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -27,6 +27,7 @@ BuildRequires: tex(latex), tex(dvips)
 BuildRequires: libdc1394-devel
 BuildRequires: libftdi-devel, libusb-devel
 BuildRequires: libjpeg-devel
+BuildRequires: libusb1-devel
 BuildRequires: desktop-file-utils
 
 %description
@@ -53,78 +54,151 @@ The MRPT is free software and is released under the GPL.
 # subset only of all the MRPT libraries. The subpackage "libs" can be used as 
 # a shortcut for all the libraries.
 
-%package ann
-Summary: Mobile Robot Programming Toolkit - Approximate Nearest Neighbor library
+%package base
+Summary: Mobile Robot Programming Toolkit - mrpt-base
 Group: Development/Libraries
-%description ann
-The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
-and open source C++ library aimed to help robotics researchers to design and
-implement algorithms in the fields of Simultaneous Localization and Mapping 
-(SLAM), computer vision, and motion planning (obstacle avoidance).
+%description base
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-base
 
-This package provides the MRPT built-in ANN (Approximate Nearest Neighbor) 
-library, by David M. Mount  and Sunil Arya.
 
-%package aria
-Summary: Mobile Robot Programming Toolkit - ActiveMedia's ARIA library
+%package opengl
+Summary: Mobile Robot Programming Toolkit - mrpt-opengl
 Group: Development/Libraries
-%description aria
-The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
-and open source C++ library aimed to help robotics researchers to design and
-implement algorithms in the fields of Simultaneous Localization and Mapping 
-(SLAM), computer vision, and motion planning (obstacle avoidance).
+Requires: %{name}-base = %{version}-%{release}
+%description opengl
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-opengl
 
-This package provides ActiveMedia's ARIA library for control of their robotic 
-mobile bases.
-
-
-%package core
-Summary: Mobile Robot Programming Toolkit - The core library
+%package bayes
+Summary: Mobile Robot Programming Toolkit - mrpt-bayes
 Group: Development/Libraries
-Requires: %{name}-ann = %{version}-%{release}
-%description core
-The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
-and open source C++ library aimed to help robotics researchers to design and
-implement algorithms in the fields of Simultaneous Localization and Mapping 
-(SLAM), computer vision, and motion planning (obstacle avoidance).
+Requires: %{name}-base = %{version}-%{release}
+%description bayes
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-bayes
 
-This package provides the mrpt-core library, which includes classes related to
-mathematic, slam, opengl, geometry, etc.
+
+%package gui
+Summary: Mobile Robot Programming Toolkit - mrpt-gui
+Group: Development/Libraries
+Requires: %{name}-opengl = %{version}-%{release}
+%description gui
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-gui
+
+
+%package obs
+Summary: Mobile Robot Programming Toolkit - mrpt-obs
+Group: Development/Libraries
+Requires: %{name}-opengl = %{version}-%{release}
+%description obs
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-obs
+
+
+%package scanmatching
+Summary: Mobile Robot Programming Toolkit - mrpt-scanmatching
+Group: Development/Libraries
+Requires: %{name}-base = %{version}-%{release}
+%description scanmatching
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-scanmatching
+
+
+%package topography
+Summary: Mobile Robot Programming Toolkit - mrpt-topography
+Group: Development/Libraries
+Requires: %{name}-scanmatching = %{version}-%{release}
+%description topography
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-topography
+
+
+%package maps
+Summary: Mobile Robot Programming Toolkit - mrpt-maps
+Group: Development/Libraries
+Requires: %{name}-obs = %{version}-%{release}
+%description maps
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-maps
+
+
+%package vision
+Summary: Mobile Robot Programming Toolkit - mrpt-vision
+Group: Development/Libraries
+Requires: %{name}-obs = %{version}-%{release}
+%description vision
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-vision
+
 
 %package hwdrivers
-Summary: Mobile Robot Programming Toolkit - Sensor interfaces library
+Summary: Mobile Robot Programming Toolkit - mrpt-hwdrivers
 Group: Development/Libraries
-Requires: %{name}-core = %{version}-%{release}
-Requires: %{name}-aria = %{version}-%{release}
+Requires: %{name}-obs = %{version}-%{release}
+Requires: %{name}-gui = %{version}-%{release}
 %description hwdrivers
-The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
-and open source C++ library aimed to help robotics researchers to design and
-implement algorithms in the fields of Simultaneous Localization and Mapping 
-(SLAM), computer vision, and motion planning (obstacle avoidance).
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-hwdrivers
 
-This package provides the mrpt-hwdrivers library, including classes for serial
-ports, FTDI USB chips, SICK and HOKUYO laser scanners, etc.
+
+%package slam
+Summary: Mobile Robot Programming Toolkit - mrpt-slam
+Group: Development/Libraries
+Requires: %{name}-bayes = %{version}-%{release}
+Requires: %{name}-scanmatching = %{version}-%{release}
+Requires: %{name}-maps = %{version}-%{release}
+Requires: %{name}-vision = %{version}-%{release}
+%description slam
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-slam
+
+
 
 %package reactivenav
-Summary: Mobile Robot Programming Toolkit - Reactive Navigation library
+Summary: Mobile Robot Programming Toolkit - mrpt-reactivenav
 Group: Development/Libraries
-Requires: %{name}-core = %{version}-%{release}
+Requires: %{name}-maps = %{version}-%{release}
 %description reactivenav
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-reactivenav
+
+
+%package detectors
+Summary: Mobile Robot Programming Toolkit - mrpt-detectors
+Group: Development/Libraries
+Requires: %{name}-maps = %{version}-%{release}
+Requires: %{name}-gui = %{version}-%{release}
+Requires: %{name}-vision = %{version}-%{release}
+%description detectors
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-detectors
+
+
+%package hmtslam
+Summary: Mobile Robot Programming Toolkit - mrpt-hmtslam
+Group: Development/Libraries
+Requires: %{name}-slam = %{version}-%{release}
+%description hmtslam
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-hmtslam
+
+
+%package libs
+Summary: Mobile Robot Programming Toolkit - All the libraries
+Group: Development/Libraries
+Requires: %{name}-detectors = %{version}-%{release}
+Requires: %{name}-reactivenav = %{version}-%{release}
+Requires: %{name}-hmtslam = %{version}-%{release}
+Requires: %{name}-slam = %{version}-%{release}
+Requires: %{name}-topography = %{version}-%{release}
+Requires: %{name}-gui = %{version}-%{release}
+Requires: %{name}-obs = %{version}-%{release}
+Requires: %{name}-maps = %{version}-%{release}
+Requires: %{name}-opengl = %{version}-%{release}
+Requires: %{name}-base = %{version}-%{release}
+Requires: %{name}-bayes = %{version}-%{release}
+%description libs
 The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
 and open source C++ library aimed to help robotics researchers to design and
 implement algorithms in the fields of Simultaneous Localization and Mapping 
 (SLAM), computer vision, and motion planning (obstacle avoidance).
 
-This package provides the mrpt-reactivenav library, with implementation of 
-reactive navigation algorithms (VFF, ND, PTG-based space transformations).
+This virtual package depends on all MRPT libraries.
+
 
 
 %package apps
 Summary: Mobile Robot Programming Toolkit - Console and GUI applications
 Group: Applications/Engineering
-Requires: %{name}-core = %{version}-%{release}
-Requires: %{name}-reactivenav = %{version}-%{release}
-Requires: %{name}-hwdrivers = %{version}-%{release}
+Requires: %{name}-libs = %{version}-%{release}
 %description apps
 The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
 and open source C++ library aimed to help robotics researchers to design and
@@ -136,27 +210,12 @@ datasets, particle filtering localization and SLAM, grabbing data from
 robotic sensors, etc.
 
 
-%package libs
-Summary: Mobile Robot Programming Toolkit - All the libraries
-Group: Development/Libraries
-Requires: %{name}-core = %{version}-%{release}
-Requires: %{name}-reactivenav = %{version}-%{release}
-Requires: %{name}-hwdrivers = %{version}-%{release}
-%description libs
-The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
-and open source C++ library aimed to help robotics researchers to design and
-implement algorithms in the fields of Simultaneous Localization and Mapping 
-(SLAM), computer vision, and motion planning (obstacle avoidance).
-
-This virtual package depends on all MRPT libraries.
-
 
 %package devel
 Summary: Mobile Robot Programming Toolkit - Development package
 Group: Development/Libraries
 Requires: %{name}-libs = %{version}-%{release}
-# wxGTK-devel is needed due to headers dependencies.
-Requires: wxGTK-devel, pkgconfig
+Requires: pkgconfig
 %description devel
 The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
 and open source C++ library aimed to help robotics researchers to design and
@@ -183,10 +242,10 @@ with Doxygen.
 %prep
 %setup -q
 # Fix encoding of the mrpt-book file
-gzip -d doc/mrpt-book.ps.gz
-iconv -f ISO8859-1 -t UTF-8 doc/mrpt-book.ps > mrpt-book.ps.conv
-mv -f mrpt-book.ps.conv doc/mrpt-book.ps
-gzip doc/mrpt-book.ps
+#gzip -d doc/mrpt-book.ps.gz
+#iconv -f ISO8859-1 -t UTF-8 doc/mrpt-book.ps > mrpt-book.ps.conv
+#mv -f mrpt-book.ps.conv doc/mrpt-book.ps
+#gzip doc/mrpt-book.ps
 
 
 %build
@@ -209,24 +268,54 @@ find ${RPM_BUILD_ROOT}%{_datadir}/applications/ -name "*.desktop" | xargs -I FIL
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files ann
+%files base
 %defattr(-,root,root,-)
 %doc README COPYING
-%{_libdir}/libmrpt-ann.so.*
-
-%files aria
-%defattr(-,root,root,-)
-%doc README COPYING
-%{_libdir}/libmrpt-aria.so.*
-
-%files core
-%defattr(-,root,root,-)
-%doc README COPYING
-%{_libdir}/libmrpt-core.so.*
+%{_libdir}/libmrpt-base.so.*
 # This directory is empty here but contains files in other sub-packages 
-#  depending on mrpt-core:
+#  depending on mrpt-base:
 %dir %{_datadir}/mrpt
 %{_datadir}/mime/packages/*.xml
+
+%files opengl
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_libdir}/libmrpt-opengl.so.*
+
+%files scanmatching
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_libdir}/libmrpt-scanmatching.so.*
+
+%files bayes
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_libdir}/libmrpt-bayes.so.*
+
+%files obs
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_libdir}/libmrpt-obs.so.*
+
+%files gui
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_libdir}/libmrpt-gui.so.*
+
+%files topography
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_libdir}/libmrpt-topography.so.*
+
+%files maps
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_libdir}/libmrpt-maps.so.*
+
+%files vision
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_libdir}/libmrpt-vision.so.*
 
 %files hwdrivers
 %defattr(-,root,root,-)
@@ -238,6 +327,21 @@ rm -rf $RPM_BUILD_ROOT
 %doc README COPYING
 %{_libdir}/libmrpt-reactivenav.so.*
 
+%files detectors
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_libdir}/libmrpt-detectors.so.*
+
+%files slam
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_libdir}/libmrpt-slam.so.*
+
+%files hmtslam
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_libdir}/libmrpt-hmtslam.so.*
+
 
 %files apps
 %defattr(-,root,root,-)
@@ -247,7 +351,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/pixmaps/*.ico
 %{_datadir}/pixmaps/*.xpm
 %{_datadir}/mime/packages/*.xml
-# %{_datadir}/mrpt is owned by mrpt-core:
+# %{_datadir}/mrpt is owned by mrpt-base:
 %{_datadir}/mrpt/config_files/
 %{_datadir}/mrpt/datasets/
 %{_mandir}/man1/*
@@ -258,7 +362,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc README COPYING
 %{_libdir}/*.so
 %{_includedir}/mrpt
-%{_libdir}/pkgconfig/libmrpt.pc
+%{_libdir}/pkgconfig/*.pc
 # %{_datadir}/mrpt is owned by mrpt-core:
 %{_datadir}/mrpt/MRPTConfig.cmake
 
@@ -276,11 +380,26 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %ifos linux
-%post ann -p /sbin/ldconfig
-%postun ann -p /sbin/ldconfig
+%post opengl -p /sbin/ldconfig
+%postun opengl -p /sbin/ldconfig
 
-%post aria -p /sbin/ldconfig
-%postun aria -p /sbin/ldconfig
+%post gui -p /sbin/ldconfig
+%postun gui -p /sbin/ldconfig
+
+%post obs -p /sbin/ldconfig
+%postun obs -p /sbin/ldconfig
+
+%post scanmatching -p /sbin/ldconfig
+%postun scanmatching -p /sbin/ldconfig
+
+%post topography -p /sbin/ldconfig
+%postun topography -p /sbin/ldconfig
+
+%post maps -p /sbin/ldconfig
+%postun maps -p /sbin/ldconfig
+
+%post vision -p /sbin/ldconfig
+%postun vision -p /sbin/ldconfig
 
 %post hwdrivers -p /sbin/ldconfig
 %postun hwdrivers -p /sbin/ldconfig
@@ -288,17 +407,26 @@ rm -rf $RPM_BUILD_ROOT
 %post reactivenav -p /sbin/ldconfig
 %postun reactivenav -p /sbin/ldconfig
 
+%post detectors -p /sbin/ldconfig
+%postun detectors -p /sbin/ldconfig
+
+%post slam -p /sbin/ldconfig
+%postun slam -p /sbin/ldconfig
+
+%post hmtslam -p /sbin/ldconfig
+%postun hmtslam -p /sbin/ldconfig
+
 %post apps
 update-desktop-database &> /dev/null || :
 
 %postun apps
 update-desktop-database &> /dev/null || :
 
-%post core
+%post base
 /sbin/ldconfig
 update-mime-database %{_datadir}/mime &> /dev/null || :
 
-%postun core
+%postun base
 /sbin/ldconfig
 update-mime-database %{_datadir}/mime &> /dev/null || :
 
@@ -306,6 +434,46 @@ update-mime-database %{_datadir}/mime &> /dev/null || :
 
 
 %changelog
+* Sat Dec 29 2010 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.9.4-0.1.20101229svn2363
+- Packaging of new upstream version 0.9.4 (svn snapshot)
+
+* Sat Dec 25 2010 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.9.4-0.1.20101225svn2354
+- Packaging of new upstream version 0.9.4 (svn snapshot)
+
+* Wed Jul 14 2010 Dan Horák <dan@danny.cz> - 0.9.0-0.5
+- rebuilt against wxGTK-2.8.11-2
+
+* Sun Jul 4 2010 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.9.0-0.4
+- Rebuild needed by new opencv.
+
+* Sun Jun 6 2010 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.9.0-0.3
+- Changed source tarball name numbering.
+
+* Sat Jun 5 2010 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.9.0-0.2
+- Fixed build against OpenCV.
+
+* Fri Jun 4 2010 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.9.0-0.1
+- Packaging of new upstream version 0.9.0.
+
+* Sat Mar  6 2010 - Thomas Spura <tomspur@fedoraproject.org> 0.8.0-0.3.20100102svn1398
+- rebuild as requested in
+  http://lists.fedoraproject.org/pipermail/devel/2010-March/132519.html
+
+* Fri Jan 22 2010 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.8.0-0.2.20100102svn1398
+- Fixed dependencies in spec file.
+
+* Thu Jan 21 2010 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.8.0-0.1.20100102svn1398
+- Packaging of new upstream version 0.8.0.
+
+* Mon Aug 18 2009 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.7.1-0.1.20090818svn1148
+- Packaging of new upstream version 0.7.1, patched.
+
+* Mon Aug 17 2009 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.7.1-0.1.20090817svn1147
+- Packaging of new upstream version 0.7.1.
+
+* Sat Jul 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.7.0-0.2.20090529svn1047
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
+
 * Tue Jul 14 2009 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.7.0-0.1.20090529svn1047
 - Packaging of new upstream version 0.7.0.
 
