@@ -26,51 +26,41 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_math_H
-#define _mrpt_math_H
+#include <mrpt/base.h>  // Precompiled headers
 
-#include <mrpt/math/distributions.h>
-#include <mrpt/math/transform_gaussian.h>
-#include <mrpt/math/fourier.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/math/ops_vectors.h>
-#include <mrpt/math/ops_matrices.h>
-#include <mrpt/math/ops_containers.h>
-
-#include <mrpt/math/CLevenbergMarquardt.h>
-#include <mrpt/math/CQuaternion.h>
-#include <mrpt/math/CQuaternion.h>
-#include <mrpt/math/ransac.h>
-#include <mrpt/math/ransac_applications.h>
-#include <mrpt/math/dijkstra.h>
-
-#include <mrpt/math/CHistogram.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/CMatrixB.h>
-#include <mrpt/math/CMatrixTemplateObjects.h>
-#include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/math/CArray.h>
-
-#include <mrpt/math/graphs.h>
-#include <mrpt/math/CGraphPartitioner.h>
-#include <mrpt/math/CPolygon.h>
-#include <mrpt/math/geometry.h>
-
-#include <mrpt/math/CSplineInterpolator1D.h>
-
-#include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/math/CSparseMatrixTemplate.h>
-#include <mrpt/math/CSparseMatrix.h>
-
-#include <mrpt/math/CAStarAlgorithm.h>
-#include <mrpt/math/CBinaryRelation.h>
-#include <mrpt/math/CMonteCarlo.h>
-#include <mrpt/math/jacobians.h>
-
-#include <mrpt/math/KDTreeCapable.h>
-#include <mrpt/math/kmeans.h>
-#include <mrpt/math/slerp.h>
 #include <mrpt/math/model_search.h>
 
-#endif
+using namespace mrpt;
+using namespace mrpt::math;
+
+//----------------------------------------------------------------------
+//! Select random (unique) indices from the 0..p_size sequence
+void ModelSearch::pickRandomIndex( size_t p_size, size_t p_pick, vector_size_t& p_ind )
+{
+	ASSERT_( p_size >= p_pick );
+
+	vector_size_t a( p_size );
+	for( size_t i = 0; i < p_size; i++ )
+		a[i] = i;
+
+	std::random_shuffle( a.begin(), a.end() );
+	p_ind.resize( p_pick );
+	for( size_t i = 0 ; i < p_pick; i++ )
+		p_ind[i] = a[i];
+}
+
+//----------------------------------------------------------------------
+//! Select random (unique) indices from the set.
+//! The set is destroyed during pick
+void ModelSearch::pickRandomIndex( std::set<size_t> p_set, size_t p_pick, vector_size_t& p_ind )
+{
+	p_ind.resize( p_pick );
+	vector_size_t inds( p_set.begin(), p_set.end() );
+
+	std::random_shuffle( inds.begin(), inds.end() );
+	p_ind.resize( p_pick );
+	for( size_t i = 0 ; i < p_pick; i++ )
+		p_ind[i] = inds[i];
+}
+

@@ -35,6 +35,8 @@
   <h2>Version 0.9.4 - (Version 1.0.0-Release_Candidate_2): UNDER DEVELOPMENT </h2></a>
 	- Changes in applications:
 		- <a href="http://www.mrpt.org/Application:rawlog-grabber" >rawlog-grabber</a>: Added "hokuyo_UXM.ini" to support HOKUYO UXM laser series.
+	- New classes:
+		- mrpt::math::ModelSearch: A RANSAC + Genetic model fitter (by Zoltan Gaal)
 	- Build system:
 		- Linux/Mac: Don't enable BUILD_KINECT by default if libusb1-dev is not present. 
 		- Fixed compiling with MSVC 2005 (Patch by Z.P.Gaal)

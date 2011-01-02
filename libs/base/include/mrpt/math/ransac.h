@@ -32,13 +32,14 @@
 #include <mrpt/math/CMatrixD.h>
 #include <set>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 	namespace math
 	{
+		/** A generic RANSAC implementation with models as matrices.
+		  *  See \a RANSAC_Template::execute for more info on usage.
+		  *  \sa mrpt::math::ModelSearch, a more versatile RANSAC implementation where models can be anything else, not only matrices.
+		  */
 		template <typename NUMTYPE = double>
 		class BASE_IMPEXP RANSAC_Template : public mrpt::utils::CDebugOutputCapable
 		{

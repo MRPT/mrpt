@@ -111,6 +111,7 @@ IF(BUILD_EXAMPLES)
 		icp3D
 		ransac-demo-plane3D
 		ransac-demo-applications
+		model_search_test
 		createVideoFile
 		polyhedronIntersection
 		observer_pattern
