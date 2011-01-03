@@ -3,7 +3,7 @@
    |                                                                           |
    |                   http://mrpt.sourceforge.net/                            |
    |                                                                           |
-   |   Copyright (C) 2005-2010  University of Malaga                           |
+   |   Copyright (C) 2005-2011  University of Malaga                           |
    |                                                                           |
    |    This software was written by the Machine Perception and Intelligent    |
    |      Robotics Lab, University of Malaga (Spain).                          |
@@ -266,7 +266,7 @@ void TestParticlesLocalization()
 			COpenGLScenePtr scene = COpenGLScene::Create();
 
 	#ifdef	SHOW_REAL_TIME_3D
-			CDisplayWindow3D		window("ro-localization - MRPT (C) 2005-2010");
+			CDisplayWindow3D		window("ro-localization - MRPT (C) 2005-2011");
 			window.setPos(50,50);
 			window.resize(800,500);
 			window.setCameraElevationDeg( 90 );

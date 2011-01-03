@@ -3,7 +3,7 @@
    |                                                                           |
    |                   http://mrpt.sourceforge.net/                            |
    |                                                                           |
-   |   Copyright (C) 2005-2010  University of Malaga                           |
+   |   Copyright (C) 2005-2011  University of Malaga                           |
    |                                                                           |
    |    This software was written by the Machine Perception and Intelligent    |
    |      Robotics Lab, University of Malaga (Spain).                          |
@@ -66,7 +66,7 @@ void TMatchingPairList::saveAsMATLABScript( const std::string &filName )
 	fprintf(f,"%%   saveAsMATLABScript  \n");
 	fprintf(f,"%%  Before calling this script, define the color of lines, eg:\n");
 	fprintf(f,"%%     colorLines=[1 1 1]");
-	fprintf(f,"%%               J.L. Blanco (C) 2005-2010 \n");
+	fprintf(f,"%%               J.L. Blanco (C) 2005-2011 \n");
 	fprintf(f,"%% ----------------------------------------------------\n\n");
 
 	fprintf(f,"axis equal; hold on;\n");
