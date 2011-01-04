@@ -323,7 +323,7 @@ class Matrix
       * of same type it is enough to swap the data pointers.
       */
     template<typename OtherDerived>
-    void swap(MatrixBase<OtherDerived> EIGEN_REF_TO_TEMPORARY other)
+    void swap(MatrixBase<OtherDerived> const & other)
     { this->_swap(other.derived()); }
 
     inline Index innerStride() const { return 1; }

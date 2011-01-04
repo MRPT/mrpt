@@ -57,6 +57,7 @@ public:
                         ? Dynamic
                         : Index(AmbientDimAtCompileTime)+1,1> Coefficients;
   typedef Block<Coefficients,AmbientDimAtCompileTime,1> NormalReturnType;
+  typedef const Block<const Coefficients,AmbientDimAtCompileTime,1> ConstNormalReturnType;
 
   /** Default constructor without initialization */
   inline explicit Hyperplane() {}
@@ -148,7 +149,7 @@ public:
   /** \returns a constant reference to the unit normal vector of the plane, which corresponds
     * to the linear part of the implicit equation.
     */
-  inline const NormalReturnType normal() const { return NormalReturnType(m_coeffs,0,0,dim(),1); }
+  inline ConstNormalReturnType normal() const { return ConstNormalReturnType(m_coeffs,0,0,dim(),1); }
 
   /** \returns a non-constant reference to the unit normal vector of the plane, which corresponds
     * to the linear part of the implicit equation.

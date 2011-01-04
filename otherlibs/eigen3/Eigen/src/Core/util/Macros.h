@@ -109,19 +109,6 @@
 
 #define EIGEN_DEBUG_VAR(x) std::cerr << #x << " = " << x << std::endl;
 
-#ifdef EIGEN_PARSED_BY_DOXYGEN
-  /** \def EIGEN_NO_DEBUG
-    * \ingroup Core_Module 
-    * \brief If defined, Eigen's assertions are disabled.
-    * \details Disabling run-time assertions improves the performance, but it is dangerous because the
-    * assertions guard against programming errors. By default, the EIGEN_NO_DEBUG macro is not defined and
-    * Eigen's run-time assertions are thus enabled. However, if the NDEBUG macro is defined (this is a
-    * standard C++ macro which disables all asserts), then the EIGEN_NO_DEBUG macro will also be defined, and
-    * so Eigen's assertions will also be disabled.
-    */
-  #define EIGEN_NO_DEBUG
-#endif
-
 #ifdef NDEBUG
 # ifndef EIGEN_NO_DEBUG
 #  define EIGEN_NO_DEBUG
@@ -262,13 +249,6 @@
 // format used in Eigen's documentation
 // needed to define it here as escaping characters in CMake add_definition's argument seems very problematic.
 #define EIGEN_DOCS_IO_FORMAT IOFormat(3, 0, " ", "\n", "", "")
-
-// C++0x features
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (defined(_MSC_VER) && (_MSC_VER >= 1600))
-  #define EIGEN_REF_TO_TEMPORARY const &
-#else
-  #define EIGEN_REF_TO_TEMPORARY const &
-#endif
 
 #if defined(_MSC_VER) && (!defined(__INTEL_COMPILER))
 #define EIGEN_INHERIT_ASSIGNMENT_EQUAL_OPERATOR(Derived) \

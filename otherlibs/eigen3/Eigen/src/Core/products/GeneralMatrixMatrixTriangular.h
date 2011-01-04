@@ -218,7 +218,7 @@ TriangularView<MatrixType,UpLo>& TriangularView<MatrixType,UpLo>::assignProduct(
     typename Rhs::Scalar, _ActualRhs::Flags&RowMajorBit ? RowMajor : ColMajor, RhsBlasTraits::NeedToConjugate,
     MatrixType::Flags&RowMajorBit ? RowMajor : ColMajor, UpLo>
     ::run(m_matrix.cols(), actualLhs.cols(),
-          &actualLhs.coeff(0,0), actualLhs.outerStride(), &actualRhs.coeff(0,0), actualRhs.outerStride(),
+          &actualLhs.coeffRef(0,0), actualLhs.outerStride(), &actualRhs.coeffRef(0,0), actualRhs.outerStride(),
           const_cast<Scalar*>(m_matrix.data()), m_matrix.outerStride(), actualAlpha);
   
   return *this;

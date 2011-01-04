@@ -27,22 +27,40 @@
 #define EIGEN_FORWARDDECLARATIONS_H
 
 namespace internal {
+
 template<typename T> struct traits;
+
+// here we say once and for all that traits<const T> == traits<T>
+// When constness must affect traits, it has to be constness on template parameters on which T itself depends.
+// For example, traits<Map<const T> > != traits<Map<T> >, but
+//              traits<const Map<T> > == traits<Map<T> >
+template<typename T> struct traits<const T> : traits<T> {};
 
 template<typename Derived> struct has_direct_access
 {
   enum { ret = (traits<Derived>::Flags & DirectAccessBit) ? 1 : 0 };
 };
+
+template<typename Derived> struct accessors_level
+{
+  enum { has_direct_access = (traits<Derived>::Flags & DirectAccessBit) ? 1 : 0,
+         has_write_access = (traits<Derived>::Flags & LvalueBit) ? 1 : 0,
+         value = has_direct_access ? (has_write_access ? DirectWriteAccessors : DirectAccessors)
+                                   : (has_write_access ? WriteAccessors       : ReadOnlyAccessors)
+  };
+};
+
 } // end namespace internal
 
 template<typename T> struct NumTraits;
 
 template<typename Derived> struct EigenBase;
 template<typename Derived> class DenseBase;
+template<typename Derived> class PlainObjectBase;
+
+
 template<typename Derived,
-         AccessorLevels Level = (internal::traits<Derived>::Flags & DirectAccessBit) ? DirectAccessors
-                              : (internal::traits<Derived>::Flags & LvalueBit) ? WriteAccessors
-                              : ReadOnlyAccessors>
+         int Level = internal::accessors_level<Derived>::value >
 class DenseCoeffsBase;
 
 template<typename _Scalar, int _Rows, int _Cols,
@@ -82,10 +100,13 @@ template<typename Derived> class DiagonalBase;
 template<typename _DiagonalVectorType> class DiagonalWrapper;
 template<typename _Scalar, int SizeAtCompileTime, int MaxSizeAtCompileTime=SizeAtCompileTime> class DiagonalMatrix;
 template<typename MatrixType, typename DiagonalType, int ProductOrder> class DiagonalProduct;
-template<typename MatrixType, int Index> class Diagonal;
+template<typename MatrixType, int Index = 0> class Diagonal;
 template<int SizeAtCompileTime, int MaxSizeAtCompileTime = SizeAtCompileTime> class PermutationMatrix;
 template<int SizeAtCompileTime, int MaxSizeAtCompileTime = SizeAtCompileTime> class Transpositions;
 
+template<typename Derived,
+         int Level = internal::accessors_level<Derived>::has_write_access ? WriteAccessors : ReadOnlyAccessors
+> class MapBase;
 template<int InnerStrideAtCompileTime, int OuterStrideAtCompileTime> class Stride;
 template<typename MatrixType, int MapOptions=Unaligned, typename StrideType = Stride<0,0> > class Map;
 
@@ -107,7 +128,9 @@ template<typename DecompositionType> struct image_retval_base;
 template<typename DecompositionType> struct image_retval;
 } // end namespace internal
 
+namespace internal {
 template<typename _Scalar, int Rows=Dynamic, int Cols=Dynamic, int Supers=Dynamic, int Subs=Dynamic, int Options=0> class BandMatrix;
+}
 
 namespace internal {
 template<typename Lhs, typename Rhs> struct product_type;

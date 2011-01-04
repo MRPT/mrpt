@@ -83,15 +83,20 @@ SelfAdjointView<MatrixType,UpLo>& SelfAdjointView<MatrixType,UpLo>
   typedef typename internal::remove_all<ActualVType>::type _ActualVType;
   const ActualVType actualV = VBlasTraits::extract(v.derived());
 
-  Scalar actualAlpha = alpha * UBlasTraits::extractScalarFactor(u.derived())
-                             * internal::conj(VBlasTraits::extractScalarFactor(v.derived()));
+  // If MatrixType is row major, then we use the routine for lower triangular in the upper triangular case and
+  // vice versa, and take the complex conjugate of all coefficients and vector entries.
 
   enum { IsRowMajor = (internal::traits<MatrixType>::Flags&RowMajorBit) ? 1 : 0 };
+  Scalar actualAlpha = alpha * UBlasTraits::extractScalarFactor(u.derived())
+                             * internal::conj(VBlasTraits::extractScalarFactor(v.derived()));
+  if (IsRowMajor)
+    actualAlpha = internal::conj(actualAlpha);
+
   internal::selfadjoint_rank2_update_selector<Scalar, Index,
     typename internal::remove_all<typename internal::conj_expr_if<IsRowMajor ^ UBlasTraits::NeedToConjugate,_ActualUType>::type>::type,
     typename internal::remove_all<typename internal::conj_expr_if<IsRowMajor ^ VBlasTraits::NeedToConjugate,_ActualVType>::type>::type,
     (IsRowMajor ? int(UpLo==Upper ? Lower : Upper) : UpLo)>
-    ::run(const_cast<Scalar*>(_expression().data()),_expression().outerStride(),actualU,actualV,actualAlpha);
+    ::run(_expression().const_cast_derived().data(),_expression().outerStride(),actualU,actualV,actualAlpha);
 
   return *this;
 }

@@ -483,13 +483,10 @@ struct solve_retval<ColPivHouseholderQR<_MatrixType>, Rhs>
     typename Rhs::PlainObject c(rhs());
 
     // Note that the matrix Q = H_0^* H_1^*... so its inverse is Q^* = (H_0 H_1 ...)^T
-    c.applyOnTheLeft(householderSequence(
-      dec().matrixQR(),
-      dec().hCoeffs(),
-      true,
-      dec().nonzeroPivots(),
-      0
-    ));
+    c.applyOnTheLeft(householderSequence(dec().matrixQR(), dec().hCoeffs())
+                     .setTrans(true)
+                     .setLength(dec().nonzeroPivots())
+      );
 
     dec().matrixQR()
        .topLeftCorner(nonzero_pivots, nonzero_pivots)
@@ -517,7 +514,7 @@ typename ColPivHouseholderQR<MatrixType>::HouseholderSequenceType ColPivHousehol
   ::householderQ() const
 {
   eigen_assert(m_isInitialized && "ColPivHouseholderQR is not initialized.");
-  return HouseholderSequenceType(m_qr, m_hCoeffs.conjugate(), false, m_nonzero_pivots, 0);
+  return HouseholderSequenceType(m_qr, m_hCoeffs.conjugate()).setLength(m_nonzero_pivots);
 }
 
 /** \return the column-pivoting Householder QR decomposition of \c *this.

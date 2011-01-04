@@ -596,14 +596,15 @@ public:
 };
 
 //---------- Cache sizes ----------
-#if defined(__GNUC__) && ( defined(__i386__) || defined(__amd64__) )
+
+#if defined(__GNUC__) && ( defined(__i386__) || defined(__x86_64__) )
 #  if defined(__PIC__)
 #    define EIGEN_CPUID(abcd,func,id) \
-        __asm__ __volatile__ ("xchgl %%ebx, %%esi;cpuid; xchgl %%ebx,%%esi": "=a" (abcd[0]), "=S" (abcd[1]), "=c" (abcd[2]), "=d" (abcd[3]) : "a" (func), "c" (id));
-# else
-# define EIGEN_CPUID(abcd,func,id) \
+       __asm__ __volatile__ ("xchgl %%ebx, %%esi;cpuid; xchgl %%ebx,%%esi": "=a" (abcd[0]), "=S" (abcd[1]), "=c" (abcd[2]), "=d" (abcd[3]) : "a" (func), "c" (id));
+#  else
+#    define EIGEN_CPUID(abcd,func,id) \
        __asm__ __volatile__ ("cpuid": "=a" (abcd[0]), "=b" (abcd[1]), "=c" (abcd[2]), "=d" (abcd[3]) : "a" (func), "c" (id) );
-# endif
+#  endif
 #elif defined(_MSC_VER)
 #  if (_MSC_VER > 1500) /* newer than MSVC++ 9.0 */ || (_MSC_VER == 1500 && _MSC_FULL_VER >= 150030729) /* MSVC++ 9.0 with SP1*/
 #    define EIGEN_CPUID(abcd,func,id) __cpuidex((int*)abcd,func,id)
@@ -781,8 +782,6 @@ inline void queryCacheSizes(int& l1, int& l2, int& l3)
 //   ||cpuid_is_vendor(abcd,"SiS SiS SiS ")
 //   ||cpuid_is_vendor(abcd,"UMC UMC UMC ")
 //   ||cpuid_is_vendor(abcd,"NexGenDriven")
-//   ||cpuid_is_vendor(abcd,"CentaurHauls")
-//   ||cpuid_is_vendor(abcd,"CentaurHauls")
   #else
   l1 = l2 = l3 = -1;
   #endif

@@ -142,20 +142,41 @@ class ProductBase : public MatrixBase<Derived>
     const Diagonal<FullyLazyCoeffBaseProductType,Dynamic> diagonal(Index index) const
     { return FullyLazyCoeffBaseProductType(m_lhs, m_rhs).diagonal(index); }
 
+    // restrict coeff accessors to 1x1 expressions. No need to care about mutators here since this isnt a Lvalue expression
+    typename Base::CoeffReturnType coeff(Index row, Index col) const
+    {
+      EIGEN_STATIC_ASSERT_SIZE_1x1(Derived)
+      eigen_assert(this->rows() == 1 && this->cols() == 1);
+      return derived().coeff(row,col);
+    }
+
+    typename Base::CoeffReturnType coeff(Index i) const
+    {
+      EIGEN_STATIC_ASSERT_SIZE_1x1(Derived)
+      eigen_assert(this->rows() == 1 && this->cols() == 1);
+      return derived().coeff(i);
+    }
+
+    const Scalar& coeffRef(Index row, Index col) const
+    {
+      EIGEN_STATIC_ASSERT_SIZE_1x1(Derived)
+      eigen_assert(this->rows() == 1 && this->cols() == 1);
+      return derived().coeffRef(row,col);
+    }
+
+    const Scalar& coeffRef(Index i) const
+    {
+      EIGEN_STATIC_ASSERT_SIZE_1x1(Derived)
+      eigen_assert(this->rows() == 1 && this->cols() == 1);
+      return derived().coeffRef(i);
+    }
+
   protected:
 
     const LhsNested m_lhs;
     const RhsNested m_rhs;
 
     mutable PlainObject m_result;
-
-  private:
-
-    // discard coeff methods
-    void coeff(Index,Index) const;
-    void coeffRef(Index,Index);
-    void coeff(Index) const;
-    void coeffRef(Index);
 };
 
 // here we need to overload the nested rule for products

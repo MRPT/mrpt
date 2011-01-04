@@ -74,6 +74,7 @@ class DynamicSparseMatrix
     // EIGEN_SPARSE_INHERIT_ASSIGNMENT_OPERATOR(DynamicSparseMatrix, -=)
     typedef MappedSparseMatrix<Scalar,Flags> Map;
     using Base::IsRowMajor;
+    using Base::operator=;
     enum {
       Options = _Options
     };
@@ -282,6 +283,12 @@ class DynamicSparseMatrix
     inline DynamicSparseMatrix& operator=(const SparseMatrixBase<OtherDerived>& other)
     {
       return SparseMatrixBase<DynamicSparseMatrix>::operator=(other.derived());
+    }
+    
+    template<typename OtherDerived>
+    EIGEN_STRONG_INLINE DynamicSparseMatrix& operator=(const ReturnByValue<OtherDerived>& func)
+    {
+      return Base::operator=(func);
     }
 
     /** Destructor */

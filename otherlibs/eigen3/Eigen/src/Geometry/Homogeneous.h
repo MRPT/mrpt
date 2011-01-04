@@ -113,23 +113,11 @@ template<typename MatrixType,int _Direction> class Homogeneous
     }
 
     template<typename Scalar, int Dim, int Mode> friend
-    inline const internal::homogeneous_left_product_impl<Homogeneous,
-      typename Transform<Scalar,Dim,Mode>::AffinePartNested>
-    operator* (const Transform<Scalar,Dim,Mode>& tr, const Homogeneous& rhs)
+    inline const internal::homogeneous_left_product_impl<Homogeneous,Transform<Scalar,Dim,Mode> >
+    operator* (const Transform<Scalar,Dim,Mode>& lhs, const Homogeneous& rhs)
     {
       eigen_assert(int(Direction)==Vertical);
-      return internal::homogeneous_left_product_impl<Homogeneous,typename Transform<Scalar,Dim,Mode>::AffinePartNested >
-        (tr.affine(),rhs.m_matrix);
-    }
-
-    template<typename Scalar, int Dim> friend
-    inline const internal::homogeneous_left_product_impl<Homogeneous,
-      typename Transform<Scalar,Dim,Projective>::MatrixType>
-    operator* (const Transform<Scalar,Dim,Projective>& tr, const Homogeneous& rhs)
-    {
-      eigen_assert(int(Direction)==Vertical);
-      return internal::homogeneous_left_product_impl<Homogeneous,typename Transform<Scalar,Dim,Projective>::MatrixType>
-        (tr.matrix(),rhs.m_matrix);
+      return internal::homogeneous_left_product_impl<Homogeneous,Transform<Scalar,Dim,Mode> >(lhs,rhs.m_matrix);
     }
 
   protected:
@@ -179,11 +167,11 @@ VectorwiseOp<ExpressionType,Direction>::homogeneous() const
   *
   * \sa VectorwiseOp::hnormalized() */
 template<typename Derived>
-inline typename MatrixBase<Derived>::HNormalizedReturnType
+inline const typename MatrixBase<Derived>::HNormalizedReturnType
 MatrixBase<Derived>::hnormalized() const
 {
   EIGEN_STATIC_ASSERT_VECTOR_ONLY(Derived);
-  return StartMinusOne(derived(),0,0,
+  return ConstStartMinusOne(derived(),0,0,
     ColsAtCompileTime==1?size()-1:1,
     ColsAtCompileTime==1?1:size()-1) / coeff(size()-1);
 }
@@ -197,7 +185,7 @@ MatrixBase<Derived>::hnormalized() const
   *
   * \sa MatrixBase::hnormalized() */
 template<typename ExpressionType, int Direction>
-inline typename VectorwiseOp<ExpressionType,Direction>::HNormalizedReturnType
+inline const typename VectorwiseOp<ExpressionType,Direction>::HNormalizedReturnType
 VectorwiseOp<ExpressionType,Direction>::hnormalized() const
 {
   return HNormalized_Block(_expression(),0,0,
@@ -217,15 +205,39 @@ VectorwiseOp<ExpressionType,Direction>::hnormalized() const
 
 namespace internal {
 
+template<typename MatrixOrTransformType>
+struct take_matrix_for_product
+{
+  typedef MatrixOrTransformType type;
+  static const type& run(const type &x) { return x; }
+};
+
+template<typename Scalar, int Dim, int Mode>
+struct take_matrix_for_product<Transform<Scalar, Dim, Mode> >
+{
+  typedef Transform<Scalar, Dim, Mode> TransformType;
+  typedef typename TransformType::ConstAffinePart type;
+  static const type run (const TransformType& x) { return x.affine(); }
+};
+
+template<typename Scalar, int Dim>
+struct take_matrix_for_product<Transform<Scalar, Dim, Projective> >
+{
+  typedef Transform<Scalar, Dim, Projective> TransformType;
+  typedef typename TransformType::MatrixType type;
+  static const type& run (const TransformType& x) { return x.matrix(); }
+};
+
 template<typename MatrixType,typename Lhs>
 struct traits<homogeneous_left_product_impl<Homogeneous<MatrixType,Vertical>,Lhs> >
 {
+  typedef typename take_matrix_for_product<Lhs>::type LhsMatrixType;
   typedef typename make_proper_matrix_type<
                  typename traits<MatrixType>::Scalar,
-                 Lhs::RowsAtCompileTime,
+                 LhsMatrixType::RowsAtCompileTime,
                  MatrixType::ColsAtCompileTime,
                  MatrixType::PlainObject::Options,
-                 Lhs::MaxRowsAtCompileTime,
+                 LhsMatrixType::MaxRowsAtCompileTime,
                  MatrixType::MaxColsAtCompileTime>::type ReturnType;
 };
 
@@ -233,10 +245,12 @@ template<typename MatrixType,typename Lhs>
 struct homogeneous_left_product_impl<Homogeneous<MatrixType,Vertical>,Lhs>
   : public ReturnByValue<homogeneous_left_product_impl<Homogeneous<MatrixType,Vertical>,Lhs> >
 {
-  typedef typename remove_all<typename Lhs::Nested>::type LhsNested;
+  typedef typename traits<homogeneous_left_product_impl>::LhsMatrixType LhsMatrixType;
+  typedef typename remove_all<typename LhsMatrixType::Nested>::type LhsMatrixTypeNested;
   typedef typename MatrixType::Index Index;
   homogeneous_left_product_impl(const Lhs& lhs, const MatrixType& rhs)
-    : m_lhs(lhs), m_rhs(rhs)
+    : m_lhs(take_matrix_for_product<Lhs>::run(lhs)),
+      m_rhs(rhs)
   {}
 
   inline Index rows() const { return m_lhs.rows(); }
@@ -245,15 +259,15 @@ struct homogeneous_left_product_impl<Homogeneous<MatrixType,Vertical>,Lhs>
   template<typename Dest> void evalTo(Dest& dst) const
   {
     // FIXME investigate how to allow lazy evaluation of this product when possible
-    dst = Block<LhsNested,
-              LhsNested::RowsAtCompileTime,
-              LhsNested::ColsAtCompileTime==Dynamic?Dynamic:LhsNested::ColsAtCompileTime-1>
+    dst = Block<const LhsMatrixTypeNested,
+              LhsMatrixTypeNested::RowsAtCompileTime,
+              LhsMatrixTypeNested::ColsAtCompileTime==Dynamic?Dynamic:LhsMatrixTypeNested::ColsAtCompileTime-1>
             (m_lhs,0,0,m_lhs.rows(),m_lhs.cols()-1) * m_rhs;
     dst += m_lhs.col(m_lhs.cols()-1).rowwise()
             .template replicate<MatrixType::ColsAtCompileTime>(m_rhs.cols());
   }
 
-  const typename Lhs::Nested m_lhs;
+  const typename LhsMatrixType::Nested m_lhs;
   const typename MatrixType::Nested m_rhs;
 };
 
@@ -284,7 +298,7 @@ struct homogeneous_right_product_impl<Homogeneous<MatrixType,Horizontal>,Rhs>
   template<typename Dest> void evalTo(Dest& dst) const
   {
     // FIXME investigate how to allow lazy evaluation of this product when possible
-    dst = m_lhs * Block<RhsNested,
+    dst = m_lhs * Block<const RhsNested,
                         RhsNested::RowsAtCompileTime==Dynamic?Dynamic:RhsNested::RowsAtCompileTime-1,
                         RhsNested::ColsAtCompileTime>
             (m_rhs,0,0,m_rhs.rows()-1,m_rhs.cols());

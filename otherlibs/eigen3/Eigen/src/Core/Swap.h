@@ -63,6 +63,16 @@ template<typename ExpressionType> class SwapWrapper
       return m_expression.const_cast_derived().coeffRef(index);
     }
 
+    inline Scalar& coeffRef(Index row, Index col) const
+    {
+      return m_expression.coeffRef(row, col);
+    }
+
+    inline Scalar& coeffRef(Index index) const
+    {
+      return m_expression.coeffRef(index);
+    }
+
     template<typename OtherDerived>
     void copyCoeff(Index row, Index col, const DenseBase<OtherDerived>& other)
     {
@@ -112,19 +122,5 @@ template<typename ExpressionType> class SwapWrapper
   protected:
     ExpressionType& m_expression;
 };
-
-/** swaps *this with the expression \a other.
-  *
-  * \note \a other is only marked for internal reasons, but of course
-  * it gets const-casted. One reason is that one will often call swap
-  * on temporary objects (hence non-const references are forbidden).
-  * Another reason is that lazyAssign takes a const argument anyway.
-  */
-template<typename Derived>
-template<typename OtherDerived>
-void DenseBase<Derived>::swap(DenseBase<OtherDerived> EIGEN_REF_TO_TEMPORARY other)
-{
-  (SwapWrapper<Derived>(derived())).lazyAssign(other);
-}
 
 #endif // EIGEN_SWAP_H

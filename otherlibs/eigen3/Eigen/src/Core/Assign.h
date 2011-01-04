@@ -499,7 +499,8 @@ EIGEN_STRONG_INLINE Derived& DenseBase<Derived>
   enum{
     SameType = internal::is_same<typename Derived::Scalar,typename OtherDerived::Scalar>::value
   };
-  
+
+  EIGEN_STATIC_ASSERT_LVALUE(Derived)
   EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Derived,OtherDerived)
   EIGEN_STATIC_ASSERT(SameType,YOU_MIXED_DIFFERENT_NUMERIC_TYPES__YOU_NEED_TO_USE_THE_CAST_METHOD_OF_MATRIXBASE_TO_CAST_NUMERIC_TYPES_EXPLICITLY)
 

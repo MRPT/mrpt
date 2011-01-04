@@ -32,13 +32,7 @@
 // then include this file where all our macros are defined. It's really important to do it first because
 // it's where we do all the alignment settings (platform detection and honoring the user's will if he
 // defined e.g. EIGEN_DONT_ALIGN) so it needs to be done before we do anything with vectorization.
-#ifndef EIGEN_PARSED_BY_DOXYGEN
-  #include "src/Core/util/Macros.h"
-#else
-  namespace Eigen {  // for some reason Doxygen needs this namespace
-    #include "src/Core/util/Macros.h"
-  }
-#endif
+#include "src/Core/util/Macros.h"
 
 // if alignment is disabled, then disable vectorization. Note: EIGEN_ALIGN is the proper check, it takes into
 // account both the user's will (EIGEN_DONT_ALIGN) and our own platform checks
@@ -169,6 +163,22 @@
 // required for __cpuid, needs to be included after cmath
 #if defined(_MSC_VER) && (defined(_M_IX86)||defined(_M_X64))
   #include <intrin.h>
+  // When available, intrin.h pulls in all SSE headers which allows us
+  // to check which SSE level is supported on MSVC systems
+  #ifndef EIGEN_DONT_VECTORIZE
+    #ifdef _INCLUDED_PMM
+      #define EIGEN_VECTORIZE_SSE3
+    #endif
+    #ifdef _INCLUDED_TMM
+      #define EIGEN_VECTORIZE_SSSE3
+    #endif
+    #ifdef _INCLUDED_SMM
+      #define EIGEN_VECTORIZE_SSE4_1
+    #endif
+    #ifdef _INCLUDED_NMM
+      #define EIGEN_VECTORIZE_SSE4_2
+    #endif
+  #endif
 #endif
 
 #if (defined(_CPPUNWIND) || defined(__EXCEPTIONS)) && !defined(EIGEN_NO_EXCEPTIONS)
@@ -273,6 +283,7 @@ using std::size_t;
 #include "src/Core/NoAlias.h"
 #include "src/Core/PlainObjectBase.h"
 #include "src/Core/Matrix.h"
+#include "src/Core/Array.h"
 #include "src/Core/CwiseBinaryOp.h"
 #include "src/Core/CwiseUnaryOp.h"
 #include "src/Core/CwiseNullaryOp.h"
@@ -327,7 +338,6 @@ using std::size_t;
 #include "src/Core/Reverse.h"
 #include "src/Core/ArrayBase.h"
 #include "src/Core/ArrayWrapper.h"
-#include "src/Core/Array.h"
 
 } // namespace Eigen
 

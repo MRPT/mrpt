@@ -46,11 +46,11 @@ struct product_triangular_matrix_vector<Index,Mode,LhsScalar,ConjLhs,RhsScalar,C
     
     static const Index PanelWidth = EIGEN_TUNE_TRIANGULAR_PANEL_WIDTH;
 
-    typedef Map<Matrix<LhsScalar,Dynamic,Dynamic,ColMajor>, 0, OuterStride<> > LhsMap;
+    typedef Map<const Matrix<LhsScalar,Dynamic,Dynamic,ColMajor>, 0, OuterStride<> > LhsMap;
     const LhsMap lhs(_lhs,rows,cols,OuterStride<>(lhsStride));
     typename conj_expr_if<ConjLhs,LhsMap>::type cjLhs(lhs);
     
-    typedef Map<Matrix<RhsScalar,Dynamic,1>, 0, InnerStride<> > RhsMap;
+    typedef Map<const Matrix<RhsScalar,Dynamic,1>, 0, InnerStride<> > RhsMap;
     const RhsMap rhs(_rhs,cols,InnerStride<>(rhsIncr));
     typename conj_expr_if<ConjRhs,RhsMap>::type cjRhs(rhs);
 
@@ -76,8 +76,8 @@ struct product_triangular_matrix_vector<Index,Mode,LhsScalar,ConjLhs,RhsScalar,C
         Index s = IsLower ? pi+actualPanelWidth : 0;
         general_matrix_vector_product<Index,LhsScalar,ColMajor,ConjLhs,RhsScalar,ConjRhs>::run(
             r, actualPanelWidth,
-            &lhs.coeff(s,pi), lhsStride,
-            &rhs.coeff(pi), rhsIncr,
+            &lhs.coeffRef(s,pi), lhsStride,
+            &rhs.coeffRef(pi), rhsIncr,
             &res.coeffRef(s), resIncr, alpha);
       }
     }
@@ -100,11 +100,11 @@ struct product_triangular_matrix_vector<Index,Mode,LhsScalar,ConjLhs,RhsScalar,C
     
     static const Index PanelWidth = EIGEN_TUNE_TRIANGULAR_PANEL_WIDTH;
 
-    typedef Map<Matrix<LhsScalar,Dynamic,Dynamic,RowMajor>, 0, OuterStride<> > LhsMap;
+    typedef Map<const Matrix<LhsScalar,Dynamic,Dynamic,RowMajor>, 0, OuterStride<> > LhsMap;
     const LhsMap lhs(_lhs,rows,cols,OuterStride<>(lhsStride));
     typename conj_expr_if<ConjLhs,LhsMap>::type cjLhs(lhs);
 
-    typedef Map<Matrix<RhsScalar,Dynamic,1> > RhsMap;
+    typedef Map<const Matrix<RhsScalar,Dynamic,1> > RhsMap;
     const RhsMap rhs(_rhs,cols);
     typename conj_expr_if<ConjRhs,RhsMap>::type cjRhs(rhs);
 
@@ -130,8 +130,8 @@ struct product_triangular_matrix_vector<Index,Mode,LhsScalar,ConjLhs,RhsScalar,C
         Index s = IsLower ? 0 : pi + actualPanelWidth;
         general_matrix_vector_product<Index,LhsScalar,RowMajor,ConjLhs,RhsScalar,ConjRhs>::run(
             actualPanelWidth, r,
-            &(lhs.coeff(pi,s)), lhsStride,
-            &(rhs.coeff(s)), rhsIncr,
+            &lhs.coeffRef(pi,s), lhsStride,
+            &rhs.coeffRef(s), rhsIncr,
             &res.coeffRef(pi), resIncr, alpha);
       }
     }

@@ -97,15 +97,15 @@ template<typename _MatrixType> class Tridiagonalization
     typedef internal::TridiagonalizationMatrixTReturnType<MatrixTypeRealView> MatrixTReturnType;
 
     typedef typename internal::conditional<NumTraits<Scalar>::IsComplex,
-              typename Diagonal<MatrixType,0>::RealReturnType,
-              Diagonal<MatrixType,0>
+              const typename Diagonal<const MatrixType>::RealReturnType,
+              const Diagonal<const MatrixType>
             >::type DiagonalReturnType;
 
     typedef typename internal::conditional<NumTraits<Scalar>::IsComplex,
-              typename Diagonal<
-                Block<MatrixType,SizeMinusOne,SizeMinusOne>,0 >::RealReturnType,
-              Diagonal<
-                Block<MatrixType,SizeMinusOne,SizeMinusOne>,0 >
+              const typename Diagonal<
+                Block<const MatrixType,SizeMinusOne,SizeMinusOne> >::RealReturnType,
+              const Diagonal<
+                Block<const MatrixType,SizeMinusOne,SizeMinusOne> >
             >::type SubDiagonalReturnType;
 
     /** \brief Return type of matrixQ() */
@@ -251,7 +251,9 @@ template<typename _MatrixType> class Tridiagonalization
     HouseholderSequenceType matrixQ() const
     {
       eigen_assert(m_isInitialized && "Tridiagonalization is not initialized.");
-      return HouseholderSequenceType(m_matrix, m_hCoeffs.conjugate(), false, m_matrix.rows() - 1, 1);
+      return HouseholderSequenceType(m_matrix, m_hCoeffs.conjugate())
+             .setLength(m_matrix.rows() - 1)
+             .setShift(1);
     }
 
     /** \brief Returns an expression of the tridiagonal matrix T in the decomposition
@@ -290,7 +292,7 @@ template<typename _MatrixType> class Tridiagonalization
       *
       * \sa matrixT(), subDiagonal()
       */
-    const DiagonalReturnType diagonal() const;
+    DiagonalReturnType diagonal() const;
 
     /** \brief Returns the subdiagonal of the tridiagonal matrix T in the decomposition.
       *
@@ -302,7 +304,7 @@ template<typename _MatrixType> class Tridiagonalization
       *
       * \sa diagonal() for an example, matrixT()
       */
-    const SubDiagonalReturnType subDiagonal() const;
+    SubDiagonalReturnType subDiagonal() const;
 
   protected:
 
@@ -312,7 +314,7 @@ template<typename _MatrixType> class Tridiagonalization
 };
 
 template<typename MatrixType>
-const typename Tridiagonalization<MatrixType>::DiagonalReturnType
+typename Tridiagonalization<MatrixType>::DiagonalReturnType
 Tridiagonalization<MatrixType>::diagonal() const
 {
   eigen_assert(m_isInitialized && "Tridiagonalization is not initialized.");
@@ -320,12 +322,12 @@ Tridiagonalization<MatrixType>::diagonal() const
 }
 
 template<typename MatrixType>
-const typename Tridiagonalization<MatrixType>::SubDiagonalReturnType
+typename Tridiagonalization<MatrixType>::SubDiagonalReturnType
 Tridiagonalization<MatrixType>::subDiagonal() const
 {
   eigen_assert(m_isInitialized && "Tridiagonalization is not initialized.");
   Index n = m_matrix.rows();
-  return Block<MatrixType,SizeMinusOne,SizeMinusOne>(m_matrix, 1, 0, n-1,n-1).diagonal();
+  return Block<const MatrixType,SizeMinusOne,SizeMinusOne>(m_matrix, 1, 0, n-1,n-1).diagonal();
 }
 
 namespace internal {
@@ -356,12 +358,13 @@ namespace internal {
 template<typename MatrixType, typename CoeffVectorType>
 void tridiagonalization_inplace(MatrixType& matA, CoeffVectorType& hCoeffs)
 {
-  eigen_assert(matA.rows()==matA.cols());
-  eigen_assert(matA.rows()==hCoeffs.size()+1);
   typedef typename MatrixType::Index Index;
   typedef typename MatrixType::Scalar Scalar;
   typedef typename MatrixType::RealScalar RealScalar;
   Index n = matA.rows();
+  eigen_assert(n==matA.cols());
+  eigen_assert(n==hCoeffs.size()+1 || n==1);
+  
   for (Index i = 0; i<n-1; ++i)
   {
     Index remainingSize = n-i-1;
@@ -458,7 +461,9 @@ struct tridiagonalization_inplace_selector
     diag = mat.diagonal().real();
     subdiag = mat.template diagonal<-1>().real();
     if(extractQ)
-      mat = HouseholderSequenceType(mat, hCoeffs.conjugate(), false, mat.rows() - 1, 1);
+      mat = HouseholderSequenceType(mat, hCoeffs.conjugate())
+            .setLength(mat.rows() - 1)
+            .setShift(1);
   }
 };
 
@@ -547,7 +552,7 @@ template<typename MatrixType> struct TridiagonalizationMatrixTReturnType
     {
       result.setZero();
       result.template diagonal<1>() = m_matrix.template diagonal<-1>().conjugate();
-      result.template diagonal() = m_matrix.template diagonal();
+      result.diagonal() = m_matrix.diagonal();
       result.template diagonal<-1>() = m_matrix.template diagonal<-1>();
     }
 

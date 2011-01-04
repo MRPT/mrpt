@@ -245,7 +245,9 @@ template<typename _MatrixType> class HessenbergDecomposition
     HouseholderSequenceType matrixQ() const
     {
       eigen_assert(m_isInitialized && "HessenbergDecomposition is not initialized.");
-      return HouseholderSequenceType(m_matrix, m_hCoeffs.conjugate(), false, m_matrix.rows() - 1, 1);
+      return HouseholderSequenceType(m_matrix, m_hCoeffs.conjugate())
+             .setLength(m_matrix.rows() - 1)
+             .setShift(1);
     }
 
     /** \brief Constructs the Hessenberg matrix H in the decomposition

@@ -169,8 +169,8 @@ class SparseTimeDenseProduct
       enum { LhsIsRowMajor = (_Lhs::Flags&RowMajorBit)==RowMajorBit };
       for(Index j=0; j<m_lhs.outerSize(); ++j)
       {
-        typename Rhs::Scalar rhs_j = alpha * m_rhs.coeff(j,0);
-        Block<Dest,1,Dest::ColsAtCompileTime> dest_j(dest.row(LhsIsRowMajor ? j : 0));
+        typename Rhs::Scalar rhs_j = alpha * m_rhs.coeff(LhsIsRowMajor ? 0 : j,0);
+        typename Dest::RowXpr dest_j(dest.row(LhsIsRowMajor ? j : 0));
         for(LhsInnerIterator it(m_lhs,j); it ;++it)
         {
           if(LhsIsRowMajor)                   dest_j += (alpha*it.value()) * m_rhs.row(it.index());

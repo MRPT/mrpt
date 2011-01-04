@@ -73,7 +73,8 @@ template<> EIGEN_STRONG_INLINE Packet2cf psub<Packet2cf>(const Packet2cf& a, con
 template<> EIGEN_STRONG_INLINE Packet2cf pnegate(const Packet2cf& a) { return Packet2cf(pnegate<Packet4f>(a.v)); }
 template<> EIGEN_STRONG_INLINE Packet2cf pconj(const Packet2cf& a)
 {
-  return Packet2cf(vreinterpretq_f32_u32(veorq_u32(vreinterpretq_u32_f32(a.v), p4ui_CONJ_XOR)));
+  Packet4ui b = vreinterpretq_u32_f32(a.v);
+  return Packet2cf(vreinterpretq_f32_u32(veorq_u32(b, p4ui_CONJ_XOR)));
 }
 
 template<> EIGEN_STRONG_INLINE Packet2cf pmul<Packet2cf>(const Packet2cf& a, const Packet2cf& b)
@@ -116,8 +117,8 @@ template<> EIGEN_STRONG_INLINE Packet2cf pandnot<Packet2cf>(const Packet2cf& a, 
   return Packet2cf(vreinterpretq_f32_u32(vbicq_u32(vreinterpretq_u32_f32(a.v),vreinterpretq_u32_f32(b.v))));
 }
 
-template<> EIGEN_STRONG_INLINE Packet2cf pload <std::complex<float> >(const std::complex<float>* from) { EIGEN_DEBUG_ALIGNED_LOAD return Packet2cf(pload((const float*)from)); }
-template<> EIGEN_STRONG_INLINE Packet2cf ploadu<std::complex<float> >(const std::complex<float>* from) { EIGEN_DEBUG_UNALIGNED_LOAD return Packet2cf(ploadu((const float*)from)); }
+template<> EIGEN_STRONG_INLINE Packet2cf pload<Packet2cf>(const std::complex<float>* from) { EIGEN_DEBUG_ALIGNED_LOAD return Packet2cf(pload<Packet4f>((const float*)from)); }
+template<> EIGEN_STRONG_INLINE Packet2cf ploadu<Packet2cf>(const std::complex<float>* from) { EIGEN_DEBUG_UNALIGNED_LOAD return Packet2cf(ploadu<Packet4f>((const float*)from)); }
 
 template<> EIGEN_STRONG_INLINE void pstore <std::complex<float> >(std::complex<float> *   to, const Packet2cf& from) { EIGEN_DEBUG_ALIGNED_STORE pstore((float*)to, from.v); }
 template<> EIGEN_STRONG_INLINE void pstoreu<std::complex<float> >(std::complex<float> *   to, const Packet2cf& from) { EIGEN_DEBUG_UNALIGNED_STORE pstoreu((float*)to, from.v); }
@@ -143,7 +144,7 @@ template<> EIGEN_STRONG_INLINE Packet2cf preverse(const Packet2cf& a)
   return Packet2cf(a_r128);
 }
 
-EIGEN_STRONG_INLINE Packet2cf pcplxflip/*<Packet2cf>*/(const Packet2cf& x)
+EIGEN_STRONG_INLINE Packet2cf pcplxflip(const Packet2cf& a)
 {
   return Packet2cf(vrev64q_f32(a.v));
 }

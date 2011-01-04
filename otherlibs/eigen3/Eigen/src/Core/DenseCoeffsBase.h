@@ -554,19 +554,90 @@ class DenseCoeffsBase<Derived, WriteAccessors> : public DenseCoeffsBase<Derived,
 
 };
 
-/** \brief Base class providing direct coefficient access to matrices and arrays.
+/** \brief Base class providing direct read-only coefficient access to matrices and arrays.
   * \ingroup Core_Module
   * \tparam Derived Type of the derived class
   * \tparam DirectAccessors Constant indicating direct access
   *
   * This class defines functions to work with strides which can be used to access entries directly. This class
-  * inherits DenseCoeffsBase<Derived, WriteAccessors> which defines functions to access entries using 
+  * inherits DenseCoeffsBase<Derived, ReadOnlyAccessors> which defines functions to access entries read-only using
   * \c operator() .
   *
   * \sa \ref TopicClassHierarchy
   */
 template<typename Derived>
-class DenseCoeffsBase<Derived, DirectAccessors> : public DenseCoeffsBase<Derived, WriteAccessors>
+class DenseCoeffsBase<Derived, DirectAccessors> : public DenseCoeffsBase<Derived, ReadOnlyAccessors>
+{
+  public:
+
+    typedef DenseCoeffsBase<Derived, ReadOnlyAccessors> Base;
+    typedef typename internal::traits<Derived>::Index Index;
+    typedef typename internal::traits<Derived>::Scalar Scalar;
+    typedef typename NumTraits<Scalar>::Real RealScalar;
+
+    using Base::rows;
+    using Base::cols;
+    using Base::size;
+    using Base::derived;
+
+    /** \returns the pointer increment between two consecutive elements within a slice in the inner direction.
+      *
+      * \sa outerStride(), rowStride(), colStride()
+      */
+    inline Index innerStride() const
+    {
+      return derived().innerStride();
+    }
+
+    /** \returns the pointer increment between two consecutive inner slices (for example, between two consecutive columns
+      *          in a column-major matrix).
+      *
+      * \sa innerStride(), rowStride(), colStride()
+      */
+    inline Index outerStride() const
+    {
+      return derived().outerStride();
+    }
+
+    // FIXME shall we remove it ?
+    inline Index stride() const
+    {
+      return Derived::IsVectorAtCompileTime ? innerStride() : outerStride();
+    }
+
+    /** \returns the pointer increment between two consecutive rows.
+      *
+      * \sa innerStride(), outerStride(), colStride()
+      */
+    inline Index rowStride() const
+    {
+      return Derived::IsRowMajor ? outerStride() : innerStride();
+    }
+
+    /** \returns the pointer increment between two consecutive columns.
+      *
+      * \sa innerStride(), outerStride(), rowStride()
+      */
+    inline Index colStride() const
+    {
+      return Derived::IsRowMajor ? innerStride() : outerStride();
+    }
+};
+
+/** \brief Base class providing direct read/write coefficient access to matrices and arrays.
+  * \ingroup Core_Module
+  * \tparam Derived Type of the derived class
+  * \tparam DirectAccessors Constant indicating direct access
+  *
+  * This class defines functions to work with strides which can be used to access entries directly. This class
+  * inherits DenseCoeffsBase<Derived, WriteAccessors> which defines functions to access entries read/write using
+  * \c operator().
+  *
+  * \sa \ref TopicClassHierarchy
+  */
+template<typename Derived>
+class DenseCoeffsBase<Derived, DirectWriteAccessors>
+  : public DenseCoeffsBase<Derived, WriteAccessors>
 {
   public:
 

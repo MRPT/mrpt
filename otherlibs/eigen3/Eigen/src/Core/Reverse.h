@@ -194,7 +194,7 @@ template<typename MatrixType, int Direction> class Reverse
   *
   */
 template<typename Derived>
-inline Reverse<Derived, BothDirections>
+inline typename DenseBase<Derived>::ReverseReturnType
 DenseBase<Derived>::reverse()
 {
   return derived();
@@ -202,7 +202,7 @@ DenseBase<Derived>::reverse()
 
 /** This is the const version of reverse(). */
 template<typename Derived>
-inline const Reverse<Derived, BothDirections>
+inline const typename DenseBase<Derived>::ConstReverseReturnType
 DenseBase<Derived>::reverse() const
 {
   return derived();
@@ -216,7 +216,7 @@ DenseBase<Derived>::reverse() const
   * the following additional features:
   *  - less error prone: doing the same operation with .reverse() requires special care:
   *    \code m = m.reverse().eval(); \endcode
-  *  - no temporary object is created (currently there is one created but could be avoided using swap)
+  *  - this API allows to avoid creating a temporary (the current implementation creates a temporary, but that could be avoided using swap)
   *  - it allows future optimizations (cache friendliness, etc.)
   *
   * \sa reverse() */

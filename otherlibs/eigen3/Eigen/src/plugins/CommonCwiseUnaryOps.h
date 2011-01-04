@@ -130,10 +130,18 @@ real() const { return derived(); }
 inline const ImagReturnType
 imag() const { return derived(); }
 
-/** \returns an expression of a custom coefficient-wise unary operator \a func of *this
+/** \brief Apply a unary operator coefficient-wise
+  * \param[in]  func  Functor implementing the unary operator
+  * \tparam  CustomUnaryOp Type of \a func  
+  * \returns An expression of a custom coefficient-wise unary operator \a func of *this
   *
-  * The template parameter \a CustomUnaryOp is the type of the functor
-  * of the custom unary operator.
+  * The function \c ptr_fun() from the C++ standard library can be used to make functors out of normal functions.
+  *
+  * Example:
+  * \include class_CwiseUnaryOp_ptrfun.cpp
+  * Output: \verbinclude class_CwiseUnaryOp_ptrfun.out
+  *
+  * Genuine functors allow for more possibilities, for instance it may contain a state.
   *
   * Example:
   * \include class_CwiseUnaryOp.cpp

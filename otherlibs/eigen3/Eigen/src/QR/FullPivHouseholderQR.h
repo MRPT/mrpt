@@ -407,7 +407,8 @@ struct solve_retval<FullPivHouseholderQR<_MatrixType>, Rhs>
       RealScalar biggest_in_lower_part_of_c = c.bottomRows(rows-dec().rank()).cwiseAbs().maxCoeff();
       // FIXME brain dead
       const RealScalar m_precision = NumTraits<Scalar>::epsilon() * std::min(rows,cols);
-      if(!isMuchSmallerThan(biggest_in_lower_part_of_c, biggest_in_upper_part_of_c, m_precision))
+      // this internal:: prefix is needed by at least gcc 3.4 and ICC
+      if(!internal::isMuchSmallerThan(biggest_in_lower_part_of_c, biggest_in_upper_part_of_c, m_precision))
         return;
     }
     dec().matrixQR()

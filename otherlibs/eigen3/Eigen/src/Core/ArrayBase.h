@@ -91,6 +91,7 @@ template<typename Derived> class ArrayBase
     using Base::operator/=;
 
     typedef typename Base::CoeffReturnType CoeffReturnType;
+
 #endif // not EIGEN_PARSED_BY_DOXYGEN
 
 #ifndef EIGEN_PARSED_BY_DOXYGEN
@@ -186,7 +187,7 @@ EIGEN_STRONG_INLINE Derived &
 ArrayBase<Derived>::operator-=(const ArrayBase<OtherDerived> &other)
 {
   SelfCwiseBinaryOp<internal::scalar_difference_op<Scalar>, Derived, OtherDerived> tmp(derived());
-  tmp = other;
+  tmp = other.derived();
   return derived();
 }
 

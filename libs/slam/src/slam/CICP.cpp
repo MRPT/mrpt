@@ -369,6 +369,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			//   from a Levenberg-Maquardt optimization stage.
 			// ----------------------------------------------
 			CMatrixDouble	D(3,nCorrespondences);
+			//Eigen::Matrix<double,3,Eigen::Dynamic> D(3,nCorrespondences);
 
 			const TPose2D transf( gaussPdf->mean );
 

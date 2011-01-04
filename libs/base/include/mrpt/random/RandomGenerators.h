@@ -190,10 +190,10 @@ namespace mrpt
 				 * \exception std::exception On invalid covariance matrix
 				 * \sa drawGaussianMultivariateMany
 				 */
-				 template <class VECTORLIKE,class MATRIX>
+				 template <class VECTORLIKE,class COVMATRIX>
 				 void  drawGaussianMultivariate(
 					VECTORLIKE	&out_result,
-					const MATRIX &cov,
+					const COVMATRIX &cov,
 					const VECTORLIKE* mean = NULL
 					)
 				{
@@ -201,27 +201,26 @@ namespace mrpt
 					ASSERT_(cov.rows()==cov.cols())
 					if (mean) ASSERT_EQUAL_(size_t(mean->size()),N)
 
-					typename MATRIX::PlainObject Z,D;
-					Z.resizeLike(cov);
-					D.resizeLike(cov);
+					// Compute eigenvalues/eigenvectors of cov:
+					Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject> eigensolver(cov);
+
+					typename Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject>::MatrixType eigVecs = eigensolver.eigenvectors();
+					typename Eigen::SelfAdjointEigenSolver<typename COVMATRIX::PlainObject>::RealVectorType eigVals = eigensolver.eigenvalues();
+
+					// Scale eigenvectors with eigenvalues:
+					// D.Sqrt(); Z = Z * D; (for each column)
+					eigVals = eigVals.array().sqrt();
+					for (typename COVMATRIX::Index i=0;i<eigVecs.cols();i++)
+						eigVecs.col(i) *= eigVals[i];
 
 					// Set size of output vector:
 					out_result.assign(N,0);
-					cov.eigenVectors( Z, D );
 
-					// Scale eigenvectors with eigenvalues:
-					// Efficient implementation of: D.Sqrt(); Z = Z * D;
 					for (size_t i=0;i<N;i++)
 					{
-						const double eig_sqrt = std::sqrt(D.get_unsafe(i,i));
-						for (size_t j=0;j<N;j++)
-							Z.get_unsafe(j,i)*=eig_sqrt;
-					}
-					for (size_t i=0;i<N;i++)
-					{
-						double rnd = drawGaussian1D_normalized();
+						typename COVMATRIX::Scalar rnd = drawGaussian1D_normalized();
 						for (size_t d=0;d<N;d++)
-							out_result[d]+= ( Z(d,i)* rnd );
+							out_result[d]+= eigVecs.coeff(d,i) * rnd;
 					}
 					if (mean)
 						for (size_t d=0;d<N;d++)

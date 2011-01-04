@@ -200,7 +200,7 @@ template<> struct llt_inplace<Lower>
       Block<MatrixType,Dynamic,Dynamic> A20(mat,k+1,0,rs,k);
 
       RealScalar x = real(mat.coeff(k,k));
-      if (k>0) x -= mat.row(k).head(k).squaredNorm();
+      if (k>0) x -= A10.squaredNorm();
       if (x<=RealScalar(0))
         return false;
       mat.coeffRef(k,k) = x = sqrt(x);

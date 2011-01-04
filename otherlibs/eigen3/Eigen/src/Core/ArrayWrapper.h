@@ -160,6 +160,11 @@ class MatrixWrapper : public MatrixBase<MatrixWrapper<ExpressionType> >
       return m_expression.const_cast_derived().coeffRef(row, col);
     }
 
+    inline const Scalar& coeffRef(Index row, Index col) const
+    {
+      return m_expression.derived().coeffRef(row, col);
+    }
+
     inline const CoeffReturnType coeff(Index index) const
     {
       return m_expression.coeff(index);

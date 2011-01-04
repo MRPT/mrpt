@@ -77,12 +77,22 @@ template<typename BinaryOp, typename Lhs, typename Rhs> class SelfCwiseBinaryOp
     // TODO make Assign use .data()
     inline Scalar& coeffRef(Index row, Index col)
     {
+      EIGEN_STATIC_ASSERT_LVALUE(Lhs)
       return m_matrix.const_cast_derived().coeffRef(row, col);
+    }
+    inline const Scalar& coeffRef(Index row, Index col) const
+    {
+      return m_matrix.coeffRef(row, col);
     }
 
     // note that this function is needed by assign to correctly align loads/stores
     // TODO make Assign use .data()
     inline Scalar& coeffRef(Index index)
+    {
+      EIGEN_STATIC_ASSERT_LVALUE(Lhs)
+      return m_matrix.const_cast_derived().coeffRef(index);
+    }
+    inline const Scalar& coeffRef(Index index) const
     {
       return m_matrix.const_cast_derived().coeffRef(index);
     }

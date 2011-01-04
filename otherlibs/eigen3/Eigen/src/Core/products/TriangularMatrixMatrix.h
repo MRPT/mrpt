@@ -387,8 +387,8 @@ struct TriangularProduct<Mode,LhsIsTriangular,Lhs,false,Rhs,false>
       (internal::traits<Dest          >::Flags&RowMajorBit) ? RowMajor : ColMajor>
       ::run(
         lhs.rows(), rhs.cols(), lhs.cols(),// LhsIsTriangular ? rhs.cols() : lhs.rows(),           // sizes
-        &lhs.coeff(0,0),    lhs.outerStride(), // lhs info
-        &rhs.coeff(0,0),    rhs.outerStride(), // rhs info
+        &lhs.coeffRef(0,0),    lhs.outerStride(), // lhs info
+        &rhs.coeffRef(0,0),    rhs.outerStride(), // rhs info
         &dst.coeffRef(0,0), dst.outerStride(), // result info
         actualAlpha                            // alpha
       );

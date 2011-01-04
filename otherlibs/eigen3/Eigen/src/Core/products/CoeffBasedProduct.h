@@ -98,6 +98,7 @@ struct traits<CoeffBasedProduct<LhsNested,RhsNested,NestingFlags> >
       Flags = ((unsigned int)(LhsFlags | RhsFlags) & HereditaryBits & ~RowMajorBit)
             | (EvalToRowMajor ? RowMajorBit : 0)
             | NestingFlags
+            | (LhsFlags & RhsFlags & AlignedBit)
             // TODO enable vectorization for mixed types
             | (SameType && (CanVectorizeLhs || CanVectorizeRhs) ? PacketAccessBit : 0),
 

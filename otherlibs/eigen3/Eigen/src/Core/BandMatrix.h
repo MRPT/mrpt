@@ -25,6 +25,8 @@
 #ifndef EIGEN_BANDMATRIX_H
 #define EIGEN_BANDMATRIX_H
 
+namespace internal {
+
 /**
   * \class BandMatrix
   * \ingroup Core_Module
@@ -44,7 +46,6 @@
   * \sa class TridiagonalMatrix
   */
 
-namespace internal {
 template<typename _Scalar, int Rows, int Cols, int Supers, int Subs, int Options>
 struct traits<BandMatrix<_Scalar,Rows,Cols,Supers,Subs,Options> >
 {
@@ -60,7 +61,6 @@ struct traits<BandMatrix<_Scalar,Rows,Cols,Supers,Subs,Options> >
     Flags = LvalueBit
   };
 };
-}
 
 template<typename _Scalar, int Rows, int Cols, int Supers, int Subs, int Options>
 class BandMatrix : public EigenBase<BandMatrix<_Scalar,Rows,Cols,Supers,Subs,Options> >
@@ -132,8 +132,8 @@ class BandMatrix : public EigenBase<BandMatrix<_Scalar,Rows,Cols,Supers,Subs,Opt
     { return Block<DataType,1,SizeAtCompileTime>(m_data,supers(),0,1,std::min(rows(),cols())); }
 
     /** \returns a vector expression of the main diagonal (const version) */
-    inline const Block<DataType,1,SizeAtCompileTime> diagonal() const
-    { return Block<DataType,1,SizeAtCompileTime>(m_data,supers(),0,1,std::min(rows(),cols())); }
+    inline const Block<const DataType,1,SizeAtCompileTime> diagonal() const
+    { return Block<const DataType,1,SizeAtCompileTime>(m_data,supers(),0,1,std::min(rows(),cols())); }
 
     template<int Index> struct DiagonalIntReturnType {
       enum {
@@ -172,10 +172,10 @@ class BandMatrix : public EigenBase<BandMatrix<_Scalar,Rows,Cols,Supers,Subs,Opt
     }
 
     /** \returns a vector expression of the \a i -th sub or super diagonal */
-    inline const Block<DataType,1,Dynamic> diagonal(Index i) const
+    inline const Block<const DataType,1,Dynamic> diagonal(Index i) const
     {
       eigen_assert((i<0 && -i<=subs()) || (i>=0 && i<=supers()));
-      return Block<DataType,1,Dynamic>(m_data, supers()-i, std::max<Index>(0,i), 1, diagonalLength(i));
+      return Block<const DataType,1,Dynamic>(m_data, supers()-i, std::max<Index>(0,i), 1, diagonalLength(i));
     }
 
     template<typename Dest> inline void evalTo(Dest& dst) const
@@ -237,5 +237,7 @@ class TridiagonalMatrix : public BandMatrix<Scalar,Size,Size,Options&SelfAdjoint
     { return Base::template diagonal<-1>(); }
   protected:
 };
+
+} // end namespace internal
 
 #endif // EIGEN_BANDMATRIX_H
