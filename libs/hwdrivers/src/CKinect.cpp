@@ -357,11 +357,17 @@ void CKinect::open()
 
 #if MRPT_KINECT_WITH_CLNUI  // ----->  CL NUI SDK
 	// Open handles:
-	m_clnui_motor = CreateNUIMotor();
+	m_clnui_motor = CreateNUIMotor
+	(
+	GetNUIDeviceSerial(0)  // Comment this line if you use a version older than CL NUI SDK v1.0.0.1210
+	);
 	if (!m_clnui_motor)
 		THROW_EXCEPTION("Can't open Kinect camera (m_clnui_motor()==NULL)")
 
-	m_clnui_cam   = CreateNUICamera();
+	m_clnui_cam   = CreateNUICamera
+	(
+	GetNUIDeviceSerial(0)  // Comment this line if you use a version older than CL NUI SDK v1.0.0.1210
+	);
 	if (!m_clnui_cam)
 		THROW_EXCEPTION("Can't open Kinect camera (CreateNUICamera()==NULL)")
 
