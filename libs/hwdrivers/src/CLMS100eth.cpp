@@ -277,11 +277,11 @@ void CLMS100Eth::doProcessSimple(bool &outThereIsObservation, CObservation2DRang
 
     char msg[] = {"sRN LMDscandata"};
     sendCommand(msg);
-    char buffIn[4000];
-    //size_t read = m_client.readAsync(buffIn, 4000, 100, 100);
+    char buffIn[16*1024];
+    //size_t read = m_client.readAsync(buffIn, sizeof(buffIn), 100, 100);
     //cout << "read :" << read << endl;
-    //while(m_client.readAsync(buffIn, 4000, 100, 100)) cout << "Lit dans le vent" << endl;
-    m_client.readAsync(buffIn, 4000, 100, 100);
+    //while(m_client.readAsync(buffIn, sizeof(buffIn), 100, 100)) cout << "Lit dans le vent" << endl;
+    m_client.readAsync(buffIn, sizeof(buffIn), 100, 100);
 
     if(decodeScan(buffIn, outObservation))
     {
