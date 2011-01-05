@@ -37,7 +37,7 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 # -------------------------------------------------------------------
 # And now create the custom packages for each Ubuntu distribution
 # -------------------------------------------------------------------
-LST_DISTROS=(karmic lucid maverick)
+LST_DISTROS=(natty karmic lucid maverick)
 #LST_DISTROS=maverick
 
 count=${#LST_DISTROS[@]}
