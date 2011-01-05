@@ -39,7 +39,7 @@
 #include <winsock2.h>
 #include <winerror.h>
 
-#if (__BORLANDC__) || (_MSC_VER)
+#if defined(__BORLANDC__) || defined(_MSC_VER)
 #pragma comment (lib,"WS2_32.LIB")
 #endif
 

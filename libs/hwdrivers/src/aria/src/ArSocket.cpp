@@ -29,6 +29,10 @@ MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 #include "ArSocket.h"
 #include "ArLog.h"
 
+// JL: Added for MRPT to build in MSVC 64bit
+#if defined(__BORLANDC__) || defined(_MSC_VER)
+#pragma comment (lib,"WS2_32.LIB")
+#endif
 
 void ArSocket::internalInit(void)
 {

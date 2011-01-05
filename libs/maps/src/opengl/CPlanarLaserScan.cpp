@@ -45,6 +45,16 @@
 	#endif
 #endif
 
+// Include libraries in linking:
+#if MRPT_HAS_OPENGL_GLUT && defined(MRPT_OS_WINDOWS)
+		// WINDOWS:
+		#if defined(_MSC_VER) || defined(__BORLANDC__)
+			#pragma comment (lib,"opengl32.lib")
+			#pragma comment (lib,"GlU32.lib")
+		#endif
+#endif // MRPT_HAS_OPENGL_GLUT
+
+
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::utils;

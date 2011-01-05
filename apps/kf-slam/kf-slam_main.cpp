@@ -110,7 +110,11 @@ void Run_KF_SLAM()
 	bool  SAVE_3D_SCENES = cfgFile.read_bool("MappingApplication","SAVE_3D_SCENES", true);
 	bool  SAVE_MAP_REPRESENTATIONS = cfgFile.read_bool("MappingApplication","SAVE_MAP_REPRESENTATIONS", true);
 	bool  SHOW_3D_LIVE = cfgFile.read_bool("MappingApplication","SHOW_3D_LIVE", false);
-	
+
+#if !MRPT_HAS_WXWIDGETS
+	SHOW_3D_LIVE = false;
+#endif
+
 //	bool  FORCE_IGNORE_ODOMETRY = cfgFile.read_bool("MappingApplication","FORCE_IGNORE_ODOMETRY", false);
 
 

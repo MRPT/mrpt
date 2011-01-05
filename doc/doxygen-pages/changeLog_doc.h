@@ -39,6 +39,7 @@
 		- mrpt::math::ModelSearch: A RANSAC + Genetic model fitter (by Zoltan Gaal)
 	- Build system:
 		- Linux/Mac: Don't enable BUILD_KINECT by default if libusb1-dev is not present. 
+		- Win64: Fixed building warnings and errors with MSVC9
 		- Fixed compiling with MSVC 2005 (Patch by Z.P.Gaal)
 		- Fixed compiling under MIPS/SPARC/S930/... due to a bug in Eigen3-beta (patch sent upstream and fixed in local copy).
 		- Fixed build errors against latest changes in eigen3 (before their release version).

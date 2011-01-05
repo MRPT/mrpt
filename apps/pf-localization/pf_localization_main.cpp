@@ -138,6 +138,10 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 	int			SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS = iniFile.read_int(iniSectionName,"SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS",1);
 	double 		STATS_CONF_INTERVAL = iniFile.read_double(iniSectionName,"STATS_CONF_INTERVAL",0.2);
 
+#if !MRPT_HAS_WXWIDGETS
+	SHOW_PROGRESS_3D_REAL_TIME = false;
+#endif
+
 	// Default odometry uncertainty parameters in "dummy_odom_params" depending on how fast the robot moves, etc...
 	//  Only used for observations-only rawlogs:
 	CActionRobotMovement2D::TMotionModelOptions dummy_odom_params;

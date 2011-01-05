@@ -307,8 +307,8 @@ public:
 #endif
 		const Index oldCols = cols();
 		const Index oldRows = rows();
-		const int nNewCols = col - cols();
-		const int nNewRows = row - rows();
+		const int nNewCols = int(col) - int(cols());
+		const int nNewRows = int(row) - int(rows());
 		::mrpt::math::detail::TAuxResizer<Eigen::MatrixBase<Derived>,SizeAtCompileTime>::internal_resize(*this,row,col);
 		if (nNewCols>0) derived().block(0,oldCols,row,nNewCols).setZero();
 		if (nNewRows>0) derived().block(oldRows,0,nNewRows,col).setZero();

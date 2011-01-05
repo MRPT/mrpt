@@ -1259,7 +1259,7 @@ IF(BUILD_KINECT)
 		# Look for "CL NUI Platform"		
 		FIND_PATH(BASE_CLNUI_SDK_DIR  "Code Laboratories/CL NUI Platform/SDK/")
 		MARK_AS_ADVANCED(BASE_CLNUI_SDK_DIR)
-		
+				
 		IF(BASE_CLNUI_SDK_DIR)
 			SET(CLNUI_SDK_DIR "${BASE_CLNUI_SDK_DIR}/Code Laboratories/CL NUI Platform/SDK/" CACHE PATH "Path to CL NUI Platform/SDK/ directory")
 			MESSAGE(STATUS "Kinect CL NUI SDK found in: ${CLNUI_SDK_DIR}")
