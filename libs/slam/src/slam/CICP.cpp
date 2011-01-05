@@ -41,6 +41,8 @@ using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace std;
 
+
+
 /*---------------------------------------------------------------
 The method for aligning a pair of 2D points map.
 *   The meaning of some parameters are implementation dependant,
@@ -368,8 +370,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			//  It is the equivalent covariance resulting
 			//   from a Levenberg-Maquardt optimization stage.
 			// ----------------------------------------------
-			CMatrixDouble	D(3,nCorrespondences);
-			//Eigen::Matrix<double,3,Eigen::Dynamic> D(3,nCorrespondences);
+			Eigen::Matrix<double,3,Eigen::Dynamic> D(3,nCorrespondences);
 
 			const TPose2D transf( gaussPdf->mean );
 
@@ -380,7 +381,6 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			double  q1,q2,q3;
 			double  A,B;
 			double  Axy = 0.01;
-			//float  Axy2 = square(Axy);
 
 			// Fill out D:
 			double  rho2 = square( options.kernel_rho );
@@ -436,7 +436,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			CMatrixDouble33  DDt = D*D.transpose();
 
 			for (i=0;i<3;i++)
-				DDt.get_unsafe( i,i ) += 6000.0;  // Lambda...
+				DDt( i,i ) += 6000.0;  // Lambda...
 
 			DDt.inv(gaussPdf->cov);
 #endif

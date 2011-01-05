@@ -243,7 +243,7 @@ namespace mrpt
 			covariances.setSize(DIM,DIM);
 			const size_t nElms=elements.size();
 			const T NORM=1.0/nElms;
-			if (weights_mean) { ASSERTDEB_(weights_mean->size()==nElms) }
+			if (weights_mean) { ASSERTDEB_(size_t(weights_mean->size())==size_t(nElms)) }
 			// The mean goes first:
 			for (size_t i=0;i<DIM;i++)
 			{
@@ -295,7 +295,7 @@ namespace mrpt
 					typename MATRIXLIKE::value_type elem=0;
 					if (weights_cov)
 					{
-						ASSERTDEB_(weights_cov->size()==nElms)
+						ASSERTDEB_(size_t(weights_cov->size())==size_t(nElms))
 						for (size_t k=0;k<nElms;k++)
 						{
 							const T Ai = (elements[k][i]-means[i]);
@@ -1153,7 +1153,7 @@ namespace mrpt
 		{
 			MRPT_START
 			ASSERTDEB_(cov.isSquare())
-			ASSERTDEB_(cov.getColCount()==diff_mean.size())
+			ASSERTDEB_(size_t(cov.getColCount())==size_t(diff_mean.size()))
 			MATRIXLIKE C_inv;
 			cov.inv(C_inv);
 			maha2_out = multiply_HCHt_scalar(diff_mean,C_inv);

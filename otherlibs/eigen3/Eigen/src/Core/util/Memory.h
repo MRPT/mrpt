@@ -598,10 +598,12 @@ public:
 //---------- Cache sizes ----------
 
 #if defined(__GNUC__) && ( defined(__i386__) || defined(__x86_64__) )
-#  if defined(__PIC__)
+#  if defined(__PIC__) && defined(__i386__)
+     // Case for x86 with PIC
 #    define EIGEN_CPUID(abcd,func,id) \
        __asm__ __volatile__ ("xchgl %%ebx, %%esi;cpuid; xchgl %%ebx,%%esi": "=a" (abcd[0]), "=S" (abcd[1]), "=c" (abcd[2]), "=d" (abcd[3]) : "a" (func), "c" (id));
 #  else
+     // Case for x86_64 or x86 w/o PIC
 #    define EIGEN_CPUID(abcd,func,id) \
        __asm__ __volatile__ ("cpuid": "=a" (abcd[0]), "=b" (abcd[1]), "=c" (abcd[2]), "=d" (abcd[3]) : "a" (func), "c" (id) );
 #  endif
