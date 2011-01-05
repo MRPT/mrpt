@@ -61,10 +61,8 @@ install: build
 	
 	# Move all the ".so" files to the proper place: the -dev package:
 	mkdir -p $(CURDIR)/debian/libmrpt-dev/usr/lib/
-	# 1: copy (-P: don't dereference symbolic link)
-	find $(CURDIR)/debian/ -name "*.so" | xargs -I FIL cp -P FIL $(CURDIR)/debian/libmrpt-dev/usr/lib/
-	# 2: remove from the old location (this is to avoid "mv" to complaing if moving to the same location)
-	find $(CURDIR)/debian/ -name "*.so" | grep -v 'libmrpt-dev' | xargs rm 
+	find $(CURDIR)/debian/ -name "*.so" | grep -v 'libmrpt-dev' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dev/usr/lib/
+
 	
 # Build architecture-independent files here.
 binary-indep: build install
