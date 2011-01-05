@@ -37,3 +37,6 @@ SUBSYSTEM=="firewire", ATTR{vendor_name}=="Linux Firewire", GROUP="video"
 # Or if your application needs access to all nodes, simply use:
 
 SUBSYSTEM=="firewire", GROUP="video"
+
+#eNose
+ATTR{idVendor}=="0403", ATTR{idProduct}=="6100", MODE="666"
