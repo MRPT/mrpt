@@ -91,9 +91,9 @@ void thread_grabbing(TThreadParam &p)
 
 		CTicTac tictac;
 		int nImgs = 0;
-		bool there_is_obs=true, hard_error;
+		bool there_is_obs=true, hard_error=false;
 
-		while (there_is_obs && !p.quit)
+		while (!hard_error && !p.quit)
 		{
 			// Grab new observation from the camera:
 			CObservation3DRangeScanPtr  obs = CObservation3DRangeScan::Create(); // Smart pointer to observation
