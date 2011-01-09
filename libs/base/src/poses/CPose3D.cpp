@@ -294,9 +294,9 @@ void CPose3D::operator *=(const double s)
 ---------------------------------------------------------------*/
 void  CPose3D::getYawPitchRoll( double &yaw, double &pitch, double &roll ) const
 {
-	ASSERTDEBMSG_( fabs(sqrt(square(m_ROT(0,0))+square(m_ROT(1,0))+square(m_ROT(2,0))) - 1 ) < 1e-5, "Homogeneous matrix is not orthogonal & normalized!: "+m_ROT.inMatlabFormat() )
-	ASSERTDEBMSG_( fabs(sqrt(square(m_ROT(0,1))+square(m_ROT(1,1))+square(m_ROT(2,1))) - 1 ) < 1e-5, "Homogeneous matrix is not orthogonal & normalized!: "+m_ROT.inMatlabFormat() )
-	ASSERTDEBMSG_( fabs(sqrt(square(m_ROT(0,2))+square(m_ROT(1,2))+square(m_ROT(2,2))) - 1 ) < 1e-5, "Homogeneous matrix is not orthogonal & normalized!: "+m_ROT.inMatlabFormat() )
+	ASSERTDEBMSG_( std::abs(sqrt(square(m_ROT(0,0))+square(m_ROT(1,0))+square(m_ROT(2,0))) - 1 ) < 3e-3, "Homogeneous matrix is not orthogonal & normalized!: "+m_ROT.inMatlabFormat() )
+	ASSERTDEBMSG_( std::abs(sqrt(square(m_ROT(0,1))+square(m_ROT(1,1))+square(m_ROT(2,1))) - 1 ) < 3e-3, "Homogeneous matrix is not orthogonal & normalized!: "+m_ROT.inMatlabFormat() )
+	ASSERTDEBMSG_( std::abs(sqrt(square(m_ROT(0,2))+square(m_ROT(1,2))+square(m_ROT(2,2))) - 1 ) < 3e-3, "Homogeneous matrix is not orthogonal & normalized!: "+m_ROT.inMatlabFormat() )
 
 	// Pitch is in the range [-pi/2, pi/2 ], so this calculation is enough:
 	pitch =  atan2( - m_ROT(2,0), hypot( m_ROT(0,0),m_ROT(1,0) ) ); //asin( - m_ROT(2,0) );
