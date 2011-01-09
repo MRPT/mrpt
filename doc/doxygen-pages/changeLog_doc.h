@@ -51,8 +51,11 @@
 		- mrpt::poses::CPose3D was too strict in checking that the rotation matrix is orthogonal: admisible threshold is now 1 (plus/minus)3e-3.
 	- Changes in examples:
 		- hokuyo_laser_test. Now it's possible to choose between USB and Ethernet connection.
-        - BUG FIXES:
+	- New examples:
+		- opengl_video_demo: A demo of opengl textures from a video stream.
+	- BUG FIXES:
 		- Octree-based rendering of point cloud didn't discard all invisible nodes, not doing an optimal rendering.
+		- Fixed situations were RTTI registrations were not updated before usage, leading to "uregistered class?" exceptions.
 
 
 

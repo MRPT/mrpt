@@ -44,6 +44,11 @@ using namespace mrpt::system;
 using namespace std;
 
 
+/*---------------------------------------------------------------
+					STATIC GLOBAL VARIABLES
+ ---------------------------------------------------------------*/
+volatile bool mrpt::utils::pending_class_registers_modified = false;
+
 // Creation on first call pattern:
 CAtomicCounter	& mrpt::utils::pending_class_registers_count()
 {
@@ -54,13 +59,12 @@ CAtomicCounter	& mrpt::utils::pending_class_registers_count()
 // Creation on first call pattern:
 CThreadSafeQueue<TRegisterFunction>	 &mrpt::utils::pending_class_registers()
 {
+	pending_class_registers_modified = true;
 	static CThreadSafeQueue<TRegisterFunction> lst;
 	return lst;
 }
 
-/*---------------------------------------------------------------
-					STATIC GLOBAL VARIABLES
- ---------------------------------------------------------------*/
+
 namespace mrpt
 {
 	namespace utils
@@ -129,6 +133,8 @@ namespace mrpt
 */
 void mrpt::utils::registerAllPendingClasses()
 {
+	if (!pending_class_registers_modified) return; // Quick return
+
 	while( pending_class_registers_count()!=0 )
 	{
 		TRegisterFunction *ptrToPtr = pending_class_registers().get();
@@ -141,7 +147,9 @@ void mrpt::utils::registerAllPendingClasses()
 			delete ptrToPtr;
 		}
 	}
+	pending_class_registers_modified = false;
 }
+
 
 
 /*---------------------------------------------------------------

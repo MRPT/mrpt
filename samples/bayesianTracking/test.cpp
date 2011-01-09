@@ -367,10 +367,6 @@ int main()
 {
 	try
 	{
-		MRPT_TODO("Try fixing this registration issue!")
-		registerClass( CLASS_ID( CObservationBearingRange ) );
-
-
 		TestBayesianTracking();
 		return 0;
 	} catch (std::exception &e)

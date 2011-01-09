@@ -33,6 +33,8 @@
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/system/os.h>
 
+#include "internal_class_registry.h"
+
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
@@ -53,6 +55,9 @@ bool TRuntimeClassId::derivedFrom(const TRuntimeClassId* pBaseClass) const
 	// The same class??
 	if (pBaseClass==this)
 		return true;
+
+	// Automatically register all pending classes, just in case:
+	registerAllPendingClasses();
 
 	// Check heritage:
 	const TRuntimeClassId* pClassThis = this;
@@ -75,8 +80,10 @@ bool TRuntimeClassId::derivedFrom(const char* pBaseClass_name) const
 {
 	ASSERT_(this != NULL)
 
-	const TRuntimeClassId* pBaseClass = findRegisteredClass(pBaseClass_name);
+	// Automatically register all pending classes, just in case:
+	registerAllPendingClasses();
 
+	const TRuntimeClassId* pBaseClass = findRegisteredClass(pBaseClass_name);
 	ASSERTMSG_(pBaseClass != NULL, format("Class %s not registered??",pBaseClass_name) )
 
 	// The same class??

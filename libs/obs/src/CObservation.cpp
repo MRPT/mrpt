@@ -43,8 +43,7 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CObservation, CSerializable, mrpt::slam)
 
 extern CStartUpClassesRegister  mrpt_obs_class_reg;
 
-const int dumm = mrpt_obs_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
-
+const volatile int dumm = mrpt_obs_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 /*---------------------------------------------------------------
 					CONSTRUCTOR
