@@ -56,6 +56,7 @@
 	- BUG FIXES:
 		- Octree-based rendering of point cloud didn't discard all invisible nodes, not doing an optimal rendering.
 		- Fixed situations were RTTI registrations were not updated before usage, leading to "uregistered class?" exceptions.
+		- Fixed a kind of memory-leak in OpenGL due to the particular way of reserving texture names (seem to only affect some OpenGL implementations, but it's fixed now).
 
 
 

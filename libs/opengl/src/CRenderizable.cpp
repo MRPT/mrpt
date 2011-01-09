@@ -113,7 +113,7 @@ unsigned int CRenderizable::getNewTextureNumber()
 		ret++;
 		ret = ret % MAX_GL_TEXTURE_IDS_MASK;
 
-		if (++tries>=MAX_GL_TEXTURE_IDS) 
+		if (++tries>=MAX_GL_TEXTURE_IDS)
 			THROW_EXCEPTION_CUSTOM_MSG1("Maximum number of textures (%u) excedeed! (are you deleting them?)", (unsigned int)MAX_GL_TEXTURE_IDS);
 	}
 
@@ -128,6 +128,8 @@ void CRenderizable::releaseTextureName(unsigned int i)
 	TOpenGLNameBooker &booker = TOpenGLNameBooker::instance();
 	CCriticalSectionLocker lock ( &booker.cs );
 	booker.freeTextureNames[i] = false;
+	if (i<booker.next_free_texture) booker.next_free_texture = i;  // try to reuse texture numbers.
+	// "glDeleteTextures" seems not to be neeeded, since we do the reservation of texture names by our own.
 }
 
 

@@ -50,7 +50,7 @@ void TestOpenGLVideo()
 	cout << "Video stream open OK\n";
 
 	// Create 3D window:
-	CDisplayWindow3D	win("Demo of video with MRPT's OpenGL objects",640,480);
+	CDisplayWindow3D	win("Demo of video textures with MRPT's OpenGL objects",640,480);
 
 	// XY Grid
 	opengl::CGridPlaneXYPtr gl_ground = opengl::CGridPlaneXY::Create(-7,7,-7,7,0,1);
@@ -92,10 +92,10 @@ void TestOpenGLVideo()
 			if (IS_CLASS(obs,CObservationImage))
 			{
 				CObservationImagePtr o = CObservationImagePtr(obs);
-				COpenGLScenePtr &scene = win.get3DSceneAndLock();
-					gl_plane1->assignImage( o->image ); 
-					gl_plane2->assignImage( o->image ); 
-					gl_plane3->assignImage( o->image ); 
+				win.get3DSceneAndLock();
+					gl_plane1->assignImage( o->image );
+					gl_plane2->assignImage( o->image );
+					gl_plane3->assignImage( o->image );
 				win.unlockAccess3DScene();
 				win.repaint();
 			}
