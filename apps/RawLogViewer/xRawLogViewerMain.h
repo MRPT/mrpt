@@ -119,7 +119,7 @@ struct TAlogRecord
 {
 	std::string		label;
 	char   			type;  // 0: odo, 1: 2d laser, 2:3d laser, 3: image
-	mrpt::vector<float>   data;
+	std::vector<float>   data;
 	std::string		imgFile;
 	double          startElev, endElev;
 };

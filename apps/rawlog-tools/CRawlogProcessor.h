@@ -202,10 +202,10 @@ namespace mrpt
 		class CRawlogProcessorFilterObservations : public CRawlogProcessorOnEachObservation
 		{
 		public:
-			CFileGZOutputStream 	&m_out_rawlog;
+			mrpt::utils::CFileGZOutputStream 	&m_out_rawlog;
 			size_t  				m_entries_removed, m_entries_parsed;
 
-			CRawlogProcessorFilterObservations(mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose, CFileGZOutputStream &out_rawlog) :
+			CRawlogProcessorFilterObservations(mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose, mrpt::utils::CFileGZOutputStream &out_rawlog) :
 				CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose),
 				m_out_rawlog(out_rawlog),
 				m_entries_removed(0),

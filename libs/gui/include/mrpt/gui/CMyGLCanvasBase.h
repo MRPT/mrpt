@@ -184,7 +184,7 @@ namespace mrpt
 				float  color_r=1,
 				float  color_g=1,
 				float  color_b=1,
-				TOpenGLFont    font = MRPT_GLUT_BITMAP_TIMES_ROMAN_24
+				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24
 				);
 
 			/** Return the exact width in pixels for a given string, as will be rendered by renderTextBitmap().
@@ -192,7 +192,7 @@ namespace mrpt
 			  */
 			int textBitmapWidth(
 				const std::string &str,
-				TOpenGLFont    font = MRPT_GLUT_BITMAP_TIMES_ROMAN_24 );
+				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24 );
 
 			// Used to create the gl context at startup.
 			void OnWindowCreation(wxWindowCreateEvent &ev);

@@ -138,7 +138,7 @@ namespace slam
 
 		 /** Returns the 2D points of current local map
 		   */
-		void  getCurrentMapPoints( mrpt::vector<float> &x, mrpt::vector<float> &y);
+		void  getCurrentMapPoints( std::vector<float> &x, std::vector<float> &y);
 
 		/** Returns the map built so far. NOTE that for efficiency a pointer to the internal object is passed, DO NOT delete nor modify the object in any way, if desired, make a copy of ir with "duplicate()".
 		  */

@@ -47,8 +47,8 @@ void TestTrackFeatures()
 {
 
 	CImage im1, im2;
-	im1.loadFromFile("J:/Trabajo/Experimentos/[2009] vOdometry Characterization/right1.jpg");
-	im2.loadFromFile("J:/Trabajo/Experimentos/[2009] vOdometry Characterization/right2.jpg");
+	im1.loadFromFile("/Trabajo/Experimentos/[2009] vOdometry Characterization/right1.jpg");
+	im2.loadFromFile("/Trabajo/Experimentos/[2009] vOdometry Characterization/right2.jpg");
 
 	CFeatureExtraction	fExt;
 	CFeatureList		feats;
@@ -57,10 +57,14 @@ void TestTrackFeatures()
 	fExt.detectFeatures( im1, feats );
 	feats.saveToTextFile("J:/Trabajo/Experimentos/[2009] vOdometry Characterization/before.txt");
 
-	vision::trackFeatures( im1, im2, feats );
+	CFeatureTracker_KL	tracker;
+	// tracker.extra_params["add_new_features"]  = 1;   // track, AND ALSO, add new features
+	// ...
+	
+	// Do tracking:
+	tracker.trackFeatures(im1, im2, feats);
 
-	feats.saveToTextFile("J:/Trabajo/Experimentos/[2009] vOdometry Characterization/after.txt");
-
+	feats.saveToTextFile("/Trabajo/Experimentos/[2009] vOdometry Characterization/after.txt");
 }
 
 void TestRectifyImages()
