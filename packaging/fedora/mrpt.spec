@@ -257,7 +257,7 @@ make man_pages_all
 
 %check
 export LD_LIBRARY_PATH=$(pwd)/lib
-make test VERBOSE=1 ARGS="-VV" || echo "\n***************\n* WARNING: Some unit tests failed, but continuing anyway\n************\n\n"
+make test VERBOSE=1 ARGS="-VV" 
 
 %install
 rm -rf $RPM_BUILD_ROOT

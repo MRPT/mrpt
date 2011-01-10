@@ -26,6 +26,12 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
+// IMPORTANT: It seems to be a problem with Eigen3 vectorization + amd64 + GCC older than 4.5:
+#if defined(__GNUC__) && MRPT_WORD_SIZE!=32 && !( (__GNUC__ - 0 > 4 || (__GNUC__ - 0 == 4 && __GNUC_MINOR__ - 0 >= 5)) )
+#	define EIGEN_DONT_VECTORIZE   // This must be BEFORE all other includes
+#endif
+
+
 #include <mrpt/base.h>  // Precompiled headers
 
 #include <mrpt/random.h>
@@ -38,6 +44,7 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+
 
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -529,10 +536,6 @@ void CPose3DQuatPDFGaussian::jacobiansPoseComposition(
 			qx, qr,-qz, qy,
 			qy, qz, qr,-qx,
 			qz,-qy, qx, qr };
-
-		// ******** DON'T ASK ME WHY, IF THIS CODE IS NOT HERE, RESULT IS WRONG IN GCC (WTF!!!!) **********
-		std::stringstream s; s << CMatrixFixedNumeric<double,4,4>(aux44_data);
-		// ************************************************************************************************
 
 		df_du.block(3,3, 4,4).noalias() = (norm_jacob * CMatrixFixedNumeric<double,4,4>(aux44_data)).eval();
 	}

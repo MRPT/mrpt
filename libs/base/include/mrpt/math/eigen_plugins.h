@@ -279,9 +279,9 @@ public:
 	/** Computes the laplacian of this square graph weight matrix.
 	  *  The laplacian matrix is L = D - W, with D a diagonal matrix with the degree of each node, W the
 	  */
-    template<typename OtherDerived>
-    EIGEN_STRONG_INLINE void laplacian(Eigen::MatrixBase <OtherDerived>& ret) const
-    {
+	template<typename OtherDerived>
+	EIGEN_STRONG_INLINE void laplacian(Eigen::MatrixBase <OtherDerived>& ret) const
+	{
 		if (rows()!=cols()) throw std::runtime_error("laplacian: Defined for square matrixes only");
 		const Index N = rows();
 		ret = -(*this);
