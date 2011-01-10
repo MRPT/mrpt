@@ -261,7 +261,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 				glLoadIdentity();
 				glOrtho( -Ax*0.5,Ax*0.5,-Ay*0.5,Ay*0.5,0.1, 10);
 
-				gluLookAt(0,0,1,
+				gluLookAt(0,0,-1,
 					0,0,0,
 					0.0,-1.0, 0.0);
 
