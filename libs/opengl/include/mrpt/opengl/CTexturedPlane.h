@@ -79,6 +79,12 @@ namespace mrpt
 				CRenderizableDisplayList::notifyChange();
 			}
 
+			/** Get the coordinates of the four corners that define the plane on the XY plane. */
+			inline void getPlaneCorners(float &xMin, float &xMax, float &yMin, float &yMax) const
+			{
+				xMin = m_xMin; xMax = m_xMax;
+				yMin = m_yMin; yMax = m_yMax;
+			}
 
 			/** Class factory  */
 			static CTexturedPlanePtr Create(

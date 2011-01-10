@@ -151,6 +151,7 @@ IF(BUILD_EXAMPLES)
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		opengl_video_demo
+		opengl_video_viewport_demo
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-hwdrivers mrpt-gui)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

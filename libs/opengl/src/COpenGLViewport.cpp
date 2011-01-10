@@ -76,6 +76,8 @@ COpenGLViewport::COpenGLViewport( COpenGLScene *parent, const string &name  ) :
 	m_clip_max(10000),
 	m_custom_backgb_color(false),
 	m_background_color(0.6,0.6,0.6),
+	m_isImageView(false),
+	m_imageview_quad(),
 	m_objects()
 {
 
@@ -226,174 +228,231 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
         }
         glDisable(GL_SCISSOR_TEST);
 
-		// Set camera:
-		// -------------------------------------------
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-
-		const CListOpenGLObjects	*objectsToRender;
-		COpenGLViewport		*viewForGetCamera;
-
-		if (m_isCloned)
-		{	// Clone: render someone's else objects.
-			ASSERT_(m_parent.get()!=NULL);
-
-			COpenGLViewportPtr view = m_parent->getViewport( m_clonedViewport );
-			if (!view)
-				THROW_EXCEPTION_CUSTOM_MSG1("Cloned viewport '%s' not found in parent COpenGLScene",m_clonedViewport.c_str());
-
-			objectsToRender = &view->m_objects;
-			viewForGetCamera = m_isClonedCamera ? view.pointer() : const_cast<COpenGLViewport*>(this);
-		}
-		else
-		{	// Normal case: render our own objects:
-			objectsToRender = &m_objects;
-			viewForGetCamera = const_cast<COpenGLViewport*>(this);
-		}
-
-		// Get camera:
-		// 1st: if there is a CCamera in the scene:
-		CRenderizablePtr cam_ptr = viewForGetCamera->getByClass<CCamera>();
-
-		CCamera *myCamera=NULL;
-		if (cam_ptr.present())
-		{
-			myCamera = getAs<CCamera>(cam_ptr);
-		}
-
-		// 2nd: the internal camera of all viewports:
-		if (!myCamera)
-			myCamera = &viewForGetCamera->m_camera;
-
-        ASSERT_(m_camera.m_distanceZoom>0);
-
-
-        m_lastProjMat.azimuth = DEG2RAD(myCamera->m_azimuthDeg);
-        m_lastProjMat.elev    = DEG2RAD(myCamera->m_elevationDeg);
-
-        m_lastProjMat.eye.x = myCamera->m_pointingX +  max(0.01f,myCamera->m_distanceZoom) * cos(m_lastProjMat.azimuth)*cos(m_lastProjMat.elev);
-        m_lastProjMat.eye.y = myCamera->m_pointingY +  max(0.01f,myCamera->m_distanceZoom) * sin(m_lastProjMat.azimuth)*cos(m_lastProjMat.elev);
-        m_lastProjMat.eye.z = myCamera->m_pointingZ +  max(0.01f,myCamera->m_distanceZoom) * sin(m_lastProjMat.elev);
-
-
-        if (fabs(fabs(myCamera->m_elevationDeg)-90)>1e-6)
+        // If we are in "image mode", rendering is much simpler: just set
+        //  ortho projection and render the image quad:
+        if (m_isImageView)
         {
-            m_lastProjMat.up.x=0;
-            m_lastProjMat.up.y=0;
-            m_lastProjMat.up.z=1;
+        	// "Image mode" rendering:
+        	// -----------------------------------
+        	if (m_imageview_quad) // should be ALWAYS true, but just in case!
+        	{
+				const mrpt::opengl::CTexturedPlane *gl_plane = reinterpret_cast<const mrpt::opengl::CTexturedPlane*>(m_imageview_quad.pointer()); // We are sure of this pointer type.
+
+				glMatrixMode(GL_PROJECTION);
+				glLoadIdentity();
+
+				// Get the plane corners to find out the image aspect ratio:
+				float pl_xMin, pl_xMax, pl_yMin, pl_yMax;
+				gl_plane->getPlaneCorners(pl_xMin, pl_xMax, pl_yMin, pl_yMax);
+
+
+				double Ax = pl_xMax-pl_xMin;
+				double Ay = pl_yMax-pl_yMin;
+
+				// Need to adjust the aspect ratio?
+				const double ratio = vw*Ay/double(vh*Ax);
+
+				if (ratio>1)
+					Ax *= ratio;
+				else
+				if (ratio!=0) Ay /=ratio;
+
+				glMatrixMode(GL_PROJECTION);
+				glLoadIdentity();
+				glOrtho( -Ax*0.5,Ax*0.5,-Ay*0.5,Ay*0.5,0.1, 10);
+
+				gluLookAt(0,0,1,
+					0,0,0,
+					0.0,-1.0, 0.0);
+
+				// Render:
+				glMatrixMode(GL_MODELVIEW);
+				glLoadIdentity();
+
+				glPushAttrib(GL_ALL_ATTRIB_BITS);
+				CRenderizable::checkOpenGLError();
+
+				gl_plane->render();
+
+				glPopAttrib();
+				CRenderizable::checkOpenGLError();
+        	}
+			// done.
         }
         else
         {
-            float sgn = myCamera->m_elevationDeg>0 ? 1:-1;
-            m_lastProjMat.up.x = -cos(DEG2RAD(myCamera->m_azimuthDeg))*sgn;
-            m_lastProjMat.up.y = -sin(DEG2RAD(myCamera->m_azimuthDeg))*sgn;
-            m_lastProjMat.up.z = 0;
-        }
+        	// Non "image mode" rendering:
 
-		m_lastProjMat.is_projective = myCamera->m_projectiveModel;
-		m_lastProjMat.FOV           = myCamera->m_projectiveFOVdeg;
-		m_lastProjMat.pointing.x    = myCamera->m_pointingX;
-		m_lastProjMat.pointing.y    = myCamera->m_pointingY;
-		m_lastProjMat.pointing.z    = myCamera->m_pointingZ;
-		m_lastProjMat.zoom    		= myCamera->m_distanceZoom;
+			// Set camera:
+			// -------------------------------------------
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
 
-        if (myCamera->m_projectiveModel)
-        {
-            gluPerspective( myCamera->m_projectiveFOVdeg, vw/double(vh),m_clip_min,m_clip_max);
-        }
-        else
-        {
-			const double ratio = vw/double(vh);
-			double Ax = myCamera->m_distanceZoom*0.5;
-			double Ay = myCamera->m_distanceZoom*0.5;
+			const CListOpenGLObjects	*objectsToRender;
+			COpenGLViewport		*viewForGetCamera;
 
-			if (ratio>1)
-				Ax *= ratio;
+			if (m_isCloned)
+			{	// Clone: render someone's else objects.
+				ASSERT_(m_parent.get()!=NULL);
+
+				COpenGLViewportPtr view = m_parent->getViewport( m_clonedViewport );
+				if (!view)
+					THROW_EXCEPTION_CUSTOM_MSG1("Cloned viewport '%s' not found in parent COpenGLScene",m_clonedViewport.c_str());
+
+				objectsToRender = &view->m_objects;
+				viewForGetCamera = m_isClonedCamera ? view.pointer() : const_cast<COpenGLViewport*>(this);
+			}
+			else
+			{	// Normal case: render our own objects:
+				objectsToRender = &m_objects;
+				viewForGetCamera = const_cast<COpenGLViewport*>(this);
+			}
+
+			// Get camera:
+			// 1st: if there is a CCamera in the scene:
+			CRenderizablePtr cam_ptr = viewForGetCamera->getByClass<CCamera>();
+
+			CCamera *myCamera=NULL;
+			if (cam_ptr.present())
+			{
+				myCamera = getAs<CCamera>(cam_ptr);
+			}
+
+			// 2nd: the internal camera of all viewports:
+			if (!myCamera)
+				myCamera = &viewForGetCamera->m_camera;
+
+			ASSERT_(m_camera.m_distanceZoom>0);
+
+
+			m_lastProjMat.azimuth = DEG2RAD(myCamera->m_azimuthDeg);
+			m_lastProjMat.elev    = DEG2RAD(myCamera->m_elevationDeg);
+
+			m_lastProjMat.eye.x = myCamera->m_pointingX +  max(0.01f,myCamera->m_distanceZoom) * cos(m_lastProjMat.azimuth)*cos(m_lastProjMat.elev);
+			m_lastProjMat.eye.y = myCamera->m_pointingY +  max(0.01f,myCamera->m_distanceZoom) * sin(m_lastProjMat.azimuth)*cos(m_lastProjMat.elev);
+			m_lastProjMat.eye.z = myCamera->m_pointingZ +  max(0.01f,myCamera->m_distanceZoom) * sin(m_lastProjMat.elev);
+
+
+			if (fabs(fabs(myCamera->m_elevationDeg)-90)>1e-6)
+			{
+				m_lastProjMat.up.x=0;
+				m_lastProjMat.up.y=0;
+				m_lastProjMat.up.z=1;
+			}
 			else
 			{
-				if (ratio!=0) Ay /=ratio;
+				float sgn = myCamera->m_elevationDeg>0 ? 1:-1;
+				m_lastProjMat.up.x = -cos(DEG2RAD(myCamera->m_azimuthDeg))*sgn;
+				m_lastProjMat.up.y = -sin(DEG2RAD(myCamera->m_azimuthDeg))*sgn;
+				m_lastProjMat.up.z = 0;
 			}
 
-            glOrtho( -Ax,Ax,-Ay,Ay,-0.5*m_clip_max,0.5*m_clip_max);
-        }
-		// This command is common to ortho and perspective:
-		gluLookAt(
-			m_lastProjMat.eye.x,
-			m_lastProjMat.eye.y,
-			m_lastProjMat.eye.z,
-			m_lastProjMat.pointing.x,
-			m_lastProjMat.pointing.y,
-			m_lastProjMat.pointing.z,
-			m_lastProjMat.up.x,
-			m_lastProjMat.up.y,
-			m_lastProjMat.up.z);
-		CRenderizable::checkOpenGLError();
+			m_lastProjMat.is_projective = myCamera->m_projectiveModel;
+			m_lastProjMat.FOV           = myCamera->m_projectiveFOVdeg;
+			m_lastProjMat.pointing.x    = myCamera->m_pointingX;
+			m_lastProjMat.pointing.y    = myCamera->m_pointingY;
+			m_lastProjMat.pointing.z    = myCamera->m_pointingZ;
+			m_lastProjMat.zoom    		= myCamera->m_distanceZoom;
 
-		// Render objects:
-		// -------------------------------------------
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
-        glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LEQUAL); //GL_LESS
-
-		for (CListOpenGLObjects::const_iterator	itP=objectsToRender->begin();itP!=objectsToRender->end();++itP)
-		{
-			if (!itP->present()) continue;
-			it = itP->pointer(); // Use plain pointers, faster than smart pointers:
-			if (!it->isVisible()) continue;
-
-			// 3D coordinates transformation:
-			glMatrixMode(GL_MODELVIEW);
-			glPushMatrix();
-
-			glPushAttrib(GL_ALL_ATTRIB_BITS);
-			CRenderizable::checkOpenGLError();
-
-			// This is the right order so that the transformation results in the standard matrix.
-			// The order seems to be wrong, but it's not.
-			glTranslated(it->m_x, it->m_y, it->m_z);
-			glRotated(it->m_yaw, 0.0, 0.0, 1.0);
-			glRotated(it->m_pitch, 0.0, 1.0, 0.0);
-			glRotated(it->m_roll, 1.0, 0.0, 0.0);
-
-			// Do scaling after the other transformations!
-			glScalef(it->m_scale_x,it->m_scale_y,it->m_scale_z);
-
-			// Set color:
-			glColor4f( it->m_color_R,it->m_color_G,it->m_color_B,it->m_color_A);
-
-			it->render();
-
-			if (it->m_show_name)
+			if (myCamera->m_projectiveModel)
 			{
-				glDisable(GL_DEPTH_TEST);
-				glColor3f(1.f,1.f,1.f);  // Must be called BEFORE glRasterPos3f
-				glRasterPos3f(0.0f,0.0f,0.0f);
-
-				GLfloat		raster_pos[4];
-				glGetFloatv( GL_CURRENT_RASTER_POSITION, raster_pos);
-				float eye_distance= raster_pos[3];
-
-				void *font=NULL;
-				if (eye_distance<2)
-						font = GLUT_BITMAP_TIMES_ROMAN_24;
-				else if(eye_distance<200)
-					font = GLUT_BITMAP_TIMES_ROMAN_10;
-
-				if (font)
-					CRenderizable::renderTextBitmap( it->m_name.c_str(), font);
-
-				glEnable(GL_DEPTH_TEST);
+				gluPerspective( myCamera->m_projectiveFOVdeg, vw/double(vh),m_clip_min,m_clip_max);
 			}
+			else
+			{
+				const double ratio = vw/double(vh);
+				double Ax = myCamera->m_distanceZoom*0.5;
+				double Ay = myCamera->m_distanceZoom*0.5;
 
-			glPopAttrib();
+				if (ratio>1)
+					Ax *= ratio;
+				else
+				{
+					if (ratio!=0) Ay /=ratio;
+				}
+
+				glOrtho( -Ax,Ax,-Ay,Ay,-0.5*m_clip_max,0.5*m_clip_max);
+			}
+			// This command is common to ortho and perspective:
+			gluLookAt(
+				m_lastProjMat.eye.x,
+				m_lastProjMat.eye.y,
+				m_lastProjMat.eye.z,
+				m_lastProjMat.pointing.x,
+				m_lastProjMat.pointing.y,
+				m_lastProjMat.pointing.z,
+				m_lastProjMat.up.x,
+				m_lastProjMat.up.y,
+				m_lastProjMat.up.z);
 			CRenderizable::checkOpenGLError();
 
-			glPopMatrix();
-			CRenderizable::checkOpenGLError();
+			// Render objects:
+			// -------------------------------------------
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
 
-		} // end foreach object
+			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(GL_LEQUAL); //GL_LESS
+
+			for (CListOpenGLObjects::const_iterator	itP=objectsToRender->begin();itP!=objectsToRender->end();++itP)
+			{
+				if (!itP->present()) continue;
+				it = itP->pointer(); // Use plain pointers, faster than smart pointers:
+				if (!it->isVisible()) continue;
+
+				// 3D coordinates transformation:
+				glMatrixMode(GL_MODELVIEW);
+				glPushMatrix();
+
+				glPushAttrib(GL_ALL_ATTRIB_BITS);
+				CRenderizable::checkOpenGLError();
+
+				// This is the right order so that the transformation results in the standard matrix.
+				// The order seems to be wrong, but it's not.
+				glTranslated(it->m_x, it->m_y, it->m_z);
+				glRotated(it->m_yaw, 0.0, 0.0, 1.0);
+				glRotated(it->m_pitch, 0.0, 1.0, 0.0);
+				glRotated(it->m_roll, 1.0, 0.0, 0.0);
+
+				// Do scaling after the other transformations!
+				glScalef(it->m_scale_x,it->m_scale_y,it->m_scale_z);
+
+				// Set color:
+				glColor4f( it->m_color_R,it->m_color_G,it->m_color_B,it->m_color_A);
+
+				it->render();
+
+				if (it->m_show_name)
+				{
+					glDisable(GL_DEPTH_TEST);
+					glColor3f(1.f,1.f,1.f);  // Must be called BEFORE glRasterPos3f
+					glRasterPos3f(0.0f,0.0f,0.0f);
+
+					GLfloat		raster_pos[4];
+					glGetFloatv( GL_CURRENT_RASTER_POSITION, raster_pos);
+					float eye_distance= raster_pos[3];
+
+					void *font=NULL;
+					if (eye_distance<2)
+							font = GLUT_BITMAP_TIMES_ROMAN_24;
+					else if(eye_distance<200)
+						font = GLUT_BITMAP_TIMES_ROMAN_10;
+
+					if (font)
+						CRenderizable::renderTextBitmap( it->m_name.c_str(), font);
+
+					glEnable(GL_DEPTH_TEST);
+				}
+
+				glPopAttrib();
+				CRenderizable::checkOpenGLError();
+
+				glPopMatrix();
+				CRenderizable::checkOpenGLError();
+
+			} // end foreach object
+
+        } // end of non "image mode" rendering
 
 
 		// Finally, draw the border:
@@ -730,4 +789,44 @@ void COpenGLViewport::getCurrentCameraPose( mrpt::poses::CPose3D &out_cameraPose
 {
 	mrpt::math::TLine3D dum;
 	get3DRayForPixelCoord(0,0,dum, &out_cameraPose);
+}
+
+
+/** Resets the viewport to a normal 3D viewport \sa setCloneView, setImageView */
+void COpenGLViewport::setNormalMode()
+{
+	// If this was a m_isImageView, remove the quad object:
+	if (m_isImageView && m_imageview_quad)
+		m_imageview_quad.clear();
+
+	m_isCloned=false;
+	m_isClonedCamera=false;
+	m_isImageView=false;
+}
+
+void COpenGLViewport::setImageView(const mrpt::utils::CImage &img)
+{
+	internal_setImageView_fast(img,false);
+}
+void COpenGLViewport::setImageView_fast(mrpt::utils::CImage &img)
+{
+	internal_setImageView_fast(img,true);
+}
+
+void COpenGLViewport::internal_setImageView_fast(const mrpt::utils::CImage &img, bool is_fast)
+{
+	// If this is the first time, we have to create the quad object:
+	if (!m_isImageView || !m_imageview_quad)
+		m_imageview_quad = mrpt::opengl::CTexturedPlane::Create();
+	m_isImageView = true;
+
+	// Update texture image:
+	mrpt::opengl::CTexturedPlane *gl_plane = reinterpret_cast<mrpt::opengl::CTexturedPlane*>(m_imageview_quad.pointer()); // We are sure of this pointer type.
+
+	const double IMG_ASPECT_RATIO_INV = double(img.getHeight())/img.getWidth();
+	gl_plane->setPlaneCorners(-0.5,0.5,-0.5*IMG_ASPECT_RATIO_INV,0.5*IMG_ASPECT_RATIO_INV);
+
+	if (!is_fast)
+	      gl_plane->assignImage(img);
+	else  gl_plane->assignImage_fast(*(const_cast<mrpt::utils::CImage*>(&img)));
 }

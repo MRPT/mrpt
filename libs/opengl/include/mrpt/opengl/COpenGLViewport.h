@@ -38,12 +38,10 @@ namespace mrpt
 {
 	namespace utils { class CStringList; }
 
-	using namespace mrpt::math;
-
-	/** The namespace for 3D scene representation and rendering.
-	  */
 	namespace opengl
 	{
+		using namespace mrpt::math;
+
 		class COpenGLScene;
 		class CRenderizable;
 
@@ -52,49 +50,63 @@ namespace mrpt
 
 		/** A viewport within a COpenGLScene, containing a set of OpenGL objects to render.
 		  *   This class has protected constuctor, thus it cannot be created by users. Use COpenGLScene::createViewport instead.
-		  *  Refer to opengl::COpenGLScene for further details.
+		  *  A viewport has these "operation modes":
+		  *		- Normal (default): It renders the contained objects.
+		  *		- Cloned: It clones the objects from another viewport. See \a setCloneView()
+		  *		- Image mode: It renders an image (e.g. from a video stream) efficiently using a textued quad. See \a setImageView().
+		  *
+		  * In any case, the viewport can be resized to only fit a part of the entire parent viewport.
+		  *  There will be always at least one viewport in a COpenGLScene named "main".
+		  *
+		  *  Refer to mrpt::opengl::COpenGLScene for further details.
 		  */
 		class OPENGL_IMPEXP COpenGLViewport : public mrpt::utils::CSerializable
 		{
 			DEFINE_SERIALIZABLE( COpenGLViewport )
-
 			friend class COpenGLScene;
 		public:
+			// -------------------------------------------------------------------
+			/** @name Set the viewport "modes"
+			    @{ */
 
-			typedef CListOpenGLObjects::const_iterator 	const_iterator;
-			typedef CListOpenGLObjects::iterator 		iterator;
-
-			inline const_iterator begin() const { return  m_objects.begin(); }
-			inline const_iterator end() const { return  m_objects.end(); }
-			inline iterator begin() { return  m_objects.begin(); }
-			inline iterator end() { return  m_objects.end(); }
-
-
-			/** Set this view as a clone of some other viewport, given its name - as a side effect, current list of internal OpenGL objects is cleared.
+			/** Set this viewport as a clone of some other viewport, given its name - as a side effect, current list of internal OpenGL objects is cleared.
 			  *  By default, only the objects are cloned, not the camera. See
 			  * \sa resetCloneView
 			  */
 			void setCloneView( const std::string &clonedViewport );
 
-			/** Reset the viewport to normal mode: rendering its own objects.
-			  * \sa setCloneView
+			/** Set this viewport into "image view"-mode, where an image is efficiently drawn (fitting the viewport area) using an OpenGL textured quad.
+			  *  Call this method with the new image to update the displayed image (but recall to first lock the parent openglscene's critical section, then do the update, then release the lock, and then issue a window repaint).
+			  *  Internally, the texture is drawn using a mrpt::opengl::CTexturedPlane
+			  *  The viewport can be reverted to behave like a normal viewport by calling setNormalMode()
+			  * \sa setImageView_fast
 			  */
-			inline void resetCloneView() { m_isCloned=false;m_isClonedCamera=false; }
+			void setImageView(const mrpt::utils::CImage &img);
+
+			/** Just like \a setImageView but moves the internal image memory instead of making a copy, so it's faster but empties the input image.
+			  * \sa setImageView
+			  */
+			void setImageView_fast(mrpt::utils::CImage &img);
+
+			/** Reset the viewport to normal mode: rendering its own objects.
+			  * \sa setCloneView, setNormalMode
+			  */
+			inline void resetCloneView() { setNormalMode(); }
 
 			/** If set to true, and setCloneView() has been called, this viewport will be rendered using the camera of the cloned viewport.
 			  */
 			inline void setCloneCamera(bool enable) { m_isClonedCamera = enable; }
 
+			/** Resets the viewport to a normal 3D viewport \sa setCloneView, setImageView */
+			void setNormalMode();
 
-			/** Delete all internal obejcts
-			  * \sa insert
-			  */
-			void clear();
+			/** @} */ // end of Set the "viewport mode"
+			// ------------------------------------------------------
 
-			/** Insert a new object into the list.
-			  *  The object MUST NOT be deleted, it will be deleted automatically by this object when not required anymore.
-			  */
-			void insert( const CRenderizablePtr &newObject );
+
+			// -------------------------------------------------------------------
+			/** @name Change or read viewport properties (except "viewport modes")
+			    @{ */
 
 			/** Returns the name of the viewport */
 			inline std::string getName() { return m_name; }
@@ -161,9 +173,6 @@ namespace mrpt
 
 			inline TColorf getCustomBackgroundColor() const { return m_background_color; }
 
-
-			virtual ~COpenGLViewport();  //!< Destructor: clears all objects.
-
 			/** Compute the 3D ray corresponding to a given pixel; this can be used to allow the user to pick and select 3D objects by clicking onto the 2D image.
 			  *  \param x_coord Horizontal coordinate with the usual meaning (0:left of the viewport, W-1: right border).
 			  *  \param y_coord Horizontal coordinate with the usual meaning (0:top of the viewport, H-1: right border).
@@ -173,6 +182,31 @@ namespace mrpt
 			  * \sa getCurrentCameraPose
 			  */
 			void get3DRayForPixelCoord( const double x_coord, const double y_coord, mrpt::math::TLine3D &out_ray, mrpt::poses::CPose3D *out_cameraPose=NULL ) const;
+
+			/** @} */ // end of Change or read viewport properties
+			// ------------------------------------------------------
+
+
+			// -------------------------------------------------------------------
+			/** @name Contained objects set/get/search
+			    @{ */
+
+			typedef CListOpenGLObjects::const_iterator 	const_iterator;
+			typedef CListOpenGLObjects::iterator 		iterator;
+
+			inline const_iterator begin() const { return  m_objects.begin(); }
+			inline const_iterator end() const { return  m_objects.end(); }
+			inline iterator begin() { return  m_objects.begin(); }
+			inline iterator end() { return  m_objects.end(); }
+
+			/** Delete all internal obejcts
+			  * \sa insert */
+			void clear();
+
+			/** Insert a new object into the list.
+			  *  The object MUST NOT be deleted, it will be deleted automatically by this object when not required anymore.
+			  */
+			void insert( const CRenderizablePtr &newObject );
 
 			/** Compute the current 3D camera pose.
 			  * \sa get3DRayForPixelCoord
@@ -214,8 +248,6 @@ namespace mrpt
 				MRPT_END;
 			 }
 
-
-
 			/** Removes the given object from the scene (it also deletes the object to free its memory).
 			  */
 			void removeObject( const CRenderizablePtr & obj );
@@ -229,6 +261,13 @@ namespace mrpt
 			opengl::CCamera& getCamera() { return m_camera;} //!< Get a reference to the camera associated with this viewport.
 
 			const opengl::CCamera & getCamera() const { return m_camera;} //!< Get a reference to the camera associated with this viewport.
+
+			/** @} */ // end of Contained objects set/get/search
+			// ------------------------------------------------------
+
+
+			virtual ~COpenGLViewport();  //!< Destructor: clears all objects.
+
 
 		protected:
 			/** Constructor, invoked from COpenGLScene only.
@@ -259,6 +298,8 @@ namespace mrpt
 			double			m_clip_min,m_clip_max; //!< The min/max clip depth distances (default: 0.1 - 10000)
 			bool			m_custom_backgb_color;
 			TColorf			m_background_color;  //!< used only if m_custom_backgb_color
+			bool			m_isImageView; //!< Set by setImageView
+			CRenderizablePtr m_imageview_quad ; //!< A mrpt::opengl::CTexturedPlane used after setImageView() is called
 
 			struct TLastProjectiveMatrixInfo
 			{
@@ -279,6 +320,8 @@ namespace mrpt
 			  *  Objects are automatically deleted when calling "clear" or in the destructor.
 			  */
 			opengl::CListOpenGLObjects		m_objects;
+
+			void internal_setImageView_fast(const mrpt::utils::CImage &img, bool is_fast);
 
 		};
 		/**

@@ -44,6 +44,7 @@
 		- Fixed compiling under MIPS/SPARC/S930/... due to a bug in Eigen3-beta (patch sent upstream and fixed in local copy).
 		- Fixed build errors against latest changes in eigen3 (before their release version).
 	- Changes in classes:
+		- mrpt::opengl::COpenGLViewport now has a special "image mode" which makes very easy to render images to opengl windows efficiently. See the example "opengl_video_viewport_demo".
 		- Improvement in Kinect Linux driver (libfreenect), avoiding intensive usage of critical sections (Thanks, "Gonzales" - see: http://www.mrpt.org/node/491 )
 		- Kinect: Embedded libfreenect library updated to latest GIT revision (12/DEC/2010).
 		- mrpt::hwdrivers::CHokuyoURG now support ethernet connection (tested in HOKUYO UXM series)[JRRS].
@@ -53,6 +54,7 @@
 		- hokuyo_laser_test. Now it's possible to choose between USB and Ethernet connection.
 	- New examples:
 		- opengl_video_demo: A demo of opengl textures from a video stream.
+		- opengl_video_viewport_demo: A demonstration of the new viewport "image mode".
 	- BUG FIXES:
 		- Octree-based rendering of point cloud didn't discard all invisible nodes, not doing an optimal rendering.
 		- Fixed situations were RTTI registrations were not updated before usage, leading to "uregistered class?" exceptions.

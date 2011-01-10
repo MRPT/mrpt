@@ -323,7 +323,7 @@ namespace mrpt
 #if MRPT_KINECT_WITH_LIBFREENECT
 			// Auxiliary getters/setters (we can't declare the libfreenect callback as friend since we
 			//   want to avoid including the API headers here).
-			inline CObservation3DRangeScan & internal_latest_obs() { return m_latest_obs; }
+			inline mrpt::slam::CObservation3DRangeScan & internal_latest_obs() { return m_latest_obs; }
 			inline volatile uint32_t & internal_tim_latest_depth() { return m_tim_latest_depth; }
 			inline volatile uint32_t & internal_tim_latest_rgb()   { return m_tim_latest_rgb; }
 #endif
@@ -348,7 +348,7 @@ namespace mrpt
 			void *m_f_dev;  //!< The "freenect_device", or NULL if closed
 
 			// Data fields for use with the callback function:
-			CObservation3DRangeScan  m_latest_obs;
+			mrpt::slam::CObservation3DRangeScan  m_latest_obs;
 			volatile uint32_t                 m_tim_latest_depth, m_tim_latest_rgb; // 0 = not updated
 #endif
 
