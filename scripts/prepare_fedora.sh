@@ -42,31 +42,25 @@ else
 		MRPT_SVN_VERSION=${MRPT_SVN_VERSION:0:${#MRPT_SVN_VERSION}-1}
 	fi
 
-	MRPT_VERSION_STR="${MRPT_VERSION_STR}svn${MRPT_SVN_VERSION}"
+#	MRPT_VERSION_STR="${MRPT_VERSION_STR}svn${MRPT_SVN_VERSION}"
 fi
 
 # Just copy as in release,
 bash scripts/prepare_release.sh
 
-
-# then delete the SIFT stuff:
+# Delete zip (not needed)
 cd $MRPT_DEB_DIR
-tar -xf mrpt-${MRPT_VERSION_STR}.tar.gz
-rm mrpt-${MRPT_VERSION_STR}.tar.gz
-mv mrpt-${MRPT_VERSION_STR} mrpt-${MRPT_VER_MMP}
-cd mrpt-${MRPT_VER_MMP}
-rm -fr otherlibs/sift*
+rm *.zip > /dev/null 2>/dev/null
 
-# Orig tarball:
-cd ..
-echo "Creating orig tarball: mrpt-${MRPT_VERSION_STR}.tar.gz"
-rm -fr $MRPT_DEB_DIR/*.tar*
-tar czf ~/packages/SOURCES/mrpt-${MRPT_VER_MMP}.tar.gz mrpt-${MRPT_VER_MMP}
+# Rename tar.gz to Fedora convention:
+mv mrpt*.tar.gz mrpt-${MRPT_VERSION_STR}-$(date +%Y%m%d)svn${MRPT_SVN_VERSION}.tar.gz
 
-echo "Creating RPM package:"
-#rpmbuild -ta mrpt-${MRPT_VER_MMP}.tar.gz
+ls -l
 
-ls -l ~/packages/SOURCES/
+# Create source package:
+cp mrpt*.gz ${HOME}/rpmbuild/SOURCES/
+
+ls -l ${HOME}/rpmbuild/SOURCES/
 
 
 exit 0

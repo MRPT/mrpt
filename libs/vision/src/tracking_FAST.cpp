@@ -64,7 +64,7 @@ double match_template_SQDIFF(
 		const uint8_t *pixel_patch = reinterpret_cast<const uint8_t *>(patch->imageData) + patch->widthStep*y + 0;
 
 		for (unsigned int x=patch->width;x!=0;x--)
-			sq_diff += mrpt::square( (*pixel_img++) - (*pixel_patch++) );
+			sq_diff += square( (*pixel_img++) - (*pixel_patch++) );
 	}
 
 	return 1.0 - sq_diff / (square(255.0)* patch->width *  patch->height);
