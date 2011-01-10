@@ -1,7 +1,7 @@
 Summary: Libraries and programs for mobile robot SLAM and navigation
 Name: mrpt
 Version: 0.9.4
-Release: 0.1.20110110svn2382%{?dist}
+Release: 0.1.20110110svn2383%{?dist}
 License: GPLv3+
 Group: Development/Libraries
 URL: http://www.mrpt.org/
@@ -15,7 +15,7 @@ URL: http://www.mrpt.org/
 # following commands to generate the tarball:
 #  svn export http://babel.isa.uma.es/mrpt-browse-code/mrpt-0.7.0 mrpt-0.7.0
 #  tar -czvf mrpt-0.7.0-20090529svn1047.tar.gz mrpt-0.70
-Source: http://archive.mrpt.org/fedora-packages/mrpt-0.9.4-20110110svn2382.tar.gz
+Source: http://archive.mrpt.org/fedora-packages/mrpt-0.9.4-20110110svn2383.tar.gz
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -434,6 +434,9 @@ update-mime-database %{_datadir}/mime &> /dev/null || :
 
 
 %changelog
+* Mon Jan 10 2011 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.9.4-0.1.20110110svn2383
+- New 0.9.4 svn snapshot, with more secure unit tests for autobuilders.
+
 * Mon Jan 10 2011 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.9.4-0.1.20110110svn2382
 - Packaging of new upstream version 0.9.4 (svn snapshot)
 
