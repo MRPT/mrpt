@@ -33,9 +33,8 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
-
 #include <mrpt/math/KDTreeCapable.h>
-
+#include <mrpt/slam/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
@@ -48,7 +47,6 @@ namespace slam
 	using namespace mrpt::poses;
 	using namespace mrpt::math;
 
-	class CObservation2DRangeScan;
 	class CSimplePointsMap;
 	class CMultiMetricMap;
 	class CColouredPointsMap;
@@ -72,13 +70,10 @@ namespace slam
 		DEFINE_VIRTUAL_SERIALIZABLE( CPointsMap )
 
 	 protected:
-		 /** The points coordinates
-		  */
-		 std::vector<float>		x,y,z;
+		 std::vector<float>     x,y,z;        //!< The points coordinates
+		 std::vector<uint32_t>  pointWeight;  //!< The points weights
 
-		 /** The points weights
-		  */
-		 std::vector<uint32_t>		pointWeight;
+		 CSinCosLookUpTableFor2DScans  m_scans_sincos_cache; //!< Cache of sin/cos values for the latest 2D scan geometries.
 
 		 /** Auxiliary variables used in "getLargestDistanceFromOrigin"
 		   * \sa getLargestDistanceFromOrigin

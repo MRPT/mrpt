@@ -28,8 +28,6 @@
 
 #include <mrpt/obs.h>   // Precompiled headers
 
-
-
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
 
@@ -403,4 +401,17 @@ void CObservation2DRangeScan::internal_buildAuxPointsMap( const void *options ) 
 		throw std::runtime_error("[CObservation2DRangeScan::buildAuxPointsMap] ERROR: This function needs linking against mrpt-maps.\n");
 
 	(*ptr_internal_build_points_map_from_scan2D)(*this,m_cachedMap, options);
+}
+
+/** Fill out a T2DScanProperties structure with the parameters of this scan */
+void CObservation2DRangeScan::getScanProperties(T2DScanProperties& p) const
+{
+	p.nRays       = this->scan.size();
+	p.aperture    = this->aperture;
+	p.rightToLeft = this->rightToLeft;
+}
+
+bool mrpt::slam::operator<(const T2DScanProperties&a, const T2DScanProperties&b)
+{
+	return (a.nRays<b.nRays || a.aperture<b.aperture || (a.rightToLeft && !b.rightToLeft));
 }

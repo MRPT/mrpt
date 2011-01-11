@@ -37,6 +37,7 @@
 		- <a href="http://www.mrpt.org/Application:rawlog-grabber" >rawlog-grabber</a>: Added "hokuyo_UXM.ini" to support HOKUYO UXM laser series.
 	- New classes:
 		- mrpt::math::ModelSearch: A RANSAC + Genetic model fitter (by Zoltan Gaal)
+		- mrpt::slam::CSinCosLookUpTableFor2DScans: A cache of sin/cos values. It's used in points maps and now inserting laser scans in a point cloud is ~3 times faster.
 	- Build system:
 		- Linux/Mac: Don't enable BUILD_KINECT by default if libusb1-dev is not present. 
 		- Win64: Fixed building warnings and errors with MSVC9
@@ -50,6 +51,7 @@
 		- mrpt::hwdrivers::CHokuyoURG now support ethernet connection (tested in HOKUYO UXM series)[JRRS].
 		- mrpt::slam::CICP has a new option: skip_cov_calculation that can save some time in some cases.
 		- mrpt::poses::CPose3D was too strict in checking that the rotation matrix is orthogonal: admisible threshold is now 1 (plus/minus)3e-3.
+		- mrpt::slam::CPointsMaps: Inserting 2D laser scans is now ~3 times faster (thanks to mrpt::slam::CSinCosLookUpTableFor2DScans).
 	- Changes in examples:
 		- hokuyo_laser_test. Now it's possible to choose between USB and Ethernet connection.
 	- New examples:

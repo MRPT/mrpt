@@ -511,7 +511,18 @@ void  CGasConcentrationGridMap2D::writeToStream(CStream &out, int *version) cons
 		// Save the map contents:
 		n = static_cast<uint32_t>(m_map.size());
 		out << n;
+
+		// Save the "m_map": This requires special handling for big endian systems:
+#if MRPT_IS_BIG_ENDIAN
+		for (uint32_t i=0;i<n;i++)
+		{
+			out << m_map[i].kf_mean << m_map[i].dm_mean << m_map[i].dmv_var_mean;
+		}
+#else
+		// Little endian: just write all at once:
 		out.WriteBuffer( &m_map[0], sizeof(m_map[0])*m_map.size() );  // TODO: Do this endianness safe!!
+#endif
+
 
 		// Version 1: Save the insertion options:
 		out << uint8_t(m_mapType)
@@ -583,11 +594,19 @@ void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
 			}
 			else
 			{
-				ASSERT_( n == static_cast<uint32_t>( sizeof( TGasConcentrationCell ) ));
+				ASSERT_EQUAL_( n , static_cast<uint32_t>( sizeof( TGasConcentrationCell ) ));
 				// Load the map contents:
 				in >> n;
 				m_map.resize(n);
+
+				// Read the note in writeToStream()
+#if MRPT_IS_BIG_ENDIAN
+				for (uint32_t i=0;i<n;i++)
+					in >> m_map[i].kf_mean >> m_map[i].dm_mean >> m_map[i].dmv_var_mean;
+#else
+				// Little endian: just read all at once:
 				in.ReadBuffer( &m_map[0], sizeof(m_map[0])*m_map.size() );
+#endif
 			}
 
 			// Version 1: Insertion options:

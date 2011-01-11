@@ -42,6 +42,17 @@ namespace mrpt
 {
 namespace slam
 {
+	/** Auxiliary struct that holds all the relevant *geometry* information about a 2D scan.
+	  * This class is used in CSinCosLookUpTableFor2DScans
+	  * \sa CObservation2DRangeScan and CObservation2DRangeScan::getScanProperties */
+	struct OBS_IMPEXP T2DScanProperties {
+		size_t  nRays;
+		double  aperture;
+		bool    rightToLeft;
+	};
+	bool OBS_IMPEXP operator<(const T2DScanProperties&a, const T2DScanProperties&b);	//!< Order operator, so T2DScanProperties can appear in associative STL containers.
+
+
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation2DRangeScan, CObservation, OBS_IMPEXP)
 
@@ -54,7 +65,7 @@ namespace slam
 	  *    - CObservation2DRangeScan::aperture -> The field-of-view of the scanner, in radians (typically, M_PI = 180deg).
 	  *    - CObservation2DRangeScan::sensorPose -> The 6D location of the sensor on the robot reference frame (default=at the origin).
 	  *
-	  * \sa CObservation, CPointsMap
+	  * \sa CObservation, CPointsMap, T2DScanProperties
 	  */
 	class OBS_IMPEXP CObservation2DRangeScan : public CObservation
 	{
@@ -112,6 +123,9 @@ namespace slam
 		/** If the laser gathers data by sweeping in the pitch/elevation angle, this holds the increment in "pitch" (=-"elevation") between the beginning and the end of the scan (the sensorPose member stands for the pose at the beginning of the scan).
 		  */
 		double				deltaPitch;
+
+		/** Fill out a T2DScanProperties structure with the parameters of this scan */
+		void getScanProperties(T2DScanProperties& p) const;
 
 		/** @} */
 

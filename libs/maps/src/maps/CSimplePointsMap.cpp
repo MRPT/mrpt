@@ -78,6 +78,7 @@ void  CSimplePointsMap::copyFrom(const CPointsMap &obj)
 	MRPT_END;
 }
 
+
 /*---------------------------------------------------------------
 					LoadFromRangeScan
  Transform the range scan into a set of cartessian coordinated
@@ -87,7 +88,6 @@ void  CSimplePointsMap::loadFromRangeScan(
 	const CObservation2DRangeScan		&rangeScan,
 	const CPose3D						*robotPose )
 {
-	int	i;
 	CPose3D			sensorPose3D;
 
 	mark_as_modified();
@@ -106,7 +106,7 @@ void  CSimplePointsMap::loadFromRangeScan(
 		pointWeight.clear();
 	}
 
-	int		sizeRangeScan = rangeScan.scan.size();
+	const int sizeRangeScan = rangeScan.scan.size();
 
 	// For a great gain in efficiency:
 	if ( x.size()+2*sizeRangeScan > x.capacity() )
@@ -124,18 +124,18 @@ void  CSimplePointsMap::loadFromRangeScan(
 		MRPT_CHECK_NORMAL_NUMBER( sensorPose3D.z() )
 
 		// For quicker access:
-		float		m00 = ROT.get_unsafe(0,0);
-		float		m01 = ROT.get_unsafe(0,1);
-		float		m03 = sensorPose3D.x();
-		float		m10 = ROT.get_unsafe(1,0);
-		float		m11 = ROT.get_unsafe(1,1);
-		float		m13 = sensorPose3D.y();
-		float		m20 = ROT.get_unsafe(2,0);
-		float		m21 = ROT.get_unsafe(2,1);
-		float		m23 = sensorPose3D.z();
+		const float		m00 = ROT.get_unsafe(0,0);
+		const float		m01 = ROT.get_unsafe(0,1);
+		const float		m03 = sensorPose3D.x();
+		const float		m10 = ROT.get_unsafe(1,0);
+		const float		m11 = ROT.get_unsafe(1,1);
+		const float		m13 = sensorPose3D.y();
+		const float		m20 = ROT.get_unsafe(2,0);
+		const float		m21 = ROT.get_unsafe(2,1);
+		const float		m23 = sensorPose3D.z();
 
-		float		lx_1,ly_1,lz_1,lx,ly,lz;		// Punto anterior y actual:
-		float		lx_2,ly_2,lz_2;				// Punto antes del anterior
+		float  lx_1,ly_1,lz_1,lx,ly,lz;		// Previous and current point
+		float  lx_2,ly_2,lz_2;				    // The previous-to-the-previous point.
 
 		// Initial last point:
 		lx_1 = -100; ly_1 = -100; lz_1 = -100;
@@ -144,7 +144,11 @@ void  CSimplePointsMap::loadFromRangeScan(
 		// ------------------------------------------------------
 		//		Pass range scan to a set of 2D points:
 		// ------------------------------------------------------
-		vector<float>		scan_x,scan_y;
+		Eigen::Array<float,Eigen::Dynamic,1>  scan_x(sizeRangeScan), scan_y(sizeRangeScan);
+
+		// Use old method (1) or the faster cos/sin look-up-tables (0)?
+#if 0
+		// Old method (slower)
 		double		Ang, dA;
 		if (rangeScan.rightToLeft)
 		{
@@ -157,24 +161,22 @@ void  CSimplePointsMap::loadFromRangeScan(
 			dA  = - rangeScan.aperture / (sizeRangeScan-1);
 		}
 
-		scan_x.resize( sizeRangeScan );
-		scan_y.resize( sizeRangeScan );
-
-		MRPT_TODO("Possible optization: use vector_float with precomputed cos/sin table.")
-
-		vector<float>::iterator		 scan_x_it, scan_y_it;
-		vector<float>::const_iterator scan_it;
-
-		for ( scan_x_it=scan_x.begin(),
-			  scan_y_it=scan_y.begin(),
-			  scan_it=rangeScan.scan.begin();
-				scan_it!=rangeScan.scan.end();
-			  scan_x_it++, scan_y_it++,scan_it++)
+		for (int i=0;i<sizeRangeScan;i++)
 		{
-			*scan_x_it = *scan_it * cos(  Ang );
-			*scan_y_it = *scan_it * sin(  Ang );
+			scan_x[i] = rangeScan.scan[i] * cos( Ang );
+			scan_y[i] = rangeScan.scan[i] * sin( Ang );
 			Ang+=dA;
 		}
+#else
+		// New faster method:
+		const CSinCosLookUpTableFor2DScans::TSinCosValues & sincos_vals = m_scans_sincos_cache.getSinCosForScan(rangeScan);
+		{
+			const mrpt::vector_float scan_vals( rangeScan.scan ); // Convert from the std::vector
+			// Vectorized (optimized) scalar multiplications:
+			scan_x = scan_vals.array() * sincos_vals.ccos.array();
+			scan_y = scan_vals.array() * sincos_vals.csin.array();
+		}
+#endif
 
 		float  minDistSqrBetweenLaserPoints = square( insertionOptions.minDistBetweenLaserPoints );
 
@@ -190,7 +192,7 @@ void  CSimplePointsMap::loadFromRangeScan(
 		bool  	lastPointWasInserted = false;
 		float	changeInDirection = 0;
 
-		for (i=0;i<sizeRangeScan;i++)
+		for (int i=0;i<sizeRangeScan;i++)
 		{
 			// Punto actual del scan:
 			if ( rangeScan.validRange[i] ) //(rangeScan.scan[i]< rangeScan.maxRange )

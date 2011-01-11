@@ -67,6 +67,9 @@ namespace slam
 		// You can access to a "TGasConcentrationCell *cell" like: cell->kf_mean, cell->kf_std, etc..
 		//  but accessing cell->kf_mean would also modify (i.e. ARE the same memory slot) cell->dm_mean, for example.
 
+		// Note 2: If the number of type of fields are changed in the future,
+		//   *PLEASE* also update the writeToStream() and readFromStream() methods!!
+
 		union
 		{
 			double kf_mean; //!< [KF-methods only] The mean value of this cell
