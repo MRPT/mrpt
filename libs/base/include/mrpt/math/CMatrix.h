@@ -38,14 +38,14 @@ namespace mrpt
 	namespace math
 	{
 		// This must be added to any CSerializable derived class:
-		//DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CMatrix, mrpt::utils::CSerializable )
-		//DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, BASE_IMPEXP )
+		// Note: instead of the standard "DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE", classes inheriting
+		// from templates need special nasty handling for MSVC DLL exports...
 		DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(CMatrix, mrpt::utils::CSerializable, CMatrix)
 		BASE_IMPEXP ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, CMatrixPtr &pObj);
 
 		/**  This class is a "CSerializable" wrapper for "CMatrixFloat".
 		 */
-		class CMatrix : public mrpt::utils::CSerializable, public CMatrixFloat
+		class BASE_IMPEXP_TEMPL CMatrix : public mrpt::utils::CSerializable, public CMatrixFloat
 		{
 			// This must be added to any CSerializable derived class:
 			//DEFINE_SERIALIZABLE( CMatrix )
@@ -53,15 +53,15 @@ namespace mrpt
 		protected:
 			static  const mrpt::utils::TRuntimeClassId* _GetBaseClass();
 			static mrpt::utils::CLASSINIT _init_CMatrix;
-		public: 
-			/*! A typedef for the associated smart pointer */ 
-			typedef CMatrixPtr SmartPtr; 
-			static BASE_IMPEXP  mrpt::utils::TRuntimeClassId  classCMatrix; 
-			static BASE_IMPEXP  const mrpt::utils::TRuntimeClassId *classinfo; 
-			virtual BASE_IMPEXP  const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const; 
-			static  BASE_IMPEXP mrpt::utils::CObject* CreateObject(); 
-			static BASE_IMPEXP CMatrixPtr Create(); 
-			virtual BASE_IMPEXP mrpt::utils::CObject *duplicate() const; 
+		public:
+			/*! A typedef for the associated smart pointer */
+			typedef CMatrixPtr SmartPtr;
+			static BASE_IMPEXP  mrpt::utils::TRuntimeClassId  classCMatrix;
+			static BASE_IMPEXP  const mrpt::utils::TRuntimeClassId *classinfo;
+			virtual BASE_IMPEXP  const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const;
+			static  BASE_IMPEXP mrpt::utils::CObject* CreateObject();
+			static BASE_IMPEXP CMatrixPtr Create();
+			virtual BASE_IMPEXP mrpt::utils::CObject *duplicate() const;
 		protected:
 			/*! @name CSerializable virtual methods */
 			/*! @{ */

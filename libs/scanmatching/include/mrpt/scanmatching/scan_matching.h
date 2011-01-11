@@ -100,7 +100,7 @@ namespace mrpt
 		  *  Implemented by FAMD, 2007. Revised in 2010
 		  * \sa robustRigidTransformation
 		  */
-		inline bool SCANMATCHING_IMPEXP leastSquareErrorRigidTransformation6D(
+		inline bool leastSquareErrorRigidTransformation6D(
 			const TMatchingPairList	&in_correspondences,
 			CPose3D								&out_transformation,
 			double								&out_scale,

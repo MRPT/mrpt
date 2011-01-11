@@ -81,12 +81,12 @@ void CServerTCPSocket::setupSocket(
 	desiredIP.sin_addr.s_addr	= inet_addr( IPaddress.c_str() );
 	desiredIP.sin_port			= htons((unsigned short)listenPort);
 
-	if( INVALID_SOCKET == ::bind(m_serverSock,(struct sockaddr *)(&desiredIP),sizeof(desiredIP)) )
+	if( int(INVALID_SOCKET) == ::bind(m_serverSock,(struct sockaddr *)(&desiredIP),sizeof(desiredIP)) )
 		THROW_EXCEPTION( getLastErrorStr() );
 
 	// Put in listen mode:
 	// ----------------------------
-	if ( INVALID_SOCKET ==  listen(m_serverSock,maxConnectionsWaiting) )
+	if ( int(INVALID_SOCKET) ==  listen(m_serverSock,maxConnectionsWaiting) )
 		THROW_EXCEPTION( getLastErrorStr() );
 
 	if (m_verbose)
@@ -144,7 +144,7 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 					 NULL,			// Wait for except.
 					 ptrTimeout);	// Timeout
 
-	if( selRet==INVALID_SOCKET )
+	if( selRet==int(INVALID_SOCKET))
 	{
 		std::cerr << getLastErrorStr() << std::endl;
 		return NULL;
@@ -172,7 +172,7 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 			(struct sockaddr*)&otherPart,
 			&otherPartSize );
 
-		if (aceptdSock==INVALID_SOCKET)
+		if (aceptdSock==int(INVALID_SOCKET))
 		{
 			std::cerr << getLastErrorStr() << std::endl;
 			delete ret;

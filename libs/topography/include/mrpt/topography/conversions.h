@@ -187,7 +187,7 @@ namespace mrpt
 		  * \param GeodeticCoords: Out geodetic coordinates.
 		  * \param ellip: the reference ellipsoid used for the transformation (default: WGS84)
 		  */
-		inline void TOPO_IMPEXP UTMToGeodetic(
+		inline void UTMToGeodetic(
 			const TUTMCoords	&UTMCoords,
 			const int			&zone,
 			const char			&hem,
@@ -243,7 +243,7 @@ namespace mrpt
 		  *   \endcode
 		  *   \sa http://www.mathworks.com/matlabcentral/fileexchange/10915
 		 */
-		inline void  TOPO_IMPEXP GeodeticToUTM(
+		inline void  GeodeticToUTM(
 			const TGeodeticCoords	&GeodeticCoords,
 			TUTMCoords				&UTMCoords,
 			int    					&UTMZone,

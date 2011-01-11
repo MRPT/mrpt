@@ -106,7 +106,17 @@
 #		define BASE_IMPEXP MRPT_BASE_IMPORT
 #	endif
 #else /* not making nor using DLL */
-#    define BASE_IMPEXP 
+#    define BASE_IMPEXP
+#endif
+
+// Finally this one allows exporting a class that inherits from a
+// template in MS DLLs with both MSVC and GCC. To see how nasty is
+// this, Google "class derived from template DLL export" and suffer...
+#if defined(_MSC_VER)
+#   define BASE_IMPEXP_TEMPL
+#else
+    // Mostly for Mingw:
+#   define BASE_IMPEXP_TEMPL BASE_IMPEXP
 #endif
 
 
