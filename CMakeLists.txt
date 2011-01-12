@@ -2038,11 +2038,19 @@ ENDIF(UNIX)
 INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
 INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
 
-# If using embedded version, install embeded version as part of mrpt-base's headers:
+# If using embedded version, install embedded version as part of mrpt-base's headers:
 IF (EIGEN_USE_EMBEDDED_VERSION)
+	IF(WIN32)
+		# Eigen headers must end up in /Program Files/MRPT-X.Y.Z/libs/base/...
+		SET(MRPT_INSTALL_EIGEN_PREFIX "libs/base/include/")
+	ELSE(WIN32)
+		# Eigen headers must end up in /usr/...
+		SET(MRPT_INSTALL_EIGEN_PREFIX "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/base/include/")
+	ENDIF(WIN32)
+
 	INSTALL(
 		DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/Eigen" 
-		DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/base/include/" PATTERN ".svn" EXCLUDE)
+		DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" PATTERN ".svn" EXCLUDE)
 ENDIF (EIGEN_USE_EMBEDDED_VERSION)
 
 # ----------------------------------------------------------------------------
