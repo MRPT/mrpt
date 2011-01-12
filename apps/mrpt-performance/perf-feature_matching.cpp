@@ -28,10 +28,11 @@
 #include <mrpt/slam.h>
 #include <mrpt/scanmatching.h>
 
+#include "common.h"
+
 using namespace mrpt::vision;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
-using namespace mrpt::gui;
 using namespace mrpt::system;
 using namespace mrpt::scanmatching;
 using namespace std;

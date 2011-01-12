@@ -29,6 +29,9 @@
 #include <mrpt/gui.h>
 #include <mrpt/scanmatching.h>
 
+#include "common.h"
+
+
 using namespace mrpt::vision;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
@@ -56,14 +59,14 @@ void generate_points( TPoints &pA, TPoints &pB )
 
 	pA.resize( 5 );		// A set of points at "A" reference system
 	pB.resize( 5 );		// A set of points at "B" reference system
-	
-	pA[0].resize(3);	pA[0][0] = 0.0;		pA[0][1] = 0.5;		pA[0][2] = 0.4;		
-	pA[1].resize(3);	pA[1][0] = 1.0;		pA[1][1] = 1.5;		pA[1][2] = -0.1;		
-	pA[2].resize(3);	pA[2][0] = 1.2;		pA[2][1] = 1.1;		pA[2][2] = 0.9;		
-	pA[3].resize(3);	pA[3][0] = 0.7;		pA[3][1] = 0.3;		pA[3][2] = 3.4;		
+
+	pA[0].resize(3);	pA[0][0] = 0.0;		pA[0][1] = 0.5;		pA[0][2] = 0.4;
+	pA[1].resize(3);	pA[1][0] = 1.0;		pA[1][1] = 1.5;		pA[1][2] = -0.1;
+	pA[2].resize(3);	pA[2][0] = 1.2;		pA[2][1] = 1.1;		pA[2][2] = 0.9;
+	pA[3].resize(3);	pA[3][0] = 0.7;		pA[3][1] = 0.3;		pA[3][2] = 3.4;
 	pA[4].resize(3);	pA[4][0] = 1.9;		pA[4][1] = 2.5;		pA[4][2] = -1.7;
 
-	CPose3DQuat qPose = CPose3D( Dx, Dy, Dz, yaw, pitch, roll ); 
+	CPose3DQuat qPose = CPose3D( Dx, Dy, Dz, yaw, pitch, roll );
 	for( unsigned int i = 0; i < 5; ++i )
 	{
 		pB[i].resize( 3 );
@@ -81,13 +84,13 @@ void generate_list_of_points( const TPoints &pA, const TPoints &pB, TMatchingPai
 	for( unsigned int i = 0; i < 5; ++i )
 	{
 		pair.this_idx	= pair.other_idx = i;
-		pair.this_x		= pA[i][0]; 
-		pair.this_y		= pA[i][1]; 
-		pair.this_z		= pA[i][2]; 
+		pair.this_x		= pA[i][0];
+		pair.this_y		= pA[i][1];
+		pair.this_z		= pA[i][2];
 
-		pair.other_x	= pB[i][0]; 
-		pair.other_y	= pB[i][1]; 
-		pair.other_z	= pB[i][2]; 
+		pair.other_x	= pB[i][0];
+		pair.other_y	= pB[i][1];
+		pair.other_z	= pB[i][2];
 
 		list.push_back( pair );
 	}
@@ -120,7 +123,7 @@ double scan_matching_test_1( int a1, int a2 )
 
 	CPose3D out;
 	double	scale;
-	
+
 	const size_t	N = 100;
 	CTicTac			tictac;
 

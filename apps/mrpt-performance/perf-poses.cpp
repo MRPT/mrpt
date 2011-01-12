@@ -26,9 +26,11 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-
 #include <mrpt/math.h>
+#include <mrpt/poses.h>
 #include <mrpt/utils/CTicTac.h>
+
+#include "common.h"
 
 using namespace mrpt;
 using namespace mrpt::utils;

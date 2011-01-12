@@ -28,6 +28,8 @@
 
 #include <mrpt/slam.h>
 
+#include "common.h"
+
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
@@ -190,13 +192,13 @@ double grid_test_8(int a1, int a2)
 // ------------------------------------------------------
 void register_tests_grids()
 {
-	lstTests.push_back( TestData("gridmap2D: getCell",grid_test_1) ); 
-	lstTests.push_back( TestData("gridmap2D: setCell",grid_test_2) ); 
-	lstTests.push_back( TestData("gridmap2D: updateCell",grid_test_3) ); 
-	lstTests.push_back( TestData("gridmap2D: updateCell_fast_occupied",grid_test_4) ); 
-	lstTests.push_back( TestData("gridmap2D: insert scan w/o widening",grid_test_5_6, 0) ); 
-	lstTests.push_back( TestData("gridmap2D: insert scan with widening",grid_test_5_6, 1) ); 
-	lstTests.push_back( TestData("gridmap2D: resize",grid_test_7) ); 
-	lstTests.push_back( TestData("gridmap2D: computeLikelihood",grid_test_8) ); 
+	lstTests.push_back( TestData("gridmap2D: getCell",grid_test_1) );
+	lstTests.push_back( TestData("gridmap2D: setCell",grid_test_2) );
+	lstTests.push_back( TestData("gridmap2D: updateCell",grid_test_3) );
+	lstTests.push_back( TestData("gridmap2D: updateCell_fast_occupied",grid_test_4) );
+	lstTests.push_back( TestData("gridmap2D: insert scan w/o widening",grid_test_5_6, 0) );
+	lstTests.push_back( TestData("gridmap2D: insert scan with widening",grid_test_5_6, 1) );
+	lstTests.push_back( TestData("gridmap2D: resize",grid_test_7) );
+	lstTests.push_back( TestData("gridmap2D: computeLikelihood",grid_test_8) );
 }
 

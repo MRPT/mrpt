@@ -26,9 +26,13 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-
-#include <mrpt/math.h>
+#include <mrpt/math/dijkstra.h>
+#include <mrpt/slam/graph_slam.h>
+#include <mrpt/random.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CTimeLogger.h>
+
+#include "common.h"
 
 using namespace mrpt;
 using namespace mrpt::utils;

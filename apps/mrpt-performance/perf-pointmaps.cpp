@@ -28,6 +28,8 @@
 
 #include <mrpt/slam.h>
 
+#include "common.h"
+
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;

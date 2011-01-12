@@ -35,6 +35,7 @@
   <h2>Version 0.9.4 - (Version 1.0.0-Release_Candidate_2): UNDER DEVELOPMENT </h2></a>
 	- Changes in applications:
 		- <a href="http://www.mrpt.org/Application:rawlog-grabber" >rawlog-grabber</a>: Added "hokuyo_UXM.ini" to support HOKUYO UXM laser series.
+		- mrpt-performance has been refactored into several smaller .cpp files. Having all in one big file lead to memory depletion when building in small machines (e.g. Debian MIPS & S390 autobuilders).
 	- New classes:
 		- mrpt::math::ModelSearch: A RANSAC + Genetic model fitter (by Zoltan Gaal)
 		- mrpt::slam::CSinCosLookUpTableFor2DScans: A cache of sin/cos values. It's used in points maps and now inserting laser scans in a point cloud is ~3 times faster.

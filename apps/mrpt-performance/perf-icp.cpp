@@ -28,6 +28,8 @@
 
 #include <mrpt/slam.h>
 
+#include "common.h"
+
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
@@ -42,7 +44,7 @@ double icp_test_1(int a1, int a2)
 {
 #ifdef MRPT_DATASET_DIR
 	const string rawlog_file = MRPT_DATASET_DIR  "/2006-01ENE-21-SENA_Telecom Faculty_one_loop_only.rawlog";
-	if (!mrpt::system::fileExists(rawlog_file)) 
+	if (!mrpt::system::fileExists(rawlog_file))
 		return 1;
 
 	CTicTac	 tictac;
@@ -77,7 +79,7 @@ double icp_test_1(int a1, int a2)
 	CICP::TConfigParams  icpOptions;
 
 	icpOptions.maxIterations = 40;
-	
+
 
 	// ---------------------------------
 	//		Constructor
