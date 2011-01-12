@@ -21,7 +21,7 @@ Build-Depends: debhelper (>= 5),
                texlive | tetex,
                subversion,
                libdc1394-22-dev,
-               libusb-1.0-0-dev,
+               libusb-1.0-0-dev [!hurd-i386],
                libeigen3-dev | perl
 Standards-Version: 3.9.1
 Homepage: http://www.mrpt.org/
