@@ -27,10 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 // IMPORTANT: It seems to be a problem with Eigen3 vectorization + amd64 + GCC older than 4.5:
-#if defined(__GNUC__) && MRPT_WORD_SIZE!=32 && !( (__GNUC__ - 0 > 4 || (__GNUC__ - 0 == 4 && __GNUC_MINOR__ - 0 >= 5)) )
-#	define EIGEN_DONT_VECTORIZE   // This must be BEFORE all other includes
-#endif
-
+// -DEIGEN_DONT_VECTORIZE is defined for this file (at CMake script level to avoid stupid warnings with MSVC and precompiled headers).
 
 #include <mrpt/base.h>  // Precompiled headers
 
