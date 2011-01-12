@@ -17,10 +17,9 @@ digraph MRPT_LIBS {
 	
 	hmtslam		[label="mrpt-hmtslam",URL="mrpt-hmtslam.html"];
 	reactivenav	[label="mrpt-reactivenav",URL="mrpt-reactivenav.html"];
-	monoslam	[label="mrpt-monoslam (*)",URL="mrpt-monoslam.html"];
 	stereoslam	[label="mrpt-stereoslam (*)",URL="mrpt-stereoslam.html"];
 	
-	detectors	[label="mrpt-detectors (*)",URL="mrpt-detectors.html"];
+	detectors	[label="mrpt-detectors",URL="mrpt-detectors.html"];
 	
 	
 	scanmatching -> base;
@@ -53,8 +52,7 @@ digraph MRPT_LIBS {
 	detectors -> gui;
 	
 	hmtslam -> slam;
-	
-	monoslam -> vision;
+
 
 	stereoslam -> vision;
 	
