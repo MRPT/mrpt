@@ -256,13 +256,13 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 
 	outObservation.scan.clear();
 	outObservation.validRange.clear();
-
-    for(unsigned int i = 0 ; i < scanCount ; i++, next = strtok(NULL, " ", &tmp))
+    unsigned int i;
+    for(i = 0 ; i < scanCount && next; i++, next = strtok(NULL, " ", &tmp))
     {
         outObservation.scan.push_back(double(strtoul(next, NULL, 16))/1000.0);
         outObservation.validRange.push_back(outObservation.scan[i] <= outObservation.maxRange);
     }
-    return true;
+    return i>=scanCount;
 }
 
 void CLMS100Eth::doProcessSimple(bool &outThereIsObservation, CObservation2DRangeScan &outObservation, bool &hardwareError)
