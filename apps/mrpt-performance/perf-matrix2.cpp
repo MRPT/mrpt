@@ -1,0 +1,161 @@
+/* +---------------------------------------------------------------------------+
+   |          The Mobile Robot Programming Toolkit (MRPT) C++ library          |
+   |                                                                           |
+   |                   http://mrpt.sourceforge.net/                            |
+   |                                                                           |
+   |   Copyright (C) 2005-2011  University of Malaga                           |
+   |                                                                           |
+   |    This software was written by the Machine Perception and Intelligent    |
+   |      Robotics Lab, University of Malaga (Spain).                          |
+   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>                     |
+   |                                                                           |
+   |  This file is part of the MRPT project.                                   |
+   |                                                                           |
+   |     MRPT is free software: you can redistribute it and/or modify          |
+   |     it under the terms of the GNU General Public License as published by  |
+   |     the Free Software Foundation, either version 3 of the License, or     |
+   |     (at your option) any later version.                                   |
+   |                                                                           |
+   |   MRPT is distributed in the hope that it will be useful,                 |
+   |     but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+   |     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
+   |     GNU General Public License for more details.                          |
+   |                                                                           |
+   |     You should have received a copy of the GNU General Public License     |
+   |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
+   |                                                                           |
+   +---------------------------------------------------------------------------+ */
+
+#include <mrpt/math.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/random.h>
+
+#include "common.h"
+
+using namespace mrpt;
+using namespace mrpt::utils;
+using namespace mrpt::math;
+using namespace mrpt::random;
+using namespace std;
+
+
+// Cholesky:
+template <typename T,size_t DIM1>
+double matrix_test_chol_dyn(int a1, int a2)
+{
+	CMatrixTemplateNumeric<T>	A = randomGenerator.drawDefinitePositiveMatrix(DIM1, 0.2);
+	CMatrixTemplateNumeric<T>   chol_U;
+
+	const long N = 100;
+	CTicTac	 tictac;
+	for (long i=0;i<N;i++)
+	{
+		A.chol(chol_U);
+	}
+	return tictac.Tac()/N;
+}
+
+double matrix_test_chol_Nx6x6_dyn(int DIM, int nReps)
+{
+	CMatrixDouble  C(DIM*6,DIM*6);
+	for (int i=0;i<DIM;i++)
+	{
+		CMatrixDouble subCov = randomGenerator.drawDefinitePositiveMatrix(6, 0.2);
+		C.insertMatrix(i*6,i*6,subCov);
+	}
+
+	CMatrixDouble	chol_U;
+
+	const long N = nReps==0 ?  10 : nReps;
+	CTicTac	 tictac;
+	for (long i=0;i<N;i++)
+	{
+		C.chol(chol_U);
+	}
+	return tictac.Tac()/N;
+}
+
+
+template <typename T,size_t DIM1>
+double matrix_test_chol_fix(int a1, int a2)
+{
+	CMatrixFixedNumeric<T,DIM1,DIM1>	A = randomGenerator.drawDefinitePositiveMatrix(DIM1, 0.2);
+	CMatrixFixedNumeric<T,DIM1,DIM1>	chol_U;
+
+	const long N = 100;
+	CTicTac	 tictac;
+	for (long i=0;i<N;i++)
+	{
+		A.chol(chol_U);
+	}
+	return tictac.Tac()/N;
+}
+
+template <size_t DIM1, size_t DIM2>
+double matrix_test_chol_sparse(int a1, int a2)
+{
+	CMatrixDouble	A1 = randomGenerator.drawDefinitePositiveMatrix(DIM1, 0.2);
+	CMatrixDouble	A2 = randomGenerator.drawDefinitePositiveMatrix(DIM2, 0.2);
+
+	CMatrixDouble	A(DIM1+DIM2,DIM1+DIM2);
+	A.insertMatrix(0,0,A1);
+	A.insertMatrix(DIM1,DIM1,A2);
+
+	const CSparseMatrix  SM(A);
+
+	const long N = 10;
+	CTicTac	 tictac;
+	for (long i=0;i<N;i++)
+	{
+		CSparseMatrix::CholeskyDecomp  CHOL(SM);
+	}
+	return tictac.Tac()/N;
+}
+
+double matrix_test_chol_Nx6x6_sparse(int DIM, int a2)
+{
+	CMatrixDouble  C(DIM*6,DIM*6);
+	for (int i=0;i<DIM;i++)
+	{
+		CMatrixDouble subCov = randomGenerator.drawDefinitePositiveMatrix(6, 0.2);
+		C.insertMatrix(i*6,i*6,subCov);
+	}
+
+	const CSparseMatrix  SM(C);
+
+	const long N = 100;
+	CTicTac	 tictac;
+	for (long i=0;i<N;i++)
+	{
+		CSparseMatrix::CholeskyDecomp  CHOL(SM);
+	}
+	return tictac.Tac()/N;
+}
+
+// ------------------------------------------------------
+// register_tests_matrices: Part 2
+// ------------------------------------------------------
+void register_tests_matrices2()
+{
+	lstTests.push_back( TestData("matrix: chol, dyn[double] 4x4",matrix_test_chol_dyn<double,4>) );
+	lstTests.push_back( TestData("matrix: chol, fix[double] 4x4",matrix_test_chol_fix<double,4>) );
+	lstTests.push_back( TestData("matrix: chol, dyn[double] 40x40",matrix_test_chol_dyn<double,40>) );
+	lstTests.push_back( TestData("matrix: chol, fix[double] 40x40",matrix_test_chol_fix<double,40>) );
+
+	lstTests.push_back( TestData("matrix: chol, sparse [2x2;2x2]",matrix_test_chol_sparse<2,2>) );
+	lstTests.push_back( TestData("matrix: chol, sparse [30x30;10x10]",matrix_test_chol_sparse<30,10>) );
+
+	lstTests.push_back( TestData("matrix: chol, dyn[double] 10x[6x6]",matrix_test_chol_Nx6x6_dyn,10) );
+	lstTests.push_back( TestData("matrix: chol, sparse      10x[6x6]",matrix_test_chol_Nx6x6_sparse,10) );
+	lstTests.push_back( TestData("matrix: chol, dyn[double] 20x[6x6]",matrix_test_chol_Nx6x6_dyn,20) );
+	lstTests.push_back( TestData("matrix: chol, sparse      20x[6x6]",matrix_test_chol_Nx6x6_sparse,20) );
+	lstTests.push_back( TestData("matrix: chol, dyn[double] 50x[6x6]",matrix_test_chol_Nx6x6_dyn,50) );
+	lstTests.push_back( TestData("matrix: chol, sparse      50x[6x6]",matrix_test_chol_Nx6x6_sparse,50) );
+	lstTests.push_back( TestData("matrix: chol, dyn[double] 100x[6x6]",matrix_test_chol_Nx6x6_dyn,100, 2) );
+	lstTests.push_back( TestData("matrix: chol, sparse      100x[6x6]",matrix_test_chol_Nx6x6_sparse,100) );
+	lstTests.push_back( TestData("matrix: chol, dyn[double] 120x[6x6]",matrix_test_chol_Nx6x6_dyn,120, 2) );
+	lstTests.push_back( TestData("matrix: chol, sparse      120x[6x6]",matrix_test_chol_Nx6x6_sparse,120) );
+	lstTests.push_back( TestData("matrix: chol, dyn[double] 140x[6x6]",matrix_test_chol_Nx6x6_dyn,140, 2) );
+	lstTests.push_back( TestData("matrix: chol, sparse      140x[6x6]",matrix_test_chol_Nx6x6_sparse,140) );
+
+}
