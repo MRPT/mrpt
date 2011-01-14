@@ -37,8 +37,8 @@
 
 Note: This is a very *simple* approach to SLAM. It would be better to first select
       3d points in the 3D point-cloud, then project them into the image plane
-	  and then track them (instead of directly choosing poins in the image plane), 
-	  since in that case the (x,y) to 3D correspondence would be much more accurate. 
+	  and then track them (instead of directly choosing poins in the image plane),
+	  since in that case the (x,y) to 3D correspondence would be much more accurate.
 	  Feel free to modify or improve this example as you need!
 
 */
@@ -214,10 +214,9 @@ void Test_Kinect()
 
 	const double aspect_ratio =  480.0 / 640.0; // kinect.getRowCount() / double( kinect.getColCount() );
 
-	mrpt::opengl::CTexturedPlanePtr gl_img_intensity =  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
-
 	mrpt::opengl::CSetOfObjectsPtr gl_cur_cam_corner = mrpt::opengl::stock_objects::CornerXYZSimple(0.4,4);
 
+	opengl::COpenGLViewportPtr viewInt;
 	{
 		mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
 
@@ -234,14 +233,9 @@ void Test_Kinect()
 		const int VW_HEIGHT = aspect_ratio*VW_WIDTH;
 
 		// Create the Opengl objects for the planar images each in a separate viewport:
-		opengl::COpenGLViewportPtr viewInt = scene->createViewport("view2d_int");
-		scene->insert( gl_img_intensity, "view2d_int");
+		viewInt = scene->createViewport("view2d_int");
 		viewInt->setViewportPosition(2,2, VW_WIDTH,VW_HEIGHT);
 		viewInt->setTransparent(true);
-		viewInt->getCamera().setOrthogonal(true);
-		viewInt->getCamera().setAzimuthDegrees(90);
-		viewInt->getCamera().setElevationDegrees(90);
-		viewInt->getCamera().setZoomDistance(0.6);
 
 		win3D.unlockAccess3DScene();
 		win3D.repaint();
@@ -439,8 +433,7 @@ void Test_Kinect()
 
 			// Show intensity image
 			win3D.get3DSceneAndLock();
-				//gl_img_intensity->assignImage(last_obs->intensityImage);
-				gl_img_intensity->assignImage(theImg);
+				viewInt->setImageView(theImg);
 			win3D.unlockAccess3DScene();
 
 			// Show 3D points & current visible feats, at the current camera 3D pose "currentCamPose_wrt_last"

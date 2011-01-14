@@ -63,7 +63,7 @@ int freenect_update_tilt_state(freenect_device *dev)
 	dev->raw_state.accelerometer_y = (int16_t)uy;
 	dev->raw_state.accelerometer_z = (int16_t)uz;
 	dev->raw_state.tilt_angle = (int8_t)buf[8];
-	dev->raw_state.tilt_status = buf[9];
+	dev->raw_state.tilt_status = (freenect_tilt_status_code)buf[9];
 
 	return ret;
 }
@@ -91,6 +91,11 @@ int freenect_set_led(freenect_device *dev, freenect_led_options option)
 double freenect_get_tilt_degs(freenect_raw_tilt_state *state)
 {
 	return ((double)state->tilt_angle) / 2.;
+}
+
+freenect_tilt_status_code freenect_get_tilt_status(freenect_raw_tilt_state *state)
+{
+	return state->tilt_status;
 }
 
 void freenect_get_mks_accel(freenect_raw_tilt_state *state, double* x, double* y, double* z)

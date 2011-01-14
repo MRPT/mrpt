@@ -86,7 +86,7 @@ void thread_grabbing(TThreadParam &p)
 		{
 			// Grab new observation from the camera:
 			CObservation3DRangeScanPtr  obs     = CObservation3DRangeScan::Create(); // Smart pointers to observations
-			CObservationIMUPtr          obs_imu = CObservationIMU::Create();       
+			CObservationIMUPtr          obs_imu = CObservationIMU::Create();
 
 			kinect.getNextObservation(*obs,*obs_imu,there_is_obs,hard_error);
 
@@ -109,6 +109,10 @@ void thread_grabbing(TThreadParam &p)
 						p.tilt_ang_deg+=1;
 						if (p.tilt_ang_deg>31) p.tilt_ang_deg=31;
 						kinect.setTiltAngleDegrees(p.tilt_ang_deg);
+						break;
+					case 'c':
+						// Switch video input:
+						kinect.setVideoChannel( kinect.getVideoChannel()==CKinect::VIDEO_CHANNEL_RGB ?  CKinect::VIDEO_CHANNEL_IR : CKinect::VIDEO_CHANNEL_RGB);
 						break;
 					case 27:
 						p.quit = true;
@@ -160,9 +164,7 @@ void Test_Kinect()
 
 	const double aspect_ratio =  480.0 / 640.0; // kinect.getRowCount() / double( kinect.getColCount() );
 
-	mrpt::opengl::CTexturedPlanePtr gl_img_range 			=  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
-	mrpt::opengl::CTexturedPlanePtr gl_img_intensity 		=  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
-
+	opengl::COpenGLViewportPtr viewRange, viewInt; // Extra viewports for the RGB & D images.
 	{
 		mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
 
@@ -173,28 +175,16 @@ void Test_Kinect()
 
 		const int VW_WIDTH = 250;	// Size of the viewport into the window, in pixel units.
 		const int VW_HEIGHT = aspect_ratio*VW_WIDTH;
-		const int VW_GAP = 10;
+		const int VW_GAP = 30;
 
 		// Create the Opengl objects for the planar images, as textured planes, each in a separate viewport:
-		win3D.addTextMessage(30,-10-1*(VW_GAP+VW_HEIGHT),"Range data",TColorf(1,1,1), 1, MRPT_GLUT_BITMAP_HELVETICA_12 );
-		opengl::COpenGLViewportPtr viewRange = scene->createViewport("view2d_range");
-		scene->insert( gl_img_range, "view2d_range");
+		win3D.addTextMessage(30,-25-1*(VW_GAP+VW_HEIGHT),"Range data",TColorf(1,1,1), 1, MRPT_GLUT_BITMAP_HELVETICA_12 );
+		viewRange = scene->createViewport("view2d_range");
 		viewRange->setViewportPosition(5,-10-1*(VW_GAP+VW_HEIGHT), VW_WIDTH,VW_HEIGHT);
-		viewRange->setTransparent(true);
-		viewRange->getCamera().setOrthogonal(true);
-		viewRange->getCamera().setAzimuthDegrees(90);
-		viewRange->getCamera().setElevationDegrees(90);
-		viewRange->getCamera().setZoomDistance(1.0);
 
-		win3D.addTextMessage(30, -10-2*(VW_GAP+VW_HEIGHT),"Intensity data",TColorf(1,1,1), 2, MRPT_GLUT_BITMAP_HELVETICA_12 );
-		opengl::COpenGLViewportPtr viewInt = scene->createViewport("view2d_int");
-		scene->insert( gl_img_intensity, "view2d_int");
+		win3D.addTextMessage(30, -25-2*(VW_GAP+VW_HEIGHT),"Intensity data",TColorf(1,1,1), 2, MRPT_GLUT_BITMAP_HELVETICA_12 );
+		viewInt = scene->createViewport("view2d_int");
 		viewInt->setViewportPosition(5, -10-2*(VW_GAP+VW_HEIGHT), VW_WIDTH,VW_HEIGHT );
-		viewInt->setTransparent(true);
-		viewInt->getCamera().setOrthogonal(true);
-		viewInt->getCamera().setAzimuthDegrees(90);
-		viewInt->getCamera().setElevationDegrees(90);
-		viewInt->getCamera().setZoomDistance(1.0);
 
 		win3D.unlockAccess3DScene();
 		win3D.repaint();
@@ -225,7 +215,7 @@ void Test_Kinect()
 				img.setFromMatrix(range2D);
 
 				win3D.get3DSceneAndLock();
-					gl_img_range->assignImage_fast(img);
+					viewRange->setImageView_fast(img);
 				win3D.unlockAccess3DScene();
 			}
 
@@ -233,7 +223,7 @@ void Test_Kinect()
 			if (last_obs->hasIntensityImage )
 			{
 				win3D.get3DSceneAndLock();
-					gl_img_intensity->assignImage(last_obs->intensityImage);
+					viewInt->setImageView(last_obs->intensityImage); // This is not "_fast" since the intensity image is used below in the coloured point cloud.
 				win3D.unlockAccess3DScene();
 			}
 
@@ -262,8 +252,8 @@ void Test_Kinect()
 			{
 				;
 				win3D.get3DSceneAndLock();
-					win3D.addTextMessage(10,60, 
-						format("Acc: x=%.02f y=%.02f z=%.02f", last_obs_imu->rawMeasurements[IMU_X_ACC], last_obs_imu->rawMeasurements[IMU_Y_ACC], last_obs_imu->rawMeasurements[IMU_Z_ACC] ), 
+					win3D.addTextMessage(10,60,
+						format("Acc: x=%.02f y=%.02f z=%.02f", last_obs_imu->rawMeasurements[IMU_X_ACC], last_obs_imu->rawMeasurements[IMU_Y_ACC], last_obs_imu->rawMeasurements[IMU_Z_ACC] ),
 						TColorf(0,0,1), 102, MRPT_GLUT_BITMAP_HELVETICA_18 );
 				win3D.unlockAccess3DScene();
 			}
@@ -299,7 +289,7 @@ void Test_Kinect()
 
 		win3D.get3DSceneAndLock();
 		win3D.addTextMessage(10,10,
-			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, mouse: orbit 3D, ESC: quit"),
+			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, mouse: orbit 3D,'c':Switch RGB/IR, ESC: quit"),
 				TColorf(0,0,1), 110, MRPT_GLUT_BITMAP_HELVETICA_18 );
 		win3D.addTextMessage(10,35,
 			format("Tilt angle: %.01f deg", thrPar.tilt_ang_deg),

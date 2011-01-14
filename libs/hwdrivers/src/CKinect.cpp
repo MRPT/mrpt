@@ -114,7 +114,8 @@ CKinect::CKinect()  :
 	m_grab_image(true),
 	m_grab_depth(true),
 	m_grab_3D_points(true),
-	m_grab_IMU(true)
+	m_grab_IMU(true),
+	m_video_channel(VIDEO_CHANNEL_RGB)
 {
 	calculate_range2meters();
 
@@ -233,6 +234,8 @@ void  CKinect::loadConfig_sensorSpecific(
 	m_grab_3D_points = configSource.read_bool(iniSection,"grab_3D_points",m_grab_3D_points);
 	m_grab_IMU = configSource.read_bool(iniSection,"grab_IMU ",m_grab_IMU );
 
+	m_video_channel = configSource.read_enum<TVideoChannel>(iniSection,"video_channel",m_video_channel);
+
 	{
 		std::string s = configSource.read_string(iniSection,"relativePoseIntensityWRTDepth","");
 		if (!s.empty())
@@ -291,9 +294,10 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 	obs.intensityImage.loadFromMemoryBuffer(
 		KINECT_W,
 		KINECT_H,
-		CH_RGB,
+		obj->getVideoChannel()==CKinect::VIDEO_CHANNEL_RGB, // Color image?
 		reinterpret_cast<unsigned char*>(rgb),
-		true );
+		true  // Swap red/blue
+		);
 	obj->internal_tim_latest_rgb() = timestamp;
 }
 // ========  END OF GLOBAL CALLBACK FUNCTIONS ========
@@ -342,7 +346,14 @@ void CKinect::open()
 	freenect_set_depth_callback(f_dev, depth_cb);
 	freenect_set_video_callback(f_dev, rgb_cb);
 
-	freenect_set_video_format(f_dev, FREENECT_VIDEO_RGB);
+	// rgb or IR channel:
+	freenect_set_video_format(f_dev,
+		m_video_channel==VIDEO_CHANNEL_IR ?
+		FREENECT_VIDEO_IR_8BIT
+		:
+		FREENECT_VIDEO_RGB
+	);
+
 	freenect_set_depth_format(f_dev, FREENECT_DEPTH_10BIT); // FREENECT_DEPTH_11BIT);
 	freenect_set_video_buffer(f_dev, &m_buf_rgb[0]);
 	// freenect_set_depth_buffer(f_dev, &m_buf_depth[0]);  // JL: not needed??
@@ -378,7 +389,6 @@ void CKinect::open()
 		THROW_EXCEPTION("Can't start grabbing from Kinect camera (StartNUICamera failed)")
 
 #endif // MRPT_KINECT_WITH_CLNUI
-
 }
 
 void CKinect::close()
@@ -415,6 +425,34 @@ void CKinect::close()
 #endif // MRPT_KINECT_WITH_CLNUI
 }
 
+/** Changes the video channel to open (RGB or IR) - you can call this method before start grabbing or in the middle of streaming and the video source will change on the fly.
+	Default is RGB channel.
+*/
+void  CKinect::setVideoChannel(const TVideoChannel vch)
+{
+#if MRPT_KINECT_WITH_LIBFREENECT
+	m_video_channel = vch;
+	if (!isOpen()) return; // Nothing else to do here.
+
+	// rgb or IR channel:
+	freenect_stop_video(f_dev);
+	freenect_set_video_format(f_dev,
+		m_video_channel==VIDEO_CHANNEL_IR ?
+		FREENECT_VIDEO_IR_8BIT
+		:
+		FREENECT_VIDEO_RGB
+	);
+	freenect_start_video(f_dev);
+
+#endif // MRPT_KINECT_WITH_LIBFREENECT
+
+#if MRPT_KINECT_WITH_CLNUI
+	THROW_EXCEPTION("Not implemented yet.")
+#endif // MRPT_KINECT_WITH_CLNUI
+
+
+}
+
 
 /** The main data retrieving function, to be called after calling loadConfig() and initialize().
   *  \param out_obs The output retrieved observation (only if there_is_obs=true).
@@ -433,7 +471,7 @@ void CKinect::getNextObservation(
 
 #if MRPT_KINECT_WITH_LIBFREENECT
 
-	static const double max_wait_seconds = 0.1;
+	static const double max_wait_seconds = 1./25.;
 	static const TTimeStamp max_wait = mrpt::system::secondsToTimestamp(max_wait_seconds);
 
 	// Mark previous observation's timestamp as out-dated:
@@ -442,24 +480,41 @@ void CKinect::getNextObservation(
 	m_latest_obs.hasIntensityImage  = false;
 	m_latest_obs.hasConfidenceImage = false;
 
+	const TTimeStamp tim0 = mrpt::system::now();
+
+	// Reset these timestamp flags so if they are !=0 in the next call we're sure they're new frames.
 	m_tim_latest_rgb   = 0;
 	m_tim_latest_depth = 0;
-
-	const TTimeStamp tim0 = mrpt::system::now();
 
 	while (freenect_process_events(f_ctx)>=0 && mrpt::system::now()<(tim0+max_wait) )
 	{
 		// Got a new frame?
-		if ( (!m_grab_image || m_tim_latest_rgb!=0) &&
-			 (!m_grab_depth || m_tim_latest_depth!=0) )
+		if ( (!m_grab_image || m_tim_latest_rgb!=0) &&   // If we are NOT grabbing RGB or we are and there's a new frame...
+			 (!m_grab_depth || m_tim_latest_depth!=0)    // If we are NOT grabbing Depth or we are and there's a new frame...
+		   )
 		{
+			// Approx: 0.5ms delay between depth frame (first) and RGB frame (second).
+			//cout << "m_tim_latest_rgb: " << m_tim_latest_rgb << " m_tim_latest_depth: "<< m_tim_latest_depth <<endl;
 			there_is_obs=true;
 			break;
 		}
 	}
 
+	// Handle the case when there is NOT depth frames (if there's something very close blocking the IR sensor) but we have RGB:
+	if ( (m_grab_image && m_tim_latest_rgb!=0) &&
+		 (m_grab_depth && m_tim_latest_depth==0) )
+	{
+		// Mark the entire range data as invalid:
+		m_latest_obs.hasRangeImage = true;
+		m_latest_obs.rangeImage.setSize(KINECT_H,KINECT_W);
+		m_latest_obs.rangeImage.setConstant(0); // "0" means: error in range
+		there_is_obs=true;
+	}
+
+
 	if (!there_is_obs)
 		return;
+
 
 	// We DO have a fresh new observation:
 
@@ -487,7 +542,7 @@ void CKinect::getNextObservation(
 		if (m_grab_image)
 		{
 			newObs.hasIntensityImage  = true;
-			newObs.intensityImage.loadFromMemoryBuffer(KINECT_W,KINECT_H,true,&m_buf_rgb[0]);
+			//newObs.intensityImage.loadFromMemoryBuffer() was already called in the callback function
 		}
 
 		// Set range image --------------------------

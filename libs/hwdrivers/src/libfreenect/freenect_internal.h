@@ -51,7 +51,14 @@ struct _freenect_context {
 #define LL_SPEW FREENECT_LOG_SPEW
 #define LL_FLOOD FREENECT_LOG_FLOOD
 
+
+#ifdef _WIN32
+#include <stdarg.h>
+#include <stdio.h>
+void fn_log(freenect_context *ctx, freenect_loglevel level, const char *fmt, ...);
+#else
 void fn_log(freenect_context *ctx, freenect_loglevel level, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
+#endif
 
 #define FN_LOG(level, ...) fn_log(ctx, level, __VA_ARGS__)
 
@@ -140,15 +147,6 @@ struct _freenect_device {
 	// Motor
 	fnusb_dev usb_motor;
 	freenect_raw_tilt_state raw_state;
-};
-
-struct caminit {
-	uint16_t command;
-	uint16_t tag;
-	int cmdlen;
-	int replylen;
-	uint8_t cmddata[1024];
-	uint8_t replydata[1024];
 };
 
 #endif

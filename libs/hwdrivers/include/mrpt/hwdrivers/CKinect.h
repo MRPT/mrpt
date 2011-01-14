@@ -31,7 +31,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/slam/CObservationIMU.h>
-
+#include <mrpt/utils/TEnumType.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
 #include <mrpt/hwdrivers/link_pragmas.h>
@@ -68,7 +68,7 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** A class for grabing "range images", intensity images and other information from an Xbox Kinect sensor.
+		/** A class for grabing "range images", intensity images (either RGB or IR) and other information from an Xbox Kinect sensor.
 		  *
 		  *  <h2>Configuration and usage:</h2> <hr>
 		  * Data is returned as observations of type mrpt::slam::CObservation3DRangeScan (and mrpt::slam::CObservationIMU for accelerometers data).
@@ -99,8 +99,9 @@ namespace mrpt
 		  *		- This sensor can be also used from within rawlog-grabber to grab datasets within a robot with more sensors.
 		  *		- There is no built-in threading support, so if you use this class manually (not with-in rawlog-grabber),
 		  *			the ideal would be to create a thread and continuously request data from that thread (see mrpt::system::createThread ).
+		  *		- The intensity channel default to the RGB images, but it can be changed with setVideoChannel() to read the IR camera images (useful for calibrating).
 		  *		- There is a built-in support for an optional preview of the data on a window, so you don't need to even worry on creating a window to show them.
-		  *		- This class relies on an embedded version of libfreenect (you don't have to install it in your system). Thanks guys for the great job!
+		  *		- This class relies on an embedded version of libfreenect (you do NOT need to install it in your system). Thanks guys for the great job!
 		  *
 		  * <h2>Converting to 3D point cloud </h2><hr>
 		  *   You can convert the 3D observation into a 3D point cloud with this piece of code:
@@ -162,6 +163,8 @@ namespace mrpt
 		  *    grab_3D_points  = true        // Grab the 3D point cloud? (Default=true) If disabled, points can be generated later on.
 		  *    grab_IMU        = true        // Grab the accelerometers? (Default=true)
 		  *
+		  *    video_channel   = VIDEO_CHANNEL_RGB // Optional. Can be: VIDEO_CHANNEL_RGB (default) or VIDEO_CHANNEL_IR
+		  *
 		  *    // Calibration matrix of the RGB camera:
 		  *    rgb_cx        = 328.9427     // (cx,cy): Optical center, pixels
 		  *    rgb_cy        = 267.4807
@@ -198,6 +201,11 @@ namespace mrpt
 		public:
 			typedef float TDepth2RangeArray[KINECT_RANGES_TABLE_LEN]; //!< A typedef for an array that converts raw depth to ranges in meters.
 
+			/** RGB or IR video channel identifiers \sa setVideoChannel */
+			enum TVideoChannel {
+				VIDEO_CHANNEL_RGB=0,
+				VIDEO_CHANNEL_IR
+			};
 
 			CKinect();	 //!< Default ctor
 			~CKinect();	 //!< Default ctor
@@ -246,7 +254,7 @@ namespace mrpt
 			/** @name Sensor parameters (alternative to \a loadConfig ) and manual control
 			    @{ */
 
-			/** Try to open the camera (set all the parameters first!) - users may also call initialize(), which in turn calls this.
+			/** Try to open the camera (set all the parameters before calling this) - users may also call initialize(), which in turn calls this method.
 			  *  Raises an exception upon error.
 			  * \exception std::exception A textual description of the error.
 			  */
@@ -257,6 +265,12 @@ namespace mrpt
 			/** Close the conection to the sensor (not need to call it manually unless desired for some reason,
 			  * since it's called at destructor) */
 			void close();
+
+			/** Changes the video channel to open (RGB or IR) - you can call this method before start grabbing or in the middle of streaming and the video source will change on the fly.
+			    Default is RGB channel. */
+			void          setVideoChannel(const TVideoChannel vch);
+			/** Return the current video channel (RGB or IR) \sa setVideoChannel */
+			inline TVideoChannel getVideoChannel() const { return m_video_channel; }
 
 			/** Set the sensor index to open (if there're several sensors attached to the computer); default=0 -> the first one. */
 			inline void setDeviceIndexToOpen(int index) { m_user_device_number=index; }
@@ -367,6 +381,8 @@ namespace mrpt
 
 			bool  m_grab_image, m_grab_depth, m_grab_3D_points, m_grab_IMU ; //!< Default: all true
 
+			TVideoChannel  m_video_channel; //!< The video channel to open: RGB or IR
+
 		private:
 			std::vector<uint8_t> m_buf_depth, m_buf_rgb; //!< Temporary buffers for image grabbing.
 			TDepth2RangeArray   m_range2meters; //!< The table raw depth -> range in meters
@@ -377,8 +393,23 @@ namespace mrpt
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 		};	// End of class
-
 	} // End of NS
+
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<hwdrivers::CKinect::TVideoChannel>
+		{
+			typedef hwdrivers::CKinect::TVideoChannel enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(hwdrivers::CKinect::VIDEO_CHANNEL_RGB, "VIDEO_CHANNEL_RGB");
+				m_map.insert(hwdrivers::CKinect::VIDEO_CHANNEL_IR,  "VIDEO_CHANNEL_IR");
+			}
+		};
+	} // End of namespace
+
 } // End of NS
 
 
