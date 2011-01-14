@@ -447,7 +447,7 @@ void  CKinect::setVideoChannel(const TVideoChannel vch)
 #endif // MRPT_KINECT_WITH_LIBFREENECT
 
 #if MRPT_KINECT_WITH_CLNUI
-	THROW_EXCEPTION("Not implemented yet.")
+	THROW_EXCEPTION("Grabbing IR intensity is not available with CL NUI Kinect driver.")
 #endif // MRPT_KINECT_WITH_CLNUI
 
 
@@ -527,7 +527,8 @@ void CKinect::getNextObservation(
 	const bool there_is_rgb   = GetNUICameraColorFrameRGB24(m_clnui_cam, &m_buf_rgb[0],waitTimeout);
 	const bool there_is_depth = GetNUICameraDepthFrameRAW(m_clnui_cam, (PUSHORT)&m_buf_depth[0],waitTimeout);
 
-	there_is_obs = there_is_rgb && there_is_depth;
+	there_is_obs = (!m_grab_image  || there_is_rgb) && 
+	               (!m_grab_depth  || there_is_depth);
 
 	if (!there_is_obs)
 		return;
@@ -542,7 +543,7 @@ void CKinect::getNextObservation(
 		if (m_grab_image)
 		{
 			newObs.hasIntensityImage  = true;
-			//newObs.intensityImage.loadFromMemoryBuffer() was already called in the callback function
+			newObs.intensityImage.loadFromMemoryBuffer(KINECT_W,KINECT_H,true,&m_buf_rgb[0]);
 		}
 
 		// Set range image --------------------------

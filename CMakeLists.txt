@@ -2104,7 +2104,7 @@ SHOW_CONFIG_LINE("Has OpenGL & GLUT:                      " CMAKE_MRPT_HAS_OPENG
 SHOW_CONFIG_LINE("Has xSENS MTi library (inertial sensor) " CMAKE_MRPT_HAS_xSENS)
 SHOW_CONFIG_LINE("Has libdc1394-2 (FireWire capture)      " CMAKE_MRPT_HAS_LIBDC1394_2)
 SHOW_CONFIG_LINE("Has SwissRanger 3/4000 3D camera        " CMAKE_MRPT_HAS_SWISSRANGE )
-SHOW_CONFIG_LINE("Has Xbox Kinect (via libfreenect)       " CMAKE_MRPT_HAS_KINECT)
+SHOW_CONFIG_LINE("Has Xbox Kinect                         " CMAKE_MRPT_HAS_KINECT)
 
 
 SHOW_CONFIG_LINE_SYSTEM("Has OpenCV (Image manipulation)         " CMAKE_MRPT_HAS_OPENCV "Version: ${MRPT_OPENCV_VERSION}")
