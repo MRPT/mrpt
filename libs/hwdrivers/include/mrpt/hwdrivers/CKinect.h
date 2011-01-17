@@ -37,27 +37,17 @@
 #include <mrpt/hwdrivers/link_pragmas.h>
 
 // MRPT implements a common interface to Kinect disregarding the
-//  actual underlying library. These macros are defined for internal
-//  MRPT usage to know which library to use:
-#if MRPT_HAS_KINECT
-#	if defined(_MSC_VER)
-#		define MRPT_KINECT_WITH_CLNUI        1
-#		define MRPT_KINECT_WITH_LIBFREENECT  0
-#	else
-#		define MRPT_KINECT_WITH_CLNUI        0
-#		define MRPT_KINECT_WITH_LIBFREENECT  1
-#	endif
-#else
-#		define MRPT_KINECT_WITH_CLNUI        0
-#		define MRPT_KINECT_WITH_LIBFREENECT  0
-#endif
+//  actual underlying library. These macros defined in "mrpt/config.h"
+//  let us know which library is actually used:
+//   - MRPT_HAS_KINECT_CL_NUI     = 0 or 1
+//   - MRPT_HAS_KINECT_FREENECT   = 0 or 1
 
 // Depth of Kinect ranges:
-#if MRPT_KINECT_WITH_LIBFREENECT
+#if MRPT_HAS_KINECT_FREENECT
 #	define MRPT_KINECT_DEPTH_10BIT
 #	define KINECT_RANGES_TABLE_LEN    1024
 #	define KINECT_RANGES_TABLE_MASK   0x03FF
-#else //  MRPT_KINECT_WITH_CLNUI or none:
+#else //  MRPT_HAS_KINECT_CL_NUI or none:
 #	define MRPT_KINECT_DEPTH_11BIT
 #	define KINECT_RANGES_TABLE_LEN    2048
 #	define KINECT_RANGES_TABLE_MASK   0x07FF
@@ -334,12 +324,13 @@ namespace mrpt
 			/** @} */
 
 
-#if MRPT_KINECT_WITH_LIBFREENECT
+#if MRPT_HAS_KINECT_FREENECT
 			// Auxiliary getters/setters (we can't declare the libfreenect callback as friend since we
 			//   want to avoid including the API headers here).
 			inline mrpt::slam::CObservation3DRangeScan & internal_latest_obs() { return m_latest_obs; }
 			inline volatile uint32_t & internal_tim_latest_depth() { return m_tim_latest_depth; }
 			inline volatile uint32_t & internal_tim_latest_rgb()   { return m_tim_latest_rgb; }
+			inline mrpt::synch::CCriticalSection & internal_latest_obs_cs() { return m_latest_obs_cs; }
 #endif
 
 		protected:
@@ -357,16 +348,17 @@ namespace mrpt
 			size_t      m_preview_decim_counter_range, m_preview_decim_counter_rgb;
 			mrpt::gui::CDisplayWindowPtr  m_win_range, m_win_int;
 
-#if MRPT_KINECT_WITH_LIBFREENECT
+#if MRPT_HAS_KINECT_FREENECT
 			void *m_f_ctx;  //!< The "freenect_context", or NULL if closed
 			void *m_f_dev;  //!< The "freenect_device", or NULL if closed
 
 			// Data fields for use with the callback function:
 			mrpt::slam::CObservation3DRangeScan  m_latest_obs;
 			volatile uint32_t                 m_tim_latest_depth, m_tim_latest_rgb; // 0 = not updated
+			mrpt::synch::CCriticalSection     m_latest_obs_cs;
 #endif
 
-#if MRPT_KINECT_WITH_CLNUI
+#if MRPT_HAS_KINECT_CL_NUI
 			void *m_clnui_cam;   //!< The "CLNUICamera" or NULL if closed
 			void *m_clnui_motor; //!< The "CLNUIMotor" or NULL if closed
 #endif

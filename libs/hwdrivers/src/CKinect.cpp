@@ -37,11 +37,11 @@ using namespace mrpt::synch;
 IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 
 
-#if MRPT_KINECT_WITH_LIBFREENECT
-#	include "libfreenect/libfreenect.h"
+#if MRPT_HAS_KINECT_FREENECT
+#	include <libfreenect.h>
 #	define KINECT_W FREENECT_FRAME_W
 #	define KINECT_H FREENECT_FRAME_H
-#elif MRPT_KINECT_WITH_CLNUI
+#elif MRPT_HAS_KINECT_CL_NUI
 #	include <CLNUIDevice.h>
 #	define KINECT_W 640
 #	define KINECT_H 480
@@ -51,20 +51,20 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 #endif
 
 
-#if MRPT_KINECT_WITH_LIBFREENECT
+#if MRPT_HAS_KINECT_FREENECT
 	// Macros to convert the opaque pointers in the class header:
 	#define f_ctx  reinterpret_cast<freenect_context*>(m_f_ctx)
 	#define f_ctx_ptr  reinterpret_cast<freenect_context**>(&m_f_ctx)
 	#define f_dev  reinterpret_cast<freenect_device*>(m_f_dev)
 	#define f_dev_ptr  reinterpret_cast<freenect_device**>(&m_f_dev)
-#endif // MRPT_KINECT_WITH_LIBFREENECT
+#endif // MRPT_HAS_KINECT_FREENECT
 
 
-#if MRPT_KINECT_WITH_CLNUI
+#if MRPT_HAS_KINECT_CL_NUI
 	// Macros to convert the opaque pointers in the class header:
 	#define clnui_motor  reinterpret_cast<CLNUIMotor>(m_clnui_motor)
 	#define clnui_cam    reinterpret_cast<CLNUICamera>(m_clnui_cam)
-#endif // MRPT_KINECT_WITH_CLNUI
+#endif // MRPT_HAS_KINECT_CL_NUI
 
 
 
@@ -97,14 +97,15 @@ CKinect::CKinect()  :
 	m_preview_decim_counter_range(0),
 	m_preview_decim_counter_rgb(0),
 
-#if MRPT_KINECT_WITH_LIBFREENECT
+#if MRPT_HAS_KINECT_FREENECT
 	m_f_ctx(NULL), // The "freenect_context", or NULL if closed
 	m_f_dev(NULL), // The "freenect_device", or NULL if closed
 	m_tim_latest_depth(0),
 	m_tim_latest_rgb(0),
+	m_latest_obs_cs("m_latest_obs_cs"),
 #endif
 
-#if MRPT_KINECT_WITH_CLNUI
+#if MRPT_HAS_KINECT_CL_NUI
 	m_clnui_cam(NULL),
 	m_clnui_motor(NULL),
 #endif
@@ -245,9 +246,9 @@ void  CKinect::loadConfig_sensorSpecific(
 
 bool CKinect::isOpen() const
 {
-#if MRPT_KINECT_WITH_LIBFREENECT
+#if MRPT_HAS_KINECT_FREENECT
 	return f_dev != NULL;
-#elif MRPT_KINECT_WITH_CLNUI
+#elif MRPT_HAS_KINECT_CL_NUI
 	return m_clnui_cam != NULL;
 #else
 	return false;
@@ -257,7 +258,7 @@ bool CKinect::isOpen() const
 }
 
 
-#if MRPT_KINECT_WITH_LIBFREENECT
+#if MRPT_HAS_KINECT_FREENECT
 // ========  GLOBAL CALLBACK FUNCTIONS ========
 void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 {
@@ -267,6 +268,7 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 
 	// Update of the timestamps at the end:
 	CObservation3DRangeScan &obs = obj->internal_latest_obs();
+	mrpt::synch::CCriticalSectionLocker lock( &obj->internal_latest_obs_cs() );
 
 	obs.hasRangeImage = true;
 	obs.rangeImage.setSize(KINECT_H,KINECT_W);
@@ -289,6 +291,7 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 
 	// Update of the timestamps at the end:
 	CObservation3DRangeScan &obs = obj->internal_latest_obs();
+	mrpt::synch::CCriticalSectionLocker lock( &obj->internal_latest_obs_cs() );
 
 	obs.hasIntensityImage = true;
 	obs.intensityImage.loadFromMemoryBuffer(
@@ -301,7 +304,7 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 	obj->internal_tim_latest_rgb() = timestamp;
 }
 // ========  END OF GLOBAL CALLBACK FUNCTIONS ========
-#endif // MRPT_KINECT_WITH_LIBFREENECT
+#endif // MRPT_HAS_KINECT_FREENECT
 
 
 void CKinect::open()
@@ -313,7 +316,7 @@ void CKinect::open()
 	m_buf_depth.resize(KINECT_W*KINECT_H*3);
 	m_buf_rgb.resize(KINECT_W*KINECT_H*3);
 
-#if MRPT_KINECT_WITH_LIBFREENECT  // ----> libfreenect
+#if MRPT_HAS_KINECT_FREENECT  // ----> libfreenect
 	// Try to open the device:
 	if (freenect_init(f_ctx_ptr, NULL) < 0)
 		THROW_EXCEPTION("freenect_init() failed")
@@ -364,9 +367,9 @@ void CKinect::open()
 	freenect_start_depth(f_dev);
 	freenect_start_video(f_dev);
 
-#endif // MRPT_KINECT_WITH_LIBFREENECT
+#endif // MRPT_HAS_KINECT_FREENECT
 
-#if MRPT_KINECT_WITH_CLNUI  // ----->  CL NUI SDK
+#if MRPT_HAS_KINECT_CL_NUI  // ----->  CL NUI SDK
 	// Open handles:
 	m_clnui_motor = CreateNUIMotor
 	(
@@ -388,12 +391,12 @@ void CKinect::open()
 	if (!ret)
 		THROW_EXCEPTION("Can't start grabbing from Kinect camera (StartNUICamera failed)")
 
-#endif // MRPT_KINECT_WITH_CLNUI
+#endif // MRPT_HAS_KINECT_CL_NUI
 }
 
 void CKinect::close()
 {
-#if MRPT_KINECT_WITH_LIBFREENECT
+#if MRPT_HAS_KINECT_FREENECT
 	if (f_dev)
 	{
 		freenect_stop_depth(f_dev);
@@ -405,9 +408,9 @@ void CKinect::close()
 	if (f_ctx)
 		freenect_shutdown(f_ctx);
 	m_f_ctx = NULL;
-#endif // MRPT_KINECT_WITH_LIBFREENECT
+#endif // MRPT_HAS_KINECT_FREENECT
 
-#if MRPT_KINECT_WITH_CLNUI
+#if MRPT_HAS_KINECT_CL_NUI
 	// Stop grabbing & close handles:
 	if (m_clnui_cam)
 	{
@@ -422,7 +425,7 @@ void CKinect::close()
 		DestroyNUIMotor(clnui_motor);
 		m_clnui_motor = NULL;
 	}
-#endif // MRPT_KINECT_WITH_CLNUI
+#endif // MRPT_HAS_KINECT_CL_NUI
 }
 
 /** Changes the video channel to open (RGB or IR) - you can call this method before start grabbing or in the middle of streaming and the video source will change on the fly.
@@ -430,7 +433,7 @@ void CKinect::close()
 */
 void  CKinect::setVideoChannel(const TVideoChannel vch)
 {
-#if MRPT_KINECT_WITH_LIBFREENECT
+#if MRPT_HAS_KINECT_FREENECT
 	m_video_channel = vch;
 	if (!isOpen()) return; // Nothing else to do here.
 
@@ -444,11 +447,11 @@ void  CKinect::setVideoChannel(const TVideoChannel vch)
 	);
 	freenect_start_video(f_dev);
 
-#endif // MRPT_KINECT_WITH_LIBFREENECT
+#endif // MRPT_HAS_KINECT_FREENECT
 
-#if MRPT_KINECT_WITH_CLNUI
+#if MRPT_HAS_KINECT_CL_NUI
 	THROW_EXCEPTION("Grabbing IR intensity is not available with CL NUI Kinect driver.")
-#endif // MRPT_KINECT_WITH_CLNUI
+#endif // MRPT_HAS_KINECT_CL_NUI
 
 
 }
@@ -469,7 +472,7 @@ void CKinect::getNextObservation(
 	there_is_obs=false;
 	hardware_error = false;
 
-#if MRPT_KINECT_WITH_LIBFREENECT
+#if MRPT_HAS_KINECT_FREENECT
 
 	static const double max_wait_seconds = 1./25.;
 	static const TTimeStamp max_wait = mrpt::system::secondsToTimestamp(max_wait_seconds);
@@ -483,8 +486,10 @@ void CKinect::getNextObservation(
 	const TTimeStamp tim0 = mrpt::system::now();
 
 	// Reset these timestamp flags so if they are !=0 in the next call we're sure they're new frames.
+	m_latest_obs_cs.enter();
 	m_tim_latest_rgb   = 0;
 	m_tim_latest_depth = 0;
+	m_latest_obs_cs.leave();
 
 	while (freenect_process_events(f_ctx)>=0 && mrpt::system::now()<(tim0+max_wait) )
 	{
@@ -519,9 +524,11 @@ void CKinect::getNextObservation(
 	// We DO have a fresh new observation:
 
 	// Quick save the observation to the user's object:
-	_out_obs.swap(m_latest_obs);
+	m_latest_obs_cs.enter();
+		_out_obs.swap(m_latest_obs);
+	m_latest_obs_cs.leave();
 
-#elif MRPT_KINECT_WITH_CLNUI
+#elif MRPT_HAS_KINECT_CL_NUI
 
 	const int waitTimeout = 200;
 	const bool there_is_rgb   = GetNUICameraColorFrameRGB24(m_clnui_cam, &m_buf_rgb[0],waitTimeout);
@@ -568,7 +575,7 @@ void CKinect::getNextObservation(
 		_out_obs.swap(newObs);
 	}
 
-#endif  // end MRPT_KINECT_WITH_CLNUI
+#endif  // end MRPT_HAS_KINECT_CL_NUI
 
 	// Set common data into observation:
 	// --------------------------------------
@@ -639,7 +646,7 @@ void CKinect::getNextObservation(
 		double acc_x=0,acc_y=0,acc_z=0; // In m/s^2
 		bool  has_good_acc=false;
 
-#if MRPT_KINECT_WITH_LIBFREENECT
+#if MRPT_HAS_KINECT_FREENECT
 		{
 			freenect_update_tilt_state(f_dev);
 			freenect_raw_tilt_state* state = freenect_get_tilt_state(f_dev);
@@ -658,7 +665,7 @@ void CKinect::getNextObservation(
 				acc_z = -ly;
 			}
 		}
-#elif MRPT_KINECT_WITH_CLNUI
+#elif MRPT_HAS_KINECT_CL_NUI
 		{
 			SHORT x, y, z;
 			if (GetNUIMotorAccelerometer( clnui_motor, x,y,z))
@@ -722,9 +729,9 @@ void CKinect::setTiltAngleDegrees(double angle)
 {
 	ASSERTMSG_(isOpen(),"Sensor must be open first")
 
-#if MRPT_KINECT_WITH_LIBFREENECT
+#if MRPT_HAS_KINECT_FREENECT
 	freenect_set_tilt_degs(f_dev,angle);
-#elif MRPT_KINECT_WITH_CLNUI
+#elif MRPT_HAS_KINECT_CL_NUI
 	// JL: I deduced this formula empirically, since CLNUI seems not to have documented this API!!
 	const short int send_angle =  ( (angle<-31) ? -31 : ((angle>31) ? 31 : angle) ) * (0x4000)/31.0;
 	SetNUIMotorPosition(clnui_motor, send_angle);
@@ -741,7 +748,7 @@ double CKinect::getTiltAngleDegrees()
 	freenect_raw_tilt_state *ts=freenect_get_tilt_state(f_dev);
 	return freenect_get_tilt_degs(ts);
 
-#elif MRPT_KINECT_WITH_CLNUI
+#elif MRPT_HAS_KINECT_CL_NUI
 	// TODO: Does CL NUI provides this??
 	return 0;
 #else

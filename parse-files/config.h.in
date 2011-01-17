@@ -100,6 +100,11 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /* do we have support for XBox Kinect? */
 #define MRPT_HAS_KINECT       ${CMAKE_MRPT_HAS_KINECT}
 
+/* Kinect SDK variants: */
+#define MRPT_HAS_KINECT_CL_NUI           ${CMAKE_MRPT_HAS_CL_NUI}
+#define MRPT_HAS_KINECT_FREENECT         ${CMAKE_MRPT_HAS_FREENECT}
+#define MRPT_HAS_KINECT_FREENECT_SYSTEM  ${CMAKE_MRPT_HAS_FREENECT_SYSTEM}
+
 
 /** The file ftdi.h exists (Linux only) */
 #define MRPT_HAS_FTDI             ${CMAKE_MRPT_HAS_FTDI}
