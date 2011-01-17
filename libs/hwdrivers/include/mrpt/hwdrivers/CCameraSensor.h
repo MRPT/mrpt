@@ -166,6 +166,8 @@ namespace mrpt
 		  *    kinect_grab_3d         = true            // whether to save the 3D points
 		  *    kinect_grab_range      = true            // whether to save the depth image
 		  *
+		  *    kinect_video_rgb       = true            // Optional. If set to "false", the IR intensity channel will be grabbed instead of the color RGB channel.
+		  *
 		  *  \endcode
 		  *
 		  *  \note The execution rate (in rawlog-grabber) should be greater than the required capture FPS.
@@ -256,6 +258,7 @@ namespace mrpt
 			bool 			m_kinect_save_3d;			//!< Save the 3D point cloud (default: true)
 			bool 			m_kinect_save_range_img;	//!< Save the 2D range image (default: true)
 			bool 			m_kinect_save_intensity_img; //!< Save the 2D intensity image (default: true)
+			bool			m_kinect_video_rgb;			//!< Save RGB or IR channels (default:true)
 
 			bool				m_external_images_own_thread; //!< Whether to launch independent thread
 

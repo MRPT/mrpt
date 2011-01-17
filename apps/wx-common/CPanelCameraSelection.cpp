@@ -29,9 +29,9 @@
 
 //(*InternalHeaders(CPanelCameraSelection)
 #include <wx/settings.h>
-#include <wx/string.h>
-#include <wx/intl.h>
 #include <wx/font.h>
+#include <wx/intl.h>
+#include <wx/string.h>
 //*)
 
 //(*IdInit(CPanelCameraSelection)
@@ -76,6 +76,7 @@ const long CPanelCameraSelection::ID_PANEL1 = wxNewId();
 const long CPanelCameraSelection::ID_CHECKBOX7 = wxNewId();
 const long CPanelCameraSelection::ID_CHECKBOX8 = wxNewId();
 const long CPanelCameraSelection::ID_CHECKBOX9 = wxNewId();
+const long CPanelCameraSelection::ID_RADIOBOX3 = wxNewId();
 const long CPanelCameraSelection::ID_PANEL8 = wxNewId();
 const long CPanelCameraSelection::ID_NOTEBOOK1 = wxNewId();
 const long CPanelCameraSelection::ID_CHECKBOX2 = wxNewId();
@@ -90,18 +91,18 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 {
 	//(*Initialize(CPanelCameraSelection)
 	wxStaticBoxSizer* StaticBoxSizer2;
-	wxFlexGridSizer* FlexGridSizer1;
-	wxFlexGridSizer* FlexGridSizer2;
-	wxFlexGridSizer* FlexGridSizer11;
 	wxFlexGridSizer* FlexGridSizer4;
-	wxFlexGridSizer* FlexGridSizer3;
 	wxFlexGridSizer* FlexGridSizer16;
 	wxFlexGridSizer* FlexGridSizer10;
-	wxFlexGridSizer* FlexGridSizer13;
-	wxFlexGridSizer* FlexGridSizer18;
-	wxFlexGridSizer* FlexGridSizer12;
+	wxFlexGridSizer* FlexGridSizer3;
 	wxFlexGridSizer* FlexGridSizer5;
+	wxFlexGridSizer* FlexGridSizer2;
+	wxFlexGridSizer* FlexGridSizer18;
+	wxFlexGridSizer* FlexGridSizer13;
+	wxFlexGridSizer* FlexGridSizer12;
 	wxStaticBoxSizer* StaticBoxSizer1;
+	wxFlexGridSizer* FlexGridSizer1;
+	wxFlexGridSizer* FlexGridSizer11;
 	
 	Create(parent, id, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("id"));
 	FlexGridSizer1 = new wxFlexGridSizer(0, 1, 0, 0);
@@ -200,8 +201,8 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer18 = new wxFlexGridSizer(2, 2, 0, 0);
 	wxString __wxRadioBoxChoices_1[2] = 
 	{
-	_("Left"),
-	_("Right")
+		_("Left"),
+		_("Right")
 	};
 	rbBumblebeeSel = new wxRadioBox(Panel1, ID_RADIOBOX1, _("Select monocular input"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX1"));
 	rbBumblebeeSel->SetSelection(0);
@@ -219,8 +220,8 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer2 = new wxFlexGridSizer(2, 3, 0, 0);
 	wxString __wxRadioBoxChoices_2[2] = 
 	{
-	_("USB"),
-	_("Ethernet")
+		_("USB"),
+		_("Ethernet")
 	};
 	rbSR_usb = new wxRadioBox(pnSwissRanger, ID_RADIOBOX2, _("Connection"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_2, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX2"));
 	FlexGridSizer2->Add(rbSR_usb, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
@@ -264,6 +265,14 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer5->Add(cbKinect_Depth, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
 	StaticBoxSizer2->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
 	FlexGridSizer4->Add(StaticBoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
+	wxString __wxRadioBoxChoices_3[2] = 
+	{
+		_("RGB camera"),
+		_("IR camera")
+	};
+	rbKinect_int = new wxRadioBox(pnKinect, ID_RADIOBOX3, _("Intensity channel:"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_3, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX3"));
+	rbKinect_int->SetSelection(0);
+	FlexGridSizer4->Add(rbKinect_int, 1, wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 5);
 	pnKinect->SetSizer(FlexGridSizer4);
 	FlexGridSizer4->Fit(pnKinect);
 	FlexGridSizer4->SetSizeHints(pnKinect);

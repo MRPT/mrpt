@@ -88,6 +88,7 @@ CCameraSensor::CCameraSensor() :
 	m_kinect_save_3d		(true),
 	m_kinect_save_range_img (true),
 	m_kinect_save_intensity_img(true),
+	m_kinect_video_rgb		(true),
 
 	m_external_images_own_thread(false),
 	m_cap_cv			(NULL),
@@ -213,6 +214,7 @@ void CCameraSensor::initialize()
 		m_cap_kinect->enableGrab3DPoints( m_kinect_save_3d );
 		m_cap_kinect->enableGrabDepth ( m_kinect_save_range_img );
 		m_cap_kinect->enableGrabRGB( m_kinect_save_intensity_img );
+		m_cap_kinect->setVideoChannel( m_kinect_video_rgb ? CKinect::VIDEO_CHANNEL_RGB : CKinect::VIDEO_CHANNEL_IR );
 
 		if (!m_path_for_external_images.empty())
 			m_cap_kinect->setPathForExternalImages( m_path_for_external_images );
@@ -390,6 +392,8 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	m_kinect_save_3d = configSource.read_bool( iniSection, "kinect_grab_3d", m_kinect_save_3d );
 	m_kinect_save_intensity_img = configSource.read_bool( iniSection, "kinect_grab_intensity", m_kinect_save_intensity_img );
 	m_kinect_save_range_img = configSource.read_bool( iniSection, "kinect_grab_range", m_kinect_save_range_img );
+	m_kinect_video_rgb = configSource.read_bool( iniSection, "kinect_video_rgb", m_kinect_video_rgb);
+	
 
 	// Special stuff: FPS
 	map<double,grabber_dc1394_framerate_t>	map_fps;
@@ -529,8 +533,16 @@ CObservationPtr CCameraSensor::getNextFrame()
 	{
 		obs3D = CObservation3DRangeScan::Create();
 
+		// Specially at start-up, there may be a delay grabbing so a few calls return false: add a timeout.
+		const mrpt::system::TTimeStamp t0 = mrpt::system::now();
+		static const double max_timeout = 3.0; // seconds
+
 		bool there_is_obs, hardware_error;
-		m_cap_kinect->getNextObservation(*obs3D, there_is_obs, hardware_error);
+		do 
+		{
+			m_cap_kinect->getNextObservation(*obs3D, there_is_obs, hardware_error);
+			if (!there_is_obs) mrpt::system::sleep(1);
+		} while (!there_is_obs && mrpt::system::timeDifference(t0,mrpt::system::now())<max_timeout);
 
 		if (!there_is_obs || hardware_error)
 		{	// Error

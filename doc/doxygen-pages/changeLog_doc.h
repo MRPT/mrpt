@@ -52,6 +52,7 @@
 	- Changes in classes:
 		- mrpt::hwdrivers::CKinect
 			- mrpt::hwdrivers::CKinect::setVideoChannel(): New method (and .ini parameter) for switching between the RGB and IR channels for the intensity images.
+			- The posibility of grabbing the IR channel is also now available in mrpt::hwdrivers::prepareVideoSourceFromUserSelection() , the camera-calib application, etc...
 			- libfreenect is now also supported in Windows. Read http://www.mrpt.org/Kinect_and_MRPT
 			- Improved robustness and efficiency in grabbing.
 		- mrpt::opengl::COpenGLViewport now has a special "image mode" which makes very easy to render images to opengl windows efficiently. See the example "opengl_video_viewport_demo".

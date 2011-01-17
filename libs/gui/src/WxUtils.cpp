@@ -461,6 +461,7 @@ const long CPanelCameraSelection::ID_PANEL1 = wxNewId();
 const long CPanelCameraSelection::ID_CHECKBOX7 = wxNewId();
 const long CPanelCameraSelection::ID_CHECKBOX8 = wxNewId();
 const long CPanelCameraSelection::ID_CHECKBOX9 = wxNewId();
+const long CPanelCameraSelection::ID_RADIOBOX3 = wxNewId();
 const long CPanelCameraSelection::ID_PANEL8 = wxNewId();
 const long CPanelCameraSelection::ID_NOTEBOOK1 = wxNewId();
 const long CPanelCameraSelection::ID_CHECKBOX2 = wxNewId();
@@ -475,18 +476,18 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 {
 	//(*Initialize(CPanelCameraSelection)
 	wxStaticBoxSizer* StaticBoxSizer2;
-	wxFlexGridSizer* FlexGridSizer1;
-	wxFlexGridSizer* FlexGridSizer2;
-	wxFlexGridSizer* FlexGridSizer11;
 	wxFlexGridSizer* FlexGridSizer4;
-	wxFlexGridSizer* FlexGridSizer3;
 	wxFlexGridSizer* FlexGridSizer16;
 	wxFlexGridSizer* FlexGridSizer10;
-	wxFlexGridSizer* FlexGridSizer13;
-	wxFlexGridSizer* FlexGridSizer18;
-	wxFlexGridSizer* FlexGridSizer12;
+	wxFlexGridSizer* FlexGridSizer3;
 	wxFlexGridSizer* FlexGridSizer5;
+	wxFlexGridSizer* FlexGridSizer2;
+	wxFlexGridSizer* FlexGridSizer18;
+	wxFlexGridSizer* FlexGridSizer13;
+	wxFlexGridSizer* FlexGridSizer12;
 	wxStaticBoxSizer* StaticBoxSizer1;
+	wxFlexGridSizer* FlexGridSizer1;
+	wxFlexGridSizer* FlexGridSizer11;
 
 	Create(parent, id, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("id"));
 	FlexGridSizer1 = new wxFlexGridSizer(0, 1, 0, 0);
@@ -649,6 +650,14 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer5->Add(cbKinect_Depth, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
 	StaticBoxSizer2->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
 	FlexGridSizer4->Add(StaticBoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
+	wxString __wxRadioBoxChoices_3[2] = 
+	{
+		_("RGB camera"),
+		_("IR camera")
+	};
+	rbKinect_int = new wxRadioBox(pnKinect, ID_RADIOBOX3, _("Intensity channel:"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_3, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX3"));
+	rbKinect_int->SetSelection(0);
+	FlexGridSizer4->Add(rbKinect_int, 1, wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 5);
 	pnKinect->SetSizer(FlexGridSizer4);
 	FlexGridSizer4->Fit(pnKinect);
 	FlexGridSizer4->SetSizeHints(pnKinect);
@@ -870,6 +879,8 @@ void CPanelCameraSelection::writeConfigFromVideoSourcePanel(
 			cfg->write(sect,"kinect_grab_intensity", cbKinect_Int->GetValue() );
 			cfg->write(sect,"kinect_grab_3d", cbKinect_3D->GetValue() );
 			cfg->write(sect,"kinect_grab_range", cbKinect_Depth->GetValue() );
+
+			cfg->write(sect,"kinect_video_rgb", rbKinect_int->GetSelection()==0 ? 1 : 0 );
 		}
 		break;
 
