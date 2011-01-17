@@ -1,0 +1,42 @@
+=head1 NAME
+
+kinect-3d-view - Demo for the Microsoft Kinect sensor 
+
+=head1 SYNOPSIS
+
+kinect-3d-view
+
+=head1 DESCRIPTION
+
+B<kinect-3d-view> is a simple example that continuously grabs from a
+Kinect sensor and displays the 3D point cloud live. It also allows to 
+switch between the RGB and IR channels, to control the tilt servo and 
+displays the accelerometer readings.
+
+
+=head1 BUGS
+
+Please report bugs at http://www.mrpt.org/project/issues/MRPT
+
+=head1 SEE ALSO
+
+The application wiki page at http://www.mrpt.org/Kinect_and_MRPT
+
+=head1 AUTHORS
+
+B<kinect-3d-view> is part of the Mobile Robot Programming Toolkit (MRPT), and was originally 
+written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3, or (at your option) any
+later version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
+=cut

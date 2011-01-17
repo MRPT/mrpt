@@ -47,7 +47,14 @@ msbuild MRPT.sln /p:Configuration=Release %MSBUILDPARALLEL%
 IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
 REM Several tries to go on when MSVC9 linker crashes... (fuch yeah!)
-for %I in (1 2 3 4 5 6 7 8 9 10 11 12 13 14 15) do msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
+msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
+msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
+msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
+msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
+msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
+msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
+msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
+msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
 
 REM 6) Build package:
 REM ----------------------------------------------

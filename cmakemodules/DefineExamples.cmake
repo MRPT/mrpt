@@ -163,7 +163,6 @@ IF(BUILD_EXAMPLES)
 		#  list of examples for each directory:
 		SET(LIST_EXAMPLES_IN_THIS_DIR
 			swissranger_cam_demo
-			kinect_3d_view
 			GPS_test
 			sonar_SRF10_test
 			eNoses_test
