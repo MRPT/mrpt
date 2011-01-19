@@ -40,6 +40,20 @@ using namespace mrpt::utils;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CRenderizableDisplayList, CRenderizable, mrpt::opengl )
 
+
+// This is needed since it seems we must delete display lists from the same thread we create them....
+struct TAuxDLData
+{
+	std::vector<unsigned int>      dls_to_delete;
+	mrpt::synch::CCriticalSection  dls_to_delete_cs;
+
+	static TAuxDLData& getSingleton() 
+	{
+		static TAuxDLData instance;
+		return instance;
+	}
+};
+
 // Default constructor:
 CRenderizableDisplayList::CRenderizableDisplayList() :
 	m_dl(INVALID_DISPLAY_LIST_ID),
@@ -53,10 +67,11 @@ CRenderizableDisplayList::~CRenderizableDisplayList()
 	// If we had an associated display list:
 	if (m_dl!=INVALID_DISPLAY_LIST_ID)
 	{
-		// Delete the graphical memory:
-#if MRPT_HAS_OPENGL_GLUT
-		glDeleteLists(m_dl, 1);
-#endif
+		// Delete the graphical memory (actually, enque the request...)
+		TAuxDLData & obj = TAuxDLData::getSingleton();
+		obj.dls_to_delete_cs.enter();
+			obj.dls_to_delete.push_back(m_dl);
+		obj.dls_to_delete_cs.leave();
 	}
 }
 
@@ -72,6 +87,19 @@ void   CRenderizableDisplayList::render() const
 	}
 	else
 	{
+		// We must delete pending dl's in the same thread we create them, so, let's do it here, for example:
+		TAuxDLData & obj = TAuxDLData::getSingleton();
+		if (!obj.dls_to_delete.empty())
+		{
+			obj.dls_to_delete_cs.enter();
+#if MRPT_HAS_OPENGL_GLUT
+			for (size_t i=0;i<obj.dls_to_delete.size();i++)
+				glDeleteLists(obj.dls_to_delete[i], 1);
+#endif
+			obj.dls_to_delete.clear();
+			obj.dls_to_delete_cs.leave();
+		}
+
 		if (m_dl==INVALID_DISPLAY_LIST_ID)
 			m_dl = glGenLists(1);  // Assign list ID upon first usage.
 
