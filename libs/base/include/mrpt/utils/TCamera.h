@@ -213,7 +213,12 @@ namespace mrpt
 			inline void k3(double val) { dist[4]=val; }
 		}; // end class TCamera
 
-				DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( TStereoCamera, mrpt::utils::CSerializable )
+
+		bool BASE_IMPEXP operator ==(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b);
+		bool BASE_IMPEXP operator !=(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b);
+
+
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( TStereoCamera, mrpt::utils::CSerializable )
 
 		enum TStereoCameraModel
 		{

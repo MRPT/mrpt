@@ -124,8 +124,12 @@ namespace slam
 		  *   y(i) = (r_cx - c) * x(i) / r_fy
 		  *   z(i) = (r_cy - r) * x(i) / r_fx
 		  * \endcode
+		  * 
+		  * \param[in] PROJ3D_USE_LUT Whether to use a Look-up-table (LUT) to speed up the conversion. It's thread safe in all situations <b>except</b> when you call this method from different threads <b>and</b> with different camera parameter matrices. In all other cases, it's a good idea to left it enabled.
+		  *
+		  * \note This method assumes that "ranges" are in fact distances along the "+X" axis, not 3D ranges. This is the way Kinect reports ranges.
 		  */
-		void project3DPointsFromDepthImage();
+		void project3DPointsFromDepthImage(const bool PROJ3D_USE_LUT=true);
 
 		bool hasPoints3D; 								//!< true means the field points3D contains valid data.
 		std::vector<float> points3D_x;   //!< If hasPoints3D=true, the X coordinates of the 3D point cloud detected by the camera.

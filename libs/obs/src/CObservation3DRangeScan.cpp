@@ -598,35 +598,111 @@ void CObservation3DRangeScan::getZoneAsObs(
 }
 
 
-void CObservation3DRangeScan::project3DPointsFromDepthImage()
+
+
+void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_USE_LUT)
 {
 	if (!hasRangeImage) return;
 
+// Do performance time logging?
+#define  PROJ3D_PERFLOG		0
+
+#if PROJ3D_PERFLOG
+	static mrpt::utils::CTimeLogger tims;
+	tims.enter("proj");
+#endif
+
 	const int W = rangeImage.cols();
 	const int H = rangeImage.rows();
+	const size_t WH = W*H;
 
 	hasPoints3D = true;
-	points3D_x.resize( W*H );
-	points3D_y.resize( W*H );
-	points3D_z.resize( W*H );
+	points3D_x.resize( WH );
+	points3D_y.resize( WH );
+	points3D_z.resize( WH );
 
 
 	float *xs= &points3D_x[0];
 	float *ys= &points3D_y[0];
 	float *zs= &points3D_z[0];
 
-	const float r_cx =  cameraParams.cx();
-	const float r_cy = cameraParams.cy();
-	const float r_fx_inv = 1.0f/cameraParams.fx();
-	const float r_fy_inv = 1.0f/cameraParams.fy();
+	// Use cached tables:
+	struct TCached3DProjTables
+	{
+		mrpt::vector_float Kzs,Kys;
+		TCamera  prev_camParams;
+	};
 
-	for (int r=0;r<H;r++)
-		for (int c=0;c<W;c++)
+	static TCached3DProjTables m_3dproj_lut; //!< 3D point cloud projection look-up-table \sa project3DPointsFromDepthImage
+
+	if (PROJ3D_USE_LUT)
+	{
+		// Use LUT:
+		if (m_3dproj_lut.prev_camParams!=cameraParams)
 		{
-			*xs = rangeImage.coeff(r,c);
-			*zs++ = (r_cy - r) * (*xs) * r_fx_inv;
-			*ys++ = (r_cx - c) * (*xs) * r_fy_inv;
-			xs++;
-		}
+#if PROJ3D_PERFLOG
+			tims.enter("LUT");
+#endif
+			m_3dproj_lut.prev_camParams = cameraParams;
+			m_3dproj_lut.Kys.resize(WH);
+			m_3dproj_lut.Kzs.resize(WH);
 
+			const float r_cx =  cameraParams.cx();
+			const float r_cy = cameraParams.cy();
+			const float r_fx_inv = 1.0f/cameraParams.fx();
+			const float r_fy_inv = 1.0f/cameraParams.fy();
+
+			float *kys = &m_3dproj_lut.Kys[0];
+			float *kzs = &m_3dproj_lut.Kzs[0];
+			for (int r=0;r<H;r++)
+				for (int c=0;c<W;c++)
+				{
+					*kys++ = (r_cx - c) * r_fy_inv;
+					*kzs++ = (r_cy - r) * r_fx_inv;
+				}
+
+#if PROJ3D_PERFLOG
+			tims.leave("LUT");
+#endif
+		} // end update LUT.
+	 
+		ASSERT_EQUAL_(WH,m_3dproj_lut.Kys.size())
+		ASSERT_EQUAL_(WH,m_3dproj_lut.Kzs.size())
+		float *kys = &m_3dproj_lut.Kys[0];
+		float *kzs = &m_3dproj_lut.Kzs[0];
+
+		for (int r=0;r<H;r++)
+			for (int c=0;c<W;c++)
+			{
+				const float D = rangeImage.coeff(r,c);
+				*xs++ = D;
+				*zs++ = *kzs++ * D;
+				*ys++ = *kys++ * D;
+			}
+	}
+	else
+	{
+		// Without LUT:
+		const float r_cx =  cameraParams.cx();
+		const float r_cy = cameraParams.cy();
+		const float r_fx_inv = 1.0f/cameraParams.fx();
+		const float r_fy_inv = 1.0f/cameraParams.fy();
+
+		for (int r=0;r<H;r++)
+			for (int c=0;c<W;c++)
+			{
+				const float Kz = (r_cy - r) * r_fx_inv;
+				const float Ky = (r_cx - c) * r_fy_inv;			
+				const float D = rangeImage.coeff(r,c);
+
+				*xs++ = D;
+				*zs++ = Kz * D;
+				*ys++ = Ky * D;
+			}
+	}
+
+
+#if PROJ3D_PERFLOG
+	tims.leave("proj");
+#endif
 }

@@ -56,6 +56,7 @@
 			- The posibility of grabbing the IR channel is also now available in mrpt::hwdrivers::prepareVideoSourceFromUserSelection() , the camera-calib application, etc...
 			- libfreenect is now also supported in Windows. Read http://www.mrpt.org/Kinect_and_MRPT
 			- Improved robustness and efficiency in grabbing.
+		- mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage now uses by default a LUT to speed up (~10%) the conversion of range images to 3D point clouds in Kinect.
 		- mrpt::opengl::COpenGLViewport now has a special "image mode" which makes very easy to render images to opengl windows efficiently. See the example "opengl_video_viewport_demo".
 		- Improvement in Kinect Linux driver (libfreenect), avoiding intensive usage of critical sections (Thanks, "Gonzales" - see: http://www.mrpt.org/node/491 )
 		- Kinect: Embedded libfreenect library updated to latest GIT revision (12/DEC/2010).

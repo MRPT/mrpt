@@ -336,3 +336,17 @@ void TCamera::scaleToResolution(uint32_t new_ncols, uint32_t new_nrows)
 
 	// distortion params: unmodified.
 }
+
+bool mrpt::utils::operator ==(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b)
+{
+	return 
+		a.ncols==b.ncols &&
+		a.nrows==b.nrows && 
+		a.intrinsicParams==b.intrinsicParams && 
+		a.dist==b.dist && 
+		a.focalLengthMeters==b.focalLengthMeters;
+}
+bool mrpt::utils::operator !=(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b)
+{
+	return !(a==b);
+}
