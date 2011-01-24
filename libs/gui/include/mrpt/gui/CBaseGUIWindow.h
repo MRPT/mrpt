@@ -56,6 +56,8 @@ namespace mrpt
 		  *   - mrpt::gui::mrptEventWindowResize
 		  *   - mrpt::gui::mrptEventMouseDown
 		  *
+		  *  See derived classes to check if they emit other additional events.
+		  *
 		  *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked from the wxWidgets internal MRPT thread,
 		  *    so all your code in the handler must be thread safe.
 		  *

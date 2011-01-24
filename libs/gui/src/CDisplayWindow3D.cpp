@@ -248,7 +248,7 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRender()
 
 void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)
 {
-	if (m_win3D) m_win3D->setRenderingFPS(At>0 ? 1.0/At : 1e9);
+	if (m_win3D) m_win3D->internal_setRenderingFPS(At>0 ? 1.0/At : 1e9);
 
 	// If we are requested to do so, grab images to disk as they are rendered:
 	string grabFile = m_win3D->grabImageGetNextFile();
@@ -264,7 +264,10 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(double At, wxPaintDC &
 		memDC.Blit(0,0, w,h, &dc, 0,0);
 
 		if (!grabFile.empty())
+		{
 			memBmp.SaveFile( _U(grabFile.c_str()) , wxBITMAP_TYPE_PNG );
+			m_win3D->internal_emitGrabImageEvent(grabFile);
+		}
 
 		if (m_win3D->isCapturingImgs())
 		{
@@ -852,8 +855,15 @@ void CDisplayWindow3D::clearTextMessages()
 #endif
 }
 
-void CDisplayWindow3D::setRenderingFPS(double FPS)
+void CDisplayWindow3D::internal_setRenderingFPS(double FPS)
 {
 	const double ALPHA = 0.99;
 	m_last_FPS = ALPHA*m_last_FPS+(1-ALPHA)*FPS;
+}
+
+// Called by CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers
+void CDisplayWindow3D::internal_emitGrabImageEvent(const std::string &fil)
+{
+	const mrptEvent3DWindowGrabImageFile ev(this,fil);
+	publishEvent(ev);
 }

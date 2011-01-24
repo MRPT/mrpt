@@ -666,8 +666,8 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 #endif
 		} // end update LUT.
 	 
-		ASSERT_EQUAL_(WH,m_3dproj_lut.Kys.size())
-		ASSERT_EQUAL_(WH,m_3dproj_lut.Kzs.size())
+		ASSERT_EQUAL_(WH,size_t(m_3dproj_lut.Kys.size()))
+		ASSERT_EQUAL_(WH,size_t(m_3dproj_lut.Kzs.size()))
 		float *kys = &m_3dproj_lut.Kys[0];
 		float *kzs = &m_3dproj_lut.Kzs[0];
 

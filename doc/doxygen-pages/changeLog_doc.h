@@ -64,6 +64,7 @@
 		- mrpt::slam::CICP has a new option: skip_cov_calculation that can save some time in some cases.
 		- mrpt::poses::CPose3D was too strict in checking that the rotation matrix is orthogonal: admisible threshold is now 1 (plus/minus)3e-3.
 		- mrpt::slam::CPointsMaps: Inserting 2D laser scans is now ~3 times faster (thanks to mrpt::slam::CSinCosLookUpTableFor2DScans).
+		- mrpt::gui::CDisplayWindow3D now emits a new event. See mrpt::gui::mrptEvent3DWindowGrabImageFile
 	- Changes in examples:
 		- hokuyo_laser_test. Now it's possible to choose between USB and Ethernet connection.
 	- New examples:

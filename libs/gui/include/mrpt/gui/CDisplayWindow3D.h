@@ -86,6 +86,7 @@ namespace mrpt
 		  *  See CDisplayWindow3D::add2DTextMessage
 		  *
 		  *  For a list of supported events with the observer/observable pattern, see the discussion in mrpt::gui::CBaseGUIWindow.
+		  *  In addition to those events, this class introduces mrpt::gui::mrptEvent3DWindowGrabImageFile
 		  *
 		  *
 		  * \sa  The example /samples/display3D, the <a href="http://www.mrpt.org/Tutorial_3D_Scenes" > tutorial only</a>.
@@ -266,6 +267,8 @@ namespace mrpt
 			  *
 			  *  Will generate "./video_000001.png", etc.
 			  *
+			  *  If this feature is enabled, the window will emit events of the type mrpt::gui::mrptEvent3DWindowGrabImageFile() which you can subscribe to.
+			  *
 			  *  \sa grabImagesStop
 			  */
 			void grabImagesStart( const std::string &grab_imgs_prefix = std::string("video_") );
@@ -336,13 +339,41 @@ namespace mrpt
 			  */
 			void clearTextMessages();
 
-			/** Set the rendering FPS (users don't call this, the method is for internal MRPT objects only) \sa getRenderingFPS */
-			void setRenderingFPS(double FPS);
-
 			/** Get the average Frames Per Second (FPS) value from the last 250 rendering events */
 			double getRenderingFPS() const { return m_last_FPS; }
 
+		protected:
+			void internal_setRenderingFPS(double FPS);  //!< Set the rendering FPS (users don't call this, the method is for internal MRPT objects only) \sa getRenderingFPS
+			void internal_emitGrabImageEvent(const std::string &fil); //!< called by CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers
+
 		}; // End of class def.
+
+
+		/** @name Events specific to CDisplayWindow3D
+			@{  */
+
+		/**  An event sent by a CDisplayWindow3D window when an image is saved after enabling this feature with CDisplayWindow3D::grabImagesStart()
+		  *
+		  *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked from the wxWidgets internal MRPT thread,
+		  *    so all your code in the handler must be thread safe.
+		  */
+		class GUI_IMPEXP mrptEvent3DWindowGrabImageFile : public mrptEvent
+		{
+		protected:
+			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+		public:
+			inline mrptEvent3DWindowGrabImageFile(
+				CDisplayWindow3D *obj,
+				const std::string &_img_file
+				) : source_object(obj), img_file(_img_file) { }
+
+			CDisplayWindow3D  *source_object;
+			const std::string &img_file;    //!< The absolute path of the file that has been just saved.
+		}; // End of class def.
+
+		/** @} */
+
+
 	} // End of namespace
 } // End of namespace
 
