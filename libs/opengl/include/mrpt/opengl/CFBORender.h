@@ -31,16 +31,20 @@
 
 #include <mrpt/utils/CImage.h>
 #include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/CTextMessageCapable.h>
 
 namespace mrpt
 {
 	namespace opengl
 	{
 		/** A class for rendering 3D scenes off-screen directly into an image using OpenGL extensions (glext).
-		  *  \note This class is in a "experimental state".
+		  *  To define a background color, set it in the scene's "main" viewport.
+		  *
+		  *  You can add overlaid text messages, see base class CTextMessageCapable
+		  *
 		  *  \sa Example "fbo_render_test"
 		  */
-		class OPENGL_IMPEXP CFBORender
+		class OPENGL_IMPEXP CFBORender : public mrpt::opengl::CTextMessageCapable
 		{
 		public:
 

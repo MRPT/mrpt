@@ -75,24 +75,16 @@ IMPLEMENTS_MRPT_OBJECT(CDisplayWindow3D,CBaseGUIWindow,mrpt::gui)
 #endif
 
 #include <mrpt/gui/CMyGLCanvasBase.h>
+#include <mrpt/opengl/CTextMessageCapable.h>
 
 namespace mrpt
 {
 	namespace gui
 	{
-
-		class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CMyGLCanvasBase
+		class CMyGLCanvas_DisplayWindow3D :
+			public mrpt::gui::CMyGLCanvasBase,
+			public mrpt::opengl::CTextMessageCapable
 		{
-		protected:
-			struct T2DTextData
-			{
-				std::string 			text;
-				mrpt::utils::TColorf	color;
-				mrpt::opengl::TOpenGLFont font;
-				double					x,y;
-			};
-			std::map<size_t,T2DTextData>  m_2D_texts;
-
 		public:
 			CMyGLCanvas_DisplayWindow3D( CDisplayWindow3D *win3D,
 						 wxWindow *parent, wxWindowID id = wxID_ANY,
@@ -111,30 +103,6 @@ namespace mrpt
 			void OnPreRender();
 			void OnPostRender();
 			void OnPostRenderSwapBuffers(double At, wxPaintDC &dc);
-
-			void clearTextMessages()
-			{
-				m_2D_texts.clear();
-			}
-
-			void addTextMessage(
-				const double x_frac,
-				const double y_frac,
-				const std::string &text,
-				const mrpt::utils::TColorf &color = mrpt::utils::TColorf(1.0,1.0,1.0),
-				const size_t unique_index = 0,
-				const mrpt::opengl::TOpenGLFont font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24
-				)
-			{
-				T2DTextData  d;
-				d.text = text;
-				d.color = color;
-				d.x = x_frac;
-				d.y = y_frac;
-				d.font = font;
-
-				m_2D_texts[unique_index] = d;
-			}
 
 			static void display3D_processKeyEvent(CDisplayWindow3D *m_win3D, wxKeyEvent&ev);
 		};
@@ -233,17 +201,7 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRender()
 	int w,h;
 	this->GetSize(&w,&h);
 
-	for (std::map<size_t,T2DTextData>::const_iterator it=m_2D_texts.begin();it!=m_2D_texts.end();++it)
-	{
-		// If (x,y) \in [0,1[, it's interpreted as a ratio, otherwise, as an actual coordinate in pixels
-		int x = it->second.x>=1 ? int(it->second.x) : (it->second.x<0 ? int(w+it->second.x) : int(it->second.x * w));
-		int y = it->second.y>=1 ? int(it->second.y) : (it->second.y<0 ? int(h+it->second.y) : int(it->second.y * h));
-		this->renderTextBitmap(
-			x,y,
-			it->second.text,
-			it->second.color.R,it->second.color.G,it->second.color.B,
-			it->second.font);
-	}
+	render_text_messages(w,h);
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)

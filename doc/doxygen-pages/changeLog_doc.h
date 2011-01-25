@@ -40,6 +40,7 @@
 	- New classes:
 		- mrpt::math::ModelSearch: A RANSAC + Genetic model fitter (by Zoltan Gaal)
 		- mrpt::slam::CSinCosLookUpTableFor2DScans: A cache of sin/cos values. It's used in points maps and now inserting laser scans in a point cloud is ~3 times faster.
+		- mrpt::opengl::CTextMessageCapable: A refactoring of the capability to display text messages on opengl views.
 	- MRPT libraries or "modules":
 		- mrpt-detectors is no longer marked as "experimental".
 		- mrpt-monoslam is no longer shown in the graph of libraries since it's unmaintained.

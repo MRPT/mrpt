@@ -172,12 +172,8 @@ namespace mrpt
 			unsigned long  m_LastTime;
 			unsigned long  m_LastRedraw;
 
-			/** Draws a text string on the screen.
-			  *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the viewport. Negative numbers will wrap to the opposite side of the viewport (e.g. x=-10 means 10px fromt the right).
-			  *   - The text color is defined by (color_r,color_g,color_b), each float numbers in the range [0,1].
-			  *  \sa textBitmapWidth
-			  */
-			void renderTextBitmap(
+			/** DEPRECATED: Use CRenderizable static method instead */
+			static void renderTextBitmap(
 				int screen_x,
 				int screen_y,
 				const std::string &str,
@@ -185,14 +181,18 @@ namespace mrpt
 				float  color_g=1,
 				float  color_b=1,
 				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24
-				);
+				)
+			{
+				mrpt::opengl::CRenderizable::renderTextBitmap(screen_x,screen_y,str,color_r,color_g,color_b, font);
+			}
 
-			/** Return the exact width in pixels for a given string, as will be rendered by renderTextBitmap().
-			  * \sa renderTextBitmap
-			  */
-			int textBitmapWidth(
+			/** DEPRECATED: Use CRenderizable static method instead */
+			static int textBitmapWidth(
 				const std::string &str,
-				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24 );
+				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24 )
+			{
+				return mrpt::opengl::CRenderizable::textBitmapWidth(str,font);
+			}
 
 			// Used to create the gl context at startup.
 			void OnWindowCreation(wxWindowCreateEvent &ev);

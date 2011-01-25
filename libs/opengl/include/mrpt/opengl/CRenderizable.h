@@ -34,6 +34,8 @@
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
+#include <mrpt/opengl/opengl_fonts.h>
+
 #include <mrpt/opengl/link_pragmas.h>
 
 namespace mrpt
@@ -45,6 +47,7 @@ namespace mrpt
 	{
 		class COpenGLViewport;
 		class CSetOfObjects;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRenderizable, mrpt::utils::CSerializable, OPENGL_IMPEXP )
@@ -150,8 +153,32 @@ namespace mrpt
 			  */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
 
+			/** This method is safe for calling from within ::render() methods \sa renderTextBitmap */
 			static void	renderTextBitmap( const char *str, void *fontStyle );
-			
+
+			/** Render a text message in the current rendering context, creating a glViewport in the way (do not call within ::render() methods)
+			  *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the viewport. Negative numbers will wrap to the opposite side of the viewport (e.g. x=-10 means 10px fromt the right).
+			  *   - The text color is defined by (color_r,color_g,color_b), each float numbers in the range [0,1].
+			  *  \sa renderTextBitmap, textBitmapWidth
+			  */
+			static void renderTextBitmap(
+				int screen_x,
+				int screen_y,
+				const std::string &str,
+				float  color_r=1,
+				float  color_g=1,
+				float  color_b=1,
+				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24
+				);
+
+			/** Return the exact width in pixels for a given string, as will be rendered by renderTextBitmap().
+			  * \sa renderTextBitmap
+			  */
+			static int textBitmapWidth(
+				const std::string &str,
+				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24 );
+
+
 			/** Information about the rendering process being issued. \sa See getCurrentRenderingInfo for more details */
 			struct OPENGL_IMPEXP TRenderInfo
 			{

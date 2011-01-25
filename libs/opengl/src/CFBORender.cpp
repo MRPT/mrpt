@@ -206,7 +206,14 @@ void  CFBORender::getFrame2( const COpenGLScene& scene, CImage& buffer )
 	// bind the framebuffer, fbo, so operations will now occur on it
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo);
 
+	// Render opengl objects:
+	// ---------------------------
 	scene.render();
+
+	// If any, draw the 2D text messages:
+	// ----------------------------------
+	render_text_messages(m_width,m_height);
+
 
 	// get the current read buffer setting and save it
 	IplImage* image = (IplImage*)buffer.getAsIplImage();

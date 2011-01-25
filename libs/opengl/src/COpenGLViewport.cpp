@@ -272,6 +272,8 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 				glPushAttrib(GL_ALL_ATTRIB_BITS);
 				CRenderizable::checkOpenGLError();
 
+				glColor4f(1.0f,1.0f,1.0f,1.0f);
+
 				gl_plane->render();
 
 				glPopAttrib();

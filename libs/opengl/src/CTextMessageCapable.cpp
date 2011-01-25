@@ -26,39 +26,55 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef mrpt_opengl_fonts_H
-#define mrpt_opengl_fonts_H
+#include <mrpt/opengl.h>  // Precompiled header
 
-#include <mrpt/utils/types.h>
-#include <mrpt/opengl/link_pragmas.h>
+#include <mrpt/opengl/CTextMessageCapable.h>
 
-namespace mrpt
+
+using namespace std;
+using namespace mrpt;
+using namespace mrpt::opengl;
+
+
+/** Renders the messages to the current opengl rendering context (to be called OUT of MRPT mrpt::opengl render() methods ).
+  *  (w,h) are the dimensions of the rendering area in pixels.
+  */
+void CTextMessageCapable::render_text_messages(const int w, const int h) const
 {
-	namespace opengl
+	for (std::map<size_t,mrpt::opengl::T2DTextData>::const_iterator it=m_2D_texts.begin();it!=m_2D_texts.end();++it)
 	{
-		/** Existing fonts for 2D texts in mrpt::opengl methods.
-		  * \sa mrpt::opengl::CMyGLCanvasBase::renderTextBitmap
-		  */
-		enum TOpenGLFont
-		{
-			MRPT_GLUT_BITMAP_TIMES_ROMAN_10 = 0,
-			MRPT_GLUT_BITMAP_TIMES_ROMAN_24 = 1,
-			MRPT_GLUT_BITMAP_HELVETICA_10 = 2,
-			MRPT_GLUT_BITMAP_HELVETICA_12 = 3,
-			MRPT_GLUT_BITMAP_HELVETICA_18 = 4
-		};
-
-		/** An auxiliary struct for holding a list of text messages in some mrpt::opengl & mrpt::gui classes
-		*/
-		struct OPENGL_IMPEXP T2DTextData
-		{
-			std::string 			text;
-			mrpt::utils::TColorf	color;
-			mrpt::opengl::TOpenGLFont font;
-			double					x,y;
-		};
-
+		// If (x,y) \in [0,1[, it's interpreted as a ratio, otherwise, as an actual coordinate in pixels
+		const int x = it->second.x>=1 ? int(it->second.x) : (it->second.x<0 ? int(w+it->second.x) : int(it->second.x * w));
+		const int y = it->second.y>=1 ? int(it->second.y) : (it->second.y<0 ? int(h+it->second.y) : int(it->second.y * h));
+		CRenderizable::renderTextBitmap(
+			x,y,
+			it->second.text,
+			it->second.color.R,it->second.color.G,it->second.color.B,
+			it->second.font);
 	}
 }
 
-#endif
+void CTextMessageCapable::clearTextMessages()
+{
+	m_2D_texts.clear();
+}
+
+
+void CTextMessageCapable::addTextMessage(
+	const double x_frac,
+	const double y_frac,
+	const std::string &text,
+	const mrpt::utils::TColorf &color,
+	const size_t unique_index ,
+	const mrpt::opengl::TOpenGLFont font
+	)
+{
+	mrpt::opengl::T2DTextData  d;
+	d.text = text;
+	d.color = color;
+	d.x = x_frac;
+	d.y = y_frac;
+	d.font = font;
+
+	m_2D_texts[unique_index] = d;
+}
