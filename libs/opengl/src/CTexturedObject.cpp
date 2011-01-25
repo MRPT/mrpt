@@ -363,8 +363,14 @@ void  CTexturedObject::writeToStreamTexturedObject(CStream &out) const
 void  CTexturedObject::render_dl() const
 {
 	render_pre();
+	if (glGetError()!= GL_NO_ERROR)
+		std::cerr << "render_pre: Error" << std::endl;
 	render_texturedobj();
+	if (glGetError()!= GL_NO_ERROR)
+		std::cerr << "render_texturedobj: Error" << std::endl;
 	render_post();
+	if (glGetError()!= GL_NO_ERROR)
+		std::cerr << "render_post: Error" << std::endl;
 }
 
 

@@ -59,6 +59,7 @@ IF(BUILD_EXAMPLES)
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		display3D
 		opengl_objects_demo
+		fbo_render_test
 		octree_render_huge_pointcloud
 		imageBasics
 		imageCorrelation
@@ -119,7 +120,6 @@ IF(BUILD_EXAMPLES)
 		stl_containers_serialize
 		polygonSplit
 		dijkstra-example
-		fbo_render_test
 		setOfTexturedTrianglesTest
 		gui_windows_events
 		a_starAlgorithm

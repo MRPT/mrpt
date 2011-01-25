@@ -203,7 +203,9 @@ void  CRenderizable::checkOpenGLError()
 	int	 openglErr;
 	if ( ( openglErr= glGetError()) != GL_NO_ERROR )
 	{
-		THROW_EXCEPTION( std::string("OpenGL error: ") + std::string( (char*)gluErrorString(openglErr) ) );
+		const std::string sErr = std::string("OpenGL error: ") + std::string( (char*)gluErrorString(openglErr) );
+		std::cerr << "[CRenderizable::checkOpenGLError] " << sErr << std::endl;
+		THROW_EXCEPTION(sErr)
 	}
 #endif
 }

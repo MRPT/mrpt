@@ -47,7 +47,7 @@ struct TAuxDLData
 	std::vector<unsigned int>      dls_to_delete;
 	mrpt::synch::CCriticalSection  dls_to_delete_cs;
 
-	static TAuxDLData& getSingleton() 
+	static TAuxDLData& getSingleton()
 	{
 		static TAuxDLData instance;
 		return instance;
@@ -101,23 +101,32 @@ void   CRenderizableDisplayList::render() const
 		}
 
 		if (m_dl==INVALID_DISPLAY_LIST_ID)
+		{
 			m_dl = glGenLists(1);  // Assign list ID upon first usage.
+			if (glGetError()!= GL_NO_ERROR)
+				std::cerr << "glGenLists: Error" << std::endl;
+		}
 
 		if (m_dl_recreate)
 		{
 			m_dl_recreate = false;
 			glNewList(m_dl,GL_COMPILE);
+			if (glGetError()!= GL_NO_ERROR)
+				std::cerr << "glNewList: Error" << std::endl;
 
 			// Call derived class:
 			render_dl();
 
 			glEndList();
+			if (glGetError()!= GL_NO_ERROR)
+				std::cerr << "glEndList: Error" << std::endl;
 		}
 
 		// Call the list:
 		glCallList(m_dl);
+		glGetError(); // Clear any error flags that may remain: this is because it seems FBO rendering lead to "errors" but it actually renders OK...
 	}
-#endif 
+#endif
 }
 
 

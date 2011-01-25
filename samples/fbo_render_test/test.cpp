@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/opengl.h>
 #include <mrpt/gui.h>
 
 using namespace mrpt;

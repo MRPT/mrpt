@@ -176,26 +176,14 @@ void  CFBORender::getFrame( const COpenGLScene& scene, CImage& buffer )
 		buffer.getHeight()       != static_cast<size_t>(m_height) ||
 		buffer.getChannelCount() != 3 ||
 		buffer.isOriginTopLeft() != false )
-			buffer.resize(m_width, m_height, 3, false);
+	{
+		buffer.resize(m_width, m_height, 3, false);
+	}
 
-	// bind the framebuffer, fbo, so operations will now occur on it
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo);
-
-	scene.render();
-
-	// get the current read buffer setting and save it
-	IplImage* image = (IplImage*)buffer.getAsIplImage();
-	glReadPixels(0, 0, m_width, m_height, GL_BGR_EXT, GL_UNSIGNED_BYTE, image->imageData);
-	image = NULL;
-
-	//'unbind' the frambuffer object, so subsequent drawing ops are not drawn into the FBO.
-	// '0' means "windowing system provided framebuffer
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	// Go on.
+	getFrame2(scene,buffer);;
 
 	MRPT_END
-
-//#else
-//	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!")
 #endif
 }
 
@@ -210,10 +198,10 @@ void  CFBORender::getFrame2( const COpenGLScene& scene, CImage& buffer )
 	MRPT_START
 
 	// check the buffer size
-	ASSERT_( buffer.getWidth()        == static_cast<size_t>(m_width) &&
-			 buffer.getHeight()       == static_cast<size_t>(m_height) &&
-			 buffer.getChannelCount() == 3 &&
-			 buffer.isOriginTopLeft() == false );
+	ASSERT_EQUAL_( buffer.getWidth(), static_cast<size_t>(m_width) )
+	ASSERT_EQUAL_( buffer.getHeight(),static_cast<size_t>(m_height) )
+	ASSERT_EQUAL_( buffer.getChannelCount(), 3 )
+	ASSERT_EQUAL_( buffer.isOriginTopLeft(), false )
 
 	// bind the framebuffer, fbo, so operations will now occur on it
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo);
@@ -231,8 +219,6 @@ void  CFBORender::getFrame2( const COpenGLScene& scene, CImage& buffer )
 
 	MRPT_END
 
-//#else
-//	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!")
 #endif
 }
 
