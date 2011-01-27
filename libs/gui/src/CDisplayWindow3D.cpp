@@ -81,9 +81,7 @@ namespace mrpt
 {
 	namespace gui
 	{
-		class CMyGLCanvas_DisplayWindow3D :
-			public mrpt::gui::CMyGLCanvasBase,
-			public mrpt::opengl::CTextMessageCapable
+		class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CMyGLCanvasBase
 		{
 		public:
 			CMyGLCanvas_DisplayWindow3D( CDisplayWindow3D *win3D,
@@ -96,6 +94,14 @@ namespace mrpt
 
 
 			CDisplayWindow3D *m_win3D;
+
+			// The idea is that CMyGLCanvas_DisplayWindow3D was derived from CTextMessageCapable, but
+			//  that raises errors in MSVC when converting method pointers to wxObjectEventFunction...
+			struct THubClass : public mrpt::opengl::CTextMessageCapable
+			{
+				void render_text_messages_public(const int w, const int h) const { render_text_messages(w,h); } 
+			};
+			THubClass m_text_msgs; 
 
 			void OnCharCustom( wxKeyEvent& event );
 			void OnMouseDown(wxMouseEvent& event);
@@ -201,7 +207,7 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRender()
 	int w,h;
 	this->GetSize(&w,&h);
 
-	render_text_messages(w,h);
+	m_text_msgs.render_text_messages_public(w,h);
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)
@@ -351,7 +357,7 @@ void C3DWindowDialog::OnResize(wxSizeEvent& event)
 void C3DWindowDialog::clearTextMessages()
 {
 #if MRPT_HAS_OPENGL_GLUT
-	m_canvas->clearTextMessages();
+	m_canvas->m_text_msgs.clearTextMessages();
 #endif
 }
 
@@ -365,7 +371,7 @@ void C3DWindowDialog::addTextMessage(
 	)
 {
 #if MRPT_HAS_OPENGL_GLUT
-	m_canvas->addTextMessage( x_frac, y_frac, text,color,unique_index,font );
+	m_canvas->m_text_msgs.addTextMessage( x_frac, y_frac, text,color,unique_index,font );
 #endif
 }
 
