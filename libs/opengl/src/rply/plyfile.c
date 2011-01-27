@@ -19,23 +19,26 @@ chars representing red, green and blue.
 ---------------------------------------------------------------
 
 Copyright (c) 1994 The Board of Trustees of The Leland Stanford
-Junior University.  All rights reserved.   
-  
-Permission to use, copy, modify and distribute this software and its   
-documentation for any purpose is hereby granted without fee, provided   
-that the above copyright notice and this permission notice appear in   
-all copies of this software and that you do not sell the software.   
-  
-THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND,   
-EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY   
-WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.   
+Junior University.  All rights reserved.
+
+Permission to use, copy, modify and distribute this software and its
+documentation for any purpose is hereby granted without fee, provided
+that the above copyright notice and this permission notice appear in
+all copies of this software and that you do not sell the software.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND,
+EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
 */
+
+#define _GNU_SOURCE  // JL: This is to make strdup visible in C99
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <memory.h>  // Added by JL for MRPT
 #include "ply.h"
 
 // Added by JL for MRPT:
@@ -105,7 +108,7 @@ double get_item_value(char *, int);
 
 /* get binary or ascii item and store it according to ptr and type */
 void get_ascii_item(char *, int, int *, unsigned int *, double *);
-void get_binary_item(FILE *, int, int *, unsigned int *, double *);
+int get_binary_item(FILE *, int, int *, unsigned int *, double *);  // return 0 on error
 
 /* get a bunch of elements from a file */
 void ascii_get_element(PlyFile *, char *);
@@ -994,7 +997,7 @@ Entry:
   elem_ptr - pointer to location where the element information should be put
 ******************************************************************************/
 
-ply_get_element(PlyFile *plyfile, void *elem_ptr)
+void ply_get_element(PlyFile *plyfile, void *elem_ptr)
 {
   if (plyfile->file_type == PLY_ASCII)
     ascii_get_element (plyfile, (char *) elem_ptr);
@@ -1164,7 +1167,7 @@ PlyOtherProp *ply_get_other_properties(
 #endif
   other->size = elem->other_size;
   other->props = (PlyProperty **) myalloc (sizeof(PlyProperty) * elem->nprops);
-  
+
   /* save descriptions of each "other" property */
   nprops = 0;
   for (i = 0; i < elem->nprops; i++) {
@@ -1183,7 +1186,7 @@ PlyOtherProp *ply_get_other_properties(
     elem->other_offset = NO_OTHER_PROPS;
   }
 #endif
-  
+
   /* return structure */
   return (other);
 }
@@ -1647,8 +1650,13 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
     if (prop->is_list) {       /* a list */
 
       /* get and store the number of items in the list */
-      get_binary_item (fp, prop->count_external,
-                      &int_val, &uint_val, &double_val);
+      if (!get_binary_item (fp, prop->count_external,
+                      &int_val, &uint_val, &double_val))
+      {
+        // Error...
+        fprintf(stderr,"RPly::binary_get_element: Error reading binary file!\n");
+      }
+
       if (store_it) {
         item = elem_data + prop->count_offset;
         store_item(item, prop->count_internal, int_val, uint_val, double_val);
@@ -1659,7 +1667,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
       /* The "if" was added by Afra Zomorodian 8/22/95
        * so that zipper won't crash reading plies that have additional
        * properties.
-       */ 
+       */
       if (store_it) {
 	item_size = ply_type_size[prop->internal_type];
       }
@@ -1677,8 +1685,13 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
 
         /* read items and store them into the array */
         for (k = 0; k < list_count; k++) {
-          get_binary_item (fp, prop->external_type,
-                          &int_val, &uint_val, &double_val);
+          if (!get_binary_item (fp, prop->external_type,
+                          &int_val, &uint_val, &double_val))
+         {
+           // Error...
+           fprintf(stderr,"RPly::binary_get_element: Error reading binary file!\n");
+         }
+
           if (store_it) {
             store_item (item, prop->internal_type,
                         int_val, uint_val, double_val);
@@ -1689,8 +1702,13 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
 
     }
     else {                     /* not a list */
-      get_binary_item (fp, prop->external_type,
-                      &int_val, &uint_val, &double_val);
+      if (!get_binary_item (fp, prop->external_type,
+                      &int_val, &uint_val, &double_val))
+      {
+        // Error...
+        fprintf(stderr,"RPly::binary_get_element: Error reading binary file!\n");
+      }
+
       if (store_it) {
         item = elem_data + prop->offset;
         store_item (item, prop->internal_type, int_val, uint_val, double_val);
@@ -2140,9 +2158,11 @@ Exit:
   int_val    - integer value
   uint_val   - unsigned integer value
   double_val - double-precision floating point value
+
+Return: 0: On error
 ******************************************************************************/
 
-void get_binary_item(
+int get_binary_item(
   FILE *fp,
   int type,
   int *int_val,
@@ -2157,57 +2177,58 @@ void get_binary_item(
 
   switch (type) {
     case PLY_CHAR:
-      fread (ptr, 1, 1, fp);
+      if (fread (ptr, 1, 1, fp)!=1) return 0;
       *int_val = *((char *) ptr);
       *uint_val = *int_val;
       *double_val = *int_val;
       break;
     case PLY_UCHAR:
-      fread (ptr, 1, 1, fp);
+      if (fread (ptr, 1, 1, fp)!=1) return 0;
       *uint_val = *((unsigned char *) ptr);
       *int_val = *uint_val;
       *double_val = *uint_val;
       break;
     case PLY_SHORT:
-      fread (ptr, 2, 1, fp);
+      if (fread (ptr, 2, 1, fp)!=1) return 0;
       *int_val = *((short int *) ptr);
       *uint_val = *int_val;
       *double_val = *int_val;
       break;
     case PLY_USHORT:
-      fread (ptr, 2, 1, fp);
+      if (fread (ptr, 2, 1, fp)!=1) return 0;
       *uint_val = *((unsigned short int *) ptr);
       *int_val = *uint_val;
       *double_val = *uint_val;
       break;
     case PLY_INT:
-      fread (ptr, 4, 1, fp);
+      if (fread (ptr, 4, 1, fp)!=1) return 0;
       *int_val = *((int *) ptr);
       *uint_val = *int_val;
       *double_val = *int_val;
       break;
     case PLY_UINT:
-      fread (ptr, 4, 1, fp);
+      if (fread (ptr, 4, 1, fp)!=1) return 0;
       *uint_val = *((unsigned int *) ptr);
       *int_val = *uint_val;
       *double_val = *uint_val;
       break;
     case PLY_FLOAT:
-      fread (ptr, 4, 1, fp);
+      if (fread (ptr, 4, 1, fp)!=1) return 0;
       *double_val = *((float *) ptr);
       *int_val = *double_val;
       *uint_val = *double_val;
       break;
     case PLY_DOUBLE:
-      fread (ptr, 8, 1, fp);
+      if (fread (ptr, 8, 1, fp)!=1) return 0;
       *double_val = *((double *) ptr);
       *int_val = *double_val;
       *uint_val = *double_val;
       break;
     default:
       fprintf (stderr, "get_binary_item: bad type = %d\n", type);
-      exit (-1);
+      return 0; //exit (-1);
   }
+  return 1;
 }
 
 
@@ -2504,7 +2525,7 @@ Entry:
   fname - file name from which memory was requested
 ******************************************************************************/
 
-static char *my_alloc(int size, int lnum, char *fname)
+char *my_alloc(int size, int lnum, char *fname)
 {
   char *ptr;
 

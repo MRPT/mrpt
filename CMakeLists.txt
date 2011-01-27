@@ -1618,7 +1618,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	# The -Wno-long-long is required in 64bit systems when including sytem headers.
 	# The -Wno-variadic-macros was needed for Eigen3, StdVector.h
  	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-write-strings -Wno-variadic-macros")
- 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-write-strings -Wno-variadic-macros")
+ 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
 
 	# Use "modern" C99 ! ;-)
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
