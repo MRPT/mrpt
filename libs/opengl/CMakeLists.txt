@@ -27,6 +27,12 @@ IF(WIN32)
 	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/opengl/src/glew/include")
 ENDIF(WIN32)
 
+# Embedded version of RPly: http://w3.impa.br/~diego/software/rply/
+LIST(APPEND opengl_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/opengl/src/rply/plyfile.c" "${MRPT_LIBS_ROOT}/opengl/src/rply/ply.h")
+LIST(APPEND opengl_EXTRA_SRCS_NAME 	"rply" "rply")
+#INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/opengl/rply/")
+
+
 # Glext headers only (for Windows)
 INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/opengl/src/glext")
 
@@ -48,10 +54,11 @@ IF(MRPT_ENABLE_PRECOMPILED_HDRS)
 			${lib3ds_FILES}
 			${freeglut_FILES}
 			${glew_FILES}
+			${rply_FILES}
 			PROPERTIES COMPILE_FLAGS "/Y-"
 			)
 		# Params for glew:	
 		set_source_files_properties(${glew_FILES} PROPERTIES COMPILE_FLAGS "/Y- /DGLEW_STATIC")
-	ENDIF (MSVC)
+ENDIF (MSVC)
 ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
 
