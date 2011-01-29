@@ -20,6 +20,7 @@ IF(wxWidgets_FOUND AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		CDialogOptions.cpp   CDialogOptions.h
 		CAboutBox.cpp        CAboutBox.h
 		CDlgCamTracking.cpp  CDlgCamTracking.h
+		CDlgPLYOptions.cpp   CDlgPLYOptions.h
 		../wx-common/CMyRedirector.h
 	)
 	IF(WIN32)

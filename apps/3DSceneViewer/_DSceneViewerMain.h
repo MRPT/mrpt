@@ -110,6 +110,8 @@ class _DSceneViewerFrame: public wxFrame
         void OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event);
         void OnmnuItemChangeMaxPointsPerOctreeNodeSelected(wxCommandEvent& event);
         void OnmnuSceneStatsSelected(wxCommandEvent& event);
+        void OnMenuItemImportPLYPointCloud(wxCommandEvent& event);
+        void OnMenuItemExportPointsPLY(wxCommandEvent& event);
         //*)
 
 		void OntimAutoplay(wxTimerEvent& event);
@@ -119,6 +121,11 @@ class _DSceneViewerFrame: public wxFrame
         static const long ID_MENUITEM2;
         static const long ID_MENUITEM5;
         static const long ID_MENUITEM7;
+        static const long ID_MENUITEM6;
+        static const long ID_MENUITEM20;
+        static const long ID_MENUITEM19;
+        static const long ID_MENUITEM22;
+        static const long ID_MENUITEM21;
         static const long ID_MENUITEM12;
         static const long ID_MENUITEM18;
         static const long idMenuQuit;
@@ -130,7 +137,6 @@ class _DSceneViewerFrame: public wxFrame
         static const long ID_MENUITEM11;
         static const long ID_MENUITEM9;
         static const long ID_MENUITEM8;
-        static const long ID_MENUITEM6;
         static const long ID_MENUITEM10;
         static const long ID_MENUITEM14;
         static const long ID_MENUITEM13;
@@ -172,6 +178,7 @@ class _DSceneViewerFrame: public wxFrame
         wxMenuItem* MenuItem10;
         wxToolBarToolBase* ToolBarItem6;
         wxToolBarToolBase* ToolBarItem1;
+        wxMenuItem* mnuSceneStats;
         wxStatusBar* StatusBar1;
         wxMenuItem* MenuItem6;
         wxToolBarToolBase* ToolBarItem5;

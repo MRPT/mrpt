@@ -26,6 +26,25 @@
 					<handler function="OnMenuSave" entry="EVT_MENU" />
 				</object>
 				<object class="separator" />
+				<object class="wxMenu" name="ID_MENUITEM19" variable="MenuItem18" member="yes">
+					<label>Import</label>
+					<object class="wxMenuItem" name="ID_MENUITEM6" variable="MenuItem8" member="yes">
+						<label>a 3DStudio object...</label>
+						<handler function="OnInsert3DS" entry="EVT_MENU" />
+					</object>
+					<object class="wxMenuItem" name="ID_MENUITEM20" variable="MenuItem19" member="yes">
+						<label>a PLY point cloud...</label>
+						<handler function="OnMenuItemImportPLYPointCloud" entry="EVT_MENU" />
+					</object>
+				</object>
+				<object class="wxMenu" name="ID_MENUITEM21" variable="MenuItem20" member="yes">
+					<label>Export</label>
+					<object class="wxMenuItem" name="ID_MENUITEM22" variable="MenuItem21" member="yes">
+						<label>point clouds to PLY file...</label>
+						<handler function="OnMenuItemExportPointsPLY" entry="EVT_MENU" />
+					</object>
+				</object>
+				<object class="separator" />
 				<object class="wxMenuItem" name="ID_MENUITEM12" variable="MenuItem14" member="yes">
 					<label>Take snapshot...</label>
 					<accel>F2</accel>
@@ -33,7 +52,7 @@
 					<handler function="OnMenuItem14Selected" entry="EVT_MENU" />
 				</object>
 				<object class="wxMenuItem" name="ID_MENUITEM18" variable="mnuSceneStats" member="yes">
-					<label>Scene stats...</label>
+					<label>Scene stats</label>
 					<handler function="OnmnuSceneStatsSelected" entry="EVT_MENU" />
 				</object>
 				<object class="separator" />
@@ -78,10 +97,6 @@
 						<label>SICK laser</label>
 						<handler function="OnMenuAddSICK" entry="EVT_MENU" />
 					</object>
-				</object>
-				<object class="wxMenuItem" name="ID_MENUITEM6" variable="MenuItem8" member="yes">
-					<label>Insert a 3DStudio object...</label>
-					<handler function="OnInsert3DS" entry="EVT_MENU" />
 				</object>
 				<object class="separator" />
 				<object class="wxMenu" name="ID_MENUITEM13" variable="MenuItem15" member="no">

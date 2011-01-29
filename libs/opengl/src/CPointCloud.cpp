@@ -32,6 +32,8 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/math/utils.h>
 
+#include "rply/ply.h"
+
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -40,8 +42,8 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-float  mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL = 0.04f;
-size_t mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE            = 1e5;
+float  mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL = 0.10f;
+size_t mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE            = 1e6;
 
 
 IMPLEMENTS_SERIALIZABLE( CPointCloud, CRenderizable, mrpt::opengl )
@@ -352,4 +354,80 @@ void CPointCloud::markAllPointsAsNew()
 {
 	m_minmax_valid = false;
 	octree_mark_as_outdated();
+}
+
+
+/** Loads a point cloud from a PLY file
+  * \sa http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
+  */
+bool CPointCloud::loadFromPlyFile(const std::string &filename)
+{
+	static const PlyProperty vert_props[] = { /* list of property information for a vertex */
+		//                                             is_list   count_external  count_internal   count_offset
+		{"x", PLY_FLOAT, PLY_FLOAT, offsetof(TPoint3Df,x), 0       , 0                 , 0              , 0},
+		{"y", PLY_FLOAT, PLY_FLOAT, offsetof(TPoint3Df,y), 0       , 0                 , 0              , 0},
+		{"z", PLY_FLOAT, PLY_FLOAT, offsetof(TPoint3Df,z), 0       , 0                 , 0              , 0},
+	};
+
+	/* open a PLY file for reading */
+	int		nelems;
+	char **elist;
+	int file_type;
+	float version;
+	PlyFile *ply = ply_open_for_reading(filename.c_str(), &nelems, &elist, &file_type, &version);
+
+	/* go through each kind of element that we learned is in the file */
+	/* and read them */
+
+	for (int i = 0; i < nelems; i++) 
+	{
+		/* get the description of the first element */
+		char *elem_name = elist[i];
+		int num_elems, nprops;
+
+		PlyProperty **plist = ply_get_element_description (ply, elem_name, &num_elems, &nprops);
+
+		/* print the name of the element, for debugging */
+		//printf ("element %s %d\n", elem_name, num_elems);
+
+		/* if we're on vertex elements, read them in */
+		if (equal_strings ("vertex", elem_name)) 
+		{
+			/* set up for getting vertex elements */
+			ply_get_property (ply, elem_name, &vert_props[0]);
+			ply_get_property (ply, elem_name, &vert_props[1]);
+			ply_get_property (ply, elem_name, &vert_props[2]);
+
+			/* grab all the vertex elements */
+			this->resize(num_elems);
+			for (int j = 0; j < num_elems; j++) 
+			{
+				TPoint3Df  pt;
+				/* grab an element from the file */
+				ply_get_element (ply, reinterpret_cast<void*>(&pt));
+				this->setPoint(j,pt.x,pt.y,pt.z);
+			}
+		}
+
+		// print out the properties we got, for debugging 
+		//for (int j = 0; j < nprops; j++)
+		//	printf ("property %s\n", plist[j]->name);
+	}
+/*
+	// grab and print out the comments in the file 
+	int num_comments;
+	char **comments = ply_get_comments (ply, &num_comments);
+	for (int i = 0; i < num_comments; i++)
+		printf ("comment = '%s'\n", comments[i]);
+
+	// grab and print out the object information
+	int num_obj_info;
+	char **obj_info = ply_get_obj_info (ply, &num_obj_info);
+	for (int i = 0; i < num_obj_info; i++)
+		printf ("obj_info = '%s'\n", obj_info[i]);
+*/
+	/* close the PLY file */
+	ply_close (ply);
+
+	return true;
 }

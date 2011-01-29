@@ -32,6 +32,9 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
+// Jose Luis Blanco: This file contains some modifications wrt the original version (1.1).
+//  You can do a "diff" with the original file to find them out. (JAN/2011)
+
 #define _GNU_SOURCE  // JL: This is to make strdup visible in C99
 
 #include <stdio.h>
@@ -68,13 +71,13 @@ int ply_type_size[] = {
 
 
 /* returns 1 if strings are equal, 0 if not */
-int equal_strings(char *, char *);
+int equal_strings(const char *, const char *);
 
 /* find an element in a plyfile's list */
-PlyElement *find_element(PlyFile *, char *);
+PlyElement *find_element(PlyFile *, const char *);
 
 /* find a property in an element's list */
-PlyProperty *find_property(PlyElement *, char *, int *);
+PlyProperty *find_property(PlyElement *, const char *, int *);
 
 /* write to a file the word describing a PLY file data type */
 void write_scalar_type (FILE *, int);
@@ -807,7 +810,7 @@ Exit:
 ******************************************************************************/
 
 PlyFile *ply_open_for_reading(
-  char *filename,
+  const char *filename,
   int *nelems,
   char ***elem_names,
   int *file_type,
@@ -816,19 +819,13 @@ PlyFile *ply_open_for_reading(
 {
   FILE *fp;
   PlyFile *plyfile;
-  char *name;
 
   /* tack on the extension .ply, if necessary */
-
-  name = (char *) myalloc (sizeof (char) * (strlen (filename) + 5));
-  strcpy (name, filename);
-  if (strlen (name) < 4 ||
-      strcmp (name + strlen (name) - 4, ".ply") != 0)
-      strcat (name, ".ply");
+  // JL: Don't touch the original filanem (also, it seems there was a memory leak here...)
 
   /* open the file for reading */
 
-  fp = fopen (name, "r");
+  fp = fopen (filename, "r");
   if (fp == NULL)
     return (NULL);
 
@@ -957,8 +954,8 @@ Entry:
 
 void ply_get_property(
   PlyFile *plyfile,
-  char *elem_name,
-  PlyProperty *prop
+  const char *elem_name,
+  const PlyProperty *prop
 )
 {
   PlyElement *elem;
@@ -1404,18 +1401,9 @@ void ply_get_info(PlyFile *ply, float *version, int *file_type)
 Compare two strings.  Returns 1 if they are the same, 0 if not.
 ******************************************************************************/
 
-int equal_strings(char *s1, char *s2)
+int equal_strings(const char *s1, const char *s2)
 {
-  int i;
-
-  while (*s1 && *s2)
-    if (*s1++ != *s2++)
-      return (0);
-
-  if (*s1 != *s2)
-    return (0);
-  else
-    return (1);
+	return 0==strcmpi(s1,s2) ? 1 /*equal*/ : 0;
 }
 
 
@@ -1430,7 +1418,7 @@ Exit:
   returns the element, or NULL if not found
 ******************************************************************************/
 
-PlyElement *find_element(PlyFile *plyfile, char *element)
+PlyElement *find_element(PlyFile *plyfile, const char *element)
 {
   int i;
 
@@ -1454,7 +1442,7 @@ Exit:
   returns a pointer to the property, or NULL if not found
 ******************************************************************************/
 
-PlyProperty *find_property(PlyElement *elem, char *prop_name, int *index)
+PlyProperty *find_property(PlyElement *elem, const char *prop_name, int *index)
 {
   int i;
 
@@ -1496,7 +1484,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
   int store_it;
   char **store_array;
   char *orig_line;
-  char *other_data;
+  char *other_data=NULL;
   int other_flag;
 
   /* the kind of element we're reading currently */

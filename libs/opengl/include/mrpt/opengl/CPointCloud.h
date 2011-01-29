@@ -175,6 +175,12 @@ namespace mrpt
 				MRPT_END
 			}
 
+			/** Loads a point cloud from a PLY file
+			  * \return false on any error in the file format or reading it (more info returned to cerr).
+			  * \sa http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
+			  */
+			bool loadFromPlyFile(const std::string &filename);
+
 			/** Get the number of elements actually rendered in the last render event. */
 			size_t getActuallyRendered() const { return m_last_rendered_count; }
 

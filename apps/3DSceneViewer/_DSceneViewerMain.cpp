@@ -28,6 +28,7 @@
 
 #include "_DSceneViewerMain.h"
 #include "CDlgCamTracking.h"
+#include "CDlgPLYOptions.h"
 #include <wx/app.h>
 
 //(*InternalHeaders(_DSceneViewerFrame)
@@ -54,9 +55,9 @@
 #include <wx/dcmemory.h>
 
 #if defined(__WXMSW__)
-    std::string             iniFileSect("CONF_WIN");
+    const std::string             iniFileSect("CONF_WIN");
 #elif defined(__UNIX__)
-    std::string             iniFileSect("CONF_LIN");
+    const std::string             iniFileSect("CONF_LIN");
 #endif
 
 #include "imgs/icono_main.xpm"
@@ -143,6 +144,20 @@ int         delayBetweenAutoplay = 5;
 
 
 wxLogWindow *logWin=NULL;
+
+
+void saveLastUsedDirectoryToCfgFile(const std::string &fil)
+{
+    try
+    {
+        iniFile->write(iniFileSect,"LastDir", extractFileDirectory(fil) );
+    }
+    catch(std::exception &e)
+    {
+        wxMessageBox( _U(e.what()), _("Exception"), wxOK );
+    }
+}
+
 
 
 void CMyGLCanvas::OnRenderError( const wxString &str )
@@ -308,6 +323,11 @@ const long _DSceneViewerFrame::ID_MENUITEM1 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM2 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM5 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM7 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM6 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM20 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM19 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM22 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM21 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM12 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM18 = wxNewId();
 const long _DSceneViewerFrame::idMenuQuit = wxNewId();
@@ -319,7 +339,6 @@ const long _DSceneViewerFrame::ID_MENUITEM16 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM11 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM9 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM8 = wxNewId();
-const long _DSceneViewerFrame::ID_MENUITEM6 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM10 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM14 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM13 = wxNewId();
@@ -369,15 +388,18 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     //(*Initialize(_DSceneViewerFrame)
     wxMenuItem* MenuItem2;
     wxMenu* MenuItem15;
+    wxMenu* MenuItem20;
     wxMenuItem* MenuItem1;
     wxMenuItem* MenuItem4;
     wxMenuItem* MenuItem13;
     wxMenu* Menu1;
     wxMenuItem* MenuItem12;
     wxMenuItem* MenuItem3;
-    wxMenuItem* mnuSceneStats;
     wxMenuBar* MenuBar1;
+    wxMenuItem* MenuItem21;
     wxMenu* Menu2;
+    wxMenu* MenuItem18;
+    wxMenuItem* MenuItem19;
     
     Create(parent, id, _("3DSceneViewer - Part of the MRPT project - Jose Luis Blanco (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetClientSize(wxSize(672,539));
@@ -397,9 +419,20 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     MenuItem9 = new wxMenuItem(Menu1, ID_MENUITEM7, _("Save..."), wxEmptyString, wxITEM_NORMAL);
     Menu1->Append(MenuItem9);
     Menu1->AppendSeparator();
+    MenuItem18 = new wxMenu();
+    MenuItem8 = new wxMenuItem(MenuItem18, ID_MENUITEM6, _("a 3DStudio object..."), wxEmptyString, wxITEM_NORMAL);
+    MenuItem18->Append(MenuItem8);
+    MenuItem19 = new wxMenuItem(MenuItem18, ID_MENUITEM20, _("a PLY point cloud..."), wxEmptyString, wxITEM_NORMAL);
+    MenuItem18->Append(MenuItem19);
+    Menu1->Append(ID_MENUITEM19, _("Import"), MenuItem18, wxEmptyString);
+    MenuItem20 = new wxMenu();
+    MenuItem21 = new wxMenuItem(MenuItem20, ID_MENUITEM22, _("point clouds to PLY file..."), wxEmptyString, wxITEM_NORMAL);
+    MenuItem20->Append(MenuItem21);
+    Menu1->Append(ID_MENUITEM21, _("Export"), MenuItem20, wxEmptyString);
+    Menu1->AppendSeparator();
     MenuItem14 = new wxMenuItem(Menu1, ID_MENUITEM12, _("Take snapshot...\tF2"), _("Saves the current window image to a file"), wxITEM_NORMAL);
     Menu1->Append(MenuItem14);
-    mnuSceneStats = new wxMenuItem(Menu1, ID_MENUITEM18, _("Scene stats..."), wxEmptyString, wxITEM_NORMAL);
+    mnuSceneStats = new wxMenuItem(Menu1, ID_MENUITEM18, _("Scene stats"), wxEmptyString, wxITEM_NORMAL);
     Menu1->Append(mnuSceneStats);
     Menu1->AppendSeparator();
     MenuItem1 = new wxMenuItem(Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
@@ -424,8 +457,6 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     MenuItem12 = new wxMenuItem(MenuItem11, ID_MENUITEM9, _("SICK laser"), wxEmptyString, wxITEM_NORMAL);
     MenuItem11->Append(MenuItem12);
     Menu3->Append(ID_MENUITEM8, _("Insert stock object"), MenuItem11, wxEmptyString);
-    MenuItem8 = new wxMenuItem(Menu3, ID_MENUITEM6, _("Insert a 3DStudio object..."), wxEmptyString, wxITEM_NORMAL);
-    Menu3->Append(MenuItem8);
     Menu3->AppendSeparator();
     MenuItem15 = new wxMenu();
     MenuItem10 = new wxMenuItem(MenuItem15, ID_MENUITEM10, _("Circular"), wxEmptyString, wxITEM_NORMAL);
@@ -470,6 +501,9 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
     Connect(ID_MENUITEM5,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnReload);
     Connect(ID_MENUITEM7,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuSave);
+    Connect(ID_MENUITEM6,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnInsert3DS);
+    Connect(ID_MENUITEM20,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemImportPLYPointCloud);
+    Connect(ID_MENUITEM22,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemExportPointsPLY);
     Connect(ID_MENUITEM12,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItem14Selected);
     Connect(ID_MENUITEM18,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSceneStatsSelected);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnQuit);
@@ -479,7 +513,6 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_MENUITEM17,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected);
     Connect(ID_MENUITEM11,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuDeleteAll);
     Connect(ID_MENUITEM9,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuAddSICK);
-    Connect(ID_MENUITEM6,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnInsert3DS);
     Connect(ID_MENUITEM10,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnStartCameraTravelling);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnAbout);
     Connect(ID_TOOLBARITEM7,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
@@ -600,14 +633,7 @@ void _DSceneViewerFrame::loadFromFile( const std::string &fil, bool isInASequenc
     try
     {
         // Save the path
-        try
-        {
-            iniFile->write(iniFileSect,"LastDir", extractFileDirectory(fil) );
-        }
-        catch(std::exception &e)
-        {
-            wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
-        }
+		saveLastUsedDirectoryToCfgFile(fil);
 
 		static float	old_cam_pX,old_cam_pY,old_cam_pZ,old_cam_d,old_cam_az,old_cam_el;
 		static bool first = true;
@@ -853,8 +879,8 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 		wxString fileName = dialog.GetPath();
 		std::string	fil = string(fileName.mb_str());
 
-		iniFile->write(iniFileSect,"LastDir", extractFileDirectory(fil) );
-
+		saveLastUsedDirectoryToCfgFile(fil);
+		
 		mrpt::opengl::C3DSScenePtr	obj3D = mrpt::opengl::C3DSScene::Create();
 		obj3D->loadFrom3DSFile( fil );
 		m_canvas->m_openGLScene->insert( obj3D );
@@ -1138,7 +1164,7 @@ void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(wxCommand
 		// Redo the octrees:
 		clear_all_octrees_in_scene();
 		Refresh(false);
-		
+
 		wxCommandEvent dumm;  // Redraw bounding-boxes:
 		OnmnuItemShowCloudOctreesSelected(dumm);
 	}
@@ -1260,11 +1286,11 @@ void func_get_octbb(const mrpt::opengl::CRenderizablePtr &o)
 void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event)
 {
 	const bool show_hide = mnuItemShowCloudOctrees->IsChecked();
-	
+
     try
     {
 		wxBusyCursor wait;
-		
+
 		{
 			mrpt::synch::CCriticalSectionLocker lock(&critSec_UpdateScene);
 			m_canvas->m_openGLScene->visitAllObjects( &func_gather_stats );
@@ -1276,7 +1302,7 @@ void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event
 				CRenderizablePtr obj = m_canvas->m_openGLScene->getByName(name_octrees_bb_globj);
 				if (obj)
 					gl_octrees_bb = CSetOfObjectsPtr(obj);
-				else  
+				else
 				{
 					gl_octrees_bb = CSetOfObjects::Create();
 					gl_octrees_bb->setName( name_octrees_bb_globj );
@@ -1306,3 +1332,98 @@ void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event
     }
 }
 
+// ----------------------------------------------------------
+// Import a point cloud from the PLY file format
+// ----------------------------------------------------------
+void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
+{
+	try
+	{
+		wxFileDialog dialog(
+			this, 
+			_("Choose the PLY file to import"), 
+			_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ), 
+			_("*.ply"),
+			_("PLY files (*.ply, *.PLY)|*.ply;*.PLY|All files (*.*)|*.*"),
+			wxFD_OPEN | wxFD_FILE_MUST_EXIST );
+
+		if (dialog.ShowModal() != wxID_OK)
+			return;
+
+		const std::string fil = string(dialog.GetPath().mb_str());
+		saveLastUsedDirectoryToCfgFile(fil);
+
+		CDlgPLYOptions dlgPLY(this);
+		if (dlgPLY.ShowModal()!=wxID_OK)
+			return;
+
+		opengl::CPointCloudPtr gl_points =  opengl::CPointCloud::Create();
+
+		if (!gl_points->loadFromPlyFile(fil))
+		{
+	        wxMessageBox( _("Error loading or parsing the PLY file"), _("Exception"), wxOK, this);
+		}
+		else
+		{
+			// Set the point cloud as the only object in scene:
+			m_canvas->m_openGLScene = opengl::COpenGLScene::Create();
+
+
+			if (dlgPLY.cbXYGrid->GetValue())
+			{
+				mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create( -50,50,-50,50,0,1 );
+				obj->setColor(0.3,0.3,0.3);
+				m_canvas->m_openGLScene->insert( obj );
+			}
+
+			if (dlgPLY.cbXYZ->GetValue())
+				m_canvas->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
+
+			double ptSize;
+			dlgPLY.cbPointSize->GetStringSelection().ToDouble(&ptSize);
+			gl_points->setPointSize( ptSize );
+
+			switch(dlgPLY.rbIntFromXYZ->GetSelection())
+			{
+				case 0: gl_points->enableColorFromX(); break;
+				case 1: gl_points->enableColorFromY(); break;
+				case 2: gl_points->enableColorFromZ(); break;
+			};
+
+			TPose3D ptCloudPose(0,0,0, 0,0,0);
+
+			dlgPLY.edYaw->GetValue().ToDouble(&ptCloudPose.yaw);
+			dlgPLY.edPitch->GetValue().ToDouble(&ptCloudPose.pitch);
+			dlgPLY.edRoll->GetValue().ToDouble(&ptCloudPose.roll);
+			ptCloudPose.yaw   = DEG2RAD(ptCloudPose.yaw);
+			ptCloudPose.pitch = DEG2RAD(ptCloudPose.pitch);
+			ptCloudPose.roll  = DEG2RAD(ptCloudPose.roll);
+			gl_points->setPose(CPose3D(ptCloudPose));
+
+			// Insert point cloud into scene:
+            m_canvas->m_openGLScene->insert(gl_points);
+
+
+			m_canvas->cameraPointingX = 0;
+			m_canvas->cameraPointingY = 0;
+			m_canvas->cameraPointingZ = 0;
+
+			m_canvas->cameraZoomDistance = 10;
+			m_canvas->cameraAzimuthDeg   = 45;
+			m_canvas->cameraElevationDeg = 45;
+
+			loadedFileName = std::string("Imported_")+fil+std::string(".3Dscene");
+			updateTitle();
+
+			Refresh(false);
+		}
+    }
+    catch(std::exception &e)
+    {
+        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+    }
+}
+
+void _DSceneViewerFrame::OnMenuItemExportPointsPLY(wxCommandEvent& event)
+{
+}

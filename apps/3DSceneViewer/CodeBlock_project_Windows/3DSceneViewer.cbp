@@ -82,14 +82,16 @@
 			<Add directory="..\..\..\lib" />
 			<Add directory="..\..\..\lib\otherlibs" />
 		</Linker>
+		<Unit filename="..\CAboutBox.cpp" />
+		<Unit filename="..\CAboutBox.h" />
+		<Unit filename="..\CDlgPLYOptions.cpp" />
+		<Unit filename="..\CDlgPLYOptions.h" />
 		<Unit filename="..\_DSceneViewerApp.cpp" />
 		<Unit filename="..\_DSceneViewerApp.h" />
 		<Unit filename="..\_DSceneViewerMain.cpp" />
 		<Unit filename="..\_DSceneViewerMain.h" />
-		<Unit filename="..\CAboutBox.cpp" />
-		<Unit filename="..\CAboutBox.h" />
-		<Unit filename="..\wxsmith\_DSceneViewerframe.wxs" />
 		<Unit filename="..\wxsmith\CDialogOptions.wxs" />
+		<Unit filename="..\wxsmith\_DSceneViewerframe.wxs" />
 		<Extensions>
 			<code_completion />
 			<envvars />
@@ -101,6 +103,7 @@
 					<wxFrame wxs="../wxsmith/_DSceneViewerframe.wxs" src="../_DSceneViewerMain.cpp" hdr="../_DSceneViewerMain.h" name="_DSceneViewerFrame" language="CPP" />
 					<wxDialog wxs="../wxsmith/CDialogOptions.wxs" src="../CDialogOptions.cpp" hdr="../CDialogOptions.h" name="CDialogOptions" language="CPP" />
 					<wxDialog wxs="../wxsmith/CAboutBox.wxs" src="../CAboutBox.cpp" hdr="../CAboutBox.h" name="CAboutBox" language="CPP" />
+					<wxDialog wxs="../wxsmith/CDlgPLYOptions.wxs" src="../CDlgPLYOptions.cpp" hdr="../CDlgPLYOptions.h" name="CDlgPLYOptions" language="CPP" />
 				</resources>
 			</wxsmith>
 		</Extensions>
