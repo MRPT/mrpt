@@ -44,7 +44,9 @@ const long CDlgPLYOptions::ID_STATICTEXT3 = wxNewId();
 const long CDlgPLYOptions::ID_TEXTCTRL2 = wxNewId();
 const long CDlgPLYOptions::ID_STATICTEXT4 = wxNewId();
 const long CDlgPLYOptions::ID_TEXTCTRL3 = wxNewId();
+const long CDlgPLYOptions::ID_RADIOBOX2 = wxNewId();
 const long CDlgPLYOptions::ID_RADIOBOX1 = wxNewId();
+const long CDlgPLYOptions::ID_PANEL1 = wxNewId();
 const long CDlgPLYOptions::ID_BUTTON1 = wxNewId();
 const long CDlgPLYOptions::ID_BUTTON2 = wxNewId();
 //*)
@@ -61,6 +63,7 @@ CDlgPLYOptions::CDlgPLYOptions(wxWindow* parent,wxWindowID id)
 	wxFlexGridSizer* FlexGridSizer3;
 	wxFlexGridSizer* FlexGridSizer5;
 	wxFlexGridSizer* FlexGridSizer2;
+	wxFlexGridSizer* FlexGridSizer7;
 	wxFlexGridSizer* FlexGridSizer6;
 	wxStaticBoxSizer* StaticBoxSizer1;
 	wxFlexGridSizer* FlexGridSizer1;
@@ -108,21 +111,33 @@ CDlgPLYOptions::CDlgPLYOptions(wxWindow* parent,wxWindowID id)
 	StaticBoxSizer1->Add(FlexGridSizer6, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	FlexGridSizer4->Add(StaticBoxSizer1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 0);
-	wxString __wxRadioBoxChoices_1[4] = 
+	FlexGridSizer7 = new wxFlexGridSizer(2, 1, 0, 0);
+	wxString __wxRadioBoxChoices_1[2] = 
+	{
+		_("mrpt::opengl::CPointCloud"),
+		_("mrpt::opengl::CPointCloudColoured")
+	};
+	rbClass = new wxRadioBox(this, ID_RADIOBOX2, _("Import as class..."), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX2"));
+	rbClass->SetSelection(0);
+	FlexGridSizer7->Add(rbClass, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	Panel1 = new wxPanel(this, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
+	wxString __wxRadioBoxChoices_2[4] = 
 	{
 		_("None"),
 		_("X"),
 		_("Y"),
 		_("Z")
 	};
-	rbIntFromXYZ = new wxRadioBox(this, ID_RADIOBOX1, _(" Intensity from X,Y or Z value "), wxDefaultPosition, wxDefaultSize, 4, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX1"));
+	rbIntFromXYZ = new wxRadioBox(Panel1, ID_RADIOBOX1, _(" Intensity from X,Y or Z value "), wxDefaultPosition, wxDefaultSize, 4, __wxRadioBoxChoices_2, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX1"));
 	rbIntFromXYZ->SetSelection(2);
-	FlexGridSizer2->Add(rbIntFromXYZ, 1, wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 2);
+	FlexGridSizer7->Add(Panel1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer2->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	FlexGridSizer3 = new wxFlexGridSizer(0, 3, 0, 0);
 	btnCancel = new wxButton(this, ID_BUTTON1, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
 	FlexGridSizer3->Add(btnCancel, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	btnOK = new wxButton(this, ID_BUTTON2, _("Import"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
+	btnOK->SetDefault();
 	FlexGridSizer3->Add(btnOK, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer1->Add(FlexGridSizer3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	SetSizer(FlexGridSizer1);
@@ -130,9 +145,15 @@ CDlgPLYOptions::CDlgPLYOptions(wxWindow* parent,wxWindowID id)
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
 	
+	Connect(ID_RADIOBOX2,wxEVT_COMMAND_RADIOBOX_SELECTED,(wxObjectEventFunction)&CDlgPLYOptions::OnrbClassSelect);
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CDlgPLYOptions::OnbtnCancelClick);
 	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CDlgPLYOptions::OnbtnOKClick);
 	//*)
+
+
+	wxCommandEvent ev;
+	OnrbClassSelect(ev);
+
 }
 
 CDlgPLYOptions::~CDlgPLYOptions()
@@ -150,4 +171,9 @@ void CDlgPLYOptions::OnbtnCancelClick(wxCommandEvent& event)
 void CDlgPLYOptions::OnbtnOKClick(wxCommandEvent& event)
 {
 	EndModal(wxID_OK);
+}
+
+void CDlgPLYOptions::OnrbClassSelect(wxCommandEvent& event)
+{
+	rbIntFromXYZ->Enable( rbClass->GetSelection()==0 );
 }

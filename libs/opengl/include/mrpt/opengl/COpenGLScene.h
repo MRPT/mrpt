@@ -222,7 +222,7 @@ namespace mrpt
 			template <typename FUNCTOR>
 			static void internal_visitAllObjects(FUNCTOR functor, const CRenderizablePtr &o)
 			{
-				(*functor)(o);
+				functor(o);
 				if (IS_CLASS(o,CSetOfObjects))
 				{
 					CSetOfObjectsPtr obj = CSetOfObjectsPtr(o);

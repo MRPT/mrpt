@@ -35,6 +35,7 @@
 #include <wx/radiobox.h>
 #include <wx/textctrl.h>
 #include <wx/checkbox.h>
+#include <wx/panel.h>
 #include <wx/choice.h>
 #include <wx/button.h>
 #include <wx/dialog.h>
@@ -54,9 +55,11 @@ class CDlgPLYOptions: public wxDialog
 		wxButton* btnCancel;
 		wxRadioBox* rbIntFromXYZ;
 		wxTextCtrl* edPitch;
+		wxPanel* Panel1;
 		wxStaticText* StaticText1;
 		wxStaticText* StaticText3;
 		wxButton* btnOK;
+		wxRadioBox* rbClass;
 		wxTextCtrl* edYaw;
 		wxChoice* cbPointSize;
 		wxStaticText* StaticText4;
@@ -76,7 +79,9 @@ class CDlgPLYOptions: public wxDialog
 		static const long ID_TEXTCTRL2;
 		static const long ID_STATICTEXT4;
 		static const long ID_TEXTCTRL3;
+		static const long ID_RADIOBOX2;
 		static const long ID_RADIOBOX1;
+		static const long ID_PANEL1;
 		static const long ID_BUTTON1;
 		static const long ID_BUTTON2;
 		//*)
@@ -86,6 +91,7 @@ class CDlgPLYOptions: public wxDialog
 		//(*Handlers(CDlgPLYOptions)
 		void OnbtnCancelClick(wxCommandEvent& event);
 		void OnbtnOKClick(wxCommandEvent& event);
+		void OnrbClassSelect(wxCommandEvent& event);
 		//*)
 
 		DECLARE_EVENT_TABLE()

@@ -1357,9 +1357,29 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 		if (dlgPLY.ShowModal()!=wxID_OK)
 			return;
 
-		opengl::CPointCloudPtr gl_points =  opengl::CPointCloud::Create();
+		opengl::CPointCloudPtr gl_points; 
+		opengl::CPointCloudColouredPtr gl_points_col;
+		mrpt::utils::PLY_Importer *ply_obj=NULL;
 
-		if (!gl_points->loadFromPlyFile(fil))
+		if (dlgPLY.rbClass->GetSelection()==0)
+		{
+		     gl_points     = opengl::CPointCloud::Create();
+			 ply_obj = gl_points.pointer();
+		}
+		else 
+		{
+			gl_points_col = opengl::CPointCloudColoured::Create();
+			ply_obj = gl_points_col.pointer();
+		}
+
+		CStringList file_comments, file_info;
+
+		bool res;
+		{
+			wxBusyCursor  busy;
+			res	= ply_obj->loadFromPlyFile(fil, &file_comments, &file_info);
+		}
+		if (!res)
 		{
 	        wxMessageBox( _("Error loading or parsing the PLY file"), _("Exception"), wxOK, this);
 		}
@@ -1367,7 +1387,6 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 		{
 			// Set the point cloud as the only object in scene:
 			m_canvas->m_openGLScene = opengl::COpenGLScene::Create();
-
 
 			if (dlgPLY.cbXYGrid->GetValue())
 			{
@@ -1381,14 +1400,18 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 
 			double ptSize;
 			dlgPLY.cbPointSize->GetStringSelection().ToDouble(&ptSize);
-			gl_points->setPointSize( ptSize );
+			if (gl_points)     gl_points->setPointSize( ptSize );
+			if (gl_points_col) gl_points_col->setPointSize( ptSize );
 
-			switch(dlgPLY.rbIntFromXYZ->GetSelection())
+			if (gl_points)
 			{
-				case 0: gl_points->enableColorFromX(); break;
-				case 1: gl_points->enableColorFromY(); break;
-				case 2: gl_points->enableColorFromZ(); break;
-			};
+				switch(dlgPLY.rbIntFromXYZ->GetSelection())
+				{
+					case 1: gl_points->enableColorFromX(); break;
+					case 2: gl_points->enableColorFromY(); break;
+					case 3: gl_points->enableColorFromZ(); break;
+				};
+			}
 
 			TPose3D ptCloudPose(0,0,0, 0,0,0);
 
@@ -1398,24 +1421,35 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 			ptCloudPose.yaw   = DEG2RAD(ptCloudPose.yaw);
 			ptCloudPose.pitch = DEG2RAD(ptCloudPose.pitch);
 			ptCloudPose.roll  = DEG2RAD(ptCloudPose.roll);
-			gl_points->setPose(CPose3D(ptCloudPose));
+			
+			if (gl_points)     gl_points->setPose(CPose3D(ptCloudPose));
+			if (gl_points_col) gl_points_col->setPose(CPose3D(ptCloudPose));
 
 			// Insert point cloud into scene:
-            m_canvas->m_openGLScene->insert(gl_points);
+            if (gl_points)     m_canvas->m_openGLScene->insert(gl_points);
+            if (gl_points_col) m_canvas->m_openGLScene->insert(gl_points_col);
 
 
 			m_canvas->cameraPointingX = 0;
 			m_canvas->cameraPointingY = 0;
 			m_canvas->cameraPointingZ = 0;
 
-			m_canvas->cameraZoomDistance = 10;
+			m_canvas->cameraZoomDistance = 4;
 			m_canvas->cameraAzimuthDeg   = 45;
-			m_canvas->cameraElevationDeg = 45;
+			m_canvas->cameraElevationDeg = 30;
 
 			loadedFileName = std::string("Imported_")+fil+std::string(".3Dscene");
 			updateTitle();
 
 			Refresh(false);
+
+			wxMessageBox(
+				_U(format(
+					"Comments:\n--------------------\n%s\nObject info:\n--------------------\n%s",
+					file_comments.getText().c_str(), file_info.getText().c_str()).c_str()),
+				_("File info"),
+				wxOK,
+				this);
 		}
     }
     catch(std::exception &e)
@@ -1424,6 +1458,67 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
     }
 }
 
+
+struct visitor_export_PLY : public unary_function<mrpt::opengl::CRenderizablePtr,void> 
+{
+	const string &filename;
+	unsigned int &count;
+
+	visitor_export_PLY(const string &fil,unsigned int &counter) : filename(fil), count(counter) { }
+
+	void operator()(const mrpt::opengl::CRenderizablePtr &obj)
+	{
+		if (IS_CLASS(obj,CPointCloud))
+		{
+			CPointCloudPtr o = CPointCloudPtr(obj);
+			o->saveToPlyFile(format("%s_%03u.ply",filename.c_str(),++count));
+		}
+		else
+		if (IS_CLASS(obj,CPointCloudColoured))
+		{
+			CPointCloudColouredPtr o = CPointCloudColouredPtr(obj);
+			o->saveToPlyFile(format("%s_%03u.ply",filename.c_str(),++count));
+		}
+	}
+};
+
+// ----------------------------------------------------------
+// Export point clouds to the PLY file format
+// ----------------------------------------------------------
 void _DSceneViewerFrame::OnMenuItemExportPointsPLY(wxCommandEvent& event)
 {
+	try
+	{
+		wxMessageBox(_("Each point cloud object in the scene will be exported as a separate PLY file."),_("Notice") );
+
+		wxFileDialog dialog(
+			this, 
+			_("Choose the target PLY filename"), 
+			_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ), 
+			_("*.ply"),
+			_("PLY files (*.ply, *.PLY)|*.ply;*.PLY|All files (*.*)|*.*"),
+			wxFD_SAVE );
+
+		if (dialog.ShowModal() != wxID_OK)
+			return;
+
+		const std::string fil = string(dialog.GetPath().mb_str());
+		saveLastUsedDirectoryToCfgFile(fil);
+
+		// Go thru all point clouds and save them:
+		unsigned int counter=0;
+		visitor_export_PLY visitor(fil,counter);
+
+		{
+			wxBusyCursor busy;
+			m_canvas->m_openGLScene->visitAllObjects( visitor );
+		}
+
+		wxMessageBox(wxString::Format(_("%u point cloud(s) exported to PLY files."),counter), _("Result"));
+
+    }
+    catch(std::exception &e)
+    {
+        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+    }
 }

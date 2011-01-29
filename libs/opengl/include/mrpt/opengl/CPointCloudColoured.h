@@ -31,7 +31,7 @@
 
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/COctreePointRenderer.h>
-//#include <mrpt/utils/stl_extensions.h>
+#include <mrpt/utils/PLY_import_export.h>
 
 namespace mrpt
 {
@@ -61,7 +61,9 @@ namespace mrpt
 		  */
 		class OPENGL_IMPEXP CPointCloudColoured :
 			public CRenderizable,
-			public COctreePointRenderer<CPointCloudColoured>
+			public COctreePointRenderer<CPointCloudColoured>,
+			public mrpt::utils::PLY_Importer,
+			public mrpt::utils::PLY_Exporter
 		{
 			DEFINE_SERIALIZABLE( CPointCloudColoured )
 
@@ -217,6 +219,40 @@ namespace mrpt
 
 			/** Render a subset of points (required by octree renderer) */
 			void  render_subset(const bool all, const std::vector<size_t>& idxs, const float render_area_sqpixels ) const;
+
+		protected:
+			/** @name PLY Import virtual methods to implement in base classes
+			    @{ */
+			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */
+			virtual void PLY_import_set_vertex_count(const size_t N);
+			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_face */
+			virtual void PLY_import_set_face_count(const size_t N) {  } 
+			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point. 
+			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+			  */
+			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL);
+			/** @} */
+
+			/** @name PLY Export virtual methods to implement in base classes
+			    @{ */
+
+			/** In a base class, return the number of vertices */
+			virtual size_t PLY_export_get_vertex_count() const;
+
+			/** In a base class, return the number of faces */
+			virtual size_t PLY_export_get_face_count() const { return 0; }
+
+			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point. 
+			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+			  */
+			virtual void PLY_export_get_vertex(
+				const size_t idx, 
+				mrpt::math::TPoint3Df &pt, 
+				bool &pt_has_color,
+				mrpt::utils::TColorf &pt_color) const;
+
+			/** @} */
+
 
 		};
 

@@ -31,6 +31,7 @@
 
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/COctreePointRenderer.h>
+#include <mrpt/utils/PLY_import_export.h>
 
 namespace mrpt
 {
@@ -61,7 +62,9 @@ namespace mrpt
 		  */
 		class OPENGL_IMPEXP CPointCloud :
 			public CRenderizable,
-			public COctreePointRenderer<CPointCloud>
+			public COctreePointRenderer<CPointCloud>,
+			public mrpt::utils::PLY_Importer,
+			public mrpt::utils::PLY_Exporter
 		{
 			DEFINE_SERIALIZABLE( CPointCloud )
 		protected:
@@ -73,6 +76,42 @@ namespace mrpt
 			mutable volatile size_t m_last_rendered_count, m_last_rendered_count_ongoing;
 
 			void markAllPointsAsNew(); //!< Do needed internal work if all points are new (octree rebuilt,...)
+
+		protected:
+			/** @name PLY Import virtual methods to implement in base classes
+			    @{ */
+			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */
+			virtual void PLY_import_set_vertex_count(const size_t N);
+
+			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_face */
+			virtual void PLY_import_set_face_count(const size_t N) {  }
+
+			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point. 
+			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+			  */
+			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL);
+			/** @} */
+
+			/** @name PLY Export virtual methods to implement in base classes
+			    @{ */
+
+			/** In a base class, return the number of vertices */
+			virtual size_t PLY_export_get_vertex_count() const;
+
+			/** In a base class, return the number of faces */
+			virtual size_t PLY_export_get_face_count() const { return 0; }
+
+			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point. 
+			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+			  */
+			virtual void PLY_export_get_vertex(
+				const size_t idx, 
+				mrpt::math::TPoint3Df &pt, 
+				bool &pt_has_color,
+				mrpt::utils::TColorf &pt_color) const;
+
+			/** @} */
+
 
 		public:
 
@@ -174,12 +213,6 @@ namespace mrpt
 				markAllPointsAsNew();
 				MRPT_END
 			}
-
-			/** Loads a point cloud from a PLY file
-			  * \return false on any error in the file format or reading it (more info returned to cerr).
-			  * \sa http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
-			  */
-			bool loadFromPlyFile(const std::string &filename);
 
 			/** Get the number of elements actually rendered in the last render event. */
 			size_t getActuallyRendered() const { return m_last_rendered_count; }
