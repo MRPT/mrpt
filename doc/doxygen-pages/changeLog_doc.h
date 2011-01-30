@@ -36,7 +36,7 @@
 	- Changes in applications:
 		- <a href="http://www.mrpt.org/Application:rawlog-grabber" >rawlog-grabber</a>: Added "hokuyo_UXM.ini" to support HOKUYO UXM laser series.
 		- mrpt-performance has been refactored into several smaller .cpp files. Having all in one big file lead to memory depletion when building in small machines (e.g. Debian MIPS & S390 autobuilders).
-		- New application: <a href="http://www.mrpt.org/Application:kinect-3d-view">. It was formerly an example, now it's an application so it's much easier for everyone to try it without compile manually.
+		- New application: <a href="http://www.mrpt.org/Application:kinect-3d-view" > kinect-3d-view </a>. It was formerly an example, now it's an application so it's much easier for everyone to try it without compile manually.
 		- Support for Stanford's PLY file format in SceneViewer3D. See http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
 	- New classes:
 		- mrpt::math::ModelSearch: A RANSAC + Genetic model fitter (by Zoltan Gaal)
