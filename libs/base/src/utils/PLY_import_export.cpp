@@ -185,7 +185,7 @@ Compare two strings.  Returns 1 if they are the same, 0 if not.
 ******************************************************************************/
 int equal_strings(const char *s1, const char *s2)
 {
-	return 0==strcmpi(s1,s2) ? 1 /*equal*/ : 0;
+	return 0==mrpt::system::os::_strcmpi(s1,s2) ? 1 /*equal*/ : 0;
 }
 
 
