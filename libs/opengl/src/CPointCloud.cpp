@@ -76,17 +76,6 @@ GLuint m_DL_id = -1;
 void   CPointCloud::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	//if (m_DL_id!=-1)
-	//{
-	//	glCallList(m_DL_id);
-	//	return;
-	//}
-	//m_DL_id = glGenLists(1);
-
-	//// start list
-	//glNewList(m_DL_id,GL_COMPILE);
-
-
 
     ASSERT_(m_xs.size() == m_ys.size());
     ASSERT_(m_xs.size() == m_zs.size());
@@ -108,17 +97,12 @@ void   CPointCloud::render() const
 					m_colorFromDepth == CPointCloud::Z ? m_zs : (m_colorFromDepth == CPointCloud::Y ? m_ys : m_xs),
 					m_min, m_max);
 			else m_max=m_min=0;
-
-			m_max_m_min = m_max - m_min;
-			if (std::abs(m_max_m_min)<1e-4)
-					m_max_m_min=-1;
-			else	m_min = m_max - m_max_m_min * 1.01f;
-		}
-		else
-		{
-			m_max_m_min = m_max - m_min;
 		}
 
+		m_max_m_min = m_max - m_min;
+		if (std::abs(m_max_m_min)<1e-4)
+				m_max_m_min=-1;
+		else	m_min = m_max - m_max_m_min * 1.01f;
 		m_max_m_min_inv  = 1.0/m_max_m_min;
 	}
 
@@ -127,6 +111,11 @@ void   CPointCloud::render() const
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
+	else 
+	{
+		glDisable(GL_BLEND);
+	}
+
 
 
 	// Slopes of color interpolation:
