@@ -227,7 +227,7 @@ double get_item_value(char *, int);
 
 /* get binary or ascii item and store it according to ptr and type */
 void get_ascii_item(char *, int, int *, unsigned int *, double *);
-int get_binary_item(FILE *, int, int *, unsigned int *, double *);  // return 0 on error
+int get_binary_item(FILE *, int, int, int *, unsigned int *, double *);  // return 0 on error
 
 /* get a bunch of elements from a file */
 void ascii_get_element(PlyFile *, char *);
@@ -1561,8 +1561,8 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
   char **words;
   int nwords;
   int which_word;
-  FILE *fp = plyfile->fp;
-  char *elem_data,*item;
+  //FILE *fp = plyfile->fp;
+  char *elem_data,*item=NULL;
   char *item_ptr;
   int item_size;
   int int_val;
@@ -1679,17 +1679,19 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
   PlyElement *elem;
   PlyProperty *prop;
   FILE *fp = plyfile->fp;
-  char *elem_data,*item;
+  char *elem_data,*item=NULL;
   char *item_ptr;
-  int item_size;
+  int item_size=0;
   int int_val;
   unsigned int uint_val;
   double double_val;
   int list_count;
   int store_it;
   char **store_array;
-  char *other_data;
+  char *other_data=NULL;
   int other_flag;
+  
+  int bin_file_type =  plyfile->file_type;
 
   /* the kind of element we're reading currently */
   elem = plyfile->which_elem;
@@ -1724,7 +1726,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
     if (prop->is_list) {       /* a list */
 
       /* get and store the number of items in the list */
-      if (!get_binary_item (fp, prop->count_external,
+      if (!get_binary_item (fp,bin_file_type, prop->count_external,
                       &int_val, &uint_val, &double_val))
       {
         // Error...
@@ -1759,7 +1761,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
 
         /* read items and store them into the array */
         for (k = 0; k < list_count; k++) {
-          if (!get_binary_item (fp, prop->external_type,
+          if (!get_binary_item (fp, bin_file_type, prop->external_type,
                           &int_val, &uint_val, &double_val))
          {
            // Error...
@@ -1776,7 +1778,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
 
     }
     else {                     /* not a list */
-      if (!get_binary_item (fp, prop->external_type,
+      if (!get_binary_item (fp,bin_file_type, prop->external_type,
                       &int_val, &uint_val, &double_val))
       {
         // Error...
@@ -2230,6 +2232,7 @@ Return: 0: On error
 
 int get_binary_item(
   FILE *fp,
+  int bin_file_type,
   int type,
   int *int_val,
   unsigned int *uint_val,
@@ -2293,6 +2296,25 @@ int get_binary_item(
     default:
 		throw std::runtime_error(format("get_binary_item: bad type = %d", type));
   }
+
+  // Added by JL: 
+  // If the Big/Little endian format in the file is different than the native format, do the conversion:
+#if MRPT_IS_BIG_ENDIAN
+  const bool do_reverse = (bin_file_type==PLY_BINARY_LE);
+#else
+  const bool do_reverse = (bin_file_type==PLY_BINARY_BE);
+#endif
+
+  if (do_reverse)
+  { 
+	int int_val2 = *int_val;
+	unsigned int uint_val2 = *uint_val;
+	double double_val2 = *double_val;
+	mrpt::utils::reverseBytes(int_val2,*int_val);
+	mrpt::utils::reverseBytes(uint_val2,*uint_val);
+	mrpt::utils::reverseBytes(double_val2,*double_val);
+  }
+
   return 1;
 }
 
@@ -2580,7 +2602,6 @@ const float VAL_NOT_SET = -1e10;
 
 struct TVertex
 {
-	TVertex() : x(VAL_NOT_SET),y(VAL_NOT_SET),z(VAL_NOT_SET),r(VAL_NOT_SET),g(VAL_NOT_SET),b(VAL_NOT_SET),intensity(VAL_NOT_SET) { } 
 	float x,y,z;
 	float r,g,b;
 	float intensity;
@@ -2633,7 +2654,8 @@ bool PLY_Importer::loadFromPlyFile(
 			char *elem_name = elist[i];
 			int num_elems, nprops;
 
-			PlyProperty **plist = ply_get_element_description (ply, elem_name, &num_elems, &nprops);
+			//PlyProperty **plist = 
+			ply_get_element_description (ply, elem_name, &num_elems, &nprops);
 
 			/* print the name of the element, for debugging */
 			//printf ("element %s %d\n", elem_name, num_elems);
@@ -2650,6 +2672,8 @@ bool PLY_Importer::loadFromPlyFile(
 				for (int j = 0; j < num_elems; j++) 
 				{
 					TVertex  pt;
+					pt.x = pt.y = pt.z = pt.r = pt.g = pt.b = pt.intensity = VAL_NOT_SET;
+
 					/* grab an element from the file */
 					ply_get_element (ply, reinterpret_cast<void*>(&pt));
 					const TPoint3Df xyz(pt.x,pt.y,pt.z);
