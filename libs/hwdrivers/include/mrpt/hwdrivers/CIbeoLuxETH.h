@@ -25,16 +25,14 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
+#ifndef CIbeoLuxETH_H
+#define CIbeoLuxETH_H
 
-#include <mrpt/hwdrivers/CActivMediaRobotBase.h>	//Pionier
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-//#include <mrpt/utils/CStream.h>
-#include <mrpt/utils.h>
-#include <boost/thread.hpp>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <vector>
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/utils/CClientTCPSocket.h>
 
 namespace mrpt
 {
@@ -75,7 +73,7 @@ namespace mrpt
                 /** Destructor.
                  * Close communcation with the device, and free memory.
                  */
-                ~CIbeoLuxETH();
+                virtual ~CIbeoLuxETH();
                 /** This function acquire a laser scan from the device. If an error occured, hardwareError will be set to true.
                  * The new laser scan will be stored in the outObservation argument.
                  *
@@ -124,3 +122,5 @@ namespace mrpt
         };
     }
 }
+
+#endif

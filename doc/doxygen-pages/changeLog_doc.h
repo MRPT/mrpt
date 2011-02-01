@@ -43,6 +43,7 @@
 		- mrpt::slam::CSinCosLookUpTableFor2DScans: A cache of sin/cos values. It's used in points maps and now inserting laser scans in a point cloud is ~3 times faster.
 		- mrpt::opengl::CTextMessageCapable: A refactoring of the capability to display text messages on opengl views.
 		- mrpt::utils::PLY_Importer & mrpt::utils::PLY_Exporter: Support for Stanford's PLY file format in different 3D point cloud classes. See also: http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
+		- mrpt::hwdrivers::CIbeoLuxETH a driver for Ibeo Lux laser scanners through Ethernet. Contributed by Jan Girlich, University of Hamburg.
 	- MRPT libraries or "modules":
 		- mrpt-detectors is no longer marked as "experimental".
 		- mrpt-monoslam is no longer shown in the graph of libraries since it's unmaintained.

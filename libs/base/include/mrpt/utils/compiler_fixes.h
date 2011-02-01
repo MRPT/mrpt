@@ -45,7 +45,9 @@
 	#pragma warning(disable:4275)
 	#if (_MSC_VER >= 1400 )
 		// MS believes they have the right to deprecate functions in the C++ Standard STL... disable their warnings:
-		#define _SCL_SECURE_NO_WARNINGS
+		#ifndef _SCL_SECURE_NO_WARNINGS
+			#define _SCL_SECURE_NO_WARNINGS
+		#endif
 		#pragma warning(disable:4996)
 		// For the new secure library in VC++8
 		#if !defined(_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES)

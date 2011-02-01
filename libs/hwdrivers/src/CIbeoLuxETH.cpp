@@ -27,14 +27,9 @@
    +---------------------------------------------------------------------------+ */
 
 
-/*#include <mrpt/system/string_utils.h>
+#include <mrpt/hwdrivers.h> // Precompiled headers
 
-#include <iostream>
-#include <sstream>
-#include <string.h>
-#include <boost/bind.hpp>
-*/
-#include <../include/mrpt/hwdrivers/CIbeoLuxETH.h> // Precompiled headers
+#include <mrpt/hwdrivers/CIbeoLuxETH.h> // Precompiled headers
 
 #include <bitset>
 
@@ -173,7 +168,7 @@ void CIbeoLuxETH::dataCollection()
 						dropPacket = true;
 						//std::cerr << "Invalid layer: " << SPlayer << " should be element of [0,3] Scanpoint dropped.\n";
 					}
-					if ((SPHangle < (int)-angleTicks/2) || (SPHangle > (int)angleTicks/2))
+					if ((SPHangle < -((int)angleTicks)/2) || (SPHangle > (int)angleTicks/2))
 					{
 						dropPacket = true;
 						//std::cerr << "Invalid horizontal angle: " << (int)-angleTicks/2 << "< " << SPHangle << " <" << angleTicks/2 << " Scanpoint dropped.\n";
@@ -185,7 +180,7 @@ void CIbeoLuxETH::dataCollection()
 					}
 
 
-					if (not dropPacket)
+					if (!dropPacket)
 					{
 						//TODO: Process point information correctly
 						CPoint3D cartesianPoint = convertToCartesian(
