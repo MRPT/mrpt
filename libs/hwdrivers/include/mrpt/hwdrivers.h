@@ -40,6 +40,7 @@
 #include <mrpt/hwdrivers/CHokuyoURG.h>
 #include <mrpt/hwdrivers/CSickLaserUSB.h>
 #include <mrpt/hwdrivers/CSickLaserSerial.h>
+#include <mrpt/hwdrivers/CIbeoLuxETH.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/hwdrivers/CInterfaceFTDIMessages.h>
 #include <mrpt/hwdrivers/CSerialPort.h>

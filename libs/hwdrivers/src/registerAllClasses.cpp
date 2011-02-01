@@ -43,6 +43,7 @@ CStartUpClassesRegister  mrpt_hwdrivers_class_reg(&registerAllClasses_mrpt_hwdri
 void registerAllClasses_mrpt_hwdrivers()
 {
 	CSickLaserUSB::doRegister();
+	CIbeoLuxETH::doRegister();
 	CHokuyoURG::doRegister();
 	CGPSInterface::doRegister();
 	CBoardSonars::doRegister();
