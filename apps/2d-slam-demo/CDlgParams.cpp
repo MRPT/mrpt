@@ -88,6 +88,11 @@ const long CDlgParams::ID_STATICTEXT16 = wxNewId();
 const long CDlgParams::ID_TEXTCTRL9 = wxNewId();
 const long CDlgParams::ID_TEXTCTRL10 = wxNewId();
 const long CDlgParams::ID_TEXTCTRL11 = wxNewId();
+const long CDlgParams::ID_STATICTEXT26 = wxNewId();
+const long CDlgParams::ID_STATICTEXT27 = wxNewId();
+const long CDlgParams::ID_STATICTEXT28 = wxNewId();
+const long CDlgParams::ID_TEXTCTRL16 = wxNewId();
+const long CDlgParams::ID_TEXTCTRL17 = wxNewId();
 const long CDlgParams::ID_STATICTEXT18 = wxNewId();
 const long CDlgParams::ID_SPINCTRL4 = wxNewId();
 const long CDlgParams::ID_STATICTEXT19 = wxNewId();
@@ -108,10 +113,12 @@ CDlgParams::CDlgParams(wxWindow* parent,wxWindowID id,const wxPoint& pos,const w
 {
 	//(*Initialize(CDlgParams)
 	wxStaticBoxSizer* StaticBoxSizer2;
+	wxFlexGridSizer* FlexGridSizer21;
 	wxFlexGridSizer* FlexGridSizer8;
 	wxFlexGridSizer* FlexGridSizer1;
 	wxFlexGridSizer* FlexGridSizer2;
 	wxFlexGridSizer* FlexGridSizer15;
+	wxStaticBoxSizer* StaticBoxSizer7;
 	wxStaticBoxSizer* StaticBoxSizer5;
 	wxFlexGridSizer* FlexGridSizer17;
 	wxFlexGridSizer* FlexGridSizer19;
@@ -132,6 +139,7 @@ CDlgParams::CDlgParams(wxWindow* parent,wxWindowID id,const wxPoint& pos,const w
 	wxFlexGridSizer* FlexGridSizer12;
 	wxFlexGridSizer* FlexGridSizer5;
 	wxStaticBoxSizer* StaticBoxSizer1;
+	wxFlexGridSizer* FlexGridSizer20;
 	
 	Create(parent, wxID_ANY, _("Simulation configuration"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("wxID_ANY"));
 	FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
@@ -274,7 +282,7 @@ CDlgParams::CDlgParams(wxWindow* parent,wxWindowID id,const wxPoint& pos,const w
 	FlexGridSizer12 = new wxFlexGridSizer(0, 1, 0, 0);
 	FlexGridSizer12->AddGrowableCol(0);
 	FlexGridSizer13 = new wxFlexGridSizer(0, 3, 0, 0);
-	cbSensorDistin = new wxCheckBox(this, ID_CHECKBOX1, _("Sensor distingishes landmakrs (Checked: avoids data association problem)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
+	cbSensorDistin = new wxCheckBox(this, ID_CHECKBOX1, _("Sensor distingishes landmarks (Checked: avoids data association problem)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
 	cbSensorDistin->SetValue(false);
 	FlexGridSizer13->Add(cbSensorDistin, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer12->Add(FlexGridSizer13, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
@@ -316,6 +324,25 @@ CDlgParams::CDlgParams(wxWindow* parent,wxWindowID id,const wxPoint& pos,const w
 	edSenPhi = new wxTextCtrl(this, ID_TEXTCTRL11, _("Text"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL11"));
 	FlexGridSizer15->Add(edSenPhi, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer12->Add(FlexGridSizer15, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	StaticBoxSizer7 = new wxStaticBoxSizer(wxHORIZONTAL, this, _(" Spurious readings: "));
+	FlexGridSizer20 = new wxFlexGridSizer(1, 2, 0, 0);
+	FlexGridSizer20->AddGrowableCol(1);
+	StaticText26 = new wxStaticText(this, ID_STATICTEXT26, _("Normally-distributeed number\nof spurious per \"observation\":\n(Both to 0 = disable)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT26"));
+	FlexGridSizer20->Add(StaticText26, 1, wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL, 5);
+	FlexGridSizer21 = new wxFlexGridSizer(2, 2, 0, 0);
+	FlexGridSizer21->AddGrowableCol(0);
+	FlexGridSizer21->AddGrowableCol(1);
+	StaticText27 = new wxStaticText(this, ID_STATICTEXT27, _("Mean (#readings):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT27"));
+	FlexGridSizer21->Add(StaticText27, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	StaticText28 = new wxStaticText(this, ID_STATICTEXT28, _("Std.Dev. (#readings):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT28"));
+	FlexGridSizer21->Add(StaticText28, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	edSpuriousMean = new wxTextCtrl(this, ID_TEXTCTRL16, _("Text"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL16"));
+	FlexGridSizer21->Add(edSpuriousMean, 1, wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL, 5);
+	edSpuriousStd = new wxTextCtrl(this, ID_TEXTCTRL17, _("Text"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL17"));
+	FlexGridSizer21->Add(edSpuriousStd, 1, wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL, 5);
+	FlexGridSizer20->Add(FlexGridSizer21, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
+	StaticBoxSizer7->Add(FlexGridSizer20, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
+	FlexGridSizer12->Add(StaticBoxSizer7, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 2);
 	StaticBoxSizer4->Add(FlexGridSizer12, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	FlexGridSizer17->Add(StaticBoxSizer4, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	StaticBoxSizer6 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Uncertainty models over-estimation"));

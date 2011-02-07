@@ -61,10 +61,12 @@ class CDlgParams: public wxDialog
 		wxStaticText* StaticText14;
 		wxCheckBox* cbJacobTran;
 		wxStaticText* StaticText15;
+		wxTextCtrl* edSpuriousStd;
 		wxTextCtrl* edMinR;
 		wxRadioButton* rbKFdavison;
 		wxStaticText* StaticText17;
 		wxRadioBox* rbDAMetric;
+		wxStaticText* StaticText28;
 		wxRadioButton* rbKFnaiv;
 		wxSpinCtrl* edIKFiters;
 		wxTextCtrl* edOdomStdXY;
@@ -94,8 +96,11 @@ class CDlgParams: public wxDialog
 		wxTextCtrl* edSenX;
 		wxStaticText* StaticText5;
 		wxStaticText* StaticText2;
+		wxTextCtrl* edSpuriousMean;
+		wxStaticText* StaticText27;
 		wxTextCtrl* edChi2;
 		wxRadioButton* rbMapFile;
+		wxStaticText* StaticText26;
 		wxStaticText* StaticText6;
 		wxTextCtrl* edICMLrefDist;
 		wxButton* btnCancel;
@@ -170,6 +175,11 @@ class CDlgParams: public wxDialog
 		static const long ID_TEXTCTRL9;
 		static const long ID_TEXTCTRL10;
 		static const long ID_TEXTCTRL11;
+		static const long ID_STATICTEXT26;
+		static const long ID_STATICTEXT27;
+		static const long ID_STATICTEXT28;
+		static const long ID_TEXTCTRL16;
+		static const long ID_TEXTCTRL17;
 		static const long ID_STATICTEXT18;
 		static const long ID_SPINCTRL4;
 		static const long ID_STATICTEXT19;

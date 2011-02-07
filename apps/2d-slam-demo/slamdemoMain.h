@@ -349,6 +349,8 @@ class slamdemoFrame: public wxFrame
 
 			bool		show_map_real_correspondences;
 
+			double		spurious_count_mean, spurious_count_std; //!< Mean and std of spurious readings per "sensor observation".
+
 		};
 
 

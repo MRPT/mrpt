@@ -479,7 +479,7 @@
 											<cols>3</cols>
 											<object class="sizeritem">
 												<object class="wxCheckBox" name="ID_CHECKBOX1" variable="cbSensorDistin" member="yes">
-													<label>Sensor distingishes landmakrs (Checked: avoids data association problem)</label>
+													<label>Sensor distingishes landmarks (Checked: avoids data association problem)</label>
 													<handler function="OnUpdateControlsState" entry="EVT_CHECKBOX" />
 												</object>
 												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
@@ -638,6 +638,73 @@
 											</object>
 										</object>
 										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxStaticBoxSizer" variable="StaticBoxSizer7" member="no">
+											<label> Spurious readings: </label>
+											<object class="sizeritem">
+												<object class="wxFlexGridSizer" variable="FlexGridSizer20" member="no">
+													<cols>2</cols>
+													<rows>1</rows>
+													<growablecols>1</growablecols>
+													<object class="sizeritem">
+														<object class="wxStaticText" name="ID_STATICTEXT26" variable="StaticText26" member="yes">
+															<label>Normally-distributeed number&#x0A;of spurious per &quot;observation&quot;:&#x0A;(Both to 0 = disable)</label>
+															<style>wxALIGN_CENTRE</style>
+														</object>
+														<flag>wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL</flag>
+														<border>5</border>
+														<option>1</option>
+													</object>
+													<object class="sizeritem">
+														<object class="wxFlexGridSizer" variable="FlexGridSizer21" member="no">
+															<cols>2</cols>
+															<rows>2</rows>
+															<growablecols>0,1</growablecols>
+															<object class="sizeritem">
+																<object class="wxStaticText" name="ID_STATICTEXT27" variable="StaticText27" member="yes">
+																	<label>Mean (#readings):</label>
+																</object>
+																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxStaticText" name="ID_STATICTEXT28" variable="StaticText28" member="yes">
+																	<label>Std.Dev. (#readings):</label>
+																</object>
+																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxTextCtrl" name="ID_TEXTCTRL16" variable="edSpuriousMean" member="yes">
+																	<value>Text</value>
+																</object>
+																<flag>wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxTextCtrl" name="ID_TEXTCTRL17" variable="edSpuriousStd" member="yes">
+																	<value>Text</value>
+																</object>
+																<flag>wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+														</object>
+														<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM</flag>
+														<option>1</option>
+													</object>
+												</object>
+												<flag>wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM</flag>
+												<option>1</option>
+											</object>
+										</object>
+										<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM</flag>
+										<border>2</border>
 										<option>1</option>
 									</object>
 								</object>

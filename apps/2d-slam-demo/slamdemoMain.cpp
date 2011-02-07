@@ -1456,7 +1456,9 @@ slamdemoFrame::TSimulationOptions::TSimulationOptions() :
 	odometry_noise_std_phi( DEG2RAD(0.2) ),
 	uncert_overestim_odom(1.2),
 	uncert_overestim_sensor(1.2),
-	show_map_real_correspondences(false)
+	show_map_real_correspondences(false),
+	spurious_count_mean(0),
+	spurious_count_std(0)
 {
 }
 
@@ -1489,6 +1491,9 @@ void  slamdemoFrame::TSimulationOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(uncert_overestim_sensor,double,	f,c)
 
 	MRPT_LOAD_CONFIG_VAR(show_map_real_correspondences,bool,	f,c)
+
+	MRPT_LOAD_CONFIG_VAR(spurious_count_mean,double,	f,c)
+	MRPT_LOAD_CONFIG_VAR(spurious_count_std ,double,	f,c)
 }
 
 void  slamdemoFrame::TSimulationOptions::saveToConfigFile(
@@ -1519,6 +1524,9 @@ void  slamdemoFrame::TSimulationOptions::saveToConfigFile(
 	MRPT_SAVE_CONFIG_VAR(uncert_overestim_sensor,f,c)
 
 	MRPT_SAVE_CONFIG_VAR(show_map_real_correspondences,f,c)
+
+	MRPT_SAVE_CONFIG_VAR(spurious_count_mean,f,c)
+	MRPT_SAVE_CONFIG_VAR(spurious_count_std,f,c)
 }
 
 
@@ -1596,7 +1604,9 @@ void slamdemoFrame::executeOneStep()
 			m_SLAM.options.std_sensor_range / options.uncert_overestim_sensor,
 			m_SLAM.options.std_sensor_yaw / options.uncert_overestim_sensor,
 			0, // sigma_pitch: we are in 2D
-			&m_lastObservation_GT_indices
+			&m_lastObservation_GT_indices,
+			options.spurious_count_mean,
+			options.spurious_count_std
 			);
 	}
 
@@ -1651,7 +1661,10 @@ void slamdemoFrame::executeOneStep()
 		const size_t real_map_idx = m_lastObservation_GT_indices[obs_idx];
 
 		m_estimatedIDX2realIDX[est_map_idx] = real_map_idx;
-		m_realIDX_already_mapped.insert(real_map_idx);
+
+		// Do NOT remember all spureous readings, since they all look alike:
+		if (real_map_idx!=std::string::npos)
+			m_realIDX_already_mapped.insert(real_map_idx);
 	}
 
 	// Save historic data ------------------------
@@ -1671,8 +1684,12 @@ void slamdemoFrame::executeOneStep()
 		for (unsigned int o=0;o<m_lastObservation.sensedData.size();o++)
 		{
 			const bool    o_has_assoc   = (da.results.associations.find(o)!=da.results.associations.end());
-			const size_t  o_realmap_idx = m_lastObservation_GT_indices[o];
-			const bool    o_was_mapped  = old_realIDX_already_mapped.find(o_realmap_idx)!=old_realIDX_already_mapped.end();
+			const size_t  o_realmap_idx = m_lastObservation_GT_indices[o]; // Note: This can be "-1" for spurious readings!
+			const bool    o_was_mapped  =
+				(o_realmap_idx==std::string::npos) ?
+					false
+					:
+					old_realIDX_already_mapped.find(o_realmap_idx)!=old_realIDX_already_mapped.end();
 			const bool    o_has_been_just_inserted = da.newly_inserted_landmarks.find(o)!=da.newly_inserted_landmarks.end();
 
 			if ( o_was_mapped )
@@ -1792,6 +1809,9 @@ void slamdemoFrame::OnConfigClicked(wxCommandEvent& event)
 	dlg.edStdRange->SetValue( wxString::Format(_("%f"),m_SLAM.options.std_sensor_range) );
 	dlg.edStdAngle->SetValue( wxString::Format(_("%f"),RAD2DEG(m_SLAM.options.std_sensor_yaw)) );
 
+	dlg.edSpuriousMean->SetValue( wxString::Format(_("%f"),options.spurious_count_mean) );
+	dlg.edSpuriousStd->SetValue( wxString::Format(_("%f"),options.spurious_count_std) );
+
 	dlg.edSenX->SetValue( wxString::Format(_("%f"),options.sensorOnTheRobot.x() ) );
 	dlg.edSenY->SetValue( wxString::Format(_("%f"),options.sensorOnTheRobot.y() ) );
 	dlg.edSenPhi->SetValue( wxString::Format(_("%f"),RAD2DEG(options.sensorOnTheRobot.phi()) ) );
@@ -1850,6 +1870,9 @@ void slamdemoFrame::OnConfigClicked(wxCommandEvent& event)
 
 		m_SLAM.options.std_sensor_range = atof( dlg.edStdRange->GetValue().mb_str() );
 		m_SLAM.options.std_sensor_yaw   = DEG2RAD( atof( dlg.edStdAngle->GetValue().mb_str() ) );
+
+		options.spurious_count_mean = atof( dlg.edSpuriousMean->GetValue().mb_str() );
+		options.spurious_count_std = atof( dlg.edSpuriousStd->GetValue().mb_str() );
 
 		options.sensorOnTheRobot.x( atof( dlg.edSenX->GetValue().mb_str() ) );
 		options.sensorOnTheRobot.y( atof( dlg.edSenY->GetValue().mb_str() ) );

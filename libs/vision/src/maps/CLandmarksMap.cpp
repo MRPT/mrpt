@@ -2509,10 +2509,13 @@ void  CLandmarksMap::simulateRangeBearingReadings(
     const CPose3D					&in_sensorLocationOnRobot,
     CObservationBearingRange		&out_Observations,
     bool                            sensorDetectsIDs,
-    const float                     &in_stdRange,
-    const float                     &in_stdYaw,
-    const float                     &in_stdPitch,
-    vector_size_t 					*out_real_associations ) const
+    const float                     in_stdRange,
+    const float                     in_stdYaw,
+    const float                     in_stdPitch,
+    vector_size_t 					*out_real_associations,
+	const double                    spurious_count_mean,
+	const double                    spurious_count_std
+	) const
 {
 	TSequenceLandmarks::const_iterator				it;
 	size_t  idx;
@@ -2536,46 +2539,72 @@ void  CLandmarksMap::simulateRangeBearingReadings(
 	out_Observations.sensorLocationOnRobot	= in_sensorLocationOnRobot;
 
 	// For each BEACON landmark in the map:
+	// ------------------------------------------
 	for (idx=0,it=landmarks.begin();it!=landmarks.end();++it,++idx)
 	{
-		//if (it->getType() == featBeacon)
+		// Get the 3D position of the beacon (just the mean value):
+		it->getPose( beaconPDF );
+		beacon3D = CPoint3D(beaconPDF.mean);
+
+		// Compute yaw,pitch,range:
+		double	range,yaw,pitch;
+		point3D.sphericalCoordinates(beacon3D, range,yaw,pitch);
+
+		// Add noises:
+		range += in_stdRange * randomGenerator.drawGaussian1D_normalized();
+		yaw   += in_stdYaw   * randomGenerator.drawGaussian1D_normalized();
+		pitch += in_stdPitch * randomGenerator.drawGaussian1D_normalized();
+
+		yaw = math::wrapToPi(yaw);
+		range=max(0.0,range);
+
+
+		if ( range>=out_Observations.minSensorDistance &&
+			 range<=out_Observations.maxSensorDistance &&
+			 fabs(yaw)<=0.5f*out_Observations.fieldOfView_yaw &&
+			 fabs(pitch)<=0.5f*out_Observations.fieldOfView_pitch )
 		{
-			// Get the 3D position of the beacon (just the mean value):
-			it->getPose( beaconPDF );
-			beacon3D = CPoint3D(beaconPDF.mean);
+			// Fill out:
+			if (sensorDetectsIDs)
+					newMeas.landmarkID = it->ID;
+			else	newMeas.landmarkID = INVALID_LANDMARK_ID;
+			newMeas.range = range;
+			newMeas.yaw = yaw;
+			newMeas.pitch = pitch;
 
-            // Compute yaw,pitch,range:
-			double	range,yaw,pitch;
-			point3D.sphericalCoordinates(beacon3D, range,yaw,pitch);
+			// Insert:
+			out_Observations.sensedData.push_back( newMeas );
 
-            // Add noises:
-            range += in_stdRange * randomGenerator.drawGaussian1D_normalized();
-            yaw   += in_stdYaw   * randomGenerator.drawGaussian1D_normalized();
-            pitch += in_stdPitch * randomGenerator.drawGaussian1D_normalized();
-
-            yaw = math::wrapToPi(yaw);
-            range=max(0.0,range);
-
-
-			if ( range>=out_Observations.minSensorDistance &&
-			     range<=out_Observations.maxSensorDistance &&
-			     fabs(yaw)<=0.5f*out_Observations.fieldOfView_yaw &&
-			     fabs(pitch)<=0.5f*out_Observations.fieldOfView_pitch )
-			{
-                // Fill out:
-                if (sensorDetectsIDs)
-						newMeas.landmarkID = it->ID;
-				else	newMeas.landmarkID = INVALID_LANDMARK_ID;
-                newMeas.range = range;
-                newMeas.yaw = yaw;
-                newMeas.pitch = pitch;
-
-                // Insert:
-                out_Observations.sensedData.push_back( newMeas );
-
-                if (out_real_associations) out_real_associations->push_back(idx); // Real indices.
-			}
-		} // end if beacon
+			if (out_real_associations) out_real_associations->push_back(idx); // Real indices.
+		}
 	} // end for it
+
+	const double fSpurious = randomGenerator.drawGaussian1D(spurious_count_mean,spurious_count_std);
+	size_t nSpurious = 0;
+	if (spurious_count_std!=0 || spurious_count_mean!=0)
+		nSpurious = static_cast<size_t>(mrpt::utils::round_long( std::max(0.0,fSpurious) ) );
+
+	// For each spurios reading to generate:
+	// ------------------------------------------
+	for (size_t i=0;i<nSpurious;i++)
+	{
+		// Make up yaw,pitch,range out from thin air:
+		// (the conditionals on yaw & pitch are to generate 2D observations if we are in 2D, which we learn from a null std.dev.)
+		const double range = randomGenerator.drawUniform(out_Observations.minSensorDistance,out_Observations.maxSensorDistance);
+		const double yaw   = (out_Observations.sensor_std_yaw==0) ? 0 : randomGenerator.drawUniform(-0.5f*out_Observations.fieldOfView_yaw,0.5f*out_Observations.fieldOfView_yaw);
+		const double pitch = (out_Observations.sensor_std_pitch==0) ? 0 :  randomGenerator.drawUniform(-0.5f*out_Observations.fieldOfView_pitch,0.5f*out_Observations.fieldOfView_pitch);
+
+		// Fill out:
+		newMeas.landmarkID = INVALID_LANDMARK_ID;  // Always invalid ID since it's spurious
+		newMeas.range = range;
+		newMeas.yaw = yaw;
+		newMeas.pitch = pitch;
+
+		// Insert:
+		out_Observations.sensedData.push_back( newMeas );
+
+		if (out_real_associations) out_real_associations->push_back( std::string::npos ); // Real index: spurious
+	} // end for it
+
 	// Done!
 }
