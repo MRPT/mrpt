@@ -218,7 +218,11 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 		//msg.content.clear();
 		//comms->sendMessage( msg );
 
-		// Wait for e-nose frame	[2 header, N sensors*Mchambers, 2 timestamp] of uint16_t
+		//----------------------------MCE-nose FRAME--------------------------------------------------
+		// Wait for e-nose frame:	<0x69><0x91><lenght><body><0x96> "Bytes"
+		// Where <body> = [Numchamber, Activechamber, N sensors*M chambers*2, 2 timestamp] of uint16_t
+		// MCE-nose provides a 136B body lenght which makes 140B total frame lenght
+		
 		if (!comms->receiveMessage( msg ))
 		{
 			return false;
@@ -229,12 +233,11 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 		// Copy to "uint16_t":
 		ASSERT_((msg.content.size() % 2)==0);
 
-		vector<uint16_t>	readings( msg.content.size() / 2 );	// divide by 2 to pass from byte to word
+		vector<uint16_t>	readings( msg.content.size() / 2 );	// divide by 2 to pass from byte to word. 136B/2 = 68 Words
 
 		if (msg.content.size()>0)
 		{
-			// Copy to a vector of 16bit integers:
-			//vector<uint16_t>	readings( msg.content.size() / 2 );	// divide by 2 to pass from byte to word
+			// Copy to a vector of 16bit integers:			
 			memcpy( &readings[0],&msg.content[0],msg.content.size() * sizeof(msg.content[0]) );
 
 			//HEADER Frame [ Nº of chambers/enoses (16b) , Active Chamber (16b)]
@@ -277,7 +280,7 @@ bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
 				if (i == (ActiveChamber))
 					newRead.isActive = true;
 
-				//porcess each sensor on this chamber "i"
+				//process each sensor on this chamber "i"
 				for (size_t idx=0 ; idx<wordsPereNose/2 ; idx++)
 				{
 					if ( readings[i*wordsPereNose + 2*idx + 2] != 0x0000 )	//not empty slot
@@ -413,9 +416,9 @@ bool CBoardENoses::setActiveChamber( unsigned char chamber )
 			return false;
 
 		// Send a byte to set the Active chamber on device.
-		// by default:  Byte_to_send = 101 _ _ 101
+		// by default:  Byte_to_send = 10_ _ _ _10
 		unsigned char buf[1];
-		buf[0] = ((chamber & 3) << 3) | 165;	 //165 = 101 00 101
+		buf[0] = ((chamber & 15) << 2) | 130;	 //130= 10 0000 10
 
 		comms->WriteBuffer(buf,1);	// Exceptions will be raised on errors here
 		return true;
