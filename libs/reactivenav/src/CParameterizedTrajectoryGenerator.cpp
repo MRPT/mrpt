@@ -619,6 +619,8 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f 
 
         float	ff;
 
+		MRPT_TODO("JL: Add smart detection of stored vs. actual PTG parameters.")
+
         // Datos descriptivos de la rejilla:
 		*f >> ff; ASSERT_(ff==m_x_min);
 		*f >> ff; ASSERT_(ff==m_x_max);
