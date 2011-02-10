@@ -76,6 +76,7 @@ class ReactiveNavigationDemoFrame: public wxFrame
         //(*Identifiers(ReactiveNavigationDemoFrame)
         static const long ID_BUTTON1;
         static const long ID_BUTTON2;
+        static const long ID_CHECKBOX3;
         static const long ID_BUTTON3;
         static const long ID_CHECKBOX1;
         static const long ID_STATICTEXT1;
@@ -121,6 +122,7 @@ class ReactiveNavigationDemoFrame: public wxFrame
         wxStaticText* StaticText4;
         wxStaticText* StaticText5;
         wxStaticText* StaticText2;
+        wxCheckBox* cbLog;
         wxStaticText* StaticText6;
         wxTimer timSimulate;
         wxButton* btnStart;

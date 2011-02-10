@@ -34,9 +34,6 @@
 // In milliseconds:
 #define SIMULATION_TIME_STEPS   100
 
-//#define ENABLE_reactivenav_LOG_FILES true
-#define ENABLE_reactivenav_LOG_FILES false
-
 //(*InternalHeaders(ReactiveNavigationDemoFrame)
 #include <wx/settings.h>
 #include <wx/string.h>
@@ -185,6 +182,7 @@ CMyReactInterface  myReactiveInterface;
 //(*IdInit(ReactiveNavigationDemoFrame)
 const long ReactiveNavigationDemoFrame::ID_BUTTON1 = wxNewId();
 const long ReactiveNavigationDemoFrame::ID_BUTTON2 = wxNewId();
+const long ReactiveNavigationDemoFrame::ID_CHECKBOX3 = wxNewId();
 const long ReactiveNavigationDemoFrame::ID_BUTTON3 = wxNewId();
 const long ReactiveNavigationDemoFrame::ID_CHECKBOX1 = wxNewId();
 const long ReactiveNavigationDemoFrame::ID_STATICTEXT1 = wxNewId();
@@ -246,7 +244,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
     wxFlexGridSizer* FlexGridSizer3;
     wxFlexGridSizer* FlexGridSizer5;
     wxStaticBoxSizer* StaticBoxSizer1;
-
+    
     Create(parent, id, _("Reactive Navigation Demo - Part of the MRPT project - J.L. Blanco (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     {
     wxIcon FrameIcon;
@@ -259,13 +257,16 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
     Panel1 = new wxPanel(this, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
     FlexGridSizer2 = new wxFlexGridSizer(2, 1, 0, 0);
     FlexGridSizer2->AddGrowableCol(0);
-    FlexGridSizer3 = new wxFlexGridSizer(0, 4, 0, 0);
-    FlexGridSizer3->AddGrowableCol(2);
+    FlexGridSizer3 = new wxFlexGridSizer(0, 5, 0, 0);
+    FlexGridSizer3->AddGrowableCol(3);
     btnStart = new wxButton(Panel1, ID_BUTTON1, _("Simulate"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
     FlexGridSizer3->Add(btnStart, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnPause = new wxButton(Panel1, ID_BUTTON2, _("Pause"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
     btnPause->Disable();
     FlexGridSizer3->Add(btnPause, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    cbLog = new wxCheckBox(Panel1, ID_CHECKBOX3, _("Generate navigation log file"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
+    cbLog->SetValue(false);
+    FlexGridSizer3->Add(cbLog, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
     FlexGridSizer3->Add(-1,-1,1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnExit = new wxButton(Panel1, ID_BUTTON3, _("EXIT"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
     FlexGridSizer3->Add(btnExit, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
@@ -352,7 +353,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-
+    
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnStartClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnPauseClick);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnExitClick);
@@ -539,6 +540,8 @@ void ReactiveNavigationDemoFrame::tryConstructReactiveNavigator()
 
 		if (!reacNavObj)
 		{
+			const bool ENABLE_reactivenav_LOG_FILES = cbLog->GetValue();
+
 			// Create reactive nav. object:
 			reacNavObj = new CReactiveNavigationSystem(
 				myReactiveInterface,
@@ -704,8 +707,12 @@ void ReactiveNavigationDemoFrame::OntimSimulateTrigger(wxTimerEvent& event)
 		return; // We are paused!
 	}
 
-	// Navigation end?
 	ASSERT_(reacNavObj!=NULL);
+
+	// Enable/disable log files on-the-fly:
+	reacNavObj->enableLogFile( cbLog->GetValue() );
+
+	// Navigation end?
 	if (reacNavObj->getCurrentState() != CAbstractReactiveNavigationSystem::NAVIGATING )
 	{
 		cout << "NAVIGATION FINISHED - Select a new target and press 'Start' again." << endl;

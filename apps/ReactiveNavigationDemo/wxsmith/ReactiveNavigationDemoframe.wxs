@@ -17,8 +17,8 @@
 						<growablecols>0</growablecols>
 						<object class="sizeritem">
 							<object class="wxFlexGridSizer" variable="FlexGridSizer3" member="no">
-								<cols>4</cols>
-								<growablecols>2</growablecols>
+								<cols>5</cols>
+								<growablecols>3</growablecols>
 								<object class="sizeritem">
 									<object class="wxButton" name="ID_BUTTON1" variable="btnStart" member="yes">
 										<label>Simulate</label>
@@ -35,6 +35,14 @@
 										<handler function="OnbtnPauseClick" entry="EVT_BUTTON" />
 									</object>
 									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="sizeritem">
+									<object class="wxCheckBox" name="ID_CHECKBOX3" variable="cbLog" member="yes">
+										<label>Generate navigation log file</label>
+									</object>
+									<flag>wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM</flag>
 									<border>5</border>
 									<option>1</option>
 								</object>

@@ -576,7 +576,7 @@ bool CParameterizedTrajectoryGenerator::LoadColGridsFromFile( const std::string 
 
 		if (n!=1)
 		{
-			std::cerr << format("[LoadColGridsFromFile] WARNING: n!=1 --> return false;\n");
+			//std::cerr << format("[LoadColGridsFromFile] WARNING: n!=1 --> return false;\n");
 			return false;
 		}
 
@@ -712,10 +712,13 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 		}
 	}
 
+	MRPT_TODO("It seems there is a bug around: test with PTG #2")
+
 	if (selected_k!=-1)
 	{
 		k_out = selected_k;
 		d_out = selected_d / refDistance;
+		cerr << "selected_d:" << selected_d << " refDistance:"<< refDistance << " d_out:" << d_out << "k_out:"<<k_out<<endl;
 		return;
 	}
 
@@ -741,6 +744,8 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 
 	k_out = selected_k;
 	d_out = selected_d / refDistance;
+
+	//cerr << "extrapol: selected_d:" << selected_d << " refDistance:"<< refDistance << " d_out:" << d_out << "k_out:"<<k_out<<endl;
 }
 
 
