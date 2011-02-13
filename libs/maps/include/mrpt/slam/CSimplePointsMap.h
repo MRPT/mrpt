@@ -216,6 +216,13 @@ namespace mrpt
 			  */
 			bool  internal_insertObservation( const CObservation *obs, const CPose3D *robotPose = NULL );
 
+		protected:
+			/** @name PLY Import virtual methods to implement in base classes
+			    @{ */
+			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */
+			virtual void PLY_import_set_vertex_count(const size_t N);
+			/** @} */
+
 		}; // End of class def.
 
 	} // End of namespace

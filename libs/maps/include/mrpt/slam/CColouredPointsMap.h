@@ -314,6 +314,31 @@ namespace mrpt
 
 			/** @} */
 
+
+		protected:
+			/** @name Redefinition of PLY Import virtual methods from CPointsMap
+			    @{ */
+			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point. 
+			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+			  */
+			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL);
+
+			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */
+			virtual void PLY_import_set_vertex_count(const size_t N);
+			/** @} */
+
+			/** @name Redefinition of PLY Export virtual methods from CPointsMap
+			    @{ */
+			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point. 
+			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+			  */
+			virtual void PLY_export_get_vertex(
+				const size_t idx, 
+				mrpt::math::TPoint3Df &pt, 
+				bool &pt_has_color,
+				mrpt::utils::TColorf &pt_color) const;
+			/** @} */
+
 		}; // End of class def.
 
 	} // End of namespace

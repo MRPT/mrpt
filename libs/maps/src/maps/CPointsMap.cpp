@@ -1534,3 +1534,36 @@ struct TAuxLoadFunctor
 TAuxLoadFunctor  dummy_loader;  // used just to set "ptr_internal_build_points_map_from_scan2D"
 
 
+
+
+// ================================ PLY files import & export virtual methods ================================
+
+/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point. 
+  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+  */
+void CPointsMap::PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color)
+{
+	this->setPoint(idx,pt.x,pt.y,pt.z);
+}
+
+/** In a base class, return the number of vertices */
+size_t CPointsMap::PLY_export_get_vertex_count() const
+{
+	return this->size();
+}
+
+/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point. 
+  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+  */
+void CPointsMap::PLY_export_get_vertex(
+	const size_t idx, 
+	mrpt::math::TPoint3Df &pt, 
+	bool &pt_has_color,
+	mrpt::utils::TColorf &pt_color) const
+{
+	pt_has_color=false;
+	
+	pt.x = x[idx];
+	pt.y = y[idx];
+	pt.z = z[idx];
+}

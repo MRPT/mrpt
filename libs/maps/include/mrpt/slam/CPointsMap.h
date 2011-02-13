@@ -37,6 +37,7 @@
 #include <mrpt/slam/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/utils/PLY_import_export.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
@@ -58,7 +59,12 @@ namespace slam
 	 *  This is a virtual class, thus only a derived class can be instantiated by the user. The user most usually wants to use CSimplePointsMap.
 	 * \sa CMetricMap, CPoint, mrpt::utils::CSerializable
 	 */
-	class MAPS_IMPEXP CPointsMap : public CMetricMap, public mrpt::utils::KDTreeCapable
+	class MAPS_IMPEXP CPointsMap : 
+		public CMetricMap, 
+		public mrpt::utils::KDTreeCapable,
+		public mrpt::utils::PLY_Importer,
+		public mrpt::utils::PLY_Exporter
+
 	{
 		friend class CMultiMetricMap;
 		friend class CMultiMetricMapPDF;
@@ -554,6 +560,38 @@ namespace slam
 		 * \note In CPointsMap this method is virtual so it can be redefined in derived classes, if desired.
 		 */
 		virtual double computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
+
+		protected:
+			/** @name PLY Import virtual methods to implement in base classes
+			    @{ */
+			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_face */
+			virtual void PLY_import_set_face_count(const size_t N) {  }
+
+			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point. 
+			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+			  */
+			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL);
+			/** @} */
+
+			/** @name PLY Export virtual methods to implement in base classes
+			    @{ */
+
+			/** In a base class, return the number of vertices */
+			virtual size_t PLY_export_get_vertex_count() const;
+
+			/** In a base class, return the number of faces */
+			virtual size_t PLY_export_get_face_count() const { return 0; }
+
+			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point. 
+			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+			  */
+			virtual void PLY_export_get_vertex(
+				const size_t idx, 
+				mrpt::math::TPoint3Df &pt, 
+				bool &pt_has_color,
+				mrpt::utils::TColorf &pt_color) const;
+
+			/** @} */
 
 	}; // End of class def.
 

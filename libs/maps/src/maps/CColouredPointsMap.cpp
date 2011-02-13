@@ -1591,3 +1591,46 @@ bool  CColouredPointsMap::save3D_and_colour_to_text_file(const std::string &file
 
 }
 
+// ================================ PLY files import & export virtual methods ================================
+
+/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */
+void CColouredPointsMap::PLY_import_set_vertex_count(const size_t N)
+{
+	x.resize( N );
+	y.resize( N );
+	z.resize( N );
+	m_color_R.resize( N );
+	m_color_G.resize( N );
+	m_color_B.resize( N );
+	m_min_dist.resize( N );
+}
+
+/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point. 
+  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+  */
+void CColouredPointsMap::PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color)
+{
+	if (pt_color)
+			this->setPoint(idx,pt.x,pt.y,pt.z,pt_color->R,pt_color->G,pt_color->B);
+	else	this->setPoint(idx,pt.x,pt.y,pt.z);
+}
+
+/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point. 
+  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+  */
+void CColouredPointsMap::PLY_export_get_vertex(
+	const size_t idx, 
+	mrpt::math::TPoint3Df &pt, 
+	bool &pt_has_color,
+	mrpt::utils::TColorf &pt_color) const
+{
+	pt_has_color=true;
+	
+	pt.x = x[idx];
+	pt.y = y[idx];
+	pt.z = z[idx];
+
+	pt_color.R = m_color_R[idx];
+	pt_color.G = m_color_G[idx];
+	pt_color.B = m_color_B[idx];
+}

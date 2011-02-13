@@ -1139,3 +1139,14 @@ void CSimplePointsMap::reserve(size_t newLength)
 	z.reserve( newLength );
 	pointWeight.reserve( newLength );
 }
+
+// ================================ PLY files import & export virtual methods ================================
+
+/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */
+void CSimplePointsMap::PLY_import_set_vertex_count(const size_t N)
+{
+	x.resize( N);
+	y.resize( N );
+	z.resize( N );
+	pointWeight.resize( N );
+}
