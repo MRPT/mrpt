@@ -55,7 +55,7 @@ namespace mrpt
 			};
 		}
 
-		/** A generic provider of log-odds grid-map maintainance functions. 
+		/** A generic provider of log-odds grid-map maintainance functions.
 		  *  Map cells must be type TCELL, which can be only:
 		  *		- int8_t or
 		  *		- int16_t
@@ -65,7 +65,8 @@ namespace mrpt
 		template <typename TCELL>
 		struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 		{
-			typedef TCELL cell_t; //!< The type of 
+			typedef TCELL cell_t; //!< The type of cells
+			typedef detail::logoddscell_traits<TCELL>  traits_t;
 
 			/** Performs the Bayesian fusion of a new observation of a cell, without checking for grid limits nor updateInfoChangeOnly.
 			  * This method increases the "occupancy-ness" of a cell, managing possible saturation.
@@ -86,7 +87,7 @@ namespace mrpt
 				cell_t *theCell = mapArray + (x+y*_size_x);
 				if (*theCell > thres )
 						*theCell -= logodd_obs;
-				else	*theCell = CELLTYPE_MIN;
+				else	*theCell = traits_t::CELLTYPE_MIN;
 			}
 
 			/** Performs the Bayesian fusion of a new observation of a cell, without checking for grid limits nor updateInfoChangeOnly.
@@ -103,7 +104,7 @@ namespace mrpt
 			{
 				if (*theCell > thres )
 						*theCell -= logodd_obs;
-				else	*theCell = CELLTYPE_MIN;
+				else	*theCell = traits_t::CELLTYPE_MIN;
 			}
 
 			/** Performs the Bayesian fusion of a new observation of a cell, without checking for grid limits nor updateInfoChangeOnly.
@@ -125,7 +126,7 @@ namespace mrpt
 				cell_t *theCell = mapArray + (x+y*_size_x);
 				if (*theCell < thres )
 						*theCell += logodd_obs;
-				else	*theCell = CELLTYPE_MAX;
+				else	*theCell = traits_t::CELLTYPE_MAX;
 			}
 
 			/** Performs the Bayesian fusion of a new observation of a cell, without checking for grid limits nor updateInfoChangeOnly.
@@ -143,7 +144,7 @@ namespace mrpt
 			{
 				if (*theCell < thres )
 						*theCell += logodd_obs;
-				else	*theCell = CELLTYPE_MAX;
+				else	*theCell = traits_t::CELLTYPE_MAX;
 			}
 
 		};  // end of CLogOddsGridMap2D
@@ -158,7 +159,8 @@ namespace mrpt
 		template <typename TCELL>
 		struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
 		{
-			typedef TCELL cell_t; //!< The type of 
+			typedef TCELL cell_t; //!< The type of
+			typedef detail::logoddscell_traits<TCELL>  traits_t;
 
 			/** A lookup table to compute occupancy probabilities in [0,1] from integer log-odds values in the cells, using \f$ p(m_{xy}) = \frac{1}{1+exp(-log_odd)} \f$.
 			  */
@@ -181,20 +183,20 @@ namespace mrpt
 				static const double LOGODD_K  = 16;
 				static const double LOGODD_K_INV = 1.0/LOGODD_K;
 
-				logoddsTable.resize( LOGODDS_LUT_ENTRIES );
-				logoddsTable_255.resize( LOGODDS_LUT_ENTRIES );
-				for (int i=CELLTYPE_MIN;i<=CELLTYPE_MAX;i++)
+				logoddsTable.resize( traits_t::LOGODDS_LUT_ENTRIES );
+				logoddsTable_255.resize( traits_t::LOGODDS_LUT_ENTRIES );
+				for (int i=traits_t::CELLTYPE_MIN;i<=traits_t::CELLTYPE_MAX;i++)
 				{
 					float f = 1.0f / (1.0f + exp( - i * LOGODD_K_INV ) );
-					unsigned int idx =  -CELLTYPE_MIN+i;
+					unsigned int idx =  -traits_t::CELLTYPE_MIN+i;
 					logoddsTable[idx] = f;
 					logoddsTable_255[idx] = (uint8_t)(f*255.0f);
 				}
 
 				// Build the p2lTable as well:
-				p2lTable.resize( P2LTABLE_SIZE+1 );
-				double K = 1.0 / P2LTABLE_SIZE;
-				for (int j=0;j<=P2LTABLE_SIZE;j++)
+				p2lTable.resize( traits_t::P2LTABLE_SIZE+1 );
+				double K = 1.0 / traits_t::P2LTABLE_SIZE;
+				for (int j=0;j<=traits_t::P2LTABLE_SIZE;j++)
 				{
 					double p = j*K;
 					if (p==0)
@@ -204,10 +206,10 @@ namespace mrpt
 
 					double logodd = log(p)-log(1-p);
 					int   L = round(logodd * LOGODD_K);
-					if (L>CELLTYPE_MAX)
-						L=CELLTYPE_MAX;
-					else if (L<CELLTYPE_MIN)
-						L=CELLTYPE_MIN;
+					if (L>traits_t::CELLTYPE_MAX)
+						L=traits_t::CELLTYPE_MAX;
+					else if (L<traits_t::CELLTYPE_MIN)
+						L=traits_t::CELLTYPE_MIN;
 					p2lTable[j] = L;
 				}
 
@@ -218,21 +220,21 @@ namespace mrpt
 			  */
 			inline float l2p(const cell_t l)
 			{
-				return logoddsTable[ -CELLTYPE_MIN+l ];
+				return logoddsTable[ -traits_t::CELLTYPE_MIN+l ];
 			}
 
 			/** Scales an integer representation of the log-odd into a linear scale [0,255], using p=exp(l)/(1+exp(l))
 			  */
 			inline uint8_t l2p_255(const cell_t l)
 			{
-				return logoddsTable_255[ -CELLTYPE_MIN+l ];
+				return logoddsTable_255[ -traits_t::CELLTYPE_MIN+l ];
 			}
 
 			/** Scales a real valued probability in [0,1] to an integer representation of: log(p)-log(1-p)  in the valid range of cell_t.
 			  */
 			inline cell_t p2l(const float p)
 			{
-				return p2lTable[ static_cast<unsigned int>(p * P2LTABLE_SIZE) ];
+				return p2lTable[ static_cast<unsigned int>(p * traits_t::P2LTABLE_SIZE) ];
 			}
 
 		}; // end of CLogOddsGridMap2D
