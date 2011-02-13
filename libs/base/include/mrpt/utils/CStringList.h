@@ -65,6 +65,15 @@ namespace mrpt
 			  */
 			CStringList(const std::string& text);
 
+			/** Explicit constructor from deque<string> */
+			explicit CStringList(const std::deque<std::string>& lines) : m_strings(lines) { }
+
+			/** Explicit constructor from vector<string> */
+			explicit CStringList(const std::vector<std::string>& lines)
+			{
+				std::copy(lines.begin(),lines.end(),std::back_inserter(m_strings));
+			}
+
 			/** Appends a new string at the end of the string list.
 			  * \sa insert,set
 			  */

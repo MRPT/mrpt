@@ -26,10 +26,10 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-/*  
+/*
   This file is heavily based on the RPly C library by Greg Turk (February 1994)
   It was modified, C++'ized and STL'ized by J.L.Blanco for MRPT (January 2011)
-  
+
   Below follows the original copyright notes by Greg Turk:
  ======================================================================
 The interface routines for reading and writing PLY polygon files.
@@ -72,7 +72,7 @@ using namespace mrpt;
 using namespace mrpt::utils;
 
 
-MRPT_TODO("JL says: I suspect there are memory leaks in RPly!!")
+//MRPT_TODO("JL says: I suspect there are memory leaks in RPly!!")
 
 
 #define PLY_ASCII      1        /* ascii PLY file */
@@ -101,7 +101,7 @@ MRPT_TODO("JL says: I suspect there are memory leaks in RPly!!")
 
 typedef struct PlyProperty {    /* description of a property */
 
-  char *name;                           /* property name */
+  std::string name;                           /* property name */
   int external_type;                    /* file's data type */
   int internal_type;                    /* program's data type */
   int offset;                           /* offset bytes of prop in a struct */
@@ -114,7 +114,7 @@ typedef struct PlyProperty {    /* description of a property */
 } PlyProperty;
 
 typedef struct PlyElement {     /* description of an element */
-  char *name;                   /* element name */
+  std::string name;                   /* element name */
   int num;                      /* number of elements in this object */
   int size;                     /* size of element (bytes) or -1 if variable */
   int nprops;                   /* number of properties for this element */
@@ -125,7 +125,7 @@ typedef struct PlyElement {     /* description of an element */
 } PlyElement;
 
 typedef struct PlyOtherProp {   /* describes other properties in an element */
-  char *name;                   /* element name */
+  std::string name;                   /* element name */
   int size;                     /* size of other_props */
   int nprops;                   /* number of properties in other_props */
   PlyProperty **props;          /* list of properties in other_props */
@@ -136,7 +136,7 @@ typedef struct OtherData { /* for storing other_props for an other element */
 } OtherData;
 
 typedef struct OtherElem {     /* data for one "other" element */
-  char *elem_name;             /* names of other elements */
+  std::string elem_name;             /* names of other elements */
   int elem_count;              /* count of instances of each element */
   OtherData **other_data;      /* actual property data for the elements */
   PlyOtherProp *other_props;   /* description of the property data */
@@ -147,26 +147,35 @@ typedef struct PlyOtherElems {  /* "other" elements, not interpreted by user */
   OtherElem *other_list;        /* list of data for other elements */
 } PlyOtherElems;
 
-typedef struct PlyFile {        /* description of PLY file */
-  FILE *fp;                     /* file pointer */
-  int file_type;                /* ascii or binary */
-  float version;                /* version number of file */
-  int nelems;                   /* number of elements of object */
-  PlyElement **elems;           /* list of elements */
-  int num_comments;             /* number of comments */
-  const char **comments;              /* list of comments */
-  int num_obj_info;             /* number of items of object information */
-  const char **obj_info;              /* list of object info items */
-  PlyElement *which_elem;       /* which element we're currently writing */
-  PlyOtherElems *other_elems;   /* "other" elements from a PLY file */
-} PlyFile;
+struct PlyFile
+{        /* description of PLY file */
+	PlyFile(FILE* _fp=NULL) :
+		fp(_fp),
+		file_type(0),
+		version(0),
+		which_elem(NULL),
+		other_elems(NULL)
+	{
+	}
 
 
-const char *type_names[] = {
-"invalid",
-"char", "short", "int",
-"uchar", "ushort", "uint",
-"float", "double",
+	FILE *fp;                     /* file pointer */
+	int file_type;                /* ascii or binary */
+	float version;                /* version number of file */
+	int nelems;                   /* number of elements of object */
+	PlyElement **elems;           /* list of elements */
+	vector<string> comments;              /* list of comments */
+	vector<string> obj_info;              /* list of object info items */
+	PlyElement *which_elem;       /* which element we're currently writing */
+	PlyOtherElems *other_elems;   /* "other" elements from a PLY file */
+};
+
+
+const std::string type_names[] = {
+string("invalid"),
+string("char"), string("short"), string("int"),
+string("uchar"), string("ushort"), string("uint"),
+string("float"), string("double"),
 };
 const int ply_type_size[] = {
   0, 1, 2, 4, 1, 2, 4, 4, 8
@@ -190,28 +199,26 @@ int equal_strings(const char *s1, const char *s2)
 
 
 /* find an element in a plyfile's list */
-PlyElement *find_element(PlyFile *, const char *);
+PlyElement *find_element(PlyFile *, const std::string &s);
 
 /* find a property in an element's list */
-PlyProperty *find_property(PlyElement *, const char *, int *);
+PlyProperty *find_property(PlyElement *, const std::string &s, int *);
 
 /* write to a file the word describing a PLY file data type */
 void write_scalar_type (FILE *, int);
 
 /* read a line from a file and break it up into separate words */
-char **get_words(FILE *, int *, char **);
-char **old_get_words(FILE *, int *);
+vector<string> get_words(FILE *, string&);
 
 /* write an item to a file */
 void write_binary_item(FILE *, int, unsigned int, double, int);
 void write_ascii_item(FILE *, int, unsigned int, double, int);
-double old_write_ascii_item(FILE *, char *, int);
 
 /* add information to a PLY file descriptor */
-void add_element(PlyFile *, char **, int);
-void add_property(PlyFile *, char **, int);
-void add_comment(PlyFile *, char *);
-void add_obj_info(PlyFile *, char *);
+void add_element(PlyFile *, const vector<string> &);
+void add_property(PlyFile *, const vector<string> &);
+void add_comment(PlyFile *, const string &);
+void add_obj_info(PlyFile *, const string &);
 
 /* copy a property */
 void copy_property(PlyProperty *, const PlyProperty *);
@@ -226,7 +233,7 @@ void get_stored_item( void *, int, int *, unsigned int *, double *);
 double get_item_value(char *, int);
 
 /* get binary or ascii item and store it according to ptr and type */
-void get_ascii_item(char *, int, int *, unsigned int *, double *);
+void get_ascii_item(const char *, int, int *, unsigned int *, double *);
 int get_binary_item(FILE *, int, int, int *, unsigned int *, double *);  // return 0 on error
 
 /* get a bunch of elements from a file */
@@ -260,7 +267,6 @@ PlyFile *ply_write(
 )
 {
   int i;
-  PlyFile *plyfile;
   PlyElement *elem;
 
   /* check for NULL file pointer */
@@ -268,14 +274,11 @@ PlyFile *ply_write(
     return (NULL);
 
   /* create a record for this object */
+  PlyFile *plyfile = new PlyFile(fp);
 
-  plyfile = (PlyFile *) malloc (sizeof (PlyFile));
   plyfile->file_type = file_type;
-  plyfile->num_comments = 0;
-  plyfile->num_obj_info = 0;
   plyfile->nelems = nelems;
   plyfile->version = 1.0;
-  plyfile->fp = fp;
   plyfile->other_elems = NULL;
 
   /* tuck aside the names of the elements */
@@ -316,18 +319,8 @@ PlyFile *ply_open_for_writing(
   float *version
 )
 {
-  //int i;
   PlyFile *plyfile;
-  //PlyElement *elem;
-  //char *name;
   FILE *fp;
-
-  /* tack on the extension .ply, if necessary */
-  //name = (char *) malloc (sizeof (char) * (strlen (filename) + 5));
-  //strcpy (name, filename);
-  //if (strlen (name) < 4 ||
-  //    strcmp (name + strlen (name) - 4, ".ply") != 0)
-  //    strcat (name, ".ply");
 
   /* open the file for writing */
 
@@ -364,7 +357,7 @@ Entry:
 
 void ply_describe_element(
   PlyFile *plyfile,
-  char *elem_name,
+  const string &elem_name,
   int nelems,
   int nprops,
   PlyProperty *prop_list
@@ -376,8 +369,8 @@ void ply_describe_element(
 
   /* look for appropriate element */
   elem = find_element (plyfile, elem_name);
-  if (elem == NULL) 
-	  throw std::runtime_error(format("ply_describe_element: can't find element '%s'",elem_name));
+  if (elem == NULL)
+	  throw std::runtime_error(format("ply_describe_element: can't find element '%s'",elem_name.c_str()));
 
   elem->num = nelems;
 
@@ -465,7 +458,7 @@ void ply_describe_other_properties(
   elem = find_element (plyfile, other->name);
   if (elem == NULL) {
     fprintf(stderr, "ply_describe_other_properties: can't find element '%s'\n",
-            other->name);
+            other->name.c_str());
     return;
   }
 
@@ -513,7 +506,7 @@ Entry:
 
 void ply_element_count(
   PlyFile *plyfile,
-  char *elem_name,
+  const string &elem_name,
   int nelems
 )
 {
@@ -523,8 +516,8 @@ void ply_element_count(
 
   /* look for appropriate element */
   elem = find_element (plyfile, elem_name);
-  if (elem == NULL) 
-	  throw std::runtime_error(format("ply_element_count: can't find element '%s'",elem_name));
+  if (elem == NULL)
+	  throw std::runtime_error(format("ply_element_count: can't find element '%s'",elem_name.c_str()));
 
   elem->num = nelems;
 }
@@ -562,20 +555,20 @@ void ply_header_complete(PlyFile *plyfile)
 
   /* write out the comments */
 
-  for (i = 0; i < plyfile->num_comments; i++)
-    fprintf (fp, "comment %s\n", plyfile->comments[i]);
+  for (size_t i = 0; i < plyfile->comments.size(); i++)
+    fprintf (fp, "comment %s\n", plyfile->comments[i].c_str());
 
   /* write out object information */
 
-  for (i = 0; i < plyfile->num_obj_info; i++)
-    fprintf (fp, "obj_info %s\n", plyfile->obj_info[i]);
+  for (size_t i = 0; i < plyfile->obj_info.size(); i++)
+    fprintf (fp, "obj_info %s\n", plyfile->obj_info[i].c_str());
 
   /* write out information about each element */
 
   for (i = 0; i < plyfile->nelems; i++) {
 
     elem = plyfile->elems[i];
-    fprintf (fp, "element %s %d\n", elem->name, elem->num);
+    fprintf (fp, "element %s %d\n", elem->name.c_str(), elem->num);
 
     /* write out each property */
     for (j = 0; j < elem->nprops; j++) {
@@ -585,12 +578,12 @@ void ply_header_complete(PlyFile *plyfile)
         write_scalar_type (fp, prop->count_external);
         fprintf (fp, " ");
         write_scalar_type (fp, prop->external_type);
-        fprintf (fp, " %s\n", prop->name);
+        fprintf (fp, " %s\n", prop->name.c_str());
       }
       else {
         fprintf (fp, "property ");
         write_scalar_type (fp, prop->external_type);
-        fprintf (fp, " %s\n", prop->name);
+        fprintf (fp, " %s\n", prop->name.c_str());
       }
     }
   }
@@ -608,13 +601,13 @@ Entry:
   elem_name - name of element we're talking about
 ******************************************************************************/
 
-void ply_put_element_setup(PlyFile *plyfile, char *elem_name)
+void ply_put_element_setup(PlyFile *plyfile, const string &elem_name)
 {
   PlyElement *elem;
 
   elem = find_element (plyfile, elem_name);
-  if (elem == NULL) 
-	  throw std::runtime_error(format("ply_elements_setup: can't find element '%s'", elem_name));
+  if (elem == NULL)
+	  throw std::runtime_error(format("ply_elements_setup: can't find element '%s'", elem_name.c_str()));
 
   plyfile->which_elem = elem;
 }
@@ -742,18 +735,9 @@ Entry:
   comment - the comment to be written
 ******************************************************************************/
 
-void ply_put_comment(PlyFile *plyfile, const char *comment)
+void ply_put_comment(PlyFile *plyfile, const string &comment)
 {
-  /* (re)allocate space for new comment */
-  if (plyfile->num_comments == 0)
-    plyfile->comments = (const char **) malloc (sizeof (const char *));
-  else
-    plyfile->comments = (const char **) realloc (plyfile->comments,
-                         sizeof (const char *) * (plyfile->num_comments + 1));
-
-  /* add comment to list */
-  plyfile->comments[plyfile->num_comments] = strdup (comment);
-  plyfile->num_comments++;
+	plyfile->comments.push_back(comment);
 }
 
 
@@ -766,22 +750,10 @@ Entry:
   obj_info - the text information to be written
 ******************************************************************************/
 
-void ply_put_obj_info(PlyFile *plyfile, const char *obj_info)
+void ply_put_obj_info(PlyFile *plyfile, const string &obj_info)
 {
-  /* (re)allocate space for new info */
-  if (plyfile->num_obj_info == 0)
-    plyfile->obj_info = (const char **) malloc (sizeof (const char *));
-  else
-    plyfile->obj_info = (const char **) realloc (plyfile->obj_info,
-                         sizeof (const char *) * (plyfile->num_obj_info + 1));
-
-  /* add info to list */
-  plyfile->obj_info[plyfile->num_obj_info] = strdup (obj_info);
-  plyfile->num_obj_info++;
+	plyfile->obj_info.push_back(obj_info);
 }
-
-
-
 
 
 
@@ -804,71 +776,57 @@ Exit:
   returns a pointer to a PlyFile, used to refer to this file, or NULL if error
 ******************************************************************************/
 
-PlyFile *ply_read(FILE *fp, int *nelems, char ***elem_names)
+PlyFile *ply_read(FILE *fp, vector<string> &elem_names)
 {
   int i,j;
-  PlyFile *plyfile;
-  int nwords;
-  char **words;
   int found_format = 0;
-  char **elist;
   PlyElement *elem;
-  char *orig_line;
 
   /* check for NULL file pointer */
   if (fp == NULL)
     return (NULL);
 
   /* create record for this object */
-
-  plyfile = (PlyFile *) malloc (sizeof (PlyFile));
-  plyfile->nelems = 0;
-  plyfile->comments = NULL;
-  plyfile->num_comments = 0;
-  plyfile->obj_info = NULL;
-  plyfile->num_obj_info = 0;
-  plyfile->fp = fp;
-  plyfile->other_elems = NULL;
+  PlyFile *plyfile = new PlyFile(fp);
 
   /* read and parse the file's header */
+  string orig_line;
+  vector<string> words = get_words (plyfile->fp, orig_line);
 
-  words = get_words (plyfile->fp, &nwords, &orig_line);
-  if (!words || !equal_strings (words[0], "ply"))
-    return (NULL);
+  if (words.empty() || words[0]!="ply" )
+	return NULL;
 
-  while (words) {
+  while (words.size()) {
 
     /* parse words */
 
-    if (equal_strings (words[0], "format")) {
-      if (nwords != 3)
+    if (words[0]=="format")
+    {
+      if (words.size() != 3)
         return (NULL);
-      if (equal_strings (words[1], "ascii"))
+      if (words[1]=="ascii")
         plyfile->file_type = PLY_ASCII;
-      else if (equal_strings (words[1], "binary_big_endian"))
+      else if (words[1]=="binary_big_endian")
         plyfile->file_type = PLY_BINARY_BE;
-      else if (equal_strings (words[1], "binary_little_endian"))
+      else if (words[1]=="binary_little_endian")
         plyfile->file_type = PLY_BINARY_LE;
       else
         return (NULL);
-      plyfile->version = atof (words[2]);
+      plyfile->version = atof (words[2].c_str());
       found_format = 1;
     }
-    else if (equal_strings (words[0], "element"))
-      add_element (plyfile, words, nwords);
-    else if (equal_strings (words[0], "property"))
-      add_property (plyfile, words, nwords);
-    else if (equal_strings (words[0], "comment"))
+    else if (words[0]== "element")
+      add_element (plyfile, words);
+    else if (words[0]== "property")
+      add_property (plyfile, words);
+    else if (words[0]== "comment")
       add_comment (plyfile, orig_line);
-    else if (equal_strings (words[0], "obj_info"))
+    else if (words[0]== "obj_info")
       add_obj_info (plyfile, orig_line);
-    else if (equal_strings (words[0], "end_header"))
+    else if (words[0]== "end_header")
       break;
 
-    /* free up words space */
-    free (words);
-
-    words = get_words (plyfile->fp, &nwords, &orig_line);
+	words = get_words (plyfile->fp, orig_line);
   }
 
   /* create tags for each property of each element, to be used */
@@ -883,13 +841,9 @@ PlyFile *ply_read(FILE *fp, int *nelems, char ***elem_names)
   }
 
   /* set return values about the elements */
-
-  elist = (char **) malloc (sizeof (char *) * plyfile->nelems);
+  elem_names.clear();
   for (i = 0; i < plyfile->nelems; i++)
-    elist[i] = strdup (plyfile->elems[i]->name);
-
-  *elem_names = elist;
-  *nelems = plyfile->nelems;
+	elem_names.push_back(plyfile->elems[i]->name);
 
   /* return a pointer to the file's information */
 
@@ -913,17 +867,13 @@ Exit:
 
 PlyFile *ply_open_for_reading(
   const char *filename,
-  int *nelems,
-  char ***elem_names,
+  vector<string> &elem_names,
   int *file_type,
   float *version
 )
 {
   FILE *fp;
   PlyFile *plyfile;
-
-  /* tack on the extension .ply, if necessary */
-  // JL: Don't touch the original filanem (also, it seems there was a memory leak here...)
 
   /* open the file for reading */
 
@@ -933,12 +883,14 @@ PlyFile *ply_open_for_reading(
 
   /* create the PlyFile data structure */
 
-  plyfile = ply_read (fp, nelems, elem_names);
+  plyfile = ply_read (fp, elem_names);
 
   /* determine the file type and version */
-
-  *file_type = plyfile->file_type;
-  *version = plyfile->version;
+  if (plyfile)
+  {
+	  *file_type = plyfile->file_type;
+	  *version = plyfile->version;
+  }
 
   /* return a pointer to the file's information */
 
@@ -961,7 +913,7 @@ Exit:
 
 PlyProperty **ply_get_element_description(
   PlyFile *plyfile,
-  char *elem_name,
+  const string &elem_name,
   int *nelems,
   int *nprops
 )
@@ -992,55 +944,6 @@ PlyProperty **ply_get_element_description(
 }
 
 
-/******************************************************************************
-Specify which properties of an element are to be returned.  This should be
-called before a call to the routine ply_get_element().
-
-Entry:
-  plyfile   - file identifier
-  elem_name - which element we're talking about
-  nprops    - number of properties
-  prop_list - list of properties
-******************************************************************************/
-
-void ply_get_element_setup(
-  PlyFile *plyfile,
-  char *elem_name,
-  int nprops,
-  PlyProperty *prop_list
-)
-{
-  int i;
-  PlyElement *elem;
-  PlyProperty *prop;
-  int index;
-
-  /* find information about the element */
-  elem = find_element (plyfile, elem_name);
-  plyfile->which_elem = elem;
-
-  /* deposit the property information into the element's description */
-  for (i = 0; i < nprops; i++) {
-
-    /* look for actual property */
-    prop = find_property (elem, prop_list[i].name, &index);
-    if (prop == NULL) {
-      fprintf (stderr, "Warning:  Can't find property '%s' in element '%s'\n",
-               prop_list[i].name, elem_name);
-      continue;
-    }
-
-    /* store its description */
-    prop->internal_type = prop_list[i].internal_type;
-    prop->offset = prop_list[i].offset;
-    prop->count_internal = prop_list[i].count_internal;
-    prop->count_offset = prop_list[i].count_offset;
-
-    /* specify that the user wants this property */
-    elem->store_prop[index] = STORE_PROP;
-  }
-}
-
 
 /******************************************************************************
 Specify a property of an element that is to be returned.  This should be
@@ -1056,7 +959,7 @@ Entry:
 
 void ply_get_property(
   PlyFile *plyfile,
-  const char *elem_name,
+  const string &elem_name,
   const PlyProperty *prop
 )
 {
@@ -1073,7 +976,7 @@ void ply_get_property(
   prop_ptr = find_property (elem, prop->name, &index);
   if (prop_ptr == NULL) {
     fprintf (stderr, "Warning:  Can't find property '%s' in element '%s'\n",
-             prop->name, elem_name);
+             prop->name.c_str(), elem_name.c_str());
     return;
   }
   prop_ptr->internal_type  = prop->internal_type;
@@ -1116,10 +1019,9 @@ Exit:
   returns a pointer to a list of comments
 ******************************************************************************/
 
-const char **ply_get_comments(PlyFile *plyfile, int *num_comments)
+void ply_get_comments(PlyFile *plyfile, vector<string> &comments)
 {
-  *num_comments = plyfile->num_comments;
-  return (plyfile->comments);
+	comments = plyfile->comments;
 }
 
 
@@ -1135,10 +1037,9 @@ Exit:
   returns a pointer to a list of object info lines
 ******************************************************************************/
 
-const char **ply_get_obj_info(PlyFile *plyfile, int *num_obj_info)
+void ply_get_obj_info(PlyFile *plyfile, vector<string> &obj_info)
 {
-  *num_obj_info = plyfile->num_obj_info;
-  return (plyfile->obj_info);
+	obj_info = plyfile->obj_info;
 }
 
 
@@ -1325,7 +1226,7 @@ PlyOtherElems *ply_get_other_element (
 
   /* look for appropriate element */
   elem = find_element (plyfile, elem_name);
-  if (elem == NULL) 
+  if (elem == NULL)
 	  throw std::runtime_error(format("ply_get_other_element: can't find element '%s'", elem_name));
 
   /* create room for the new "other" element, initializing the */
@@ -1443,10 +1344,8 @@ Free up storage used by an "other" elements data structure.
 Entry:
   other_elems - data structure to free up
 ******************************************************************************/
-
 void ply_free_other_elements (PlyOtherElems *other_elems)
 {
-
 }
 
 
@@ -1469,7 +1368,7 @@ void ply_close(PlyFile *plyfile)
   fclose (plyfile->fp);
 
   /* free up memory associated with the PLY file */
-  free (plyfile);
+  delete plyfile;
 }
 
 
@@ -1506,12 +1405,12 @@ Exit:
   returns the element, or NULL if not found
 ******************************************************************************/
 
-PlyElement *find_element(PlyFile *plyfile, const char *element)
+PlyElement *find_element(PlyFile *plyfile, const string &element)
 {
   int i;
 
   for (i = 0; i < plyfile->nelems; i++)
-    if (equal_strings (element, plyfile->elems[i]->name))
+    if ( element == plyfile->elems[i]->name)
       return (plyfile->elems[i]);
 
   return (NULL);
@@ -1530,12 +1429,12 @@ Exit:
   returns a pointer to the property, or NULL if not found
 ******************************************************************************/
 
-PlyProperty *find_property(PlyElement *elem, const char *prop_name, int *index)
+PlyProperty *find_property(PlyElement *elem, const std::string &prop_name, int *index)
 {
   int i;
 
   for (i = 0; i < elem->nprops; i++)
-    if (equal_strings (prop_name, elem->props[i]->name)) {
+    if (string(prop_name)==elem->props[i]->name ) {
       *index = i;
       return (elem->props[i]);
     }
@@ -1558,8 +1457,6 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
   int j,k;
   PlyElement *elem;
   PlyProperty *prop;
-  char **words;
-  int nwords;
   int which_word;
   //FILE *fp = plyfile->fp;
   char *elem_data,*item=NULL;
@@ -1571,7 +1468,6 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
   int list_count;
   int store_it;
   char **store_array;
-  char *orig_line;
   char *other_data=NULL;
   int other_flag;
 
@@ -1593,9 +1489,10 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
     other_flag = 0;
 
   /* read in the element */
+  string orig_line;
+  vector<string> words = get_words (plyfile->fp, orig_line);
 
-  words = get_words (plyfile->fp, &nwords, &orig_line);
-  if (words == NULL) 
+  if (words.empty())
 	  throw std::runtime_error(format("ply_get_element: unexpected end of file"));
 
   which_word = 0;
@@ -1614,7 +1511,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
     if (prop->is_list) {       /* a list */
 
       /* get and store the number of items in the list */
-      get_ascii_item (words[which_word++], prop->count_external,
+      get_ascii_item (words[which_word++].c_str(), prop->count_external,
                       &int_val, &uint_val, &double_val);
       if (store_it) {
         item = elem_data + prop->count_offset;
@@ -1639,7 +1536,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
 
         /* read items and store them into the array */
         for (k = 0; k < list_count; k++) {
-          get_ascii_item (words[which_word++], prop->external_type,
+          get_ascii_item (words[which_word++].c_str(), prop->external_type,
                           &int_val, &uint_val, &double_val);
           if (store_it) {
             store_item (item, prop->internal_type,
@@ -1651,7 +1548,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
 
     }
     else {                     /* not a list */
-      get_ascii_item (words[which_word++], prop->external_type,
+      get_ascii_item (words[which_word++].c_str(), prop->external_type,
                       &int_val, &uint_val, &double_val);
       if (store_it) {
         item = elem_data + prop->offset;
@@ -1661,7 +1558,6 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
 
   }
 
-  free (words);
 }
 
 
@@ -1690,7 +1586,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
   char **store_array;
   char *other_data=NULL;
   int other_flag;
-  
+
   int bin_file_type =  plyfile->file_type;
 
   /* the kind of element we're reading currently */
@@ -1807,12 +1703,12 @@ void write_scalar_type (FILE *fp, int code)
 {
   /* make sure this is a valid code */
 
-  if (code <= PLY_START_TYPE || code >= PLY_END_TYPE) 
+  if (code <= PLY_START_TYPE || code >= PLY_END_TYPE)
 	  throw std::runtime_error(format("write_scalar_type: bad data code = %d", code));
 
   /* write the code to a file */
 
-  fprintf (fp, "%s", type_names[code]);
+  fprintf (fp, "%s", type_names[code].c_str());
 }
 
 
@@ -1831,79 +1727,26 @@ Exit:
   returns a list of words from the line, or NULL if end-of-file
 ******************************************************************************/
 
-char **get_words(FILE *fp, int *nwords, char **orig_line)
+vector<string> get_words(FILE *fp, string&orig_line)
 {
 #define BIG_STRING 4096
-  static char str[BIG_STRING];
-  static char str_copy[BIG_STRING];
-  char **words;
-  int max_words = 10;
-  int num_words = 0;
-  char *ptr,*ptr2;
-  char *result;
+  char str[BIG_STRING];
 
-  words = (char **) malloc (sizeof (char *) * max_words);
+  vector<string> words;
+
+  ASSERT_(fp!=NULL)
 
   /* read in a line */
-  result = fgets (str, BIG_STRING, fp);
+  char* result = fgets (str, BIG_STRING, fp);
   if (result == NULL) {
-    *nwords = 0;
-    *orig_line = NULL;
-    return (NULL);
+    orig_line = string();
+    return words;
   }
 
-  /* convert line-feed and tabs into spaces */
-  /* (this guarentees that there will be a space before the */
-  /*  null character at the end of the string) */
+  orig_line = string(str);
+  mrpt::system::tokenize(orig_line," \t\r\n", words);
 
-  str[BIG_STRING-2] = ' ';
-  str[BIG_STRING-1] = '\0';
-
-  for (ptr = str, ptr2 = str_copy; *ptr != '\0'; ptr++, ptr2++) {
-    *ptr2 = *ptr;
-    if (*ptr == '\t') {
-      *ptr = ' ';
-      *ptr2 = ' ';
-    }
-    else if (*ptr == '\n') {
-      *ptr = ' ';
-      *ptr2 = '\0';
-      break;
-    }
-  }
-
-  /* find the words in the line */
-
-  ptr = str;
-  while (*ptr != '\0') {
-
-    /* jump over leading spaces */
-    while (*ptr == ' ')
-      ptr++;
-
-    /* break if we reach the end */
-    if (*ptr == '\0')
-      break;
-
-    /* save pointer to beginning of word */
-    if (num_words >= max_words) {
-      max_words += 10;
-      words = (char **) realloc (words, sizeof (char *) * max_words);
-    }
-    words[num_words++] = ptr;
-
-    /* jump over non-spaces */
-    while (*ptr != ' ')
-      ptr++;
-
-    /* place a null character here to mark the end of the word */
-    *ptr++ = '\0';
-  }
-
-  /* return the list of words */
-  *nwords = num_words;
-  *orig_line = str_copy;
-  return (words);
+  return words;
 }
 
 
@@ -2072,77 +1915,6 @@ void write_ascii_item(
 }
 
 
-/******************************************************************************
-Write out an item to a file as ascii characters.
-
-Entry:
-  fp   - file to write to
-  item - pointer to item to write
-  type - data type that "item" points to
-
-Exit:
-  returns a double-precision float that contains the value of the written item
-******************************************************************************/
-
-double old_write_ascii_item(FILE *fp, char *item, int type)
-{
-  unsigned char *puchar;
-  char *pchar;
-  short int *pshort;
-  unsigned short int *pushort;
-  int *pint;
-  unsigned int *puint;
-  float *pfloat;
-  double *pdouble;
-  int int_value;
-  unsigned int uint_value;
-  double double_value;
-
-  switch (type) {
-    case PLY_CHAR:
-      pchar = (char *) item;
-      int_value = *pchar;
-      fprintf (fp, "%d ", int_value);
-      return ((double) int_value);
-    case PLY_UCHAR:
-      puchar = (unsigned char *) item;
-      int_value = *puchar;
-      fprintf (fp, "%d ", int_value);
-      return ((double) int_value);
-    case PLY_SHORT:
-      pshort = (short int *) item;
-      int_value = *pshort;
-      fprintf (fp, "%d ", int_value);
-      return ((double) int_value);
-    case PLY_USHORT:
-      pushort = (unsigned short int *) item;
-      int_value = *pushort;
-      fprintf (fp, "%d ", int_value);
-      return ((double) int_value);
-    case PLY_INT:
-      pint = (int *) item;
-      int_value = *pint;
-      fprintf (fp, "%d ", int_value);
-      return ((double) int_value);
-    case PLY_UINT:
-      puint = (unsigned int *) item;
-      uint_value = *puint;
-      fprintf (fp, "%u ", uint_value);
-      return ((double) uint_value);
-    case PLY_FLOAT:
-      pfloat = (float *) item;
-      double_value = *pfloat;
-      fprintf (fp, "%g ", double_value);
-      return (double_value);
-    case PLY_DOUBLE:
-      pdouble = (double *) item;
-      double_value = *pdouble;
-      fprintf (fp, "%g ", double_value);
-      return (double_value);
-    default:
-		throw std::runtime_error(format("old_write_ascii_item: bad type = %d", type));
-  }
-}
 
 
 /******************************************************************************
@@ -2297,7 +2069,7 @@ int get_binary_item(
 		throw std::runtime_error(format("get_binary_item: bad type = %d", type));
   }
 
-  // Added by JL: 
+  // Added by JL:
   // If the Big/Little endian format in the file is different than the native format, do the conversion:
 #if MRPT_IS_BIG_ENDIAN
   const bool do_reverse = (bin_file_type==PLY_BINARY_LE);
@@ -2306,7 +2078,7 @@ int get_binary_item(
 #endif
 
   if (do_reverse)
-  { 
+  {
 	int int_val2 = *int_val;
 	unsigned int uint_val2 = *uint_val;
 	double double_val2 = *double_val;
@@ -2334,7 +2106,7 @@ Exit:
 ******************************************************************************/
 
 void get_ascii_item(
-  char *word,
+  const char *word,
   int type,
   int *int_val,
   unsigned int *uint_val,
@@ -2448,14 +2220,14 @@ Entry:
   nwords  - number of words in the list
 ******************************************************************************/
 
-void add_element (PlyFile *plyfile, char **words, int nwords)
+void add_element (PlyFile *plyfile, const vector<string> &words)
 {
   PlyElement *elem;
 
   /* create the new element */
   elem = (PlyElement *) malloc (sizeof (PlyElement));
-  elem->name = strdup (words[1]);
-  elem->num = atoi (words[2]);
+  elem->name = words[1];
+  elem->num = atoi (words[2].c_str());
   elem->nprops = 0;
 
   /* make room for new element in the object's list of elements */
@@ -2481,12 +2253,12 @@ Exit:
   returns integer code for property, or 0 if not found
 ******************************************************************************/
 
-int get_prop_type(char *type_name)
+int get_prop_type(const string &type_name)
 {
   int i;
 
   for (i = PLY_START_TYPE + 1; i < PLY_END_TYPE; i++)
-    if (equal_strings (type_name, type_names[i]))
+    if ( type_name == type_names[i])
       return (i);
 
   /* if we get here, we didn't find the type */
@@ -2503,7 +2275,7 @@ Entry:
   nwords  - number of words in the list
 ******************************************************************************/
 
-void add_property (PlyFile *plyfile, char **words, int nwords)
+void add_property (PlyFile *plyfile, const vector<string> &words)
 {
   PlyProperty *prop;
   PlyElement *elem;
@@ -2512,15 +2284,15 @@ void add_property (PlyFile *plyfile, char **words, int nwords)
 
   prop = (PlyProperty *) malloc (sizeof (PlyProperty));
 
-  if (equal_strings (words[1], "list")) {       /* is a list */
+  if (words[1]=="list") {       /* is a list */
     prop->count_external = get_prop_type (words[2]);
     prop->external_type = get_prop_type (words[3]);
-    prop->name = strdup (words[4]);
+    prop->name = words[4];
     prop->is_list = 1;
   }
   else {                                        /* not a list */
     prop->external_type = get_prop_type (words[1]);
-    prop->name = strdup (words[2]);
+    prop->name = words[2];
     prop->is_list = 0;
   }
 
@@ -2547,16 +2319,10 @@ Entry:
   line    - line containing comment
 ******************************************************************************/
 
-void add_comment (PlyFile *plyfile, char *line)
+void add_comment (PlyFile *plyfile, const string &line)
 {
-  int i;
-
   /* skip over "comment" and leading spaces and tabs */
-  i = 7;
-  while (line[i] == ' ' || line[i] == '\t')
-    i++;
-
-  ply_put_comment (plyfile, &line[i]);
+  ply_put_comment (plyfile, mrpt::system::trim(line.substr(7)));
 }
 
 
@@ -2568,16 +2334,10 @@ Entry:
   line    - line containing text info
 ******************************************************************************/
 
-void add_obj_info (PlyFile *plyfile, char *line)
+void add_obj_info (PlyFile *plyfile, const string &line)
 {
-  int i;
-
   /* skip over "obj_info" and leading spaces and tabs */
-  i = 8;
-  while (line[i] == ' ' || line[i] == '\t')
-    i++;
-
-  ply_put_obj_info (plyfile, &line[i]);
+  ply_put_obj_info (plyfile, mrpt::system::trim(line.substr(8)));
 }
 
 
@@ -2587,15 +2347,7 @@ Copy a property.
 
 void copy_property(PlyProperty *dest, const PlyProperty *src)
 {
-  dest->name = strdup (src->name);
-  dest->external_type = src->external_type;
-  dest->internal_type = src->internal_type;
-  dest->offset = src->offset;
-
-  dest->is_list = src->is_list;
-  dest->count_external = src->count_external;
-  dest->count_internal = src->count_internal;
-  dest->count_offset = src->count_offset;
+	*dest = *src;
 }
 
 const float VAL_NOT_SET = -1e10;
@@ -2615,7 +2367,7 @@ const PlyProperty vert_props[] = { /* list of property information for a vertex 
 	{"intensity", PLY_FLOAT, PLY_FLOAT, offsetof(TVertex,intensity), 0       , 0                 , 0              , 0}
 };
 
-struct TFace 
+struct TFace
 {
   float intensity; /* this user attaches intensity to faces */
   unsigned char nverts;    /* number of vertex indices in list */
@@ -2628,40 +2380,39 @@ const PlyProperty face_props[] = { /* list of property information for a vertex 
 };
 
 
-/* 
-		Loads from a PLY file.  
+/*
+		Loads from a PLY file.
 */
 bool PLY_Importer::loadFromPlyFile(
-	const std::string         &filename, 
+	const std::string         &filename,
 	CStringList  *file_comments,
 	CStringList  *file_obj_info )
 {
 	try
 	{
 		/* open a PLY file for reading */
-		int		nelems;
-		char **elist;
+		vector<string> elist;  // element names
 		int file_type;
 		float version;
-		PlyFile *ply = ply_open_for_reading(filename.c_str(), &nelems, &elist, &file_type, &version);
+		PlyFile *ply = ply_open_for_reading(filename.c_str(), elist, &file_type, &version);
 
 		/* go through each kind of element that we learned is in the file */
 		/* and read them */
 
-		for (int i = 0; i < nelems; i++) 
+		for (size_t i = 0; i < elist.size(); i++)
 		{
 			/* get the description of the first element */
-			char *elem_name = elist[i];
+			const string &elem_name = elist[i];
 			int num_elems, nprops;
 
-			//PlyProperty **plist = 
+			//PlyProperty **plist =
 			ply_get_element_description (ply, elem_name, &num_elems, &nprops);
 
 			/* print the name of the element, for debugging */
 			//printf ("element %s %d\n", elem_name, num_elems);
 
 			/* if we're on vertex elements, read them in */
-			if (equal_strings ("vertex", elem_name)) 
+			if ("vertex"==elem_name)
 			{
 				/* set up for getting vertex elements */
 				for (size_t k=0;k<sizeof(vert_props)/sizeof(PlyProperty);k++)
@@ -2669,7 +2420,7 @@ bool PLY_Importer::loadFromPlyFile(
 
 				/* grab all the vertex elements */
 				this->PLY_import_set_vertex_count(num_elems);
-				for (int j = 0; j < num_elems; j++) 
+				for (int j = 0; j < num_elems; j++)
 				{
 					TVertex  pt;
 					pt.x = pt.y = pt.z = pt.r = pt.g = pt.b = pt.intensity = VAL_NOT_SET;
@@ -2682,42 +2433,38 @@ bool PLY_Importer::loadFromPlyFile(
 						const TColorf col(pt.intensity,pt.intensity,pt.intensity);
 						this->PLY_import_set_vertex(j,xyz, &col);
 					}
-					else 
+					else
 					if (pt.r!=VAL_NOT_SET && pt.g!=VAL_NOT_SET && pt.b!=VAL_NOT_SET)
 					{	// RGB
 						const TColorf col(pt.r,pt.g,pt.b);
 						this->PLY_import_set_vertex(j,xyz, &col);
 					}
-					else 
+					else
 					{	// No color
 						this->PLY_import_set_vertex(j,xyz);
 					}
 				}
 			}
 
-			// print out the properties we got, for debugging 
+			// print out the properties we got, for debugging
 			//for (int j = 0; j < nprops; j++)
 			//	printf ("property %s\n", plist[j]->name);
 		}
 
-		// grab and print out the comments in the file 
+		// grab and print out the comments in the file
 		if (file_comments)
 		{
-			int num_comments;
-			const char **comments = ply_get_comments (ply, &num_comments);
-			file_comments->clear();
-			for (int i = 0; i < num_comments; i++)
-				file_comments->add( std::string(comments[i]) );
+			vector<string> strs;
+			ply_get_comments (ply, strs);
+			*file_comments = CStringList(strs);
 		}
 
 		// grab and print out the object information
 		if (file_obj_info)
 		{
-			int num_obj_info;
-			const char **obj_info = ply_get_obj_info (ply, &num_obj_info);
-			file_obj_info->clear();
-			for (int i = 0; i < num_obj_info; i++)
-				file_obj_info->add( std::string( obj_info[i] ) );
+			vector<string> strs;
+			ply_get_obj_info (ply, strs);
+			*file_obj_info = CStringList(strs);
 		}
 
 		/* close the PLY file */
@@ -2737,7 +2484,7 @@ bool PLY_Importer::loadFromPlyFile(
 
 
 bool PLY_Exporter::saveToPlyFile(
-	const std::string  & filename, 
+	const std::string  & filename,
 	bool save_in_binary,
 	const CStringList  & file_comments ,
 	const CStringList  & file_obj_info  ) const
@@ -2758,16 +2505,16 @@ bool PLY_Exporter::saveToPlyFile(
 
 		float version;
 		PlyFile *ply = ply_open_for_writing(
-			filename.c_str(), 
-			2, 
-			elem_names, 
-			save_in_binary ? 
+			filename.c_str(),
+			2,
+			elem_names,
+			save_in_binary ?
 #if MRPT_IS_BIG_ENDIAN
-	PLY_BINARY_BE 
+	PLY_BINARY_BE
 #else
-	PLY_BINARY_LE 
+	PLY_BINARY_LE
 #endif
-				: PLY_ASCII, 
+				: PLY_ASCII,
 			&version);
 
 		/* describe what properties go into the vertex and face elements */
@@ -2784,10 +2531,10 @@ bool PLY_Exporter::saveToPlyFile(
 			this->PLY_export_get_vertex(0,pt,pt_has_color,pt_color);
 
 			ply_element_count (ply, "vertex", nverts);
-			ply_describe_property (ply, "vertex", &vert_props[0]);  // x 
+			ply_describe_property (ply, "vertex", &vert_props[0]);  // x
 			ply_describe_property (ply, "vertex", &vert_props[1]);  // y
 			ply_describe_property (ply, "vertex", &vert_props[2]);  // z
-	
+
 			if (pt_has_color)
 				ply_describe_property (ply, "vertex", &vert_props[3]);  // intensity
 		}
@@ -2802,7 +2549,7 @@ bool PLY_Exporter::saveToPlyFile(
 
 		for (size_t k=0;k<file_obj_info.size();k++)
 			ply_put_obj_info (ply, file_obj_info(k).c_str() );
-	
+
 
 		/* we have described exactly what we will put in the file, so */
 		/* we are now done with the header info */
