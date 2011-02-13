@@ -28,7 +28,7 @@
 
 /*
   This file is heavily based on the RPly C library by Greg Turk (February 1994)
-  It was modified, C++'ized and STL'ized by J.L.Blanco for MRPT (January 2011)
+  It was modified, C++'ized and STL'ized by J.L.Blanco for MRPT (Jan-Feb 2011)
 
   Below follows the original copyright notes by Greg Turk:
  ======================================================================
@@ -79,25 +79,35 @@ using namespace mrpt::utils;
 #define PLY_BINARY_BE  2        /* binary PLY file, big endian */
 #define PLY_BINARY_LE  3        /* binary PLY file, little endian */
 
-#define PLY_OKAY    0           /* ply routine worked okay */
-#define PLY_ERROR  -1           /* error in ply routine */
+//#define PLY_OKAY    0           /* ply routine worked okay */
+//#define PLY_ERROR  -1           /* error in ply routine */
 
 /* scalar data types supported by PLY format */
 
-#define PLY_START_TYPE 0
-#define PLY_CHAR       1
-#define PLY_SHORT      2
-#define PLY_INT        3
-#define PLY_UCHAR      4
-#define PLY_USHORT     5
-#define PLY_UINT       6
-#define PLY_FLOAT      7
-#define PLY_DOUBLE     8
-#define PLY_END_TYPE   9
+enum {
+	PLY_START_TYPE = 0,
+	PLY_CHAR      = 1,
+	PLY_SHORT     = 2,
+	PLY_INT       = 3,
+	PLY_UCHAR     = 4,
+	PLY_USHORT    = 5,
+	PLY_UINT      = 6,
+	PLY_FLOAT     = 7,
+	PLY_DOUBLE    = 8,
+	PLY_END_TYPE  = 9
+};
 
-#define  PLY_SCALAR  0
-#define  PLY_LIST    1
+//#define  PLY_SCALAR  0
+//#define  PLY_LIST    1
 
+
+const int NO_OTHER_PROPS = -1;
+
+const char DONT_STORE_PROP = 0;
+const char STORE_PROP      = 1;
+
+const char OTHER_PROP = 0;
+const char NAMED_PROP = 1;
 
 typedef struct PlyProperty {    /* description of a property */
 
@@ -113,39 +123,23 @@ typedef struct PlyProperty {    /* description of a property */
 
 } PlyProperty;
 
-typedef struct PlyElement {     /* description of an element */
-  std::string name;                   /* element name */
+typedef struct PlyElement 
+{     /* description of an element */
+  PlyElement() :
+     num(0),
+	 size(0),
+	 other_offset(NO_OTHER_PROPS)
+  {
+  }
+
+  string name;                   /* element name */
   int num;                      /* number of elements in this object */
   int size;                     /* size of element (bytes) or -1 if variable */
-  int nprops;                   /* number of properties for this element */
-  PlyProperty **props;          /* list of properties in the file */
-  char *store_prop;             /* flags: property wanted by user? */
+  vector<PlyProperty> props;          /* list of properties in the file */
+  vector<char>        store_prop;             /* flags: property wanted by user? */
   int other_offset;             /* offset to un-asked-for props, or -1 if none*/
   int other_size;               /* size of other_props structure */
 } PlyElement;
-
-typedef struct PlyOtherProp {   /* describes other properties in an element */
-  std::string name;                   /* element name */
-  int size;                     /* size of other_props */
-  int nprops;                   /* number of properties in other_props */
-  PlyProperty **props;          /* list of properties in other_props */
-} PlyOtherProp;
-
-typedef struct OtherData { /* for storing other_props for an other element */
-  void *other_props;
-} OtherData;
-
-typedef struct OtherElem {     /* data for one "other" element */
-  std::string elem_name;             /* names of other elements */
-  int elem_count;              /* count of instances of each element */
-  OtherData **other_data;      /* actual property data for the elements */
-  PlyOtherProp *other_props;   /* description of the property data */
-} OtherElem;
-
-typedef struct PlyOtherElems {  /* "other" elements, not interpreted by user */
-  int num_elems;                /* number of other elements */
-  OtherElem *other_list;        /* list of data for other elements */
-} PlyOtherElems;
 
 struct PlyFile
 {        /* description of PLY file */
@@ -153,8 +147,7 @@ struct PlyFile
 		fp(_fp),
 		file_type(0),
 		version(0),
-		which_elem(NULL),
-		other_elems(NULL)
+		which_elem(NULL)
 	{
 	}
 
@@ -162,12 +155,10 @@ struct PlyFile
 	FILE *fp;                     /* file pointer */
 	int file_type;                /* ascii or binary */
 	float version;                /* version number of file */
-	int nelems;                   /* number of elements of object */
-	PlyElement **elems;           /* list of elements */
+	vector<PlyElement> elems;           /* list of elements */
 	vector<string> comments;              /* list of comments */
 	vector<string> obj_info;              /* list of object info items */
 	PlyElement *which_elem;       /* which element we're currently writing */
-	PlyOtherElems *other_elems;   /* "other" elements from a PLY file */
 };
 
 
@@ -180,22 +171,6 @@ string("float"), string("double"),
 const int ply_type_size[] = {
   0, 1, 2, 4, 1, 2, 4, 4, 8
 };
-
-#define NO_OTHER_PROPS  -1
-
-#define DONT_STORE_PROP  0
-#define STORE_PROP       1
-
-#define OTHER_PROP       0
-#define NAMED_PROP       1
-
-/******************************************************************************
-Compare two strings.  Returns 1 if they are the same, 0 if not.
-******************************************************************************/
-int equal_strings(const char *s1, const char *s2)
-{
-	return 0==mrpt::system::os::_strcmpi(s1,s2) ? 1 /*equal*/ : 0;
-}
 
 
 /* find an element in a plyfile's list */
@@ -230,7 +205,7 @@ void store_item(char *, int, int, unsigned int, double);
 void get_stored_item( void *, int, int *, unsigned int *, double *);
 
 /* return the value stored in an item, given ptr to it and its type */
-double get_item_value(char *, int);
+double get_item_value(const char *, int);
 
 /* get binary or ascii item and store it according to ptr and type */
 void get_ascii_item(const char *, int, int *, unsigned int *, double *);
@@ -261,14 +236,10 @@ Exit:
 
 PlyFile *ply_write(
   FILE *fp,
-  int nelems,
-  const char **elem_names,
+  const vector<string> & elem_names,
   int file_type
 )
 {
-  int i;
-  PlyElement *elem;
-
   /* check for NULL file pointer */
   if (fp == NULL)
     return (NULL);
@@ -277,19 +248,15 @@ PlyFile *ply_write(
   PlyFile *plyfile = new PlyFile(fp);
 
   plyfile->file_type = file_type;
-  plyfile->nelems = nelems;
   plyfile->version = 1.0;
-  plyfile->other_elems = NULL;
+  //plyfile->other_elems = NULL;
 
   /* tuck aside the names of the elements */
 
-  plyfile->elems = (PlyElement **) malloc (sizeof (PlyElement *) * nelems);
-  for (i = 0; i < nelems; i++) {
-    elem = (PlyElement *) malloc (sizeof (PlyElement));
-    plyfile->elems[i] = elem;
-    elem->name = strdup (elem_names[i]);
-    elem->num = 0;
-    elem->nprops = 0;
+  plyfile->elems.resize( elem_names.size() );
+  for (size_t i = 0; i < elem_names.size(); i++) 
+  {
+    plyfile->elems[i].name = elem_names[i];
   }
 
   /* return pointer to the file descriptor */
@@ -313,8 +280,7 @@ Exit:
 
 PlyFile *ply_open_for_writing(
   const char *name,
-  int nelems,
-  const char **elem_names,
+  const vector<string> &elem_names,
   int file_type,
   float *version
 )
@@ -331,7 +297,7 @@ PlyFile *ply_open_for_writing(
 
   /* create the actual PlyFile structure */
 
-  plyfile = ply_write (fp, nelems, elem_names, file_type);
+  plyfile = ply_write (fp, elem_names, file_type);
   if (plyfile == NULL)
     return (NULL);
 
@@ -359,16 +325,11 @@ void ply_describe_element(
   PlyFile *plyfile,
   const string &elem_name,
   int nelems,
-  int nprops,
-  PlyProperty *prop_list
+  vector<PlyProperty> &prop_list
 )
 {
-  int i;
-  PlyElement *elem;
-  PlyProperty *prop;
-
   /* look for appropriate element */
-  elem = find_element (plyfile, elem_name);
+  PlyElement *elem = find_element (plyfile, elem_name);
   if (elem == NULL)
 	  throw std::runtime_error(format("ply_describe_element: can't find element '%s'",elem_name.c_str()));
 
@@ -376,15 +337,14 @@ void ply_describe_element(
 
   /* copy the list of properties */
 
-  elem->nprops = nprops;
-  elem->props = (PlyProperty **) malloc (sizeof (PlyProperty *) * nprops);
-  elem->store_prop = (char *) malloc (sizeof (char) * nprops);
+  const size_t nprops = prop_list.size();
+  elem->props.resize(nprops);
+  elem->store_prop.resize(nprops);
 
-  for (i = 0; i < nprops; i++) {
-    prop = (PlyProperty *) malloc (sizeof (PlyProperty));
-    elem->props[i] = prop;
+  for (size_t i = 0; i < nprops; i++) 
+  {
+    elem->props[i] = prop_list[i];
     elem->store_prop[i] = NAMED_PROP;
-    copy_property (prop, &prop_list[i]);
   }
 }
 
@@ -404,94 +364,17 @@ void ply_describe_property(
   const PlyProperty *prop
 )
 {
-  PlyElement *elem;
-  PlyProperty *elem_prop;
-
   /* look for appropriate element */
-  elem = find_element (plyfile, elem_name);
+  PlyElement *elem = find_element (plyfile, elem_name);
   if (elem == NULL) {
     fprintf(stderr, "ply_describe_property: can't find element '%s'\n",
             elem_name);
     return;
   }
 
-  /* create room for new property */
-
-  if (elem->nprops == 0) {
-    elem->props = (PlyProperty **) malloc (sizeof (PlyProperty *));
-    elem->store_prop = (char *) malloc (sizeof (char));
-    elem->nprops = 1;
-  }
-  else {
-    elem->nprops++;
-    elem->props = (PlyProperty **)
-                  realloc (elem->props, sizeof (PlyProperty *) * elem->nprops);
-    elem->store_prop = (char *)
-                  realloc (elem->store_prop, sizeof (char) * elem->nprops);
-  }
-
   /* copy the new property */
-
-  elem_prop = (PlyProperty *) malloc (sizeof (PlyProperty));
-  elem->props[elem->nprops - 1] = elem_prop;
-  elem->store_prop[elem->nprops - 1] = NAMED_PROP;
-  copy_property (elem_prop, prop);
-}
-
-
-/******************************************************************************
-Describe what the "other" properties are that are to be stored, and where
-they are in an element.
-******************************************************************************/
-
-void ply_describe_other_properties(
-  PlyFile *plyfile,
-  PlyOtherProp *other,
-  int offset
-)
-{
-  int i;
-  PlyElement *elem;
-  PlyProperty *prop;
-
-  /* look for appropriate element */
-  elem = find_element (plyfile, other->name);
-  if (elem == NULL) {
-    fprintf(stderr, "ply_describe_other_properties: can't find element '%s'\n",
-            other->name.c_str());
-    return;
-  }
-
-  /* create room for other properties */
-
-  if (elem->nprops == 0) {
-    elem->props = (PlyProperty **)
-                  malloc (sizeof (PlyProperty *) * other->nprops);
-    elem->store_prop = (char *) malloc (sizeof (char) * other->nprops);
-    elem->nprops = 0;
-  }
-  else {
-    int newsize;
-    newsize = elem->nprops + other->nprops;
-    elem->props = (PlyProperty **)
-                  realloc (elem->props, sizeof (PlyProperty *) * newsize);
-    elem->store_prop = (char *)
-                  realloc (elem->store_prop, sizeof (char) * newsize);
-  }
-
-  /* copy the other properties */
-
-  for (i = 0; i < other->nprops; i++) {
-    prop = (PlyProperty *) malloc (sizeof (PlyProperty));
-    copy_property (prop, other->props[i]);
-    elem->props[elem->nprops] = prop;
-    elem->store_prop[elem->nprops] = OTHER_PROP;
-    elem->nprops++;
-  }
-
-  /* save other info about other properties */
-  elem->other_size = other->size;
-  elem->other_offset = offset;
+  elem->props.push_back(*prop);
+  elem->store_prop.push_back(NAMED_PROP);
 }
 
 
@@ -533,9 +416,7 @@ Entry:
 
 void ply_header_complete(PlyFile *plyfile)
 {
-  int i,j;
   FILE *fp = plyfile->fp;
-  PlyElement *elem;
 
   fprintf (fp, "ply\n");
 
@@ -565,14 +446,14 @@ void ply_header_complete(PlyFile *plyfile)
 
   /* write out information about each element */
 
-  for (i = 0; i < plyfile->nelems; i++) {
-
-    elem = plyfile->elems[i];
+  for (size_t i = 0; i < plyfile->elems.size(); i++) 
+  {
+    const PlyElement *elem = &plyfile->elems[i];
     fprintf (fp, "element %s %d\n", elem->name.c_str(), elem->num);
 
     /* write out each property */
-    for (j = 0; j < elem->nprops; j++) {
-      const PlyProperty *prop = elem->props[j];
+    for (size_t j = 0; j < elem->props.size(); j++) {
+      const PlyProperty *prop = &elem->props[j];
       if (prop->is_list) {
         fprintf (fp, "property list ");
         write_scalar_type (fp, prop->count_external);
@@ -625,19 +506,16 @@ Entry:
 
 void ply_put_element(PlyFile *plyfile, void *elem_ptr)
 {
-  int j,k;
   FILE *fp = plyfile->fp;
-  PlyElement *elem;
   char *elem_data,*item;
   char **item_ptr;
-  int list_count;
   int item_size;
   int int_val;
   unsigned int uint_val;
   double double_val;
   char **other_ptr;
 
-  elem = plyfile->which_elem;
+  PlyElement *elem = plyfile->which_elem;
   elem_data = (char*)elem_ptr;
   other_ptr = (char **) (((char *) elem_ptr) + elem->other_offset);
 
@@ -648,8 +526,9 @@ void ply_put_element(PlyFile *plyfile, void *elem_ptr)
     /* write an ascii file */
 
     /* write out each property of the element */
-    for (j = 0; j < elem->nprops; j++) {
-      const PlyProperty *prop = elem->props[j];
+    for (size_t j = 0; j < elem->props.size(); j++) 
+	{
+      const PlyProperty *prop = &elem->props[j];
       if (elem->store_prop[j] == OTHER_PROP)
         elem_data = *other_ptr;
       else
@@ -660,11 +539,12 @@ void ply_put_element(PlyFile *plyfile, void *elem_ptr)
                          &int_val, &uint_val, &double_val);
         write_ascii_item (fp, int_val, uint_val, double_val,
                           prop->count_external);
-        list_count = uint_val;
+        const size_t list_count = uint_val;
         item_ptr = (char **) (elem_data + prop->offset);
         item = item_ptr[0];
        item_size = ply_type_size[prop->internal_type];
-        for (k = 0; k < list_count; k++) {
+        for (size_t k = 0; k < list_count; k++) 
+		{
           get_stored_item ((void *) item, prop->internal_type,
                            &int_val, &uint_val, &double_val);
           write_ascii_item (fp, int_val, uint_val, double_val,
@@ -688,8 +568,9 @@ void ply_put_element(PlyFile *plyfile, void *elem_ptr)
     /* write a binary file */
 
     /* write out each property of the element */
-    for (j = 0; j < elem->nprops; j++) {
-      const PlyProperty *prop = elem->props[j];
+    for (size_t j = 0; j < elem->props.size(); j++) 
+	{
+      const PlyProperty *prop = &elem->props[j];
       if (elem->store_prop[j] == OTHER_PROP)
         elem_data = *other_ptr;
       else
@@ -701,11 +582,11 @@ void ply_put_element(PlyFile *plyfile, void *elem_ptr)
                          &int_val, &uint_val, &double_val);
         write_binary_item (fp, int_val, uint_val, double_val,
                            prop->count_external);
-        list_count = uint_val;
+        const size_t list_count = uint_val;
         item_ptr = (char **) (elem_data + prop->offset);
         item = item_ptr[0];
         item_size = ply_type_size[prop->internal_type];
-        for (k = 0; k < list_count; k++) {
+        for (size_t k = 0; k < list_count; k++) {
           get_stored_item ((void *) item, prop->internal_type,
                            &int_val, &uint_val, &double_val);
           write_binary_item (fp, int_val, uint_val, double_val,
@@ -778,9 +659,7 @@ Exit:
 
 PlyFile *ply_read(FILE *fp, vector<string> &elem_names)
 {
-  int i,j;
   int found_format = 0;
-  PlyElement *elem;
 
   /* check for NULL file pointer */
   if (fp == NULL)
@@ -832,18 +711,17 @@ PlyFile *ply_read(FILE *fp, vector<string> &elem_names)
   /* create tags for each property of each element, to be used */
   /* later to say whether or not to store each property for the user */
 
-  for (i = 0; i < plyfile->nelems; i++) {
-    elem = plyfile->elems[i];
-    elem->store_prop = (char *) malloc (sizeof (char) * elem->nprops);
-    for (j = 0; j < elem->nprops; j++)
-      elem->store_prop[j] = DONT_STORE_PROP;
+  for (size_t i = 0; i < plyfile->elems.size(); i++) {
+    PlyElement *elem = &plyfile->elems[i];
+	
+	elem->store_prop.assign(elem->props.size(), DONT_STORE_PROP);
     elem->other_offset = NO_OTHER_PROPS; /* no "other" props by default */
   }
 
   /* set return values about the elements */
   elem_names.clear();
-  for (i = 0; i < plyfile->nelems; i++)
-	elem_names.push_back(plyfile->elems[i]->name);
+  for (size_t i = 0; i < plyfile->elems.size(); i++)
+	elem_names.push_back(plyfile->elems[i].name);
 
   /* return a pointer to the file's information */
 
@@ -911,36 +789,23 @@ Exit:
   returns a list of properties, or NULL if the file doesn't contain that elem
 ******************************************************************************/
 
-PlyProperty **ply_get_element_description(
+vector<PlyProperty> ply_get_element_description(
   PlyFile *plyfile,
   const string &elem_name,
-  int *nelems,
-  int *nprops
+  int &nelems,
+  int &nprops
 )
 {
-  int i;
-  PlyElement *elem;
-  PlyProperty *prop;
-  PlyProperty **prop_list;
-
   /* find information about the element */
-  elem = find_element (plyfile, elem_name);
+  PlyElement *elem = find_element (plyfile, elem_name);
   if (elem == NULL)
-    return (NULL);
+    return vector<PlyProperty>();
 
-  *nelems = elem->num;
-  *nprops = elem->nprops;
+  nelems = elem->num;
+  nprops = elem->props.size();
 
   /* make a copy of the element's property list */
-  prop_list = (PlyProperty **) malloc (sizeof (PlyProperty *) * elem->nprops);
-  for (i = 0; i < elem->nprops; i++) {
-    prop = (PlyProperty *) malloc (sizeof (PlyProperty));
-    copy_property (prop, elem->props[i]);
-    prop_list[i] = prop;
-  }
-
-  /* return this duplicate property list */
-  return (prop_list);
+  return elem->props;
 }
 
 
@@ -1043,313 +908,6 @@ void ply_get_obj_info(PlyFile *plyfile, vector<string> &obj_info)
 }
 
 
-/******************************************************************************
-Make ready for "other" properties of an element-- those properties that
-the user has not explicitly asked for, but that are to be stashed away
-in a special structure to be carried along with the element's other
-information.
-
-Entry:
-  plyfile - file identifier
-  elem    - element for which we want to save away other properties
-******************************************************************************/
-
-void setup_other_props(PlyFile *plyfile, PlyElement *elem)
-{
-  int i;
-  int size = 0;
-  int type_size;
-
-  /* Examine each property in decreasing order of size. */
-  /* We do this so that all data types will be aligned by */
-  /* word, half-word, or whatever within the structure. */
-
-  for (type_size = 8; type_size > 0; type_size /= 2) {
-
-    /* add up the space taken by each property, and save this information */
-    /* away in the property descriptor */
-
-    for (i = 0; i < elem->nprops; i++) {
-
-      /* don't bother with properties we've been asked to store explicitly */
-      if (elem->store_prop[i])
-        continue;
-
-      PlyProperty *prop = elem->props[i];
-
-      /* internal types will be same as external */
-      prop->internal_type = prop->external_type;
-      prop->count_internal = prop->count_external;
-
-      /* check list case */
-      if (prop->is_list) {
-
-        /* pointer to list */
-        if (type_size == sizeof (void *)) {
-          prop->offset = size;
-          size += sizeof (void *);    /* always use size of a pointer here */
-        }
-
-        /* count of number of list elements */
-        if (type_size == ply_type_size[prop->count_external]) {
-          prop->count_offset = size;
-          size += ply_type_size[prop->count_external];
-        }
-      }
-      /* not list */
-      else if (type_size == ply_type_size[prop->external_type]) {
-        prop->offset = size;
-        size += ply_type_size[prop->external_type];
-      }
-    }
-
-  }
-
-  /* save the size for the other_props structure */
-  elem->other_size = size;
-}
-
-
-/******************************************************************************
-Specify that we want the "other" properties of an element to be tucked
-away within the user's structure.  The user needn't be concerned for how
-these properties are stored.
-
-Entry:
-  plyfile   - file identifier
-  elem_name - name of element that we want to store other_props in
-  offset    - offset to where other_props will be stored inside user's structure
-
-Exit:
-  returns pointer to structure containing description of other_props
-******************************************************************************/
-
-PlyOtherProp *ply_get_other_properties(
-  PlyFile *plyfile,
-  char *elem_name,
-  int offset
-)
-{
-  int i;
-  PlyElement *elem;
-  PlyOtherProp *other;
-  PlyProperty *prop;
-  int nprops;
-
-  /* find information about the element */
-  elem = find_element (plyfile, elem_name);
-  if (elem == NULL) {
-    fprintf (stderr, "ply_get_other_properties: Can't find element '%s'\n",
-             elem_name);
-    return (NULL);
-  }
-
-  /* remember that this is the "current" element */
-  plyfile->which_elem = elem;
-
-  /* save the offset to where to store the other_props */
-  elem->other_offset = offset;
-
-  /* place the appropriate pointers, etc. in the element's property list */
-  setup_other_props (plyfile, elem);
-
-  /* create structure for describing other_props */
-  other = (PlyOtherProp *) malloc (sizeof (PlyOtherProp));
-  other->name = strdup (elem_name);
-#if 0
-  if (elem->other_offset == NO_OTHER_PROPS) {
-    other->size = 0;
-    other->props = NULL;
-    other->nprops = 0;
-    return (other);
-  }
-#endif
-  other->size = elem->other_size;
-  other->props = (PlyProperty **) malloc (sizeof(PlyProperty) * elem->nprops);
-
-  /* save descriptions of each "other" property */
-  nprops = 0;
-  for (i = 0; i < elem->nprops; i++) {
-    if (elem->store_prop[i])
-      continue;
-    prop = (PlyProperty *) malloc (sizeof (PlyProperty));
-    copy_property (prop, elem->props[i]);
-    other->props[nprops] = prop;
-    nprops++;
-  }
-  other->nprops = nprops;
-
-#if 1
-  /* set other_offset pointer appropriately if there are NO other properties */
-  if (other->nprops == 0) {
-    elem->other_offset = NO_OTHER_PROPS;
-  }
-#endif
-
-  /* return structure */
-  return (other);
-}
-
-
-
-
-/*************************/
-/*  Other Element Stuff  */
-/*************************/
-
-
-
-
-/******************************************************************************
-Grab all the data for an element that a user does not want to explicitly
-read in.
-
-Entry:
-  plyfile    - pointer to file
-  elem_name  - name of element whose data is to be read in
-  elem_count - number of instances of this element stored in the file
-
-Exit:
-  returns pointer to ALL the "other" element data for this PLY file
-******************************************************************************/
-
-PlyOtherElems *ply_get_other_element (
-  PlyFile *plyfile,
-  char *elem_name,
-  int elem_count
-)
-{
-  int i;
-  PlyElement *elem;
-  PlyOtherElems *other_elems;
-  OtherElem *other;
-
-  /* look for appropriate element */
-  elem = find_element (plyfile, elem_name);
-  if (elem == NULL)
-	  throw std::runtime_error(format("ply_get_other_element: can't find element '%s'", elem_name));
-
-  /* create room for the new "other" element, initializing the */
-  /* other data structure if necessary */
-
-  if (plyfile->other_elems == NULL) {
-    plyfile->other_elems = (PlyOtherElems *) malloc (sizeof (PlyOtherElems));
-    other_elems = plyfile->other_elems;
-    other_elems->other_list = (OtherElem *) malloc (sizeof (OtherElem));
-    other = &(other_elems->other_list[0]);
-    other_elems->num_elems = 1;
-  }
-  else {
-    other_elems = plyfile->other_elems;
-    other_elems->other_list = (OtherElem *) realloc (other_elems->other_list,
-                              sizeof (OtherElem) * other_elems->num_elems + 1);
-    other = &(other_elems->other_list[other_elems->num_elems]);
-    other_elems->num_elems++;
-  }
-
-  /* count of element instances in file */
-  other->elem_count = elem_count;
-
-  /* save name of element */
-  other->elem_name = strdup (elem_name);
-
-  /* create a list to hold all the current elements */
-  other->other_data = (OtherData **)
-                  malloc (sizeof (OtherData *) * other->elem_count);
-
-  /* set up for getting elements */
-  other->other_props = ply_get_other_properties (plyfile, elem_name,
-                         offsetof(OtherData,other_props));
-
-  /* grab all these elements */
-  for (i = 0; i < other->elem_count; i++) {
-    /* grab and element from the file */
-    other->other_data[i] = (OtherData *) malloc (sizeof (OtherData));
-    ply_get_element (plyfile, (void *) other->other_data[i]);
-  }
-
-  /* return pointer to the other elements data */
-  return (other_elems);
-}
-
-
-/******************************************************************************
-Pass along a pointer to "other" elements that we want to save in a given
-PLY file.  These other elements were presumably read from another PLY file.
-
-Entry:
-  plyfile     - file pointer in which to store this other element info
-  other_elems - info about other elements that we want to store
-******************************************************************************/
-
-void ply_describe_other_elements (
-  PlyFile *plyfile,
-  PlyOtherElems *other_elems
-)
-{
-  int i;
-  OtherElem *other;
-
-  /* ignore this call if there is no other element */
-  if (other_elems == NULL)
-    return;
-
-  /* save pointer to this information */
-  plyfile->other_elems = other_elems;
-
-  /* describe the other properties of this element */
-
-  for (i = 0; i < other_elems->num_elems; i++) {
-    other = &(other_elems->other_list[i]);
-    ply_element_count (plyfile, other->elem_name, other->elem_count);
-    ply_describe_other_properties (plyfile, other->other_props,
-                                   offsetof(OtherData,other_props));
-  }
-}
-
-
-/******************************************************************************
-Write out the "other" elements specified for this PLY file.
-
-Entry:
-  plyfile - pointer to PLY file to write out other elements for
-******************************************************************************/
-
-void ply_put_other_elements (PlyFile *plyfile)
-{
-  int i,j;
-  OtherElem *other;
-
-  /* make sure we have other elements to write */
-  if (plyfile->other_elems == NULL)
-    return;
-
-  /* write out the data for each "other" element */
-
-  for (i = 0; i < plyfile->other_elems->num_elems; i++) {
-
-    other = &(plyfile->other_elems->other_list[i]);
-    ply_put_element_setup (plyfile, other->elem_name);
-
-    /* write out each instance of the current element */
-    for (j = 0; j < other->elem_count; j++)
-      ply_put_element (plyfile, (void *) other->other_data[j]);
-  }
-}
-
-
-/******************************************************************************
-Free up storage used by an "other" elements data structure.
-
-Entry:
-  other_elems - data structure to free up
-******************************************************************************/
-void ply_free_other_elements (PlyOtherElems *other_elems)
-{
-}
-
-
-
 /*******************/
 /*  Miscellaneous  */
 /*******************/
@@ -1407,11 +965,9 @@ Exit:
 
 PlyElement *find_element(PlyFile *plyfile, const string &element)
 {
-  int i;
-
-  for (i = 0; i < plyfile->nelems; i++)
-    if ( element == plyfile->elems[i]->name)
-      return (plyfile->elems[i]);
+  for (size_t i = 0; i < plyfile->elems.size(); i++)
+    if ( element == plyfile->elems[i].name)
+      return &plyfile->elems[i];
 
   return (NULL);
 }
@@ -1431,14 +987,11 @@ Exit:
 
 PlyProperty *find_property(PlyElement *elem, const std::string &prop_name, int *index)
 {
-  int i;
-
-  for (i = 0; i < elem->nprops; i++)
-    if (string(prop_name)==elem->props[i]->name ) {
+  for (size_t i = 0; i < elem->props.size(); i++)
+    if (string(prop_name)==elem->props[i].name ) {
       *index = i;
-      return (elem->props[i]);
+      return &elem->props[i];
     }
-
   *index = -1;
   return (NULL);
 }
@@ -1454,9 +1007,6 @@ Entry:
 
 void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
 {
-  int j,k;
-  PlyElement *elem;
-  PlyProperty *prop;
   int which_word;
   //FILE *fp = plyfile->fp;
   char *elem_data,*item=NULL;
@@ -1472,7 +1022,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
   int other_flag;
 
   /* the kind of element we're reading currently */
-  elem = plyfile->which_elem;
+  PlyElement *elem = plyfile->which_elem;
 
   /* do we need to setup for other_props? */
 
@@ -1497,9 +1047,9 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
 
   which_word = 0;
 
-  for (j = 0; j < elem->nprops; j++) {
-
-    prop = elem->props[j];
+  for (size_t j = 0; j < elem->props.size(); j++) 
+  {
+    PlyProperty *prop = &elem->props[j];
     store_it = (elem->store_prop[j] | other_flag);
 
     /* store either in the user's structure or in other_props */
@@ -1535,7 +1085,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
         }
 
         /* read items and store them into the array */
-        for (k = 0; k < list_count; k++) {
+        for (int k = 0; k < list_count; k++) {
           get_ascii_item (words[which_word++].c_str(), prop->external_type,
                           &int_val, &uint_val, &double_val);
           if (store_it) {
@@ -1571,9 +1121,6 @@ Entry:
 
 void binary_get_element(PlyFile *plyfile, char *elem_ptr)
 {
-  int j,k;
-  PlyElement *elem;
-  PlyProperty *prop;
   FILE *fp = plyfile->fp;
   char *elem_data,*item=NULL;
   char *item_ptr;
@@ -1590,7 +1137,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
   int bin_file_type =  plyfile->file_type;
 
   /* the kind of element we're reading currently */
-  elem = plyfile->which_elem;
+  PlyElement *elem = plyfile->which_elem;
 
   /* do we need to setup for other_props? */
 
@@ -1608,9 +1155,9 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
 
   /* read in a number of elements */
 
-  for (j = 0; j < elem->nprops; j++) {
-
-    prop = elem->props[j];
+  for (size_t j = 0; j < elem->props.size(); j++) 
+  {
+    PlyProperty *prop = &elem->props[j];
     store_it = (elem->store_prop[j] | other_flag);
 
     /* store either in the user's structure or in other_props */
@@ -1656,7 +1203,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
         }
 
         /* read items and store them into the array */
-        for (k = 0; k < list_count; k++) {
+        for (int k = 0; k < list_count; k++) {
           if (!get_binary_item (fp, bin_file_type, prop->external_type,
                           &int_val, &uint_val, &double_val))
          {
@@ -2222,24 +1769,12 @@ Entry:
 
 void add_element (PlyFile *plyfile, const vector<string> &words)
 {
-  PlyElement *elem;
-
   /* create the new element */
-  elem = (PlyElement *) malloc (sizeof (PlyElement));
+  plyfile->elems.push_back( PlyElement() );
+
+  PlyElement *elem = &(*plyfile->elems.rbegin());
   elem->name = words[1];
   elem->num = atoi (words[2].c_str());
-  elem->nprops = 0;
-
-  /* make room for new element in the object's list of elements */
-  if (plyfile->nelems == 0)
-    plyfile->elems = (PlyElement **) malloc (sizeof (PlyElement *));
-  else
-    plyfile->elems = (PlyElement **) realloc (plyfile->elems,
-                     sizeof (PlyElement *) * (plyfile->nelems + 1));
-
-  /* add the new element to the object's list */
-  plyfile->elems[plyfile->nelems] = elem;
-  plyfile->nelems++;
 }
 
 
@@ -2277,12 +1812,15 @@ Entry:
 
 void add_property (PlyFile *plyfile, const vector<string> &words)
 {
-  PlyProperty *prop;
-  PlyElement *elem;
+  /* add this property to the list of properties of the current element */
+  PlyElement *elem = &(*plyfile->elems.rbegin());
+
+  elem->props.push_back( PlyProperty() );
+
+  PlyProperty *prop = &(*elem->props.rbegin());
+
 
   /* create the new property */
-
-  prop = (PlyProperty *) malloc (sizeof (PlyProperty));
 
   if (words[1]=="list") {       /* is a list */
     prop->count_external = get_prop_type (words[2]);
@@ -2295,19 +1833,6 @@ void add_property (PlyFile *plyfile, const vector<string> &words)
     prop->name = words[2];
     prop->is_list = 0;
   }
-
-  /* add this property to the list of properties of the current element */
-
-  elem = plyfile->elems[plyfile->nelems - 1];
-
-  if (elem->nprops == 0)
-    elem->props = (PlyProperty **) malloc (sizeof (PlyProperty *));
-  else
-    elem->props = (PlyProperty **) realloc (elem->props,
-                  sizeof (PlyProperty *) * (elem->nprops + 1));
-
-  elem->props[elem->nprops] = prop;
-  elem->nprops++;
 }
 
 
@@ -2405,8 +1930,8 @@ bool PLY_Importer::loadFromPlyFile(
 			const string &elem_name = elist[i];
 			int num_elems, nprops;
 
-			//PlyProperty **plist =
-			ply_get_element_description (ply, elem_name, &num_elems, &nprops);
+			//vector<PlyProperty> plist = 
+			ply_get_element_description (ply, elem_name, num_elems, nprops);
 
 			/* print the name of the element, for debugging */
 			//printf ("element %s %d\n", elem_name, num_elems);
@@ -2491,10 +2016,11 @@ bool PLY_Exporter::saveToPlyFile(
 {
 	try
 	{
-		const char *elem_names[] = { /* list of the kinds of elements in the user's object */
-		  "vertex", "face"
-		};
-
+		/* list of the kinds of elements in the user's object */
+		vector<string> elem_names;
+		elem_names.push_back(string("vertex"));
+		elem_names.push_back(string("face"));
+		
 		/* create the vertex index lists for the faces */
 		//for (i = 0; i < nfaces; i++)
 		//	faces[i].verts = vert_ptrs[i];
@@ -2506,7 +2032,6 @@ bool PLY_Exporter::saveToPlyFile(
 		float version;
 		PlyFile *ply = ply_open_for_writing(
 			filename.c_str(),
-			2,
 			elem_names,
 			save_in_binary ?
 #if MRPT_IS_BIG_ENDIAN
