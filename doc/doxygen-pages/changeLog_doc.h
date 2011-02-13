@@ -56,6 +56,7 @@
 		- Fixed compiling with MSVC 2005 (Patch by Z.P.Gaal)
 		- Fixed compiling under MIPS/SPARC/S930/... due to a bug in Eigen3-beta (patch sent upstream and fixed in local copy).
 		- Fixed build errors against latest changes in eigen3 (before their release version).
+		- MSVC 2010: MRPT now uses standard "stdint.h" if provided by the compiler, instead of pstdint.h
 	- Changes in classes:
 		- mrpt::hwdrivers::CKinect
 			- mrpt::hwdrivers::CKinect::setVideoChannel(): New method (and .ini parameter) for switching between the RGB and IR channels for the intensity images.

@@ -40,12 +40,6 @@ using namespace mrpt::slam;
 using namespace mrpt::hwdrivers;
 
 #if MRPT_HAS_xSENS
-	// If we are not in GNU GCC, ignore the pstdint.h since in
-	//  MRPT we already have most of the constant correctly defined
-	#	if !defined(__GNUC__)
-	#		define _PSTDINT_H_INCLUDED
-	#	endif
-
 	#include "xSens/cmt1.h"
 	#include "xSens/cmt2.h"
 	#include "xSens/cmt3.h"

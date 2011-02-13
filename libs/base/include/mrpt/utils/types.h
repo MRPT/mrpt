@@ -41,25 +41,9 @@
 
 #include <ctime>
 
-// Define macros in platform dependant stdint.h header:
-#ifndef __STDC_FORMAT_MACROS
-#	define __STDC_FORMAT_MACROS
-#endif
-#ifndef __STDC_CONSTANT_MACROS
-#	define __STDC_CONSTANT_MACROS
-#endif
-#ifndef __STDC_LIMIT_MACROS
-#	define __STDC_LIMIT_MACROS
-#endif
+#include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
+#include <mrpt/utils/mrpt_inttypes.h>  // compiler-independent version of "inttypes.h"
 
-// Standard elemental types:
-#include "pstdint.h"  // The "portable stdint header file"
-
-#if HAVE_INTTYPES_H
-#	include <inttypes.h>
-#elif defined(_MSC_VER)
-#	include	<mrpt/utils/msvc_inttypes.h>
-#endif
 
 // SSE2, SSE3 types:
 #if MRPT_HAS_SSE2

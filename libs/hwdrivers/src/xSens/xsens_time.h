@@ -1,9 +1,7 @@
 #ifndef _XSENS_TIME_2006_09_12
 #define _XSENS_TIME_2006_09_12
 
-#ifndef _PSTDINT_H_INCLUDED
-#	include "pstdint.h"
-#endif
+#include <mrpt/utils/mrpt_stdint.h>
 
 #include <time.h>
 

@@ -67,7 +67,7 @@
 #pragma once
 #endif
 
-#include "pstdint.h"
+//#include "pstdint.h"  // Already included in <mrpt/utils/types.h>
 
 // 7.8 Format conversion of integer types
 

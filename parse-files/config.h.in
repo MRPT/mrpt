@@ -198,6 +198,10 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_INTTYPES_H 1
 #endif
 
+#ifndef HAVE_STDINT_H
+#cmakedefine HAVE_STDINT_H 1
+#endif
+
 #ifndef HAVE_WINSOCK2_H
 #cmakedefine HAVE_WINSOCK2_H 1
 #endif

@@ -2,9 +2,7 @@
 #define _CMT_FILE_DEF_H_2007_01_24
 
 #include <stdio.h>
-#ifndef _PSTDINT_H_INCLUDED
-#	include "pstdint.h"
-#endif
+#include <mrpt/utils/mrpt_stdint.h>
 
 #ifndef _WIN32
 #   include <sys/types.h>

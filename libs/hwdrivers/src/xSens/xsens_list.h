@@ -30,9 +30,8 @@
 #ifndef _XSENS_LIST_H_2006_06_08
 #define _XSENS_LIST_H_2006_06_08
 
-#ifndef _PSTDINT_H_INCLUDED
-#	include "pstdint.h"
-#endif
+#include <mrpt/utils/mrpt_stdint.h>
+
 #ifndef _JANITORS_H_2006_05_01
 #	include "xsens_janitors.h"
 #endif
