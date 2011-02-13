@@ -465,14 +465,6 @@ float  CHeightGridMap2D::compute3DMatchingRatio(
 	return 0;
 }
 
-
-/*---------------------------------------------------------------
-					auxParticleFilterCleanUp
- ---------------------------------------------------------------*/
-void  CHeightGridMap2D::auxParticleFilterCleanUp()
-{
-}
-
 /*---------------------------------------------------------------
 					auxParticleFilterCleanUp
   Gets the intersection between a 3D line and a Height Grid map 

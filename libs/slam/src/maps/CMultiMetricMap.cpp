@@ -47,6 +47,8 @@ extern CStartUpClassesRegister  mrpt_slam_class_reg;
 const int dumm = mrpt_slam_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 
+MRPT_TODO("JL: Consider rewriting many of this with STL algorithm")
+
 /*---------------------------------------------------------------
 			Constructor
   ---------------------------------------------------------------*/
@@ -60,6 +62,7 @@ CMultiMetricMap::CMultiMetricMap(
 		m_gridMaps(0),
 		m_gasGridMaps(0),
 		m_heightMaps(0),
+		m_reflectivityMaps(0),
 		m_colourPointsMap(),
 		m_ID(0)
 {
@@ -86,6 +89,7 @@ CMultiMetricMap::CMultiMetricMap(const mrpt::slam::CMultiMetricMap &other ) :
 	m_gridMaps(0),
 	m_gasGridMaps(0),
 	m_heightMaps(0),
+	m_reflectivityMaps(0),
 	m_colourPointsMap(),
 	m_ID(0)
 {
@@ -174,6 +178,24 @@ void  CMultiMetricMap::setListOfMaps(
 				newGridmap->insertionOptions = it->heightMap_options.insertionOpts;
 
 				m_heightMaps.push_back( newGridmap );
+			}
+			else
+			if ( it->metricMapClassType == CLASS_ID(CReflectivityGridMap2D) )
+			{
+				// -------------------------------------------------------
+				//			REFLECTIVITY GRID MAPS
+				// -------------------------------------------------------
+				CReflectivityGridMap2DPtr newGridmap = CReflectivityGridMap2DPtr( new CReflectivityGridMap2D(
+					it->reflectivityMap_options.min_x,
+					it->reflectivityMap_options.max_x,
+					it->reflectivityMap_options.min_y,
+					it->reflectivityMap_options.max_y,
+					it->reflectivityMap_options.resolution ) );
+
+				newGridmap->m_disableSaveAs3DObject = it->m_disableSaveAs3DObject;
+				newGridmap->insertionOptions = it->reflectivityMap_options.insertionOpts;
+
+				m_reflectivityMaps.push_back( newGridmap );
 			}
 			else
 			if ( it->metricMapClassType == CLASS_ID(CSimplePointsMap) )
@@ -288,6 +310,9 @@ void  CMultiMetricMap::internal_clear()
 	// Height maps:
 	for_each( m_heightMaps.begin(),m_heightMaps.end(),  ObjectClear() );
 
+	// Reflectivity maps:
+	for_each( m_reflectivityMaps.begin(),m_reflectivityMaps.end(),  ObjectClear() );
+
 	// Colour points maps:
 	if (m_colourPointsMap) m_colourPointsMap->clear();
 
@@ -337,6 +362,11 @@ mrpt::slam::CMultiMetricMap & CMultiMetricMap::operator = ( const CMultiMetricMa
 	m_heightMaps = other.m_heightMaps;
 	for_each( m_heightMaps.begin(), m_heightMaps.end(), ObjectMakeUnique() );
 
+	// Reflectivity maps:
+	// --------------------------------
+	m_reflectivityMaps = other.m_reflectivityMaps;
+	for_each( m_reflectivityMaps.begin(), m_reflectivityMaps.end(), ObjectMakeUnique() );
+
 	// Copy the colour points map:
 	// --------------------------------
 	m_colourPointsMap = other.m_colourPointsMap;
@@ -366,6 +396,7 @@ void  CMultiMetricMap::deleteAllMaps( )
 	m_landmarksMap.clear_unique();
 	m_beaconMap.clear_unique();
 	m_heightMaps.clear();
+	m_reflectivityMaps.clear();
 	m_colourPointsMap.clear_unique();
 }
 
@@ -375,7 +406,7 @@ void  CMultiMetricMap::deleteAllMaps( )
 void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 7;
+		*version = 8;
 	else
 	{
 		// Version 5: The options:
@@ -384,7 +415,8 @@ void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
 			<< options.enableInsertion_gridMaps
 			<< options.enableInsertion_gasGridMaps
 			<< options.enableInsertion_beaconMap
-			<< options.enableInsertion_heightMaps;	// Added in v6
+			<< options.enableInsertion_heightMaps	// Added in v6
+			<< options.enableInsertion_reflectivityMaps; // Added in v8
 
 		// The data
 		uint32_t	i,n = static_cast<uint32_t>(m_gridMaps.size());
@@ -428,6 +460,11 @@ void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
 		out << n;
 		for (i=0;i<n;i++)	out << *m_heightMaps[i];
 
+		// Added in version 8:
+		n = static_cast<uint32_t>(m_reflectivityMaps.size());
+		out << n;
+		for (i=0;i<n;i++)	out << *m_reflectivityMaps[i];
+
 		// Added in version 7:
 		n = m_colourPointsMap.present() ? 1:0;
 		out << n;
@@ -450,6 +487,7 @@ void  CMultiMetricMap::readFromStream(CStream &in, int version)
 	case 5:
 	case 6:
 	case 7:
+	case 8:
 		{
 			uint32_t  n;
 
@@ -464,6 +502,12 @@ void  CMultiMetricMap::readFromStream(CStream &in, int version)
 
 				if (version>=6)
 					in >> options.enableInsertion_heightMaps;
+				else options.enableInsertion_heightMaps=true;
+
+				if (version>=8)
+					in >> options.enableInsertion_reflectivityMaps;
+				else options.enableInsertion_reflectivityMaps = true;
+
 			}
 			else
 			{ } // Default!
@@ -564,6 +608,20 @@ void  CMultiMetricMap::readFromStream(CStream &in, int version)
 			for_each( m_heightMaps.begin(), m_heightMaps.end(), ObjectReadFromStream(&in) );
 
 
+			// Reflectivity maps (added in version 8)
+			// --------------------------------------
+			if (version>=8)
+						in >> n;
+			else		n = 0;			// Compatibility: Previously there were no such maps!
+
+			// Free previous maps:
+			m_reflectivityMaps.clear();
+
+			// Load from stream:
+			m_reflectivityMaps.resize(n);
+			for_each( m_reflectivityMaps.begin(), m_reflectivityMaps.end(), ObjectReadFromStream(&in) );
+
+
 			// Colour points maps (added in version 7)
 			// --------------------------------------
 			if (version>=7)
@@ -618,6 +676,15 @@ double	 CMultiMetricMap::computeObservationLikelihood(
 
 			for (std::deque<CGasConcentrationGridMap2DPtr>::iterator	itGas = m_gasGridMaps.begin();itGas!=m_gasGridMaps.end();++itGas)
 				ret += (*itGas)->computeObservationLikelihood(obs, takenFrom );
+
+			for (std::deque<CHeightGridMap2DPtr>::iterator	it = m_heightMaps.begin();it!=m_heightMaps.end();++it)
+				ret += (*it)->computeObservationLikelihood(obs, takenFrom );
+
+			for (std::deque<CReflectivityGridMap2DPtr>::iterator	it = m_reflectivityMaps.begin();it!=m_reflectivityMaps.end();++it)
+				ret += (*it)->computeObservationLikelihood(obs, takenFrom );
+
+			if (m_colourPointsMap)
+				ret += m_colourPointsMap->computeObservationLikelihood(obs, takenFrom );
 
 			MRPT_CHECK_NORMAL_NUMBER(ret);
             return ret;
@@ -675,6 +742,14 @@ double	 CMultiMetricMap::computeObservationLikelihood(
             return ret;
 		}
 
+	case  TOptions::mapReflectivity:
+		{
+			ASSERT_( m_reflectivityMaps.size()>0 );
+			ret=m_reflectivityMaps[0]->computeObservationLikelihood(obs, takenFrom );
+			MRPT_CHECK_NORMAL_NUMBER(ret);
+            return ret;
+		}
+
 	case  TOptions::mapColourPoints:
 		{
 			ASSERT_( m_colourPointsMap );
@@ -718,7 +793,16 @@ bool CMultiMetricMap::canComputeObservationLikelihood( const CObservation *obs )
 			for (std::deque<CGasConcentrationGridMap2DPtr>::iterator	itGas = m_gasGridMaps.begin();itGas!=m_gasGridMaps.end();++itGas)
 				ret = ret || (*itGas)->canComputeObservationLikelihood(obs);
 
-            return ret;
+			for (std::deque<CHeightGridMap2DPtr>::iterator	it = m_heightMaps.begin();it!=m_heightMaps.end();++it)
+				ret = ret || (*it)->canComputeObservationLikelihood(obs);
+
+			for (std::deque<CReflectivityGridMap2DPtr>::iterator	it = m_reflectivityMaps.begin();it!=m_reflectivityMaps.end();++it)
+				ret = ret || (*it)->canComputeObservationLikelihood(obs);
+
+			if (m_colourPointsMap)
+				ret = ret || m_colourPointsMap->canComputeObservationLikelihood(obs);
+
+			return ret;
 		}
 
 	case  TOptions::mapPoints:
@@ -761,6 +845,18 @@ bool CMultiMetricMap::canComputeObservationLikelihood( const CObservation *obs )
 		{
 			ASSERT_( m_heightMaps.size()>0 );
 			return m_heightMaps[0]->canComputeObservationLikelihood(obs );
+		}
+
+	case  TOptions::mapReflectivity:
+		{
+			ASSERT_( m_reflectivityMaps.size()>0 );
+			return m_reflectivityMaps[0]->canComputeObservationLikelihood(obs );
+		}
+
+	case  TOptions::mapColourPoints:
+		{
+			ASSERT_( m_colourPointsMap );
+			return m_colourPointsMap->canComputeObservationLikelihood(obs);
 		}
 
 	default:
@@ -868,7 +964,7 @@ bool  CMultiMetricMap::internal_insertObservation(
 	//  that leads to NOT INSERTING observations in maps sometimes!!!
 	// So, do not "optimize" this "bool's" stuff:		(JLBC, 14/DEC/2006)
 	// ---------------------------------------------------------------------
-	std::vector<bool>	done(7,false);
+	std::vector<bool>	done(8,false);
 	bool				auxDone;
 
 	if (options.enableInsertion_pointsMap)
@@ -917,7 +1013,16 @@ bool  CMultiMetricMap::internal_insertObservation(
 	if (m_colourPointsMap && options.enableInsertion_colourPointsMaps)
 		done[6] = m_colourPointsMap->insertObservation( obs, robotPose );
 
-	return done[0] || done[1] || done[2] || done[3] || done[4] || done[5] || done[6];
+	if (options.enableInsertion_reflectivityMaps)
+	{
+		for (std::deque<CReflectivityGridMap2DPtr>::iterator	it = m_reflectivityMaps.begin();it!=m_reflectivityMaps.end();++it)
+		{
+			auxDone = (*it)->insertObservation( obs, robotPose );
+			done[7] = done[7] || auxDone;
+		}
+	}
+
+	return done[0] || done[1] || done[2] || done[3] || done[4] || done[5] || done[6] || done[7];
 
 	MRPT_END;
 }
@@ -1068,6 +1173,20 @@ TMetricMapInitializer::CHeightGridMap2DOptions::CHeightGridMap2DOptions() :
 {
 }
 
+
+/*---------------------------------------------------------------
+					CReflectivityGridMap2DOptions
+ ---------------------------------------------------------------*/
+TMetricMapInitializer::CReflectivityGridMap2DOptions::CReflectivityGridMap2DOptions() :
+	min_x(-2),
+	max_x(2),
+	min_y(-2),
+	max_y(2),
+	resolution(0.10f),
+	insertionOpts()
+{
+}
+
 /*---------------------------------------------------------------
 					CColouredPointsMapOptions
  ---------------------------------------------------------------*/
@@ -1144,6 +1263,24 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(
 			fil += format("_heightgridmap_no%02u",idx);
 			(*it)->saveMetricMapRepresentationToFile( fil );
 		}
+	}
+
+	// Reflexivity grids maps:
+	{
+		std::deque<CReflectivityGridMap2DPtr>::const_iterator	it;
+		for (idx=0,it = m_reflectivityMaps.begin();it!=m_reflectivityMaps.end();it++,idx++)
+		{
+			std::string		fil( filNamePrefix );
+			fil += format("_reflectivitygridmap_no%02u",idx);
+			(*it)->saveMetricMapRepresentationToFile( fil );
+		}
+	}
+
+	// Colour points map:
+	if (m_colourPointsMap.present())
+	{
+		std::string		fil( filNamePrefix + std::string("_colourpointsmap") );
+		m_colourPointsMap->saveMetricMapRepresentationToFile( fil );
 	}
 
 	MRPT_END;
@@ -1327,6 +1464,30 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 		this->push_back(init);
 	} // end for i
 
+	// reflectivity grid maps:
+	n = ini.read_int(sectionName,"reflectivityMap_count",0);
+	for (unsigned int i=0;i<n;i++)
+	{
+		TMetricMapInitializer	init;
+
+		init.metricMapClassType					= CLASS_ID( CHeightGridMap2D );
+
+		// [<sectionName>+"_reflectivityGrid_##_creationOpts"]
+		subSectName = format("%s_reflectivityGrid_%02u_creationOpts",sectionName.c_str(),i);
+		init.m_disableSaveAs3DObject = ini.read_bool(subSectName,"disableSaveAs3DObject",false);
+		init.reflectivityMap_options.min_x	= ini.read_float(subSectName,"min_x",init.heightMap_options.min_x);
+		init.reflectivityMap_options.max_x	= ini.read_float(subSectName,"max_x",init.heightMap_options.max_x);
+		init.reflectivityMap_options.min_y	= ini.read_float(subSectName,"min_y",init.heightMap_options.min_y);
+		init.reflectivityMap_options.max_y	= ini.read_float(subSectName,"max_y",init.heightMap_options.max_y);
+		init.reflectivityMap_options.resolution = ini.read_float(subSectName,"resolution",init.heightMap_options.resolution);
+
+		// [<sectionName>+"_reflectivityGrid_##_insertOpts"]
+		init.reflectivityMap_options.insertionOpts.loadFromConfigFile(ini,format("%s_reflectivityGrid_%02u_insertOpts",sectionName.c_str(),i));
+
+		// Add the map and its params to the list of "to-create":
+		this->push_back(init);
+	} // end for i
+
 	// Colour points map:
 	n = ini.read_int(sectionName,"colourPointsMap_count",0);
 	for (unsigned int i=0;i<n;i++)
@@ -1372,6 +1533,8 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_gasGridMaps,bool,	options.enableInsertion_gasGridMaps,	ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_beaconMap,bool,	options.enableInsertion_beaconMap,		ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_heightMaps,bool,	options.enableInsertion_heightMaps,		ini,sectionName);
+	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_reflectivityMaps,bool,	options.enableInsertion_reflectivityMaps,		ini,sectionName);
+	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_colourPointsMaps,bool,	options.enableInsertion_colourPointsMaps,		ini,sectionName);
 
 	MRPT_END;
 }
@@ -1387,27 +1550,16 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 	out.printf("             Set of internal maps for 'CMultiMetricMap' object\n\n");
 	out.printf("====================================================================\n");
 
-	out.printf("likelihoodMapSelection                  = %i (",static_cast<int>(options.likelihoodMapSelection));
+	out.printf("likelihoodMapSelection                  = %s\n",
+		TEnumType<CMultiMetricMap::TOptions::TMapSelectionForLikelihood>::value2name(options.likelihoodMapSelection).c_str() );
 
-	switch(options.likelihoodMapSelection)
-	{
-	case -1:	out.printf("Fuse from all maps)\n"); break;
-	case 0:		out.printf("OccupancyGrid Map)\n"); break;
-	case 1:		out.printf("Point Map)\n"); break;
-	case 2:		out.printf("Landmark Map)\n"); break;
-	case 3:		out.printf("Gas grid Map)\n"); break;
-	case 4:		out.printf("Beacon Map)\n"); break;
-	case 5:		out.printf("Height Map)\n"); break;
-	default:
-			THROW_EXCEPTION("Invalid value!");
-	}
-
-	out.printf("enableInsertion_pointsMap               = %s\n",options.enableInsertion_pointsMap? "true":"false");
-	out.printf("enableInsertion_landmarksMap            = %s\n",options.enableInsertion_landmarksMap? "true":"false");
-	out.printf("enableInsertion_beaconMap               = %s\n",options.enableInsertion_beaconMap? "true":"false");
-	out.printf("enableInsertion_gridMaps                = %s\n",options.enableInsertion_gridMaps? "true":"false");
-	out.printf("enableInsertion_gasGridMaps             = %s\n",options.enableInsertion_gasGridMaps? "true":"false");
-	out.printf("enableInsertion_heightMaps              = %s\n",options.enableInsertion_heightMaps? "true":"false");
+	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_pointsMap		, bool)
+	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_landmarksMap		, bool)
+	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_beaconMap		, bool)
+	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_gridMaps		, bool)
+	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_gasGridMaps		, bool)
+	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_reflectivityMaps		, bool)
+	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_colourPointsMaps		, bool)
 
 	// Show each map:
 	out.printf("Showing next the %u internal maps:\n\n", (int)size());
@@ -1480,6 +1632,18 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 			it->heightMap_options.insertionOpts.dumpToTextStream(out);
 		}
 		else
+		if (it->metricMapClassType==CLASS_ID(CReflectivityGridMap2D))
+		{
+			out.printf("m_disableSaveAs3DObject                   = %s\n",it->m_disableSaveAs3DObject ? "true":"false");
+			out.printf("min_x                                     = %f\n", it->reflectivityMap_options.min_x );
+			out.printf("max_x                                     = %f\n", it->reflectivityMap_options.max_x );
+			out.printf("min_y                                     = %f\n", it->reflectivityMap_options.min_y );
+			out.printf("max_y                                     = %f\n", it->reflectivityMap_options.max_y );
+			out.printf("resolution                                = %f\n", it->reflectivityMap_options.resolution );
+
+			it->reflectivityMap_options.insertionOpts.dumpToTextStream(out);
+		}
+		else
 		if (it->metricMapClassType==CLASS_ID(CSimplePointsMap))
 		{
 			out.printf("m_disableSaveAs3DObject                 = %s\n",it->m_disableSaveAs3DObject ? "true":"false");
@@ -1546,6 +1710,13 @@ void  CMultiMetricMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) c
 	{
 		std::deque<CHeightGridMap2DPtr>::const_iterator	it;
 		for (it = m_heightMaps.begin();it!=m_heightMaps.end();it++)
+			(*it)->getAs3DObject( outObj );
+	}
+
+	// Reflexivity grids maps:
+	{
+		std::deque<CReflectivityGridMap2DPtr>::const_iterator	it;
+		for (it = m_reflectivityMaps.begin();it!=m_reflectivityMaps.end();it++)
 			(*it)->getAs3DObject( outObj );
 	}
 
@@ -1662,13 +1833,17 @@ void  CMultiMetricMap::TOptions::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase	&source,
 	const std::string		&section)
 {
-	MRPT_LOAD_CONFIG_VAR_CAST(likelihoodMapSelection, int, CMultiMetricMap::TOptions::TMapSelectionForLikelihood, source,section );
+	likelihoodMapSelection = source.read_enum<TMapSelectionForLikelihood>(section,"likelihoodMapSelection",likelihoodMapSelection);
 
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_pointsMap, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_landmarksMap, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_gridMaps, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_gasGridMaps, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_beaconMap, bool,  source, section );
+	MRPT_LOAD_CONFIG_VAR(enableInsertion_heightMaps, bool,  source, section );
+	MRPT_LOAD_CONFIG_VAR(enableInsertion_reflectivityMaps, bool,  source, section );
+	MRPT_LOAD_CONFIG_VAR(enableInsertion_colourPointsMaps, bool,  source, section );
+
 }
 
 /** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.

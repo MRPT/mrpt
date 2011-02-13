@@ -46,6 +46,10 @@
 		- mrpt::opengl::CTextMessageCapable: A refactoring of the capability to display text messages on opengl views.
 		- mrpt::utils::PLY_Importer & mrpt::utils::PLY_Exporter: Support for Stanford's PLY file format in different 3D point cloud classes. See also: http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
 		- mrpt::hwdrivers::CIbeoLuxETH a driver for Ibeo Lux laser scanners through Ethernet. Contributed by Jan Girlich, University of Hamburg.
+		- Support for "reflectivity" maps and observations:
+			- [mrpt-obs] mrpt::slam::CObservationReflectivity
+			- [mrpt-maps] mrpt::slam::CReflectivityGridMap2D
+		- mrpt::slam::CLogOddsGridMap2D, a new class due to a refactoring of mrpt::slam::COccupancyGridMap2D.		
 	- MRPT libraries or "modules":
 		- mrpt-detectors is no longer marked as "experimental".
 		- mrpt-monoslam is no longer shown in the graph of libraries since it's unmaintained.

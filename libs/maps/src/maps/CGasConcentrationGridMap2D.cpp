@@ -1789,14 +1789,6 @@ float  CGasConcentrationGridMap2D::compute3DMatchingRatio(
 
 
 /*---------------------------------------------------------------
-					auxParticleFilterCleanUp
- ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::auxParticleFilterCleanUp()
-{
-
-}
-
-/*---------------------------------------------------------------
 					computeMeanCellValue_DM_DMV
  ---------------------------------------------------------------*/
 double  CGasConcentrationGridMap2D::computeMeanCellValue_DM_DMV (const TGasConcentrationCell *cell ) const

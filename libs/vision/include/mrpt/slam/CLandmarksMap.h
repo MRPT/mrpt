@@ -604,7 +604,7 @@ namespace slam
 		/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
 		  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
 		  */
-		void  auxParticleFilterCleanUp();
+		virtual void  auxParticleFilterCleanUp();
 
 	}; // End of class def.
 

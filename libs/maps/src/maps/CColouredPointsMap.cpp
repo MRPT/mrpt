@@ -1370,13 +1370,6 @@ bool  CColouredPointsMap::internal_insertObservation(
 }
 
 /*---------------------------------------------------------------
-					auxParticleFilterCleanUp
- ---------------------------------------------------------------*/
-void  CColouredPointsMap::auxParticleFilterCleanUp()
-{
-}
-
-/*---------------------------------------------------------------
 					reserve
  ---------------------------------------------------------------*/
 void CColouredPointsMap::reserve(size_t newLength)

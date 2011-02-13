@@ -29,7 +29,6 @@
 #include <mrpt/maps.h>  // Precompiled header
 
 
-
 // Force size_x being a multiple of 16 cells
 //#define		ROWSIZE_MULTIPLE_16
 
@@ -66,18 +65,9 @@ std::vector<float>		COccupancyGridMap2D::entropyTable;
 
 #define	MAX_H		0.69314718055994531f	// ln(2)
 
-/** A lookup table to compute occupancy probabilities in [0,1] from integer log-odds values in the cells, using \f$ p(m_{xy}) = \frac{1}{1+exp(-log_odd)} \f$.
-  */
-std::vector<float>		COccupancyGridMap2D::logoddsTable;
 
-std::vector<uint8_t>	COccupancyGridMap2D::logoddsTable_255;
-
-std::vector<COccupancyGridMap2D::cellType> 	COccupancyGridMap2D::p2lTable;
-
-float *		COccupancyGridMap2D::logoddsTablePtr		= NULL;
-uint8_t *	COccupancyGridMap2D::logoddsTable_255Ptr	= NULL;
-COccupancyGridMap2D::cellType * 	COccupancyGridMap2D::p2lTablePtr			= NULL;
-
+// Static lookup tables for log-odds
+CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>  COccupancyGridMap2D::m_logodd_lut; 
 
 /*---------------------------------------------------------------
 						Constructor
@@ -103,55 +93,9 @@ COccupancyGridMap2D::COccupancyGridMap2D(
 		likelihoodOutputs(),
 		CriticalPointsList()
 {
-	MRPT_START;
-
-	// Create look-up table:
-	// -----------------------------------
-#ifdef	OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS
-	size_t  	desiSize = (1<<16);
-#else
-	size_t  	desiSize = (1<<8);
-#endif
-
-	if (logoddsTable.size()!= desiSize )
-	{
-		logoddsTable.resize( desiSize );
-		logoddsTable_255.resize( desiSize );
-		for (int i=OCCGRID_CELLTYPE_MIN;i<=OCCGRID_CELLTYPE_MAX;i++)
-		{
-			float f = 1.0f / (1.0f + exp( - i * OCCGRID_LOGODD_K_INV ) );
-			unsigned int idx =  -OCCGRID_CELLTYPE_MIN+i;
-			logoddsTable[idx] = f;
-			logoddsTable_255[idx] = (uint8_t)(f*255.0f);
-		}
-		logoddsTablePtr = &logoddsTable[0];
-		logoddsTable_255Ptr = &logoddsTable_255[0];
-
-		// Build the p2lTable as well:
-		p2lTable.resize( OCCGRID_P2LTABLE_SIZE+1 );
-		double K = 1.0 / OCCGRID_P2LTABLE_SIZE;
-		for (int j=0;j<=OCCGRID_P2LTABLE_SIZE;j++)
-		{
-			double p = j*K;
-			if (p==0)
-				p=1e-14;
-			else if (p==1)
-				p=1-1e-14;
-
-			double logodd = log(p)-log(1-p);
-			int   L = round(logodd * OCCGRID_LOGODD_K);
-			if (L>OCCGRID_CELLTYPE_MAX)
-				L=OCCGRID_CELLTYPE_MAX;
-			else if (L<OCCGRID_CELLTYPE_MIN)
-				L=OCCGRID_CELLTYPE_MIN;
-			p2lTable[j] = L;
-		}
-		p2lTablePtr = &p2lTable[0];
-	}
-
+	MRPT_START
 	setSize(min_x,max_x,min_y,max_y, resolution,0.5f );
-
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -4306,14 +4250,6 @@ float  COccupancyGridMap2D::compute3DMatchingRatio(
 	MRPT_UNUSED_PARAM(minMahaDistForCorr);
 
 	return 0;
-}
-
-/*---------------------------------------------------------------
-					auxParticleFilterCleanUp
- ---------------------------------------------------------------*/
-void  COccupancyGridMap2D::auxParticleFilterCleanUp()
-{
-
 }
 
 /*---------------------------------------------------------------

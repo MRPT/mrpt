@@ -26,76 +26,51 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef CHeightGridMap2D_H
-#define CHeightGridMap2D_H
+#ifndef CReflectivityGridMap2D_H
+#define CReflectivityGridMap2D_H
 
 #include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/geometry.h>
-#include <mrpt/system/os.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/stl_extensions.h>
 
 #include <mrpt/slam/CMetricMap.h>
+#include <mrpt/slam/CLogOddsGridMap2D.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
-	namespace poses
-	{
-		class CPose2D;
-	}
 	namespace slam
 	{
 		using namespace mrpt::utils;
 
 		class CObservation;
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CHeightGridMap2D, CMetricMap, MAPS_IMPEXP  )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CReflectivityGridMap2D, CMetricMap, MAPS_IMPEXP  )
 
-		/** The contents of each cell in a CHeightGridMap2D map.
-		 **/
-		struct MAPS_IMPEXP THeightGridmapCell
-		{
-			/** Constructor
-			  */
-			THeightGridmapCell() : h(0), w(0)
-			{}
-
-			/** The current average height (in meters).
-			  */
-			float	h;
-
-			/** The current standard deviation of the height (in meters).
-			  */
-			float	var;
-
-			/** Auxiliary variable for storing the incremental mean value (in meters).
-			  */
-			float	u;
-
-			/** Auxiliary (in meters).
-			  */
-			float	v;
-
-
-			/** [mrSimpleAverage model] The accumulated weight: initially zero if un-observed, increased by one for each observation.
-			  */
-			uint32_t	w;
-		};
-
-		/** A mesh representation of a surface which keeps the estimated height for each (x,y) location.
-		  *  Important implemented features are the insertion of 2D laser scans (from arbitrary 6D poses) and the exportation as 3D scenes.
+		/** A 2D grid map representing the reflectivity of the environment (for example, measured with an IR proximity sensor).
+		  *
+		  *  Important implemented features are: 
+		  *		- Insertion of mrpt::slam::CObservationReflectivity observations.
+		  *		- Probability estimation of observations. See base class.
+		  *		- Rendering as 3D object: a 2D textured plane.
+		  *		- Automatic resizing of the map limits when inserting observations close to the border.
 		  *
 		  *   Each cell contains the up-to-date average height from measured falling in that cell. Algorithms that can be used:
 		  *		- mrSimpleAverage: Each cell only stores the current average value.
 		  */
-		class MAPS_IMPEXP CHeightGridMap2D : public CMetricMap, public utils::CDynamicGrid<THeightGridmapCell>
+		class MAPS_IMPEXP CReflectivityGridMap2D : 
+			public CMetricMap, 
+			public utils::CDynamicGrid<int8_t>,
+			public CLogOddsGridMap2D<int8_t>
 		{
 			// This must be added to any CSerializable derived class:
-			DEFINE_SERIALIZABLE( CHeightGridMap2D )
+			DEFINE_SERIALIZABLE( CReflectivityGridMap2D )
+
+		protected:
+			static CLogOddsGridMapLUT<cell_t>  m_logodd_lut; //!< Lookup tables for log-odds
+
 		public:
 
 			/** Calls the base CMetricMap::clear
@@ -103,24 +78,14 @@ namespace mrpt
 			  */
 			inline void clear() { CMetricMap::clear(); }
 
-			float cell2float(const THeightGridmapCell& c) const
+			float cell2float(const int8_t& c) const
 			{
-				return float(c.h);
+				return m_logodd_lut.l2p(c);
 			}
-
-			/** The type of map representation to be used.
-			  *  See mrpt::slam::CHeightGridMap2D for discussion.
-			  */
-			enum TMapRepresentation
-			{
-				mrSimpleAverage = 0
-//				mrSlidingWindow
-			};
 
 			/** Constructor
 			  */
-			CHeightGridMap2D(
-				TMapRepresentation	mapType = mrSimpleAverage,
+			CReflectivityGridMap2D(
 				float				x_min = -2,
 				float				x_max = 2,
 				float				y_min = -2,
@@ -160,16 +125,6 @@ namespace mrpt
 				  */
 				void  dumpToTextStream(CStream	&out) const;
 
-				/** Wether to perform filtering by z-coordinate (default=false): coordinates are always RELATIVE to the robot for this filter.
-				  */
-				bool	filterByHeight;
-
-				/** Only when filterByHeight is true: coordinates are always RELATIVE to the robot for this filter.
-				  */
-				float	z_min,z_max;
-
-				float	minDistBetweenPointsWhenInserting;	//!< When inserting a scan, a point cloud is first created with this minimum distance between the 3D points (default=0).
-
 			} insertionOptions;
 
 			/** Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
@@ -200,28 +155,11 @@ namespace mrpt
 			  */
 			void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
-			/** Return the type of the gas distribution map, according to parameters passed on construction.
+			/** Returns the grid as a 8-bit graylevel image, where each pixel is a cell (output image is RGB only if forceRGB is true)
 			  */
-			TMapRepresentation	 getMapType();
-
-
-			/** Gets the intersection between a 3D line and a Height Grid map (taking into account the different heights of each individual cell).
-			  */
-			bool intersectLine3D(const TLine3D &r1, TObject3D &obj) const;
-
-			/** Computes the minimum and maximum height in the grid.
-			  * \return False if there is no observed cell yet.
-			  */
-			bool getMinMaxHeight(float &z_min, float &z_max) const;
-
-			/** Return the number of cells with at least one height data inserted. */
-			size_t countObservedCells() const; 
+			void  getAsImage( utils::CImage	&img, bool verticalFlip = false, bool forceRGB=false) const;
 
 		protected:
-
-			/** The map representation type of this map.
-			  */
-			TMapRepresentation		m_mapType;
 
 			 /** Erase all the contents of the map
 			  */
@@ -241,28 +179,6 @@ namespace mrpt
 
 	} // End of namespace
 
-	namespace global_settings
-	{
-		/** If set to true (default), mrpt::slam::CHeightGridMap2D will be exported as a opengl::CMesh, otherwise, as a opengl::CPointCloudColoured
-		  * Affects to:
-		  *		- CHeightGridMap2D::getAs3DObject
-		  */
-		extern MAPS_IMPEXP bool HEIGHTGRIDMAP_EXPORT3D_AS_MESH;
-	}
-
-	// Specializations MUST occur at the same namespace:
-	namespace utils
-	{
-		template <>
-		struct TEnumTypeFiller<slam::CHeightGridMap2D::TMapRepresentation>
-		{
-			typedef slam::CHeightGridMap2D::TMapRepresentation enum_t;
-			static void fill(bimap<enum_t,std::string>  &m_map)
-			{
-				m_map.insert(slam::CHeightGridMap2D::mrSimpleAverage,     "mrSimpleAverage");
-			}
-		};
-	} // End of namespace
 
 } // End of namespace
 

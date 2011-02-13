@@ -47,6 +47,7 @@
 #include <mrpt/slam/CObservationOdometry.h>
 #include <mrpt/slam/CObservationBearingRange.h>
 #include <mrpt/slam/CObservationComment.h>
+#include <mrpt/slam/CObservationReflectivity.h>
 #include <mrpt/slam/CSensoryFrame.h>
 
 // Observations:

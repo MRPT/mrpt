@@ -35,6 +35,7 @@
 #include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/utils/TMatchingPair.h>
+#include <mrpt/slam/CLogOddsGridMap2D.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
@@ -49,27 +50,6 @@
 #if defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) && defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)
 		#error Only one of OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS or OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS must be defined at a time.
 #endif
-
-// Discrete to float conversion factors:
-#ifdef	OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS
-	/** The min/max values of the integer cell type, eg.[0,255] or [0,65535]
-	  */
-	#define	OCCGRID_CELLTYPE_MIN 	(-32768)
-	#define	OCCGRID_CELLTYPE_MAX 	(32767)
-
-	#define OCCGRID_P2LTABLE_SIZE	(32767)
-#else
-	/** The min/max values of the integer cell type, eg.[0,255] or [0,65535]
-	  */
-	#define	OCCGRID_CELLTYPE_MIN 	(-128)
-	#define	OCCGRID_CELLTYPE_MAX 	(127)
-
-	#define OCCGRID_P2LTABLE_SIZE	(128)
-#endif
-
-// The factor for converting log2-odds into integers:
-#define OCCGRID_LOGODD_K   		(16)
-#define OCCGRID_LOGODD_K_INV   (1.0f/OCCGRID_LOGODD_K)
 
 
 namespace mrpt
@@ -108,35 +88,45 @@ namespace slam
 	 *		- Entropy and information methods (See computeEntropy)
 	 *
 	 **/
-	class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap
+	class MAPS_IMPEXP COccupancyGridMap2D : 
+		public CMetricMap,
+		// Inherit from the corresponding specialization of CLogOddsGridMap2D<>:
+#ifdef	OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
+		public CLogOddsGridMap2D<int8_t>
+#else
+		public CLogOddsGridMap2D<int16_t>
+#endif
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( COccupancyGridMap2D )
 
 	public:
+	/** The type of the map cells: */
 #ifdef	OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
-		/** The type of the map cells:
-		  */
 		typedef int8_t  cellType;
 		typedef uint8_t cellTypeUnsigned;
-#endif
-#ifdef	OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS
-		/** The type of the map cells:
-		  */
+#else
 		typedef int16_t  cellType;
 		typedef uint16_t cellTypeUnsigned;
 #endif
+
+	/** Discrete to float conversion factors: The min/max values of the integer cell type, eg.[0,255] or [0,65535] */
+	static const cellType OCCGRID_CELLTYPE_MIN  = CLogOddsGridMap2D<cellType>::CELLTYPE_MIN;
+	static const cellType OCCGRID_CELLTYPE_MAX  = CLogOddsGridMap2D<cellType>::CELLTYPE_MAX;
+	static const cellType OCCGRID_P2LTABLE_SIZE = CLogOddsGridMap2D<cellType>::P2LTABLE_SIZE;
 
 	protected:
 
 		friend class CMultiMetricMap;
 		friend class CMultiMetricMapPDF;
 
+		static CLogOddsGridMapLUT<cellType>  m_logodd_lut; //!< Lookup tables for log-odds
+
 		/** This is the buffer for storing the cells.In this dynamic
 		 *   size buffer are stored the cell values as
 		 *   "bytes", stored row by row, from left to right cells.
 		 */
-		std::vector<cellType>		map;
+		std::vector<cellType>    map;
 
 		/** The size of the grid in cells.
 		 */
@@ -154,9 +144,6 @@ namespace slam
 		  */
 		std::vector<double>		precomputedLikelihood;
 		bool					precomputedLikelihoodToBeRecomputed;
-
-		//std::vector<unsigned char>	basis_map;
-		//std::vector<int>			voronoi_diagram;
 
 		/** Used for Voronoi calculation.Same struct as "map", but contains a "0" if not a basis point. */
 		CDynamicGrid<uint8_t>	m_basis_map;
@@ -210,27 +197,6 @@ namespace slam
 		/** Internally used to speed-up entropy calculation
 		  */
 		static std::vector<float>		entropyTable;
-
-		/** A lookup table to compute occupancy probabilities in [0,1] from integer log-odds values in the cells, using \f$ p(m_{xy}) = \frac{1}{1+exp(-log_odd)} \f$.
-		  */
-		static std::vector<float>		logoddsTable;
-
-		/** A lookup table to compute occupancy probabilities in the range [0,255] from integer log-odds values in the cells, using \f$ p(m_{xy}) = \frac{1}{1+exp(-log_odd)} \f$.
-		  *  This is used to speed-up conversions to grayscale images.
-		  */
-		static std::vector<uint8_t>		logoddsTable_255;
-
-		/** A pointer to the vector logoddsTable */
-		static float*					logoddsTablePtr;
-
-		/** A pointer to the vector logoddsTable_255 */
-		static uint8_t*					logoddsTable_255Ptr;
-
-		/** A lookup table for passing from float to log-odds as cellType. */
-		static std::vector<cellType> 	p2lTable;
-
-		/** A pointer to the vector p2lTable */
-		static cellType*				p2lTablePtr;
 
 
 		/** One of the methods that can be selected for implementing "computeObservationLikelihood" (This method is the Range-Scan Likelihood Consensus for gridmaps, see the ICRA2007 paper by Blanco et al.)
@@ -297,85 +263,6 @@ namespace slam
 		  * \sa updateInfoChangeOnly, updateCell_fast_occupied, updateCell_fast_free
 		 */
 		void  updateCell(int x,int y, float v);
-
-		/** Performs the Bayesian fusion of a new observation of a cell, without checking for grid limits nor updateInfoChangeOnly.
-		  * This method increases the "occupancy-ness" of a cell, managing possible saturation.
-		  *  \param x Cell index in X axis.
-		  *  \param y Cell index in Y axis.
-		  *  \param logodd_obs Observation of the cell, in log-odd form as transformed by p2l.
-		  *  \param thres  This must be OCCGRID_CELLTYPE_MIN+logodd_obs
-		  * \sa updateCell, updateCell_fast_free
-		 */
-		inline static void  updateCell_fast_occupied(
-			const unsigned	&x,
-			const unsigned	&y,
-			const cellType	&logodd_obs,
-			const cellType  &thres,
-			cellType		*mapArray,
-			const unsigned	&_size_x)
-		{
-			cellType *theCell = mapArray + (x+y*_size_x);
-			if (*theCell > thres )
-					*theCell -= logodd_obs;
-			else	*theCell = OCCGRID_CELLTYPE_MIN;
-		}
-
-		/** Performs the Bayesian fusion of a new observation of a cell, without checking for grid limits nor updateInfoChangeOnly.
-		  * This method increases the "occupancy-ness" of a cell, managing possible saturation.
-		  *  \param theCell The cell to modify
-		  *  \param logodd_obs Observation of the cell, in log-odd form as transformed by p2l.
-		  *  \param thres  This must be OCCGRID_CELLTYPE_MIN+logodd_obs
-		  * \sa updateCell, updateCell_fast_free
-		 */
-		inline static void  updateCell_fast_occupied(
-			cellType		*theCell,
-			const cellType	&logodd_obs,
-			const cellType  &thres )
-		{
-			if (*theCell > thres )
-					*theCell -= logodd_obs;
-			else	*theCell = OCCGRID_CELLTYPE_MIN;
-		}
-
-		/** Performs the Bayesian fusion of a new observation of a cell, without checking for grid limits nor updateInfoChangeOnly.
-		  * This method increases the "free-ness" of a cell, managing possible saturation.
-		  *  \param x Cell index in X axis.
-		  *  \param y Cell index in Y axis.
-		  *  \param logodd_obs Observation of the cell, in log-odd form as transformed by p2l.
-		  *  \param thres  This must be OCCGRID_CELLTYPE_MAX-logodd_obs
-		  * \sa updateCell_fast_occupied
-		 */
-		inline static void  updateCell_fast_free(
-			const unsigned	&x,
-			const unsigned	&y,
-			const cellType	&logodd_obs,
-			const cellType  &thres,
-			cellType		*mapArray,
-			const unsigned	&_size_x)
-		{
-			cellType *theCell = mapArray + (x+y*_size_x);
-			if (*theCell < thres )
-					*theCell += logodd_obs;
-			else	*theCell = OCCGRID_CELLTYPE_MAX;
-		}
-
-		/** Performs the Bayesian fusion of a new observation of a cell, without checking for grid limits nor updateInfoChangeOnly.
-		  * This method increases the "free-ness" of a cell, managing possible saturation.
-		  *  \param x Cell index in X axis.
-		  *  \param y Cell index in Y axis.
-		  *  \param logodd_obs Observation of the cell, in log-odd form as transformed by p2l.
-		  *  \param thres  This must be OCCGRID_CELLTYPE_MAX-logodd_obs
-		  * \sa updateCell_fast_occupied
-		 */
-		inline static void  updateCell_fast_free(
-			cellType		*theCell,
-			const cellType	&logodd_obs,
-			const cellType  &thres)
-		{
-			if (*theCell < thres )
-					*theCell += logodd_obs;
-			else	*theCell = OCCGRID_CELLTYPE_MAX;
-		}
 
 		/** An internal structure for storing data related to counting the new information apported by some observation.
 		  */
@@ -497,23 +384,23 @@ namespace slam
 
 		/** Scales an integer representation of the log-odd into a real valued probability in [0,1], using p=exp(l)/(1+exp(l))
 		  */
-		static inline float l2p(const cellType  &l)
+		static inline float l2p(const cellType  l)
 		{
-			return logoddsTablePtr[ -OCCGRID_CELLTYPE_MIN+l ];
+			return m_logodd_lut.l2p(l);
 		}
 
 		/** Scales an integer representation of the log-odd into a linear scale [0,255], using p=exp(l)/(1+exp(l))
 		  */
-		static inline uint8_t l2p_255(const cellType  &l)
+		static inline uint8_t l2p_255(const cellType l)
 		{
-			return logoddsTable_255Ptr[ -OCCGRID_CELLTYPE_MIN+l ];
+			return m_logodd_lut.l2p_255(l);
 		}
 
 		/** Scales a real valued probability in [0,1] to an integer representation of: log(p)-log(1-p)  in the valid range of cellType.
 		  */
-		static inline cellType p2l(const float &p)
+		static inline cellType p2l(const float p)
 		{
-			return p2lTablePtr[ (int)(p * OCCGRID_P2LTABLE_SIZE) ];
+			return m_logodd_lut.p2l(p);
 		}
 
 		/** Change the contents [0,1] of a cell, given its index.
@@ -1164,11 +1051,6 @@ namespace slam
 			 */
 			std::vector<int>       x_basis1,y_basis1, x_basis2,y_basis2;
 		} CriticalPointsList;
-
-		/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
-		  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
-		  */
-		void  auxParticleFilterCleanUp();
 
 
 	private:

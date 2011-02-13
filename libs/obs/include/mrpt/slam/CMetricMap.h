@@ -318,7 +318,10 @@ namespace mrpt
 			/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
 			  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
 			  */
-			virtual void  auxParticleFilterCleanUp() = 0;
+			virtual void  auxParticleFilterCleanUp() 
+			{ 
+				// Default implementation: do nothing.
+			}
 
 			/** Returns the square distance from the 2D point (x0,y0) to the closest correspondence in the map.
 			  */

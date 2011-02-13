@@ -26,23 +26,60 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_maps_H
-#define _mrpt_maps_H
+#include <mrpt/obs.h>   // Precompiled headers
 
-#include <mrpt/obs.h> // dependencies
+#include <mrpt/slam/CObservationReflectivity.h>
 
-#include <mrpt/slam/CBeacon.h>
-#include <mrpt/slam/CBeaconMap.h>
-#include <mrpt/slam/CColouredPointsMap.h>
-#include <mrpt/slam/CGasConcentrationGridMap2D.h>
-#include <mrpt/slam/CHeightGridMap2D.h>
-#include <mrpt/slam/CReflectivityGridMap2D.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CPointsMap.h>
+using namespace mrpt::slam; 
+using namespace mrpt::utils; 
+using namespace mrpt::poses;
 
-#include <mrpt/opengl/CAngularObservationMesh.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
+// This must be added to any CSerializable class implementation file.
+IMPLEMENTS_SERIALIZABLE(CObservationReflectivity, CObservation,mrpt::slam)
 
-#endif
+
+/** Default constructor.
+ */
+CObservationReflectivity::CObservationReflectivity( ) :
+	reflectivityLevel ( 0.5f ),
+	sensorPose(),
+	sensorStdNoise( 0.2f )
+{
+}
+
+CObservationReflectivity::~CObservationReflectivity()
+{
+}
+
+/*---------------------------------------------------------------
+  Implements the writing to a CStream capability of CSerializable objects
+ ---------------------------------------------------------------*/
+void  CObservationReflectivity::writeToStream(CStream &out, int *version) const
+{
+	if (version)
+		*version = 0;
+	else
+	{
+		out << reflectivityLevel << sensorPose;
+		out << sensorLabel
+			<< timestamp;
+	}
+}
+
+/*---------------------------------------------------------------
+  Implements the reading from a CStream capability of CSerializable objects
+ ---------------------------------------------------------------*/
+void  CObservationReflectivity::readFromStream(CStream &in, int version)
+{
+	switch(version)
+	{
+	case 0:
+		{
+			in >> reflectivityLevel >> sensorPose;
+			in >> sensorLabel
+			   >> timestamp;
+		} break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	};
+}

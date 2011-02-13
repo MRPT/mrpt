@@ -356,11 +356,6 @@ namespace slam
 		  */
 		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
-		/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
-		  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
-		  */
-		void  auxParticleFilterCleanUp();
-
 		/** Returns a pointer to the beacon with the given ID, or NULL if it does not exist.
 		  */
 		const CBeacon * getBeaconByID( CBeacon::TBeaconID  id ) const;

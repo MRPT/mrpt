@@ -31,6 +31,7 @@
 #include <mrpt/slam/COccupancyGridMap2D.h>
 #include <mrpt/slam/CGasConcentrationGridMap2D.h>
 #include <mrpt/slam/CHeightGridMap2D.h>
+#include <mrpt/slam/CReflectivityGridMap2D.h>
 #include <mrpt/slam/CSimplePointsMap.h>
 #include <mrpt/slam/CColouredPointsMap.h>
 #include <mrpt/slam/CLandmarksMap.h>
@@ -38,6 +39,7 @@
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/utils/TEnumType.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
@@ -61,6 +63,7 @@ namespace slam
 	 *		- mrpt::slam::CGasConcentrationGridMap2D: For gas concentration maps.
 	 *		- mrpt::slam::CBeaconMap: For range-only SLAM.
 	 *		- mrpt::slam::CHeightGridMap2D: For maps of height for each (x,y) location.
+	 *		- mrpt::slam::CReflectivityGridMap2D: For maps of "reflectivity" for each (x,y) location.
 	 *		- mrpt::slam::CColouredPointsMap: For points map with color.
 	 *
 	 *  See CMultiMetricMap::setListOfMaps() for the method for initializing this class, and also
@@ -109,6 +112,7 @@ namespace slam
 							enableInsertion_gasGridMaps(true),
 							enableInsertion_beaconMap(true),
 							enableInsertion_heightMaps(true),
+							enableInsertion_reflectivityMaps(true),
 							enableInsertion_colourPointsMaps(true)
 			{
 			}
@@ -124,8 +128,9 @@ namespace slam
 			void  dumpToTextStream(CStream	&out) const;
 
 			/** This selects the map to be used when computing the likelihood of an observation.
-			* \sa computeObservationLikelihood
-			*/
+			 * This enum has a corresponding mrpt::utils::TEnumType<> specialization.
+			 * \sa computeObservationLikelihood
+			 */
 			enum TMapSelectionForLikelihood
 			{
 				mapFuseAll = -1,
@@ -135,67 +140,37 @@ namespace slam
 				mapGasGrid,
 				mapBeacon,
 				mapHeight,
-				mapColourPoints
+				mapColourPoints,
+				mapReflectivity
 			} likelihoodMapSelection;
 
-			/** Default = true (set to false to avoid "insertObservation" to update a given map)
-			  */
-			bool	enableInsertion_pointsMap;
-
-			/** Default = true (set to false to avoid "insertObservation" to update a given map)
-			  */
-			bool	enableInsertion_landmarksMap;
-
-			/** Default = true (set to false to avoid "insertObservation" to update a given map)
-			  */
-			bool	enableInsertion_gridMaps;
-
-			/** Default = true (set to false to avoid "insertObservation" to update a given map)
-			  */
-			bool	enableInsertion_gasGridMaps;
-
-			/** Default = true (set to false to avoid "insertObservation" to update a given map)
-			  */
-			bool	enableInsertion_beaconMap;
-
-			/** Default = true (set to false to avoid "insertObservation" to update a given map)
-			  */
-			bool	enableInsertion_heightMaps;
-
-			/** Default = true (set to false to avoid "insertObservation" to update a given map)
-			  */
-			bool	enableInsertion_colourPointsMaps;
-
+			bool	enableInsertion_pointsMap;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
+			bool	enableInsertion_landmarksMap;		//!< Default = true (set to false to avoid "insertObservation" to update a given map)
+			bool	enableInsertion_gridMaps;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
+			bool	enableInsertion_gasGridMaps;		//!< Default = true (set to false to avoid "insertObservation" to update a given map)
+			bool	enableInsertion_beaconMap;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
+			bool	enableInsertion_heightMaps;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
+			bool	enableInsertion_reflectivityMaps;	//!< Default = true (set to false to avoid "insertObservation" to update a given map)
+			bool	enableInsertion_colourPointsMaps;	//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 
 		} options;
 
-		/** Some of the internal metric maps (the number of point-maps depends on the the TSetOfMetricMapInitializers passed to the constructor of this class)
-		 */
-		std::deque<CSimplePointsMapPtr>		m_pointsMaps;
-
-		/** One of the internal metric map (will be NULL if not used, what comes from the TSetOfMetricMapInitializers passed to the constructor of this class)
-		 */
-		CLandmarksMapPtr					m_landmarksMap;
-
-		/** One of the internal metric map (will be NULL if not used, what comes from the TSetOfMetricMapInitializers passed to the constructor of this class)
-		 */
-		CBeaconMapPtr						m_beaconMap;
-
-		/** Some of the internal metric maps (the number of gridmaps depends on the the TSetOfMetricMapInitializers passed to the constructor of this class)
-		 */
-		std::deque<COccupancyGridMap2DPtr>	m_gridMaps;
-
-		/** Some of the internal metric maps (the number of gas gridmaps depends on the the TSetOfMetricMapInitializers passed to the constructor of this class)
-		 */
-		std::deque<CGasConcentrationGridMap2DPtr>	m_gasGridMaps;
-
-		/** Some of the internal metric maps (the number of gas gridmaps depends on the the TSetOfMetricMapInitializers passed to the constructor of this class)
-		 */
-		std::deque<CHeightGridMap2DPtr>	m_heightMaps;
-
-		/** One of the internal metric map (will be NULL if not used, what comes from the TSetOfMetricMapInitializers passed to the constructor of this class)
-		 */
-		CColouredPointsMapPtr		m_colourPointsMap;
+		
+		/** @name Internal lists of maps
+		    @{ */
+		// Note: A variable number of maps may exist, depending on the initialization from TSetOfMetricMapInitializers.
+		//       Not used maps are "NULL" or empty smart pointers.
+		
+		std::deque<CSimplePointsMapPtr>              m_pointsMaps;
+		CLandmarksMapPtr                             m_landmarksMap;
+		CBeaconMapPtr                                m_beaconMap;
+		std::deque<COccupancyGridMap2DPtr>           m_gridMaps;
+		std::deque<CGasConcentrationGridMap2DPtr>    m_gasGridMaps;
+		std::deque<CHeightGridMap2DPtr>              m_heightMaps;
+		std::deque<CReflectivityGridMap2DPtr>        m_reflectivityMaps;
+		CColouredPointsMapPtr                        m_colourPointsMap;
+		
+		/** @} */
 
 		/** Constructor.
 		 * \param initializers One internal map will be created for each entry in this "TSetOfMetricMapInitializers" struct, and each map will be initialized with the corresponding options.
@@ -398,6 +373,16 @@ namespace slam
 			CHeightGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
 		} heightMap_options;
 
+		/** Especific options for height grid maps (mrpt::slam::CReflectivityGridMap2D)
+		  */
+		struct SLAM_IMPEXP CReflectivityGridMap2DOptions
+		{
+			CReflectivityGridMap2DOptions();	//!< Default values loader
+
+			float	min_x,max_x,min_y,max_y,resolution;	//!< See CReflectivityGridMap2DOptions::CReflectivityGridMap2DOptions
+			CReflectivityGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
+		} reflectivityMap_options;
+
 		/** Especific options for coloured points maps (mrpt::slam::CPointsMap)
 		  */
 		struct SLAM_IMPEXP CColouredPointsMapOptions
@@ -449,28 +434,32 @@ namespace slam
 		  *
 		  *  \code
 		  * [<sectionName>]
-		  *  ; Creation of maps:
+		  *  // Creation of maps:
 		  *  occupancyGrid_count=<Number of mrpt::slam::COccupancyGridMap2D maps>
 		  *  gasGrid_count=<Number of mrpt::slam::CGasConcentrationGridMap2D maps>
 		  *  landmarksMap_count=<0 or 1, for creating a mrpt::slam::CLandmarksMap map>
 		  *  beaconMap_count=<0 or 1, for creating a mrpt::slam::CBeaconMap map>
 		  *  pointsMap_count=<Number of mrpt::slam::CSimplePointsMap map>
 		  *  heightMap_count=<Number of mrpt::slam::CHeightGridMap2D maps>
+		  *  reflectivityMap_count=<Number of mrpt::slam::CReflectivityGridMap2D maps>
 		  *  colourPointsMap_count=<0 or 1, for creating a mrpt::slam::CColouredPointsMap map>
 		  *
-		  *  ; Selection of map for likelihood: (fuseAll=-1, occGrid=0, points=1,landmarks=2,gasGrid=3,4=landmarks SOG, 5=beacon map, 6=height map)
-		  *  likelihoodMapSelection=[-1, 6]
+		  *  // Selection of map for likelihood. Either a numeric value or the textual enum 
+		  *  //   enum value of slam::CMultiMetricMap::TOptions::TMapSelectionForLikelihood (e.g: either "-1" or "fuseAll", ect...)
+		  *  likelihoodMapSelection = -1
 		  *
-		  *  ; Enables (1) / Disables (0) insertion into specific maps:
+		  *  // Enables (1 or "true") / Disables (0 or "false") insertion into specific maps:
 		  *  enableInsertion_pointsMap=<0/1>
 		  *  enableInsertion_landmarksMap=<0/1>
 		  *  enableInsertion_gridMaps=<0/1>
 		  *  enableInsertion_gasGridMaps=<0/1>
 		  *  enableInsertion_beaconMap=<0/1>
 		  *  enableInsertion_heightMap=<0/1>
+		  *  enableInsertion_reflectivityMap=<0/1>
 		  *  enableInsertion_colourPointsMap=<0/1>
 		  *
-		  * ; Creation Options for OccupancyGridMap ##:
+		  * // ====================================================
+		  * //  Creation Options for OccupancyGridMap ##:
 		  * [<sectionName>+"_occupancyGrid_##_creationOpts"]
 		  *  min_x=<value>
 		  *  max_x=<value>
@@ -478,25 +467,27 @@ namespace slam
 		  *  max_y=<value>
 		  *  resolution=<value>
 		  *
-		  * ; Insertion Options for OccupancyGridMap ##:
+		  * // Insertion Options for OccupancyGridMap ##:
 		  * [<sectionName>+"_occupancyGrid_##_insertOpts"]
 		  *  <See COccupancyGridMap2D::TInsertionOptions>
 		  *
-		  * ; Likelihood Options for OccupancyGridMap ##:
+		  * // Likelihood Options for OccupancyGridMap ##:
 		  * [<sectionName>+"_occupancyGrid_##_likelihoodOpts"]
 		  *  <See COccupancyGridMap2D::TLikelihoodOptions>
 		  *
 		  *
-		  *
-		  * ; Insertion Options for CSimplePointsMap ##:
+		  * // ====================================================
+		  * // Insertion Options for CSimplePointsMap ##:
 		  * [<sectionName>+"_pointsMap_##_insertOpts"]
 		  *  <See CPointsMap::TInsertionOptions>
 		  *
-		  * ; Likelihood Options for CSimplePointsMap ##:
+		  * // Likelihood Options for CSimplePointsMap ##:
 		  * [<sectionName>+"_pointsMap_##_likelihoodOpts"]
 		  *  <See CPointsMap::TLikelihoodOptions>
 		  *
-		  * ; Creation Options for CGasConcentrationGridMap2D ##:
+		  *
+		  * // ====================================================
+		  * // Creation Options for CGasConcentrationGridMap2D ##:
 		  * [<sectionName>+"_gasGrid_##_creationOpts"]
 		  *  mapType= <0-1> ; See CGasConcentrationGridMap2D::CGasConcentrationGridMap2D
 		  *  min_x=<value>
@@ -505,12 +496,13 @@ namespace slam
 		  *  max_y=<value>
 		  *  resolution=<value>
 		  *
-		  * ; Insertion Options for CGasConcentrationGridMap2D ##:
+		  * // Insertion Options for CGasConcentrationGridMap2D ##:
 		  * [<sectionName>+"_gasGrid_##_insertOpts"]
 		  *  <See CGasConcentrationGridMap2D::TInsertionOptions>
 		  *
 		  *
-		  * ; Creation Options for CLandmarksMap ##:
+		  * // ====================================================
+		  * // Creation Options for CLandmarksMap ##:
 		  * [<sectionName>+"_landmarksMap_##_creationOpts"]
 		  *  nBeacons=<# of beacons>
 		  *  beacon_001_ID=67		; The ID and 3D coordinates of each beacon
@@ -518,47 +510,64 @@ namespace slam
 		  *  beacon_001_Y=<x>
 		  *  beacon_001_Z=<x>
 		  *
-		  * ; Insertion Options for CLandmarksMap ##:
+		  * // Insertion Options for CLandmarksMap ##:
 		  * [<sectionName>+"_landmarksMap_##_insertOpts"]
 		  *  <See CLandmarksMap::TInsertionOptions>
 		  *
-		  * ; Likelihood Options for CLandmarksMap ##:
+		  * // Likelihood Options for CLandmarksMap ##:
 		  * [<sectionName>+"_landmarksMap_##_likelihoodOpts"]
 		  *  <See CLandmarksMap::TLikelihoodOptions>
 		  *
 		  *
-		  * ; Insertion Options for CBeaconMap ##:
+		  * // ====================================================
+		  * // Insertion Options for CBeaconMap ##:
 		  * [<sectionName>+"_beaconMap_##_insertOpts"]
 		  *  <See CBeaconMap::TInsertionOptions>
 		  *
-		  * ; Likelihood Options for CBeaconMap ##:
+		  * // Likelihood Options for CBeaconMap ##:
 		  * [<sectionName>+"_beaconMap_##_likelihoodOpts"]
 		  *  <See CBeaconMap::TLikelihoodOptions>
 		  *
-		  * ; Creation Options for HeightGridMap ##:
+		  * // ====================================================
+		  * // Creation Options for HeightGridMap ##:
 		  * [<sectionName>+"_heightGrid_##_creationOpts"]
-		  *  mapType= <0-1> ; See CHeightGridMap2D::CHeightGridMap2D
+		  *  mapType= <0-1> // See CHeightGridMap2D::CHeightGridMap2D
 		  *  min_x=<value>
 		  *  max_x=<value>
 		  *  min_y=<value>
 		  *  max_y=<value>
 		  *  resolution=<value>
 		  *
-		  * ; Insertion Options for HeightGridMap ##:
+		  * // Insertion Options for HeightGridMap ##:
 		  * [<sectionName>+"_heightGrid_##_insertOpts"]
 		  *  <See CHeightGridMap2D::TInsertionOptions>
 		  *
 		  *
-		  * ; Insertion Options for CColouredPointsMap ##:
+		  * // ====================================================
+		  * // Creation Options for ReflectivityGridMap ##:
+		  * [<sectionName>+"_reflectivityGrid_##_creationOpts"]
+		  *  min_x=<value>  // See CReflectivityGridMap2D::CReflectivityGridMap2D
+		  *  max_x=<value>
+		  *  min_y=<value>
+		  *  max_y=<value>
+		  *  resolution=<value>
+		  *
+		  * // Insertion Options for HeightGridMap ##:
+		  * [<sectionName>+"_reflectivityGrid_##_insertOpts"]
+		  *  <See CReflectivityGridMap2D::TInsertionOptions>
+		  *
+		  *
+		  * // ====================================================
+		  * // Insertion Options for CColouredPointsMap ##:
 		  * [<sectionName>+"_colourPointsMap_##_insertOpts"]
 		  *  <See CPointsMap::TInsertionOptions>
 		  *
 		  *
-		  * ; Color Options for CColouredPointsMap ##:
+		  * // Color Options for CColouredPointsMap ##:
 		  * [<sectionName>+"_colourPointsMap_##_colorOpts"]
 		  *  <See CColouredPointsMap::TColourOptions>
 		  *
-		  * ; Likelihood Options for CSimplePointsMap ##:
+		  * // Likelihood Options for CSimplePointsMap ##:
 		  * [<sectionName>+"_colourPointsMap_##_likelihoodOpts"]
 		  *  <See CPointsMap::TLikelihoodOptions>
 		  *
@@ -577,8 +586,33 @@ namespace slam
 		void  dumpToTextStream(CStream	&out) const;
 	};
 
-
 	} // End of namespace
+
+
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<slam::CMultiMetricMap::TOptions::TMapSelectionForLikelihood>
+		{
+			typedef slam::CMultiMetricMap::TOptions::TMapSelectionForLikelihood enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(slam::CMultiMetricMap::TOptions::mapFuseAll,   "mapFuseAll");
+				m_map.insert(slam::CMultiMetricMap::TOptions::mapGrid,      "mapGrid");
+				m_map.insert(slam::CMultiMetricMap::TOptions::mapPoints,    "mrSimpleAverage");
+				m_map.insert(slam::CMultiMetricMap::TOptions::mapLandmarks, "mapLandmarks");
+				m_map.insert(slam::CMultiMetricMap::TOptions::mapGasGrid,   "mapGasGrid");
+				m_map.insert(slam::CMultiMetricMap::TOptions::mapBeacon,    "mapBeacon");
+				m_map.insert(slam::CMultiMetricMap::TOptions::mapHeight,    "mapHeight");
+				m_map.insert(slam::CMultiMetricMap::TOptions::mapColourPoints, "mapColourPoints");
+				m_map.insert(slam::CMultiMetricMap::TOptions::mapReflectivity, "mapReflectivity");
+			}
+		};
+	} // End of namespace
+
+
+
 } // End of namespace
 
 #endif

@@ -1128,13 +1128,6 @@ void  CSimplePointsMap::insertAnotherMap(	CPointsMap			*otherMap,
 	}
 }
 
-/*---------------------------------------------------------------
-					auxParticleFilterCleanUp
- ---------------------------------------------------------------*/
-void  CSimplePointsMap::auxParticleFilterCleanUp()
-{
-
-}
 
 /*---------------------------------------------------------------
 					auxParticleFilterCleanUp

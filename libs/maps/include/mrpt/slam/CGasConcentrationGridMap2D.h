@@ -271,11 +271,6 @@ namespace slam
 		  */
 		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
-		/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
-		  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
-		  */
-		void  auxParticleFilterCleanUp();
-
 		/** Return the type of the gas distribution map, according to parameters passed on construction.
 		  */
 		TMapRepresentation	 getMapType();

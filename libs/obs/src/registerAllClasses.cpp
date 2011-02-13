@@ -61,6 +61,7 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CObservationIMU ) );
 	registerClass( CLASS_ID( CObservationOdometry ) );
 	registerClass( CLASS_ID( CObservationRange ) );
+	registerClass( CLASS_ID( CObservationReflectivity ) );
 	registerClass( CLASS_ID( CObservationStereoImages ) );
 	registerClass( CLASS_ID( CObservationStereoImagesFeatures ) );
 	//registerClass( CLASS_ID( CObservationVisualLandmarks ) );

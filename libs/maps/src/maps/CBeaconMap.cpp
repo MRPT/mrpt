@@ -1147,13 +1147,6 @@ float  CBeaconMap::compute3DMatchingRatio(
 
 
 /*---------------------------------------------------------------
-					auxParticleFilterCleanUp
- ---------------------------------------------------------------*/
-void  CBeaconMap::auxParticleFilterCleanUp()
-{
-}
-
-/*---------------------------------------------------------------
 					getBeaconByID
  ---------------------------------------------------------------*/
 const CBeacon * CBeaconMap::getBeaconByID( CBeacon::TBeaconID  id ) const

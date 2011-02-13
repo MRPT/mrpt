@@ -161,11 +161,6 @@ namespace mrpt
 			  */
 			void  applyDeletionMask( std::vector<bool> &mask );
 
-			/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
-			  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
-			  */
-			void  auxParticleFilterCleanUp();
-
 			/** Reserves memory for a given number of points: the size of the map does not change, it only reserves the memory.
 			  *  This is useful for situations where it is approximately known the final size of the map. This method is more
 			  *  efficient than constantly increasing the size of the buffers. Refer to the STL C++ library's "reserve" methods.
