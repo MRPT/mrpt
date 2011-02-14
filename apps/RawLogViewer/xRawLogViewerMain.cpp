@@ -2147,8 +2147,27 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 											// ----------------------------------------------------------------------
 											//              CObservationBatteryState
 											// ----------------------------------------------------------------------
-											//CObservationBatteryState *obs = (CObservationBatteryState*) sel_obj;
+											CObservationBatteryStatePtr obs = CObservationBatteryStatePtr( sel_obj);
 											curSelectedObservation = CObservationPtr( sel_obj );
+											cout << endl;
+
+											cout << format("Measured VoltageMainRobotBattery: %.02fV  isValid= %s \n", 
+												obs->voltageMainRobotBattery,
+												(obs->voltageMainRobotBatteryIsValid == true)? "True":"False" );
+
+											cout << format("Measured VoltageMainRobotComputer: %.02fV  isValid= %s \n", 
+												obs->voltageMainRobotComputer,
+												(obs->voltageMainRobotComputerIsValid == true)? "True":"False" );
+
+											cout << "VoltageOtherBatteries: \n";
+											for(size_t i=0; i<obs->voltageOtherBatteries.size(); i++)
+											{
+												cout << format("Index: %d --> %.02fV  isValid= %s \n", 
+												obs->voltageOtherBatteries[i],
+												(obs->voltageOtherBatteriesValid[i] == true)? "True":"False" );
+											}
+
+
 
 										}
 										else
