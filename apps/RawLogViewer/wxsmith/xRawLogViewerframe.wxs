@@ -544,6 +544,10 @@
 						<label>a RTL log...</label>
 						<handler function="OnImportRTL" entry="EVT_MENU" />
 					</object>
+					<object class="wxMenuItem" name="ID_MENUITEM87" variable="MenuItem83" member="yes">
+						<label>a Bremen DLR log...</label>
+						<handler function="OnMenuItemImportBremenDLRLog" entry="EVT_MENU" />
+					</object>
 				</object>
 				<object class="wxMenu" name="ID_MENUITEM54" variable="MenuItem51" member="yes">
 					<label>Export</label>

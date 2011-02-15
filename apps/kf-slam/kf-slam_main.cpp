@@ -36,7 +36,6 @@
 
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
-#include <mrpt/slam/CRangeBearingKFSLAM.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -94,7 +93,13 @@ int main(int argc, char **argv)
 // ------------------------------------------------------
 void Run_KF_SLAM()
 {
-	CRangeBearingKFSLAM  mapping;
+	// The EKF-SLAM class:
+//	typedef CRangeBearingKFSLAM2D  ekfslam_t;
+	typedef CRangeBearingKFSLAM    ekfslam_t;
+#define IMPLEMENT_PARTITION_EXPERIMENT
+
+	ekfslam_t  mapping;
+
 	CConfigFile			 cfgFile( configFile );
 	std::string			 rawlogFileName;
 
@@ -313,7 +318,7 @@ void Run_KF_SLAM()
 
 				// Draw latest data association:
 				{
-					const CRangeBearingKFSLAM::TDataAssocInfo & da = mapping.getLastDataAssociation();
+					const ekfslam_t::TDataAssocInfo & da = mapping.getLastDataAssociation();
 
 					mrpt::opengl::CSetOfLinesPtr lins = mrpt::opengl::CSetOfLines::Create();
 					lins->setLineWidth(1.2);
@@ -322,7 +327,7 @@ void Run_KF_SLAM()
 					{
 						const prediction_index_t idxPred = it->second;
 						// This index must match the internal list of features in the map:
-						CRangeBearingKFSLAM::KFArray_FEAT featMean;
+						ekfslam_t::KFArray_FEAT featMean;
 						mapping.getLandmarkMean(idxPred, featMean);
 
 						// Line: robot -> landmark:
@@ -402,7 +407,8 @@ void Run_KF_SLAM()
 
 
     // Compute the "information" between partitions:
-    if (mapping.options.doPartitioningExperiment)
+#ifdef IMPLEMENT_PARTITION_EXPERIMENT
+	if (mapping.options.doPartitioningExperiment)
     {
 		// --------------------------------------------
 		// PART I:
@@ -480,6 +486,7 @@ void Run_KF_SLAM()
         ERRS_SWEEP_THRESHOLD.saveToTextFile( OUT_DIR+string("/ERRORS_SWEEP_THRESHOLD.txt" ));
 
     } // end if doPartitioningExperiment
+#endif
 
 
     // Is there ground truth of landmarks positions??

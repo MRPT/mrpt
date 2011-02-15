@@ -66,21 +66,19 @@ namespace slam
 			*/
 		struct OBS_IMPEXP TMeasurement
 		{
-			/** The sensed landmark distance, in meters.
-			  */
+			/** The sensed landmark distance, in meters. */
 			float	range;
 
 			/** The sensed landmark direction, in radians, measured as the yaw (azimuth) and pitch (negative elevation).
+			  *  Set pitch to zero for 2D sensors.
 			  * See mrpt::poses::CPose3D for a definition of the 3D angles.
 			  */
 			float	yaw,pitch;
 
-			/** The ID of the sensed beacon, or INVALID_LANDMARK_ID (-1) if the sensor does not identify the landmark.
-			  */
+			/** The ID of the sensed beacon, or INVALID_LANDMARK_ID (-1) if the sensor does not identify the landmark. */
 			int32_t	landmarkID;
 
-			/** The covariance matrix of the landmark. 
-			  */
+			/** The covariance matrix of the landmark, with variable indices [0,1,2] being [range,yaw,pitch]. */
 			CMatrixDouble33 covariance;
 		};
 

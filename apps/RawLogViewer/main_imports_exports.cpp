@@ -1149,7 +1149,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 						0,0);
 
 					//obs->image.loadFromFile( img_file );
-					obs->image.setExternalStorage( it->second.imgFile );
+					obs->image.setExternalStorage( it->second.imgFile  );
 				}
 				else
 					cerr << "Image file does not exist: " << img_file << endl;
@@ -1335,6 +1335,239 @@ void xRawLogViewerFrame::OnGenGasTxt(wxCommandEvent& event)
 		os::sprintf(auxStr,sizeof(auxStr),"%u entries saved!",(unsigned)M);
 		wxMessageBox(_U(auxStr),_("Done"),wxOK,this);
 	}//end-if
+
+	WX_END_TRY
+}
+
+
+// --------------------------------------------------------------------------------
+// Datasets and docs from these nice guys:
+//  http://www.informatik.uni-bremen.de/agebv/en/DlrSpatialCognitionDataSet
+// --------------------------------------------------------------------------------
+void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
+{
+	WX_START_TRY
+
+	if (rawlog.size())
+		if (wxYES!=wxMessageBox(_("This will overwrite your currently loaded rawlog. Proceed anyway?"),_("Import rawlog"),wxYES_NO,this))
+			return;
+
+
+	wxString caption = wxT("Import a uni-bremen DLR dataset...");
+	wxString wildcard = wxT("Uni-bremen DLR circles dataset (*.circles)|*.circle|All files (*.*)|*.*");
+	wxString defaultDir( _U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ) );
+	wxString defaultFilename = _("*.circles");
+	wxFileDialog dialog(this, caption, defaultDir, defaultFilename,wildcard, wxFD_OPEN |  wxFD_FILE_MUST_EXIST );
+	if (dialog.ShowModal() != wxID_OK)
+		return;
+	// Save the path
+	WX_START_TRY
+	iniFile->write(iniFileSect,"LastDir",string(dialog.GetDirectory().mb_str()));
+	WX_END_TRY
+
+	// File to import:
+	const wxString sFile = dialog.GetPath();
+	string  import_filename( sFile.mbc_str() );
+	//loadedFileName = fil + string(".rawlog");
+
+/* --------------------------------------------------------------------------------
+   As I say above, see: http://www.informatik.uni-bremen.de/agebv/en/DlrSpatialCognitionDataSet
+
+   Sample lines:
+
+  CIRCLEMARKDETECTOR dlr-spatial_cognition-c.cam nohalf 0.10000 0.50000
+  CIRCLEMARKDETECTOR <cameraCalibrationFile> <useHalfImages> <radius> <threshold>
+
+Defines the parameters for the circular fiducial detector. 
+   <cameraCalibrationFile> is the file containing the camera calibration 
+   with respect to the floor plane that is used for finding the fiducials 
+   and converting the image location to a metrical location. 
+
+   <useHalfImages> If it is 'half' the camera calibration refers to a full 
+   frame image and it's y resolution must be divided by two to match the images. 
+
+   <radius> metrical radius of the fiducials (meter)
+ 
+   <threshold> the visual fiducial detector assigns a quality measure between [0..1]
+   to every fiducial found. Only those above <threshold> are passed to the SLAM algorithm.
+
+  STEP dlr-spatial_cognition-c.0000 -0.03752 -0.10467 -0.10807 0.000014396673 -0.000000184001 0.000013237216 0.000015157225 -0.000001814284 0.000246181200
+  STEP <image> <dX> <dY> <dTheta>, <cXX>, <cXY>, <cYY>, <cXTheta>, <cYTheta>, <cThetaTheta>
+
+Defines a single step of the robot trajectory, that is an odometry measurement plus an image. Such
+a line defines, that the robot first moved by <dX>, <dY>, <dTheta> relative to it's previous pose and
+then took the image saved in <image>. <cXX>...<cThetaTheta> are the covariances of <dX>, <dY>, <dTheta>.
+Units are m and radian.
+
+   -------------------------------------------------------------------------------- */
+
+	// Clear current dataset:
+	rawlog.clear();
+
+	const bool use_SF_format = 
+		(wxYES==wxMessageBox(_("Use Actions-SensoryFrames format (YES) or the Observation-only format (NO)?"),_("Import rawlog"),wxYES_NO,this));
+
+	// Parse line by line:
+	mrpt::utils::CTextFileLinesParser  fileParser(import_filename);
+	std::string line;
+
+	mrpt::system::TTimeStamp cur_timestamp = mrpt::system::now();
+	const mrpt::system::TTimeStamp time_steps = mrpt::system::secondsToTimestamp(0.25); // why not? ;-)
+
+	loadedFileName = import_filename + string( use_SF_format ? ".rawlog" : ".obs.rawlog" );
+
+	wxBusyCursor  wait;
+
+	CSensoryFrame  set_of_obs; // Set of observations after the last odometry; saved BEFORE processing the next odometry.
+	
+	// For use only in Observations-only format:
+	CObservationOdometry  obs_odo;
+	obs_odo.sensorLabel = "ODOMETRY";
+	obs_odo.odometry = CPose2D(0,0,0);
+
+	while (fileParser.getNextLine(line))
+	{
+		std::vector<std::string> words;
+		mrpt::utils::tokenize(line," \t",words);
+		if (words.empty()) continue;
+
+		if (words[0]=="STEP")
+		{
+			cur_timestamp+=time_steps; // Increment time counter
+
+			// First, do we have some queued obs?
+			if (!set_of_obs.empty())
+			{
+				if (use_SF_format)
+				{
+					rawlog.addObservations(set_of_obs);
+				}
+				else
+				{
+					for (size_t i=0;i<set_of_obs.size();i++)
+						rawlog.addObservationMemoryReference( set_of_obs.getObservationByIndex(i) );
+				}
+				set_of_obs.clear();
+			}
+
+			if (set_of_obs.empty())
+			{
+				// Always create an range-bearing observation, for the cases of images without any detected landmark 
+				//  so we have the observation, even if it's empty:
+				// Create upon first landmark:
+				CObservationBearingRangePtr obs = CObservationBearingRange::Create();
+				obs->sensorLabel = "CIRCLE_DETECTOR";
+				obs->timestamp = cur_timestamp;
+				obs->minSensorDistance = 0;
+				obs->maxSensorDistance = 100;
+				obs->sensor_std_yaw = 1e-4;
+				obs->sensor_std_range = 1e-2;
+				obs->sensor_std_pitch = 0; // Is a 2D sensor
+				obs->fieldOfView_pitch = 0;
+				obs->fieldOfView_yaw = DEG2RAD(180);
+				obs->validCovariances = true;
+
+				set_of_obs.insert(obs);
+			}
+
+			ASSERT_ABOVEEQ_(words.size(), 11)
+			// Process STEP entries (odometry increments)
+			//  STEP dlr-spatial_cognition-c.0000 -0.03752 -0.10467 -0.10807 0.000014396673 -0.000000184001 0.000013237216 0.000015157225 -0.000001814284 0.000246181200
+			//  STEP <image> <dX> <dY> <dTheta>, <cXX>, <cXY>, <cYY>, <cXTheta>, <cYTheta>, <cThetaTheta>
+
+			// Add the image to be inserted before the next odometry entry:
+			CObservationImagePtr newImg = CObservationImage::Create();
+			newImg->timestamp = cur_timestamp;
+			newImg->sensorLabel = "CAMERA";
+			newImg->image.setExternalStorage(words[1] + std::string(".jpg"));
+			MRPT_TODO("Camera params, ...")
+			// newImg->cameraParams
+			set_of_obs.insert( newImg );
+
+			const double odo_dx   = atof(words[2].c_str());
+			const double odo_dy   = atof(words[3].c_str());
+			const double odo_dphi = atof(words[4].c_str());
+
+			const CPose2D odoIncr( -odo_dy, odo_dx, odo_dphi );
+
+			CActionRobotMovement2D  act_mov;
+			CActionRobotMovement2D::TMotionModelOptions odoParams;
+			odoParams.modelSelection = CActionRobotMovement2D::mmGaussian;
+			odoParams.gausianModel.a1 = 
+			odoParams.gausianModel.a2 = 
+			odoParams.gausianModel.a3 = 
+			odoParams.gausianModel.a4 = 0;
+			odoParams.gausianModel.minStdXY  = std::sqrt( atof(words[5].c_str())+atof(words[7].c_str()) );
+			odoParams.gausianModel.minStdPHI = std::sqrt( atof(words[10].c_str()) );
+
+			act_mov.computeFromOdometry(odoIncr,odoParams);
+			act_mov.timestamp = cur_timestamp;
+			
+			if (use_SF_format)
+			{
+				CActionCollection  acts;
+				acts.insert(act_mov);
+				rawlog.addActions(acts);
+			}
+			else
+			{
+				obs_odo.timestamp = cur_timestamp;
+				obs_odo.odometry += odoIncr;
+				rawlog.addObservationMemoryReference( CObservationOdometryPtr( new CObservationOdometry( obs_odo )));
+			}
+		}
+		else
+		if (words[0]=="LANDMARK_C")
+		{
+			ASSERT_ABOVEEQ_(words.size(), 8)
+			// LANDMARK_C 0.67972 -2.87676 0.600235 0.00176143 -0.000314459 0.00334762 -1
+			// #  LANDMARK <pX> <pY> <quality> <cXX> <cXY> <cYY> <ID>
+
+			// Just append this measure to the observation within "set_of_obs":
+
+			CObservationBearingRangePtr obs = set_of_obs.getObservationByClass<CObservationBearingRange>();
+			ASSERT_(obs)
+
+			// <pX> <pY> <quality> <cXX> <cXY> <cYY> <ID>
+			const double lm_x = -atof(words[2].c_str());  // Ey! Yes, I flipped the coord. system to match MRPT's standard
+			const double lm_y =  atof(words[1].c_str());  //  of +X pointing fordward, +Y to the left.
+
+			const double r = std::sqrt( square(lm_x)+square(lm_y) );
+			const double a = atan2(lm_y,lm_x);
+
+			MRPT_TODO("Proper handling of covariances")
+			CMatrixDouble33 COV;
+
+			CObservationBearingRange::TMeasurement meas;
+			meas.landmarkID = INVALID_LANDMARK_ID; // Unknown IDs
+			meas.range  = r;
+			meas.yaw    = a; 
+			meas.pitch  = 0;
+			meas.covariance = COV;
+
+			obs->sensedData.push_back(meas);
+		}
+	};
+
+	// finally, we have to repeat this part not to lost the last few observations:
+	if (!set_of_obs.empty())
+	{
+		if (use_SF_format)
+		{
+			rawlog.addObservations(set_of_obs);
+		}
+		else
+		{
+			for (size_t i=0;i<set_of_obs.size();i++)
+				rawlog.addObservationMemoryReference( set_of_obs.getObservationByIndex(i) );
+		}
+	}
+
+
+
+	wxTheApp->Yield();
+	// Update the views:
+	rebuildTreeView();
 
 	WX_END_TRY
 }

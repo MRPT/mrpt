@@ -266,15 +266,16 @@ namespace mrpt
 			  *
 			  * \endcode
 			  */
-			iterator end() { return m_observations.end(); }
+			inline iterator end() { return m_observations.end(); }
 
 
-			/** Returns the number of observations in the list.
-			  */
-			size_t size() const;
+			/** Returns the number of observations in the list. */
+			inline size_t size() const { return m_observations.size(); }
 
-			/** Removes the i'th observation in the list (0=first).
-			  */
+			/** Returns true if there are no observations in the list. */
+			inline bool empty() const { return  m_observations.empty(); }
+
+			/** Removes the i'th observation in the list (0=first). */
 			void   eraseByIndex(const size_t &idx);
 
 			/** Removes the given observation in the list, and return an iterator to the next element (or this->end() if it was the last one).

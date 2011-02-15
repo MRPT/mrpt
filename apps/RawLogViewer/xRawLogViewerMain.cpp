@@ -57,13 +57,13 @@
 #include <mrpt/gui/WxUtils.h>
 
 //(*InternalHeaders(xRawLogViewerFrame)
-#include <wx/string.h>
-#include <wx/intl.h>
-#include <wx/font.h>
+#include <wx/artprov.h>
 #include <wx/bitmap.h>
 #include <wx/icon.h>
+#include <wx/font.h>
+#include <wx/intl.h>
 #include <wx/image.h>
-#include <wx/artprov.h>
+#include <wx/string.h>
 //*)
 
 #include <wx/tooltip.h>
@@ -251,6 +251,7 @@ const long xRawLogViewerFrame::ID_MENUITEM5 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM47 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM56 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM63 = wxNewId();
+const long xRawLogViewerFrame::ID_MENUITEM87 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM3 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM58 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM55 = wxNewId();
@@ -356,54 +357,55 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxArtProvider::Push(new MyArtProvider);
 
 	//(*Initialize(xRawLogViewerFrame)
-	wxMenuItem* MenuItem2;
-	wxMenu* MenuItem81;
-	wxMenuItem* MenuItem1;
-	wxFlexGridSizer* FlexGridSizer8;
-	wxFlexGridSizer* FlexGridSizer1;
-	wxFlexGridSizer* FlexGridSizer2;
-	wxMenuItem* MenuItem43;
 	wxMenu* Menu39;
-	wxMenuItem* MenuItem75;
-	wxMenu* Menu1;
-	wxMenuItem* MenuItem12;
-	wxMenuItem* MenuItem25;
-	wxMenuItem* MenuItem55;
-	wxMenuItem* MenuItem19;
-	wxFlexGridSizer* FlexGridSizer11;
-	wxMenuItem* MenuItem65;
-	wxMenuItem* MenuItem56;
-	wxMenuItem* MenuItem67;
-	wxMenuItem* MenuItem33;
-	wxFlexGridSizer* FlexGridSizer7;
-	wxMenuItem* MenuItem24;
 	wxFlexGridSizer* FlexGridSizer4;
-	wxMenuItem* MenuItem69;
-	wxFlexGridSizer* FlexGridSizer9;
-	wxFlexGridSizer* FlexGridSizer6;
-	wxMenuItem* MenuItem17;
-	wxFlexGridSizer* FlexGridSizer3;
-	wxMenuItem* MenuItem60;
-	wxMenuItem* MenuItem22;
-	wxMenuItem* MenuItem41;
-	wxFlexGridSizer* FlexGridSizer10;
-	wxMenuItem* MenuItem82;
-	wxFlexGridSizer* FlexGridSizer13;
-	wxMenuBar* MenuBar1;
-	wxMenuItem* MenuItem27;
-	wxMenuItem* MenuItem18;
+	wxMenuItem* MenuItem33;
 	wxMenuItem* MenuItem26;
-	wxMenuItem* MenuItem70;
-	wxFlexGridSizer* FlexGridSizer12;
-	wxMenu* Menu2;
+	wxMenuItem* MenuItem25;
+	wxMenuItem* MenuItem2;
+	wxFlexGridSizer* FlexGridSizer10;
+	wxFlexGridSizer* FlexGridSizer3;
+	wxMenuItem* MenuItem55;
+	wxMenuItem* MenuItem1;
+	wxMenuItem* MenuItem56;
 	wxFlexGridSizer* FlexGridSizer5;
-
+	wxFlexGridSizer* FlexGridSizer9;
+	wxMenuItem* MenuItem22;
+	wxFlexGridSizer* FlexGridSizer2;
+	wxMenuItem* MenuItem17;
+	wxMenu* Menu1;
+	wxFlexGridSizer* FlexGridSizer7;
+	wxMenuItem* MenuItem82;
+	wxMenuItem* MenuItem75;
+	wxMenuItem* MenuItem60;
+	wxMenuItem* MenuItem12;
+	wxMenuItem* MenuItem24;
+	wxMenuItem* MenuItem69;
+	wxMenuItem* MenuItem27;
+	wxFlexGridSizer* FlexGridSizer8;
+	wxMenuItem* MenuItem70;
+	wxMenuItem* MenuItem67;
+	wxMenuItem* MenuItem83;
+	wxMenuItem* MenuItem65;
+	wxFlexGridSizer* FlexGridSizer13;
+	wxMenuItem* MenuItem41;
+	wxFlexGridSizer* FlexGridSizer12;
+	wxMenu* MenuItem81;
+	wxMenuBar* MenuBar1;
+	wxFlexGridSizer* FlexGridSizer6;
+	wxFlexGridSizer* FlexGridSizer1;
+	wxFlexGridSizer* FlexGridSizer11;
+	wxMenuItem* MenuItem43;
+	wxMenu* Menu2;
+	wxMenuItem* MenuItem18;
+	wxMenuItem* MenuItem19;
+	
 	Create(parent, id, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("id"));
 	SetClientSize(wxSize(700,500));
 	{
-	wxIcon FrameIcon;
-	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_OTHER));
-	SetIcon(FrameIcon);
+		wxIcon FrameIcon;
+		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_OTHER));
+		SetIcon(FrameIcon);
 	}
 	SplitterWindow1 = new wxSplitterWindow(this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_3DBORDER|wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW1"));
 	SplitterWindow1->SetMinSize(wxSize(10,10));
@@ -658,6 +660,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	MenuItem5->Append(MenuItem53);
 	MenuItem60 = new wxMenuItem(MenuItem5, ID_MENUITEM63, _("a RTL log..."), wxEmptyString, wxITEM_NORMAL);
 	MenuItem5->Append(MenuItem60);
+	MenuItem83 = new wxMenuItem(MenuItem5, ID_MENUITEM87, _("a Bremen DLR log..."), wxEmptyString, wxITEM_NORMAL);
+	MenuItem5->Append(MenuItem83);
 	Menu1->Append(ID_MENUITEM3, _("Import"), MenuItem5, wxEmptyString);
 	MenuItem51 = new wxMenu();
 	MenuItem55 = new wxMenuItem(MenuItem51, ID_MENUITEM58, _("Plain text files..."), _("Generate text files for odometry and laser"), wxITEM_NORMAL);
@@ -843,7 +847,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	mnuTree.Append(ID_MENUITEM48, _("Add action"), MenuItem45, wxEmptyString);
 	timAutoLoad.SetOwner(this, ID_TIMER1);
 	timAutoLoad.Start(50, true);
-
+	
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnbtnEditCommentsClick1);
 	Connect(ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
 	Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
@@ -864,6 +868,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	Connect(ID_MENUITEM47,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnImportSequenceOfImages);
 	Connect(ID_MENUITEM56,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuImportALOG);
 	Connect(ID_MENUITEM63,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnImportRTL);
+	Connect(ID_MENUITEM87,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuItemImportBremenDLRLog);
 	Connect(ID_MENUITEM58,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnGenOdoLaser);
 	Connect(ID_MENUITEM55,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuExportALOG);
 	Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnQuit);
@@ -2139,6 +2144,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 											Zs[k] = relRobot.z();
 										}
 										lyRangeBearingLandmarks->SetData(Xs,Ys);
+										plotRangeBearing->LockAspect();
 										plotRangeBearing->Fit();      // Update the window to show the new data fitted.
 									}
 									else
@@ -2160,7 +2166,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 												(obs->voltageMainRobotComputerIsValid == true)? "True":"False" );
 
 											cout << "VoltageOtherBatteries: \n";
-											for(size_t i=0; i<obs->voltageOtherBatteries.size(); i++)
+											for(vector_double::Index i=0; i<obs->voltageOtherBatteries.size(); i++)
 											{
 												cout << format("Index: %d --> %.02fV  isValid= %s \n", 
 												obs->voltageOtherBatteries[i],
@@ -2339,7 +2345,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 															obs->cameraParamsIntensity.saveToConfigFile("INTENSITY_CAM_PARAMS",cfg);
 															cout << cfg.getContent() << endl;
 														}
-														cout << endl << endl << "Pose of the intensity cam. wrt the depth cam:\n" 
+														cout << endl << endl << "Pose of the intensity cam. wrt the depth cam:\n"
 															<< obs->relativePoseIntensityWRTDepth << endl
 															<< obs->relativePoseIntensityWRTDepth.getHomogeneousMatrixVal() << endl;
 
@@ -2429,7 +2435,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 														}
 														// Update confidence image ======
 														{
-															wxImage *img; 
+															wxImage *img;
 															if (obs->hasConfidenceImage)
 																img = mrpt::gui::MRPTImage2wxImage( obs->confidenceImage );
 															else
@@ -6256,3 +6262,4 @@ void xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged(wxScrollEvent& event)
 	// Refresh:
 	SelectObjectInTreeView(curSelectedObject);
 }
+

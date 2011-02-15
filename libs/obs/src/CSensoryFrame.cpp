@@ -195,15 +195,6 @@ void CSensoryFrame::operator += (const CObservationPtr &obs)
 }
 
 /*---------------------------------------------------------------
-					size
-  ---------------------------------------------------------------*/
-size_t CSensoryFrame::size() const
-{
-	return m_observations.size();
-}
-
-
-/*---------------------------------------------------------------
 					push_back
   ---------------------------------------------------------------*/
 void CSensoryFrame::push_back(const CObservationPtr &obs)
