@@ -108,13 +108,14 @@ void Run_KF_SLAM()
 	// The rawlog file:
 	// ----------------------------------------
 	rawlogFileName = cfgFile.read_string("MappingApplication","rawlog_file",std::string("log.rawlog"));
-	unsigned int	rawlog_offset = cfgFile.read_int("MappingApplication","rawlog_offset",0);
+	const unsigned int	rawlog_offset = cfgFile.read_int("MappingApplication","rawlog_offset",0);
 
-	unsigned int SAVE_LOG_FREQUENCY= cfgFile.read_int("MappingApplication","SAVE_LOG_FREQUENCY",1);
+	const unsigned int SAVE_LOG_FREQUENCY= cfgFile.read_int("MappingApplication","SAVE_LOG_FREQUENCY",1);
 
-	bool  SAVE_3D_SCENES = cfgFile.read_bool("MappingApplication","SAVE_3D_SCENES", true);
-	bool  SAVE_MAP_REPRESENTATIONS = cfgFile.read_bool("MappingApplication","SAVE_MAP_REPRESENTATIONS", true);
-	bool  SHOW_3D_LIVE = cfgFile.read_bool("MappingApplication","SHOW_3D_LIVE", false);
+	const bool  SAVE_3D_SCENES = cfgFile.read_bool("MappingApplication","SAVE_3D_SCENES", true);
+	const bool  SAVE_MAP_REPRESENTATIONS = cfgFile.read_bool("MappingApplication","SAVE_MAP_REPRESENTATIONS", true);
+	const bool  SHOW_3D_LIVE = cfgFile.read_bool("MappingApplication","SHOW_3D_LIVE", false);
+	const bool  CAMERA_3DSCENE_FOLLOWS_ROBOT = cfgFile.read_bool("MappingApplication","CAMERA_3DSCENE_FOLLOWS_ROBOT", false);
 
 #if !MRPT_HAS_WXWIDGETS
 	SHOW_3D_LIVE = false;
@@ -162,7 +163,7 @@ void Run_KF_SLAM()
 	if (SHOW_3D_LIVE)
 	{
 		win3d = mrpt::gui::CDisplayWindow3D::Create("KF-SLAM live view",800,500);
-		
+
 		win3d->addTextMessage(0.01,0.96,"Red: Estimated path",TColorf(0.8,0.8,0.8),100,MRPT_GLUT_BITMAP_HELVETICA_10);
 		win3d->addTextMessage(0.01,0.93,"Black: Ground truth path",TColorf(0.8,0.8,0.8),101,MRPT_GLUT_BITMAP_HELVETICA_10);
 	}
@@ -282,13 +283,20 @@ void Run_KF_SLAM()
 						}
 					}
 					scene3D->insert( linesPath );
-					
+
 					// finally a big corner for the latest robot pose:
 					{
 						mrpt::opengl::CSetOfObjectsPtr xyz = mrpt::opengl::stock_objects::CornerXYZSimple(1.0,2.5);
 						xyz->setPose(CPose3D(robotPose.mean));
 						scene3D->insert(xyz);
 					}
+
+					// The camera pointing to the current robot pose:
+					if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
+					{
+						win3d->setCameraPointingToPoint(robotPose.mean.x(),robotPose.mean.y(),robotPose.mean.z());
+					}
+
 
 				}
 
@@ -352,13 +360,13 @@ void Run_KF_SLAM()
 
 					// Update text messages:
 					win3d->addTextMessage(
-						0.02,0.02, 
-						format("Step %u",(unsigned int)step ), 
+						0.02,0.02,
+						format("Step %u - Landmarks in the map: %u",(unsigned int)step, (unsigned int)LMs.size() ),
 						TColorf(1,1,1), 0, MRPT_GLUT_BITMAP_HELVETICA_12 );
 
 					win3d->addTextMessage(
-						0.02,0.06, 
-						format("Estimated pose: (x y z qr qx qy qz) = %s", robotPose.mean.asString().c_str() ), 
+						0.02,0.06,
+						format("Estimated pose: (x y z qr qx qy qz) = %s", robotPose.mean.asString().c_str() ),
 						TColorf(1,1,1), 1, MRPT_GLUT_BITMAP_HELVETICA_12 );
 
 					static vector<double> estHz_vals;
@@ -368,16 +376,16 @@ void Run_KF_SLAM()
 						estHz_vals.erase(estHz_vals.begin());
 					const double meanHz = mrpt::math::mean(estHz_vals);
 
-									
+
 					win3d->addTextMessage(
-						0.02,0.10, 
-						format("Iteration time: %7ss", 
+						0.02,0.10,
+						format("Iteration time: %7ss",
 							mrpt::utils::unitsFormat(tim_kf_iter).c_str()),
 							TColorf(1,1,1), 2, MRPT_GLUT_BITMAP_HELVETICA_12 );
 
 					win3d->addTextMessage(
-						0.02,0.14, 
-						format("Execution rate: %7sHz", 
+						0.02,0.14,
+						format("Execution rate: %7sHz",
 							mrpt::utils::unitsFormat(meanHz).c_str()),
 							TColorf(1,1,1), 3, MRPT_GLUT_BITMAP_HELVETICA_12 );
 
@@ -536,7 +544,7 @@ void Run_KF_SLAM()
 
 	cout << "********* KF-SLAM finished! **********" << endl;
 
-	if (win3d) 
+	if (win3d)
 	{
 		cout << "\n Close the 3D window to quit the application.\n";
 		win3d->waitForKey();

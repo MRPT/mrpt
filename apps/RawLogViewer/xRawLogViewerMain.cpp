@@ -399,7 +399,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxMenu* Menu2;
 	wxMenuItem* MenuItem18;
 	wxMenuItem* MenuItem19;
-	
+
 	Create(parent, id, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("id"));
 	SetClientSize(wxSize(700,500));
 	{
@@ -847,7 +847,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	mnuTree.Append(ID_MENUITEM48, _("Add action"), MenuItem45, wxEmptyString);
 	timAutoLoad.SetOwner(this, ID_TIMER1);
 	timAutoLoad.Start(50, true);
-	
+
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnbtnEditCommentsClick1);
 	Connect(ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
 	Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
@@ -2106,11 +2106,20 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 										cout << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
 										cout << obs->sensorLocationOnRobot.getHomogeneousMatrixVal()
-										<< obs->sensorLocationOnRobot << endl;
+										<< obs->sensorLocationOnRobot << endl << endl;
+
+										cout << "Do observations have individual covariance matrices? " << (obs->validCovariances ? "YES":"NO") << endl << endl;
+
+										cout << "Default noise sigmas:" << endl;
+										cout << "sensor_std_range (m)   : " << obs->sensor_std_range << endl;
+										cout << "sensor_std_yaw   (deg) : " << RAD2DEG(obs->sensor_std_yaw) << endl;
+										cout << "sensor_std_pitch (deg) : " << RAD2DEG(obs->sensor_std_pitch) << endl;
+
+										cout << endl;
 
 										// For each entry in this sequence:
-										cout << "  LANDMARK_ID    RANGE (m)    YAW (deg)    PITCH (deg)" << endl;
-										cout << "-------------------------------------------------------" << endl;
+										cout << "  LANDMARK_ID    RANGE (m)    YAW (deg)    PITCH (deg)   COV. MATRIX (optional)" << endl;
+										cout << "--------------------------------------------------------------------------------------" << endl;
 										for (size_t q=0;q<obs->sensedData.size();q++)
 										{
 
@@ -2119,10 +2128,15 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 												cout << "(NO ID)";
 											else cout << format("%7u",obs->sensedData[q].landmarkID);
 
-											cout << format("    %4.03f     %4.03f     %4.03f\n",
+											cout << format("   %10.03f  %10.03f %10.03f        ",
 														   obs->sensedData[q].range,
 														   RAD2DEG( wrapToPi( obs->sensedData[q].yaw)),
 														   RAD2DEG( wrapToPi(obs->sensedData[q].pitch)) );
+
+											if (obs->validCovariances)
+												cout << obs->sensedData[q].covariance.inMatlabFormat() << endl;
+											else
+												cout << "  (N/A)\n";
 										}
 
 										// The plot:
@@ -2157,18 +2171,19 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 											curSelectedObservation = CObservationPtr( sel_obj );
 											cout << endl;
 
-											cout << format("Measured VoltageMainRobotBattery: %.02fV  isValid= %s \n", 
+											cout << format("Measured VoltageMainRobotBattery: %.02fV  isValid= %s \n",
 												obs->voltageMainRobotBattery,
 												(obs->voltageMainRobotBatteryIsValid == true)? "True":"False" );
 
-											cout << format("Measured VoltageMainRobotComputer: %.02fV  isValid= %s \n", 
+											cout << format("Measured VoltageMainRobotComputer: %.02fV  isValid= %s \n",
 												obs->voltageMainRobotComputer,
 												(obs->voltageMainRobotComputerIsValid == true)? "True":"False" );
 
 											cout << "VoltageOtherBatteries: \n";
 											for(vector_double::Index i=0; i<obs->voltageOtherBatteries.size(); i++)
 											{
-												cout << format("Index: %d --> %.02fV  isValid= %s \n", 
+												cout << format("Index: %d --> %.02fV  isValid= %s \n",
+												int(i),
 												obs->voltageOtherBatteries[i],
 												(obs->voltageOtherBatteriesValid[i] == true)? "True":"False" );
 											}

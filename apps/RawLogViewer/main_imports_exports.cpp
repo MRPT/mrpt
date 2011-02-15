@@ -1354,7 +1354,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 
 
 	wxString caption = wxT("Import a uni-bremen DLR dataset...");
-	wxString wildcard = wxT("Uni-bremen DLR circles dataset (*.circles)|*.circle|All files (*.*)|*.*");
+	wxString wildcard = wxT("Uni-bremen DLR circles dataset (*.circles)|*.circles|All files (*.*)|*.*");
 	wxString defaultDir( _U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ) );
 	wxString defaultFilename = _("*.circles");
 	wxFileDialog dialog(this, caption, defaultDir, defaultFilename,wildcard, wxFD_OPEN |  wxFD_FILE_MUST_EXIST );
@@ -1368,7 +1368,6 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 	// File to import:
 	const wxString sFile = dialog.GetPath();
 	string  import_filename( sFile.mbc_str() );
-	//loadedFileName = fil + string(".rawlog");
 
 /* --------------------------------------------------------------------------------
    As I say above, see: http://www.informatik.uni-bremen.de/agebv/en/DlrSpatialCognitionDataSet
@@ -1378,16 +1377,16 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
   CIRCLEMARKDETECTOR dlr-spatial_cognition-c.cam nohalf 0.10000 0.50000
   CIRCLEMARKDETECTOR <cameraCalibrationFile> <useHalfImages> <radius> <threshold>
 
-Defines the parameters for the circular fiducial detector. 
-   <cameraCalibrationFile> is the file containing the camera calibration 
-   with respect to the floor plane that is used for finding the fiducials 
-   and converting the image location to a metrical location. 
+Defines the parameters for the circular fiducial detector.
+   <cameraCalibrationFile> is the file containing the camera calibration
+   with respect to the floor plane that is used for finding the fiducials
+   and converting the image location to a metrical location.
 
-   <useHalfImages> If it is 'half' the camera calibration refers to a full 
-   frame image and it's y resolution must be divided by two to match the images. 
+   <useHalfImages> If it is 'half' the camera calibration refers to a full
+   frame image and it's y resolution must be divided by two to match the images.
 
    <radius> metrical radius of the fiducials (meter)
- 
+
    <threshold> the visual fiducial detector assigns a quality measure between [0..1]
    to every fiducial found. Only those above <threshold> are passed to the SLAM algorithm.
 
@@ -1401,10 +1400,10 @@ Units are m and radian.
 
    -------------------------------------------------------------------------------- */
 
-	// Clear current dataset:
-	rawlog.clear();
+	// Create a new dataset:
+	CRawlog  newRawlog;
 
-	const bool use_SF_format = 
+	const bool use_SF_format =
 		(wxYES==wxMessageBox(_("Use Actions-SensoryFrames format (YES) or the Observation-only format (NO)?"),_("Import rawlog"),wxYES_NO,this));
 
 	// Parse line by line:
@@ -1419,11 +1418,16 @@ Units are m and radian.
 	wxBusyCursor  wait;
 
 	CSensoryFrame  set_of_obs; // Set of observations after the last odometry; saved BEFORE processing the next odometry.
-	
+
 	// For use only in Observations-only format:
 	CObservationOdometry  obs_odo;
 	obs_odo.sensorLabel = "ODOMETRY";
 	obs_odo.odometry = CPose2D(0,0,0);
+
+	// For stats on covariance transforms:
+	vector_double stats_stdRanges,stats_stdYaw;
+	vector_double stats_stdXs,stats_stdYs;
+
 
 	while (fileParser.getNextLine(line))
 	{
@@ -1440,19 +1444,19 @@ Units are m and radian.
 			{
 				if (use_SF_format)
 				{
-					rawlog.addObservations(set_of_obs);
+					newRawlog.addObservations(set_of_obs);
 				}
 				else
 				{
 					for (size_t i=0;i<set_of_obs.size();i++)
-						rawlog.addObservationMemoryReference( set_of_obs.getObservationByIndex(i) );
+						newRawlog.addObservationMemoryReference( set_of_obs.getObservationByIndex(i) );
 				}
 				set_of_obs.clear();
 			}
 
 			if (set_of_obs.empty())
 			{
-				// Always create an range-bearing observation, for the cases of images without any detected landmark 
+				// Always create an range-bearing observation, for the cases of images without any detected landmark
 				//  so we have the observation, even if it's empty:
 				// Create upon first landmark:
 				CObservationBearingRangePtr obs = CObservationBearingRange::Create();
@@ -1465,7 +1469,7 @@ Units are m and radian.
 				obs->sensor_std_pitch = 0; // Is a 2D sensor
 				obs->fieldOfView_pitch = 0;
 				obs->fieldOfView_yaw = DEG2RAD(180);
-				obs->validCovariances = true;
+				obs->validCovariances = true;  // Each observation has its own cov. matrix.
 
 				set_of_obs.insert(obs);
 			}
@@ -1493,27 +1497,27 @@ Units are m and radian.
 			CActionRobotMovement2D  act_mov;
 			CActionRobotMovement2D::TMotionModelOptions odoParams;
 			odoParams.modelSelection = CActionRobotMovement2D::mmGaussian;
-			odoParams.gausianModel.a1 = 
-			odoParams.gausianModel.a2 = 
-			odoParams.gausianModel.a3 = 
+			odoParams.gausianModel.a1 =
+			odoParams.gausianModel.a2 =
+			odoParams.gausianModel.a3 =
 			odoParams.gausianModel.a4 = 0;
 			odoParams.gausianModel.minStdXY  = std::sqrt( atof(words[5].c_str())+atof(words[7].c_str()) );
 			odoParams.gausianModel.minStdPHI = std::sqrt( atof(words[10].c_str()) );
 
 			act_mov.computeFromOdometry(odoIncr,odoParams);
 			act_mov.timestamp = cur_timestamp;
-			
+
 			if (use_SF_format)
 			{
 				CActionCollection  acts;
 				acts.insert(act_mov);
-				rawlog.addActions(acts);
+				newRawlog.addActions(acts);
 			}
 			else
 			{
 				obs_odo.timestamp = cur_timestamp;
 				obs_odo.odometry += odoIncr;
-				rawlog.addObservationMemoryReference( CObservationOdometryPtr( new CObservationOdometry( obs_odo )));
+				newRawlog.addObservationMemoryReference( CObservationOdometryPtr( new CObservationOdometry( obs_odo )));
 			}
 		}
 		else
@@ -1535,17 +1539,48 @@ Units are m and radian.
 			const double r = std::sqrt( square(lm_x)+square(lm_y) );
 			const double a = atan2(lm_y,lm_x);
 
-			MRPT_TODO("Proper handling of covariances")
-			CMatrixDouble33 COV;
+			/* Transform covariance from (x,y) -> (r,a):
+			 *   Jacobian:
+			 *   [ x/(x^2 + y^2)^(1/2), y/(x^2 + y^2)^(1/2)]  // range
+			 *   [      -y/(x^2 + y^2),       x/(x^2 + y^2)]  // yaw
+			 */
+			const double Cxy_xx = atof(words[4].c_str());
+			const double Cxy_xy = atof(words[5].c_str());
+			const double Cxy_yy = atof(words[6].c_str());
 
+			const double dat_C_xy[3*3]= {
+				Cxy_xx, Cxy_xy, 0,
+				Cxy_xy, Cxy_yy, 0,
+				0,      0,      0
+				};
+			const CMatrixDouble33  C_xy(dat_C_xy);
+
+			// Jacobian:
+			const double dat_H[3*3]= {
+				lm_x / r,    lm_y / r,    0,
+				-lm_y/(r*r), lm_x/(r*r),  0,
+				0,           0,           0
+				};
+			const CMatrixDouble33 H(dat_H);
+
+			// Transform covariance with Jacobian:
+			const CMatrixDouble33 C_ypr = H * C_xy * H.transpose();
+
+			// Create obs:
 			CObservationBearingRange::TMeasurement meas;
 			meas.landmarkID = INVALID_LANDMARK_ID; // Unknown IDs
 			meas.range  = r;
-			meas.yaw    = a; 
+			meas.yaw    = a;
 			meas.pitch  = 0;
-			meas.covariance = COV;
+			meas.covariance = C_ypr;
 
 			obs->sensedData.push_back(meas);
+
+			// gather stats:
+			stats_stdRanges.push_back( std::sqrt(C_ypr(0,0)));
+			stats_stdYaw.push_back   ( std::sqrt(C_ypr(1,1)));
+			stats_stdXs.push_back( std::sqrt(C_xy(0,0)));
+			stats_stdYs.push_back( std::sqrt(C_xy(1,1)));
 		}
 	};
 
@@ -1554,20 +1589,40 @@ Units are m and radian.
 	{
 		if (use_SF_format)
 		{
-			rawlog.addObservations(set_of_obs);
+			newRawlog.addObservations(set_of_obs);
 		}
 		else
 		{
 			for (size_t i=0;i<set_of_obs.size();i++)
-				rawlog.addObservationMemoryReference( set_of_obs.getObservationByIndex(i) );
+				newRawlog.addObservationMemoryReference( set_of_obs.getObservationByIndex(i) );
 		}
 	}
 
-
-
 	wxTheApp->Yield();
 	// Update the views:
+	rawlog = newRawlog; // Load into GUI
 	rebuildTreeView();
+
+
+	// Extra info, to the console:
+	if (stats_stdRanges.size()!=0)
+	{
+		cout << "[ImportBremenDLRLog] Stats for: " << import_filename << endl;
+
+		double stdRange_mean , stdRange_std;
+		double stdYaw_mean   , stdYaw_std;
+		mrpt::math::meanAndStd(stats_stdRanges,stdRange_mean , stdRange_std);
+		mrpt::math::meanAndStd(stats_stdYaw   ,stdYaw_mean   , stdYaw_std);
+		cout << "[ImportBremenDLRLog] Computed stdRange (m): mean= " << stdRange_mean << " std= " << stdRange_std << endl;
+		cout << "[ImportBremenDLRLog] Computed stdYaw (deg): mean= " << RAD2DEG(stdYaw_mean) << " std= " << RAD2DEG(stdYaw_std) << endl;
+
+		double stdX_mean , stdX_std;
+		double stdY_mean   , stdY_std;
+		mrpt::math::meanAndStd(stats_stdXs, stdX_mean , stdX_std);
+		mrpt::math::meanAndStd(stats_stdYs, stdY_mean , stdY_std);
+		cout << "[ImportBremenDLRLog] Computed stdX (m): mean= " << stdX_mean << " std= " << stdX_std << endl;
+		cout << "[ImportBremenDLRLog] Computed stdY (m): mean= " << stdY_mean << " std= " << stdY_std << endl;
+	}
 
 	WX_END_TRY
 }

@@ -609,10 +609,12 @@ private:
     } \
 	catch(std::exception &e) \
     { \
+		std::cerr << e.what() << std::endl; \
         wxMessageBox( wxString(e.what(),wxConvUTF8), wxT("Exception"), wxOK, this); \
     } \
     catch(...) \
     { \
+		std::cerr << "Untyped exception!" << std::endl; \
         wxMessageBox( _("Untyped exception!"), _("Exception"), wxOK, this); \
     }
 
