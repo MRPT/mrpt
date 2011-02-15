@@ -400,7 +400,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     wxMenu* Menu2;
     wxMenu* MenuItem18;
     wxMenuItem* MenuItem19;
-    
+
     Create(parent, id, _("3DSceneViewer - Part of the MRPT project - Jose Luis Blanco (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetClientSize(wxSize(672,539));
     {
@@ -496,7 +496,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     timLoadFileCmdLine.SetOwner(this, ID_TIMER1);
     timLoadFileCmdLine.Start(50, true);
     Center();
-    
+
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
     Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
     Connect(ID_MENUITEM5,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnReload);
@@ -880,7 +880,7 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 		std::string	fil = string(fileName.mb_str());
 
 		saveLastUsedDirectoryToCfgFile(fil);
-		
+
 		mrpt::opengl::C3DSScenePtr	obj3D = mrpt::opengl::C3DSScene::Create();
 		obj3D->loadFrom3DSFile( fil );
 		m_canvas->m_openGLScene->insert( obj3D );
@@ -1241,8 +1241,10 @@ void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent& event)
 		wxBusyCursor wait;
 		sceneStats.clear();
 
-		mrpt::synch::CCriticalSectionLocker lock(&critSec_UpdateScene);
-		m_canvas->m_openGLScene->visitAllObjects( &func_gather_stats );
+		{
+			mrpt::synch::CCriticalSectionLocker lock(&critSec_UpdateScene);
+			m_canvas->m_openGLScene->visitAllObjects( &func_gather_stats );
+		}
 
 		std::stringstream  ss;
 		ss << "Number of objects: " << sceneStats.nObjects << endl
@@ -1340,9 +1342,9 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 	try
 	{
 		wxFileDialog dialog(
-			this, 
-			_("Choose the PLY file to import"), 
-			_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ), 
+			this,
+			_("Choose the PLY file to import"),
+			_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ),
 			_("*.ply"),
 			_("PLY files (*.ply, *.PLY)|*.ply;*.PLY|All files (*.*)|*.*"),
 			wxFD_OPEN | wxFD_FILE_MUST_EXIST );
@@ -1357,7 +1359,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 		if (dlgPLY.ShowModal()!=wxID_OK)
 			return;
 
-		opengl::CPointCloudPtr gl_points; 
+		opengl::CPointCloudPtr gl_points;
 		opengl::CPointCloudColouredPtr gl_points_col;
 		mrpt::utils::PLY_Importer *ply_obj=NULL;
 
@@ -1366,7 +1368,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 		     gl_points     = opengl::CPointCloud::Create();
 			 ply_obj = gl_points.pointer();
 		}
-		else 
+		else
 		{
 			gl_points_col = opengl::CPointCloudColoured::Create();
 			ply_obj = gl_points_col.pointer();
@@ -1421,7 +1423,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 			ptCloudPose.yaw   = DEG2RAD(ptCloudPose.yaw);
 			ptCloudPose.pitch = DEG2RAD(ptCloudPose.pitch);
 			ptCloudPose.roll  = DEG2RAD(ptCloudPose.roll);
-			
+
 			if (gl_points)     gl_points->setPose(CPose3D(ptCloudPose));
 			if (gl_points_col) gl_points_col->setPose(CPose3D(ptCloudPose));
 
@@ -1459,7 +1461,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 }
 
 
-struct visitor_export_PLY : public unary_function<mrpt::opengl::CRenderizablePtr,void> 
+struct visitor_export_PLY : public unary_function<mrpt::opengl::CRenderizablePtr,void>
 {
 	const string &filename;
 	unsigned int &count;
@@ -1492,9 +1494,9 @@ void _DSceneViewerFrame::OnMenuItemExportPointsPLY(wxCommandEvent& event)
 		wxMessageBox(_("Each point cloud object in the scene will be exported as a separate PLY file."),_("Notice") );
 
 		wxFileDialog dialog(
-			this, 
-			_("Choose the target PLY filename"), 
-			_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ), 
+			this,
+			_("Choose the target PLY filename"),
+			_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ),
 			_("*.ply"),
 			_("PLY files (*.ply, *.PLY)|*.ply;*.PLY|All files (*.*)|*.*"),
 			wxFD_SAVE );
