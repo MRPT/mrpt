@@ -26,6 +26,10 @@ namespace Eigen {
 #include "src/SVD/JacobiSVD.h"
 #include "src/SVD/UpperBidiagonalization.h"
 
+#ifdef EIGEN2_SUPPORT
+#include "src/Eigen2Support/SVD.h"
+#endif
+
 } // namespace Eigen
 
 #include "src/Core/util/EnableMSVCWarnings.h"

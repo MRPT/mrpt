@@ -111,9 +111,17 @@ template<> EIGEN_STRONG_INLINE Packet2cf pset1<Packet2cf>(const std::complex<flo
 
 template<> EIGEN_STRONG_INLINE std::complex<float>  pfirst<Packet2cf>(const Packet2cf& a)
 {
+  #if (defined __GNUC__) && (__GNUC__==4) && (__GNUC_MINOR__==2) && (__GNUC_PATCHLEVEL__<=3)
+  // workaround gcc 4.2.1 ICE (mac's gcc version) - I'm not sure how the 4.2.2 and 4.2.3 deal with it, but 4.2.4 works well.
+  // this is not performance wise ideal, but who cares...
+  EIGEN_ALIGN16 std::complex<float> res[2];
+  _mm_store_ps((float*)res, a.v);
+  return res[0];
+  #else
   std::complex<float> res;
   _mm_storel_pi((__m64*)&res, a.v);
   return res;
+  #endif
 }
 
 template<> EIGEN_STRONG_INLINE Packet2cf preverse(const Packet2cf& a) { return Packet2cf(_mm_castpd_ps(preverse(_mm_castps_pd(a.v)))); }
@@ -154,7 +162,7 @@ template<> struct conj_helper<Packet2cf, Packet2cf, false,true>
   EIGEN_STRONG_INLINE Packet2cf pmul(const Packet2cf& a, const Packet2cf& b) const
   {
     #ifdef EIGEN_VECTORIZE_SSE3
-    return pmul(a, pconj(b));
+    return internal::pmul(a, pconj(b));
     #else
     const __m128 mask = _mm_castsi128_ps(_mm_setr_epi32(0x00000000,0x80000000,0x00000000,0x80000000));
     return Packet2cf(_mm_add_ps(_mm_xor_ps(_mm_mul_ps(vec4f_swizzle1(a.v, 0, 0, 2, 2), b.v), mask),
@@ -172,7 +180,7 @@ template<> struct conj_helper<Packet2cf, Packet2cf, true,false>
   EIGEN_STRONG_INLINE Packet2cf pmul(const Packet2cf& a, const Packet2cf& b) const
   {
     #ifdef EIGEN_VECTORIZE_SSE3
-    return pmul(pconj(a), b);
+    return internal::pmul(pconj(a), b);
     #else
     const __m128 mask = _mm_castsi128_ps(_mm_setr_epi32(0x00000000,0x80000000,0x00000000,0x80000000));
     return Packet2cf(_mm_add_ps(_mm_mul_ps(vec4f_swizzle1(a.v, 0, 0, 2, 2), b.v),
@@ -190,7 +198,7 @@ template<> struct conj_helper<Packet2cf, Packet2cf, true,true>
   EIGEN_STRONG_INLINE Packet2cf pmul(const Packet2cf& a, const Packet2cf& b) const
   {
     #ifdef EIGEN_VECTORIZE_SSE3
-    return pconj(pmul(a, b));
+    return pconj(internal::pmul(a, b));
     #else
     const __m128 mask = _mm_castsi128_ps(_mm_setr_epi32(0x00000000,0x80000000,0x00000000,0x80000000));
     return Packet2cf(_mm_sub_ps(_mm_xor_ps(_mm_mul_ps(vec4f_swizzle1(a.v, 0, 0, 2, 2), b.v), mask),

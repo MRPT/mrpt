@@ -43,6 +43,9 @@ namespace Eigen {
   *
   */
 
+#include "src/Eigen2Support/Macros.h"
+#include "src/Eigen2Support/Memory.h"
+#include "src/Eigen2Support/Meta.h"
 #include "src/Eigen2Support/Lazy.h"
 #include "src/Eigen2Support/Cwise.h"
 #include "src/Eigen2Support/CwiseOperators.h"
@@ -64,16 +67,16 @@ namespace Eigen {
 EIGEN_USING_MATRIX_TYPEDEFS \
 using Eigen::Matrix; \
 using Eigen::MatrixBase; \
-using Eigen::internal::random; \
-using Eigen::internal::real; \
-using Eigen::internal::imag; \
-using Eigen::internal::conj; \
-using Eigen::internal::abs; \
-using Eigen::internal::abs2; \
-using Eigen::internal::sqrt; \
-using Eigen::internal::exp; \
-using Eigen::internal::log; \
-using Eigen::internal::sin; \
-using Eigen::internal::cos;
+using Eigen::ei_random; \
+using Eigen::ei_real; \
+using Eigen::ei_imag; \
+using Eigen::ei_conj; \
+using Eigen::ei_abs; \
+using Eigen::ei_abs2; \
+using Eigen::ei_sqrt; \
+using Eigen::ei_exp; \
+using Eigen::ei_log; \
+using Eigen::ei_sin; \
+using Eigen::ei_cos;
 
 #endif // EIGEN2SUPPORT_H

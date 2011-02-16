@@ -61,6 +61,7 @@ struct traits<SparseMatrix<_Scalar, _Options, _Index> >
     SupportedAccessPatterns = InnerRandomAccessPattern
   };
 };
+
 } // end namespace internal
 
 template<typename _Scalar, int _Options, typename _Index>
@@ -69,7 +70,7 @@ class SparseMatrix
 {
   public:
     EIGEN_SPARSE_PUBLIC_INTERFACE(SparseMatrix)
-    using Base::operator=;
+//     using Base::operator=;
     EIGEN_SPARSE_INHERIT_ASSIGNMENT_OPERATOR(SparseMatrix, +=)
     EIGEN_SPARSE_INHERIT_ASSIGNMENT_OPERATOR(SparseMatrix, -=)
     // FIXME: why are these operator already alvailable ???
@@ -450,15 +451,15 @@ class SparseMatrix
     #ifndef EIGEN_PARSED_BY_DOXYGEN
     template<typename Lhs, typename Rhs>
     inline SparseMatrix& operator=(const SparseSparseProduct<Lhs,Rhs>& product)
-    {
-      return Base::operator=(product);
-    }
+    { return Base::operator=(product); }
     
     template<typename OtherDerived>
-    EIGEN_STRONG_INLINE SparseMatrix& operator=(const ReturnByValue<OtherDerived>& func)
-    {
-      return Base::operator=(func);
-    }
+    inline SparseMatrix& operator=(const ReturnByValue<OtherDerived>& other)
+    { return Base::operator=(other); }
+    
+    template<typename OtherDerived>
+    inline SparseMatrix& operator=(const EigenBase<OtherDerived>& other)
+    { return Base::operator=(other); }
     #endif
 
     template<typename OtherDerived>
@@ -600,6 +601,10 @@ class SparseMatrix
 
     /** \deprecated use finalize */
     EIGEN_DEPRECATED void endFill() { finalize(); }
+    
+#   ifdef EIGEN_SPARSEMATRIX_PLUGIN
+#     include EIGEN_SPARSEMATRIX_PLUGIN
+#   endif
 
 private:
   struct default_prunning_func {

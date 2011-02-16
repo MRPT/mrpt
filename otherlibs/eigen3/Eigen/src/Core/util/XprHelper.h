@@ -333,6 +333,12 @@ template<typename T, int n=1, typename PlainObject = typename eval<T>::type> str
   >::type type;
 };
 
+template<typename T>
+T* const_cast_ptr(const T* ptr)
+{
+  return const_cast<T*>(ptr);
+}
+
 template<typename Derived, typename XprKind = typename traits<Derived>::XprKind>
 struct dense_xpr_base
 {

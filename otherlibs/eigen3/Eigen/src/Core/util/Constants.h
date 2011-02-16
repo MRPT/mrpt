@@ -56,7 +56,8 @@ const int Infinity = -1;
   * for a matrix, this means that the storage order is row-major.
   * If this bit is not set, the storage order is column-major.
   * For an expression, this determines the storage order of
-  * the matrix created by evaluation of that expression. */
+  * the matrix created by evaluation of that expression. 
+  * \sa \ref TopicStorageOrders */
 const unsigned int RowMajorBit = 0x1;
 
 /** \ingroup flags

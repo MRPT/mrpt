@@ -96,7 +96,7 @@ template<typename _MatrixType> class ComplexEigenSolver
       * This is a square matrix with entries of type #ComplexScalar.
       * The size is the same as the size of #MatrixType.
       */
-    typedef Matrix<ComplexScalar, RowsAtCompileTime, ColsAtCompileTime, Options, MaxRowsAtCompileTime, ColsAtCompileTime> EigenvectorType;
+    typedef Matrix<ComplexScalar, RowsAtCompileTime, ColsAtCompileTime, Options, MaxRowsAtCompileTime, MaxColsAtCompileTime> EigenvectorType;
 
     /** \brief Default constructor.
       *

@@ -10,7 +10,8 @@
   // 4324 - structure was padded due to declspec(align())
   // 4512 - assignment operator could not be generated
   // 4522 - 'class' : multiple assignment operators specified
+  // 4700 - uninitialized local variable 'xyz' used
   // 4717 - 'function' : recursive on all control paths, function will cause runtime stack overflow
   #pragma warning( push )
-  #pragma warning( disable : 4100 4101 4127 4181 4211 4244 4273 4324 4512 4522 4717 )
+  #pragma warning( disable : 4100 4101 4127 4181 4211 4244 4273 4324 4512 4522 4700 4717 )
 #endif

@@ -26,8 +26,8 @@
 #ifndef EIGEN_MAPBASE_H
 #define EIGEN_MAPBASE_H
 
-#define EIGEN_STATIC_ASSERT_LINEAR_ACCESS(Derived) \
-      EIGEN_STATIC_ASSERT(int(internal::traits<Derived>::Flags) & LinearAccessBit, \
+#define EIGEN_STATIC_ASSERT_INDEX_BASED_ACCESS(Derived) \
+      EIGEN_STATIC_ASSERT((int(internal::traits<Derived>::Flags) & LinearAccessBit) || Derived::IsVectorAtCompileTime, \
                           YOU_ARE_TRYING_TO_USE_AN_INDEX_BASED_ACCESSOR_ON_AN_EXPRESSION_THAT_DOES_NOT_SUPPORT_THAT)
 
 
@@ -106,7 +106,7 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
 
     inline const Scalar& coeff(Index index) const
     {
-      EIGEN_STATIC_ASSERT_LINEAR_ACCESS(Derived)
+      EIGEN_STATIC_ASSERT_INDEX_BASED_ACCESS(Derived)
       return m_data[index * innerStride()];
     }
 
@@ -117,7 +117,7 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
 
     inline const Scalar& coeffRef(Index index) const
     {
-      EIGEN_STATIC_ASSERT_LINEAR_ACCESS(Derived)
+      EIGEN_STATIC_ASSERT_INDEX_BASED_ACCESS(Derived)
       return this->m_data[index * innerStride()];
     }
 
@@ -131,7 +131,7 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
     template<int LoadMode>
     inline PacketScalar packet(Index index) const
     {
-      EIGEN_STATIC_ASSERT_LINEAR_ACCESS(Derived)
+      EIGEN_STATIC_ASSERT_INDEX_BASED_ACCESS(Derived)
       return internal::ploadt<PacketScalar, LoadMode>(m_data + index * innerStride());
     }
 
@@ -217,7 +217,7 @@ template<typename Derived> class MapBase<Derived, WriteAccessors>
 
     inline ScalarWithConstIfNotLvalue& coeffRef(Index index)
     {
-      EIGEN_STATIC_ASSERT_LINEAR_ACCESS(Derived)
+      EIGEN_STATIC_ASSERT_INDEX_BASED_ACCESS(Derived)
       return this->m_data[index * innerStride()];
     }
 
@@ -231,7 +231,7 @@ template<typename Derived> class MapBase<Derived, WriteAccessors>
     template<int StoreMode>
     inline void writePacket(Index index, const PacketScalar& x)
     {
-      EIGEN_STATIC_ASSERT_LINEAR_ACCESS(Derived)
+      EIGEN_STATIC_ASSERT_INDEX_BASED_ACCESS(Derived)
       internal::pstoret<Scalar, PacketScalar, StoreMode>
                 (this->m_data + index * innerStride(), x);
     }

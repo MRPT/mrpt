@@ -82,7 +82,7 @@ template<typename MatrixType, int DiagIndex> class Diagonal
     typedef typename internal::dense_xpr_base<Diagonal>::type Base;
     EIGEN_DENSE_PUBLIC_INTERFACE(Diagonal)
 
-    inline Diagonal(const MatrixType& matrix, Index index = DiagIndex) : m_matrix(matrix), m_index(index) {}
+    inline Diagonal(MatrixType& matrix, Index index = DiagIndex) : m_matrix(matrix), m_index(index) {}
 
     EIGEN_INHERIT_ASSIGNMENT_OPERATORS(Diagonal)
 
@@ -103,6 +103,7 @@ template<typename MatrixType, int DiagIndex> class Diagonal
 
     inline Scalar& coeffRef(Index row, Index)
     {
+      EIGEN_STATIC_ASSERT_LVALUE(MatrixType)
       return m_matrix.const_cast_derived().coeffRef(row+rowOffset(), row+colOffset());
     }
 
@@ -118,6 +119,7 @@ template<typename MatrixType, int DiagIndex> class Diagonal
 
     inline Scalar& coeffRef(Index index)
     {
+      EIGEN_STATIC_ASSERT_LVALUE(MatrixType)
       return m_matrix.const_cast_derived().coeffRef(index+rowOffset(), index+colOffset());
     }
 
@@ -165,7 +167,7 @@ template<typename Derived>
 inline const typename MatrixBase<Derived>::ConstDiagonalReturnType
 MatrixBase<Derived>::diagonal() const
 {
-  return derived();
+  return ConstDiagonalReturnType(derived());
 }
 
 /** \returns an expression of the \a DiagIndex-th sub or super diagonal of the matrix \c *this

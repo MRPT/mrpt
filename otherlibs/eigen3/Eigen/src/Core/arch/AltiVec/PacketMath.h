@@ -35,10 +35,6 @@ namespace internal {
 #define EIGEN_HAS_FUSE_CJMADD 1
 #endif
 
-#ifndef EIGEN_TUNE_FOR_CPU_CACHE_SIZE
-#define EIGEN_TUNE_FOR_CPU_CACHE_SIZE 8*256*256
-#endif
-
 // NOTE Altivec has 32 registers, but Eigen only accepts a value of 8 or 16
 #ifndef EIGEN_ARCH_DEFAULT_NUMBER_OF_REGISTERS
 #define EIGEN_ARCH_DEFAULT_NUMBER_OF_REGISTERS 16

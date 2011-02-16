@@ -132,8 +132,8 @@ public:
   }
 
   /** Concatenates a translation and a transformation */
-  template<int Mode>
-  inline Transform<Scalar,Dim,Mode> operator* (const Transform<Scalar,Dim,Mode>& t) const
+  template<int Mode, int Options>
+  inline Transform<Scalar,Dim,Mode> operator* (const Transform<Scalar,Dim,Mode,Options>& t) const
   {
     Transform<Scalar,Dim,Mode> res = t;
     res.pretranslate(m_coeffs);

@@ -754,35 +754,57 @@ EIGEN_ASM_COMMENT("mybegin4");
           blA += mr;
         }
 
-        ResPacket R0, R1, R2, R3, R4, R5, R6, R7;
-        ResPacket alphav = pset1<ResPacket>(alpha);
+        if(nr==4)
+        {
+          ResPacket R0, R1, R2, R3, R4, R5, R6;
+          ResPacket alphav = pset1<ResPacket>(alpha);
 
-                  R0 = ploadu<ResPacket>(r0);
-                  R1 = ploadu<ResPacket>(r1);
-        if(nr==4) R2 = ploadu<ResPacket>(r2);
-        if(nr==4) R3 = ploadu<ResPacket>(r3);
-                  R4 = ploadu<ResPacket>(r0 + ResPacketSize);
-                  R5 = ploadu<ResPacket>(r1 + ResPacketSize);
-        if(nr==4) R6 = ploadu<ResPacket>(r2 + ResPacketSize);
-        if(nr==4) R7 = ploadu<ResPacket>(r3 + ResPacketSize);
+          R0 = ploadu<ResPacket>(r0);
+          R1 = ploadu<ResPacket>(r1);
+          R2 = ploadu<ResPacket>(r2);
+          R3 = ploadu<ResPacket>(r3);
+          R4 = ploadu<ResPacket>(r0 + ResPacketSize);
+          R5 = ploadu<ResPacket>(r1 + ResPacketSize);
+          R6 = ploadu<ResPacket>(r2 + ResPacketSize);
+          traits.acc(C0, alphav, R0);
+          pstoreu(r0, R0);
+          R0 = ploadu<ResPacket>(r3 + ResPacketSize);
 
-                  traits.acc(C0, alphav, R0);
-                  traits.acc(C1, alphav, R1);
-        if(nr==4) traits.acc(C2, alphav, R2);
-        if(nr==4) traits.acc(C3, alphav, R3);
-                  traits.acc(C4, alphav, R4);
-                  traits.acc(C5, alphav, R5);
-        if(nr==4) traits.acc(C6, alphav, R6);
-        if(nr==4) traits.acc(C7, alphav, R7);
+          traits.acc(C1, alphav, R1);
+          traits.acc(C2, alphav, R2);
+          traits.acc(C3, alphav, R3);
+          traits.acc(C4, alphav, R4);
+          traits.acc(C5, alphav, R5);
+          traits.acc(C6, alphav, R6);
+          traits.acc(C7, alphav, R0);
+          
+          pstoreu(r1, R1);
+          pstoreu(r2, R2);
+          pstoreu(r3, R3);
+          pstoreu(r0 + ResPacketSize, R4);
+          pstoreu(r1 + ResPacketSize, R5);
+          pstoreu(r2 + ResPacketSize, R6);
+          pstoreu(r3 + ResPacketSize, R0);
+        }
+        else
+        {
+          ResPacket R0, R1, R4;
+          ResPacket alphav = pset1<ResPacket>(alpha);
 
-                  pstoreu(r0, R0);
-                  pstoreu(r1, R1);
-        if(nr==4) pstoreu(r2, R2);
-        if(nr==4) pstoreu(r3, R3);
-                  pstoreu(r0 + ResPacketSize, R4);
-                  pstoreu(r1 + ResPacketSize, R5);
-        if(nr==4) pstoreu(r2 + ResPacketSize, R6);
-        if(nr==4) pstoreu(r3 + ResPacketSize, R7);
+          R0 = ploadu<ResPacket>(r0);
+          R1 = ploadu<ResPacket>(r1);
+          R4 = ploadu<ResPacket>(r0 + ResPacketSize);
+          traits.acc(C0, alphav, R0);
+          pstoreu(r0, R0);
+          R0 = ploadu<ResPacket>(r1 + ResPacketSize);
+          traits.acc(C1, alphav, R1);
+          traits.acc(C4, alphav, R4);
+          traits.acc(C5, alphav, R0);
+          pstoreu(r1, R1);
+          pstoreu(r0 + ResPacketSize, R4);
+          pstoreu(r1 + ResPacketSize, R0);
+        }
+        
       }
       
       if(rows-peeled_mc>=LhsProgress)

@@ -72,8 +72,8 @@ public:
   inline Transform<Scalar,Dim,Affine> operator* (const Translation<Scalar,Dim>& t) const;
 
   /** Concatenates a uniform scaling and an affine transformation */
-  template<int Dim, int Mode>
-  inline Transform<Scalar,Dim,Mode> operator* (const Transform<Scalar,Dim, Mode>& t) const;
+  template<int Dim, int Mode, int Options>
+  inline Transform<Scalar,Dim,Mode> operator* (const Transform<Scalar,Dim, Mode, Options>& t) const;
 
   /** Concatenates a uniform scaling and a linear transformation matrix */
   // TODO returns an expression
@@ -141,7 +141,7 @@ static inline DiagonalMatrix<Scalar,3> Scaling(Scalar sx, Scalar sy, Scalar sz)
   * This is an alias for coeffs.asDiagonal()
   */
 template<typename Derived>
-static inline const DiagonalWrapper<Derived> Scaling(const MatrixBase<Derived>& coeffs)
+static inline const DiagonalWrapper<const Derived> Scaling(const MatrixBase<Derived>& coeffs)
 { return coeffs.asDiagonal(); }
 
 /** \addtogroup Geometry_Module */
@@ -170,9 +170,9 @@ UniformScaling<Scalar>::operator* (const Translation<Scalar,Dim>& t) const
 }
 
 template<typename Scalar>
-template<int Dim,int Mode>
+template<int Dim,int Mode,int Options>
 inline Transform<Scalar,Dim,Mode>
-UniformScaling<Scalar>::operator* (const Transform<Scalar,Dim, Mode>& t) const
+UniformScaling<Scalar>::operator* (const Transform<Scalar,Dim, Mode, Options>& t) const
 {
   Transform<Scalar,Dim,Mode> res = t;
   res.prescale(factor());

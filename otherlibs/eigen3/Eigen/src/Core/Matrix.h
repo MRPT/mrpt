@@ -45,7 +45,7 @@
   * The remaining template parameters are optional -- in most cases you don't have to worry about them.
   * \tparam _Options \anchor matrix_tparam_options A combination of either \b RowMajor or \b ColMajor, and of either
   *                 \b AutoAlign or \b DontAlign.
-  *                 The former controls storage order, and defaults to column-major. The latter controls alignment, which is required
+  *                 The former controls \ref TopicStorageOrders "storage order", and defaults to column-major. The latter controls alignment, which is required
   *                 for vectorization. It defaults to aligning matrices except for fixed sizes that aren't a multiple of the packet size.
   * \tparam _MaxRows Maximum number of rows. Defaults to \a _Rows (\ref maxrows "note").
   * \tparam _MaxCols Maximum number of columns. Defaults to \a _Cols (\ref maxrows "note").
@@ -107,7 +107,8 @@
   * are the dimensions of the original matrix, while _Rows and _Cols are Dynamic.</dd>
   * </dl>
   *
-  * \see MatrixBase for the majority of the API methods for matrices, \ref TopicClassHierarchy
+  * \see MatrixBase for the majority of the API methods for matrices, \ref TopicClassHierarchy, 
+  * \ref TopicStorageOrders 
   */
 
 namespace internal {
@@ -235,7 +236,7 @@ class Matrix
     {
       Base::_check_template_params();
       EIGEN_STATIC_ASSERT_VECTOR_ONLY(Matrix)
-      eigen_assert(dim > 0);
+      eigen_assert(dim >= 0);
       eigen_assert(SizeAtCompileTime == Dynamic || SizeAtCompileTime == dim);
       EIGEN_INITIALIZE_BY_ZERO_IF_THAT_OPTION_IS_ENABLED
     }
@@ -285,6 +286,11 @@ class Matrix
     EIGEN_STRONG_INLINE Matrix(const MatrixBase<OtherDerived>& other)
              : Base(other.rows() * other.cols(), other.rows(), other.cols())
     {
+      // This test resides here, to bring the error messages closer to the user. Normally, these checks
+      // are performed deeply within the library, thus causing long and scary error traces.
+      EIGEN_STATIC_ASSERT((internal::is_same<Scalar, typename OtherDerived::Scalar>::value),
+        YOU_MIXED_DIFFERENT_NUMERIC_TYPES__YOU_NEED_TO_USE_THE_CAST_METHOD_OF_MATRIXBASE_TO_CAST_NUMERIC_TYPES_EXPLICITLY)
+
       Base::_check_template_params();
       Base::_set_noalias(other);
     }
@@ -335,6 +341,13 @@ class Matrix
     explicit Matrix(const RotationBase<OtherDerived,ColsAtCompileTime>& r);
     template<typename OtherDerived>
     Matrix& operator=(const RotationBase<OtherDerived,ColsAtCompileTime>& r);
+
+    #ifdef EIGEN2_SUPPORT
+    template<typename OtherDerived>
+    explicit Matrix(const eigen2_RotationBase<OtherDerived,ColsAtCompileTime>& r);
+    template<typename OtherDerived>
+    Matrix& operator=(const eigen2_RotationBase<OtherDerived,ColsAtCompileTime>& r);
+    #endif
 
     // allow to extend Matrix outside Eigen
     #ifdef EIGEN_MATRIX_PLUGIN

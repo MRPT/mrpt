@@ -30,6 +30,10 @@ namespace Eigen {
   #include "src/LU/arch/Inverse_SSE.h"
 #endif
 
+#ifdef EIGEN2_SUPPORT
+  #include "src/Eigen2Support/LU.h"
+#endif
+
 } // namespace Eigen
 
 #include "src/Core/util/EnableMSVCWarnings.h"

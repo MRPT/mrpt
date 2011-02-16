@@ -170,10 +170,10 @@ template<typename Derived> class ArrayBase
     template<typename OtherDerived> explicit ArrayBase(const ArrayBase<OtherDerived>&);
   protected:
     // mixing arrays and matrices is not legal
-    template<typename OtherDerived> Derived& operator+=(const MatrixBase<OtherDerived>& mat)
+    template<typename OtherDerived> Derived& operator+=(const MatrixBase<OtherDerived>& )
     {EIGEN_STATIC_ASSERT(sizeof(typename OtherDerived::Scalar)==-1,YOU_CANNOT_MIX_ARRAYS_AND_MATRICES);}
     // mixing arrays and matrices is not legal
-    template<typename OtherDerived> Derived& operator-=(const MatrixBase<OtherDerived>& mat)
+    template<typename OtherDerived> Derived& operator-=(const MatrixBase<OtherDerived>& )
     {EIGEN_STATIC_ASSERT(sizeof(typename OtherDerived::Scalar)==-1,YOU_CANNOT_MIX_ARRAYS_AND_MATRICES);}
 };
 

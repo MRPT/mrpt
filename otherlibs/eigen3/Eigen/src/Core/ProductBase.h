@@ -84,12 +84,14 @@ class ProductBase : public MatrixBase<Derived>
     typedef internal::blas_traits<_LhsNested> LhsBlasTraits;
     typedef typename LhsBlasTraits::DirectLinearAccessType ActualLhsType;
     typedef typename internal::remove_all<ActualLhsType>::type _ActualLhsType;
+    typedef typename internal::traits<Lhs>::Scalar LhsScalar;
 
     typedef typename Rhs::Nested RhsNested;
     typedef typename internal::remove_all<RhsNested>::type _RhsNested;
     typedef internal::blas_traits<_RhsNested> RhsBlasTraits;
     typedef typename RhsBlasTraits::DirectLinearAccessType ActualRhsType;
     typedef typename internal::remove_all<ActualRhsType>::type _ActualRhsType;
+    typedef typename internal::traits<Rhs>::Scalar RhsScalar;
 
     // Diagonal of a product: no need to evaluate the arguments because they are going to be evaluated only once
     typedef CoeffBasedProduct<LhsNested, RhsNested, 0> FullyLazyCoeffBaseProductType;
@@ -132,7 +134,7 @@ class ProductBase : public MatrixBase<Derived>
       return m_result;
     }
 
-    const Diagonal<FullyLazyCoeffBaseProductType,0> diagonal() const
+    const Diagonal<const FullyLazyCoeffBaseProductType,0> diagonal() const
     { return FullyLazyCoeffBaseProductType(m_lhs, m_rhs); }
 
     template<int Index>
@@ -145,9 +147,13 @@ class ProductBase : public MatrixBase<Derived>
     // restrict coeff accessors to 1x1 expressions. No need to care about mutators here since this isnt a Lvalue expression
     typename Base::CoeffReturnType coeff(Index row, Index col) const
     {
+#ifdef EIGEN2_SUPPORT
+      return lhs().row(row).cwiseProduct(rhs().col(col).transpose()).sum();
+#else
       EIGEN_STATIC_ASSERT_SIZE_1x1(Derived)
       eigen_assert(this->rows() == 1 && this->cols() == 1);
       return derived().coeff(row,col);
+#endif
     }
 
     typename Base::CoeffReturnType coeff(Index i) const

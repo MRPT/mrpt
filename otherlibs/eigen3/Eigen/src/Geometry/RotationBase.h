@@ -98,8 +98,8 @@ class RotationBase
     }
 
     /** \returns the concatenation of the rotation \c *this with a transformation \a t */
-    template<int Mode>
-    inline Transform<Scalar,Dim,Mode> operator*(const Transform<Scalar,Dim,Mode>& t) const
+    template<int Mode, int Options>
+    inline Transform<Scalar,Dim,Mode> operator*(const Transform<Scalar,Dim,Mode,Options>& t) const
     { return toRotationMatrix() * t; }
 
     template<typename OtherVectorType>

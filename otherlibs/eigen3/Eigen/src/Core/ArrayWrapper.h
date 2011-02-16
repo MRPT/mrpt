@@ -72,12 +72,22 @@ class ArrayWrapper : public ArrayBase<ArrayWrapper<ExpressionType> >
       return m_expression.const_cast_derived().coeffRef(row, col);
     }
 
+    inline const Scalar& coeffRef(Index row, Index col) const
+    {
+      return m_expression.const_cast_derived().coeffRef(row, col);
+    }
+
     inline const CoeffReturnType coeff(Index index) const
     {
       return m_expression.coeff(index);
     }
 
     inline Scalar& coeffRef(Index index)
+    {
+      return m_expression.const_cast_derived().coeffRef(index);
+    }
+
+    inline const Scalar& coeffRef(Index index) const
     {
       return m_expression.const_cast_derived().coeffRef(index);
     }
@@ -171,6 +181,11 @@ class MatrixWrapper : public MatrixBase<MatrixWrapper<ExpressionType> >
     }
 
     inline Scalar& coeffRef(Index index)
+    {
+      return m_expression.const_cast_derived().coeffRef(index);
+    }
+
+    inline const Scalar& coeffRef(Index index) const
     {
       return m_expression.const_cast_derived().coeffRef(index);
     }

@@ -26,6 +26,12 @@
 #ifndef EIGEN_TRIANGULARMATRIX_H
 #define EIGEN_TRIANGULARMATRIX_H
 
+namespace internal {
+  
+template<int Side, typename TriangularType, typename Rhs> struct triangular_solve_retval;
+  
+}
+
 /** \internal
   *
   * \class TriangularBase
@@ -48,6 +54,8 @@ template<typename Derived> class TriangularBase : public EigenBase<Derived>
     typedef typename internal::traits<Derived>::Scalar Scalar;
     typedef typename internal::traits<Derived>::StorageKind StorageKind;
     typedef typename internal::traits<Derived>::Index Index;
+    typedef typename internal::traits<Derived>::DenseMatrixType DenseMatrixType;
+    typedef DenseMatrixType DenseType;
 
     inline TriangularBase() { eigen_assert(!((Mode&UnitDiag) && (Mode&ZeroDiag))); }
 
@@ -87,6 +95,13 @@ template<typename Derived> class TriangularBase : public EigenBase<Derived>
     void evalTo(MatrixBase<DenseDerived> &other) const;
     template<typename DenseDerived>
     void evalToLazy(MatrixBase<DenseDerived> &other) const;
+
+    DenseMatrixType toDenseMatrix() const
+    {
+      DenseMatrixType res(rows(), cols());
+      evalToLazy(res);
+      return res;
+    }
 
   protected:
 
@@ -135,12 +150,14 @@ template<typename MatrixType, unsigned int _Mode>
 struct traits<TriangularView<MatrixType, _Mode> > : traits<MatrixType>
 {
   typedef typename nested<MatrixType>::type MatrixTypeNested;
-  typedef typename remove_reference<MatrixTypeNested>::type _MatrixTypeNested;
+  typedef typename remove_reference<MatrixTypeNested>::type MatrixTypeNestedNonRef;
+  typedef typename remove_all<MatrixTypeNested>::type MatrixTypeNestedCleaned;
   typedef MatrixType ExpressionType;
+  typedef typename MatrixType::PlainObject DenseMatrixType;
   enum {
     Mode = _Mode,
-    Flags = (_MatrixTypeNested::Flags & (HereditaryBits) & (~(PacketAccessBit | DirectAccessBit | LinearAccessBit))) | Mode,
-    CoeffReadCost = _MatrixTypeNested::CoeffReadCost
+    Flags = (MatrixTypeNestedCleaned::Flags & (HereditaryBits) & (~(PacketAccessBit | DirectAccessBit | LinearAccessBit))) | Mode,
+    CoeffReadCost = MatrixTypeNestedCleaned::CoeffReadCost
   };
 };
 }
@@ -159,11 +176,14 @@ template<typename _MatrixType, unsigned int _Mode> class TriangularView
     typedef typename internal::traits<TriangularView>::Scalar Scalar;
 
     typedef _MatrixType MatrixType;
-    typedef typename MatrixType::PlainObject DenseMatrixType;
+    typedef typename internal::traits<TriangularView>::DenseMatrixType DenseMatrixType;
+    typedef DenseMatrixType PlainObject;
 
   protected:
-    typedef typename MatrixType::Nested MatrixTypeNested;
-    typedef typename internal::remove_all<MatrixTypeNested>::type _MatrixTypeNested;
+    typedef typename internal::traits<TriangularView>::MatrixTypeNested MatrixTypeNested;
+    typedef typename internal::traits<TriangularView>::MatrixTypeNestedNonRef MatrixTypeNestedNonRef;
+    typedef typename internal::traits<TriangularView>::MatrixTypeNestedCleaned MatrixTypeNestedCleaned;
+
     typedef typename internal::remove_all<typename MatrixType::ConjugateReturnType>::type MatrixConjugateReturnType;
     
   public:
@@ -226,8 +246,8 @@ template<typename _MatrixType, unsigned int _Mode> class TriangularView
       return m_matrix.const_cast_derived().coeffRef(row, col);
     }
 
-    const MatrixType& nestedExpression() const { return m_matrix; }
-    MatrixType& nestedExpression() { return const_cast<MatrixType&>(m_matrix); }
+    const MatrixTypeNestedCleaned& nestedExpression() const { return m_matrix; }
+    MatrixTypeNestedCleaned& nestedExpression() { return *const_cast<MatrixTypeNestedCleaned*>(&m_matrix); }
 
     /** Assigns a triangular matrix to a triangular part of a dense matrix */
     template<typename OtherDerived>
@@ -269,13 +289,6 @@ template<typename _MatrixType, unsigned int _Mode> class TriangularView
     inline const TriangularView<Transpose<MatrixType>,TransposeMode> transpose() const
     { return m_matrix.transpose(); }
 
-    DenseMatrixType toDenseMatrix() const
-    {
-      DenseMatrixType res(rows(), cols());
-      evalToLazy(res);
-      return res;
-    }
-
     /** Efficient triangular matrix times vector/matrix product */
     template<typename OtherDerived>
     TriangularProduct<Mode,true,MatrixType,false,OtherDerived,OtherDerived::IsVectorAtCompileTime>
@@ -296,31 +309,60 @@ template<typename _MatrixType, unsigned int _Mode> class TriangularView
               (lhs.derived(),rhs.m_matrix);
     }
 
-    template<int Side, typename OtherDerived>
-    typename internal::plain_matrix_type_column_major<OtherDerived>::type
-    solve(const MatrixBase<OtherDerived>& other) const;
+    #ifdef EIGEN2_SUPPORT
+    template<typename OtherDerived>
+    struct eigen2_product_return_type
+    {
+      typedef typename TriangularView<MatrixType,Mode>::DenseMatrixType DenseMatrixType;
+      typedef typename OtherDerived::PlainObject::DenseType OtherPlainObject;
+      typedef typename ProductReturnType<DenseMatrixType, OtherPlainObject>::Type ProdRetType;
+      typedef typename ProdRetType::PlainObject type;
+    };
+    template<typename OtherDerived>
+    const typename eigen2_product_return_type<OtherDerived>::type
+    operator*(const EigenBase<OtherDerived>& rhs) const
+    {
+      typename OtherDerived::PlainObject::DenseType rhsPlainObject;
+      rhs.evalTo(rhsPlainObject);
+      return this->toDenseMatrix() * rhsPlainObject;
+    }
+    template<typename OtherMatrixType>
+    bool isApprox(const TriangularView<OtherMatrixType, Mode>& other, typename NumTraits<Scalar>::Real precision = NumTraits<Scalar>::dummy_precision()) const
+    {
+      return this->toDenseMatrix().isApprox(other.toDenseMatrix(), precision);
+    }
+    template<typename OtherDerived>
+    bool isApprox(const MatrixBase<OtherDerived>& other, typename NumTraits<Scalar>::Real precision = NumTraits<Scalar>::dummy_precision()) const
+    {
+      return this->toDenseMatrix().isApprox(other, precision);
+    }
+    #endif // EIGEN2_SUPPORT
+
+    template<int Side, typename Other>
+    inline const internal::triangular_solve_retval<Side,TriangularView, Other>
+    solve(const MatrixBase<Other>& other) const;
 
     template<int Side, typename OtherDerived>
     void solveInPlace(const MatrixBase<OtherDerived>& other) const;
 
-    template<typename OtherDerived>
-    typename internal::plain_matrix_type_column_major<OtherDerived>::type
-    solve(const MatrixBase<OtherDerived>& other) const
+    template<typename Other>
+    inline const internal::triangular_solve_retval<OnTheLeft,TriangularView, Other> 
+    solve(const MatrixBase<Other>& other) const
     { return solve<OnTheLeft>(other); }
 
     template<typename OtherDerived>
     void solveInPlace(const MatrixBase<OtherDerived>& other) const
     { return solveInPlace<OnTheLeft>(other); }
 
-    const SelfAdjointView<_MatrixTypeNested,Mode> selfadjointView() const
+    const SelfAdjointView<MatrixTypeNestedNonRef,Mode> selfadjointView() const
     {
       EIGEN_STATIC_ASSERT((Mode&UnitDiag)==0,PROGRAMMING_ERROR);
-      return SelfAdjointView<_MatrixTypeNested,Mode>(m_matrix);
+      return SelfAdjointView<MatrixTypeNestedNonRef,Mode>(m_matrix);
     }
-    SelfAdjointView<_MatrixTypeNested,Mode> selfadjointView()
+    SelfAdjointView<MatrixTypeNestedNonRef,Mode> selfadjointView()
     {
       EIGEN_STATIC_ASSERT((Mode&UnitDiag)==0,PROGRAMMING_ERROR);
-      return SelfAdjointView<_MatrixTypeNested,Mode>(m_matrix);
+      return SelfAdjointView<MatrixTypeNestedNonRef,Mode>(m_matrix);
     }
 
     template<typename OtherDerived>
@@ -659,10 +701,10 @@ void TriangularBase<Derived>::evalToLazy(MatrixBase<DenseDerived> &other) const
                    && DenseDerived::SizeAtCompileTime * internal::traits<Derived>::CoeffReadCost / 2
                         <= EIGEN_UNROLLING_LIMIT
   };
-  eigen_assert(this->rows() == other.rows() && this->cols() == other.cols());
+  other.derived().resize(this->rows(), this->cols());
 
   internal::triangular_assignment_selector
-    <DenseDerived, typename internal::traits<Derived>::ExpressionType, Derived::Mode,
+    <DenseDerived, typename internal::traits<Derived>::MatrixTypeNestedCleaned, Derived::Mode,
     unroll ? int(DenseDerived::SizeAtCompileTime) : Dynamic,
     true // clear the opposite triangular part
     >::run(other.derived(), derived().nestedExpression());
@@ -676,10 +718,28 @@ void TriangularBase<Derived>::evalToLazy(MatrixBase<DenseDerived> &other) const
 * Implementation of MatrixBase methods
 ***************************************************************************/
 
+#ifdef EIGEN2_SUPPORT
+
+// implementation of part<>(), including the SelfAdjoint case.
+
+namespace internal {
+template<typename MatrixType, unsigned int Mode>
+struct eigen2_part_return_type
+{
+  typedef TriangularView<MatrixType, Mode> type;
+};
+
+template<typename MatrixType>
+struct eigen2_part_return_type<MatrixType, SelfAdjoint>
+{
+  typedef SelfAdjointView<MatrixType, Upper> type;
+};
+}
+
 /** \deprecated use MatrixBase::triangularView() */
 template<typename Derived>
 template<unsigned int Mode>
-EIGEN_DEPRECATED const TriangularView<Derived, Mode> MatrixBase<Derived>::part() const
+const typename internal::eigen2_part_return_type<Derived, Mode>::type MatrixBase<Derived>::part() const
 {
   return derived();
 }
@@ -687,10 +747,11 @@ EIGEN_DEPRECATED const TriangularView<Derived, Mode> MatrixBase<Derived>::part()
 /** \deprecated use MatrixBase::triangularView() */
 template<typename Derived>
 template<unsigned int Mode>
-EIGEN_DEPRECATED TriangularView<Derived, Mode> MatrixBase<Derived>::part()
+typename internal::eigen2_part_return_type<Derived, Mode>::type MatrixBase<Derived>::part()
 {
   return derived();
 }
+#endif
 
 /**
   * \returns an expression of a triangular view extracted from the current matrix
@@ -723,7 +784,7 @@ MatrixBase<Derived>::triangularView() const
 /** \returns true if *this is approximately equal to an upper triangular matrix,
   *          within the precision given by \a prec.
   *
-  * \sa isLowerTriangular(), extract(), part(), marked()
+  * \sa isLowerTriangular()
   */
 template<typename Derived>
 bool MatrixBase<Derived>::isUpperTriangular(RealScalar prec) const
@@ -748,7 +809,7 @@ bool MatrixBase<Derived>::isUpperTriangular(RealScalar prec) const
 /** \returns true if *this is approximately equal to a lower triangular matrix,
   *          within the precision given by \a prec.
   *
-  * \sa isUpperTriangular(), extract(), part(), marked()
+  * \sa isUpperTriangular()
   */
 template<typename Derived>
 bool MatrixBase<Derived>::isLowerTriangular(RealScalar prec) const

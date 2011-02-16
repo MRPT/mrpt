@@ -53,6 +53,8 @@
   *     to by move / add / mul instructions respectively, assuming the data is already stored in CPU registers.
   *     Stay vague here. No need to do architecture-specific stuff.
   * \li An enum value \a IsSigned. It is equal to \c 1 if \a T is a signed type and to 0 if \a T is unsigned.
+  * \li An enum value \a RequireInitialization. It is equal to \c 1 if the constructor of the numeric type \a T must
+  *     be called, and to 0 if it is safe not to call it. Default is 0 if \a T is an arithmetic type, and 1 otherwise.
   * \li An epsilon() function which, unlike std::numeric_limits::epsilon(), returns a \a Real instead of a \a T.
   * \li A dummy_precision() function returning a weak epsilon value. It is mainly used as a default
   *     value by the fuzzy comparison operators.
@@ -65,6 +67,7 @@ template<typename T> struct GenericNumTraits
     IsInteger = std::numeric_limits<T>::is_integer,
     IsSigned = std::numeric_limits<T>::is_signed,
     IsComplex = 0,
+    RequireInitialization = internal::is_arithmetic<T>::value ? 0 : 1,
     ReadCost = 1,
     AddCost = 1,
     MulCost = 1
@@ -86,6 +89,13 @@ template<typename T> struct GenericNumTraits
   }
   inline static T highest() { return std::numeric_limits<T>::max(); }
   inline static T lowest()  { return IsInteger ? std::numeric_limits<T>::min() : (-std::numeric_limits<T>::max()); }
+  
+#ifdef EIGEN2_SUPPORT
+  enum {
+    HasFloatingPoint = !IsInteger
+  };
+  typedef NonInteger FloatingPoint;
+#endif
 };
 
 template<typename T> struct NumTraits : GenericNumTraits<T>
@@ -114,6 +124,7 @@ template<typename _Real> struct NumTraits<std::complex<_Real> >
   typedef _Real Real;
   enum {
     IsComplex = 1,
+    RequireInitialization = NumTraits<_Real>::RequireInitialization,
     ReadCost = 2 * NumTraits<_Real>::ReadCost,
     AddCost = 2 * NumTraits<Real>::AddCost,
     MulCost = 4 * NumTraits<Real>::MulCost + 2 * NumTraits<Real>::AddCost
@@ -137,6 +148,7 @@ struct NumTraits<Array<Scalar, Rows, Cols, Options, MaxRows, MaxCols> >
     IsComplex = NumTraits<Scalar>::IsComplex,
     IsInteger = NumTraits<Scalar>::IsInteger,
     IsSigned  = NumTraits<Scalar>::IsSigned,
+    RequireInitialization = 1,
     ReadCost = ArrayType::SizeAtCompileTime==Dynamic ? Dynamic : ArrayType::SizeAtCompileTime * NumTraits<Scalar>::ReadCost,
     AddCost  = ArrayType::SizeAtCompileTime==Dynamic ? Dynamic : ArrayType::SizeAtCompileTime * NumTraits<Scalar>::AddCost,
     MulCost  = ArrayType::SizeAtCompileTime==Dynamic ? Dynamic : ArrayType::SizeAtCompileTime * NumTraits<Scalar>::MulCost

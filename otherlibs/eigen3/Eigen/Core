@@ -2,7 +2,7 @@
 // for linear algebra.
 //
 // Copyright (C) 2008 Gael Guennebaud <gael.guennebaud@inria.fr>
-// Copyright (C) 2007-2010 Benoit Jacob <jacob.benoit.1@gmail.com>
+// Copyright (C) 2007-2011 Benoit Jacob <jacob.benoit.1@gmail.com>
 //
 // Eigen is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -152,6 +152,7 @@
 #include <cstring>
 #include <string>
 #include <limits>
+#include <climits> // for CHAR_BIT
 // for min/max:
 #include <algorithm>
 
@@ -163,22 +164,6 @@
 // required for __cpuid, needs to be included after cmath
 #if defined(_MSC_VER) && (defined(_M_IX86)||defined(_M_X64))
   #include <intrin.h>
-  // When available, intrin.h pulls in all SSE headers which allows us
-  // to check which SSE level is supported on MSVC systems
-  #ifndef EIGEN_DONT_VECTORIZE
-    #ifdef _INCLUDED_PMM
-      #define EIGEN_VECTORIZE_SSE3
-    #endif
-    #ifdef _INCLUDED_TMM
-      #define EIGEN_VECTORIZE_SSSE3
-    #endif
-    #ifdef _INCLUDED_SMM
-      #define EIGEN_VECTORIZE_SSE4_1
-    #endif
-    #ifdef _INCLUDED_NMM
-      #define EIGEN_VECTORIZE_SSE4_2
-    #endif
-  #endif
 #endif
 
 #if (defined(_CPPUNWIND) || defined(__EXCEPTIONS)) && !defined(EIGEN_NO_EXCEPTIONS)
@@ -220,6 +205,32 @@ inline static const char *SimdInstructionSetsInUse(void) {
   return "None";
 #endif
 }
+
+#define STAGE10_FULL_EIGEN2_API             10
+#define STAGE20_RESOLVE_API_CONFLICTS       20
+#define STAGE30_FULL_EIGEN3_API             30
+#define STAGE40_FULL_EIGEN3_STRICTNESS      40
+#define STAGE99_NO_EIGEN2_SUPPORT           99
+
+#if   defined EIGEN2_SUPPORT_STAGE40_FULL_EIGEN3_STRICTNESS
+  #define EIGEN2_SUPPORT
+  #define EIGEN2_SUPPORT_STAGE STAGE40_FULL_EIGEN3_STRICTNESS
+#elif defined EIGEN2_SUPPORT_STAGE30_FULL_EIGEN3_API
+  #define EIGEN2_SUPPORT
+  #define EIGEN2_SUPPORT_STAGE STAGE30_FULL_EIGEN3_API
+#elif defined EIGEN2_SUPPORT_STAGE20_RESOLVE_API_CONFLICTS
+  #define EIGEN2_SUPPORT
+  #define EIGEN2_SUPPORT_STAGE STAGE20_RESOLVE_API_CONFLICTS
+#elif defined EIGEN2_SUPPORT_STAGE10_FULL_EIGEN2_API
+  #define EIGEN2_SUPPORT
+  #define EIGEN2_SUPPORT_STAGE STAGE10_FULL_EIGEN2_API
+#elif defined EIGEN2_SUPPORT
+  // default to stage 3, that's what it's always meant
+  #define EIGEN2_SUPPORT_STAGE30_FULL_EIGEN3_API
+  #define EIGEN2_SUPPORT_STAGE STAGE30_FULL_EIGEN3_API
+#else
+  #define EIGEN2_SUPPORT_STAGE STAGE99_NO_EIGEN2_SUPPORT
+#endif
 
 #ifdef EIGEN2_SUPPORT
 #undef minor

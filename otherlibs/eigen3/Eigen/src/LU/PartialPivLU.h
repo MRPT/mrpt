@@ -225,7 +225,7 @@ PartialPivLU<MatrixType>::PartialPivLU(const MatrixType& matrix)
 namespace internal {
 
 /** \internal This is the blocked version of fullpivlu_unblocked() */
-template<typename Scalar, int StorageOrder>
+template<typename Scalar, int StorageOrder, typename PivIndex>
 struct partial_lu_impl
 {
   // FIXME add a stride to Map, so that the following mapping becomes easier,
@@ -247,51 +247,50 @@ struct partial_lu_impl
     * of columns of the matrix \a lu, and an integer \a nb_transpositions
     * which returns the actual number of transpositions.
     *
-    * \returns false if some pivot is exactly zero, in which case the matrix is left with
-    *          undefined coefficients (to avoid generating inf/nan values). Returns true
-    *          otherwise.
+    * \returns The index of the first pivot which is exactly zero if any, or a negative number otherwise.
     */
-  static bool unblocked_lu(MatrixType& lu, Index* row_transpositions, Index& nb_transpositions)
+  static Index unblocked_lu(MatrixType& lu, PivIndex* row_transpositions, PivIndex& nb_transpositions)
   {
     const Index rows = lu.rows();
-    const Index size = std::min(lu.rows(),lu.cols());
+    const Index cols = lu.cols();
+    const Index size = std::min(rows,cols);
     nb_transpositions = 0;
+    int first_zero_pivot = -1;
     for(Index k = 0; k < size; ++k)
     {
+      Index rrows = rows-k-1;
+      Index rcols = cols-k-1;
+        
       Index row_of_biggest_in_col;
       RealScalar biggest_in_corner
         = lu.col(k).tail(rows-k).cwiseAbs().maxCoeff(&row_of_biggest_in_col);
       row_of_biggest_in_col += k;
 
-      if(biggest_in_corner == 0) // the pivot is exactly zero: the matrix is singular
-      {
-        // end quickly, avoid generating inf/nan values. Although in this unblocked_lu case
-        // the result is still valid, there's no need to boast about it because
-        // the blocked_lu code can't guarantee the same.
-        // before exiting, make sure to initialize the still uninitialized row_transpositions
-        // in a sane state without destroying what we already have.
-        for(Index i = k; i < size; i++)
-          row_transpositions[i] = i;
-        return false;
-      }
-
       row_transpositions[k] = row_of_biggest_in_col;
 
-      if(k != row_of_biggest_in_col)
+      if(biggest_in_corner != 0)
       {
-        lu.row(k).swap(lu.row(row_of_biggest_in_col));
-        ++nb_transpositions;
+        if(k != row_of_biggest_in_col)
+        {
+          lu.row(k).swap(lu.row(row_of_biggest_in_col));
+          ++nb_transpositions;
+        }
+
+        // FIXME shall we introduce a safe quotient expression in cas 1/lu.coeff(k,k)
+        // overflow but not the actual quotient?
+        lu.col(k).tail(rrows) /= lu.coeff(k,k);
+      }
+      else if(first_zero_pivot==-1)
+      {
+        // the pivot is exactly zero, we record the index of the first pivot which is exactly 0,
+        // and continue the factorization such we still have A = PLU
+        first_zero_pivot = k;
       }
 
       if(k<rows-1)
-      {
-        Index rrows = rows-k-1;
-        Index rsize = size-k-1;
-        lu.col(k).tail(rrows) /= lu.coeff(k,k);
-        lu.bottomRightCorner(rrows,rsize).noalias() -= lu.col(k).tail(rrows) * lu.row(k).tail(rsize);
-      }
+        lu.bottomRightCorner(rrows,rcols).noalias() -= lu.col(k).tail(rrows) * lu.row(k).tail(rcols);
     }
-    return true;
+    return first_zero_pivot;
   }
 
   /** \internal performs the LU decomposition in-place of the matrix represented
@@ -303,15 +302,13 @@ struct partial_lu_impl
     * of columns of the matrix \a lu, and an integer \a nb_transpositions
     * which returns the actual number of transpositions.
     *
-    * \returns false if some pivot is exactly zero, in which case the matrix is left with
-    *          undefined coefficients (to avoid generating inf/nan values). Returns true
-    *          otherwise.
+    * \returns The index of the first pivot which is exactly zero if any, or a negative number otherwise.
     *
     * \note This very low level interface using pointers, etc. is to:
     *   1 - reduce the number of instanciations to the strict minimum
     *   2 - avoid infinite recursion of the instanciations with Block<Block<Block<...> > >
     */
-  static bool blocked_lu(Index rows, Index cols, Scalar* lu_data, Index luStride, Index* row_transpositions, Index& nb_transpositions, Index maxBlockSize=256)
+  static Index blocked_lu(Index rows, Index cols, Scalar* lu_data, Index luStride, PivIndex* row_transpositions, PivIndex& nb_transpositions, Index maxBlockSize=256)
   {
     MapLU lu1(lu_data,StorageOrder==RowMajor?rows:luStride,StorageOrder==RowMajor?luStride:cols);
     MatrixType lu(lu1,0,0,rows,cols);
@@ -334,6 +331,7 @@ struct partial_lu_impl
     }
 
     nb_transpositions = 0;
+    int first_zero_pivot = -1;
     for(Index k = 0; k < size; k+=blockSize)
     {
       Index bs = std::min(size-k,blockSize); // actual size of the block
@@ -351,21 +349,15 @@ struct partial_lu_impl
       BlockType A21(lu,k+bs,k,trows,bs);
       BlockType A22(lu,k+bs,k+bs,trows,tsize);
 
-      Index nb_transpositions_in_panel;
+      PivIndex nb_transpositions_in_panel;
       // recursively call the blocked LU algorithm on [A11^T A21^T]^T
       // with a very small blocking size:
-      if(!blocked_lu(trows+bs, bs, &lu.coeffRef(k,k), luStride,
-                   row_transpositions+k, nb_transpositions_in_panel, 16))
-      {
-        // end quickly with undefined coefficients, just avoid generating inf/nan values.
-        // before exiting, make sure to initialize the still uninitialized row_transpositions
-        // in a sane state without destroying what we already have.
-        for(Index i=k; i<size; ++i)
-          row_transpositions[i] = i;
-        return false;
-      }
-      nb_transpositions += nb_transpositions_in_panel;
+      Index ret = blocked_lu(trows+bs, bs, &lu.coeffRef(k,k), luStride,
+                   row_transpositions+k, nb_transpositions_in_panel, 16);
+      if(ret>=0 && first_zero_pivot==-1)
+        first_zero_pivot = k+ret;
 
+      nb_transpositions += nb_transpositions_in_panel;
       // update permutations and apply them to A_0
       for(Index i=k; i<k+bs; ++i)
       {
@@ -385,20 +377,20 @@ struct partial_lu_impl
         A22.noalias() -= A21 * A12;
       }
     }
-    return true;
+    return first_zero_pivot;
   }
 };
 
 /** \internal performs the LU decomposition with partial pivoting in-place.
   */
 template<typename MatrixType, typename TranspositionType>
-void partial_lu_inplace(MatrixType& lu, TranspositionType& row_transpositions, typename MatrixType::Index& nb_transpositions)
+void partial_lu_inplace(MatrixType& lu, TranspositionType& row_transpositions, typename TranspositionType::Index& nb_transpositions)
 {
   eigen_assert(lu.cols() == row_transpositions.size());
   eigen_assert((&row_transpositions.coeffRef(1)-&row_transpositions.coeffRef(0)) == 1);
 
   partial_lu_impl
-    <typename MatrixType::Scalar, MatrixType::Flags&RowMajorBit?RowMajor:ColMajor>
+    <typename MatrixType::Scalar, MatrixType::Flags&RowMajorBit?RowMajor:ColMajor, typename TranspositionType::Index>
     ::blocked_lu(lu.rows(), lu.cols(), &lu.coeffRef(0,0), lu.outerStride(), &row_transpositions.coeffRef(0), nb_transpositions);
 }
 
@@ -414,7 +406,7 @@ PartialPivLU<MatrixType>& PartialPivLU<MatrixType>::compute(const MatrixType& ma
 
   m_rowsTranspositions.resize(size);
 
-  Index nb_transpositions;
+  typename TranspositionType::Index nb_transpositions;
   internal::partial_lu_inplace(m_lu, m_rowsTranspositions, nb_transpositions);
   m_det_p = (nb_transpositions%2) ? -1 : 1;
 
@@ -497,6 +489,7 @@ MatrixBase<Derived>::partialPivLu() const
   return PartialPivLU<PlainObject>(eval());
 }
 
+#if EIGEN2_SUPPORT_STAGE > STAGE20_RESOLVE_API_CONFLICTS
 /** \lu_module
   *
   * Synonym of partialPivLu().
@@ -511,5 +504,6 @@ MatrixBase<Derived>::lu() const
 {
   return PartialPivLU<PlainObject>(eval());
 }
+#endif
 
 #endif // EIGEN_PARTIALLU_H

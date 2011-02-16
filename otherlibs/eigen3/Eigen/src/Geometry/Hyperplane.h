@@ -43,24 +43,32 @@
   * \f$ n \cdot x + d = 0 \f$ where \f$ n \f$ is a unit normal vector of the plane (linear part)
   * and \f$ d \f$ is the distance (offset) to the origin.
   */
-template <typename _Scalar, int _AmbientDim>
+template <typename _Scalar, int _AmbientDim, int _Options>
 class Hyperplane
 {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF_VECTORIZABLE_FIXED_SIZE(_Scalar,_AmbientDim==Dynamic ? Dynamic : _AmbientDim+1)
-  enum { AmbientDimAtCompileTime = _AmbientDim };
+  enum {
+    AmbientDimAtCompileTime = _AmbientDim,
+    Options = _Options
+  };
   typedef _Scalar Scalar;
   typedef typename NumTraits<Scalar>::Real RealScalar;
   typedef DenseIndex Index;
   typedef Matrix<Scalar,AmbientDimAtCompileTime,1> VectorType;
   typedef Matrix<Scalar,Index(AmbientDimAtCompileTime)==Dynamic
                         ? Dynamic
-                        : Index(AmbientDimAtCompileTime)+1,1> Coefficients;
+                        : Index(AmbientDimAtCompileTime)+1,1,Options> Coefficients;
   typedef Block<Coefficients,AmbientDimAtCompileTime,1> NormalReturnType;
   typedef const Block<const Coefficients,AmbientDimAtCompileTime,1> ConstNormalReturnType;
 
   /** Default constructor without initialization */
   inline explicit Hyperplane() {}
+  
+  template<int OtherOptions>
+  Hyperplane(const Hyperplane<Scalar,AmbientDimAtCompileTime,OtherOptions>& other)
+   : m_coeffs(other.coeffs())
+  {}
 
   /** Constructs a dynamic-size hyperplane with \a _dim the dimension
     * of the ambient space */
@@ -229,7 +237,8 @@ public:
     *               or a more generic Affine transformation. The default is Affine.
     *               Other kind of transformations are not supported.
     */
-  inline Hyperplane& transform(const Transform<Scalar,AmbientDimAtCompileTime,Affine>& t,
+  template<int TrOptions>
+  inline Hyperplane& transform(const Transform<Scalar,AmbientDimAtCompileTime,Affine,TrOptions>& t,
                                 TransformTraits traits = Affine)
   {
     transform(t.linear(), traits);
@@ -244,22 +253,23 @@ public:
     */
   template<typename NewScalarType>
   inline typename internal::cast_return_type<Hyperplane,
-           Hyperplane<NewScalarType,AmbientDimAtCompileTime> >::type cast() const
+           Hyperplane<NewScalarType,AmbientDimAtCompileTime,Options> >::type cast() const
   {
     return typename internal::cast_return_type<Hyperplane,
-                    Hyperplane<NewScalarType,AmbientDimAtCompileTime> >::type(*this);
+                    Hyperplane<NewScalarType,AmbientDimAtCompileTime,Options> >::type(*this);
   }
 
   /** Copy constructor with scalar type conversion */
-  template<typename OtherScalarType>
-  inline explicit Hyperplane(const Hyperplane<OtherScalarType,AmbientDimAtCompileTime>& other)
+  template<typename OtherScalarType,int OtherOptions>
+  inline explicit Hyperplane(const Hyperplane<OtherScalarType,AmbientDimAtCompileTime,OtherOptions>& other)
   { m_coeffs = other.coeffs().template cast<Scalar>(); }
 
   /** \returns \c true if \c *this is approximately equal to \a other, within the precision
     * determined by \a prec.
     *
     * \sa MatrixBase::isApprox() */
-  bool isApprox(const Hyperplane& other, typename NumTraits<Scalar>::Real prec = NumTraits<Scalar>::dummy_precision()) const
+  template<int OtherOptions>
+  bool isApprox(const Hyperplane<Scalar,AmbientDimAtCompileTime,OtherOptions>& other, typename NumTraits<Scalar>::Real prec = NumTraits<Scalar>::dummy_precision()) const
   { return m_coeffs.isApprox(other.m_coeffs, prec); }
 
 protected:

@@ -237,6 +237,10 @@ Packet psin(const Packet& a) { return sin(a); }
 template<typename Packet> EIGEN_DECLARE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
 Packet pcos(const Packet& a) { return cos(a); }
 
+/** \internal \returns the tan of \a a (coeff-wise) */
+template<typename Packet> EIGEN_DECLARE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
+Packet ptan(const Packet& a) { return tan(a); }
+
 /** \internal \returns the exp of \a a (coeff-wise) */
 template<typename Packet> EIGEN_DECLARE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
 Packet pexp(const Packet& a) { return exp(a); }

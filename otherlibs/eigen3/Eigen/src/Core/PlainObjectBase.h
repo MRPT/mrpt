@@ -56,6 +56,7 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     typedef typename internal::traits<Derived>::Scalar Scalar;
     typedef typename internal::packet_traits<Scalar>::type PacketScalar;
     typedef typename NumTraits<Scalar>::Real RealScalar;
+    typedef Derived DenseType;
 
     using Base::RowsAtCompileTime;
     using Base::ColsAtCompileTime;
@@ -66,6 +67,7 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     using Base::IsVectorAtCompileTime;
     using Base::Flags;
 
+    template<typename PlainObjectType, int MapOptions, typename StrideType> friend class Eigen::Map;
     friend  class Eigen::Map<Derived, Unaligned>;
     typedef Eigen::Map<Derived, Unaligned>  MapType;
     friend  class Eigen::Map<const Derived, Unaligned>;
@@ -74,6 +76,11 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     typedef Eigen::Map<Derived, Aligned> AlignedMapType;
     friend  class Eigen::Map<const Derived, Aligned>;
     typedef const Eigen::Map<const Derived, Aligned> ConstAlignedMapType;
+    template<typename StrideType> struct StridedMapType { typedef Eigen::Map<Derived, Unaligned, StrideType> type; };
+    template<typename StrideType> struct StridedConstMapType { typedef Eigen::Map<const Derived, Unaligned, StrideType> type; };
+    template<typename StrideType> struct StridedAlignedMapType { typedef Eigen::Map<Derived, Aligned, StrideType> type; };
+    template<typename StrideType> struct StridedConstAlignedMapType { typedef Eigen::Map<const Derived, Aligned, StrideType> type; };
+    
 
   protected:
     DenseStorage<Scalar, Base::MaxSizeAtCompileTime, Base::RowsAtCompileTime, Base::ColsAtCompileTime, Options> m_storage;
@@ -128,6 +135,7 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
       return m_storage.data()[index];
     }
 
+    /** \internal */
     template<int LoadMode>
     EIGEN_STRONG_INLINE PacketScalar packet(Index row, Index col) const
     {
@@ -137,12 +145,14 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
                                    : row + col * m_storage.rows()));
     }
 
+    /** \internal */
     template<int LoadMode>
     EIGEN_STRONG_INLINE PacketScalar packet(Index index) const
     {
       return internal::ploadt<PacketScalar, LoadMode>(m_storage.data() + index);
     }
 
+    /** \internal */
     template<int StoreMode>
     EIGEN_STRONG_INLINE void writePacket(Index row, Index col, const PacketScalar& x)
     {
@@ -152,6 +162,7 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
                                    : row + col * m_storage.rows()), x);
     }
 
+    /** \internal */
     template<int StoreMode>
     EIGEN_STRONG_INLINE void writePacket(Index index, const PacketScalar& x)
     {
@@ -418,6 +429,44 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
     { return ConstAlignedMapType(data, rows, cols); }
     inline static AlignedMapType MapAligned(Scalar* data, Index rows, Index cols)
     { return AlignedMapType(data, rows, cols); }
+
+    template<int Outer, int Inner>
+    inline static typename StridedConstMapType<Stride<Outer, Inner> >::type Map(const Scalar* data, const Stride<Outer, Inner>& stride)
+    { return typename StridedConstMapType<Stride<Outer, Inner> >::type(data, stride); }
+    template<int Outer, int Inner>
+    inline static typename StridedMapType<Stride<Outer, Inner> >::type Map(Scalar* data, const Stride<Outer, Inner>& stride)
+    { return typename StridedMapType<Stride<Outer, Inner> >::type(data, stride); }
+    template<int Outer, int Inner>
+    inline static typename StridedConstMapType<Stride<Outer, Inner> >::type Map(const Scalar* data, Index size, const Stride<Outer, Inner>& stride)
+    { return typename StridedConstMapType<Stride<Outer, Inner> >::type(data, size, stride); }
+    template<int Outer, int Inner>
+    inline static typename StridedMapType<Stride<Outer, Inner> >::type Map(Scalar* data, Index size, const Stride<Outer, Inner>& stride)
+    { return typename StridedMapType<Stride<Outer, Inner> >::type(data, size, stride); }
+    template<int Outer, int Inner>
+    inline static typename StridedConstMapType<Stride<Outer, Inner> >::type Map(const Scalar* data, Index rows, Index cols, const Stride<Outer, Inner>& stride)
+    { return typename StridedConstMapType<Stride<Outer, Inner> >::type(data, rows, cols, stride); }
+    template<int Outer, int Inner>
+    inline static typename StridedMapType<Stride<Outer, Inner> >::type Map(Scalar* data, Index rows, Index cols, const Stride<Outer, Inner>& stride)
+    { return typename StridedMapType<Stride<Outer, Inner> >::type(data, rows, cols, stride); }
+
+    template<int Outer, int Inner>
+    inline static typename StridedConstAlignedMapType<Stride<Outer, Inner> >::type MapAligned(const Scalar* data, const Stride<Outer, Inner>& stride)
+    { return typename StridedConstAlignedMapType<Stride<Outer, Inner> >::type(data, stride); }
+    template<int Outer, int Inner>
+    inline static typename StridedAlignedMapType<Stride<Outer, Inner> >::type MapAligned(Scalar* data, const Stride<Outer, Inner>& stride)
+    { return typename StridedAlignedMapType<Stride<Outer, Inner> >::type(data, stride); }
+    template<int Outer, int Inner>
+    inline static typename StridedConstAlignedMapType<Stride<Outer, Inner> >::type MapAligned(const Scalar* data, Index size, const Stride<Outer, Inner>& stride)
+    { return typename StridedConstAlignedMapType<Stride<Outer, Inner> >::type(data, size, stride); }
+    template<int Outer, int Inner>
+    inline static typename StridedAlignedMapType<Stride<Outer, Inner> >::type MapAligned(Scalar* data, Index size, const Stride<Outer, Inner>& stride)
+    { return typename StridedAlignedMapType<Stride<Outer, Inner> >::type(data, size, stride); }
+    template<int Outer, int Inner>
+    inline static typename StridedConstAlignedMapType<Stride<Outer, Inner> >::type MapAligned(const Scalar* data, Index rows, Index cols, const Stride<Outer, Inner>& stride)
+    { return typename StridedConstAlignedMapType<Stride<Outer, Inner> >::type(data, rows, cols, stride); }
+    template<int Outer, int Inner>
+    inline static typename StridedAlignedMapType<Stride<Outer, Inner> >::type MapAligned(Scalar* data, Index rows, Index cols, const Stride<Outer, Inner>& stride)
+    { return typename StridedAlignedMapType<Stride<Outer, Inner> >::type(data, rows, cols, stride); }
     //@}
 
     using Base::setConstant;

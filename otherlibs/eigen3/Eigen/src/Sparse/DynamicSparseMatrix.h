@@ -245,10 +245,10 @@ class DynamicSparseMatrix
     }
 
     template<typename OtherDerived>
-    inline DynamicSparseMatrix(const SparseMatrixBase<OtherDerived>& other)
+    explicit inline DynamicSparseMatrix(const SparseMatrixBase<OtherDerived>& other)
       : m_innerSize(0)
     {
-      *this = other.derived();
+    Base::operator=(other.derived());
     }
 
     inline DynamicSparseMatrix(const DynamicSparseMatrix& other)
@@ -277,18 +277,6 @@ class DynamicSparseMatrix
         m_data = other.m_data;
       }
       return *this;
-    }
-
-    template<typename OtherDerived>
-    inline DynamicSparseMatrix& operator=(const SparseMatrixBase<OtherDerived>& other)
-    {
-      return SparseMatrixBase<DynamicSparseMatrix>::operator=(other.derived());
-    }
-    
-    template<typename OtherDerived>
-    EIGEN_STRONG_INLINE DynamicSparseMatrix& operator=(const ReturnByValue<OtherDerived>& func)
-    {
-      return Base::operator=(func);
     }
 
     /** Destructor */
@@ -333,6 +321,10 @@ class DynamicSparseMatrix
     /** \deprecated use finalize()
       * Does nothing. Provided for compatibility with SparseMatrix. */
     EIGEN_DEPRECATED void endFill() {}
+    
+#   ifdef EIGEN_DYNAMICSPARSEMATRIX_PLUGIN
+#     include EIGEN_DYNAMICSPARSEMATRIX_PLUGIN
+#   endif
 };
 
 template<typename Scalar, int _Options, typename _Index>

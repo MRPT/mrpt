@@ -171,8 +171,14 @@
        ) \
      )
 
-#define EIGEN_STATIC_ASSERT_NON_INTEGER(TYPE) \
-  EIGEN_STATIC_ASSERT(!NumTraits<TYPE>::IsInteger, THIS_FUNCTION_IS_NOT_FOR_INTEGER_NUMERIC_TYPES)
+#ifdef EIGEN2_SUPPORT
+  #define EIGEN_STATIC_ASSERT_NON_INTEGER(TYPE) \
+    eigen_assert(!NumTraits<Scalar>::IsInteger);
+#else
+  #define EIGEN_STATIC_ASSERT_NON_INTEGER(TYPE) \
+    EIGEN_STATIC_ASSERT(!NumTraits<TYPE>::IsInteger, THIS_FUNCTION_IS_NOT_FOR_INTEGER_NUMERIC_TYPES)
+#endif
+
 
 // static assertion failing if it is guaranteed at compile-time that the two matrix expression types have different sizes
 #define EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(TYPE0,TYPE1) \
@@ -186,7 +192,7 @@
                           THIS_METHOD_IS_ONLY_FOR_1x1_EXPRESSIONS)
 
 #define EIGEN_STATIC_ASSERT_LVALUE(Derived) \
-      EIGEN_STATIC_ASSERT(int(internal::traits<Derived>::Flags) & LvalueBit, \
+      EIGEN_STATIC_ASSERT(internal::is_lvalue<Derived>::value, \
                           THIS_EXPRESSION_IS_NOT_A_LVALUE__IT_IS_READ_ONLY)
 
 #endif // EIGEN_STATIC_ASSERT_H

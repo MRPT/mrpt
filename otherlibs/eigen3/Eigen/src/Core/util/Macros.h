@@ -27,7 +27,7 @@
 #define EIGEN_MACROS_H
 
 #define EIGEN_WORLD_VERSION 2
-#define EIGEN_MAJOR_VERSION 92
+#define EIGEN_MAJOR_VERSION 93
 #define EIGEN_MINOR_VERSION 0
 
 #define EIGEN_VERSION_AT_LEAST(x,y,z) (EIGEN_WORLD_VERSION>x || (EIGEN_WORLD_VERSION>=x && \
@@ -232,7 +232,13 @@
 #endif
 
 #ifndef EIGEN_DEFAULT_IO_FORMAT
+#ifdef EIGEN_MAKING_DOCS
+// format used in Eigen's documentation
+// needed to define it here as escaping characters in CMake add_definition's argument seems very problematic.
+#define EIGEN_DEFAULT_IO_FORMAT Eigen::IOFormat(3, 0, " ", "\n", "", "")
+#else
 #define EIGEN_DEFAULT_IO_FORMAT Eigen::IOFormat()
+#endif
 #endif
 
 // just an empty macro !
@@ -245,10 +251,6 @@
 // convert a token to a string
 #define EIGEN_MAKESTRING2(a) #a
 #define EIGEN_MAKESTRING(a) EIGEN_MAKESTRING2(a)
-
-// format used in Eigen's documentation
-// needed to define it here as escaping characters in CMake add_definition's argument seems very problematic.
-#define EIGEN_DOCS_IO_FORMAT IOFormat(3, 0, " ", "\n", "", "")
 
 #if defined(_MSC_VER) && (!defined(__INTEL_COMPILER))
 #define EIGEN_INHERIT_ASSIGNMENT_EQUAL_OPERATOR(Derived) \
@@ -342,10 +344,10 @@
 
 #define EIGEN_MAKE_CWISE_BINARY_OP(METHOD,FUNCTOR) \
   template<typename OtherDerived> \
-  EIGEN_STRONG_INLINE const CwiseBinaryOp<FUNCTOR<Scalar>, Derived, OtherDerived> \
+  EIGEN_STRONG_INLINE const CwiseBinaryOp<FUNCTOR<Scalar>, const Derived, const OtherDerived> \
   METHOD(const EIGEN_CURRENT_STORAGE_BASE_CLASS<OtherDerived> &other) const \
   { \
-    return CwiseBinaryOp<FUNCTOR<Scalar>, Derived, OtherDerived>(derived(), other.derived()); \
+    return CwiseBinaryOp<FUNCTOR<Scalar>, const Derived, const OtherDerived>(derived(), other.derived()); \
   }
 
 // the expression type of a cwise product
@@ -355,8 +357,8 @@
           typename internal::traits<LHS>::Scalar, \
           typename internal::traits<RHS>::Scalar \
       >, \
-      LHS, \
-      RHS \
+      const LHS, \
+      const RHS \
     >
 
 #endif // EIGEN_MACROS_H

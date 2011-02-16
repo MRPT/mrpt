@@ -75,7 +75,7 @@ template<typename MatrixType> class Transpose
     typedef typename TransposeImpl<MatrixType,typename internal::traits<MatrixType>::StorageKind>::Base Base;
     EIGEN_GENERIC_PUBLIC_INTERFACE(Transpose)
 
-    inline Transpose(const MatrixType& matrix) : m_matrix(matrix) {}
+    inline Transpose(MatrixType& matrix) : m_matrix(matrix) {}
 
     EIGEN_INHERIT_ASSIGNMENT_OPERATORS(Transpose)
 
@@ -222,7 +222,7 @@ template<typename Derived>
 inline const typename DenseBase<Derived>::ConstTransposeReturnType
 DenseBase<Derived>::transpose() const
 {
-  return derived();
+  return ConstTransposeReturnType(derived());
 }
 
 /** \returns an expression of the adjoint (i.e. conjugate transpose) of *this.

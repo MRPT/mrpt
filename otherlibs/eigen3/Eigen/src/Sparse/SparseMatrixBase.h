@@ -118,18 +118,23 @@ template<typename Derived> class SparseMatrixBase : public EigenBase<Derived>
 //     typedef SparseCwiseUnaryOp<internal::scalar_imag_op<Scalar>, Derived> ImagReturnType;
     /** \internal the return type of MatrixBase::adjoint() */
     typedef typename internal::conditional<NumTraits<Scalar>::IsComplex,
-                        CwiseUnaryOp<internal::scalar_conjugate_op<Scalar>, Eigen::Transpose<Derived> >,
-                        Transpose<Derived>
+                        CwiseUnaryOp<internal::scalar_conjugate_op<Scalar>, Eigen::Transpose<const Derived> >,
+                        Transpose<const Derived>
                      >::type AdjointReturnType;
+
 
     typedef SparseMatrix<Scalar, Flags&RowMajorBit ? RowMajor : ColMajor> PlainObject;
 
-    #define EIGEN_CURRENT_STORAGE_BASE_CLASS Eigen::SparseMatrixBase
-    #include "../plugins/CommonCwiseUnaryOps.h"
-    #include "../plugins/CommonCwiseBinaryOps.h"
-    #include "../plugins/MatrixCwiseUnaryOps.h"
-    #include "../plugins/MatrixCwiseBinaryOps.h"
-    #undef EIGEN_CURRENT_STORAGE_BASE_CLASS
+#define EIGEN_CURRENT_STORAGE_BASE_CLASS Eigen::SparseMatrixBase
+#   include "../plugins/CommonCwiseUnaryOps.h"
+#   include "../plugins/CommonCwiseBinaryOps.h"
+#   include "../plugins/MatrixCwiseUnaryOps.h"
+#   include "../plugins/MatrixCwiseBinaryOps.h"
+#   ifdef EIGEN_SPARSEMATRIXBASE_PLUGIN
+#     include EIGEN_SPARSEMATRIXBASE_PLUGIN
+#   endif
+#   undef EIGEN_CURRENT_STORAGE_BASE_CLASS
+#undef EIGEN_CURRENT_STORAGE_BASE_CLASS
 
 #ifndef EIGEN_PARSED_BY_DOXYGEN
     /** This is the "real scalar" type; if the \a Scalar type is already real numbers
@@ -420,7 +425,7 @@ template<typename Derived> class SparseMatrixBase : public EigenBase<Derived>
 //     void normalize();
 
     Transpose<Derived> transpose() { return derived(); }
-    const Transpose<Derived> transpose() const { return derived(); }
+    const Transpose<const Derived> transpose() const { return derived(); }
     // void transposeInPlace();
     const AdjointReturnType adjoint() const { return transpose(); }
 

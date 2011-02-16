@@ -183,8 +183,9 @@ struct functor_traits<max_coeff_visitor<Scalar> > {
   * \sa DenseBase::minCoeff(Index*), DenseBase::maxCoeff(Index*,Index*), DenseBase::visitor(), DenseBase::minCoeff()
   */
 template<typename Derived>
+template<typename IndexType>
 typename internal::traits<Derived>::Scalar
-DenseBase<Derived>::minCoeff(Index* row, Index* col) const
+DenseBase<Derived>::minCoeff(IndexType* row, IndexType* col) const
 {
   internal::min_coeff_visitor<Derived> minVisitor;
   this->visit(minVisitor);
@@ -196,11 +197,12 @@ DenseBase<Derived>::minCoeff(Index* row, Index* col) const
 /** \returns the minimum of all coefficients of *this
   * and puts in *index its location.
   *
-  * \sa DenseBase::minCoeff(Index*,Index*), DenseBase::maxCoeff(Index*,Index*), DenseBase::visitor(), DenseBase::minCoeff()
+  * \sa DenseBase::minCoeff(IndexType*,IndexType*), DenseBase::maxCoeff(IndexType*,IndexType*), DenseBase::visitor(), DenseBase::minCoeff()
   */
 template<typename Derived>
+template<typename IndexType>
 typename internal::traits<Derived>::Scalar
-DenseBase<Derived>::minCoeff(Index* index) const
+DenseBase<Derived>::minCoeff(IndexType* index) const
 {
   EIGEN_STATIC_ASSERT_VECTOR_ONLY(Derived)
   internal::min_coeff_visitor<Derived> minVisitor;
@@ -212,11 +214,12 @@ DenseBase<Derived>::minCoeff(Index* index) const
 /** \returns the maximum of all coefficients of *this
   * and puts in *row and *col its location.
   *
-  * \sa DenseBase::minCoeff(Index*,Index*), DenseBase::visitor(), DenseBase::maxCoeff()
+  * \sa DenseBase::minCoeff(IndexType*,IndexType*), DenseBase::visitor(), DenseBase::maxCoeff()
   */
 template<typename Derived>
+template<typename IndexType>
 typename internal::traits<Derived>::Scalar
-DenseBase<Derived>::maxCoeff(Index* row, Index* col) const
+DenseBase<Derived>::maxCoeff(IndexType* row, IndexType* col) const
 {
   internal::max_coeff_visitor<Derived> maxVisitor;
   this->visit(maxVisitor);
@@ -228,11 +231,12 @@ DenseBase<Derived>::maxCoeff(Index* row, Index* col) const
 /** \returns the maximum of all coefficients of *this
   * and puts in *index its location.
   *
-  * \sa DenseBase::maxCoeff(Index*,Index*), DenseBase::minCoeff(Index*,Index*), DenseBase::visitor(), DenseBase::maxCoeff()
+  * \sa DenseBase::maxCoeff(IndexType*,IndexType*), DenseBase::minCoeff(IndexType*,IndexType*), DenseBase::visitor(), DenseBase::maxCoeff()
   */
 template<typename Derived>
+template<typename IndexType>
 typename internal::traits<Derived>::Scalar
-DenseBase<Derived>::maxCoeff(Index* index) const
+DenseBase<Derived>::maxCoeff(IndexType* index) const
 {
   EIGEN_STATIC_ASSERT_VECTOR_ONLY(Derived)
   internal::max_coeff_visitor<Derived> maxVisitor;

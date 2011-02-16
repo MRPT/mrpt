@@ -358,10 +358,31 @@ struct gemv_selector<OnTheLeft,StorageOrder,BlasCompatible>
   }
 };
 
+template<typename Scalar,int Size,int MaxSize,bool Cond> struct gemv_static_vector_if;
+
+template<typename Scalar,int Size,int MaxSize>
+struct gemv_static_vector_if<Scalar,Size,MaxSize,false>
+{
+  EIGEN_STRONG_INLINE  Scalar* data() { eigen_internal_assert(false && "should never be called"); return 0; }
+};
+
+template<typename Scalar,int Size>
+struct gemv_static_vector_if<Scalar,Size,Dynamic,true>
+{
+  EIGEN_STRONG_INLINE Scalar* data() { return 0; }
+};
+
+template<typename Scalar,int Size,int MaxSize>
+struct gemv_static_vector_if<Scalar,Size,MaxSize,true>
+{
+  internal::plain_array<Scalar,EIGEN_SIZE_MIN_PREFER_FIXED(Size,MaxSize),0> m_data;
+  EIGEN_STRONG_INLINE Scalar* data() { return m_data.array; }
+};
+
 template<> struct gemv_selector<OnTheRight,ColMajor,true>
 {
   template<typename ProductType, typename Dest>
-  static void run(const ProductType& prod, Dest& dest, typename ProductType::Scalar alpha)
+  static inline void run(const ProductType& prod, Dest& dest, typename ProductType::Scalar alpha)
   {
     typedef typename ProductType::Index Index;
     typedef typename ProductType::LhsScalar   LhsScalar;
@@ -382,30 +403,43 @@ template<> struct gemv_selector<OnTheRight,ColMajor,true>
 
     enum {
       // FIXME find a way to allow an inner stride on the result if packet_traits<Scalar>::size==1
+      // on, the other hand it is good for the cache to pack the vector anyways...
       EvalToDestAtCompileTime = Dest::InnerStrideAtCompileTime==1,
-      ComplexByReal = (NumTraits<LhsScalar>::IsComplex) && (!NumTraits<RhsScalar>::IsComplex)
+      ComplexByReal = (NumTraits<LhsScalar>::IsComplex) && (!NumTraits<RhsScalar>::IsComplex),
+      MightCannotUseDest = (Dest::InnerStrideAtCompileTime!=1) || ComplexByReal
     };
+
+    gemv_static_vector_if<ResScalar,Dest::SizeAtCompileTime,Dest::MaxSizeAtCompileTime,MightCannotUseDest> static_dest;
 
     bool alphaIsCompatible = (!ComplexByReal) || (imag(actualAlpha)==RealScalar(0));
     bool evalToDest = EvalToDestAtCompileTime && alphaIsCompatible;
     
     RhsScalar compatibleAlpha = get_factor<ResScalar,RhsScalar>::run(actualAlpha);
 
-    ResScalar* actualDest;
+    ResScalar* actualDestPtr;
+    bool freeDestPtr = false;
     if (evalToDest)
     {
-      actualDest = &dest.coeffRef(0);
+      actualDestPtr = &dest.coeffRef(0);
     }
     else
     {
-      actualDest = ei_aligned_stack_new(ResScalar,dest.size());
+      #ifdef EIGEN_DENSE_STORAGE_CTOR_PLUGIN
+      int size = dest.size();
+      EIGEN_DENSE_STORAGE_CTOR_PLUGIN
+      #endif
+      if((actualDestPtr = static_dest.data())==0)
+      {
+        freeDestPtr = true;
+        actualDestPtr = ei_aligned_stack_new(ResScalar,dest.size());
+      }
       if(!alphaIsCompatible)
       {
-        MappedDest(actualDest, dest.size()).setZero();
+        MappedDest(actualDestPtr, dest.size()).setZero();
         compatibleAlpha = RhsScalar(1);
       }
       else
-        MappedDest(actualDest, dest.size()) = dest;
+        MappedDest(actualDestPtr, dest.size()) = dest;
     }
 
     general_matrix_vector_product
@@ -413,16 +447,16 @@ template<> struct gemv_selector<OnTheRight,ColMajor,true>
         actualLhs.rows(), actualLhs.cols(),
         &actualLhs.coeffRef(0,0), actualLhs.outerStride(),
         actualRhs.data(), actualRhs.innerStride(),
-        actualDest, 1,
+        actualDestPtr, 1,
         compatibleAlpha);
 
     if (!evalToDest)
     {
       if(!alphaIsCompatible)
-        dest += actualAlpha * MappedDest(actualDest, dest.size());
+        dest += actualAlpha * MappedDest(actualDestPtr, dest.size());
       else
-        dest = MappedDest(actualDest, dest.size());
-      ei_aligned_stack_delete(ResScalar, actualDest, dest.size());
+        dest = MappedDest(actualDestPtr, dest.size());
+      if(freeDestPtr) ei_aligned_stack_delete(ResScalar, actualDestPtr, dest.size());
     }
   }
 };
@@ -449,30 +483,42 @@ template<> struct gemv_selector<OnTheRight,RowMajor,true>
                                   * RhsBlasTraits::extractScalarFactor(prod.rhs());
 
     enum {
-      // FIXME I think here we really have to check for packet_traits<Scalar>::size==1
-      // because in this case it is fine to have an inner stride
-      DirectlyUseRhs = ((packet_traits<RhsScalar>::size==1) || (_ActualRhsType::Flags&ActualPacketAccessBit))
-                     && (!(_ActualRhsType::Flags & RowMajorBit))
+      // FIXME find a way to allow an inner stride on the result if packet_traits<Scalar>::size==1
+      // on, the other hand it is good for the cache to pack the vector anyways...
+      DirectlyUseRhs = _ActualRhsType::InnerStrideAtCompileTime==1
     };
 
-    RhsScalar* rhs_data;
+    gemv_static_vector_if<RhsScalar,_ActualRhsType::SizeAtCompileTime,_ActualRhsType::MaxSizeAtCompileTime,!DirectlyUseRhs> static_rhs;
+
+    RhsScalar* actualRhsPtr;
+    bool freeRhsPtr = false;
     if (DirectlyUseRhs)
-       rhs_data = const_cast<RhsScalar*>(&actualRhs.coeffRef(0));
+    {
+      actualRhsPtr = const_cast<RhsScalar*>(&actualRhs.coeffRef(0));
+    }
     else
     {
-      rhs_data = ei_aligned_stack_new(RhsScalar, actualRhs.size());
-      Map<typename _ActualRhsType::PlainObject>(rhs_data, actualRhs.size()) = actualRhs;
+      #ifdef EIGEN_DENSE_STORAGE_CTOR_PLUGIN
+      int size = actualRhs.size();
+      EIGEN_DENSE_STORAGE_CTOR_PLUGIN
+      #endif
+      if((actualRhsPtr = static_rhs.data())==0)
+      {
+        freeRhsPtr = true;
+        actualRhsPtr = ei_aligned_stack_new(RhsScalar, actualRhs.size());
+      }
+      Map<typename _ActualRhsType::PlainObject>(actualRhsPtr, actualRhs.size()) = actualRhs;
     }
 
     general_matrix_vector_product
       <Index,LhsScalar,RowMajor,LhsBlasTraits::NeedToConjugate,RhsScalar,RhsBlasTraits::NeedToConjugate>::run(
         actualLhs.rows(), actualLhs.cols(),
         &actualLhs.coeffRef(0,0), actualLhs.outerStride(),
-        rhs_data, 1,
+        actualRhsPtr, 1,
         &dest.coeffRef(0,0), dest.innerStride(),
         actualAlpha);
 
-    if (!DirectlyUseRhs) ei_aligned_stack_delete(RhsScalar, rhs_data, prod.rhs().size());
+    if((!DirectlyUseRhs) && freeRhsPtr) ei_aligned_stack_delete(RhsScalar, actualRhsPtr, prod.rhs().size());
   }
 };
 

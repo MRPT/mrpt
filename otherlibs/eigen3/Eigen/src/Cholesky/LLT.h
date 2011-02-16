@@ -135,6 +135,17 @@ template<typename _MatrixType, int _UpLo> class LLT
       return internal::solve_retval<LLT, Rhs>(*this, b.derived());
     }
 
+    #ifdef EIGEN2_SUPPORT
+    template<typename OtherDerived, typename ResultType>
+    bool solve(const MatrixBase<OtherDerived>& b, ResultType *result) const
+    {
+      *result = this->solve(b);
+      return true;
+    }
+    
+    bool isPositiveDefinite() const { return true; }
+    #endif
+
     template<typename Derived>
     void solveInPlace(MatrixBase<Derived> &bAndX) const;
 
@@ -184,11 +195,12 @@ template<int UpLo> struct llt_inplace;
 template<> struct llt_inplace<Lower>
 {
   template<typename MatrixType>
-  static bool unblocked(MatrixType& mat)
+  static typename MatrixType::Index unblocked(MatrixType& mat)
   {
+    typedef typename MatrixType::Index Index;
     typedef typename MatrixType::Scalar Scalar;
     typedef typename MatrixType::RealScalar RealScalar;
-    typedef typename MatrixType::Index Index;
+    
     eigen_assert(mat.rows()==mat.cols());
     const Index size = mat.rows();
     for(Index k = 0; k < size; ++k)
@@ -202,16 +214,16 @@ template<> struct llt_inplace<Lower>
       RealScalar x = real(mat.coeff(k,k));
       if (k>0) x -= A10.squaredNorm();
       if (x<=RealScalar(0))
-        return false;
+        return k;
       mat.coeffRef(k,k) = x = sqrt(x);
       if (k>0 && rs>0) A21.noalias() -= A20 * A10.adjoint();
       if (rs>0) A21 *= RealScalar(1)/x;
     }
-    return true;
+    return -1;
   }
 
   template<typename MatrixType>
-  static bool blocked(MatrixType& m)
+  static typename MatrixType::Index blocked(MatrixType& m)
   {
     typedef typename MatrixType::Index Index;
     eigen_assert(m.rows()==m.cols());
@@ -235,24 +247,25 @@ template<> struct llt_inplace<Lower>
       Block<MatrixType,Dynamic,Dynamic> A21(m,k+bs,k,   rs,bs);
       Block<MatrixType,Dynamic,Dynamic> A22(m,k+bs,k+bs,rs,rs);
 
-      if(!unblocked(A11)) return false;
+      Index ret;
+      if((ret=unblocked(A11))>=0) return k+ret;
       if(rs>0) A11.adjoint().template triangularView<Upper>().template solveInPlace<OnTheRight>(A21);
       if(rs>0) A22.template selfadjointView<Lower>().rankUpdate(A21,-1); // bottleneck
     }
-    return true;
+    return -1;
   }
 };
 
 template<> struct llt_inplace<Upper>
 {
   template<typename MatrixType>
-  static EIGEN_STRONG_INLINE bool unblocked(MatrixType& mat)
+  static EIGEN_STRONG_INLINE typename MatrixType::Index unblocked(MatrixType& mat)
   {
     Transpose<MatrixType> matt(mat);
     return llt_inplace<Lower>::unblocked(matt);
   }
   template<typename MatrixType>
-  static EIGEN_STRONG_INLINE bool blocked(MatrixType& mat)
+  static EIGEN_STRONG_INLINE typename MatrixType::Index blocked(MatrixType& mat)
   {
     Transpose<MatrixType> matt(mat);
     return llt_inplace<Lower>::blocked(matt);
@@ -266,7 +279,7 @@ template<typename MatrixType> struct LLT_Traits<MatrixType,Lower>
   inline static MatrixL getL(const MatrixType& m) { return m; }
   inline static MatrixU getU(const MatrixType& m) { return m.adjoint(); }
   static bool inplace_decomposition(MatrixType& m)
-  { return llt_inplace<Lower>::blocked(m); }
+  { return llt_inplace<Lower>::blocked(m)==-1; }
 };
 
 template<typename MatrixType> struct LLT_Traits<MatrixType,Upper>
@@ -276,7 +289,7 @@ template<typename MatrixType> struct LLT_Traits<MatrixType,Upper>
   inline static MatrixL getL(const MatrixType& m) { return m.adjoint(); }
   inline static MatrixU getU(const MatrixType& m) { return m; }
   static bool inplace_decomposition(MatrixType& m)
-  { return llt_inplace<Upper>::blocked(m); }
+  { return llt_inplace<Upper>::blocked(m)==-1; }
 };
 
 } // end namespace internal

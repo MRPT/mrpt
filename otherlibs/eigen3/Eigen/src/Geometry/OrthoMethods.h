@@ -35,7 +35,7 @@
   */
 template<typename Derived>
 template<typename OtherDerived>
-inline typename MatrixBase<Derived>::PlainObject
+inline typename MatrixBase<Derived>::template cross_product_return_type<OtherDerived>::type
 MatrixBase<Derived>::cross(const MatrixBase<OtherDerived>& other) const
 {
   EIGEN_STATIC_ASSERT_VECTOR_SPECIFIC_SIZE(Derived,3)
@@ -45,10 +45,10 @@ MatrixBase<Derived>::cross(const MatrixBase<OtherDerived>& other) const
   // optimize such a small temporary very well (even within a complex expression)
   const typename internal::nested<Derived,2>::type lhs(derived());
   const typename internal::nested<OtherDerived,2>::type rhs(other.derived());
-  return typename internal::plain_matrix_type<Derived>::type(
-    lhs.coeff(1) * rhs.coeff(2) - lhs.coeff(2) * rhs.coeff(1),
-    lhs.coeff(2) * rhs.coeff(0) - lhs.coeff(0) * rhs.coeff(2),
-    lhs.coeff(0) * rhs.coeff(1) - lhs.coeff(1) * rhs.coeff(0)
+  return typename cross_product_return_type<OtherDerived>::type(
+    internal::conj(lhs.coeff(1) * rhs.coeff(2) - lhs.coeff(2) * rhs.coeff(1)),
+    internal::conj(lhs.coeff(2) * rhs.coeff(0) - lhs.coeff(0) * rhs.coeff(2)),
+    internal::conj(lhs.coeff(0) * rhs.coeff(1) - lhs.coeff(1) * rhs.coeff(0))
   );
 }
 
@@ -62,9 +62,9 @@ struct cross3_impl {
   run(const VectorLhs& lhs, const VectorRhs& rhs)
   {
     return typename internal::plain_matrix_type<VectorLhs>::type(
-      lhs.coeff(1) * rhs.coeff(2) - lhs.coeff(2) * rhs.coeff(1),
-      lhs.coeff(2) * rhs.coeff(0) - lhs.coeff(0) * rhs.coeff(2),
-      lhs.coeff(0) * rhs.coeff(1) - lhs.coeff(1) * rhs.coeff(0),
+      internal::conj(lhs.coeff(1) * rhs.coeff(2) - lhs.coeff(2) * rhs.coeff(1)),
+      internal::conj(lhs.coeff(2) * rhs.coeff(0) - lhs.coeff(0) * rhs.coeff(2)),
+      internal::conj(lhs.coeff(0) * rhs.coeff(1) - lhs.coeff(1) * rhs.coeff(0)),
       0
     );
   }
@@ -121,16 +121,16 @@ VectorwiseOp<ExpressionType,Direction>::cross(const MatrixBase<OtherDerived>& ot
   if(Direction==Vertical)
   {
     eigen_assert(CrossReturnType::RowsAtCompileTime==3 && "the matrix must have exactly 3 rows");
-    res.row(0) = _expression().row(1) * other.coeff(2) - _expression().row(2) * other.coeff(1);
-    res.row(1) = _expression().row(2) * other.coeff(0) - _expression().row(0) * other.coeff(2);
-    res.row(2) = _expression().row(0) * other.coeff(1) - _expression().row(1) * other.coeff(0);
+    res.row(0) = (_expression().row(1) * other.coeff(2) - _expression().row(2) * other.coeff(1)).conjugate();
+    res.row(1) = (_expression().row(2) * other.coeff(0) - _expression().row(0) * other.coeff(2)).conjugate();
+    res.row(2) = (_expression().row(0) * other.coeff(1) - _expression().row(1) * other.coeff(0)).conjugate();
   }
   else
   {
     eigen_assert(CrossReturnType::ColsAtCompileTime==3 && "the matrix must have exactly 3 columns");
-    res.col(0) = _expression().col(1) * other.coeff(2) - _expression().col(2) * other.coeff(1);
-    res.col(1) = _expression().col(2) * other.coeff(0) - _expression().col(0) * other.coeff(2);
-    res.col(2) = _expression().col(0) * other.coeff(1) - _expression().col(1) * other.coeff(0);
+    res.col(0) = (_expression().col(1) * other.coeff(2) - _expression().col(2) * other.coeff(1)).conjugate();
+    res.col(1) = (_expression().col(2) * other.coeff(0) - _expression().col(0) * other.coeff(2)).conjugate();
+    res.col(2) = (_expression().col(0) * other.coeff(1) - _expression().col(1) * other.coeff(0)).conjugate();
   }
   return res;
 }

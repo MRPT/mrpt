@@ -53,9 +53,9 @@ EIGEN_MAKE_CWISE_BINARY_OP(operator+,internal::scalar_sum_op)
   * \sa class CwiseBinaryOp, operator+(), operator-(), cwiseProduct()
   */
 template<typename CustomBinaryOp, typename OtherDerived>
-EIGEN_STRONG_INLINE const CwiseBinaryOp<CustomBinaryOp, Derived, OtherDerived>
+EIGEN_STRONG_INLINE const CwiseBinaryOp<CustomBinaryOp, const Derived, const OtherDerived>
 binaryExpr(const EIGEN_CURRENT_STORAGE_BASE_CLASS<OtherDerived> &other, const CustomBinaryOp& func = CustomBinaryOp()) const
 {
-  return CwiseBinaryOp<CustomBinaryOp, Derived, OtherDerived>(derived(), other.derived(), func);
+  return CwiseBinaryOp<CustomBinaryOp, const Derived, const OtherDerived>(derived(), other.derived(), func);
 }
 

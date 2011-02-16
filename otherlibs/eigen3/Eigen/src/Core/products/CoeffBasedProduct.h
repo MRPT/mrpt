@@ -213,14 +213,14 @@ class CoeffBasedProduct
     const _LhsNested& lhs() const { return m_lhs; }
     const _RhsNested& rhs() const { return m_rhs; }
 
-    const Diagonal<LazyCoeffBasedProductType,0> diagonal() const
+    const Diagonal<const LazyCoeffBasedProductType,0> diagonal() const
     { return reinterpret_cast<const LazyCoeffBasedProductType&>(*this); }
 
     template<int DiagonalIndex>
-    const Diagonal<LazyCoeffBasedProductType,DiagonalIndex> diagonal() const
+    const Diagonal<const LazyCoeffBasedProductType,DiagonalIndex> diagonal() const
     { return reinterpret_cast<const LazyCoeffBasedProductType&>(*this); }
 
-    const Diagonal<LazyCoeffBasedProductType,Dynamic> diagonal(Index index) const
+    const Diagonal<const LazyCoeffBasedProductType,Dynamic> diagonal(Index index) const
     { return reinterpret_cast<const LazyCoeffBasedProductType&>(*this).diagonal(index); }
 
   protected:

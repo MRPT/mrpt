@@ -484,8 +484,8 @@ struct solve_retval<ColPivHouseholderQR<_MatrixType>, Rhs>
 
     // Note that the matrix Q = H_0^* H_1^*... so its inverse is Q^* = (H_0 H_1 ...)^T
     c.applyOnTheLeft(householderSequence(dec().matrixQR(), dec().hCoeffs())
-                     .setTrans(true)
                      .setLength(dec().nonzeroPivots())
+		     .transpose()
       );
 
     dec().matrixQR()

@@ -44,7 +44,7 @@
   * data is laid out contiguously in memory. You can however override this by explicitly specifying
   * inner and outer strides.
   *
-  * Here's an example of simply mapping a contiguous array as a column-major matrix:
+  * Here's an example of simply mapping a contiguous array as a \ref TopicStorageOrders "column-major" matrix:
   * \include Map_simple.cpp
   * Output: \verbinclude Map_simple.out
   *
@@ -74,7 +74,7 @@
   *
   * This class is the return type of Matrix::Map() but can also be used directly.
   *
-  * \sa Matrix::Map()
+  * \sa Matrix::Map(), \ref TopicStorageOrders
   */
 
 namespace internal {
@@ -124,7 +124,13 @@ template<typename PlainObjectType, int MapOptions, typename StrideType> class Ma
     EIGEN_DENSE_PUBLIC_INTERFACE(Map)
 
     typedef typename Base::PointerType PointerType;
-
+#if EIGEN2_SUPPORT_STAGE <= STAGE30_FULL_EIGEN3_API
+    typedef const Scalar* PointerArgType;
+    inline PointerType cast_to_pointer_type(PointerArgType ptr) { return const_cast<PointerType>(ptr); }
+#else
+    typedef PointerType PointerArgType;
+    inline PointerType cast_to_pointer_type(PointerArgType ptr) { return ptr; }
+#endif
 
     inline Index innerStride() const
     {
@@ -144,8 +150,8 @@ template<typename PlainObjectType, int MapOptions, typename StrideType> class Ma
       * \param data pointer to the array to map
       * \param stride optional Stride object, passing the strides.
       */
-    inline Map(PointerType data, const StrideType& stride = StrideType())
-      : Base(data), m_stride(stride)
+    inline Map(PointerArgType data, const StrideType& stride = StrideType())
+      : Base(cast_to_pointer_type(data)), m_stride(stride)
     {
       PlainObjectType::Base::_check_template_params();
     }
@@ -156,8 +162,8 @@ template<typename PlainObjectType, int MapOptions, typename StrideType> class Ma
       * \param size the size of the vector expression
       * \param stride optional Stride object, passing the strides.
       */
-    inline Map(PointerType data, Index size, const StrideType& stride = StrideType())
-      : Base(data, size), m_stride(stride)
+    inline Map(PointerArgType data, Index size, const StrideType& stride = StrideType())
+      : Base(cast_to_pointer_type(data), size), m_stride(stride)
     {
       PlainObjectType::Base::_check_template_params();
     }
@@ -169,8 +175,8 @@ template<typename PlainObjectType, int MapOptions, typename StrideType> class Ma
       * \param cols the number of columns of the matrix expression
       * \param stride optional Stride object, passing the strides.
       */
-    inline Map(PointerType data, Index rows, Index cols, const StrideType& stride = StrideType())
-      : Base(data, rows, cols), m_stride(stride)
+    inline Map(PointerArgType data, Index rows, Index cols, const StrideType& stride = StrideType())
+      : Base(cast_to_pointer_type(data), rows, cols), m_stride(stride)
     {
       PlainObjectType::Base::_check_template_params();
     }

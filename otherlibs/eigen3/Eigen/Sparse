@@ -11,6 +11,14 @@
 #include <cstring>
 #include <algorithm>
 
+#ifdef EIGEN2_SUPPORT
+#define EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+#endif
+
+#ifndef EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET
+#error The sparse module API is not stable yet. To use it anyway, please define the EIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET preprocessor token.
+#endif
+
 namespace Eigen {
 
 /** \defgroup Sparse_Module Sparse module

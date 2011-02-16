@@ -28,7 +28,7 @@
 
 #define EIGEN_ARRAY_DECLARE_GLOBAL_STD_UNARY(NAME,FUNCTOR) \
   template<typename Derived> \
-  inline const Eigen::CwiseUnaryOp<Eigen::internal::FUNCTOR<typename Derived::Scalar>, Derived> \
+  inline const Eigen::CwiseUnaryOp<Eigen::internal::FUNCTOR<typename Derived::Scalar>, const Derived> \
   NAME(const Eigen::ArrayBase<Derived>& x) { \
     return x.derived(); \
   }
@@ -38,7 +38,7 @@
   template<typename Derived> \
   struct NAME##_retval<ArrayBase<Derived> > \
   { \
-    typedef const Eigen::CwiseUnaryOp<Eigen::internal::FUNCTOR<typename Derived::Scalar>, Derived> type; \
+    typedef const Eigen::CwiseUnaryOp<Eigen::internal::FUNCTOR<typename Derived::Scalar>, const Derived> type; \
   }; \
   template<typename Derived> \
   struct NAME##_impl<ArrayBase<Derived> > \
@@ -56,13 +56,14 @@ namespace std
   EIGEN_ARRAY_DECLARE_GLOBAL_STD_UNARY(imag,scalar_imag_op)
   EIGEN_ARRAY_DECLARE_GLOBAL_STD_UNARY(sin,scalar_sin_op)
   EIGEN_ARRAY_DECLARE_GLOBAL_STD_UNARY(cos,scalar_cos_op)
+  EIGEN_ARRAY_DECLARE_GLOBAL_STD_UNARY(tan,scalar_tan_op)
   EIGEN_ARRAY_DECLARE_GLOBAL_STD_UNARY(exp,scalar_exp_op)
   EIGEN_ARRAY_DECLARE_GLOBAL_STD_UNARY(log,scalar_log_op)
   EIGEN_ARRAY_DECLARE_GLOBAL_STD_UNARY(abs,scalar_abs_op)
   EIGEN_ARRAY_DECLARE_GLOBAL_STD_UNARY(sqrt,scalar_sqrt_op)
 
   template<typename Derived>
-  inline const Eigen::CwiseUnaryOp<Eigen::internal::scalar_pow_op<typename Derived::Scalar>, Derived>
+  inline const Eigen::CwiseUnaryOp<Eigen::internal::scalar_pow_op<typename Derived::Scalar>, const Derived>
   pow(const Eigen::ArrayBase<Derived>& x, const typename Derived::Scalar& exponent) { \
     return x.derived().pow(exponent); \
   }
@@ -76,6 +77,7 @@ namespace Eigen
     EIGEN_ARRAY_DECLARE_GLOBAL_EIGEN_UNARY(imag,scalar_imag_op)
     EIGEN_ARRAY_DECLARE_GLOBAL_EIGEN_UNARY(sin,scalar_sin_op)
     EIGEN_ARRAY_DECLARE_GLOBAL_EIGEN_UNARY(cos,scalar_cos_op)
+    EIGEN_ARRAY_DECLARE_GLOBAL_EIGEN_UNARY(tan,scalar_tan_op)
     EIGEN_ARRAY_DECLARE_GLOBAL_EIGEN_UNARY(exp,scalar_exp_op)
     EIGEN_ARRAY_DECLARE_GLOBAL_EIGEN_UNARY(log,scalar_log_op)
     EIGEN_ARRAY_DECLARE_GLOBAL_EIGEN_UNARY(abs,scalar_abs_op)

@@ -112,12 +112,12 @@ template<typename MatrixType,int _Direction> class Homogeneous
       return internal::homogeneous_left_product_impl<Homogeneous,Lhs>(lhs.derived(),rhs.m_matrix);
     }
 
-    template<typename Scalar, int Dim, int Mode> friend
-    inline const internal::homogeneous_left_product_impl<Homogeneous,Transform<Scalar,Dim,Mode> >
-    operator* (const Transform<Scalar,Dim,Mode>& lhs, const Homogeneous& rhs)
+    template<typename Scalar, int Dim, int Mode, int Options> friend
+    inline const internal::homogeneous_left_product_impl<Homogeneous,Transform<Scalar,Dim,Mode,Options> >
+    operator* (const Transform<Scalar,Dim,Mode,Options>& lhs, const Homogeneous& rhs)
     {
       eigen_assert(int(Direction)==Vertical);
-      return internal::homogeneous_left_product_impl<Homogeneous,Transform<Scalar,Dim,Mode> >(lhs,rhs.m_matrix);
+      return internal::homogeneous_left_product_impl<Homogeneous,Transform<Scalar,Dim,Mode,Options> >(lhs,rhs.m_matrix);
     }
 
   protected:
@@ -212,18 +212,18 @@ struct take_matrix_for_product
   static const type& run(const type &x) { return x; }
 };
 
-template<typename Scalar, int Dim, int Mode>
-struct take_matrix_for_product<Transform<Scalar, Dim, Mode> >
+template<typename Scalar, int Dim, int Mode,int Options>
+struct take_matrix_for_product<Transform<Scalar, Dim, Mode, Options> >
 {
-  typedef Transform<Scalar, Dim, Mode> TransformType;
+  typedef Transform<Scalar, Dim, Mode, Options> TransformType;
   typedef typename TransformType::ConstAffinePart type;
   static const type run (const TransformType& x) { return x.affine(); }
 };
 
-template<typename Scalar, int Dim>
-struct take_matrix_for_product<Transform<Scalar, Dim, Projective> >
+template<typename Scalar, int Dim, int Options>
+struct take_matrix_for_product<Transform<Scalar, Dim, Projective, Options> >
 {
-  typedef Transform<Scalar, Dim, Projective> TransformType;
+  typedef Transform<Scalar, Dim, Projective, Options> TransformType;
   typedef typename TransformType::MatrixType type;
   static const type& run (const TransformType& x) { return x.matrix(); }
 };

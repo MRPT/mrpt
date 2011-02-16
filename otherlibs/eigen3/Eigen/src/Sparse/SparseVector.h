@@ -384,6 +384,10 @@ class SparseVector
 
     /** \deprecated use finalize() */
     EIGEN_DEPRECATED void endFill() {}
+    
+#   ifdef EIGEN_SPARSEVECTOR_PLUGIN
+#     include EIGEN_SPARSEVECTOR_PLUGIN
+#   endif
 };
 
 template<typename Scalar, int _Options, typename _Index>

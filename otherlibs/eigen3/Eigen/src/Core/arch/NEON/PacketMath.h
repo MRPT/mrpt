@@ -33,10 +33,6 @@ namespace internal {
 #define EIGEN_CACHEFRIENDLY_PRODUCT_THRESHOLD 8
 #endif
 
-#ifndef EIGEN_TUNE_FOR_CPU_CACHE_SIZE
-#define EIGEN_TUNE_FOR_CPU_CACHE_SIZE 4*192*192
-#endif
-
 // FIXME NEON has 16 quad registers, but since the current register allocator
 // is so bad, it is much better to reduce it to 8
 #ifndef EIGEN_ARCH_DEFAULT_NUMBER_OF_REGISTERS
@@ -87,6 +83,14 @@ template<> struct packet_traits<int>    : default_packet_traits
     // FIXME check the Has*
   };
 };
+
+#if (defined __GNUC__) && (!(EIGEN_GNUC_AT_LEAST(4,4)))
+// workaround gcc 4.2 and 4.3 compilatin issue
+EIGEN_STRONG_INLINE float32x4_t vld1q_f32(const float* x) { return ::vld1q_f32((const float32_t*)x); }
+EIGEN_STRONG_INLINE float32x2_t vld1_f32 (const float* x) { return ::vld1_f32 ((const float32_t*)x); }
+EIGEN_STRONG_INLINE void        vst1q_f32(float* to, float32x4_t from) { ::vst1q_f32((float32_t*)to,from); }
+EIGEN_STRONG_INLINE void        vst1_f32 (float* to, float32x2_t from) { ::vst1_f32 ((float32_t*)to,from); }
+#endif
 
 template<> struct unpacket_traits<Packet4f> { typedef float  type; enum {size=4}; };
 template<> struct unpacket_traits<Packet4i> { typedef int    type; enum {size=4}; };

@@ -215,28 +215,28 @@ public:
   */
 
 namespace internal {
-template<typename _Scalar>
-struct traits<Quaternion<_Scalar> >
+template<typename _Scalar,int _Options>
+struct traits<Quaternion<_Scalar,_Options> >
 {
-  typedef Quaternion<_Scalar> PlainObject;
+  typedef Quaternion<_Scalar,_Options> PlainObject;
   typedef _Scalar Scalar;
-  typedef Matrix<_Scalar,4,1> Coefficients;
+  typedef Matrix<_Scalar,4,1,_Options> Coefficients;
   enum{
-    PacketAccess = Aligned
+    PacketAccess = _Options & DontAlign ? Unaligned : Aligned
   };
 };
 }
 
-template<typename _Scalar>
-class Quaternion : public QuaternionBase<Quaternion<_Scalar> >{
-  typedef QuaternionBase<Quaternion<_Scalar> > Base;
+template<typename _Scalar, int _Options>
+class Quaternion : public QuaternionBase<Quaternion<_Scalar,_Options> >{
+  typedef QuaternionBase<Quaternion<_Scalar,_Options> > Base;
 public:
   typedef _Scalar Scalar;
 
-  EIGEN_INHERIT_ASSIGNMENT_EQUAL_OPERATOR(Quaternion<Scalar>)
+  EIGEN_INHERIT_ASSIGNMENT_EQUAL_OPERATOR(Quaternion)
   using Base::operator*=;
 
-  typedef typename internal::traits<Quaternion<Scalar> >::Coefficients Coefficients;
+  typedef typename internal::traits<Quaternion<Scalar,_Options> >::Coefficients Coefficients;
   typedef typename Base::AngleAxisType AngleAxisType;
 
   /** Default constructor leaving the quaternion uninitialized. */
@@ -272,6 +272,14 @@ public:
 
 protected:
   Coefficients m_coeffs;
+  
+#ifndef EIGEN_PARSED_BY_DOXYGEN
+    EIGEN_STRONG_INLINE static void _check_template_params()
+    {
+      EIGEN_STATIC_ASSERT( (_Options & DontAlign) == _Options,
+        INVALID_MATRIX_TEMPLATE_PARAMETERS)
+    }
+#endif
 };
 
 /** \ingroup Geometry_Module

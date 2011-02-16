@@ -46,6 +46,7 @@ class DiagonalBase : public EigenBase<Derived>
     };
 
     typedef Matrix<Scalar, RowsAtCompileTime, ColsAtCompileTime, 0, MaxRowsAtCompileTime, MaxColsAtCompileTime> DenseMatrixType;
+    typedef DenseMatrixType DenseType;
     typedef DiagonalMatrix<Scalar,DiagonalVectorType::SizeAtCompileTime,DiagonalVectorType::MaxSizeAtCompileTime> PlainObject;
 
     inline const Derived& derived() const { return *static_cast<const Derived*>(this); }
@@ -71,11 +72,24 @@ class DiagonalBase : public EigenBase<Derived>
     const DiagonalProduct<MatrixDerived, Derived, OnTheLeft>
     operator*(const MatrixBase<MatrixDerived> &matrix) const;
 
-    inline const DiagonalWrapper<CwiseUnaryOp<internal::scalar_inverse_op<Scalar>, DiagonalVectorType> >
+    inline const DiagonalWrapper<CwiseUnaryOp<internal::scalar_inverse_op<Scalar>, const DiagonalVectorType> >
     inverse() const
     {
       return diagonal().cwiseInverse();
     }
+    
+    #ifdef EIGEN2_SUPPORT
+    template<typename OtherDerived>
+    bool isApprox(const DiagonalBase<OtherDerived>& other, typename NumTraits<Scalar>::Real precision = NumTraits<Scalar>::dummy_precision()) const
+    {
+      return diagonal().isApprox(other.diagonal(), precision);
+    }
+    template<typename OtherDerived>
+    bool isApprox(const MatrixBase<OtherDerived>& other, typename NumTraits<Scalar>::Real precision = NumTraits<Scalar>::dummy_precision()) const
+    {
+      return toDenseMatrix().isApprox(other, precision);
+    }
+    #endif
 };
 
 template<typename Derived>
@@ -256,7 +270,7 @@ class DiagonalWrapper
   * \sa class DiagonalWrapper, class DiagonalMatrix, diagonal(), isDiagonal()
   **/
 template<typename Derived>
-inline const DiagonalWrapper<Derived>
+inline const DiagonalWrapper<const Derived>
 MatrixBase<Derived>::asDiagonal() const
 {
   return derived();

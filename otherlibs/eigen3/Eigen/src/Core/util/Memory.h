@@ -363,10 +363,38 @@ template<typename T, bool Align> inline void conditional_aligned_delete(T *ptr, 
 
 template<typename T, bool Align> inline T* conditional_aligned_realloc_new(T* pts, size_t new_size, size_t old_size)
 {
+  if(new_size < old_size)
+    destruct_elements_of_array(pts+new_size, old_size-new_size);
   T *result = reinterpret_cast<T*>(conditional_aligned_realloc<Align>(reinterpret_cast<void*>(pts), sizeof(T)*new_size, sizeof(T)*old_size));
-  if (new_size > old_size)
+  if(new_size > old_size)
     construct_elements_of_array(result+old_size, new_size-old_size);
   return result;
+}
+
+
+template<typename T, bool Align> inline T* conditional_aligned_new_auto(size_t size)
+{
+  T *result = reinterpret_cast<T*>(conditional_aligned_malloc<Align>(sizeof(T)*size));
+  if(NumTraits<T>::RequireInitialization)
+    construct_elements_of_array(result, size);
+  return result;
+}
+
+template<typename T, bool Align> inline T* conditional_aligned_realloc_new_auto(T* pts, size_t new_size, size_t old_size)
+{
+  if(NumTraits<T>::RequireInitialization && (new_size < old_size))
+    destruct_elements_of_array(pts+new_size, old_size-new_size);
+  T *result = reinterpret_cast<T*>(conditional_aligned_realloc<Align>(reinterpret_cast<void*>(pts), sizeof(T)*new_size, sizeof(T)*old_size));
+  if(NumTraits<T>::RequireInitialization && (new_size > old_size))
+    construct_elements_of_array(result+old_size, new_size-old_size);
+  return result;
+}
+
+template<typename T, bool Align> inline void conditional_aligned_delete_auto(T *ptr, size_t size)
+{
+  if(NumTraits<T>::RequireInitialization)
+    destruct_elements_of_array<T>(ptr, size);
+  conditional_aligned_free<Align>(ptr);
 }
 
 /****************************************************************************/
@@ -608,7 +636,7 @@ public:
        __asm__ __volatile__ ("cpuid": "=a" (abcd[0]), "=b" (abcd[1]), "=c" (abcd[2]), "=d" (abcd[3]) : "a" (func), "c" (id) );
 #  endif
 #elif defined(_MSC_VER)
-#  if (_MSC_VER > 1500) /* newer than MSVC++ 9.0 */ || (_MSC_VER == 1500 && _MSC_FULL_VER >= 150030729) /* MSVC++ 9.0 with SP1*/
+#  if (_MSC_VER > 1500)
 #    define EIGEN_CPUID(abcd,func,id) __cpuidex((int*)abcd,func,id)
 #  endif
 #endif
