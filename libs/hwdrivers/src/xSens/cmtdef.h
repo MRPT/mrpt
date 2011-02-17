@@ -45,7 +45,7 @@
 #	endif
 // required for gnu c++ compiler due to difference in attribute declarations
 #   define __cdecl   // __attribute__((cdecl))   // JLBC @ MRPT: GCC warns about ignored attribute
-#   define __stdcall __attribute__((stdcall))
+#   define __stdcall // __attribute__((stdcall)) // JLBC @ MRPT: GCC warns about ignored attribute
 #endif
 
 #ifndef _XSENS_STD_H_2006_09_11
@@ -1165,6 +1165,8 @@ struct CmtRawGpsData {
 };
 struct CmtAnalogInData
 {
+	CmtAnalogInData() : m_data(0) { }
+
 	uint16_t m_data;
 };
 struct CmtVector {

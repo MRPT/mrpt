@@ -101,7 +101,7 @@ double grid_test_4(int a1, int a2)
 	COccupancyGridMap2D::cellType  logodd_obs = COccupancyGridMap2D::p2l( p );
 	COccupancyGridMap2D::cellType  *theMapArray = gridMap.getRow(0);
 	unsigned  theMapSize_x = gridMap.getSizeX();
-	COccupancyGridMap2D::cellType   logodd_thres_occupied = OCCGRID_CELLTYPE_MIN+logodd_obs;
+	COccupancyGridMap2D::cellType   logodd_thres_occupied = COccupancyGridMap2D::OCCGRID_CELLTYPE_MIN+logodd_obs;
 
 	CTicTac tictac;
 	for (long i=0;i<N;i++)
