@@ -670,7 +670,7 @@ namespace mrpt
 
 					// Try the analitic Jacobian first:
 					m_user_didnt_implement_jacobian=false; // Set to true by the default method if not reimplemented in base class.
-					if (KF_options.use_analytic_transition_jacobian)
+					if (KF_options.use_analytic_observation_jacobian)
 						OnObservationJacobians(lm_idx,Hx,Hy);
 
 					if (m_user_didnt_implement_jacobian || !KF_options.use_analytic_observation_jacobian || KF_options.debug_verify_analytic_jacobians)

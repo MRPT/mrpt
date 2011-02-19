@@ -83,11 +83,12 @@
 		- opengl_video_demo: A demo of opengl textures from a video stream.
 		- opengl_video_viewport_demo: A demonstration of the new viewport "image mode".
 	- BUG FIXES:
-		- Fixed behavior of mrpt::system::os::kbhit() in non-s.
+		- Fixed behavior of mrpt::system::os::kbhit() in Linux.
 		- Fixed a kind of memory-leak in OpenGL due to the particular way of reserving texture names (seem to only affect some OpenGL implementations, but it's fixed now).
 		- Fixed another OpenGL memory-leak happening when destructors of display lists were called from a different thread than the rendering thread (where they were created).
 		- Octree-based rendering of point cloud didn't discard all invisible nodes, not doing an optimal rendering.
 		- Fixed situations were RTTI registrations were not updated before usage, leading to "uregistered class?" exceptions.
+		- [mrpt-bayes] Kalman filter: Fixed wrong use of use_analytic_transition_jacobian instead of use_analytic_observation_jacobian (thanks "bgrigorian"!)
 
 
 
