@@ -83,7 +83,7 @@ namespace mrpt
 			{
 				/** Initalizer
 				*/
-				TOptions();
+				TOptions(const TFeatureType featsType = featKLT);
 
 				/** See utils::CLoadableOptions
 				  */

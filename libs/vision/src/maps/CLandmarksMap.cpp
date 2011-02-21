@@ -39,7 +39,6 @@
 #include <mrpt/slam/CLandmark.h>
 #include <mrpt/slam/CObservationImage.h>
 #include <mrpt/vision/utils.h>
-#include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/slam/CObservationStereoImages.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
@@ -227,7 +226,7 @@ double	 CLandmarksMap::computeObservationLikelihood(
 #else
 		CLandmarksMap	auxMap;
 		auxMap.insertionOptions = insertionOptions;
-		auxMap.loadSiftFeaturesFromStereoImageObservation( *o, CLandmarksMap::_mapMaxID );
+		auxMap.loadSiftFeaturesFromStereoImageObservation( *o, CLandmarksMap::_mapMaxID, likelihoodOptions.SIFT_feat_options );
 		auxMap.changeCoordinatesReference( robotPose3D );
 #endif
 
@@ -429,7 +428,7 @@ bool  CLandmarksMap::internal_insertObservation( const CObservation *obs, const 
 
 
 		// 1) Load the features in a temporary 3D landmarks map:
-		tempMap.loadSiftFeaturesFromImageObservation( *o );
+		tempMap.loadSiftFeaturesFromImageObservation( *o, insertionOptions.SIFT_feat_options );
 
 		// 2) This temp. map must be moved to its real position on the global reference coordinates:
 		tempMap.changeCoordinatesReference( robotPose3D );
@@ -457,10 +456,7 @@ bool  CLandmarksMap::internal_insertObservation( const CObservation *obs, const 
 
 		// Load into the map:
 		tempMap.loadOccupancyFeaturesFrom2DRangeScan(*o, robotPose);
-
 		fuseWith( tempMap );
-
-
 
 		// Observation was successfully inserted into the map
 		// --------------------------------------------------------
@@ -484,7 +480,7 @@ bool  CLandmarksMap::internal_insertObservation( const CObservation *obs, const 
 #else
 		CLandmarksMap	auxMap;
 		auxMap.insertionOptions = insertionOptions;
-		auxMap.loadSiftFeaturesFromStereoImageObservation( *o, CLandmarksMap::_mapMaxID );
+		auxMap.loadSiftFeaturesFromStereoImageObservation( *o, CLandmarksMap::_mapMaxID, insertionOptions.SIFT_feat_options );
 		auxMap.changeCoordinatesReference( robotPose3D );
 #endif
 
@@ -521,16 +517,8 @@ bool  CLandmarksMap::internal_insertObservation( const CObservation *obs, const 
 	else
 	{
 	/********************************************************************
-
 				OBSERVATION TYPE: Unknown
-
-		********************************************************************/
-/*			printf("[CSimplePointsMap::insertObservation] Warning! Do not know how to insert an observation of type: '");
-		try
-		{
-			printf( obs->GetRuntimeClass()->className );
-		} catch(...) {}
-		printf("'\n");*/
+	********************************************************************/
 		return false;
 	}
 
@@ -539,7 +527,7 @@ bool  CLandmarksMap::internal_insertObservation( const CObservation *obs, const 
 }
 
 /*---------------------------------------------------------------
-				loadSiftFeaturesFromImageObservation
+				computeMatchingWith2D
   ---------------------------------------------------------------*/
 void  CLandmarksMap::computeMatchingWith2D(
 		const CMetricMap						*otherMap,
@@ -586,7 +574,10 @@ void  CLandmarksMap::computeMatchingWith2D(
 /*---------------------------------------------------------------
 				loadSiftFeaturesFromImageObservation
   ---------------------------------------------------------------*/
-void  CLandmarksMap::loadSiftFeaturesFromImageObservation( const CObservationImage	&obs )
+void  CLandmarksMap::loadSiftFeaturesFromImageObservation( 
+	const CObservationImage	&obs,
+	const mrpt::vision::CFeatureExtraction::TOptions & feat_options
+	)
 {
 	CImage								corImg;
 	CPointPDFGaussian						landmark3DPositionPDF;
@@ -608,7 +599,7 @@ void  CLandmarksMap::loadSiftFeaturesFromImageObservation( const CObservationIma
 	corImg = obs.image; //obs.image.correctDistortion(obs.intrinsicParams,obs.distortionParams);
 
 	// Extract SIFT features:
-	fExt.options.featsType = vision::featSIFT;
+	fExt.options = feat_options;
 	fExt.detectFeatures( corImg, siftList );	//vision::computeSiftFeatures(corImg, siftList );
 
 	// Save them as 3D landmarks:
@@ -664,7 +655,11 @@ void  CLandmarksMap::loadSiftFeaturesFromImageObservation( const CObservationIma
 /*---------------------------------------------------------------
 				loadSiftFeaturesFromStereoImagesObservation
   ---------------------------------------------------------------*/
-void  CLandmarksMap::loadSiftFeaturesFromStereoImageObservation( const CObservationStereoImages	&obs, mrpt::slam::CLandmark::TLandmarkID fID )
+void  CLandmarksMap::loadSiftFeaturesFromStereoImageObservation( 
+	const CObservationStereoImages	&obs, 
+	mrpt::slam::CLandmark::TLandmarkID fID,
+	const mrpt::vision::CFeatureExtraction::TOptions & feat_options
+	)
 {
 	MRPT_START;
 
@@ -678,13 +673,8 @@ void  CLandmarksMap::loadSiftFeaturesFromStereoImageObservation( const CObservat
 
 	CLandmarksMap							landmarkMap;
 
-	//float									stdPixel2	= square( insertionOptions.SIFTs_stdXY );
-	//float									stdDisp2	= square( insertionOptions.SIFTs_stdDisparity );
-
 	// Extract SIFT features:
-	fExt.options.featsType = vision::featSIFT;
-	//fExt.options.SIFTOptions.implementation = vision::CFeatureExtraction::Hess;
-	fExt.options.SIFTOptions.implementation = vision::CFeatureExtraction::LoweBinary;
+	fExt.options = feat_options;   // OLD: fExt.options.SIFTOptions.implementation = vision::CFeatureExtraction::Hess;
 
 	// Default: Hess implementation
 	fExt.detectFeatures( obs.imageLeft, leftSiftList, fID, insertionOptions.SIFTs_numberOfKLTKeypoints );
@@ -2052,7 +2042,9 @@ CLandmarksMap::TInsertionOptions::TInsertionOptions() :
 	SIFTs_stereo_maxDepth				( 15.0f ),
 
 	SIFTs_epipolar_TH					( 1.5f ),
-	PLOT_IMAGES							( false )
+	PLOT_IMAGES							( false ),
+
+	SIFT_feat_options					( vision::featSIFT )
 {
 }
 
@@ -2084,6 +2076,8 @@ void  CLandmarksMap::TInsertionOptions::dumpToTextStream(CStream	&out) const
 	out.printf("SIFTs_epipolar_TH						= %f\n", SIFTs_epipolar_TH);
 	out.printf("PLOT_IMAGES								= %c\n", PLOT_IMAGES ? 'Y':'N');
 
+	SIFT_feat_options.dumpToTextStream(out);
+
 	out.printf("\n");
 }
 
@@ -2111,6 +2105,8 @@ void  CLandmarksMap::TInsertionOptions::loadFromConfigFile(
 	SIFTs_stereo_maxDepth				= iniFile.read_float(section.c_str(),"SIFTs_stereo_maxDepth",SIFTs_stereo_maxDepth);
 	SIFTs_epipolar_TH					= iniFile.read_float(section.c_str(),"SIFTs_epipolar_TH",SIFTs_epipolar_TH);
 	PLOT_IMAGES							= iniFile.read_bool(section.c_str(),"PLOT_IMAGES",PLOT_IMAGES);
+
+	SIFT_feat_options.loadFromConfigFile(iniFile,section);
 }
 
 /*---------------------------------------------------------------
@@ -2127,7 +2123,8 @@ CLandmarksMap::TLikelihoodOptions::TLikelihoodOptions() :
 	alphaRatio						( 1.0f ),
 	beaconMaxRange					( 20.0f ),
 	GPSOrigin						(),
-	GPS_sigma						( 1.0f )
+	GPS_sigma						( 1.0f ),
+	SIFT_feat_options				( vision::featSIFT )
 {
 }
 
@@ -2169,6 +2166,8 @@ void  CLandmarksMap::TLikelihoodOptions::dumpToTextStream(CStream	&out) const
 
 	out.printf("GPS_sigma                               = %f (m)\n",GPS_sigma);
 
+	SIFT_feat_options.dumpToTextStream(out);
+
 	out.printf("\n");
 }
 
@@ -2199,6 +2198,8 @@ void  CLandmarksMap::TLikelihoodOptions::loadFromConfigFile(
 	beaconRangesStd					= iniFile.read_float(section.c_str(),"beaconRangesStd",beaconRangesStd);
 	alphaRatio						= iniFile.read_float(section.c_str(),"alphaRatio",alphaRatio);
 	beaconMaxRange					= iniFile.read_float(section.c_str(),"beaconMaxRange",beaconMaxRange);
+
+	SIFT_feat_options.loadFromConfigFile(iniFile,section);
 }
 
 /*---------------------------------------------------------------

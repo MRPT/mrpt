@@ -28,6 +28,7 @@
 #ifndef CLandmarksMap_H
 #define CLandmarksMap_H
 
+#include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/slam/CLandmark.h>
 #include <mrpt/slam/CObservationImage.h>
@@ -289,6 +290,12 @@ namespace slam
 			  */
 			bool	PLOT_IMAGES;
 
+			/** Parameters of the SIFT feature detector/descriptors while inserting images in the landmark map.
+			  *  \note There exists another \a SIFT_feat_options field in the \a likelihoodOptions member.
+			  *  \note All parameters of this field can be loaded from a config file. See mrpt::vision::CFeatureExtraction::TOptions for the names of the expected fields.
+			  */
+			mrpt::vision::CFeatureExtraction::TOptions  SIFT_feat_options;
+
 		 } insertionOptions;
 
 		 /** With this struct options are provided to the likelihood computations.
@@ -378,7 +385,11 @@ namespace slam
 			  */
 			float			GPS_sigma;
 
-
+			/** Parameters of the SIFT feature detector/descriptors while inserting images in the landmark map.
+			  *  \note There exists another \a SIFT_feat_options field in the \a insertionOptions member.
+			  *  \note All parameters of this field can be loaded from a config file. See mrpt::vision::CFeatureExtraction::TOptions for the names of the expected fields.
+			  */
+			mrpt::vision::CFeatureExtraction::TOptions  SIFT_feat_options;
 
 		 } likelihoodOptions;
 
@@ -448,10 +459,6 @@ namespace slam
 		 */
 		size_t  size() const;
 
-		/** Copy.
-			*/
-		//void  operator = (const CLandmarksMap& obj);
-
 		/** Computes the (logarithmic) likelihood function for a sensed observation "o" according to "this" map.
 		  *   This is the implementation of the algorithm reported in the paper:
 				<em>J.L. Blanco, J. Gonzalez, and J.A. Fernandez-Madrigal, "A Consensus-based Approach for Estimating the Observation Likelihood of Accurate Range Sensors", in IEEE International Conference on Robotics and Automation (ICRA), Rome (Italy), Apr 10-14, 2007</em>
@@ -461,14 +468,25 @@ namespace slam
 		/** Loads into this landmarks map the SIFT features extracted from an image observation (Previous contents of map will be erased)
 		  *  The robot is assumed to be at the origin of the map.
 		  *  Some options may be applicable from "insertionOptions" (insertionOptions.SIFTsLoadDistanceOfTheMean)
+		  * 
+		  *  \param feat_options Optionally, you can pass here parameters for changing the default SIFT detector settings.
 		  */
-		void  loadSiftFeaturesFromImageObservation( const CObservationImage	&obs );
+		void  loadSiftFeaturesFromImageObservation( 
+			const CObservationImage	&obs,
+			const mrpt::vision::CFeatureExtraction::TOptions & feat_options = mrpt::vision::CFeatureExtraction::TOptions(mrpt::vision::featSIFT)
+			);
 
 		/** Loads into this landmarks map the SIFT features extracted from an observation consisting of a pair of stereo-image (Previous contents of map will be erased)
 		  *  The robot is assumed to be at the origin of the map.
 		  *  Some options may be applicable from "insertionOptions"
+		  *
+		  *  \param feat_options Optionally, you can pass here parameters for changing the default SIFT detector settings.
 		  */
-		void  loadSiftFeaturesFromStereoImageObservation( const CObservationStereoImages	&obs, mrpt::slam::CLandmark::TLandmarkID fID );
+		void  loadSiftFeaturesFromStereoImageObservation( 
+			const CObservationStereoImages	&obs, 
+			mrpt::slam::CLandmark::TLandmarkID fID,
+			const mrpt::vision::CFeatureExtraction::TOptions & feat_options = mrpt::vision::CFeatureExtraction::TOptions(mrpt::vision::featSIFT)
+			);
 
 		/** Loads into this landmarks-map a set of occupancy features according to a 2D range scan (Previous contents of map will be erased)
 		  *  \param obs	The observation

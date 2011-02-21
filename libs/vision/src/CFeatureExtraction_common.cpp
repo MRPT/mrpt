@@ -283,10 +283,10 @@ void  CFeatureExtraction::extractFeaturesBCD(
 /*------------------------------------------------------------
 					TOptions()
 -------------------------------------------------------------*/
-CFeatureExtraction::TOptions::TOptions()
+CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType) :
+	featsType	( _featsType)	// Default Method: Kanade-Lucas-Tomasi
 {
 	// General options
-	featsType		= featKLT;				// Default Method: Kanade-Lucas-Tomasi
 	patchSize		= 21;					// Patch size
 	FIND_SUBPIXEL	= true;					// Find subpixel
 	useMask         = false;                // Use mask for finding features

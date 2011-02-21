@@ -77,6 +77,7 @@
 		- mrpt::slam::CPointsMaps: Inserting 2D laser scans is now ~3 times faster (thanks to mrpt::slam::CSinCosLookUpTableFor2DScans).
 		- mrpt::gui::CDisplayWindow3D now emits a new event. See mrpt::gui::mrptEvent3DWindowGrabImageFile
 		- mrpt::slam::CLandmarksMap::simulateRangeBearingReadings() now also simulates spurious readings.
+		- [mrpt-vision] mrpt::slam::CLandmarksMap now has new fields in the insertionOptions and likelihoodOptions to allow users control the exact parameters of SIFT detectors/descriptors.
 	- Changes in examples:
 		- hokuyo_laser_test. Now it's possible to choose between USB and Ethernet connection.
 	- New examples:

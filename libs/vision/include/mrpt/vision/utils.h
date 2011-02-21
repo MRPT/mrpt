@@ -37,8 +37,6 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/slam/CLandmarksMap.h>
-#include <mrpt/slam/CObservationVisualLandmarks.h>
 
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
@@ -51,6 +49,8 @@ namespace mrpt
 	{
 		class CObservationStereoImages;
 		class CObservationBearingRange;
+		class CLandmarksMap;
+		class CObservationVisualLandmarks;
 	}
 
 	/** Classes for computer vision, detectors, features, etc.
