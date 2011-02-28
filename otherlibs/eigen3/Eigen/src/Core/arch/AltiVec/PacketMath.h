@@ -73,6 +73,7 @@ static Packet4f p4f_COUNTDOWN = { 3.0, 2.0, 1.0, 0.0 };
 static Packet4i p4i_COUNTDOWN = { 3, 2, 1, 0 };
 static Packet16uc p16uc_REVERSE = {12,13,14,15, 8,9,10,11, 4,5,6,7, 0,1,2,3};
 static Packet16uc p16uc_FORWARD = vec_lvsl(0, (float*)0);
+static Packet16uc p16uc_DUPLICATE = {0,1,2,3, 0,1,2,3, 4,5,6,7, 4,5,6,7};
 
 static _EIGEN_DECLARE_CONST_FAST_Packet4f(ZERO, 0);
 static _EIGEN_DECLARE_CONST_FAST_Packet4i(ZERO, 0);
@@ -290,6 +291,21 @@ template<> EIGEN_STRONG_INLINE Packet4i ploadu<Packet4i>(const int* from)
   LSQ = vec_ld(15, (unsigned char *)from);         // least significant quadword
   mask = vec_lvsl(0, from);                        // create the permute mask
   return (Packet4i) vec_perm(MSQ, LSQ, mask);    // align the data
+}
+
+template<> EIGEN_STRONG_INLINE Packet4f ploaddup<Packet4f>(const float*   from)
+{
+  Packet4f p;
+  if((ptrdiff_t(&from) % 16) == 0)  p = pload<Packet4f>(from);
+  else                              p = ploadu<Packet4f>(from);
+  return vec_perm(p, p, p16uc_DUPLICATE);
+}
+template<> EIGEN_STRONG_INLINE Packet4i ploaddup<Packet4i>(const int*     from)
+{
+  Packet4i p;
+  if((ptrdiff_t(&from) % 16) == 0)  p = pload<Packet4i>(from);
+  else                              p = ploadu<Packet4i>(from);
+  return vec_perm(p, p, p16uc_DUPLICATE);
 }
 
 template<> EIGEN_STRONG_INLINE void pstore<float>(float*   to, const Packet4f& from) { EIGEN_DEBUG_ALIGNED_STORE vec_st(from, 0, to); }

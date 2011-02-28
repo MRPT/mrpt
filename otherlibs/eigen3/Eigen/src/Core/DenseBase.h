@@ -34,7 +34,10 @@
   * This class is the base that is inherited by all dense objects (matrix, vector, arrays,
   * and related expression types). The common Eigen API for dense objects is contained in this class.
   *
-  * \param Derived is the derived type, e.g., a matrix type or an expression.
+  * \tparam Derived is the derived type, e.g., a matrix type or an expression.
+  *
+  * This class can be extended with the help of the plugin mechanism described on the page
+  * \ref TopicCustomizingEigen by defining the preprocessor symbol \c EIGEN_DENSEBASE_PLUGIN.
   *
   * \sa \ref TopicClassHierarchy
   */

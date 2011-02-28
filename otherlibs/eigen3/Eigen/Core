@@ -26,8 +26,8 @@
 #ifndef EIGEN_CORE_H
 #define EIGEN_CORE_H
 
-// first thing Eigen does: prevent MSVC from committing suicide
-#include "src/Core/util/DisableMSVCWarnings.h"
+// first thing Eigen does: stop the compiler from committing suicide
+#include "src/Core/util/DisableStupidWarnings.h"
 
 // then include this file where all our macros are defined. It's really important to do it first because
 // it's where we do all the alignment settings (platform detection and honoring the user's will if he
@@ -158,7 +158,7 @@
 
 // for outputting debug info
 #ifdef EIGEN_DEBUG_ASSIGN
-#include<iostream>
+#include <iostream>
 #endif
 
 // required for __cpuid, needs to be included after cmath
@@ -354,7 +354,7 @@ using std::size_t;
 
 #include "src/Core/GlobalFunctions.h"
 
-#include "src/Core/util/EnableMSVCWarnings.h"
+#include "src/Core/util/ReenableStupidWarnings.h"
 
 #ifdef EIGEN2_SUPPORT
 #include "Eigen2Support"

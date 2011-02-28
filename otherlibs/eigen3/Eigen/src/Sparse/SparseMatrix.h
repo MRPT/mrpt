@@ -34,13 +34,15 @@
   * This class implements a sparse matrix using the very common compressed row/column storage
   * scheme.
   *
-  * \param _Scalar the scalar type, i.e. the type of the coefficients
-  * \param _Options Union of bit flags controlling the storage scheme. Currently the only possibility
+  * \tparam _Scalar the scalar type, i.e. the type of the coefficients
+  * \tparam _Options Union of bit flags controlling the storage scheme. Currently the only possibility
   *                 is RowMajor. The default is 0 which means column-major.
-  * \param _Index the type of the indices. Default is \c int.
+  * \tparam _Index the type of the indices. Default is \c int.
   *
   * See http://www.netlib.org/linalg/html_templates/node91.html for details on the storage scheme.
   *
+  * This class can be extended with the help of the plugin mechanism described on the page
+  * \ref TopicCustomizingEigen by defining the preprocessor symbol \c EIGEN_SPARSEMATRIX_PLUGIN.
   */
 
 namespace internal {

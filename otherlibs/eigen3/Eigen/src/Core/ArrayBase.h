@@ -42,7 +42,10 @@ template<typename ExpressionType> class MatrixWrapper;
   *
   * This class is the base that is inherited by all array expression types.
   *
-  * \param Derived is the derived type, e.g., an array or an expression type.
+  * \tparam Derived is the derived type, e.g., an array or an expression type.
+  *
+  * This class can be extended with the help of the plugin mechanism described on the page
+  * \ref TopicCustomizingEigen by defining the preprocessor symbol \c EIGEN_ARRAYBASE_PLUGIN.
   *
   * \sa class MatrixBase, \ref TopicClassHierarchy
   */

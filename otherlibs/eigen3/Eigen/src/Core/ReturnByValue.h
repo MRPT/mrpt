@@ -71,9 +71,9 @@ template<typename Derived> class ReturnByValue
 
     template<typename Dest>
     inline void evalTo(Dest& dst) const
-    { static_cast<const Derived* const>(this)->evalTo(dst); }
-    inline Index rows() const { return static_cast<const Derived* const>(this)->rows(); }
-    inline Index cols() const { return static_cast<const Derived* const>(this)->cols(); }
+    { static_cast<const Derived*>(this)->evalTo(dst); }
+    inline Index rows() const { return static_cast<const Derived*>(this)->rows(); }
+    inline Index cols() const { return static_cast<const Derived*>(this)->cols(); }
 
 #ifndef EIGEN_PARSED_BY_DOXYGEN
 #define Unusable YOU_ARE_TRYING_TO_ACCESS_A_SINGLE_COEFFICIENT_IN_A_SPECIAL_EXPRESSION_WHERE_THAT_IS_NOT_ALLOWED_BECAUSE_THAT_WOULD_BE_INEFFICIENT

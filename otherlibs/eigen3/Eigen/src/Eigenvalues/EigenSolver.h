@@ -228,6 +228,7 @@ template<typename _MatrixType> class EigenSolver
       * block-diagonal. The blocks on the diagonal are either 1-by-1 or 2-by-2
       * blocks of the form
       * \f$ \begin{bmatrix} u & v \\ -v & u \end{bmatrix} \f$.
+      * These blocks are not sorted in any particular order.
       * The matrix \f$ D \f$ and the matrix \f$ V \f$ returned by
       * pseudoEigenvectors() satisfy \f$ AV = VD \f$.
       *
@@ -244,7 +245,8 @@ template<typename _MatrixType> class EigenSolver
       * compute(const MatrixType&, bool) has been called before.
       *
       * The eigenvalues are repeated according to their algebraic multiplicity,
-      * so there are as many eigenvalues as rows in the matrix.
+      * so there are as many eigenvalues as rows in the matrix. The eigenvalues 
+      * are not sorted in any particular order.
       *
       * Example: \include EigenSolver_eigenvalues.cpp
       * Output: \verbinclude EigenSolver_eigenvalues.out

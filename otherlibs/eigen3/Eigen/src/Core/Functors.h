@@ -669,7 +669,7 @@ struct functor_traits<scalar_sqrt_op<Scalar> >
 
 /** \internal
   * \brief Template functor to compute the cosine of a scalar
-  * \sa class CwiseUnaryOp, Cwise::cos()
+  * \sa class CwiseUnaryOp, ArrayBase::cos()
   */
 template<typename Scalar> struct scalar_cos_op {
   EIGEN_EMPTY_STRUCT_CTOR(scalar_cos_op)
@@ -688,7 +688,7 @@ struct functor_traits<scalar_cos_op<Scalar> >
 
 /** \internal
   * \brief Template functor to compute the sine of a scalar
-  * \sa class CwiseUnaryOp, Cwise::sin()
+  * \sa class CwiseUnaryOp, ArrayBase::sin()
   */
 template<typename Scalar> struct scalar_sin_op {
   EIGEN_EMPTY_STRUCT_CTOR(scalar_sin_op)
@@ -708,7 +708,7 @@ struct functor_traits<scalar_sin_op<Scalar> >
 
 /** \internal
   * \brief Template functor to compute the tan of a scalar
-  * \sa class CwiseUnaryOp, Cwise::tan()
+  * \sa class CwiseUnaryOp, ArrayBase::tan()
   */
 template<typename Scalar> struct scalar_tan_op {
   EIGEN_EMPTY_STRUCT_CTOR(scalar_tan_op)
@@ -722,6 +722,44 @@ struct functor_traits<scalar_tan_op<Scalar> >
   enum {
     Cost = 5 * NumTraits<Scalar>::MulCost,
     PacketAccess = packet_traits<Scalar>::HasTan
+  };
+};
+
+/** \internal
+  * \brief Template functor to compute the arc cosine of a scalar
+  * \sa class CwiseUnaryOp, ArrayBase::acos()
+  */
+template<typename Scalar> struct scalar_acos_op {
+  EIGEN_EMPTY_STRUCT_CTOR(scalar_acos_op)
+  inline const Scalar operator() (const Scalar& a) const { return acos(a); }
+  typedef typename packet_traits<Scalar>::type Packet;
+  inline Packet packetOp(const Packet& a) const { return internal::pacos(a); }
+};
+template<typename Scalar>
+struct functor_traits<scalar_acos_op<Scalar> >
+{
+  enum {
+    Cost = 5 * NumTraits<Scalar>::MulCost,
+    PacketAccess = packet_traits<Scalar>::HasACos
+  };
+};
+
+/** \internal
+  * \brief Template functor to compute the arc sine of a scalar
+  * \sa class CwiseUnaryOp, ArrayBase::asin()
+  */
+template<typename Scalar> struct scalar_asin_op {
+  EIGEN_EMPTY_STRUCT_CTOR(scalar_asin_op)
+  inline const Scalar operator() (const Scalar& a) const { return acos(a); }
+  typedef typename packet_traits<Scalar>::type Packet;
+  inline Packet packetOp(const Packet& a) const { return internal::pacos(a); }
+};
+template<typename Scalar>
+struct functor_traits<scalar_asin_op<Scalar> >
+{
+  enum {
+    Cost = 5 * NumTraits<Scalar>::MulCost,
+    PacketAccess = packet_traits<Scalar>::HasASin
   };
 };
 

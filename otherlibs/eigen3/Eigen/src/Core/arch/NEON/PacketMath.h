@@ -41,7 +41,7 @@ namespace internal {
 
 typedef float32x4_t Packet4f;
 typedef int32x4_t   Packet4i;
-typedef uint32x4_t   Packet4ui;
+typedef uint32x4_t  Packet4ui;
 
 #define _EIGEN_DECLARE_CONST_Packet4f(NAME,X) \
   const Packet4f p4f_##NAME = pset1<Packet4f>(X)
@@ -84,8 +84,8 @@ template<> struct packet_traits<int>    : default_packet_traits
   };
 };
 
-#if (defined __GNUC__) && (!(EIGEN_GNUC_AT_LEAST(4,4)))
-// workaround gcc 4.2 and 4.3 compilatin issue
+#if EIGEN_GNUC_AT_MOST(4,4)
+// workaround gcc 4.2, 4.3 and 4.4 compilatin issue
 EIGEN_STRONG_INLINE float32x4_t vld1q_f32(const float* x) { return ::vld1q_f32((const float32_t*)x); }
 EIGEN_STRONG_INLINE float32x2_t vld1_f32 (const float* x) { return ::vld1_f32 ((const float32_t*)x); }
 EIGEN_STRONG_INLINE void        vst1q_f32(float* to, float32x4_t from) { ::vst1q_f32((float32_t*)to,from); }

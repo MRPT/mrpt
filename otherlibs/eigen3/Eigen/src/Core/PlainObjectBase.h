@@ -42,6 +42,10 @@ template<typename MatrixTypeA, typename MatrixTypeB, bool SwapPointers> struct m
 
 /**
   * \brief %Dense storage base class for matrices and arrays.
+  *
+  * This class can be extended with the help of the plugin mechanism described on the page
+  * \ref TopicCustomizingEigen by defining the preprocessor symbol \c EIGEN_PLAINOBJECTBASE_PLUGIN.
+  *
   * \sa \ref TopicClassHierarchy
   */
 template<typename Derived>
@@ -283,33 +287,47 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
       else resize(other.rows(), other.cols());
     }
 
-    /** Resizes \c *this to a \a rows x \a cols matrix while leaving old values of \c *this untouched.
+    /** Resizes the matrix to \a rows x \a cols while leaving old values untouched.
       *
-      * This method is intended for dynamic-size matrices. If you only want to change the number
-      * of rows and/or of columns, you can use conservativeResize(NoChange_t, Index),
+      * The method is intended for matrices of dynamic size. If you only want to change the number
+      * of rows and/or of columns, you can use conservativeResize(NoChange_t, Index) or
       * conservativeResize(Index, NoChange_t).
       *
-      * The top-left part of the resized matrix will be the same as the overlapping top-left corner
-      * of \c *this. In case values need to be appended to the matrix they will be uninitialized.
+      * Matrices are resized relative to the top-left element. In case values need to be 
+      * appended to the matrix they will be uninitialized.
       */
     EIGEN_STRONG_INLINE void conservativeResize(Index rows, Index cols)
     {
       internal::conservative_resize_like_impl<Derived>::run(*this, rows, cols);
     }
 
+    /** Resizes the matrix to \a rows x \a cols while leaving old values untouched.
+      *
+      * As opposed to conservativeResize(Index rows, Index cols), this version leaves
+      * the number of columns unchanged.
+      *
+      * In case the matrix is growing, new rows will be uninitialized.
+      */
     EIGEN_STRONG_INLINE void conservativeResize(Index rows, NoChange_t)
     {
       // Note: see the comment in conservativeResize(Index,Index)
       conservativeResize(rows, cols());
     }
 
+    /** Resizes the matrix to \a rows x \a cols while leaving old values untouched.
+      *
+      * As opposed to conservativeResize(Index rows, Index cols), this version leaves
+      * the number of rows unchanged.
+      *
+      * In case the matrix is growing, new columns will be uninitialized.
+      */
     EIGEN_STRONG_INLINE void conservativeResize(NoChange_t, Index cols)
     {
       // Note: see the comment in conservativeResize(Index,Index)
       conservativeResize(rows(), cols);
     }
 
-    /** Resizes \c *this to a vector of length \a size while retaining old values of *this.
+    /** Resizes the vector to \a size while retaining old values.
       *
       * \only_for_vectors. This method does not work for
       * partially dynamic matrices when the static dimension is anything other
@@ -322,6 +340,15 @@ class PlainObjectBase : public internal::dense_xpr_base<Derived>::type
       internal::conservative_resize_like_impl<Derived>::run(*this, size);
     }
 
+    /** Resizes the matrix to \a rows x \a cols of \c other, while leaving old values untouched.
+      *
+      * The method is intended for matrices of dynamic size. If you only want to change the number
+      * of rows and/or of columns, you can use conservativeResize(NoChange_t, Index) or
+      * conservativeResize(Index, NoChange_t).
+      *
+      * Matrices are resized relative to the top-left element. In case values need to be 
+      * appended to the matrix they will copied from \c other.
+      */
     template<typename OtherDerived>
     EIGEN_STRONG_INLINE void conservativeResizeLike(const DenseBase<OtherDerived>& other)
     {

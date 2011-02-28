@@ -30,7 +30,7 @@ namespace internal {
 /** \internal */
 inline void manage_multi_threading(Action action, int* v)
 {
-  static int m_maxThreads = -1;
+  static EIGEN_UNUSED int m_maxThreads = -1;
 
   if(action==SetAction)
   {

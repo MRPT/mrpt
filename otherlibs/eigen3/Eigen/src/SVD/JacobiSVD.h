@@ -452,7 +452,7 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
     /** \returns the vector of singular values.
      *
      * For the SVD decomposition of a n-by-p matrix, letting \a m be the minimum of \a n and \a p, the
-     * returned vector has size \a m.
+     * returned vector has size \a m.  Singular values are always sorted in decreasing order.
      */
     const SingularValuesType& singularValues() const
     {

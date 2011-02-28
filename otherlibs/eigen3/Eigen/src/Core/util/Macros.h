@@ -27,16 +27,29 @@
 #define EIGEN_MACROS_H
 
 #define EIGEN_WORLD_VERSION 2
-#define EIGEN_MAJOR_VERSION 93
+#define EIGEN_MAJOR_VERSION 94
 #define EIGEN_MINOR_VERSION 0
 
 #define EIGEN_VERSION_AT_LEAST(x,y,z) (EIGEN_WORLD_VERSION>x || (EIGEN_WORLD_VERSION>=x && \
                                       (EIGEN_MAJOR_VERSION>y || (EIGEN_MAJOR_VERSION>=y && \
                                                                  EIGEN_MINOR_VERSION>=z))))
 #ifdef __GNUC__
-  #define EIGEN_GNUC_AT_LEAST(x,y) ((__GNUC__>=x && __GNUC_MINOR__>=y) || __GNUC__>x)
+  #define EIGEN_GNUC_AT_LEAST(x,y) ((__GNUC__==x && __GNUC_MINOR__>=y) || __GNUC__>x)
 #else
   #define EIGEN_GNUC_AT_LEAST(x,y) 0
+#endif
+ 
+#ifdef __GNUC__
+  #define EIGEN_GNUC_AT_MOST(x,y) ((__GNUC__==x && __GNUC_MINOR__<=y) || __GNUC__<x)
+#else
+  #define EIGEN_GNUC_AT_MOST(x,y) 0
+#endif
+
+#if EIGEN_GNUC_AT_MOST(4,3)
+  // see bug 89
+  #define EIGEN_SAFE_TO_USE_STANDARD_ASSERT_MACRO 0
+#else
+  #define EIGEN_SAFE_TO_USE_STANDARD_ASSERT_MACRO 1
 #endif
 
 #if defined(__GNUC__) && (__GNUC__ <= 3)
@@ -109,31 +122,13 @@
 
 #define EIGEN_DEBUG_VAR(x) std::cerr << #x << " = " << x << std::endl;
 
-#ifdef NDEBUG
-# ifndef EIGEN_NO_DEBUG
-#  define EIGEN_NO_DEBUG
-# endif
-#endif
+// concatenate two tokens
+#define EIGEN_CAT2(a,b) a ## b
+#define EIGEN_CAT(a,b) EIGEN_CAT2(a,b)
 
-#ifndef eigen_assert
-#ifdef EIGEN_NO_DEBUG
-#define eigen_assert(x)
-#else
-#define eigen_assert(x) assert(x)
-#endif
-#endif
-
-#ifdef EIGEN_INTERNAL_DEBUGGING
-#define eigen_internal_assert(x) eigen_assert(x)
-#else
-#define eigen_internal_assert(x)
-#endif
-
-#ifdef EIGEN_NO_DEBUG
-#define EIGEN_ONLY_USED_FOR_DEBUG(x) (void)x
-#else
-#define EIGEN_ONLY_USED_FOR_DEBUG(x)
-#endif
+// convert a token to a string
+#define EIGEN_MAKESTRING2(a) #a
+#define EIGEN_MAKESTRING(a) EIGEN_MAKESTRING2(a)
 
 // EIGEN_ALWAYS_INLINE_ATTRIB should be use in the declaration of function
 // which should be inlined even in debug mode.
@@ -147,14 +142,14 @@
 #define EIGEN_ALWAYS_INLINE_ATTRIB
 #endif
 
-#if EIGEN_GNUC_AT_LEAST(4,1)
+#if EIGEN_GNUC_AT_LEAST(4,1) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #define EIGEN_FLATTEN_ATTRIB __attribute__((flatten))
 #else
 #define EIGEN_FLATTEN_ATTRIB
 #endif
 
 // EIGEN_FORCE_INLINE means "inline as much as possible"
-#if (defined _MSC_VER) || (defined __intel_compiler)
+#if (defined _MSC_VER) || (defined __INTEL_COMPILER)
 #define EIGEN_STRONG_INLINE __forceinline
 #else
 #define EIGEN_STRONG_INLINE inline
@@ -174,6 +169,67 @@
 //  - inline is not perfect either as it unwantedly hints the compiler toward inlining the function.
 #define EIGEN_DECLARE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
 #define EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS inline
+
+#ifdef NDEBUG
+# ifndef EIGEN_NO_DEBUG
+#  define EIGEN_NO_DEBUG
+# endif
+#endif
+
+// eigen_plain_assert is where we implement the workaround for the assert() bug in GCC <= 4.3, see bug 89
+#ifdef EIGEN_NO_DEBUG
+  #define eigen_plain_assert(x)
+#else
+  #if EIGEN_SAFE_TO_USE_STANDARD_ASSERT_MACRO
+    namespace Eigen {
+    namespace internal {
+    inline bool copy_bool(bool b) { return b; }
+    }
+    }
+    #define eigen_plain_assert(x) assert(x)
+  #else
+    // work around bug 89
+    #include <cstdlib>   // for abort
+    #include <iostream>  // for std::cerr
+
+    namespace Eigen {
+    namespace internal {
+    // trivial function copying a bool. Must be EIGEN_DONT_INLINE, so we implement it after including Eigen headers.
+    // see bug 89.
+    namespace {
+    EIGEN_DONT_INLINE bool copy_bool(bool b) { return b; }
+    }
+    inline void assert_fail(const char *condition, const char *function, const char *file, int line)
+    {
+      std::cerr << "assertion failed: " << condition << " in function " << function << " at " << file << ":" << line << std::endl;
+      abort();
+    }
+    }
+    }
+    #define eigen_plain_assert(x) \
+      do { \
+        if(!Eigen::internal::copy_bool(x)) \
+          Eigen::internal::assert_fail(EIGEN_MAKESTRING(x), __PRETTY_FUNCTION__, __FILE__, __LINE__); \
+      } while(false)
+  #endif
+#endif
+
+// eigen_assert can be overridden
+#ifndef eigen_assert
+#define eigen_assert(x) eigen_plain_assert(x)
+#endif
+
+#ifdef EIGEN_INTERNAL_DEBUGGING
+#define eigen_internal_assert(x) eigen_assert(x)
+#else
+#define eigen_internal_assert(x)
+#endif
+
+#ifdef EIGEN_NO_DEBUG
+#define EIGEN_ONLY_USED_FOR_DEBUG(x) (void)x
+#else
+#define EIGEN_ONLY_USED_FOR_DEBUG(x)
+#endif
 
 #if (defined __GNUC__)
 #define EIGEN_DEPRECATED __attribute__((deprecated))
@@ -243,14 +299,6 @@
 
 // just an empty macro !
 #define EIGEN_EMPTY
-
-// concatenate two tokens
-#define EIGEN_CAT2(a,b) a ## b
-#define EIGEN_CAT(a,b) EIGEN_CAT2(a,b)
-
-// convert a token to a string
-#define EIGEN_MAKESTRING2(a) #a
-#define EIGEN_MAKESTRING(a) EIGEN_MAKESTRING2(a)
 
 #if defined(_MSC_VER) && (!defined(__INTEL_COMPILER))
 #define EIGEN_INHERIT_ASSIGNMENT_EQUAL_OPERATOR(Derived) \

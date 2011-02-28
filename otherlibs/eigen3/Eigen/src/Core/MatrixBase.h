@@ -38,7 +38,7 @@
   * Note that some methods are defined in other modules such as the \ref LU_Module LU module
   * for all functions related to matrix inversions.
   *
-  * \param Derived is the derived type, e.g. a matrix type, or an expression, etc.
+  * \tparam Derived is the derived type, e.g. a matrix type, or an expression, etc.
   *
   * When writing a function taking Eigen objects as argument, if you want your function
   * to take as argument any matrix, vector, or expression, just let it take a
@@ -52,6 +52,9 @@
       cout << x.row(0) << endl;
     }
   * \endcode
+  *
+  * This class can be extended with the help of the plugin mechanism described on the page
+  * \ref TopicCustomizingEigen by defining the preprocessor symbol \c EIGEN_MATRIXBASE_PLUGIN.
   *
   * \sa \ref TopicClassHierarchy
   */

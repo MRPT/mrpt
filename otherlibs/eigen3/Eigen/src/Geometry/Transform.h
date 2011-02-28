@@ -81,15 +81,16 @@ template<typename TransformType> struct transform_take_affine_part;
   *
   * \brief Represents an homogeneous transformation in a N dimensional space
   *
-  * \param _Scalar the scalar type, i.e., the type of the coefficients
-  * \param _Dim the dimension of the space
-  * \param _Mode the type of the transformation. Can be:
+  * \tparam _Scalar the scalar type, i.e., the type of the coefficients
+  * \tparam _Dim the dimension of the space
+  * \tparam _Mode the type of the transformation. Can be:
   *              - Affine: the transformation is stored as a (Dim+1)^2 matrix,
   *                        where the last row is assumed to be [0 ... 0 1].
   *              - AffineCompact: the transformation is stored as a (Dim)x(Dim+1) matrix.
   *              - Projective: the transformation is stored as a (Dim+1)^2 matrix
   *                            without any assumption.
-  * \param _Options can be \b AutoAlign or \b DontAlign. Default is \b AutoAlign
+  * \tparam _Options has the same meaning as in class Matrix. It allows to specify DontAlign and/or RowMajor.
+  *                  These Options are passed directly to the underlying matrix type.
   *
   * The homography is internally represented and stored by a matrix which
   * is available through the matrix() method. To understand the behavior of
@@ -177,6 +178,9 @@ template<typename TransformType> struct transform_take_affine_part;
   * Conversion methods from/to Qt's QMatrix and QTransform are available if the
   * preprocessor token EIGEN_QT_SUPPORT is defined.
   *
+  * This class can be extended with the help of the plugin mechanism described on the page
+  * \ref TopicCustomizingEigen by defining the preprocessor symbol \c EIGEN_TRANSFORM_PLUGIN.
+  *
   * \sa class Matrix, class Quaternion
   */
 template<typename _Scalar, int _Dim, int _Mode, int _Options>
@@ -195,11 +199,11 @@ public:
   typedef _Scalar Scalar;
   typedef DenseIndex Index;
   /** type of the matrix used to represent the transformation */
-  typedef Matrix<Scalar,Rows,HDim,Options&DontAlign> MatrixType;
+  typedef Matrix<Scalar,Rows,HDim,Options> MatrixType;
   /** constified MatrixType */
   typedef const MatrixType ConstMatrixType;
   /** type of the matrix used to represent the linear part of the transformation */
-  typedef Matrix<Scalar,Dim,Dim> LinearMatrixType;
+  typedef Matrix<Scalar,Dim,Dim,Options> LinearMatrixType;
   /** type of read/write reference to the linear part of the transformation */
   typedef Block<MatrixType,Dim,Dim> LinearPart;
   /** type of read reference to the linear part of the transformation */
@@ -517,7 +521,7 @@ public:
   template<typename Derived>
   inline Transform operator*(const RotationBase<Derived,Dim>& r) const;
 
-  LinearMatrixType rotation() const;
+  const LinearMatrixType rotation() const;
   template<typename RotationMatrixType, typename ScalingMatrixType>
   void computeRotationScaling(RotationMatrixType *rotation, ScalingMatrixType *scaling) const;
   template<typename ScalingMatrixType, typename RotationMatrixType>
@@ -604,7 +608,7 @@ protected:
   #ifndef EIGEN_PARSED_BY_DOXYGEN
     EIGEN_STRONG_INLINE static void check_template_params()
     {
-      EIGEN_STATIC_ASSERT((Options & (DontAlign)) == Options, INVALID_MATRIX_TEMPLATE_PARAMETERS)
+      EIGEN_STATIC_ASSERT((Options & (DontAlign|RowMajor)) == Options, INVALID_MATRIX_TEMPLATE_PARAMETERS)
     }
   #endif
 
@@ -964,7 +968,7 @@ inline Transform<Scalar,Dim,Mode,Options> Transform<Scalar,Dim,Mode,Options>::op
   * \sa computeRotationScaling(), computeScalingRotation(), class SVD
   */
 template<typename Scalar, int Dim, int Mode, int Options>
-typename Transform<Scalar,Dim,Mode,Options>::LinearMatrixType
+const typename Transform<Scalar,Dim,Mode,Options>::LinearMatrixType
 Transform<Scalar,Dim,Mode,Options>::rotation() const
 {
   LinearMatrixType result;
@@ -1136,9 +1140,9 @@ template<typename TransformType> struct transform_take_affine_part {
   { return m.template block<TransformType::Dim,TransformType::HDim>(0,0); }
 };
 
-template<typename Scalar, int Dim>
-struct transform_take_affine_part<Transform<Scalar,Dim,AffineCompact> > {
-  typedef typename Transform<Scalar,Dim,AffineCompact>::MatrixType MatrixType;
+template<typename Scalar, int Dim, int Options>
+struct transform_take_affine_part<Transform<Scalar,Dim,AffineCompact, Options> > {
+  typedef typename Transform<Scalar,Dim,AffineCompact,Options>::MatrixType MatrixType;
   static inline MatrixType& run(MatrixType& m) { return m; }
   static inline const MatrixType& run(const MatrixType& m) { return m; }
 };
@@ -1178,7 +1182,7 @@ struct transform_construct_from_matrix<Other, Mode,Options,Dim,HDim, HDim,HDim>
 template<typename Other, int Options, int Dim, int HDim>
 struct transform_construct_from_matrix<Other, AffineCompact,Options,Dim,HDim, HDim,HDim>
 {
-  static inline void run(Transform<typename Other::Scalar,Dim,AffineCompact> *transform, const Other& other)
+  static inline void run(Transform<typename Other::Scalar,Dim,AffineCompact,Options> *transform, const Other& other)
   { transform->matrix() = other.template block<Dim,HDim>(0,0); }
 };
 
