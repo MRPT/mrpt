@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # build_docs - Builds the doxygen documentation.
 # Script: build_docs.sh
 # Author: Jose Luis Blanco
