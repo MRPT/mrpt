@@ -148,7 +148,7 @@ namespace mrpt
 
 			/** Saves the contents to a rawlog-file, compatible with RawlogViewer (As the sequence of internal objects).
 			  *  The file is saved with gz-commpressed if MRPT has gz-streams.
-			  * \returns It returns false if the file does not exists.
+			  * \returns It returns false if any error is found while writing/creating the target file.
 			  */
 			bool saveToRawLogFile( const std::string &fileName ) const;
 
