@@ -34,6 +34,7 @@
   <a name="0.9.4">
   <h2>Version 0.9.4 - (Version 1.0.0-Release_Candidate_2): UNDER DEVELOPMENT </h2></a>
 	- Changes in applications:
+		- <a href="http://www.mrpt.org/Application:kf-slam" >kf-slam</a>: Now supports two implementations 2D and 3D EKF-SLAM (it was always 3D SLAM previously).
 		- <a href="http://www.mrpt.org/Application:rawlog-grabber" >rawlog-grabber</a>: Added "hokuyo_UXM.ini" to support HOKUYO UXM laser series.
 		- mrpt-performance has been refactored into several smaller .cpp files. Having all in one big file lead to memory depletion when building in small machines (e.g. Debian MIPS & S390 autobuilders).
 		- New application: <a href="http://www.mrpt.org/Application:kinect-3d-view" > kinect-3d-view </a>. It was formerly an example, now it's an application so it's much easier for everyone to try it without compile manually.

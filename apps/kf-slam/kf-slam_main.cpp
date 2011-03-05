@@ -45,9 +45,15 @@ using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace std;
 
-std::string		configFile;
+// Fordward declaration.
+template <class IMPL>
+void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName );
 
-void Run_KF_SLAM();
+
+// 3D Window (smart pointer) declared here so after an exception it's not
+// immediately closed.
+mrpt::gui::CDisplayWindow3DPtr win3d;
+
 
 // ------------------------------------------------------
 //						MAIN
@@ -56,21 +62,40 @@ int main(int argc, char **argv)
 {
 	try
 	{
-		printf(" KF-SLAM version 0.2 - Part of the MRPT\n");
+		printf(" kf-slam - Part of the MRPT\n");
 		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
 		printf("-------------------------------------------------------------------\n");
 
 		// Process arguments:
 		if (argc<2)
 		{
-			printf("Use: kf-slam <config_file>\n\nPush any key to exit...\n");
+			printf("Use: kf-slam <config_file> [dataset.rawlog]\n\nPush any key to exit...\n");
 			os::getch();
 			return -1;
 		}
 
-		configFile = std::string( argv[1] );
+		// Config file:
+		const std::string configFile = std::string( argv[1] );
+		CConfigFile cfg( configFile );
 
-		Run_KF_SLAM();
+		// Rawlog file: from args. line or from config file:
+		string rawlogFileName;
+		if (argc==3)
+			rawlogFileName = std::string( argv[2] );
+		else
+			rawlogFileName = cfg.read_string("MappingApplication","rawlog_file",std::string("log.rawlog"));
+
+		// 2D or 3D implementation:
+		const string kf_implementation =
+			mrpt::system::trim( cfg.read_string("MappingApplication","kf_implementation","CRangeBearingKFSLAM" ) );
+
+		if (kf_implementation=="CRangeBearingKFSLAM")
+			Run_KF_SLAM<CRangeBearingKFSLAM>(cfg,rawlogFileName);
+		else
+		if (kf_implementation=="CRangeBearingKFSLAM2D")
+			Run_KF_SLAM<CRangeBearingKFSLAM2D>(cfg,rawlogFileName);
+		else
+			throw std::runtime_error("kf_implementation: Invalid value found in the config file.");
 
 		return 0;
 	}
@@ -88,26 +113,143 @@ int main(int argc, char **argv)
 	}
 }
 
+
 // ------------------------------------------------------
-//				TestMapping
+//				traits
 // ------------------------------------------------------
-void Run_KF_SLAM()
+template <class IMPL> struct kfslam_traits;
+
+// Specialization for 2D (3D) SLAM:
+template <> struct kfslam_traits<CRangeBearingKFSLAM2D>
+{
+	typedef CRangeBearingKFSLAM2D     ekfslam_t;
+	typedef CPosePDFGaussian	      posepdf_t;
+	typedef CPose2D                   pose_t;
+	typedef TPoint2D                  lm_t;
+	template <class ARR> static void landmark_to_3d(const ARR &lm, TPoint3D &p) { p.x=lm[0]; p.y=lm[1]; p.z=0; }
+
+	static void doPartitioningExperiment(
+		ekfslam_t  &mapping,
+		CMatrixDouble  &fullCov,
+		const string &OUT_DIR)
+	{
+		// Nothing to do
+	}
+};
+
+// Specialization for 3D (6D) SLAM:
+template <> struct kfslam_traits<CRangeBearingKFSLAM>
+{
+	typedef CRangeBearingKFSLAM       ekfslam_t;
+	typedef CPose3DQuatPDFGaussian	  posepdf_t;
+	typedef CPose3D                   pose_t;
+	typedef CPoint3D                  lm_t;
+
+	template <class ARR> static void landmark_to_3d(const ARR &lm, TPoint3D &p) { p.x=lm[0]; p.y=lm[1]; p.z=lm[2]; }
+
+	static void doPartitioningExperiment(
+		ekfslam_t  &mapping,
+		CMatrixDouble  &fullCov,
+		const string &OUT_DIR)
+	{
+		// Compute the "information" between partitions:
+		if (mapping.options.doPartitioningExperiment)
+		{
+			// --------------------------------------------
+			// PART I:
+			//  Comparison to fixed partitioning every K obs.
+			// --------------------------------------------
+
+			// Compute the information matrix:
+			for (size_t i=0;i<6;i++) fullCov(i,i) = max(fullCov(i,i), 1e-6);
+
+			CMatrix		H( fullCov.inv() );
+			H.saveToTextFile(OUT_DIR+string("/information_matrix_final.txt"));
+
+			// Replace by absolute values:
+			H.Abs();
+			CMatrix H2(H); H2.normalize(0,1);
+			CImage   imgF(H2, true);
+			imgF.saveToFile(OUT_DIR+string("/information_matrix_final.png"));
+
+
+			// ----------------------------------------
+			// Compute the "approximation error factor" E:
+			//  E = SUM() / SUM(ALL ELEMENTS IN MATRIX)
+			// ----------------------------------------
+			vector<vector_uint>  landmarksMembership,partsInObsSpace;
+			CMatrix  ERRS(50,3);
+
+			for (size_t i=0;i<ERRS.getRowCount();i++)
+			{
+				size_t K;
+
+				if (i==0)
+				{
+					K=0;
+					mapping.getLastPartitionLandmarks( landmarksMembership );
+				}
+				else
+				{
+					K=i+1;
+					mapping.getLastPartitionLandmarksAsIfFixedSubmaps(i+1,landmarksMembership);
+				}
+
+				mapping.getLastPartition(partsInObsSpace);
+
+				ERRS(i,0) = (float)K;
+				ERRS(i,1) = (float)partsInObsSpace.size();
+				ERRS(i,2) = mapping.computeOffDiagonalBlocksApproximationError(landmarksMembership);
+			}
+
+
+			ERRS.saveToTextFile( OUT_DIR+string("/ERRORS.txt" ));
+			//printf("Approximation error from partition:\n"); cout << ERRS << endl;
+
+			// --------------------------------------------
+			// PART II:
+			//  Sweep partitioning threshold:
+			// --------------------------------------------
+			size_t STEPS = 50;
+			CVectorFloat	ERRS_SWEEP(STEPS),ERRS_SWEEP_THRESHOLD(STEPS);
+
+			// Compute the error for each partitioning-threshold
+			for (size_t i=0;i<STEPS;i++)
+			{
+				float th = (1.0f*i)/(STEPS-1.0f);
+				ERRS_SWEEP_THRESHOLD[i] = th;
+				mapping.mapPartitionOptions()->partitionThreshold =  th;
+
+				mapping.reconsiderPartitionsNow();
+
+				mapping.getLastPartitionLandmarks( landmarksMembership );
+				ERRS_SWEEP[i] = mapping.computeOffDiagonalBlocksApproximationError(landmarksMembership);
+			}
+
+			ERRS_SWEEP.saveToTextFile( OUT_DIR+string("/ERRORS_SWEEP.txt" ));
+			ERRS_SWEEP_THRESHOLD.saveToTextFile( OUT_DIR+string("/ERRORS_SWEEP_THRESHOLD.txt" ));
+
+		} // end if doPartitioningExperiment
+	}
+
+};
+
+
+// ------------------------------------------------------
+//				Run_KF_SLAM
+// ------------------------------------------------------
+template <class IMPL>
+void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 {
 	// The EKF-SLAM class:
-//	typedef CRangeBearingKFSLAM2D  ekfslam_t;
-	typedef CRangeBearingKFSLAM    ekfslam_t;
-#define IMPLEMENT_PARTITION_EXPERIMENT
+	typedef kfslam_traits<IMPL> traits_t; // Traits for this KF implementation (2D or 3D)
+
+	typedef typename traits_t::ekfslam_t ekfslam_t;
 
 	ekfslam_t  mapping;
 
-	CConfigFile			 cfgFile( configFile );
-	std::string			 rawlogFileName;
-
-	//mapping.debugOut = &myDebugStream;
-
 	// The rawlog file:
 	// ----------------------------------------
-	rawlogFileName = cfgFile.read_string("MappingApplication","rawlog_file",std::string("log.rawlog"));
 	const unsigned int	rawlog_offset = cfgFile.read_int("MappingApplication","rawlog_offset",0);
 
 	const unsigned int SAVE_LOG_FREQUENCY= cfgFile.read_int("MappingApplication","SAVE_LOG_FREQUENCY",1);
@@ -120,8 +262,6 @@ void Run_KF_SLAM()
 #if !MRPT_HAS_WXWIDGETS
 	SHOW_3D_LIVE = false;
 #endif
-
-//	bool  FORCE_IGNORE_ODOMETRY = cfgFile.read_bool("MappingApplication","FORCE_IGNORE_ODOMETRY", false);
 
 
 	string OUT_DIR = cfgFile.read_string("MappingApplication","logOutput_dir","OUT_KF-SLAM");
@@ -139,7 +279,7 @@ void Run_KF_SLAM()
 
 	// Load the config options for mapping:
 	// ----------------------------------------
-	mapping.loadOptions( CConfigFile(configFile) );
+	mapping.loadOptions( cfgFile );
 	mapping.KF_options.dumpToConsole();
 	mapping.options.dumpToConsole();
 
@@ -157,9 +297,6 @@ void Run_KF_SLAM()
 		ASSERT_(size(GT_PATH,1)>0 && size(GT_PATH,2)==6)
 	}
 
-	// Init 3D window:
-	mrpt::gui::CDisplayWindow3DPtr win3d;
-
 	if (SHOW_3D_LIVE)
 	{
 		win3d = mrpt::gui::CDisplayWindow3D::Create("KF-SLAM live view",800,500);
@@ -168,24 +305,21 @@ void Run_KF_SLAM()
 		win3d->addTextMessage(0.01,0.93,"Black: Ground truth path",TColorf(0.8,0.8,0.8),101,MRPT_GLUT_BITMAP_HELVETICA_10);
 	}
 
-	//			INITIALIZATION
-	// ----------------------------------------
-	//mapping.initializeEmptyMap();
-
 	// The main loop:
 	// ---------------------------------------
 	CActionCollectionPtr	action;
 	CSensoryFramePtr		observations;
-	size_t			rawlogEntry = 0, step = 0;
+	size_t rawlogEntry = 0, step = 0;
 
-	typedef vector<CPose3DQuat, Eigen::aligned_allocator<CPose3DQuat> > TListCPose3DQuat;
-	TListCPose3DQuat  meanPath; // The estimated path
 
-	CPose3DQuatPDFGaussian		robotPose;
-	std::vector<CPoint3D>	LMs;
-	std::map<unsigned int,CLandmark::TLandmarkID> LM_IDs;
-	CMatrixDouble	fullCov;
-	CVectorDouble           fullState;
+	vector<TPose3D>  meanPath; // The estimated path
+	typename traits_t::posepdf_t   robotPose;
+
+	std::vector<typename traits_t::lm_t>	 LMs;
+	std::map<unsigned int,CLandmark::TLandmarkID>    LM_IDs;
+	CMatrixDouble  fullCov;
+	CVectorDouble  fullState;
+	CTicTac kftictac;
 
 	for (;;)
 	{
@@ -206,7 +340,6 @@ void Run_KF_SLAM()
 		{
 			// Process the action and observations:
 			// --------------------------------------------
-			static CTicTac kftictac;
 			kftictac.Tic();
 
 			mapping.processActionObservation(action,observations);
@@ -219,13 +352,16 @@ void Run_KF_SLAM()
 			cout << "Mean pose: " << endl << robotPose.mean << endl;
 			cout << "# of landmarks in the map: " << LMs.size() << endl;
 
+			// Get the mean robot pose as 3D:
+			const CPose3D robotPoseMean3D = CPose3D(robotPose.mean);
+
 			// Build the path:
-			meanPath.push_back( robotPose.mean );
+			meanPath.push_back( TPose3D(robotPoseMean3D) );
 
 			// Save mean pose:
 			if (!(step % SAVE_LOG_FREQUENCY))
 			{
-				const CMatrixDouble71  p= CMatrixDouble71(robotPose.mean);
+				const vector_double p = robotPose.mean.getAsVectorVal();
 				p.saveToTextFile(OUT_DIR+format("/robot_pose_%05u.txt",(unsigned int)step));
 			}
 
@@ -256,23 +392,15 @@ void Run_KF_SLAM()
 					opengl::CSetOfLinesPtr linesPath = opengl::CSetOfLines::Create();
 					linesPath->setColor(1,0,0);
 
-					double x0=0,y0=0,z0=0;
+					TPose3D init_pose;
 					if (!meanPath.empty())
-					{
-						x0 = meanPath[0].x();
-						y0 = meanPath[0].y();
-						z0 = meanPath[0].z();
-					}
+						init_pose = TPose3D(CPose3D(meanPath[0]));
 
 					int path_decim = 0;
-					for (TListCPose3DQuat::iterator it=meanPath.begin();it!=meanPath.end();++it)
+					for (vector<TPose3D>::iterator it=meanPath.begin();it!=meanPath.end();++it)
 					{
-						linesPath->appendLine(
-							x0,y0,z0,
-							it->x(), it->y(), it->z() );
-						x0=it->x();
-						y0=it->y();
-						z0=it->z();
+						linesPath->appendLine(init_pose,*it);
+						init_pose = *it;
 
 						if (++path_decim>10)
 						{
@@ -287,28 +415,27 @@ void Run_KF_SLAM()
 					// finally a big corner for the latest robot pose:
 					{
 						mrpt::opengl::CSetOfObjectsPtr xyz = mrpt::opengl::stock_objects::CornerXYZSimple(1.0,2.5);
-						xyz->setPose(CPose3D(robotPose.mean));
+						xyz->setPose(robotPoseMean3D);
 						scene3D->insert(xyz);
 					}
 
 					// The camera pointing to the current robot pose:
 					if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
 					{
-						win3d->setCameraPointingToPoint(robotPose.mean.x(),robotPose.mean.y(),robotPose.mean.z());
+						win3d->setCameraPointingToPoint(robotPoseMean3D.x(),robotPoseMean3D.y(),robotPoseMean3D.z());
 					}
-
-
 				}
 
+				// Do we have a ground truth?
+				if (size(GT_PATH,2)==6 || size(GT_PATH,2)==3)
 				{
-					// Do we have a ground truth?
+					opengl::CSetOfLinesPtr GT_path = opengl::CSetOfLines::Create();
+					GT_path->setColor(0,0,0);
+					size_t N = std::min(size(GT_PATH,1), meanPath.size() );
+
 					if (size(GT_PATH,2)==6)
 					{
-						opengl::CSetOfLinesPtr GT_path = opengl::CSetOfLines::Create();
-						GT_path->setColor(0,0,0);
-
 						double gtx0=0,gty0=0,gtz0=0;
-						size_t N = std::min(size(GT_PATH,1), meanPath.size() );
 						for (size_t i=0;i<N;i++)
 						{
 							const CPose3D  p( GT_PATH(i,0),GT_PATH(i,1),GT_PATH(i,2), GT_PATH(i,3),GT_PATH(i,4),GT_PATH(i,5) );
@@ -320,13 +447,27 @@ void Run_KF_SLAM()
 							gty0=p.y();
 							gtz0=p.z();
 						}
-						scene3D->insert( GT_path );
 					}
+					else if (size(GT_PATH,2)==3)
+					{
+						double gtx0=0,gty0=0;
+						for (size_t i=0;i<N;i++)
+						{
+							const CPose2D p( GT_PATH(i,0),GT_PATH(i,1),GT_PATH(i,2) );
+
+							GT_path->appendLine(
+								gtx0,gty0,0,
+								p.x(),p.y(),0 );
+							gtx0=p.x();
+							gty0=p.y();
+						}
+					}
+					scene3D->insert( GT_path );
 				}
 
 				// Draw latest data association:
 				{
-					const ekfslam_t::TDataAssocInfo & da = mapping.getLastDataAssociation();
+					const typename ekfslam_t::TDataAssocInfo & da = mapping.getLastDataAssociation();
 
 					mrpt::opengl::CSetOfLinesPtr lins = mrpt::opengl::CSetOfLines::Create();
 					lins->setLineWidth(1.2);
@@ -335,13 +476,16 @@ void Run_KF_SLAM()
 					{
 						const prediction_index_t idxPred = it->second;
 						// This index must match the internal list of features in the map:
-						ekfslam_t::KFArray_FEAT featMean;
+						typename ekfslam_t::KFArray_FEAT featMean;
 						mapping.getLandmarkMean(idxPred, featMean);
+
+						TPoint3D featMean3D;
+						traits_t::landmark_to_3d(featMean,featMean3D);
 
 						// Line: robot -> landmark:
 						lins->appendLine(
-							robotPose.mean.x(),robotPose.mean.y(),robotPose.mean.z(),
-							featMean[0],featMean[1],featMean[2]);
+							robotPoseMean3D.x(),robotPoseMean3D.y(),robotPoseMean3D.z(),
+							featMean3D.x,featMean3D.y,featMean3D.z);
 					}
 					scene3D->insert( lins );
 				}
@@ -414,88 +558,8 @@ void Run_KF_SLAM()
 	};	// end "while(1)"
 
 
-    // Compute the "information" between partitions:
-#ifdef IMPLEMENT_PARTITION_EXPERIMENT
-	if (mapping.options.doPartitioningExperiment)
-    {
-		// --------------------------------------------
-		// PART I:
-		//  Comparison to fixed partitioning every K obs.
-		// --------------------------------------------
-
-        // Compute the information matrix:
-        size_t i;
-        for (i=0;i<6;i++) fullCov(i,i) = max(fullCov(i,i), 1e-6);
-
-        CMatrix		H( fullCov.inv() );
-        H.saveToTextFile(OUT_DIR+string("/information_matrix_final.txt"));
-
-        // Replace by absolute values:
-        H.Abs();
-        CMatrix H2(H); H2.normalize(0,1);
-        CImage   imgF(H2, true);
-        imgF.saveToFile(OUT_DIR+string("/information_matrix_final.png"));
-
-
-        // ----------------------------------------
-        // Compute the "approximation error factor" E:
-        //  E = SUM() / SUM(ALL ELEMENTS IN MATRIX)
-        // ----------------------------------------
-        vector<vector_uint>  landmarksMembership,partsInObsSpace;
-        CMatrix  ERRS(50,3);
-
-        for (i=0;i<ERRS.getRowCount();i++)
-        {
-            size_t K;
-
-            if (i==0)
-            {
-                K=0;
-                mapping.getLastPartitionLandmarks( landmarksMembership );
-            }
-            else
-            {
-                K=i+1;
-                mapping.getLastPartitionLandmarksAsIfFixedSubmaps(i+1,landmarksMembership);
-            }
-
-            mapping.getLastPartition(partsInObsSpace);
-
-            ERRS(i,0) = (float)K;
-            ERRS(i,1) = (float)partsInObsSpace.size();
-            ERRS(i,2) = mapping.computeOffDiagonalBlocksApproximationError(landmarksMembership);
-        }
-
-
-        ERRS.saveToTextFile( OUT_DIR+string("/ERRORS.txt" ));
-        //printf("Approximation error from partition:\n"); cout << ERRS << endl;
-
-		// --------------------------------------------
-		// PART II:
-		//  Sweep partitioning threshold:
-		// --------------------------------------------
-		size_t STEPS = 50;
-        CVectorFloat	ERRS_SWEEP(STEPS),ERRS_SWEEP_THRESHOLD(STEPS);
-
-		// Compute the error for each partitioning-threshold
-        for (i=0;i<STEPS;i++)
-        {
-			float th = (1.0f*i)/(STEPS-1.0f);
-			ERRS_SWEEP_THRESHOLD[i] = th;
-			mapping.mapPartitionOptions()->partitionThreshold =  th;
-
-			mapping.reconsiderPartitionsNow();
-
-			mapping.getLastPartitionLandmarks( landmarksMembership );
-            ERRS_SWEEP[i] = mapping.computeOffDiagonalBlocksApproximationError(landmarksMembership);
-        }
-
-        ERRS_SWEEP.saveToTextFile( OUT_DIR+string("/ERRORS_SWEEP.txt" ));
-        ERRS_SWEEP_THRESHOLD.saveToTextFile( OUT_DIR+string("/ERRORS_SWEEP_THRESHOLD.txt" ));
-
-    } // end if doPartitioningExperiment
-#endif
-
+	// Partitioning experiment: Only for 6D SLAM:
+	traits_t::doPartitioningExperiment( mapping, fullCov, OUT_DIR );
 
     // Is there ground truth of landmarks positions??
     if (ground_truth_file.size() && fileExists(ground_truth_file))
@@ -524,7 +588,8 @@ void Run_KF_SLAM()
                 {
                     if ( LM_IDs[i] == GT(r,6) )
                     {
-                        ERRS.push_back( LMs[i].distance3DTo( GT(r,0),GT(r,1),GT(r,2) ) );
+                    	const CPoint3D  gtPt( GT(r,0),GT(r,1),GT(r,2) );
+                        ERRS.push_back( gtPt.distanceTo(CPoint3D(TPoint3D(LMs[i]))) );  // All these conversions are to make it work with either CPoint3D & TPoint2D
                         found = true;
                         break;
                     }
