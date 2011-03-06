@@ -48,8 +48,8 @@ namespace mrpt
 		typedef	uint64_t TLandmarkID;   //!< Unique IDs for landmarks
 		typedef uint64_t TCameraPoseID; //!< Unique IDs for camera frames (poses)
 
-		typedef std::map<TCameraPoseID,CPose3D>  TFramePosesMap;        //!< A list of camera frames (6D poses) indexed by unique IDs.
-		typedef std::vector<CPose3D>             TFramePosesVec;        //!< A list of camera frames (6D poses), which assumes indexes are unique, consecutive IDs.
+		typedef mrpt::aligned_containers<TCameraPoseID,CPose3D>::map_t  TFramePosesMap;        //!< A list of camera frames (6D poses) indexed by unique IDs.
+		typedef mrpt::aligned_containers<CPose3D>::vector_t             TFramePosesVec;        //!< A list of camera frames (6D poses), which assumes indexes are unique, consecutive IDs.
 
 		typedef std::map<TLandmarkID,TPoint3D>   TLandmarkLocationsMap; //!< A list of landmarks (3D points) indexed by unique IDs.
 		typedef std::vector<TPoint3D>            TLandmarkLocationsVec; //!< A list of landmarks (3D points), which assumes indexes are unique, consecutive IDs.
@@ -119,15 +119,6 @@ namespace mrpt
 				std::map<TLandmarkID,TLandmarkID>      *old2new_lmIDs=NULL );
 
 		};
-
-		/** Data returned by  mrpt::vision::camera_calib_ba */
-		struct VISION_IMPEXP TCamCalibBAResults
-		{
-			std::vector<mrpt::poses::CPose3DQuat,Eigen::aligned_allocator<mrpt::poses::CPose3DQuat> >  	camera_poses;
-			std::vector<mrpt::math::TPoint3D>		landmark_positions;
-		};
-
-
 
 		/** Parameters associated to a stereo system
 		  */

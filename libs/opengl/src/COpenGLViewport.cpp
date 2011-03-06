@@ -787,6 +787,8 @@ void COpenGLViewport::get3DRayForPixelCoord(
 	}
 }
 
+MRPT_TODO("Implement a setCurrentCameraFromPose() method")
+
 void COpenGLViewport::getCurrentCameraPose( mrpt::poses::CPose3D &out_cameraPose ) const
 {
 	mrpt::math::TLine3D dum;
