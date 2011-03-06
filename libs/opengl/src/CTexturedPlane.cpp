@@ -79,10 +79,10 @@ void   CTexturedPlane::render_texturedobj() const
 	MRPT_START
 
 	// Compute the exact texture coordinates:
-	m_tex_x_min = ((float)m_fill_x_left) / r_width;
-	m_tex_x_max = 1.0f-((float)m_fill_x_right) / r_width;
-	m_tex_y_min = ((float)m_fill_y_top) / r_height;
-	m_tex_y_max = 1.0f-((float)m_fill_y_bottom) / r_height;
+	m_tex_x_min = 0; // ((float)m_fill_x_left) / r_width;
+	m_tex_x_max = 1; // 1.0f-((float)m_fill_x_right) / r_width;
+	m_tex_y_min = 0; // ((float)m_fill_y_top) / r_height;
+	m_tex_y_max = 1; // 1.0f-((float)m_fill_y_bottom) / r_height;
 
 	glBegin(GL_QUADS);
 

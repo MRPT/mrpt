@@ -166,7 +166,7 @@ void  CTexturedObject::loadTextureInOpenGL() const
 		checkOpenGLError();
 
 		// when texture area is small, bilinear filter the closest mipmap
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR ); //_MIPMAP_NEAREST );
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
 		checkOpenGLError();
 
 		// when texture area is large, bilinear filter the first mipmap
@@ -191,15 +191,8 @@ void  CTexturedObject::loadTextureInOpenGL() const
 			m_textureImageAlpha = m_textureImageAlpha.scaleHalf();
 		}
 
-		int		width = m_textureImage.getWidth();
-		int		height = m_textureImage.getHeight();
-
-		r_width = round2up( width );
-		r_height = round2up( height );
-		m_fill_x_left = (r_width - width) >> 1; // div by 2;
-		m_fill_y_top = (r_height - height) >> 1; // div by 2;
-		m_fill_x_right = (r_width - width) - m_fill_x_left;
-		m_fill_y_bottom = (r_height - height) - m_fill_y_top;
+		r_width = m_textureImage.getWidth();
+		r_height = m_textureImage.getHeight();
 
         if (m_enableTransparency)
 		{
@@ -213,53 +206,60 @@ void  CTexturedObject::loadTextureInOpenGL() const
 			// Color texture:
 			if (m_enableTransparency)
 			{
+				// Color texture WITH trans.
+				// --------------------------------------
+				const GLenum pixels_format = strcmpi(m_textureImage.getChannelsOrder(),"BGR")==0 ? GL_BGRA : GL_RGBA;
+
 				data.clear();
-				data.resize( r_height*r_width*4 + 1000);
+				data.resize( r_height*r_width*4 + 512);
                 dataAligned = ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
 
-				for (int y=0;y<height;y++)
+				for (int y=0;y<r_height;y++)
 				{
-					unsigned char 	*ptrSrcCol = m_textureImage(0,y,2);
+					unsigned char 	*ptrSrcCol = m_textureImage(0,y,0);
 					unsigned char 	*ptrSrcAlfa = m_textureImageAlpha(0,y);
-					unsigned char 	*ptr = dataAligned + (m_fill_x_left)*4 + (m_fill_y_top+y)*r_width*4;
-					for (int x=0;x<width;x++)
+					unsigned char 	*ptr = dataAligned + y*r_width*4;
+					for (int x=0;x<r_width;x++)
 					{
-    					*ptr++ = *ptrSrcCol--;
-    					*ptr++ = *ptrSrcCol--;
-    					*ptr++ = *ptrSrcCol--;
+    					*ptr++ = *ptrSrcCol++;
+    					*ptr++ = *ptrSrcCol++;
+    					*ptr++ = *ptrSrcCol++;
     					*ptr++ = *ptrSrcAlfa++;
-						ptrSrcCol+=6;
 					}
 				}
-
 				// build our texture mipmaps
-				gluBuild2DMipmaps( GL_TEXTURE_2D, 4, r_width, r_height,GL_RGBA, GL_UNSIGNED_BYTE, dataAligned );
-//				glTexImage2D( GL_TEXTURE_2D, 0, 4, r_width, r_height,0,GL_RGBA, GL_UNSIGNED_BYTE, dataAligned );
+				gluBuild2DMipmaps( GL_TEXTURE_2D, 4, r_width, r_height,pixels_format, GL_UNSIGNED_BYTE, dataAligned );
 				checkOpenGLError();
 			} // End of color texture WITH trans.
 			else
 			{
-				data.clear();
-				data.resize( r_height*r_width*3+1000 );
-                dataAligned = ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
+				// Color texture WITHOUT trans.
+				// --------------------------------------
+				const GLenum pixels_format = strcmpi(m_textureImage.getChannelsOrder(),"BGR")==0 ? GL_BGR : GL_RGB;
 
-				for (int y=0;y<height;y++)
+				// Does the OpenCV img have fillings?
+				if ( (m_textureImage(0,1)-m_textureImage(0,0))!=3*r_width )
 				{
-					unsigned char 	*ptrSrcCol = m_textureImage(0,y,2);
-					unsigned char 	*ptr = dataAligned + (m_fill_x_left)*3 + (m_fill_y_top+y)*r_width*3;
-					for (int x=0;x<width;x++)
+					// Has fillings: build temporary image all continuous in memory:
+					data.clear();
+					data.resize( r_height*r_width*3+512 );
+					dataAligned = ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
+					const size_t bytesPerLine = r_width*3;
+					for (int y=0;y<r_height;y++)
 					{
-    					*ptr++ = *ptrSrcCol--;
-    					*ptr++ = *ptrSrcCol--;
-    					*ptr++ = *ptrSrcCol--;
-						ptrSrcCol+=6;
+						memcpy(dataAligned,m_textureImage(0,y,0),bytesPerLine);
+						dataAligned+=bytesPerLine;
 					}
 				}
-
-				// build our texture mipmaps
-				gluBuild2DMipmaps( GL_TEXTURE_2D, 3, r_width, r_height,GL_RGB, GL_UNSIGNED_BYTE, dataAligned );
-//				glTexImage2D( GL_TEXTURE_2D, 0, 3, r_width, r_height,0,GL_RGB, GL_UNSIGNED_BYTE, dataAligned );
+				else
+				{
+					// Simply:
+					dataAligned = m_textureImage(0,0);
+				}
+				// Build texture:
+				gluBuild2DMipmaps( GL_TEXTURE_2D, 3, r_width, r_height,pixels_format, GL_UNSIGNED_BYTE, dataAligned );
 				checkOpenGLError();
+
 			} // End of color texture WITHOUT trans.
 		}
 		else
@@ -271,12 +271,12 @@ void  CTexturedObject::loadTextureInOpenGL() const
 				data.resize( r_height*r_width*2+1000 );
                 dataAligned = ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
 
-				for (int y=0;y<height;y++)
+				for (int y=0;y<r_height;y++)
 				{
 					unsigned char 	*ptrSrcCol = m_textureImage(0,y);
 					unsigned char 	*ptrSrcAlfa = m_textureImageAlpha(0,y);
-					unsigned char 	*ptr = dataAligned + (m_fill_x_left)*2 + (m_fill_y_top+y)*r_width*2;
-					for (int x=0;x<width;x++)
+					unsigned char 	*ptr = dataAligned + y*r_width*2;
+					for (int x=0;x<r_width;x++)
 					{
     					*ptr++ = *ptrSrcCol++;
     					*ptr++ = *ptrSrcAlfa++;
@@ -285,7 +285,6 @@ void  CTexturedObject::loadTextureInOpenGL() const
 
 				// build our texture mipmaps
 				gluBuild2DMipmaps( GL_TEXTURE_2D, 2, r_width, r_height, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, dataAligned );
-//				glTexImage2D( GL_TEXTURE_2D, 0, 2, r_width, r_height,0,GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, dataAligned );
 				checkOpenGLError();
 			}// End of gray-scale texture WITH trans.
 			else
@@ -294,19 +293,16 @@ void  CTexturedObject::loadTextureInOpenGL() const
 				data.resize( r_height*r_width+1000 );
                 dataAligned = ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
 
-				for (int y=0;y<height;y++)
+				for (int y=0;y<r_height;y++)
 				{
 					unsigned char 	*ptrSrcCol = m_textureImage(0,y);
-					unsigned char 	*ptr = dataAligned + (m_fill_x_left)*1 + (m_fill_y_top+y)*r_width*1;
-					for (int x=0;x<width;x++)
-					{
+					unsigned char 	*ptr = dataAligned + y*r_width*1;
+					for (int x=0;x<r_width;x++)
     					*ptr++ = *ptrSrcCol++;
-					}
 				}
 
 				// build our texture mipmaps
 				gluBuild2DMipmaps( GL_TEXTURE_2D, 1, r_width, r_height, GL_LUMINANCE, GL_UNSIGNED_BYTE, dataAligned );
-//				glTexImage2D( GL_TEXTURE_2D, 0, 1, r_width, r_height,0,GL_LUMINANCE, GL_UNSIGNED_BYTE, dataAligned );
 				checkOpenGLError();
 			}// End of gray-scale texture WITHOUT trans.
 
