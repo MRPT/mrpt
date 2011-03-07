@@ -83,6 +83,20 @@ namespace mrpt
 					cam_params.cy() + cam_params.fy() * y/z );
 			}
 
+			//! \overload 
+			template <typename POINT>
+			inline void projectPoint_no_distortion(
+				const POINT  &in_point_wrt_cam,
+				const mrpt::utils::TCamera  &cam_params,
+				TPixelCoordf  &out_projectedPoints )
+			{
+				ASSERT_(in_point_wrt_cam.z!=0)
+				// Pinhole model:
+				out_projectedPoints.x = cam_params.cx() + cam_params.fx() * in_point_wrt_cam.x/in_point_wrt_cam.z;
+				out_projectedPoints.y = cam_params.cy() + cam_params.fy() * in_point_wrt_cam.y/in_point_wrt_cam.z;
+			}
+
+
 			/** Project a set of 3D points into a camera at an arbitrary 6D pose using its calibration matrix and distortion parameters (radial and tangential distortions projection model)
 			  * \param in_points_3D [IN] The list of 3D points in world coordinates (meters) to project.
 			  * \param cameraPose [IN] The pose of the camera in the world.
