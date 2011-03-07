@@ -208,7 +208,7 @@ void  CTexturedObject::loadTextureInOpenGL() const
 			{
 				// Color texture WITH trans.
 				// --------------------------------------
-				const GLenum pixels_format = strcmpi(m_textureImage.getChannelsOrder(),"BGR")==0 ? GL_BGRA : GL_RGBA;
+				const GLenum pixels_format = mrpt::system::os::_strcmp(m_textureImage.getChannelsOrder(),"BGR")==0 ? GL_BGRA : GL_RGBA;
 
 				data.clear();
 				data.resize( r_height*r_width*4 + 512);
@@ -235,7 +235,7 @@ void  CTexturedObject::loadTextureInOpenGL() const
 			{
 				// Color texture WITHOUT trans.
 				// --------------------------------------
-				const GLenum pixels_format = strcmpi(m_textureImage.getChannelsOrder(),"BGR")==0 ? GL_BGR : GL_RGB;
+				const GLenum pixels_format = mrpt::system::os::_strcmp(m_textureImage.getChannelsOrder(),"BGR")==0 ? GL_BGR : GL_RGB;
 
 				// Does the OpenCV img have fillings?
 				if ( (m_textureImage(0,1)-m_textureImage(0,0))!=3*r_width )
