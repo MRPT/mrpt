@@ -38,6 +38,8 @@ using namespace mrpt::vision;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 
+using mrpt::aligned_containers;
+
 // Define -> estimate the inverse of poses; Undefined -> estimate the camera poses (read the doc of mrpt::vision::bundle_adj_full)
 #define USE_INVERSE_POSES
 
@@ -76,8 +78,8 @@ double mrpt::vision::bundle_adj_full(
 	static const unsigned int ObsDim   = 2; // Obs: x y (pixels)
 
 	// Typedefs for this specific BA problem:
-	typedef JacData<FrameDof,PointDof,ObsDim>  MyJacData;
-	typedef vector<MyJacData,Eigen::aligned_allocator<MyJacData> >  MyJacDataVec;
+	typedef JacData<FrameDof,PointDof,ObsDim>        MyJacData;
+	typedef aligned_containers<MyJacData>::vector_t  MyJacDataVec;
 
 	typedef CArray<double,ObsDim>              Array_O;
 	typedef CArrayDouble<FrameDof>             Array_F;
@@ -158,10 +160,10 @@ double mrpt::vision::bundle_adj_full(
 	const size_t len_free_frames = FrameDof * num_free_frames;
 	const size_t len_free_points = PointDof * num_free_points;
 
-	vector<Matrix_FxF,Eigen::aligned_allocator<Matrix_FxF> >   U         (num_free_frames);
-	vector<Array_F,Eigen::aligned_allocator<Array_F> >         eps_frame (num_free_frames, arrF_zeros);
-	vector<Matrix_PxP,Eigen::aligned_allocator<Matrix_PxP> >   V         (num_free_points);
-	vector<Array_P,Eigen::aligned_allocator<Array_P> >         eps_point (num_free_points, arrP_zeros);
+	aligned_containers<Matrix_FxF>::vector_t    U         (num_free_frames);
+	aligned_containers<Array_F>::vector_t       eps_frame (num_free_frames, arrF_zeros);
+	aligned_containers<Matrix_PxP>::vector_t    V         (num_free_points);
+	aligned_containers<Array_P>::vector_t       eps_point (num_free_points, arrP_zeros);
 
 	profiler.enter("calcUVeps");
 	ba_calcUVeps(observations,residual_vec,jac_data_vec, U,eps_frame,V,eps_point, num_fix_frames, num_fix_points );
@@ -212,8 +214,8 @@ double mrpt::vision::bundle_adj_full(
 			I_muFrame.unit(FrameDof,mu);
 			I_muPoint.unit(PointDof,mu);
 
-			vector<Matrix_FxF,Eigen::aligned_allocator<Matrix_FxF> >   U_star(num_free_frames, I_muFrame);
-			vector<Matrix_PxP,Eigen::aligned_allocator<Matrix_PxP> >   V_inv (num_free_points);
+			aligned_containers<Matrix_FxF>::vector_t   U_star(num_free_frames, I_muFrame);
+			aligned_containers<Matrix_PxP>::vector_t   V_inv (num_free_points);
 
 			for (size_t i=0; i<U_star.size(); ++i)
 				U_star[i] += U[i];
