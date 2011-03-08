@@ -330,6 +330,7 @@ namespace mrpt
 			  *     ...
 			  *   \endcode
 			  *
+			  * \note Only the upper triangular part of the input matrix is accessed.
 			  * \note This class was initially adapted from "robotvision", by Hauke Strasdat, Steven Lovegrove and Andrew J. Davison. See http://www.openslam.org/robotvision.html
 			  * \note This class designed to be "uncopiable".
 			  * \sa The main class: CSparseMatrix
@@ -344,6 +345,7 @@ namespace mrpt
 			public:
 				/** Constructor from a square definite-positive sparse matrix A, which can be use to solve Ax=b
 				  *   The actual Cholesky decomposition takes places in this constructor.
+				  *  \note Only the upper triangular part of the matrix is accessed.
 				  *  \exception std::runtime_error On non-square input matrix.
 				  *  \exception mrpt::math::CExceptionNotDefPos On non-definite-positive matrix as input.
 				  */

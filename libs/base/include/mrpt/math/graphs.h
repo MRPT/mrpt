@@ -201,6 +201,22 @@ namespace mrpt
 				}
 			}
 
+			/** Just like \a getAdjacencyMatrix but return only the adjacency for those node_ids in the set \a onlyForTheseNodes 
+			  *  (both endings nodes of an edge must be within the set for it to be returned) */
+			template <class MAP_NODEID_SET_NODEIDS,class SET_NODEIDS>
+			void getAdjacencyMatrix( MAP_NODEID_SET_NODEIDS  &outAdjacency, const SET_NODEIDS &onlyForTheseNodes ) const
+			{
+				outAdjacency.clear();
+				const typename SET_NODEIDS::const_iterator setEnd = onlyForTheseNodes.end();
+				for (typename edges_map_t::const_iterator it=edges.begin();it!=edges.end();++it)
+				{
+					if (onlyForTheseNodes.find(it->first.first)==setEnd || onlyForTheseNodes.find(it->first.second)==setEnd)
+						continue;
+					outAdjacency[it->first.first].insert(it->first.second);
+					outAdjacency[it->first.second].insert(it->first.first);
+				}
+			}
+
 			/** @} */  // end of edge/nodes utilities
 
 		}; // end class CDirectedGraph
