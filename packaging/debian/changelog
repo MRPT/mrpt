@@ -1,5 +1,10 @@
-TODO (Closes: #617537)
+mrpt (1:0.9.4svn2453-1) unstable; urgency=low
 
+  * New version of upstream sources.
+  * Fixes OOM FTBFS errors for MIPS (Closes: #617537).
+  * Added optional build-dependency on doxygen-latex (Closes: #616269).
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Wed, 09 Mar 2011 19:30:44 +0100
 
 mrpt (1:0.9.4-1) unstable; urgency=low
 
