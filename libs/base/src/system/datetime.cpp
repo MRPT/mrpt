@@ -84,8 +84,8 @@ double mrpt::system::timestampTotime_t( const mrpt::system::TTimeStamp  &t )
 }
 
 /* Jerome Monceaux 2011/03/08: bilock@gmail.com
- * comment this include because it is not find 
- * under snow leopard and because the 
+ * comment this include because it is not find
+ * under snow leopard and because the
  * mrpt::system::getCurrentTime
  * is not implemented for now under apple
  */
@@ -107,8 +107,8 @@ mrpt::system::TTimeStamp  mrpt::system::getCurrentTime( )
 #elif defined(MRPT_OS_APPLE)
 
 	/* Jerome Monceaux 2011/03/08: bilock@gmail.com
-	 * comment the next line because it does not compile 
-	 * under snow osx and an exception was thrown systematically 
+	 * comment the next line because it does not compile
+	 * under snow osx and an exception was thrown systematically
 	 */
 	struct timeval tv;
 	timespec  tim;
@@ -120,7 +120,7 @@ mrpt::system::TTimeStamp  mrpt::system::getCurrentTime( )
 	return time_tToTimestamp( tim.tv_sec ) + tim.tv_nsec/100;
 #else
     timespec  tim;
-    clock_gettime(CLOCK_MONOTONIC, &tim);
+    clock_gettime(CLOCK_REALTIME, &tim);
 	return time_tToTimestamp( tim.tv_sec ) + tim.tv_nsec/100;
 #endif
 }
@@ -213,7 +213,7 @@ mrpt::system::TTimeStamp  mrpt::system::getCurrentLocalTime()
     THROW_EXCEPTION("to do")
 #else
     timespec  tim;
-    clock_gettime(CLOCK_MONOTONIC, &tim);
+    clock_gettime(CLOCK_REALTIME, &tim);
 
 	time_t  tt;
 	struct tm * timeinfo;
