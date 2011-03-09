@@ -83,9 +83,16 @@ double mrpt::system::timestampTotime_t( const mrpt::system::TTimeStamp  &t )
     return double(t - ((uint64_t)116444736*1000000000)) / 10000000.0;
 }
 
-
+/* Jerome Monceaux 2011/03/08: bilock@gmail.com
+ * comment this include because it is not find 
+ * under snow leopard and because the 
+ * mrpt::system::getCurrentTime
+ * is not implemented for now under apple
+ */
 #if defined(MRPT_OS_APPLE)
-#	include <CFBase.h> // for CFAbsoluteTimeGetCurrent
+//#	include <CFBase.h> // for CFAbsoluteTimeGetCurrent
+# include <sys/timeb.h>
+# include <sys/types.h>
 #endif
 
 /*---------------------------------------------------------------
@@ -98,12 +105,22 @@ mrpt::system::TTimeStamp  mrpt::system::getCurrentTime( )
 	GetSystemTimeAsFileTime(&t);
 	return (((uint64_t)t.dwHighDateTime) << 32) | ((uint64_t)t.dwLowDateTime);
 #elif defined(MRPT_OS_APPLE)
-	CFAbsoluteTime t = CFAbsoluteTimeGetCurrent();
-	// JL: kCFAbsoluteTimeIntervalSince1970  ??
-    THROW_EXCEPTION("to do")
+
+	/* Jerome Monceaux 2011/03/08: bilock@gmail.com
+	 * comment the next line because it does not compile 
+	 * under snow osx and an exception was thrown systematically 
+	 */
+	struct timeval tv;
+	timespec  tim;
+
+	gettimeofday(&tv, NULL);
+	tim.tv_sec = tv.tv_sec;
+	tim.tv_nsec = tv.tv_usec*1000;
+
+	return time_tToTimestamp( tim.tv_sec ) + tim.tv_nsec/100;
 #else
     timespec  tim;
-    clock_gettime((clockid_t)0, &tim);
+    clock_gettime(CLOCK_MONOTONIC, &tim);
 	return time_tToTimestamp( tim.tv_sec ) + tim.tv_nsec/100;
 #endif
 }
@@ -196,7 +213,7 @@ mrpt::system::TTimeStamp  mrpt::system::getCurrentLocalTime()
     THROW_EXCEPTION("to do")
 #else
     timespec  tim;
-    clock_gettime((clockid_t)0, &tim);
+    clock_gettime(CLOCK_MONOTONIC, &tim);
 
 	time_t  tt;
 	struct tm * timeinfo;

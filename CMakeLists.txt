@@ -1122,7 +1122,11 @@ ELSE(MSVC OR BORLAND)
 
 	# In Linux, link against librt
 	IF(UNIX)
-		APPEND_MRPT_LIBS(rt)
+		# Jerome Monceaux : 2011/03/08
+		# exclude rt from apple osx linking
+		IF(NOT APPLE)
+			APPEND_MRPT_LIBS(rt)
+		ENDIF(NOT APPLE)
 	ENDIF(UNIX)
 	
 	# In Windows, link against ole32 & uuid & oleaut32, etc...
@@ -1416,6 +1420,8 @@ endif(MSVC AND NOT MSVC6 AND NOT MSVC7)
 
 CHECK_INCLUDE_FILE("alloca.h" HAVE_ALLOCA_H)
 CHECK_INCLUDE_FILE("linux/serial.h" HAVE_LINUX_SERIAL_H)
+CHECK_INCLUDE_FILE("malloc.h" HAVE_MALLOC_H)
+CHECK_INCLUDE_FILE("malloc/malloc.h" HAVE_MALLOC_MALLOC_H)
 
 IF(HAVE_ALLOCA_FUNC OR HAVE_ALLOCA_H)
 	SET(HAVE_ALLOCA 1)

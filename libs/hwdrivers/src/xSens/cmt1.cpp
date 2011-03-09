@@ -52,12 +52,24 @@
 
 #include "cmt1.h"
 #include <errno.h>
+
+#include <mrpt/config.h> // For HAVE_MALLOC_H
+
 #ifndef _WIN32
 #	include <unistd.h>		// close
 #	include <sys/ioctl.h>	// ioctl
 #	include <fcntl.h>		// open, O_RDWR
 #	include <string.h>		// strcpy
-#	include <malloc.h>		// malloc
+
+/* Jerome Monceaux : bilock@gmail.com
+ * Add a specific case for apple
+ */
+#ifdef HAVE_MALLOC_H
+# include <malloc.h>
+#elif defined(HAVE_MALLOC_MALLOC_H)
+# include <malloc/malloc.h>
+#endif
+
 #	include <stdarg.h>		// va_start, etc...
 #   include <sys/param.h>
 // We have to redefine PATH_MAX from 4096 to CMT_MAX_FILENAME_LENGTH to mainain compatibility

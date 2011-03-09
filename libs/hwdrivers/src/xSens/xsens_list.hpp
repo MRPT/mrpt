@@ -30,8 +30,17 @@
 #ifdef _XSENS_LIST_IO
 #	include <iostream>
 #endif
+
+/* Jerome Monceaux : bilock@gmail.com
+ * Add a specific case for apple
+ */
+#ifdef __APPLE__
+# include <malloc/malloc.h>
+#else
+# include <malloc.h>
+#endif
+
 #include <stdlib.h>
-#include <malloc.h>
 
 namespace xsens {
 

@@ -224,7 +224,13 @@ unsigned long mrpt::system::getCurrentThreadId() MRPT_NO_THROWS
 {
 #ifdef MRPT_OS_WINDOWS
 	return static_cast<unsigned long>(GetCurrentThreadId());
-#elif MRPT_OS_APPLE
+
+/* Jerome Monceaux 2011/03/08: bilock@gmail.com
+ * The next precompilation directive didn't compile under osx
+ * added defined(MRPT_OS_APPLE) solved the probleme
+ */
+//#elif MRPT_OS_APPLE
+#elif defined(MRPT_OS_APPLE)
 	return reinterpret_cast<unsigned long>(pthread_self());
 #else
 	return pthread_self();

@@ -62,9 +62,24 @@ uint32_t getTimeOfDay(tm* date_, time_t* secs_)
 
 	// 86400 = 24*60*60 = secs in a day, this gives us the seconds since midnight
 	return (1000 * ((uint32_t) tp.time % XSENS_SEC_PER_DAY)) + tp.millitm;
+	
+/* Jerome Monceaux : 2011/03/08
+ * Add a special case for apple 
+ * because librt is not available
+ * so clock_gettime as well
+ */
 #else
+# ifdef __APPLE__
+	struct timeval tv;
+ 	timespec  tp;
+ 
+  gettimeofday(&tv, NULL);
+  tp.tv_sec = tv.tv_sec;
+  tp.tv_nsec = tv.tv_usec*1000;
+# else
 	timespec tp;
 	clock_gettime(CLOCK_REALTIME, &tp); // compile with -lrt
+# endif
 
 	if (date_ != NULL)
 		localtime_r(&tp.tv_sec,date_);

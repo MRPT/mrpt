@@ -14,8 +14,18 @@
 #ifndef KM_UTILS_H__
 #define KM_UTILS_H__
 
+#include <mrpt/config.h> // For HAVE_MALLOC_H
+
 // Includes
-#include <malloc.h>
+/* Jerome Monceaux : bilock@gmail.com
+ * Add a specific case for apple
+ */
+#ifdef HAVE_MALLOC_H
+# include <malloc.h>
+#elif defined(HAVE_MALLOC_MALLOC_H)
+# include <malloc/malloc.h>
+#endif
+
 #include <memory.h>
 #include <cstdlib>
 

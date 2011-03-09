@@ -31,6 +31,11 @@
 
 #include <wx/app.h>
 
+/* Jerome Monceaux : 2011/03/08
+ * Include <string> needed under snow leopard
+ */
+#include <string>
+
 class slamdemoFrame;
 
 class slamdemoApp : public wxApp

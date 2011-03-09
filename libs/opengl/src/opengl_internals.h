@@ -47,9 +47,20 @@
 	#endif	// MRPT_OS_WINDOWS
 
 	#include <GL/glut.h>
+
+	/* Jerome Monceaux : bilock@gmail.com
+	 * Add inclusion of otherlibs/freeglut/GL/glut.h
+	 * because GLUT_INIT_STATE is detected as undefined 
+	 * under osx
+	 */
+	#ifdef __APPLE__
+		#include <otherlibs/freeglut/GL/freeglut_std.h>
+	#endif
+
 	#ifdef HAVE_FREEGLUT_EXT_H
 		#include <GL/freeglut_ext.h>
 	#endif
+
 
 	// gl-ext
 	#ifdef MRPT_OS_WINDOWS
