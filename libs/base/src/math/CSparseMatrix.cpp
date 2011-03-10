@@ -236,7 +236,7 @@ void CSparseMatrix::cs2dense(const cs& SM, CMatrixDouble &d_M)
 	d_M.zeros(SM.m,SM.n);
 	if (SM.nz>=0)  // isTriplet ??
 	{	// It's in triplet form.
-		for (int idx=0;idx<SM.nzmax; ++idx)
+		for (int idx=0;idx<SM.nz; ++idx)
 			d_M(SM.i[idx],SM.p[idx]) += SM.x[idx];  // += since the convention is that duplicate (i,j) entries add to each other.
 	}
 	else
