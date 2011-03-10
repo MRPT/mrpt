@@ -329,6 +329,11 @@ namespace mrpt
 			inline const_iterator begin() const { return m_feats.begin(); }
 			inline const_iterator end() const { return m_feats.end(); }
 
+			inline reverse_iterator rbegin() { return m_feats.rbegin(); }
+			inline reverse_iterator rend() { return m_feats.rend(); }
+			inline const_reverse_iterator rbegin() const { return m_feats.rbegin(); }
+			inline const_reverse_iterator rend() const { return m_feats.rend(); }
+
 			inline iterator erase(const iterator it)  { mark_kdtree_as_outdated(); return m_feats.erase(it); }
 
 			inline bool empty() const  { return m_feats.empty(); }

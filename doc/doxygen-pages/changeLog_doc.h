@@ -82,6 +82,7 @@
 		- [mrpt-slam] mrpt::slam::CICP has a new option: skip_cov_calculation that can save some time in some cases.
 		- [mrpt-vision] mrpt::slam::CLandmarksMap::simulateRangeBearingReadings() now also simulates spurious readings.
 		- [mrpt-vision] mrpt::slam::CLandmarksMap now has new fields in the insertionOptions and likelihoodOptions to allow users control the exact parameters of SIFT detectors/descriptors.
+		- [mrpt-vision] Added missing rbegin() and rend() methods to mrpt::vision::CFeatureList 
 	- Changes in examples:
 		- hokuyo_laser_test. Now it's possible to choose between USB and Ethernet connection.
 	- New examples:
