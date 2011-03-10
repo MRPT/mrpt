@@ -41,16 +41,6 @@
 		- Support for Stanford's PLY file format in SceneViewer3D. See http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
 		- <a href="http://www.mrpt.org/Application:2d-slam-demo" >2d-slam-demo</a> can now simulate spurious readings.
 		- ReactiveNavigationDemo: New checkbox to enable generating navigation logs, viewable with navlog-viewer.
-	- New classes:
-		- mrpt::math::ModelSearch: A RANSAC + Genetic model fitter (by Zoltan Gaal)
-		- mrpt::slam::CSinCosLookUpTableFor2DScans: A cache of sin/cos values. It's used in points maps and now inserting laser scans in a point cloud is ~3 times faster.
-		- mrpt::opengl::CTextMessageCapable: A refactoring of the capability to display text messages on opengl views.
-		- mrpt::utils::PLY_Importer & mrpt::utils::PLY_Exporter: Support for Stanford's PLY file format in different 3D point cloud classes. See also: http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
-		- mrpt::hwdrivers::CIbeoLuxETH a driver for Ibeo Lux laser scanners through Ethernet. Contributed by Jan Girlich, University of Hamburg.
-		- Support for "reflectivity" maps and observations:
-			- [mrpt-obs] mrpt::slam::CObservationReflectivity
-			- [mrpt-maps] mrpt::slam::CReflectivityGridMap2D
-		- mrpt::slam::CLogOddsGridMap2D, a new class due to a refactoring of mrpt::slam::COccupancyGridMap2D.		
 	- MRPT libraries or "modules":
 		- mrpt-detectors is no longer marked as "experimental".
 		- mrpt-monoslam is no longer shown in the graph of libraries since it's unmaintained.
@@ -63,24 +53,35 @@
 		- Fixed build errors against latest changes in eigen3-beta4 (before their release version).
 		- MSVC 2010: MRPT now uses standard "stdint.h" if provided by the compiler, instead of pstdint.h
 		- OSX: Fixed all build errors (Thanks to Jérôme Monceaux, http://www.mrpt.org/node/618 )
+	- New classes:
+		- [mrpt-base] mrpt::math::ModelSearch: A RANSAC + Genetic model fitter (by Zoltan Gaal)
+		- [mrpt-base] mrpt::utils::PLY_Importer & mrpt::utils::PLY_Exporter: Support for Stanford's PLY file format in different 3D point cloud classes. See also: http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
+		- [mrpt-obs] mrpt::slam::CSinCosLookUpTableFor2DScans: A cache of sin/cos values. It's used in points maps and now inserting laser scans in a point cloud is ~3 times faster.
+		- [mrpt-opengl] mrpt::opengl::CTextMessageCapable: A refactoring of the capability to display text messages on opengl views.
+		- [mrpt-hwdrivers] mrpt::hwdrivers::CIbeoLuxETH a driver for Ibeo Lux laser scanners through Ethernet. Contributed by Jan Girlich, University of Hamburg.
+		- Support for "reflectivity" maps and observations:
+			- [mrpt-obs] mrpt::slam::CObservationReflectivity
+			- [mrpt-maps] mrpt::slam::CReflectivityGridMap2D
+		- [mrpt-maps] mrpt::slam::CLogOddsGridMap2D, a new class due to a refactoring of mrpt::slam::COccupancyGridMap2D.		
 	- Changes in classes:
-		- mrpt::hwdrivers::CKinect
+		- [mrpt-base] mrpt::poses::CPose3D was too strict in checking that the rotation matrix is orthogonal: admisible threshold is now 1 (plus/minus)3e-3.
+		- [mrpt-base] New method: mrpt::utils::CThreadSafeQueue::get_lastest_purge_old()
+		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect changes:
 			- mrpt::hwdrivers::CKinect::setVideoChannel(): New method (and .ini parameter) for switching between the RGB and IR channels for the intensity images.
 			- The posibility of grabbing the IR channel is also now available in mrpt::hwdrivers::prepareVideoSourceFromUserSelection() , the camera-calib application, etc...
 			- libfreenect is now also supported in Windows. Read http://www.mrpt.org/Kinect_and_MRPT
 			- Improved robustness and efficiency in grabbing.
-		- mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage now uses by default a LUT to speed up (~10%) the conversion of range images to 3D point clouds in Kinect.
-		- mrpt::opengl::COpenGLViewport now has a special "image mode" which makes very easy to render images to opengl windows efficiently. See the example "opengl_video_viewport_demo".
-		- Improvement in Kinect Linux driver (libfreenect), avoiding intensive usage of critical sections (Thanks, "Gonzales" - see: http://www.mrpt.org/node/491 )
-		- Kinect: Embedded libfreenect library updated to latest GIT revision (12/DEC/2010).
-		- mrpt::hwdrivers::CHokuyoURG now support ethernet connection (tested in HOKUYO UXM series)[JRRS].
-		- mrpt::slam::CICP has a new option: skip_cov_calculation that can save some time in some cases.
-		- mrpt::poses::CPose3D was too strict in checking that the rotation matrix is orthogonal: admisible threshold is now 1 (plus/minus)3e-3.
-		- mrpt::slam::CPointsMaps: Inserting 2D laser scans is now ~3 times faster (thanks to mrpt::slam::CSinCosLookUpTableFor2DScans).
-		- mrpt::gui::CDisplayWindow3D now emits a new event. See mrpt::gui::mrptEvent3DWindowGrabImageFile
-		- mrpt::slam::CLandmarksMap::simulateRangeBearingReadings() now also simulates spurious readings.
-		- [mrpt-vision] mrpt::slam::CLandmarksMap now has new fields in the insertionOptions and likelihoodOptions to allow users control the exact parameters of SIFT detectors/descriptors.
+		- [mrpt-hwdrivers] Improvement in Kinect Linux driver (libfreenect), avoiding intensive usage of critical sections (Thanks, "Gonzales" - see: http://www.mrpt.org/node/491 )
+		- [mrpt-hwdrivers] Kinect: Embedded libfreenect library updated to latest GIT revision (12/DEC/2010).
+		- [mrpt-hwdrivers] mrpt::hwdrivers::CHokuyoURG now support ethernet connection (tested in HOKUYO UXM series)[JRRS].
+		- [mrpt-gui] mrpt::gui::CDisplayWindow3D now emits a new event. See mrpt::gui::mrptEvent3DWindowGrabImageFile
+		- [mrpt-maps] mrpt::slam::CPointsMaps: Inserting 2D laser scans is now ~3 times faster (thanks to mrpt::slam::CSinCosLookUpTableFor2DScans).
+		- [mrpt-obs] mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage now uses by default a LUT to speed up (~10%) the conversion of range images to 3D point clouds in Kinect.
+		- [mrpt-opengl] mrpt::opengl::COpenGLViewport now has a special "image mode" which makes very easy to render images to opengl windows efficiently. See the example "opengl_video_viewport_demo".
 		- [mrpt-opengl] mrpt::opengl::CTexturedObject (+derived classes) now are more efficient creating OpenGL's texture mipmaps.
+		- [mrpt-slam] mrpt::slam::CICP has a new option: skip_cov_calculation that can save some time in some cases.
+		- [mrpt-vision] mrpt::slam::CLandmarksMap::simulateRangeBearingReadings() now also simulates spurious readings.
+		- [mrpt-vision] mrpt::slam::CLandmarksMap now has new fields in the insertionOptions and likelihoodOptions to allow users control the exact parameters of SIFT detectors/descriptors.
 	- Changes in examples:
 		- hokuyo_laser_test. Now it's possible to choose between USB and Ethernet connection.
 	- New examples:
