@@ -205,8 +205,23 @@ int WxSubsystem::CWXMainFrame::notifyWindowCreation()
 
 int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
 {
-	CCriticalSectionLocker	lock(&cs_windowCount);
-    return --m_windowCount;
+	int ret;
+	{
+		CCriticalSectionLocker	lock(&cs_windowCount);
+		ret = --m_windowCount;
+	}
+
+	if (ret==0)
+	{
+		// That was the last window... we should close the wx subsystem:
+		if (oneInstance)
+		{
+			CWXMainFrame * me = (CWXMainFrame*)(oneInstance); // cast away the "volatile".
+			me->Close();
+		}
+	}
+
+	return ret;
 }
 
 /** Thread-safe method to return the next pending request, or NULL if there is none (After usage, FREE the memory!)
@@ -784,7 +799,7 @@ int CDisplayWindow_WXAPP::OnExit()
     wxApp::OnExit();
     CleanUp();
 
-	WxSubsystem::GetWxMainThreadInstance().m_wxMainThreadId.clear();
+	//WxSubsystem::GetWxMainThreadInstance().m_wxMainThreadId.clear(); // Moved to wxMainThread() 
 
     return 0;
 }
@@ -794,44 +809,40 @@ int CDisplayWindow_WXAPP::OnExit()
   */
 void WxSubsystem::waitWxShutdownsIfNoWindows()
 {
-	// Sad JL says: Couldn't fint a better solution :-(
-	// Perhaps this is enough, even if not the optimal solution, it leaves time to the wx thread to exit:
-	mrpt::system::sleep(50);
+	// Just let know a global object that, at its destruction, it must  ....
+	// Any open windows?
+	int nOpenWnds;
+	{
+		CCriticalSectionLocker	locker(&CWXMainFrame::cs_windowCount);
+		nOpenWnds = CWXMainFrame::m_windowCount;
+	}
 
-//	// Just let know a global object that, at its destruction, it must  ....
-//	// Any open windows?
-//	int nOpenWnds;
-//	{
-//		CCriticalSectionLocker	locker(&CWXMainFrame::cs_windowCount);
-//		nOpenWnds = CWXMainFrame::m_windowCount;
-//	}
-//
-//    if (!nOpenWnds && WxSubsystem::isConsoleApp)
-//    {
-//		cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Waiting for WxWidgets thread to shutdown...\n";
-//
-//    	// Then we must be shutting down in the wx thread (we are in the main MRPT application thread)...
-//    	// Wait until wx is safely shut down:
-//    	bool done=false;
-//		int maxTimeout =
-//#ifdef _DEBUG
-//			3000;
-//#else
-//			500;
-//#endif
-//    	while (!done && --maxTimeout >0)
-//    	{
-//    		system::sleep(10);
-//			WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId.enter();
-//			done = WxSubsystem::GetWxMainThreadInstance().m_wxMainThreadId.isClear();
-//			WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId.leave();
-//    	}
-//
-//    	if (maxTimeout<=0)
-//    	{
-//    		cerr << "[WxSubsystem::waitWxShutdownsIfNoWindows] Timeout waiting for WxWidgets thread to shutdown!" << endl;
-//    	}
-//    }
+    if (!nOpenWnds && WxSubsystem::isConsoleApp)
+    {
+		//cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Waiting for WxWidgets thread to shutdown...\n";
+
+    	// Then we must be shutting down in the wx thread (we are in the main MRPT application thread)...
+    	// Wait until wx is safely shut down:
+    	bool done=false;
+		int maxTimeout =
+#ifdef _DEBUG
+			3000;
+#else
+			500;
+#endif
+    	while (!done && --maxTimeout >0)
+    	{
+    		system::sleep(10);
+			WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId.enter();
+			done = WxSubsystem::GetWxMainThreadInstance().m_wxMainThreadId.isClear();
+			WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId.leave();
+    	}
+
+    	if (maxTimeout<=0)
+    	{
+    		cerr << "[WxSubsystem::waitWxShutdownsIfNoWindows] Timeout waiting for WxWidgets thread to shutdown!" << endl;
+    	}
+    }
 }
 
 wxAppConsole *mrpt_wxCreateApp()
@@ -868,9 +879,14 @@ int mrpt_wxEntryReal(int& argc, char **argv)
 
 		// app execution
 		int ret = wxTheApp->OnRun();
-		wxTheApp->OnExit();  // This replaces the above callOnExit class
 
-		wxEntryCleanup();
+		{
+			wxLogNull logNo;  // Skip any warning in this scope.
+
+			wxTheApp->OnExit();  // This replaces the above callOnExit class
+			wxEntryCleanup();
+		}
+
 		return ret;
 	}
 	catch(...)
@@ -912,6 +928,15 @@ void WxSubsystem::wxMainThread()
 		// JLBC OCT2008: wxWidgets little hack to enable console/gui mixed applications:
 		wxApp::SetInitializerFunction( (wxAppInitializerFunction) mrpt_wxCreateApp );
 		mrpt_wxEntryReal(argc,argv);
+
+
+		free(argv[0]);
+		delete[]argv;
+
+	    //cout << "[wxMainThread] Finished" << endl;
+
+		// Now this thread is ready. The main thread is free to end now:
+		WxSubsystem::GetWxMainThreadInstance().m_wxMainThreadId.clear();
 	}
 	else
 	{
@@ -927,12 +952,10 @@ void WxSubsystem::wxMainThread()
 		// We are ready!!
 		//cout << "[wxMainThread] Signaling semaphore." << endl;
 		WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.release();
+
+		free(argv[0]);
+		delete[]argv;
 	}
-
-    //cout << "[wxMainThread] Finished" << endl;
-
-    free(argv[0]);
-    delete[]argv;
 
 	MRPT_END;
 }
