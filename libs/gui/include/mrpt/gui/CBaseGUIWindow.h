@@ -90,6 +90,7 @@ namespace mrpt
 			volatile mrptKeyModifier  m_keyPushedModifier;
 
 			void createWxWindow(unsigned int initialWidth, unsigned int initialHeight); //!< Must be called by child classes just within the constructor.
+			void destroyWxWindow(); //!< Must be called by child classes in their destructors. The code cannot be put into this class' destructor.
 
 		public:
 			void * getWxObject() { return m_hwnd.get(); } //!< Read-only access to the wxDialog object.

@@ -337,7 +337,7 @@ CDisplayWindow::CDisplayWindow( const std::string &windowCaption, unsigned int i
  ---------------------------------------------------------------*/
 CDisplayWindow::~CDisplayWindow( )
 {
-	// All done in base class.
+	CBaseGUIWindow::destroyWxWindow();
 }
 
 /** Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) */

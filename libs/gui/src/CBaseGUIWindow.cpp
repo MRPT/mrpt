@@ -113,6 +113,13 @@ void CBaseGUIWindow::createWxWindow(unsigned int initialWidth, unsigned int init
  ---------------------------------------------------------------*/
 CBaseGUIWindow::~CBaseGUIWindow()
 {
+}
+
+/*---------------------------------------------------------------
+				destroyWxWindow
+ ---------------------------------------------------------------*/
+void CBaseGUIWindow::destroyWxWindow()
+{
 	MRPT_START
 #if MRPT_HAS_WXWIDGETS
     // Send close request:
@@ -143,7 +150,6 @@ CBaseGUIWindow::~CBaseGUIWindow()
 			cerr << "[CBaseGUIWindow::dtor] Timeout waiting window destruction." << endl;
 		}
     }
-
 	WxSubsystem::waitWxShutdownsIfNoWindows();
 #endif
 	MRPT_END

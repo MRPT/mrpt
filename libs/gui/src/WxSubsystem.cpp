@@ -216,8 +216,11 @@ int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
 		// That was the last window... we should close the wx subsystem:
 		if (oneInstance)
 		{
-			CWXMainFrame * me = (CWXMainFrame*)(oneInstance); // cast away the "volatile".
-			me->Close();
+//			CWXMainFrame * me = (CWXMainFrame*)(oneInstance); // cast away the "volatile".
+//			me->Close();
+#ifdef WXSUBSYSTEM_VERBOSE
+	cout << "[CWXMainFrame::notifyWindowDestruction] numWindows=0. me->Close() called." << endl;
+#endif
 		}
 	}
 
@@ -794,12 +797,14 @@ int CDisplayWindow_WXAPP::OnExit()
 {
 	CCriticalSectionLocker	lock(& WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId );
 
-    //cout << "[wxApp::OnExit] wxApplication OnExit called." << endl;
+#ifdef WXSUBSYSTEM_VERBOSE
+    cout << "[wxApp::OnExit] wxApplication OnExit called." << endl;
+#endif
 
     wxApp::OnExit();
     CleanUp();
 
-	//WxSubsystem::GetWxMainThreadInstance().m_wxMainThreadId.clear(); // Moved to wxMainThread() 
+	//WxSubsystem::GetWxMainThreadInstance().m_wxMainThreadId.clear(); // Moved to wxMainThread()
 
     return 0;
 }
@@ -809,6 +814,13 @@ int CDisplayWindow_WXAPP::OnExit()
   */
 void WxSubsystem::waitWxShutdownsIfNoWindows()
 {
+#if 1
+	#ifdef WXSUBSYSTEM_VERBOSE
+		cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Doing a quick sleep() and returning.\n";
+	#endif
+	mrpt::system::sleep(50);
+	return;
+#else
 	// Just let know a global object that, at its destruction, it must  ....
 	// Any open windows?
 	int nOpenWnds;
@@ -819,7 +831,9 @@ void WxSubsystem::waitWxShutdownsIfNoWindows()
 
     if (!nOpenWnds && WxSubsystem::isConsoleApp)
     {
-		//cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Waiting for WxWidgets thread to shutdown...\n";
+#ifdef WXSUBSYSTEM_VERBOSE
+		cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Waiting for WxWidgets thread to shutdown...\n";
+#endif
 
     	// Then we must be shutting down in the wx thread (we are in the main MRPT application thread)...
     	// Wait until wx is safely shut down:
@@ -843,6 +857,7 @@ void WxSubsystem::waitWxShutdownsIfNoWindows()
     		cerr << "[WxSubsystem::waitWxShutdownsIfNoWindows] Timeout waiting for WxWidgets thread to shutdown!" << endl;
     	}
     }
+#endif
 }
 
 wxAppConsole *mrpt_wxCreateApp()
@@ -914,7 +929,9 @@ void WxSubsystem::wxMainThread()
     argv[0]=strdup("./MRPT");
     argv[1]=NULL;
 
-    //cout << "[wxMainThread] Starting..." << endl;
+#ifdef WXSUBSYSTEM_VERBOSE
+    cout << "[wxMainThread] Starting..." << endl;
+#endif
 
 	// Are we in a console or wxGUI application????
 	wxAppConsole *app_gui = wxApp::GetInstance();
@@ -922,7 +939,9 @@ void WxSubsystem::wxMainThread()
 	{
 		// We are NOT in a wx application (it's a console program)
 		// ---------------------------------------------------------
-		//cout << "[wxMainThread] I am in a console app" << endl;
+#ifdef WXSUBSYSTEM_VERBOSE
+		cout << "[wxMainThread] I am in a console app" << endl;
+#endif
 		//  Start a new wx application object:
 
 		// JLBC OCT2008: wxWidgets little hack to enable console/gui mixed applications:
@@ -930,10 +949,12 @@ void WxSubsystem::wxMainThread()
 		mrpt_wxEntryReal(argc,argv);
 
 
-		free(argv[0]);
-		delete[]argv;
+//		free(argv[0]);
+//		delete[]argv;
 
-	    //cout << "[wxMainThread] Finished" << endl;
+#ifdef WXSUBSYSTEM_VERBOSE
+	    cout << "[wxMainThread] Finished" << endl;
+#endif
 
 		// Now this thread is ready. The main thread is free to end now:
 		WxSubsystem::GetWxMainThreadInstance().m_wxMainThreadId.clear();
@@ -942,19 +963,22 @@ void WxSubsystem::wxMainThread()
 	{
 		// We are ALREADY in a wx application:
 		// ---------------------------------------------------------
-		//cout << "[wxMainThread] I am in a GUI app" << endl;
-
+#ifdef WXSUBSYSTEM_VERBOSE
+		cout << "[wxMainThread] I am in a GUI app" << endl;
+#endif
 		wxWindow *topWin = static_cast<wxApp*>(app_gui)->GetTopWindow();
 
 		WxSubsystem::CWXMainFrame* Frame = new WxSubsystem::CWXMainFrame( topWin );
 		Frame->Hide();
 
 		// We are ready!!
-		//cout << "[wxMainThread] Signaling semaphore." << endl;
+#ifdef WXSUBSYSTEM_VERBOSE
+		cout << "[wxMainThread] Signaling semaphore." << endl;
+#endif
 		WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.release();
 
-		free(argv[0]);
-		delete[]argv;
+//		free(argv[0]);
+//		delete[]argv;
 	}
 
 	MRPT_END;
@@ -1011,12 +1035,18 @@ bool WxSubsystem::createOneInstanceMainThread()
 			// Create a thread for message processing there:
 			GetWxMainThreadInstance().m_wxMainThreadId = system::createThread( wxMainThread );
 
-			const int maxTimeout =
+			int maxTimeout =
 #ifdef _DEBUG
 			30000;
 #else
 			5000;
 #endif
+
+			// If we have an "MRPT_WXSUBSYS_TIMEOUT_MS" environment variable, use that timeout instead:
+			const char *envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS");
+			if (envVal)
+				maxTimeout = atoi(envVal);
+
 			if(! GetWxMainThreadInstance().m_semWxMainThreadReady.waitForSignal(maxTimeout) )  // A few secs should be enough...
 			{
 				cerr << "[WxSubsystem::createOneInstanceMainThread] Timeout waiting wxApplication to start up!" << endl;

@@ -99,9 +99,9 @@ namespace mrpt
 			//  that raises errors in MSVC when converting method pointers to wxObjectEventFunction...
 			struct THubClass : public mrpt::opengl::CTextMessageCapable
 			{
-				void render_text_messages_public(const int w, const int h) const { render_text_messages(w,h); } 
+				void render_text_messages_public(const int w, const int h) const { render_text_messages(w,h); }
 			};
-			THubClass m_text_msgs; 
+			THubClass m_text_msgs;
 
 			void OnCharCustom( wxKeyEvent& event );
 			void OnMouseDown(wxMouseEvent& event);
@@ -387,12 +387,17 @@ CDisplayWindow3D::CDisplayWindow3D(
 	unsigned int		initialWindowWidth,
 	unsigned int		initialWindowHeight )
 	: CBaseGUIWindow(static_cast<void*>(this),300,399, windowCaption),
+      m_csAccess3DScene("m_csAccess3DScene"),
       m_grab_imgs_prefix(),
       m_grab_imgs_idx(0),
       m_is_capturing_imgs(false),
+      m_last_captured_img_cs("m_last_captured_img_cs"),
 	  m_lastFullScreen (mrpt::system::now()),
 	  m_last_FPS(10)
 {
+//	static mrpt::utils::CStdOutStream oo;
+//	m_csAccess3DScene.m_debugOut = &oo;
+
 	m_3Dscene = COpenGLScene::Create();
 	CBaseGUIWindow::createWxWindow(initialWindowWidth,initialWindowHeight);
 }
@@ -403,7 +408,7 @@ CDisplayWindow3D::CDisplayWindow3D(
  ---------------------------------------------------------------*/
 CDisplayWindow3D::~CDisplayWindow3D( )
 {
-	// All done in base class.
+	CBaseGUIWindow::destroyWxWindow();
 }
 
 

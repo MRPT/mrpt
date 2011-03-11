@@ -73,8 +73,9 @@ CCriticalSection::~CCriticalSection()
 	if (m_data.alias_count()==1)
 	{
 		unsigned long	cur_own = m_data.getAs<CRIT_SECT_WIN*>()->currentThreadOwner;
-		if ( cur_own != 0 )
-			THROW_EXCEPTION_CUSTOM_MSG1("Destroying a critical section currently locked by thread %lu", cur_own );
+		// JL (mar/2011): Disabled to avoid weird errors when suddenly closing a pogram with running mrpt::gui windows.
+//		if ( cur_own != 0 )
+//			THROW_EXCEPTION(format("Destroying a critical section ('%s') currently locked by thread %lu", m_name.c_str(), cur_own ) )
 
 		DeleteCriticalSection( & m_data.getAs<CRIT_SECT_WIN*>()->cs );
 
@@ -94,7 +95,7 @@ void  CCriticalSection::enter() const
 	CRIT_SECT_WIN *myCS = const_cast<CRIT_SECT_WIN  *>(  m_data.getAs<const CRIT_SECT_WIN*>() );
 
 	if( myCS->currentThreadOwner == threadid )
-		THROW_EXCEPTION_CUSTOM_MSG1("Detected recursive lock on critical section by the same thread: %lu",threadid );
+		THROW_EXCEPTION(format("Detected recursive lock on critical section ('%s') by the same thread: %lu",,m_name.c_str(),threadid ) )
 
 	EnterCriticalSection( & myCS->cs );
 
@@ -116,7 +117,7 @@ void  CCriticalSection::leave() const
 	CRIT_SECT_WIN *myCS = const_cast<CRIT_SECT_WIN  *>(  m_data.getAs<const CRIT_SECT_WIN*>() );
 
 	if ( myCS->currentThreadOwner!=threadid )
-		THROW_EXCEPTION("Trying to release a critical section possessed by a different thread.");
+		THROW_EXCEPTION(format("Trying to release a critical section  ('%s') locked by a different thread.",m_name.c_str()));
 
 	myCS->currentThreadOwner = 0;
 

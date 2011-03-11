@@ -76,6 +76,7 @@
 		- [mrpt-hwdrivers] Kinect: Embedded libfreenect library updated to latest GIT revision (12/DEC/2010).
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CHokuyoURG now support ethernet connection (tested in HOKUYO UXM series)[JRRS].
 		- [mrpt-gui] mrpt::gui::CDisplayWindow3D now emits a new event. See mrpt::gui::mrptEvent3DWindowGrabImageFile
+		- [mrpt-gui] Creation and destruction of windows have a timeout, which is not configurable via an optional environment variable "MRPT_WXSUBSYS_TIMEOUT_MS" (milliseconds). This is useful to increase that timeout if debugging with valgrind.
 		- [mrpt-maps] mrpt::slam::CPointsMaps: Inserting 2D laser scans is now ~3 times faster (thanks to mrpt::slam::CSinCosLookUpTableFor2DScans).
 		- [mrpt-obs] mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage now uses by default a LUT to speed up (~10%) the conversion of range images to 3D point clouds in Kinect.
 		- [mrpt-opengl] mrpt::opengl::COpenGLViewport now has a special "image mode" which makes very easy to render images to opengl windows efficiently. See the example "opengl_video_viewport_demo".

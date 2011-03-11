@@ -530,7 +530,7 @@ CDisplayWindowPlots::CDisplayWindowPlots(
  ---------------------------------------------------------------*/
 CDisplayWindowPlots::~CDisplayWindowPlots( )
 {
-	// All done in base class.
+	CBaseGUIWindow::destroyWxWindow();
 }
 
 /** Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) */
