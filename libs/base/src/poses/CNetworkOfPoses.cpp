@@ -505,7 +505,9 @@ void mrpt::poses::detail::graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE,POS
 
 			// Compute the pose of "child_id" as parent_pose (+) edge_delta_pose,
 			//  taking into account that that edge may be in reverse order and then have to invert the delta_pose:
-			if (!edge_to_child.reverse)
+			if ( (!edge_to_child.reverse && !m_g->edges_store_inverse_poses) ||
+				 ( edge_to_child.reverse &&  m_g->edges_store_inverse_poses)
+				)
 			{	// pose_child = p_parent (+) p_delta
 				m_g->nodes[child_id].composeFrom( m_g->nodes[parent_id],  mrpt::poses::getPoseMean<CPOSE>( *edge_to_child.data ) );
 			}

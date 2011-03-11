@@ -66,6 +66,7 @@
 	- Changes in classes:
 		- [mrpt-base] mrpt::poses::CPose3D was too strict in checking that the rotation matrix is orthogonal: admisible threshold is now 1 (plus/minus)3e-3.
 		- [mrpt-base] New method: mrpt::utils::CThreadSafeQueue::get_lastest_purge_old()
+		- [mrpt-base] Graph-SLAM maps (mrpt::poses::CNetworkOfPoses) have a new field "edges_store_inverse_poses", taken into account in mrpt::poses::CNetworkOfPoses::dijkstra_nodes_estimate()
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect changes:
 			- mrpt::hwdrivers::CKinect::setVideoChannel(): New method (and .ini parameter) for switching between the RGB and IR channels for the intensity images.
 			- The posibility of grabbing the IR channel is also now available in mrpt::hwdrivers::prepareVideoSourceFromUserSelection() , the camera-calib application, etc...

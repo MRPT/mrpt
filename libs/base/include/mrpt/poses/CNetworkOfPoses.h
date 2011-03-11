@@ -125,6 +125,11 @@ namespace mrpt
 			/** The ID of the node that is the origin of coordinates, used as reference by all coordinates in \nodes. By default, root is the ID "0". */
 			TNodeID         root;
 
+			/** False (default) if an edge i->j stores the normal relative pose of j as seen from i: \f$ \Delta_i^j = j \ominus i \f$
+			  * True if an edge i->j stores the inverse relateive pose, that is, i as seen from j: \f$ \Delta_i^j = i \ominus j \f$  
+			  */
+			bool            edges_store_inverse_poses;
+
 			/** @} */
 
 
@@ -162,6 +167,7 @@ namespace mrpt
 
 			/** Spanning tree computation of a simple estimation of the global coordinates of each node just from the information in all edges, sorted in a Dijkstra tree based on the current "root" node.
 			  *  Note that "global" coordinates are with respect to the node with the ID specified in \a root.
+			  * \note This method takes into account the value of \a edges_store_inverse_poses
 			  * \sa node, root
 			  */
 			inline void dijkstra_nodes_estimate() { detail::graph_of_poses_dijkstra_init(this); }
@@ -207,6 +213,7 @@ namespace mrpt
 				BASE::edges.clear();
 				nodes.clear();
 				root = 0;
+				edges_store_inverse_poses = false;
 			}
 
 			/** Return number of nodes in the list \nodes of global coordinates (may be differente that all nodes appearing in edges)
@@ -219,8 +226,8 @@ namespace mrpt
 			/** @name Ctors & Dtors
 			    @{ */
 
-			/** Default constructor (just sets root to "0") */
-			inline CNetworkOfPoses() : root(0) { }
+			/** Default constructor (just sets root to "0" and edges_store_inverse_poses to "false") */
+			inline CNetworkOfPoses() : root(0), edges_store_inverse_poses(false) { }
 			~CNetworkOfPoses() { }
 			/** @} */
 		};

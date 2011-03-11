@@ -120,7 +120,8 @@ namespace mrpt
 			}
 
 			/** Skip all old messages in the queue and directly return the last one (the most recent, at the bottom of the queue), or NULL if there is no message.
-			  *  The user MUST call "delete" with the returned object after use.
+			  *  \note The memory of all skipped messages is freed with "delete".
+			  *  \note The user MUST call "delete" with the returned object after use.
 			  */
 			inline T *get_lastest_purge_old( )
 			{
@@ -134,6 +135,7 @@ namespace mrpt
 						T *ret = m_msgs.front();
 						m_msgs.pop();
 						if (m_msgs.empty()) return ret;
+						else delete ret;
 					}
 				}
 			}
