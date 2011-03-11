@@ -41,6 +41,16 @@
 
 //#define  WXSUBSYSTEM_VERBOSE
 
+// ------------------------------------------------------------------------
+// Defined: Try to wait for all windows & the thread to exit cleanly.
+// Undefined: Just to a sleep() and quit crossing our fingers.
+//
+//  Problem with the "clean way" is: As of feb/2011, I get this error
+//   at the end:
+//  ** (MRPT:11711): CRITICAL **: giop_thread_request_push: assertion `tdata != NULL' failed
+// ------------------------------------------------------------------------
+//#define WXSHUTDOWN_DO_IT_CLEAN
+
 #if MRPT_HAS_WXWIDGETS
 
 
@@ -78,7 +88,8 @@ WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
 		REQ->OPCODE   = 999;
 		WxSubsystem::pushPendingWxRequest( REQ );
 
-		mrpt::system::sleep(100);
+		//mrpt::system::sleep(100); // JL: I found no better way of doing this, sorry :-(  See WxSubsystem::waitWxShutdownsIfNoWindows()
+		WxSubsystem::waitWxShutdownsIfNoWindows();
 	} // is console app.
 
 
@@ -216,8 +227,11 @@ int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
 		// That was the last window... we should close the wx subsystem:
 		if (oneInstance)
 		{
-//			CWXMainFrame * me = (CWXMainFrame*)(oneInstance); // cast away the "volatile".
-//			me->Close();
+#ifdef WXSHUTDOWN_DO_IT_CLEAN
+			CWXMainFrame * me = (CWXMainFrame*)(oneInstance); // cast away the "volatile".
+			me->Close();
+#endif
+
 #ifdef WXSUBSYSTEM_VERBOSE
 	cout << "[CWXMainFrame::notifyWindowDestruction] numWindows=0. me->Close() called." << endl;
 #endif
@@ -253,6 +267,15 @@ WxSubsystem::TRequestToWxMainThread * WxSubsystem::popPendingWxRequest()
   */
 void WxSubsystem::pushPendingWxRequest( WxSubsystem::TRequestToWxMainThread *data )
 {
+	if (!WxSubsystem::CWXMainFrame::oneInstance)
+	{
+	#ifdef WXSUBSYSTEM_VERBOSE
+		cout << "[WxSubsystem::pushPendingWxRequest] IGNORING request since app seems already closed.\n";
+	#endif
+		delete[] data;
+		return; // wx subsystem already closed, ignore.
+	}
+
 	if (!cs_listPendingWxRequests)
 	{
 		cs_listPendingWxRequests= new CCriticalSection();
@@ -814,7 +837,8 @@ int CDisplayWindow_WXAPP::OnExit()
   */
 void WxSubsystem::waitWxShutdownsIfNoWindows()
 {
-#if 1
+#ifndef WXSHUTDOWN_DO_IT_CLEAN
+
 	#ifdef WXSUBSYSTEM_VERBOSE
 		cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Doing a quick sleep() and returning.\n";
 	#endif

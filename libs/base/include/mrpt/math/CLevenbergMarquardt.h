@@ -58,10 +58,18 @@ namespace math
 		  *  \param y The same object passed to "execute" as the parameter "userParam".
 		  *  \param out The vector of (non-squared) errors, of the average square root error, for the given "x". The functor code must set the size of this vector.
 		  */
-		typedef void (*TFunctor)(
+		typedef void (*TFunctorEval)(
 			const VECTORTYPE &x,
 			const USERPARAM &y,
 			VECTORTYPE &out);
+
+		/** The type of an optional functor passed to \a execute to replace the Euclidean addition "x_new = x_old + x_incr" by any other operation.
+		  */
+		typedef void (*TFunctorIncrement)(
+			VECTORTYPE &x_new,
+			const VECTORTYPE &x_old,
+			const VECTORTYPE &x_incr,
+			const USERPARAM &user_param);
 
 		struct TResultInfo
 		{
@@ -78,24 +86,28 @@ namespace math
 		};
 
 		/** Executes the LM-method, with derivatives estimated from
-		  *  "functor" Is a user-provided function which takes as input two vectors, in this order:
+		  *  \a functor is a user-provided function which takes as input two vectors, in this order:
 		  *		- x: The parameters to be optimized.
 		  *		- userParam: The vector passed to the LM algorithm, unmodified.
 		  *	  and must return the "error vector", or the error (not squared) in each measured dimension, so the sum of the square of that output is the overall square error.
+		  *
+		  * \a x_increment_adder Is an optional functor which may replace the Euclidean "x_new = x + x_increment" at the core of the incremental optimizer by
+		  *     any other operation. It can be used for example, in on-manifold optimizations.
 		  */
 		static void	execute(
 			VECTORTYPE			&out_optimal_x,
 			const VECTORTYPE	&x0,
-			TFunctor			functor,
+			TFunctorEval		functor,
 			const VECTORTYPE	&increments,
 			const USERPARAM		&userParam,
 			TResultInfo			&out_info,
 			bool				verbose = false,
-			const size_t		&maxIter = 200,
+			const size_t		maxIter = 200,
 			const NUMTYPE		tau = 1e-3,
 			const NUMTYPE		e1 = 1e-8,
 			const NUMTYPE		e2 = 1e-8,
-			bool returnPath=true
+			bool                returnPath =true,
+			TFunctorIncrement	x_increment_adder = NULL
 			)
 		{
 			using namespace mrpt;
@@ -170,9 +182,11 @@ namespace math
 				}
 				else
 				{
-					// Improvement:
-					xnew = x;
-					xnew += h_lm;
+					// Improvement: xnew = x + h_lm;
+					if (!x_increment_adder)
+							xnew = x + h_lm; // Normal Euclidean space addition.
+					else 	x_increment_adder(xnew, x, h_lm, userParam);
+
 					functor(xnew, userParam ,f_xnew );
 					const double F_xnew = pow( math::norm(f_xnew), 2);
 
