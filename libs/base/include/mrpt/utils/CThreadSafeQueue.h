@@ -147,6 +147,13 @@ namespace mrpt
 				return m_msgs.empty();
 			}
 
+			/** Return the number of queued messages. */
+			size_t size() const
+			{
+				mrpt::synch::CCriticalSectionLocker locker( &m_csQueue );
+				return m_msgs.size();
+			}
+
 		}; // End of class def.
 
 	} // End of namespace
