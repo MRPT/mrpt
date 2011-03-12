@@ -51,7 +51,8 @@ CCamera::CCamera()	:
 	m_distanceZoom(10),
 	m_azimuthDeg(45),m_elevationDeg(45),
 	m_projectiveModel(true),
-	m_projectiveFOVdeg(30)
+	m_projectiveFOVdeg(30),
+	m_6DOFMode(false)
 {
 }
 

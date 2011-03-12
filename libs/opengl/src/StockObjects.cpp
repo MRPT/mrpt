@@ -139,31 +139,63 @@ CSetOfObjectsPtr stock_objects::CornerXYZ(float scale)
 	CSetOfObjectsPtr ret = CSetOfObjects::Create();
 
 	CArrowPtr obj = CArrow::Create(
-        	0,0,0,
-            scale,0,0,
-            0.25f*scale,0.02f*scale,0.05f*scale);
+			0,0,0,
+			scale,0,0,
+			0.25f*scale,0.02f*scale,0.05f*scale);
 
-    obj->setColor(1,0,0);
+	obj->setColor(1,0,0);
 
 	ret->insert( obj );
 
 	obj = CArrow::Create(
-        	0,0,0,
-            0,scale,0,
-            0.25f*scale,0.02f*scale,0.05f*scale);
-    obj->setColor(0,1,0);
+			0,0,0,
+			0,scale,0,
+			0.25f*scale,0.02f*scale,0.05f*scale);
+	obj->setColor(0,1,0);
 
-    ret->insert( obj );
+	ret->insert( obj );
 
 	obj = CArrow::Create(
-    	0,0,0,
-        0,0,scale,
-        0.25f*scale,0.02f*scale,0.05f*scale);
-    obj->setColor(0,0,1);
+		0,0,0,
+		0,0,scale,
+		0.25f*scale,0.02f*scale,0.05f*scale);
+	obj->setColor(0,0,1);
 
-    ret->insert( obj );
+	ret->insert( obj );
 
-    return ret;
+	return ret;
+}
+CSetOfObjectsPtr stock_objects::CornerXYZEye()
+{
+	CSetOfObjectsPtr ret = CSetOfObjects::Create();
+	CPose3D rotation;
+	
+	CArrowPtr obj = CArrow::Create(
+			0,0,0,
+			1.0,0,0,
+			0.25f,0.02f,0.05f);
+
+	obj->setColor(1,0,0);
+
+	ret->insert( obj );
+
+	obj = CArrow::Create(
+			0,0,0,
+			0,1.0,0,
+			0.25f,0.02f,0.05f);
+	obj->setColor(0,1,0);
+
+	ret->insert( obj );
+
+	obj = CArrow::Create(
+		0,0,-1.0,
+		0,0,0,
+		0.25f,0.02f,0.05f);
+	obj->setColor(0,0,1);
+
+	ret->insert( obj );
+
+	return ret;
 }
 
 /*---------------------------------------------------------------

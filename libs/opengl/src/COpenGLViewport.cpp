@@ -375,18 +375,41 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 
 				glOrtho( -Ax,Ax,-Ay,Ay,-0.5*m_clip_max,0.5*m_clip_max);
 			}
+		
+			if (myCamera->is6DOFMode())
+			{
+				// In 6DOFMode eye is set viewing towards the direction of the positive Z axis
+				// Up is set as Y axis 
+				mrpt::poses::CPose3D viewDirection,pose,at;
+				viewDirection.z(+1);
+				pose = myCamera->getPose();
+				at = pose + viewDirection;
+				gluLookAt(
+					pose.x(),
+					pose.y(),
+					pose.z(),
+					at.x(),
+					at.y(),
+					at.z(),
+					pose.getRotationMatrix()(0,1),
+					pose.getRotationMatrix()(1,1),
+					pose.getRotationMatrix()(2,1)
+					);
+				CRenderizable::checkOpenGLError();
+			}else{
 			// This command is common to ortho and perspective:
-			gluLookAt(
-				m_lastProjMat.eye.x,
-				m_lastProjMat.eye.y,
-				m_lastProjMat.eye.z,
-				m_lastProjMat.pointing.x,
-				m_lastProjMat.pointing.y,
-				m_lastProjMat.pointing.z,
-				m_lastProjMat.up.x,
-				m_lastProjMat.up.y,
-				m_lastProjMat.up.z);
-			CRenderizable::checkOpenGLError();
+				gluLookAt(
+					m_lastProjMat.eye.x,
+					m_lastProjMat.eye.y,
+					m_lastProjMat.eye.z,
+					m_lastProjMat.pointing.x,
+					m_lastProjMat.pointing.y,
+					m_lastProjMat.pointing.z,
+					m_lastProjMat.up.x,
+					m_lastProjMat.up.y,
+					m_lastProjMat.up.z);
+				CRenderizable::checkOpenGLError();
+			}
 
 			// Render objects:
 			// -------------------------------------------

@@ -59,6 +59,8 @@ namespace mrpt
 
 			bool	m_projectiveModel;	//!< If set to true (default), camera model is projective, otherwise, it's orthogonal.
 			float	m_projectiveFOVdeg;	//!< Field-of-View in degs, only when projectiveModel=true (default=30 deg).
+			bool	m_6DOFMode; //!< If set to true, camera pose is used when rendering the viewport
+
 
 		public:
 			void setPointingAt(float x,float y, float z) { m_pointingX=x; m_pointingY=y; m_pointingZ=z; }
@@ -88,9 +90,17 @@ namespace mrpt
 
 			void setProjectiveModel(bool v=true) { m_projectiveModel=v; } //!< Enable/Disable projective mode (vs. orthogonal)
 			void setOrthogonal(bool v=true) { m_projectiveModel=!v; }     //!< Enable/Disable orthogonal mode (vs. projective)
-
+			
+			/** Set 6DOFMode, if enabled camera is set according to its pose (default=false).
+			 *  Conventionally, eye is set looking towards the positive direction of Z axis.
+			 *  Up is set as the Y axis.
+			 *  In this mode azimuth/elevation are ignored.
+			 **/			
+			void set6DOFMode(bool v) { m_6DOFMode=v; }    
+			
 			bool isProjective() const { return m_projectiveModel; }
 			bool isOrthogonal() const { return !m_projectiveModel; }
+			bool is6DOFMode() const { return m_6DOFMode; }
 
 			void setProjectiveFOVdeg(float ang) { m_projectiveFOVdeg=ang; }  //!< Field-of-View in degs, only when projectiveModel=true (default=30 deg).
 			float getProjectiveFOVdeg() const { return m_projectiveFOVdeg; }  //!< Field-of-View in degs, only when projectiveModel=true (default=30 deg).
