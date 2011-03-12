@@ -95,7 +95,7 @@ void  CCriticalSection::enter() const
 	CRIT_SECT_WIN *myCS = const_cast<CRIT_SECT_WIN  *>(  m_data.getAs<const CRIT_SECT_WIN*>() );
 
 	if( myCS->currentThreadOwner == threadid )
-		THROW_EXCEPTION(format("Detected recursive lock on critical section ('%s') by the same thread: %lu",,m_name.c_str(),threadid ) )
+		THROW_EXCEPTION(format("Detected recursive lock on critical section ('%s') by the same thread: %lu",m_name.c_str(),threadid ) )
 
 	EnterCriticalSection( & myCS->cs );
 
