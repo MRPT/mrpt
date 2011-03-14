@@ -167,14 +167,36 @@ inline void* generic_aligned_realloc(void* ptr, size_t size, size_t old_size)
 *** Implementation of portable aligned versions of malloc/free/realloc     ***
 *****************************************************************************/
 
+#ifdef EIGEN_NO_MALLOC
+inline void check_that_malloc_is_allowed()
+{
+  eigen_assert(false && "heap allocation is forbidden (EIGEN_NO_MALLOC is defined)");
+}
+#elif defined EIGEN_RUNTIME_NO_MALLOC
+inline bool is_malloc_allowed_impl(bool update, bool new_value = false)
+{
+  static bool value = true;
+  if (update == 1)
+    value = new_value;
+  return value;
+}
+inline bool is_malloc_allowed() { return is_malloc_allowed_impl(false); }
+inline bool set_is_malloc_allowed(bool new_value) { return is_malloc_allowed_impl(true, new_value); }
+inline void check_that_malloc_is_allowed()
+{
+  eigen_assert(is_malloc_allowed() && "heap allocation is forbidden (EIGEN_RUNTIME_NO_MALLOC is defined and g_is_malloc_allowed is false)");
+}
+#else 
+inline void check_that_malloc_is_allowed()
+{}
+#endif
+
 /** \internal Allocates \a size bytes. The returned pointer is guaranteed to have 16 bytes alignment.
   * On allocation error, the returned pointer is null, and if exceptions are enabled then a std::bad_alloc is thrown.
   */
 inline void* aligned_malloc(size_t size)
 {
-  #ifdef EIGEN_NO_MALLOC
-    eigen_assert(false && "heap allocation is forbidden (EIGEN_NO_MALLOC is defined)");
-  #endif
+  check_that_malloc_is_allowed();
 
   void *result;
   #if !EIGEN_ALIGN
@@ -268,9 +290,7 @@ template<bool Align> inline void* conditional_aligned_malloc(size_t size)
 
 template<> inline void* conditional_aligned_malloc<false>(size_t size)
 {
-  #ifdef EIGEN_NO_MALLOC
-    eigen_assert(false && "heap allocation is forbidden (EIGEN_NO_MALLOC is defined)");
-  #endif
+  check_that_malloc_is_allowed();
 
   void *result = std::malloc(size);
   #ifdef EIGEN_EXCEPTIONS

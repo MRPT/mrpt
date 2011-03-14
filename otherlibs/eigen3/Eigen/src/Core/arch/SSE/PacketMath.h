@@ -305,6 +305,19 @@ template<> EIGEN_STRONG_INLINE void pstoreu<double>(double* to, const Packet2d& 
 template<> EIGEN_STRONG_INLINE void pstoreu<float>(float*  to, const Packet4f& from) { EIGEN_DEBUG_UNALIGNED_STORE pstoreu((double*)to, _mm_castps_pd(from)); }
 template<> EIGEN_STRONG_INLINE void pstoreu<int>(int*      to, const Packet4i& from) { EIGEN_DEBUG_UNALIGNED_STORE pstoreu((double*)to, _mm_castsi128_pd(from)); }
 
+// some compilers might be tempted to perform multiple moves instead of using a vector path.
+template<> EIGEN_STRONG_INLINE void pstore1<Packet4f>(float* to, const float& a)
+{
+  Packet4f pa = _mm_set_ss(a);
+  pstore(to, vec4f_swizzle1(pa,0,0,0,0));
+}
+// some compilers might be tempted to perform multiple moves instead of using a vector path.
+template<> EIGEN_STRONG_INLINE void pstore1<Packet2d>(double* to, const double& a)
+{
+  Packet2d pa = _mm_set_sd(a);
+  pstore(to, vec2d_swizzle1(pa,0,0));
+}
+
 template<> EIGEN_STRONG_INLINE void prefetch<float>(const float*   addr) { _mm_prefetch((const char*)(addr), _MM_HINT_T0); }
 template<> EIGEN_STRONG_INLINE void prefetch<double>(const double* addr) { _mm_prefetch((const char*)(addr), _MM_HINT_T0); }
 template<> EIGEN_STRONG_INLINE void prefetch<int>(const int*       addr) { _mm_prefetch((const char*)(addr), _MM_HINT_T0); }

@@ -43,7 +43,9 @@ struct transform_traits
 
 template< typename TransformType,
           typename MatrixType,
-          bool IsProjective = transform_traits<TransformType>::IsProjective>
+          int Case = transform_traits<TransformType>::IsProjective ? 0
+                   : int(MatrixType::RowsAtCompileTime) == int(transform_traits<TransformType>::HDim) ? 1
+                   : 2>
 struct transform_right_product_impl;
 
 template< typename Other,
@@ -199,7 +201,7 @@ public:
   typedef _Scalar Scalar;
   typedef DenseIndex Index;
   /** type of the matrix used to represent the transformation */
-  typedef Matrix<Scalar,Rows,HDim,Options> MatrixType;
+  typedef typename internal::make_proper_matrix_type<Scalar,Rows,HDim,Options>::type MatrixType;
   /** constified MatrixType */
   typedef const MatrixType ConstMatrixType;
   /** type of the matrix used to represent the linear part of the transformation */
@@ -1204,7 +1206,7 @@ struct transform_product_result
 };
 
 template< typename TransformType, typename MatrixType >
-struct transform_right_product_impl< TransformType, MatrixType, true >
+struct transform_right_product_impl< TransformType, MatrixType, 0 >
 {
   typedef typename MatrixType::PlainObject ResultType;
 
@@ -1215,7 +1217,7 @@ struct transform_right_product_impl< TransformType, MatrixType, true >
 };
 
 template< typename TransformType, typename MatrixType >
-struct transform_right_product_impl< TransformType, MatrixType, false >
+struct transform_right_product_impl< TransformType, MatrixType, 1 >
 {
   enum { 
     Dim = TransformType::Dim, 
@@ -1228,20 +1230,39 @@ struct transform_right_product_impl< TransformType, MatrixType, false >
 
   EIGEN_STRONG_INLINE static ResultType run(const TransformType& T, const MatrixType& other)
   {
-    EIGEN_STATIC_ASSERT(OtherRows==Dim || OtherRows==HDim, YOU_MIXED_MATRICES_OF_DIFFERENT_SIZES);
+    EIGEN_STATIC_ASSERT(OtherRows==HDim, YOU_MIXED_MATRICES_OF_DIFFERENT_SIZES);
 
     typedef Block<ResultType, Dim, OtherCols> TopLeftLhs;
-    typedef Block<const MatrixType, Dim, OtherCols> TopLeftRhs;
 
     ResultType res(other.rows(),other.cols());
+    TopLeftLhs(res, 0, 0, Dim, other.cols()).noalias() = T.affine() * other;
+    res.row(OtherRows-1) = other.row(OtherRows-1);
+    
+    return res;
+  }
+};
 
-    TopLeftLhs(res, 0, 0, Dim, other.cols()) =
-      ( T.linear() * TopLeftRhs(other, 0, 0, Dim, other.cols()) ).colwise() +
-        T.translation();
+template< typename TransformType, typename MatrixType >
+struct transform_right_product_impl< TransformType, MatrixType, 2 >
+{
+  enum { 
+    Dim = TransformType::Dim, 
+    HDim = TransformType::HDim,
+    OtherRows = MatrixType::RowsAtCompileTime,
+    OtherCols = MatrixType::ColsAtCompileTime
+  };
 
-    // we need to take .rows() because OtherRows might be Dim or HDim
-    if (OtherRows==HDim)
-      res.row(other.rows()) = other.row(other.rows());
+  typedef typename MatrixType::PlainObject ResultType;
+
+  EIGEN_STRONG_INLINE static ResultType run(const TransformType& T, const MatrixType& other)
+  {
+    EIGEN_STATIC_ASSERT(OtherRows==Dim, YOU_MIXED_MATRICES_OF_DIFFERENT_SIZES);
+
+    typedef Block<ResultType, Dim, OtherCols> TopLeftLhs;
+
+    ResultType res(other.rows(),other.cols());
+    TopLeftLhs(res, 0, 0, Dim, other.cols()).noalias() = T.linear() * other;
+    TopLeftLhs(res, 0, 0, Dim, other.cols()).colwise() += T.translation();
 
     return res;
   }

@@ -40,6 +40,9 @@ using namespace mrpt::math;
 using namespace std;
 
 
+MRPT_TODO("FIXME: textures may be rendered wrong! Test case: icp with gridmap")
+
+
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CTexturedObject, CRenderizableDisplayList, mrpt::opengl )
 
 /*---------------------------------------------------------------

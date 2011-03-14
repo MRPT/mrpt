@@ -85,6 +85,8 @@ template<typename Derived> class MapBase<Derived, ReadOnlyAccessors>
     using Base::rowStride;
     using Base::colStride;
 
+    // bug 217 - compile error on ICC 11.1
+    using Base::operator=;
 
     typedef typename Base::CoeffReturnType CoeffReturnType;
 

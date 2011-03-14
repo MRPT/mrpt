@@ -270,6 +270,14 @@ Packet psqrt(const Packet& a) { return sqrt(a); }
 * The following functions might not have to be overwritten for vectorized types
 ***************************************************************************/
 
+/** \internal copy a packet with constant coeficient \a a (e.g., [a,a,a,a]) to \a *to. \a to must be 16 bytes aligned */
+// NOTE: this function must really be templated on the packet type (think about different packet types for the same scalar type)
+template<typename Packet>
+inline void pstore1(typename unpacket_traits<Packet>::type* to, const typename unpacket_traits<Packet>::type& a)
+{
+  pstore(to, pset1<Packet>(a));
+}
+
 /** \internal \returns a * b + c (coeff-wise) */
 template<typename Packet> inline Packet
 pmadd(const Packet&  a,

@@ -56,7 +56,13 @@ template<typename Derived> class DenseBase
     class InnerIterator;
 
     typedef typename internal::traits<Derived>::StorageKind StorageKind;
-    typedef typename internal::traits<Derived>::Index Index; /**< The type of indices */
+
+    /** \brief The type of indices 
+      * \details To change this, \c \#define the preprocessor symbol \c EIGEN_DEFAULT_DENSE_INDEX_TYPE.
+      * \sa \ref TopicPreprocessorDirectives.
+      */
+    typedef typename internal::traits<Derived>::Index Index; 
+
     typedef typename internal::traits<Derived>::Scalar Scalar;
     typedef typename internal::packet_traits<Scalar>::type PacketScalar;
     typedef typename NumTraits<Scalar>::Real RealScalar;

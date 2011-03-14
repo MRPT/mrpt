@@ -376,7 +376,12 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
       * The default constructor is useful in cases in which the user intends to
       * perform decompositions via JacobiSVD::compute(const MatrixType&).
       */
-    JacobiSVD() : m_isInitialized(false) {}
+    JacobiSVD()
+      : m_isInitialized(false),
+        m_isAllocated(false),
+        m_computationOptions(0),
+        m_rows(-1), m_cols(-1)
+    {}
 
 
     /** \brief Default Constructor with memory preallocation
@@ -386,6 +391,10 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
       * \sa JacobiSVD()
       */
     JacobiSVD(Index rows, Index cols, unsigned int computationOptions = 0)
+      : m_isInitialized(false),
+        m_isAllocated(false),
+        m_computationOptions(0),
+        m_rows(-1), m_cols(-1)
     {
       allocate(rows, cols, computationOptions);
     }
@@ -401,11 +410,15 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
      * available with the (non-default) FullPivHouseholderQR preconditioner.
      */
     JacobiSVD(const MatrixType& matrix, unsigned int computationOptions = 0)
+      : m_isInitialized(false),
+        m_isAllocated(false),
+        m_computationOptions(0),
+        m_rows(-1), m_cols(-1)
     {
       compute(matrix, computationOptions);
     }
 
-    /** \brief Method performing the decomposition of given matrix.
+    /** \brief Method performing the decomposition of given matrix using custom options.
      *
      * \param matrix the matrix to decompose
      * \param computationOptions optional parameter allowing to specify if you want full or thin U or V unitaries to be computed.
@@ -415,7 +428,18 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
      * Thin unitaries are only available if your matrix type has a Dynamic number of columns (for example MatrixXf). They also are not
      * available with the (non-default) FullPivHouseholderQR preconditioner.
      */
-    JacobiSVD& compute(const MatrixType& matrix, unsigned int computationOptions = 0);
+    JacobiSVD& compute(const MatrixType& matrix, unsigned int computationOptions);
+
+    /** \brief Method performing the decomposition of given matrix using current options.
+     *
+     * \param matrix the matrix to decompose
+     *
+     * This method uses the current \a computationOptions, as already passed to the constructor or to compute(const MatrixType&, unsigned int).
+     */
+    JacobiSVD& compute(const MatrixType& matrix)
+    {
+      return compute(matrix, m_computationOptions);
+    }
 
     /** \returns the \a U matrix.
      *
@@ -494,16 +518,17 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
     inline Index cols() const { return m_cols; }
 
   private:
-    void allocate(Index rows, Index cols, unsigned int computationOptions = 0);
+    void allocate(Index rows, Index cols, unsigned int computationOptions);
 
   protected:
     MatrixUType m_matrixU;
     MatrixVType m_matrixV;
     SingularValuesType m_singularValues;
     WorkMatrixType m_workMatrix;
-    bool m_isInitialized;
+    bool m_isInitialized, m_isAllocated;
     bool m_computeFullU, m_computeThinU;
     bool m_computeFullV, m_computeThinV;
+    unsigned int m_computationOptions;
     Index m_nonzeroSingularValues, m_rows, m_cols, m_diagSize;
 
     template<typename __MatrixType, int _QRPreconditioner, bool _IsComplex>
@@ -515,9 +540,21 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
 template<typename MatrixType, int QRPreconditioner>
 void JacobiSVD<MatrixType, QRPreconditioner>::allocate(Index rows, Index cols, unsigned int computationOptions)
 {
+  eigen_assert(rows >= 0 && cols >= 0);
+
+  if (m_isAllocated &&
+      rows == m_rows &&
+      cols == m_cols &&
+      computationOptions == m_computationOptions)
+  {
+    return;
+  }
+
   m_rows = rows;
   m_cols = cols;
   m_isInitialized = false;
+  m_isAllocated = true;
+  m_computationOptions = computationOptions;
   m_computeFullU = (computationOptions & ComputeFullU) != 0;
   m_computeThinU = (computationOptions & ComputeThinU) != 0;
   m_computeFullV = (computationOptions & ComputeFullV) != 0;

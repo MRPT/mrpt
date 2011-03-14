@@ -199,7 +199,7 @@ public:
   EIGEN_STRONG_INLINE void unpackRhs(DenseIndex n, const RhsScalar* rhs, RhsScalar* b)
   {
     for(DenseIndex k=0; k<n; k++)
-      pstore(&b[k*RhsPacketSize], pset1<RhsPacket>(rhs[k]));
+      pstore1<RhsPacket>(&b[k*RhsPacketSize], rhs[k]);
   }
 
   EIGEN_STRONG_INLINE void loadRhs(const RhsScalar* b, RhsPacket& dest) const
@@ -270,7 +270,7 @@ public:
   EIGEN_STRONG_INLINE void unpackRhs(DenseIndex n, const RhsScalar* rhs, RhsScalar* b)
   {
     for(DenseIndex k=0; k<n; k++)
-      pstore(&b[k*RhsPacketSize], pset1<RhsPacket>(rhs[k]));
+      pstore1<RhsPacket>(&b[k*RhsPacketSize], rhs[k]);
   }
 
   EIGEN_STRONG_INLINE void loadRhs(const RhsScalar* b, RhsPacket& dest) const
@@ -363,8 +363,8 @@ public:
     {
       if(Vectorizable)
       {
-        pstore((RealScalar*)&b[k*ResPacketSize*2+0], pset1<RealPacket>(real(rhs[k])));
-        pstore((RealScalar*)&b[k*ResPacketSize*2+ResPacketSize], pset1<RealPacket>(imag(rhs[k])));
+        pstore1<RealPacket>((RealScalar*)&b[k*ResPacketSize*2+0],             real(rhs[k]));
+        pstore1<RealPacket>((RealScalar*)&b[k*ResPacketSize*2+ResPacketSize], imag(rhs[k]));
       }
       else
         b[k] = rhs[k];
@@ -475,7 +475,7 @@ public:
   EIGEN_STRONG_INLINE void unpackRhs(DenseIndex n, const RhsScalar* rhs, RhsScalar* b)
   {
     for(DenseIndex k=0; k<n; k++)
-      pstore(&b[k*RhsPacketSize], pset1<RhsPacket>(rhs[k]));
+      pstore1<RhsPacket>(&b[k*RhsPacketSize], rhs[k]);
   }
 
   EIGEN_STRONG_INLINE void loadRhs(const RhsScalar* b, RhsPacket& dest) const
@@ -1009,12 +1009,7 @@ EIGEN_ASM_COMMENT("mybegin4");
     for(Index j2=packet_cols; j2<cols; j2++)
     {
       // unpack B
-      {
-        traits.unpackRhs(depth, &blockB[j2*strideB+offsetB], unpackedB);
-//         const RhsScalar* blB = &blockB[j2*strideB+offsetB];
-//         for(Index k=0; k<depth; k++)
-//           pstore(&unpackedB[k*RhsPacketSize], pset1<RhsPacket>(blB[k]));
-      }
+      traits.unpackRhs(depth, &blockB[j2*strideB+offsetB], unpackedB);
 
       for(Index i=0; i<peeled_mc; i+=mr)
       {
