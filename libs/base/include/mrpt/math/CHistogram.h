@@ -88,7 +88,7 @@ namespace math
 		{
 			const size_t N = x.size();
 			for (size_t i=0;i<N;i++)
-				this->add(static_cast<const double>(x[i]));
+				this->add(static_cast<const double>(x(i)));
 		}
 
 		//! \overload
