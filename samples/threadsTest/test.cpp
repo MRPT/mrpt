@@ -29,6 +29,7 @@
 #include <mrpt/utils.h>
 #include <mrpt/system.h>
 #include <mrpt/random.h>
+#include <mrpt/synch.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -78,7 +79,6 @@ void thread_example(int id)
 	}
 }
 
-
 // ------------------------------------------------------
 //				ThreadsTest
 // ------------------------------------------------------
@@ -103,6 +103,54 @@ void ThreadsTest()
 	} while (cnt);
 }
 
+
+
+void thread_example2(int id)
+{
+	try
+	{
+		printf("[thread_example2 %i, ID:%lu] Started, trying to get into semaphore...\n", id, getCurrentThreadId());
+
+		CSemaphore  sem(0,0,"mrpt-demo-sem1");
+
+		sem.waitForSignal();
+
+		double delay = randomGenerator.drawUniform(3.0,10.0);
+		printf("[thread_example2 %i, ID:%lu] I'm in. Delaying %f seconds...\n", id, getCurrentThreadId(), delay);
+		mrpt::system::sleep( delay*1000 );
+
+		sem.release();
+
+		printf("[thread_example2 %i] Finished\n", id);
+	}
+	catch(std::exception &e)
+	{
+		cerr << e.what() << endl;
+	}
+	catch(...)
+	{
+		printf("[thread_example2] Runtime error!\n");
+	}
+}
+
+// ------------------------------------------------------
+//				ThreadsTest2
+// ------------------------------------------------------
+void ThreadsTest2()
+{
+	std::vector<TThreadHandle>  threads;
+
+	// Create a named semaphore:
+	CSemaphore  sem(3 /*init val*/,50 /*max val*/,"mrpt-demo-sem1");
+
+	for (int i=1;i<=10;i++)
+		threads.push_back( createThread( thread_example2, i ) );
+
+	// Wait all threads exit:
+	for (size_t i=0;i<threads.size();i++)
+		joinThread( threads[i] );
+}
+
 // ------------------------------------------------------
 //						MAIN
 // ------------------------------------------------------
@@ -110,7 +158,11 @@ int main()
 {
 	try
 	{
+		cout << " =============== TEST 1: CCriticalSection ================\n";
 		ThreadsTest();
+
+		cout << "\n =============== TEST 2: CSemaphore ================\n";
+		ThreadsTest2();
 
 		return 0;
 	} catch (std::exception &e)

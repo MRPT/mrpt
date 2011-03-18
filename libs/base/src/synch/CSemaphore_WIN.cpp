@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers 
+#include <mrpt/base.h>  // Precompiled headers
 
 
 
@@ -49,6 +49,8 @@ CSemaphore::CSemaphore(
     unsigned int    initialCount,
     unsigned int    maxCount,
     const std::string &name )
+    :
+    m_name(name)
 {
 	MRPT_START;
 

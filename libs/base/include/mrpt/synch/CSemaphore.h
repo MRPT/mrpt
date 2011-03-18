@@ -53,9 +53,13 @@ namespace mrpt
 		{
 		protected:
 			utils::CReferencedMemBlock		m_data;
+			std::string  m_name; //!< The name of the named semaphore, or empty if unnamed.
 
         public:
             /** Creates a semaphore.
+              *  If \a name is not an empty string, a named semaphore is created. In that case
+              *   if the semaphore didn't exist it's created. Otherwise, the existing semaphore
+              *   is linked to this object and then \a initialCount and \a maxCount are ignored.
               */
             CSemaphore(
                 unsigned int    initialCount,
@@ -75,6 +79,14 @@ namespace mrpt
             /** Increments the count of the semaphore by a given amount.
               */
             void release(unsigned int increaseCount = 1);
+
+
+			/** Get the name of the named semaphore or an empty string if it's unnamed */
+			inline std::string  getName() const { return m_name; }
+
+			/** Return true if this is a named semaphore */
+			inline bool isNamed() const { return !m_name.empty(); }
+
 
 		};
 
