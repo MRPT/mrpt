@@ -48,7 +48,7 @@ FREENECTAPI int freenect_init(freenect_context **ctx, freenect_usb_context *usb_
 FREENECTAPI int freenect_shutdown(freenect_context *ctx)
 {
 	while (ctx->first) {
-		FN_NOTICE("Device %p open during shutdown, closing...\n", ctx->first);
+		FN_NOTICE("Device %p open during shutdown, closing...\n", (void*)ctx->first);
 		freenect_close_device(ctx->first);
 	}
 
@@ -122,7 +122,7 @@ FREENECTAPI int freenect_close_device(freenect_device *dev)
 	}
 
 	if (!cur) {
-		FN_ERROR("device %p not found in linked list for this context!\n", dev);
+		FN_ERROR("device %p not found in linked list for this context!\n", (void*)dev);
 		return -1;
 	}
 

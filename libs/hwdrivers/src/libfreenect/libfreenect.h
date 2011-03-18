@@ -65,7 +65,7 @@ typedef enum {
 	FREENECT_VIDEO_IR_10BIT        = 3, /**< 10-bit IR mode */
 	FREENECT_VIDEO_IR_10BIT_PACKED = 4, /**< 10-bit packed IR mode */
 	FREENECT_VIDEO_YUV_RGB         = 5, /**< YUV RGB mode */
-	FREENECT_VIDEO_YUV_RAW         = 6, /**< YUV Raw mode */
+	FREENECT_VIDEO_YUV_RAW         = 6  /**< YUV Raw mode */
 } freenect_video_format;
 
 /// Enumeration of LED states
@@ -77,7 +77,7 @@ typedef enum {
 	LED_YELLOW           = 3, /**< Turn LED to Yellow */
 	LED_BLINK_GREEN      = 4, /**< Make LED blink Green */
 	// 5 is same as 4, LED blink Green
-	LED_BLINK_RED_YELLOW = 6, /**< Make LED blink Red/Yellow */
+	LED_BLINK_RED_YELLOW = 6  /**< Make LED blink Red/Yellow */
 } freenect_led_options;
 
 /// Enumeration of depth frame states
@@ -86,7 +86,7 @@ typedef enum {
 	FREENECT_DEPTH_11BIT        = 0, /**< 11 bit depth information in one uint16_t/pixel */
 	FREENECT_DEPTH_10BIT        = 1, /**< 10 bit depth information in one uint16_t/pixel */
 	FREENECT_DEPTH_11BIT_PACKED = 2, /**< 11 bit packed depth information */
-	FREENECT_DEPTH_10BIT_PACKED = 3, /**< 10 bit packed depth information */
+	FREENECT_DEPTH_10BIT_PACKED = 3  /**< 10 bit packed depth information */
 } freenect_depth_format;
 
 
@@ -94,7 +94,7 @@ typedef enum {
 typedef enum {
 	TILT_STATUS_STOPPED = 0x00, /**< Tilt motor is stopped */
 	TILT_STATUS_LIMIT   = 0x01, /**< Tilt motor has reached movement limit */
-	TILT_STATUS_MOVING  = 0x04, /**< Tilt motor is currently moving to new position */
+	TILT_STATUS_MOVING  = 0x04  /**< Tilt motor is currently moving to new position */
 } freenect_tilt_status_code;
 
 /// Data from the tilt motor and accelerometer
@@ -145,7 +145,7 @@ typedef enum {
 	FREENECT_LOG_INFO,          /**< Log for normal messages */
 	FREENECT_LOG_DEBUG,         /**< Log for useful development messages */
 	FREENECT_LOG_SPEW,          /**< Log for slightly less useful messages */
-	FREENECT_LOG_FLOOD,         /**< Log EVERYTHING. May slow performance. */
+	FREENECT_LOG_FLOOD          /**< Log EVERYTHING. May slow performance. */
 } freenect_loglevel;
 
 /**
