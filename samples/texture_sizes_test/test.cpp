@@ -66,7 +66,7 @@ void TextureSizes_test()
 	CImage transpMask_N(W,H, CH_GRAY );
 	for (int y=0;y<H;y++)
 		for (int x=0;x<W;x++)
-			*transpMask_N(x,y) = uint8_t(x+y);
+			*transpMask_N(x,y) = (((x+y)>>5)&1) ? 240 : 10;
 
 	CImage transpMask_2N;
 	transpMask_N.scaleImage(transpMask_2N,512,512);
@@ -81,13 +81,14 @@ void TextureSizes_test()
 	COpenGLScenePtr &theScene = win.get3DSceneAndLock();
 
 	double off_x = 0;
-	const double off_y_label = 7;
-	const double STEP_X = 25;
+	const double off_y_label = 4;
+	const double STEP_X = 15;
 
 	if (1)
 	{
 		opengl::CTexturedPlanePtr obj = opengl::CTexturedPlane::Create(-3,3, -3,3);
 		obj->assignImage(imgCol_N);
+		obj->setLocation(off_x,0,0);
 		theScene->insert( obj );
 
 		opengl::CTextPtr gl_txt = opengl::CText::Create("Color texture, random size, w/o transp");
@@ -96,10 +97,11 @@ void TextureSizes_test()
 	}
 	off_x+=STEP_X;
 
-	if (0)
+	if (1)
 	{
 		opengl::CTexturedPlanePtr obj = opengl::CTexturedPlane::Create(-3,3, -3,3);
 		obj->assignImage(imgCol_N, transpMask_N);
+		obj->setLocation(off_x,0,0);
 		theScene->insert( obj );
 
 		opengl::CTextPtr gl_txt = opengl::CText::Create("Color texture, random size, with transp");
@@ -108,10 +110,11 @@ void TextureSizes_test()
 	}
 	off_x+=STEP_X;
 
-	if (0)
+	if (1)
 	{
 		opengl::CTexturedPlanePtr obj = opengl::CTexturedPlane::Create(-3,3, -3,3);
 		obj->assignImage(imgBW_N);
+		obj->setLocation(off_x,0,0);
 		theScene->insert( obj );
 
 		opengl::CTextPtr gl_txt = opengl::CText::Create("B/W texture, random size, w/o transp");
@@ -124,6 +127,7 @@ void TextureSizes_test()
 	{
 		opengl::CTexturedPlanePtr obj = opengl::CTexturedPlane::Create(-3,3, -3,3);
 		obj->assignImage(imgBW_N, transpMask_N);
+		obj->setLocation(off_x,0,0);
 		theScene->insert( obj );
 
 		opengl::CTextPtr gl_txt = opengl::CText::Create("B/W texture, random size, with transp");
@@ -136,6 +140,7 @@ void TextureSizes_test()
 	{
 		opengl::CTexturedPlanePtr obj = opengl::CTexturedPlane::Create(-3,3, -3,3);
 		obj->assignImage(imgCol_2N);
+		obj->setLocation(off_x,0,0);
 		theScene->insert( obj );
 
 		opengl::CTextPtr gl_txt = opengl::CText::Create("Color texture, 2^N size, w/o transp");
@@ -144,10 +149,11 @@ void TextureSizes_test()
 	}
 	off_x+=STEP_X;
 
-	if (0)
+	if (1)
 	{
 		opengl::CTexturedPlanePtr obj = opengl::CTexturedPlane::Create(-3,3, -3,3);
 		obj->assignImage(imgCol_2N, transpMask_2N);
+		obj->setLocation(off_x,0,0);
 		theScene->insert( obj );
 
 		opengl::CTextPtr gl_txt = opengl::CText::Create("Color texture, 2^N size, with transp");
@@ -156,10 +162,11 @@ void TextureSizes_test()
 	}
 	off_x+=STEP_X;
 
-	if (0)
+	if (1)
 	{
 		opengl::CTexturedPlanePtr obj = opengl::CTexturedPlane::Create(-3,3, -3,3);
 		obj->assignImage(imgBW_2N);
+		obj->setLocation(off_x,0,0);
 		theScene->insert( obj );
 
 		opengl::CTextPtr gl_txt = opengl::CText::Create("B/W texture, 2^N size, w/o transp");
@@ -172,6 +179,7 @@ void TextureSizes_test()
 	{
 		opengl::CTexturedPlanePtr obj = opengl::CTexturedPlane::Create(-3,3, -3,3);
 		obj->assignImage(imgBW_2N, transpMask_2N);
+		obj->setLocation(off_x,0,0);
 		theScene->insert( obj );
 
 		opengl::CTextPtr gl_txt = opengl::CText::Create("B/W texture, 2^N size, with transp");
@@ -182,7 +190,8 @@ void TextureSizes_test()
 
 
 
-	win.setCameraZoom(50);
+	win.setCameraZoom(150);
+	win.setCameraAzimuthDeg(90);
 
 	// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
 	win.unlockAccess3DScene();

@@ -166,7 +166,9 @@ void  CTexturedObject::loadTextureInOpenGL() const
 		checkOpenGLError();
 
 		// when texture area is small, bilinear filter the closest mipmap
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );  // GL_LINEAR
+		// Other options: //  GL_LINEAR ); // _MIPMAP_NEAREST  ); // GL_LINEAR_MIPMAP_NEAREST );  // GL_LINEAR
+		//  See also: http://www.opengl.org/discussion_boards/ubbthreads.php?ubb=showflat&Number=133116&page=1
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST); 
 		checkOpenGLError();
 
 		// when texture area is large, bilinear filter the first mipmap
@@ -226,7 +228,7 @@ void  CTexturedObject::loadTextureInOpenGL() const
 				{
 					unsigned char 	*ptrSrcCol = m_textureImage(0,y,0);
 					unsigned char 	*ptrSrcAlfa = m_textureImageAlpha(0,y);
-					unsigned char 	*ptr = dataAligned + (m_fill_x_left)*4 + (m_fill_y_top+y)* y*r_width*4;
+					unsigned char 	*ptr = dataAligned + (m_fill_x_left)*4 + (m_fill_y_top+y)*r_width*4;
 
 					for (int x=0;x<width;x++)
 					{
@@ -298,7 +300,7 @@ void  CTexturedObject::loadTextureInOpenGL() const
 				for (int y=0;y<height;y++)
 				{
 					unsigned char 	*ptrSrcCol = m_textureImage(0,y);
-					unsigned char 	*ptr = dataAligned + m_fill_x_left + (m_fill_y_top+y)*y*r_width;
+					unsigned char 	*ptr = dataAligned + m_fill_x_left + (m_fill_y_top+y)*r_width;
 					memcpy(ptr,ptrSrcCol, r_width);
 				}
 
