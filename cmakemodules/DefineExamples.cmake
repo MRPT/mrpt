@@ -72,6 +72,7 @@ IF(BUILD_EXAMPLES)
 		optimize-lm
 		kmeans
 		slerp_demo
+		texture_sizes_test
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-gui)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

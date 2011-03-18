@@ -40,9 +40,6 @@ using namespace mrpt::math;
 using namespace std;
 
 
-MRPT_TODO("FIXME: textures may be rendered wrong! Test case: icp with gridmap")
-
-
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CTexturedObject, CRenderizableDisplayList, mrpt::opengl )
 
 /*---------------------------------------------------------------
@@ -169,7 +166,7 @@ void  CTexturedObject::loadTextureInOpenGL() const
 		checkOpenGLError();
 
 		// when texture area is small, bilinear filter the closest mipmap
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );  // GL_LINEAR
 		checkOpenGLError();
 
 		// when texture area is large, bilinear filter the first mipmap
@@ -194,8 +191,16 @@ void  CTexturedObject::loadTextureInOpenGL() const
 			m_textureImageAlpha = m_textureImageAlpha.scaleHalf();
 		}
 
-		r_width = m_textureImage.getWidth();
-		r_height = m_textureImage.getHeight();
+		int		width = m_textureImage.getWidth();
+		int		height = m_textureImage.getHeight();
+
+		r_width = round2up( width );
+		r_height = round2up( height );
+		m_fill_x_left = (r_width - width) >> 1; // div by 2;
+		m_fill_y_top = (r_height - height) >> 1; // div by 2;
+		m_fill_x_right = (r_width - width) - m_fill_x_left;
+		m_fill_y_bottom = (r_height - height) - m_fill_y_top;
+
 
         if (m_enableTransparency)
 		{
@@ -217,12 +222,13 @@ void  CTexturedObject::loadTextureInOpenGL() const
 				data.resize( r_height*r_width*4 + 512);
                 dataAligned = ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
 
-				for (int y=0;y<r_height;y++)
+				for (int y=0;y<height;y++)
 				{
 					unsigned char 	*ptrSrcCol = m_textureImage(0,y,0);
 					unsigned char 	*ptrSrcAlfa = m_textureImageAlpha(0,y);
-					unsigned char 	*ptr = dataAligned + y*r_width*4;
-					for (int x=0;x<r_width;x++)
+					unsigned char 	*ptr = dataAligned + (m_fill_x_left)*4 + (m_fill_y_top+y)* y*r_width*4;
+
+					for (int x=0;x<width;x++)
 					{
     					*ptr++ = *ptrSrcCol++;
     					*ptr++ = *ptrSrcCol++;
@@ -240,25 +246,18 @@ void  CTexturedObject::loadTextureInOpenGL() const
 				// --------------------------------------
 				const GLenum pixels_format = mrpt::system::os::_strcmp(m_textureImage.getChannelsOrder(),"BGR")==0 ? GL_BGR : GL_RGB;
 
-				// Does the OpenCV img have fillings?
-				if ( (m_textureImage(0,1)-m_textureImage(0,0))!=3*r_width )
+				data.clear();
+				data.resize( r_height*r_width*3+512 );
+				dataAligned = ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
+				const size_t bytesPerLineSrc =   width*3;
+				const size_t bytesPerLineDst = r_width*3;
+				unsigned char *ptrDst = dataAligned + (m_fill_x_left)*3 + m_fill_y_top*r_width*3;
+				for (int y=0;y<height;y++)
 				{
-					// Has fillings: build temporary image all continuous in memory:
-					data.clear();
-					data.resize( r_height*r_width*3+512 );
-					dataAligned = ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
-					const size_t bytesPerLine = r_width*3;
-					for (int y=0;y<r_height;y++)
-					{
-						memcpy(dataAligned,m_textureImage(0,y,0),bytesPerLine);
-						dataAligned+=bytesPerLine;
-					}
+					memcpy(ptrDst,m_textureImage(0,y,0),bytesPerLineSrc);
+					ptrDst += bytesPerLineDst;
 				}
-				else
-				{
-					// Simply:
-					dataAligned = m_textureImage(0,0);
-				}
+
 				// Build texture:
 				gluBuild2DMipmaps( GL_TEXTURE_2D, 3, r_width, r_height,pixels_format, GL_UNSIGNED_BYTE, dataAligned );
 				checkOpenGLError();
@@ -274,12 +273,12 @@ void  CTexturedObject::loadTextureInOpenGL() const
 				data.resize( r_height*r_width*2+1000 );
                 dataAligned = ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
 
-				for (int y=0;y<r_height;y++)
+				for (int y=0;y<height;y++)
 				{
 					unsigned char 	*ptrSrcCol = m_textureImage(0,y);
 					unsigned char 	*ptrSrcAlfa = m_textureImageAlpha(0,y);
-					unsigned char 	*ptr = dataAligned + y*r_width*2;
-					for (int x=0;x<r_width;x++)
+					unsigned char 	*ptr = dataAligned + (m_fill_x_left)*2 + (m_fill_y_top+y)*r_width*2;
+					for (int x=0;x<width;x++)
 					{
     					*ptr++ = *ptrSrcCol++;
     					*ptr++ = *ptrSrcAlfa++;
@@ -296,12 +295,11 @@ void  CTexturedObject::loadTextureInOpenGL() const
 				data.resize( r_height*r_width+1000 );
                 dataAligned = ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
 
-				for (int y=0;y<r_height;y++)
+				for (int y=0;y<height;y++)
 				{
 					unsigned char 	*ptrSrcCol = m_textureImage(0,y);
-					unsigned char 	*ptr = dataAligned + y*r_width*1;
-					for (int x=0;x<r_width;x++)
-    					*ptr++ = *ptrSrcCol++;
+					unsigned char 	*ptr = dataAligned + m_fill_x_left + (m_fill_y_top+y)*y*r_width;
+					memcpy(ptr,ptrSrcCol, r_width);
 				}
 
 				// build our texture mipmaps
