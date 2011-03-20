@@ -45,6 +45,7 @@
 		- mrpt-detectors is no longer marked as "experimental".
 		- mrpt-monoslam is no longer shown in the graph of libraries since it's unmaintained.
 	- Build system:
+		- Embedded Eigen version updated to release Eigen 3.0 (March 19th 2011).
 		- Linux/Mac: Don't enable BUILD_KINECT by default if libusb1-dev is not present. 
 		- Win64: Fixed building warnings and errors with MSVC9
 		- MinGW: Fixed building.
