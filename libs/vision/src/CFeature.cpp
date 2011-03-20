@@ -42,6 +42,7 @@ using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(CFeature, CSerializable, mrpt::vision)
 
+MRPT_TODO("Define 'lightweight' versions without smart pointer & suited for vector<> allocation: TSimpleFeature, TSimpleFeatureList")
 
 extern CStartUpClassesRegister  mrpt_vision_class_reg;
 const int dumm = mrpt_vision_class_reg.do_nothing(); // Avoid compiler removing this class in static linking

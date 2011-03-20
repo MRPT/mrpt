@@ -69,6 +69,7 @@
 		- [mrpt-base] New method: mrpt::utils::CThreadSafeQueue::get_lastest_purge_old()
 		- [mrpt-base] mrpt::synch::CSemaphore now supports named semaphores in Linux too.
 		- [mrpt-base] Graph-SLAM maps (mrpt::poses::CNetworkOfPoses) have a new field "edges_store_inverse_poses", taken into account in mrpt::poses::CNetworkOfPoses::dijkstra_nodes_estimate()
+		- [mrpt-base] mrpt::poses::CPose3DQuat constructor from a mrpt::poses::CPose3D is not explicit to avoid unintentional conversions.
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect changes:
 			- mrpt::hwdrivers::CKinect::setVideoChannel(): New method (and .ini parameter) for switching between the RGB and IR channels for the intensity images.
 			- The posibility of grabbing the IR channel is also now available in mrpt::hwdrivers::prepareVideoSourceFromUserSelection() , the camera-calib application, etc...

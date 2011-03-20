@@ -90,7 +90,7 @@ namespace poses
 		inline CPose3DQuat(const double x,const double y,const double z,const mrpt::math::CQuaternionDouble &q ) : m_quat(q) { m_coords[0]=x; m_coords[1]=y; m_coords[2]=z; m_quat.normalize(); }
 
 		/** Constructor from a CPose3D */
-		CPose3DQuat(const CPose3D &p);
+		explicit CPose3DQuat(const CPose3D &p);
 
 		/** Constructor from lightweight object. */
 		CPose3DQuat(const mrpt::math::TPose3DQuat &p) : m_quat(p.qr,p.qx,p.qy,p.qz) { x()=p.x; y()=p.y; z()=p.z; }

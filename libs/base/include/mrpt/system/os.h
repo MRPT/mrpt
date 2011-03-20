@@ -218,6 +218,11 @@ namespace mrpt
 		  */
 		std::string BASE_IMPEXP stack_trace(bool calling_from_exception = false);
 
+		/** Only when built in debug (with _DEBUG), this function will be called just before raising any MRPT exception, 
+		  *  so the user can conveniently put a breakpoint here to explore the call stack, etc.
+		  */
+		void BASE_IMPEXP breakpoint(const std::string &exception_msg);
+
 		/** For use in  setConsoleColor */
 		enum TConsoleColor
 		{

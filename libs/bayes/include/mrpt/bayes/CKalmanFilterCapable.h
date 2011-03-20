@@ -40,6 +40,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/TEnumType.h>
 
 #include <mrpt/bayes/link_pragmas.h>
 
@@ -1616,6 +1617,24 @@ namespace mrpt
 		} // end namespace "detail"
 
 	} // end namespace
+
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<bayes::TKFMethod>
+		{
+			typedef bayes::TKFMethod enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(bayes::kfEKFNaive,          "kfEKFNaive");
+				m_map.insert(bayes::kfEKFAlaDavison,     "kfEKFAlaDavison");
+				m_map.insert(bayes::kfIKFFull,           "kfIKFFull");
+				m_map.insert(bayes::kfIKF,               "kfIKF");
+			}
+		};
+	} // End of namespace
+
 } // end namespace
 
 #endif

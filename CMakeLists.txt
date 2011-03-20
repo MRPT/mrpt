@@ -2197,3 +2197,4 @@ IF (NOT CMAKE_MRPT_HAS_OPENCV AND NOT DISABLE_OPENCV)
 	MESSAGE(STATUS "***********************************************************************")
 	MESSAGE(STATUS "")
 ENDIF(NOT CMAKE_MRPT_HAS_OPENCV AND NOT DISABLE_OPENCV)
+

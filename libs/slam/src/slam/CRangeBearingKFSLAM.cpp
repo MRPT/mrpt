@@ -110,8 +110,15 @@ void CRangeBearingKFSLAM::getCurrentRobotPose(
 
 	ASSERT_(m_xkk.size()>=7);
 
-	// Copy xyz+quat:
-	std::copy(m_xkk.begin(),m_xkk.begin()+out_robotPose.mean.static_size, out_robotPose.mean.begin() );
+	// Copy xyz+quat: (explicitly unroll the loop)
+	out_robotPose.mean.m_coords[0] = m_xkk[0];
+	out_robotPose.mean.m_coords[1] = m_xkk[1];
+	out_robotPose.mean.m_coords[2] = m_xkk[2];
+	out_robotPose.mean.m_quat  [0] = m_xkk[3];
+	out_robotPose.mean.m_quat  [1] = m_xkk[4];
+	out_robotPose.mean.m_quat  [2] = m_xkk[5];
+	out_robotPose.mean.m_quat  [3] = m_xkk[6];
+
 	// and cov:
 	m_pkk.extractMatrix(0,0,out_robotPose.cov);
 
@@ -123,10 +130,17 @@ void CRangeBearingKFSLAM::getCurrentRobotPose(
   ---------------------------------------------------------------*/
 mrpt::poses::CPose3DQuat CRangeBearingKFSLAM::getCurrentRobotPoseMean() const
 {
-	CPose3DQuat  q(UNINITIALIZED_POSE);
+	CPose3DQuat  q(UNINITIALIZED_QUATERNION);
 	ASSERTDEB_(m_xkk.size()>=7)
-	// Copy xyz+quat:
-	std::copy(m_xkk.begin(),m_xkk.begin()+q.static_size, q.begin() );
+	// Copy xyz+quat: (explicitly unroll the loop)
+	q.m_coords[0] = m_xkk[0];
+	q.m_coords[1] = m_xkk[1];
+	q.m_coords[2] = m_xkk[2];
+	q.m_quat  [0] = m_xkk[3];
+	q.m_quat  [1] = m_xkk[4];
+	q.m_quat  [2] = m_xkk[5];
+	q.m_quat  [3] = m_xkk[6];
+
 	return q;
 }
 
@@ -145,8 +159,15 @@ void CRangeBearingKFSLAM::getCurrentState(
 
 	ASSERT_(size_t(m_xkk.size())>=get_vehicle_size());
 
-	// Copy xyz+quat:
-	std::copy(m_xkk.begin(),m_xkk.begin()+out_robotPose.mean.static_size, out_robotPose.mean.begin() );
+	// Copy xyz+quat: (explicitly unroll the loop)
+	out_robotPose.mean.m_coords[0] = m_xkk[0];
+	out_robotPose.mean.m_coords[1] = m_xkk[1];
+	out_robotPose.mean.m_coords[2] = m_xkk[2];
+	out_robotPose.mean.m_quat  [0] = m_xkk[3];
+	out_robotPose.mean.m_quat  [1] = m_xkk[4];
+	out_robotPose.mean.m_quat  [2] = m_xkk[5];
+	out_robotPose.mean.m_quat  [3] = m_xkk[6];
+
 	// and cov:
 	m_pkk.extractMatrix(0,0,out_robotPose.cov);
 
@@ -304,9 +325,15 @@ void  CRangeBearingKFSLAM::OnTransitionModel(
 	// Current pose: copy xyz+quat
 	CPose3DQuat	robotPose = getCurrentRobotPoseMean();
 
-	// Increment pose: copy xyz+quat
-	CPose3DQuat	odoIncrement(UNINITIALIZED_POSE);
-	std::copy(u.begin(),u.begin()+odoIncrement.static_size, odoIncrement.begin() );
+	// Increment pose: copy xyz+quat (explicitly unroll the loop)
+	CPose3DQuat	odoIncrement(UNINITIALIZED_QUATERNION);
+	odoIncrement.m_coords[0] = u[0];
+	odoIncrement.m_coords[1] = u[1];
+	odoIncrement.m_coords[2] = u[2];
+	odoIncrement.m_quat  [0] = u[3];
+	odoIncrement.m_quat  [1] = u[4];
+	odoIncrement.m_quat  [2] = u[5];
+	odoIncrement.m_quat  [3] = u[6];
 
 	// Pose composition:
 	robotPose += odoIncrement;
@@ -408,7 +435,7 @@ void CRangeBearingKFSLAM::OnObservationModel(
 	// Get the sensor pose relative to the robot:
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
 	ASSERT_(obs);
-	const CPose3DQuat sensorPoseOnRobot = obs->sensorLocationOnRobot;
+	const CPose3DQuat sensorPoseOnRobot = CPose3DQuat(obs->sensorLocationOnRobot);
 
 	/* -------------------------------------------
        Equations, obtained using matlab, of the relative 3D position of a landmark (xi,yi,zi), relative
@@ -474,7 +501,7 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
 	// Get the sensor pose relative to the robot:
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
 	ASSERT_(obs);
-	const CPose3DQuat sensorPoseOnRobot = obs->sensorLocationOnRobot;
+	const CPose3DQuat sensorPoseOnRobot = CPose3DQuat(obs->sensorLocationOnRobot);
 
     const size_t  vehicle_size = get_vehicle_size();
     //const size_t  obs_size  = get_observation_size();
@@ -482,7 +509,7 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
 
 	// Compute the jacobians, needed below:
 	//const CPose3DQuat  sensorPoseAbs= robotPose + sensorPoseOnRobot;
-	CPose3DQuat  sensorPoseAbs(UNINITIALIZED_POSE);
+	CPose3DQuat  sensorPoseAbs(UNINITIALIZED_QUATERNION);
 	CMatrixFixedNumeric<kftype,7,7>  H_senpose_vehpose(UNINITIALIZED_MATRIX);
 	CMatrixFixedNumeric<kftype,7,7>  H_senpose_senrelpose(UNINITIALIZED_MATRIX);  // Not actually used
 
@@ -791,7 +818,7 @@ void CRangeBearingKFSLAM::OnInverseObservationModel(
 	const CPose3DQuat	robotPose = getCurrentRobotPoseMean();
 
 	//const CPose3DQuat  sensorPoseAbs= robotPose + sensorPoseOnRobot;
-	CPose3DQuat  sensorPoseAbs(UNINITIALIZED_POSE);
+	CPose3DQuat  sensorPoseAbs(UNINITIALIZED_QUATERNION);
 	CMatrixFixedNumeric<kftype,7,7>  dsensorabs_dvehpose(UNINITIALIZED_MATRIX);
 	CMatrixFixedNumeric<kftype,7,7>  dsensorabs_dsenrelpose(UNINITIALIZED_MATRIX);  // Not actually used
 

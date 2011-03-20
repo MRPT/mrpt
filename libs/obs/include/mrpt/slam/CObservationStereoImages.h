@@ -126,7 +126,7 @@ namespace slam
 		  *  Note that most sensors will use the full (6D) CPose3D, but see the derived classes for more details or special cases.
 		  * \sa getSensorPose
 		  */
-		void setSensorPose( const CPose3D &newSensorPose ) { cameraPose = newSensorPose; }
+		void setSensorPose( const CPose3D &newSensorPose ) { cameraPose = CPose3DQuat(newSensorPose); }
 
 		void swap( CObservationStereoImages &o); //!< Do an efficient swap of all data members of this object with "o".
 
