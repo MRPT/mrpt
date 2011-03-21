@@ -131,7 +131,7 @@ protected:
 	static void func_inverse(const CArrayDouble<7> &x, const double &dummy, CArrayDouble<7> &Y)
 	{
 		const CPose3DQuat p1(x[0],x[1],x[2],CQuaternionDouble(x[3],x[4],x[5],x[6]));
-		const CPose3DQuat p1_inv = -p1;
+		const CPose3DQuat p1_inv ( -p1 );
 		for (int i=0;i<7;i++) Y[i]=p1_inv[i];
 	}
 
@@ -139,8 +139,8 @@ protected:
 		double x,double y, double z, double yaw, double pitch, double roll,
 		double x2,double y2, double z2, double yaw2, double pitch2, double roll2)
 	{
-		const CPose3DQuat  q1 = CPose3D(x,y,z,yaw,pitch,roll);
-		const CPose3DQuat  q2 = CPose3D(x2,y2,z2,yaw2,pitch2,roll2);
+		const CPose3DQuat  q1( CPose3D(x,y,z,yaw,pitch,roll) );
+		const CPose3DQuat  q2( CPose3D(x2,y2,z2,yaw2,pitch2,roll2) );
 
 		// Theoretical Jacobians:
 		CMatrixDouble77  df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);

@@ -237,8 +237,8 @@ void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
 					new_obs->timestamp = ( o_l->timestamp + o_r->timestamp ) >> 1;
 					new_obs->sensorLabel = lb_stereo;
 
-					new_obs->cameraPose = o_l->cameraPose;
-					new_obs->rightCameraPose = o_r->cameraPose - o_l->cameraPose;
+					new_obs->cameraPose = CPose3DQuat(o_l->cameraPose);
+					new_obs->rightCameraPose = CPose3DQuat(o_r->cameraPose - o_l->cameraPose);
 					new_obs->imageLeft = o_l->image;
 					new_obs->imageRight = o_r->image;
 

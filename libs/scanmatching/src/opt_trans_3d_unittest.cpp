@@ -61,7 +61,7 @@ CPose3DQuat generate_points( TPoints &pA, TPoints &pB )
 	pA[3].resize(3);	pA[3][0] = 0.7;		pA[3][1] = 0.3;		pA[3][2] = 3.4;
 	pA[4].resize(3);	pA[4][0] = 1.9;		pA[4][1] = 2.5;		pA[4][2] = -1.7;
 
-	CPose3DQuat qPose = CPose3D( Dx, Dy, Dz, yaw, pitch, roll );
+	CPose3DQuat qPose = CPose3DQuat(CPose3D( Dx, Dy, Dz, yaw, pitch, roll ));
 	for( unsigned int i = 0; i < 5; ++i )
 	{
 		pB[i].resize( 3 );

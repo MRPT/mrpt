@@ -220,7 +220,7 @@ void TestCalibrate_pose2quat()
 {
 	// Take a 7x7 representation:
 	CPose3DQuatPDFGaussian  o;
-	o.mean = CPose3D(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60));
+	o.mean = CPose3DQuat(CPose3D(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60)));
 	//o.mean = CPose3D(1.0,2.0,3.0, DEG2RAD(00),DEG2RAD(90),DEG2RAD(0));
 
 	CMatrixFixedNumeric<double,7,1> v;

@@ -62,7 +62,7 @@ protected:
 	void test_toYPRAndBack(double YAW,double PITCH,double ROLL)
 	{
 		CPose3D p1(0,0,0, YAW,PITCH,ROLL);
-		CPose3DQuat		q1 = p1;
+		CPose3DQuat		q1(p1);
 		CPose3D			p2 = q1;
 
 		EXPECT_NEAR(0,(p1.getRotationMatrix()-p2.getRotationMatrix()).Abs().sumAll(), 1e-4) <<

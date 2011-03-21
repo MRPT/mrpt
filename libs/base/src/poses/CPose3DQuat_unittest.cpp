@@ -55,8 +55,8 @@ protected:
 		const CPose3D  p1_i_p2 = p1 - p2;
 
 
-		CPose3DQuat  q1=p1;
-		CPose3DQuat  q2=p2;
+		CPose3DQuat  q1=CPose3DQuat(p1);
+		CPose3DQuat  q2=CPose3DQuat(p2);
 
 		CPose3DQuat  q1_c_q2=q1+q2;
 		CPose3DQuat  q1_i_q2=q1-q2;
@@ -77,7 +77,7 @@ protected:
 	                 double x,double y,double z)
 	{
 		const CPose3D  		p1(x1,y1,z1,yaw1,pitch1,roll1);
-		const CPose3DQuat  	q1 = p1;
+		const CPose3DQuat  	q1(p1);
 		const CPoint3D  	p(x,y,z);
 
 		CPoint3D  p1_plus_p = p1 + p;
@@ -107,7 +107,7 @@ protected:
 	void test_composePointJacob(double x1,double y1,double z1, double yaw1,double pitch1,double roll1,
 	                 double x,double y,double z)
 	{
-		const CPose3DQuat  	q1 = CPose3D(x1,y1,z1,yaw1,pitch1,roll1);
+		const CPose3DQuat  	q1( CPose3D(x1,y1,z1,yaw1,pitch1,roll1) );
 		const CPoint3D  	p(x,y,z);
 
 		CMatrixFixedNumeric<double,3,3> df_dpoint(UNINITIALIZED_MATRIX);
@@ -158,7 +158,7 @@ protected:
 	                 double x,double y,double z)
 	{
 		const CPose3D		p1(x1,y1,z1,yaw1,pitch1,roll1);
-		const CPose3DQuat  	q1 = p1;
+		const CPose3DQuat  	q1(p1);
 		const CPoint3D  	p(x,y,z);
 
 		CPoint3D  p_minus_p1 = p - p1;
@@ -190,7 +190,7 @@ protected:
 	void test_invComposePointJacob(double x1,double y1,double z1, double yaw1,double pitch1,double roll1,
 	                 double x,double y,double z)
 	{
-		const CPose3DQuat  	q1 = CPose3D(x1,y1,z1,yaw1,pitch1,roll1);
+		const CPose3DQuat  	q1( CPose3D(x1,y1,z1,yaw1,pitch1,roll1) );
 		const CPoint3D  	p(x,y,z);
 
 		CMatrixFixedNumeric<double,3,3> df_dpoint(UNINITIALIZED_MATRIX);
@@ -258,7 +258,7 @@ protected:
 	void test_fromYPRAndBack(double x1,double y1,double z1, double yaw1,double pitch1,double roll1)
 	{
 		const CPose3D p1(x1,y1,z1,yaw1,pitch1,roll1);
-		const CPose3DQuat q1 = p1;
+		const CPose3DQuat q1(p1);
 		const CPose3D p1r = q1;
 
 		EXPECT_NEAR(0, (p1.getHomogeneousMatrixVal()-q1.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-5) <<
@@ -275,7 +275,7 @@ protected:
 		double x1,double y1,double z1, double yaw1,double pitch1,double roll1,
 		double x, double y, double z)
 	{
-		const CPose3DQuat q1 = CPose3D(x1,y1,z1,yaw1,pitch1,roll1);
+		const CPose3DQuat q1(CPose3D(x1,y1,z1,yaw1,pitch1,roll1));
 		TPoint3D pp(x,y,z), aux;
 		q1.composePoint( x,y,z, pp.x,pp.y,pp.z);
 		q1.inverseComposePoint( pp.x,pp.y,pp.z, aux.x, aux.y, aux.z );
@@ -297,7 +297,7 @@ protected:
 	void test_sphericalCoords(double x1,double y1,double z1, double yaw1,double pitch1,double roll1,
 	                 double x,double y,double z)
 	{
-		const CPose3DQuat  	q1 = CPose3D(x1,y1,z1,yaw1,pitch1,roll1);
+		const CPose3DQuat  	q1( CPose3D(x1,y1,z1,yaw1,pitch1,roll1) );
 		const TPoint3D  	p(x,y,z);
 
 		CMatrixFixedNumeric<double,3,3> df_dpoint(UNINITIALIZED_MATRIX);
