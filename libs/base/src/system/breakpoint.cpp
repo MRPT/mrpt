@@ -36,5 +36,5 @@
 void mrpt::system::breakpoint(const std::string &exception_msg)
 {
 	// Does nothing, but provides a place where to put a breakpoint:
-	const size_t n = exception_msg.size();
+	exception_msg.size();
 }

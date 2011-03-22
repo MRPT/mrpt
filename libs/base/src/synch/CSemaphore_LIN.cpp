@@ -154,7 +154,7 @@ bool CSemaphore::waitForSignal( unsigned int timelimit )
 
 	// If there's an error != than a timeout, dump to stderr:
 	if (rc!=0 && errno!=ETIMEDOUT)
-		std::cerr << format("[CSemaphore::waitForSignal] In semaphore named '', error: %s\n", m_name.c_str(),strerror(errno) );
+		std::cerr << format("[CSemaphore::waitForSignal] In semaphore named '%s', error: %s\n", m_name.c_str(),strerror(errno) );
 
 	return rc==0; // true: all ok.
 
