@@ -1264,14 +1264,80 @@ void CImage::grayscale( CImage  &ret ) const
 }
 
 
+MRPT_TODO("JL: Create separate files for SSE2 optimized code!")
+
+// This function comes from libcvd, released under LGPL. See http://mi.eng.cam.ac.uk/~er258/cvd/
+#if MRPT_HAS_SSE2
+void halfSampleSSE2(const uint8_t* in, uint8_t* out, int w, int h)
+{
+	const unsigned long long mask[2] = {0x00FF00FF00FF00FFull, 0x00FF00FF00FF00FFull};
+	const uint8_t* nextRow = in + w;
+	__m128i m = _mm_loadu_si128((const __m128i*)mask);
+	int sw = w >> 4;
+	int sh = h >> 1;
+
+	for (int i=0; i<sh; i++)
+	{
+		for (int j=0; j<sw; j++)
+		{
+			__m128i here = _mm_load_si128((const __m128i*)in);
+			__m128i next = _mm_load_si128((const __m128i*)nextRow);
+			here = _mm_avg_epu8(here,next);
+			next = _mm_and_si128(_mm_srli_si128(here,1), m);
+			here = _mm_and_si128(here,m);
+			here = _mm_avg_epu16(here, next);
+			_mm_storel_epi64((__m128i*)out, _mm_packus_epi16(here,here));
+			in += 16;
+			nextRow += 16;
+			out += 8;
+		}
+
+		in += w;
+		nextRow += w;
+	}
+}
+#endif
+
+// The following templates are taken from libcvd (LGPL). See http://mi.eng.cam.ac.uk/~er258/cvd/
+// Check if the pointer is aligned to the specified byte granularity
+template<int bytes> bool is_aligned(const void* ptr);
+template<> inline bool is_aligned<8>(const void* ptr) {   return ((reinterpret_cast<size_t>(ptr)) & 0x7) == 0;   }
+template<> inline bool is_aligned<16>(const void* ptr) {  return ((reinterpret_cast<size_t>(ptr)) & 0xF) == 0;   }
+
+
 /*---------------------------------------------------------------
 						scaleHalf
  ---------------------------------------------------------------*/
 void CImage::scaleHalf(CImage &out)const
 {
+#if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();   // For delayed loaded images stored externally
+	ASSERT_(img!=NULL)
+
+	// Get this image size:
+	const IplImage * img_src = ((IplImage*)img);
+	const int w = img_src->width;
+	const int h = img_src->height;
+
+	// prepare output image:
+
+	// If possible, use SSE2 optimized version:
+#if MRPT_HAS_SSE2
+	{
+		out.resize(w>>1,h>>1,img_src->nChannels, img_src->origin==0 );
+		const IplImage * img_dest = ((IplImage*)out.getAsIplImage());
+		if (img_src->nChannels==1 && is_aligned<16>(img_src->imageData) && is_aligned<16>(img_dest->imageData) && ((w & 0xF) == 0))
+		{
+			halfSampleSSE2( (const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData, w,h);
+			return;
+		}
+	}
+#endif
+
+	// Fall back to slow method:
 	out = *this;
-	const TImageSize siz = this->getSize();
-	out.scaleImage(siz.x/2,siz.y/2);
+	out.scaleImage(w>>1,h>>1);
+#endif
 }
 
 /*---------------------------------------------------------------

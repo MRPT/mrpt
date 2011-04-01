@@ -168,7 +168,7 @@ namespace mrpt
 			  * \sa setFromMatrix
 			  */
 			template <typename Derived>
-			explicit inline CImage(const Eigen::MatrixBase<Derived> &m, bool matrix_is_normalized) 
+			explicit inline CImage(const Eigen::MatrixBase<Derived> &m, bool matrix_is_normalized)
 			{
 				this->setFromMatrix(m,matrix_is_normalized);
 			}
@@ -202,7 +202,6 @@ namespace mrpt
 					TImageChannels	nChannels,
 					bool			originTopLeft )
 			{
-				ASSERT_(img!=NULL);
 				changeSize(width,height,nChannels,originTopLeft);
 			}
 
@@ -279,7 +278,7 @@ namespace mrpt
 				this->scaleHalf(ret);
 				return ret;
 			}
-			
+
 			//! \overload
 			void scaleHalf(CImage &out_image) const;
 
