@@ -66,9 +66,9 @@ CPointCloud::CPointCloud( ) :
 {
 	markAllPointsAsNew();
 }
-
+#if MRPT_HAS_OPENGL_GLUT
 GLuint m_DL_id = -1;
-
+#endif
 
 /*---------------------------------------------------------------
 							render
