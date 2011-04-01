@@ -103,6 +103,22 @@ double image_test_2(int w, int h)
 }
 
 
+double image_halfsample(int w, int h)
+{
+	CImage  img(w,h,CH_GRAY), img2;
+
+	CTicTac	 tictac;
+
+	const size_t N = 100;
+
+	tictac.Tic();
+	for (size_t i=0;i<N;i++)
+		img.scaleHalf(img2);
+
+	return tictac.Tac()/N;
+}
+
+
 // ------------------------------------------------------
 // register_tests_image
 // ------------------------------------------------------
@@ -119,6 +135,9 @@ void register_tests_image()
 	lstTests.push_back( TestData("images: Gauss filter (640x480)",image_test_2,  640,480) );
 	lstTests.push_back( TestData("images: Gauss filter (800x600)",image_test_2,  800,600) );
 	lstTests.push_back( TestData("images: Gauss filter (1024x768)",image_test_2,  1024,768) );
+
+	lstTests.push_back( TestData("images: Half sample (640x480)",image_halfsample,  640,480) );
+	lstTests.push_back( TestData("images: Half sample (800x600)",image_halfsample,  800,600) );
 }
 
 

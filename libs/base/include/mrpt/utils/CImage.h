@@ -273,15 +273,29 @@ namespace mrpt
 			  * \exception std::exception On odd size
 			  * \sa scaleDouble, scaleImage
 			  */
-			CImage  scaleHalf()const;
+			CImage  scaleHalf()const
+			{
+				CImage ret(UNINITIALIZED_IMAGE);
+				this->scaleHalf(ret);
+				return ret;
+			}
+			
+			//! \overload
+			void scaleHalf(CImage &out_image) const;
 
 			/** Returns a new image scaled up to double its original size.
 			  * \exception std::exception On odd size
 			  * \sa scaleHalf, scaleImage
 			  */
-			CImage  scaleDouble()const;
+			CImage  scaleDouble()const
+                        {
+                                CImage ret(UNINITIALIZED_IMAGE);
+                                this->scaleDouble(ret);
+                                return ret;
+                        }
 
-
+                       //! \overload
+                       void scaleDouble(CImage &out_image) const;
 
 
 			/** Update a part of this image with the "patch" given as argument.

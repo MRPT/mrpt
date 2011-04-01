@@ -1267,23 +1267,21 @@ void CImage::grayscale( CImage  &ret ) const
 /*---------------------------------------------------------------
 						scaleHalf
  ---------------------------------------------------------------*/
-CImage  CImage::scaleHalf()const
+void CImage::scaleHalf(CImage &out)const
 {
-	CImage ret = *this;
+	out = *this;
 	const TImageSize siz = this->getSize();
-	ret.scaleImage(siz.x/2,siz.y/2);
-	return ret;
+	out.scaleImage(siz.x/2,siz.y/2);
 }
 
 /*---------------------------------------------------------------
 						scaleDouble
  ---------------------------------------------------------------*/
-CImage  CImage::scaleDouble()const
+void CImage::scaleDouble(CImage &out)const
 {
-	CImage ret = *this;
+	out = *this;
 	const TImageSize siz = this->getSize();
-	ret.scaleImage(siz.x*2,siz.y*2);
-	return ret;
+	out.scaleImage(siz.x*2,siz.y*2);
 }
 
 /*---------------------------------------------------------------
