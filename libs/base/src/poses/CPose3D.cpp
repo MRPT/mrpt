@@ -36,6 +36,7 @@
 #include <mrpt/poses/CPose3DQuat.h>
 
 #include <mrpt/math/utils.h>
+#include <mrpt/math/geometry.h>
 #include <mrpt/math/CMatrix.h>
 
 

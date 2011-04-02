@@ -28,6 +28,9 @@
 
 #include <mrpt/obs.h>   // Precompiled headers
 
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CObservationOdometry.h>
+
 #include <mrpt/system/string_utils.h>
 
 #include <mrpt/slam/carmen_log_tools.h>

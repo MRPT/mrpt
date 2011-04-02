@@ -33,6 +33,7 @@
 #include <mrpt/utils/CFileOutputStream.h>
 
 #include <mrpt/math/utils.h>
+#include <mrpt/math/slerp.h>
 #include <mrpt/math/CMatrixD.h>
 
 using namespace mrpt;

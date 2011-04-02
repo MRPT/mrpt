@@ -26,16 +26,34 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#ifndef MRPT_VISION_INTERNAL_OPECV_INCL_H
+#define MRPT_VISION_INTERNAL_OPECV_INCL_H
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/system/os.h>
+#include <mrpt/config.h>
 
-/** Only when built in debug (with _DEBUG), this function will be called just before raising any MRPT exception,
-  *  so the user can conveniently put a breakpoint here to explore the call stack, etc.
-  */
-void mrpt::system::breakpoint(const std::string &exception_msg)
-{
-	// Does nothing, but provides a place where to put a breakpoint:
-	exception_msg.size();
-}
+#if MRPT_HAS_OPENCV
+	// OPENCV HEADERS
+#	define CV_NO_CVV_IMAGE // Avoid CImage name crash
+
+#	if MRPT_OPENCV_VERSION_NUM>=0x211
+#		include <opencv2/core/core.hpp>
+#		include <opencv2/highgui/highgui.hpp>
+#		include <opencv2/imgproc/imgproc.hpp>
+#		include <opencv2/imgproc/imgproc_c.h>
+#		include <opencv2/calib3d/calib3d.hpp>
+#	else
+		// For OpenCV <=2.1
+#		include <cv.h>
+#		include <highgui.h>
+#		include <cvaux.h>
+#	endif
+
+	#ifdef CImage	// For old OpenCV versions (<=1.0.0)
+	#undef CImage
+	#endif
+
+	using mrpt::utils::CImage;
+
+#endif // MRPT_HAS_OPENCV
+
+#endif

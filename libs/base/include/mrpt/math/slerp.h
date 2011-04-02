@@ -33,9 +33,11 @@
 namespace mrpt
 {
 	namespace poses  { class CPose3D; class CPose3DQuat; }
-	
+
 	namespace math
 	{
+		using namespace mrpt::poses;
+
 		/** @name SLERP (Spherical Linear Interpolation) functions
 		    @{ */
 
@@ -52,7 +54,7 @@ namespace mrpt
 		void slerp(
 			const CQuaternion<T>  & q0,
 			const CQuaternion<T>  & q1,
-			const double            t, 
+			const double            t,
 			CQuaternion<T>        & q)
 		{
 			ASSERTDEB_(t>=0 && t<=1)
@@ -62,7 +64,7 @@ namespace mrpt
 			// if qa=qb or qa=-qb then theta = 0 and we can return qa
 			if (std::abs(cosHalfTheta) >= 1.0)
 			{
-				q = q0; 
+				q = q0;
 				return;
 			}
 			bool reverse_q1 = false;
@@ -77,7 +79,7 @@ namespace mrpt
 			// if theta = 180 degrees then result is not fully defined
 			// we could rotate around any axis normal to qa or qb
 			if (std::abs(sinHalfTheta) < 0.001)
-			{ 
+			{
 				if (!reverse_q1)
 				     for (int i=0;i<4;i++) q[i] = (1-t)*q0[i] + t*q1[i];
 				else for (int i=0;i<4;i++) q[i] = (1-t)*q0[i] - t*q1[i];
@@ -100,16 +102,16 @@ namespace mrpt
 		void BASE_IMPEXP slerp(
 			const CPose3D  & q0,
 			const CPose3D  & q1,
-			const double     t, 
+			const double     t,
 			CPose3D        & p);
-			
+
 		//! \overload
 		void BASE_IMPEXP slerp(
 			const CPose3DQuat & q0,
 			const CPose3DQuat & q1,
-			const double        t, 
+			const double        t,
 			CPose3DQuat       & p);
-					  
+
 		/** @} */
 	}
 }

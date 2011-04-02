@@ -33,6 +33,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/synch.h>
 
 #include <map>

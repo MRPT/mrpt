@@ -31,6 +31,10 @@
 
 #include <mrpt/base.h> // dependencies
 
+// Only really include all headers if we come from a user program (anything
+//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
+#if !defined(mrpt_opengl_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
+
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -67,6 +71,8 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/pose_pdfs.h>
 #include <mrpt/opengl/graph_tools.h>
+
+#endif // end precomp.headers
 
 
 #endif

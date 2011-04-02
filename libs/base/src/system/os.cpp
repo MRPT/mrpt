@@ -28,13 +28,13 @@
 
 #include <mrpt/base.h>  // Precompiled headers
 
-#include <mrpt/system/os.h>
 
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/synch/CCriticalSection.h>
+#include <mrpt/system/os.h>
 
 #include <cstdlib>
 #include <cstdarg>

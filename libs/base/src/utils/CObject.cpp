@@ -31,6 +31,7 @@
 
 #include <mrpt/utils/CObject.h>
 #include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/system/os.h>
 
 #include "internal_class_registry.h"

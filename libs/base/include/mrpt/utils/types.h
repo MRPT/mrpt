@@ -45,10 +45,15 @@
 #include <mrpt/utils/mrpt_inttypes.h>  // compiler-independent version of "inttypes.h"
 
 
-// SSE2, SSE3 types:
+// SSE2 types:
 #if MRPT_HAS_SSE2
 	#include <emmintrin.h>
 	#include <mmintrin.h>
+#endif
+
+// SSE3 types:
+#if MRPT_HAS_SSE3
+	#include <pmmintrin.h>
 #endif
 
 // needed here for a few basic types used in Eigen MRPT's plugin:

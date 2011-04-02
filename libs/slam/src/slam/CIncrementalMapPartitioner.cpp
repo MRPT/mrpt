@@ -32,6 +32,7 @@
 
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/slam/observations_overlap.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/math/CGraphPartitioner.h>

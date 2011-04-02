@@ -28,6 +28,8 @@
 
 #include <mrpt/vision.h>  // Precompiled headers
 
+#include <mrpt/vision/chessboard_find_corners.h>
+#include <mrpt/vision/pinhole.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 
 #include "do_opencv_includes.h"

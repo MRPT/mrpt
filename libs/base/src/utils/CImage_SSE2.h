@@ -25,17 +25,18 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
+#ifndef CImage_SSE2_H
+#define CImage_SSE2_H
 
-#include <mrpt/base.h>  // Precompiled headers
+#include <mrpt/config.h>
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/system/os.h>
+// See documentation in the .cpp file.
+#if MRPT_HAS_SSE2
 
-/** Only when built in debug (with _DEBUG), this function will be called just before raising any MRPT exception,
-  *  so the user can conveniently put a breakpoint here to explore the call stack, etc.
-  */
-void mrpt::system::breakpoint(const std::string &exception_msg)
-{
-	// Does nothing, but provides a place where to put a breakpoint:
-	exception_msg.size();
-}
+void image_SSE2_scale_half_1c8u        (const uint8_t* in, uint8_t* out, int w, int h);
+void image_SSE2_scale_half_smooth_1c8u (const uint8_t* in, uint8_t* out, int w, int h);
+
+
+#endif // end if MRPT_HAS_SSE2
+
+#endif

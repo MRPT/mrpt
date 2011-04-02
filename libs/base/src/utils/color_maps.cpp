@@ -30,6 +30,7 @@
 
 
 #include <mrpt/utils/color_maps.h>
+#include <mrpt/math/utils.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

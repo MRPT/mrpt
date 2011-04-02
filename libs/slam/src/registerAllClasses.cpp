@@ -28,6 +28,13 @@
 
 #include <mrpt/slam.h>  // Precompiled header
 
+#ifndef MRPT_ENABLE_PRECOMPILED_HDRS
+#	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
+#	undef mrpt_slam_H
+#	include <mrpt/slam.h>
+#endif
+
+
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::slam;

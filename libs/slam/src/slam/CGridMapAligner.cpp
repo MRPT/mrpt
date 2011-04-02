@@ -37,6 +37,7 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/slam/CMultiMetricMap.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPosePDFSOG.h>

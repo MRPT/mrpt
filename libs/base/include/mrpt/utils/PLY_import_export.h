@@ -30,6 +30,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CStringList.h>
+#include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
 {
@@ -49,12 +50,12 @@ namespace mrpt
 			  * \return false on any error in the file format or reading it. To obtain more details on the error you can call getLoadPLYErrorString()
 			  */
 			bool loadFromPlyFile(
-				const std::string         &filename, 
+				const std::string         &filename,
 				CStringList  *file_comments = NULL,
 				CStringList  *file_obj_info = NULL );
 
 			/** Return a description of the error if loadFromPlyFile() returned false, or an empty string if the file was loaded without problems. */
-			std::string getLoadPLYErrorString() const { return m_ply_import_last_error; } 
+			std::string getLoadPLYErrorString() const { return m_ply_import_last_error; }
 
 		protected:
 			/** @name PLY Import virtual methods to implement in base classes
@@ -66,7 +67,7 @@ namespace mrpt
 			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_face */
 			virtual void PLY_import_set_face_count(const size_t N) = 0;
 
-			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point. 
+			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
 			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
 			  */
 			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL) = 0;
@@ -93,13 +94,13 @@ namespace mrpt
 			  * \return false on any error writing the file. To obtain more details on the error you can call getSavePLYErrorString()
 			  */
 			bool saveToPlyFile(
-				const std::string  & filename, 
+				const std::string  & filename,
 				bool save_in_binary = false,
 				const CStringList  & file_comments = CStringList(),
 				const CStringList  & file_obj_info = CStringList() ) const;
 
 			/** Return a description of the error if loadFromPlyFile() returned false, or an empty string if the file was loaded without problems. */
-			std::string getSavePLYErrorString() const { return m_ply_export_last_error; } 
+			std::string getSavePLYErrorString() const { return m_ply_export_last_error; }
 
 		protected:
 			/** @name PLY Export virtual methods to implement in base classes
@@ -111,12 +112,12 @@ namespace mrpt
 			/** In a base class, return the number of faces */
 			virtual size_t PLY_export_get_face_count() const = 0;
 
-			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point. 
+			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
 			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
 			  */
 			virtual void PLY_export_get_vertex(
-				const size_t idx, 
-				mrpt::math::TPoint3Df &pt, 
+				const size_t idx,
+				mrpt::math::TPoint3Df &pt,
 				bool &pt_has_color,
 				mrpt::utils::TColorf &pt_color) const = 0;
 

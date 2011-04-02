@@ -32,8 +32,12 @@
 
 namespace mrpt
 {
+	namespace utils { class CStream; }
+
 	namespace opengl
 	{
+		using mrpt::utils::CStream;
+
 		class OPENGL_IMPEXP CSetOfTexturedTriangles;
 
 		// This must be added to any CSerializable derived class:

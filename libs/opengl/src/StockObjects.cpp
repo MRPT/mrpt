@@ -28,6 +28,16 @@
 
 #include <mrpt/opengl.h>  // Precompiled header
 
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSetOfTriangles.h>
+#include <mrpt/opengl/CArrow.h>
+#include <mrpt/opengl/CCylinder.h>
+#include <mrpt/opengl/CPolyhedron.h>
+#include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/opengl/C3DSScene.h>
+
+
 #include <mrpt/system.h>
 #include <mrpt/utils/CFileOutputStream.h>
 
@@ -169,7 +179,7 @@ CSetOfObjectsPtr stock_objects::CornerXYZEye()
 {
 	CSetOfObjectsPtr ret = CSetOfObjects::Create();
 	CPose3D rotation;
-	
+
 	CArrowPtr obj = CArrow::Create(
 			0,0,0,
 			1.0,0,0,

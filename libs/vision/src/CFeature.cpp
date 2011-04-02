@@ -32,6 +32,7 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/vision/CFeature.h>
+#include <mrpt/vision/types.h>
 #include <mrpt/math/utils.h>
 
 using namespace mrpt;

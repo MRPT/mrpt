@@ -28,6 +28,8 @@
 
 #include <mrpt/slam.h>  // Precompiled header
 
+#include <mrpt/slam/observations_overlap.h>
+
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::poses;

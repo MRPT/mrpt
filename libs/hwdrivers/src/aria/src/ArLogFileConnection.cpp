@@ -17,9 +17,9 @@ Copyright (C) 2006, 2007 MobileRobots Inc.
      along with this program; if not, write to the Free Software
      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-If you wish to redistribute ARIA under different terms, contact 
-MobileRobots for information about a commercial version of ARIA at 
-robots@mobilerobots.com or 
+If you wish to redistribute ARIA under different terms, contact
+MobileRobots for information about a commercial version of ARIA at
+robots@mobilerobots.com or
 MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 */
 
@@ -85,7 +85,7 @@ AREXPORT int ArLogFileConnection::internalOpen(void)
       myStatus = STATUS_OPEN_FAILED;
       return OPEN_FILE_NOT_FOUND;
     }
-  
+
   char buf[100];
   if (fgets(buf,100,myFD) != NULL)
     {
@@ -149,20 +149,20 @@ AREXPORT bool ArLogFileConnection::close(void)
   return true;
 }
 
-AREXPORT int ArLogFileConnection::read(const char *data, unsigned int size, 
+AREXPORT int ArLogFileConnection::read(const char *data, unsigned int size,
 				   unsigned int msWait)
 {
   ArTime timeDone;
   unsigned int bytesRead = 0;
-  int n;
+  int n=0;
 
-  if (getStatus() != STATUS_OPEN) 
+  if (getStatus() != STATUS_OPEN)
   {
-    ArLog::log(ArLog::Terse, 
+    ArLog::log(ArLog::Terse,
 	       "ArLogFileConnection::read: Attempt to use port that is not open.");
     return -1;
   }
-  
+
   timeDone.setToNow();
   timeDone.addMSec(msWait);
 
@@ -191,7 +191,7 @@ AREXPORT int ArLogFileConnection::read(const char *data, unsigned int size,
                 {
                   if (isdigit(line[i+2]))
                     {
-                      const_cast<char *>(data)[n++] = 
+                      const_cast<char *>(data)[n++] =
                         100 * (line[i]-'0') + 10*(line[i+1]-'0') + line[i+2]-'0';
                       i++;
                     }
@@ -215,14 +215,14 @@ AREXPORT int ArLogFileConnection::read(const char *data, unsigned int size,
 
       i = 3;
       nn = data[2] - 2;
-      while (nn > 1) 
+      while (nn > 1)
         {
           c += ((unsigned char)data[i]<<8) | (unsigned char)data[i+1];
           c = c & 0xffff;
           nn -= 2;
           i += 2;
         }
-      if (nn > 0) 
+      if (nn > 0)
         c = c ^ (int)((unsigned char) data[i]);
 
       const_cast<char *>(data)[n++] = (c << 8) & 0xff;
@@ -242,7 +242,7 @@ AREXPORT int ArLogFileConnection::write(const char *data, unsigned int size)
 }
 
 
-/** 
+/**
     @return the name of the log file
 */
 AREXPORT const char *ArLogFileConnection::getLogFile(void)

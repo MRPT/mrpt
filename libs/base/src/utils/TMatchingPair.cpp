@@ -28,8 +28,15 @@
 
 #include <mrpt/base.h>  // Precompiled headers
 
+#include <mrpt/utils/TMatchingPair.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/utils_defs.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/poses/CPose2D.h>
+
 using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::system;
 using namespace std;
 
 /*---------------------------------------------------------------
@@ -151,7 +158,7 @@ float TMatchingPairList::overallSquareErrorAndPoints(
 }
 
 /*---------------------------------------------------------------
-					TMatchingPairList::contains 
+					TMatchingPairList::contains
   ---------------------------------------------------------------*/
 bool TMatchingPairList::contains (const TMatchingPair &p) const
 {

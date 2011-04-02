@@ -28,6 +28,12 @@
 
 #include <mrpt/base.h>
 
+#ifndef MRPT_ENABLE_PRECOMPILED_HDRS
+#	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
+#	undef mrpt_base_H
+#	include <mrpt/base.h>
+#endif
+
 
 using namespace mrpt::utils;
 using namespace mrpt::math;

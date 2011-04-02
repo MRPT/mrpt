@@ -28,14 +28,76 @@
 
 #include <mrpt/base.h>  // Precompiled headers
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/system/os.h>
+#if MRPT_HAS_SSE2
+// ---------------------------------------------------------------------------
+//   This file contains the SSE2 optimized functions for mrpt::utils::CImage
+//    See the sources and the doxygen documentation page XXX for more details.
+// ---------------------------------------------------------------------------
 
-/** Only when built in debug (with _DEBUG), this function will be called just before raising any MRPT exception,
-  *  so the user can conveniently put a breakpoint here to explore the call stack, etc.
-  */
-void mrpt::system::breakpoint(const std::string &exception_msg)
+#include <mrpt/utils/CImage.h>
+#include "CImage_SSE2.h"
+
+
+/*
+  Function derived from sources in libcvd, released under LGPL. See http://mi.eng.cam.ac.uk/~er258/cvd/
+ */
+void image_SSE2_scale_half_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
 {
-	// Does nothing, but provides a place where to put a breakpoint:
-	exception_msg.size();
+	const unsigned long long mask[2] = {0x00FF00FF00FF00FFull, 0x00FF00FF00FF00FFull};
+	__m128i m = _mm_loadu_si128((const __m128i*)mask);
+	int sw = w >> 4;
+	int sh = h >> 1;
+
+	for (int i=0; i<sh; i++)
+	{
+		for (int j=0; j<sw; j++)
+		{
+			__m128i here = _mm_load_si128((const __m128i*)in);
+			__m128i next = _mm_and_si128(_mm_srli_si128(here,1), m);
+			here = _mm_and_si128(here,m);
+			here = _mm_avg_epu16(here, next);
+			_mm_storel_epi64((__m128i*)out, _mm_packus_epi16(here,here));
+			in += 16;
+			out += 8;
+		}
+		in += w;
+	}
 }
+
+
+
+/*
+  This function comes from libcvd, released under LGPL. See http://mi.eng.cam.ac.uk/~er258/cvd/
+ */
+void image_SSE2_scale_half_smooth_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
+{
+	const unsigned long long mask[2] = {0x00FF00FF00FF00FFull, 0x00FF00FF00FF00FFull};
+	const uint8_t* nextRow = in + w;
+	__m128i m = _mm_loadu_si128((const __m128i*)mask);
+	int sw = w >> 4;
+	int sh = h >> 1;
+
+	for (int i=0; i<sh; i++)
+	{
+		for (int j=0; j<sw; j++)
+		{
+			__m128i here = _mm_load_si128((const __m128i*)in);
+			__m128i next = _mm_load_si128((const __m128i*)nextRow);
+			here = _mm_avg_epu8(here,next);
+			next = _mm_and_si128(_mm_srli_si128(here,1), m);
+			here = _mm_and_si128(here,m);
+			here = _mm_avg_epu16(here, next);
+			_mm_storel_epi64((__m128i*)out, _mm_packus_epi16(here,here));
+			in += 16;
+			nextRow += 16;
+			out += 8;
+		}
+
+		in += w;
+		nextRow += w;
+	}
+}
+
+
+
+#endif // end if MRPT_HAS_SSE2

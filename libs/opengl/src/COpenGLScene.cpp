@@ -29,7 +29,9 @@
 #include <mrpt/opengl.h>  // Precompiled header
 
 
+#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/utils/metaprogramming.h>
 

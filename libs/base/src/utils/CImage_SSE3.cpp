@@ -28,14 +28,16 @@
 
 #include <mrpt/base.h>  // Precompiled headers
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/system/os.h>
+// ---------------------------------------------------------------------------
+//   This file contains the SSE2 optimized functions for mrpt::utils::CImage
+//    See the sources and the doxygen documentation page XXX for more details.
+// ---------------------------------------------------------------------------
 
-/** Only when built in debug (with _DEBUG), this function will be called just before raising any MRPT exception,
-  *  so the user can conveniently put a breakpoint here to explore the call stack, etc.
-  */
-void mrpt::system::breakpoint(const std::string &exception_msg)
-{
-	// Does nothing, but provides a place where to put a breakpoint:
-	exception_msg.size();
-}
+#include <mrpt/utils/CImage.h>
+#include "CImage_SSE3.h"
+
+
+
+
+
+

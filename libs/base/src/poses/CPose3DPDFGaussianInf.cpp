@@ -35,6 +35,7 @@
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussianInf.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

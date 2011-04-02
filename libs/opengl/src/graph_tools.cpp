@@ -29,6 +29,10 @@
 #include <mrpt/opengl.h>  // Precompiled header
 
 #include <mrpt/opengl/graph_tools.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::poses;

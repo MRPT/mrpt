@@ -270,7 +270,7 @@ namespace mrpt
 
 			/** Returns a new image scaled down to half its original size.
 			  * \exception std::exception On odd size
-			  * \sa scaleDouble, scaleImage
+			  * \sa scaleDouble, scaleImage, scaleHalfSmooth
 			  */
 			CImage  scaleHalf()const
 			{
@@ -281,6 +281,22 @@ namespace mrpt
 
 			//! \overload
 			void scaleHalf(CImage &out_image) const;
+
+
+			/** Returns a new image scaled down to half its original size (averaging between every two rows)
+			  * \exception std::exception On odd size
+			  * \sa scaleDouble, scaleImage, scaleHalf
+			  */
+			CImage  scaleHalfSmooth()const
+			{
+				CImage ret(UNINITIALIZED_IMAGE);
+				this->scaleHalfSmooth(ret);
+				return ret;
+			}
+
+			//! \overload
+			void scaleHalfSmooth(CImage &out_image) const;
+
 
 			/** Returns a new image scaled up to double its original size.
 			  * \exception std::exception On odd size

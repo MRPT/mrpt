@@ -28,6 +28,12 @@
 
 #include <mrpt/opengl.h>
 
+#ifndef MRPT_ENABLE_PRECOMPILED_HDRS
+#	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
+#	undef _mrpt_opengl_H
+#	include <mrpt/opengl.h>
+#endif
+
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
 

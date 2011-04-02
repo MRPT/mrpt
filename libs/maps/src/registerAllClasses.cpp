@@ -28,6 +28,13 @@
 
 #include <mrpt/maps.h>
 
+#ifndef MRPT_ENABLE_PRECOMPILED_HDRS
+#	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
+#	undef _mrpt_maps_H
+#	include <mrpt/maps.h>
+#endif
+
+
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::opengl;

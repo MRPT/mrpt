@@ -175,9 +175,9 @@ namespace mrpt
 		bool  BASE_IMPEXP vectorToTextFile( const std::vector<size_t> &vec, const std::string &fileName, bool append = false, bool byRows=false );
 		//! \overload
 		template <class Derived>
-		bool vectorToTextFile( const Eigen::MatrixBase<Derived> &vec, const std::string &fileName ) { 
+		bool vectorToTextFile( const Eigen::MatrixBase<Derived> &vec, const std::string &fileName ) {
 			try {
-				vec.saveToTextFile(fileName); 
+				vec.saveToTextFile(fileName);
 				return true;
 			} catch(...) {return false;}
 		}
@@ -218,7 +218,7 @@ namespace mrpt
 		  */
 		std::string BASE_IMPEXP stack_trace(bool calling_from_exception = false);
 
-		/** Only when built in debug (with _DEBUG), this function will be called just before raising any MRPT exception, 
+		/** Only when built in debug (with _DEBUG), this function will be called just before raising any MRPT exception,
 		  *  so the user can conveniently put a breakpoint here to explore the call stack, etc.
 		  */
 		void BASE_IMPEXP breakpoint(const std::string &exception_msg);
@@ -238,6 +238,13 @@ namespace mrpt
 		  * By default the color of "cout" is changed, unless changeStdErr=true, in which case "cerr" is changed.
 		  */
 		void BASE_IMPEXP setConsoleColor( TConsoleColor color, bool changeStdErr=false );
+
+
+		// The following templates are taken from libcvd (LGPL). See http://mi.eng.cam.ac.uk/~er258/cvd/
+		// Check if the pointer is aligned to the specified byte granularity
+		template<int bytes> bool is_aligned(const void* ptr);
+		template<> inline bool is_aligned<8>(const void* ptr) {   return ((reinterpret_cast<size_t>(ptr)) & 0x7) == 0;   }
+		template<> inline bool is_aligned<16>(const void* ptr) {  return ((reinterpret_cast<size_t>(ptr)) & 0xF) == 0;   }
 
 	} // End of namespace
 

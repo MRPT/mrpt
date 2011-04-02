@@ -54,6 +54,8 @@
 		- Fixed build errors against latest changes in eigen3-beta4 (before their release version).
 		- MSVC 2010: MRPT now uses standard "stdint.h" if provided by the compiler, instead of pstdint.h
 		- OSX: Fixed all build errors (Thanks to Jérôme Monceaux, http://www.mrpt.org/node/618 )
+		- Automatic detection of SSE2 and SSE3 support in the CMake script.
+		- Faster build with GCC thanks to changes in precompiled headers.
 	- New classes:
 		- [mrpt-base] mrpt::math::ModelSearch: A RANSAC + Genetic model fitter (by Zoltan Gaal)
 		- [mrpt-base] mrpt::utils::PLY_Importer & mrpt::utils::PLY_Exporter: Support for Stanford's PLY file format in different 3D point cloud classes. See also: http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
@@ -65,6 +67,9 @@
 			- [mrpt-maps] mrpt::slam::CReflectivityGridMap2D
 		- [mrpt-maps] mrpt::slam::CLogOddsGridMap2D, a new class due to a refactoring of mrpt::slam::COccupancyGridMap2D.		
 	- Changes in classes:
+		- [mrpt-bases] mrpt::utils::CImage changes:
+			- Some methods have been optimized for use of SSE2/SSE3 functions, falling back to the (slower) OpenCV functions when it's not possible.
+			- Implementation separated into different CImage_*.cpp files.
 		- [mrpt-base] mrpt::poses::CPose3D was too strict in checking that the rotation matrix is orthogonal: admisible threshold is now 1 (plus/minus)3e-3.
 		- [mrpt-base] New method: mrpt::utils::CThreadSafeQueue::get_lastest_purge_old()
 		- [mrpt-base] mrpt::synch::CSemaphore now supports named semaphores in Linux too.

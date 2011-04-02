@@ -29,10 +29,13 @@
 #define CSparseMatrix_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/exceptions.h>
 #include <mrpt/utils/CUncopiable.h>
 
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
 
 extern "C"{
 #include <mrpt/otherlibs/CSparse/cs.h>

@@ -45,6 +45,8 @@ namespace mrpt
 		using namespace mrpt::utils;
 
 
+		typedef uint64_t TFeatureID;	//!< Definition of a feature ID
+
 		typedef	uint64_t TLandmarkID;   //!< Unique IDs for landmarks
 		typedef uint64_t TCameraPoseID; //!< Unique IDs for camera frames (poses)
 

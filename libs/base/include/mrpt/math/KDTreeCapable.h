@@ -32,6 +32,8 @@
 
 #include <mrpt/otherlibs/ann/ANN.h>   // ANN: for kd-tree
 
+#include <mrpt/math/lightweight_geom_data.h>   // ANN: for kd-tree
+
 namespace mrpt
 {
 	namespace math

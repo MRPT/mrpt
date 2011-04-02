@@ -29,6 +29,12 @@
 #include <mrpt/vision.h>
 #include <mrpt/utils/CSerializable.h>
 
+#ifndef MRPT_ENABLE_PRECOMPILED_HDRS
+#	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
+#	undef __mrpt_vision_H
+#	include <mrpt/vision.h>
+#endif
+
 
 using namespace mrpt::vision;
 using namespace mrpt::utils;

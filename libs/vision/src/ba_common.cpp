@@ -27,7 +27,9 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/vision.h>  // Precompiled headers
+
 #include <mrpt/vision/bundle_adjustment.h>
+#include <mrpt/vision/pinhole.h>
 #include "ba_internals.h"
 
 using namespace std;

@@ -31,6 +31,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CProbabilityDensityFunction.h>
 #include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/opengl_frwd_decl.h>
 
 namespace mrpt

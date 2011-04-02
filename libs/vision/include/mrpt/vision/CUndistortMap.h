@@ -31,6 +31,8 @@
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/CImage.h>
 
+#include <mrpt/vision/link_pragmas.h>
+
 namespace mrpt
 {
 	namespace vision

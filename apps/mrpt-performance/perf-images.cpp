@@ -103,17 +103,50 @@ double image_test_2(int w, int h)
 }
 
 
+template <int IMG_CHANNELS>
 double image_halfsample(int w, int h)
 {
-	CImage  img(w,h,CH_GRAY), img2;
+	CImage  img(w,h,IMG_CHANNELS), img2;
 
 	CTicTac	 tictac;
 
-	const size_t N = 100;
+	const size_t N = 300;
 
 	tictac.Tic();
 	for (size_t i=0;i<N;i++)
 		img.scaleHalf(img2);
+
+	return tictac.Tac()/N;
+}
+
+template <int IMG_CHANNELS>
+double image_halfsample_smooth(int w, int h)
+{
+	CImage  img(w,h,IMG_CHANNELS), img2;
+
+	CTicTac	 tictac;
+
+	const size_t N = 300;
+
+	tictac.Tic();
+	for (size_t i=0;i<N;i++)
+		img.scaleHalfSmooth(img2);
+
+	return tictac.Tac()/N;
+}
+
+
+double image_rgb2gray_8u(int w, int h)
+{
+	CImage  img(w,h,CH_RGB), img2;
+
+	CTicTac	 tictac;
+
+	const size_t N = 300;
+
+	tictac.Tic();
+	for (size_t i=0;i<N;i++)
+		img.grayscale(img2);
 
 	return tictac.Tac()/N;
 }
@@ -136,8 +169,21 @@ void register_tests_image()
 	lstTests.push_back( TestData("images: Gauss filter (800x600)",image_test_2,  800,600) );
 	lstTests.push_back( TestData("images: Gauss filter (1024x768)",image_test_2,  1024,768) );
 
-	lstTests.push_back( TestData("images: Half sample (640x480)",image_halfsample,  640,480) );
-	lstTests.push_back( TestData("images: Half sample (800x600)",image_halfsample,  800,600) );
+	lstTests.push_back( TestData("images: Half sample GRAY (640x480)",image_halfsample<CH_GRAY>,  640,480) );
+	lstTests.push_back( TestData("images: Half sample GRAY (800x600)",image_halfsample<CH_GRAY>,  800,600) );
+
+	lstTests.push_back( TestData("images: Half sample RGB (640x480)",image_halfsample<CH_RGB>,  640,480) );
+	lstTests.push_back( TestData("images: Half sample RGB (800x600)",image_halfsample<CH_RGB>,  800,600) );
+
+	lstTests.push_back( TestData("images: Half sample smooth GRAY (640x480)",image_halfsample_smooth<CH_GRAY>,  640,480) );
+	lstTests.push_back( TestData("images: Half sample smooth GRAY (800x600)",image_halfsample_smooth<CH_GRAY>,  800,600) );
+
+	lstTests.push_back( TestData("images: Half sample smooth RGB (640x480)",image_halfsample_smooth<CH_RGB>,  640,480) );
+	lstTests.push_back( TestData("images: Half sample smooth RGB (800x600)",image_halfsample_smooth<CH_RGB>,  800,600) );
+
+
+	lstTests.push_back( TestData("images: RGB->GRAY 8u (640x480)",image_rgb2gray_8u,  640,480) );
+	lstTests.push_back( TestData("images: RGB->GRAY 8u (800x600)",image_rgb2gray_8u,  800,600) );
 }
 
 

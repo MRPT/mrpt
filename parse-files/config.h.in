@@ -151,10 +151,19 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Use optimized functions with the SSE2 machine instructions set */
 #if defined WIN32 && (!defined WIN64 || defined EM64T) && \
  (_MSC_VER >= 1400) || (defined __SSE2__ && defined __GNUC__ && __GNUC__ >= 4)
-	#define MRPT_HAS_SSE2  ${CMAKE_MRPT_HAS_SSE2}
+	#define MRPT_HAS_SSE2  ${CMAKE_MRPT_HAS_SSE2}   // This value can be set to 0 from CMake with DISABLE_SSE2
 #else
 	#define MRPT_HAS_SSE2  0
 #endif
+
+/** Use optimized functions with the SSE3 machine instructions set */
+#if defined WIN32 && (!defined WIN64 || defined EM64T) && \
+ (_MSC_VER >= 1600) || (defined __SSE3__ && defined __GNUC__ && __GNUC__ >= 4)
+	#define MRPT_HAS_SSE3  ${CMAKE_MRPT_HAS_SSE3}   // This value can be set to 0 from CMake with DISABLE_SSE3
+#else
+	#define MRPT_HAS_SSE3  0
+#endif
+
 
 /** Whether to include the ActivMedia Robotics ARIA: */
 #define MRPT_HAS_ARIA ${CMAKE_MRPT_HAS_ARIA}
@@ -279,6 +288,10 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 /* Backwards compatibility of MRPT APIs: */
 #cmakedefine MRPT_BACKCOMPATIB_08X 1
+
+/* Defined only if MRPT is being build/was built with precompiled 
+    headers enabled */
+#cmakedefine MRPT_ENABLE_PRECOMPILED_HDRS 1
 
 // -------------------------------
 //			Some checks:

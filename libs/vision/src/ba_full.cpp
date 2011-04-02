@@ -30,6 +30,8 @@
 #include <mrpt/vision/bundle_adjustment.h>
 #include <mrpt/utils/CTimeLogger.h>
 
+#include <memory>  // std::auto_ptr
+
 #include "ba_internals.h"
 
 using namespace std;

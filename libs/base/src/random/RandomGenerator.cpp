@@ -32,10 +32,10 @@
 
 #include <mrpt/config.h>
 
-#include <mrpt/system/os.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/random/RandomGenerators.h>
+#include <mrpt/system/os.h>
 
 #include <mrpt/math/ops_matrices.h>
 
@@ -204,8 +204,8 @@ double CRandomGenerator::drawGaussian1D_normalized( double *likelihood  )
 /** Generates a random definite-positive matrix of the given size, using the formula C = v*v^t + epsilon*I, with "v" being a vector of gaussian random samples.
 */
 CMatrixDouble CRandomGenerator::drawDefinitePositiveMatrix(
-	const size_t dim, 
-	const double std_scale, 
+	const size_t dim,
+	const double std_scale,
 	const double diagonal_epsilon)
 {
 	CMatrixDouble   r(dim,1);

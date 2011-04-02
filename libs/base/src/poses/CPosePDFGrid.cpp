@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers 
+#include <mrpt/base.h>  // Precompiled headers
 
 
 #include <mrpt/poses/CPosePDFGrid.h>
@@ -35,6 +35,7 @@
 #include <mrpt/random.h>
 #include <mrpt/math/utils.h>
 
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;

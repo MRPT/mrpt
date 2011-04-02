@@ -67,7 +67,9 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 #include <mrpt/base.h>  // Precompiled headers
 
 #include <mrpt/utils/PLY_import_export.h>
+#include <mrpt/system/string_utils.h>
 
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
 
@@ -123,7 +125,7 @@ typedef struct PlyProperty {    /* description of a property */
 
 } PlyProperty;
 
-typedef struct PlyElement 
+typedef struct PlyElement
 {     /* description of an element */
   PlyElement() :
      num(0),
@@ -254,7 +256,7 @@ PlyFile *ply_write(
   /* tuck aside the names of the elements */
 
   plyfile->elems.resize( elem_names.size() );
-  for (size_t i = 0; i < elem_names.size(); i++) 
+  for (size_t i = 0; i < elem_names.size(); i++)
   {
     plyfile->elems[i].name = elem_names[i];
   }
@@ -341,7 +343,7 @@ void ply_describe_element(
   elem->props.resize(nprops);
   elem->store_prop.resize(nprops);
 
-  for (size_t i = 0; i < nprops; i++) 
+  for (size_t i = 0; i < nprops; i++)
   {
     elem->props[i] = prop_list[i];
     elem->store_prop[i] = NAMED_PROP;
@@ -446,7 +448,7 @@ void ply_header_complete(PlyFile *plyfile)
 
   /* write out information about each element */
 
-  for (size_t i = 0; i < plyfile->elems.size(); i++) 
+  for (size_t i = 0; i < plyfile->elems.size(); i++)
   {
     const PlyElement *elem = &plyfile->elems[i];
     fprintf (fp, "element %s %d\n", elem->name.c_str(), elem->num);
@@ -526,7 +528,7 @@ void ply_put_element(PlyFile *plyfile, void *elem_ptr)
     /* write an ascii file */
 
     /* write out each property of the element */
-    for (size_t j = 0; j < elem->props.size(); j++) 
+    for (size_t j = 0; j < elem->props.size(); j++)
 	{
       const PlyProperty *prop = &elem->props[j];
       if (elem->store_prop[j] == OTHER_PROP)
@@ -543,7 +545,7 @@ void ply_put_element(PlyFile *plyfile, void *elem_ptr)
         item_ptr = (char **) (elem_data + prop->offset);
         item = item_ptr[0];
        item_size = ply_type_size[prop->internal_type];
-        for (size_t k = 0; k < list_count; k++) 
+        for (size_t k = 0; k < list_count; k++)
 		{
           get_stored_item ((void *) item, prop->internal_type,
                            &int_val, &uint_val, &double_val);
@@ -568,7 +570,7 @@ void ply_put_element(PlyFile *plyfile, void *elem_ptr)
     /* write a binary file */
 
     /* write out each property of the element */
-    for (size_t j = 0; j < elem->props.size(); j++) 
+    for (size_t j = 0; j < elem->props.size(); j++)
 	{
       const PlyProperty *prop = &elem->props[j];
       if (elem->store_prop[j] == OTHER_PROP)
@@ -713,7 +715,7 @@ PlyFile *ply_read(FILE *fp, vector<string> &elem_names)
 
   for (size_t i = 0; i < plyfile->elems.size(); i++) {
     PlyElement *elem = &plyfile->elems[i];
-	
+
 	elem->store_prop.assign(elem->props.size(), DONT_STORE_PROP);
     elem->other_offset = NO_OTHER_PROPS; /* no "other" props by default */
   }
@@ -1047,7 +1049,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
 
   which_word = 0;
 
-  for (size_t j = 0; j < elem->props.size(); j++) 
+  for (size_t j = 0; j < elem->props.size(); j++)
   {
     PlyProperty *prop = &elem->props[j];
     store_it = (elem->store_prop[j] | other_flag);
@@ -1155,7 +1157,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
 
   /* read in a number of elements */
 
-  for (size_t j = 0; j < elem->props.size(); j++) 
+  for (size_t j = 0; j < elem->props.size(); j++)
   {
     PlyProperty *prop = &elem->props[j];
     store_it = (elem->store_prop[j] | other_flag);
@@ -1930,7 +1932,7 @@ bool PLY_Importer::loadFromPlyFile(
 			const string &elem_name = elist[i];
 			int num_elems, nprops;
 
-			//vector<PlyProperty> plist = 
+			//vector<PlyProperty> plist =
 			ply_get_element_description (ply, elem_name, num_elems, nprops);
 
 			/* print the name of the element, for debugging */
@@ -2020,7 +2022,7 @@ bool PLY_Exporter::saveToPlyFile(
 		vector<string> elem_names;
 		elem_names.push_back(string("vertex"));
 		elem_names.push_back(string("face"));
-		
+
 		/* create the vertex index lists for the faces */
 		//for (i = 0; i < nfaces; i++)
 		//	faces[i].verts = vert_ptrs[i];

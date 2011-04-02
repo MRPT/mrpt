@@ -34,6 +34,7 @@
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/KDTreeCapable.h>
 
+#include <mrpt/vision/types.h>
 #include <mrpt/vision/link_pragmas.h>
 
 namespace mrpt
@@ -46,10 +47,6 @@ namespace mrpt
 
 		class CFeatureList;
 		class CMatchedFeatureList;
-
-		/** Definition of a feature ID
-		*/
-		typedef uint64_t TFeatureID;
 
 		/** Types of features - This means that the point has been detected with this algorithm, which is independent of additional descriptors a feature may also have
 		*/

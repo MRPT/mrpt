@@ -28,6 +28,13 @@
 
 #include <mrpt/obs.h>
 
+#ifndef MRPT_ENABLE_PRECOMPILED_HDRS
+#	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
+#	undef mrpt_obs_H
+#	include <mrpt/obs.h>
+#endif
+
+
 #include <mrpt/utils/CSerializable.h>
 
 

@@ -28,6 +28,12 @@
 
 #include <mrpt/opengl.h>  // Precompiled header
 
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/stock_objects.h>
+
 #include <mrpt/poses.h>
 
 using namespace mrpt;
@@ -45,10 +51,15 @@ const double POSE_AXIS_SCALE  = 0.1;
 #define POINT_COLOR		1,0,0
 
 
+namespace mrpt
+{
+	namespace opengl
+	{
+
 /** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 	*    mrpt::poses::CPosePDF::getAs3DObject     */
 template <>
-CSetOfObjectsPtr mrpt::opengl::posePDF2opengl<CPosePDF,CSetOfObjectsPtr>(const CPosePDF &o)
+CSetOfObjectsPtr posePDF2opengl<CPosePDF,CSetOfObjectsPtr>(const CPosePDF &o)
 {
 	CSetOfObjectsPtr outObj = CSetOfObjects::Create();
 
@@ -136,7 +147,7 @@ CSetOfObjectsPtr mrpt::opengl::posePDF2opengl<CPosePDF,CSetOfObjectsPtr>(const C
 /** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 	*    mrpt::poses::CPointPDF::getAs3DObject     */
 template <>
-CSetOfObjectsPtr mrpt::opengl::posePDF2opengl<CPointPDF,CSetOfObjectsPtr>(const CPointPDF &o)
+CSetOfObjectsPtr posePDF2opengl<CPointPDF,CSetOfObjectsPtr>(const CPointPDF &o)
 {
 	CSetOfObjectsPtr outObj = CSetOfObjects::Create();
 
@@ -195,7 +206,7 @@ CSetOfObjectsPtr mrpt::opengl::posePDF2opengl<CPointPDF,CSetOfObjectsPtr>(const 
 /** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 	*    mrpt::poses::CPose3DPDF::getAs3DObject     */
 template <>
-CSetOfObjectsPtr mrpt::opengl::posePDF2opengl<CPose3DPDF,CSetOfObjectsPtr>(const CPose3DPDF &o)
+CSetOfObjectsPtr posePDF2opengl<CPose3DPDF,CSetOfObjectsPtr>(const CPose3DPDF &o)
 {
 	CSetOfObjectsPtr outObj = CSetOfObjects::Create();
 
@@ -265,7 +276,7 @@ CSetOfObjectsPtr mrpt::opengl::posePDF2opengl<CPose3DPDF,CSetOfObjectsPtr>(const
 /** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 	*    mrpt::poses::CPose3DQuatPDF::getAs3DObject     */
 template <>
-CSetOfObjectsPtr mrpt::opengl::posePDF2opengl<CPose3DQuatPDF,CSetOfObjectsPtr>(const CPose3DQuatPDF &o)
+CSetOfObjectsPtr posePDF2opengl<CPose3DQuatPDF,CSetOfObjectsPtr>(const CPose3DQuatPDF &o)
 {
 	CSetOfObjectsPtr outObj = CSetOfObjects::Create();
 
@@ -292,3 +303,7 @@ CSetOfObjectsPtr mrpt::opengl::posePDF2opengl<CPose3DQuatPDF,CSetOfObjectsPtr>(c
 
 	return outObj;
 }
+
+
+	} // end NS
+} // end NS

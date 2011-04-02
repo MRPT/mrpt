@@ -310,7 +310,13 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 # Enable precompiled headers:
 # ===================================================
-SET(MRPT_ENABLE_PRECOMPILED_HDRS ON CACHE BOOL "Enable precompiled headers (thru 'mrpt/LIB.h')")
+IF(MSVC)
+	SET(DEFAULT_VAL_PRECOMP_HDR ON)
+ELSE(MSVC)
+	SET(DEFAULT_VAL_PRECOMP_HDR OFF)
+ENDIF(MSVC)
+
+SET(MRPT_ENABLE_PRECOMPILED_HDRS ${DEFAULT_VAL_PRECOMP_HDR} CACHE BOOL "Enable precompiled headers (thru 'mrpt/LIB.h')")
 MARK_AS_ADVANCED(MRPT_ENABLE_PRECOMPILED_HDRS)
 
 # Eigen library plugins:
@@ -933,6 +939,15 @@ IF(DISABLE_SSE2)
 	SET(CMAKE_MRPT_HAS_SSE2 0)
 ENDIF(DISABLE_SSE2)
 
+# Let the user disable SSE3
+# ===================================================
+SET(CMAKE_MRPT_HAS_SSE3 1)
+SET(DISABLE_SSE3 OFF CACHE BOOL "Forces compilation WITHOUT SSE3 extensions")
+MARK_AS_ADVANCED(DISABLE_SSE3)
+IF(DISABLE_SSE3)
+	SET(CMAKE_MRPT_HAS_SSE3 0)
+ENDIF(DISABLE_SSE3)
+
 
 # Detect support for OpenMP:
 # ===================================================
@@ -1453,6 +1468,30 @@ IF (CMAKE_MRPT_HAS_SSE2)
 	ENDIF(NOT HAVE_MMINTRIN_H OR NOT HAVE_EMMINTRIN_H)
 ENDIF(CMAKE_MRPT_HAS_SSE2)
 
+# If we want SSE3, check for the expected headers:
+IF (CMAKE_MRPT_HAS_SSE3)
+	
+	# JL: Before the CHECK_INCLUDE_FILE() we need to temporarily enable 
+	#  the -msse3 flag in GCC or the test program that CMake builds will 
+	#  always fail even if the header is present:
+	IF(CMAKE_COMPILER_IS_GNUCXX)
+		SET(TEMP_BACKUP_CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse3")
+	ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+
+	CHECK_INCLUDE_FILE("pmmintrin.h" HAVE_PMMINTRIN_H)
+
+	# Restore from above:
+	IF(CMAKE_COMPILER_IS_GNUCXX)
+		SET(CMAKE_C_FLAGS ${TEMP_BACKUP_CMAKE_C_FLAGS})
+	ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+	
+	# If the headers are not found, disable optimizations:
+	IF (NOT HAVE_PMMINTRIN_H)
+		SET(CMAKE_MRPT_HAS_SSE3 0)
+	ENDIF (NOT HAVE_PMMINTRIN_H)
+ENDIF(CMAKE_MRPT_HAS_SSE3)
+
 
 # Compiler type sizes:
 check_type_size("long double"  HAVE_LONG_DOUBLE)
@@ -1491,7 +1530,7 @@ CREATE_CMAKE_MRPT_DEFINE(CMAKE_MRPT_HAS_INOTIFY)
 # ------------------------------------
 #  Backward compatibility switches
 # ------------------------------------
-SET(MRPT_BACKCOMPATIB_08X ON CACHE BOOL "API backward compatible with 0.8.X")
+SET(MRPT_BACKCOMPATIB_08X OFF CACHE BOOL "API backward compatible with 0.8.X")
 
 # ----------------------------------------------------------------------------
 #   				UPDATE CONFIG FILES & SCRIPTS:
@@ -1602,6 +1641,9 @@ IF(MSVC)
 	IF (CMAKE_MRPT_HAS_SSE2 AND NOT CMAKE_MRPT_WORD_SIZE EQUAL 64)
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /arch:SSE2")
 	ENDIF(CMAKE_MRPT_HAS_SSE2 AND NOT CMAKE_MRPT_WORD_SIZE EQUAL 64)
+
+	# SSE3?
+	# TODO: Any flag needed?
 	
 	# Fast math:
 	#SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /fp:fast")
@@ -1701,6 +1743,11 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -mfpmath=sse -msse2 -funroll-loops")
 	ENDIF(CMAKE_MRPT_HAS_SSE2)
 
+	# SSE3?
+	IF (CMAKE_MRPT_HAS_SSE3)
+		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse3")
+	ENDIF(CMAKE_MRPT_HAS_SSE3)
+
 
 	# Parallel stdlibc++?
 	IF(MRPT_ENABLE_LIBSTD_PARALLEL_MODE)
@@ -1713,24 +1760,6 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 		ADD_DEFINITIONS( -D_DEBUG)
 		ADD_DEFINITIONS( -DDEBUG)
 	ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
-
-	# Cross compiling Linux 64bits -> 32 bits?
-	IF(UNIX)
-		# Are we in a 64 bit Linux?
-		IF(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
-			SET( MRPT_CROSS_COMPILE_64_TO_32 OFF CACHE BOOL "Build 32 bit executables (Default=OFF, native 64 bit)")
-			IF(MRPT_CROSS_COMPILE_64_TO_32)
-				SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -m32")
-				SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -m32")
-				SET(CMAKE_MRPT_64BIT_COMPILE_MODE "32 bit cross-compiling")
-
-				SET(CMAKE_MRPT_WORD_SIZE 32)	# Fake wordsize
-			ELSE(MRPT_CROSS_COMPILE_64_TO_32)
-				SET(CMAKE_MRPT_64BIT_COMPILE_MODE "64 bit native")
-			ENDIF(MRPT_CROSS_COMPILE_64_TO_32)
-		ENDIF(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	ENDIF(UNIX)
-
 
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
@@ -2143,12 +2172,9 @@ SHOW_CONFIG_LINE("Will MRPT be built as a shared library? " CMAKE_MRPT_BUILD_SHA
 SHOW_CONFIG_LINE("Additional checks even in Release       " CMAKE_MRPT_ALWAYS_CHECKS_DEBUG)
 SHOW_CONFIG_LINE("Additional matrix checks                " CMAKE_MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 MESSAGE(STATUS  " Word size (32/64 bits)                   : ${CMAKE_MRPT_WORD_SIZE}")
-IF(CMAKE_MRPT_64BIT_COMPILE_MODE)
-	MESSAGE(STATUS   " 64 bit compilation mode                  : ${CMAKE_MRPT_64BIT_COMPILE_MODE}")
-ENDIF(CMAKE_MRPT_64BIT_COMPILE_MODE)
-
 SHOW_CONFIG_LINE("Is system big endian?                   " CMAKE_MRPT_IS_BIG_ENDIAN)
-SHOW_CONFIG_LINE("Use MMX/SSE2?                           " CMAKE_MRPT_HAS_SSE2)
+SHOW_CONFIG_LINE("Use SSE2?                               " CMAKE_MRPT_HAS_SSE2)
+SHOW_CONFIG_LINE("Use SSE3?                               " CMAKE_MRPT_HAS_SSE3)
 #SHOW_CONFIG_LINE("Use OpenMP?                             " CMAKE_MRPT_HAS_OPENMP)
 
 SHOW_CONFIG_LINE_SYSTEM("Has eigen3                              " CMAKE_MRPT_HAS_EIGEN "Version: ${PKG_EIGEN3_VERSION}")

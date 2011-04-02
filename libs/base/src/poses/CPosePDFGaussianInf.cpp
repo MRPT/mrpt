@@ -32,6 +32,8 @@
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/helper_templates.h>
+#include <mrpt/poses/CPose3DPDFGaussianInf.h>
 #include <mrpt/math/CMatrix.h>
 
 #include <mrpt/math/utils.h>

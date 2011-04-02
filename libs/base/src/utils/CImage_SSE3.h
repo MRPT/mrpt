@@ -25,17 +25,10 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
+#ifndef CImage_SSE3_H
+#define CImage_SSE3_H
 
-#include <mrpt/base.h>  // Precompiled headers
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/system/os.h>
 
-/** Only when built in debug (with _DEBUG), this function will be called just before raising any MRPT exception,
-  *  so the user can conveniently put a breakpoint here to explore the call stack, etc.
-  */
-void mrpt::system::breakpoint(const std::string &exception_msg)
-{
-	// Does nothing, but provides a place where to put a breakpoint:
-	exception_msg.size();
-}
+
+#endif

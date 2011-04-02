@@ -29,6 +29,7 @@
 #define CProbabilityDensityFunction_H
 
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
 
 namespace mrpt
 {

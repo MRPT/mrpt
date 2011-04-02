@@ -76,7 +76,7 @@ void  CConfigFileBase::write(const std::string &section, const std::string &name
 {
 	writeString(section, name, format("%u",static_cast<unsigned int>(value)) );
 }
-#endif		
+#endif
 
 
 /*---------------------------------------------------------------
@@ -194,7 +194,7 @@ bool  CConfigFileBase::read_bool(const std::string &section, const std::string &
  ---------------------------------------------------------------*/
 std::string  CConfigFileBase::read_string(const std::string &section, const std::string &name, const std::string &defaultValue, bool failIfNotFound ) const
 {
-	return mrpt::utils::trim(readString(section, name, defaultValue,failIfNotFound ));
+	return mrpt::system::trim(readString(section, name, defaultValue,failIfNotFound ));
 }
 
 /*---------------------------------------------------------------

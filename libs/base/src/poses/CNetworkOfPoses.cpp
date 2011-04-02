@@ -29,7 +29,9 @@
 #include <mrpt/base.h>  // Precompiled headers
 
 #include <mrpt/poses/CNetworkOfPoses.h>
+#include <mrpt/poses/helper_templates.h>
 #include <mrpt/math/dijkstra.h>
+#include <mrpt/utils/CTextFileLinesParser.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

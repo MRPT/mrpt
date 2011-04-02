@@ -84,8 +84,8 @@ void TestImageConversion()
 	CDisplayWindow		win1("win1"),win2("win2"),win3("win3");
 
 	CImage			imgSmall( img );
-	CImage			imgSmall2( imgSmall.scaleHalf() );
-	CImage			imgGray( imgSmall2.grayscale() );
+	CImage			imgGray( imgSmall.grayscale() );
+	CImage			imgSmall2( imgGray.scaleHalfSmooth() );
 
 	// Test some draw capabilities:
 	// ---------------------------------
@@ -115,6 +115,8 @@ void TestImageConversion()
 	tictac.Tic();
 	img2.saveToFile("frame_out.jpg");
 	printf("jpeg file saved in %.03fms\n", 1000.0f*tictac.Tac() );
+
+	imgSmall2.saveToFile("frame_out_small.png");
 
 	return;
 }

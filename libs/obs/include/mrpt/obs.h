@@ -30,6 +30,10 @@
 
 #include <mrpt/opengl.h> // dependencies
 
+// Only really include all headers if we come from a user program (anything
+//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
+#if !defined(mrpt_obs_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS  || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
+
 // Observations:
 #include <mrpt/slam/CObservation.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
@@ -64,6 +68,9 @@
 // Very basic classes for maps:
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/slam/CSimpleMap.h>
+
+
+#endif // end precomp.headers
 
 
 #endif
