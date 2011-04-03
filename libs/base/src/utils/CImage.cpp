@@ -46,7 +46,6 @@
 // Prototypes of SSE2/SSE3/SSSE3 optimized functions:
 #include "CImage_SSEx.h"
 
-
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -887,7 +886,7 @@ IplImage *ipl_to_grayscale(const IplImage * img_src)
 		return img_dest;
 	}
 #endif
-	
+
 	// OpenCV Method:
 	cvCvtColor( img_src, img_dest, CV_BGR2GRAY );
 	return img_dest;

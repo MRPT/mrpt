@@ -169,21 +169,43 @@ void register_tests_image()
 	lstTests.push_back( TestData("images: Gauss filter (800x600)",image_test_2,  800,600) );
 	lstTests.push_back( TestData("images: Gauss filter (1024x768)",image_test_2,  1024,768) );
 
+	lstTests.push_back( TestData("images: Half sample GRAY (160x120)",image_halfsample<CH_GRAY>,  160,120) );
+	lstTests.push_back( TestData("images: Half sample GRAY (320x240)",image_halfsample<CH_GRAY>,  320,240) );
 	lstTests.push_back( TestData("images: Half sample GRAY (640x480)",image_halfsample<CH_GRAY>,  640,480) );
 	lstTests.push_back( TestData("images: Half sample GRAY (800x600)",image_halfsample<CH_GRAY>,  800,600) );
+	lstTests.push_back( TestData("images: Half sample GRAY (1024x768)",image_halfsample<CH_GRAY>,  1024,768) );
+	lstTests.push_back( TestData("images: Half sample GRAY (1280x1024)",image_halfsample<CH_GRAY>,  1280,1024) );
 
+	lstTests.push_back( TestData("images: Half sample RGB (160x120)",image_halfsample<CH_RGB>,  160,120) );
+	lstTests.push_back( TestData("images: Half sample RGB (320x240)",image_halfsample<CH_RGB>,  320,240) );
 	lstTests.push_back( TestData("images: Half sample RGB (640x480)",image_halfsample<CH_RGB>,  640,480) );
 	lstTests.push_back( TestData("images: Half sample RGB (800x600)",image_halfsample<CH_RGB>,  800,600) );
+	lstTests.push_back( TestData("images: Half sample RGB (1024x768)",image_halfsample<CH_RGB>,  1024,768) );
+	lstTests.push_back( TestData("images: Half sample RGB (1280x1024)",image_halfsample<CH_RGB>,  1280,1024) );
 
+	lstTests.push_back( TestData("images: Half sample smooth GRAY (160x120)",image_halfsample_smooth<CH_GRAY>,  160,120) );
+	lstTests.push_back( TestData("images: Half sample smooth GRAY (320x240)",image_halfsample_smooth<CH_GRAY>,  320,240) );
 	lstTests.push_back( TestData("images: Half sample smooth GRAY (640x480)",image_halfsample_smooth<CH_GRAY>,  640,480) );
 	lstTests.push_back( TestData("images: Half sample smooth GRAY (800x600)",image_halfsample_smooth<CH_GRAY>,  800,600) );
+	lstTests.push_back( TestData("images: Half sample smooth GRAY (1024x768)",image_halfsample_smooth<CH_GRAY>,  1024,768) );
+	lstTests.push_back( TestData("images: Half sample smooth GRAY (1280x1024)",image_halfsample_smooth<CH_GRAY>,  1280,1024) );
 
+	lstTests.push_back( TestData("images: Half sample smooth RGB (160x120)",image_halfsample_smooth<CH_RGB>,  160,120) );
+	lstTests.push_back( TestData("images: Half sample smooth RGB (320x240)",image_halfsample_smooth<CH_RGB>,  320,240) );
 	lstTests.push_back( TestData("images: Half sample smooth RGB (640x480)",image_halfsample_smooth<CH_RGB>,  640,480) );
 	lstTests.push_back( TestData("images: Half sample smooth RGB (800x600)",image_halfsample_smooth<CH_RGB>,  800,600) );
+	lstTests.push_back( TestData("images: Half sample smooth RGB (1024x768)",image_halfsample_smooth<CH_RGB>,  1024,768) );
+	lstTests.push_back( TestData("images: Half sample smooth RGB (1280x1024)",image_halfsample_smooth<CH_RGB>,  1280,1024) );
 
 
+	lstTests.push_back( TestData("images: RGB->GRAY 8u (40x30)",image_rgb2gray_8u,  40,30) );
+	lstTests.push_back( TestData("images: RGB->GRAY 8u (80x60)",image_rgb2gray_8u,  80,60) );
+	lstTests.push_back( TestData("images: RGB->GRAY 8u (160x120)",image_rgb2gray_8u,  160,120) );
+	lstTests.push_back( TestData("images: RGB->GRAY 8u (320x240)",image_rgb2gray_8u,  320,240) );
 	lstTests.push_back( TestData("images: RGB->GRAY 8u (640x480)",image_rgb2gray_8u,  640,480) );
 	lstTests.push_back( TestData("images: RGB->GRAY 8u (800x600)",image_rgb2gray_8u,  800,600) );
+	lstTests.push_back( TestData("images: RGB->GRAY 8u (1024x768)",image_rgb2gray_8u,  1024,768) );
+	lstTests.push_back( TestData("images: RGB->GRAY 8u (1280x1024)",image_rgb2gray_8u,  1280,1024) );
 }
 
 

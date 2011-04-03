@@ -63,10 +63,10 @@ fi
 # -------------------------------------------------------------------
 CUR_DIR=`pwd`
 EIGEN_BASE_DIR="$CUR_DIR/otherlibs/eigen3/Eigen"
-EXTRA_INDIV_FILES=`find libs -name '*SSE*.cpp' | xargs ls`
+EXTRA_INDIV_FILES=`find libs -name '*SSE*.cpp' | xargs -I FIL printf "$CUR_DIR/FIL "`
 EIGEN_INDIV_FILES="$EIGEN_BASE_DIR $EIGEN_BASE_DIR/Dense $EIGEN_BASE_DIR/Eigenvalues $EIGEN_BASE_DIR/Cholesky $EIGEN_BASE_DIR/QR"
-
-MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/ $EXTRA_INDIV_FILES $EIGEN_INDIV_FILES)
+MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/ $EIGEN_INDIV_FILES)
+MRPT_LIST_INPUT="$MRPT_LIST_DIRECTORIES $EXTRA_INDIV_FILES"
 
 # Checks
 # --------------------------------
@@ -220,7 +220,7 @@ doxygen doxygen_project.txt
 # Cleanup
 # -------------------------------------
 rm doxygen_footer.html
-rm doxygen_project.txt
+#rm doxygen_project.txt
 
 rm images/*
 

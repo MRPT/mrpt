@@ -32,8 +32,8 @@
 // ---------------------------------------------------------------------------
 //   This file contains the SSE2 optimized functions for mrpt::utils::CImage
 //    See the sources and the doxygen documentation page "sse_optimizations" for more details.
-// 
-//  Some functions here are derived from sources in libcvd, released 
+//
+//  Some functions here are derived from sources in libcvd, released
 //   under LGPL. See http://mi.eng.cam.ac.uk/~er258/cvd/
 //
 // ---------------------------------------------------------------------------
@@ -41,7 +41,8 @@
 #include <mrpt/utils/CImage.h>
 #include "CImage_SSEx.h"
 
-/** \addtogroup sse_optimizations SSE optimized functions
+/** \addtogroup sse_optimizations
+ *  SSE optimized functions
  *  @{
  */
 
@@ -49,15 +50,15 @@
   *  - <b>Input format:</b> uint8_t, 1 channel
   *  - <b>Output format:</b> uint8_t, 1 channel
   *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels)
-  *  - <b>Notes:</b> 
-  *  - <b>Requires: SSE2</b> 
+  *  - <b>Notes:</b>
+  *  - <b>Requires: SSE2</b>
   *  - <b>Invoked from:</b> mrpt::utils::CImage::scaleHalf()
   */
 void image_SSE2_scale_half_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
 {
 	EIGEN_ALIGN16 const unsigned long long mask[2] = {0x00FF00FF00FF00FFull, 0x00FF00FF00FF00FFull};
 	const __m128i m = _mm_load_si128((const __m128i*)mask);
-	
+
 	int sw = w >> 4;
 	int sh = h >> 1;
 
@@ -75,12 +76,12 @@ void image_SSE2_scale_half_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
 }
 
 
-/** Average each 2x2 pixels into 1x1 pixel (arithmetic average) 
+/** Average each 2x2 pixels into 1x1 pixel (arithmetic average)
   *  - <b>Input format:</b> uint8_t, 1 channel
   *  - <b>Output format:</b> uint8_t, 1 channel
   *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels)
-  *  - <b>Notes:</b> 
-  *  - <b>Requires: SSE2</b> 
+  *  - <b>Notes:</b>
+  *  - <b>Requires: SSE2</b>
   *  - <b>Invoked from:</b> mrpt::utils::CImage::scaleHalfSmooth()
   */
 void image_SSE2_scale_half_smooth_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
