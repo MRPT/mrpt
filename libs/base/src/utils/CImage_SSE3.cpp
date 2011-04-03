@@ -30,16 +30,26 @@
 
 // ---------------------------------------------------------------------------
 //   This file contains the SSE3/SSSE3 optimized functions for mrpt::utils::CImage
-//    See the sources and the doxygen documentation page XXX for more details.
+//    See the sources and the doxygen documentation page "sse_optimizations" for more details.
 // ---------------------------------------------------------------------------
 #if MRPT_HAS_SSE3
 
 #include <mrpt/utils/CImage.h>
 #include "CImage_SSEx.h"
 
-// Subsample each 2x2 pixel block into 1x1 pixel (taking the first pixel, ignoring the other 3)
-// Input format : uint8_t, 3 channels
-// Output format: uint8_t, 3 channels
+
+/** \addtogroup sse_optimizations
+ *   SSE optimized functions
+ *  @{
+ */
+
+/** Subsample each 2x2 pixel block into 1x1 pixel, taking the first pixel & ignoring the other 3.
+  *  - <b>Input format:</b> uint8_t, 3 channels (RGB or BGR)
+  *  - <b>Output format:</b> uint8_t, 3 channels (RGB or BGR)
+  *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels)
+  *  - <b>Notes:</b> 
+  *  - <b>Invoked from:</b> mrpt::utils::CImage::scaleHalf()
+  */
 void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
 {
 	EIGEN_ALIGN16 const unsigned long long mask0[2] = { 0x0D0C080706020100ull, 0x808080808080800Eull }; // Long words are in inverse order due to little endianness
@@ -86,5 +96,7 @@ void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
 		in += 3*w;
 	}
 }
+
+/**  @} */
 
 #endif // end of MRPT_HAS_SSE3

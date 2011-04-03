@@ -31,7 +31,7 @@
 #if MRPT_HAS_SSE2
 // ---------------------------------------------------------------------------
 //   This file contains the SSE2 optimized functions for mrpt::utils::CImage
-//    See the sources and the doxygen documentation page XXX for more details.
+//    See the sources and the doxygen documentation page "sse_optimizations" for more details.
 // 
 //  Some functions here are derived from sources in libcvd, released 
 //   under LGPL. See http://mi.eng.cam.ac.uk/~er258/cvd/
@@ -41,10 +41,18 @@
 #include <mrpt/utils/CImage.h>
 #include "CImage_SSEx.h"
 
+/** \addtogroup sse_optimizations
+ *   SSE optimized functions
+ *  @{
+ */
 
-// Subsample each 2x2 pixel block into 1x1 pixel (ignoring the other 3)
-// Input format : uint8_t, 1 channel
-// Output format: uint8_t, 1 channel
+/** Subsample each 2x2 pixel block into 1x1 pixel, taking the first pixel & ignoring the other 3.
+  *  - <b>Input format:</b> uint8_t, 1 channel
+  *  - <b>Output format:</b> uint8_t, 1 channel
+  *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels)
+  *  - <b>Notes:</b> 
+  *  - <b>Invoked from:</b> mrpt::utils::CImage::scaleHalf()
+  */
 void image_SSE2_scale_half_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
 {
 	EIGEN_ALIGN16 const unsigned long long mask[2] = {0x00FF00FF00FF00FFull, 0x00FF00FF00FF00FFull};
@@ -67,10 +75,13 @@ void image_SSE2_scale_half_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
 }
 
 
-
-// Average each 2x2 pixels into 1x1 pixel (arithmetic average) 
-// Input format : uint8_t, 1 channel
-// Output format: uint8_t, 1 channel
+/** Average each 2x2 pixels into 1x1 pixel (arithmetic average) 
+  *  - <b>Input format:</b> uint8_t, 1 channel
+  *  - <b>Output format:</b> uint8_t, 1 channel
+  *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels)
+  *  - <b>Notes:</b> 
+  *  - <b>Invoked from:</b> mrpt::utils::CImage::scaleHalfSmooth()
+  */
 void image_SSE2_scale_half_smooth_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
 {
 	EIGEN_ALIGN16 const unsigned long long mask[2] = {0x00FF00FF00FF00FFull, 0x00FF00FF00FF00FFull};
@@ -101,5 +112,9 @@ void image_SSE2_scale_half_smooth_1c8u(const uint8_t* in, uint8_t* out, int w, i
 }
 
 
+// TODO:
+// Sum of absolute differences: Use  _mm_sad_epu8
+
+/**  @} */
 
 #endif // end if MRPT_HAS_SSE2
