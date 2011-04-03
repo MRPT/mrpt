@@ -81,11 +81,12 @@ void TestImageConversion()
 		return;
 	}
 
-	CDisplayWindow		win1("win1"),win2("win2"),win3("win3");
+	CDisplayWindow		win1("win1"),win2("win2"),win3("win3"),win4("win4");
 
 	CImage			imgSmall( img );
 	CImage			imgGray( imgSmall.grayscale() );
 	CImage			imgSmall2( imgGray.scaleHalfSmooth() );
+	CImage			imgSmallRGB( img.scaleHalf() ); //Smooth() );
 
 	// Test some draw capabilities:
 	// ---------------------------------
@@ -107,10 +108,13 @@ void TestImageConversion()
 	// ------------------------------------------------------
 	win1.showImage( imgSmall ); win1.setPos(0,0);
 	win2.showImage( imgSmall2 ); win2.setPos(810,0);
-	win3.showImage( imgGray ); win3.setPos(810,400);
+	win3.showImage( imgGray ); win3.setPos(810,300);
+	win4.showImage( imgSmallRGB ); win4.setPos(300,400);
 
-	cout << "Press any key on 'win3' to exit" << endl;
-	win3.waitForKey();
+
+
+	cout << "Press any key on 'win4' to exit" << endl;
+	win4.waitForKey();
 
 	tictac.Tic();
 	img2.saveToFile("frame_out.jpg");

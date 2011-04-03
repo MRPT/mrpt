@@ -32,19 +32,24 @@
 // ---------------------------------------------------------------------------
 //   This file contains the SSE2 optimized functions for mrpt::utils::CImage
 //    See the sources and the doxygen documentation page XXX for more details.
+// 
+//  Some functions here are derived from sources in libcvd, released 
+//   under LGPL. See http://mi.eng.cam.ac.uk/~er258/cvd/
+//
 // ---------------------------------------------------------------------------
 
 #include <mrpt/utils/CImage.h>
-#include "CImage_SSE2.h"
+#include "CImage_SSEx.h"
 
 
-/*
-  Function derived from sources in libcvd, released under LGPL. See http://mi.eng.cam.ac.uk/~er258/cvd/
- */
+// Subsample each 2x2 pixel block into 1x1 pixel (ignoring the other 3)
+// Input format : uint8_t, 1 channel
+// Output format: uint8_t, 1 channel
 void image_SSE2_scale_half_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
 {
-	const unsigned long long mask[2] = {0x00FF00FF00FF00FFull, 0x00FF00FF00FF00FFull};
-	__m128i m = _mm_loadu_si128((const __m128i*)mask);
+	EIGEN_ALIGN16 const unsigned long long mask[2] = {0x00FF00FF00FF00FFull, 0x00FF00FF00FF00FFull};
+	const __m128i m = _mm_load_si128((const __m128i*)mask);
+	
 	int sw = w >> 4;
 	int sh = h >> 1;
 
@@ -52,11 +57,8 @@ void image_SSE2_scale_half_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
 	{
 		for (int j=0; j<sw; j++)
 		{
-			__m128i here = _mm_load_si128((const __m128i*)in);
-			__m128i next = _mm_and_si128(_mm_srli_si128(here,1), m);
-			here = _mm_and_si128(here,m);
-			here = _mm_avg_epu16(here, next);
-			_mm_storel_epi64((__m128i*)out, _mm_packus_epi16(here,here));
+			const __m128i here_sampled = _mm_and_si128( _mm_load_si128((const __m128i*)in), m);
+			_mm_storel_epi64((__m128i*)out, _mm_packus_epi16(here_sampled,here_sampled));
 			in += 16;
 			out += 8;
 		}
@@ -66,14 +68,14 @@ void image_SSE2_scale_half_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
 
 
 
-/*
-  This function comes from libcvd, released under LGPL. See http://mi.eng.cam.ac.uk/~er258/cvd/
- */
+// Average each 2x2 pixels into 1x1 pixel (arithmetic average) 
+// Input format : uint8_t, 1 channel
+// Output format: uint8_t, 1 channel
 void image_SSE2_scale_half_smooth_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
 {
-	const unsigned long long mask[2] = {0x00FF00FF00FF00FFull, 0x00FF00FF00FF00FFull};
+	EIGEN_ALIGN16 const unsigned long long mask[2] = {0x00FF00FF00FF00FFull, 0x00FF00FF00FF00FFull};
 	const uint8_t* nextRow = in + w;
-	__m128i m = _mm_loadu_si128((const __m128i*)mask);
+	__m128i m = _mm_load_si128((const __m128i*)mask);
 	int sw = w >> 4;
 	int sh = h >> 1;
 

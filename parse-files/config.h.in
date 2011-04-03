@@ -158,7 +158,7 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 /** Use optimized functions with the SSE3 machine instructions set */
 #if defined WIN32 && (!defined WIN64 || defined EM64T) && \
- (_MSC_VER >= 1600) || (defined __SSE3__ && defined __GNUC__ && __GNUC__ >= 4)
+ (_MSC_VER >= 1500) || (defined __SSE3__ && defined __GNUC__ && __GNUC__ >= 4)
 	#define MRPT_HAS_SSE3  ${CMAKE_MRPT_HAS_SSE3}   // This value can be set to 0 from CMake with DISABLE_SSE3
 #else
 	#define MRPT_HAS_SSE3  0
