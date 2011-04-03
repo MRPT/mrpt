@@ -63,9 +63,10 @@ fi
 # -------------------------------------------------------------------
 CUR_DIR=`pwd`
 EIGEN_BASE_DIR="$CUR_DIR/otherlibs/eigen3/Eigen"
-EIGEN_INDIV_FILES="$EIGEN_BASE_DIR $EIGEN_BASE_DIR/Dense $EIGEN_BASE_DIR/Eigenvalues $EIGEN_BASE_DIR/Cholesky $EIGEN_BASE_DIR/QR $CUR_DIR/libs/base/src/utils/CImage_*.cpp"
+EXTRA_INDIV_FILES=`find libs -name '*SSE*.cpp'`
+EIGEN_INDIV_FILES="$EIGEN_BASE_DIR $EIGEN_BASE_DIR/Dense $EIGEN_BASE_DIR/Eigenvalues $EIGEN_BASE_DIR/Cholesky $EIGEN_BASE_DIR/QR"
 
-MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/ $EIGEN_INDIV_FILES)
+MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/ $EXTRA_INDIV_FILES $EIGEN_INDIV_FILES)
 
 # Checks
 # --------------------------------

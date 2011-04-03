@@ -871,6 +871,29 @@ CImage  CImage::grayscale() const
 	return ret;
 }
 
+// Auxiliary function for both ::grayscale() and ::grayscaleInPlace()
+#if MRPT_HAS_OPENCV
+IplImage *ipl_to_grayscale(const IplImage * img_src)
+{
+	IplImage * img_dest = cvCreateImage( cvSize(img_src->width,img_src->height),IPL_DEPTH_8U, 1 );
+	img_dest->origin = img_src->origin;
+
+	// If possible, use SSE optimized version:
+#if MRPT_HAS_SSE3
+	if (is_aligned<16>(img_src->imageData) && (img_src->width & 0xF) == 0)
+	{
+		ASSERT_(is_aligned<16>(img_dest->imageData))
+		image_SSSE3_rgb_to_gray_8u( (const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData, img_src->width,img_src->height);
+		return img_dest;
+	}
+#endif
+	
+	// OpenCV Method:
+	cvCvtColor( img_src, img_dest, CV_BGR2GRAY );
+	return img_dest;
+}
+#endif
+
 /*---------------------------------------------------------------
 						grayscale
  ---------------------------------------------------------------*/
@@ -890,9 +913,23 @@ void CImage::grayscale( CImage  &ret ) const
 	else
 	{
 		// Convert to a single luminance channel image
-		ret.changeSize(ipl->width, ipl->height,1,isOriginTopLeft());
-		cvCvtColor( ipl, ret.getAs<IplImage>(), CV_BGR2GRAY );
+		ret.setFromIplImage(ipl_to_grayscale(ipl));
 	}
+#endif
+}
+
+/*---------------------------------------------------------------
+                        grayscaleInPlace
+ ---------------------------------------------------------------*/
+void CImage::grayscaleInPlace()
+{
+#if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();   // For delayed loaded images stored externally
+	const IplImage *ipl = this->getAs<const IplImage>();
+	ASSERT_(ipl)
+	if (ipl->nChannels==1) return; // Already done.
+
+	setFromIplImage(ipl_to_grayscale(ipl));
 #endif
 }
 
@@ -2013,30 +2050,6 @@ void CImage::scaleImage( CImage &out_img, unsigned int width, unsigned int heigh
 #endif
 }
 
-/*---------------------------------------------------------------
-                        grayscaleInPlace
- ---------------------------------------------------------------*/
-void CImage::grayscaleInPlace()
-{
-#if MRPT_HAS_OPENCV
-	makeSureImageIsLoaded();   // For delayed loaded images stored externally
-    ASSERT_(img!=NULL);
-	if (!this->isColor()) return;
-
-	IplImage *srcImg = static_cast<IplImage*>( getAsIplImage() );	// Source Image
-	IplImage *outImg;												// Output Image
-	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, 1 );
-
-	cvCvtColor( srcImg, outImg, CV_BGR2GRAY );
-
-	// Resize:
-	outImg->origin = srcImg->origin;
-
-	// Assign the output image to the IPLImage pointer within the CImage
-	releaseIpl();
-	img = outImg;
-#endif
-}
 
 /*---------------------------------------------------------------
                         rotateImage

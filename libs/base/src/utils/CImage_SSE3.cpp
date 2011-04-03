@@ -38,16 +38,16 @@
 #include "CImage_SSEx.h"
 
 
-/** \addtogroup sse_optimizations
- *   SSE optimized functions
+/** \addtogroup sse_optimizations SSE optimized functions
  *  @{
  */
 
-/** Subsample each 2x2 pixel block into 1x1 pixel, taking the first pixel & ignoring the other 3.
+/** Subsample each 2x2 pixel block into 1x1 pixel, taking the first pixel & ignoring the other 3
   *  - <b>Input format:</b> uint8_t, 3 channels (RGB or BGR)
   *  - <b>Output format:</b> uint8_t, 3 channels (RGB or BGR)
   *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels)
   *  - <b>Notes:</b> 
+  *  - <b>Requires: SSSE3</b> 
   *  - <b>Invoked from:</b> mrpt::utils::CImage::scaleHalf()
   */
 void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
@@ -96,6 +96,62 @@ void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
 		in += 3*w;
 	}
 }
+
+
+/** Convert a RGB image (3cu8) into a GRAYSCALE (1c8u) image, using Y=77*R+150*G+29*B
+  *  - <b>Input format:</b> uint8_t, 3 channels (RGB order)
+  *  - <b>Output format:</b> uint8_t, 1 channel
+  *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels)
+  *  - <b>Notes:</b> 
+  *  - <b>Requires: SSSE3</b> 
+  *  - <b>Invoked from:</b> mrpt::utils::CImage::grayscale(), mrpt::utils::CImage::grayscaleInPlace()
+  */
+void image_SSSE3_rgb_to_gray_8u(const uint8_t* in, uint8_t* out, int w, int h)
+{
+	EIGEN_ALIGN16 const unsigned long long mask0[2] = { 0x0980068003800080ull, 0x808080800F800C80ull }; // Long words are in inverse order due to little endianness
+	EIGEN_ALIGN16 const unsigned long long mask1[2] = { 0x8080808080808080ull, 0x5080208080808080ull }; // Long words are in inverse order due to little endianness
+
+	EIGEN_ALIGN16 const unsigned long long val_red[2] = { 0x4D004D004D004D00ull, 0x4D004D004D004D00ull }; // Long words are in inverse order due to little endianness
+
+	const __m128i m0 = _mm_load_si128((const __m128i*)mask0);
+	const __m128i m1 = _mm_load_si128((const __m128i*)mask1);
+
+	const __m128i VAL_R = _mm_load_si128((const __m128i*)val_red);
+
+	const int sw = w >> 4;  // This are the number of 3*16 blocks in each row
+	const int sh = h >> 1;
+
+	for (int i=0; i<sh; i++)
+	{
+		for (int j=0; j<sw; j++)
+		{
+			// We process RGB data in blocks of 3 x 16byte blocks:
+			__m128i d0 = _mm_load_si128((const __m128i*)in); in += 16;
+			__m128i d1 = _mm_load_si128((const __m128i*)in); in += 16;
+			__m128i d2 = _mm_load_si128((const __m128i*)in); in += 16;
+
+			__m128i shuf0 = _mm_shuffle_epi8(d0,m0);
+			__m128i shuf1 = _mm_shuffle_epi8(d1,m1);
+			__m128i REDS_0_7 = _mm_or_si128(shuf0,shuf1);
+
+			// _mm_mulhi_epu16(): Multiplies the 8 unsigned 16-bit integers from a by the 8 unsigned 16-bit integers from b.
+			//r0 := (a0 * b0)[31:16]
+			//r1 := (a1 * b1)[31:16]
+			//...
+			//r7 := (a7 * b7)[31:16]
+			//
+			__m128i MOD_REDS_0_7 = _mm_mulhi_epu16(REDS_0_7, VAL_R);
+
+			MRPT_TODO("CONTINUE!")
+
+			_mm_storel_epi64((__m128i*)out, _mm_packus_epi16(MOD_REDS_0_7,MOD_REDS_0_7));
+
+
+		}
+		in += 3*w;
+	}
+}
+
 
 /**  @} */
 

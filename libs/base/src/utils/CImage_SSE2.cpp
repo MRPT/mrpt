@@ -41,16 +41,16 @@
 #include <mrpt/utils/CImage.h>
 #include "CImage_SSEx.h"
 
-/** \addtogroup sse_optimizations
- *   SSE optimized functions
+/** \addtogroup sse_optimizations SSE optimized functions
  *  @{
  */
 
-/** Subsample each 2x2 pixel block into 1x1 pixel, taking the first pixel & ignoring the other 3.
+/** Subsample each 2x2 pixel block into 1x1 pixel, taking the first pixel & ignoring the other 3
   *  - <b>Input format:</b> uint8_t, 1 channel
   *  - <b>Output format:</b> uint8_t, 1 channel
   *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels)
   *  - <b>Notes:</b> 
+  *  - <b>Requires: SSE2</b> 
   *  - <b>Invoked from:</b> mrpt::utils::CImage::scaleHalf()
   */
 void image_SSE2_scale_half_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
@@ -80,6 +80,7 @@ void image_SSE2_scale_half_1c8u(const uint8_t* in, uint8_t* out, int w, int h)
   *  - <b>Output format:</b> uint8_t, 1 channel
   *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels)
   *  - <b>Notes:</b> 
+  *  - <b>Requires: SSE2</b> 
   *  - <b>Invoked from:</b> mrpt::utils::CImage::scaleHalfSmooth()
   */
 void image_SSE2_scale_half_smooth_1c8u(const uint8_t* in, uint8_t* out, int w, int h)

@@ -47,6 +47,7 @@ void TestImageConversion()
 	// --------------------------------
 	CImage		img,img2;
 	CTicTac			tictac;
+	CTimeLogger     timlog;
 
 	tictac.Tic();
 	if (!img.loadFromFile(myDataDir+string("frame_color.jpg")))
@@ -67,7 +68,9 @@ void TestImageConversion()
 		win1.waitForKey();
 		cout << "Done" << endl;
 
+		timlog.enter("grayscale1");
 		img = img.grayscale();
+		timlog.leave("grayscale1");
 
 		CDisplayWindow		win2("JPEG file, gray");
 		win2.showImage( img );
@@ -84,7 +87,15 @@ void TestImageConversion()
 	CDisplayWindow		win1("win1"),win2("win2"),win3("win3"),win4("win4");
 
 	CImage			imgSmall( img );
-	CImage			imgGray( imgSmall.grayscale() );
+	CImage			imgGray;
+
+	for (int i=0;i<50;i++)
+	{
+		timlog.enter("grayscale2");
+		imgSmall.grayscale(imgGray);
+		timlog.leave("grayscale2");
+	}
+
 	CImage			imgSmall2( imgGray.scaleHalfSmooth() );
 	CImage			imgSmallRGB( img.scaleHalf() ); //Smooth() );
 

@@ -99,6 +99,10 @@ namespace mrpt
 		 *			- CImage::setFromIplImage
 		 *			- CImage::CImage(void *IPL)
 		 *
+		 *   Some functions are implemented in MRPT with highly optimized SSE2/SSE3 routines, in suitable platforms and compilers. To
+		 *   see the list of optimizations refer to \ref sse_optimizations "this page". If optimized versions are not available in some
+		 *   platform it falls back to default OpenCV methods.
+		 *
 		 * For many computer vision functions that use CImage as its image data type, see mrpt::vision.
 		 *
 		 * \note This class acts as a wrapper class to a small subset of OpenCV functions. IplImage is the internal storage structure.

@@ -35,6 +35,7 @@
 void image_SSE2_scale_half_1c8u         (const uint8_t* in, uint8_t* out, int w, int h);
 void image_SSSE3_scale_half_3c8u        (const uint8_t* in, uint8_t* out, int w, int h);
 void image_SSE2_scale_half_smooth_1c8u  (const uint8_t* in, uint8_t* out, int w, int h);
+void image_SSSE3_rgb_to_gray_8u         (const uint8_t* in, uint8_t* out, int w, int h);
 
 
 #endif
