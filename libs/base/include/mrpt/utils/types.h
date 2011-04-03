@@ -51,9 +51,12 @@
 	#include <mmintrin.h>
 #endif
 
-// SSE3 types:
+// SSE3/SSE3 types:
 #if MRPT_HAS_SSE3
 	#include <pmmintrin.h>
+	#if defined(__GNUC__)
+		#include <immintrin.h>  // Meta-header
+	#endif
 #endif
 
 // needed here for a few basic types used in Eigen MRPT's plugin:

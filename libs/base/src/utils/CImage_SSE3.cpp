@@ -37,7 +37,6 @@
 #include <mrpt/utils/CImage.h>
 #include "CImage_SSEx.h"
 
-
 // Subsample each 2x2 pixel block into 1x1 pixel (taking the first pixel, ignoring the other 3)
 // Input format : uint8_t, 3 channels
 // Output format: uint8_t, 3 channels
@@ -52,7 +51,7 @@ void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
 	const __m128i m1 = _mm_load_si128((const __m128i*)mask1);
 	const __m128i m2 = _mm_load_si128((const __m128i*)mask2);
 	const __m128i m3 = _mm_load_si128((const __m128i*)mask3);
-	
+
 	const int sw = w >> 4;  // This are the number of 3*16 blocks in each row
 	const int sh = h >> 1;
 
@@ -79,7 +78,7 @@ void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
 			__m128i d2 = _mm_load_si128((const __m128i*)in); in += 16;
 
 			_mm_storel_epi64(	// Write lower 8 bytes only
-				(__m128i*)out, 
+				(__m128i*)out,
 				_mm_or_si128(_mm_shuffle_epi8(d2,m2),_mm_shuffle_epi8(d1,m3))
 				);
 			out += 8;

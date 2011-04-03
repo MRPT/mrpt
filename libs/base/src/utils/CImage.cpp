@@ -878,7 +878,11 @@ void CImage::grayscale( CImage  &ret ) const
 {
 #if MRPT_HAS_OPENCV
 	// The image is already grayscale??
-	if (!isColor())
+	makeSureImageIsLoaded();   // For delayed loaded images stored externally
+	const IplImage *ipl = this->getAs<const IplImage>();
+	ASSERT_(ipl)
+
+	if (ipl->nChannels==1)
 	{
 		ret = *this;
 		return;
@@ -886,11 +890,8 @@ void CImage::grayscale( CImage  &ret ) const
 	else
 	{
 		// Convert to a single luminance channel image
-		makeSureImageIsLoaded();   // For delayed loaded images stored externally
-		IplImage *ipl = ((IplImage*)img);
-		ASSERT_(ipl);
 		ret.changeSize(ipl->width, ipl->height,1,isOriginTopLeft());
-		cvCvtColor( ipl, (IplImage*)ret.img, CV_BGR2GRAY );
+		cvCvtColor( ipl, ret.getAs<IplImage>(), CV_BGR2GRAY );
 	}
 #endif
 }

@@ -1745,7 +1745,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 
 	# SSE3?
 	IF (CMAKE_MRPT_HAS_SSE3)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse3")
+		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse3 -mssse3")
 	ENDIF(CMAKE_MRPT_HAS_SSE3)
 
 
@@ -2174,7 +2174,7 @@ SHOW_CONFIG_LINE("Additional matrix checks                " CMAKE_MRPT_ALWAYS_CH
 MESSAGE(STATUS  " Word size (32/64 bits)                   : ${CMAKE_MRPT_WORD_SIZE}")
 SHOW_CONFIG_LINE("Is system big endian?                   " CMAKE_MRPT_IS_BIG_ENDIAN)
 SHOW_CONFIG_LINE("Use SSE2?                               " CMAKE_MRPT_HAS_SSE2)
-SHOW_CONFIG_LINE("Use SSE3?                               " CMAKE_MRPT_HAS_SSE3)
+SHOW_CONFIG_LINE("Use SSE3/SSSE3?                         " CMAKE_MRPT_HAS_SSE3)
 #SHOW_CONFIG_LINE("Use OpenMP?                             " CMAKE_MRPT_HAS_OPENMP)
 
 SHOW_CONFIG_LINE_SYSTEM("Has eigen3                              " CMAKE_MRPT_HAS_EIGEN "Version: ${PKG_EIGEN3_VERSION}")
