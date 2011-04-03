@@ -883,7 +883,7 @@ IplImage *ipl_to_grayscale(const IplImage * img_src)
 	if (is_aligned<16>(img_src->imageData) && (img_src->width & 0xF) == 0)
 	{
 		ASSERT_(is_aligned<16>(img_dest->imageData))
-		image_SSSE3_rgb_to_gray_8u( (const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData, img_src->width,img_src->height);
+		image_SSSE3_bgr_to_gray_8u( (const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData, img_src->width,img_src->height);
 		return img_dest;
 	}
 #endif

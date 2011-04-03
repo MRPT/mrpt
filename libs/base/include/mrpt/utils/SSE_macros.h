@@ -25,18 +25,14 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-#ifndef CImage_SSEx_H
-#define CImage_SSEx_H
 
-#include <mrpt/config.h>
+#ifndef mrpt_utils_sse_macros_H
+#define mrpt_utils_sse_macros_H
 
-// See documentation in the .cpp files CImage_SSE*.cpp
-
-void image_SSE2_scale_half_1c8u         (const uint8_t* in, uint8_t* out, int w, int h);
-void image_SSSE3_scale_half_3c8u        (const uint8_t* in, uint8_t* out, int w, int h);
-void image_SSE2_scale_half_smooth_1c8u  (const uint8_t* in, uint8_t* out, int w, int h);
-void image_SSSE3_rgb_to_gray_8u         (const uint8_t* in, uint8_t* out, int w, int h);
-void image_SSSE3_bgr_to_gray_8u         (const uint8_t* in, uint8_t* out, int w, int h);
+// Useful macro for masks used in _mm_shuffle_epi8()
+#define BUILD_128BIT_CONST(_name, B0,B1,B2,B3,B4,B5,B6,B7,B8,B9,B10,B11,B12,B13,B14,B15)  \
+	EIGEN_ALIGN16 const unsigned long long _name[2] = { 0x##B7##B6##B5##B4##B3##B2##B1##B0##ull, 0x##B15##B14##B13##B12##B11##B10##B9##B8##ull };
 
 
 #endif
+
