@@ -30,6 +30,7 @@
 
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/math/geometry.h>
 
 #include <mrpt/slam/CPointsMap.h>

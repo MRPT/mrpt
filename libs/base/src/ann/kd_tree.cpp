@@ -61,6 +61,8 @@
 #include <ann/kd_util.h>					// kd-tree utilities
 #include <ann/ANNperf.h>				// performance evaluation
 
+using namespace std;
+
 //----------------------------------------------------------------------
 //	Global data
 //

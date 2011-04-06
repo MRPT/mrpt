@@ -40,6 +40,7 @@
 #include <mrpt/slam/CObservationBearingRange.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/lightweight_geom_data.h>

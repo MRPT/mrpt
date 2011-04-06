@@ -58,6 +58,7 @@
 	#undef CImage
 	#endif
 
+	#include <mrpt/utils/CImage.h>
 	using mrpt::utils::CImage;
 
 	typedef std::vector<CvPoint2D32f> CvPoint2D32fVector;

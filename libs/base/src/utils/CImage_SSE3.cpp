@@ -35,6 +35,7 @@
 #if MRPT_HAS_SSE3
 
 #include <mrpt/utils/CImage.h>
+#include <mrpt/utils/SSE_types.h>
 #include <mrpt/utils/SSE_macros.h>
 #include "CImage_SSEx.h"
 

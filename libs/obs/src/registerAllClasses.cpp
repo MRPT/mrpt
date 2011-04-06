@@ -36,6 +36,7 @@
 
 
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
 
 using namespace mrpt::slam;

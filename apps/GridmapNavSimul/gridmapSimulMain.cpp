@@ -102,6 +102,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 #include <mrpt/gui/CMyGLCanvasBase.h>
 
 #include <mrpt/maps.h>
+#include <mrpt/obs.h>
 #include <mrpt/hwdrivers.h>
 
 #include <mrpt/gui/WxUtils.h>

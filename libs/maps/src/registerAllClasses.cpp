@@ -34,6 +34,8 @@
 #	include <mrpt/maps.h>
 #endif
 
+#include <mrpt/utils/CStartUpClassesRegister.h>
+
 
 using namespace mrpt::utils;
 using namespace mrpt::slam;

@@ -30,6 +30,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CStringList.h>
+#include <mrpt/utils/TColor.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt

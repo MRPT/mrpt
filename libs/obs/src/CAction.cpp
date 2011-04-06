@@ -30,6 +30,8 @@
 
 #include <mrpt/slam/CAction.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
+
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;

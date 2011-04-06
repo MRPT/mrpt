@@ -55,7 +55,7 @@
 		- MSVC 2010: MRPT now uses standard "stdint.h" if provided by the compiler, instead of pstdint.h
 		- OSX: Fixed all build errors (Thanks to Jérôme Monceaux, http://www.mrpt.org/node/618 )
 		- Automatic detection of SSE2 and SSE3 support in the CMake script.
-		- Faster build with GCC thanks to changes in precompiled headers.
+		- Faster build with GCC thanks to changes in precompiled headers (build time cut by 25%-50%)
 	- New classes:
 		- [mrpt-base] mrpt::math::ModelSearch: A RANSAC + Genetic model fitter (by Zoltan Gaal)
 		- [mrpt-base] mrpt::utils::PLY_Importer & mrpt::utils::PLY_Exporter: Support for Stanford's PLY file format in different 3D point cloud classes. See also: http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY

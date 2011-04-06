@@ -28,6 +28,7 @@
 
 
 #include <mrpt/slam.h>
+#include <mrpt/maps.h>  // for CAngularObservationMesh
 #include <gtest/gtest.h>
 
 using namespace mrpt;

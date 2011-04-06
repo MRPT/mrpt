@@ -32,6 +32,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CObservable.h>
 #include <mrpt/utils/safe_pointers.h>
+#include <mrpt/utils/TPixelCoord.h>
 #include <mrpt/gui/keycodes.h>
 
 #include <mrpt/gui/link_pragmas.h>

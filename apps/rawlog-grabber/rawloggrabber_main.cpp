@@ -37,6 +37,7 @@
   -----------------------------------------------------------------------------*/
 
 #include <mrpt/obs.h>
+#include <mrpt/base.h>
 #include <mrpt/hwdrivers.h>
 
 #ifdef RAWLOGGRABBER_PLUGIN

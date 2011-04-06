@@ -60,6 +60,8 @@
 
 #include <ann/ANNperf.h>				// performance evaluation
 
+using namespace std;
+
 //----------------------------------------------------------------------
 //	Printing a bd-tree
 //		These routines print a bd-tree.   See the analogous procedure

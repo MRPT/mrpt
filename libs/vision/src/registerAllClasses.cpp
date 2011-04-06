@@ -35,6 +35,7 @@
 #	include <mrpt/vision.h>
 #endif
 
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt::vision;
 using namespace mrpt::utils;

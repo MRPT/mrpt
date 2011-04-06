@@ -29,6 +29,7 @@
 #ifndef CReflectivityGridMap2D_H
 #define CReflectivityGridMap2D_H
 
+#include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
@@ -43,6 +44,7 @@ namespace mrpt
 {
 	namespace slam
 	{
+		using namespace mrpt;
 		using namespace mrpt::utils;
 
 		class CObservation;
@@ -51,7 +53,7 @@ namespace mrpt
 
 		/** A 2D grid map representing the reflectivity of the environment (for example, measured with an IR proximity sensor).
 		  *
-		  *  Important implemented features are: 
+		  *  Important implemented features are:
 		  *		- Insertion of mrpt::slam::CObservationReflectivity observations.
 		  *		- Probability estimation of observations. See base class.
 		  *		- Rendering as 3D object: a 2D textured plane.
@@ -60,8 +62,8 @@ namespace mrpt
 		  *   Each cell contains the up-to-date average height from measured falling in that cell. Algorithms that can be used:
 		  *		- mrSimpleAverage: Each cell only stores the current average value.
 		  */
-		class MAPS_IMPEXP CReflectivityGridMap2D : 
-			public CMetricMap, 
+		class MAPS_IMPEXP CReflectivityGridMap2D :
+			public CMetricMap,
 			public utils::CDynamicGrid<int8_t>,
 			public CLogOddsGridMap2D<int8_t>
 		{

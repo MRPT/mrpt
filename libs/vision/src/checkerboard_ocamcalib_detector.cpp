@@ -28,6 +28,8 @@
 
 #include <mrpt/vision.h>  // Precompiled headers
 
+#include <stack>  // Precompiled headers
+
 // Note for MRPT: what follows below is a modified part of the "OCamCalib Toolbox":
 //  See: http://robotics.ethz.ch/~scaramuzza/Davide_Scaramuzza_files/Research/OcamCalib_Tutorial.htm
 // Modifications include:

@@ -31,7 +31,10 @@
 #include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
 
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
+#include <mrpt/math/CLevenbergMarquardt.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
 
 using namespace std;
 using namespace mrpt::slam;
@@ -665,7 +668,7 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 			tims.leave("LUT");
 #endif
 		} // end update LUT.
-	 
+
 		ASSERT_EQUAL_(WH,size_t(m_3dproj_lut.Kys.size()))
 		ASSERT_EQUAL_(WH,size_t(m_3dproj_lut.Kzs.size()))
 		float *kys = &m_3dproj_lut.Kys[0];
@@ -692,7 +695,7 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 			for (int c=0;c<W;c++)
 			{
 				const float Kz = (r_cy - r) * r_fx_inv;
-				const float Ky = (r_cx - c) * r_fy_inv;			
+				const float Ky = (r_cx - c) * r_fy_inv;
 				const float D = rangeImage.coeff(r,c);
 
 				*xs++ = D;

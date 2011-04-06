@@ -32,6 +32,7 @@
 #include <mrpt/slam/CSimplePointsMap.h>
 #include <mrpt/slam/CObservationRange.h>
 
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::utils;

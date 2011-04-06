@@ -30,6 +30,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/stl_extensions.h>
+#include <mrpt/utils/TPixelCoord.h>
 
 #include <mrpt/math/math_frwds.h>  // Fordward declarations
 

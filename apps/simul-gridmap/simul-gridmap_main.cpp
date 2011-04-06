@@ -28,6 +28,8 @@
 
 
 #include <mrpt/maps.h>
+#include <mrpt/obs.h>
+#include <mrpt/base.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 

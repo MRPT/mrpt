@@ -26,30 +26,24 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_maps_H
-#define _mrpt_maps_H
+#ifndef mrpt_utils_SSE_types_H
+#define mrpt_utils_SSE_types_H
 
-//#include <mrpt/obs.h> // dependencies
+#include <mrpt/config.h>
 
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_maps_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
+// SSE2 types:
+#if MRPT_HAS_SSE2
+	#include <emmintrin.h>
+	#include <mmintrin.h>
+#endif
 
-
-#include <mrpt/slam/CBeacon.h>
-#include <mrpt/slam/CBeaconMap.h>
-#include <mrpt/slam/CColouredPointsMap.h>
-#include <mrpt/slam/CGasConcentrationGridMap2D.h>
-#include <mrpt/slam/CHeightGridMap2D.h>
-#include <mrpt/slam/CReflectivityGridMap2D.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CPointsMap.h>
-
-#include <mrpt/opengl/CAngularObservationMesh.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
-
-#endif // end precomp.headers
+// SSE3/SSE3 types:
+#if MRPT_HAS_SSE3
+	#include <pmmintrin.h>
+	#if defined(__GNUC__)
+		#include <immintrin.h>  // Meta-header
+	#endif
+#endif
 
 #endif
+

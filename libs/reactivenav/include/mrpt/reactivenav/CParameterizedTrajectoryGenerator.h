@@ -30,6 +30,7 @@
 
 #include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/utils/TParameters.h>
 #include <mrpt/reactivenav/link_pragmas.h>
 
 namespace mrpt

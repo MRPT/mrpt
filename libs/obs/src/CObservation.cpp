@@ -34,6 +34,9 @@
 #include <mrpt/system/os.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
+#include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/poses/CPose3D.h>
+
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::poses;

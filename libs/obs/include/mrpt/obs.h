@@ -28,7 +28,7 @@
 #ifndef mrpt_obs_H
 #define mrpt_obs_H
 
-#include <mrpt/opengl.h> // dependencies
+//#include <mrpt/opengl.h> // dependencies
 
 // Only really include all headers if we come from a user program (anything
 //  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.

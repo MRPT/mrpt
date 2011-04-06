@@ -27,6 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/slam.h>
+#include <mrpt/vision/CVideoFileWriter.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

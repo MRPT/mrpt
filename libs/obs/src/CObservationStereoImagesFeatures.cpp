@@ -29,10 +29,13 @@
 #include <mrpt/obs.h>   // Precompiled headers
 #include <mrpt/slam/CObservationStereoImagesFeatures.h>
 
-using namespace mrpt::slam; 
-using namespace mrpt::utils; 
+#include <mrpt/utils/CFileOutputStream.h>
+
+using namespace mrpt::slam;
+using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace std;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationStereoImagesFeatures, CObservation,mrpt::slam)
@@ -44,7 +47,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationStereoImagesFeatures, CObservation,mrpt::sla
 	cameraPoseOnRobot()
 	{}
 
-CObservationStereoImagesFeatures::CObservationStereoImagesFeatures( 
+CObservationStereoImagesFeatures::CObservationStereoImagesFeatures(
 	const CMatrixDouble33 &iPLeft, const CMatrixDouble33 &iPRight,
 	const CArrayDouble<5> &dPLeft, const CArrayDouble<5> &dPRight,
 	const CPose3DQuat &rCPose, const CPose3DQuat &cPORobot )
@@ -59,7 +62,7 @@ CObservationStereoImagesFeatures::CObservationStereoImagesFeatures(
 	cameraPoseOnRobot			= cPORobot;
 }
 
-CObservationStereoImagesFeatures::CObservationStereoImagesFeatures( 
+CObservationStereoImagesFeatures::CObservationStereoImagesFeatures(
 	const TCamera &cLeft, const TCamera &cRight,
 	const CPose3DQuat &rCPose, const CPose3DQuat &cPORobot )
 {
@@ -80,7 +83,7 @@ void  CObservationStereoImagesFeatures::saveFeaturesToTextFile( const std::strin
 
 	vector<TStereoImageFeatures>::iterator it;
 	for( it = theFeatures.begin(); it != theFeatures.end(); ++it )
-		file << format("%u %.2f %.2f %.2f %.2f\n", it->ID, it->pixels.first.x, it->pixels.first.y, it->pixels.second.x, it->pixels.second.y ); 
+		file << format("%u %.2f %.2f %.2f %.2f\n", it->ID, it->pixels.first.x, it->pixels.first.y, it->pixels.second.x, it->pixels.second.y );
 
 	file.close();
 }

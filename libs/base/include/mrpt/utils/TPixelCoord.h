@@ -26,30 +26,45 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_maps_H
-#define _mrpt_maps_H
+#ifndef mrpt_utils_tpixelcoord_H
+#define mrpt_utils_tpixelcoord_H
 
-//#include <mrpt/obs.h> // dependencies
+#include <iostream>
+#include <mrpt/base/link_pragmas.h>
 
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_maps_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
+namespace mrpt
+{
+	namespace utils
+	{
+		/** A pair (x,y) of pixel coordinates (subpixel resolution). */
+		struct BASE_IMPEXP TPixelCoordf
+		{
+			float x,y;
 
+			/** Default constructor: undefined values of x,y */
+			TPixelCoordf() : x(),y() {}
 
-#include <mrpt/slam/CBeacon.h>
-#include <mrpt/slam/CBeaconMap.h>
-#include <mrpt/slam/CColouredPointsMap.h>
-#include <mrpt/slam/CGasConcentrationGridMap2D.h>
-#include <mrpt/slam/CHeightGridMap2D.h>
-#include <mrpt/slam/CReflectivityGridMap2D.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CPointsMap.h>
+			/** Constructor from x,y values */
+			TPixelCoordf(const float _x,const float _y) : x(_x), y(_y) { }
+		};
 
-#include <mrpt/opengl/CAngularObservationMesh.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
+		std::ostream BASE_IMPEXP & operator <<(std::ostream& o, const TPixelCoordf& p); //!< Prints TPixelCoordf as "(x,y)"
 
-#endif // end precomp.headers
+		/** A pair (x,y) of pixel coordinates (integer resolution). */
+		struct BASE_IMPEXP TPixelCoord
+		{
+			TPixelCoord() : x(0),y(0) { }
+			TPixelCoord(const int _x,const int _y) : x(_x), y(_y) { }
+
+			int x,y;
+		};
+
+		std::ostream BASE_IMPEXP & operator <<(std::ostream& o, const TPixelCoord& p); //!< Prints TPixelCoord as "(x,y)"
+
+		typedef TPixelCoord TImageSize; //!< A type for image sizes.
+
+	} // end namespace
+}
 
 #endif
+

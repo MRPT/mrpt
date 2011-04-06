@@ -31,6 +31,7 @@
 #include <mrpt/slam/CMonteCarloLocalization2D.h>
 
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
 #include <mrpt/slam/CActionCollection.h>
 #include <mrpt/slam/CSensoryFrame.h>
 

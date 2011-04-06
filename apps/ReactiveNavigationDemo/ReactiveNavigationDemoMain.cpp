@@ -102,6 +102,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 
 // General global variables:
 #include <mrpt/maps.h>
+#include <mrpt/base.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

@@ -33,6 +33,7 @@
 #include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/obs.h>
 #include <mrpt/slam/CObservationImage.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt::detectors;
 

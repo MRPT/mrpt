@@ -29,6 +29,7 @@
 #include <mrpt/maps.h>  // Precompiled header
 
 #include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/slam/CSimplePointsMap.h>
 
 #include <mrpt/utils/color_maps.h>
@@ -36,16 +37,12 @@
 
 #include <mrpt/opengl/CPointCloudColoured.h>
 
-//#include <mrpt/vision/utils.h>
-//#include <mrpt/vision/pinhole.h>
-
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-//using namespace mrpt::vision;
-//using namespace mrpt::vision::pinhole;
 
 IMPLEMENTS_SERIALIZABLE(CColouredPointsMap, CPointsMap,mrpt::slam)
 
@@ -1605,7 +1602,7 @@ void CColouredPointsMap::PLY_import_set_vertex_count(const size_t N)
 	m_min_dist.resize( N );
 }
 
-/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point. 
+/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
   *  \param pt_color Will be NULL if the loaded file does not provide color info.
   */
 void CColouredPointsMap::PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color)
@@ -1615,17 +1612,17 @@ void CColouredPointsMap::PLY_import_set_vertex(const size_t idx, const mrpt::mat
 	else	this->setPoint(idx,pt.x,pt.y,pt.z);
 }
 
-/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point. 
+/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
   *  \param pt_color Will be NULL if the loaded file does not provide color info.
   */
 void CColouredPointsMap::PLY_export_get_vertex(
-	const size_t idx, 
-	mrpt::math::TPoint3Df &pt, 
+	const size_t idx,
+	mrpt::math::TPoint3Df &pt,
 	bool &pt_has_color,
 	mrpt::utils::TColorf &pt_color) const
 {
 	pt_has_color=true;
-	
+
 	pt.x = x[idx];
 	pt.y = y[idx];
 	pt.z = z[idx];

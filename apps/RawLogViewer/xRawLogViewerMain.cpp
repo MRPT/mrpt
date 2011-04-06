@@ -55,6 +55,7 @@
 #include "xRawLogViewerApp.h"
 
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/vision/CVideoFileWriter.h>
 
 //(*InternalHeaders(xRawLogViewerFrame)
 #include <wx/artprov.h>

@@ -31,6 +31,7 @@
 #include <mrpt/math.h>
 #include <mrpt/poses.h>
 #include <mrpt/maps.h>
+#include <mrpt/obs.h>
 #include <mrpt/utils/CTicTac.h>
 
 #include "CPosePDFParticlesExtended.h"

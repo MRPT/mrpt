@@ -35,6 +35,7 @@
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/utils/TParameters.h>
 
 #include <mrpt/utils/metaprogramming.h>
 
@@ -44,7 +45,6 @@ namespace mrpt
 {
 	namespace vision
 	{
-		using namespace mrpt::slam;
 		using namespace mrpt::math;
 		using namespace mrpt::utils;
 

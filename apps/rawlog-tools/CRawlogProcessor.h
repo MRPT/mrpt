@@ -30,6 +30,7 @@
 #define RAWLOG_PROCESSOR_H
 
 #include <mrpt/slam/CRawlog.h>
+#include <mrpt/base.h>
 
 // Aparently, TCLAP headers can't be included in more than one source file
 //  or duplicated linking symbols appear! -> Use forward declarations instead:

@@ -32,12 +32,12 @@
 
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/utils/metaprogramming.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
-
-#include <mrpt/utils/metaprogramming.h>
 using namespace mrpt::utils::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE( CMultiMetricMap, CMetricMap, mrpt::slam )

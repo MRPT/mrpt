@@ -30,6 +30,7 @@
 
 #include <mrpt/poses/CNetworkOfPoses.h>
 #include <mrpt/poses/SE_traits.h>
+#include <mrpt/utils/TParameters.h>
 
 #include <mrpt/slam/link_pragmas.h>
 

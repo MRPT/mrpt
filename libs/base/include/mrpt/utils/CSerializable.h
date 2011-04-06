@@ -32,6 +32,9 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/safe_pointers.h>
 
+#include <set>
+#include <list>
+
 namespace mrpt
 {
 	/** Classes for serialization, sockets, ini-file manipulation, streams, list of properties-values, timewatch, extensions to STL.
@@ -152,7 +155,7 @@ namespace mrpt
 		  *     DECLARE_CUSTOM_TTYPENAME(MyClass)
 		  *     cout << TTypeName<MyClass>::get() << endl;                          // "MyClass"
 		  *  \endcode
-		  *  
+		  *
 		  *  The following types are NOT ALLOWED since they have platform-dependant sizes:
 		  *  - int, unsigned int
 		  *  - long, unsigned long

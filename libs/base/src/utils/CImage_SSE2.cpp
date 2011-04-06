@@ -39,6 +39,8 @@
 // ---------------------------------------------------------------------------
 
 #include <mrpt/utils/CImage.h>
+#include <mrpt/utils/SSE_types.h>
+#include <mrpt/utils/SSE_macros.h>
 #include "CImage_SSEx.h"
 
 /** \addtogroup sse_optimizations

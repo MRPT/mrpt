@@ -30,6 +30,7 @@
 
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/utils/TParameters.h>
 
 #include <mrpt/system/string_utils.h>
 

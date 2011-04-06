@@ -29,11 +29,15 @@
 #include <mrpt/slam.h>  // Precompiled header
 
 #include <mrpt/poses/CNetworkOfPoses.h>
+#include <mrpt/poses/helper_templates.h>
 #include <mrpt/slam/graph_slam.h>
+#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/math/CSparseMatrix.h>
+
+#include <memory>
 
 using namespace mrpt;
 using namespace mrpt::poses;
-using namespace mrpt::slam;
 using namespace mrpt::graphslam;
 using namespace mrpt::math;
 using namespace mrpt::utils;

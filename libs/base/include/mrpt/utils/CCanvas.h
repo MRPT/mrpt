@@ -29,6 +29,7 @@
 #define CCanvas_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/TColor.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/ops_matrices.h>
 

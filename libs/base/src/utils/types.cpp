@@ -30,6 +30,7 @@
 
 
 #include <mrpt/utils/types.h>
+#include <mrpt/utils/TPixelCoord.h>
 
 using namespace mrpt::utils;
 using namespace std;

@@ -35,6 +35,8 @@
 
 #include <mrpt/hwdrivers/link_pragmas.h>
 
+#include <list>
+
 namespace mrpt
 {
 	namespace hwdrivers

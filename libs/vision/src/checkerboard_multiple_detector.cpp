@@ -29,6 +29,7 @@
 #include <mrpt/vision.h>  // Precompiled headers
 
 #include <mrpt/math/kmeans.h>
+#include <mrpt/math/geometry.h>
 
 #include "do_opencv_includes.h"
 #include "checkerboard_ocamcalib_detector.h"
@@ -167,8 +168,8 @@ bool find_chessboard_corners_multiple(
 			vector<size_t> num_quads_by_cluster(nClusters);
 
 			vector<int>	assignments;
-			mrpt::math::kmeanspp< 
-				vector<CArrayDouble<2>,Eigen::aligned_allocator<CArrayDouble<2> > >, 
+			mrpt::math::kmeanspp<
+				vector<CArrayDouble<2>,Eigen::aligned_allocator<CArrayDouble<2> > >,
 				vector<CArrayDouble<2>,Eigen::aligned_allocator<CArrayDouble<2> > > >
 				(nClusters,quad_centers,assignments);
 

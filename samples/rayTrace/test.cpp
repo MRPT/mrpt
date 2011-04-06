@@ -28,6 +28,7 @@
 
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
+#include <mrpt/maps.h>
 
 #define COLORR 1.0f
 #define COLORG 0.0f

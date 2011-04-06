@@ -26,12 +26,15 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header  
+#include <mrpt/maps.h>  // Precompiled header
 
 #include <mrpt/slam/CReflectivityGridMap2D.h>
 #include <mrpt/slam/CObservationReflectivity.h>
 
+#include <mrpt/opengl/CTexturedPlane.h>
 
+
+using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -43,7 +46,7 @@ IMPLEMENTS_SERIALIZABLE(CReflectivityGridMap2D, CMetricMap,mrpt::slam)
 
 
 // Lookup tables for log-odds
-CLogOddsGridMapLUT<CReflectivityGridMap2D::cell_t>  CReflectivityGridMap2D::m_logodd_lut; 
+CLogOddsGridMapLUT<CReflectivityGridMap2D::cell_t>  CReflectivityGridMap2D::m_logodd_lut;
 
 /*---------------------------------------------------------------
 						Constructor
@@ -126,7 +129,7 @@ bool  CReflectivityGridMap2D::internal_insertObservation(
 
 			// Now we should get the cell:
 			cell = cellByPos(sensor_pose.x(),sensor_pose.y());
-			
+
 			ASSERTMSG_(cell!=NULL,"cell==NULL even after resizing grid!?")
 		}
 
@@ -164,18 +167,18 @@ double	 CReflectivityGridMap2D::computeObservationLikelihood(
 
 		CPose3D sensor_pose;
 		sensor_pose.composeFrom(takenFrom, o->sensorPose);
-		
+
 		cell_t *cell = cellByPos(sensor_pose.x(),sensor_pose.y());
 		if (!cell)
 			return 0; // out of the map..
-		else 
+		else
 		{
 			ASSERT_ABOVEEQ_(o->reflectivityLevel,0)
 			ASSERT_BELOWEQ_(o->reflectivityLevel,1)
-			return -0.5*square( ( m_logodd_lut.p2l(*cell) - o->reflectivityLevel )/o->sensorStdNoise); 
+			return -0.5*square( ( m_logodd_lut.p2l(*cell) - o->reflectivityLevel )/o->sensorStdNoise);
 		}
 	}
-	else 
+	else
 		return 0;
 
 	MRPT_END
@@ -242,7 +245,7 @@ void  CReflectivityGridMap2D::readFromStream(CStream &in, int version)
 /*---------------------------------------------------------------
 					TInsertionOptions
  ---------------------------------------------------------------*/
-CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions() 
+CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions()
 {
 }
 

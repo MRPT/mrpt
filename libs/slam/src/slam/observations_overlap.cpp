@@ -29,6 +29,7 @@
 #include <mrpt/slam.h>  // Precompiled header
 
 #include <mrpt/slam/observations_overlap.h>
+#include <mrpt/slam/CPointsMap.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;

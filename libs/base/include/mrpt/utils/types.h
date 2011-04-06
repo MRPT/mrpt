@@ -30,34 +30,14 @@
 #define mrpt_utils_types_H
 
 #include <vector>
-#include <list>
-#include <set>
 #include <map>
 #include <string>
 #include <stdexcept>
 #include <cstdarg>
-#include <iostream>
-#include <sstream>
-
 #include <ctime>
 
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 #include <mrpt/utils/mrpt_inttypes.h>  // compiler-independent version of "inttypes.h"
-
-
-// SSE2 types:
-#if MRPT_HAS_SSE2
-	#include <emmintrin.h>
-	#include <mmintrin.h>
-#endif
-
-// SSE3/SSE3 types:
-#if MRPT_HAS_SSE3
-	#include <pmmintrin.h>
-	#if defined(__GNUC__)
-		#include <immintrin.h>  // Meta-header
-	#endif
-#endif
 
 // needed here for a few basic types used in Eigen MRPT's plugin:
 #include <mrpt/math/math_frwds.h>
@@ -164,150 +144,6 @@ namespace mrpt
 		#else
 			typedef unsigned long POINTER_TYPE;
 		#endif
-
-		/** A RGB color - 8bit */
-		struct BASE_IMPEXP TColor
-		{
-			inline TColor() : R(0),G(0),B(0),A(255) { }
-			inline TColor(uint8_t r,uint8_t g,uint8_t b, uint8_t alpha=255) : R(r),G(g),B(b),A(alpha) { }
-			inline explicit TColor(const unsigned int color_RGB_24bit) : R(uint8_t(color_RGB_24bit>>16)),G(uint8_t(color_RGB_24bit>>8)),B(uint8_t(color_RGB_24bit)),A(255) { }
-			uint8_t R,G,B,A;
-			/** Operator for implicit conversion into an int binary representation 0xRRGGBB */
-			inline operator unsigned int(void) const { return (((unsigned int)R)<<16) | (((unsigned int)G)<<8) | B; }
-
-			static TColor red; //!< Predefined colors
-			static TColor green;//!< Predefined colors
-			static TColor blue;//!< Predefined colors
-			static TColor white;//!< Predefined colors
-			static TColor black;//!< Predefined colors
-			static TColor gray;	//!< Predefined colors
-		};
-
-		/** A RGB color - floats in the range [0,1] */
-		struct BASE_IMPEXP TColorf
-		{
-			TColorf(float r=0,float g=0,float b=0, float alpha=1.0f) : R(r),G(g),B(b),A(alpha) { }
-			explicit TColorf(const TColor &col) : R(col.R*(1.f/255)),G(col.G*(1.f/255)),B(col.B*(1.f/255)),A(col.A*(1.f/255)) { }
-			float R,G,B,A;
-		};
-
-		/** A pair (x,y) of pixel coordinates (subpixel resolution). */
-		struct BASE_IMPEXP TPixelCoordf
-		{
-			float x,y;
-
-			/** Default constructor: undefined values of x,y */
-			TPixelCoordf() : x(),y() {}
-
-			/** Constructor from x,y values */
-			TPixelCoordf(const float _x,const float _y) : x(_x), y(_y) { }
-		};
-
-		std::ostream BASE_IMPEXP & operator <<(std::ostream& o, const TPixelCoordf& p); //!< Prints TPixelCoordf as "(x,y)"
-
-		/** A pair (x,y) of pixel coordinates (integer resolution). */
-		struct BASE_IMPEXP TPixelCoord
-		{
-			TPixelCoord() : x(0),y(0) { }
-			TPixelCoord(const int _x,const int _y) : x(_x), y(_y) { }
-
-			int x,y;
-		};
-
-		std::ostream BASE_IMPEXP & operator <<(std::ostream& o, const TPixelCoord& p); //!< Prints TPixelCoord as "(x,y)"
-
-		typedef TPixelCoord TImageSize; //!< A type for image sizes.
-
-		/** For usage when passing a dynamic number of (numeric) arguments to a function, by name.
-		  *  \code
-		  *    TParameters<double> p;  // or TParametersDouble
-		  *    p["v_max"] = 1.0;  // Write
-		  *    ...
-		  *    cout << p["w_max"]; // Read, even if "p" was const.
-		  *  \endcode
-		  *
-		  *  A default list of parameters can be passed to the constructor as a sequence
-		  *   of pairs "name, value", which MUST end in a NULL name string. Names MUST BE "const char*"
-		  *   (that is, "old plain strings" are OK), not std::string objects!.
-		  *  See this example:
-		  *
-		  *  \code
-		  *    TParameters<double> p("par1",2.0, "par2",-4.5, "par3",9.0, NULL); // MUST end with a NULL
-		  *  \endcode
-		  *
-		  *  <b>VERY IMPORTANT:</b> If you use the NULL-ended constructor above, make sure all the values are of the proper
-		  *    type or it will crash in runtime. For example, in a TParametersDouble all values must be double's, so
-		  *    if you type "10" the compiler will make it an "int". Instead, write "10.0".
-		  *
-		  * \sa the example in MRPT/samples/params-by-name
-		  */
-		template <typename T>
-		struct TParameters : public std::map<std::string,T>
-		{
-			typedef std::map<std::string,T> BASE;
-			/** Default constructor (initializes empty) */
-			TParameters() : BASE() { }
-			/** Constructor with a list of initial values (see the description and use example in mrpt::utils::TParameters) */
-			TParameters(const char *nam1,...) : BASE() {
-				if (!nam1) return; // No parameters
-				T val;
-				va_list args;
-				va_start(args,nam1);
-				// 1st one out of the loop:
-				val = va_arg(args,T);
-				BASE::operator[](std::string(nam1)) = val;
-				// Loop until NULL:
-				const char *nam;
-				do{
-					nam = va_arg(args,const char*);
-					if (nam) {
-						val = va_arg(args,T);
-						BASE::operator[](std::string(nam)) = val;
-					}
-				} while (nam);
-				va_end(args);
-			}
-			inline bool has(const std::string &s) const { return std::map<std::string,T>::end()!=BASE::find(s); }
-			/** A const version of the [] operator, for usage as read-only.
-			  * \exception std::logic_error On parameter not present. Please, check existence with "has" before reading.
-			  */
-			inline T operator[](const std::string &s) const {
-				typename BASE::const_iterator it =BASE::find(s);
-				if (BASE::end()==it)
-					throw std::logic_error(std::string("Parameter '")+s+std::string("' is not present.").c_str());
-				return it->second;
-			}
-			/** A const version of the [] operator and with a default value in case the parameter is not set (for usage as read-only).
-			  */
-			inline T getWithDefaultVal(const std::string &s, const T& defaultVal) const {
-				typename BASE::const_iterator it =BASE::find(s);
-				if (BASE::end()==it)
-						return defaultVal;
-				else 	return it->second;
-			}
-			/** The write (non-const) version of the [] operator. */
-			inline T & operator[](const std::string &s) { return BASE::operator[](s); }
-
-			/** Dumps to console the output from getAsString() */
-			inline void dumpToConsole() const { std::cout << getAsString(); }
-
-			/** Returns a multi-like string representation of the parameters like : 'nam   = val\nnam2   = val2...' */
-			inline std::string getAsString() const { std::string s; getAsString(s); return s; }
-
-			/** Returns a multi-like string representation of the parameters like : 'nam   = val\nnam2   = val2...' */
-			void getAsString(std::string &s) const {
-				size_t maxStrLen = 10;
-				for (typename BASE::const_iterator it=BASE::begin();it!=BASE::end();++it) maxStrLen = std::max(maxStrLen, it->first.size() );
-				maxStrLen++;
-				std::stringstream str;
-				for (typename BASE::const_iterator it=BASE::begin();it!=BASE::end();++it)
-					str << it->first << std::string(maxStrLen-it->first.size(),' ') << " = " << it->second << std::endl;
-				s = str.str();
-			}
-		};
-
-		typedef TParameters<double>       TParametersDouble; //!< See the generic template mrpt::utils::TParameters
-		typedef TParameters<std::string>  TParametersString; //!< See the generic template mrpt::utils::TParameters
 
 		typedef uint64_t TNodeID;  //!< The type for node IDs in graphs of different types.
 		typedef std::pair<TNodeID,TNodeID> TPairNodeIDs; //!< A pair of node IDs.

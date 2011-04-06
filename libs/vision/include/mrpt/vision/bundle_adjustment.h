@@ -31,6 +31,7 @@
 
 #include <mrpt/vision/types.h>
 #include <mrpt/utils/TCamera.h>
+#include <mrpt/utils/TParameters.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 // The methods declared in this file are implemented in separate files in: vision/src/ba_*.cpp

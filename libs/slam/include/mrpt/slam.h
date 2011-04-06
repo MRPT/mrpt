@@ -28,8 +28,8 @@
 #ifndef mrpt_slam_H
 #define mrpt_slam_H
 
-#include <mrpt/vision.h>  // Dependencies of mrpt-slam
-#include <mrpt/maps.h>   // Dependencies of mrpt-slam
+//#include <mrpt/vision.h>  // Dependencies of mrpt-slam
+//#include <mrpt/maps.h>   // Dependencies of mrpt-slam
 
 // Only really include all headers if we come from a user program (anything
 //  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.

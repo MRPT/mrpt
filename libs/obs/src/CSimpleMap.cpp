@@ -30,6 +30,7 @@
 
 
 #include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 
 using namespace mrpt::slam;
