@@ -49,6 +49,7 @@
 #include <wx/tipdlg.h>
 #include <wx/statbox.h>
 
+#include <mrpt/system.h>
 
 extern std::string global_fileToOpen;
 

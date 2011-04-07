@@ -26,6 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
+#include <mrpt/base.h>
 #include <mrpt/opengl.h>
 #include <mrpt/gui.h>
 

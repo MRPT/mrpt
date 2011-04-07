@@ -41,9 +41,9 @@
     DATE: 20-Aug-2010
    =========================================================================== */
 
+#include <mrpt/base.h>
 #include <mrpt/vision.h>
 #include <mrpt/gui.h>
-#include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;

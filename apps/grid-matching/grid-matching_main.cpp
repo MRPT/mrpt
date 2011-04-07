@@ -28,6 +28,7 @@
 
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
+#include <mrpt/base.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 

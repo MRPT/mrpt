@@ -28,6 +28,7 @@
 
 #include <mrpt/vision.h>
 #include <mrpt/gui.h>
+#include <mrpt/base.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;

@@ -30,9 +30,8 @@
 //  http://www.mrpt.org/Kalman_Filters
 // ------------------------------------------------------
 
-#include <mrpt/utils.h>
+#include <mrpt/base.h>
 #include <mrpt/gui.h>
-#include <mrpt/math.h>
 #include <mrpt/obs.h>
 
 #include <mrpt/bayes/CKalmanFilterCapable.h>

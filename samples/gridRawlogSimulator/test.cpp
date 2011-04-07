@@ -29,6 +29,7 @@
 
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
+#include <mrpt/base.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;

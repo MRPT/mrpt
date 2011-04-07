@@ -39,6 +39,7 @@
 #include <mrpt/vision.h> 	// For feature detection, etc.
 #include <mrpt/gui.h>		// For visualization windows
 #include <mrpt/hwdrivers.h>	// For capture of video from videos/cameras
+#include <mrpt/base.h>
 #include <mrpt/slam/CRawlog.h>
 
 using namespace std;

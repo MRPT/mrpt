@@ -57,6 +57,7 @@
 #include "../wx-common/CMyRedirector.h"
 #include "CAboutBox.h"
 
+#include <mrpt/base.h>
 
 #if !wxUSE_GLCANVAS
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"

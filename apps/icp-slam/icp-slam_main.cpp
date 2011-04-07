@@ -35,6 +35,7 @@
           http://www.mrpt.org/Application:icp-slam
   ---------------------------------------------------------------*/
 
+#include <mrpt/base.h>
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
 
