@@ -28,27 +28,16 @@
 
 #include <mrpt/slam.h>  // Precompiled header
 
-#include <mrpt/math/utils.h>
-//#include <mrpt/gui/CDisplayWindow.h>
-//#include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CEnhancedMetaFile.h>
 #include <mrpt/slam/CGridMapAligner.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPoint2DPDFGaussian.h>
+
+#include <mrpt/base.h>
+
 #include <mrpt/slam/COccupancyGridMap2D.h>
 #include <mrpt/slam/CMultiMetricMap.h>
 #include <mrpt/slam/CICP.h>
-#include <mrpt/poses/CPosePDFParticles.h>
-#include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/slam/CLandmarksMap.h>
 #include <mrpt/scanmatching.h>
-#include <mrpt/poses/CPosePDFGrid.h>
 
-#include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/math.h>
-#include <mrpt/random.h>
 
 using namespace mrpt::math;
 using namespace mrpt::slam;

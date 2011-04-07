@@ -879,7 +879,10 @@ IplImage *ipl_to_grayscale(const IplImage * img_src)
 
 	// If possible, use SSE optimized version:
 #if MRPT_HAS_SSE3
-	if (is_aligned<16>(img_src->imageData) && (img_src->width & 0xF) == 0)
+	if (is_aligned<16>(img_src->imageData) && 
+		(img_src->width & 0xF) == 0 && 
+		img_src->widthStep==img_src->width*img_src->nChannels && 
+		img_dest->widthStep==img_dest->width*img_dest->nChannels )
 	{
 		ASSERT_(is_aligned<16>(img_dest->imageData))
 		image_SSSE3_bgr_to_gray_8u( (const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData, img_src->width,img_src->height);
@@ -947,20 +950,23 @@ void CImage::scaleHalf(CImage &out)const
 	const int w = img_src->width;
 	const int h = img_src->height;
 
+	// Create target image:
+	IplImage * img_dest = cvCreateImage( cvSize(w>>1,h>>1),IPL_DEPTH_8U, img_src->nChannels );
+	img_dest->origin = img_src->origin;
+	memcpy(img_dest->colorModel,img_src->colorModel,4);
+	memcpy(img_dest->channelSeq,img_src->channelSeq,4);
+	img_dest->dataOrder=img_src->dataOrder;
+
+
 	// If possible, use SSE optimized version:
 #if MRPT_HAS_SSE3
-	if (img_src->nChannels==3 && is_aligned<16>(img_src->imageData) && (w & 0xF) == 0)
+	if (img_src->nChannels==3 && 
+		is_aligned<16>(img_src->imageData) && 
+		is_aligned<16>(img_dest->imageData) &&
+		(w & 0xF) == 0 && 
+		img_src->widthStep==img_src->width*img_src->nChannels && 
+		img_dest->widthStep==img_dest->width*img_dest->nChannels )
 	{
-		// Create target image:
-		IplImage * img_dest = cvCreateImage( cvSize(w>>1,h>>1),IPL_DEPTH_8U, img_src->nChannels );
-		img_dest->origin = img_src->origin;
-		memcpy(img_dest->colorModel,img_src->colorModel,4);
-		memcpy(img_dest->channelSeq,img_src->channelSeq,4);
-		img_dest->dataOrder=img_src->dataOrder;
-
-		ASSERT_(is_aligned<16>(img_dest->imageData))
-		ASSERT_(img_src->nChannels==3)
-
 		image_SSSE3_scale_half_3c8u( (const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData, w,h);
 		out.setFromIplImage(img_dest);
 		return;
@@ -968,18 +974,13 @@ void CImage::scaleHalf(CImage &out)const
 #endif
 
 #if MRPT_HAS_SSE2
-	if (img_src->nChannels==1 && is_aligned<16>(img_src->imageData) && (w & 0xF) == 0)
+	if (img_src->nChannels==1 && 
+		is_aligned<16>(img_src->imageData) && 
+		is_aligned<16>(img_dest->imageData) && 
+		(w & 0xF) == 0 &&
+		img_src->widthStep==img_src->width*img_src->nChannels && 
+		img_dest->widthStep==img_dest->width*img_dest->nChannels )
 	{
-		// Create target image:
-		IplImage * img_dest = cvCreateImage( cvSize(w>>1,h>>1),IPL_DEPTH_8U, img_src->nChannels );
-		img_dest->origin = img_src->origin;
-		memcpy(img_dest->colorModel,img_src->colorModel,4);
-		memcpy(img_dest->channelSeq,img_src->channelSeq,4);
-		img_dest->dataOrder=img_src->dataOrder;
-
-		ASSERT_(is_aligned<16>(img_dest->imageData))
-		ASSERT_(img_src->nChannels==1)
-
 		image_SSE2_scale_half_1c8u( (const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData, w,h);
 
 		out.setFromIplImage(img_dest);
@@ -988,8 +989,8 @@ void CImage::scaleHalf(CImage &out)const
 #endif
 
 	// Fall back to slow method:
-	out = *this;
-	out.scaleImage(w>>1,h>>1,IMG_INTERP_NN);
+	cvResize( img_src, img_dest, IMG_INTERP_NN );
+	out.setFromIplImage(img_dest);
 #endif
 }
 
@@ -1007,20 +1008,23 @@ void CImage::scaleHalfSmooth(CImage &out)const
 	const int w = img_src->width;
 	const int h = img_src->height;
 
+	// Create target image:
+	IplImage * img_dest = cvCreateImage( cvSize(w>>1,h>>1),IPL_DEPTH_8U, img_src->nChannels );
+	img_dest->origin = img_src->origin;
+	memcpy(img_dest->colorModel,img_src->colorModel,4);
+	memcpy(img_dest->channelSeq,img_src->channelSeq,4);
+	img_dest->dataOrder=img_src->dataOrder;
+
+
 	// If possible, use SSE optimized version:
 #if MRPT_HAS_SSE2
-	if (img_src->nChannels==1 && is_aligned<16>(img_src->imageData) && (w & 0xF) == 0)
+	if (img_src->nChannels==1 && 
+		is_aligned<16>(img_src->imageData) && 
+		is_aligned<16>(img_dest->imageData) && 
+		(w & 0xF) == 0 &&
+		img_src->widthStep==img_src->width*img_src->nChannels && 
+		img_dest->widthStep==img_dest->width*img_dest->nChannels )
 	{
-		// Create target image:
-		IplImage * img_dest = cvCreateImage( cvSize(w>>1,h>>1),IPL_DEPTH_8U, img_src->nChannels );
-		img_dest->origin = img_src->origin;
-		memcpy(img_dest->colorModel,img_src->colorModel,4);
-		memcpy(img_dest->channelSeq,img_src->channelSeq,4);
-		img_dest->dataOrder=img_src->dataOrder;
-
-		ASSERT_(is_aligned<16>(img_dest->imageData))
-		ASSERT_(img_src->nChannels==1)
-
 		image_SSE2_scale_half_smooth_1c8u( (const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData, w,h);
 
 		out.setFromIplImage(img_dest);
@@ -1029,8 +1033,8 @@ void CImage::scaleHalfSmooth(CImage &out)const
 #endif
 
 	// Fall back to slow method:
-	out = *this;
-	out.scaleImage(w>>1,h>>1,IMG_INTERP_LINEAR);
+	cvResize( img_src, img_dest, IMG_INTERP_LINEAR );
+	out.setFromIplImage(img_dest);
 #endif
 }
 

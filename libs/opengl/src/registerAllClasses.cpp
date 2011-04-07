@@ -34,6 +34,8 @@
 #	include <mrpt/opengl.h>
 #endif
 
+#include <mrpt/utils/CStartUpClassesRegister.h>
+
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
 

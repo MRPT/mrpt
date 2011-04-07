@@ -48,9 +48,9 @@
 /** Subsample each 2x2 pixel block into 1x1 pixel, taking the first pixel & ignoring the other 3
   *  - <b>Input format:</b> uint8_t, 3 channels (RGB or BGR)
   *  - <b>Output format:</b> uint8_t, 3 channels (RGB or BGR)
-  *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels)
+  *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels), widthStep=w*3
   *  - <b>Notes:</b>
-  *  - <b>Requires: SSSE3</b>
+  *  - <b>Requires:</b> SSSE3
   *  - <b>Invoked from:</b> mrpt::utils::CImage::scaleHalf()
   */
 void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
@@ -68,6 +68,8 @@ void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
 	const int sw = w >> 4;  // This are the number of 3*16 blocks in each row
 	const int sh = h >> 1;
 
+	int odd_row = 0; 
+
 	for (int i=0; i<sh; i++)
 	{
 		for (int j=0; j<sw; j++)
@@ -82,7 +84,7 @@ void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
 
 			__m128i res0 = _mm_or_si128(shuf0,shuf1);
 
-			if ((j&0x1)!=0)
+			if ((odd_row&0x1)!=0)
 			     _mm_storeu_si128((__m128i*)out,res0);  // unaligned output
 			else _mm_store_si128 ((__m128i*)out,res0);  // aligned output
 			out += 16;
@@ -94,6 +96,7 @@ void image_SSSE3_scale_half_3c8u(const uint8_t* in, uint8_t* out, int w, int h)
 				(__m128i*)out,
 				_mm_or_si128(_mm_shuffle_epi8(d2,m2),_mm_shuffle_epi8(d1,m3))
 				);
+			odd_row++;
 			out += 8;
 		}
 		in += 3*w;
@@ -216,9 +219,9 @@ void private_image_SSSE3_rgb_or_bgr_to_gray_8u(const uint8_t* in, uint8_t* out, 
 /** Convert a RGB image (3cu8) into a GRAYSCALE (1c8u) image, using Y=77*R+150*G+29*B
   *  - <b>Input format:</b> uint8_t, 3 channels (BGR order)
   *  - <b>Output format:</b> uint8_t, 1 channel
-  *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels)
+  *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels), widthStep=w*3 and w*1
   *  - <b>Notes:</b>
-  *  - <b>Requires: SSSE3</b>
+  *  - <b>Requires:</b> SSSE3
   *  - <b>Invoked from:</b> mrpt::utils::CImage::grayscale(), mrpt::utils::CImage::grayscaleInPlace()
   */
 void image_SSSE3_bgr_to_gray_8u(const uint8_t* in, uint8_t* out, int w, int h)
@@ -229,9 +232,9 @@ void image_SSSE3_bgr_to_gray_8u(const uint8_t* in, uint8_t* out, int w, int h)
 /** Convert a RGB image (3cu8) into a GRAYSCALE (1c8u) image, using Y=77*R+150*G+29*B
   *  - <b>Input format:</b> uint8_t, 3 channels (RGB order)
   *  - <b>Output format:</b> uint8_t, 1 channel
-  *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels)
+  *  - <b>Preconditions:</b> in & out aligned to 16bytes, w = k*16 (w=width in pixels), widthStep=w*3 and w*1
   *  - <b>Notes:</b>
-  *  - <b>Requires: SSSE3</b>
+  *  - <b>Requires:</b> SSSE3
   *  - <b>Invoked from:</b> mrpt::utils::CImage::grayscale(), mrpt::utils::CImage::grayscaleInPlace()
   */
 void image_SSSE3_rgb_to_gray_8u(const uint8_t* in, uint8_t* out, int w, int h)

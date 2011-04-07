@@ -36,7 +36,7 @@
 
 namespace mrpt
 {
-	namespace utils { class CStringList; }
+	namespace utils { class CStringList; class CImage; }
 
 	namespace opengl
 	{

@@ -29,9 +29,6 @@
 #ifndef _mrpt_topography_H
 #define _mrpt_topography_H
 
-#include <mrpt/math.h>   // dependency
-#include <mrpt/poses.h>  // dependency
-
 #include <mrpt/topography/conversions.h>
 #include <mrpt/topography/path_from_rtk_gps.h>
 

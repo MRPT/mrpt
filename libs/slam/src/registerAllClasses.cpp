@@ -34,6 +34,7 @@
 #	include <mrpt/slam.h>
 #endif
 
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;

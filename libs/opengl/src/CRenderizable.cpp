@@ -39,6 +39,7 @@
 
 #include "opengl_internals.h"
 
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace std;
 using namespace mrpt;

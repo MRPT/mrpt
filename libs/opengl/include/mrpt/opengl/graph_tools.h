@@ -30,6 +30,7 @@
 
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/poses/CNetworkOfPoses.h>
+#include <mrpt/utils/TParameters.h>
 
 namespace mrpt
 {

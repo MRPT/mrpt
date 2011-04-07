@@ -32,6 +32,8 @@
 #include <mrpt/system/os.h>
 #include <mrpt/gui/WxSubsystem.h>
 
+#include <mrpt/utils/CStartUpClassesRegister.h>
+
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::utils;

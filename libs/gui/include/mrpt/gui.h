@@ -29,13 +29,13 @@
 #ifndef _mrpt_gui_H
 #define _mrpt_gui_H
 
-#include <mrpt/opengl.h> // dependencies
+//#include <mrpt/opengl.h> // dependencies
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 
-// Include these ones manually in your code only if you need them, since linkage dependencies will appear:
+// Include these ones manually in your code only if you need them, since they require wxWidget headers:
 // #include "gui/WxSubsystem.h" 
 //#include "gui/WxUtils.h"
 //#include "gui/CMyGLCanvasBase.h"

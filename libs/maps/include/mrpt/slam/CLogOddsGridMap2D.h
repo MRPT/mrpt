@@ -41,7 +41,7 @@ namespace mrpt
 			// Specializations:
 			template <> struct logoddscell_traits<int8_t>
 			{
-				static const int8_t CELLTYPE_MIN  = -127; // In mrpt <0.9.4 was -128 (!).
+				static const int8_t CELLTYPE_MIN  = -127; // In mrpt <0.9.4 was -128 (!) - This is to make it compatible with all architectures.
 				static const int8_t CELLTYPE_MAX  = 127;
 				static const int8_t P2LTABLE_SIZE = CELLTYPE_MAX;
 				static const size_t LOGODDS_LUT_ENTRIES = 1<<8;
@@ -220,14 +220,18 @@ namespace mrpt
 			  */
 			inline float l2p(const cell_t l)
 			{
-				return logoddsTable[ -traits_t::CELLTYPE_MIN+l ];
+				if (l<traits_t::CELLTYPE_MIN)	
+				     return logoddsTable[ 0 ];  // This is needed since min can be -127 and int8_t can be -128.
+				else return logoddsTable[ -traits_t::CELLTYPE_MIN+l ];
 			}
 
 			/** Scales an integer representation of the log-odd into a linear scale [0,255], using p=exp(l)/(1+exp(l))
 			  */
 			inline uint8_t l2p_255(const cell_t l)
 			{
-				return logoddsTable_255[ -traits_t::CELLTYPE_MIN+l ];
+				if (l<traits_t::CELLTYPE_MIN)	
+				     return logoddsTable_255[ 0 ]; // This is needed since min can be -127 and int8_t can be -128.
+				else return logoddsTable_255[ -traits_t::CELLTYPE_MIN+l ];
 			}
 
 			/** Scales a real valued probability in [0,1] to an integer representation of: log(p)-log(1-p)  in the valid range of cell_t.

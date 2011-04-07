@@ -29,7 +29,7 @@
 #include <mrpt/gui.h>
 
 #include <mrpt/utils/CSerializable.h>
-
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt::gui;
 using namespace mrpt::utils;

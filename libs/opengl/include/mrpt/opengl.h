@@ -29,7 +29,7 @@
 #ifndef _mrpt_opengl_H
 #define _mrpt_opengl_H
 
-#include <mrpt/base.h> // dependencies
+#include <mrpt/config.h>
 
 // Only really include all headers if we come from a user program (anything
 //  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.

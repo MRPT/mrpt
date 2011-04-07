@@ -28,13 +28,16 @@
 #ifndef mrpt_slam_H
 #define mrpt_slam_H
 
-//#include <mrpt/vision.h>  // Dependencies of mrpt-slam
-//#include <mrpt/maps.h>   // Dependencies of mrpt-slam
+#include <mrpt/config.h>
 
 // Only really include all headers if we come from a user program (anything
 //  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
 #if !defined(mrpt_slam_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
 
+// This is to try to avoid an internal compiler error in MSVC 2008... :-(
+#if defined(mrpt_slam_EXPORTS) && MRPT_ENABLE_PRECOMPILED_HDRS
+	#include <mrpt/base.h>  
+#endif
 
 // Maps:
 #include <mrpt/slam/CMetricMap.h>
