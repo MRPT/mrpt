@@ -34,6 +34,7 @@
 	See README.txt for instructions.
   ---------------------------------------------------------------*/
 
+#include <mrpt/base.h>
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
 

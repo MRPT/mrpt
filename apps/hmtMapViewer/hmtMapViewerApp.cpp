@@ -41,6 +41,7 @@ IMPLEMENT_APP(hmtMapViewerApp)
 // The file to open (from cmd line), or an empty string
 std::string     global_fileToOpen;
 
+#include <mrpt/base.h>
 #include <mrpt/slam.h>
 
 #include <mrpt/hmtslam/CHMTSLAM.h>

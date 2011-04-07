@@ -27,7 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CBoardENoses.h>
-#include <mrpt/utils.h>
+#include <mrpt/base.h>
 #include <mrpt/slam.h>
 
 

@@ -28,6 +28,7 @@
 
 #include <mrpt/math/ransac.h>
 #include <mrpt/math/model_search.h>
+#include <mrpt/base.h>
 #include <mrpt/gui.h>
 
 using namespace mrpt;

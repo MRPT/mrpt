@@ -26,6 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
+#include <mrpt/base.h>
 #include <mrpt/slam/graph_slam.h>
 #include <mrpt/gui.h>
 

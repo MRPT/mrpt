@@ -26,6 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
+#include <mrpt/base.h>
 #include <mrpt/slam.h>
 #include <mrpt/hwdrivers/CServoeNeck.h>
 #include <mrpt/gui.h>

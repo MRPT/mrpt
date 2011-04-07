@@ -29,6 +29,7 @@
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
 #include <mrpt/maps.h>
+#include <mrpt/base.h>
 
 using namespace std;
 using namespace mrpt;

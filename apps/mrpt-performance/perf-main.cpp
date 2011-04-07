@@ -33,6 +33,7 @@
 
 #include <mrpt/version.h>
 #include <mrpt/slam.h>
+#include <mrpt/base.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 

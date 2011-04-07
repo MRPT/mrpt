@@ -35,6 +35,7 @@
 	See README.txt for instructions.
   ---------------------------------------------------------------*/
 
+#include <mrpt/base.h>
 #include <mrpt/slam.h>
 
 using namespace mrpt;

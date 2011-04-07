@@ -33,7 +33,7 @@
 #include <wx/msgdlg.h>
 
 
-#include <mrpt/system/os.h>
+#include <mrpt/base.h>
 
 using namespace std;
 using namespace mrpt;

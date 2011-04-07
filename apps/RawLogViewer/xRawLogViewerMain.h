@@ -60,6 +60,7 @@
 #include <wx/docview.h>
 
 // General global variables:
+#include <mrpt/base.h>
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
 

@@ -32,6 +32,7 @@
 // and access to the contained "image" instead of "imageLeft".
 // -----------------------------------------------------------------------------------------------------------------------
 
+#include <mrpt/base.h>
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
 

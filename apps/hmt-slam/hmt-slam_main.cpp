@@ -36,6 +36,7 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/slam.h>
+#include <mrpt/base.h>
 #include <mrpt/hmtslam/CHMTSLAM.h>
 
 using namespace mrpt;

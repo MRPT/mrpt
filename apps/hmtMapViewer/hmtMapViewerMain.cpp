@@ -64,6 +64,7 @@ extern std::string     global_fileToOpen;
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"
 #endif
 
+#include <mrpt/base.h>
 #include <mrpt/gui/CMyGLCanvasBase.h>
 
 #include <mrpt/slam.h>
