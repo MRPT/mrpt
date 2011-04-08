@@ -177,7 +177,7 @@ namespace mrpt
 				ASSERT_EQUAL_(X.size(),Y.size())
 				ASSERT_(Z.size()==0 || Z.size()==X.size())
 				x.resize(N); y.resize(N); z.resize(N);
-				const bool z_valid = Z.empty();
+				const bool z_valid = !Z.empty();
 				if (z_valid) for (size_t i=0;i<N;i++) { this->x[i]=X[i]; this->y[i]=Y[i]; this->z[i]=Z[i]; }
 				else         for (size_t i=0;i<N;i++) { this->x[i]=X[i]; this->y[i]=Y[i]; this->z[i]=0; }
 				pointWeight.assign(N,1);
