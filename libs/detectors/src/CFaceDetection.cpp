@@ -32,17 +32,16 @@
 #include <mrpt/slam/CColouredPointsMap.h>
 
 #include <mrpt/detectors/CFaceDetection.h>
-#include <mrpt/math/geometry.h>
+#include <mrpt/math.h>
 
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/slam/CICP.h>
 
 #include "do_opencv_includes.h"
 
-//#include <mrpt/slam.h>
 
-
-
+using namespace std;
+using namespace mrpt;
 using namespace mrpt::detectors;
 using namespace mrpt::math;
 using namespace mrpt::gui;
@@ -51,7 +50,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::slam;
 
-CColouredPointsMap mapa;
+//CColouredPointsMap mapa;
 
 //------------------------------------------------------------------------
 //							CFaceDetection

@@ -29,6 +29,7 @@
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
 #include <mrpt/maps.h>
+#include <mrpt/system.h>
 
 #define COLORR 1.0f
 #define COLORG 0.0f
@@ -119,7 +120,7 @@ void generateObjects(CSetOfObjectsPtr &world)	{
 void display()	{
 	CDisplayWindow3D window("Ray trace demo",640,480);
 	window.setPos(10,10);
-	sleep(20);
+	mrpt::system::sleep(20);
 	COpenGLScenePtr scene1=COpenGLScene::Create();
 	//COpenGLScenePtr &scene1=window.get3DSceneAndLock();
 	opengl::CGridPlaneXYPtr plane1=CGridPlaneXY::Create(-20,20,-20,20,0,1);
@@ -161,7 +162,7 @@ void display()	{
 	scene1->insert(point);
 	CDisplayWindow3D window2("Observed mesh",640,480);
 	window2.setPos(660,10);
-	sleep(20);
+	mrpt::system::sleep(20);
 	window.get3DSceneAndLock()=scene1;
 	window.unlockAccess3DScene();
 	window.setCameraElevationDeg(25.0f);
