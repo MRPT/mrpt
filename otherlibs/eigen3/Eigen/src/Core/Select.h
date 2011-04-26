@@ -101,6 +101,21 @@ class Select : internal::no_assignment_operator,
         return m_else.coeff(i);
     }
 
+    const ConditionMatrixType& conditionMatrix() const
+    {
+      return m_condition;
+    }
+
+    const ThenMatrixType& thenMatrix() const
+    {
+      return m_then;
+    }
+
+    const ElseMatrixType& elseMatrix() const
+    {
+      return m_else;
+    }
+
   protected:
     const typename ConditionMatrixType::Nested m_condition;
     const typename ThenMatrixType::Nested m_then;

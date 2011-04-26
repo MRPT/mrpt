@@ -51,16 +51,16 @@
       #define EIGEN_SSE2_ON_MSVC_2008_OR_LATER
     #endif
   #endif
-#endif
-
-// Remember that usage of defined() in a #define is undefined by the standard
-#if (defined __SSE2__) && ( (!defined __GNUC__) || EIGEN_GNUC_AT_LEAST(4,2) )
-  #define EIGEN_SSE2_BUT_NOT_OLD_GCC
+#else
+  // Remember that usage of defined() in a #define is undefined by the standard
+  #if (defined __SSE2__) && ( (!defined __GNUC__) || EIGEN_GNUC_AT_LEAST(4,2) )
+    #define EIGEN_SSE2_ON_NON_MSVC_BUT_NOT_OLD_GCC
+  #endif
 #endif
 
 #ifndef EIGEN_DONT_VECTORIZE
 
-  #if defined (EIGEN_SSE2_BUT_NOT_OLD_GCC) || defined(EIGEN_SSE2_ON_MSVC_2008_OR_LATER)
+  #if defined (EIGEN_SSE2_ON_NON_MSVC_BUT_NOT_OLD_GCC) || defined(EIGEN_SSE2_ON_MSVC_2008_OR_LATER)
 
     // Defines symbols for compile-time detection of which instructions are
     // used.
@@ -143,6 +143,7 @@
 #ifdef EIGEN_HAS_ERRNO
 #include <cerrno>
 #endif
+#include <cstddef>
 #include <cstdlib>
 #include <cmath>
 #include <complex>
@@ -321,7 +322,7 @@ using std::size_t;
 #include "src/Core/CommaInitializer.h"
 #include "src/Core/Flagged.h"
 #include "src/Core/ProductBase.h"
-#include "src/Core/Product.h"
+#include "src/Core/GeneralProduct.h"
 #include "src/Core/TriangularMatrix.h"
 #include "src/Core/SelfAdjointView.h"
 #include "src/Core/SolveTriangular.h"
@@ -349,6 +350,12 @@ using std::size_t;
 #include "src/Core/Reverse.h"
 #include "src/Core/ArrayBase.h"
 #include "src/Core/ArrayWrapper.h"
+
+#ifdef EIGEN_ENABLE_EVALUATORS
+#include "src/Core/Product.h"
+#include "src/Core/CoreEvaluators.h"
+#include "src/Core/AssignEvaluator.h"
+#endif 
 
 } // namespace Eigen
 

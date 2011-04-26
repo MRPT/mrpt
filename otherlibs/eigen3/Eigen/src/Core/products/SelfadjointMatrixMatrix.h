@@ -263,10 +263,10 @@ struct product_selfadjoint_matrix<Scalar,Index,LhsStorageOrder,true,ConjugateLhs
     // kc must smaller than mc
     kc = std::min(kc,mc);
 
-    Scalar* blockA = ei_aligned_stack_new(Scalar, kc*mc);
     std::size_t sizeW = kc*Traits::WorkSpaceFactor;
     std::size_t sizeB = sizeW + kc*cols;
-    Scalar* allocatedBlockB = ei_aligned_stack_new(Scalar, sizeB);
+    ei_declare_aligned_stack_constructed_variable(Scalar, blockA, kc*mc, 0);
+    ei_declare_aligned_stack_constructed_variable(Scalar, allocatedBlockB, sizeB, 0);
     Scalar* blockB = allocatedBlockB + sizeW;
 
     gebp_kernel<Scalar, Scalar, Index, Traits::mr, Traits::nr, ConjugateLhs, ConjugateRhs> gebp_kernel;
@@ -313,9 +313,6 @@ struct product_selfadjoint_matrix<Scalar,Index,LhsStorageOrder,true,ConjugateLhs
         gebp_kernel(res+i2, resStride, blockA, blockB, actual_mc, actual_kc, cols, alpha);
       }
     }
-
-    ei_aligned_stack_delete(Scalar, blockA, kc*mc);
-    ei_aligned_stack_delete(Scalar, allocatedBlockB, sizeB);
   }
 };
 
@@ -343,11 +340,10 @@ struct product_selfadjoint_matrix<Scalar,Index,LhsStorageOrder,false,ConjugateLh
     Index mc = rows;  // cache block size along the M direction
     Index nc = cols;  // cache block size along the N direction
     computeProductBlockingSizes<Scalar,Scalar>(kc, mc, nc);
-
-    Scalar* blockA = ei_aligned_stack_new(Scalar, kc*mc);
     std::size_t sizeW = kc*Traits::WorkSpaceFactor;
     std::size_t sizeB = sizeW + kc*cols;
-    Scalar* allocatedBlockB = ei_aligned_stack_new(Scalar, sizeB);
+    ei_declare_aligned_stack_constructed_variable(Scalar, blockA, kc*mc, 0);
+    ei_declare_aligned_stack_constructed_variable(Scalar, allocatedBlockB, sizeB, 0);
     Scalar* blockB = allocatedBlockB + sizeW;
 
     gebp_kernel<Scalar, Scalar, Index, Traits::mr, Traits::nr, ConjugateLhs, ConjugateRhs> gebp_kernel;
@@ -369,9 +365,6 @@ struct product_selfadjoint_matrix<Scalar,Index,LhsStorageOrder,false,ConjugateLh
         gebp_kernel(res+i2, resStride, blockA, blockB, actual_mc, actual_kc, cols, alpha);
       }
     }
-
-    ei_aligned_stack_delete(Scalar, blockA, kc*mc);
-    ei_aligned_stack_delete(Scalar, allocatedBlockB, sizeB);
   }
 };
 

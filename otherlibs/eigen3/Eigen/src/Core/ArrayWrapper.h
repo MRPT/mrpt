@@ -119,6 +119,12 @@ class ArrayWrapper : public ArrayBase<ArrayWrapper<ExpressionType> >
     template<typename Dest>
     inline void evalTo(Dest& dst) const { dst = m_expression; }
 
+    const typename internal::remove_all<NestedExpressionType>::type& 
+    nestedExpression() const 
+    {
+      return m_expression;
+    }
+
   protected:
     const NestedExpressionType m_expression;
 };
@@ -212,6 +218,12 @@ class MatrixWrapper : public MatrixBase<MatrixWrapper<ExpressionType> >
     inline void writePacket(Index index, const PacketScalar& x)
     {
       m_expression.const_cast_derived().template writePacket<LoadMode>(index, x);
+    }
+
+    const typename internal::remove_all<NestedExpressionType>::type& 
+    nestedExpression() const 
+    {
+      return m_expression;
     }
 
   protected:

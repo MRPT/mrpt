@@ -38,7 +38,7 @@
   * with given dense storage of the coefficients. It is the return type of MatrixBase::selfadjointView()
   * and most of the time this is the only way that it is used.
   *
-  * \sa class TriangularBase, MatrixBase::selfAdjointView()
+  * \sa class TriangularBase, MatrixBase::selfadjointView()
   */
 
 namespace internal {

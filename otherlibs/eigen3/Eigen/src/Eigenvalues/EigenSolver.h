@@ -343,6 +343,7 @@ typename EigenSolver<MatrixType>::EigenvectorsType EigenSolver<MatrixType>::eige
     {
       // we have a real eigen value
       matV.col(j) = m_eivec.col(j).template cast<ComplexScalar>();
+      matV.col(j).normalize();
     }
     else
     {

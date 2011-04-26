@@ -605,7 +605,7 @@ template <typename Scalar, bool RandomAccess> struct linspaced_op
   EIGEN_STRONG_INLINE const Packet packetOp(Index row, Index col) const
   {
     eigen_assert(col==0 || row==0);
-    return impl(col + row);
+    return impl.packetOp(col + row);
   }
 
   // This proxy object handles the actual required temporaries, the different

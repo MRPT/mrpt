@@ -238,7 +238,7 @@ template<typename Derived> class MapBase<Derived, WriteAccessors>
                 (this->m_data + index * innerStride(), x);
     }
 
-    inline MapBase(PointerType data) : Base(data) {}
+    explicit inline MapBase(PointerType data) : Base(data) {}
     inline MapBase(PointerType data, Index size) : Base(data, size) {}
     inline MapBase(PointerType data, Index rows, Index cols) : Base(data, rows, cols) {}
 

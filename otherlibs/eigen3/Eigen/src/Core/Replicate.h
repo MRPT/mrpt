@@ -122,6 +122,10 @@ template<typename MatrixType,int RowFactor,int ColFactor> class Replicate
       return m_matrix.template packet<LoadMode>(actual_row, actual_col);
     }
 
+    const typename internal::remove_all<typename MatrixType::Nested>::type& nestedExpression() const 
+    { 
+      return m_matrix; 
+    }
 
   protected:
     const typename MatrixType::Nested m_matrix;

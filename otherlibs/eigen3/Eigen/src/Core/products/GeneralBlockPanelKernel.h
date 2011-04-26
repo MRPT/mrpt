@@ -536,7 +536,7 @@ struct gebp_kernel
     ResPacketSize = Traits::ResPacketSize
   };
 
-  EIGEN_FLATTEN_ATTRIB
+  EIGEN_DONT_INLINE EIGEN_FLATTEN_ATTRIB
   void operator()(ResScalar* res, Index resStride, const LhsScalar* blockA, const RhsScalar* blockB, Index rows, Index depth, Index cols, ResScalar alpha,
                   Index strideA=-1, Index strideB=-1, Index offsetA=0, Index offsetB=0, RhsScalar* unpackedB = 0)
   {

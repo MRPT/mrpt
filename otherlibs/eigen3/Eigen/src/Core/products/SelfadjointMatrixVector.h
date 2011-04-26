@@ -62,14 +62,12 @@ static EIGEN_DONT_INLINE void product_selfadjoint_vector(
   // FIXME this copy is now handled outside product_selfadjoint_vector, so it could probably be removed.
   // if the rhs is not sequentially stored in memory we copy it to a temporary buffer,
   // this is because we need to extract packets
-  const Scalar* EIGEN_RESTRICT rhs = _rhs;
+  ei_declare_aligned_stack_constructed_variable(Scalar,rhs,size,rhsIncr==1 ? const_cast<Scalar*>(_rhs) : 0);  
   if (rhsIncr!=1)
   {
-    Scalar* r = ei_aligned_stack_new(Scalar, size);
     const Scalar* it = _rhs;
     for (Index i=0; i<size; ++i, it+=rhsIncr)
-      r[i] = *it;
-    rhs = r;
+      rhs[i] = *it;
   }
 
   Index bound = std::max(Index(0),size-8) & 0xfffffffe;
@@ -160,9 +158,6 @@ static EIGEN_DONT_INLINE void product_selfadjoint_vector(
     }
     res[j] += alpha * t2;
   }
-
-  if(rhsIncr!=1)
-    ei_aligned_stack_delete(Scalar, const_cast<Scalar*>(rhs), size);
 }
 
 } // end namespace internal 
@@ -211,40 +206,28 @@ struct SelfadjointProductMatrix<Lhs,LhsMode,false,Rhs,0,true>
     
     internal::gemv_static_vector_if<ResScalar,Dest::SizeAtCompileTime,Dest::MaxSizeAtCompileTime,!EvalToDest> static_dest;
     internal::gemv_static_vector_if<RhsScalar,_ActualRhsType::SizeAtCompileTime,_ActualRhsType::MaxSizeAtCompileTime,!UseRhs> static_rhs;
+
+    ei_declare_aligned_stack_constructed_variable(ResScalar,actualDestPtr,dest.size(),
+                                                  EvalToDest ? dest.data() : static_dest.data());
+                                                  
+    ei_declare_aligned_stack_constructed_variable(RhsScalar,actualRhsPtr,rhs.size(),
+        UseRhs ? const_cast<RhsScalar*>(rhs.data()) : static_rhs.data());
     
-    bool freeDestPtr = false;
-    ResScalar* actualDestPtr;
-    if(EvalToDest)
-      actualDestPtr = dest.data();
-    else
+    if(!EvalToDest)
     {
       #ifdef EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       int size = dest.size();
       EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       #endif
-      if((actualDestPtr=static_dest.data())==0)
-      {
-        freeDestPtr = true;
-        actualDestPtr = ei_aligned_stack_new(ResScalar,dest.size());
-      }
       MappedDest(actualDestPtr, dest.size()) = dest;
     }
       
-    bool freeRhsPtr = false;
-    RhsScalar* actualRhsPtr;
-    if(UseRhs)
-      actualRhsPtr = const_cast<RhsScalar*>(rhs.data());
-    else
+    if(!UseRhs)
     {
       #ifdef EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       int size = rhs.size();
       EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       #endif
-      if((actualRhsPtr=static_rhs.data())==0)
-      {
-        freeRhsPtr = true;
-        actualRhsPtr = ei_aligned_stack_new(RhsScalar,rhs.size());
-      }
       Map<typename _ActualRhsType::PlainObject>(actualRhsPtr, rhs.size()) = rhs;
     }
       
@@ -259,11 +242,7 @@ struct SelfadjointProductMatrix<Lhs,LhsMode,false,Rhs,0,true>
       );
     
     if(!EvalToDest)
-    {
       dest = MappedDest(actualDestPtr, dest.size());
-      if(freeDestPtr) ei_aligned_stack_delete(ResScalar, actualDestPtr, dest.size());
-    }
-    if(freeRhsPtr) ei_aligned_stack_delete(RhsScalar, actualRhsPtr, rhs.size());
   }
 };
 

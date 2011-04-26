@@ -37,7 +37,7 @@
   * with given dense storage of the coefficients. It is the return type of MatrixBase::selfadjointView()
   * and most of the time this is the only way that it is used.
   *
-  * \sa SparseMatrixBase::selfAdjointView()
+  * \sa SparseMatrixBase::selfadjointView()
   */
 template<typename Lhs, typename Rhs, int UpLo>
 class SparseSelfAdjointTimeDenseProduct;
@@ -235,7 +235,6 @@ class SparseSelfAdjointTimeDenseProduct
           dest.row(j) += i.value() * m_rhs.row(j);
           ++i;
         }
-        Block<Dest,1,Dest::ColsAtCompileTime> dest_j(dest.row(LhsIsRowMajor ? j : 0));
         for(; (ProcessFirstHalf ? i && i.index() < j : i) ; ++i)
         {
           Index a = LhsIsRowMajor ? j : i.index();

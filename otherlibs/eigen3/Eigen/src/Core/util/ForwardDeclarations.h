@@ -133,6 +133,7 @@ template<typename ExpressionType> class WithFormat;
 template<typename MatrixType> struct CommaInitializer;
 template<typename Derived> class ReturnByValue;
 template<typename ExpressionType> class ArrayWrapper;
+template<typename ExpressionType> class MatrixWrapper;
 
 namespace internal {
 template<typename DecompositionType, typename Rhs> struct solve_retval_base;

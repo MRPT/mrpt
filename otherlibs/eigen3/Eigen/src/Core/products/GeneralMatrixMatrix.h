@@ -94,8 +94,9 @@ static void run(Index rows, Index cols, Index depth,
     
     std::size_t sizeA = kc*mc;
     std::size_t sizeW = kc*Traits::WorkSpaceFactor;
-    LhsScalar* blockA = ei_aligned_stack_new(LhsScalar, sizeA);
-    RhsScalar* w = ei_aligned_stack_new(RhsScalar, sizeW);
+    ei_declare_aligned_stack_constructed_variable(LhsScalar, blockA, sizeA, 0);
+    ei_declare_aligned_stack_constructed_variable(RhsScalar, w, sizeW, 0);
+    
     RhsScalar* blockB = blocking.blockB();
     eigen_internal_assert(blockB!=0);
 
@@ -154,9 +155,6 @@ static void run(Index rows, Index cols, Index depth,
         #pragma omp atomic
         --(info[j].users);
     }
-
-    ei_aligned_stack_delete(LhsScalar, blockA, kc*mc);
-    ei_aligned_stack_delete(RhsScalar, w, sizeW);
   }
   else
 #endif // EIGEN_HAS_OPENMP
@@ -167,9 +165,10 @@ static void run(Index rows, Index cols, Index depth,
     std::size_t sizeA = kc*mc;
     std::size_t sizeB = kc*cols;
     std::size_t sizeW = kc*Traits::WorkSpaceFactor;
-    LhsScalar *blockA = blocking.blockA()==0 ? ei_aligned_stack_new(LhsScalar, sizeA) : blocking.blockA();
-    RhsScalar *blockB = blocking.blockB()==0 ? ei_aligned_stack_new(RhsScalar, sizeB) : blocking.blockB();
-    RhsScalar *blockW = blocking.blockW()==0 ? ei_aligned_stack_new(RhsScalar, sizeW) : blocking.blockW();
+
+    ei_declare_aligned_stack_constructed_variable(LhsScalar, blockA, sizeA, blocking.blockA());
+    ei_declare_aligned_stack_constructed_variable(RhsScalar, blockB, sizeB, blocking.blockB());
+    ei_declare_aligned_stack_constructed_variable(RhsScalar, blockW, sizeW, blocking.blockW());
 
     // For each horizontal panel of the rhs, and corresponding panel of the lhs...
     // (==GEMM_VAR1)
@@ -200,10 +199,6 @@ static void run(Index rows, Index cols, Index depth,
 
       }
     }
-
-    if(blocking.blockA()==0) ei_aligned_stack_delete(LhsScalar, blockA, sizeA);
-    if(blocking.blockB()==0) ei_aligned_stack_delete(RhsScalar, blockB, sizeB);
-    if(blocking.blockW()==0) ei_aligned_stack_delete(RhsScalar, blockW, sizeW);
   }
 }
 

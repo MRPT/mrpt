@@ -36,15 +36,16 @@ struct product_triangular_matrix_vector<Index,Mode,LhsScalar,ConjLhs,RhsScalar,C
   typedef typename scalar_product_traits<LhsScalar, RhsScalar>::ReturnType ResScalar;
   enum {
     IsLower = ((Mode&Lower)==Lower),
-    HasUnitDiag = (Mode & UnitDiag)==UnitDiag
+    HasUnitDiag = (Mode & UnitDiag)==UnitDiag,
+    HasZeroDiag = (Mode & ZeroDiag)==ZeroDiag
   };
-  static EIGEN_DONT_INLINE  void run(Index rows, Index cols, const LhsScalar* _lhs, Index lhsStride,
+  static EIGEN_DONT_INLINE  void run(Index _rows, Index _cols, const LhsScalar* _lhs, Index lhsStride,
                                      const RhsScalar* _rhs, Index rhsIncr, ResScalar* _res, Index resIncr, ResScalar alpha)
   {
-    EIGEN_UNUSED_VARIABLE(resIncr);
-    eigen_assert(resIncr==1);
-    
     static const Index PanelWidth = EIGEN_TUNE_TRIANGULAR_PANEL_WIDTH;
+    Index size = std::min(_rows,_cols);
+    Index rows = IsLower ? _rows : std::min(_rows,_cols);
+    Index cols = IsLower ? std::min(_rows,_cols) : _cols;
 
     typedef Map<const Matrix<LhsScalar,Dynamic,Dynamic,ColMajor>, 0, OuterStride<> > LhsMap;
     const LhsMap lhs(_lhs,rows,cols,OuterStride<>(lhsStride));
@@ -57,20 +58,20 @@ struct product_triangular_matrix_vector<Index,Mode,LhsScalar,ConjLhs,RhsScalar,C
     typedef Map<Matrix<ResScalar,Dynamic,1> > ResMap;
     ResMap res(_res,rows);
 
-    for (Index pi=0; pi<cols; pi+=PanelWidth)
+    for (Index pi=0; pi<size; pi+=PanelWidth)
     {
-      Index actualPanelWidth = std::min(PanelWidth, cols-pi);
+      Index actualPanelWidth = std::min(PanelWidth, size-pi);
       for (Index k=0; k<actualPanelWidth; ++k)
       {
         Index i = pi + k;
-        Index s = IsLower ? (HasUnitDiag ? i+1 : i ) : pi;
+        Index s = IsLower ? ((HasUnitDiag||HasZeroDiag) ? i+1 : i ) : pi;
         Index r = IsLower ? actualPanelWidth-k : k+1;
-        if ((!HasUnitDiag) || (--r)>0)
+        if ((!(HasUnitDiag||HasZeroDiag)) || (--r)>0)
           res.segment(s,r) += (alpha * cjRhs.coeff(i)) * cjLhs.col(i).segment(s,r);
         if (HasUnitDiag)
           res.coeffRef(i) += alpha * cjRhs.coeff(i);
       }
-      Index r = IsLower ? cols - pi - actualPanelWidth : pi;
+      Index r = IsLower ? rows - pi - actualPanelWidth : pi;
       if (r>0)
       {
         Index s = IsLower ? pi+actualPanelWidth : 0;
@@ -81,6 +82,14 @@ struct product_triangular_matrix_vector<Index,Mode,LhsScalar,ConjLhs,RhsScalar,C
             &res.coeffRef(s), resIncr, alpha);
       }
     }
+    if((!IsLower) && cols>size)
+    {
+      general_matrix_vector_product<Index,LhsScalar,ColMajor,ConjLhs,RhsScalar,ConjRhs>::run(
+          rows, cols-size,
+          &lhs.coeffRef(0,size), lhsStride,
+          &rhs.coeffRef(size), rhsIncr,
+          _res, resIncr, alpha);
+    }
   }
 };
 
@@ -90,15 +99,16 @@ struct product_triangular_matrix_vector<Index,Mode,LhsScalar,ConjLhs,RhsScalar,C
   typedef typename scalar_product_traits<LhsScalar, RhsScalar>::ReturnType ResScalar;
   enum {
     IsLower = ((Mode&Lower)==Lower),
-    HasUnitDiag = (Mode & UnitDiag)==UnitDiag
+    HasUnitDiag = (Mode & UnitDiag)==UnitDiag,
+    HasZeroDiag = (Mode & ZeroDiag)==ZeroDiag
   };
-  static void run(Index rows, Index cols, const LhsScalar* _lhs, Index lhsStride,
+  static void run(Index _rows, Index _cols, const LhsScalar* _lhs, Index lhsStride,
                   const RhsScalar* _rhs, Index rhsIncr, ResScalar* _res, Index resIncr, ResScalar alpha)
   {
-    eigen_assert(rhsIncr==1);
-    EIGEN_UNUSED_VARIABLE(rhsIncr);
-    
     static const Index PanelWidth = EIGEN_TUNE_TRIANGULAR_PANEL_WIDTH;
+    Index diagSize = std::min(_rows,_cols);
+    Index rows = IsLower ? _rows : diagSize;
+    Index cols = IsLower ? diagSize : _cols;
 
     typedef Map<const Matrix<LhsScalar,Dynamic,Dynamic,RowMajor>, 0, OuterStride<> > LhsMap;
     const LhsMap lhs(_lhs,rows,cols,OuterStride<>(lhsStride));
@@ -111,15 +121,15 @@ struct product_triangular_matrix_vector<Index,Mode,LhsScalar,ConjLhs,RhsScalar,C
     typedef Map<Matrix<ResScalar,Dynamic,1>, 0, InnerStride<> > ResMap;
     ResMap res(_res,rows,InnerStride<>(resIncr));
     
-    for (Index pi=0; pi<cols; pi+=PanelWidth)
+    for (Index pi=0; pi<diagSize; pi+=PanelWidth)
     {
-      Index actualPanelWidth = std::min(PanelWidth, cols-pi);
+      Index actualPanelWidth = std::min(PanelWidth, diagSize-pi);
       for (Index k=0; k<actualPanelWidth; ++k)
       {
         Index i = pi + k;
-        Index s = IsLower ? pi  : (HasUnitDiag ? i+1 : i);
+        Index s = IsLower ? pi  : ((HasUnitDiag||HasZeroDiag) ? i+1 : i);
         Index r = IsLower ? k+1 : actualPanelWidth-k;
-        if ((!HasUnitDiag) || (--r)>0)
+        if ((!(HasUnitDiag||HasZeroDiag)) || (--r)>0)
           res.coeffRef(i) += alpha * (cjLhs.row(i).segment(s,r).cwiseProduct(cjRhs.segment(s,r).transpose())).sum();
         if (HasUnitDiag)
           res.coeffRef(i) += alpha * cjRhs.coeff(i);
@@ -134,6 +144,14 @@ struct product_triangular_matrix_vector<Index,Mode,LhsScalar,ConjLhs,RhsScalar,C
             &rhs.coeffRef(s), rhsIncr,
             &res.coeffRef(pi), resIncr, alpha);
       }
+    }
+    if(IsLower && rows>diagSize)
+    {
+      general_matrix_vector_product<Index,LhsScalar,RowMajor,ConjLhs,RhsScalar,ConjRhs>::run(
+            rows-diagSize, cols,
+            &lhs.coeffRef(diagSize,0), lhsStride,
+            &rhs.coeffRef(0), rhsIncr,
+            &res.coeffRef(diagSize), resIncr, alpha);
     }
   }
 };
@@ -185,8 +203,8 @@ struct TriangularProduct<Mode,false,Lhs,true,Rhs,false>
   template<typename Dest> void scaleAndAddTo(Dest& dst, Scalar alpha) const
   {
     eigen_assert(dst.rows()==m_lhs.rows() && dst.cols()==m_rhs.cols());
-    
-    typedef TriangularProduct<(Mode & UnitDiag) | ((Mode & Lower) ? Upper : Lower),true,Transpose<const Rhs>,false,Transpose<const Lhs>,true> TriangularProductTranspose;
+
+    typedef TriangularProduct<(Mode & (UnitDiag|ZeroDiag)) | ((Mode & Lower) ? Upper : Lower),true,Transpose<const Rhs>,false,Transpose<const Lhs>,true> TriangularProductTranspose;
     Transpose<Dest> dstT(dst);
     internal::trmv_selector<(int(internal::traits<Rhs>::Flags)&RowMajorBit) ? ColMajor : RowMajor>::run(
       TriangularProductTranspose(m_rhs.transpose(),m_lhs.transpose()), dstT, alpha);
@@ -235,23 +253,15 @@ template<> struct trmv_selector<ColMajor>
     
     RhsScalar compatibleAlpha = get_factor<ResScalar,RhsScalar>::run(actualAlpha);
 
-    ResScalar* actualDestPtr;
-    bool freeDestPtr = false;
-    if (evalToDest)
-    {
-      actualDestPtr = dest.data();
-    }
-    else
+    ei_declare_aligned_stack_constructed_variable(ResScalar,actualDestPtr,dest.size(),
+                                                  evalToDest ? dest.data() : static_dest.data());
+
+    if(!evalToDest)
     {
       #ifdef EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       int size = dest.size();
       EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       #endif
-      if((actualDestPtr = static_dest.data())==0)
-      {
-        freeDestPtr = true;
-        actualDestPtr = ei_aligned_stack_new(ResScalar,dest.size());
-      }
       if(!alphaIsCompatible)
       {
         MappedDest(actualDestPtr, dest.size()).setZero();
@@ -277,7 +287,6 @@ template<> struct trmv_selector<ColMajor>
         dest += actualAlpha * MappedDest(actualDestPtr, dest.size());
       else
         dest = MappedDest(actualDestPtr, dest.size());
-      if(freeDestPtr) ei_aligned_stack_delete(ResScalar, actualDestPtr, dest.size());
     }
   }
 };
@@ -310,23 +319,15 @@ template<> struct trmv_selector<RowMajor>
 
     gemv_static_vector_if<RhsScalar,_ActualRhsType::SizeAtCompileTime,_ActualRhsType::MaxSizeAtCompileTime,!DirectlyUseRhs> static_rhs;
 
-    RhsScalar* actualRhsPtr;
-    bool freeRhsPtr = false;
-    if (DirectlyUseRhs)
-    {
-      actualRhsPtr = const_cast<RhsScalar*>(actualRhs.data());
-    }
-    else
+    ei_declare_aligned_stack_constructed_variable(RhsScalar,actualRhsPtr,actualRhs.size(),
+        DirectlyUseRhs ? const_cast<RhsScalar*>(actualRhs.data()) : static_rhs.data());
+
+    if(!DirectlyUseRhs)
     {
       #ifdef EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       int size = actualRhs.size();
       EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       #endif
-      if((actualRhsPtr = static_rhs.data())==0)
-      {
-        freeRhsPtr = true;
-        actualRhsPtr = ei_aligned_stack_new(RhsScalar, actualRhs.size());
-      }
       Map<typename _ActualRhsType::PlainObject>(actualRhsPtr, actualRhs.size()) = actualRhs;
     }
     
@@ -340,8 +341,6 @@ template<> struct trmv_selector<RowMajor>
             actualRhsPtr,1,
             dest.data(),dest.innerStride(),
             actualAlpha);
-
-    if((!DirectlyUseRhs) && freeRhsPtr) ei_aligned_stack_delete(RhsScalar, actualRhsPtr, prod.rhs().size());
   }
 };
 

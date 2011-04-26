@@ -74,6 +74,7 @@ void MatrixBase<Derived>::makeHouseholder(
   {
     tau = 0;
     beta = internal::real(c0);
+    essential.setZero();
   }
   else
   {
