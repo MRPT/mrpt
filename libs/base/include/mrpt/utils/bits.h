@@ -30,6 +30,8 @@
 #error "This file is intended for include from utils_defs.h only!"
 #endif
 
+#include <mrpt/utils/SSE_types.h>  // needed by SSE intrinsics used in some inline functions below.
+
 /** This is the global namespace for all Mobile Robot Programming Toolkit (MRPT) libraries.
  */
 namespace mrpt
@@ -179,7 +181,7 @@ namespace mrpt
 			v_out = v_in;
 			reverseBytesInPlace(v_out);
 		}
-		
+
 
 		/** If the second argument is below the first one, set the first argument to this lower value. */
 		template <typename T,typename K>

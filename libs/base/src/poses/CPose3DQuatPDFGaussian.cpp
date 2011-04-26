@@ -31,13 +31,13 @@
 
 #include <mrpt/base.h>  // Precompiled headers
 
-#include <mrpt/random.h>
+#include <mrpt/poses/CPose3DQuatPDFGaussian.h>
+
 #include <mrpt/math/utils.h>
 #include <mrpt/math/jacobians.h>
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/distributions.h>
 
-#include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>

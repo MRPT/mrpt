@@ -28,7 +28,6 @@
 #ifndef _MRPT_CArray_H
 #define _MRPT_CArray_H
 
-#include <iterator>
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/ops_containers.h>
@@ -65,7 +64,7 @@ namespace math
 	 * 29 Sep 2000 - Initial Revision (Nico Josuttis)
 	 *
 	 * Jan 30, 2004
-	 * 
+	 *
 	 * \note This class DOES NOT support mathematical operations on its elements: it's a generic container, it doesn't assume they are numerical.
 	 *
      * \sa CArrayNumeric (for another, non-related base template class that DOES support maths)

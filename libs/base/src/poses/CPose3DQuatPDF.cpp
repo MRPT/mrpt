@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers 
+#include <mrpt/base.h>  // Precompiled headers
 
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>

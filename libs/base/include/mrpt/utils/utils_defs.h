@@ -64,11 +64,11 @@
 // STL+ library:
 #include <mrpt/otherlibs/stlplus/smart_ptr.hpp>
 
-// Standard elemental types:
-#include <mrpt/utils/types.h>
-
 // A few small functions and templates global to all mrpt libs:
 #include <mrpt/utils/bits.h>
+
+// Standard elemental types:
+#include <mrpt/utils/types.h>
 
 #endif
 

@@ -33,16 +33,20 @@
 
 // SSE2 types:
 #if MRPT_HAS_SSE2
+    extern "C" {
 	#include <emmintrin.h>
 	#include <mmintrin.h>
+    }
 #endif
 
 // SSE3/SSE3 types:
 #if MRPT_HAS_SSE3
+    extern "C" {
 	#include <pmmintrin.h>
 	#if defined(__GNUC__)
 		#include <immintrin.h>  // Meta-header
 	#endif
+    }
 #endif
 
 #endif
