@@ -645,11 +645,6 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 {
 	// Esta en la zona donde las trayectorias son curvas:
 	//   comparar con simulaciones
-	int     selected_k = -1;
-	float	selected_d= 0;
-	float   selected_dist;
-	int		n,k;
-	float   dist_a_punto;
 
 	// -------------------------------------------------------------------
 	// Optimization: (24-JAN-2007 @ Jose Luis Blanco):
@@ -660,7 +655,7 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 	int		k_min = 0;
 	int		k_max = alfaValuesCount-1;
 	int		n_min = 0;
-	int		n_max = 0, n_max_this;
+	int		n_max = -1; // This is to force that, if no cell contains the area of interest in the first loop below, we skip straight to the next part.
 
 	// Cell indexes:
 	int		cx0 = m_lambdaFunctionOptimizer.x2idx(x);
@@ -695,30 +690,34 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 
 	// Try to find a closest point to the paths:
 	// ----------------------------------------------
-	selected_dist = square( 0.20f );
-	//for ( k=0;k<alfaValuesCount;k++)
-	for (k=k_min;k<=k_max;k++)
-	{
-		n_max_this = min( (int)CPoints[k].size()-1, n_min);
+	int     selected_k = -1;
+	float	selected_d= 0;
+	float   selected_dist = std::numeric_limits<float>::max();
 
-		for (n = n_min;n<=n_max_this; n++)
+	if (n_max>=n_min) // Otherwise, don't even lose time checking...
+	{
+		for (int k=k_min;k<=k_max;k++)
 		{
-			if ((dist_a_punto= square( CPoints[k][n].x - x ) + square( CPoints[k][n].y - y ))<selected_dist)
+			const int n_max_this = min( int(CPoints[k].size())-1, n_max);
+
+			for (int n = n_min;n<=n_max_this; n++)
 			{
-				selected_dist = dist_a_punto;
-				selected_k = k;
-				selected_d = CPoints[k][n].dist;
+				const float dist_a_punto= square( CPoints[k][n].x - x ) + square( CPoints[k][n].y - y );
+				if (dist_a_punto<selected_dist)
+				{
+					selected_dist = dist_a_punto;
+					selected_k = k;
+					selected_d = CPoints[k][n].dist;
+				}
 			}
 		}
 	}
-
-	MRPT_TODO("It seems there is a bug around: test with PTG #2")
 
 	if (selected_k!=-1)
 	{
 		k_out = selected_k;
 		d_out = selected_d / refDistance;
-		cerr << "selected_d:" << selected_d << " refDistance:"<< refDistance << " d_out:" << d_out << "k_out:"<<k_out<<endl;
+		//cerr << "selected_d:" << selected_d << " refDistance:"<< refDistance << " d_out:" << d_out << "k_out:"<<k_out<<endl;
 		return;
 	}
 
@@ -730,17 +729,21 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 	//  is closest to the point, and the associated "d_closest" distance,
 	//  which can be normalized by "1/refDistance" to get TP-Space distances.
 	// ------------------------------------------------------------------------------------
-	selected_dist = 1e6;
-	for ( k=0;k<(int)alfaValuesCount;k++)
+	selected_dist = std::numeric_limits<float>::max();
+	for ( int k=0;k<static_cast<int>(alfaValuesCount);k++)
 	{
-		n = CPoints[k].size()-1;
-		if ((dist_a_punto= square( CPoints[k][n].x - x ) + square( CPoints[k][n].y - y ))<selected_dist)
+		const int n = int (CPoints[k].size()) -1;
+		const float dist_a_punto = square( CPoints[k][n].dist ) + square( CPoints[k][n].x - x ) + square( CPoints[k][n].y - y );
+
+		if (dist_a_punto<selected_dist)
 		{
 			selected_dist = dist_a_punto;
 			selected_k = k;
-			selected_d = CPoints[k][n].dist + sqrt(dist_a_punto);
+			selected_d = dist_a_punto;
 		}
 	}
+
+	selected_d = std::sqrt(selected_d);
 
 	k_out = selected_k;
 	d_out = selected_d / refDistance;
