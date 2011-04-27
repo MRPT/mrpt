@@ -74,9 +74,6 @@ using namespace mrpt;
 using namespace mrpt::utils;
 
 
-//MRPT_TODO("JL says: I suspect there are memory leaks in RPly!!")
-
-
 #define PLY_ASCII      1        /* ascii PLY file */
 #define PLY_BINARY_BE  2        /* binary PLY file, big endian */
 #define PLY_BINARY_LE  3        /* binary PLY file, little endian */

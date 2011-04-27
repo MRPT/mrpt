@@ -1,3 +1,5 @@
+  * Fixed build errors with GCC 4.6 (Closes: #770953).
+
 mrpt (1:0.9.4svn2453-1) unstable; urgency=low
 
   * New version of upstream sources.

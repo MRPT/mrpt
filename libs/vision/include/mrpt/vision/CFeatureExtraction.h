@@ -221,7 +221,8 @@ namespace mrpt
 									const unsigned int		init_ID = 0,
 									const unsigned int		nDesiredFeatures = 0,
 									const TImageROI			& ROI = TImageROI(),
-                                    const CMatrixBool       & mask = CMatrixBool()) const;
+                                    const CMatrixBool       * mask = NULL ) const; // Important: This was a const ref. in mrpt <0.9.4, but the instantiation of a default value 
+			                                                                       // for CMatrixBool being a template generated duplicated linking errors for MSVC, thus it was changed to a pointer.
 
 			/** Compute one (or more) descriptors for the given set of interest points onto the image, which may have been filled out manually or from \a detectFeatures
 			* \param in_img (input) The image from where to compute the descriptors.
@@ -392,7 +393,8 @@ namespace mrpt
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
 				const TImageROI			&ROI = TImageROI(),
-                const CMatrixBool       & mask = CMatrixBool())  const;
+                const CMatrixBool       * mask = NULL ) const; // Important: This was a const ref. in mrpt <0.9.4, but the instantiation of a default value 
+                                                               // for CMatrixBool being a template generated duplicated linking errors for MSVC, thus it was changed to a pointer.
 
 			// ------------------------------------------------------------------------------------
 			//								my_scale_space_extrema

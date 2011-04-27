@@ -48,7 +48,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	unsigned int			    init_ID,
 	unsigned int			    nDesiredFeatures,
 	const TImageROI			    & ROI,
-	const CMatrixBool           & mask )  const
+	const CMatrixBool           * mask )  const
 {
 	MRPT_START
 
@@ -79,7 +79,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
     if( options.useMask )
     {
         cout << "using mask" << endl;
-        size_t maskW = mask.getColCount(), maskH = mask.getRowCount();
+        size_t maskW = mask->getColCount(), maskH = mask->getRowCount();
         ASSERT_( maskW == inImg_gray.getWidth() && maskH == inImg_gray.getHeight() );
 
         // Convert Mask into CV type
@@ -88,7 +88,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
         for( int ii = 0; ii < int(maskW); ++ii )
             for( int jj = 0; jj < int(maskH); ++jj )
             {
-                if( !mask.get_unsafe(jj,ii) )
+                if( !mask->get_unsafe(jj,ii) )
                 {
                     cvMask.at<char>(ii,jj) = (char)0;
                 }

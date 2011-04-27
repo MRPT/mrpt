@@ -66,7 +66,7 @@ void  CFeatureExtraction::detectFeatures(
 		const unsigned int		init_ID,
 		const unsigned int		nDesiredFeatures,
 		const TImageROI			& ROI,
-		const CMatrixBool       & mask) const
+		const CMatrixBool       * mask) const
 {
 	switch( options.featsType )
 	{
