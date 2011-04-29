@@ -613,7 +613,7 @@ AREXPORT void ArUtil::functorPrintf(ArFunctor1<const char *> *functor,
 
 AREXPORT void ArUtil::writeToFile(const char *str, FILE *file)
 {
-  fprintf(file, str);
+  fprintf(file, "%s", str);
 }
 
 
@@ -637,7 +637,8 @@ AREXPORT bool ArUtil::getStringFromFile(const char *fileName,
 
   if ((strFile = fopen(fileName, "r")) != NULL)
   {
-    fgets(str, strLen, strFile);
+    char * dumm_ret =fgets(str, strLen, strFile);
+    if (!dumm_ret) return false;
     for (i = 0; i < strLen; i++)
     {
       if (str[i] == '\r' || str[i] == '\n' || str[i] == '\0')

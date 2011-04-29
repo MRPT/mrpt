@@ -111,7 +111,8 @@ AREXPORT int ArLogFileConnection::internalOpen(void)
       if (strncmp(buf, "// Robot position", 17) == 0)  // have a position!
         {
           int x,y,th;
-          fgets(buf,100,myFD);
+          char * dumm_ret = fgets(buf,100,myFD);
+          if (!dumm_ret) return OPEN_NOT_A_LOG_FILE;
           sscanf(buf, "%d %d %d", &x, &y, &th);
           myPose.setX(x);
           myPose.setY(y);
@@ -120,7 +121,8 @@ AREXPORT int ArLogFileConnection::internalOpen(void)
         }
       if (strncmp(buf, "// Robot name", 13) == 0)  // have a name!
         {
-          fgets(buf,100,myFD);
+          char * dumm_ret =fgets(buf,100,myFD);
+          if (!dumm_ret) return OPEN_NOT_A_LOG_FILE;
           sscanf(buf, "%s %s %s", myName, myType, mySubtype);
         }
     }

@@ -17,9 +17,9 @@ Copyright (C) 2006, 2007 MobileRobots Inc.
      along with this program; if not, write to the Free Software
      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-If you wish to redistribute ARIA under different terms, contact 
-MobileRobots for information about a commercial version of ARIA at 
-robots@mobilerobots.com or 
+If you wish to redistribute ARIA under different terms, contact
+MobileRobots for information about a commercial version of ARIA at
+robots@mobilerobots.com or
 MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 */
 
@@ -31,7 +31,7 @@ MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 #include "ariaInternal.h"
 #include <time.h>
 
-AREXPORT ArSick::ArSick(size_t currentBufferSize, size_t cumulativeBufferSize, 
+AREXPORT ArSick::ArSick(size_t currentBufferSize, size_t cumulativeBufferSize,
 			const char *name, bool addAriaExitCB) :
   ArRangeDeviceThreaded(currentBufferSize, cumulativeBufferSize, name, 32500),
   myRobotConnectCB(this, &ArSick::robotConnectCallback),
@@ -73,16 +73,16 @@ AREXPORT ArSick::ArSick(size_t currentBufferSize, size_t cumulativeBufferSize,
 
   myLastCleanedCumulative.setToNow();
 
-  setCurrentDrawingData(new ArDrawingData("polyDots", 
-										  ArColor(0, 0, 255), 
+  setCurrentDrawingData(new ArDrawingData("polyDots",
+										  ArColor(0, 0, 255),
 										  80,  // mm diameter of dots
-										  75), // layer above sonar 
+										  75), // layer above sonar
 						true);
 
-  setCumulativeDrawingData(new ArDrawingData("polyDots", 
-											 ArColor(125, 125, 125), 
+  setCumulativeDrawingData(new ArDrawingData("polyDots",
+											 ArColor(125, 125, 125),
 											 100, // mm diameter of dots
-											 60), // layer below current range devices  
+											 60), // layer below current range devices
 						   true);
 }
 
@@ -107,12 +107,12 @@ AREXPORT ArSick::~ArSick()
 AREXPORT void ArSick::robotConnectCallback(void)
 {
   const ArRobotParams *params;
-  if (myRealConfigured || !myRobot->isConnected()) 
+  if (myRealConfigured || !myRobot->isConnected())
     return;
   params = myRobot->getRobotParams();
   myLaserFlipped = params->getLaserFlipped();
   myPowerControl = params->getLaserPowerControlled();
-  
+
   if (myDegrees == DEGREES180)
     myOffsetAmount = 90;
   else if (myDegrees == DEGREES100)
@@ -122,7 +122,7 @@ AREXPORT void ArSick::robotConnectCallback(void)
     myOffsetAmount = 0;
     ArLog::log(ArLog::Terse,"ArSick::robotConnectCallback: bad degrees configured.\n");
   }
-  
+
 
   if (myLaserFlipped)
     myOffsetAmount *= -1;
@@ -233,8 +233,8 @@ AREXPORT double ArSick::getSensorPositionTh(void)
 AREXPORT void ArSick::setDeviceConnection(ArDeviceConnection *conn)
 {
   myConnLock.lock();
-  myConn = conn; 
-  mySickPacketReceiver.setDeviceConnection(conn); 
+  myConn = conn;
+  mySickPacketReceiver.setDeviceConnection(conn);
   myConnLock.unlock();
 }
 
@@ -250,7 +250,7 @@ AREXPORT ArDeviceConnection *ArSick::getDeviceConnection(void)
 
    @param mSecs if 0 then the connection timeout feature
    will be disabled, otherwise disconnect on error will be triggered
-   after this number of miliseconds...  
+   after this number of miliseconds...
 **/
 AREXPORT void ArSick::setConnectionTimeoutTime(int mSecs)
 {
@@ -297,7 +297,7 @@ AREXPORT void ArSick::setRobot(ArRobot *robot)
  * ArSimpleConnector to connect to the laser based on command line parameters,
  * so calling this function is only neccesary if you are not using
  * ArSimpleConnector, or you wish to always override ArSimpleConnector's
- * configuration. 
+ * configuration.
  *
  * (Don't forget, you must lock ArSick with lockDevice() if multiple threads
  * are accessing the ArSick, e.g. if you used runAsync().)
@@ -323,7 +323,7 @@ AREXPORT void ArSick::configure(bool useSim, bool powerControl,
     myOffsetAmount = 0;
     ArLog::log(ArLog::Terse,"ArSick::configure: bad degrees configured.\n");
   }
-  
+
   if (myLaserFlipped)
     myOffsetAmount *= -1;
 
@@ -366,7 +366,7 @@ AREXPORT void ArSick::configureShort(bool useSim, BaudRate baud,
     myOffsetAmount = 0;
     ArLog::log(ArLog::Terse,"ArSick::configureShort: bad degrees configured.\n");
   }
-  
+
   if (myLaserFlipped)
     myOffsetAmount *= -1;
 
@@ -391,7 +391,7 @@ AREXPORT void ArSick::configureShort(bool useSim, BaudRate baud,
 /**
    Sets the range/bit information.  The old immutable combination is
    (in effect) the same as the new default.  If you look at the enums
-   for these units you can see the effect this has on range.  
+   for these units you can see the effect this has on range.
 **/
 AREXPORT void ArSick::setRangeInformation(Bits bits, Units units)
 {
@@ -415,14 +415,14 @@ AREXPORT bool ArSick::simPacketHandler(ArRobotPacket *packet)
   int range;
   int refl = 0;
   ArPose encoderPose;
-  std::list<double>::iterator ignoreIt;  
+  std::list<double>::iterator ignoreIt;
   bool ignore;
-  
+
   if (packet->getID() != 0x60 && packet->getID() != 0x61)
     return false;
 
   bool isExtendedPacket = (packet->getID() == 0x61);
-   
+
   // if we got here, its the right type of packet
 
   //printf("Got in a packet from the simulator\n");
@@ -461,16 +461,16 @@ AREXPORT bool ArSick::simPacketHandler(ArRobotPacket *packet)
       delete (*tempIt);
     myAssembleReadings->pop_front();
   }
-  
+
   // If we don't have any sensor readings created at all, make 'em all now
   if (myAssembleReadings->size() == 0)
     for (i = 0; i < totalNumReadings; i++)
       myAssembleReadings->push_back(new ArSensorReading);
-  
-  // Okay, we know where we're at, so get an iterator to the right spot, or 
+
+  // Okay, we know where we're at, so get an iterator to the right spot, or
   // make sure the one we keep around is in the right spot... if neither of
   // these trigger, then the iter should be in the right spot
-  if ((readingNumber != myWhichReading + 1) || 
+  if ((readingNumber != myWhichReading + 1) ||
       totalNumReadings != myTotalNumReadings)
   {
     //printf("2\n");
@@ -491,13 +491,13 @@ AREXPORT bool ArSick::simPacketHandler(ArRobotPacket *packet)
     myWhichReading = readingNumber;
   }
 
-  atDeg = (mySensorPose.getTh() - myOffsetAmount + 
+  atDeg = (mySensorPose.getTh() - myOffsetAmount +
 	   readingNumber * myIncrementAmount);
   //printf("4\n");
   encoderPose = mySimPacketEncoderTrans.doInvTransform(mySimPacketStart);
-  // while we have in the readings and have stuff left we can read 
-  for (i = 0; 
-       //	 (myWhichReading < myTotalNumReadings && 
+  // while we have in the readings and have stuff left we can read
+  for (i = 0;
+       //	 (myWhichReading < myTotalNumReadings &&
        //	  packet->getReadLength() < packet->getLength() - 4);
        i < newReadings;
        i++, myWhichReading++, atDeg += myIncrementAmount)
@@ -511,7 +511,7 @@ AREXPORT bool ArSick::simPacketHandler(ArRobotPacket *packet)
       packet->bufToUByte(); // don't need this byte for anything yet
     }
     ignore = false;
-    for (ignoreIt = myIgnoreReadings.begin(); 
+    for (ignoreIt = myIgnoreReadings.begin();
 	 ignoreIt != myIgnoreReadings.end();
 	 ignoreIt++)
     {
@@ -528,20 +528,20 @@ AREXPORT bool ArSick::simPacketHandler(ArRobotPacket *packet)
       ignore = true;
     if (myMaxRange != 0 && range > (int)myMaxRange)
       ignore = true;
-    
+
     reading->resetSensorPosition(ArMath::roundInt(mySensorPose.getX()),
 				 ArMath::roundInt(mySensorPose.getY()),
 				 atDeg);
     //      printf("dist %d\n", dist);
-    reading->newData(range, mySimPacketStart, 
+    reading->newData(range, mySimPacketStart,
 		     encoderPose,
 		     mySimPacketTrans,
 		     mySimPacketCounter, packet->getTimeReceived(), ignore, refl);
-    
+
     //addReading(reading->getX(), reading->getY());
     tempIt = myIter;
     tempIt++;
-    if (tempIt == myAssembleReadings->end() && 
+    if (tempIt == myAssembleReadings->end() &&
 	myWhichReading + 1 != myTotalNumReadings)
     {
       myAssembleReadings->push_back(new ArSensorReading);
@@ -561,7 +561,7 @@ AREXPORT bool ArSick::simPacketHandler(ArRobotPacket *packet)
     // We have in all the readings, now sort 'em and update the current ones
     filterReadings();
 
-    if (myTimeLastSickPacket != time(NULL)) 
+    if (myTimeLastSickPacket != time(NULL))
       {
 	myTimeLastSickPacket = time(NULL);
 	mySickPacCount = mySickPacCurrentCount;
@@ -569,11 +569,11 @@ AREXPORT bool ArSick::simPacketHandler(ArRobotPacket *packet)
       }
     mySickPacCurrentCount++;
     myLastReading.setToNow();
-    
+
     for (it = myDataCBList.begin(); it != myDataCBList.end(); it++)
       (*it)->invoke();
-  }	
-  
+  }
+
   unlockDevice();
   return true;
 }
@@ -583,7 +583,7 @@ AREXPORT bool ArSick::simPacketHandler(ArRobotPacket *packet)
 
  Filter readings, moving them from the raw current buffer to filtered current
  buffer (see ArRangeDevice), and then also to the cumulative
- buffer. This is called automatically when new data is received from 
+ buffer. This is called automatically when new data is received from
  the Sick.
 
  Current buffer filtering eliminates max (null) range readings, and
@@ -601,7 +601,7 @@ void ArSick::filterReadings()
   double squaredDist;
   double lastX = 0.0, lastY = 0.0;
   unsigned int i;
-  double squaredNearDist = myFilterNearDist * myFilterNearDist; 
+  double squaredNearDist = myFilterNearDist * myFilterNearDist;
   ArTime len;
   len.setToNow();
 
@@ -616,7 +616,7 @@ void ArSick::filterReadings()
   {
     clean = false;
   }
-  
+
   sensIt = myRawReadings->begin();
   sReading = (*sensIt);
   myCurrentBuffer.setPoseTaken(sReading->getPoseTaken());
@@ -634,8 +634,8 @@ void ArSick::filterReadings()
 
   i = 0;
   // walk the buffer of all the readings and see if we want to add them
-  for (myCurrentBuffer.beginRedoBuffer();	  
-       sensIt != myRawReadings->end(); 
+  for (myCurrentBuffer.beginRedoBuffer();
+       sensIt != myRawReadings->end();
        ++sensIt)
   {
     sReading = (*sensIt);
@@ -650,7 +650,7 @@ void ArSick::filterReadings()
       x = sReading->getX();
       y = sReading->getY();
 
-      
+
       // see if we're checking on the filter near dist... if we are
       // and the reading is a good one we'll check the cumulative
       // buffer
@@ -664,7 +664,7 @@ void ArSick::filterReadings()
 	  lastX = x;
 	  lastY = y;
 	  // since it was a good reading, see if we should toss it in
-	  // the cumulative buffer... 
+	  // the cumulative buffer...
 	  filterAddAndCleanCumulative(x, y, clean);
 
 	  /* we don't do this part anymore since it wound up leaving
@@ -676,7 +676,7 @@ void ArSick::filterReadings()
 	// it wasn't far enough, skip this one and go to the next one
 	else
 	{
-	  continue;		
+	  continue;
 	}
       }
       // we weren't filtering the readings, but see if it goes in the
@@ -691,11 +691,11 @@ void ArSick::filterReadings()
     }
   }
   myCurrentBuffer.endRedoBuffer();
-  /*  Put this in to see how long the cumulative filtering is taking  
+  /*  Put this in to see how long the cumulative filtering is taking
   if (clean)
     printf("### %ld %d\n", len.mSecSince(), myCumulativeBuffer.getBuffer()->size());
     */
-  
+
 }
 
 /** @internal */
@@ -722,17 +722,17 @@ void ArSick::filterAddAndCleanCumulative(double x, double y, bool clean)
   squaredDist = ArMath::squaredDistanceBetween(x, y, xTaken, yTaken);
   // if we're not cleaning and its further than we're keeping track of
   // readings ignore it
-  if (!clean && 
-      myFilterSquaredCumulativeInsertMaxDist > 1 && 
+  if (!clean &&
+      myFilterSquaredCumulativeInsertMaxDist > 1 &&
       squaredDist > myFilterSquaredCumulativeInsertMaxDist)
     return;
-  
+
   // if we're cleaning we start our sweep
   if (clean)
     myCumulativeBuffer.beginInvalidationSweep();
   // run through all the readings
-  for (cit = getCumulativeBuffer()->begin(); 
-       cit != getCumulativeBuffer()->end(); 
+  for (cit = getCumulativeBuffer()->begin();
+       cit != getCumulativeBuffer()->end();
        ++cit)
   {
     // if its closer to a reading than the filter near dist, just return
@@ -754,7 +754,7 @@ void ArSick::filterAddAndCleanCumulative(double x, double y, bool clean)
       // see if the cumulative buffer reading perpindicular intersects
       // this line segment, and then see if its too close if it does
       if (line.getPerpPoint((*cit), &intersection) &&
-	  (intersection.squaredFindDistanceTo(*(*cit)) < 
+	  (intersection.squaredFindDistanceTo(*(*cit)) <
         	                       myFilterSquaredCumulativeCleanDist) &&
 	  (intersection.squaredFindDistanceTo(reading) > 50 * 50))
       {
@@ -922,7 +922,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
 	value = packet->bufToByte();
 	if (value == 0)
 	{
-	  ArLog::log(ArLog::Terse, 
+	  ArLog::log(ArLog::Terse,
 		     "ArSick: Could not configure laser, failed connect.");
 	  switchState(STATE_NONE);
 	  failedConnect();
@@ -937,7 +937,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
 	}
 	else
 	{
-	  ArLog::log(ArLog::Terse, 
+	  ArLog::log(ArLog::Terse,
 		     "ArSick: Could not configure laser, failed connect.");
 	  switchState(STATE_NONE);
 	  failedConnect();
@@ -1006,7 +1006,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
 	}
 	else if (value == 1)
 	{
-	  ArLog::log(ArLog::Terse, 
+	  ArLog::log(ArLog::Terse,
 		     "ArSick: Could not start laser, incorrect password.");
 	  switchState(STATE_NONE);
 	  failedConnect();
@@ -1014,7 +1014,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
 	}
 	else if (value == 2)
 	{
-	  ArLog::log(ArLog::Terse, 
+	  ArLog::log(ArLog::Terse,
 		     "ArSick: Could not start laser, LMI fault.");
 	  switchState(STATE_NONE);
 	  failedConnect();
@@ -1022,7 +1022,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
 	}
 	else
 	{
-	  ArLog::log(ArLog::Terse, 
+	  ArLog::log(ArLog::Terse,
 		     "ArSick: Could not start laser, unknown problem.");
 	  switchState(STATE_NONE);
 	  failedConnect();
@@ -1031,7 +1031,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
       }
       else if (packet->getID() == 0xb0)
       {
-	
+
 	ArLog::log(ArLog::Terse, "ArSick: extra data packet\n");
 	myPacket.empty();
 	myPacket.uByteToBuf(0x20);
@@ -1167,7 +1167,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
     myPacket.byte2ToBuf(0);
     // um, an extra one (sick quickstart manual says its 21 not 20 long)
     myPacket.uByteToBuf(0);
-    
+
     myPacket.finalizePacket();
     //myPacket.log();
     //printf("Sending mode!\n");
@@ -1199,7 +1199,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
       }
       else if (packet->getID() == 0xb0)
       {
-	
+
 	ArLog::log(ArLog::Terse, "ArSick: extra data packet\n");
 	myPacket.empty();
 	myPacket.uByteToBuf(0x20);
@@ -1228,7 +1228,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
       return 2;
     }
     break;
-    case STATE_START_READINGS: 
+    case STATE_START_READINGS:
       if (myStateStart.mSecSince() < 200)
       return 0;
     myPacket.empty();
@@ -1264,7 +1264,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
 	}
 	else if (value == 1)
 	{
-	  ArLog::log(ArLog::Terse, 
+	  ArLog::log(ArLog::Terse,
 	     "ArSick: Could not start laser laser, incorrect password.");
 	  switchState(STATE_NONE);
 	  failedConnect();
@@ -1272,7 +1272,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
 	}
 	else if (value == 2)
 	{
-	  ArLog::log(ArLog::Terse, 
+	  ArLog::log(ArLog::Terse,
 		     "ArSick: Could not start laser laser, LMI fault.");
 	  switchState(STATE_NONE);
 	  failedConnect();
@@ -1280,7 +1280,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
 	}
 	else
 	{
-	  ArLog::log(ArLog::Terse, 
+	  ArLog::log(ArLog::Terse,
 		     "ArSick: Could not start laser laser, unknown problem.");
 	  switchState(STATE_NONE);
 	  failedConnect();
@@ -1321,7 +1321,7 @@ AREXPORT bool ArSick::internalConnectSim(void)
   if (myRobot->comInt(36, -ArMath::roundInt(offset)) &&   // Start angle
       myRobot->comInt(37, ArMath::roundInt(offset)) &&    // End angle
       myRobot->comInt(38, ArMath::roundInt(increment * 100.0)) && // increment
-      myRobot->comInt(35, 2)) // Enable sending data, with extended info 
+      myRobot->comInt(35, 2)) // Enable sending data, with extended info
     ///@todo only choose extended info if reflector bits desired, also shorten range.
   {
     myRobot->unlock();
@@ -1334,7 +1334,7 @@ AREXPORT bool ArSick::internalConnectSim(void)
   {
     switchState(STATE_NONE);
     failedConnect();
-    ArLog::log(ArLog::Terse, 
+    ArLog::log(ArLog::Terse,
 	       "ArSick: Failed to connect to simulated laser.");
     return false;
   }
@@ -1351,7 +1351,7 @@ AREXPORT bool ArSick::internalConnectSim(void)
    @param position whether to place the functor first or last
    @see remConnectCB()
 **/
-AREXPORT void ArSick::addConnectCB(ArFunctor *functor, 
+AREXPORT void ArSick::addConnectCB(ArFunctor *functor,
 				    ArListPos::Pos position)
 {
   if (position == ArListPos::FIRST)
@@ -1359,11 +1359,11 @@ AREXPORT void ArSick::addConnectCB(ArFunctor *functor,
   else if (position == ArListPos::LAST)
     myConnectCBList.push_back(functor);
   else
-    ArLog::log(ArLog::Terse, 
+    ArLog::log(ArLog::Terse,
 	       "ArSick::myConnectCallbackList: Invalid position.");
 }
 
-/** 
+/**
     @param functor the functor to remove from the list of connect callbacks
     @see addConnectCB()
 **/
@@ -1385,7 +1385,7 @@ AREXPORT void ArSick::remConnectCB(ArFunctor *functor)
     @param position whether to place the functor first or last
     @see remFailedConnectCB()
 **/
-AREXPORT void ArSick::addFailedConnectCB(ArFunctor *functor, 
+AREXPORT void ArSick::addFailedConnectCB(ArFunctor *functor,
 					  ArListPos::Pos position)
 {
   if (position == ArListPos::FIRST)
@@ -1393,11 +1393,11 @@ AREXPORT void ArSick::addFailedConnectCB(ArFunctor *functor,
   else if (position == ArListPos::LAST)
     myFailedConnectCBList.push_back(functor);
   else
-    ArLog::log(ArLog::Terse, 
+    ArLog::log(ArLog::Terse,
 	       "ArSick::myConnectCallbackList: Invalid position.");
 }
 
-/** 
+/**
     @param functor the functor to remove from the list of connect-failed callbacks
     @see addFailedConnectCB()
 **/
@@ -1414,12 +1414,12 @@ AREXPORT void ArSick::remFailedConnectCB(ArFunctor *functor)
     a callback, that module must remove the callback when the module
     is removed.
 
-    @param functor functor created from ArFunctorC which refers to the 
+    @param functor functor created from ArFunctorC which refers to the
     function to call.
     @param position whether to place the functor first or last
     @see remFailedConnectCB
 **/
-AREXPORT void ArSick::addDisconnectNormallyCB(ArFunctor *functor, 
+AREXPORT void ArSick::addDisconnectNormallyCB(ArFunctor *functor,
 					       ArListPos::Pos position)
 {
   if (position == ArListPos::FIRST)
@@ -1427,11 +1427,11 @@ AREXPORT void ArSick::addDisconnectNormallyCB(ArFunctor *functor,
   else if (position == ArListPos::LAST)
     myDisconnectNormallyCBList.push_back(functor);
   else
-    ArLog::log(ArLog::Terse, 
+    ArLog::log(ArLog::Terse,
 	       "ArSick::myConnectCallbackList: Invalid position.");
 }
 
-/** 
+/**
     @param functor the functor to remove from the list of connect callbacks
     @see addDisconnectNormallyCB
 **/
@@ -1451,12 +1451,12 @@ AREXPORT void ArSick::remDisconnectNormallyCB(ArFunctor *functor)
     sort of module that adds a callback, that module must remove the
     callback when the module removed.
 
-    @param functor functor created from ArFunctorC which refers to the 
+    @param functor functor created from ArFunctorC which refers to the
     function to call.
     @param position whether to place the functor first or last
     @see remFailedConnectCB
 **/
-AREXPORT void ArSick::addDisconnectOnErrorCB(ArFunctor *functor, 
+AREXPORT void ArSick::addDisconnectOnErrorCB(ArFunctor *functor,
 					      ArListPos::Pos position)
 {
   if (position == ArListPos::FIRST)
@@ -1464,11 +1464,11 @@ AREXPORT void ArSick::addDisconnectOnErrorCB(ArFunctor *functor,
   else if (position == ArListPos::LAST)
     myDisconnectOnErrorCBList.push_back(functor);
   else
-    ArLog::log(ArLog::Terse, 
+    ArLog::log(ArLog::Terse,
 	       "ArSick::myConnectCallbackList: Invalid position");
 }
 
-/** 
+/**
    @param functor the functor to remove from the list of connect callbacks
    @see addDisconnectOnErrorCB
 **/
@@ -1482,12 +1482,12 @@ AREXPORT void ArSick::remDisconnectOnErrorCB(ArFunctor *functor)
    ArFunctorC.  Whenever a new reading is processed this callback is
    called.  You can then get the raw readings with getRawReadings.
 
-   @param functorfunctor created from ArFunctorC which refers to the 
+   @param functorfunctor created from ArFunctorC which refers to the
    function to call.
    @param position whether to place the functor first or last
    @see remConnectCB
 **/
-AREXPORT void ArSick::addDataCB(ArFunctor *functor, 
+AREXPORT void ArSick::addDataCB(ArFunctor *functor,
 				    ArListPos::Pos position)
 {
   if (position == ArListPos::FIRST)
@@ -1495,11 +1495,11 @@ AREXPORT void ArSick::addDataCB(ArFunctor *functor,
   else if (position == ArListPos::LAST)
     myDataCBList.push_back(functor);
   else
-    ArLog::log(ArLog::Terse, 
+    ArLog::log(ArLog::Terse,
 	       "ArSick::addDataCB: Invalid position.");
 }
 
-/** 
+/**
     @param functor the functor to remove from the list of data callbacks
     @see addDataCB
 **/
@@ -1511,18 +1511,18 @@ AREXPORT void ArSick::remDataCB(ArFunctor *functor)
 /** @internal */
 AREXPORT void ArSick::dropConnection(void)
 {
-  std::list<ArFunctor *>::iterator it;  
+  std::list<ArFunctor *>::iterator it;
 
   if (myState != STATE_CONNECTED)
     return;
 
   myCurrentBuffer.reset();
   myCumulativeBuffer.reset();
-  ArLog::log(ArLog::Terse, 
+  ArLog::log(ArLog::Terse,
 	     "ArSick:  Lost connection to the laser because of error.");
   switchState(STATE_NONE);
-  for (it = myDisconnectOnErrorCBList.begin(); 
-       it != myDisconnectOnErrorCBList.end(); 
+  for (it = myDisconnectOnErrorCBList.begin();
+       it != myDisconnectOnErrorCBList.end();
        it++)
     (*it)->invoke();
   if (myConn != NULL)
@@ -1532,11 +1532,11 @@ AREXPORT void ArSick::dropConnection(void)
 /** @internal */
 AREXPORT void ArSick::failedConnect(void)
 {
-  std::list<ArFunctor *>::iterator it;  
-  
+  std::list<ArFunctor *>::iterator it;
+
   switchState(STATE_NONE);
-  for (it = myFailedConnectCBList.begin(); 
-       it != myFailedConnectCBList.end(); 
+  for (it = myFailedConnectCBList.begin();
+       it != myFailedConnectCBList.end();
        it++)
     (*it)->invoke();
   if (myConn != NULL)
@@ -1557,18 +1557,18 @@ AREXPORT void ArSick::madeConnection(void)
    Disconnects from the laser.  You should lockDevice the laser before
    calling this function.  Also if you are using the simulator it will
    lock the robot so it can send the command to the simulator, so you
-   should make sure the robot is unlocked.  
-   
+   should make sure the robot is unlocked.
+
    @param doNotLockRobotForSim if this is true, this will not lock the
    robot if its trying to send a command to the sim... ONLY do this if
    you are calling this from within the robots sync loop (ie from a
    sync task, sensor interp task, or user task)
-   
+
 @return true if it could disconnect from the laser cleanly
 **/
 AREXPORT bool ArSick::disconnect(bool doNotLockRobotForSim)
 {
-  std::list<ArFunctor *>::iterator it;  
+  std::list<ArFunctor *>::iterator it;
   bool ret;
   ArSerialConnection *conn;
 
@@ -1578,7 +1578,7 @@ AREXPORT bool ArSick::disconnect(bool doNotLockRobotForSim)
     myStateMutex.unlock();
     return true;
   }
-    
+
   if (myState != STATE_CONNECTED)
   {
     lockDevice();
@@ -1598,8 +1598,8 @@ AREXPORT bool ArSick::disconnect(bool doNotLockRobotForSim)
   ArLog::log(ArLog::Terse, "ArSick: Disconnecting from laser.");
   myState = STATE_NONE;
   myStateMutex.unlock();
-  for (it = myDisconnectNormallyCBList.begin(); 
-       it != myDisconnectNormallyCBList.end(); 
+  for (it = myDisconnectNormallyCBList.begin();
+       it != myDisconnectNormallyCBList.end();
        it++)
     (*it)->invoke();
   if (myUseSim)
@@ -1645,12 +1645,12 @@ AREXPORT bool ArSick::disconnect(bool doNotLockRobotForSim)
 
 /**
    Locks this class (using lockDevice()), tries to make a connection, then
-   unlocks.  If connecting to the simulator, 
+   unlocks.  If connecting to the simulator,
    then it will commands to the simulator instead of connecting
-   over the configured serial port.  
+   over the configured serial port.
 
    @note If you have previously locked
-   the laser with lockDevice(), then you must unlock with unlockDevice() 
+   the laser with lockDevice(), then you must unlock with unlockDevice()
    before calling this function.
 
    @note Since the simulated laser uses the robot connection instead
@@ -1662,7 +1662,7 @@ AREXPORT bool ArSick::disconnect(bool doNotLockRobotForSim)
 
    @return true if a connection was successfully made, false otherwise
 **/
- 
+
 AREXPORT bool ArSick::blockingConnect(void)
 {
   int ret;
@@ -1672,7 +1672,7 @@ AREXPORT bool ArSick::blockingConnect(void)
     return internalConnectSim();
   }
   // if we're talking to a real laser
-  else 
+  else
   {
     if (myConn == NULL)
     {
@@ -1689,7 +1689,7 @@ AREXPORT bool ArSick::blockingConnect(void)
     myConnLock.unlock();
     if (ret == 1)
       return true;
-    else 
+    else
       return false;
   }
   return false;
@@ -1706,7 +1706,7 @@ AREXPORT bool ArSick::blockingConnect(void)
   runOnRobot() used.
 
   @return true if a connection will be able to be tried, false
-  otherwise 
+  otherwise
 
   @see configure(), ArRangeDeviceThreaded::run(),
   ArRangeDeviceThreaded::runAsync(), runOnRobot()
@@ -1722,7 +1722,7 @@ AREXPORT bool ArSick::asyncConnect(void)
   {
     myStartConnect = true;
     return true;
-  } 
+  }
   else
   {
     ArLog::log(ArLog::Terse, "ArSick: Could not connect, to make an async connection either the sim needs to be used, the device needs to be run or runAsync, or the device needs to be runOnRobot.");
@@ -1731,11 +1731,11 @@ AREXPORT bool ArSick::asyncConnect(void)
 }
 
 /**
-   This alternate method of operation sets up a sensor interpretation task 
+   This alternate method of operation sets up a sensor interpretation task
    on the robot object, instead of in a background thread.
    Note that the device must have been added to
    the robot already so that the device has a pointer to the robot.
-   You should lock the robot and lockDevice() this laser before calling this if 
+   You should lock the robot and lockDevice() this laser before calling this if
    other things are running already.
 **/
 AREXPORT bool ArSick::runOnRobot(void)
@@ -1743,7 +1743,7 @@ AREXPORT bool ArSick::runOnRobot(void)
   if (myRobot == NULL)
     return false;
   else
-  {  
+  {
     myRunningOnRobot = true;
     if (getRunning())
       stopRunning();
@@ -1758,7 +1758,7 @@ AREXPORT void ArSick::processPacket(ArSickPacket *packet, ArPose pose,
 				    bool deinterlace,
 				    ArPose deinterlaceDelta)
 {
-  std::list<ArFunctor *>::iterator it;  
+  std::list<ArFunctor *>::iterator it;
   unsigned int rawValue;
   unsigned int value;
   unsigned int reflector = 0;
@@ -1771,7 +1771,7 @@ AREXPORT void ArSick::processPacket(ArSickPacket *packet, ArPose pose,
   std::list<ArSensorReading *>::iterator tempIt;
   int multiplier;
   ArTransform transform;
-  std::list<double>::iterator ignoreIt;  
+  std::list<double>::iterator ignoreIt;
   bool ignore;
 
   ArTime arTime;
@@ -1781,7 +1781,7 @@ AREXPORT void ArSick::processPacket(ArSickPacket *packet, ArPose pose,
   ArTime deinterlaceTime;
   deinterlaceTime = packet->getTimeReceived();
   deinterlaceTime.addMSec(-27);
-  
+
   //if (packet->getID() != 0xb0)
   //printf("Got in packet of type 0x%x\n", packet->getID());
   if (packet->getID() == 0xb0)
@@ -1797,7 +1797,7 @@ AREXPORT void ArSick::processPacket(ArSickPacket *packet, ArPose pose,
       multiplier = 100;
     else
     {
-      ArLog::log(ArLog::Terse, 
+      ArLog::log(ArLog::Terse,
 		 "ArSick::processPacket: bad distance configuration in packet\n");
       multiplier = 0;
     }
@@ -1813,8 +1813,8 @@ AREXPORT void ArSick::processPacket(ArSickPacket *packet, ArPose pose,
 	delete (*tempIt);
       myAssembleReadings->pop_front();
     }
-    
-    // If we don't have any sensor readings created at all, make 'em all 
+
+    // If we don't have any sensor readings created at all, make 'em all
     if (myAssembleReadings->size() == 0)
       for (i = 0; i < numReadings; i++)
 	myAssembleReadings->push_back(new ArSensorReading);
@@ -1824,7 +1824,7 @@ AREXPORT void ArSick::processPacket(ArSickPacket *packet, ArPose pose,
     // printf("usePose2 %d, th1 %.0f th2 %.0f\n",  usePose2, pose.getTh(), pose2.getTh());
     for (atDeg = mySensorPose.getTh() - myOffsetAmount, onReading = 0,
 	 myIter = myAssembleReadings->begin();
-	 (onReading < numReadings && 
+	 (onReading < numReadings &&
 	  packet->getReadLength() < packet->getLength() - 4);
 	 myWhichReading++, atDeg += myIncrementAmount, myIter++, onReading++)
     {
@@ -1863,7 +1863,7 @@ AREXPORT void ArSick::processPacket(ArSickPacket *packet, ArPose pose,
       reflector = reflector << 5;
 
       ignore = false;
-      for (ignoreIt = myIgnoreReadings.begin(); 
+      for (ignoreIt = myIgnoreReadings.begin();
 	   ignoreIt != myIgnoreReadings.end();
 	   ignoreIt++)
       {
@@ -1883,25 +1883,25 @@ AREXPORT void ArSick::processPacket(ArSickPacket *packet, ArPose pose,
 	       ArMath::roundInt(mySensorPose.getX() + deinterlaceDelta.getX()),
 	       ArMath::roundInt(mySensorPose.getY() + deinterlaceDelta.getY()),
 	       ArMath::addAngle(atDeg, deinterlaceDelta.getTh()));
-	reading->newData(dist, pose, encoderPose, transform, counter, 
+	reading->newData(dist, pose, encoderPose, transform, counter,
 			 deinterlaceTime, ignore, reflector);
       }
       else
       {
 	reading->resetSensorPosition(ArMath::roundInt(mySensorPose.getX()),
 				     ArMath::roundInt(mySensorPose.getY()),
-				     atDeg); 
-	reading->newData(dist, pose, encoderPose, transform, counter, 
+				     atDeg);
+	reading->newData(dist, pose, encoderPose, transform, counter,
 			 arTime, ignore, reflector);
       }
       /*
       reading->newData(onReading, 0, 0, 0,
-		       ArTransform(), counter, 
+		       ArTransform(), counter,
 		       packet->getTimeReceived());
       */
       tempIt = myIter;
       tempIt++;
-      if (tempIt == myAssembleReadings->end() && 
+      if (tempIt == myAssembleReadings->end() &&
 	  onReading + 1 != numReadings)
       {
 	myAssembleReadings->push_back(new ArSensorReading);
@@ -1915,8 +1915,8 @@ AREXPORT void ArSick::processPacket(ArSickPacket *packet, ArPose pose,
     //printf("\n");
     myLastReading.setToNow();
     filterReadings();
-    
-    if (myTimeLastSickPacket != time(NULL)) 
+
+    if (myTimeLastSickPacket != time(NULL))
     {
       myTimeLastSickPacket = time(NULL);
       mySickPacCount = mySickPacCurrentCount;
@@ -1932,7 +1932,7 @@ AREXPORT void ArSick::processPacket(ArSickPacket *packet, ArPose pose,
 AREXPORT void ArSick::runOnce(bool lockRobot)
 {
   ArSickPacket *packet;
-  unsigned int counter;
+  unsigned int counter=0;
   int ret;
   ArTime time;
   ArTime time2;
@@ -1951,7 +1951,7 @@ AREXPORT void ArSick::runOnce(bool lockRobot)
   }
 
   lockDevice();
-  if (myState == STATE_CONNECTED && myTimeoutTime > 0 && 
+  if (myState == STATE_CONNECTED && myTimeoutTime > 0 &&
       myLastReading.mSecSince() > myTimeoutTime * 1000)
   {
     dropConnection();
@@ -2160,13 +2160,13 @@ AREXPORT void ArSick::sensorInterpCallback(void)
   ArTime time;
   ArPose pose;
   int ret;
-  int retEncoder;
+  int retEncoder=0;
   ArPose encoderPose;
   ArPose deinterlaceEncoderPose;
   bool deinterlace;
   ArTime deinterlaceTime;
   ArPose deinterlaceDelta;
-  
+
   if (myRunningOnRobot)
     runOnce(false);
 
@@ -2183,13 +2183,13 @@ AREXPORT void ArSick::sensorInterpCallback(void)
     time = packet->getTimeReceived();
     time.addMSec(-13);
     if ((ret = myRobot->getPoseInterpPosition(time, &pose)) == 1 &&
-	(retEncoder = 
+	(retEncoder =
 	 myRobot->getEncoderPoseInterpPosition(time, &encoderPose)) == 1)
     {
       deinterlaceTime = packet->getTimeReceived();
       deinterlaceTime.addMSec(-27);
-      
-      if (myIncrement == INCREMENT_HALF && 
+
+      if (myIncrement == INCREMENT_HALF &&
 	  (myRobot->getEncoderPoseInterpPosition(
 		  deinterlaceTime, &deinterlaceEncoderPose)) == 1)
 	deinterlace = true;
@@ -2215,7 +2215,7 @@ AREXPORT void ArSick::sensorInterpCallback(void)
       }
       processed.push_back(packet);
     }
-    else 
+    else
     {
       //ArLog::log(ArLog::Terse, "ArSick::processPacket: error %d from interpolation\n", ret);
       //printf("$$$ ret = %d\n", ret);
@@ -2246,7 +2246,7 @@ AREXPORT void *ArSick::runThread(void *arg)
 	unlockDevice();
 	internalConnectSim();
       }
-      else 
+      else
       {
 	unlockDevice();
 	while (getRunningWithLock())
@@ -2279,9 +2279,9 @@ AREXPORT void *ArSick::runThread(void *arg)
   return NULL;
 }
 
-/** 
+/**
     Applies a transform to the buffers. this is mostly useful for translating
-    to/from local/global coordinates, but may have other uses.  
+    to/from local/global coordinates, but may have other uses.
     This is different from
     the class because it also transforms the raw readings.
     @param trans the transform to apply to the data

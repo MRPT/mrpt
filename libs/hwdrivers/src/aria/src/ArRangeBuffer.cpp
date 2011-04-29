@@ -17,9 +17,9 @@ Copyright (C) 2006, 2007 MobileRobots Inc.
      along with this program; if not, write to the Free Software
      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-If you wish to redistribute ARIA under different terms, contact 
-MobileRobots for information about a commercial version of ARIA at 
-robots@mobilerobots.com or 
+If you wish to redistribute ARIA under different terms, contact
+MobileRobots for information about a commercial version of ARIA at
+robots@mobilerobots.com or
 MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 */
 
@@ -67,12 +67,12 @@ AREXPORT void ArRangeBuffer::setEncoderPoseTaken(ArPose p)
 }
 
 /**
-   If the new size is smaller than the current buffer it chops off the 
+   If the new size is smaller than the current buffer it chops off the
    readings that are excess from the oldest readings... if the new size
    is larger then it just leaves room for the buffer to grow
    @param size number of readings to set the buffer to
 */
-AREXPORT void ArRangeBuffer::setSize(size_t size) 
+AREXPORT void ArRangeBuffer::setSize(size_t size)
 {
   mySize = size;
   myVector.reserve(mySize);
@@ -94,43 +94,43 @@ AREXPORT void ArRangeBuffer::setSize(size_t size)
   }
 }
 
-/** 
+/**
     This function returns a pointer to a list that has all of the readings
-    in it.  This list is mostly for reference, ie for finding some 
-    particular value or for using the readings to draw them.  Don't do 
-    any modification at all to the list unless you really know what you're 
+    in it.  This list is mostly for reference, ie for finding some
+    particular value or for using the readings to draw them.  Don't do
+    any modification at all to the list unless you really know what you're
     doing... and if you do you'd better lock the rangeDevice this came from
     so nothing messes with the list while you are doing so.
     @return the list of positions this range buffer has
 */
 AREXPORT const std::list<ArPoseWithTime *> *ArRangeBuffer::getBuffer(void) const
-{ 
-  return &myBuffer; 
+{
+  return &myBuffer;
 }
 
-/** 
+/**
     This function returns a pointer to a list that has all of the readings
-    in it.  This list is mostly for reference, ie for finding some 
-    particular value or for using the readings to draw them.  Don't do 
-    any modification at all to the list unless you really know what you're 
+    in it.  This list is mostly for reference, ie for finding some
+    particular value or for using the readings to draw them.  Don't do
+    any modification at all to the list unless you really know what you're
     doing... and if you do you'd better lock the rangeDevice this came from
     so nothing messes with the list while you are doing so.
     @return the list of positions this range buffer has
 */
 AREXPORT std::list<ArPoseWithTime *> *ArRangeBuffer::getBuffer(void)
-{ 
-  return &myBuffer; 
+{
+  return &myBuffer;
 }
 
 
 /**
-   Gets the closest reading in a region defined by startAngle going to 
-   endAngle... going counterclockwise (neg degrees to poseitive... with 
-   how the robot is set up, thats counterclockwise)... from -180 to 180... 
+   Gets the closest reading in a region defined by startAngle going to
+   endAngle... going counterclockwise (neg degrees to poseitive... with
+   how the robot is set up, thats counterclockwise)... from -180 to 180...
    this means if you want the slice between 0 and 10 degrees,
    you must enter it as 0, 10, if you do 10, 0 you'll get the 350 degrees
    between 10 and 0... be especially careful with negative... for example
-   -30 to -60 is everything from -30, around through 0, 90, and 180 back to 
+   -30 to -60 is everything from -30, around through 0, 90, and 180 back to
    -60... since -60 is actually to clockwise of -30
    @param startAngle where to start the slice
    @param endAngle where to end the slice, going clockwise from startAngle
@@ -139,33 +139,33 @@ AREXPORT std::list<ArPoseWithTime *> *ArRangeBuffer::getBuffer(void)
    @param maxRange the maximum range to return (and what to return if nothing
    found)
    @param angle a pointer return of the angle to the found reading
-   @param position the origin of the local coords for the definition of the 
+   @param position the origin of the local coords for the definition of the
    coordinates, normally just ArRobot::getPosition
    @return if the return is >= 0 and <= maxRange then this is the distance
-   to the closest reading, if it is >= maxRange, then there was no reading 
+   to the closest reading, if it is >= maxRange, then there was no reading
    in the given section
 */
-AREXPORT double ArRangeBuffer::getClosestPolar(double startAngle, 
-					       double endAngle, 
-					       ArPose startPos, 
+AREXPORT double ArRangeBuffer::getClosestPolar(double startAngle,
+					       double endAngle,
+					       ArPose startPos,
 					       unsigned int maxRange,
 					       double *angle) const
 {
-  return getClosestPolarInList(startAngle, endAngle, 
+  return getClosestPolarInList(startAngle, endAngle,
 			       startPos, maxRange, angle, &myBuffer);
 }
 
 AREXPORT double ArRangeBuffer::getClosestPolarInList(
-	double startAngle, double endAngle, ArPose startPos, 
-	unsigned int maxRange, double *angle, 
+	double startAngle, double endAngle, ArPose startPos,
+	unsigned int maxRange, double *angle,
 	const std::list<ArPoseWithTime *> *buffer)
 {
-  double closest;
+  double closest=0;
   bool foundOne = false;
   std::list<ArPoseWithTime *>::const_iterator it;
   ArPoseWithTime *reading;
   double th;
-  double closeTh;
+  double closeTh=0;
   double dist;
   double angle1, angle2;
 
@@ -183,7 +183,7 @@ AREXPORT double ArRangeBuffer::getClosestPolarInList(
     {
       if (!foundOne || (dist = reading->findDistanceTo(startPos)) < closest)
       {
-	closeTh = th;	
+	closeTh = th;
 	if (!foundOne)
 	  closest = reading->findDistanceTo(startPos);
 	else
@@ -199,7 +199,7 @@ AREXPORT double ArRangeBuffer::getClosestPolarInList(
   if (closest > maxRange)
     return maxRange;
   else
-    return closest;  
+    return closest;
 }
 
 /**
@@ -215,19 +215,19 @@ AREXPORT double ArRangeBuffer::getClosestPolarInList(
    found)
    @param readingPos a pointer to a position in which to store the location of
    the closest position
-   @param targetPose the origin of the local coords for the definition of the 
+   @param targetPose the origin of the local coords for the definition of the
    coordinates, e.g. ArRobot::getPosition() to center the box on the robot
    @return if the return is >= 0 and <= maxRange then this is the distance
-   to the closest reading, if it is >= maxRange, then there was no reading 
+   to the closest reading, if it is >= maxRange, then there was no reading
    in the given section
 */
 AREXPORT double ArRangeBuffer::getClosestBox(double x1, double y1, double x2,
 					     double y2, ArPose startPos,
-					     unsigned int maxRange, 
+					     unsigned int maxRange,
 					     ArPose *readingPos,
 					     ArPose targetPose) const
 {
-  return getClosestBoxInList(x1, y1, x2, y2, startPos, maxRange, readingPos, 
+  return getClosestBoxInList(x1, y1, x2, y2, startPos, maxRange, readingPos,
 			     targetPose, &myBuffer);
 }
 
@@ -246,12 +246,12 @@ AREXPORT double ArRangeBuffer::getClosestBox(double x1, double y1, double x2,
    found)
    @param readingPos a pointer to a position in which to store the location of
    the closest position
-   @param targetPose the origin of the local coords for the definition of the 
+   @param targetPose the origin of the local coords for the definition of the
    coordinates, normally just ArRobot::getPosition()
-   @param buffer Use the reading positions from this list 
+   @param buffer Use the reading positions from this list
    @param targetPose the pose to see if we're closest too (in local coordinates), this should nearly always be the default of 0 0 0
    @return if the return is >= 0 and <= maxRange then this is the distance
-   to the closest reading, if it is >= maxRange, then there was no reading 
+   to the closest reading, if it is >= maxRange, then there was no reading
    in the given section
 */
 AREXPORT double ArRangeBuffer::getClosestBoxInList(
@@ -267,7 +267,7 @@ AREXPORT double ArRangeBuffer::getClosestBoxInList(
   ArTransform trans;
   ArPoseWithTime pose;
   ArPose zeroPos;
-  
+
   double temp;
 
   closest = maxRange;
@@ -276,17 +276,17 @@ AREXPORT double ArRangeBuffer::getClosestBoxInList(
 
   if (x1 >= x2)
   {
-    temp = x1, 
+    temp = x1,
     x1 = x2;
     x2 = temp;
   }
   if (y1 >= y2)
   {
-    temp = y1, 
+    temp = y1,
     y1 = y2;
     y2 = temp;
   }
-  
+
   for (it = buffer->begin(); it != buffer->end(); ++it)
   {
     pose = trans.doTransform(*(*it));
@@ -312,11 +312,11 @@ AREXPORT double ArRangeBuffer::getClosestBoxInList(
     return closest;
 }
 
-/** 
+/**
     Applies a transform to the buffers.. this is mostly useful for translating
     to/from local/global coords, but may have other uses
     @param trans the transform to apply to the data
-*/    
+*/
 AREXPORT void ArRangeBuffer::applyTransform(ArTransform trans)
 {
   trans.doTransform(&myBuffer);
@@ -353,14 +353,14 @@ AREXPORT void ArRangeBuffer::clearOlderThanSeconds(int seconds)
 
 /**
    To redo the buffer means that you want to replace all
-   of the readings in the buffer with new pose values, and get rid of the 
-   readings that you didn't update with new values (invalidate them).  
-   The three functions beginRedoBuffer(), 
+   of the readings in the buffer with new pose values, and get rid of the
+   readings that you didn't update with new values (invalidate them).
+   The three functions beginRedoBuffer(),
    redoReading(), and endRedoBuffer() are all made to enable you to do this.
    First call beginRedoBuffer(). Then for each reading you want
    to update in the buffer, call redoReading(double x, double y), then
    when you are done, call endRedoBuffer().
-**/     
+**/
 AREXPORT void ArRangeBuffer::beginRedoBuffer(void)
 {
   myRedoIt = myBuffer.begin();
@@ -380,7 +380,7 @@ AREXPORT void ArRangeBuffer::redoReading(double x, double y)
     (*myRedoIt)->setPose(x, y);
     myRedoIt++;
   }
-  // if we don't, add more (its just moving from buffers here, 
+  // if we don't, add more (its just moving from buffers here,
   //but let the class for this do the work
   else
   {
@@ -405,14 +405,14 @@ AREXPORT void ArRangeBuffer::endRedoBuffer(void)
       myRedoIt++;
     }
     endInvalidationSweep();
-  } 
+  }
 }
 
 /**
    @param x the x position of the reading
    @param y the y position of the reading
 */
-AREXPORT void ArRangeBuffer::addReading(double x, double y) 
+AREXPORT void ArRangeBuffer::addReading(double x, double y)
 {
   if (myBuffer.size() < mySize)
   {
@@ -440,9 +440,9 @@ AREXPORT void ArRangeBuffer::addReading(double x, double y)
 /**
    This is a set of funkiness used to invalid readings in the buffer.
    It is fairly complicated.  But what you need to do, is set up the invalid
-   sweeping with beginInvalidationSweep, then walk through the list of 
-   readings, and pass the iterator to a reading you want to invalidate to 
-   invalidateReading, then after you are all through walking the list call 
+   sweeping with beginInvalidationSweep, then walk through the list of
+   readings, and pass the iterator to a reading you want to invalidate to
+   invalidateReading, then after you are all through walking the list call
    endInvalidationSweep.  Look at the description of getBuffer for additional
    warnings.
    @see invalidateReading
@@ -474,7 +474,7 @@ AREXPORT void ArRangeBuffer::invalidateReading(
 */
 void ArRangeBuffer::endInvalidationSweep(void)
 {
-  while ((myInvalidIt = myInvalidSweepList.begin()) != 
+  while ((myInvalidIt = myInvalidSweepList.begin()) !=
 	 myInvalidSweepList.end())
   {
     //printf("nuked one before %d %d\n", myBuffer.size(), myInvalidBuffer.size());
@@ -488,7 +488,7 @@ void ArRangeBuffer::endInvalidationSweep(void)
 
 /**
    Copy the readings from this buffer to a vector stored within
-   this object, and return a pointer to that vector. 
+   this object, and return a pointer to that vector.
    Note that the actual vector object is stored within ArRangeBuffer,
    be careful if accessing it from multiple threads.
    @return Pointer to reading vector.

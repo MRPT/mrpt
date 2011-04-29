@@ -2062,8 +2062,11 @@ void vision::computeStereoRectificationMaps(
         K2, D2,
         nSize,
         R, T,
-        R1, R2, P1, P2, Q, alpha,
-        cv::Size(), 0, 0, 0 );
+        R1, R2, P1, P2, Q,
+        cv::CALIB_ZERO_DISPARITY, //
+		alpha
+		);
+        // cv::Size(), 0, 0, 0 ); // Rest of arguments -> default
 
     cv::Size sz1, sz2;
     cv::initUndistortRectifyMap( K1, D1, R1, P1, cv::Size(resX,resY), CV_32FC1, *mapx1, *mapy1 );

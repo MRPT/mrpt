@@ -17,9 +17,9 @@ Copyright (C) 2006, 2007 MobileRobots Inc.
      along with this program; if not, write to the Free Software
      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-If you wish to redistribute ARIA under different terms, contact 
-MobileRobots for information about a commercial version of ARIA at 
-robots@mobilerobots.com or 
+If you wish to redistribute ARIA under different terms, contact
+MobileRobots for information about a commercial version of ARIA at
+robots@mobilerobots.com or
 MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 */
 
@@ -32,7 +32,7 @@ MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 AREXPORT ArPriorityResolver::ArPriorityResolver() :
   ArResolver("ArPriorityResolver", "Resolves strictly by using priority, the highest priority action to act is the one that gets to go.  Does no mixing of any variety.")
 {
-  
+
 
 }
 
@@ -49,10 +49,10 @@ AREXPORT ArActionDesired *ArPriorityResolver::resolve(
   ArActionDesired *act;
   ArActionDesired averaging;
   bool first = true;
-  int lastPriority;
+  int lastPriority=0;
   bool printedFirst = true;
-  int printedLast;
-  
+  int printedLast=0;
+
   if (actions == NULL)
     return NULL;
 
@@ -71,7 +71,7 @@ AREXPORT ArActionDesired *ArPriorityResolver::resolve(
       {
 	averaging.endAverage();
 	myActionDesired.merge(&averaging);
-	
+
 	averaging.reset();
 	averaging.startAverage();
 	first = false;
@@ -89,8 +89,8 @@ AREXPORT ArActionDesired *ArPriorityResolver::resolve(
 	ArLog::log(ArLog::Terse, "Action: %s", action->getName());
 	act->log();
       }
-	
-	
+
+
     }
   }
   averaging.endAverage();
@@ -98,7 +98,7 @@ AREXPORT ArActionDesired *ArPriorityResolver::resolve(
   /*
   printf(
       "desired delta %.0f strength %.3f, desired speed %.0f strength %.3f\n",
-      myActionDesired.getDeltaHeading(), myActionDesired.getHeadingStrength(), 
+      myActionDesired.getDeltaHeading(), myActionDesired.getHeadingStrength(),
       myActionDesired.getVel(), myActionDesired.getVelStrength());
   */
   return &myActionDesired;

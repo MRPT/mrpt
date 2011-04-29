@@ -17,9 +17,9 @@ Copyright (C) 2006, 2007 MobileRobots Inc.
      along with this program; if not, write to the Free Software
      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-If you wish to redistribute ARIA under different terms, contact 
-MobileRobots for information about a commercial version of ARIA at 
-robots@mobilerobots.com or 
+If you wish to redistribute ARIA under different terms, contact
+MobileRobots for information about a commercial version of ARIA at
+robots@mobilerobots.com or
 MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 */
 
@@ -78,7 +78,7 @@ AREXPORT bool ArFileParser::addHandler(
    shouldn't matter.
 **/
 AREXPORT bool ArFileParser::addHandlerWithError(
-	const char *keyword, 
+	const char *keyword,
 	ArRetFunctor3<bool, ArArgumentBuilder *, char *, size_t> *functor)
 {
   std::map<std::string, HandlerCBType *, ArStrCaseCmpOp>::iterator it;
@@ -107,7 +107,7 @@ AREXPORT bool ArFileParser::addHandlerWithError(
   return true;
 }
 
-AREXPORT bool ArFileParser::remHandler(const char *keyword, 
+AREXPORT bool ArFileParser::remHandler(const char *keyword,
 				       bool logIfCannotFind)
 {
   std::map<std::string, HandlerCBType *, ArStrCaseCmpOp>::iterator it;
@@ -124,7 +124,7 @@ AREXPORT bool ArFileParser::remHandler(const char *keyword,
   if ((it = myMap.find(keyword)) == myMap.end())
   {
     if (logIfCannotFind)
-      ArLog::log(ArLog::Normal, "There is no keyword '%s' to remove.", 
+      ArLog::log(ArLog::Normal, "There is no keyword '%s' to remove.",
 		 keyword);
     return false;
   }
@@ -155,7 +155,7 @@ AREXPORT bool ArFileParser::remHandler(
   {
     if ((*it).second->haveFunctor(functor))
     {
-      ArLog::log(ArLog::Verbose, "Functor for keyword '%s' removed.", 
+      ArLog::log(ArLog::Verbose, "Functor for keyword '%s' removed.",
 		 (*it).first.c_str());
       handler = (*it).second;
       myMap.erase(it);
@@ -186,7 +186,7 @@ AREXPORT bool ArFileParser::remHandler(
   {
     if ((*it).second->haveFunctor(functor))
     {
-      ArLog::log(ArLog::Verbose, "Functor for keyword '%s' removed.", 
+      ArLog::log(ArLog::Verbose, "Functor for keyword '%s' removed.",
 		 (*it).first.c_str());
       handler = (*it).second;
       myMap.erase(it);
@@ -209,7 +209,7 @@ AREXPORT ArRetFunctor1<bool, ArArgumentBuilder *> *ArFileParser::getHandler(cons
     ArLog::log(ArLog::Normal, "There is no keyword handler for '%s'", keyword);
     return NULL;
   }
-  
+
   return (*it).second;
 }
 */
@@ -231,13 +231,13 @@ AREXPORT void ArFileParser::resetCounters(void)
   myLineNumber = 0;
 }
 
-AREXPORT bool ArFileParser::parseLine(char *line, 
+AREXPORT bool ArFileParser::parseLine(char *line,
 				      char *errorBuffer, size_t errorBufferLen)
 {
   char keyword[512];
   char *choppingPos;
-  char *valueStart;
-  size_t textStart;
+  char *valueStart=NULL;
+  size_t textStart=0;
   size_t len;
   size_t i;
   bool noArgs;
@@ -246,25 +246,25 @@ AREXPORT bool ArFileParser::parseLine(char *line,
 
   myLineNumber++;
   noArgs = false;
-  
+
   // chop out the comments
   if ((choppingPos = strstr(line, ";")) != NULL)
     line[choppingPos-line] = '\0';
   if ((choppingPos = strstr(line, "#")) != NULL)
     line[choppingPos-line] = '\0';
-  
-  
-  
+
+
+
   // chop out the new line if its there
   if ((choppingPos = strstr(line, "\n")) != NULL)
     line[choppingPos-line] = '\0';
   // chop out the windows new line if its there
   while ((choppingPos = strstr(line, "\r")) != NULL)
     memmove(choppingPos, choppingPos + 1, strlen(line));
-  
+
   // see how long the line is
   len = strlen(line);
-  
+
   // find the keyword
   // if this is 0 then we have an empty line so we continue
   if (len == 0)
@@ -288,10 +288,10 @@ AREXPORT bool ArFileParser::parseLine(char *line,
     ArLog::log(ArLog::Verbose, "line %d: just white space at start of line", myLineNumber);
     return true;
   }
-  // now we chisel out the keyword 
+  // now we chisel out the keyword
   // adding it so that if the text is quoted it pulls the whole keyword
   bool quoted = false;
-  for (i = textStart; 
+  for (i = textStart;
        i < len && i < sizeof(keyword) + textStart - 3;
        i++)
   {
@@ -368,23 +368,23 @@ AREXPORT bool ArFileParser::parseLine(char *line,
     // if we don't just keep going
     else
     {
-      ArLog::log(ArLog::Verbose, 
-		 "line %d: unknown keyword '%s' line '%s', continuing", 
+      ArLog::log(ArLog::Verbose,
+		 "line %d: unknown keyword '%s' line '%s', continuing",
 		 myLineNumber, keyword, &line[textStart]);
       return true;
     }
   }
   /*
   if (noArgs)
-    ArLog::log(ArLog::Verbose, "line %d: firstword '%s' no argument", 
+    ArLog::log(ArLog::Verbose, "line %d: firstword '%s' no argument",
 	       myLineNumber, keyword);
   else
-    ArLog::log(ArLog::Verbose, "line %d: firstword '%s' argument '%s'", 
+    ArLog::log(ArLog::Verbose, "line %d: firstword '%s' argument '%s'",
 	       myLineNumber, keyword, valueStart);
   */
   // now toss the rest of the argument into an argument builder then
   // form it up to send to the functor
-  
+
   ArArgumentBuilder builder;
   // if we have arguments add them
   if (!noArgs)
@@ -400,7 +400,7 @@ AREXPORT bool ArFileParser::parseLine(char *line,
     errorBuffer = NULL;
     errorBufferLen = 0;
   }
-    
+
   // call the functor and see if there are errors;
   // if we had an error and aren't continuing on errors then we keep going
   if (!handler->call(&builder, errorBuffer, errorBufferLen))
@@ -410,9 +410,9 @@ AREXPORT bool ArFileParser::parseLine(char *line,
     if (errorBuffer != NULL)
     {
       std::string errorString = errorBuffer;
-      snprintf(errorBuffer, errorBufferLen, "Line %d: %s", myLineNumber, 
+      snprintf(errorBuffer, errorBufferLen, "Line %d: %s", myLineNumber,
 	       errorString.c_str());
-      
+
     }
     return false;
   }
@@ -421,21 +421,21 @@ AREXPORT bool ArFileParser::parseLine(char *line,
 
 /**
    @param fileName the file to open
-   
+
    @param continueOnErrors whether to continue or immediately bail upon an error
-   
+
    @param noFileNotFoundMessage whether or not to log if we find a
    file (we normally want to but for robot param files that'd be too
    annoying since we test for a lot of files)
-   
+
    @param errorBuffer buffer to put errors into if not NULL. Only the
    first error is saved, and as soon as this function is called it
    immediately empties the errorBuffer
-   
+
    @param errorBufferLen the length of @a errorBuffer
 */
-AREXPORT bool ArFileParser::parseFile(const char *fileName, 
-				      bool continueOnErrors, 
+AREXPORT bool ArFileParser::parseFile(const char *fileName,
+				      bool continueOnErrors,
 				      bool noFileNotFoundMessage,
 				      char *errorBuffer,
 				      size_t errorBufferLen)
@@ -460,7 +460,7 @@ AREXPORT bool ArFileParser::parseFile(const char *fileName,
   }
 
   ArLog::log(ArLog::Verbose, "Opening file %s from fileName given %s and base directory %s", realFileName.c_str(), fileName, myBaseDir.c_str());
-    
+
   //char *buf = new char[4096];
 
   if ((file = fopen(realFileName.c_str(), "r")) == NULL)
@@ -484,14 +484,14 @@ AREXPORT bool ArFileParser::parseFile(const char *fileName,
   {
     if (!parseLine(line, errorBuffer, errorBufferLen))
     {
-      ArLog::log(ArLog::Terse, "## Last error on line %d of file '%s'", 
+      ArLog::log(ArLog::Terse, "## Last error on line %d of file '%s'",
 		 myLineNumber, realFileName.c_str());
       ret = false;
       if (!continueOnErrors)
 	break;
     }
   }
-  
+
   fclose(file);
   return ret;
 }
@@ -509,8 +509,8 @@ AREXPORT bool ArFileParser::parseFile(const char *fileName,
  *  immediately empties the errorBuffer
  * @param errorBufferLen the length of @a errorBuffer
 */
-AREXPORT bool ArFileParser::parseFile(FILE *file, char *buffer, 
-				      int bufferLength, 
+AREXPORT bool ArFileParser::parseFile(FILE *file, char *buffer,
+				      int bufferLength,
 				      bool continueOnErrors,
 				      char *errorBuffer,
 				      size_t errorBufferLen)
@@ -518,7 +518,7 @@ AREXPORT bool ArFileParser::parseFile(FILE *file, char *buffer,
   if (errorBuffer)
     errorBuffer[0] = '\0';
 
-  if ((file == NULL) || (buffer == NULL) || (bufferLength <= 0)) 
+  if ((file == NULL) || (buffer == NULL) || (bufferLength <= 0))
   {
     if (errorBuffer != NULL)
       snprintf(errorBuffer, errorBufferLen, "parseFile: bad setup");

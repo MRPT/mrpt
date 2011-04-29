@@ -17,9 +17,9 @@ Copyright (C) 2006, 2007 MobileRobots Inc.
      along with this program; if not, write to the Free Software
      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-If you wish to redistribute ARIA under different terms, contact 
-MobileRobots for information about a commercial version of ARIA at 
-robots@mobilerobots.com or 
+If you wish to redistribute ARIA under different terms, contact
+MobileRobots for information about a commercial version of ARIA at
+robots@mobilerobots.com or
 MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 */
 
@@ -32,13 +32,13 @@ MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 
 /**
    @param allocatePackets whether to allocate memory for the packets before
-   returning them (true) or to just return a pointer to an internal 
+   returning them (true) or to just return a pointer to an internal
    packet (false)... most everything should use false as this will help prevent
    many memory leaks or corruptions
 */
 AREXPORT ArSickPacketReceiver::ArSickPacketReceiver(
 	unsigned char receivingAddress, bool allocatePackets,
-	bool useBase0Address) 
+	bool useBase0Address)
 {
   myAllocatePackets = allocatePackets;
   myReceivingAddress = receivingAddress;
@@ -49,12 +49,12 @@ AREXPORT ArSickPacketReceiver::ArSickPacketReceiver(
 /**
    @param deviceConnection the connection which the receiver will use
    @param allocatePackets whether to allocate memory for the packets before
-   returning them (true) or to just return a pointer to an internal 
+   returning them (true) or to just return a pointer to an internal
    packet (false)... most everything should use false as this will help prevent
    many memory leaks or corruptions
 */
 AREXPORT ArSickPacketReceiver::ArSickPacketReceiver(
-	ArDeviceConnection *deviceConnection, 
+	ArDeviceConnection *deviceConnection,
 	unsigned char receivingAddress, bool allocatePackets,
 	bool useBase0Address)
 {
@@ -64,9 +64,9 @@ AREXPORT ArSickPacketReceiver::ArSickPacketReceiver(
   myUseBase0Address = useBase0Address;
 }
 
-AREXPORT ArSickPacketReceiver::~ArSickPacketReceiver() 
+AREXPORT ArSickPacketReceiver::~ArSickPacketReceiver()
 {
-  
+
 }
 
 AREXPORT void ArSickPacketReceiver::setDeviceConnection(
@@ -83,10 +83,10 @@ AREXPORT ArDeviceConnection *ArSickPacketReceiver::getDeviceConnection(void)
 /**
     @param msWait how long to block for the start of a packet, nonblocking if 0
     @return NULL if there are no packets in alloted time, otherwise a pointer
-    to the packet received, if allocatePackets is true than the place that 
-    called this function owns the packet and should delete the packet when 
+    to the packet received, if allocatePackets is true than the place that
+    called this function owns the packet and should delete the packet when
     done... if allocatePackets is false then nothing must store a pointer to
-    this packet, the packet must be used and done with by the time this 
+    this packet, the packet must be used and done with by the time this
     method is called again
 */
 AREXPORT ArSickPacket *ArSickPacketReceiver::receivePacket(
@@ -101,19 +101,19 @@ AREXPORT ArSickPacket *ArSickPacketReceiver::receivePacket(
   //unsigned int timeDone;
   //unsigned int curTime;
   long timeToRunFor;
-  long packetLength;
+  long packetLength=0;
   ArTime timeDone;
   ArTime lastDataRead;
   ArTime packetReceived;
   int numRead;
 
 
-  if (myDeviceConn == NULL || 
+  if (myDeviceConn == NULL ||
       myDeviceConn->getStatus() != ArDeviceConnection::STATUS_OPEN)
   {
     return NULL;
   }
-  
+
   timeDone.setToNow();
   timeDone.addMSec(msWait);
   do
@@ -122,7 +122,7 @@ AREXPORT ArSickPacket *ArSickPacketReceiver::receivePacket(
     if (timeToRunFor < 0)
       timeToRunFor = 0;
 
-    if (myDeviceConn->read((char *)&c, 1, timeToRunFor) == 0) 
+    if (myDeviceConn->read((char *)&c, 1, timeToRunFor) == 0)
     {
       if (state == STATE_START)
       {
@@ -158,7 +158,7 @@ AREXPORT ArSickPacket *ArSickPacketReceiver::receivePacket(
       // out in favor of a more inclusive approach, if someone ever
       // wnats to drive multiple robots off of one serial port just
       // put this back in, or I don't know, punt
-      //if (c == ((unsigned char)0x80 + myReceivingAddress)) 
+      //if (c == ((unsigned char)0x80 + myReceivingAddress))
       if (!myUseBase0Address && c >= 0x80 && c <= 0x84)
       {
 	state = STATE_START_COUNT;
@@ -172,7 +172,7 @@ AREXPORT ArSickPacket *ArSickPacketReceiver::receivePacket(
       }
       else // go back to beginning, packet hosed
       {
-	ArLog::log(ArLog::Terse, 
+	ArLog::log(ArLog::Terse,
 		   "ArSickPacketReceiver::receivePacket: wrong address (0x%x instead of 0x%x)", c, (unsigned) 0x80 + myReceivingAddress);
 	state = STATE_START;
       }
@@ -183,8 +183,8 @@ AREXPORT ArSickPacket *ArSickPacketReceiver::receivePacket(
       state = STATE_ACQUIRE_DATA;
       break;
     case STATE_ACQUIRE_DATA:
-      // the character c is high ordre byte of the packet length count 
-      // so we'll just build the length of the packet then get the 
+      // the character c is high ordre byte of the packet length count
+      // so we'll just build the length of the packet then get the
       //rest of the data
       myPacket.uByteToBuf(c);
       packetLength = packetLength | (c << 8);
@@ -194,7 +194,7 @@ AREXPORT ArSickPacket *ArSickPacketReceiver::receivePacket(
       if (packetLength > ((long)myPacket.getMaxLength() -
 			  (long)myPacket.getHeaderLength()))
       {
-	ArLog::log(ArLog::Normal, 
+	ArLog::log(ArLog::Normal,
 	   "ArSickPacketReceiver::receivePacket: packet too long, it is %d long while the maximum is %d.", packetLength, myPacket.getMaxLength());
 	state = STATE_START;
 	//myPacket.log();
@@ -216,7 +216,7 @@ AREXPORT ArSickPacket *ArSickPacketReceiver::receivePacket(
 	count += numRead;
       }
       myPacket.dataToBuf(buf, packetLength + 2);
-      if (myPacket.verifyCRC()) 
+      if (myPacket.verifyCRC())
       {
 	myPacket.resetRead();
 	//printf("Received ");
@@ -230,9 +230,9 @@ AREXPORT ArSickPacket *ArSickPacketReceiver::receivePacket(
 	else
 	  return &myPacket;
       }
-      else 
+      else
       {
-	ArLog::log(ArLog::Normal, 
+	ArLog::log(ArLog::Normal,
 	   "ArSickPacketReceiver::receivePacket: bad packet, bad checksum");
 	state = STATE_START;
 	//myPacket.log();

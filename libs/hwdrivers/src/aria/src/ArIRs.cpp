@@ -17,9 +17,9 @@ Copyright (C) 2006, 2007 MobileRobots Inc.
      along with this program; if not, write to the Free Software
      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-If you wish to redistribute ARIA under different terms, contact 
-MobileRobots for information about a commercial version of ARIA at 
-robots@mobilerobots.com or 
+If you wish to redistribute ARIA under different terms, contact
+MobileRobots for information about a commercial version of ARIA at
+robots@mobilerobots.com or
 MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 */
 
@@ -36,9 +36,9 @@ MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
    @param maxSecondsToKeepCurrent How long to keep readings in the current buffer
 */
 
-AREXPORT ArIRs::ArIRs(size_t currentBufferSize, size_t cumulativeBufferSize, 
+AREXPORT ArIRs::ArIRs(size_t currentBufferSize, size_t cumulativeBufferSize,
 		      const char *name, int maxSecondsToKeepCurrent) :
-  ArRangeDevice(currentBufferSize, cumulativeBufferSize, name, 5000, maxSecondsToKeepCurrent), 
+  ArRangeDevice(currentBufferSize, cumulativeBufferSize, name, 5000, maxSecondsToKeepCurrent),
   myProcessCB(this, &ArIRs::processReadings)
 {
   setCurrentDrawingData(new ArDrawingData("polyArrows", ArColor(255, 255, 0),
@@ -76,7 +76,7 @@ AREXPORT void ArIRs::setRobot(ArRobot *robot)
 */
 AREXPORT void ArIRs::processReadings(void)
 {
-  ArUtil::BITS bit;
+  ArUtil::BITS bit = ArUtil::BIT0;
   if(myParams.haveTableSensingIR())
     {
       for (int i = 0; i < myParams.getNumIR(); ++i)
@@ -116,7 +116,7 @@ AREXPORT void ArIRs::processReadings(void)
 		{
 		  if(cycleCounters[i] < myParams.getIRCycles(i))
 		    {
-		      cycleCounters[i] = cycleCounters[i] + 1;		      
+		      cycleCounters[i] = cycleCounters[i] + 1;
 		    }
 		  else
 		    {
@@ -124,10 +124,10 @@ AREXPORT void ArIRs::processReadings(void)
 		      ArPose pose;
 		      pose.setX(myParams.getIRX(i));
 		      pose.setY(myParams.getIRY(i));
-		      
+
 		      ArTransform global = myRobot->getToGlobalTransform();
 		      pose = global.doTransform(pose);
-		      
+
 		      myCurrentBuffer.addReading(pose.getX(), pose.getY());
 		    }
 		}
@@ -142,19 +142,19 @@ AREXPORT void ArIRs::processReadings(void)
 		{
 		  if(cycleCounters[i] < myParams.getIRCycles(i))
 		    {
-		      cycleCounters[i] = cycleCounters[i] + 1;		      
+		      cycleCounters[i] = cycleCounters[i] + 1;
 		    }
 		  else
 		    {
 		      cycleCounters[i] = 1;
-		      
+
 		      ArPose pose;
 		      pose.setX(myParams.getIRX(i));
 		      pose.setY(myParams.getIRY(i));
-		      
+
 		      ArTransform global = myRobot->getToGlobalTransform();
 		      pose = global.doTransform(pose);
-		      
+
 		      myCurrentBuffer.addReading(pose.getX(), pose.getY());
 		    }
 		}

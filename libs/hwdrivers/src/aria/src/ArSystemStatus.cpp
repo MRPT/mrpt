@@ -89,11 +89,11 @@ void ArSystemStatus::refreshCPU()
   //char line[512];
   //fgets(line,  512, uptimefp);
   //printf("read uptime file: %s\n", line);
-  fscanf(uptimefp, "%lf %lf", &uptime, &idle_uptime);
+  int dum_ret = fscanf(uptimefp, "%lf %lf", &uptime, &idle_uptime);
   fclose(uptimefp);
   unsigned long user, nice, sys, idle, total;
   char tag[32];
-  fscanf(statfp, "%s %lu %lu %lu %lu", tag, &user, &nice, &sys, &idle);
+  dum_ret = fscanf(statfp, "%s %lu %lu %lu %lu", tag, &user, &nice, &sys, &idle);
   fclose(statfp);
   ourUptime = (unsigned long)uptime;
   total = user+nice+sys; // total non-idle cpu time in 100ths of a sec

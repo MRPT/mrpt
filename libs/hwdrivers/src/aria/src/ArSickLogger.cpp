@@ -17,9 +17,9 @@ Copyright (C) 2006, 2007 MobileRobots Inc.
      along with this program; if not, write to the Free Software
      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-If you wish to redistribute ARIA under different terms, contact 
-MobileRobots for information about a commercial version of ARIA at 
-robots@mobilerobots.com or 
+If you wish to redistribute ARIA under different terms, contact
+MobileRobots for information about a commercial version of ARIA at
+robots@mobilerobots.com or
 MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 */
 
@@ -46,7 +46,7 @@ MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 
    @param degDiff the degrees turned at which to take a new reading
 
-   @param fileName the file name in which to put the log 
+   @param fileName the file name in which to put the log
 
    @param addGoals whether to add goals automatically or... if true
    then the sick logger puts hooks into places it needs this to
@@ -54,20 +54,20 @@ MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
    pays attention to the flag bit of the robot, and it puts in a
    button press callback for the joyhandler passed in (if any)
 **/
-AREXPORT ArSickLogger::ArSickLogger(ArRobot *robot, ArSick *sick, 
-				    double distDiff, double degDiff, 
+AREXPORT ArSickLogger::ArSickLogger(ArRobot *robot, ArSick *sick,
+				    double distDiff, double degDiff,
 				    const char *fileName, bool addGoals,
 				    ArJoyHandler *joyHandler,
-				    const char *baseDirectory, 
+				    const char *baseDirectory,
 				    bool useReflectorValues,
 				    ArRobotJoyHandler *robotJoyHandler) :
-  mySectors(18), 
+  mySectors(18),
   myTaskCB(this, &ArSickLogger::robotTask),
-  myGoalKeyCB(this, &ArSickLogger::goalKeyCallback), 
+  myGoalKeyCB(this, &ArSickLogger::goalKeyCallback),
   myLoopPacketHandlerCB(this, &ArSickLogger::loopPacketHandler)
 {
   ArKeyHandler *keyHandler;
-  
+
   ArSick::Degrees degrees;
   ArSick::Increment increment;
   double deg, incr;
@@ -93,13 +93,13 @@ AREXPORT ArSickLogger::ArSickLogger(ArRobot *robot, ArSick *sick,
     realFileName += fileName;
   }
   myFileName = realFileName;
-  
+
   myFile = fopen(realFileName.c_str(), "w+");
   degrees = mySick->getDegrees();
   increment = mySick->getIncrement();
   if (degrees == ArSick::DEGREES180)
     deg = 180;
-  else 
+  else
     deg = 100;
   if (increment == ArSick::INCREMENT_ONE)
     incr = 1;
@@ -112,14 +112,14 @@ AREXPORT ArSickLogger::ArSickLogger(ArRobot *robot, ArSick *sick,
     fprintf(myFile, "LaserOdometryLog\n");
     fprintf(myFile, "#Created by ARIA's ArSickLogger\n");
     fprintf(myFile, "version: 2\n");
-    fprintf(myFile, "sick1pose: %d %d %.2f\n", params->getLaserX(), 
+    fprintf(myFile, "sick1pose: %d %d %.2f\n", params->getLaserX(),
 	    params->getLaserY(), params->getLaserTh());
-    fprintf(myFile, "sick1conf: %d %d %d\n", 
+    fprintf(myFile, "sick1conf: %d %d %d\n",
 	    ArMath::roundInt(0.0 - deg / 2.0),
 	    ArMath::roundInt(deg / 2.0), ArMath::roundInt(deg / incr + 1.0));
   }
   else
-    ArLog::log(ArLog::Terse, "ArSickLogger cannot write to file %s", 
+    ArLog::log(ArLog::Terse, "ArSickLogger cannot write to file %s",
 	       myFileName.c_str());
 
   myDistDiff = distDiff;
@@ -173,7 +173,7 @@ AREXPORT ArSickLogger::~ArSickLogger()
     fclose(myFile);
   }
 }
-  
+
 AREXPORT bool ArSickLogger::loopPacketHandler(ArRobotPacket *packet)
 {
   unsigned char loops;
@@ -205,7 +205,7 @@ AREXPORT bool ArSickLogger::loopPacketHandler(ArRobotPacket *packet)
 /**
    The robot MUST be locked before you call this function, so that
    this function is not adding to a list as the robotTask is using it.
-   
+
    This function takes the given tag and puts it into the log file
    along with a tag as to where the robot was and when in the mapping
    it was
@@ -218,7 +218,7 @@ AREXPORT void ArSickLogger::addTagToLogPlain(const char *str)
 /**
    The robot MUST be locked before you call this function, so that
    this function is not adding to a list as the robotTask is using it.
-   
+
    This function takes the given tag and puts it into the log file
    along with a tag as to where the robot was and when in the mapping
    it was
@@ -237,7 +237,7 @@ AREXPORT void ArSickLogger::addTagToLog(const char *str, ...)
 /**
    The robot MUST be locked before you call this function, so that
    this function is not adding to a list as the robotTask is using it.
-   
+
    This function takes the given tag and puts it into the log file by
    itself
 **/
@@ -250,7 +250,7 @@ AREXPORT void ArSickLogger::addInfoToLogPlain(const char *str)
 /**
    The robot MUST be locked before you call this function, so that
    this function is not adding to a list as the robotTask is using it.
-   
+
    This function takes the given tag and puts it into the log file by
    itself
 **/
@@ -277,16 +277,16 @@ void ArSickLogger::internalAddGoal(void)
   // this check is for if we're not adding goals return... but if
   // we're not adding goals and one was requested explicitly then add
   // that one
-  if (!myAddGoals && !myAddGoalExplicit) 
+  if (!myAddGoals && !myAddGoalExplicit)
     return;
-  
+
   if (myJoyHandler != NULL)
-    joyButton = (myJoyHandler->getButton(2) || 
-		   myJoyHandler->getButton(3) || 
+    joyButton = (myJoyHandler->getButton(2) ||
+		   myJoyHandler->getButton(3) ||
 		   myJoyHandler->getButton(4));
   else
     joyButton = (myRobot->getFlags() & ArUtil::BIT9);
-  
+
   if (myRobotJoyHandler != NULL)
     robotJoyButton = myRobotJoyHandler->getButton2();
   else
@@ -295,7 +295,7 @@ void ArSickLogger::internalAddGoal(void)
   // see if we want to add a goal... note that if the button is pushed
   // it must have been unpushed at one point to cause the goal to
   // trigger
-  if (myRobot->isConnected() && 
+  if (myRobot->isConnected() &&
       (myAddGoalExplicit ||
        (myAddGoalKeyboard && !myLastAddGoalKeyboard) ||
        (joyButton && !myLastJoyButton) ||
@@ -314,7 +314,7 @@ void ArSickLogger::internalAddGoal(void)
   myLastAddGoalKeyboard = myAddGoalKeyboard;
   myLastJoyButton = joyButton;
   myLastRobotJoyButton = robotJoyButton;
-      
+
   // reset this here for if they held the key down a little, so it
   // gets reset and doesn't hit multiple goals
   myAddGoalKeyboard = false;
@@ -367,12 +367,12 @@ void ArSickLogger::internalTakeReading(void)
   // myDegDiff if we've switched sign on velocity and gone more than
   // 50 mm (so it doesn't oscilate and cause us to trigger)
 
-  if (myRobot->isConnected() && (!myFirstTaken || myTakeReadingExplicit || 
+  if (myRobot->isConnected() && (!myFirstTaken || myTakeReadingExplicit ||
       myLast.findDistanceTo(myRobot->getEncoderPose()) > myDistDiff ||
-      fabs(ArMath::subAngle(myLast.getTh(), 
+      fabs(ArMath::subAngle(myLast.getTh(),
 			    myRobot->getEncoderPose().getTh())) > myDegDiff ||
-      ((myLastVel < 0 && myRobot->getVel() > 0 ||
-	myLastVel > 0 && myRobot->getVel() < 0) && 
+      (( (myLastVel < 0 && myRobot->getVel() > 0) ||
+	(myLastVel > 0 && myRobot->getVel() < 0)) &&
        myLast.findDistanceTo(myRobot->getEncoderPose()) > 50)))
   {
     myWrote = true;
@@ -397,12 +397,12 @@ void ArSickLogger::internalTakeReading(void)
     myTakeReadingExplicit = false;
     myScanNumber++;
     if (usingAdjustedReadings)
-      ArLog::log(ArLog::Normal, 
-		 "Taking adjusted readings from the %d laser values", 
+      ArLog::log(ArLog::Normal,
+		 "Taking adjusted readings from the %d laser values",
 		 readings->size());
     else
-      ArLog::log(ArLog::Normal, 
-		 "Taking readings from the %d laser values", 
+      ArLog::log(ArLog::Normal,
+		 "Taking readings from the %d laser values",
 		 readings->size());
     myFirstTaken = true;
     myLast = myRobot->getEncoderPose();
@@ -419,7 +419,7 @@ void ArSickLogger::internalTakeReading(void)
     if (myUseReflectorValues)
     {
       fprintf(myFile, "reflector1: ");
-      
+
       if (!mySick->isLaserFlipped())
       {
 	// make sure that the list is in increasing order
@@ -453,7 +453,7 @@ void ArSickLogger::internalTakeReading(void)
     if (myOldReadings)
     {
       fprintf(myFile, "sick1: ");
-      
+
       if (!mySick->isLaserFlipped())
       {
 	// make sure that the list is in increasing order
@@ -476,7 +476,7 @@ void ArSickLogger::internalTakeReading(void)
     if (myNewReadings)
     {
       fprintf(myFile, "scan1: ");
-      
+
       if (!mySick->isLaserFlipped())
       {
 	// make sure that the list is in increasing order
@@ -484,8 +484,8 @@ void ArSickLogger::internalTakeReading(void)
 	{
 	  reading = (*it);
 	  if (!reading->getIgnoreThisReading())
-	    fprintf(myFile, "%.0f %.0f  ", 
-		    reading->getLocalX() - mySick->getSensorPositionX(), 
+	    fprintf(myFile, "%.0f %.0f  ",
+		    reading->getLocalX() - mySick->getSensorPositionX(),
 		    reading->getLocalY() - mySick->getSensorPositionY());
 	  else
 	    fprintf(myFile, "0 0  ");
@@ -497,8 +497,8 @@ void ArSickLogger::internalTakeReading(void)
 	{
 	  reading = (*rit);
 	  if (!reading->getIgnoreThisReading())
-	    fprintf(myFile, "%.0f %.0f  ", 
-		    reading->getLocalX() - mySick->getSensorPositionX(), 
+	    fprintf(myFile, "%.0f %.0f  ",
+		    reading->getLocalX() - mySick->getSensorPositionX(),
 		    reading->getLocalY() - mySick->getSensorPositionY());
 	  else
 	    fprintf(myFile, "0 0  ");
@@ -520,16 +520,16 @@ void ArSickLogger::internalPrintPos(ArPose poseTaken)
 
   ArPose rawPose;
   rawPose = normalToRaw.doInvTransform(poseTaken);
-  fprintf(myFile, "#rawRobot: %.0f %.0f %.2f %.0f %.0f\n", 
-	  rawPose.getX(), 
-	  rawPose.getY(), 
-	  rawPose.getTh(), 
+  fprintf(myFile, "#rawRobot: %.0f %.0f %.2f %.0f %.0f\n",
+	  rawPose.getX(),
+	  rawPose.getY(),
+	  rawPose.getTh(),
 	  myRobot->getVel(),
 	  myRobot->getRotVel());
-  fprintf(myFile, "robot: %.0f %.0f %.2f %.0f %.0f\n", 
-	  poseTaken.getX(), 
-	  poseTaken.getY(), 
-	  poseTaken.getTh(), 
+  fprintf(myFile, "robot: %.0f %.0f %.2f %.0f %.0f\n",
+	  poseTaken.getX(),
+	  poseTaken.getY(),
+	  poseTaken.getTh(),
 	  myRobot->getVel(),
 	  myRobot->getRotVel());
 }
@@ -539,10 +539,10 @@ AREXPORT void ArSickLogger::robotTask(void)
 
   // call our function to check goals
   internalAddGoal();
-  
+
   // call our function to dump tags
   internalWriteTags();
-  
+
   // call our function to take a reading
   internalTakeReading();
 

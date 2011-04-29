@@ -335,7 +335,7 @@ bool ArSocket::create(Type type)
 
 bool ArSocket::findValidPort(int startPort, const char *openOnIP)
 {
-  char localhost[100];  // maxHostNameLen()];
+//  char localhost[100];  // maxHostNameLen()];
 
   /*
   if (gethostname(localhost, sizeof(localhost)) == 1)
@@ -577,7 +577,7 @@ bool ArSocket::getSockName()
   if (myFD < 0)
   {
     myErrorStr="Trying to get socket name on an unopened socket";
-    printf(myErrorStr.c_str());
+    printf("%s",myErrorStr.c_str());
     return(false);
   }
 

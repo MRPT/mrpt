@@ -2625,7 +2625,7 @@ AREXPORT void ArRobot::deactivateActions(void)
 AREXPORT void ArRobot::logActions(bool logDeactivated) const
 {
   ArResolver::ActionMap::const_reverse_iterator it;
-  int lastPriority;
+  int lastPriority=0;
   bool first = true;
   const ArAction *action;
 
@@ -2692,7 +2692,7 @@ AREXPORT void ArRobot::stateReflector(void)
   double rotDecel;
   bool rotStopped = false;
   bool rotHeading = false;
-  double encTh;
+  double encTh=0;
   double rawTh;
 
 
@@ -4141,8 +4141,8 @@ AREXPORT int ArRobot::getClosestSonarNumber(double startAngle, double endAngle) 
 {
   int i;
   ArSensorReading *sonar;
-  int closestReading;
-  int closestSonar;
+  int closestReading=0;
+  int closestSonar=0;
   bool noReadings = true;
 
   for (i = 0; i < getNumSonar(); i++)
