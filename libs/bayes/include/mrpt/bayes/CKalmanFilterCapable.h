@@ -839,6 +839,8 @@ namespace mrpt
 									vector_size_t S_idxs;
 									S_idxs.reserve(OBS_SIZE*N_upd);
 
+									const size_t row_len = VEH_SIZE + FEAT_SIZE * N_map;
+
 									for (size_t i=0;i<data_association.size();++i)
 									{
 										if (data_association[i]<0) continue;
@@ -849,14 +851,12 @@ namespace mrpt
 										// TODO: In these cases, extend the prediction right now instead of launching an exception... or is this a bad idea??
 
 										// Build the subset dh_dx_full_obs:
+										dh_dx_full_obs.block(S_idxs.size()             ,0, OBS_SIZE, row_len)
+										=
+										dh_dx_full.block    (assoc_idx_in_pred*OBS_SIZE,0, OBS_SIZE, row_len);
+										// S_idxs.size() is used as counter for "dh_dx_full_obs".
 										for (size_t k=0;k<OBS_SIZE;k++)
-										{  // S_idxs.size() is used as counter for "dh_dx_full_obs".
-											::memcpy(
-												dh_dx_full_obs.get_unsafe_row(S_idxs.size()),
-												dh_dx_full.get_unsafe_row(assoc_idx_in_pred*OBS_SIZE + k ),
-												sizeof(dh_dx_full(0,0))*(VEH_SIZE + FEAT_SIZE * N_map) );
 											S_idxs.push_back(assoc_idx_in_pred*OBS_SIZE+k);
-										}
 
 										// ytilde_i = Z[i] - all_predictions[i]
 										KFArray_OBS ytilde_i = Z[i];
@@ -1471,7 +1471,7 @@ namespace mrpt
 
 		namespace detail
 		{
- 			// generic version for SLAM. There is a speciation below for NON-SLAM problems.			
+ 			// generic version for SLAM. There is a speciation below for NON-SLAM problems.
  			struct CRunOneKalmanIteration_addNewLandmarks {
  				template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
  				void operator()(

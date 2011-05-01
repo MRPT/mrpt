@@ -24,6 +24,7 @@ ADD_EXECUTABLE(rawlog-edit
 	rawlog-edit_filters.cpp
 	rawlog-edit_cuts.cpp
 	rawlog-edit_sensor-poses.cpp
+	rawlog-edit_list-images.cpp
 	)
 SET(TMP_TARGET_NAME "rawlog-edit")
 SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(APP) ${TMP_TARGET_NAME}")

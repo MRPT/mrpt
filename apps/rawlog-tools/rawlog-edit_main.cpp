@@ -59,6 +59,7 @@ using namespace std;
 // Frwd. decl:
 DECLARE_OP_FUNCTION(op_externalize);
 DECLARE_OP_FUNCTION(op_info);
+DECLARE_OP_FUNCTION(op_list_images);
 DECLARE_OP_FUNCTION(op_remove_label);
 DECLARE_OP_FUNCTION(op_keep_label);
 DECLARE_OP_FUNCTION(op_cut);
@@ -75,6 +76,8 @@ TCLAP::ValueArg<std::string> arg_input_file ("i","input","Input dataset (require
 TCLAP::ValueArg<std::string> arg_output_file("o","output","Output dataset (*.rawlog)",false,"","dataset_out.rawlog",cmd);
 
 TCLAP::ValueArg<std::string> arg_external_img_extension("","image-format","External image format",false,"jpg","jpg,png,pgm,...",cmd);
+
+TCLAP::ValueArg<std::string> arg_out_text_file("","text-file-output","Output for a text file",false,"out.txt","out.txt",cmd);
 
 TCLAP::ValueArg<uint64_t> arg_from_index("","from-index","Starting index for --cut",false,0,"N0",cmd);
 TCLAP::ValueArg<uint64_t> arg_to_index  ("","to-index",  "End index for --cut",false,0,"N1",cmd);
@@ -110,6 +113,12 @@ int main(int argc, char **argv)
 		arg_ops.push_back(new TCLAP::SwitchArg("","info",
 			"Op: parse input file and dump information and statistics.",cmd, false) );
 		ops_functors["info"] = &op_info;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","list-images",
+			"Op: dump a list of all external image files in the dataset.\n"
+			"Optionally the output text file can be changed with --text-file-output."
+			,cmd, false) );
+		ops_functors["list-images"] = &op_list_images;
 
 		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","remove-label",
 			"Op: Remove all observation matching the given sensor label(s)."

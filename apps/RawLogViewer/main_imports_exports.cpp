@@ -1406,6 +1406,9 @@ Units are m and radian.
 	const bool use_SF_format =
 		(wxYES==wxMessageBox(_("Use Actions-SensoryFrames format (YES) or the Observation-only format (NO)?"),_("Import rawlog"),wxYES_NO,this));
 
+	const bool use_ground_truth_IDs =
+		(wxYES==wxMessageBox(_("Employ landmark IDs in file (YES) or make the sensor unable to identify any landmarks (NO)?"),_("Import rawlog"),wxYES_NO,this));
+
 	// Parse line by line:
 	mrpt::utils::CTextFileLinesParser  fileParser(import_filename);
 	std::string line;
@@ -1427,6 +1430,9 @@ Units are m and radian.
 	// For stats on covariance transforms:
 	vector_double stats_stdRanges,stats_stdYaw;
 	vector_double stats_stdXs,stats_stdYs;
+
+
+	int32_t next_outlier_ID = 10000; // In DLR datasets no real landmark has such a high ID... use these numbers for outliers.
 
 
 	while (fileParser.getNextLine(line))
@@ -1568,7 +1574,25 @@ Units are m and radian.
 
 			// Create obs:
 			CObservationBearingRange::TMeasurement meas;
-			meas.landmarkID = INVALID_LANDMARK_ID; // Unknown IDs
+			if (use_ground_truth_IDs)
+			{
+				const int32_t ID_in_file = atoi(words[7].c_str());
+				if (ID_in_file<0)
+				{
+					// If the ground-truth says this landmark is an outlier (ID=-1), then
+					//  assign a unique ID in a range that will not collide with real landmarks:
+					meas.landmarkID = next_outlier_ID++;
+				}
+				else
+				{
+					meas.landmarkID = ID_in_file;
+				}
+			}
+			else
+			{
+				meas.landmarkID = INVALID_LANDMARK_ID; // Unknown IDs
+			}
+
 			meas.range  = r;
 			meas.yaw    = a;
 			meas.pitch  = 0;

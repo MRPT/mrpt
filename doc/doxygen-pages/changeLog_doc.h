@@ -38,9 +38,10 @@
 		- <a href="http://www.mrpt.org/Application:rawlog-grabber" >rawlog-grabber</a>: Added "hokuyo_UXM.ini" to support HOKUYO UXM laser series.
 		- mrpt-performance has been refactored into several smaller .cpp files. Having all in one big file lead to memory depletion when building in small machines (e.g. Debian MIPS & S390 autobuilders).
 		- New application: <a href="http://www.mrpt.org/Application:kinect-3d-view" > kinect-3d-view </a>. It was formerly an example, now it's an application so it's much easier for everyone to try it without compile manually.
-		- Support for Stanford's PLY file format in SceneViewer3D. See http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
+		- SceneViewer3D: Support for Stanford's PLY file format. See http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
 		- <a href="http://www.mrpt.org/Application:2d-slam-demo" >2d-slam-demo</a> can now simulate spurious readings.
-		- ReactiveNavigationDemo: New checkbox to enable generating navigation logs, viewable with navlog-viewer.
+		- <a href="http://www.mrpt.org/Application:ReactiveNavigationDemo" >ReactiveNavigationDemo</a>: New checkbox to enable generating navigation logs, viewable with navlog-viewer.
+		- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: New operation "--list-images".
 	- MRPT libraries or "modules":
 		- mrpt-detectors is no longer marked as "experimental".
 		- mrpt-monoslam is no longer shown in the graph of libraries since it's unmaintained.
