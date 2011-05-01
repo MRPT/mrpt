@@ -425,6 +425,19 @@ public:
 	template <typename MAT> EIGEN_STRONG_INLINE void insertRow(size_t nRow, const MAT & aRow) { this->row(nRow) = aRow; }
 	template <typename MAT> EIGEN_STRONG_INLINE void insertCol(size_t nCol, const MAT & aCol) { this->col(nCol) = aCol; }
 
+	template <typename R> void insertRow(size_t nRow, const std::vector<R> & aRow)
+	{
+		if (static_cast<Index>(aRow.size())!=cols()) throw std::runtime_error("insertRow: Row size doesn't fit the size of this matrix.");
+		for (Index j=0;j<cols();j++)
+			coeffRef(nRow,j) = aRow[j];
+	}
+	template <typename R> void insertCol(size_t nCol, const std::vector<R> & aCol)
+	{
+		if (static_cast<Index>(aCol.size())!=rows()) throw std::runtime_error("insertRow: Row size doesn't fit the size of this matrix.");
+		for (Index j=0;j<rows();j++)
+			coeffRef(j,nCol) = aCol[j];
+	}
+
 	/** Remove columns of the matrix.*/
 	EIGEN_STRONG_INLINE void removeColumns(const std::vector<size_t> &idxsToRemove)
 	{
