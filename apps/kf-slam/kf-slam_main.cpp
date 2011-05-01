@@ -255,6 +255,8 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 
 	const unsigned int SAVE_LOG_FREQUENCY= cfgFile.read_int("MappingApplication","SAVE_LOG_FREQUENCY",1);
 
+	const bool  SAVE_DA_LOG = cfgFile.read_bool("MappingApplication","SAVE_DA_LOG", true);
+
 	const bool  SAVE_3D_SCENES = cfgFile.read_bool("MappingApplication","SAVE_3D_SCENES", true);
 	const bool  SAVE_MAP_REPRESENTATIONS = cfgFile.read_bool("MappingApplication","SAVE_MAP_REPRESENTATIONS", true);
 	const bool  SHOW_3D_LIVE = cfgFile.read_bool("MappingApplication","SHOW_3D_LIVE", false);
@@ -269,9 +271,12 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 	string ground_truth_file = cfgFile.read_string("MappingApplication","ground_truth_file","");
 	string ground_truth_file_robot= cfgFile.read_string("MappingApplication","ground_truth_file_robot","");
 
+	string ground_truth_data_association = cfgFile.read_string("MappingApplication","ground_truth_data_association","");
+
 	cout << "RAWLOG FILE:" << endl << rawlogFileName << endl;
 	ASSERT_( fileExists( rawlogFileName ) );
 	CFileGZInputStream	rawlogFile( rawlogFileName );
+
 
 	cout << "---------------------------------------------------" << endl << endl;
 
@@ -298,6 +303,38 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 		ASSERT_(size(GT_PATH,1)>0 && size(GT_PATH,2)==6)
 	}
 
+	// Is there a ground truth file of the data association?
+	std::map<double,std::vector<int> >  GT_DA; // Map: timestamp -> vector(index in observation -> real index)
+	mrpt::utils::bimap<int,int>             DA2GTDA_indices; // Landmark indices bimapping: SLAM DA <---> GROUND TRUTH DA
+	if (!ground_truth_data_association.empty() && fileExists(ground_truth_data_association))
+	{
+		CMatrixDouble mGT_DA;
+		mGT_DA.loadFromTextFile(ground_truth_data_association);
+		ASSERT_ABOVEEQ_(mGT_DA.getColCount(),3)
+
+		// Convert the loaded matrix into a std::map in GT_DA:
+		for (size_t i=0;i<mGT_DA.getRowCount();i++)
+		{
+			std::vector<int> & v = GT_DA[mGT_DA(i,0)];
+			if (v.size()<=mGT_DA(i,1)) v.resize(mGT_DA(i,1)+1);
+			v[mGT_DA(i,1)] = mGT_DA(i,2);
+		}
+		cout << "Loaded " << GT_DA.size() << " entries from DA ground truth file\n";
+	}
+
+	// Create output file for DA perf:
+	std::ofstream   out_da_performance_log;
+	{
+		const std::string f = std::string(OUT_DIR+std::string("/data_association_performance.log"));
+		out_da_performance_log.open( f.c_str() );
+		ASSERTMSG_(out_da_performance_log.is_open(), std::string("Error writing to: ") + f )
+
+		// Header:
+		out_da_performance_log
+			<< "%           TIMESTAMP                INDEX_IN_OBS    TruePos FalsePos TrueNeg FalseNeg  NoGroundTruthSoIDontKnow \n"
+			<< "%----------------------------------------------------------------------------------------------------------------\n";
+	}
+
 	if (SHOW_3D_LIVE)
 	{
 		win3d = mrpt::gui::CDisplayWindow3D::Create("KF-SLAM live view",800,500);
@@ -305,6 +342,21 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 		win3d->addTextMessage(0.01,0.96,"Red: Estimated path",TColorf(0.8,0.8,0.8),100,MRPT_GLUT_BITMAP_HELVETICA_10);
 		win3d->addTextMessage(0.01,0.93,"Black: Ground truth path",TColorf(0.8,0.8,0.8),101,MRPT_GLUT_BITMAP_HELVETICA_10);
 	}
+
+	// Create DA-log output file:
+	std::ofstream   out_da_log;
+	if (SAVE_DA_LOG)
+	{
+		const std::string f = std::string(OUT_DIR+std::string("/data_association.log"));
+		out_da_log.open( f.c_str() );
+		ASSERTMSG_(out_da_log.is_open(), std::string("Error writing to: ") + f )
+
+		// Header:
+		out_da_log << "%           TIMESTAMP                INDEX_IN_OBS    ID    RANGE(m)    YAW(rad)   PITCH(rad) \n"
+			       << "%--------------------------------------------------------------------------------------------\n";
+
+	}
+
 
 	// The main loop:
 	// ---------------------------------------
@@ -371,6 +423,132 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 			{
 				fullCov.saveToTextFile(OUT_DIR+format("/full_cov_%05u.txt",(unsigned int)step));
 			}
+
+			// Generate Data Association log?
+			if (SAVE_DA_LOG)
+			{
+				const typename ekfslam_t::TDataAssocInfo & da = mapping.getLastDataAssociation();
+
+				const CObservationBearingRangePtr obs = observations->getObservationByClass<CObservationBearingRange>();
+				if (obs)
+				{
+					const CObservationBearingRange* obsRB = obs.pointer();
+					const double tim = mrpt::system::timestampToDouble( obsRB->timestamp );
+
+					for (size_t i=0;i<obsRB->sensedData.size();i++)
+					{
+						std::map<observation_index_t,prediction_index_t>::const_iterator it = da.results.associations.find(i);
+						int assoc_ID_in_SLAM;
+						if (it!=da.results.associations.end())
+								assoc_ID_in_SLAM = it->second;
+						else
+						{
+							// It should be a newly created LM:
+							std::map<size_t,size_t>::const_iterator itNewLM = da.newly_inserted_landmarks.find(i);
+							if (itNewLM!=da.newly_inserted_landmarks.end())
+							      assoc_ID_in_SLAM = itNewLM->second;
+							else  assoc_ID_in_SLAM = -1;
+						}
+
+						out_da_log << format("%35.22f %8i %10i %10f %12f %12f\n",
+							tim,
+							(int)i,
+							assoc_ID_in_SLAM,
+							(double)obsRB->sensedData[i].range,
+							(double)obsRB->sensedData[i].yaw,
+							(double)obsRB->sensedData[i].pitch );
+					}
+				}
+			}
+
+
+			// Save report on DA performance:
+			{
+				const typename ekfslam_t::TDataAssocInfo & da = mapping.getLastDataAssociation();
+
+				const CObservationBearingRangePtr obs = observations->getObservationByClass<CObservationBearingRange>();
+				if (obs)
+				{
+					const CObservationBearingRange* obsRB = obs.pointer();
+					const double tim = mrpt::system::timestampToDouble( obsRB->timestamp );
+
+					std::map<double,std::vector<int> >::const_iterator itDA = GT_DA.find( tim );
+
+					for (size_t i=0;i<obsRB->sensedData.size();i++)
+					{
+						bool is_FP=false, is_TP=false, is_FN=false, is_TN = false;
+
+						if (itDA!=GT_DA.end())
+						{
+							const std::vector<int> & vDA = itDA->second;
+							ASSERT_BELOW_(i,vDA.size())
+							const int GT_ASSOC = vDA[i];
+
+							std::map<observation_index_t,prediction_index_t>::const_iterator it = da.results.associations.find(i);
+							if (it!=da.results.associations.end())
+							{
+								// This observation was assigned the already existing LM in the map: "it->second"
+								// TruePos -> If that LM index corresponds to that in the GT (with index mapping):
+
+								//mrpt::utils::bimap<int,int>  DA2GTDA_indices; // Landmark indices bimapping: SLAM DA <---> GROUND TRUTH DA
+								if (DA2GTDA_indices.hasKey(it->second))
+								{
+									const int slam_asigned_LM_idx = DA2GTDA_indices.direct(it->second);
+									if (slam_asigned_LM_idx==GT_ASSOC)
+									      is_TP = true;
+									else  is_FP = true;
+								}
+								else
+								{
+									// Is this case possible? Assigned to an index not ever seen for the first time with a GT....
+									//  Just in case:
+									is_FP = true;
+								}
+							}
+							else
+							{
+								// No pairing, but should be a newly created LM:
+								std::map<size_t,size_t>::const_iterator itNewLM = da.newly_inserted_landmarks.find(i);
+								if (itNewLM!=da.newly_inserted_landmarks.end())
+								{
+									const int new_LM_in_SLAM = itNewLM->second;
+
+									// Was this really a NEW LM not observed before?
+									if (DA2GTDA_indices.hasValue(GT_ASSOC))
+									{
+										// GT says this LM was already observed, so it shouldn't appear here as new:
+										is_FN = true;
+									}
+									else
+									{
+										// Really observed for the first time:
+										is_TN = true;
+										DA2GTDA_indices.insert(new_LM_in_SLAM,GT_ASSOC);
+									}
+								}
+								else
+								{
+									// Not associated neither inserted: Shouldn't really never arrive here.
+								}
+							}
+						}
+
+						// "%           TIMESTAMP                INDEX_IN_OBS    TruePos FalsePos TrueNeg FalseNeg  NoGroundTruthSoIDontKnow \n"
+						out_da_performance_log << format("%35.22f %13i %8i %8i %8i %8i %8i\n",
+							tim,
+							(int)i,
+							(int)(is_TP ? 1:0),
+							(int)(is_FP ? 1:0),
+							(int)(is_TN ? 1:0),
+							(int)(is_FN ? 1:0),
+							(int)(!is_FP && !is_TP && !is_FN && !is_TN ? 1:0)
+							);
+					}
+				}
+
+			}
+
+
 
 			// Save map to file representations?
 			if (SAVE_MAP_REPRESENTATIONS  && !(step % SAVE_LOG_FREQUENCY))

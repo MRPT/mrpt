@@ -749,10 +749,11 @@ void CRangeBearingKFSLAM::TOptions::loadFromConfigFile(
 
 	MRPT_LOAD_CONFIG_VAR(force_ignore_odometry,bool, source,section);
 
-	MRPT_LOAD_CONFIG_VAR_CAST(data_assoc_method,int, TDataAssociationMethod,   source,section);
-	MRPT_LOAD_CONFIG_VAR_CAST(data_assoc_metric,int, TDataAssociationMetric,   source,section);
+	data_assoc_method    = source.read_enum<TDataAssociationMethod>(section,"data_assoc_method",data_assoc_method);
+	data_assoc_metric    = source.read_enum<TDataAssociationMetric>(section,"data_assoc_metric",data_assoc_metric);
+	data_assoc_IC_metric = source.read_enum<TDataAssociationMetric>(section,"data_assoc_IC_metric",data_assoc_IC_metric);
+
 	MRPT_LOAD_CONFIG_VAR(data_assoc_IC_chi2_thres,double,  source, section);
-	MRPT_LOAD_CONFIG_VAR_CAST(data_assoc_IC_metric,int, TDataAssociationMetric,   source,section);
 	MRPT_LOAD_CONFIG_VAR(data_assoc_IC_ml_threshold,double,  source, section);
 
 	MRPT_LOAD_CONFIG_VAR(quantiles_3D_representation, float, source,section);
@@ -795,11 +796,15 @@ void CRangeBearingKFSLAM::TOptions::dumpToTextStream( CStream &out)const
 {
 	out.printf("\n----------- [CRangeBearingKFSLAM::TOptions] ------------ \n\n");
 
-	//out.printf("stds_Q_no_odo                           = "); stds_Q_no_odo
-
 	out.printf("doPartitioningExperiment                = %c\n",	doPartitioningExperiment ? 'Y':'N' );
 	out.printf("partitioningMethod                      = %i\n",	partitioningMethod );
+	out.printf("data_assoc_method                       = %s\n", TEnumType<TDataAssociationMethod>::value2name(data_assoc_method).c_str() );
+	out.printf("data_assoc_metric                       = %s\n", TEnumType<TDataAssociationMetric>::value2name(data_assoc_metric).c_str() );
+	out.printf("data_assoc_IC_chi2_thres                = %.06f\n", data_assoc_IC_chi2_thres );
+	out.printf("data_assoc_IC_metric                    = %s\n", TEnumType<TDataAssociationMetric>::value2name(data_assoc_IC_metric).c_str() );
+	out.printf("data_assoc_IC_ml_threshold              = %.06f\n", data_assoc_IC_ml_threshold );
 
+	out.printf("\n");
 }
 
 void CRangeBearingKFSLAM::OnInverseObservationModel(

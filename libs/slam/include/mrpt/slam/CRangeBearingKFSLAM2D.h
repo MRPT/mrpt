@@ -61,8 +61,9 @@ namespace mrpt
 		/** An implementation of EKF-based SLAM with range-bearing sensors, odometry, and a 2D (+heading) robot pose, and 2D landmarks.
 		  *  The main method is "processActionObservation" which processes pairs of action/observation.
 		  *
-		  *   The following Wiki page describes an front-end application based on this class:
-		  *     http://www.mrpt.org/Application:2d-slam-demo
+		  *   The following pages describe front-end applications based on this class:
+		  *		- http://www.mrpt.org/Application:2d-slam-demo
+		  *		- http://www.mrpt.org/Application:kf-slam
 		  *
 		  * \sa CRangeBearingKFSLAM
 		  */

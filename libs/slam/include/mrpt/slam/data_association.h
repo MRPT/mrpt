@@ -31,6 +31,7 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
+#include <mrpt/utils/TEnumType.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
@@ -171,7 +172,35 @@ namespace mrpt
 
 		/** @} */
 
+	} // end namespace
+
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<slam::TDataAssociationMethod>
+		{
+			typedef slam::TDataAssociationMethod enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(slam::assocNN,          "assocNN");
+				m_map.insert(slam::assocJCBB,        "assocJCBB");
+			}
+		};
+
+		template <>
+		struct TEnumTypeFiller<slam::TDataAssociationMetric>
+		{
+			typedef slam::TDataAssociationMetric enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(slam::metricMaha,       "metricMaha");
+				m_map.insert(slam::metricML,         "metricML");
+			}
+		};
+
 	} // End of namespace
+
 } // End of namespace
 
 #endif

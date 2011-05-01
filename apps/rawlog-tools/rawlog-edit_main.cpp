@@ -60,6 +60,7 @@ using namespace std;
 DECLARE_OP_FUNCTION(op_externalize);
 DECLARE_OP_FUNCTION(op_info);
 DECLARE_OP_FUNCTION(op_list_images);
+DECLARE_OP_FUNCTION(op_list_rangebearing);
 DECLARE_OP_FUNCTION(op_remove_label);
 DECLARE_OP_FUNCTION(op_keep_label);
 DECLARE_OP_FUNCTION(op_cut);
@@ -119,6 +120,12 @@ int main(int argc, char **argv)
 			"Optionally the output text file can be changed with --text-file-output."
 			,cmd, false) );
 		ops_functors["list-images"] = &op_list_images;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","list-range-bearing",
+			"Op: dump a list of all landmark observations of type range-bearing.\n"
+			"Optionally the output text file can be changed with --text-file-output."
+			,cmd, false) );
+		ops_functors["list-range-bearing"] = &op_list_rangebearing;
 
 		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","remove-label",
 			"Op: Remove all observation matching the given sensor label(s)."
