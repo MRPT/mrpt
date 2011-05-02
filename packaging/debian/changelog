@@ -1,4 +1,10 @@
-  * Fixed build errors with GCC 4.6 (Closes: #770953).
+mrpt (1:0.9.4svn2500-1) unstable; urgency=low
+
+  * New version of upstream sources.
+  * Fixed build errors with GCC 4.6. Debian (Closes: #625075), Ubuntu (Closes: #770953).
+
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Mon, 02 May 2011 15:40:17 +0200
 
 mrpt (1:0.9.4svn2453-1) unstable; urgency=low
 
