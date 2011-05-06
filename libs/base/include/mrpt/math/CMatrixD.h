@@ -46,6 +46,7 @@ namespace mrpt
 
 
 		/**  This class is a "CSerializable" wrapper for "CMatrixTemplateNumeric<double>".
+		 * \note For a complete introduction to Matrices and vectors in MRPT, see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
 		 */
 		class BASE_IMPEXP_TEMPL CMatrixD : public mrpt::utils::CSerializable, public CMatrixTemplateNumeric<double>
 		{

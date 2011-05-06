@@ -57,6 +57,7 @@ namespace mrpt
 		  * \note This class exists for backward compatibility of ancient times when MRPT didn't rely on Eigen, feel free to directly use Eigen::Matrix<> types instead.
 		  *
 		  * \sa CMatrixTemplate (a non Eigen lib-based  class, which can hold arbitrary objects, not only numerical types).
+		 * \note For a complete introduction to Matrices and vectors in MRPT, see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
 		  */
 		template <class T>
 		class CMatrixTemplateNumeric : 

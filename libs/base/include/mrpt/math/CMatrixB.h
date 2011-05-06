@@ -41,6 +41,7 @@ namespace mrpt
 
 
 		/**  This class is a "CSerializable" wrapper for "CMatrixBool".
+		 * \note For a complete introduction to Matrices and vectors in MRPT, see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
 		 */
 		class BASE_IMPEXP CMatrixB : public mrpt::utils::CSerializable, public CMatrixBool
 		{

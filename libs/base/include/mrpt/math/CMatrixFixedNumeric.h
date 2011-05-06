@@ -47,6 +47,7 @@ namespace mrpt
 		 *
 		 * \note This class exists for backward compatibility of ancient times when MRPT didn't rely on Eigen, feel free to directly use Eigen::Matrix<> types instead.
 		 * \sa CMatrixTemplateNumeric (for dynamic-size matrices)
+		 * \note For a complete introduction to Matrices and vectors in MRPT, see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
 		 */
 		template <typename T,size_t NROWS,size_t NCOLS>
 		class CMatrixFixedNumeric  : 
