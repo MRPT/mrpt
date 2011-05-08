@@ -611,23 +611,16 @@ void CPosePDFSOG::mergeModes( double max_KLd, bool verbose  )
 	// IEEE Transactions on Aerospace and Electronic Systems, 2007.
 	//  See Eq.(21) for Bij !!
 
-	size_t Nold = 0; // force recompute the first time
-
 	for (size_t i=0;i<(N-1); )
 	{
 		N = m_modes.size(); // It might have changed.
 		double sumW=0;
 
-		//if (Nold!=N)
-		{
-			// For getting linear weights:
-			sumW = 0;
-			for (size_t i=0;i<N;i++)
-				sumW += exp(m_modes[i].log_w);
-			ASSERT_(sumW);
-
-			Nold = N;
-		}
+		// For getting linear weights:
+		sumW = 0;
+		for (size_t j=0;j<N;j++)
+			sumW += exp(m_modes[j].log_w);
+		ASSERT_(sumW);
 
 		const double Wi = exp(m_modes[i].log_w) / sumW;
 

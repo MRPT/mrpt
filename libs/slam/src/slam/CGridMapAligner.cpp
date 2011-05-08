@@ -898,7 +898,6 @@ CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
 
 //#define	CORRELATION_SHOW_DEBUG
 
-	float						mapsResolution;
 	CTicTac						*tictac = NULL;
 
 	// Asserts:
@@ -909,7 +908,6 @@ CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
 	const COccupancyGridMap2D	*m2 = static_cast<const COccupancyGridMap2D*>( mm2 );
 
 	ASSERT_( m1->getResolution() == m2->getResolution() );
-	mapsResolution = m1->getResolution();
 
 	if (runningTime)
 	{

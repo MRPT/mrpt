@@ -120,7 +120,7 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 	double						maxValidLaserRange;
 	strMaxLaserRange.ToDouble( &maxValidLaserRange );
 
-	float						thisTimestamp, lastTimestamp;
+	float						thisTimestamp;
 
 	unsigned int				i,n;
 
@@ -208,7 +208,7 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 			}
 
 			// For the next step:
-			lastTimestamp = thisTimestamp;
+			//lastTimestamp = thisTimestamp;
 			lastOdoReading = thisOdoReading;
 
 
@@ -590,7 +590,7 @@ void xRawLogViewerFrame::OnImportRTL(wxCommandEvent& event)
 		string			strLine;
 
 		double init_timestamp = timestampTotime_t ( getCurrentTime() );
-		float	max_laser_range=49.5f;
+		//float	max_laser_range=49.5f;
 
 		while (!f.eof())
 		{
@@ -607,11 +607,11 @@ void xRawLogViewerFrame::OnImportRTL(wxCommandEvent& event)
 			{
 				if ( strLine[0] == 'P' )
 				{
-					size_t idx;
-					if ((idx = strLine.find("Max_scan_distance"))!=strLine.npos )
-					{
-						max_laser_range = atof( strLine.c_str() + idx + strlen("Max_scan_distance") + 1 );
-					}
+//					size_t idx;
+//					if ((idx = strLine.find("Max_scan_distance"))!=strLine.npos )
+//					{
+//						max_laser_range = atof( strLine.c_str() + idx + strlen("Max_scan_distance") + 1 );
+//					}
 					//else if
 				}
 				else if ( strLine[0] == 'O' )

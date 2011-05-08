@@ -201,7 +201,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
     unsigned int idx = 0;
     unsigned int scanCount=0;
     char* tmp;
-    double factor;
+    //double factor;
 
     next = strtok(buff, " ", &tmp);
 
@@ -234,7 +234,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
             printf_debug("Distance : OK\n");
             break;
         case 22 :
-            factor = strtod(next, NULL);
+            //factor = strtod(next, NULL);
             break;
         case 26 :
             scanCount = strtoul(next, NULL, 16);

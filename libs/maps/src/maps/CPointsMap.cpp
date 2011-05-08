@@ -313,12 +313,12 @@ void  CPointsMap::computeMatchingWith2D(
 	float					global_y_min=std::numeric_limits<float>::max(), global_y_max= -std::numeric_limits<float>::max();
 
 	double					maxDistForCorrespondenceSquared;
-	float			        x_local, y_local,z_local;
+	float			        x_local, y_local;
 	unsigned int			globalIdx,localIdx;
 
-	vector<float>					x_locals(nLocalPoints),y_locals(nLocalPoints),z_locals(nLocalPoints);
+	vector<float>					x_locals(nLocalPoints),y_locals(nLocalPoints); // z_locals(nLocalPoints);
 
-	float 		*x_locals_it,*y_locals_it,*z_locals_it;
+	float 		*x_locals_it,*y_locals_it; //*z_locals_it;
 	const float *x_other_it,*y_other_it,*z_other_it,*x_global_it,*y_global_it; //,*z_global_it;
 
 	// No correspondences initially:
@@ -341,7 +341,7 @@ void  CPointsMap::computeMatchingWith2D(
 	for (   localIdx=0,
 		    x_locals_it=&x_locals[0],
 			y_locals_it=&y_locals[0],
-			z_locals_it=&z_locals[0],
+			//z_locals_it=&z_locals[0],
 			x_other_it=&otherMap->x[0],
 			y_other_it=&otherMap->y[0],
 			z_other_it=&otherMap->z[0];
@@ -354,7 +354,7 @@ void  CPointsMap::computeMatchingWith2D(
 
 		float  x_local = *x_locals_it++  = otherMapPose.x + cos_phi * x_other - sin_phi * y_other ;
 		float  y_local = *y_locals_it++  = otherMapPose.y + sin_phi * x_other + cos_phi * y_other;
-		*z_locals_it++ = *z_other_it++;
+		//*z_locals_it++ = *z_other_it++;
 
 		// Find the bounding box:
 		local_x_min = min(local_x_min,x_local);
@@ -392,17 +392,16 @@ void  CPointsMap::computeMatchingWith2D(
 	for ( localIdx=0,
 			x_locals_it=&x_locals[0],
 			y_locals_it=&y_locals[0],
-			z_locals_it=&z_locals[0],
 			x_other_it=&otherMap->x[0],
 			y_other_it=&otherMap->y[0],
 			z_other_it=&otherMap->z[0];
 			localIdx<nLocalPoints;
-			x_locals_it++,y_locals_it++,z_locals_it++,x_other_it++,y_other_it++,z_other_it++,localIdx++ )
+			x_locals_it++,y_locals_it++,x_other_it++,y_other_it++,z_other_it++,localIdx++ )
 	{
 		// For speed-up:
 		x_local = *x_locals_it;
 		y_local = *y_locals_it;
-		z_local = *z_locals_it;
+		//z_local = *z_locals_it;
 
 		// Find all the matchings in the requested distance:
 		TMatchingPair		p,closestPair;

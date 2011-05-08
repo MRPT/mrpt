@@ -104,7 +104,8 @@ AREXPORT ArModuleLoader::Status ArModuleLoader::load(const char *modName,
   std::string name;
   std::map<std::string, DllRef>::iterator iter;
   DllRef handle;
-  bool (*func)(ArRobot*,void*);
+  typedef bool(*TFunc)(ArRobot*,void*);  // Added by JLBC for MRPT
+  TFunc func;
   bool ret;
 
   name=modName;
@@ -130,7 +131,8 @@ AREXPORT ArModuleLoader::Status ArModuleLoader::load(const char *modName,
     return(STATUS_FAILED_OPEN);
   }
 
-  func=(bool(*)(ArRobot*,void*))dlsym(handle, "ariaInitModule");
+  //func=(bool(*)(ArRobot*,void*))dlsym(handle, "ariaInitModule");
+  func=reinterpret_cast<TFunc>( dlsym(handle, "ariaInitModule") );
   if (!func || dlerror() != NULL)
   {
     if (!quiet)
@@ -208,7 +210,7 @@ AREXPORT ArModuleLoader::Status ArModuleLoader::close(const char *modName,
   }
   else
   {
-    handle=(*iter).second;
+    handle=reinterpret_cast<DllRef>((*iter).second);
     func=(bool(*)())dlsym(handle, "ariaExitModule");
     if (!func)
     {

@@ -635,13 +635,13 @@ void _DSceneViewerFrame::loadFromFile( const std::string &fil, bool isInASequenc
         // Save the path
 		saveLastUsedDirectoryToCfgFile(fil);
 
-		static float	old_cam_pX,old_cam_pY,old_cam_pZ,old_cam_d,old_cam_az,old_cam_el;
+		//static float	old_cam_pX,old_cam_pY,old_cam_pZ,old_cam_d,old_cam_az,old_cam_el;
 		static bool first = true;
 
 		if (first)
 		{
 			first = false;
-			old_cam_pX=old_cam_pY=old_cam_pZ=old_cam_d=old_cam_az=old_cam_el=0.0f;
+			//old_cam_pX=old_cam_pY=old_cam_pZ=old_cam_d=old_cam_az=old_cam_el=0.0f;
 		}
 
 		CFileGZInputStream	   	f( fil);

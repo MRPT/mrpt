@@ -264,7 +264,7 @@ bool CPtuDPerception::haltAll() {
 
 bool CPtuDPerception::halt(char axis) {
 
-	char sTrans[2]="";
+	char sTrans[3];
     sTrans[0]='H';sTrans[1]=axis;sTrans[2]='\0';
 
 	return ( transmit(sTrans) & receive(sTrans,NULL) );

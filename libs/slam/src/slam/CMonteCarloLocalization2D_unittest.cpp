@@ -223,7 +223,7 @@ TEST(MonteCarlo2D, RunSampleDataset)
 			CSensoryFramePtr     observations;
 			bool				end = false;
 
-			TTimeStamp cur_obs_timestamp;
+			//TTimeStamp cur_obs_timestamp;
 
 			while (rawlogEntry<(rawlogEntries-1) && !end)
 			{
@@ -239,8 +239,8 @@ TEST(MonteCarlo2D, RunSampleDataset)
 
 				CPose2D		expectedPose; // Ground truth
 
-				if (observations->size()>0)
-					cur_obs_timestamp = observations->getObservationByIndex(0)->timestamp;
+//				if (observations->size()>0)
+//					cur_obs_timestamp = observations->getObservationByIndex(0)->timestamp;
 
 				if (step>=rawlog_offset)
 				{

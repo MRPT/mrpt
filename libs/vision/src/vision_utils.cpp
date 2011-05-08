@@ -498,7 +498,6 @@ size_t vision::matchFeatures(
 	float							distDesc;			// EDD or EDSD
 	float							minDist1;		    // Minimum EDD or EDSD
 	float							minDist2;		    // Second minimum EDD or EDSD
-	TFeatureID						minIdx; 			// Index of the closest feature
 
 	// For Harris
 	double							maxCC1;			    // Maximum CC
@@ -531,7 +530,6 @@ size_t vision::matchFeatures(
 		minSAD2 = 1e5;
 
 		// For all the cases
-		minIdx	    = 0;
 		minRightIdx = 0;
 
 		for( rFeat = 0, itList2 = list2.begin(); itList2 != list2.end(); ++itList2, ++rFeat )		// ... compare with all the features in list2.
@@ -955,12 +953,12 @@ void vision::projectMatchedFeature(
 //	return;
 
     const double f0 = 600;
-    double nfx1 = leftFeat->x, nfy1 = leftFeat->y, nfx2 = rightFeat->x, nfy2 = rightFeat->y;
+    double nfx1 = leftFeat->x, nfy1 = leftFeat->y, nfx2 = rightFeat->x; // nfy2 = rightFeat->y;
 
-    const double x  = leftFeat->x * f0; // x  = (x  / f0) * f0 Ë x  = x
-	const double y  = leftFeat->y * f0; // y  = (y  / f0) * f0 Ë y  = y
-	const double xd = rightFeat->x * f0; // x' = (x' / f0) * f0 Ë x' = x'
-	const double yd = rightFeat->y * f0; // y' = (y' / f0) * f0 Ë y' = y'
+    const double x  = leftFeat->x * f0; // x  = (x  / f0) * f0   x  = x
+	const double y  = leftFeat->y * f0; // y  = (y  / f0) * f0   y  = y
+	const double xd = rightFeat->x * f0; // x' = (x' / f0) * f0   x' = x'
+	const double yd = rightFeat->y * f0; // y' = (y' / f0) * f0   y' = y'
 
 	const double f2  = f0 * f0;
 	const double p9  = f2 * params.F.get_unsafe(2,2);
@@ -1019,7 +1017,7 @@ void vision::projectMatchedFeature(
 			nfx1 = xh / f0;
 			nfy1 = yh / f0;
 			nfx2 = xhd / f0;
-			nfy2 = yhd / f0;
+			//nfy2 = yhd / f0;
 
             break;
 		}

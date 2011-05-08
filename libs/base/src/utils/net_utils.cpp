@@ -435,7 +435,8 @@ bool net::DNS_resolve_async(
 	TDNSThreadData param;
 	param.in_servername = server_name;
 
-	TThreadHandle th = mrpt::system::createThreadRef( thread_DNS_solver_async,param );
+	//TThreadHandle th =
+	mrpt::system::createThreadRef( thread_DNS_solver_async,param );
 
 	if (param.sem_solved.waitForSignal(timeout_ms))
 	{

@@ -658,7 +658,7 @@ Exit:
 
 PlyFile *ply_read(FILE *fp, vector<string> &elem_names)
 {
-  int found_format = 0;
+  //int found_format = 0;
 
   /* check for NULL file pointer */
   if (fp == NULL)
@@ -691,7 +691,7 @@ PlyFile *ply_read(FILE *fp, vector<string> &elem_names)
       else
         return (NULL);
       plyfile->version = atof (words[2].c_str());
-      found_format = 1;
+      //found_format = 1;
     }
     else if (words[0]== "element")
       add_element (plyfile, words);

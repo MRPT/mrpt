@@ -67,7 +67,7 @@ std::vector<float>		COccupancyGridMap2D::entropyTable;
 
 
 // Static lookup tables for log-odds
-CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>  COccupancyGridMap2D::m_logodd_lut; 
+CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>  COccupancyGridMap2D::m_logodd_lut;
 
 /*---------------------------------------------------------------
 						Constructor
@@ -3536,7 +3536,6 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 
 	size_t							nLocalPoints = otherMap->getPointsCount();
 	float							_sumSqrDist=0;
-	float							meanSquareError, meanSquareErrorMax;
 	std::vector<float>				x_locals(nLocalPoints), y_locals(nLocalPoints),z_locals(nLocalPoints);
 	std::vector<float>::const_iterator	otherMap_x_it,otherMap_y_it,otherMap_z_it;
 	std::vector<float>::iterator	x_locals_it,y_locals_it,z_locals_it;
@@ -3559,7 +3558,6 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 	// Initially there are no correspondences:
 	correspondences.clear();
 	correspondencesRatio = 0;
-	meanSquareError = meanSquareErrorMax = 0;
 
 	// Hay mapa local?
 	if (!nLocalPoints)  return;  // No
@@ -3926,7 +3924,7 @@ bool  COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 	CImage			img1,img2;
 	CImage			img(10,10,3,true);
 	TColor 			lineColor;
-	unsigned int	i,n , lx1, ly1, lx2, ly2, Ay1, Ay2;
+	unsigned int	i,n , Ay1, Ay2;
 	unsigned int	px, py;
 
 	lineColor = TColor::red;
@@ -3935,8 +3933,11 @@ bool  COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 	// ---------------------------------------------
 	m1->getAsImage( img1, false );
 	m2->getAsImage( img2, false );
-	lx1 = img1.getWidth();	ly1 = img1.getHeight();
-	lx2 = img2.getWidth();	ly2 = img2.getHeight();
+	unsigned int lx1 = img1.getWidth();
+	unsigned int ly1 = img1.getHeight();
+
+	unsigned int lx2 = img2.getWidth();
+	unsigned int ly2 = img2.getHeight();
 
 	// The map with the lowest height has to be vertically aligned:
 	if (ly1>ly2)
@@ -4014,7 +4015,7 @@ bool  COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 	CEnhancedMetaFile				emf(fileName,1);
 	CImage			img1,img2;
 	TColor			lineColor;
-	unsigned int	i,n , lx1, ly1, lx2, ly2, Ay1, Ay2;
+	unsigned int	i, Ay1, Ay2;
 	unsigned int	px, py;
 
 
@@ -4029,8 +4030,10 @@ bool  COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 	m1->getAsImage( img1, false );		// Linux: emulated EMF is different.
 	m2->getAsImage( img2, false );
 #endif
-	lx1 = img1.getWidth();	ly1 = img1.getHeight();
-	lx2 = img2.getWidth();	ly2 = img2.getHeight();
+	unsigned int lx1 = img1.getWidth();
+	unsigned int ly1 = img1.getHeight();
+	//unsigned int lx2 = img2.getWidth();
+	unsigned int ly2 = img2.getHeight();
 
 	// The map with the lowest height has to be vertically aligned:
 	if (ly1>ly2)
@@ -4052,7 +4055,7 @@ bool  COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 
 	// Draw the features:
 	// ---------------------------------------------
-	n = corrs.size();
+	const unsigned int n = corrs.size();
 	lineColor = TColor::black;
 	for (i=0;i<n;i++)
 	{

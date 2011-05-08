@@ -405,13 +405,14 @@ AREXPORT bool ArArgumentBuilder::getArgBool(size_t whichArg) const
 AREXPORT bool ArArgumentBuilder::isArgInt(size_t whichArg) const
 {
   const char *str;
-  int ret;
+  //int ret;
   char *endPtr;
   if (whichArg > myArgc || getArg(whichArg) == NULL)
     return false;
 
   str = getArg(whichArg);
-  ret = strtol(str, &endPtr, 10);
+  //ret =
+  strtol(str, &endPtr, 10);
   if (endPtr[0] == '\0' && endPtr != str)
     return true;
   else
@@ -437,7 +438,7 @@ AREXPORT int ArArgumentBuilder::getArgInt(size_t whichArg) const
 AREXPORT bool ArArgumentBuilder::isArgDouble(size_t whichArg) const
 {
   const char *str;
-  double ret;
+  //double ret;
   char *endPtr;
   if (whichArg > myArgc || getArg(whichArg) == NULL)
     return false;
@@ -453,7 +454,8 @@ AREXPORT bool ArArgumentBuilder::isArgDouble(size_t whichArg) const
   }
   else
   {
-    ret = strtod(str, &endPtr);
+    //ret =
+    strtod(str, &endPtr);
     if (endPtr[0] == '\0' && endPtr != str)
       return true;
     else

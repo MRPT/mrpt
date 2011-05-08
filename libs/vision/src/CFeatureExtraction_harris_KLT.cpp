@@ -67,7 +67,6 @@ void CFeatureExtraction::selectGoodFeaturesKLT(
 		// Create OpenCV Local Variables
 		// -----------------------------------------------------------------
 		int				count = 0;
-		int				flags = 0;
 		int				nPts;
 
 		CvImage img, cGrey;
@@ -90,8 +89,6 @@ void CFeatureExtraction::selectGoodFeaturesKLT(
 		nDesiredFeatures <= 0 ? nPts = MAX_COUNT : nPts = nDesiredFeatures;
 
 		std::vector<CvPoint2D32f> points(nPts);
-
-		flags = 0;
 
 		CvImage eig, temp;									// temporary and auxiliary images
 

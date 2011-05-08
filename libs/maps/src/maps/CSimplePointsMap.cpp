@@ -136,11 +136,11 @@ void  CSimplePointsMap::loadFromRangeScan(
 		const float		m23 = sensorPose3D.z();
 
 		float  lx_1,ly_1,lz_1,lx,ly,lz;		// Previous and current point
-		float  lx_2,ly_2,lz_2;				    // The previous-to-the-previous point.
+		float  lx_2,ly_2;				    // The previous-to-the-previous point.
 
 		// Initial last point:
 		lx_1 = -100; ly_1 = -100; lz_1 = -100;
-		lx_2 = -100; ly_2 = -100; lz_2 = -100;
+		lx_2 = -100; ly_2 = -100; //lz_2 = -100;
 
 		// ------------------------------------------------------
 		//		Pass range scan to a set of 2D points:
@@ -248,7 +248,6 @@ void  CSimplePointsMap::loadFromRangeScan(
 
 					lx_2 = lx_1;
 					ly_2 = ly_1;
-					lz_2 = lz_1;
 
 					lx_1 = lx;
 					ly_1 = ly;

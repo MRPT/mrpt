@@ -609,7 +609,8 @@ void hmt_slam_guiFrame::rebuildTreeView()
 	{
 		string str = format( "Area %i", (int)it->second->getID() );
 
-		wxTreeItemId treeNode = treeView->AppendItem(
+		//wxTreeItemId treeNode =
+		treeView->AppendItem(
 			root,
 			_U(str.c_str()),
 			0,-1,

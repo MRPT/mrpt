@@ -307,7 +307,7 @@ AREXPORT char *ArSocket::readString(void)
 
 void ArSocket::doStringEcho(void)
 {
-  size_t to;
+  //size_t to;
 
   if (!myStringAutoEcho && !myStringEcho)
     return;
@@ -328,7 +328,7 @@ void ArSocket::doStringEcho(void)
     return;
 
   myStringHaveEchoed = true;
-  to = strchr(myStringBuf, '\0') - myStringBuf;
+  //to =strchr(myStringBuf, '\0') - myStringBuf;
   write(&myStringBuf[myStringPosLast], myStringPos - myStringPosLast);
   myStringPosLast = myStringPos;
 }

@@ -574,7 +574,7 @@ void  CLandmarksMap::computeMatchingWith2D(
 /*---------------------------------------------------------------
 				loadSiftFeaturesFromImageObservation
   ---------------------------------------------------------------*/
-void  CLandmarksMap::loadSiftFeaturesFromImageObservation( 
+void  CLandmarksMap::loadSiftFeaturesFromImageObservation(
 	const CObservationImage	&obs,
 	const mrpt::vision::CFeatureExtraction::TOptions & feat_options
 	)
@@ -655,8 +655,8 @@ void  CLandmarksMap::loadSiftFeaturesFromImageObservation(
 /*---------------------------------------------------------------
 				loadSiftFeaturesFromStereoImagesObservation
   ---------------------------------------------------------------*/
-void  CLandmarksMap::loadSiftFeaturesFromStereoImageObservation( 
-	const CObservationStereoImages	&obs, 
+void  CLandmarksMap::loadSiftFeaturesFromStereoImageObservation(
+	const CObservationStereoImages	&obs,
 	mrpt::slam::CLandmark::TLandmarkID fID,
 	const mrpt::vision::CFeatureExtraction::TOptions & feat_options
 	)
@@ -1012,7 +1012,7 @@ void  CLandmarksMap::computeMatchingWith3DLandmarks(
 	unsigned int							i,n,j,k;
 	TMatchingPair							match;
 	double									lik_dist, lik_desc, lik, maxLik;
-	double									maxLikDist = -1, maxLikDesc = -1;
+	//double									maxLikDist = -1, maxLikDesc = -1;
 	CPointPDFGaussian						pointPDF_k, pointPDF_j;
 	std::vector<bool>						thisLandmarkAssigned;
 	double									K_desc = 0.0;
@@ -1146,8 +1146,8 @@ void  CLandmarksMap::computeMatchingWith3DLandmarks(
 
 						if( lik > maxLik )
 						{
-							maxLikDist = lik_dist;
-							maxLikDesc = lik_desc;
+//							maxLikDist = lik_dist;
+//							maxLikDesc = lik_desc;
 							maxLik = lik;
 							maxIdx = j;
 						}
@@ -1553,9 +1553,8 @@ double  CLandmarksMap::computeLikelihood_RSLC_2007( const CLandmarksMap  *s, con
 	MRPT_START;
 
 	double								lik = 1.0;
-	TSequenceLandmarks::const_iterator		itOther; // itThis; //, itClosest;
-	CLandmark							*lm,*itClosest;
-	//unsigned int						nThisMap = landmarks.size();
+	TSequenceLandmarks::const_iterator		itOther;
+	CLandmark							*lm; //*itClosest;
 	double								corr;
 	double								PrNoCorr;
 	CPointPDFGaussian					poseThis,poseOther;
@@ -1588,7 +1587,7 @@ double  CLandmarksMap::computeLikelihood_RSLC_2007( const CLandmarksMap  *s, con
 
 		// For each landmark in this map: Compute its correspondence likelihood
 		//   and conditioned observation likelihood:
-		itClosest = NULL;
+		//itClosest = NULL;
 
 		// Look at landmarks in sourronding cells only:
 		for (cx=cx_1;cx<=cx_2;cx++)

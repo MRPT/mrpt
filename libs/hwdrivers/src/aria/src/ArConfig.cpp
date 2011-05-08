@@ -1114,7 +1114,7 @@ AREXPORT void ArConfig::writeSection(ArConfigSection *section, FILE *file,
   char line[1024];
   // holds the fprintf
   char startLine[128];
-  bool commented = false;
+  //bool commented = false;
   unsigned int startCommentColumn = 25;
 
   std::list<ArArgumentBuilder *>::const_iterator argIt;
@@ -1162,7 +1162,7 @@ AREXPORT void ArConfig::writeSection(ArConfigSection *section, FILE *file,
   // find this parameter
   for (paramIt = params->begin(); paramIt != params->end(); paramIt++)
   {
-    commented = false;
+    //commented = false;
     param = &(*paramIt);
 
     if (param->getType() == ArConfigArg::SEPARATOR) {

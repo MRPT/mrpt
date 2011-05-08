@@ -343,7 +343,7 @@ protected:
 		const double &dummy, CArrayDouble<12> &Y)
 	{
 		const CPose3D p = CPose3D::exp(x);
-		const CMatrixDouble44 R = p.getHomogeneousMatrixVal();
+		//const CMatrixDouble44 R = p.getHomogeneousMatrixVal();
 		p.getAs12Vector(Y);
 	}
 

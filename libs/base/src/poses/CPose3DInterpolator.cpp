@@ -539,16 +539,16 @@ void CPose3DInterpolator::filter( unsigned int component, unsigned int samples )
 	int		k = 0;
 	CPose3DInterpolator::iterator it1, it2, it3;
 
-	int asamples;
+	//int asamples;
 	for( it1 = m_path.begin(); it1 != m_path.end(); it1++, k++ )
 	{
-		asamples = samples;
+		//asamples = samples;
 
 		it2 = m_path.begin();
 		if( k-ant > 0 )
 			advance( it2, k-ant );
-		else
-			asamples = samples+k-ant;
+		/*else
+			asamples = samples+k-ant;*/
 
 
 		if( k+post < (int)nitems )
@@ -559,7 +559,7 @@ void CPose3DInterpolator::filter( unsigned int component, unsigned int samples )
 		else
 		{
 			it3 = m_path.end();
-			asamples = post+nitems-k;
+			//asamples = post+nitems-k;
 		}
 
 		CPose3D auxPose;

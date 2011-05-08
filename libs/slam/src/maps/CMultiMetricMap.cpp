@@ -68,6 +68,8 @@ CMultiMetricMap::CMultiMetricMap(
 {
 	MRPT_START;
 
+	MRPT_UNUSED_PARAM(dumm);
+
 	// Create maps
 	setListOfMaps(initializers);
 
@@ -1791,12 +1793,10 @@ void  CMultiMetricMap::auxParticleFilterCleanUp()
 {
 	MRPT_START;
 
-	size_t	idx;
-
 	// grid maps:
 	{
 		std::deque<COccupancyGridMap2DPtr>::iterator	it;
-		for (idx=0,it = m_gridMaps.begin();it!=m_gridMaps.end();it++)
+		for (it = m_gridMaps.begin();it!=m_gridMaps.end();it++)
 			(*it)->auxParticleFilterCleanUp( );
 	}
 

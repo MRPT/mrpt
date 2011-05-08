@@ -222,7 +222,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent,wxWindowID id)
     wxMenuBar* MenuBar1;
     wxMenu* Menu2;
     wxFlexGridSizer* FlexGridSizer5;
-    
+
     Create(parent, wxID_ANY, _("HMT Maps Viewer - Part of the MRPT project (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
     SetClientSize(wxSize(740,606));
     SplitterWindow1 = new wxSplitterWindow(this, ID_SPLITTERWINDOW1, wxPoint(176,320), wxDefaultSize, wxSP_3D|wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW1"));
@@ -379,7 +379,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent,wxWindowID id)
     ToolBar1->Realize();
     SetToolBar(ToolBar1);
     Center();
-    
+
     Connect(ID_TREECTRL1,wxEVT_COMMAND_TREE_SEL_CHANGED,(wxObjectEventFunction)&hmtMapViewerFrame::OntreeViewSelectionChanged);
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnMenuLoad);
     Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnmenuExportLocalMapsSelected);
@@ -544,7 +544,8 @@ void hmtMapViewerFrame::rebuildTreeView()
 	{
 		string str = format( "Area %i", (int)it->second->getID() );
 
-		wxTreeItemId treeNode = treeView->AppendItem(
+		//wxTreeItemId treeNode =
+		treeView->AppendItem(
 			root,
 			_U(str.c_str()),
 			0,-1,

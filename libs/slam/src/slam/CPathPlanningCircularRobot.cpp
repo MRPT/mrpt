@@ -128,11 +128,9 @@ void  CPathPlanningCircularRobot::computePath(
 			int		row = y*size_x;
 			int		row_1  = (y+1) * size_x;
 			int		row__1 = (y-1) * size_x;
-			bool	enlarge;
 
 			for (x=2;x<size_x-2;x++)
 			{
-				enlarge = false;
 				uint16_t val = ( CELL_OBSTACLE - nEnlargements );
 
 				//  A cell near an obstacle found??

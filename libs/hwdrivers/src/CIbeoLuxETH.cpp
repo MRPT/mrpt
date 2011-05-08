@@ -75,7 +75,7 @@ void CIbeoLuxETH::dataCollection()
 {
 	unsigned char state = SearchForAF;
 	unsigned char msgIn[1], Header[20], ScanListHeader[44], ScanPointData[10];
-	unsigned int datatype, scannumber, numScanpoints, angleTicks, SPlayer, SPdistance, SPecho;
+	unsigned int datatype, /*scannumber,*/ numScanpoints, angleTicks, SPlayer, SPdistance; // SPecho;
 	int SPHangle;
 	unsigned char msg[32];
 
@@ -148,7 +148,8 @@ void CIbeoLuxETH::dataCollection()
 				newObs->maxRange = 200.00;
 
 				m_client.readAsync(ScanListHeader, 44, 10, 10);
-				scannumber = ScanListHeader[1] * 0x100 + ScanListHeader[0];
+				/*scannumber =*/
+				ScanListHeader[1] * 0x100 + ScanListHeader[0];
 				numScanpoints = ScanListHeader[29] * 0x100 + ScanListHeader[28];
 				angleTicks = ScanListHeader[23] * 0x100 + ScanListHeader[22];
 
@@ -158,7 +159,7 @@ void CIbeoLuxETH::dataCollection()
 
 					m_client.readAsync(ScanPointData, 10, 10, 10);
 					SPlayer = ScanPointData[0] & 0x0F; // two lower bits denote layer
-					SPecho  = ScanPointData[0] >> 4; // two higher bits denote echo
+					// SPecho  = ScanPointData[0] >> 4; // two higher bits denote echo
 					SPHangle = (char)ScanPointData[3] * 0x100 + ScanPointData[2]; // signed INT16 here
 					SPdistance = ScanPointData[5] * 0x100 + ScanPointData[4];
 

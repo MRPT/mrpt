@@ -429,7 +429,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			// =====================================================================
 			bool 		methodSOGorGrid = false; // TRUE=SOG
 			CPoint3D  	newDrawnPosition;
-			float  		firstEstimateRobotHeading=0;
+			float  		firstEstimateRobotHeading=std::numeric_limits<float>::max();
 
 			// The parameters to discard too far gaussians:
 			CPoint3D  	centerPositionPrior( ith_last_pose );
@@ -516,7 +516,6 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 				//       using odometry. If there is no odometry, we *absolutely* need
 				//       at least one well-localized beacon at the beginning, or the symmetry cannot be broken!
 				// -----------------------------------------------------------------------------------------------
-				float  firstEstimateRobotHeading;
 				if ( robotActionSampler.isPrepared() )
 				{
 					CPointPDFSOG::TGaussianMode	newMode;
@@ -817,6 +816,8 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			{
 				cout << "Drawn: " << newDrawnPosition << endl;
 				//cout << "Final cov was:\n" << fusedObsModels.getEstimatedCovariance() << endl << endl;
+
+				ASSERT_(firstEstimateRobotHeading!=std::numeric_limits<float>::max()) // Make sure it was initialized
 
 				finalPose.setFromValues(
 					newDrawnPosition.x(),

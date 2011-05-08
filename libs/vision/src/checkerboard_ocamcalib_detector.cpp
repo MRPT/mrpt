@@ -1965,30 +1965,30 @@ int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out
             if(dst_contour->total == 4 && cvCheckContourConvexity(dst_contour) )
             {
                 CvPoint pt[4];
-                double d1, d2; //, p = cvContourPerimeter(dst_contour);
+                //double d1, d2; //, p = cvContourPerimeter(dst_contour);
                 //double area = fabs(cvContourArea(dst_contour, CV_WHOLE_SEQ));
-                double dx, dy;
+                //double dx, dy;
 
                 for( int i = 0; i < 4; i++ )
                     pt[i] = *(CvPoint*)cvGetSeqElem(dst_contour, i);
 
-                dx = pt[0].x - pt[2].x;
-                dy = pt[0].y - pt[2].y;
-                d1 = sqrt(dx*dx + dy*dy);
-
-                dx = pt[1].x - pt[3].x;
-                dy = pt[1].y - pt[3].y;
-                d2 = sqrt(dx*dx + dy*dy);
+//                dx = pt[0].x - pt[2].x;
+//                dy = pt[0].y - pt[2].y;
+//                d1 = sqrt(dx*dx + dy*dy);
+//
+//                dx = pt[1].x - pt[3].x;
+//                dy = pt[1].y - pt[3].y;
+//                d2 = sqrt(dx*dx + dy*dy);
 
                 // PHILIPG: Only accept those quadrangles which are more
 				// square than rectangular and which are big enough
-                double d3, d4;
-                dx = pt[0].x - pt[1].x;
-                dy = pt[0].y - pt[1].y;
-                d3 = sqrt(dx*dx + dy*dy);
-                dx = pt[1].x - pt[2].x;
-                dy = pt[1].y - pt[2].y;
-                d4 = sqrt(dx*dx + dy*dy);
+//                double d3, d4;
+//                dx = pt[0].x - pt[1].x;
+//                dy = pt[0].y - pt[1].y;
+//                d3 = sqrt(dx*dx + dy*dy);
+//                dx = pt[1].x - pt[2].x;
+//                dy = pt[1].y - pt[2].y;
+//                d4 = sqrt(dx*dx + dy*dy);
                 if(true)//!(flags & CV_CALIB_CB_FILTER_QUADS) ||
                     //d3*4 > d4 && d4*4 > d3 && d3*d4 < area*1.5 && area > min_size &&
                     //d1 >= 0.15 * p && d2 >= 0.15 * p )

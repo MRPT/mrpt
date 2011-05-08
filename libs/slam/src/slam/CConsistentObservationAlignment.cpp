@@ -292,7 +292,7 @@ void  CConsistentObservationAlignment::execute(
 			printf_debug("execute: Node %i has no strong links!\n", i);
 		}
 	}
-//	ASSERT_(!errorDetected);
+	ASSERT_(!errorDetected);
 
 	// Compute the G matrix
 	// ----------------------------------------------------------------------

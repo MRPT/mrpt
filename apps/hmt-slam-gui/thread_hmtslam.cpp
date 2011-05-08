@@ -48,7 +48,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 
 		CFileGZInputStream  *fInRawlog = NULL;
 		std::string 		OUT_DIR="./HMTSLAM_OUT";
-		unsigned int		rawlogEntry = 0, step = 0;
+		unsigned int		rawlogEntry = 0; // step = 0;
 
 		while (true)
 		{
@@ -107,7 +107,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 						CImage::IMAGES_PATH_BASE = rawlog_images_path;		// Set it.
 
 						rawlogEntry = 0;
-						step = 0;
+						//step = 0;
 					}
 				} // end first iteration
 

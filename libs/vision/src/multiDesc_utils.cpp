@@ -568,14 +568,12 @@ bool vision::computeMainOrientations( const CImage &image,
                 return false;
         } // end
     // Search for the maximum
-    unsigned int   mxbin   = 0;
     double         mxori   = 0.0;
     for( unsigned int k = 0; k < oris.size(); ++k )
     {
         if( oris[k] > mxori )
         {
             mxori = oris[k];
-            mxbin = k;
         }
     } // end-for
 
@@ -936,7 +934,7 @@ TMultiResMatchingOutput vision::matchMultiResolutionFeatures(
     int rightFeatCounter = 0;                               // Counter for features
     vector<double> orientations;
     int patchSize = computeOpts.basePSize;
-    int minDist, minIdx, minScale;
+    int minScale;
     double maxResponse;
     output.nMatches = 0;
     int ridx = 0;
@@ -955,8 +953,8 @@ TMultiResMatchingOutput vision::matchMultiResolutionFeatures(
         double sRegionY0 = max( (*it1)->y-min((hWindow+2*(*it1)->nTimesLastSeen), mxsize), 0.0f);
         double sRegionY1 = min( (*it1)->y+min((hWindow+2*(*it1)->nTimesLastSeen), mxsize), (float)imageH );
 
-        minDist = 1e6;
-        minIdx  = -1;
+        int minDist = 1e6;
+        //int minIdx  = -1;
         minScale = -1;
         maxResponse = 0;
         ridx = 0;
@@ -1394,7 +1392,7 @@ int vision::computeMoreDescriptors(
         inputFeat->y+hLargestSize > smLeftImg.getHeight()-1 || inputFeat->y-hLargestSize < 0 )
             return 0;
 
-    int iniScale = 0, endScale = 0;
+    //int iniScale = 0, endScale = 0;
     if( lowerScales )
     {
         vector<double> thisScales(2);
@@ -1407,8 +1405,8 @@ int vision::computeMoreDescriptors(
         outputFeat->multiScales.push_front( thisScales[1]*baseScale );
         outputFeat->multiScales.push_front( thisScales[0]*baseScale );
 
-        iniScale = 0;
-        endScale = 2;
+//        iniScale = 0;
+//        endScale = 2;
 
         for( int k = 1; k >= 0; --k )
         {

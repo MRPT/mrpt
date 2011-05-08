@@ -59,7 +59,7 @@ double feature_matching_test_Harris_CC( int w, int h )
 	// Extract features: HARRIS
 	fExt.options.featsType = featHarris;
 
-	size_t				nMatches;
+	//size_t				nMatches;
 	TMatchingOptions	opt;
 	const size_t		N = 20;
 
@@ -69,7 +69,8 @@ double feature_matching_test_Harris_CC( int w, int h )
 	{
 		fExt.detectFeatures( imL, featsHarris_L, 0, NFEATS );
 		fExt.detectFeatures( imR, featsHarris_R, 0, NFEATS );
-		nMatches = matchFeatures( featsHarris_L, featsHarris_R, mHarris );
+		//nMatches =
+		matchFeatures( featsHarris_L, featsHarris_R, mHarris );
 	}
 	const double T = tictac.Tac()/N;
 
@@ -97,7 +98,6 @@ double feature_matching_test_Harris_SAD( int w, int h )
 	// Extract features: HARRIS
 	fExt.options.featsType = featHarris;
 
-	size_t				nMatches;
 	TMatchingOptions	opt;
 	const size_t		N = 20;
 	opt.matching_method = TMatchingOptions::mmSAD;
@@ -108,7 +108,8 @@ double feature_matching_test_Harris_SAD( int w, int h )
 	{
 		fExt.detectFeatures( imL, featsHarris_L, 0, NFEATS );
 		fExt.detectFeatures( imR, featsHarris_R, 0, NFEATS );
-		nMatches = matchFeatures( featsHarris_L, featsHarris_R, mHarris, opt );
+		//nMatches =
+		matchFeatures( featsHarris_L, featsHarris_R, mHarris, opt );
 	}
 	const double T = tictac.Tac()/N;
 
@@ -135,7 +136,7 @@ double feature_matching_test_SIFT( int w, int h )
 	// Extract features: HARRIS
 	fExt.options.featsType = featSIFT;
 
-	size_t				nMatches;
+	//size_t				nMatches;
 	TMatchingOptions	opt;
 	const size_t		N = 5;
 	opt.matching_method = TMatchingOptions::mmDescriptorSIFT;
@@ -146,7 +147,8 @@ double feature_matching_test_SIFT( int w, int h )
 	{
 		fExt.detectFeatures( imL, featsSIFT_L, 0, NFEATS );
 		fExt.detectFeatures( imR, featsSIFT_R, 0, NFEATS );
-		nMatches = matchFeatures( featsSIFT_L, featsSIFT_R, mSIFT, opt );
+		//nMatches =
+		matchFeatures( featsSIFT_L, featsSIFT_R, mSIFT, opt );
 	}
 	const double T = tictac.Tac()/N;
 
@@ -173,7 +175,7 @@ double feature_matching_test_SURF( int w, int h )
 	// Extract features: HARRIS
 	fExt.options.featsType = featSURF;
 
-	size_t				nMatches;
+	//size_t				nMatches;
 	TMatchingOptions	opt;
 	const size_t		N = 10;
 	opt.matching_method = TMatchingOptions::mmDescriptorSURF;
@@ -184,7 +186,8 @@ double feature_matching_test_SURF( int w, int h )
 	{
 		fExt.detectFeatures( imL, featsSURF_L, 0, NFEATS );
 		fExt.detectFeatures( imR, featsSURF_R, 0, NFEATS );
-		nMatches = matchFeatures( featsSURF_L, featsSURF_R, mSURF, opt );
+		//nMatches =
+		matchFeatures( featsSURF_L, featsSURF_R, mSURF, opt );
 	}
 	const double T = tictac.Tac()/N;
 
@@ -211,7 +214,7 @@ double feature_matching_test_FAST_CC( int w, int h )
 	// Extract features: HARRIS
 	fExt.options.featsType = featFAST;
 
-	size_t				nMatches;
+	//size_t				nMatches;
 	TMatchingOptions	opt;
 	const size_t		N = 20;
 
@@ -221,7 +224,8 @@ double feature_matching_test_FAST_CC( int w, int h )
 	{
 		fExt.detectFeatures( imL, featsFAST_L, 0, NFEATS );
 		fExt.detectFeatures( imR, featsFAST_R, 0, NFEATS );
-		nMatches = matchFeatures( featsFAST_L, featsFAST_R, mFAST, opt );
+		//nMatches =
+		matchFeatures( featsFAST_L, featsFAST_R, mFAST, opt );
 	}
 	const double T = tictac.Tac()/N;
 
@@ -248,7 +252,7 @@ double feature_matching_test_FAST_SAD( int w, int h )
 	// Extract features: HARRIS
 	fExt.options.featsType = featFAST;
 
-	size_t				nMatches;
+	//size_t				nMatches;
 	TMatchingOptions	opt;
 	const size_t		N = 20;
 	opt.matching_method			= TMatchingOptions::mmSAD;
@@ -259,7 +263,8 @@ double feature_matching_test_FAST_SAD( int w, int h )
 	{
 		fExt.detectFeatures( imL, featsFAST_L, 0, NFEATS );
 		fExt.detectFeatures( imR, featsFAST_R, 0, NFEATS );
-		nMatches = matchFeatures( featsFAST_L, featsFAST_R, mFAST, opt );
+		//nMatches =
+		matchFeatures( featsFAST_L, featsFAST_R, mFAST, opt );
 	}
 	const double T = tictac.Tac()/N;
 

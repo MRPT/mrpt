@@ -150,11 +150,11 @@ void  CColouredPointsMap::loadFromRangeScan(
 		float		m23 = HM.get_unsafe(2,3);
 
 		float		lx_1,ly_1,lz_1,lx,ly,lz;		// Punto anterior y actual:
-		float		lx_2,ly_2,lz_2;				// Punto antes del anterior
+		float		lx_2,ly_2;				// Punto antes del anterior
 
 		// Initial last point:
 		lx_1 = -100; ly_1 = -100; lz_1 = -100;
-		lx_2 = -100; ly_2 = -100; lz_2 = -100;
+		lx_2 = -100; ly_2 = -100;
 
 		// ------------------------------------------------------
 		//		Pass range scan to a set of 2D points:
@@ -311,7 +311,6 @@ void  CColouredPointsMap::loadFromRangeScan(
 
 						lx_2 = lx_1;
 						ly_2 = ly_1;
-						lz_2 = lz_1;
 
 						lx_1 = lx;
 						ly_1 = ly;
@@ -991,15 +990,13 @@ void  CColouredPointsMap::fuseWith(
 {
 	TMatchingPairList			correspondences;
 	TMatchingPairList::iterator	corrsIt;
-	size_t						nThis,nOther,i;
 	CPoint3D					a,b;
 	float						corrRatio;
 	static CPose2D				nullPose(0,0,0);
 
 	mark_as_modified();
 
-	nThis  =     this->getPointsCount();
-	nOther = otherMap->getPointsCount();
+	const size_t nOther = otherMap->getPointsCount();
 
 	// Find correspondences between this map and the other one:
 	// ------------------------------------------------------------
@@ -1025,7 +1022,7 @@ void  CColouredPointsMap::fuseWith(
 	// Merge matched points from both maps:
 	//  AND add new points which have been not matched:
 	// -------------------------------------------------
-	for (i=0;i<nOther;i++)
+	for (size_t i=0;i<nOther;i++)
 	{
 		unsigned long	w_a = otherMap->getPoint(i,a);	// Get "local" point into "a"
 

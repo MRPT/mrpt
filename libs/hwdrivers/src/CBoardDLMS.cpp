@@ -231,7 +231,7 @@ void CBoardDLMS::doProcess()
 						}
 						else
 						{
-							m = (lowByte + highByte*256.0f)/1000.0f;			// Correct value
+							m = (lowByte + highByte*256.0f)/( unit ? 1000.0f : 100.0f);			// Correct value
 							(*itValid) = 1;
 						}
 						(*itScan) = m;

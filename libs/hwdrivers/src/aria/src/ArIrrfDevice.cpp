@@ -17,9 +17,9 @@ Copyright (C) 2006, 2007 MobileRobots Inc.
      along with this program; if not, write to the Free Software
      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-If you wish to redistribute ARIA under different terms, contact 
-MobileRobots for information about a commercial version of ARIA at 
-robots@mobilerobots.com or 
+If you wish to redistribute ARIA under different terms, contact
+MobileRobots for information about a commercial version of ARIA at
+robots@mobilerobots.com or
 MobileRobots Inc, 19 Columbia Drive, Amherst, NH 03031; 800-639-9481
 */
 
@@ -67,7 +67,7 @@ AREXPORT void ArIrrfDevice::setRobot(ArRobot *robot)
 
 AREXPORT void ArIrrfDevice::processReadings(void)
 {
-  int i;
+  //int i;
   double rx, ry, nx, ny, dx, dy, dist;
   ArSensorReading *reading;
   std::list<ArSensorReading *>::iterator rawIt;
@@ -78,7 +78,7 @@ AREXPORT void ArIrrfDevice::processReadings(void)
   rx = myRobot->getX();
   ry = myRobot->getY();
 
-  i=0;
+  //i=0;
   for (rawIt = myRawReadings->begin();rawIt != myRawReadings->end();rawIt++)
   {
     reading = (*rawIt);
@@ -100,7 +100,7 @@ AREXPORT void ArIrrfDevice::processReadings(void)
 
       if (readingList != NULL)
       {
-        for (readIt = readingList->begin(); 
+        for (readIt = readingList->begin();
 	     readIt != readingList->end();
 	     readIt++)
         {
@@ -114,7 +114,7 @@ AREXPORT void ArIrrfDevice::processReadings(void)
       myCumulativeBuffer.addReading(nx, ny);
     }
   }
- 
+
   readingList = myCumulativeBuffer.getBuffer();
 
   rx = myRobot->getX();
@@ -144,7 +144,7 @@ AREXPORT void ArIrrfDevice::processReadings(void)
 */
 AREXPORT bool ArIrrfDevice::packetHandler(ArRobotPacket *packet)
 {
-  int portNum, i, dist, packetCounter;
+  int /*portNum,*/ i, dist, packetCounter;
   double conv;
   ArTransform packetTrans;
   std::list<ArSensorReading *>::iterator it;
@@ -163,7 +163,8 @@ AREXPORT bool ArIrrfDevice::packetHandler(ArRobotPacket *packet)
     return false;
 
   // Which Aux port the IRRF is connected to
-  portNum = packet->bufToByte2();
+  //portNum =
+  packet->bufToByte2();
   encoderTrans = myRobot->getEncoderTransform();
   encoderPose = encoderTrans.doInvTransform(pose);
 
