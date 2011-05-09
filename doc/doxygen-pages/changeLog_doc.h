@@ -111,6 +111,7 @@
 		- Fixed situations were RTTI registrations were not updated before usage, leading to "uregistered class?" exceptions.
 		- [mrpt-bayes] Kalman filter: Fixed wrong use of use_analytic_transition_jacobian instead of use_analytic_observation_jacobian (thanks "bgrigorian"!)
 		- [mrpt-base] Fixed out of buffer access in mrpt::math::CSparseMatrix::cs2dense() when the sparse matrix still is in the triplet format.
+		- pf-localization: Fixed wrong execution of batchs of experiments when "experimentRepetitions" > 1. Thanks to  yyfeng88625 for noticing! (http://www.mrpt.org/node/694 ) 
 
 
 

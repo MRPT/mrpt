@@ -234,14 +234,6 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 	}
 
-	// --------------------------
-	// Load the rawlog:
-	// --------------------------
-	printf("Opening the rawlog file...");
-	CFileGZInputStream rawlog_in_stream(RAWLOG_FILE);
-	printf("OK\n");
-
-
 	// Load the Ground Truth:
 	CMatrixDouble	GT(0,0);
 	if ( fileExists( GT_FILE ) )
@@ -321,6 +313,12 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 			     << "      RUNNING FOR "<< PARTICLE_COUNT << " INITIAL PARTICLES  - Repetition " << 1+repetition << " / " << NUM_REPS << "\n"
 			     <<"-------------------------------------------------------------\n\n";
 
+			// --------------------------
+			// Load the rawlog:
+			// --------------------------
+			printf("Opening the rawlog file...");
+			CFileGZInputStream rawlog_in_stream(RAWLOG_FILE);
+			printf("OK\n");
 
 			// The experiment directory is:
 			string      sOUT_DIR, sOUT_DIR_PARTS, sOUT_DIR_3D;
