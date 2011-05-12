@@ -31,11 +31,13 @@
 #include <mrpt/utils/utils_defs.h>
 #include <string.h>
 #include <vector>
-#include <windows.h>
-#include <wlanapi.h>
-#include <objbase.h>
-#include <wtypes.h>
-#pragma comment(lib, "Wlanapi.lib")
+
+#ifdef MRPT_OS_WINDOWS
+#	include <windows.h>
+#	include <wlanapi.h>
+#	include <objbase.h>
+#	include <wtypes.h>
+#endif
 
 namespace mrpt
 {
@@ -53,7 +55,7 @@ namespace utils
 		/** GUID of the WiFi interface
 		 */
 		std::string guid;
-		
+
 #ifdef MRPT_OS_WINDOWS
 		/** Gets a connection to the server
 		 * \exception std::exception In case there is a failure (happens when WiFi is not started)
@@ -78,7 +80,7 @@ namespace utils
 		 * \return PWLAN_INTERFACE_INFO returns a handle to the interface
 		 */
 		PWLAN_INTERFACE_INFO GetInterfaceW();
-		
+
 		/** Gets a handle to the network that has been set by setNet() (in Windows format)
 		 * \exception std::exception In case there is a failure
 		 * \return PWLAN_AVAILABLE_NETWORK returns a handle to the network
@@ -96,7 +98,7 @@ namespace utils
 		 */
 		HANDLE hClient;
 #endif
-		
+
 	public:
 		/** Default constructor.
 		 */
@@ -112,7 +114,7 @@ namespace utils
 
 		/** Gets a list of the interfaces
 		 * \exception std::exception In case there is a failure
-		 * \return std::vector returns the identifiers (GUID) of the available interfaces 
+		 * \return std::vector returns the identifiers (GUID) of the available interfaces
 		 */
 		std::vector<std::string>	ListInterfaces();
 

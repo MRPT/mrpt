@@ -38,6 +38,12 @@ using namespace mrpt::utils;
 
 
 #ifdef MRPT_OS_WINDOWS
+
+// Linking pragmas must always be in the .cpp, otherwise the lib will be linked by
+// user apps, while if MRPT is a DLL this is unnecesary!
+#pragma comment(lib, "Wlanapi.lib")
+
+
 /*---------------------------------------------------------------
 					setNet
    Set the SSID and GUID of the target network
@@ -55,11 +61,11 @@ void CWirelessPower::setNet(std::string ssid_, std::string guid_)
  ---------------------------------------------------------------*/
 void	CWirelessPower::ConnectWlanServerW()
 {
-	DWORD dwMaxClient = 2;        
+	DWORD dwMaxClient = 2;
     DWORD dwCurVersion = 0;
 	DWORD dwResult = 0;			// Result of the API call
 
-	// open connection to server 
+	// open connection to server
     dwResult = WlanOpenHandle(dwMaxClient, NULL, &dwCurVersion, &hClient);
     if (dwResult != ERROR_SUCCESS) {
 		// if an error ocurred
@@ -82,7 +88,7 @@ std::vector<std::string>	CWirelessPower::ListInterfaces()
 
 	std::vector<PWLAN_INTERFACE_INFO> ifaces;					// vector containing the interface entries (Windows format)
 	std::vector<PWLAN_INTERFACE_INFO>::iterator ifacesIter;		// iterator to run through the previous list
-	std::vector<std::string> output;							// output vector of strings 
+	std::vector<std::string> output;							// output vector of strings
 
 	// get the list
 	ifaces = ListInterfacesW();
@@ -109,7 +115,7 @@ std::vector<PWLAN_INTERFACE_INFO>	CWirelessPower::ListInterfacesW()
     PWLAN_INTERFACE_INFO pIfInfo = NULL;					// information element for one interface
 	DWORD dwResult = 0;
 
-	int i;	
+	int i;
 
 	// Call the interface enumeration function of the API
 	dwResult = WlanEnumInterfaces(hClient, NULL, &pIfList);
@@ -122,15 +128,15 @@ std::vector<PWLAN_INTERFACE_INFO>	CWirelessPower::ListInterfacesW()
         // You can use FormatMessage here to find out why the function failed
     } else {
 		// iterate throught interfaces to add them to the output vector
-	
+
 		for (i = 0; i < (int) pIfList->dwNumberOfItems; i++) {
-			
+
             pIfInfo = (WLAN_INTERFACE_INFO *) &pIfList->InterfaceInfo[i];
 			outputVector.push_back(pIfInfo);
 		}
 	}
 	return outputVector;
-	
+
 }
 
 
@@ -144,13 +150,13 @@ PWLAN_INTERFACE_INFO CWirelessPower::GetInterfaceW()
 	// Get interface given the GUID as a string (by the guid property of the object)
 
 
-	std::vector<PWLAN_INTERFACE_INFO> ifaceList;						// interface list 
+	std::vector<PWLAN_INTERFACE_INFO> ifaceList;						// interface list
 	std::vector<PWLAN_INTERFACE_INFO>::iterator ifaceIter;				// iterator
 	PWLAN_INTERFACE_INFO output = NULL;									// interface info element
 
 	// get a list of all the interfaces
 	ifaceList = ListInterfacesW();
-	
+
 	// search for the interface that has the given GUID
 	for(ifaceIter = ifaceList.begin(); ifaceIter != ifaceList.end(); ifaceIter++){
 		if (GUID2Str((*ifaceIter)->InterfaceGuid) == guid){
@@ -261,17 +267,17 @@ int		CWirelessPower::GetPower()
 {
 	//int iRSSI = 0;					// Received signal strength indication
 	PWLAN_AVAILABLE_NETWORK wlan;	// handler to the network
-	
+
 	// Get a handler to the network
 	wlan = GetNetworkW();
 /*
 	// Calculate the RSSI
 	if (wlan->wlanSignalQuality == 0)
 		iRSSI = -100;
-	else if (wlan->wlanSignalQuality == 100)   
+	else if (wlan->wlanSignalQuality == 100)
 		iRSSI = -50;
 	else
-		iRSSI = -100 + (wlan->wlanSignalQuality/2); 
+		iRSSI = -100 + (wlan->wlanSignalQuality/2);
 
 	return iRSSI;
 */
@@ -295,16 +301,16 @@ std::string CWirelessPower::GUID2Str(GUID ifaceGuid)
 	WCHAR GuidString[39] = {0};
 	char GuidChar[100];
 
-	
-	std::string outputString;	
+
+	std::string outputString;
 
 	// Call the API function that gets the name of the GUID as a WCHAR[]
-    iRet = StringFromGUID2(ifaceGuid, (LPOLESTR) &GuidString, sizeof(GuidString)/sizeof(*GuidString)); 
+    iRet = StringFromGUID2(ifaceGuid, (LPOLESTR) &GuidString, sizeof(GuidString)/sizeof(*GuidString));
             // For c rather than C++ source code, the above line needs to be
-            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 
-            //     sizeof(GuidString)/sizeof(*GuidString)); 
+            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString,
+            //     sizeof(GuidString)/sizeof(*GuidString));
 
-	
+
 	// translate from a WCHAR to string if no error happened
 	if (iRet == 0){
 		THROW_EXCEPTION("StringFromGUID2 failed\n");
@@ -316,7 +322,7 @@ std::string CWirelessPower::GUID2Str(GUID ifaceGuid)
 			outputString = std::string(GuidChar);
 		}
 	}
-	
+
 	return outputString;
 }
 #endif //  end of Windows code
