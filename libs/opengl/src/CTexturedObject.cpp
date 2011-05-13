@@ -361,6 +361,7 @@ void  CTexturedObject::writeToStreamTexturedObject(CStream &out) const
 
 void  CTexturedObject::render_dl() const
 {
+#if MRPT_HAS_OPENGL_GLUT
 	render_pre();
 	if (glGetError()!= GL_NO_ERROR)
 		std::cerr << "render_pre: Error" << std::endl;
@@ -370,6 +371,7 @@ void  CTexturedObject::render_dl() const
 	render_post();
 	if (glGetError()!= GL_NO_ERROR)
 		std::cerr << "render_post: Error" << std::endl;
+#endif
 }
 
 

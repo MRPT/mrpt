@@ -29,6 +29,8 @@
 
 #include <mrpt/base.h>  // Precompiled headers
 
+#ifdef MRPT_OS_WINDOWS
+
 #include <mrpt/utils/CWirelessPower.h>
 
 
@@ -40,9 +42,6 @@
 #pragma comment(lib, "Wlanapi.lib")
 
 using namespace mrpt::utils;
-
-
-#ifdef MRPT_OS_WINDOWS
 
 /*---------------------------------------------------------------
 					ConnectWlanServerW

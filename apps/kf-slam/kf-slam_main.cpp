@@ -259,7 +259,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 
 	const bool  SAVE_3D_SCENES = cfgFile.read_bool("MappingApplication","SAVE_3D_SCENES", true);
 	const bool  SAVE_MAP_REPRESENTATIONS = cfgFile.read_bool("MappingApplication","SAVE_MAP_REPRESENTATIONS", true);
-	const bool  SHOW_3D_LIVE = cfgFile.read_bool("MappingApplication","SHOW_3D_LIVE", false);
+	bool  SHOW_3D_LIVE = cfgFile.read_bool("MappingApplication","SHOW_3D_LIVE", false);
 	const bool  CAMERA_3DSCENE_FOLLOWS_ROBOT = cfgFile.read_bool("MappingApplication","CAMERA_3DSCENE_FOLLOWS_ROBOT", false);
 
 #if !MRPT_HAS_WXWIDGETS

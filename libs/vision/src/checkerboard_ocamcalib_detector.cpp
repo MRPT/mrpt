@@ -69,13 +69,12 @@ If you use this code, please cite the following articles:
 
 #include "checkerboard_ocamcalib_detector.h"
 
+#if MRPT_HAS_OPENCV
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
-
-#if MRPT_HAS_OPENCV
 
 //===========================================================================
 // CODE STARTS HERE
@@ -2257,7 +2256,7 @@ void quadListMakeUnique( std::vector<CvCBQuadPtr> &quads)
 		);
 	for (size_t i=0;i<new_quads.size();i++)
 		for (size_t j=0;j<4;j++)
-			new_quads[i]->neighbors[j] = new_quads[ neig_indices[i][j] ];
+x			new_quads[i]->neighbors[j] = new_quads[ neig_indices[i][j] ];
 }
 
 
