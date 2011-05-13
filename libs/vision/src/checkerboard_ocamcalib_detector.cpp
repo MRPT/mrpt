@@ -2256,7 +2256,7 @@ void quadListMakeUnique( std::vector<CvCBQuadPtr> &quads)
 		);
 	for (size_t i=0;i<new_quads.size();i++)
 		for (size_t j=0;j<4;j++)
-x			new_quads[i]->neighbors[j] = new_quads[ neig_indices[i][j] ];
+			new_quads[i]->neighbors[j] = new_quads[ neig_indices[i][j] ];
 }
 
 
