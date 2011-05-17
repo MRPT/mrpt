@@ -233,7 +233,7 @@ void  CKinect::loadConfig_sensorSpecific(
 	m_grab_image = configSource.read_bool(iniSection,"grab_image",m_grab_image);
 	m_grab_depth = configSource.read_bool(iniSection,"grab_depth",m_grab_depth);
 	m_grab_3D_points = configSource.read_bool(iniSection,"grab_3D_points",m_grab_3D_points);
-	m_grab_IMU = configSource.read_bool(iniSection,"grab_IMU ",m_grab_IMU );
+	m_grab_IMU = configSource.read_bool(iniSection,"grab_IMU",m_grab_IMU );
 
 	m_video_channel = configSource.read_enum<TVideoChannel>(iniSection,"video_channel",m_video_channel);
 
@@ -554,7 +554,7 @@ void CKinect::getNextObservation(
 		}
 
 		// Set range image --------------------------
-		if (m_grab_depth)
+		if (m_grab_depth || m_grab_3D_points)
 		{
 			newObs.hasRangeImage = true;
 			newObs.rangeImage.setSize(KINECT_H,KINECT_W);
@@ -591,6 +591,12 @@ void CKinect::getNextObservation(
 	if ( _out_obs.hasRangeImage && m_grab_3D_points )
 	{
 		_out_obs.project3DPointsFromDepthImage();
+
+		if ( !m_grab_depth )
+		{
+			_out_obs.hasRangeImage = false;
+			_out_obs.rangeImage.resize(0,0);
+		}	
 
 	}
 
