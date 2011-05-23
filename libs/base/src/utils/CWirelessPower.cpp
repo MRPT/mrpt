@@ -29,12 +29,168 @@
 
 #include <mrpt/base.h>  // Precompiled headers
 
-#ifdef MRPT_OS_WINDOWS
 
 #include <mrpt/utils/CWirelessPower.h>
 
 
 #include <mrpt/config.h>
+
+#ifdef MRPT_OS_LINUX
+#include <iostream>
+#include <sstream>
+using namespace mrpt::utils;
+
+/*---------------------------------------------------------------
+					setNet
+   Set the SSID and GUID of the target network
+ ---------------------------------------------------------------*/
+
+void CWirelessPower::setNet(std::string ssid_, std::string guid_)
+{
+	ssid = ssid_;
+	guid = guid_;   // in the case of Linux, the "GUID" is the interface name (wlanX)
+}
+
+
+/*---------------------------------------------------------------
+					ListInterfaces
+   Gets a list of the interfaces
+ ---------------------------------------------------------------*/
+
+std::vector<std::string>	CWirelessPower::ListInterfaces()
+{
+    // in linux, the command line is used to get all the relevant information
+
+	std::vector<std::string> output;				// output vector of strings
+
+	FILE *cmdoutput;                                // file handler for the executed command line
+	char ifaceread[256],*netname;                   // strings used to read the output of the command line and get the name of each network
+
+    // Run the command line: get the info frim /proc/net/wireless and cut out the names of the interfaces
+
+	//commandl << "cat /proc/net/wireless|grep \"wlan\"|cut -d\" \" -f2|cut -d\":\" -f1";
+	cmdoutput = popen("cat /proc/net/wireless|grep \"wlan\"|cut -d\" \" -f2|cut -d\":\" -f1","r");
+	fgets(ifaceread,3,cmdoutput);       // read output
+
+	// iterate thrugh list and get each interface as a string
+    netname = strtok(ifaceread,"\n");
+	while(netname){
+        output.push_back(std::string(netname));
+        netname = strtok(NULL,"\n");
+	}
+
+	return output;
+}
+
+
+/*---------------------------------------------------------------
+					ListNetworks
+   Gets a list of the networks available for the interface
+ ---------------------------------------------------------------*/
+
+std::vector<std::string>	CWirelessPower::ListNetworks()
+{
+
+	std::vector<std::string> output;							// output vector of strings
+
+	std::stringstream commandl;             // command to be executed
+
+	FILE *cmdoutput;
+	char listread[1024];
+	char *netname;
+
+    // Run command: get a list of networks and cut out their names. Note: this must be done as a superuser, so the command is executed with sudo. Usually it should ask for the password only the first time.
+    // To avoid the inconvenience of having to write the password, it would be useful to configure sudo to allow the user to run this command. See "man sudoers"
+	commandl << "sudo iwlist " << "wlan0" << " scan|grep ESSID|cut -d\"\\\"\" -f2";
+	cmdoutput = popen(commandl.str().c_str(),"r");
+	fgets(listread,3,cmdoutput);
+
+	netname = strtok(listread,"\n");
+	while(netname){
+        output.push_back(std::string(netname));
+        netname = strtok(NULL,"\n");
+	}
+
+
+	return output;
+
+}
+
+
+
+/*---------------------------------------------------------------
+					GetPower
+   Gets the power of the network
+ ---------------------------------------------------------------*/
+int		CWirelessPower::GetPower()
+{
+    FILE *cmdoutput;
+	char *powerReadL;
+    std::stringstream commandl;
+    // Run command: get the power of the networks and additional info
+	commandl << "sudo iwlist " << "wlan0" << " scan";
+	cmdoutput = popen(commandl.str().c_str(),"r");
+
+	std::vector<std::string> powerReadV;
+    size_t readBytes;
+
+  powerReadL = (char *) malloc (256);
+	std::stringstream ssidLine;
+
+	ssidLine << "ESSID:\"" << ssid << "\"";
+	int i = 0;
+    getline(&powerReadL,&readBytes,cmdoutput);
+    while(!strstr(powerReadL, ssidLine.str().c_str())){
+        powerReadV.push_back(std::string(powerReadL));
+        getline(&powerReadL,&readBytes,cmdoutput);
+       // mrpt::system::pause();
+	}
+
+    std::vector<std::string>::iterator ssiter= powerReadV.end() - 2;
+
+char powerLine[256];
+
+	// now we have a string per output line of iwlist. We must find the line containing the desired ESSID and read the power from two lines before
+
+strcpy(powerLine,(*ssiter).c_str());
+
+    char level[10];
+    //*level = '0';
+	// If the ESSID was found and the line containing the power read, separate the information now
+	//if (sIter != powerReadV.end()){
+	 //   std::cout << "PASA 6" << std::endl;
+        // meaning that the ESSID was found
+        // Example pf the value of poerLine: Quality=57/100  Signal level=57/100
+        char *fraction;
+         //fraction = (char *) malloc (256);
+        strtok(powerLine,"=");
+        strtok(NULL,"=");
+        fraction = strtok(NULL,"=");
+        strcpy(level,strtok(fraction,"/"));
+
+
+    //std::cout << "Power level read: " << level << std::endl;
+    free(powerReadL);
+
+    return atoi(level);
+/*
+	// Calculate the RSSI
+	if (wlan->wlanSignalQuality == 0)
+		iRSSI = -100;
+	else if (wlan->wlanSignalQuality == 100)
+		iRSSI = -50;
+	else
+		iRSSI = -100 + (wlan->wlanSignalQuality/2);
+
+	return iRSSI;
+*/
+
+}
+
+
+#endif //ifdef MRPT_OS_LINUX
+
+#ifdef MRPT_OS_WINDOWS
 #include <windows.h>
 #include <wlanapi.h>
 #include <objbase.h>
@@ -152,16 +308,16 @@ std::string GUID2Str(GUID ifaceGuid)
 	WCHAR GuidString[39] = {0};
 	char GuidChar[100];
 
-	
-	std::string outputString;	
+
+	std::string outputString;
 
 	// Call the API function that gets the name of the GUID as a WCHAR[]
     iRet = StringFromGUID2(ifaceGuid, (LPOLESTR) &GuidString, sizeof(GuidString)/sizeof(*GuidString)); 
             // For c rather than C++ source code, the above line needs to be
-            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString, 
-            //     sizeof(GuidString)/sizeof(*GuidString)); 
+            // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString,
+            //     sizeof(GuidString)/sizeof(*GuidString));
 
-	
+
 	// translate from a WCHAR to string if no error happened
 	if (iRet == 0){
 		THROW_EXCEPTION("StringFromGUID2 failed\n");
@@ -173,7 +329,7 @@ std::string GUID2Str(GUID ifaceGuid)
 			outputString = std::string(GuidChar);
 		}
 	}
-	
+
 	return outputString;
 }
 
@@ -188,7 +344,7 @@ std::vector<std::string>	CWirelessPower::ListInterfaces()
 
 	std::vector<PWLAN_INTERFACE_INFO> ifaces;					// vector containing the interface entries (Windows format)
 	std::vector<PWLAN_INTERFACE_INFO>::iterator ifacesIter;		// iterator to run through the previous list
-	std::vector<std::string> output;							// output vector of strings 
+	std::vector<std::string> output;							// output vector of strings
 
 	// get the list
 	ifaces = ListInterfacesW(hClient);
@@ -217,13 +373,13 @@ PWLAN_INTERFACE_INFO GetInterfaceW(std::string guid, HANDLE hClient)
 	// Get interface given the GUID as a string (by the guid property of the object)
 
 
-	std::vector<PWLAN_INTERFACE_INFO> ifaceList;						// interface list 
+	std::vector<PWLAN_INTERFACE_INFO> ifaceList;						// interface list
 	std::vector<PWLAN_INTERFACE_INFO>::iterator ifaceIter;				// iterator
 	PWLAN_INTERFACE_INFO output = NULL;									// interface info element
 
 	// get a list of all the interfaces
 	ifaceList = ListInterfacesW(hClient);
-	
+
 	// search for the interface that has the given GUID
 	for(ifaceIter = ifaceList.begin(); ifaceIter != ifaceList.end(); ifaceIter++){
 		if (GUID2Str((*ifaceIter)->InterfaceGuid) == guid){
@@ -256,6 +412,10 @@ std::vector<PWLAN_AVAILABLE_NETWORK>	ListNetworksW(PWLAN_INTERFACE_INFO iface, H
 	int j;
 	std::vector<PWLAN_AVAILABLE_NETWORK> outputVector;	// output vector
 	WCHAR GuidString[39] = {0};
+	// Force a scan (to obtain new data)
+	PWLAN_RAW_DATA pIeData;
+	WlanScan((HANDLE)hClient, &ifaceGuid, NULL, pIeData, NULL);
+
 
 	// Call the Windows API and get a list of the networks available through the interface
 	dwResult = WlanGetAvailableNetworkList((HANDLE)hClient, &ifaceGuid, 0, NULL, &pBssList);
@@ -320,10 +480,10 @@ PWLAN_AVAILABLE_NETWORK GetNetworkW(HANDLE hClient, std::string ssid, std::strin
 
 	// Get a handler to the interface
 	iface = GetInterfaceW(guid, hClient);
-	
+
 	// Get the list of networks
 	std::vector<PWLAN_AVAILABLE_NETWORK> pBssList = ListNetworksW(iface,hClient);
-	
+
 
 	// Iterate through the list and find the network that has the matching SSID
 	std::vector<PWLAN_AVAILABLE_NETWORK>::iterator netIter;
@@ -347,17 +507,17 @@ int		CWirelessPower::GetPower()
 {
 	//int iRSSI = 0;					// Received signal strength indication
 	PWLAN_AVAILABLE_NETWORK wlan;	// handler to the network
-	
+
 	// Get a handler to the network
 	wlan = GetNetworkW((HANDLE)hClient,ssid,guid);
 /*
 	// Calculate the RSSI
 	if (wlan->wlanSignalQuality == 0)
 		iRSSI = -100;
-	else if (wlan->wlanSignalQuality == 100)   
+	else if (wlan->wlanSignalQuality == 100)
 		iRSSI = -50;
 	else
-		iRSSI = -100 + (wlan->wlanSignalQuality/2); 
+		iRSSI = -100 + (wlan->wlanSignalQuality/2);
 
 	return iRSSI;
 */
