@@ -175,7 +175,7 @@ namespace mrpt
 			 */
 			float           targetAllowedDistance;
 
-			/** The allowed distance from target in order to end the navigation.
+			/** Whether the \a target coordinates are in global coordinates (false) or are relative to the current robot pose (true).
 			 */
 			bool            targetIsRelative;
 		};
