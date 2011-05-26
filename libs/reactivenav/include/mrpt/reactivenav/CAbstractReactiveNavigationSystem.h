@@ -115,6 +115,10 @@ namespace mrpt
 	 *		- 15/SEP/2005: Totally rewritten again, for integration into MRPT Applications Repository.
 	 *		-  3/NOV/2009: All functors are finally replaced by the new virtual class CReactiveInterfaceImplementation
 	 *
+	 *   How to use:
+	 *      - A class with callbacks must be defined by the user and provided to the constructor.
+	 *      - navigationStep() must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.
+	 *
 	 * \sa CReactiveNavigationSystem, CReactiveInterfaceImplementation
 	 */
 	class REACTIVENAV_IMPEXP CAbstractReactiveNavigationSystem : public mrpt::utils::CDebugOutputCapable
