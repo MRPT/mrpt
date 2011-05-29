@@ -11,7 +11,7 @@ REM ---------------------------------------------------------------------------
 
 REM  Extra params we want on all public binary releases:
 set EXTRA_CMAKE_VARS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON
-set MSBUILDPARALLEL=/maxcpucount:4
+set MSBUILDPARALLEL=/maxcpucount:1
 
 REM Make sure params are OK:
 REM ------------------------------
@@ -46,7 +46,7 @@ REM ----------------------------------------------
 msbuild MRPT.sln /p:Configuration=Release %MSBUILDPARALLEL%
 IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
-REM Several tries to go on when MSVC9 linker crashes... (fuch yeah!)
+REM Several tries to go on when MSVC9 linker crashes... (fuck yeah!)
 msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
 msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
 msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%

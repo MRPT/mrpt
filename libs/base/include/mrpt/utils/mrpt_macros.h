@@ -242,7 +242,7 @@
 	 * \sa MRPT_TRY_START, MRPT_TRY_END
 	 */
 #	define ASSERT_(f) \
-		ASSERTMSG_(f, "Assert condition failed: " + ::std::string(#f) )
+		ASSERTMSG_(f, std::string("Assert condition failed: ") + ::std::string(#f) )
 
 /** Throws an exception if the number is NaN, IND, or +/-INF, or return the same number otherwise.
   */

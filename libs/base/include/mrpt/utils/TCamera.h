@@ -78,7 +78,7 @@ namespace mrpt
 
 			/** Rescale all the parameters for a new camera resolution (it raises an exception if the aspect ratio is modified, which is not permitted).
 			  */
-			void scaleToResolution(uint32_t new_ncols, uint32_t new_nrows);
+			void scaleToResolution(unsigned int new_ncols, unsigned int new_nrows);
 
 			/**  Save as a config block:
 			  *  \code

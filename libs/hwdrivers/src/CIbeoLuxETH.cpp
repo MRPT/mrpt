@@ -148,8 +148,8 @@ void CIbeoLuxETH::dataCollection()
 				newObs->maxRange = 200.00;
 
 				m_client.readAsync(ScanListHeader, 44, 10, 10);
-				/*scannumber =*/
-				ScanListHeader[1] * 0x100 + ScanListHeader[0];
+				/*scannumber =
+				ScanListHeader[1] * 0x100 + ScanListHeader[0]; */
 				numScanpoints = ScanListHeader[29] * 0x100 + ScanListHeader[28];
 				angleTicks = ScanListHeader[23] * 0x100 + ScanListHeader[22];
 

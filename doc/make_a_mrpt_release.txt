@@ -16,6 +16,7 @@
 The packages are in $(HOME)/mrpt_release and $(HOME)/mrpt_debian
 
 Now for windows binary packages:
+(see also the script: MRPT/scripts/automated_build_msvc_binary_package.bat)
 > Extract mrpt-0.9.3.zip
 > Build in Debug all the mrpt-* libs.
 > Run cmake again (this is to add the debug libs to the list of files to package!).

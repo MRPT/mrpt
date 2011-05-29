@@ -409,12 +409,11 @@ std::vector<PWLAN_AVAILABLE_NETWORK>	ListNetworksW(PWLAN_INTERFACE_INFO iface, H
     PWLAN_AVAILABLE_NETWORK_LIST pBssList = NULL;	// list of available networks
     PWLAN_AVAILABLE_NETWORK pBssEntry = NULL;		// information element for one interface
 	GUID ifaceGuid = iface->InterfaceGuid;			// Get GUID of the interface
-	int j;
 	std::vector<PWLAN_AVAILABLE_NETWORK> outputVector;	// output vector
 	WCHAR GuidString[39] = {0};
 	// Force a scan (to obtain new data)
-	PWLAN_RAW_DATA pIeData;
-	WlanScan((HANDLE)hClient, &ifaceGuid, NULL, pIeData, NULL);
+	WLAN_RAW_DATA IeData;
+	WlanScan((HANDLE)hClient, &ifaceGuid, NULL, &IeData, NULL);
 
 
 	// Call the Windows API and get a list of the networks available through the interface
@@ -428,7 +427,7 @@ std::vector<PWLAN_AVAILABLE_NETWORK>	ListNetworksW(PWLAN_INTERFACE_INFO iface, H
 		THROW_EXCEPTION(excmsg.str());
 	} else {
 		// for each network, get its info and save it
-		for (j = 0; j < pBssList->dwNumberOfItems; j++) {
+		for (unsigned int j = 0; j < pBssList->dwNumberOfItems; j++) {
 			pBssEntry = (WLAN_AVAILABLE_NETWORK *) & pBssList->Network[j];	// get entry for network
 			outputVector.push_back(pBssEntry);	// save entry
 		}

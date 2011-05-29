@@ -311,7 +311,7 @@ void TCamera::loadFromConfigFile(const std::string &section,  const mrpt::utils:
 
 /** Rescale all the parameters for a new camera resolution (it raises an exception if the aspect ratio is modified, which is not permitted).
   */
-void TCamera::scaleToResolution(uint32_t new_ncols, uint32_t new_nrows)
+void TCamera::scaleToResolution(unsigned int new_ncols, unsigned int new_nrows)
 {
 	if (ncols == new_ncols && nrows == new_nrows)
 		return; // already done
