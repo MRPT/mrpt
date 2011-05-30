@@ -46,7 +46,7 @@ CPTG3::CPTG3(const TParameters<double> &params ) :
 /*---------------------------------------------------------------
 						getDescription
   ---------------------------------------------------------------*/
-std::string CPTG3::getDescription()
+std::string CPTG3::getDescription() const
 {
 	char str[100];
 	os::sprintf(str,100,"Type#3PTG:C|C,S");

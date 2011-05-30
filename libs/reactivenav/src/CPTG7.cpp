@@ -44,7 +44,7 @@ CPTG7::CPTG7(const TParameters<double> &params ) : CParameterizedTrajectoryGener
 /*---------------------------------------------------------------
 						getDescription
   ---------------------------------------------------------------*/
-std::string CPTG7::getDescription()
+std::string CPTG7::getDescription() const
 {
 	return std::string( format("Type#7PTG,av=%udeg,aw=%udeg",(int)RAD2DEG(cte_a0v),(int)RAD2DEG(cte_a0w)) );
 }

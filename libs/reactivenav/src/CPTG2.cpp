@@ -44,7 +44,7 @@ CPTG2::CPTG2(const TParameters<double> &params ) : CParameterizedTrajectoryGener
 /*---------------------------------------------------------------
 						getDescription
   ---------------------------------------------------------------*/
-std::string CPTG2::getDescription()
+std::string CPTG2::getDescription() const
 {
 	char str[100];
 	os::sprintf(str,100,"Type#2PTG,av=%udeg,aw=%udeg",(int)RAD2DEG(cte_a0v),(int)RAD2DEG(cte_a0w) );

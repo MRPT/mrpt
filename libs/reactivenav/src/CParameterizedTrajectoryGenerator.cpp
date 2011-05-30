@@ -56,7 +56,7 @@ using namespace std;
  *   - system_TAU, system_DELAY (Optional): Robot dynamics
  */
 CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const TParameters<double> &params) :
-	m_collisionGrid(-1,1,-1,1,0.5)
+	m_collisionGrid(-1,1,-1,1,0.5,this)
 {
 	this->refDistance	= params["ref_distance"];
 	this->V_MAX			= params["v_max"];
@@ -588,6 +588,8 @@ bool CParameterizedTrajectoryGenerator::LoadColGridsFromFile( const std::string 
 	}
 }
 
+const uint32_t COLGRID_FILE_MAGIC = 0xC0C0C0C0;
+
 /*---------------------------------------------------------------
 					Save to file
   ---------------------------------------------------------------*/
@@ -596,6 +598,9 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::saveToFile( CStream *f )
 	try
 	{
 		if (!f) return false;
+
+		*f << COLGRID_FILE_MAGIC;
+		*f << m_parent->getDescription();
 
 		*f << m_x_min << m_x_max << m_y_min << m_y_max;
 		*f << m_resolution;
@@ -617,16 +622,27 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f 
 	{
         if (!f) return false;
 
-        float	ff;
+		// Return false if the file contents doesn't match what we expected:
+		uint32_t file_magic;
+		*f >> file_magic;
 
-		MRPT_TODO("JL: Add smart detection of stored vs. actual PTG parameters.")
+		if (COLGRID_FILE_MAGIC!=file_magic)
+			return false;
+
+		const std::string expected_desc = m_parent->getDescription();
+		std::string desc;
+		*f >> desc;
+
+		if (desc!=expected_desc)
+			return false;
 
         // Datos descriptivos de la rejilla:
-		*f >> ff; ASSERT_(ff==m_x_min);
-		*f >> ff; ASSERT_(ff==m_x_max);
-		*f >> ff; ASSERT_(ff==m_y_min);
-		*f >> ff; ASSERT_(ff==m_y_max);
-		*f >> ff; ASSERT_(ff==m_resolution);
+        float	ff;
+		*f >> ff; if(ff!=m_x_min) return false;
+		*f >> ff; if(ff!=m_x_max) return false;
+		*f >> ff; if(ff!=m_y_min) return false;
+		*f >> ff; if(ff!=m_y_max) return false;
+		*f >> ff; if(ff!=m_resolution) return false;
 
 		*f >> m_map;
 		return true;

@@ -35,8 +35,8 @@ namespace mrpt
   namespace reactivenav
   {
 
-	/** A PTG for circular paths. The parameter K is related with the transformation between alfa values 
-			and curvature of the arcs. Let R be the radius of the circular path (the inverse of the curvature). 
+	/** A PTG for circular paths. The parameter K is related with the transformation between alfa values
+			and curvature of the arcs. Let R be the radius of the circular path (the inverse of the curvature).
 			Then: <br> <center><code> R = K / (v<sub>MAX</sub> tan &alfa;) </code></center>
 	 */
 	class REACTIVENAV_IMPEXP CPTG1 : public CParameterizedTrajectoryGenerator
@@ -49,9 +49,9 @@ namespace mrpt
 
 			/** The lambda function. */
 			void lambdaFunction( float x, float y, int &out_k, float &out_d );
-			
+
 			/** Gets a short textual description of the PTG and its parameters. */
-			std::string getDescription();
+			std::string getDescription() const;
 
 
 			bool PTG_IsIntoDomain( float x, float y );

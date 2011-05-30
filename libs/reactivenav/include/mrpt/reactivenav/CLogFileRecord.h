@@ -142,10 +142,6 @@ namespace mrpt
 		   */
 		 float						actual_v,actual_w;
 
-		 /** Some recent values from previous iterations:
-		   */
-		 vector_float				prevV,prevW,prevSelPTG;
-
 		 /** The used robot shape in WS.
 		   */
 		 vector_float				robotShape_x,robotShape_y;
@@ -153,10 +149,6 @@ namespace mrpt
 		 /** The navigator behavior.
 		   */
 		 int32_t					navigatorBehavior;
-
-		 /** The segment of the door-crossing behaviors, when applicable, in relative coordinates.
-		   */
-		 mrpt::poses::CPoint2D				doorCrossing_P1,doorCrossing_P2;
 
 	 private:
 		 /** Free all objects in infoPerPTGs structures (used internally).

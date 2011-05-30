@@ -47,10 +47,10 @@ namespace mrpt
 			/** The lambda function.
 			  */
 			void lambdaFunction( float x, float y, int &out_k, float &out_d );
-			
+
 			/** Gets a short textual description of the PTG and its parameters.
 			*/
-			std::string getDescription();
+			std::string getDescription() const;
 
 			bool PTG_IsIntoDomain( float x, float y );
 
@@ -59,7 +59,7 @@ namespace mrpt
 			float	cte_a0v;
 			float	cte_a0w;
 
-	
+
 	};
   }
 }

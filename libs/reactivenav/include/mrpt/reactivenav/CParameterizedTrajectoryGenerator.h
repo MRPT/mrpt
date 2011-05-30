@@ -75,7 +75,7 @@ namespace mrpt
 
 		/** Gets a short textual description of the PTG and its parameters.
 		  */
-		virtual std::string getDescription() = 0;
+		virtual std::string getDescription() const = 0 ;
 
         /** Destructor */
         virtual ~CParameterizedTrajectoryGenerator() {  }
@@ -180,13 +180,17 @@ namespace mrpt
 		  *	 - map value (float)    -> the MINIMUM distance (d), in meters, associated with that "k".
 		  */
 		typedef std::map<uint16_t,float> TCollisionCell;
-        
+
 		/** An internal class for storing the collision grid  */
 		class REACTIVENAV_IMPEXP CColisionGrid : public mrpt::utils::CDynamicGrid<TCollisionCell>
         {
-          public:
-				CColisionGrid(float x_min, float x_max,float y_min, float y_max, float resolution ) 
-				  : mrpt::utils::CDynamicGrid<TCollisionCell>(x_min,x_max,y_min,y_max,resolution)
+		private:
+				CParameterizedTrajectoryGenerator const * m_parent;
+
+		public:
+				CColisionGrid(float x_min, float x_max,float y_min, float y_max, float resolution, CParameterizedTrajectoryGenerator* parent )
+				  : mrpt::utils::CDynamicGrid<TCollisionCell>(x_min,x_max,y_min,y_max,resolution),
+				    m_parent(parent)
 				{
 				}
 				virtual ~CColisionGrid() { }

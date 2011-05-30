@@ -38,7 +38,6 @@ using namespace mrpt::utils;
 using namespace mrpt::reactivenav;
 using namespace std;
 
-#define		PREVIOUS_VALUES_IN_LOG		50
 
 /*---------------------------------------------------------------
 					Constructor
@@ -49,16 +48,20 @@ CReactiveNavigationSystem::CReactiveNavigationSystem(
     bool					enableLogToFile)
 	:
 	CAbstractReactiveNavigationSystem(react_iterf_impl),
-	meanExecutionTime(0.1f),
-	meanTotalExecutionTime(0.1f),
-	nLastSelectedPTG(-1),
-	m_decimateHeadingEstimate(0)
+	last_cmd_v                   (0),
+	last_cmd_w                   (0),
+	navigationEndEventSent       (false),
+	holonomicMethod              (NULL),
+	logFile                      (NULL),
+	m_enableConsoleOutput        (enableConsoleOutput),
+	m_init_done                  (false),
+	meanExecutionTime            (0.1f),
+	meanTotalExecutionTime       (0.1f),
+	nLastSelectedPTG             (-1),
+	m_decimateHeadingEstimate    (0),
+	m_closing_navigator          (false)
 {
 	// Initialize some members:
-	logFile				= NULL;
-	holonomicMethod		= NULL;
-	enableConsoleOutput = enableConsoleOutput;
-	CerrandoHilo		= false;
 	nIteration			= 0;
 	meanExecutionPeriod	= 0.1f;
 	last_cmd_v			= 0;
@@ -66,9 +69,6 @@ CReactiveNavigationSystem::CReactiveNavigationSystem(
 
 	PTGs.resize(0);
 	enableLogFile( enableLogToFile );
-
-	// Reset behavior:
-	navigatorBehavior = beNormalNavigation;
 }
 
 /*---------------------------------------------------------------
@@ -115,6 +115,7 @@ void CReactiveNavigationSystem::getLastLogRecord( CLogFileRecord &o )
 void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const mrpt::utils::CConfigFileBase &robotIni )
 {
 	MRPT_START;
+
 	collisionGridsMustBeUpdated = true;
 
 	// Load config from INI file:
@@ -150,17 +151,6 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 
 	badNavAlarm_AlarmTimeout = ini.read_float("GLOBAL_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", 10, true);
-
-	// -----
-	DOOR_CROSSING_SEARCH_TARGET_DISTANCEx2 = ini.read_float("DOOR_CROSSING","DOOR_CROSSING_SEARCH_TARGET_DISTANCEx2", 12.0f );
-	VORONOI_MINIMUM_CLEARANCE		   	   = ini.read_float("DOOR_CROSSING","VORONOI_MINIMUM_CLEARANCE", 0.2f );
-	DISABLE_PERIOD_AFTER_FAIL		   	   = ini.read_float("DOOR_CROSSING","DISABLE_PERIOD_AFTER_FAIL",3.0f );
-	VORONOI_PATH_DIST_FROM_DOORWAY		   = ini.read_float("DOOR_CROSSING","VORONOI_PATH_DIST_FROM_DOORWAY",1.0f );
-	DOORCROSSING_HEADING_ACCURACY_DEG	   = ini.read_float("DOOR_CROSSING","DOORCROSSING_HEADING_ACCURACY_DEG",10.0f );
-	DOORCROSSING_ROTATION_CTE_DEG		   = ini.read_float("DOOR_CROSSING","DOORCROSSING_ROTATION_CTE_DEG", 50.0f );
-	DOOR_CROSSING_DIST_TO_AUX_TARGETS	   = ini.read_float("DOOR_CROSSING","DOOR_CROSSING_DIST_TO_AUX_TARGETS", 0.15f );
-	DOOR_CROOSING_BEH3_TIMEOUT			   = ini.read_float("DOOR_CROSSING","DOOR_CROOSING_BEH3_TIMEOUT", 4.0f );
-	DOOR_CROSSING_MAXIMUM_DOORWAY_SIZE	   = ini.read_float("DOOR_CROSSING","DOOR_CROSSING_MAXIMUM_DOORWAY_SIZE", 1.0f );
 
 	// Load robot shape:
 	// ---------------------------------------------
@@ -253,6 +243,10 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	printf_debug("  Robot Shape Points Count \t= %u\n", robotShape.verticesCount() );
 	printf_debug("  Obstacles 'z' axis range \t= [%.03f,%.03f]\n", minObstaclesHeight, maxObstaclesHeight );
 	printf_debug("\n\n");
+
+
+	m_init_done = true;
+
 
 	MRPT_END;
 }
@@ -356,14 +350,15 @@ void  CReactiveNavigationSystem::performNavigationStep()
 	float										curW;			// en rad/segundo
 	THolonomicMovement							selectedHolonomicMovement;
 	float										cmd_v=0,cmd_w=0;	// The non-holonomic command
-	float 										desired_cmd_v, desired_cmd_w;
 	std::vector<CHolonomicLogFileRecordPtr>		HLFRs;
 	int											nSelectedPTG;
 
 	float cur_approx_heading_dir = 0;
 
 	// Already closing??
-	if (CerrandoHilo) return;
+	if (m_closing_navigator) return;
+
+	if (!m_init_done) THROW_EXCEPTION("Have you called loadConfigFile() before?")
 
 	// Lock
 	mrpt::synch::CCriticalSectionLocker lock( &m_critZoneNavigating );
@@ -381,7 +376,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 		   ---------------------------------------------------------------- */
 		if ( !m_robot.getCurrentPoseAndSpeeds(curPose, curVL, curW ) )
 		{
-			Error_ParadaDeEmergencia("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
+			doEmergencyStop("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
 			return;
 		}
 
@@ -398,8 +393,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 			m_robot.sendNavigationEndEvent();
 		}
 
-		if ( targetDist < m_navigationParams.targetAllowedDistance &&
-		        navigatorBehavior == beNormalNavigation )
+		if ( targetDist < m_navigationParams.targetAllowedDistance )
 		{
 			m_robot.stop();
 			m_navigationState = IDLE;
@@ -605,40 +599,6 @@ void  CReactiveNavigationSystem::performNavigationStep()
 			last_cmd_v = cmd_v;
 			last_cmd_w = cmd_w;
 
-			// STEP8: Dynamics: Finds the best (cmd_v/w) closer to (desired_cmd_v/w);
-			// ---------------------------------------------------------------------
-			desired_cmd_v = cmd_v;
-			desired_cmd_w = cmd_w;
-
-			/*		DW.v_max = min( robotMax_V_mps, curVL + robotMax_V_accel_mpss * deg);
-					DW.v_min = max(-robotMax_V_mps, curVL - robotMax_V_accel_mpss * meanExecutionPeriod);
-					DW.w_max = min( DEG2RAD(robotMax_W_degps), curW + DEG2RAD(robotMax_W_accel_degpss * meanExecutionPeriod) );
-					DW.w_min = max(-DEG2RAD(robotMax_W_degps), curW - DEG2RAD(robotMax_W_accel_degpss * meanExecutionPeriod) );
-			*/
-			// Possible cases:
-			// --------------------------
-			// 1) cmd is into the DW:
-			if (1) /*( cmd_v>=DW.v_min && cmd_v<=DW.v_max &&
-				 cmd_w>=DW.w_min && cmd_w<=DW.w_max ) */
-			{
-				// OK!! Command is feasible. Let it be.
-
-			}
-			else
-			{
-				// Cmd is not feasible. Find the most similar one into the DW:
-				// ------------------------------------------------------------------
-				// Cases:
-				// 2) Desired curvature is into the reachable set:
-				//     Find cuts of constant curvature line with DW:
-				// 3) Desired curvature out of reachability: Only an
-				//     approximation can be found:
-				DW.findBestApproximation(
-				    desired_cmd_v, desired_cmd_w,	// IN
-				    cmd_v, cmd_w	// OUT
-				);
-			}
-
 		} // end of "!skipNormalReactiveNavigation"
 
 		// ---------------------------------------------------------------------
@@ -652,7 +612,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 		{
 			if ( !m_robot.changeSpeeds( cmd_v, cmd_w ) )
 			{
-				Error_ParadaDeEmergencia("\nERROR calling RobotMotionControl::changeSpeeds!! Stopping robot and finishing navigation\n");
+				doEmergencyStop("\nERROR calling RobotMotionControl::changeSpeeds!! Stopping robot and finishing navigation\n");
 				return;
 			}
 		}
@@ -690,7 +650,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 			nSelectedPTG = 0;
 		}
 
-		printf_debug("BEHAVIOR:%i\n", (int)navigatorBehavior );
+		printf_debug("\n");
 
 		// ---------------------------------------
 		// Generate log record
@@ -706,15 +666,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 		newLogRec.actual_w				= curW;
 		newLogRec.estimatedExecutionPeriod = meanExecutionPeriod;
 		newLogRec.nPTGs					= PTGs.size();
-		newLogRec.navigatorBehavior		= navigatorBehavior;
-
-		if ( navigatorBehavior==beDoorCrosing1 ||
-		        navigatorBehavior==beDoorCrosing2 ||
-		        navigatorBehavior==beDoorCrosing3 )
-		{
-			newLogRec.doorCrossing_P1 = m_bePassPoint1 - curPose;
-			newLogRec.doorCrossing_P2 = m_bePassPoint2 - curPose;
-		}
+		newLogRec.navigatorBehavior		= 0;  // Not used now
 
 		const size_t nVerts = robotShape.size();
 		if (size_t(newLogRec.robotShape_x.size()) != nVerts)
@@ -727,27 +679,6 @@ void  CReactiveNavigationSystem::performNavigationStep()
 			newLogRec.robotShape_x[i]= robotShape.GetVertex_x(i);
 			newLogRec.robotShape_y[i]= robotShape.GetVertex_y(i);
 		}
-
-		// Previous values:
-		if (prevV.size() != PREVIOUS_VALUES_IN_LOG) prevV.resize(PREVIOUS_VALUES_IN_LOG);
-		if (prevW.size() != PREVIOUS_VALUES_IN_LOG) prevW.resize(PREVIOUS_VALUES_IN_LOG);
-		if (prevSelPTG.size() != PREVIOUS_VALUES_IN_LOG) prevSelPTG.resize(PREVIOUS_VALUES_IN_LOG);
-
-		// Shift:
-		for (size_t i=0;i<PREVIOUS_VALUES_IN_LOG-1;i++)
-		{
-			prevV[i]=prevV[i+1];
-			prevW[i]=prevW[i+1];
-			prevSelPTG[i]=prevSelPTG[i+1];
-		}
-		// Last values:
-		prevV[PREVIOUS_VALUES_IN_LOG-1] = cmd_v;
-		prevW[PREVIOUS_VALUES_IN_LOG-1] = cmd_w;
-		prevSelPTG[PREVIOUS_VALUES_IN_LOG-1] = (float)nSelectedPTG;
-
-		newLogRec.prevV					= prevV;
-		newLogRec.prevW					= prevW;
-		newLogRec.prevSelPTG			= prevSelPTG;
 
 		// For each PTG:
 		if (!skipNormalReactiveNavigation)
@@ -1227,41 +1158,30 @@ void CReactiveNavigationSystem::STEP7_NonHolonomicMovement(
 *************************************************************************/
 CReactiveNavigationSystem::~CReactiveNavigationSystem()
 {
-	CerrandoHilo = true;
+	m_closing_navigator = true;
 
-	// Esperar a que termine la ejecucion actual, por si esta en otro hilo:
+	// Wait to end of navigation (multi-thread...)
 	m_critZoneNavigating.enter();
 	m_critZoneNavigating.leave();
 
-	// Por si acaso...
+	// Just in case.
 	m_robot.stop();
 
-	if (logFile)
-	{
-		delete logFile;
-		logFile = NULL;
-	}
-
+	mrpt::utils::delete_safe(logFile);
 
 	// Free PTGs:
 	for (size_t i=0;i<PTGs.size();i++)	delete PTGs[i];
 	PTGs.clear();
 
 	// Free holonomic method:
-	if (holonomicMethod)
-	{
-		delete holonomicMethod;
-		holonomicMethod = NULL;
-	}
-
-
+	mrpt::utils::delete_safe(holonomicMethod);
 }
 
 
 
 
 /*************************************************************************
-			 Evaluar navegacion:
+			 Evaluate navigation (not used)
 *************************************************************************/
 float  CReactiveNavigationSystem::evaluate( TNavigationParams *params )
 {
@@ -1269,7 +1189,7 @@ float  CReactiveNavigationSystem::evaluate( TNavigationParams *params )
 }
 
 /*************************************************************************
-			 Iniciar navegacion:
+			 Start navigation
 *************************************************************************/
 void  CReactiveNavigationSystem::navigate(CReactiveNavigationSystem::TNavigationParams *params )
 {
@@ -1277,9 +1197,6 @@ void  CReactiveNavigationSystem::navigate(CReactiveNavigationSystem::TNavigation
 
 	// Copiar datos:
 	m_navigationParams = *params;
-
-	// Reset behavior:
-	navigatorBehavior = beNormalNavigation;
 
 	// Si se piden coordenadas relativas, transformar a absolutas:
 	if ( m_navigationParams.targetIsRelative )
@@ -1291,7 +1208,7 @@ void  CReactiveNavigationSystem::navigate(CReactiveNavigationSystem::TNavigation
 
 		if ( !m_robot.getCurrentPoseAndSpeeds(currentPose, velLineal_actual,velAngular_actual) )
 		{
-			Error_ParadaDeEmergencia("\n[CReactiveNavigationSystem] Error querying current robot pose to resolve relative coordinates\n");
+			doEmergencyStop("\n[CReactiveNavigationSystem] Error querying current robot pose to resolve relative coordinates\n");
 			return;
 		}
 
@@ -1320,7 +1237,7 @@ void  CReactiveNavigationSystem::setParams( CReactiveNavigationSystem::TNavigati
 /*************************************************************************
                 Para la silla y muestra un mensaje de error.
 *************************************************************************/
-void CReactiveNavigationSystem::Error_ParadaDeEmergencia( const char *msg )
+void CReactiveNavigationSystem::doEmergencyStop( const char *msg )
 {
 	// Mostrar mensaje y parar navegacion si estamos moviendonos:
 	printf_debug( msg );
@@ -1331,133 +1248,5 @@ void CReactiveNavigationSystem::Error_ParadaDeEmergencia( const char *msg )
 	m_navigationState = NAV_ERROR;
 	return;
 }
-
-
-/* -------------------------------------------------------------
-   ------------------------------------------------------------- */
-void  CReactiveNavigationSystem::CDynamicWindow::findMinMaxCurvatures(float &minCurv, float &maxCurv)
-{
-	if (fabs(v_min)<0.005f) v_min=0.005f*sign(v_min);
-	if (fabs(v_max)<0.005f) v_max=0.005f*sign(v_max);
-
-	// Compute the curvature for the 4 corners:
-	c1 = w_max / v_min;
-	c2 = w_min / v_min;
-	c3 = w_max / v_max;
-	c4 = w_min / v_max;
-
-	minCurv = min( min(c1,c2),min(c3,c4) );
-	maxCurv = max( max(c1,c2),max(c3,c4) );
-}
-
-
-/* -------------------------------------------------------------
-   ------------------------------------------------------------- */
-void  CReactiveNavigationSystem::CDynamicWindow::findBestApproximation(float desV,float desW, float &outV,float &outW)
-{
-	// Try to find a "cut", if not, find just the closest corner.
-	if (findClosestCut(desV,desW,outV,outW))
-		return;
-
-	float closestX,closestY;
-
-	float	d[4];
-	d[0] = math::minimumDistanceFromPointToSegment(v_min,w_max, 0,0,desV,desW,closestX,closestY);
-	d[1] = math::minimumDistanceFromPointToSegment(v_min,w_min, 0,0,desV,desW,closestX,closestY);
-	d[2] = math::minimumDistanceFromPointToSegment(v_max,w_max, 0,0,desV,desW,closestX,closestY);
-	d[3] = math::minimumDistanceFromPointToSegment(v_max,w_min, 0,0,desV,desW,closestX,closestY);
-
-	float	d_min=1e6;
-	int		idx_min=-1,i;
-	for (i=0;i<4;i++)
-		if (d[i]<d_min)
-		{
-			d_min = d[i];
-			idx_min = i;
-		}
-
-	switch (idx_min)
-	{
-	case 0:
-		outV = v_min;
-		outW = w_max;
-		break;
-	case 1:
-		outV = v_min;
-		outW = w_min;
-		break;
-	case 2:
-		outV = v_max;
-		outW = w_max;
-		break;
-	case 3:
-		outV = v_max;
-		outW = w_min;
-		break;
-	};
-}
-
-
-/* -------------------------------------------------------------
-   ------------------------------------------------------------- */
-bool  CReactiveNavigationSystem::CDynamicWindow::findClosestCut( float cmd_v, float cmd_w,	// IN
-        float &out_v,float &out_w)	// OUT
-{
-	if (fabs(cmd_v)<0.005f) cmd_v = 0.005f * sign(cmd_v);
-	//float desiredCurv	= cmd_w / cmd_v;
-
-	// Find the 1..4 cuts:
-	vector<float>	vs,ws;
-	vs.reserve(4);
-	ws.reserve(4);
-	float			v,w;
-
-	if ( math::SegmentsIntersection( v_min,w_min,v_min,w_max, 0,0,cmd_v,cmd_w , v,w) )
-	{
-		vs.push_back(v);
-		ws.push_back(w);
-	}
-	if ( math::SegmentsIntersection( v_min,w_max,v_max,w_max, 0,0,cmd_v,cmd_w , v,w) )
-	{
-		vs.push_back(v);
-		ws.push_back(w);
-	}
-	if ( math::SegmentsIntersection( v_max,w_max,v_max,w_min, 0,0,cmd_v,cmd_w , v,w) )
-	{
-		vs.push_back(v);
-		ws.push_back(w);
-	}
-	if (math::SegmentsIntersection( v_min,w_min,v_max,w_min, 0,0,cmd_v,cmd_w , v,w) )
-	{
-		vs.push_back(v);
-		ws.push_back(w);
-	}
-
-	// Any cut??
-	if (!vs.size()) return false;
-
-	// Find closest cut:
-	float	d_min=1e6;
-	int		idx_min=-1;
-	for (unsigned int i=0;i<vs.size();i++)
-	{
-		float d = math::distanceBetweenPoints( cmd_v,cmd_w, vs[i],ws[i] );
-		if (d<d_min)
-		{
-			d_min = d;
-			idx_min = i;
-		}
-	}
-
-	ASSERT_(idx_min>=0 && idx_min<(int)vs.size())
-
-	// Returns the closes cut point:
-	out_v = vs[idx_min];
-	out_w = ws[idx_min];
-
-	return true;
-}
-
-
 
 

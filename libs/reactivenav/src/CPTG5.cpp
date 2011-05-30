@@ -46,7 +46,7 @@ CPTG5::CPTG5(const TParameters<double> &params ) : CParameterizedTrajectoryGener
 /*---------------------------------------------------------------
 						getDescription
   ---------------------------------------------------------------*/
-std::string CPTG5::getDescription()
+std::string CPTG5::getDescription() const
 {
 	char str[100];
 	os::sprintf(str,100,"Type#5PTG:CS");

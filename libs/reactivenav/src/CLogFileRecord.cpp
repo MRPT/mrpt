@@ -75,10 +75,6 @@ void CLogFileRecord::operator =( CLogFileRecord &o)
 	executionTime = o.executionTime;
 	estimatedExecutionPeriod = o.estimatedExecutionPeriod;
 
-	prevV=o.prevV;
-	prevW=o.prevW;
-	prevSelPTG=o.prevSelPTG;
-
 	robotShape_x=o.robotShape_x;
 	robotShape_y=o.robotShape_y;
 
@@ -89,9 +85,6 @@ void CLogFileRecord::operator =( CLogFileRecord &o)
 	securityDistances = o.securityDistances;
 
 	navigatorBehavior = o.navigatorBehavior;
-
-	doorCrossing_P1 = o.doorCrossing_P1;
-	doorCrossing_P2 = o.doorCrossing_P2;
 }
 
 
@@ -128,7 +121,7 @@ CLogFileRecord::~CLogFileRecord()
 void  CLogFileRecord::writeToStream(CStream &out,int *version) const
 {
 	if (version)
-		*version = 5;
+		*version = 6;
 	else
 	{
 		uint32_t	i,n;
@@ -151,18 +144,7 @@ void  CLogFileRecord::writeToStream(CStream &out,int *version) const
 
 		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative << v << w << executionTime;
 
-		// Previous values:
-		n = prevV.size();
-		out << n;
-		out.WriteBuffer((const void*)&(*prevV.begin()),n*sizeof(prevV[0]));
-
-		n = prevW.size();
-		out << n;
-		out.WriteBuffer((const void*)&(*prevW.begin()),n*sizeof(prevW[0]));
-
-		n = prevSelPTG.size();
-		out << n;
-		out.WriteBuffer((const void*)&(*prevSelPTG.begin()),n*sizeof(prevSelPTG[0]));
+		// Previous values: REMOVED IN VERSION #6
 
 		n = robotShape_x.size();
 		out << n;
@@ -192,7 +174,7 @@ void  CLogFileRecord::writeToStream(CStream &out,int *version) const
 		for (i=0;i<n;i++) out << securityDistances[i];
 
 		// Version 5 -----------
-		out << navigatorBehavior << doorCrossing_P1 << doorCrossing_P2;
+		out << navigatorBehavior; // Removed in version 6: << doorCrossing_P1 << doorCrossing_P2;
 	}
 }
 
@@ -209,6 +191,7 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 	case 3:
 	case 4:
 	case 5:
+	case 6:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -237,18 +220,24 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 
 			in >> nSelectedPTG >> WS_Obstacles >> robotOdometryPose >> WS_target_relative >> v >> w >> executionTime;
 
-			// Previous values:
-			in >> n;
-			prevV.resize(n);
-			in.ReadBuffer((void*)&(*prevV.begin()),n*sizeof(prevV[0]));
 
-			in >> n;
-			prevW.resize(n);
-			in.ReadBuffer((void*)&(*prevW.begin()),n*sizeof(prevW[0]));
+			if (version<6)
+			{
+				vector_float prevV,prevW,prevSelPTG;
 
-			in >> n;
-			prevSelPTG.resize(n);
-			in.ReadBuffer((void*)&(*prevSelPTG.begin()),n*sizeof(prevSelPTG[0]));
+				// Previous values: (Removed in version 6)
+				in >> n;
+				prevV.resize(n);
+				in.ReadBuffer((void*)&(*prevV.begin()),n*sizeof(prevV[0]));
+
+				in >> n;
+				prevW.resize(n);
+				in.ReadBuffer((void*)&(*prevW.begin()),n*sizeof(prevW[0]));
+
+				in >> n;
+				prevSelPTG.resize(n);
+				in.ReadBuffer((void*)&(*prevSelPTG.begin()),n*sizeof(prevSelPTG[0]));
+			}
 
 			in >> n;
 			robotShape_x.resize(n);
@@ -311,7 +300,13 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 			if (version > 4)
 			{
 				// Version 5 ----------
-				in >> navigatorBehavior >> doorCrossing_P1 >> doorCrossing_P2;
+				in >> navigatorBehavior;
+
+				if (version<6)  // Removed in version 6:
+				{
+					mrpt::poses::CPoint2D doorCrossing_P1,doorCrossing_P2;
+					in >> doorCrossing_P1 >> doorCrossing_P2;
+				}
 			}
 			else
 			{

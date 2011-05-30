@@ -46,7 +46,7 @@ CPTG1::CPTG1(const TParameters<double> &params ) :
 /*---------------------------------------------------------------
 						getDescription
   ---------------------------------------------------------------*/
-std::string CPTG1::getDescription()
+std::string CPTG1::getDescription() const
 {
 	char str[100];
 	os::sprintf(str,100,"Type#1PTG,circular,K=%i",(int)K );

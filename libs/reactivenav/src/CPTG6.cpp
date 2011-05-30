@@ -44,7 +44,7 @@ CPTG6::CPTG6(const TParameters<double> &params ) : CParameterizedTrajectoryGener
 /*---------------------------------------------------------------
 						getDescription
   ---------------------------------------------------------------*/
-std::string CPTG6::getDescription()
+std::string CPTG6::getDescription() const
 {
 	char str[100];
 	os::sprintf(str,100,"Type#6PTG,av=%udeg,aw=%udeg",(int)RAD2DEG(cte_a0v),(int)RAD2DEG(cte_a0w) );
