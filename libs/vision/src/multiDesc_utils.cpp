@@ -1430,7 +1430,7 @@ int vision::computeMoreDescriptors(
             vector<double> auxOriVector;
             if( !vision::computeMainOrientations( rsPatch, a/2+1, a/2+1, a, auxOriVector, opts.sg2 ))
             {
-                cout << "computeMainOrientations = -1" << endl;
+                cout << "computeMainOrientations returned false" << endl;
                 mrpt::system::pause();
             }
 
@@ -1865,25 +1865,31 @@ vector<bool> vision::computeMultiResolutionDescriptors(
     CTimeLogger tlogger;
     tlogger.disable();
     ASSERT_( list.size() > 0 );
+    CImage smLeftImg;
+    if( opts.blurImage )
+    {
+        //**************************************************************************
+        // Pre-smooth the image with sigma = sg1 (typically 0.5)
+        //**************************************************************************
+        cv::Mat tempImg;
+        IplImage aux;
 
-    //**************************************************************************
-    // Pre-smooth the image with sigma = sg1 (typically 0.5)
-    //**************************************************************************
-    tlogger.enter("smooth");
-    cv::Mat tempImg1;
-    IplImage aux1;
+        cv::Mat inImg = static_cast<IplImage*>(image.getAsIplImage());
 
-    cv::Mat inImg1 = static_cast<IplImage*>(image.getAsIplImage());
+        cv::GaussianBlur( inImg, tempImg, cvSize(0,0), opts.sg1 /*sigmaX*/, opts.sg1 /*sigmaY*/ );
+        aux = tempImg;
+        smLeftImg.loadFromIplImage( &aux );
+        //--------------------------------------------------------------------------
+    }
+    else
+        smLeftImg = image;
 
-    cv::GaussianBlur( inImg1, tempImg1, cvSize(0,0), opts.sg1 /*sigmaX*/, opts.sg1 /*sigmaY*/ );
-    aux1 = tempImg1;
-    CImage smLeftImg( &aux1 );
-    //--------------------------------------------------------------------------
-
+    TMultiResDescOptions auxOpts    = opts;
+    auxOpts.blurImage               = false;
     vector<bool> st( list.size() );
     int k = 0;
     for( CFeatureList::iterator it = list.begin(); it != list.end(); ++it, ++k )
-        st[k] = computeMultiResolutionDescriptors( smLeftImg, (*it), opts );
+        st[k] = computeMultiResolutionDescriptors( smLeftImg, (*it), auxOpts );
     return st;
     MRPT_END
 #else

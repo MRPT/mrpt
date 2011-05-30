@@ -375,7 +375,8 @@ namespace mrpt
             vector<double>  scales;             //!< The set of scales relatives to the base patch
             unsigned int    comLScl, comHScl;   //!< The subset of scales for which to compute the descriptors
             double          sg1, sg2, sg3;      //!< The sigmas for the Gaussian kernels
-            bool            computeDepth;       //!< Whether or not compute the depth of the feature
+            bool            computeDepth;       //!< Whether or not to compute the depth of the feature
+            bool            blurImage;          //!< Whether or not to blur the image previously to compute the descriptors
             double          fx,cx,cy,baseline;  //!< Intrinsic stereo pair parameters for computing the depth of the feature
             bool            computeHashCoeffs;  //!< Whether or not compute the coefficients for mantaining a HASH table of descriptors (for relocalization)
 
@@ -384,7 +385,7 @@ namespace mrpt
             /** Default constructor
               */
             TMultiResDescOptions() :
-                basePSize(23), sg1 (0.5), sg2(7.5), sg3(8.0), computeDepth(true), fx(0.0), cx(0.0), cy(0.0), baseline(0.0), computeHashCoeffs(false), cropValue(0.2)
+                basePSize(23), sg1 (0.5), sg2(7.5), sg3(8.0), computeDepth(true), blurImage(true), fx(0.0), cx(0.0), cy(0.0), baseline(0.0), computeHashCoeffs(false), cropValue(0.2)
             {
                 scales.resize(7);
                 scales[0] = 0.5;
@@ -401,10 +402,10 @@ namespace mrpt
             TMultiResDescOptions( const unsigned int &_basePSize, const vector<double> &_scales,
                 const unsigned int &_comLScl, const unsigned int &_comHScl,
                 const double &_sg1, const double &_sg2, const double &_sg3,
-                const bool &_computeDepth, const double &_fx, const double &_cx, const double &_cy, const double &_baseline, const bool &_computeHashCoeffs, const double &_cropValue ):
+                const bool &_computeDepth, const bool _blurImage, const double &_fx, const double &_cx, const double &_cy, const double &_baseline, const bool &_computeHashCoeffs, const double &_cropValue ):
                 basePSize( _basePSize ), comLScl( _comLScl ), comHScl( _comHScl ),
                 sg1( _sg1 ), sg2( _sg2 ), sg3( _sg3 ),
-                computeDepth( _computeDepth ), fx( _fx ), cx( _cx ), cy( _cy ), baseline( _baseline ), computeHashCoeffs( _computeHashCoeffs), cropValue( _cropValue )
+                computeDepth( _computeDepth ), blurImage( _blurImage ), fx( _fx ), cx( _cx ), cy( _cy ), baseline( _baseline ), computeHashCoeffs( _computeHashCoeffs), cropValue( _cropValue )
             {
                 scales.resize( _scales.size() );
                 for(unsigned int k = 0; k < _scales.size(); ++k)

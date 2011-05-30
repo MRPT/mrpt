@@ -160,6 +160,7 @@ void TMultiResDescOptions::loadFromConfigFile( const mrpt::utils::CConfigFileBas
     sg2 = cfg.read_double(section,"sg2", 7.5, false );
     sg3 = cfg.read_double(section,"sg3", 8.0, false );
     computeDepth = cfg.read_bool(section,"computeDepth", true, false );
+    blurImage = cfg.read_bool(section,"blurImage", true, false );
     fx = cfg.read_double(section,"fx",0.0, false);
     cx = cfg.read_double(section,"cx",0.0, false);
     cy = cfg.read_double(section,"cy",0.0, false);
@@ -194,6 +195,7 @@ void TMultiResDescOptions::saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, 
 	cfg.write(section,"sg3", sg3 );
 
     cfg.write(section,"computeDepth", computeDepth ? "true" : "false" );
+    cfg.write(section,"blurImage", blurImage ? "true" : "false" );
 	cfg.write(section,"fx", fx );
 	cfg.write(section,"cx", cx );
 	cfg.write(section,"cy", cy );
@@ -232,6 +234,12 @@ void  TMultiResDescOptions::dumpToTextStream( mrpt::utils::CStream &out) const
 
     out.printf("Compute Hash Coeffs:            ");
     if( computeHashCoeffs )
+        out.printf("Yes\n");
+    else
+        out.printf("No\n");
+
+    out.printf("Blur image previously:          ");
+    if( blurImage )
         out.printf("Yes\n");
     else
         out.printf("No\n");
