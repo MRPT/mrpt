@@ -98,8 +98,8 @@ class GeneralizedSelfAdjointEigenSolver : public SelfAdjointEigenSolver<_MatrixT
       *                   Only the lower triangular part of the matrix is referenced.
       * \param[in]  matB  Positive-definite matrix in matrix pencil.
       *                   Only the lower triangular part of the matrix is referenced.
-      * \param[in]  options A or-ed set of flags {ComputeEigenvectors,EigenvaluesOnly} | {Ax_lBx,ABx_lx,BAx_lx}.
-      *                     Default is ComputeEigenvectors|Ax_lBx.
+      * \param[in]  options A or-ed set of flags {#ComputeEigenvectors,#EigenvaluesOnly} | {#Ax_lBx,#ABx_lx,#BAx_lx}.
+      *                     Default is #ComputeEigenvectors|#Ax_lBx.
       *
       * This constructor calls compute(const MatrixType&, const MatrixType&, int)
       * to compute the eigenvalues and (if requested) the eigenvectors of the
@@ -131,8 +131,8 @@ class GeneralizedSelfAdjointEigenSolver : public SelfAdjointEigenSolver<_MatrixT
       *                   Only the lower triangular part of the matrix is referenced.
       * \param[in]  matB  Positive-definite matrix in matrix pencil.
       *                   Only the lower triangular part of the matrix is referenced.
-      * \param[in]  options A or-ed set of flags {ComputeEigenvectors,EigenvaluesOnly} | {Ax_lBx,ABx_lx,BAx_lx}.
-      *                     Default is ComputeEigenvectors|Ax_lBx.
+      * \param[in]  options A or-ed set of flags {#ComputeEigenvectors,#EigenvaluesOnly} | {#Ax_lBx,#ABx_lx,#BAx_lx}.
+      *                     Default is #ComputeEigenvectors|#Ax_lBx.
       *
       * \returns    Reference to \c *this
       *

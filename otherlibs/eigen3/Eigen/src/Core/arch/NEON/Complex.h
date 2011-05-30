@@ -43,6 +43,7 @@ template<> struct packet_traits<std::complex<float> >  : default_packet_traits
   typedef Packet2cf type;
   enum {
     Vectorizable = 1,
+    AlignedOnScalar = 1,
     size = 2,
 
     HasAdd    = 1,

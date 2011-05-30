@@ -185,6 +185,7 @@
 // defined in bits/termios.h
 #undef B0
 
+/** \brief Namespace containing all symbols from the %Eigen library. */
 namespace Eigen {
 
 inline static const char *SimdInstructionSetsInUse(void) {
@@ -240,6 +241,8 @@ inline static const char *SimdInstructionSetsInUse(void) {
 // we use size_t frequently and we'll never remember to prepend it with std:: everytime just to
 // ensure QNX/QCC support
 using std::size_t;
+// gcc 4.6.0 wants std:: for ptrdiff_t 
+using std::ptrdiff_t;
 
 /** \defgroup Core_Module Core module
   * This is the main module of Eigen providing dense matrix and vector support
@@ -322,7 +325,7 @@ using std::size_t;
 #include "src/Core/CommaInitializer.h"
 #include "src/Core/Flagged.h"
 #include "src/Core/ProductBase.h"
-#include "src/Core/GeneralProduct.h"
+#include "src/Core/Product.h"
 #include "src/Core/TriangularMatrix.h"
 #include "src/Core/SelfAdjointView.h"
 #include "src/Core/SolveTriangular.h"
@@ -350,12 +353,6 @@ using std::size_t;
 #include "src/Core/Reverse.h"
 #include "src/Core/ArrayBase.h"
 #include "src/Core/ArrayWrapper.h"
-
-#ifdef EIGEN_ENABLE_EVALUATORS
-#include "src/Core/Product.h"
-#include "src/Core/CoreEvaluators.h"
-#include "src/Core/AssignEvaluator.h"
-#endif 
 
 } // namespace Eigen
 

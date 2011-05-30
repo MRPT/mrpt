@@ -31,10 +31,10 @@
   *
   * \brief A matrix or vector expression mapping an existing array of data.
   *
-  * \param PlainObjectType the equivalent matrix type of the mapped data
-  * \param MapOptions specifies whether the pointer is \c Aligned, or \c Unaligned.
-  *                The default is \c Unaligned.
-  * \param StrideType optionnally specifies strides. By default, Map assumes the memory layout
+  * \tparam PlainObjectType the equivalent matrix type of the mapped data
+  * \tparam MapOptions specifies whether the pointer is \c #Aligned, or \c #Unaligned.
+  *                The default is \c #Unaligned.
+  * \tparam StrideType optionnally specifies strides. By default, Map assumes the memory layout
   *                   of an ordinary, contiguous array. This can be overridden by specifying strides.
   *                   The type passed here must be a specialization of the Stride template, see examples below.
   *

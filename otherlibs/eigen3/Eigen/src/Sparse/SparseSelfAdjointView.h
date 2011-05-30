@@ -31,7 +31,7 @@
   * \brief Pseudo expression to manipulate a triangular sparse matrix as a selfadjoint matrix.
   *
   * \param MatrixType the type of the dense matrix storing the coefficients
-  * \param UpLo can be either \c Lower or \c Upper
+  * \param UpLo can be either \c #Lower or \c #Upper
   *
   * This class is an expression of a sefladjoint matrix from a triangular part of a matrix
   * with given dense storage of the coefficients. It is the return type of MatrixBase::selfadjointView()
@@ -235,6 +235,7 @@ class SparseSelfAdjointTimeDenseProduct
           dest.row(j) += i.value() * m_rhs.row(j);
           ++i;
         }
+        Block<Dest,1,Dest::ColsAtCompileTime> dest_j(dest.row(LhsIsRowMajor ? j : 0));
         for(; (ProcessFirstHalf ? i && i.index() < j : i) ; ++i)
         {
           Index a = LhsIsRowMajor ? j : i.index();

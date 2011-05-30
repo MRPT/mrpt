@@ -32,7 +32,7 @@
   * \brief Expression of a selfadjoint matrix from a triangular part of a dense matrix
   *
   * \param MatrixType the type of the dense matrix storing the coefficients
-  * \param TriangularPart can be either \c Lower or \c Upper
+  * \param TriangularPart can be either \c #Lower or \c #Upper
   *
   * This class is an expression of a sefladjoint matrix from a triangular part of a matrix
   * with given dense storage of the coefficients. It is the return type of MatrixBase::selfadjointView()

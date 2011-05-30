@@ -72,7 +72,7 @@ void MatrixBase<Derived>::makeHouseholder(
 
   if(tailSqNorm == RealScalar(0) && internal::imag(c0)==RealScalar(0))
   {
-    tau = 0;
+    tau = RealScalar(0);
     beta = internal::real(c0);
     essential.setZero();
   }

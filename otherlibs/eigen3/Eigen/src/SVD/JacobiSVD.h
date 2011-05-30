@@ -271,13 +271,13 @@ void real_2x2_jacobi_svd(const MatrixType& matrix, Index p, Index q,
   RealScalar d = m.coeff(1,0) - m.coeff(0,1);
   if(t == RealScalar(0))
   {
-    rot1.c() = 0;
-    rot1.s() = d > 0 ? 1 : -1;
+    rot1.c() = RealScalar(0);
+    rot1.s() = d > RealScalar(0) ? RealScalar(1) : RealScalar(-1);
   }
   else
   {
     RealScalar u = d / t;
-    rot1.c() = RealScalar(1) / sqrt(1 + abs2(u));
+    rot1.c() = RealScalar(1) / sqrt(RealScalar(1) + abs2(u));
     rot1.s() = rot1.c() * u;
   }
   m.applyOnTheLeft(0,1,rot1);
@@ -292,7 +292,7 @@ void real_2x2_jacobi_svd(const MatrixType& matrix, Index p, Index q,
   *
   * \class JacobiSVD
   *
-  * \brief Two-sided Jacobi SVD decomposition of a square matrix
+  * \brief Two-sided Jacobi SVD decomposition of a rectangular matrix
   *
   * \param MatrixType the type of the matrix of which we are computing the SVD decomposition
   * \param QRPreconditioner this optional parameter allows to specify the type of QR decomposition that will be used internally
@@ -403,8 +403,8 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
      *
      * \param matrix the matrix to decompose
      * \param computationOptions optional parameter allowing to specify if you want full or thin U or V unitaries to be computed.
-     *                           By default, none is computed. This is a bit-field, the possible bits are ComputeFullU, ComputeThinU,
-     *                           ComputeFullV, ComputeThinV.
+     *                           By default, none is computed. This is a bit-field, the possible bits are #ComputeFullU, #ComputeThinU,
+     *                           #ComputeFullV, #ComputeThinV.
      *
      * Thin unitaries are only available if your matrix type has a Dynamic number of columns (for example MatrixXf). They also are not
      * available with the (non-default) FullPivHouseholderQR preconditioner.
@@ -422,8 +422,8 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
      *
      * \param matrix the matrix to decompose
      * \param computationOptions optional parameter allowing to specify if you want full or thin U or V unitaries to be computed.
-     *                           By default, none is computed. This is a bit-field, the possible bits are ComputeFullU, ComputeThinU,
-     *                           ComputeFullV, ComputeThinV.
+     *                           By default, none is computed. This is a bit-field, the possible bits are #ComputeFullU, #ComputeThinU,
+     *                           #ComputeFullV, #ComputeThinV.
      *
      * Thin unitaries are only available if your matrix type has a Dynamic number of columns (for example MatrixXf). They also are not
      * available with the (non-default) FullPivHouseholderQR preconditioner.
@@ -444,7 +444,7 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
     /** \returns the \a U matrix.
      *
      * For the SVD decomposition of a n-by-p matrix, letting \a m be the minimum of \a n and \a p,
-     * the U matrix is n-by-n if you asked for ComputeFullU, and is n-by-m if you asked for ComputeThinU.
+     * the U matrix is n-by-n if you asked for #ComputeFullU, and is n-by-m if you asked for #ComputeThinU.
      *
      * The \a m first columns of \a U are the left singular vectors of the matrix being decomposed.
      *
@@ -460,7 +460,7 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
     /** \returns the \a V matrix.
      *
      * For the SVD decomposition of a n-by-p matrix, letting \a m be the minimum of \a n and \a p,
-     * the V matrix is p-by-p if you asked for ComputeFullV, and is p-by-m if you asked for ComputeThinV.
+     * the V matrix is p-by-p if you asked for #ComputeFullV, and is p-by-m if you asked for ComputeThinV.
      *
      * The \a m first columns of \a V are the right singular vectors of the matrix being decomposed.
      *
@@ -618,8 +618,9 @@ JacobiSVD<MatrixType, QRPreconditioner>::compute(const MatrixType& matrix, unsig
         // if this 2x2 sub-matrix is not diagonal already...
         // notice that this comparison will evaluate to false if any NaN is involved, ensuring that NaN's don't
         // keep us iterating forever.
-        if(std::max(internal::abs(m_workMatrix.coeff(p,q)),internal::abs(m_workMatrix.coeff(q,p)))
-            > std::max(internal::abs(m_workMatrix.coeff(p,p)),internal::abs(m_workMatrix.coeff(q,q)))*precision)
+        using std::max;
+        if(max(internal::abs(m_workMatrix.coeff(p,q)),internal::abs(m_workMatrix.coeff(q,p)))
+            > max(internal::abs(m_workMatrix.coeff(p,p)),internal::abs(m_workMatrix.coeff(q,q)))*precision)
         {
           finished = false;
 

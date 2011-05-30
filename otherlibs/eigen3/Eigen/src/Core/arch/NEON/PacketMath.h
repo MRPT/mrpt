@@ -100,12 +100,12 @@ template<> EIGEN_STRONG_INLINE Packet4i pset1<Packet4i>(const int&    from)   { 
 
 template<> EIGEN_STRONG_INLINE Packet4f plset<float>(const float& a)
 {
-  Packet4f countdown = { 3, 2, 1, 0 };
+  Packet4f countdown = { 0, 1, 2, 3 };
   return vaddq_f32(pset1<Packet4f>(a), countdown);
 }
 template<> EIGEN_STRONG_INLINE Packet4i plset<int>(const int& a)
 {
-  Packet4i countdown = { 3, 2, 1, 0 };
+  Packet4i countdown = { 0, 1, 2, 3 };
   return vaddq_s32(pset1<Packet4i>(a), countdown);
 }
 
@@ -191,14 +191,14 @@ template<> EIGEN_STRONG_INLINE Packet4f ploaddup<Packet4f>(const float*   from)
 {
   float32x2_t lo, hi;
   lo = vdup_n_f32(*from);
-  hi = vdup_n_f32(*from);
+  hi = vdup_n_f32(*(from+1));
   return vcombine_f32(lo, hi);
 }
 template<> EIGEN_STRONG_INLINE Packet4i ploaddup<Packet4i>(const int*     from)
 {
   int32x2_t lo, hi;
   lo = vdup_n_s32(*from);
-  hi = vdup_n_s32(*from);
+  hi = vdup_n_s32(*(from+1));
   return vcombine_s32(lo, hi);
 }
 

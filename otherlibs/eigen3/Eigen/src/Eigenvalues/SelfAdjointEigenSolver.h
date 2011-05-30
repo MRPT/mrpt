@@ -147,11 +147,11 @@ template<typename _MatrixType> class SelfAdjointEigenSolver
       *
       * \param[in]  matrix  Selfadjoint matrix whose eigendecomposition is to
       *    be computed. Only the lower triangular part of the matrix is referenced.
-      * \param[in]  options Can be ComputeEigenvectors (default) or EigenvaluesOnly.
+      * \param[in]  options Can be #ComputeEigenvectors (default) or #EigenvaluesOnly.
       *
       * This constructor calls compute(const MatrixType&, int) to compute the
       * eigenvalues of the matrix \p matrix. The eigenvectors are computed if
-      * \p options equals ComputeEigenvectors.
+      * \p options equals #ComputeEigenvectors.
       *
       * Example: \include SelfAdjointEigenSolver_SelfAdjointEigenSolver_MatrixType.cpp
       * Output: \verbinclude SelfAdjointEigenSolver_SelfAdjointEigenSolver_MatrixType.out
@@ -171,11 +171,11 @@ template<typename _MatrixType> class SelfAdjointEigenSolver
       *
       * \param[in]  matrix  Selfadjoint matrix whose eigendecomposition is to
       *    be computed. Only the lower triangular part of the matrix is referenced.
-      * \param[in]  options Can be ComputeEigenvectors (default) or EigenvaluesOnly.
+      * \param[in]  options Can be #ComputeEigenvectors (default) or #EigenvaluesOnly.
       * \returns    Reference to \c *this
       *
       * This function computes the eigenvalues of \p matrix.  The eigenvalues()
-      * function can be used to retrieve them.  If \p options equals ComputeEigenvectors,
+      * function can be used to retrieve them.  If \p options equals #ComputeEigenvectors,
       * then the eigenvectors are also computed and can be retrieved by
       * calling eigenvectors().
       *

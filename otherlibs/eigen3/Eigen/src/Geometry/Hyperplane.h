@@ -213,8 +213,8 @@ public:
   /** Applies the transformation matrix \a mat to \c *this and returns a reference to \c *this.
     *
     * \param mat the Dim x Dim transformation matrix
-    * \param traits specifies whether the matrix \a mat represents an Isometry
-    *               or a more generic Affine transformation. The default is Affine.
+    * \param traits specifies whether the matrix \a mat represents an #Isometry
+    *               or a more generic #Affine transformation. The default is #Affine.
     */
   template<typename XprType>
   inline Hyperplane& transform(const MatrixBase<XprType>& mat, TransformTraits traits = Affine)
@@ -233,8 +233,8 @@ public:
   /** Applies the transformation \a t to \c *this and returns a reference to \c *this.
     *
     * \param t the transformation of dimension Dim
-    * \param traits specifies whether the transformation \a t represents an Isometry
-    *               or a more generic Affine transformation. The default is Affine.
+    * \param traits specifies whether the transformation \a t represents an #Isometry
+    *               or a more generic #Affine transformation. The default is #Affine.
     *               Other kind of transformations are not supported.
     */
   template<int TrOptions>

@@ -116,7 +116,7 @@ struct functor_traits<scalar_conj_product_op<LhsScalar,RhsScalar> > {
   */
 template<typename Scalar> struct scalar_min_op {
   EIGEN_EMPTY_STRUCT_CTOR(scalar_min_op)
-  EIGEN_STRONG_INLINE const Scalar operator() (const Scalar& a, const Scalar& b) const { return std::min(a, b); }
+  EIGEN_STRONG_INLINE const Scalar operator() (const Scalar& a, const Scalar& b) const { using std::min; return min(a, b); }
   template<typename Packet>
   EIGEN_STRONG_INLINE const Packet packetOp(const Packet& a, const Packet& b) const
   { return internal::pmin(a,b); }
@@ -139,7 +139,7 @@ struct functor_traits<scalar_min_op<Scalar> > {
   */
 template<typename Scalar> struct scalar_max_op {
   EIGEN_EMPTY_STRUCT_CTOR(scalar_max_op)
-  EIGEN_STRONG_INLINE const Scalar operator() (const Scalar& a, const Scalar& b) const { return std::max(a, b); }
+  EIGEN_STRONG_INLINE const Scalar operator() (const Scalar& a, const Scalar& b) const { using std::max; return max(a, b); }
   template<typename Packet>
   EIGEN_STRONG_INLINE const Packet packetOp(const Packet& a, const Packet& b) const
   { return internal::pmax(a,b); }
@@ -165,8 +165,10 @@ template<typename Scalar> struct scalar_hypot_op {
 //   typedef typename NumTraits<Scalar>::Real result_type;
   EIGEN_STRONG_INLINE const Scalar operator() (const Scalar& _x, const Scalar& _y) const
   {
-    Scalar p = std::max(_x, _y);
-    Scalar q = std::min(_x, _y);
+    using std::max;
+    using std::min;
+    Scalar p = max(_x, _y);
+    Scalar q = min(_x, _y);
     Scalar qp = q/p;
     return p * sqrt(Scalar(1) + qp*qp);
   }
@@ -750,9 +752,9 @@ struct functor_traits<scalar_acos_op<Scalar> >
   */
 template<typename Scalar> struct scalar_asin_op {
   EIGEN_EMPTY_STRUCT_CTOR(scalar_asin_op)
-  inline const Scalar operator() (const Scalar& a) const { return acos(a); }
+  inline const Scalar operator() (const Scalar& a) const { return asin(a); }
   typedef typename packet_traits<Scalar>::type Packet;
-  inline Packet packetOp(const Packet& a) const { return internal::pacos(a); }
+  inline Packet packetOp(const Packet& a) const { return internal::pasin(a); }
 };
 template<typename Scalar>
 struct functor_traits<scalar_asin_op<Scalar> >

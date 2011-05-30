@@ -35,7 +35,7 @@ template<typename T> struct add_const_on_value_type_if_arithmetic
 /** \brief Base class providing read-only coefficient access to matrices and arrays.
   * \ingroup Core_Module
   * \tparam Derived Type of the derived class
-  * \tparam ReadOnlyAccessors Constant indicating read-only access
+  * \tparam #ReadOnlyAccessors Constant indicating read-only access
   *
   * This class defines the \c operator() \c const function and friends, which can be used to read specific
   * entries of a matrix or array.
@@ -212,7 +212,7 @@ class DenseCoeffsBase<Derived,ReadOnlyAccessors> : public EigenBase<Derived>
       * to ensure that a packet really starts there. This method is only available on expressions having the
       * PacketAccessBit.
       *
-      * The \a LoadMode parameter may have the value \a Aligned or \a Unaligned. Its effect is to select
+      * The \a LoadMode parameter may have the value \a #Aligned or \a #Unaligned. Its effect is to select
       * the appropriate vectorization instruction. Aligned access is faster, but is only possible for packets
       * starting at an address which is a multiple of the packet size.
       */
@@ -239,7 +239,7 @@ class DenseCoeffsBase<Derived,ReadOnlyAccessors> : public EigenBase<Derived>
       * to ensure that a packet really starts there. This method is only available on expressions having the
       * PacketAccessBit and the LinearAccessBit.
       *
-      * The \a LoadMode parameter may have the value \a Aligned or \a Unaligned. Its effect is to select
+      * The \a LoadMode parameter may have the value \a #Aligned or \a #Unaligned. Its effect is to select
       * the appropriate vectorization instruction. Aligned access is faster, but is only possible for packets
       * starting at an address which is a multiple of the packet size.
       */
@@ -275,7 +275,7 @@ class DenseCoeffsBase<Derived,ReadOnlyAccessors> : public EigenBase<Derived>
 /** \brief Base class providing read/write coefficient access to matrices and arrays.
   * \ingroup Core_Module
   * \tparam Derived Type of the derived class
-  * \tparam WriteAccessors Constant indicating read/write access
+  * \tparam #WriteAccessors Constant indicating read/write access
   *
   * This class defines the non-const \c operator() function and friends, which can be used to write specific
   * entries of a matrix or array. This class inherits DenseCoeffsBase<Derived, ReadOnlyAccessors> which
@@ -433,7 +433,7 @@ class DenseCoeffsBase<Derived, WriteAccessors> : public DenseCoeffsBase<Derived,
       * to ensure that a packet really starts there. This method is only available on expressions having the
       * PacketAccessBit.
       *
-      * The \a LoadMode parameter may have the value \a Aligned or \a Unaligned. Its effect is to select
+      * The \a LoadMode parameter may have the value \a #Aligned or \a #Unaligned. Its effect is to select
       * the appropriate vectorization instruction. Aligned access is faster, but is only possible for packets
       * starting at an address which is a multiple of the packet size.
       */
@@ -567,7 +567,7 @@ class DenseCoeffsBase<Derived, WriteAccessors> : public DenseCoeffsBase<Derived,
 /** \brief Base class providing direct read-only coefficient access to matrices and arrays.
   * \ingroup Core_Module
   * \tparam Derived Type of the derived class
-  * \tparam DirectAccessors Constant indicating direct access
+  * \tparam #DirectAccessors Constant indicating direct access
   *
   * This class defines functions to work with strides which can be used to access entries directly. This class
   * inherits DenseCoeffsBase<Derived, ReadOnlyAccessors> which defines functions to access entries read-only using
@@ -637,7 +637,7 @@ class DenseCoeffsBase<Derived, DirectAccessors> : public DenseCoeffsBase<Derived
 /** \brief Base class providing direct read/write coefficient access to matrices and arrays.
   * \ingroup Core_Module
   * \tparam Derived Type of the derived class
-  * \tparam DirectAccessors Constant indicating direct access
+  * \tparam #DirectWriteAccessors Constant indicating direct access
   *
   * This class defines functions to work with strides which can be used to access entries directly. This class
   * inherits DenseCoeffsBase<Derived, WriteAccessors> which defines functions to access entries read/write using

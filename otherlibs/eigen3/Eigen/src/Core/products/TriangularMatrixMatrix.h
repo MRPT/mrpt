@@ -99,7 +99,7 @@ struct product_triangular_matrix_matrix<Scalar,Index,Mode,true,
   
   typedef gebp_traits<Scalar,Scalar> Traits;
   enum {
-    SmallPanelWidth   = 2 * EIGEN_PLAIN_ENUM_MAX(Traits::mr,Traits::nr),
+    SmallPanelWidth   = EIGEN_PLAIN_ENUM_MAX(Traits::mr,Traits::nr),
     IsLower = (Mode&Lower) == Lower,
     SetDiag = (Mode&(ZeroDiag|UnitDiag)) ? 0 : 1
   };
