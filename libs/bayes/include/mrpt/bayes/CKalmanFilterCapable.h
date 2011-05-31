@@ -255,7 +255,7 @@ namespace mrpt
 			  */
 			virtual void OnTransitionJacobianNumericGetIncrements(KFArray_VEH &out_increments) const
 			{
-				std::fill_n(&out_increments[0], VEH_SIZE, 1e-6);
+				for (size_t i=0;i<VEH_SIZE;i++) out_increments[i] = 1e-6;
 			}
 
 			/** Implements the transition noise covariance \f$ Q_k \f$
@@ -336,8 +336,8 @@ namespace mrpt
 					KFArray_VEH  &out_veh_increments,
 					KFArray_FEAT &out_feat_increments ) const
 			{
-				std::fill_n(&out_veh_increments[0], VEH_SIZE, 1e-6);
-				std::fill_n(&out_feat_increments[0], FEAT_SIZE, 1e-6);
+				for (size_t i=0;i<VEH_SIZE;i++) out_veh_increments[i] = 1e-6;
+				for (size_t i=0;i<FEAT_SIZE;i++) out_feat_increments[i] = 1e-6;
 			}
 
 			/** Computes A=A-B, which may need to be re-implemented depending on the topology of the individual scalar components (eg, angles).

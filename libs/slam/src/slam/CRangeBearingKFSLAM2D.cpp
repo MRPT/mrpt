@@ -1083,7 +1083,7 @@ void CRangeBearingKFSLAM2D::OnPreComputingPredictions(
   */
 void CRangeBearingKFSLAM2D::OnTransitionJacobianNumericGetIncrements(KFArray_VEH &out_increments) const
 {
-	std::fill_n(&out_increments[0], get_vehicle_size(), 1e-6);
+	for (size_t i=0;i<get_vehicle_size();i++) out_increments[i] = 1e-6;
 }
 
 
@@ -1093,6 +1093,6 @@ void CRangeBearingKFSLAM2D::OnObservationJacobiansNumericGetIncrements(
 		KFArray_VEH  &out_veh_increments,
 		KFArray_FEAT &out_feat_increments ) const
 {
-	std::fill_n(&out_veh_increments[0], get_vehicle_size(), 1e-6);
-	std::fill_n(&out_feat_increments[0], get_feature_size(), 1e-6);
+	for (size_t i=0;i<get_vehicle_size();i++) out_veh_increments[i] = 1e-6;
+	for (size_t i=0;i<get_feature_size();i++) out_feat_increments[i] = 1e-6;
 }
