@@ -1,7 +1,7 @@
 /* +---------------------------------------------------------------------------+
    |          The Mobile Robot Programming Toolkit (MRPT) C++ library          |
    |                                                                           |
-   |                   http://mrpt.sourceforge.net/                            |
+   |                       http://www.mrpt.org/                                |
    |                                                                           |
    |   Copyright (C) 2005-2011  University of Malaga                           |
    |                                                                           |
@@ -160,7 +160,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << "Jose Luis Blanco (C) 2005-2011\n";
 		cout << "\n";
 		cout << "For bug reports or to collaborate:\n";
-		cout << "http://mrpt.sourceforge.net/\n\n";
+		cout << "    http://www.mrpt.org/    \n\n";
 
 		cout << "MRPT version:           " << MRPT_getVersion() << endl;
 		cout << "MRPT compilation date:  " << MRPT_getCompilationDate() << endl;

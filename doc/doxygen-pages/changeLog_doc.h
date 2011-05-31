@@ -1,7 +1,7 @@
 /* +---------------------------------------------------------------------------+
    |          The Mobile Robot Programming Toolkit (MRPT) C++ library          |
    |                                                                           |
-   |                   http://mrpt.sourceforge.net/                            |
+   |                       http://www.mrpt.org/                                |
    |                                                                           |
    |   Copyright (C) 2004-2011  University of Malaga                           |
    |                                                                           |

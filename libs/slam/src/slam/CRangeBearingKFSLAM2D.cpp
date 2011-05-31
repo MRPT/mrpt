@@ -1,7 +1,7 @@
 /* +---------------------------------------------------------------------------+
    |          The Mobile Robot Programming Toolkit (MRPT) C++ library          |
    |                                                                           |
-   |                   http://mrpt.sourceforge.net/                            |
+   |                       http://www.mrpt.org/                                |
    |                                                                           |
    |   Copyright (C) 2005-2011  University of Malaga                           |
    |                                                                           |
@@ -964,7 +964,7 @@ void CRangeBearingKFSLAM2D::saveMapAndPath2DRepresentationAsMATLABFile(
 	os::fprintf(f,"%%\n");
 	os::fprintf(f,"%%                        ~ MRPT ~\n");
 	os::fprintf(f,"%%  Jose Luis Blanco Claraco, University of Malaga @ 2008\n");
-	os::fprintf(f,"%%  http://mrpt.sourceforge.net/ \n");
+	os::fprintf(f,"%%      http://www.mrpt.org/     \n");
 	os::fprintf(f,"%%--------------------------------------------------------------------\n");
 
 	// Main code:

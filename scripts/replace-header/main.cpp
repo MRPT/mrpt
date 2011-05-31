@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 				of << "/* +---------------------------------------------------------------------------+\r\n";
 				of << "   |          The Mobile Robot Programming Toolkit (MRPT) C++ library          |\r\n";
 				of << "   |                                                                           |\r\n";
-				of << "   |                   http://mrpt.sourceforge.net/                            |\r\n";
+				of << "   |                       http://www.mrpt.org/                                |\r\n";
 				of << "   |                                                                           |\r\n";
 				of << "   |   Copyright (C) 2005-2011  University of Malaga                           |\r\n";
 				of << "   |                                                                           |\r\n";
