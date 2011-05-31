@@ -97,6 +97,7 @@
 		- [mrpt-vision] Added missing rbegin() and rend() methods to mrpt::vision::CFeatureList 
 		- [mrpt-vision] Backward incompatible change in the ABI/API of mrpt::vision::CFeatureExtraction::detectFeatures(): The optional \a mask is now passed as a pointer instead of a const ref to avoid linking errors in MSVC.
 		- [mrpt-reactivenav] Clean up of code and smarter detection of mismatches in precomputed collision grid files.
+		- [mrpt-bayes] Kalman filter: If the prediction heuristics in mrpt::bayes::CKalmanFilterCapable::OnPreComputingPredictions() fails it doesn't raise an exception anymore but recompute all the required matrices, sending a performance warning to console.
 	- Changes in examples:
 		- hokuyo_laser_test. Now it's possible to choose between USB and Ethernet connection.
 	- New examples:

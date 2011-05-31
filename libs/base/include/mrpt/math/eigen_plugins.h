@@ -497,7 +497,7 @@ public:
 	/** @} */  // end miscelaneous
 
 
-	/** @name Multiply and extra addition functions
+	/** @name MRPT plugin: Multiply and extra addition functions
 		@{ */
 
 	EIGEN_STRONG_INLINE bool empty() const { return this->getColCount()==0 || this->getRowCount()==0; }
@@ -655,7 +655,7 @@ public:
 	/** @} */  // end multiply functions
 
 
-	/** @name Eigenvalue / Eigenvectors
+	/** @name MRPT plugin: Eigenvalue / Eigenvectors
 	    @{  */
 
 	/** [For square matrices only] Compute the eigenvectors and eigenvalues (sorted), both returned as matrices: eigenvectors are the columns in "eVecs", and eigenvalues in ascending order as the diagonal of "eVals".
@@ -703,7 +703,7 @@ public:
 
 
 
-	/** @name Linear algebra & decomposition-based methods
+	/** @name MRPT plugin: Linear algebra & decomposition-based methods
 	    @{ */
 
 	/** Cholesky M=U<sup>T</sup> * U decomposition for simetric matrix (upper-half of the matrix will be actually ignored) */
@@ -730,7 +730,7 @@ public:
 
 
 
-	/** @name Scalar and element-wise extra operators
+	/** @name MRPT plugin: Scalar and element-wise extra operators
 	    @{ */
 
 	EIGEN_STRONG_INLINE MatrixBase<Derived>& Sqrt()       { (*this) = this->array().sqrt(); return *this; }

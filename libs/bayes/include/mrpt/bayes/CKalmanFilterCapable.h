@@ -650,138 +650,182 @@ namespace mrpt
 
 				m_timLogger.enter("KF:5.build Jacobians");
 
-				const size_t N_pred = FEAT_SIZE==0 ?
+				size_t N_pred = FEAT_SIZE==0 ?
 					1 /* In non-SLAM problems, there'll be only 1 fixed observation */ :
 					predictLMidxs.size();
 
-				dh_dx.zeros(N_pred*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_pred ); // Init to zeros.
-				dh_dx_full.zeros(N_pred*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_map ); // Init to zeros.
+				vector_int  data_association;  // -1: New map feature.>=0: Indexes in the state vector
+
+				// The next loop will only do more than one iteration if the heuristic in OnPreComputingPredictions() fails, 
+				//  which will be detected by the addition of extra landmarks to predict into "missing_predictions_to_add"
+				std::vector<size_t> missing_predictions_to_add;
 
 				// Indices in xkk (& Pkk) that are involved in this observation (used below).
 				idxs.clear();
 				idxs.reserve(VEH_SIZE+N_pred*FEAT_SIZE);
-
 				for (size_t i=0;i<VEH_SIZE;i++) idxs.push_back(i);
 
-				for (size_t i=0;i<N_pred;++i)
+				dh_dx.zeros(N_pred*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_pred ); // Init to zeros.
+				dh_dx_full.zeros(N_pred*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_map ); // Init to zeros.
+
+				size_t first_new_pred = 0; // This will be >0 only if we perform multiple loops due to failures in the prediction heuristic.
+
+				do  
 				{
-					const size_t lm_idx = FEAT_SIZE==0 ? 0 : predictLMidxs[i];
-					KFMatrix_OxV Hx(UNINITIALIZED_MATRIX);
-					KFMatrix_OxF Hy(UNINITIALIZED_MATRIX);
+					if (!missing_predictions_to_add.empty())
+					{
+						const size_t nNew = missing_predictions_to_add.size();
+						printf_debug("[KF] *Performance Warning*: %u LMs were not correctly predicted by OnPreComputingPredictions()\n",static_cast<unsigned int>(nNew));
 
-					// Try the analitic Jacobian first:
-					m_user_didnt_implement_jacobian=false; // Set to true by the default method if not reimplemented in base class.
-					if (KF_options.use_analytic_observation_jacobian)
-						OnObservationJacobians(lm_idx,Hx,Hy);
+						ASSERTDEB_(FEAT_SIZE!=0)
+						for (size_t j=0;j<nNew;j++)
+							predictLMidxs.push_back( missing_predictions_to_add[j] );
 
-					if (m_user_didnt_implement_jacobian || !KF_options.use_analytic_observation_jacobian || KF_options.debug_verify_analytic_jacobians)
-					{	// Numeric approximation:
-						const size_t lm_idx_in_statevector = VEH_SIZE+lm_idx*FEAT_SIZE;
+						N_pred = predictLMidxs.size();
+						missing_predictions_to_add.clear();
+					}
 
-						const KFArray_VEH  x_vehicle( &m_xkk[0] );
-						const KFArray_FEAT x_feat( &m_xkk[lm_idx_in_statevector] );
+					dh_dx.setSize(N_pred*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_pred ); // Pad with zeros.
+					dh_dx_full.setSize(N_pred*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_map ); // Pad with zeros.
 
-						KFArray_VEH  xkk_veh_increments;
-						KFArray_FEAT feat_increments;
-						OnObservationJacobiansNumericGetIncrements(xkk_veh_increments, feat_increments);
+					for (size_t i=first_new_pred;i<N_pred;++i)
+					{
+						const size_t lm_idx = FEAT_SIZE==0 ? 0 : predictLMidxs[i];
+						KFMatrix_OxV Hx(UNINITIALIZED_MATRIX);
+						KFMatrix_OxF Hy(UNINITIALIZED_MATRIX);
 
-						mrpt::math::estimateJacobian(
-							x_vehicle,
-							&KF_aux_estimate_obs_Hx_jacobian,
-							xkk_veh_increments,
-							std::make_pair<KFCLASS*,size_t>(this,lm_idx),
-							Hx);
-						// The state vector was temporarily modified by KF_aux_estimate_*, restore it:
-						::memcpy(&m_xkk[0],&x_vehicle[0],sizeof(m_xkk[0])*VEH_SIZE);
+						// Try the analitic Jacobian first:
+						m_user_didnt_implement_jacobian=false; // Set to true by the default method if not reimplemented in base class.
+						if (KF_options.use_analytic_observation_jacobian)
+							OnObservationJacobians(lm_idx,Hx,Hy);
 
-						mrpt::math::estimateJacobian(
-							x_feat,
-							&KF_aux_estimate_obs_Hy_jacobian,
-							feat_increments,
-							std::make_pair<KFCLASS*,size_t>(this,lm_idx),
-							Hy);
-						// The state vector was temporarily modified by KF_aux_estimate_*, restore it:
-						::memcpy(&m_xkk[lm_idx_in_statevector],&x_feat[0],sizeof(m_xkk[0])*FEAT_SIZE);
+						if (m_user_didnt_implement_jacobian || !KF_options.use_analytic_observation_jacobian || KF_options.debug_verify_analytic_jacobians)
+						{	// Numeric approximation:
+							const size_t lm_idx_in_statevector = VEH_SIZE+lm_idx*FEAT_SIZE;
 
-						if (KF_options.debug_verify_analytic_jacobians)
+							const KFArray_VEH  x_vehicle( &m_xkk[0] );
+							const KFArray_FEAT x_feat( &m_xkk[lm_idx_in_statevector] );
+
+							KFArray_VEH  xkk_veh_increments;
+							KFArray_FEAT feat_increments;
+							OnObservationJacobiansNumericGetIncrements(xkk_veh_increments, feat_increments);
+
+							mrpt::math::estimateJacobian(
+								x_vehicle,
+								&KF_aux_estimate_obs_Hx_jacobian,
+								xkk_veh_increments,
+								std::make_pair<KFCLASS*,size_t>(this,lm_idx),
+								Hx);
+							// The state vector was temporarily modified by KF_aux_estimate_*, restore it:
+							::memcpy(&m_xkk[0],&x_vehicle[0],sizeof(m_xkk[0])*VEH_SIZE);
+
+							mrpt::math::estimateJacobian(
+								x_feat,
+								&KF_aux_estimate_obs_Hy_jacobian,
+								feat_increments,
+								std::make_pair<KFCLASS*,size_t>(this,lm_idx),
+								Hy);
+							// The state vector was temporarily modified by KF_aux_estimate_*, restore it:
+							::memcpy(&m_xkk[lm_idx_in_statevector],&x_feat[0],sizeof(m_xkk[0])*FEAT_SIZE);
+
+							if (KF_options.debug_verify_analytic_jacobians)
+							{
+								KFMatrix_OxV Hx_gt(UNINITIALIZED_MATRIX);
+								KFMatrix_OxF Hy_gt(UNINITIALIZED_MATRIX);
+								OnObservationJacobians(lm_idx,Hx_gt,Hy_gt);
+								if ((Hx-Hx_gt).Abs().sumAll()>KF_options.debug_verify_analytic_jacobians_threshold) {
+									std::cerr << "[KalmanFilter] ERROR: User analytical observation Hx Jacobians are wrong: \n"
+										<< " Real Hx: \n" << Hx << "\n Analytical Hx:\n" << Hx_gt << "Diff:\n" << Hx-Hx_gt << "\n";
+									THROW_EXCEPTION("ERROR: User analytical observation Hx Jacobians are wrong (More details dumped to cerr)")
+								}
+								if ((Hy-Hy_gt).Abs().sumAll()>KF_options.debug_verify_analytic_jacobians_threshold) {
+									std::cerr << "[KalmanFilter] ERROR: User analytical observation Hy Jacobians are wrong: \n"
+										<< " Real Hy: \n" << Hy << "\n Analytical Hx:\n" << Hy_gt << "Diff:\n" << Hy-Hy_gt << "\n";
+									THROW_EXCEPTION("ERROR: User analytical observation Hy Jacobians are wrong (More details dumped to cerr)")
+								}
+							}
+						}
+
+						dh_dx.insertMatrix(i*OBS_SIZE,0, Hx);
+						if (FEAT_SIZE!=0)
+							dh_dx.insertMatrix(i*OBS_SIZE,VEH_SIZE+i*FEAT_SIZE, Hy);
+
+						dh_dx_full.insertMatrix(i*OBS_SIZE,0, Hx);
+						if (FEAT_SIZE!=0)
 						{
-							KFMatrix_OxV Hx_gt(UNINITIALIZED_MATRIX);
-							KFMatrix_OxF Hy_gt(UNINITIALIZED_MATRIX);
-							OnObservationJacobians(lm_idx,Hx_gt,Hy_gt);
-							if ((Hx-Hx_gt).Abs().sumAll()>KF_options.debug_verify_analytic_jacobians_threshold) {
-								std::cerr << "[KalmanFilter] ERROR: User analytical observation Hx Jacobians are wrong: \n"
-									<< " Real Hx: \n" << Hx << "\n Analytical Hx:\n" << Hx_gt << "Diff:\n" << Hx-Hx_gt << "\n";
-								THROW_EXCEPTION("ERROR: User analytical observation Hx Jacobians are wrong (More details dumped to cerr)")
-							}
-							if ((Hy-Hy_gt).Abs().sumAll()>KF_options.debug_verify_analytic_jacobians_threshold) {
-								std::cerr << "[KalmanFilter] ERROR: User analytical observation Hy Jacobians are wrong: \n"
-									<< " Real Hy: \n" << Hy << "\n Analytical Hx:\n" << Hy_gt << "Diff:\n" << Hy-Hy_gt << "\n";
-								THROW_EXCEPTION("ERROR: User analytical observation Hy Jacobians are wrong (More details dumped to cerr)")
-							}
+							dh_dx_full.insertMatrix(i*OBS_SIZE,VEH_SIZE+lm_idx*FEAT_SIZE, Hy);
+
+							for (size_t k=0;k<FEAT_SIZE;k++)
+								idxs.push_back(k+VEH_SIZE+FEAT_SIZE*lm_idx);
+						}
+					}
+					m_timLogger.leave("KF:5.build Jacobians");
+
+					// Compute S:  S = H P ~H + R
+					// *TODO*: This can be accelerated by exploiting the sparsity of dh_dx!!!
+					// ------------------------------------
+					m_timLogger.enter("KF:6.build S");
+
+					S.setSize(N_pred*OBS_SIZE,N_pred*OBS_SIZE);
+
+					// (TODO: Implement multiply_HCHt for a subset of COV directly.)
+					// Extract the subset of m_Pkk that is involved in this observation:
+					m_pkk.extractSubmatrixSymmetrical(idxs,Pkk_subset);
+
+					// S = dh_dx * m_pkk(subset) * (~dh_dx);
+					dh_dx.multiply_HCHt(Pkk_subset,S);
+
+					// Sum the "R" term:
+					if ( FEAT_SIZE>0 )
+					{
+						for (size_t i=0;i<N_pred;++i)
+						{
+							const size_t obs_idx_off = i*OBS_SIZE;
+							for (size_t j=0;j<OBS_SIZE;j++)
+								for (size_t k=0;k<OBS_SIZE;k++)
+									S.get_unsafe(obs_idx_off+j,obs_idx_off+k) += R.get_unsafe(j,k);
+						}
+					}
+					else
+					{	// Not a SLAM-like EKF problem:
+						ASSERTDEB_(S.getColCount() == OBS_SIZE );
+						S+=R;
+					}
+
+					m_timLogger.leave("KF:6.build S");
+
+
+					Z.clear();	// Each entry is one observation:
+
+					m_timLogger.enter("KF:7.get obs & DA");
+
+					// Get observations and do data-association:
+					OnGetObservationsAndDataAssociation(
+						Z, data_association, // Out
+						all_predictions, S, predictLMidxs, R  // In
+						);
+					ASSERTDEB_(data_association.size()==Z.size() || (data_association.empty() && FEAT_SIZE==0));
+
+					// Check if an observation hasn't been predicted in OnPreComputingPredictions() but has been actually 
+					//  observed. This may imply an error in the heuristic of OnPreComputingPredictions(), and forces us
+					//  to rebuild the matrices 
+					missing_predictions_to_add.clear();
+					if (FEAT_SIZE!=0)
+					{
+						for (size_t i=0;i<data_association.size();++i)
+						{
+							if (data_association[i]<0) continue;
+							const size_t assoc_idx_in_map = static_cast<size_t>(data_association[i]);
+							const size_t assoc_idx_in_pred = mrpt::utils::find_in_vector(assoc_idx_in_map, predictLMidxs);
+							if (assoc_idx_in_pred==std::string::npos)
+								missing_predictions_to_add.push_back(assoc_idx_in_map);
 						}
 					}
 
-					dh_dx.insertMatrix(i*OBS_SIZE,0, Hx);
-					if (FEAT_SIZE!=0)
-						dh_dx.insertMatrix(i*OBS_SIZE,VEH_SIZE+i*FEAT_SIZE, Hy);
+					first_new_pred = N_pred;  // If we do another loop, start at the begin of new predictions
 
-					dh_dx_full.insertMatrix(i*OBS_SIZE,0, Hx);
-					if (FEAT_SIZE!=0)
-					{
-						dh_dx_full.insertMatrix(i*OBS_SIZE,VEH_SIZE+lm_idx*FEAT_SIZE, Hy);
+				} while (!missing_predictions_to_add.empty());
 
-						for (size_t k=0;k<FEAT_SIZE;k++)
-							idxs.push_back(k+VEH_SIZE+FEAT_SIZE*lm_idx);
-					}
-				}
-				m_timLogger.leave("KF:5.build Jacobians");
-
-				// Compute S:  S = H P ~H + R
-				// *TODO*: This can be accelerated by exploiting the sparsity of dh_dx!!!
-				// ------------------------------------
-				m_timLogger.enter("KF:6.build S");
-
-				S.setSize(N_pred*OBS_SIZE,N_pred*OBS_SIZE);
-
-				// (TODO: Implement multiply_HCHt for a subset of COV directly.)
-				// Extract the subset of m_Pkk that is involved in this observation:
-				m_pkk.extractSubmatrixSymmetrical(idxs,Pkk_subset);
-
-				// S = dh_dx * m_pkk(subset) * (~dh_dx);
-				dh_dx.multiply_HCHt(Pkk_subset,S);
-
-				// Sum the "R" term:
-				if ( FEAT_SIZE>0 )
-				{
-					for (size_t i=0;i<N_pred;++i)
-					{
-						const size_t obs_idx_off = i*OBS_SIZE;
-						for (size_t j=0;j<OBS_SIZE;j++)
-							for (size_t k=0;k<OBS_SIZE;k++)
-								S.get_unsafe(obs_idx_off+j,obs_idx_off+k) += R.get_unsafe(j,k);
-					}
-				}
-				else
-				{	// Not a SLAM-like EKF problem:
-					ASSERTDEB_(S.getColCount() == OBS_SIZE );
-					S+=R;
-				}
-
-				m_timLogger.leave("KF:6.build S");
-
-
-				Z.clear();	// Each entry is one observation:
-				vector_int  data_association;  // -1: New map feature.>=0: Indexes in the state vector
-
-				m_timLogger.enter("KF:7.get obs & DA");
-
-				// Get observations and do data-association:
-				OnGetObservationsAndDataAssociation(
-					Z, data_association, // Out
-					all_predictions, S, predictLMidxs, R  // In
-					);
-
-				ASSERTDEB_(data_association.size()==Z.size() || (data_association.empty() && FEAT_SIZE==0));
 
 				const double tim_obs_DA = m_timLogger.leave("KF:7.get obs & DA");
 
