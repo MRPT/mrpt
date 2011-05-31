@@ -103,6 +103,7 @@
 		- opengl_video_demo: A demo of opengl textures from a video stream.
 		- opengl_video_viewport_demo: A demonstration of the new viewport "image mode".
 	- BUG FIXES:
+		- [mrpt-opengl] Fixed wrong normalization of proyected coordinates in mrpt::opengl::CRenderizable::TRenderInfo::projectPoint()
 		- [mrpt-reactivenav] Fixed an ancient bug in mrpt::reactivenav::CParameterizedTrajectoryGenerator::lambdaFunction() that degraded the use of some PTGs.
 		- [mrpt-gui] Fixed an old bug that lead to SEGFAULTs in the wxWidgets thread if an exception suddenly closed the program without that thread having time to clean exit.
 		- Fixed behavior of mrpt::system::os::kbhit() in Linux.

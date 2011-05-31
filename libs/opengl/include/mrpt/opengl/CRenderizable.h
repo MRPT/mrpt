@@ -196,9 +196,9 @@ namespace mrpt
 				void projectPoint(float x,float y,float z, float &proj_x, float &proj_y, float &proj_z_depth) const
 				{
 					const Eigen::Matrix<float,4,1,Eigen::ColMajor> proj = full_matrix * Eigen::Matrix<float,4,1,Eigen::ColMajor>(x,y,z,1);
-					proj_x = proj[2] ? proj[0]/proj[2] : 0;
-					proj_y = proj[2] ? proj[1]/proj[2] : 0;
-					proj_z_depth = proj[3];
+					proj_x = proj[3] ? proj[0]/proj[3] : 0;
+					proj_y = proj[3] ? proj[1]/proj[3] : 0;
+					proj_z_depth = proj[2];
 				}
 
 				/** Exactly like projectPoint but the (x,y) projected coordinates are given in pixels instead of normalized coordinates. */
@@ -223,7 +223,6 @@ namespace mrpt
 			static unsigned int getNewTextureNumber();
 			static void releaseTextureName(unsigned int i);
 
-
 			/** Gather useful information on the render parameters.
 			  *  It can be called from within the render() method of derived classes, and
 			  *   the returned matrices can be used to determine whether a given point (lx,ly,lz)
@@ -238,7 +237,6 @@ namespace mrpt
 			  *  where (rend_x,rend_y) are both in the range [-1,1].
 			  */
 			void getCurrentRenderingInfo(TRenderInfo &ri) const;
-
 		};
 		/**
 		  * Applies a CPose3D transformation to the object. Note that this method doesn't <i>set</i> the pose to the given value, but <i>combines</i> it with the existing one.
