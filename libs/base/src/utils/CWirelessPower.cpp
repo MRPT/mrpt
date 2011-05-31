@@ -138,7 +138,7 @@ int		CWirelessPower::GetPower()
 	std::stringstream ssidLine;
 
 	ssidLine << "ESSID:\"" << ssid << "\"";
-	int i = 0;
+	//int i = 0;
     getline(&powerReadL,&readBytes,cmdoutput);
     while(!strstr(powerReadL, ssidLine.str().c_str())){
         powerReadV.push_back(std::string(powerReadL));
