@@ -164,7 +164,7 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
     ctx->videoStream=-1;
     for(unsigned int i=0; i<ctx->pFormatCtx->nb_streams; i++)
     {
-        if(ctx->pFormatCtx->streams[i]->codec->codec_type==CODEC_TYPE_VIDEO)
+		if(ctx->pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_VIDEO)
         {
             ctx->videoStream=(int)i;
             break;

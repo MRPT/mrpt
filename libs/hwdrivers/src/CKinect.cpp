@@ -39,8 +39,6 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 
 #if MRPT_HAS_KINECT_FREENECT
 #	include <libfreenect.h>
-#	define KINECT_W FREENECT_FRAME_W
-#	define KINECT_H FREENECT_FRAME_H
 #elif MRPT_HAS_KINECT_CL_NUI
 #	include <CLNUIDevice.h>
 #	define KINECT_W 640
@@ -128,8 +126,8 @@ CKinect::CKinect()  :
 
 	// =========== Default params ===========
 	// ----- RGB -----
-	m_cameraParamsRGB.ncols = KINECT_W;
-	m_cameraParamsRGB.nrows = KINECT_H;
+	m_cameraParamsRGB.ncols = 640; // By default set 640x480, on connect we'll update this.
+	m_cameraParamsRGB.nrows = 480;
 
 	m_cameraParamsRGB.cx(328.94272028759258);
 	m_cameraParamsRGB.cy(267.48068171871557);
@@ -139,8 +137,8 @@ CKinect::CKinect()  :
 	m_cameraParamsRGB.dist.zeros();
 
 	// ----- Depth -----
-	m_cameraParamsDepth.ncols = KINECT_W;
-	m_cameraParamsDepth.nrows = KINECT_H;
+	m_cameraParamsDepth.ncols = 640;
+	m_cameraParamsDepth.nrows = 480;
 
 	m_cameraParamsDepth.cx(339.30781);
 	m_cameraParamsDepth.cy(242.7391);
@@ -262,6 +260,8 @@ bool CKinect::isOpen() const
 // ========  GLOBAL CALLBACK FUNCTIONS ========
 void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 {
+	const freenect_frame_mode frMode = freenect_get_current_video_mode(dev);
+
 	uint16_t *depth = reinterpret_cast<uint16_t *>(v_depth);
 
 	CKinect *obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
@@ -271,10 +271,10 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 	mrpt::synch::CCriticalSectionLocker lock( &obj->internal_latest_obs_cs() );
 
 	obs.hasRangeImage = true;
-	obs.rangeImage.setSize(KINECT_H,KINECT_W);
+	obs.rangeImage.setSize(frMode.height,frMode.width);
 	const CKinect::TDepth2RangeArray &r2m = obj->getRawDepth2RangeConversion();
-	for (int r=0;r<KINECT_H;r++)
-		for (int c=0;c<KINECT_W;c++)
+	for (int r=0;r<frMode.height;r++)
+		for (int c=0;c<frMode.width;c++)
 		{
 			// For now, quickly save the depth as it comes from the sensor, it'll
 			//  transformed later on in getNextObservation()
@@ -288,6 +288,7 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 {
 	CKinect *obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
+	const freenect_frame_mode frMode = freenect_get_current_video_mode(dev);
 
 	// Update of the timestamps at the end:
 	CObservation3DRangeScan &obs = obj->internal_latest_obs();
@@ -295,8 +296,8 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 
 	obs.hasIntensityImage = true;
 	obs.intensityImage.loadFromMemoryBuffer(
-		KINECT_W,
-		KINECT_H,
+		frMode.width,
+		frMode.height,
 		obj->getVideoChannel()==CKinect::VIDEO_CHANNEL_RGB, // Color image?
 		reinterpret_cast<unsigned char*>(rgb),
 		true  // Swap red/blue
@@ -313,8 +314,8 @@ void CKinect::open()
 		close();
 
 	// Alloc memory, if this is the first time:
-	m_buf_depth.resize(KINECT_W*KINECT_H*3);
-	m_buf_rgb.resize(KINECT_W*KINECT_H*3);
+	m_buf_depth.resize(640*480*3);
+	m_buf_rgb.resize(640*480*3);
 
 #if MRPT_HAS_KINECT_FREENECT  // ----> libfreenect
 	// Try to open the device:
@@ -339,9 +340,19 @@ void CKinect::open()
 	if (freenect_open_device(f_ctx, f_dev_ptr, m_user_device_number) < 0)
 		THROW_EXCEPTION_CUSTOM_MSG1("Error opening Kinect sensor with index: %d",m_user_device_number)
 
+	// Get video mode:
+	const freenect_frame_mode frMode = freenect_get_current_video_mode(f_dev);
+
+	// Realloc mem:
+	m_buf_depth.resize(frMode.width*frMode.height*3);
+	m_buf_rgb.resize(frMode.width*frMode.height*3);
+
 	// Save resolution:
-	m_cameraParamsRGB.ncols = KINECT_W;
-	m_cameraParamsRGB.nrows = KINECT_H;
+	m_cameraParamsRGB.ncols = frMode.width;
+	m_cameraParamsRGB.nrows = frMode.height;
+
+	m_cameraParamsDepth.ncols = frMode.width;
+	m_cameraParamsDepth.nrows = frMode.height;
 
 	// Setup:
 	setTiltAngleDegrees(0);
@@ -350,22 +361,30 @@ void CKinect::open()
 	freenect_set_video_callback(f_dev, rgb_cb);
 
 	// rgb or IR channel:
-	freenect_set_video_format(f_dev,
+	const freenect_frame_mode desiredFrMode = freenect_find_video_mode(
+		FREENECT_RESOLUTION_MEDIUM, 
 		m_video_channel==VIDEO_CHANNEL_IR ?
-		FREENECT_VIDEO_IR_8BIT
-		:
-		FREENECT_VIDEO_RGB
-	);
+			FREENECT_VIDEO_IR_8BIT
+			:
+			FREENECT_VIDEO_RGB
+		);
 
-	freenect_set_depth_format(f_dev, FREENECT_DEPTH_10BIT); // FREENECT_DEPTH_11BIT);
-	freenect_set_video_buffer(f_dev, &m_buf_rgb[0]);
+	// Switch to that video mode:
+	if (freenect_set_video_mode(f_dev, desiredFrMode)<0)
+		THROW_EXCEPTION("Error setting Kinect video mode.")
+
+//	freenect_set_depth_format(f_dev, FREENECT_DEPTH_10BIT); // FREENECT_DEPTH_11BIT);
+//	freenect_set_video_buffer(f_dev, &m_buf_rgb[0]);
 	// freenect_set_depth_buffer(f_dev, &m_buf_depth[0]);  // JL: not needed??
 
 	// Set user data = pointer to "this":
 	freenect_set_user(f_dev, this);
 
-	freenect_start_depth(f_dev);
-	freenect_start_video(f_dev);
+	if (freenect_start_depth(f_dev)<0) 
+		THROW_EXCEPTION("Error starting depth streaming.")
+
+	if (freenect_start_video(f_dev)<0)
+		THROW_EXCEPTION("Error starting depth streaming.")
 
 #endif // MRPT_HAS_KINECT_FREENECT
 
@@ -439,12 +458,20 @@ void  CKinect::setVideoChannel(const TVideoChannel vch)
 
 	// rgb or IR channel:
 	freenect_stop_video(f_dev);
-	freenect_set_video_format(f_dev,
+
+	// rgb or IR channel:
+	const freenect_frame_mode desiredFrMode = freenect_find_video_mode(
+		FREENECT_RESOLUTION_MEDIUM, 
 		m_video_channel==VIDEO_CHANNEL_IR ?
-		FREENECT_VIDEO_IR_8BIT
-		:
-		FREENECT_VIDEO_RGB
-	);
+			FREENECT_VIDEO_IR_8BIT
+			:
+			FREENECT_VIDEO_RGB
+		);
+
+	// Switch to that video mode:
+	if (freenect_set_video_mode(f_dev, desiredFrMode)<0)
+		THROW_EXCEPTION("Error setting Kinect video mode.")
+
 	freenect_start_video(f_dev);
 
 #endif // MRPT_HAS_KINECT_FREENECT
@@ -511,7 +538,7 @@ void CKinect::getNextObservation(
 	{
 		// Mark the entire range data as invalid:
 		m_latest_obs.hasRangeImage = true;
-		m_latest_obs.rangeImage.setSize(KINECT_H,KINECT_W);
+		m_latest_obs.rangeImage.setSize(m_cameraParamsDepth.nrows,m_cameraParamsDepth.ncols);
 		m_latest_obs.rangeImage.setConstant(0); // "0" means: error in range
 		there_is_obs=true;
 	}
