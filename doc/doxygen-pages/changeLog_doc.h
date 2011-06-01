@@ -81,7 +81,8 @@
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect changes:
 			- mrpt::hwdrivers::CKinect::setVideoChannel(): New method (and .ini parameter) for switching between the RGB and IR channels for the intensity images.
 			- The posibility of grabbing the IR channel is also now available in mrpt::hwdrivers::prepareVideoSourceFromUserSelection() , the camera-calib application, etc...
-			- libfreenect is now also supported in Windows. Read http://www.mrpt.org/Kinect_and_MRPT
+			- libfreenect is now also supported in Windows.
+			- An embedded version of libfreenect is used for both Linux/Windows, so it's not required anymore to download and build that project separately. Read http://www.mrpt.org/Kinect_and_MRPT
 			- Improved robustness and efficiency in grabbing.
 		- [mrpt-hwdrivers] Improvement in Kinect Linux driver (libfreenect), avoiding intensive usage of critical sections (Thanks, "Gonzales" - see: http://www.mrpt.org/node/491 )
 		- [mrpt-hwdrivers] Kinect: Embedded libfreenect library updated to latest GIT revision (31/MAY/2011).

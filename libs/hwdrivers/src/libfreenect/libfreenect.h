@@ -27,7 +27,7 @@
 #ifndef LIBFREENECT_H
 #define LIBFREENECT_H
 
-#include <stdint.h>
+#include <mrpt/utils/pstdint.h>
 
 #ifdef __cplusplus
 extern "C" {

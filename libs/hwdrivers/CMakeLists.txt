@@ -30,6 +30,25 @@ IF(CMAKE_MRPT_HAS_FREENECT)
 			"kinect"
 			"kinect"
 			)
+			
+		# Special stuff for windows:
+		if (WIN32)
+			LIST(APPEND hwdrivers_EXTRA_SRCS
+				"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows/libusb10emu/libusb-1.0/libusbemu.cpp"
+				"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows/libusb10emu/libusb-1.0/failguard.cpp"
+				)
+			LIST(APPEND hwdrivers_EXTRA_SRCS_NAME 
+				"kinect"
+				"kinect"
+				)
+				
+			INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows")
+			INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows/libusb10emu")
+			# libfreenect.h includes libusb.h:
+			include_directories("${LIBUSB_1_INCLUDE_DIRS}")
+
+		endif(WIN32)
+			
 	ENDIF (CMAKE_MRPT_HAS_FREENECT_SYSTEM)	
 ENDIF(CMAKE_MRPT_HAS_FREENECT)
 
@@ -70,12 +89,24 @@ IF(CMAKE_MRPT_HAS_xSENS)
 	ADD_DEFINITIONS(-D_LOG_TO_STDOUT)
 ENDIF(CMAKE_MRPT_HAS_xSENS)
 
-IF(CMAKE_MRPT_HAS_FREENECT AND CMAKE_MRPT_HAS_FREENECT_SYSTEM)
+IF(CMAKE_MRPT_HAS_FREENECT)
 	# Add linking against these libs:
 	IF(NOT "${FREENECT_LIBS}" STREQUAL "")
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${FREENECT_LIBS})
 	ENDIF(NOT "${FREENECT_LIBS}" STREQUAL "")
-ENDIF(CMAKE_MRPT_HAS_FREENECT AND CMAKE_MRPT_HAS_FREENECT_SYSTEM)
+		
+	if (NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
+		# Using embedded version:
+		# Ignore precompiled headers:
+		IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+			set_source_files_properties(${kinect_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
+		ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+		
+		if (MSVC)
+			set_source_files_properties(${kinect_FILES} PROPERTIES LANGUAGE CXX) 			# Build as C++
+		endif(MSVC)
+	endif (NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
+ENDIF(CMAKE_MRPT_HAS_FREENECT)
 
 # build with link on Phidget21 lib
 IF(CMAKE_MRPT_HAS_PHIDGET)
