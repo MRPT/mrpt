@@ -32,7 +32,7 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</i></p>
 
   <a name="0.9.4">
-  <h2>Version 0.9.4 - (Version 1.0.0-Release_Candidate_2): Released 1-JUN-2011 (SVN 2529) </h2></a>
+  <h2>Version 0.9.4 - (Version 1.0.0-Release_Candidate_2): Released 1-JUN-2011 (SVN 2533) </h2></a>
 	- Changes in applications:
 		- <a href="http://www.mrpt.org/Application:kf-slam" >kf-slam</a>: Now supports two implementations 2D and 3D EKF-SLAM (it was always 3D SLAM previously).
 		- <a href="http://www.mrpt.org/Application:rawlog-grabber" >rawlog-grabber</a>: Added "hokuyo_UXM.ini" to support HOKUYO UXM laser series.
@@ -84,7 +84,7 @@
 			- libfreenect is now also supported in Windows. Read http://www.mrpt.org/Kinect_and_MRPT
 			- Improved robustness and efficiency in grabbing.
 		- [mrpt-hwdrivers] Improvement in Kinect Linux driver (libfreenect), avoiding intensive usage of critical sections (Thanks, "Gonzales" - see: http://www.mrpt.org/node/491 )
-		- [mrpt-hwdrivers] Kinect: Embedded libfreenect library updated to latest GIT revision (12/DEC/2010).
+		- [mrpt-hwdrivers] Kinect: Embedded libfreenect library updated to latest GIT revision (31/MAY/2011).
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CHokuyoURG now support ethernet connection (tested in HOKUYO UXM series)[JRRS].
 		- [mrpt-gui] mrpt::gui::CDisplayWindow3D now emits a new event. See mrpt::gui::mrptEvent3DWindowGrabImageFile
 		- [mrpt-gui] Creation and destruction of windows have a timeout, which is not configurable via an optional environment variable "MRPT_WXSUBSYS_TIMEOUT_MS" (milliseconds). This is useful to increase that timeout if debugging with valgrind.
