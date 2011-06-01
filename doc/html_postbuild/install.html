@@ -5,7 +5,7 @@
     
     <title>Compiling MRPT</title>
     <!--<base href="http://www.mrpt.org">--><base href=".">
-    <link type="text/css" rel="stylesheet" href="./install_files/print.css">
+    <link type="text/css" rel="stylesheet" href="./Compiling MRPT_files/print.css">
       </head>
   <body>
               <div class="section-1">
@@ -57,7 +57,7 @@ Please, report <b>errors or doubts</b> on MRPT compilation to the <a href="http:
 </div><hr>
 
 
-<div style="float: right;"><img src="./install_files/icon_win.png"></div>
+<div style="float: right;"><img src="./Compiling MRPT_files/icon_win.png"></div>
 <br>
 
 <h4 id="CMake_Mandatory"> 1.1.1 CMake (Mandatory)</h4>
@@ -91,7 +91,7 @@ In Windows <b>you'll have to manually modify the flag to compile the OpenGL supp
 #define wxUSE_GLCANVAS       1
 </pre>
 
-Now, depending on your version of wxWidgets, open the Visual Studio project (which may be <b>wxwidgets\build\msw\wx_dll.dsw</b> or  <b>wxwidgets\build\msw\wx_vcX.sln</b>).  I recommend to build, with "Build all", only these configurations:
+Now, depending on your version of wxWidgets, open the Visual Studio project (may be called <b>wxwidgets\build\msw\wx_dll.dsw</b>).  I recommend to build, with "Build all", <b>only</b> these configurations:
 
 <ul>
 <li>DLL Unicode Release  (or just "DLL Release" in wxWidgets &gt;=2.9) </li>
@@ -136,14 +136,13 @@ The FFmpeg DLLs will be required at runtime by programs compiled with MRPT under
 
 
 <br><br>
-<h4 id="Code_Laboratories_NUI_SDK_for_Kinect_Optional_only_if_want_to_use_Kinect">1.1.5 Code Laboratories NUI SDK for Kinect (Optional, only if want to use Kinect)</h4>
+<h4 id="Code_Laboratories_NUI_SDK_for_Kinect_or_OpenKinect-s_freenect_Optional_only_if_want_to_use_Kinect">1.1.5 Code Laboratories NUI SDK for Kinect <b>or</b> OpenKinect's freenect (Optional, only if want to use Kinect)</h4>
 <br>
 
-<small>(For MRPT 0.9.3+)</small><br><br>
+<small>(For MRPT 0.9.3+ or 0.9.4+, respectively)</small><br><br>
 
-To enable Xbox Kinect in Windows, you'll need this SDK. It can be downloaded from: <a href="http://codelaboratories.com/nui">http://codelaboratories.com/nui</a>.<br><br>
+Please, read <a href="http://www.mrpt.org/Kinect_and_MRPT">this page</a> where all the posibilities are explained.
 
-After download and installing, CMake should find it. If it's not done automatically, set the variables <code>CLNUI_SDK_DIR</code> pointing to the installation directory. <b>Remember to add the "CL NUI Platform\SDK\Bin" directory to the system PATH.</b>
 
 <br><br>
 <br><br>
@@ -151,7 +150,7 @@ After download and installing, CMake should find it. If it's not done automatica
 <br><hr><div style="background-color:#F0F0F0">
 <h3 id="On_GNULinux">1.2. On GNU/Linux</h3>
 </div><hr>
-<div style="float: right;"><img src="./install_files/icon_linux.png"></div>
+<div style="float: right;"><img src="./Compiling MRPT_files/icon_linux.png"></div>
 <br>
 
 
@@ -188,8 +187,8 @@ Under Linux, you'll <b>NOT</b> need to do a "make install" after building OpenCV
 <h4 id="Ubuntu_Debian"> 1.2.3 Ubuntu, Debian</h4>
 <br>
 Invoke:
-<pre class="bordered"> $ sudo apt-get install build-essential cmake libwxgtk2.8-dev \
-   libwxbase2.8-dbg libwxgtk2.8-dbg libftdi-dev libglut3-dev \
+<pre class="bordered"> $ sudo apt-get install build-essential pkg-config cmake \
+   libwxgtk2.8-dev libftdi-dev libglut3-dev \
    zlib1g-dev libusb-1.0-0-dev  \
    libdc1394-22-dev libavformat-dev libswscale-dev
 </pre>
@@ -232,7 +231,7 @@ For OpenSUSE 11.X, invoke:
 <h3 id="On_Mac">1.3. On Mac</h3>
 </div><hr>
 
-<div style="float: right;"><img src="./install_files/icon_macos.jpg"></div>
+<div style="float: right;"><img src="./Compiling MRPT_files/icon_macos.jpg"></div>
 <br>
 
 Building under MacOS is not yet working 100%. Instructions will be given when we solve all the problems.
@@ -274,7 +273,7 @@ This will use all the default options. To tune them, invoke (available for Linux
 
 <div align="center">
 <a href="http://www.mrpt.org/sites/default/files/images/screenshot_cmake_console_linux.jpg">
-<img width="250" src="./install_files/screenshot_cmake_console_linux.preview.jpg">
+<img width="250" src="./Compiling MRPT_files/screenshot_cmake_console_linux.preview.jpg">
 </a>
 <small>(Click the image to see it at full size)</small>
 </div>
@@ -373,13 +372,14 @@ After building everything, it's a good idea to run the tests by building the "te
 
 <ul>
 
-<li>Install MinGW: Recommended: http://www.tdragon.net/recentgcc/ </li>
+<li>Install MinGW: Recommended: <a href="http://tdm-gcc.tdragon.net/" target="_blank">http://tdm-gcc.tdragon.net/</a> </li>
 
 <li>Before compiling MRPT with MinGW, it's strongly recommended to compile wxWidgets and OpenCV with MinGW:</li>
 <li>Build wxWidgets. Open a command prompt and go to the directory build/msw. Then execute the following commands to rebuild the Release and Debug configurations (as shared libs), so CMake can correctly detect wxWidgets:
 <pre class="bordered">mingw32-make -f makefile.gcc SHARED=1 USE_OPENGL=1 BUILD=release 
 mingw32-make -f makefile.gcc SHARED=1 USE_OPENGL=1 BUILD=debug 
 </pre>
+As usual with <code>make</code>, add a <code>-j4</code> if you have a DualCore, etc... to compile faster in parallel.
 </li>
 
 <li>Build OpenCV. Use its CMake build system, select the MinGW compiler and follow the generic OpenCV compilation instructions.</li>
