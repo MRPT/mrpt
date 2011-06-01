@@ -110,22 +110,20 @@ CImage& CImage::operator = (const CImage& o)
 
 	releaseIpl();
 
-#if MRPT_HAS_OPENCV
 	m_imgIsExternalStorage = o.m_imgIsExternalStorage;
 	m_imgIsReadOnly = false;
 
 	if (!o.m_imgIsExternalStorage)
 	{ 	// A normal image
+#if MRPT_HAS_OPENCV
 		ASSERTMSG_(o.img!=NULL,"Source image in = operator has NULL IplImage*")
 		img = cvCloneImage( (IplImage*)o.img );
+#endif
 	}
 	else
 	{ 	// An externally stored image:
 		m_externalFile = o.m_externalFile;
 	}
-#else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
-#endif
 
 	return *this;
 
@@ -172,7 +170,6 @@ void CImage::copyFastFrom( CImage &o )
 
 	if (this==&o) return;
 
-#if MRPT_HAS_OPENCV
 	if (o.m_imgIsExternalStorage)
 	{
 		// Just copy the reference to the ext. file:
@@ -180,8 +177,9 @@ void CImage::copyFastFrom( CImage &o )
 	}
 	else
 	{	// Normal copy
+#if MRPT_HAS_OPENCV
 		if (!o.img) 		THROW_EXCEPTION("Origin image is empty! (o.img==NULL)")
-
+#endif
 		// Erase current image:
 		releaseIpl();
 
@@ -195,10 +193,6 @@ void CImage::copyFastFrom( CImage &o )
 		o.m_imgIsReadOnly = false;
 		o.m_imgIsExternalStorage=false;
 	}
-
-#else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
-#endif
 
 	MRPT_END;
 }
@@ -217,14 +211,12 @@ CImage::CImage( void *iplImage ) :
 #if MRPT_HAS_OPENCV
 	if (!iplImage)
 	{
-        changeSize( 1, 1, 1, true );
+		changeSize( 1, 1, 1, true );
 	}
 	else
 	{
 		img = cvCloneImage( (IplImage*) iplImage );
 	}
-#else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 
 	MRPT_END;
@@ -313,13 +305,16 @@ void  CImage::loadFromIplImage( void* iplImage )
 	MRPT_START;
 	ASSERT_(iplImage!=NULL)
 
-#if MRPT_HAS_OPENCV
 	releaseIpl();
 
-	img = cvCloneImage( (IplImage*)iplImage );
+	if (iplImage)
+	{
+#if MRPT_HAS_OPENCV
+		img = cvCloneImage( (IplImage*)iplImage );
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+		THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
+	}
 
 	MRPT_END;
 }
@@ -331,17 +326,20 @@ void  CImage::setFromIplImageReadOnly( void* iplImage )
 {
 	MRPT_START;
 
+	releaseIpl();
+
 #if MRPT_HAS_OPENCV
 	ASSERT_(iplImage!=NULL)
 	ASSERTMSG_(iplImage!=this->img,"Trying to assign read-only to itself.")
 
-	releaseIpl();
 	img = (IplImage*)iplImage;
+#else
+	if (iplImage) {
+		THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+	}
+#endif
 	m_imgIsReadOnly = true;
 	m_imgIsExternalStorage=false;
-#else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
-#endif
 
 	MRPT_END;
 }
@@ -353,14 +351,17 @@ void  CImage::setFromIplImage( void* iplImage )
 {
 	MRPT_START;
 
-#if MRPT_HAS_OPENCV
 	releaseIpl();
-	img = (IplImage*)iplImage;
+	if (iplImage)
+	{
+#if MRPT_HAS_OPENCV
+		img = (IplImage*)iplImage;
+#else
+		THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
+#endif	
+	}
 	m_imgIsReadOnly = false;
 	m_imgIsExternalStorage=false;
-#else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
-#endif
 
 	MRPT_END;
 }

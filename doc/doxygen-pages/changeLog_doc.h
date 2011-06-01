@@ -72,6 +72,7 @@
 		- [mrpt-bases] mrpt::utils::CImage changes:
 			- Some methods have been optimized for use of SSE2/SSE3 functions, falling back to the (slower) OpenCV functions when it's not possible.
 			- Implementation separated into different CImage_*.cpp files.
+			- More tolerant dealing with builds without OpenCV: don't launch an exception until something really important can't be done.
 		- [mrpt-base] mrpt::poses::CPose3D was too strict in checking that the rotation matrix is orthogonal: admisible threshold is now 1 (plus/minus)3e-3.
 		- [mrpt-base] New method: mrpt::utils::CThreadSafeQueue::get_lastest_purge_old()
 		- [mrpt-base] mrpt::synch::CSemaphore now supports named semaphores in Linux too.
