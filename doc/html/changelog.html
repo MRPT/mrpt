@@ -27,7 +27,7 @@
 <div class="contents">
 <div class="textblock"><p><b>Note:</b> <em>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</em></p>
 <p><a class="anchor" id="0.9.4"></a> </p>
-<h2>Version 0.9.4 - (Version 1.0.0-Release_Candidate_2): Released 1-JUN-2011 (SVN 2533) </h2>
+<h2>Version 0.9.4 - (Version 1.0.0-Release_Candidate_2): Released 2-JUN-2011 (SVN 2536) </h2>
 <ul>
 <li>Changes in applications:<ul>
 <li><a href="http://www.mrpt.org/Application:kf-slam">kf-slam</a>: Now supports two implementations 2D and 3D EKF-SLAM (it was always 3D SLAM previously).</li>
@@ -89,7 +89,8 @@
 <li>[mrpt-hwdrivers] <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_kinect.html" title="A class for grabing &quot;range images&quot;, intensity images (either RGB or IR) and other informati...">mrpt::hwdrivers::CKinect</a> changes:<ul>
 <li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_kinect.html#a6f9ef0ed138921c22961bf0b433e74e8" title="Changes the video channel to open (RGB or IR) - you can call this method before start grabbing or in ...">mrpt::hwdrivers::CKinect::setVideoChannel()</a>: New method (and .ini parameter) for switching between the RGB and IR channels for the intensity images.</li>
 <li>The posibility of grabbing the IR channel is also now available in <a class="el" href="namespacemrpt_1_1hwdrivers.html#a9d0c0e836d0abcd45f253b11bc930641" title="Show to the user a list of possible camera drivers and creates and open the selected camera...">mrpt::hwdrivers::prepareVideoSourceFromUserSelection()</a> , the camera-calib application, etc...</li>
-<li>libfreenect is now also supported in Windows. Read <a href="http://www.mrpt.org/Kinect_and_MRPT">http://www.mrpt.org/Kinect_and_MRPT</a></li>
+<li>libfreenect is now also supported in Windows.</li>
+<li>An embedded version of libfreenect is used for both Linux/Windows, so it's not required anymore to download and build that project separately. Read <a href="http://www.mrpt.org/Kinect_and_MRPT">http://www.mrpt.org/Kinect_and_MRPT</a></li>
 <li>Improved robustness and efficiency in grabbing.</li>
 </ul>
 </li>
@@ -99,7 +100,11 @@
 <li>[mrpt-gui] <a class="el" href="classmrpt_1_1gui_1_1_c_display_window3_d.html" title="A graphical user interface (GUI) for efficiently rendering 3D scenes in real-time.">mrpt::gui::CDisplayWindow3D</a> now emits a new event. See <a class="el" href="classmrpt_1_1gui_1_1mrpt_event3_d_window_grab_image_file.html" title="An event sent by a CDisplayWindow3D window when an image is saved after enabling this feature with CD...">mrpt::gui::mrptEvent3DWindowGrabImageFile</a></li>
 <li>[mrpt-gui] Creation and destruction of windows have a timeout, which is not configurable via an optional environment variable "MRPT_WXSUBSYS_TIMEOUT_MS" (milliseconds). This is useful to increase that timeout if debugging with valgrind.</li>
 <li>[mrpt-maps] mrpt::slam::CPointsMaps: Inserting 2D laser scans is now ~3 times faster (thanks to <a class="el" href="classmrpt_1_1slam_1_1_c_sin_cos_look_up_table_for2_d_scans.html" title="A smart look-up-table (LUT) of sin/cos values for 2D laser scans.">mrpt::slam::CSinCosLookUpTableFor2DScans</a>).</li>
-<li>[mrpt-obs] <a class="el" href="classmrpt_1_1slam_1_1_c_observation3_d_range_scan.html#a0b06693a67ecd4044917ed914aad7195" title="Compute the 3D points coordinates from the depth image (rangeImage) and the depth camera camera param...">mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage</a> now uses by default a LUT to speed up (~10%) the conversion of range images to 3D point clouds in Kinect.</li>
+<li>[mrpt-obs] <a class="el" href="classmrpt_1_1slam_1_1_c_observation3_d_range_scan.html#a0b06693a67ecd4044917ed914aad7195" title="Compute the 3D points coordinates from the depth image (rangeImage) and the depth camera camera param...">mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage</a>:<ul>
+<li>Now uses by default a LUT to speed up (~10%) the conversion of range images to 3D point clouds in Kinect.</li>
+<li>Addition of SSE-optimized code for point cloud proyection when using the LUT.</li>
+</ul>
+</li>
 <li>[mrpt-opengl] <a class="el" href="classmrpt_1_1opengl_1_1_c_open_g_l_viewport.html" title="A viewport within a COpenGLScene, containing a set of OpenGL objects to render.">mrpt::opengl::COpenGLViewport</a> now has a special "image mode" which makes very easy to render images to opengl windows efficiently. See the example "opengl_video_viewport_demo".</li>
 <li>[mrpt-opengl] <a class="el" href="classmrpt_1_1opengl_1_1_c_textured_object.html" title="A base class for all OpenGL objects with loadable textures.">mrpt::opengl::CTexturedObject</a> (+derived classes) now are more efficient creating OpenGL's texture mipmaps.</li>
 <li>[mrpt-slam] <a class="el" href="classmrpt_1_1slam_1_1_c_i_c_p.html" title="Several implementations of ICP (Iterative closest point) algorithms for aligning two point maps...">mrpt::slam::CICP</a> has a new option: skip_cov_calculation that can save some time in some cases.</li>
@@ -2148,4 +2153,4 @@
 </li>
 </ul>
 </div></div>
-<br><hr><br> <table border="0" width="100%"> <tr> <td> Page generated by <a href="http://www.doxygen.org" target="_blank">Doxygen 1.7.3</a> for MRPT 0.9.4 SVN:2532M at Wed Jun  1 14:48:29 CEST 2011</td><td></td> <td width="100"> </td> <td width="150">  </td></tr> </table>  </body></html>
+<br><hr><br> <table border="0" width="100%"> <tr> <td> Page generated by <a href="http://www.doxygen.org" target="_blank">Doxygen 1.7.3</a> for MRPT 0.9.4 SVN:2534:2535M at Thu Jun  2 18:46:07 CEST 2011</td><td></td> <td width="100"> </td> <td width="150">  </td></tr> </table>  </body></html>

@@ -133,7 +133,9 @@ namespace mrpt
 		  * <h2>Platform-specific comments</h2><hr>
 		  *   For more details, refer to <a href="http://openkinect.org/wiki/Main_Page" >libfreenect</a> documentation:
 		  *		- Linux: You'll need root privileges to access Kinect. Or, install <code> MRPT/scripts/51-kinect.rules </code> in <code>/etc/udev/rules.d/</code> to allow access to all users.
-		  *		- Windows: Install CL NUI SDK: http://codelaboratories.com/nui
+		  *		- Windows:
+		  *			- Since MRPT 0.9.4 you'll only need to install <a href="http://sourceforge.net/projects/libusb-win32/files/libusb-win32-releases/" >libusb-win32</a>: download and extract the latest libusb-win32-bin-x.x.x.x.zip
+		  *			- To install the drivers, read this: http://openkinect.org/wiki/Getting_Started#Windows
 		  *		- MacOS: (write me!)
 		  *
 		  *

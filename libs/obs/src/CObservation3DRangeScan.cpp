@@ -652,7 +652,7 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 	if (PROJ3D_USE_LUT)
 	{
 		// Use LUT:
-		if (m_3dproj_lut.prev_camParams!=cameraParams)
+		if (m_3dproj_lut.prev_camParams!=cameraParams || WH!=size_t(m_3dproj_lut.Kys.size()))
 		{
 #if PROJ3D_PERFLOG
 			tims.enter("LUT");
