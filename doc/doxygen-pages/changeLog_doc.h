@@ -90,7 +90,9 @@
 		- [mrpt-gui] mrpt::gui::CDisplayWindow3D now emits a new event. See mrpt::gui::mrptEvent3DWindowGrabImageFile
 		- [mrpt-gui] Creation and destruction of windows have a timeout, which is not configurable via an optional environment variable "MRPT_WXSUBSYS_TIMEOUT_MS" (milliseconds). This is useful to increase that timeout if debugging with valgrind.
 		- [mrpt-maps] mrpt::slam::CPointsMaps: Inserting 2D laser scans is now ~3 times faster (thanks to mrpt::slam::CSinCosLookUpTableFor2DScans).
-		- [mrpt-obs] mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage now uses by default a LUT to speed up (~10%) the conversion of range images to 3D point clouds in Kinect.
+		- [mrpt-obs] mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage:
+			- Now uses by default a LUT to speed up (~10%) the conversion of range images to 3D point clouds in Kinect.
+			- Addition of SSE-optimized code for point cloud proyection when using the LUT.
 		- [mrpt-opengl] mrpt::opengl::COpenGLViewport now has a special "image mode" which makes very easy to render images to opengl windows efficiently. See the example "opengl_video_viewport_demo".
 		- [mrpt-opengl] mrpt::opengl::CTexturedObject (+derived classes) now are more efficient creating OpenGL's texture mipmaps.
 		- [mrpt-slam] mrpt::slam::CICP has a new option: skip_cov_calculation that can save some time in some cases.

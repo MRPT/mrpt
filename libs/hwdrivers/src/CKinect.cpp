@@ -279,7 +279,7 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 			// For now, quickly save the depth as it comes from the sensor, it'll
 			//  transformed later on in getNextObservation()
 			const uint16_t v = *depth++;
-			obs.rangeImage.coeffRef(r,c) = r2m[v % KINECT_RANGES_TABLE_MASK];
+			obs.rangeImage.coeffRef(r,c) = r2m[v & KINECT_RANGES_TABLE_MASK];
 		}
 	obj->internal_tim_latest_depth() = timestamp;
 
@@ -362,7 +362,7 @@ void CKinect::open()
 
 	// rgb or IR channel:
 	const freenect_frame_mode desiredFrMode = freenect_find_video_mode(
-		FREENECT_RESOLUTION_MEDIUM, 
+		FREENECT_RESOLUTION_MEDIUM,
 		m_video_channel==VIDEO_CHANNEL_IR ?
 			FREENECT_VIDEO_IR_8BIT
 			:
@@ -377,14 +377,16 @@ void CKinect::open()
 //	freenect_set_video_buffer(f_dev, &m_buf_rgb[0]);
 	// freenect_set_depth_buffer(f_dev, &m_buf_depth[0]);  // JL: not needed??
 
+	freenect_set_depth_mode(f_dev, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_10BIT));
+
 	// Set user data = pointer to "this":
 	freenect_set_user(f_dev, this);
 
-	if (freenect_start_depth(f_dev)<0) 
+	if (freenect_start_depth(f_dev)<0)
 		THROW_EXCEPTION("Error starting depth streaming.")
 
 	if (freenect_start_video(f_dev)<0)
-		THROW_EXCEPTION("Error starting depth streaming.")
+		THROW_EXCEPTION("Error starting video streaming.")
 
 #endif // MRPT_HAS_KINECT_FREENECT
 
@@ -461,7 +463,7 @@ void  CKinect::setVideoChannel(const TVideoChannel vch)
 
 	// rgb or IR channel:
 	const freenect_frame_mode desiredFrMode = freenect_find_video_mode(
-		FREENECT_RESOLUTION_MEDIUM, 
+		FREENECT_RESOLUTION_MEDIUM,
 		m_video_channel==VIDEO_CHANNEL_IR ?
 			FREENECT_VIDEO_IR_8BIT
 			:
@@ -561,7 +563,7 @@ void CKinect::getNextObservation(
 	const bool there_is_rgb   = GetNUICameraColorFrameRGB24(m_clnui_cam, &m_buf_rgb[0],waitTimeout);
 	const bool there_is_depth = GetNUICameraDepthFrameRAW(m_clnui_cam, (PUSHORT)&m_buf_depth[0],waitTimeout);
 
-	there_is_obs = (!m_grab_image  || there_is_rgb) && 
+	there_is_obs = (!m_grab_image  || there_is_rgb) &&
 	               (!m_grab_depth  || there_is_depth);
 
 	if (!there_is_obs)
@@ -590,7 +592,7 @@ void CKinect::getNextObservation(
 				for (int c=0;c<KINECT_W;c++)
 				{
 					const uint16_t v = (*depthPtr++);
-					newObs.rangeImage.coeffRef(r,c) = m_range2meters[v % KINECT_RANGES_TABLE_MASK];
+					newObs.rangeImage.coeffRef(r,c) = m_range2meters[v & KINECT_RANGES_TABLE_MASK];
 				}
 		}
 
@@ -623,7 +625,7 @@ void CKinect::getNextObservation(
 		{
 			_out_obs.hasRangeImage = false;
 			_out_obs.rangeImage.resize(0,0);
-		}	
+		}
 
 	}
 

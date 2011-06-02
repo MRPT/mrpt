@@ -35,6 +35,7 @@
 #include <mrpt/math/CLevenbergMarquardt.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CTimeLogger.h>
 
 using namespace std;
 using namespace mrpt::slam;
@@ -602,6 +603,9 @@ void CObservation3DRangeScan::getZoneAsObs(
 
 
 
+// Auxiliary functions which implement SSE-optimized proyection of 3D point cloud:
+void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, float*xs, float *ys, float*zs);
+void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, float*xs, float *ys, float*zs);
 
 void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_USE_LUT)
 {
@@ -619,11 +623,18 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 	const int H = rangeImage.rows();
 	const size_t WH = W*H;
 
+#if PROJ3D_PERFLOG
+	tims.enter("proj.resize");
+#endif
+
 	hasPoints3D = true;
 	points3D_x.resize( WH );
 	points3D_y.resize( WH );
 	points3D_z.resize( WH );
 
+#if PROJ3D_PERFLOG
+	tims.leave("proj.resize");
+#endif
 
 	float *xs= &points3D_x[0];
 	float *ys= &points3D_y[0];
@@ -674,14 +685,13 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 		float *kys = &m_3dproj_lut.Kys[0];
 		float *kzs = &m_3dproj_lut.Kzs[0];
 
-		for (int r=0;r<H;r++)
-			for (int c=0;c<W;c++)
-			{
-				const float D = rangeImage.coeff(r,c);
-				*xs++ = D;
-				*zs++ = *kzs++ * D;
-				*ys++ = *kys++ * D;
-			}
+#if defined(MRPT_HAS_SSE2)
+		if ((W & 0x07)==0)
+				do_project_3d_pointcloud_SSE2(H,W,kys,kzs,rangeImage,xs,ys,zs);
+		else	do_project_3d_pointcloud(H,W,kys,kzs,rangeImage,xs,ys,zs);  // if image width is not 8*N, use standard method
+#else
+		do_project_3d_pointcloud(H,W,kys,kzs,rangeImage,xs,ys,zs);
+#endif
 	}
 	else
 	{
@@ -707,5 +717,53 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 
 #if PROJ3D_PERFLOG
 	tims.leave("proj");
+#endif
+}
+
+
+// Auxiliary functions which implement proyection of 3D point clouds:
+void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, float*xs, float *ys, float*zs)
+{
+	for (int r=0;r<H;r++)
+		for (int c=0;c<W;c++)
+		{
+			const float D = rangeImage.coeff(r,c);
+			*xs++ = D;
+			*zs++ = *kzs++ * D;
+			*ys++ = *kys++ * D;
+		}
+}
+
+void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, float*xs, float *ys, float*zs)
+{
+#if defined(MRPT_HAS_SSE2)
+		// Use optimized version:
+		const int W_4 = W >> 2;  // /=4 , since we process 4 values at a time.
+
+		for (int r=0;r<H;r++)
+		{
+			const float *D_ptr = &rangeImage.coeffRef(r,0);  // Matrices are 16-aligned
+
+			for (int c=0;c<W_4;c++)
+			{
+				const __m128 D = _mm_load_ps(D_ptr);
+
+				const __m128 KY = _mm_load_ps(kys);
+				const __m128 KZ = _mm_load_ps(kzs);
+
+				_mm_storeu_ps(xs , D);
+				_mm_storeu_ps(ys , _mm_mul_ps(KY,D));
+				_mm_storeu_ps(zs , _mm_mul_ps(KZ,D));
+
+				D_ptr+=4;
+				kys+=4;
+				kzs+=4;
+				xs+=4;
+				ys+=4;
+				zs+=4;
+			}
+
+
+		}
 #endif
 }
