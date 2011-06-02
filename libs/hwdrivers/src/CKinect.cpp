@@ -340,20 +340,6 @@ void CKinect::open()
 	if (freenect_open_device(f_ctx, f_dev_ptr, m_user_device_number) < 0)
 		THROW_EXCEPTION_CUSTOM_MSG1("Error opening Kinect sensor with index: %d",m_user_device_number)
 
-	// Get video mode:
-	const freenect_frame_mode frMode = freenect_get_current_video_mode(f_dev);
-
-	// Realloc mem:
-	m_buf_depth.resize(frMode.width*frMode.height*3);
-	m_buf_rgb.resize(frMode.width*frMode.height*3);
-
-	// Save resolution:
-	m_cameraParamsRGB.ncols = frMode.width;
-	m_cameraParamsRGB.nrows = frMode.height;
-
-	m_cameraParamsDepth.ncols = frMode.width;
-	m_cameraParamsDepth.nrows = frMode.height;
-
 	// Setup:
 	setTiltAngleDegrees(0);
 	freenect_set_led(f_dev,LED_RED);
@@ -373,9 +359,23 @@ void CKinect::open()
 	if (freenect_set_video_mode(f_dev, desiredFrMode)<0)
 		THROW_EXCEPTION("Error setting Kinect video mode.")
 
-//	freenect_set_depth_format(f_dev, FREENECT_DEPTH_10BIT); // FREENECT_DEPTH_11BIT);
-//	freenect_set_video_buffer(f_dev, &m_buf_rgb[0]);
-	// freenect_set_depth_buffer(f_dev, &m_buf_depth[0]);  // JL: not needed??
+
+	// Get video mode:
+	const freenect_frame_mode frMode = freenect_get_current_video_mode(f_dev);
+
+	// Realloc mem:
+	m_buf_depth.resize(frMode.width*frMode.height*3);
+	m_buf_rgb.resize(frMode.width*frMode.height*3);
+
+	// Save resolution:
+	m_cameraParamsRGB.ncols = frMode.width;
+	m_cameraParamsRGB.nrows = frMode.height;
+
+	m_cameraParamsDepth.ncols = frMode.width;
+	m_cameraParamsDepth.nrows = frMode.height;
+
+	freenect_set_video_buffer(f_dev, &m_buf_rgb[0]);
+	freenect_set_depth_buffer(f_dev, &m_buf_depth[0]);
 
 	freenect_set_depth_mode(f_dev, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_10BIT));
 

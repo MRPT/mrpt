@@ -37,7 +37,7 @@
 	{
 	#define _MSC_STDINT_H_    // We already have pstdint.h in MRPT
 	#include <avformat.h>
-	//#include <avcodec.h>
+	#include <avcodec.h>
 	#include <swscale.h>
 	}
 #endif
@@ -164,7 +164,13 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
     ctx->videoStream=-1;
     for(unsigned int i=0; i<ctx->pFormatCtx->nb_streams; i++)
     {
-		if(ctx->pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_VIDEO)
+		if(ctx->pFormatCtx->streams[i]->codec->codec_type==
+#if LIBAVCODEC_VERSION_INT<AV_VERSION_INT(53,0,0)
+			CODEC_TYPE_VIDEO
+#else
+			AVMEDIA_TYPE_VIDEO
+#endif
+			)
         {
             ctx->videoStream=(int)i;
             break;
