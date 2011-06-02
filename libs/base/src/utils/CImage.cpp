@@ -39,6 +39,7 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/math/fourier.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CTimeLogger.h>
 
 // OpenCV headers for any old/new version of them:
 #include "do_opencv_includes.h"
@@ -57,6 +58,14 @@ IMPLEMENTS_SERIALIZABLE(CImage, CSerializable, mrpt::utils)
 
 bool CImage::DISABLE_ZIP_COMPRESSION  = false;
 std::string CImage::IMAGES_PATH_BASE(".");
+
+// Do performance time logging?
+#define  IMAGE_ALLOC_PERFLOG  0
+
+#if IMAGE_ALLOC_PERFLOG
+mrpt::utils::CTimeLogger alloc_tims;
+#endif
+
 
 /*---------------------------------------------------------------
 						Constructor
@@ -246,8 +255,19 @@ void  CImage::changeSize(
 	releaseIpl();
 
 #if MRPT_HAS_OPENCV
-    img = cvCreateImage( cvSize(width,height),IPL_DEPTH_8U, nChannels );
+
+#	if IMAGE_ALLOC_PERFLOG
+	const std::string sLog = mrpt::format("cvCreateImage %ux%u",width,height);
+	alloc_tims.enter(sLog.c_str());
+#	endif
+	
+	img = cvCreateImage( cvSize(width,height),IPL_DEPTH_8U, nChannels );
 	((IplImage*)img)->origin = originTopLeft ? 0:1;
+
+#	if IMAGE_ALLOC_PERFLOG
+	alloc_tims.leave(sLog.c_str());
+#	endif
+
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif

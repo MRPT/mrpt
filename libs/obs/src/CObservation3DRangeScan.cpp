@@ -31,7 +31,6 @@
 #include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
 
-//#include <mrpt/math/utils.h>
 #include <mrpt/math/CLevenbergMarquardt.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
@@ -50,6 +49,29 @@ IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation,mrpt::slam)
 // Whether external files for 3D points & range are text or binary.
 //#define EXTERNALS_AS_TEXT
 
+// Whether to use a memory pool for 3D points:
+#define COBS3DRANGE_USE_MEMPOOL 
+
+
+// Data types for memory pooling CObservation3DRangeScan:
+#ifdef COBS3DRANGE_USE_MEMPOOL
+
+#	include <mrpt/system/CGenericMemoryPool.h>
+
+	struct CObservation3DRangeScan_MemPoolParams
+	{
+		size_t WH; //!< Width*Height, that is, the number of 3D points 
+		inline bool isSuitable(const CObservation3DRangeScan_MemPoolParams &req) const {
+			return WH>=req.WH;
+		}
+	};
+	struct CObservation3DRangeScan_MemPoolData 
+	{
+		std::vector<float> pts_x,pts_y,pts_z;
+	};
+
+	typedef CGenericMemoryPool<CObservation3DRangeScan_MemPoolParams,CObservation3DRangeScan_MemPoolData> TMyMemPool;
+#endif
 
 /*---------------------------------------------------------------
 							Constructor
@@ -75,6 +97,25 @@ CObservation3DRangeScan::CObservation3DRangeScan( ) :
  ---------------------------------------------------------------*/
 CObservation3DRangeScan::~CObservation3DRangeScan()
 {
+#ifdef COBS3DRANGE_USE_MEMPOOL
+	const size_t WH = points3D_x.size();
+
+	if (WH>0)
+	{
+		// Before dying, donate my memory to the pool for the joy of future class-brothers...
+		TMyMemPool &pool = TMyMemPool::getInstance();
+
+		CObservation3DRangeScan_MemPoolParams mem_params;
+		mem_params.WH = WH;
+
+		CObservation3DRangeScan_MemPoolData *mem_block = new CObservation3DRangeScan_MemPoolData();
+		points3D_x.swap( mem_block->pts_x );
+		points3D_y.swap( mem_block->pts_y );
+		points3D_z.swap( mem_block->pts_z );
+	
+		pool.dump_to_pool(mem_params, mem_block);
+	}
+#endif
 }
 
 /*---------------------------------------------------------------
@@ -144,9 +185,7 @@ void  CObservation3DRangeScan::readFromStream(CStream &in, int version)
 			if (hasPoints3D)
 			{
 				in >> N;
-				points3D_x.resize(N);
-				points3D_y.resize(N);
-				points3D_z.resize(N);
+				resizePoints3DVectors(N);
 
 				if (N)
 				{
@@ -361,9 +400,20 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage( const std::stri
 #endif
 
 	m_points3D_external_stored = true;
-	points3D_x.clear();
-	points3D_y.clear();
-	points3D_z.clear();
+
+	// Really dealloc memory, clear() is not enough:
+	{	
+		std::vector<float> dumm;
+		dumm.swap(points3D_x);
+	}
+	{
+		std::vector<float> dumm;
+		dumm.swap(points3D_y);
+	}
+	{
+		std::vector<float> dumm;
+		dumm.swap(points3D_z);
+	}
 }
 void CObservation3DRangeScan::rangeImage_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir )
 {
@@ -612,7 +662,7 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 	if (!hasRangeImage) return;
 
 // Do performance time logging?
-#define  PROJ3D_PERFLOG		0
+#define  PROJ3D_PERFLOG		1
 
 #if PROJ3D_PERFLOG
 	static mrpt::utils::CTimeLogger tims;
@@ -628,9 +678,9 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 #endif
 
 	hasPoints3D = true;
-	points3D_x.resize( WH );
-	points3D_y.resize( WH );
-	points3D_z.resize( WH );
+
+	// Reserve memory for 3D points:
+	resizePoints3DVectors(WH);
 
 #if PROJ3D_PERFLOG
 	tims.leave("proj.resize");
@@ -762,8 +812,33 @@ void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,cons
 				ys+=4;
 				zs+=4;
 			}
-
-
 		}
 #endif
+}
+
+/** Use this method instead of resizing all three \a points3D_x, \a points3D_y & \a points3D_z to allow the usage of the internal memory pool. */
+void CObservation3DRangeScan::resizePoints3DVectors(const size_t WH)
+{
+#ifdef COBS3DRANGE_USE_MEMPOOL
+	// Request memory for the X,Y,Z buffers from the memory pool:
+	TMyMemPool &pool = TMyMemPool::getInstance();
+
+	CObservation3DRangeScan_MemPoolParams mem_params;
+	mem_params.WH = WH;
+
+	CObservation3DRangeScan_MemPoolData *mem_block = pool.request_memory(mem_params);
+
+	if (mem_block)
+	{	// Take the memory via swaps:
+		points3D_x.swap( mem_block->pts_x );
+		points3D_y.swap( mem_block->pts_y );
+		points3D_z.swap( mem_block->pts_z );
+		delete mem_block;
+	}
+#endif
+
+	// Either if there was no pool memory or we got it, make sure the size of vectors is OK:
+	points3D_x.resize( WH );
+	points3D_y.resize( WH );
+	points3D_z.resize( WH );
 }

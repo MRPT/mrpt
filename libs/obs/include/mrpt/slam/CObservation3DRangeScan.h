@@ -132,9 +132,12 @@ namespace slam
 		void project3DPointsFromDepthImage(const bool PROJ3D_USE_LUT=true);
 
 		bool hasPoints3D; 								//!< true means the field points3D contains valid data.
-		std::vector<float> points3D_x;   //!< If hasPoints3D=true, the X coordinates of the 3D point cloud detected by the camera.
-		std::vector<float> points3D_y;   //!< If hasPoints3D=true, the Y coordinates of the 3D point cloud detected by the camera.
-		std::vector<float> points3D_z;   //!< If hasPoints3D=true, the Z coordinates of the 3D point cloud detected by the camera.
+		std::vector<float> points3D_x;   //!< If hasPoints3D=true, the X coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors
+		std::vector<float> points3D_y;   //!< If hasPoints3D=true, the Y coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors
+		std::vector<float> points3D_z;   //!< If hasPoints3D=true, the Z coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors
+
+		/** Use this method instead of resizing all three \a points3D_x, \a points3D_y & \a points3D_z to allow the usage of the internal memory pool. */
+		void resizePoints3DVectors(const size_t nPoints);
 
 		// 3D points external storage functions ---------
 		inline bool points3D_isExternallyStored() const { return m_points3D_external_stored; }
