@@ -30,6 +30,7 @@
 
 
 #include <mrpt/opengl/CTexturedObject.h>
+#include <mrpt/utils/CTimeLogger.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -39,8 +40,35 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CTexturedObject, CRenderizableDisplayList, mrpt::opengl )
+
+// Whether to profile memory allocations:
+//#define TEXTUREOBJ_PROFILE_MEM_ALLOC
+
+// Whether to use a memory pool for the texture buffer:
+#define TEXTUREOBJ_USE_MEMPOOL
+
+// Data types for memory pooling CTexturedObject:
+#ifdef TEXTUREOBJ_USE_MEMPOOL
+
+#	include <mrpt/system/CGenericMemoryPool.h>
+
+	struct CTexturedObject_MemPoolParams
+	{
+		size_t len; //!< size of the vector<unsigned char>
+
+		inline bool isSuitable(const CTexturedObject_MemPoolParams &req) const {
+			return len==req.len;
+		}
+	};
+	struct CTexturedObject_MemPoolData 
+	{
+		vector<unsigned char> data;
+	};
+
+	typedef CGenericMemoryPool<CTexturedObject_MemPoolParams,CTexturedObject_MemPoolData> TMyMemPool;
+#endif
+
 
 /*---------------------------------------------------------------
 							CTexturedObject
@@ -137,6 +165,29 @@ void  CTexturedObject::assignImage_fast(
 }
 
 
+// Auxiliary function for loadTextureInOpenGL(): reserve memory and return 16byte aligned starting point within it:
+unsigned char *reserveDataBuffer(const size_t len, vector<unsigned char> &data)
+{
+#ifdef TEXTUREOBJ_USE_MEMPOOL
+	TMyMemPool &pool = TMyMemPool::getInstance();
+
+	CTexturedObject_MemPoolParams mem_params;
+	mem_params.len = len;
+
+	CTexturedObject_MemPoolData *mem_block = pool.request_memory(mem_params);
+	if (mem_block)
+	{
+		// Recover the memory block via a swap:
+		data.swap(mem_block->data);
+		delete mem_block;
+	}
+
+#endif
+	data.resize(len);
+	return ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
+}
+
+
 /*---------------------------------------------------------------
 							loadTextureInOpenGL
   ---------------------------------------------------------------*/
@@ -145,6 +196,11 @@ void  CTexturedObject::loadTextureInOpenGL() const
 #if MRPT_HAS_OPENGL_GLUT
 	unsigned char	*dataAligned=NULL;
 	vector<unsigned char>		data;
+
+#	ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+	static mrpt::utils::CTimeLogger tim;
+#	endif
+
 
 	try
 	{
@@ -220,9 +276,16 @@ void  CTexturedObject::loadTextureInOpenGL() const
 				// --------------------------------------
 				const GLenum pixels_format = mrpt::system::os::_strcmp(m_textureImage.getChannelsOrder(),"BGR")==0 ? GL_BGRA : GL_RGBA;
 
-				data.clear();
-				data.resize( r_height*r_width*4 + 512);
-                dataAligned = ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
+#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+				const std::string sSec = mrpt::format("opengl_texture_alloc %ix%i (color,trans)",r_width,r_height);
+				tim.enter(sSec.c_str());
+#			endif
+
+				dataAligned = reserveDataBuffer(r_height*r_width*4 + 512, data );
+
+#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+				tim.leave(sSec.c_str());
+#			endif
 
 				for (int y=0;y<height;y++)
 				{
@@ -248,9 +311,17 @@ void  CTexturedObject::loadTextureInOpenGL() const
 				// --------------------------------------
 				const GLenum pixels_format = mrpt::system::os::_strcmp(m_textureImage.getChannelsOrder(),"BGR")==0 ? GL_BGR : GL_RGB;
 
-				data.clear();
-				data.resize( r_height*r_width*3+512 );
-				dataAligned = ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
+#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+				const std::string sSec = mrpt::format("opengl_texture_alloc %ix%i (color)",r_width,r_height);
+				tim.enter(sSec.c_str());
+#			endif
+
+				dataAligned = reserveDataBuffer(r_height*r_width*3 + 512, data );
+
+#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+				tim.leave(sSec.c_str());
+#			endif
+
 				const size_t bytesPerLineSrc =   width*3;
 				const size_t bytesPerLineDst = r_width*3;
 				unsigned char *ptrDst = dataAligned + (m_fill_x_left)*3 + m_fill_y_top*r_width*3;
@@ -271,9 +342,16 @@ void  CTexturedObject::loadTextureInOpenGL() const
 			// Gray-scale texture:
 			if (m_enableTransparency)
 			{
-				data.clear();
-				data.resize( r_height*r_width*2+1000 );
-                dataAligned = ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
+#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+				const std::string sSec = mrpt::format("opengl_texture_alloc %ix%i (gray,transp)",r_width,r_height);
+				tim.enter(sSec.c_str());
+#			endif
+
+				dataAligned = reserveDataBuffer(r_height*r_width*2 + 1024, data );
+
+#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+				tim.leave(sSec.c_str());
+#			endif
 
 				for (int y=0;y<height;y++)
 				{
@@ -293,9 +371,16 @@ void  CTexturedObject::loadTextureInOpenGL() const
 			}// End of gray-scale texture WITH trans.
 			else
 			{
-				data.clear();
-				data.resize( r_height*r_width+1000 );
-                dataAligned = ((unsigned char*)(((POINTER_TYPE)&data[0]) & (~((POINTER_TYPE)0x0F)) )) + 0x10;
+#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+				const std::string sSec = mrpt::format("opengl_texture_alloc %ix%i (gray)",r_width,r_height);
+				tim.enter(sSec.c_str());
+#			endif
+
+				dataAligned = reserveDataBuffer(r_height*r_width + 1024, data );
+
+#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+				tim.leave(sSec.c_str());
+#			endif
 
 				for (int y=0;y<height;y++)
 				{
@@ -312,6 +397,23 @@ void  CTexturedObject::loadTextureInOpenGL() const
 		}
 
 		m_texture_is_loaded = true;
+
+#ifdef TEXTUREOBJ_USE_MEMPOOL
+		// Before freeing the buffer in "data", donate my memory to the pool:
+		if (!data.empty())
+		{
+			TMyMemPool &pool = TMyMemPool::getInstance();
+
+			CTexturedObject_MemPoolParams mem_params;
+			mem_params.len = data.size();
+
+			CTexturedObject_MemPoolData *mem_block = new CTexturedObject_MemPoolData();
+			data.swap(mem_block->data);
+	
+			pool.dump_to_pool(mem_params, mem_block);
+		}
+#endif
+
 	}
 	catch(exception &e)
 	{

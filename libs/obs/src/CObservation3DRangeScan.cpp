@@ -52,6 +52,9 @@ IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation,mrpt::slam)
 // Whether to use a memory pool for 3D points:
 #define COBS3DRANGE_USE_MEMPOOL 
 
+// Do performance time logging?
+// #define  PROJ3D_PERFLOG
+
 
 // Data types for memory pooling CObservation3DRangeScan:
 #ifdef COBS3DRANGE_USE_MEMPOOL
@@ -661,10 +664,7 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 {
 	if (!hasRangeImage) return;
 
-// Do performance time logging?
-#define  PROJ3D_PERFLOG		1
-
-#if PROJ3D_PERFLOG
+#ifdef PROJ3D_PERFLOG
 	static mrpt::utils::CTimeLogger tims;
 	tims.enter("proj");
 #endif
@@ -673,7 +673,7 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 	const int H = rangeImage.rows();
 	const size_t WH = W*H;
 
-#if PROJ3D_PERFLOG
+#ifdef PROJ3D_PERFLOG
 	tims.enter("proj.resize");
 #endif
 
@@ -682,7 +682,7 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 	// Reserve memory for 3D points:
 	resizePoints3DVectors(WH);
 
-#if PROJ3D_PERFLOG
+#ifdef PROJ3D_PERFLOG
 	tims.leave("proj.resize");
 #endif
 
@@ -704,7 +704,7 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 		// Use LUT:
 		if (m_3dproj_lut.prev_camParams!=cameraParams || WH!=size_t(m_3dproj_lut.Kys.size()))
 		{
-#if PROJ3D_PERFLOG
+#ifdef PROJ3D_PERFLOG
 			tims.enter("LUT");
 #endif
 			m_3dproj_lut.prev_camParams = cameraParams;
@@ -725,7 +725,7 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 					*kzs++ = (r_cy - r) * r_fx_inv;
 				}
 
-#if PROJ3D_PERFLOG
+#ifdef PROJ3D_PERFLOG
 			tims.leave("LUT");
 #endif
 		} // end update LUT.
@@ -765,7 +765,7 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 	}
 
 
-#if PROJ3D_PERFLOG
+#ifdef PROJ3D_PERFLOG
 	tims.leave("proj");
 #endif
 }

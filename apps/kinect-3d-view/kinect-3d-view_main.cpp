@@ -210,8 +210,11 @@ void Test_Kinect()
 			if (last_obs->hasRangeImage )
 			{
 				mrpt::utils::CImage  img;
+				
 				// Normalize the image
-				const CMatrixFloat  range2D = last_obs->rangeImage * (1.0/ 5.0); //kinect.getMaxRange());
+				static CMatrixFloat  range2D;   // Static to save time allocating the matrix in every iteration
+				range2D = last_obs->rangeImage * (1.0/ 5.0); //kinect.getMaxRange());
+
 				img.setFromMatrix(range2D);
 
 				win3D.get3DSceneAndLock();
