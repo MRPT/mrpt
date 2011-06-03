@@ -70,7 +70,8 @@ std::vector<std::string>	CWirelessPower::ListInterfaces()
 
 	//commandl << "cat /proc/net/wireless|grep \"wlan\"|cut -d\" \" -f2|cut -d\":\" -f1";
 	cmdoutput = popen("cat /proc/net/wireless|grep \"wlan\"|cut -d\" \" -f2|cut -d\":\" -f1","r");
-	fgets(ifaceread,3,cmdoutput);       // read output
+	if (!fgets(ifaceread,3,cmdoutput))       // read output
+		THROW_EXCEPTION("Error reading /proc/net/wireless")
 
 	// iterate thrugh list and get each interface as a string
     netname = strtok(ifaceread,"\n");
@@ -103,7 +104,8 @@ std::vector<std::string>	CWirelessPower::ListNetworks()
     // To avoid the inconvenience of having to write the password, it would be useful to configure sudo to allow the user to run this command. See "man sudoers"
 	commandl << "sudo iwlist " << "wlan0" << " scan|grep ESSID|cut -d\"\\\"\" -f2";
 	cmdoutput = popen(commandl.str().c_str(),"r");
-	fgets(listread,3,cmdoutput);
+	if (!fgets(listread,3,cmdoutput))
+		THROW_EXCEPTION("Error reading response from iwlist")
 
 	netname = strtok(listread,"\n");
 	while(netname){
@@ -139,10 +141,12 @@ int		CWirelessPower::GetPower()
 
 	ssidLine << "ESSID:\"" << ssid << "\"";
 	//int i = 0;
-    getline(&powerReadL,&readBytes,cmdoutput);
+    if (getline(&powerReadL,&readBytes,cmdoutput)<0) THROW_EXCEPTION("Error reading response from iwlist")
+
     while(!strstr(powerReadL, ssidLine.str().c_str())){
         powerReadV.push_back(std::string(powerReadL));
-        getline(&powerReadL,&readBytes,cmdoutput);
+        if (getline(&powerReadL,&readBytes,cmdoutput))
+			THROW_EXCEPTION("Error reading response from iwlist")
        // mrpt::system::pause();
 	}
 
@@ -210,17 +214,17 @@ using namespace mrpt::utils;
 
 void*	ConnectWlanServerW()
 {
-	DWORD dwMaxClient = 2;        
+	DWORD dwMaxClient = 2;
     DWORD dwCurVersion = 0;
 	DWORD dwResult = 0;			// Result of the API call
 	HANDLE hClient;
-	// open connection to server 
+	// open connection to server
     dwResult = WlanOpenHandle(dwMaxClient, NULL, &dwCurVersion, &hClient);
     if (dwResult != ERROR_SUCCESS) {
 		// if an error ocurred
 		std::stringstream excmsg;
 		excmsg << "WlanOpenHandle failed with error: " << dwResult << std::endl;
-		
+
         // You can use FormatMessage here to find out why the function failed
 		THROW_EXCEPTION(excmsg.str());
     }
@@ -247,30 +251,30 @@ std::vector<PWLAN_INTERFACE_INFO>	ListInterfacesW(HANDLE hClient)
     PWLAN_INTERFACE_INFO pIfInfo = NULL;					// information element for one interface
 	DWORD dwResult = 0;
 
-	int i;	
+	int i;
 
-	
+
 	// Call the interface enumeration function of the API
 	dwResult = WlanEnumInterfaces(hClient, NULL, &pIfList);
-	
+
 	// check result
     if (dwResult != ERROR_SUCCESS) {
 		// In case of error, raise an exception
 		std::stringstream excmsg;
 		excmsg << "WlanEnumInterfaces failed with error: " << dwResult << std::endl;
-		
+
 		THROW_EXCEPTION(excmsg.str());
         // You can use FormatMessage here to find out why the function failed
     } else {
 		// iterate throught interfaces to add them to the output vector
 		for (i = 0; i < (int) pIfList->dwNumberOfItems; i++) {
-			
+
             pIfInfo = (WLAN_INTERFACE_INFO *) &pIfList->InterfaceInfo[i];
 			outputVector.push_back(pIfInfo);
 		}
 	}
 	return outputVector;
-	
+
 }
 
 
@@ -285,7 +289,7 @@ void CWirelessPower::setNet(std::string ssid_, std::string guid_)
 {
 	ssid = ssid_;
 	guid = guid_;
-	
+
 	hClient = ConnectWlanServerW();
 }
 
@@ -312,7 +316,7 @@ std::string GUID2Str(GUID ifaceGuid)
 	std::string outputString;
 
 	// Call the API function that gets the name of the GUID as a WCHAR[]
-    iRet = StringFromGUID2(ifaceGuid, (LPOLESTR) &GuidString, sizeof(GuidString)/sizeof(*GuidString)); 
+    iRet = StringFromGUID2(ifaceGuid, (LPOLESTR) &GuidString, sizeof(GuidString)/sizeof(*GuidString));
             // For c rather than C++ source code, the above line needs to be
             // iRet = StringFromGUID2(&pIfInfo->InterfaceGuid, (LPOLESTR) &GuidString,
             //     sizeof(GuidString)/sizeof(*GuidString));

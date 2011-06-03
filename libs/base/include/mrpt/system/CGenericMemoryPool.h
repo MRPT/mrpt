@@ -43,7 +43,7 @@ namespace mrpt
 		  *		- At your class destructor, donate the memory to the pool with \a dump_to_pool().
 		  *
 		  *   Notice that memory requests are checked against memory blocks in the pool via a user-defined function:
-		  *   
+		  *
 		  *    bool POOLABLE_DATA::isSuitable(const POOLABLE_DATA & req) const { ... }
 		  *
 		  *   For an example of how to handle a memory pool, see the class mrpt::slam::CObservation3DRangeScan
@@ -63,7 +63,7 @@ namespace mrpt
 			CGenericMemoryPool() : m_maxPoolEntries(5)
 			{
 			}
-	
+
 		public:
 			inline size_t getMemoryPoolMaxSize() const                     { return m_maxPoolEntries; }
 			inline void   setMemoryPoolMaxSize(const size_t maxNumEntries) { m_maxPoolEntries = maxNumEntries; }
@@ -75,9 +75,9 @@ namespace mrpt
 				return inst;
 			}
 
-			/** Request a block of data which fulfils the size requirements stated in \a params. 
+			/** Request a block of data which fulfils the size requirements stated in \a params.
 			  *  Notice that the decision on the suitability of each pool'ed block is done by DATA_PARAMS::isSuitable().
-			  *  \return The block of data, or NULL if none suitable was found in the pool. 
+			  *  \return The block of data, or NULL if none suitable was found in the pool.
 			  *  \note It is a responsibility of the user to free with "delete" the "POOLABLE_DATA" object itself once the memory has been extracted from its elements.
 			  */
 			POOLABLE_DATA * request_memory(const DATA_PARAMS &params)
@@ -86,7 +86,7 @@ namespace mrpt
 				if (m_pool.empty()) return NULL;
 
 				mrpt::synch::CCriticalSectionLocker lock( &m_pool_cs );
-				for (TList::iterator it=m_pool.begin();it!=m_pool.end();++it) {
+				for (typename TList::iterator it=m_pool.begin();it!=m_pool.end();++it) {
 					if (it->first.isSuitable(params))
 					{
 						POOLABLE_DATA * ret = it->second;
@@ -97,7 +97,7 @@ namespace mrpt
 				return NULL;
 			}
 
-			/** Saves the passed data block (characterized by \a params) to the pool. 
+			/** Saves the passed data block (characterized by \a params) to the pool.
 			  *  If the overall size of the pool is above the limit, the oldest entry is removed.
 			  *  \note It is a responsibility of the user to allocate in dynamic memory the "POOLABLE_DATA" object with "new".
 			  */
@@ -108,14 +108,14 @@ namespace mrpt
 				while (m_pool.size()>=m_maxPoolEntries) // Free old data if needed
 					m_pool.erase(m_pool.begin());
 
-				m_pool.push_back( TList::value_type(params,block) );
+				m_pool.push_back( typename TList::value_type(params,block) );
 			}
 
 			~CGenericMemoryPool()
 			{
 				// Free remaining memory blocks:
 				mrpt::synch::CCriticalSectionLocker lock( &m_pool_cs );
-				for (TList::iterator it=m_pool.begin();it!=m_pool.end();++it) 
+				for (typename TList::iterator it=m_pool.begin();it!=m_pool.end();++it)
 					delete it->second;
 				m_pool.clear();
 			}
