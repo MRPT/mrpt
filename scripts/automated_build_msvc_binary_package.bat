@@ -28,7 +28,7 @@ IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
 REM 2) Compile debug libs (so Cmake find them in the next run)
 REM ----------------------------------------------
-msbuild libs\ALL_MRPT_LIBS.sln /p:Configuration=Debug %MSBUILDPARALLEL%
+msbuild libs\ALL_MRPT_LIBS.sln /p:Configuration=Debug %MSBUILDPARALLEL% /verbosity:minimal
 IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
 REM 3) re-call CMake to detect the debug libs
@@ -38,23 +38,23 @@ IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
 REM 4) Do unit tests:
 REM ----------------------------------------------
-msbuild tests\tests.sln /p:Configuration=Release %MSBUILDPARALLEL%
+msbuild tests\tests.sln /p:Configuration=Release %MSBUILDPARALLEL% /verbosity:minimal
 IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
 REM 5) All seem OK. Build all.
 REM ----------------------------------------------
-msbuild MRPT.sln /p:Configuration=Release %MSBUILDPARALLEL%
+msbuild MRPT.sln /p:Configuration=Release %MSBUILDPARALLEL% /verbosity:minimal
 IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
-REM Several tries to go on when MSVC9 linker crashes... (fuck yeah!)
-msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
+REM Repeat several times with MSVC9 since its linker crashes... (yes, fuck yeah!)
+REM msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL% /verbosity:minimal
 REM msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
 REM msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
 REM ...
 
 REM 6) Build package:
 REM ----------------------------------------------
-msbuild PACKAGE.vcxproj /p:Configuration=Release
+msbuild PACKAGE.vcxproj /p:Configuration=Release /verbosity:minimal
 
 
 goto END_BATCH

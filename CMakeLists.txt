@@ -109,9 +109,6 @@ SET(CPACK_PACKAGE_VERSION_MAJOR "${CMAKE_MRPT_VERSION_NUMBER_MAJOR}")
 SET(CPACK_PACKAGE_VERSION_MINOR "${CMAKE_MRPT_VERSION_NUMBER_MINOR}")
 SET(CPACK_PACKAGE_VERSION_PATCH "${CMAKE_MRPT_VERSION_NUMBER_PATCH}")
 
-SET(CPACK_DEBIAN_PACKAGE_VERSION "${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}.${CMAKE_MRPT_VERSION_NUMBER_PATCH}")
-SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION "${CPACK_PACKAGE_DESCRIPTION_SUMMARY}\r\rThe Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform, and open source C++ library aimed to help robotics researchers to design and implement algorithms (mainly) in the fields of Simultaneous Localization and Mapping (SLAM) and computer vision (e.g. MonoSLAM).\rThe library allows an easy interface to many common sensors like laser scanners or cameras, and defines a versatile rawlog file format, used to store data sets gathered by a robot for posterior processing. The MRPT's format for rawlogs is Bayesian filter-friendly: sequences of action-observations, in a generic form that allows 2D/3D(6D) movements and any number of (extensible) observations.\r\r MRPT website: http://mrpt.sourceforge.net\r")
-
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
 SET(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
 
@@ -194,24 +191,18 @@ IF(WIN32)
 		\\\${unregisterExtension} \\\".3Dscene\\\" \\\"Robotic 3D scene\\\" 
 		")
 
-	SET(CPACK_NSIS_MODIFY_PATH OFF)  # don't show this dialog
-
+	# Install to "Program files (x86)" or "Program files" correctly:
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	  set(CPACK_NSIS_PROGRAMFILES PROGRAMFILES64)
+	else(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	  set(CPACK_NSIS_PROGRAMFILES PROGRAMFILES)
+	endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
+		
 ENDIF(WIN32)
 IF(UNIX)
-	# --------------------------------
-	# Packages for linux
-	# --------------------------------
-   	SET(CPACK_OUTPUT_FILE_PATH "MRPT-${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}.${CMAKE_MRPT_VERSION_NUMBER_PATCH}-Linux-${CMAKE_SYSTEM_PROCESSOR}.deb")
-	SET(CPACK_DEBIAN_PACKAGE_NAME "libmrpt")
-	SET(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local")
-	SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libcv1,libglu1-mesa,libwxgtk2.8-0")
-
-	SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "${CMAKE_SYSTEM_PROCESSOR}")
-
-	SET(CPACK_SOURCE_IGNORE_FILES ".svn;CMakeFiles;CMakeCache.txt;CPack*;progress.make;install_manifest.txt;cmake_install.cmake;cmake_psdk.cmake$;Makefile;.swp$;.*~;tags;cmake_uninstall.cmake$")
-
-	SET(CPACK_GENERATOR DEB)
-
+	# ------------------------------------------------------------------
+	# Packages for linux: Not supported, use scritps/prepare_* instead
+	# ------------------------------------------------------------------
 ENDIF(UNIX)
 
 IF(APPLE)
@@ -2042,16 +2033,16 @@ IF(WIN32)
 	# Smart determination of the dependencies DLLs so they are also copied when installing:
 	# ---------------------------------------------------------------------------------------
 	# wxWidgets:
-	IF (EXISTS "${wxWidgets_ROOT_DIR}/lib/vc_dll")
-		FILE(GLOB_RECURSE EXTRA_DLLS "${wxWidgets_ROOT_DIR}/lib/vc_dll/*.dll")
+	IF (EXISTS "${wxWidgets_LIB_DIR}")
+		FILE(GLOB_RECURSE EXTRA_DLLS "${wxWidgets_LIB_DIR}/*.dll")
 		FOREACH(F ${EXTRA_DLLS})
 			INSTALL(FILES "${F}" DESTINATION bin)
 		ENDFOREACH(F)
-	ENDIF (EXISTS "${wxWidgets_ROOT_DIR}/lib/vc_dll")
+	ENDIF (EXISTS "${wxWidgets_LIB_DIR}")
 	
 	# OpenCV:
 	IF (EXISTS "${OpenCV_DIR}/bin/Release")
-		FILE(GLOB_RECURSE EXTRA_DLLS "${OpenCV_DIR}/bin/*.dll")
+		FILE(GLOB_RECURSE EXTRA_DLLS "${OpenCV_DIR}/bin/*.dll") # This includes debug & release DLLs
 		FOREACH(F ${EXTRA_DLLS})
 			INSTALL(FILES "${F}" DESTINATION bin)
 		ENDFOREACH(F)
