@@ -620,8 +620,13 @@ namespace mrpt
 			/** Returns true if the coordinates origin is top-left, or false if it is bottom-left  */
 			bool  isOriginTopLeft() const;
 
-			/** Returns a string of the form "BGR","RGB" or "GRAY" indicating the channels ordering. */
+			/** Returns a string of the form "BGR","RGB" or "GRAY" indicating the channels ordering. \sa setChannelsOrder, swapRB */
 			const char *  getChannelsOrder()const;
+
+			/** Marks the channel ordering in a color image as "RGB" (this doesn't actually modify the image data, just the format description) \sa getChannelsOrder, swapRB */
+			void setChannelsOrder_RGB();
+			/** Marks the channel ordering in a color image as "BGR" (this doesn't actually modify the image data, just the format description) \sa getChannelsOrder, swapRB */
+			void setChannelsOrder_BGR();
 
 			/** Returns the number of channels, typically 1 (GRAY) or 3 (RGB)
 			  * \sa isColor

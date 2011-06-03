@@ -404,34 +404,49 @@ void  CImage::loadFromMemoryBuffer(
 	m_imgIsReadOnly = false;
 	m_imgIsExternalStorage=false;
 
-	if ( ((IplImage*)img)->widthStep == ((IplImage*)img)->width * ((IplImage*)img)->nChannels )
+
+	if (color && swapRedBlue)
 	{
-		// Copy the image data:
-		memcpy( ((IplImage*)img)->imageData,
-				rawpixels,
-				((IplImage*)img)->imageSize);
+		// Do copy & swap at once:
+		unsigned char *ptr_src = rawpixels;
+		unsigned char *ptr_dest = reinterpret_cast<unsigned char*>( ((IplImage*)img)->imageData );
+		const int  bytes_per_row_out = ((IplImage*)img)->widthStep;
+
+		for(int h=height; h--; )
+		{
+			for( unsigned int i = 0; i < width; i++, ptr_src += 3, ptr_dest += 3 )
+			{
+				unsigned char t0 = ptr_src[0], t1 = ptr_src[1], t2 = ptr_src[2];
+				ptr_dest[2] = t0; ptr_dest[1] = t1; ptr_dest[0] = t2;
+			}
+			ptr_dest += bytes_per_row_out - width*3;
+		}
 	}
 	else
 	{
-		// Copy the image row by row:
-		unsigned char *ptr_src = rawpixels;
-		unsigned char *ptr_dest = reinterpret_cast<unsigned char*>( ((IplImage*)img)->imageData );
-		int  bytes_per_row = width * (color ? 3:1);
-		int  bytes_per_row_out = ((IplImage*)img)->widthStep;
-		for (unsigned int y=0;y<height;y++)
+		if ( ((IplImage*)img)->widthStep == ((IplImage*)img)->width * ((IplImage*)img)->nChannels )
 		{
-			memcpy( ptr_dest, ptr_src, bytes_per_row );
+			// Copy the image data:
+			memcpy( ((IplImage*)img)->imageData,
+					rawpixels,
+					((IplImage*)img)->imageSize);
+		}
+		else
+		{
+			// Copy the image row by row:
+			unsigned char *ptr_src = rawpixels;
+			unsigned char *ptr_dest = reinterpret_cast<unsigned char*>( ((IplImage*)img)->imageData );
+			int  bytes_per_row = width * (color ? 3:1);
+			int  bytes_per_row_out = ((IplImage*)img)->widthStep;
+			for (unsigned int y=0;y<height;y++)
+			{
+				memcpy( ptr_dest, ptr_src, bytes_per_row );
 
-			ptr_src+=bytes_per_row;
-			ptr_dest+=bytes_per_row_out;
+				ptr_src+=bytes_per_row;
+				ptr_dest+=bytes_per_row_out;
+			}
 		}
 	}
-
-	if (swapRedBlue)
-	{
-		swapRB();
-	}
-
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
@@ -2366,3 +2381,29 @@ float CImage::KLT_response(
 	return 0;
 #endif
 }
+
+
+/** Marks the channel ordering in a color image (this doesn't actually modify the image data, just the format description)  
+  */
+void CImage::setChannelsOrder_RGB()
+{
+#if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();   // For delayed loaded images stored externally
+	ASSERT_(img);
+	strcpy( ((IplImage*)img)->channelSeq, "RGB");
+#else
+		THROW_EXCEPTION("MRPT compiled without OpenCV")
+#endif
+}
+
+void CImage::setChannelsOrder_BGR()
+{
+#if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();   // For delayed loaded images stored externally
+	ASSERT_(img);
+	strcpy( ((IplImage*)img)->channelSeq, "BGR");
+#else
+		THROW_EXCEPTION("MRPT compiled without OpenCV")
+#endif
+}
+

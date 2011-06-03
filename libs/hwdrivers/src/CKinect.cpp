@@ -29,6 +29,7 @@
 #include <mrpt/hwdrivers.h> // Precompiled header
 
 #include <mrpt/hwdrivers/CKinect.h>
+#include <mrpt/utils/CTimeLogger.h>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
@@ -36,6 +37,8 @@ using namespace mrpt::synch;
 
 IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 
+// Whether to profile memory allocations:
+//#define KINECT_PROFILE_MEM_ALLOC
 
 #if MRPT_HAS_KINECT_FREENECT
 #	include <libfreenect.h>
@@ -47,7 +50,6 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 #	define KINECT_W 640
 #	define KINECT_H 480
 #endif
-
 
 #if MRPT_HAS_KINECT_FREENECT
 	// Macros to convert the opaque pointers in the class header:
@@ -65,6 +67,9 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 #endif // MRPT_HAS_KINECT_CL_NUI
 
 
+#ifdef KINECT_PROFILE_MEM_ALLOC
+mrpt::utils::CTimeLogger alloc_tim;
+#endif
 
 void CKinect::calculate_range2meters()
 {
@@ -271,7 +276,18 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 	mrpt::synch::CCriticalSectionLocker lock( &obj->internal_latest_obs_cs() );
 
 	obs.hasRangeImage = true;
-	obs.rangeImage.setSize(frMode.height,frMode.width);
+	
+#ifdef KINECT_PROFILE_MEM_ALLOC
+	alloc_tim.enter("depth_cb alloc");
+#endif
+
+	// This method will try to exploit memory pooling if possible:
+	obs.rangeImage_setSize(frMode.height,frMode.width); // Was: obs.rangeImage.setSize(frMode.height,frMode.width);
+
+#ifdef KINECT_PROFILE_MEM_ALLOC
+	alloc_tim.leave("depth_cb alloc");
+#endif
+
 	const CKinect::TDepth2RangeArray &r2m = obj->getRawDepth2RangeConversion();
 	for (int r=0;r<frMode.height;r++)
 		for (int c=0;c<frMode.width;c++)
@@ -294,6 +310,10 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 	CObservation3DRangeScan &obs = obj->internal_latest_obs();
 	mrpt::synch::CCriticalSectionLocker lock( &obj->internal_latest_obs_cs() );
 
+#ifdef KINECT_PROFILE_MEM_ALLOC
+	alloc_tim.enter("depth_rgb loadFromMemoryBuffer");
+#endif
+
 	obs.hasIntensityImage = true;
 	obs.intensityImage.loadFromMemoryBuffer(
 		frMode.width,
@@ -302,6 +322,13 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 		reinterpret_cast<unsigned char*>(rgb),
 		true  // Swap red/blue
 		);
+
+	//obs.intensityImage.setChannelsOrder_RGB();
+
+#ifdef KINECT_PROFILE_MEM_ALLOC
+	alloc_tim.leave("depth_rgb loadFromMemoryBuffer");
+#endif
+
 	obj->internal_tim_latest_rgb() = timestamp;
 }
 // ========  END OF GLOBAL CALLBACK FUNCTIONS ========

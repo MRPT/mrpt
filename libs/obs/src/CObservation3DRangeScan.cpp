@@ -61,19 +61,35 @@ IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation,mrpt::slam)
 
 #	include <mrpt/system/CGenericMemoryPool.h>
 
-	struct CObservation3DRangeScan_MemPoolParams
+	// Memory pool for XYZ points ----------------
+	struct CObservation3DRangeScan_Points_MemPoolParams
 	{
 		size_t WH; //!< Width*Height, that is, the number of 3D points 
-		inline bool isSuitable(const CObservation3DRangeScan_MemPoolParams &req) const {
+		inline bool isSuitable(const CObservation3DRangeScan_Points_MemPoolParams &req) const {
 			return WH>=req.WH;
 		}
 	};
-	struct CObservation3DRangeScan_MemPoolData 
+	struct CObservation3DRangeScan_Points_MemPoolData 
 	{
 		std::vector<float> pts_x,pts_y,pts_z;
 	};
+	typedef CGenericMemoryPool<CObservation3DRangeScan_Points_MemPoolParams,CObservation3DRangeScan_Points_MemPoolData> TMyPointsMemPool;
 
-	typedef CGenericMemoryPool<CObservation3DRangeScan_MemPoolParams,CObservation3DRangeScan_MemPoolData> TMyMemPool;
+	// Memory pool for the rangeImage matrix ----------------
+	struct CObservation3DRangeScan_Ranges_MemPoolParams
+	{
+		int H,W; //!< Size of matrix
+		inline bool isSuitable(const CObservation3DRangeScan_Ranges_MemPoolParams &req) const {
+			return H==req.H && W==req.W;
+		}
+	};
+	struct CObservation3DRangeScan_Ranges_MemPoolData 
+	{
+		mrpt::utils::CMatrix rangeImage;
+	};
+	typedef CGenericMemoryPool<CObservation3DRangeScan_Ranges_MemPoolParams,CObservation3DRangeScan_Ranges_MemPoolData> TMyRangesMemPool;
+
+
 #endif
 
 /*---------------------------------------------------------------
@@ -101,23 +117,37 @@ CObservation3DRangeScan::CObservation3DRangeScan( ) :
 CObservation3DRangeScan::~CObservation3DRangeScan()
 {
 #ifdef COBS3DRANGE_USE_MEMPOOL
-	const size_t WH = points3D_x.size();
-
-	if (WH>0)
+	if (!points3D_x.empty())
 	{
 		// Before dying, donate my memory to the pool for the joy of future class-brothers...
-		TMyMemPool &pool = TMyMemPool::getInstance();
+		TMyPointsMemPool &pool = TMyPointsMemPool::getInstance();
 
-		CObservation3DRangeScan_MemPoolParams mem_params;
-		mem_params.WH = WH;
+		CObservation3DRangeScan_Points_MemPoolParams mem_params;
+		mem_params.WH = points3D_x.size();
 
-		CObservation3DRangeScan_MemPoolData *mem_block = new CObservation3DRangeScan_MemPoolData();
+		CObservation3DRangeScan_Points_MemPoolData *mem_block = new CObservation3DRangeScan_Points_MemPoolData();
 		points3D_x.swap( mem_block->pts_x );
 		points3D_y.swap( mem_block->pts_y );
 		points3D_z.swap( mem_block->pts_z );
 	
 		pool.dump_to_pool(mem_params, mem_block);
 	}
+
+	if (rangeImage.cols()>1 && rangeImage.rows()>1)
+	{
+		// Before dying, donate my memory to the pool for the joy of future class-brothers...
+		TMyRangesMemPool &pool = TMyRangesMemPool::getInstance();
+
+		CObservation3DRangeScan_Ranges_MemPoolParams mem_params;
+		mem_params.H = rangeImage.rows();
+		mem_params.W = rangeImage.cols();
+
+		CObservation3DRangeScan_Ranges_MemPoolData *mem_block = new CObservation3DRangeScan_Ranges_MemPoolData();
+		rangeImage.swap( mem_block->rangeImage );
+	
+		pool.dump_to_pool(mem_params, mem_block);
+	}
+
 #endif
 }
 
@@ -821,12 +851,12 @@ void CObservation3DRangeScan::resizePoints3DVectors(const size_t WH)
 {
 #ifdef COBS3DRANGE_USE_MEMPOOL
 	// Request memory for the X,Y,Z buffers from the memory pool:
-	TMyMemPool &pool = TMyMemPool::getInstance();
+	TMyPointsMemPool &pool = TMyPointsMemPool::getInstance();
 
-	CObservation3DRangeScan_MemPoolParams mem_params;
+	CObservation3DRangeScan_Points_MemPoolParams mem_params;
 	mem_params.WH = WH;
 
-	CObservation3DRangeScan_MemPoolData *mem_block = pool.request_memory(mem_params);
+	CObservation3DRangeScan_Points_MemPoolData *mem_block = pool.request_memory(mem_params);
 
 	if (mem_block)
 	{	// Take the memory via swaps:
@@ -841,4 +871,30 @@ void CObservation3DRangeScan::resizePoints3DVectors(const size_t WH)
 	points3D_x.resize( WH );
 	points3D_y.resize( WH );
 	points3D_z.resize( WH );
+}
+
+
+// Similar to calling "rangeImage.setSize(H,W)" but this method provides memory pooling to speed-up the memory allocation.
+void CObservation3DRangeScan::rangeImage_setSize(const int H, const int W)
+{
+#ifdef COBS3DRANGE_USE_MEMPOOL
+	// Request memory from the memory pool:
+	TMyRangesMemPool &pool = TMyRangesMemPool::getInstance();
+
+	CObservation3DRangeScan_Ranges_MemPoolParams mem_params;
+	mem_params.H = H;
+	mem_params.W = W;
+
+	CObservation3DRangeScan_Ranges_MemPoolData *mem_block = pool.request_memory(mem_params);
+
+	if (mem_block)
+	{	// Take the memory via swaps:
+		rangeImage.swap(mem_block->rangeImage);
+		delete mem_block;
+		return;
+	}
+	// otherwise, continue with the normal method:
+#endif
+	// Fall-back to normal method:
+	rangeImage.setSize(H,W);
 }

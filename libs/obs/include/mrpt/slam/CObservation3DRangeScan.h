@@ -153,6 +153,8 @@ namespace slam
 
 		bool hasRangeImage; 				//!< true means the field rangeImage contains valid data
 		mrpt::math::CMatrix rangeImage; 	//!< If hasRangeImage=true, a matrix of floats with the range data as captured by the camera (in meters).
+		
+		void rangeImage_setSize(const int HEIGHT, const int WIDTH); //!< Similar to calling "rangeImage.setSize(H,W)" but this method provides memory pooling to speed-up the memory allocation.
 
 		// Range Matrix external storage functions ---------
 		inline bool rangeImage_isExternallyStored() const { return m_rangeImage_external_stored; }
