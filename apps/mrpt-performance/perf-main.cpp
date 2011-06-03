@@ -242,7 +242,19 @@ int main(int argc, char **argv)
 		{
 			const char* version_postfix = arg_release.isSet() ? "":"dev";
 #if defined(_MSC_VER)
+#		if _MSC_VER<=1399
+			const char* compiler_name = "MSVC7";
+#		elif _MSC_VER<=1499
+			const char* compiler_name = "MSVC8";
+#		elif _MSC_VER<=1599
+			const char* compiler_name = "MSVC9";
+#		elif _MSC_VER<=1699
+			const char* compiler_name = "MSVC10";
+#		elif _MSC_VER<=1799
+			const char* compiler_name = "MSVC11";
+#		else
 			const char* compiler_name = "MSVC";
+#		endif
 #elif defined(__GNUC__)
 			const char* compiler_name = "GCC";
 #else

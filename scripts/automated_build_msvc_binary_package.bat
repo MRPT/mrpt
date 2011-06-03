@@ -1,4 +1,4 @@
-@echo off
+REM @echo off
 REM ---------------------------------------------------------------------------
 REM    Batch file for generating MRPT binary packages for MSVC binary releases
 REM 
@@ -11,7 +11,7 @@ REM ---------------------------------------------------------------------------
 
 REM  Extra params we want on all public binary releases:
 set EXTRA_CMAKE_VARS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON
-set MSBUILDPARALLEL=/maxcpucount:1
+set MSBUILDPARALLEL=/maxcpucount:2
 
 REM Make sure params are OK:
 REM ------------------------------
@@ -48,17 +48,13 @@ IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
 REM Several tries to go on when MSVC9 linker crashes... (fuck yeah!)
 msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
-msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
-msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
-msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
-msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
-msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
-msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
-msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
+REM msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
+REM msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
+REM ...
 
 REM 6) Build package:
 REM ----------------------------------------------
-msbuild PACKAGE.vcproj /p:Configuration=Release
+msbuild PACKAGE.vcxproj /p:Configuration=Release
 
 
 goto END_BATCH
