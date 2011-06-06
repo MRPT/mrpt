@@ -765,7 +765,7 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 		float *kys = &m_3dproj_lut.Kys[0];
 		float *kzs = &m_3dproj_lut.Kzs[0];
 
-#if defined(MRPT_HAS_SSE2)
+#if MRPT_HAS_SSE2
 		if ((W & 0x07)==0)
 				do_project_3d_pointcloud_SSE2(H,W,kys,kzs,rangeImage,xs,ys,zs);
 		else	do_project_3d_pointcloud(H,W,kys,kzs,rangeImage,xs,ys,zs);  // if image width is not 8*N, use standard method
@@ -816,7 +816,7 @@ void do_project_3d_pointcloud(const int H,const int W,const float *kys,const flo
 
 void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, float*xs, float *ys, float*zs)
 {
-#if defined(MRPT_HAS_SSE2)
+#if MRPT_HAS_SSE2
 		// Use optimized version:
 		const int W_4 = W >> 2;  // /=4 , since we process 4 values at a time.
 
