@@ -35,6 +35,8 @@
  <a name="0.9.5">
   <h2>Version 0.9.5 - (Under development) </h2></a>
         - ...
+	- BUG FIXES:
+		- Build error in platforms that don't support SSE2 (Thanks rovoreed!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2550" >r2550</a>
 
 <br> <hr>
 
