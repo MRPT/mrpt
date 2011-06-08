@@ -52,103 +52,44 @@ namespace mrpt
 
 
 	 public:
-		 /** Constructor, builds an empty record.
-		   */
-		 CLogFileRecord();
+        CLogFileRecord();  //!< Constructor, builds an empty record.
+        virtual ~CLogFileRecord();   //!< Destructor, free all objects.
 
-		 /** Copy .
-		   */
-		 void operator =( CLogFileRecord &);
+        void operator =( CLogFileRecord &);  //!< Copy .
 
-		 /** Destructor, free all objects.
-		   */
-		 virtual ~CLogFileRecord();
+        /** The structure used to store all relevant information about each
+          *  transformation into TP-Space.
+          */
+        struct TInfoPerPTG
+        {
+            std::string				PTG_desc;      //!< A short description for the applied PTG
+            vector_float				TP_Obstacles;  //!< Distances until obstacles, in "pseudometers", first index for -PI direction, last one for PI direction.
+            mrpt::poses::CPoint2D		TP_Target;     //!< Target location in TP-Space
+            float						timeForTPObsTransformation,timeForHolonomicMethod;  //!< Time, in seconds.
+            float						desiredDirection,desiredSpeed, evaluation;          //!< The results from the holonomic method.
+            vector_float				evalFactors;   //!< Evaluation factors
+            CHolonomicLogFileRecordPtr	HLFR;          //!< Other useful info about holonomic method execution.
+        };
 
-		 /** The structure used to store all relevant information about each
-		   *  transformation into TP-Space.
-		   */
-		 struct TInfoPerPTG
-		 {
-			 /** A short description for the applied PTG
-			   */
-			 std::string				PTG_desc;
-
-			 /** Distances until obstacles, in "pseudometers", first index for -PI direction, last one for PI direction.
-			   */
-			 vector_float				TP_Obstacles;
-
-			 /** Target location in TP-Space
-			   */
-			 mrpt::poses::CPoint2D				TP_Target;
-
-			 /** Time, in seconds.
-			   */
-			 float						timeForTPObsTransformation,timeForHolonomicMethod;
-
-			 /** The results from the holonomic method.
-			   */
-			 float						desiredDirection,desiredSpeed, evaluation;
-
-			 /** Evaluation factors
-			   */
-			 vector_float				evalFactors;
-
-			 /** Other useful info about holonomic method execution.
-			   */
-			 CHolonomicLogFileRecordPtr	HLFR;
-		 };
-
-		 /** The number of PTGS:
-		   */
-		uint32_t nPTGs;
-
-		/** The security distances:
-		 */
-		vector_float				securityDistances;
+        mrpt::system::TTimeStamp   timestamp;  //!< The timestamp of when this log was processed by the reactive algorithm (It can be INVALID_TIMESTAMP for navigation logs in MRPT <0.9.5)
+		uint32_t       nPTGs;  //!< The number of PTGS:
+		vector_float   securityDistances;  //!< The security distances:
 
 		 /** The info for each applied PTG: must contain "nPTGs·nSecDistances" elements
 		   */
 		 std::vector<TInfoPerPTG, Eigen::aligned_allocator<TInfoPerPTG> >	infoPerPTG;
 
-		 /**  The selected PTG.
-		   */
-		 int32_t					nSelectedPTG;
+		 int32_t					nSelectedPTG;   //!< The selected PTG.
+		 float						executionTime;  //!< The total computation time, excluding sensing.
+		 float						estimatedExecutionPeriod;  //!< The estimated execution period.
+		 mrpt::slam::CSimplePointsMap  WS_Obstacles;  //!< The WS-Obstacles
+		 mrpt::poses::CPose2D          robotOdometryPose; //!< The robot pose (from raw odometry or a localization system).
+		 mrpt::poses::CPoint2D         WS_target_relative;  //!< The relative location of target point in WS.
 
-		 /** The total computation time, excluding sensing.
-		   */
-		 float						executionTime;
-
-		 /** The estimated execution period.
-		   */
-		 float						estimatedExecutionPeriod;
-
-		 /** The WS-Obstacles
-		   */
-		 mrpt::slam::CSimplePointsMap		WS_Obstacles;
-
-		 /** The raw odometry measurement.
-		   */
-		 mrpt::poses::CPose2D				robotOdometryPose;
-
-		 /** The relative location of target point in WS.
-		   */
-		 mrpt::poses::CPoint2D				WS_target_relative;
-
-		 /** The final motion command sent to robot, in "m/sec" and "rad/sec".
-		   */
-		 float						v,w;
-
-		 /** The actual robot velocities, as read from sensors, in "m/sec" and "rad/sec".
-		   */
-		 float						actual_v,actual_w;
-
-		 /** The used robot shape in WS.
-		   */
-		 vector_float				robotShape_x,robotShape_y;
-
-		 /** The navigator behavior.
-		   */
-		 int32_t					navigatorBehavior;
+		 float						v,w;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
+		 float						actual_v,actual_w; //!< The actual robot velocities, as read from sensors, in "m/sec" and "rad/sec".
+		 vector_float				robotShape_x,robotShape_y;  //!< The used robot shape in WS.
+		 int32_t					navigatorBehavior;  //!< The navigator behavior.
 
 	 private:
 		 /** Free all objects in infoPerPTGs structures (used internally).

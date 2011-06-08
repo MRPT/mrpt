@@ -34,6 +34,7 @@
 #include <wx/dialog.h>
 #include <wx/sizer.h>
 #include <wx/button.h>
+#include <wx/menu.h>
 #include <wx/panel.h>
 #include <wx/slider.h>
 #include <wx/stattext.h>
@@ -53,6 +54,8 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		std::vector<mrpt::utils::CSerializablePtr>  m_logdata;
 		std::map<std::string, mrpt::gui::CDisplayWindowPlotsPtr> m_mywins;
 
+        mrpt::system::TTimeStamp m_log_first_tim, m_log_last_tim;
+
 
     public:
         navlog_viewer_GUI_designDialog(wxWindow* parent,wxWindowID id = -1);
@@ -69,6 +72,8 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
         void OnbtnStopClick(wxCommandEvent& event);
         void OntimPlayTrigger(wxTimerEvent& event);
         void OntimAutoloadTrigger(wxTimerEvent& event);
+        void OnbtnMoreOpsClick(wxCommandEvent& event);
+        void OnmnuMatlabPlotsSelected(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(navlog_viewer_GUI_designDialog)
@@ -83,26 +88,37 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
         static const long ID_PANEL2;
         static const long ID_STATICTEXT2;
         static const long ID_STATICTEXT3;
+        static const long ID_STATICTEXT4;
+        static const long ID_STATICTEXT5;
         static const long ID_PANEL3;
+        static const long ID_BUTTON6;
         static const long ID_PANEL1;
         static const long ID_TIMER1;
         static const long ID_TIMER2;
+        static const long ID_MENUITEM1;
         //*)
 
         //(*Declarations(navlog_viewer_GUI_designDialog)
+        wxMenu mnuMoreOps;
         wxPanel* Panel1;
         wxTextCtrl* edLogFile;
         wxButton* btnPlay;
         wxStaticText* StaticText1;
+        wxFlexGridSizer* FlexGridSizer9;
+        wxStaticText* StaticText3;
         wxButton* btnStop;
+        wxButton* btnMoreOps;
         wxTimer timPlay;
         wxCustomButton* btnLoad;
         wxPanel* Panel3;
         wxStaticText* StaticText2;
+        wxStaticText* txtLogDuration;
         wxTimer timAutoload;
         wxSlider* slidLog;
+        wxMenuItem* mnuMatlabPlots;
         wxPanel* Panel_AUX;
         wxStaticText* txtLogEntries;
+        wxFlexGridSizer* flexGridRightHand;
         wxCustomButton* btnHelp;
         wxCustomButton* btnQuit;
         //*)

@@ -40,7 +40,9 @@ IMPLEMENTS_SERIALIZABLE( CLogFileRecord, CSerializable,mrpt::reactivenav )
 /*---------------------------------------------------------------
 					Constructor
   ---------------------------------------------------------------*/
-CLogFileRecord::CLogFileRecord()
+CLogFileRecord::CLogFileRecord() :
+    timestamp ( INVALID_TIMESTAMP ),
+    nPTGs     ( 0 )
 {
 	infoPerPTG.clear();
 	WS_Obstacles.clear();
@@ -81,6 +83,7 @@ void CLogFileRecord::operator =( CLogFileRecord &o)
 	actual_v = o.actual_v;
 	actual_w = o.actual_w;
 
+    timestamp = o.timestamp;
 	nPTGs = o.nPTGs;
 	securityDistances = o.securityDistances;
 
@@ -121,7 +124,7 @@ CLogFileRecord::~CLogFileRecord()
 void  CLogFileRecord::writeToStream(CStream &out,int *version) const
 {
 	if (version)
-		*version = 6;
+		*version = 7;
 	else
 	{
 		uint32_t	i,n;
@@ -175,6 +178,9 @@ void  CLogFileRecord::writeToStream(CStream &out,int *version) const
 
 		// Version 5 -----------
 		out << navigatorBehavior; // Removed in version 6: << doorCrossing_P1 << doorCrossing_P2;
+
+		// version 7:
+		out << timestamp;
 	}
 }
 
@@ -192,6 +198,7 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 	case 4:
 	case 5:
 	case 6:
+	case 7:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -311,6 +318,15 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 			else
 			{
 				navigatorBehavior = 0;
+			}
+
+			if (version>6)
+			{
+			    in >> timestamp;
+			}
+			else
+			{
+			    timestamp = INVALID_TIMESTAMP;
 			}
 
 		} break;

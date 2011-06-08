@@ -74,10 +74,14 @@ const long navlog_viewer_GUI_designDialog::ID_BUTTON5 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_PANEL2 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT2 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT3 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_STATICTEXT4 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_STATICTEXT5 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_PANEL3 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_BUTTON6 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_PANEL1 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_TIMER1 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_TIMER2 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_MENUITEM1 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(navlog_viewer_GUI_designDialog,wxFrame)
@@ -117,7 +121,6 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
 
     //(*Initialize(navlog_viewer_GUI_designDialog)
     wxStaticBoxSizer* StaticBoxSizer2;
-    wxFlexGridSizer* FlexGridSizer8;
     wxFlexGridSizer* FlexGridSizer1;
     wxFlexGridSizer* FlexGridSizer2;
     wxFlexGridSizer* FlexGridSizer7;
@@ -177,19 +180,29 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     FlexGridSizer5->SetSizeHints(Panel1);
     StaticBoxSizer1->Add(Panel1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer4->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    flexGridRightHand = new wxFlexGridSizer(2, 1, 0, 0);
+    flexGridRightHand->AddGrowableCol(0);
+    flexGridRightHand->AddGrowableRow(0);
+    flexGridRightHand->AddGrowableRow(1);
     StaticBoxSizer2 = new wxStaticBoxSizer(wxHORIZONTAL, Panel_AUX, _("Information:"));
     Panel3 = new wxPanel(Panel_AUX, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL3"));
-    FlexGridSizer8 = new wxFlexGridSizer(0, 3, 0, 0);
+    FlexGridSizer9 = new wxFlexGridSizer(0, 2, 0, 0);
     StaticText2 = new wxStaticText(Panel3, ID_STATICTEXT2, _("Log entries:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
-    FlexGridSizer8->Add(StaticText2, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    FlexGridSizer9->Add(StaticText2, 1, wxALL|wxALIGN_RIGHT|wxALIGN_TOP, 5);
     txtLogEntries = new wxStaticText(Panel3, ID_STATICTEXT3, _("0"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
-    FlexGridSizer8->Add(txtLogEntries, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
-    FlexGridSizer8->Add(87,21,1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
-    Panel3->SetSizer(FlexGridSizer8);
-    FlexGridSizer8->Fit(Panel3);
-    FlexGridSizer8->SetSizeHints(Panel3);
+    FlexGridSizer9->Add(txtLogEntries, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    StaticText3 = new wxStaticText(Panel3, ID_STATICTEXT4, _("Duration:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT4"));
+    FlexGridSizer9->Add(StaticText3, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+    txtLogDuration = new wxStaticText(Panel3, ID_STATICTEXT5, _("0"), wxDefaultPosition, wxSize(80,-1), 0, _T("ID_STATICTEXT5"));
+    FlexGridSizer9->Add(txtLogDuration, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    Panel3->SetSizer(FlexGridSizer9);
+    FlexGridSizer9->Fit(Panel3);
+    FlexGridSizer9->SetSizeHints(Panel3);
     StaticBoxSizer2->Add(Panel3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-    FlexGridSizer4->Add(StaticBoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    flexGridRightHand->Add(StaticBoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    btnMoreOps = new wxButton(Panel_AUX, ID_BUTTON6, _("More..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON6"));
+    flexGridRightHand->Add(btnMoreOps, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer4->Add(flexGridRightHand, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel_AUX->SetSizer(FlexGridSizer2);
     FlexGridSizer2->Fit(Panel_AUX);
@@ -199,6 +212,8 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     timPlay.SetOwner(this, ID_TIMER1);
     timAutoload.SetOwner(this, ID_TIMER2);
     timAutoload.Start(20, true);
+    mnuMatlabPlots = new wxMenuItem((&mnuMoreOps), ID_MENUITEM1, _("Export map plot to MATLAB..."), wxEmptyString, wxITEM_NORMAL);
+    mnuMoreOps.Append(mnuMatlabPlots);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
 
@@ -209,8 +224,10 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnslidLogCmdScroll);
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnPlayClick);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnStopClick);
+    Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnMoreOpsClick);
     Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimPlayTrigger);
     Connect(ID_TIMER2,wxEVT_TIMER,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OntimAutoloadTrigger);
+    Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected);
     //*)
 
     {
@@ -218,6 +235,9 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
     	SetIcon(FrameIcon);
     }
+
+	m_log_first_tim = INVALID_TIMESTAMP;
+	m_log_last_tim  = INVALID_TIMESTAMP;
 
 	UpdateInfoFromLoadedLog(); // Disable some controls, etc..
 }
@@ -265,6 +285,9 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string &filName)
 	set<string>  validClasses;
 	validClasses.insert("CLogFileRecord");
 
+	m_log_first_tim = INVALID_TIMESTAMP;
+	m_log_last_tim  = INVALID_TIMESTAMP;
+
 	for (;;)
 	{
 		try
@@ -276,6 +299,17 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string &filName)
 				break;
 			}
 			m_logdata.push_back(obj);
+
+			// generate time stats:
+			if (IS_CLASS(obj,CLogFileRecord))
+			{
+                const CLogFileRecordPtr logptr = CLogFileRecordPtr(obj);
+                if (logptr->timestamp!=INVALID_TIMESTAMP)
+                    m_log_last_tim = logptr->timestamp;
+			}
+
+			if (m_log_first_tim == INVALID_TIMESTAMP && m_log_last_tim!=INVALID_TIMESTAMP)
+                m_log_first_tim = m_log_last_tim;
 		}
 		catch (CExceptionEOF &)
 		{
@@ -354,6 +388,17 @@ void navlog_viewer_GUI_designDialog::UpdateInfoFromLoadedLog()
 		wxScrollEvent d;
 		OnslidLogCmdScroll(d);
 	}
+
+    std::string sDuration("???");
+	if (m_log_first_tim != INVALID_TIMESTAMP && m_log_last_tim!=INVALID_TIMESTAMP)
+	{
+	    sDuration = mrpt::system::intervalFormat( mrpt::system::timeDifference(m_log_first_tim,m_log_last_tim) );
+	}
+    this->txtLogDuration->SetLabel( _U(sDuration.c_str()));;
+
+    flexGridRightHand->RecalcSizes();
+    this->Fit();
+
 }
 
 // ---------------------------------------------
@@ -465,4 +510,116 @@ void navlog_viewer_GUI_designDialog::OntimAutoloadTrigger(wxTimerEvent& event)
 {
 	if (!global_fileToOpen.empty() && mrpt::system::fileExists(global_fileToOpen))
 		loadLogfile(global_fileToOpen);
+}
+
+void navlog_viewer_GUI_designDialog::OnbtnMoreOpsClick(wxCommandEvent& event)
+{
+    this->PopupMenu(&mnuMoreOps);
+}
+
+// ------------------------------------------------------------------------
+//     Generate a MATLAB script that draws the overall navigation log
+// ------------------------------------------------------------------------
+void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& event)
+{
+	WX_START_TRY
+
+	wxFileDialog dialog(
+		this,
+		_("Save MATLAB/Octave script that draws the log...") /*caption*/,
+		_(".") /* defaultDir */,
+		_("drawLog.m") /* defaultFilename */,
+		_("MATLAB/Octave script (*.m)|*.m") /* wildcard */,
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+	if (dialog.ShowModal() != wxID_OK) return;
+
+	const string filName(dialog.GetPath().mb_str());
+
+    ofstream f(filName.c_str());
+    if (!f.is_open())
+        throw runtime_error("Error writing to file!");
+
+    f << "% Script for drawing navigation log\n"
+      << "% Generated automatically by navlog-viewer - MRPT " << mrpt::system::MRPT_getVersion() << "\n"
+      << "%  From log: " << string(edLogFile->GetValue().mbc_str()) << "\n"
+      << "% -------------------------------------------------------------------------\n\n";
+
+    f << "%%\n"
+    << "function [] = main()\n"
+    << "% Robot shape: (x,y) in each line\n"
+    << "rs = [-0.3 -0.3;0.6 -0.3;0.6 0.3;-0.3 0.3];\n"
+    << "decimate_robot_shapes = 15;"
+    << "decim_cnt=0;";
+
+    const int DECIMATE_POINTS = 10;
+    int decim_point_cnt =0;
+
+    std::vector<float> X,Y;    // Obstacles
+    std::vector<float> TX,TY;  // Target over time
+
+    const size_t N = m_logdata.size();
+	for (size_t i=0;i<N;i++)
+	{
+        const CLogFileRecordPtr logsptr = CLogFileRecordPtr( m_logdata[i] );
+        const CLogFileRecord * logptr = logsptr.pointer();
+
+        f << format("decim_cnt=decim_cnt+1; if (decim_cnt>=decimate_robot_shapes); drawRobotShape(rs,[%f %f %f]); decim_cnt=0; end\n",
+            logptr->robotOdometryPose.x(),
+            logptr->robotOdometryPose.y(),
+            logptr->robotOdometryPose.phi()
+            );
+
+        if (++decim_point_cnt>=DECIMATE_POINTS)
+        {
+            CSimplePointsMap pts;
+            pts.changeCoordinatesReference( logptr->WS_Obstacles, logptr->robotOdometryPose );
+
+            const std::vector<float> &pX = pts.getPointsBufferRef_x();
+            const std::vector<float> &pY = pts.getPointsBufferRef_y();
+
+            X.insert(X.begin(),pX.begin(),pX.end());
+            Y.insert(Y.begin(),pY.begin(),pY.end());
+        }
+
+        // Target:
+        const mrpt::math::TPoint2D trg_glob = mrpt::math::TPoint2D( logptr->robotOdometryPose+logptr->WS_target_relative );
+        if (TX.empty() || std::abs((*TX.rbegin())-trg_glob.x)>1e-3 || std::abs((*TY.rbegin())-trg_glob.y)>1e-3 )
+        {
+            TX.push_back(trg_glob.x);
+            TY.push_back(trg_glob.y);
+        }
+	}
+
+	f << "\n % Points: \n"
+	  << " Ps = [";
+    for (size_t k=0;k<X.size();k++)
+        f << X[k] << " " << Y[k] << "\n";
+
+	f << "];\n"
+	  << "plot(Ps(:,1),Ps(:,2),'k.','MarkerSize',3);\n";
+
+	f << "\n % Target point: \n"
+	  << " Ts = [";
+    for (size_t k=0;k<TX.size();k++)
+        f << TX[k] << " " << TY[k] << "\n";
+
+	f << "];\n"
+	  << "plot(Ts(:,1),Ts(:,2),'rx','MarkerSize',5);\n";
+
+    f << "axis equal;\n"
+    << "\n";
+
+    f
+    << "%% drawRobotShape()\n"
+    << "function [] = drawRobotShape(sh,pose)\n"
+    << "nPts=size(sh,1);\n"
+    << "Pts=[];\n"
+    << "for i=1:(nPts+1),\n"
+    << "    j=mod(i-1,nPts)+1;\n"
+    << "    cc=cos(pose(3)); ss=sin(pose(3)); x=pose(1); y=pose(2);\n"
+    << "    Pts=[Pts;x+cc*sh(j,1)-ss*sh(j,2) y+ss*sh(j,1)+cc*sh(j,2) ];\n"
+    << "end\n"
+    << "plot(Pts(:,1),Pts(:,2)); hold on;\n";
+
+	WX_END_TRY
 }

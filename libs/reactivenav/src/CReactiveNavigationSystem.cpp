@@ -371,6 +371,8 @@ void  CReactiveNavigationSystem::performNavigationStep()
 		// Start timer
 		totalExecutionTime.Tic();
 
+		const mrpt::system::TTimeStamp tim_start_iteration = mrpt::system::now();
+
 		/* ----------------------------------------------------------------
 		 	  Request current robot pose and velocities
 		   ---------------------------------------------------------------- */
@@ -665,6 +667,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 		newLogRec.actual_v				= curVL;
 		newLogRec.actual_w				= curW;
 		newLogRec.estimatedExecutionPeriod = meanExecutionPeriod;
+		newLogRec.timestamp             = tim_start_iteration;
 		newLogRec.nPTGs					= PTGs.size();
 		newLogRec.navigatorBehavior		= 0;  // Not used now
 
