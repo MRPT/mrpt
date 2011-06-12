@@ -142,6 +142,18 @@ namespace mrpt
 										float				minDistForFuse  = 0.02f,
 										std::vector<bool>	*notFusedPoints = NULL);
 
+			/** Adds all the points from \a anotherMap to this map, without fusing.
+			  *  This operation can be also invoked via the "+=" operator, for example:
+			  *  \code
+			  *   CSimplePointsMap m1, m2;
+			  *   ...
+			  *   m1.addFrom( m2 );  // Add all points of m2 to m1
+			  *   m1 += m2;          // Exactly the same than above
+			  *  \endcode
+			  * \sa insertAnotherMap, fuseWith
+			  */
+			virtual void  addFrom(const CPointsMap &anotherMap);
+
 			/** Changes a given point from map, as a 2D point. First index is 0.
 			 * \exception Throws std::exception on index out of bound.
 			 */

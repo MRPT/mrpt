@@ -816,6 +816,7 @@ void  CSimplePointsMap::insertPoint( float x, float y, float z )
 	mark_as_modified();
 }
 
+
 /*---------------------------------------------------------------
 						applyDeletionMask
  ---------------------------------------------------------------*/

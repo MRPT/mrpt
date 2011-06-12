@@ -42,7 +42,7 @@ namespace math
 	 *
 	 * This code is an adapted version from Boost, modifed for its integration
 	 *	within MRPT (JLBC, Dec/2009) (Renamed array -> CArray to avoid possible potential conflicts).
-     *
+	 *
 	 * See
 	 *      http://www.josuttis.com/cppcode
 	 * for details and the latest version.
@@ -66,6 +66,7 @@ namespace math
 	 * Jan 30, 2004
 	 *
 	 * \note This class DOES NOT support mathematical operations on its elements: it's a generic container, it doesn't assume they are numerical.
+	 * \note For a summary and classification of all MRPT vector, array and matrix classes see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
 	 *
      * \sa CArrayNumeric (for another, non-related base template class that DOES support maths)
 	 */

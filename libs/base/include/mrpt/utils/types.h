@@ -83,7 +83,9 @@
 
 namespace mrpt
 {
-	/** The base class of MRPT vectors, actually, Eigen column matrices of dynamic size with specialized constructors that resemble std::vector. */
+	/** The base class of MRPT vectors, actually, Eigen column matrices of dynamic size with specialized constructors that resemble std::vector. 
+         * \note For a summary and classification of all MRPT vector, array and matrix classes see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
+	 */
 	template <typename T>
 	struct dynamicsize_vector : public Eigen::Matrix<T,Eigen::Dynamic,1>
 	{

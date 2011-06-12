@@ -119,7 +119,7 @@ namespace mrpt
 			/** Insert the contents of another map into this one, without fusing close points.
 			 * \param otherMap The other map whose points are to be inserted into this one.
 			 * \param otherPose The pose of the other map in the coordinates of THIS map
-			 * \sa fuseWith
+			 * \sa fuseWith, addFrom
 			 */
 			void  insertAnotherMap(
 										CPointsMap			*otherMap,
@@ -196,7 +196,7 @@ namespace mrpt
 				setAllPointsTemplate(X,Y);
 			}
 
-			/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it. 
+			/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 				* Otherwise, return NULL
 				*/
 			virtual const CSimplePointsMap * getAsSimplePointsMap() const { return this; }

@@ -1568,3 +1568,27 @@ void CPointsMap::PLY_export_get_vertex(
 	pt.y = y[idx];
 	pt.z = z[idx];
 }
+
+// Generic implementation (a more optimized one should exist in derived classes):
+void  CPointsMap::addFrom(const CPointsMap &anotherMap)
+{
+	const size_t nThis = this->size();
+	const size_t nOther = anotherMap.size();
+
+	const size_t nTot = nThis+nOther;
+
+	this->x.resize(nTot);
+	this->y.resize(nTot);
+	this->z.resize(nTot);
+	this->pointWeight.resize(nTot);
+
+	for (size_t i=0,j=nThis;i<nOther;i++, j++)
+	{
+		this->x[j]=anotherMap.x[i];
+		this->y[j]=anotherMap.y[i];
+		this->z[j]=anotherMap.z[i];
+		this->pointWeight[j]=anotherMap.pointWeight[i];
+	}
+
+	mark_as_modified();
+}

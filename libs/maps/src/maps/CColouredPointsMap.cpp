@@ -1628,3 +1628,58 @@ void CColouredPointsMap::PLY_export_get_vertex(
 	pt_color.G = m_color_G[idx];
 	pt_color.B = m_color_B[idx];
 }
+
+
+/*---------------------------------------------------------------
+						addFrom
+ ---------------------------------------------------------------*/
+void  CColouredPointsMap::addFrom(const CPointsMap &anotherMap)
+{
+	const size_t nThis = this->size();
+	const size_t nOther = anotherMap.size();
+
+	const size_t nTot = nThis+nOther;
+
+	// First common data: XYZ, Weight
+	this->x.resize(nTot);
+	this->y.resize(nTot);
+	this->z.resize(nTot);
+	this->pointWeight.resize(nTot);
+
+	this->m_color_R.resize(nTot);
+	this->m_color_B.resize(nTot);
+	this->m_color_B.resize(nTot);
+	this->m_min_dist.resize(nTot);
+
+	for (size_t i=0,j=nThis;i<nOther;i++, j++)
+	{
+		x[j] = anotherMap.x[i];
+		y[j] = anotherMap.y[i];
+		z[j] = anotherMap.z[i];
+		pointWeight[j] = anotherMap.pointWeight[i];
+	}
+
+	// Now specific data for this class:
+	const CColouredPointsMap * anotheMap_col = dynamic_cast<const CColouredPointsMap *>(&anotherMap);
+
+	if (anotheMap_col)
+	{
+		for (size_t i=0,j=nThis;i<nOther;i++, j++)
+		{
+			m_color_R[j] = anotheMap_col->m_color_R[i];
+			m_color_G[j] = anotheMap_col->m_color_G[i];
+			m_color_B[j] = anotheMap_col->m_color_B[i];
+		}
+	}
+	else
+	{
+		for (size_t i=0,j=nThis;i<nOther;i++, j++)
+		{
+			m_color_R[j] = 1;
+			m_color_G[j] = 1;
+			m_color_B[j] = 1;
+		}
+	}
+
+	mark_as_modified();
+}

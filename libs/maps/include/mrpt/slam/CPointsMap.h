@@ -59,8 +59,8 @@ namespace slam
 	 *  This is a virtual class, thus only a derived class can be instantiated by the user. The user most usually wants to use CSimplePointsMap.
 	 * \sa CMetricMap, CPoint, mrpt::utils::CSerializable
 	 */
-	class MAPS_IMPEXP CPointsMap : 
-		public CMetricMap, 
+	class MAPS_IMPEXP CPointsMap :
+		public CMetricMap,
 		public mrpt::utils::KDTreeCapable,
 		public mrpt::utils::PLY_Importer,
 		public mrpt::utils::PLY_Exporter
@@ -192,11 +192,30 @@ namespace slam
 		 * \param otherMap The other map whose points are to be inserted into this one.
 		 * \param minDistForFuse Minimum distance (in meters) between two points, each one in a map, to be considered the same one and be fused rather than added.
 		 * \param notFusedPoints If a pointer is supplied, this list will contain at output a list with a "bool" value per point in "this" map. This will be false/true according to that point having been fused or not.
+		 * \sa loadFromRangeScan, addFrom
 		 */
 		virtual void  fuseWith(
-			CPointsMap			*otherMap,
+			CPointsMap			*anotherMap,
 			float				minDistForFuse  = 0.02f,
 			std::vector<bool>	*notFusedPoints = NULL) = 0;
+
+		/** Adds all the points from \a anotherMap to this map, without fusing.
+		  *  This operation can be also invoked via the "+=" operator, for example:
+		  *  \code
+		  *   CSimplePointsMap m1, m2;
+		  *   ...
+		  *   m1.addFrom( m2 );  // Add all points of m2 to m1
+		  *   m1 += m2;          // Exactly the same than above
+		  *  \endcode
+		  * \note The method in CPointsMap is generic but derived classes may redefine this virtual method to another one more optimized.
+		  */
+		virtual void  addFrom(const CPointsMap &anotherMap);
+
+		/** This operator is synonymous with \a addFrom. \sa addFrom */
+		inline void operator +=(const CPointsMap &anotherMap)
+		{
+			this->addFrom(anotherMap);
+		}
 
 		/** Transform the range scan into a set of cartessian coordinated
 		  *	 points. The options in "insertionOptions" are considered in this method.
@@ -567,7 +586,7 @@ namespace slam
 			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_face */
 			virtual void PLY_import_set_face_count(const size_t N) {  }
 
-			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point. 
+			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
 			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
 			  */
 			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL);
@@ -582,12 +601,12 @@ namespace slam
 			/** In a base class, return the number of faces */
 			virtual size_t PLY_export_get_face_count() const { return 0; }
 
-			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point. 
+			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
 			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
 			  */
 			virtual void PLY_export_get_vertex(
-				const size_t idx, 
-				mrpt::math::TPoint3Df &pt, 
+				const size_t idx,
+				mrpt::math::TPoint3Df &pt,
 				bool &pt_has_color,
 				mrpt::utils::TColorf &pt_color) const;
 

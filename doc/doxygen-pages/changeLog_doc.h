@@ -37,6 +37,7 @@
 	- Changes in applications:
 		- navlog-viewer: Now allows exporting the global navigation map as a MATLAB script for generating vector plots.
 	- Changes in classes:
+		- [mrpt-maps] mrpt::slam::CPointsMap (and derived classes) now have a method mrpt::slam::CPointsMap::addFrom() and an "operator +=" to add the points from another point map.
 		- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".
 	- BUG FIXES:
 		- Build error in platforms that don't support SSE2 (Thanks rovoreed!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2550" >r2550</a>
