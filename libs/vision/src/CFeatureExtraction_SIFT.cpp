@@ -365,7 +365,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 //***********************************************************************************************
 		case OpenCV:
 		{
-#if MRPT_OPENCV_VERSION_NUM >= 0x211
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x211
 			SiftFeatureDetector SIFTDetector(
 				SIFT::DetectorParams::GET_DEFAULT_THRESHOLD(),
 				SIFT::DetectorParams::GET_DEFAULT_EDGE_THRESHOLD() );

@@ -41,6 +41,7 @@
 		- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".
 	- BUG FIXES:
 		- Build error in platforms that don't support SSE2 (Thanks rovoreed!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2550" >r2550</a>
+                - Build error when OpenCV exists but is not used. - <a href="http://code.google.com/p/mrpt/source/detail?r=2555" >r2555</a>
 
 <br> <hr>
 

@@ -176,7 +176,7 @@ void CGenericFeatureTracker::trackFeatures(
 	if (add_new_features)
 	{
 		m_timlog.enter("[CGenericFeatureTracker] add new features");
-
+#if MRPT_HAS_OPENCV
 #if MRPT_OPENCV_VERSION_NUM >= 0x210
 		using namespace cv;
 
@@ -193,6 +193,7 @@ void CGenericFeatureTracker::trackFeatures(
 	// Older version:
 	FAST(cur_gray.getAs<IplImage>(), new_feats, m_detector_adaptive_thres, true /* non-max supres. */ );
 # endif
+#endif // MRPT_HAS_OPENCV
 
 		const size_t N = new_feats.size();
 

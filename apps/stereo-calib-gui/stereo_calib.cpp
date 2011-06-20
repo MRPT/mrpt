@@ -51,13 +51,19 @@
      http://pr.willowgarage.com/wiki/OpenCV
    ************************************************** */
 
+#if MRPT_HAS_OPENCV
+
 #include "cv.h"
 #include "cxmisc.h"
 #include "highgui.h"
 #include <vector>
 #include <string>
 #include <algorithm>
+#endif // MRPT_HAS_OPENCV
+
 #include <stdio.h>
+
+#if MRPT_HAS_OPENCV
 #include <ctype.h>
 
 using namespace std;
@@ -454,12 +460,18 @@ StereoCalib( const char* imageList, int nx, int ny, int useUncalibrated )
     }
 }
 
+#endif // MRPT_HAS_OPENCV
+
 int main(void)
 {
+#if MRPT_HAS_OPENCV
 	//CvMat leftCamMat, rightCamMat;
 	//CvMat leftDisCoe, rightDisCoe;
     //StereoCalib("stereo_calib.txt", 6, 7, 1, &leftCamMat, &leftDisCoe, &rightCamMat, &rightDisCoe );
 	//StereoCalib("stereo_calib.txt", 6, 9, 0 );
 	StereoCalib("stereo_calib.txt", 6, 9, 0 );
+#else
+	printf("MRPT built without OpenCV\n");
+#endif
     return 0;
 }
