@@ -70,9 +70,13 @@ class GeneralizedSelfAdjointEigenSolver : public SelfAdjointEigenSolver<_MatrixT
     /** \brief Default constructor for fixed-size matrices.
       *
       * The default constructor is useful in cases in which the user intends to
-      * perform decompositions via compute(). This constructor
+      * perform decompositions via compute(const MatrixType&, bool) or
+      * compute(const MatrixType&, const MatrixType&, bool). This constructor
       * can only be used if \p _MatrixType is a fixed-size matrix; use
-      * GeneralizedSelfAdjointEigenSolver(Index) for dynamic-size matrices.
+      * SelfAdjointEigenSolver(Index) for dynamic-size matrices.
+      *
+      * Example: \include SelfAdjointEigenSolver_SelfAdjointEigenSolver.cpp
+      * Output: \verbinclude SelfAdjointEigenSolver_SelfAdjointEigenSolver.out
       */
     GeneralizedSelfAdjointEigenSolver() : Base() {}
 
@@ -82,11 +86,12 @@ class GeneralizedSelfAdjointEigenSolver : public SelfAdjointEigenSolver<_MatrixT
       * eigenvalues and eigenvectors will be computed.
       *
       * This constructor is useful for dynamic-size matrices, when the user
-      * intends to perform decompositions via compute(). The \p size
+      * intends to perform decompositions via compute(const MatrixType&, bool)
+      * or compute(const MatrixType&, const MatrixType&, bool). The \p size
       * parameter is only used as a hint. It is not an error to give a wrong
       * \p size, but it may impair performance.
       *
-      * \sa compute() for an example
+      * \sa compute(const MatrixType&, bool) for an example
       */
     GeneralizedSelfAdjointEigenSolver(Index size)
         : Base(size)
@@ -98,8 +103,8 @@ class GeneralizedSelfAdjointEigenSolver : public SelfAdjointEigenSolver<_MatrixT
       *                   Only the lower triangular part of the matrix is referenced.
       * \param[in]  matB  Positive-definite matrix in matrix pencil.
       *                   Only the lower triangular part of the matrix is referenced.
-      * \param[in]  options A or-ed set of flags {#ComputeEigenvectors,#EigenvaluesOnly} | {#Ax_lBx,#ABx_lx,#BAx_lx}.
-      *                     Default is #ComputeEigenvectors|#Ax_lBx.
+      * \param[in]  options A or-ed set of flags {ComputeEigenvectors,EigenvaluesOnly} | {Ax_lBx,ABx_lx,BAx_lx}.
+      *                     Default is ComputeEigenvectors|Ax_lBx.
       *
       * This constructor calls compute(const MatrixType&, const MatrixType&, int)
       * to compute the eigenvalues and (if requested) the eigenvectors of the
@@ -131,8 +136,8 @@ class GeneralizedSelfAdjointEigenSolver : public SelfAdjointEigenSolver<_MatrixT
       *                   Only the lower triangular part of the matrix is referenced.
       * \param[in]  matB  Positive-definite matrix in matrix pencil.
       *                   Only the lower triangular part of the matrix is referenced.
-      * \param[in]  options A or-ed set of flags {#ComputeEigenvectors,#EigenvaluesOnly} | {#Ax_lBx,#ABx_lx,#BAx_lx}.
-      *                     Default is #ComputeEigenvectors|#Ax_lBx.
+      * \param[in]  options A or-ed set of flags {ComputeEigenvectors,EigenvaluesOnly} | {Ax_lBx,ABx_lx,BAx_lx}.
+      *                     Default is ComputeEigenvectors|Ax_lBx.
       *
       * \returns    Reference to \c *this
       *

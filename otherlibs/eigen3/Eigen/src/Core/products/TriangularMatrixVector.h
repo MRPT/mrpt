@@ -41,6 +41,9 @@ struct product_triangular_matrix_vector<Index,Mode,LhsScalar,ConjLhs,RhsScalar,C
   static EIGEN_DONT_INLINE  void run(Index rows, Index cols, const LhsScalar* _lhs, Index lhsStride,
                                      const RhsScalar* _rhs, Index rhsIncr, ResScalar* _res, Index resIncr, ResScalar alpha)
   {
+    EIGEN_UNUSED_VARIABLE(resIncr);
+    eigen_assert(resIncr==1);
+    
     static const Index PanelWidth = EIGEN_TUNE_TRIANGULAR_PANEL_WIDTH;
 
     typedef Map<const Matrix<LhsScalar,Dynamic,Dynamic,ColMajor>, 0, OuterStride<> > LhsMap;
@@ -92,6 +95,9 @@ struct product_triangular_matrix_vector<Index,Mode,LhsScalar,ConjLhs,RhsScalar,C
   static void run(Index rows, Index cols, const LhsScalar* _lhs, Index lhsStride,
                   const RhsScalar* _rhs, Index rhsIncr, ResScalar* _res, Index resIncr, ResScalar alpha)
   {
+    eigen_assert(rhsIncr==1);
+    EIGEN_UNUSED_VARIABLE(rhsIncr);
+    
     static const Index PanelWidth = EIGEN_TUNE_TRIANGULAR_PANEL_WIDTH;
 
     typedef Map<const Matrix<LhsScalar,Dynamic,Dynamic,RowMajor>, 0, OuterStride<> > LhsMap;
@@ -179,7 +185,7 @@ struct TriangularProduct<Mode,false,Lhs,true,Rhs,false>
   template<typename Dest> void scaleAndAddTo(Dest& dst, Scalar alpha) const
   {
     eigen_assert(dst.rows()==m_lhs.rows() && dst.cols()==m_rhs.cols());
-
+    
     typedef TriangularProduct<(Mode & UnitDiag) | ((Mode & Lower) ? Upper : Lower),true,Transpose<const Rhs>,false,Transpose<const Lhs>,true> TriangularProductTranspose;
     Transpose<Dest> dstT(dst);
     internal::trmv_selector<(int(internal::traits<Rhs>::Flags)&RowMajorBit) ? ColMajor : RowMajor>::run(
@@ -229,15 +235,23 @@ template<> struct trmv_selector<ColMajor>
     
     RhsScalar compatibleAlpha = get_factor<ResScalar,RhsScalar>::run(actualAlpha);
 
-    ei_declare_aligned_stack_constructed_variable(ResScalar,actualDestPtr,dest.size(),
-                                                  evalToDest ? dest.data() : static_dest.data());
-
-    if(!evalToDest)
+    ResScalar* actualDestPtr;
+    bool freeDestPtr = false;
+    if (evalToDest)
+    {
+      actualDestPtr = dest.data();
+    }
+    else
     {
       #ifdef EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       int size = dest.size();
       EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       #endif
+      if((actualDestPtr = static_dest.data())==0)
+      {
+        freeDestPtr = true;
+        actualDestPtr = ei_aligned_stack_new(ResScalar,dest.size());
+      }
       if(!alphaIsCompatible)
       {
         MappedDest(actualDestPtr, dest.size()).setZero();
@@ -263,6 +277,7 @@ template<> struct trmv_selector<ColMajor>
         dest += actualAlpha * MappedDest(actualDestPtr, dest.size());
       else
         dest = MappedDest(actualDestPtr, dest.size());
+      if(freeDestPtr) ei_aligned_stack_delete(ResScalar, actualDestPtr, dest.size());
     }
   }
 };
@@ -295,15 +310,23 @@ template<> struct trmv_selector<RowMajor>
 
     gemv_static_vector_if<RhsScalar,_ActualRhsType::SizeAtCompileTime,_ActualRhsType::MaxSizeAtCompileTime,!DirectlyUseRhs> static_rhs;
 
-    ei_declare_aligned_stack_constructed_variable(RhsScalar,actualRhsPtr,actualRhs.size(),
-        DirectlyUseRhs ? const_cast<RhsScalar*>(actualRhs.data()) : static_rhs.data());
-
-    if(!DirectlyUseRhs)
+    RhsScalar* actualRhsPtr;
+    bool freeRhsPtr = false;
+    if (DirectlyUseRhs)
+    {
+      actualRhsPtr = const_cast<RhsScalar*>(actualRhs.data());
+    }
+    else
     {
       #ifdef EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       int size = actualRhs.size();
       EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       #endif
+      if((actualRhsPtr = static_rhs.data())==0)
+      {
+        freeRhsPtr = true;
+        actualRhsPtr = ei_aligned_stack_new(RhsScalar, actualRhs.size());
+      }
       Map<typename _ActualRhsType::PlainObject>(actualRhsPtr, actualRhs.size()) = actualRhs;
     }
     
@@ -317,6 +340,8 @@ template<> struct trmv_selector<RowMajor>
             actualRhsPtr,1,
             dest.data(),dest.innerStride(),
             actualAlpha);
+
+    if((!DirectlyUseRhs) && freeRhsPtr) ei_aligned_stack_delete(RhsScalar, actualRhsPtr, prod.rhs().size());
   }
 };
 

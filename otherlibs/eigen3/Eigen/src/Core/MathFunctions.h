@@ -87,8 +87,7 @@ struct real_impl<std::complex<RealScalar> >
 {
   static inline RealScalar run(const std::complex<RealScalar>& x)
   {
-    using std::real;
-    return real(x);
+    return std::real(x);
   }
 };
 
@@ -123,8 +122,7 @@ struct imag_impl<std::complex<RealScalar> >
 {
   static inline RealScalar run(const std::complex<RealScalar>& x)
   {
-    using std::imag;
-    return imag(x);
+    return std::imag(x);
   }
 };
 
@@ -246,8 +244,7 @@ struct conj_impl<std::complex<RealScalar> >
 {
   static inline std::complex<RealScalar> run(const std::complex<RealScalar>& x)
   {
-    using std::conj;
-    return conj(x);
+    return std::conj(x);
   }
 };
 
@@ -273,8 +270,7 @@ struct abs_impl
   typedef typename NumTraits<Scalar>::Real RealScalar;
   static inline RealScalar run(const Scalar& x)
   {
-    using std::abs;
-    return abs(x);
+    return std::abs(x);
   }
 };
 
@@ -309,8 +305,7 @@ struct abs2_impl<std::complex<RealScalar> >
 {
   static inline RealScalar run(const std::complex<RealScalar>& x)
   {
-    using std::norm;
-    return norm(x);
+    return std::norm(x);
   }
 };
 
@@ -374,12 +369,10 @@ struct hypot_impl
   typedef typename NumTraits<Scalar>::Real RealScalar;
   static inline RealScalar run(const Scalar& x, const Scalar& y)
   {
-    using std::max;
-    using std::min;
     RealScalar _x = abs(x);
     RealScalar _y = abs(y);
-    RealScalar p = max(_x, _y);
-    RealScalar q = min(_x, _y);
+    RealScalar p = std::max(_x, _y);
+    RealScalar q = std::min(_x, _y);
     RealScalar qp = q/p;
     return p * sqrt(RealScalar(1) + qp*qp);
   }
@@ -427,8 +420,7 @@ struct sqrt_default_impl
 {
   static inline Scalar run(const Scalar& x)
   {
-    using std::sqrt;
-    return sqrt(x);
+    return std::sqrt(x);
   }
 };
 
@@ -462,36 +454,194 @@ inline EIGEN_MATHFUNC_RETVAL(sqrt, Scalar) sqrt(const Scalar& x)
 }
 
 /****************************************************************************
-* Implementation of standard unary real functions (exp, log, sin, cos, ...  *
+* Implementation of exp                                                  *
 ****************************************************************************/
 
-// This macro instanciate all the necessary template mechanism which is common to all unary real functions.
-#define EIGEN_MATHFUNC_STANDARD_REAL_UNARY(NAME) \
-  template<typename Scalar, bool IsInteger> struct NAME##_default_impl {            \
-    static inline Scalar run(const Scalar& x) { using std::NAME; return NAME(x); }  \
-  };                                                                                \
-  template<typename Scalar> struct NAME##_default_impl<Scalar, true> {              \
-    static inline Scalar run(const Scalar&) {                                       \
-      EIGEN_STATIC_ASSERT_NON_INTEGER(Scalar)                                       \
-      return Scalar(0);                                                             \
-    }                                                                               \
-  };                                                                                \
-  template<typename Scalar> struct NAME##_impl                                      \
-    : NAME##_default_impl<Scalar, NumTraits<Scalar>::IsInteger>                     \
-  {};                                                                               \
-  template<typename Scalar> struct NAME##_retval { typedef Scalar type; };          \
-  template<typename Scalar>                                                         \
-  inline EIGEN_MATHFUNC_RETVAL(NAME, Scalar) NAME(const Scalar& x) {                \
-    return EIGEN_MATHFUNC_IMPL(NAME, Scalar)::run(x);                               \
+template<typename Scalar, bool IsInteger>
+struct exp_default_impl
+{
+  static inline Scalar run(const Scalar& x)
+  {
+    return std::exp(x);
   }
+};
 
-EIGEN_MATHFUNC_STANDARD_REAL_UNARY(exp)
-EIGEN_MATHFUNC_STANDARD_REAL_UNARY(log)
-EIGEN_MATHFUNC_STANDARD_REAL_UNARY(sin)
-EIGEN_MATHFUNC_STANDARD_REAL_UNARY(cos)
-EIGEN_MATHFUNC_STANDARD_REAL_UNARY(tan)
-EIGEN_MATHFUNC_STANDARD_REAL_UNARY(asin)
-EIGEN_MATHFUNC_STANDARD_REAL_UNARY(acos)
+template<typename Scalar>
+struct exp_default_impl<Scalar, true>
+{
+  static inline Scalar run(const Scalar&)
+  {
+    EIGEN_STATIC_ASSERT_NON_INTEGER(Scalar)
+    return Scalar(0);
+  }
+};
+
+template<typename Scalar>
+struct exp_impl : exp_default_impl<Scalar, NumTraits<Scalar>::IsInteger> {};
+
+template<typename Scalar>
+struct exp_retval
+{
+  typedef Scalar type;
+};
+
+template<typename Scalar>
+inline EIGEN_MATHFUNC_RETVAL(exp, Scalar) exp(const Scalar& x)
+{
+  return EIGEN_MATHFUNC_IMPL(exp, Scalar)::run(x);
+}
+
+/****************************************************************************
+* Implementation of cos                                                  *
+****************************************************************************/
+
+template<typename Scalar, bool IsInteger>
+struct cos_default_impl
+{
+  static inline Scalar run(const Scalar& x)
+  {
+    return std::cos(x);
+  }
+};
+
+template<typename Scalar>
+struct cos_default_impl<Scalar, true>
+{
+  static inline Scalar run(const Scalar&)
+  {
+    EIGEN_STATIC_ASSERT_NON_INTEGER(Scalar)
+    return Scalar(0);
+  }
+};
+
+template<typename Scalar>
+struct cos_impl : cos_default_impl<Scalar, NumTraits<Scalar>::IsInteger> {};
+
+template<typename Scalar>
+struct cos_retval
+{
+  typedef Scalar type;
+};
+
+template<typename Scalar>
+inline EIGEN_MATHFUNC_RETVAL(cos, Scalar) cos(const Scalar& x)
+{
+  return EIGEN_MATHFUNC_IMPL(cos, Scalar)::run(x);
+}
+
+/****************************************************************************
+* Implementation of sin                                                  *
+****************************************************************************/
+
+template<typename Scalar, bool IsInteger>
+struct sin_default_impl
+{
+  static inline Scalar run(const Scalar& x)
+  {
+    return std::sin(x);
+  }
+};
+
+template<typename Scalar>
+struct sin_default_impl<Scalar, true>
+{
+  static inline Scalar run(const Scalar&)
+  {
+    EIGEN_STATIC_ASSERT_NON_INTEGER(Scalar)
+    return Scalar(0);
+  }
+};
+
+template<typename Scalar>
+struct sin_impl : sin_default_impl<Scalar, NumTraits<Scalar>::IsInteger> {};
+
+template<typename Scalar>
+struct sin_retval
+{
+  typedef Scalar type;
+};
+
+template<typename Scalar>
+inline EIGEN_MATHFUNC_RETVAL(sin, Scalar) sin(const Scalar& x)
+{
+  return EIGEN_MATHFUNC_IMPL(sin, Scalar)::run(x);
+}
+
+/****************************************************************************
+* Implementation of tan                                                  *
+****************************************************************************/
+
+template<typename Scalar, bool IsInteger>
+struct tan_default_impl
+{
+  static inline Scalar run(const Scalar& x)
+  {
+    return std::tan(x);
+  }
+};
+
+template<typename Scalar>
+struct tan_default_impl<Scalar, true>
+{
+  static inline Scalar run(const Scalar&)
+  {
+    EIGEN_STATIC_ASSERT_NON_INTEGER(Scalar)
+    return Scalar(0);
+  }
+};
+
+template<typename Scalar>
+struct tan_impl : tan_default_impl<Scalar, NumTraits<Scalar>::IsInteger> {};
+
+template<typename Scalar>
+struct tan_retval
+{
+  typedef Scalar type;
+};
+
+template<typename Scalar>
+inline EIGEN_MATHFUNC_RETVAL(tan, Scalar) tan(const Scalar& x)
+{
+  return EIGEN_MATHFUNC_IMPL(tan, Scalar)::run(x);
+}
+
+/****************************************************************************
+* Implementation of log                                                  *
+****************************************************************************/
+
+template<typename Scalar, bool IsInteger>
+struct log_default_impl
+{
+  static inline Scalar run(const Scalar& x)
+  {
+    return std::log(x);
+  }
+};
+
+template<typename Scalar>
+struct log_default_impl<Scalar, true>
+{
+  static inline Scalar run(const Scalar&)
+  {
+    EIGEN_STATIC_ASSERT_NON_INTEGER(Scalar)
+    return Scalar(0);
+  }
+};
+
+template<typename Scalar>
+struct log_impl : log_default_impl<Scalar, NumTraits<Scalar>::IsInteger> {};
+
+template<typename Scalar>
+struct log_retval
+{
+  typedef Scalar type;
+};
+
+template<typename Scalar>
+inline EIGEN_MATHFUNC_RETVAL(log, Scalar) log(const Scalar& x)
+{
+  return EIGEN_MATHFUNC_IMPL(log, Scalar)::run(x);
+}
 
 /****************************************************************************
 * Implementation of atan2                                                *
@@ -503,8 +653,7 @@ struct atan2_default_impl
   typedef Scalar retval;
   static inline Scalar run(const Scalar& x, const Scalar& y)
   {
-    using std::atan2;
-    return atan2(x, y);
+    return std::atan2(x, y);
   }
 };
 
@@ -543,8 +692,7 @@ struct pow_default_impl
   typedef Scalar retval;
   static inline Scalar run(const Scalar& x, const Scalar& y)
   {
-    using std::pow;
-    return pow(x, y);
+    return std::pow(x, y);
   }
 };
 
@@ -736,8 +884,7 @@ struct scalar_fuzzy_default_impl<Scalar, false, false>
   }
   static inline bool isApprox(const Scalar& x, const Scalar& y, const RealScalar& prec)
   {
-    using std::min;
-    return abs(x - y) <= min(abs(x), abs(y)) * prec;
+    return abs(x - y) <= std::min(abs(x), abs(y)) * prec;
   }
   static inline bool isApproxOrLessThan(const Scalar& x, const Scalar& y, const RealScalar& prec)
   {
@@ -775,8 +922,7 @@ struct scalar_fuzzy_default_impl<Scalar, true, false>
   }
   static inline bool isApprox(const Scalar& x, const Scalar& y, const RealScalar& prec)
   {
-    using std::min;
-    return abs2(x - y) <= min(abs2(x), abs2(y)) * prec * prec;
+    return abs2(x - y) <= std::min(abs2(x), abs2(y)) * prec * prec;
   }
 };
 

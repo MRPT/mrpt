@@ -62,12 +62,12 @@ class GeneralizedSelfAdjointEigenSolver;
   *
   * Call the function compute() to compute the eigenvalues and eigenvectors of
   * a given matrix. Alternatively, you can use the
-  * SelfAdjointEigenSolver(const MatrixType&, int) constructor which computes
+  * SelfAdjointEigenSolver(const MatrixType&, bool) constructor which computes
   * the eigenvalues and eigenvectors at construction time. Once the eigenvalue
   * and eigenvectors are computed, they can be retrieved with the eigenvalues()
   * and eigenvectors() functions.
   *
-  * The documentation for SelfAdjointEigenSolver(const MatrixType&, int)
+  * The documentation for SelfAdjointEigenSolver(const MatrixType&, bool)
   * contains an example of the typical use of this class.
   *
   * To solve the \em generalized eigenvalue problem \f$ Av = \lambda Bv \f$ and
@@ -110,7 +110,8 @@ template<typename _MatrixType> class SelfAdjointEigenSolver
     /** \brief Default constructor for fixed-size matrices.
       *
       * The default constructor is useful in cases in which the user intends to
-      * perform decompositions via compute(). This constructor
+      * perform decompositions via compute(const MatrixType&, bool) or
+      * compute(const MatrixType&, const MatrixType&, bool). This constructor
       * can only be used if \p _MatrixType is a fixed-size matrix; use
       * SelfAdjointEigenSolver(Index) for dynamic-size matrices.
       *
@@ -130,11 +131,12 @@ template<typename _MatrixType> class SelfAdjointEigenSolver
       * eigenvalues and eigenvectors will be computed.
       *
       * This constructor is useful for dynamic-size matrices, when the user
-      * intends to perform decompositions via compute(). The \p size
+      * intends to perform decompositions via compute(const MatrixType&, bool)
+      * or compute(const MatrixType&, const MatrixType&, bool). The \p size
       * parameter is only used as a hint. It is not an error to give a wrong
       * \p size, but it may impair performance.
       *
-      * \sa compute() for an example
+      * \sa compute(const MatrixType&, bool) for an example
       */
     SelfAdjointEigenSolver(Index size)
         : m_eivec(size, size),
@@ -147,16 +149,17 @@ template<typename _MatrixType> class SelfAdjointEigenSolver
       *
       * \param[in]  matrix  Selfadjoint matrix whose eigendecomposition is to
       *    be computed. Only the lower triangular part of the matrix is referenced.
-      * \param[in]  options Can be #ComputeEigenvectors (default) or #EigenvaluesOnly.
+      * \param[in]  options Can be ComputeEigenvectors (default) or EigenvaluesOnly.
       *
-      * This constructor calls compute(const MatrixType&, int) to compute the
+      * This constructor calls compute(const MatrixType&, bool) to compute the
       * eigenvalues of the matrix \p matrix. The eigenvectors are computed if
-      * \p options equals #ComputeEigenvectors.
+      * \p options equals ComputeEigenvectors.
       *
       * Example: \include SelfAdjointEigenSolver_SelfAdjointEigenSolver_MatrixType.cpp
       * Output: \verbinclude SelfAdjointEigenSolver_SelfAdjointEigenSolver_MatrixType.out
       *
-      * \sa compute(const MatrixType&, int)
+      * \sa compute(const MatrixType&, bool),
+      *     SelfAdjointEigenSolver(const MatrixType&, const MatrixType&, bool)
       */
     SelfAdjointEigenSolver(const MatrixType& matrix, int options = ComputeEigenvectors)
       : m_eivec(matrix.rows(), matrix.cols()),
@@ -171,11 +174,11 @@ template<typename _MatrixType> class SelfAdjointEigenSolver
       *
       * \param[in]  matrix  Selfadjoint matrix whose eigendecomposition is to
       *    be computed. Only the lower triangular part of the matrix is referenced.
-      * \param[in]  options Can be #ComputeEigenvectors (default) or #EigenvaluesOnly.
+      * \param[in]  options Can be ComputeEigenvectors (default) or EigenvaluesOnly.
       * \returns    Reference to \c *this
       *
       * This function computes the eigenvalues of \p matrix.  The eigenvalues()
-      * function can be used to retrieve them.  If \p options equals #ComputeEigenvectors,
+      * function can be used to retrieve them.  If \p options equals ComputeEigenvectors,
       * then the eigenvectors are also computed and can be retrieved by
       * calling eigenvectors().
       *
@@ -195,11 +198,11 @@ template<typename _MatrixType> class SelfAdjointEigenSolver
       * Example: \include SelfAdjointEigenSolver_compute_MatrixType.cpp
       * Output: \verbinclude SelfAdjointEigenSolver_compute_MatrixType.out
       *
-      * \sa SelfAdjointEigenSolver(const MatrixType&, int)
+      * \sa SelfAdjointEigenSolver(const MatrixType&, bool)
       */
     SelfAdjointEigenSolver& compute(const MatrixType& matrix, int options = ComputeEigenvectors);
 
-    /** \brief Returns the eigenvectors of given matrix.
+    /** \brief Returns the eigenvectors of given matrix (pencil).
       *
       * \returns  A const reference to the matrix whose columns are the eigenvectors.
       *
@@ -224,15 +227,14 @@ template<typename _MatrixType> class SelfAdjointEigenSolver
       return m_eivec;
     }
 
-    /** \brief Returns the eigenvalues of given matrix.
+    /** \brief Returns the eigenvalues of given matrix (pencil).
       *
       * \returns A const reference to the column vector containing the eigenvalues.
       *
       * \pre The eigenvalues have been computed before.
       *
       * The eigenvalues are repeated according to their algebraic multiplicity,
-      * so there are as many eigenvalues as rows in the matrix. The eigenvalues
-      * are sorted in increasing order.
+      * so there are as many eigenvalues as rows in the matrix.
       *
       * Example: \include SelfAdjointEigenSolver_eigenvalues.cpp
       * Output: \verbinclude SelfAdjointEigenSolver_eigenvalues.out
@@ -400,11 +402,10 @@ SelfAdjointEigenSolver<MatrixType>& SelfAdjointEigenSolver<MatrixType>
 
   // map the matrix coefficients to [-1:1] to avoid over- and underflow.
   RealScalar scale = matrix.cwiseAbs().maxCoeff();
-  if(scale==Scalar(0)) scale = 1;
   mat = matrix / scale;
   m_subdiag.resize(n-1);
   internal::tridiagonalization_inplace(mat, diag, m_subdiag, computeEigenvectors);
-  
+
   Index end = n-1;
   Index start = 0;
   Index iter = 0; // number of iterations we are working on one element
@@ -457,7 +458,7 @@ SelfAdjointEigenSolver<MatrixType>& SelfAdjointEigenSolver<MatrixType>
       }
     }
   }
-  
+
   // scale back the eigen values
   m_eivalues *= scale;
 
@@ -470,17 +471,12 @@ namespace internal {
 template<int StorageOrder,typename RealScalar, typename Scalar, typename Index>
 static void tridiagonal_qr_step(RealScalar* diag, RealScalar* subdiag, Index start, Index end, Scalar* matrixQ, Index n)
 {
-  // NOTE this version avoids over & underflow, however since the matrix is prescaled, overflow cannot occur,
-  // and underflows should be meaningless anyway. So I don't any reason to enable this version, but I keep
-  // it here for reference:
-//   RealScalar td = (diag[end-1] - diag[end])*RealScalar(0.5);
-//   RealScalar e = subdiag[end-1];
-//   RealScalar mu = diag[end] - (e / (td + (td>0 ? 1 : -1))) * (e / hypot(td,e));
   RealScalar td = (diag[end-1] - diag[end])*RealScalar(0.5);
   RealScalar e2 = abs2(subdiag[end-1]);
   RealScalar mu = diag[end] - e2 / (td + (td>0 ? 1 : -1) * sqrt(td*td + e2));
   RealScalar x = diag[start] - mu;
   RealScalar z = subdiag[start];
+
   for (Index k = start; k < end; ++k)
   {
     JacobiRotation<RealScalar> rot;
@@ -493,7 +489,6 @@ static void tridiagonal_qr_step(RealScalar* diag, RealScalar* subdiag, Index sta
     diag[k] = rot.c() * (rot.c() * diag[k] - rot.s() * subdiag[k]) - rot.s() * (rot.c() * subdiag[k] - rot.s() * diag[k+1]);
     diag[k+1] = rot.s() * sdk + rot.c() * dkp1;
     subdiag[k] = rot.c() * sdk - rot.s() * dkp1;
-    
 
     if (k > start)
       subdiag[k - 1] = rot.c() * subdiag[k-1] - rot.s() * z;
@@ -505,7 +500,7 @@ static void tridiagonal_qr_step(RealScalar* diag, RealScalar* subdiag, Index sta
       z = -rot.s() * subdiag[k+1];
       subdiag[k + 1] = rot.c() * subdiag[k+1];
     }
-    
+
     // apply the givens rotation to the unit matrix Q = Q * G
     if (matrixQ)
     {

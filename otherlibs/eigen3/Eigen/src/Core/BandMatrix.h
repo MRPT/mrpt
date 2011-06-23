@@ -180,10 +180,10 @@ class BandMatrixBase : public EigenBase<Derived>
   * \param Cols Number of columns, or \b Dynamic
   * \param Supers Number of super diagonal
   * \param Subs Number of sub diagonal
-  * \param _Options A combination of either \b #RowMajor or \b #ColMajor, and of \b #SelfAdjoint
-  *                 The former controls \ref TopicStorageOrders "storage order", and defaults to
-  *                 column-major. The latter controls whether the matrix represents a selfadjoint 
-  *                 matrix in which case either Supers of Subs have to be null.
+  * \param _Options A combination of either \b RowMajor or \b ColMajor, and of \b SelfAdjoint
+  *                 The former controls storage order, and defaults to column-major. The latter controls
+  *                 whether the matrix represent a selfadjoint matrix in which case either Supers of Subs
+  *                 have to be null.
   *
   * \sa class TridiagonalMatrix
   */

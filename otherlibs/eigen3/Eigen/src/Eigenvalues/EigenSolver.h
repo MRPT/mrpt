@@ -228,7 +228,6 @@ template<typename _MatrixType> class EigenSolver
       * block-diagonal. The blocks on the diagonal are either 1-by-1 or 2-by-2
       * blocks of the form
       * \f$ \begin{bmatrix} u & v \\ -v & u \end{bmatrix} \f$.
-      * These blocks are not sorted in any particular order.
       * The matrix \f$ D \f$ and the matrix \f$ V \f$ returned by
       * pseudoEigenvectors() satisfy \f$ AV = VD \f$.
       *
@@ -245,8 +244,7 @@ template<typename _MatrixType> class EigenSolver
       * compute(const MatrixType&, bool) has been called before.
       *
       * The eigenvalues are repeated according to their algebraic multiplicity,
-      * so there are as many eigenvalues as rows in the matrix. The eigenvalues 
-      * are not sorted in any particular order.
+      * so there are as many eigenvalues as rows in the matrix.
       *
       * Example: \include EigenSolver_eigenvalues.cpp
       * Output: \verbinclude EigenSolver_eigenvalues.out
@@ -343,7 +341,6 @@ typename EigenSolver<MatrixType>::EigenvectorsType EigenSolver<MatrixType>::eige
     {
       // we have a real eigen value
       matV.col(j) = m_eivec.col(j).template cast<ComplexScalar>();
-      matV.col(j).normalize();
     }
     else
     {
@@ -450,7 +447,7 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
     Scalar q = m_eivalues.coeff(n).imag();
 
     // Scalar vector
-    if (q == Scalar(0))
+    if (q == 0)
     {
       Scalar lastr=0, lastw=0;
       Index l = n;
@@ -491,12 +488,12 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
 
           // Overflow control
           Scalar t = internal::abs(m_matT.coeff(i,n));
-          if ((eps * t) * t > Scalar(1))
+          if ((eps * t) * t > 1)
             m_matT.col(n).tail(size-i) /= t;
         }
       }
     }
-    else if (q < Scalar(0) && n > 0) // Complex vector
+    else if (q < 0) // Complex vector
     {
       Scalar lastra=0, lastsa=0, lastw=0;
       Index l = n-1;
@@ -530,7 +527,7 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
         else
         {
           l = i;
-          if (m_eivalues.coeff(i).imag() == RealScalar(0))
+          if (m_eivalues.coeff(i).imag() == 0)
           {
             std::complex<Scalar> cc = cdiv(-ra,-sa,w,q);
             m_matT.coeffRef(i,n-1) = internal::real(cc);
@@ -563,17 +560,12 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
           }
 
           // Overflow control
-          using std::max;
-          Scalar t = max(internal::abs(m_matT.coeff(i,n-1)),internal::abs(m_matT.coeff(i,n)));
-          if ((eps * t) * t > Scalar(1))
+          Scalar t = std::max(internal::abs(m_matT.coeff(i,n-1)),internal::abs(m_matT.coeff(i,n)));
+          if ((eps * t) * t > 1)
             m_matT.block(i, n-1, size-i, 2) /= t;
 
         }
       }
-    }
-    else
-    {
-      eigen_assert("Internal bug in EigenSolver"); // this should not happen
     }
   }
 

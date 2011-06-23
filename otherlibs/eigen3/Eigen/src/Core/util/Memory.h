@@ -167,36 +167,14 @@ inline void* generic_aligned_realloc(void* ptr, size_t size, size_t old_size)
 *** Implementation of portable aligned versions of malloc/free/realloc     ***
 *****************************************************************************/
 
-#ifdef EIGEN_NO_MALLOC
-inline void check_that_malloc_is_allowed()
-{
-  eigen_assert(false && "heap allocation is forbidden (EIGEN_NO_MALLOC is defined)");
-}
-#elif defined EIGEN_RUNTIME_NO_MALLOC
-inline bool is_malloc_allowed_impl(bool update, bool new_value = false)
-{
-  static bool value = true;
-  if (update == 1)
-    value = new_value;
-  return value;
-}
-inline bool is_malloc_allowed() { return is_malloc_allowed_impl(false); }
-inline bool set_is_malloc_allowed(bool new_value) { return is_malloc_allowed_impl(true, new_value); }
-inline void check_that_malloc_is_allowed()
-{
-  eigen_assert(is_malloc_allowed() && "heap allocation is forbidden (EIGEN_RUNTIME_NO_MALLOC is defined and g_is_malloc_allowed is false)");
-}
-#else 
-inline void check_that_malloc_is_allowed()
-{}
-#endif
-
 /** \internal Allocates \a size bytes. The returned pointer is guaranteed to have 16 bytes alignment.
   * On allocation error, the returned pointer is null, and if exceptions are enabled then a std::bad_alloc is thrown.
   */
 inline void* aligned_malloc(size_t size)
 {
-  check_that_malloc_is_allowed();
+  #ifdef EIGEN_NO_MALLOC
+    eigen_assert(false && "heap allocation is forbidden (EIGEN_NO_MALLOC is defined)");
+  #endif
 
   void *result;
   #if !EIGEN_ALIGN
@@ -290,7 +268,9 @@ template<bool Align> inline void* conditional_aligned_malloc(size_t size)
 
 template<> inline void* conditional_aligned_malloc<false>(size_t size)
 {
-  check_that_malloc_is_allowed();
+  #ifdef EIGEN_NO_MALLOC
+    eigen_assert(false && "heap allocation is forbidden (EIGEN_NO_MALLOC is defined)");
+  #endif
 
   void *result = std::malloc(size);
   #ifdef EIGEN_EXCEPTIONS
@@ -468,87 +448,36 @@ inline static Index first_aligned(const Scalar* array, Index size)
 *** Implementation of runtime stack allocation (falling back to malloc)    ***
 *****************************************************************************/
 
-// you can overwrite Eigen's default behavior regarding alloca by defining EIGEN_ALLOCA
-// to the appropriate stack allocation function
-#ifndef EIGEN_ALLOCA
-  #if (defined __linux__)
-    #define EIGEN_ALLOCA alloca
-  #elif defined(_MSC_VER)
-    #define EIGEN_ALLOCA _alloca
-  #endif
-#endif
-
-namespace internal {
-
-// This helper class construct the allocated memory, and takes care of destructing and freeing the handled data
-// at destruction time. In practice this helper class is mainly useful to avoid memory leak in case of exceptions.
-template<typename T> class aligned_stack_memory_handler
-{
-  public:
-    /* Creates a stack_memory_handler responsible for the buffer \a ptr of size \a size.
-     * Note that \a ptr can be 0 regardless of the other parameters.
-     * This constructor takes care of constructing/initializing the elements of the buffer if required by the scalar type T (see NumTraits<T>::RequireInitialization).
-     * In this case, the buffer elements will also be destructed when this handler will be destructed.
-     * Finally, if \a dealloc is true, then the pointer \a ptr is freed.
-     **/
-    aligned_stack_memory_handler(T* ptr, size_t size, bool dealloc)
-      : m_ptr(ptr), m_size(size), m_deallocate(dealloc)
-    {
-      if(NumTraits<T>::RequireInitialization)
-        Eigen::internal::construct_elements_of_array(m_ptr, size);
-    }
-    ~aligned_stack_memory_handler()
-    {
-      if(NumTraits<T>::RequireInitialization)
-        Eigen::internal::destruct_elements_of_array<T>(m_ptr, m_size);
-      if(m_deallocate)
-        Eigen::internal::aligned_free(m_ptr);
-    }
-  protected:
-    T* m_ptr;
-    size_t m_size;
-    bool m_deallocate;
-};
-
-}
-
 /** \internal
-  * Declares, allocates and construct an aligned buffer named NAME of SIZE elements of type TYPE on the stack
-  * if SIZE is smaller than EIGEN_STACK_ALLOCATION_LIMIT, and if stack allocation is supported by the platform
-  * (currently, this is Linux and Visual Studio only). Otherwise the memory is allocated on the heap.
-  * The allocated buffer is automatically deleted when exiting the scope of this declaration.
-  * If BUFFER is non nul, then the declared variable is simply an alias for BUFFER, and no allocation/deletion occurs.
-  * Here is an example:
+  * Allocates an aligned buffer of SIZE bytes on the stack if SIZE is smaller than
+  * EIGEN_STACK_ALLOCATION_LIMIT, and if stack allocation is supported by the platform
+  * (currently, this is Linux only). Otherwise the memory is allocated on the heap.
+  * Data allocated with ei_aligned_stack_alloc \b must be freed by calling
+  * ei_aligned_stack_free(PTR,SIZE).
   * \code
-  * {
-  *   ei_declare_aligned_stack_constructed_variable(float,data,size,0);
-  *   // use data[0] to data[size-1]
-  * }
+  * float * data = ei_aligned_stack_alloc(float,array.size());
+  * // ...
+  * ei_aligned_stack_free(data,float,array.size());
   * \endcode
-  * The underlying stack allocation function can controlled with the EIGEN_ALLOCA preprocessor token.
   */
-#ifdef EIGEN_ALLOCA
-
-  #ifdef __arm__
-    #define EIGEN_ALIGNED_ALLOCA(SIZE) reinterpret_cast<void*>((reinterpret_cast<size_t>(EIGEN_ALLOCA(SIZE+16)) & ~(size_t(15))) + 16)
-  #else
-    #define EIGEN_ALIGNED_ALLOCA EIGEN_ALLOCA
-  #endif
-
-  #define ei_declare_aligned_stack_constructed_variable(TYPE,NAME,SIZE,BUFFER) \
-    TYPE* NAME = (BUFFER)!=0 ? (BUFFER) \
-               : reinterpret_cast<TYPE*>( \
-                      (sizeof(TYPE)*SIZE<=EIGEN_STACK_ALLOCATION_LIMIT) ? EIGEN_ALIGNED_ALLOCA(sizeof(TYPE)*SIZE) \
-                    : Eigen::internal::aligned_malloc(sizeof(TYPE)*SIZE) );  \
-    Eigen::internal::aligned_stack_memory_handler<TYPE> EIGEN_CAT(NAME,_stack_memory_destructor)((BUFFER)==0 ? NAME : 0,SIZE,sizeof(TYPE)*SIZE>EIGEN_STACK_ALLOCATION_LIMIT)
-
+#if (defined __linux__)
+  #define ei_aligned_stack_alloc(SIZE) (SIZE<=EIGEN_STACK_ALLOCATION_LIMIT) \
+                                    ? alloca(SIZE) \
+                                    : Eigen::internal::aligned_malloc(SIZE)
+  #define ei_aligned_stack_free(PTR,SIZE) if(SIZE>EIGEN_STACK_ALLOCATION_LIMIT) Eigen::internal::aligned_free(PTR)
+#elif defined(_MSC_VER)
+  #define ei_aligned_stack_alloc(SIZE) (SIZE<=EIGEN_STACK_ALLOCATION_LIMIT) \
+                                    ? _alloca(SIZE) \
+                                    : Eigen::internal::aligned_malloc(SIZE)
+  #define ei_aligned_stack_free(PTR,SIZE) if(SIZE>EIGEN_STACK_ALLOCATION_LIMIT) Eigen::internal::aligned_free(PTR)
 #else
-
-  #define ei_declare_aligned_stack_constructed_variable(TYPE,NAME,SIZE,BUFFER) \
-    TYPE* NAME = (BUFFER)!=0 ? BUFFER : reinterpret_cast<TYPE*>(Eigen::internal::aligned_malloc(sizeof(TYPE)*SIZE));    \
-    Eigen::internal::aligned_stack_memory_handler<TYPE> EIGEN_CAT(NAME,_stack_memory_destructor)((BUFFER)==0 ? NAME : 0,SIZE,true)
-    
+  #define ei_aligned_stack_alloc(SIZE) Eigen::internal::aligned_malloc(SIZE)
+  #define ei_aligned_stack_free(PTR,SIZE) Eigen::internal::aligned_free(PTR)
 #endif
+
+#define ei_aligned_stack_new(TYPE,SIZE) Eigen::internal::construct_elements_of_array(reinterpret_cast<TYPE*>(ei_aligned_stack_alloc(sizeof(TYPE)*SIZE)), SIZE)
+#define ei_aligned_stack_delete(TYPE,PTR,SIZE) do {Eigen::internal::destruct_elements_of_array<TYPE>(PTR, SIZE); \
+                                                   ei_aligned_stack_free(PTR,sizeof(TYPE)*SIZE);} while(0)
 
 
 /*****************************************************************************

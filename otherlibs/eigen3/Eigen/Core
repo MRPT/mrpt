@@ -26,8 +26,8 @@
 #ifndef EIGEN_CORE_H
 #define EIGEN_CORE_H
 
-// first thing Eigen does: stop the compiler from committing suicide
-#include "src/Core/util/DisableStupidWarnings.h"
+// first thing Eigen does: prevent MSVC from committing suicide
+#include "src/Core/util/DisableMSVCWarnings.h"
 
 // then include this file where all our macros are defined. It's really important to do it first because
 // it's where we do all the alignment settings (platform detection and honoring the user's will if he
@@ -51,16 +51,16 @@
       #define EIGEN_SSE2_ON_MSVC_2008_OR_LATER
     #endif
   #endif
-#else
-  // Remember that usage of defined() in a #define is undefined by the standard
-  #if (defined __SSE2__) && ( (!defined __GNUC__) || EIGEN_GNUC_AT_LEAST(4,2) )
-    #define EIGEN_SSE2_ON_NON_MSVC_BUT_NOT_OLD_GCC
-  #endif
+#endif
+
+// Remember that usage of defined() in a #define is undefined by the standard
+#if (defined __SSE2__) && ( (!defined __GNUC__) || EIGEN_GNUC_AT_LEAST(4,2) )
+  #define EIGEN_SSE2_BUT_NOT_OLD_GCC
 #endif
 
 #ifndef EIGEN_DONT_VECTORIZE
 
-  #if defined (EIGEN_SSE2_ON_NON_MSVC_BUT_NOT_OLD_GCC) || defined(EIGEN_SSE2_ON_MSVC_2008_OR_LATER)
+  #if defined (EIGEN_SSE2_BUT_NOT_OLD_GCC) || defined(EIGEN_SSE2_ON_MSVC_2008_OR_LATER)
 
     // Defines symbols for compile-time detection of which instructions are
     // used.
@@ -143,7 +143,6 @@
 #ifdef EIGEN_HAS_ERRNO
 #include <cerrno>
 #endif
-#include <cstddef>
 #include <cstdlib>
 #include <cmath>
 #include <complex>
@@ -159,12 +158,28 @@
 
 // for outputting debug info
 #ifdef EIGEN_DEBUG_ASSIGN
-#include <iostream>
+#include<iostream>
 #endif
 
 // required for __cpuid, needs to be included after cmath
 #if defined(_MSC_VER) && (defined(_M_IX86)||defined(_M_X64))
   #include <intrin.h>
+  // When available, intrin.h pulls in all SSE headers which allows us
+  // to check which SSE level is supported on MSVC systems
+  #ifndef EIGEN_DONT_VECTORIZE
+    #ifdef _INCLUDED_PMM
+      #define EIGEN_VECTORIZE_SSE3
+    #endif
+    #ifdef _INCLUDED_TMM
+      #define EIGEN_VECTORIZE_SSSE3
+    #endif
+    #ifdef _INCLUDED_SMM
+      #define EIGEN_VECTORIZE_SSE4_1
+    #endif
+    #ifdef _INCLUDED_NMM
+      #define EIGEN_VECTORIZE_SSE4_2
+    #endif
+  #endif
 #endif
 
 #if (defined(_CPPUNWIND) || defined(__EXCEPTIONS)) && !defined(EIGEN_NO_EXCEPTIONS)
@@ -185,7 +200,6 @@
 // defined in bits/termios.h
 #undef B0
 
-/** \brief Namespace containing all symbols from the %Eigen library. */
 namespace Eigen {
 
 inline static const char *SimdInstructionSetsInUse(void) {
@@ -241,8 +255,6 @@ inline static const char *SimdInstructionSetsInUse(void) {
 // we use size_t frequently and we'll never remember to prepend it with std:: everytime just to
 // ensure QNX/QCC support
 using std::size_t;
-// gcc 4.6.0 wants std:: for ptrdiff_t 
-using std::ptrdiff_t;
 
 /** \defgroup Core_Module Core module
   * This is the main module of Eigen providing dense matrix and vector support
@@ -358,7 +370,7 @@ using std::ptrdiff_t;
 
 #include "src/Core/GlobalFunctions.h"
 
-#include "src/Core/util/ReenableStupidWarnings.h"
+#include "src/Core/util/EnableMSVCWarnings.h"
 
 #ifdef EIGEN2_SUPPORT
 #include "Eigen2Support"

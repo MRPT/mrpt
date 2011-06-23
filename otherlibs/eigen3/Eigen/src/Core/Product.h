@@ -375,23 +375,8 @@ struct gemv_static_vector_if<Scalar,Size,Dynamic,true>
 template<typename Scalar,int Size,int MaxSize>
 struct gemv_static_vector_if<Scalar,Size,MaxSize,true>
 {
-  #if EIGEN_ALIGN_STATICALLY
   internal::plain_array<Scalar,EIGEN_SIZE_MIN_PREFER_FIXED(Size,MaxSize),0> m_data;
   EIGEN_STRONG_INLINE Scalar* data() { return m_data.array; }
-  #else
-  // Some architectures cannot align on the stack,
-  // => let's manually enforce alignment by allocating more data and return the address of the first aligned element.
-  enum {
-    ForceAlignment  = internal::packet_traits<Scalar>::Vectorizable,
-    PacketSize      = internal::packet_traits<Scalar>::size
-  };
-  internal::plain_array<Scalar,EIGEN_SIZE_MIN_PREFER_FIXED(Size,MaxSize)+(ForceAlignment?PacketSize:0),0> m_data;
-  EIGEN_STRONG_INLINE Scalar* data() {
-    return ForceAlignment
-            ? reinterpret_cast<Scalar*>((reinterpret_cast<size_t>(m_data.array) & ~(size_t(15))) + 16)
-            : m_data.array;
-  }
-  #endif
 };
 
 template<> struct gemv_selector<OnTheRight,ColMajor,true>
@@ -426,21 +411,28 @@ template<> struct gemv_selector<OnTheRight,ColMajor,true>
 
     gemv_static_vector_if<ResScalar,Dest::SizeAtCompileTime,Dest::MaxSizeAtCompileTime,MightCannotUseDest> static_dest;
 
-    // this is written like this (i.e., with a ?:) to workaround an ICE with ICC 12
-    bool alphaIsCompatible = (!ComplexByReal) ? true : (imag(actualAlpha)==RealScalar(0));
+    bool alphaIsCompatible = (!ComplexByReal) || (imag(actualAlpha)==RealScalar(0));
     bool evalToDest = EvalToDestAtCompileTime && alphaIsCompatible;
     
     RhsScalar compatibleAlpha = get_factor<ResScalar,RhsScalar>::run(actualAlpha);
 
-    ei_declare_aligned_stack_constructed_variable(ResScalar,actualDestPtr,dest.size(),
-                                                  evalToDest ? dest.data() : static_dest.data());
-    
-    if(!evalToDest)
+    ResScalar* actualDestPtr;
+    bool freeDestPtr = false;
+    if (evalToDest)
+    {
+      actualDestPtr = &dest.coeffRef(0);
+    }
+    else
     {
       #ifdef EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       int size = dest.size();
       EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       #endif
+      if((actualDestPtr = static_dest.data())==0)
+      {
+        freeDestPtr = true;
+        actualDestPtr = ei_aligned_stack_new(ResScalar,dest.size());
+      }
       if(!alphaIsCompatible)
       {
         MappedDest(actualDestPtr, dest.size()).setZero();
@@ -464,6 +456,7 @@ template<> struct gemv_selector<OnTheRight,ColMajor,true>
         dest += actualAlpha * MappedDest(actualDestPtr, dest.size());
       else
         dest = MappedDest(actualDestPtr, dest.size());
+      if(freeDestPtr) ei_aligned_stack_delete(ResScalar, actualDestPtr, dest.size());
     }
   }
 };
@@ -497,15 +490,23 @@ template<> struct gemv_selector<OnTheRight,RowMajor,true>
 
     gemv_static_vector_if<RhsScalar,_ActualRhsType::SizeAtCompileTime,_ActualRhsType::MaxSizeAtCompileTime,!DirectlyUseRhs> static_rhs;
 
-    ei_declare_aligned_stack_constructed_variable(RhsScalar,actualRhsPtr,actualRhs.size(),
-        DirectlyUseRhs ? const_cast<RhsScalar*>(actualRhs.data()) : static_rhs.data());
-
-    if(!DirectlyUseRhs)
+    RhsScalar* actualRhsPtr;
+    bool freeRhsPtr = false;
+    if (DirectlyUseRhs)
+    {
+      actualRhsPtr = const_cast<RhsScalar*>(&actualRhs.coeffRef(0));
+    }
+    else
     {
       #ifdef EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       int size = actualRhs.size();
       EIGEN_DENSE_STORAGE_CTOR_PLUGIN
       #endif
+      if((actualRhsPtr = static_rhs.data())==0)
+      {
+        freeRhsPtr = true;
+        actualRhsPtr = ei_aligned_stack_new(RhsScalar, actualRhs.size());
+      }
       Map<typename _ActualRhsType::PlainObject>(actualRhsPtr, actualRhs.size()) = actualRhs;
     }
 
@@ -516,6 +517,8 @@ template<> struct gemv_selector<OnTheRight,RowMajor,true>
         actualRhsPtr, 1,
         &dest.coeffRef(0,0), dest.innerStride(),
         actualAlpha);
+
+    if((!DirectlyUseRhs) && freeRhsPtr) ei_aligned_stack_delete(RhsScalar, actualRhsPtr, prod.rhs().size());
   }
 };
 

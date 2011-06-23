@@ -134,12 +134,12 @@ pdiv(const Packet& a,
 /** \internal \returns the min of \a a and \a b  (coeff-wise) */
 template<typename Packet> inline Packet
 pmin(const Packet& a,
-        const Packet& b) { using std::min; return min(a, b); }
+        const Packet& b) { return std::min(a, b); }
 
 /** \internal \returns the max of \a a and \a b  (coeff-wise) */
 template<typename Packet> inline Packet
 pmax(const Packet& a,
-        const Packet& b) { using std::max; return max(a, b); }
+        const Packet& b) { return std::max(a, b); }
 
 /** \internal \returns the absolute value of \a a */
 template<typename Packet> inline Packet
@@ -225,34 +225,21 @@ template<typename Packet> inline typename unpacket_traits<Packet>::type predux_m
 template<typename Packet> inline Packet preverse(const Packet& a)
 { return a; }
 
-
-/** \internal \returns \a a with real and imaginary part flipped (for complex type only) */
-template<typename Packet> inline Packet pcplxflip(const Packet& a)
-{ return Packet(imag(a),real(a)); }
-
 /**************************
 * Special math functions
 ***************************/
 
-/** \internal \returns the sine of \a a (coeff-wise) */
+/** \internal \returns the sin of \a a (coeff-wise) */
 template<typename Packet> EIGEN_DECLARE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
 Packet psin(const Packet& a) { return sin(a); }
 
-/** \internal \returns the cosine of \a a (coeff-wise) */
+/** \internal \returns the cos of \a a (coeff-wise) */
 template<typename Packet> EIGEN_DECLARE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
 Packet pcos(const Packet& a) { return cos(a); }
 
 /** \internal \returns the tan of \a a (coeff-wise) */
 template<typename Packet> EIGEN_DECLARE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
 Packet ptan(const Packet& a) { return tan(a); }
-
-/** \internal \returns the arc sine of \a a (coeff-wise) */
-template<typename Packet> EIGEN_DECLARE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
-Packet pasin(const Packet& a) { return asin(a); }
-
-/** \internal \returns the arc cosine of \a a (coeff-wise) */
-template<typename Packet> EIGEN_DECLARE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
-Packet pacos(const Packet& a) { return acos(a); }
 
 /** \internal \returns the exp of \a a (coeff-wise) */
 template<typename Packet> EIGEN_DECLARE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
@@ -270,14 +257,6 @@ Packet psqrt(const Packet& a) { return sqrt(a); }
 * The following functions might not have to be overwritten for vectorized types
 ***************************************************************************/
 
-/** \internal copy a packet with constant coeficient \a a (e.g., [a,a,a,a]) to \a *to. \a to must be 16 bytes aligned */
-// NOTE: this function must really be templated on the packet type (think about different packet types for the same scalar type)
-template<typename Packet>
-inline void pstore1(typename unpacket_traits<Packet>::type* to, const typename unpacket_traits<Packet>::type& a)
-{
-  pstore(to, pset1<Packet>(a));
-}
-
 /** \internal \returns a * b + c (coeff-wise) */
 template<typename Packet> inline Packet
 pmadd(const Packet&  a,
@@ -286,7 +265,7 @@ pmadd(const Packet&  a,
 { return padd(pmul(a, b),c); }
 
 /** \internal \returns a packet version of \a *from.
-  * If LoadMode equals #Aligned, \a from must be 16 bytes aligned */
+  * \If LoadMode equals Aligned, \a from must be 16 bytes aligned */
 template<typename Packet, int LoadMode>
 inline Packet ploadt(const typename unpacket_traits<Packet>::type* from)
 {
@@ -297,7 +276,7 @@ inline Packet ploadt(const typename unpacket_traits<Packet>::type* from)
 }
 
 /** \internal copy the packet \a from to \a *to.
-  * If StoreMode equals #Aligned, \a to must be 16 bytes aligned */
+  * If StoreMode equals Aligned, \a to must be 16 bytes aligned */
 template<typename Scalar, typename Packet, int LoadMode>
 inline void pstoret(Scalar* to, const Packet& from)
 {

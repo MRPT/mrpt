@@ -5,12 +5,9 @@
 #error LeastSquares is only available in Eigen2 support mode (define EIGEN2_SUPPORT)
 #endif
 
-// exclude from normal eigen3-only documentation
-#ifdef EIGEN2_SUPPORT
-
 #include "Core"
 
-#include "src/Core/util/DisableStupidWarnings.h"
+#include "src/Core/util/DisableMSVCWarnings.h"
 
 #include "Eigenvalues"
 #include "Geometry"
@@ -29,8 +26,6 @@ namespace Eigen {
 
 } // namespace Eigen
 
-#include "src/Core/util/ReenableStupidWarnings.h"
-
-#endif // EIGEN2_SUPPORT
+#include "src/Core/util/EnableMSVCWarnings.h"
 
 #endif // EIGEN_REGRESSION_MODULE_H

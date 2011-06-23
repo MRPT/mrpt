@@ -51,7 +51,7 @@
   * \include Map_general_stride.cpp
   * Output: \verbinclude Map_general_stride.out
   *
-  * \sa class InnerStride, class OuterStride, \ref TopicStorageOrders
+  * \sa class InnerStride, class OuterStride
   */
 template<int _OuterStrideAtCompileTime, int _InnerStrideAtCompileTime>
 class Stride

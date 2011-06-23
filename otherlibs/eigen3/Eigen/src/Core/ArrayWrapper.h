@@ -53,12 +53,6 @@ class ArrayWrapper : public ArrayBase<ArrayWrapper<ExpressionType> >
     EIGEN_DENSE_PUBLIC_INTERFACE(ArrayWrapper)
     EIGEN_INHERIT_ASSIGNMENT_OPERATORS(ArrayWrapper)
 
-    typedef typename internal::conditional<
-                       internal::is_lvalue<ExpressionType>::value,
-                       Scalar,
-                       const Scalar
-                     >::type ScalarWithConstIfNotLvalue;
-
     typedef typename internal::nested<ExpressionType>::type NestedExpressionType;
 
     inline ArrayWrapper(const ExpressionType& matrix) : m_expression(matrix) {}
@@ -67,9 +61,6 @@ class ArrayWrapper : public ArrayBase<ArrayWrapper<ExpressionType> >
     inline Index cols() const { return m_expression.cols(); }
     inline Index outerStride() const { return m_expression.outerStride(); }
     inline Index innerStride() const { return m_expression.innerStride(); }
-
-    inline ScalarWithConstIfNotLvalue* data() { return m_expression.data(); }
-    inline const Scalar* data() const { return m_expression.data(); }
 
     inline const CoeffReturnType coeff(Index row, Index col) const
     {
@@ -160,12 +151,6 @@ class MatrixWrapper : public MatrixBase<MatrixWrapper<ExpressionType> >
     EIGEN_DENSE_PUBLIC_INTERFACE(MatrixWrapper)
     EIGEN_INHERIT_ASSIGNMENT_OPERATORS(MatrixWrapper)
 
-    typedef typename internal::conditional<
-                       internal::is_lvalue<ExpressionType>::value,
-                       Scalar,
-                       const Scalar
-                     >::type ScalarWithConstIfNotLvalue;
-
     typedef typename internal::nested<ExpressionType>::type NestedExpressionType;
 
     inline MatrixWrapper(const ExpressionType& matrix) : m_expression(matrix) {}
@@ -174,9 +159,6 @@ class MatrixWrapper : public MatrixBase<MatrixWrapper<ExpressionType> >
     inline Index cols() const { return m_expression.cols(); }
     inline Index outerStride() const { return m_expression.outerStride(); }
     inline Index innerStride() const { return m_expression.innerStride(); }
-
-    inline ScalarWithConstIfNotLvalue* data() { return m_expression.data(); }
-    inline const Scalar* data() const { return m_expression.data(); }
 
     inline const CoeffReturnType coeff(Index row, Index col) const
     {

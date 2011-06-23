@@ -29,12 +29,10 @@
   *
   * \brief a sparse vector class
   *
-  * \tparam _Scalar the scalar type, i.e. the type of the coefficients
+  * \param _Scalar the scalar type, i.e. the type of the coefficients
   *
   * See http://www.netlib.org/linalg/html_templates/node91.html for details on the storage scheme.
   *
-  * This class can be extended with the help of the plugin mechanism described on the page
-  * \ref TopicCustomizingEigen by defining the preprocessor symbol \c EIGEN_SPARSEVECTOR_PLUGIN.
   */
 
 namespace internal {

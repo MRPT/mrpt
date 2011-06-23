@@ -31,10 +31,10 @@
   *
   * \brief A matrix or vector expression mapping an existing array of data.
   *
-  * \tparam PlainObjectType the equivalent matrix type of the mapped data
-  * \tparam MapOptions specifies whether the pointer is \c #Aligned, or \c #Unaligned.
-  *                The default is \c #Unaligned.
-  * \tparam StrideType optionnally specifies strides. By default, Map assumes the memory layout
+  * \param PlainObjectType the equivalent matrix type of the mapped data
+  * \param MapOptions specifies whether the pointer is \c Aligned, or \c Unaligned.
+  *                The default is \c Unaligned.
+  * \param StrideType optionnally specifies strides. By default, Map assumes the memory layout
   *                   of an ordinary, contiguous array. This can be overridden by specifying strides.
   *                   The type passed here must be a specialization of the Stride template, see examples below.
   *
@@ -44,7 +44,7 @@
   * data is laid out contiguously in memory. You can however override this by explicitly specifying
   * inner and outer strides.
   *
-  * Here's an example of simply mapping a contiguous array as a \ref TopicStorageOrders "column-major" matrix:
+  * Here's an example of simply mapping a contiguous array as a column-major matrix:
   * \include Map_simple.cpp
   * Output: \verbinclude Map_simple.out
   *
@@ -74,7 +74,7 @@
   *
   * This class is the return type of Matrix::Map() but can also be used directly.
   *
-  * \sa Matrix::Map(), \ref TopicStorageOrders
+  * \sa Matrix::Map()
   */
 
 namespace internal {
@@ -95,7 +95,7 @@ struct traits<Map<PlainObjectType, MapOptions, StrideType> >
     HasNoInnerStride = InnerStrideAtCompileTime == 1,
     HasNoOuterStride = StrideType::OuterStrideAtCompileTime == 0,
     HasNoStride = HasNoInnerStride && HasNoOuterStride,
-    IsAligned = bool(EIGEN_ALIGN) && ((int(MapOptions)&Aligned)==Aligned),
+    IsAligned = int(int(MapOptions)&Aligned)==Aligned,
     IsDynamicSize = PlainObjectType::SizeAtCompileTime==Dynamic,
     KeepsPacketAccess = bool(HasNoInnerStride)
                         && ( bool(IsDynamicSize)
@@ -192,14 +192,14 @@ template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int
 inline Array<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>
   ::Array(const Scalar *data)
 {
-  this->_set_noalias(Eigen::Map<const Array>(data));
+  _set_noalias(Eigen::Map<const Array>(data));
 }
 
 template<typename _Scalar, int _Rows, int _Cols, int _Options, int _MaxRows, int _MaxCols>
 inline Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>
   ::Matrix(const Scalar *data)
 {
-  this->_set_noalias(Eigen::Map<const Matrix>(data));
+  _set_noalias(Eigen::Map<const Matrix>(data));
 }
 
 #endif // EIGEN_MAP_H

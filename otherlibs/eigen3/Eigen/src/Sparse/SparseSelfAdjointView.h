@@ -31,13 +31,13 @@
   * \brief Pseudo expression to manipulate a triangular sparse matrix as a selfadjoint matrix.
   *
   * \param MatrixType the type of the dense matrix storing the coefficients
-  * \param UpLo can be either \c #Lower or \c #Upper
+  * \param UpLo can be either \c Lower or \c Upper
   *
   * This class is an expression of a sefladjoint matrix from a triangular part of a matrix
   * with given dense storage of the coefficients. It is the return type of MatrixBase::selfadjointView()
   * and most of the time this is the only way that it is used.
   *
-  * \sa SparseMatrixBase::selfadjointView()
+  * \sa SparseMatrixBase::selfAdjointView()
   */
 template<typename Lhs, typename Rhs, int UpLo>
 class SparseSelfAdjointTimeDenseProduct;

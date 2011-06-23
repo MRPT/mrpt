@@ -271,13 +271,13 @@ void real_2x2_jacobi_svd(const MatrixType& matrix, Index p, Index q,
   RealScalar d = m.coeff(1,0) - m.coeff(0,1);
   if(t == RealScalar(0))
   {
-    rot1.c() = RealScalar(0);
-    rot1.s() = d > RealScalar(0) ? RealScalar(1) : RealScalar(-1);
+    rot1.c() = 0;
+    rot1.s() = d > 0 ? 1 : -1;
   }
   else
   {
     RealScalar u = d / t;
-    rot1.c() = RealScalar(1) / sqrt(RealScalar(1) + abs2(u));
+    rot1.c() = RealScalar(1) / sqrt(1 + abs2(u));
     rot1.s() = rot1.c() * u;
   }
   m.applyOnTheLeft(0,1,rot1);
@@ -292,7 +292,7 @@ void real_2x2_jacobi_svd(const MatrixType& matrix, Index p, Index q,
   *
   * \class JacobiSVD
   *
-  * \brief Two-sided Jacobi SVD decomposition of a rectangular matrix
+  * \brief Two-sided Jacobi SVD decomposition of a square matrix
   *
   * \param MatrixType the type of the matrix of which we are computing the SVD decomposition
   * \param QRPreconditioner this optional parameter allows to specify the type of QR decomposition that will be used internally
@@ -376,12 +376,7 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
       * The default constructor is useful in cases in which the user intends to
       * perform decompositions via JacobiSVD::compute(const MatrixType&).
       */
-    JacobiSVD()
-      : m_isInitialized(false),
-        m_isAllocated(false),
-        m_computationOptions(0),
-        m_rows(-1), m_cols(-1)
-    {}
+    JacobiSVD() : m_isInitialized(false) {}
 
 
     /** \brief Default Constructor with memory preallocation
@@ -391,10 +386,6 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
       * \sa JacobiSVD()
       */
     JacobiSVD(Index rows, Index cols, unsigned int computationOptions = 0)
-      : m_isInitialized(false),
-        m_isAllocated(false),
-        m_computationOptions(0),
-        m_rows(-1), m_cols(-1)
     {
       allocate(rows, cols, computationOptions);
     }
@@ -403,48 +394,33 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
      *
      * \param matrix the matrix to decompose
      * \param computationOptions optional parameter allowing to specify if you want full or thin U or V unitaries to be computed.
-     *                           By default, none is computed. This is a bit-field, the possible bits are #ComputeFullU, #ComputeThinU,
-     *                           #ComputeFullV, #ComputeThinV.
+     *                           By default, none is computed. This is a bit-field, the possible bits are ComputeFullU, ComputeThinU,
+     *                           ComputeFullV, ComputeThinV.
      *
      * Thin unitaries are only available if your matrix type has a Dynamic number of columns (for example MatrixXf). They also are not
      * available with the (non-default) FullPivHouseholderQR preconditioner.
      */
     JacobiSVD(const MatrixType& matrix, unsigned int computationOptions = 0)
-      : m_isInitialized(false),
-        m_isAllocated(false),
-        m_computationOptions(0),
-        m_rows(-1), m_cols(-1)
     {
       compute(matrix, computationOptions);
     }
 
-    /** \brief Method performing the decomposition of given matrix using custom options.
+    /** \brief Method performing the decomposition of given matrix.
      *
      * \param matrix the matrix to decompose
      * \param computationOptions optional parameter allowing to specify if you want full or thin U or V unitaries to be computed.
-     *                           By default, none is computed. This is a bit-field, the possible bits are #ComputeFullU, #ComputeThinU,
-     *                           #ComputeFullV, #ComputeThinV.
+     *                           By default, none is computed. This is a bit-field, the possible bits are ComputeFullU, ComputeThinU,
+     *                           ComputeFullV, ComputeThinV.
      *
      * Thin unitaries are only available if your matrix type has a Dynamic number of columns (for example MatrixXf). They also are not
      * available with the (non-default) FullPivHouseholderQR preconditioner.
      */
-    JacobiSVD& compute(const MatrixType& matrix, unsigned int computationOptions);
-
-    /** \brief Method performing the decomposition of given matrix using current options.
-     *
-     * \param matrix the matrix to decompose
-     *
-     * This method uses the current \a computationOptions, as already passed to the constructor or to compute(const MatrixType&, unsigned int).
-     */
-    JacobiSVD& compute(const MatrixType& matrix)
-    {
-      return compute(matrix, m_computationOptions);
-    }
+    JacobiSVD& compute(const MatrixType& matrix, unsigned int computationOptions = 0);
 
     /** \returns the \a U matrix.
      *
      * For the SVD decomposition of a n-by-p matrix, letting \a m be the minimum of \a n and \a p,
-     * the U matrix is n-by-n if you asked for #ComputeFullU, and is n-by-m if you asked for #ComputeThinU.
+     * the U matrix is n-by-n if you asked for ComputeFullU, and is n-by-m if you asked for ComputeThinU.
      *
      * The \a m first columns of \a U are the left singular vectors of the matrix being decomposed.
      *
@@ -460,7 +436,7 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
     /** \returns the \a V matrix.
      *
      * For the SVD decomposition of a n-by-p matrix, letting \a m be the minimum of \a n and \a p,
-     * the V matrix is p-by-p if you asked for #ComputeFullV, and is p-by-m if you asked for ComputeThinV.
+     * the V matrix is p-by-p if you asked for ComputeFullV, and is p-by-m if you asked for ComputeThinV.
      *
      * The \a m first columns of \a V are the right singular vectors of the matrix being decomposed.
      *
@@ -476,7 +452,7 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
     /** \returns the vector of singular values.
      *
      * For the SVD decomposition of a n-by-p matrix, letting \a m be the minimum of \a n and \a p, the
-     * returned vector has size \a m.  Singular values are always sorted in decreasing order.
+     * returned vector has size \a m.
      */
     const SingularValuesType& singularValues() const
     {
@@ -518,17 +494,16 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
     inline Index cols() const { return m_cols; }
 
   private:
-    void allocate(Index rows, Index cols, unsigned int computationOptions);
+    void allocate(Index rows, Index cols, unsigned int computationOptions = 0);
 
   protected:
     MatrixUType m_matrixU;
     MatrixVType m_matrixV;
     SingularValuesType m_singularValues;
     WorkMatrixType m_workMatrix;
-    bool m_isInitialized, m_isAllocated;
+    bool m_isInitialized;
     bool m_computeFullU, m_computeThinU;
     bool m_computeFullV, m_computeThinV;
-    unsigned int m_computationOptions;
     Index m_nonzeroSingularValues, m_rows, m_cols, m_diagSize;
 
     template<typename __MatrixType, int _QRPreconditioner, bool _IsComplex>
@@ -540,21 +515,9 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
 template<typename MatrixType, int QRPreconditioner>
 void JacobiSVD<MatrixType, QRPreconditioner>::allocate(Index rows, Index cols, unsigned int computationOptions)
 {
-  eigen_assert(rows >= 0 && cols >= 0);
-
-  if (m_isAllocated &&
-      rows == m_rows &&
-      cols == m_cols &&
-      computationOptions == m_computationOptions)
-  {
-    return;
-  }
-
   m_rows = rows;
   m_cols = cols;
   m_isInitialized = false;
-  m_isAllocated = true;
-  m_computationOptions = computationOptions;
   m_computeFullU = (computationOptions & ComputeFullU) != 0;
   m_computeThinU = (computationOptions & ComputeThinU) != 0;
   m_computeFullV = (computationOptions & ComputeFullV) != 0;
@@ -618,9 +581,8 @@ JacobiSVD<MatrixType, QRPreconditioner>::compute(const MatrixType& matrix, unsig
         // if this 2x2 sub-matrix is not diagonal already...
         // notice that this comparison will evaluate to false if any NaN is involved, ensuring that NaN's don't
         // keep us iterating forever.
-        using std::max;
-        if(max(internal::abs(m_workMatrix.coeff(p,q)),internal::abs(m_workMatrix.coeff(q,p)))
-            > max(internal::abs(m_workMatrix.coeff(p,p)),internal::abs(m_workMatrix.coeff(q,q)))*precision)
+        if(std::max(internal::abs(m_workMatrix.coeff(p,q)),internal::abs(m_workMatrix.coeff(q,p)))
+            > std::max(internal::abs(m_workMatrix.coeff(p,p)),internal::abs(m_workMatrix.coeff(q,q)))*precision)
         {
           finished = false;
 

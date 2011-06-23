@@ -70,10 +70,10 @@ struct triangular_solve_matrix<Scalar,Index,OnTheLeft,Mode,Conjugate,TriStorageO
     Index nc = cols;  // cache block size along the N direction
     computeProductBlockingSizes<Scalar,Scalar,4>(kc, mc, nc);
 
+    Scalar* blockA = ei_aligned_stack_new(Scalar, kc*mc);
     std::size_t sizeW = kc*Traits::WorkSpaceFactor;
     std::size_t sizeB = sizeW + kc*cols;
-    ei_declare_aligned_stack_constructed_variable(Scalar, blockA, kc*mc, 0);
-    ei_declare_aligned_stack_constructed_variable(Scalar, allocatedBlockB, sizeB, 0);
+    Scalar* allocatedBlockB = ei_aligned_stack_new(Scalar, sizeB);
     Scalar* blockB = allocatedBlockB + sizeW;
 
     conj_if<Conjugate> conj;
@@ -174,6 +174,9 @@ struct triangular_solve_matrix<Scalar,Index,OnTheLeft,Mode,Conjugate,TriStorageO
         }
       }
     }
+
+    ei_aligned_stack_delete(Scalar, blockA, kc*mc);
+    ei_aligned_stack_delete(Scalar, allocatedBlockB, sizeB);
   }
 };
 
@@ -206,10 +209,10 @@ struct triangular_solve_matrix<Scalar,Index,OnTheRight,Mode,Conjugate,TriStorage
     Index nc = rows;  // cache block size along the N direction
     computeProductBlockingSizes<Scalar,Scalar,4>(kc, mc, nc);
 
+    Scalar* blockA = ei_aligned_stack_new(Scalar, kc*mc);
     std::size_t sizeW = kc*Traits::WorkSpaceFactor;
     std::size_t sizeB = sizeW + kc*size;
-    ei_declare_aligned_stack_constructed_variable(Scalar, blockA, kc*mc, 0);
-    ei_declare_aligned_stack_constructed_variable(Scalar, allocatedBlockB, sizeB, 0);
+    Scalar* allocatedBlockB = ei_aligned_stack_new(Scalar, sizeB);
     Scalar* blockB = allocatedBlockB + sizeW;
 
     conj_if<Conjugate> conj;
@@ -311,6 +314,9 @@ struct triangular_solve_matrix<Scalar,Index,OnTheRight,Mode,Conjugate,TriStorage
                       -1, -1, 0, 0, allocatedBlockB);
       }
     }
+
+    ei_aligned_stack_delete(Scalar, blockA, kc*mc);
+    ei_aligned_stack_delete(Scalar, allocatedBlockB, sizeB);
   }
 };
 
