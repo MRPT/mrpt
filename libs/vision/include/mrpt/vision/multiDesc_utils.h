@@ -57,6 +57,10 @@ namespace mrpt
         // A 3D quantization table for storing pairs of TFeatureIDs and scales
         typedef map<int,map<int,map<int,deque<pair<TFeatureID, double> > > > > TQuantizationTable;
 
+        void VISION_IMPEXP saveQTableToFile(
+                                const TQuantizationTable            & qTable,
+                                const string                        & filename );
+
         void VISION_IMPEXP insertHashCoeffs(
                                 const CFeaturePtr                   & feat,
                                 TQuantizationTable                  & qTable );

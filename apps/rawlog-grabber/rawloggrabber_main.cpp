@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 		MRPT_LOAD_CONFIG_VAR( SF_max_time_span, float,		iniFile, GLOBAL_SECTION_NAME );
 		MRPT_LOAD_CONFIG_VAR( use_sensoryframes, bool,		iniFile, GLOBAL_SECTION_NAME );
 		MRPT_LOAD_CONFIG_VAR( GRABBER_PERIOD_MS, int, iniFile, GLOBAL_SECTION_NAME );
-		
+
 		MRPT_LOAD_CONFIG_VAR( rawlog_GZ_compress_level, int, iniFile, GLOBAL_SECTION_NAME );
 
 		// Build full rawlog file name:
@@ -178,8 +178,8 @@ int main(int argc, char **argv)
 		// ----------------------------------------------
 		// Run:
 		// ----------------------------------------------
-		CFileGZOutputStream	out_file; 
-		
+		CFileGZOutputStream	out_file;
+
 		out_file.open( rawlog_filename, rawlog_GZ_compress_level );
 
 		CSensoryFrame						curSF;

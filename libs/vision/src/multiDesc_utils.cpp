@@ -101,16 +101,41 @@ void vision::insertHashCoeffs(
                 } // end-for
             } // end-if
             if( !found )        // Insert the new coefficients if they haven't been inserted before
-                qTable[key1][key2][key3].push_back( pair<TFeatureID,double>( feat->ID, feat->multiScales[k] ) );
+                qTable[key1][key2][key3].push_back( make_pair(feat->ID,feat->multiScales[k]) );
         } // end for multiOrientations
     } // end for multiScales
     MRPT_END
 } // end-insertHashCoeffs
 
 /*-------------------------------------------------------------
+					saveQTableToFile
+-------------------------------------------------------------*/
+void vision::saveQTableToFile( const TQuantizationTable &qTable, const string &filename )
+{
+    FILE *f = mrpt::system::os::fopen( filename, "wt" );
+
+    typedef map<int,map<int,map<int,deque<pair<TFeatureID, double> > > > > TQuantizationTable;
+
+    TQuantizationTable::const_iterator                                    it1;
+    map<int,map<int,deque<pair<TFeatureID, double> > > >::const_iterator  it2;
+    map<int,deque<pair<TFeatureID, double> > >::const_iterator            it3;
+
+    for( it1 = qTable.begin(); it1 != qTable.end(); ++it1 )
+        for( it2 = it1->second.begin(); it2 != it1->second.end(); ++it2 )
+            for( it3 = it2->second.begin(); it3 != it2->second.end(); ++it3 )
+            {
+                mrpt::system::os::fprintf( f, "%d\t%d\t%d\t", it1->first, it2->first, it3->first );
+                for( int k = 0; k < int(it3->second.size()); ++k )
+                    mrpt::system::os::fprintf( f, "%lu\t%.2f\t", it3->second[k].first, it3->second[k].second );
+                mrpt::system::os::fprintf( f, "\n" );
+            } // end-for
+    mrpt::system::os::fclose( f );
+} // end-saveQTableToFile
+
+/*-------------------------------------------------------------
 					relocalizeMultiDesc
 -------------------------------------------------------------*/
-// Return the number of features which has been properly re-matched
+// Return the number of features which have been properly re-matched
 TMultiResMatchingOutput vision::relocalizeMultiDesc(
                 const CImage                        & image,
                 CFeatureList                        & baseList,
@@ -122,7 +147,7 @@ TMultiResMatchingOutput vision::relocalizeMultiDesc(
     MRPT_START
     const bool PARAR = false;
 
-    int TH = 20;                        // The threshold for searching in the quantization table
+    int TH = 30;                        // The threshold for searching in the quantization table
     TMultiResMatchingOutput output;
     output.firstListCorrespondences.resize( baseList.size(), -1 );
     output.firstListDistance.resize( baseList.size() );
@@ -151,15 +176,17 @@ TMultiResMatchingOutput vision::relocalizeMultiDesc(
             for( int i = 0; i < (int)(*it)->multiScales.size(); ++i )
                 cout << (*it)->multiScales[i] << endl;
         }
+        ASSERT_( (*it)->multiHashCoeffs.size() == (*it)->multiScales.size() );
 
-        (*it)->dumpToConsole();
-        (*it)->patch.saveToFile(format("imgs/patch_%d.jpg", int((*it)->ID)));
-//        vID.clear();
-//        vSc.clear();
+//        (*it)->dumpToConsole();
+//        (*it)->patch.saveToFile(format("imgs/patch_ini_%d.jpg", int((*it)->ID)));
+//        cout << "done" << endl;
+
         featsToCompareMap.clear();
-        int minDist = 1e6;
         if( !(*it)->descriptors.hasDescriptorMultiSIFT() )
         {
+            cout << "[relocalizeMultiDesc] Feature " << (*it)->ID << " in currentList hasn't got any descriptor." << endl;
+
             // Compute the new descriptors at scale 1.0
             TMultiResDescOptions nopts = desc_opts;
             nopts.scales.resize(1);
@@ -170,165 +197,139 @@ TMultiResMatchingOutput vision::relocalizeMultiDesc(
                 cout << "[relocalizeMultiDesc] WARNING: Feature too close to the border. MultiDescriptor computation skipped." << endl;
                 continue;
             }
-
             computeMultiResolutionDescriptors( image, *it, nopts );
-            cout << "Scales: " << (*it)->multiScales.size() << endl;
-            cout << "Oris: " << (*it)->multiOrientations[0].size() << endl;
+        } // end-if
 
-            for( int k = 0; k < int((*it)->multiOrientations[0].size()); ++k )
+        for( int k = 0; k < int((*it)->multiOrientations[0].size()); ++k )
+        {
+            /* Where to look for within the quantization table?*/
+            /* this is done for each feature and for each main orientation*/
+            int c1mn = (*it)->multiHashCoeffs[0][k][0] - TH;
+            int c1mx = (*it)->multiHashCoeffs[0][k][0] + TH;
+
+            int c2mn = (*it)->multiHashCoeffs[0][k][1] - TH;
+            int c2mx = (*it)->multiHashCoeffs[0][k][1] + TH;
+
+            int c3mn = (*it)->multiHashCoeffs[0][k][2] - TH;
+            int c3mx = (*it)->multiHashCoeffs[0][k][2] + TH;
+
+            for( int m1 = c1mn; m1 < c1mx; ++m1 )
             {
-                /* Where to look for within the quantization table?*/
-                /* this is done for each feature and for each main orientation*/
-                int c1mn = (*it)->multiHashCoeffs[0][k][0] - TH;
-                int c1mx = (*it)->multiHashCoeffs[0][k][0] + TH;
-
-                int c2mn = (*it)->multiHashCoeffs[0][k][1] - TH;
-                int c2mx = (*it)->multiHashCoeffs[0][k][1] + TH;
-
-                int c3mn = (*it)->multiHashCoeffs[0][k][2] - TH;
-                int c3mx = (*it)->multiHashCoeffs[0][k][2] + TH;
-
-                for( int m1 = c1mn; m1 < c1mx; ++m1 )
+                it1 = qTable.find(m1);
+                if( it1 != qTable.end() )
                 {
-                    it1 = qTable.find(m1);
-                    if( it1 != qTable.end() )
+                    for( int m2 = c2mn; m2 < c2mx; ++m2 )
                     {
-                        for( int m2 = c2mn; m2 < c2mx; ++m2 )
+                        it2 = it1->second.find(m2);
+                        if( it2 != it1->second.end() )
                         {
-                            it2 = it1->second.find(m2);
-                            if( it2 != it1->second.end() )
+                            for( int m3 = c3mn; m3 < c3mx; ++m3 )
                             {
-                                for( int m3 = c3mn; m3 < c3mx; ++m3 )
+                                it3 = it2->second.find(m3);
+                                if( it3 != it2->second.end() )
                                 {
-                                    it3 = it2->second.find(m3);
-                                    if( it3 != it2->second.end() )
+                                    for( int n = 0; n < int(it3->second.size()); ++n )
                                     {
-                                        for( int n = 0; n < int(it3->second.size()); ++n )
-                                        {
-                                            featsToCompareMap[qTable[m1][m2][m3][n].first].push_back( qTable[m1][m2][m3][n].second );
-//                                            vID.push_back( qTable[m1][m2][m3][n].first );
-//                                            vSc.push_back( qTable[m1][m2][m3][n].second );
-                                        } // endfor n
-                                    } // endif it3
-                                } // endfor m3
-                            } // endif it2
-                        } // endfor m2
-                    } // endif it1
-                } //endfor m1
+                                        featsToCompareMap[qTable[m1][m2][m3][n].first].push_back( qTable[m1][m2][m3][n].second );
+                                    } // endfor n
+                                } // endif it3
+                            } // endfor m3
+                        } // endif it2
+                    } // endfor m2
+                } // endif it1
+            } //endfor m1
 
-                map< TFeatureID, vector<double> >::iterator nit;
-//                for( nit = featsToCompareMap.begin(); nit != featsToCompareMap.end(); ++nit )
-//                {
-//                    cout << nit->first << ":";
-//                    for( int mm = 0; mm < nit->second.size(); ++mm )
-//                        cout << nit->second[mm] << ",";
-//                    cout << endl;
-//                }
+            // Erase duplicates
+            vID.resize( featsToCompareMap.size() ); // To store only the IDs
+            int counter = 0;
+            for( map< TFeatureID, vector<double> >::iterator nit = featsToCompareMap.begin(); nit != featsToCompareMap.end(); ++nit, ++counter )
+            {
+                // Remove duplicates
+                std::sort( nit->second.begin(), nit->second.end() );
 
-                // Erase duplicated scales
-                vID.resize( featsToCompareMap.size() ); // To store only the IDs
-                int fc = 0;
-                for( nit = featsToCompareMap.begin(); nit != featsToCompareMap.end(); ++nit, ++fc )
+                vector<double>::iterator vit;
+                vit = std::unique( nit->second.begin(), nit->second.end() );
+
+                nit->second.resize( vit - nit->second.begin() );
+
+                // Add to the ID vector
+                vID[counter] = nit->first;
+            }
+
+            // Find the scales where to look
+            // Use all orientations for each scale (we don't know a priori what's the change in orientation)
+            counter = 0;
+            // for each feature to compare
+            int minDist     = 1e6;
+            int minBaseScl  = 0;
+            int minBaseFeat = 0;
+            for( map< TFeatureID, vector<double> >::iterator nit = featsToCompareMap.begin(); nit != featsToCompareMap.end(); ++nit, ++counter )
+            {
+                int baseIdx;
+                CFeaturePtr baseFeat = baseList.getByID( nit->first, baseIdx );
+
+//                cout << int((*it)->ID) << " (" << (*it)->x << "," << (*it)->y << ")";
+//                cout << " -------------------------------------------------------------" << endl;
+
+                // for each scale within the base feature
+                for( int k1 = 0; k1 < int(baseFeat->multiScales.size()); ++k1 )
                 {
-                    vector<bool> spotsToDelete( nit->second.size(), false );
-                    for( int m1 = 0; m1 < int(nit->second.size()); ++m1 )
+                    // for each scale from the qTable
+                    for( int k2 = 0; k2 < int(nit->second.size()); ++k2 )
                     {
-                        double thisSc = nit->second[m1];
-                        for( int m2 = m1+1; m2 < int(nit->second.size()); ++m2 )
-                            if( thisSc == nit->second[m2] )
-                                spotsToDelete[m2] = true;
-                    } // end-for
-                    int m3 = 0;
-                    for( vector<double>::iterator tt = nit->second.begin(); tt != nit->second.end(); ++m3 )
-                    {
-                        if( spotsToDelete[m3] )
-                            tt = nit->second.erase( tt );
-                        else
-                            ++tt;
-                    }
-                    vID[fc] = nit->first;
-                } // end-for-nit
-
-//                for( nit = featsToCompareMap.begin(); nit != featsToCompareMap.end(); ++nit )
-//                {
-//                    cout << nit->first << ":";
-//                    for( int mm = 0; mm < nit->second.size(); ++mm )
-//                        cout << nit->second[mm] << ",";
-//                    cout << endl;
-//                }
-
-                // Up to here we have a vector containing the IDs of features to compare with this one
-                vector<CFeaturePtr>             featsToCompare;
-                vector<int>                     featsToCompareIndex;
-                vector<CFeaturePtr>::iterator   itFeat;
-                baseList.getByMultiIDs( vID, featsToCompare, featsToCompareIndex );
-
-//                cout << "Feat: " << endl;
-//                (*it)->dumpToConsole();
-//                for( int f = 0; f < int(featsToCompare.size()); ++f )
-//                    featsToCompare[f]->dumpToConsole();
-//
-//                mrpt::system::pause();
-
-                // Find the scales where to look
-                // Use all orientations for each scale (we don't know a priori what's the change in orientation)
-
-                int minBaseScl  = 0;
-                int minBaseFeat = 0;
-                int baseCounter = 0;
-
-//                findClosestMatch( vector<int>, vector<CFeaturePtr>, out_idx out_dist )
-
-                // For each of the SELECTED features in the base list
-                for( itFeat = featsToCompare.begin(); itFeat != featsToCompare.end(); ++itFeat, ++baseCounter )
-                {
-                    TFeatureID thisID = vID[baseCounter];
-//                    (*itFeat)->dumpToConsole();
-                    (*itFeat)->patch.saveToFile(format("imgs/patch_%d.jpg",int(thisID)));
-
-                    for( int s = 0; s < (int)(*itFeat)->multiScales.size(); ++s )
-                    {
-//                        cout << "scales to search: " << featsToCompareMap[thisID] << endl;
-                        // If the scale has been selected to be useful ...
-//                        for(int mm = 0; mm < (int)featsToCompareMap[thisID].size(); ++mm )
-//                            if( featsToCompareMap[thisID][mm] == (*itFeat)->multiScales[s] )
-//                            {
-                                cout << "scale: " << s << endl;
-                                // Compute the distance between descriptors for each orientation and keep the minimum
-                                for( int o = 0; o < (int)(*itFeat)->multiOrientations[s].size(); ++o )
+                        if( baseFeat->multiScales[k1] == nit->second[k2] )  // if this scale has been selected
+                        {
+                            // for each orientation of the feature 1
+                            for( int k3 = 0; k3 < int(baseFeat->multiOrientations[k1].size()); ++k3 )
+                            {
+                                // for each orientation of the feature 2
+                                for( int k4 = 0; k4 < int((*it)->multiOrientations[0].size()); ++k4 )
                                 {
-                                    int dist = 0;
-                                    for( int d = 0; d < (int)(*itFeat)->descriptors.multiSIFTDescriptors[s][o].size(); ++d )
-                                        dist += fabs( float((*itFeat)->descriptors.multiSIFTDescriptors[s][o][d]) - float((*it)->descriptors.multiSIFTDescriptors[0][k][d]) );
+                                    // check orientation
+                                    if( fabs(baseFeat->multiOrientations[k1][k3]-(*it)->multiOrientations[0][k4]) > DEG2RAD(10) )
+                                        continue;
+//                                    cout << "Orientation check passed" << endl;
+//                                    cout << "HASH: " << (*it)->multiHashCoeffs[0][k4] << endl;
 
-                                    cout << int((*it)->ID) << "with " << thisID << "[" << (*itFeat)->multiScales[s] << "]" << " dist: " << dist << endl;
+                                    // Compute the distance
+                                    int dist = 0;
+                                    for( int d = 0; d < int(baseFeat->descriptors.multiSIFTDescriptors[k1][k3].size()); ++d )
+                                        dist += fabs( float(baseFeat->descriptors.multiSIFTDescriptors[k1][k3][d]) - float((*it)->descriptors.multiSIFTDescriptors[0][k4][d]) );
+
+//                                    cout << nit->first << "[" << baseFeat->multiScales[k1] << "] - ori: " << baseFeat->multiOrientations[k1][k3] << " - HASH: " << baseFeat->multiHashCoeffs[k1][k3] << " - dist: " << dist << endl;
                                     if( dist < minDist )
                                     {
-                                        minDist     = dist;
-                                        minBaseFeat = featsToCompareIndex[baseCounter];
-                                        minBaseScl  = s;
+                                        minDist     = dist;     // minimun distance of the features
+                                        minBaseFeat = baseIdx;  // index of the base feature
+                                        minBaseScl  = k1;       // scale of the base feature
                                     } // end-if
-                                } // end-for orientation
-                                //break;                          // Process next scale of the base feature
-//                            } // end if useful scale
-                    } // end-for scales
-                } // end-for-each-feature-in-base-list
-//                mrpt::system::pause();
+                                } // end-for
+                            } // end-for
+                        } // end-if
+                    } // end-for-k2
+                } // end-for-k1
+//                if( baseFeat->ID == 32 && (*it)->ID == 9 )
+//                    mrpt::system::pause();
+            } // end-for-nit
+            if( minDist < match_opts.matchingThreshold )
+            {
+                // We've found a match
+                // Store the index of the current feature
+                output.firstListCorrespondences[minBaseFeat]    = curCounter;
+                output.firstListFoundScales[minBaseFeat]        = minBaseScl;
+                output.firstListDistance[minBaseFeat]           = minDist;
+                output.secondListCorrespondences[curCounter]    = minBaseFeat;
+                output.nMatches++;
+            }
+        } // end-for orientations
+//        if( (*it)->ID == 9 )
+//        {
+//            baseList.getByID(32)->dumpToConsole();
+//            (*it)->dumpToConsole();
+//            mrpt::system::pause();
+//        }
 
-                if( minDist < 1000 /*match_opts.matchingThreshold*/ )
-                {
-                    // We've found a match
-                    // Store the index of the current feature
-                    output.firstListCorrespondences[minBaseFeat]    = curCounter;
-                    output.firstListFoundScales[minBaseFeat]        = minBaseScl;
-                    output.firstListDistance[minBaseFeat]           = minDist;
-                    output.secondListCorrespondences[curCounter]    = minBaseFeat;
-                    output.nMatches++;
-                }
-            } // end-for orientations
-
-        } // end-if
-    } // end-for
+    } // end-for-it
 
     return output;
 
@@ -833,7 +834,6 @@ void vision::computeHistogramOfOrientations(
 //            else
 //                mrpt::system::os::fprintf( f11, "%d %d\n", y+r, x+c );
         } // end-for
-
 //    mrpt::system::os::fclose(f1);
 //    mrpt::system::os::fclose(f2);
 //    mrpt::system::os::fclose(f3);
@@ -1795,7 +1795,9 @@ bool vision::computeMultiResolutionDescriptors(
     feat->multiScales.resize( maxScale );
     feat->multiOrientations.resize( maxScale );
     feat->descriptors.multiSIFTDescriptors.resize( maxScale );
-    feat->multiHashCoeffs.resize( maxScale );
+    // If the hash coeffs have to be computed, resize the vector of hash coeffs.
+    if( opts.computeHashCoeffs )
+        feat->multiHashCoeffs.resize( maxScale );
 
     // Copy the scale values within the feature.
     for( int k = 0; k < maxScale; ++k )
@@ -1833,18 +1835,34 @@ bool vision::computeMultiResolutionDescriptors(
 
         size_t nMainOris = feat->multiOrientations[k].size();
         feat->descriptors.multiSIFTDescriptors[k].resize( nMainOris );
-        feat->multiHashCoeffs[k].resize( nMainOris );
+        if( opts.computeHashCoeffs )
+           feat->multiHashCoeffs[k].resize( nMainOris );
 
         for( unsigned int m = 0; m < nMainOris; ++m )
         {
-            computeHistogramOfOrientations(
+            if( opts.computeHashCoeffs )
+            {
+                computeHistogramOfOrientations(
                         rsPatch,
                         a/2+1, a/2+1, a,
                         feat->multiOrientations[k][m],
-                        feat->descriptors.multiSIFTDescriptors[k][m], opts,
+                        feat->descriptors.multiSIFTDescriptors[k][m],
+                        opts,
                         feat->multiHashCoeffs[k][m] );
-        } // end for
-    } // end scales for
+            } // end-if
+            else
+            {
+                vector<int32_t> vec;
+                computeHistogramOfOrientations(
+                        rsPatch,
+                        a/2+1, a/2+1, a,
+                        feat->multiOrientations[k][m],
+                        feat->descriptors.multiSIFTDescriptors[k][m],
+                        opts,
+                        vec );
+            } // end-else
+        } // end orientations for (m)
+    } // end scales for (k)
     return true;
     MRPT_END
 #else

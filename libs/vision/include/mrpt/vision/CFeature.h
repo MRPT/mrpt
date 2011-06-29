@@ -290,7 +290,8 @@ namespace mrpt
 			TFeatureID getMaxID() const;
 
 			/** Get a reference to a Feature from its ID */
-			CFeaturePtr getByID( TFeatureID ID ) const;
+			CFeaturePtr getByID( const TFeatureID &ID ) const;
+			CFeaturePtr getByID( const TFeatureID &ID, int &out_idx ) const;
 
             /** Get a vector of references to a subset of features from their IDs */
             void getByMultiIDs( const vector<TFeatureID> &IDs, vector<CFeaturePtr> &out, vector<int> &outIndex ) const;

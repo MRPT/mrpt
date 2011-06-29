@@ -80,6 +80,13 @@ namespace slam
 
 			bool operator == (const TUTCTime& o) const { return hour==o.hour && minute==o.minute && sec==o.sec; }
 			bool operator != (const TUTCTime& o) const { return hour!=o.hour || minute!=o.minute || sec!=o.sec; }
+			inline TUTCTime& operator = (const TUTCTime& o)
+			{
+			    this->hour = o.hour;
+			    this->minute = o.minute;
+			    this->sec = o.sec;
+			    return *this;
+            }
 		};
 
 		/** The GPS datum for GGA commands
@@ -87,6 +94,14 @@ namespace slam
 		struct OBS_IMPEXP TGPSDatum_GGA
 		{
 			TGPSDatum_GGA();
+
+			/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography)
+			  *   Call as: getAsStruct<TGeodeticCoords>();
+			  */
+			template <class TGEODETICCOORDS>
+			inline TGEODETICCOORDS getOrthoAsStruct() const {
+				return TGEODETICCOORDS(latitude_degrees,longitude_degrees,corrected_orthometric_altitude);
+			}
 
 			/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography)
 			  *   Call as: getAsStruct<TGeodeticCoords>();
@@ -122,9 +137,21 @@ namespace slam
 			  */
 			uint8_t		fix_quality;
 
-			/** The measured altitude, in meters.
+			/** The measured altitude, in meters (A).
 			*/
 			double			altitude_meters;
+
+			/** Difference between the measured altitude and the geoid, in meters (B).
+			*/
+			double          geoidal_distance;
+
+			/** The measured orthometric altitude, in meters (A)+(B).
+			*/
+			double          orthometric_altitude;
+
+			/** The corrected (mmGPS) orthometric altitude, in meters mmGPS(A+B).
+			*/
+			double          corrected_orthometric_altitude;
 
 			/** The number of satelites used to compute this estimation.
 			*/
@@ -261,6 +288,7 @@ namespace slam
 		  * \sa getSensorPose
 		  */
 		void setSensorPose( const CPose3D &newSensorPose ) { sensorPose = newSensorPose; }
+
 
 	}; // End of class def.
 

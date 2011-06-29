@@ -82,7 +82,11 @@ namespace mrpt
 			/** Constructor
 			  * \param BUFFER_LENGTH The size of the communications buffer (default value should be fine always)
 			  */
-			CGPSInterface( int			BUFFER_LENGTH = 500 );
+//			CGPSInterface( int BUFFER_LENGTH = 500 );
+
+			// MAR'11 -------------------------------------
+			CGPSInterface( int BUFFER_LENGTH = 500, mrpt::hwdrivers::CSerialPort *outPort = NULL, mrpt::synch::CCriticalSection *csOutPort = NULL);
+            // --------------------------------------------
 
 			/** Destructor
 			  */
@@ -105,6 +109,11 @@ namespace mrpt
 			void  setSerialPortName(const std::string &COM_port);  //!< Set the serial port to use (COM1, ttyUSB0, etc).
 			std::string getSerialPortName() const;  //!< Get the serial port to use (COM1, ttyUSB0, etc).
 
+			inline void setExternCOM( CSerialPort *outPort, mrpt::synch::CCriticalSection *csOutPort )
+			{ m_out_COM = outPort; m_cs_out_COM = csOutPort; }
+
+			inline bool isAIMConfigured() { return m_AIMConfigured; }
+
 		protected:
 			/** Implements custom messages to be sent to the GPS unit just after connection and before normal use.
 			  *  Returns false or raise an exception if something goes wrong.
@@ -112,6 +121,11 @@ namespace mrpt
 			bool OnConnectionEstablished();
 
 			CSerialPort		m_COM;
+
+            // MAR'11 -------------------------------------
+			CSerialPort		                *m_out_COM;
+            mrpt::synch::CCriticalSection   *m_cs_out_COM;
+			// --------------------------------------------
 
 			poses::CPoint3D	m_sensorPose;
 
@@ -133,6 +147,18 @@ namespace mrpt
 			/** Only used when "m_JAVAD_rtk_src_port" is not empty: format of RTK corrections: "cmr", "rtcm", "rtcm3", etc. */
 			void setJAVAD_rtk_format(const std::string &s) {m_JAVAD_rtk_format=s;}
 
+			/** Set Advanced Input Mode for the primary port.
+                This can be used to send RTK corrections to the device using the same port that it's used for the commands.
+                The RTK correction stream must be re-packaged into a special frame with prefix ">>" */
+            bool setJAVAD_AIM_mode();
+
+			/** Unset Advanced Input Mode for the primary port and use it only as a command port. */
+            bool unsetJAVAD_AIM_mode();
+
+            // MAR'11 -------------------------------------
+            inline bool useExternCOM() { return (m_out_COM!=NULL); }
+            // --------------------------------------------
+
 		private:
 			std::string 	m_COMname;
 			int				m_COMbauds;
@@ -147,6 +173,16 @@ namespace mrpt
 			std::string		m_JAVAD_rtk_src_port; 	//!< If not empty, will send a cmd "set,/par/pos/pd/port,...". Example value: "/dev/ser/b"
 			unsigned int	m_JAVAD_rtk_src_baud; 	//!< Only used when "m_JAVAD_rtk_src_port" is not empty
 			std::string		m_JAVAD_rtk_format; 	//!< Only used when "m_JAVAD_rtk_src_port" is not empty: format of RTK corrections: "cmr", "rtcm", "rtcm3", etc.
+
+			// MAR'11 -----------------------------------------
+			bool            m_useAIMMode;           //!< Use this mode for receive RTK corrections from a external source through the primary port
+            // ------------------------------------------------
+			TTimeStamp      m_last_timestamp;
+
+			// MAR'11 -----------------------------------------
+			bool            m_AIMConfigured;        //!< Indicates if the AIM has been properly set up.
+			double          m_data_period;          //!< The period in seconds which the data should be provided by the GPS
+            // ------------------------------------------------
 
 			/** Returns true if the COM port is already open, or try to open it in other case.
 			  * \return true if everything goes OK, or false if there are problems opening the port.
@@ -170,7 +206,8 @@ namespace mrpt
 
 			/* A private copy of the last received gps datum:
 			 */
-			mrpt::slam::CObservationGPS	m_latestGPS_data;
+			mrpt::slam::CObservationGPS	            m_latestGPS_data;
+			mrpt::slam::CObservationGPS::TUTCTime   m_last_UTC_time;
 
 			void JAVAD_sendMessage(const char*str, bool waitForAnswer = true); //!< Private auxiliary method. Raises exception on error.
 

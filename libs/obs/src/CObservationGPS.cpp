@@ -3,7 +3,7 @@
    |                                                                           |
    |                       http://www.mrpt.org/                                |
    |                                                                           |
-   |   Copyright (C) 2005-2011  University of Malaga                           |
+   |   Copyright (C) 2005-2010  University of Malaga                           |
    |                                                                           |
    |    This software was written by the Machine Perception and Intelligent    |
    |      Robotics Lab, University of Malaga (Spain).                          |
@@ -64,7 +64,7 @@ void  CObservationGPS::writeToStream(CStream &out, int *version) const
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)
-		*version = 8;
+		*version = 9;
 	else
 	{
 		out << timestamp;
@@ -81,7 +81,10 @@ void  CObservationGPS::writeToStream(CStream &out, int *version) const
 				<< GGA_datum.longitude_degrees
 				<< GGA_datum.fix_quality
 				<< GGA_datum.altitude_meters
-				<< GGA_datum.satellitesUsed
+                << GGA_datum.geoidal_distance                   // Added in V9
+                << GGA_datum.orthometric_altitude               // Added in V9
+                << GGA_datum.corrected_orthometric_altitude     // Added in V9
+                << GGA_datum.satellitesUsed
 				<< GGA_datum.thereis_HDOP
 				<< GGA_datum.HDOP;
 		}
@@ -107,7 +110,7 @@ void  CObservationGPS::writeToStream(CStream &out, int *version) const
 		out << has_PZS_datum;
 		if (has_PZS_datum)
 		{
-			out << 
+			out <<
 				PZS_datum.latitude_degrees <<
 				PZS_datum.longitude_degrees <<
 				PZS_datum.height_meters <<
@@ -120,15 +123,15 @@ void  CObservationGPS::writeToStream(CStream &out, int *version) const
 				PZS_datum.RXBattery <<
 				PZS_datum.error <<
 			// Added in V6:
-				PZS_datum.hasCartesianPosVel << 
+				PZS_datum.hasCartesianPosVel <<
 				PZS_datum.cartesian_x << PZS_datum.cartesian_y << PZS_datum.cartesian_z <<
 				PZS_datum.cartesian_vx << PZS_datum.cartesian_vy << PZS_datum.cartesian_vz <<
 				PZS_datum.hasPosCov <<
 				PZS_datum.pos_covariance <<
 				PZS_datum.hasVelCov <<
 				PZS_datum.vel_covariance <<
-				PZS_datum.hasStats << 
-				PZS_datum.stats_GPS_sats_used << 
+				PZS_datum.hasStats <<
+				PZS_datum.stats_GPS_sats_used <<
 				PZS_datum.stats_GLONASS_sats_used <<
 			// Added V8:
 				PZS_datum.stats_rtk_fix_progress;
@@ -169,6 +172,7 @@ void  CObservationGPS::readFromStream(CStream &in, int version)
 	case 6:
 	case 7:
 	case 8:
+	case 9:
 		{
 			if (version>=3)
 					in >> timestamp;
@@ -183,8 +187,21 @@ void  CObservationGPS::readFromStream(CStream &in, int version)
 					>> GGA_datum.latitude_degrees
 					>> GGA_datum.longitude_degrees
 					>> GGA_datum.fix_quality
-					>> GGA_datum.altitude_meters
-					>> GGA_datum.satellitesUsed
+					>> GGA_datum.altitude_meters;
+					if( version >= 9 )
+					{
+                        in  >> GGA_datum.geoidal_distance
+                            >> GGA_datum.orthometric_altitude
+                            >> GGA_datum.corrected_orthometric_altitude;
+                    }
+                    else
+                    {
+                        GGA_datum.geoidal_distance                  = 0.0f;
+                        GGA_datum.orthometric_altitude              = 0.0f;
+                        GGA_datum.corrected_orthometric_altitude    = 0.0f;
+                    }
+
+                in  >> GGA_datum.satellitesUsed
 					>> GGA_datum.thereis_HDOP
 					>> GGA_datum.HDOP;
 			}
@@ -215,7 +232,7 @@ void  CObservationGPS::readFromStream(CStream &in, int version)
 				in >> has_PZS_datum;
 				if (has_PZS_datum)
 				{
-					in >> 
+					in >>
 						PZS_datum.latitude_degrees >>
 						PZS_datum.longitude_degrees >>
 						PZS_datum.height_meters >>
@@ -230,7 +247,7 @@ void  CObservationGPS::readFromStream(CStream &in, int version)
 					// extra data?
 					if (version>=6)
 					{
-						in >> 
+						in >>
 							PZS_datum.hasCartesianPosVel >>
 							PZS_datum.cartesian_x >> PZS_datum.cartesian_y >> PZS_datum.cartesian_z >>
 							PZS_datum.cartesian_vx >> PZS_datum.cartesian_vy >> PZS_datum.cartesian_vz >>
@@ -238,18 +255,18 @@ void  CObservationGPS::readFromStream(CStream &in, int version)
 							PZS_datum.pos_covariance >>
 							PZS_datum.hasVelCov >>
 							PZS_datum.vel_covariance >>
-							PZS_datum.hasStats >> 
-							PZS_datum.stats_GPS_sats_used >> 
+							PZS_datum.hasStats >>
+							PZS_datum.stats_GPS_sats_used >>
 							PZS_datum.stats_GLONASS_sats_used;
 
 						if (version>=8)
 							in >> PZS_datum.stats_rtk_fix_progress;
-						else	
+						else
 							PZS_datum.stats_rtk_fix_progress=0;
 					}
 					else
 					{
-						PZS_datum.hasCartesianPosVel = 
+						PZS_datum.hasCartesianPosVel =
 						PZS_datum.hasPosCov =
 						PZS_datum.hasVelCov =
 						PZS_datum.hasStats = false;
@@ -294,15 +311,20 @@ void  CObservationGPS::dumpToStream( CStream &out )
 		out.printf("  Longitude: %.09f deg  Latitude: %.09f deg  Height: %.03f m\n",
 			GGA_datum.longitude_degrees,
 			GGA_datum.latitude_degrees,
-			GGA_datum.altitude_meters
-			);
+			GGA_datum.altitude_meters );
+
+        out.printf("  Geoidal distance: %.03f m  Orthometric alt.: %.03f m  Corrected ort. alt.: %.03f m\n",
+            GGA_datum.geoidal_distance,
+            GGA_datum.orthometric_altitude,
+            GGA_datum.corrected_orthometric_altitude );
+
 		out.printf("  UTC time-stamp: %02u:%02u:%02.03f  #sats=%2u  ",
 			GGA_datum.UTCTime.hour,
 			GGA_datum.UTCTime.minute,
 			GGA_datum.UTCTime.sec,
 			GGA_datum.satellitesUsed );
 
-		out.printf("Fix mode: %u\n",GGA_datum.fix_quality);
+		out.printf("Fix mode: %u ",GGA_datum.fix_quality);
 		switch( GGA_datum.fix_quality )
 		{
 			case 0: out.printf("(Invalid)\n"); break;
@@ -310,17 +332,19 @@ void  CObservationGPS::dumpToStream( CStream &out )
 			case 2: out.printf("(DGPS fix)\n"); break;
 			case 3: out.printf("(PPS fix)\n"); break;
 			case 4: out.printf("(Real Time Kinematic/RTK Fixed)\n"); break;
-			case 5: out.printf("(Float RTK)\n"); break;
-			case 6: out.printf("(dead reckoning)\n"); break;
+			case 5: out.printf("(Real Time Kinematic/RTK Float)\n"); break;
+			case 6: out.printf("(Dead Reckoning)\n"); break;
 			case 7: out.printf("(Manual)\n"); break;
 			case 8: out.printf("(Simulation)\n"); break;
+			case 9: out.printf("(mmGPS + RTK Fixed)\n"); break;
+			case 10: out.printf("(mmGPS + RTK Float)\n"); break;
 			default: out.printf("(UNKNOWN!)\n"); break;
 		};
 
 		out.printf(" HDOP (Horizontal Dilution of Precision): ");
 		if (GGA_datum.thereis_HDOP)
 				out.printf(" %f\n", GGA_datum.HDOP);
-		else 	out.printf(" not available\n");
+		else 	out.printf(" N/A\n");
 
 	} // END GGA
 
@@ -348,12 +372,12 @@ void  CObservationGPS::dumpToStream( CStream &out )
 
 	} // END RMC
 
-	
+
 	// PZS datum:
 	if (has_PZS_datum)
 	{
 		out.printf("\n[PZS datum: YES]\n");
-		out.printf("  Longitude: %.09f deg  Latitude: %.09f deg Height: %.03f m (%.03fm without NBeam) \n",
+		out.printf("  Longitude: %.09f deg  Latitude: %.09f deg Height: %.03f m (%.03f m without NBeam) \n",
 			PZS_datum.longitude_degrees,
 			PZS_datum.latitude_degrees,
 			PZS_datum.height_meters,
@@ -396,11 +420,11 @@ void  CObservationGPS::dumpToStream( CStream &out )
 	{
 		out.printf("  USI   ELEV    AZIM \n");
 		out.printf("---------------------------\n");
-		
+
 		ASSERT_(SATS_datum.USIs.size()==SATS_datum.AZs.size() && SATS_datum.USIs.size()==SATS_datum.ELs.size());
 		for (size_t i=0;i<SATS_datum.USIs.size();i++)
 			out.printf(" %03i   %02i    %03i\n", (int)SATS_datum.USIs[i], (int)SATS_datum.ELs[i], (int)SATS_datum.AZs[i] );
-		
+
 	} // end SATS_datum
 
 	out.printf("---------------------------------------------------------------------\n\n");
@@ -464,7 +488,7 @@ CObservationGPS::TGPSDatum_PZS::TGPSDatum_PZS() :
 	hasVelCov(false),
 	vel_covariance(),
 	hasStats(false),
-	stats_GPS_sats_used(0), 
+	stats_GPS_sats_used(0),
 	stats_GLONASS_sats_used(0)
 { }
 

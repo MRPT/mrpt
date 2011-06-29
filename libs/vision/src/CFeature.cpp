@@ -322,9 +322,10 @@ void CFeature::dumpToTextStream( mrpt::utils::CStream &out) const
                 for( int n = 0; n < (int)descriptors.multiSIFTDescriptors[k][m].size(); ++n )
                     out.printf("%d ", descriptors.multiSIFTDescriptors[k][m][n] );
                 out.printf("\n");
-                out.printf(" ·· HASH coefficients %d,%d,%d\n", multiHashCoeffs[k][m][0], multiHashCoeffs[k][m][1],multiHashCoeffs[k][m][2] );
-            }
-        }
+                if( multiHashCoeffs.size() > 0 )
+                    out.printf(" ·· HASH coefficients %d,%d,%d\n", multiHashCoeffs[k][m][0], multiHashCoeffs[k][m][1],multiHashCoeffs[k][m][2] );
+            }//end-for-m
+        }//end-for-k
     } // end else
 } // end dumpToTextStream
 
@@ -992,12 +993,28 @@ void CFeatureList::copyListFrom( const CFeatureList &otherList )
 // --------------------------------------------------
 // getByID()
 // --------------------------------------------------
-CFeaturePtr CFeatureList::getByID( TFeatureID ID ) const
+CFeaturePtr CFeatureList::getByID( const TFeatureID &ID ) const
 {
 	for( CFeatureList::const_iterator it = begin(); it != end(); ++it )
 		if( (*it)->ID == ID )
-			return (*it);
+		    return (*it);
 
+	return CFeaturePtr();
+} // end getByID
+
+// --------------------------------------------------
+// getByID()
+// --------------------------------------------------
+CFeaturePtr CFeatureList::getByID( const TFeatureID &ID, int &out_idx ) const
+{
+    int k = 0;
+	for( CFeatureList::const_iterator it = begin(); it != end(); ++it, ++k )
+		if( (*it)->ID == ID )
+		{
+		    out_idx = k;
+		    return (*it);
+		}
+    out_idx = -1;
 	return CFeaturePtr();
 } // end getByID
 
@@ -1011,15 +1028,13 @@ void CFeatureList::getByMultiIDs( const vector<TFeatureID> &IDs, vector<CFeature
     out.reserve( IDs.size() );
     outIndex.reserve( IDs.size() );
 
-    int counter = 0;
-	for( CFeatureList::const_iterator it = begin(); it != end(); ++it, ++counter )
-	    for( int k = 0; k < int(IDs.size()); ++k )
-            if( (*it)->ID == IDs[k] )
-            {
-                out.push_back( *it );
-                outIndex.push_back( counter );
-                break;
-            }
+    for( int k = 0; k < int(IDs.size()); ++k )
+    {
+        int idx;
+        CFeaturePtr f = getByID( IDs[k], idx );
+        out.push_back( f );
+        outIndex.push_back( idx );
+    }
 } // end getByID
 
 // --------------------------------------------------
