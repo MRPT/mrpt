@@ -183,6 +183,12 @@ template<typename MatrixType, int Direction> class Reverse
       m_matrix.const_cast_derived().template writePacket<LoadMode>(m_matrix.size() - index - PacketSize, internal::preverse(x));
     }
 
+    const typename internal::remove_all<typename MatrixType::Nested>::type& 
+    nestedExpression() const 
+    {
+      return m_matrix;
+    }
+
   protected:
     const typename MatrixType::Nested m_matrix;
 };

@@ -324,11 +324,11 @@ inline void RealSchur<MatrixType>::splitOffTwoRows(Index iu, bool computeU, Scal
   m_matT.coeffRef(iu,iu) += exshift;
   m_matT.coeffRef(iu-1,iu-1) += exshift;
 
-  if (q >= 0) // Two real eigenvalues
+  if (q >= Scalar(0)) // Two real eigenvalues
   {
     Scalar z = internal::sqrt(internal::abs(q));
     JacobiRotation<Scalar> rot;
-    if (p >= 0)
+    if (p >= Scalar(0))
       rot.makeGivens(p + z, m_matT.coeff(iu, iu-1));
     else
       rot.makeGivens(p - z, m_matT.coeff(iu, iu-1));
@@ -369,7 +369,7 @@ inline void RealSchur<MatrixType>::computeShift(Index iu, Index iter, Scalar& ex
   {
     Scalar s = (shiftInfo.coeff(1) - shiftInfo.coeff(0)) / Scalar(2.0);
     s = s * s + shiftInfo.coeff(2);
-    if (s > 0)
+    if (s > Scalar(0))
     {
       s = internal::sqrt(s);
       if (shiftInfo.coeff(1) < shiftInfo.coeff(0))

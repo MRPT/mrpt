@@ -56,6 +56,7 @@ template<typename Derived>
 inline typename NumTraits<typename internal::traits<Derived>::Scalar>::Real
 MatrixBase<Derived>::stableNorm() const
 {
+  using std::min;
   const Index blockSize = 4096;
   RealScalar scale = 0;
   RealScalar invScale = 1;
@@ -68,7 +69,7 @@ MatrixBase<Derived>::stableNorm() const
   if (bi>0)
     internal::stable_norm_kernel(this->head(bi), ssq, scale, invScale);
   for (; bi<n; bi+=blockSize)
-    internal::stable_norm_kernel(this->segment(bi,std::min(blockSize, n - bi)).template forceAlignedAccessIf<Alignment>(), ssq, scale, invScale);
+    internal::stable_norm_kernel(this->segment(bi,min(blockSize, n - bi)).template forceAlignedAccessIf<Alignment>(), ssq, scale, invScale);
   return scale * internal::sqrt(ssq);
 }
 
@@ -85,6 +86,9 @@ template<typename Derived>
 inline typename NumTraits<typename internal::traits<Derived>::Scalar>::Real
 MatrixBase<Derived>::blueNorm() const
 {
+  using std::pow;
+  using std::min;
+  using std::max;
   static Index nmax = -1;
   static RealScalar b1, b2, s1m, s2m, overfl, rbig, relerr;
   if(nmax <= 0)
@@ -107,17 +111,17 @@ MatrixBase<Derived>::blueNorm() const
     rbig  = std::numeric_limits<RealScalar>::max();         // largest floating-point number
 
     iexp  = -((1-iemin)/2);
-    b1    = RealScalar(std::pow(RealScalar(ibeta),RealScalar(iexp)));  // lower boundary of midrange
+    b1    = RealScalar(pow(RealScalar(ibeta),RealScalar(iexp)));  // lower boundary of midrange
     iexp  = (iemax + 1 - it)/2;
-    b2    = RealScalar(std::pow(RealScalar(ibeta),RealScalar(iexp)));   // upper boundary of midrange
+    b2    = RealScalar(pow(RealScalar(ibeta),RealScalar(iexp)));   // upper boundary of midrange
 
     iexp  = (2-iemin)/2;
-    s1m   = RealScalar(std::pow(RealScalar(ibeta),RealScalar(iexp)));   // scaling factor for lower range
+    s1m   = RealScalar(pow(RealScalar(ibeta),RealScalar(iexp)));   // scaling factor for lower range
     iexp  = - ((iemax+it)/2);
-    s2m   = RealScalar(std::pow(RealScalar(ibeta),RealScalar(iexp)));   // scaling factor for upper range
+    s2m   = RealScalar(pow(RealScalar(ibeta),RealScalar(iexp)));   // scaling factor for upper range
 
     overfl  = rbig*s2m;             // overflow boundary for abig
-    eps     = RealScalar(std::pow(double(ibeta), 1-it));
+    eps     = RealScalar(pow(double(ibeta), 1-it));
     relerr  = internal::sqrt(eps);         // tolerance for neglecting asml
     abig    = RealScalar(1.0/eps - 1.0);
     if (RealScalar(nbig)>abig)  nmax = int(abig);  // largest safe n
@@ -163,8 +167,8 @@ MatrixBase<Derived>::blueNorm() const
   }
   else
     return internal::sqrt(amed);
-  asml = std::min(abig, amed);
-  abig = std::max(abig, amed);
+  asml = min(abig, amed);
+  abig = max(abig, amed);
   if(asml <= abig*relerr)
     return abig;
   else

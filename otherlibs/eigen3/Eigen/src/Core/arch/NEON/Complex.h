@@ -43,6 +43,7 @@ template<> struct packet_traits<std::complex<float> >  : default_packet_traits
   typedef Packet2cf type;
   enum {
     Vectorizable = 1,
+    AlignedOnScalar = 1,
     size = 2,
 
     HasAdd    = 1,
@@ -120,6 +121,8 @@ template<> EIGEN_STRONG_INLINE Packet2cf pandnot<Packet2cf>(const Packet2cf& a, 
 template<> EIGEN_STRONG_INLINE Packet2cf pload<Packet2cf>(const std::complex<float>* from) { EIGEN_DEBUG_ALIGNED_LOAD return Packet2cf(pload<Packet4f>((const float*)from)); }
 template<> EIGEN_STRONG_INLINE Packet2cf ploadu<Packet2cf>(const std::complex<float>* from) { EIGEN_DEBUG_UNALIGNED_LOAD return Packet2cf(ploadu<Packet4f>((const float*)from)); }
 
+template<> EIGEN_STRONG_INLINE Packet2cf ploaddup<Packet2cf>(const std::complex<float>* from) { return pset1<Packet2cf>(*from); }
+
 template<> EIGEN_STRONG_INLINE void pstore <std::complex<float> >(std::complex<float> *   to, const Packet2cf& from) { EIGEN_DEBUG_ALIGNED_STORE pstore((float*)to, from.v); }
 template<> EIGEN_STRONG_INLINE void pstoreu<std::complex<float> >(std::complex<float> *   to, const Packet2cf& from) { EIGEN_DEBUG_UNALIGNED_STORE pstoreu((float*)to, from.v); }
 
@@ -144,7 +147,7 @@ template<> EIGEN_STRONG_INLINE Packet2cf preverse(const Packet2cf& a)
   return Packet2cf(a_r128);
 }
 
-EIGEN_STRONG_INLINE Packet2cf pcplxflip(const Packet2cf& a)
+template<> EIGEN_STRONG_INLINE Packet2cf pcplxflip<Packet2cf>(const Packet2cf& a)
 {
   return Packet2cf(vrev64q_f32(a.v));
 }
@@ -220,7 +223,7 @@ template<> struct conj_helper<Packet2cf, Packet2cf, false,true>
 
   EIGEN_STRONG_INLINE Packet2cf pmul(const Packet2cf& a, const Packet2cf& b) const
   {
-    return pmul(a, pconj(b));
+    return internal::pmul(a, pconj(b));
   }
 };
 
@@ -231,7 +234,7 @@ template<> struct conj_helper<Packet2cf, Packet2cf, true,false>
 
   EIGEN_STRONG_INLINE Packet2cf pmul(const Packet2cf& a, const Packet2cf& b) const
   {
-    return pmul(pconj(a), b);
+    return internal::pmul(pconj(a), b);
   }
 };
 
@@ -242,7 +245,7 @@ template<> struct conj_helper<Packet2cf, Packet2cf, true,true>
 
   EIGEN_STRONG_INLINE Packet2cf pmul(const Packet2cf& a, const Packet2cf& b) const
   {
-    return pconj(pmul(a, b));
+    return pconj(internal::pmul(a, b));
   }
 };
 

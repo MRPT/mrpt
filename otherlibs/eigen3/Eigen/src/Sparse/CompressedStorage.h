@@ -218,8 +218,8 @@ class CompressedStorage
       Index* newIndices = new Index[size];
       size_t copySize = std::min(size, m_size);
       // copy
-      memcpy(newValues,  m_values,  copySize * sizeof(Scalar));
-      memcpy(newIndices, m_indices, copySize * sizeof(Index));
+      internal::smart_copy(m_values, m_values+copySize, newValues);
+      internal::smart_copy(m_indices, m_indices+copySize, newIndices);
       // delete old stuff
       delete[] m_values;
       delete[] m_indices;

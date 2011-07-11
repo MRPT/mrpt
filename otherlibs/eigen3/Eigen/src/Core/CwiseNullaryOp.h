@@ -101,6 +101,9 @@ class CwiseNullaryOp : internal::no_assignment_operator,
       return m_functor.packetOp(index);
     }
 
+    /** \returns the functor representing the nullary operation */
+    const NullaryOp& functor() const { return m_functor; }
+
   protected:
     const internal::variable_if_dynamic<Index, RowsAtCompileTime> m_rows;
     const internal::variable_if_dynamic<Index, ColsAtCompileTime> m_cols;

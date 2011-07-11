@@ -37,6 +37,9 @@
   * API for the %Matrix class provides easy access to linear-algebra
   * operations.
   *
+  * This class can be extended with the help of the plugin mechanism described on the page
+  * \ref TopicCustomizingEigen by defining the preprocessor symbol \c EIGEN_ARRAY_PLUGIN.
+  *
   * \sa \ref TutorialArrayClass, \ref TopicClassHierarchy
   */
 namespace internal {

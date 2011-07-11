@@ -70,7 +70,7 @@ sqrt() const
   * Example: \include Cwise_cos.cpp
   * Output: \verbinclude Cwise_cos.out
   *
-  * \sa sin(), exp()
+  * \sa sin(), acos()
   */
 inline const CwiseUnaryOp<internal::scalar_cos_op<Scalar>, const Derived>
 cos() const
@@ -84,7 +84,7 @@ cos() const
   * Example: \include Cwise_sin.cpp
   * Output: \verbinclude Cwise_sin.out
   *
-  * \sa cos(), exp()
+  * \sa cos(), asin()
   */
 inline const CwiseUnaryOp<internal::scalar_sin_op<Scalar>, const Derived>
 sin() const
@@ -92,6 +92,31 @@ sin() const
   return derived();
 }
 
+/** \returns an expression of the coefficient-wise arc cosine of *this.
+  *
+  * Example: \include Cwise_acos.cpp
+  * Output: \verbinclude Cwise_acos.out
+  *
+  * \sa cos(), asin()
+  */
+inline const CwiseUnaryOp<internal::scalar_acos_op<Scalar>, const Derived>
+acos() const
+{
+  return derived();
+}
+
+/** \returns an expression of the coefficient-wise arc sine of *this.
+  *
+  * Example: \include Cwise_asin.cpp
+  * Output: \verbinclude Cwise_asin.out
+  *
+  * \sa sin(), acos()
+  */
+inline const CwiseUnaryOp<internal::scalar_asin_op<Scalar>, const Derived>
+asin() const
+{
+  return derived();
+}
 
 /** \returns an expression of the coefficient-wise tan of *this.
   *

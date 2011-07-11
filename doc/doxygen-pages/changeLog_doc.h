@@ -40,7 +40,7 @@
 		- [mrpt-maps] mrpt::slam::CPointsMap (and derived classes) now have a method mrpt::slam::CPointsMap::addFrom() and an "operator +=" to add the points from another point map  - <a href="http://code.google.com/p/mrpt/source/detail?r=2553" >r2553</a>
 		- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".
 	- Build system/external libs:
-		- Update of Eigen3 to a more recent version (23-Jun-2011), which avoids warnings in MSVC x64 - <a href="http://code.google.com/p/mrpt/source/detail?r=2556" >r2556</a>
+		- Update of Eigen3 to a more recent version (11-Jul-2011), which avoids warnings in MSVC x64 - <a href="http://code.google.com/p/mrpt/source/detail?r=2556" >r2556</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2558" >r2558</a>
 	- BUG FIXES:
 		- Build error in platforms that don't support SSE2 (Thanks rovoreed!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2550" >r2550</a>
                 - Build error when OpenCV exists but is not used. - <a href="http://code.google.com/p/mrpt/source/detail?r=2555" >r2555</a>

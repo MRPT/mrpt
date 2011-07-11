@@ -31,10 +31,10 @@
   *
   * \brief Base class of any sparse matrices or sparse expressions
   *
-  * \param Derived
+  * \tparam Derived
   *
-  *
-  *
+  * This class can be extended with the help of the plugin mechanism described on the page
+  * \ref TopicCustomizingEigen by defining the preprocessor symbol \c EIGEN_SPARSEMATRIXBASE_PLUGIN.
   */
 template<typename Derived> class SparseMatrixBase : public EigenBase<Derived>
 {

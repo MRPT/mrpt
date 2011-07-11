@@ -41,7 +41,7 @@ public:
     DstIsAligned = Derived::Flags & AlignedBit,
     DstHasDirectAccess = Derived::Flags & DirectAccessBit,
     SrcIsAligned = OtherDerived::Flags & AlignedBit,
-    JointAlignment = DstIsAligned && SrcIsAligned ? Aligned : Unaligned
+    JointAlignment = bool(DstIsAligned) && bool(SrcIsAligned) ? Aligned : Unaligned
   };
 
 private:
@@ -106,9 +106,9 @@ public:
                                              : int(NoUnrolling)
                   )
               : int(Traversal) == int(LinearVectorizedTraversal)
-                ? ( int(MayUnrollCompletely) && int(DstIsAligned) ? int(CompleteUnrolling) : int(NoUnrolling) )
+                ? ( bool(MayUnrollCompletely) && bool(DstIsAligned) ? int(CompleteUnrolling) : int(NoUnrolling) )
               : int(Traversal) == int(LinearTraversal)
-                ? ( int(MayUnrollCompletely) ? int(CompleteUnrolling) : int(NoUnrolling) )
+                ? ( bool(MayUnrollCompletely) ? int(CompleteUnrolling) : int(NoUnrolling) )
               : int(NoUnrolling)
   };
 
@@ -474,7 +474,7 @@ struct assign_impl<Derived1, Derived2, SliceVectorizedTraversal, NoUnrolling>
 
       // do the vectorizable part of the assignment
       for(Index inner = alignedStart; inner<alignedEnd; inner+=packetSize)
-        dst.template copyPacketByOuterInner<Derived2, Aligned, Unaligned>(outer, inner, src);
+        dst.template copyPacketByOuterInner<Derived2, dstAlignment, Unaligned>(outer, inner, src);
 
       // do the non-vectorizable part of the assignment
       for(Index inner = alignedEnd; inner<innerSize ; ++inner)

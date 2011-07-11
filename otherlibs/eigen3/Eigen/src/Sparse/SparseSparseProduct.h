@@ -133,7 +133,12 @@ static void sparse_product_impl(const Lhs& lhs, const Rhs& rhs, ResultType& res)
   float avgNnzPerRhsColumn = float(rhs.nonZeros())/float(cols);
   float ratioRes = std::min(ratioLhs * avgNnzPerRhsColumn, 1.f);
 
-  res.resize(rows, cols);
+  // mimics a resizeByInnerOuter:
+  if(ResultType::IsRowMajor)
+    res.resize(cols, rows);
+  else
+    res.resize(rows, cols);
+
   res.reserve(Index(ratioRes*rows*cols));
   for (Index j=0; j<cols; ++j)
   {

@@ -133,6 +133,17 @@ template<typename MatrixType, int DiagIndex> class Diagonal
       return m_matrix.coeff(index+rowOffset(), index+colOffset());
     }
 
+    const typename internal::remove_all<typename MatrixType::Nested>::type& 
+    nestedExpression() const 
+    {
+      return m_matrix;
+    }
+
+    int index() const
+    {
+      return m_index.value();
+    }
+
   protected:
     const typename MatrixType::Nested m_matrix;
     const internal::variable_if_dynamic<Index, DiagIndex> m_index;

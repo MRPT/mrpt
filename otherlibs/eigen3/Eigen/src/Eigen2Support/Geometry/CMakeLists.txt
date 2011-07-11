@@ -1,6 +1,6 @@
-FILE(GLOB Eigen_Geometry_SRCS "*.h")
+FILE(GLOB Eigen_Eigen2Support_Geometry_SRCS "*.h")
 
 INSTALL(FILES
-  ${Eigen_Geometry_SRCS}
+  ${Eigen_Eigen2Support_Geometry_SRCS}
   DESTINATION ${INCLUDE_INSTALL_DIR}/Eigen/src/Eigen2Support/Geometry
   )

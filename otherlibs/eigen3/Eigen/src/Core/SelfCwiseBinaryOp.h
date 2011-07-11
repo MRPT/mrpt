@@ -163,6 +163,16 @@ template<typename BinaryOp, typename Lhs, typename Rhs> class SelfCwiseBinaryOp
       return Base::operator=(rhs);
     }
 
+    Lhs& expression() const 
+    { 
+      return m_matrix;
+    }
+
+    const BinaryOp& functor() const 
+    { 
+      return m_functor;
+    }
+
   protected:
     Lhs& m_matrix;
     const BinaryOp& m_functor;

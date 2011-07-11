@@ -31,9 +31,9 @@
   *
   * \brief Generic expression of a partially reduxed matrix
   *
-  * \param MatrixType the type of the matrix we are applying the redux operation
-  * \param MemberOp type of the member functor
-  * \param Direction indicates the direction of the redux (Vertical or Horizontal)
+  * \tparam MatrixType the type of the matrix we are applying the redux operation
+  * \tparam MemberOp type of the member functor
+  * \tparam Direction indicates the direction of the redux (#Vertical or #Horizontal)
   *
   * This class represents an expression of a partial redux operator of a matrix.
   * It is the return type of some VectorwiseOp functions,
@@ -164,7 +164,7 @@ struct member_redux {
   * \brief Pseudo expression providing partial reduction operations
   *
   * \param ExpressionType the type of the object on which to do partial reductions
-  * \param Direction indicates the direction of the redux (Vertical or Horizontal)
+  * \param Direction indicates the direction of the redux (#Vertical or #Horizontal)
   *
   * This class represents a pseudo expression with partial reduction features.
   * It is the return type of DenseBase::colwise() and DenseBase::rowwise()

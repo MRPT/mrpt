@@ -186,7 +186,8 @@ template<typename _MatrixType> class ComplexEigenSolver
       * This function returns a column vector containing the
       * eigenvalues. Eigenvalues are repeated according to their
       * algebraic multiplicity, so there are as many eigenvalues as
-      * rows in the matrix.
+      * rows in the matrix. The eigenvalues are not sorted in any particular
+      * order.
       *
       * Example: \include ComplexEigenSolver_eigenvalues.cpp
       * Output: \verbinclude ComplexEigenSolver_eigenvalues.out

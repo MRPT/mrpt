@@ -268,7 +268,7 @@ struct partial_lu_impl
 
       row_transpositions[k] = row_of_biggest_in_col;
 
-      if(biggest_in_corner != 0)
+      if(biggest_in_corner != RealScalar(0))
       {
         if(k != row_of_biggest_in_col)
         {

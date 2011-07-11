@@ -105,11 +105,11 @@ class SparseInnerVectorSet : internal::no_assignment_operator,
 * specialisation for DynamicSparseMatrix
 ***************************************************************************/
 
-template<typename _Scalar, int _Options, int Size>
-class SparseInnerVectorSet<DynamicSparseMatrix<_Scalar, _Options>, Size>
-  : public SparseMatrixBase<SparseInnerVectorSet<DynamicSparseMatrix<_Scalar, _Options>, Size> >
+template<typename _Scalar, int _Options, typename _Index, int Size>
+class SparseInnerVectorSet<DynamicSparseMatrix<_Scalar, _Options, _Index>, Size>
+  : public SparseMatrixBase<SparseInnerVectorSet<DynamicSparseMatrix<_Scalar, _Options, _Index>, Size> >
 {
-    typedef DynamicSparseMatrix<_Scalar, _Options> MatrixType;
+    typedef DynamicSparseMatrix<_Scalar, _Options, _Index> MatrixType;
   public:
 
     enum { IsRowMajor = internal::traits<SparseInnerVectorSet>::IsRowMajor };
@@ -205,9 +205,9 @@ class SparseInnerVectorSet<DynamicSparseMatrix<_Scalar, _Options>, Size>
 
 template<typename _Scalar, int _Options, typename _Index, int Size>
 class SparseInnerVectorSet<SparseMatrix<_Scalar, _Options, _Index>, Size>
-  : public SparseMatrixBase<SparseInnerVectorSet<SparseMatrix<_Scalar, _Options>, Size> >
+  : public SparseMatrixBase<SparseInnerVectorSet<SparseMatrix<_Scalar, _Options, _Index>, Size> >
 {
-    typedef SparseMatrix<_Scalar, _Options> MatrixType;
+    typedef SparseMatrix<_Scalar, _Options, _Index> MatrixType;
   public:
 
     enum { IsRowMajor = internal::traits<SparseInnerVectorSet>::IsRowMajor };

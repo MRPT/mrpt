@@ -65,7 +65,7 @@ struct evaluator_impl_base
   {
     Index row = rowIndexByOuterInner(outer, inner); 
     Index col = colIndexByOuterInner(outer, inner); 
-    derived().coeffRef(row, col) = other.coeff(row, col);
+    derived().copyCoeff(row, col, other);
   }
 
   template<typename OtherEvaluatorType>
@@ -86,8 +86,7 @@ struct evaluator_impl_base
   {
     Index row = rowIndexByOuterInner(outer, inner); 
     Index col = colIndexByOuterInner(outer, inner); 
-    derived().template writePacket<StoreMode>(row, col, 
-      other.template packet<LoadMode>(row, col));
+    derived().template copyPacket<StoreMode, LoadMode>(row, col, other);
   }
 
   template<int StoreMode, int LoadMode, typename OtherEvaluatorType>
@@ -441,7 +440,7 @@ struct evaluator_impl<CwiseUnaryView<UnaryOp, ArgType> >
   }
 
 protected:
-  const UnaryOp& m_unaryOp;
+  const UnaryOp m_unaryOp;
   typename evaluator<ArgType>::type m_argImpl;
 };
 
@@ -783,7 +782,7 @@ struct evaluator_impl<PartialReduxExpr<ArgType, MemberOp, Direction> >
   }
 
 protected:
-  const XprType& m_expr;
+  const XprType m_expr;
 };
 
 
@@ -1014,6 +1013,142 @@ protected:
 private:
   EIGEN_STRONG_INLINE Index rowOffset() const { return m_index>0 ? 0 : -m_index; }
   EIGEN_STRONG_INLINE Index colOffset() const { return m_index>0 ? m_index : 0; }
+};
+
+
+// ---------- SwapWrapper ----------
+
+template<typename ArgType>
+struct evaluator_impl<SwapWrapper<ArgType> >
+  : evaluator_impl_base<SwapWrapper<ArgType> >
+{
+  typedef SwapWrapper<ArgType> XprType;
+
+  evaluator_impl(const XprType& swapWrapper) 
+    : m_argImpl(swapWrapper.expression())
+  { }
+ 
+  typedef typename XprType::Index Index;
+  typedef typename XprType::Scalar Scalar;
+  typedef typename XprType::Packet Packet;
+
+  // This function and the next one are needed by assign to correctly align loads/stores
+  // TODO make Assign use .data()
+  Scalar& coeffRef(Index row, Index col)
+  {
+    return m_argImpl.coeffRef(row, col);
+  }
+  
+  inline Scalar& coeffRef(Index index)
+  {
+    return m_argImpl.coeffRef(index);
+  }
+
+  template<typename OtherEvaluatorType>
+  void copyCoeff(Index row, Index col, const OtherEvaluatorType& other)
+  {
+    OtherEvaluatorType& nonconst_other = const_cast<OtherEvaluatorType&>(other);
+    Scalar tmp = m_argImpl.coeff(row, col);
+    m_argImpl.coeffRef(row, col) = nonconst_other.coeff(row, col);
+    nonconst_other.coeffRef(row, col) = tmp;
+  }
+
+  template<typename OtherEvaluatorType>
+  void copyCoeff(Index index, const OtherEvaluatorType& other)
+  {
+    OtherEvaluatorType& nonconst_other = const_cast<OtherEvaluatorType&>(other);
+    Scalar tmp = m_argImpl.coeff(index);
+    m_argImpl.coeffRef(index) = nonconst_other.coeff(index);
+    nonconst_other.coeffRef(index) = tmp;
+  }
+
+  template<int StoreMode, int LoadMode, typename OtherEvaluatorType>
+  void copyPacket(Index row, Index col, const OtherEvaluatorType& other)
+  {
+    OtherEvaluatorType& nonconst_other = const_cast<OtherEvaluatorType&>(other);
+    Packet tmp = m_argImpl.template packet<StoreMode>(row, col);
+    m_argImpl.template writePacket<StoreMode>
+      (row, col, nonconst_other.template packet<LoadMode>(row, col));
+    nonconst_other.template writePacket<LoadMode>(row, col, tmp);
+  }
+
+  template<int StoreMode, int LoadMode, typename OtherEvaluatorType>
+  void copyPacket(Index index, const OtherEvaluatorType& other)
+  {
+    OtherEvaluatorType& nonconst_other = const_cast<OtherEvaluatorType&>(other);
+    Packet tmp = m_argImpl.template packet<StoreMode>(index);
+    m_argImpl.template writePacket<StoreMode>
+      (index, nonconst_other.template packet<LoadMode>(index));
+    nonconst_other.template writePacket<LoadMode>(index, tmp);
+  }
+
+protected:
+  typename evaluator<ArgType>::type m_argImpl;
+};
+
+
+// ---------- SelfCwiseBinaryOp ----------
+
+template<typename BinaryOp, typename LhsXpr, typename RhsXpr>
+struct evaluator_impl<SelfCwiseBinaryOp<BinaryOp, LhsXpr, RhsXpr> >
+  : evaluator_impl_base<SelfCwiseBinaryOp<BinaryOp, LhsXpr, RhsXpr> >
+{
+  typedef SelfCwiseBinaryOp<BinaryOp, LhsXpr, RhsXpr> XprType;
+
+  evaluator_impl(const XprType& selfCwiseBinaryOp) 
+    : m_argImpl(selfCwiseBinaryOp.expression()),
+      m_functor(selfCwiseBinaryOp.functor())
+  { }
+ 
+  typedef typename XprType::Index Index;
+  typedef typename XprType::Scalar Scalar;
+  typedef typename XprType::Packet Packet;
+
+  // This function and the next one are needed by assign to correctly align loads/stores
+  // TODO make Assign use .data()
+  Scalar& coeffRef(Index row, Index col)
+  {
+    return m_argImpl.coeffRef(row, col);
+  }
+  
+  inline Scalar& coeffRef(Index index)
+  {
+    return m_argImpl.coeffRef(index);
+  }
+
+  template<typename OtherEvaluatorType>
+  void copyCoeff(Index row, Index col, const OtherEvaluatorType& other)
+  {
+    Scalar& tmp = m_argImpl.coeffRef(row, col);
+    tmp = m_functor(tmp, other.coeff(row, col));
+  }
+
+  template<typename OtherEvaluatorType>
+  void copyCoeff(Index index, const OtherEvaluatorType& other)
+  {
+    Scalar& tmp = m_argImpl.coeffRef(index);
+    tmp = m_functor(tmp, other.coeff(index));
+  }
+
+  template<int StoreMode, int LoadMode, typename OtherEvaluatorType>
+  void copyPacket(Index row, Index col, const OtherEvaluatorType& other)
+  {
+    const Packet res = m_functor.packetOp(m_argImpl.template packet<StoreMode>(row, col),
+					  other.template packet<LoadMode>(row, col));
+    m_argImpl.template writePacket<StoreMode>(row, col, res);
+  }
+
+  template<int StoreMode, int LoadMode, typename OtherEvaluatorType>
+  void copyPacket(Index index, const OtherEvaluatorType& other)
+  {
+    const Packet res = m_functor.packetOp(m_argImpl.template packet<StoreMode>(index),
+					  other.template packet<LoadMode>(index));
+    m_argImpl.template writePacket<StoreMode>(index, res);
+  }
+
+protected:
+  typename evaluator<LhsXpr>::type m_argImpl;
+  const BinaryOp m_functor;
 };
 
 

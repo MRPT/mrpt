@@ -133,6 +133,7 @@ template<typename ExpressionType> class WithFormat;
 template<typename MatrixType> struct CommaInitializer;
 template<typename Derived> class ReturnByValue;
 template<typename ExpressionType> class ArrayWrapper;
+template<typename ExpressionType> class MatrixWrapper;
 
 namespace internal {
 template<typename DecompositionType, typename Rhs> struct solve_retval_base;
@@ -179,6 +180,9 @@ template<typename Scalar> struct scalar_exp_op;
 template<typename Scalar> struct scalar_log_op;
 template<typename Scalar> struct scalar_cos_op;
 template<typename Scalar> struct scalar_sin_op;
+template<typename Scalar> struct scalar_acos_op;
+template<typename Scalar> struct scalar_asin_op;
+template<typename Scalar> struct scalar_tan_op;
 template<typename Scalar> struct scalar_pow_op;
 template<typename Scalar> struct scalar_inverse_op;
 template<typename Scalar> struct scalar_square_op;
@@ -279,6 +283,8 @@ template<typename MatrixType,int Direction> class Homogeneous;
 // MatrixFunctions module
 template<typename Derived> struct MatrixExponentialReturnValue;
 template<typename Derived> class MatrixFunctionReturnValue;
+template<typename Derived> class MatrixSquareRootReturnValue;
+template<typename Derived> class MatrixLogarithmReturnValue;
 
 namespace internal {
 template <typename Scalar>

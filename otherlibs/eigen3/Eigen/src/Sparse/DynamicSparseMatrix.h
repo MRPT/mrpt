@@ -328,9 +328,9 @@ class DynamicSparseMatrix
 };
 
 template<typename Scalar, int _Options, typename _Index>
-class DynamicSparseMatrix<Scalar,_Options,_Index>::InnerIterator : public SparseVector<Scalar,_Options>::InnerIterator
+class DynamicSparseMatrix<Scalar,_Options,_Index>::InnerIterator : public SparseVector<Scalar,_Options,_Index>::InnerIterator
 {
-    typedef typename SparseVector<Scalar,_Options>::InnerIterator Base;
+    typedef typename SparseVector<Scalar,_Options,_Index>::InnerIterator Base;
   public:
     InnerIterator(const DynamicSparseMatrix& mat, Index outer)
       : Base(mat.m_data[outer]), m_outer(outer)

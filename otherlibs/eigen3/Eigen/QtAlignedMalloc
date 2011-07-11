@@ -6,7 +6,7 @@
 
 #if (!EIGEN_MALLOC_ALREADY_ALIGNED)
 
-#include "src/Core/util/DisableMSVCWarnings.h"
+#include "src/Core/util/DisableStupidWarnings.h"
 
 void *qMalloc(size_t size)
 {
@@ -26,7 +26,7 @@ void *qRealloc(void *ptr, size_t size)
   return newPtr;
 }
 
-#include "src/Core/util/EnableMSVCWarnings.h"
+#include "src/Core/util/ReenableStupidWarnings.h"
 
 #endif
 

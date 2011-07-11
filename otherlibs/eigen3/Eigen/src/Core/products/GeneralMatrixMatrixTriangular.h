@@ -83,10 +83,10 @@ struct general_matrix_matrix_triangular_product<Index,LhsScalar,LhsStorageOrder,
     if(mc > Traits::nr)
       mc = (mc/Traits::nr)*Traits::nr;
 
-    LhsScalar* blockA = ei_aligned_stack_new(LhsScalar, kc*mc);
     std::size_t sizeW = kc*Traits::WorkSpaceFactor;
     std::size_t sizeB = sizeW + kc*size;
-    RhsScalar* allocatedBlockB = ei_aligned_stack_new(RhsScalar, sizeB);
+    ei_declare_aligned_stack_constructed_variable(LhsScalar, blockA, kc*mc, 0);
+    ei_declare_aligned_stack_constructed_variable(RhsScalar, allocatedBlockB, sizeB, 0);
     RhsScalar* blockB = allocatedBlockB + sizeW;
     
     gemm_pack_lhs<LhsScalar, Index, Traits::mr, Traits::LhsProgress, LhsStorageOrder> pack_lhs;
@@ -125,8 +125,6 @@ struct general_matrix_matrix_triangular_product<Index,LhsScalar,LhsStorageOrder,
         }
       }
     }
-    ei_aligned_stack_delete(LhsScalar, blockA, kc*mc);
-    ei_aligned_stack_delete(RhsScalar, allocatedBlockB, sizeB);
   }
 };
 

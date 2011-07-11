@@ -375,8 +375,23 @@ struct gemv_static_vector_if<Scalar,Size,Dynamic,true>
 template<typename Scalar,int Size,int MaxSize>
 struct gemv_static_vector_if<Scalar,Size,MaxSize,true>
 {
+  #if EIGEN_ALIGN_STATICALLY
   internal::plain_array<Scalar,EIGEN_SIZE_MIN_PREFER_FIXED(Size,MaxSize),0> m_data;
   EIGEN_STRONG_INLINE Scalar* data() { return m_data.array; }
+  #else
+  // Some architectures cannot align on the stack,
+  // => let's manually enforce alignment by allocating more data and return the address of the first aligned element.
+  enum {
+    ForceAlignment  = internal::packet_traits<Scalar>::Vectorizable,
+    PacketSize      = internal::packet_traits<Scalar>::size
+  };
+  internal::plain_array<Scalar,EIGEN_SIZE_MIN_PREFER_FIXED(Size,MaxSize)+(ForceAlignment?PacketSize:0),0> m_data;
+  EIGEN_STRONG_INLINE Scalar* data() {
+    return ForceAlignment
+            ? reinterpret_cast<Scalar*>((reinterpret_cast<size_t>(m_data.array) & ~(size_t(15))) + 16)
+            : m_data.array;
+  }
+  #endif
 };
 
 template<> struct gemv_selector<OnTheRight,ColMajor,true>

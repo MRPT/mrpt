@@ -55,6 +55,9 @@
   * Example: \include MatrixBase_cwise_const.cpp
   * Output: \verbinclude MatrixBase_cwise_const.out
   *
+  * This class can be extended with the help of the plugin mechanism described on the page
+  * \ref TopicCustomizingEigen by defining the preprocessor symbol \c EIGEN_CWISE_PLUGIN.
+  *
   * \sa MatrixBase::cwise() const, MatrixBase::cwise()
   */
 template<typename ExpressionType> class Cwise

@@ -58,14 +58,14 @@ struct plain_array
   #define EIGEN_MAKE_UNALIGNED_ARRAY_ASSERT(sizemask) \
     eigen_assert((reinterpret_cast<size_t>(array) & sizemask) == 0 \
               && "this assertion is explained here: " \
-              "http://eigen.tuxfamily.org/dox/UnalignedArrayAssert.html" \
+              "http://eigen.tuxfamily.org/dox-devel/TopicUnalignedArrayAssert.html" \
               " **** READ THIS WEB PAGE !!! ****");
 #endif
 
 template <typename T, int Size, int MatrixOrArrayOptions>
 struct plain_array<T, Size, MatrixOrArrayOptions, 16>
 {
-  EIGEN_ALIGN16 T array[Size];
+  EIGEN_USER_ALIGN16 T array[Size];
   plain_array() { EIGEN_MAKE_UNALIGNED_ARRAY_ASSERT(0xf) }
   plain_array(constructor_without_unaligned_array_assert) {}
 };
@@ -73,7 +73,7 @@ struct plain_array<T, Size, MatrixOrArrayOptions, 16>
 template <typename T, int MatrixOrArrayOptions, int Alignment>
 struct plain_array<T, 0, MatrixOrArrayOptions, Alignment>
 {
-  EIGEN_ALIGN16 T array[1];
+  EIGEN_USER_ALIGN16 T array[1];
   plain_array() {}
   plain_array(constructor_without_unaligned_array_assert) {}
 };
@@ -127,6 +127,16 @@ template<typename T, int _Rows, int _Cols, int _Options> class DenseStorage<T, 0
     inline const T *data() const { return 0; }
     inline T *data() { return 0; }
 };
+
+// more specializations for null matrices; these are necessary to resolve ambiguities
+template<typename T, int _Options> class DenseStorage<T, 0, Dynamic, Dynamic, _Options>
+: public DenseStorage<T, 0, 0, 0, _Options> { };
+
+template<typename T, int _Rows, int _Options> class DenseStorage<T, 0, _Rows, Dynamic, _Options>
+: public DenseStorage<T, 0, 0, 0, _Options> { };
+
+template<typename T, int _Cols, int _Options> class DenseStorage<T, 0, Dynamic, _Cols, _Options>
+: public DenseStorage<T, 0, 0, 0, _Options> { };
 
 // dynamic-size matrix with fixed-size storage
 template<typename T, int Size, int _Options> class DenseStorage<T, Size, Dynamic, Dynamic, _Options>
