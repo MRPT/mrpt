@@ -1606,7 +1606,7 @@ bool CPointsMap::savePCDFile(const std::string &filename, bool save_as_binary) c
     pcl::PointCloud<pcl::PointXYZ> cloud;
     this->getPCLPointCloud(cloud);
 
-    return 0 == pcl::io::savePCDFile("test_pcd.pcd", cloud, save_as_binary);
+    return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
 
 #else
     THROW_EXCEPTION("Operation not available: MRPT was built without PCL")

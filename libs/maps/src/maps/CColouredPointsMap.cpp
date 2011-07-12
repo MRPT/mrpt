@@ -1695,30 +1695,40 @@ void  CColouredPointsMap::addFrom(const CPointsMap &anotherMap)
 bool CColouredPointsMap::savePCDFile(const std::string &filename, bool save_as_binary) const
 {
 #if MRPT_HAS_PCL
-    pcl::PointCloud<pcl::PointXYZRGB> cloud;
+	pcl::PointCloud<pcl::PointXYZRGB> cloud;
 
 	const size_t nThis = this->size();
 
-    // Fill in the cloud data
-    cloud.width    = nThis;
-    cloud.height   = 1;
-    cloud.is_dense = false;
-    cloud.points.resize (cloud.width * cloud.height);
+	// Fill in the cloud data
+	cloud.width    = nThis;
+	cloud.height   = 1;
+	cloud.is_dense = false;
+	cloud.points.resize (cloud.width * cloud.height);
 
-    const float f = 1.0f/255;
-    for (size_t i = 0; i < nThis; ++i)
-    {
-        cloud.points[i].x =this->x[i];
-        cloud.points[i].y =this->y[i];
-        cloud.points[i].z =this->z[i];
-        cloud.points[i].r = static_cast<uint8_t>( this->m_color_R[i] * f);
-        cloud.points[i].g = static_cast<uint8_t>( this->m_color_G[i] * f);
-        cloud.points[i].b = static_cast<uint8_t>( this->m_color_B[i] * f);
-    }
+	const float f = 1.0f/255;
 
-    return 0 == pcl::io::savePCDFile("test_pcd.pcd", cloud, save_as_binary);
+	union myaux_t
+	{
+		uint8_t rgb[4];
+		float   f;		
+	} aux_val;
+
+	for (size_t i = 0; i < nThis; ++i)
+	{
+		cloud.points[i].x =this->x[i];
+		cloud.points[i].y =this->y[i];
+		cloud.points[i].z =this->z[i];
+
+		aux_val.rgb[0]=static_cast<uint8_t>( this->m_color_B[0] * f);
+		aux_val.rgb[1]=static_cast<uint8_t>( this->m_color_B[1] * f);
+		aux_val.rgb[2]=static_cast<uint8_t>( this->m_color_B[2] * f);
+
+		cloud.points[i].rgb = aux_val.f;
+	}
+
+	return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
 
 #else
-    THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
+	THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
 #endif
 }

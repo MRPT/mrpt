@@ -1341,7 +1341,7 @@ ENDIF(BUILD_KINECT)
 # --------------------------------------------
 SET(CMAKE_MRPT_HAS_PCL 0)
 SET(CMAKE_MRPT_HAS_PCL_SYSTEM 0)
-find_package(PCL 1.1.0 COMPONENTS io common registration QUIET)
+find_package(PCL COMPONENTS io common registration QUIET)
 if (PCL_FOUND)
 	SET(CMAKE_MRPT_HAS_PCL 1)
 	SET(CMAKE_MRPT_HAS_PCL_SYSTEM 1)

@@ -39,7 +39,7 @@
 	- Changes in classes:
 		- [mrpt-maps] mrpt::slam::CPointsMap (and derived classes) now have a method mrpt::slam::CPointsMap::addFrom() and an "operator +=" to add the points from another point map  - <a href="http://code.google.com/p/mrpt/source/detail?r=2553" >r2553</a>
 		- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".
-		- [mrpt-maps] Basic support for PCL library (version 1.1.0): ( <a href="http://code.google.com/p/mrpt/source/detail?r=2560" >r2560</a> )
+		- [mrpt-maps] Basic support for PCL library (version 1.0.0+): ( <a href="http://code.google.com/p/mrpt/source/detail?r=2560" >r2560</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2562" >r2562</a> )
 			- mrpt::slam::CPointsMap::savePCDFile() 
 			- mrpt::slam::CPointsMap::getPCLPointCloud()
 			- mrpt::slam::CColouredPointsMap::savePCDFile() 
