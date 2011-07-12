@@ -302,6 +302,15 @@ namespace mrpt
 
 			 void resetPointsMinDist( float defValue = 2000.0f ); //!< Reset the minimum-observed-distance buffer for all the points to a predefined value
 
+            /** @name PCL library support
+                @{ */
+
+            /** Save the point cloud as a PCL PCD file, in either ASCII or binary format \return false on any error */
+            virtual bool savePCDFile(const std::string &filename, bool save_as_binary) const;
+
+            /** @} */
+
+
 			/** @name Filter-by-height stuff
 				@{ */
 		public:

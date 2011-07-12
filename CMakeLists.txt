@@ -832,7 +832,7 @@ SET(CMAKE_MRPT_HAS_JPEG 1)	# Always present: system or built-in
 # ===================================================
 # Here you can define what libraries of wxWidgets you need for your application. 
 #  You can figure out what libraries you need here;  http://www.wxwidgets.org/manuals/2.8/wx_librarieslist.html
-SET(wxWidgets_MRPT_COMPONENTS_TO_SEARCH "base;core;gl;adv;aui" CACHE STRING "Components to search in wxWidgets")
+SET(wxWidgets_MRPT_COMPONENTS_TO_SEARCH "base core gl adv aui" CACHE STRING "Components to search in wxWidgets")
 
 IF(UNIX)
 	# Linux:
@@ -855,7 +855,7 @@ endif(msvc)
 
 
 # We need the Find package for wxWidgets to work
-FIND_PACKAGE(wxWidgets COMPONENTS "${wxWidgets_MRPT_COMPONENTS_TO_SEARCH}")
+FIND_PACKAGE(wxWidgets COMPONENTS ${wxWidgets_MRPT_COMPONENTS_TO_SEARCH})
 # Did we find wxWidgets ? This condition will fail for as long as the internal vars do not point to the proper wxWidgets configuration
 IF(wxWidgets_FOUND)
 	# Check for non-found debug libs:
@@ -871,6 +871,7 @@ IF(wxWidgets_FOUND)
 	INCLUDE(${wxWidgets_USE_FILE})
 	# ${wxWidgets_LIBRARIES}  will contain the libraries that should be added through TARGET_LINK_LIBRARIES(...)
 	#MESSAGE(STATUS "wxWidgets:")
+	#MESSAGE(STATUS "WX: ${wxWidgets_LIBRARIES}")
 	#MESSAGE(STATUS "   wxWidgets_LIBRARY_DIRS  : ${wxWidgets_LIBRARY_DIRS}")
 	#MESSAGE(STATUS "   wxWidgets_CXX_FLAGS     : ${wxWidgets_CXX_FLAGS}")
 	#MESSAGE(STATUS "   wxWidgets_INCLUDE_DIRS  : ${wxWidgets_INCLUDE_DIRS}")
@@ -1335,6 +1336,26 @@ IF(BUILD_KINECT)
 ELSE(BUILD_KINECT)
 	SET(CMAKE_MRPT_HAS_KINECT 0)
 ENDIF(BUILD_KINECT)
+
+# PCL library: 
+# --------------------------------------------
+SET(CMAKE_MRPT_HAS_PCL 0)
+SET(CMAKE_MRPT_HAS_PCL_SYSTEM 0)
+find_package(PCL 1.1.0 COMPONENTS io common registration QUIET)
+if (PCL_FOUND)
+	SET(CMAKE_MRPT_HAS_PCL 1)
+	SET(CMAKE_MRPT_HAS_PCL_SYSTEM 1)
+
+	INCLUDE_DIRECTORIES(${PCL_INCLUDE_DIRS})
+	link_directories(${PCL_LIBRARY_DIRS})
+	add_definitions(${PCL_DEFINITIONS})
+
+	# Add PCL directories as "-isystem" to avoid warnings:
+	FOREACH(PCLDIR ${PCL_INCLUDE_DIRS})
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${PCLDIR}")
+	ENDFOREACH(PCLDIR)
+
+endif(PCL_FOUND)
 
 
 # WXWIDGETS+GL: Add libraries
@@ -2199,6 +2220,9 @@ SHOW_CONFIG_LINE_SYSTEM("Has libjpeg (jpeg)                      " CMAKE_MRPT_HA
 IF(UNIX)
 	SHOW_CONFIG_LINE_SYSTEM("Has libftdi (USB)                       " CMAKE_MRPT_HAS_FTDI)
 ENDIF(UNIX)
+
+SHOW_CONFIG_LINE_SYSTEM("Has PCL (Pointscloud library)           " CMAKE_MRPT_HAS_PCL  "Version: ${PCL_VERSION}")
+
 MESSAGE(STATUS "")
 
 MESSAGE(STATUS "  Install prefix:     ${CMAKE_INSTALL_PREFIX}")

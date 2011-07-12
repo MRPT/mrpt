@@ -38,6 +38,12 @@
 
 #include <mrpt/opengl/CPointCloud.h>
 
+#if MRPT_HAS_PCL
+#   include <pcl/io/pcd_io.h>
+#   include <pcl/point_types.h>
+//#   include <pcl/registration/icp.h>
+#endif
+
 using namespace mrpt::poses;
 using namespace mrpt::slam;
 using namespace std;
@@ -1591,4 +1597,18 @@ void  CPointsMap::addFrom(const CPointsMap &anotherMap)
 	}
 
 	mark_as_modified();
+}
+
+/** Save the point cloud as a PCL PCD file, in either ASCII or binary format \return false on any error */
+bool CPointsMap::savePCDFile(const std::string &filename, bool save_as_binary) const
+{
+#if MRPT_HAS_PCL
+    pcl::PointCloud<pcl::PointXYZ> cloud;
+    this->getPCLPointCloud(cloud);
+
+    return 0 == pcl::io::savePCDFile("test_pcd.pcd", cloud, save_as_binary);
+
+#else
+    THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
+#endif
 }

@@ -580,6 +580,40 @@ namespace slam
 		 */
 		virtual double computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
 
+        /** @name PCL library support
+            @{ */
+
+        /** Save the point cloud as a PCL PCD file, in either ASCII or binary format \return false on any error */
+        virtual bool savePCDFile(const std::string &filename, bool save_as_binary) const;
+
+
+        /** Use to convert this MRPT point cloud object into a PCL point cloud object.
+          *  Usage example:
+          *  \code
+          *    mrpt::slam::CPointsCloud       pc;
+          *    pcl::PointCloud<pcl::PointXYZ> cloud;
+          *
+          *    pc.getPCLPointCloud(cloud);
+          *  \endcode
+          */
+        template <class POINTCLOUD>
+        void getPCLPointCloud(POINTCLOUD &cloud) const
+        {
+            const size_t nThis = this->size();
+            // Fill in the cloud data
+            cloud.width    = nThis;
+            cloud.height   = 1;
+            cloud.is_dense = false;
+            cloud.points.resize(cloud.width * cloud.height);
+            for (size_t i = 0; i < nThis; ++i) {
+                cloud.points[i].x =this->x[i];
+                cloud.points[i].y =this->y[i];
+                cloud.points[i].z =this->z[i];
+            }
+        }
+
+        /** @} */
+
 		protected:
 			/** @name PLY Import virtual methods to implement in base classes
 			    @{ */

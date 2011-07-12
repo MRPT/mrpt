@@ -46,6 +46,13 @@ using namespace mrpt::math;
 
 IMPLEMENTS_SERIALIZABLE(CColouredPointsMap, CPointsMap,mrpt::slam)
 
+
+#if MRPT_HAS_PCL
+#   include <pcl/io/pcd_io.h>
+#   include <pcl/point_types.h>
+//#   include <pcl/registration/icp.h>
+#endif
+
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
@@ -1682,4 +1689,36 @@ void  CColouredPointsMap::addFrom(const CPointsMap &anotherMap)
 	}
 
 	mark_as_modified();
+}
+
+/** Save the point cloud as a PCL PCD file, in either ASCII or binary format \return false on any error */
+bool CColouredPointsMap::savePCDFile(const std::string &filename, bool save_as_binary) const
+{
+#if MRPT_HAS_PCL
+    pcl::PointCloud<pcl::PointXYZRGB> cloud;
+
+	const size_t nThis = this->size();
+
+    // Fill in the cloud data
+    cloud.width    = nThis;
+    cloud.height   = 1;
+    cloud.is_dense = false;
+    cloud.points.resize (cloud.width * cloud.height);
+
+    const float f = 1.0f/255;
+    for (size_t i = 0; i < nThis; ++i)
+    {
+        cloud.points[i].x =this->x[i];
+        cloud.points[i].y =this->y[i];
+        cloud.points[i].z =this->z[i];
+        cloud.points[i].r = static_cast<uint8_t>( this->m_color_R[i] * f);
+        cloud.points[i].g = static_cast<uint8_t>( this->m_color_G[i] * f);
+        cloud.points[i].b = static_cast<uint8_t>( this->m_color_B[i] * f);
+    }
+
+    return 0 == pcl::io::savePCDFile("test_pcd.pcd", cloud, save_as_binary);
+
+#else
+    THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
+#endif
 }

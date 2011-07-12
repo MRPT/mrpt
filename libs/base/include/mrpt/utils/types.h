@@ -52,7 +52,9 @@
 #ifdef EIGEN_MAJOR_VERSION
 #	error **FATAL ERROR**: MRPT headers must be included before Eigen headers.
 #endif
-#define EIGEN_USE_NEW_STDVECTOR
+#ifndef EIGEN_USE_NEW_STDVECTOR
+#  define EIGEN_USE_NEW_STDVECTOR
+#endif
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
 #include <Eigen/StdDeque>
@@ -83,7 +85,7 @@
 
 namespace mrpt
 {
-	/** The base class of MRPT vectors, actually, Eigen column matrices of dynamic size with specialized constructors that resemble std::vector. 
+	/** The base class of MRPT vectors, actually, Eigen column matrices of dynamic size with specialized constructors that resemble std::vector.
          * \note For a summary and classification of all MRPT vector, array and matrix classes see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
 	 */
 	template <typename T>
