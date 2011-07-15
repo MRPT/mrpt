@@ -177,7 +177,7 @@ void CGenericFeatureTracker::trackFeatures(
 	{
 		m_timlog.enter("[CGenericFeatureTracker] add new features");
 #if MRPT_HAS_OPENCV
-#if MRPT_OPENCV_VERSION_NUM >= 0x210
+#if MRPT_OPENCV_VERSION_NUM >= 0x200
 		using namespace cv;
 
 		// Look for new features:
@@ -189,7 +189,7 @@ void CGenericFeatureTracker::trackFeatures(
 	FastFeatureDetector fastDetector( m_detector_adaptive_thres, true /* non-max supres. */ );
 	const Mat new_img_gray_mat = cvarrToMat( cur_gray.getAs<IplImage>() );
 	fastDetector.detect( new_img_gray_mat, new_feats );
-# elif MRPT_OPENCV_VERSION_NUM >= 0x210
+# else
 	// Older version:
 	FAST(cur_gray.getAs<IplImage>(), new_feats, m_detector_adaptive_thres, true /* non-max supres. */ );
 # endif
