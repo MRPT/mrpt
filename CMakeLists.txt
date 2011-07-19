@@ -832,7 +832,7 @@ SET(CMAKE_MRPT_HAS_JPEG 1)	# Always present: system or built-in
 # ===================================================
 # Here you can define what libraries of wxWidgets you need for your application. 
 #  You can figure out what libraries you need here;  http://www.wxwidgets.org/manuals/2.8/wx_librarieslist.html
-SET(wxWidgets_MRPT_COMPONENTS_TO_SEARCH "base core gl adv aui" CACHE STRING "Components to search in wxWidgets")
+SET(wxWidgets_MRPT_COMPONENTS_TO_SEARCH "base;core;gl;adv;aui" CACHE STRING "Components to search in wxWidgets")
 
 IF(UNIX)
 	# Linux:
