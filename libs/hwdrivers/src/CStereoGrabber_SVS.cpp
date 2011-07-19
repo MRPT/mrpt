@@ -31,18 +31,7 @@
 
 
 // OPENCV HEADERS: For old (1.X) and new (2.X) versions:
-#if MRPT_HAS_OPENCV
-#	if MRPT_OPENCV_VERSION_NUM>=0x211
-#		define CV_NO_CVV_IMAGE   // Avoid CImage name crash
-#		include <opencv2/core/core.hpp>
-#               include <opencv/cv.h>
-#	else
-#		include <cv.h>
-#	endif
-#	ifdef CImage	// For old OpenCV versions (<=1.0.0)
-#		undef CImage
-#	endif
-#endif
+#include "do_opencv_includes.h"
 
 #if MRPT_HAS_SVS
 #	include <svsclass.h>

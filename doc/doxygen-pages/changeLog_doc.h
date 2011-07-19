@@ -45,9 +45,12 @@
 			- mrpt::slam::CColouredPointsMap::savePCDFile() 
 	- Build system/external libs:
 		- Update of Eigen3 to a more recent version (11-Jul-2011), which avoids warnings in MSVC x64 - <a href="http://code.google.com/p/mrpt/source/detail?r=2556" >r2556</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2558" >r2558</a>
-	- BUG FIXES:
+	- Build error FIXES:
 		- Build error in platforms that don't support SSE2 (Thanks rovoreed!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2550" >r2550</a>
-                - Build error when OpenCV exists but is not used. - <a href="http://code.google.com/p/mrpt/source/detail?r=2555" >r2555</a>
+		- Build error when OpenCV exists but is not used. - <a href="http://code.google.com/p/mrpt/source/detail?r=2555" >r2555</a>
+		- Build error in mrpt-hwdrivers with latest OpenCV 2.3 - <a href="http://code.google.com/p/mrpt/source/detail?r=r2566" >r2566</a>
+	- BUG FIXES:
+		- (none yet)
 
 <br> <hr>
 
