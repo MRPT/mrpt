@@ -30,6 +30,12 @@
 
 #include <mrpt/opengl/CRenderizable.h>
 
+// All these are needed for the auxiliary methods posePDF2opengl()
+#include <mrpt/poses/CPointPDF.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPose3DQuatPDF.h>
+
 namespace mrpt
 {
 	namespace opengl
@@ -160,6 +166,31 @@ namespace mrpt
 
 			bool contains(const CRenderizablePtr &obj) const;
 
+
+			/** @name pose_pdf -> 3d objects auxiliary templates
+			    @{ */
+			// The reason this code is here is to exploit C++'s "T::template function()" in order to 
+			//  define the members getAs3DObject() in several classes in mrpt-base with its argument
+			//  being a class (CSetOfObjects) which is actually declared here, in mrpt-opengl.
+			//  Implementations are in "pose_pdfs.cpp", not in "CSetOfObjects" (historic reasons...)
+
+			/** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
+			  *    mrpt::poses::CPosePDF::getAs3DObject     */
+			static CSetOfObjectsPtr posePDF2opengl(const mrpt::poses::CPosePDF &o);
+
+			/** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
+			  *    mrpt::poses::CPointPDF::getAs3DObject     */
+			static CSetOfObjectsPtr posePDF2opengl(const mrpt::poses::CPointPDF &o);
+
+			/** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
+			  *    mrpt::poses::CPose3DPDF::getAs3DObject     */
+			static CSetOfObjectsPtr posePDF2opengl(const mrpt::poses::CPose3DPDF &o);
+
+			/** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
+			  *    mrpt::poses::CPose3DQuatPDF::getAs3DObject     */
+			static CSetOfObjectsPtr posePDF2opengl(const mrpt::poses::CPose3DQuatPDF &o);
+
+			/** @} */
 
 		private:
 			/** Default constructor

@@ -49,6 +49,7 @@
 		- Build error in platforms that don't support SSE2 (Thanks rovoreed!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2550" >r2550</a>
 		- Build error when OpenCV exists but is not used. - <a href="http://code.google.com/p/mrpt/source/detail?r=2555" >r2555</a>
 		- Build error in mrpt-hwdrivers with latest OpenCV 2.3 - <a href="http://code.google.com/p/mrpt/source/detail?r=r2566" >r2566</a>
+		- Linking error with MinGW around the mrpt::opengl::posePDF2opengl() templates - <a href="http://code.google.com/p/mrpt/source/detail?r=r2567" >r2567</a> (Thanks Miyamoto Musashi for <a href="http://www.mrpt.org/node/1031" >reporting</a>!).
 	- BUG FIXES:
 		- (none yet)
 

@@ -32,7 +32,6 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/utils/CProbabilityDensityFunction.h>
-#include <mrpt/poses/opengl_frwd_decl.h>
 
 
 namespace mrpt
@@ -96,7 +95,7 @@ namespace poses
 		  */
 		template <class OPENGL_SETOFOBJECTSPTR>
 		inline void getAs3DObject(OPENGL_SETOFOBJECTSPTR &out_obj) const {
-			*out_obj = *mrpt::opengl::posePDF2opengl<CPosePDF,OPENGL_SETOFOBJECTSPTR>(*this);
+				*out_obj = *out_obj->posePDF2opengl(*this);
 		}
 
 		/** Returns a 3D representation of this PDF.
@@ -104,7 +103,9 @@ namespace poses
 		  */
 		template <class OPENGL_SETOFOBJECTSPTR>
 		inline OPENGL_SETOFOBJECTSPTR getAs3DObject() const {
-			return mrpt::opengl::posePDF2opengl<CPosePDF,OPENGL_SETOFOBJECTSPTR>(*this);
+			OPENGL_SETOFOBJECTSPTR ptr;
+			ptr->posePDF2opengl(*this);
+			return ptr;
 		}
 
 

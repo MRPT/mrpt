@@ -29,42 +29,22 @@
 #define pose_pdfs_H
 
 #include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/poses/opengl_frwd_decl.h>
-#include <mrpt/poses/CPointPDF.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/poses/CPose3DQuatPDF.h>
 
 namespace mrpt
 {
 	namespace opengl
 	{
-		/** @name A set of functions to obtain a 3D representation of a pose PDF (these functions are in the mrpt-opengl library)
+		/** @name Functions to obtain a 3D representation of a pose PDF
 		    @{  */
 
-		/** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
-		  *    mrpt::poses::CPosePDF::getAs3DObject     */
-		template <>
-		CSetOfObjectsPtr OPENGL_IMPEXP posePDF2opengl<CPosePDF,CSetOfObjectsPtr>(const CPosePDF &o);
-
-		/** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
-		  *    mrpt::poses::CPointPDF::getAs3DObject     */
-		template <>
-		CSetOfObjectsPtr OPENGL_IMPEXP posePDF2opengl<CPointPDF,CSetOfObjectsPtr>(const CPointPDF &o);
-
-		/** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
-		  *    mrpt::poses::CPose3DPDF::getAs3DObject     */
-		template <>
-		CSetOfObjectsPtr OPENGL_IMPEXP posePDF2opengl<CPose3DPDF,CSetOfObjectsPtr>(const CPose3DPDF &o);
-
-		/** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
-		  *    mrpt::poses::CPose3DQuatPDF::getAs3DObject     */
-		template <>
-		CSetOfObjectsPtr OPENGL_IMPEXP posePDF2opengl<CPose3DQuatPDF,CSetOfObjectsPtr>(const CPose3DQuatPDF &o);
+		/** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call mrpt::poses::CPosePDF::getAs3DObject     */
+		template <class POSE_PDF>
+		inline CSetOfObjectsPtr posePDF2opengl(const POSE_PDF &o) {
+			return CSetOfObjects::posePDF2opengl(o);
+		}
 
 		/**  @}  */
 	}
-
 } // End of namespace
 
 

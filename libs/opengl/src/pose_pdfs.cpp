@@ -51,15 +51,9 @@ const double POSE_AXIS_SCALE  = 0.1;
 #define POINT_COLOR		1,0,0
 
 
-namespace mrpt
-{
-	namespace opengl
-	{
-
 /** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 	*    mrpt::poses::CPosePDF::getAs3DObject     */
-template <>
-CSetOfObjectsPtr posePDF2opengl<CPosePDF,CSetOfObjectsPtr>(const CPosePDF &o)
+CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPosePDF &o)
 {
 	CSetOfObjectsPtr outObj = CSetOfObjects::Create();
 
@@ -146,8 +140,7 @@ CSetOfObjectsPtr posePDF2opengl<CPosePDF,CSetOfObjectsPtr>(const CPosePDF &o)
 
 /** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 	*    mrpt::poses::CPointPDF::getAs3DObject     */
-template <>
-CSetOfObjectsPtr posePDF2opengl<CPointPDF,CSetOfObjectsPtr>(const CPointPDF &o)
+CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPointPDF &o)
 {
 	CSetOfObjectsPtr outObj = CSetOfObjects::Create();
 
@@ -205,8 +198,7 @@ CSetOfObjectsPtr posePDF2opengl<CPointPDF,CSetOfObjectsPtr>(const CPointPDF &o)
 
 /** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 	*    mrpt::poses::CPose3DPDF::getAs3DObject     */
-template <>
-CSetOfObjectsPtr posePDF2opengl<CPose3DPDF,CSetOfObjectsPtr>(const CPose3DPDF &o)
+CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPose3DPDF &o)
 {
 	CSetOfObjectsPtr outObj = CSetOfObjects::Create();
 
@@ -275,8 +267,7 @@ CSetOfObjectsPtr posePDF2opengl<CPose3DPDF,CSetOfObjectsPtr>(const CPose3DPDF &o
 
 /** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 	*    mrpt::poses::CPose3DQuatPDF::getAs3DObject     */
-template <>
-CSetOfObjectsPtr posePDF2opengl<CPose3DQuatPDF,CSetOfObjectsPtr>(const CPose3DQuatPDF &o)
+CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPose3DQuatPDF &o)
 {
 	CSetOfObjectsPtr outObj = CSetOfObjects::Create();
 
@@ -304,6 +295,3 @@ CSetOfObjectsPtr posePDF2opengl<CPose3DQuatPDF,CSetOfObjectsPtr>(const CPose3DQu
 	return outObj;
 }
 
-
-	} // end NS
-} // end NS
