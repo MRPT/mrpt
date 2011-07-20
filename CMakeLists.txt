@@ -1337,6 +1337,10 @@ ELSE(BUILD_KINECT)
 	SET(CMAKE_MRPT_HAS_KINECT 0)
 ENDIF(BUILD_KINECT)
 
+# It seems the PCL find_package changes some wxWidgets variables (wtf!), so make a backup:
+set(BCK_wxWidgets_LIB_DIR ${wxWidgets_LIB_DIR})
+set(BCK_wxWidgets_LIBRARIES ${wxWidgets_LIBRARIES})
+
 # PCL library: 
 # --------------------------------------------
 SET(CMAKE_MRPT_HAS_PCL 0)
@@ -1356,6 +1360,10 @@ if (PCL_FOUND)
 	ENDFOREACH(PCLDIR)
 
 endif(PCL_FOUND)
+
+# Undo backups: (read above)
+set(wxWidgets_LIB_DIR ${BCK_wxWidgets_LIB_DIR})
+set(wxWidgets_LIBRARIES ${BCK_wxWidgets_LIBRARIES})
 
 
 # WXWIDGETS+GL: Add libraries
