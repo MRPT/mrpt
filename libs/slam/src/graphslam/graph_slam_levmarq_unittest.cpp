@@ -32,7 +32,6 @@
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::opengl;
 using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
