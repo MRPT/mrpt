@@ -10,7 +10,6 @@
 
 <div align="center" >
 	<b>Version: $MRPT_VERSION_STR $MRPT_SVN_NUMBER</b> <br>
-        <!-- <A HREF="http://babel.isa.uma.es/mapir/" target="_blank" >MAPIR Lab</A> - <a href="http://www.uma.es" target="_blank" >University of Malaga</a><br> -->
 </div>
 <hr>
 
@@ -42,6 +41,13 @@ Read also <a href="http://www.mrpt.org/Libraries_tree_layout" >the guide</a> to 
 $MRPT_LIBS_DOT
 \enddot
 </div>
+
+<br><a name="dependencies">
+<h2>Dependencies</h2>
+
+Check out <a href="dependencies.html" >this page</a> to find out what are needed for each of the MRPT build dependencies (opencv, wxWidgets,...) 
+to decide if you need them for your applications.
+
 
 
 <br><a name="perf">
