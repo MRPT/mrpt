@@ -53,6 +53,7 @@ void registerAllClasses_mrpt_hwdrivers()
 	CCameraSensor::doRegister();
 	CActivMediaRobotBase::doRegister();
 	CPtuHokuyo::doRegister();
+	CWirelessPower::doRegister();
 	CSickLaserSerial::doRegister();
 	CBoardENoses::doRegister();
 	CNTRIPEmitter::doRegister();

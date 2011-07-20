@@ -53,6 +53,7 @@ TEST(SerializeTestObs, WriteReadToMem)
 		CLASS_ID(CObservation3DRangeScan),
 		CLASS_ID(CObservationBearingRange),
 		CLASS_ID(CObservationBatteryState),
+		CLASS_ID(CObservationWirelessPower),
 		CLASS_ID(CObservationBeaconRanges),
 		CLASS_ID(CObservationComment),
 		CLASS_ID(CObservationGasSensors),

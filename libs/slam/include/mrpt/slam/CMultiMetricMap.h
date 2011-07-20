@@ -30,6 +30,7 @@
 
 #include <mrpt/slam/COccupancyGridMap2D.h>
 #include <mrpt/slam/CGasConcentrationGridMap2D.h>
+#include <mrpt/slam/CWirelessPowerGridMap2D.h>
 #include <mrpt/slam/CHeightGridMap2D.h>
 #include <mrpt/slam/CReflectivityGridMap2D.h>
 #include <mrpt/slam/CSimplePointsMap.h>
@@ -61,6 +62,7 @@ namespace slam
 	 *		- mrpt::slam::COccupancyGridMap2D: Exclusively for 2D, <b>horizontal</b>  laser range scans, at different altitudes.
 	 *		- mrpt::slam::CLandmarksMap: For visual landmarks,etc...
 	 *		- mrpt::slam::CGasConcentrationGridMap2D: For gas concentration maps.
+	 *		- mrpt::slam::CWirelessPowerGridMap2D: For wifi power maps.
 	 *		- mrpt::slam::CBeaconMap: For range-only SLAM.
 	 *		- mrpt::slam::CHeightGridMap2D: For maps of height for each (x,y) location.
 	 *		- mrpt::slam::CReflectivityGridMap2D: For maps of "reflectivity" for each (x,y) location.
@@ -110,6 +112,7 @@ namespace slam
 							enableInsertion_landmarksMap(true),
 							enableInsertion_gridMaps(true),
 							enableInsertion_gasGridMaps(true),
+							enableInsertion_wifiGridMaps(true),
 							enableInsertion_beaconMap(true),
 							enableInsertion_heightMaps(true),
 							enableInsertion_reflectivityMaps(true),
@@ -138,6 +141,7 @@ namespace slam
 				mapPoints,
 				mapLandmarks,
 				mapGasGrid,
+				mapWifiGrid,
 				mapBeacon,
 				mapHeight,
 				mapColourPoints,
@@ -148,6 +152,7 @@ namespace slam
 			bool	enableInsertion_landmarksMap;		//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 			bool	enableInsertion_gridMaps;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 			bool	enableInsertion_gasGridMaps;		//!< Default = true (set to false to avoid "insertObservation" to update a given map)
+			bool	enableInsertion_wifiGridMaps;		//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 			bool	enableInsertion_beaconMap;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 			bool	enableInsertion_heightMaps;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 			bool	enableInsertion_reflectivityMaps;	//!< Default = true (set to false to avoid "insertObservation" to update a given map)
@@ -166,6 +171,7 @@ namespace slam
 		CBeaconMapPtr                                m_beaconMap;
 		std::deque<COccupancyGridMap2DPtr>           m_gridMaps;
 		std::deque<CGasConcentrationGridMap2DPtr>    m_gasGridMaps;
+		std::deque<CWirelessPowerGridMap2DPtr>    m_wifiGridMaps;
 		std::deque<CHeightGridMap2DPtr>              m_heightMaps;
 		std::deque<CReflectivityGridMap2DPtr>        m_reflectivityMaps;
 		CColouredPointsMapPtr                        m_colourPointsMap;
@@ -338,6 +344,18 @@ namespace slam
 
 		} gasGridMap_options;
 
+		/** Especific options for wifi grid maps (mrpt::slam::CWirelessPowerGridMap2D)
+		  */
+		struct SLAM_IMPEXP CWirelessPowerGridMap2DOptions
+		{
+			CWirelessPowerGridMap2DOptions();	//!< Default values loader
+
+			float	min_x,max_x,min_y,max_y,resolution;	//!< See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D
+			CWirelessPowerGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CWirelessPowerGridMap2D::CWirelessPowerGridMap2D)
+			CWirelessPowerGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
+
+		} wifiGridMap_options;
+
 		/** Especific options for landmarks maps (mrpt::slam::CLandmarksMap)
 		  */
 		struct SLAM_IMPEXP CLandmarksMapOptions
@@ -437,6 +455,7 @@ namespace slam
 		  *  // Creation of maps:
 		  *  occupancyGrid_count=<Number of mrpt::slam::COccupancyGridMap2D maps>
 		  *  gasGrid_count=<Number of mrpt::slam::CGasConcentrationGridMap2D maps>
+		  *  wifiGrid_count=<Number of mrpt::slam::CWirelessPowerGridMap2D maps>
 		  *  landmarksMap_count=<0 or 1, for creating a mrpt::slam::CLandmarksMap map>
 		  *  beaconMap_count=<0 or 1, for creating a mrpt::slam::CBeaconMap map>
 		  *  pointsMap_count=<Number of mrpt::slam::CSimplePointsMap map>
@@ -453,6 +472,7 @@ namespace slam
 		  *  enableInsertion_landmarksMap=<0/1>
 		  *  enableInsertion_gridMaps=<0/1>
 		  *  enableInsertion_gasGridMaps=<0/1>
+		  *  enableInsertion_wifiGridMaps=<0/1>
 		  *  enableInsertion_beaconMap=<0/1>
 		  *  enableInsertion_heightMap=<0/1>
 		  *  enableInsertion_reflectivityMap=<0/1>
@@ -499,6 +519,25 @@ namespace slam
 		  * // Insertion Options for CGasConcentrationGridMap2D ##:
 		  * [<sectionName>+"_gasGrid_##_insertOpts"]
 		  *  <See CGasConcentrationGridMap2D::TInsertionOptions>
+
+
+
+		  
+		  * // ====================================================
+		  * // Creation Options for CWirelessPowerGridMap2D ##:
+		  * [<sectionName>+"_wifiGrid_##_creationOpts"]
+		  *  mapType= <0-1> ; See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D
+		  *  min_x=<value>
+		  *  max_x=<value>
+		  *  min_y=<value>
+		  *  max_y=<value>
+		  *  resolution=<value>
+		  *
+		  * // Insertion Options for CWirelessPowerGridMap2D ##:
+		  * [<sectionName>+"_wifiGrid_##_insertOpts"]
+		  *  <See CWirelessPowerGridMap2D::TInsertionOptions>
+
+
 		  *
 		  *
 		  * // ====================================================
@@ -603,6 +642,7 @@ namespace slam
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapPoints,    "mrSimpleAverage");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapLandmarks, "mapLandmarks");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapGasGrid,   "mapGasGrid");
+				m_map.insert(slam::CMultiMetricMap::TOptions::mapWifiGrid,   "mapWifiGrid");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapBeacon,    "mapBeacon");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapHeight,    "mapHeight");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapColourPoints, "mapColourPoints");

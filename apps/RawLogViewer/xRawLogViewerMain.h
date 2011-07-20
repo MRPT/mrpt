@@ -186,6 +186,7 @@ private:
     void OnImportCARMEN(wxCommandEvent& event);
     void OnGenerateSeqImgs(wxCommandEvent& event);
     void OnGenGasTxt(wxCommandEvent& event);
+    void OnGenWifiTxt(wxCommandEvent& event);
     void OnGenGPSTxt(wxCommandEvent& event);
     void OnGenOdoLaser(wxCommandEvent& event);
     void OnSummaryGPS(wxCommandEvent& event);

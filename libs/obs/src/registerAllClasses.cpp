@@ -60,6 +60,7 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CObservation2DRangeScan ) );
 	registerClass( CLASS_ID( CObservation3DRangeScan ) );
 	registerClass( CLASS_ID( CObservationBatteryState ) );
+	registerClass( CLASS_ID( CObservationWirelessPower ) );
 	registerClass( CLASS_ID( CObservationBeaconRanges ) );
 	registerClass( CLASS_ID( CObservationBearingRange ) );
 	registerClass( CLASS_ID( CObservationComment ) );

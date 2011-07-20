@@ -39,6 +39,7 @@
 #include <mrpt/slam/CBeaconMap.h>
 #include <mrpt/slam/CColouredPointsMap.h>
 #include <mrpt/slam/CGasConcentrationGridMap2D.h>
+#include <mrpt/slam/CWirelessPowerGridMap2D.h>
 #include <mrpt/slam/CHeightGridMap2D.h>
 #include <mrpt/slam/CReflectivityGridMap2D.h>
 #include <mrpt/slam/COccupancyGridMap2D.h>

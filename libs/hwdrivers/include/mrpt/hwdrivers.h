@@ -43,6 +43,7 @@
 #include <mrpt/hwdrivers/CIbeoLuxETH.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/hwdrivers/CInterfaceFTDIMessages.h>
+#include <mrpt/hwdrivers/CWirelessPower.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/hwdrivers/CBoardDLMS.h>
 #include <mrpt/hwdrivers/CBoardIR.h>

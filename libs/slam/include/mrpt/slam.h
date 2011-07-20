@@ -50,6 +50,9 @@
 #include <mrpt/slam/CLandmarksMap.h>
 #include <mrpt/slam/CLandmark.h>
 #include <mrpt/slam/CGasConcentrationGridMap2D.h>
+
+#include <mrpt/slam/CWirelessPowerGridMap2D.h>
+
 #include <mrpt/slam/CBeaconMap.h>
 
 // Map Building algorithms:
@@ -68,6 +71,7 @@
 #include <mrpt/slam/CObservationStereoImages.h>
 #include <mrpt/slam/CObservationBeaconRanges.h>
 #include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/slam/CObservationWirelessPower.h>
 #include <mrpt/slam/CObservationGPS.h>
 #include <mrpt/slam/CObservationBatteryState.h>
 #include <mrpt/slam/CObservationIMU.h>

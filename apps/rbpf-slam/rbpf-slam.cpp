@@ -238,6 +238,7 @@ void MapBuilding_RBPF()
 	CActionCollectionPtr					action;
 	CSensoryFramePtr						observations;
 	std::deque<CObservationGasSensorsPtr>	gasObservations;
+	std::deque<CObservationWirelessPowerPtr>	wifiObservations;
 	CPose3D  odoPose(0,0,0);
 
 	CDisplayWindow3D    *win3D = NULL;
@@ -583,6 +584,9 @@ void MapBuilding_RBPF()
 
 	// Free gas readings memory (if any):
 	gasObservations.clear();
+
+	// Free wifi readings memory (if any):
+	wifiObservations.clear();
 
 	// Close 3D window, if any:
 	if (win3D)

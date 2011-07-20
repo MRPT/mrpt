@@ -2193,6 +2193,19 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 										}
 										else
+										if ( classID  == CLASS_ID(CObservationWirelessPower) )
+										{
+											// ----------------------------------------------------------------------
+											//              CObservationBatteryState
+											// ----------------------------------------------------------------------
+											CObservationWirelessPowerPtr obs = CObservationWirelessPowerPtr( sel_obj);
+											curSelectedObservation = CObservationPtr( sel_obj );
+											cout << endl;
+
+											cout << format("Measured Power: %.02f/100\n",
+												obs->power);
+										}
+										else
 											if ( classID  == CLASS_ID(CObservationIMU) )
 											{
 												// ----------------------------------------------------------------------

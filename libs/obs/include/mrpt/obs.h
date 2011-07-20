@@ -52,7 +52,9 @@
 #include <mrpt/slam/CObservationBearingRange.h>
 #include <mrpt/slam/CObservationComment.h>
 #include <mrpt/slam/CObservationReflectivity.h>
+#include <mrpt/slam/CObservationWirelessPower.h>
 #include <mrpt/slam/CSensoryFrame.h>
+
 
 // Observations:
 #include <mrpt/slam/CAction.h>

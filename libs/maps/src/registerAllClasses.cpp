@@ -58,6 +58,7 @@ void registerAllClasses_mrpt_maps()
 	registerClass( CLASS_ID( CColouredPointsMap ) );
 	registerClass( CLASS_ID( COccupancyGridMap2D ) );
 	registerClass( CLASS_ID( CGasConcentrationGridMap2D ) );
+	registerClass( CLASS_ID( CWirelessPowerGridMap2D ) );
 	registerClass( CLASS_ID( CHeightGridMap2D ) );
 	registerClass( CLASS_ID( CReflectivityGridMap2D ) );
 

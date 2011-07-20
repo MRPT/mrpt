@@ -61,6 +61,7 @@ CMultiMetricMap::CMultiMetricMap(
 		m_beaconMap(),
 		m_gridMaps(0),
 		m_gasGridMaps(0),
+		m_wifiGridMaps(0),
 		m_heightMaps(0),
 		m_reflectivityMaps(0),
 		m_colourPointsMap(),
@@ -90,6 +91,7 @@ CMultiMetricMap::CMultiMetricMap(const mrpt::slam::CMultiMetricMap &other ) :
 	m_beaconMap(),
 	m_gridMaps(0),
 	m_gasGridMaps(0),
+	m_wifiGridMaps(0),
 	m_heightMaps(0),
 	m_reflectivityMaps(0),
 	m_colourPointsMap(),
@@ -161,6 +163,28 @@ void  CMultiMetricMap::setListOfMaps(
 				newGridmap->clear();
 
 				m_gasGridMaps.push_back( newGridmap );
+			}
+			else
+			if ( it->metricMapClassType == CLASS_ID(CWirelessPowerGridMap2D) )
+			{
+				// -------------------------------------------------------
+				//			WIRELESS POWER GRID MAPS
+				// -------------------------------------------------------
+				CWirelessPowerGridMap2DPtr newGridmap = CWirelessPowerGridMap2DPtr( new CWirelessPowerGridMap2D(
+					it->wifiGridMap_options.mapType,
+					it->wifiGridMap_options.min_x,
+					it->wifiGridMap_options.max_x,
+					it->wifiGridMap_options.min_y,
+					it->wifiGridMap_options.max_y,
+					it->wifiGridMap_options.resolution ) );
+
+				newGridmap->m_disableSaveAs3DObject = it->m_disableSaveAs3DObject;
+				newGridmap->insertionOptions = it->wifiGridMap_options.insertionOpts;
+
+				// IMPORTANT: Reinitialize the map with the new parameters:
+				newGridmap->clear();
+
+				m_wifiGridMaps.push_back( newGridmap );
 			}
 			else
 			if ( it->metricMapClassType == CLASS_ID(CHeightGridMap2D) )
@@ -300,6 +324,10 @@ void  CMultiMetricMap::internal_clear()
 	// Gas grids maps:
 	for_each( m_gasGridMaps.begin(),m_gasGridMaps.end(),  ObjectClear() );
 
+	
+	// Wifi grids maps:
+	for_each( m_wifiGridMaps.begin(),m_wifiGridMaps.end(),  ObjectClear() );
+
 	// Points maps:
 	for_each( m_pointsMaps.begin(),m_pointsMaps.end(),  ObjectClear() );
 
@@ -359,6 +387,11 @@ mrpt::slam::CMultiMetricMap & CMultiMetricMap::operator = ( const CMultiMetricMa
 	m_gasGridMaps = other.m_gasGridMaps;
 	for_each( m_gasGridMaps.begin(), m_gasGridMaps.end(), ObjectMakeUnique() );
 
+	// Copy wifi grid maps:
+	// --------------------------------
+	m_wifiGridMaps = other.m_wifiGridMaps;
+	for_each( m_wifiGridMaps.begin(), m_wifiGridMaps.end(), ObjectMakeUnique() );
+
 	// Height maps:
 	// --------------------------------
 	m_heightMaps = other.m_heightMaps;
@@ -394,6 +427,7 @@ void  CMultiMetricMap::deleteAllMaps( )
 {
 	m_gridMaps.clear();
 	m_gasGridMaps.clear();
+	m_wifiGridMaps.clear();
 	m_pointsMaps.clear();
 	m_landmarksMap.clear_unique();
 	m_beaconMap.clear_unique();
@@ -416,6 +450,7 @@ void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
 			<< options.enableInsertion_landmarksMap
 			<< options.enableInsertion_gridMaps
 			<< options.enableInsertion_gasGridMaps
+			<< options.enableInsertion_wifiGridMaps
 			<< options.enableInsertion_beaconMap
 			<< options.enableInsertion_heightMaps	// Added in v6
 			<< options.enableInsertion_reflectivityMaps; // Added in v8
@@ -445,6 +480,12 @@ void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
 		n = static_cast<uint32_t>(m_gasGridMaps.size());
 		out << n;
 		for (i=0;i<n;i++)	out << *m_gasGridMaps[i];
+
+		// wifi grid maps:
+		// ----------------------
+		n = static_cast<uint32_t>(m_wifiGridMaps.size());
+		out << n;
+		for (i=0;i<n;i++)	out << *m_wifiGridMaps[i];
 
 		// Added in version 3:
 		out << static_cast<uint32_t>(m_ID);
@@ -500,6 +541,7 @@ void  CMultiMetricMap::readFromStream(CStream &in, int version)
 					>> options.enableInsertion_landmarksMap
 					>> options.enableInsertion_gridMaps
 					>> options.enableInsertion_gasGridMaps
+					>> options.enableInsertion_wifiGridMaps
 					>> options.enableInsertion_beaconMap;
 
 				if (version>=6)
@@ -574,6 +616,26 @@ void  CMultiMetricMap::readFromStream(CStream &in, int version)
 			// Load from stream:
 			m_gasGridMaps.resize(n);
 			for_each(m_gasGridMaps.begin(), m_gasGridMaps.end(), ObjectReadFromStream(&in) );
+
+			if (version>=3)
+			{
+				uint32_t	ID;
+				in >> ID; m_ID = ID;
+			}
+			else	m_ID = 0;
+
+			// Wifi grid maps:
+			// ----------------------
+			if (version>=2)
+						in >> n;
+			else		n = 0;			// Compatibility: Previously there were no gas grid maps!
+
+			// Free previous grid maps:
+			m_wifiGridMaps.clear();
+
+			// Load from stream:
+			m_wifiGridMaps.resize(n);
+			for_each(m_wifiGridMaps.begin(), m_wifiGridMaps.end(), ObjectReadFromStream(&in) );
 
 			if (version>=3)
 			{
@@ -679,6 +741,9 @@ double	 CMultiMetricMap::computeObservationLikelihood(
 			for (std::deque<CGasConcentrationGridMap2DPtr>::iterator	itGas = m_gasGridMaps.begin();itGas!=m_gasGridMaps.end();++itGas)
 				ret += (*itGas)->computeObservationLikelihood(obs, takenFrom );
 
+			for (std::deque<CWirelessPowerGridMap2DPtr>::iterator	itWifi = m_wifiGridMaps.begin();itWifi!=m_wifiGridMaps.end();++itWifi)
+				ret += (*itWifi)->computeObservationLikelihood(obs, takenFrom );
+
 			for (std::deque<CHeightGridMap2DPtr>::iterator	it = m_heightMaps.begin();it!=m_heightMaps.end();++it)
 				ret += (*it)->computeObservationLikelihood(obs, takenFrom );
 
@@ -732,6 +797,14 @@ double	 CMultiMetricMap::computeObservationLikelihood(
 		{
 			ASSERT_( m_gasGridMaps.size()>0 );
 			ret=m_gasGridMaps[0]->computeObservationLikelihood(obs, takenFrom );
+			MRPT_CHECK_NORMAL_NUMBER(ret);
+            return ret;
+		}
+
+	case  TOptions::mapWifiGrid:
+		{
+			ASSERT_( m_wifiGridMaps.size()>0 );
+			ret=m_wifiGridMaps[0]->computeObservationLikelihood(obs, takenFrom );
 			MRPT_CHECK_NORMAL_NUMBER(ret);
             return ret;
 		}
@@ -795,6 +868,9 @@ bool CMultiMetricMap::canComputeObservationLikelihood( const CObservation *obs )
 			for (std::deque<CGasConcentrationGridMap2DPtr>::iterator	itGas = m_gasGridMaps.begin();itGas!=m_gasGridMaps.end();++itGas)
 				ret = ret || (*itGas)->canComputeObservationLikelihood(obs);
 
+			for (std::deque<CWirelessPowerGridMap2DPtr>::iterator	itWifi = m_wifiGridMaps.begin();itWifi!=m_wifiGridMaps.end();++itWifi)
+				ret = ret || (*itWifi)->canComputeObservationLikelihood(obs);
+
 			for (std::deque<CHeightGridMap2DPtr>::iterator	it = m_heightMaps.begin();it!=m_heightMaps.end();++it)
 				ret = ret || (*it)->canComputeObservationLikelihood(obs);
 
@@ -841,6 +917,12 @@ bool CMultiMetricMap::canComputeObservationLikelihood( const CObservation *obs )
 		{
 			ASSERT_( m_gasGridMaps.size()>0 );
 			return m_gasGridMaps[0]->canComputeObservationLikelihood(obs );
+		}
+
+	case  TOptions::mapWifiGrid:
+		{
+			ASSERT_( m_wifiGridMaps.size()>0 );
+			return m_wifiGridMaps[0]->canComputeObservationLikelihood(obs );
 		}
 
 	case  TOptions::mapHeight:
@@ -999,6 +1081,15 @@ bool  CMultiMetricMap::internal_insertObservation(
 		}
 	}
 
+	if (options.enableInsertion_wifiGridMaps)
+	{
+		for (std::deque<CWirelessPowerGridMap2DPtr>::iterator	it = m_wifiGridMaps.begin();it!=m_wifiGridMaps.end();++it)
+		{
+			auxDone = (*it)->insertObservation( obs, robotPose );
+			done[3] = done[3] || auxDone;
+		}
+	}
+
 	if (m_beaconMap && options.enableInsertion_beaconMap)
 		done[4] = m_beaconMap->insertObservation( obs, robotPose );
 
@@ -1081,6 +1172,10 @@ bool  CMultiMetricMap::isEmpty() const
 	for (std::deque<CGasConcentrationGridMap2DPtr>::const_iterator	it2 = m_gasGridMaps.begin();it2!=m_gasGridMaps.end();it2++)
 		res = res && (*it2)->isEmpty();
 
+	
+	for (std::deque<CWirelessPowerGridMap2DPtr>::const_iterator	it3 = m_wifiGridMaps.begin();it3!=m_wifiGridMaps.end();it3++)
+		res = res && (*it3)->isEmpty();
+
 	if (m_colourPointsMap)	res = res && m_colourPointsMap->isEmpty();
 
 	return res;
@@ -1095,6 +1190,7 @@ TMetricMapInitializer::TMetricMapInitializer() :
 	occupancyGridMap2D_options(),
 	pointsMapOptions_options(),
 	gasGridMap_options(),
+	wifiGridMap_options(),
 	landmarksMap_options(),
 	beaconMap_options(),
 	heightMap_options(),
@@ -1157,6 +1253,20 @@ TMetricMapInitializer::CGasConcentrationGridMap2DOptions::CGasConcentrationGridM
 	max_y(2),
 	resolution(0.10f),
 	mapType(CGasConcentrationGridMap2D::mrKernelDM),
+	insertionOpts()
+{
+}
+	
+/*---------------------------------------------------------------
+					CWirelessPowerGridMap2DOptions
+ ---------------------------------------------------------------*/
+TMetricMapInitializer::CWirelessPowerGridMap2DOptions::CWirelessPowerGridMap2DOptions() :
+	min_x(-2),
+	max_x(2),
+	min_y(-2),
+	max_y(2),
+	resolution(0.10f),
+	mapType(CWirelessPowerGridMap2D::mrKernelDM),
 	insertionOpts()
 {
 }
@@ -1227,6 +1337,17 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(
 		{
 			std::string		fil( filNamePrefix );
 			fil += format("_gasgridmap_no%02u",idx);
+			(*it)->saveMetricMapRepresentationToFile( fil );
+		}
+	}
+
+	// Wifi grids maps:
+	{
+		std::deque<CWirelessPowerGridMap2DPtr>::const_iterator	it;
+		for (idx=0,it = m_wifiGridMaps.begin();it!=m_wifiGridMaps.end();it++,idx++)
+		{
+			std::string		fil( filNamePrefix );
+			fil += format("_wifigridmap_no%02u",idx);
 			(*it)->saveMetricMapRepresentationToFile( fil );
 		}
 	}
@@ -1306,6 +1427,7 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 		  *  ; Creation of maps:
 		  *  occupancyGrid_count=<Number of mrpt::slam::COccupancyGridMap2D maps>
 		  *  gasGrid_count=<Number of mrpt::slam::CGasConcentrationGridMap2D maps>
+		  *  wifiGrid_count=<Number of mrpt::slam::CWirelessPowerGridMap2D maps>
 		  *  landmarksMap_count=<0 or 1, for creating a mrpt::slam::CLandmarksMap map>
 		  *  beaconMap_count=<0 or 1>
 		  *  pointsMap_count=<0 or 1, for creating a mrpt::slam::CSimplePointsMap map>
@@ -1378,6 +1500,30 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 
 		// [<sectionName>+"_gasGrid_##_insertOpts"]
 		init.gasGridMap_options.insertionOpts.loadFromConfigFile(ini,format("%s_gasGrid_%02u_insertOpts",sectionName.c_str(),i));
+
+		// Add the map and its params to the list of "to-create":
+		this->push_back(init);
+	} // end for i
+
+	n = ini.read_int(sectionName,"wifiGrid_count",0);
+	for (unsigned int i=0;i<n;i++)
+	{
+		TMetricMapInitializer	init;
+
+		init.metricMapClassType					= CLASS_ID( CWirelessPowerGridMap2D );
+
+		// [<sectionName>+"_wifiGrid_##_creationOpts"]
+		subSectName = format("%s_wifiGrid_%02u_creationOpts",sectionName.c_str(),i);
+		init.m_disableSaveAs3DObject = ini.read_bool(subSectName,"disableSaveAs3DObject",false);
+		init.wifiGridMap_options.mapType = ini.read_enum<CWirelessPowerGridMap2D::TMapRepresentation>(subSectName,"mapType",init.wifiGridMap_options.mapType);
+		init.wifiGridMap_options.min_x	= ini.read_float(subSectName,"min_x",init.occupancyGridMap2D_options.min_x);
+		init.wifiGridMap_options.max_x	= ini.read_float(subSectName,"max_x",init.occupancyGridMap2D_options.max_x);
+		init.wifiGridMap_options.min_y	= ini.read_float(subSectName,"min_y",init.occupancyGridMap2D_options.min_y);
+		init.wifiGridMap_options.max_y	= ini.read_float(subSectName,"max_y",init.occupancyGridMap2D_options.max_y);
+		init.wifiGridMap_options.resolution = ini.read_float(subSectName,"resolution",init.occupancyGridMap2D_options.resolution);
+
+		// [<sectionName>+"_wifiGrid_##_insertOpts"]
+		init.wifiGridMap_options.insertionOpts.loadFromConfigFile(ini,format("%s_wifiGrid_%02u_insertOpts",sectionName.c_str(),i));
 
 		// Add the map and its params to the list of "to-create":
 		this->push_back(init);
@@ -1527,12 +1673,14 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 		  *  enableInsertion_landmarksMap=<0/1>
 		  *  enableInsertion_gridMaps=<0/1>
 		  *  enableInsertion_gasGridMaps=<0/1>
+		  *  enableInsertion_wifiGridMaps=<0/1>
 		  *  enableInsertion_beaconMap=<0/1>
 */
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_pointsMap,bool,	options.enableInsertion_pointsMap,		ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_landmarksMap,bool, options.enableInsertion_landmarksMap,	ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_gridMaps,bool,		options.enableInsertion_gridMaps,		ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_gasGridMaps,bool,	options.enableInsertion_gasGridMaps,	ini,sectionName);
+	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_wifiGridMaps,bool,	options.enableInsertion_wifiGridMaps,	ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_beaconMap,bool,	options.enableInsertion_beaconMap,		ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_heightMaps,bool,	options.enableInsertion_heightMaps,		ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_reflectivityMaps,bool,	options.enableInsertion_reflectivityMaps,		ini,sectionName);
@@ -1560,6 +1708,7 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_beaconMap		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_gridMaps		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_gasGridMaps		, bool)
+	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_wifiGridMaps		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_reflectivityMaps		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_colourPointsMaps		, bool)
 
@@ -1619,6 +1768,19 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 			out.printf("resolution                                = %f\n", it->gasGridMap_options.resolution );
 
 			it->gasGridMap_options.insertionOpts.dumpToTextStream(out);
+		}
+		else
+		if (it->metricMapClassType==CLASS_ID(CWirelessPowerGridMap2D))
+		{
+			out.printf("m_disableSaveAs3DObject                   = %s\n",it->m_disableSaveAs3DObject ? "true":"false");
+			out.printf("MAP TYPE                                  = %s\n", mrpt::utils::TEnumType<CWirelessPowerGridMap2D::TMapRepresentation>::value2name(it->wifiGridMap_options.mapType).c_str() );
+			out.printf("min_x                                     = %f\n", it->wifiGridMap_options.min_x );
+			out.printf("max_x                                     = %f\n", it->wifiGridMap_options.max_x );
+			out.printf("min_y                                     = %f\n", it->wifiGridMap_options.min_y );
+			out.printf("max_y                                     = %f\n", it->wifiGridMap_options.max_y );
+			out.printf("resolution                                = %f\n", it->wifiGridMap_options.resolution );
+
+			it->wifiGridMap_options.insertionOpts.dumpToTextStream(out);
 		}
 		else
 		if (it->metricMapClassType==CLASS_ID(CHeightGridMap2D))
@@ -1700,6 +1862,13 @@ void  CMultiMetricMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) c
 			(*it)->getAs3DObject( outObj );
 	}
 
+	// Wifi grids maps:
+	{
+		std::deque<CWirelessPowerGridMap2DPtr>::const_iterator	it;
+		for (it = m_wifiGridMaps.begin();it!=m_wifiGridMaps.end();it++)
+			(*it)->getAs3DObject( outObj );
+	}
+
 	// Landmarks maps:
 	if (m_landmarksMap.present())
 		m_landmarksMap->getAs3DObject( outObj );
@@ -1757,6 +1926,8 @@ float  CMultiMetricMap::compute3DMatchingRatio(
 
 	// Gas grids maps: NO
 
+	// Wifi grids maps: NO
+
 	// Points maps:
 	if (m_pointsMaps.size()>0)
 	{
@@ -1807,6 +1978,13 @@ void  CMultiMetricMap::auxParticleFilterCleanUp()
 			(*it)->auxParticleFilterCleanUp( );
 	}
 
+	// Wifi grids maps:
+	{
+		std::deque<CWirelessPowerGridMap2DPtr>::iterator	it;
+		for (it = m_wifiGridMaps.begin();it!=m_wifiGridMaps.end();it++)
+			(*it)->auxParticleFilterCleanUp( );
+	}
+
 	// Points maps:
 	{
 		std::deque<CSimplePointsMapPtr>::iterator	it;
@@ -1839,6 +2017,7 @@ void  CMultiMetricMap::TOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_landmarksMap, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_gridMaps, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_gasGridMaps, bool,  source, section );
+	MRPT_LOAD_CONFIG_VAR(enableInsertion_wifiGridMaps, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_beaconMap, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_heightMaps, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_reflectivityMaps, bool,  source, section );
@@ -1857,6 +2036,7 @@ void  CMultiMetricMap::TOptions::dumpToTextStream(CStream	&out) const
 	out.printf("enableInsertion_landmarksMap            = %c\n",	enableInsertion_landmarksMap ? 'Y':'N');
 	out.printf("enableInsertion_gridMaps                = %c\n",	enableInsertion_gridMaps ? 'Y':'N');
 	out.printf("enableInsertion_gasGridMaps             = %c\n",	enableInsertion_gasGridMaps ? 'Y':'N');
+	out.printf("enableInsertion_wifiGridMaps             = %c\n",	enableInsertion_gasGridMaps ? 'Y':'N');
 	out.printf("enableInsertion_beaconMap               = %c\n",	enableInsertion_beaconMap ? 'Y':'N');
 
 	out.printf("\n");
