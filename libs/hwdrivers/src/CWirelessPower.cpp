@@ -304,7 +304,7 @@ PWLAN_AVAILABLE_NETWORK GetNetworkW(HANDLE hClient, std::string ssid, std::strin
 
 	return output;
 }
-	
+
 	#endif
 
 #endif // end of Windows auxiliary functions definition
@@ -338,7 +338,7 @@ void CWirelessPower::setNet(std::string ssid_, std::string guid_)
 
 std::vector<std::string>	CWirelessPower::ListInterfaces()
 {
-    
+
 	std::vector<std::string> output;				// output vector of strings
 
 #ifdef MRPT_OS_LINUX
@@ -354,10 +354,10 @@ std::vector<std::string>	CWirelessPower::ListInterfaces()
 		THROW_EXCEPTION("Error reading /proc/net/wireless")
 
 	// iterate thrugh list and get each interface as a string
-    netname = strtok(ifaceread,"\n");
+    netname = ::strtok(ifaceread,"\n");
 	while(netname){
         output.push_back(std::string(netname));
-        netname = strtok(NULL,"\n");
+        netname = ::strtok(NULL,"\n");
 	}
 #endif
 
@@ -369,7 +369,7 @@ std::vector<std::string>	CWirelessPower::ListInterfaces()
 
 	std::vector<PWLAN_INTERFACE_INFO> ifaces;					// vector containing the interface entries (Windows format)
 	std::vector<PWLAN_INTERFACE_INFO>::iterator ifacesIter;		// iterator to run through the previous list
-	
+
 
 	// get the list
 	ifaces = ListInterfacesW(hClient);
@@ -410,10 +410,10 @@ std::vector<std::string>	CWirelessPower::ListNetworks()
 	if (!fgets(listread,3,cmdoutput))
 		THROW_EXCEPTION("Error reading response from iwlist")
 
-	netname = strtok(listread,"\n");
+	netname = ::strtok(listread,"\n");
 	while(netname){
         output.push_back(std::string(netname));
-        netname = strtok(NULL,"\n");
+        netname = ::strtok(NULL,"\n");
 	}
 
 #endif
@@ -424,7 +424,7 @@ std::vector<std::string>	CWirelessPower::ListNetworks()
 	# else
 
 	PWLAN_INTERFACE_INFO iface;			// Information element for an interface
-	
+
 
 	iface = GetInterfaceW(guid,(HANDLE)hClient);			// Get the interface handler
 
@@ -487,11 +487,11 @@ int		CWirelessPower::GetPower()
 	// meaning that the ESSID was found
     // Example pf the value of poerLine: Quality=57/100  Signal level=57/100
     char *fraction;
-    
-    strtok(powerLine,"=");
-    strtok(NULL,"=");
-    fraction = strtok(NULL,"=");
-    strcpy(level,strtok(fraction,"/"));
+
+    ::strtok(powerLine,"=");
+    ::strtok(NULL,"=");
+    fraction = ::strtok(NULL,"=");
+    strcpy(level,::strtok(fraction,"/"));
 
     free(powerReadL);
 
@@ -503,7 +503,7 @@ int		CWirelessPower::GetPower()
 	#  if defined(__GNUC__)
      THROW_EXCEPTION("Sorry, method not available for MinGW")
 	# else
-	
+
 	PWLAN_AVAILABLE_NETWORK wlan;	// handler to the network
 
 	// Get a handler to the network
