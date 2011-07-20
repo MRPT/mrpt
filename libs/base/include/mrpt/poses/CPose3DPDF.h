@@ -102,7 +102,8 @@ namespace poses
 		  */
 		template <class OPENGL_SETOFOBJECTSPTR>
 		inline void getAs3DObject(OPENGL_SETOFOBJECTSPTR &out_obj) const {
-			*out_obj = *out_obj->posePDF2opengl(*this);
+			typedef typename OPENGL_SETOFOBJECTSPTR::value_type SETOFOBJECTS;
+			*out_obj = *SETOFOBJECTS::posePDF2opengl(*this);
 		}
 
 		/** Returns a 3D representation of this PDF.
@@ -110,9 +111,8 @@ namespace poses
 		  */
 		template <class OPENGL_SETOFOBJECTSPTR>
 		inline OPENGL_SETOFOBJECTSPTR getAs3DObject() const {
-			OPENGL_SETOFOBJECTSPTR ptr;
-			ptr->posePDF2opengl(*this);
-			return ptr;
+			typedef typename OPENGL_SETOFOBJECTSPTR::value_type SETOFOBJECTS;
+			return SETOFOBJECTS::posePDF2opengl(*this);
 		}
 
 	}; // End of class def.

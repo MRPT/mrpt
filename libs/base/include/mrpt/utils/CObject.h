@@ -192,6 +192,7 @@ namespace mrpt
 			/*! The smart pointer type for the associated class */ \
 			struct class_name_LINKAGE_##Ptr : public base_name##Ptr \
 			{ \
+				typedef class_name value_type; \
 				inline class_name##Ptr() : base_name##Ptr(static_cast<base_name*>(NULL)) { } \
 				inline explicit class_name##Ptr(class_name* p) : base_name##Ptr( reinterpret_cast<base_name*>(p) ) { } \
 				inline explicit class_name##Ptr(const base_name##Ptr & p) : base_name##Ptr(p) { ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \

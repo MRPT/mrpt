@@ -169,7 +169,7 @@ namespace mrpt
 
 			/** @name pose_pdf -> 3d objects auxiliary templates
 			    @{ */
-			// The reason this code is here is to exploit C++'s "T::template function()" in order to 
+			// The reason this code is here is to exploit C++'s "T::template function()" in order to
 			//  define the members getAs3DObject() in several classes in mrpt-base with its argument
 			//  being a class (CSetOfObjects) which is actually declared here, in mrpt-opengl.
 			//  Implementations are in "pose_pdfs.cpp", not in "CSetOfObjects" (historic reasons...)

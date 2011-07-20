@@ -43,6 +43,8 @@
 			- mrpt::slam::CPointsMap::savePCDFile() 
 			- mrpt::slam::CPointsMap::getPCLPointCloud()
 			- mrpt::slam::CColouredPointsMap::savePCDFile() 
+		- [mrpt-base] All classes derived from mrpt::utils::CObjectPtr now have a proper "value_type" typedef with the most specific data type of the class being pointed by the smart pointer, overriding the inherited, too generic, mrpt::utils::CObject. - <a href="http://code.google.com/p/mrpt/source/detail?r=2568" >r2568</a>
+
 	- Build system/external libs:
 		- Update of Eigen3 to a more recent version (11-Jul-2011), which avoids warnings in MSVC x64 - <a href="http://code.google.com/p/mrpt/source/detail?r=2556" >r2556</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2558" >r2558</a>
 	- Build error FIXES:
