@@ -31,16 +31,14 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/slam/CObservationWirelessPower.h>
 #include <mrpt/utils/CConfigFileBase.h>
-#include <string.h>
-#include <vector>
-
 
 namespace mrpt
 {
 	namespace hwdrivers
 	{
 		/** This class implements a wireless power probe.
-		 */
+		  *  \sa mrpt::slam::CWirelessPowerGridMap2D, mrpt::slam::CObservationWirelessPower
+		  */
 		class HWDRIVERS_IMPEXP CWirelessPower : public mrpt::hwdrivers::CGenericSensor
 		{
 				DEFINE_GENERIC_SENSOR(CWirelessPower)
@@ -53,11 +51,11 @@ namespace mrpt
 			/** GUID of the WiFi interface
 			 */
 			std::string guid;
-			
+
 			/** Handle to the WLAN server (Windows)
 			 */
 			void* hClient;
-			
+
 		public:
 			/** Default constructor.
 			 */
@@ -78,7 +76,7 @@ namespace mrpt
 
 			/** Gets a list of the interfaces
 			 * \exception std::exception In case there is a failure
-			 * \return std::vector returns the identifiers (GUID) of the available interfaces 
+			 * \return std::vector returns the identifiers (GUID) of the available interfaces
 			 */
 			std::vector<std::string>	ListInterfaces();
 
@@ -89,7 +87,7 @@ namespace mrpt
 			 */
 			int		GetPower();
 
-		
+
 			/** Gets the power of a given network as a timestamped observation
 			 * \return Returns true if the observation was correct, and false otherwise
 			 */

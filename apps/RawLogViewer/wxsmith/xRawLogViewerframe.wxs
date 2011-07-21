@@ -827,6 +827,13 @@
 						<handler function="OnGenerateIMUTextFile" entry="EVT_MENU" />
 					</object>
 				</object>
+				<object class="wxMenu" name="ID_MENUITEM88" variable="MenuItem84" member="yes">
+					<label>&amp;WiFi Strength</label>
+					<object class="wxMenuItem" name="ID_MENUITEM89" variable="MenuItem85" member="yes">
+						<label>Generate &amp;text file with all observations...</label>
+						<handler function="OnGenWifiTxt" entry="EVT_MENU" />
+					</object>
+				</object>
 			</object>
 			<object class="wxMenu" variable="Menu4" member="yes">
 				<label>&amp;Tools</label>

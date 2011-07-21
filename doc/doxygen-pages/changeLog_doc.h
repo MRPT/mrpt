@@ -36,6 +36,11 @@
   <h2>Version 0.9.5 - (Under development) </h2></a>
 	- Changes in applications:
 		- navlog-viewer: Now allows exporting the global navigation map as a MATLAB script for generating vector plots.
+	- New classes:
+		- A batch of changes to introduce WiFi signal strength receivers and building maps out of such observations (by Emil Khatib) - <a href="http://code.google.com/p/mrpt/source/detail?r=2572" >r2572</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2573" >r2573</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2574" >r2574</a>:
+			- [mrpt-obs] mrpt::slam::CObservationWirelessPower 
+			- [mrpt-maps] mrpt::slam::CWirelessPowerGridMap2D
+			- [mrpt-hwdrivers] mrpt::hwdrivers::CWirelessPower
 	- Changes in classes:
 		- [mrpt-maps] mrpt::slam::CPointsMap (and derived classes) now have a method mrpt::slam::CPointsMap::addFrom() and an "operator +=" to add the points from another point map  - <a href="http://code.google.com/p/mrpt/source/detail?r=2553" >r2553</a>
 		- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".

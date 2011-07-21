@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers 
+#include <mrpt/obs.h>   // Precompiled headers
 
 
 
@@ -51,13 +51,14 @@ void  CObservationWirelessPower::writeToStream(CStream &out, int *version) const
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)
-		*version = 2;
+		*version = 3;
 	else
 	{
 		// The data
 		out << power
 			<< sensorLabel
-			<< timestamp;
+			<< timestamp
+			<< sensorPoseOnRobot; // Added in v3
 	}
 }
 
@@ -72,6 +73,7 @@ void  CObservationWirelessPower::readFromStream(CStream &in, int version)
 	case 0:
 	case 1:
 	case 2:
+	case 3:
 		{
 			in	>> power;
 			if (version>=1)
@@ -82,11 +84,27 @@ void  CObservationWirelessPower::readFromStream(CStream &in, int version)
 					in >> timestamp;
 			else 	timestamp = INVALID_TIMESTAMP;
 
+			if (version>=3)
+					in >> sensorPoseOnRobot;
+			else 	sensorPoseOnRobot = CPose3D();
+
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 
 	};
 
+}
+
+
+
+void CObservationWirelessPower::getSensorPose( CPose3D &out_sensorPose ) const
+{
+	out_sensorPose=sensorPoseOnRobot;
+}
+
+void CObservationWirelessPower::setSensorPose( const CPose3D &newSensorPose )
+{
+	sensorPoseOnRobot = newSensorPose;
 }
 

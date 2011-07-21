@@ -42,7 +42,7 @@ namespace slam
 	/** This represents a measurement of the wireless strength perceived by the robot.
 	 *  The signal level is given as a percentage.
 	 *
-	 * \sa CObservation
+	 * \sa CObservation, mrpt::hwdrivers::CWirelessPower for a software sensor capable of reading this kind of observations.
 	 */
 	class OBS_IMPEXP CObservationWirelessPower : public CObservation
 	{
@@ -50,25 +50,23 @@ namespace slam
 		DEFINE_SERIALIZABLE( CObservationWirelessPower )
 
 	 public:
-		/** Constructor
-		 */
+		/** Constructor */
 		CObservationWirelessPower( );
 
-		 /** The data members
-		  * \sa power
-		  */
-		double power;
+		 /** @name The data members
+		  * @{ */
 
-		
-		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose=CPose3D(0,0,0); }
+		double power;  //!< The power or signal strength as sensed by the Wifi receiver (In percentage: [0-100])
+		mrpt::poses::CPose3D  sensorPoseOnRobot; //!< The location of the sensing antenna on the robot coordinate framework
 
+		/** @} */
+
+		void getSensorPose( CPose3D &out_sensorPose ) const;
 
 		/** A general method to change the sensor pose on the robot.
 		  *  It has no effects in this class
-		  * \sa getSensorPose
-		  */
-		void setSensorPose( const CPose3D &newSensorPose ) {  }
-
+		  * \sa getSensorPose  */
+		void setSensorPose( const CPose3D &newSensorPose );
 
 	}; // End of class def.
 

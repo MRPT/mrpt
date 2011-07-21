@@ -58,13 +58,13 @@
 #include <mrpt/vision/CVideoFileWriter.h>
 
 //(*InternalHeaders(xRawLogViewerFrame)
-#include <wx/artprov.h>
+#include <wx/string.h>
+#include <wx/intl.h>
+#include <wx/font.h>
 #include <wx/bitmap.h>
 #include <wx/icon.h>
-#include <wx/font.h>
-#include <wx/intl.h>
 #include <wx/image.h>
-#include <wx/string.h>
+#include <wx/artprov.h>
 //*)
 
 #include <wx/tooltip.h>
@@ -316,6 +316,8 @@ const long xRawLogViewerFrame::ID_MENUITEM46 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM45 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM43 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM42 = wxNewId();
+const long xRawLogViewerFrame::ID_MENUITEM89 = wxNewId();
+const long xRawLogViewerFrame::ID_MENUITEM88 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM26 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM32 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM27 = wxNewId();
@@ -358,55 +360,54 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxArtProvider::Push(new MyArtProvider);
 
 	//(*Initialize(xRawLogViewerFrame)
-	wxMenu* Menu39;
-	wxFlexGridSizer* FlexGridSizer4;
-	wxMenuItem* MenuItem33;
-	wxMenuItem* MenuItem26;
-	wxMenuItem* MenuItem25;
 	wxMenuItem* MenuItem2;
-	wxFlexGridSizer* FlexGridSizer10;
-	wxFlexGridSizer* FlexGridSizer3;
-	wxMenuItem* MenuItem55;
-	wxMenuItem* MenuItem1;
-	wxMenuItem* MenuItem56;
-	wxFlexGridSizer* FlexGridSizer5;
-	wxFlexGridSizer* FlexGridSizer9;
-	wxMenuItem* MenuItem22;
-	wxFlexGridSizer* FlexGridSizer2;
-	wxMenuItem* MenuItem17;
-	wxMenu* Menu1;
-	wxFlexGridSizer* FlexGridSizer7;
-	wxMenuItem* MenuItem82;
-	wxMenuItem* MenuItem75;
-	wxMenuItem* MenuItem60;
-	wxMenuItem* MenuItem12;
-	wxMenuItem* MenuItem24;
-	wxMenuItem* MenuItem69;
-	wxMenuItem* MenuItem27;
-	wxFlexGridSizer* FlexGridSizer8;
-	wxMenuItem* MenuItem70;
-	wxMenuItem* MenuItem67;
-	wxMenuItem* MenuItem83;
-	wxMenuItem* MenuItem65;
-	wxFlexGridSizer* FlexGridSizer13;
-	wxMenuItem* MenuItem41;
-	wxFlexGridSizer* FlexGridSizer12;
 	wxMenu* MenuItem81;
-	wxMenuBar* MenuBar1;
-	wxFlexGridSizer* FlexGridSizer6;
+	wxMenuItem* MenuItem1;
+	wxFlexGridSizer* FlexGridSizer8;
 	wxFlexGridSizer* FlexGridSizer1;
-	wxFlexGridSizer* FlexGridSizer11;
+	wxFlexGridSizer* FlexGridSizer2;
 	wxMenuItem* MenuItem43;
-	wxMenu* Menu2;
-	wxMenuItem* MenuItem18;
+	wxMenu* Menu39;
+	wxMenuItem* MenuItem75;
+	wxMenu* Menu1;
+	wxMenuItem* MenuItem12;
+	wxMenuItem* MenuItem25;
+	wxMenuItem* MenuItem55;
 	wxMenuItem* MenuItem19;
-
+	wxFlexGridSizer* FlexGridSizer11;
+	wxMenuItem* MenuItem65;
+	wxMenuItem* MenuItem56;
+	wxMenuItem* MenuItem67;
+	wxMenuItem* MenuItem33;
+	wxFlexGridSizer* FlexGridSizer7;
+	wxMenuItem* MenuItem24;
+	wxFlexGridSizer* FlexGridSizer4;
+	wxMenuItem* MenuItem69;
+	wxFlexGridSizer* FlexGridSizer9;
+	wxFlexGridSizer* FlexGridSizer6;
+	wxMenuItem* MenuItem17;
+	wxFlexGridSizer* FlexGridSizer3;
+	wxMenuItem* MenuItem60;
+	wxMenuItem* MenuItem22;
+	wxMenuItem* MenuItem41;
+	wxFlexGridSizer* FlexGridSizer10;
+	wxMenuItem* MenuItem82;
+	wxFlexGridSizer* FlexGridSizer13;
+	wxMenuBar* MenuBar1;
+	wxMenuItem* MenuItem27;
+	wxMenuItem* MenuItem18;
+	wxMenuItem* MenuItem26;
+	wxMenuItem* MenuItem70;
+	wxFlexGridSizer* FlexGridSizer12;
+	wxMenu* Menu2;
+	wxFlexGridSizer* FlexGridSizer5;
+	
 	Create(parent, id, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("id"));
 	SetClientSize(wxSize(700,500));
 	{
-		wxIcon FrameIcon;
-		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_OTHER));
-		SetIcon(FrameIcon);
+	wxIcon FrameIcon;
+	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_OTHER));
+	SetIcon(FrameIcon);
 	}
 	SplitterWindow1 = new wxSplitterWindow(this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_3DBORDER|wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW1"));
 	SplitterWindow1->SetMinSize(wxSize(10,10));
@@ -799,6 +800,10 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	MenuItem40 = new wxMenuItem(MenuItem39, ID_MENUITEM43, _("Generate text file with measurementes..."), wxEmptyString, wxITEM_NORMAL);
 	MenuItem39->Append(MenuItem40);
 	Menu6->Append(ID_MENUITEM42, _("Inertial Measurement Units"), MenuItem39, wxEmptyString);
+	MenuItem84 = new wxMenu();
+	MenuItem85 = new wxMenuItem(MenuItem84, ID_MENUITEM89, _("Generate &text file with all observations..."), wxEmptyString, wxITEM_NORMAL);
+	MenuItem84->Append(MenuItem85);
+	Menu6->Append(ID_MENUITEM88, _("&WiFi Strength"), MenuItem84, wxEmptyString);
 	MenuBar1->Append(Menu6, _("&Sensors"));
 	Menu4 = new wxMenu();
 	MenuItem28 = new wxMenuItem(Menu4, ID_MENUITEM26, _("Open paths and &map generation module..."), _("Open the raw map/path samples dialog"), wxITEM_NORMAL);
@@ -848,7 +853,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	mnuTree.Append(ID_MENUITEM48, _("Add action"), MenuItem45, wxEmptyString);
 	timAutoLoad.SetOwner(this, ID_TIMER1);
 	timAutoLoad.Start(50, true);
-
+	
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnbtnEditCommentsClick1);
 	Connect(ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
 	Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
@@ -921,6 +926,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	Connect(ID_MENUITEM81,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuRangeBearFilterIDs);
 	Connect(ID_MENUITEM46,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnRangeFinder1DGenTextFile);
 	Connect(ID_MENUITEM43,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnGenerateIMUTextFile);
+	Connect(ID_MENUITEM89,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnGenWifiTxt);
 	Connect(ID_MENUITEM26,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnRawMapOdo);
 	Connect(ID_MENUITEM32,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnGenOdoLaser);
 	Connect(ID_MENUITEM27,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuShowTips);
@@ -6291,4 +6297,5 @@ void xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged(wxScrollEvent& event)
 	// Refresh:
 	SelectObjectInTreeView(curSelectedObject);
 }
+
 
