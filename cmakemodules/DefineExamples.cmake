@@ -60,6 +60,7 @@ IF(BUILD_EXAMPLES)
 		display3D
 		opengl_objects_demo
 		fbo_render_test
+		offscreen-render
 		octree_render_huge_pointcloud
 		imageBasics
 		imageCorrelation
