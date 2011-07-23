@@ -15,8 +15,15 @@ ADD_CUSTOM_TARGET(test)
 # Tests based on Google gtest:
 # -----------------------------
 
-# Include gtest:
-INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/gtest-1.5.0/fused-src/")
+# Include gtest from embeded lib:
+IF (NOT CMAKE_MRPT_HAS_GTEST_SYSTEM)
+	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/gtest-1.5.0/fused-src/")
+ENDIF(NOT CMAKE_MRPT_HAS_GTEST_SYSTEM)
+
+# If using system library, add C++ flags:
+IF (NOT "${CMAKE_GTEST_CFLAGS}" STREQUAL "")
+	ADD_DEFINITIONS(${CMAKE_GTEST_CFLAGS})
+ENDIF (NOT "${CMAKE_GTEST_CFLAGS}" STREQUAL "")
 
 
 get_property(LST_LIB_TESTS GLOBAL PROPERTY "MRPT_TEST_LIBS")
@@ -29,8 +36,17 @@ FOREACH(_TSTLIB ${LST_LIB_TESTS})
 
 	# Test project:
 	ADD_EXECUTABLE( test_${_TSTLIB} test_main.cpp ${lstfiles})
-	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest) # Add the required libraries for linking:
+
+	# Add the required libraries for linking:
+IF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
+	# System vesion:
+	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} gtest)
+ELSE (CMAKE_MRPT_HAS_GTEST_SYSTEM)
+	# Own vesion:
+	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest) 
 	ADD_DEPENDENCIES(test_${_TSTLIB} mrptgtest)  # Assure the MRPT library is updated:
+ENDIF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
+
 
 	set_target_properties(test_${_TSTLIB} PROPERTIES "COMPILE_DEFINITIONS" "MRPT_TEST_LIB=${_TSTLIB}")
 

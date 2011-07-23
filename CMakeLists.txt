@@ -2023,7 +2023,56 @@ ENDMACRO(SHOW_CONFIG_LINE_SYSTEM)
 #   TESTS
 # ----------------------------------------------------------------------------
 SET( BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
+
+# By default, use embedded version of gtest:	
+SET(CMAKE_MRPT_HAS_GTEST         1)
+SET(CMAKE_MRPT_HAS_GTEST_SYSTEM  0)
+SET(CMAKE_MRPT_HAS_GTEST_VERSION  "1.5.0")  # In "otherlibs/gtest-x.y.z"
+
 IF( BUILD_TESTING)
+	# Try using libgtest (Google testing library) from the system, if available
+	IF(UNIX)
+		FIND_FILE(GTEST_CONFIG_FILE gtest-config)
+		IF(GTEST_CONFIG_FILE)
+			MARK_AS_ADVANCED(GTEST_CONFIG_FILE)
+
+			SET(CMAKE_MRPT_HAS_GTEST_SYSTEM 1)
+
+			# Get the version:
+			EXECUTE_PROCESS(COMMAND ${GTEST_CONFIG_FILE} --version
+				RESULT_VARIABLE CMAKE_GTEST_CONFIG_RES
+				OUTPUT_VARIABLE CMAKE_MRPT_HAS_GTEST_VERSION
+				OUTPUT_STRIP_TRAILING_WHITESPACE
+				)
+			IF(${CMAKE_GTEST_CONFIG_RES})
+				MESSAGE("Error invoking GTEST config file:\n ${GTEST_CONFIG_FILE} --version")
+			ENDIF(${CMAKE_GTEST_CONFIG_RES})
+
+			# Get the config params:
+			EXECUTE_PROCESS(COMMAND ${GTEST_CONFIG_FILE} --libs
+				RESULT_VARIABLE CMAKE_GTEST_CONFIG_RES
+				OUTPUT_VARIABLE CMAKE_GTEST_LIBS
+				OUTPUT_STRIP_TRAILING_WHITESPACE
+				)
+			IF(${CMAKE_GTEST_CONFIG_RES})
+				MESSAGE("Error invoking GTEST config file:\n ${GTEST_CONFIG_FILE} --libs")
+			ENDIF(${CMAKE_GTEST_CONFIG_RES})
+
+			EXECUTE_PROCESS(COMMAND ${GTEST_CONFIG_FILE} --cxxflags
+				RESULT_VARIABLE CMAKE_GTEST_CONFIG_RES
+				OUTPUT_VARIABLE CMAKE_GTEST_CFLAGS
+				OUTPUT_STRIP_TRAILING_WHITESPACE
+				)
+			IF(${CMAKE_GTEST_CONFIG_RES})
+				MESSAGE("Error invoking GTEST config file:\n ${GTEST_CONFIG_FILE} --cxxflags")
+			ENDIF(${CMAKE_GTEST_CONFIG_RES})
+
+		ELSE(GTEST_CONFIG_FILE)
+			SET(CMAKE_MRPT_HAS_GTEST_SYSTEM 0)
+		ENDIF(GTEST_CONFIG_FILE)
+
+	ENDIF(UNIX)
+
 	add_subdirectory(tests)
 ENDIF( BUILD_TESTING)
 
@@ -2228,6 +2277,10 @@ SHOW_CONFIG_LINE_SYSTEM("Has libjpeg (jpeg)                      " CMAKE_MRPT_HA
 IF(UNIX)
 	SHOW_CONFIG_LINE_SYSTEM("Has libftdi (USB)                       " CMAKE_MRPT_HAS_FTDI)
 ENDIF(UNIX)
+
+SHOW_CONFIG_LINE_SYSTEM("Has libftdi (USB)                       " CMAKE_MRPT_HAS_FTDI)
+SHOW_CONFIG_LINE_SYSTEM("Has gtest (Google unit testing library) " CMAKE_MRPT_HAS_GTEST "Version: ${CMAKE_MRPT_HAS_GTEST_VERSION}")
+
 
 SHOW_CONFIG_LINE_SYSTEM("Has PCL (Pointscloud library)           " CMAKE_MRPT_HAS_PCL  "Version: ${PCL_VERSION}")
 

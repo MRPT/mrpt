@@ -51,6 +51,7 @@
 		- [mrpt-base] All classes derived from mrpt::utils::CObjectPtr now have a proper "value_type" typedef with the most specific data type of the class being pointed by the smart pointer, overriding the inherited, too generic, mrpt::utils::CObject. - <a href="http://code.google.com/p/mrpt/source/detail?r=2568" >r2568</a>
 	- Build system/external libs:
 		- Update of Eigen3 to a more recent version (11-Jul-2011), which avoids warnings in MSVC x64 - <a href="http://code.google.com/p/mrpt/source/detail?r=2556" >r2556</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2558" >r2558</a>
+		- Automatic check for existence of system "libgtest-dev" not to build embedded version of Google unit testing library and link to system lib instead - <a href="http://code.google.com/p/mrpt/source/detail?r=r2576" >r2576</a>
 	- Build error FIXES:
 		- Build error in platforms that don't support SSE2 (Thanks rovoreed!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2550" >r2550</a>
 		- Build error when OpenCV exists but is not used. - <a href="http://code.google.com/p/mrpt/source/detail?r=2555" >r2555</a>
