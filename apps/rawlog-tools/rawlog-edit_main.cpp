@@ -68,6 +68,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml);
 DECLARE_OP_FUNCTION(op_export_gps_txt);
 DECLARE_OP_FUNCTION(op_sensors_pose);
 DECLARE_OP_FUNCTION(op_camera_params);
+DECLARE_OP_FUNCTION(op_generate_3d_pointclouds);
 
 
 // Declare the supported command line switches ===========
@@ -163,6 +164,12 @@ int main(int argc, char **argv)
 			,cmd,false) );
 		ops_functors["cut"] = &op_cut;
 
+		arg_ops.push_back(new TCLAP::SwitchArg("","generate-3d-pointclouds",
+			"Op: (re)generate the 3D pointclouds within CObservation3DRangeScan objects that have range data.\n"
+			"Requires: -o (or --output)\n"
+			,cmd,false));
+		ops_functors["generate-3d-pointclouds"] = &op_generate_3d_pointclouds;
+
 		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","sensors-pose",
 			"Op: batch change the poses of sensors from a rawlog-grabber-like configuration file that specifies the pose of sensors by their sensorLabel names.\n"
 			"Requires: -o (or --output)\n",
@@ -176,7 +183,6 @@ int main(int argc, char **argv)
 		ops_functors["camera-params"] = &op_camera_params;
 
 		// --------------- End of list of possible operations --------
-
 
 		// Parse arguments:
 		if (!cmd.parse( argc, argv ))
