@@ -86,7 +86,7 @@ CSwissRanger3DCamera::CSwissRanger3DCamera()  :
 	m_preview_window(false)
 {
 	m_sensorLabel = "3DCAM";
-	
+
 	// Default params: Obtained from a SR4000 with 0.004px avr reprojection error.
 	m_cameraParams.ncols = 176;
 	m_cameraParams.nrows = 144;
@@ -99,7 +99,7 @@ CSwissRanger3DCamera::CSwissRanger3DCamera()  :
 	m_cameraParams.dist[2] =  2.699818e-06;
 	m_cameraParams.dist[3] = -3.263559e-05;
 	m_cameraParams.dist[4] = 0;
-	
+
 #if !MRPT_HAS_SWISSRANGE
 	THROW_EXCEPTION("MRPT was compiled without support for SwissRanger 3D cameras! Rebuild it.")
 #endif
@@ -116,43 +116,43 @@ CSwissRanger3DCamera::~CSwissRanger3DCamera()
 
 /*-------------------------------------------------------------
 	Modified A-law compression algorithm for uint16_t -> uint8_t
-	 The original method uses signed int16_t. It's being tuned for 
+	 The original method uses signed int16_t. It's being tuned for
 	 what we want here...
  -------------------------------------------------------------*/
-static char ALawCompressTable[128] = 
-{ 
-     1,1,2,2,3,3,3,3, 
-     4,4,4,4,4,4,4,4, 
-     5,5,5,5,5,5,5,5, 
-     5,5,5,5,5,5,5,5, 
-     6,6,6,6,6,6,6,6, 
-     6,6,6,6,6,6,6,6, 
-     6,6,6,6,6,6,6,6, 
-     6,6,6,6,6,6,6,6, 
-     7,7,7,7,7,7,7,7, 
-     7,7,7,7,7,7,7,7, 
-     7,7,7,7,7,7,7,7, 
-     7,7,7,7,7,7,7,7, 
-     7,7,7,7,7,7,7,7, 
-     7,7,7,7,7,7,7,7, 
-     7,7,7,7,7,7,7,7, 
-     7,7,7,7,7,7,7,7 
-}; 
+static char ALawCompressTable[128] =
+{
+     1,1,2,2,3,3,3,3,
+     4,4,4,4,4,4,4,4,
+     5,5,5,5,5,5,5,5,
+     5,5,5,5,5,5,5,5,
+     6,6,6,6,6,6,6,6,
+     6,6,6,6,6,6,6,6,
+     6,6,6,6,6,6,6,6,
+     6,6,6,6,6,6,6,6,
+     7,7,7,7,7,7,7,7,
+     7,7,7,7,7,7,7,7,
+     7,7,7,7,7,7,7,7,
+     7,7,7,7,7,7,7,7,
+     7,7,7,7,7,7,7,7,
+     7,7,7,7,7,7,7,7,
+     7,7,7,7,7,7,7,7,
+     7,7,7,7,7,7,7,7
+};
 
 uint8_t table_16u_to_8u [0x10000];
 bool    table_16u_to_8u_init = false;
 
 unsigned char LinearToALawSample(uint16_t sample)
-{ 
+{
      if (sample >= 0x200)
-     { 
-          int exponent =  ALawCompressTable[(sample >> 9) & 0x7F]; 
-          int mantissa = (sample >> (exponent + 3) ) & 0x1F; 
-          return ((exponent << 5) | mantissa); 
-     } 
-     else 
-     { 
-          return (sample >> 4); 
+     {
+          int exponent =  ALawCompressTable[(sample >> 9) & 0x7F];
+          int mantissa = (sample >> (exponent + 3) ) & 0x1F;
+          return ((exponent << 5) | mantissa);
+     }
+     else
+     {
+          return (sample >> 4);
      }
 }
 
@@ -219,7 +219,7 @@ void  CSwissRanger3DCamera::loadConfig_sensorSpecific(
 	m_save_range_img= configSource.read_bool(iniSection,"save_range_img",m_save_range_img);
 	m_save_intensity_img= configSource.read_bool(iniSection,"save_intensity_img",m_save_intensity_img);
 	m_save_confidence= configSource.read_bool(iniSection,"save_confidence",m_save_confidence);
-	
+
 	m_enable_img_hist_equal = configSource.read_bool(iniSection,"enable_img_hist_equal",m_enable_img_hist_equal);
 	m_enable_median_filter = configSource.read_bool(iniSection,"enable_median_filter",m_enable_median_filter);
 	m_enable_mediancross_filter = configSource.read_bool(iniSection,"enable_mediancross_filter",m_enable_mediancross_filter);
@@ -232,14 +232,14 @@ void  CSwissRanger3DCamera::loadConfig_sensorSpecific(
 
 	m_external_images_format = mrpt::utils::trim( configSource.read_string( iniSection, "external_images_format", m_external_images_format ) );
 	m_external_images_jpeg_quality = configSource.read_int( iniSection, "external_images_jpeg_quality", m_external_images_jpeg_quality );
-	
+
 	try
 	{
 		m_cameraParams.loadFromConfigFile(iniSection, configSource);
 	}
 	catch(std::exception &)
 	{
-		// If there's some missing field, just keep the default values.	
+		// If there's some missing field, just keep the default values.
 	}
 }
 
@@ -400,6 +400,7 @@ void CSwissRanger3DCamera::getNextObservation(
 				{
 					ASSERT_(img->dataType==ImgEntry::DT_USHORT)
 					obs.hasRangeImage = true;
+					obs.range_is_depth = false;
 
 					// Convert data from uint16_t to float ranges:
 					//  (0x0000, 0xFFFF)  -> (0m, 5m)
@@ -444,17 +445,17 @@ void CSwissRanger3DCamera::getNextObservation(
 				{
 					ASSERT_(img->dataType==ImgEntry::DT_USHORT)
 					obs.hasIntensityImage = true;
-					
+
 					// Make sure the camera params are there:
 					m_cameraParams.scaleToResolution(img->width,img->height);
 					obs.cameraParams = m_cameraParams;
-					
+
 					// make sure the modified A-law Look Up Table is up-to-date:
 					if (!table_16u_to_8u_init)
 					{
 						table_16u_to_8u_init = true;
 						do_init_table_16u_to_8u();
-					}						
+					}
 
 					obs.intensityImage.resize(img->width,img->height,1, true);
 
@@ -515,7 +516,7 @@ void CSwissRanger3DCamera::getNextObservation(
 				break;
 		}
 	}
-	
+
 	// Save the observation to the user's object:
 	_out_obs.swap(obs);
 
@@ -531,7 +532,7 @@ void CSwissRanger3DCamera::getNextObservation(
 			{
 				decim=0;
 				if (!m_win_range)	{ m_win_range = mrpt::gui::CDisplayWindow::Create("Preview RANGE"); m_win_range->setPos(5,5); }
-			
+
 				mrpt::utils::CImage  img;
 				// Normalize the image
 				CMatrixFloat  range2D = _out_obs.rangeImage;
@@ -551,7 +552,7 @@ void CSwissRanger3DCamera::getNextObservation(
 			}
 		}
 	}
-	else 
+	else
 	{
 		if (m_win_range) m_win_range.clear();
 		if (m_win_int) m_win_int.clear();
@@ -567,10 +568,10 @@ void CSwissRanger3DCamera::getNextObservation(
 ----------------------------------------------------- */
 void CSwissRanger3DCamera::setPathForExternalImages( const std::string &directory )
 {
-	return;  
-	// Ignore for now. It seems performance is better grabbing everything 
+	return;
+	// Ignore for now. It seems performance is better grabbing everything
 	// to a single big file than creating hundreds of smaller files per second...
- 
+
 	if (!mrpt::system::createDirectory( directory ))
 	{
 		THROW_EXCEPTION_CUSTOM_MSG1("Error: Cannot create the directory for externally saved images: %s",directory.c_str() )

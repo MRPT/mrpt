@@ -275,8 +275,9 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 	CObservation3DRangeScan &obs = obj->internal_latest_obs();
 	mrpt::synch::CCriticalSectionLocker lock( &obj->internal_latest_obs_cs() );
 
-	obs.hasRangeImage = true;
-	
+	obs.hasRangeImage  = true;
+	obs.range_is_depth = true;
+
 #ifdef KINECT_PROFILE_MEM_ALLOC
 	alloc_tim.enter("depth_cb alloc");
 #endif
@@ -567,6 +568,7 @@ void CKinect::getNextObservation(
 	{
 		// Mark the entire range data as invalid:
 		m_latest_obs.hasRangeImage = true;
+		m_latest_obs.range_is_depth = true;
 		m_latest_obs.rangeImage.setSize(m_cameraParamsDepth.nrows,m_cameraParamsDepth.ncols);
 		m_latest_obs.rangeImage.setConstant(0); // "0" means: error in range
 		there_is_obs=true;
@@ -613,6 +615,7 @@ void CKinect::getNextObservation(
 		if (m_grab_depth || m_grab_3D_points)
 		{
 			newObs.hasRangeImage = true;
+			newObs.range_is_depth = true;
 			newObs.rangeImage.setSize(KINECT_H,KINECT_W);
 			PUSHORT depthPtr = (PUSHORT)&m_buf_depth[0];
 			for (int r=0;r<KINECT_H;r++)

@@ -80,12 +80,18 @@ namespace slam
 	 *		- cameraParams: Projection parameters of the depth camera.
 	 *		- cameraParamsIntensity: Projection parameters of the intensity (gray-level or RGB) camera.
 	 *
+	 *  Range data can be interpreted in two different ways depending on the 3D camera (this field is already set to the
+	 *    correct setting when grabbing observations from an mrpt::hwdrivers sensor):
+	 *		- range_is_depth=true  -> Kinect-like ranges: entries of \a rangeImage are distances along the +X axis
+	 *		- range_is_depth=false -> Ranges in \a rangeImage are actual distances in 3D.
+	 *
 	 *  3D point clouds can be generated at any moment after grabbing with CObservation3DRangeScan::project3DPointsFromDepthImage()
 	 *
 	 *  \note Starting at serialization version 2 (MRPT 0.9.1+), the confidence channel is stored as an image instead of a matrix to optimize memory and disk space.
 	 *  \note Starting at serialization version 3 (MRPT 0.9.1+), the 3D point cloud and the rangeImage can both be stored externally to save rawlog space.
+	 *  \note Starting at serialization version 5 (MRPT 0.9.5+), the new field \a range_is_depth.
 	 *
-	 * \sa mrpt::hwdrivers::CSwissRanger3DCamera, CObservation
+	 * \sa mrpt::hwdrivers::CSwissRanger3DCamera, mrpt::hwdrivers::CKinect, CObservation
 	 */
 	class OBS_IMPEXP CObservation3DRangeScan : public CObservation
 	{
@@ -118,16 +124,34 @@ namespace slam
 		/** @} */
 
 		/** Compute the 3D points coordinates from the depth image (\a rangeImage) and the depth camera camera parameters (\a cameraParams).
-		  *  The formulas for the i'th point, with rangeImage pixel coordinates (r,c) are:
+		  *  There exist two set of formulas for projecting the i'th point, depending on the value of "range_is_depth".
+		  *   In all formulas below, "rangeImage" is the matrix of ranges and the pixel coordinates are (r,c).
+		  *
+		  *  1) [range_is_depth=true] With "range equals depth" or "Kinect-like depth mode": the range values
+		  *      are in fact distances along the "+X" axis, not real 3D ranges (this is the way Kinect reports ranges):
+		  *
 		  * \code
 		  *   x(i) = rangeImage(r,c)
-		  *   y(i) = (r_cx - c) * x(i) / r_fy
-		  *   z(i) = (r_cy - r) * x(i) / r_fx
+		  *   y(i) = (r_cx - c) * x(i) / r_fx
+		  *   z(i) = (r_cy - r) * x(i) / r_fy
 		  * \endcode
-		  * 
-		  * \param[in] PROJ3D_USE_LUT Whether to use a Look-up-table (LUT) to speed up the conversion. It's thread safe in all situations <b>except</b> when you call this method from different threads <b>and</b> with different camera parameter matrices. In all other cases, it's a good idea to left it enabled.
 		  *
-		  * \note This method assumes that "ranges" are in fact distances along the "+X" axis, not 3D ranges. This is the way Kinect reports ranges.
+		  *
+		  *  2) [range_is_depth=false] With "normal ranges": range means distance in 3D. This must be set when
+		  *      processing data from the SwissRange 3D camera, among others.
+		  *
+		  * \code
+		  *   Ky = (r_cx - c)/r_fx
+		  *   Kz = (r_cy - r)/r_fy
+		  *
+		  *   x(i) = rangeImage(r,c) / sqrt( 1 + Ky^2 + Kz^2 )
+		  *   y(i) = Ky * x(i)
+		  *   z(i) = Kz * x(i)
+		  * \endcode
+		  *
+		  * \param[in] PROJ3D_USE_LUT (Only when range_is_depth=true) Whether to use a Look-up-table (LUT) to speed up the conversion. It's thread safe in all situations <b>except</b> when you call this method from different threads <b>and</b> with different camera parameter matrices. In all other cases, it's a good idea to left it enabled.
+		  *
+		  * \note In MRPT < 0.9.5, this method always assumes that ranges were in Kinect-like format.
 		  */
 		void project3DPointsFromDepthImage(const bool PROJ3D_USE_LUT=true);
 
@@ -152,8 +176,9 @@ namespace slam
 		// ---------
 
 		bool hasRangeImage; 				//!< true means the field rangeImage contains valid data
-		mrpt::math::CMatrix rangeImage; 	//!< If hasRangeImage=true, a matrix of floats with the range data as captured by the camera (in meters).
-		
+		mrpt::math::CMatrix rangeImage; 	//!< If hasRangeImage=true, a matrix of floats with the range data as captured by the camera (in meters) \sa range_is_depth
+		bool range_is_depth;				//!< true: Kinect-like ranges: entries of \a rangeImage are distances along the +X axis; false: Ranges in \a rangeImage are actual distances in 3D.
+
 		void rangeImage_setSize(const int HEIGHT, const int WIDTH); //!< Similar to calling "rangeImage.setSize(H,W)" but this method provides memory pooling to speed-up the memory allocation.
 
 		// Range Matrix external storage functions ---------

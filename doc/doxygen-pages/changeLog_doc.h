@@ -36,19 +36,23 @@
   <h2>Version 0.9.5 - (Under development) </h2></a>
 	- Changes in applications:
 		- navlog-viewer: Now allows exporting the global navigation map as a MATLAB script for generating vector plots.
+		- rawlog-edit: New operation: "--generate-3d-pointclouds" - <a href="http://code.google.com/p/mrpt/source/detail?r=2579" >r2579</a>
 	- New classes:
 		- A batch of changes to introduce WiFi signal strength receivers and building maps out of such observations (by Emil Khatib) - <a href="http://code.google.com/p/mrpt/source/detail?r=2572" >r2572</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2573" >r2573</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2574" >r2574</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2577" >r2577</a>:
 			- [mrpt-obs] mrpt::slam::CObservationWirelessPower 
 			- [mrpt-maps] mrpt::slam::CWirelessPowerGridMap2D
 			- [mrpt-hwdrivers] mrpt::hwdrivers::CWirelessPower
 		- [mrpt-maps] New class mrpt::slam::CRandomFieldGridMap2D to generalize previous WiFi and GasConcentration grid mapping - <a href="http://code.google.com/p/mrpt/source/detail?r=2577" >r2577</a>
- 	- 	- Changes in classes:
-		- [mrpt-maps] mrpt::slam::CPointsMap (and derived classes) now have a method mrpt::slam::CPointsMap::addFrom() and an "operator +=" to add the points from another point map  - <a href="http://code.google.com/p/mrpt/source/detail?r=2553" >r2553</a>
+	- Changes in classes:
 		- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".
+		- [mrpt-maps] mrpt::slam::CPointsMap (and derived classes) now have a method mrpt::slam::CPointsMap::addFrom() and an "operator +=" to add the points from another point map  - <a href="http://code.google.com/p/mrpt/source/detail?r=2553" >r2553</a>
 		- [mrpt-maps] Basic support for PCL library (version 1.0.0+): ( <a href="http://code.google.com/p/mrpt/source/detail?r=2560" >r2560</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2562" >r2562</a> )
 			- mrpt::slam::CPointsMap::savePCDFile() 
 			- mrpt::slam::CPointsMap::getPCLPointCloud()
 			- mrpt::slam::CColouredPointsMap::savePCDFile() 
+		- [mrpt-obs] In mrpt::slam::CObservation3DRangeScan - <a href="http://code.google.com/p/mrpt/source/detail?r=r2578" >r2578</a>:
+			- New data field: mrpt::slam::CObservation3DRangeScan::range_is_depth
+			- Method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() can now also recover 3D point clouds from 3D range scans not in the "Kinect" depth format.
 		- [mrpt-base] All classes derived from mrpt::utils::CObjectPtr now have a proper "value_type" typedef with the most specific data type of the class being pointed by the smart pointer, overriding the inherited, too generic, mrpt::utils::CObject. - <a href="http://code.google.com/p/mrpt/source/detail?r=2568" >r2568</a>
 Build system/external libs:
 		- Update of Eigen3 to a more recent version (11-Jul-2011), which avoids warnings in MSVC x64 - <a href="http://code.google.com/p/mrpt/source/detail?r=2556" >r2556</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2558" >r2558</a>
@@ -59,11 +63,11 @@ Build system/external libs:
 		- Build error in mrpt-hwdrivers with latest OpenCV 2.3 - <a href="http://code.google.com/p/mrpt/source/detail?r=r2566" >r2566</a>
 		- Linking error with MinGW around the mrpt::opengl::posePDF2opengl() templates - <a href="http://code.google.com/p/mrpt/source/detail?r=r2567" >r2567</a> (Thanks Miyamoto Musashi for <a href="http://www.mrpt.org/node/1031" >reporting</a>!).
 	- New examples:
-		- offscreen-render - A demo program to load a 3D scene and render it off-screen (in memory) at any arbitrary size, even larger than the screen  - <a href="http://code.google.com/p/mrpt/source/detail?r=r2575" >rr2575</a>.
+		- offscreen-render - A demo program to load a 3D scene and render it off-screen (in memory) at any arbitrary size, even larger than the screen  - <a href="http://code.google.com/p/mrpt/source/detail?r=r2575" >r2575</a>.
 	- New datasets:
-		- malaga-cs-fac-building.simplemap.gz - A new prebuilt simplemap of the ground floor of one Computer Science building (Malaga University) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2575" >rr2575</a>.
+		- malaga-cs-fac-building.simplemap.gz - A new prebuilt simplemap of the ground floor of one Computer Science building (Malaga University) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2575" >r2575</a>.
 	- BUG FIXES:
-		- (none yet)
+		- [mrpt-obs] Wrong usage of focal distances "fx"<->"fy" when generating the 3D point clouds from Kinect observations with the method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() - <a href="http://code.google.com/p/mrpt/source/detail?r=r2578" >r2578</a>.
 
 <br> <hr>
 

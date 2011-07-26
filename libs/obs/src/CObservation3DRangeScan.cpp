@@ -50,7 +50,7 @@ IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation,mrpt::slam)
 //#define EXTERNALS_AS_TEXT
 
 // Whether to use a memory pool for 3D points:
-#define COBS3DRANGE_USE_MEMPOOL 
+#define COBS3DRANGE_USE_MEMPOOL
 
 // Do performance time logging?
 // #define  PROJ3D_PERFLOG
@@ -64,12 +64,12 @@ IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation,mrpt::slam)
 	// Memory pool for XYZ points ----------------
 	struct CObservation3DRangeScan_Points_MemPoolParams
 	{
-		size_t WH; //!< Width*Height, that is, the number of 3D points 
+		size_t WH; //!< Width*Height, that is, the number of 3D points
 		inline bool isSuitable(const CObservation3DRangeScan_Points_MemPoolParams &req) const {
 			return WH>=req.WH;
 		}
 	};
-	struct CObservation3DRangeScan_Points_MemPoolData 
+	struct CObservation3DRangeScan_Points_MemPoolData
 	{
 		std::vector<float> pts_x,pts_y,pts_z;
 	};
@@ -83,7 +83,7 @@ IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation,mrpt::slam)
 			return H==req.H && W==req.W;
 		}
 	};
-	struct CObservation3DRangeScan_Ranges_MemPoolData 
+	struct CObservation3DRangeScan_Ranges_MemPoolData
 	{
 		mrpt::utils::CMatrix rangeImage;
 	};
@@ -100,6 +100,7 @@ CObservation3DRangeScan::CObservation3DRangeScan( ) :
 	m_rangeImage_external_stored(false),
 	hasPoints3D(false),
 	hasRangeImage(false),
+	range_is_depth(true),
 	hasIntensityImage(false),
 	hasConfidenceImage(false),
 	cameraParams(),
@@ -129,7 +130,7 @@ CObservation3DRangeScan::~CObservation3DRangeScan()
 		points3D_x.swap( mem_block->pts_x );
 		points3D_y.swap( mem_block->pts_y );
 		points3D_z.swap( mem_block->pts_z );
-	
+
 		pool.dump_to_pool(mem_params, mem_block);
 	}
 
@@ -144,7 +145,7 @@ CObservation3DRangeScan::~CObservation3DRangeScan()
 
 		CObservation3DRangeScan_Ranges_MemPoolData *mem_block = new CObservation3DRangeScan_Ranges_MemPoolData();
 		rangeImage.swap( mem_block->rangeImage );
-	
+
 		pool.dump_to_pool(mem_params, mem_block);
 	}
 
@@ -157,7 +158,7 @@ CObservation3DRangeScan::~CObservation3DRangeScan()
 void  CObservation3DRangeScan::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 4;
+		*version = 5;
 	else
 	{
 		// The data
@@ -191,6 +192,9 @@ void  CObservation3DRangeScan::writeToStream(CStream &out, int *version) const
 		// New in v3:
 		out << m_points3D_external_stored << m_points3D_external_file;
 		out << m_rangeImage_external_stored << m_rangeImage_external_file;
+
+		// New in v5:
+		out << range_is_depth;
 	}
 }
 
@@ -206,6 +210,7 @@ void  CObservation3DRangeScan::readFromStream(CStream &in, int version)
 	case 2:
 	case 3:
 	case 4:
+	case 5:
 		{
 			uint32_t		N;
 
@@ -285,6 +290,15 @@ void  CObservation3DRangeScan::readFromStream(CStream &in, int version)
 			{
 				m_points3D_external_stored = false;
 				m_rangeImage_external_stored = false;
+			}
+
+			if (version>=5)
+			{
+				in >> range_is_depth;
+			}
+			else
+			{
+				range_is_depth = true;
 			}
 
 		} break;
@@ -435,7 +449,7 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage( const std::stri
 	m_points3D_external_stored = true;
 
 	// Really dealloc memory, clear() is not enough:
-	{	
+	{
 		std::vector<float> dumm;
 		dumm.swap(points3D_x);
 	}
@@ -720,63 +734,96 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 	float *ys= &points3D_y[0];
 	float *zs= &points3D_z[0];
 
-	// Use cached tables:
-	struct TCached3DProjTables
-	{
-		mrpt::vector_float Kzs,Kys;
-		TCamera  prev_camParams;
-	};
 
-	static TCached3DProjTables m_3dproj_lut; //!< 3D point cloud projection look-up-table \sa project3DPointsFromDepthImage
-
-	if (PROJ3D_USE_LUT)
+	if (range_is_depth)
 	{
-		// Use LUT:
-		if (m_3dproj_lut.prev_camParams!=cameraParams || WH!=size_t(m_3dproj_lut.Kys.size()))
+		// range_is_depth = true
+
+		// Use cached tables:
+		struct TCached3DProjTables
 		{
-#ifdef PROJ3D_PERFLOG
-			tims.enter("LUT");
-#endif
-			m_3dproj_lut.prev_camParams = cameraParams;
-			m_3dproj_lut.Kys.resize(WH);
-			m_3dproj_lut.Kzs.resize(WH);
+			mrpt::vector_float Kzs,Kys;
+			TCamera  prev_camParams;
+		};
 
+		static TCached3DProjTables m_3dproj_lut; //!< 3D point cloud projection look-up-table \sa project3DPointsFromDepthImage
+
+		if (PROJ3D_USE_LUT)
+		{
+			// Use LUT:
+			if (m_3dproj_lut.prev_camParams!=cameraParams || WH!=size_t(m_3dproj_lut.Kys.size()))
+			{
+#ifdef PROJ3D_PERFLOG
+				tims.enter("LUT");
+#endif
+				m_3dproj_lut.prev_camParams = cameraParams;
+				m_3dproj_lut.Kys.resize(WH);
+				m_3dproj_lut.Kzs.resize(WH);
+
+				const float r_cx =  cameraParams.cx();
+				const float r_cy = cameraParams.cy();
+				const float r_fx_inv = 1.0f/cameraParams.fx();
+				const float r_fy_inv = 1.0f/cameraParams.fy();
+
+				float *kys = &m_3dproj_lut.Kys[0];
+				float *kzs = &m_3dproj_lut.Kzs[0];
+				for (int r=0;r<H;r++)
+					for (int c=0;c<W;c++)
+					{
+						*kys++ = (r_cx - c) * r_fx_inv;
+						*kzs++ = (r_cy - r) * r_fy_inv;
+					}
+
+#ifdef PROJ3D_PERFLOG
+				tims.leave("LUT");
+#endif
+			} // end update LUT.
+
+			ASSERT_EQUAL_(WH,size_t(m_3dproj_lut.Kys.size()))
+			ASSERT_EQUAL_(WH,size_t(m_3dproj_lut.Kzs.size()))
+			float *kys = &m_3dproj_lut.Kys[0];
+			float *kzs = &m_3dproj_lut.Kzs[0];
+
+#if MRPT_HAS_SSE2
+			if ((W & 0x07)==0)
+					do_project_3d_pointcloud_SSE2(H,W,kys,kzs,rangeImage,xs,ys,zs);
+			else	do_project_3d_pointcloud(H,W,kys,kzs,rangeImage,xs,ys,zs);  // if image width is not 8*N, use standard method
+#else
+			do_project_3d_pointcloud(H,W,kys,kzs,rangeImage,xs,ys,zs);
+#endif
+		}
+		else
+		{
+			// Without LUT:
 			const float r_cx =  cameraParams.cx();
 			const float r_cy = cameraParams.cy();
 			const float r_fx_inv = 1.0f/cameraParams.fx();
 			const float r_fy_inv = 1.0f/cameraParams.fy();
 
-			float *kys = &m_3dproj_lut.Kys[0];
-			float *kzs = &m_3dproj_lut.Kzs[0];
 			for (int r=0;r<H;r++)
 				for (int c=0;c<W;c++)
 				{
-					*kys++ = (r_cx - c) * r_fy_inv;
-					*kzs++ = (r_cy - r) * r_fx_inv;
+					const float Kz = (r_cy - r) * r_fy_inv;
+					const float Ky = (r_cx - c) * r_fx_inv;
+					const float D = rangeImage.coeff(r,c);
+
+					*xs++ = D;
+					*zs++ = Kz * D;
+					*ys++ = Ky * D;
 				}
-
-#ifdef PROJ3D_PERFLOG
-			tims.leave("LUT");
-#endif
-		} // end update LUT.
-
-		ASSERT_EQUAL_(WH,size_t(m_3dproj_lut.Kys.size()))
-		ASSERT_EQUAL_(WH,size_t(m_3dproj_lut.Kzs.size()))
-		float *kys = &m_3dproj_lut.Kys[0];
-		float *kzs = &m_3dproj_lut.Kzs[0];
-
-#if MRPT_HAS_SSE2
-		if ((W & 0x07)==0)
-				do_project_3d_pointcloud_SSE2(H,W,kys,kzs,rangeImage,xs,ys,zs);
-		else	do_project_3d_pointcloud(H,W,kys,kzs,rangeImage,xs,ys,zs);  // if image width is not 8*N, use standard method
-#else
-		do_project_3d_pointcloud(H,W,kys,kzs,rangeImage,xs,ys,zs);
-#endif
+		}
 	}
 	else
 	{
-		// Without LUT:
-		const float r_cx =  cameraParams.cx();
+		/* range_is_depth = false :
+		  *   Ky = (r_cx - c)/r_fx
+		  *   Kz = (r_cy - r)/r_fy
+		  *
+		  *   x(i) = rangeImage(r,c) / sqrt( 1 + Ky^2 + Kz^2 )
+		  *   y(i) = Ky * x(i)
+		  *   z(i) = Kz * x(i)
+		  */
+		const float r_cx = cameraParams.cx();
 		const float r_cy = cameraParams.cy();
 		const float r_fx_inv = 1.0f/cameraParams.fx();
 		const float r_fy_inv = 1.0f/cameraParams.fy();
@@ -784,16 +831,15 @@ void CObservation3DRangeScan::project3DPointsFromDepthImage(const bool PROJ3D_US
 		for (int r=0;r<H;r++)
 			for (int c=0;c<W;c++)
 			{
-				const float Kz = (r_cy - r) * r_fx_inv;
-				const float Ky = (r_cx - c) * r_fy_inv;
+				const float Ky = (r_cx - c) * r_fx_inv;
+				const float Kz = (r_cy - r) * r_fy_inv;
 				const float D = rangeImage.coeff(r,c);
 
-				*xs++ = D;
+				*xs++ = D / std::sqrt(1+Ky*Ky+Kz*Kz);
 				*zs++ = Kz * D;
 				*ys++ = Ky * D;
 			}
 	}
-
 
 #ifdef PROJ3D_PERFLOG
 	tims.leave("proj");
