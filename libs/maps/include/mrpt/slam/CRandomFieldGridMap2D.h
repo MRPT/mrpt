@@ -346,9 +346,9 @@ namespace slam
 	namespace utils
 	{
 		template <>
-		struct TEnumTypeFiller<typename slam::CRandomFieldGridMap2D::TMapRepresentation>
+		struct TEnumTypeFiller<slam::CRandomFieldGridMap2D::TMapRepresentation>
 		{
-			typedef typename slam::CRandomFieldGridMap2D::TMapRepresentation enum_t;
+			typedef slam::CRandomFieldGridMap2D::TMapRepresentation enum_t;
 			static void fill(bimap<enum_t,std::string>  &m_map)
 			{
 				m_map.insert(slam::CRandomFieldGridMap2D::mrKernelDM,          "mrKernelDM");

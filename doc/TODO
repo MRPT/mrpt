@@ -1,0 +1,19 @@
+
+List of pending stuff to be integrated into MRPT someday:
+
+
+  PRIORITARY
+===============
+
+- Point maps: Simplify  -> 9% faster
+
+- Fix WifiMaps.
+
+
+
+  WISHLIST FOR THE THREE WISE MEN
+=====================================
+
+- icp-graph-slam
+- Add \ingroup Doxygen tags to document mrpt-* libs
+
