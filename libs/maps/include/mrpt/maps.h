@@ -45,6 +45,7 @@
 #include <mrpt/slam/COccupancyGridMap2D.h>
 #include <mrpt/slam/CPointsMap.h>
 #include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/slam/CWeightedPointsMap.h>
 #include <mrpt/slam/CPointsMap.h>
 
 #include <mrpt/opengl/CAngularObservationMesh.h>

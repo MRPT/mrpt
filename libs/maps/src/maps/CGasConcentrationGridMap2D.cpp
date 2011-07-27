@@ -129,7 +129,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 	const CObservation	*obs,
 	const CPose3D			*robotPose )
 {
-	MRPT_START;
+	MRPT_START
 
 	CPose2D		robotPose2D;
 	CPose3D		robotPose3D;
@@ -246,7 +246,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 
 	return false;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

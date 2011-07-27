@@ -38,6 +38,12 @@
 
 #include <mrpt/opengl/CPointCloud.h>
 
+// Observations:
+#include <mrpt/slam/CObservationRange.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
+
+
 #if MRPT_HAS_PCL
 #   include <pcl/io/pcd_io.h>
 #   include <pcl/point_types.h>
@@ -66,10 +72,13 @@ const int dumm = mrpt_maps_class_reg.do_nothing(); // Avoid compiler removing th
 						Constructor
   ---------------------------------------------------------------*/
 CPointsMap::CPointsMap() :
-	x(),y(),z(),pointWeight(),
-	m_largestDistanceFromOrigin(0),
 	insertionOptions(),
-	likelihoodOptions()
+	likelihoodOptions(),
+	x(),y(),z(),
+	m_largestDistanceFromOrigin(0),
+	m_heightfilter_z_min(-10),
+	m_heightfilter_z_max(10),
+	m_heightfilter_enabled(false)
 {
 	mark_as_modified();
 }
@@ -116,20 +125,67 @@ bool  CPointsMap::save3D_to_text_file(const string &file) const
 	return true;
 }
 
-/*---------------------------------------------------------------
-					getPointsCount
-  ---------------------------------------------------------------*/
-size_t  CPointsMap::getPointsCount() const
-{
-	return x.size();
-}
 
 /*---------------------------------------------------------------
-						size
+					load2Dor3D_from_text_file
+  Load from a text file. In each line there are a point coordinates.
+    Returns false if any error occured, true elsewere.
   ---------------------------------------------------------------*/
-size_t CPointsMap::size() const
+bool  CPointsMap::load2Dor3D_from_text_file(
+	const std::string &file,
+	const bool is_3D)
 {
-	return x.size();
+	MRPT_START
+
+	mark_as_modified();
+
+	FILE	*f=os::fopen(file.c_str(),"rt");
+	if (!f) return false;
+
+	char		str[1024];
+	char		*ptr,*ptr1,*ptr2,*ptr3;
+
+	// Clear current map:
+	this->clear();
+
+	while (!feof(f))
+	{
+		// Read one string line:
+		str[0] = 0;
+		if (!fgets(str,sizeof(str),f)) break;
+
+		// Find the first digit:
+		ptr=str;
+		while (ptr[0] && (ptr[0]==' ' || ptr[0]=='\t' || ptr[0]=='\r' || ptr[0]=='\n'))
+			ptr++;
+
+		// And try to parse it:
+		float	xx = strtod(ptr,&ptr1);
+		if (ptr1!=str)
+		{
+			float	yy = strtod(ptr1,&ptr2);
+			if (ptr2!=ptr1)
+			{
+				if (!is_3D)
+				{
+					this->insertPoint(xx,yy,0);
+				}
+				else
+				{
+					float	zz = strtod(ptr2,&ptr3);
+					if (ptr3!=ptr2)
+					{
+						this->insertPoint(xx,yy,zz);
+					}
+				}
+			}
+		}
+	}
+
+	os::fclose(f);
+	return true;
+
+	MRPT_END
 }
 
 
@@ -137,72 +193,43 @@ size_t CPointsMap::size() const
 					getPoint
 			Access to stored points coordinates:
   ---------------------------------------------------------------*/
-unsigned long  CPointsMap::getPoint(size_t index,CPoint2D &p) const
-{
-	if (index>=x.size())
-		THROW_EXCEPTION("Index out of bounds");
-
-	p.x( x[index] );
-	p.y( y[index] );
-
-	return pointWeight[index];
-}
-
-unsigned long  CPointsMap::getPoint(size_t index,CPoint3D &p) const
-{
-	if (index>=x.size())
-		THROW_EXCEPTION("Index out of bounds");
-
-	p.x( x[index] );
-	p.y( y[index] );
-	p.z( z[index] );
-
-	return pointWeight[index];
-}
-
-unsigned long  CPointsMap::getPoint(size_t index,TPoint3D &p) const
-{
-	if (index>=x.size())
-		THROW_EXCEPTION("Index out of bounds");
-
-	p.x= x[index];
-	p.y= y[index];
-	p.z= z[index];
-
-	return pointWeight[index];
-}
-
-unsigned long  CPointsMap::getPoint(size_t index,TPoint2D &p) const
-{
-	if (index>=x.size())
-		THROW_EXCEPTION("Index out of bounds");
-
-	p.x= x[index];
-	p.y= y[index];
-
-	return pointWeight[index];
-}
-
 unsigned long  CPointsMap::getPoint(size_t index,float &x,float &y) const
 {
-	if (index>=this->x.size())
-		THROW_EXCEPTION("Index out of bounds");
+	ASSERT_BELOW_(index,this->x.size())
 
 	x = this->x[index];
 	y = this->y[index];
 
-	return pointWeight[index];
+	return getPointWeight(index);
 }
 unsigned long  CPointsMap::getPoint(size_t index,float &x,float &y,float &z) const
 {
-	if (index>=this->x.size())
-		THROW_EXCEPTION("Index out of bounds");
+	ASSERT_BELOW_(index,this->x.size())
 
 	x = this->x[index];
 	y = this->y[index];
 	z = this->z[index];
 
-	return pointWeight[index];
+	return getPointWeight(index);
+}
+unsigned long  CPointsMap::getPoint(size_t index,double &x,double  &y) const
+{
+	ASSERT_BELOW_(index,this->x.size())
+
+	x = this->x[index];
+	y = this->y[index];
+
+	return getPointWeight(index);;
+}
+unsigned long  CPointsMap::getPoint(size_t index,double &x,double &y,double &z) const
+{
+	ASSERT_BELOW_(index,this->x.size())
+
+	x = this->x[index];
+	y = this->y[index];
+	z = this->z[index];
+
+	return getPointWeight(index);;
 }
 
 /*---------------------------------------------------------------
@@ -300,7 +327,7 @@ void  CPointsMap::computeMatchingWith2D(
     bool									onlyKeepTheClosest,
 	bool									onlyUniqueRobust) const
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom( CLASS_ID(CPointsMap) ));
 	const CPointsMap		*otherMap = static_cast<const CPointsMap*>( otherMap2 );
@@ -590,7 +617,7 @@ void  CPointsMap::computeMatchingWith2D(
 	// The ratio of points in the other map with corrs:
 	correspondencesRatio = nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -792,7 +819,7 @@ float  CPointsMap::compute3DMatchingRatio(
 		) const
 {
 	MRPT_UNUSED_PARAM(minMahaDistForCorr);
-	MRPT_START;
+	MRPT_START
 
 	// Do have the other map any points map??
 	const CPointsMap *otherMap = otherMap2->getAsSimplePointsMap();
@@ -970,7 +997,7 @@ float  CPointsMap::compute3DMatchingRatio(
 	// The ratio of points in the other map with corrs:
 	return nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1002,7 +1029,7 @@ float  CPointsMap::getLargestDistanceFromOrigin() const
 ---------------------------------------------------------------*/
 void  CPointsMap::getAllPoints( vector<float> &xs, vector<float> &ys, size_t decimation  ) const
 {
-	MRPT_START;
+	MRPT_START
 	ASSERT_(decimation>0);
 
 	size_t N = x.size() / decimation;
@@ -1017,7 +1044,7 @@ void  CPointsMap::getAllPoints( vector<float> &xs, vector<float> &ys, size_t dec
 		*oX=*X;
 		*oY=*Y;
 	}
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -1157,7 +1184,7 @@ void  CPointsMap::computeMatchingWith3D(
     bool									onlyKeepTheClosest,
 	bool									onlyUniqueRobust) const
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom( CLASS_ID(CPointsMap) ));
 	const CPointsMap		*otherMap = static_cast<const CPointsMap*>( otherMap2 );
@@ -1383,7 +1410,7 @@ void  CPointsMap::computeMatchingWith3D(
 	// The ratio of points in the other map with corrs:
 	correspondencesRatio = nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
 
-	MRPT_END;
+	MRPT_END
 }
 
 void CPointsMap::extractCylinder( const CPoint2D &center, const double radius, const double zmin, const double zmax, CPointsMap *outMap )
@@ -1496,15 +1523,6 @@ double	 CPointsMap::computeObservationLikelihood(
 	 /**/
 }
 
-/*---------------------------------------------------------------
-						mark_as_modified
-  ---------------------------------------------------------------*/
-void CPointsMap::mark_as_modified() const
-{
-	m_largestDistanceFromOriginIsUpdated=false;
-	kdtree_mark_as_outdated();
-}
-
 
 namespace mrpt
 {
@@ -1583,18 +1601,17 @@ void  CPointsMap::addFrom(const CPointsMap &anotherMap)
 
 	const size_t nTot = nThis+nOther;
 
-	this->x.resize(nTot);
-	this->y.resize(nTot);
-	this->z.resize(nTot);
-	this->pointWeight.resize(nTot);
+	this->resize(nTot);
 
 	for (size_t i=0,j=nThis;i<nOther;i++, j++)
 	{
 		this->x[j]=anotherMap.x[i];
 		this->y[j]=anotherMap.y[i];
 		this->z[j]=anotherMap.z[i];
-		this->pointWeight[j]=anotherMap.pointWeight[i];
 	}
+
+	// Also copy other data fields (color, ...)
+	addFrom_classSpecific(anotherMap,nThis);
 
 	mark_as_modified();
 }
@@ -1611,4 +1628,712 @@ bool CPointsMap::savePCDFile(const std::string &filename, bool save_as_binary) c
 #else
     THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
 #endif
+}
+
+
+/*---------------------------------------------------------------
+					LoadFromRangeScan
+ Transform the range scan into a set of cartessian coordinated
+   points, leaving a given min. distance between them.
+  ---------------------------------------------------------------*/
+void  CPointsMap::loadFromRangeScan(
+	const CObservation2DRangeScan		&rangeScan,
+	const CPose3D						*robotPose )
+{
+	mark_as_modified();
+
+	// If robot pose is supplied, compute sensor pose relative to it.
+	CPose3D sensorPose3D(UNINITIALIZED_POSE);
+	if (!robotPose)
+			sensorPose3D = rangeScan.sensorPose;
+	else	sensorPose3D.composeFrom(*robotPose, rangeScan.sensorPose);
+
+	// Insert vs. load and replace:
+	if (!insertionOptions.addToExistingPointsMap)
+		this->resize(0); // Resize to 0 instead of clear() so the std::vector<> memory is not actually deadllocated and can be reused.
+
+	const int sizeRangeScan = rangeScan.scan.size();
+
+	// For a great gain in efficiency:
+	if ( x.size()+sizeRangeScan > x.capacity() )
+	{
+		reserve( (size_t) (x.size() * 1.2f) + 3*sizeRangeScan );
+	}
+
+
+	// GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION:
+	//  Specialize a bit the equations since we know that z=0 always for the scan in local coordinates:
+	TLaserRange2DInsertContext  lric(rangeScan);
+	sensorPose3D.getHomogeneousMatrix(lric.HM);
+
+	// For quicker access as "float" numbers:
+	float		m00 = lric.HM.get_unsafe(0,0);
+	float		m01 = lric.HM.get_unsafe(0,1);
+	float		m03 = lric.HM.get_unsafe(0,3);
+	float		m10 = lric.HM.get_unsafe(1,0);
+	float		m11 = lric.HM.get_unsafe(1,1);
+	float		m13 = lric.HM.get_unsafe(1,3);
+	float		m20 = lric.HM.get_unsafe(2,0);
+	float		m21 = lric.HM.get_unsafe(2,1);
+	float		m23 = lric.HM.get_unsafe(2,3);
+
+	float		lx_1,ly_1,lz_1,lx,ly,lz; // Punto anterior y actual:
+	float		lx_2,ly_2;				 // Punto antes del anterior
+
+	// Initial last point:
+	lx_1 = -100; ly_1 = -100; lz_1 = -100;
+	lx_2 = -100; ly_2 = -100;
+
+	// ------------------------------------------------------
+	//		Pass range scan to a set of 2D points:
+	// ------------------------------------------------------
+	Eigen::Array<float,Eigen::Dynamic,1>  scan_x(sizeRangeScan), scan_y(sizeRangeScan);
+
+	// Use a LUT to convert ranges -> (x,y) ; Automatically computed upon first usage.
+	const CSinCosLookUpTableFor2DScans::TSinCosValues & sincos_vals = m_scans_sincos_cache.getSinCosForScan(rangeScan);
+	{
+		const mrpt::vector_float scan_vals( rangeScan.scan ); // Convert from the std::vector
+		// Vectorized (optimized) scalar multiplications:
+		scan_x = scan_vals.array() * sincos_vals.ccos.array();
+		scan_y = scan_vals.array() * sincos_vals.csin.array();
+	}
+
+	// Minimum distance between points to reduce high density scans:
+	const float  minDistSqrBetweenLaserPoints = insertionOptions.minDistBetweenLaserPoints>0 ? square( insertionOptions.minDistBetweenLaserPoints ) : -1;
+
+	// ----------------------------------------------------------------
+	//   Transform these points into 3D using the pose transformation:
+	// ----------------------------------------------------------------
+	bool	lastPointWasValid = true;
+	bool	thisIsTheFirst = true;
+	bool  	lastPointWasInserted = false;
+
+	// Initialize extra stuff in derived class:
+	this->internal_loadFromRangeScan2D_init(lric);
+
+	for (int i=0;i<sizeRangeScan;i++)
+	{
+		if ( rangeScan.validRange[i] )
+		{
+			lx = m00*scan_x[i] + m01*scan_y[i] + m03;
+			ly = m10*scan_x[i] + m11*scan_y[i] + m13;
+			lz = m20*scan_x[i] + m21*scan_y[i] + m23;
+
+			// Specialized work in derived classes:
+			this->internal_loadFromRangeScan2D_prepareOneRange(lx,ly,lz,lric);
+
+			lastPointWasInserted = false;
+
+			// Add if distance > minimum only:
+			const float d2 = (square(lx-lx_1) + square(ly-ly_1) + square(lz-lz_1) );
+			if ( thisIsTheFirst || (lastPointWasValid && (d2 > minDistSqrBetweenLaserPoints)) )
+			{
+				thisIsTheFirst = false;
+				// Si quieren que interpolemos tb. los puntos lejanos, hacerlo:
+				if (insertionOptions.also_interpolate && i>1)
+				{
+					float changeInDirection;
+					const float d = std::sqrt( d2 );
+
+					if ((lx!=lx_1 || ly!=ly_1) && (lx_1!=lx_2 || ly_1!=ly_2) )
+							changeInDirection = atan2(ly-ly_1,lx-lx_1)-atan2(ly_1-ly_2,lx_1-lx_2);
+					else	changeInDirection = 0;
+
+					// Conditions to really interpolate the points:
+					if (d>=2*insertionOptions.minDistBetweenLaserPoints &&
+						d<insertionOptions.maxDistForInterpolatePoints &&
+						fabs(changeInDirection)<DEG2RAD(5) )
+					{
+						int nInterpol = round(d / (2*sqrt(minDistSqrBetweenLaserPoints)));
+
+						for (int q=1;q<nInterpol;q++)
+						{
+							float i_x = lx_1 + q*(lx-lx_1)/nInterpol;
+							float i_y = ly_1 + q*(ly-ly_1)/nInterpol;
+							float i_z = lz_1 + q*(lz-lz_1)/nInterpol;
+							if( !m_heightfilter_enabled || ( i_z >= m_heightfilter_z_min && i_z <= m_heightfilter_z_max ) )
+							{
+								x.push_back( i_x );
+								y.push_back( i_y );
+								z.push_back( i_z );
+								// Allow derived classes to add any other information to that point:
+								this->internal_loadFromRangeScan2D_postPushBack(lric);
+							} // end if
+						} // end for
+					} // End of interpolate:
+				}
+
+				if( !m_heightfilter_enabled || (lz >= m_heightfilter_z_min && lz <= m_heightfilter_z_max ) )
+				{
+					x.push_back( lx );
+					y.push_back( ly );
+					z.push_back( lz );
+					// Allow derived classes to add any other information to that point:
+					this->internal_loadFromRangeScan2D_postPushBack(lric);
+
+					lastPointWasInserted = true;
+
+					lx_2 = lx_1;
+					ly_2 = ly_1;
+
+					lx_1 = lx;
+					ly_1 = ly;
+					lz_1 = lz;
+				}
+			}
+		}
+
+		// Save for next iteration:
+		lastPointWasValid = rangeScan.validRange[i] != 0;
+	}
+
+	// The last point
+	if (lastPointWasValid && !lastPointWasInserted)
+	{
+		if( !m_heightfilter_enabled || (lz >= m_heightfilter_z_min && lz <= m_heightfilter_z_max ) )
+		{
+			x.push_back( lx );
+			y.push_back( ly );
+			z.push_back( lz );
+			// Allow derived classes to add any other information to that point:
+			this->internal_loadFromRangeScan2D_postPushBack(lric);
+		}
+	}
+
+}
+
+/*---------------------------------------------------------------
+					LoadFromRangeScan
+ Transform the range scan into a set of cartessian coordinated
+   points, leaving a given min. distance between them.
+  ---------------------------------------------------------------*/
+void  CPointsMap::loadFromRangeScan(
+	const CObservation3DRangeScan		&rangeScan,
+	const CPose3D						*robotPose )
+{
+	mark_as_modified();
+
+	// If robot pose is supplied, compute sensor pose relative to it.
+	CPose3D sensorPose3D(UNINITIALIZED_POSE);
+	if (!robotPose)
+			sensorPose3D = rangeScan.sensorPose;
+	else	sensorPose3D.composeFrom(*robotPose, rangeScan.sensorPose);
+
+	// Insert vs. load and replace:
+	if (!insertionOptions.addToExistingPointsMap)
+		this->resize(0); // Resize to 0 instead of clear() so the std::vector<> memory is not actually deadllocated and can be reused.
+
+	if (!rangeScan.hasPoints3D)
+		return; // Nothing to do!
+
+	const size_t sizeRangeScan = rangeScan.points3D_x.size();
+
+	// For a great gain in efficiency:
+	if ( x.size()+sizeRangeScan> x.capacity() )
+		reserve( size_t(x.size() + 1.1*sizeRangeScan) );
+
+
+	// GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION:
+	// --------------------------------------------------------------------------
+	TLaserRange3DInsertContext  lric(rangeScan);
+	sensorPose3D.getHomogeneousMatrix(lric.HM);
+	// For quicker access to values as "float" instead of "doubles":
+	float		m00 = lric.HM.get_unsafe(0,0);
+	float		m01 = lric.HM.get_unsafe(0,1);
+	float		m02 = lric.HM.get_unsafe(0,2);
+	float		m03 = lric.HM.get_unsafe(0,3);
+	float		m10 = lric.HM.get_unsafe(1,0);
+	float		m11 = lric.HM.get_unsafe(1,1);
+	float		m12 = lric.HM.get_unsafe(1,2);
+	float		m13 = lric.HM.get_unsafe(1,3);
+	float		m20 = lric.HM.get_unsafe(2,0);
+	float		m21 = lric.HM.get_unsafe(2,1);
+	float		m22 = lric.HM.get_unsafe(2,2);
+	float		m23 = lric.HM.get_unsafe(2,3);
+
+	float		lx_1,ly_1,lz_1,lx,ly,lz;		// Punto anterior y actual:
+
+	// Initial last point:
+	lx_1 = -100; ly_1 = -100; lz_1 = -100;
+
+	float  minDistSqrBetweenLaserPoints = square( insertionOptions.minDistBetweenLaserPoints );
+
+	// If the user doesn't want a minimum distance:
+	if (insertionOptions.minDistBetweenLaserPoints<0)
+		minDistSqrBetweenLaserPoints = -1;
+
+	// ----------------------------------------------------------------
+	//   Transform these points into 3D using the pose transformation:
+	// ----------------------------------------------------------------
+	bool	lastPointWasValid = true;
+	bool	thisIsTheFirst = true;
+	bool  	lastPointWasInserted = false;
+
+	// Initialize extra stuff in derived class:
+	this->internal_loadFromRangeScan3D_init(lric);
+
+	for (size_t i=0;i<sizeRangeScan;i++)
+	{
+		// Valid point?
+		if ( rangeScan.points3D_x[i]!=0 && rangeScan.points3D_y[i]!=0 )
+		{
+			lric.scan_x = rangeScan.points3D_x[i];
+			lric.scan_y = rangeScan.points3D_y[i];
+			lric.scan_z = rangeScan.points3D_z[i];
+
+			lx = m00*lric.scan_x + m01*lric.scan_y + m02*lric.scan_z + m03;
+			ly = m10*lric.scan_x + m11*lric.scan_y + m12*lric.scan_z + m13;
+			lz = m20*lric.scan_x + m21*lric.scan_y + m22*lric.scan_z + m23;
+
+			// Specialized work in derived classes:
+			this->internal_loadFromRangeScan3D_prepareOneRange(lx,ly,lz,lric);
+
+			lastPointWasInserted = false;
+
+			// Add if distance > minimum only:
+			float d2 = (square(lx-lx_1) + square(ly-ly_1) + square(lz-lz_1) );
+			if ( thisIsTheFirst || (lastPointWasValid && (d2 > minDistSqrBetweenLaserPoints)) )
+			{
+				thisIsTheFirst = false;
+
+				x.push_back( lx );
+				y.push_back( ly );
+				z.push_back( lz );
+				// Allow derived classes to add any other information to that point:
+				this->internal_loadFromRangeScan3D_postPushBack(lric);
+
+				lastPointWasInserted = true;
+
+				lx_1 = lx;
+				ly_1 = ly;
+				lz_1 = lz;
+			}
+
+			lastPointWasValid = true;
+		}
+		else
+		{
+			lastPointWasValid = false;
+		}
+
+		this->internal_loadFromRangeScan3D_postOneRange(lric);
+	}
+
+	// The last point
+	if (lastPointWasValid && !lastPointWasInserted)
+	{
+		x.push_back( lx );
+		y.push_back( ly );
+		z.push_back( lz );
+		// Allow derived classes to add any other information to that point:
+		this->internal_loadFromRangeScan3D_postPushBack(lric);
+	}
+}
+
+
+/*---------------------------------------------------------------
+						applyDeletionMask
+ ---------------------------------------------------------------*/
+void  CPointsMap::applyDeletionMask( std::vector<bool> &mask )
+{
+	ASSERT_EQUAL_( getPointsCount(), mask.size() )
+
+	// Remove marked points:
+	const size_t n = mask.size();
+	vector<float> Pt;
+	size_t i,j;
+	for (i=0,j=0;i<n;i++)
+	{
+		if (!mask[i])
+		{
+			// Pt[j] <---- Pt[i]
+			this->getPointAllFieldsFast(i,Pt);
+			this->setPointAllFieldsFast(j,Pt);
+		}
+	}
+
+	// Set new correct size:
+	this->resize(j);
+
+	mark_as_modified();
+}
+
+/*---------------------------------------------------------------
+					insertAnotherMap
+ ---------------------------------------------------------------*/
+void  CPointsMap::insertAnotherMap(
+	const CPointsMap	*otherMap,
+	const CPose3D		&otherPose)
+{
+	const size_t N_this = size();
+	const size_t N_other = otherMap->size();
+
+	// Set the new size:
+	this->resize( N_this + N_other );
+
+	mrpt::math::TPoint3Df pt;
+	size_t src,dst;
+	for (src=0, dst=N_this; src<N_other; src++, dst++)
+	{
+		// Load the next point:
+		otherMap->getPointFast(src,pt.x,pt.y,pt.z);
+
+		// Translation:
+		double gx,gy,gz;
+		otherPose.composePoint(pt.x,pt.y,pt.z,  gx,gy,gz);
+
+		// Add to this map:
+		this->setPointFast(dst,gx,gy,gz);
+	}
+
+	// Also copy other data fields (color, ...)
+	addFrom_classSpecific(*otherMap, N_this);
+
+	mark_as_modified();
+}
+
+
+/** Helper method for ::copyFrom() */
+void  CPointsMap::base_copyFrom(const CPointsMap &obj)
+{
+	MRPT_START
+
+	if (this==&obj)
+		return;
+
+	x = obj.x;
+	y = obj.y;
+	z = obj.z;
+
+	m_largestDistanceFromOriginIsUpdated = obj.m_largestDistanceFromOriginIsUpdated;
+	m_largestDistanceFromOrigin = obj.m_largestDistanceFromOrigin;
+
+	// Fill missing fields (R,G,B,min_dist) with default values.
+	this->resize(x.size());
+
+	kdtree_mark_as_outdated();
+
+	MRPT_END
+}
+
+
+/*---------------------------------------------------------------
+					internal_insertObservation
+
+  Insert the observation information into this map.
+ ---------------------------------------------------------------*/
+bool  CPointsMap::internal_insertObservation(
+	const CObservation	*obs,
+    const CPose3D *robotPose)
+{
+	MRPT_START
+
+	CPose2D		robotPose2D;
+	CPose3D		robotPose3D;
+
+	if (robotPose)
+	{
+		robotPose2D = CPose2D(*robotPose);
+		robotPose3D = (*robotPose);
+	}
+	else
+	{
+		// Default values are (0,0,0)
+	}
+
+	if (IS_CLASS(obs,CObservation2DRangeScan))
+	{
+		/********************************************************************
+					OBSERVATION TYPE: CObservation2DRangeScan
+		 ********************************************************************/
+		mark_as_modified();
+
+		const CObservation2DRangeScan *o = static_cast<const CObservation2DRangeScan *>(obs);
+		// Insert only HORIZONTAL scans??
+		bool	reallyInsertIt;
+
+		if (insertionOptions.isPlanarMap)
+			 reallyInsertIt = o->isPlanarScan( insertionOptions.horizontalTolerance );
+		else reallyInsertIt = true;
+
+		if (reallyInsertIt)
+		{
+			std::vector<bool>	checkForDeletion;
+
+			// 1) Fuse into the points map or add directly?
+			// ----------------------------------------------
+			if (insertionOptions.fuseWithExisting)
+			{
+				CSimplePointsMap	auxMap;
+				// Fuse:
+				auxMap.insertionOptions = insertionOptions;
+				auxMap.insertionOptions.addToExistingPointsMap = false;
+
+				auxMap.loadFromRangeScan(
+					*o,						// The laser range scan observation
+					&robotPose3D			// The robot pose
+					);
+
+				fuseWith(	&auxMap,					// Fuse with this map
+							insertionOptions.minDistBetweenLaserPoints,	// Min dist.
+							&checkForDeletion		// Set to "false" if a point in "map" has been fused.
+							);
+
+				if (! insertionOptions.disableDeletion )
+				{
+					// 2) Delete points in newly added free
+					//      region, thus dynamic areas:
+					// --------------------------------------
+					// Load scan as a polygon:
+					CPolygon			pol;
+					const float			*xs,*ys,*zs;
+					size_t n;
+					auxMap.getPointsBuffer( n, xs,ys,zs);
+					pol.setAllVertices( n, xs, ys );
+
+					// Check for deletion of points in "map"
+					n = getPointsCount();
+					for (size_t i=0;i<n;i++)
+					{
+						if ( checkForDeletion[i] )		// Default to true, unless a fused point, which must be kept.
+						{
+							float x,y;
+							getPoint(i,x,y);
+							if ( !pol.PointIntoPolygon( x,y) )
+								checkForDeletion[i] = false;	// Out of polygon, don't delete
+						}
+					}
+
+					// Create a new points list just with non-deleted points.
+					// ----------------------------------------------------------
+					applyDeletionMask( checkForDeletion );
+				}
+			}
+			else
+			{
+				// Don't fuse: Simply add
+				insertionOptions.addToExistingPointsMap = true;
+				loadFromRangeScan(
+					*o,						// The laser range scan observation
+					&robotPose3D				// The robot pose
+					);
+
+				// Don't build this vector if is not used later!
+				if (!insertionOptions.disableDeletion)
+				{
+					const size_t n = getPointsCount();
+					checkForDeletion.resize(n);
+					for (size_t i=0;i<n;i++) checkForDeletion[i] = true;
+				}
+			}
+			return true;
+		}
+		// A planar map and a non-horizontal scan.
+		else return false;
+	}
+	else
+	if (IS_CLASS(obs,CObservation3DRangeScan))
+	{
+		/********************************************************************
+					OBSERVATION TYPE: CObservation3DRangeScan
+		 ********************************************************************/
+		mark_as_modified();
+
+		const CObservation3DRangeScan *o = static_cast<const CObservation3DRangeScan *>(obs);
+		// Insert only HORIZONTAL scans??
+		bool	reallyInsertIt;
+
+		if (insertionOptions.isPlanarMap)
+			 reallyInsertIt = false; // Don't insert 3D range observation into planar map
+		else reallyInsertIt = true;
+
+		if (reallyInsertIt)
+		{
+			// 1) Fuse into the points map or add directly?
+			// ----------------------------------------------
+			if (insertionOptions.fuseWithExisting)
+			{
+				// Fuse:
+				CSimplePointsMap	auxMap;
+				auxMap.insertionOptions = insertionOptions;
+				auxMap.insertionOptions.addToExistingPointsMap = false;
+
+				auxMap.loadFromRangeScan(
+					*o,						// The laser range scan observation
+					&robotPose3D			// The robot pose
+					);
+
+				fuseWith(	&auxMap,					// Fuse with this map
+							insertionOptions.minDistBetweenLaserPoints,	// Min dist.
+							NULL			// rather than &checkForDeletion which we don't need for 3D observations
+							);
+			}
+			else
+			{
+				// Don't fuse: Simply add
+				insertionOptions.addToExistingPointsMap = true;
+				loadFromRangeScan(
+					*o,						// The laser range scan observation
+					&robotPose3D			// The robot pose
+					);
+			}
+
+			// This could be implemented to check whether existing points fall into empty-space 3D polygon
+			// but performance for standard Swissranger scans (176*144 points) may be too sluggish?
+			//if (! insertionOptions.disableDeletion )   {
+			// ....
+			// }
+			// JL -> Nope, it's ok like that ;-)
+
+			return true;
+		}
+		// A planar map and a non-horizontal scan.
+		else return false;
+	}
+	else
+	if ( IS_CLASS(obs,CObservationRange))
+	{
+		/********************************************************************
+					OBSERVATION TYPE: CObservationRange  (IRs, Sonars, etc.)
+		 ********************************************************************/
+		mark_as_modified();
+
+		const CObservationRange* o = static_cast<const CObservationRange*>(obs);
+
+		const double aper_2 = 0.5*o->sensorConeApperture;
+
+		this->reserve( this->size() + o->sensedData.size()*30 );  // faster push_back's.
+
+		for (CObservationRange::const_iterator it=o->begin();it!=o->end();++it)
+		{
+			const CPose3D sensorPose = robotPose3D + CPose3D(it->sensorPose);
+			const double rang = it->sensedDistance;
+
+			if (rang<=0 || rang<o->minSensorDistance || rang>o->maxSensorDistance)
+				continue;
+
+			// Insert a few points with a given maximum separation between them:
+			const double arc_len = o->sensorConeApperture*rang;
+			const unsigned int nSteps = round(1+arc_len/0.05);
+			const double Aa = o->sensorConeApperture/double(nSteps);
+			TPoint3D loc, glob;
+
+			for (double a1=-aper_2;a1<aper_2;a1+=Aa)
+			{
+				for (double a2=-aper_2;a2<aper_2;a2+=Aa)
+				{
+					loc.x = cos(a1)*cos(a2)*rang;
+					loc.y = cos(a1)*sin(a2)*rang;
+					loc.z = sin(a1)*rang;
+					sensorPose.composePoint(loc,glob);
+
+					this->insertPointFast(glob.x, glob.y, glob.z);
+				}
+			}
+		}
+		return true;
+	}
+	else
+	{
+		/********************************************************************
+					OBSERVATION TYPE: Unknown
+		********************************************************************/
+		return false;
+	}
+
+	MRPT_END
+}
+
+/*---------------------------------------------------------------
+Insert the contents of another map into this one, fusing the previous content with the new one.
+ This means that points very close to existing ones will be "fused", rather than "added". This prevents
+ the unbounded increase in size of these class of maps.
+ ---------------------------------------------------------------*/
+void  CPointsMap::fuseWith(
+	CPointsMap			*otherMap,
+	float				minDistForFuse,
+	std::vector<bool>	*notFusedPoints)
+{
+	TMatchingPairList	correspondences;
+	TPoint3D			a,b;
+	float				corrRatio;
+	const CPose2D		nullPose(0,0,0);
+
+	mark_as_modified();
+
+	//const size_t nThis  =     this->getPointsCount();
+	const size_t nOther = otherMap->getPointsCount();
+
+	// Find correspondences between this map and the other one:
+	// ------------------------------------------------------------
+	computeMatchingWith2D( otherMap,			// The other map
+						   nullPose,	// The other map's pose
+						   minDistForFuse,	// Max. dist. for correspondence
+						   0,
+						   nullPose,
+						   correspondences,
+						   corrRatio );
+
+	// Initially, all set to "true" -> "not fused".
+	if (notFusedPoints)
+	{
+		notFusedPoints->clear();
+		notFusedPoints->reserve( x.size() + nOther );
+		notFusedPoints->resize( x.size(), true );
+	}
+
+	// Speeds-up possible memory reallocations:
+	reserve( x.size() + nOther );
+
+	// Merge matched points from both maps:
+	//  AND add new points which have been not matched:
+	// -------------------------------------------------
+	for (size_t i=0;i<nOther;i++)
+	{
+		const unsigned long	w_a = otherMap->getPoint(i,a);	// Get "local" point into "a"
+
+		// Find closest correspondence of "a":
+		int			closestCorr = -1;
+		float		minDist	= std::numeric_limits<float>::max();
+		for (TMatchingPairList::const_iterator corrsIt = correspondences.begin(); corrsIt!=correspondences.end(); ++corrsIt)
+		{
+			if (corrsIt->other_idx==i)
+			{
+				float	dist = square( corrsIt->other_x - corrsIt->this_x ) +
+							   square( corrsIt->other_y - corrsIt->this_y ) +
+							   square( corrsIt->other_z - corrsIt->this_z );
+				if (dist<minDist)
+				{
+					minDist = dist;
+					closestCorr = corrsIt->this_idx;
+				}
+			}
+		} // End of for each correspondence...
+
+		if (closestCorr!=-1)
+		{	// Merge:		FUSION
+			unsigned long w_b = getPoint(closestCorr,b);
+
+			ASSERT_((w_a+w_b)>0);
+
+			const float F = 1.0f/(w_a+w_b);
+
+			x[closestCorr]=F*(w_a*a.x+w_b*b.x);
+			y[closestCorr]=F*(w_a*a.y+w_b*b.y);
+			z[closestCorr]=F*(w_a*a.z+w_b*b.z);
+
+			this->setPointWeight(closestCorr,w_a+w_b);
+
+			// Append to fused points list
+			if (notFusedPoints)
+				(*notFusedPoints)[closestCorr] = false;
+		}
+		else
+		{	// New point:	ADDITION
+			this->insertPointFast(a.x,a.y,a.z);
+			if (notFusedPoints)
+				(*notFusedPoints).push_back(false);
+		}
+	}
+
 }

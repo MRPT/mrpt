@@ -48,6 +48,8 @@ const int dumm = mrpt_slam_class_reg.do_nothing(); // Avoid compiler removing th
 
 
 MRPT_TODO("JL: Consider rewriting many of this with STL algorithm")
+MRPT_TODO("JL: Add the new weighted point maps")
+
 
 /*---------------------------------------------------------------
 			Constructor

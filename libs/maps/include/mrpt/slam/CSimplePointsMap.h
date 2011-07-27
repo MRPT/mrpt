@@ -44,157 +44,88 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSimplePointsMap , CPointsMap, MAPS_IMPEXP )
 
 		/** A cloud of points in 2D or 3D, which can be built from a sequence of laser scans.
-		 *    This class stores the coordinates (x,y,z) and a "weight", or counter of how many times that point has been seen, used only if points fusion is enabled in the options structure.
-		 * \sa CMetricMap, CPoint, mrpt::utils::CSerializable
+		 *    This class only stores the coordinates (x,y,z) of each point.
+		 *
+		 *  See mrpt::slam::CPointsMap and derived classes for other point cloud classes.
+		 *
+		 * \sa CMetricMap, CWeightedPointsMap, CPoint, mrpt::utils::CSerializable
 		 */
 		class MAPS_IMPEXP CSimplePointsMap : public CPointsMap
 		{
 			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CSimplePointsMap )
+
 		 public:
+			 CSimplePointsMap();          //!< Default constructor
+			 virtual ~CSimplePointsMap(); //!< Destructor
 
-			 /** Destructor
-			   */
-			 virtual ~CSimplePointsMap();
-
-			 /** Default constructor
-			  */
-			 CSimplePointsMap();
-
-			 /** Copy operator
-			  */
-			 void  copyFrom(const CPointsMap &obj);
-
-			/** Transform the range scan into a set of cartesian coordinated
-			  *	 points. The options in "insertionOptions" are considered in this method.
-			  * \param rangeScan The scan to be inserted into this map
-			  * \param robotPose The robot 3D pose, default to (0,0,0|0deg,0deg,0deg). It is used to compute the sensor pose relative to the robot actual pose. Recall sensor pose is embeded in the observation class.
-			  *
-			  *   NOTE: Only ranges marked as "valid=true" in the observation will be inserted
-			  *
-			  * \sa CObservation2DRangeScan
-			  */
-			void  loadFromRangeScan(
-					const CObservation2DRangeScan &rangeScan,
-					const CPose3D				  *robotPose = NULL );
-
-			/** Enter the set of cartesian coordinated points from the 3D range scan into
-			  *	 the map. The options in "insertionOptions" are considered in this method.
-			  * \param rangeScan The 3D scan to be inserted into this map
-			  * \param robotPose The robot 3D pose, default to (0,0,0|0deg,0deg,0deg). It is used to compute the sensor pose relative to the robot actual pose. Recall sensor pose is embeded in the observation class.
-			  *
-			  *   NOTE: Only ranges marked as "valid=true" in the observation will be inserted
-			  *
-			  * \sa CObservation3DRangeScan
-			  */
-			void  loadFromRangeScan(
-					const CObservation3DRangeScan &rangeScan,
-					const CPose3D				  *robotPose = NULL );
-
-			/** Load from a text file. In each line there are a point coordinates.
-			 *   Returns false if any error occured, true elsewere.
-			 */
-			bool  load2D_from_text_file(std::string file);
-
-			/** Load from a text file. In each line there are a point coordinates.
-			 *   Returns false if any error occured, true elsewere.
-			 */
-			bool  load3D_from_text_file(std::string file);
-
-
-			/** Insert the contents of another map into this one, fusing the previous content with the new one.
-			 *    This means that points very close to existing ones will be "fused", rather than "added". This prevents
-			 *     the unbounded increase in size of these class of maps.
-			 *		NOTICE that "otherMap" is neither translated nor rotated here, so if this is desired it must done
-			 *		 before calling this method.
-			 * \param otherMap The other map whose points are to be inserted into this one.
-			 * \param minDistForFuse Minimum distance (in meters) between two points, each one in a map, to be considered the same one and be fused rather than added.
-			 * \param notFusedPoints If a pointer is supplied, this list will contain at output a list with a "bool" value per point in "this" map. This will be false/true according to that point having been fused or not.
-			 * \sa insertAnotherMap
-			 */
-			void  fuseWith(	CPointsMap			*otherMap,
-										float				minDistForFuse  = 0.02f,
-										std::vector<bool>	*notFusedPoints = NULL);
-
-			/** Insert the contents of another map into this one, without fusing close points.
-			 * \param otherMap The other map whose points are to be inserted into this one.
-			 * \param otherPose The pose of the other map in the coordinates of THIS map
-			 * \sa fuseWith, addFrom
-			 */
-			void  insertAnotherMap(
-										CPointsMap			*otherMap,
-										const CPose2D		&otherPose);
-
-			/** Changes a given point from map, as a 2D point. First index is 0.
-			 * \exception Throws std::exception on index out of bound.
-			 */
-			virtual void  setPoint(size_t index,CPoint2D &p);
-
-			/** Changes a given point from map, as a 3D point. First index is 0.
-			 * \exception Throws std::exception on index out of bound.
-			 */
-			virtual void  setPoint(size_t index,CPoint3D &p);
-
-			/** Changes a given point from map. First index is 0.
-			 * \exception Throws std::exception on index out of bound.
-			 */
-			virtual void  setPoint(size_t index,float x, float y);
-
-			/** Changes a given point from map. First index is 0.
-			 * \exception Throws std::exception on index out of bound.
-			 */
-			virtual void  setPoint(size_t index,float x, float y, float z);
-
-			/** Provides a way to insert individual points into the map:
-			  */
-			void  insertPoint( float x, float y, float z = 0 );
-
-			/** Provides a way to insert individual points into the map:
-			  */
-			void  insertPoint( const mrpt::math::TPoint3D &new_pnt ) {
-				this->insertPoint(new_pnt.x,new_pnt.y,new_pnt.z);
-			}
-
-			/** Remove from the map the points marked in a bool's array as "true".
-			  *
-			  * \exception std::exception If mask size is not equal to points count.
-			  */
-			void  applyDeletionMask( std::vector<bool> &mask );
+			// --------------------------------------------
+			/** @name Pure virtual interfaces to be implemented by any class derived from CPointsMap
+				@{ */
 
 			/** Reserves memory for a given number of points: the size of the map does not change, it only reserves the memory.
 			  *  This is useful for situations where it is approximately known the final size of the map. This method is more
 			  *  efficient than constantly increasing the size of the buffers. Refer to the STL C++ library's "reserve" methods.
 			  */
-			void reserve(size_t newLength);
+			virtual void reserve(size_t newLength);
 
-			/** Set all the points at once from vectors with X,Y and Z coordinates (if Z is not provided, it will be set to all zeros).
-			  * \tparam VECTOR can be mrpt::vector_float or std::vector<float> or any other column or row Eigen::Matrix.
+			/** Resizes all point buffers so they can hold the given number of points: newly created points are set to default values,
+			  *  and old contents are not changed.
+			  * \sa reserve, setPoint, setPointFast, setSize
 			  */
-			template <typename VECTOR>
-			inline void setAllPointsTemplate(const VECTOR &X,const VECTOR &Y,const VECTOR &Z = VECTOR())
-			{
-				const size_t N = X.size();
-				ASSERT_EQUAL_(X.size(),Y.size())
-				ASSERT_(Z.size()==0 || Z.size()==X.size())
-				x.resize(N); y.resize(N); z.resize(N);
-				const bool z_valid = !Z.empty();
-				if (z_valid) for (size_t i=0;i<N;i++) { this->x[i]=X[i]; this->y[i]=Y[i]; this->z[i]=Z[i]; }
-				else         for (size_t i=0;i<N;i++) { this->x[i]=X[i]; this->y[i]=Y[i]; this->z[i]=0; }
-				pointWeight.assign(N,1);
-				mark_as_modified();
+			virtual void resize(size_t newLength);
+
+			/** Resizes all point buffers so they can hold the given number of points, *erasing* all previous contents
+			  *  and leaving all points to default values.
+			  * \sa reserve, setPoint, setPointFast, setSize
+			  */
+			virtual void setSize(size_t newLength);
+
+			/** Changes the coordinates of the given point (0-based index), *without* checking for out-of-bounds and *without* calling mark_as_modified()  \sa setPoint */
+			virtual void  setPointFast(size_t index,float x, float y, float z);
+
+			/** The virtual method for \a insertPoint() *without* calling mark_as_modified()   */
+			virtual void  insertPointFast( float x, float y, float z = 0 );
+
+			 /** Virtual assignment operator, to be implemented in derived classes.
+			   */
+			 virtual void  copyFrom(const CPointsMap &obj);
+
+			/** Get all the data fields for one point as a vector: [X Y Z]
+			  *  Unlike getPointAllFields(), this method does not check for index out of bounds
+			  * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
+			  */
+			virtual void  getPointAllFieldsFast( const size_t index, std::vector<float> & point_data ) const {
+				point_data.resize(3);
+				point_data[0] = x[index];
+				point_data[1] = y[index];
+				point_data[2] = z[index];
 			}
 
-			/** Set all the points at once from vectors with X,Y and Z coordinates. \sa getAllPoints */
-			virtual void setAllPoints(const std::vector<float> &X,const std::vector<float> &Y,const std::vector<float> &Z)
-			{
-				setAllPointsTemplate(X,Y,Z);
+			/** Set all the data fields for one point as a vector: [X Y Z]
+			  *  Unlike setPointAllFields(), this method does not check for index out of bounds
+			  * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
+			  */
+			virtual void  setPointAllFieldsFast( const size_t index, const std::vector<float> & point_data ) {
+				ASSERTDEB_(point_data.size()==3)
+				x[index] = point_data[0];
+				y[index] = point_data[1];
+				z[index] = point_data[2];
 			}
 
-			/** Set all the points at once from vectors with X and Y coordinates (Z=0). \sa getAllPoints */
-			virtual void setAllPoints(const std::vector<float> &X,const std::vector<float> &Y)
-			{
-				setAllPointsTemplate(X,Y);
+		protected:
+
+			/** Auxiliary method called from within \a addFrom() automatically, to finish the copying of class-specific data  */
+			virtual void  addFrom_classSpecific(const CPointsMap &anotherMap, const size_t nPreviousPoints) {
+				// No extra data.
 			}
+
+		public:
+
+
+			/** @} */
+			// --------------------------------------------
+
 
 			/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 				* Otherwise, return NULL
@@ -207,16 +138,6 @@ namespace mrpt
 			 */
 			virtual void  internal_clear();
 
-			 /** Insert the observation information into this map. This method must be implemented
-			  *    in derived classes.
-			  * \param obs The observation
-			  * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use CPose2D(0,0,deg)
-			  *
-			  * \sa CObservation::insertObservationInto
-			  */
-			bool  internal_insertObservation( const CObservation *obs, const CPose3D *robotPose = NULL );
-
-		protected:
 			/** @name PLY Import virtual methods to implement in base classes
 			    @{ */
 			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */

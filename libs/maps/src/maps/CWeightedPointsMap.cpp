@@ -28,7 +28,7 @@
 
 #include <mrpt/maps.h>  // Precompiled header
 
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/slam/CWeightedPointsMap.h>
 
 using namespace std;
 using namespace mrpt;
@@ -37,12 +37,12 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
-IMPLEMENTS_SERIALIZABLE(CSimplePointsMap, CPointsMap,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CWeightedPointsMap, CPointsMap,mrpt::slam)
 
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
-CSimplePointsMap::CSimplePointsMap()
+CWeightedPointsMap::CWeightedPointsMap()
 {
 	reserve( 400 );
 }
@@ -50,57 +50,99 @@ CSimplePointsMap::CSimplePointsMap()
 /*---------------------------------------------------------------
 						Destructor
   ---------------------------------------------------------------*/
-CSimplePointsMap::~CSimplePointsMap()
+CWeightedPointsMap::~CWeightedPointsMap()
 {
 }
 
 /*---------------------------------------------------------------
 				reserve & resize methods
  ---------------------------------------------------------------*/
-void CSimplePointsMap::reserve(size_t newLength)
+void CWeightedPointsMap::reserve(size_t newLength)
 {
 	x.reserve( newLength );
 	y.reserve( newLength );
 	z.reserve( newLength );
+	pointWeight.reserve(newLength);
 }
 
 // Resizes all point buffers so they can hold the given number of points: newly created points are set to default values,
 //  and old contents are not changed.
-void CSimplePointsMap::resize(size_t newLength)
+void CWeightedPointsMap::resize(size_t newLength)
 {
 	x.resize( newLength, 0 );
 	y.resize( newLength, 0 );
 	z.resize( newLength, 0 );
+	pointWeight.resize(newLength, 1);
 }
 
 // Resizes all point buffers so they can hold the given number of points, *erasing* all previous contents
 //  and leaving all points to default values.
-void CSimplePointsMap::setSize(size_t newLength)
+void CWeightedPointsMap::setSize(size_t newLength)
 {
 	x.assign( newLength, 0);
 	y.assign( newLength, 0);
 	z.assign( newLength, 0);
+	pointWeight.assign( newLength, 1 );
 }
 
+void  CWeightedPointsMap::setPointFast(size_t index,float x,float y,float z)
+{
+	this->x[index] = x;
+	this->y[index] = y;
+	this->z[index] = z;
+	// this->pointWeight: Unmodified
+	// mark_as_modified(); -> Fast
+}
+
+void  CWeightedPointsMap::insertPointFast( float x, float y, float z )
+{
+	this->x.push_back(x);
+	this->y.push_back(y);
+	this->z.push_back(z);
+	this->pointWeight.push_back(1);
+	// mark_as_modified(); -> Fast
+}
 
 /*---------------------------------------------------------------
 						Copy constructor
   ---------------------------------------------------------------*/
-void  CSimplePointsMap::copyFrom(const CPointsMap &obj)
+void  CWeightedPointsMap::copyFrom(const CPointsMap &obj)
 {
 	CPointsMap::base_copyFrom(obj);  // This also does a ::resize(N) of all data fields.
+
+	const CWeightedPointsMap *pW = dynamic_cast<const CWeightedPointsMap*>(&obj);
+	if (pW)
+	{
+		pointWeight = pW->pointWeight;
+	}
 }
 
+/*---------------------------------------------------------------
+						addFrom_classSpecific
+ ---------------------------------------------------------------*/
+void  CWeightedPointsMap::addFrom_classSpecific(const CPointsMap &anotherMap, const size_t nPreviousPoints)
+{
+	const size_t nOther = anotherMap.size();
+
+	// Specific data for this class:
+	const CWeightedPointsMap * anotheMap_w = dynamic_cast<const CWeightedPointsMap *>(&anotherMap);
+
+	if (anotheMap_w)
+	{
+		for (size_t i=0,j=nPreviousPoints;i<nOther;i++, j++)
+			pointWeight[j] = anotheMap_w->pointWeight[i];
+	}
+}
 
 /*---------------------------------------------------------------
 					writeToStream
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CSimplePointsMap::writeToStream(CStream &out, int *version) const
+void  CWeightedPointsMap::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 7;
+		*version = 0;
 	else
 	{
 		uint32_t n = x.size();
@@ -113,26 +155,22 @@ void  CSimplePointsMap::writeToStream(CStream &out, int *version) const
 			out.WriteBufferFixEndianness(&x[0],n);
 			out.WriteBufferFixEndianness(&y[0],n);
 			out.WriteBufferFixEndianness(&z[0],n);
-			// This was removed in v7: WriteBufferFixEndianness(&pointWeight[0],n);
+			out.WriteBufferFixEndianness(&pointWeight[0],n);
 		}
 
-		// version 2: options saved too
+		// options saved too
 		out	<< insertionOptions.minDistBetweenLaserPoints
 			<< insertionOptions.addToExistingPointsMap
 			<< insertionOptions.also_interpolate
 			<< insertionOptions.disableDeletion
 			<< insertionOptions.fuseWithExisting
 			<< insertionOptions.isPlanarMap
-			// << insertionOptions.matchStaticPointsOnly  // Removed in v6
 			<< insertionOptions.maxDistForInterpolatePoints;
 
 		// Insertion as 3D:
 		out << m_disableSaveAs3DObject;
-
-		// Added in version 3:
 		out << insertionOptions.horizontalTolerance;
 
-		// Added in version 5:
 		likelihoodOptions.writeToStream(out);
 	}
 }
@@ -142,18 +180,11 @@ void  CSimplePointsMap::writeToStream(CStream &out, int *version) const
    Implements the reading from a CStream capability of
       CSerializable objects
   ---------------------------------------------------------------*/
-void  CSimplePointsMap::readFromStream(CStream &in, int version)
+void  CWeightedPointsMap::readFromStream(CStream &in, int version)
 {
 	switch(version)
 	{
 	case 0:
-	case 1:
-	case 2:
-	case 3:
-	case 4:
-	case 5:
-	case 6:
-	case 7:
 		{
 			mark_as_modified();
 
@@ -164,67 +195,29 @@ void  CSimplePointsMap::readFromStream(CStream &in, int version)
 			x.resize(n);
 			y.resize(n);
 			z.resize(n);
+			pointWeight.resize(n);
+
 
 			if (n>0)
 			{
 				in.ReadBufferFixEndianness(&x[0],n);
 				in.ReadBufferFixEndianness(&y[0],n);
 				in.ReadBufferFixEndianness(&z[0],n);
-
-				// Version 1: weights are also stored:
-				// Version 4: Type becomes long int -> uint32_t for portability!!
-				if (version>=1)
-				{
-					if (version>=4)
-					{
-						if (version>=7)
-						{
-							// Weights were removed from this class in v7 (MRPT 0.9.5),
-							//  so nothing else to do.
-						}
-						else
-						{
-							// Go on with old serialization format, but discard weights:
-							std::vector<uint32_t>  dummy_pointWeight(n);
-							in.ReadBufferFixEndianness(&dummy_pointWeight[0],n);
-						}
-					}
-					else
-					{
-						std::vector<uint32_t>  dummy_pointWeight(n);
-						in.ReadBufferFixEndianness((unsigned long*)(&dummy_pointWeight[0]),n);
-					}
-				}
+				in.ReadBufferFixEndianness(&pointWeight[0],n);
 			}
 
-			if (version>=2)
-			{
-				// version 2: options saved too
-				in 	>> insertionOptions.minDistBetweenLaserPoints
-					>> insertionOptions.addToExistingPointsMap
-					>> insertionOptions.also_interpolate
-					>> insertionOptions.disableDeletion
-					>> insertionOptions.fuseWithExisting
-					>> insertionOptions.isPlanarMap;
+			in 	>> insertionOptions.minDistBetweenLaserPoints
+				>> insertionOptions.addToExistingPointsMap
+				>> insertionOptions.also_interpolate
+				>> insertionOptions.disableDeletion
+				>> insertionOptions.fuseWithExisting
+				>> insertionOptions.isPlanarMap
+				>> insertionOptions.maxDistForInterpolatePoints
+				>> m_disableSaveAs3DObject;
 
-				if (version<6)
-				{
-					bool old_matchStaticPointsOnly;
-					in >> old_matchStaticPointsOnly;
-				}
+			in >> insertionOptions.horizontalTolerance;
 
-				in >> insertionOptions.maxDistForInterpolatePoints;
-
-				in >> m_disableSaveAs3DObject;
-			}
-
-			if (version>=3)
-			{
-				in >> insertionOptions.horizontalTolerance;
-			}
-
-			if (version>=5) // version 5: added likelihoodOptions
-				likelihoodOptions.readFromStream(in);
+			likelihoodOptions.readFromStream(in);
 
 		} break;
 	default:
@@ -237,34 +230,54 @@ void  CSimplePointsMap::readFromStream(CStream &in, int version)
 /*---------------------------------------------------------------
 					Clear
   ---------------------------------------------------------------*/
-void  CSimplePointsMap::internal_clear()
+void  CWeightedPointsMap::internal_clear()
 {
 	// This swap() thing is the only way to really deallocate the memory.
 	{ vector<float> empt;  x.swap(empt); }
 	{ vector<float> empt;  y.swap(empt); }
 	{ vector<float> empt;  z.swap(empt); }
+	{ vector<uint32_t> empt;  pointWeight.swap(empt); }
 
 	mark_as_modified();
 }
 
-void  CSimplePointsMap::setPointFast(size_t index,float x,float y,float z)
+/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
+void  CWeightedPointsMap::internal_loadFromRangeScan2D_init(TLaserRange2DInsertContext & lric)
 {
-	this->x[index] = x;
-	this->y[index] = y;
-	this->z[index] = z;
-}
 
-void  CSimplePointsMap::insertPointFast( float x, float y, float z )
+}
+/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
+void  CWeightedPointsMap::internal_loadFromRangeScan2D_prepareOneRange(const float gx,const float gy, const float gz, TLaserRange2DInsertContext & lric )
 {
-	this->x.push_back(x);
-	this->y.push_back(y);
-	this->z.push_back(z);
+}
+/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
+void  CWeightedPointsMap::internal_loadFromRangeScan2D_postPushBack(TLaserRange2DInsertContext & lric)
+{
+	pointWeight.push_back(1);
+}
+/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
+void  CWeightedPointsMap::internal_loadFromRangeScan3D_init(TLaserRange3DInsertContext & lric)
+{
+}
+/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
+void  CWeightedPointsMap::internal_loadFromRangeScan3D_prepareOneRange(const float gx,const float gy, const float gz, TLaserRange3DInsertContext & lric )
+{
+
+}
+/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
+void  CWeightedPointsMap::internal_loadFromRangeScan3D_postPushBack(TLaserRange3DInsertContext & lric)
+{
+	pointWeight.push_back(1);
+}
+/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data, at the end */
+void  CWeightedPointsMap::internal_loadFromRangeScan3D_postOneRange(TLaserRange3DInsertContext & lric )
+{
 }
 
 // ================================ PLY files import & export virtual methods ================================
 
 /** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */
-void CSimplePointsMap::PLY_import_set_vertex_count(const size_t N)
+void CWeightedPointsMap::PLY_import_set_vertex_count(const size_t N)
 {
 	this->setSize(N);
 }

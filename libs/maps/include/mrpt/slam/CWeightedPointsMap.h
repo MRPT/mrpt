@@ -25,15 +25,14 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-#ifndef CColouredPointsMap_H
-#define CColouredPointsMap_H
+#ifndef CWeightedPointsMap_H
+#define CWeightedPointsMap_H
 
 #include <mrpt/slam/CPointsMap.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/stl_extensions.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
@@ -41,29 +40,21 @@ namespace mrpt
 {
 	namespace slam
 	{
-		class CObservation3DRangeScan;
 
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CWeightedPointsMap , CPointsMap, MAPS_IMPEXP )
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CColouredPointsMap, CPointsMap,MAPS_IMPEXP )
-
-		/** A map of 2D/3D points with individual colours (RGB).
-		 *  For different color schemes, see CColouredPointsMap::colorScheme
-		 *  Colors are defined in the range [0,1].
-		 * \sa mrpt::slam::CPointsMap, mrpt::slam::CMetricMap, mrpt::utils::CSerializable
+		/** A cloud of points in 2D or 3D, which can be built from a sequence of laser scans.
+		 *    This class stores the coordinates (x,y,z) and a "weight", or counter of how many times that point has been seen, used only if points fusion is enabled in the options structure.
+		 * \sa CMetricMap, CPoint, mrpt::utils::CSerializable, CSimplePointsMap
 		 */
-		class MAPS_IMPEXP CColouredPointsMap : public CPointsMap
+		class MAPS_IMPEXP CWeightedPointsMap : public CPointsMap
 		{
 			// This must be added to any CSerializable derived class:
-			DEFINE_SERIALIZABLE( CColouredPointsMap )
+			DEFINE_SERIALIZABLE( CWeightedPointsMap )
 
-		public:
-			 /** Destructor
-			   */
-			 virtual ~CColouredPointsMap();
-
-			 /** Default constructor
-			  */
-			 CColouredPointsMap();
+		 public:
+			 CWeightedPointsMap();          //!< Default constructor
+			 virtual ~CWeightedPointsMap(); //!< Destructor
 
 			// --------------------------------------------
 			/** @name Pure virtual interfaces to be implemented by any class derived from CPointsMap
@@ -87,7 +78,7 @@ namespace mrpt
 			  */
 			virtual void setSize(size_t newLength);
 
-			/** Changes the coordinates of the given point (0-based index), *without* checking for out-of-bounds and *without* calling mark_as_modified()  \sa setPoint */
+			/** Changes the coordinates of the given point (0-based index), *without* checking for out-of-bounds and *without* calling mark_as_modified() \sa setPoint */
 			virtual void  setPointFast(size_t index,float x, float y, float z);
 
 			/** The virtual method for \a insertPoint() *without* calling mark_as_modified()   */
@@ -97,32 +88,28 @@ namespace mrpt
 			   */
 			 virtual void  copyFrom(const CPointsMap &obj);
 
-			/** Get all the data fields for one point as a vector: [X Y Z R G B]
+			/** Get all the data fields for one point as a vector: [X Y Z WEIGHT]
 			  *  Unlike getPointAllFields(), this method does not check for index out of bounds
 			  * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
 			  */
 			virtual void  getPointAllFieldsFast( const size_t index, std::vector<float> & point_data ) const {
-				point_data.resize(6);
+				point_data.resize(4);
 				point_data[0] = x[index];
 				point_data[1] = y[index];
 				point_data[2] = z[index];
-				point_data[3] = m_color_R[index];
-				point_data[4] = m_color_G[index];
-				point_data[5] = m_color_B[index];
+				point_data[3] = pointWeight[index];
 			}
 
-			/** Set all the data fields for one point as a vector: [X Y Z R G B]
+			/** Set all the data fields for one point as a vector: [X Y Z WEIGHT]
 			  *  Unlike setPointAllFields(), this method does not check for index out of bounds
 			  * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
 			  */
 			virtual void  setPointAllFieldsFast( const size_t index, const std::vector<float> & point_data ) {
-				ASSERTDEB_(point_data.size()==6)
+				ASSERTDEB_(point_data.size()==4)
 				x[index] = point_data[0];
 				y[index] = point_data[1];
 				z[index] = point_data[2];
-				m_color_R[index] = point_data[3];
-				m_color_G[index] = point_data[4];
-				m_color_B[index] = point_data[5];
+				pointWeight[index] = point_data[3];
 			}
 
 		protected:
@@ -148,148 +135,26 @@ namespace mrpt
 
 		public:
 
-
 			/** @} */
 			// --------------------------------------------
 
-			/** Save to a text file. In each line contains X Y Z (meters) R G B (range [0,1]) for each point in the map.
-			 *     Returns false if any error occured, true elsewere.
-			 */
-			bool  save3D_and_colour_to_text_file(const std::string &file) const;
-
-			/** Changes a given point from map. First index is 0.
-			 * \exception Throws std::exception on index out of bound.
-			 */
-			virtual void  setPoint(size_t index,float x, float y, float z, float R, float G, float B);
-
-			// The following overloads must be repeated here (from CPointsMap) due to the shadowing of the above "setPoint()"
-			/// \overload
-			inline void  setPoint(size_t index,float x, float y, float z) {
-				ASSERT_BELOW_(index,this->size())
-				setPointFast(index,x,y,z);
-				mark_as_modified();
-			}
-			/// \overload
-			inline void  setPoint(size_t index,CPoint2D &p) {  setPoint(index,p.x(),p.y(),0); }
-			/// \overload
-			inline void  setPoint(size_t index,CPoint3D &p)  { setPoint(index,p.x(),p.y(),p.z()); }
-			/// \overload
-			inline void  setPoint(size_t index,float x, float y) { setPoint(index,x,y,0); }
-
-
-			/** Adds a new point given its coordinates and color (colors range is [0,1]) */
-			virtual void  insertPoint( float x, float y, float z, float R, float G, float B );
-			// The following overloads must be repeated here (from CPointsMap) due to the shadowing of the above "insertPoint()"
-			/// \overload of \a insertPoint()
-			inline void  insertPoint( const CPoint3D &p ) { insertPoint(p.x(),p.y(),p.z()); }
-			/// \overload
-			inline void  insertPoint( const mrpt::math::TPoint3D &p ) { insertPoint(p.x,p.y,p.z); }
-			/// \overload
-			inline void  insertPoint( float x, float y, float z) { insertPointFast(x,y,z); mark_as_modified(); }
-
-			/** Changes just the color of a given point from the map. First index is 0.
-			 * \exception Throws std::exception on index out of bound.
-			 */
-			void  setPointColor(size_t index,float R, float G, float B);
-
-			/** Retrieves a point and its color (colors range is [0,1])
-			  */
-			virtual void  getPoint( size_t index, float &x, float &y, float &z, float &R, float &G, float &B ) const;
-
-			/** Retrieves a point color (colors range is [0,1]) */
-			void  getPointColor( size_t index, float &R, float &G, float &B ) const;
-
-			/** Returns true if the point map has a color field for each point */
-			virtual bool hasColorPoints() const { return true; }
-
-			/** Override of the default 3D scene builder to account for the individual points' color.
-			  * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
-			  */
-			virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
-
-			/** Colour a set of points from a CObservationImage and the global pose of the robot
-			  */
-			bool colourFromObservation( const CObservationImage &obs, const CPose3D &robotPose );
-
-			/** The choices for coloring schemes:
-			  *		- cmFromHeightRelativeToSensor: The Z coordinate wrt the sensor will be used to obtain the color using the limits z_min,z_max.
-			  * 	- cmFromIntensityImage: When inserting 3D range scans, take the color from the intensity image channel, if available.
-			  * \sa TColourOptions
-			  */
-			enum TColouringMethod
-			{
-				cmFromHeightRelativeToSensor = 0,
-				cmFromHeightRelativeToSensorJet = 0,
-				cmFromHeightRelativeToSensorGray = 1,
-				cmFromIntensityImage = 2
-			};
-
-			/** The definition of parameters for generating colors from laser scans */
-			 struct MAPS_IMPEXP TColourOptions : public utils::CLoadableOptions
-			 {
-				/** Initilization of default parameters */
-				TColourOptions( );
-				virtual ~TColourOptions() {}
-				/** See utils::CLoadableOptions
-				  */
-				void  loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase  &source,
-					const std::string &section);
-
-				/** See utils::CLoadableOptions
-				  */
-				void  dumpToTextStream(CStream	&out) const;
-
-				TColouringMethod	scheme;
-				float				z_min,z_max;
-				float				d_max;
-			 };
-
-			 TColourOptions	colorScheme;	//!< The options employed when inserting laser scans in the map.
-
-			 void resetPointsMinDist( float defValue = 2000.0f ); //!< Reset the minimum-observed-distance buffer for all the points to a predefined value
-
-            /** @name PCL library support
-                @{ */
-
-            /** Save the point cloud as a PCL PCD file, in either ASCII or binary format \return false on any error */
-            virtual bool savePCDFile(const std::string &filename, bool save_as_binary) const;
-
-            /** @} */
-
+			/// Sets the point weight, which is ignored in all classes but those which actually store that field (Note: No checks are done for out-of-bounds index). \sa getPointWeight
+			virtual void setPointWeight(size_t index,unsigned long w) { pointWeight[index]=w; }
+			/// Gets the point weight, which is ignored in all classes (defaults to 1) but in those which actually store that field (Note: No checks are done for out-of-bounds index).  \sa setPointWeight
+			virtual unsigned int getPointWeight(size_t index) const { return pointWeight[index]; }
 
 		protected:
-			/** The color data */
-			std::vector<float>	m_color_R,m_color_G,m_color_B;
-
-			/** Minimum distance from where the points have been seen */
-			//std::vector<float>	m_min_dist;
+			std::vector<uint32_t>  pointWeight;  //!< The points weights
 
 			/** Clear the map, erasing all the points.
 			 */
 			virtual void  internal_clear();
 
-			/** @name Redefinition of PLY Import virtual methods from CPointsMap
+		protected:
+			/** @name PLY Import virtual methods to implement in base classes
 			    @{ */
-			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
-			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
-			  */
-			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL);
-
 			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */
 			virtual void PLY_import_set_vertex_count(const size_t N);
-			/** @} */
-
-			/** @name Redefinition of PLY Export virtual methods from CPointsMap
-			    @{ */
-			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
-			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
-			  */
-			virtual void PLY_export_get_vertex(
-				const size_t idx,
-				mrpt::math::TPoint3Df &pt,
-				bool &pt_has_color,
-				mrpt::utils::TColorf &pt_color) const;
 			/** @} */
 
 		}; // End of class def.

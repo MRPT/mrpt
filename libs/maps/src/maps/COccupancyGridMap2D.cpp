@@ -119,7 +119,7 @@ void  COccupancyGridMap2D::setSize(
 	float		resolution,
 	float		default_value)
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(resolution>0)
 	ASSERT_(x_max>x_min && y_max>y_min)
@@ -168,7 +168,7 @@ void  COccupancyGridMap2D::setSize(
 
 	m_is_empty=true;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -290,7 +290,7 @@ void  COccupancyGridMap2D::resizeGrid(float new_x_min,float new_x_max,float new_
   ---------------------------------------------------------------*/
 void COccupancyGridMap2D::freeMap()
 {
-	MRPT_START;
+	MRPT_START
 
 	// Free map and sectors
     map.clear();
@@ -305,7 +305,7 @@ void COccupancyGridMap2D::freeMap()
 
 	m_is_empty=true;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -980,13 +980,13 @@ int  COccupancyGridMap2D::direction2idx(int dx, int dy)
   ---------------------------------------------------------------*/
 bool  COccupancyGridMap2D::saveAsBitmapFile(const std::string &file) const
 {
-	MRPT_START;
+	MRPT_START
 
 	CImage			img;
 	getAsImage(img);
 	return img.saveToFile(file);
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -1435,7 +1435,7 @@ bool  COccupancyGridMap2D::loadFromBitmapFile(
 	float			xCentralPixel,
 	float			yCentralPixel)
 {
-	MRPT_START;
+	MRPT_START
 
 	CImage		imgFl;
 	if (!imgFl.loadFromFile(file,0))
@@ -1444,7 +1444,7 @@ bool  COccupancyGridMap2D::loadFromBitmapFile(
 	m_is_empty = false;
 	return loadFromBitmap(imgFl,resolution, xCentralPixel, yCentralPixel);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1452,7 +1452,7 @@ bool  COccupancyGridMap2D::loadFromBitmapFile(
  ---------------------------------------------------------------*/
 bool  COccupancyGridMap2D::loadFromBitmap(const mrpt::utils::CImage &imgFl, float resolution, float xCentralPixel, float yCentralPixel)
 {
-	MRPT_START;
+	MRPT_START
 
 	// For the precomputed likelihood trick:
 	precomputedLikelihoodToBeRecomputed = true;
@@ -1491,7 +1491,7 @@ bool  COccupancyGridMap2D::loadFromBitmap(const mrpt::utils::CImage &imgFl, floa
 	m_is_empty = false;
 	return true;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /** Local stucture used in the next method */
@@ -1509,7 +1509,7 @@ bool  COccupancyGridMap2D::internal_insertObservation(
 		const CObservation	*obs,
 		const CPose3D			*robotPose)
 {
-// 	MRPT_START;   // Avoid "try" since we use "alloca"
+// 	MRPT_START   // Avoid "try" since we use "alloca"
 
 #define FRBITS	9
 
@@ -2901,7 +2901,7 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_MI(
 			const CObservation		*obs,
 			const CPose2D				&takenFrom )
 {
-	MRPT_START;
+	MRPT_START
 
  	CPose3D			poseRobot(takenFrom);
 	double			res;
@@ -2933,7 +2933,7 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_MI(
 
 	return log(res);
 
-	MRPT_END;
+	MRPT_END
  }
 
 double	 COccupancyGridMap2D::computeObservationLikelihood_rayTracing(
@@ -3045,7 +3045,7 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_Thrun(
 			const CObservation		*obs,
 			const CPose2D				&takenFrom )
 {
-	MRPT_START;
+	MRPT_START
 
 	double		ret=0;
 
@@ -3074,7 +3074,7 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_Thrun(
 
 	return ret;
 
-	MRPT_END;
+	MRPT_END
 
 }
 
@@ -3085,7 +3085,7 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_II(
 			const CObservation		*obs,
 			const CPose2D				&takenFrom )
 {
-	MRPT_START;
+	MRPT_START
 
 	double		ret=0;
 
@@ -3110,7 +3110,7 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_II(
 
 	return ret;
 
-	MRPT_END;
+	MRPT_END
 
 }
 
@@ -3120,7 +3120,7 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_II(
  ---------------------------------------------------------------*/
 double	 COccupancyGridMap2D::computeLikelihoodField_Thrun( const CPointsMap	*pm, const CPose2D *relativePose )
 {
-	MRPT_START;
+	MRPT_START
 
 	double		ret;
 	size_t		N = pm->getPointsCount();
@@ -3302,7 +3302,7 @@ double	 COccupancyGridMap2D::computeLikelihoodField_Thrun( const CPointsMap	*pm,
 
 	return ret;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -3310,7 +3310,7 @@ double	 COccupancyGridMap2D::computeLikelihoodField_Thrun( const CPointsMap	*pm,
  ---------------------------------------------------------------*/
 double	 COccupancyGridMap2D::computeLikelihoodField_II( const CPointsMap	*pm, const CPose2D *relativePose )
 {
-	MRPT_START;
+	MRPT_START
 
 	double		ret;
 	size_t		N = pm->getPointsCount();
@@ -3407,7 +3407,7 @@ double	 COccupancyGridMap2D::computeLikelihoodField_II( const CPointsMap	*pm, co
 
 	return ret;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -3527,7 +3527,7 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
     bool									onlyKeepTheClosest,
 	bool									onlyUniqueRobust) const
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom( CLASS_ID(CPointsMap) ));
 	const CPointsMap			*otherMap = static_cast<const CPointsMap*>(otherMap2);
@@ -3567,13 +3567,17 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 	// -----------------------------------------------------------
 	float	local_x_min=0,local_x_max=0,local_y_min=0,local_y_max=0;
 
+	const std::vector<float> & otherMap_pxs = otherMap->getPointsBufferRef_x();
+	const std::vector<float> & otherMap_pys = otherMap->getPointsBufferRef_y();
+	const std::vector<float> & otherMap_pzs = otherMap->getPointsBufferRef_z();
+
 	// Translate all local map points:
 	for (x_locals_it=x_locals.begin(),
 			y_locals_it=y_locals.begin(),
 			z_locals_it=z_locals.begin(),
-			otherMap_x_it=otherMap->x.begin(),
-			otherMap_y_it=otherMap->y.begin(),
-			otherMap_z_it=otherMap->z.begin();
+			otherMap_x_it=otherMap_pxs.begin(),
+			otherMap_y_it=otherMap_pys.begin(),
+			otherMap_z_it=otherMap_pzs.begin();
 			x_locals_it<x_locals.end();
 			++x_locals_it,++y_locals_it,++z_locals_it,++otherMap_x_it,++otherMap_y_it)
 	{
@@ -3604,9 +3608,9 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 			x_locals_it=x_locals.begin(),
 			y_locals_it=y_locals.begin(),
 			z_locals_it=z_locals.begin(),
-			otherMap_x_it=otherMap->x.begin(),
-			otherMap_y_it=otherMap->y.begin(),
-			otherMap_z_it=otherMap->z.begin();
+			otherMap_x_it=otherMap_pxs.begin(),
+			otherMap_y_it=otherMap_pys.begin(),
+			otherMap_z_it=otherMap_pzs.begin();
 			x_locals_it<x_locals.end();
 			++x_locals_it,++y_locals_it,++z_locals_it,++otherMap_x_it,++otherMap_y_it,++otherMap_z_it,++localIdx)
 	{
@@ -3724,7 +3728,7 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 
 //		os::fclose(fDebug);
 
-	MRPT_END;
+	MRPT_END
 
 }
 
@@ -3919,7 +3923,7 @@ bool  COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 	const COccupancyGridMap2D				*m2,
 	const TMatchingPairList		&corrs)
 {
-	MRPT_START;
+	MRPT_START
 
 	CImage			img1,img2;
 	CImage			img(10,10,3,true);
@@ -3998,7 +4002,7 @@ bool  COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 
 	return img.saveToFile(fileName.c_str() );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -4010,7 +4014,7 @@ bool  COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 	const COccupancyGridMap2D				*m2,
 	const TMatchingPairList		&corrs)
 {
-	MRPT_START;
+	MRPT_START
 
 	CEnhancedMetaFile				emf(fileName,1);
 	CImage			img1,img2;
@@ -4111,7 +4115,7 @@ bool  COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 
 	return true;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -4122,7 +4126,7 @@ void  COccupancyGridMap2D::getAs3DObject(mrpt::opengl::CSetOfObjectsPtr	&outSetO
 	if (m_disableSaveAs3DObject)
 		return;
 
-	MRPT_START;
+	MRPT_START
 
 	opengl::CTexturedPlanePtr	outObj = opengl::CTexturedPlane::Create();
 
@@ -4158,7 +4162,7 @@ void  COccupancyGridMap2D::getAs3DObject(mrpt::opengl::CSetOfObjectsPtr	&outSetO
 	outObj->assignImage_fast( imgColor,imgTrans );
 	outSetOfObj->insert( outObj );
 
-	MRPT_END;
+	MRPT_END
 }
 
 

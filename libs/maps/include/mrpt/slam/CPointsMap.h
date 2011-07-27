@@ -45,18 +45,24 @@ namespace mrpt
 {
 namespace slam
 {
+	// Fordward declarations:
+	class CSimplePointsMap;
+	class CObservation2DRangeScan;
+	class CObservation3DRangeScan;
+
 	using namespace mrpt::poses;
 	using namespace mrpt::math;
-
-	class CSimplePointsMap;
-	class CMultiMetricMap;
-	class CColouredPointsMap;
-	class COccupancyGridMap2D;
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CPointsMap , CMetricMap, MAPS_IMPEXP )
 
 	/** A cloud of points in 2D or 3D, which can be built from a sequence of laser scans or other sensors.
 	 *  This is a virtual class, thus only a derived class can be instantiated by the user. The user most usually wants to use CSimplePointsMap.
+	 *
+	 *  This class implements generic version of mrpt::slam::CMetric::insertObservation() accepting these types of sensory data:
+	 *		- mrpt::slam::CObservation2DRangeScan: 2D range scans
+	 *		- mrpt::slam::CObservation3DRangeScan: 3D range scans (Kinect, etc...)
+	 *		- mrpt::slam::CObservationRange: IRs, Sonars, etc.
+	 *
 	 * \sa CMetricMap, CPoint, mrpt::utils::CSerializable
 	 */
 	class MAPS_IMPEXP CPointsMap :
@@ -66,54 +72,106 @@ namespace slam
 		public mrpt::utils::PLY_Exporter
 
 	{
-		friend class CMultiMetricMap;
-		friend class CMultiMetricMapPDF;
-		friend class CSimplePointsMap;
-		friend class CColouredPointsMap;
-		friend class COccupancyGridMap2D;
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_VIRTUAL_SERIALIZABLE( CPointsMap )
 
-	 protected:
-		 std::vector<float>     x,y,z;        //!< The points coordinates
-		 std::vector<uint32_t>  pointWeight;  //!< The points weights
+	protected:
+		/** Helper struct used for \a internal_loadFromRangeScan2D_prepareOneRange() */
+		struct MAPS_IMPEXP TLaserRange2DInsertContext {
+			TLaserRange2DInsertContext(const CObservation2DRangeScan  &_rangeScan) : HM(UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
+			{ }
+			CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
+			const CObservation2DRangeScan  &rangeScan;
+			std::vector<float>         fVars;  //!< Extra variables to be used as desired by the derived class.
+			std::vector<unsigned int>  uVars;
+			std::vector<uint8_t>       bVars;
+		};
 
-		 CSinCosLookUpTableFor2DScans  m_scans_sincos_cache; //!< Cache of sin/cos values for the latest 2D scan geometries.
-
-		 /** Auxiliary variables used in "getLargestDistanceFromOrigin"
-		   * \sa getLargestDistanceFromOrigin
-		   */
-		 mutable float	m_largestDistanceFromOrigin;
-
-		 /** Auxiliary variables used in "getLargestDistanceFromOrigin"
-		   * \sa getLargestDistanceFromOrigin
-		   */
-		 mutable bool	m_largestDistanceFromOriginIsUpdated;
-
-		 void mark_as_modified() const; //!< Called only by this class or children classes, set m_largestDistanceFromOriginIsUpdated=false and such.
-
-
-
-		/** @name Virtual methods that MUST be implemented by children classes of KDTreeCapable
-			@{ */
-		/** Must return the number of data points */
-		virtual size_t kdtree_get_point_count() const;
-
-		/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],...,data[i][nDims-1]). */
-		virtual void kdtree_fill_point_data(ANNpointArray &data, const int nDims) const;
-
-		/** @} */
+		/** Helper struct used for \a internal_loadFromRangeScan3D_prepareOneRange() */
+		struct MAPS_IMPEXP TLaserRange3DInsertContext {
+			TLaserRange3DInsertContext(const CObservation3DRangeScan  &_rangeScan) : HM(UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
+			{ }
+			CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
+			const CObservation3DRangeScan  &rangeScan;
+			float scan_x, scan_y,scan_z; //!< In \a internal_loadFromRangeScan3D_prepareOneRange, these are the local coordinates of the scan points being inserted right now.
+			std::vector<float>         fVars;  //!< Extra variables to be used as desired by the derived class.
+			std::vector<unsigned int>  uVars;
+			std::vector<uint8_t>       bVars;
+		};
 
 	 public:
-		 /** Constructor
-		   */
-		 CPointsMap();
+		 CPointsMap();            //!< Ctor
+		 virtual ~CPointsMap();   //!< Virtual destructor.
 
-		 /** Virtual destructor.
-		   */
-		 virtual ~CPointsMap();
 
+		// --------------------------------------------
+		/** @name Pure virtual interfaces to be implemented by any class derived from CPointsMap
+		    @{ */
+
+		/** Reserves memory for a given number of points: the size of the map does not change, it only reserves the memory.
+		  *  This is useful for situations where it is approximately known the final size of the map. This method is more
+		  *  efficient than constantly increasing the size of the buffers. Refer to the STL C++ library's "reserve" methods.
+		  */
+		virtual void reserve(size_t newLength) = 0;
+
+		/** Resizes all point buffers so they can hold the given number of points: newly created points are set to default values,
+		  *  and old contents are not changed.
+		  * \sa reserve, setPoint, setPointFast, setSize
+		  */
+		virtual void resize(size_t newLength) = 0;
+
+		/** Resizes all point buffers so they can hold the given number of points, *erasing* all previous contents
+		  *  and leaving all points to default values.
+		  * \sa reserve, setPoint, setPointFast, setSize
+		  */
+		virtual void setSize(size_t newLength) = 0;
+
+		/** Changes the coordinates of the given point (0-based index), *without* checking for out-of-bounds and *without* calling mark_as_modified()  \sa setPoint */
+		virtual void  setPointFast(size_t index,float x, float y, float z)=0;
+
+		/** The virtual method for \a insertPoint() *without* calling mark_as_modified()   */
+		virtual void  insertPointFast( float x, float y, float z = 0 ) = 0;
+
+		 /** Virtual assignment operator, copies as much common data (XYZ, color,...) as possible from the source map into this one. */
+		 virtual void  copyFrom(const CPointsMap &obj) = 0;
+
+		/** Get all the data fields for one point as a vector: depending on the implementation class this can be [X Y Z] or [X Y Z R G B], etc...
+		  *  Unlike getPointAllFields(), this method does not check for index out of bounds
+		  * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
+		  */
+		virtual void  getPointAllFieldsFast( const size_t index, std::vector<float> & point_data ) const = 0;
+
+		/** Set all the data fields for one point as a vector: depending on the implementation class this can be [X Y Z] or [X Y Z R G B], etc...
+		  *  Unlike setPointAllFields(), this method does not check for index out of bounds
+		  * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
+		  */
+		virtual void  setPointAllFieldsFast( const size_t index, const std::vector<float> & point_data ) = 0;
+
+	protected:
+
+		/** Auxiliary method called from within \a addFrom() automatically, to finish the copying of class-specific data  */
+		virtual void  addFrom_classSpecific(const CPointsMap &anotherMap, const size_t nPreviousPoints) = 0;
+
+		/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
+		virtual void  internal_loadFromRangeScan2D_init(TLaserRange2DInsertContext & lric)  {  }
+		/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
+		virtual void  internal_loadFromRangeScan2D_prepareOneRange(const float gx,const float gy, const float gz, TLaserRange2DInsertContext & lric )  {  }
+		/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
+		virtual void  internal_loadFromRangeScan2D_postPushBack(TLaserRange2DInsertContext & lric)  {  }
+
+		/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
+		virtual void  internal_loadFromRangeScan3D_init(TLaserRange3DInsertContext & lric) {  }
+		/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
+		virtual void  internal_loadFromRangeScan3D_prepareOneRange(const float gx,const float gy, const float gz, TLaserRange3DInsertContext & lric )  {  }
+		/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
+		virtual void  internal_loadFromRangeScan3D_postPushBack(TLaserRange3DInsertContext & lric)  {  }
+		/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data, at the end */
+		virtual void  internal_loadFromRangeScan3D_postOneRange(TLaserRange3DInsertContext & lric )  {  }
+
+	public:
+
+		/** @} */
+		// --------------------------------------------
 
 
 		/** Returns the square distance from the 2D point (x0,y0) to the closest correspondence in the map.
@@ -180,24 +238,6 @@ namespace slam
 
 		 TLikelihoodOptions  likelihoodOptions;
 
-		 /** Virtual assignment operator, to be implemented in derived classes.
-		   */
-		 virtual void  copyFrom(const CPointsMap &obj) = 0;
-
-		/** Insert the contents of another map into this one, fusing the previous content with the new one.
-		 *    This means that points very close to existing ones will be "fused", rather than "added". This prevents
-		 *     the unbounded increase in size of these class of maps.
-		 *		NOTICE that "otherMap" is neither translated nor rotated here, so if this is desired it must done
-		 *		 before calling this method.
-		 * \param otherMap The other map whose points are to be inserted into this one.
-		 * \param minDistForFuse Minimum distance (in meters) between two points, each one in a map, to be considered the same one and be fused rather than added.
-		 * \param notFusedPoints If a pointer is supplied, this list will contain at output a list with a "bool" value per point in "this" map. This will be false/true according to that point having been fused or not.
-		 * \sa loadFromRangeScan, addFrom
-		 */
-		virtual void  fuseWith(
-			CPointsMap			*anotherMap,
-			float				minDistForFuse  = 0.02f,
-			std::vector<bool>	*notFusedPoints = NULL) = 0;
 
 		/** Adds all the points from \a anotherMap to this map, without fusing.
 		  *  This operation can be also invoked via the "+=" operator, for example:
@@ -217,35 +257,38 @@ namespace slam
 			this->addFrom(anotherMap);
 		}
 
-		/** Transform the range scan into a set of cartessian coordinated
-		  *	 points. The options in "insertionOptions" are considered in this method.
-		  * \param rangeScan The scan to be inserted into this map
-		  * \param robotPose The robot 3D pose, default to (0,0,0|0deg,0deg,0deg). It is used to compute the sensor pose relative to the robot actual pose. Recall sensor pose is embeded in the observation class.
-		  *
-		  *   NOTE: Only ranges marked as "valid=true" in the observation will be inserted
-		  *
-		  * \sa CObservation2DRangeScan
-		  */
-		virtual void  loadFromRangeScan(
-				const CObservation2DRangeScan &rangeScan,
-				const CPose3D				  *robotPose = NULL ) = 0;
+		/** Insert the contents of another map into this one with some geometric transformation, without fusing close points.
+		 * \param otherMap The other map whose points are to be inserted into this one.
+		 * \param otherPose The pose of the other map in the coordinates of THIS map
+		 * \sa fuseWith, addFrom
+		 */
+		void  insertAnotherMap(
+			const CPointsMap	*otherMap,
+			const CPose3D		&otherPose);
 
-		/** Load from a text file. In each line there are a point coordinates.
+		// --------------------------------------------------
+		/** @name File input/output methods
+		    @{ */
+
+		/** Load from a text file. Each line should contain an "X Y" coordinate pair, separated by whitespaces.
 		 *   Returns false if any error occured, true elsewere.
 		 */
-		virtual bool  load2D_from_text_file(std::string file) = 0;
+		inline bool  load2D_from_text_file(const std::string &file) { return load2Dor3D_from_text_file(file,false); }
 
-		/** Load from a text file. In each line there are a point coordinates.
+		/** Load from a text file. Each line should contain an "X Y Z" coordinate tuple, separated by whitespaces.
 		 *   Returns false if any error occured, true elsewere.
 		 */
-		virtual bool  load3D_from_text_file(std::string file) = 0;
+		inline bool  load3D_from_text_file(const std::string &file) { return load2Dor3D_from_text_file(file,true); }
 
-		/**  Save to a text file. In each line there are a point coordinates.
+		/** 2D or 3D generic implementation of \a load2D_from_text_file and load3D_from_text_file */
+		bool  load2Dor3D_from_text_file(const std::string &file, const bool is_3D);
+
+		/**  Save to a text file. Each line will contain "X Y" point coordinates.
 		 *		Returns false if any error occured, true elsewere.
 		 */
 		bool  save2D_to_text_file(const std::string &file) const;
 
-		/** Save to a text file. In each line there are a point coordinates.
+		/**  Save to a text file. Each line will contain "X Y Z" point coordinates.
 		 *     Returns false if any error occured, true elsewere.
 		 */
 		bool  save3D_to_text_file(const std::string &file)const;
@@ -260,51 +303,40 @@ namespace slam
 			save3D_to_text_file( fil );
 		}
 
+        /** Save the point cloud as a PCL PCD file, in either ASCII or binary format (requires MRPT built against PCL) \return false on any error */
+        virtual bool savePCDFile(const std::string &filename, bool save_as_binary) const;
+
+		/** @} */ // End of: File input/output methods
+		// --------------------------------------------------
 
 		/** Returns the number of stored points in the map.
 		 */
-		size_t size() const;
+		inline size_t size() const { return x.size(); }
 
 		/** Returns the number of stored points in the map (DEPRECATED, use "size()" instead better)
 		 */
-		size_t getPointsCount() const;
+		inline size_t getPointsCount() const { return size(); }
 
 		/** Access to a given point from map, as a 2D point. First index is 0.
-		 * \return The return value is the weight of the point (the times it has been fused)
+		 * \return The return value is the weight of the point (the times it has been fused), or 1 if weights are not used.
 		 * \exception Throws std::exception on index out of bound.
-		 */
-		unsigned long  getPoint(size_t index,CPoint2D &p) const;
-
-		/** Access to a given point from map, as a 3D point. First index is 0.
-		 * \return The return value is the weight of the point (the times it has been fused)
-		 * \exception Throws std::exception on index out of bound.
-		 */
-		unsigned long  getPoint(size_t index,CPoint3D &p) const;
-
-		/** Access to a given point from map, as a 3D point. First index is 0.
-		 * \return The return value is the weight of the point (the times it has been fused)
-		 * \exception Throws std::exception on index out of bound.
-		 */
-		unsigned long  getPoint(size_t index,mrpt::math::TPoint3D &p) const;
-
-		/** Access to a given point from map, as a 2D point. First index is 0.
-		 * \return The return value is the weight of the point (the times it has been fused)
-		 * \exception Throws std::exception on index out of bound.
-		 */
-		unsigned long  getPoint(size_t index,mrpt::math::TPoint2D &p) const;
-
-		/** Access to a given point from map. First index is 0.
-		 * \return The return value is the weight of the point (the times it has been fused)
-		 * \exception Throws std::exception on index out of bound.
-		 */
-		unsigned long  getPoint(size_t index,float &x,float &y) const;
-
-		/** Access to a given point from map. First index is 0.
-		 * \return The return value is the weight of the point (the times it has been fused)
-		 * \exception Throws std::exception on index out of bound.
+		 * \sa setPoint, getPointFast
 		 */
 		unsigned long  getPoint(size_t index,float &x,float &y,float &z) const;
-
+		/// \overload
+		unsigned long  getPoint(size_t index,float &x,float &y) const;
+		/// \overload
+		unsigned long  getPoint(size_t index,double &x,double &y,double &z) const;
+		/// \overload
+		unsigned long  getPoint(size_t index,double &x,double &y) const;
+		/// \overload
+		inline unsigned long  getPoint(size_t index,CPoint2D &p) const { return getPoint(index,p.x(),p.y()); }
+		/// \overload
+		inline unsigned long  getPoint(size_t index,CPoint3D &p) const  { return getPoint(index,p.x(),p.y(),p.z()); }
+		/// \overload
+		inline unsigned long  getPoint(size_t index,mrpt::math::TPoint2D &p) const  { return getPoint(index,p.x,p.y); }
+		/// \overload
+		inline unsigned long  getPoint(size_t index,mrpt::math::TPoint3D &p) const  { return getPoint(index,p.x,p.y,p.z); }
 
 		/** Access to a given point from map, and its colors, if the map defines them (othersise, R=G=B=1.0). First index is 0.
 		 * \return The return value is the weight of the point (the times it has been fused)
@@ -316,28 +348,35 @@ namespace slam
 			R=G=B=1;
 		}
 
+		/** Just like \a getPoint() but without checking out-of-bound index and without returning the point weight, just XYZ.
+		 */
+		inline void getPointFast(size_t index,float &x,float &y,float &z) const { x=this->x[index]; y=this->y[index]; z=this->z[index]; }
+
 		/** Returns true if the point map has a color field for each point */
 		virtual bool hasColorPoints() const { return false; }
 
-		/** Changes a given point from map, as a 2D point. First index is 0.
+		/** Changes a given point from map, with Z defaulting to 0 if not provided.
 		 * \exception Throws std::exception on index out of bound.
 		 */
-		virtual void  setPoint(size_t index,CPoint2D &p)=0;
+		inline void  setPoint(size_t index,float x, float y, float z) {
+			ASSERT_BELOW_(index,this->size())
+			setPointFast(index,x,y,z);
+			mark_as_modified();
+		}
+		/// \overload
+		inline void  setPoint(size_t index,CPoint2D &p) {  setPoint(index,p.x(),p.y(),0); }
+		/// \overload
+		inline void  setPoint(size_t index,CPoint3D &p)  { setPoint(index,p.x(),p.y(),p.z()); }
+		/// \overload
+		inline void  setPoint(size_t index,float x, float y) { setPoint(index,x,y,0); }
+		/// \overload (RGB data is ignored in classes without color information)
+		virtual void setPoint(size_t index,float x, float y, float z, float R, float G, float B) { setPoint(index,x,y,z); }
 
-		/** Changes a given point from map, as a 3D point. First index is 0.
-		 * \exception Throws std::exception on index out of bound.
-		 */
-		virtual void  setPoint(size_t index,CPoint3D &p)=0;
+		/// Sets the point weight, which is ignored in all classes but those which actually store that field (Note: No checks are done for out-of-bounds index). \sa getPointWeight
+		virtual void setPointWeight(size_t index,unsigned long w) {  }
+		/// Gets the point weight, which is ignored in all classes (defaults to 1) but in those which actually store that field (Note: No checks are done for out-of-bounds index).  \sa setPointWeight
+		virtual unsigned int getPointWeight(size_t index) const { return 1; }
 
-		/** Changes a given point from map. First index is 0.
-		 * \exception Throws std::exception on index out of bound.
-		 */
-		virtual void  setPoint(size_t index,float x, float y)=0;
-
-		/** Changes a given point from map. First index is 0.
-		 * \exception Throws std::exception on index out of bound.
-		 */
-		virtual void  setPoint(size_t index,float x, float y, float z)=0;
 
 		/** Provides a direct access to points buffer, or NULL if there is no points in the map.
 		  */
@@ -401,29 +440,60 @@ namespace slam
 			}
 		}
 
-		/** Provides a way to insert individual points into the map */
-		virtual void  insertPoint( float x, float y, float z = 0 ) = 0;
-
-		/** Provides a way to insert individual points into the map */
-		inline void  insertPoint( const CPoint3D &p ) {
-			insertPoint(p.x(),p.y(),p.z());
-		}
-
-		/** Provides a way to insert individual points into the map */
-		inline void  insertPoint( const mrpt::math::TPoint3D &p ) {
-			insertPoint(p.x,p.y,p.z);
-		}
-
-		/** Reserves memory for a given number of points: the size of the map does not change, it only reserves the memory.
-		  *  This is useful for situations where it is approximately known the final size of the map. This method is more
-		  *  efficient than constantly increasing the size of the buffers. Refer to the STL C++ library's "reserve" methods.
+		/** Provides a way to insert (append) individual points into the map: the missing fields of child
+		  * classes (color, weight, etc) are left to their default values
 		  */
-		virtual void reserve(size_t newLength) = 0;
+		inline void  insertPoint( float x, float y, float z=0 ) { insertPointFast(x,y,z); mark_as_modified(); }
+		/// \overload of \a insertPoint()
+		inline void  insertPoint( const CPoint3D &p ) { insertPoint(p.x(),p.y(),p.z()); }
+		/// \overload
+		inline void  insertPoint( const mrpt::math::TPoint3D &p ) { insertPoint(p.x,p.y,p.z); }
+		/// \overload (RGB data is ignored in classes without color information)
+		virtual void  insertPoint( float x, float y, float z, float R, float G, float B ) { insertPoint(x,y,z); }
+
+		/** Set all the points at once from vectors with X,Y and Z coordinates (if Z is not provided, it will be set to all zeros).
+		  * \tparam VECTOR can be mrpt::vector_float or std::vector<float> or any other column or row Eigen::Matrix.
+		  */
+		template <typename VECTOR>
+		inline void setAllPointsTemplate(const VECTOR &X,const VECTOR &Y,const VECTOR &Z = VECTOR())
+		{
+			const size_t N = X.size();
+			ASSERT_EQUAL_(X.size(),Y.size())
+			ASSERT_(Z.size()==0 || Z.size()==X.size())
+			this->setSize(N);
+			const bool z_valid = !Z.empty();
+			if (z_valid) for (size_t i=0;i<N;i++) { this->setPointFast(i,X[i],Y[i],Z[i]); }
+			else         for (size_t i=0;i<N;i++) { this->setPointFast(i,X[i],Y[i],0); }
+			mark_as_modified();
+		}
 
 		/** Set all the points at once from vectors with X,Y and Z coordinates. \sa getAllPoints */
-		virtual void setAllPoints(const std::vector<float> &X,const std::vector<float> &Y,const std::vector<float> &Z) = 0;
+		inline void setAllPoints(const std::vector<float> &X,const std::vector<float> &Y,const std::vector<float> &Z) {
+			setAllPointsTemplate(X,Y,Z);
+		}
+
 		/** Set all the points at once from vectors with X and Y coordinates (Z=0). \sa getAllPoints */
-		virtual void setAllPoints(const std::vector<float> &X,const std::vector<float> &Y) = 0;
+		inline void setAllPoints(const std::vector<float> &X,const std::vector<float> &Y) {
+			setAllPointsTemplate(X,Y);
+		}
+
+		/** Get all the data fields for one point as a vector: depending on the implementation class this can be [X Y Z] or [X Y Z R G B], etc...
+		  * \sa getPointAllFieldsFast, setPointAllFields, setPointAllFieldsFast
+		  */
+		void  getPointAllFields( const size_t index, std::vector<float> & point_data ) const {
+			ASSERT_BELOW_(index,this->size())
+			getPointAllFieldsFast(index,point_data);
+		}
+
+		/** Set all the data fields for one point as a vector: depending on the implementation class this can be [X Y Z] or [X Y Z R G B], etc...
+		  *  Unlike setPointAllFields(), this method does not check for index out of bounds
+		  * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
+		  */
+		void  setPointAllFields( const size_t index, const std::vector<float> & point_data ){
+			ASSERT_BELOW_(index,this->size())
+			setPointAllFieldsFast(index,point_data);
+		}
+
 
 		/** Delete points out of the given "z" axis range have been removed.
 		  */
@@ -434,10 +504,9 @@ namespace slam
 		void  clipOutOfRange(const CPoint2D	&point, float maxRange);
 
 		/** Remove from the map the points marked in a bool's array as "true".
-		  *
 		  * \exception std::exception If mask size is not equal to points count.
 		  */
-		virtual void  applyDeletionMask( std::vector<bool> &mask ) = 0;
+		void  applyDeletionMask( std::vector<bool> &mask );
 
 		/** Computes the matchings between this and another 2D/3D points map.
 		   This includes finding:
@@ -499,33 +568,6 @@ namespace slam
 			bool									onlyKeepTheClosest = true,
 			bool									onlyUniqueRobust = false ) const;
 
-
-		/** Replace each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose compounding operator).
-		  */
-		void   changeCoordinatesReference(const CPose2D &b);
-
-		/** Replace each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose compounding operator).
-		  */
-		void   changeCoordinatesReference(const CPose3D &b);
-
-		/** Copy all the points from "other" map to "this", replacing each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose compounding operator).
-		  */
-		void   changeCoordinatesReference(const CPointsMap &other, const CPose3D &b);
-
-		/** Returns true if the map is empty/no observation has been inserted.
-		   */
-		virtual bool  isEmpty() const;
-
-		/** STL-like method to check whether the map is empty: */
-		inline bool  empty() const { return isEmpty(); }
-
-		/** Returns a 3D object representing the map.
-		  *  The color of the points is given by the static variables: COLOR_3DSCENE_R,COLOR_3DSCENE_G,COLOR_3DSCENE_B
-		  * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
-		  */
-		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
-
-
 		/** Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
 		 *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
 		 * \param  otherMap					  [IN] The other map to compute the matching with.
@@ -543,9 +585,89 @@ namespace slam
 				float									minMahaDistForCorr = 2.0f
 				) const;
 
-		/** This method returns the largest distance from the origin to any of the points, such as a sphere centered at the origin with this radius cover ALL the points in the map (the results are buffered, such as, if the map is not modified, the second call will be much faster than the first one).
+		/** Transform the range scan into a set of cartessian coordinated
+		  *	 points. The options in "insertionOptions" are considered in this method.
+		  * \param rangeScan The scan to be inserted into this map
+		  * \param robotPose The robot 3D pose, default to (0,0,0|0deg,0deg,0deg). It is used to compute the sensor pose relative to the robot actual pose. Recall sensor pose is embeded in the observation class.
+		  *
+		  *  Only ranges marked as "valid=true" in the observation will be inserted
+		  *
+		  *  \note Each derived class may enrich points in different ways (color, weight, etc..), so please refer to the description of the specific
+		  *         implementation of mrpt::slam::CPointsMap you are using.
+		  *
+		  * \sa CObservation2DRangeScan, CObservation3DRangeScan
 		  */
+		void  loadFromRangeScan(
+				const CObservation2DRangeScan &rangeScan,
+				const CPose3D				  *robotPose = NULL );
+
+		/** Overload of \a loadFromRangeScan() for 3D range scans (for example, Kinect observations).
+		  *
+		  * \param rangeScan The scan to be inserted into this map
+		  * \param robotPose The robot 3D pose, default to (0,0,0|0deg,0deg,0deg). It is used to compute the sensor pose relative to the robot actual pose. Recall sensor pose is embeded in the observation class.
+		  *
+		  *  \note Each derived class may enrich points in different ways (color, weight, etc..), so please refer to the description of the specific
+		  *         implementation of mrpt::slam::CPointsMap you are using.
+		  */
+		void  loadFromRangeScan(
+				const CObservation3DRangeScan &rangeScan,
+				const CPose3D				  *robotPose = NULL );
+
+		/** Insert the contents of another map into this one, fusing the previous content with the new one.
+		 *    This means that points very close to existing ones will be "fused", rather than "added". This prevents
+		 *     the unbounded increase in size of these class of maps.
+		 *		NOTICE that "otherMap" is neither translated nor rotated here, so if this is desired it must done
+		 *		 before calling this method.
+		 * \param otherMap The other map whose points are to be inserted into this one.
+		 * \param minDistForFuse Minimum distance (in meters) between two points, each one in a map, to be considered the same one and be fused rather than added.
+		 * \param notFusedPoints If a pointer is supplied, this list will contain at output a list with a "bool" value per point in "this" map. This will be false/true according to that point having been fused or not.
+		 * \sa loadFromRangeScan, addFrom
+		 */
+		void  fuseWith(
+			CPointsMap			*anotherMap,
+			float				minDistForFuse  = 0.02f,
+			std::vector<bool>	*notFusedPoints = NULL);
+
+		/** Replace each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose compounding operator).
+		  */
+		void   changeCoordinatesReference(const CPose2D &b);
+
+		/** Replace each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose compounding operator).
+		  */
+		void   changeCoordinatesReference(const CPose3D &b);
+
+		/** Copy all the points from "other" map to "this", replacing each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose compounding operator).
+		  */
+		void   changeCoordinatesReference(const CPointsMap &other, const CPose3D &b);
+
+		/** Returns true if the map is empty/no observation has been inserted.
+		   */
+		virtual bool isEmpty() const;
+
+		/** STL-like method to check whether the map is empty: */
+		inline bool  empty() const { return isEmpty(); }
+
+		/** Returns a 3D object representing the map.
+		  *  The color of the points is given by the static variables: COLOR_3DSCENE_R,COLOR_3DSCENE_G,COLOR_3DSCENE_B
+		  * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
+		  */
+		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+
+		/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
+			* Otherwise, return NULL
+			*/
+		virtual const CSimplePointsMap * getAsSimplePointsMap() const { return NULL; }
+		virtual       CSimplePointsMap * getAsSimplePointsMap()       { return NULL; }
+
+
+		/** This method returns the largest distance from the origin to any of the points, such as a sphere centered at the origin with this radius cover ALL the points in the map (the results are buffered, such as, if the map is not modified, the second call will be much faster than the first one). */
 		float  getLargestDistanceFromOrigin() const;
+
+		/** Like \a getLargestDistanceFromOrigin() but returns in \a output_is_valid = false if the distance was not already computed, skipping its computation then, unlike getLargestDistanceFromOrigin() */
+		float  getLargestDistanceFromOriginNoRecompute(bool &output_is_valid) const {
+			output_is_valid = m_largestDistanceFromOriginIsUpdated;
+			return m_largestDistanceFromOrigin;
+		}
 
 		/** Computes the bounding box of all the points, or (0,0 ,0,0, 0,0) if there are no points. */
 		void boundingBox( float &min_x,float &max_x,float &min_y,float &max_y,float &min_z,float &max_z ) const;
@@ -563,6 +685,20 @@ namespace slam
 
 		void extractCylinder( const CPoint2D &center, const double radius, const double zmin, const double zmax, CPointsMap *outMap );
 
+		/** @name Filter-by-height stuff
+			@{ */
+
+		/** Enable/disable the filter-by-height functionality \sa setHeightFilterLevels \note Default upon construction is disabled. */
+		inline void enableFilterByHeight(bool enable=true) { m_heightfilter_enabled=enable; }
+		/** Return whether filter-by-height is enabled \sa enableFilterByHeight */
+		inline bool isFilterByHeightEnabled() const  { return m_heightfilter_enabled; }
+
+		/** Set the min/max Z levels for points to be actually inserted in the map (only if \a enableFilterByHeight() was called before). */
+		inline void setHeightFilterLevels(const double _z_min, const double _z_max) { m_heightfilter_z_min=_z_min; m_heightfilter_z_max=_z_max; }
+		/** Get the min/max Z levels for points to be actually inserted in the map \sa enableFilterByHeight, setHeightFilterLevels */
+		inline void getHeightFilterLevels(double &_z_min, double &_z_max) const { _z_min=m_heightfilter_z_min; _z_max=m_heightfilter_z_max; }
+
+		/** @} */
 
 		/** The color [0,1] of points when extracted from getAs3DObject (default=blue) */
 		static float COLOR_3DSCENE_R;
@@ -582,9 +718,6 @@ namespace slam
 
         /** @name PCL library support
             @{ */
-
-        /** Save the point cloud as a PCL PCD file, in either ASCII or binary format \return false on any error */
-        virtual bool savePCDFile(const std::string &filename, bool save_as_binary) const;
 
 
         /** Use to convert this MRPT point cloud object into a PCL point cloud object.
@@ -614,37 +747,90 @@ namespace slam
 
         /** @} */
 
-		protected:
-			/** @name PLY Import virtual methods to implement in base classes
-			    @{ */
-			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_face */
-			virtual void PLY_import_set_face_count(const size_t N) {  }
 
-			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
-			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
-			  */
-			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL);
-			/** @} */
+	protected:
+		std::vector<float>     x,y,z;        //!< The point coordinates
 
-			/** @name PLY Export virtual methods to implement in base classes
-			    @{ */
+		CSinCosLookUpTableFor2DScans  m_scans_sincos_cache; //!< Cache of sin/cos values for the latest 2D scan geometries.
 
-			/** In a base class, return the number of vertices */
-			virtual size_t PLY_export_get_vertex_count() const;
+		/** Auxiliary variables used in "getLargestDistanceFromOrigin"
+		  * \sa getLargestDistanceFromOrigin
+		  */
+		mutable float	m_largestDistanceFromOrigin;
 
-			/** In a base class, return the number of faces */
-			virtual size_t PLY_export_get_face_count() const { return 0; }
+		/** Auxiliary variables used in "getLargestDistanceFromOrigin"
+		  * \sa getLargestDistanceFromOrigin
+		  */
+		mutable bool	m_largestDistanceFromOriginIsUpdated;
 
-			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
-			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
-			  */
-			virtual void PLY_export_get_vertex(
-				const size_t idx,
-				mrpt::math::TPoint3Df &pt,
-				bool &pt_has_color,
-				mrpt::utils::TColorf &pt_color) const;
+		/** Called only by this class or children classes, set m_largestDistanceFromOriginIsUpdated=false and such. */
+		inline void mark_as_modified() const
+		{
+			m_largestDistanceFromOriginIsUpdated=false;
+			kdtree_mark_as_outdated();
+		}
 
-			/** @} */
+		/** This is a common version of CMetricMap::insertObservation() for point maps (actually, CMetricMap::internal_insertObservation),
+		  *   so derived classes don't need to worry implementing that method unless something special is really necesary.
+		  * See mrpt::slam::CPointsMap for the enumeration of types of observations which are accepted.
+		  */
+		bool  internal_insertObservation(
+			const CObservation	*obs,
+			const CPose3D *robotPose);
+
+		/** Helper method for ::copyFrom() */
+		void  base_copyFrom(const CPointsMap &obj);
+
+		/** @name Virtual methods that MUST be implemented by children classes of KDTreeCapable
+			@{ */
+		/** Must return the number of data points */
+		virtual size_t kdtree_get_point_count() const;
+
+		/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],...,data[i][nDims-1]). */
+		virtual void kdtree_fill_point_data(ANNpointArray &data, const int nDims) const;
+
+		/** @} */
+
+
+		/** @name PLY Import virtual methods to implement in base classes
+			@{ */
+		/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_face */
+		virtual void PLY_import_set_face_count(const size_t N) {  }
+
+		/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
+		  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+		  */
+		virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL);
+		/** @} */
+
+		/** @name PLY Export virtual methods to implement in base classes
+			@{ */
+
+		/** In a base class, return the number of vertices */
+		virtual size_t PLY_export_get_vertex_count() const;
+
+		/** In a base class, return the number of faces */
+		virtual size_t PLY_export_get_face_count() const { return 0; }
+
+		/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
+		  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+		  */
+		virtual void PLY_export_get_vertex(
+			const size_t idx,
+			mrpt::math::TPoint3Df &pt,
+			bool &pt_has_color,
+			mrpt::utils::TColorf &pt_color) const;
+
+		/** @} */
+
+		/** The minimum and maximum height for a certain laser scan to be inserted into this map
+		   * \sa m_heightfilter_enabled */
+		double m_heightfilter_z_min, m_heightfilter_z_max;
+
+		/** Whether or not (default=not) filter the input points by height
+		  * \sa m_heightfilter_z_min, m_heightfilter_z_max */
+		bool m_heightfilter_enabled;
+
 
 	}; // End of class def.
 

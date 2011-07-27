@@ -86,7 +86,7 @@ bool  CReflectivityGridMap2D::internal_insertObservation(
 	const CObservation	*obs,
 	const CPose3D			*robotPose )
 {
-	MRPT_START;
+	MRPT_START
 
 	CPose2D		robotPose2D;
 	CPose3D		robotPose3D;
@@ -145,7 +145,7 @@ bool  CReflectivityGridMap2D::internal_insertObservation(
 
 	return false;
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -337,7 +337,7 @@ void  CReflectivityGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&out
 	if (m_disableSaveAs3DObject)
 		return;
 
-	MRPT_START;
+	MRPT_START
 
 	opengl::CTexturedPlanePtr	outObj = opengl::CTexturedPlane::Create();
 
@@ -368,7 +368,7 @@ void  CReflectivityGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&out
 	outObj->assignImage_fast( imgColor,imgTrans );
 	outSetOfObj->insert( outObj );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

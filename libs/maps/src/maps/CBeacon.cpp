@@ -110,7 +110,7 @@ void  CBeacon::readFromStream(CStream &in, int version)
   ---------------------------------------------------------------*/
 void CBeacon::getMean(CPoint3D &p) const
 {
-	MRPT_START;
+	MRPT_START
 	switch (m_typePDF)
 	{
 	case pdfMonteCarlo:	m_locationMC.getMean(p);		break;
@@ -118,7 +118,7 @@ void CBeacon::getMean(CPoint3D &p) const
 	case pdfSOG:		m_locationSOG.getMean(p);		break;
 	default:			THROW_EXCEPTION("ERROR: Invalid 'm_typePDF' value");
 	};
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -126,7 +126,7 @@ void CBeacon::getMean(CPoint3D &p) const
   ---------------------------------------------------------------*/
 void CBeacon::getCovarianceAndMean(CMatrixDouble33 &COV,CPoint3D &p) const
 {
-	MRPT_START;
+	MRPT_START
 	switch (m_typePDF)
 	{
 	case pdfMonteCarlo:	m_locationMC.getCovarianceAndMean(COV,p);		break;
@@ -134,7 +134,7 @@ void CBeacon::getCovarianceAndMean(CMatrixDouble33 &COV,CPoint3D &p) const
 	case pdfSOG:		m_locationSOG.getCovarianceAndMean(COV,p);		break;
 	default:			THROW_EXCEPTION("ERROR: Invalid 'm_typePDF' value");
 	};
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -142,7 +142,7 @@ void CBeacon::getCovarianceAndMean(CMatrixDouble33 &COV,CPoint3D &p) const
   ---------------------------------------------------------------*/
 void CBeacon::bayesianFusion(const  CPointPDF &p1,const  CPointPDF &p2, const double &minMahalanobisDistToDrop)
 {
-	MRPT_START;
+	MRPT_START
 	switch (m_typePDF)
 	{
 	case pdfMonteCarlo:	m_locationMC.bayesianFusion(p1,p2,minMahalanobisDistToDrop);	break;
@@ -150,7 +150,7 @@ void CBeacon::bayesianFusion(const  CPointPDF &p1,const  CPointPDF &p2, const do
 	case pdfSOG:		m_locationSOG.bayesianFusion(p1,p2,minMahalanobisDistToDrop);		break;
 	default:			THROW_EXCEPTION("ERROR: Invalid 'm_typePDF' value");
 	};
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -159,7 +159,7 @@ void CBeacon::bayesianFusion(const  CPointPDF &p1,const  CPointPDF &p2, const do
   ---------------------------------------------------------------*/
 void CBeacon::drawSingleSample(CPoint3D &outSample) const
 {
-	MRPT_START;
+	MRPT_START
 	switch (m_typePDF)
 	{
 	case pdfMonteCarlo:	m_locationMC.drawSingleSample(outSample);		break;
@@ -167,7 +167,7 @@ void CBeacon::drawSingleSample(CPoint3D &outSample) const
 	case pdfSOG:		m_locationSOG.drawSingleSample(outSample);		break;
 	default:			THROW_EXCEPTION("ERROR: Invalid 'm_typePDF' value");
 	};
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -176,7 +176,7 @@ void CBeacon::drawSingleSample(CPoint3D &outSample) const
   ---------------------------------------------------------------*/
 void  CBeacon::copyFrom(const CPointPDF &o)
 {
-	MRPT_START;
+	MRPT_START
 	switch (m_typePDF)
 	{
 	case pdfMonteCarlo:	m_locationMC.copyFrom(o);		break;
@@ -184,7 +184,7 @@ void  CBeacon::copyFrom(const CPointPDF &o)
 	case pdfSOG:		m_locationSOG.copyFrom(o);		break;
 	default:			THROW_EXCEPTION("ERROR: Invalid 'm_typePDF' value");
 	};
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -192,7 +192,7 @@ void  CBeacon::copyFrom(const CPointPDF &o)
   ---------------------------------------------------------------*/
 void  CBeacon::saveToTextFile(const std::string &file) const
 {
-	MRPT_START;
+	MRPT_START
 	switch (m_typePDF)
 	{
 	case pdfMonteCarlo:	m_locationMC.saveToTextFile(file);		break;
@@ -200,7 +200,7 @@ void  CBeacon::saveToTextFile(const std::string &file) const
 	case pdfSOG:		m_locationSOG.saveToTextFile(file);		break;
 	default:			THROW_EXCEPTION("ERROR: Invalid 'm_typePDF' value");
 	};
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -208,7 +208,7 @@ void  CBeacon::saveToTextFile(const std::string &file) const
   ---------------------------------------------------------------*/
 void  CBeacon::changeCoordinatesReference( const CPose3D &newReferenceBase )
 {
-	MRPT_START;
+	MRPT_START
 	switch (m_typePDF)
 	{
 	case pdfMonteCarlo:	m_locationMC.changeCoordinatesReference(newReferenceBase);		break;
@@ -216,7 +216,7 @@ void  CBeacon::changeCoordinatesReference( const CPose3D &newReferenceBase )
 	case pdfSOG:		m_locationSOG.changeCoordinatesReference(newReferenceBase);		break;
 	default:			THROW_EXCEPTION("ERROR: Invalid 'm_typePDF' value");
 	};
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -224,7 +224,7 @@ void  CBeacon::changeCoordinatesReference( const CPose3D &newReferenceBase )
   ---------------------------------------------------------------*/
 void  CBeacon::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	switch (m_typePDF)
 	{
@@ -281,7 +281,7 @@ void  CBeacon::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 	obj2->setLocation( meanP.x()+0.10, meanP.y()+0.10, meanP.z() );
 	outObj->insert( obj2 );
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -290,7 +290,7 @@ void  CBeacon::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
   ---------------------------------------------------------------*/
 void CBeacon::getAsMatlabDrawCommands( utils::CStringList &out_Str  ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	out_Str.clear();
 	char		auxStr[1000];
@@ -361,7 +361,7 @@ void CBeacon::getAsMatlabDrawCommands( utils::CStringList &out_Str  ) const
 	os::sprintf(auxStr,sizeof(auxStr),"text(%f,%f,'#%i');",meanP.x(),meanP.y(), static_cast<int>(m_ID) );
 	out_Str.add(std::string(auxStr));
 
-	MRPT_END;
+	MRPT_END
 }
 
 

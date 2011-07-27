@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header  
+#include <mrpt/maps.h>  // Precompiled header
 
 
 
@@ -92,7 +92,7 @@ bool  CHeightGridMap2D::internal_insertObservation(
 	const CObservation	*obs,
 	const CPose3D			*robotPose )
 {
-	MRPT_START;
+	MRPT_START
 
 	CPose2D		robotPose2D;
 	CPose3D		robotPose3D;
@@ -178,7 +178,7 @@ bool  CHeightGridMap2D::internal_insertObservation(
 
 	return false;
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -261,8 +261,8 @@ void  CHeightGridMap2D::readFromStream(CStream &in, int version)
 				// Data member in version 0:
 				if (version==0)
 				{
-					std::multimap<mrpt::system::TTimeStamp,float>	history_Zs; 
-					in >> history_Zs; // Discarded now... 
+					std::multimap<mrpt::system::TTimeStamp,float>	history_Zs;
+					in >> history_Zs; // Discarded now...
 				}
 			}
 
@@ -339,7 +339,7 @@ void  CHeightGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) 
 {
 	if (m_disableSaveAs3DObject)
 		return;
-		
+
 	if (mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH)
 	{
 		opengl::CMeshPtr	mesh = opengl::CMesh::Create();
@@ -379,14 +379,14 @@ void  CHeightGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) 
 		// As points:
 		mrpt::opengl::CPointCloudColouredPtr obj = mrpt::opengl::CPointCloudColoured::Create();
 		obj->setPointSize(2);
-		
+
 		// Find min/max:
 		float z_min,z_max;
 		float K;
 		if (this->getMinMaxHeight(z_min,z_max))
 		     K = 1.0f/(z_max-z_min);
 		else K = 1.0f;
-		
+
 		obj->reserve(m_size_x*m_size_y);
 		for (size_t x=0;x<m_size_x;x++)
 			for (size_t y=0;y<m_size_y;y++)
@@ -398,17 +398,17 @@ void  CHeightGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) 
 					float r,g,b;
 					const float col_idx = (c->h-z_min)*K;
 					colormap(
-						cmGRAYSCALE, //cmJET, 
+						cmGRAYSCALE, //cmJET,
 						col_idx, r,g,b );
 					obj->push_back( idx2x(x),idx2y(y), c->h, r,g,b );
 				}
 			}
-		
+
 		outObj->insert( obj );
 	}
 }
 
-/** Computes the minimum and maximum height in the grid. 
+/** Computes the minimum and maximum height in the grid.
   * \return False if there is no observed cell yet.
   */
 bool CHeightGridMap2D::getMinMaxHeight(float &z_min, float &z_max) const
@@ -435,7 +435,7 @@ bool CHeightGridMap2D::getMinMaxHeight(float &z_min, float &z_max) const
 				}
 			}
 		}
-	return any;	
+	return any;
 }
 
 
@@ -467,18 +467,18 @@ float  CHeightGridMap2D::compute3DMatchingRatio(
 
 /*---------------------------------------------------------------
 					auxParticleFilterCleanUp
-  Gets the intersection between a 3D line and a Height Grid map 
+  Gets the intersection between a 3D line and a Height Grid map
    (taking into account the different heights of each individual cell).
  ---------------------------------------------------------------*/
 bool CHeightGridMap2D::intersectLine3D(const TLine3D &ray, TObject3D &obj) const
 {
 	MRPT_START
-	
+
 	obj = TObject3D();
 
 	float z_min,z_max;
 	if (!getMinMaxHeight(z_min,z_max))
-		return false;		
+		return false;
 
 
 	// 1st: intersections with 2 horizontal planes at the grid Z limits:
@@ -489,7 +489,7 @@ bool CHeightGridMap2D::intersectLine3D(const TLine3D &ray, TObject3D &obj) const
 		TObject3D int_ab,int_be;
 		intersect(ray,horz_plane_above, int_ab);
 		intersect(ray,horz_plane_below, int_be);
-		
+
 		if (!int_ab.getPoint(pt_ab) || !int_be.getPoint(pt_be))
 			return false;
 	}
@@ -501,12 +501,12 @@ bool CHeightGridMap2D::intersectLine3D(const TLine3D &ray, TObject3D &obj) const
 	if (totalDist==0) return false;
 	// The step:
 	Apt*= this->m_resolution * 0.99/totalDist;
-	
-	TPoint3D Apt_half=Apt; 
+
+	TPoint3D Apt_half=Apt;
 	Apt_half*=0.5;
-	
+
 	const size_t N = ceil(totalDist/m_resolution);
-	
+
 	for (size_t i=0;i<N;i++)
 	{
 		// Mid point between this and next step:
@@ -524,9 +524,9 @@ bool CHeightGridMap2D::intersectLine3D(const TLine3D &ray, TObject3D &obj) const
 				return true;
 			}
 		}
-		pt+=Apt;		
+		pt+=Apt;
 	}
-	
+
 	// No collision found!
 	return false;
 

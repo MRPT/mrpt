@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header  
+#include <mrpt/maps.h>  // Precompiled header
 
 
 
@@ -150,7 +150,7 @@ double	 CBeaconMap::computeObservationLikelihood(
 				const CObservation	*obs,
 				const CPose3D		&robotPose3D )
 {
-	MRPT_START;
+	MRPT_START
 
 	/* ===============================================================================================================
 		Refer to the papers:
@@ -314,7 +314,7 @@ double	 CBeaconMap::computeObservationLikelihood(
 		********************************************************************/
 		return 0;
 	}
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -322,7 +322,7 @@ double	 CBeaconMap::computeObservationLikelihood(
   ---------------------------------------------------------------*/
 bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPose3D *robotPose)
 {
-	MRPT_START;
+	MRPT_START
 
 	CPose2D		robotPose2D;
 	CPose3D		robotPose3D;
@@ -688,7 +688,7 @@ bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPo
 		return false;
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -709,7 +709,7 @@ void  CBeaconMap::computeMatchingWith2D(
 	MRPT_UNUSED_PARAM(onlyKeepTheClosest);MRPT_UNUSED_PARAM(sumSqrDist);
 	MRPT_UNUSED_PARAM(angularDistPivotPoint);MRPT_UNUSED_PARAM(maxDistForCorrespondence);MRPT_UNUSED_PARAM(maxAngularDistForCorrespondence);
 
-	MRPT_START;
+	MRPT_START
 
 
 	CBeaconMap	auxMap;
@@ -731,7 +731,7 @@ void  CBeaconMap::computeMatchingWith2D(
 									correspondencesRatio,
 									otherCorrespondences );
 
-	MRPT_END;
+	MRPT_END
 
 }
 
@@ -765,7 +765,7 @@ void  CBeaconMap::computeMatchingWith3DLandmarks(
     float									&correspondencesRatio,
     vector<bool>						&otherCorrespondences) const
 {
-	MRPT_START;
+	MRPT_START
 
 	TSequenceBeacons::const_iterator		thisIt,otherIt;
 	size_t									nThis,nOther;
@@ -827,7 +827,7 @@ void  CBeaconMap::computeMatchingWith3DLandmarks(
 	// Compute the corrs ratio:
 	correspondencesRatio = 2.0f * correspondences.size() / static_cast<float>( nThis + nOther);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1017,7 +1017,7 @@ void  CBeaconMap::simulateBeaconReadings(
   ---------------------------------------------------------------*/
 void  CBeaconMap::saveMetricMapRepresentationToFile( const string	&filNamePrefix ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	// Matlab:
 	string		fil1( filNamePrefix + string("_3D.m") );
@@ -1071,7 +1071,7 @@ void  CBeaconMap::saveMetricMapRepresentationToFile( const string	&filNamePrefix
 	}
 
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1079,7 +1079,7 @@ void  CBeaconMap::saveMetricMapRepresentationToFile( const string	&filNamePrefix
   ---------------------------------------------------------------*/
 void  CBeaconMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	if (m_disableSaveAs3DObject)
 		return;
@@ -1093,7 +1093,7 @@ void  CBeaconMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 	for (const_iterator	it=m_beacons.begin();it!=m_beacons.end();++it)
 		it->getAs3DObject( outObj );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1116,7 +1116,7 @@ float  CBeaconMap::compute3DMatchingRatio(
 	MRPT_UNUSED_PARAM(minDistForCorr);
 	MRPT_UNUSED_PARAM(minMahaDistForCorr);
 
-	MRPT_START;
+	MRPT_START
 
 	// Compare to a similar map only:
 	const CBeaconMap	*otherMap = NULL;
@@ -1142,7 +1142,7 @@ float  CBeaconMap::compute3DMatchingRatio(
 
 	return out_corrsRatio;
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -1176,7 +1176,7 @@ CBeacon * CBeaconMap::getBeaconByID( CBeacon::TBeaconID  id )
  ---------------------------------------------------------------*/
 void CBeaconMap::saveToTextFile(const string &fil) const
 {
-	MRPT_START;
+	MRPT_START
 	FILE	*f = os::fopen(fil.c_str(),"wt");
 	ASSERT_(f!=NULL);
 
@@ -1199,5 +1199,5 @@ void CBeaconMap::saveToTextFile(const string &fil) const
 	}
 
 	os::fclose(f);
-	MRPT_END;
+	MRPT_END
 }
