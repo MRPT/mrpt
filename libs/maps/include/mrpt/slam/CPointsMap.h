@@ -669,7 +669,9 @@ namespace slam
 			return m_largestDistanceFromOrigin;
 		}
 
-		/** Computes the bounding box of all the points, or (0,0 ,0,0, 0,0) if there are no points. */
+		/** Computes the bounding box of all the points, or (0,0 ,0,0, 0,0) if there are no points.
+		  *  Results are cached unless the map is somehow modified to avoid repeated calculations.
+		  */
 		void boundingBox( float &min_x,float &max_x,float &min_y,float &max_y,float &min_z,float &max_z ) const;
 
 		inline void boundingBox(TPoint3D &pMin,TPoint3D &pMax) const	{
@@ -763,10 +765,15 @@ namespace slam
 		  */
 		mutable bool	m_largestDistanceFromOriginIsUpdated;
 
+		mutable bool	m_boundingBoxIsUpdated;
+		mutable float   m_bb_min_x,m_bb_max_x, m_bb_min_y,m_bb_max_y, m_bb_min_z,m_bb_max_z;
+
+
 		/** Called only by this class or children classes, set m_largestDistanceFromOriginIsUpdated=false and such. */
 		inline void mark_as_modified() const
 		{
 			m_largestDistanceFromOriginIsUpdated=false;
+			m_boundingBoxIsUpdated = false;
 			kdtree_mark_as_outdated();
 		}
 

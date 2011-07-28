@@ -213,13 +213,97 @@ double pointmap_test_3(int a1, int a2)
 	return tictac.Tac()/a2;
 }
 
+double pointmap_test_4(int a1, int a2)
+{
+	// test 4: computeMatchingWith2D
+	// ----------------------------------------
+
+	// prepare the laser scan:
+	CObservation2DRangeScan	scan1;
+	scan1.aperture = M_PIf;
+	scan1.rightToLeft = true;
+	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
+	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
+	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
+	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
+
+
+	CSimplePointsMap  pt_map;
+	CSimplePointsMap  pt_map2;
+	pt_map.insertionOptions.minDistBetweenLaserPoints = 0.03;
+	pt_map2.insertionOptions.minDistBetweenLaserPoints = 0.03;
+
+	CPose3D pose;
+	pt_map.insertObservation(&scan1, &pose);
+
+	CPose3D pose2(0.05,0.04,0, DEG2RAD(4), 0,0);
+	pt_map2.insertObservation(&scan1, &pose2);
+
+	const CPose2D nullPose(0,0,0);
+	TMatchingPairList	correspondences;
+	float				corrRatio;
+
+	CTicTac	 tictac;
+	for (long i=0;i<a1;i++)
+	{
+		pt_map.computeMatchingWith2D(
+			&pt_map2,			// The other map
+			nullPose,	// The other map's pose
+			0.10, 		// Max. dist. for correspondence
+			0,
+			nullPose,
+			correspondences,
+			corrRatio );
+	}
+	return tictac.Tac()/a1;
+}
+
+double pointmap_test_5(int a1, int a2)
+{
+	// test 5: boundingBox
+	// ----------------------------------------
+
+	// prepare the laser scan:
+	CObservation2DRangeScan	scan1;
+	scan1.aperture = M_PIf;
+	scan1.rightToLeft = true;
+	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
+	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
+	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
+	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
+
+
+	CSimplePointsMap  pt_map;
+
+	pt_map.insertionOptions.minDistBetweenLaserPoints = 0.03;
+	CPose3D pose;
+	for (long i=0;i<a1;i++)
+	{
+		pose.setFromValues( pose.x()+0.04, pose.y()+0.08,0, pose.yaw()+0.02);
+		pt_map.insertObservation(&scan1, &pose);
+	}
+
+	CTicTac	 tictac;
+
+	float x0,x1, y0,y1, z0,z1;
+	for (long i=0;i<a2;i++)
+	{
+		// Modify the map so the bounding box cache is invalidated:
+		pt_map.setPoint(0, 0,0,0);
+
+		pt_map.boundingBox(x0,x1, y0,y1, z0,z1);
+	}
+	
+	return tictac.Tac()/a2;
+}
+
 
 // ------------------------------------------------------
 // register_tests_pointmaps
 // ------------------------------------------------------
 void register_tests_pointmaps()
 {
-	lstTests.push_back( TestData("pointmap: insert 100 scans",pointmap_test_0, 100, 500 ) );
+	lstTests.push_back( TestData("pointmap: insert 100 scans",pointmap_test_0, 100, 2000 ) );
 
 	lstTests.push_back( TestData("pointmap: build 2D kd-tree of 1 scan",pointmap_test_1, 1, 1 ) );
 	lstTests.push_back( TestData("pointmap: build 2D kd-tree of 100 scan",pointmap_test_1, 100, 1 ) );
@@ -240,5 +324,11 @@ void register_tests_pointmaps()
 	lstTests.push_back( TestData("pointmap: (insert scan+3D kd-tree query) x 10",pointmap_test_2,  10,  2 ) );
 	lstTests.push_back( TestData("pointmap: (insert scan+3D kd-tree query) x 50",pointmap_test_2,  50,  2 ) );
 	//lstTests.push_back( TestData("pointmap: (insert scan+3D kd-tree query) x 100",pointmap_test_2, 100, 2 ) );
+
+	lstTests.push_back( TestData("pointmap: computeMatchingWith2D",pointmap_test_4, 5000 ) );
+
+	lstTests.push_back( TestData("pointmap: boundingBox (10 scans)",pointmap_test_5, 10, 50000 ) );
+	lstTests.push_back( TestData("pointmap: boundingBox (1000 scans)",pointmap_test_5, 1000, 5000 ) );
+
 }
 

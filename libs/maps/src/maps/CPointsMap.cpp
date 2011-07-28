@@ -30,6 +30,7 @@
 
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/math/geometry.h>
 
@@ -48,6 +49,11 @@
 #   include <pcl/io/pcd_io.h>
 #   include <pcl/point_types.h>
 //#   include <pcl/registration/icp.h>
+#endif
+
+#if MRPT_HAS_SSE2
+#	include <mrpt/utils/SSE_types.h>
+#	include <mrpt/utils/SSE_macros.h>
 #endif
 
 using namespace mrpt::poses;
@@ -347,12 +353,10 @@ void  CPointsMap::computeMatchingWith2D(
 
 	double					maxDistForCorrespondenceSquared;
 	float			        x_local, y_local;
-	unsigned int			globalIdx,localIdx;
+	unsigned int			localIdx;
 
-	vector<float>					x_locals(nLocalPoints),y_locals(nLocalPoints); // z_locals(nLocalPoints);
 
-	float 		*x_locals_it,*y_locals_it; //*z_locals_it;
-	const float *x_other_it,*y_other_it,*z_other_it,*x_global_it,*y_global_it; //,*z_global_it;
+	const float *x_other_it,*y_other_it,*z_other_it; // *x_global_it,*y_global_it; //,*z_global_it;
 
 	// No correspondences initially:
 	correspondences.clear();
@@ -364,83 +368,134 @@ void  CPointsMap::computeMatchingWith2D(
 	// Hay mapa local?
 	if (!nLocalPoints)  return;  // No
 
-	double	sin_phi = sin(otherMapPose.phi);
-	double	cos_phi = cos(otherMapPose.phi);
+	const double	sin_phi = sin(otherMapPose.phi);
+	const double	cos_phi = cos(otherMapPose.phi);
 
 	// Do matching only there is any chance of the two maps to overlap:
 	// -----------------------------------------------------------
 
 	// Translate and rotate all local points:
-	for (   localIdx=0,
-		    x_locals_it=&x_locals[0],
-			y_locals_it=&y_locals[0],
-			//z_locals_it=&z_locals[0],
-			x_other_it=&otherMap->x[0],
-			y_other_it=&otherMap->y[0],
-			z_other_it=&otherMap->z[0];
-			localIdx<nLocalPoints;
-			localIdx++)
+
+#if MRPT_HAS_SSE2
+	// Number of 4-floats:
+	size_t nPackets = nLocalPoints/4;
+	if ( (nLocalPoints & 0x03)!=0) nPackets++;
+
+	// Pad with zeros to make sure we have a number of points multiple of 4
+	size_t nLocalPoints_4align = nLocalPoints;
+	size_t nExtraPad = 0;
+	if (0!=(nLocalPoints & 0x03))
 	{
-		// Translate and rotate each point in the "other" map:
-		float  x_other = *x_other_it++;
-		float  y_other = *y_other_it++;
-
-		float  x_local = *x_locals_it++  = otherMapPose.x + cos_phi * x_other - sin_phi * y_other ;
-		float  y_local = *y_locals_it++  = otherMapPose.y + sin_phi * x_other + cos_phi * y_other;
-		//*z_locals_it++ = *z_other_it++;
-
-		// Find the bounding box:
-		local_x_min = min(local_x_min,x_local);
-		local_x_max = max(local_x_max,x_local);
-		local_y_min = min(local_y_min,y_local);
-		local_y_max = max(local_y_max,y_local);
+		nExtraPad = 4 - (nLocalPoints & 0x03);
+		nLocalPoints_4align+=nExtraPad;
 	}
+
+	Eigen::Array<float,Eigen::Dynamic,1>  x_locals(nLocalPoints_4align), y_locals(nLocalPoints_4align);
+
+	// We'll assume that the real allocated memory in the source buffers at least have room for a maximum
+	//  of 3 more floats, and pad with zeroes there (yeah, fuck correct-constness....)
+	if ( otherMap->x.capacity()<nLocalPoints_4align ||
+		 otherMap->y.capacity()<nLocalPoints_4align )
+	{
+		// This will happen perhaps...once in a lifetime? Anyway:
+		const_cast<vector<float>*>(&otherMap->x)->reserve(nLocalPoints_4align+16);
+		const_cast<vector<float>*>(&otherMap->y)->reserve(nLocalPoints_4align+16);
+	}
+
+	if (nExtraPad)
+	{
+		float *ptr_in_x = const_cast<float*>(&otherMap->x[0]);
+		float *ptr_in_y = const_cast<float*>(&otherMap->y[0]);
+		for (size_t k=nExtraPad;k; k--) {
+			ptr_in_x[nLocalPoints+k]=0;
+			ptr_in_y[nLocalPoints+k]=0;
+		}
+	}
+
+	const __m128 cos_4val = _mm_set1_ps(cos_phi); // load 4 copies of the same value
+	const __m128 sin_4val = _mm_set1_ps(sin_phi);
+	const __m128 x0_4val = _mm_set1_ps(otherMapPose.x);
+	const __m128 y0_4val = _mm_set1_ps(otherMapPose.y);
+
+	// For the bounding box:
+	__m128 x_mins = _mm_set1_ps( std::numeric_limits<float>::max() );
+	__m128 x_maxs = _mm_set1_ps( std::numeric_limits<float>::min() );
+	__m128 y_mins = x_mins;
+	__m128 y_maxs = x_maxs;
+
+	const float *ptr_in_x = &otherMap->x[0];
+	const float *ptr_in_y = &otherMap->y[0];
+	float *ptr_out_x    = &x_locals[0];
+	float *ptr_out_y    = &y_locals[0];
+
+	for( ; nPackets; nPackets--, ptr_in_x+=4, ptr_in_y+=4, ptr_out_x+=4, ptr_out_y+=4 )
+	{
+		const __m128 xs = _mm_loadu_ps(ptr_in_x); // *Unaligned* load
+		const __m128 ys = _mm_loadu_ps(ptr_in_y);
+
+		const __m128 lxs = _mm_add_ps(x0_4val, _mm_sub_ps( _mm_mul_ps(xs,cos_4val), _mm_mul_ps(ys,sin_4val) ) );
+		const __m128 lys = _mm_add_ps(y0_4val, _mm_add_ps( _mm_mul_ps(xs,sin_4val), _mm_mul_ps(ys,cos_4val) ) );
+		_mm_store_ps(ptr_out_x, lxs );
+		_mm_store_ps(ptr_out_y, lys );
+
+		x_mins = _mm_min_ps(x_mins,lxs);
+		x_maxs = _mm_max_ps(x_maxs,lxs);
+		y_mins = _mm_min_ps(y_mins,lys);
+		y_maxs = _mm_max_ps(y_maxs,lys);
+	}
+
+	// Recover the min/max:
+	EIGEN_ALIGN16 float temp_nums[4];
+
+	_mm_store_ps(temp_nums, x_mins); local_x_min=min(min(temp_nums[0],temp_nums[1]),min(temp_nums[2],temp_nums[3]));
+	_mm_store_ps(temp_nums, y_mins); local_y_min=min(min(temp_nums[0],temp_nums[1]),min(temp_nums[2],temp_nums[3]));
+	_mm_store_ps(temp_nums, x_maxs); local_x_max=max(max(temp_nums[0],temp_nums[1]),max(temp_nums[2],temp_nums[3]));
+	_mm_store_ps(temp_nums, y_maxs); local_y_max=max(max(temp_nums[0],temp_nums[1]),max(temp_nums[2],temp_nums[3]));
+
+#else
+	// Non SSE2 version:
+	mrpt::vector_float  x_org(otherMap->x), y_org(otherMap->y);
+	Eigen::Array<float,Eigen::Dynamic,1>  x_locals = otherMapPose.x + cos_phi * x_org.array() - sin_phi *  y_org.array() ;
+	Eigen::Array<float,Eigen::Dynamic,1>  y_locals = otherMapPose.y + sin_phi * x_org.array() + cos_phi *  y_org.array() ;
+
+	local_x_min=x_locals.minCoeff();
+	local_y_min=y_locals.minCoeff();
+	local_x_max=x_locals.maxCoeff();
+	local_y_max=y_locals.maxCoeff();
+#endif
 
 	// Find the bounding box:
-	for (   globalIdx=0,
-		    x_global_it=&x[0],
-		    y_global_it=&y[0];
-			globalIdx<nGlobalPoints;
-			globalIdx++)
-	{
-		float global_x = *x_global_it++;
-		float global_y = *y_global_it++;
+	float global_z_min,global_z_max;
+	this->boundingBox(
+		global_x_min,global_x_max,
+		global_y_min,global_y_max,
+		global_z_min,global_z_max );
 
-		global_x_min = min(global_x_min,global_x);
-		global_x_max = max(global_x_max,global_x);
-		global_y_min = min(global_y_min,global_y);
-		global_y_max = max(global_y_max,global_y);
-	}
-
-	// Solo hacer matching si existe alguna posibilidad de que
-	//  los dos mapas se toquen:
+	// Only try doing a matching if there exist any chance of both maps touching/overlaping:
 	if (local_x_min>global_x_max ||
 		local_x_max<global_x_min ||
 		local_y_min>global_y_max ||
-		local_y_max<global_y_min) return;	// No hace falta hacer matching,
-											//   porque es de CERO.
+		local_y_max<global_y_min) return;	// We know for sure there is no matching at all
+
 
 	// Loop for each point in local map:
 	// --------------------------------------------------
 	for ( localIdx=0,
-			x_locals_it=&x_locals[0],
-			y_locals_it=&y_locals[0],
 			x_other_it=&otherMap->x[0],
 			y_other_it=&otherMap->y[0],
 			z_other_it=&otherMap->z[0];
 			localIdx<nLocalPoints;
-			x_locals_it++,y_locals_it++,x_other_it++,y_other_it++,z_other_it++,localIdx++ )
+			x_other_it++,y_other_it++,z_other_it++,localIdx++ )
 	{
 		// For speed-up:
-		x_local = *x_locals_it;
-		y_local = *y_locals_it;
+		x_local = x_locals[localIdx]; // *x_locals_it;
+		y_local = y_locals[localIdx]; // *y_locals_it;
 		//z_local = *z_locals_it;
 
 		// Find all the matchings in the requested distance:
 		TMatchingPair		p,closestPair;
 
-		// KD-TREE implementation
-#if 1
+		// KD-TREE implementation =================================
 		// Use a KD-tree to look for the nearnest neighbor of:
 		//   (x_local, y_local, z_local)
 		// In "this" (global/reference) points map.
@@ -476,90 +531,6 @@ void  CPointsMap::computeMatchingWith2D(
 			_sumSqrDist+= p.errorSquareAfterTransformation;
 			_sumSqrCount++;
 		}
-
-
-#else // old implementation
-
-		bool thisLocalHasCorr = false;
-
-		float min_dist = 1e6;
-		// Loop for global points:
-		// ----------------------------------
-		const float *z_global_it;
-
-		for (   globalIdx=0,
-				x_global_it=&x[0],
-				y_global_it=&y[0],
-				z_global_it=&z[0];
-				globalIdx<nGlobalPoints;
-//					x_global_it=x.begin(),y_global_it=y.begin(),z_global_it=z.begin();
-//					x_global_it!=x.end();
-			x_global_it++,y_global_it++,z_global_it++,globalIdx++)
-		{
-			float residual_x = *x_global_it - x_local;
-			float residual_y = *y_global_it - y_local;
-
-			// Compute max. allowed distance:
-			maxDistForCorrespondenceSquared = square(
-						maxAngularDistForCorrespondence * angularDistPivotPoint.distance2DTo(x_local,y_local) +
-						maxDistForCorrespondence );
-
-			float this_dist = square(*x_global_it - x_local) +
-						square(*y_global_it - y_local);
-						//square(*z_global_it - z_local);
-
-			if (this_dist<maxDistForCorrespondenceSquared)
-			{
-				// Save all the correspondences??
-				p.this_idx = globalIdx;
-				p.this_x = *x_global_it;
-				p.this_y = *y_global_it;
-				p.this_z = *z_global_it;
-				p.other_idx = localIdx;
-				p.other_x = *x_other_it;
-				p.other_y = *y_other_it;
-				p.other_z = *z_other_it;
-
-				p.errorSquareAfterTransformation = this_dist;
-
-				if (!onlyKeepTheClosest)
-				{
-					// save the correspondence:
-					correspondences.push_back( p );
-				}
-				else
-				{
-					// Or try to find the closest only?
-					// Keep the min. distance:
-					if (this_dist<min_dist)
-						closestPair = p;
-				}
-
-				if (this_dist<min_dist)
-						min_dist = this_dist;
-
-				// At least one:
-				thisLocalHasCorr = true;
-			}
-
-		} // End for each global point:
-
-		// At least one corr:
-		if (thisLocalHasCorr)
-		{
-			nOtherMapPointsWithCorrespondence++;
-
-			// Accumulate the MSE:
-			_sumSqrDist+= min_dist;
-			_sumSqrCount++;
-
-			// Save the closest only?
-			if (onlyKeepTheClosest)
-			{
-				correspondences.push_back( closestPair );
-			}
-		}
-#endif
 
 	} // For each local point
 
@@ -1142,30 +1113,115 @@ void CPointsMap::boundingBox(
 	float &min_z,  float &max_z
 	) const
 {
-	vector<float>::const_iterator xi, yi, zi;
+	const size_t nPoints = x.size();
 
-	if (x.empty())
+	if (!m_boundingBoxIsUpdated)
 	{
-		min_x = max_x =
-		min_y = max_y =
-		min_z = max_z = 0;
-		return;
+		if (!nPoints)
+		{
+			m_bb_min_x = m_bb_max_x =
+			m_bb_min_y = m_bb_max_y =
+			m_bb_min_z = m_bb_max_z = 0;
+		}
+		else
+		{
+#if MRPT_HAS_SSE2
+			// Vectorized version: ~ 9x times faster
+
+			// Number of 4-floats:
+			size_t nPackets = nPoints/4;
+			if ( (nPoints & 0x03)!=0) nPackets++;
+
+			// Pad with zeros to make sure we have a number of points multiple of 4
+			size_t nPoints_4align = nPoints;
+			size_t nExtraPad = 0;
+			if (0!=(nPoints & 0x03))
+			{
+				nExtraPad = 4 - (nPoints & 0x03);
+				nPoints_4align+=nExtraPad;
+			}
+
+			// We'll assume that the real allocated memory in the source buffers at least have room for a maximum
+			//  of 3 more floats, and pad with zeroes there (yeah, fuck correct-constness....)
+			if ( x.capacity()<nPoints_4align ||
+				 y.capacity()<nPoints_4align ||
+				 z.capacity()<nPoints_4align )
+			{
+				// This will happen perhaps...once in a lifetime? Anyway:
+				const_cast<vector<float>*>(&x)->reserve(nPoints_4align+16);
+				const_cast<vector<float>*>(&y)->reserve(nPoints_4align+16);
+				const_cast<vector<float>*>(&z)->reserve(nPoints_4align+16);
+			}
+
+			if (nExtraPad)
+			{
+				float *ptr_in_x = const_cast<float*>(&x[0]);
+				float *ptr_in_y = const_cast<float*>(&y[0]);
+				float *ptr_in_z = const_cast<float*>(&z[0]);
+				for (size_t k=nExtraPad;k; k--) {
+					ptr_in_x[nPoints+k]=0;
+					ptr_in_y[nPoints+k]=0;
+					ptr_in_z[nPoints+k]=0;
+				}
+			}
+
+			// For the bounding box:
+			__m128 x_mins = _mm_set1_ps( std::numeric_limits<float>::max() );
+			__m128 x_maxs = _mm_set1_ps( std::numeric_limits<float>::min() );
+			__m128 y_mins = x_mins, y_maxs = x_maxs;
+			__m128 z_mins = x_mins, z_maxs = x_maxs;
+
+			const float *ptr_in_x = &this->x[0];
+			const float *ptr_in_y = &this->y[0];
+			const float *ptr_in_z = &this->z[0];
+
+			for( ; nPackets; nPackets--, ptr_in_x+=4, ptr_in_y+=4, ptr_in_z+=4 )
+			{
+				const __m128 xs = _mm_loadu_ps(ptr_in_x); // *Unaligned* load
+				x_mins = _mm_min_ps(x_mins,xs); x_maxs = _mm_max_ps(x_maxs,xs);
+
+				const __m128 ys = _mm_loadu_ps(ptr_in_y);
+				y_mins = _mm_min_ps(y_mins,ys); y_maxs = _mm_max_ps(y_maxs,ys);
+
+				const __m128 zs = _mm_loadu_ps(ptr_in_z);
+				z_mins = _mm_min_ps(z_mins,zs); z_maxs = _mm_max_ps(z_maxs,zs);
+			}
+
+			// Recover the min/max:
+			EIGEN_ALIGN16 float temp_nums[4];
+
+			_mm_store_ps(temp_nums, x_mins); m_bb_min_x=min(min(temp_nums[0],temp_nums[1]),min(temp_nums[2],temp_nums[3]));
+			_mm_store_ps(temp_nums, y_mins); m_bb_min_y=min(min(temp_nums[0],temp_nums[1]),min(temp_nums[2],temp_nums[3]));
+			_mm_store_ps(temp_nums, z_mins); m_bb_min_z=min(min(temp_nums[0],temp_nums[1]),min(temp_nums[2],temp_nums[3]));
+			_mm_store_ps(temp_nums, x_maxs); m_bb_max_x=max(max(temp_nums[0],temp_nums[1]),max(temp_nums[2],temp_nums[3]));
+			_mm_store_ps(temp_nums, y_maxs); m_bb_max_y=max(max(temp_nums[0],temp_nums[1]),max(temp_nums[2],temp_nums[3]));
+			_mm_store_ps(temp_nums, z_maxs); m_bb_max_z=max(max(temp_nums[0],temp_nums[1]),max(temp_nums[2],temp_nums[3]));
+
+#else
+			// Non vectorized version:
+			m_bb_min_x =
+			m_bb_min_y =
+			m_bb_min_z = (std::numeric_limits<float>::max)();
+
+			m_bb_max_x =
+			m_bb_max_y =
+			m_bb_max_z = -(std::numeric_limits<float>::max)();
+
+			for (vector<float>::const_iterator xi=x.begin(), yi=y.begin(), zi=z.begin(); xi!=x.end();xi++,yi++,zi++)
+			{
+				m_bb_min_x = min( m_bb_min_x, *xi ); m_bb_max_x = max( m_bb_max_x, *xi );
+				m_bb_min_y = min( m_bb_min_y, *yi ); m_bb_max_y = max( m_bb_max_y, *yi );
+				m_bb_min_z = min( m_bb_min_z, *zi ); m_bb_max_z = max( m_bb_max_z, *zi );
+			}
+#endif
+
+		}
+		m_boundingBoxIsUpdated = true;
 	}
 
-	min_x =
-	min_y =
-	min_z = (std::numeric_limits<float>::max)();
-
-	max_x =
-	max_y =
-	max_z = -(std::numeric_limits<float>::max)();
-
-	for (xi=x.begin(), yi=y.begin(), zi=z.begin(); xi!=x.end();xi++,yi++,zi++)
-	{
-		min_x = min( min_x, *xi ); max_x = max( max_x, *xi );
-		min_y = min( min_y, *yi ); max_y = max( max_y, *yi );
-		min_z = min( min_z, *zi ); max_z = max( max_z, *zi );
-	}
+	min_x = m_bb_min_x; max_x = m_bb_max_x;
+	min_y = m_bb_min_y; max_y = m_bb_max_y;
+	min_z = m_bb_min_z; max_z = m_bb_max_z;
 }
 
 
@@ -1660,7 +1716,6 @@ void  CPointsMap::loadFromRangeScan(
 		reserve( (size_t) (x.size() * 1.2f) + 3*sizeRangeScan );
 	}
 
-
 	// GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION:
 	//  Specialize a bit the equations since we know that z=0 always for the scan in local coordinates:
 	TLaserRange2DInsertContext  lric(rangeScan);
@@ -1677,7 +1732,7 @@ void  CPointsMap::loadFromRangeScan(
 	float		m21 = lric.HM.get_unsafe(2,1);
 	float		m23 = lric.HM.get_unsafe(2,3);
 
-	float		lx_1,ly_1,lz_1,lx,ly,lz; // Punto anterior y actual:
+	float		lx_1,ly_1,lz_1,lx=0,ly=0,lz=0; // Punto anterior y actual:
 	float		lx_2,ly_2;				 // Punto antes del anterior
 
 	// Initial last point:
@@ -1687,19 +1742,42 @@ void  CPointsMap::loadFromRangeScan(
 	// ------------------------------------------------------
 	//		Pass range scan to a set of 2D points:
 	// ------------------------------------------------------
-	Eigen::Array<float,Eigen::Dynamic,1>  scan_x(sizeRangeScan), scan_y(sizeRangeScan);
+	// The "+3" is to assure the buffer has room for the SSE2 method which works with 4-tuples of floats.
+	Eigen::Array<float,Eigen::Dynamic,1>  scan_x(sizeRangeScan+3), scan_y(sizeRangeScan+3);
 
 	// Use a LUT to convert ranges -> (x,y) ; Automatically computed upon first usage.
 	const CSinCosLookUpTableFor2DScans::TSinCosValues & sincos_vals = m_scans_sincos_cache.getSinCosForScan(rangeScan);
+
 	{
-		const mrpt::vector_float scan_vals( rangeScan.scan ); // Convert from the std::vector
+#if MRPT_HAS_SSE2
+		// Number of 4-floats:
+		size_t nPackets = sizeRangeScan/4;
+		if ( (sizeRangeScan & 0x03)!=0) nPackets++;
+
+		const float *ptr_in_scan = &rangeScan.scan[0];
+		const float *ptr_in_cos  = &sincos_vals.ccos[0];
+		const float *ptr_in_sin  = &sincos_vals.csin[0];
+		float *ptr_out_x    = &scan_x[0];
+		float *ptr_out_y    = &scan_y[0];
+		for( ; nPackets; nPackets--, ptr_in_scan+=4, ptr_in_cos+=4, ptr_in_sin+=4, ptr_out_x+=4, ptr_out_y+=4 )
+		{
+			const __m128 scan_4vals = _mm_loadu_ps(ptr_in_scan);  // *Unaligned* load
+
+			_mm_store_ps(ptr_out_x, _mm_mul_ps(scan_4vals, _mm_load_ps(ptr_in_cos) ) );
+			_mm_store_ps(ptr_out_y, _mm_mul_ps(scan_4vals, _mm_load_ps(ptr_in_sin) ) );
+		}
+#else
+		mrpt::vector_float scan_vals( rangeScan.scan ); // Convert from the std::vector
+
 		// Vectorized (optimized) scalar multiplications:
 		scan_x = scan_vals.array() * sincos_vals.ccos.array();
 		scan_y = scan_vals.array() * sincos_vals.csin.array();
+#endif
 	}
 
 	// Minimum distance between points to reduce high density scans:
-	const float  minDistSqrBetweenLaserPoints = insertionOptions.minDistBetweenLaserPoints>0 ? square( insertionOptions.minDistBetweenLaserPoints ) : -1;
+	const bool   useMinDist = insertionOptions.minDistBetweenLaserPoints>0;
+	const float  minDistSqrBetweenLaserPoints = square( insertionOptions.minDistBetweenLaserPoints );
 
 	// ----------------------------------------------------------------
 	//   Transform these points into 3D using the pose transformation:
@@ -1711,13 +1789,31 @@ void  CPointsMap::loadFromRangeScan(
 	// Initialize extra stuff in derived class:
 	this->internal_loadFromRangeScan2D_init(lric);
 
+	// Resize now for efficiency, if there're invalid or filtered points, buffers
+	//  will be reduced at the end:
+	const size_t nPointsAtStart = this->size();
+	size_t nextPtIdx = nPointsAtStart;
+
+	{
+		const size_t expectedMaxSize = nPointsAtStart+(sizeRangeScan* (insertionOptions.also_interpolate ? 3:1) );
+		x.resize( expectedMaxSize );
+		y.resize( expectedMaxSize );
+		z.resize( expectedMaxSize );
+	}
+
+	// Build list of points in global coordinates:
+	Eigen::Array<float,Eigen::Dynamic,1>  scan_gx(sizeRangeScan+3), scan_gy(sizeRangeScan+3),scan_gz(sizeRangeScan+3);
+	scan_gx = m00*scan_x+m01*scan_y+m03;
+	scan_gy = m10*scan_x+m11*scan_y+m13;
+	scan_gz = m20*scan_x+m21*scan_y+m23;
+
 	for (int i=0;i<sizeRangeScan;i++)
 	{
 		if ( rangeScan.validRange[i] )
 		{
-			lx = m00*scan_x[i] + m01*scan_y[i] + m03;
-			ly = m10*scan_x[i] + m11*scan_y[i] + m13;
-			lz = m20*scan_x[i] + m21*scan_y[i] + m23;
+			lx = scan_gx[i];
+			ly = scan_gy[i];
+			lz = scan_gz[i];
 
 			// Specialized work in derived classes:
 			this->internal_loadFromRangeScan2D_prepareOneRange(lx,ly,lz,lric);
@@ -1725,11 +1821,24 @@ void  CPointsMap::loadFromRangeScan(
 			lastPointWasInserted = false;
 
 			// Add if distance > minimum only:
-			const float d2 = (square(lx-lx_1) + square(ly-ly_1) + square(lz-lz_1) );
-			if ( thisIsTheFirst || (lastPointWasValid && (d2 > minDistSqrBetweenLaserPoints)) )
+			bool pt_pass_min_dist = true;
+			float d2 = 0;
+			if (useMinDist || insertionOptions.also_interpolate)
+			{
+				if (!lastPointWasValid)
+						pt_pass_min_dist = false;
+				else
+				{
+					d2 = (square(lx-lx_1) + square(ly-ly_1) + square(lz-lz_1) );
+					pt_pass_min_dist = (d2 > minDistSqrBetweenLaserPoints);
+				}
+			}
+
+			if ( thisIsTheFirst || pt_pass_min_dist )
 			{
 				thisIsTheFirst = false;
 				// Si quieren que interpolemos tb. los puntos lejanos, hacerlo:
+
 				if (insertionOptions.also_interpolate && i>1)
 				{
 					float changeInDirection;
@@ -1765,20 +1874,25 @@ void  CPointsMap::loadFromRangeScan(
 
 				if( !m_heightfilter_enabled || (lz >= m_heightfilter_z_min && lz <= m_heightfilter_z_max ) )
 				{
-					x.push_back( lx );
-					y.push_back( ly );
-					z.push_back( lz );
+					x[nextPtIdx] = lx;
+					y[nextPtIdx] = ly;
+					z[nextPtIdx] = lz;
+					nextPtIdx++;
+
 					// Allow derived classes to add any other information to that point:
 					this->internal_loadFromRangeScan2D_postPushBack(lric);
 
 					lastPointWasInserted = true;
+					if (useMinDist)
+					{
+						lx_2 = lx_1;
+						ly_2 = ly_1;
 
-					lx_2 = lx_1;
-					ly_2 = ly_1;
+						lx_1 = lx;
+						ly_1 = ly;
+						lz_1 = lz;
+					}
 
-					lx_1 = lx;
-					ly_1 = ly;
-					lz_1 = lz;
 				}
 			}
 		}
@@ -1792,14 +1906,19 @@ void  CPointsMap::loadFromRangeScan(
 	{
 		if( !m_heightfilter_enabled || (lz >= m_heightfilter_z_min && lz <= m_heightfilter_z_max ) )
 		{
-			x.push_back( lx );
-			y.push_back( ly );
-			z.push_back( lz );
+			x[nextPtIdx] = lx;
+			y[nextPtIdx] = ly;
+			z[nextPtIdx] = lz;
+			nextPtIdx++;
 			// Allow derived classes to add any other information to that point:
 			this->internal_loadFromRangeScan2D_postPushBack(lric);
 		}
 	}
 
+	// Adjust size:
+	x.resize( nextPtIdx );
+	y.resize( nextPtIdx );
+	z.resize( nextPtIdx );
 }
 
 /*---------------------------------------------------------------
@@ -2119,13 +2238,15 @@ bool  CPointsMap::internal_insertObservation(
 					);
 
 				// Don't build this vector if is not used later!
-				if (!insertionOptions.disableDeletion)
-				{
-					const size_t n = getPointsCount();
-					checkForDeletion.resize(n);
-					for (size_t i=0;i<n;i++) checkForDeletion[i] = true;
-				}
+//				if (!insertionOptions.disableDeletion)
+//				{
+//					const size_t n = getPointsCount();
+//					checkForDeletion.resize(n);
+//					for (size_t i=0;i<n;i++) checkForDeletion[i] = true;
+//				}
 			}
+
+
 			return true;
 		}
 		// A planar map and a non-horizontal scan.

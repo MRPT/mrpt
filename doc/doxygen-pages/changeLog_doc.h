@@ -45,7 +45,10 @@
 		- [mrpt-maps] New class mrpt::slam::CRandomFieldGridMap2D to generalize previous WiFi and GasConcentration grid mapping - <a href="http://code.google.com/p/mrpt/source/detail?r=2577" >r2577</a>
 	- Changes in classes:
 		- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".
-		- [mrpt-maps] mrpt::slam::CPointsMap (and derived classes) now have a method mrpt::slam::CPointsMap::addFrom() and an "operator +=" to add the points from another point map  - <a href="http://code.google.com/p/mrpt/source/detail?r=2553" >r2553</a>
+		- [mrpt-maps] mrpt::slam::CPointsMap (and all derived point-cloud maps): 
+			- mrpt::slam::CPointsMap now has a method mrpt::slam::CPointsMap::addFrom() and an "operator +=" to add the points from another point map  - <a href="http://code.google.com/p/mrpt/source/detail?r=2553" >r2553</a>
+			- A large code refactoring in all point-cloud maps: now mrpt::slam::CSimplePointsMap no longer has weights associated to each point. If users want weights (mainly for ::fuseWith()) please use the newly created class mrpt::slam::CWeightedPointsMap - <a href="http://code.google.com/p/mrpt/source/detail?r=2582" >r2582</a>
+			- Many point-cloud methods now have optimized SSE2 implementations - <a href="http://code.google.com/p/mrpt/source/detail?r=2583" >r2583</a> 
 		- [mrpt-maps] Basic support for PCL library (version 1.0.0+): ( <a href="http://code.google.com/p/mrpt/source/detail?r=2560" >r2560</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2562" >r2562</a> )
 			- mrpt::slam::CPointsMap::savePCDFile() 
 			- mrpt::slam::CPointsMap::getPCLPointCloud()

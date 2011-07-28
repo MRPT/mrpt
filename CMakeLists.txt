@@ -2278,7 +2278,6 @@ IF(UNIX)
 	SHOW_CONFIG_LINE_SYSTEM("Has libftdi (USB)                       " CMAKE_MRPT_HAS_FTDI)
 ENDIF(UNIX)
 
-SHOW_CONFIG_LINE_SYSTEM("Has libftdi (USB)                       " CMAKE_MRPT_HAS_FTDI)
 SHOW_CONFIG_LINE_SYSTEM("Has gtest (Google unit testing library) " CMAKE_MRPT_HAS_GTEST "Version: ${CMAKE_MRPT_HAS_GTEST_VERSION}")
 
 
