@@ -883,17 +883,11 @@ float  CPointsMap::compute3DMatchingRatio(
 	}
 
 	// Find the bounding box:
-	for ( x_global_it=x.begin(),y_global_it=y.begin(),z_global_it=z.begin();
-			x_global_it!=x.end();
-			x_global_it++,y_global_it++,z_global_it++)
-	{
-		global_x_min = min(global_x_min,*x_global_it);
-		global_x_max = max(global_x_max,*x_global_it);
-		global_y_min = min(global_y_min,*y_global_it);
-		global_y_max = max(global_y_max,*y_global_it);
-		global_z_min = min(global_z_min,*z_global_it);
-		global_z_max = max(global_z_max,*z_global_it);
-	}
+	float global_z_min,global_z_max;
+	this->boundingBox(
+		global_x_min,global_x_max,
+		global_y_min,global_y_max,
+		global_z_min,global_z_max );
 
 	// Do the maps overlap??
 	if (local_x_min>global_x_max || local_x_max<global_x_min ||
@@ -919,7 +913,6 @@ float  CPointsMap::compute3DMatchingRatio(
 
 		bool thisLocalHasCorr = false;
 
-#if 1
 		// Use a KD-tree to look for the nearnest neighbor of:
 		//   (x_local, y_local, z_local)
 		// In "this" (global/reference) points map.
@@ -935,30 +928,6 @@ float  CPointsMap::compute3DMatchingRatio(
 
 		// Distance below the threshold??
 		thisLocalHasCorr  = errorSquareAfterTransformation < maxDistForCorrespondenceSquared;
-
-#else
-		size_t					globalIdx;
-		float					residual_x,residual_y,residual_z;
-		float					min_dist;
-
-		// Find all the matchings in the requested distance:
-		min_dist = 1e6;
-		// Loop for global points:
-		// ----------------------------------
-		for ( globalIdx=0,
-				x_global_it=x.begin(),y_global_it=y.begin(),z_global_it=z.begin();
-				x_global_it!=x.end() && !thisLocalHasCorr;
-			x_global_it++,y_global_it++,z_global_it++,globalIdx++)
-		{
-			residual_x = *x_global_it - x_local;
-			residual_y = *y_global_it - y_local;
-			residual_z = *z_global_it - z_local;
-
-			if ( square(residual_x)+square(residual_y)+square(residual_z) < maxDistForCorrespondenceSquared )
-				thisLocalHasCorr = true;
-
-		} // End for-global points
-#endif
 
 		// At least one corr?
 		if (thisLocalHasCorr) nOtherMapPointsWithCorrespondence++;
@@ -1802,10 +1771,55 @@ void  CPointsMap::loadFromRangeScan(
 	}
 
 	// Build list of points in global coordinates:
-	Eigen::Array<float,Eigen::Dynamic,1>  scan_gx(sizeRangeScan+3), scan_gy(sizeRangeScan+3),scan_gz(sizeRangeScan+3);
-	scan_gx = m00*scan_x+m01*scan_y+m03;
-	scan_gy = m10*scan_x+m11*scan_y+m13;
-	scan_gz = m20*scan_x+m21*scan_y+m23;
+	Eigen::Array<float,Eigen::Dynamic,1>  scan_gx(sizeRangeScan+3), scan_gy(sizeRangeScan+3),scan_gz(sizeRangeScan+3);  // The +3 is to assure there's room for "nPackets*4"
+	{
+#if MRPT_HAS_SSE2
+		// Number of 4-floats:
+		size_t nPackets = sizeRangeScan/4;
+		if ( (sizeRangeScan & 0x03)!=0) nPackets++;
+
+		// We want to implement:
+		//   scan_gx = m00*scan_x+m01*scan_y+m03;
+		//   scan_gy = m10*scan_x+m11*scan_y+m13;
+		//   scan_gz = m20*scan_x+m21*scan_y+m23;
+
+		const __m128 m00_4val = _mm_set1_ps(m00); // load 4 copies of the same value
+		const __m128 m01_4val = _mm_set1_ps(m01);
+		const __m128 m03_4val = _mm_set1_ps(m03);
+
+		const __m128 m10_4val = _mm_set1_ps(m10);
+		const __m128 m11_4val = _mm_set1_ps(m11);
+		const __m128 m13_4val = _mm_set1_ps(m13);
+
+		const __m128 m20_4val = _mm_set1_ps(m20);
+		const __m128 m21_4val = _mm_set1_ps(m21);
+		const __m128 m23_4val = _mm_set1_ps(m23);
+
+		const float *ptr_in_x = &scan_x[0];
+		const float *ptr_in_y = &scan_y[0];
+		float *ptr_out_x    = &scan_gx[0];
+		float *ptr_out_y    = &scan_gy[0];
+		float *ptr_out_z    = &scan_gz[0];
+
+		for( ; nPackets; nPackets--, ptr_in_x+=4, ptr_in_y+=4, ptr_out_x+=4, ptr_out_y+=4, ptr_out_z+=4 )
+		{
+			const __m128 xs = _mm_load_ps(ptr_in_x); // We can assume here it's aligned
+			const __m128 ys = _mm_load_ps(ptr_in_y);
+
+			_mm_store_ps(ptr_out_x, _mm_add_ps(m03_4val, _mm_add_ps( _mm_mul_ps(xs,m00_4val), _mm_mul_ps(ys,m01_4val) ) ) );
+			_mm_store_ps(ptr_out_y, _mm_add_ps(m13_4val, _mm_add_ps( _mm_mul_ps(xs,m10_4val), _mm_mul_ps(ys,m11_4val) ) ) );
+			_mm_store_ps(ptr_out_z, _mm_add_ps(m23_4val, _mm_add_ps( _mm_mul_ps(xs,m20_4val), _mm_mul_ps(ys,m21_4val) ) ) );
+		}
+
+
+#else
+		// Non (manually) vectorized version:
+		scan_gx = m00*scan_x+m01*scan_y+m03;
+		scan_gy = m10*scan_x+m11*scan_y+m13;
+		scan_gz = m20*scan_x+m21*scan_y+m23;
+#endif
+	}
+
 
 	for (int i=0;i<sizeRangeScan;i++)
 	{

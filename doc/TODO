@@ -5,9 +5,9 @@ List of pending stuff to be integrated into MRPT someday:
   PRIORITARY
 ===============
 
-- Point maps: Simplify  -> 9% faster
+- Colour point clouds store colors as u8 insteaf of float.
 
-- Fix WifiMaps.
+- Fix WifiMaps... (WTF was this??)
 
 
 

@@ -87,6 +87,8 @@ void KDTreeCapable::rebuild_kdTree(size_t nDims) const
 
 		if (N)
 		{
+			MRPT_TODO("Modify ANN so its point point coordinates are stored in individual buffers to avoid this waste of time")
+
 			//allocate memory for query point and results
 			KDTreeData.m_QueryPoint = annAllocPt(  KDTreeData.m_nDim );
 
