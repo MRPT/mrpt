@@ -883,7 +883,6 @@ float  CPointsMap::compute3DMatchingRatio(
 	}
 
 	// Find the bounding box:
-	float global_z_min,global_z_max;
 	this->boundingBox(
 		global_x_min,global_x_max,
 		global_y_min,global_y_max,
