@@ -61,8 +61,6 @@ using namespace mrpt::slam;
 using namespace std;
 
 
-MRPT_TODO("TODO: Debug a segfault in GridmapNavSimul around this classs...")
-
 float mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE = 3.0f;
 
 
@@ -1680,6 +1678,9 @@ void  CPointsMap::loadFromRangeScan(
 
 	const int sizeRangeScan = rangeScan.scan.size();
 
+	if (!sizeRangeScan) 
+		return; // Nothing to do.
+
 	// For a great gain in efficiency:
 	if ( x.size()+sizeRangeScan > x.capacity() )
 	{
@@ -1708,6 +1709,8 @@ void  CPointsMap::loadFromRangeScan(
 	// Initial last point:
 	lx_1 = -100; ly_1 = -100; lz_1 = -100;
 	lx_2 = -100; ly_2 = -100;
+
+	MRPT_TODO("Alternate version with only 1 transformation")
 
 	// ------------------------------------------------------
 	//		Pass range scan to a set of 2D points:

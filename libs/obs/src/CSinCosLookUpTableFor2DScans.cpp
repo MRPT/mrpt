@@ -57,6 +57,14 @@ const CSinCosLookUpTableFor2DScans::TSinCosValues & CSinCosLookUpTableFor2DScans
 		// Compute and insert in the cache:
 		TSinCosValues &new_entry = m_cache[scan_prop];
 
+		// Make sure the allocated memory at least have room for 4 more double's at the end, 
+		//  for the case we use these buffers for SSE2 optimized code. This is the only way 
+		//  I can figure out to emulate a STL-like "reserve":
+		new_entry.ccos.resize(scan_prop.nRays+4);
+		new_entry.csin.resize(scan_prop.nRays+4);
+		new_entry.ccos.resize(scan_prop.nRays);
+		new_entry.csin.resize(scan_prop.nRays);
+
 		if (scan_prop.nRays>0)
 		{
 			double Ang, dA;
@@ -71,8 +79,6 @@ const CSinCosLookUpTableFor2DScans::TSinCosValues & CSinCosLookUpTableFor2DScans
 				dA  = - scan_prop.aperture / (scan_prop.nRays-1);
 			}
 
-			new_entry.ccos.resize(scan_prop.nRays);
-			new_entry.csin.resize(scan_prop.nRays);
 			for (size_t i=0;i<scan_prop.nRays;i++)
 			{
 				new_entry.ccos[i] = cos( Ang );
