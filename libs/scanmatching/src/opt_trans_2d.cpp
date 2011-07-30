@@ -39,6 +39,10 @@
 
 #include <algorithm>
 
+#if MRPT_HAS_SSE2
+	#include <mrpt/utils/SSE_types.h>
+#endif
+
 using namespace mrpt;
 using namespace mrpt::scanmatching;
 using namespace mrpt::random;
@@ -71,7 +75,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation(
 
 	if (N<2) return false;
 
-	const double N_inv = 1.0/N;  // For efficiency, keep this value.
+	const float N_inv = 1.0f/N;  // For efficiency, keep this value.
 
 	// ----------------------------------------------------------------------
 	// Compute the estimated pose. Notation from the paper:
@@ -86,16 +90,98 @@ bool  scanmatching::leastSquareErrorRigidTransformation(
 	//   http://www.mrpt.org/Paper:Occupancy_Grid_Matching
 	//   and Jose Luis Blanco's PhD thesis.
 	// ----------------------------------------------------------------------
-	double SumXa=0, SumXb=0, SumYa=0, SumYb=0;
-	double Sxx=0, Sxy=0, Syx=0, Syy=0;
+#if MRPT_HAS_SSE2
+	// SSE vectorized version:
+
+	MRPT_COMPILE_TIME_ASSERT(sizeof(TMatchingPair::this_x)==sizeof(float))
+	MRPT_COMPILE_TIME_ASSERT(sizeof(TMatchingPair::other_x)==sizeof(float))
+
+	__m128  sum_a_xyz = _mm_setzero_ps(); // All 4 zeros (0.0f)
+	__m128  sum_b_xyz = _mm_setzero_ps(); // All 4 zeros (0.0f)
+
+	//   [ f0     f1      f2      f3  ]
+	//    xa*xb  ya*yb   xa*yb  xb*ya
+	__m128  sum_ab_xyz = _mm_setzero_ps(); // All 4 zeros (0.0f)
 
 	for (TMatchingPairList::const_iterator corrIt=in_correspondences.begin(); corrIt!=in_correspondences.end(); corrIt++)
 	{
 		// Get the pair of points in the correspondence:
-		const double xa = corrIt->this_x;
-		const double ya = corrIt->this_y;
-		const double xb = corrIt->other_x;
-		const double yb = corrIt->other_y;
+		//   a_xyyx = [   xa     ay   |   xa    ya ]
+		//   b_xyyx = [   xb     yb   |   yb    xb ]
+		//      (product)
+		//            [  xa*xb  ya*yb   xa*yb  xb*ya
+		//                LO0    LO1     HI2    HI3
+		// Note: _MM_SHUFFLE(hi3,hi2,lo1,lo0)
+		const __m128 a_xyz = _mm_loadu_ps( &corrIt->this_x );  // *Unaligned* load
+		const __m128 b_xyz = _mm_loadu_ps( &corrIt->other_x );  // *Unaligned* load
+
+		const __m128 a_xyxy = _mm_shuffle_ps(a_xyz,a_xyz, _MM_SHUFFLE(1,0,1,0) );
+		const __m128 b_xyyx = _mm_shuffle_ps(b_xyz,b_xyz, _MM_SHUFFLE(0,1,1,0) );
+
+		// Compute the terms:
+		sum_a_xyz = _mm_add_ps(sum_a_xyz,a_xyz);
+		sum_b_xyz = _mm_add_ps(sum_b_xyz,b_xyz);
+
+		//   [ f0     f1      f2      f3  ]
+		//    xa*xb  ya*yb   xa*yb  xb*ya
+		sum_ab_xyz = _mm_add_ps(sum_ab_xyz, _mm_mul_ps(a_xyxy,b_xyyx));
+
+	}
+
+	EIGEN_ALIGN16 float sums_a[4], sums_b[4];
+	_mm_store_ps(sums_a,sum_a_xyz);
+	_mm_store_ps(sums_b,sum_b_xyz);
+
+	const float &SumXa=sums_a[0];
+	const float &SumYa=sums_a[1];
+	const float &SumXb=sums_b[0];
+	const float &SumYb=sums_b[1];
+
+	// Compute all four means:
+	const __m128 Ninv_4val = _mm_set1_ps(N_inv); // load 4 copies of the same value
+	sum_a_xyz = _mm_mul_ps(sum_a_xyz,Ninv_4val);
+	sum_b_xyz = _mm_mul_ps(sum_b_xyz,Ninv_4val);
+
+
+	// means_a[0]: mean_x_a
+	// means_a[1]: mean_y_a
+	// means_b[0]: mean_x_b
+	// means_b[1]: mean_y_b
+	EIGEN_ALIGN16 float means_a[4], means_b[4];
+	_mm_store_ps(means_a,sum_a_xyz);
+	_mm_store_ps(means_b,sum_b_xyz);
+
+	const float	&mean_x_a = means_a[0];
+	const float	&mean_y_a = means_a[1];
+	const float	&mean_x_b = means_b[0];
+	const float	&mean_y_b = means_b[1];
+
+	//      Sxx   Syy     Sxy    Syx
+	//    xa*xb  ya*yb   xa*yb  xb*ya
+	EIGEN_ALIGN16 float cross_sums[4];
+	_mm_store_ps(cross_sums,sum_ab_xyz);
+
+	const float	&Sxx = cross_sums[0];
+	const float	&Syy = cross_sums[1];
+	const float	&Sxy = cross_sums[2];
+	const float	&Syx = cross_sums[3];
+
+	// Auxiliary variables Ax,Ay:
+	const float Ax = N*(Sxx + Syy) - SumXa*SumXb - SumYa*SumYb;
+	const float Ay = SumXa * SumYb + N*(Syx-Sxy)- SumXb * SumYa;
+
+#else
+	// Non vectorized version:
+	float SumXa=0, SumXb=0, SumYa=0, SumYb=0;
+	float Sxx=0, Sxy=0, Syx=0, Syy=0;
+
+	for (TMatchingPairList::const_iterator corrIt=in_correspondences.begin(); corrIt!=in_correspondences.end(); corrIt++)
+	{
+		// Get the pair of points in the correspondence:
+		const float xa = corrIt->this_x;
+		const float ya = corrIt->this_y;
+		const float xb = corrIt->other_x;
+		const float yb = corrIt->other_y;
 
 		// Compute the terms:
 		SumXa+=xa;
@@ -110,21 +196,24 @@ bool  scanmatching::leastSquareErrorRigidTransformation(
 		Syy += ya * yb;
 	}	// End of "for all correspondences"...
 
-	const double	mean_x_a = SumXa * N_inv;
-	const double	mean_y_a = SumYa * N_inv;
-	const double	mean_x_b = SumXb * N_inv;
-	const double	mean_y_b = SumYb * N_inv;
+	const float	mean_x_a = SumXa * N_inv;
+	const float	mean_y_a = SumYa * N_inv;
+	const float	mean_x_b = SumXb * N_inv;
+	const float	mean_y_b = SumYb * N_inv;
 
 	// Auxiliary variables Ax,Ay:
-	const double Ax = N*(Sxx + Syy) - SumXa*SumXb - SumYa*SumYb;
-	const double Ay = SumXa * SumYb + N*(Syx-Sxy)- SumXb * SumYa;
+	const float Ax = N*(Sxx + Syy) - SumXa*SumXb - SumYa*SumYb;
+	const float Ay = SumXa * SumYb + N*(Syx-Sxy)- SumXb * SumYa;
+
+#endif
+
 
 	if (Ax!=0 || Ay!=0)
 			out_transformation.phi( atan2( Ay, Ax) );
 	else	out_transformation.phi(0);
 
-	const double ccos = cos( out_transformation.phi() );
-	const double csin = sin( out_transformation.phi() );
+	const float ccos = cos( out_transformation.phi() );
+	const float csin = sin( out_transformation.phi() );
 
 	out_transformation.x( mean_x_a - mean_x_b * ccos + mean_y_b * csin  );
 	out_transformation.y( mean_y_a - mean_x_b * csin - mean_y_b * ccos );

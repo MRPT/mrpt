@@ -35,7 +35,10 @@ namespace mrpt
 	namespace utils
 	{
 		using namespace mrpt::poses;
-	
+
+	// Pragma defined to ensure no structure packing, so we can use SSE2 vectorization on parts of this struture
+#pragma pack(push,1)
+
 		/** A structure for holding correspondences between two sets of points or points-like entities in 2D or 3D.
 		  */
 		struct BASE_IMPEXP TMatchingPair
@@ -63,6 +66,9 @@ namespace mrpt
 			float			errorSquareAfterTransformation;
 
 		};
+
+#pragma pack(pop) // End of pack = 1
+
 
 		typedef TMatchingPair*  TMatchingPairPtr;
 
@@ -123,7 +129,7 @@ namespace mrpt
 			/** Test whether the given pair "p" is within the pairings */
 			bool contains (const TMatchingPair &p) const;
 		};
-		
+
 		/** A comparison operator, for sorting lists of TMatchingPair's, first order by this_idx, if equals, by other_idx   */
 		bool BASE_IMPEXP operator < (const TMatchingPair& a, const TMatchingPair& b);
 
@@ -132,8 +138,8 @@ namespace mrpt
 
 		/** A comparison operator */
 		bool BASE_IMPEXP operator == (const TMatchingPairList& a,const TMatchingPairList& b);
-		
-		
+
+
 	} // End of namespace
 } // end of namespace
 #endif

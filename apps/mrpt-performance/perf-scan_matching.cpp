@@ -27,6 +27,7 @@
    +---------------------------------------------------------------------------+ */
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
+#include <mrpt/random.h>
 #include <mrpt/scanmatching.h>
 
 #include "common.h"
@@ -124,7 +125,7 @@ double scan_matching_test_1( int a1, int a2 )
 	CPose3D out;
 	double	scale;
 
-	const size_t	N = 100;
+	const size_t	N = a1;
 	CTicTac			tictac;
 
 	tictac.Tic();
@@ -149,7 +150,7 @@ double scan_matching_test_2( int a1, int a2 )
 	CPose3DQuat out;
 	double		scale;
 
-	const size_t	N = 100;
+	const size_t	N = a1;
 	CTicTac			tictac;
 
 	tictac.Tic();
@@ -173,7 +174,7 @@ double scan_matching_test_3( int a1, int a2 )
 
 	vector_double qu;
 
-	const size_t	N = 100;
+	const size_t	N = a1;
 	CTicTac			tictac;
 
 	tictac.Tic();
@@ -184,12 +185,60 @@ double scan_matching_test_3( int a1, int a2 )
 	return T;
 }
 
+
+// ------------------------------------------------------
+//				Benchmark:  leastSquareErrorRigidTransformation
+// ------------------------------------------------------
+double scan_matching_test_4( int nCorrs, int nRepets )
+{
+	TPoints	pA, pB;
+	generate_points( pA, pB );
+
+	vector_double inV;
+	generate_vector_of_points( pA, pB, inV );
+
+	vector_double qu;
+
+	TMatchingPairList	in_correspondences;
+	CPose2D             out_pose;
+
+	in_correspondences.resize(nCorrs);
+	for (int i=0;i<nCorrs;i++)
+	{
+		TMatchingPair & m= in_correspondences[i];
+		m.this_idx = i;
+		m.other_idx = i;
+		m.this_x = mrpt::random::randomGenerator.drawUniform(-10,10);
+		m.this_y = mrpt::random::randomGenerator.drawUniform(-10,10);
+		m.this_z = mrpt::random::randomGenerator.drawUniform(-10,10);
+		m.other_x = mrpt::random::randomGenerator.drawUniform(-10,10);
+		m.other_y = mrpt::random::randomGenerator.drawUniform(-10,10);
+		m.other_z = mrpt::random::randomGenerator.drawUniform(-10,10);
+	}
+
+	const size_t	N = nRepets;
+	CTicTac			tictac;
+
+	tictac.Tic();
+	for (size_t i=0;i<N;i++)
+	{
+		mrpt::scanmatching::leastSquareErrorRigidTransformation(in_correspondences,out_pose);
+	}
+
+	const double T = tictac.Tac()/N;
+	return T;
+}
+
 // ------------------------------------------------------
 // register_tests_scan_matching
 // ------------------------------------------------------
 void register_tests_scan_matching()
 {
-	lstTests.push_back( TestData("scan_matching: 6D LS Rigid Trans. [CPose3D]", scan_matching_test_1 ) );
-	lstTests.push_back( TestData("scan_matching: 6D LS Rigid Trans. [CPose3DQuat]", scan_matching_test_2 ) );
-	lstTests.push_back( TestData("scan_matching: 6D LS Rigid Trans. [vector of points]", scan_matching_test_3 ) );
+	lstTests.push_back( TestData("scan_matching: 6D LS Rigid Trans. [CPose3D]", scan_matching_test_1 , 1e4 ) );
+	lstTests.push_back( TestData("scan_matching: 6D LS Rigid Trans. [CPose3DQuat]", scan_matching_test_2 , 1e4) );
+	lstTests.push_back( TestData("scan_matching: 6D LS Rigid Trans. [vector of points]", scan_matching_test_3 , 1e4) );
+
+	lstTests.push_back( TestData("scan_matching: leastSquares 2D [x10 corrs]", scan_matching_test_4,  10, 1e6 ) );
+	lstTests.push_back( TestData("scan_matching: leastSquares 2D [x100 corrs]", scan_matching_test_4,  100, 1e6 ) );
+	lstTests.push_back( TestData("scan_matching: leastSquares 2D [x1000 corrs]", scan_matching_test_4,  1000, 1e5 ) );
 }

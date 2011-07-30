@@ -1778,7 +1778,7 @@ void  CPointsMap::loadFromRangeScan(
 		float *ptr_out_y    = &scan_gy[0];
 		float *ptr_out_z    = &scan_gz[0];
 
-		for( ; nPackets; nPackets--, ptr_in_scan+=4, ptr_out_x+=4, ptr_out_y+=4, ptr_out_z+=4 )
+		for( ; nPackets; nPackets--, ptr_in_scan+=4, ptr_in_cos+=4, ptr_in_sin+=4,  ptr_out_x+=4, ptr_out_y+=4, ptr_out_z+=4 )
 		{
 			const __m128 scan_4vals = _mm_loadu_ps(ptr_in_scan);  // *Unaligned* load
 
