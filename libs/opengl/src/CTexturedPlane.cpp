@@ -176,7 +176,7 @@ void  CTexturedPlane::readFromStream(CStream &in,int version)
 
 bool CTexturedPlane::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	if (!polygonUpToDate) updatePoly();
-	return math::traceRay(tmpPoly,o-CPose3D(m_x,m_y,m_z,DEG2RAD(m_yaw),DEG2RAD(m_pitch),DEG2RAD(m_roll)),dist);
+	return math::traceRay(tmpPoly,o-this->m_pose,dist);
 }
 
 void CTexturedPlane::updatePoly() const	{

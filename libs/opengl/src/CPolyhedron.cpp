@@ -833,7 +833,7 @@ void CPolyhedron::render_dl() const	{
 
 bool CPolyhedron::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	if (!polygonsUpToDate) updatePolygons();
-	return math::traceRay(tempPolygons,o-CPose3D(m_x,m_y,m_z,DEG2RAD(m_yaw),DEG2RAD(m_pitch),DEG2RAD(m_roll)),dist);
+	return math::traceRay(tempPolygons,o-this->m_pose,dist);
 }
 
 void CPolyhedron::getEdgesLength(std::vector<double> &lengths) const	{
@@ -875,7 +875,7 @@ void CPolyhedron::getSetOfPolygonsAbsolute(std::vector<math::TPolygon3D> &vec) c
 	size_t N=mVertices.size();
 	vector<TPoint3D> nVerts;
 	nVerts.resize(N);
-	CPose3D pose=CPose3D(m_x,m_y,m_z,DEG2RAD(m_yaw),DEG2RAD(m_pitch),DEG2RAD(m_roll));
+	CPose3D pose=this->m_pose;
 	for (size_t i=0;i<N;i++) nVerts[i]=pose+mVertices[i];
 	transform(mFaces.begin(),mFaces.end(),vec.begin(),FCreatePolygonFromFace<TPolygon3D>(nVerts));
 }

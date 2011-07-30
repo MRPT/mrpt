@@ -61,6 +61,8 @@ using namespace mrpt::slam;
 using namespace std;
 
 
+MRPT_TODO("TODO: Debug a segfault in GridmapNavSimul around this classs...")
+
 float mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE = 3.0f;
 
 

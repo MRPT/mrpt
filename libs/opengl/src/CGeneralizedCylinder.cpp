@@ -124,7 +124,7 @@ inline void createMesh(const CMatrixTemplate<TPoint3D> &pointsMesh,size_t R,size
 
 bool CGeneralizedCylinder::traceRay(const CPose3D &o,double &dist) const	{
 	if (!meshUpToDate||!polysUpToDate) updatePolys();
-	return math::traceRay(polys,o-CPose3D(m_x,m_y,m_z,DEG2RAD(m_yaw),DEG2RAD(m_pitch),DEG2RAD(m_roll)),dist);
+	return math::traceRay(polys,o-this->m_pose,dist);
 }
 
 void CGeneralizedCylinder::updateMesh() const	{
@@ -217,7 +217,7 @@ void CGeneralizedCylinder::getOrigin(CPolyhedronPtr &poly) const	{
 	if (axis.size()<2||generatrix.size()<3) throw std::logic_error("Not enough points.");
 	size_t i=fullyVisible?0:firstSection;
 	generatePolygon(poly,generatrix,axis[i]);
-	poly->setPose(CPose3D(m_x,m_y,m_z,m_yaw,m_pitch,m_roll));
+	poly->setPose(this->m_pose);
 	poly->setColor(getColor());
 }
 
@@ -226,7 +226,7 @@ void CGeneralizedCylinder::getEnd(CPolyhedronPtr &poly) const	{
 	if (axis.size()<2||generatrix.size()<3) throw std::logic_error("Not enough points.");
 	size_t i=(fullyVisible?axis.size():lastSection)-1;
 	generatePolygon(poly,generatrix,axis[i]);
-	poly->setPose(CPose3D(m_x,m_y,m_z,m_yaw,m_pitch,m_roll));
+	poly->setPose(this->m_pose);
 	poly->setColor(getColor());
 }
 

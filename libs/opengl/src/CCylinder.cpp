@@ -127,7 +127,7 @@ bool solveEqn(double a,double b,double c,double &t)	{	//Actually, the b from the
 
 bool CCylinder::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	TLine3D lin;
-	createFromPoseX(o-CPose3D(m_x,m_y,m_z,DEG2RAD(m_yaw),DEG2RAD(m_pitch),DEG2RAD(m_roll)),lin);
+	createFromPoseX(o-this->m_pose,lin);
 	lin.unitarize();	//By adding this line, distance from any point of the line to its base is exactly equal to the "t".
 	if (abs(lin.director[2])<geometryEpsilon)	{
 		if (!reachesHeight(lin.pBase.z)) return false;

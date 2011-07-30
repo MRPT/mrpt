@@ -157,7 +157,7 @@ void  CSetOfTriangles::readFromStream(CStream &in,int version)
 
 bool CSetOfTriangles::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	if (!polygonsUpToDate) updatePolygons();
-	return mrpt::math::traceRay(tmpPolygons,o-CPose3D(m_x,m_y,m_z,DEG2RAD(m_yaw),DEG2RAD(m_pitch),DEG2RAD(m_roll)),dist);
+	return mrpt::math::traceRay(tmpPolygons,o-this->m_pose,dist);
 }
 
 //Helper function. Given two 2D points (y1,z1) and (y2,z2), returns three coefficients A, B and C so that both points

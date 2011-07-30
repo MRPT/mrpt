@@ -63,81 +63,8 @@ void   CSetOfObjects::clear()
   ---------------------------------------------------------------*/
 void   CSetOfObjects::render() const
 {
-#if MRPT_HAS_OPENGL_GLUT
-	CListOpenGLObjects::const_iterator	it;
-	try
-	{
-		for (it=m_objects.begin();it!=m_objects.end();it++)
-		{
-			if (!it->present()) continue;
-			if (!(*it)->isVisible()) continue;
-
-			// 3D coordinates transformation:
-			glMatrixMode(GL_MODELVIEW);
-			glPushMatrix();
-
-			glPushAttrib(GL_ALL_ATTRIB_BITS);
-			//CRenderizable::checkOpenGLError();
-
-			// This is the right order so that the transformation results in the standard matrix.
-			// The order seems to be wrong, but it's not.
-			glTranslated((*it)->m_x, (*it)->m_y, (*it)->m_z);
-			glRotated((*it)->m_yaw, 0.0, 0.0, 1.0);
-			glRotated((*it)->m_pitch, 0.0, 1.0, 0.0);
-			glRotated((*it)->m_roll, 1.0, 0.0, 0.0);
-
-			// Do scaling after the other transformations!
-			glScalef((*it)->m_scale_x,(*it)->m_scale_y,(*it)->m_scale_z);
-
-			// Set color:
-			glColor4f( (*it)->getColorR(),(*it)->getColorG(),(*it)->getColorB(),(*it)->getColorA());
-
-
-			(*it)->render();
-
-
-			if ((*it)->m_show_name)
-			{
-				glDisable(GL_DEPTH_TEST);
-				glColor3f(1.f,1.f,1.f);  // Must be called BEFORE glRasterPos3f
-				glRasterPos3f(0.0f,0.0f,0.0f);
-
-				GLfloat		raster_pos[4];
-				glGetFloatv( GL_CURRENT_RASTER_POSITION, raster_pos);
-				float eye_distance= raster_pos[3];
-
-				void *font=NULL;
-				if (eye_distance<2)
-						font = GLUT_BITMAP_TIMES_ROMAN_24;
-				else if(eye_distance<200)
-					font = GLUT_BITMAP_TIMES_ROMAN_10;
-
-				if (font)
-					CRenderizable::renderTextBitmap( (*it)->m_name.c_str(), font);
-
-				glEnable(GL_DEPTH_TEST);
-			}
-
-			glPopMatrix();
-			checkOpenGLError();
-
-			glPopAttrib();
-			//CRenderizable::checkOpenGLError();
-		}
-	}
-	catch(exception &e)
-	{
-		char	str[1000];
-		os::sprintf(str,1000,"Exception while rendering a class '%s'\n%s",
-			(*it)->GetRuntimeClass()->className,
-			e.what() );
-		THROW_EXCEPTION(str);
-	}
-	catch(...)
-	{
-		THROW_EXCEPTION("Runtime error!");
-	}
-#endif
+	// Render all the objects:
+	CRenderizable::glutils::renderSetOfObjects(m_objects);
 }
 
 /*---------------------------------------------------------------
@@ -266,7 +193,7 @@ void CSetOfObjects::removeObject( const CRenderizablePtr &obj )
 }
 
 bool CSetOfObjects::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
-	CPose3D nueva=(CPose3D(0,0,0,0,0,0)-CPose3D(m_x,m_y,m_z,DEG2RAD(m_yaw),DEG2RAD(m_pitch),DEG2RAD(m_roll)))+o;
+	CPose3D nueva=(CPose3D()-this->m_pose)+o;
 	bool found=false;
 	double tmp;
 	for (CListOpenGLObjects::const_iterator it=m_objects.begin();it!=m_objects.end();++it) if ((*it)->traceRay(nueva,tmp))	{

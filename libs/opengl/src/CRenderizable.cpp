@@ -83,8 +83,7 @@ CRenderizable::CRenderizable() :
 	m_name(),
 	m_show_name(false),
 	m_color_R(1),m_color_G(1),m_color_B(1),m_color_A(1),
-	m_x(0),m_y(0),m_z(0),
-	m_yaw(0),m_pitch(0),m_roll(0),
+	m_pose(),
 	m_scale_x(1), m_scale_y(1), m_scale_z(1),
 	m_visible(true)
 {
@@ -137,23 +136,28 @@ void CRenderizable::releaseTextureName(unsigned int i)
 void  CRenderizable::writeToStreamRender(CStream &out) const
 {
 	out << m_name << (float)m_color_R << (float)m_color_G << (float)m_color_B << (float)m_color_A;
-	out << (float)m_x << (float)m_y << (float)m_z;
+	out << (float)m_pose.x() << (float)m_pose.y() << (float)m_pose.z();
 
 	// Version 2 (dummy=16.0f): Added scale vars
 	// Version 3 (dummy=17.0f): Added "m_visible"
 	if (m_scale_x==1.0f && m_scale_y==1.0f && m_scale_z==1.0f)
 	{
 		// Keep old format for compatibility:
-		out << (float)m_yaw << (float)m_pitch << (float)m_roll;
-		out << m_show_name;
+		out << (float)RAD2DEG(m_pose.yaw())
+		    << (float)RAD2DEG(m_pose.pitch())
+			<< (float)RAD2DEG(m_pose.roll())
+		    << m_show_name;
 	}
 	else
 	{
 		const float dummy = 17.0f;
-		out << (float)m_yaw << (float)m_pitch << dummy << (float)m_roll;
-		out << m_show_name;
-		out << m_scale_x << m_scale_y << m_scale_z;
-		out << m_visible; // Added in v3
+		out << (float)RAD2DEG(m_pose.yaw())
+		    << (float)RAD2DEG(m_pose.pitch())
+		    << dummy
+		    << (float)RAD2DEG(m_pose.roll())
+		    << m_show_name
+		    << m_scale_x << m_scale_y << m_scale_z
+		    << m_visible; // Added in v3
 	}
 }
 
@@ -162,29 +166,31 @@ void  CRenderizable::readFromStreamRender(CStream &in)
 	in >> m_name;
 	float f;
 
+	float yaw_deg,pitch_deg,roll_deg;
+
 	in >> f; m_color_R=f;
 	in >> f; m_color_G=f;
 	in >> f; m_color_B=f;
 	in >> f; m_color_A=f;
-	in >> f; m_x=f;
-	in >> f; m_y=f;
-	in >> f; m_z=f;
-	in >> f; m_yaw=f;
-	in >> f; m_pitch=f;
-	in >> f;
+	in >> f; m_pose.x(f);
+	in >> f; m_pose.y(f);
+	in >> f; m_pose.z(f);
+	in >> yaw_deg;
+	in >> pitch_deg;
+	in >> roll_deg;
 	// Version 2: Add scale vars:
 	//  JL: Yes, this is a crappy hack since I forgot to enable versions here...what? :-P
 	if (f!=16.0f && f!=17.0f)
 	{
 		// Old version:
-		m_roll=f;
+		// "roll_deg" is the actual roll.
 		in >> m_show_name;
 		m_scale_x=m_scale_y=m_scale_z=1;	// Default values
 	}
 	else
 	{
 		// New version >=v2:
-		in >> f; m_roll=f;
+		in >> roll_deg;
 		in >> m_show_name;
 
 		// Scale data:
@@ -195,6 +201,8 @@ void  CRenderizable::readFromStreamRender(CStream &in)
 		else
 			m_visible = true; // Default
 	}
+
+	m_pose.setYawPitchRoll( DEG2RAD(yaw_deg),DEG2RAD(pitch_deg),DEG2RAD(roll_deg) );
 }
 
 
@@ -216,12 +224,7 @@ void  CRenderizable::checkOpenGLError()
   ---------------------------------------------------------------*/
 CRenderizable& CRenderizable::setPose( const mrpt::poses::CPose3D &o )
 {
-	m_x = o.x();
-	m_y = o.y();
-	m_z = o.z();
-	m_yaw = RAD2DEG( o.yaw() );
-	m_pitch = RAD2DEG( o.pitch() );
-	m_roll = RAD2DEG( o.roll() );
+	m_pose = o;
 	return *this;
 }
 
@@ -230,12 +233,7 @@ CRenderizable& CRenderizable::setPose( const mrpt::poses::CPose3D &o )
   ---------------------------------------------------------------*/
 CRenderizable& CRenderizable::setPose( const mrpt::math::TPose3D &o )
 {
-	m_x = o.x;
-	m_y = o.y;
-	m_z = o.z;
-	m_yaw = RAD2DEG( o.yaw );
-	m_pitch = RAD2DEG( o.pitch );
-	m_roll = RAD2DEG( o.roll );
+	m_pose = CPose3D(o);
 	return *this;
 }
 
@@ -244,12 +242,7 @@ CRenderizable& CRenderizable::setPose( const mrpt::math::TPose3D &o )
   ---------------------------------------------------------------*/
 CRenderizable& CRenderizable::setPose( const mrpt::poses::CPoint3D &o )	//!< Set the 3D pose from a mrpt::poses::CPose3D object
 {
-	m_x = o.x();
-	m_y = o.y();
-	m_z = o.z();
-	m_yaw = 0;
-	m_pitch = 0;
-	m_roll = 0;
+	m_pose.setFromValues(o.x(), o.y(), o.z(),  0,0,0 );
 	return *this;
 }
 
@@ -258,12 +251,7 @@ CRenderizable& CRenderizable::setPose( const mrpt::poses::CPoint3D &o )	//!< Set
   ---------------------------------------------------------------*/
 CRenderizable& CRenderizable::setPose( const mrpt::poses::CPoint2D &o )	//!< Set the 3D pose from a mrpt::poses::CPose3D object
 {
-	m_x = o.x();
-	m_y = o.y();
-	m_z = 0;
-	m_yaw = 0;
-	m_pitch = 0;
-	m_roll = 0;
+	m_pose.setFromValues(o.x(), o.y(),0,  0,0,0 );
 	return *this;
 }
 
@@ -273,9 +261,8 @@ CRenderizable& CRenderizable::setPose( const mrpt::poses::CPoint2D &o )	//!< Set
   ---------------------------------------------------------------*/
 mrpt::math::TPose3D CRenderizable::getPose() const
 {
-	return mrpt::math::TPose3D( m_x,m_y,m_z,DEG2RAD(m_yaw),DEG2RAD(m_pitch),DEG2RAD(m_roll) );
+	return mrpt::math::TPose3D(m_pose);
 }
-
 
 /*--------------------------------------------------------------
 					traceRay
@@ -368,118 +355,3 @@ void CRenderizable::getCurrentRenderingInfo(TRenderInfo &ri) const
 #endif
 }
 
-/*---------------------------------------------------------------
-					renderTextBitmap
-  ---------------------------------------------------------------*/
-void	CRenderizable::renderTextBitmap( const char *str, void *fontStyle )
-{
-#if MRPT_HAS_OPENGL_GLUT
-	MRPT_START;
-	while ( *str ) glutBitmapCharacter( fontStyle ,*(str++) );
-	MRPT_END;
-#endif
-}
-
-void *aux_mrptfont2glutfont(const TOpenGLFont font)
-{
-#if MRPT_HAS_OPENGL_GLUT
-	switch (font)
-	{
-	default:
-	case MRPT_GLUT_BITMAP_TIMES_ROMAN_10: return GLUT_BITMAP_TIMES_ROMAN_10; break;
-	case MRPT_GLUT_BITMAP_TIMES_ROMAN_24: return GLUT_BITMAP_TIMES_ROMAN_24; break;
-
-	case MRPT_GLUT_BITMAP_HELVETICA_10: return GLUT_BITMAP_HELVETICA_10; break;
-	case MRPT_GLUT_BITMAP_HELVETICA_12: return GLUT_BITMAP_HELVETICA_12; break;
-	case MRPT_GLUT_BITMAP_HELVETICA_18: return GLUT_BITMAP_HELVETICA_18; break;
-	}
-#else
-	return NULL;
-#endif
-}
-
-
-/*---------------------------------------------------------------
-					renderTextBitmap
-  ---------------------------------------------------------------*/
-void CRenderizable::renderTextBitmap(
-	int screen_x,
-	int screen_y,
-	const std::string &str,
-	float  color_r,
-	float  color_g,
-	float  color_b,
-	TOpenGLFont font
-	)
-{
-#if MRPT_HAS_OPENGL_GLUT
-    glDisable(GL_DEPTH_TEST);
-
-	// If (x,y) are negative, wrap to the opposite side:
-	if (screen_x<0 || screen_y<0)
-	{
-		// Size of the viewport:
-		GLint	win_dims[4];  // [2]:width ,[3]:height
-		glGetIntegerv( GL_VIEWPORT, win_dims );
-
-		if (screen_x<0) screen_x += win_dims[2];
-		if (screen_y<0) screen_y += win_dims[3];
-	}
-
-	// Draw text:
-    glColor3f(color_r,color_g,color_b);
-
-    // From: http://www.mesa3d.org/brianp/sig97/gotchas.htm
-	GLfloat fx, fy;
-
-	/* Push current matrix mode and viewport attributes */
-	glPushAttrib( GL_TRANSFORM_BIT | GL_VIEWPORT_BIT );
-
-	/* Setup projection parameters */
-	glMatrixMode( GL_PROJECTION );
-	glPushMatrix();
-	glLoadIdentity();
-	glMatrixMode( GL_MODELVIEW );
-	glPushMatrix();
-	glLoadIdentity();
-
-	//glDepthRange( z, z );
-	glViewport( (int) screen_x - 1, (int) screen_y - 1, 2, 2 );
-
-	/* set the raster (window) position */
-	fx = screen_x - (int) screen_x;
-	fy = screen_y - (int) screen_y;
-	//glRasterPos4f( fx, fy, 0.0, w );
-	glRasterPos3f( fx, fy, 0.0 );
-
-	/* restore matrices, viewport and matrix mode */
-	glPopMatrix();
-	glMatrixMode( GL_PROJECTION );
-	glPopMatrix();
-
-	glPopAttrib();
-
-	// Select font:
-	void *glut_font_sel = aux_mrptfont2glutfont(font);
-
-	for (size_t i=0;i<str.size();i++)
-		glutBitmapCharacter( glut_font_sel ,str[i] );
-
-    glEnable(GL_DEPTH_TEST);
-#endif
-}
-
-/** Return the exact width in pixels for a given string, as will be rendered by renderTextBitmap().
-  * \sa renderTextBitmap
-  */
-int CRenderizable::textBitmapWidth(
-	const std::string &str,
-	mrpt::opengl::TOpenGLFont    font)
-{
-#if MRPT_HAS_OPENGL_GLUT
-	if (str.empty()) return 0;
-	return glutBitmapLength(aux_mrptfont2glutfont(font), (const unsigned char*)str.c_str() );
-#else
-	return 10;
-#endif
-}

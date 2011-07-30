@@ -152,7 +152,7 @@ bool CSphere::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	//we'll simply transform the center and then compute the beam's points whose distance to that transformed point
 	//equals the sphere's radius.
 
-	CPose3D transf=CPose3D(m_x,m_y,m_z,DEG2RAD(m_yaw),DEG2RAD(m_pitch),DEG2RAD(m_roll))-o;
+	CPose3D transf=this->m_pose-o;
 	double x=transf.x(),y=transf.y(),z=transf.z();
 	double r2=m_radius*m_radius;
 	double dyz=y*y+z*z;

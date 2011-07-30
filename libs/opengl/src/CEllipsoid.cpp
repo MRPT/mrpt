@@ -227,7 +227,7 @@ bool quickSolveEqn(double a,double b_2,double c,double &t)	{
 bool CEllipsoid::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	if (m_cov.getRowCount()!=3) return false;
 	TLine3D lin,lin2;
-	createFromPoseX(o-CPose3D(m_x,m_y,m_z,DEG2RAD(m_yaw),DEG2RAD(m_pitch),DEG2RAD(m_roll)),lin);
+	createFromPoseX(o-this->m_pose,lin);
 	lin.unitarize();	//By adding this line, distance from any point of the line to its base is exactly equal to the "t".
 	for (size_t i=0;i<3;i++)	{
 		lin2.pBase[i]=0;

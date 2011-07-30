@@ -58,6 +58,7 @@ IF(BUILD_EXAMPLES)
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		display3D
+		display3D_custom_render
 		opengl_objects_demo
 		fbo_render_test
 		offscreen-render

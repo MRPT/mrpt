@@ -320,7 +320,7 @@ void CMesh::setUV( const mrpt::math::CMatrixTemplateNumeric<float> &in_U, const 
 
 bool CMesh::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	if (!trianglesUpToDate||!polygonsUpToDate) updatePolygons();
-	return mrpt::math::traceRay(tmpPolys,o-CPose3D(m_x,m_y,m_z,DEG2RAD(m_yaw),DEG2RAD(m_pitch),DEG2RAD(m_roll)),dist);
+	return mrpt::math::traceRay(tmpPolys,o-this->m_pose,dist);
 }
 
 static math::TPolygon3D tmpPoly(3);

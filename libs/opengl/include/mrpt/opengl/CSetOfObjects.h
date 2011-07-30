@@ -42,10 +42,6 @@ namespace mrpt
 	{
 		class OPENGL_IMPEXP CSetOfObjects;
 
-		/** A list of objects pointers, automatically managing memory free at destructor, and managing copies correctly.
-		  */
-		typedef std::deque<CRenderizablePtr> CListOpenGLObjects;
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfObjects, CRenderizable, OPENGL_IMPEXP )
 

@@ -32,6 +32,8 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/TColor.h>
 
+#include <mrpt/poses/CPose3D.h>
+
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
@@ -41,7 +43,7 @@
 
 namespace mrpt
 {
-	namespace poses { class CPose3D; class CPoint3D; class CPoint2D; }
+	namespace poses { class CPoint3D; class CPoint2D; }
 	namespace utils { class CStringList; }
 
 	namespace opengl
@@ -52,6 +54,9 @@ namespace mrpt
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRenderizable, mrpt::utils::CSerializable, OPENGL_IMPEXP )
+
+		/** A list of objects pointers, automatically managing memory free at destructor, and managing copies correctly. */
+		typedef std::deque<CRenderizablePtr> CListOpenGLObjects;
 
 		/** The base class of 3D objects that can be directly rendered through OpenGL.
 		  *  In this class there are a set of common properties to all 3D objects, mainly:
@@ -72,8 +77,7 @@ namespace mrpt
 			std::string				m_name;
 			bool					m_show_name;
 			double					m_color_R,m_color_G,m_color_B,m_color_A;    //!< Color components in the range [0,1]
-			double					m_x,m_y,m_z;								//!< Translation relative to parent coordinate origin.
-			double					m_yaw,m_pitch,m_roll;						//!< Rotation relative to parent coordinate origin, in **DEGREES**.
+			mrpt::poses::CPose3D    m_pose;                                     //!< 6D pose wrt the parent coordinate reference. This class automatically holds the cached 3x3 rotation matrix for quick load into opengl stack.
 			float					m_scale_x, m_scale_y, m_scale_z;			//!< Scale components to apply to the object (default=1)
 			bool					m_visible; //!< Is the object visible? (default=true)
 
@@ -94,25 +98,30 @@ namespace mrpt
 			CRenderizable& setPose( const mrpt::poses::CPoint3D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
 			CRenderizable& setPose( const mrpt::poses::CPoint2D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
 
-			mrpt::math::TPose3D getPose() const;	//!< Returns the 3D pose of the object
+			mrpt::math::TPose3D getPose() const;	//!< Returns the 3D pose of the object as TPose3D
+			/** Returns a const ref to the 3D pose of the object as CPose3D (which explicitly contains the 3x3 rotation matrix) */
+			inline const mrpt::poses::CPose3D & getPoseRef() const { return m_pose; }
 
 			/** Changes the location of the object, keeping untouched the orientation  \return a ref to this */
-			inline CRenderizable& setLocation(double x,double y,double z) { m_x=x; m_y=y; m_z=z; return *this; }
+			inline CRenderizable& setLocation(double x,double y,double z) { m_pose.x(x); m_pose.y(y); m_pose.z(z); return *this; }
 
 			/** Changes the location of the object, keeping untouched the orientation  \return a ref to this  */
-			inline CRenderizable& setLocation(const mrpt::math::TPoint3D &p ) { m_x=p.x; m_y=p.y; m_z=p.z; return *this;  }
+			inline CRenderizable& setLocation(const mrpt::math::TPoint3D &p ) { m_pose.x(p.x); m_pose.y(p.y); m_pose.z(p.z); return *this;  }
 
-			double getPoseX() const { return m_x; } //!< Translation relative to parent coordinate origin.
-			double getPoseY() const { return m_y; } //!< Translation relative to parent coordinate origin.
-			double getPoseZ() const { return m_z; } //!< Translation relative to parent coordinate origin.
-			double getPoseYaw() const { return m_yaw; } //!< Rotation relative to parent coordinate origin, in **DEGREES**.
-			double getPosePitch() const { return m_pitch; } //!< Rotation relative to parent coordinate origin, in **DEGREES**.
-			double getPoseRoll() const { return m_roll; } //!< Rotation relative to parent coordinate origin, in **DEGREES**.
+			inline double getPoseX() const { return m_pose.x(); } //!< Translation relative to parent coordinate origin.
+			inline double getPoseY() const { return m_pose.y(); } //!< Translation relative to parent coordinate origin.
+			inline double getPoseZ() const { return m_pose.z(); } //!< Translation relative to parent coordinate origin.
+			inline double getPoseYaw() const { return mrpt::utils::RAD2DEG(m_pose.yaw()); } //!< Rotation relative to parent coordinate origin, in **DEGREES**.
+			inline double getPosePitch() const { return mrpt::utils::RAD2DEG(m_pose.pitch()); } //!< Rotation relative to parent coordinate origin, in **DEGREES**.
+			inline double getPoseRoll() const { return mrpt::utils::RAD2DEG(m_pose.roll()); } //!< Rotation relative to parent coordinate origin, in **DEGREES**.
+			inline double getPoseYawRad() const { return m_pose.yaw(); } //!< Rotation relative to parent coordinate origin, in radians.
+			inline double getPosePitchRad() const { return m_pose.pitch(); } //!< Rotation relative to parent coordinate origin, in radians.
+			inline double getPoseRollRad() const { return m_pose.roll(); } //!< Rotation relative to parent coordinate origin, in radians.
 
-			double getColorR() const { return m_color_R; } //!< Color components in the range [0,1]
-			double getColorG() const { return m_color_G; } //!< Color components in the range [0,1]
-			double getColorB() const { return m_color_B; } //!< Color components in the range [0,1]
-			double getColorA() const { return m_color_A; } //!< Color components in the range [0,1]
+			inline double getColorR() const { return m_color_R; } //!< Color components in the range [0,1]
+			inline double getColorG() const { return m_color_G; } //!< Color components in the range [0,1]
+			inline double getColorB() const { return m_color_B; } //!< Color components in the range [0,1]
+			inline double getColorA() const { return m_color_A; } //!< Color components in the range [0,1]
 
 			virtual CRenderizable&  setColorR(const double r)	{m_color_R=r; return *this;}	//!<Color components in the range [0,1] \return a ref to this
 			virtual CRenderizable&  setColorG(const double g)	{m_color_G=g; return *this;}	//!<Color components in the range [0,1] \return a ref to this
@@ -154,32 +163,6 @@ namespace mrpt
 			  */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
 
-			/** This method is safe for calling from within ::render() methods \sa renderTextBitmap */
-			static void	renderTextBitmap( const char *str, void *fontStyle );
-
-			/** Render a text message in the current rendering context, creating a glViewport in the way (do not call within ::render() methods)
-			  *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the viewport. Negative numbers will wrap to the opposite side of the viewport (e.g. x=-10 means 10px fromt the right).
-			  *   - The text color is defined by (color_r,color_g,color_b), each float numbers in the range [0,1].
-			  *  \sa renderTextBitmap, textBitmapWidth
-			  */
-			static void renderTextBitmap(
-				int screen_x,
-				int screen_y,
-				const std::string &str,
-				float  color_r=1,
-				float  color_g=1,
-				float  color_b=1,
-				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24
-				);
-
-			/** Return the exact width in pixels for a given string, as will be rendered by renderTextBitmap().
-			  * \sa renderTextBitmap
-			  */
-			static int textBitmapWidth(
-				const std::string &str,
-				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24 );
-
-
 			/** Information about the rendering process being issued. \sa See getCurrentRenderingInfo for more details */
 			struct OPENGL_IMPEXP TRenderInfo
 			{
@@ -209,6 +192,61 @@ namespace mrpt
 					proj_y_px = (proj_y_px+1.0f)*(vp_height/2);
 				}
 			};
+
+			/** A set of auxiliary functions (as static members) that can be called to render OpenGL primitives from MRPT or user code */
+			struct glutils
+			{
+				/** For each object in the list:
+				  *   - checks visibility of each object
+				  *   - prepare the GL_MODELVIEW matrix according to its coordinates
+				  *   - call its ::render()
+				  *   - shows its name (if enabled).
+				  *
+				  *  \note Used by  COpenGLViewport, CSetOfObjects
+				  */
+				static void renderSetOfObjects(const CListOpenGLObjects &objs);
+
+				/** This method is safe for calling from within ::render() methods \sa renderTextBitmap */
+				static void	renderTextBitmap( const char *str, void *fontStyle );
+
+				/** Return the exact width in pixels for a given string, as will be rendered by renderTextBitmap().
+				  * \sa renderTextBitmap
+				  */
+				static int textBitmapWidth(
+					const std::string &str,
+					mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24 );
+
+			}; // end "glutils"
+
+			/** This method is safe for calling from within ::render() methods \sa renderTextBitmap */
+			static void	renderTextBitmap( const char *str, void *fontStyle ) {
+				glutils::renderTextBitmap(str,fontStyle);
+			}
+
+			/** Return the exact width in pixels for a given string, as will be rendered by renderTextBitmap().
+			  * \sa renderTextBitmap
+			  */
+			static int textBitmapWidth(
+				const std::string &str,
+				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24 ) {
+				return glutils::textBitmapWidth(str,font);
+			}
+
+
+			/** Render a text message in the current rendering context, creating a glViewport in the way (do not call within ::render() methods)
+			  *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the viewport. Negative numbers will wrap to the opposite side of the viewport (e.g. x=-10 means 10px fromt the right).
+			  *   - The text color is defined by (color_r,color_g,color_b), each float numbers in the range [0,1].
+			  *  \sa renderTextBitmap, textBitmapWidth
+			  */
+			static void renderTextBitmap(
+				int screen_x,
+				int screen_y,
+				const std::string &str,
+				float  color_r=1,
+				float  color_g=1,
+				float  color_b=1,
+				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24
+				);
 
 		protected:
 			/** Checks glGetError and throws an exception if an error situation is found */

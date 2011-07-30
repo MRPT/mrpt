@@ -113,7 +113,7 @@ bool CDisk::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	//(x,y,z)
 	//( cos(w)*cos(p)+x, sin(w)*cos(p)*y, -sin(p)+z )
 	//( -sin(w)*cos(r)+cos(w)*sin(p)*sin(r)+x, cos(w)*cos(r)+sin(w)*sin(p)*sin(r)+y, cos(p)*sin(r)*z )
-	CPose3D transf=CPose3D(m_x,m_y,m_z,DEG2RAD(m_yaw),DEG2RAD(m_pitch),DEG2RAD(m_roll))-o;
+	CPose3D transf=this->m_pose-o;
 	double x=transf.x(),y=transf.y(),z=transf.z(),w=transf.yaw(),p=transf.pitch(),r=transf.roll();
 	double coef=sin(w)*sin(r)+cos(w)*sin(p)*cos(r);
 	//coef is the first component of the normal to the transformed Z plane. So, the scalar product between

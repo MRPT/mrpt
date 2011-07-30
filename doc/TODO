@@ -2,18 +2,25 @@
 List of pending stuff to be integrated into MRPT someday:
 
 
-  PRIORITARY
-===============
+ PRIORITY LIST
+==================
 
-- Colour point clouds store colors as u8 insteaf of float.
-
+- Multimetric map: add support for new weighted point map.
+- Image feature tracking: new lightweight version.
 - Fix WifiMaps... (WTF was this??)
-
 
 
   WISHLIST FOR THE THREE WISE MEN
 =====================================
 
+- Make sparse Kalman implementation, if would improve anything.
+- Colour point clouds store colors as u8 insteaf of float.
+- Point cloud maps: replace virtual methods by CRTP
+- 3D rendering windows & glCanvas should have functors for the user to call custom gl primitives.
 - icp-graph-slam
 - Add \ingroup Doxygen tags to document mrpt-* libs
+- CColouredPointsMap no longer has a the "m_min_dist" field: Create a new class?
+- ANN lib: replace by custom implementation, smaller with only KD-trees + SSE optimizations
+   + avoid duplication of point buffers + make unit tests.
+
 

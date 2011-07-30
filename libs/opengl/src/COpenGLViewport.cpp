@@ -375,11 +375,11 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 
 				glOrtho( -Ax,Ax,-Ay,Ay,-0.5*m_clip_max,0.5*m_clip_max);
 			}
-		
+
 			if (myCamera->is6DOFMode())
 			{
 				// In 6DOFMode eye is set viewing towards the direction of the positive Z axis
-				// Up is set as Y axis 
+				// Up is set as Y axis
 				mrpt::poses::CPose3D viewDirection,pose,at;
 				viewDirection.z(+1);
 				pose = myCamera->getPose();
@@ -419,63 +419,8 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 			glEnable(GL_DEPTH_TEST);
 			glDepthFunc(GL_LEQUAL); //GL_LESS
 
-			for (CListOpenGLObjects::const_iterator	itP=objectsToRender->begin();itP!=objectsToRender->end();++itP)
-			{
-				if (!itP->present()) continue;
-				it = itP->pointer(); // Use plain pointers, faster than smart pointers:
-				if (!it->isVisible()) continue;
-
-				// 3D coordinates transformation:
-				glMatrixMode(GL_MODELVIEW);
-				glPushMatrix();
-
-				glPushAttrib(GL_ALL_ATTRIB_BITS);
-				CRenderizable::checkOpenGLError();
-
-				// This is the right order so that the transformation results in the standard matrix.
-				// The order seems to be wrong, but it's not.
-				glTranslated(it->m_x, it->m_y, it->m_z);
-				glRotated(it->m_yaw, 0.0, 0.0, 1.0);
-				glRotated(it->m_pitch, 0.0, 1.0, 0.0);
-				glRotated(it->m_roll, 1.0, 0.0, 0.0);
-
-				// Do scaling after the other transformations!
-				glScalef(it->m_scale_x,it->m_scale_y,it->m_scale_z);
-
-				// Set color:
-				glColor4f( it->m_color_R,it->m_color_G,it->m_color_B,it->m_color_A);
-
-				it->render();
-
-				if (it->m_show_name)
-				{
-					glDisable(GL_DEPTH_TEST);
-					glColor3f(1.f,1.f,1.f);  // Must be called BEFORE glRasterPos3f
-					glRasterPos3f(0.0f,0.0f,0.0f);
-
-					GLfloat		raster_pos[4];
-					glGetFloatv( GL_CURRENT_RASTER_POSITION, raster_pos);
-					float eye_distance= raster_pos[3];
-
-					void *font=NULL;
-					if (eye_distance<2)
-							font = GLUT_BITMAP_TIMES_ROMAN_24;
-					else if(eye_distance<200)
-						font = GLUT_BITMAP_TIMES_ROMAN_10;
-
-					if (font)
-						CRenderizable::renderTextBitmap( it->m_name.c_str(), font);
-
-					glEnable(GL_DEPTH_TEST);
-				}
-
-				glPopAttrib();
-				CRenderizable::checkOpenGLError();
-
-				glPopMatrix();
-				CRenderizable::checkOpenGLError();
-
-			} // end foreach object
+			// Render all the objects:
+			CRenderizable::glutils::renderSetOfObjects(*objectsToRender);
 
         } // end of non "image mode" rendering
 
