@@ -1710,44 +1710,6 @@ void  CPointsMap::loadFromRangeScan(
 	lx_1 = -100; ly_1 = -100; lz_1 = -100;
 	lx_2 = -100; ly_2 = -100;
 
-	MRPT_TODO("Alternate version with only 1 transformation")
-
-	// ------------------------------------------------------
-	//		Pass range scan to a set of 2D points:
-	// ------------------------------------------------------
-	// The "+3" is to assure the buffer has room for the SSE2 method which works with 4-tuples of floats.
-	Eigen::Array<float,Eigen::Dynamic,1>  scan_x(sizeRangeScan+3), scan_y(sizeRangeScan+3);
-
-	// Use a LUT to convert ranges -> (x,y) ; Automatically computed upon first usage.
-	const CSinCosLookUpTableFor2DScans::TSinCosValues & sincos_vals = m_scans_sincos_cache.getSinCosForScan(rangeScan);
-
-	{
-#if MRPT_HAS_SSE2
-		// Number of 4-floats:
-		size_t nPackets = sizeRangeScan/4;
-		if ( (sizeRangeScan & 0x03)!=0) nPackets++;
-
-		const float *ptr_in_scan = &rangeScan.scan[0];
-		const float *ptr_in_cos  = &sincos_vals.ccos[0];
-		const float *ptr_in_sin  = &sincos_vals.csin[0];
-		float *ptr_out_x    = &scan_x[0];
-		float *ptr_out_y    = &scan_y[0];
-		for( ; nPackets; nPackets--, ptr_in_scan+=4, ptr_in_cos+=4, ptr_in_sin+=4, ptr_out_x+=4, ptr_out_y+=4 )
-		{
-			const __m128 scan_4vals = _mm_loadu_ps(ptr_in_scan);  // *Unaligned* load
-
-			_mm_store_ps(ptr_out_x, _mm_mul_ps(scan_4vals, _mm_load_ps(ptr_in_cos) ) );
-			_mm_store_ps(ptr_out_y, _mm_mul_ps(scan_4vals, _mm_load_ps(ptr_in_sin) ) );
-		}
-#else
-		mrpt::vector_float scan_vals( rangeScan.scan ); // Convert from the std::vector
-
-		// Vectorized (optimized) scalar multiplications:
-		scan_x = scan_vals.array() * sincos_vals.ccos.array();
-		scan_y = scan_vals.array() * sincos_vals.csin.array();
-#endif
-	}
-
 	// Minimum distance between points to reduce high density scans:
 	const bool   useMinDist = insertionOptions.minDistBetweenLaserPoints>0;
 	const float  minDistSqrBetweenLaserPoints = square( insertionOptions.minDistBetweenLaserPoints );
@@ -1774,6 +1736,12 @@ void  CPointsMap::loadFromRangeScan(
 		z.resize( expectedMaxSize );
 	}
 
+	// ------------------------------------------------------
+	//		Pass range scan to a set of 2D points:
+	// ------------------------------------------------------
+	// Use a LUT to convert ranges -> (x,y) ; Automatically computed upon first usage.
+	const CSinCosLookUpTableFor2DScans::TSinCosValues & sincos_vals = m_scans_sincos_cache.getSinCosForScan(rangeScan);
+
 	// Build list of points in global coordinates:
 	Eigen::Array<float,Eigen::Dynamic,1>  scan_gx(sizeRangeScan+3), scan_gy(sizeRangeScan+3),scan_gz(sizeRangeScan+3);  // The +3 is to assure there's room for "nPackets*4"
 	{
@@ -1786,7 +1754,10 @@ void  CPointsMap::loadFromRangeScan(
 		//   scan_gx = m00*scan_x+m01*scan_y+m03;
 		//   scan_gy = m10*scan_x+m11*scan_y+m13;
 		//   scan_gz = m20*scan_x+m21*scan_y+m23;
-
+		//  
+		//  With: scan_x = ccos*range
+		//        scan_y = csin*range
+		//
 		const __m128 m00_4val = _mm_set1_ps(m00); // load 4 copies of the same value
 		const __m128 m01_4val = _mm_set1_ps(m01);
 		const __m128 m03_4val = _mm_set1_ps(m03);
@@ -1799,24 +1770,37 @@ void  CPointsMap::loadFromRangeScan(
 		const __m128 m21_4val = _mm_set1_ps(m21);
 		const __m128 m23_4val = _mm_set1_ps(m23);
 
-		const float *ptr_in_x = &scan_x[0];
-		const float *ptr_in_y = &scan_y[0];
+		const float *ptr_in_scan = &rangeScan.scan[0];
+		const float *ptr_in_cos  = &sincos_vals.ccos[0];
+		const float *ptr_in_sin  = &sincos_vals.csin[0];
+
 		float *ptr_out_x    = &scan_gx[0];
 		float *ptr_out_y    = &scan_gy[0];
 		float *ptr_out_z    = &scan_gz[0];
 
-		for( ; nPackets; nPackets--, ptr_in_x+=4, ptr_in_y+=4, ptr_out_x+=4, ptr_out_y+=4, ptr_out_z+=4 )
+		for( ; nPackets; nPackets--, ptr_in_scan+=4, ptr_out_x+=4, ptr_out_y+=4, ptr_out_z+=4 )
 		{
-			const __m128 xs = _mm_load_ps(ptr_in_x); // We can assume here it's aligned
-			const __m128 ys = _mm_load_ps(ptr_in_y);
+			const __m128 scan_4vals = _mm_loadu_ps(ptr_in_scan);  // *Unaligned* load
+
+			const __m128 xs = _mm_mul_ps(scan_4vals, _mm_load_ps(ptr_in_cos) );
+			const __m128 ys = _mm_mul_ps(scan_4vals, _mm_load_ps(ptr_in_sin) );
 
 			_mm_store_ps(ptr_out_x, _mm_add_ps(m03_4val, _mm_add_ps( _mm_mul_ps(xs,m00_4val), _mm_mul_ps(ys,m01_4val) ) ) );
 			_mm_store_ps(ptr_out_y, _mm_add_ps(m13_4val, _mm_add_ps( _mm_mul_ps(xs,m10_4val), _mm_mul_ps(ys,m11_4val) ) ) );
 			_mm_store_ps(ptr_out_z, _mm_add_ps(m23_4val, _mm_add_ps( _mm_mul_ps(xs,m20_4val), _mm_mul_ps(ys,m21_4val) ) ) );
 		}
 
-
 #else
+		// The "+3" is to assure the buffer has room for the SSE2 method which works with 4-tuples of floats.
+		Eigen::Array<float,Eigen::Dynamic,1>  scan_x(sizeRangeScan+3), scan_y(sizeRangeScan+3);
+
+		mrpt::vector_float scan_vals( rangeScan.scan ); // Convert from the std::vector
+
+		// Vectorized (optimized) scalar multiplications:
+		scan_x = scan_vals.array() * sincos_vals.ccos.array();
+		scan_y = scan_vals.array() * sincos_vals.csin.array();
+
+		// To global:
 		// Non (manually) vectorized version:
 		scan_gx = m00*scan_x+m01*scan_y+m03;
 		scan_gy = m10*scan_x+m11*scan_y+m13;
