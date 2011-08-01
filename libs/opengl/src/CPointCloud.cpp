@@ -81,8 +81,8 @@ void   CPointCloud::render() const
 	m_last_rendered_count_ongoing = 0;
 
 	// Info needed by octree renderer:
-	TRenderInfo ri;
-	getCurrentRenderingInfo(ri);
+	gl_utils::TRenderInfo ri;
+	gl_utils::getCurrentRenderingInfo(ri);
 
 	if ( m_colorFromDepth )
 	{
@@ -108,7 +108,7 @@ void   CPointCloud::render() const
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
-	else 
+	else
 	{
 		glDisable(GL_BLEND);
 	}
@@ -346,7 +346,7 @@ void CPointCloud::PLY_import_set_vertex_count(const size_t N)
 	this->resize(N);
 }
 
-/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point. 
+/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
   *  \param pt_color Will be NULL if the loaded file does not provide color info.
   */
 void CPointCloud::PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color)
@@ -360,17 +360,17 @@ size_t CPointCloud::PLY_export_get_vertex_count() const
 	return this->size();
 }
 
-/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point. 
+/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
   *  \param pt_color Will be NULL if the loaded file does not provide color info.
   */
 void CPointCloud::PLY_export_get_vertex(
-	const size_t idx, 
-	mrpt::math::TPoint3Df &pt, 
+	const size_t idx,
+	mrpt::math::TPoint3Df &pt,
 	bool &pt_has_color,
 	mrpt::utils::TColorf &pt_color) const
 {
 	pt_has_color=false;
-	
+
 	pt.x = m_xs[idx];
 	pt.y = m_ys[idx];
 	pt.z = m_zs[idx];

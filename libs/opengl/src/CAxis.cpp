@@ -92,7 +92,7 @@ void   CAxis::render_dl() const
 		for (float i = m_xmin ; i<= m_xmax ; i = i + m_frecuency)
 		{
 			os::sprintf(n,50,"%.02f",i);
-			gl_utils::glDrawText(n, 0.25 /* scale */,  gl_utils::FILL );
+			gl_utils::glDrawText(n, 0.25 /* scale */,  mrpt::opengl::FILL );
 			glTranslatef(-m_frecuency,0,0);
 		}
 
@@ -101,7 +101,7 @@ void   CAxis::render_dl() const
 		glTranslatef(m_xmax+0.5f*m_frecuency,0,0);
 		glRotatef(180,0,0,1);
 		glRotatef(90,1,0,0);
-		gl_utils::glDrawText("+X", 0.3, gl_utils::NICE );
+		gl_utils::glDrawText("+X", 0.3, mrpt::opengl::NICE );
 		glPopMatrix();
 
 
@@ -115,7 +115,7 @@ void   CAxis::render_dl() const
 			if (std::abs(i)>1e-4)
 			{	// Dont draw the "0" more than once
 				os::sprintf(n,50,"%.02f",i);
-				gl_utils::glDrawText(n, 0.25 /* scale */,  gl_utils::FILL );
+				gl_utils::glDrawText(n, 0.25 /* scale */,  mrpt::opengl::FILL );
 			}
 			glTranslatef(m_frecuency,0,0);
 		}
@@ -125,7 +125,7 @@ void   CAxis::render_dl() const
 		glTranslatef(0,m_ymax+1.0f*m_frecuency,0);
 		glRotatef(-90,0,0,1);
 		glRotatef(90,1,0,0);
-		gl_utils::glDrawText("+Y", 0.3, gl_utils::NICE );
+		gl_utils::glDrawText("+Y", 0.3, mrpt::opengl::NICE );
 		glPopMatrix();
 
 
@@ -139,7 +139,7 @@ void   CAxis::render_dl() const
 			if (std::abs(i)>1e-4)
 			{	// Dont draw the "0" more than once
 				os::sprintf(n,50,"%.02f",i);
-				gl_utils::glDrawText(n, 0.25 /* scale */,  gl_utils::FILL );
+				gl_utils::glDrawText(n, 0.25 /* scale */,  mrpt::opengl::FILL );
 			}
 			glTranslatef(0,m_frecuency,0);
 		}
@@ -149,7 +149,7 @@ void   CAxis::render_dl() const
 		glTranslatef(0,0,m_zmax+0.5f*m_frecuency);
 		glRotatef(180,0,0,1);
 		glRotatef(90,1,0,0);
-		gl_utils::glDrawText("+Z", 0.3, gl_utils::NICE );
+		gl_utils::glDrawText("+Z", 0.3, mrpt::opengl::NICE );
 		glPopMatrix();
 
 	}

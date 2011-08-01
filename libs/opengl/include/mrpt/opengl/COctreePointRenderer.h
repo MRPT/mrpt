@@ -91,7 +91,7 @@ namespace mrpt
 			/** Render the entire octree recursively.
 			  * Should be called from children's render() method.
 			  */
-			void octree_render(const mrpt::opengl::CRenderizable::TRenderInfo &ri ) const
+			void octree_render(const mrpt::opengl::gl_utils::TRenderInfo &ri ) const
 			{
 				m_visible_octree_nodes_ongoing = 0;
 
@@ -216,7 +216,7 @@ namespace mrpt
 			/** Render a given node. */
 			void octree_recursive_render(
 				size_t node_idx,
-				const mrpt::opengl::CRenderizable::TRenderInfo &ri,
+				const mrpt::opengl::gl_utils::TRenderInfo &ri,
 				TPixelCoordf cr_px[8],
 				float        cr_z[8],
 				bool         corners_are_all_computed = true,
@@ -246,7 +246,7 @@ namespace mrpt
 						keep_min(px_min.x,cr_px[i].x); keep_min(px_min.y,cr_px[i].y);
 						keep_max(px_max.x,cr_px[i].x); keep_max(px_max.y,cr_px[i].y);
 					}
-					
+
 					const bool any_cr_zs_neg = (cr_z[0]<0 ||cr_z[1]<0 ||cr_z[2]<0 ||cr_z[3]<0 ||cr_z[4]<0 ||cr_z[5]<0 ||cr_z[6]<0 ||cr_z[7]<0);
 					const bool any_cr_zs_pos = (cr_z[0]>0 ||cr_z[1]>0 ||cr_z[2]>0 ||cr_z[3]>0 ||cr_z[4]>0 ||cr_z[5]>0 ||cr_z[6]>0 ||cr_z[7]>0);
 					const bool box_crosses_image_plane = any_cr_zs_pos && any_cr_zs_neg;
@@ -265,9 +265,9 @@ namespace mrpt
 						// If we are here, it seems at least a part of the Box is visible:
 						m_visible_octree_nodes_ongoing++;
 
-						const float render_area_sqpixels = trust_me_youre_visible ? 
-							approx_area_sqpixels 
-							: 							
+						const float render_area_sqpixels = trust_me_youre_visible ?
+							approx_area_sqpixels
+							:
 							std::abs(px_min.x-px_max.x) * std::abs(px_min.y-px_max.y);
 
 						// OK: Add to list of rendering-pending:
@@ -276,13 +276,13 @@ namespace mrpt
 				}
 				else
 				{	// Render children nodes:
-					// If ALL my 8 corners are within the screen, tell our children that they 
+					// If ALL my 8 corners are within the screen, tell our children that they
 					//  won't need to compute anymore, since all of them and their children are visible as well:
 					bool children_are_all_visible_for_sure = true;
 
 					if (!trust_me_youre_visible) // Trust my parent... otherwise:
 					{
-						for (int i=0;i<8;i++) 
+						for (int i=0;i<8;i++)
 						{
 							if (!( cr_px[i].x>=0 && cr_px[i].y>=0 && cr_px[i].x<ri.vp_width && cr_px[i].y<ri.vp_height ))
 							{
@@ -297,10 +297,10 @@ namespace mrpt
 					{
 						TPixelCoordf child_cr_px[8]; // No need to initialize
 						float        child_cr_z[8];  // No need to initialize
-						
+
 						// Approximate area of the children nodes:
 						const float approx_child_area = trust_me_youre_visible ?
-							approx_area_sqpixels/8.0f 
+							approx_area_sqpixels/8.0f
 							:
 							std::abs(px_min.x-px_max.x) * std::abs(px_min.y-px_max.y) / 8.0f;
 

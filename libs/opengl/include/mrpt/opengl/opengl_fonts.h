@@ -42,6 +42,7 @@ namespace mrpt
 		  */
 		enum TOpenGLFont
 		{
+			MRPT_GLUT_BITMAP_NONE = -1,
 			MRPT_GLUT_BITMAP_TIMES_ROMAN_10 = 0,
 			MRPT_GLUT_BITMAP_TIMES_ROMAN_24 = 1,
 			MRPT_GLUT_BITMAP_HELVETICA_10 = 2,
@@ -49,14 +50,43 @@ namespace mrpt
 			MRPT_GLUT_BITMAP_HELVETICA_18 = 4
 		};
 
+		/** Different style for vectorized font rendering \sa T2DTextData */
+		enum TOpenGLFontStyle {
+			FILL = 0,       ///< renders glyphs as filled polygons
+			OUTLINE = 1,    ///< renders glyphs as outlines with GL_LINES
+			NICE = 2        ///< renders glyphs filled with antialiased outlines
+		};
+
 		/** An auxiliary struct for holding a list of text messages in some mrpt::opengl & mrpt::gui classes
-		*/
+		  *  The font can be either a bitmapped or a vectorized font.
+		  *  \sa mrpt::opengl::CTextMessageCapable
+		  */
 		struct OPENGL_IMPEXP T2DTextData
 		{
+			T2DTextData() :
+				font(MRPT_GLUT_BITMAP_NONE),
+				vfont_name(),
+				vfont_spacing(1.5),
+				vfont_kerning(0.1)
+			{
+			}
+
 			std::string 			text;
 			mrpt::utils::TColorf	color;
-			mrpt::opengl::TOpenGLFont font;
 			double					x,y;
+			/** @name Bitmapped font params
+			    @{ */
+			mrpt::opengl::TOpenGLFont font;
+			/** @} */
+
+			/** @name Vectorized font params - Applicable only if font==MRPT_GLUT_BITMAP_NONE
+			    @{ */
+			std::string             vfont_name;  //!< Vectorized font name ("sans","mono","serif")
+			double                  vfont_scale; //!< Size of characters
+			TOpenGLFontStyle        vfont_style;
+			double                  vfont_spacing; //!< Refer to mrpt::opengl::gl_utils::glDrawText
+			double                  vfont_kerning; //!< Refer to mrpt::opengl::gl_utils::glDrawText
+			/** @} */
 		};
 
 	}

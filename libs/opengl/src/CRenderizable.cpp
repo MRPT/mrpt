@@ -169,7 +169,7 @@ void  CRenderizable::readFromStreamRender(CStream &in)
 	float yaw_deg,pitch_deg,roll_deg;
 
 	mrpt::utils::TColorf col;
-	in >> col.R >> col.G >> col.B >> col.A; 
+	in >> col.R >> col.G >> col.B >> col.A;
 	m_color = mrpt::utils::TColor(col.R*255,col.G*255,col.B*255,col.A*255);
 
 	in >> f; m_pose.x(f);
@@ -268,25 +268,6 @@ CRenderizablePtr &mrpt::opengl::operator<<(CRenderizablePtr &r,const CPose3D &p)
 	return r;
 }
 
-void CRenderizable::renderTriangleWithNormal( const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2,const mrpt::math::TPoint3D &p3 )
-{
-#if MRPT_HAS_OPENGL_GLUT
-	float	ax= p2.x - p1.x;
-    float	ay= p2.y - p1.y;
-	float	az= p2.z - p1.z;
-
-	float	bx= p3.x - p1.x;
-	float	by= p3.y - p1.y;
-	float	bz= p3.z - p1.z;
-
-	glNormal3f(ay*bz-az*by,-ax*bz+az*bx,ax*by-ay*bx);
-
-	glVertex3f(p1.x,p1.y,p1.z);
-	glVertex3f(p2.x,p2.y,p2.z);
-	glVertex3f(p3.x,p3.y,p3.z);
-#endif
-}
-
 CRenderizable& CRenderizable::setColor_u8( const mrpt::utils::TColor &c)
 {
 	m_color.R = c.R;
@@ -297,44 +278,6 @@ CRenderizable& CRenderizable::setColor_u8( const mrpt::utils::TColor &c)
 }
 
 
-/** Gather useful information on the render parameters.
-  *  It can be called from within the render() method of derived classes.
-  */
-void CRenderizable::getCurrentRenderingInfo(TRenderInfo &ri) const
-{
-#if MRPT_HAS_OPENGL_GLUT
-	// Viewport geometry:
-	GLint	win_dims[4];
-	glGetIntegerv( GL_VIEWPORT, win_dims );
-	ri.vp_x      = win_dims[0];
-	ri.vp_y      = win_dims[1];
-	ri.vp_width  = win_dims[2];
-	ri.vp_height = win_dims[3];
-
-	// Get the inverse camera position:
-	GLfloat  mat_proj[16];
-	glGetFloatv(GL_PROJECTION_MATRIX,mat_proj);
-	ri.proj_matrix = Eigen::Matrix<float,4,4,Eigen::ColMajor>(mat_proj);
-
-	// Extract the camera position:
-	Eigen::Matrix<float,4,1> cam_pose_hm = ri.proj_matrix.inverse().col(3);
-	if (cam_pose_hm[3]!=0)
-	{
-		ri.camera_position.x = cam_pose_hm[0]/cam_pose_hm[3];
-		ri.camera_position.y = cam_pose_hm[1]/cam_pose_hm[3];
-		ri.camera_position.z = cam_pose_hm[2]/cam_pose_hm[3];
-	}
-	else ri.camera_position= mrpt::math::TPoint3Df(0,0,0);
-
-	// Get the model transformation:
-	GLfloat  mat_mod[16];
-	glGetFloatv(GL_MODELVIEW_MATRIX,mat_mod);
-	ri.model_matrix = Eigen::Matrix<float,4,4,Eigen::ColMajor>(mat_mod);
-
-	// PROJ * MODEL
-	ri.full_matrix = ri.proj_matrix * ri.model_matrix;
-#endif
-}
 
 /** This method is safe for calling from within ::render() methods \sa renderTextBitmap */
 void CRenderizable::renderTextBitmap( const char *str, void *fontStyle )

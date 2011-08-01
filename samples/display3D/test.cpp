@@ -137,7 +137,7 @@ void TestDisplay3D()
 	win.unlockAccess3DScene();
 
 	// Texts:
-	win.addTextMessage(0.01,0.85, "This is a 2D message", TColorf(1,1,1),0,MRPT_GLUT_BITMAP_TIMES_ROMAN_10 );
+	win.addTextMessage(0.01,0.85, "This is a 2D message", TColorf(1,1,1),"sans",11, mrpt::opengl::NICE, 0);
 
 	win.setCameraElevationDeg( 25.0f );
 	//win.setCameraProjective(false);
@@ -180,20 +180,23 @@ void TestDisplay3D()
 			R2* cos(W2*t)*cos(Q2*t) );
 
 
+		win.addTextMessage(0.01,0.85, "This is a 2D message", TColorf(1,0,0),"sans",8, mrpt::opengl::NICE, 0);
+
 		win.addTextMessage(0.02,0.02,  // X,Y<=1 means coordinates are factors over the entire viewport area.
 			format("ball#1 pos: %.02f %.02f %.02f ",obj1->getPoseX(),obj1->getPoseY(),obj1->getPoseZ()),
 			TColorf(.8,.8,.8),
-			10, // An arbitrary ID to always overwrite the same, previous 2D text message
-			MRPT_GLUT_BITMAP_HELVETICA_12
+			"sans",14,  // font name & size
+			mrpt::opengl::FILL,
+			10 // An arbitrary ID to always overwrite the same, previous 2D text message
 			);
 
 		win.addTextMessage(5,-15,  // |X|,|Y|>1 means absolute coordinates, negative means from the top instead of the bottom.
 			format("Time: %s", mrpt::system::dateTimeLocalToString( mrpt::system::now() ).c_str() ),
 			TColorf(1,1,1),
-			20, // An arbitrary ID to always overwrite the same, previous 2D text message
-			MRPT_GLUT_BITMAP_HELVETICA_12
+			"mono",9,  // font name & size
+			mrpt::opengl::NICE,
+			20 // An arbitrary ID to always overwrite the same, previous 2D text message
 			);
-
 
 		// Show management of (x,y) mouse coordinates and 3D rays:
 		// ------------------------------------------------------------

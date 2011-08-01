@@ -64,7 +64,7 @@ namespace mrpt
 		protected:
 			std::string		m_str;
             std::string		m_fontName;
-            gl_utils::TEXT_STYLE m_text_style;
+            TOpenGLFontStyle m_text_style;
 			double          m_text_spacing;
 			double          m_text_kerning;
 
@@ -86,12 +86,12 @@ namespace mrpt
 			inline const std::string &getFont() const { return m_fontName; }
 
 			/** Change drawing style: FILL, OUTLINE, NICE */
-			void setTextStyle(const mrpt::opengl::gl_utils::TEXT_STYLE text_style) {
+			void setTextStyle(const mrpt::opengl::TOpenGLFontStyle text_style) {
 				m_text_style = text_style;
 				CRenderizableDisplayList::notifyChange();
 			}
 			/** Gets the current drawing style */
-			mrpt::opengl::gl_utils::TEXT_STYLE getTextStyle() const { return m_text_style; }
+			mrpt::opengl::TOpenGLFontStyle getTextStyle() const { return m_text_style; }
 
 			void setTextSpacing(const double text_spacing) {
 				m_text_spacing = text_spacing;
@@ -115,7 +115,7 @@ namespace mrpt
 				const std::string &str,
 				const std::string &fontName = std::string("sans"),
 				const double scale = 1.0,
-				const mrpt::opengl::gl_utils::TEXT_STYLE text_style = mrpt::opengl::gl_utils::FILL,
+				const mrpt::opengl::TOpenGLFontStyle text_style = mrpt::opengl::FILL,
 				const double text_spacing = 1.5,
 				const double text_kerning = 0.1 )
 				{
@@ -128,7 +128,7 @@ namespace mrpt
 				const std::string &str = std::string(""),
 				const std::string &fontName = std::string("sans"),
 				const double scale = 1.0,
-				const mrpt::opengl::gl_utils::TEXT_STYLE text_style = mrpt::opengl::gl_utils::FILL,
+				const mrpt::opengl::TOpenGLFontStyle text_style = mrpt::opengl::FILL,
 				const double text_spacing = 1.5,
 				const double text_kerning = 0.1 );
 

@@ -375,6 +375,24 @@ void C3DWindowDialog::addTextMessage(
 #endif
 }
 
+void C3DWindowDialog::addTextMessage(
+	const double x_frac,
+	const double y_frac,
+	const std::string &text,
+	const mrpt::utils::TColorf &color,
+	const std::string  &font_name,
+	const double  font_size,
+	const mrpt::opengl::TOpenGLFontStyle font_style,
+	const size_t  unique_index,
+	const double  font_spacing,
+	const double  font_kerning
+	)
+{
+#if MRPT_HAS_OPENGL_GLUT
+	m_canvas->m_text_msgs.addTextMessage( x_frac, y_frac, text,color, font_name, font_size, font_style, unique_index, font_spacing, font_kerning );
+#endif
+}
+
 
 
 #endif // MRPT_HAS_WXWIDGETS
@@ -799,6 +817,50 @@ void CDisplayWindow3D::addTextMessage(
         REQ->vector_x[3] = color.G;
         REQ->vector_x[4] = color.B;
         REQ->x 			= int(font);
+        REQ->y			= int(unique_index);
+
+        WxSubsystem::pushPendingWxRequest( REQ );
+	}
+#endif
+}
+
+/*---------------------------------------------------------------
+					addTextMessage
+ ---------------------------------------------------------------*/
+void CDisplayWindow3D::addTextMessage(
+	const double x_frac,
+	const double y_frac,
+	const std::string &text,
+	const mrpt::utils::TColorf &color,
+	const std::string  &font_name,
+	const double  font_size,
+	const mrpt::opengl::TOpenGLFontStyle font_style,
+	const size_t  unique_index,
+	const double  font_spacing,
+	const double  font_kerning
+	)
+{
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
+	if (win)
+	{
+        // Send request:
+        // Add a 2D text message:
+        WxSubsystem::TRequestToWxMainThread  *REQ = new WxSubsystem::TRequestToWxMainThread[1];
+        REQ->source3D = this;
+        REQ->OPCODE   = 362;
+        REQ->str 		= text;
+        REQ->plotName   = font_name;
+        REQ->vector_x.resize(8);
+        REQ->vector_x[0] = x_frac;
+        REQ->vector_x[1] = y_frac;
+        REQ->vector_x[2] = color.R;
+        REQ->vector_x[3] = color.G;
+        REQ->vector_x[4] = color.B;
+        REQ->vector_x[5] = font_size;
+        REQ->vector_x[6] = font_spacing;
+        REQ->vector_x[7] = font_kerning;
+        REQ->x			= int(font_style);
         REQ->y			= int(unique_index);
 
         WxSubsystem::pushPendingWxRequest( REQ );

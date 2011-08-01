@@ -74,6 +74,20 @@ namespace mrpt
 				const mrpt::opengl::TOpenGLFont font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24
 				);
 
+			/// \overload with more font parameters - refer to mrpt::opengl::gl_utils::glDrawText()
+			void addTextMessage(
+				const double x_frac,
+				const double y_frac,
+				const std::string &text,
+				const mrpt::utils::TColorf &color,
+				const std::string  &font_name,
+				const double  font_size,
+				const mrpt::opengl::TOpenGLFontStyle font_style = mrpt::opengl::NICE,
+				const size_t  unique_index = 0,
+				const double  font_spacing = 1.5,
+				const double  font_kerning = 0.1
+				);
+
 		}; // end of CTextMessageCapable
 
 	} // end namespace

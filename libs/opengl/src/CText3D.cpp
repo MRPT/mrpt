@@ -47,7 +47,7 @@ CText3D::CText3D(
 	const std::string &str,
 	const std::string &fontName,
 	const double scale ,
-	const mrpt::opengl::gl_utils::TEXT_STYLE text_style,
+	const mrpt::opengl::TOpenGLFontStyle text_style,
 	const double text_spacing ,
 	const double text_kerning ) :
 		m_str ( str ),
@@ -122,7 +122,7 @@ void  CText3D::readFromStream(CStream &in,int version)
 				>> m_text_spacing
 				>> m_text_kerning;
 
-			m_text_style = gl_utils::TEXT_STYLE(i);
+			m_text_style = TOpenGLFontStyle(i);
 
 		} break;
 	default:

@@ -111,61 +111,61 @@ void CBox::render_dl() const	{
 		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 
 		// Front face:
-		renderTriangleWithNormal(
+		gl_utils::renderTriangleWithNormal(
 			TPoint3D(m_corner_max.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_max.x,m_corner_min.y,m_corner_max.z) );
-		renderTriangleWithNormal(
+		gl_utils::renderTriangleWithNormal(
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_max.z),
 			TPoint3D(m_corner_max.x,m_corner_min.y,m_corner_max.z) );
 
 		// Back face:
-		renderTriangleWithNormal(
+		gl_utils::renderTriangleWithNormal(
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_min.z),
 			TPoint3D(m_corner_min.x,m_corner_max.y,m_corner_min.z),
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_max.z) );
-		renderTriangleWithNormal(
+		gl_utils::renderTriangleWithNormal(
 			TPoint3D(m_corner_min.x,m_corner_max.y,m_corner_min.z),
 			TPoint3D(m_corner_min.x,m_corner_max.y,m_corner_max.z),
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_max.z) );
 
 		// Left face:
-		renderTriangleWithNormal(
+		gl_utils::renderTriangleWithNormal(
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_min.x,m_corner_max.y,m_corner_min.z),
 			TPoint3D(m_corner_min.x,m_corner_max.y,m_corner_max.z) );
-		renderTriangleWithNormal(
+		gl_utils::renderTriangleWithNormal(
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_max.z),
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_min.x,m_corner_max.y,m_corner_max.z) );
 
 		// Right face:
-		renderTriangleWithNormal(
+		gl_utils::renderTriangleWithNormal(
 			TPoint3D(m_corner_max.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_min.z),
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_max.z) );
-		renderTriangleWithNormal(
+		gl_utils::renderTriangleWithNormal(
 			TPoint3D(m_corner_max.x,m_corner_min.y,m_corner_max.z),
 			TPoint3D(m_corner_max.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_max.z) );
 
 		// Bottom face:
-		renderTriangleWithNormal(
+		gl_utils::renderTriangleWithNormal(
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_max.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_min.z) );
-		renderTriangleWithNormal(
+		gl_utils::renderTriangleWithNormal(
 			TPoint3D(m_corner_min.x,m_corner_max.y,m_corner_min.z),
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_min.z) );
 
 		// Top face:
-		renderTriangleWithNormal(
+		gl_utils::renderTriangleWithNormal(
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_max.z),
 			TPoint3D(m_corner_max.x,m_corner_min.y,m_corner_max.z),
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_max.z) );
-		renderTriangleWithNormal(
+		gl_utils::renderTriangleWithNormal(
 			TPoint3D(m_corner_min.x,m_corner_max.y,m_corner_max.z),
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_max.z),
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_max.z) );

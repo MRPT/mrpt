@@ -468,6 +468,25 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
                     }
                 }
                 break;
+                // Add a 2D text message: vector_x: [0]:x, [1]:y, [2,3,4]:R G B, "x": enum of desired font. "y": unique index, "str": String.
+                case 362:
+                if (msg->source3D )
+				{
+                    C3DWindowDialog  *wnd = (C3DWindowDialog*) msg->source3D->getWxObject();
+                    if (wnd)
+                    {
+                        wnd->addTextMessage(
+							msg->vector_x[0],msg->vector_x[1],
+							msg->str,
+							mrpt::utils::TColorf(msg->vector_x[2],msg->vector_x[3],msg->vector_x[4]),
+							msg->plotName,
+							msg->vector_x[5],
+							mrpt::opengl::TOpenGLFontStyle(msg->x),
+							size_t(msg->y),
+							msg->vector_x[6],msg->vector_x[7] );
+                    }
+                }
+                break;
 
                 // DESTROY EXISTING WINDOW:
                 case 399:

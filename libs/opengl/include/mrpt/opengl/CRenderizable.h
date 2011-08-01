@@ -157,7 +157,7 @@ namespace mrpt
 
 			inline const mrpt::utils::TColor &getColor_u8() const { return m_color; }  //!< Returns the object color property as a TColor
 			/*** Changes the default object color \return a ref to this */
-			virtual CRenderizable& setColor_u8( const mrpt::utils::TColor &c);  
+			virtual CRenderizable& setColor_u8( const mrpt::utils::TColor &c);
 
 			/** Set the color components of this object (R,G,B,Alpha, in the range 0-1)  \return a ref to this */
 			inline CRenderizable& setColor_u8( uint8_t R, uint8_t G, uint8_t B, uint8_t A=255) { return setColor_u8(mrpt::utils::TColor(R,G,B,A)); }
@@ -179,46 +179,16 @@ namespace mrpt
 			  */
 			virtual void  render() const = 0;
 
-
 			/** Simulation of ray-trace, given a pose. Returns true if the ray effectively collisions with the object (returning the distance to the origin of the ray in "dist"), or false in other case. "dist" variable yields undefined behaviour when false is returned
 			  */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
 
-			/** Information about the rendering process being issued. \sa See getCurrentRenderingInfo for more details */
-			struct OPENGL_IMPEXP TRenderInfo
-			{
-				int vp_x, vp_y, vp_width, vp_height;    //!< Rendering viewport geometry (in pixels)
-				Eigen::Matrix<float,4,4,Eigen::ColMajor>  proj_matrix;  //!< The 4x4 projection matrix
-				Eigen::Matrix<float,4,4,Eigen::ColMajor>  model_matrix;  //!< The 4x4 model transformation matrix
-				Eigen::Matrix<float,4,4,Eigen::ColMajor>  full_matrix;  //!< PROJ * MODEL
-				mrpt::math::TPoint3Df   camera_position;  //!< The 3D location of the camera
 
-				/** Computes the normalized coordinates (range=[0,1]) on the current rendering viewport of a
-				  * point with local coordinates (wrt to the current model matrix) of (x,y,z).
-				  *  The output proj_z_depth is the real distance from the eye to the point.
-				  */
-				void projectPoint(float x,float y,float z, float &proj_x, float &proj_y, float &proj_z_depth) const
-				{
-					const Eigen::Matrix<float,4,1,Eigen::ColMajor> proj = full_matrix * Eigen::Matrix<float,4,1,Eigen::ColMajor>(x,y,z,1);
-					proj_x = proj[3] ? proj[0]/proj[3] : 0;
-					proj_y = proj[3] ? proj[1]/proj[3] : 0;
-					proj_z_depth = proj[2];
-				}
-
-				/** Exactly like projectPoint but the (x,y) projected coordinates are given in pixels instead of normalized coordinates. */
-				void projectPointPixels(float x,float y,float z, float &proj_x_px, float &proj_y_px, float &proj_z_depth) const
-				{
-					projectPoint(x,y,z,proj_x_px,proj_y_px,proj_z_depth);
-					proj_x_px = (proj_x_px+1.0f)*(vp_width/2);
-					proj_y_px = (proj_y_px+1.0f)*(vp_height/2);
-				}
-			};
-
-			/** This method is safe for calling from within ::render() methods \sa renderTextBitmap */
+			/** This method is safe for calling from within ::render() methods \sa renderTextBitmap, mrpt::opengl::gl_utils */
 			static void	renderTextBitmap( const char *str, void *fontStyle );
 
 			/** Return the exact width in pixels for a given string, as will be rendered by renderTextBitmap().
-			  * \sa renderTextBitmap
+			  * \sa renderTextBitmap, mrpt::opengl::gl_utils
 			  */
 			static int textBitmapWidth(
 				const std::string &str,
@@ -227,7 +197,7 @@ namespace mrpt
 			/** Render a text message in the current rendering context, creating a glViewport in the way (do not call within ::render() methods)
 			  *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the viewport. Negative numbers will wrap to the opposite side of the viewport (e.g. x=-10 means 10px fromt the right).
 			  *   - The text color is defined by (color_r,color_g,color_b), each float numbers in the range [0,1].
-			  *  \sa renderTextBitmap, textBitmapWidth
+			  *  \sa renderTextBitmap, textBitmapWidth, mrpt::opengl::gl_utils
 			  */
 			static void renderTextBitmap(
 				int screen_x,
@@ -242,8 +212,6 @@ namespace mrpt
 		protected:
 			/** Checks glGetError and throws an exception if an error situation is found */
 			static void checkOpenGLError();
-			/** Can be used by derived classes to draw a triangle with a normal vector computed automatically - to be called within a glBegin()-glEnd() block. */
-			static void renderTriangleWithNormal( const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2,const mrpt::math::TPoint3D &p3 );
 
 			void  writeToStreamRender(utils::CStream &out) const;
 			void  readFromStreamRender(utils::CStream &in);
@@ -252,20 +220,6 @@ namespace mrpt
 			static unsigned int getNewTextureNumber();
 			static void releaseTextureName(unsigned int i);
 
-			/** Gather useful information on the render parameters.
-			  *  It can be called from within the render() method of derived classes, and
-			  *   the returned matrices can be used to determine whether a given point (lx,ly,lz)
-			  *   in local coordinates wrt the object being rendered falls within the screen or not:
-			  * \code
-			  *  TRenderInfo ri;
-			  *  getCurrentRenderingInfo(ri);
-			  *  Eigen::Matrix<float,4,4> M= ri.proj_matrix * ri.model_matrix * HomogeneousMatrix(lx,ly,lz);
-			  *  const float rend_x = M(0,3)/M(3,3);
-			  *  const float rend_y = M(1,3)/M(3,3);
-			  * \endcode
-			  *  where (rend_x,rend_y) are both in the range [-1,1].
-			  */
-			void getCurrentRenderingInfo(TRenderInfo &ri) const;
 		};
 		/**
 		  * Applies a CPose3D transformation to the object. Note that this method doesn't <i>set</i> the pose to the given value, but <i>combines</i> it with the existing one.

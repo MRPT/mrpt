@@ -45,6 +45,43 @@ namespace mrpt
 		  */
 		namespace gl_utils
 		{
+
+			/** @name Data types for mrpt::opengl::gl_utils
+			    @{ */
+
+			/** Information about the rendering process being issued. \sa See getCurrentRenderingInfo for more details */
+			struct OPENGL_IMPEXP TRenderInfo
+			{
+				int vp_x, vp_y, vp_width, vp_height;    //!< Rendering viewport geometry (in pixels)
+				Eigen::Matrix<float,4,4,Eigen::ColMajor>  proj_matrix;  //!< The 4x4 projection matrix
+				Eigen::Matrix<float,4,4,Eigen::ColMajor>  model_matrix;  //!< The 4x4 model transformation matrix
+				Eigen::Matrix<float,4,4,Eigen::ColMajor>  full_matrix;  //!< PROJ * MODEL
+				mrpt::math::TPoint3Df   camera_position;  //!< The 3D location of the camera
+
+				/** Computes the normalized coordinates (range=[0,1]) on the current rendering viewport of a
+				  * point with local coordinates (wrt to the current model matrix) of (x,y,z).
+				  *  The output proj_z_depth is the real distance from the eye to the point.
+				  */
+				void projectPoint(float x,float y,float z, float &proj_x, float &proj_y, float &proj_z_depth) const
+				{
+					const Eigen::Matrix<float,4,1,Eigen::ColMajor> proj = full_matrix * Eigen::Matrix<float,4,1,Eigen::ColMajor>(x,y,z,1);
+					proj_x = proj[3] ? proj[0]/proj[3] : 0;
+					proj_y = proj[3] ? proj[1]/proj[3] : 0;
+					proj_z_depth = proj[2];
+				}
+
+				/** Exactly like projectPoint but the (x,y) projected coordinates are given in pixels instead of normalized coordinates. */
+				void projectPointPixels(float x,float y,float z, float &proj_x_px, float &proj_y_px, float &proj_z_depth) const
+				{
+					projectPoint(x,y,z,proj_x_px,proj_y_px,proj_z_depth);
+					proj_x_px = (proj_x_px+1.0f)*(vp_width/2);
+					proj_y_px = (proj_y_px+1.0f)*(vp_height/2);
+				}
+			};
+
+			/** @} */  // -----------------------------------------------------
+
+
 			/** For each object in the list:
 			  *   - checks visibility of each object
 			  *   - prepare the GL_MODELVIEW matrix according to its coordinates
@@ -58,7 +95,24 @@ namespace mrpt
 			/** Checks glGetError and throws an exception if an error situation is found */
 			void OPENGL_IMPEXP checkOpenGLError();
 
+			/** Can be used by derived classes to draw a triangle with a normal vector computed automatically - to be called within a glBegin()-glEnd() block. */
+			void OPENGL_IMPEXP renderTriangleWithNormal( const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2,const mrpt::math::TPoint3D &p3 );
 
+
+			/** Gather useful information on the render parameters.
+			  *  It can be called from within the render() method of CRenderizable-derived classes, and
+			  *   the returned matrices can be used to determine whether a given point (lx,ly,lz)
+			  *   in local coordinates wrt the object being rendered falls within the screen or not:
+			  * \code
+			  *  TRenderInfo ri;
+			  *  getCurrentRenderingInfo(ri);
+			  *  Eigen::Matrix<float,4,4> M= ri.proj_matrix * ri.model_matrix * HomogeneousMatrix(lx,ly,lz);
+			  *  const float rend_x = M(0,3)/M(3,3);
+			  *  const float rend_y = M(1,3)/M(3,3);
+			  * \endcode
+			  *  where (rend_x,rend_y) are both in the range [-1,1].
+			  */
+			void OPENGL_IMPEXP getCurrentRenderingInfo(TRenderInfo &ri);
 
 			/** @name OpenGL bitmapped 2D fonts
 			    @{ */
@@ -86,13 +140,6 @@ namespace mrpt
 			/// returns the name of the currently active font
 			const OPENGL_IMPEXP std::string & glGetFont();
 
-			/// different style for font rendering
-			enum TEXT_STYLE {
-				FILL = 0,       ///< renders glyphs as filled polygons
-				OUTLINE = 1,    ///< renders glyphs as outlines with GL_LINES
-				NICE = 2        ///< renders glyphs filled with antialiased outlines
-			};
-
 			/// renders a string in GL using the current settings.
 			/// Font coordinates are +X along the line and +Y along the up direction of glyphs.
 			/// The origin is at the top baseline at the left of the first character. Characters have a maximum size of 1.
@@ -104,7 +151,7 @@ namespace mrpt
 			/// @param spacing distance between individual text lines
 			/// @param kerning distance between characters
 			/// \note This functions comes from libcvd (LGPL, http://www.edwardrosten.com/cvd/ )
-			std::pair<double, double> OPENGL_IMPEXP glDrawText(const std::string & text, const double textScale, enum TEXT_STYLE style = NICE, double spacing = 1.5, double kerning = 0.1);
+			std::pair<double, double> OPENGL_IMPEXP glDrawText(const std::string & text, const double textScale, enum TOpenGLFontStyle style = NICE, double spacing = 1.5, double kerning = 0.1);
 
 			/// returns the size of the bounding box of a text to be rendered, similar to @ref glDrawText but without any visual output
 			/// \note This functions comes from libcvd (LGPL, http://www.edwardrosten.com/cvd/ )
