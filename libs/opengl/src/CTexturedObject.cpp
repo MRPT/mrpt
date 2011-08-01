@@ -61,7 +61,7 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE( CTexturedObject, CRenderizableDisplayList, mrpt
 			return len==req.len;
 		}
 	};
-	struct CTexturedObject_MemPoolData 
+	struct CTexturedObject_MemPoolData
 	{
 		vector<unsigned char> data;
 	};
@@ -224,7 +224,7 @@ void  CTexturedObject::loadTextureInOpenGL() const
 		// when texture area is small, bilinear filter the closest mipmap
 		// Other options: //  GL_LINEAR ); // _MIPMAP_NEAREST  ); // GL_LINEAR_MIPMAP_NEAREST );  // GL_LINEAR
 		//  See also: http://www.opengl.org/discussion_boards/ubbthreads.php?ubb=showflat&Number=133116&page=1
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST); 
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 		checkOpenGLError();
 
 		// when texture area is large, bilinear filter the first mipmap
@@ -409,7 +409,7 @@ void  CTexturedObject::loadTextureInOpenGL() const
 
 			CTexturedObject_MemPoolData *mem_block = new CTexturedObject_MemPoolData();
 			data.swap(mem_block->data);
-	
+
 			pool.dump_to_pool(mem_params, mem_block);
 		}
 #endif

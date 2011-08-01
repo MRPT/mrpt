@@ -44,6 +44,7 @@
 			- [mrpt-hwdrivers] mrpt::hwdrivers::CWirelessPower
 		- [mrpt-maps] New class mrpt::slam::CRandomFieldGridMap2D to generalize previous WiFi and GasConcentration grid mapping - <a href="http://code.google.com/p/mrpt/source/detail?r=2577" >r2577</a>
 		- [mrpt-maps] New map type mrpt::slam::CWeightedPointsMap which is equivalent to the old mrpt::slam::CSimplePointsMap (which now does not have weights). Read more on the code refactoring in point-cloud maps below.
+		- [mrpt-opengl] mrpt::opengl::CText3D, a new way to display texts using OpenGL primitives instead of bitmaps.
 	- Changes in classes:
 		- [mrpt-maps] mrpt::slam::CPointsMap (and all derived point-cloud maps) have undergone a big code refactoring and optimizations:
 			- New method mrpt::slam::CPointsMap::addFrom() and an "operator +=" to add the points from another point map  - <a href="http://code.google.com/p/mrpt/source/detail?r=2553" >r2553</a>
@@ -60,7 +61,10 @@
 			- Method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() can now also recover 3D point clouds from 3D range scans not in the "Kinect" depth format.
 		- [mrpt-base] All classes derived from mrpt::utils::CObjectPtr now have a proper "value_type" typedef with the most specific data type of the class being pointed by the smart pointer, overriding the inherited, too generic, mrpt::utils::CObject. - <a href="http://code.google.com/p/mrpt/source/detail?r=2568" >r2568</a>
 		- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".
-Build system/external libs:
+		- [mrpt-opengl & mrpt-gui] All text labels in 3D rendering windows are now drawn as OpenGL primitives instead of bitmaps, which are ~10x faster to draw. See mrpt::opengl::CTextMessageCapable
+		- [mrpt-opengl] A new namespace with utility functions for rendering opengl stuff. See mrpt::opengl::gl_utils
+
+	- Build system/external libs:
 		- Update of Eigen3 to a more recent version (11-Jul-2011), which avoids warnings in MSVC x64 - <a href="http://code.google.com/p/mrpt/source/detail?r=2556" >r2556</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2558" >r2558</a>
 		- Automatic check for existence of system "libgtest-dev" not to build embedded version of Google unit testing library and link to system lib instead - <a href="http://code.google.com/p/mrpt/source/detail?r=r2576" >r2576</a>
 	- New examples:

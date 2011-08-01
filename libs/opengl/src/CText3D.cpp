@@ -29,134 +29,58 @@
 #include <mrpt/opengl.h>  // Precompiled header
 
 
-#include <mrpt/opengl/CAxis.h>
-
+#include <mrpt/opengl/CText3D.h>
+#include <mrpt/opengl/gl_utils.h>
 #include "opengl_internals.h"
-
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::system;
 using namespace mrpt::utils;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CAxis, CRenderizableDisplayList, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CText3D, CRenderizableDisplayList, mrpt::opengl )
 
+/*---------------------------------------------------------------
+							Constructor
+  ---------------------------------------------------------------*/
+CText3D::CText3D(
+	const std::string &str,
+	const std::string &fontName,
+	const double scale ,
+	const mrpt::opengl::gl_utils::TEXT_STYLE text_style,
+	const double text_spacing ,
+	const double text_kerning ) :
+		m_str ( str ),
+		m_fontName ( fontName ),
+		m_text_style ( text_style ),
+		m_text_spacing ( text_spacing ),
+		m_text_kerning ( text_kerning )
+{
+	this->setScale(scale);
+}
 
-void   CAxis::render_dl() const
+/*---------------------------------------------------------------
+							Destructor
+  ---------------------------------------------------------------*/
+CText3D::~CText3D()
+{
+}
+
+/*---------------------------------------------------------------
+							render
+  ---------------------------------------------------------------*/
+void   CText3D::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	MRPT_START;
+	glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
 
-	glEnable (GL_BLEND);
-	checkOpenGLError();
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	checkOpenGLError();
+	mrpt::opengl::gl_utils::glSetFont(m_fontName);
+	mrpt::opengl::gl_utils::glDrawText(
+		m_str,
+		1.0, // Scale
+		m_text_style,
+		m_text_spacing, m_text_kerning );
 
-	ASSERT_(m_frecuency>=0);
-
-    glLineWidth(m_lineWidth);
-	checkOpenGLError();
-
-    glBegin( GL_LINES );
-
-    glColor4f( m_color_R,m_color_G,m_color_B,m_color_A );
-	//X axis
-	glVertex3f( m_xmin, 0.0f, 0.0f );
-    glVertex3f( m_xmax, 0.0f, 0.0f );
-	//Y axis
-	glVertex3f( 0.0f, m_ymin, 0.0f );
-    glVertex3f( 0.0f, m_ymax, 0.0f);
-	//Z axis
-	glVertex3f( 0.0f, 0.0f, m_zmin );
-    glVertex3f( 0.0f, 0.0f, m_zmax );
-
-	glEnd();
-	checkOpenGLError();
-
-    glLineWidth(1.0f);
-	checkOpenGLError();
-
-	glDisable (GL_BLEND);
-	checkOpenGLError();
-
-	// Draw the "tick marks":
-	if (m_marks ==true)
-	{
-		char n[50];
-
-		// X axis
-		glPushMatrix();
-		glTranslatef(m_xmin,.0f,.05f);
-		glRotatef(180,0,0,1);
-		glRotatef(90,1,0,0);
-		for (float i = m_xmin ; i<= m_xmax ; i = i + m_frecuency)
-		{
-			os::sprintf(n,50,"%.02f",i);
-			gl_utils::glDrawText(n, 0.25 /* scale */,  gl_utils::FILL );
-			glTranslatef(-m_frecuency,0,0);
-		}
-
-		glPopMatrix();
-		glPushMatrix();
-		glTranslatef(m_xmax+0.5f*m_frecuency,0,0);
-		glRotatef(180,0,0,1);
-		glRotatef(90,1,0,0);
-		gl_utils::glDrawText("+X", 0.3, gl_utils::NICE );
-		glPopMatrix();
-
-
-		// Y axis
-		glPushMatrix();
-		glTranslatef(.0f,m_ymin,.05f);
-		glRotatef(90,0,0,1);
-		glRotatef(90,1,0,0);
-		for (float i = m_ymin ; i<= m_ymax ; i = i + m_frecuency)
-		{
-			if (std::abs(i)>1e-4)
-			{	// Dont draw the "0" more than once
-				os::sprintf(n,50,"%.02f",i);
-				gl_utils::glDrawText(n, 0.25 /* scale */,  gl_utils::FILL );
-			}
-			glTranslatef(m_frecuency,0,0);
-		}
-
-		glPopMatrix();
-		glPushMatrix();
-		glTranslatef(0,m_ymax+1.0f*m_frecuency,0);
-		glRotatef(-90,0,0,1);
-		glRotatef(90,1,0,0);
-		gl_utils::glDrawText("+Y", 0.3, gl_utils::NICE );
-		glPopMatrix();
-
-
-		// Z axis
-		glPushMatrix();
-		glTranslatef(.0f,.0f,m_zmin);
-		glRotatef(180,0,0,1);
-		glRotatef(90,1,0,0);
-		for (float i = m_zmin ; i<= m_zmax ; i = i + m_frecuency)
-		{
-			if (std::abs(i)>1e-4)
-			{	// Dont draw the "0" more than once
-				os::sprintf(n,50,"%.02f",i);
-				gl_utils::glDrawText(n, 0.25 /* scale */,  gl_utils::FILL );
-			}
-			glTranslatef(0,m_frecuency,0);
-		}
-
-		glPopMatrix();
-		glPushMatrix();
-		glTranslatef(0,0,m_zmax+0.5f*m_frecuency);
-		glRotatef(180,0,0,1);
-		glRotatef(90,1,0,0);
-		gl_utils::glDrawText("+Z", 0.3, gl_utils::NICE );
-		glPopMatrix();
-
-	}
-
-	MRPT_END;
-/*******************************************************/
 #endif
 }
 
@@ -164,17 +88,18 @@ void   CAxis::render_dl() const
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CAxis::writeToStream(CStream &out,int *version) const
+void  CText3D::writeToStream(CStream &out,int *version) const
 {
-
 	if (version)
 		*version = 0;
 	else
 	{
 		writeToStreamRender(out);
-		out << m_xmin << m_ymin << m_zmin;
-		out << m_xmax << m_ymax << m_zmax;
-		out << m_frecuency << m_lineWidth << m_marks;
+		out << m_str
+			<< m_fontName
+			<< (uint32_t)m_text_style
+			<< m_text_spacing
+			<< m_text_kerning;
 	}
 }
 
@@ -182,20 +107,26 @@ void  CAxis::writeToStream(CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CAxis::readFromStream(CStream &in,int version)
+void  CText3D::readFromStream(CStream &in,int version)
 {
 	switch(version)
 	{
 	case 0:
 		{
 			readFromStreamRender(in);
-			in >> m_xmin >> m_ymin >> m_zmin;
-			in >> m_xmax >> m_ymax >> m_zmax;
-			in >> m_frecuency >> m_lineWidth >> m_marks;
+
+			uint32_t	i;
+			in >> m_str
+				>> m_fontName
+				>> i
+				>> m_text_spacing
+				>> m_text_kerning;
+
+			m_text_style = gl_utils::TEXT_STYLE(i);
+
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 
 	};
 }
-

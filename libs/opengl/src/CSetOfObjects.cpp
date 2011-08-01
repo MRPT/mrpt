@@ -64,7 +64,7 @@ void   CSetOfObjects::clear()
 void   CSetOfObjects::render() const
 {
 	// Render all the objects:
-	CRenderizable::glutils::renderSetOfObjects(m_objects);
+	mrpt::opengl::gl_utils::renderSetOfObjects(m_objects);
 }
 
 /*---------------------------------------------------------------

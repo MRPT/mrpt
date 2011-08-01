@@ -337,6 +337,21 @@ mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 10000;
 	}
 	off_x+=STEP_X;
 
+	// CText3D
+	{
+		{
+			opengl::CText3DPtr obj = opengl::CText3D::Create("I'm a cool CText3D!");
+			obj->setLocation(off_x,0,0);
+			theScene->insert( obj );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("CText3D");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
+
 	// CSetOfLines
 	{
 		{

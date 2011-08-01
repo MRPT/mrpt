@@ -45,13 +45,14 @@ namespace mrpt
 		  *
 		  *  \note All texts appear with the font GLUT_BITMAP_TIMES_ROMAN_10 for now (i.e. setFont is ignored)
 		  *  \sa opengl::COpenGLScene
-		  *  
+		  *
 		  *  <div align="center">
 		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
 		  *   <tr> <td> mrpt::opengl::CText </td> <td> \image html preview_CText.png </td> </tr>
 		  *  </table>
 		  *  </div>
-		  *  
+		  *
+		  *  \sa CText3D
 		  */
 		class OPENGL_IMPEXP CText : public CRenderizable
 		{

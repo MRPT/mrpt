@@ -86,12 +86,13 @@ namespace mrpt
 			    @{ */
 
 			void setName(const std::string &n) { m_name=n; }	//!< Changes the name of the object
-			std::string getName() const { return m_name; }		//!< Returns the name of the object
+			const std::string &getName() const { return m_name; }		//!< Returns the name of the object
 
 			inline bool isVisible() const /** Is the object visible? \sa setVisibility */  { return m_visible; }
 			inline void setVisibility(bool visible=true) /** Set object visibility (default=true) \sa isVisible */  { m_visible=visible; }
 
-			void enableShowName(bool showName=true) { m_show_name=showName; }	//!< Enables or disables showing the name of the object as a label when rendering
+			inline void enableShowName(bool showName=true) { m_show_name=showName; }	//!< Enables or disables showing the name of the object as a label when rendering
+			inline bool isShowNameEnabled() const { return m_show_name; }	//!< \sa enableShowName
 
 			CRenderizable& setPose( const mrpt::poses::CPose3D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
 			CRenderizable& setPose( const mrpt::math::TPose3D &o );	//!< Set the 3D pose from a  mrpt::math::TPose3D object (return a ref to this)
@@ -193,45 +194,15 @@ namespace mrpt
 				}
 			};
 
-			/** A set of auxiliary functions (as static members) that can be called to render OpenGL primitives from MRPT or user code */
-			struct glutils
-			{
-				/** For each object in the list:
-				  *   - checks visibility of each object
-				  *   - prepare the GL_MODELVIEW matrix according to its coordinates
-				  *   - call its ::render()
-				  *   - shows its name (if enabled).
-				  *
-				  *  \note Used by  COpenGLViewport, CSetOfObjects
-				  */
-				static void renderSetOfObjects(const CListOpenGLObjects &objs);
-
-				/** This method is safe for calling from within ::render() methods \sa renderTextBitmap */
-				static void	renderTextBitmap( const char *str, void *fontStyle );
-
-				/** Return the exact width in pixels for a given string, as will be rendered by renderTextBitmap().
-				  * \sa renderTextBitmap
-				  */
-				static int textBitmapWidth(
-					const std::string &str,
-					mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24 );
-
-			}; // end "glutils"
-
 			/** This method is safe for calling from within ::render() methods \sa renderTextBitmap */
-			static void	renderTextBitmap( const char *str, void *fontStyle ) {
-				glutils::renderTextBitmap(str,fontStyle);
-			}
+			static void	renderTextBitmap( const char *str, void *fontStyle );
 
 			/** Return the exact width in pixels for a given string, as will be rendered by renderTextBitmap().
 			  * \sa renderTextBitmap
 			  */
 			static int textBitmapWidth(
 				const std::string &str,
-				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24 ) {
-				return glutils::textBitmapWidth(str,font);
-			}
-
+				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24 );
 
 			/** Render a text message in the current rendering context, creating a glViewport in the way (do not call within ::render() methods)
 			  *   - Coordinates (x,y) are 2D pixels, starting at bottom-left of the viewport. Negative numbers will wrap to the opposite side of the viewport (e.g. x=-10 means 10px fromt the right).
@@ -285,6 +256,9 @@ namespace mrpt
 	} // end namespace
 
 } // End of namespace
+
+// This header goes here so there we can use "CRenderizablePtr"
+#include <mrpt/opengl/gl_utils.h>
 
 
 #endif

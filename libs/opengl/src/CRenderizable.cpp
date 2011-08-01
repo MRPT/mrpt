@@ -208,15 +208,7 @@ void  CRenderizable::readFromStreamRender(CStream &in)
 
 void  CRenderizable::checkOpenGLError()
 {
-#if MRPT_HAS_OPENGL_GLUT
-	int	 openglErr;
-	if ( ( openglErr= glGetError()) != GL_NO_ERROR )
-	{
-		const std::string sErr = std::string("OpenGL error: ") + std::string( (char*)gluErrorString(openglErr) );
-		std::cerr << "[CRenderizable::checkOpenGLError] " << sErr << std::endl;
-		THROW_EXCEPTION(sErr)
-	}
-#endif
+	mrpt::opengl::gl_utils::checkOpenGLError();
 }
 
 /*--------------------------------------------------------------
@@ -355,3 +347,18 @@ void CRenderizable::getCurrentRenderingInfo(TRenderInfo &ri) const
 #endif
 }
 
+/** This method is safe for calling from within ::render() methods \sa renderTextBitmap */
+void CRenderizable::renderTextBitmap( const char *str, void *fontStyle )
+{
+	gl_utils::renderTextBitmap(str,fontStyle);
+}
+
+/** Return the exact width in pixels for a given string, as will be rendered by renderTextBitmap().
+  * \sa renderTextBitmap
+  */
+int CRenderizable::textBitmapWidth(
+	const std::string &str,
+	mrpt::opengl::TOpenGLFont font )
+{
+	return gl_utils::textBitmapWidth(str,font);
+}

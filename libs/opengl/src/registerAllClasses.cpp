@@ -74,6 +74,7 @@ void registerAllClasses_mrpt_opengl()
 	registerClass( CLASS_ID( CSetOfObjects ) );
 	registerClass( CLASS_ID( CSimpleLine ) );
 	registerClass( CLASS_ID( CText ) );
+	registerClass( CLASS_ID( CText3D ) );
 
 	// These ones are in the lib: mrpt-obsmaps
 	//registerClass( CLASS_ID( CPlanarLaserScan ) );

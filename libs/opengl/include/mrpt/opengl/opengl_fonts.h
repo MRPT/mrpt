@@ -29,6 +29,7 @@
 #ifndef mrpt_opengl_fonts_H
 #define mrpt_opengl_fonts_H
 
+#include <mrpt/utils/TColor.h>
 #include <mrpt/utils/types.h>
 #include <mrpt/opengl/link_pragmas.h>
 

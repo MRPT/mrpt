@@ -40,6 +40,7 @@ Below follows a table with the preview of most rendering primitive classes:
  <tr> <td> mrpt::opengl::CSetOfLines </td> <td> \image html preview_CSetOfLines.png </td> </tr>
  <tr> <td> mrpt::opengl::CSphere </td> <td> \image html preview_CSphere.png </td> </tr>
  <tr> <td> mrpt::opengl::CText </td> <td> \image html preview_CText.png </td> </tr>
+ <tr> <td> mrpt::opengl::CText3D </td> <td> \image html preview_CText3D.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::BumblebeeCamera() </td> <td> \image html preview_stock_objects_BumblebeeCamera.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::CornerXYSimple() </td> <td> \image html preview_stock_objects_CornerXYSimple.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::CornerXYZSimple() </td> <td> \image html preview_stock_objects_CornerXYZSimple.png </td> </tr>

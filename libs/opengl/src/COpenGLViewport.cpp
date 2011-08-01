@@ -420,7 +420,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 			glDepthFunc(GL_LEQUAL); //GL_LESS
 
 			// Render all the objects:
-			CRenderizable::glutils::renderSetOfObjects(*objectsToRender);
+			mrpt::opengl::gl_utils::renderSetOfObjects(*objectsToRender);
 
         } // end of non "image mode" rendering
 

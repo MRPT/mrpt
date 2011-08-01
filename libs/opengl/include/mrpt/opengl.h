@@ -58,6 +58,7 @@
 #include <mrpt/opengl/CSimpleLine.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CText.h>
+#include <mrpt/opengl/CText3D.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/C3DSScene.h>
 //#include <mrpt/opengl/CPlanarLaserScan.h>			// It's in the lib mrpt-maps now
