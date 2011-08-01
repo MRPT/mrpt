@@ -30,6 +30,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/safe_pointers.h>
+#include <mrpt/utils/CImage.h>
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -299,7 +300,8 @@ namespace mrpt
 			bool			m_custom_backgb_color;
 			TColorf			m_background_color;  //!< used only if m_custom_backgb_color
 			bool			m_isImageView; //!< Set by setImageView
-			CRenderizablePtr m_imageview_quad ; //!< A mrpt::opengl::CTexturedPlane used after setImageView() is called
+			//CRenderizablePtr m_imageview_quad ; //!< A mrpt::opengl::CTexturedPlane used after setImageView() is called
+			mrpt::utils::CImagePtr  m_imageview_img; //!< The image to display, after calling \a setImageView()
 
 			struct TLastProjectiveMatrixInfo
 			{

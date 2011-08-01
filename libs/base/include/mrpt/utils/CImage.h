@@ -609,6 +609,11 @@ namespace mrpt
 				return ret;
 			}
 
+			/** Returns the row stride of the image: this is the number of *bytes* between two consecutive rows. You can access the pointer to the first row with get_unsafe(0,0)
+			  * \sa getSize, get_unsafe
+			  */
+			size_t getRowStride() const;
+
 			/** Return the maximum pixel value of the image, as a float value in the range [0,1]
 			  * \sa getAsFloat
 			  */

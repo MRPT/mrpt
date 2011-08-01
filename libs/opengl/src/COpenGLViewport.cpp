@@ -34,6 +34,7 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/utils/CStringList.h>
+#include <mrpt/utils/CTimeLogger.h>
 
 #include "opengl_internals.h"
 
@@ -48,6 +49,12 @@ using namespace std;
 using namespace mrpt::utils::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE( COpenGLViewport, CSerializable, mrpt::opengl )
+
+//#define OPENGLVIEWPORT_ENABLE_TIMEPROFILING
+
+#if defined(OPENGLVIEWPORT_ENABLE_TIMEPROFILING)
+mrpt::utils::CTimeLogger  glv_timlog;
+#endif
 
 
 /*--------------------------------------------------------------
@@ -77,7 +84,7 @@ COpenGLViewport::COpenGLViewport( COpenGLScene *parent, const string &name  ) :
 	m_custom_backgb_color(false),
 	m_background_color(0.6,0.6,0.6),
 	m_isImageView(false),
-	m_imageview_quad(),
+	m_imageview_img(),
 	m_objects()
 {
 
@@ -232,54 +239,54 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
         //  ortho projection and render the image quad:
         if (m_isImageView)
         {
-        	// "Image mode" rendering:
+#if defined(OPENGLVIEWPORT_ENABLE_TIMEPROFILING)
+			glv_timlog.enter("COpenGLViewport::render imageview");
+#endif
+			// "Image mode" rendering:
         	// -----------------------------------
-        	if (m_imageview_quad) // should be ALWAYS true, but just in case!
+        	if (m_imageview_img) // should be ALWAYS true, but just in case!
         	{
-				const mrpt::opengl::CTexturedPlane *gl_plane = reinterpret_cast<const mrpt::opengl::CTexturedPlane*>(m_imageview_quad.pointer()); // We are sure of this pointer type.
+				// Note: The following code is inspired in the implementations: 
+				//  - libcvd, by Edward Rosten http://www.edwardrosten.com/cvd/
+				//  - PTAM, by Klein & Murray http://www.robots.ox.ac.uk/~gk/PTAM/
+				
+				const mrpt::utils::CImage *img = m_imageview_img.pointer();
 
+				const int img_w = img->getWidth();
+				const int img_h = img->getHeight();
+
+				// Prepare an ortho projection:
 				glMatrixMode(GL_PROJECTION);
 				glLoadIdentity();
+				glOrtho(-0.5,(double)img_w - 0.5, (double) img_h - 0.5, -0.5, -1.0, 1.0);
 
-				// Get the plane corners to find out the image aspect ratio:
-				float pl_xMin, pl_xMax, pl_yMin, pl_yMax;
-				gl_plane->getPlaneCorners(pl_xMin, pl_xMax, pl_yMin, pl_yMax);
+				// Prepare raster pos & pixel copy direction in -Y.
+				glRasterPos2f(-0.5f,-0.5f);
+				glPixelZoom(
+					 vw / float(img_w),
+					-vh / float(img_h) );
 
+				// Prepare image data types:
+				const GLenum img_type = GL_UNSIGNED_BYTE;				
+				const int nBytesPerPixel = img->isColor() ? 3 : 1;
+				const bool is_RGB_order = (!::strcmp(img->getChannelsOrder(),"RGB"));  // Reverse RGB <-> BGR order?
+				const GLenum img_format = nBytesPerPixel==3 ? (is_RGB_order ? GL_RGB : GL_BGR): GL_LUMINANCE;
 
-				double Ax = pl_xMax-pl_xMin;
-				double Ay = pl_yMax-pl_yMin;
+				// Send image data to OpenGL:
+				//glPixelStorei(GL_UNPACK_ALIGNMENT,4);
+				glPixelStorei(GL_UNPACK_ROW_LENGTH,img->getRowStride()/nBytesPerPixel );
+				glDrawPixels(
+					img_w, img_h,
+					img_format, img_type,
+					img->get_unsafe(0,0) 
+					);
+				glPixelStorei(GL_UNPACK_ROW_LENGTH,0);  // Reset
 
-				// Need to adjust the aspect ratio?
-				const double ratio = vw*Ay/double(vh*Ax);
-
-				if (ratio>1)
-					Ax *= ratio;
-				else
-				if (ratio!=0) Ay /=ratio;
-
-				glMatrixMode(GL_PROJECTION);
-				glLoadIdentity();
-				glOrtho( -Ax*0.5,Ax*0.5,-Ay*0.5,Ay*0.5,0.1, 10);
-
-				gluLookAt(0,0,-1,
-					0,0,0,
-					0.0,-1.0, 0.0);
-
-				// Render:
-				glMatrixMode(GL_MODELVIEW);
-				glLoadIdentity();
-
-				glPushAttrib(GL_ALL_ATTRIB_BITS);
-				CRenderizable::checkOpenGLError();
-
-				glColor4f(1.0f,1.0f,1.0f,1.0f);
-
-				gl_plane->render();
-
-				glPopAttrib();
-				CRenderizable::checkOpenGLError();
-        	}
+			}
 			// done.
+#if defined(OPENGLVIEWPORT_ENABLE_TIMEPROFILING)
+			glv_timlog.leave("COpenGLViewport::render imageview");
+#endif
         }
         else
         {
@@ -768,8 +775,8 @@ void COpenGLViewport::getCurrentCameraPose( mrpt::poses::CPose3D &out_cameraPose
 void COpenGLViewport::setNormalMode()
 {
 	// If this was a m_isImageView, remove the quad object:
-	if (m_isImageView && m_imageview_quad)
-		m_imageview_quad.clear();
+	if (m_isImageView && m_imageview_img)
+		m_imageview_img.clear();
 
 	m_isCloned=false;
 	m_isClonedCamera=false;
@@ -788,17 +795,14 @@ void COpenGLViewport::setImageView_fast(mrpt::utils::CImage &img)
 void COpenGLViewport::internal_setImageView_fast(const mrpt::utils::CImage &img, bool is_fast)
 {
 	// If this is the first time, we have to create the quad object:
-	if (!m_isImageView || !m_imageview_quad)
-		m_imageview_quad = mrpt::opengl::CTexturedPlane::Create();
+	if (!m_isImageView || !m_imageview_img)
+		m_imageview_img = mrpt::utils::CImage::Create();
 	m_isImageView = true;
 
 	// Update texture image:
-	mrpt::opengl::CTexturedPlane *gl_plane = reinterpret_cast<mrpt::opengl::CTexturedPlane*>(m_imageview_quad.pointer()); // We are sure of this pointer type.
-
-	const double IMG_ASPECT_RATIO_INV = double(img.getHeight())/img.getWidth();
-	gl_plane->setPlaneCorners(-0.5,0.5,-0.5*IMG_ASPECT_RATIO_INV,0.5*IMG_ASPECT_RATIO_INV);
+	mrpt::utils::CImage *my_img = m_imageview_img.pointer();
 
 	if (!is_fast)
-	      gl_plane->assignImage(img);
-	else  gl_plane->assignImage_fast(*(const_cast<mrpt::utils::CImage*>(&img)));
+	      *my_img = img;
+	else  my_img->copyFastFrom(* const_cast<mrpt::utils::CImage*>(&img));
 }

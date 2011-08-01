@@ -60,10 +60,12 @@
 			- New data field: mrpt::slam::CObservation3DRangeScan::range_is_depth
 			- Method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() can now also recover 3D point clouds from 3D range scans not in the "Kinect" depth format.
 		- [mrpt-base] All classes derived from mrpt::utils::CObjectPtr now have a proper "value_type" typedef with the most specific data type of the class being pointed by the smart pointer, overriding the inherited, too generic, mrpt::utils::CObject. - <a href="http://code.google.com/p/mrpt/source/detail?r=2568" >r2568</a>
+		- [mrpt-base] New method: mrpt::utils::CImage::getRowStride()
 		- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".
 		- [mrpt-opengl & mrpt-gui] All text labels in 3D rendering windows are now drawn as OpenGL primitives instead of bitmaps, which are ~10x faster to draw. See mrpt::opengl::CTextMessageCapable
 		- [mrpt-opengl] A new namespace with utility functions for rendering opengl stuff. See mrpt::opengl::gl_utils
 		- [mrpt-opengl] mrpt::opengl::CRenderizable (and all derived classes) now store colors as 4 u8 numbers instead of 4 doubles. All double-based APIs are maintained for backward compatibility.
+		- [mrpt-opengl] The "image display mode" of mrpt::opengl::COpenGLViewport is now based on glDrawPixels(), which is ~40 times faster than the old method.
 	- Build system/external libs:
 		- Update of Eigen3 to a more recent version (11-Jul-2011), which avoids warnings in MSVC x64 - <a href="http://code.google.com/p/mrpt/source/detail?r=2556" >r2556</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2558" >r2558</a>
 		- Automatic check for existence of system "libgtest-dev" not to build embedded version of Google unit testing library and link to system lib instead - <a href="http://code.google.com/p/mrpt/source/detail?r=r2576" >r2576</a>

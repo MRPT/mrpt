@@ -69,6 +69,8 @@ void CTextMessageCapable::render_text_messages(const int w, const int h) const
 
 	glMatrixMode(GL_MODELVIEW);
 
+	glDisable(GL_DEPTH_TEST);
+
 	for (std::map<size_t,mrpt::opengl::T2DTextData>::const_iterator it=m_2D_texts.begin();it!=m_2D_texts.end();++it)
 	{
 		// If (x,y) \in [0,1[, it's interpreted as a ratio, otherwise, as an actual coordinate in pixels
@@ -101,6 +103,8 @@ void CTextMessageCapable::render_text_messages(const int w, const int h) const
 
 		glPopMatrix();
 	}
+
+	glEnable(GL_DEPTH_TEST);
 
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();

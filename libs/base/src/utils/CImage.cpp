@@ -789,6 +789,21 @@ size_t CImage::getWidth() const
 }
 
 /*---------------------------------------------------------------
+						getRowStride
+ ---------------------------------------------------------------*/
+size_t CImage::getRowStride() const
+{
+#if MRPT_HAS_OPENCV
+	makeSureImageIsLoaded();   // For delayed loaded images stored externally
+	ASSERT_(img!=NULL);
+	return ((IplImage*)img)->widthStep;
+#else
+	return 0;
+#endif
+}
+
+
+/*---------------------------------------------------------------
 						getWidth
  ---------------------------------------------------------------*/
 size_t CImage::getHeight() const

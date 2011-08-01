@@ -43,7 +43,7 @@ using namespace std;
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CTexturedObject, CRenderizableDisplayList, mrpt::opengl )
 
 // Whether to profile memory allocations:
-//#define TEXTUREOBJ_PROFILE_MEM_ALLOC
+// #define TEXTUREOBJ_PROFILE_MEM_ALLOC
 
 // Whether to use a memory pool for the texture buffer:
 #define TEXTUREOBJ_USE_MEMPOOL
@@ -101,6 +101,7 @@ void  CTexturedObject::assignImage(
 
 	MRPT_END
 }
+
 
 /*---------------------------------------------------------------
 							assignImage
@@ -252,6 +253,13 @@ void  CTexturedObject::loadTextureInOpenGL() const
 		int		width = m_textureImage.getWidth();
 		int		height = m_textureImage.getHeight();
 
+#		ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+		{
+			const std::string sSec = mrpt::format("opengl_texture: load %ix%i",width,height);
+			tim.enter(sSec.c_str());
+		}
+#		endif
+
 		r_width = round2up( width );
 		r_height = round2up( height );
 		m_fill_x_left = (r_width - width) >> 1; // div by 2;
@@ -382,12 +390,26 @@ void  CTexturedObject::loadTextureInOpenGL() const
 				tim.leave(sSec.c_str());
 #			endif
 
+#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+				{
+					const std::string sSec = mrpt::format("opengl_texture: memcpy %ix%i",width,height);
+					tim.enter(sSec.c_str());
+				}
+#			endif
+
 				for (int y=0;y<height;y++)
 				{
 					unsigned char 	*ptrSrcCol = m_textureImage(0,y);
 					unsigned char 	*ptr = dataAligned + m_fill_x_left + (m_fill_y_top+y)*r_width;
 					memcpy(ptr,ptrSrcCol, r_width);
 				}
+
+#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+				{
+					const std::string sSec = mrpt::format("opengl_texture: memcpy %ix%i",width,height);
+					tim.leave(sSec.c_str());
+				}
+#			endif
 
 				// build our texture mipmaps
 				gluBuild2DMipmaps( GL_TEXTURE_2D, 1, r_width, r_height, GL_LUMINANCE, GL_UNSIGNED_BYTE, dataAligned );
@@ -397,6 +419,14 @@ void  CTexturedObject::loadTextureInOpenGL() const
 		}
 
 		m_texture_is_loaded = true;
+
+#		ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+		{
+			const std::string sSec = mrpt::format("opengl_texture: load %ix%i",width,height);
+			tim.leave(sSec.c_str());
+		}
+#		endif
+
 
 #ifdef TEXTUREOBJ_USE_MEMPOOL
 		// Before freeing the buffer in "data", donate my memory to the pool:
