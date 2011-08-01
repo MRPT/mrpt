@@ -103,7 +103,7 @@ void   CPointCloud::render() const
 		m_max_m_min_inv  = 1.0/m_max_m_min;
 	}
 
-	if ( m_color_A != 1.0 )
+	if ( m_color.A != 255 )
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -132,11 +132,11 @@ void   CPointCloud::render() const
 
 
     glBegin( GL_POINTS );
-    glColor4f( m_color_R,m_color_G,m_color_B,m_color_A ); // The default if m_colorFromDepth=false
+    glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A); // The default if m_colorFromDepth=false
 	octree_render(ri); // Render all points recursively:
     glEnd();
 
-	if ( m_color_A != 1.0 )
+	if ( m_color.A != 255 )
 		glDisable(GL_BLEND);
 
 	if (m_pointSmooth)
@@ -163,7 +163,7 @@ inline void CPointCloud::internal_render_one_point(size_t i) const
 			m_colorFromDepth_min.R + f*m_col_slop_inv.R,
 			m_colorFromDepth_min.G + f*m_col_slop_inv.G,
 			m_colorFromDepth_min.B + f*m_col_slop_inv.B,
-			m_color_A );
+			m_color.A * (1.0f/255.f) );
 	}
 	glVertex3f( m_xs[i],m_ys[i],m_zs[i] );
 #endif
@@ -264,9 +264,9 @@ void  CPointCloud::readFromStream(CStream &in,int version)
 			else
 			{
 				m_colorFromDepth_min = TColorf(0,0,0);
-				m_colorFromDepth_max.R = m_color_R;
-				m_colorFromDepth_max.G = m_color_G;
-				m_colorFromDepth_max.B = m_color_B;
+				m_colorFromDepth_max.R = m_color.R*255.f;
+				m_colorFromDepth_max.G = m_color.G*255.f;
+				m_colorFromDepth_max.B = m_color.B*255.f;
 			}
 
 			if (version>=4)

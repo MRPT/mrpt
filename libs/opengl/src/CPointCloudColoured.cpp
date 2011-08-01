@@ -56,7 +56,7 @@ void   CPointCloudColoured::render() const
 	TRenderInfo ri;
 	getCurrentRenderingInfo(ri);
 
-	if ( m_color_A != 1.0 )
+	if ( m_color.A != 255 )
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -74,7 +74,7 @@ void   CPointCloudColoured::render() const
     glEnd();
 
 	// Undo flags:
-	if ( m_color_A != 1.0 )
+	if ( m_color.A != 255 )
 		glDisable(GL_BLEND);
 
 	if (m_pointSmooth)
@@ -102,7 +102,7 @@ void  CPointCloudColoured::render_subset(const bool all, const std::vector<size_
 		for (size_t i=0;i<N;i+=decimation)
 		{
 			const TPointColour &p = m_points[i];
-			glColor4f( p.R, p.G, p.B,m_color_A );
+			glColor4f( p.R, p.G, p.B,m_color.A*1.0f/255.f );
 			glVertex3f( p.x,p.y,p.z );
 		}
 	}
@@ -111,7 +111,7 @@ void  CPointCloudColoured::render_subset(const bool all, const std::vector<size_
 		for (size_t i=0;i<N;i+=decimation)
 		{
 			const TPointColour &p = m_points[idxs[i]];
-			glColor4f( p.R, p.G, p.B,m_color_A );
+			glColor4f( p.R, p.G, p.B,m_color.A*1.0f/255.f  );
 			glVertex3f( p.x,p.y,p.z );
 		}
 	}

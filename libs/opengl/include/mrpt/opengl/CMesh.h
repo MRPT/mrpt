@@ -198,10 +198,10 @@ namespace mrpt
 				xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax),
 				trianglesUpToDate(false)
 			{
-				m_color_A = 1.0f;
-				m_color_R = 0.0f;
-				m_color_G = 0.0f;
-				m_color_B = 0.6f;
+				m_color.A = 255;
+				m_color.R = 0;
+				m_color.G = 0;
+				m_color.B = 150;
 			}
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CMesh() { }

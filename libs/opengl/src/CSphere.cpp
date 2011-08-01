@@ -54,7 +54,7 @@ void   CSphere::render_dl() const
     glEnable(GL_COLOR_MATERIAL);
     glShadeModel(GL_SMOOTH);
 
-	if ( m_color_A != 1.0 )
+	if ( m_color.A != 255 )
 	{
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
@@ -90,7 +90,7 @@ void   CSphere::render_dl() const
 	gluDeleteQuadric(obj);
 	checkOpenGLError();
 
-	if ( m_color_A != 1.0 )
+	if ( m_color.A != 255 )
 	{
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);

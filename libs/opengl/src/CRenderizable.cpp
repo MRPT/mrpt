@@ -82,7 +82,7 @@ public:
 CRenderizable::CRenderizable() :
 	m_name(),
 	m_show_name(false),
-	m_color_R(1),m_color_G(1),m_color_B(1),m_color_A(1),
+	m_color(255,255,255,255),
 	m_pose(),
 	m_scale_x(1), m_scale_y(1), m_scale_z(1),
 	m_visible(true)
@@ -135,7 +135,7 @@ void CRenderizable::releaseTextureName(unsigned int i)
 
 void  CRenderizable::writeToStreamRender(CStream &out) const
 {
-	out << m_name << (float)m_color_R << (float)m_color_G << (float)m_color_B << (float)m_color_A;
+	out << m_name << (float)(m_color.R*255.f) << (float)(m_color.G*255.f) << (float)(m_color.B*255.f) << (float)(m_color.A*255.f);
 	out << (float)m_pose.x() << (float)m_pose.y() << (float)m_pose.z();
 
 	// Version 2 (dummy=16.0f): Added scale vars
@@ -168,10 +168,10 @@ void  CRenderizable::readFromStreamRender(CStream &in)
 
 	float yaw_deg,pitch_deg,roll_deg;
 
-	in >> f; m_color_R=f;
-	in >> f; m_color_G=f;
-	in >> f; m_color_B=f;
-	in >> f; m_color_A=f;
+	mrpt::utils::TColorf col;
+	in >> col.R >> col.G >> col.B >> col.A; 
+	m_color = mrpt::utils::TColor(col.R*255,col.G*255,col.B*255,col.A*255);
+
 	in >> f; m_pose.x(f);
 	in >> f; m_pose.y(f);
 	in >> f; m_pose.z(f);
@@ -262,17 +262,6 @@ mrpt::math::TPose3D CRenderizable::getPose() const
 bool CRenderizable::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	return false;
 }
-/*--------------------------------------------------------------
-					setColor
-  ---------------------------------------------------------------*/
-CRenderizable& CRenderizable::setColor( double R, double G, double B, double A)
-{
-	m_color_R = R;
-	m_color_G = G;
-	m_color_B = B;
-	m_color_A = A;
-	return *this;
-}
 
 CRenderizablePtr &mrpt::opengl::operator<<(CRenderizablePtr &r,const CPose3D &p)	{
 	r->setPose(p+r->getPose());
@@ -298,12 +287,12 @@ void CRenderizable::renderTriangleWithNormal( const mrpt::math::TPoint3D &p1,con
 #endif
 }
 
-CRenderizable& CRenderizable::setColor( const mrpt::utils::TColorf &c)
+CRenderizable& CRenderizable::setColor_u8( const mrpt::utils::TColor &c)
 {
-	m_color_R = c.R;
-	m_color_G = c.G;
-	m_color_B = c.B;
-	m_color_A = c.A;
+	m_color.R = c.R;
+	m_color.G = c.G;
+	m_color.B = c.B;
+	m_color.A = c.A;
 	return *this;
 }
 

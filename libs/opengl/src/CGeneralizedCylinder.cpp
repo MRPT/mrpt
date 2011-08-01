@@ -61,13 +61,13 @@ void CGeneralizedCylinder::TQuadrilateral::calculateNormal()	{
 #if MRPT_HAS_OPENGL_GLUT
 class FQuadrilateralRenderer	{
 private:
-	const mrpt::utils::TColorf &color;
+	const mrpt::utils::TColor &color;
 public:
 	void operator()(const CGeneralizedCylinder::TQuadrilateral t) const	{
 		glNormal3d(t.normal[0],t.normal[1],t.normal[2]);
 		for (int i=0;i<4;i++) glVertex3d(t.points[i].x,t.points[i].y,t.points[i].z);
 	}
-	FQuadrilateralRenderer(const mrpt::utils::TColorf &c):color(c)	{}
+	FQuadrilateralRenderer(const mrpt::utils::TColor &c):color(c)	{}
 	~FQuadrilateralRenderer()	{}
 };
 #endif
@@ -94,12 +94,12 @@ void CGeneralizedCylinder::render_dl() const	{
 	glEnable(GL_COLOR_MATERIAL);
 	glShadeModel(GL_SMOOTH);
 	glBegin(GL_QUADS);
-	glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
+	glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 	vector<TQuadrilateral>::const_iterator begin,end;
 	getMeshIterators(mesh,begin,end);
-	for_each(begin,end,FQuadrilateralRenderer(mrpt::utils::TColorf(m_color_R,m_color_G,m_color_B,m_color_A)));
+	for_each(begin,end,FQuadrilateralRenderer(m_color));
 	glEnd();
-	if (m_color_A!=1.0) glDisable(GL_BLEND);
+	if (m_color.A!=1.0) glDisable(GL_BLEND);
 	glDisable(GL_COLOR_MATERIAL);
 	glDisable(GL_LIGHT0);
 	glDisable(GL_LIGHTING);

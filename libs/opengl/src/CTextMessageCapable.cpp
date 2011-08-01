@@ -43,6 +43,7 @@ using namespace mrpt::opengl;
 void CTextMessageCapable::render_text_messages(const int w, const int h) const
 {
 #if 0
+	// Render text labels as bitmaps:
 	for (std::map<size_t,mrpt::opengl::T2DTextData>::const_iterator it=m_2D_texts.begin();it!=m_2D_texts.end();++it)
 	{
 		// If (x,y) \in [0,1[, it's interpreted as a ratio, otherwise, as an actual coordinate in pixels
@@ -56,6 +57,7 @@ void CTextMessageCapable::render_text_messages(const int w, const int h) const
 	}
 #else
 #if MRPT_HAS_OPENGL_GLUT
+	// Render text labels as opengl primitives (much faster):
 	GLint old_matMode = 0;
 	glGetIntegerv(GL_MATRIX_MODE, &old_matMode);
 

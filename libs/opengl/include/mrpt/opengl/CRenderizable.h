@@ -76,7 +76,7 @@ namespace mrpt
 		protected:
 			std::string				m_name;
 			bool					m_show_name;
-			double					m_color_R,m_color_G,m_color_B,m_color_A;    //!< Color components in the range [0,1]
+			mrpt::utils::TColor		m_color;	//!< Color components in the range [0,255]
 			mrpt::poses::CPose3D    m_pose;                                     //!< 6D pose wrt the parent coordinate reference. This class automatically holds the cached 3x3 rotation matrix for quick load into opengl stack.
 			float					m_scale_x, m_scale_y, m_scale_z;			//!< Scale components to apply to the object (default=1)
 			bool					m_visible; //!< Is the object visible? (default=true)
@@ -119,15 +119,25 @@ namespace mrpt
 			inline double getPosePitchRad() const { return m_pose.pitch(); } //!< Rotation relative to parent coordinate origin, in radians.
 			inline double getPoseRollRad() const { return m_pose.roll(); } //!< Rotation relative to parent coordinate origin, in radians.
 
-			inline double getColorR() const { return m_color_R; } //!< Color components in the range [0,1]
-			inline double getColorG() const { return m_color_G; } //!< Color components in the range [0,1]
-			inline double getColorB() const { return m_color_B; } //!< Color components in the range [0,1]
-			inline double getColorA() const { return m_color_A; } //!< Color components in the range [0,1]
+			inline double getColorR() const { return m_color.R/255.; } //!< Color components in the range [0,1]
+			inline double getColorG() const { return m_color.G/255.; } //!< Color components in the range [0,1]
+			inline double getColorB() const { return m_color.B/255.; } //!< Color components in the range [0,1]
+			inline double getColorA() const { return m_color.A/255.; } //!< Color components in the range [0,1]
 
-			virtual CRenderizable&  setColorR(const double r)	{m_color_R=r; return *this;}	//!<Color components in the range [0,1] \return a ref to this
-			virtual CRenderizable&  setColorG(const double g)	{m_color_G=g; return *this;}	//!<Color components in the range [0,1] \return a ref to this
-			virtual CRenderizable&  setColorB(const double b)	{m_color_B=b; return *this;}	//!<Color components in the range [0,1] \return a ref to this
-			virtual CRenderizable&  setColorA(const double a)	{m_color_A=a; return *this;}	//!<Color components in the range [0,1] \return a ref to this
+			inline uint8_t getColorR_u8() const { return m_color.R; } //!< Color components in the range [0,255]
+			inline uint8_t getColorG_u8() const { return m_color.G; } //!< Color components in the range [0,255]
+			inline uint8_t getColorB_u8() const { return m_color.B; } //!< Color components in the range [0,255]
+			inline uint8_t getColorA_u8() const { return m_color.A; } //!< Color components in the range [0,255]
+
+			CRenderizable&  setColorR(const double r)	{return setColorR_u8(static_cast<uint8_t>(255*r));}	//!<Color components in the range [0,1] \return a ref to this
+			CRenderizable&  setColorG(const double g)	{return setColorG_u8(static_cast<uint8_t>(255*g));}	//!<Color components in the range [0,1] \return a ref to this
+			CRenderizable&  setColorB(const double b)	{return setColorB_u8(static_cast<uint8_t>(255*b));}	//!<Color components in the range [0,1] \return a ref to this
+			CRenderizable&  setColorA(const double a)	{return setColorA_u8(static_cast<uint8_t>(255*a));}	//!<Color components in the range [0,1] \return a ref to this
+
+			virtual CRenderizable&  setColorR_u8(const uint8_t r)	{m_color.R=r; return *this;}	//!<Color components in the range [0,255] \return a ref to this
+			virtual CRenderizable&  setColorG_u8(const uint8_t g)	{m_color.G=g; return *this;}	//!<Color components in the range [0,255] \return a ref to this
+			virtual CRenderizable&  setColorB_u8(const uint8_t b)	{m_color.B=b; return *this;}	//!<Color components in the range [0,255] \return a ref to this
+			virtual CRenderizable&  setColorA_u8(const uint8_t a)	{m_color.A=a; return *this;}	//!<Color components in the range [0,255] \return a ref to this
 
 			inline CRenderizable& setScale(float s)  { m_scale_x=m_scale_y=m_scale_z = s; return *this; } //!< Scale to apply to the object, in all three axes (default=1)  \return a ref to this
 			inline CRenderizable& setScale(float sx,float sy,float sz)  { m_scale_x=sx; m_scale_y=sy; m_scale_z = sz; return *this; } //!< Scale to apply to the object in each axis (default=1)  \return a ref to this
@@ -136,11 +146,21 @@ namespace mrpt
 			inline float getScaleZ() const { return m_scale_z; }  //!< Get the current scaling factor in one axis
 
 
-			inline mrpt::utils::TColorf getColor() const { return mrpt::utils::TColorf(m_color_R,m_color_G,m_color_B,m_color_A); }  //!< Returns the object color property as a TColorf
-			virtual CRenderizable& setColor( const mrpt::utils::TColorf &c);  //!< Changes the default object color \return a ref to this
+			inline mrpt::utils::TColorf getColor() const { return mrpt::utils::TColorf(m_color); }  //!< Returns the object color property as a TColorf
+			CRenderizable& setColor( const mrpt::utils::TColorf &c) //!< Changes the default object color \return a ref to this
+			{
+				return setColor_u8(mrpt::utils::TColor(c.R*255.f,c.G*255.f,c.B*255.f,c.A*255.f));
+			}
 
 			/** Set the color components of this object (R,G,B,Alpha, in the range 0-1)  \return a ref to this */
-			virtual CRenderizable& setColor( double R, double G, double B, double A=1);
+			inline CRenderizable& setColor( double R, double G, double B, double A=1) { return setColor_u8(R*255,G*255,B*255,A*255); }
+
+			inline const mrpt::utils::TColor &getColor_u8() const { return m_color; }  //!< Returns the object color property as a TColor
+			/*** Changes the default object color \return a ref to this */
+			virtual CRenderizable& setColor_u8( const mrpt::utils::TColor &c);  
+
+			/** Set the color components of this object (R,G,B,Alpha, in the range 0-1)  \return a ref to this */
+			inline CRenderizable& setColor_u8( uint8_t R, uint8_t G, uint8_t B, uint8_t A=255) { return setColor_u8(mrpt::utils::TColor(R,G,B,A)); }
 
 			/** @} */
 

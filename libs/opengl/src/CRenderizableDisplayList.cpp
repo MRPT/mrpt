@@ -129,22 +129,3 @@ void   CRenderizableDisplayList::render() const
 #endif
 }
 
-
-CRenderizable& CRenderizableDisplayList::setColor( double R, double G, double B, double A)
-{
-	m_color_R = R;
-	m_color_G = G;
-	m_color_B = B;
-	m_color_A = A;
-	notifyChange();
-	return *this;
-}
-
-CRenderizable& CRenderizableDisplayList::setColor( const mrpt::utils::TColorf &c)
-{
-	m_color_R = c.R;
-	m_color_G = c.G;
-	m_color_B = c.B;
-	m_color_A = c.A;
-	return *this;
-}

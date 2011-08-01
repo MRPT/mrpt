@@ -270,61 +270,48 @@ bool CSetOfTriangles::traceRayTriangle(const mrpt::poses::CPose3D &transf,double
 }
 */
 
-CRenderizable& CSetOfTriangles::setColor(double R,double G,double B,double A)	{
+CRenderizable& CSetOfTriangles::setColor_u8(const mrpt::utils::TColor &c)	{
 	CRenderizableDisplayList::notifyChange();
-	m_color_R=R;
-	m_color_G=G;
-	m_color_B=B;
-	m_color_A=A;
+	m_color=c;
+	mrpt::utils::TColorf col(c);
 	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++)	{
-		it->r[i]=R;
-		it->g[i]=G;
-		it->b[i]=B;
-		it->a[i]=A;
+		it->r[i]=col.R;
+		it->g[i]=col.G;
+		it->b[i]=col.B;
+		it->a[i]=col.A;
 	}
 	return *this;
 }
 
-CRenderizable& CSetOfTriangles::setColor(const mrpt::utils::TColorf &c)	{
+CRenderizable& CSetOfTriangles::setColorR_u8(const uint8_t r)	{
 	CRenderizableDisplayList::notifyChange();
-	m_color_R=c.R;
-	m_color_G=c.G;
-	m_color_B=c.B;
-	m_color_A=c.A;
-	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++)	{
-		it->r[i]=c.R;
-		it->g[i]=c.G;
-		it->b[i]=c.B;
-		it->a[i]=c.A;
-	}
+	m_color.R=r;
+	const float col = r/255.f;
+	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->r[i]=col;
 	return *this;
 }
 
-CRenderizable& CSetOfTriangles::setColorR(const double r)	{
+CRenderizable& CSetOfTriangles::setColorG_u8(const uint8_t g)	{
 	CRenderizableDisplayList::notifyChange();
-	m_color_R=r;
-	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->r[i]=r;
+	m_color.G=g;
+	const float col = g/255.f;
+	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->g[i]=col;
 	return *this;
 }
 
-CRenderizable& CSetOfTriangles::setColorG(const double g)	{
+CRenderizable& CSetOfTriangles::setColorB_u8(const uint8_t b)	{
 	CRenderizableDisplayList::notifyChange();
-	m_color_G=g;
-	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->g[i]=g;
+	m_color.B=b;
+	const float col = b/255.f;
+	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->b[i]=col;
 	return *this;
 }
 
-CRenderizable& CSetOfTriangles::setColorB(const double b)	{
+CRenderizable& CSetOfTriangles::setColorA_u8(const uint8_t a)	{
 	CRenderizableDisplayList::notifyChange();
-	m_color_B=b;
-	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->b[i]=b;
-	return *this;
-}
-
-CRenderizable& CSetOfTriangles::setColorA(const double a)	{
-	CRenderizableDisplayList::notifyChange();
-	m_color_A=a;
-	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->a[i]=a;
+	m_color.A=a;
+	const float col = a/255.f;
+	for (std::vector<TTriangle>::iterator it=m_triangles.begin();it!=m_triangles.end();++it) for (size_t i=0;i<3;i++) it->a[i]=col;
 	return *this;
 }
 

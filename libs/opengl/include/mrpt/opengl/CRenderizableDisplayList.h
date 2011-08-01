@@ -98,12 +98,11 @@ namespace mrpt
 			/** @name Changes the appearance of the object to render (methods from CRenderizable that need to be redefined)
 			    @{ */
 
-			virtual CRenderizable&  setColorR(const double r)	{m_color_R=r; notifyChange(); return *this;}	//!<Color components in the range [0,1] \return a ref to this
-			virtual CRenderizable&  setColorG(const double g)	{m_color_G=g; notifyChange(); return *this;}	//!<Color components in the range [0,1] \return a ref to this
-			virtual CRenderizable&  setColorB(const double b)	{m_color_B=b; notifyChange(); return *this;}	//!<Color components in the range [0,1] \return a ref to this
-			virtual CRenderizable&  setColorA(const double a)	{m_color_A=a; notifyChange(); return *this;}	//!<Color components in the range [0,1] \return a ref to this
-			virtual CRenderizable& setColor( const mrpt::utils::TColorf &c);  //!< Changes the default object color \return a ref to this
-			virtual CRenderizable& setColor( double R, double G, double B, double A=1);	//!< Set the color components of this object (R,G,B,Alpha, in the range 0-1)  \return a ref to this
+			virtual CRenderizable&  setColorR_u8(const uint8_t r)	{m_color.R=r; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
+			virtual CRenderizable&  setColorG_u8(const uint8_t g)	{m_color.G=g; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
+			virtual CRenderizable&  setColorB_u8(const uint8_t b)	{m_color.B=b; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
+			virtual CRenderizable&  setColorA_u8(const uint8_t a)	{m_color.A=a; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
+			virtual CRenderizable& setColor_u8( const mrpt::utils::TColor &c) { CRenderizable::setColor_u8(c); notifyChange(); return *this; } //!< Changes the default object color \return a ref to this
 
 			/** @} */
 

@@ -797,7 +797,7 @@ void CPolyhedron::render_dl() const	{
 	if (mWireframe)	{
 		glLineWidth(mLineWidth);
 		checkOpenGLError();
-		glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
+		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 		glBegin(GL_LINES);
 		for (vector<TPolyhedronEdge>::const_iterator it=mEdges.begin();it!=mEdges.end();++it)	{
 			TPoint3D p=mVertices[it->v1];
@@ -814,7 +814,7 @@ void CPolyhedron::render_dl() const	{
 		glEnable(GL_LIGHT0);
 		glEnable(GL_COLOR_MATERIAL);
 		glShadeModel(GL_SMOOTH);
-		glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
+		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 		for (vector<TPolyhedronFace>::const_iterator it=mFaces.begin();it!=mFaces.end();++it)	{
 			glBegin(GL_POLYGON);
 			glNormal3f(it->normal[0],it->normal[1],it->normal[2]);

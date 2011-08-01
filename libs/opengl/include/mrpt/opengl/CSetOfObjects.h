@@ -153,12 +153,11 @@ namespace mrpt
 			  */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
 
-			virtual CRenderizable& setColor(const mrpt::utils::TColorf &c);
-			virtual CRenderizable& setColor(double r,double g,double b,double a=1);
-			virtual CRenderizable& setColorR(const double r);
-			virtual CRenderizable& setColorG(const double g);
-			virtual CRenderizable& setColorB(const double b);
-			virtual CRenderizable& setColorA(const double a);
+			virtual CRenderizable& setColor_u8(const mrpt::utils::TColor &c);
+			virtual CRenderizable& setColorR_u8(const uint8_t r);
+			virtual CRenderizable& setColorG_u8(const uint8_t g);
+			virtual CRenderizable& setColorB_u8(const uint8_t b);
+			virtual CRenderizable& setColorA_u8(const uint8_t a);
 
 			bool contains(const CRenderizablePtr &obj) const;
 

@@ -62,14 +62,14 @@ void   CSetOfLines::render_dl() const
 	glLineWidth(mLineWidth);
 	checkOpenGLError();
 
-	if ( m_color_A != 1.0 )
+	if ( m_color.A != 255 )
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	glBegin(GL_LINES);
-	glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
+	glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 	for (std::vector<TSegment3D>::const_iterator it=mSegments.begin();it!=mSegments.end();++it)	{
 		glVertex3d(it->point1.x,it->point1.y,it->point1.z);
 		glVertex3d(it->point2.x,it->point2.y,it->point2.z);
@@ -77,7 +77,7 @@ void   CSetOfLines::render_dl() const
 	glEnd();
 	checkOpenGLError();
 
-	if ( m_color_A != 1.0 )
+	if ( m_color.A != 255 )
 		glDisable(GL_BLEND);
 
 #endif

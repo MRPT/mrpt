@@ -53,9 +53,9 @@ void CMesh::updateTriangles() const	{
 	const size_t rows=Z.getRowCount();
 	if (m_colorFromZ) updateColorsMatrix();
 	else	{
-		cR[0]=cR[1]=cR[2]=m_color_R;
-		cG[0]=cG[1]=cG[2]=m_color_G;
-		cB[0]=cB[1]=cB[2]=m_color_B;
+		cR[0]=cR[1]=cR[2]=m_color.R/255.f;
+		cG[0]=cG[1]=cG[2]=m_color.G/255.f;
+		cB[0]=cB[1]=cB[2]=m_color.B/255.f;
 	}
 	ASSERT_(cols>0&&rows>0);
 	ASSERT_(xMax>xMin&&yMax>yMin);
@@ -87,9 +87,9 @@ void CMesh::updateTriangles() const	{
 				colormap(m_colorMap,C(i+1,j),tri.r[1],tri.g[1],tri.b[1]);
 				colormap(m_colorMap,C(i+1,j+1),tri.r[2],tri.g[2],tri.b[2]);
 			}	else	{
-				tri.r[0]=tri.r[1]=tri.r[2]=m_color_R;
-				tri.g[0]=tri.g[1]=tri.g[2]=m_color_G;
-				tri.b[0]=tri.b[1]=tri.b[2]=m_color_B;
+				tri.r[0]=tri.r[1]=tri.r[2]=m_color.R/255.f;
+				tri.g[0]=tri.g[1]=tri.g[2]=m_color.G/255.f;
+				tri.b[0]=tri.b[1]=tri.b[2]=m_color.B/255.f;
 			}
 			actualMesh.push_back(tri);
 		}
@@ -102,9 +102,9 @@ void CMesh::updateTriangles() const	{
 				colormap(m_colorMap,C(i,j+1),tri.r[1],tri.g[1],tri.b[1]);
 				colormap(m_colorMap,C(i+1,j+1),tri.r[2],tri.g[2],tri.b[2]);
 			}	else	{
-				tri.r[0]=tri.r[1]=tri.r[2]=m_color_R;
-				tri.g[0]=tri.g[1]=tri.g[2]=m_color_G;
-				tri.b[0]=tri.b[1]=tri.b[2]=m_color_B;
+				tri.r[0]=tri.r[1]=tri.r[2]=m_color.R/255.f;
+				tri.g[0]=tri.g[1]=tri.g[2]=m_color.G/255.f;
+				tri.b[0]=tri.b[1]=tri.b[2]=m_color.B/255.f;
 			}
 			actualMesh.push_back(tri);
 		}

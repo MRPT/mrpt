@@ -57,7 +57,7 @@ void   CSimpleLine::render_dl() const
 
     glBegin( GL_LINES );
 
-    glColor4f( m_color_R,m_color_G,m_color_B,m_color_A );
+    glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 	glVertex3f( m_x0, m_y0, m_z0 );
     glVertex3f( m_x1, m_y1, m_z1 );
 

@@ -72,7 +72,7 @@ CText3D::~CText3D()
 void   CText3D::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
+	glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 
 	mrpt::opengl::gl_utils::glSetFont(m_fontName);
 	mrpt::opengl::gl_utils::glDrawText(

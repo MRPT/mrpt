@@ -59,8 +59,7 @@ void   CAxis::render_dl() const
 	checkOpenGLError();
 
     glBegin( GL_LINES );
-
-    glColor4f( m_color_R,m_color_G,m_color_B,m_color_A );
+    glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 	//X axis
 	glVertex3f( m_xmin, 0.0f, 0.0f );
     glVertex3f( m_xmax, 0.0f, 0.0f );

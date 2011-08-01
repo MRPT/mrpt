@@ -45,7 +45,7 @@ IMPLEMENTS_SERIALIZABLE(CBox,CRenderizableDisplayList,mrpt::opengl)
   ---------------------------------------------------------------*/
 void CBox::render_dl() const	{
 #if MRPT_HAS_OPENGL_GLUT
-	if (m_color_A!=1.0)
+	if (m_color.A!=255)
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -66,7 +66,7 @@ void CBox::render_dl() const	{
 		// wireframe:
 		glLineWidth(m_lineWidth); checkOpenGLError();
 		glBegin(GL_LINE_STRIP);
-		glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
+		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 
 		glVertex3d(m_corner_min.x,m_corner_min.y,m_corner_min.z);
 		glVertex3d(m_corner_max.x,m_corner_min.y,m_corner_min.z);
@@ -77,7 +77,7 @@ void CBox::render_dl() const	{
 		glEnd();
 
 		glBegin(GL_LINE_STRIP);
-		glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
+		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 
 		glVertex3d(m_corner_min.x,m_corner_max.y,m_corner_min.z);
 		glVertex3d(m_corner_max.x,m_corner_max.y,m_corner_min.z);
@@ -88,7 +88,7 @@ void CBox::render_dl() const	{
 		glEnd();
 
 		glBegin(GL_LINE_STRIP);
-		glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
+		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 		glVertex3d(m_corner_min.x,m_corner_min.y,m_corner_min.z);
 		glVertex3d(m_corner_min.x,m_corner_max.y,m_corner_min.z);
 		glVertex3d(m_corner_min.x,m_corner_max.y,m_corner_max.z);
@@ -96,7 +96,7 @@ void CBox::render_dl() const	{
 		glEnd();
 
 		glBegin(GL_LINE_STRIP);
-		glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
+		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 		glVertex3d(m_corner_max.x,m_corner_min.y,m_corner_min.z);
 		glVertex3d(m_corner_max.x,m_corner_max.y,m_corner_min.z);
 		glVertex3d(m_corner_max.x,m_corner_max.y,m_corner_max.z);
@@ -108,7 +108,7 @@ void CBox::render_dl() const	{
 	{
 		// solid:
 		glBegin(GL_TRIANGLES);
-		glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
+		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 
 		// Front face:
 		renderTriangleWithNormal(

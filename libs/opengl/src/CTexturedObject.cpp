@@ -484,7 +484,7 @@ void  CTexturedObject::render_pre() const
 	glEnable(GL_TEXTURE_2D);
 	checkOpenGLError();
 
-	if (m_enableTransparency || m_color_A!=1.0)
+	if (m_enableTransparency || m_color.A!=255)
 	{
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
@@ -507,7 +507,7 @@ void  CTexturedObject::render_post() const
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
 
-	if (m_enableTransparency || m_color_A!=1.0)
+	if (m_enableTransparency || m_color.A!=255)
 	{
 		glDisable(GL_BLEND);
 		checkOpenGLError();

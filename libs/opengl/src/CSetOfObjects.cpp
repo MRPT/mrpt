@@ -207,45 +207,41 @@ bool CSetOfObjects::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 
 class FSetColor	{
 public:
-	float r,g,b,a;
+	uint8_t r,g,b,a;
 	void operator()(CRenderizablePtr &p)	{
-		p->setColor(r,g,b,a);
+		p->setColor_u8(r,g,b,a);
 	}
-	FSetColor(float R,float G,float B,float A):r(R),g(G),b(B),a(A)	{}
+	FSetColor(uint8_t R,uint8_t G,uint8_t B,uint8_t A):r(R),g(G),b(B),a(A)	{}
 	~FSetColor()	{}
 };
 
-CRenderizable& CSetOfObjects::setColor(const mrpt::utils::TColorf &c)	{
-	for_each(m_objects.begin(),m_objects.end(),FSetColor(m_color_R=c.R,m_color_G=c.G,m_color_B=c.B,m_color_A=c.A));
+CRenderizable& CSetOfObjects::setColor_u8(const mrpt::utils::TColor &c)	{
+	for_each(m_objects.begin(),m_objects.end(),FSetColor(m_color.R=c.R,m_color.G=c.G,m_color.B=c.B,m_color.A=c.A));
 	return *this;
 }
 
-CRenderizable& CSetOfObjects::setColor(double r,double g,double b,double a)	{
-	for_each(m_objects.begin(),m_objects.end(),FSetColor(m_color_R=r,m_color_G=g,m_color_B=b,m_color_A=a));
-	return *this;
-}
 
 bool CSetOfObjects::contains(const CRenderizablePtr &obj) const	{
 	return find(m_objects.begin(),m_objects.end(),obj)!=m_objects.end();
 }
 
-CRenderizable& CSetOfObjects::setColorR(const double r)	{
-	for(CListOpenGLObjects::iterator it=m_objects.begin();it!=m_objects.end();++it) (*it)->setColorR(m_color_R=r);
+CRenderizable& CSetOfObjects::setColorR_u8(const uint8_t r)	{
+	for(CListOpenGLObjects::iterator it=m_objects.begin();it!=m_objects.end();++it) (*it)->setColorR_u8(m_color.R=r);
 	return *this;
 }
 
-CRenderizable& CSetOfObjects::setColorG(const double g)	{
-	for(CListOpenGLObjects::iterator it=m_objects.begin();it!=m_objects.end();++it) (*it)->setColorG(m_color_G=g);
+CRenderizable& CSetOfObjects::setColorG_u8(const uint8_t  g)	{
+	for(CListOpenGLObjects::iterator it=m_objects.begin();it!=m_objects.end();++it) (*it)->setColorG_u8(m_color.G=g);
 	return *this;
 }
 
-CRenderizable& CSetOfObjects::setColorB(const double b)	{
-	for(CListOpenGLObjects::iterator it=m_objects.begin();it!=m_objects.end();++it) (*it)->setColorB(m_color_B=b);
+CRenderizable& CSetOfObjects::setColorB_u8(const uint8_t  b)	{
+	for(CListOpenGLObjects::iterator it=m_objects.begin();it!=m_objects.end();++it) (*it)->setColorB_u8(m_color.B=b);
 	return *this;
 }
 
-CRenderizable& CSetOfObjects::setColorA(const double a)	{
-	for(CListOpenGLObjects::iterator it=m_objects.begin();it!=m_objects.end();++it) (*it)->setColorA(m_color_A=a);
+CRenderizable& CSetOfObjects::setColorA_u8(const uint8_t  a)	{
+	for(CListOpenGLObjects::iterator it=m_objects.begin();it!=m_objects.end();++it) (*it)->setColorA_u8(m_color.A=a);
 	return *this;
 }
 

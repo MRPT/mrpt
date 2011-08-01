@@ -67,7 +67,7 @@ void   CText::render() const
 #if MRPT_HAS_OPENGL_GLUT
     glDisable(GL_DEPTH_TEST);
 
-	glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
+	glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
     // Set the "cursor" to the XYZ position:
     glRasterPos3f(0,0,0);//m_x,m_y,m_z);
 

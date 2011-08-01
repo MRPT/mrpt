@@ -182,14 +182,15 @@ namespace mrpt
 
 					size_t N = xs.size();
 					m_points.resize(N);
+					const mrpt::utils::TColorf col(m_color);
 					for (size_t i=0;i<N;i++)
 					{
 						m_points[i].x = xs[i];
 						m_points[i].y = ys[i];
 						m_points[i].z = zs[i];
-						m_points[i].R = m_color_R;
-						m_points[i].G = m_color_G;
-						m_points[i].B = m_color_B;
+						m_points[i].R = col.R;
+						m_points[i].G = col.G;
+						m_points[i].B = col.B;
 					}
 				}
 				markAllPointsAsNew();

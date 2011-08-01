@@ -61,7 +61,7 @@ void COpenGLStandardObject::render_dl()	const	{
 	glShadeModel(GL_SMOOTH);
 	//This line won't take any effect if GL_BLEND is not enabled, so it's safe to always execute it.
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(m_color_R,m_color_G,m_color_B,m_color_A);
+	glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 	if (normal[0]||normal[1]||normal[2]) glNormal3f(normal[0],normal[1],normal[2]);
 	if (chunkSize==0)	{
 		glBegin(type);
