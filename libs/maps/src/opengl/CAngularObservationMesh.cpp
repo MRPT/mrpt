@@ -69,10 +69,10 @@ void CAngularObservationMesh::addTriangle(const TPoint3D &p1,const TPoint3D &p2,
 		t.x[i]=arr[i]->x;
 		t.y[i]=arr[i]->y;
 		t.z[i]=arr[i]->z;
-		t.r[i]=m_color_R;
-		t.g[i]=m_color_G;
-		t.b[i]=m_color_B;
-		t.a[i]=m_color_A;
+		t.r[i]=m_color.R*(1.f/255);
+		t.g[i]=m_color.G*(1.f/255);
+		t.b[i]=m_color.B*(1.f/255);
+		t.a[i]=m_color.A*(1.f/255);
 	}
 	triangles.push_back(t);
 	CRenderizableDisplayList::notifyChange();

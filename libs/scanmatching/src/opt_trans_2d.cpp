@@ -93,8 +93,11 @@ bool  scanmatching::leastSquareErrorRigidTransformation(
 #if MRPT_HAS_SSE2
 	// SSE vectorized version:
 
-	MRPT_COMPILE_TIME_ASSERT(sizeof(TMatchingPair::this_x)==sizeof(float))
-	MRPT_COMPILE_TIME_ASSERT(sizeof(TMatchingPair::other_x)==sizeof(float))
+	//{
+	//	TMatchingPair dumm;
+	//	MRPT_COMPILE_TIME_ASSERT(sizeof(dumm.this_x)==sizeof(float))
+	//	MRPT_COMPILE_TIME_ASSERT(sizeof(dumm.other_x)==sizeof(float))
+	//}
 
 	__m128  sum_a_xyz = _mm_setzero_ps(); // All 4 zeros (0.0f)
 	__m128  sum_b_xyz = _mm_setzero_ps(); // All 4 zeros (0.0f)

@@ -258,13 +258,26 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 				// Prepare an ortho projection:
 				glMatrixMode(GL_PROJECTION);
 				glLoadIdentity();
-				glOrtho(-0.5,(double)img_w - 0.5, (double) img_h - 0.5, -0.5, -1.0, 1.0);
+
+				// Need to adjust the aspect ratio?
+				const double ratio = vw*img_h/double(vh*img_w);
+				double ortho_w = img_w;
+				double ortho_h = img_h;
+				if (ratio>1)
+					ortho_w *= ratio;
+					else
+				if (ratio!=0) ortho_h /=ratio;
+
+				glOrtho(
+					-0.5, ortho_h - 0.5, 
+					ortho_w - 0.5, -0.5,  
+					-1,1);
 
 				// Prepare raster pos & pixel copy direction in -Y.
 				glRasterPos2f(-0.5f,-0.5f);
 				glPixelZoom(
-					 vw / float(img_w),
-					-vh / float(img_h) );
+					 vw / float(ortho_w),
+					-vh / float(ortho_h) );
 
 				// Prepare image data types:
 				const GLenum img_type = GL_UNSIGNED_BYTE;				
