@@ -227,7 +227,6 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			theImg.equalizeHistInPlace();
 		// Convert to color so we can draw color marks, etc.
 		theImg.colorImageInPlace();
-		theImg.selectTextFont("6x13");
 
 		double extra_tim_to_wait=0;
 
@@ -237,13 +236,18 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			tictac.Tic();
 			const double fps = 1.0/(std::max(1e-5,T));
 			//theImg.filledRectangle(1,1,175,25,TColor(0,0,0));
+
+			theImg.selectTextFont("6x13");
 			theImg.textOut(3,3,format("FPS: %.03f Hz", fps ),TColor(200,20,20) );
+			theImg.textOut(3,22,format("# feats: %u", (unsigned int)trackedFeats.size()  ),TColor(200,20,20) );
 
 			extra_tim_to_wait = 1.0/MAX_FPS - 1.0/fps;
 		}
 		{	// Tracked feats:
+			theImg.selectTextFont("5x7");
+			tracker->getProfiler().enter("drawFeatures");
 			theImg.drawFeatures(trackedFeats, TColor(0,0,255), SHOW_FEAT_IDS, SHOW_RESPONSES);
-			theImg.textOut(3,22,format("# feats: %u", (unsigned int)trackedFeats.size()  ),TColor(200,20,20) );
+			tracker->getProfiler().leave("drawFeatures");
 		}
 
 		win->showImage(theImg);

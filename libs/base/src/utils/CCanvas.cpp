@@ -41,12 +41,14 @@
 
 
 // Include the MRPT bitmap fonts:
+#include "mrpt_font_5x7.h"
 #include "mrpt_font_6x13.h"
 #include "mrpt_font_6x13B.h"
 #include "mrpt_font_6x13O.h"
 #include "mrpt_font_9x15.h"
 #include "mrpt_font_9x15B.h"
 #include "mrpt_font_10x20.h"
+
 
 // Japanese fonts?
 #if MRPT_HAS_ASIAN_FONTS
@@ -94,15 +96,16 @@ void init_fonts_list()
 				/*mrpt::compress::zip::compress( list_registered_fonts[#ARR], f ); */  \
 			}
 
-    	SAVE_COMPRESSED(6x13)
-    	SAVE_COMPRESSED(6x13B)
-    	SAVE_COMPRESSED(6x13O)
-    	SAVE_COMPRESSED(9x15)
-    	SAVE_COMPRESSED(9x15B)
-    	SAVE_COMPRESSED(10x20)
+    	SAVE_COMPRESSED(5x7)
+//    	SAVE_COMPRESSED(6x13)
+//    	SAVE_COMPRESSED(6x13B)
+//    	SAVE_COMPRESSED(6x13O)
+//    	SAVE_COMPRESSED(9x15)
+//    	SAVE_COMPRESSED(9x15B)
+//    	SAVE_COMPRESSED(10x20)
 
 	#if MRPT_HAS_ASIAN_FONTS
-    	SAVE_COMPRESSED(18x18ja)
+//    	SAVE_COMPRESSED(18x18ja)
 	#endif
 
 #endif
@@ -117,6 +120,7 @@ void init_fonts_list()
 			mrpt::compress::zip::decompress_gz_data_block(tmpBuf,list_registered_fonts[#FONTNAME]); \
 		}
 
+		LOAD_FONT(5x7)
 		LOAD_FONT(6x13)
 		LOAD_FONT(6x13B)
 		LOAD_FONT(6x13O)

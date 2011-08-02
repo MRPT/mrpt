@@ -10,7 +10,8 @@
 
 int main(int argc, char **argv)
 {
-    char * lib_file = "vflibcap.pk";
+    //char * lib_file = "vflibcap.pk";
+    char * lib_file = "/etc/vflib3/vflibcap";
 
     if (argc!=5)
     {

@@ -198,8 +198,20 @@ namespace mrpt
 
 			/** Select the current font used when drawing text.
 			  * \param fontName The name of the font
-			  *  See <a href="http://www.mrpt.org/Implemented_2D_Fonts">the wiki</a> for a list of valid font names.
-			  * \sa textOut
+			  *
+			  *  Valid font names:
+			  *  - 5x7
+			  *  - 6x13
+			  *  - 6x13B
+			  *  - 6x13O
+			  *  - 9x15   (Default at start-up)
+			  *  - 9x15B
+			  *  - 10x20
+			  *  - 18x18ja (Asian characters for UTF-8 strings - Only available if MRPT is built with MRPT_HAS_ASIAN_FONTS = true)
+			  *
+			  *   <img src="sample_textFonts.png" >
+			  *
+			  * \sa textOut, The example in <a href="http://www.mrpt.org/Implemented_2D_Fonts">this page</a>.
 			  */
 			virtual void  selectTextFont( const std::string  &fontName );
 

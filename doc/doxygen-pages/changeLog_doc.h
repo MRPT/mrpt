@@ -63,6 +63,8 @@
 		- [mrpt-base] mrpt::utils::CImage:
 			- New method mrpt::utils::CImage::getRowStride()
 			- mrpt::utils::CImage::KLT_response() has been optimized for time.
+		- [mrpt-base] mrpt::utils::CCanvas (which includes mrpt::utils::CImage):
+			- New bitmapped font: "5x7". See mrpt::utils::CCanvas::selectTextFont() - <a href="http://code.google.com/p/mrpt/source/detail?r=2598" >r2598</a>
 		- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".
 		- [mrpt-opengl & mrpt-gui] All text labels in 3D rendering windows are now drawn as OpenGL primitives instead of bitmaps, which are ~10x faster to draw. See mrpt::opengl::CTextMessageCapable
 		- [mrpt-opengl & mrpt-gui] mrpt::opengl::CTextMessageCapable and mrpt::gui::CDisplayWindow3D now have an overloaded ::addTextMessage() method with many more font size/style options.
