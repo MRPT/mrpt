@@ -260,7 +260,7 @@ void  CImage::changeSize(
 	const std::string sLog = mrpt::format("cvCreateImage %ux%u",width,height);
 	alloc_tims.enter(sLog.c_str());
 #	endif
-	
+
 	img = cvCreateImage( cvSize(width,height),IPL_DEPTH_8U, nChannels );
 	((IplImage*)img)->origin = originTopLeft ? 0:1;
 
@@ -378,7 +378,7 @@ void  CImage::setFromIplImage( void* iplImage )
 		img = (IplImage*)iplImage;
 #else
 		THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
-#endif	
+#endif
 	}
 	m_imgIsReadOnly = false;
 	m_imgIsExternalStorage=false;
@@ -930,9 +930,9 @@ IplImage *ipl_to_grayscale(const IplImage * img_src)
 
 	// If possible, use SSE optimized version:
 #if MRPT_HAS_SSE3
-	if (is_aligned<16>(img_src->imageData) && 
-		(img_src->width & 0xF) == 0 && 
-		img_src->widthStep==img_src->width*img_src->nChannels && 
+	if (is_aligned<16>(img_src->imageData) &&
+		(img_src->width & 0xF) == 0 &&
+		img_src->widthStep==img_src->width*img_src->nChannels &&
 		img_dest->widthStep==img_dest->width*img_dest->nChannels )
 	{
 		ASSERT_(is_aligned<16>(img_dest->imageData))
@@ -1011,11 +1011,11 @@ void CImage::scaleHalf(CImage &out)const
 
 	// If possible, use SSE optimized version:
 #if MRPT_HAS_SSE3
-	if (img_src->nChannels==3 && 
-		is_aligned<16>(img_src->imageData) && 
+	if (img_src->nChannels==3 &&
+		is_aligned<16>(img_src->imageData) &&
 		is_aligned<16>(img_dest->imageData) &&
-		(w & 0xF) == 0 && 
-		img_src->widthStep==img_src->width*img_src->nChannels && 
+		(w & 0xF) == 0 &&
+		img_src->widthStep==img_src->width*img_src->nChannels &&
 		img_dest->widthStep==img_dest->width*img_dest->nChannels )
 	{
 		image_SSSE3_scale_half_3c8u( (const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData, w,h);
@@ -1025,11 +1025,11 @@ void CImage::scaleHalf(CImage &out)const
 #endif
 
 #if MRPT_HAS_SSE2
-	if (img_src->nChannels==1 && 
-		is_aligned<16>(img_src->imageData) && 
-		is_aligned<16>(img_dest->imageData) && 
+	if (img_src->nChannels==1 &&
+		is_aligned<16>(img_src->imageData) &&
+		is_aligned<16>(img_dest->imageData) &&
 		(w & 0xF) == 0 &&
-		img_src->widthStep==img_src->width*img_src->nChannels && 
+		img_src->widthStep==img_src->width*img_src->nChannels &&
 		img_dest->widthStep==img_dest->width*img_dest->nChannels )
 	{
 		image_SSE2_scale_half_1c8u( (const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData, w,h);
@@ -1069,11 +1069,11 @@ void CImage::scaleHalfSmooth(CImage &out)const
 
 	// If possible, use SSE optimized version:
 #if MRPT_HAS_SSE2
-	if (img_src->nChannels==1 && 
-		is_aligned<16>(img_src->imageData) && 
-		is_aligned<16>(img_dest->imageData) && 
+	if (img_src->nChannels==1 &&
+		is_aligned<16>(img_src->imageData) &&
+		is_aligned<16>(img_dest->imageData) &&
 		(w & 0xF) == 0 &&
-		img_src->widthStep==img_src->width*img_src->nChannels && 
+		img_src->widthStep==img_src->width*img_src->nChannels &&
 		img_dest->widthStep==img_dest->width*img_dest->nChannels )
 	{
 		image_SSE2_scale_half_smooth_1c8u( (const uint8_t*)img_src->imageData, (uint8_t*)img_dest->imageData, w,h);
@@ -2332,9 +2332,39 @@ void CImage::equalizeHistInPlace()
 }
 
 
+template <unsigned int HALF_WIN_SIZE>
+void image_KLT_response_template(const uint8_t* in, const int widthStep, int x, int y, int32_t &_gxx,int32_t &_gyy,int32_t &_gxy)
+{
+	const unsigned int min_x = x-HALF_WIN_SIZE;
+	const unsigned int min_y = y-HALF_WIN_SIZE;
 
-/** Compute the KLT response at a given pixel (x,y) - Only for grayscale images (for efficiency it avoids converting to grayscale internally).
-  */
+	int32_t gxx = 0;
+	int32_t gxy = 0;
+	int32_t gyy = 0;
+
+	const unsigned int WIN_SIZE = 1+2*HALF_WIN_SIZE;
+
+	unsigned int yy = min_y;
+	for (unsigned int iy=WIN_SIZE; iy ; --iy, ++yy)
+	{
+		const uint8_t* ptr = in + widthStep*yy+ min_x;
+		unsigned int xx = min_x;
+		for (unsigned int ix = WIN_SIZE; ix; --ix, ++xx)
+		{
+			const int32_t dx = ptr[+1]-ptr[-1];
+			const int32_t dy = ptr[+widthStep]-ptr[-widthStep];
+			gxx += dx * dx;
+			gxy += dx * dy;
+			gyy += dy * dy;
+		}
+	}
+	_gxx = gxx;
+	_gyy = gyy;
+	_gxy = gxy;
+}
+
+
+
 float CImage::KLT_response(
 	const unsigned int x,
 	const unsigned int y,
@@ -2347,7 +2377,9 @@ float CImage::KLT_response(
 
 	const unsigned int img_w = srcImg->width;
 	const unsigned int img_h = srcImg->height;
+	const int widthStep = srcImg->widthStep;
 
+	// If any of those predefined values worked, do the generic way:
 	const unsigned int min_x = x-half_window_size;
 	const unsigned int max_x = x+half_window_size;
 	const unsigned int min_y = y-half_window_size;
@@ -2355,29 +2387,41 @@ float CImage::KLT_response(
 
 	// Since min_* are "unsigned", checking "<" will detect negative numbers:
 	ASSERTMSG_(min_x<img_w && max_x<img_w && min_y<img_h && max_y<img_h, "Window is out of image bounds")
-//	ASSERTMSG_(min_x<img_w && min_x>0 && max_x<(img_w-1) && min_y<img_h && min_y>0 && max_y<(img_h-1), "Window is out of image bounds")
 
 	// Gradient sums: Use integers since they're much faster than doubles/floats!!
 	int32_t gxx = 0;
 	int32_t gxy = 0;
 	int32_t gyy = 0;
 
-	const int widthStep = srcImg->widthStep;
-
-	for (unsigned int yy = min_y; yy<=max_y; yy++)
+	const uint8_t* img_data = reinterpret_cast<const uint8_t*>(srcImg->imageData);  //*VERY IMPORTANT*: Use unsigned
+	switch (half_window_size)
 	{
-		const uint8_t* ptr = reinterpret_cast<const uint8_t*>(&srcImg->imageData[widthStep*yy+ min_x] );  //*VERY IMPORTANT*: Use unsigned
-		for (unsigned int xx = min_x; xx<=max_x; xx++)
-		{
-			const int32_t dx = ptr[+1]-ptr[-1];
-			const int32_t dy = ptr[+widthStep]-ptr[-widthStep];
-			gxx += dx * dx;
-			gxy += dx * dy;
-			gyy += dy * dy;
-		}
-		++ptr;
-	}
+		case 2: image_KLT_response_template<2>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 3: image_KLT_response_template<3>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 4: image_KLT_response_template<4>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 5: image_KLT_response_template<5>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 6: image_KLT_response_template<6>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 7: image_KLT_response_template<7>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 8: image_KLT_response_template<8>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 15: image_KLT_response_template<15>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 16: image_KLT_response_template<16>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 32: image_KLT_response_template<32>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
 
+		default:
+			for (unsigned int yy = min_y; yy<=max_y; yy++)
+			{
+				const uint8_t* ptr = img_data + widthStep*yy+ min_x;
+				for (unsigned int xx = min_x; xx<=max_x; xx++)
+				{
+					const int32_t dx = ptr[+1]-ptr[-1];
+					const int32_t dy = ptr[+widthStep]-ptr[-widthStep];
+					gxx += dx * dx;
+					gxy += dx * dy;
+					gyy += dy * dy;
+				}
+			}
+		 break;
+	}
 	// Convert to float's and normalize in the way:
 	const float K = 0.5f/( (max_y-min_y+1) * (max_x-min_x+1) );
 	const float Gxx = gxx * K;
@@ -2398,7 +2442,7 @@ float CImage::KLT_response(
 }
 
 
-/** Marks the channel ordering in a color image (this doesn't actually modify the image data, just the format description)  
+/** Marks the channel ordering in a color image (this doesn't actually modify the image data, just the format description)
   */
 void CImage::setChannelsOrder_RGB()
 {

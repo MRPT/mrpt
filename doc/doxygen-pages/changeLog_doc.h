@@ -60,7 +60,9 @@
 			- New data field: mrpt::slam::CObservation3DRangeScan::range_is_depth
 			- Method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() can now also recover 3D point clouds from 3D range scans not in the "Kinect" depth format.
 		- [mrpt-base] All classes derived from mrpt::utils::CObjectPtr now have a proper "value_type" typedef with the most specific data type of the class being pointed by the smart pointer, overriding the inherited, too generic, mrpt::utils::CObject. - <a href="http://code.google.com/p/mrpt/source/detail?r=2568" >r2568</a>
-		- [mrpt-base] New method: mrpt::utils::CImage::getRowStride()
+		- [mrpt-base] mrpt::utils::CImage:
+			- New method mrpt::utils::CImage::getRowStride()
+			- mrpt::utils::CImage::KLT_response() has been optimized for time.
 		- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".
 		- [mrpt-opengl & mrpt-gui] All text labels in 3D rendering windows are now drawn as OpenGL primitives instead of bitmaps, which are ~10x faster to draw. See mrpt::opengl::CTextMessageCapable
 		- [mrpt-opengl & mrpt-gui] mrpt::opengl::CTextMessageCapable and mrpt::gui::CDisplayWindow3D now have an overloaded ::addTextMessage() method with many more font size/style options.

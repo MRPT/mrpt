@@ -103,7 +103,6 @@ double image_test_2(int w, int h)
 	return R;
 }
 
-
 template <int IMG_CHANNELS>
 double image_halfsample(int w, int h)
 {
@@ -150,6 +149,34 @@ double image_rgb2gray_8u(int w, int h)
 		img.grayscale(img2);
 
 	return tictac.Tac()/N;
+}
+
+double image_KLTscore(int WIN, int N)
+{
+	static const size_t w = 800;
+	static const size_t h = 800;
+	CImage  img(w,h,CH_GRAY);
+
+	for (int i=0;i<5000;i++)
+		img.line(randomGenerator.drawUniform(0,w-1),randomGenerator.drawUniform(0,h-1),randomGenerator.drawUniform(0,w-1),randomGenerator.drawUniform(0,h-1), TColor( randomGenerator.drawUniform32bit() ) );
+
+	ASSERT_BELOW_(WIN,128)
+	int x = 0;
+	int y = 0;
+
+	CTicTac	 tictac;
+	tictac.Tic();
+	for (int i=0;i<N;i++)
+	{
+		//float r =
+		 img.KLT_response(x | 128,y | 128,WIN);
+		x++; x &= 0x1FF;
+		y++; y &= 0x1FF;
+	}
+
+	double R = tictac.Tac()/N;
+
+	return R;
 }
 
 
@@ -207,6 +234,23 @@ void register_tests_image()
 	lstTests.push_back( TestData("images: RGB->GRAY 8u (800x600)",image_rgb2gray_8u,  800,600) );
 	lstTests.push_back( TestData("images: RGB->GRAY 8u (1024x768)",image_rgb2gray_8u,  1024,768) );
 	lstTests.push_back( TestData("images: RGB->GRAY 8u (1280x1024)",image_rgb2gray_8u,  1280,1024) );
+
+	lstTests.push_back( TestData("images: KLT score (WIN=2 5x5)",image_KLTscore, 2,  1e7) );
+	lstTests.push_back( TestData("images: KLT score (WIN=3 7x7)",image_KLTscore, 3,  1e7) );
+	lstTests.push_back( TestData("images: KLT score (WIN=4 9x9)",image_KLTscore, 4,  1e7) );
+	lstTests.push_back( TestData("images: KLT score (WIN=5 10x10)",image_KLTscore, 5,  1e7) );
+	lstTests.push_back( TestData("images: KLT score (WIN=6 13x13)",image_KLTscore, 6,  1e7) );
+	lstTests.push_back( TestData("images: KLT score (WIN=7 15x15)",image_KLTscore, 7,  1e6) );
+	lstTests.push_back( TestData("images: KLT score (WIN=8 17x17)",image_KLTscore, 8,  1e6) );
+	lstTests.push_back( TestData("images: KLT score (WIN=9 19x19)",image_KLTscore, 9,  1e6) );
+	lstTests.push_back( TestData("images: KLT score (WIN=10 21x21)",image_KLTscore, 10,  1e6) );
+	lstTests.push_back( TestData("images: KLT score (WIN=11 23x23)",image_KLTscore, 11,  1e6) );
+	lstTests.push_back( TestData("images: KLT score (WIN=12 25x25)",image_KLTscore, 12,  1e6) );
+	lstTests.push_back( TestData("images: KLT score (WIN=13 27x27)",image_KLTscore, 13,  1e6) );
+	lstTests.push_back( TestData("images: KLT score (WIN=14 29x29)",image_KLTscore, 14,  1e6) );
+	lstTests.push_back( TestData("images: KLT score (WIN=15 31x31)",image_KLTscore, 15,  1e6) );
+	lstTests.push_back( TestData("images: KLT score (WIN=16 33x33)",image_KLTscore, 16,  1e6) );
+
 }
 
 
