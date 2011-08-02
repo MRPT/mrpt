@@ -124,10 +124,10 @@ void image_SSE2_scale_half_smooth_1c8u(const uint8_t* in, uint8_t* out, int w, i
   *  This function is not manually optimized for SSE2 but templatized for different
   *   window sizes such as the compiler can optimize automatically for that size.
   *
-  *  Only for the most common window sizes this templates are instantiated, falling back to
+  *  Only for the most common window sizes this templates are instantiated (W=[2-16] and W=32 ),
+  *   falling back to
   *   a generic implementation otherwise. The next figure shows the performance (time for
   *   KLT_response() to compute the score for one single pixel) for different window sizes.
-  *   The clearly higher values are those not optimized with the template instantiation.
   *
   *  <img src="KLT_response_performance_SSE2.png" >
   *

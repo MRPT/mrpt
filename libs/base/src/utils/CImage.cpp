@@ -2403,6 +2403,12 @@ float CImage::KLT_response(
 		case 6: image_KLT_response_template<6>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
 		case 7: image_KLT_response_template<7>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
 		case 8: image_KLT_response_template<8>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 9: image_KLT_response_template<9>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 10: image_KLT_response_template<10>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 11: image_KLT_response_template<11>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 12: image_KLT_response_template<12>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 13: image_KLT_response_template<13>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
+		case 14: image_KLT_response_template<14>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
 		case 15: image_KLT_response_template<15>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
 		case 16: image_KLT_response_template<16>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
 		case 32: image_KLT_response_template<32>(img_data,widthStep,x,y,gxx,gyy,gxy); break;
