@@ -177,22 +177,17 @@ void CGenericFeatureTracker::trackFeatures(
 	{
 		m_timlog.enter("[CGenericFeatureTracker] add new features");
 #if MRPT_HAS_OPENCV
-#if MRPT_OPENCV_VERSION_NUM >= 0x200
 		using namespace cv;
 
 		// Look for new features:
-		vector<KeyPoint> new_feats; // The opencv keypoint output vector
+		std::vector<TPixelCoord> new_feats;
 
 		// Do the detection
-# if MRPT_OPENCV_VERSION_NUM >= 0x211
-	// Modern version:
-	FastFeatureDetector fastDetector( m_detector_adaptive_thres, true /* non-max supres. */ );
-	const Mat new_img_gray_mat = cvarrToMat( cur_gray.getAs<IplImage>() );
-	fastDetector.detect( new_img_gray_mat, new_feats );
-# else
-	// Older version:
-	FAST(cur_gray.getAs<IplImage>(), new_feats, m_detector_adaptive_thres, true /* non-max supres. */ );
-# endif
+		CFeatureExtraction::detectFeatures_SSE2_FASTER12(
+			cur_gray,
+			new_feats,
+			m_detector_adaptive_thres );
+
 #endif // MRPT_HAS_OPENCV
 
 		const size_t N = new_feats.size();
@@ -206,16 +201,17 @@ void CGenericFeatureTracker::trackFeatures(
 		else if (N>hysteresis_max_num_feats)	m_detector_adaptive_thres = std::max(m_detector_adaptive_thres+1.0, m_detector_adaptive_thres*1.2);
 
 		// Use KLT response instead of the OpenCV's original "response" field:
+		std::vector<float> responses(N);
 		{
 			const unsigned int max_x = img_width-KLT_response_half_win;
 			const unsigned int max_y = img_height-KLT_response_half_win;
 			for (size_t i=0;i<N;i++)
 			{
-				const unsigned int x = new_feats[i].pt.x;
-				const unsigned int y = new_feats[i].pt.y;
+				const unsigned int x = new_feats[i].x;
+				const unsigned int y = new_feats[i].y;
 				if (x>KLT_response_half_win && y>KLT_response_half_win && x<max_x && y<max_y)
-						new_feats[i].response = cur_gray.KLT_response(x,y,KLT_response_half_win);
-				else	new_feats[i].response = 0; // Out of bounds
+						responses[i] = cur_gray.KLT_response(x,y,KLT_response_half_win);
+				else	responses[i] = 0; // Out of bounds
 			}
 		}
 
@@ -223,7 +219,8 @@ void CGenericFeatureTracker::trackFeatures(
 		//      indices "sorted_indices" than sorting directly the actual list of features "cv_feats"
 		std::vector<size_t> sorted_indices(N);
 		for (size_t i=0;i<N;i++)  sorted_indices[i]=i;
-		std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointCompCache(new_feats) );
+
+		std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointCompCache2(responses) );
 
 		// For each new good feature, add it to the list of tracked ones only if it's pretty
 		//  isolated:
@@ -233,35 +230,38 @@ void CGenericFeatureTracker::trackFeatures(
 		const size_t maxNumFeatures = extra_params.getWithDefaultVal("add_new_feat_max_features",100);
 		const size_t patchSize = extra_params.getWithDefaultVal("add_new_feat_patch_size",11);
 		const int 	 offset		= (int)patchSize/2 + 1;
+		const int    w_off      = int(img_width - offset);
+		const int    h_off      = int(img_height - offset);
 
 		const float minimum_KLT_response_to_add = extra_params.getWithDefaultVal("minimum_KLT_response_to_add",10);
 
 		for (size_t i=0;i<nNewToCheck && featureList.size()<maxNumFeatures;i++)
 		{
-			const KeyPoint &kp = new_feats[sorted_indices[i]];
+			const TPixelCoord &pt = new_feats[ sorted_indices[i] ];
+			const float response  = responses[ sorted_indices[i] ];
 
-			if (kp.response<minimum_KLT_response_to_add) continue;
+			if (response<minimum_KLT_response_to_add) continue;
 
 			double min_dist_sqr = square(10000);
 
 			if (!featureList.empty())
-				min_dist_sqr = featureList.kdTreeClosestPoint2DsqrError(kp.pt.x,kp.pt.y );
+				min_dist_sqr = featureList.kdTreeClosestPoint2DsqrError(pt.x,pt.y );
 
 			if (min_dist_sqr>threshold_sqr_dist_to_add_new &&
-				kp.pt.x > offset &&
-				kp.pt.y > offset &&
-				kp.pt.x < img_width - offset &&
-				kp.pt.y < img_height - offset )
+				pt.x > offset &&
+				pt.y > offset &&
+				pt.x < w_off &&
+				pt.y < h_off )
 			{
 				// Add new feature:
 				CFeaturePtr ft		= CFeature::Create();
 				ft->type			= featFAST;
 				ft->ID				= ++max_feat_ID_at_input;
-				ft->x				= kp.pt.x;
-				ft->y				= kp.pt.y;
-				ft->response		= kp.response;
-				ft->orientation		= kp.angle;
-				ft->scale			= kp.octave;
+				ft->x				= pt.x;
+				ft->y				= pt.y;
+				ft->response		= response;
+				ft->orientation		= 0;
+				ft->scale			= 1;
 				ft->patchSize		= patchSize;		// The size of the feature patch
 
 				if( patchSize > 0 )
@@ -275,9 +275,6 @@ void CGenericFeatureTracker::trackFeatures(
 				featureList.push_back( ft );
 			}
 		}
-#else
-	THROW_EXCEPTION("add_new_features requires OpenCV >=2.1.0")
-#endif //MRPT_OPENCV_VERSION_NUM
 
 		m_timlog.leave("[CGenericFeatureTracker] add new features");
 	}

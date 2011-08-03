@@ -79,8 +79,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	CGenericFeatureTrackerAutoPtr  tracker;
 
 	// "CFeatureTracker_KL" is by far the most robust implementation for now:
-	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_KL );
-	tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_FAST );
+	tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_KL );
+	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_FAST );
 	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_PatchMatch );
 
 	tracker->enableTimeLogger(true); // Do time profiling.

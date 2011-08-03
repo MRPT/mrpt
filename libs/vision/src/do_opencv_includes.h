@@ -105,4 +105,14 @@
 
 #endif // MRPT_HAS_OPENCV
 
+/** A helper struct to sort lists of responses */
+struct KeypointCompCache2 : public std::binary_function<size_t,size_t,bool>
+{
+	const std::vector<float> &m_data;
+	KeypointCompCache2( const std::vector<float> &data ) : m_data(data) { }
+	bool operator() (size_t k1, size_t k2 ) const {
+		return (m_data[k1] > m_data[k2]);
+	}
+};
+
 #endif

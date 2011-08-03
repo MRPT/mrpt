@@ -43,17 +43,6 @@ using namespace mrpt::system;
 using namespace std;
 
 
-/** A helper struct to sort lists of responses */
-struct KeypointCompCache2 : public std::binary_function<size_t,size_t,bool>
-{
-	const std::vector<float> &m_data;
-	KeypointCompCache2( const std::vector<float> &data ) : m_data(data) { }
-	bool operator() (size_t k1, size_t k2 ) const {
-		return (m_data[k1] > m_data[k2]);
-	}
-};
-
-
 // ------------  SSE2-optimized implementations of FASTER -------------
 void CFeatureExtraction::detectFeatures_SSE2_FASTER9(const CImage &img, std::vector<TPixelCoord> &corners, const int threshold)
 {
@@ -94,7 +83,7 @@ void CFeatureExtraction::detectFeatures_SSE2_FASTER12(const CImage &img, std::ve
 ************************************************************************************************/
 // N_fast = 9, 10, 12
 void  CFeatureExtraction::extractFeaturesFASTER_N(
-	const int					N_fast,  
+	const int					N_fast,
 	const mrpt::utils::CImage	& inImg,
 	CFeatureList			    & feats,
 	unsigned int			    init_ID,
@@ -134,7 +123,7 @@ void  CFeatureExtraction::extractFeaturesFASTER_N(
 	std::vector<float> responses(N);
 
 	// Use KLT response
-	if (options.FASTOptions.use_KLT_response || 
+	if (options.FASTOptions.use_KLT_response ||
 		nDesiredFeatures!=0 // If the user wants us to limit the number of features, we need to do it according to some quality measure
 		)
 	{
