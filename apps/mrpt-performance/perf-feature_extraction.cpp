@@ -53,7 +53,7 @@ double feature_extraction_test_Harris( int N, int h )
 
 	fExt.options.featsType = featHarris;
 	tictac.Tic();
-	for (size_t i=0;i<N;i++)
+	for (int i=0;i<N;i++)
 		fExt.detectFeatures( img, featsHarris );
 
 	const double T = tictac.Tac()/N;
@@ -82,7 +82,7 @@ double feature_extraction_test_KLT( int N, int h )
 	fExt.options.KLTOptions.radius		= 5;
 
 	tictac.Tic();
-	for (size_t i=0;i<N;i++)
+	for (int i=0;i<N;i++)
 		fExt.detectFeatures( img, featsKLT );
 
 	const double T = tictac.Tac()/N;
@@ -108,7 +108,7 @@ double feature_extraction_test_SIFT( int N, int h )
 	fExt.options.SIFTOptions.implementation = CFeatureExtraction::Hess;
 
 	tictac.Tic();
-	for (size_t i=0;i<N;i++)
+	for (int i=0;i<N;i++)
 		fExt.detectFeatures( img, featsSIFT );
 
 	const double T = tictac.Tac()/N;
@@ -137,7 +137,7 @@ double feature_extraction_test_SIFT_desc( int N, int h )
 	fExt.detectFeatures( img, featsHarris );
 
 	tictac.Tic();
-	for (size_t i=0;i<N;i++)
+	for (int i=0;i<N;i++)
 		fExt.computeDescriptors( img, featsHarris, descSIFT );
 
 	const double T = tictac.Tac()/N;
@@ -164,7 +164,7 @@ double feature_extraction_test_SURF( int N, int h )
 	fExt.options.featsType					= featSURF;
 
 	tictac.Tic();
-	for (size_t i=0;i<N;i++)
+	for (int i=0;i<N;i++)
 		fExt.detectFeatures( img, featsSURF );
 
 	const double T = tictac.Tac()/N;
@@ -195,7 +195,7 @@ double feature_extraction_test_FAST( int N, int h )
 	img.grayscaleInPlace();
 
 	tictac.Tic();
-	for (size_t i=0;i<N;i++)
+	for (int i=0;i<N;i++)
 		fExt.detectFeatures( img, featsFAST );
 
 	const double T = tictac.Tac()/N;
@@ -223,7 +223,7 @@ double feature_extraction_test_Spin_desc( int N, int h )
 	fExt.detectFeatures( img, featsHarris );
 
 	tictac.Tic();
-	for (size_t i=0;i<N;i++)
+	for (int i=0;i<N;i++)
 		fExt.computeDescriptors( img, featsHarris, descSpinImages );
 
 	const double T = tictac.Tac()/N;
@@ -252,7 +252,7 @@ double feature_extraction_test_FASTER( int N, int threshold )
 	img.grayscaleInPlace();
 
 	tictac.Tic();
-	for (size_t i=0;i<N;i++)
+	for (int i=0;i<N;i++)
 		fExt.detectFeatures( img, feats,0, MAX_N_FEATS );
 
 	const double T = tictac.Tac()/N;
@@ -274,13 +274,13 @@ double feature_extraction_test_FASTER_quick( int N, int threshold )
 	tictac.Tic();
 
 	if (TYP==featFASTER9)
-		for (size_t i=0;i<N;i++)
+		for (int i=0;i<N;i++)
 			CFeatureExtraction::detectFeatures_SSE2_FASTER9(img,corners,threshold);
 	else if (TYP==featFASTER10)
-		for (size_t i=0;i<N;i++)
+		for (int i=0;i<N;i++)
 			CFeatureExtraction::detectFeatures_SSE2_FASTER10(img,corners,threshold);
 	else if (TYP==featFASTER12)
-		for (size_t i=0;i<N;i++)
+		for (int i=0;i<N;i++)
 			CFeatureExtraction::detectFeatures_SSE2_FASTER12(img,corners,threshold);
 
 	const double T = tictac.Tac()/N;

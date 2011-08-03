@@ -269,6 +269,9 @@ void CFeature::dumpToTextStream( mrpt::utils::CStream &out) const
 	    case 4: out.printf("SURF\n"); break;
 	    case 5: out.printf("Beacon\n"); break;
 	    case 6: out.printf("FAST\n"); break;
+	    case 7: out.printf("FASTER-9\n"); break;
+	    case 8: out.printf("FASTER-10\n"); break;
+	    case 9: out.printf("FASTER-12\n"); break;
 	}
 	out.printf("Status:                         ");
 	switch( track_status )
