@@ -59,7 +59,10 @@ namespace mrpt
 			featSIFT,				//!< Scale Invariant Feature Transform [LOWE'04]
 			featSURF,				//!< Speeded Up Robust Feature [BAY'06]
 			featBeacon,				//!< A especial case: this is not an image feature, but a 2D/3D beacon (used for range-only SLAM from mrpt::slam::CLandmark)
-			featFAST				//!< FAST feature detector ("Faster and better: A machine learning approach to corner detection", E. Rosten, R. Porter and T. Drummond, PAMI, 2009).
+			featFAST,				//!< FAST feature detector, OpenCV's implementation ("Faster and better: A machine learning approach to corner detection", E. Rosten, R. Porter and T. Drummond, PAMI, 2009).
+			featFASTER9,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
+			featFASTER10,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
+			featFASTER12			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
 		};
 
 		/** The bitwise OR combination of values of TDescriptorType are used in CFeatureExtraction::computeDescriptors to indicate which descriptors are to be computed for features.

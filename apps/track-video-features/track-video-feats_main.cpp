@@ -50,13 +50,13 @@ using namespace mrpt::slam;
 using namespace mrpt::vision;
 using namespace mrpt::poses;
 
+mrpt::gui::CDisplayWindowPtr win;  // This is global such as an exception within the main program do not abruptly closes the window
+
 // ------------------------------------------------------
 //		DoTrackingDemo
 // ------------------------------------------------------
 int DoTrackingDemo(CCameraSensorPtr  cam)
 {
-	mrpt::gui::CDisplayWindowPtr win;
-
 	win = mrpt::gui::CDisplayWindow::Create("Tracked features");
 
 	mrpt::vision::CVideoFileWriter  vidWritter;
@@ -79,8 +79,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	CGenericFeatureTrackerAutoPtr  tracker;
 
 	// "CFeatureTracker_KL" is by far the most robust implementation for now:
-	tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_KL );
-	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_FAST );
+	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_KL );
+	tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_FAST );
 	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_PatchMatch );
 
 	tracker->enableTimeLogger(true); // Do time profiling.

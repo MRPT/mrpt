@@ -200,21 +200,21 @@ void  CFeatureExtraction::detectFeatures(
 			extractFeaturesFAST(img, feats, init_ID, nDesiredFeatures, ROI, mask);
 			break;
 
+		case featFASTER9:
+			extractFeaturesFASTER_N(9,img, feats, init_ID, nDesiredFeatures, ROI);
+			break;
+		case featFASTER10:
+			extractFeaturesFASTER_N(10,img, feats, init_ID, nDesiredFeatures, ROI);
+			break;
+		case featFASTER12:
+			extractFeaturesFASTER_N(12,img, feats, init_ID, nDesiredFeatures, ROI);
+			break;
+
 		default:
 			THROW_EXCEPTION("options.method has an invalid value!");
 			break;
 	}
 }
-//void  CFeatureExtraction::detectFeatures2(
-//		const CImage			&img,
-//		std::vector<CFeature>	&feats,
-//		unsigned int			init_ID,
-//		unsigned int			nDesiredFeatures,
-//		const TImageROI			&ROI) const
-//{
-//	extractFeaturesFAST2(img, feats, init_ID, nDesiredFeatures, ROI);
-//}
-
 
 /************************************************************************************************
  								computeDescriptors

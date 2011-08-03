@@ -65,13 +65,17 @@ bool DemoFeatures()
 	// --------------------------------------
 	mrpt::vision::CFeatureExtraction	fext;
 
-	cout << endl << "Detectors:" << endl;
-	cout << "0: KLT" << endl;
-	cout << "1: Harris" << endl;
-	cout << "2: BCD" << endl;
-	cout << "3: SIFT" << endl;
-	cout << "4: SURF" << endl;
-	cout << "6: FAST" << endl;
+	cout << endl 
+		<< "Detectors:\n"
+		"0: KLT\n"
+		"1: Harris\n"
+		"2: BCD\n"
+		"3: SIFT\n"
+		"4: SURF\n"
+		"6: FAST\n"
+		"7: FASTER-9\n"
+		"8: FASTER-10\n"
+		"9: FASTER-12\n";
 
 	cout << endl << "Select the number for the desired method [3: SIFT]:";
 
@@ -165,11 +169,11 @@ bool DemoFeatures()
 
 	cout << "Detecting features in image1..."; tictac.Tic();
 	fext.detectFeatures(img1,feats1, 0,nFeats );
-	cout << tictac.Tac() * 1000 << " ms" << endl;
+	cout << tictac.Tac() * 1000 << " ms (" << feats1.size() << " features)\n";
 
 	cout << "Detecting features in image2..."; tictac.Tic();
 	fext.detectFeatures(img2,feats2, 0, nFeats);
-	cout << tictac.Tac() * 1000 << " ms" << endl;
+	cout << tictac.Tac() * 1000 << " ms (" << feats2.size() << " features)\n";
 
 	if (desc_to_compute != TDescriptorType(-1) &&
 		desc_to_compute != descAny )

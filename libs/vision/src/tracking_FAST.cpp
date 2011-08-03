@@ -34,11 +34,17 @@
 
 #include "do_opencv_includes.h"
 
+#if MRPT_HAS_SSE2
+#	include <mrpt/utils/SSE_types.h>
+#endif
+
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
+
+
 
 #if MRPT_HAS_OPENCV
 #if MRPT_OPENCV_VERSION_NUM >= 0x211
@@ -50,13 +56,20 @@ double match_template_SQDIFF(
 	const unsigned int patch_pos_x,
 	const unsigned int patch_pos_y)
 {
+// Only for 8bit grayscale:
+	ASSERTDEB_(img->depth==patch->depth && patch->depth==8)
+	ASSERTDEB_(img->nChannels == 1 && patch->nChannels == 1 )
+	ASSERTDEB_(patch_pos_x + patch->width<=(size_t)img->width)
+	ASSERTDEB_(patch_pos_y + patch->height<=(size_t)img->height)
+
+#if MRPT_HAS_SSE2 && 0 // TO DO
+	//_mm_sad_epu8
+	// See: http://software.intel.com/en-us/articles/motion-estimation-with-intel-streaming-simd-extensions-4-intel-sse4/
+#else
+	// Non-vectorized version:
 	unsigned int sq_diff = 0;
 
-	// Only for 8bit grayscale:
-	ASSERT_(img->depth==patch->depth && patch->depth==8)
-	ASSERT_(img->nChannels == 1 && patch->nChannels == 1 )
-	ASSERT_(patch_pos_x + patch->width<=(size_t)img->width)
-	ASSERT_(patch_pos_y + patch->height<=(size_t)img->height)
+	
 
 	for (unsigned int y=0;y<(unsigned int)patch->height;y++)
 	{
@@ -68,6 +81,7 @@ double match_template_SQDIFF(
 	}
 
 	return 1.0 - sq_diff / (square(255.0)* patch->width *  patch->height);
+#endif
 }
 
 #endif
@@ -126,8 +140,12 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 	const CImage new_img_gray(new_img, FAST_REF_OR_CONVERT_TO_GRAY);
 
 	// Do the detection
+	m_timlog.enter("[CFeatureTracker_FAST::track]: detect FAST");
+
 	const Mat new_img_gray_mat = cvarrToMat( reinterpret_cast<IplImage*>(new_img_gray.getAsIplImage()) );
 	fastDetector.detect( new_img_gray_mat, cv_feats );
+
+	m_timlog.leave("[CFeatureTracker_FAST::track]: detect FAST");
 
 #if 0
 	{
@@ -203,8 +221,8 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 			const unsigned int px = cv_feats[closest_idxs[k]].pt.x;
 			const unsigned int py = cv_feats[closest_idxs[k]].pt.y;
 
-			if (px<patch_half_size ||
-				py<patch_half_size ||
+			if (px<=patch_half_size ||
+				py<=patch_half_size ||
 				px>=max_border_x ||
 				py>=max_border_y)
 			{
@@ -218,11 +236,15 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 			//printf("testing %u against (%u,%u)\n",(unsigned)i, px,py );
 
 			// Possible algorithms: { TM_SQDIFF=0, TM_SQDIFF_NORMED=1, TM_CCORR=2, TM_CCORR_NORMED=3, TM_CCOEFF=4, TM_CCOEFF_NORMED=5 };
+			m_timlog.enter("[CFeatureTracker_FAST::track]: matchSQDIFF");
+
 			double match_quality  = match_template_SQDIFF(
 				reinterpret_cast<IplImage*>( new_img_gray.getAsIplImage()),
 				reinterpret_cast<IplImage*>( feat->patch.getAsIplImage()),
 				px-patch_half_size-1,
 				py-patch_half_size-1);
+
+			m_timlog.leave("[CFeatureTracker_FAST::track]: matchSQDIFF");
 
 			potential_matches[match_quality] = closest_idxs[k];
 		}

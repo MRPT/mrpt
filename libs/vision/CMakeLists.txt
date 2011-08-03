@@ -16,6 +16,11 @@ IF(CMAKE_MRPT_HAS_SIFT_HESS)
 	LIST(APPEND vision_EXTRA_SRCS_NAME 	"sift-hess" "sift-hess" "sift-hess" "sift-hess")
 ENDIF(CMAKE_MRPT_HAS_SIFT_HESS)
 
+LIST(APPEND vision_EXTRA_SRCS		
+	"${MRPT_SOURCE_DIR}/libs/vision/src/faster/*.cpp" 
+	"${MRPT_SOURCE_DIR}/libs/vision/src/faster/*.h" )
+LIST(APPEND vision_EXTRA_SRCS_NAME 	"faster" "faster")
+
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -44,3 +49,9 @@ IF(CMAKE_MRPT_HAS_SIFT_HESS)
 		set_source_files_properties(${sift-hess_FILES} PROPERTIES COMPILE_FLAGS "-Wno-unused-function")
 	ENDIF (CMAKE_COMPILER_IS_GNUCXX)
 ENDIF(CMAKE_MRPT_HAS_SIFT_HESS)
+
+# Ignore precompiled headers in faster sources:
+IF (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+	set_source_files_properties(${faster_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
+ENDIF (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+

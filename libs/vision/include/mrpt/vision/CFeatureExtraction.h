@@ -40,19 +40,21 @@ namespace mrpt
 		/** The central class from which images can be analyzed in search of different kinds of interest points and descriptors computed for them.
 		  *  To extract features from an image, create an instance of CFeatureExtraction,
 		  *   fill out its CFeatureExtraction::options field, including the algorithm to use (see
-		  *   CFeatureExtraction::TMethodExtraction), and call CFeatureExtraction::detectFeatures.
+		  *   CFeatureExtraction::TOptions::featsType), and call CFeatureExtraction::detectFeatures.
 		  *  This will return a set of features of the class mrpt::vision::CFeature, which include
 		  *   details for each interest point as well as the desired descriptors and/or patches.
 		  *
 		  *  By default, a 21x21 patch is extracted for each detected feature. If the patch is not needed,
 		  *   set patchSize to 0 in CFeatureExtraction::options
 		  *
-		  *  The implemented <b>detection</b> algorithms are (see CFeatureExtraction::TMethodExtraction):
+		  *  The implemented <b>detection</b> algorithms are (see CFeatureExtraction::TOptions::featsType):
 		  *		- KLT (Kanade-Lucas-Tomasi): A detector (no descriptor vector).
 		  *		- Harris: A detector (no descriptor vector).
 		  *		- BCD (Binary Corner Detector): A detector (no descriptor vector) (Not implemented yet).
 		  *		- SIFT: An implementation of the SIFT detector and descriptor. The implemention may be selected with CFeatureExtraction::TOptions::SIFTOptions::implementation.
 		  *		- SURF: OpenCV's implementation of SURF detector and descriptor.
+		  *		- The FAST feature detector (OpenCV's implementation)
+		  *		- The FASTER (9,10,12) detectors (Edward Rosten's libcvd implementation optimized for SSE2).
 		  *
 		  *  Additionally, given a list of interest points onto an image, the following
 		  *   <b>descriptors</b> can be computed for each point by calling CFeatureExtraction::computeDescriptors :
@@ -61,6 +63,10 @@ namespace mrpt
 		  *		- Intensity-domain spin images (SpinImage): Creates a vector descriptor with the 2D histogram as a single row.
 		  *		- A circular patch in polar coordinates (Polar images): The matrix descriptor is a 2D polar image centered at the interest point.
 		  *		- A log-polar image patch (Log-polar images): The matrix descriptor is the 2D log-polar image centered at the interest point.
+		  *
+		  *
+		  *  Apart from the normal entry point \a detectFeatures(), these other low-level functions are provided for convenience:
+		  *   - 
 		  *
 		  * \note The descriptor "Intensity-domain spin images" is described in "A sparse texture representation using affine-invariant regions", S Lazebnik, C Schmid, J Ponce, 2003 IEEE Computer Society Conference on Computer Vision.
 		  *
@@ -115,20 +121,18 @@ namespace mrpt
 				  */
 				bool FIND_SUBPIXEL;
 
+				/** KLT Options */
 				struct VISION_IMPEXP TKLTOptions
 				{
-					/** KLT Options
-					  */
 					int		radius;			// size of the block of pixels used
 					float	threshold;		// (default=0.1) for rejecting weak local maxima (with min_eig < threshold*max(eig_image))
 					float	min_distance;	// minimum distance between features
 					bool	tile_image;		// splits the image into 8 tiles and search for the best points in all of them (distribute the features over all the image)
 				} KLTOptions;
 
+				/** Harris Options */
 				struct VISION_IMPEXP THarrisOptions
 				{
-					/** Harris Options
-					  */
 					float	threshold;		// (default=0.005) for rejecting weak local maxima (with min_eig < threshold*max(eig_image))
 					float	k;				// k factor for the Harris algorithm
 					float	sigma;			// standard deviation for the gaussian smoothing function
@@ -137,16 +141,14 @@ namespace mrpt
 					bool	tile_image;		// splits the image into 8 tiles and search for the best points in all of them (distribute the features over all the image)
 				} harrisOptions;
 
+				/** BCD Options */
 				struct VISION_IMPEXP TBCDOptions
 				{
-					/** BCD Options
-					  */
 				} BCDOptions;
 
+				/** FAST and FASTER Options */
 				struct VISION_IMPEXP TFASTOptions
 				{
-					/** FAST Options
-					  */
 					int 	threshold;  //!< default= 20
 					bool	nonmax_suppression;		//!< Default = true
 					float	min_distance;	//!< (default=5) minimum distance between features (in pixels)
@@ -257,6 +259,21 @@ namespace mrpt
 									const CFeatureList &inList,
 									CFeatureList &outList,
 									unsigned int nDesiredFeats = 0) const;
+
+
+			/** @name Static methods with low-level detector functionality 
+			    @{ */
+
+			/** A SSE2-optimized implementation of FASTER-9 (requires img to be grayscale) - If SSE2 is not available, it gratefully falls back to a non-optimized version */
+			static void detectFeatures_SSE2_FASTER9(const CImage &img, std::vector<TPixelCoord> &corners, const int threshold = 20);
+			
+			/** A SSE2-optimized implementation of FASTER-10 (requires img to be grayscale) - If SSE2 is not available, it gratefully falls back to a non-optimized version */
+			static void detectFeatures_SSE2_FASTER10(const CImage &img, std::vector<TPixelCoord> &corners, const int threshold = 20);
+
+			/** A SSE2-optimized implementation of FASTER-12  (requires img to be grayscale) - If SSE2 is not available, it gratefully falls back to a non-optimized version */
+			static void detectFeatures_SSE2_FASTER12(const CImage &img, std::vector<TPixelCoord> &corners, const int threshold = 20);
+
+			/** @} */
 
 		private:
 			/** Compute the SIFT descriptor of the provided features into the input image
@@ -395,6 +412,16 @@ namespace mrpt
 				const TImageROI			&ROI = TImageROI(),
                 const CMatrixBool       * mask = NULL ) const; // Important: This was a const ref. in mrpt <0.9.4, but the instantiation of a default value 
                                                                // for CMatrixBool being a template generated duplicated linking errors for MSVC, thus it was changed to a pointer.
+
+			/** Edward's "FASTER & Better" detector, N=9,10,12 */
+			void  extractFeaturesFASTER_N(
+				const int               N,  
+				const CImage			&img,
+				CFeatureList			&feats,
+				unsigned int			init_ID = 0,
+				unsigned int			nDesiredFeatures = 0,
+				const TImageROI			&ROI = TImageROI()) const;
+
 
 			// ------------------------------------------------------------------------------------
 			//								my_scale_space_extrema
