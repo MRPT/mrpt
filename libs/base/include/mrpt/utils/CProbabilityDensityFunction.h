@@ -147,17 +147,6 @@ namespace mrpt
 				return 0.5*( STATE_LEN + STATE_LEN * ln_2PI + log( std::max(getCovariance().det(), std::numeric_limits<double>::epsilon() ) ) );
 			}
 
-			 /** Returns an estimate of the covariance matrix
-			   * \note Deprecated: Use getCovariance or getCovarianceAndMean instead.
-			  */
-			MRPT_DECLARE_DEPRECATED_FUNCTION("**deprecated** Use getCovariance instead",
-			CMatrixD  getEstimatedCovariance() const )
-			{
-				CMatrixDouble C;
-				getCovariance(C);
-				return CMatrixD(C);
-			}
-
 		}; // End of class def.
 
 	} // End of namespace

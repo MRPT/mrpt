@@ -79,6 +79,16 @@
 		- Update of Eigen3 to a more recent version (11-Jul-2011), which avoids warnings in MSVC x64 - <a href="http://code.google.com/p/mrpt/source/detail?r=2556" >r2556</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2558" >r2558</a>
 		- Automatic check for existence of system "libgtest-dev" not to build embedded version of Google unit testing library and link to system lib instead - <a href="http://code.google.com/p/mrpt/source/detail?r=r2576" >r2576</a>
 		- Support for Intel threading blocks library (TBB). Enable it from the CMake option "MRPT_HAS_TBB" - <a href="http://code.google.com/p/mrpt/source/detail?r=2606" >r2606</a>
+	- Removal of old deprecated APIs:
+		- mrpt::vision ::trackFeatures() methods -> replace with mrpt::vision::CGenericFeatureTracker
+		- mrpt::topography ::coordinatesTransformation_WGS84(), mrpt::topography::coordinatesTransformation_WGS84_geocentric() -> replace with mrpt::topography::geodeticToENU_WGS84()
+		- mrpt::poses::CProbabilityDensityFunction ::getEstimatedCovariance() -> replace with mrpt::poses::CProbabilityDensityFunction::getCovariance()
+		- mrpt::poses::CPose3DPDF ::getEstimatedPose() -> mrpt::poses::CPose3DPDF::getMean()
+		- mrpt::poses::CPosePDF ::getEstimatedPose() -> mrpt::poses::CPosePDF::getMean()
+		- mrpt::poses::CPointPDF ::getEstimatedPoint() -> mrpt::poses::CPointPDF::getMean()
+		- mrpt::poses::CPoint2DPDF ::getEstimatedPoint() -> mrpt::poses::CPoint2DPDF::getMean()
+		- mrpt::poses::CPose3DPDFGaussian constructor from CMatrixD -> Use constructor from fixed-size matrix.
+		- mrpt::random global functions -> replace with method of object mrpt::random::randomGenerator or instantiate your own mrpt::random::CRandomGenerator
 	- New examples:
 		- offscreen-render - A demo program to load a 3D scene and render it off-screen (in memory) at any arbitrary size, even larger than the screen  - <a href="http://code.google.com/p/mrpt/source/detail?r=r2575" >r2575</a>.
 		- display3d_custom_render

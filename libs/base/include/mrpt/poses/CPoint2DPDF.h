@@ -58,16 +58,6 @@ namespace poses
 		DEFINE_VIRTUAL_SERIALIZABLE( CPoint2DPDF )
 
 	 public:
-		 /** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF)
-		  */
-		MRPT_DECLARE_DEPRECATED_FUNCTION("**deprecated** Use getMean instead",
-		CPoint2D  getEstimatedPoint() const )
-		{
-			CPoint2D p;
-			this->getMean(p);
-			return p;
-		}
-
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		  */
 		virtual void  copyFrom(const CPoint2DPDF &o) = 0;

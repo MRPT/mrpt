@@ -254,51 +254,6 @@ namespace mrpt
 			UTMCoords.z = GeodeticCoords.height;
 		}
 
-
-	/** @}
-	    ======================================================================= */
-
-
-	/** =======================================================================
-	   @name DEPRECATED topography coordinate conversion functions
-	   @{ */
-
-		/** Coordinates transformation from longitude/latitude/height to ENU (East-North-Up)  X/Y/Z coordinates
-		  *  The WGS84 ellipsoid is used for the transformation. The coordinates are in 3D
-		  *   relative to some user-provided point, with local X axis being east-ward, Y north-ward, Z up-ward.
-		  *  For an explanation, refer to http://en.wikipedia.org/wiki/Reference_ellipsoid
-		  * \sa coordinatesTransformation_WGS84_geocentric, ENU_axes_from_WGS84
-		  */
-		MRPT_DECLARE_DEPRECATED_FUNCTION("*DEPRECATED* Use geodeticToENU_WGS84 instead",
-		void TOPO_IMPEXP coordinatesTransformation_WGS84(
-			double		in_longitude_degrees,
-			double		in_latitude_degrees,
-			double		in_height_meters,
-			double		&out_x_meters,
-			double		&out_y_meters,
-			double		&out_z_meters,
-			double		in_longitude_reference_degrees,
-			double		in_latitude_reference_degrees,
-			double		in_height_reference_meters
-			));
-
-		/** Coordinates transformation from longitude/latitude/height to geocentric X/Y/Z coordinates (with a WGS84 geoid).
-		  *  The WGS84 ellipsoid is used for the transformation. The coordinates are in 3D
-		  *   where the reference is the center of the Earth.
-		  *  For an explanation, refer to http://en.wikipedia.org/wiki/Reference_ellipsoid
-		  * \sa geodeticToENU_WGS84
-		  */
-		MRPT_DECLARE_DEPRECATED_FUNCTION("*DEPRECATED* Use geodeticToENU_WGS84 instead",
-		void TOPO_IMPEXP coordinatesTransformation_WGS84_geocentric(
-			double		in_longitude_degrees,
-			double		in_latitude_degrees,
-			double		in_height_meters,
-			double		&out_x_meters,
-			double		&out_y_meters,
-			double		&out_z_meters
-			) );
-
-
 	/** @}
 	    ======================================================================= */
 

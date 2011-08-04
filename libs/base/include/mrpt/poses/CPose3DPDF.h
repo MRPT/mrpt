@@ -62,17 +62,6 @@ namespace poses
 		DEFINE_VIRTUAL_SERIALIZABLE( CPose3DPDF )
 
 	 public:
-
-		/** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF)
-		  */
-		MRPT_DECLARE_DEPRECATED_FUNCTION("**deprecated** Use getMean instead",
-		CPose3D  getEstimatedPose() const )
-		{
-			CPose3D p;
-			this->getMean(p);
-			return p;
-		}
-
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		  * \sa createFrom2D
 		  */

@@ -307,35 +307,6 @@ namespace mrpt
 			return randomGenerator.drawUniform32bit() % i;
 		}
 
-		/** Generate a normalized normally distributed pseudo-random number.
-		 *  \param likelihood If desired, pass a pointer to a double which will receive the likelihood of the given sample to have been obtained, that is, the value of the normal pdf at the sample value.
-		 */
-		MRPT_DECLARE_DEPRECATED_FUNCTION("** deprecated **: Use mrpt::random::randomGenerator instead",
-		double normalizedGaussian( double *likelihood = NULL) );
-
-		/** Generate a normally distributed pseudo-random number.
-		 * \param mean The mean value of desired normal distribution
-		 * \param std  The standard deviation value of desired normal distribution
-		 */
-		MRPT_DECLARE_DEPRECATED_FUNCTION("** deprecated **: Use mrpt::random::randomGenerator instead",
-		double RandomNormal( double mean = 0, double std = 1) );
-
-		/** Generate a uniformly distributed pseudo-random number using the MT19937 algorithm, in the whole range of 32-bit integers.
-		  *  See: http://en.wikipedia.org/wiki/Mersenne_twister
-		  * \sa RandomUni, Randomize
-		  */
-		MRPT_DECLARE_DEPRECATED_FUNCTION("** deprecated **: Use mrpt::random::randomGenerator instead",
-		uint32_t RandomUniInt() );
-
-		/** Generate a uniformly distributed pseudo-random number using the MT19937 algorithm, scaled to the selected range.
-		  *  This function uses internally RandomUniInt to generate the number, then scales it to the desired range.
-		  *  Since MRPT 0.6.0 the MT19937 algorithm is used instead of C runtime library "rand" version.
-		  *  See: http://en.wikipedia.org/wiki/Mersenne_twister
-		  * \sa RandomUniInt, Randomize
-		  */
-		MRPT_DECLARE_DEPRECATED_FUNCTION("** deprecated **: Use mrpt::random::randomGenerator instead",
-		double RandomUni( const double min, const double max) );
-
 		/** Fills the given matrix with independent, uniformly distributed samples.
 		  * Matrix classes can be CMatrixTemplateNumeric or CMatrixFixedNumeric
 		  * \sa matrixRandomNormal

@@ -75,11 +75,6 @@ namespace poses
 		  */
 		CPose3DPDFGaussian(TConstructorFlags_Poses constructor_dummy_param);
 
-		MRPT_DECLARE_DEPRECATED_FUNCTION("Deprecated: use the constructor accepting a CMatrixDouble66 instead.",
-		/** *DEPRECATED* Constructor  */
-		CPose3DPDFGaussian( const CPose3D &init_Mean, const CMatrixD &init_Cov )
-		);
-
 		/** Constructor  */
 		CPose3DPDFGaussian( const CPose3D &init_Mean, const CMatrixDouble66 &init_Cov );
 
