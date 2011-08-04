@@ -28,6 +28,7 @@
 
 #include <mrpt/base.h>
 #include <mrpt/slam.h>
+#include <mrpt/vision.h>
 
 #include "common.h"
 
@@ -35,11 +36,14 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::random;
+using namespace mrpt::vision;
 using namespace std;
 
 #if MRPT_HAS_OPENCV
 	#include <cxcore.h>
 #endif
+
+extern void getTestImage(unsigned int img_index, mrpt::utils::CImage &out_img );
 
 // ------------------------------------------------------
 //				Benchmark: image loading/saving
@@ -179,6 +183,27 @@ double image_KLTscore(int WIN, int N)
 	return R;
 }
 
+template <bool DO_SMOOTH, bool CONVERT_GRAY>
+double image_buildPyramid(int N, int NOCTS)
+{
+	// Get a real image for testing:
+	CImage  img;
+	getTestImage(0,img);
+
+	mrpt::vision::CImagePyramid pyr;
+	// Run once in advance not to count the memory reservation:
+	pyr.buildPyramid(img,NOCTS,DO_SMOOTH,CONVERT_GRAY);
+
+	CTicTac	 tictac;
+	tictac.Tic();
+	for (int i=0;i<N;i++)
+	{
+		pyr.buildPyramid(img,NOCTS,DO_SMOOTH,CONVERT_GRAY);
+	}
+	double R = tictac.Tac()/N;
+	return R;
+}
+
 
 // ------------------------------------------------------
 // register_tests_image
@@ -250,6 +275,17 @@ void register_tests_image()
 	lstTests.push_back( TestData("images: KLT score (WIN=14 29x29)",image_KLTscore, 14,  1e6) );
 	lstTests.push_back( TestData("images: KLT score (WIN=15 31x31)",image_KLTscore, 15,  1e6) );
 	lstTests.push_back( TestData("images: KLT score (WIN=16 33x33)",image_KLTscore, 16,  1e6) );
+
+	lstTests.push_back( TestData("images: buildPyramid 640x480,4 levs,no smooth,no gray", image_buildPyramid<false,false>, 500, 4) );
+	lstTests.push_back( TestData("images: buildPyramid 640x480,4 levs,   smooth,no gray",    image_buildPyramid<true,false>, 500, 4) );
+	lstTests.push_back( TestData("images: buildPyramid 640x480,4 levs,no smooth,   gray",    image_buildPyramid<false,true>, 500, 4) );
+	lstTests.push_back( TestData("images: buildPyramid 640x480,4 levs,   smooth,   gray",       image_buildPyramid<true,true>, 500, 4) );
+
+	lstTests.push_back( TestData("images: buildPyramid 640x480,8 levs,no smooth,no gray", image_buildPyramid<false,false>, 500, 8) );
+	lstTests.push_back( TestData("images: buildPyramid 640x480,8 levs,   smooth,no gray",    image_buildPyramid<true,false>, 500, 8) );
+	lstTests.push_back( TestData("images: buildPyramid 640x480,8 levs,no smooth,   gray",    image_buildPyramid<false,true>, 500, 8) );
+	lstTests.push_back( TestData("images: buildPyramid 640x480,8 levs,   smooth,   gray",       image_buildPyramid<true,true>, 500, 8) );
+
 
 }
 

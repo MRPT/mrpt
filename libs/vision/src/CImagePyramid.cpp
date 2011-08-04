@@ -26,35 +26,73 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef __mrpt_vision_H
-#define __mrpt_vision_H
-
-#include <mrpt/config.h>
-
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_vision_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
-
-#include <mrpt/vision/utils.h>
-#include <mrpt/vision/multiDesc_utils.h>
-#include <mrpt/vision/chessboard_camera_calib.h>
-#include <mrpt/vision/chessboard_find_corners.h>
-#include <mrpt/vision/pinhole.h>
-#include <mrpt/vision/CCamModel.h>
-#include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/vision/CVideoFileWriter.h>
-#include <mrpt/vision/tracking.h>
-#include <mrpt/vision/bundle_adjustment.h>
-#include <mrpt/vision/CUndistortMap.h>
+#include <mrpt/vision.h>  // Precompiled headers
 #include <mrpt/vision/CImagePyramid.h>
 
-// Maps:
-#include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CLandmarksMap.h>
+using namespace mrpt;
+using namespace mrpt::utils;
+using namespace mrpt::vision;
 
-// Obs:
-#include <mrpt/slam/CObservationVisualLandmarks.h>
+CImagePyramid::CImagePyramid()
+{
+}
 
-#endif // end precomp.headers
+CImagePyramid::~CImagePyramid()
+{
+	// Nothing especial to do, mem. is automatically freed.
+}
 
-#endif
+// Template that generalizes the two user entry-points below:
+template <bool FASTLOAD>
+void buildPyramid_templ(
+	CImagePyramid &obj,
+	mrpt::utils::CImage &img,
+	const size_t nOctaves,
+	const bool smooth_halves,
+	const bool convert_grayscale)
+{
+	ASSERT_ABOVE_(nOctaves,0)
+
+	TImageSize  img_size = img.getSize();
+	obj.images.resize(nOctaves);
+
+	// First octave: Just copy the image:
+	if (convert_grayscale && img.isColor())
+	{
+		// In this case we have to convert to grayscale, so FASTLOAD doesn't really matter:
+		img.grayscale(obj.images[0]);
+	}
+	else
+	{
+		// No need to convert to grayscale OR image already is grayscale:
+		if (FASTLOAD)
+		     obj.images[0].copyFastFrom(img);  // Fast copy -> "move", destroying source.
+		else obj.images[0] = img;  // Normal copy
+	}
+
+	// Rest of octaves, if any:
+	for (size_t o=1;o<nOctaves;o++)
+	{
+		if (smooth_halves)
+		     obj.images[o-1].scaleHalfSmooth(obj.images[o]);
+		else obj.images[o-1].scaleHalf(obj.images[o]);
+	}
+}
+
+void CImagePyramid::buildPyramid(
+	const mrpt::utils::CImage &img,
+	const size_t nOctaves,
+	const bool smooth_halves,
+	const bool convert_grayscale)
+{
+	buildPyramid_templ<false>(*this,*const_cast<mrpt::utils::CImage*>(&img), nOctaves,smooth_halves,convert_grayscale);
+}
+
+void CImagePyramid::buildPyramidFast(
+	mrpt::utils::CImage &img,
+	const size_t nOctaves,
+	const bool smooth_halves,
+	const bool convert_grayscale)
+{
+	buildPyramid_templ<true>(*this,img,nOctaves,smooth_halves,convert_grayscale);
+}
