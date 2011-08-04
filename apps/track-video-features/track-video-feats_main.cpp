@@ -92,7 +92,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	tracker->extra_params["add_new_feat_max_features"]    = 150;
 	tracker->extra_params["add_new_feat_patch_size"]      = 21;
 
-	tracker->extra_params["update_patches_every"]		= 0;  // Update patches at all frames.
+	tracker->extra_params["update_patches_every"]		= 0;  // Don't update patches.
 
 	tracker->extra_params["check_KLT_response_every"]	= 5;	// Re-check the KLT-response to assure features are in good points.
 
@@ -237,9 +237,13 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			const double fps = 1.0/(std::max(1e-5,T));
 			//theImg.filledRectangle(1,1,175,25,TColor(0,0,0));
 
-			theImg.selectTextFont("6x13");
-			theImg.textOut(3,3,format("FPS: %.03f Hz", fps ),TColor(200,20,20) );
-			theImg.textOut(3,22,format("# feats: %u", (unsigned int)trackedFeats.size()  ),TColor(200,20,20) );
+			const int current_adapt_thres = tracker->getDetectorAdaptiveThreshold();
+
+			theImg.selectTextFont("6x13B");
+			theImg.textOut(3,3,format("FPS: %.03f Hz", fps ),TColor(200,200,0) );
+			theImg.textOut(3,22,format("# feats: %u - Adaptive threshold: %i", (unsigned int)trackedFeats.size(), current_adapt_thres ),TColor(200,200,0) );
+
+			theImg.textOut(3,22,format("# feats: %u", (unsigned int)trackedFeats.size()  ),TColor(200,200,0) );
 
 			extra_tim_to_wait = 1.0/MAX_FPS - 1.0/fps;
 		}

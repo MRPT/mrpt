@@ -32,6 +32,7 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/vision/utils.h>
 #include <mrpt/vision/CFeature.h>
+#include <mrpt/vision/TSimpleFeature.h>
 
 namespace mrpt
 {
@@ -66,7 +67,7 @@ namespace mrpt
 		  *
 		  *
 		  *  Apart from the normal entry point \a detectFeatures(), these other low-level functions are provided for convenience:
-		  *   - 
+		  *   -
 		  *
 		  * \note The descriptor "Intensity-domain spin images" is described in "A sparse texture representation using affine-invariant regions", S Lazebnik, C Schmid, J Ponce, 2003 IEEE Computer Society Conference on Computer Vision.
 		  *
@@ -223,7 +224,7 @@ namespace mrpt
 									const unsigned int		init_ID = 0,
 									const unsigned int		nDesiredFeatures = 0,
 									const TImageROI			& ROI = TImageROI(),
-                                    const CMatrixBool       * mask = NULL ) const; // Important: This was a const ref. in mrpt <0.9.4, but the instantiation of a default value 
+                                    const CMatrixBool       * mask = NULL ) const; // Important: This was a const ref. in mrpt <0.9.4, but the instantiation of a default value
 			                                                                       // for CMatrixBool being a template generated duplicated linking errors for MSVC, thus it was changed to a pointer.
 
 			/** Compute one (or more) descriptors for the given set of interest points onto the image, which may have been filled out manually or from \a detectFeatures
@@ -261,17 +262,23 @@ namespace mrpt
 									unsigned int nDesiredFeats = 0) const;
 
 
-			/** @name Static methods with low-level detector functionality 
+			/** @name Static methods with low-level detector functionality
 			    @{ */
 
-			/** A SSE2-optimized implementation of FASTER-9 (requires img to be grayscale) - If SSE2 is not available, it gratefully falls back to a non-optimized version */
-			static void detectFeatures_SSE2_FASTER9(const CImage &img, std::vector<TPixelCoord> &corners, const int threshold = 20);
-			
-			/** A SSE2-optimized implementation of FASTER-10 (requires img to be grayscale) - If SSE2 is not available, it gratefully falls back to a non-optimized version */
-			static void detectFeatures_SSE2_FASTER10(const CImage &img, std::vector<TPixelCoord> &corners, const int threshold = 20);
+			/** A SSE2-optimized implementation of FASTER-9 (requires img to be grayscale) - If SSE2 is not available, it gratefully falls back to a non-optimized version
+			  *  Only the pt.{x,y} fields are filled out for each feature: the rest of fields are left *uninitialized* and their content is *undefined*.
+			  */
+			static void detectFeatures_SSE2_FASTER9(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20);
 
-			/** A SSE2-optimized implementation of FASTER-12  (requires img to be grayscale) - If SSE2 is not available, it gratefully falls back to a non-optimized version */
-			static void detectFeatures_SSE2_FASTER12(const CImage &img, std::vector<TPixelCoord> &corners, const int threshold = 20);
+			/** A SSE2-optimized implementation of FASTER-10 (requires img to be grayscale) - If SSE2 is not available, it gratefully falls back to a non-optimized version
+			  *  Only the pt.{x,y} fields are filled out for each feature: the rest of fields are left *uninitialized* and their content is *undefined*.
+			  */
+			static void detectFeatures_SSE2_FASTER10(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20);
+
+			/** A SSE2-optimized implementation of FASTER-12  (requires img to be grayscale) - If SSE2 is not available, it gratefully falls back to a non-optimized version
+			  *  Only the pt.{x,y} fields are filled out for each feature: the rest of fields are left *uninitialized* and their content is *undefined*.
+			  */
+			static void detectFeatures_SSE2_FASTER12(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20);
 
 			/** @} */
 
@@ -410,12 +417,12 @@ namespace mrpt
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
 				const TImageROI			&ROI = TImageROI(),
-                const CMatrixBool       * mask = NULL ) const; // Important: This was a const ref. in mrpt <0.9.4, but the instantiation of a default value 
+                const CMatrixBool       * mask = NULL ) const; // Important: This was a const ref. in mrpt <0.9.4, but the instantiation of a default value
                                                                // for CMatrixBool being a template generated duplicated linking errors for MSVC, thus it was changed to a pointer.
 
 			/** Edward's "FASTER & Better" detector, N=9,10,12 */
 			void  extractFeaturesFASTER_N(
-				const int               N,  
+				const int               N,
 				const CImage			&img,
 				CFeatureList			&feats,
 				unsigned int			init_ID = 0,

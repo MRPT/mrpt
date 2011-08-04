@@ -30,23 +30,25 @@
 #define MRPT_FASTER_CORNER_PROTO_H
 
 #include <mrpt/utils/types.h>
+#include <mrpt/vision/TSimpleFeature.h>
 #include "../do_opencv_includes.h"
 
 using mrpt::utils::TPixelCoord;
+using mrpt::vision::TSimpleFeatureList;
 using std::vector;
 
 #if MRPT_HAS_OPENCV
 
 	// Prototypes of functions exported from "vision/src/faster/*" to "vision/src/*":
-	void fast_corner_detect_9 (const IplImage* I, std::vector<TPixelCoord>& corners, int barrier);
-	void fast_corner_detect_10(const IplImage* I, std::vector<TPixelCoord>& corners, int barrier);
-	void fast_corner_detect_12(const IplImage* I, std::vector<TPixelCoord>& corners, int barrier);
+	void fast_corner_detect_9 (const IplImage* I, TSimpleFeatureList & corners, int barrier);
+	void fast_corner_detect_10(const IplImage* I, TSimpleFeatureList & corners, int barrier);
+	void fast_corner_detect_12(const IplImage* I, TSimpleFeatureList & corners, int barrier);
 
 
 	// Internal prototypes:
-	void fast_corner_detect_plain_9 (const IplImage* i, vector<TPixelCoord>& corners, int b);
-	void fast_corner_detect_plain_10(const IplImage* i, vector<TPixelCoord>& corners, int b);
-	void fast_corner_detect_plain_12(const IplImage* i, vector<TPixelCoord>& corners, int b);
+	void fast_corner_detect_plain_9 (const IplImage* i, TSimpleFeatureList &corners, int b);
+	void fast_corner_detect_plain_10(const IplImage* i, TSimpleFeatureList &corners, int b);
+	void fast_corner_detect_plain_12(const IplImage* i, TSimpleFeatureList &corners, int b);
 
 #endif
 

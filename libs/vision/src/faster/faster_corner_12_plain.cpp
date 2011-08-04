@@ -27,7 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 // ---------------------------------------------------------------------------
-// LICENSING: This file is a slightly-modified version of part of libcvd, 
+// LICENSING: This file is a slightly-modified version of part of libcvd,
 //             released under LGPL 2.1 by Edward Rosten
 // ---------------------------------------------------------------------------
 
@@ -35,7 +35,7 @@
 #include "faster_corner_prototypes.h"
 
 #include "faster_corner_utilities.h"
-#include "corner_12.h"    
+#include "corner_12.h"
 
 using namespace std;
 using namespace mrpt;
@@ -43,7 +43,7 @@ using namespace mrpt::utils;
 
 #if MRPT_HAS_OPENCV
 
-void fast_corner_detect_plain_12(const IplImage* i, vector<TPixelCoord>& corners, int b)
+void fast_corner_detect_plain_12(const IplImage* i, TSimpleFeatureList &corners, int b)
 {
 	int y, cb, c_b;
 	const uint8_t  *line_max, *line_min;
@@ -79,7 +79,7 @@ void fast_corner_detect_plain_12(const IplImage* i, vector<TPixelCoord>& corners
 		{
 			cb = *cache_0 + b;
 			c_b= *cache_0 - b;
-  
+
 			if(*(cache_0 + pixel[8]) > cb)
 			 if(*(cache_0 + pixel[0]) > cb)
 			  if(*(cache_0 + pixel[3]) > cb)
@@ -2289,7 +2289,7 @@ void fast_corner_detect_plain_12(const IplImage* i, vector<TPixelCoord>& corners
 			  continue;
 
 			success:
-				corners.push_back(TPixelCoord(cache_0-line_min, y));
+				corners.push_back_fast(cache_0-line_min, y);
 		}
 	}
 }

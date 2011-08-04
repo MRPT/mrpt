@@ -180,7 +180,7 @@ void CGenericFeatureTracker::trackFeatures(
 		using namespace cv;
 
 		// Look for new features:
-		std::vector<TPixelCoord> new_feats;
+		TSimpleFeatureList new_feats;
 
 		// Do the detection
 		CFeatureExtraction::detectFeatures_SSE2_FASTER12(
@@ -201,17 +201,16 @@ void CGenericFeatureTracker::trackFeatures(
 		else if (N>hysteresis_max_num_feats)	m_detector_adaptive_thres = std::max(m_detector_adaptive_thres+1.0, m_detector_adaptive_thres*1.2);
 
 		// Use KLT response instead of the OpenCV's original "response" field:
-		std::vector<float> responses(N);
 		{
 			const unsigned int max_x = img_width-KLT_response_half_win;
 			const unsigned int max_y = img_height-KLT_response_half_win;
 			for (size_t i=0;i<N;i++)
 			{
-				const unsigned int x = new_feats[i].x;
-				const unsigned int y = new_feats[i].y;
+				const unsigned int x = new_feats[i].pt.x;
+				const unsigned int y = new_feats[i].pt.y;
 				if (x>KLT_response_half_win && y>KLT_response_half_win && x<max_x && y<max_y)
-						responses[i] = cur_gray.KLT_response(x,y,KLT_response_half_win);
-				else	responses[i] = 0; // Out of bounds
+						new_feats[i].response = cur_gray.KLT_response(x,y,KLT_response_half_win);
+				else	new_feats[i].response = 0; // Out of bounds
 			}
 		}
 
@@ -220,7 +219,7 @@ void CGenericFeatureTracker::trackFeatures(
 		std::vector<size_t> sorted_indices(N);
 		for (size_t i=0;i<N;i++)  sorted_indices[i]=i;
 
-		std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointCompCache2(responses) );
+		std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointResponseSorter<TSimpleFeatureList>(new_feats) );
 
 		// For each new good feature, add it to the list of tracked ones only if it's pretty
 		//  isolated:
@@ -237,29 +236,28 @@ void CGenericFeatureTracker::trackFeatures(
 
 		for (size_t i=0;i<nNewToCheck && featureList.size()<maxNumFeatures;i++)
 		{
-			const TPixelCoord &pt = new_feats[ sorted_indices[i] ];
-			const float response  = responses[ sorted_indices[i] ];
+			const TSimpleFeature &feat = new_feats[ sorted_indices[i] ];
 
-			if (response<minimum_KLT_response_to_add) continue;
+			if (feat.response<minimum_KLT_response_to_add) continue;
 
 			double min_dist_sqr = square(10000);
 
 			if (!featureList.empty())
-				min_dist_sqr = featureList.kdTreeClosestPoint2DsqrError(pt.x,pt.y );
+				min_dist_sqr = featureList.kdTreeClosestPoint2DsqrError(feat.pt.x,feat.pt.y );
 
 			if (min_dist_sqr>threshold_sqr_dist_to_add_new &&
-				pt.x > offset &&
-				pt.y > offset &&
-				pt.x < w_off &&
-				pt.y < h_off )
+				feat.pt.x > offset &&
+				feat.pt.y > offset &&
+				feat.pt.x < w_off &&
+				feat.pt.y < h_off )
 			{
 				// Add new feature:
 				CFeaturePtr ft		= CFeature::Create();
 				ft->type			= featFAST;
 				ft->ID				= ++max_feat_ID_at_input;
-				ft->x				= pt.x;
-				ft->y				= pt.y;
-				ft->response		= response;
+				ft->x				= feat.pt.x;
+				ft->y				= feat.pt.y;
+				ft->response		= feat.response;
 				ft->orientation		= 0;
 				ft->scale			= 1;
 				ft->patchSize		= patchSize;		// The size of the feature patch

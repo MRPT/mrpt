@@ -66,16 +66,6 @@ CPose3DPDFGaussian::CPose3DPDFGaussian(TConstructorFlags_Poses constructor_dummy
 /*---------------------------------------------------------------
 	Constructor
   ---------------------------------------------------------------*/
-CPose3DPDFGaussian::CPose3DPDFGaussian(
-	const CPose3D	&init_Mean,
-	const CMatrixD	&init_Cov ) : mean(init_Mean), cov(init_Cov)
-{
-	ASSERT_( init_Cov.getColCount()==6 && init_Cov.getRowCount()==6 );
-}
-
-/*---------------------------------------------------------------
-	Constructor
-  ---------------------------------------------------------------*/
 CPose3DPDFGaussian::CPose3DPDFGaussian( const CPose3D &init_Mean, const CMatrixDouble66 &init_Cov ) :
 	mean(init_Mean), cov(init_Cov)
 {

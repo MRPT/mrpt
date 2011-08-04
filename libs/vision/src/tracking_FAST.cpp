@@ -69,7 +69,7 @@ double match_template_SQDIFF(
 	// Non-vectorized version:
 	unsigned int sq_diff = 0;
 
-	
+
 
 	for (unsigned int y=0;y<(unsigned int)patch->height;y++)
 	{
@@ -90,7 +90,7 @@ double match_template_SQDIFF(
 /** Ctor  */
 CFeatureTracker_FAST::CFeatureTracker_FAST(const mrpt::utils::TParametersDouble &extraParams) :
 	CGenericFeatureTracker			( extraParams ),
-	m_detector_adaptive_thres		( 10 ),
+	m_fast_detector_adaptive_thres	( 10 ),
 	m_hysteresis_min_num_feats		( 2500 ),
 	m_hysteresis_max_num_feats		( 3500 )
 {
@@ -134,7 +134,7 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 	// =======================================================================
 	vector<KeyPoint> cv_feats; // The opencv keypoint output vector
 
-	FastFeatureDetector fastDetector( m_detector_adaptive_thres , true /* non-max supres. */ );
+	FastFeatureDetector fastDetector( m_fast_detector_adaptive_thres , true /* non-max supres. */ );
 
 	// Create a temporary gray image, if needed:
 	const CImage new_img_gray(new_img, FAST_REF_OR_CONVERT_TO_GRAY);
@@ -168,8 +168,8 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 	// =======================================================================
 	// 2) Update the adaptive threshold.
 	// =======================================================================
-	if (N<m_hysteresis_min_num_feats) 		m_detector_adaptive_thres*=0.8;
-	else if (N>m_hysteresis_max_num_feats)	m_detector_adaptive_thres*=1.2;
+	if (N<m_hysteresis_min_num_feats) 		m_fast_detector_adaptive_thres*=0.8;
+	else if (N>m_hysteresis_max_num_feats)	m_fast_detector_adaptive_thres*=1.2;
 
 	// =======================================================================
 	// 3) For each old feature:

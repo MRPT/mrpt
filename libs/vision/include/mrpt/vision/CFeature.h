@@ -48,65 +48,12 @@ namespace mrpt
 		class CFeatureList;
 		class CMatchedFeatureList;
 
-		/** Types of features - This means that the point has been detected with this algorithm, which is independent of additional descriptors a feature may also have
-		*/
-		enum TFeatureType
-		{
-			featNotDefined = -1,	//!< Non-defined feature (also used for Occupancy features)
-			featKLT = 0,			//!< Kanade-Lucas-Tomasi feature [SHI'94]
-			featHarris,				//!< Harris border and corner detector [HARRIS]
-			featBCD,				//!< Binary corder detector
-			featSIFT,				//!< Scale Invariant Feature Transform [LOWE'04]
-			featSURF,				//!< Speeded Up Robust Feature [BAY'06]
-			featBeacon,				//!< A especial case: this is not an image feature, but a 2D/3D beacon (used for range-only SLAM from mrpt::slam::CLandmark)
-			featFAST,				//!< FAST feature detector, OpenCV's implementation ("Faster and better: A machine learning approach to corner detection", E. Rosten, R. Porter and T. Drummond, PAMI, 2009).
-			featFASTER9,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
-			featFASTER10,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
-			featFASTER12			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
-		};
-
-		/** The bitwise OR combination of values of TDescriptorType are used in CFeatureExtraction::computeDescriptors to indicate which descriptors are to be computed for features.
-		  */
-		enum TDescriptorType
-		{
-			descAny				= 0,  //!< Used in some methods to mean "any of the present descriptors"
-			descSIFT            = 1,  //!< SIFT descriptors
-			descSURF			= 2,  //!< SURF descriptors
-			descSpinImages      = 4,  //!< Intensity-domain spin image descriptors
-			descPolarImages     = 8,  //!< Polar image descriptor
-			descLogPolarImages	= 16  //!< Log-Polar image descriptor
-		};
-
-		enum TFeatureTrackStatus
-		{
-			// Init value
-			status_IDLE 	= 0,	//!< Inactive (right after detection, and before being tried to track)
-
-			// Ok:
-			status_TRACKED 	= 5,	//!< Feature correctly tracked
-
-			// Bad:
-			status_OOB		= 1,	//!< Feature felt Out Of Bounds
-			status_LOST 	= 10,	//!< Unable to track this feature
-
-			// KLT specific:
-			statusKLT_IDLE 	= 0,	//!< Inactive
-			statusKLT_OOB	= 1,	//!< Out Of Bounds	(Value identical to status_OOB)
-			statusKLT_SMALL_DET	= 2,	//!< Determinant of the matrix too small
-			statusKLT_LARGE_RESIDUE = 3,	//!< Error too big
-			statusKLT_MAX_RESIDUE	= 4,
-			statusKLT_TRACKED 	= 5,	//!< Feature correctly tracked (Value identical to status_TRACKED)
-			statusKLT_MAX_ITERATIONS	= 6	//!< Iteration maximum reached
-		};
-
 		enum TListIdx
 		{
 		    firstList = 0,
 		    secondList,
 		    bothLists
 		};
-
-		typedef TFeatureTrackStatus TKLTFeatureStatus; //!< For backward compatibility
 
 		/****************************************************
 						Class CFEATURE
@@ -117,6 +64,8 @@ namespace mrpt
 		  * Each feature may have one or more descriptors (see \a descriptors), in addition to an image patch.
 		  * The (Euclidean) distance between descriptors in a pair of features can be computed with  descriptorDistanceTo,
 		  *  while the similarity of the patches is given by patchCorrelationTo.
+		  *
+		  *  \sa CFeatureList, TSimpleFeature, TSimpleFeatureList
 		  */
 		class VISION_IMPEXP CFeature : public mrpt::utils::CSerializable
 		{
@@ -341,7 +290,7 @@ namespace mrpt
 			inline size_t size() const { return m_feats.size(); }
 
 			inline void clear() { m_feats.clear(); mark_kdtree_as_outdated(); }
-			inline void resize(size_t N) { m_feats.resize(N); }
+			inline void resize(size_t N) { m_feats.resize(N); mark_kdtree_as_outdated(); }
 
 			inline void push_front(const CFeaturePtr &f) { mark_kdtree_as_outdated();  m_feats.push_front(f); }
 			inline void push_back(const CFeaturePtr &f) { mark_kdtree_as_outdated();  m_feats.push_back(f); }
@@ -411,14 +360,13 @@ namespace mrpt
 
 	} // end of namespace
 
+
 	namespace utils
 	{
 		using namespace ::mrpt::vision;
 		// Specialization must occur in the same namespace
 		MRPT_DECLARE_TTYPENAME_PTR(CFeature)
 	}
-
-
 } // end of namespace
 
 #endif

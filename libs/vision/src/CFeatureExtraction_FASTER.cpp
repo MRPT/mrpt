@@ -44,36 +44,33 @@ using namespace std;
 
 
 // ------------  SSE2-optimized implementations of FASTER -------------
-void CFeatureExtraction::detectFeatures_SSE2_FASTER9(const CImage &img, std::vector<TPixelCoord> &corners, const int threshold)
+void CFeatureExtraction::detectFeatures_SSE2_FASTER9(const CImage &img, TSimpleFeatureList & corners, const int threshold)
 {
 #if MRPT_HAS_OPENCV
 	const IplImage *IPL = (const IplImage*)img.getAsIplImage();
 	ASSERTDEB_(IPL)
 	ASSERT_(!img.isColor())
 
-	corners.clear();
 	fast_corner_detect_9 (IPL,corners,threshold);
 #endif
 }
-void CFeatureExtraction::detectFeatures_SSE2_FASTER10(const CImage &img, std::vector<TPixelCoord> &corners, const int threshold)
+void CFeatureExtraction::detectFeatures_SSE2_FASTER10(const CImage &img, TSimpleFeatureList & corners, const int threshold)
 {
 #if MRPT_HAS_OPENCV
 	const IplImage *IPL = (const IplImage*)img.getAsIplImage();
 	ASSERTDEB_(IPL)
 	ASSERT_(!img.isColor())
 
-	corners.clear();
 	fast_corner_detect_10 (IPL,corners,threshold);
 #endif
 }
-void CFeatureExtraction::detectFeatures_SSE2_FASTER12(const CImage &img, std::vector<TPixelCoord> &corners, const int threshold)
+void CFeatureExtraction::detectFeatures_SSE2_FASTER12(const CImage &img, TSimpleFeatureList & corners, const int threshold)
 {
 #if MRPT_HAS_OPENCV
 	const IplImage *IPL = (const IplImage*)img.getAsIplImage();
 	ASSERTDEB_(IPL)
 	ASSERT_(!img.isColor())
 
-	corners.clear();
 	fast_corner_detect_12 (IPL,corners,threshold);
 #endif
 }
@@ -98,7 +95,7 @@ void  CFeatureExtraction::extractFeaturesFASTER_N(
 
 	const IplImage *IPL = (const IplImage*)inImg_gray.getAsIplImage();
 
-	std::vector<TPixelCoord> corners;
+	TSimpleFeatureList corners;
 	TFeatureType type_of_this_feature;
 
 	switch (N_fast)
@@ -120,33 +117,31 @@ void  CFeatureExtraction::extractFeaturesFASTER_N(
 	std::vector<size_t> sorted_indices(N);
 	for (size_t i=0;i<N;i++)  sorted_indices[i]=i;
 
-	std::vector<float> responses(N);
-
 	// Use KLT response
 	if (options.FASTOptions.use_KLT_response ||
 		nDesiredFeatures!=0 // If the user wants us to limit the number of features, we need to do it according to some quality measure
 		)
 	{
-		const unsigned int KLT_half_win = 4;
-		const unsigned int max_x = inImg_gray.getWidth() - 1 - KLT_half_win;
-		const unsigned int max_y = inImg_gray.getHeight() - 1 - KLT_half_win;
+		const int KLT_half_win = 4;
+		const int max_x = inImg_gray.getWidth() - 1 - KLT_half_win;
+		const int max_y = inImg_gray.getHeight() - 1 - KLT_half_win;
 
 		for (size_t i=0;i<N;i++)
 		{
-			const unsigned int x = corners[i].x;
-			const unsigned int y = corners[i].y;
+			const int x = corners[i].pt.x;
+			const int y = corners[i].pt.y;
 			if (x>KLT_half_win && y>KLT_half_win && x<=max_x && y<=max_y)
-					responses[i] = inImg_gray.KLT_response(x,y,KLT_half_win);
-			else	responses[i] = -100;
+					corners[i].response = inImg_gray.KLT_response(x,y,KLT_half_win);
+			else	corners[i].response = -100;
 		}
 
-		std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointCompCache2(responses) );
+		std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointResponseSorter<TSimpleFeatureList>(corners) );
 	}
 	else
 	{
-		responses.assign(N,0);
+		for (size_t i=0;i<N;i++)
+			corners[i].response = 0;
 	}
-
 
 	//  2) Filter by "min-distance" (in options.FASTOptions.min_distance)
 	//  3) Convert to MRPT CFeatureList format.
@@ -185,15 +180,14 @@ void  CFeatureExtraction::extractFeaturesFASTER_N(
 	while( cont != nMax && i!=N )
 	{
 		// Take the next feature fromt the ordered list of good features:
-		const mrpt::utils::TPixelCoord &pt = corners[ sorted_indices[i] ];
-		const float response = responses[ sorted_indices[i] ];
+		const TSimpleFeature &feat = corners[ sorted_indices[i] ];
 		i++;
 
 		// Patch out of the image??
-		const int xBorderInf =  pt.x - size_2;
-		const int xBorderSup =  pt.x + size_2;
-		const int yBorderInf =  pt.y - size_2;
-		const int yBorderSup =  pt.y + size_2;
+		const int xBorderInf =  feat.pt.x - size_2;
+		const int xBorderSup =  feat.pt.x + size_2;
+		const int yBorderInf =  feat.pt.y - size_2;
+		const int yBorderSup =  feat.pt.y + size_2;
 
 		if (!( xBorderSup < (int)imgW && xBorderInf > 0 && yBorderSup < (int)imgH && yBorderInf > 0 ))
 			continue; // nope, skip.
@@ -201,8 +195,8 @@ void  CFeatureExtraction::extractFeaturesFASTER_N(
 		if (do_filter_min_dist)
 		{
 			// Check the min-distance:
-			const size_t section_idx_x = size_t(pt.x * occupied_grid_cell_size_inv);
-			const size_t section_idx_y = size_t(pt.y * occupied_grid_cell_size_inv);
+			const size_t section_idx_x = size_t(feat.pt.x * occupied_grid_cell_size_inv);
+			const size_t section_idx_y = size_t(feat.pt.y * occupied_grid_cell_size_inv);
 
 			if (occupied_sections(section_idx_x,section_idx_y))
 				continue; // Already occupied! skip.
@@ -219,9 +213,9 @@ void  CFeatureExtraction::extractFeaturesFASTER_N(
 		CFeaturePtr ft		= CFeature::Create();
 		ft->type			= type_of_this_feature;
 		ft->ID				= nextID++;
-		ft->x				= pt.x;
-		ft->y				= pt.y;
-		ft->response		= response;
+		ft->x				= feat.pt.x;
+		ft->y				= feat.pt.y;
+		ft->response		= feat.response;
 		ft->orientation		= 0;
 		ft->scale			= 1;
 		ft->patchSize		= options.patchSize;		// The size of the feature patch

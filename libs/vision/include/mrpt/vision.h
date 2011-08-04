@@ -36,6 +36,7 @@
 #if !defined(mrpt_vision_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
 
 #include <mrpt/vision/utils.h>
+#include <mrpt/vision/TSimpleFeature.h>
 #include <mrpt/vision/multiDesc_utils.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/vision/chessboard_find_corners.h>

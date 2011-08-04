@@ -171,6 +171,9 @@ namespace mrpt
 			/** Returns a read-only reference to the internal time logger */
 			inline void enableTimeLogger(bool enable=true) { m_timlog.enable(enable); }
 
+			/** Returns the current adaptive threshold used by the FAST(ER) detector to find out new features in empty areas */
+			inline int getDetectorAdaptiveThreshold() const { return m_detector_adaptive_thres; }
+
 		protected:
 			/** The tracking method implementation, to be implemented in children classes. */
 			virtual void trackFeatures_impl(
@@ -241,8 +244,8 @@ namespace mrpt
 				vision::CFeatureList &inout_featureList );
 
 		private:
-			int		m_detector_adaptive_thres;		//!< threshold for cvFAST()
-			size_t	m_hysteresis_min_num_feats, m_hysteresis_max_num_feats; //!< for the adaptive control of "m_detector_adaptive_thres"
+			int		m_fast_detector_adaptive_thres;		//!< threshold for cvFAST()
+			size_t	m_hysteresis_min_num_feats, m_hysteresis_max_num_feats; //!< for the adaptive control of "m_fast_detector_adaptive_thres"
 		};
 
 

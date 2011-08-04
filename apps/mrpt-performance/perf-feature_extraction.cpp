@@ -269,7 +269,7 @@ double feature_extraction_test_FASTER_quick( int N, int threshold )
 	getTestImage(0,img);
 	img.grayscaleInPlace();
 
-	std::vector<TPixelCoord>  corners;
+	TSimpleFeatureList  corners;
 
 	tictac.Tic();
 
@@ -310,8 +310,8 @@ void register_tests_feature_extraction()
 	lstTests.push_back( TestData("feature_extraction [640x480]: FASTER-12", feature_extraction_test_FASTER<featFASTER12,0>, 100 , 20 ) );
 	lstTests.push_back( TestData("feature_extraction [640x480]: FASTER-12 (sorted best 200)", feature_extraction_test_FASTER<featFASTER12,200>, 100 , 20 ) );
 
-	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER9()", feature_extraction_test_FASTER_quick<featFASTER9>, 100 , 20 ) );
-	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER10()", feature_extraction_test_FASTER_quick<featFASTER10>, 100 , 20 ) );
-	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER12()", feature_extraction_test_FASTER_quick<featFASTER12>, 100 , 20 ) );
+	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER9()", feature_extraction_test_FASTER_quick<featFASTER9>, 1000 , 20 ) );
+	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER10()", feature_extraction_test_FASTER_quick<featFASTER10>, 1000 , 20 ) );
+	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER12()", feature_extraction_test_FASTER_quick<featFASTER12>, 1000 , 20 ) );
 
 }

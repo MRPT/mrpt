@@ -56,6 +56,61 @@ namespace mrpt
 		typedef std::map<TLandmarkID,TPoint3D>   TLandmarkLocationsMap; //!< A list of landmarks (3D points) indexed by unique IDs.
 		typedef std::vector<TPoint3D>            TLandmarkLocationsVec; //!< A list of landmarks (3D points), which assumes indexes are unique, consecutive IDs.
 
+
+		/** Types of features - This means that the point has been detected with this algorithm, which is independent of additional descriptors a feature may also have
+		*/
+		enum TFeatureType
+		{
+			featNotDefined = -1,	//!< Non-defined feature (also used for Occupancy features)
+			featKLT = 0,			//!< Kanade-Lucas-Tomasi feature [SHI'94]
+			featHarris,				//!< Harris border and corner detector [HARRIS]
+			featBCD,				//!< Binary corder detector
+			featSIFT,				//!< Scale Invariant Feature Transform [LOWE'04]
+			featSURF,				//!< Speeded Up Robust Feature [BAY'06]
+			featBeacon,				//!< A especial case: this is not an image feature, but a 2D/3D beacon (used for range-only SLAM from mrpt::slam::CLandmark)
+			featFAST,				//!< FAST feature detector, OpenCV's implementation ("Faster and better: A machine learning approach to corner detection", E. Rosten, R. Porter and T. Drummond, PAMI, 2009).
+			featFASTER9,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
+			featFASTER10,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
+			featFASTER12			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
+		};
+
+		/** The bitwise OR combination of values of TDescriptorType are used in CFeatureExtraction::computeDescriptors to indicate which descriptors are to be computed for features.
+		  */
+		enum TDescriptorType
+		{
+			descAny				= 0,  //!< Used in some methods to mean "any of the present descriptors"
+			descSIFT            = 1,  //!< SIFT descriptors
+			descSURF			= 2,  //!< SURF descriptors
+			descSpinImages      = 4,  //!< Intensity-domain spin image descriptors
+			descPolarImages     = 8,  //!< Polar image descriptor
+			descLogPolarImages	= 16  //!< Log-Polar image descriptor
+		};
+
+		enum TFeatureTrackStatus
+		{
+			// Init value
+			status_IDLE 	= 0,	//!< Inactive (right after detection, and before being tried to track)
+
+			// Ok:
+			status_TRACKED 	= 5,	//!< Feature correctly tracked
+
+			// Bad:
+			status_OOB		= 1,	//!< Feature felt Out Of Bounds
+			status_LOST 	= 10,	//!< Unable to track this feature
+
+			// KLT specific:
+			statusKLT_IDLE 	= 0,	//!< Inactive
+			statusKLT_OOB	= 1,	//!< Out Of Bounds	(Value identical to status_OOB)
+			statusKLT_SMALL_DET	= 2,	//!< Determinant of the matrix too small
+			statusKLT_LARGE_RESIDUE = 3,	//!< Error too big
+			statusKLT_MAX_RESIDUE	= 4,
+			statusKLT_TRACKED 	= 5,	//!< Feature correctly tracked (Value identical to status_TRACKED)
+			statusKLT_MAX_ITERATIONS	= 6	//!< Iteration maximum reached
+		};
+
+		typedef TFeatureTrackStatus TKLTFeatureStatus; //!< For backward compatibility
+
+
 		/** One feature observation entry, used within sequences with TSequenceFeatureObservations */
 		struct VISION_IMPEXP TFeatureObservation
 		{

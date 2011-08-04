@@ -46,8 +46,6 @@ using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(CFeature, CSerializable, mrpt::vision)
 
-MRPT_TODO("Define 'lightweight' versions without smart pointer & suited for vector<> allocation: TSimpleFeature, TSimpleFeatureList")
-
 extern CStartUpClassesRegister  mrpt_vision_class_reg;
 const int dumm = mrpt_vision_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
@@ -1061,19 +1059,6 @@ CFeaturePtr CFeatureList::nearest(  const float x,  const float y, double &dist_
 		return m_feats[closest_idx];
 	}
 	else return CFeaturePtr();
-
-#if 0
-	float dist;
-	CFeatureList::const_iterator menor = end();
-	for( CFeatureList::const_iterator it = begin(); it != end(); ++it ) {
-		dist = sqrt( square((*it)->x - x) + square((*it)->y - y) );
-		if( dist < dist_prev ){
-			dist_prev = dist;
-			menor = it;
-		}
-	}
-	return menor==end() ? CFeaturePtr() : *menor;
-#endif
 } // end nearest
 
 

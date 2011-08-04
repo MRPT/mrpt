@@ -27,7 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 // ---------------------------------------------------------------------------
-// LICENSING: This file is a slightly-modified version of part of libcvd, 
+// LICENSING: This file is a slightly-modified version of part of libcvd,
 //             released under LGPL 2.1 by Edward Rosten
 // ---------------------------------------------------------------------------
 
@@ -35,20 +35,20 @@
 
 #include <mrpt/utils/SSE_types.h>
 #include "faster_corner_utilities.h"
-#include "corner_12.h"    
+#include "corner_12.h"
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
 
 
-template <int I, int N> struct BitCheck 
+template <int I, int N> struct BitCheck
 {
 	template <class C> static inline void eval(unsigned int three, const uint8_t* p, const int w, const int barrier, C& corners) {
 		const int BIT = 1<<I;
 		if (three & BIT) {
 		if (three & (BIT << 16)) {
-			if (is_corner_12<Greater>(p, w, barrier)) 
+			if (is_corner_12<Greater>(p, w, barrier))
 			corners.push_back(p);
 		} else {
 			if (is_corner_12<Less>(p, w, barrier))
@@ -59,13 +59,13 @@ template <int I, int N> struct BitCheck
 	}
 };
 
-template <int N> struct BitCheck<N,N> 
-{ 
-	template <class C> static inline void eval(unsigned int, const uint8_t* , const int , const int , C& ) {} 
+template <int N> struct BitCheck<N,N>
+{
+	template <class C> static inline void eval(unsigned int, const uint8_t* , const int , const int , C& ) {}
 };
 
 template <int CHUNKS, class C> inline void process_16(unsigned int three, const uint8_t* p, const int w, const int barrier, C& corners)
-{    
+{
 three |= (three >> 16);
 const int BITS = 16/CHUNKS;
 const int mask = ((1<<BITS)-1);
@@ -80,9 +80,13 @@ for (int i=0; i<CHUNKS; ++i) {
 
 #if MRPT_HAS_SSE2 && MRPT_HAS_OPENCV
 
-template <bool Aligned> 
-void faster_corner_detect_12(const IplImage* I, std::vector<TPixelCoord>& corners, int barrier)
+template <bool Aligned>
+void faster_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier)
 {
+	corners.clear();
+	corners.reserve(1000);
+	corners.mark_kdtree_as_outdated();
+
 const int w = I->width;
 const int stride = 3*I->widthStep; // 3*w;
 typedef std::list<const uint8_t*> Passed;
@@ -128,7 +132,7 @@ for (int i=3; i<I->height-3; ++i) {
 	    }
 	}
     }
-    
+
     //Do the edge of the row, using the old-fasioned 4 point test
     for(int j=(w/16) * 16; j < w-3; j++, p++)
     {
@@ -147,8 +151,8 @@ for (int i=3; i<I->height-3; ++i) {
 	if(num_above & 2) //num_above is 2 or 3
 	{
 	    if(!(num_above & 1)) //num_above is 2
-		num_above += p[3] > cb; 
-	    
+		num_above += p[3] > cb;
+
 
 	    //Only do a complete check if num_above is 3
 	    if((num_above&1) && is_corner_12<Greater>(p, w, barrier))
@@ -157,8 +161,8 @@ for (int i=3; i<I->height-3; ++i) {
 	else if(num_below & 2)
 	{
 	    if(!(num_below & 1))
-		num_below += p[3] < c_b; 
-	    
+		num_below += p[3] < c_b;
+
 
 	    if((num_below&1) && is_corner_12<Less>(p, w, barrier))
 	    	passed.push_back(p);
@@ -177,7 +181,7 @@ for (Passed::iterator it = passed.begin(); it != passed.end(); ++it) {
     }
     int x = *it - row_start;
     if (x > 2 && x < w-3)
-	corners.push_back(TPixelCoord(x, row));
+	corners.push_back_fast(x, row);
 }
 }
 
@@ -187,13 +191,13 @@ for (Passed::iterator it = passed.begin(); it != passed.end(); ++it) {
 
 #if MRPT_HAS_OPENCV
 
-void fast_corner_detect_12(const IplImage* I, std::vector<TPixelCoord>& corners, int barrier)
+void fast_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier)
 {
 	if (I->width < 22)
 	{
 		fast_corner_detect_plain_12(I,corners,barrier);
 		return;
-	} 
+	}
 	else if (I->width < 22 || I->height < 7)
 		return;
 

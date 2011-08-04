@@ -604,45 +604,6 @@ void  mrpt::topography::transfInterpolation(
 }
 
 
-void mrpt::topography::coordinatesTransformation_WGS84(
-    double		in_longitude_degrees,
-    double		in_latitude_degrees,
-    double		in_height_meters,
-    double		&out_x_meters,
-    double		&out_y_meters,
-    double		&out_z_meters,
-    double		in_longitude_reference_degrees,
-    double		in_latitude_reference_degrees,
-    double		in_height_reference_meters
-    )
-{
-    mrpt::math::TPoint3D  p;
-    geodeticToENU_WGS84(
-        TGeodeticCoords(in_latitude_degrees,in_longitude_degrees,in_height_meters),
-        p,
-        TGeodeticCoords(in_latitude_reference_degrees,in_longitude_reference_degrees,in_height_reference_meters)
-        );
-    out_x_meters = p.x;
-    out_y_meters = p.y;
-    out_z_meters = p.z;
-}
-
-void  mrpt::topography::coordinatesTransformation_WGS84_geocentric(
-    double		in_longitude_degrees,
-    double		in_latitude_degrees,
-    double		in_height_meters,
-    double		&out_x_meters,
-    double		&out_y_meters,
-    double		&out_z_meters
-    )
-{
-    mrpt::math::TPoint3D p;
-    geodeticToGeocentric_WGS84( TGeodeticCoords(in_latitude_degrees,in_longitude_degrees,in_height_meters), p);
-    out_x_meters = p.x;
-    out_y_meters = p.y;
-    out_z_meters = p.z;
-}
-
 /** ENU to geocentric coordinates.
   * \sa geodeticToENU_WGS84
   */

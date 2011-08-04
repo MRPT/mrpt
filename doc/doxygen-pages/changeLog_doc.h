@@ -46,6 +46,7 @@
 		- [mrpt-maps] New map type mrpt::slam::CWeightedPointsMap which is equivalent to the old mrpt::slam::CSimplePointsMap (which now does not have weights). Read more on the code refactoring in point-cloud maps below.
 		- [mrpt-opengl] mrpt::opengl::CText3D, a new way to display texts using OpenGL primitives instead of bitmaps.
 		- [mrpt-vision] mrpt::vision::CImagePyramid, a tool for managing pyramids of images in different octaves (each being half the size of the previous one) - <a href="http://code.google.com/p/mrpt/source/detail?r=2602" >r2602</a>
+		- [mrpt-vision] New "lightweight" image feature classes: mrpt::vision::TSimpleFeature, mrpt::vision::TSimpleFeatureList
 	- Changes in classes:
 		- [mrpt-maps] mrpt::slam::CPointsMap (and all derived point-cloud maps) have undergone a big code refactoring and optimizations:
 			- New method mrpt::slam::CPointsMap::addFrom() and an "operator +=" to add the points from another point map  - <a href="http://code.google.com/p/mrpt/source/detail?r=2553" >r2553</a>

@@ -128,7 +128,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	//      indices "sorted_indices" than sorting directly the actual list of features "cv_feats"
 	std::vector<size_t> sorted_indices(N);
 	for (size_t i=0;i<N;i++)  sorted_indices[i]=i;
-	std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointCompCache(cv_feats) );
+	std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointResponseSorter<vector<KeyPoint> >(cv_feats) );
 
 	//  2) Filter by "min-distance" (in options.FASTOptions.min_distance)
 	//  3) Convert to MRPT CFeatureList format.

@@ -27,7 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 // ---------------------------------------------------------------------------
-// LICENSING: This file is a slightly-modified version of part of libcvd, 
+// LICENSING: This file is a slightly-modified version of part of libcvd,
 //             released under LGPL 2.1 by Edward Rosten
 // ---------------------------------------------------------------------------
 
@@ -35,7 +35,7 @@
 
 #include <mrpt/utils/SSE_types.h>
 #include "faster_corner_utilities.h"
-#include "corner_9.h"    
+#include "corner_9.h"
 
 using namespace std;
 using namespace mrpt;
@@ -43,12 +43,16 @@ using namespace mrpt::utils;
 
 #if MRPT_HAS_SSE2 && MRPT_HAS_OPENCV
 
-template <bool Aligned> 
-void faster_corner_detect_9(const IplImage* I, std::vector<TPixelCoord>& corners, int barrier)
+template <bool Aligned>
+void faster_corner_detect_9(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier)
 {
+	corners.clear();
+	corners.reserve(1000);
+	corners.mark_kdtree_as_outdated();
+
 	const int w = I->width;
 	const int stride = 3*I->widthStep; // 3*w;
- 
+
 	// The compiler refuses to reserve a register for this
 	register const __m128i barriers = _mm_set1_epi8((uint8_t)barrier);
 
@@ -59,8 +63,8 @@ void faster_corner_detect_9(const IplImage* I, std::vector<TPixelCoord>& corners
 	{
 	    for(int x=3; x < 16; x++)
 			if(is_corner_9<Less>( (const uint8_t*)I->imageData+I->widthStep*y+x, I->widthStep, barrier) || is_corner_9<Greater>((const uint8_t*)I->imageData+I->widthStep*y+x, I->widthStep, barrier))
-		    corners.push_back(TPixelCoord(x, y));
-	    
+		    corners.push_back_fast(x, y);
+
 	    for(int x=16; x < xend; x+=16)
 	    {
 	    	const uint8_t* p = (const uint8_t*)I->imageData+I->widthStep*y+x; //(const uint8_t*)I->imageData+I->widthStep*y+x;
@@ -79,7 +83,7 @@ void faster_corner_detect_9(const IplImage* I, std::vector<TPixelCoord>& corners
 		    CHECK_BARRIER(lo, hi, bottom, ans_8);
 		    possible = ans_0 | ans_8;
 		    if (!possible)
-			continue;	 
+			continue;
 		}
 
 		unsigned int ans_15, ans_1;
@@ -165,7 +169,7 @@ void faster_corner_detect_9(const IplImage* I, std::vector<TPixelCoord>& corners
 		    __m128i l = _mm_loadu_si128((const __m128i*)(p+3+w));
 		    CHECK_BARRIER(lo, hi, g, ans_13);
 		    CHECK_BARRIER(lo, hi, l, ans_5);
-		    const unsigned int ans_15_0 = ans_15 & ans_0; 
+		    const unsigned int ans_15_0 = ans_15 & ans_0;
 		    const unsigned int ans_7_8 = ans_7 & ans_8;
 		    {
 			const unsigned int ans_12_13 = ans_12 & ans_13;
@@ -227,46 +231,46 @@ void faster_corner_detect_9(const IplImage* I, std::vector<TPixelCoord>& corners
 		//if(possible & 0x0f) //Does this make it faster?
 		{
 		    if(possible & (1<< 0))
-		      corners.push_back(TPixelCoord(x + 0, y));
+		      corners.push_back_fast(x + 0, y);
 		    if(possible & (1<< 1))
-		      corners.push_back(TPixelCoord(x + 1, y));
+		      corners.push_back_fast(x + 1, y);
 		    if(possible & (1<< 2))
-		      corners.push_back(TPixelCoord(x + 2, y));
+		      corners.push_back_fast(x + 2, y);
 		    if(possible & (1<< 3))
-		      corners.push_back(TPixelCoord(x + 3, y));
+		      corners.push_back_fast(x + 3, y);
 		    if(possible & (1<< 4))
-		      corners.push_back(TPixelCoord(x + 4, y));
+		      corners.push_back_fast(x + 4, y);
 		    if(possible & (1<< 5))
-		      corners.push_back(TPixelCoord(x + 5, y));
+		      corners.push_back_fast(x + 5, y);
 		    if(possible & (1<< 6))
-		      corners.push_back(TPixelCoord(x + 6, y));
+		      corners.push_back_fast(x + 6, y);
 		    if(possible & (1<< 7))
-		      corners.push_back(TPixelCoord(x + 7, y));
+		      corners.push_back_fast(x + 7, y);
 		}
 		//if(possible & 0xf0) //Does this mak( ,  fast)r?
 		{
 		    if(possible & (1<< 8))
-		      corners.push_back(TPixelCoord(x + 8, y));
+		      corners.push_back_fast(x + 8, y);
 		    if(possible & (1<< 9))
-		      corners.push_back(TPixelCoord(x + 9, y));
+		      corners.push_back_fast(x + 9, y);
 		    if(possible & (1<<10))
-		      corners.push_back(TPixelCoord(x +10, y));
+		      corners.push_back_fast(x +10, y);
 		    if(possible & (1<<11))
-		      corners.push_back(TPixelCoord(x +11, y));
+		      corners.push_back_fast(x +11, y);
 		    if(possible & (1<<12))
-		      corners.push_back(TPixelCoord(x +12, y));
+		      corners.push_back_fast(x +12, y);
 		    if(possible & (1<<13))
-		      corners.push_back(TPixelCoord(x +13, y));
+		      corners.push_back_fast(x +13, y);
 		    if(possible & (1<<14))
-		      corners.push_back(TPixelCoord(x +14, y));
+		      corners.push_back_fast(x +14, y);
 		    if(possible & (1<<15))
-		      corners.push_back(TPixelCoord(x +15, y));
+		      corners.push_back_fast(x +15, y);
 		}
 	    }
 
 	    for(int x=xend; x < I->width - 3; x++)
 			if(is_corner_9<Less>((const uint8_t*)I->imageData+I->widthStep*y+x, I->widthStep, barrier) || is_corner_9<Greater>((const uint8_t*)I->imageData+I->widthStep*y+x, I->widthStep, barrier))
-		    corners.push_back(TPixelCoord(x, y));
+		    corners.push_back_fast(x, y);
 	}
 }
 
@@ -275,13 +279,13 @@ void faster_corner_detect_9(const IplImage* I, std::vector<TPixelCoord>& corners
 
 #if MRPT_HAS_OPENCV
 
-void fast_corner_detect_9(const IplImage* I, std::vector<TPixelCoord>& corners, int barrier)
+void fast_corner_detect_9(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier)
 {
 	if (I->width < 22)
 	{
 		fast_corner_detect_plain_9(I,corners,barrier);
 		return;
-	} 
+	}
 	else if (I->width < 22 || I->height < 7)
 		return;
 
