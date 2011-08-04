@@ -18,7 +18,10 @@ config.status: configure
 	# Add here commands to configure the package.
 	./configure MRPT_IS_DEB_PACKAGE=1 --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs"
 
-build: build-stamp
+build: build-arch build-indep
+
+build-arch: build-stamp
+build-indep: build-stamp
 
 build-stamp:  config.status
 	dh_testdir
