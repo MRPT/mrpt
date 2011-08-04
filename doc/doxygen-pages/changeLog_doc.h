@@ -78,6 +78,7 @@
 	- Build system/external libs:
 		- Update of Eigen3 to a more recent version (11-Jul-2011), which avoids warnings in MSVC x64 - <a href="http://code.google.com/p/mrpt/source/detail?r=2556" >r2556</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2558" >r2558</a>
 		- Automatic check for existence of system "libgtest-dev" not to build embedded version of Google unit testing library and link to system lib instead - <a href="http://code.google.com/p/mrpt/source/detail?r=r2576" >r2576</a>
+		- Support for Intel threading blocks library (TBB). Enable it from the CMake option "MRPT_HAS_TBB" - <a href="http://code.google.com/p/mrpt/source/detail?r=2606" >r2606</a>
 	- New examples:
 		- offscreen-render - A demo program to load a 3D scene and render it off-screen (in memory) at any arbitrary size, even larger than the screen  - <a href="http://code.google.com/p/mrpt/source/detail?r=r2575" >r2575</a>.
 		- display3d_custom_render
