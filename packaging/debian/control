@@ -26,7 +26,7 @@ Build-Depends: debhelper (>= 5),
                texlive | tetex,
                doxygen-latex | perl,
                subversion,
-               libdc1394-22-dev,
+               libdc1394-22-dev [!hurd-i386],
                libusb-1.0-0-dev [!hurd-i386],
                libeigen3-dev | perl
 Standards-Version: 3.9.2
