@@ -63,36 +63,6 @@
 
 	typedef std::vector<CvPoint2D32f> CvPoint2D32fVector;
 
-#	if MRPT_OPENCV_VERSION_NUM >= 0x200
-
-#	include <mrpt/math/KDTreeCapable.h>
-
-	/** Helper class: KD-tree search class for vector<KeyPoint>:
-	  */
-	class CSimple2DKDTree : public mrpt::math::KDTreeCapable
-	{
-	public:
-		const std::vector<cv::KeyPoint> & m_data;
-		CSimple2DKDTree(const std::vector<cv::KeyPoint> & data) : m_data(data) {  }
-
-	protected:
-		/** Must return the number of data points */
-		virtual size_t kdtree_get_point_count() const {
-			return m_data.size();
-		}
-		/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],...,data[i][nDims-1]). */
-		virtual void kdtree_fill_point_data(ANNpointArray &data, const int nDims) const
-		{
-			const size_t N = m_data.size();
-			for (size_t i=0;i<N;i++) {
-				data[i][0] = m_data[i].pt.x;
-				data[i][1] = m_data[i].pt.y;
-			}
-		}
-	}; // end CSimple2DKDTree
-
-#	endif // MRPT_OPENCV_VERSION_NUM >= 0x211
-
 #endif // MRPT_HAS_OPENCV
 
 #endif

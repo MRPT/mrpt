@@ -103,35 +103,44 @@ MRPT_START;
 
 		int	flags = 0;
 
+		const int 	LK_levels    = extra_params.getWithDefaultVal("LK_levels",3);
+		const int 	LK_max_iters = extra_params.getWithDefaultVal("LK_max_iters",10);
+		const int 	LK_epsilon   = extra_params.getWithDefaultVal("LK_epsilon",0.1);
+		const float LK_max_tracking_error = extra_params.getWithDefaultVal("LK_max_tracking_error",150.0f);
+
+		float* track_error = reinterpret_cast<float*>( mrpt_alloca(sizeof(float)*nFeatures) );
+
 		cvCalcOpticalFlowPyrLK(prev_gray_ipl, cur_gray_ipl, pPyr, cPyr,
-			&points[0][0], &points[1][0], nFeatures, cvSize( window_width, window_height ), 3, &status[0], NULL,
-			cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,20,0.03), flags );
+			&points[0][0], &points[1][0], nFeatures, cvSize( window_width, window_height ), LK_levels, &status[0], track_error,
+			cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,LK_max_iters,LK_epsilon), flags );
 
 		cvReleaseImage( &pPyr );
 		cvReleaseImage( &cPyr );
+
+		// Array conversion OpenCV->MRPT
+		for( i = 0, itFeat = featureList.begin(); i < nFeatures && itFeat != featureList.end(); i++, itFeat++  )
+		{
+			if( status[i] == 1 &&
+				points[1][i].x > 0 && points[1][i].y > 0 &&
+				points[1][i].x < img_width && points[1][i].y < img_height )
+			{
+				// Feature could be tracked
+				(*itFeat)->x			= points[1][i].x;
+				(*itFeat)->y			= points[1][i].y;
+				(*itFeat)->track_status	= statusKLT_TRACKED;
+			} // end if
+			else	// Feature could not be tracked
+			{
+				(*itFeat)->x			= -1;
+				(*itFeat)->y			= -1;
+				(*itFeat)->track_status	= status[i] == 0 ? statusKLT_IDLE : statusKLT_OOB;
+			} // end else
+		} // end for
+		
+		mrpt_alloca_free( track_error );
+
+		featureList.mark_kdtree_as_outdated(); // the internal KD-tree must be recomputed
 	}
-
-	// Array conversion OpenCV->MRPT
-	for( i = 0, itFeat = featureList.begin(); i < nFeatures && itFeat != featureList.end(); i++, itFeat++  )
-	{
-		if( status[i] == 1 &&
-			points[1][i].x > 0 && points[1][i].y > 0 &&
-			points[1][i].x < img_width && points[1][i].y < img_height )
-		{
-			// Feature could be tracked
-			(*itFeat)->x			= points[1][i].x;
-			(*itFeat)->y			= points[1][i].y;
-			(*itFeat)->track_status	= statusKLT_TRACKED;
-		} // end if
-		else	// Feature could not be tracked
-		{
-			(*itFeat)->x			= -1;
-			(*itFeat)->y			= -1;
-			(*itFeat)->track_status	= status[i] == 0 ? statusKLT_IDLE : statusKLT_OOB;
-		} // end else
-	} // end for
-
-	featureList.mark_kdtree_as_outdated(); // the internal KD-tree must be recomputed
 
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
@@ -192,12 +201,15 @@ MRPT_START;
 
 		int	flags = 0;
 
-		const int    LK_levels    = 3; // 3;
-		const int    LK_max_iters = 5; //20;
-		const double LK_epsilon   = 0.5; //0.03;
+		const int 	LK_levels    = extra_params.getWithDefaultVal("LK_levels",3);
+		const int 	LK_max_iters = extra_params.getWithDefaultVal("LK_max_iters",10);
+		const int 	LK_epsilon   = extra_params.getWithDefaultVal("LK_epsilon",0.1);
+		const float LK_max_tracking_error = extra_params.getWithDefaultVal("LK_max_tracking_error",150.0f);
+
+		float* track_error = reinterpret_cast<float*>( mrpt_alloca(sizeof(float)*nFeatures) );
 
 		cvCalcOpticalFlowPyrLK(prev_gray_ipl, cur_gray_ipl, pPyr, cPyr,
-			&points[0][0], &points[1][0], nFeatures, cvSize( window_width, window_height ), LK_levels, &status[0], NULL,
+			&points[0][0], &points[1][0], nFeatures, cvSize( window_width, window_height ), LK_levels, &status[0], track_error,
 			cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,LK_max_iters,LK_epsilon), flags );
 
 		cvReleaseImage( &pPyr );
@@ -207,7 +219,10 @@ MRPT_START;
 		{
 			TSimpleFeature &ft = featureList[i];
 
+			const bool trck_err_too_large = track_error[i]>LK_max_tracking_error;
+
 			if( status[i] == 1 &&
+				!trck_err_too_large &&
 				points[1][i].x > 0 && points[1][i].y > 0 &&
 				points[1][i].x < img_width && points[1][i].y < img_height )
 			{
@@ -220,17 +235,14 @@ MRPT_START;
 			{
 				ft.pt.x			= -1;
 				ft.pt.y			= -1;
-				ft.track_status	= status[i] == 0 ? statusKLT_IDLE : statusKLT_OOB;
+				ft.track_status	= trck_err_too_large ? status_LOST : statusKLT_OOB;
 			} // end else
 		} // end for
 
-		featureList.mark_kdtree_as_outdated(); // the internal KD-tree must be recomputed
-
 		mrpt_alloca_free( points[0] );
 		mrpt_alloca_free( points[1] );
-
+		mrpt_alloca_free( track_error );
 	}
-
 
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");

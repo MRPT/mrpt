@@ -83,7 +83,7 @@ for (int i=0; i<CHUNKS; ++i) {
 template <bool Aligned>
 void faster_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier, uint8_t octave)
 {
-	corners.mark_kdtree_as_outdated();
+	//corners.mark_kdtree_as_outdated();
 
 const int w = I->width;
 const int stride = 3*I->widthStep; // 3*w;

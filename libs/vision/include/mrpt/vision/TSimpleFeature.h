@@ -30,6 +30,7 @@
 
 #include <mrpt/utils/TPixelCoord.h>
 #include <mrpt/math/KDTreeCapable.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/vision/types.h>
 
 #include <mrpt/vision/link_pragmas.h>
@@ -73,38 +74,16 @@ namespace mrpt
 		  *  Users normally use directly the typedef's: TSimpleFeatureList & TSimpleFeaturefList
 		  */
 		template <typename FEATURE>
-		struct TSimpleFeatureList_templ : public mrpt::math::KDTreeCapable
+		struct TSimpleFeatureList_templ
 		{
 		public:
 			typedef std::vector<FEATURE> TFeatureVector;
 
+			/** @name Utilities
+			    @{ */
+
 			/** Returns a const ref to the actual std::vector<> container */
 			const TFeatureVector& getVector() const { return m_feats; }
-
-			/** Get a reference to the nearest feature to the a given 2D point (version returning distance to closest feature in "max_dist")
-			*   \param x [IN] The query point x-coordinate
-			*   \param y [IN] The query point y-coordinate
-			*   \param max_dist [IN/OUT] At input: The maximum distance to search for. At output: The actual distance to the feature.
-			*  \return The 0-based index of the found feature, or std::string::npos if none found.
-			*  \note See also all the available KD-tree search methods, listed in mrpt::math::KDTreeCapable
-			*/
-			size_t nearest( const float x, const float y, double &max_dist ) const
-			{
-				if (!this->empty()) {
-					float closest_x,closest_y, closest_sqDist;
-					// Look for the closest feature using KD-tree look up:
-					const size_t closest_idx = this->kdTreeClosestPoint2D(x,y,closest_x,closest_y,closest_sqDist);
-					float closest_dist = std::sqrt(closest_sqDist);
-					if (closest_dist<=max_dist) {
-						max_dist = closest_dist;
-						return closest_idx;
-					}
-				}
-				return std::string::npos;
-			} // end nearest
-
-			/** Call this when the list of features has been modified so the KD-tree is marked as outdated. */
-			inline void mark_kdtree_as_outdated() const { kdtree_mark_as_outdated(); }
 
 			/** Returns the maximum ID of all features in the list, or 0 if it's empty */
 			TFeatureID getMaxID() const {
@@ -114,6 +93,20 @@ namespace mrpt
 				for ( ; N ; --N) mrpt::utils::keep_max(maxID, m_feats[N].ID);
 				return maxID;
 			}
+
+			/** Returns a vector with a LUT of the first feature index per row, to efficiently look for neighbors, etc.
+			  *  By default this vector is empty, so if a feature detector is used that doesn't fill this out, it will remain empty and useless. 
+			  *  \note FASTER detectors do fill this out. In general, a feature list that dynamically changes will not use this LUT.
+			  */
+			const std::vector<size_t> & getFirstIndexPerRowLUT() const { return m_first_index_per_row; }
+			/// \overload
+			std::vector<size_t> & getFirstIndexPerRowLUT() { return m_first_index_per_row; }
+
+			/** Get a ref to the occupation matrix: this is a user-defined matrix, which is not updated automatically by this class. */
+			inline mrpt::math::CMatrixBool & getOccupiedSectionsMatrix() { return m_occupied_sections; }
+			inline const mrpt::math::CMatrixBool & getOccupiedSectionsMatrix() const { return m_occupied_sections; }
+
+			/** @} */
 
 			/** @name Method and datatypes to emulate a STL container
 			    @{ */
@@ -133,17 +126,17 @@ namespace mrpt
 			inline const_reverse_iterator rbegin() const { return m_feats.rbegin(); }
 			inline const_reverse_iterator rend() const { return m_feats.rend(); }
 
-			inline iterator erase(const iterator it)  { mark_kdtree_as_outdated(); return m_feats.erase(it); }
+			inline iterator erase(const iterator it)  {  return m_feats.erase(it); }
 
 			inline bool empty() const  { return m_feats.empty(); }
 			inline size_t size() const { return m_feats.size(); }
 
-			inline void clear() { m_feats.clear(); mark_kdtree_as_outdated(); }
-			inline void resize(size_t N) { m_feats.resize(N); mark_kdtree_as_outdated(); }
+			inline void clear() { m_feats.clear(); m_first_index_per_row.clear(); }
+			inline void resize(size_t N) { m_feats.resize(N);  }
 			inline void reserve(size_t N) { m_feats.reserve(N); }
 
-			inline void push_front(const FEATURE &f) { mark_kdtree_as_outdated();  m_feats.push_front(f); }
-			inline void push_back(const FEATURE &f) { mark_kdtree_as_outdated();  m_feats.push_back(f); }
+			inline void push_front(const FEATURE &f) {   m_feats.push_front(f); }
+			inline void push_back(const FEATURE &f) {   m_feats.push_back(f); }
 
 			inline void push_front_fast(const FEATURE &f) { m_feats.push_front(f); }
 			inline void push_back_fast (const FEATURE &f) { m_feats.push_back(f); }
@@ -162,23 +155,6 @@ namespace mrpt
 
 			/** @} */
 
-			/** @name Virtual methods that MUST be implemented by children classes of KDTreeCapable
-			    @{ */
-			/** Must return the number of data points */
-			virtual size_t kdtree_get_point_count() const { return size(); }
-			/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],...,data[i][nDims-1]). */
-			virtual void kdtree_fill_point_data(ANNpointArray &data, const int nDims) const
-			{
-				ASSERTMSG_(nDims==2, "TSimpleFeatureList_templ only supports 2D KD-trees.")
-				const size_t N=m_feats.size();
-				for (size_t i=0;i<N;i++)
-				{
-					data[i][0] = m_feats[i].pt.x;
-					data[i][1] = m_feats[i].pt.y;
-				}
-			}
-			/** @} */
-
 			/** @name getFeature*() methods for template-based access to feature list
 			    @{ */
 			inline float getFeatureX(size_t i) const { return m_feats[i].pt.x; }
@@ -187,12 +163,12 @@ namespace mrpt
 			inline float getFeatureResponse(size_t i) const { return m_feats[i].response; }
 			inline bool isPointFeature(size_t i) const { return true; }
 			inline float getScale(size_t i) const { return static_cast<float>(1<<m_feats[i].octave); }
-
 			/** @} */
 
-
 		private:
-			TFeatureVector  m_feats; //!< The actual container with the list of features
+			TFeatureVector			m_feats; //!< The actual container with the list of features
+			std::vector<size_t>		m_first_index_per_row; //!< A LUT of the first feature index per row, to efficiently look for neighbors, etc.
+			mrpt::math::CMatrixBool m_occupied_sections; 
 
 		}; // end of class
 
@@ -201,8 +177,6 @@ namespace mrpt
 
 		/** A list of image features using the structure TSimpleFeaturef for each feature - capable of KD-tree computations */
 		typedef TSimpleFeatureList_templ<TSimpleFeaturef> TSimpleFeaturefList;
-
-
 
 
 		/** A helper struct to sort keypoints by their response: It can be used with these types:
@@ -218,6 +192,37 @@ namespace mrpt
 				return (m_data[k1].response > m_data[k2].response);
 			}
 		};
+
+
+	/** Helper class: KD-tree search class for vector<KeyPoint>:
+	  *  Call mark_as_outdated() to force rebuilding the kd-tree after modifying the linked feature list.
+	  *  \tparam FEAT Can be cv::KeyPoint or mrpt::vision::TSimpleFeature
+	  */
+	template <typename FEAT>
+	class CFeatureListKDTree : public mrpt::math::KDTreeCapable
+	{
+	public:
+		inline void mark_as_outdated() { kdtree_mark_as_outdated(); }
+
+		const std::vector<FEAT> & m_data;
+		CFeatureListKDTree(const std::vector<FEAT> & data) : m_data(data) {  }
+
+	protected:
+		/** Must return the number of data points */
+		virtual size_t kdtree_get_point_count() const {
+			return m_data.size();
+		}
+		/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],...,data[i][nDims-1]). */
+		virtual void kdtree_fill_point_data(ANNpointArray &data, const int nDims) const
+		{
+			const size_t N = m_data.size();
+			for (size_t i=0;i<N;i++) {
+				data[i][0] = m_data[i].pt.x;
+				data[i][1] = m_data[i].pt.y;
+			}
+		}
+	}; // end CFeatureListKDTree
+
 
 	} // end of namespace
 

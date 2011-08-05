@@ -190,6 +190,7 @@ namespace mrpt
 			struct VISION_IMPEXP TExtraOutputInfo
 			{
 				size_t  raw_FAST_feats_detected;  //!< In the new_img with the last adaptive threshold
+				size_t  num_deleted_feats; //!< The number of features which were deleted due to OOB, bad tracking, etc... (only if "remove_lost_features" is enabled)
 			};
 
 			TExtraOutputInfo  last_execution_extra_info; //!< Updated with each call to trackFeatures()
@@ -243,6 +244,10 @@ namespace mrpt
 		  *   List of additional parameters in "extra_params" (apart from those in CGenericFeatureTracker) accepted by this class:
 		  *		- "window_width"  (Default=15)
 		  *		- "window_height" (Default=15)
+		  *		- "LK_levels" (Default=3) Number of pyramids to build for LK tracking (this parameter only has effects when tracking with CImage's, not with CImagePyramid's).
+		  *		- "LK_max_iters" (Default=10) Max. number of iterations in LK tracking.
+		  *		- "LK_epsilon" (Default=0.1) Minimum epsilon step in interations of LK_tracking.
+		  *		- "LK_max_tracking_error" (Default=150.0) The maximum "tracking error" of LK tracking such as a feature is marked as "lost".
 		  *
 		  *  \sa OpenCV's method cvCalcOpticalFlowPyrLK
 		  */

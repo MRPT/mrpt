@@ -88,11 +88,12 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	tracker->enableTimeLogger(true); // Do time profiling.
 
 	// Set of parameters common to any tracker implementation:
+	// -------------------------------------------------------------
 	// To see all the existing params and documentation, see mrpt::vision::CGenericFeatureTracker
 	tracker->extra_params["remove_lost_features"]         = 1;   // automatically remove out-of-image and badly tracked features
 
 	tracker->extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
-	tracker->extra_params["add_new_feat_min_separation"]  = 20;
+	tracker->extra_params["add_new_feat_min_separation"]  = 32;
 	tracker->extra_params["minimum_KLT_response_to_add"]  = 20;
 	tracker->extra_params["add_new_feat_max_features"]    = 150;
 	tracker->extra_params["add_new_feat_patch_size"]      = 11;
@@ -103,8 +104,13 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	tracker->extra_params["minimum_KLT_response"]	    = 5;
 
 	// Specific params for "CFeatureTracker_KL"
+	// ------------------------------------------------------
 	tracker->extra_params["window_width"]  = 5;
 	tracker->extra_params["window_height"] = 5;
+	//tracker->extra_params["LK_levels"] = 3;
+	//tracker->extra_params["LK_max_iters"] = 10;
+	//tracker->extra_params["LK_epsilon"] = 0.1;
+	//tracker->extra_params["LK_max_tracking_error"] = 150;
 
 
 	// --------------------------------
@@ -237,7 +243,11 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			theImg.textOut(3,3,format("FPS: %.03f Hz", fps ),TColor(200,200,0) );
 			theImg.textOut(3,22,format("# feats: %u - Adaptive threshold: %i", (unsigned int)trackedFeats.size(), current_adapt_thres ),TColor(200,200,0) );
 
-			theImg.textOut(3,41,format("# raw feats: %u", (unsigned int)tracker->last_execution_extra_info.raw_FAST_feats_detected ),TColor(200,200,0) );
+			theImg.textOut(3,41,
+				format("# raw feats: %u - Removed: %u", 
+					(unsigned int)tracker->last_execution_extra_info.raw_FAST_feats_detected, 
+					(unsigned int)tracker->last_execution_extra_info.num_deleted_feats ),
+					TColor(200,200,0) );
 
 			extra_tim_to_wait = 1.0/MAX_FPS - 1.0/fps;
 		}

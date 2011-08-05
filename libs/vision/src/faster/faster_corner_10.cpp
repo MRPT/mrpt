@@ -47,7 +47,7 @@ template <bool Aligned>
 void faster_corner_detect_10(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier, uint8_t octave)
 {
 	corners.reserve(corners.size()+500);
-	corners.mark_kdtree_as_outdated();
+	//corners.mark_kdtree_as_outdated();
 
 	const int w = I->width;
 	const int stride = 3*I->widthStep; // 3*w;

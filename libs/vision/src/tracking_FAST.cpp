@@ -231,11 +231,14 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 
 		m_timlog.enter("[CFeatureTracker_FAST::track]: testMatch.kdtree");
 
-		std::vector<size_t> closest_idxs =
-		new_feats.kdTreeNClosestPoint2D(
+		std::vector<size_t> closest_idxs;
+#if 0
+		// new_feats.kdTreeNClosestPoint2D(
 			feat->x,feat->y,
 			max_query_results,
 			closest_xs,closest_ys,closest_dist_sqr);
+#endif
+		THROW_EXCEPTION("TODO")
 
 		m_timlog.leave("[CFeatureTracker_FAST::track]: testMatch.kdtree");
 
@@ -290,11 +293,14 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 
 		m_timlog.enter("[CFeatureTracker_FAST::track]: testMatch.kdtree");
 
-		std::vector<size_t> closest_idxs =
-		new_feats.kdTreeNClosestPoint2D(
+		std::vector<size_t> closest_idxs;
+#if 0
+		= new_feats.kdTreeNClosestPoint2D(
 			feat->x,feat->y,
 			max_query_results,
 			closest_xs,closest_ys,closest_dist_sqr);
+#endif
+		THROW_EXCEPTION("TODO")
 
 		m_timlog.leave("[CFeatureTracker_FAST::track]: testMatch.kdtree");
 
@@ -460,12 +466,14 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 
 		m_timlog.enter("[CFeatureTracker_FAST::track]: testMatch.kdtree");
 
-		std::vector<size_t> closest_idxs =
-		new_feats.kdTreeNClosestPoint2D(
+		std::vector<size_t> closest_idxs; 
+#if 0
+		= new_feats.kdTreeNClosestPoint2D(
 			feat.pt.x,feat.pt.y,
 			max_query_results,
 			closest_xs,closest_ys,closest_dist_sqr);
-
+#endif
+		THROW_EXCEPTION("TODO")
 		m_timlog.leave("[CFeatureTracker_FAST::track]: testMatch.kdtree");
 
 		ASSERTDEB_(closest_idxs.size()==max_query_results)

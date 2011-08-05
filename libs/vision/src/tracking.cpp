@@ -208,24 +208,130 @@ namespace mrpt {
 			template <>
 			inline void trackFeatures_addNewFeats<TSimpleFeatureList>(TSimpleFeatureList &featureList,const TSimpleFeatureList &new_feats, const std::vector<size_t> &sorted_indices, const size_t nNewToCheck,const size_t maxNumFeatures,const float minimum_KLT_response_to_add,const double threshold_sqr_dist_to_add_new,const size_t patchSize,const CImage &cur_gray, TFeatureID  &max_feat_ID_at_input)
 			{
+#if 0
+				// Brute-force version:
+				const int max_manhatan_dist = std::sqrt(2*threshold_sqr_dist_to_add_new);
+
 				for (size_t i=0;i<nNewToCheck && featureList.size()<maxNumFeatures;i++)
 				{
 					const TSimpleFeature &feat = new_feats[ sorted_indices[i] ];
-					if (feat.response<minimum_KLT_response_to_add) continue;
+					if (feat.response<minimum_KLT_response_to_add) break; // continue;
 
-					double min_dist_sqr = square(10000);
+					// Check the min-distance:
+					int manh_dist = std::numeric_limits<int>::max();
+					for (size_t j=0;j<featureList.size();j++)
+					{
+						const TSimpleFeature &existing = featureList[j];
+						const int d = std::abs(existing.pt.x-feat.pt.x)+std::abs(existing.pt.y-feat.pt.y);
+						mrpt::utils::keep_min(manh_dist, d);
+					}
+
+					if (manh_dist<max_manhatan_dist)
+						continue; // Already occupied! skip.
+
+					// OK: accept it
+					featureList.push_back_fast(feat.pt.x,feat.pt.y);  // (x,y)
+					//featureList.mark_kdtree_as_outdated();
+
+					// Fill out the rest of data:
+					TSimpleFeature &newFeat = featureList.back();
+
+					newFeat.ID			= ++max_feat_ID_at_input;
+					newFeat.response	= feat.response;
+					newFeat.octave		= 0;
+					newFeat.track_status = status_IDLE;  //!< Inactive: right after detection, and before being tried to track
+				}
+#elif 0
+				// Version with an occupancy grid:
+				const int grid_cell_log2 = round( std::log(std::sqrt(threshold_sqr_dist_to_add_new)*0.5)/std::log(2.0));
+
+				int grid_lx = 1+(cur_gray.getWidth() >> grid_cell_log2);
+				int grid_ly = 1+(cur_gray.getHeight()>> grid_cell_log2);
+
+				mrpt::math::CMatrixBool & occupied_sections = featureList.getOccupiedSectionsMatrix();
+
+				occupied_sections.setSize(grid_lx,grid_ly);  // See the comments above for an explanation.
+				occupied_sections.fillAll(false);
+
+				for (size_t i=0;i<featureList.size();i++)
+				{
+					const TSimpleFeature &feat = featureList[i];
+					const int section_idx_x = feat.pt.x >> grid_cell_log2;
+					const int section_idx_y = feat.pt.y >> grid_cell_log2;
+
+					if (!section_idx_x || !section_idx_y || section_idx_x>=grid_lx-1 || section_idx_y>=grid_ly-1)
+						continue; // This may be too radical, but speeds up the logic below...
+					
+					// Mark sections as occupied
+					bool *ptr1 = &occupied_sections.get_unsafe(section_idx_x-1,section_idx_y-1);
+					bool *ptr2 = &occupied_sections.get_unsafe(section_idx_x-1,section_idx_y  );
+					bool *ptr3 = &occupied_sections.get_unsafe(section_idx_x-1,section_idx_y+1);
+					ptr1[0]=ptr1[1]=ptr1[2]=true;
+					ptr2[0]=ptr2[1]=ptr2[2]=true;
+					ptr3[0]=ptr3[1]=ptr3[2]=true;
+				}
+
+				for (size_t i=0;i<nNewToCheck && featureList.size()<maxNumFeatures;i++)
+				{
+					const TSimpleFeature &feat = new_feats[ sorted_indices[i] ];
+					if (feat.response<minimum_KLT_response_to_add) break; // continue;
+
+					// Check the min-distance:
+					const int section_idx_x = feat.pt.x >> grid_cell_log2;
+					const int section_idx_y = feat.pt.y >> grid_cell_log2;
+
+					if (!section_idx_x || !section_idx_y || section_idx_x>=grid_lx-2 || section_idx_y>=grid_ly-2)
+						continue; // This may be too radical, but speeds up the logic below...
+
+					if (occupied_sections(section_idx_x,section_idx_y))
+						continue; // Already occupied! skip.
+
+					// Mark section as occupied
+					bool *ptr1 = &occupied_sections.get_unsafe(section_idx_x-1,section_idx_y-1);
+					bool *ptr2 = &occupied_sections.get_unsafe(section_idx_x-1,section_idx_y  );
+					bool *ptr3 = &occupied_sections.get_unsafe(section_idx_x-1,section_idx_y+1);
+
+					ptr1[0]=ptr1[1]=ptr1[2]=true;
+					ptr2[0]=ptr2[1]=ptr2[2]=true;
+					ptr3[0]=ptr3[1]=ptr3[2]=true;
+
+					// OK: accept it
+					featureList.push_back_fast(feat.pt.x,feat.pt.y);  // (x,y)
+					//featureList.mark_kdtree_as_outdated();
+
+					// Fill out the rest of data:
+					TSimpleFeature &newFeat = featureList.back();
+
+					newFeat.ID			= ++max_feat_ID_at_input;
+					newFeat.response	= feat.response;
+					newFeat.octave		= 0;
+					newFeat.track_status = status_IDLE;  //!< Inactive: right after detection, and before being tried to track
+				}
+#else
+				// Version with KD-tree
+				CFeatureListKDTree<TSimpleFeature>  kdtree(featureList.getVector());
+
+
+				for (size_t i=0;i<nNewToCheck && featureList.size()<maxNumFeatures;i++)
+				{
+					const TSimpleFeature &feat = new_feats[ sorted_indices[i] ];
+					if (feat.response<minimum_KLT_response_to_add) break; // continue;
+
+					// Check the min-distance:
+					double min_dist_sqr = std::numeric_limits<double>::max();
 
 					if (!featureList.empty())
 					{
 						//m_timlog.enter("[CGenericFeatureTracker] add new features.kdtree");
-						min_dist_sqr = featureList.kdTreeClosestPoint2DsqrError(feat.pt.x,feat.pt.y );
+						min_dist_sqr = kdtree.kdTreeClosestPoint2DsqrError(feat.pt.x,feat.pt.y );
 						//m_timlog.leave("[CGenericFeatureTracker] add new features.kdtree");
 					}
 
 					if (min_dist_sqr>threshold_sqr_dist_to_add_new)
 					{
+						// OK: accept it
 						featureList.push_back_fast(feat.pt.x,feat.pt.y);  // (x,y)
-						featureList.mark_kdtree_as_outdated();
+						kdtree.mark_as_outdated();
 
 						// Fill out the rest of data:
 						TSimpleFeature &newFeat = featureList.back();
@@ -236,65 +342,70 @@ namespace mrpt {
 						newFeat.track_status = status_IDLE;  //!< Inactive: right after detection, and before being tried to track
 					}
 				}
+
+#endif
 			} // end of trackFeatures_addNewFeats<>
 
+			// Return the number of removed features
 			template <typename FEATLIST>
-			inline void trackFeatures_deleteOOB(
+			inline size_t trackFeatures_deleteOOB(
 				FEATLIST &trackedFeats,
 				const size_t img_width, const size_t img_height,
 				const int MIN_DIST_MARGIN_TO_STOP_TRACKING);
 
 			template <>
-			inline void trackFeatures_deleteOOB(
+			inline size_t trackFeatures_deleteOOB(
 				TSimpleFeatureList &trackedFeats,
 				const size_t img_width, const size_t img_height,
 				const int MIN_DIST_MARGIN_TO_STOP_TRACKING)
 			{
-				if (!trackedFeats.empty())
+				if (trackedFeats.empty()) return 0;
+
+				std::vector<size_t> survival_idxs;
+				const size_t N = trackedFeats.size();
+
+				// 1st: Build list of survival indexes:
+				survival_idxs.reserve(N);
+				for (size_t i=0;i<N;i++)
 				{
-					std::vector<size_t> survival_idxs;
-					const size_t N = trackedFeats.size();
-
-					// 1st: Build list of survival indexes:
-					survival_idxs.reserve(N);
-					for (size_t i=0;i<N;i++)
+					const TSimpleFeature &ft = trackedFeats[i];
+					const TFeatureTrackStatus status = ft.track_status;
+					bool eras = (status_TRACKED!=status && status_IDLE!=status);
+					if (!eras)
 					{
-						const TSimpleFeature &ft = trackedFeats[i];
-						const TFeatureTrackStatus status = ft.track_status;
-						bool eras = (status_TRACKED!=status && status_IDLE!=status);
-						if (!eras)
+						// Also, check if it's too close to the image border:
+						const int x= ft.pt.x;
+						const int y= ft.pt.y;
+						if (x<MIN_DIST_MARGIN_TO_STOP_TRACKING  || y<MIN_DIST_MARGIN_TO_STOP_TRACKING ||
+							x>(img_width-MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
+							y>(img_height-MIN_DIST_MARGIN_TO_STOP_TRACKING))
 						{
-							// Also, check if it's too close to the image border:
-							const int x= ft.pt.x;
-							const int y= ft.pt.y;
-							if (x<MIN_DIST_MARGIN_TO_STOP_TRACKING  || y<MIN_DIST_MARGIN_TO_STOP_TRACKING ||
-								x>(img_width-MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
-								y>(img_height-MIN_DIST_MARGIN_TO_STOP_TRACKING))
-							{
-								eras = true;
-							}
+							eras = true;
 						}
-						if (!eras) survival_idxs.push_back(i);
 					}
-
-					// 2nd: Build updated list:
-					const size_t N2 = survival_idxs.size();
-					for (size_t i=0;i<N2;i++)
-					{
-						if (survival_idxs[i]!=i)
-							trackedFeats[i] = trackedFeats[ survival_idxs[i] ];
-					}
-					trackedFeats.resize(N2);
+					if (!eras) survival_idxs.push_back(i);
 				}
+
+				// 2nd: Build updated list:
+				const size_t N2 = survival_idxs.size();
+				const size_t n_removed = N-N2;
+				for (size_t i=0;i<N2;i++)
+				{
+					if (survival_idxs[i]!=i)
+						trackedFeats[i] = trackedFeats[ survival_idxs[i] ];
+				}
+				trackedFeats.resize(N2);
+				return n_removed;
 			} // end of trackFeatures_deleteOOB
 
 			template <>
-			inline void trackFeatures_deleteOOB(
+			inline size_t trackFeatures_deleteOOB(
 				CFeatureList &trackedFeats,
 				const size_t img_width, const size_t img_height,
 				const int MIN_DIST_MARGIN_TO_STOP_TRACKING)
 			{
 				CFeatureList::iterator itFeat = trackedFeats.begin();
+				size_t n_removed = 0;
 				while (itFeat!=trackedFeats.end())
 				{
 					const TFeatureTrackStatus status = (*itFeat)->track_status;
@@ -313,9 +424,13 @@ namespace mrpt {
 						}
 					}
 					if (eras)	// Erase or keep?
+					{
 						itFeat = trackedFeats.erase(itFeat);
+						n_removed++;
+					}
 					else ++itFeat;
 				}
+				return n_removed;
 			} // end of trackFeatures_deleteOOB
 
 
@@ -401,12 +516,18 @@ void CGenericFeatureTracker::internal_trackFeatures(
 
 		static const int MIN_DIST_MARGIN_TO_STOP_TRACKING = 10;
 
-		detail::trackFeatures_deleteOOB(
+		const size_t nRemoved = detail::trackFeatures_deleteOOB(
 			featureList,
 			img_width, img_height,
 			MIN_DIST_MARGIN_TO_STOP_TRACKING);
 
 		m_timlog.leave("[CGenericFeatureTracker] removal of OOB");
+
+		last_execution_extra_info.num_deleted_feats = nRemoved;
+	}
+	else 
+	{
+		last_execution_extra_info.num_deleted_feats = 0;
 	}
 
 
