@@ -266,19 +266,17 @@ namespace mrpt
 			    @{ */
 
 			/** A SSE2-optimized implementation of FASTER-9 (requires img to be grayscale) - If SSE2 is not available, it gratefully falls back to a non-optimized version
-			  *  Only the pt.{x,y} fields are filled out for each feature: the rest of fields are left *uninitialized* and their content is *undefined*.
+			  *  Only the pt.{x,y} & octave fields are filled out for each feature: the rest of fields are left *uninitialized* and their content is *undefined*.
+			  *  Note that (x,y) are already scaled to the 0-level image coordinates if octave>0.
+			  *  If \a append_to_list is false, the \a corners list is not cleared before adding the newly detected feats.
 			  */
-			static void detectFeatures_SSE2_FASTER9(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20);
+			static void detectFeatures_SSE2_FASTER9(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20, bool append_to_list = false, uint8_t octave = 0);
 
-			/** A SSE2-optimized implementation of FASTER-10 (requires img to be grayscale) - If SSE2 is not available, it gratefully falls back to a non-optimized version
-			  *  Only the pt.{x,y} fields are filled out for each feature: the rest of fields are left *uninitialized* and their content is *undefined*.
-			  */
-			static void detectFeatures_SSE2_FASTER10(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20);
+			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector */
+			static void detectFeatures_SSE2_FASTER10(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20, bool append_to_list = false, uint8_t octave = 0);
 
-			/** A SSE2-optimized implementation of FASTER-12  (requires img to be grayscale) - If SSE2 is not available, it gratefully falls back to a non-optimized version
-			  *  Only the pt.{x,y} fields are filled out for each feature: the rest of fields are left *uninitialized* and their content is *undefined*.
-			  */
-			static void detectFeatures_SSE2_FASTER12(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20);
+			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector */
+			static void detectFeatures_SSE2_FASTER12(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20, bool append_to_list = false, uint8_t octave = 0);
 
 			/** @} */
 

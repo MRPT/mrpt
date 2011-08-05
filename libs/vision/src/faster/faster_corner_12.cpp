@@ -81,10 +81,8 @@ for (int i=0; i<CHUNKS; ++i) {
 #if MRPT_HAS_SSE2 && MRPT_HAS_OPENCV
 
 template <bool Aligned>
-void faster_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier)
+void faster_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier, uint8_t octave)
 {
-	corners.clear();
-	corners.reserve(1000);
 	corners.mark_kdtree_as_outdated();
 
 const int w = I->width;
@@ -171,7 +169,7 @@ for (int i=3; i<I->height-3; ++i) {
 
     passed.push_back(0);
 }
-corners.reserve(passed.size());
+corners.reserve(corners.size()+passed.size());
 int row = 3;
 const uint8_t* row_start = (const uint8_t*)I->imageData + I->widthStep*3;
 for (Passed::iterator it = passed.begin(); it != passed.end(); ++it) {
@@ -181,7 +179,7 @@ for (Passed::iterator it = passed.begin(); it != passed.end(); ++it) {
     }
     int x = *it - row_start;
     if (x > 2 && x < w-3)
-	corners.push_back_fast(x, row);
+	corners.push_back_fast(x<<octave, row<<octave);
 }
 }
 
@@ -191,11 +189,11 @@ for (Passed::iterator it = passed.begin(); it != passed.end(); ++it) {
 
 #if MRPT_HAS_OPENCV
 
-void fast_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier)
+void fast_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier, uint8_t octave)
 {
 	if (I->width < 22)
 	{
-		fast_corner_detect_plain_12(I,corners,barrier);
+		fast_corner_detect_plain_12(I,corners,barrier, octave);
 		return;
 	}
 	else if (I->width < 22 || I->height < 7)
@@ -203,11 +201,11 @@ void fast_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList &
 
 #if MRPT_HAS_SSE2
 	if (mrpt::system::is_aligned<16>(I->imageData) && is_aligned<16>(I->imageData+I->widthStep))
-		faster_corner_detect_12<true>(I, corners, barrier);
+		faster_corner_detect_12<true>(I, corners, barrier, octave);
 	else
-		faster_corner_detect_12<false>(I, corners, barrier);
+		faster_corner_detect_12<false>(I, corners, barrier, octave);
 #else
-	fast_corner_detect_plain_12(I,corners,barrier);
+	fast_corner_detect_plain_12(I,corners,barrier, octave);
 #endif
 }
 #endif

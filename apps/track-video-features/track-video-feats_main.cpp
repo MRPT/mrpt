@@ -237,7 +237,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			theImg.textOut(3,3,format("FPS: %.03f Hz", fps ),TColor(200,200,0) );
 			theImg.textOut(3,22,format("# feats: %u - Adaptive threshold: %i", (unsigned int)trackedFeats.size(), current_adapt_thres ),TColor(200,200,0) );
 
-			theImg.textOut(3,22,format("# feats: %u", (unsigned int)trackedFeats.size()  ),TColor(200,200,0) );
+			theImg.textOut(3,41,format("# raw feats: %u", (unsigned int)tracker->last_execution_extra_info.raw_FAST_feats_detected ),TColor(200,200,0) );
 
 			extra_tim_to_wait = 1.0/MAX_FPS - 1.0/fps;
 		}

@@ -44,10 +44,9 @@ using namespace mrpt::utils;
 #if MRPT_HAS_SSE2 && MRPT_HAS_OPENCV
 
 template <bool Aligned>
-void faster_corner_detect_10(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier)
+void faster_corner_detect_10(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier, uint8_t octave)
 {
-	corners.clear();
-	corners.reserve(1000);
+	corners.reserve(corners.size()+500);
 	corners.mark_kdtree_as_outdated();
 
 	const int w = I->width;
@@ -224,11 +223,11 @@ void faster_corner_detect_10(const IplImage* I, mrpt::vision::TSimpleFeatureList
 
 #if MRPT_HAS_OPENCV
 
-void fast_corner_detect_10(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier)
+void fast_corner_detect_10(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier, uint8_t octave)
 {
 	if (I->width < 22)
 	{
-		fast_corner_detect_plain_10(I,corners,barrier);
+		fast_corner_detect_plain_10(I,corners,barrier, octave);
 		return;
 	}
 	else if (I->width < 22 || I->height < 7)
@@ -236,11 +235,11 @@ void fast_corner_detect_10(const IplImage* I, mrpt::vision::TSimpleFeatureList &
 
 #if MRPT_HAS_SSE2
 	if (mrpt::system::is_aligned<16>(I->imageData) && is_aligned<16>(I->imageData+I->widthStep))
-		faster_corner_detect_10<true>(I, corners, barrier);
+		faster_corner_detect_10<true>(I, corners, barrier, octave);
 	else
-		faster_corner_detect_10<false>(I, corners, barrier);
+		faster_corner_detect_10<false>(I, corners, barrier, octave);
 #else
-	fast_corner_detect_plain_10(I,corners,barrier);
+	fast_corner_detect_plain_10(I,corners,barrier, octave);
 #endif
 }
 #endif

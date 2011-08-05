@@ -187,6 +187,13 @@ namespace mrpt
 			/** Returns the current adaptive threshold used by the FAST(ER) detector to find out new features in empty areas */
 			inline int getDetectorAdaptiveThreshold() const { return m_detector_adaptive_thres; }
 
+			struct VISION_IMPEXP TExtraOutputInfo
+			{
+				size_t  raw_FAST_feats_detected;  //!< In the new_img with the last adaptive threshold
+			};
+
+			TExtraOutputInfo  last_execution_extra_info; //!< Updated with each call to trackFeatures()
+
 		protected:
 			/** The tracking method implementation, to be implemented in children classes. */
 			virtual void trackFeatures_impl(
@@ -201,6 +208,17 @@ namespace mrpt
 				CFeatureList &inout_featureList ) = 0;
 
 			mrpt::utils::CTimeLogger  m_timlog; //!< the internal time logger, disabled by default.
+
+			/** This field is clared by \a trackFeatures() before calling \a trackFeatures_impl(), and
+			  *   can be filled out with newly defected FAST(ER) features in the latter.
+			  * If it's not the case, feats will be computed anyway if the user enabled the "add_new_features" option.
+			  */
+			mrpt::vision::TSimpleFeatureList   m_newly_detected_feats;
+
+			/** Adapts the threshold \a m_detector_adaptive_thres according to the real and desired number of features just detected */
+			void updateAdaptiveNewFeatsThreshold(
+				const size_t nNewlyDetectedFeats,
+				const size_t desired_num_features);
 
 		private:
 			size_t		m_update_patches_counter;	//!< for use when "update_patches_every">=1
@@ -261,22 +279,17 @@ namespace mrpt
 			/** Ctor */
 			CFeatureTracker_FAST(const mrpt::utils::TParametersDouble & extraParams = mrpt::utils::TParametersDouble() );
 
-			struct VISION_IMPEXP TExtraOutputInfo
-			{
-				size_t  raw_FAST_feats_detected;  //!< In the new_img with the last adaptive threshold
-			};
-
-			TExtraOutputInfo  last_execution_extra_info; //!< Updated with each call to trackFeatures()
-
 		protected:
 			virtual void trackFeatures_impl(
 				const CImage &old_img,
 				const CImage &new_img,
 				vision::CFeatureList &inout_featureList );
 
-		private:
-			int		m_fast_detector_adaptive_thres;		//!< threshold for cvFAST()
-			size_t	m_hysteresis_min_num_feats, m_hysteresis_max_num_feats; //!< for the adaptive control of "m_fast_detector_adaptive_thres"
+			virtual void trackFeatures_impl(
+				const CImage &old_img,
+				const CImage &new_img,
+				TSimpleFeatureList  &inout_featureList );
+
 		};
 
 

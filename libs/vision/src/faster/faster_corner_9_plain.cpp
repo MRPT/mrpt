@@ -43,7 +43,7 @@ using namespace mrpt::utils;
 
 #if MRPT_HAS_OPENCV
 
-void fast_corner_detect_plain_9(const IplImage* i, TSimpleFeatureList &corners, int b)
+void fast_corner_detect_plain_9(const IplImage* i, TSimpleFeatureList &corners, int b, uint8_t octave)
 {
 	int y, cb, c_b;
 	const uint8_t  *line_max, *line_min;
@@ -4696,7 +4696,7 @@ void fast_corner_detect_plain_9(const IplImage* i, TSimpleFeatureList &corners, 
 			  continue;
 
 			success:
-				corners.push_back_fast(cache_0-line_min, y);
+				corners.push_back_fast((cache_0-line_min)<<octave, y<<octave);
 		}
 	}
 }

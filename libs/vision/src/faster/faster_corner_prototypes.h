@@ -40,15 +40,15 @@ using std::vector;
 #if MRPT_HAS_OPENCV
 
 	// Prototypes of functions exported from "vision/src/faster/*" to "vision/src/*":
-	void fast_corner_detect_9 (const IplImage* I, TSimpleFeatureList & corners, int barrier);
-	void fast_corner_detect_10(const IplImage* I, TSimpleFeatureList & corners, int barrier);
-	void fast_corner_detect_12(const IplImage* I, TSimpleFeatureList & corners, int barrier);
+	void fast_corner_detect_9 (const IplImage* I, TSimpleFeatureList & corners, int barrier, uint8_t octave);
+	void fast_corner_detect_10(const IplImage* I, TSimpleFeatureList & corners, int barrier, uint8_t octave);
+	void fast_corner_detect_12(const IplImage* I, TSimpleFeatureList & corners, int barrier, uint8_t octave);
 
 
 	// Internal prototypes:
-	void fast_corner_detect_plain_9 (const IplImage* i, TSimpleFeatureList &corners, int b);
-	void fast_corner_detect_plain_10(const IplImage* i, TSimpleFeatureList &corners, int b);
-	void fast_corner_detect_plain_12(const IplImage* i, TSimpleFeatureList &corners, int b);
+	void fast_corner_detect_plain_9 (const IplImage* i, TSimpleFeatureList &corners, int b, uint8_t octave);
+	void fast_corner_detect_plain_10(const IplImage* i, TSimpleFeatureList &corners, int b, uint8_t octave);
+	void fast_corner_detect_plain_12(const IplImage* i, TSimpleFeatureList &corners, int b, uint8_t octave);
 
 #endif
 

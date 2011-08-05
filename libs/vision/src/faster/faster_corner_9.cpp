@@ -44,10 +44,9 @@ using namespace mrpt::utils;
 #if MRPT_HAS_SSE2 && MRPT_HAS_OPENCV
 
 template <bool Aligned>
-void faster_corner_detect_9(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier)
+void faster_corner_detect_9(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier, uint8_t octave)
 {
-	corners.clear();
-	corners.reserve(1000);
+	corners.reserve(corners.size()+500);
 	corners.mark_kdtree_as_outdated();
 
 	const int w = I->width;
@@ -63,7 +62,7 @@ void faster_corner_detect_9(const IplImage* I, mrpt::vision::TSimpleFeatureList 
 	{
 	    for(int x=3; x < 16; x++)
 			if(is_corner_9<Less>( (const uint8_t*)I->imageData+I->widthStep*y+x, I->widthStep, barrier) || is_corner_9<Greater>((const uint8_t*)I->imageData+I->widthStep*y+x, I->widthStep, barrier))
-		    corners.push_back_fast(x, y);
+		    corners.push_back_fast(x<<octave, y<<octave);
 
 	    for(int x=16; x < xend; x+=16)
 	    {
@@ -231,46 +230,46 @@ void faster_corner_detect_9(const IplImage* I, mrpt::vision::TSimpleFeatureList 
 		//if(possible & 0x0f) //Does this make it faster?
 		{
 		    if(possible & (1<< 0))
-		      corners.push_back_fast(x + 0, y);
+		      corners.push_back_fast((x + 0)<<octave, y<<octave);
 		    if(possible & (1<< 1))
-		      corners.push_back_fast(x + 1, y);
+		      corners.push_back_fast((x + 1)<<octave, y<<octave);
 		    if(possible & (1<< 2))
-		      corners.push_back_fast(x + 2, y);
+		      corners.push_back_fast((x + 2)<<octave, y<<octave);
 		    if(possible & (1<< 3))
-		      corners.push_back_fast(x + 3, y);
+		      corners.push_back_fast((x + 3)<<octave, y<<octave);
 		    if(possible & (1<< 4))
-		      corners.push_back_fast(x + 4, y);
+		      corners.push_back_fast((x + 4)<<octave, y<<octave);
 		    if(possible & (1<< 5))
-		      corners.push_back_fast(x + 5, y);
+		      corners.push_back_fast((x + 5)<<octave, y<<octave);
 		    if(possible & (1<< 6))
-		      corners.push_back_fast(x + 6, y);
+		      corners.push_back_fast((x + 6)<<octave, y<<octave);
 		    if(possible & (1<< 7))
-		      corners.push_back_fast(x + 7, y);
+		      corners.push_back_fast((x + 7)<<octave, y<<octave);
 		}
 		//if(possible & 0xf0) //Does this mak( ,  fast)r?
 		{
 		    if(possible & (1<< 8))
-		      corners.push_back_fast(x + 8, y);
+		      corners.push_back_fast((x + 8)<<octave, y<<octave);
 		    if(possible & (1<< 9))
-		      corners.push_back_fast(x + 9, y);
+		      corners.push_back_fast((x + 9)<<octave, y<<octave);
 		    if(possible & (1<<10))
-		      corners.push_back_fast(x +10, y);
+		      corners.push_back_fast((x +10)<<octave, y<<octave);
 		    if(possible & (1<<11))
-		      corners.push_back_fast(x +11, y);
+		      corners.push_back_fast((x +11)<<octave, y<<octave);
 		    if(possible & (1<<12))
-		      corners.push_back_fast(x +12, y);
+		      corners.push_back_fast((x +12)<<octave, y<<octave);
 		    if(possible & (1<<13))
-		      corners.push_back_fast(x +13, y);
+		      corners.push_back_fast((x +13)<<octave, y<<octave);
 		    if(possible & (1<<14))
-		      corners.push_back_fast(x +14, y);
+		      corners.push_back_fast((x +14)<<octave, y<<octave);
 		    if(possible & (1<<15))
-		      corners.push_back_fast(x +15, y);
+		      corners.push_back_fast((x +15)<<octave, y<<octave);
 		}
 	    }
 
 	    for(int x=xend; x < I->width - 3; x++)
 			if(is_corner_9<Less>((const uint8_t*)I->imageData+I->widthStep*y+x, I->widthStep, barrier) || is_corner_9<Greater>((const uint8_t*)I->imageData+I->widthStep*y+x, I->widthStep, barrier))
-		    corners.push_back_fast(x, y);
+		    corners.push_back_fast(x<<octave, y<<octave);
 	}
 }
 
@@ -279,11 +278,11 @@ void faster_corner_detect_9(const IplImage* I, mrpt::vision::TSimpleFeatureList 
 
 #if MRPT_HAS_OPENCV
 
-void fast_corner_detect_9(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier)
+void fast_corner_detect_9(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier, uint8_t octave)
 {
 	if (I->width < 22)
 	{
-		fast_corner_detect_plain_9(I,corners,barrier);
+		fast_corner_detect_plain_9(I,corners,barrier,octave);
 		return;
 	}
 	else if (I->width < 22 || I->height < 7)
@@ -291,11 +290,11 @@ void fast_corner_detect_9(const IplImage* I, mrpt::vision::TSimpleFeatureList & 
 
 #if MRPT_HAS_SSE2
 	if (mrpt::system::is_aligned<16>(I->imageData) && is_aligned<16>(I->imageData+I->widthStep))
-		faster_corner_detect_9<true>(I, corners, barrier);
+		faster_corner_detect_9<true>(I, corners, barrier,octave);
 	else
-		faster_corner_detect_9<false>(I, corners, barrier);
+		faster_corner_detect_9<false>(I, corners, barrier,octave);
 #else
-	fast_corner_detect_plain_9(I,corners,barrier);
+	fast_corner_detect_plain_9(I,corners,barrier,octave);
 #endif
 }
 

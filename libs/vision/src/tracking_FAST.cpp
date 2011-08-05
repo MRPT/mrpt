@@ -84,15 +84,42 @@ double match_template_SQDIFF(
 #endif
 }
 
+double match_template_SQDIFF_2(
+	const unsigned int patch_size,
+	const IplImage* img,
+	const IplImage* old_img,
+	const unsigned int prev_patch_pos_x,
+	const unsigned int prev_patch_pos_y,
+	const unsigned int patch_pos_x,
+	const unsigned int patch_pos_y)
+{
+// Only for 8bit grayscale:
+//	ASSERTDEB_(img->depth==patch->depth && patch->depth==8)
+//	ASSERTDEB_(img->nChannels == 1 && patch->nChannels == 1 )
+//	ASSERTDEB_(patch_pos_x + patch->width<=(size_t)img->width)
+//	ASSERTDEB_(patch_pos_y + patch->height<=(size_t)img->height)
+
+	// Non-vectorized version:
+	unsigned int sq_diff = 0;
+	for (unsigned int y=0;y<patch_size;y++)
+	{
+		const uint8_t *pixel_img   = reinterpret_cast<const uint8_t *>(img->imageData) + img->widthStep*(y+patch_pos_y) + patch_pos_x;
+		const uint8_t *pixel_patch = reinterpret_cast<const uint8_t *>(old_img->imageData) + old_img->widthStep*(y+prev_patch_pos_y) + prev_patch_pos_x;
+
+		for (unsigned int x=patch_size;x!=0;x--)
+			sq_diff += square( (*pixel_img++) - (*pixel_patch++) );
+	}
+
+	return 1.0 - sq_diff / (square(255.0*patch_size));
+}
+
+
 #endif
 #endif
 
 /** Ctor  */
 CFeatureTracker_FAST::CFeatureTracker_FAST(const mrpt::utils::TParametersDouble &extraParams) :
-	CGenericFeatureTracker			( extraParams ),
-	m_fast_detector_adaptive_thres	( 10 ),
-	m_hysteresis_min_num_feats		( 2500 ),
-	m_hysteresis_max_num_feats		( 3500 )
+	CGenericFeatureTracker			( extraParams )
 {
 }
 
@@ -109,12 +136,11 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 {
 	MRPT_START
 #if MRPT_HAS_OPENCV
-#if MRPT_OPENCV_VERSION_NUM >= 0x211
 
 	const unsigned int window_width = extra_params.getWithDefaultVal("window_width",15);
 	const unsigned int window_height = extra_params.getWithDefaultVal("window_height",15);
-
-	using namespace cv;
+	const size_t  img_width  = new_img.getWidth();
+	const size_t  img_height = new_img.getHeight();
 
 	// =======================================================================
 	//                   OVERVIEW OF THE TRACKING ALGORITHM
@@ -133,22 +159,19 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 	// 1) Detect ALL available features in the new image.
 	// =======================================================================
 	// Look for new features:
-	//FastFeatureDetector fastDetector( m_fast_detector_adaptive_thres , true /* non-max supres. */ );
 	// Create a temporary gray image, if needed:
 	const CImage new_img_gray(new_img, FAST_REF_OR_CONVERT_TO_GRAY);
 
 	// Do the detection
 	m_timlog.enter("[CFeatureTracker_FAST::track]: detect FAST");
 
-	MRPT_TODO("Reuse this list in the generic tracker while looking for new feats")
-
-	TSimpleFeatureList new_feats;
+	TSimpleFeatureList & new_feats = m_newly_detected_feats; // Var rename
 
 	// Do the detection
 	CFeatureExtraction::detectFeatures_SSE2_FASTER12(
 		new_img_gray,
 		new_feats,
-		m_fast_detector_adaptive_thres );
+		getDetectorAdaptiveThreshold() );
 
 	m_timlog.leave("[CFeatureTracker_FAST::track]: detect FAST");
 
@@ -156,9 +179,7 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 	{
 		mrpt::utils::CImage  dbg_img;
 		new_img_gray.colorImage(dbg_img);
-		vector<TPoint2D> pts;
-		for (size_t i=0;i<new_feats.size();i++) pts.push_back(TPoint2D(new_feats[i].pt.x,new_feats[i].pt.y));
-		dbg_img.drawFeaturesSimple(pts);
+		dbg_img.drawFeatures(new_feats);
 		static int cnt = 1;
 		dbg_img.saveToFile( format("dbg_%04i.jpg",cnt++) );
 	}
@@ -166,15 +187,15 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 
 	// # of detected feats.
 	const size_t N = new_feats.size();
-	//cout << "N: " << N << endl;
 
 	last_execution_extra_info.raw_FAST_feats_detected = N; // Extra out info.
 
 	// =======================================================================
 	// 2) Update the adaptive threshold.
 	// =======================================================================
-	if (N<m_hysteresis_min_num_feats) 		m_fast_detector_adaptive_thres*=0.8;
-	else if (N>m_hysteresis_max_num_feats)	m_fast_detector_adaptive_thres*=1.2;
+	// Update the adaptive threshold.
+	const size_t desired_num_features = extra_params.getWithDefaultVal("desired_num_features_adapt", size_t( (img_width*img_height)>>5 ) );
+	this->updateAdaptiveNewFeatsThreshold(N,desired_num_features);
 
 	// =======================================================================
 	// 3) For each old feature:
@@ -342,12 +363,185 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 	m_timlog.leave("[CFeatureTracker_FAST::track]: testMatchAll");
 
 #else
-	THROW_EXCEPTION("This function requires OpenCV >= 2.1.1")
+	THROW_EXCEPTION("MRPT has been compiled without OpenCV!")
 #endif
+	MRPT_END
+}
+
+void CFeatureTracker_FAST::trackFeatures_impl(
+	const CImage &old_img,
+	const CImage &new_img,
+	TSimpleFeatureList &featureList )
+{
+	MRPT_START
+#if MRPT_HAS_OPENCV
+
+	const unsigned int window_width = extra_params.getWithDefaultVal("window_width",15);
+	const unsigned int window_height = extra_params.getWithDefaultVal("window_height",15);
+
+	// =======================================================================
+	//                   OVERVIEW OF THE TRACKING ALGORITHM
+	//
+	// 1) Detect ALL available features in the new image.
+	// 2) Update the adaptive threshold.
+	// 3) For each old feature:
+	//    3.A) Look for a set of closest ones among the new feats.
+	//    3.B) Keep the one with the best patch similarity.
+	// 4) Optionally: Add NEW features from the list of already detected ones,
+	//     so we do tracking + new feats detection at once.
+	//
+	// =======================================================================
+
+	// =======================================================================
+	// 1) Detect ALL available features in the new image.
+	// =======================================================================
+	// Look for new features:
+	// Create a temporary gray image, if needed:
+	const CImage new_img_gray(new_img, FAST_REF_OR_CONVERT_TO_GRAY);
+	const CImage old_img_gray(old_img, FAST_REF_OR_CONVERT_TO_GRAY);
+
+	const size_t  img_width  = new_img.getWidth();
+	const size_t  img_height = new_img.getHeight();
+
+	// Do the detection
+	m_timlog.enter("[CFeatureTracker_FAST::track]: detect FAST");
+
+	TSimpleFeatureList & new_feats = m_newly_detected_feats; // Var rename
+
+	// Do the detection
+	CFeatureExtraction::detectFeatures_SSE2_FASTER12(
+		new_img_gray,
+		new_feats,
+		getDetectorAdaptiveThreshold() );
+
+	m_timlog.leave("[CFeatureTracker_FAST::track]: detect FAST");
+
+	// # of detected feats.
+	const size_t N = new_feats.size();
+	//cout << "N: " << N << endl;
+
+	// =======================================================================
+	// 2) Update the adaptive threshold.
+	// =======================================================================
+	// Update the adaptive threshold.
+	const size_t desired_num_features = extra_params.getWithDefaultVal("desired_num_features_adapt", size_t( (img_width*img_height)>>5 ) );
+	this->updateAdaptiveNewFeatsThreshold(N,desired_num_features);
+
+	// =======================================================================
+	// 3) For each old feature:
+	//    3.A) Look for a set of closest ones among the new feats.
+	// =======================================================================
+
+	// # of closest features to look for:
+	size_t max_query_results = 20;
+	keep_min(max_query_results, N);
+
+	// Maximum distance for ignoring a "close" potential match:
+	const float max_sq_dist_to_check = square(window_width) + square(window_height);
+
+	std::vector<float>  closest_xs(max_query_results), closest_ys(max_query_results);
+	std::vector<float>  closest_dist_sqr(max_query_results);
+
+	m_timlog.enter("[CFeatureTracker_FAST::track]: testMatchAll");
+
+	// For each old feature:
+	const size_t nOldFeats = featureList.size();
+
+	const unsigned int patch_half_size = 4;   // Load as parameter
+	const unsigned int patch_size = 1+2*patch_half_size;
+
+	// Get the size of the patch so we know when we are too close to a border.
+	const unsigned int max_border_x = new_img_gray.getWidth() - patch_half_size -1;
+	const unsigned int max_border_y = new_img_gray.getHeight() - patch_half_size -1;
+
+	for (size_t i=0;i<nOldFeats;i++)
+	{
+		TSimpleFeature & feat = featureList[i];
+
+		m_timlog.enter("[CFeatureTracker_FAST::track]: testMatch.kdtree");
+
+		std::vector<size_t> closest_idxs =
+		new_feats.kdTreeNClosestPoint2D(
+			feat.pt.x,feat.pt.y,
+			max_query_results,
+			closest_xs,closest_ys,closest_dist_sqr);
+
+		m_timlog.leave("[CFeatureTracker_FAST::track]: testMatch.kdtree");
+
+		ASSERTDEB_(closest_idxs.size()==max_query_results)
+
+		m_timlog.enter("[CFeatureTracker_FAST::track]: testMatch");
+
+		// The result list is sorted in ascending distance, go thru it:
+		std::map<double,size_t>  potential_matches;
+		for (size_t k=0;k<max_query_results;k++)
+		{
+			if (closest_dist_sqr[k]>max_sq_dist_to_check)
+				break; // Too far.
+
+			const unsigned int px = new_feats[closest_idxs[k]].pt.x;
+			const unsigned int py = new_feats[closest_idxs[k]].pt.y;
+
+			if (px<=patch_half_size ||
+				py<=patch_half_size ||
+				px>=max_border_x ||
+				py>=max_border_y)
+			{
+				// Can't match the entire patch with the image... what to do?
+				// -> Discard it and mark as OOB:
+				feat.track_status = status_OOB;
+				break;
+			}
+
+			// This is a potential match: Check the patch to see if it matches:
+			//printf("testing %u against (%u,%u)\n",(unsigned)i, px,py );
+
+			// Possible algorithms: { TM_SQDIFF=0, TM_SQDIFF_NORMED=1, TM_CCORR=2, TM_CCORR_NORMED=3, TM_CCOEFF=4, TM_CCOEFF_NORMED=5 };
+
+			double match_quality  = match_template_SQDIFF_2(
+				patch_size,
+				reinterpret_cast<IplImage*>( new_img_gray.getAsIplImage()),
+				reinterpret_cast<IplImage*>( old_img_gray.getAsIplImage()),
+				// The patch position in the previous image:
+				feat.pt.x-patch_half_size-1,
+				feat.pt.y-patch_half_size-1,
+				// The patch position in the new image:
+				px-patch_half_size-1,
+				py-patch_half_size-1);
+
+			potential_matches[match_quality] = closest_idxs[k];
+		}
+
+		m_timlog.leave("[CFeatureTracker_FAST::track]: testMatch");
+
+		// Keep the best match: Since std::map<> is ordered, the last is the best one:
+		const double MINIMUM_SAD_TO_TRACK = 0.995;
+
+		if (!potential_matches.empty() &&
+			potential_matches.rbegin()->first > MINIMUM_SAD_TO_TRACK
+			)
+		{
+			const size_t idxBestMatch = potential_matches.rbegin()->second;
+			// OK: Accept it:
+			feat.track_status	= status_TRACKED;
+			feat.pt.x			= new_feats[idxBestMatch].pt.x;
+			feat.pt.y			= new_feats[idxBestMatch].pt.y;
+		}
+		else
+		{
+			// No potential match!
+			// Mark as "lost":
+			feat.track_status = status_LOST;
+		}
+	}
+	m_timlog.leave("[CFeatureTracker_FAST::track]: testMatchAll");
+
 #else
 	THROW_EXCEPTION("MRPT has been compiled without OpenCV!")
 #endif
 	MRPT_END
 }
+
+
 
 

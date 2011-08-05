@@ -200,7 +200,6 @@ MRPT_START;
 			&points[0][0], &points[1][0], nFeatures, cvSize( window_width, window_height ), LK_levels, &status[0], NULL,
 			cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,LK_max_iters,LK_epsilon), flags );
 
-
 		cvReleaseImage( &pPyr );
 		cvReleaseImage( &cPyr );
 

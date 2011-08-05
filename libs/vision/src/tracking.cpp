@@ -358,6 +358,8 @@ void CGenericFeatureTracker::internal_trackFeatures(
 	// =================================
 	// (1st STEP)  Do the actual tracking
 	// =================================
+	m_newly_detected_feats.clear();
+
 	m_timlog.enter("[CGenericFeatureTracker] trackFeatures_impl");
 
 	trackFeatures_impl(prev_gray,cur_gray,featureList);
@@ -436,24 +438,23 @@ void CGenericFeatureTracker::internal_trackFeatures(
 	{
 		m_timlog.enter("[CGenericFeatureTracker] add new features");
 
-		// Look for new features:
-		TSimpleFeatureList new_feats;
+		// Look for new features and save in "m_newly_detected_feats", if they're not already computed:
+		if (m_newly_detected_feats.empty())
+		{
+			// Do the detection
+			CFeatureExtraction::detectFeatures_SSE2_FASTER12(
+				cur_gray,
+				m_newly_detected_feats,
+				m_detector_adaptive_thres );
+		}
 
-		// Do the detection
-		CFeatureExtraction::detectFeatures_SSE2_FASTER12(
-			cur_gray,
-			new_feats,
-			m_detector_adaptive_thres );
+		const size_t N = m_newly_detected_feats.size();
 
-		const size_t N = new_feats.size();
+		last_execution_extra_info.raw_FAST_feats_detected = N; // Extra out info.
 
 		// Update the adaptive threshold.
 		const size_t desired_num_features = extra_params.getWithDefaultVal("desired_num_features_adapt", size_t( (img_width*img_height)>>9 ) );
-		const size_t hysteresis_min_num_feats = desired_num_features * 0.9;
-		const size_t hysteresis_max_num_feats = desired_num_features * 1.1;
-
-		if (N<hysteresis_min_num_feats) 		m_detector_adaptive_thres = std::max(2.0,std::min(m_detector_adaptive_thres-1.0, m_detector_adaptive_thres*0.8));
-		else if (N>hysteresis_max_num_feats)	m_detector_adaptive_thres = std::max(m_detector_adaptive_thres+1.0, m_detector_adaptive_thres*1.2);
+		updateAdaptiveNewFeatsThreshold(N,desired_num_features);
 
 		// Use KLT response instead of the OpenCV's original "response" field:
 		{
@@ -461,20 +462,20 @@ void CGenericFeatureTracker::internal_trackFeatures(
 			const unsigned int max_y = img_height-KLT_response_half_win;
 			for (size_t i=0;i<N;i++)
 			{
-				const unsigned int x = new_feats[i].pt.x;
-				const unsigned int y = new_feats[i].pt.y;
+				const unsigned int x = m_newly_detected_feats[i].pt.x;
+				const unsigned int y = m_newly_detected_feats[i].pt.y;
 				if (x>KLT_response_half_win && y>KLT_response_half_win && x<max_x && y<max_y)
-						new_feats[i].response = cur_gray.KLT_response(x,y,KLT_response_half_win);
-				else	new_feats[i].response = 0; // Out of bounds
+						m_newly_detected_feats[i].response = cur_gray.KLT_response(x,y,KLT_response_half_win);
+				else	m_newly_detected_feats[i].response = 0; // Out of bounds
 			}
 		}
 
 		//  Sort them by "response": It's ~100 times faster to sort a list of
-		//      indices "sorted_indices" than sorting directly the actual list of features "new_feats"
+		//      indices "sorted_indices" than sorting directly the actual list of features "m_newly_detected_feats"
 		std::vector<size_t> sorted_indices(N);
 		for (size_t i=0;i<N;i++)  sorted_indices[i]=i;
 
-		std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointResponseSorter<TSimpleFeatureList>(new_feats) );
+		std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointResponseSorter<TSimpleFeatureList>(m_newly_detected_feats) );
 
 		// For each new good feature, add it to the list of tracked ones only if it's pretty
 		//  isolated:
@@ -487,7 +488,7 @@ void CGenericFeatureTracker::internal_trackFeatures(
 		const float minimum_KLT_response_to_add = extra_params.getWithDefaultVal("minimum_KLT_response_to_add",10);
 
 		// Do it:
-		detail::trackFeatures_addNewFeats(featureList,new_feats,sorted_indices,nNewToCheck,maxNumFeatures,minimum_KLT_response_to_add,threshold_sqr_dist_to_add_new,patchSize,cur_gray,max_feat_ID_at_input);
+		detail::trackFeatures_addNewFeats(featureList,m_newly_detected_feats,sorted_indices,nNewToCheck,maxNumFeatures,minimum_KLT_response_to_add,threshold_sqr_dist_to_add_new,patchSize,cur_gray,max_feat_ID_at_input);
 
 		m_timlog.leave("[CGenericFeatureTracker] add new features");
 	}
@@ -511,6 +512,19 @@ void CGenericFeatureTracker::trackFeatures(
 	TSimpleFeatureList &featureList )
 {
 	internal_trackFeatures<TSimpleFeatureList>(old_img,new_img,featureList);
+}
+
+void CGenericFeatureTracker::updateAdaptiveNewFeatsThreshold(
+	const size_t nNewlyDetectedFeats,
+	const size_t desired_num_features)
+{
+	const size_t hysteresis_min_num_feats = desired_num_features * 0.9;
+	const size_t hysteresis_max_num_feats = desired_num_features * 1.1;
+
+	if (nNewlyDetectedFeats<hysteresis_min_num_feats)
+		m_detector_adaptive_thres = std::max(2.0,std::min(m_detector_adaptive_thres-1.0, m_detector_adaptive_thres*0.8));
+	else if (nNewlyDetectedFeats>hysteresis_max_num_feats)
+		m_detector_adaptive_thres = std::max(m_detector_adaptive_thres+1.0, m_detector_adaptive_thres*1.2);
 }
 
 

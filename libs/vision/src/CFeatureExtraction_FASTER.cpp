@@ -44,34 +44,37 @@ using namespace std;
 
 
 // ------------  SSE2-optimized implementations of FASTER -------------
-void CFeatureExtraction::detectFeatures_SSE2_FASTER9(const CImage &img, TSimpleFeatureList & corners, const int threshold)
+void CFeatureExtraction::detectFeatures_SSE2_FASTER9(const CImage &img, TSimpleFeatureList & corners, const int threshold, bool append_to_list, uint8_t octave)
 {
 #if MRPT_HAS_OPENCV
 	const IplImage *IPL = (const IplImage*)img.getAsIplImage();
 	ASSERTDEB_(IPL)
 	ASSERT_(!img.isColor())
+	if (!append_to_list) corners.clear();
 
-	fast_corner_detect_9 (IPL,corners,threshold);
+	fast_corner_detect_9 (IPL,corners,threshold,octave);
 #endif
 }
-void CFeatureExtraction::detectFeatures_SSE2_FASTER10(const CImage &img, TSimpleFeatureList & corners, const int threshold)
+void CFeatureExtraction::detectFeatures_SSE2_FASTER10(const CImage &img, TSimpleFeatureList & corners, const int threshold, bool append_to_list, uint8_t octave)
 {
 #if MRPT_HAS_OPENCV
 	const IplImage *IPL = (const IplImage*)img.getAsIplImage();
 	ASSERTDEB_(IPL)
 	ASSERT_(!img.isColor())
+	if (!append_to_list) corners.clear();
 
-	fast_corner_detect_10 (IPL,corners,threshold);
+	fast_corner_detect_10 (IPL,corners,threshold,octave);
 #endif
 }
-void CFeatureExtraction::detectFeatures_SSE2_FASTER12(const CImage &img, TSimpleFeatureList & corners, const int threshold)
+void CFeatureExtraction::detectFeatures_SSE2_FASTER12(const CImage &img, TSimpleFeatureList & corners, const int threshold, bool append_to_list, uint8_t octave)
 {
 #if MRPT_HAS_OPENCV
 	const IplImage *IPL = (const IplImage*)img.getAsIplImage();
 	ASSERTDEB_(IPL)
 	ASSERT_(!img.isColor())
+	if (!append_to_list) corners.clear();
 
-	fast_corner_detect_12 (IPL,corners,threshold);
+	fast_corner_detect_12 (IPL,corners,threshold,octave);
 #endif
 }
 
@@ -100,9 +103,9 @@ void  CFeatureExtraction::extractFeaturesFASTER_N(
 
 	switch (N_fast)
 	{
-	case 9:  fast_corner_detect_9 (IPL,corners, options.FASTOptions.threshold); type_of_this_feature=featFASTER9; break;
-	case 10: fast_corner_detect_10(IPL,corners, options.FASTOptions.threshold); type_of_this_feature=featFASTER10; break;
-	case 12: fast_corner_detect_12(IPL,corners, options.FASTOptions.threshold); type_of_this_feature=featFASTER12; break;
+	case 9:  fast_corner_detect_9 (IPL,corners, options.FASTOptions.threshold, 0); type_of_this_feature=featFASTER9; break;
+	case 10: fast_corner_detect_10(IPL,corners, options.FASTOptions.threshold, 0); type_of_this_feature=featFASTER10; break;
+	case 12: fast_corner_detect_12(IPL,corners, options.FASTOptions.threshold, 0); type_of_this_feature=featFASTER12; break;
 	default:
 		THROW_EXCEPTION("Only the 9,10,12 FASTER detectors are implemented.")
 		break;
