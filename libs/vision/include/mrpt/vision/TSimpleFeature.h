@@ -45,15 +45,19 @@ namespace mrpt
 		template <typename PIXEL_COORD_TYPE>
 		struct TSimpleFeature_templ
 		{
-			/** Constructor that only sets the pt.{x,y} values, leaving all other values to *undefined values*. */
-			template <typename COORD_TYPE>
-			inline TSimpleFeature_templ(const COORD_TYPE x, const COORD_TYPE y) : pt(x,y) { }
-
 			PIXEL_COORD_TYPE    pt;             //!< Coordinates in the image
 			TFeatureID          ID;             //!< ID of the feature
 			TFeatureTrackStatus	track_status;	//!< Status of the feature tracking process
 			float				response;		//!< A measure of the "goodness" of the feature (typically, the KLT_response value)
 			int					octave;			//!< The image octave the image was found in: 0=original image, 1=1/2 image, 2=1/4 image, etc.
+
+
+			/** Constructor that only sets the pt.{x,y} values, leaving all other values to *undefined values*. */
+			template <typename COORD_TYPE>
+			inline TSimpleFeature_templ(const COORD_TYPE x, const COORD_TYPE y) : pt(x,y) { }
+
+			/** Default constructor, leaves all fields uninitialized */
+			inline TSimpleFeature_templ() {}
 		};
 
 		/** A simple structure for representing one image feature (without descriptor nor patch).
@@ -102,6 +106,15 @@ namespace mrpt
 			/** Call this when the list of features has been modified so the KD-tree is marked as outdated. */
 			inline void mark_kdtree_as_outdated() const { kdtree_mark_as_outdated(); }
 
+			/** Returns the maximum ID of all features in the list, or 0 if it's empty */
+			TFeatureID getMaxID() const {
+				if (this->empty()) return 0;
+				TFeatureID maxID = m_feats[0].ID;
+				size_t N = m_feats.size()-1;
+				for ( ; N ; --N) mrpt::utils::keep_max(maxID, m_feats[N].ID);
+				return maxID;
+			}
+
 			/** @name Method and datatypes to emulate a STL container
 			    @{ */
 			typedef typename TFeatureVector::iterator iterator;
@@ -141,6 +154,12 @@ namespace mrpt
 			inline       FEATURE & operator [](const unsigned int index)        { return m_feats[index]; }
 			inline const FEATURE & operator [](const unsigned int index) const  { return m_feats[index]; }
 
+			inline       FEATURE & back()        { return m_feats.back(); }
+			inline const FEATURE & back() const  { return m_feats.back(); }
+
+			inline       FEATURE & front()        { return m_feats.front(); }
+			inline const FEATURE & front() const  { return m_feats.front(); }
+
 			/** @} */
 
 			/** @name Virtual methods that MUST be implemented by children classes of KDTreeCapable
@@ -159,6 +178,19 @@ namespace mrpt
 				}
 			}
 			/** @} */
+
+			/** @name getFeature*() methods for template-based access to feature list
+			    @{ */
+			inline float getFeatureX(size_t i) const { return m_feats[i].pt.x; }
+			inline float getFeatureY(size_t i) const { return m_feats[i].pt.y; }
+			inline TFeatureID getFeatureID(size_t i) const { return m_feats[i].ID; }
+			inline float getFeatureResponse(size_t i) const { return m_feats[i].response; }
+			inline bool isPointFeature(size_t i) const { return true; }
+			inline float getScale(size_t i) const { return static_cast<float>(1<<m_feats[i].octave); }
+
+			/** @} */
+
+
 		private:
 			TFeatureVector  m_feats; //!< The actual container with the list of features
 

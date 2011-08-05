@@ -327,26 +327,32 @@ namespace mrpt
 			template <class FEATURELIST>
 			void  drawFeaturesSimple( const FEATURELIST &list, const TColor &color = TColor::red )
 			{
-				for(typename FEATURELIST::const_iterator i = list.begin(); i != list.end(); ++i ) {
-					this->cross( round(i->x), round(i->y), color, '+' );
+				for(size_t i=0;i<list.size(); ++i )
+				{
+					const int x = round( list.getFeatureX(i) );
+					const int y = round( list.getFeatureY(i) );
+					this->cross( x,y, color, '+' );
 				}
 			}
 
 			/** Draws a set of marks (or scaled circles for features with scale) onto the image, given a generic container of features.
-			 *  The class of FEATURELIST can be mrpt::vision::CFeatureList
+			 *  The class of FEATURELIST can be:
+			 *    - mrpt::vision::CFeatureList
+			 *    - mrpt::vision::TSimpleFeatureList
+			 *
 			 * \sa drawFeaturesSimple
 			 */
 			template <class FEATURELIST>
 			void  drawFeatures( const FEATURELIST &list, const TColor &color = TColor::red, const bool showIDs = false, const bool showResponse = false  )
 			{
-				for(typename FEATURELIST::const_iterator i = list.begin(); i != list.end(); ++i )
+				for(size_t i=0;i<list.size(); ++i )
 				{
-					const int x = round((*i)->x);
-					const int y = round((*i)->y);
+					const int x = round( list.getFeatureX(i) );
+					const int y = round( list.getFeatureY(i) );
 					this->cross(x,y, color, '+' );
-					if( showIDs ) this->textOut(x,y, format("%u", static_cast<unsigned int>((*i)->ID)), TColor::red );
-					if (showResponse) this->textOut( x,y+10, format("R:%u", static_cast<unsigned int>((*i)->response)), TColor::red );
-					if( ! (*i)->isPointFeature() ) this->drawCircle( round((*i)->x), round((*i)->y), (*i)->scale, TColor::red );
+					if( showIDs ) this->textOut(x,y, format("%u", static_cast<unsigned int>(list.getFeatureID(i))), TColor::red );
+					if (showResponse) this->textOut( x,y+10, format("R:%u", static_cast<unsigned int>(list.getFeatureResponse(i))), TColor::red );
+					if( ! list.isPointFeature(i) ) this->drawCircle(x,y, list.getScale(i), TColor::red );
 				}
 			}
 

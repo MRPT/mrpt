@@ -33,6 +33,7 @@
 #include <mrpt/vision/link_pragmas.h>
 
 #include <mrpt/vision/CFeature.h>
+#include <mrpt/vision/TSimpleFeature.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/TParameters.h>
@@ -91,10 +92,13 @@ namespace mrpt
 		  *      <td> If <i>add_new_features</i>==1,  this is the minimum separation (in pixels) to any other (old, or new) feature for it
 		  *             being considered a candidate to be added.
 		  *         </td> </tr>
-		  *   <tr><td align="center" > add_new_feat_max_features  </td>  <td align="center" > 100 </td>
-		  *      <td> If <i>add_new_features</i>==1,  FAST features are detected in each frame, and only the best <i>add_new_feat_max_features</i> keypoints
-		  *             (ordered by their KLT response) will be considered as eligible for addition to the set of tracked features.
+		  *   <tr><td align="center" > desired_num_features_adapt  </td>  <td align="center" > (img_width*img_height)/512 </td>
+		  *      <td> If <i>add_new_features</i>==1, the threshold of the FAST(ER) feature detector is dynamically adapted such as the number of
+		  *        raw FAST keypoints is around this number. This number should be much higher than the real desired numbre of features, since this
+		  *        one includes many features concentrated in space which are later discarded for the minimum distance.
 		  *         </td> </tr>
+		  *   <tr><td align="center" > desired_num_features </td>  <td align="center" > 100 </td>
+		  *      <td> If <i>add_new_features</i>==1, the target number of the patch associated to each feature will be updated with every N'th frame. </td> </tr>
 		  *   <tr><td align="center" > add_new_feat_patch_size  </td>  <td align="center" > 11 </td>
 		  *      <td> If <i>add_new_features</i>==1,  for each new added feature, this is the size of the patch to be extracted around the keypoint (set to 0 if patches are not required at all).
 		  *          </td> </tr>
@@ -114,6 +118,9 @@ namespace mrpt
 		  *       </td> </tr>
 		  *   <tr><td align="center" > update_patches_every  </td>  <td align="center" > 0 </td>
 		  *      <td> If !=0, the patch associated to each feature will be updated with every N'th frame. </td> </tr>
+		  *   <tr><td align="center" > remove_lost_features  </td>  <td align="center" > 0 </td>
+		  *      <td> If !=0, out-of-bound features or those lost while tracking, will be automatically removed from the list of features.
+		  *            Otherwise, the user will have to manually remove them by checking the track_status field. </td> </tr>
 		  * </table>
 		  *
 		  *  This class also offers a time profiler, disabled by default (see getProfiler and enableTimeLogger).
@@ -146,7 +153,13 @@ namespace mrpt
 			void trackFeatures(
 				const CImage &old_img,
 				const CImage &new_img,
-				vision::CFeatureList &inout_featureList );
+				TSimpleFeatureList &inout_featureList );
+
+			/** \overload This overload version uses the old (and much slower) CFeatureList  */
+			void trackFeatures(
+				const CImage &old_img,
+				const CImage &new_img,
+				CFeatureList &inout_featureList );
 
 			/** A wrapper around the basic trackFeatures() method, but keeping the original list of features unmodified and returns the tracked ones in a new list. */
 			inline void trackFeaturesNewList(
@@ -179,7 +192,13 @@ namespace mrpt
 			virtual void trackFeatures_impl(
 				const CImage &old_img,
 				const CImage &new_img,
-				vision::CFeatureList &inout_featureList ) = 0;
+				TSimpleFeatureList  &inout_featureList ) = 0;
+
+			/** This version falls back to the version with TSimpleFeatureList if the derived class does not implement it. */
+			virtual void trackFeatures_impl(
+				const CImage &old_img,
+				const CImage &new_img,
+				CFeatureList &inout_featureList ) = 0;
 
 			mrpt::utils::CTimeLogger  m_timlog; //!< the internal time logger, disabled by default.
 
@@ -188,6 +207,12 @@ namespace mrpt
 			size_t		m_check_KLT_counter;	//!< For use when "check_KLT_response_every">=1
 			int			m_detector_adaptive_thres;  //!< For use in "add_new_features" == true
 
+
+			template <typename FEATLIST>
+			void internal_trackFeatures(
+				const CImage &old_img,
+				const CImage &new_img,
+				FEATLIST &inout_featureList );
 		};
 
 		typedef std::auto_ptr<CGenericFeatureTracker> CGenericFeatureTrackerAutoPtr;
@@ -215,6 +240,12 @@ namespace mrpt
 				const CImage &old_img,
 				const CImage &new_img,
 				vision::CFeatureList &inout_featureList );
+
+			/** The tracking method implementation, to be implemented in children classes. */
+			virtual void trackFeatures_impl(
+				const CImage &old_img,
+				const CImage &new_img,
+				TSimpleFeatureList  &inout_featureList );
 		};
 
 		/** Track a set of features from old_img -> new_img by patch correlation over the closest FAST features, using a KD-tree for looking closest correspondences.
@@ -276,15 +307,6 @@ namespace mrpt
 							CFeatureList &rightList,
 							vision::TMatchingOptions options);
 
-		/** Tracks a set of features in an image.
-		  *  Deprecated: See CGenericFeatureTracker
-		  */
-		void VISION_IMPEXP trackFeatures2(
-			const CImage &inImg1,
-			const CImage &inImg2,
-			CFeatureList &featureList,
-			const unsigned int window_width = 15,
-			const unsigned int window_height = 15);
 
 		/** Filter bad correspondences by distance
 		  * ...

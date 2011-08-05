@@ -50,25 +50,27 @@ using namespace mrpt::slam;
 using namespace mrpt::vision;
 using namespace mrpt::poses;
 
-mrpt::gui::CDisplayWindowPtr win;  // This is global such as an exception within the main program do not abruptly closes the window
+mrpt::gui::CDisplayWindow3DPtr win;  // This is global such as an exception within the main program do not abruptly closes the window
 
 // ------------------------------------------------------
 //		DoTrackingDemo
 // ------------------------------------------------------
 int DoTrackingDemo(CCameraSensorPtr  cam)
 {
-	win = mrpt::gui::CDisplayWindow::Create("Tracked features");
+	win = mrpt::gui::CDisplayWindow3D::Create("Tracked features",800,600);
 
 	mrpt::vision::CVideoFileWriter  vidWritter;
 
 	bool 		hasResolution = false;
 	TCamera		cameraParams; // For now, will only hold the image resolution on the arrive of the first frame.
 
-	CFeatureList	trackedFeats;
+	TSimpleFeatureList  trackedFeats;
+
 	unsigned int	step_num = 0;
 
 	bool  SHOW_FEAT_IDS = true;
 	bool  SHOW_RESPONSES = true;
+	bool  SHOW_FEAT_TRACKS = true;
 
 	bool  DO_SAVE_VIDEO = false;
 	bool  DO_HIST_EQUALIZE_IN_GRAYSCALE = false;
@@ -87,19 +89,22 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 	// Set of parameters common to any tracker implementation:
 	// To see all the existing params and documentation, see mrpt::vision::CGenericFeatureTracker
+	tracker->extra_params["remove_lost_features"]         = 1;   // automatically remove out-of-image and badly tracked features
+
 	tracker->extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
-	tracker->extra_params["add_new_feat_min_separation"]  = 25;
+	tracker->extra_params["add_new_feat_min_separation"]  = 20;
+	tracker->extra_params["minimum_KLT_response_to_add"]  = 20;
 	tracker->extra_params["add_new_feat_max_features"]    = 150;
-	tracker->extra_params["add_new_feat_patch_size"]      = 21;
+	tracker->extra_params["add_new_feat_patch_size"]      = 11;
 
 	tracker->extra_params["update_patches_every"]		= 0;  // Don't update patches.
 
 	tracker->extra_params["check_KLT_response_every"]	= 5;	// Re-check the KLT-response to assure features are in good points.
+	tracker->extra_params["minimum_KLT_response"]	    = 5;
 
 	// Specific params for "CFeatureTracker_KL"
 	tracker->extra_params["window_width"]  = 5;
 	tracker->extra_params["window_height"] = 5;
-
 
 
 	// --------------------------------
@@ -114,7 +119,19 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 	cout << endl << "TO END THE PROGRAM: Close the window.\n";
 
-	while( win->isOpen() ) // infinite loop, until we close the win
+	mrpt::opengl::COpenGLViewportPtr gl_view;
+	{
+		mrpt::opengl::COpenGLScenePtr scene = win->get3DSceneAndLock();
+		gl_view = scene->getViewport("main");
+		win->unlockAccess3DScene();
+	}
+
+	// Aux data for drawing the recent track of features:
+	static const size_t FEATS_TRACK_LEN = 10;
+	std::map<TFeatureID,std::list<TPixelCoord> >  feat_tracks;
+
+	// infinite loop, until we close the win:
+	while( win->isOpen() )
 	{
 		CObservationPtr obs;
 		try
@@ -172,31 +189,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		// Do tracking:
 		if (step_num>1)  // we need "previous_image" to be valid.
 		{
+			// This single call makes: detection, tracking, recalculation of KLT_response, etc.
 			tracker->trackFeatures(previous_image, theImg, trackedFeats);
-
-			// Remove those now out of the image plane:
-			CFeatureList::iterator itFeat = trackedFeats.begin();
-			while (itFeat!=trackedFeats.end())
-			{
-				const TFeatureTrackStatus status = (*itFeat)->track_status;
-				bool eras = (status_TRACKED!=status && status_IDLE!=status);
-				if (!eras)
-				{
-					// Also, check if it's too close to the image border:
-					const float x= (*itFeat)->x;
-					const float y= (*itFeat)->y;
-					static const float MIN_DIST_MARGIN_TO_STOP_TRACKING = 10;
-					if (x<MIN_DIST_MARGIN_TO_STOP_TRACKING  || y<MIN_DIST_MARGIN_TO_STOP_TRACKING ||
-						x>(cameraParams.ncols-MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
-						y>(cameraParams.nrows-MIN_DIST_MARGIN_TO_STOP_TRACKING))
-					{
-						eras = true;
-					}
-				}
-				if (eras)	// Erase or keep?
-					itFeat = trackedFeats.erase(itFeat);
-				else ++itFeat;
-			}
 		}
 
 		// Save the image for the next step:
@@ -205,11 +199,11 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		// Save history of feature observations:
 		tracker->getProfiler().enter("Save history");
 
-		for (CFeatureList::iterator itFeat = trackedFeats.begin();itFeat!=trackedFeats.end();++itFeat)
+		for (size_t i=0;i<trackedFeats.size();++i)
 		{
-			const CFeature &f = **itFeat;
+			TSimpleFeature &f = trackedFeats[i];
 
-			const TPixelCoordf pxRaw(f.x,f.y);
+			const TPixelCoordf pxRaw(f.pt.x,f.pt.y);
 			TPixelCoordf  pxUndist;
 			//mrpt::vision::pinhole::undistort_point(pxRaw,pxUndist, cameraParams);
 			pxUndist = pxRaw;
@@ -247,14 +241,71 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 			extra_tim_to_wait = 1.0/MAX_FPS - 1.0/fps;
 		}
-		{	// Tracked feats:
+
+		// Draw feature tracks
+		if (SHOW_FEAT_TRACKS)
+		{
+			// Update new feature coords:
+			tracker->getProfiler().enter("drawFeatureTracks");
+
+			std::set<TFeatureID> observed_IDs;
+
+			for (size_t i=0;i<trackedFeats.size();++i)
+			{
+				const TSimpleFeature &ft = trackedFeats[i];
+				std::list<TPixelCoord> & seq = feat_tracks[ft.ID];
+
+				observed_IDs.insert(ft.ID);
+
+				if (seq.size()>=FEATS_TRACK_LEN) seq.erase(seq.begin());
+				seq.push_back(ft.pt);
+
+				// Draw:
+				if (seq.size()>1)
+				{
+					const std::list<TPixelCoord>::const_iterator it_end = seq.end();
+
+					std::list<TPixelCoord>::const_iterator it      = seq.begin();
+					std::list<TPixelCoord>::const_iterator it_prev = it++;
+
+					for (;it!=it_end;++it)
+					{
+						theImg.line(it_prev->x,it_prev->y,it->x,it->y, TColor(190,190,190) );
+						it_prev = it;
+					}
+				}
+			}
+
+			tracker->getProfiler().leave("drawFeatureTracks");
+
+			// Purge old data:
+			for (std::map<TFeatureID,std::list<TPixelCoord> >::iterator it=feat_tracks.begin();it!=feat_tracks.end(); )
+			{
+				if (observed_IDs.find(it->first)==observed_IDs.end())
+				{
+					std::map<TFeatureID,std::list<TPixelCoord> >::iterator next_it = it;
+					next_it++;
+					feat_tracks.erase(it);
+					it = next_it;
+				}
+				else ++it;
+			}
+		}
+
+		// Draw Tracked feats:
+		{
 			theImg.selectTextFont("5x7");
 			tracker->getProfiler().enter("drawFeatures");
 			theImg.drawFeatures(trackedFeats, TColor(0,0,255), SHOW_FEAT_IDS, SHOW_RESPONSES);
 			tracker->getProfiler().leave("drawFeatures");
 		}
 
-		win->showImage(theImg);
+
+		// Update window:
+		win->get3DSceneAndLock();
+			gl_view->setImageView(theImg);
+		win->unlockAccess3DScene();
+		win->repaint();
 
 		// Save debug output video:
 		// ----------------------------------

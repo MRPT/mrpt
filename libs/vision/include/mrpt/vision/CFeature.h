@@ -311,6 +311,19 @@ namespace mrpt
 			/** @} */
 
 
+			/** @name getFeature*() methods for template-based access to feature list
+			    @{ */
+
+			inline float getFeatureX(size_t i) const { return m_feats[i]->x; }
+			inline float getFeatureY(size_t i) const { return m_feats[i]->y; }
+			inline TFeatureID getFeatureID(size_t i) const { return m_feats[i]->ID; }
+			inline float getFeatureResponse(size_t i) const { return m_feats[i]->response; }
+			inline bool isPointFeature(size_t i) const { return m_feats[i]->isPointFeature(); }
+			inline float getScale(size_t i) const { return m_feats[i]->scale; }
+
+			/** @} */
+
+
 		}; // end of class
 
 		/****************************************************
