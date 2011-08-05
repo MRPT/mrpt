@@ -269,6 +269,14 @@ namespace mrpt
 				const CImage &old_img,
 				const CImage &new_img,
 				TSimpleFeatureList  &inout_featureList );
+
+		private:
+			template <typename FEATLIST>
+			void trackFeatures_impl_templ(
+				const CImage &old_img,
+				const CImage &new_img,
+				FEATLIST  &inout_featureList );
+
 		};
 
 		/** Track a set of features from old_img -> new_img by patch correlation over the closest FAST features, using a KD-tree for looking closest correspondences.

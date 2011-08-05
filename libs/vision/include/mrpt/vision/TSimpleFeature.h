@@ -70,6 +70,22 @@ namespace mrpt
 		typedef TSimpleFeature_templ<mrpt::utils::TPixelCoordf>  TSimpleFeaturef;
 
 
+		template <typename FEATURE> struct TSimpleFeatureTraits;
+
+		template <> struct TSimpleFeatureTraits<TSimpleFeature>  {
+			typedef int   coord_t;
+
+			static inline coord_t f2coord(float f) { return mrpt::utils::round(f); }
+		};
+
+		template <> struct TSimpleFeatureTraits<TSimpleFeaturef> {
+			typedef float coord_t;
+
+			static inline coord_t f2coord(float f) { return f; }
+		};
+
+
+
 		/** A list of image features using the structure TSimpleFeature for each feature - capable of KD-tree computations
 		  *  Users normally use directly the typedef's: TSimpleFeatureList & TSimpleFeaturefList
 		  */
@@ -95,7 +111,7 @@ namespace mrpt
 			}
 
 			/** Returns a vector with a LUT of the first feature index per row, to efficiently look for neighbors, etc.
-			  *  By default this vector is empty, so if a feature detector is used that doesn't fill this out, it will remain empty and useless. 
+			  *  By default this vector is empty, so if a feature detector is used that doesn't fill this out, it will remain empty and useless.
 			  *  \note FASTER detectors do fill this out. In general, a feature list that dynamically changes will not use this LUT.
 			  */
 			const std::vector<size_t> & getFirstIndexPerRowLUT() const { return m_first_index_per_row; }
@@ -135,13 +151,8 @@ namespace mrpt
 			inline void resize(size_t N) { m_feats.resize(N);  }
 			inline void reserve(size_t N) { m_feats.reserve(N); }
 
-			inline void push_front(const FEATURE &f) {   m_feats.push_front(f); }
 			inline void push_back(const FEATURE &f) {   m_feats.push_back(f); }
-
-			inline void push_front_fast(const FEATURE &f) { m_feats.push_front(f); }
 			inline void push_back_fast (const FEATURE &f) { m_feats.push_back(f); }
-
-			inline void push_front_fast(const int x, const int y) { m_feats.push_front(FEATURE(x,y)); }
 			inline void push_back_fast (const int x, const int y) { m_feats.push_back (FEATURE(x,y)); }
 
 			inline       FEATURE & operator [](const unsigned int index)        { return m_feats[index]; }
@@ -157,18 +168,32 @@ namespace mrpt
 
 			/** @name getFeature*() methods for template-based access to feature list
 			    @{ */
-			inline float getFeatureX(size_t i) const { return m_feats[i].pt.x; }
-			inline float getFeatureY(size_t i) const { return m_feats[i].pt.y; }
+			inline typename TSimpleFeatureTraits<FEATURE>::coord_t getFeatureX(size_t i) const { return m_feats[i].pt.x; }
+			inline typename TSimpleFeatureTraits<FEATURE>::coord_t getFeatureY(size_t i) const { return m_feats[i].pt.y; }
 			inline TFeatureID getFeatureID(size_t i) const { return m_feats[i].ID; }
 			inline float getFeatureResponse(size_t i) const { return m_feats[i].response; }
 			inline bool isPointFeature(size_t i) const { return true; }
 			inline float getScale(size_t i) const { return static_cast<float>(1<<m_feats[i].octave); }
+			inline TFeatureTrackStatus getTrackStatus(size_t i) { return m_feats[i].track_status; }
+
+			inline void setFeatureX(size_t i,typename TSimpleFeatureTraits<FEATURE>::coord_t x) { m_feats[i].pt.x=x; }
+			inline void setFeatureY(size_t i,typename TSimpleFeatureTraits<FEATURE>::coord_t y) { m_feats[i].pt.y=y; }
+
+			inline void setFeatureXf(size_t i,float x) { m_feats[i].pt.x=TSimpleFeatureTraits<FEATURE>::f2coord(x); }
+			inline void setFeatureYf(size_t i,float y) { m_feats[i].pt.y=TSimpleFeatureTraits<FEATURE>::f2coord(y); }
+
+			inline void setFeatureID(size_t i,TFeatureID id) { m_feats[i]->ID=id; }
+			inline void setFeatureResponse(size_t i,float r) { m_feats[i]->response=r; }
+			inline void setScale(size_t i,float s) { m_feats[i]->scale=s; }
+			inline void setTrackStatus(size_t i,TFeatureTrackStatus s) { m_feats[i].track_status=s; }
+
+			inline void mark_as_outdated() const {  }
 			/** @} */
 
 		private:
 			TFeatureVector			m_feats; //!< The actual container with the list of features
 			std::vector<size_t>		m_first_index_per_row; //!< A LUT of the first feature index per row, to efficiently look for neighbors, etc.
-			mrpt::math::CMatrixBool m_occupied_sections; 
+			mrpt::math::CMatrixBool m_occupied_sections;
 
 		}; // end of class
 

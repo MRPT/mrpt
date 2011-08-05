@@ -221,7 +221,7 @@ namespace mrpt
 		class VISION_IMPEXP CFeatureList : public mrpt::math::KDTreeCapable  //public std::deque<CFeaturePtr>
 		{
 		protected:
-			typedef std::deque<CFeaturePtr> TInternalFeatList;
+			typedef std::vector<CFeaturePtr> TInternalFeatList;
 
 			TInternalFeatList  m_feats; //!< The actual container with the list of features
 
@@ -292,7 +292,6 @@ namespace mrpt
 			inline void clear() { m_feats.clear(); mark_kdtree_as_outdated(); }
 			inline void resize(size_t N) { m_feats.resize(N); mark_kdtree_as_outdated(); }
 
-			inline void push_front(const CFeaturePtr &f) { mark_kdtree_as_outdated();  m_feats.push_front(f); }
 			inline void push_back(const CFeaturePtr &f) { mark_kdtree_as_outdated();  m_feats.push_back(f); }
 
 			inline CFeaturePtr & operator [](const unsigned int index) { return m_feats[index]; }
@@ -313,13 +312,25 @@ namespace mrpt
 
 			/** @name getFeature*() methods for template-based access to feature list
 			    @{ */
-
 			inline float getFeatureX(size_t i) const { return m_feats[i]->x; }
 			inline float getFeatureY(size_t i) const { return m_feats[i]->y; }
 			inline TFeatureID getFeatureID(size_t i) const { return m_feats[i]->ID; }
 			inline float getFeatureResponse(size_t i) const { return m_feats[i]->response; }
 			inline bool isPointFeature(size_t i) const { return m_feats[i]->isPointFeature(); }
 			inline float getScale(size_t i) const { return m_feats[i]->scale; }
+			inline TFeatureTrackStatus getTrackStatus(size_t i) { return m_feats[i]->track_status; }
+
+			inline void setFeatureX(size_t i,float x) { m_feats[i]->x=x; }
+			inline void setFeatureXf(size_t i,float x) { m_feats[i]->x=x; }
+			inline void setFeatureY(size_t i,float y) { m_feats[i]->y=y; }
+			inline void setFeatureYf(size_t i,float y) { m_feats[i]->y=y; }
+
+			inline void setFeatureID(size_t i,TFeatureID id) { m_feats[i]->ID=id; }
+			inline void setFeatureResponse(size_t i,float r) { m_feats[i]->response=r; }
+			inline void setScale(size_t i,float s) { m_feats[i]->scale=s; }
+			inline void setTrackStatus(size_t i,TFeatureTrackStatus s) { m_feats[i]->track_status=s; }
+
+			inline void mark_as_outdated() const { kdtree_mark_as_outdated(); }
 
 			/** @} */
 
