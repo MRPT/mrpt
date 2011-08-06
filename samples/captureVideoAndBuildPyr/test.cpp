@@ -46,6 +46,7 @@ void TestVideoBuildPyr()
 	size_t N_OCTAVES  = 4;
 	bool do_smooth    = false;
 	bool do_grayscale = false;
+	bool do_features  = false;
 
 	// Ask for a different number of octaves:
 	cout << "Number of octaves to use [4]: ";
@@ -103,7 +104,7 @@ void TestVideoBuildPyr()
 	win.setPos(10,10);
 
 	win.addTextMessage(0.51,5,  // X,Y<=1 means coordinates are factors over the entire viewport area.
-		"Keys: 's'=Smoothing, 'g': Grayscale",
+		"Keys: 's'=Smoothing, 'g': Grayscale 'f': Features",
 		TColorf(.8,.8,0),
 		"sans",10,  // font name & size
 		mrpt::opengl::FILL,
@@ -137,6 +138,21 @@ void TestVideoBuildPyr()
 					do_grayscale
 					);
 
+				// Also detect features?
+				if (do_features)
+				{
+					static const int threshold = 20;
+
+					for (unsigned int level=0;level<N_OCTAVES;++level)
+					{
+						CImage gray_img(imgpyr.images[level], FAST_REF_OR_CONVERT_TO_GRAY);
+
+						TSimpleFeatureList feats;
+						CFeatureExtraction::detectFeatures_SSE2_FASTER12( gray_img, feats, threshold );
+
+						imgpyr.images[level].drawFeaturesSimple(feats, TColor::blue);
+					}
+				}
 
 				win.get3DSceneAndLock();
 
@@ -148,7 +164,7 @@ void TestVideoBuildPyr()
 
 
 				win.addTextMessage(0.51,25,  // X,Y<=1 means coordinates are factors over the entire viewport area.
-					format("Smooth=%i Grayscale=%i",int(do_smooth ? 1:0), int(do_grayscale ? 1:0)),
+					format("Smooth=%i Grayscale=%i Features=%i",int(do_smooth ? 1:0), int(do_grayscale ? 1:0), int(do_features ? 1:0)),
 					TColorf(.8,.8,0),
 					"sans",10,  // font name & size
 					mrpt::opengl::FILL,
@@ -172,6 +188,8 @@ void TestVideoBuildPyr()
 					do_smooth = !do_smooth;
 				if (key=='g' || key=='G')
 					do_grayscale = !do_grayscale;
+				if (key=='f' || key=='F')
+					do_features = !do_features;
 			}
 
 		}
