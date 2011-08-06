@@ -47,7 +47,6 @@ using namespace std;
 
 
 #if MRPT_HAS_OPENCV
-#if MRPT_OPENCV_VERSION_NUM >= 0x211
 
 // Auxiliary function:
 double match_template_SQDIFF(
@@ -114,7 +113,6 @@ double match_template_SQDIFF_2(
 }
 
 
-#endif
 #endif
 
 /** Ctor  */
@@ -466,7 +464,7 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 
 		m_timlog.enter("[CFeatureTracker_FAST::track]: testMatch.kdtree");
 
-		std::vector<size_t> closest_idxs; 
+		std::vector<size_t> closest_idxs;
 #if 0
 		= new_feats.kdTreeNClosestPoint2D(
 			feat.pt.x,feat.pt.y,
