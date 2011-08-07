@@ -28,8 +28,6 @@
 
 #include <mrpt/slam.h>   // Precompiled headers
 
-
-
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/slam/CMultiMetricMap.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
@@ -46,9 +44,229 @@ IMPLEMENTS_SERIALIZABLE( CMultiMetricMap, CMetricMap, mrpt::slam )
 extern CStartUpClassesRegister  mrpt_slam_class_reg;
 const int dumm = mrpt_slam_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
+// ------------------------------------------------------------------------
+// A few words explaining how all this works:
+//  The main hub for operating with all the maps in the internal list
+//   if MapExecutor.
+//
+// All operations go thru MapExecutor::run<OP>() with OP being one of the
+//  possible map operations (clear, matching, likelihood, etc.). The
+//  idea is that when adding new map types to the internal list of
+//  CMultiMetricMap, *only* "MapExecutor" methods must be updated.
+// (The only exception are readFromStream() & writeToStream())
+//
+// The map-specific operations all go into template specializations of
+//  other helper structures or in overloaded methods.
+//                                                 JLBC (7-AUG-2011)
+// ------------------------------------------------------------------------
 
-MRPT_TODO("JL: Consider rewriting many of this with STL algorithm")
-MRPT_TODO("JL: Add the new weighted point maps")
+struct MapExecutor {
+	// Apply operation to maps in the same order as declared in CMultiMetricMap.h:
+	template <typename OP>
+	static void run(const CMultiMetricMap &_mmm, OP &op)
+	{
+		MRPT_START
+		CMultiMetricMap &mmm = const_cast<CMultiMetricMap&>(_mmm);  // This is to avoid duplicating "::run()" for const and non-const.
+
+		for_each( mmm.m_pointsMaps.begin(),mmm.m_pointsMaps.end(), op );
+		for_each( mmm.m_gridMaps.begin(),mmm.m_gridMaps.end(),  op );
+		for_each( mmm.m_gasGridMaps.begin(),mmm.m_gasGridMaps.end(),  op );
+		for_each( mmm.m_wifiGridMaps.begin(),mmm.m_wifiGridMaps.end(),  op );
+		for_each( mmm.m_heightMaps.begin(),mmm.m_heightMaps.end(),  op );
+		for_each( mmm.m_reflectivityMaps.begin(),mmm.m_reflectivityMaps.end(), op );
+		op(mmm.m_colourPointsMap);
+		op(mmm.m_weightedPointsMap);
+		op(mmm.m_landmarksMap);
+		op(mmm.m_beaconMap);
+
+		MRPT_END
+	}
+	// Apply operation to the vectors (or deques) contianing maps:
+	template <typename OP>
+	static void runOnVectors(const CMultiMetricMap &_mmm, OP &op)
+	{
+		MRPT_START
+		CMultiMetricMap &mmm = const_cast<CMultiMetricMap&>(_mmm);  // This is to avoid duplicating "::run()" for const and non-const.
+
+		op( mmm.m_pointsMaps );
+		op( mmm.m_gridMaps );
+		op( mmm.m_gasGridMaps );
+		op( mmm.m_wifiGridMaps );
+		op( mmm.m_heightMaps );
+		op( mmm.m_reflectivityMaps );
+
+		MRPT_END
+	}
+	// Copy all smart pointers:
+	static void copyAll(const CMultiMetricMap &other, CMultiMetricMap &mmm) {
+		mmm.m_pointsMaps = other.m_pointsMaps;
+		mmm.m_gridMaps = other.m_gridMaps;
+		mmm.m_gasGridMaps = other.m_gasGridMaps;
+		mmm.m_wifiGridMaps = other.m_wifiGridMaps;
+		mmm.m_heightMaps = other.m_heightMaps;
+		mmm.m_reflectivityMaps = other.m_reflectivityMaps;
+		mmm.m_colourPointsMap = other.m_colourPointsMap;
+		mmm.m_weightedPointsMap = other.m_weightedPointsMap;
+		mmm.m_landmarksMap = other.m_landmarksMap;
+		mmm.m_beaconMap = other.m_beaconMap;
+	}
+};  // end of MapExecutor
+
+// ------------------- Begin of map-operations helper templates -------------------
+struct MapVectorClearer
+{
+	template<typename T>
+	inline void operator()(T &container) {
+		container.clear();
+	}
+};
+
+// Auxiliary methods are in this base helper struct:
+struct MapTraits
+{
+	const CMultiMetricMap & mmm;
+	MapTraits(const CMultiMetricMap & m) : mmm(m) { }
+
+	inline bool isUsedLik(CSimplePointsMapPtr &ptr) {
+		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
+				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapPoints ) );
+	}
+	inline bool isUsedLik(COccupancyGridMap2DPtr &ptr) {
+		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
+				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapGrid ) );
+	}
+	inline bool isUsedLik(CGasConcentrationGridMap2DPtr &ptr) {
+		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
+				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapGasGrid ) );
+	}
+	inline bool isUsedLik(CWirelessPowerGridMap2DPtr &ptr) {
+		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
+				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapWifiGrid ) );
+	}
+	inline bool isUsedLik(CHeightGridMap2DPtr &ptr) {
+		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
+				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapHeight ) );
+	}
+	inline bool isUsedLik(CReflectivityGridMap2DPtr &ptr) {
+		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
+				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapReflectivity ) );
+	}
+	inline bool isUsedLik(CColouredPointsMapPtr &ptr) {
+		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
+				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapColourPoints ) );
+	}
+	inline bool isUsedLik(CWeightedPointsMapPtr &ptr) {
+		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
+				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapWeightedPoints) );
+	}
+	inline bool isUsedLik(CLandmarksMapPtr &ptr) {
+		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
+				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapLandmarks ) );
+	}
+	inline bool isUsedLik(CBeaconMapPtr &ptr) {
+		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
+				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapBeacon ) );
+	}
+
+	// --------------------
+	inline bool isUsedInsert(CSimplePointsMapPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_pointsMap; }
+	inline bool isUsedInsert(COccupancyGridMap2DPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_gridMaps; }
+	inline bool isUsedInsert(CGasConcentrationGridMap2DPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_gasGridMaps; }
+	inline bool isUsedInsert(CWirelessPowerGridMap2DPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_wifiGridMaps; }
+	inline bool isUsedInsert(CHeightGridMap2DPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_heightMaps; }
+	inline bool isUsedInsert(CReflectivityGridMap2DPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_reflectivityMaps; }
+	inline bool isUsedInsert(CColouredPointsMapPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_colourPointsMaps; }
+	inline bool isUsedInsert(CWeightedPointsMapPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_weightedPointsMaps; }
+	inline bool isUsedInsert(CLandmarksMapPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_landmarksMap; }
+	inline bool isUsedInsert(CBeaconMapPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_beaconMap; }
+
+}; // end of MapTraits
+
+struct MapComputeLikelihood : public MapTraits
+{
+	const CObservation    * obs;
+	const CPose3D         & takenFrom;
+	double                & total_log_lik;
+
+	MapComputeLikelihood(const CMultiMetricMap &m,const CObservation * _obs, const CPose3D & _takenFrom, double & _total_log_lik) :
+		MapTraits(m),
+		obs(_obs), takenFrom(_takenFrom),
+		total_log_lik(_total_log_lik)
+	{
+		total_log_lik=0;
+	}
+
+	template <typename PTR>
+	inline void operator()(PTR &ptr) {
+		if (isUsedLik(ptr))
+			total_log_lik+=ptr->computeObservationLikelihood(obs,takenFrom);
+	}
+
+}; // end of MapComputeLikelihood
+
+struct MapCanComputeLikelihood  : public MapTraits
+{
+	const CObservation    * obs;
+	bool                  & can;
+
+	MapCanComputeLikelihood(const CMultiMetricMap &m,const CObservation * _obs, bool & _can) :
+		MapTraits(m),
+		obs(_obs),
+		can(_can)
+	{
+		can = false;
+	}
+
+	template <typename PTR>
+	inline void operator()(PTR &ptr) {
+		if (isUsedLik(ptr))
+			can = can || ptr->canComputeObservationLikelihood(obs);
+	}
+
+}; // end of MapCanComputeLikelihood
+
+struct MapInsertObservation : public MapTraits
+{
+	const CObservation    * obs;
+	const CPose3D         * robot_pose;
+	int                   & total_insert;
+
+	MapInsertObservation(const CMultiMetricMap &m,const CObservation * _obs, const CPose3D * _robot_pose, int & _total_insert) :
+		MapTraits(m),
+		obs(_obs), robot_pose(_robot_pose),
+		total_insert(_total_insert)
+	{
+		total_insert = 0;
+	}
+
+	template <typename PTR>
+	inline void operator()(PTR &ptr) {
+		if (isUsedInsert(ptr))
+		{
+			bool ret = ptr->insertObservation(obs,robot_pose);
+			if (ret) total_insert++;
+		}
+	}
+}; // end of MapInsertObservation
+
+struct MapIsEmpty
+{
+	bool & is_empty;
+
+	MapIsEmpty(bool & _is_empty) : is_empty(_is_empty)
+	{
+		is_empty = true;
+	}
+
+	template <typename PTR>
+	inline void operator()(PTR &ptr) {
+		if (ptr.present())
+			is_empty = is_empty && ptr->isEmpty();
+	}
+}; // end of MapInsertObservation
+
+// ------------------- End of map-operations helper templates -------------------
+
 
 
 /*---------------------------------------------------------------
@@ -57,28 +275,16 @@ MRPT_TODO("JL: Add the new weighted point maps")
 CMultiMetricMap::CMultiMetricMap(
 	const TSetOfMetricMapInitializers		*initializers,
 	const mrpt::slam::CMultiMetricMap::TOptions	*opts) :
-		options(),
-		m_pointsMaps(0),
-		m_landmarksMap(),
-		m_beaconMap(),
-		m_gridMaps(0),
-		m_gasGridMaps(0),
-		m_wifiGridMaps(0),
-		m_heightMaps(0),
-		m_reflectivityMaps(0),
-		m_colourPointsMap(),
 		m_ID(0)
 {
 	MRPT_START
-
 	MRPT_UNUSED_PARAM(dumm);
 
 	// Create maps
 	setListOfMaps(initializers);
 
 	// Do we have initial options?
-	if (opts)
-		options = *opts;
+	if (opts) options = *opts;
 
 	MRPT_END
 }
@@ -87,16 +293,6 @@ CMultiMetricMap::CMultiMetricMap(
 			copy constructor
   ---------------------------------------------------------------*/
 CMultiMetricMap::CMultiMetricMap(const mrpt::slam::CMultiMetricMap &other ) :
-	options(),
-	m_pointsMaps(0),
-	m_landmarksMap(),
-	m_beaconMap(),
-	m_gridMaps(0),
-	m_gasGridMaps(0),
-	m_wifiGridMaps(0),
-	m_heightMaps(0),
-	m_reflectivityMaps(0),
-	m_colourPointsMap(),
 	m_ID(0)
 {
 	*this = other;	// Call the "=" operator
@@ -234,7 +430,6 @@ void  CMultiMetricMap::setListOfMaps(
 				CSimplePointsMapPtr newPointsMap = CSimplePointsMap::Create();
 				newPointsMap->m_disableSaveAs3DObject = it->m_disableSaveAs3DObject;
 				newPointsMap->insertionOptions = it->pointsMapOptions_options.insertionOpts;
-				//newPointsMap->m_parent         = this;
 
 				m_pointsMaps.push_back( newPointsMap );
 			}
@@ -248,9 +443,20 @@ void  CMultiMetricMap::setListOfMaps(
 				newPointsMap->m_disableSaveAs3DObject = it->m_disableSaveAs3DObject;
 				newPointsMap->insertionOptions = it->colouredPointsMapOptions_options.insertionOpts;
 				newPointsMap->colorScheme	   = it->colouredPointsMapOptions_options.colourOpts;
-				//newPointsMap->m_parent         = this;
 
 				m_colourPointsMap = newPointsMap;
+			}
+			else
+			if ( it->metricMapClassType == CLASS_ID(CWeightedPointsMap) )
+			{
+				// -------------------------------------------------------
+				//				  WEIGHTED POINTS MAPS
+				// -------------------------------------------------------
+				CWeightedPointsMapPtr newPointsMap = CWeightedPointsMap::Create();
+				newPointsMap->m_disableSaveAs3DObject = it->m_disableSaveAs3DObject;
+				newPointsMap->insertionOptions = it->weightedPointsMapOptions_options.insertionOpts;
+
+				m_weightedPointsMap = newPointsMap;
 			}
 			else
 			if ( it->metricMapClassType == CLASS_ID(CLandmarksMap) )
@@ -318,37 +524,8 @@ void  CMultiMetricMap::setListOfMaps(
   ---------------------------------------------------------------*/
 void  CMultiMetricMap::internal_clear()
 {
-	MRPT_START
-
-	// grid maps:
-	for_each( m_gridMaps.begin(),m_gridMaps.end(),  ObjectClear() );
-
-	// Gas grids maps:
-	for_each( m_gasGridMaps.begin(),m_gasGridMaps.end(),  ObjectClear() );
-
-
-	// Wifi grids maps:
-	for_each( m_wifiGridMaps.begin(),m_wifiGridMaps.end(),  ObjectClear() );
-
-	// Points maps:
-	for_each( m_pointsMaps.begin(),m_pointsMaps.end(),  ObjectClear() );
-
-	// Landmarks maps:
-	if (m_landmarksMap) m_landmarksMap->clear();
-
-	// Landmark SOG maps:
-	if (m_beaconMap) m_beaconMap->clear();
-
-	// Height maps:
-	for_each( m_heightMaps.begin(),m_heightMaps.end(),  ObjectClear() );
-
-	// Reflectivity maps:
-	for_each( m_reflectivityMaps.begin(),m_reflectivityMaps.end(),  ObjectClear() );
-
-	// Colour points maps:
-	if (m_colourPointsMap) m_colourPointsMap->clear();
-
-	MRPT_END
+	ObjectClear op;
+	MapExecutor::run(*this, op);
 }
 
 /*---------------------------------------------------------------
@@ -361,53 +538,14 @@ mrpt::slam::CMultiMetricMap & CMultiMetricMap::operator = ( const CMultiMetricMa
 	if (this == &other) return *this;			// Who knows! :-)
 
 	options	  = other.options;
-
 	m_ID	  = other.m_ID;
 
-	// Copy points map:
-	// --------------------------------
-	m_pointsMaps = other.m_pointsMaps;
-	for_each( m_pointsMaps.begin(),m_pointsMaps.end(), ObjectMakeUnique() );
+	// Copy all maps and then make_unique() to really duplicate the objects:
+	MapExecutor::copyAll(other,*this);
 
-	// Copy the landmarks map:
-	// --------------------------------
-	m_landmarksMap = other.m_landmarksMap;
-	m_landmarksMap.make_unique();
-
-	// Copy the beacon map:
-	// --------------------------------
-	m_beaconMap = other.m_beaconMap;
-	m_beaconMap.make_unique();
-
-	// Copy grid maps:
-	// --------------------------------
-	m_gridMaps = other.m_gridMaps;
-	for_each( m_gridMaps.begin(),m_gridMaps.end(),  ObjectMakeUnique() );
-
-	// Copy gas grid maps:
-	// --------------------------------
-	m_gasGridMaps = other.m_gasGridMaps;
-	for_each( m_gasGridMaps.begin(), m_gasGridMaps.end(), ObjectMakeUnique() );
-
-	// Copy wifi grid maps:
-	// --------------------------------
-	m_wifiGridMaps = other.m_wifiGridMaps;
-	for_each( m_wifiGridMaps.begin(), m_wifiGridMaps.end(), ObjectMakeUnique() );
-
-	// Height maps:
-	// --------------------------------
-	m_heightMaps = other.m_heightMaps;
-	for_each( m_heightMaps.begin(), m_heightMaps.end(), ObjectMakeUnique() );
-
-	// Reflectivity maps:
-	// --------------------------------
-	m_reflectivityMaps = other.m_reflectivityMaps;
-	for_each( m_reflectivityMaps.begin(), m_reflectivityMaps.end(), ObjectMakeUnique() );
-
-	// Copy the colour points map:
-	// --------------------------------
-	m_colourPointsMap = other.m_colourPointsMap;
-	m_colourPointsMap.make_unique();
+	// invoke make_unique() operation on each smart pointer:
+	ObjectMakeUnique op;
+	MapExecutor::run(*this, op);
 
 	return *this;
 
@@ -427,15 +565,12 @@ CMultiMetricMap::~CMultiMetricMap( )
   ---------------------------------------------------------------*/
 void  CMultiMetricMap::deleteAllMaps( )
 {
-	m_gridMaps.clear();
-	m_gasGridMaps.clear();
-	m_wifiGridMaps.clear();
-	m_pointsMaps.clear();
-	m_landmarksMap.clear_unique();
-	m_beaconMap.clear_unique();
-	m_heightMaps.clear();
-	m_reflectivityMaps.clear();
-	m_colourPointsMap.clear_unique();
+	// invoke make_unique() operation on each smart pointer:
+	MapVectorClearer op_vec_clear;
+	MapExecutor::runOnVectors(*this, op_vec_clear);
+
+	ObjectMakeUnique op_make_unique;
+	MapExecutor::run(*this, op_make_unique);
 }
 
 /*---------------------------------------------------------------
@@ -720,126 +855,13 @@ double	 CMultiMetricMap::computeObservationLikelihood(
 			const CObservation		*obs,
 			const CPose3D			&takenFrom )
 {
-	MRPT_START
-	double	ret;
+	double ret_log_lik;
+	MapComputeLikelihood op_likelihood(*this,obs,takenFrom,ret_log_lik);
 
-	switch (options.likelihoodMapSelection)
-	{
-	case TOptions::mapFuseAll:
-		{
-			ret = 0;
-			for (std::deque<CSimplePointsMapPtr>::iterator  itP = m_pointsMaps.begin();itP!=m_pointsMaps.end();++itP)
-				ret += (*itP)->computeObservationLikelihood(obs, takenFrom );
+	MapExecutor::run(*this,op_likelihood);
 
-			if(m_landmarksMap.present())
-				ret += m_landmarksMap->computeObservationLikelihood(obs, takenFrom );
-
-			if (m_beaconMap)
-				ret += m_beaconMap->computeObservationLikelihood(obs, takenFrom );
-
-			for (std::deque<COccupancyGridMap2DPtr>::iterator	it = m_gridMaps.begin();it!=m_gridMaps.end();++it)
-				ret += (*it)->computeObservationLikelihood(obs, takenFrom );
-
-			for (std::deque<CGasConcentrationGridMap2DPtr>::iterator	itGas = m_gasGridMaps.begin();itGas!=m_gasGridMaps.end();++itGas)
-				ret += (*itGas)->computeObservationLikelihood(obs, takenFrom );
-
-			for (std::deque<CWirelessPowerGridMap2DPtr>::iterator	itWifi = m_wifiGridMaps.begin();itWifi!=m_wifiGridMaps.end();++itWifi)
-				ret += (*itWifi)->computeObservationLikelihood(obs, takenFrom );
-
-			for (std::deque<CHeightGridMap2DPtr>::iterator	it = m_heightMaps.begin();it!=m_heightMaps.end();++it)
-				ret += (*it)->computeObservationLikelihood(obs, takenFrom );
-
-			for (std::deque<CReflectivityGridMap2DPtr>::iterator	it = m_reflectivityMaps.begin();it!=m_reflectivityMaps.end();++it)
-				ret += (*it)->computeObservationLikelihood(obs, takenFrom );
-
-			if (m_colourPointsMap)
-				ret += m_colourPointsMap->computeObservationLikelihood(obs, takenFrom );
-
-			MRPT_CHECK_NORMAL_NUMBER(ret);
-            return ret;
-		}
-
-	case  TOptions::mapPoints:
-		{
-			ASSERT_( m_pointsMaps.size()>0 );
-			ret = 0;
-			for (std::deque<CSimplePointsMapPtr>::iterator	it = m_pointsMaps.begin();it!=m_pointsMaps.end();++it)
-				ret += (*it)->computeObservationLikelihood(obs, takenFrom );
-			MRPT_CHECK_NORMAL_NUMBER(ret);
-            return ret;
-		}
-
-	case  TOptions::mapLandmarks:
-		{
-			ASSERT_( m_landmarksMap );
-			ret=m_landmarksMap->computeObservationLikelihood(obs, takenFrom );
-			MRPT_CHECK_NORMAL_NUMBER(ret);
-            return ret;
-		}
-
-	case  TOptions::mapBeacon:
-		{
-			ASSERT_( m_beaconMap );
-			ret=m_beaconMap->computeObservationLikelihood(obs, takenFrom );
-			MRPT_CHECK_NORMAL_NUMBER(ret);
-            return ret;
-		}
-
-	case  TOptions::mapGrid:
-		{
-			ASSERT_( m_gridMaps.size()>0 );
-			ret = 0;
-			for (std::deque<COccupancyGridMap2DPtr>::iterator	it = m_gridMaps.begin();it!=m_gridMaps.end();++it)
-				ret += (*it)->computeObservationLikelihood(obs, takenFrom );
-			MRPT_CHECK_NORMAL_NUMBER( ret );
-            return ret;
-		}
-
-	case  TOptions::mapGasGrid:
-		{
-			ASSERT_( m_gasGridMaps.size()>0 );
-			ret=m_gasGridMaps[0]->computeObservationLikelihood(obs, takenFrom );
-			MRPT_CHECK_NORMAL_NUMBER(ret);
-            return ret;
-		}
-
-	case  TOptions::mapWifiGrid:
-		{
-			ASSERT_( m_wifiGridMaps.size()>0 );
-			ret=m_wifiGridMaps[0]->computeObservationLikelihood(obs, takenFrom );
-			MRPT_CHECK_NORMAL_NUMBER(ret);
-            return ret;
-		}
-
-	case  TOptions::mapHeight:
-		{
-			ASSERT_( m_heightMaps.size()>0 );
-			ret=m_heightMaps[0]->computeObservationLikelihood(obs, takenFrom );
-			MRPT_CHECK_NORMAL_NUMBER(ret);
-            return ret;
-		}
-
-	case  TOptions::mapReflectivity:
-		{
-			ASSERT_( m_reflectivityMaps.size()>0 );
-			ret=m_reflectivityMaps[0]->computeObservationLikelihood(obs, takenFrom );
-			MRPT_CHECK_NORMAL_NUMBER(ret);
-            return ret;
-		}
-
-	case  TOptions::mapColourPoints:
-		{
-			ASSERT_( m_colourPointsMap );
-			ret=m_colourPointsMap->computeObservationLikelihood(obs, takenFrom );
-			MRPT_CHECK_NORMAL_NUMBER(ret);
-            return ret;
-		}
-
-	default:
-		THROW_EXCEPTION("Unknown value in options.likelihoodMapSelection!!");
-	};
-
-	MRPT_END
+	MRPT_CHECK_NORMAL_NUMBER(ret_log_lik)
+	return ret_log_lik;
 }
 
 /*---------------------------------------------------------------
@@ -848,110 +870,11 @@ Returns true if this map is able to compute a sensible likelihood function for t
  ---------------------------------------------------------------*/
 bool CMultiMetricMap::canComputeObservationLikelihood( const CObservation *obs )
 {
-	MRPT_START
+	bool can_comp;
 
-	switch (options.likelihoodMapSelection)
-	{
-	case TOptions::mapFuseAll:
-		{
-			bool ret = false;
-			for (std::deque<CSimplePointsMapPtr>::iterator	itP = m_pointsMaps.begin();itP!=m_pointsMaps.end();++itP)
-				ret = ret || (*itP)->canComputeObservationLikelihood(obs );
-
-			if(m_landmarksMap.present())
-				ret = ret || m_landmarksMap->canComputeObservationLikelihood(obs);
-
-			if (m_beaconMap)
-				ret = ret || m_beaconMap->canComputeObservationLikelihood(obs);
-
-			for (std::deque<COccupancyGridMap2DPtr>::iterator	it = m_gridMaps.begin();it!=m_gridMaps.end();++it)
-				ret = ret || (*it)->canComputeObservationLikelihood(obs  );
-
-			for (std::deque<CGasConcentrationGridMap2DPtr>::iterator	itGas = m_gasGridMaps.begin();itGas!=m_gasGridMaps.end();++itGas)
-				ret = ret || (*itGas)->canComputeObservationLikelihood(obs);
-
-			for (std::deque<CWirelessPowerGridMap2DPtr>::iterator	itWifi = m_wifiGridMaps.begin();itWifi!=m_wifiGridMaps.end();++itWifi)
-				ret = ret || (*itWifi)->canComputeObservationLikelihood(obs);
-
-			for (std::deque<CHeightGridMap2DPtr>::iterator	it = m_heightMaps.begin();it!=m_heightMaps.end();++it)
-				ret = ret || (*it)->canComputeObservationLikelihood(obs);
-
-			for (std::deque<CReflectivityGridMap2DPtr>::iterator	it = m_reflectivityMaps.begin();it!=m_reflectivityMaps.end();++it)
-				ret = ret || (*it)->canComputeObservationLikelihood(obs);
-
-			if (m_colourPointsMap)
-				ret = ret || m_colourPointsMap->canComputeObservationLikelihood(obs);
-
-			return ret;
-		}
-
-	case  TOptions::mapPoints:
-		{
-			ASSERT_( m_pointsMaps.size()>0 );
-			bool ret = false;
-			for (std::deque<CSimplePointsMapPtr>::iterator	itP = m_pointsMaps.begin();itP!=m_pointsMaps.end();++itP)
-				ret = ret || (*itP)->canComputeObservationLikelihood(obs );
-			return ret;
-		}
-
-	case  TOptions::mapLandmarks:
-		{
-			ASSERT_( m_landmarksMap );
-			return m_landmarksMap->canComputeObservationLikelihood(obs );
-		}
-
-	case  TOptions::mapBeacon:
-		{
-			ASSERT_( m_beaconMap );
-			return m_beaconMap->canComputeObservationLikelihood(obs);
-		}
-
-	case  TOptions::mapGrid:
-		{
-			ASSERT_( m_gridMaps.size()>0 );
-			bool ret = false;
-			for (std::deque<COccupancyGridMap2DPtr>::iterator	it = m_gridMaps.begin();it!=m_gridMaps.end();++it)
-				ret = ret || (*it)->canComputeObservationLikelihood(obs);
-            return ret;
-		}
-
-	case  TOptions::mapGasGrid:
-		{
-			ASSERT_( m_gasGridMaps.size()>0 );
-			return m_gasGridMaps[0]->canComputeObservationLikelihood(obs );
-		}
-
-	case  TOptions::mapWifiGrid:
-		{
-			ASSERT_( m_wifiGridMaps.size()>0 );
-			return m_wifiGridMaps[0]->canComputeObservationLikelihood(obs );
-		}
-
-	case  TOptions::mapHeight:
-		{
-			ASSERT_( m_heightMaps.size()>0 );
-			return m_heightMaps[0]->canComputeObservationLikelihood(obs );
-		}
-
-	case  TOptions::mapReflectivity:
-		{
-			ASSERT_( m_reflectivityMaps.size()>0 );
-			return m_reflectivityMaps[0]->canComputeObservationLikelihood(obs );
-		}
-
-	case  TOptions::mapColourPoints:
-		{
-			ASSERT_( m_colourPointsMap );
-			return m_colourPointsMap->canComputeObservationLikelihood(obs);
-		}
-
-	default:
-		{
-		THROW_EXCEPTION("Unknown value in options.likelihoodMapSelection!!");
-		}
-	};
-
-	MRPT_END
+	MapCanComputeLikelihood op_can_likelihood(*this,obs,can_comp);
+	MapExecutor::run(*this,op_can_likelihood);
+	return can_comp;
 }
 
 /*---------------------------------------------------------------
@@ -1042,84 +965,10 @@ bool  CMultiMetricMap::internal_insertObservation(
 		const CObservation	*obs,
 		const CPose3D			*robotPose)
 {
-	MRPT_START
-
-	// ---------------------------------------------------------------------
-	// There are easiest ways of obtaining the bool return value for this
-	//  method, like using "ret = ret || ...", but depending on compiler
-	//  that leads to NOT INSERTING observations in maps sometimes!!!
-	// So, do not "optimize" this "bool's" stuff:		(JLBC, 14/DEC/2006)
-	// ---------------------------------------------------------------------
-	std::vector<bool>	done(8,false);
-	bool				auxDone;
-
-	if (options.enableInsertion_pointsMap)
-	{
-		for (std::deque<CSimplePointsMapPtr>::iterator	it = m_pointsMaps.begin();it!=m_pointsMaps.end();++it)
-		{
-			auxDone = (*it)->insertObservation( obs, robotPose );
-			done[0] = done[0] || auxDone;
-		}
-	}
-
-	if (m_landmarksMap && options.enableInsertion_landmarksMap)
-		done[1] = m_landmarksMap->insertObservation( obs, robotPose );
-
-	if (options.enableInsertion_gridMaps)
-	{
-		for (std::deque<COccupancyGridMap2DPtr>::iterator	it = m_gridMaps.begin();it!=m_gridMaps.end();++it)
-		{
-			auxDone = (*it)->insertObservation( obs, robotPose );
-			done[2] = done[2] || auxDone;
-		}
-	}
-
-	if (options.enableInsertion_gasGridMaps)
-	{
-		for (std::deque<CGasConcentrationGridMap2DPtr>::iterator	it = m_gasGridMaps.begin();it!=m_gasGridMaps.end();++it)
-		{
-			auxDone = (*it)->insertObservation( obs, robotPose );
-			done[3] = done[3] || auxDone;
-		}
-	}
-
-	if (options.enableInsertion_wifiGridMaps)
-	{
-		for (std::deque<CWirelessPowerGridMap2DPtr>::iterator	it = m_wifiGridMaps.begin();it!=m_wifiGridMaps.end();++it)
-		{
-			auxDone = (*it)->insertObservation( obs, robotPose );
-			done[3] = done[3] || auxDone;
-		}
-	}
-
-	if (m_beaconMap && options.enableInsertion_beaconMap)
-		done[4] = m_beaconMap->insertObservation( obs, robotPose );
-
-
-	if (options.enableInsertion_heightMaps)
-	{
-		for (std::deque<CHeightGridMap2DPtr>::iterator	it = m_heightMaps.begin();it!=m_heightMaps.end();++it)
-		{
-			auxDone = (*it)->insertObservation( obs, robotPose );
-			done[5] = done[5] || auxDone;
-		}
-	}
-
-	if (m_colourPointsMap && options.enableInsertion_colourPointsMaps)
-		done[6] = m_colourPointsMap->insertObservation( obs, robotPose );
-
-	if (options.enableInsertion_reflectivityMaps)
-	{
-		for (std::deque<CReflectivityGridMap2DPtr>::iterator	it = m_reflectivityMaps.begin();it!=m_reflectivityMaps.end();++it)
-		{
-			auxDone = (*it)->insertObservation( obs, robotPose );
-			done[7] = done[7] || auxDone;
-		}
-	}
-
-	return done[0] || done[1] || done[2] || done[3] || done[4] || done[5] || done[6] || done[7];
-
-	MRPT_END
+	int total_insert;
+	MapInsertObservation op_insert_obs(*this,obs,robotPose,total_insert);
+	MapExecutor::run(*this,op_insert_obs);
+	return total_insert!=0;
 }
 
 /*---------------------------------------------------------------
@@ -1160,27 +1009,10 @@ void  CMultiMetricMap::computeMatchingWith2D(
  ---------------------------------------------------------------*/
 bool  CMultiMetricMap::isEmpty() const
 {
-	bool	res = true;
-
-	for (std::deque<CSimplePointsMapPtr>::const_iterator	itP = m_pointsMaps.begin();itP!=m_pointsMaps.end();++itP)
-		res = res && (*itP)->isEmpty();
-
-	if (m_landmarksMap)		res = res && m_landmarksMap->isEmpty();
-	if (m_beaconMap)	res = res && m_beaconMap->isEmpty();
-
-	for (std::deque<COccupancyGridMap2DPtr>::const_iterator	it = m_gridMaps.begin();it!=m_gridMaps.end();++it)
-		res = res && (*it)->isEmpty();
-
-	for (std::deque<CGasConcentrationGridMap2DPtr>::const_iterator	it2 = m_gasGridMaps.begin();it2!=m_gasGridMaps.end();it2++)
-		res = res && (*it2)->isEmpty();
-
-
-	for (std::deque<CWirelessPowerGridMap2DPtr>::const_iterator	it3 = m_wifiGridMaps.begin();it3!=m_wifiGridMaps.end();it3++)
-		res = res && (*it3)->isEmpty();
-
-	if (m_colourPointsMap)	res = res && m_colourPointsMap->isEmpty();
-
-	return res;
+	bool is_empty;
+	MapIsEmpty op_insert_obs(is_empty);
+	MapExecutor::run(*this,op_insert_obs);
+	return is_empty;
 }
 
 /*---------------------------------------------------------------
@@ -1307,6 +1139,14 @@ TMetricMapInitializer::CReflectivityGridMap2DOptions::CReflectivityGridMap2DOpti
 TMetricMapInitializer::CColouredPointsMapOptions::CColouredPointsMapOptions() :
 	insertionOpts(),
 	colourOpts()
+{
+}
+
+/*---------------------------------------------------------------
+					CWeightedPointsMapOptions
+ ---------------------------------------------------------------*/
+TMetricMapInitializer::CWeightedPointsMapOptions::CWeightedPointsMapOptions() :
+	insertionOpts()
 {
 }
 
@@ -1662,6 +1502,27 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 		this->push_back(init);
 	} // end for i
 
+	// Weighted points map:
+	n = ini.read_int(sectionName,"weightedPointsMap_count",0);
+	for (unsigned int i=0;i<n;i++)
+	{
+		TMetricMapInitializer	init;
+
+		init.metricMapClassType					= CLASS_ID( CWeightedPointsMap );
+
+		// [<sectionName>+"_weightedPointsMap_##_creationOpts"]
+		init.m_disableSaveAs3DObject = ini.read_bool(format("%s_weightedPointsMap_%02u_creationOpts",sectionName.c_str(),i),"disableSaveAs3DObject",false);
+
+		// [<sectionName>+"_weightedPointsMap_##_insertOpts"]
+		init.weightedPointsMapOptions_options.insertionOpts.loadFromConfigFile(ini, format("%s_weightedPointsMap_%02u_insertOpts",sectionName.c_str(),i) );
+
+		// [<sectionName>+"_weightedPointsMap_##_likelihoodOpts"]
+		init.weightedPointsMapOptions_options.likelihoodOpts.loadFromConfigFile(ini,format("%s_weightedPointsMap_%02u_likelihoodOpts",sectionName.c_str(),i));
+
+		// Add the map and its params to the list of "to-create":
+		this->push_back(init);
+	} // end for i
+
 
 /*
 		  *  ; Selection of map for likelihood: (occGrid=0, points=1,landmarks=2,gasGrid=3)
@@ -1687,6 +1548,7 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_heightMaps,bool,	options.enableInsertion_heightMaps,		ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_reflectivityMaps,bool,	options.enableInsertion_reflectivityMaps,		ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_colourPointsMaps,bool,	options.enableInsertion_colourPointsMaps,		ini,sectionName);
+	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_weightedPointsMaps,bool,	options.enableInsertion_weightedPointsMaps,		ini,sectionName);
 
 	MRPT_END
 }
@@ -1713,6 +1575,7 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_wifiGridMaps		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_reflectivityMaps		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_colourPointsMaps		, bool)
+	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_weightedPointsMaps	, bool)
 
 	// Show each map:
 	out.printf("Showing next the %u internal maps:\n\n", (int)size());
@@ -1825,6 +1688,14 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 			it->colouredPointsMapOptions_options.insertionOpts.dumpToTextStream(out);
 			it->colouredPointsMapOptions_options.likelihoodOpts.dumpToTextStream(out);
 			it->colouredPointsMapOptions_options.colourOpts.dumpToTextStream(out);
+		}
+		else
+			if (it->metricMapClassType==CLASS_ID(CWeightedPointsMap))
+		{
+			out.printf("m_disableSaveAs3DObject                 = %s\n",it->m_disableSaveAs3DObject ? "true":"false");
+
+			it->weightedPointsMapOptions_options.insertionOpts.dumpToTextStream(out);
+			it->weightedPointsMapOptions_options.likelihoodOpts.dumpToTextStream(out);
 		}
 		else
 		{

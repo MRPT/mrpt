@@ -57,7 +57,7 @@ namespace mrpt
 			struct ObjectClear {
 				template<typename T>
 				inline void operator()(T &ptr) {
-					ptr->clear();
+					if (ptr) ptr->clear();
 				}
 			};
 

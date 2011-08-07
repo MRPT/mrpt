@@ -35,6 +35,7 @@
 #include <mrpt/slam/CReflectivityGridMap2D.h>
 #include <mrpt/slam/CSimplePointsMap.h>
 #include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/slam/CWeightedPointsMap.h>
 #include <mrpt/slam/CLandmarksMap.h>
 #include <mrpt/slam/CBeaconMap.h>
 #include <mrpt/slam/CMetricMap.h>
@@ -66,7 +67,8 @@ namespace slam
 	 *		- mrpt::slam::CBeaconMap: For range-only SLAM.
 	 *		- mrpt::slam::CHeightGridMap2D: For maps of height for each (x,y) location.
 	 *		- mrpt::slam::CReflectivityGridMap2D: For maps of "reflectivity" for each (x,y) location.
-	 *		- mrpt::slam::CColouredPointsMap: For points map with color.
+	 *		- mrpt::slam::CColouredPointsMap: For point map with color.
+	 *		- mrpt::slam::CWeightedPointsMap: For point map with weights (capable of "fusing").
 	 *
 	 *  See CMultiMetricMap::setListOfMaps() for the method for initializing this class, and also
 	 *   see TSetOfMetricMapInitializers::loadFromConfigFile for a template of ".ini"-like configuration
@@ -116,7 +118,8 @@ namespace slam
 							enableInsertion_beaconMap(true),
 							enableInsertion_heightMaps(true),
 							enableInsertion_reflectivityMaps(true),
-							enableInsertion_colourPointsMaps(true)
+							enableInsertion_colourPointsMaps(true),
+							enableInsertion_weightedPointsMaps(true)
 			{
 			}
 
@@ -145,7 +148,8 @@ namespace slam
 				mapBeacon,
 				mapHeight,
 				mapColourPoints,
-				mapReflectivity
+				mapReflectivity,
+				mapWeightedPoints
 			} likelihoodMapSelection;
 
 			bool	enableInsertion_pointsMap;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
@@ -157,6 +161,7 @@ namespace slam
 			bool	enableInsertion_heightMaps;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 			bool	enableInsertion_reflectivityMaps;	//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 			bool	enableInsertion_colourPointsMaps;	//!< Default = true (set to false to avoid "insertObservation" to update a given map)
+			bool	enableInsertion_weightedPointsMaps;	//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 
 		} options;
 
@@ -167,14 +172,15 @@ namespace slam
 		//       Not used maps are "NULL" or empty smart pointers.
 
 		std::deque<CSimplePointsMapPtr>              m_pointsMaps;
-		CLandmarksMapPtr                             m_landmarksMap;
-		CBeaconMapPtr                                m_beaconMap;
 		std::deque<COccupancyGridMap2DPtr>           m_gridMaps;
 		std::deque<CGasConcentrationGridMap2DPtr>    m_gasGridMaps;
 		std::deque<CWirelessPowerGridMap2DPtr>       m_wifiGridMaps;
 		std::deque<CHeightGridMap2DPtr>              m_heightMaps;
 		std::deque<CReflectivityGridMap2DPtr>        m_reflectivityMaps;
 		CColouredPointsMapPtr                        m_colourPointsMap;
+		CWeightedPointsMapPtr                        m_weightedPointsMap;
+		CLandmarksMapPtr                             m_landmarksMap;
+		CBeaconMapPtr                                m_beaconMap;
 
 		/** @} */
 
@@ -213,7 +219,7 @@ namespace slam
 		 */
 		double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
 
-		/** Returns the ratio of points in a map which are new to the points map while falling into yet static cells of gridmap.
+		/** Returns the ratio of points in a map which are new to the point map while falling into yet static cells of gridmap.
 		  * \param points The set of points to check.
 		  * \param takenFrom The pose for the reference system of points, in global coordinates of this hybrid map.
 		  */
@@ -221,7 +227,7 @@ namespace slam
 				CPointsMap		*points,
 				CPose2D			&takenFrom );
 
-		/** See the definition in the base class: In this class calls to this method are passed to the inner points map.
+		/** See the definition in the base class: In this class calls to this method are passed to the inner point map.
 		 *
 		 * \sa computeMatching3DWith
 		 */
@@ -281,7 +287,7 @@ namespace slam
 		 */
 		inline bool canComputeObservationLikelihood( const CObservationPtr &obs ) { return canComputeObservationLikelihood(obs.pointer()); }
 
-		/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
+		/** If the map is a simple point map or it's a multi-metric map that contains EXACTLY one simple point map, return it.
 			* Otherwise, return NULL
 			*/
 		virtual const CSimplePointsMap * getAsSimplePointsMap() const;
@@ -311,7 +317,7 @@ namespace slam
 		  */
 		bool				m_disableSaveAs3DObject;
 
-		/** Especific options for grid maps (mrpt::slam::COccupancyGridMap2D)
+		/** Specific options for grid maps (mrpt::slam::COccupancyGridMap2D)
 		  */
 		struct SLAM_IMPEXP TOccGridMap2DOptions
 		{
@@ -323,7 +329,7 @@ namespace slam
 
 		} occupancyGridMap2D_options;
 
-		/** Especific options for points maps (mrpt::slam::CPointsMap)
+		/** Specific options for point maps (mrpt::slam::CPointsMap)
 		  */
 		struct SLAM_IMPEXP CPointsMapOptions
 		{
@@ -332,7 +338,7 @@ namespace slam
 			CPointsMap::TLikelihoodOptions  likelihoodOpts; //!< 	//!< Customizable initial likelihood options
 		} pointsMapOptions_options;
 
-		/** Especific options for gas grid maps (mrpt::slam::CGasConcentrationGridMap2D)
+		/** Specific options for gas grid maps (mrpt::slam::CGasConcentrationGridMap2D)
 		  */
 		struct SLAM_IMPEXP CGasConcentrationGridMap2DOptions
 		{
@@ -344,7 +350,7 @@ namespace slam
 
 		} gasGridMap_options;
 
-		/** Especific options for wifi grid maps (mrpt::slam::CWirelessPowerGridMap2D)
+		/** Specific options for wifi grid maps (mrpt::slam::CWirelessPowerGridMap2D)
 		  */
 		struct SLAM_IMPEXP CWirelessPowerGridMap2DOptions
 		{
@@ -356,7 +362,7 @@ namespace slam
 
 		} wifiGridMap_options;
 
-		/** Especific options for landmarks maps (mrpt::slam::CLandmarksMap)
+		/** Specific options for landmarks maps (mrpt::slam::CLandmarksMap)
 		  */
 		struct SLAM_IMPEXP CLandmarksMapOptions
 		{
@@ -369,7 +375,7 @@ namespace slam
 		} landmarksMap_options;
 
 
-		/** Especific options for landmarks maps (mrpt::slam::CBeaconMap)
+		/** Specific options for landmarks maps (mrpt::slam::CBeaconMap)
 		  */
 		struct SLAM_IMPEXP CBeaconMapOptions
 		{
@@ -380,7 +386,7 @@ namespace slam
 
 		} beaconMap_options;
 
-		/** Especific options for height grid maps (mrpt::slam::CHeightGridMap2D)
+		/** Specific options for height grid maps (mrpt::slam::CHeightGridMap2D)
 		  */
 		struct SLAM_IMPEXP CHeightGridMap2DOptions
 		{
@@ -391,7 +397,7 @@ namespace slam
 			CHeightGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
 		} heightMap_options;
 
-		/** Especific options for height grid maps (mrpt::slam::CReflectivityGridMap2D)
+		/** Specific options for height grid maps (mrpt::slam::CReflectivityGridMap2D)
 		  */
 		struct SLAM_IMPEXP CReflectivityGridMap2DOptions
 		{
@@ -401,7 +407,7 @@ namespace slam
 			CReflectivityGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
 		} reflectivityMap_options;
 
-		/** Especific options for coloured points maps (mrpt::slam::CPointsMap)
+		/** Specific options for coloured point maps (mrpt::slam::CPointsMap)
 		  */
 		struct SLAM_IMPEXP CColouredPointsMapOptions
 		{
@@ -410,6 +416,15 @@ namespace slam
 			CPointsMap::TLikelihoodOptions  likelihoodOpts; //!< 	//!< Customizable initial likelihood options
 			CColouredPointsMap::TColourOptions colourOpts;	//!< Customizable initial options for loading the class' own defaults. */
 		} colouredPointsMapOptions_options;
+
+		/** Specific options for coloured point maps (mrpt::slam::CPointsMap)
+		  */
+		struct SLAM_IMPEXP CWeightedPointsMapOptions
+		{
+			CWeightedPointsMapOptions();	//!< Default values loader
+			CPointsMap::TInsertionOptions	insertionOpts;	//!< Customizable initial options for loading the class' own defaults.
+			CPointsMap::TLikelihoodOptions  likelihoodOpts; //!< 	//!< Customizable initial likelihood options
+		} weightedPointsMapOptions_options;
 	};
 
 	/** A set of TMetricMapInitializer structures, passed to the constructor CMultiMetricMap::CMultiMetricMap
@@ -462,12 +477,13 @@ namespace slam
 		  *  heightMap_count=<Number of mrpt::slam::CHeightGridMap2D maps>
 		  *  reflectivityMap_count=<Number of mrpt::slam::CReflectivityGridMap2D maps>
 		  *  colourPointsMap_count=<0 or 1, for creating a mrpt::slam::CColouredPointsMap map>
+		  *  weightedPointsMap_count=<0 or 1, for creating a mrpt::slam::CWeightedPointsMap map>
 		  *
 		  *  // Selection of map for likelihood. Either a numeric value or the textual enum
 		  *  //   enum value of slam::CMultiMetricMap::TOptions::TMapSelectionForLikelihood (e.g: either "-1" or "fuseAll", ect...)
 		  *  likelihoodMapSelection = -1
 		  *
-		  *  // Enables (1 or "true") / Disables (0 or "false") insertion into specific maps:
+		  *  // Enables (1 or "true") / Disables (0 or "false") insertion into specific maps (Defaults are all "true"):
 		  *  enableInsertion_pointsMap=<0/1>
 		  *  enableInsertion_landmarksMap=<0/1>
 		  *  enableInsertion_gridMaps=<0/1>
@@ -477,6 +493,7 @@ namespace slam
 		  *  enableInsertion_heightMap=<0/1>
 		  *  enableInsertion_reflectivityMap=<0/1>
 		  *  enableInsertion_colourPointsMap=<0/1>
+		  *  enableInsertion_weightedPointsMap=<0/1>
 		  *
 		  * // ====================================================
 		  * //  Creation Options for OccupancyGridMap ##:
@@ -610,11 +627,24 @@ namespace slam
 		  * [<sectionName>+"_colourPointsMap_##_likelihoodOpts"]
 		  *  <See CPointsMap::TLikelihoodOptions>
 		  *
+		  *
+		  * // ====================================================
+		  * // Insertion Options for CWeightedPointsMap ##:
+		  * [<sectionName>+"_weightedPointsMap_##_insertOpts"]
+		  *  <See CPointsMap::TInsertionOptions>
+		  *
+		  *
+		  * // Likelihood Options for CWeightedPointsMap ##:
+		  * [<sectionName>+"_weightedPointsMap_##_likelihoodOpts"]
+		  *  <See CPointsMap::TLikelihoodOptions>
+		  *
 		  *  \endcode
 		  *
 		  *  Where:
 		  *		- ##: Represents the index of the map (e.g. "00","01",...)
 		  *		- By default, the variables into each "TOptions" structure of the maps are defined in textual form by the same name of the corresponding C++ variable (e.g. "float resolution;" -> "resolution=0.10")
+		  *
+		  * \note Examples of map definitions can be found in the '.ini' files provided in the demo directories: "share/mrpt/config-files/"
 		  */
 		void  loadFromConfigFile(
 			const mrpt::utils::CConfigFileBase  &source,
@@ -647,6 +677,7 @@ namespace slam
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapHeight,    "mapHeight");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapColourPoints, "mapColourPoints");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapReflectivity, "mapReflectivity");
+				m_map.insert(slam::CMultiMetricMap::TOptions::mapWeightedPoints, "mapWeightedPoints");
 			}
 		};
 	} // End of namespace
