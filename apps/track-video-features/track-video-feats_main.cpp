@@ -94,8 +94,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 
 	tracker->extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
 	tracker->extra_params["add_new_feat_min_separation"]  = 32;
-	tracker->extra_params["minimum_KLT_response_to_add"]  = 20;
-	tracker->extra_params["add_new_feat_max_features"]    = 150;
+	tracker->extra_params["minimum_KLT_response_to_add"]  = 10;
+	tracker->extra_params["add_new_feat_max_features"]    = 350;
 	tracker->extra_params["add_new_feat_patch_size"]      = 11;
 
 	tracker->extra_params["update_patches_every"]		= 0;  // Don't update patches.
@@ -244,8 +244,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 			theImg.textOut(3,22,format("# feats: %u - Adaptive threshold: %i", (unsigned int)trackedFeats.size(), current_adapt_thres ),TColor(200,200,0) );
 
 			theImg.textOut(3,41,
-				format("# raw feats: %u - Removed: %u", 
-					(unsigned int)tracker->last_execution_extra_info.raw_FAST_feats_detected, 
+				format("# raw feats: %u - Removed: %u",
+					(unsigned int)tracker->last_execution_extra_info.raw_FAST_feats_detected,
 					(unsigned int)tracker->last_execution_extra_info.num_deleted_feats ),
 					TColor(200,200,0) );
 
