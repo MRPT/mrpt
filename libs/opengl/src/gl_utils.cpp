@@ -429,7 +429,11 @@ void gl_utils::glSetFont( const std::string & fontname ){
 }
 
 const std::string & gl_utils::glGetFont(){
+#if MRPT_HAS_OPENGL_GLUT
     return Internal::data.currentFontName;
+#else
+    THROW_EXCEPTION("MRPT built without OpenGL")
+#endif
 }
 
 std::pair<double,double> gl_utils::glDrawText(const std::string& text, const double textScale, enum TOpenGLFontStyle style, double spacing, double kerning){
