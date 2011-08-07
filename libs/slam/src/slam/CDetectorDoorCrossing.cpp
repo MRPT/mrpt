@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled header 
+#include <mrpt/slam.h>  // Precompiled header
 
 
 
@@ -74,7 +74,7 @@ void  CDetectorDoorCrossing::process(
 
 	out_estimation.cumulativeTurning = 0;
 
-	MRPT_START;
+	MRPT_START
 
 	// 1) Add new pair to the list:
 	// -----------------------------------------
@@ -161,7 +161,7 @@ void  CDetectorDoorCrossing::process(
 	lastEntropy = entropy;
 	lastEntropyValid = true;
 
-	MRPT_END;
+	MRPT_END
 
 }
 

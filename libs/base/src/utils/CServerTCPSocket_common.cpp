@@ -65,7 +65,7 @@ void CServerTCPSocket::setupSocket(
 	const std::string &IPaddress,
 	int               maxConnectionsWaiting )
 {
-	MRPT_START;
+	MRPT_START
 
 	// Create the socket:
 	// ----------------------------
@@ -92,7 +92,7 @@ void CServerTCPSocket::setupSocket(
 	if (m_verbose)
 		printf_debug("[CServerTCPSocket::CServerTCPSocket] Listening at %s:%i\n",IPaddress.c_str(), listenPort );
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -110,7 +110,7 @@ bool CServerTCPSocket::isListening()
  ---------------------------------------------------------------*/
 CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 {
-	MRPT_START;
+	MRPT_START
 
 	if( m_serverSock == INVALID_SOCKET) return NULL;
 
@@ -191,7 +191,7 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 		return ret;
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 

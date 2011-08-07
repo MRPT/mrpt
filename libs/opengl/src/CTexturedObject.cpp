@@ -109,7 +109,7 @@ void  CTexturedObject::assignImage(
 void  CTexturedObject::assignImage(
 	const CImage& img )
 {
-	MRPT_START;
+	MRPT_START
 
 	CRenderizableDisplayList::notifyChange();
 
@@ -120,7 +120,7 @@ void  CTexturedObject::assignImage(
 
 	m_enableTransparency = false;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -130,7 +130,7 @@ void  CTexturedObject::assignImage_fast(
 	CImage& img,
 	CImage& imgAlpha )
 {
-	MRPT_START;
+	MRPT_START
 
 	CRenderizableDisplayList::notifyChange();
 
@@ -142,7 +142,7 @@ void  CTexturedObject::assignImage_fast(
 
 	m_enableTransparency = true;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -151,7 +151,7 @@ void  CTexturedObject::assignImage_fast(
 void  CTexturedObject::assignImage_fast(
 	CImage& img )
 {
-	MRPT_START;
+	MRPT_START
 
 	CRenderizableDisplayList::notifyChange();
 
@@ -162,7 +162,7 @@ void  CTexturedObject::assignImage_fast(
 
 	m_enableTransparency = false;
 
-	MRPT_END;
+	MRPT_END
 }
 
 

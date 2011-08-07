@@ -443,7 +443,7 @@ bool CPose3DInterpolator::saveInterpolatedToTextFile(const std::string &s, doubl
   ---------------------------------------------------------------*/
 bool CPose3DInterpolator::loadFromTextFile(const std::string &s)
 {
-	MRPT_START;
+	MRPT_START
 
 	clear();
 	CMatrixD	M;
@@ -467,7 +467,7 @@ bool CPose3DInterpolator::loadFromTextFile(const std::string &s)
 		insert(time_tToTimestamp( M(i,0) ), CPose3D( M(i,1),M(i,2),M(i,3),M(i,4),M(i,5),M(i,6) ) );
 
 	return true;
-	MRPT_END;
+	MRPT_END
 }
 
 

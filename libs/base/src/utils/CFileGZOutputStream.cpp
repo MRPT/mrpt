@@ -51,10 +51,10 @@ using namespace std;
 CFileGZOutputStream::CFileGZOutputStream( const string	&fileName ) :
 	m_f(NULL)
 {
-	MRPT_START;
+	MRPT_START
 	if (!open(fileName))
 		THROW_EXCEPTION_CUSTOM_MSG1( "Error trying to open file: '%s'",fileName.c_str() );
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -70,7 +70,7 @@ CFileGZOutputStream::CFileGZOutputStream( ) :
  ---------------------------------------------------------------*/
 bool CFileGZOutputStream::open( const string	&fileName, int compress_level )
 {
-	MRPT_START;
+	MRPT_START
 
 	if (m_f) gzclose(m_f);
 
@@ -78,7 +78,7 @@ bool CFileGZOutputStream::open( const string	&fileName, int compress_level )
 	m_f = gzopen(fileName.c_str(),format("wb%i",compress_level).c_str() );
 	return m_f != NULL;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

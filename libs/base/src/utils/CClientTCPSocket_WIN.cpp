@@ -53,7 +53,7 @@ using namespace std;
  ---------------------------------------------------------------*/
 CClientTCPSocket::CClientTCPSocket( )
 {
-	MRPT_START;
+	MRPT_START
 
 	// Init the WinSock Library:
 	// ----------------------------
@@ -67,7 +67,7 @@ CClientTCPSocket::CClientTCPSocket( )
 
 	m_hSock = INVALID_SOCKET;
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -76,14 +76,14 @@ CClientTCPSocket::CClientTCPSocket( )
  ---------------------------------------------------------------*/
 CClientTCPSocket::~CClientTCPSocket( )
 {
-	MRPT_START;
+	MRPT_START
 
 	// Close socket:
 	close();
 
 	WSACleanup();
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -91,7 +91,7 @@ CClientTCPSocket::~CClientTCPSocket( )
  ---------------------------------------------------------------*/
 void  CClientTCPSocket::close()
 {
-	MRPT_START;
+	MRPT_START
 
 	// Delete socket:
 	if (m_hSock != INVALID_SOCKET)
@@ -101,7 +101,7 @@ void  CClientTCPSocket::close()
 		m_hSock = INVALID_SOCKET;
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

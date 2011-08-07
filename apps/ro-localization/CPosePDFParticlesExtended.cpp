@@ -70,7 +70,7 @@ CPosePDFParticlesExtended::CPosePDFParticlesExtended( size_t M )
   ---------------------------------------------------------------*/
 void  CPosePDFParticlesExtended::copyFrom(const CPosePDF &o)
 {
-	MRPT_START;
+	MRPT_START
 
 	CParticleList::iterator	itSrc,itDest;
 
@@ -136,7 +136,7 @@ void  CPosePDFParticlesExtended::copyFrom(const CPosePDF &o)
 
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -412,7 +412,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 	const mrpt::slam::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
-	MRPT_START;
+	MRPT_START
 
 	size_t				i,M = m_particles.size();
 	CActionRobotMovement2DPtr robotMovement;
@@ -475,7 +475,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 			it->log_w += auxiliarComputeObservationLikelihood(PF_options, this,i,sf, it->d ) * PF_options.powFactor;
 	};
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -489,7 +489,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 	const mrpt::slam::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
-	MRPT_START;
+	MRPT_START
 
 	size_t						i,k,N,M = m_particles.size();
 	CActionRobotMovement2DPtr robotMovement;
@@ -683,13 +683,13 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 	newParticles.clear();
 	normalizeWeights();
 
-	MRPT_END;
+	MRPT_END
 }
 
 
 /*
 {
-	MRPT_START;
+	MRPT_START
 
 	size_t				i,M = m_particles.size();
 	CActionRobotMovement2DPtr robotMovement;
@@ -915,7 +915,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 		THROW_EXCEPTION("DYNAMIC SAMPLE SIZE NOT IMPLEMENTED IN THIS CLASS!");
 	} // end of ADAPTIVE SAMPLE SIZE
 
-	MRPT_END;
+	MRPT_END
 }
 */
 
@@ -955,7 +955,7 @@ void  CPosePDFParticlesExtended::resetUniform(
 			  float phi_min,float phi_max,
 			  int	particlesCount)
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_( state_min.size() == state_max.size() );
 
@@ -982,7 +982,7 @@ void  CPosePDFParticlesExtended::resetUniform(
 		m_particles[i].log_w=0;
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1275,7 +1275,7 @@ double  CPosePDFParticlesExtended::particlesEvaluator_AuxPFOptimal(
 	const void * action,
 	const void * observation )
 {
-	MRPT_START;
+	MRPT_START
 
 	// Compute the quantity:
 	//     w[i]·p(zt|z^{t-1},x^{[i],t-1},X)
@@ -1301,7 +1301,7 @@ double  CPosePDFParticlesExtended::particlesEvaluator_AuxPFOptimal(
 		static_cast<const CSensoryFrame*>(observation),
 		&x_predict ) );
 
-	MRPT_END;
+	MRPT_END
 }
 
 

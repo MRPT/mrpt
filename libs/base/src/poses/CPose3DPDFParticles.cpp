@@ -59,7 +59,7 @@ CPose3DPDFParticles::CPose3DPDFParticles( size_t M )
   ---------------------------------------------------------------*/
 void  CPose3DPDFParticles::copyFrom(const CPose3DPDF &o)
 {
-	MRPT_START;
+	MRPT_START
 
 	CPose3DPDFParticles::CParticleList::const_iterator	itSrc;
 	CPose3DPDFParticles::CParticleList::iterator		itDest;
@@ -125,7 +125,7 @@ void  CPose3DPDFParticles::copyFrom(const CPose3DPDF &o)
 */
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -143,7 +143,7 @@ CPose3DPDFParticles::~CPose3DPDFParticles( )
  ---------------------------------------------------------------*/
 void CPose3DPDFParticles::getMean(CPose3D &p) const
 {
-	MRPT_START;
+	MRPT_START
 
 	double			X=0,Y=0,Z=0,YAW=0,PITCH=0,ROLL=0;
 	double			ang,w,W=0;
@@ -229,7 +229,7 @@ void CPose3DPDFParticles::getMean(CPose3D &p) const
 
 	p.setFromValues(X,Y,Z,YAW,PITCH,ROLL);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -237,7 +237,7 @@ void CPose3DPDFParticles::getMean(CPose3D &p) const
   ---------------------------------------------------------------*/
 void CPose3DPDFParticles::getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mean) const
 {
-	MRPT_START;
+	MRPT_START
 
 	getMean(mean);	// First! the mean value:
 
@@ -343,7 +343,7 @@ void CPose3DPDFParticles::getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mea
 	cov(5,4) = cov(4,5) = std_pr;
 
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -449,7 +449,7 @@ void  CPose3DPDFParticles::append( CPose3DPDFParticles &o )
  ---------------------------------------------------------------*/
 void CPose3DPDFParticles::inverse(CPose3DPDF  &o) const
 {
-	MRPT_START;
+	MRPT_START
 	ASSERT_( o.GetRuntimeClass() == CLASS_ID(CPose3DPDFParticles) );
 	CPose3DPDFParticles * out = static_cast<CPose3DPDFParticles*> (&o);
 
@@ -462,7 +462,7 @@ void CPose3DPDFParticles::inverse(CPose3DPDF  &o) const
 	for (it=out->m_particles.begin();it!=out->m_particles.end();it++)
 		*it->d = zero - *it->d;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

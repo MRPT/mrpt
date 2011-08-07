@@ -62,7 +62,7 @@ void  mrpt::compress::zip::compress(
 	std::vector<unsigned char>	&outData)
 {
 	int ret=0;
-	MRPT_START;
+	MRPT_START
 
 	unsigned long	resSize;
 
@@ -91,7 +91,7 @@ void  mrpt::compress::zip::compress(
 	std::vector<unsigned char>			&outData)
 {
 	int ret=0;
-	MRPT_START;
+	MRPT_START
 
 	unsigned long	resSize;
 
@@ -121,7 +121,7 @@ void  mrpt::compress::zip::compress(
 	CStream						&out)
 {
 	int ret=0;
-	MRPT_START;
+	MRPT_START
 
 	unsigned long	resSize;
 	std::vector<unsigned char>	outData;
@@ -156,7 +156,7 @@ void  mrpt::compress::zip::compress(
 	CStream						&out)
 {
 	int ret=0;
-	MRPT_START;
+	MRPT_START
 
 	unsigned long	resSize;
 	std::vector<unsigned char>	outData;
@@ -192,7 +192,7 @@ void  mrpt::compress::zip::decompress(
 	size_t						outDataEstimatedSize)
 {
 	int ret=0;
-	MRPT_START;
+	MRPT_START
 
 	outData.resize( outDataEstimatedSize );
 	unsigned long	actualOutSize;
@@ -224,7 +224,7 @@ void  mrpt::compress::zip::decompress(
 	size_t						&outDataActualSize)
 {
 	int ret=0;
-	MRPT_START;
+	MRPT_START
 
 	unsigned long	actualOutSize = (unsigned long)outDataBufferSize;
 
@@ -255,7 +255,7 @@ void  mrpt::compress::zip::decompress(
 	size_t						&outDataActualSize)
 {
 	int ret=0;
-	MRPT_START;
+	MRPT_START
 
 	unsigned long	actualOutSize = (unsigned long)outDataBufferSize;
 	std::vector<unsigned char>		inData;

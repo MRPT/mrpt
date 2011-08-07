@@ -47,12 +47,12 @@ CFileOutputStream::CFileOutputStream(
 	const string &fileName,
 	bool  append ) : m_of()
 {
-	MRPT_START;
+	MRPT_START
 
 	if (!open(fileName,append))
 		THROW_EXCEPTION_CUSTOM_MSG1( "Error creating/opening for write file: '%s'",fileName.c_str() );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

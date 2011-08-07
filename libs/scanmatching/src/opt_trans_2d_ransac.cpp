@@ -84,7 +84,7 @@ void  scanmatching::robustRigidTransformation(
 
 //#define DEBUG_OUT
 
-	MRPT_START;
+	MRPT_START
 
 	// Asserts:
 	if( N < ransac_minSetSize )

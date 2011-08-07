@@ -135,9 +135,9 @@ CMHPropertiesValuesList::~CMHPropertiesValuesList()
  ---------------------------------------------------------------*/
 void  CMHPropertiesValuesList::clear()
 {
-	MRPT_START;
+	MRPT_START
 	m_properties.clear();
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -182,7 +182,7 @@ void  CMHPropertiesValuesList::set(
 	const CSerializablePtr &obj,
 	const int64_t &hypothesis_ID)
 {
-	MRPT_START;
+	MRPT_START
 
 	for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end();++it)
 	{
@@ -219,7 +219,7 @@ void  CMHPropertiesValuesList::setMemoryReference(
 	const CSerializablePtr &obj,
 	const int64_t & hypothesis_ID)
 {
-	MRPT_START;
+	MRPT_START
 
 	for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end();++it)
 	{

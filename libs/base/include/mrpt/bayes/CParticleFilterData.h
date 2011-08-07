@@ -168,22 +168,22 @@ namespace bayes
 		public: \
 		virtual double  getW(size_t i) const \
 		{ \
-			MRPT_START; \
+			MRPT_START \
 			if (i>=m_particles.size()) THROW_EXCEPTION_CUSTOM_MSG1("Index %i is out of range!",(int)i); \
 			return m_particles[i].log_w; \
-			MRPT_END; \
+			MRPT_END \
 		} \
 		virtual void setW(size_t i, double w) \
 		{ \
-			MRPT_START; \
+			MRPT_START \
 			if (i>=m_particles.size()) THROW_EXCEPTION_CUSTOM_MSG1("Index %i is out of range!",(int)i); \
 			m_particles[i].log_w = w; \
-			MRPT_END; \
+			MRPT_END \
 		} \
 		virtual size_t particlesCount() const { return m_particles.size(); } \
 		virtual double normalizeWeights( double *out_max_log_w = NULL ) \
 		{ \
-			MRPT_START; \
+			MRPT_START \
 			CParticleList::iterator it;\
 			\
 			if (!m_particles.size()) return 0; \
@@ -202,11 +202,11 @@ namespace bayes
 				*out_max_log_w = maxW; \
 			/* Return the max/min ratio: */ \
 			return exp(maxW-minW); \
-			MRPT_END; \
+			MRPT_END \
 		} \
 		virtual double ESS() \
 		{ \
-			MRPT_START; \
+			MRPT_START \
 			CParticleList::iterator it; \
 			double	cum = 0; \
 			\
@@ -221,12 +221,12 @@ namespace bayes
 			if (cum==0) \
 					return 0; \
 			else	return 1.0/(m_particles.size()*cum); \
-			MRPT_END; \
+			MRPT_END \
 		} \
 		/** Replaces the old particles by copies determined by the indexes in "indx", performing an efficient copy of the necesary particles only and allowing the number of particles to change.*/ \
 		virtual void  performSubstitution( const std::vector<size_t> &indx) \
 		{  \
-			MRPT_START; \
+			MRPT_START \
 			CParticleList    	            parts; \
 			CParticleList::iterator			itDest,itSrc; \
 			size_t									M_old = m_particles.size(); \
@@ -285,7 +285,7 @@ namespace bayes
 				itSrc->d = NULL; \
 			} \
 			parts.clear(); \
-			MRPT_END; \
+			MRPT_END \
 		} \
 
 	} // end namespace

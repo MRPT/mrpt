@@ -155,7 +155,7 @@ mrpt::system::TThreadHandle mrpt::system::detail::createThreadImpl(
     void       *param
     )
 {
-	MRPT_START;
+	MRPT_START
 
     TAuxThreadLaucher   *auxData=new TAuxThreadLaucher();
     auxData->ptrFunc = func;
@@ -192,7 +192,7 @@ mrpt::system::TThreadHandle mrpt::system::detail::createThreadImpl(
 	return threadHandle;
 #endif
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -336,7 +336,7 @@ void mrpt::system::getCurrentThreadTimes(
 	time_t			&exitTime,
 	double			&cpuTime )
 {
-	MRPT_START;
+	MRPT_START
 
 #ifdef MRPT_OS_WINDOWS
 	FILETIME	timCreat,timExit, timKernel, timUser;
@@ -434,7 +434,7 @@ void mrpt::system::getCurrentThreadTimes(
 	cpuTime = 0;
 #endif
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

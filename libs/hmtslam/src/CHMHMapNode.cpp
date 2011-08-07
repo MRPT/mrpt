@@ -142,7 +142,7 @@ void  CHMHMapNode::readFromStream(CStream &in,int version)
   ---------------------------------------------------------------*/
 void  CHMHMapNode::onArcDestruction(CHMHMapArc	*arc)
 {
-	MRPT_START;
+	MRPT_START
 
 	// Important note: We cannot create a temporary smart pointer here, since 
 	//  it will lead to an infinity recursion!  (BUGFIX, JLBC SEP-2009)
@@ -156,7 +156,7 @@ void  CHMHMapNode::onArcDestruction(CHMHMapArc	*arc)
 			m_arcs.erase(it);
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -164,7 +164,7 @@ void  CHMHMapNode::onArcDestruction(CHMHMapArc	*arc)
   ---------------------------------------------------------------*/
 void  CHMHMapNode::onArcAddition(CHMHMapArcPtr &arc)
 {
-	MRPT_START;
+	MRPT_START
 
 	// Check if arc is from/to this node:
 	if (arc->m_nodeFrom==m_ID || arc->m_nodeTo==m_ID)
@@ -175,7 +175,7 @@ void  CHMHMapNode::onArcAddition(CHMHMapArcPtr &arc)
 			m_arcs.push_back(arc);	// Add to the list:
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 /*---------------------------------------------------------------
 					onArcAddition

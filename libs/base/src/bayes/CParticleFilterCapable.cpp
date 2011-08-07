@@ -56,7 +56,7 @@ const unsigned CParticleFilterCapable::PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS = 
  ---------------------------------------------------------------*/
 void  CParticleFilterCapable::performResampling( const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
-	MRPT_START;
+	MRPT_START
 
 	// Make a vector with the particles' log. weights:
 	size_t				i,M=particlesCount();
@@ -81,7 +81,7 @@ void  CParticleFilterCapable::performResampling( const bayes::CParticleFilter::T
 	// Finally, equal weights:
 	for (i=0;i<M;i++) setW(i, 0 /* Logarithmic weight */ );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -92,7 +92,7 @@ void CParticleFilterCapable::computeResampling(
 	const vector_double	&in_logWeights,
 	std::vector<size_t>			&out_indexes )
 {
-	MRPT_START;
+	MRPT_START
 
 	// Compute the normalized linear weights:
 	//  The array "linW" will be the input to the actual
@@ -285,7 +285,7 @@ void CParticleFilterCapable::computeResampling(
 			THROW_EXCEPTION( format("ERROR: Unknown resampling method selected: %i",method) );
 	};
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -373,7 +373,7 @@ void  CParticleFilterCapable::prepareFastDrawSample(
 	const void	* action,
 	const void	* observation ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	if (PF_options.adaptiveSampleSize)
 	{
@@ -386,7 +386,7 @@ void  CParticleFilterCapable::prepareFastDrawSample(
 
 		size_t	i,j=666666,M = particlesCount();
 
-		MRPT_START;
+		MRPT_START
 
 		// Prepare buffers:
 		m_fastDrawAuxiliary.CDF.resize( 1+PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS, 0);
@@ -437,7 +437,7 @@ void  CParticleFilterCapable::prepareFastDrawSample(
 			std::cout << "m_fastDrawAuxiliary.CDF:" << m_fastDrawAuxiliary.CDF << std::endl; \
 			);
 #else
-		MRPT_END;
+		MRPT_END
 #endif
 
 	}
@@ -467,7 +467,7 @@ void  CParticleFilterCapable::prepareFastDrawSample(
 		m_fastDrawAuxiliary.alreadyDrawnNextOne = 0;
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -475,7 +475,7 @@ void  CParticleFilterCapable::prepareFastDrawSample(
  ---------------------------------------------------------------*/
 size_t  CParticleFilterCapable::fastDrawSample( const bayes::CParticleFilter::TParticleFilterOptions &PF_options  ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	if (PF_options.adaptiveSampleSize)
 	{
@@ -490,7 +490,7 @@ size_t  CParticleFilterCapable::fastDrawSample( const bayes::CParticleFilter::TP
 		double			draw = randomGenerator.drawUniform(0,0.999999);
 		double			CDF_next=-1, CDF=-1;
 
-		MRPT_START;
+		MRPT_START
 
 		// Use the look-up table to see the starting index we must start looking from:
 		j = (size_t)floor( draw * ((double)PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS-0.05) );
@@ -522,7 +522,7 @@ size_t  CParticleFilterCapable::fastDrawSample( const bayes::CParticleFilter::TP
 		return m_fastDrawAuxiliary.alreadyDrawnIndexes[m_fastDrawAuxiliary.alreadyDrawnNextOne++];
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

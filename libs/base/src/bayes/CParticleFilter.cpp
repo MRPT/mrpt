@@ -180,7 +180,7 @@ void  CParticleFilter::TParticleFilterOptions::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase  &iniFile,
 	const std::string &section)
 {
-	MRPT_START;
+	MRPT_START
 
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(adaptiveSampleSize,bool,	iniFile,section.c_str());
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(BETA,double,				iniFile,section.c_str());
@@ -207,5 +207,5 @@ void  CParticleFilter::TParticleFilterOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(pfAuxFilterOptimal_MLE,bool,	iniFile,section.c_str());
 
 
-	MRPT_END;
+	MRPT_END
 }

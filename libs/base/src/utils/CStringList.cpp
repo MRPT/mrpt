@@ -55,9 +55,9 @@ CStringList::CStringList()
   ---------------------------------------------------------------*/
 CStringList::CStringList(const string& text)
 {
-	MRPT_START;
+	MRPT_START
 	setText( text );
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -74,12 +74,12 @@ void  CStringList::add( const string &str )
   ---------------------------------------------------------------*/
 void  CStringList::insert( size_t index, const string &str )
 {
-	MRPT_START;
+	MRPT_START
 	if (index>=m_strings.size()) THROW_EXCEPTION("index out of bounds!");
 
 	m_strings.insert( m_strings.begin()+index, str);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -87,12 +87,12 @@ void  CStringList::insert( size_t index, const string &str )
   ---------------------------------------------------------------*/
 void  CStringList::set( size_t index, const string &str )
 {
-	MRPT_START;
+	MRPT_START
 	if (index>=m_strings.size()) THROW_EXCEPTION("index out of bounds!");
 
 	m_strings[index]= str;
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -110,12 +110,12 @@ void  CStringList::clear()
   ---------------------------------------------------------------*/
 void  CStringList::remove(size_t index)
 {
-	MRPT_START;
+	MRPT_START
 	if (index>=m_strings.size()) THROW_EXCEPTION("index out of bounds!");
 
 	m_strings.erase( m_strings.begin()+index );
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -127,7 +127,7 @@ bool  CStringList::find(
 	size_t					foundIndex,
 	bool					caseSensitive) const
 {
-	MRPT_START;
+	MRPT_START
 
 	foundIndex = 0;
 	if (caseSensitive)
@@ -145,7 +145,7 @@ bool  CStringList::find(
 	}
 
 	return false;
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -153,7 +153,7 @@ bool  CStringList::find(
   ---------------------------------------------------------------*/
 void  CStringList::getText(string &outText) const
 {
-	MRPT_START;
+	MRPT_START
 	deque<string>::const_iterator	it;
 	size_t								curPos = 0,totalLen = 0;
 
@@ -174,7 +174,7 @@ void  CStringList::getText(string &outText) const
 		outText[curPos++]='\n';
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -182,9 +182,9 @@ void  CStringList::getText(string &outText) const
   ---------------------------------------------------------------*/
 void  CStringList::setText(const string &inText)
 {
-	MRPT_START;
+	MRPT_START
 	mrpt::system::tokenize( inText,"\r\n",m_strings );
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -192,7 +192,7 @@ void  CStringList::setText(const string &inText)
   ---------------------------------------------------------------*/
 void  CStringList::loadFromFile(const string &fileName)
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_( mrpt::system::fileExists(fileName) );
 
@@ -211,7 +211,7 @@ void  CStringList::loadFromFile(const string &fileName)
 	// Parse:
 	setText(wholeStr);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -219,7 +219,7 @@ void  CStringList::loadFromFile(const string &fileName)
   ---------------------------------------------------------------*/
 void  CStringList::saveToFile(const string &fileName) const
 {
-	MRPT_START;
+	MRPT_START
 
 	CFileOutputStream	fil(fileName.c_str());
 	deque<string>::const_iterator	it;
@@ -230,7 +230,7 @@ void  CStringList::saveToFile(const string &fileName) const
 		fil.WriteBuffer( "\r\n",2 );
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -291,12 +291,12 @@ size_t  CStringList::size() const
  ---------------------------------------------------------------*/
 void  CStringList::get(size_t index, string &outText) const
 {
-	MRPT_START;
+	MRPT_START
 	if (index>=m_strings.size()) THROW_EXCEPTION("index out of bounds!");
 
 	outText = m_strings[index];
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -304,11 +304,11 @@ void  CStringList::get(size_t index, string &outText) const
  ---------------------------------------------------------------*/
 string  CStringList::operator ()(size_t index) const
 {
-	MRPT_START;
+	MRPT_START
 	if (index>=m_strings.size()) THROW_EXCEPTION("index out of bounds!");
 
 	return m_strings[index];
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -316,11 +316,11 @@ string  CStringList::operator ()(size_t index) const
  ---------------------------------------------------------------*/
 string&  CStringList::operator ()(size_t index)
 {
-	MRPT_START;
+	MRPT_START
 	if (index>=m_strings.size()) THROW_EXCEPTION("index out of bounds!");
 
 	return m_strings[index];
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -328,7 +328,7 @@ string&  CStringList::operator ()(size_t index)
  ---------------------------------------------------------------*/
 string  CStringList::get_string( const string &keyName )
 {
-	MRPT_START;
+	MRPT_START
 	string		strToLookFor(keyName + string("="));
 	size_t			idx = string::npos;
 
@@ -341,7 +341,7 @@ string  CStringList::get_string( const string &keyName )
 
 	THROW_EXCEPTION( format("Key '%s' not found!",keyName.c_str()) );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -349,10 +349,10 @@ string  CStringList::get_string( const string &keyName )
  ---------------------------------------------------------------*/
 float CStringList::get_float( const string &keyName )
 {
-	MRPT_START;
+	MRPT_START
 	string	s( get_string(keyName) );
 	return (float)atof(s.c_str());
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -360,10 +360,10 @@ float CStringList::get_float( const string &keyName )
  ---------------------------------------------------------------*/
 int CStringList::get_int( const string &keyName )
 {
-	MRPT_START;
+	MRPT_START
 	string	s( get_string(keyName) );
 	return atoi(s.c_str());
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -371,10 +371,10 @@ int CStringList::get_int( const string &keyName )
  ---------------------------------------------------------------*/
 double CStringList::get_double( const string &keyName )
 {
-	MRPT_START;
+	MRPT_START
 	string	s( get_string(keyName) );
 	return atof(s.c_str());
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -382,10 +382,10 @@ double CStringList::get_double( const string &keyName )
  ---------------------------------------------------------------*/
 bool CStringList::get_bool( const string &keyName )
 {
-	MRPT_START;
+	MRPT_START
 	string	s( get_string(keyName) );
 	return atoi(s.c_str())!=0;
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -393,7 +393,7 @@ bool CStringList::get_bool( const string &keyName )
  ---------------------------------------------------------------*/
 void  CStringList::set( const string &keyName, const string &value )
 {
-	MRPT_START;
+	MRPT_START
 	string		strToLookFor(keyName + string("="));
 	size_t			idx = string::npos;
 
@@ -411,25 +411,25 @@ void  CStringList::set( const string &keyName, const string &value )
 	// It is a new key: Append it!
 	m_strings.push_back( strToLookFor + value );
 
-	MRPT_END;
+	MRPT_END
 }
 /*---------------------------------------------------------------
 						set
  ---------------------------------------------------------------*/
 void  CStringList::set( const string &keyName, const int &value )
 {
-	MRPT_START;
+	MRPT_START
 	set(keyName,format("%i",value));
-	MRPT_END;
+	MRPT_END
 }
 /*---------------------------------------------------------------
 						set
  ---------------------------------------------------------------*/
 void  CStringList::set( const string &keyName, const float &value )
 {
-	MRPT_START;
+	MRPT_START
 	set(keyName,format("%.10e",value));
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -437,9 +437,9 @@ void  CStringList::set( const string &keyName, const float &value )
  ---------------------------------------------------------------*/
 void  CStringList::set( const string &keyName, const double &value )
 {
-	MRPT_START;
+	MRPT_START
 	set(keyName,format("%.16e",value));
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -447,8 +447,8 @@ void  CStringList::set( const string &keyName, const double &value )
  ---------------------------------------------------------------*/
 void  CStringList::set( const string &keyName, const bool &value )
 {
-	MRPT_START;
+	MRPT_START
 	set(keyName,string(value ? "1":"0"));
-	MRPT_END;
+	MRPT_END
 }
 

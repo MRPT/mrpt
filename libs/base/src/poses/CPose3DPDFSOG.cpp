@@ -274,7 +274,7 @@ void  CPose3DPDFSOG::readFromStream(CStream &in,int version)
   ---------------------------------------------------------------*/
 void  CPose3DPDFSOG::copyFrom(const CPose3DPDF &o)
 {
-	MRPT_START;
+	MRPT_START
 
 	if (this == &o) return;		// It may be used sometimes
 
@@ -291,7 +291,7 @@ void  CPose3DPDFSOG::copyFrom(const CPose3DPDF &o)
 		m_modes[0].val.cov = C;
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -326,7 +326,7 @@ void  CPose3DPDFSOG::changeCoordinatesReference(const CPose3D &newReferenceBase 
  ---------------------------------------------------------------*/
 void  CPose3DPDFSOG::bayesianFusion(const  CPose3DPDF &p1_,const  CPose3DPDF &p2_ )
 {
-	MRPT_START;
+	MRPT_START
 
 	// p1: CPose3DPDFSOG, p2: CPosePDFGaussian:
 
@@ -399,7 +399,7 @@ void  CPose3DPDFSOG::bayesianFusion(const  CPose3DPDF &p1_,const  CPose3DPDF &p2
 */
 	normalizeWeights();
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -407,7 +407,7 @@ void  CPose3DPDFSOG::bayesianFusion(const  CPose3DPDF &p1_,const  CPose3DPDF &p2
  ---------------------------------------------------------------*/
 void  CPose3DPDFSOG::assureSymmetry()
 {
-	MRPT_START;
+	MRPT_START
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
 	for (iterator it=m_modes.begin();it!=m_modes.end();++it)
@@ -417,7 +417,7 @@ void  CPose3DPDFSOG::assureSymmetry()
 				(it)->val.cov.get_unsafe(i,j) = (it)->val.cov.get_unsafe(j,i);
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -425,7 +425,7 @@ void  CPose3DPDFSOG::assureSymmetry()
  ---------------------------------------------------------------*/
 void  CPose3DPDFSOG::normalizeWeights()
 {
-	MRPT_START;
+	MRPT_START
 
 	if (!m_modes.size()) return;
 
@@ -436,7 +436,7 @@ void  CPose3DPDFSOG::normalizeWeights()
 	for (iterator it=m_modes.begin();it!=m_modes.end();++it)
 		(it)->log_w -= maxW;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -460,7 +460,7 @@ void CPose3DPDFSOG::drawManySamples( size_t N, std::vector<vector_double> & outS
  ---------------------------------------------------------------*/
 void  CPose3DPDFSOG::inverse(CPose3DPDF &o) const
 {
-	MRPT_START;
+	MRPT_START
 	ASSERT_( o.GetRuntimeClass() == CLASS_ID(CPose3DPDFSOG) );
 	CPose3DPDFSOG	*out = static_cast<CPose3DPDFSOG*>( &o );
 
@@ -477,7 +477,7 @@ void  CPose3DPDFSOG::inverse(CPose3DPDF &o) const
 	}
 
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -485,7 +485,7 @@ void  CPose3DPDFSOG::inverse(CPose3DPDF &o) const
  ---------------------------------------------------------------*/
 void  CPose3DPDFSOG::appendFrom( const CPose3DPDFSOG &o )
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_( &o != this );  // Don't be bad...
 	if (o.m_modes.empty()) return;
@@ -495,7 +495,7 @@ void  CPose3DPDFSOG::appendFrom( const CPose3DPDFSOG &o )
 		m_modes.push_back( *it );
 
 	normalizeWeights();
-	MRPT_END;
+	MRPT_END
 }
 
 

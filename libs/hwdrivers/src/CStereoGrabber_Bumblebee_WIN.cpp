@@ -135,7 +135,7 @@ CStereoGrabber_Bumblebee::CStereoGrabber_Bumblebee(
 		m_centerRow( 0 ),
 		m_options( options )
 {
-    MRPT_START;
+    MRPT_START
 #if MRPT_HAS_BUMBLEBEE
 
 	// Error handling
@@ -261,7 +261,7 @@ CStereoGrabber_Bumblebee::CStereoGrabber_Bumblebee(
 	MRPT_UNUSED_PARAM(options);
 	THROW_EXCEPTION("This class is not available. Recompile MRPT with option 'MRPT_HAS_BUMBLEBEE' on");
 #endif
-    MRPT_END;
+    MRPT_END
 }
 
 /*-------------------------------------------------------------
@@ -270,7 +270,7 @@ CStereoGrabber_Bumblebee::CStereoGrabber_Bumblebee(
 CStereoGrabber_Bumblebee::~CStereoGrabber_Bumblebee()
 {
 #if MRPT_HAS_BUMBLEBEE
-	MRPT_START;
+	MRPT_START
 
 	FlyCaptureError		fe;
 	TriclopsError		te;
@@ -289,7 +289,7 @@ CStereoGrabber_Bumblebee::~CStereoGrabber_Bumblebee()
 		
 	}
 
-	MRPT_END;
+	MRPT_END
 #endif
 }
 
@@ -737,7 +737,7 @@ void CStereoGrabber_Bumblebee::convertTriclopsImageTo8BitsIplImage( void *src, v
 //		mrpt::slam::CObservationVisualLandmarks &out_observation)
 //{
 //#if MRPT_HAS_BUMBLEBEE
-//	MRPT_START;
+//	MRPT_START
 //
 //	unsigned int		x,y;
 //	unsigned short		disp;
@@ -830,7 +830,7 @@ void CStereoGrabber_Bumblebee::convertTriclopsImageTo8BitsIplImage( void *src, v
 //	}	// end for y
 //
 //	return true;
-//	MRPT_END;
+//	MRPT_END
 //#else
 //	MRPT_UNUSED_PARAM(out_observation);
 //	MRPT_UNUSED_PARAM(ROI);

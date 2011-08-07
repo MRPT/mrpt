@@ -118,7 +118,7 @@ namespace mrpt
 			 template <typename T>
 			 typename T::SmartPtr getByClass( const size_t &ith = 0 ) const
 			 {
-				MRPT_START;
+				MRPT_START
 				size_t  foundCount = 0;
 				const mrpt::utils::TRuntimeClassId*	class_ID = T::classinfo;
 				for (CListOpenGLObjects::const_iterator it = m_objects.begin();it!=m_objects.end();++it)
@@ -137,7 +137,7 @@ namespace mrpt
 				}
 
 				return typename T::SmartPtr();	// Not found: return empty smart pointer
-				MRPT_END;
+				MRPT_END
 			 }
 
 

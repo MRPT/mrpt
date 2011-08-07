@@ -195,7 +195,7 @@ bool  mrpt::system::deleteFile( const string &fileName )
 ---------------------------------------------------------------*/
 void mrpt::system::deleteFiles(const string &s)
 {
-	MRPT_START;
+	MRPT_START
 	size_t	len = s.size()+20;
 	char	*aux=new char[len];
 #ifdef MRPT_OS_WINDOWS
@@ -213,7 +213,7 @@ void mrpt::system::deleteFiles(const string &s)
 		cerr << "[mrpt::system::deleteFiles] Warning: error invoking: " << aux << endl;
 	}
 	delete[] aux;
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

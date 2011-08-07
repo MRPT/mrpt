@@ -149,9 +149,9 @@ CPropertiesValuesList & CPropertiesValuesList::operator = (const CPropertiesValu
  ---------------------------------------------------------------*/
 void  CPropertiesValuesList::clear()
 {
-	MRPT_START;
+	MRPT_START
 	m_properties.clear();
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -174,7 +174,7 @@ CSerializablePtr  CPropertiesValuesList::get(const std::string &propertyName)con
  ---------------------------------------------------------------*/
 void  CPropertiesValuesList::set(const std::string &propertyName, const CSerializablePtr &obj)
 {
-	MRPT_START;
+	MRPT_START
 
 	for (std::vector<TPropertyValuePair>::iterator it=m_properties.begin();it!=m_properties.end();++it)
 	{

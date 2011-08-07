@@ -552,7 +552,7 @@ unsigned int  CMetricMapBuilderICP::getCurrentlyBuiltMapSize()
   ---------------------------------------------------------------*/
 void  CMetricMapBuilderICP::saveCurrentEstimationToImage(const std::string &file, bool formatEMF_BMP )
 {
-	MRPT_START;
+	MRPT_START
 
 	CImage        img;
 	const size_t  nPoses = m_estRobotPath.size();
@@ -601,7 +601,7 @@ void  CMetricMapBuilderICP::saveCurrentEstimationToImage(const std::string &file
 			TColor::black );
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 

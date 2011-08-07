@@ -125,7 +125,7 @@ namespace mrpt
                 const T& defaultValueNewCells,
                 float	additionalMarginMeters = 2.0f )
             {
-                MRPT_START;
+                MRPT_START
 
 				MRPT_CHECK_NORMAL_NUMBER(new_x_min)
 				MRPT_CHECK_NORMAL_NUMBER(new_x_max)
@@ -200,7 +200,7 @@ namespace mrpt
                 // Keep the new map only:
                 m_map.swap(new_map);
 
-                MRPT_END;
+                MRPT_END
 
             }
 

@@ -64,7 +64,7 @@ CPosePDFParticles::CPosePDFParticles( size_t M )
   ---------------------------------------------------------------*/
 void  CPosePDFParticles::copyFrom(const CPosePDF &o)
 {
-	MRPT_START;
+	MRPT_START
 
 	CParticleList::iterator			itDest;
 	CParticleList::const_iterator	itSrc;
@@ -126,7 +126,7 @@ void  CPosePDFParticles::copyFrom(const CPosePDF &o)
 
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -330,7 +330,7 @@ void  CPosePDFParticles::resetUniform(
 	const double & phi_max,
 	const int	&particlesCount)
 {
-	MRPT_START;
+	MRPT_START
 
 	if (particlesCount>0)
 	{
@@ -349,7 +349,7 @@ void  CPosePDFParticles::resetUniform(
 		m_particles[i].log_w=0;
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -447,7 +447,7 @@ void  CPosePDFParticles::append( CPosePDFParticles &o )
  ---------------------------------------------------------------*/
 void	 CPosePDFParticles::inverse(CPosePDF  &o) const
 {
-	MRPT_START;
+	MRPT_START
 	ASSERT_( o.GetRuntimeClass() == CLASS_ID(CPosePDFParticles) );
 	CPosePDFParticles	*out = static_cast<CPosePDFParticles*>( &o );
 
@@ -458,7 +458,7 @@ void	 CPosePDFParticles::inverse(CPosePDF  &o) const
 	for (unsigned int i=0;i<out->m_particles.size();i++)
 		(*out->m_particles[i].d) = nullPose - (*out->m_particles[i].d);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

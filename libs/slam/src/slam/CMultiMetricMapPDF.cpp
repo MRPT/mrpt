@@ -402,7 +402,7 @@ void  CMultiMetricMapPDF::rebuildAverageMap()
 	bool	SSE_SUPORTED = checkSuportSSE();
 	if (SSE_SUPORTED)
 	{
-        MRPT_START;
+        MRPT_START
 
 		// ******************************************************
 		//     Implementation with the SSE Instructions Set
@@ -498,7 +498,7 @@ void  CMultiMetricMapPDF::rebuildAverageMap()
 		//     Implementation WITHOUT the SSE Instructions Set
 		// ******************************************************
 
-		MRPT_START;
+		MRPT_START
 
 		// Reserve a float grid-map, add weight all maps
 		// -------------------------------------------------------------------------------------------
@@ -540,7 +540,7 @@ void  CMultiMetricMapPDF::rebuildAverageMap()
 		for (srcCell=floatMap.begin();srcCell!=floatMap.end();srcCell++,destCell++)
 			*destCell = static_cast<COccupancyGridMap2D::cellType>( *srcCell );
 
-		MRPT_END;
+		MRPT_END
 	}	// End of SSE not supported
 
 	// ---------------------------------------------------------

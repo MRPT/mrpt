@@ -251,7 +251,7 @@ void  CPosePDFGaussian::rotateCov(const double ang)
  ---------------------------------------------------------------*/
 void  CPosePDFGaussian::drawSingleSample( CPose2D &outPart ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	vector_double	v;
 	randomGenerator.drawGaussianMultivariate(v,cov);
@@ -275,7 +275,7 @@ void  CPosePDFGaussian::drawManySamples(
 	size_t						N,
 	std::vector<vector_double>	&outSamples ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	std::vector<vector_double>	rndSamples;
 
@@ -291,7 +291,7 @@ void  CPosePDFGaussian::drawManySamples(
 		wrapToPiInPlace( outSamples[i][2] );
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -300,7 +300,7 @@ void  CPosePDFGaussian::drawManySamples(
  ---------------------------------------------------------------*/
 void  CPosePDFGaussian::bayesianFusion(const  CPosePDF &p1_,const  CPosePDF &p2_,const double& minMahalanobisDistToDrop )
 {
-	MRPT_START;
+	MRPT_START
 
 	MRPT_UNUSED_PARAM(minMahalanobisDistToDrop); // Not used in this class!
 
@@ -335,7 +335,7 @@ void  CPosePDFGaussian::bayesianFusion(const  CPosePDF &p1_,const  CPosePDF &p2_
 	this->mean.phi( x(2,0) );
 	this->mean.normalizePhi();
 
-	MRPT_END;
+	MRPT_END
 
 }
 
@@ -414,7 +414,7 @@ void  CPosePDFGaussian::assureSymmetry()
  ---------------------------------------------------------------*/
 double  CPosePDFGaussian::mahalanobisDistanceTo( const CPosePDFGaussian& theOther )
 {
-	MRPT_START;
+	MRPT_START
 
 	CArrayDouble<3> MU=CArrayDouble<3>(mean);
 	MU-=CArrayDouble<3>(theOther.mean);
@@ -433,7 +433,7 @@ double  CPosePDFGaussian::mahalanobisDistanceTo( const CPosePDFGaussian& theOthe
 	// (~MU) * (!COV_) * MU
 	return std::sqrt( mrpt::math::multiply_HCHt_scalar(MU,COV_inv) );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

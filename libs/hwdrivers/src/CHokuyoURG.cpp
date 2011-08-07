@@ -219,7 +219,7 @@ void  CHokuyoURG::loadConfig_sensorSpecific(
 -------------------------------------------------------------*/
 bool  CHokuyoURG::turnOn()
 {
-	MRPT_START;
+	MRPT_START
 
 	// Bound?
 	if (!checkCOMisOpen()) return false;
@@ -317,7 +317,7 @@ bool  CHokuyoURG::turnOn()
 
 	return true;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------

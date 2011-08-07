@@ -1074,7 +1074,7 @@ namespace mrpt
 		template<class T>
 		CMatrixTemplateNumeric<T> generateAxisBaseFromDirection( T dx, T dy, T dz )
 		{
-			MRPT_START;
+			MRPT_START
 
 			if (dx==0 && dy==0 && dz==0)
 				THROW_EXCEPTION("Invalid input: Direction vector is (0,0,0)!");
@@ -1108,7 +1108,7 @@ namespace mrpt
 			P.col(2) = crossProduct3D(P.col(0),P.col(1));
 
 			return P;
-			MRPT_END;
+			MRPT_END
 		}
 
 

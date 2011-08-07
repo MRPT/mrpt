@@ -186,7 +186,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 	const mrpt::slam::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
-	MRPT_START;
+	MRPT_START
 
 	// ----------------------------------------------------------------------
 	//						PREDICTION STAGE
@@ -867,7 +867,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 	printf("Ok\n");
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

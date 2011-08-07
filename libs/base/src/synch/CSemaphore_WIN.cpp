@@ -52,7 +52,7 @@ CSemaphore::CSemaphore(
     :
     m_name(name)
 {
-	MRPT_START;
+	MRPT_START
 
 	HANDLE hSem = CreateSemaphoreA(
 		NULL,			// pointer to security attributes
@@ -66,7 +66,7 @@ CSemaphore::CSemaphore(
 
 	* m_data.getAs<HANDLE*>() = hSem;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -87,14 +87,14 @@ Blocks until the count of the semaphore to be non-zero.
 ---------------------------------------------------------------*/
 bool CSemaphore::waitForSignal( unsigned int timeout_ms )
 {
-	MRPT_START;
+	MRPT_START
 
 	DWORD tim = (timeout_ms==0) ? INFINITE : timeout_ms;
 	DWORD ret = WaitForSingleObject( * m_data.getAs<HANDLE*>(), tim );
 
 	return (ret==WAIT_OBJECT_0);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -102,7 +102,7 @@ bool CSemaphore::waitForSignal( unsigned int timeout_ms )
 ---------------------------------------------------------------*/
 void CSemaphore::release(unsigned int increaseCount )
 {
-	MRPT_START;
+	MRPT_START
 
 	if (!ReleaseSemaphore(
 		*m_data.getAs<HANDLE*>(),		// handle of the semaphore object
@@ -110,7 +110,7 @@ void CSemaphore::release(unsigned int increaseCount )
 		NULL ))				// address of previous count
 			THROW_EXCEPTION("Error increasing semaphore count!");
 
-	MRPT_END;
+	MRPT_END
 }
 
 

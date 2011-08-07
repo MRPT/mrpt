@@ -46,7 +46,7 @@ IMPLEMENTS_SERIALIZABLE( CAxis, CRenderizableDisplayList, mrpt::opengl )
 void   CAxis::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	MRPT_START;
+	MRPT_START
 
 	glEnable (GL_BLEND);
 	checkOpenGLError();
@@ -154,7 +154,7 @@ void   CAxis::render_dl() const
 
 	}
 
-	MRPT_END;
+	MRPT_END
 /*******************************************************/
 #endif
 }

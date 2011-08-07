@@ -50,7 +50,7 @@ IMPLEMENTS_SERIALIZABLE( CEllipsoid, CRenderizableDisplayList, mrpt::opengl )
 void   CEllipsoid::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	MRPT_START;
+	MRPT_START
 
     const size_t dim = m_cov.getColCount();
 

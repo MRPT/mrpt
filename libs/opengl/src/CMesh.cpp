@@ -157,7 +157,7 @@ void CMesh::render_dl() const	{
 void  CMesh::assignImage(
 	const CImage& img )
 {
-	MRPT_START;
+	MRPT_START
 
 	// Make a copy:
 	m_textureImage = img;
@@ -165,7 +165,7 @@ void  CMesh::assignImage(
 
 	CRenderizableDisplayList::notifyChange();
 
-	MRPT_END;
+	MRPT_END
 }
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of

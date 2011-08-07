@@ -97,7 +97,7 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 					CActionCollection	&action,
 					CSensoryFrame		&observations )
 {
-	MRPT_START;
+	MRPT_START
 
 	// Enter critical section (updating map)
 	enterCriticalSection();
@@ -332,7 +332,7 @@ void  CMetricMapBuilderRBPF::drawCurrentEstimationToImage( utils::CCanvas *img )
 	std::deque<TPose3D>		path;
 	unsigned int			imgHeight=0;
 
-	MRPT_START;
+	MRPT_START
 
 	// Estimated map:
 //		currentMetricMapEstimation = mapPDF.getCurrentMetricMapEstimation( );
@@ -421,7 +421,7 @@ void  CMetricMapBuilderRBPF::drawCurrentEstimationToImage( utils::CCanvas *img )
 		}
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -429,7 +429,7 @@ void  CMetricMapBuilderRBPF::drawCurrentEstimationToImage( utils::CCanvas *img )
   ---------------------------------------------------------------*/
 void  CMetricMapBuilderRBPF::saveCurrentEstimationToImage(const std::string &file, bool formatEMF_BMP )
 {
-	MRPT_START;
+	MRPT_START
 
 	if (formatEMF_BMP)
 	{
@@ -445,7 +445,7 @@ void  CMetricMapBuilderRBPF::saveCurrentEstimationToImage(const std::string &fil
 		img.saveToFile(file);
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -507,7 +507,7 @@ void  CMetricMapBuilderRBPF::TConstructionOptions::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase  &iniFile,
 	const std::string &section)
 {
-	MRPT_START;
+	MRPT_START
 
 	PF_options.loadFromConfigFile(iniFile,section);
 
@@ -520,5 +520,5 @@ void  CMetricMapBuilderRBPF::TConstructionOptions::loadFromConfigFile(
 	mapsInitializers.loadFromConfigFile(iniFile,section);
 	predictionOptions.loadFromConfigFile(iniFile,section);
 
-	MRPT_END;
+	MRPT_END
 }

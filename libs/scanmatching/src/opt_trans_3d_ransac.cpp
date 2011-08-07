@@ -60,7 +60,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
 	const bool 							forceScaleToUnity
 	)
 {
-	MRPT_START;
+	MRPT_START
 
 	unsigned int N = (unsigned int)in_correspondences.size();
 
@@ -214,7 +214,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
         return false;
     }
 
-	MRPT_END;
+	MRPT_END
 
 	return true;
 } // end leastSquareErrorRigidTransformation6DRANSAC

@@ -195,7 +195,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	newMetricMap.setListOfMaps( &mapInitializer );
 
 
-	MRPT_START;
+	MRPT_START
 
 	// Create the metric map:
 	// -----------------------------------------------------------------
@@ -410,7 +410,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
   void CIncrementalMapPartitioner::updatePartitions(
 	  vector<vector_uint> &partitions )
 {
-	MRPT_START;
+	MRPT_START
 
 	unsigned int			i,j;
 	unsigned int			n_nodes;
@@ -519,7 +519,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 
 	m_last_last_partition_are_new_ones = false;
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -537,7 +537,7 @@ unsigned int CIncrementalMapPartitioner::getNodesCount()
   ---------------------------------------------------------------*/
 void  CIncrementalMapPartitioner::removeSetOfNodes(vector_uint	indexesToRemove, bool changeCoordsRef)
 {
-	MRPT_START;
+	MRPT_START
 
 	size_t				nOld = m_A.getColCount();
 	size_t				nNew = nOld - indexesToRemove.size();
@@ -620,7 +620,7 @@ void  CIncrementalMapPartitioner::removeSetOfNodes(vector_uint	indexesToRemove, 
 
 	// All done!
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -648,7 +648,7 @@ void CIncrementalMapPartitioner::changeCoordinatesOrigin( const CPose3D  &newOri
   ---------------------------------------------------------------*/
 void CIncrementalMapPartitioner::changeCoordinatesOriginPoseIndex( const unsigned &newOriginPose )
 {
-	MRPT_START;
+	MRPT_START
 
 	CPose3DPDFPtr pdf;
 	CSensoryFramePtr sf;
@@ -658,7 +658,7 @@ void CIncrementalMapPartitioner::changeCoordinatesOriginPoseIndex( const unsigne
 	pdf->getMean(p);
 	changeCoordinatesOrigin(-p);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

@@ -82,7 +82,7 @@ void  vision::openCV_cross_correlation(
                     int					    x_search_size,
                     int					    y_search_size )
 {
-	MRPT_START;
+	MRPT_START
 
 #if MRPT_HAS_OPENCV
 	double		mini;
@@ -166,7 +166,7 @@ void  vision::openCV_cross_correlation(
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------
@@ -175,7 +175,7 @@ void  vision::openCV_cross_correlation(
 void  vision::flip(
                     CImage                  & img )
 {
-	MRPT_START;
+	MRPT_START
 
 #if MRPT_HAS_OPENCV
 	cvFlip((IplImage*)img.getAsIplImage());	// More params exists, they could be added in the future?
@@ -184,7 +184,7 @@ void  vision::flip(
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------
@@ -434,7 +434,7 @@ float vision::computeMainOrientation(
                     unsigned int            x,
                     unsigned int            y )
 {
-	MRPT_START;
+	MRPT_START
 	float orientation=0;
 	if( ( x-1 >= 0 ) && ( y-1 >= 0 ) && ( x+1 < image.getWidth() ) && ( y+1 < image.getHeight() ) )
 		orientation = (float) atan2( (double)*image(x,y+1) - (double)*image(x,y-1), (double)*image(x+1,y) - (double)*image(x-1,y) );
@@ -444,7 +444,7 @@ float vision::computeMainOrientation(
 	return orientation;
 
 
-	MRPT_END;
+	MRPT_END
 } // end vision::computeMainOrientation
 
 /*-------------------------------------------------------------
@@ -483,7 +483,7 @@ size_t vision::matchFeatures(
                     const TStereoSystemParams   & params )
 {
 	// Clear the output structure
-	MRPT_START;
+	MRPT_START
 	//matches.clear();
 
 	// Preliminary comprobations
@@ -832,7 +832,7 @@ size_t vision::matchFeatures(
     } // end-for-matches
 	return matches.size();
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------
@@ -1048,7 +1048,7 @@ void  vision::projectMatchedFeatures(
                     const TStereoSystemParams	& param,
                     CLandmarksMap			    & landmarks )
 {
-	MRPT_START;
+	MRPT_START
 
 	landmarks.clear();								// Assert that the output CLandmarksMap is clear
 
@@ -1335,7 +1335,7 @@ void  vision::projectMatchedFeatures(
 		} // end else
 	} // end for 'i'
 
-	MRPT_END;
+	MRPT_END
 } // end of projectMatchedFeatures
 
 /*-------------------------------------------------------------
@@ -1347,7 +1347,7 @@ void  vision::projectMatchedFeatures(
                     const vision::TStereoSystemParams	& param,
                     mrpt::slam::CLandmarksMap			& landmarks )
 {
-	MRPT_START;
+	MRPT_START
 	ASSERT_( leftList.size() == rightList.size() );
 
 	landmarks.clear();								// Assert that the output CLandmarksMap is clear
@@ -1642,7 +1642,7 @@ void  vision::projectMatchedFeatures(
 		} // end else
 	} // end for 'i'
 
-	MRPT_END;
+	MRPT_END
 }
 
 /* -------------------------------------------------------

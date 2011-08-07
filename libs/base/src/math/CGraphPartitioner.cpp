@@ -143,7 +143,7 @@ void  CGraphPartitioner::RecursiveSpectralPartition(
 	bool						recursive,
 	unsigned 					minSizeClusters )
 {
-	MRPT_START;
+	MRPT_START
 
 	size_t				nodeCount;
 	vector_uint			p1,p2;
@@ -254,7 +254,7 @@ void  CGraphPartitioner::RecursiveSpectralPartition(
 
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

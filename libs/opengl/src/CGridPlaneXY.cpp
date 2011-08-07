@@ -51,7 +51,7 @@ void   CGridPlaneXY::render_dl() const
 
 	glBegin(GL_LINES);
 
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(m_frequency>=0);
 

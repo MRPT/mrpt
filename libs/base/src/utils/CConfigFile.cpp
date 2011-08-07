@@ -44,7 +44,7 @@ using namespace std;
  ---------------------------------------------------------------*/
 CConfigFile::CConfigFile( const std::string &fileName )
 {
-    MRPT_START;
+    MRPT_START
 
 	m_file = fileName;
 	m_modified = false;
@@ -52,7 +52,7 @@ CConfigFile::CConfigFile( const std::string &fileName )
     static_cast<CSimpleIniA*>(m_ini.get())->LoadFile(fileName.c_str());
 
 
-    MRPT_END;
+    MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -60,13 +60,13 @@ CConfigFile::CConfigFile( const std::string &fileName )
  ---------------------------------------------------------------*/
 CConfigFile::CConfigFile()
 {
-    MRPT_START;
+    MRPT_START
 
 	m_file = "";
 	m_modified = false;
     m_ini = (void*) new CSimpleIniA();
 
-    MRPT_END;
+    MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -74,13 +74,13 @@ CConfigFile::CConfigFile()
  ---------------------------------------------------------------*/
 void CConfigFile::setFileName(const std::string &fil_path)
 {
-    MRPT_START;
+    MRPT_START
 
 	m_file = fil_path;
 	m_modified = false;
 
     static_cast<CSimpleIniA*>(m_ini.get())->LoadFile(fil_path.c_str());
-    MRPT_END;
+    MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -88,13 +88,13 @@ void CConfigFile::setFileName(const std::string &fil_path)
  ---------------------------------------------------------------*/
 void CConfigFile::writeNow()
 {
-    MRPT_START;
+    MRPT_START
 	if (m_modified && !m_file.empty())
 	{
 	    static_cast<CSimpleIniA*>(m_ini.get())->SaveFile( m_file.c_str() );
 	    m_modified = false;
 	}
-    MRPT_END;
+    MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -102,12 +102,12 @@ void CConfigFile::writeNow()
  ---------------------------------------------------------------*/
 CConfigFile::~CConfigFile()
 {
-    MRPT_START;
+    MRPT_START
 
     writeNow();
     delete static_cast<CSimpleIniA*>(m_ini.get());
 
-    MRPT_END;
+    MRPT_END
 }
 
 
@@ -116,14 +116,14 @@ CConfigFile::~CConfigFile()
  ---------------------------------------------------------------*/
 void  CConfigFile::writeString(const std::string &section,const std::string &name, const std::string &str)
 {
-    MRPT_START;
+    MRPT_START
 
 	m_modified = true;
 
     if (0 > static_cast<CSimpleIniA*>(m_ini.get())->SetValue( section.c_str(),name.c_str(),str.c_str(), NULL ))
         THROW_EXCEPTION("Error changing value in INI-style file!");
 
-    MRPT_END;
+    MRPT_END
 
 }
 
@@ -136,7 +136,7 @@ std::string  CConfigFile::readString(
     const std::string &defaultStr,
     bool failIfNotFound ) const
 {
-    MRPT_START;
+    MRPT_START
     const char *defVal = failIfNotFound ? NULL :defaultStr.c_str();
 
     const char *aux = static_cast<const CSimpleIniA*>(m_ini.get())->GetValue(
@@ -161,7 +161,7 @@ std::string  CConfigFile::readString(
 		ret = ret.substr(0,pos);
 	return ret;
 
-    MRPT_END;
+    MRPT_END
 }
 
 /*---------------------------------------------------------------

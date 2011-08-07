@@ -376,14 +376,14 @@ bool  CRawlog::loadFromRawLogFile( const std::string &fileName )
   ---------------------------------------------------------------*/
 void  CRawlog::remove( size_t index )
 {
-	MRPT_START;
+	MRPT_START
 
 	if (index >=m_seqOfActObs.size())
 		THROW_EXCEPTION("Index out of bounds")
 
 	m_seqOfActObs.erase( m_seqOfActObs.begin()+index );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -592,7 +592,7 @@ void CRawlog::findObservationsByClassInRange(
 	size_t							guess_start_position
 	) const
 {
-	MRPT_START;
+	MRPT_START
 
 	out_found.clear();
 
@@ -659,7 +659,7 @@ void CRawlog::findObservationsByClassInRange(
 		first++;
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 

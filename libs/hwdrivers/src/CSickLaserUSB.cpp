@@ -54,10 +54,10 @@ CSickLaserUSB::CSickLaserUSB() :
 	m_serialNumber ( "LASER001" ),
 	m_timeStartUI  ( 0 )
 {
-	MRPT_START;
+	MRPT_START
 	m_sensorLabel = "SICKLMS";
 	m_usbConnection = new CInterfaceFTDI();
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------
@@ -65,10 +65,10 @@ CSickLaserUSB::CSickLaserUSB() :
 -------------------------------------------------------------*/
 CSickLaserUSB::~CSickLaserUSB()
 {
-	MRPT_START;
+	MRPT_START
 	delete m_usbConnection;
 	m_usbConnection = NULL;
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------

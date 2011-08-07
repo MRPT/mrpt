@@ -69,7 +69,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation(
 	CPose2D								&out_transformation,
 	CMatrixDouble33						*out_estimateCovariance )
 {
-	MRPT_START;
+	MRPT_START
 
 	const size_t N = in_correspondences.size();
 
@@ -290,6 +290,6 @@ bool  scanmatching::leastSquareErrorRigidTransformation(
 
 	return true;
 
-	MRPT_END;
+	MRPT_END
 }
 

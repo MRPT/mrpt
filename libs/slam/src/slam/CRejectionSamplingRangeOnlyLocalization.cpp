@@ -59,7 +59,7 @@ CRejectionSamplingRangeOnlyLocalization::CRejectionSamplingRangeOnlyLocalization
 ---------------------------------------------------------------*/
 void CRejectionSamplingRangeOnlyLocalization::RS_drawFromProposal( CPose2D &outSample )
 {
-	MRPT_START;
+	MRPT_START
 
 	// Use the first beacon data to draw a pose:
 	if (m_dataPerBeacon.size()==0)
@@ -86,7 +86,7 @@ void CRejectionSamplingRangeOnlyLocalization::RS_drawFromProposal( CPose2D &outS
 	outSample.x( S.x() );
 	outSample.y( S.y() );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -94,7 +94,7 @@ void CRejectionSamplingRangeOnlyLocalization::RS_drawFromProposal( CPose2D &outS
 ---------------------------------------------------------------*/
 double CRejectionSamplingRangeOnlyLocalization::RS_observationLikelihood( const CPose2D &x)
 {
-	MRPT_START;
+	MRPT_START
 
 	double	lik				= 1.0;
 	double	m_sigmaRanges2	= square(m_sigmaRanges);
@@ -112,7 +112,7 @@ double CRejectionSamplingRangeOnlyLocalization::RS_observationLikelihood( const 
 
 	return lik;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -127,7 +127,7 @@ bool CRejectionSamplingRangeOnlyLocalization::setParams(
 	bool							autoCheckAngleRanges )
 
 {
-	MRPT_START;
+	MRPT_START
 
 	// Various vars:
 	m_z_robot		= robot_z;
@@ -268,5 +268,5 @@ bool CRejectionSamplingRangeOnlyLocalization::setParams(
 
 	// End!
 	return m_dataPerBeacon.size()!=0;
-	MRPT_END;
+	MRPT_END
 }

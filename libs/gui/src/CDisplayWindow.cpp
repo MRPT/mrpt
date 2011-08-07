@@ -374,7 +374,7 @@ bool CDisplayWindow::getLastMousePosition(int &x, int &y) const
 void  CDisplayWindow::showImage( const	CImage& img )
 {
 #if MRPT_HAS_WXWIDGETS
-	MRPT_START;
+	MRPT_START
 
     // Send message of new image:
 	wxImage *newImg = mrpt::gui::MRPTImage2wxImage( img );
@@ -388,7 +388,7 @@ void  CDisplayWindow::showImage( const	CImage& img )
     WxSubsystem::pushPendingWxRequest( REQ );
 
 
-	MRPT_END;
+	MRPT_END
 #endif
 }
 
@@ -398,7 +398,7 @@ void  CDisplayWindow::showImage( const	CImage& img )
 void  CDisplayWindow::showImageAndPoints( const CImage &img, const vector_float &x, const vector_float &y, const TColor &color, const bool &showNumbers )
 {
 #if MRPT_HAS_WXWIDGETS
-	MRPT_START;
+	MRPT_START
 	ASSERT_( x.size() == y.size() );
 
 	CImage imgColor(1,1,3);
@@ -415,7 +415,7 @@ void  CDisplayWindow::showImageAndPoints( const CImage &img, const vector_float 
 		}
 	} // end-for
 	showImage(imgColor);
-	MRPT_END;
+	MRPT_END
 #endif
 }
 
@@ -424,7 +424,7 @@ void  CDisplayWindow::showImageAndPoints( const CImage &img, const vector_float 
  ---------------------------------------------------------------*/
 void  CDisplayWindow::plot( const vector_float &x, const vector_float &y )
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_( x.size() == y.size() );
 
@@ -469,7 +469,7 @@ void  CDisplayWindow::plot( const vector_float &x, const vector_float &y )
 
 	showImage( imgColor );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -477,7 +477,7 @@ void  CDisplayWindow::plot( const vector_float &x, const vector_float &y )
  ---------------------------------------------------------------*/
 void  CDisplayWindow::plot( const vector_float &y )
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_( y.size() >= 0 );
 
@@ -523,7 +523,7 @@ void  CDisplayWindow::plot( const vector_float &y )
 
 	showImage( imgColor );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

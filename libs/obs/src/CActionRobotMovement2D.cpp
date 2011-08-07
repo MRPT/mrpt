@@ -614,7 +614,7 @@ void  CActionRobotMovement2D::fastDrawSingleSample( CPose2D &outSample )const
   ---------------------------------------------------------------*/
 void  CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(IS_CLASS(poseChange,CPosePDFGaussian));
 
@@ -636,7 +636,7 @@ void  CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 	D.Sqrt();
 	m_fastDrawGauss_Z = m_fastDrawGauss_Z * D;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

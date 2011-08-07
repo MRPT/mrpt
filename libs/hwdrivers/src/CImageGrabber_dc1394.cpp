@@ -60,7 +60,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 		m_dc1394camera		(NULL),
 		m_options			(options)
 {
-	MRPT_START;
+	MRPT_START
 
 #if MRPT_HAS_LIBDC1394_2
 	// Open lib:
@@ -276,7 +276,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 #else
 	THROW_EXCEPTION("[CImageGrabber_dc1394] ERROR: MRPT compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------
@@ -313,7 +313,7 @@ CImageGrabber_dc1394::~CImageGrabber_dc1394()
  -------------------------------------------------------------*/
 bool  CImageGrabber_dc1394::getObservation( mrpt::slam::CObservationImage &out_observation)
 {
-   MRPT_START;
+   MRPT_START
 
    if (!m_bInitialized) return false;
 
@@ -388,7 +388,7 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::slam::CObservationImage &out_o
 #else
    THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
-   MRPT_END;
+   MRPT_END
 }
 
 /*-------------------------------------------------------------
@@ -396,7 +396,7 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::slam::CObservationImage &out_o
  -------------------------------------------------------------*/
 bool  CImageGrabber_dc1394::getObservation( mrpt::slam::CObservationStereoImages &out_observation)
 {
-   MRPT_START;
+   MRPT_START
 
    if (!m_bInitialized) return false;
 
@@ -457,7 +457,7 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::slam::CObservationStereoImages
 #else
    THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
-   MRPT_END;
+   MRPT_END
 }
 
 
@@ -466,7 +466,7 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::slam::CObservationStereoImages
  -------------------------------------------------------------*/
 bool CImageGrabber_dc1394::changeCaptureOptions( const TCaptureOptions_dc1394 &options  )
 {
-   MRPT_START;
+   MRPT_START
 
    if (!m_bInitialized) return false;
 
@@ -514,7 +514,7 @@ bool CImageGrabber_dc1394::changeCaptureOptions( const TCaptureOptions_dc1394 &o
 #else
    THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
-   MRPT_END;
+   MRPT_END
 }
 
 /** Generates a list with the information on all the existing (Firewire) cameras in the system.

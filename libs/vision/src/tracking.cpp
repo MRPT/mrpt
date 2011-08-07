@@ -716,7 +716,7 @@ void  vision::filterBadCorrsByDistance( TMatchingPairList &feat_list, unsigned i
 {
 	ASSERT_( numberOfSigmas > 0 );
 	//	MRPT_UNUSED_PARAM( numberOfSigmas );
-	MRPT_START;
+	MRPT_START
 
 	TMatchingPairList::iterator	itPair;
 	CMatrix	dist;
@@ -755,5 +755,5 @@ void  vision::filterBadCorrsByDistance( TMatchingPairList &feat_list, unsigned i
 			itPair++;
 	}
 
-	MRPT_END;
+	MRPT_END
 } // end filterBadCorrsByDistance

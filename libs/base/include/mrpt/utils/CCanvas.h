@@ -286,7 +286,7 @@ namespace mrpt
 				int							nEllipsePoints = 20
 				)
 			{
-				MRPT_START;
+				MRPT_START
 				int				x1=0,y1=0,x2=0,y2=0;
 				double			ang;
 				MATRIX2X2		eigVal,eigVec;

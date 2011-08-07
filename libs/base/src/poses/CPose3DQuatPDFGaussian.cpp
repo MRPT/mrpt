@@ -329,7 +329,7 @@ void  CPose3DQuatPDFGaussian::drawManySamples(
 	size_t						N,
 	vector<vector_double>	&outSamples ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	randomGenerator.drawGaussianMultivariateMany(outSamples,N,cov);
 
@@ -337,7 +337,7 @@ void  CPose3DQuatPDFGaussian::drawManySamples(
 		for (unsigned int k=0;k<7;k++)
 			(*it)[k] += mean[k];
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -347,7 +347,7 @@ void  CPose3DQuatPDFGaussian::drawManySamples(
 void  CPose3DQuatPDFGaussian::bayesianFusion(const  CPose3DQuatPDF &p1_,const  CPose3DQuatPDF &p2_ )
 {
 	MRPT_UNUSED_PARAM(p1_); MRPT_UNUSED_PARAM(p2_);
-	MRPT_START;
+	MRPT_START
 
 	THROW_EXCEPTION("TO DO!!!");
 
@@ -380,7 +380,7 @@ void  CPose3DQuatPDFGaussian::bayesianFusion(const  CPose3DQuatPDF &p1_,const  C
 	this->mean.phi = x(2,0);
 	this->mean.normalizePhi();
 */
-	MRPT_END;
+	MRPT_END
 
 }
 

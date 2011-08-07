@@ -964,7 +964,7 @@ int mrpt_wxEntryReal(int& argc, char **argv)
  ---------------------------------------------------------------*/
 void WxSubsystem::wxMainThread()
 {
-	MRPT_START;
+	MRPT_START
 
     // Prepare wxWidgets:
     int argc=1;
@@ -1024,7 +1024,7 @@ void WxSubsystem::wxMainThread()
 //		delete[]argv;
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 WxSubsystem::TWxMainThreadData& WxSubsystem::GetWxMainThreadInstance()

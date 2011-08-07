@@ -388,7 +388,7 @@ void  CPose3DPDFGaussian::changeCoordinatesReference( const CPose3D &newReferenc
 void  CPose3DPDFGaussian::drawSingleSample( CPose3D &outPart ) const
 {
 	MRPT_UNUSED_PARAM(outPart);
-	MRPT_START;
+	MRPT_START
 
 	vector_double	v;
 	randomGenerator.drawGaussianMultivariate(v,cov);
@@ -413,7 +413,7 @@ void  CPose3DPDFGaussian::drawManySamples(
 	size_t						N,
 	vector<vector_double>	&outSamples ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	randomGenerator.drawGaussianMultivariateMany(outSamples,N,cov);
 
@@ -427,7 +427,7 @@ void  CPose3DPDFGaussian::drawManySamples(
 		(*it)[5] = math::wrapToPi( (*it)[5] + mean.roll() );
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -437,7 +437,7 @@ void  CPose3DPDFGaussian::drawManySamples(
 void  CPose3DPDFGaussian::bayesianFusion( const CPose3DPDF &p1_, const CPose3DPDF &p2_ )
 {
 	MRPT_UNUSED_PARAM(p1_); MRPT_UNUSED_PARAM(p2_);
-	MRPT_START;
+	MRPT_START
 
 	THROW_EXCEPTION("TO DO!!!");
 
@@ -470,7 +470,7 @@ void  CPose3DPDFGaussian::bayesianFusion( const CPose3DPDF &p1_, const CPose3DPD
 	this->mean.phi = x(2,0);
 	this->mean.normalizePhi();
 */
-	MRPT_END;
+	MRPT_END
 
 }
 

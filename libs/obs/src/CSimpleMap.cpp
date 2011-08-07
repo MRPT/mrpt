@@ -65,7 +65,7 @@ CSimpleMap::CSimpleMap( const CSimpleMap &o )  :
   ---------------------------------------------------------------*/
 CSimpleMap & CSimpleMap::operator = ( const CSimpleMap& o)
 {
-	MRPT_START;
+	MRPT_START
 
 	//TPosePDFSensFramePair	pair;
 
@@ -76,7 +76,7 @@ CSimpleMap & CSimpleMap::operator = ( const CSimpleMap& o)
 
 	return *this;
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -124,14 +124,14 @@ void  CSimpleMap::get(
   ---------------------------------------------------------------*/
 void  CSimpleMap::remove(size_t index)
 {
-	MRPT_START;
+	MRPT_START
 
 	if (index>=m_posesObsPairs.size())
 		THROW_EXCEPTION("Index out of bounds");
 
 	m_posesObsPairs.erase( m_posesObsPairs.begin() + index );
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -143,7 +143,7 @@ void  CSimpleMap::set(
 	const CPose3DPDFPtr &in_posePDF,
 	const CSensoryFramePtr & in_SF )
 {
-	MRPT_START;
+	MRPT_START
 
 	if (index>=m_posesObsPairs.size())
 		THROW_EXCEPTION("Index out of bounds");
@@ -151,7 +151,7 @@ void  CSimpleMap::set(
 	if (in_posePDF) m_posesObsPairs[index].first = in_posePDF;
 	if (in_SF) 		m_posesObsPairs[index].second = in_SF;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -162,7 +162,7 @@ void  CSimpleMap::set(
 	const CPosePDFPtr &in_posePDF,
 	const CSensoryFramePtr &in_SF )
 {
-	MRPT_START;
+	MRPT_START
 
 	if (index>=m_posesObsPairs.size())
 		THROW_EXCEPTION("Index out of bounds");
@@ -170,7 +170,7 @@ void  CSimpleMap::set(
 	if (in_posePDF) 	m_posesObsPairs[index].first = CPose3DPDFPtr( CPose3DPDF::createFrom2D( *in_posePDF ) );
 	if (in_SF) 			m_posesObsPairs[index].second = in_SF;
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -179,7 +179,7 @@ void  CSimpleMap::set(
   ---------------------------------------------------------------*/
 void  CSimpleMap::insert( const CPose3DPDF *in_posePDF, const CSensoryFramePtr &in_SF )
 {
-	MRPT_START;
+	MRPT_START
 
 	TPosePDFSensFramePair	pair;
 
@@ -188,7 +188,7 @@ void  CSimpleMap::insert( const CPose3DPDF *in_posePDF, const CSensoryFramePtr &
 
 	m_posesObsPairs.push_back( pair );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -198,7 +198,7 @@ void  CSimpleMap::insert(
 	const CPose3DPDFPtr &in_posePDF,
 	const CSensoryFramePtr &in_SF )
 {
-	MRPT_START;
+	MRPT_START
 
 	TPosePDFSensFramePair	pair;
 
@@ -207,7 +207,7 @@ void  CSimpleMap::insert(
 
 	m_posesObsPairs.push_back( pair );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -215,7 +215,7 @@ void  CSimpleMap::insert(
   ---------------------------------------------------------------*/
 void  CSimpleMap::insert( const CPose3DPDF *in_posePDF, const CSensoryFrame &in_SF )
 {
-	MRPT_START;
+	MRPT_START
 
 	TPosePDFSensFramePair	pair;
 
@@ -224,7 +224,7 @@ void  CSimpleMap::insert( const CPose3DPDF *in_posePDF, const CSensoryFrame &in_
 
 	m_posesObsPairs.push_back( pair );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -232,7 +232,7 @@ void  CSimpleMap::insert( const CPose3DPDF *in_posePDF, const CSensoryFrame &in_
   ---------------------------------------------------------------*/
 void  CSimpleMap::insert( const CPosePDF *in_posePDF, const CSensoryFrame &in_SF )
 {
-	MRPT_START;
+	MRPT_START
 
 	TPosePDFSensFramePair	pair;
 
@@ -241,7 +241,7 @@ void  CSimpleMap::insert( const CPosePDF *in_posePDF, const CSensoryFrame &in_SF
 
 	m_posesObsPairs.push_back( pair );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -249,7 +249,7 @@ void  CSimpleMap::insert( const CPosePDF *in_posePDF, const CSensoryFrame &in_SF
   ---------------------------------------------------------------*/
 void  CSimpleMap::insert( const CPosePDF *in_posePDF, const CSensoryFramePtr &in_SF )
 {
-	MRPT_START;
+	MRPT_START
 
 	TPosePDFSensFramePair	pair;
 
@@ -258,7 +258,7 @@ void  CSimpleMap::insert( const CPosePDF *in_posePDF, const CSensoryFramePtr &in
 
 	m_posesObsPairs.push_back( pair );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

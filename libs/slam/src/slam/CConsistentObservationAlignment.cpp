@@ -56,7 +56,7 @@ void  CConsistentObservationAlignment::execute(
 		CSimpleMap		&inputMap,
 		CSimpleMap		&outputMap )
 {
-	MRPT_START;
+	MRPT_START
 
 	// A matrix of gaussian prob. poses: Used to store both,
 	//   the estimated Dij and Cij covariances matrices.
@@ -446,7 +446,7 @@ void  CConsistentObservationAlignment::execute(
 
 	maps.clear();
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -476,7 +476,7 @@ void  CConsistentObservationAlignment::optimizeUserSuppliedData(
 {
 	CMatrixD						G,B;
 
-	MRPT_START;
+	MRPT_START
 
 	int								i,j,n;
 

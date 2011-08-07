@@ -39,7 +39,7 @@ using namespace mrpt::hwdrivers;
 -------------------------------------------------------------*/
 CRoboticHeadInterface::CRoboticHeadInterface()
 {
-	MRPT_START;
+	MRPT_START
 
 	m_serialNumber = "OREJA001";
 	gain.resize(3);
@@ -49,7 +49,7 @@ CRoboticHeadInterface::CRoboticHeadInterface()
 	head_yaw = 0;
 	head_pitch = 0;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------

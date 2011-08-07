@@ -67,7 +67,7 @@ void  CBoardENoses::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &configSource,
 	const std::string			&iniSection )
 {
-	MRPT_START;
+	MRPT_START
 
 	m_usbSerialNumber = configSource.read_string(iniSection, "USB_serialname","",false);
 
@@ -97,7 +97,7 @@ void  CBoardENoses::loadConfig_sensorSpecific(
 	enose_poses_pitch *= M_PIf / 180.0f;
 	enose_poses_roll *= M_PIf / 180.0f;
 
-	MRPT_END;
+	MRPT_END
 
 }
 

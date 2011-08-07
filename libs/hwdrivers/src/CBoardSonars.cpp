@@ -44,7 +44,7 @@ IMPLEMENTS_GENERIC_SENSOR(CBoardSonars,mrpt::hwdrivers)
 -------------------------------------------------------------*/
 CBoardSonars::CBoardSonars()
 {
-	MRPT_START;
+	MRPT_START
 	m_usbSerialNumber = "SONAR001";
 
 	m_sensorLabel		= "SONAR1";
@@ -52,7 +52,7 @@ CBoardSonars::CBoardSonars()
 	m_gain = 6;
 	m_maxRange = 4.0f;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------
@@ -61,7 +61,7 @@ CBoardSonars::CBoardSonars()
 void  CBoardSonars::loadConfig_sensorSpecific(	const mrpt::utils::CConfigFileBase &configSource,
 								const std::string	  &iniSection )
 {
-	MRPT_START;
+	MRPT_START
 
 	std::vector<double> aux;											// Auxiliar vector
 
@@ -100,7 +100,7 @@ void  CBoardSonars::loadConfig_sensorSpecific(	const mrpt::utils::CConfigFileBas
 	// ----------------------------------------------------------------------------------------------------------------------
 	ASSERT_( m_sonarGains.size() == m_firingOrder.size() );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------

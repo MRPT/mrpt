@@ -41,7 +41,7 @@ using namespace mrpt::utils;
  ---------------------------------------------------------------*/
 void  CMessage::serializeObject( CSerializable *obj )
 {
-	MRPT_START;
+	MRPT_START
 	CMemoryStream		auxStream;
 
 	// Dump the object in the memory stream:
@@ -54,7 +54,7 @@ void  CMessage::serializeObject( CSerializable *obj )
 		auxStream.getRawBufferData(),	// Src
 		content.size() );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -62,7 +62,7 @@ void  CMessage::serializeObject( CSerializable *obj )
  ---------------------------------------------------------------*/
 void  CMessage::deserializeIntoExistingObject( CSerializable *obj )
 {
-	MRPT_START;
+	MRPT_START
 	CMemoryStream		auxStream;
 
 	// Copy data into the stream:
@@ -72,7 +72,7 @@ void  CMessage::deserializeIntoExistingObject( CSerializable *obj )
 	// Try to parse data into existing object:
 	auxStream.ReadObject( obj );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -80,7 +80,7 @@ void  CMessage::deserializeIntoExistingObject( CSerializable *obj )
  ---------------------------------------------------------------*/
 void  CMessage::deserializeIntoNewObject( CSerializablePtr &obj )
 {
-	MRPT_START;
+	MRPT_START
 	CMemoryStream		auxStream;
 
 	// Copy data into the stream:
@@ -95,7 +95,7 @@ void  CMessage::deserializeIntoNewObject( CSerializablePtr &obj )
 	else obj.clear_unique();
 
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

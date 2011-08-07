@@ -301,7 +301,7 @@ void  CCanvas::drawImage(
 	int						y,
 	const utils::CImage	&img )
 {
-	MRPT_START;
+	MRPT_START
 
 	int		img_lx = img.getWidth();
 	int		img_ly = img.getHeight();
@@ -326,7 +326,7 @@ void  CCanvas::drawImage(
 	}
 
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -343,11 +343,11 @@ void  CCanvas::drawImage(
 	MRPT_UNUSED_PARAM(img); MRPT_UNUSED_PARAM(rotation);
 	MRPT_UNUSED_PARAM(scale);
 
-	MRPT_START;
+	MRPT_START
 
 	THROW_EXCEPTION("Not implemented yet!! Try yourself! ;-)");
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -427,7 +427,7 @@ void  CCanvas::textOut(
 	const mrpt::utils::TColor	color
 	)
 {
-	MRPT_START;
+	MRPT_START
 
 	if (!m_selectedFontBitmaps) // First call: load fonts
 		this->selectTextFont("9x15");
@@ -500,7 +500,7 @@ void  CCanvas::textOut(
 		// Char not in the font!
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 

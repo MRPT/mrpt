@@ -184,7 +184,7 @@ double	 CLandmarksMap::computeObservationLikelihood(
 	const CObservation		*obs,
 	const CPose3D			&robotPose3D )
 {
-	MRPT_START;
+	MRPT_START
 
 	// Robot poses:
 //	CPose2D		robotPose2D = takenFrom;
@@ -390,7 +390,7 @@ double	 CLandmarksMap::computeObservationLikelihood(
 		return 0.5;
 	}
 
-	MRPT_END;
+	MRPT_END
 
 }
 
@@ -400,7 +400,7 @@ double	 CLandmarksMap::computeObservationLikelihood(
   ---------------------------------------------------------------*/
 bool  CLandmarksMap::internal_insertObservation( const CObservation *obs, const CPose3D *robotPose)
 {
-	MRPT_START;
+	MRPT_START
 
 	CPose2D		robotPose2D;
 	CPose3D		robotPose3D;
@@ -522,7 +522,7 @@ bool  CLandmarksMap::internal_insertObservation( const CObservation *obs, const 
 		return false;
 	}
 
-	MRPT_END;
+	MRPT_END
 
 }
 
@@ -544,7 +544,7 @@ void  CLandmarksMap::computeMatchingWith2D(
 	MRPT_UNUSED_PARAM(onlyKeepTheClosest);MRPT_UNUSED_PARAM(onlyUniqueRobust);MRPT_UNUSED_PARAM(sumSqrDist);
 	MRPT_UNUSED_PARAM(angularDistPivotPoint);MRPT_UNUSED_PARAM(maxDistForCorrespondence);MRPT_UNUSED_PARAM(maxAngularDistForCorrespondence);
 
-	MRPT_START;
+	MRPT_START
 
 
 	CLandmarksMap	auxMap;
@@ -567,7 +567,7 @@ void  CLandmarksMap::computeMatchingWith2D(
 									correspondencesRatio,
 									otherCorrespondences );
 
-	MRPT_END;
+	MRPT_END
 
 }
 
@@ -661,7 +661,7 @@ void  CLandmarksMap::loadSiftFeaturesFromStereoImageObservation(
 	const mrpt::vision::CFeatureExtraction::TOptions & feat_options
 	)
 {
-	MRPT_START;
+	MRPT_START
 
 	vision::CFeatureExtraction				fExt;
 	vision::CFeatureList					leftSiftList, rightSiftList;
@@ -727,7 +727,7 @@ void  CLandmarksMap::loadSiftFeaturesFromStereoImageObservation(
 	// Project landmarks according to the ref. camera pose:
 	changeCoordinatesReference( obs.cameraPose );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -885,7 +885,7 @@ void  CLandmarksMap::changeCoordinatesReference( const CPose3D &newOrg, const mr
   ---------------------------------------------------------------*/
 void  CLandmarksMap::fuseWith( CLandmarksMap &other, bool justInsertAllOfThem )
 {
-	MRPT_START;
+	MRPT_START
 
 	//std::cout << "Entrando en fuseWith" << std::endl;
 
@@ -989,7 +989,7 @@ void  CLandmarksMap::fuseWith( CLandmarksMap &other, bool justInsertAllOfThem )
 		os::fclose(f);
 	}
 
-	MRPT_END;
+	MRPT_END
 
 }
 
@@ -1003,7 +1003,7 @@ void  CLandmarksMap::computeMatchingWith3DLandmarks(
 		float									&correspondencesRatio,
 		std::vector<bool>						&otherCorrespondences) const
 {
-	MRPT_START;
+	MRPT_START
 
 	TSequenceLandmarks::const_iterator		thisIt,otherIt;
 	unsigned int							nThis,nOther;
@@ -1266,7 +1266,7 @@ void  CLandmarksMap::computeMatchingWith3DLandmarks(
 	} // end switch
 
 
-	MRPT_END;
+	MRPT_END
 
 }
 
@@ -1275,7 +1275,7 @@ void  CLandmarksMap::computeMatchingWith3DLandmarks(
   ---------------------------------------------------------------*/
 bool  CLandmarksMap::saveToTextFile(std::string file)
 {
-	MRPT_START;
+	MRPT_START
 
 	FILE	*f= os::fopen(file.c_str(),"wt");
 	if (!f) return false;
@@ -1311,7 +1311,7 @@ bool  CLandmarksMap::saveToTextFile(std::string file)
 
 	return true;
 
-	MRPT_END;
+	MRPT_END
 
 }
 
@@ -1550,7 +1550,7 @@ void  CLandmarksMap::loadOccupancyFeaturesFrom2DRangeScan(
   ---------------------------------------------------------------*/
 double  CLandmarksMap::computeLikelihood_RSLC_2007( const CLandmarksMap  *s, const CPose2D &sensorPose )
 {
-	MRPT_START;
+	MRPT_START
 
 	double								lik = 1.0;
 	TSequenceLandmarks::const_iterator		itOther;
@@ -1659,7 +1659,7 @@ double  CLandmarksMap::computeLikelihood_RSLC_2007( const CLandmarksMap  *s, con
 	MRPT_CHECK_NORMAL_NUMBER( lik );
 	return lik;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1758,7 +1758,7 @@ void 	CLandmarksMap::TCustomSequenceLandmarks::hasBeenModified(unsigned int indx
 
 void 	CLandmarksMap::TCustomSequenceLandmarks::hasBeenModifiedAll()
 {
-	MRPT_START;
+	MRPT_START
 
 	TSequenceLandmarks::iterator	it;
 	unsigned int					idx;
@@ -1787,7 +1787,7 @@ void 	CLandmarksMap::TCustomSequenceLandmarks::hasBeenModifiedAll()
 	}
 
 	m_largestDistanceFromOriginIsUpdated = false;
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -2274,7 +2274,7 @@ void  CLandmarksMap::simulateBeaconReadings(
   ---------------------------------------------------------------*/
 void  CLandmarksMap::saveMetricMapRepresentationToFile( const std::string	&filNamePrefix ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	// Matlab:
 	std::string		fil1( filNamePrefix + std::string("_3D.m") );
@@ -2294,7 +2294,7 @@ void  CLandmarksMap::saveMetricMapRepresentationToFile( const std::string	&filNa
 	CFileOutputStream	f(fil2.c_str());
 	f << scene;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -2383,7 +2383,7 @@ float  CLandmarksMap::compute3DMatchingRatio(
 		) const
 {
 	MRPT_UNUSED_PARAM(minDistForCorr);
-	MRPT_START;
+	MRPT_START
 
 	// Compare to a similar map only:
 	const CLandmarksMap	*otherMap = NULL;
@@ -2480,7 +2480,7 @@ float  CLandmarksMap::compute3DMatchingRatio(
 
 	return static_cast<float>(otherLandmarkWithCorrespondence) / nOther;
 
-	MRPT_END;
+	MRPT_END
 }
 
 

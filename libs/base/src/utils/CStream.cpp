@@ -182,7 +182,7 @@ CStream& utils::operator << (CStream&out, const std::string &str)
  ---------------------------------------------------------------*/
 void CStream::WriteObject(const  CSerializable *o )
 {
-    MRPT_START;
+    MRPT_START
 
 	int		version;
 
@@ -209,7 +209,7 @@ void CStream::WriteObject(const  CSerializable *o )
 	static const uint8_t    endFlag = SERIALIZATION_END_FLAG;
 	(*this) << endFlag;
 
-    MRPT_END;
+    MRPT_END
 }
 
 

@@ -114,7 +114,7 @@ void CReactiveNavigationSystem::getLastLogRecord( CLogFileRecord &o )
   ---------------------------------------------------------------*/
 void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const mrpt::utils::CConfigFileBase &robotIni )
 {
-	MRPT_START;
+	MRPT_START
 
 	collisionGridsMustBeUpdated = true;
 
@@ -248,7 +248,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	m_init_done = true;
 
 
-	MRPT_END;
+	MRPT_END
 }
 
 

@@ -220,7 +220,7 @@ void  CPointPDFSOG::readFromStream(CStream &in,int version)
   ---------------------------------------------------------------*/
 void  CPointPDFSOG::copyFrom(const CPointPDF &o)
 {
-	MRPT_START;
+	MRPT_START
 
 	if (this == &o) return;		// It may be used sometimes
 
@@ -236,7 +236,7 @@ void  CPointPDFSOG::copyFrom(const CPointPDF &o)
 		o.getCovarianceAndMean(m_modes[0].val.cov,m_modes[0].val.mean);
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -313,7 +313,7 @@ void CPointPDFSOG::drawSingleSample(CPoint3D  &outSample) const
  ---------------------------------------------------------------*/
 void  CPointPDFSOG::bayesianFusion(const  CPointPDF &p1_, const CPointPDF &p2_,const double &minMahalanobisDistToDrop )
 {
-	MRPT_START;
+	MRPT_START
 
 	// p1: CPointPDFSOG, p2: CPosePDFGaussian:
 
@@ -425,7 +425,7 @@ void  CPointPDFSOG::bayesianFusion(const  CPointPDF &p1_, const CPointPDF &p2_,c
 
 	normalizeWeights();
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -433,7 +433,7 @@ void  CPointPDFSOG::bayesianFusion(const  CPointPDF &p1_, const CPointPDF &p2_,c
  ---------------------------------------------------------------*/
 void  CPointPDFSOG::assureSymmetry()
 {
-	MRPT_START;
+	MRPT_START
 	// Differences, when they exist, appear in the ~15'th significant
 	//  digit, so... just take one of them arbitrarily!
 	for (CListGaussianModes::iterator it=m_modes.begin();it!=m_modes.end();++it)
@@ -443,7 +443,7 @@ void  CPointPDFSOG::assureSymmetry()
 		it->val.cov(1,2) = it->val.cov(2,1);
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -451,7 +451,7 @@ void  CPointPDFSOG::assureSymmetry()
  ---------------------------------------------------------------*/
 void  CPointPDFSOG::normalizeWeights()
 {
-	MRPT_START;
+	MRPT_START
 
 	if (!m_modes.size()) return;
 
@@ -463,7 +463,7 @@ void  CPointPDFSOG::normalizeWeights()
 	for (it=m_modes.begin();it!=m_modes.end();it++)
 		it->log_w -= maxW;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -471,7 +471,7 @@ void  CPointPDFSOG::normalizeWeights()
  ---------------------------------------------------------------*/
 double CPointPDFSOG::ESS() const
 {
-	MRPT_START;
+	MRPT_START
 	CListGaussianModes::const_iterator	it;
 	double	cum = 0;
 
@@ -486,7 +486,7 @@ double CPointPDFSOG::ESS() const
 	if (cum==0)
 			return 0;
 	else	return 1.0/(m_modes.size()*cum);
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -502,7 +502,7 @@ void  CPointPDFSOG::evaluatePDFInArea(
 	CMatrixD	&outMatrix,
 	bool		sumOverAllZs )
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(x_max>x_min);
 	ASSERT_(y_max>y_min);
@@ -526,7 +526,7 @@ void  CPointPDFSOG::evaluatePDFInArea(
 	}
 
 
-	MRPT_END;
+	MRPT_END
 }
 
 

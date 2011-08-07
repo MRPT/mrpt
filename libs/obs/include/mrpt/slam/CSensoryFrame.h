@@ -197,7 +197,7 @@ namespace mrpt
 			 template <typename T>
 			 typename T::SmartPtr getObservationByClass( const size_t &ith = 0 ) const
 			 {
-				MRPT_START;
+				MRPT_START
 				size_t  foundCount = 0;
 				const mrpt::utils::TRuntimeClassId*	class_ID = T::classinfo;
 				for (const_iterator it = begin();it!=end();++it)
@@ -205,7 +205,7 @@ namespace mrpt
 						if (foundCount++ == ith)
 							return typename T::SmartPtr(*it);
 				return typename T::SmartPtr();	// Not found: return empty smart pointer
-				MRPT_END;
+				MRPT_END
 			 }
 
 			/** You can use CSensoryFrame::begin to get a iterator to the first element.

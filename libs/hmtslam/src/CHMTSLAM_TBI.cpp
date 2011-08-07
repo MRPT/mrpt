@@ -121,7 +121,7 @@ CHMTSLAM::TMessageLSLAMfromTBIPtr CHMTSLAM::TBI_main_method(
 	CLocalMetricHypothesis	*LMH,
 	const CHMHMapNode::TNodeID &areaID)
 {
-	MRPT_START;
+	MRPT_START
 
 	CHMTSLAM	*obj = (CHMTSLAM*) LMH->m_parent.get();
 
@@ -252,5 +252,5 @@ CHMTSLAM::TMessageLSLAMfromTBIPtr CHMTSLAM::TBI_main_method(
 	mrpt::system::setConsoleColor(CONCOL_NORMAL);
 
 	return msg;
-	MRPT_END;
+	MRPT_END
 }

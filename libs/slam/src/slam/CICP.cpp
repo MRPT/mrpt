@@ -67,7 +67,7 @@ CPosePDFPtr CICP::AlignPDF(
     float					*runningTime,
     void					*info )
 {
-	MRPT_START;
+	MRPT_START
 
 	CTicTac	tictac;
 	TReturnInfo		outInfo;
@@ -103,7 +103,7 @@ CPosePDFPtr CICP::AlignPDF(
 
 	return resultPDF;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -233,7 +233,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 		const CPosePDFGaussian	&initialEstimationPDF,
 		TReturnInfo				&outInfo )
 {
-	MRPT_START;
+	MRPT_START
 
 	// The result can be either a Gaussian or a SOG:
 	CPosePDFPtr								resultPDF;
@@ -558,7 +558,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 
 	return resultPDF;
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -575,7 +575,7 @@ CPosePDFPtr CICP::ICP_Method_LM(
 		const CPosePDFGaussian	&initialEstimationPDF,
 		TReturnInfo				&outInfo )
 {
-	MRPT_START;
+	MRPT_START
 
 	// The result can be either a Gaussian or a SOG:
 	size_t									nCorrespondences=0;
@@ -961,7 +961,7 @@ CPosePDFPtr CICP::ICP_Method_LM(
 	} // end of "if m2 is not empty"
 
 	return CPosePDFGaussianPtr( new CPosePDFGaussian(q, C_inv.cast<double>() ) );
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -973,11 +973,11 @@ CPosePDFPtr CICP::ICP_Method_IKF(
 		const CPosePDFGaussian	&initialEstimationPDF,
 		TReturnInfo				&outInfo )
 {
-	MRPT_START;
+	MRPT_START
 	THROW_EXCEPTION("Not implemented yet");
 	return CPosePDFGaussian::Create();
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -1005,7 +1005,7 @@ CPose3DPDFPtr CICP::Align3DPDF(
     float					*runningTime,
     void					*info )
 {
-	MRPT_START;
+	MRPT_START
 
 	static CTicTac	tictac;
 	TReturnInfo		outInfo;
@@ -1041,7 +1041,7 @@ CPose3DPDFPtr CICP::Align3DPDF(
 
 	return resultPDF;
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -1052,7 +1052,7 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 		const CPose3DPDFGaussian &initialEstimationPDF,
 		TReturnInfo				&outInfo )
 {
-	MRPT_START;
+	MRPT_START
 
 	// The result can be either a Gaussian or a SOG:
 	CPose3DPDFPtr								resultPDF;
@@ -1188,7 +1188,7 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 
 	return resultPDF;
 
-	MRPT_END;
+	MRPT_END
 }
 
 

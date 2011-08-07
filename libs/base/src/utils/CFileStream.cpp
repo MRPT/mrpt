@@ -72,7 +72,7 @@ CFileStream::CFileStream( const string &fileName, TFileOpenModes mode_ ) : m_f()
  ---------------------------------------------------------------*/
 bool CFileStream::open(const std::string &fileName, TFileOpenModes mode_)
 {
-	MRPT_START;
+	MRPT_START
 
 	std::ios_base::openmode mode = std::ios_base::in;
 	if (mode_==fomRead) mode = std::ios_base::in;
@@ -87,7 +87,7 @@ bool CFileStream::open(const std::string &fileName, TFileOpenModes mode_)
 	m_f.open(fileName.c_str(), ios_base::binary | mode );
 	return m_f.is_open();
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

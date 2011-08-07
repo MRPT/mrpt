@@ -67,7 +67,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
 	const TCaptureCVOptions &options
 	)
 {
-	MRPT_START;
+	MRPT_START
 	m_bInitialized = false;
 
 #if MRPT_HAS_OPENCV
@@ -184,7 +184,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------
@@ -192,7 +192,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
  -------------------------------------------------------------*/
 CImageGrabber_OpenCV::CImageGrabber_OpenCV( const std::string &AVI_fileName )
 {
-   MRPT_START;
+   MRPT_START
    m_bInitialized = false;
 
 #if MRPT_HAS_OPENCV
@@ -211,7 +211,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV( const std::string &AVI_fileName )
 #else
    THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
-   MRPT_END;
+   MRPT_END
 }
 
 
@@ -236,7 +236,7 @@ CImageGrabber_OpenCV::~CImageGrabber_OpenCV()
  -------------------------------------------------------------*/
 bool  CImageGrabber_OpenCV::getObservation( mrpt::slam::CObservationImage &out_observation)
 {
-   MRPT_START;
+   MRPT_START
 
    if (!m_bInitialized) return false;
 
@@ -268,5 +268,5 @@ bool  CImageGrabber_OpenCV::getObservation( mrpt::slam::CObservationImage &out_o
 #else
    THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
-   MRPT_END;
+   MRPT_END
 }

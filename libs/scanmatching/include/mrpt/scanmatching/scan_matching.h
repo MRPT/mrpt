@@ -106,7 +106,7 @@ namespace mrpt
 			double								&out_scale,
 			const bool 							forceScaleToUnity = false )
 		{
-			MRPT_START;
+			MRPT_START
 
 			CPose3DQuat qAux(UNINITIALIZED_QUATERNION);		// Convert the CPose3D to CPose3DQuat
 
@@ -116,7 +116,7 @@ namespace mrpt
 
 			return true;
 
-			MRPT_END;
+			MRPT_END
 		}
 
 		/** This method provides the closed-form solution of absolute orientation using unit quaternions to a set of over-constrained correspondences for finding the 6D rigid transformation between two cloud of 3D points using RANSAC.

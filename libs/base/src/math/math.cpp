@@ -1019,7 +1019,7 @@ void  math::fft_real(	vector_float	&in_realData,
 						vector_float	&out_FFT_Im,
 						vector_float	&out_FFT_Mag )
 {
-	MRPT_START;
+	MRPT_START
 
 	unsigned long	n = (unsigned long)in_realData.size();
 
@@ -1050,7 +1050,7 @@ void  math::fft_real(	vector_float	&in_realData,
 		out_FFT_Mag[i] = sqrt( square(out_FFT_Re[i])+square(out_FFT_Im[i]) );
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1201,7 +1201,7 @@ void  math::dft2_real(
 	CMatrixFloat		&out_real,
 	CMatrixFloat		&out_imag )
 {
-	MRPT_START;
+	MRPT_START
 
 	size_t				i,j;
 	typedef FFT_TYPE*	float_ptr ;
@@ -1290,7 +1290,7 @@ void  math::dft2_real(
 	delete[] ip;
 	delete[] w;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1301,7 +1301,7 @@ void  math::idft2_real(
 	const CMatrixFloat	&in_imag,
 	CMatrixFloat		&out_data )
 {
-	MRPT_START;
+	MRPT_START
 
 	size_t				i,j;
 	typedef FFT_TYPE*		float_ptr ;
@@ -1395,7 +1395,7 @@ void  math::idft2_real(
 	delete[] ip;
 	delete[] w;
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -1467,7 +1467,7 @@ void  math::dft2_complex(
 			CMatrixFloat		&out_real,
 			CMatrixFloat		&out_imag)
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(in_real.getRowCount() == in_imag.getRowCount() )
 	ASSERT_(in_real.getColCount() == in_imag.getColCount() )
@@ -1564,7 +1564,7 @@ void  math::dft2_complex(
 	}
 
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1576,7 +1576,7 @@ void  math::idft2_complex(
 			CMatrixFloat		&out_real,
 			CMatrixFloat		&out_imag )
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(in_real.getRowCount() == in_imag.getRowCount() )
 	ASSERT_(in_real.getColCount() == in_imag.getColCount() )
@@ -1682,7 +1682,7 @@ void  math::idft2_complex(
 		myGeneralDFT(1,in_real, in_imag, out_real,out_imag );
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -2098,7 +2098,7 @@ void  mrpt::math::cross_correlation_FFT(
 	const CMatrixFloat	&B,
 	CMatrixFloat		&out_corr )
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_( size(A,1)==size(B,1) && size(A,2)==size(B,2) );
 	if ( math::round2up( size(A,1) ) != size(A,1)  || math::round2up( size(A,2) ) != size(A,2)  )
@@ -2141,7 +2141,7 @@ void  mrpt::math::cross_correlation_FFT(
 		for (x = 0;x<lx;x++)
 			out_corr(y,x) = sqrt( square(res_R(y,x)) + square(res_I(y,x)) );
 
-	MRPT_END;
+	MRPT_END
 }
 
 

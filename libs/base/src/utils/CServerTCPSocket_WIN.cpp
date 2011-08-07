@@ -55,7 +55,7 @@ CServerTCPSocket::CServerTCPSocket(
 	) :
 		m_verbose(verbose)
 {
-	MRPT_START;
+	MRPT_START
 
 	// Init the WinSock Library:
 	// ----------------------------
@@ -70,7 +70,7 @@ CServerTCPSocket::CServerTCPSocket(
 	// Create the socket and put it listening:
 	setupSocket( listenPort, IPaddress, maxConnectionsWaiting );
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -89,7 +89,7 @@ std::string CServerTCPSocket::getLastErrorStr()
  ---------------------------------------------------------------*/
 CServerTCPSocket::~CServerTCPSocket( )
 {
-	MRPT_START;
+	MRPT_START
 
 	// Delete socket:
 	if (m_serverSock != INVALID_SOCKET)
@@ -97,7 +97,7 @@ CServerTCPSocket::~CServerTCPSocket( )
 
 	WSACleanup();
 
-	MRPT_END;
+	MRPT_END
 }
 
 

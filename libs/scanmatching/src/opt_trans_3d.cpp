@@ -53,7 +53,7 @@ double scanmatching::HornMethod(
 	vector_double			&outVector,				// The output vector
 	bool forceScaleToUnity )
 {
-	MRPT_START;
+	MRPT_START
 
 	vector_double input;
 	input.resize( inVector.size() );
@@ -172,7 +172,7 @@ double scanmatching::HornMethod(
 	outVector[2] = cR.z - pp.z;	// Z
 
 	return s; // return scale
-	MRPT_END;
+	MRPT_END
 }
 
 //! \overload
@@ -199,7 +199,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation6D(
 	const bool 							forceScaleToUnity)
 {
 
-	MRPT_START;
+	MRPT_START
 	if( in_correspondences.size() < 3 )
 		THROW_EXCEPTION( "[leastSquareErrorRigidTransformation6D]: Error: at least 3 correspondences must be provided" );
 
@@ -315,7 +315,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation6D(
 	out_transformation[1] = cR.y() - pp.y();	// Y
 	out_transformation[2] = cR.z() - pp.z();	// Z
 
-	MRPT_END;
+	MRPT_END
 
 	return true;
 

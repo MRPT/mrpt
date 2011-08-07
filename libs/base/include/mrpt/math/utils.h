@@ -351,7 +351,7 @@ namespace mrpt
 				VECTORLIKE2	&out_binCenters,
 				VECTORLIKE2	&out_binValues )
 			{
-				MRPT_START;
+				MRPT_START
 				typedef typename VECTORLIKE1::value_type TNum;
 
 				ASSERT_( values.size() == weights.size() );
@@ -386,7 +386,7 @@ namespace mrpt
 					out_binValues /= totalSum;
 
 
-				MRPT_END;
+				MRPT_END
 			}
 
 		/** Computes the weighted histogram for a vector of values and their corresponding log-weights.
@@ -405,7 +405,7 @@ namespace mrpt
 				VECTORLIKE2	&out_binCenters,
 				VECTORLIKE2	&out_binValues )
 			{
-				MRPT_START;
+				MRPT_START
 				typedef typename VECTORLIKE1::value_type TNum;
 
 				ASSERT_( values.size() == log_weights.size() );
@@ -441,7 +441,7 @@ namespace mrpt
 				if (totalSum)
 					out_binValues /= totalSum;
 
-				MRPT_END;
+				MRPT_END
 			}
 
 
@@ -635,7 +635,7 @@ namespace mrpt
 		template <class MATRIXLIKE1,class MATRIXLIKE2>
 		void homogeneousMatrixInverse(const MATRIXLIKE1 &M, MATRIXLIKE2 &out_inverse_M)
 		{
-			MRPT_START;
+			MRPT_START
 			ASSERT_( M.isSquare() && size(M,1)==4);
 
 			/* Instead of performing a generic 4x4 matrix inversion, we only need to
@@ -681,7 +681,7 @@ namespace mrpt
 			out_inverse_M.set_unsafe(3,2,  0);
 			out_inverse_M.set_unsafe(3,3,  1);
 
-			MRPT_END;
+			MRPT_END
 		}
 		//! \overload
 		template <class IN_ROTMATRIX,class IN_XYZ, class OUT_ROTMATRIX, class OUT_XYZ>

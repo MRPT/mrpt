@@ -45,14 +45,14 @@ using namespace std;
  ---------------------------------------------------------------*/
 CFileInputStream::CFileInputStream( const string		&fileName ) : m_if()
 {
-	MRPT_START;
+	MRPT_START
 
 	// Try to open the file:
 	// Open for input:
 	if (!open(fileName))
 		THROW_EXCEPTION_CUSTOM_MSG1( "Error trying to open file: '%s'",fileName.c_str() );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

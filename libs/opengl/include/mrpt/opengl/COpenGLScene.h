@@ -149,14 +149,14 @@ namespace mrpt
 			 template <typename T>
 			 typename T::SmartPtr getByClass( const size_t &ith = 0 ) const
 			 {
-				MRPT_START;
+				MRPT_START
 				for (TListViewports::const_iterator it = m_viewports.begin();it!=m_viewports.end();++it)
 				{
 					typename T::SmartPtr o = (*it)->getByClass<T>(ith);
 					if (o.present()) return o;
 				}
 				return typename T::SmartPtr();	// Not found: return empty smart pointer
-				MRPT_END;
+				MRPT_END
 			 }
 
 

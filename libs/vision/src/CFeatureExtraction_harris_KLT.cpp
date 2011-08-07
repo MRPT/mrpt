@@ -56,7 +56,7 @@ void CFeatureExtraction::selectGoodFeaturesKLT(
 #ifdef VERBOSE_TIMING
 	CTicTac tictac;
 #endif
-		MRPT_START;
+		MRPT_START
 
 		#if MRPT_HAS_OPENCV
 
@@ -226,7 +226,7 @@ void CFeatureExtraction::selectGoodFeaturesKLT(
 			THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 		#endif
 
-		MRPT_END;
+		MRPT_END
 
 } // end of function
 
@@ -239,7 +239,7 @@ void  CFeatureExtraction::findMoreFeatures( const mrpt::utils::CImage &img,
 											unsigned int nDesiredFeats) const
 {
 #if MRPT_HAS_OPENCV
-	MRPT_START;
+	MRPT_START
 
 	if( options.featsType == featHarris || options.featsType == featKLT )
 	{
@@ -297,7 +297,7 @@ void  CFeatureExtraction::findMoreFeatures( const mrpt::utils::CImage &img,
 		if( nDesiredFeats != 0 && outList.size() > nDesiredFeats )
 			outList.resize( nDesiredFeats );
 	}
-	MRPT_END;
+	MRPT_END
 #else
 	THROW_EXCEPTION("MRPT was compiled without OpenCV")
 #endif

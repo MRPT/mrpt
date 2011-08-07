@@ -46,7 +46,7 @@ IMPLEMENTS_SERIALIZABLE( CGridPlaneXZ, CRenderizableDisplayList, mrpt::opengl )
 void   CGridPlaneXZ::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	MRPT_START;
+	MRPT_START
 
 	glLineWidth(1);
 
@@ -69,7 +69,7 @@ void   CGridPlaneXZ::render_dl() const
     glEnd();
 	checkOpenGLError();
 
-	MRPT_END;
+	MRPT_END
 #endif
 }
 

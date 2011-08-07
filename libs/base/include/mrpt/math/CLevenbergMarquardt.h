@@ -115,7 +115,7 @@ namespace math
 			using namespace mrpt::math;
 			using namespace std;
 
-			MRPT_START;
+			MRPT_START
 
 			VECTORTYPE &x=out_optimal_x; // Var rename
 
@@ -236,7 +236,7 @@ namespace math
 			out_info.last_err_vector = f_x;
 			if (returnPath) out_info.path.setSize(iter,N+1);
 
-			MRPT_END;
+			MRPT_END
 		}
 
 	}; // End of class def.

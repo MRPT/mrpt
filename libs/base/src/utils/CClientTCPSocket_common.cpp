@@ -58,11 +58,11 @@ unsigned int CClientTCPSocket::DNS_LOOKUP_TIMEOUT_MS = 3000;
  ---------------------------------------------------------------*/
 size_t  CClientTCPSocket::Read(void *Buffer, size_t Count)
 {
-	MRPT_START;
+	MRPT_START
 
 	return readAsync(Buffer,Count);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -70,11 +70,11 @@ size_t  CClientTCPSocket::Read(void *Buffer, size_t Count)
  ---------------------------------------------------------------*/
 size_t  CClientTCPSocket::Write(const void *Buffer, size_t Count)
 {
-	MRPT_START;
+	MRPT_START
 
 	return writeAsync(Buffer,Count);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -197,7 +197,7 @@ void CClientTCPSocket::connect(
 	unsigned short		remotePartTCPPort,
 	unsigned int		timeout_ms )
 {
-	MRPT_START;
+	MRPT_START
 
 	// Close existing socket, if any.
 	if (m_hSock != INVALID_SOCKET)
@@ -287,7 +287,7 @@ void CClientTCPSocket::connect(
 	// Save the IP of the other part.
 	m_remotePartIP = remotePartAddress;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -309,7 +309,7 @@ size_t  CClientTCPSocket::readAsync(
 	const int		timeoutStart_ms,
 	const int		timeoutBetween_ms )
 {
-	MRPT_START;
+	MRPT_START
 
 	if (m_hSock == INVALID_SOCKET)   return 0;  // The socket is not connected!
 
@@ -389,7 +389,7 @@ size_t  CClientTCPSocket::readAsync(
 
 	return alreadyRead;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -400,7 +400,7 @@ size_t  CClientTCPSocket::writeAsync(
 	const size_t	Count,
 	const int		timeout_ms )
 {
-	MRPT_START;
+	MRPT_START
 
 	if (m_hSock == INVALID_SOCKET)  return 0;		// The socket is not connected!
 
@@ -468,7 +468,7 @@ size_t  CClientTCPSocket::writeAsync(
 
 	return alreadyWritten;
 
-	MRPT_END;
+	MRPT_END
 }
 
 

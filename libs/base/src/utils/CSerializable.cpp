@@ -120,7 +120,7 @@ std::string utils::ObjectToString(const CSerializable *o)
    ----------------------------------------------------------------------- */
 void utils::StringToObject(const std::string &str, CSerializablePtr &obj)
 {
-	MRPT_START;
+	MRPT_START
 
 	obj.clear_unique();
 	if (str.empty()) return;
@@ -168,7 +168,7 @@ void utils::StringToObject(const std::string &str, CSerializablePtr &obj)
 	tmp.Seek(0,CStream::sFromBeginning);
 	obj = tmp.ReadObject();
 
-	MRPT_END;
+	MRPT_END
 
 }
 

@@ -114,7 +114,7 @@ void  CPoint2DPDFGaussian::copyFrom(const CPoint2DPDF &o)
   ---------------------------------------------------------------*/
 void  CPoint2DPDFGaussian::saveToTextFile(const std::string &file) const
 {
-	MRPT_START;
+	MRPT_START
 
 	FILE	*f=os::fopen(file.c_str(),"wt");
 	if (!f) return;
@@ -126,7 +126,7 @@ void  CPoint2DPDFGaussian::saveToTextFile(const std::string &file) const
 
 	os::fclose(f);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -149,7 +149,7 @@ void  CPoint2DPDFGaussian::changeCoordinatesReference(const CPose3D &newReferenc
  ---------------------------------------------------------------*/
 void  CPoint2DPDFGaussian::bayesianFusion( const CPoint2DPDFGaussian &p1, const CPoint2DPDFGaussian &p2 )
 {
-	MRPT_START;
+	MRPT_START
 
 	CMatrixDouble22	C1_inv;
 	p1.cov.inv(C1_inv);
@@ -173,7 +173,7 @@ void  CPoint2DPDFGaussian::bayesianFusion( const CPoint2DPDFGaussian &p1, const 
 	std::cout << "IN2: " << p2.mean << "\n" << p2.cov << "\n";
 	std::cout << "OUT: " << mean << "\n" << cov << "\n";
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -236,7 +236,7 @@ void CPoint2DPDFGaussian::drawSingleSample(CPoint2D &outSample) const
  ---------------------------------------------------------------*/
 void  CPoint2DPDFGaussian::bayesianFusion( const CPoint2DPDF &p1_, const CPoint2DPDF &p2_,const double &minMahalanobisDistToDrop )
 {
-	MRPT_START;
+	MRPT_START
 
 	// p1: CPoint2DPDFGaussian, p2: CPosePDFGaussian:
 	ASSERT_( p1_.GetRuntimeClass() == CLASS_ID(CPoint2DPDFGaussian) );

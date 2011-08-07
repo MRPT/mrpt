@@ -48,9 +48,9 @@ using namespace std;
  ---------------------------------------------------------------*/
 CFileGZInputStream::CFileGZInputStream( const string &fileName ) : m_f(NULL)
 {
-	MRPT_START;
+	MRPT_START
 	open(fileName);
-	MRPT_END;
+	MRPT_END
 }
 /*---------------------------------------------------------------
 							Constructor
@@ -64,7 +64,7 @@ CFileGZInputStream::CFileGZInputStream( ) : m_f(NULL)
  ---------------------------------------------------------------*/
 bool CFileGZInputStream::open(const std::string &fileName )
 {
-	MRPT_START;
+	MRPT_START
 
 	if (m_f) gzclose(m_f);
 
@@ -77,7 +77,7 @@ bool CFileGZInputStream::open(const std::string &fileName )
 	m_f = gzopen(fileName.c_str(),"rb");
 	return m_f != NULL;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

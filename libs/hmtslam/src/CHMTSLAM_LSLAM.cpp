@@ -267,7 +267,7 @@ void CHMTSLAM::thread_LSLAM()
   ---------------------------------------------------------------*/
 void CHMTSLAM::LSLAM_process_message( const CMessage &msg )
 {
-	MRPT_START;
+	MRPT_START
 
 /*	switch(msg.type)
 	{
@@ -286,7 +286,7 @@ void CHMTSLAM::LSLAM_process_message( const CMessage &msg )
 	}
 */
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -295,7 +295,7 @@ void CHMTSLAM::LSLAM_process_message( const CMessage &msg )
   ---------------------------------------------------------------*/
 void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 {
-		MRPT_START;
+		MRPT_START
 
 		CTicTac    tictac;
 		tictac.Tic();
@@ -1525,7 +1525,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		printf_debug("[LSLAM_proc_msg_AA] Msg from AA took %f ms                      ]\n", tictac.Tac()*1000 );
 #endif
 
-		MRPT_END;
+		MRPT_END
 }
 
 
@@ -1534,7 +1534,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
   ---------------------------------------------------------------*/
 void CHMTSLAM::LSLAM_process_message_from_TBI( const TMessageLSLAMfromTBI &myMsg )
 {
-	MRPT_START;
+	MRPT_START
 
 	CTicTac    tictac;
 	tictac.Tic();
@@ -1647,5 +1647,5 @@ void CHMTSLAM::LSLAM_process_message_from_TBI( const TMessageLSLAMfromTBI &myMsg
 	printf_debug("[LSLAM_proc_msg_TBI] Msg from TBI took %f ms                      ]\n", tictac.Tac()*1000 );
 #endif
 
-	MRPT_END;
+	MRPT_END
 }

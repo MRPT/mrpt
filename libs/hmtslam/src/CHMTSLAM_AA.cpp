@@ -51,7 +51,7 @@ CHMTSLAM::TMessageLSLAMfromAAPtr CHMTSLAM::areaAbstraction(
 	CLocalMetricHypothesis	*LMH,
 	const TPoseIDList		&newPoseIDs )
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_( !newPoseIDs.empty() );
 	ASSERT_(LMH);
@@ -125,7 +125,7 @@ CHMTSLAM::TMessageLSLAMfromAAPtr CHMTSLAM::areaAbstraction(
 
 	return resMsg;
 
-	MRPT_END;
+	MRPT_END
 }
 
 

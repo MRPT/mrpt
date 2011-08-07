@@ -65,7 +65,7 @@ namespace bayes
 			std::vector<TParticle>			&outSamples,
 			size_t							timeoutTrials = 1000)
 		{
-			MRPT_START;
+			MRPT_START
 
 			TStateSpace							x;
 			typename std::vector<TParticle>::iterator	it;
@@ -116,7 +116,7 @@ namespace bayes
 				}
 			} // end for it
 
-			MRPT_END;
+			MRPT_END
 		}
 
 	protected:

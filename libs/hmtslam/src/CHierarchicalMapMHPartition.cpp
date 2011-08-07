@@ -78,26 +78,26 @@ size_t CHierarchicalMapMHPartition::arcCount() const
   ---------------------------------------------------------------*/
 CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByID(CHMHMapNode::TNodeID	id)
 {
-	MRPT_START;
+	MRPT_START
 	if (id==AREAID_INVALID) return CHMHMapNodePtr();
 
 	TNodeList::iterator it = m_nodes.find(id);
 	return it==m_nodes.end() ?  CHMHMapNodePtr() : it->second;
 
-	MRPT_END;
+	MRPT_END
 }
 /*---------------------------------------------------------------
 						getNodeByID
   ---------------------------------------------------------------*/
 const CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByID(CHMHMapNode::TNodeID	id) const
 {
-	MRPT_START;
+	MRPT_START
 	if (id==AREAID_INVALID) return CHMHMapNodePtr();
 
 	TNodeList::const_iterator it = m_nodes.find(id);
 	return it==m_nodes.end() ?  CHMHMapNodePtr() : it->second;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -105,7 +105,7 @@ const CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByID(CHMHMapNode::TNod
   ---------------------------------------------------------------*/
 CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByLabel(const std::string &label, const THypothesisID &hypothesisID)
 {
-	MRPT_START;
+	MRPT_START
 
 	// Look for the ID:
 	for (TNodeList::const_iterator it=m_nodes.begin();it!=m_nodes.end();++it)
@@ -116,14 +116,14 @@ CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByLabel(const std::string &l
 	// Not found:
 	return CHMHMapNodePtr();
 
-	MRPT_END;
+	MRPT_END
 }
 /*---------------------------------------------------------------
 						getNodeByLabel
   ---------------------------------------------------------------*/
 const CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByLabel(const std::string &label, const THypothesisID &hypothesisID) const
 {
-	MRPT_START;
+	MRPT_START
 
 	// Look for the ID:
 	for (TNodeList::const_iterator it=m_nodes.begin();it!=m_nodes.end();++it)
@@ -134,7 +134,7 @@ const CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByLabel(const std::str
 	// Not found:
 	return CHMHMapNodePtr();
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -156,7 +156,7 @@ void  CHierarchicalMapMHPartition::saveAreasDiagramForMATLAB(
 	const THypothesisID &hypothesisID) const
 {
 /*
-	MRPT_START;
+	MRPT_START
 	unsigned int	nAreaNodes=0;
 
 	const CHMHMapNode	*refNode = getNodeByID( idReferenceNode );
@@ -313,7 +313,7 @@ void  CHierarchicalMapMHPartition::saveAreasDiagramForMATLAB(
 
 	os::fprintf(f,"axis equal; zoom on;");
 	os::fclose(f);
-	MRPT_END;
+	MRPT_END
 */
 }
 
@@ -329,7 +329,7 @@ void  CHierarchicalMapMHPartition::saveAreasDiagramWithEllipsedForMATLAB(
 	unsigned int					numberOfIterationsForOptimalGlobalPoses
 	) const
 {
-/*	MRPT_START;
+/*	MRPT_START
 
 	const CHMHMapNode	*refNode = getNodeByID( idReferenceNode );
 	ASSERT_(refNode!=NULL);
@@ -481,7 +481,7 @@ void  CHierarchicalMapMHPartition::saveAreasDiagramWithEllipsedForMATLAB(
 	// Free memory:
 	nodesPoses.clear();
 
-	MRPT_END;
+	MRPT_END
 	*/
 }
 
@@ -493,7 +493,7 @@ void  CHierarchicalMapMHPartition::saveGlobalMapForMATLAB(
 	const THypothesisID				&hypothesisID,
 	const CHMHMapNode::TNodeID	&idReferenceNode ) const
 {
-	MRPT_START;
+	MRPT_START
 /*
 	unsigned int	nAreaNodes=0;
 
@@ -698,7 +698,7 @@ void  CHierarchicalMapMHPartition::saveGlobalMapForMATLAB(
 
 	os::fclose(f);
 */
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -734,7 +734,7 @@ void CHierarchicalMapMHPartition::findPathBetweenNodes(
 	 TArcList						&ret,
 	 bool							direction) const
 {
-	MRPT_START;
+	MRPT_START
 
 	/*
 	1  function Dijkstra(G, w, s)
@@ -846,7 +846,7 @@ void CHierarchicalMapMHPartition::findPathBetweenNodes(
 		} while (nod!=source);
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -861,7 +861,7 @@ void  CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 	float						additionalNoiseXYratio,
 	float						additionalNoisePhiRad ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	TArcList							arcsPath;
 	TArcList::const_iterator			arcsIt;
@@ -962,7 +962,7 @@ void  CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 	cout << "[computeCoordinatesTransformationBetweenNodes] Nodes: " << nodeFrom << " - " << nodeTo << ": " << auxPDF;
 #endif
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -977,11 +977,11 @@ float  CHierarchicalMapMHPartition::computeMatchProbabilityBetweenNodes(
 	const THypothesisID				&hypothesisID,
 	unsigned int				monteCarloSamplesPose )
 {
-	MRPT_START;
+	MRPT_START
 
 	THROW_EXCEPTION("TO DO")
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -993,7 +993,7 @@ void CHierarchicalMapMHPartition::findArcsBetweenNodes(
 	const THypothesisID			&hypothesisID,
 	TArcList					&ret ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	ret.clear();
 	const CHMHMapNodePtr node1 = getNodeByID( node1id );
@@ -1012,7 +1012,7 @@ void CHierarchicalMapMHPartition::findArcsBetweenNodes(
 			}
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1025,7 +1025,7 @@ void CHierarchicalMapMHPartition::findArcsOfTypeBetweenNodes(
 	const std::string			&arcType,
 	TArcList					&ret) const
 {
-	MRPT_START;
+	MRPT_START
 
 	ret.clear();
 	const CHMHMapNodePtr node1 = getNodeByID( node1id );
@@ -1045,7 +1045,7 @@ void CHierarchicalMapMHPartition::findArcsOfTypeBetweenNodes(
 			}
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -1058,7 +1058,7 @@ bool	 CHierarchicalMapMHPartition::areNodesNeightbour(
 	const THypothesisID				&hypothesisID,
 	const char					*requiredAnnotation ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	const CHMHMapNodePtr node1 = getNodeByID( node1id );
 
@@ -1082,7 +1082,7 @@ bool	 CHierarchicalMapMHPartition::areNodesNeightbour(
 
 	return false;
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -1098,7 +1098,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 	const bool					&showRobotPoseIDs
 	) const
 {
-	MRPT_START;
+	MRPT_START
 
 	// First: Clear and add the cool "ground grid" :-P
 	outScene.clear();
@@ -1276,7 +1276,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 	}
 
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -1289,7 +1289,7 @@ void  CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 	const THypothesisID										&hypothesisID,
 	const unsigned int									&numberOfIterations) const
 {
-	MRPT_START;
+	MRPT_START
 
 	CMatrixTemplateObjects<CPosePDFGaussian>		inputRelativePosesMatrix,outputOptimalPoses;
 	TArcList					arcsList;
@@ -1515,7 +1515,7 @@ void  CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 	cout << endl;
 #endif
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -1649,7 +1649,7 @@ CHMHMapArcPtr CHierarchicalMapMHPartition::findArcOfTypeBetweenNodes(
 	const std::string			&arcType,
 	bool						&isInverted ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	TArcList lstArcs;
 	findArcsOfTypeBetweenNodes( node1id, node2id, hypothesisID, arcType, lstArcs);
@@ -1671,7 +1671,7 @@ CHMHMapArcPtr CHierarchicalMapMHPartition::findArcOfTypeBetweenNodes(
 	}
 
 	return CHMHMapArcPtr();
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1685,7 +1685,7 @@ double CHierarchicalMapMHPartition::computeOverlapProbabilityBetweenNodes(
 	const float margin_to_substract
 	) const
 {
-	MRPT_START;
+	MRPT_START
 
 	size_t 		i,hits = 0;
 	CPose3DPDFParticles	posePDF;
@@ -1763,5 +1763,5 @@ double CHierarchicalMapMHPartition::computeOverlapProbabilityBetweenNodes(
 
 	return static_cast<double>(hits) / monteCarloSamples;
 
-	MRPT_END;
+	MRPT_END
 }

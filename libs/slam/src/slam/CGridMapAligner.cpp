@@ -69,7 +69,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF(
     float					*runningTime,
     void					*info )
 {
-	MRPT_START;
+	MRPT_START
 
 	switch( options.methodSelection )
 	{
@@ -85,7 +85,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF(
 		THROW_EXCEPTION("Wrong value found in 'options.methodSelection'!!");
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -879,7 +879,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 	return pdf_SOG;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -894,7 +894,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
 {
 	MRPT_UNUSED_PARAM(initialEstimationPDF);	MRPT_UNUSED_PARAM(info);
 
-	MRPT_START;
+	MRPT_START
 
 //#define	CORRELATION_SHOW_DEBUG
 
@@ -1032,7 +1032,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
 	return PDF;
 
 	// Done!
-	MRPT_END;
+	MRPT_END
 }
 
 

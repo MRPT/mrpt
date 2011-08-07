@@ -172,12 +172,12 @@ using namespace std;
 CInterfaceFTDI::CInterfaceFTDI()  :
 	m_readBuffer(4096)
 {
-	MRPT_START;
+	MRPT_START
 
 	m_ftHandle = NULL;
 	loadDriver();
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------
@@ -225,7 +225,7 @@ bool  CInterfaceFTDI::isOpen()
 -------------------------------------------------------------*/
 void	 CInterfaceFTDI::loadDriver()
 {
-	MRPT_START;
+	MRPT_START
 	// ------------------------------------------------------
 	//				Windoze version
 	// ------------------------------------------------------
@@ -250,7 +250,7 @@ void	 CInterfaceFTDI::loadDriver()
 		!m_pGetQueueStatus || !m_pSetLatencyTimer)
 			THROW_EXCEPTION("Error loading FTD2XX.DLL");
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------
@@ -258,24 +258,24 @@ void	 CInterfaceFTDI::loadDriver()
 -------------------------------------------------------------*/
 void   CInterfaceFTDI::ftdi_open(void* pvDevice)
 {
-	MRPT_START;
+	MRPT_START
 	if (isOpen()) Close();
 
 	ASSERT_(m_pOpen);
 	checkErrorAndRaise( (*m_pOpen)(pvDevice, &m_ftHandle ) );
 
-	MRPT_END;
+	MRPT_END
 }
 
 void   CInterfaceFTDI::ftdi_openEx(void*pArg1, unsigned long dwFlags)
 {
-	MRPT_START;
+	MRPT_START
 	if (isOpen()) Close();
 
 	ASSERT_(m_pOpenEx);
 	checkErrorAndRaise( (*m_pOpenEx)(pArg1,dwFlags,&m_ftHandle) );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------
@@ -314,17 +314,17 @@ void CInterfaceFTDI::ListAllDevices( TFTDIDeviceList &outList )
 
 void CInterfaceFTDI::ftdi_listDevices(void*pArg1, void*pArg2, unsigned long dwFlags)
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(m_pListDevices);
 	checkErrorAndRaise( (*m_pListDevices)(pArg1, pArg2, dwFlags) );
 
-	MRPT_END;
+	MRPT_END
 }
 
 void   CInterfaceFTDI::Close()
 {
-	MRPT_START;
+	MRPT_START
 
 	if (m_ftHandle)
 	{
@@ -335,81 +335,81 @@ void   CInterfaceFTDI::Close()
 
 	m_readBuffer.clear();
 
-	MRPT_END;
+	MRPT_END
 }
 
 void   CInterfaceFTDI::ftdi_read(void  *lpvBuffer, unsigned long dwBuffSize, unsigned long  *lpdwBytesRead)
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(m_pRead);
 	checkErrorAndRaise( (*m_pRead)( m_ftHandle, lpvBuffer, dwBuffSize, lpdwBytesRead ) );
 
-	MRPT_END;
+	MRPT_END
 }
 
 void   CInterfaceFTDI::ftdi_write(const void  *lpvBuffer, unsigned long dwBuffSize, unsigned long  *lpdwBytes)
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(m_pWrite);
 	checkErrorAndRaise(  (*m_pWrite)( m_ftHandle, lpvBuffer, dwBuffSize, lpdwBytes ) );
 
-	MRPT_END;
+	MRPT_END
 }
 
 void   CInterfaceFTDI::ResetDevice()
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(m_pResetDevice);
 	checkErrorAndRaise( (*m_pResetDevice) ( m_ftHandle ));
 
 	m_readBuffer.clear();
 
-	MRPT_END;
+	MRPT_END
 }
 
 void   CInterfaceFTDI::Purge()
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(m_pPurge);
 	unsigned long dwMask = FT_PURGE_RX | FT_PURGE_TX;
 	checkErrorAndRaise( (*m_pPurge)( m_ftHandle, dwMask ) );
 
 	m_readBuffer.clear();
-	MRPT_END;
+	MRPT_END
 }
 
 void   CInterfaceFTDI::SetTimeouts(unsigned long dwReadTimeout_ms, unsigned long dwWriteTimeout_ms)
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(m_pSetTimeouts);
 	checkErrorAndRaise( (*m_pSetTimeouts)( m_ftHandle, dwReadTimeout_ms,dwWriteTimeout_ms  ) );
 
-	MRPT_END;
+	MRPT_END
 }
 
 void   CInterfaceFTDI::ftdi_getQueueStatus(unsigned long  *lpdwAmountInRxQueue)
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(m_pGetQueueStatus);
 	checkErrorAndRaise( (*m_pGetQueueStatus) ( m_ftHandle, lpdwAmountInRxQueue  ) );
 
-	MRPT_END;
+	MRPT_END
 }
 
 void   CInterfaceFTDI::SetLatencyTimer (unsigned char latency_ms)
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(m_pSetLatencyTimer);
 	checkErrorAndRaise( (*m_pSetLatencyTimer)( m_ftHandle, latency_ms ) );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------
@@ -447,11 +447,11 @@ void  CInterfaceFTDI::checkErrorAndRaise(int errorCode)
 -------------------------------------------------------------*/
 void  CInterfaceFTDI::OpenBySerialNumber( const std::string &serialNumber )
 {
-	MRPT_START;
+	MRPT_START
 	m_readBuffer.clear();
 
 	ftdi_openEx( (void*)serialNumber.c_str(), FT_OPEN_BY_SERIAL_NUMBER);
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------
@@ -459,11 +459,11 @@ void  CInterfaceFTDI::OpenBySerialNumber( const std::string &serialNumber )
 -------------------------------------------------------------*/
 void  CInterfaceFTDI::OpenByDescription( const std::string &description )
 {
-	MRPT_START;
+	MRPT_START
 	m_readBuffer.clear();
 
 	ftdi_openEx( (void*)description.c_str(), FT_OPEN_BY_DESCRIPTION);
-	MRPT_END;
+	MRPT_END
 }
 
 

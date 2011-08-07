@@ -87,7 +87,7 @@ void CPointPDFParticles::setSize(
  ---------------------------------------------------------------*/
 void CPointPDFParticles::getMean(CPoint3D &p) const
 {
-	MRPT_START;
+	MRPT_START
 	if (m_particles.empty())
 		THROW_EXCEPTION("Cannot compute mean since there are zero particles.")
 
@@ -111,7 +111,7 @@ void CPointPDFParticles::getMean(CPoint3D &p) const
 	p.y( y*sumW );
 	p.z( z*sumW );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -119,7 +119,7 @@ void CPointPDFParticles::getMean(CPoint3D &p) const
  ---------------------------------------------------------------*/
 void CPointPDFParticles::getCovarianceAndMean(CMatrixDouble33 &cov, CPoint3D &mean) const
 {
-	MRPT_START;
+	MRPT_START
 
 	getMean(mean);
 	cov.zeros();
@@ -160,7 +160,7 @@ void CPointPDFParticles::getCovarianceAndMean(CMatrixDouble33 &cov, CPoint3D &me
 		cov(1,2) = cov(2,1) = var_yp;
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -219,7 +219,7 @@ void  CPointPDFParticles::copyFrom(const CPointPDF &o)
   ---------------------------------------------------------------*/
 void  CPointPDFParticles::saveToTextFile(const std::string &file) const
 {
-	MRPT_START;
+	MRPT_START
 
 	FILE	*f=os::fopen(file.c_str(),"wt");
 	if (!f) return;
@@ -230,7 +230,7 @@ void  CPointPDFParticles::saveToTextFile(const std::string &file) const
 
 	os::fclose(f);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -253,7 +253,7 @@ void  CPointPDFParticles::changeCoordinatesReference(const CPose3D &newReference
  ---------------------------------------------------------------*/
 double CPointPDFParticles::computeKurtosis()
 {
-	MRPT_START;
+	MRPT_START
 
 	// kurtosis = \mu^4 / (\sigma^2) -3
 	vector_double						kurts(3,0), mu4(3,0),m(3,0),var(3,0);
@@ -294,7 +294,7 @@ double CPointPDFParticles::computeKurtosis()
 
 	return math::maximum(kurts);
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -311,7 +311,7 @@ void CPointPDFParticles::drawSingleSample(CPoint3D &outSample) const
  ---------------------------------------------------------------*/
 void  CPointPDFParticles::bayesianFusion( const  CPointPDF &p1_, const  CPointPDF &p2_,const double &minMahalanobisDistToDrop )
 {
-	MRPT_START;
+	MRPT_START
 
 	THROW_EXCEPTION("TODO!!!");
 

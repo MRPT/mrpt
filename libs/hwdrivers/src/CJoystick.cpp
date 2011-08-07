@@ -98,7 +98,7 @@ CJoystick::~CJoystick()
  ---------------------------------------------------------------*/
 int  CJoystick::getJoysticksCount()
 {
-	MRPT_START;
+	MRPT_START
 #ifdef MRPT_OS_WINDOWS
 	return joyGetNumDevs();
 #elif defined(MRPT_OS_LINUX)
@@ -120,7 +120,7 @@ int  CJoystick::getJoysticksCount()
 	// Apple:
 	return 0;
 #endif
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -139,7 +139,7 @@ bool CJoystick::getJoystickPosition(
 	int	*raw_y_pos,
 	int *raw_z_pos )
 {
-	MRPT_START;
+	MRPT_START
 #ifdef MRPT_OS_WINDOWS
 	JOYINFO		jinfo;
 
@@ -254,7 +254,7 @@ bool CJoystick::getJoystickPosition(
 	// Apple.
 	return false;
 #endif
-	MRPT_END;
+	MRPT_END
 }
 
 /** Set the axis limit values, for computing a [-1,1] position index easily.

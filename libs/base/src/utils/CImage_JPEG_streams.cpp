@@ -386,7 +386,7 @@ jpeg_stdio_src (j_decompress_ptr cinfo, CStream * in)
 void  CImage::saveToStreamAsJPEG( CStream		&out  )const
 {
 #if MRPT_HAS_OPENCV
-	MRPT_START;
+	MRPT_START
 
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
 
@@ -491,7 +491,7 @@ void  CImage::saveToStreamAsJPEG( CStream		&out  )const
 	/*mrpt::utils::jpeglib::*/ jpeg_destroy_compress(&cinfo);
 
 	// DONE!
-	MRPT_END;
+	MRPT_END
 #endif
 }
 
@@ -502,7 +502,7 @@ void  CImage::saveToStreamAsJPEG( CStream		&out  )const
 void  CImage::loadFromStreamAsJPEG( CStream &in )
 {
 #if MRPT_HAS_OPENCV
-	MRPT_START;
+	MRPT_START
 
 	struct jpeg_decompress_struct		cinfo;
 	struct jpeg_error_mgr				jerr;
@@ -602,7 +602,7 @@ void  CImage::loadFromStreamAsJPEG( CStream &in )
 	jpeg_destroy_decompress(&cinfo);
 
 	// DONE!
-	MRPT_END;
+	MRPT_END
 #endif
 }
 

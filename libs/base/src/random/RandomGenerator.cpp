@@ -233,7 +233,7 @@ void  CRandomGenerator::drawGaussianMultivariate(
 
 	CMatrixTemplateNumeric<T>	Z,D;
 
-	MRPT_START;
+	MRPT_START
 
 	// Set size of output vector:
 	out_result.clear();

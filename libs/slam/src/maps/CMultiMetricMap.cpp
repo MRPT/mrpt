@@ -69,7 +69,7 @@ CMultiMetricMap::CMultiMetricMap(
 		m_colourPointsMap(),
 		m_ID(0)
 {
-	MRPT_START;
+	MRPT_START
 
 	MRPT_UNUSED_PARAM(dumm);
 
@@ -80,7 +80,7 @@ CMultiMetricMap::CMultiMetricMap(
 	if (opts)
 		options = *opts;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -108,7 +108,7 @@ CMultiMetricMap::CMultiMetricMap(const mrpt::slam::CMultiMetricMap &other ) :
 void  CMultiMetricMap::setListOfMaps(
 	const mrpt::slam::TSetOfMetricMapInitializers	*initializers )
 {
-	MRPT_START;
+	MRPT_START
 
 	m_ID = 0;
 
@@ -310,7 +310,7 @@ void  CMultiMetricMap::setListOfMaps(
 
 	} // end if initializers!=NULL
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -318,7 +318,7 @@ void  CMultiMetricMap::setListOfMaps(
   ---------------------------------------------------------------*/
 void  CMultiMetricMap::internal_clear()
 {
-	MRPT_START;
+	MRPT_START
 
 	// grid maps:
 	for_each( m_gridMaps.begin(),m_gridMaps.end(),  ObjectClear() );
@@ -326,7 +326,7 @@ void  CMultiMetricMap::internal_clear()
 	// Gas grids maps:
 	for_each( m_gasGridMaps.begin(),m_gasGridMaps.end(),  ObjectClear() );
 
-	
+
 	// Wifi grids maps:
 	for_each( m_wifiGridMaps.begin(),m_wifiGridMaps.end(),  ObjectClear() );
 
@@ -348,7 +348,7 @@ void  CMultiMetricMap::internal_clear()
 	// Colour points maps:
 	if (m_colourPointsMap) m_colourPointsMap->clear();
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -356,7 +356,7 @@ void  CMultiMetricMap::internal_clear()
   ---------------------------------------------------------------*/
 mrpt::slam::CMultiMetricMap & CMultiMetricMap::operator = ( const CMultiMetricMap &other )
 {
-	MRPT_START;
+	MRPT_START
 
 	if (this == &other) return *this;			// Who knows! :-)
 
@@ -411,7 +411,7 @@ mrpt::slam::CMultiMetricMap & CMultiMetricMap::operator = ( const CMultiMetricMa
 
 	return *this;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -720,7 +720,7 @@ double	 CMultiMetricMap::computeObservationLikelihood(
 			const CObservation		*obs,
 			const CPose3D			&takenFrom )
 {
-	MRPT_START;
+	MRPT_START
 	double	ret;
 
 	switch (options.likelihoodMapSelection)
@@ -839,7 +839,7 @@ double	 CMultiMetricMap::computeObservationLikelihood(
 		THROW_EXCEPTION("Unknown value in options.likelihoodMapSelection!!");
 	};
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -848,7 +848,7 @@ Returns true if this map is able to compute a sensible likelihood function for t
  ---------------------------------------------------------------*/
 bool CMultiMetricMap::canComputeObservationLikelihood( const CObservation *obs )
 {
-	MRPT_START;
+	MRPT_START
 
 	switch (options.likelihoodMapSelection)
 	{
@@ -951,7 +951,7 @@ bool CMultiMetricMap::canComputeObservationLikelihood( const CObservation *obs )
 		}
 	};
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1042,7 +1042,7 @@ bool  CMultiMetricMap::internal_insertObservation(
 		const CObservation	*obs,
 		const CPose3D			*robotPose)
 {
-	MRPT_START;
+	MRPT_START
 
 	// ---------------------------------------------------------------------
 	// There are easiest ways of obtaining the bool return value for this
@@ -1119,7 +1119,7 @@ bool  CMultiMetricMap::internal_insertObservation(
 
 	return done[0] || done[1] || done[2] || done[3] || done[4] || done[5] || done[6] || done[7];
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1137,7 +1137,7 @@ void  CMultiMetricMap::computeMatchingWith2D(
 		bool									onlyKeepTheClosest,
 		bool									onlyUniqueRobust) const
 {
-    MRPT_START;
+    MRPT_START
 
 	ASSERTMSG_( m_pointsMaps.empty()==1, "There is not exactly 1 points maps in the multimetric map." );
 
@@ -1152,7 +1152,7 @@ void  CMultiMetricMap::computeMatchingWith2D(
 									sumSqrDist	,
 									onlyKeepTheClosest,
 									onlyUniqueRobust);
-    MRPT_END;
+    MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1174,7 +1174,7 @@ bool  CMultiMetricMap::isEmpty() const
 	for (std::deque<CGasConcentrationGridMap2DPtr>::const_iterator	it2 = m_gasGridMaps.begin();it2!=m_gasGridMaps.end();it2++)
 		res = res && (*it2)->isEmpty();
 
-	
+
 	for (std::deque<CWirelessPowerGridMap2DPtr>::const_iterator	it3 = m_wifiGridMaps.begin();it3!=m_wifiGridMaps.end();it3++)
 		res = res && (*it3)->isEmpty();
 
@@ -1258,7 +1258,7 @@ TMetricMapInitializer::CGasConcentrationGridMap2DOptions::CGasConcentrationGridM
 	insertionOpts()
 {
 }
-	
+
 /*---------------------------------------------------------------
 					CWirelessPowerGridMap2DOptions
  ---------------------------------------------------------------*/
@@ -1317,7 +1317,7 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(
 	const std::string	&filNamePrefix
 	) const
 {
-	MRPT_START;
+	MRPT_START
 
 	unsigned int		idx;
 
@@ -1408,7 +1408,7 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(
 		m_colourPointsMap->saveMetricMapRepresentationToFile( fil );
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1418,7 +1418,7 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase  &ini,
 	const std::string &sectionName )
 {
-	MRPT_START;
+	MRPT_START
 
 	std::string subSectName;
 
@@ -1688,7 +1688,7 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_reflectivityMaps,bool,	options.enableInsertion_reflectivityMaps,		ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_colourPointsMaps,bool,	options.enableInsertion_colourPointsMaps,		ini,sectionName);
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1696,7 +1696,7 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
  ---------------------------------------------------------------*/
 void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 {
-	MRPT_START;
+	MRPT_START
 
 	out.printf("====================================================================\n\n");
 	out.printf("             Set of internal maps for 'CMultiMetricMap' object\n\n");
@@ -1832,7 +1832,7 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 		}
 	} // for "it"
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -1841,7 +1841,7 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 ---------------------------------------------------------------*/
 void  CMultiMetricMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	// Points maps:
 	{
@@ -1897,7 +1897,7 @@ void  CMultiMetricMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) c
 	if (m_colourPointsMap.present())
 		m_colourPointsMap->getAs3DObject( outObj );
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -1919,7 +1919,7 @@ float  CMultiMetricMap::compute3DMatchingRatio(
 		float									minMahaDistForCorr
 		) const
 {
-	MRPT_START;
+	MRPT_START
 
 	size_t		nMapsComputed = 0;
 	float		accumResult = 0;
@@ -1956,7 +1956,7 @@ float  CMultiMetricMap::compute3DMatchingRatio(
 	if (nMapsComputed) accumResult/=nMapsComputed;
 	return accumResult;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1964,7 +1964,7 @@ float  CMultiMetricMap::compute3DMatchingRatio(
  ---------------------------------------------------------------*/
 void  CMultiMetricMap::auxParticleFilterCleanUp()
 {
-	MRPT_START;
+	MRPT_START
 
 	// grid maps:
 	{
@@ -2002,7 +2002,7 @@ void  CMultiMetricMap::auxParticleFilterCleanUp()
 	if (m_beaconMap.present())
 		m_beaconMap->auxParticleFilterCleanUp( );
 
-	MRPT_END;
+	MRPT_END
 }
 
 

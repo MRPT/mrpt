@@ -65,7 +65,7 @@ CSensoryFrame::CSensoryFrame( const CSensoryFrame &o) :
   ---------------------------------------------------------------*/
 CSensoryFrame & CSensoryFrame::operator =( const CSensoryFrame &o)
 {
-	MRPT_START;
+	MRPT_START
 
 	clear();
 
@@ -88,7 +88,7 @@ CSensoryFrame & CSensoryFrame::operator =( const CSensoryFrame &o)
 
 	return *this;
 
-	MRPT_END;
+	MRPT_END
 
 }
 
@@ -132,7 +132,7 @@ void  CSensoryFrame::writeToStream(CStream &out,int *version) const
   ---------------------------------------------------------------*/
 void  CSensoryFrame::readFromStream(CStream &in,int version)
 {
-	MRPT_START;
+	MRPT_START
 
 	switch(version)
 	{
@@ -169,7 +169,7 @@ void  CSensoryFrame::readFromStream(CStream &in,int version)
 
 	m_cachedMap.clear();
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -262,7 +262,7 @@ CObservationPtr CSensoryFrame::getObservationBySensorLabel(
 	const std::string &label,
 	const size_t &idx) const
 {
-	MRPT_START;
+	MRPT_START
 
 	size_t  foundCount = 0;
 	for (const_iterator it = begin();it!=end();++it)
@@ -272,7 +272,7 @@ CObservationPtr CSensoryFrame::getObservationBySensorLabel(
 
 	return CObservationPtr();
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

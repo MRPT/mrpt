@@ -60,7 +60,7 @@ CHolonomicND::CHolonomicND(const mrpt::utils::CConfigFileBase *INI_FILE )
   ---------------------------------------------------------------*/
 void  CHolonomicND::initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
 {
-    MRPT_START;
+    MRPT_START
 
 	const std::string section("ND_CONFIG");
 
@@ -83,7 +83,7 @@ void  CHolonomicND::initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
     INI_FILE.read_vector(section,"factorWeights", vector_double(0), factorWeights, true );
     ASSERT_(factorWeights.size()==4);
 
-    MRPT_END;
+    MRPT_END
 }
 
 

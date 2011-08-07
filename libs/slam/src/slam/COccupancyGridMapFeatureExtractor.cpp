@@ -33,8 +33,8 @@
 
 
 using namespace mrpt;
-using namespace mrpt::slam; 
-using namespace mrpt::utils; 
+using namespace mrpt::slam;
+using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 
@@ -64,7 +64,7 @@ void COccupancyGridMapFeatureExtractor::uncached_extractFeatures(
 	const mrpt::vision::CFeatureExtraction::TOptions  &feat_options
 	)
 {
-	MRPT_START;
+	MRPT_START
 
 	// get the gridmap as an image:
 	CImage	img(1,1,1);
@@ -81,7 +81,7 @@ void COccupancyGridMapFeatureExtractor::uncached_extractFeatures(
 	fExt.detectFeatures( img, lstFeatures,0 /* Init ID */, number_of_features );
 
 	// Extract descriptors:
-	if (descriptors!=descAny) 
+	if (descriptors!=descAny)
 		fExt.computeDescriptors(img, lstFeatures, descriptors);
 
 	// Copy all the features to a map of landmarks:
@@ -124,7 +124,7 @@ void COccupancyGridMapFeatureExtractor::extractFeatures(
 #if 0
 	// Un-cashed version:
 	uncached_extractFeatures(grid,outMap,number_of_features,descriptors,feat_options);
-#else 
+#else
 	// Use cache mechanism:
 
 	TCache::const_iterator it=m_cache.find(&grid);
@@ -145,7 +145,7 @@ void COccupancyGridMapFeatureExtractor::extractFeatures(
 		// Already in the cache:
 		outMap = *(it->second);
 	}
-	
+
 #endif
 }
 

@@ -229,7 +229,7 @@ void  CPosePDFSOG::readFromStream(CStream &in,int version)
   ---------------------------------------------------------------*/
 void  CPosePDFSOG::copyFrom(const CPosePDF &o)
 {
-	MRPT_START;
+	MRPT_START
 
 	if (this == &o) return;		// It may be used sometimes
 
@@ -246,7 +246,7 @@ void  CPosePDFSOG::copyFrom(const CPosePDF &o)
 		o.getCovariance( m_modes[0].cov );
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -318,12 +318,12 @@ void  CPosePDFSOG::rotateAllCovariances(const double & ang)
  ---------------------------------------------------------------*/
 void  CPosePDFSOG::drawSingleSample( CPose2D &outPart ) const
 {
-	MRPT_START;
+	MRPT_START
 	MRPT_UNUSED_PARAM(outPart);
 
 	THROW_EXCEPTION("Not implemented yet!!");
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -333,13 +333,13 @@ void  CPosePDFSOG::drawManySamples(
 	size_t						N,
 	std::vector<vector_double>	&outSamples )  const
 {
-	MRPT_START;
+	MRPT_START
 	MRPT_UNUSED_PARAM(N);
 	MRPT_UNUSED_PARAM(outSamples);
 
 	THROW_EXCEPTION("Not implemented yet!!");
 
-	MRPT_END;
+	MRPT_END
 }
 
 
@@ -416,7 +416,7 @@ void  CPosePDFSOG::bayesianFusion(const  CPosePDF &p1_,const  CPosePDF &p2_, con
 
 	normalizeWeights();
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -539,7 +539,7 @@ void  CPosePDFSOG::assureSymmetry()
  ---------------------------------------------------------------*/
 void  CPosePDFSOG::normalizeWeights()
 {
-	MRPT_START;
+	MRPT_START
 
 	if (!m_modes.size()) return;
 
@@ -551,7 +551,7 @@ void  CPosePDFSOG::normalizeWeights()
 	for (it=m_modes.begin();it!=m_modes.end();it++)
 		(it)->log_w -= maxW;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -567,7 +567,7 @@ void  CPosePDFSOG::evaluatePDFInArea(
 	CMatrixD	&outMatrix,
 	bool		sumOverAllPhis )
 {
-	MRPT_START;
+	MRPT_START
 
 	ASSERT_(x_max>x_min);
 	ASSERT_(y_max>y_min);
@@ -591,7 +591,7 @@ void  CPosePDFSOG::evaluatePDFInArea(
 	}
 
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

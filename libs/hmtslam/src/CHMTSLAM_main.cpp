@@ -600,12 +600,12 @@ void CHMTSLAM::registerLoopClosureDetector(
   ---------------------------------------------------------------*/
 CTopLCDetectorBase* CHMTSLAM::loopClosureDetector_factory(const std::string  &name)
 {
-	MRPT_START;
+	MRPT_START
 	std::map<std::string,TLopLCDetectorFactory>::const_iterator it=m_registeredLCDetectors.find( name );
 	if (it==m_registeredLCDetectors.end())
 		THROW_EXCEPTION_CUSTOM_MSG1("Invalid value for TLC_detectors: %s", name.c_str() );
 	return it->second(this);
-	MRPT_END;
+	MRPT_END
 }
 
 

@@ -137,13 +137,13 @@ CHMHMapArc::~CHMHMapArc()
   ---------------------------------------------------------------*/
 void  CHMHMapArc::onNodeDestruction(CHMHMapNode *node)
 {
-	MRPT_START;
+	MRPT_START
 
 	// Check if arc is from/to this node:
 	if (node->getID()==m_nodeFrom)	m_nodeFrom = AREAID_INVALID;
 	if (node->getID()==m_nodeTo)	m_nodeTo = AREAID_INVALID;
 
-	MRPT_END;
+	MRPT_END
 }
 
 

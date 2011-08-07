@@ -141,7 +141,7 @@ namespace mrpt
             template <class T>
             void  setElemental(const char *propertyName, const T &data, const int64_t & hypothesis_ID)
             {
-                MRPT_START;
+                MRPT_START
 
                 CMemoryChunkPtr memChunk = CMemoryChunkPtr( new CMemoryChunk() );
 				memChunk->setAllocBlockSize(10);

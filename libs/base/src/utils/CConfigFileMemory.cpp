@@ -128,9 +128,9 @@ void CConfigFileMemory::getContent( std::string &str ) const
  ---------------------------------------------------------------*/
 CConfigFileMemory::~CConfigFileMemory(  )
 {
-    MRPT_START;
+    MRPT_START
     delete THE_INI;
-    MRPT_END;
+    MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -138,13 +138,13 @@ CConfigFileMemory::~CConfigFileMemory(  )
  ---------------------------------------------------------------*/
 void  CConfigFileMemory::writeString(const std::string &section,const std::string &name, const std::string &str)
 {
-    MRPT_START;
+    MRPT_START
 
 	SI_Error ret = THE_INI->SetValue( section.c_str(),name.c_str(),str.c_str(), NULL );
     if (ret<0)
         THROW_EXCEPTION("Error changing value in INI-style file!");
 
-    MRPT_END;
+    MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -156,7 +156,7 @@ std::string  CConfigFileMemory::readString(
     const std::string &defaultStr,
     bool failIfNotFound) const
 {
-    MRPT_START;
+    MRPT_START
     const char *defVal = failIfNotFound ? NULL :defaultStr.c_str();
 
     const char *aux = static_cast<const CSimpleIniA*>(m_ini.get())->GetValue(
@@ -177,7 +177,7 @@ std::string  CConfigFileMemory::readString(
 	if ((pos=ret.find("//"))!=string::npos && pos>0 && isspace(ret[pos-1]))
 		ret = ret.substr(0,pos);
 	return ret;
-    MRPT_END;
+    MRPT_END
 }
 
 /*---------------------------------------------------------------

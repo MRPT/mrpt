@@ -553,7 +553,7 @@ double  CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 {
 	MRPT_UNUSED_PARAM(action);
 
-	MRPT_START;
+	MRPT_START
 
 	const CLocalMetricHypothesis  *myObj = static_cast<const CLocalMetricHypothesis*>(obj);
 
@@ -628,7 +628,7 @@ double  CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 
 	return ret;
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*---------------------------------------------------------------

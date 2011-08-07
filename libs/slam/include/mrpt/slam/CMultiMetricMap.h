@@ -160,22 +160,22 @@ namespace slam
 
 		} options;
 
-		
+
 		/** @name Internal lists of maps
 		    @{ */
 		// Note: A variable number of maps may exist, depending on the initialization from TSetOfMetricMapInitializers.
 		//       Not used maps are "NULL" or empty smart pointers.
-		
+
 		std::deque<CSimplePointsMapPtr>              m_pointsMaps;
 		CLandmarksMapPtr                             m_landmarksMap;
 		CBeaconMapPtr                                m_beaconMap;
 		std::deque<COccupancyGridMap2DPtr>           m_gridMaps;
 		std::deque<CGasConcentrationGridMap2DPtr>    m_gasGridMaps;
-		std::deque<CWirelessPowerGridMap2DPtr>    m_wifiGridMaps;
+		std::deque<CWirelessPowerGridMap2DPtr>       m_wifiGridMaps;
 		std::deque<CHeightGridMap2DPtr>              m_heightMaps;
 		std::deque<CReflectivityGridMap2DPtr>        m_reflectivityMaps;
 		CColouredPointsMapPtr                        m_colourPointsMap;
-		
+
 		/** @} */
 
 		/** Constructor.
@@ -281,7 +281,7 @@ namespace slam
 		 */
 		inline bool canComputeObservationLikelihood( const CObservationPtr &obs ) { return canComputeObservationLikelihood(obs.pointer()); }
 
-		/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it. 
+		/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 			* Otherwise, return NULL
 			*/
 		virtual const CSimplePointsMap * getAsSimplePointsMap() const;
@@ -463,7 +463,7 @@ namespace slam
 		  *  reflectivityMap_count=<Number of mrpt::slam::CReflectivityGridMap2D maps>
 		  *  colourPointsMap_count=<0 or 1, for creating a mrpt::slam::CColouredPointsMap map>
 		  *
-		  *  // Selection of map for likelihood. Either a numeric value or the textual enum 
+		  *  // Selection of map for likelihood. Either a numeric value or the textual enum
 		  *  //   enum value of slam::CMultiMetricMap::TOptions::TMapSelectionForLikelihood (e.g: either "-1" or "fuseAll", ect...)
 		  *  likelihoodMapSelection = -1
 		  *
@@ -522,7 +522,7 @@ namespace slam
 
 
 
-		  
+
 		  * // ====================================================
 		  * // Creation Options for CWirelessPowerGridMap2D ##:
 		  * [<sectionName>+"_wifiGrid_##_creationOpts"]

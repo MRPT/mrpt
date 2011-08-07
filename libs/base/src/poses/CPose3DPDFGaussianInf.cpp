@@ -263,7 +263,7 @@ void  CPose3DPDFGaussianInf::changeCoordinatesReference( const CPose3D &newRefer
 void  CPose3DPDFGaussianInf::drawSingleSample( CPose3D &outPart ) const
 {
 	MRPT_UNUSED_PARAM(outPart);
-	MRPT_START;
+	MRPT_START
 
 	CMatrixDouble66 cov(UNINITIALIZED_MATRIX);
 	this->cov_inv.inv(cov);
@@ -291,7 +291,7 @@ void  CPose3DPDFGaussianInf::drawManySamples(
 	size_t						N,
 	vector<vector_double>	&outSamples ) const
 {
-	MRPT_START;
+	MRPT_START
 
 	CMatrixDouble66 cov(UNINITIALIZED_MATRIX);
 	this->cov_inv.inv(cov);
@@ -308,7 +308,7 @@ void  CPose3DPDFGaussianInf::drawManySamples(
 		(*it)[5] = math::wrapToPi( (*it)[5] + mean.roll() );
 	}
 
-	MRPT_END;
+	MRPT_END
 }
 
 

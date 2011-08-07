@@ -96,7 +96,7 @@ void  CBoardDLMS::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &configSource,
 	const string	  &iniSection )
 {
-	MRPT_START;
+	MRPT_START
 	m_usbSerialNumber	= configSource.read_string( iniSection, "USB_serialname", "", true );
 
 	m_mSensorPose.setFromValues(
@@ -115,7 +115,7 @@ void  CBoardDLMS::loadConfig_sensorSpecific(
         DEG2RAD( configSource.read_float( iniSection, "sPose_pitch", 0, false ) ),
         DEG2RAD( configSource.read_float( iniSection, "sPose_roll", 0, false ) ) );
 
-	MRPT_END;
+	MRPT_END
 }
 
 /*-------------------------------------------------------------
