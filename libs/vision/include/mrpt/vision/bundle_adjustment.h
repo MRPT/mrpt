@@ -43,6 +43,9 @@ namespace mrpt
 		using mrpt::math::TPoint3D;
 		using mrpt::utils::TCamera;
 
+		/** \defgroup bundle_adj Bundle-Adjustment methods */
+
+
 		/** @name Bundle-Adjustment methods
 		    @{ */
 
@@ -70,6 +73,7 @@ namespace mrpt
 		  *		- "verbose" : Verbose output (default=0)
 		  *		- "max_iterations": Maximum number of iterations to run (default=50)
 		  *		- "robust_kernel": If !=0, use a robust kernel against outliers (default=1)
+		  *		- "kernel_param": The pseudo-huber kernel parameter (default=3)
 		  *		- "mu": Initial mu for LevMarq (default=-1 -> autoguess)
 		  *		- "num_fix_frames": Number of first frame poses to don't optimize (keep unmodified as they come in)  (default=1: the first pose is the reference and is not modified)
 		  *		- "num_fix_points": Idem, for the landmarks positions (default=0: optimize all)
@@ -86,6 +90,7 @@ namespace mrpt
 		  * \param user_feedback [IN] If provided, this functor will be called at each iteration to provide a feedback to the user.
 		  *
 		  * \return The final overall squared error.
+		  * \ingroup bundle_adj
 		  */
 		double VISION_IMPEXP bundle_adj_full(
 			const mrpt::vision::TSequenceFeatureObservations   & observations,
@@ -105,6 +110,7 @@ namespace mrpt
 
 		/** Fills the frames & landmark points maps with an initial gross estimate from the sequence \a observations, so they can be fed to bundle adjustment methods.
 		  * \sa bundle_adj_full
+		  * \ingroup bundle_adj
 		  */
 		void VISION_IMPEXP ba_initial_estimate(
 			const mrpt::vision::TSequenceFeatureObservations   & observations,
@@ -125,6 +131,7 @@ namespace mrpt
 		  * \param frame_poses_are_inverse If set to true, global camera poses are \f$ \ominus F \f$ instead of \f$ F \f$, for each F in frame_poses.
 		  *
 		  *  \return Overall squared reprojection error.
+		  * \ingroup bundle_adj
 		  */
 		double VISION_IMPEXP reprojectionResiduals(
 			const mrpt::vision::TSequenceFeatureObservations   & observations,
@@ -133,7 +140,8 @@ namespace mrpt
 			const mrpt::vision::TLandmarkLocationsVec          & landmark_points,
 			std::vector<CArray<double,2> > & out_residuals,
 			const bool  frame_poses_are_inverse,
-			const bool  use_robust_kernel = true
+			const bool  use_robust_kernel = true,
+			const double kernel_param = 3.0
 			);
 
 		//! \overload
@@ -144,7 +152,8 @@ namespace mrpt
 			const mrpt::vision::TLandmarkLocationsMap          & landmark_points,
 			std::vector<CArray<double,2> > & out_residuals,
 			const bool  frame_poses_are_inverse,
-			const bool  use_robust_kernel = true
+			const bool  use_robust_kernel = true,
+			const double kernel_param = 3.0
 			);
 
 
@@ -157,6 +166,7 @@ namespace mrpt
 		  *     p <-- p [+] delta ==>  p <-- exp(delta) * p
 		  *
 		  * \param delta_num_vals Used just for sanity check, must be equal to "frame_poses.size() * 6"
+		  * \ingroup bundle_adj
 		  */
 		void VISION_IMPEXP add_se3_deltas_to_frames(
 			const mrpt::vision::TFramePosesVec & frame_poses,
@@ -171,6 +181,7 @@ namespace mrpt
 		  *    new_landmark_points[i] = landmark_points[i] + delta[(first_idx+3*i):(first_idx+3*i+2)]    , for every pose in \a landmark_points
 		  *
 		  * \param delta_num_vals Used just for sanity check, must be equal to "landmark_points.size() * 3"
+		  * \ingroup bundle_adj
 		  */
 		void VISION_IMPEXP add_3d_deltas_to_points(
 			const mrpt::vision::TLandmarkLocationsVec & landmark_points,

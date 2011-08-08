@@ -50,10 +50,13 @@ using namespace mrpt::gui;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
+using namespace mrpt::poses;
 using namespace std;
 
 
 vector_double history_avr_err;
+
+double WORLD_SCALE = 1;  // Will change when loading SBA examples
 
 // A feedback functor, which is called on each iteration by the optimizer to let us know on the progress:
 void my_BundleAdjustmentFeedbackFunctor(
@@ -66,8 +69,11 @@ void my_BundleAdjustmentFeedbackFunctor(
 {
 	const double avr_err = std::sqrt(cur_total_sq_error/input_observations.size());
 	history_avr_err.push_back(avr_err);
-	cout << "[PROGRESS] Iter: " << cur_iter << " avrg err in px: " << avr_err << endl;
-	cout.flush();
+	if ((cur_iter % 10)==0)
+	{
+		cout << "[PROGRESS] Iter: " << cur_iter << " avrg err in px: " << avr_err << endl;
+		cout.flush();
+	}
 }
 
 
@@ -84,10 +90,11 @@ void bundle_adj_full_demo(
 	cout << "Optimizing " << allObs.size() << " feature observations.\n";
 
 	TParametersDouble 		extra_params;
-	// extra_params["verbose"] = 1;
-	extra_params["max_iterations"]= 250;
+	//extra_params["verbose"] = 1;
+	extra_params["max_iterations"]= 2000; //250;
 	//extra_params["num_fix_frames"] = 1;
 	//extra_params["num_fix_points"] = 0;
+	//extra_params["robust_kernel"] = 0;
 	extra_params["profiler"] = 1;
 
 	mrpt::vision::bundle_adj_full(
@@ -114,11 +121,13 @@ int main(int argc, char **argv)
 	try
 	{
 		// Simulation or real-data? (read at the top of this file):
-		if (argc!=1 && argc!=3)
+		if ((argc!=1 && argc!=3 && argc!=4) || (argc==2 && !strcpy(argv[1],"--help")) )
 		{
 			cout << "Usage:\n"
+				<< argv[0] << " --help -> Shows this help\n"
 				<< argv[0] << "     -> Simulation\n"
-				<< argv[0] << " <feats.txt> <cam_model.cfg>\n";
+				<< argv[0] << " <feats.txt> <cam_model.cfg> -> Data in MRPT format\n"
+				<< argv[0] << " <cams.txt> <points.cfg> <calib.txt> -> SBA format\n";
 			return 1;
 		}
 
@@ -261,30 +270,114 @@ int main(int argc, char **argv)
 		{
 			//  Real data
 			// --------------------------
-			const string feats_fil = string(argv[1]);
-			const string cam_fil   = string(argv[2]);
+			if (argc==3)
+			{
+				const string feats_fil = string(argv[1]);
+				const string cam_fil   = string(argv[2]);
 
-			cout << "Loading observations from: " << feats_fil << "...";cout.flush();
-			allObs.loadFromTextFile(feats_fil);
-			cout << "Done.\n";
+				cout << "Loading observations from: " << feats_fil << "...";cout.flush();
+				allObs.loadFromTextFile(feats_fil);
+				cout << "Done.\n";
 
-			//allObs.decimateCameraFrames(5);
-			allObs.compressIDs();
+				allObs.decimateCameraFrames(20);
+				allObs.compressIDs();
 
-			ASSERT_(mrpt::system::fileExists(cam_fil))
-			cout << "Loading camera params from: " << cam_fil;
-			CConfigFile cfgCam(cam_fil);
-			camera_params.loadFromConfigFile("CAMERA",cfgCam);
-			cout << "Done.\n";
+				ASSERT_(mrpt::system::fileExists(cam_fil))
+				cout << "Loading camera params from: " << cam_fil;
+				CConfigFile cfgCam(cam_fil);
+				camera_params.loadFromConfigFile("CAMERA",cfgCam);
+				cout << "Done.\n";
 
-			cout << "Initial gross estimate...";
-			mrpt::vision::ba_initial_estimate(
-				allObs,
-				camera_params,
-				frame_poses,
-				landmark_points);
-			cout << "OK\n";
+				cout << "Initial gross estimate...";
+				mrpt::vision::ba_initial_estimate(
+					allObs,
+					camera_params,
+					frame_poses,
+					landmark_points);
+				cout << "OK\n";
 
+			}
+			else
+			{
+				// Load data from 3 files in the same format as used by "eucsbademo" in the SBA library:
+				const string cam_frames_fil = string(argv[1]);
+				const string obs_fil   = string(argv[2]);
+				const string calib_fil = string(argv[3]);
+
+				{
+					cout << "Loading initial camera frames from: " << cam_frames_fil << "...";cout.flush();
+
+					mrpt::utils::CTextFileLinesParser  fil(cam_frames_fil);
+					frame_poses.clear();
+
+					std::istringstream ss;
+					while (fil.getNextLine(ss))
+					{
+						double q[4],t[3];
+						ss >> q[0] >>q[1] >>q[2] >>q[3] >> t[0]>> t[1]>> t[2];
+						mrpt::poses::CPose3DQuat p(t[0],t[1],t[2], mrpt::math::CQuaternionDouble(q[0],q[1],q[2],q[3]) );
+						//cout << "cam: " << p << endl;
+						frame_poses.push_back( CPose3D(p) );
+					}
+
+					cout << "Done. " << frame_poses.size() << " cam frames loaded\n";
+
+					frame_poses_noisy = frame_poses; // To draw in 3D the initial values as well.
+				}
+
+				{
+					cout << "Loading observations & feature 3D points from: " << obs_fil << "...";cout.flush();
+
+					mrpt::utils::CTextFileLinesParser  fil(obs_fil);
+					landmark_points.clear();
+					allObs.clear();
+
+					std::istringstream ss;
+					while (fil.getNextLine(ss))
+					{
+						// # X Y Z  nframes  frame0 x0 y0  frame1 x1 y1 ...
+						double t[3];
+						size_t N=0;
+						ss >> t[0]>> t[1]>> t[2] >> N;
+
+						const TLandmarkID feat_id = landmark_points.size();
+						const TPoint3D pt(t[0],t[1],t[2]);
+						landmark_points.push_back( pt );
+
+						// Read obs:
+						for (size_t i=0;i<N;i++)
+						{
+							TCameraPoseID frame_id;
+							TPixelCoordf px;
+							ss >> frame_id >> px.x >> px.y;
+							allObs.push_back(TFeatureObservation(feat_id,frame_id,px));
+							//cout << "feat: " << feat_id << " cam: " << frame_id << " px: " << px.x << "," << px.y << endl;
+						}
+					}
+
+					cout << "Done. " << landmark_points.size() << " points, " << allObs.size() << " observations read.\n";
+
+					landmark_points_real = landmark_points; // To draw in 3D the initial values as well.
+				}
+
+				CMatrixDouble33 cam_pars;
+				cam_pars.loadFromTextFile(calib_fil);
+
+				//cout << "Calib:\n" << cam_pars << endl;
+
+				camera_params.fx( cam_pars(0,0) );
+				camera_params.fy( cam_pars(1,1) );
+				camera_params.cx( cam_pars(0,2) );
+				camera_params.cy( cam_pars(1,2) );
+
+				cout << "camera calib:\n" <<camera_params.dumpAsText()<<endl;
+
+				// Change world scale:
+				WORLD_SCALE = 2000;
+
+			}
+
+			// Do it:
 			bundle_adj_full_demo( camera_params, allObs, frame_poses, landmark_points );
 		}
 
@@ -307,6 +400,7 @@ int main(int argc, char **argv)
 			obj->setPointSize(2);
 			obj->setColor(0,0,0);
 			obj->loadFromPointsList(landmark_points_real);
+			obj->setScale(WORLD_SCALE);
 			scene->insert(obj);
 		}
 		if (!landmark_points_noisy.empty())
@@ -315,6 +409,7 @@ int main(int argc, char **argv)
 			obj->setPointSize(4);
 			obj->setColor(0.7,0.2,0.2, 0);
 			obj->loadFromPointsList(landmark_points_noisy);
+			obj->setScale(WORLD_SCALE);
 			scene->insert(obj);
 		}
 
@@ -323,6 +418,7 @@ int main(int argc, char **argv)
 			obj->setPointSize(3);
 			obj->setColor(0,0,1, 1.0);
 			obj->loadFromPointsList(landmark_points);
+			obj->setScale(WORLD_SCALE);
 			scene->insert(obj);
 		}
 
@@ -370,7 +466,11 @@ mrpt::opengl::CSetOfObjectsPtr framePosesVecVisualize(
 	for (size_t i=0;i<poses.size();i++)
 	{
 		CSetOfObjectsPtr corner = opengl::stock_objects::CornerXYZSimple(len, lineWidth);
-		corner->setPose(poses[i]);
+		CPose3D  p = poses[i];
+		p.x( WORLD_SCALE *p.x() );
+		p.y( WORLD_SCALE *p.y() );
+		p.z( WORLD_SCALE *p.z() );
+		corner->setPose(p);
 		corner->setName(format("%u",(unsigned int)i ));
 		corner->enableShowName();
 		obj->insert(corner);

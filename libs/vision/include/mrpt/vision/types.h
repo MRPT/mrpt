@@ -158,6 +158,21 @@ namespace mrpt
 			/** Load from a text file, in the format described in \a saveToTextFile \exception std::exception On I/O or format error */
 			void loadFromTextFile(const std::string &filName);
 
+			/** Save the list of observations + the point locations + the camera frame poses to a pair of files in the format
+			  *  used by the Sparse Bundle Adjustment (SBA) C++ library.
+			  *
+			  *  Point file lines: X Y Z  nframes  frame0 x0 y0  frame1 x1 y1 ...
+			  *
+			  *  Camera file lines: qr qx qy qz x y z  (Pose as a quaternion)
+			  * \return false on any error
+			  */
+			bool saveAsSBAFiles(
+				const TLandmarkLocationsVec &pts,
+				const std::string &pts_file,
+				const TFramePosesVec        &cams,
+				const std::string &cams_file) const;
+
+
 			/** Remove all those features that don't have a minimum number of observations from different camera frame IDs.
 			  * \return the number of erased entries.
 			  * \sa After calling this you may want to call \a compressIDs */

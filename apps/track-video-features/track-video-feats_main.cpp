@@ -352,6 +352,22 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 		cout << "Saving tracked features to: tracked_feats.txt..."; cout.flush();
 		feat_track_history.saveToTextFile("./tracked_feats.txt");
 		cout << "Done!\n"; cout.flush();
+
+#if 0
+		// SBA:
+		cout << "Saving cams.txt & pts.txt files in SBA library format..."; cout.flush();
+
+		feat_track_history.removeFewObservedFeatures(3);
+		feat_track_history.decimateCameraFrames(20);
+		feat_track_history.compressIDs();
+
+		TLandmarkLocationsVec  locs;
+		TFramePosesVec         cams;
+		feat_track_history.saveAsSBAFiles(locs,"pts.txt", cams, "cams.txt");
+
+
+		cout << "Done!\n"; cout.flush();
+#endif
 	}
 
 

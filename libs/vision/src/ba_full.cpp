@@ -99,10 +99,13 @@ double mrpt::vision::bundle_adj_full(
 	const size_t max_iters        = extra_params.getWithDefaultVal("max_iterations",50);
 	const size_t num_fix_frames   = extra_params.getWithDefaultVal("num_fix_frames",1);
 	const size_t num_fix_points   = extra_params.getWithDefaultVal("num_fix_points",0);
+	const double kernel_param     = extra_params.getWithDefaultVal("kernel_param",3.0);
 
 	const bool   enable_profiler  = 0!=extra_params.getWithDefaultVal("profiler",0);
 
 	mrpt::utils::CTimeLogger  profiler(enable_profiler);
+
+	profiler.enter("bundle_adj_full (complete run)");
 
 	// Input data sizes:
 	const size_t num_points = landmark_points.size();
@@ -146,7 +149,8 @@ double mrpt::vision::bundle_adj_full(
 					 observations, camera_params, frame_poses, landmark_points,
 					 residual_vec,
 					 INV_POSES_BOOL, // are poses inverse?
-					 use_robust_kernel );
+					 use_robust_kernel,
+					 kernel_param );
 	profiler.leave("reprojectionResiduals");
 
 	MRPT_CHECK_NORMAL_NUMBER(res)
@@ -476,6 +480,8 @@ double mrpt::vision::bundle_adj_full(
 		frame_poses[i].inverse();
 	profiler.leave("invert_poses");
 #endif
+
+	profiler.leave("bundle_adj_full (complete run)");
 
 	return res;
 	MRPT_END

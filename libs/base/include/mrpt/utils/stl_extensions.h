@@ -223,13 +223,6 @@ namespace mrpt
 			cont.erase(it);
 			return itRet;
 		}
-		//! \overload
-		template <class T> inline typename std::vector<T>::iterator erase_return_next(std::vector<T> &cont, typename std::vector<T>::iterator &it)
-		{
-			typename std::vector<T>::iterator itRet = it;
-			cont.erase(it);
-			return ++itRet;
-		}
 
 		/** Generates a string for a vector in the format [A,B,C,...] to std::cout, and the fmt string for <b>each</b> vector element. */
 		template <typename T>

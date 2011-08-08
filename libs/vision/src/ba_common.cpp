@@ -109,10 +109,9 @@ void mrpt::vision::ba_initial_estimate(
 
 
 /** pseudo-huber cost function */
-double kernel(double delta)
+inline double kernel(double delta, const double kernel_param)
 {
-	double b = 1; //ba_params.kernel_param;
-	return fabs(2*square(b)*(sqrt(1+square(delta/b))-1));
+	return std::abs(2*square(kernel_param)*(std::sqrt(1+square(delta/kernel_param))-1));
 }
 
 // This function is what to do for each feature in the reprojection loops below.
@@ -124,7 +123,8 @@ inline void reprojectionResidualsElement(
 	const TFramePosesVec::value_type        & frame,
 	const TLandmarkLocationsVec::value_type & point,
 	double &sum,
-	const bool  use_robust_kernel )
+	const bool  use_robust_kernel,
+	const double kernel_param )
 {
 	const TPixelCoordf  z_pred = mrpt::vision::pinhole::projectPoint_no_distortion<POSES_INVERSE>(camera_params, frame, point);
 	const TPixelCoordf &z_meas = OBS.px;
@@ -137,7 +137,7 @@ inline void reprojectionResidualsElement(
 	if (use_robust_kernel)
 	{
 		const double nrm = std::max(1e-11,std::sqrt(sum_2));
-		const double w = std::sqrt(kernel(nrm))/nrm;
+		const double w = std::sqrt(kernel(nrm,kernel_param))/nrm;
 		delta[0] *= w;
 		delta[1] *= w;
 		out_residual = delta;
@@ -163,7 +163,8 @@ double mrpt::vision::reprojectionResiduals(
 	const TLandmarkLocationsMap          & landmark_points,
 	std::vector<CArray<double,2> > & out_residuals,
 	const bool  frame_poses_are_inverse,
-	const bool  use_robust_kernel
+	const bool  use_robust_kernel,
+	const double kernel_param
 	)
 {
 	MRPT_START
@@ -189,9 +190,9 @@ double mrpt::vision::reprojectionResiduals(
 		const TLandmarkLocationsMap::mapped_type & point = itP->second;
 
 		if (frame_poses_are_inverse)
-			reprojectionResidualsElement<true>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel);
+			reprojectionResidualsElement<true>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel,kernel_param);
 		else
-			reprojectionResidualsElement<false>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel);
+			reprojectionResidualsElement<false>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel,kernel_param);
 	}
 
 	return sum;
@@ -206,7 +207,8 @@ double mrpt::vision::reprojectionResiduals(
 	const TLandmarkLocationsVec          & landmark_points,
 	std::vector<CArray<double,2> > & out_residuals,
 	const bool  frame_poses_are_inverse,
-	const bool  use_robust_kernel
+	const bool  use_robust_kernel,
+	const double kernel_param
 	)
 {
 	MRPT_START
@@ -230,9 +232,9 @@ double mrpt::vision::reprojectionResiduals(
 		const TLandmarkLocationsVec::value_type & point = landmark_points[i_p];
 
 		if (frame_poses_are_inverse)
-			reprojectionResidualsElement<true>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel);
+			reprojectionResidualsElement<true>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel,kernel_param);
 		else
-			reprojectionResidualsElement<false>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel);
+			reprojectionResidualsElement<false>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel,kernel_param);
 	}
 
 	return sum;

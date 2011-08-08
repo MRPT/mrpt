@@ -1937,6 +1937,29 @@ void slamdemoFrame::OnMenuSaveFilterState(wxCommandEvent& event)
 
 		Pkk.saveToTextFile(filName);
 	}
+
+	{
+		wxFileDialog dialog(
+			this,
+			_("Save as 3D opengl scene...") /*caption*/,
+			_(".") /* defaultDir */,
+			_("slam.3Dscene") /* defaultFilename */,
+			_("MRPT 3D scenes (*.3Dscene)|*.3Dscene|All files (*.*)|*.*") /* wildcard */,
+			wxFD_SAVE | wxFD_OVERWRITE_PROMPT  );
+
+		if (dialog.ShowModal() != wxID_OK) return;
+		string filName( dialog.GetPath().mb_str() );
+
+		// Save as 3D objects:
+		mrpt::opengl::CSetOfObjectsPtr obj3D = mrpt::opengl::CSetOfObjects::Create();
+		m_SLAM.getAs3DObject(obj3D);
+
+		mrpt::opengl::COpenGLScene scene;
+		scene.insert(obj3D);
+
+		CFileGZOutputStream(filName) << scene;
+	}
+
 }
 
 void slamdemoFrame::OnMenuProfilerViewStats(wxCommandEvent& event)
