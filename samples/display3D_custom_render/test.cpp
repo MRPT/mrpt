@@ -34,6 +34,81 @@ using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 
+// This is my custom class to handle the pre/post render events:
+struct TMyExtraRenderingStuff : public mrpt::utils::CObserver
+{
+	opengl::CSpherePtr    ball_obj;  // The ball moving in the scene
+	bool                  showing_help, hiding_help;
+	mrpt::utils::CTicTac  tim_show_start, tim_show_end;
+
+
+	TMyExtraRenderingStuff() : showing_help(false), hiding_help(false)
+	{
+	}
+
+	virtual void OnEvent (const mrptEvent &e)
+	{
+		if (e.isOfType<mrptEventGLPreRender>())
+		{
+			//const mrptEventGLPreRender* ev = e.getAs<mrptEventGLPreRender>();
+			//ev-> ...
+		}
+		else
+		if (e.isOfType<mrptEventGLPostRender>())
+		{
+			//const mrptEventGLPostRender* ev = e.getAs<mrptEventGLPostRender>();
+
+			// Show small message in the corner:
+			mrpt::opengl::gl_utils::renderMessageBox(
+				0.7f,  0.9f,  // x,y (in screen "ratios")
+				0.29f, 0.09f, // width, height (in screen "ratios")
+				"Press 'h' for help",
+				0.02f  // text size
+				);
+
+			// Also showing help?
+			if (showing_help || hiding_help)
+			{
+				static const double TRANSP_ANIMATION_TIME_SEC = 0.5;
+
+				const double show_tim = tim_show_start.Tac();
+				const double hide_tim = tim_show_end.Tac();
+
+				const double tranparency = hiding_help ?
+					1.0-std::min(1.0,hide_tim/TRANSP_ANIMATION_TIME_SEC)
+					:
+					std::min(1.0,show_tim/TRANSP_ANIMATION_TIME_SEC);
+
+				mrpt::opengl::gl_utils::renderMessageBox(
+					0.05f,  0.05f,  // x,y (in screen "ratios")
+					0.90f, 0.90f, // width, height (in screen "ratios")
+					"These are the supported commands:\n"
+					" - 'h': Toogle help view\n"
+					" - '<-' and '->': Rotate camera\n"
+					" - 'Alt+Enter': Toogle fullscreen\n"
+					" - 'ESC': Quit",
+					0.05f,  // text size
+					mrpt::utils::TColor(190,190,190, 200*tranparency),   // background
+					mrpt::utils::TColor(0,0,0, 200*tranparency),  // border
+					mrpt::utils::TColor(200,0,0, 150*tranparency), // text
+					6.0f, // border width
+					"serif", // text font
+					mrpt::opengl::NICE // text style
+					);
+
+				if (hide_tim>TRANSP_ANIMATION_TIME_SEC && hiding_help)
+					hiding_help = false;
+			}
+
+
+
+
+		}
+	}
+};
+
+
+
 // ------------------------------------------------------
 //				TestDisplay3D
 // ------------------------------------------------------
@@ -42,6 +117,14 @@ void TestDisplay3D()
 	CDisplayWindow3D	win("Example of 3D Scene Visualization - MRPT",640,480);
 
 	COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+
+	// The unique instance of the observer class:
+	TMyExtraRenderingStuff   my_extra_rendering;
+
+	// And start subscribing to the viewport events:
+	opengl::COpenGLViewportPtr the_main_view = theScene->getViewport("main");
+	my_extra_rendering.observeBegin( *the_main_view );
+
 
 	// Modify the scene:
 	// ------------------------------------------------------
@@ -69,6 +152,9 @@ void TestDisplay3D()
 		obj->setLocation(0,0,1);
 		obj->setName( "ball_1" );
 		theScene->insert( obj );
+
+		// And also let my rendering object access this ball properties:
+		my_extra_rendering.ball_obj = obj;
 	}
 
 	// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
@@ -124,9 +210,24 @@ void TestDisplay3D()
 		{
 			mrptKeyModifier kmods;
 			int key = win.getPushedKey(&kmods);
-			printf("Key pushed: %c (%i) - modifiers: 0x%04X\n",char(key),key,kmods);
+			//printf("Key pushed: %c (%i) - modifiers: 0x%04X\n",char(key),key,kmods);
 
 			if (key==MRPTK_ESCAPE) end = true;
+
+			if (key=='h' || key=='H')
+			{
+				if (!my_extra_rendering.showing_help)
+				{
+					my_extra_rendering.tim_show_start.Tic();
+					my_extra_rendering.showing_help = true;
+				}
+				else
+				{
+					my_extra_rendering.tim_show_end.Tic();
+					my_extra_rendering.showing_help = false;
+					my_extra_rendering.hiding_help = true;
+				}
+			}
 
 			if (key==MRPTK_RIGHT) win.setCameraAzimuthDeg( win.getCameraAzimuthDeg() + 5 );
 			if (key==MRPTK_LEFT)  win.setCameraAzimuthDeg( win.getCameraAzimuthDeg() - 5 );
@@ -145,6 +246,7 @@ int main()
 	{
 		TestDisplay3D();
 
+		mrpt::system::sleep(50); // leave time for the window to close
 		return 0;
 	} catch (std::exception &e)
 	{

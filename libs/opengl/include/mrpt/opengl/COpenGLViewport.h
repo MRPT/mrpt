@@ -34,6 +34,7 @@
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/utils/CObservable.h>
 
 namespace mrpt
 {
@@ -59,9 +60,15 @@ namespace mrpt
 		  * In any case, the viewport can be resized to only fit a part of the entire parent viewport.
 		  *  There will be always at least one viewport in a COpenGLScene named "main".
 		  *
+		  * This class can be observed (see mrpt::utils::CObserver) for the following events (see mrpt::utils::mrptEvent):
+		  *   - mrpt::opengl::mrptEventGLPreRender
+		  *   - mrpt::opengl::mrptEventGLPostRender
+		  *
 		  *  Refer to mrpt::opengl::COpenGLScene for further details.
 		  */
-		class OPENGL_IMPEXP COpenGLViewport : public mrpt::utils::CSerializable
+		class OPENGL_IMPEXP COpenGLViewport :
+			public mrpt::utils::CSerializable,
+			public mrpt::utils::CObservable
 		{
 			DEFINE_SERIALIZABLE( COpenGLViewport )
 			friend class COpenGLScene;
@@ -342,6 +349,54 @@ namespace mrpt
 			for (std::vector<CRenderizablePtr>::const_iterator it=v.begin();it!=v.end();++it) s->insert(*it);
 			return s;
 		}
+
+
+
+		/** @name Events emitted by COpenGLViewport
+			@{  */
+
+		/**  An event sent by an mrpt::opengl::COpenGLViewport just after clearing the viewport and setting the GL_PROJECTION matrix, and before calling the scene OpenGL drawing primitives.
+		  *
+		  *  While handling this event you can call OpenGL glBegin(),glEnd(),gl* functions or those in mrpt::opengl::gl_utils to draw stuff *in the back* of the normal
+		  *   objects contained in the COpenGLScene.
+		  *
+		  *  After processing this event, COpenGLViewport will change the OpenGL matrix mode into "GL_MODELVIEW" and load an identity matrix to continue
+		  *   rendering the scene objects as usual. Any change done to the GL_PROJECTION will have effects, so do a glPushMatrix()/glPopMatrix() if that is not your intention.
+		  *
+		  *
+		  *  IMPORTANTE NOTICE: Event handlers in your observer class will most likely be invoked from an internal GUI thread of MRPT,
+		  *    so all your code in the handler must be thread safe.
+		  */
+		class OPENGL_IMPEXP mrptEventGLPreRender : public mrptEvent
+		{
+		protected:
+			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+		public:
+			inline mrptEventGLPreRender(const COpenGLViewport* obj) : source_viewport(obj) { }
+			const COpenGLViewport * const source_viewport;
+		}; // End of class def.
+
+		/**  An event sent by an mrpt::opengl::COpenGLViewport after calling the scene OpenGL drawing primitives and before doing a glSwapBuffers
+		  *
+		  *  While handling this event you can call OpenGL glBegin(),glEnd(),gl* functions or those in mrpt::opengl::gl_utils to draw stuff *on the top* of the normal
+		  *   objects contained in the COpenGLScene.
+		  *
+		  *  IMPORTANTE NOTICE: Event handlers in your observer class will most likely be invoked from an internal GUI thread of MRPT,
+		  *    so all your code in the handler must be thread safe.
+		  */
+		class OPENGL_IMPEXP mrptEventGLPostRender : public mrptEvent
+		{
+		protected:
+			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+		public:
+			inline mrptEventGLPostRender(const COpenGLViewport* obj) : source_viewport(obj) { }
+			const COpenGLViewport * const source_viewport;
+		}; // End of class def.
+
+
+		/** @} */
+
+
 
 	} // end namespace
 

@@ -246,10 +246,10 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
         	// -----------------------------------
         	if (m_imageview_img) // should be ALWAYS true, but just in case!
         	{
-				// Note: The following code is inspired in the implementations: 
+				// Note: The following code is inspired in the implementations:
 				//  - libcvd, by Edward Rosten http://www.edwardrosten.com/cvd/
 				//  - PTAM, by Klein & Murray http://www.robots.ox.ac.uk/~gk/PTAM/
-				
+
 				const mrpt::utils::CImage *img = m_imageview_img.pointer();
 
 				const int img_w = img->getWidth();
@@ -269,8 +269,8 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 				if (ratio!=0) ortho_h /=ratio;
 
 				glOrtho(
-					-0.5, ortho_h - 0.5, 
-					ortho_w - 0.5, -0.5,  
+					-0.5, ortho_h - 0.5,
+					ortho_w - 0.5, -0.5,
 					-1,1);
 
 				// Prepare raster pos & pixel copy direction in -Y.
@@ -280,7 +280,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 					-vh / float(ortho_h) );
 
 				// Prepare image data types:
-				const GLenum img_type = GL_UNSIGNED_BYTE;				
+				const GLenum img_type = GL_UNSIGNED_BYTE;
 				const int nBytesPerPixel = img->isColor() ? 3 : 1;
 				const bool is_RGB_order = (!::strcmp(img->getChannelsOrder(),"RGB"));  // Reverse RGB <-> BGR order?
 				const GLenum img_format = nBytesPerPixel==3 ? (is_RGB_order ? GL_RGB : GL_BGR): GL_LUMINANCE;
@@ -291,7 +291,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 				glDrawPixels(
 					img_w, img_h,
 					img_format, img_type,
-					img->get_unsafe(0,0) 
+					img->get_unsafe(0,0)
 					);
 				glPixelStorei(GL_UNPACK_ROW_LENGTH,0);  // Reset
 
@@ -431,6 +431,13 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 				CRenderizable::checkOpenGLError();
 			}
 
+			// Optional pre-Render user code:
+			if (hasSubscribers())
+			{
+				mrptEventGLPreRender  ev(this);
+				this->publishEvent(ev);
+			}
+
 			// Render objects:
 			// -------------------------------------------
 			glMatrixMode(GL_MODELVIEW);
@@ -468,6 +475,12 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
             glEnable(GL_DEPTH_TEST);
 		}
 
+		// Optional post-Render user code:
+		if (hasSubscribers())
+		{
+			mrptEventGLPostRender ev(this);
+			this->publishEvent(ev);
+		}
 	}
 	catch(exception &e)
 	{

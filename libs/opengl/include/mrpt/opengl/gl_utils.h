@@ -82,6 +82,9 @@ namespace mrpt
 			/** @} */  // -----------------------------------------------------
 
 
+			/** @name Miscellaneous rendering methods
+			    @{ */
+
 			/** For each object in the list:
 			  *   - checks visibility of each object
 			  *   - prepare the GL_MODELVIEW matrix according to its coordinates
@@ -113,6 +116,43 @@ namespace mrpt
 			  *  where (rend_x,rend_y) are both in the range [-1,1].
 			  */
 			void OPENGL_IMPEXP getCurrentRenderingInfo(TRenderInfo &ri);
+
+
+			/** Draws a message box with a centered (possibly multi-lined) text.
+			  *  It consists of a filled rectangle with a frame around and the centered text in the middle.
+			  *
+			  *  The appearance of the box is highly configurable via parameters.
+			  *
+			  *   \param[in] msg_x, msg_y The left-lower corner coordinates, in ratio [0,1] of the viewport size. (0,0) if the left-bottom corner of the viewport.
+			  *   \param[in] msg_w, msg_h The width & height, in ratio [0,1] of the viewport size.
+			  *   \param[in] text  The text to display. Multiple lines can be drawn with the '\n' character.
+			  *   \param[in] text_scale Size of characters, in ration [0,1] of the viewport size. Note that this size may be scaled automatically reduced to fit the text withtin the rectangle of the message box.
+			  *   \param[in] back_col Color of the rectangle background. Alpha can be <255 to enable transparency.
+			  *   \param[in] border_col Color of the rectangle frame. Alpha can be <255 to enable transparency.
+			  *   \param[in] text_col Color of the text background. Alpha can be <255 to enable transparency.
+			  *   \param[in] border_width Width of the border, in pixels
+			  *   \param[in] text_font, text_style, text_spacing, text_kerning See mrpt::opengl::gl_utils::glDrawText()
+			  *
+			  *  Example (see directory: 'samples/display3D_custom_render'):
+			  *
+			  *  <img src="gl_utils_message_box.jpg" >
+			  */
+			void OPENGL_IMPEXP renderMessageBox(
+				const float msg_x, const float msg_y,
+				const float msg_w, const float msg_h,
+				const std::string &text,
+				float text_scale,
+				const mrpt::utils::TColor back_col = mrpt::utils::TColor(0,0,50, 150),
+				const mrpt::utils::TColor border_col = mrpt::utils::TColor(0,0,0, 140),
+				const mrpt::utils::TColor text_col = mrpt::utils::TColor(255,255,255, 220),
+				const float border_width = 4.0f,
+				const std::string & text_font = std::string("sans"),
+				mrpt::opengl::TOpenGLFontStyle text_style = mrpt::opengl::FILL,
+				const double text_spacing = 1.5,
+				const double text_kerning = 0.1
+				);
+
+			/** @} */  // -----------------------------------------------------
 
 			/** @name OpenGL bitmapped 2D fonts
 			    @{ */
@@ -151,11 +191,11 @@ namespace mrpt
 			/// @param spacing distance between individual text lines
 			/// @param kerning distance between characters
 			/// \note This functions comes from libcvd (LGPL, http://www.edwardrosten.com/cvd/ )
-			std::pair<double, double> OPENGL_IMPEXP glDrawText(const std::string & text, const double textScale, enum TOpenGLFontStyle style = NICE, double spacing = 1.5, double kerning = 0.1);
+			mrpt::utils::TPixelCoordf OPENGL_IMPEXP glDrawText(const std::string & text, const double textScale, enum TOpenGLFontStyle style = NICE, double spacing = 1.5, double kerning = 0.1);
 
 			/// returns the size of the bounding box of a text to be rendered, similar to @ref glDrawText but without any visual output
 			/// \note This functions comes from libcvd (LGPL, http://www.edwardrosten.com/cvd/ )
-			std::pair<double, double> OPENGL_IMPEXP glGetExtends(const std::string & text, const double textScale, double spacing = 1.5, double kerning = 0.1);
+			mrpt::utils::TPixelCoordf OPENGL_IMPEXP glGetExtends(const std::string & text, const double textScale, double spacing = 1.5, double kerning = 0.1);
 
 			/** @} */   // --------------------------------------------------
 

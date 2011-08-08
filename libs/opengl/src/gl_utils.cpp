@@ -326,6 +326,120 @@ void CRenderizable::renderTextBitmap(
 }
 
 
+void gl_utils::renderMessageBox(
+	const float msg_x, const float msg_y,
+	const float msg_w, const float msg_h,
+	const std::string &text,
+	float text_scale,
+	const mrpt::utils::TColor back_col,
+	const mrpt::utils::TColor border_col,
+	const mrpt::utils::TColor text_col,
+	const float border_width,
+	const std::string & text_font,
+	mrpt::opengl::TOpenGLFontStyle text_style,
+	const double text_spacing,
+	const double text_kerning
+	)
+{
+#if MRPT_HAS_OPENGL_GLUT
+	const int nLines = 1 + std::count(text.begin(),text.end(), '\n');
+
+	GLint	win_dims[4];
+	glGetIntegerv( GL_VIEWPORT, win_dims );
+	const int w = win_dims[2];
+	const int h = win_dims[3];
+
+	const int min_wh = std::min(w,h);
+	const float vw_w = w/float(min_wh);
+	const float vw_h = h/float(min_wh);
+
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+
+	glLoadIdentity();
+	glOrtho(0,vw_w,0,vw_h,-1,1);
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+
+	glLoadIdentity();
+
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// The center of the message box:
+	const float msg_x0 = vw_w * msg_x;
+	const float msg_y0 = vw_h * msg_y;
+
+	const float msg_x1 = vw_w * (msg_x+msg_w);
+	const float msg_y1 = vw_h * (msg_y+msg_h);
+
+	const float msg_real_w = msg_x1-msg_x0;
+	const float msg_real_h = msg_y1-msg_y0;
+
+	const float msg_cx = .5*(msg_x0+msg_x1);
+	const float msg_cy = .5*(msg_y0+msg_y1);
+
+	// Background:
+	glColor4ub(back_col.R,back_col.G,back_col.B,back_col.A);
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex2f( msg_x0,msg_y0 );
+	glVertex2f( msg_x1,msg_y0 );
+	glVertex2f( msg_x1,msg_y1 );
+	glVertex2f( msg_x0,msg_y1 );
+	glEnd();
+
+	// Border:
+	glColor4ub(border_col.R,border_col.G,border_col.B,border_col.A);
+	glLineWidth(border_width);
+	glBegin(GL_LINE_LOOP);
+	glVertex2f( msg_x0,msg_y0 );
+	glVertex2f( msg_x1,msg_y0 );
+	glVertex2f( msg_x1,msg_y1 );
+	glVertex2f( msg_x0,msg_y1 );
+	glEnd();
+
+
+	// Draw text (centered):
+	gl_utils::glSetFont(text_font);
+	mrpt::utils::TPixelCoordf txtSize = gl_utils::glGetExtends(text,text_scale,text_spacing,text_kerning);
+
+	// Adjust text size if it doesn't fit into the box:
+	if (txtSize.x>msg_real_w)
+	{
+		const float K = 0.99f * msg_real_w/txtSize.x;
+		text_scale *= K;
+		txtSize.x *=K; txtSize.y *=K;
+	}
+	if (txtSize.y>msg_real_h)
+	{
+		const float K = 0.99f * msg_real_h/txtSize.y;
+		text_scale *= K;
+		txtSize.x *=K; txtSize.y *=K;
+	}
+
+	const float text_w = txtSize.x;
+	const float text_h = (nLines>1 ? -(nLines-1)*txtSize.y/float(nLines) : txtSize.y);
+	const float text_x0 = msg_cx-.5f*text_w;
+	const float text_y0 = msg_cy-.5f*text_h;
+
+	glTranslatef(text_x0,text_y0,0);
+	glColor4ub(text_col.R,text_col.G,text_col.B,text_col.A);
+	gl_utils::glDrawText(text,text_scale,text_style,text_spacing,text_kerning);
+
+	// Restore gl flags:
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+
+	glPopMatrix();
+
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+#endif
+}
+
+
 //  ===============  START OF CODE FROM "libcvd -> gltext.cpp" ===============
 //    License: LGPL
 #if MRPT_HAS_OPENGL_GLUT
@@ -436,7 +550,7 @@ const std::string & gl_utils::glGetFont(){
 #endif
 }
 
-std::pair<double,double> gl_utils::glDrawText(const std::string& text, const double textScale, enum TOpenGLFontStyle style, double spacing, double kerning){
+mrpt::utils::TPixelCoordf gl_utils::glDrawText(const std::string& text, const double textScale, enum TOpenGLFontStyle style, double spacing, double kerning){
 #if MRPT_HAS_OPENGL_GLUT
 	glMatrixMode( GL_MODELVIEW );
     glPushMatrix();
@@ -512,13 +626,13 @@ std::pair<double,double> gl_utils::glDrawText(const std::string& text, const dou
 
     max_total = std::max(total, max_total);
 
-    return std::make_pair(textScale*max_total, textScale*(lines+1)*spacing);
+    return mrpt::utils::TPixelCoordf(textScale*max_total, textScale*(lines+1)*spacing);
 #else
 	THROW_EXCEPTION("MRPT built without OpenGL")
 #endif
 }
 
-std::pair<double, double> gl_utils::glGetExtends(const std::string & text,  const double textScale, double spacing, double kerning)
+mrpt::utils::TPixelCoordf gl_utils::glGetExtends(const std::string & text,  const double textScale, double spacing, double kerning)
 {
 #if MRPT_HAS_OPENGL_GLUT
     int lines = 0;
@@ -547,7 +661,7 @@ std::pair<double, double> gl_utils::glGetExtends(const std::string & text,  cons
         total += ch->advance + kerning;
     }
     max_total = std::max(total, max_total);
-    return std::make_pair(textScale*max_total, textScale*(lines+1)*spacing);
+    return mrpt::utils::TPixelCoordf(textScale*max_total, textScale*(lines+1)*spacing);
 #else
 	THROW_EXCEPTION("MRPT built without OpenGL")
 #endif

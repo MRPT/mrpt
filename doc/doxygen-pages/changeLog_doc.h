@@ -71,8 +71,11 @@
 		- [mrpt-opengl & mrpt-gui] All text labels in 3D rendering windows are now drawn as OpenGL primitives instead of bitmaps, which are ~10x faster to draw. See mrpt::opengl::CTextMessageCapable
 		- [mrpt-opengl & mrpt-gui] mrpt::opengl::CTextMessageCapable and mrpt::gui::CDisplayWindow3D now have an overloaded ::addTextMessage() method with many more font size/style options.
 		- [mrpt-opengl] A new namespace with utility functions for rendering opengl stuff. See mrpt::opengl::gl_utils
+			- mrpt::opengl::gl_utils::renderMessageBox(): Draws message boxes in OpenGL viewports
 		- [mrpt-opengl] mrpt::opengl::CRenderizable (and all derived classes) now store colors as 4 u8 numbers instead of 4 doubles. All double-based APIs are maintained for backward compatibility.
-		- [mrpt-opengl] The "image display mode" of mrpt::opengl::COpenGLViewport is now based on glDrawPixels(), which is ~40 times faster than the old method.
+		- [mrpt-opengl] mrpt::opengl::COpenGLViewport:
+			- The "image display mode" is now based on glDrawPixels(), which is ~40 times faster than the old method.
+			- It now emits pre/post rendering events (via the mrpt::utils::CObservable pattern), for the user to customize the rendering process. See example display3d_custom_render
 		- [mrpt-vision] New feature detectors: SSE2 optimized FASTER (-9,-10,-12), from libcvd by Edward Rosten <a href="http://code.google.com/p/mrpt/source/detail?r=2599" >r2599</a>
 			- mrpt::vision::CFeatureExtraction
 			- mrpt::vision::TFeatureType
