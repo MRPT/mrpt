@@ -43,7 +43,7 @@ namespace mrpt
 		using mrpt::math::TPoint3D;
 		using mrpt::utils::TCamera;
 
-		/** \defgroup bundle_adj Bundle-Adjustment methods */
+		/** \defgroup bundle_adj [mrpt-vision] Bundle-Adjustment methods */
 
 
 		/** @name Bundle-Adjustment methods

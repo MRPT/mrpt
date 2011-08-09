@@ -70,8 +70,8 @@ namespace mrpt
 		  *   -
 		  *
 		  * \note The descriptor "Intensity-domain spin images" is described in "A sparse texture representation using affine-invariant regions", S Lazebnik, C Schmid, J Ponce, 2003 IEEE Computer Society Conference on Computer Vision.
-		  *
 		  * \sa mrpt::vision::CFeature
+		  * \ingroup mrptvision_features
 		  */
 		class VISION_IMPEXP CFeatureExtraction
 		{
@@ -266,16 +266,23 @@ namespace mrpt
 			    @{ */
 
 			/** A SSE2-optimized implementation of FASTER-9 (requires img to be grayscale) - If SSE2 is not available, it gratefully falls back to a non-optimized version
-			  *  Only the pt.{x,y} & octave fields are filled out for each feature: the rest of fields are left *uninitialized* and their content is *undefined*.
-			  *  Note that (x,y) are already scaled to the 0-level image coordinates if octave>0.
+			  *  Only the pt.{x,y} fields are filled out for each feature: the rest of fields are left *uninitialized* and their content is *undefined*.
+			  *  Note that (x,y) are already scaled to the 0-level image coordinates if octave>0, by means of:
+			  *
+			  *    pt.x = detected.x << octave;
+			  *    pt.y = detected.y << octave;
+			  *
 			  *  If \a append_to_list is false, the \a corners list is not cleared before adding the newly detected feats.
+			  * \ingroup mrptvision_features
 			  */
 			static void detectFeatures_SSE2_FASTER9(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20, bool append_to_list = false, uint8_t octave = 0);
 
-			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector */
+			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector.
+			  * \ingroup mrptvision_features */
 			static void detectFeatures_SSE2_FASTER10(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20, bool append_to_list = false, uint8_t octave = 0);
 
-			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector */
+			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector.
+			  * \ingroup mrptvision_features */
 			static void detectFeatures_SSE2_FASTER12(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20, bool append_to_list = false, uint8_t octave = 0);
 
 			/** @} */

@@ -55,6 +55,12 @@ namespace mrpt
 		    bothLists
 		};
 
+		/** \defgroup mrptvision_features [mrpt-vision] Feature detection, tracking, descriptors and matching */
+
+		/** \addtogroup  mrptvision_features
+		    @{ */
+
+
 		/****************************************************
 						Class CFEATURE
 		*****************************************************/
@@ -84,7 +90,7 @@ namespace mrpt
 			float				response;		//!< A measure of the "goodness" of the feature (old name: KLT_val)
 			float				orientation;	//!< Main orientation of the feature
 			float				scale;			//!< Feature scale into the scale space
-			uint8_t				IDSourceImage;	//!< ID of the image from which the feature was extracted (JL says: ?????)
+			uint8_t				user_flags;		//!< A field for any other flags needed by the user (this has not a predefined meaning)
 			uint16_t            nTimesSeen;     //!< Number of frames it has been seen in a sequence of images.
 			uint16_t            nTimesNotSeen;  //!< Number of frames it has not been seen in a sequence of images.
 			uint16_t            nTimesLastSeen; //!< Number of frames since it was seen for the last time.
@@ -381,6 +387,9 @@ namespace mrpt
         protected:
             TFeatureID m_leftMaxID, m_rightMaxID;
 		}; // end of class
+
+
+		/** @} */ // End of add to module: mrptvision_features
 
 	} // end of namespace
 

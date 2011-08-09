@@ -353,7 +353,7 @@ void  CFeature::writeToStream(CStream &out,int *version) const
 			<< response
 			<< orientation
 			<< scale
-			<< IDSourceImage
+			<< user_flags
             << nTimesSeen
             << nTimesNotSeen
             << nTimesLastSeen
@@ -393,7 +393,7 @@ void  CFeature::readFromStream(CStream &in,int version)
 				>> response
 				>> orientation
 				>> scale
-				>> IDSourceImage;
+				>> user_flags;
             if( version > 0 )
             {
                 in  >> nTimesSeen
@@ -431,7 +431,7 @@ void  CFeature::readFromStream(CStream &in,int version)
 // CONSTRUCTOR
 CFeature::CFeature(): x(0.0f), y(0.0f), ID(0), patchSize(21), type(featNotDefined),
 	track_status(status_IDLE), response(0.0),
-	orientation(0.0), scale(0.0), IDSourceImage(0),
+	orientation(0.0), scale(0.0), user_flags(0),
 	nTimesSeen(1), nTimesNotSeen(0), nTimesLastSeen(0), depth( 0 ), initialDepth( 0 ), p3D(),
 	multiScales(), multiOrientations(), multiHashCoeffs(), descriptors()
 {}

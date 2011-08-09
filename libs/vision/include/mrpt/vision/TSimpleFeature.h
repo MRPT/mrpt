@@ -39,6 +39,10 @@ namespace mrpt
 {
 	namespace vision
 	{
+		/** \addtogroup  mrptvision_features
+		    @{ */
+
+
 		/** A simple structure for representing one image feature (without descriptor nor patch) - This is
 		  *  the template which allows you to select if pixels are represented as integers or floats.
 		  *  \sa TSimpleFeature, TSimpleFeaturef
@@ -50,8 +54,8 @@ namespace mrpt
 			TFeatureID          ID;             //!< ID of the feature
 			TFeatureTrackStatus	track_status;	//!< Status of the feature tracking process
 			float				response;		//!< A measure of the "goodness" of the feature (typically, the KLT_response value)
-			int					octave;			//!< The image octave the image was found in: 0=original image, 1=1/2 image, 2=1/4 image, etc.
-
+			uint8_t				octave;			//!< The image octave the image was found in: 0=original image, 1=1/2 image, 2=1/4 image, etc.
+			uint8_t				user_flags;		//!< A field for any other flags needed by the user (this has not a predefined meaning)
 
 			/** Constructor that only sets the pt.{x,y} values, leaving all other values to *undefined values*. */
 			template <typename COORD_TYPE>
@@ -184,7 +188,7 @@ namespace mrpt
 
 			inline void setFeatureID(size_t i,TFeatureID id) { m_feats[i]->ID=id; }
 			inline void setFeatureResponse(size_t i,float r) { m_feats[i]->response=r; }
-			inline void setScale(size_t i,float s) { m_feats[i]->scale=s; }
+			inline void setScale(size_t i,float s) { m_feats[i]->octave=mrpt::utils::round(std::log(s)/std::log(2)); }
 			inline void setTrackStatus(size_t i,TFeatureTrackStatus s) { m_feats[i].track_status=s; }
 
 			inline void mark_as_outdated() const {  }
@@ -248,6 +252,8 @@ namespace mrpt
 		}
 	}; // end CFeatureListKDTree
 
+
+		/** @} */ // End of add to module: mrptvision_features
 
 	} // end of namespace
 

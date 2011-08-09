@@ -80,6 +80,7 @@
 			- mrpt::vision::CFeatureExtraction
 			- mrpt::vision::TFeatureType
 		- [mrpt-vision] The feature tracker system in mrpt::vision::CGenericFeatureTracker has new parameters and functionality: automatic deletion of OOB features, more tunable params,...
+		- [mrpt-vision] Field "IDSourceImage" renamed  mrpt::vision::CFeature::user_flags to better reflect its intention.
 	- Build system/external libs:
 		- Update of Eigen3 to a more recent version (11-Jul-2011), which avoids warnings in MSVC x64 - <a href="http://code.google.com/p/mrpt/source/detail?r=2556" >r2556</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2558" >r2558</a>
 		- Automatic check for existence of system "libgtest-dev" not to build embedded version of Google unit testing library and link to system lib instead - <a href="http://code.google.com/p/mrpt/source/detail?r=r2576" >r2576</a>
