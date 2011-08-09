@@ -108,6 +108,7 @@
 		- Linking error with MinGW around the mrpt::opengl::posePDF2opengl() templates - <a href="http://code.google.com/p/mrpt/source/detail?r=r2567" >r2567</a> (Thanks Miyamoto Musashi for <a href="http://www.mrpt.org/node/1031" >reporting</a>!).
 	- BUG FIXES:
 		- [mrpt-obs] Wrong usage of focal distances "fx"<->"fy" when generating the 3D point clouds from Kinect observations with the method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() - <a href="http://code.google.com/p/mrpt/source/detail?r=r2578" >r2578</a>.
+		- [mrpt-hwdrivers], [mrpt-obs] Gyroscopic rotation rates in yaw and roll were stored in the wrong order in mrpt::hwdrivers::CIMUXSens and mrpt::slam::CObservationIMU. It has been fixed so new grabbed data is saved correctly but also such as old datasets are automatically fixed when loading them. Thanks Lianfen for noticing! - <a href="http://code.google.com/p/mrpt/source/detail?r=r2622" >r2622</a>.
 
 <br> <hr>
 

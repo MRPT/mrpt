@@ -26,14 +26,14 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers 
+#include <mrpt/obs.h>   // Precompiled headers
 
 
 #include <mrpt/slam/CObservationIMU.h>
 #include <mrpt/math/CMatrixD.h>
 
-using namespace mrpt::slam; 
-using namespace mrpt::utils; 
+using namespace mrpt::slam;
+using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
@@ -45,13 +45,13 @@ IMPLEMENTS_SERIALIZABLE(CObservationIMU, CObservation,mrpt::slam)
 void  CObservationIMU::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 1;
+		*version = 2;  // v1->v2 was only done to fix a bug in the ordering of YAW/PITCH/ROLL rates.
 	else
 	{
 		out << sensorPose
 		    << dataIsPresent
 		    << timestamp;
-		
+
 		out << rawMeasurements;
 
 		out << sensorLabel;
@@ -67,6 +67,7 @@ void  CObservationIMU::readFromStream(CStream &in, int version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		in >> sensorPose
 		   >> dataIsPresent;
 
@@ -86,6 +87,15 @@ void  CObservationIMU::readFromStream(CStream &in, int version)
 			in >> rawMeasurements;
 		}
 
+		if (version<2)
+		{
+			// A bug in the grabbing from XSens IMU's made /ROLL rates to be stored in the wrong order:
+			std::swap(rawMeasurements[IMU_YAW_VEL],rawMeasurements[IMU_ROLL_VEL]);
+		}
+		else
+		{
+			// v2: nothing to do, data is already in the right order.
+		}
 
 		in >> sensorLabel;
 		break;

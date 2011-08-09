@@ -173,11 +173,11 @@ void CIMUXSens::doProcess()
 			{
 				CmtVector gir_data	= packet.getCalGyr(); // getRawGyr();
 
-				obs->rawMeasurements[IMU_YAW_VEL]	= gir_data.m_data[0];
+				obs->rawMeasurements[IMU_YAW_VEL]	= gir_data.m_data[2];
 				obs->dataIsPresent[IMU_YAW_VEL]	= true;
 				obs->rawMeasurements[IMU_PITCH_VEL]	= gir_data.m_data[1];
 				obs->dataIsPresent[IMU_PITCH_VEL]	= true;
-				obs->rawMeasurements[IMU_ROLL_VEL]	= gir_data.m_data[2];
+				obs->rawMeasurements[IMU_ROLL_VEL]	= gir_data.m_data[0];
 				obs->dataIsPresent[IMU_ROLL_VEL]	= true;
 			}
 
