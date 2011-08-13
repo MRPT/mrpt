@@ -36,6 +36,8 @@
 
 #include <mrpt/opengl/CPointCloudColoured.h>
 
+#include "CPointsMap_crtp_common.h"
+
 
 using namespace std;
 using namespace mrpt;
@@ -686,283 +688,314 @@ bool CColouredPointsMap::savePCDFile(const std::string &filename, bool save_as_b
 #endif
 }
 
+namespace mrpt {
+	namespace slam {
+		namespace detail {
+			using mrpt::slam::CColouredPointsMap;
 
-// Color map:
-void  CColouredPointsMap::internal_loadFromRangeScan2D_init(TLaserRange2DInsertContext & lric)
-{
-	// Vars:
-	//  [0] -> pR
-	//  [1] -> pG
-	//  [2] -> pB
-	//  [3] -> Az_1_color
-	lric.fVars.resize(4);
-
-	ASSERT_NOT_EQUAL_(colorScheme.z_max,colorScheme.z_min)
-	lric.fVars[3] = 1.0/(colorScheme.z_max-colorScheme.z_min);
-}
-
-// Color map:
-void CColouredPointsMap::internal_loadFromRangeScan2D_prepareOneRange(const float lx,const float ly, const float lz, TLaserRange2DInsertContext & lric )
-{
-	// Relative height of the point wrt the sensor:
-	const float rel_z = lz - lric.HM.get_unsafe(2,3); // m23;
-
-	// Variable renaming:
-	float & pR = lric.fVars[0];
-	float & pG = lric.fVars[1];
-	float & pB = lric.fVars[2];
-	const float &Az_1_color = lric.fVars[3];
-
-	// Compute color:
-	switch( colorScheme.scheme )
-	{
-	//case cmFromHeightRelativeToSensor:
-	case cmFromHeightRelativeToSensorJet:
-	case cmFromHeightRelativeToSensorGray:
-		{
-			float q = (rel_z-colorScheme.z_min)*Az_1_color;
-			if (q<0) q=0; else if (q>1) q=1;
-
-			if (colorScheme.scheme==cmFromHeightRelativeToSensorGray)
+			template <> struct pointmap_traits<CColouredPointsMap>
 			{
-				pR=pG=pB=q;
-			}
-			else
-			{
-				mrpt::utils::jet2rgb(q, pR,pG,pB);
-			}
-		}
-		break;
-	case cmFromIntensityImage:
-		{
-			// In 2D scans we don't have this channel.
-			pR=pG=pB=1.0;
-		}
-		break;
-	default:
-		THROW_EXCEPTION("Unknown color scheme");
-	}
-}
-
-// Color map:
-void  CColouredPointsMap::internal_loadFromRangeScan2D_postPushBack(TLaserRange2DInsertContext & lric)
-{
-	float & pR = lric.fVars[0];
-	float & pG = lric.fVars[1];
-	float & pB = lric.fVars[2];
-	m_color_R.push_back(pR);
-	m_color_G.push_back(pG);
-	m_color_B.push_back(pB);
-	//m_min_dist.push_back(1e4);
-}
-
-/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
-void  CColouredPointsMap::internal_loadFromRangeScan3D_init(TLaserRange3DInsertContext & lric)
-{
-	// Vars:
-	//  [0] -> pR
-	//  [1] -> pG
-	//  [2] -> pB
-	//  [3] -> Az_1_color
-	//  [4] -> K_8u
-	//  [5] -> cx
-	//  [6] -> cy
-	//  [7] -> fx
-	//  [8] -> fy
-	lric.fVars.resize(9);
-	float &cx = lric.fVars[5];
-	float &cy = lric.fVars[6];
-	float &fx = lric.fVars[7];
-	float &fy = lric.fVars[8];
-
-	// unsigned int vars:
-	//  [0] -> imgW
-	//  [1] -> imgH
-	//  [2] -> img_idx_x
-	//  [3] -> img_idx_y
-	lric.uVars.resize(4);
-	unsigned int & imgW = lric.uVars[0];
-	unsigned int & imgH = lric.uVars[1];
-	unsigned int & img_idx_x = lric.uVars[2];
-	unsigned int & img_idx_y = lric.uVars[3];
-
-	// bool vars:
-	//  [0] -> hasValidIntensityImage
-	//  [1] -> hasColorIntensityImg
-	//  [2] -> simple_3d_to_color_relation
-	lric.bVars.resize(3);
-	uint8_t & hasValidIntensityImage = lric.bVars[0];
-	uint8_t & hasColorIntensityImg   = lric.bVars[1];
-	uint8_t & simple_3d_to_color_relation = lric.bVars[2];
-
-	ASSERT_NOT_EQUAL_(colorScheme.z_max,colorScheme.z_min)
-	lric.fVars[3] = 1.0/(colorScheme.z_max-colorScheme.z_min);  // Az_1_color = ...
-	lric.fVars[4] = 1.0f/255; // K_8u
-
-	hasValidIntensityImage = false;
-	imgW=0;
-	imgH=0;
-
-	if (lric.rangeScan.hasIntensityImage)
-	{
-		// assure the size matches:
-		if (lric.rangeScan.points3D_x.size() == lric.rangeScan.intensityImage.getWidth() * lric.rangeScan.intensityImage.getHeight() )
-		{
-			hasValidIntensityImage = true;
-			imgW = lric.rangeScan.intensityImage.getWidth();
-			imgH = lric.rangeScan.intensityImage.getHeight();
-		}
-	}
-
-
-	hasColorIntensityImg = hasValidIntensityImage && lric.rangeScan.intensityImage.isColor();
-
-	// running indices for the image pixels for the gray levels:
-	// If both range & intensity images coincide (e.g. SwissRanger), then we can just
-	// assign 3D points to image pixels one-to-one, but that's not the case if
-	//
-	simple_3d_to_color_relation = (std::abs(lric.rangeScan.relativePoseIntensityWRTDepth.norm())<1e-5);
-	img_idx_x = 0;
-	img_idx_y = 0;
-
-	// Will be used just if simple_3d_to_color_relation=false
-	cx = lric.rangeScan.cameraParamsIntensity.cx();
-	cy = lric.rangeScan.cameraParamsIntensity.cy();
-	fx = lric.rangeScan.cameraParamsIntensity.fx();
-	fy = lric.rangeScan.cameraParamsIntensity.fy();
-}
-
-/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
-void  CColouredPointsMap::internal_loadFromRangeScan3D_prepareOneRange(
-	const float gx,const float gy, const float gz, TLaserRange3DInsertContext & lric )
-{
-	// Rename variables:
-	float &pR = lric.fVars[0];
-	float &pG = lric.fVars[1];
-	float &pB = lric.fVars[2];
-	float &Az_1_color = lric.fVars[3];
-	float &K_8u = lric.fVars[4];
-	float &cx = lric.fVars[5];
-	float &cy = lric.fVars[6];
-	float &fx = lric.fVars[7];
-	float &fy = lric.fVars[8];
-
-	unsigned int & imgW = lric.uVars[0];
-	unsigned int & imgH = lric.uVars[1];
-	unsigned int & img_idx_x = lric.uVars[2];
-	unsigned int & img_idx_y = lric.uVars[3];
-
-	const uint8_t & hasValidIntensityImage = lric.bVars[0];
-	const uint8_t & hasColorIntensityImg   = lric.bVars[1];
-	const uint8_t & simple_3d_to_color_relation = lric.bVars[2];
-
-	// Relative height of the point wrt the sensor:
-	const float rel_z = gz - lric.HM.get_unsafe(2,3); // m23;
-
-	// Compute color:
-	switch( colorScheme.scheme )
-	{
-	//case cmFromHeightRelativeToSensor:
-	case cmFromHeightRelativeToSensorJet:
-	case cmFromHeightRelativeToSensorGray:
-		{
-			float q = (rel_z-colorScheme.z_min)*Az_1_color;
-			if (q<0) q=0; else if (q>1) q=1;
-
-			if (colorScheme.scheme==cmFromHeightRelativeToSensorGray)
-			{
-				pR=pG=pB=q;
-			}
-			else
-			{
-				mrpt::utils::jet2rgb(q, pR,pG,pB);
-			}
-		}
-		break;
-	case cmFromIntensityImage:
-		{
-			// Do we have to project the 3D point into the image plane??
-			bool hasValidColor = false;
-			if (simple_3d_to_color_relation)
-			{
-				hasValidColor=true;
-			}
-			else
-			{
-				// Do projection:
-				TPoint3D  pt; // pt_wrt_colorcam;
-				lric.rangeScan.relativePoseIntensityWRTDepth.inverseComposePoint(
-					lric.scan_x,lric.scan_y,lric.scan_z,
-					pt.x,pt.y,pt.z);
-
-				// Project to image plane:
-				if (pt.z)
+				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
+				inline static void  internal_loadFromRangeScan2D_init(CColouredPointsMap &me, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric)
 				{
-					img_idx_x = cx + fx * pt.x/pt.z;
-					img_idx_y = cy + fy * pt.y/pt.z;
+					// Vars:
+					//  [0] -> pR
+					//  [1] -> pG
+					//  [2] -> pB
+					//  [3] -> Az_1_color
+					lric.fVars.resize(4);
 
-					hasValidColor=
-						img_idx_x>=0 && img_idx_x<imgW &&
-						img_idx_y>=0 && img_idx_y<imgH;
+					ASSERT_NOT_EQUAL_(me.colorScheme.z_max,me.colorScheme.z_min)
+					lric.fVars[3] = 1.0/(me.colorScheme.z_max-me.colorScheme.z_min);
 				}
-			}
 
-			if (hasValidColor && hasColorIntensityImg)
-			{
-				const uint8_t *c= lric.rangeScan.intensityImage.get_unsafe(img_idx_x, img_idx_y, 0);
-				pR= c[2] * K_8u;
-				pG= c[1] * K_8u;
-				pB= c[0] * K_8u;
-			}
-			else
-			if (hasValidColor && hasValidIntensityImage)
-			{
-				uint8_t c= *lric.rangeScan.intensityImage.get_unsafe(img_idx_x, img_idx_y, 0);
-				pR=pG=pB= c * K_8u;
-			}
-			else
-			{
-				pR=pG=pB=1.0;
-			}
+				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
+				inline static void  internal_loadFromRangeScan2D_prepareOneRange(CColouredPointsMap &me, const float gx,const float gy, const float gz, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric )
+				{
+					// Relative height of the point wrt the sensor:
+					const float rel_z = gz - lric.HM.get_unsafe(2,3); // m23;
+
+					// Variable renaming:
+					float & pR = lric.fVars[0];
+					float & pG = lric.fVars[1];
+					float & pB = lric.fVars[2];
+					const float &Az_1_color = lric.fVars[3];
+
+					// Compute color:
+					switch( me.colorScheme.scheme )
+					{
+					//case cmFromHeightRelativeToSensor:
+					case CColouredPointsMap::cmFromHeightRelativeToSensorJet:
+					case CColouredPointsMap::cmFromHeightRelativeToSensorGray:
+						{
+							float q = (rel_z-me.colorScheme.z_min)*Az_1_color;
+							if (q<0) q=0; else if (q>1) q=1;
+
+							if (me.colorScheme.scheme==CColouredPointsMap::cmFromHeightRelativeToSensorGray)
+							{
+								pR=pG=pB=q;
+							}
+							else
+							{
+								mrpt::utils::jet2rgb(q, pR,pG,pB);
+							}
+						}
+						break;
+					case CColouredPointsMap::cmFromIntensityImage:
+						{
+							// In 2D scans we don't have this channel.
+							pR=pG=pB=1.0;
+						}
+						break;
+					default:
+						THROW_EXCEPTION("Unknown color scheme");
+					}
+
+				}
+				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
+				inline static void  internal_loadFromRangeScan2D_postPushBack(CColouredPointsMap &me, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric)
+				{
+					float & pR = lric.fVars[0];
+					float & pG = lric.fVars[1];
+					float & pB = lric.fVars[2];
+					me.m_color_R.push_back(pR);
+					me.m_color_G.push_back(pG);
+					me.m_color_B.push_back(pB);
+					//m_min_dist.push_back(1e4);
+
+				}
+
+				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
+				inline static void  internal_loadFromRangeScan3D_init(CColouredPointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric)
+				{
+					// Vars:
+					//  [0] -> pR
+					//  [1] -> pG
+					//  [2] -> pB
+					//  [3] -> Az_1_color
+					//  [4] -> K_8u
+					//  [5] -> cx
+					//  [6] -> cy
+					//  [7] -> fx
+					//  [8] -> fy
+					lric.fVars.resize(9);
+					float &cx = lric.fVars[5];
+					float &cy = lric.fVars[6];
+					float &fx = lric.fVars[7];
+					float &fy = lric.fVars[8];
+
+					// unsigned int vars:
+					//  [0] -> imgW
+					//  [1] -> imgH
+					//  [2] -> img_idx_x
+					//  [3] -> img_idx_y
+					lric.uVars.resize(4);
+					unsigned int & imgW = lric.uVars[0];
+					unsigned int & imgH = lric.uVars[1];
+					unsigned int & img_idx_x = lric.uVars[2];
+					unsigned int & img_idx_y = lric.uVars[3];
+
+					// bool vars:
+					//  [0] -> hasValidIntensityImage
+					//  [1] -> hasColorIntensityImg
+					//  [2] -> simple_3d_to_color_relation
+					lric.bVars.resize(3);
+					uint8_t & hasValidIntensityImage = lric.bVars[0];
+					uint8_t & hasColorIntensityImg   = lric.bVars[1];
+					uint8_t & simple_3d_to_color_relation = lric.bVars[2];
+
+					ASSERT_NOT_EQUAL_(me.colorScheme.z_max,me.colorScheme.z_min)
+					lric.fVars[3] = 1.0/(me.colorScheme.z_max-me.colorScheme.z_min);  // Az_1_color = ...
+					lric.fVars[4] = 1.0f/255; // K_8u
+
+					hasValidIntensityImage = false;
+					imgW=0;
+					imgH=0;
+
+					if (lric.rangeScan.hasIntensityImage)
+					{
+						// assure the size matches:
+						if (lric.rangeScan.points3D_x.size() == lric.rangeScan.intensityImage.getWidth() * lric.rangeScan.intensityImage.getHeight() )
+						{
+							hasValidIntensityImage = true;
+							imgW = lric.rangeScan.intensityImage.getWidth();
+							imgH = lric.rangeScan.intensityImage.getHeight();
+						}
+					}
+
+
+					hasColorIntensityImg = hasValidIntensityImage && lric.rangeScan.intensityImage.isColor();
+
+					// running indices for the image pixels for the gray levels:
+					// If both range & intensity images coincide (e.g. SwissRanger), then we can just
+					// assign 3D points to image pixels one-to-one, but that's not the case if
+					//
+					simple_3d_to_color_relation = (std::abs(lric.rangeScan.relativePoseIntensityWRTDepth.norm())<1e-5);
+					img_idx_x = 0;
+					img_idx_y = 0;
+
+					// Will be used just if simple_3d_to_color_relation=false
+					cx = lric.rangeScan.cameraParamsIntensity.cx();
+					cy = lric.rangeScan.cameraParamsIntensity.cy();
+					fx = lric.rangeScan.cameraParamsIntensity.fx();
+					fy = lric.rangeScan.cameraParamsIntensity.fy();
+
+				}
+
+				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
+				inline static void  internal_loadFromRangeScan3D_prepareOneRange(CColouredPointsMap &me, const float gx,const float gy, const float gz, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric )
+				{
+					// Rename variables:
+					float &pR = lric.fVars[0];
+					float &pG = lric.fVars[1];
+					float &pB = lric.fVars[2];
+					float &Az_1_color = lric.fVars[3];
+					float &K_8u = lric.fVars[4];
+					float &cx = lric.fVars[5];
+					float &cy = lric.fVars[6];
+					float &fx = lric.fVars[7];
+					float &fy = lric.fVars[8];
+
+					unsigned int & imgW = lric.uVars[0];
+					unsigned int & imgH = lric.uVars[1];
+					unsigned int & img_idx_x = lric.uVars[2];
+					unsigned int & img_idx_y = lric.uVars[3];
+
+					const uint8_t & hasValidIntensityImage = lric.bVars[0];
+					const uint8_t & hasColorIntensityImg   = lric.bVars[1];
+					const uint8_t & simple_3d_to_color_relation = lric.bVars[2];
+
+					// Relative height of the point wrt the sensor:
+					const float rel_z = gz - lric.HM.get_unsafe(2,3); // m23;
+
+					// Compute color:
+					switch( me.colorScheme.scheme )
+					{
+					//case cmFromHeightRelativeToSensor:
+					case CColouredPointsMap::cmFromHeightRelativeToSensorJet:
+					case CColouredPointsMap::cmFromHeightRelativeToSensorGray:
+						{
+							float q = (rel_z-me.colorScheme.z_min)*Az_1_color;
+							if (q<0) q=0; else if (q>1) q=1;
+
+							if (me.colorScheme.scheme==CColouredPointsMap::cmFromHeightRelativeToSensorGray)
+							{
+								pR=pG=pB=q;
+							}
+							else
+							{
+								mrpt::utils::jet2rgb(q, pR,pG,pB);
+							}
+						}
+						break;
+					case CColouredPointsMap::cmFromIntensityImage:
+						{
+							// Do we have to project the 3D point into the image plane??
+							bool hasValidColor = false;
+							if (simple_3d_to_color_relation)
+							{
+								hasValidColor=true;
+							}
+							else
+							{
+								// Do projection:
+								TPoint3D  pt; // pt_wrt_colorcam;
+								lric.rangeScan.relativePoseIntensityWRTDepth.inverseComposePoint(
+									lric.scan_x,lric.scan_y,lric.scan_z,
+									pt.x,pt.y,pt.z);
+
+								// Project to image plane:
+								if (pt.z)
+								{
+									img_idx_x = cx + fx * pt.x/pt.z;
+									img_idx_y = cy + fy * pt.y/pt.z;
+
+									hasValidColor=
+										img_idx_x>=0 && img_idx_x<imgW &&
+										img_idx_y>=0 && img_idx_y<imgH;
+								}
+							}
+
+							if (hasValidColor && hasColorIntensityImg)
+							{
+								const uint8_t *c= lric.rangeScan.intensityImage.get_unsafe(img_idx_x, img_idx_y, 0);
+								pR= c[2] * K_8u;
+								pG= c[1] * K_8u;
+								pB= c[0] * K_8u;
+							}
+							else
+							if (hasValidColor && hasValidIntensityImage)
+							{
+								uint8_t c= *lric.rangeScan.intensityImage.get_unsafe(img_idx_x, img_idx_y, 0);
+								pR=pG=pB= c * K_8u;
+							}
+							else
+							{
+								pR=pG=pB=1.0;
+							}
+						}
+						break;
+					default:
+						THROW_EXCEPTION("Unknown color scheme");
+					}
+
+				}
+
+				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
+				inline static void  internal_loadFromRangeScan3D_postPushBack(CColouredPointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric)
+				{
+					float &pR = lric.fVars[0];
+					float &pG = lric.fVars[1];
+					float &pB = lric.fVars[2];
+
+					me.m_color_R.push_back(pR);
+					me.m_color_G.push_back(pG);
+					me.m_color_B.push_back(pB);
+
+					//m_min_dist.push_back(1e4);
+
+				}
+
+				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data, at the end */
+				inline static void  internal_loadFromRangeScan3D_postOneRange(CColouredPointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric )
+				{
+					unsigned int & imgW = lric.uVars[0];
+					unsigned int & img_idx_x = lric.uVars[2];
+					unsigned int & img_idx_y = lric.uVars[3];
+
+					const uint8_t & hasValidIntensityImage = lric.bVars[0];
+					const uint8_t & simple_3d_to_color_relation = lric.bVars[2];
+
+					// Advance the color pointer (just for simple cases, e.g. SwissRanger, not for Kinect)
+					if (simple_3d_to_color_relation && hasValidIntensityImage)
+					{
+						if (++img_idx_x>=imgW)
+						{
+							img_idx_y++;
+							img_idx_x=0;
+						}
+					}
+				}
+			};
 		}
-		break;
-	default:
-		THROW_EXCEPTION("Unknown color scheme");
-	}
-
-}
-
-/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
-void  CColouredPointsMap::internal_loadFromRangeScan3D_postPushBack(TLaserRange3DInsertContext & lric)
-{
-	float &pR = lric.fVars[0];
-	float &pG = lric.fVars[1];
-	float &pB = lric.fVars[2];
-
-	m_color_R.push_back(pR);
-	m_color_G.push_back(pG);
-	m_color_B.push_back(pB);
-
-	//m_min_dist.push_back(1e4);
-}
-
-/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data, at the end */
-void  CColouredPointsMap::internal_loadFromRangeScan3D_postOneRange(TLaserRange3DInsertContext & lric )
-{
-	unsigned int & imgW = lric.uVars[0];
-	unsigned int & img_idx_x = lric.uVars[2];
-	unsigned int & img_idx_y = lric.uVars[3];
-
-	const uint8_t & hasValidIntensityImage = lric.bVars[0];
-	const uint8_t & simple_3d_to_color_relation = lric.bVars[2];
-
-	// Advance the color pointer (just for simple cases, e.g. SwissRanger, not for Kinect)
-	if (simple_3d_to_color_relation && hasValidIntensityImage)
-	{
-		if (++img_idx_x>=imgW)
-		{
-			img_idx_y++;
-			img_idx_x=0;
-		}
 	}
 }
+
+
+
+/** See CPointsMap::loadFromRangeScan() */
+void  CColouredPointsMap::loadFromRangeScan(
+		const CObservation2DRangeScan &rangeScan,
+		const CPose3D				  *robotPose)
+{
+	mrpt::slam::detail::loadFromRangeImpl<CColouredPointsMap>::templ_loadFromRangeScan(*this,rangeScan,robotPose);
+}
+
+/** See CPointsMap::loadFromRangeScan() */
+void  CColouredPointsMap::loadFromRangeScan(
+		const CObservation3DRangeScan &rangeScan,
+		const CPose3D				  *robotPose)
+{
+	mrpt::slam::detail::loadFromRangeImpl<CColouredPointsMap>::templ_loadFromRangeScan(*this,rangeScan,robotPose);
+}
+

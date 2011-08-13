@@ -55,6 +55,13 @@ namespace slam
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CPointsMap , CMetricMap, MAPS_IMPEXP )
 
+	// Forward decls. needed to make its static methods friends of CPointsMap
+	namespace detail {
+		template <class Derived> struct loadFromRangeImpl;
+		template <class Derived> struct pointmap_traits;
+	}
+
+
 	/** A cloud of points in 2D or 3D, which can be built from a sequence of laser scans or other sensors.
 	 *  This is a virtual class, thus only a derived class can be instantiated by the user. The user most usually wants to use CSimplePointsMap.
 	 *
@@ -150,22 +157,6 @@ namespace slam
 
 		/** Auxiliary method called from within \a addFrom() automatically, to finish the copying of class-specific data  */
 		virtual void  addFrom_classSpecific(const CPointsMap &anotherMap, const size_t nPreviousPoints) = 0;
-
-		/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
-		virtual void  internal_loadFromRangeScan2D_init(TLaserRange2DInsertContext & lric)  {  }
-		/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
-		virtual void  internal_loadFromRangeScan2D_prepareOneRange(const float gx,const float gy, const float gz, TLaserRange2DInsertContext & lric )  {  }
-		/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
-		virtual void  internal_loadFromRangeScan2D_postPushBack(TLaserRange2DInsertContext & lric)  {  }
-
-		/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
-		virtual void  internal_loadFromRangeScan3D_init(TLaserRange3DInsertContext & lric) {  }
-		/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
-		virtual void  internal_loadFromRangeScan3D_prepareOneRange(const float gx,const float gy, const float gz, TLaserRange3DInsertContext & lric )  {  }
-		/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
-		virtual void  internal_loadFromRangeScan3D_postPushBack(TLaserRange3DInsertContext & lric)  {  }
-		/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data, at the end */
-		virtual void  internal_loadFromRangeScan3D_postOneRange(TLaserRange3DInsertContext & lric )  {  }
 
 	public:
 
@@ -593,12 +584,13 @@ namespace slam
 		  *
 		  *  \note Each derived class may enrich points in different ways (color, weight, etc..), so please refer to the description of the specific
 		  *         implementation of mrpt::slam::CPointsMap you are using.
+		  *  \note The actual generic implementation of this file lives in <src>/CPointsMap_crtp_common.h, but specific instantiations are generated at each derived class.
 		  *
 		  * \sa CObservation2DRangeScan, CObservation3DRangeScan
 		  */
-		void  loadFromRangeScan(
+		virtual void  loadFromRangeScan(
 				const CObservation2DRangeScan &rangeScan,
-				const CPose3D				  *robotPose = NULL );
+				const CPose3D				  *robotPose = NULL ) = 0;
 
 		/** Overload of \a loadFromRangeScan() for 3D range scans (for example, Kinect observations).
 		  *
@@ -607,10 +599,11 @@ namespace slam
 		  *
 		  *  \note Each derived class may enrich points in different ways (color, weight, etc..), so please refer to the description of the specific
 		  *         implementation of mrpt::slam::CPointsMap you are using.
+		  *  \note The actual generic implementation of this file lives in <src>/CPointsMap_crtp_common.h, but specific instantiations are generated at each derived class.
 		  */
-		void  loadFromRangeScan(
+		virtual void  loadFromRangeScan(
 				const CObservation3DRangeScan &rangeScan,
-				const CPose3D				  *robotPose = NULL );
+				const CPose3D				  *robotPose = NULL ) = 0;
 
 		/** Insert the contents of another map into this one, fusing the previous content with the new one.
 		 *    This means that points very close to existing ones will be "fused", rather than "added". This prevents
@@ -876,6 +869,11 @@ namespace slam
 		/** Whether or not (default=not) filter the input points by height
 		  * \sa m_heightfilter_z_min, m_heightfilter_z_max */
 		bool m_heightfilter_enabled;
+
+
+		// Friend methods:
+		template <class Derived> friend struct detail::loadFromRangeImpl;
+		template <class Derived> friend struct detail::pointmap_traits;
 
 
 	}; // End of class def.

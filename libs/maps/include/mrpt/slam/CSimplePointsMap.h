@@ -113,12 +113,27 @@ namespace mrpt
 				z[index] = point_data[2];
 			}
 
+			/** See CPointsMap::loadFromRangeScan() */
+			virtual void  loadFromRangeScan(
+					const CObservation2DRangeScan &rangeScan,
+					const CPose3D				  *robotPose = NULL );
+
+			/** See CPointsMap::loadFromRangeScan() */
+			virtual void  loadFromRangeScan(
+					const CObservation3DRangeScan &rangeScan,
+					const CPose3D				  *robotPose = NULL );
+
+
 		protected:
 
 			/** Auxiliary method called from within \a addFrom() automatically, to finish the copying of class-specific data  */
 			virtual void  addFrom_classSpecific(const CPointsMap &anotherMap, const size_t nPreviousPoints) {
 				// No extra data.
 			}
+
+			// Friend methods:
+			template <class Derived> friend struct detail::loadFromRangeImpl;
+			template <class Derived> friend struct detail::pointmap_traits;
 
 		public:
 

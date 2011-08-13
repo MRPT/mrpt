@@ -112,26 +112,24 @@ namespace mrpt
 				pointWeight[index] = point_data[3];
 			}
 
+			/** See CPointsMap::loadFromRangeScan() */
+			virtual void  loadFromRangeScan(
+					const CObservation2DRangeScan &rangeScan,
+					const CPose3D				  *robotPose = NULL );
+
+			/** See CPointsMap::loadFromRangeScan() */
+			virtual void  loadFromRangeScan(
+					const CObservation3DRangeScan &rangeScan,
+					const CPose3D				  *robotPose = NULL );
+
 		protected:
 
 			/** Auxiliary method called from within \a addFrom() automatically, to finish the copying of class-specific data  */
 			virtual void  addFrom_classSpecific(const CPointsMap &anotherMap, const size_t nPreviousPoints);
 
-			/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
-			virtual void  internal_loadFromRangeScan2D_init(TLaserRange2DInsertContext & lric);
-			/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
-			virtual void  internal_loadFromRangeScan2D_prepareOneRange(const float gx,const float gy, const float gz, TLaserRange2DInsertContext & lric );
-			/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
-			virtual void  internal_loadFromRangeScan2D_postPushBack(TLaserRange2DInsertContext & lric);
-
-			/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
-			virtual void  internal_loadFromRangeScan3D_init(TLaserRange3DInsertContext & lric);
-			/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
-			virtual void  internal_loadFromRangeScan3D_prepareOneRange(const float gx,const float gy, const float gz, TLaserRange3DInsertContext & lric );
-			/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
-			virtual void  internal_loadFromRangeScan3D_postPushBack(TLaserRange3DInsertContext & lric);
-			/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data, at the end */
-			virtual void  internal_loadFromRangeScan3D_postOneRange(TLaserRange3DInsertContext & lric );
+			// Friend methods:
+			template <class Derived> friend struct detail::loadFromRangeImpl;
+			template <class Derived> friend struct detail::pointmap_traits;
 
 		public:
 

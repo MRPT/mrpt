@@ -30,6 +30,8 @@
 
 #include <mrpt/slam/CSimplePointsMap.h>
 
+#include "CPointsMap_crtp_common.h"
+
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -261,6 +263,51 @@ void  CSimplePointsMap::insertPointFast( float x, float y, float z )
 	this->z.push_back(z);
 }
 
+
+namespace mrpt {
+	namespace slam {
+		namespace detail {
+			using mrpt::slam::CSimplePointsMap;
+
+			template <> struct pointmap_traits<CSimplePointsMap>
+			{
+
+				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
+				inline static void  internal_loadFromRangeScan2D_init(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric)  {  }
+				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
+				inline static void  internal_loadFromRangeScan2D_prepareOneRange(CSimplePointsMap &me, const float gx,const float gy, const float gz, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric )  {  }
+				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
+				inline static void  internal_loadFromRangeScan2D_postPushBack(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric)  {  }
+
+				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
+				inline static void  internal_loadFromRangeScan3D_init(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric) {  }
+				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
+				inline static void  internal_loadFromRangeScan3D_prepareOneRange(CSimplePointsMap &me, const float gx,const float gy, const float gz, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric )  {  }
+				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
+				inline static void  internal_loadFromRangeScan3D_postPushBack(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric)  {  }
+				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data, at the end */
+				inline static void  internal_loadFromRangeScan3D_postOneRange(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric )  {  }
+			};
+		}
+	}
+}
+
+/** See CPointsMap::loadFromRangeScan() */
+void  CSimplePointsMap::loadFromRangeScan(
+		const CObservation2DRangeScan &rangeScan,
+		const CPose3D				  *robotPose)
+{
+	mrpt::slam::detail::loadFromRangeImpl<CSimplePointsMap>::templ_loadFromRangeScan(*this,rangeScan,robotPose);
+}
+
+/** See CPointsMap::loadFromRangeScan() */
+void  CSimplePointsMap::loadFromRangeScan(
+		const CObservation3DRangeScan &rangeScan,
+		const CPose3D				  *robotPose)
+{
+	mrpt::slam::detail::loadFromRangeImpl<CSimplePointsMap>::templ_loadFromRangeScan(*this,rangeScan,robotPose);
+}
+
 // ================================ PLY files import & export virtual methods ================================
 
 /** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */
@@ -268,3 +315,4 @@ void CSimplePointsMap::PLY_import_set_vertex_count(const size_t N)
 {
 	this->setSize(N);
 }
+
