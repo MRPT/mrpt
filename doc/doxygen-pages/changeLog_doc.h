@@ -67,6 +67,11 @@
 			- mrpt::utils::CImage::KLT_response() has been optimized for time.
 		- [mrpt-base] mrpt::utils::CCanvas (which includes mrpt::utils::CImage):
 			- New bitmapped font: "5x7". See mrpt::utils::CCanvas::selectTextFont() - <a href="http://code.google.com/p/mrpt/source/detail?r=2598" >r2598</a>
+		- [mrpt-base] MRPT moves from ANN to FLANN for kd-tree library, such as: ( <a href="http://code.google.com/p/mrpt/source/detail?r=2623" >r2623</a> )
+			- New namespace mrpt_flann, holding a modified version of FLANN.
+			- A modified FLANN class has been created, mrpt_flann::KDTreeSingleIndexAdaptor, to allow building a kd-tree index and performing search without duplicating all the dataset within the KD-tree index.
+			- mrpt::math::KDTreeCapable maintains its API, so the change is backward compatible
+			- New class mrpt::math::KDTreeMatrixAdaptor to build KD-tree directly from Eigen matrices.
 		- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".
 		- [mrpt-opengl & mrpt-gui] All text labels in 3D rendering windows are now drawn as OpenGL primitives instead of bitmaps, which are ~10x faster to draw. See mrpt::opengl::CTextMessageCapable
 		- [mrpt-opengl & mrpt-gui] mrpt::opengl::CTextMessageCapable and mrpt::gui::CDisplayWindow3D now have an overloaded ::addTextMessage() method with many more font size/style options.

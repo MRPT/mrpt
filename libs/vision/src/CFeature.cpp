@@ -837,18 +837,6 @@ CFeatureList::~CFeatureList()
 {
 } // end destructor
 
-/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],...,data[i][nDims-1]). */
-void CFeatureList::kdtree_fill_point_data(ANNpointArray &data, const int nDims) const
-{
-	ASSERTMSG_(nDims==2, "CFeatureList only supports 2D KD-trees.")
-
-	for (size_t i=0;i<m_feats.size();i++)
-	{
-		data[i][0] = m_feats[i]->x;
-		data[i][1] = m_feats[i]->y;
-	}
-}
-
 // --------------------------------------------------
 // saveToTextFile
 // --------------------------------------------------

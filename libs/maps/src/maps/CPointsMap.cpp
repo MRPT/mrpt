@@ -987,45 +987,6 @@ void  CPointsMap::getAllPoints( vector<float> &xs, vector<float> &ys, size_t dec
 }
 
 
-
-/** Must return the number of data points */
-size_t CPointsMap::kdtree_get_point_count() const
-{
-	return this->size();
-}
-
-/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],data[i][1]). */
-void CPointsMap::kdtree_fill_point_data(ANNpointArray &data, const int nDims) const
-{
-	ASSERT_(nDims==2 || nDims==3)
-
-	const size_t N = this->size();
-
-	if (nDims==2)
-	{
-		const float  *x_ptr = &x[0];
-		const float  *y_ptr = &y[0];
-		for(size_t i=0;i<N;i++)
-		{
-			data[i][0]= *x_ptr++;
-			data[i][1]= *y_ptr++;
-		}
-	}
-	else
-	{
-		const float  *x_ptr = &x[0];
-		const float  *y_ptr = &y[0];
-		const float  *z_ptr = &z[0];
-		for(size_t i=0;i<N;i++)
-		{
-			data[i][0]= *x_ptr++;
-			data[i][1]= *y_ptr++;
-			data[i][2]= *z_ptr++;
-		}
-	}
-}
-
-
 /*---------------------------------------------------------------
 						squareDistanceToClosestCorrespondence
 ---------------------------------------------------------------*/
@@ -1678,7 +1639,7 @@ void  CPointsMap::loadFromRangeScan(
 
 	const int sizeRangeScan = rangeScan.scan.size();
 
-	if (!sizeRangeScan) 
+	if (!sizeRangeScan)
 		return; // Nothing to do.
 
 	// For a great gain in efficiency:
@@ -1754,7 +1715,7 @@ void  CPointsMap::loadFromRangeScan(
 		//   scan_gx = m00*scan_x+m01*scan_y+m03;
 		//   scan_gy = m10*scan_x+m11*scan_y+m13;
 		//   scan_gz = m20*scan_x+m21*scan_y+m23;
-		//  
+		//
 		//  With: scan_x = ccos*range
 		//        scan_y = csin*range
 		//

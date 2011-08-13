@@ -223,34 +223,52 @@ namespace mrpt
 		};
 
 
-	/** Helper class: KD-tree search class for vector<KeyPoint>:
-	  *  Call mark_as_outdated() to force rebuilding the kd-tree after modifying the linked feature list.
-	  *  \tparam FEAT Can be cv::KeyPoint or mrpt::vision::TSimpleFeature
-	  */
-	template <typename FEAT>
-	class CFeatureListKDTree : public mrpt::math::KDTreeCapable
-	{
-	public:
-		inline void mark_as_outdated() { kdtree_mark_as_outdated(); }
-
-		const std::vector<FEAT> & m_data;
-		CFeatureListKDTree(const std::vector<FEAT> & data) : m_data(data) {  }
-
-	protected:
-		/** Must return the number of data points */
-		virtual size_t kdtree_get_point_count() const {
-			return m_data.size();
-		}
-		/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],...,data[i][nDims-1]). */
-		virtual void kdtree_fill_point_data(ANNpointArray &data, const int nDims) const
+		/** Helper class: KD-tree search class for vector<KeyPoint>:
+		  *  Call mark_as_outdated() to force rebuilding the kd-tree after modifying the linked feature list.
+		  *  \tparam FEAT Can be cv::KeyPoint or mrpt::vision::TSimpleFeature
+		  */
+		template <typename FEAT>
+		class CFeatureListKDTree : public mrpt::math::KDTreeCapable<CFeatureListKDTree<FEAT> >
 		{
-			const size_t N = m_data.size();
-			for (size_t i=0;i<N;i++) {
-				data[i][0] = m_data[i].pt.x;
-				data[i][1] = m_data[i].pt.y;
-			}
-		}
-	}; // end CFeatureListKDTree
+		public:
+			inline void mark_as_outdated() { mrpt::math::KDTreeCapable<CFeatureListKDTree<FEAT> >::kdtree_mark_as_outdated(); }
+
+			const std::vector<FEAT> & m_data;
+			CFeatureListKDTree(const std::vector<FEAT> & data) : m_data(data) {  }
+
+
+				/** @name Methods that MUST be implemented by children classes of KDTreeCapable
+					@{ */
+
+				/// Must return the number of data points
+				inline size_t kdtree_get_point_count() const {  return m_data.size(); }
+
+				/// Returns the dim'th component of the idx'th point in the class:
+				inline float kdtree_get_pt(const size_t idx, int dim) const {
+					ASSERTDEB_(dim==0 || dim==1)
+					if (dim==0) return m_data[idx].pt.x;
+					else return m_data[idx].pt.y;
+				}
+
+				/// Returns the distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
+				inline float kdtree_distance(const float *p1, const size_t idx_p2,size_t size) const
+				{
+					ASSERTDEB_(size==2)
+
+					const float d0 = p1[0] - m_data[idx_p2].pt.x;
+					const float d1 = p1[1] - m_data[idx_p2].pt.y;
+					return d0*d0+d1*d1;
+				}
+
+				// Optional bounding-box computation: return false to default to a standard bbox computation loop.
+				//   Return true if the BBOX was already computed by the class and returned in "bb" so it can be avoided to redo it again.
+				//   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3 for point clouds)
+				template <typename BBOX>
+				bool kdtree_get_bbox(BBOX &bb) const  { return false; }
+
+				/** @} */
+
+		}; // end CFeatureListKDTree
 
 
 		/** @} */ // End of add to module: mrptvision_features

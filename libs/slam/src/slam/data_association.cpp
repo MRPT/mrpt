@@ -43,12 +43,15 @@
 #include <mrpt/slam/data_association.h>
 #include <mrpt/math/distributions.h>  // for chi2inv
 #include <mrpt/math/utils.h>
+#include <mrpt/math/KDTreeMatrixAdaptor.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 
 #include <numeric>  // accumulate
+#include <memory>   // auto_ptr
 
-#include <mrpt/otherlibs/ann/ANN.h>   // ANN: for kd-tree
+#include <mrpt/otherlibs/flann/flann.hpp>   // For kd-tree's
+#include <mrpt/math/KDTreeCapable.h>   // For kd-tree's
 
 using namespace std;
 using namespace mrpt;
@@ -67,7 +70,6 @@ namespace slam
 		size_t nPredictions, nObservations, length_O; //!< Just to avoid recomputing them all the time.
 		std::map<size_t,size_t>	currentAssociation;
 	};
-
 
 /**  Computes the joint distance metric (mahalanobis or matching likelihood) between two  a set of associations
   *
@@ -294,6 +296,8 @@ void mrpt::slam::data_association_full_covariance(
 {
 	// For details on the theory, see the papers cited at the beginning of this file.
 
+	using mrpt::math::KDTreeMatrixAdaptor;
+
 	MRPT_START
 
 	results.clear();
@@ -317,28 +321,17 @@ void mrpt::slam::data_association_full_covariance(
 	// ------------------------------------------------------------
 	// Build a KD-tree of the predictions for quick look-up:
 	// ------------------------------------------------------------
-	stlplus::smart_ptr_nocopy<ANNkd_tree> kd_tree; // Use smrt pointers to enable automatic deallocation one exception, etc...
+	std::auto_ptr<KDTreeMatrixAdaptor<CMatrixDouble> >  kd_tree;
+	//stlplus::smart_ptr_nocopy<ANNkd_tree> kd_tree; // Use smrt pointers to enable automatic deallocation on exception, etc...
 	const size_t N_KD_RESULTS = nPredictions;
-	std::vector<ANNdist>	kd_result_distances(DAT_ASOC_USE_KDTREE ? N_KD_RESULTS : 0);
-	std::vector<ANNidx>		kd_result_indices(DAT_ASOC_USE_KDTREE ? N_KD_RESULTS : 0);
-	std::vector<ANNcoord>	kd_queryPoint(DAT_ASOC_USE_KDTREE ? length_O : 0);
-	ANNpointArray 			kd_dataPoints = NULL;
+	std::vector<double>	kd_result_distances(DAT_ASOC_USE_KDTREE ? N_KD_RESULTS : 0);
+	std::vector<int>	kd_result_indices(DAT_ASOC_USE_KDTREE ? N_KD_RESULTS : 0);
+	std::vector<double>	kd_queryPoint(DAT_ASOC_USE_KDTREE ? length_O : 0);
 
 	if (DAT_ASOC_USE_KDTREE)
 	{
-		kd_dataPoints = annAllocPts(nPredictions,length_O);
-
-		for(size_t i=0;i<nPredictions;++i)
-			for(size_t c=0;c<length_O;++c)
-				kd_dataPoints [i][c]= Y_predictions_mean.get_unsafe(i,c);
-
 		// Construct kd-tree for the predictions:
-		kd_tree = stlplus::smart_ptr_nocopy<ANNkd_tree>(
-			new ANNkd_tree(
-				kd_dataPoints,
-				nPredictions,
-				length_O
-				) );
+		kd_tree = std::auto_ptr<KDTreeMatrixAdaptor<CMatrixDouble> >( new KDTreeMatrixAdaptor<CMatrixDouble>(length_O, Y_predictions_mean) );
 	}
 
 	// Initialize with the worst possible distance:
@@ -396,7 +389,7 @@ void mrpt::slam::data_association_full_covariance(
 			for (size_t k=0;k<length_O;k++)
 				kd_queryPoint[k] = Z_observations_mean.get_unsafe(j,k);
 
-			kd_tree->annkSearch(&kd_queryPoint[0], N_KD_RESULTS, &kd_result_indices[0], &kd_result_distances[0] );
+			kd_tree->query(&kd_queryPoint[0], N_KD_RESULTS, &kd_result_indices[0], &kd_result_distances[0] );
 
 			// Only compute the distances for these ones:
 			for (size_t w=0;w<N_KD_RESULTS;w++)
@@ -527,10 +520,6 @@ void mrpt::slam::data_association_full_covariance(
 		for (std::map<size_t,size_t>::iterator itAssoc = results.associations.begin();itAssoc!=results.associations.end();++itAssoc)
 			itAssoc->second = predictions_IDs[itAssoc->second];
 	}
-
-
-	if (kd_dataPoints)
-		annDeallocPts(kd_dataPoints);	// free temporary points for kd-tree
 
 	MRPT_END
 }

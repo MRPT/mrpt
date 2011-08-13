@@ -564,7 +564,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 						CPoint2D p2_j_local;
 						vector<float>  matches_x,matches_y, matches_dist;
-						std::vector<size_t> matches_idx;
+						std::vector<int> matches_idx;
 
 						CPoint2DPDFGaussian  pdf_M2_j;
 						CPoint2DPDFGaussian  pdf_M1_i;

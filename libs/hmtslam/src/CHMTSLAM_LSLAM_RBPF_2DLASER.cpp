@@ -564,7 +564,7 @@ double  CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 
 	// Take the previous particle weight:
 	// --------------------------------------------
-	double			indivLik, maxLik= -DBL_MAX;
+	double			indivLik, maxLik= -std::numeric_limits<double>::max();
 	size_t			maxLikDraw = 0;
 	size_t			N;
 	size_t			nDraws = myObj->m_movementDraws.size();

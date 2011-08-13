@@ -36,13 +36,11 @@ MRPT contains portions of code from other authors:
     See `/usr/share/common-licenses/GPL-2'.
 
 
- * ANN
-    http://www.cs.umd.edu/~mount/ANN/
-    ANN: Approximate Nearest Neighbors
-    Copyright (c) 1997-2005 University of Maryland and Sunil Arya and David
-    Mount All Rights Reserved.
-    Published under GNU LESSER GENERAL PUBLIC LICENSE, Version 2.1
-    See `/usr/share/common-licenses/LGPL-2.1'.
+ * FLANN
+    http://people.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN
+    FLANN - Fast Library for Approximate Nearest Neighbors
+    Distributed under the BSD license.
+    See `/usr/share/common-licenses/BSD'.
 
 
  * simpleini

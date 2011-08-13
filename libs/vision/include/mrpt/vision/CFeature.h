@@ -224,7 +224,7 @@ namespace mrpt
 		*****************************************************/
 		/** A list of visual features, to be used as output by detectors, as input/output by trackers, etc.
 		  */
-		class VISION_IMPEXP CFeatureList : public mrpt::math::KDTreeCapable  //public std::deque<CFeaturePtr>
+		class VISION_IMPEXP CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 		{
 		protected:
 			typedef std::vector<CFeaturePtr> TInternalFeatList;
@@ -305,14 +305,36 @@ namespace mrpt
 
 			/** @} */
 
-			/** @name Virtual methods that MUST be implemented by children classes of KDTreeCapable
-			    @{ */
 
-			/** Must return the number of data points */
-			virtual size_t kdtree_get_point_count() const { return size(); }
+			/** @name Methods that MUST be implemented by children classes of KDTreeCapable
+				@{ */
 
-			/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],...,data[i][nDims-1]). */
-			virtual void kdtree_fill_point_data(ANNpointArray &data, const int nDims) const;
+			/// Must return the number of data points 
+			inline size_t kdtree_get_point_count() const {  return this->size(); }
+
+			/// Returns the dim'th component of the idx'th point in the class:
+			inline float kdtree_get_pt(const size_t idx, int dim) const { 
+				ASSERTDEB_(dim==0 || dim==1)
+				if (dim==0) return m_feats[idx]->x;
+				else return m_feats[idx]->y;
+			}
+
+			/// Returns the distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
+			inline float kdtree_distance(const float *p1, const size_t idx_p2,size_t size) const
+			{
+				ASSERTDEB_(size==2)
+
+				const float d0 = p1[0] - m_feats[idx_p2]->x; 
+				const float d1 = p1[1] - m_feats[idx_p2]->y; 
+				return d0*d0+d1*d1;
+			}
+
+			// Optional bounding-box computation: return false to default to a standard bbox computation loop. 
+			//   Return true if the BBOX was already computed by the class and returned in "bb" so it can be avoided to redo it again.
+			//   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3 for point clouds)
+			template <typename BBOX>
+			bool kdtree_get_bbox(BBOX &bb) const  { return false; }
+
 			/** @} */
 
 

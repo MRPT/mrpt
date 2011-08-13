@@ -69,6 +69,7 @@
 #include <mrpt/math/jacobians.h>
 
 #include <mrpt/math/KDTreeCapable.h>
+#include <mrpt/math/KDTreeMatrixAdaptor.h>
 #include <mrpt/math/kmeans.h>
 #include <mrpt/math/slerp.h>
 #include <mrpt/math/model_search.h>

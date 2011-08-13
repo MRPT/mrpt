@@ -67,10 +67,9 @@ namespace slam
 	 */
 	class MAPS_IMPEXP CPointsMap :
 		public CMetricMap,
-		public mrpt::utils::KDTreeCapable,
+		public mrpt::utils::KDTreeCapable<CPointsMap>,
 		public mrpt::utils::PLY_Importer,
 		public mrpt::utils::PLY_Exporter
-
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_VIRTUAL_SERIALIZABLE( CPointsMap )
@@ -749,6 +748,56 @@ namespace slam
 
         /** @} */
 
+		/** @name Methods that MUST be implemented by children classes of KDTreeCapable
+			@{ */
+
+		/// Must return the number of data points
+		inline size_t kdtree_get_point_count() const {  return this->size(); }
+
+		/// Returns the dim'th component of the idx'th point in the class:
+		inline float kdtree_get_pt(const size_t idx, int dim) const {
+			if (dim==0) return this->x[idx];
+			else if (dim==1) return this->y[idx];
+			else if (dim==2) return this->z[idx]; else return 0;
+		}
+
+		/// Returns the distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
+		inline float kdtree_distance(const float *p1, const size_t idx_p2,size_t size) const
+		{
+			if (size==2)
+			{
+				const float d0 = p1[0]-x[idx_p2];
+				const float d1 = p1[1]-y[idx_p2];
+				return d0*d0+d1*d1;
+			}
+			else
+			{
+				const float d0 = p1[0]-x[idx_p2];
+				const float d1 = p1[1]-y[idx_p2];
+				const float d2 = p1[2]-z[idx_p2];
+				return d0*d0+d1*d1+d2*d2;
+			}
+		}
+
+		// Optional bounding-box computation: return false to default to a standard bbox computation loop.
+		//   Return true if the BBOX was already computed by the class and returned in "bb" so it can be avoided to redo it again.
+		//   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3 for point clouds)
+		template <typename BBOX>
+		bool kdtree_get_bbox(BBOX &bb) const
+		{
+			float min_z,max_z;
+			this->boundingBox(
+				bb[0].low, bb[0].high,
+				bb[1].low, bb[1].high,
+				min_z,max_z);
+			if (bb.size()==3) {
+				bb[2].low = min_z; bb[2].high = max_z;
+			}
+			return true;
+		}
+
+
+		/** @} */
 
 	protected:
 		std::vector<float>     x,y,z;        //!< The point coordinates
@@ -787,16 +836,6 @@ namespace slam
 
 		/** Helper method for ::copyFrom() */
 		void  base_copyFrom(const CPointsMap &obj);
-
-		/** @name Virtual methods that MUST be implemented by children classes of KDTreeCapable
-			@{ */
-		/** Must return the number of data points */
-		virtual size_t kdtree_get_point_count() const;
-
-		/** Must fill out the data points in "data", such as the i'th point will be stored in (data[i][0],...,data[i][nDims-1]). */
-		virtual void kdtree_fill_point_data(ANNpointArray &data, const int nDims) const;
-
-		/** @} */
 
 
 		/** @name PLY Import virtual methods to implement in base classes
