@@ -128,7 +128,7 @@ namespace mrpt
 			  * \return The index of the closest point in the map array.
 			  *  \sa kdTreeClosestPoint3D, kdTreeTwoClosestPoint2D
 			  */
-			size_t kdTreeClosestPoint2D(
+			inline size_t kdTreeClosestPoint2D(
 				float   x0,
 				float   y0,
 				float   	  &out_x,
@@ -157,6 +157,30 @@ namespace mrpt
 				MRPT_END
 			}
 
+			/// \overload
+			inline size_t kdTreeClosestPoint2D(
+				float   x0,
+				float   y0,
+				float   &out_dist_sqr ) const
+			{
+				MRPT_START
+				rebuild_kdTree_2D(); // First: Create the 2D KD-Tree if required
+				if ( !m_kdtree2d_data.m_num_points ) THROW_EXCEPTION("There are no points in the KD-tree.")
+
+				const int knn = 1; // Number of points to retrieve
+				int ret_index;
+				mrpt_flann::KNNResultSet<num_t> resultSet(knn);
+				resultSet.init(&ret_index, &out_dist_sqr );
+
+				m_kdtree2d_data.query_point[0] = x0;
+				m_kdtree2d_data.query_point[1] = y0;
+		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], mrpt_flann::SearchParams(kdtree_search_params.nChecks));
+
+				return static_cast<size_t>(ret_index);
+				MRPT_END
+			}
+
+			/// \overload
 			inline size_t kdTreeClosestPoint2D(const TPoint2D &p0,TPoint2D &pOut,float &outDistSqr) const	{
 				float dmy1,dmy2;
 				size_t res=kdTreeClosestPoint2D(static_cast<float>(p0.x),static_cast<float>(p0.y),dmy1,dmy2,outDistSqr);
@@ -197,7 +221,7 @@ namespace mrpt
 			  *
 			  *  \sa kdTreeClosestPoint2D
 			  */
-			void kdTreeTwoClosestPoint2D(
+			inline void kdTreeTwoClosestPoint2D(
 				float   x0,
 				float   y0,
 				float   	  &out_x1,
@@ -319,7 +343,7 @@ namespace mrpt
 			  *
 			  *  \sa kdTreeClosestPoint2D
 			  */
-			void kdTreeNClosestPoint2DIdx(
+			inline void kdTreeNClosestPoint2DIdx(
 				float			x0,
 				float			y0,
 				size_t  knn,
@@ -362,7 +386,7 @@ namespace mrpt
 			  * \return The index of the closest point in the map array.
 			  *  \sa kdTreeClosestPoint2D
 			  */
-			size_t kdTreeClosestPoint3D(
+			inline size_t kdTreeClosestPoint3D(
 				float   x0,
 				float   y0,
 				float   z0,
@@ -395,6 +419,33 @@ namespace mrpt
 				MRPT_END
 			}
 
+			/// \overload
+			inline size_t kdTreeClosestPoint3D(
+				float   x0,
+				float   y0,
+				float   z0,
+				float		  &out_dist_sqr
+				) const
+			{
+				MRPT_START
+				rebuild_kdTree_3D(); // First: Create the 3D KD-Tree if required
+				if ( !m_kdtree3d_data.m_num_points ) THROW_EXCEPTION("There are no points in the KD-tree.")
+
+				const int knn = 1; // Number of points to retrieve
+				int ret_index;
+				mrpt_flann::KNNResultSet<num_t> resultSet(knn);
+				resultSet.init(&ret_index, &out_dist_sqr );
+
+				m_kdtree3d_data.query_point[0] = x0;
+				m_kdtree3d_data.query_point[1] = y0;
+				m_kdtree3d_data.query_point[2] = z0;
+		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], mrpt_flann::SearchParams(kdtree_search_params.nChecks));
+
+				return static_cast<size_t>(ret_index);
+				MRPT_END
+			}
+
+			/// \overload
 			inline size_t kdTreeClosestPoint3D(const TPoint3D &p0,TPoint3D &pOut,float &outDistSqr) const	{
 				float dmy1,dmy2,dmy3;
 				size_t res=kdTreeClosestPoint3D(static_cast<float>(p0.x),static_cast<float>(p0.y),static_cast<float>(p0.z),dmy1,dmy2,dmy3,outDistSqr);
@@ -421,7 +472,7 @@ namespace mrpt
 			  *
 			  *  \sa kdTreeNClosestPoint2D
 			  */
-			void kdTreeNClosestPoint3D(
+			inline void kdTreeNClosestPoint3D(
 				float			x0,
 				float			y0,
 				float			z0,
@@ -484,7 +535,7 @@ namespace mrpt
 			  *
 			  *  \sa kdTreeClosestPoint2D
 			  */
-			void kdTreeNClosestPoint3DIdx(
+			inline void kdTreeNClosestPoint3DIdx(
 				float			x0,
 				float			y0,
 				float			z0,

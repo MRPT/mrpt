@@ -187,6 +187,51 @@ double grid_test_8(int a1, int a2)
 	return tictac.Tac()/N;
 }
 
+double grid_test_9(int a1, int a2)
+{
+	// test 9: computeMatchingWith2D
+	// ----------------------------------------
+
+	// prepare the laser scan:
+	CObservation2DRangeScan	scan1;
+	scan1.aperture = M_PIf;
+	scan1.rightToLeft = true;
+	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
+	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
+	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
+	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
+
+
+	CSimplePointsMap  gridmap;
+	CSimplePointsMap  pt_map2;
+	pt_map2.insertionOptions.minDistBetweenLaserPoints = 0.03;
+
+	CPose3D pose;
+	gridmap.insertObservation(&scan1, &pose);
+
+	CPose3D pose2(0.05,0.04,0, DEG2RAD(4), 0,0);
+	pt_map2.insertObservation(&scan1, &pose2);
+
+	const CPose2D nullPose(0,0,0);
+	TMatchingPairList	correspondences;
+	float				corrRatio;
+
+	CTicTac	 tictac;
+	for (long i=0;i<a1;i++)
+	{
+		gridmap.computeMatchingWith2D(
+			&pt_map2,			// The other map
+			nullPose,	// The other map's pose
+			0.10, 		// Max. dist. for correspondence
+			0,
+			nullPose,
+			correspondences,
+			corrRatio );
+	}
+	return tictac.Tac()/a1;
+}
+
+
 // ------------------------------------------------------
 // register_tests_grids
 // ------------------------------------------------------
@@ -200,5 +245,6 @@ void register_tests_grids()
 	lstTests.push_back( TestData("gridmap2D: insert scan with widening",grid_test_5_6, 1) );
 	lstTests.push_back( TestData("gridmap2D: resize",grid_test_7) );
 	lstTests.push_back( TestData("gridmap2D: computeLikelihood",grid_test_8) );
+	lstTests.push_back( TestData("gridmap2D: computeMatchingWith2D",grid_test_9, 5000 ) );
 }
 

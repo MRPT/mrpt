@@ -242,7 +242,9 @@ namespace mrpt
 				float									&correspondencesRatio,
 				float									*sumSqrDist	= NULL,
 				bool									onlyKeepTheClosest = true,
-				bool									onlyUniqueRobust = false ) const
+				bool									onlyUniqueRobust = false,
+				const size_t                            decimation_other_map_points = 1,
+				const size_t                            offset_other_map_points = 0 ) const
 			{
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")
@@ -276,7 +278,9 @@ namespace mrpt
 				float									&correspondencesRatio,
 				float									*sumSqrDist	= NULL,
 				bool									onlyKeepTheClosest = true,
-				bool									onlyUniqueRobust = false ) const
+				bool									onlyUniqueRobust = false,
+				const size_t                            decimation_other_map_points = 1,
+				const size_t                            offset_other_map_points = 0 ) const
 			{
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")
@@ -318,8 +322,8 @@ namespace mrpt
 			/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
 			  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
 			  */
-			virtual void  auxParticleFilterCleanUp() 
-			{ 
+			virtual void  auxParticleFilterCleanUp()
+			{
 				// Default implementation: do nothing.
 			}
 

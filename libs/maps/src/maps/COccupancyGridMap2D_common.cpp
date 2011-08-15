@@ -494,35 +494,34 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
     float									&correspondencesRatio,
     float									*sumSqrDist,
     bool									onlyKeepTheClosest,
-	bool									onlyUniqueRobust) const
+	bool									onlyUniqueRobust,
+	const size_t                            decimation_other_map_points,
+	const size_t          offset_other_map_points ) const
 {
 	MRPT_START
+
+	ASSERT_ABOVE_(decimation_other_map_points,0)
+	ASSERT_BELOW_(offset_other_map_points, decimation_other_map_points)
+	const size_t incr = decimation_other_map_points; // Just to save some typing...
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom( CLASS_ID(CPointsMap) ));
 	const CPointsMap			*otherMap = static_cast<const CPointsMap*>(otherMap2);
 
 	const TPose2D  otherMapPose = TPose2D(otherMapPose_);
 
-	size_t							nLocalPoints = otherMap->getPointsCount();
-	float							_sumSqrDist=0;
+	const size_t nLocalPoints = otherMap->getPointsCount();
 	std::vector<float>				x_locals(nLocalPoints), y_locals(nLocalPoints),z_locals(nLocalPoints);
-	std::vector<float>::const_iterator	otherMap_x_it,otherMap_y_it,otherMap_z_it;
-	std::vector<float>::iterator	x_locals_it,y_locals_it,z_locals_it;
-	float							sin_phi = sin(otherMapPose.phi);
-	float							cos_phi = cos(otherMapPose.phi);
-	size_t							nOtherMapPointsWithCorrespondence = 0;	// Number of points with one corrs. at least
-	size_t							nTotalCorrespondences = 0;				// Total number of corrs
-	float							maxDistForCorrespondenceSquared;
-	float							min_dist,this_dist;
-	bool							thisLocalHasCorr;
-	register float					x_local, y_local,z_local;
-	int								cx,cy,cx_min,cx_max,cy_min,cy_max;	// For the cells search
-	unsigned int					localIdx;
-	float							residual_x,residual_y;
+
+
+	const float sin_phi = sin(otherMapPose.phi);
+	const float cos_phi = cos(otherMapPose.phi);
+
+	size_t nOtherMapPointsWithCorrespondence = 0;	// Number of points with one corrs. at least
+	size_t nTotalCorrespondences = 0;				// Total number of corrs
+	float _sumSqrDist=0;
 
 	// The number of cells to look around each point:
-	int								cellsSearchRange = round( maxDistForCorrespondence / resolution );
-
+	const int cellsSearchRange = round( maxDistForCorrespondence / resolution );
 
 	// Initially there are no correspondences:
 	correspondences.clear();
@@ -534,32 +533,28 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 	// Solo hacer matching si existe alguna posibilidad de que
 	//  los dos mapas se toquen:
 	// -----------------------------------------------------------
-	float	local_x_min=0,local_x_max=0,local_y_min=0,local_y_max=0;
+	float local_x_min =  std::numeric_limits<float>::max();
+	float local_x_max = -std::numeric_limits<float>::max();
+	float local_y_min =  std::numeric_limits<float>::max();
+	float local_y_max = -std::numeric_limits<float>::max();
 
 	const std::vector<float> & otherMap_pxs = otherMap->getPointsBufferRef_x();
 	const std::vector<float> & otherMap_pys = otherMap->getPointsBufferRef_y();
 	const std::vector<float> & otherMap_pzs = otherMap->getPointsBufferRef_z();
 
 	// Translate all local map points:
-	for (x_locals_it=x_locals.begin(),
-			y_locals_it=y_locals.begin(),
-			z_locals_it=z_locals.begin(),
-			otherMap_x_it=otherMap_pxs.begin(),
-			otherMap_y_it=otherMap_pys.begin(),
-			otherMap_z_it=otherMap_pzs.begin();
-			x_locals_it<x_locals.end();
-			++x_locals_it,++y_locals_it,++z_locals_it,++otherMap_x_it,++otherMap_y_it)
+	for (unsigned int localIdx=offset_other_map_points;localIdx<nLocalPoints;localIdx+=incr)
 	{
 		// Girar y desplazar cada uno de los puntos del local map:
-		*x_locals_it = otherMapPose.x + cos_phi* (*otherMap_x_it) - sin_phi*(*otherMap_y_it);
-		*y_locals_it = otherMapPose.y + sin_phi* (*otherMap_x_it) + cos_phi*(*otherMap_y_it);
-		*z_locals_it = /* otherMapPose.z +*/ (*otherMap_z_it);
+		const float xx = x_locals[localIdx] = otherMapPose.x + cos_phi* otherMap_pxs[localIdx] - sin_phi* otherMap_pys[localIdx] ;
+		const float yy = y_locals[localIdx] = otherMapPose.y + sin_phi* otherMap_pxs[localIdx] + cos_phi* otherMap_pys[localIdx] ;
+		z_locals[localIdx] = /* otherMapPose.z +*/ otherMap_pzs[localIdx];
 
 		// mantener el max/min de los puntos:
-		local_x_min = min(local_x_min,*x_locals_it);
-		local_x_max = max(local_x_max,*x_locals_it);
-		local_y_min = min(local_y_min,*y_locals_it);
-		local_y_max = max(local_y_max,*y_locals_it);
+		local_x_min = min(local_x_min,xx);
+		local_x_max = max(local_x_max,xx);
+		local_y_min = min(local_y_min,yy);
+		local_y_max = max(local_y_max,yy);
 	}
 
 	// If the local map is entirely out of the grid,
@@ -570,55 +565,47 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 		local_y_max< y_min) return;		// Matching is NULL!
 
 
-	cellType	thresholdCellValue = p2l(0.5f);
+	const cellType thresholdCellValue = p2l(0.5f);
 
 	// For each point in the other map:
-	for (localIdx=0,
-			x_locals_it=x_locals.begin(),
-			y_locals_it=y_locals.begin(),
-			z_locals_it=z_locals.begin(),
-			otherMap_x_it=otherMap_pxs.begin(),
-			otherMap_y_it=otherMap_pys.begin(),
-			otherMap_z_it=otherMap_pzs.begin();
-			x_locals_it<x_locals.end();
-			++x_locals_it,++y_locals_it,++z_locals_it,++otherMap_x_it,++otherMap_y_it,++otherMap_z_it,++localIdx)
+	for (unsigned int localIdx=offset_other_map_points;localIdx<nLocalPoints;localIdx+=incr)
 	{
 		// Starting value:
-		maxDistForCorrespondenceSquared = square( maxDistForCorrespondence );
+		float maxDistForCorrespondenceSquared = square( maxDistForCorrespondence );
 
 		// For speed-up:
-		x_local = *x_locals_it;
-		y_local = *y_locals_it;
-		z_local = *z_locals_it;
+		const float x_local = x_locals[localIdx];
+		const float y_local = y_locals[localIdx];
+		const float z_local = z_locals[localIdx];
 
 		// Look for the occupied cell closest from the map point:
-		min_dist = 1e6;
+		float min_dist = 1e6;
 		TMatchingPair		closestCorr;
 
 		// Get the indexes of cell where the point falls:
-		cx=x2idx(x_local);
-		cy=y2idx(y_local);
+		const int cx0=x2idx(x_local);
+		const int cy0=y2idx(y_local);
 
 		// Get the rectangle to look for into:
-		cx_min = max(0, cx - cellsSearchRange );
-		cx_max = min(static_cast<int>(size_x)-1, cx + cellsSearchRange );
-		cy_min = max(0, cy - cellsSearchRange );
-		cy_max = min(static_cast<int>(size_y)-1, cy + cellsSearchRange );
+		const int cx_min = max(0, cx0 - cellsSearchRange );
+		const int cx_max = min(static_cast<int>(size_x)-1, cx0 + cellsSearchRange );
+		const int cy_min = max(0, cy0 - cellsSearchRange );
+		const int cy_max = min(static_cast<int>(size_y)-1, cy0 + cellsSearchRange );
 
 		// Will be set to true if a corrs. is found:
-		thisLocalHasCorr = false;
+		bool thisLocalHasCorr = false;
 
 
 		// Look in nearby cells:
-		for (cx=cx_min;cx<=cx_max;cx++)
+		for (int cx=cx_min;cx<=cx_max;cx++)
 		{
-			for (cy=cy_min;cy<=cy_max;cy++)
+			for (int cy=cy_min;cy<=cy_max;cy++)
 			{
 				// Is an occupied cell?
 				if ( map[cx+cy*size_x] < thresholdCellValue )//  getCell(cx,cy)<0.49)
 				{
-					residual_x = idx2x(cx)- x_local;
-					residual_y = idx2y(cy)- y_local;
+					const float residual_x = idx2x(cx)- x_local;
+					const float residual_y = idx2y(cy)- y_local;
 
 					// Compute max. allowed distance:
 					maxDistForCorrespondenceSquared = square(
@@ -626,7 +613,7 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 								maxDistForCorrespondence );
 
 					// Square distance to the point:
-					this_dist = square( residual_x ) + square( residual_y );
+					const float this_dist = square( residual_x ) + square( residual_y );
 
 					if (this_dist<maxDistForCorrespondenceSquared)
 					{
@@ -640,9 +627,9 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 							mp.this_y = idx2y(cy);
 							mp.this_z = z_local;
 							mp.other_idx = localIdx;
-							mp.other_x = *otherMap_x_it;
-							mp.other_y = *otherMap_y_it;
-							mp.other_z = *otherMap_z_it;
+							mp.other_x = otherMap_pxs[localIdx];
+							mp.other_y = otherMap_pys[localIdx];
+							mp.other_z = otherMap_pzs[localIdx];
 							correspondences.push_back( mp );
 						}
 						else
@@ -657,9 +644,9 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 								closestCorr.this_y = idx2y(cy);
 								closestCorr.this_z = z_local;
 								closestCorr.other_idx = localIdx;
-								closestCorr.other_x = *otherMap_x_it;
-								closestCorr.other_y = *otherMap_y_it;
-								closestCorr.other_z = *otherMap_z_it;
+								closestCorr.other_x = otherMap_pxs[localIdx];
+								closestCorr.other_y = otherMap_pys[localIdx];
+								closestCorr.other_z = otherMap_pzs[localIdx];
 							}
 						}
 
@@ -688,7 +675,7 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 
 	}	// End "for each local point"...
 
-	correspondencesRatio = nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
+	correspondencesRatio = nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints/incr);
 
 	// If requested, copy sum of squared distances to output pointer:
 	// -------------------------------------------------------------------

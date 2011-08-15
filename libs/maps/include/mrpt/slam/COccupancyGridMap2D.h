@@ -88,7 +88,7 @@ namespace slam
 	 *		- Entropy and information methods (See computeEntropy)
 	 *
 	 **/
-	class MAPS_IMPEXP COccupancyGridMap2D : 
+	class MAPS_IMPEXP COccupancyGridMap2D :
 		public CMetricMap,
 		// Inherit from the corresponding specialization of CLogOddsGridMap2D<>:
 #ifdef	OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
@@ -156,7 +156,7 @@ namespace slam
 
 		bool m_is_empty; //!< True upon construction; used by isEmpty()
 
-		virtual void OnPostSuccesfulInsertObs(const CObservation *); //!< See base class 
+		virtual void OnPostSuccesfulInsertObs(const CObservation *); //!< See base class
 
 		/** The free-cells threshold used to compute the Voronoi diagram.
 		 */
@@ -446,8 +446,8 @@ namespace slam
 
 		/** Change a cell in the "basis" maps.Used for Voronoi calculation.
 		 */
-		inline void   setBasisCell(int x,int y,uint8_t value) 
-		{ 
+		inline void   setBasisCell(int x,int y,uint8_t value)
+		{
 			uint8_t *cell=m_basis_map.cellByIndex(x,y);
 #ifdef _DEBUG
 			ASSERT_ABOVEEQ_(x,0)
@@ -461,9 +461,9 @@ namespace slam
 		/** Reads a cell in the "basis" maps.Used for Voronoi calculation.
 		 */
 		inline unsigned char  getBasisCell(int x,int y) const
-		{ 
+		{
 			const uint8_t *cell=m_basis_map.cellByIndex(x,y);
-#ifdef _DEBUG			
+#ifdef _DEBUG
 			ASSERT_ABOVEEQ_(x,0)
 			ASSERT_ABOVEEQ_(y,0)
 			ASSERT_BELOWEQ_(x,int(m_basis_map.getSizeX()))
@@ -738,7 +738,7 @@ namespace slam
 		/** Reads a the clearance of a cell (in centimeters), after building the Voronoi diagram with \a buildVoronoiDiagram */
 		inline uint16_t getVoroniClearance(int cx,int cy) const
 		{
-#ifdef _DEBUG			
+#ifdef _DEBUG
 			ASSERT_ABOVEEQ_(cx,0)
 			ASSERT_ABOVEEQ_(cy,0)
 			ASSERT_BELOWEQ_(cx,int(m_voronoi_diagram.getSizeX()))
@@ -747,13 +747,13 @@ namespace slam
 			const uint16_t *cell=m_voronoi_diagram.cellByIndex(cx,cy);
 			return *cell;
 		}
-		
+
 	protected:
 		/** Used to set the clearance of a cell, while building the Voronoi diagram. */
 		inline void setVoroniClearance(int cx,int cy,uint16_t dist)
-		{ 
+		{
 			uint16_t *cell=m_voronoi_diagram.cellByIndex(cx,cy);
-#ifdef _DEBUG			
+#ifdef _DEBUG
 			ASSERT_ABOVEEQ_(cx,0)
 			ASSERT_ABOVEEQ_(cy,0)
 			ASSERT_BELOWEQ_(cx,int(m_voronoi_diagram.getSizeX()))
@@ -921,14 +921,14 @@ namespace slam
 			const TMatchingPairList		&corrs);
 
 		/** Saves the gridmap as a graphical bitmap file, 8 bit gray scale, 1 pixel is 1 cell, and with an overlay of landmarks.
-		 * \note The template parameter CLANDMARKSMAP is assumed to be mrpt::slam::CLandmarksMap normally. 
+		 * \note The template parameter CLANDMARKSMAP is assumed to be mrpt::slam::CLandmarksMap normally.
 		 * \return False on any error.
 		 */
 		template <class CLANDMARKSMAP>
 		bool  saveAsBitmapFileWithLandmarks(
 			const std::string	&file,
 			const CLANDMARKSMAP *landmarks,
-			bool  addTextLabels = false, 
+			bool  addTextLabels = false,
 			const mrpt::utils::TColor &marks_color = mrpt::utils::TColor(0,0,255) ) const
 		{
 			MRPT_START
@@ -966,7 +966,7 @@ namespace slam
 		  */
 		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
-		/** Returns true upon map construction or after calling clear(), the return 
+		/** Returns true upon map construction or after calling clear(), the return
 		  *  changes to false upon successful insertObservation() or any other method to load data in the map.
 		  */
 		bool  isEmpty() const;
@@ -997,16 +997,18 @@ namespace slam
 		 * \sa computeMatching3DWith
 		 */
 		void  computeMatchingWith2D(
-				const CMetricMap						*otherMap,
-				const CPose2D							&otherMapPose,
-				float									maxDistForCorrespondence,
-				float									maxAngularDistForCorrespondence,
-				const CPose2D							&angularDistPivotPoint,
-				TMatchingPairList						&correspondences,
-				float									&correspondencesRatio,
-				float									*sumSqrDist	= NULL,
-				bool									onlyKeepTheClosest = false,
-				bool									onlyUniqueRobust = false ) const;
+				const CMetricMap     *otherMap,
+				const CPose2D        &otherMapPose,
+				float                maxDistForCorrespondence,
+				float                maxAngularDistForCorrespondence,
+				const CPose2D        &angularDistPivotPoint,
+				TMatchingPairList    &correspondences,
+				float                &correspondencesRatio,
+				float                *sumSqrDist	= NULL,
+				bool                  onlyKeepTheClosest = false,
+				bool                  onlyUniqueRobust = false,
+				const size_t          decimation_other_map_points = 1,
+				const size_t          offset_other_map_points = 0 ) const;
 
 
 		/** Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"

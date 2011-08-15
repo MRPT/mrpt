@@ -984,7 +984,9 @@ void  CMultiMetricMap::computeMatchingWith2D(
 		float									&correspondencesRatio,
 		float									*sumSqrDist	,
 		bool									onlyKeepTheClosest,
-		bool									onlyUniqueRobust) const
+		bool									onlyUniqueRobust,
+		const size_t          decimation_other_map_points,
+		const size_t          offset_other_map_points ) const
 {
     MRPT_START
 
@@ -1000,7 +1002,8 @@ void  CMultiMetricMap::computeMatchingWith2D(
 									correspondencesRatio,
 									sumSqrDist	,
 									onlyKeepTheClosest,
-									onlyUniqueRobust);
+									onlyUniqueRobust,
+									decimation_other_map_points);
     MRPT_END
 }
 

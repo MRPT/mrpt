@@ -286,16 +286,18 @@ namespace slam
 		 * \sa compute3DMatchingRatio
 		 */
 		void  computeMatchingWith2D(
-				const CMetricMap						*otherMap,
-				const CPose2D							&otherMapPose,
-				float									maxDistForCorrespondence,
-				float									maxAngularDistForCorrespondence,
-				const CPose2D							&angularDistPivotPoint,
-				TMatchingPairList						&correspondences,
-				float									&correspondencesRatio,
-				float									*sumSqrDist	= NULL,
-				bool									onlyKeepTheClosest = false,
-				bool									onlyUniqueRobust = false ) const;
+				const CMetricMap     *otherMap,
+				const CPose2D        &otherMapPose,
+				float                maxDistForCorrespondence,
+				float                maxAngularDistForCorrespondence,
+				const CPose2D        &angularDistPivotPoint,
+				TMatchingPairList    &correspondences,
+				float                &correspondencesRatio,
+				float                *sumSqrDist	= NULL,
+				bool                  onlyKeepTheClosest = false,
+				bool                  onlyUniqueRobust = false,
+				const size_t          decimation_other_map_points = 1,
+				const size_t          offset_other_map_points = 0 ) const;
 
 		/** Perform a search for correspondences between "this" and another lansmarks map:
 		  *  Firsly, the landmarks' descriptor is used to find correspondences, then inconsistent ones removed by

@@ -169,6 +169,12 @@ namespace mrpt
 				/** Skip the computation of the covariance (saves some time) (default=false) */
 				bool			skip_cov_calculation;
 
+				/** Decimation of the point cloud being registered against the reference one (default=5) - set to 1 to have the older (MRPT <0.9.5) behavior
+				  *  of not approximating ICP by ignoring the correspondence of some points. The speed-up comes from a decimation of the number of KD-tree queries,
+				  *  the most expensive step in ICP.
+				  */
+				uint32_t        corresponding_points_decimation;
+
 			};
 
 			TConfigParams  options; //!< The options employed by the ICP align.

@@ -74,7 +74,7 @@ namespace mrpt
 
 		/** A list of TMatchingPair
 		  */
-		class BASE_IMPEXP TMatchingPairList : public std::deque<TMatchingPair>
+		class BASE_IMPEXP TMatchingPairList : public std::vector<TMatchingPair>
 		{
 		public:
 

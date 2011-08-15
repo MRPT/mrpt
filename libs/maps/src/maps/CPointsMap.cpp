@@ -331,14 +331,21 @@ void  CPointsMap::computeMatchingWith2D(
     float									&correspondencesRatio,
     float									*sumSqrDist	,
     bool									onlyKeepTheClosest,
-	bool									onlyUniqueRobust) const
+	bool									onlyUniqueRobust,
+	const size_t          decimation_other_map_points,
+	const size_t                            offset_other_map_points ) const
 {
 	MRPT_START
 
+	ASSERT_ABOVE_(decimation_other_map_points,0)
+	ASSERT_BELOW_(offset_other_map_points, decimation_other_map_points)
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom( CLASS_ID(CPointsMap) ));
 	const CPointsMap		*otherMap = static_cast<const CPointsMap*>( otherMap2 );
 
 	const TPose2D	otherMapPose(otherMapPose_.x(),otherMapPose_.y(),otherMapPose_.phi());
+
+	const size_t incr = decimation_other_map_points;  // To save typing!
+
 
 	size_t					nLocalPoints = otherMap->size();
 	size_t					nGlobalPoints = this->size();
@@ -360,6 +367,7 @@ void  CPointsMap::computeMatchingWith2D(
 
 	// No correspondences initially:
 	correspondences.clear();
+	correspondences.reserve(nLocalPoints);
 	correspondencesRatio = 0;
 
 	// Hay mapa global?
@@ -480,30 +488,28 @@ void  CPointsMap::computeMatchingWith2D(
 
 	// Loop for each point in local map:
 	// --------------------------------------------------
-	for ( localIdx=0,
-			x_other_it=&otherMap->x[0],
-			y_other_it=&otherMap->y[0],
-			z_other_it=&otherMap->z[0];
+	for ( localIdx=offset_other_map_points,
+			x_other_it=&otherMap->x[offset_other_map_points],
+			y_other_it=&otherMap->y[offset_other_map_points],
+			z_other_it=&otherMap->z[offset_other_map_points];
 			localIdx<nLocalPoints;
-			x_other_it++,y_other_it++,z_other_it++,localIdx++ )
+			x_other_it+=incr,y_other_it+=incr,z_other_it+=incr,localIdx+=incr )
 	{
 		// For speed-up:
 		x_local = x_locals[localIdx]; // *x_locals_it;
 		y_local = y_locals[localIdx]; // *y_locals_it;
-		//z_local = *z_locals_it;
 
 		// Find all the matchings in the requested distance:
-		TMatchingPair		p,closestPair;
 
 		// KD-TREE implementation =================================
 		// Use a KD-tree to look for the nearnest neighbor of:
 		//   (x_local, y_local, z_local)
 		// In "this" (global/reference) points map.
 
-		p.this_idx = kdTreeClosestPoint2D(
+		float tentativ_err_sq;
+		unsigned int tentativ_this_idx = kdTreeClosestPoint2D(
 			x_local,  y_local,  // Look closest to this guy
-			p.this_x, p.this_y, // save here the closest match
-			p.errorSquareAfterTransformation // save here the min. distance squared
+			tentativ_err_sq // save here the min. distance squared
 			);
 
 		// Compute max. allowed distance:
@@ -512,17 +518,24 @@ void  CPointsMap::computeMatchingWith2D(
 					maxDistForCorrespondence );
 
 		// Distance below the threshold??
-		if ( p.errorSquareAfterTransformation < maxDistForCorrespondenceSquared )
+		if ( tentativ_err_sq < maxDistForCorrespondenceSquared )
 		{
-			// Save all the correspondences??
-			p.this_z = z[p.this_idx];
+			// Save all the correspondences:
+			correspondences.resize(correspondences.size()+1);
+
+			TMatchingPair & p = correspondences.back();
+
+			p.this_idx = tentativ_this_idx;
+			p.this_x = x[tentativ_this_idx];
+			p.this_y = y[tentativ_this_idx];
+			p.this_z = z[tentativ_this_idx];
+
 			p.other_idx = localIdx;
 			p.other_x = *x_other_it;
 			p.other_y = *y_other_it;
 			p.other_z = *z_other_it;
 
-			// save the correspondence:
-			correspondences.push_back( p );
+			p.errorSquareAfterTransformation  = tentativ_err_sq;
 
 			// At least one:
 			nOtherMapPointsWithCorrespondence++;
@@ -586,7 +599,7 @@ void  CPointsMap::computeMatchingWith2D(
 	}
 
 	// The ratio of points in the other map with corrs:
-	correspondencesRatio = nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
+	correspondencesRatio = incr*nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
 
 	MRPT_END
 }
@@ -790,153 +803,22 @@ float  CPointsMap::compute3DMatchingRatio(
 		) const
 {
 	MRPT_UNUSED_PARAM(minMahaDistForCorr);
-	MRPT_START
 
-	// Do have the other map any points map??
-	const CPointsMap *otherMap = otherMap2->getAsSimplePointsMap();
+	static const CPoint3D origin(0,0,0);
+	float correspondencesRatio;
 
-	// There is not a points map to compare to!
-	if (!otherMap) return 0;
+	TMatchingPairList correspondences;
 
+	this->computeMatchingWith3D(
+		otherMap2,
+		otherMapPose,
+		minDistForCorr,
+		0, // maxAngularDistForCorrespondence,
+		origin, // angularDistPivotPoint,
+		correspondences,
+		correspondencesRatio);
 
-	size_t					nLocalPoints = otherMap->size();
-	size_t					nGlobalPoints = this->size();
-	size_t					nOtherMapPointsWithCorrespondence = 0;	// Number of points with one corrs. at least
-	vector<float>			x_locals,y_locals,z_locals;
-	vector<float>::iterator	x_locals_it,y_locals_it,z_locals_it;
-	vector<float>::const_iterator	x_other_it,y_other_it,z_other_it,x_global_it,y_global_it,z_global_it;
-
-	float					local_x_min= std::numeric_limits<float>::max(), local_x_max= -std::numeric_limits<float>::max();
-	float					global_x_min=std::numeric_limits<float>::max(), global_x_max= -std::numeric_limits<float>::max();
-	float					local_y_min= std::numeric_limits<float>::max(), local_y_max= -std::numeric_limits<float>::max();
-	float					global_y_min=std::numeric_limits<float>::max(), global_y_max= -std::numeric_limits<float>::max();
-	float					local_z_min= std::numeric_limits<float>::max(), local_z_max= -std::numeric_limits<float>::max();
-	float					global_z_min=std::numeric_limits<float>::max(), global_z_max= -std::numeric_limits<float>::max();
-
-	float					maxDistForCorrespondenceSquared = square(minDistForCorr);
-	float					x_local, y_local,z_local;
-	size_t					localIdx;
-
-	// There are points here?
-	if (!nGlobalPoints) return 0;  // No
-
-	// There are points there?
-	if (!nLocalPoints)  return 0;  // No
-
-	// The transformation:
-
-	CMatrixDouble44 pose3DMatrix;
-	otherMapPose.getHomogeneousMatrix(pose3DMatrix);
-
-	float		Tx  = pose3DMatrix.get_unsafe(0,3);
-	float		Ty  = pose3DMatrix.get_unsafe(1,3);
-	float		Tz  = pose3DMatrix.get_unsafe(2,3);
-
-	// ---------------------------------------------------------------------------------------------------------------
-	// Is there any "contact" between the spheres that contain all the points from each map after translating them??
-	// (Note that we can avoid computing the rotation of all the points if this test fail, with a great speed up!)
-	// ---------------------------------------------------------------------------------------------------------------
-	if ( sqrt( square(Tx) + square(Ty) + square(Tz) ) >= ( getLargestDistanceFromOrigin()+otherMap->getLargestDistanceFromOrigin() ) )
-		return 0;		// There is no contact!
-
-	float		R11 = pose3DMatrix.get_unsafe(0,0);
-	float		R12 = pose3DMatrix.get_unsafe(0,1);
-	float		R13 = pose3DMatrix.get_unsafe(0,2);
-
-	float		R21 = pose3DMatrix.get_unsafe(1,0);
-	float		R22 = pose3DMatrix.get_unsafe(1,1);
-	float		R23 = pose3DMatrix.get_unsafe(1,2);
-
-	float		R31 = pose3DMatrix.get_unsafe(2,0);
-	float		R32 = pose3DMatrix.get_unsafe(2,1);
-	float		R33 = pose3DMatrix.get_unsafe(2,2);
-
-	// Solo hacer matching si existe alguna posibilidad de que
-	//  los dos mapas se toquen:
-	// Transladar y rotar ya todos los puntos locales
-	// -----------------------------------------------------------
-	x_locals.resize(nLocalPoints);
-	y_locals.resize(nLocalPoints);
-	z_locals.resize(nLocalPoints);
-
-	for ( x_locals_it=x_locals.begin(),
-			y_locals_it=y_locals.begin(),
-			z_locals_it=z_locals.begin(),
-			x_other_it=otherMap->x.begin(),
-			y_other_it=otherMap->y.begin(),
-			z_other_it=otherMap->z.begin();
-			x_other_it!=otherMap->x.end();
-			x_locals_it++,y_locals_it++,z_locals_it++,x_other_it++,y_other_it++,z_other_it++)
-	{
-		// Girar y desplazar cada uno de los puntos del local map:
-		*x_locals_it = Tx + *x_other_it*R11 + *y_other_it*R12+ *z_other_it*R13;
-		*y_locals_it = Ty + *x_other_it*R21 + *y_other_it*R22+ *z_other_it*R23;
-		*z_locals_it = Tz + *x_other_it*R31 + *y_other_it*R32+ *z_other_it*R33;
-
-		// Find the bounding box:
-		local_x_min = min(local_x_min,*x_locals_it);
-		local_x_max = max(local_x_max,*x_locals_it);
-		local_y_min = min(local_y_min,*y_locals_it);
-		local_y_max = max(local_y_max,*y_locals_it);
-		local_z_min = min(local_z_min,*z_locals_it);
-		local_z_max = max(local_z_max,*z_locals_it);
-	}
-
-	// Find the bounding box:
-	this->boundingBox(
-		global_x_min,global_x_max,
-		global_y_min,global_y_max,
-		global_z_min,global_z_max );
-
-	// Do the maps overlap??
-	if (local_x_min>global_x_max || local_x_max<global_x_min ||
-		local_y_min>global_y_max || local_y_max<global_y_min ||
-		local_z_min>global_z_max || local_z_max<global_z_min ) return 0;
-
-	// Loop for each point in local map:
-	// --------------------------------------------------
-	for ( localIdx=0,
-			x_locals_it=x_locals.begin(),
-			y_locals_it=y_locals.begin(),
-			z_locals_it=z_locals.begin(),
-			x_other_it=otherMap->x.begin(),
-			y_other_it=otherMap->y.begin(),
-			z_other_it=otherMap->z.begin();
-			x_locals_it!=x_locals.end();
-			x_locals_it++,y_locals_it++,z_locals_it++,x_other_it++,y_other_it++,z_other_it++,localIdx++ )
-	{
-		// For speed-up:
-		x_local = *x_locals_it;
-		y_local = *y_locals_it;
-		z_local = *z_locals_it;
-
-		bool thisLocalHasCorr = false;
-
-		// Use a KD-tree to look for the nearnest neighbor of:
-		//   (x_local, y_local, z_local)
-		// In "this" (global/reference) points map.
-
-		float errorSquareAfterTransformation, this_x, this_y, this_z;
-
-		//size_t this_idx =
-		kdTreeClosestPoint3D(
-			x_local,  y_local, z_local, // Look closest to this guy
-			this_x, this_y, this_z, // save here the closest match
-			errorSquareAfterTransformation // save here the min. distance squared
-			);
-
-		// Distance below the threshold??
-		thisLocalHasCorr  = errorSquareAfterTransformation < maxDistForCorrespondenceSquared;
-
-		// At least one corr?
-		if (thisLocalHasCorr) nOtherMapPointsWithCorrespondence++;
-
-	} // For each local point:
-
-	// The ratio of points in the other map with corrs:
-	return nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
-
-	MRPT_END
+	return correspondencesRatio;
 }
 
 /*---------------------------------------------------------------
@@ -969,19 +851,27 @@ float  CPointsMap::getLargestDistanceFromOrigin() const
 void  CPointsMap::getAllPoints( vector<float> &xs, vector<float> &ys, size_t decimation  ) const
 {
 	MRPT_START
-	ASSERT_(decimation>0);
+	ASSERT_(decimation>0)
 
-	size_t N = x.size() / decimation;
-
-	xs.resize(N);
-	ys.resize(N);
-
-	vector<float>::const_iterator    X,Y;
-	vector<float>::iterator    		oX,oY;
-	for (X=x.begin(),Y=y.begin(),oX=xs.begin(),oY=ys.begin();oX!=xs.end();X+=decimation,Y+=decimation,oX++,oY++)
+	if (decimation==1)
 	{
-		*oX=*X;
-		*oY=*Y;
+		xs = x;
+		ys = y;
+	}
+	else
+	{
+		size_t N = x.size() / decimation;
+
+		xs.resize(N);
+		ys.resize(N);
+
+		vector<float>::const_iterator    X,Y;
+		vector<float>::iterator    		oX,oY;
+		for (X=x.begin(),Y=y.begin(),oX=xs.begin(),oY=ys.begin();oX!=xs.end();X+=decimation,Y+=decimation,oX++,oY++)
+		{
+			*oX=*X;
+			*oY=*Y;
+		}
 	}
 	MRPT_END
 }
@@ -996,7 +886,7 @@ float CPointsMap::squareDistanceToClosestCorrespondence(
 {
 	// Just the closest point:
 
-#if 0
+#if 1
 	return kdTreeClosestPoint2DsqrError(x0,y0);
 #else
 	// The distance to the line that interpolates the TWO closest points:
@@ -1167,37 +1057,35 @@ void  CPointsMap::computeMatchingWith3D(
     float									&correspondencesRatio,
     float									*sumSqrDist	,
     bool									onlyKeepTheClosest,
-	bool									onlyUniqueRobust) const
+	bool									onlyUniqueRobust,
+	const size_t          					decimation_other_map_points,
+	const size_t                            offset_other_map_points ) const
 {
 	MRPT_START
+
+	ASSERT_ABOVE_(decimation_other_map_points,0)
+	ASSERT_BELOW_(offset_other_map_points, decimation_other_map_points)
+	const size_t incr = decimation_other_map_points; // Just to save some typing...
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom( CLASS_ID(CPointsMap) ));
 	const CPointsMap		*otherMap = static_cast<const CPointsMap*>( otherMap2 );
 
-	size_t					nLocalPoints = otherMap->size();
-	size_t					nGlobalPoints = this->size();
+	const size_t nLocalPoints = otherMap->size();
+	const size_t nGlobalPoints = this->size();
 	float					_sumSqrDist=0;
 	size_t					_sumSqrCount = 0;
 	size_t					nOtherMapPointsWithCorrespondence = 0;	// Number of points with one corrs. at least
 
-	float					local_x_min= std::numeric_limits<float>::max(), local_x_max= -std::numeric_limits<float>::max();
-	float					global_x_min=std::numeric_limits<float>::max(), global_x_max= -std::numeric_limits<float>::max();
-	float					local_y_min= std::numeric_limits<float>::max(), local_y_max= -std::numeric_limits<float>::max();
-	float					global_y_min=std::numeric_limits<float>::max(), global_y_max= -std::numeric_limits<float>::max();
-	float					local_z_min= std::numeric_limits<float>::max(), local_z_max= -std::numeric_limits<float>::max();
-	float					global_z_min=std::numeric_limits<float>::max(), global_z_max= -std::numeric_limits<float>::max();
+	float local_x_min= std::numeric_limits<float>::max(), local_x_max= -std::numeric_limits<float>::max();
+	float local_y_min= std::numeric_limits<float>::max(), local_y_max= -std::numeric_limits<float>::max();
+	float local_z_min= std::numeric_limits<float>::max(), local_z_max= -std::numeric_limits<float>::max();
 
 	double					maxDistForCorrespondenceSquared;
 
-	unsigned int			globalIdx,localIdx;
-
-	vector<float>					x_locals,y_locals,z_locals;
-
-	float 		*x_locals_it,*y_locals_it,*z_locals_it;
-	const float *x_other_it,*y_other_it,*z_other_it,*x_global_it,*y_global_it,*z_global_it;
 
 	// No correspondences initially:
 	correspondences.clear();
+	correspondences.reserve(nLocalPoints);
 	correspondencesRatio = 0;
 
 	// Hay mapa global?
@@ -1211,32 +1099,18 @@ void  CPointsMap::computeMatchingWith3D(
 	// -----------------------------------------------------------
 
 	// Transladar y rotar ya todos los puntos locales
-	x_locals.resize(nLocalPoints);
-	y_locals.resize(nLocalPoints);
-	z_locals.resize(nLocalPoints);
+	vector<float> x_locals(nLocalPoints), y_locals(nLocalPoints), z_locals(nLocalPoints);
 
-	float x_local,y_local,z_local;
-
-	for (   localIdx=0,
-		    x_locals_it=&x_locals[0],
-			y_locals_it=&y_locals[0],
-			z_locals_it=&z_locals[0],
-			x_other_it=&otherMap->x[0],
-			y_other_it=&otherMap->y[0],
-			z_other_it=&otherMap->z[0];
-			localIdx<nLocalPoints;
-			localIdx++)
+	for (unsigned int localIdx=offset_other_map_points;localIdx<nLocalPoints;localIdx+=incr)
 	{
-		// Translate and rotate each point in the "other" map:
-		float  x_other = *x_other_it++;
-		float  y_other = *y_other_it++;
-		float  z_other = *z_other_it++;
+		float x_local,y_local,z_local;
+		otherMapPose.composePoint(
+			otherMap->x[localIdx], otherMap->y[localIdx], otherMap->z[localIdx],
+			x_local,y_local,z_local );
 
-		otherMapPose.composePoint( x_other,y_other,z_other,  x_local,y_local,z_local);
-
-		*x_locals_it++ = x_local;
-		*y_locals_it++ = y_local;
-		*z_locals_it++ = z_local;
+		x_locals[localIdx] = x_local;
+		y_locals[localIdx] = y_local;
+		z_locals[localIdx] = z_local;
 
 		// Find the bounding box:
 		local_x_min = min(local_x_min,x_local);
@@ -1248,24 +1122,11 @@ void  CPointsMap::computeMatchingWith3D(
 	}
 
 	// Find the bounding box:
-	for (   globalIdx=0,
-		    x_global_it=&x[0],
-		    y_global_it=&y[0],
-		    z_global_it=&z[0];
-			globalIdx<nGlobalPoints;
-			globalIdx++)
-	{
-		float global_x = *x_global_it++;
-		float global_y = *y_global_it++;
-		float global_z = *z_global_it++;
-
-		global_x_min = min(global_x_min,global_x);
-		global_x_max = max(global_x_max,global_x);
-		global_y_min = min(global_y_min,global_y);
-		global_y_max = max(global_y_max,global_y);
-		global_z_min = min(global_z_min,global_z);
-		global_z_max = max(global_z_max,global_z);
-	}
+	float global_x_min, global_x_max, global_y_min, global_y_max, global_z_min, global_z_max;
+	this->boundingBox(
+		global_x_min,global_x_max,
+		global_y_min,global_y_max,
+		global_z_min,global_z_max );
 
 	// Solo hacer matching si existe alguna posibilidad de que
 	//  los dos mapas se toquen:
@@ -1277,38 +1138,23 @@ void  CPointsMap::computeMatchingWith3D(
 
 	// Loop for each point in local map:
 	// --------------------------------------------------
-	for ( localIdx=0,
-			x_locals_it=&x_locals[0],
-			y_locals_it=&y_locals[0],
-			z_locals_it=&z_locals[0],
-			x_other_it=&otherMap->x[0],
-			y_other_it=&otherMap->y[0],
-			z_other_it=&otherMap->z[0];
-			localIdx<nLocalPoints;
-			x_locals_it++,y_locals_it++,z_locals_it++,x_other_it++,y_other_it++,z_other_it++,localIdx++ )
+	for (unsigned int localIdx=offset_other_map_points; localIdx<nLocalPoints; localIdx+=incr)
 	{
 		// For speed-up:
-		x_local = *x_locals_it;
-		y_local = *y_locals_it;
-		z_local = *z_locals_it;
-
-//		bool thisLocalHasCorr = false;
+		const float x_local = x_locals[localIdx];
+		const float y_local = y_locals[localIdx];
+		const float z_local = z_locals[localIdx];
 
 		{
-			// Find all the matchings in the requested distance:
-			TMatchingPair		p,closestPair;
-
-
 			// KD-TREE implementation
-
 			// Use a KD-tree to look for the nearnest neighbor of:
 			//   (x_local, y_local, z_local)
 			// In "this" (global/reference) points map.
 
-			p.this_idx = kdTreeClosestPoint3D(
+			float tentativ_err_sq;
+			const unsigned int tentativ_this_idx = kdTreeClosestPoint3D(
 				x_local,  y_local, z_local,  // Look closest to this guy
-				p.this_x, p.this_y, p.this_z, // save here the closest match
-				p.errorSquareAfterTransformation // save here the min. distance squared
+				tentativ_err_sq // save here the min. distance squared
 				);
 
 			// Compute max. allowed distance:
@@ -1317,14 +1163,24 @@ void  CPointsMap::computeMatchingWith3D(
 						maxDistForCorrespondence );
 
 			// Distance below the threshold??
-			if ( p.errorSquareAfterTransformation < maxDistForCorrespondenceSquared )
+			if ( tentativ_err_sq < maxDistForCorrespondenceSquared )
 			{
-				// Save all the correspondences??
-				p.this_z = z[p.this_idx];
+				// Save all the correspondences:
+				correspondences.resize(correspondences.size()+1);
+
+				TMatchingPair & p = correspondences.back();
+
+				p.this_idx = tentativ_this_idx;
+				p.this_x = x[tentativ_this_idx];
+				p.this_y = y[tentativ_this_idx];
+				p.this_z = z[tentativ_this_idx];
+
 				p.other_idx = localIdx;
-				p.other_x = *x_other_it;
-				p.other_y = *y_other_it;
-				p.other_z = *z_other_it;
+				p.other_x = otherMap->x[localIdx];
+				p.other_y = otherMap->y[localIdx];
+				p.other_z = otherMap->z[localIdx];
+
+				p.errorSquareAfterTransformation  = tentativ_err_sq;
 
 				// save the correspondence:
 				correspondences.push_back( p );
@@ -1393,7 +1249,7 @@ void  CPointsMap::computeMatchingWith3D(
 	}
 
 	// The ratio of points in the other map with corrs:
-	correspondencesRatio = nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
+	correspondencesRatio = incr*nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
 
 	MRPT_END
 }

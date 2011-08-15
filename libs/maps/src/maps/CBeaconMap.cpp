@@ -704,8 +704,11 @@ void  CBeaconMap::computeMatchingWith2D(
 		float									&correspondencesRatio,
 		float									*sumSqrDist	,
 		bool									onlyKeepTheClosest,
-		bool									onlyUniqueRobust) const
+		bool									onlyUniqueRobust,
+		const size_t          decimation_other_map_points,
+		const size_t          offset_other_map_points) const
 {
+	MRPT_UNUSED_PARAM(decimation_other_map_points);
 	MRPT_UNUSED_PARAM(onlyKeepTheClosest);MRPT_UNUSED_PARAM(sumSqrDist);
 	MRPT_UNUSED_PARAM(angularDistPivotPoint);MRPT_UNUSED_PARAM(maxDistForCorrespondence);MRPT_UNUSED_PARAM(maxAngularDistForCorrespondence);
 
