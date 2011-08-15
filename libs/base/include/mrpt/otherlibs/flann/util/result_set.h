@@ -61,11 +61,16 @@ struct BranchStruct
 };
 
 
-template <typename DistanceType>
+// JLBC: Removed this *virtual* class that degraded performance and replaced
+//  in callers by templatized code.
+/*template <class Derived, typename DistanceType>
 class ResultSet
 {
 public:
-    virtual ~ResultSet() {}
+	      Derived & derived()       { return *reinterpret_cast<Derived*>(this); }
+	const Derived & derived() const { return *reinterpret_cast<const Derived*>(this); }
+
+    //virtual ~ResultSet() {}
 
     virtual bool full() const = 0;
 
@@ -74,9 +79,10 @@ public:
     virtual DistanceType worstDist() const = 0;
 
 };
+*/
 
 template <typename DistanceType>
-class KNNResultSet : public ResultSet<DistanceType>
+class KNNResultSet //  : public ResultSet<DistanceType>
 {
     int* indices;
     DistanceType* dists;
@@ -84,11 +90,11 @@ class KNNResultSet : public ResultSet<DistanceType>
     int count;
 
 public:
-    KNNResultSet(int capacity_) : capacity(capacity_), count(0)
+    inline KNNResultSet(int capacity_) : capacity(capacity_), count(0)
     {
     }
 
-    void init(int* indices_, DistanceType* dists_)
+    inline void init(int* indices_, DistanceType* dists_)
     {
         indices = indices_;
         dists = dists_;
@@ -96,18 +102,18 @@ public:
         dists[capacity-1] = (std::numeric_limits<DistanceType>::max)();
     }
 
-    size_t size() const
+    inline size_t size() const
     {
         return count;
     }
 
-    bool full() const
+    inline bool full() const
     {
         return count == capacity;
     }
 
 
-    void addPoint(DistanceType dist, int index)
+    inline void addPoint(DistanceType dist, int index)
     {
         int i;
         for (i=count; i>0; --i) {
@@ -130,7 +136,7 @@ public:
         if (count<capacity) count++;
     }
 
-    DistanceType worstDist() const
+    inline DistanceType worstDist() const
     {
         return dists[capacity-1];
     }
@@ -141,7 +147,7 @@ public:
  * A result-set class used when performing a radius based search.
  */
 template <typename DistanceType>
-class RadiusResultSet : public ResultSet<DistanceType>
+class RadiusResultSet // : public ResultSet<DistanceType>
 {
     DistanceType radius;
     int* indices;
@@ -150,32 +156,32 @@ class RadiusResultSet : public ResultSet<DistanceType>
     size_t count;
 
 public:
-    RadiusResultSet(DistanceType radius_, int* indices_, DistanceType* dists_, int capacity_) :
+    inline RadiusResultSet(DistanceType radius_, int* indices_, DistanceType* dists_, int capacity_) :
         radius(radius_), indices(indices_), dists(dists_), capacity(capacity_)
     {
         init();
     }
 
-    ~RadiusResultSet()
+    inline ~RadiusResultSet()
     {
     }
 
-    void init()
+    inline void init()
     {
         count = 0;
     }
 
-    size_t size() const
+    inline size_t size() const
     {
         return count;
     }
 
-    bool full() const
+    inline bool full() const
     {
         return true;
     }
 
-    void addPoint(DistanceType dist, int index)
+    inline void addPoint(DistanceType dist, int index)
     {
         if (dist<radius) {
             if ((capacity>0)&&(count < capacity)) {
@@ -186,7 +192,7 @@ public:
         }
     }
 
-    DistanceType worstDist() const
+    inline DistanceType worstDist() const
     {
         return radius;
     }
@@ -200,7 +206,7 @@ public:
  * Faster than KNNResultSet as it uses a binary heap and does not maintain two arrays
  */
 template<typename DistanceType>
-  class ResultVector : public ResultSet<DistanceType>
+  class ResultVector // : public ResultSet<DistanceType>
   {
   public:
     typedef std::pair<float, unsigned int> DistIndexPair;
@@ -215,7 +221,7 @@ template<typename DistanceType>
 
     /** Remove all elements in the set
      */
-    virtual void clear() = 0;
+    //virtual void clear() = 0;
 
     /** Copy the set to two C arrays
      * @param indices pointer to a C array of indices
@@ -224,7 +230,7 @@ template<typename DistanceType>
     void copy(int * indices, DistanceType * dist, size_t size)
     {
       size_t count = 0;
-      for (std::vector<DistIndexPair>::const_iterator dist_index = dist_indices_.begin(); 
+      for (std::vector<DistIndexPair>::const_iterator dist_index = dist_indices_.begin();
               (dist_index != dist_indices_.end()) && (count < size); ++dist_index, ++count)
       {
         *dist = dist_index->first;
@@ -304,7 +310,7 @@ template<typename DistanceType>
 
     /** Remove all elements in the set
      */
-    void clear() {
+    inline void clear() {
       dist_indices_.clear();
       worst_distance_ = std::numeric_limits<DistanceType>::max();
       is_full_ = false;
@@ -359,17 +365,17 @@ template<typename DistanceType>
      * @param dist distance for that neighbor
      * @param index index of that neighbor
      */
-    void addPoint(DistanceType dist, int index)
+    inline void addPoint(DistanceType dist, int index)
     {
         if (dist <= radius_) {
-            if (store_neighbors_) { 
+            if (store_neighbors_) {
                 dist_indices_.push_back(typename ResultVector<DistanceType>::DistIndexPair(dist, index));
             }
             else {
                 count_++;
             }
         }
-        
+
     }
 
     /** Remove all elements in the set
@@ -389,7 +395,7 @@ template<typename DistanceType>
     }
 
     /** Returns the number of points in the set
-     * @return 
+     * @return
      */
     inline size_t size() const
     {
@@ -442,7 +448,7 @@ template<typename DistanceType>
 
     /** Remove all elements in the set
      */
-    void clear() {
+    inline void clear() {
       dist_indices_.clear();
       worst_distance_ = radius_;
       is_full_ = false;

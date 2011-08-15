@@ -14,12 +14,9 @@ List of pending stuff to be integrated into MRPT someday:
 - Optimize loading of textures in mrpt::opengl::*
 - Make sparse Kalman implementation, if would improve anything.
 - Colour point clouds store colors as u8 insteaf of float.
-- Point cloud maps: replace virtual methods by CRTP
 - icp-graph-slam
 - Add \ingroup Doxygen tags to document mrpt-* libs
 - CColouredPointsMap no longer has a the "m_min_dist" field: Create a new class?
-- ANN lib: replace by custom implementation, smaller with only KD-trees + SSE optimizations
-   + avoid duplication of point buffers + make unit tests.
 - KLT tracking: make custom implementation: with explicit pyramids, subpixel, ...
 
 

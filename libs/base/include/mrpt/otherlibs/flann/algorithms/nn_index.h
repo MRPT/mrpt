@@ -73,7 +73,9 @@ public:
     /**
        Method that searches for nearest-neighbors
      */
-    virtual void findNeighbors(ResultSet<DistanceType>& result, const ElementType* vec, const SearchParams& searchParams) = 0;
+     // JLBC for MRPT: This is ugly, but it's the only way to avoid NNIndex-based indices having templatized code around ResultSet<>,
+     //  which is a waste of precious runtime.
+    //virtual void findNeighbors(ResultSet<DistanceType>& result, const ElementType* vec, const SearchParams& searchParams) = 0;
 
     /**
        Number of features in this index.

@@ -47,6 +47,7 @@
 		- [mrpt-opengl] mrpt::opengl::CText3D, a new way to display texts using OpenGL primitives instead of bitmaps.
 		- [mrpt-vision] mrpt::vision::CImagePyramid, a tool for managing pyramids of images in different octaves (each being half the size of the previous one) - <a href="http://code.google.com/p/mrpt/source/detail?r=2602" >r2602</a>
 		- [mrpt-vision] New "lightweight" image feature classes: mrpt::vision::TSimpleFeature, mrpt::vision::TSimpleFeatureList
+		- [mrpt-base] New class mrpt::math::KDTreeMatrixAdaptor to build KD-tree directly from Eigen matrices. (read more below on changes about FLANN)
 	- Changes in classes:
 		- [mrpt-maps] mrpt::slam::CPointsMap (and all derived point-cloud maps) have undergone a big code refactoring and optimizations:
 			- New method mrpt::slam::CPointsMap::addFrom() and an "operator +=" to add the points from another point map  - <a href="http://code.google.com/p/mrpt/source/detail?r=2553" >r2553</a>
@@ -70,6 +71,7 @@
 		- [mrpt-base] MRPT moves from ANN to FLANN for kd-tree library, such as: ( <a href="http://code.google.com/p/mrpt/source/detail?r=2623" >r2623</a> )
 			- New namespace mrpt_flann, holding a modified version of FLANN.
 			- A modified FLANN class has been created, mrpt_flann::KDTreeSingleIndexAdaptor, to allow building a kd-tree index and performing search without duplicating all the dataset within the KD-tree index.
+			- FLANN has been also changed to avoid virtual functions in inner loops (mostly around mrpt_flan::ResultSet<>).
 			- mrpt::math::KDTreeCapable maintains its API, so the change is backward compatible
 			- New class mrpt::math::KDTreeMatrixAdaptor to build KD-tree directly from Eigen matrices.
 		- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".

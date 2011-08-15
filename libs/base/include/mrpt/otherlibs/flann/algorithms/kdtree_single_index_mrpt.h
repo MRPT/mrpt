@@ -301,8 +301,11 @@ public:
      *     result = the result object in which the indices of the nearest-neighbors are stored
      *     vec = the vector for which to search the nearest neighbors
      *     maxCheck = the maximum number of restarts (in a best-bin-first manner)
+     *
+     * \tparam RESULTSET Should be any ResultSet<DistanceType>
      */
-    void findNeighbors(ResultSet<DistanceType>& result, const ElementType* vec, const SearchParams& searchParams)
+	template <typename RESULTSET>
+    void findNeighbors(RESULTSET& result, const ElementType* vec, const SearchParams& searchParams)
     {
         float epsError = 1+searchParams.eps;
 
@@ -582,8 +585,10 @@ private:
 
     /**
      * Performs an exact search in the tree starting from a node.
+     * \tparam RESULTSET Should be any ResultSet<DistanceType>
      */
-    void searchLevel(ResultSet<DistanceType>& result_set, const ElementType* vec, const NodePtr node, DistanceType mindistsq,
+	template <class RESULTSET>
+    void searchLevel(RESULTSET& result_set, const ElementType* vec, const NodePtr node, DistanceType mindistsq,
                      std::vector<DistanceType>& dists, const float epsError)
     {
         /* If this is a leaf node, then do check and return. */
