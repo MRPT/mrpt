@@ -80,7 +80,7 @@ namespace mrpt
 		 *		- Blanco J.L., Fernandez-Madrigal J.A., and Gonzalez J., "Towards a Unified Bayesian Approach to Hybrid Metric-Topological SLAM", in  IEEE Transactions on Robotics (TRO), Vol. 24, No. 2, April 2008.
 		 *		- ...
 		 *
-		 *  More information in the wiki page: http://www.mrpt.org/HMT-SLAM. A complete working application can be found in "MRPT/apps/hmt-slam".
+		 *  More information in the wiki page: http://www.mrpt.org/HMT-SLAM . A complete working application can be found in "MRPT/apps/hmt-slam".
 		 *
 		 *  The complete state of the SLAM framework is serializable, so it can be saved and restore to/from a binary dump. This class implements mrpt::utils::CSerializable, so
 		 *    it can be saved with "stream << slam_object;" and restored with "stream >> slam_object;". Alternatively, the methods CHMTSLAM::saveState and CHMTSLAM::loadState

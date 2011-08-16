@@ -51,7 +51,7 @@ namespace poses
 	 *   when the user requests them. Normally, rotations are handled via the 3x3 rotation matrix only.
 	 *
 	 *  For a complete descriptionan of Points/Poses, see mrpt::poses::CPoseOrPoint, or refer
-	 *    to the <a href="http://www.mrpt.org/2D_3D_Geometry">2D/3D Geometry tutorial</a> in the wiki.
+	 *    to the <a href="http://www.mrpt.org/2D_3D_Geometry"> 2D/3D Geometry tutorial</a> in the wiki.
 	 *
 	 *  To change the individual components of the pose, use CPose3D::setFromValues. This class assures that the internal
 	 *   3x3 rotation matrix is always up-to-date with the "yaw pitch roll" members.

@@ -70,7 +70,7 @@ namespace slam
 		CPose3D			cameraPose;
 
 		 /** Intrinsic and distortion parameters of the camera.
-		   * See the <a href="http://www.mrpt.org/Camera_Parameters">tutorial</a> for a discussion of these parameters.
+		   * See the <a href="http://www.mrpt.org/Camera_Parameters" >tutorial</a> for a discussion of these parameters.
 		   */
 		TCamera		cameraParams;
 

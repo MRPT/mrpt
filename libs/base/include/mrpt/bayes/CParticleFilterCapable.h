@@ -39,7 +39,7 @@ namespace bayes
 
 	/** This virtual class defines the interface that any particles based PDF class must implement in order to be executed by a mrpt::bayes::CParticleFilter.
 	 *
-	 * See the <a href="http://www.mrpt.org/Particle_Filter_Tutorial">Particle Filter tutorial</a> explaining how to use the particle filter-related classes.
+	 * See the <a href="http://www.mrpt.org/Particle_Filter_Tutorial" >Particle Filter tutorial</a> explaining how to use the particle filter-related classes.
 	 * \sa CParticleFilter, CParticleFilterData
 	 */
 	class BASE_IMPEXP CParticleFilterCapable
@@ -105,7 +105,7 @@ namespace bayes
 		  * The function pointed by "partEvaluator" should take into account the particle filter algorithm selected in "m_PFAlgorithm".
 		  * If called without arguments (defaultEvaluator), the default behavior is to draw samples with a probability proportional to their current weights.
 		  *  The action and the observation are declared as "void*" for a greater flexibility.
-		  *  For a more detailed information see the <a href="http://www.mrpt.org/Particle_Filters">Particle Filter tutorial</a>.
+		  *  For a more detailed information see the <a href="http://www.mrpt.org/Particle_Filters" >Particle Filter tutorial</a>.
 		  *  Custom supplied "partEvaluator" functions must take into account the previous particle weight, i.e. multiplying the current observation likelihood by the weights.
 		  * \sa fastDrawSample
 		  */
@@ -118,7 +118,7 @@ namespace bayes
 
 		/** Draws a random sample from the particle filter, in such a way that each particle has a probability proportional to its weight (in the standard PF algorithm).
 		  *   This method can be used to generate a variable number of m_particles when resampling: to vary the number of m_particles in the filter.
-		  *   See prepareFastDrawSample for more information, or the <a href="http://www.mrpt.org/Particle_Filters">Particle Filter tutorial</a>.
+		  *   See prepareFastDrawSample for more information, or the <a href="http://www.mrpt.org/Particle_Filters" >Particle Filter tutorial</a>.
 		  *
 		  * NOTES:
 		  *		- You MUST call "prepareFastDrawSample" ONCE before calling this method. That method must be called after modifying the particle filter (executing one step, resampling, etc...)

@@ -99,7 +99,7 @@ namespace slam
 		bool   hasImageRight;        //!< Whether imageRight actually contains data  (Default upon construction: true)
 
 		/** Parameters for the left/right cameras: individual intrinsic and distortion parameters of the cameras.
-		  * See the <a href="http://www.mrpt.org/Camera_Parameters">tutorial</a> for a discussion of these parameters.
+		  * See the <a href="http://www.mrpt.org/Camera_Parameters" >tutorial</a> for a discussion of these parameters.
 		  */
 		TCamera		leftCamera, rightCamera;
 

@@ -41,7 +41,7 @@ namespace math
 {
 	/** An implementation of the Levenberg-Marquardt algorithm for least-square minimization.
 	 *
-	 *  Refer to this <a href="http://www.mrpt.org/Levenberg%E2%80%93Marquardt_algorithm">page</a> for more details on the algorithm and its usage.
+	 *  Refer to this <a href="http://www.mrpt.org/Levenberg%E2%80%93Marquardt_algorithm" >page</a> for more details on the algorithm and its usage.
 	 *
 	 * \tparam NUMTYPE The numeric type for all the operations (float, double, or long double)
 	 * \tparam USERPARAM The type of the "y" input to the user supplied evaluation functor. Default type is a vector of NUMTYPE.

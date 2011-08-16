@@ -89,7 +89,7 @@ namespace mrpt
 		/** Used to pass MRPT objects into a CORBA-like object (strings). See doc about "Integration with BABEL".
 		 * \param o The object to be serialized.
 		 * \return The string containing the binay version of object.
-		 * \sa StringToObject, <a href="http://www.mrpt.org/Integration_with_BABEL">Integration with BABEL</a>
+		 * \sa StringToObject, <a href="http://www.mrpt.org/Integration_with_BABEL" >Integration with BABEL</a>
 		 */
 		std::string BASE_IMPEXP ObjectToString(const CSerializable *o);
 
@@ -97,7 +97,7 @@ namespace mrpt
 		 * \param str An string generated with ObjectToString
 		 * \param obj A currently empty pointer, where a pointer to the newly created object will be stored.
 		 * \exception None On any internal exception, this function returns NULL.
-		 * \sa ObjectToString, <a href="http://www.mrpt.org/Integration_with_BABEL">Integration with BABEL</a>
+		 * \sa ObjectToString, <a href="http://www.mrpt.org/Integration_with_BABEL" >Integration with BABEL</a>
 		 */
 		void BASE_IMPEXP StringToObject(const std::string &str, CSerializablePtr &obj);
 

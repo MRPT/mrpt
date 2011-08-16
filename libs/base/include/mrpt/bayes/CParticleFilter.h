@@ -49,7 +49,7 @@ namespace mrpt
 		/** This class acts as a common interface to the different interfaces (see CParticleFilter::TParticleFilterAlgorithm) any bayes::CParticleFilterCapable class can implement: it is the invoker of particle filter algorithms.
 		 *   The particle filter is executed on a probability density function (PDF) described by a CParticleFilterCapable object, passed in the constructor or alternatively through the CParticleFilter::executeOn method.<br>
 		 *
-		 * For a complete example and further details, see the <a href="http://www.mrpt.org/Particle_Filter_Tutorial">Particle Filter tutorial</a>.
+		 * For a complete example and further details, see the <a href="http://www.mrpt.org/Particle_Filter_Tutorial" >Particle Filter tutorial</a>.
 		 *
 		 *   The basic SIR algorithm (pfStandardProposal) consists of:
 		 *		- Execute a prediction with the given "action".
@@ -69,9 +69,9 @@ namespace mrpt
 			  *		- pfStandardProposal: Standard proposal distribution + weights according to likelihood function.
 			  *		- pfAuxiliaryPFStandard: An auxiliary PF using the standard proposal distribution.
 			  *		- pfOptimalProposal: Use the optimal proposal distribution (where available!, usually this will perform approximations)
-			  *		- pfAuxiliaryPFOptimal: Use the optimal proposal and a auxiliary particle filter (see <a href="http://www.mrpt.org/Paper:An_Optimal_Filtering_Algorithm_for_Non-Parametric_Observation_Models_in_Robot_Localization_(ICRA_2008)">paper</a>).
+			  *		- pfAuxiliaryPFOptimal: Use the optimal proposal and a auxiliary particle filter (see <a href="http://www.mrpt.org/Paper:An_Optimal_Filtering_Algorithm_for_Non-Parametric_Observation_Models_in_Robot_Localization_(ICRA_2008)" >paper</a>).
 			  *
-			  * See the theoretical discussion in <a href="http://www.mrpt.org/Resampling_Schemes">resampling schemes</a>.
+			  * See the theoretical discussion in <a href="http://www.mrpt.org/Resampling_Schemes" >resampling schemes</a>.
 			  */
 			enum TParticleFilterAlgorithm
 			{
@@ -88,7 +88,7 @@ namespace mrpt
 			  *		- prStratified: The stratified resampling, where a uniform sample is drawn for each of M subdivisions of the range (0,1].
 			  *		- prSystematic: A single uniform sample is drawn in the range (0,1/M].
 			  *
-			  * See the theoretical discussion in <a href="http://www.mrpt.org/Resampling_Schemes">resampling schemes</a>.
+			  * See the theoretical discussion in <a href="http://www.mrpt.org/Resampling_Schemes" >resampling schemes</a>.
 			  */
 			enum TParticleResamplingAlgorithm
 			{

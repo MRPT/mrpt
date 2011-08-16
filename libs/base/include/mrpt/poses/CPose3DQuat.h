@@ -47,7 +47,7 @@ namespace poses
 	/** A class used to store a 3D pose as a translation (x,y,z) and a quaternion (qr,qx,qy,qz).
 	 *
 	 *  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint, or refer
-	 *    to the <a href="http://www.mrpt.org/2D_3D_Geometry">2D/3D Geometry tutorial</a> in the wiki.
+	 *    to the <a href="http://www.mrpt.org/2D_3D_Geometry"> 2D/3D Geometry tutorial</a> in the wiki.
 	 *
 	 *  To access the translation use x(), y() and z(). To access the rotation, use CPose3DQuat::quat().
 	 *

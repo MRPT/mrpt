@@ -45,7 +45,7 @@ namespace mrpt
 
 		/** Represents a probabilistic 2D movement of the robot mobile base
 		 *
-		 *  See the tutorial on <a href="http://www.mrpt.org/Probabilistic_Motion_Models">probabilistic motion models</a>.
+		 *  See the tutorial on <a href="http://www.mrpt.org/Probabilistic_Motion_Models" >probabilistic motion models</a>.
 		 *
 		 * \sa CAction
 		 */

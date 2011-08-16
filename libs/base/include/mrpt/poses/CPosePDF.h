@@ -50,7 +50,7 @@ namespace poses
 	 *   changeCoordinatesReference, in the form of a method rather than an operator.
      *
 	 *
-	 *  See also the tutorial on <a href="http://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations">probabilistic spatial representations in the MRPT</a>.
+	 *  See also the tutorial on <a href="http://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations" >probabilistic spatial representations in the MRPT</a>.
 	 *
 	 * \sa CPose2D, CPose3DPDF, CPoseRandomSampler
 	 */

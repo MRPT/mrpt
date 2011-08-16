@@ -54,7 +54,7 @@ namespace mrpt
 		 *  - For a similar class for 3D poses  (with Euler angles instead of quaternions), see CPose3DPDF.
 		 *
 		 *
-		 *  See also the tutorial on <a href="http://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations">probabilistic spatial representations in the MRPT</a>.
+		 *  See also the tutorial on <a href="http://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations" >probabilistic spatial representations in the MRPT</a>.
 		 *
 		 * \sa CPose3DQuatPDF, CPose3DPDF
 		 */

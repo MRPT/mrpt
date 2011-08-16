@@ -467,7 +467,7 @@ namespace mrpt
 
 			/** The main entry point, executes one complete step: prediction + update.
 			  *  It is protected since derived classes must provide a problem-specific entry point for users.
-			  *  The exact order in which this method calls the virtual method is explained in http://www.mrpt.org/Kalman_Filters.
+			  *  The exact order in which this method calls the virtual method is explained in http://www.mrpt.org/Kalman_Filters
 			  */
 			void runOneKalmanIteration()
 			{

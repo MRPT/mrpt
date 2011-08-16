@@ -42,7 +42,7 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( C3DSScene, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** This element keeps a set of objects imported from a 3DStudio file (.3ds).
-		  *  This class uses the opensource library <a href="http://lib3ds.sourceforge.net/">lib3ds</a> internally.
+		  *  This class uses the opensource library <a href="http://lib3ds.sourceforge.net/" >lib3ds</a> internally.
 		  *  \sa opengl::COpenGLScene
 		  */
 		class OPENGL_IMPEXP C3DSScene : public CRenderizableDisplayList

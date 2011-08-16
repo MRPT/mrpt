@@ -60,7 +60,7 @@ namespace mrpt
 		  *   member in COpenGLViewport.
 		  *
 		  *   An object COpenGLScene can be saved to a ".3Dscene" file using CFileOutputStream, for posterior visualization from
-		  *    the standalone application <a href="http://www.mrpt.org/Application:SceneViewer">SceneViewer</a>.
+		  *    the standalone application <a href="http://www.mrpt.org/Application:SceneViewer" >SceneViewer</a>.
 		  *    It can be also displayed in real-time using gui::CDisplayWindow3D.
 		  */
 		class OPENGL_IMPEXP COpenGLScene : public mrpt::utils::CSerializable

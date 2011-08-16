@@ -53,7 +53,7 @@ namespace mrpt
 		 *			- Observations: Implemented as a CSensoryFrame, refering to a set of robot observations from the same pose.
 		 *		- Format #2: A sequence of actions and observations. There is a sequence of objects, where each one can be of one type:
 		 *
-		 *	Refer to the wiki page about <a href="http://www.mrpt.org/Rawlog_Format">rawlog files</a>.
+		 *	Refer to the wiki page about <a href="http://www.mrpt.org/Rawlog_Format" >rawlog files</a>.
 		 *
 		 *  See also the application <a href="http://www.mrpt.org/Application:RawLogViewer" >RawLogViewer</a > for the GUI program that visualizes and manages rawlogs.
 		 *
@@ -67,7 +67,7 @@ namespace mrpt
 		 * \note The format #2 is supported since MRPT version 0.6.0.
 		 * \note There is a static helper method "detectImagesDirectory" for localizing the external images directory of a rawlog.
 		 *
-		 * \sa CSensoryFrame, CPose2D, <a href="http://www.mrpt.org/Rawlog_Format">RawLog file format</a>.
+		 * \sa CSensoryFrame, CPose2D, <a href="http://www.mrpt.org/Rawlog_Format"> RawLog file format</a>.
 		 */
 		class OBS_IMPEXP CRawlog : public mrpt::utils::CSerializable
 		{
