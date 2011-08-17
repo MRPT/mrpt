@@ -38,6 +38,7 @@ namespace mrpt
 	/** A PTG for circular paths. The parameter K is related with the transformation between alfa values
 			and curvature of the arcs. Let R be the radius of the circular path (the inverse of the curvature).
 			Then: <br> <center><code> R = K / (v<sub>MAX</sub> tan &alfa;) </code></center>
+	 *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP CPTG1 : public CParameterizedTrajectoryGenerator
 	{

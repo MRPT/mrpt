@@ -36,6 +36,7 @@
 
 namespace mrpt
 {
+	/** \ingroup mrpt_slam_grp */
 	namespace slam
 	{
 		class COccupancyGridMap2D;
@@ -51,13 +52,12 @@ namespace mrpt
 		 *   application "app/pf-localization" for an example of usage.
 		 *
 		 * \sa CMonteCarloLocalization3D, CPose2D, CPosePDF, CPoseGaussianPDF, CParticleFilterCapable
+		 * \ingroup mrpt_slam_grp
 		 */
 		class SLAM_IMPEXP CMonteCarloLocalization2D :
 			public CPosePDFParticles,
 			public PF_implementation<CPose2D,CMonteCarloLocalization2D>
 		{
-			//template <class PARTICLE_TYPE, class MYSELF> friend class PF_implementation;
-
 		public:
 			TMonteCarloLocalizationParams	options; //!< MCL parameters
 

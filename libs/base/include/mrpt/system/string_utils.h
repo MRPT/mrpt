@@ -34,8 +34,9 @@ namespace mrpt
 {
 	namespace system
 	{
-		/** @name String management and utilities
-		@{ */
+		/** \addtogroup string_manage String management and utilities
+		  * \ingroup mrpt_base_grp
+		  * @{ */
 
 		/** An OS-independent method for tokenizing a string.
 		  * The extra parameter "context" must be a pointer to a "char*" variable, which needs no initialization and is used to save information between calls to strtok.

@@ -31,6 +31,7 @@
 #ifndef  SIMPLEX_DOWNHILL_MRPT_H
 #define  SIMPLEX_DOWNHILL_MRPT_H
 
+/** \ingroup mrpt_base_grp */
 namespace mrpt_flann  // Modified namespace to avoid naming conflicts with 3rd party code
 {
 

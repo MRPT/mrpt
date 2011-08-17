@@ -44,6 +44,7 @@ namespace slam
 	/** Declares a class derived from "CObservation" that represents a Global Positioning System (GPS) reading.
 	 *
 	 * \sa CObservation
+	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CObservationGPS : public CObservation
 	{

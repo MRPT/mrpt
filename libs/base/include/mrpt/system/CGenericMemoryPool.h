@@ -50,6 +50,7 @@ namespace mrpt
 		  *
 		  *  \tparam POOLABLE_DATA A struct with user-defined objects which actually contain the memory blocks (e.g. one or more std::vector).
 		  *  \tparam DATA_PARAMS A struct with user information about each memory block (e.g. size of a std::vector)
+		  * \ingroup mrpt_base_grp mrpt_memory 
 		  */
 		template <class DATA_PARAMS,class POOLABLE_DATA>
 		class CGenericMemoryPool

@@ -44,7 +44,7 @@
   ---------------------------------------------------------------*/
 namespace mrpt
 {
-	/** This base provides a set of functions for maths stuff.
+	/** This base provides a set of functions for maths stuff. \ingroup mrpt_base_grp
 	 */
 	namespace math
 	{

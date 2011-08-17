@@ -35,6 +35,7 @@ namespace mrpt
 	namespace utils
 	{
 		/** A set of utility objects for metaprogramming with STL algorithms.
+		  * \ingroup mrpt_base_grp
 		  */
 		namespace metaprogramming
 		{

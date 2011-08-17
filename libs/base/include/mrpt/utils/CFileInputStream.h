@@ -42,6 +42,7 @@ namespace mrpt
 		/** This CStream derived class allow using a file as a read-only, binary stream.
 		 *
 		 * \sa CStream, CFileStream, CFileGZInputStream
+		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP CFileInputStream : public CStream, public CUncopiable
 		{

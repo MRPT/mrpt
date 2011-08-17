@@ -1,10 +1,9 @@
-/** \page mrpt-hmtslam Library overview: mrpt-hmtslam
- *
+/** \defgroup mrpt_hmtslam_grp [mrpt-hmtslam]
 
-<small> <a href="index.html#libs">Back to list of libraries</a> </small>
+<small> <a href="index.html#libs">Back to list of all libraries</a> </small>
 <br>
 
-<h2>mrpt-hmtslam</h2>
+<h2>Library <code>mrpt-hmtslam</code></h2>
 <hr>
 
 This library includes an implementation of the HMT-SLAM framework. 

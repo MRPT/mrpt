@@ -41,6 +41,7 @@ namespace mrpt
 
 		/** A 2D plane in the XY plane with a texture image.
 		  *  \sa opengl::COpenGLScene
+		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP CTexturedPlane : public CTexturedObject
 		{

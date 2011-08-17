@@ -88,6 +88,7 @@ namespace mrpt
 		  *		- MAPS_IMPLEMENTATION: Can be either mrpt::utils::map_traits_stdmap or mrpt::utils::map_traits_map_as_vector. Determines the type of the list of global poses (member \a nodes).
 		  *
 		  * \sa mrpt::graphslam
+		  * \ingroup mrpt_base_grp
 		  */
 		template<class CPOSE, class MAPS_IMPLEMENTATION = map_traits_stdmap >
 		class CNetworkOfPoses : public mrpt::math::CDirectedGraph< CPOSE >

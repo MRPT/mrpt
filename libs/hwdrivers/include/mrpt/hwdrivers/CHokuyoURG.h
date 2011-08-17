@@ -71,6 +71,7 @@ namespace mrpt
 		  *    //exclusionAngles1_end = 25  // Deg
 		  *
 		  *  \endcode
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CHokuyoURG : public C2DRangeFinderAbstract
 		{

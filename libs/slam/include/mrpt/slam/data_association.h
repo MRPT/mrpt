@@ -38,7 +38,11 @@
 namespace mrpt
 {
 	namespace slam
-	{
+	{	
+	 	/** \addtogroup data_assoc_grp Data association
+		 * \ingroup mrpt_slam_grp
+		 *  @{ */
+	
 		/** @name Data association
 			@{
 		  */
@@ -171,7 +175,9 @@ namespace mrpt
 
 
 		/** @} */
-
+		
+		/** @} */  // end of grouping
+		
 	} // end namespace
 
 	// Specializations MUST occur at the same namespace:

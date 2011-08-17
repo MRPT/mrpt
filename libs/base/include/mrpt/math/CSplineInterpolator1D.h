@@ -43,6 +43,7 @@ namespace mrpt
 		  *  This class internally relies on mrpt::math::spline. Optionally the y coordinate can be set as wrapped in ]-pi,pi].
 		  *  For querying interpolated points, see
 		  * \ sa mrpt::math::spline, mrpt::poses::CPose3DInterpolator
+		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP CSplineInterpolator1D : public mrpt::utils::CSerializable
 		{

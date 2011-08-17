@@ -46,7 +46,8 @@ namespace mrpt
 		 *    - 2009-2010: Rewritten by various authors.
 		 *
 		 * \sa mrpt::utils::TCamera, CMonoSlam, the application <a href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui</a> for calibrating a camera
-		*/
+		 * \ingroup mrpt_vision_grp 
+		 */
 		class VISION_IMPEXP  CCamModel : public mrpt::utils::CLoadableOptions
 		{
 		public:
@@ -139,7 +140,7 @@ namespace mrpt
 			void jacobian_project_with_distortion(const mrpt::math::TPoint3D &p3D, math::CMatrixDouble & dh_dy ) const;
 
 
-			/* Jacobian of the unprojection of a pixel (with distortion) back into a 3D point, as done in unproject_3D_point \f$ \frac{\partial y}{\partial h} \f$, evaluated at the pixel p
+			/** Jacobian of the unprojection of a pixel (with distortion) back into a 3D point, as done in unproject_3D_point \f$ \frac{\partial y}{\partial h} \f$, evaluated at the pixel p
 			\note JLBC: Added in March, 2009. Should be equivalent to Davison's WideCamera::UnprojectionJacobian
 			\sa unproject_3D_point
 			*/
@@ -270,7 +271,7 @@ namespace mrpt
 				tmp1[2]=square(tmp1[0])+square(tmp1[1]);
 				double sK1=square(K1);
 				double K12=sK1-K2;
-				double K123=-K1*sK1+2*K1*K2-K3;	//-K1³+2K1K2-K3
+				double K123=-K1*sK1+2*K1*K2-K3;	//-K1Â³+2K1K2-K3
 				//tmp1[3]=1-K1*tmp1[2]+K12*square(tmp1[2]);
 				tmp1[3]=1+tmp1[2]*(-K1+tmp1[2]*(K12+tmp1[2]*K123));
 				J2.set_unsafe(2,0,2*tmp1[0]);

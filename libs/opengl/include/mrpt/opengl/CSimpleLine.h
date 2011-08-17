@@ -41,6 +41,7 @@ namespace mrpt
 
 		/** A line segment
 		  *  \sa opengl::COpenGLScene
+		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP CSimpleLine : public CRenderizableDisplayList
 		{

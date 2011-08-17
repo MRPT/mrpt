@@ -41,6 +41,7 @@ namespace bayes
 	 *		- A (logarithmic) weight value.
 	 *
 	 *  This structure is used within CParticleFilterData, see that class for more information.
+	 * \ingroup mrpt_base_grp
 	 */
 	template <class T>
 	struct CProbabilityParticle

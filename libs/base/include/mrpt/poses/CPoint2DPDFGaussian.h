@@ -39,7 +39,7 @@ namespace poses
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPoint2DPDFGaussian, CPoint2DPDF )
 
 	/** A gaussian distribution for 2D points. Also a method for bayesian fusion is provided.
-     *
+	 * \ingroup mrpt_base_grp
 	 * \sa CPoint2DPDF
 	 */
 	class BASE_IMPEXP CPoint2DPDFGaussian : public CPoint2DPDF

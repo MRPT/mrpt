@@ -42,6 +42,7 @@ namespace slam
 
 	/** Declares a class derived from "CObservation" that represents one (or more) range measurements to labeled beacons.
 	 * \sa CObservation
+	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CObservationBeaconRanges : public CObservation
 	{

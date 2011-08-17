@@ -53,6 +53,7 @@ namespace mrpt
 		  *   their first & second entries (for the corresponding std::pair) will be <b>undefined</b>. This was intentional in order to
 		  *   gain efficiency (in particular, each std::pair<> doesn't have a constructor when resizing the underlying std::vector).
 		  *
+		  * \ingroup mrpt_base_grp
 		  */
 		template <typename KEY,typename VALUE>
 		class map_as_vector

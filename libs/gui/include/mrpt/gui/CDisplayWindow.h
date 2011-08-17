@@ -33,7 +33,7 @@
 
 namespace mrpt
 {
-	/** Classes for creating GUI windows for 2D and 3D visualization. */
+	/** Classes for creating GUI windows for 2D and 3D visualization.   \ingroup mrpt_gui_grp */
 	namespace gui
 	{
 		using namespace mrpt::utils;
@@ -43,7 +43,7 @@ namespace mrpt
 		/** This class creates a window as a graphical user interface (GUI) for displaying images to the user.
 		 *
 		 *  For a list of supported events with the observer/observable pattern, see the discussion in mrpt::gui::CBaseGUIWindow.
-		 *
+		 * \ingroup mrpt_gui_grp
 		 */
 		class GUI_IMPEXP CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 		{

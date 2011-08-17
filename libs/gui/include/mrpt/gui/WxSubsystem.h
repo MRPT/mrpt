@@ -121,6 +121,7 @@ namespace mrpt
 		  *  This header should be included just from the implementation files of CDisplayWindow and CDisplayWindow3D, since it uses wxWidgets classes.
 		  *
 		  *  \sa gui::CDisplayWindow, gui::CDisplayWindow3D
+		  * \ingroup mrpt_gui_grp
 		  */
 		class GUI_IMPEXP WxSubsystem
 		{

@@ -60,6 +60,7 @@ namespace mrpt
 		  * \endcode
 		  *
 		  * \sa mrpt::utils::TCamera, the application <a href="http://www.mrpt.org/Application:camera-calib" >camera-calib</a> for calibrating a camera.
+		  * \ingroup mrpt_vision_grp
 		  */
 		class VISION_IMPEXP  CUndistortMap
 		{

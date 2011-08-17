@@ -42,6 +42,7 @@ namespace mrpt
 		 *  This class requires compiling MRPT with wxWidgets. If wxWidgets is not available then the class is actually mapped to the standard CFileOutputStream
 		 *
 		 * \sa CFileOutputStream
+		 * \ingroup mrpt_base_grp
 		 */
 #if !MRPT_HAS_GZ_STREAMS
 		// We don't have wxwidgets:

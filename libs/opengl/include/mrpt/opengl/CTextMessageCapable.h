@@ -37,6 +37,7 @@ namespace mrpt
 	namespace opengl
 	{
 		/** Keeps a list of text messages which can be rendered to OpenGL contexts by graphic classes.
+		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP CTextMessageCapable
 		{

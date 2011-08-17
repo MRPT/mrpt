@@ -42,6 +42,7 @@ namespace mrpt
 
 		/** A smart pointer to a CObject object
 		  * \note Declared as a class instead of a typedef to avoid multiple defined symbols when linking dynamic libs.
+		  * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP CObjectPtr : public stlplus::smart_ptr_clone<CObject>
 		{
@@ -55,6 +56,7 @@ namespace mrpt
 		};
 
 		/** A structure that holds runtime class type information. Use CLASS_ID(<class_name>) to get a reference to the class_name's TRuntimeClassId descriptor.
+		  * \ingroup mrpt_base_grp
 		  */
 		struct BASE_IMPEXP TRuntimeClassId
 		{
@@ -71,7 +73,7 @@ namespace mrpt
 
 		};
 
-		/** A wrapper class for a "TRuntimeClassId *", well-defined with respect to copy operators and constructors.
+		/** A wrapper class for a "TRuntimeClassId *", well-defined with respect to copy operators and constructors. \ingroup mrpt_base_grp
 		  */
 		typedef safe_ptr<TRuntimeClassId> TRuntimeClassIdPtr;
 
@@ -114,7 +116,7 @@ namespace mrpt
 		/** Evaluates to true if the given pointer to an object (derived from mrpt::utils::CSerializable) is an instance of the given class or any of its derived classes. */
 		#define IS_DERIVED( ptrObj, class_name )  ((ptrObj)->GetRuntimeClass()->derivedFrom(CLASS_ID(class_name)))
 
-		/** Auxiliary structure used for CObject-based RTTI. */
+		/** Auxiliary structure used for CObject-based RTTI. \ingroup mrpt_base_grp */
 		struct BASE_IMPEXP CLASSINIT
 		{
 			CLASSINIT(const mrpt::utils::TRuntimeClassId* pNewClass)
@@ -127,7 +129,7 @@ namespace mrpt
 		/** The virtual base class of all MRPT classes with a unified RTTI system.
 		 *   For each class named <code>CMyClass</code>, a new type named <code>CMyClassPtr</code> will be created as a smart pointer suitable for
 		 *    keeping referencing count smart pointers to objects of that class. By default the base class of all these smart pointers is CObjectPtr.
-		 * \sa  mrpt::utils::CSerializable
+		 * \sa  mrpt::utils::CSerializable \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP CObject
 		{

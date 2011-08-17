@@ -53,6 +53,7 @@ namespace opengl	{
 	  *  </table>
 	  *  </div>
 	  *  
+	  * \ingroup mrpt_opengl_grp
 	  */
 	class OPENGL_IMPEXP CPolyhedron:public CRenderizableDisplayList	{
 		DEFINE_SERIALIZABLE(CPolyhedron)

@@ -44,6 +44,7 @@ namespace slam
 {
 	/** Auxiliary struct that holds all the relevant *geometry* information about a 2D scan.
 	  * This class is used in CSinCosLookUpTableFor2DScans
+	  * \ingroup mrpt_obs_grp
 	  * \sa CObservation2DRangeScan and CObservation2DRangeScan::getScanProperties */
 	struct OBS_IMPEXP T2DScanProperties {
 		size_t  nRays;
@@ -66,6 +67,7 @@ namespace slam
 	  *    - CObservation2DRangeScan::sensorPose -> The 6D location of the sensor on the robot reference frame (default=at the origin).
 	  *
 	  * \sa CObservation, CPointsMap, T2DScanProperties
+	  * \ingroup mrpt_obs_grp
 	  */
 	class OBS_IMPEXP CObservation2DRangeScan : public CObservation
 	{

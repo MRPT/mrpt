@@ -61,6 +61,7 @@ namespace mrpt
 		 *    - 12/DEC/2007: (JLBC) Added support for Linux.
 		 *
 		 * \todo Add the internal buffer to the Windows implementation also
+		 * \ingroup mrpt_hwdrivers_grp
 		 */
 		class HWDRIVERS_IMPEXP CSerialPort : public CStream
 		{

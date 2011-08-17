@@ -1,10 +1,9 @@
-/** \page mrpt-slam Library overview: mrpt-slam
- *
+/** \defgroup mrpt_slam_grp [mrpt-slam]
 
-<small> <a href="index.html#libs">Back to list of libraries</a> </small>
+<small> <a href="index.html#libs">Back to list of all libraries</a> </small>
 <br>
 
-<h2>mrpt-slam</h2>
+<h2>Library <code>mrpt-slam</code></h2>
 <hr>
 
 Interesting stuff in this library:

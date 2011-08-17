@@ -45,6 +45,7 @@ namespace mrpt
 		 *    odometry are modeled with actions. Refer to the <a href="http://www.mrpt.org/Rawlog_Format">page on rawlogs</a>.
 		 *
 		 * \sa CObservation, CActionRobotMovement2D
+		 * \ingroup mrpt_obs_grp
 		 */
 		class OBS_IMPEXP CObservationOdometry : public CObservation
 		{

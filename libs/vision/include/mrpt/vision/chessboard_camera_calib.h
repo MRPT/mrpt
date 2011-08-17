@@ -41,8 +41,9 @@ namespace mrpt
 	{
 		using namespace mrpt::utils;
 
-		/** @name Chessboard calibration 
-		    @{  */
+		/** \addtogroup chessboard_calib Chessboard calibration 
+		  *  \ingroup mrpt_vision_grp
+		  *  @{  */
 
 		/** Data associated to each image in the calibration process mrpt::vision::checkerBoardCameraCalibration (All the information can be left empty and will be filled up in the calibration method).
 		  */
@@ -121,7 +122,7 @@ namespace mrpt
 			bool			   useScaramuzzaAlternativeDetector = false
 			);
 
-		/** @}  */
+		/** @}  */ // end of grouping
 
 	}
 }

@@ -43,6 +43,7 @@ namespace slam
 	 *  two direction angles: yaw (azimuth) and pitch (negative elevation). For 2D sensors, the pitch must be always set to 0.
 	 * See CObservationBearingRange::validCovariances for the instructions to fill the uncertainty covariances.
 	 * \sa CObservation
+	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CObservationBearingRange : public CObservation
 	{

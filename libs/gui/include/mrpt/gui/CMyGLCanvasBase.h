@@ -65,6 +65,7 @@ namespace mrpt
 	{
 		/** This class implements a OpenGL canvas, and it's used in gui::CDisplayWindow3D and a number of standalone applications in the MRPT project.
 		  *  There is a filter to control the user capability of moving the camera with the mouse. See OnUserManuallyMovesCamera
+		  * \ingroup mrpt_gui_grp
 		  */
 		class GUI_IMPEXP CMyGLCanvasBase: public wxGLCanvas
 		{

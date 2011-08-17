@@ -52,6 +52,7 @@ namespace mrpt
 		 *  For a list of supported events with the observer/observable pattern, see the discussion in mrpt::gui::CBaseGUIWindow.
 		 *
 		 *   See CDisplayWindowPlots::plot
+		 * \ingroup mrpt_gui_grp
 		 */
 		class GUI_IMPEXP CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 		{

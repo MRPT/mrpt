@@ -40,6 +40,7 @@ namespace synch
 /** This class acts exactly as an int (or long) variable, but with atomic increment and decrement operators.
   *   This is a useful component of thread-safe smart pointers.
   * \note Based on code from the Boost library.
+  * \ingroup mrpt_base_grp
   */
 class BASE_IMPEXP CAtomicCounter
 {

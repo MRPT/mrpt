@@ -49,6 +49,7 @@ namespace mrpt
 		 * Specifically, when sampling 3D poses from a 2D pose pdf, this class will be smart enought to draw only 
 		 *  the 3 required dimensions, avoiding a waste of time with the other 3 missing components.
          *
+	 * \ingroup mrpt_base_grp
          * \sa CPosePDF, CPose3DPDF
          */
         class BASE_IMPEXP CPoseRandomSampler

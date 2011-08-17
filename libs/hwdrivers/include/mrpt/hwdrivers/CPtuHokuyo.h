@@ -41,6 +41,7 @@ namespace mrpt
 		 *	Hokuyo scans, adding the posibility of save the points earned
 		 *	in several different formats, limit valids points and view
 		 * 	them on a grahic.
+		 * \ingroup mrpt_hwdrivers_grp
 		 */
 
 		class HWDRIVERS_IMPEXP CPtuHokuyo;

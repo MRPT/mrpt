@@ -49,6 +49,7 @@ namespace mrpt
 		  *  The parameters obtained for one camera resolution can be used for any other resolution by means of the method TCamera::scaleToResolution()
 		  *
 		  * \sa mrpt::vision::CCamModel, the application <a href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui</a> for calibrating a camera
+		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP TCamera : public mrpt::utils::CSerializable
 		{

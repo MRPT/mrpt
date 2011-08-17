@@ -47,6 +47,7 @@ namespace mrpt
 		  *   <tr> <td> mrpt::opengl::CArrow </td> <td> \image html preview_CArrow.png </td> </tr>
 		  *  </table>
 		  *  </div>
+		  * \ingroup mrpt_opengl_grp
 		  *  
 		  */
 		class OPENGL_IMPEXP CArrow : public CRenderizableDisplayList

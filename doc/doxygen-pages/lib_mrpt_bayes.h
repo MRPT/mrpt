@@ -1,10 +1,9 @@
-/** \page mrpt-bayes Library overview: mrpt-bayes
- *
+/** \defgroup mrpt_bayes_grp [mrpt-bayes]
 
-<small> <a href="index.html#libs">Back to list of libraries</a> </small>
+<small> <a href="index.html#libs">Back to list of all libraries</a> </small>
 <br>
 
-<h2>mrpt-base</h2>
+<h2>Library <code>mrpt-bayes</code></h2>
 <hr>
 
 Here there are two main family of algorithms:

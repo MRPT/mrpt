@@ -36,7 +36,7 @@ namespace mrpt
 	namespace utils
 	{
 		/** Only specializations of this class are defined for each enum type of interest
-		  * \sa TEnumType
+		  * \sa TEnumType \ingroup mrpt_base_grp
 		  */
 		template <typename ENUMTYPE>
 		struct TEnumTypeFiller
@@ -46,7 +46,7 @@ namespace mrpt
 		};
 
 
-		/** A helper class that can convert an enum value into its textual representation, and viceversa.  */
+		/** A helper class that can convert an enum value into its textual representation, and viceversa. \ingroup mrpt_base_grp */
 		template <typename ENUMTYPE>
 		struct TEnumType
 		{

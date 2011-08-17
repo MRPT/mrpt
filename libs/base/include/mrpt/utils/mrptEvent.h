@@ -49,6 +49,7 @@ namespace mrpt
 		  * \endcode
 		  *
 		  * \sa CObserver, CObservable
+		 * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP mrptEvent
 		{
@@ -69,6 +70,7 @@ namespace mrpt
 		}; // End of class def.
 
 		/**  An event sent by any CObservable object (automatically) just before being destroyed and telling its observers to unsubscribe.
+		 * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP mrptEventOnDestroy : public mrptEvent
 		{

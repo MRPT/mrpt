@@ -40,6 +40,7 @@ namespace mrpt
 	/** A base class for log records for different holonomic navigation methods.
 	 *
 	 * \sa CReactiveNavigationSystem, CHolonomicLogFileRecord
+	  *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP CHolonomicLogFileRecord : public utils::CSerializable
 	{

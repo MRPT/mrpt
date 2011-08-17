@@ -56,6 +56,7 @@ namespace mrpt
 		/** This CStream derived class allow using a file as a read/write binary stream, creating it if the file didn't exist.
 		 *   The default behavior can be change to open as read, write, read and write,... in the constructor.
 		 * \sa CStream, CFileInputStream, CFileOutputStrea, CFileGZInputStream
+		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP  CFileStream : public CStream, public CUncopiable
 		{

@@ -43,6 +43,7 @@ namespace utils
 	 *   and then read them to other objects, or storing them to a file, for example.
 	 *
 	 * \sa CStream
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CMemoryStream : public CStream
 	{

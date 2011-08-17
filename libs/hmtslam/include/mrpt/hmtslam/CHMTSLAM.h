@@ -55,7 +55,7 @@
 
 namespace mrpt
 {
-	/** Classes related to the implementation of Hybrid Metric Topological (HMT) SLAM. */
+	/** Classes related to the implementation of Hybrid Metric Topological (HMT) SLAM. \ingroup mrpt_hmtslam_grp */
 	namespace hmtslam
 	{
 		using namespace mrpt::utils;
@@ -87,6 +87,7 @@ namespace mrpt
 		 *    can be invoked, which in turn call internally to the CSerializable interface.
 		 *
 		 * \sa CHierarchicalMHMap
+		  * \ingroup mrpt_hmtslam_grp
 		 */
 		class HMTSLAM_IMPEXP CHMTSLAM : public mrpt::utils::CDebugOutputCapable, public mrpt::utils::CSerializable
 		{

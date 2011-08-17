@@ -47,6 +47,7 @@ namespace math	{
       *
       *  \sa mrpt::math::CSparseMatrix, CSparseSymmetricalMatrix
       *  \note Methods marked as "Doesn't check bounds" mean that if an access to an element out of the matrix size is tried, an empty element will be assumed, but this will not raise any invalid memory access.
+      * \ingroup mrpt_base_grp
       */
 	template<class T>
 	class CSparseMatrixTemplate	{

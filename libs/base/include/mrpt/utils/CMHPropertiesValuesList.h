@@ -60,6 +60,7 @@ namespace mrpt
          *   For each named annotation (or attribute), several values may exist, each associated to a given hypothesis ID.
          * A non multi-hypotheses version exists in CPropertiesValuesList.
          * \sa CSerializable, CPropertiesValuesList
+	 * \ingroup mrpt_base_grp
          */
         class BASE_IMPEXP CMHPropertiesValuesList : public mrpt::utils::CSerializable
         {

@@ -40,6 +40,7 @@ namespace mrpt
 #pragma pack(push,1)
 
 		/** A structure for holding correspondences between two sets of points or points-like entities in 2D or 3D.
+		 * \ingroup mrpt_base_grp
 		  */
 		struct BASE_IMPEXP TMatchingPair
 		{
@@ -73,6 +74,7 @@ namespace mrpt
 		typedef TMatchingPair*  TMatchingPairPtr;
 
 		/** A list of TMatchingPair
+		 * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP TMatchingPairList : public std::vector<TMatchingPair>
 		{

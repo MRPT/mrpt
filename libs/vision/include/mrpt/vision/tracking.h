@@ -49,9 +49,9 @@ namespace mrpt
 		using namespace mrpt::math;
 		using namespace mrpt::utils;
 
-		/**  @name All related to feature tracking
-		     @{
-		  */
+		/** \addtogroup vision_tracking Feature detection and tracking
+		  *  \ingroup mrpt_vision_grp
+		  *   @{  */
 
 		/** A virtual interface for all feature trackers, implementing the part of feature tracking that is common to any specific tracker implementation.
 		  *   This class provides a quite robust tracking of features, avoiding as many outliers as possible but not all of them:
@@ -342,7 +342,7 @@ namespace mrpt
 
 
 
-		/**  @}  */
+		/**  @}  */  // end of grouping
 	}
 }
 

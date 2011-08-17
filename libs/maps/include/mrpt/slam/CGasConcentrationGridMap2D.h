@@ -52,6 +52,7 @@ namespace slam
 	  *    "TMapRepresentation maptype" passed in the constructor (see base class mrpt::slam::CRandomFieldGridMap2D).
 	  *
 	  * \sa mrpt::slam::CRandomFieldGridMap2D, mrpt::slam::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::slam::CMultiMetricMap
+	  * \ingroup mrpt_maps_grp
 	  */
 	class MAPS_IMPEXP CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	{

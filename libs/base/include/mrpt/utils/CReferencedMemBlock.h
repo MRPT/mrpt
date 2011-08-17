@@ -37,6 +37,7 @@ namespace mrpt
 	{
 		/** Represents a memory block (via "void*") that can be shared between several objects through copy operator (=).
 		  *  It keeps the reference count and only when it comes to zero, the memory block is really freed.
+		 * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP CReferencedMemBlock : public stlplus::smart_ptr< vector_byte >
 		{

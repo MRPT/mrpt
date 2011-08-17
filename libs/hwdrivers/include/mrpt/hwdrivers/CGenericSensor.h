@@ -40,6 +40,7 @@
 namespace mrpt
 {
 	/**   Contains classes for various device interfaces.
+	 * \ingroup mrpt_hwdrivers_grp
 	 */
 	namespace hwdrivers
 	{
@@ -73,6 +74,7 @@ namespace mrpt
 		  *
 		  *  For more details on RawLogGrabber refer to the wiki page:
 		  *    http://www.mrpt.org/Application:RawLogGrabber
+		  * \ingroup mrpt_hwdrivers_grp
  		  */
 		class HWDRIVERS_IMPEXP CGenericSensor: public mrpt::utils::CUncopiable
 		{

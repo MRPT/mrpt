@@ -63,6 +63,7 @@ namespace mrpt
 		  *   otherwise, return false AND accumulate the odometry so when we have an observation we didn't lose a thing.
 		  *   On return=true, the "m_movementDrawer" member is loaded and ready to draw samples of the increment of pose since last step.
 		  *  This method is smart enough to accumulate CActionRobotMovement2D or CActionRobotMovement3D, whatever comes in.
+		  *   \ingroup mrpt_slam_grp 
 		  */
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>

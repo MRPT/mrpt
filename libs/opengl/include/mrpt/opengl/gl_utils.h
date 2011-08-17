@@ -42,6 +42,7 @@ namespace mrpt
 	namespace opengl
 	{
 		/** A set of auxiliary functions that can be called to render OpenGL primitives from MRPT or user code
+		  * \ingroup mrpt_opengl_grp
 		  */
 		namespace gl_utils
 		{

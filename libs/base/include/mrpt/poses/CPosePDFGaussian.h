@@ -45,8 +45,9 @@ namespace poses
 	/** Declares a class that represents a Probability Density  function (PDF) of a 2D pose \f$ p(\mathbf{x}) = [x ~ y ~ \phi ]^t \f$.
 	 *
 	 *   This class implements that PDF using a mono-modal Gaussian distribution. See mrpt::poses::CPosePDF for more details.
-     *
+	 *
 	 * \sa CPose2D, CPosePDF, CPosePDFParticles
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CPosePDFGaussian : public CPosePDF
 	{

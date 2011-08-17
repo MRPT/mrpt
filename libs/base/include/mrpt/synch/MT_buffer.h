@@ -36,6 +36,7 @@ namespace synch
 {
 
 /** This class is a bulk sequence of bytes with MultiThread (MT)-safe read and write operations.
+  * \ingroup mrpt_base_grp
   */
 class MT_buffer
 {

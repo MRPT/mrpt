@@ -37,8 +37,9 @@ namespace mrpt
 {
 	namespace system
 	{
-		/** @name Time and date functions
-		@{ */
+		/** @defgroup time_date Time and date functions
+		  * \ingroup mrpt_base_grp
+		  * @{ */
 
 		/** A system independent time type, it holds the the number of 100-nanosecond intervals since January 1, 1601 (UTC).
 		 * \sa system::getCurrentTime, system::timeDifference, INVALID_TIMESTAMP, TTimeParts
@@ -115,7 +116,7 @@ namespace mrpt
 
 		/** Retuns the time difference from t1 to t2 (positive if t2 is posterior to t1), in seconds.
 		  * \sa secondsToTimestamp
-          */
+		  */
 		double BASE_IMPEXP timeDifference( const mrpt::system::TTimeStamp &t_first, const mrpt::system::TTimeStamp &t_later );
 
 		/** Transform a time interval (in seconds) into TTimeStamp (e.g. which can be added to an existing valid timestamp)

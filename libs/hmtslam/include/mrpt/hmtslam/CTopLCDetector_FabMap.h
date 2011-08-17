@@ -34,6 +34,7 @@ namespace mrpt
 {
 	namespace hmtslam
 	{
+		/** \ingroup mrpt_hmtslam_grp */
 		class CTopLCDetector_FabMap : public CTopLCDetectorBase
 		{
 		protected:

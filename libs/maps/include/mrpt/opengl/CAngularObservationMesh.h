@@ -52,6 +52,7 @@ namespace opengl	{
 	  * Each element of this set is a single scan through the yaw, given a specific pitch.
 	  * Each scan has a CPose3D identifying the origin of the scan, which ideally is the
 	  * same for every one of them.
+	  * \ingroup mrpt_maps_grp
 	  */
 	class MAPS_IMPEXP CAngularObservationMesh:public CRenderizableDisplayList	{
 		DEFINE_SERIALIZABLE(CAngularObservationMesh)

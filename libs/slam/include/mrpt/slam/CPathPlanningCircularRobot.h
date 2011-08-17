@@ -38,8 +38,7 @@ namespace mrpt
 namespace slam
 {
 	/** An implementation of CPathPlanningMethod
-     *
-	 * \sa CPathPlanningMethod
+	 * \sa CPathPlanningMethod \ingroup mrpt_slam_grp
 	 */
 	class SLAM_IMPEXP CPathPlanningCircularRobot : public CPathPlanningMethod
 	{

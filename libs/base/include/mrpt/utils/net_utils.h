@@ -37,6 +37,7 @@ namespace mrpt
 	namespace utils
 	{
 		/** A set of useful routines for networking.
+		  * \ingroup mrpt_base_grp
 		  */
 		namespace net
 		{

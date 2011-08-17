@@ -65,6 +65,7 @@ namespace mrpt
 		  *		- A RGB color: This field will be used in simple elements (points, lines, text,...) but is ignored in more complex objects that carry their own color information (triangle sets,...)
 		  *  See the main class opengl::COpenGLScene
 		  *  \sa opengl::COpenGLScene, mrpt::opengl
+		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP CRenderizable : public mrpt::utils::CSerializable
 		{

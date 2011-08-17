@@ -45,6 +45,7 @@ namespace mrpt
 		  *  You can access to lines directly by "CStringList::get" or through the operator "CStringList::operator ()". The later can be
 		  *   used both, to read and to write elements.
 		  *  Also methods are provided for accesing the text by key if they are formated as "key=value" lines.
+		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP CStringList : public mrpt::utils::CSerializable
 		{

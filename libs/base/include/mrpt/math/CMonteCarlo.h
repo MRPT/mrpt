@@ -53,6 +53,7 @@ namespace mrpt	{	namespace math	{
 			- If your experiment calculates the error directly from the base value, then refill the "errorFun1" member.
 			- Otherwise, if your experiment involves the calculation of some value whom with the experimental function is compared, refill "intermediateFun" and "errorFun2".
 			- Refill only on of the alternatives.
+	 * \ingroup mrpt_base_grp
 	*/
 	template<typename T,typename NUM,typename OTHER> class CMonteCarlo	{
 	private:

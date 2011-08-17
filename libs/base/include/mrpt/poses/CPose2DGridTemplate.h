@@ -38,7 +38,7 @@ namespace poses
 	using namespace mrpt::utils;
 
 	/** This is a template class for storing a 3D (2D+heading) grid containing any kind of data.
-	 * \sa
+	 * \ingroup mrpt_base_grp
 	 */
 	template<class T>
 	class CPose2DGridTemplate

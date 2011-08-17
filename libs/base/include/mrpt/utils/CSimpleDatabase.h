@@ -42,7 +42,7 @@ namespace utils
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CSimpleDatabaseTable, mrpt::utils::CSerializable )
 
 /**  This class implements the tables of databases.
- * \sa CSimpleDatabase
+ * \sa CSimpleDatabase \ingroup mrpt_base_grp
  */
 class BASE_IMPEXP CSimpleDatabaseTable : public mrpt::utils::CSerializable
 {

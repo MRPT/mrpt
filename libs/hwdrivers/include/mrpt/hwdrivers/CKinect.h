@@ -185,6 +185,7 @@ namespace mrpt
 		  *  More references to read:
 		  *		- http://openkinect.org/wiki/Imaging_Information
 		  *		- http://nicolas.burrus.name/index.php/Research/KinectCalibration
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP  CKinect : public mrpt::hwdrivers::CGenericSensor
 		{

@@ -38,7 +38,7 @@ namespace mrpt
 {
 	namespace vision
 	{
-		/** @name Chessboard find corner functions
+		/** \addtogroup chessboard_calib
 		    @{ */
 
 		/** Look for the corners of a chessboard in the image using one of two different methods.

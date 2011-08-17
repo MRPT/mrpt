@@ -87,6 +87,7 @@ namespace slam
 	 *		- Laser scans simulation for the map contents
 	 *		- Entropy and information methods (See computeEntropy)
 	 *
+	  * \ingroup mrpt_maps_grp
 	 **/
 	class MAPS_IMPEXP COccupancyGridMap2D :
 		public CMetricMap,

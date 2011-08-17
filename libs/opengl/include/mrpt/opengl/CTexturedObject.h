@@ -43,6 +43,7 @@ namespace mrpt
 
 		/** A base class for all OpenGL objects with loadable textures.
 		  *  \sa opengl::COpenGLScene, opengl::CTexturedPlane, opengl::CSetOfTexturedTriangles
+		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP CTexturedObject : public CRenderizableDisplayList
 		{

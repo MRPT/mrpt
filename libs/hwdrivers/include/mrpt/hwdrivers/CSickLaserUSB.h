@@ -61,6 +61,7 @@ namespace mrpt
 		  *   pose_pitch=0
 		  *   pose_roll=0
 		  *  \endcode
+		  * \ingroup mrpt_hwdrivers_grp
 		  *
 		  */
 		class HWDRIVERS_IMPEXP CSickLaserUSB : public C2DRangeFinderAbstract

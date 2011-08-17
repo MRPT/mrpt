@@ -46,6 +46,7 @@ namespace mrpt
 		  *  In addition, this class will send all the messages from "printf_debug" to the Visual Studio "Output Window" in debug mode (obviously, this is a feature only enabled under Windows).
 		  *
 		  *  See CDebugOutputCapable::printf_debug.
+		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP CDebugOutputCapable
 		{

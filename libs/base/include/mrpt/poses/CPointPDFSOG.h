@@ -49,6 +49,7 @@ namespace mrpt
 		 *  See mrpt::poses::CPointPDF for more details.
 		 *
 		 * \sa CPointPDF, CPosePDF,
+		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP  CPointPDFSOG : public CPointPDF
 		{

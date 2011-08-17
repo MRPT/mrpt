@@ -36,9 +36,12 @@ namespace mrpt
 {
 	namespace vision
 	{
-		/** Functions related to pinhole camera models, point projections, etc. */
+		/** Functions related to pinhole camera models, point projections, etc. \ingroup mrpt_vision_grp */
 		namespace pinhole
 		{
+			/** \addtogroup mrpt_vision_grp 
+			  * @{ */
+		
 			using mrpt::utils::TPixelCoordf;
 
 			/** Project a set of 3D points into a camera at an arbitrary 6D pose using its calibration matrix (undistorted projection model)
@@ -177,21 +180,7 @@ namespace mrpt
 				TPixelCoordf        &outPt,
 				const mrpt::utils::TCamera  &cameraModel);
 
-			/** Undistort a list of points given by their pixel coordinates, provided the camera matrix and distortion coefficients.
-			  * \param inputPixels [IN] The pixel coordinates as in the distorted image.
-			  * \param dstUndistortedPixels [OUT] The computed pixel coordinates without distortion.
-			  * \param intrinsicParams [IN] The 3x3 calibration matrix. See http://www.mrpt.org/Camera_Parameters
-			  * \param distortionParams [IN] The 4-length vector with the distortion parameters [k1 k2 p1 p2]. See http://www.mrpt.org/Camera_Parameters
-			  */
-			//void VISION_IMPEXP undistort_points(
-			//	const std::vector<TPixelCoordf>	&inputPixels, 		/* distorted pixels in image */
-			//	const mrpt::math::CMatrixDouble33				&intrinsicParams,	/* intrinsic parameters of the camera */
-			//	const std::vector<double>						&distortionParams,	/* k1 k2 p1 p2 */
-			//	const unsigned int								&resX,				/* X-resolution of the image */
-			//	const unsigned int								&resY,				/* Y-resolution of the image */
-			//	std::vector<TPixelCoordf>			&outputPixels		/* estimated undistorted pixels in image */
-			//	);
-
+			/** @} */ // end of grouping
 		}
 	}
 }

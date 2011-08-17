@@ -37,7 +37,8 @@ namespace mrpt
         using namespace mrpt::system;
 
         /** A 2D grid of dynamic size which stores any kind of data at each cell.
-		  * \tparam T The type of each cell in the 2D grid.
+	  * \tparam T The type of each cell in the 2D grid.
+	  * \ingroup mrpt_base_grp
           */
         template <class T>
         class CDynamicGrid

@@ -39,6 +39,7 @@ namespace mrpt
 
 		/** The ICP algorithm selection, used in mrpt::slam::CICP::options.
 		  *  For details on the algorithms refer to http://www.mrpt.org/Scan_Matching_Algorithms
+		  * \ingroup mrpt_slam_grp
 		  */
 		enum TICPAlgorithm
 		{
@@ -62,6 +63,7 @@ namespace mrpt
 		 *    Journal of Field Robotics, vol. 23, no. 1, 2006. ( http://babel.isa.uma.es/~jlblanco/papers/martinez2006gil.pdf )
 		 *
 		 * \sa CMetricMapsAlignmentAlgorithm
+		 * \ingroup mrpt_slam_grp
 		 */
 		class SLAM_IMPEXP  CICP : public CMetricMapsAlignmentAlgorithm
 		{

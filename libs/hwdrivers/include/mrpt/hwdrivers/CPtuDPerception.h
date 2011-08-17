@@ -38,6 +38,7 @@ namespace mrpt
 	{
 		/** This class implements initialization and comunication methods to
 		  * control a Pan and Tilt Unit model PTU-46-17.5, working in radians .
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CPtuDPerception : public CPtuBase
 		{

@@ -94,6 +94,7 @@ namespace mrpt
 
 		/** A set of hypothesis IDs, used for arcs and nodes in multi-hypothesis hybrid maps.
 		  *  \sa THypothesisID, CHierarchicalMHMap
+		  * \ingroup mrpt_hmtslam_grp
 		  */
 		class HMTSLAM_IMPEXP THypothesisIDSet : public mrpt::utils::CSerializable, public std::set<THypothesisID>
 		{

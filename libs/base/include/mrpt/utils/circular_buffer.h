@@ -38,6 +38,7 @@ namespace mrpt
 	namespace utils
 	{
 		/** A circular buffer of fixed size (defined at construction-time), implemented with a std::vector as the underlying storage.
+		 * \ingroup mrpt_base_grp
 		  */
 		template <typename T>
 		class circular_buffer

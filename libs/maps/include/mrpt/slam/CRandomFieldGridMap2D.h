@@ -52,6 +52,7 @@ namespace slam
 #pragma pack(push,1)
 
 	/** The contents of each cell in a CRandomFieldGridMap2D map.
+	  * \ingroup mrpt_maps_grp
 	 **/
 	struct MAPS_IMPEXP TRandomFieldCell
 	{
@@ -106,6 +107,7 @@ namespace slam
 	  *		- Serialization methods: writeToStream() and readFromStream()
 	  *
 	  * \sa mrpt::slam::CGasConcentrationGridMap2D, mrpt::slam::CWirelessPowerGridMap2D, mrpt::slam::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::slam::CMultiMetricMap
+	  * \ingroup mrpt_maps_grp
 	  */
 	class CRandomFieldGridMap2D : public CMetricMap, public utils::CDynamicGrid<TRandomFieldCell>
 	{

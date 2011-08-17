@@ -32,7 +32,8 @@ This reference documentation is complementary to the <a href="http://www.mrpt.or
 <a name="libs">
 <h2>Libraries / Modules</h2>
 
-Click on a library name to see a summary of its contents. Those marked as (*) are experimental libraries.
+Click on a library name to see a summary of its contents (those marked as (*) are experimental libraries), 
+or <b>explore the</b> <a href="modules.html" ><b>complete list</b></a> <b>of modules</b>.
 Read also <a href="http://www.mrpt.org/Libraries_tree_layout" >the guide</a> to write new MRPT libraries.
 
 

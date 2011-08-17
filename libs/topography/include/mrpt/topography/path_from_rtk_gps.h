@@ -40,6 +40,8 @@ namespace mrpt
 {
 	namespace topography
 	{
+		/** \addtogroup mrpt_topography_grp
+		  *  @{ */
 
 		/** Used to return optional information from mrpt::topography::path_from_rtk_gps */
 		struct TOPO_IMPEXP TPathFromRTKInfo
@@ -73,6 +75,9 @@ namespace mrpt
 			int									path_smooth_filter_size=2,
 			TPathFromRTKInfo					*outInfo = NULL
 			);
+			
+			
+		/** @} */ // end of grouping
 
 	} // End of namespace
 

@@ -57,6 +57,7 @@ namespace slam
 	  *  The class implements the same methods than the interface "CPointPDF", and invoking them actually becomes
 	  *   a mapping into the methods of the current PDF representation of the beacon, selectable by means of "m_typePDF"
 	  * \sa CBeaconMap, CPointPDFSOG
+	  * \ingroup mrpt_maps_grp
 	  */
 	class MAPS_IMPEXP CBeacon : public CPointPDF
 	{

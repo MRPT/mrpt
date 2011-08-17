@@ -34,6 +34,10 @@ namespace mrpt
 {
 	namespace system
 	{
+		/** \addtogroup mrpt_memory Memory utilities
+		  * \ingroup mrpt_base_grp
+		  *  @{ */
+
 		/** Returns the memory occupied by this process, in bytes */
 		unsigned long  BASE_IMPEXP getMemoryUsage();
 
@@ -67,10 +71,12 @@ namespace mrpt
 #	define		mrpt_alloca_free( mem_block )	free(mem_block)
 #endif
 
+		/** @} */
+
 		namespace os
 		{
-			/** @name Aligned memory management
-			@{ */
+			/** \addtogroup mrpt_memory Memory utilities
+			  *  @{ */
 
 			/** Returns an aligned memory block.
 			  * \param alignment The desired alignment, typ. 8 or 16 bytes. 1 means no alignment required. It must be a power of two.
@@ -106,6 +112,12 @@ namespace mrpt
 			{
 				return (_Tp*)(((size_t)ptr + n-1) & -n);
 			}
+			
+			// The following templates are taken from libcvd (LGPL). See http://mi.eng.cam.ac.uk/~er258/cvd/
+			// Check if the pointer is aligned to the specified byte granularity
+			template<int bytes> bool is_aligned(const void* ptr);
+			template<> inline bool is_aligned<8>(const void* ptr) {   return ((reinterpret_cast<size_t>(ptr)) & 0x7) == 0;   }
+			template<> inline bool is_aligned<16>(const void* ptr) {  return ((reinterpret_cast<size_t>(ptr)) & 0xF) == 0;   }
 
 			/** @} */
 

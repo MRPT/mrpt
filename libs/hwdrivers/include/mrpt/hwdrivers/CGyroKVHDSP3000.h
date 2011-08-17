@@ -77,6 +77,7 @@ namespace mrpt
 		  * 	kvh.getObservations(rateObs);
 		  *		// ....
 		  * \endcode
+		  * \ingroup mrpt_hwdrivers_grp
  		  */
 		class HWDRIVERS_IMPEXP CGyroKVHDSP3000 : public hwdrivers::CGenericSensor
 		{

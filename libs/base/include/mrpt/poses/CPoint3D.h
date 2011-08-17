@@ -46,6 +46,7 @@ namespace poses
 	 *   <img src="CPoint3D.gif">
 	 *  </div>
 	 *
+	 * \ingroup mrpt_base_grp
 	 * \sa CPoseOrPoint,CPose, CPoint
 	 */
 	class BASE_IMPEXP  CPoint3D : public CPoint<CPoint3D>, public mrpt::utils::CSerializable

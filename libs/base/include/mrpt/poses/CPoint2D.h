@@ -49,6 +49,7 @@ namespace poses
 	 *  </div>
 	 *
 	 * \sa CPoseOrPoint,CPose, CPoint
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CPoint2D : public CPoint<CPoint2D>, public mrpt::utils::CSerializable
 	{

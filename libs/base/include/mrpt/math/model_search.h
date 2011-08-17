@@ -60,6 +60,7 @@ namespace mrpt {
 	  *  \sa mrpt::math::RANSAC_Template, another RANSAC implementation where models can be matrices only.
 	  *
 	  *  \author Zoltar Gaal
+	 * \ingroup mrpt_base_grp
 	  */
 	class BASE_IMPEXP ModelSearch {
 	private:

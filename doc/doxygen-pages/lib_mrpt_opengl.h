@@ -1,10 +1,9 @@
-/** \page mrpt-opengl Library overview: mrpt-opengl
- *
+/** \defgroup mrpt_opengl_grp [mrpt-opengl]
 
-<small> <a href="index.html#libs">Back to list of libraries</a> </small>
+<small> <a href="index.html#libs">Back to list of all libraries</a> </small>
 <br>
 
-<h2>mrpt-opengl</h2>
+<h2>Library <code>mrpt-opengl</code></h2>
 <hr>
 
 

@@ -38,6 +38,7 @@ namespace slam
 	  *  Refer to the main method CSinCosLookUpTableFor2DScans::getSinCosForScan()
 	  *
 	  *  This class is used in mrpt::slam::CPointsMap
+	 * \ingroup mrpt_obs_grp
 	  */
 	class OBS_IMPEXP CSinCosLookUpTableFor2DScans
 	{

@@ -64,6 +64,7 @@ namespace mrpt
 		  *    sPose_roll		= 0
 		  *  \endcode
 		  *
+		  * \ingroup mrpt_hwdrivers_grp
  		  */
 		class HWDRIVERS_IMPEXP CBoardDLMS : public hwdrivers::CInterfaceFTDIMessages, public CGenericSensor
 		{

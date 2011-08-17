@@ -36,11 +36,17 @@
 
 namespace mrpt
 {
+	/** \defgroup mrpt_graphslam_grp GraphSLAM  
+	  *  \ingroup mrpt_slam_grp  */
+
 	/** SLAM methods related to graphs of pose constraints
-          * \sa mrpt::poses::CNetworkOfPoses
+          * \sa mrpt::poses::CNetworkOfPoses   \ingroup mrpt_graphslam_grp
           */
 	namespace graphslam
 	{
+		/** \addtogroup mrpt_graphslam_grp 
+		  *  @{ */
+
 		/** Auxiliary traits template for use among graph-slam problems to make life easier with these complicated, long data type names */
 		template <class EDGE_TYPE, class MAPS_IMPLEMENTATION>
 		struct graphslam_traits
@@ -114,10 +120,11 @@ namespace mrpt
 			typename graphslam_traits<EDGE_TYPE,MAPS_IMPLEMENTATION>::TFunctorFeedback  functor_feedback = NULL
 			);
 
-
-
+	/**  @} */  // end of grouping
 
 	} // End of namespace
+
+	
 } // End of namespace
 
 #endif

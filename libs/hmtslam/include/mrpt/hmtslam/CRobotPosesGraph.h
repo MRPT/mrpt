@@ -53,6 +53,7 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRobotPosesGraph, mrpt::utils::CSerializable, HMTSLAM_IMPEXP )
 
 		/** Auxiliary class used in mrpt::slam::CLocalMetricHypothesis for HMT-SLAM; this class stores a set of robot poses and its sensory frames and pose PDF, for being stored in a HMT-map as a serializable object in annotation NODE_ANNOTATION_POSES_GRAPH.
+		  * \ingroup mrpt_hmtslam_grp
 		  */
 		class HMTSLAM_IMPEXP CRobotPosesGraph : public  mrpt::utils::CSerializable, public std::map<TPoseID,TPoseInfo>
 		{

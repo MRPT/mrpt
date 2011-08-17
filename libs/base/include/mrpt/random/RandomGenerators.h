@@ -35,6 +35,7 @@
 namespace mrpt
 {
 	/** A namespace of pseudo-random numbers genrators of diferent distributions. The central class in this namespace is mrpt::random::CRandomGenerator
+	 * \ingroup mrpt_base_grp
 	 */
 	namespace random
 	{
@@ -47,6 +48,7 @@ namespace mrpt
 		  * For real thread-safety, each thread must create and use its own instance of this class.
 		  *
 		  * Single-thread programs can use the static object mrpt::random::randomGenerator
+		 * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP CRandomGenerator
 		{

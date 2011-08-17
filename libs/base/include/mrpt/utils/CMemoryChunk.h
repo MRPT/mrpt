@@ -44,6 +44,7 @@ namespace mrpt
 		/** A memory buffer (implements CStream) which can be itself serialized.
 		 *
 		 * \sa CStream
+		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP CMemoryChunk : public CSerializable, public CMemoryStream
 		{

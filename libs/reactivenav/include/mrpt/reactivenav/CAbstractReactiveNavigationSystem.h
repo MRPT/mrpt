@@ -50,6 +50,7 @@ namespace mrpt
 	  *   all pure virtual and the desired virtual methods according to the documentation in this class.
 	  *
 	  * \sa CReactiveNavigationSystem, CAbstractReactiveNavigationSystem
+	  *  \ingroup mrpt_reactivenav_grp
 	  */
 	class REACTIVENAV_IMPEXP CReactiveInterfaceImplementation
 	{

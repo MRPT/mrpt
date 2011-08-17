@@ -50,12 +50,13 @@ namespace poses
 	 *
 	 *  For convenience, a pose composition is also defined for any
 	 *    PDF derived class, changeCoordinatesReference, in the form of a method rather than an operator.
-     *
+	 *
 	 *  For a similar class for 6D poses (a 3D point with attitude), see CPose3DPDF
 	 *
 	 *  See also the tutorial on <a href="http://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations">probabilistic spatial representations in the MRPT</a>.
 	 *
 	 * \sa CPoint3D
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CPointPDF : public mrpt::utils::CSerializable, public mrpt::utils::CProbabilityDensityFunction<CPoint3D,3>
 	{

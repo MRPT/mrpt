@@ -40,7 +40,7 @@ namespace mrpt
 		class CSensoryFrame;
 	}
 
-	/** The namespace for Bayesian filtering algorithm: different particle filters and Kalman filter algorithms.
+	/** The namespace for Bayesian filtering algorithm: different particle filters and Kalman filter algorithms. \ingroup mrpt_base_grp
 	  */
 	namespace bayes
 	{
@@ -57,7 +57,7 @@ namespace mrpt
 		 *		- Normalize weights.
 		 *		- Perform resampling if the ESS is below the threshold options.BETA.
 		 *
-		 *
+		 * \ingroup mrpt_base_grp
 		 * \sa mrpt::poses::CPoseParticlesPDF
 		 */
 		class BASE_IMPEXP CParticleFilter : public mrpt::utils::CDebugOutputCapable

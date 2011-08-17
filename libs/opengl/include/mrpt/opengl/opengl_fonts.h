@@ -39,6 +39,7 @@ namespace mrpt
 	{
 		/** Existing fonts for 2D texts in mrpt::opengl methods.
 		  * \sa mrpt::opengl::CMyGLCanvasBase::renderTextBitmap
+		  * \ingroup mrpt_opengl_grp
 		  */
 		enum TOpenGLFont
 		{
@@ -60,6 +61,7 @@ namespace mrpt
 		/** An auxiliary struct for holding a list of text messages in some mrpt::opengl & mrpt::gui classes
 		  *  The font can be either a bitmapped or a vectorized font.
 		  *  \sa mrpt::opengl::CTextMessageCapable
+		  * \ingroup mrpt_opengl_grp
 		  */
 		struct OPENGL_IMPEXP T2DTextData
 		{

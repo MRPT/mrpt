@@ -45,6 +45,7 @@ namespace mrpt
 		  *  - Linux: Requires kernel 2.6.13 or newer.
 		  *  Using this class in an old Linux or other unsoported system (Unix,etc...) has no effect, i.e. no notification will be ever received.
 		  *  \sa CDirectoryExplorer
+		 * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP CFileSystemWatcher
 		{

@@ -53,6 +53,7 @@ namespace mrpt_flann  // Modified namespace to avoid naming conflicts with 3rd p
 /**
  * Squared Euclidean distance functor - modified version for MRPT that doesn't assume data comes in a "T*", but
  *  relies on a generic "DataSource".
+ *  \ingroup mrpt_base_grp
  */
 template<class T, class DataSource>
 struct L2_Simple_Adaptor
@@ -75,7 +76,7 @@ struct L2_Simple_Adaptor
     }
 };
 
-/// DIM>0 forces the dimensionality; -1: dynamic dimensionality
+/** \ingroup mrpt_base_grp */
 struct KDTreeSingleIndexAdaptorParams : public IndexParams
 {
     KDTreeSingleIndexAdaptorParams(int leaf_max_size_ = 10, int dim_ = -1) :
@@ -106,7 +107,7 @@ struct KDTreeSingleIndexAdaptorParams : public IndexParams
 
 
 /**
- * Randomized kd-tree index
+ * kd-tree index
  *
  * Contains the k-d trees and other information for indexing a set of points
  * for nearest-neighbor matching.
@@ -135,6 +136,7 @@ struct KDTreeSingleIndexAdaptorParams : public IndexParams
  *
  *  \endcode
  *
+ * \ingroup mrpt_base_grp
  */
 template <typename Distance, class DatasetAdaptor,int DIM = -1>
 class KDTreeSingleIndexAdaptor : public NNIndex<Distance>

@@ -46,7 +46,7 @@ namespace slam
 {
 	/** This virtual class is the base for SLAM implementations. See derived classes for more information.
 	 *
-	 * \sa CMetricMap
+	 * \sa CMetricMap  \ingroup mrpt_slam_grp
 	 */
 	class SLAM_IMPEXP CMetricMapBuilder : public mrpt::utils::CDebugOutputCapable
 	{

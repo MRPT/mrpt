@@ -43,6 +43,7 @@ namespace slam
 	/** Declares a class derived from "CObservation" that represents a set of readings from gas sensors.
 	 *
 	 * \sa CObservation
+	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CObservationGasSensors : public CObservation
 	{

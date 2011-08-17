@@ -41,6 +41,7 @@ namespace bayes
 	 *
 	 * See the <a href="http://www.mrpt.org/Particle_Filter_Tutorial" >Particle Filter tutorial</a> explaining how to use the particle filter-related classes.
 	 * \sa CParticleFilter, CParticleFilterData
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CParticleFilterCapable
 	{

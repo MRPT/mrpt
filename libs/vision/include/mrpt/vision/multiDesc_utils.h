@@ -53,6 +53,10 @@ namespace mrpt
 		using namespace mrpt::slam;
 		using namespace mrpt::math;
 		using namespace mrpt::utils;
+		
+	/** \addtogroup multidesc_desc Multiresolution SIFTs (experimental)
+	  * \ingroup mrpt_vision_grp
+	  *  @{ */
 
         // A 3D quantization table for storing pairs of TFeatureIDs and scales
         typedef map<int,map<int,map<int,deque<pair<TFeatureID, double> > > > > TQuantizationTable;
@@ -275,12 +279,7 @@ namespace mrpt
                                     const TMultiResDescOptions      & opts );
 
 
-
-
-
-
-
-
+	/** @} */ // end of grouping
 
     }
 } // end-namespace-mrpt

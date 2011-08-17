@@ -40,7 +40,7 @@ namespace mrpt
 	namespace hwdrivers
 	{
 		/** Access to joysticks and gamepads (read buttons and position), and request number of joysticks in the system.
-		  *  Since MRPT 0.6.0 this class works in Windows and Linux.
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CJoystick
 		{

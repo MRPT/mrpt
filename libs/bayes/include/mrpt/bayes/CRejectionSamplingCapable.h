@@ -34,12 +34,14 @@
 
 namespace mrpt
 {
+/// \ingroup mrpt_bayes_grp
 namespace bayes
 {
 	/** A base class for implementing rejection sampling in a generic state space.
 	 *   See the main method CRejectionSamplingCapable::rejectionSampling
 	 *  To use this class, create your own class as a child of this one and implement the desired
 	 *   virtual methods, and add any required internal data.
+	 * \ingroup mrpt_bayes_grp
 	 */
 	template <class TStateSpace>
 	class CRejectionSamplingCapable

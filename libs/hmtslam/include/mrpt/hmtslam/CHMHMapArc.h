@@ -46,6 +46,7 @@ namespace mrpt
 		 * \note Create objects by invoking the class factory "::Create"
 		 *
 		 * \sa CHierarchicalMHMap,CHMHMapNode
+		  * \ingroup mrpt_hmtslam_grp
 		 */
 		class HMTSLAM_IMPEXP CHMHMapArc : public mrpt::utils::CSerializable
 		{

@@ -61,6 +61,7 @@ namespace mrpt
 		  *		- int16_t
 		  *
 		  *  \sa CLogOddsGridMapLUT, See derived classes for usage examples.
+	 	  * \ingroup mrpt_maps_grp
 		  */
 		template <typename TCELL>
 		struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
@@ -155,6 +156,7 @@ namespace mrpt
 		  *		- int16_t
 		  *
 		  *  \sa CLogOddsGridMap2D, see derived classes for usage examples.
+	  	  * \ingroup mrpt_maps_grp
 		  */
 		template <typename TCELL>
 		struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>

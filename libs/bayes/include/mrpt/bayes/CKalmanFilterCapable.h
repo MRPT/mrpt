@@ -57,6 +57,7 @@ namespace mrpt
 		/** The Kalman Filter algorithm to employ in bayes::CKalmanFilterCapable
 		  *  For further details on each algorithm see the tutorial: http://www.mrpt.org/Kalman_Filters
 		  * \sa bayes::CKalmanFilterCapable::KF_options
+	 	  * \ingroup mrpt_bayes_grp
 		  */
 		enum TKFMethod {
 			kfEKFNaive = 0,
@@ -73,6 +74,7 @@ namespace mrpt
 		}
 
 		/** Generic options for the Kalman Filter algorithm in itself.
+	 	  * \ingroup mrpt_bayes_grp
 		  */
 		struct BAYES_IMPEXP TKF_options : public utils::CLoadableOptions
 		{
@@ -99,22 +101,6 @@ namespace mrpt
 		namespace detail
 		{
 			// Auxiliary functions.
-			//template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
-			//void runOneKalmanIteration_addNewLandmarks(
-			//	CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj,
-			//	const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::vector_KFArray_OBS &Z,
-			//	const mrpt::vector_int		&data_association,
-			//	const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R
-			//	);
-			// Specialization:
-			//template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
-			//void runOneKalmanIteration_addNewLandmarks(
-			//	CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE> &obj,
-			//	const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::vector_KFArray_OBS& Z,
-			//	const mrpt::vector_int       &data_association,
-			//	const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R
-			//	);
-
 			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
 			inline size_t getNumberOfLandmarksInMap(const CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj);
 			// Specialization:
@@ -154,6 +140,7 @@ namespace mrpt
 		 *	- 2009/DEC: Totally rewritten as a generic template using fixed-size matrices where possible (JLBC).
 		 *
 		 *  \sa mrpt::slam::CRangeBearingKFSLAM, mrpt::slam::CRangeBearingKFSLAM2D
+	 	 * \ingroup mrpt_bayes_grp
 		 */
 		template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE = double>
 		class CKalmanFilterCapable : public mrpt::utils::CDebugOutputCapable

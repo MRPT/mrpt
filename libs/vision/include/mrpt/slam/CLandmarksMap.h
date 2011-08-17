@@ -77,6 +77,7 @@ namespace slam
 	  </table>
 	 *
 	 * \sa CMetricMap
+	 * \ingroup mrpt_vision_grp
 	 */
 	class VISION_IMPEXP CLandmarksMap : public CMetricMap
 	{

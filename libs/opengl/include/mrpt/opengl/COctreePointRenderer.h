@@ -40,12 +40,14 @@ namespace mrpt
 		/** Default value = 0.01 points/px^2. Affects to these classes (read their docs for further details):
 		  *		- mrpt::opengl::CPointCloud
 		  *		- mrpt::opengl::CPointCloudColoured
+		  * \ingroup mrpt_opengl_grp
 		  */
 		extern OPENGL_IMPEXP float OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL;
 
 		/** Default value = 1e5. Maximum number of elements in each octree node before spliting. Affects to these classes (read their docs for further details):
 		  *		- mrpt::opengl::CPointCloud
 		  *		- mrpt::opengl::CPointCloudColoured
+		  * \ingroup mrpt_opengl_grp
 		  */
 		extern OPENGL_IMPEXP size_t OCTREE_RENDER_MAX_POINTS_PER_NODE;
 	}
@@ -57,6 +59,7 @@ namespace mrpt
 
 		/** Template class that implements the data structure and algorithms for Octree-based efficient rendering.
 		  *  \sa mrpt::opengl::CPointCloud, mrpt::opengl::CPointCloudColoured, http://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
+		  * \ingroup mrpt_opengl_grp
 		  */
 		template <class Derived>
 		class COctreePointRenderer

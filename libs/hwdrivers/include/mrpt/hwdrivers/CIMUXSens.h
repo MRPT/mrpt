@@ -60,6 +60,7 @@ namespace mrpt
 		  *	   baudRate	                         ; Baudrate for communicating with the COM port (mandatory for Linux)
 		  *						                    (for Windows, if COM_port_WIN is not provided, this value is ignored)
 		  *  \endcode
+		  * \ingroup mrpt_hwdrivers_grp
  		  */
 		class HWDRIVERS_IMPEXP CIMUXSens : public hwdrivers::CGenericSensor
 		{

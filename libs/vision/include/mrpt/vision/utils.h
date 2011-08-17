@@ -53,7 +53,7 @@ namespace mrpt
 		class CObservationVisualLandmarks;
 	}
 
-	/** Classes for computer vision, detectors, features, etc.
+	/** Classes for computer vision, detectors, features, etc.  \ingroup mrpt_vision_grp
 	 */
 	namespace vision
 	{
@@ -61,6 +61,9 @@ namespace mrpt
 		using namespace mrpt::slam;
 		using namespace mrpt::math;
 		using namespace mrpt::utils;
+
+		/** \addtogroup mrpt_vision_grp
+		  *  @{ */
 
 			/**	Computes the correlation between this image and another one, encapsulating the openCV function cvMatchTemplate
 			*   This implementation reduced computation time.
@@ -400,6 +403,9 @@ namespace mrpt
                                 void                                *outMap2x,
                                 void                                *outMap2y );
 
+
+	/** @} */ // end of grouping
+		
 	} // end-namespace-vision
 } // end-namespace-mrpt
 

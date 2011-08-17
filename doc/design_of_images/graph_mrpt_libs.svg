@@ -11,14 +11,14 @@
 <polygon fill="white" stroke="white" points="-4,5 -4,-400 565,-400 565,5 -4,5"/>
 <!-- base -->
 <g id="node1" class="node"><title>base</title>
-<a xlink:href="mrpt-base.html" xlink:title="mrpt&#45;base">
+<a xlink:href="group__mrpt__base__grp.html" xlink:title="mrpt&#45;base">
 <polygon fill="#d0d0d0" stroke="black" points="459,-36 383,-36 383,-1.77636e-14 459,-3.55271e-15 459,-36"/>
 <text text-anchor="middle" x="421" y="-14.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;base</text>
 </a>
 </g>
 <!-- bayes -->
 <g id="node2" class="node"><title>bayes</title>
-<a xlink:href="mrpt-bayes.html" xlink:title="mrpt&#45;bayes">
+<a xlink:href="group__mrpt__bayes__grp.html" xlink:title="mrpt&#45;bayes">
 <polygon fill="#d0d0d0" stroke="black" points="560,-108 476,-108 476,-72 560,-72 560,-108"/>
 <text text-anchor="middle" x="518" y="-86.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;bayes</text>
 </a>
@@ -30,7 +30,7 @@
 </g>
 <!-- opengl -->
 <g id="node3" class="node"><title>opengl</title>
-<a xlink:href="mrpt-opengl.html" xlink:title="mrpt&#45;opengl">
+<a xlink:href="group__mrpt__opengl__grp.html" xlink:title="mrpt&#45;opengl">
 <polygon fill="#d0d0d0" stroke="black" points="297,-108 209,-108 209,-72 297,-72 297,-108"/>
 <text text-anchor="middle" x="253" y="-86.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;opengl</text>
 </a>
@@ -42,7 +42,7 @@
 </g>
 <!-- gui -->
 <g id="node4" class="node"><title>gui</title>
-<a xlink:href="mrpt-gui.html" xlink:title="mrpt&#45;gui">
+<a xlink:href="group__mrpt__gui__grp.html" xlink:title="mrpt&#45;gui">
 <polygon fill="#d0d0d0" stroke="black" points="124,-180 58,-180 58,-144 124,-144 124,-180"/>
 <text text-anchor="middle" x="91" y="-158.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;gui</text>
 </a>
@@ -54,7 +54,7 @@
 </g>
 <!-- obs -->
 <g id="node5" class="node"><title>obs</title>
-<a xlink:href="mrpt-obs.html" xlink:title="mrpt&#45;obs">
+<a xlink:href="group__mrpt__obs__grp.html" xlink:title="mrpt&#45;obs">
 <polygon fill="#d0d0d0" stroke="black" points="288,-180 218,-180 218,-144 288,-144 288,-180"/>
 <text text-anchor="middle" x="253" y="-158.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;obs</text>
 </a>
@@ -66,7 +66,7 @@
 </g>
 <!-- hwdrivers -->
 <g id="node6" class="node"><title>hwdrivers</title>
-<a xlink:href="mrpt-hwdrivers.html" xlink:title="mrpt&#45;hwdrivers">
+<a xlink:href="group__mrpt__hwdrivers__grp.html" xlink:title="mrpt&#45;hwdrivers">
 <polygon fill="#d0d0d0" stroke="black" points="144,-252 38,-252 38,-216 144,-216 144,-252"/>
 <text text-anchor="middle" x="91" y="-230.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;hwdrivers</text>
 </a>
@@ -83,7 +83,7 @@
 </g>
 <!-- topography -->
 <g id="node7" class="node"><title>topography</title>
-<a xlink:href="mrpt-topography.html" xlink:title="mrpt&#45;topography">
+<a xlink:href="group__mrpt__topography__grp.html" xlink:title="mrpt&#45;topography">
 <polygon fill="#d0d0d0" stroke="black" points="480,-252 362,-252 362,-216 480,-216 480,-252"/>
 <text text-anchor="middle" x="421" y="-230.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;topography</text>
 </a>
@@ -95,7 +95,7 @@
 </g>
 <!-- scanmatching -->
 <g id="node10" class="node"><title>scanmatching</title>
-<a xlink:href="mrpt-scanmatching.html" xlink:title="mrpt&#45;scanmatching">
+<a xlink:href="group__mrpt__scanmatching__grp.html" xlink:title="mrpt&#45;scanmatching">
 <polygon fill="#d0d0d0" stroke="black" points="486,-180 356,-180 356,-144 486,-144 486,-180"/>
 <text text-anchor="middle" x="421" y="-158.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;scanmatching</text>
 </a>
@@ -107,7 +107,7 @@
 </g>
 <!-- maps -->
 <g id="node8" class="node"><title>maps</title>
-<a xlink:href="mrpt-maps.html" xlink:title="mrpt&#45;maps">
+<a xlink:href="group__mrpt__maps__grp.html" xlink:title="mrpt&#45;maps">
 <polygon fill="#d0d0d0" stroke="black" points="344,-252 262,-252 262,-216 344,-216 344,-252"/>
 <text text-anchor="middle" x="303" y="-230.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;maps</text>
 </a>
@@ -119,7 +119,7 @@
 </g>
 <!-- vision -->
 <g id="node9" class="node"><title>vision</title>
-<a xlink:href="mrpt-vision.html" xlink:title="mrpt&#45;vision">
+<a xlink:href="group__mrpt__vision__grp.html" xlink:title="mrpt&#45;vision">
 <polygon fill="#d0d0d0" stroke="black" points="244,-252 162,-252 162,-216 244,-216 244,-252"/>
 <text text-anchor="middle" x="203" y="-230.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;vision</text>
 </a>
@@ -136,7 +136,7 @@
 </g>
 <!-- slam -->
 <g id="node11" class="node"><title>slam</title>
-<a xlink:href="mrpt-slam.html" xlink:title="mrpt&#45;slam">
+<a xlink:href="group__mrpt__slam__grp.html" xlink:title="mrpt&#45;slam">
 <polygon fill="#d0d0d0" stroke="black" points="515,-324 439,-324 439,-288 515,-288 515,-324"/>
 <text text-anchor="middle" x="477" y="-302.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;slam</text>
 </a>
@@ -163,7 +163,7 @@
 </g>
 <!-- hmtslam -->
 <g id="node12" class="node"><title>hmtslam</title>
-<a xlink:href="mrpt-hmtslam.html" xlink:title="mrpt&#45;hmtslam">
+<a xlink:href="group__mrpt__hmtslam__grp.html" xlink:title="mrpt&#45;hmtslam">
 <polygon fill="#d0d0d0" stroke="black" points="527,-396 427,-396 427,-360 527,-360 527,-396"/>
 <text text-anchor="middle" x="477" y="-374.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;hmtslam</text>
 </a>
@@ -175,7 +175,7 @@
 </g>
 <!-- reactivenav -->
 <g id="node13" class="node"><title>reactivenav</title>
-<a xlink:href="mrpt-reactivenav.html" xlink:title="mrpt&#45;reactivenav">
+<a xlink:href="group__mrpt__reactivenav__grp.html" xlink:title="mrpt&#45;reactivenav">
 <polygon fill="#d0d0d0" stroke="black" points="390,-324 274,-324 274,-288 390,-288 390,-324"/>
 <text text-anchor="middle" x="332" y="-302.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;reactivenav</text>
 </a>
@@ -187,7 +187,7 @@
 </g>
 <!-- stereoslam -->
 <g id="node14" class="node"><title>stereoslam</title>
-<a xlink:href="mrpt-stereoslam.html" xlink:title="mrpt&#45;stereoslam (*)">
+<a xlink:href="group__mrpt__stereoslam__grp.html" xlink:title="mrpt&#45;stereoslam (*)">
 <polygon fill="#d0d0d0" stroke="black" points="132,-324 7.10543e-14,-324 0,-288 132,-288 132,-324"/>
 <text text-anchor="middle" x="66" y="-302.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;stereoslam (*)</text>
 </a>
@@ -199,7 +199,7 @@
 </g>
 <!-- detectors -->
 <g id="node15" class="node"><title>detectors</title>
-<a xlink:href="mrpt-detectors.html" xlink:title="mrpt&#45;detectors">
+<a xlink:href="group__mrpt__detectors__grp.html" xlink:title="mrpt&#45;detectors">
 <polygon fill="#d0d0d0" stroke="black" points="256,-324 150,-324 150,-288 256,-288 256,-324"/>
 <text text-anchor="middle" x="203" y="-302.7" font-family="Times Roman,serif" font-size="12.00">mrpt&#45;detectors</text>
 </a>

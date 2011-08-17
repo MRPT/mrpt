@@ -45,6 +45,7 @@ namespace mrpt
 	/** A class for storing, saving and loading a reactive navigation
 	 *   log record for the CReactiveNavigationSystem class.
 	 * \sa CReactiveNavigationSystem, CHolonomicLogFileRecord
+	 *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP  CLogFileRecord : public CSerializable
 	{
@@ -59,6 +60,7 @@ namespace mrpt
 
         /** The structure used to store all relevant information about each
           *  transformation into TP-Space.
+	  *  \ingroup mrpt_reactivenav_grp
           */
         struct TInfoPerPTG
         {

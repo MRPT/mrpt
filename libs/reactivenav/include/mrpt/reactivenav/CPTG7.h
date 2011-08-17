@@ -35,6 +35,7 @@ namespace mrpt
   namespace reactivenav
   {
 	/** A PTG for circular paths.
+	 *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP  CPTG7 : public CParameterizedTrajectoryGenerator
 	{

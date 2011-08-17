@@ -45,6 +45,7 @@ namespace mrpt	{	namespace math	{
   	  * \sa CAStarAlgorithm::generateChildren
 	  * \sa CAStarAlgorithm::getHeuristic
 	  * \sa CAStarAlgorithm::getCost
+	 * \ingroup mrpt_base_grp
 	  */
 template<typename T> class CAStarAlgorithm	{
 public:

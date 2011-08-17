@@ -73,6 +73,7 @@ namespace mrpt
 		  *		-9/JUN/2006: First version (JLBC)
 		  *		-4/JUN/2008: Added virtual methods for device-specific initialization commands.
 		  *		-10/JUN/2008: Converted into CGenericSensor class (there are no inhirited classes anymore).
+		  * \ingroup mrpt_hwdrivers_grp
 		*/
 		class HWDRIVERS_IMPEXP CGPSInterface : public utils::CDebugOutputCapable, public CGenericSensor
 		{

@@ -1,10 +1,9 @@
-/** \page mrpt-gui Library overview: mrpt-gui
- *
+/** \defgroup mrpt_gui_grp [mrpt-gui]
 
-<small> <a href="index.html#libs">Back to list of libraries</a> </small>
+<small> <a href="index.html#libs">Back to list of all libraries</a> </small>
 <br>
 
-<h2>mrpt-gui</h2>
+<h2>Library <code>mrpt-gui</code></h2>
 <hr>
 
 This library provides three classes that represent GUI windows, each having a 

@@ -45,6 +45,7 @@ namespace mrpt
 		/** A camera: if added to a scene, the viewpoint defined by this camera will be used instead of the camera parameters set in COpenGLViewport::m_camera.
 		  *  A camera can be defined to provide a projective or orthogonal view of the world by setting the member CCamera::m_projectiveModel.
 		  *  \sa opengl::COpenGLScene
+		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP CCamera : public CRenderizable
 		{

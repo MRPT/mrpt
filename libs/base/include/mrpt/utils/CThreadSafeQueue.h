@@ -68,6 +68,7 @@ namespace mrpt
 		  *   still in the queue upon destruction will be deleted automatically.
 		  *
 		  * \sa mrpt::utils::CMessageQueue
+		 * \ingroup mrpt_base_grp
 		  */
 		template <class T>
 		class CThreadSafeQueue

@@ -35,6 +35,7 @@ namespace mrpt
 	namespace opengl
 	{
 		/** A collection of pre-built 3D objects for quick insertion in opengl::COpenGLScene objects.
+		  * \ingroup mrpt_opengl_grp
 		  */
 		namespace stock_objects
 		{

@@ -62,7 +62,7 @@ namespace mrpt
 		  *   HEAD_yaw=0		//orientación inicial
 		  *   HEAD_pitch=0		//elevación inicial
 		  *  \endcode
-		  *
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CRoboticHeadInterface : public mrpt::utils::CDebugOutputCapable
 		{

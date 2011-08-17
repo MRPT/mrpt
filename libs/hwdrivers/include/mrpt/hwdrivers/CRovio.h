@@ -48,6 +48,7 @@ namespace mrpt
 		
 		/** A class to interface a Rovio robot (manufactured by WowWee).
 		  *  Supports: Simple motion commands, video streaming. 
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CRovio
 		{

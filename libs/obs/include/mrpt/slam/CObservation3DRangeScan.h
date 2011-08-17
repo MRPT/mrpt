@@ -92,6 +92,7 @@ namespace slam
 	 *  \note Starting at serialization version 5 (MRPT 0.9.5+), the new field \a range_is_depth.
 	 *
 	 * \sa mrpt::hwdrivers::CSwissRanger3DCamera, mrpt::hwdrivers::CKinect, CObservation
+	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CObservation3DRangeScan : public CObservation
 	{

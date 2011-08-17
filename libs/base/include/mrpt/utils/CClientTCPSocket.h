@@ -44,6 +44,7 @@ namespace utils
 	  *  Unless otherwise noticed, operations are blocking.
 	  *
 	  *  Note that for convenience, DNS lookup is performed with a timeout (default=3000ms), which can be changed by the static member CClientTCPSocket::DNS_LOOKUP_TIMEOUT_MS
+	  * \ingroup mrpt_base_grp
 	  */
 	class BASE_IMPEXP CClientTCPSocket : public CStream
 	{

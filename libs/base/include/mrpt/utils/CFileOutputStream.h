@@ -42,6 +42,7 @@ namespace utils
 	/** This CStream derived class allow using a file as a write-only, binary stream.
 	 *
 	 * \sa CStream, CFileStream, CFileGZOutputStream
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CFileOutputStream : public CStream, public CUncopiable
 	{

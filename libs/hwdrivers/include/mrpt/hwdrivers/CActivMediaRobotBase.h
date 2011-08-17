@@ -71,6 +71,7 @@ namespace mrpt
 		  *	   joystick_max_w_degps	= 20	; Max joystick control speed (deg/s)
 		  *
 		  *  \endcode
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CActivMediaRobotBase : public CGenericSensor
 		{

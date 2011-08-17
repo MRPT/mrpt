@@ -48,6 +48,7 @@ namespace slam
 	 *  There are boolean flags for signaling when the corresponding values have been filled out or not.
 	 *
 	 * \sa CObservation
+	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CObservationBatteryState : public CObservation
 	{

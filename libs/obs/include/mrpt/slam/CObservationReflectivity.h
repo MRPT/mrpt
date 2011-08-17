@@ -41,6 +41,7 @@ namespace slam
 	 *    This can be used for example to store readings from IR sensors (Lego Mindstorm NXT, etc...).
 	 *
 	 * \sa mrpt::slam::CReflectivityGridMap2D, CObservation
+	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CObservationReflectivity : public CObservation
 	{

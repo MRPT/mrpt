@@ -48,8 +48,9 @@ namespace poses
 	 *     keeping the inverse of the covariance matrix instead of the covariance matrix itself.
 	 *
 	 *  This class is the dual of CPosePDFGaussian.
-     *
+	 *
 	 * \sa CPose2D, CPosePDF, CPosePDFParticles
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CPosePDFGaussianInf : public CPosePDF
 	{

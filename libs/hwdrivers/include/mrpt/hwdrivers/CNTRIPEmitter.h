@@ -59,6 +59,7 @@ namespace mrpt
 		  *
 		  *  \endcode
 		  *
+		  * \ingroup mrpt_hwdrivers_grp
 		  * \sa CGPSInterface, CNTRIPClient
 		  */
 		class HWDRIVERS_IMPEXP CNTRIPEmitter : public CGenericSensor

@@ -59,6 +59,7 @@ namespace mrpt
 		  *  </table>
 		  *  </div>
 		  *
+		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP CPointCloud :
 			public CRenderizable,

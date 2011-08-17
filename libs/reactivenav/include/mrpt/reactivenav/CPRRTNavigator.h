@@ -65,6 +65,7 @@ namespace mrpt
 	 *
 	 * <b>Changes history</b>
 	 *		- 05/JUL/2009: Creation (JLBC). This is an evolution from leassons learnt from the pure reactive navigator based on PTGs.
+	 *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP CPRRTNavigator
 	{

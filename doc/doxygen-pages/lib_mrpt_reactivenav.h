@@ -1,10 +1,9 @@
-/** \page mrpt-reactivenav Library overview: mrpt-reactivenav
- *
+/** \defgroup mrpt_reactivenav_grp [mrpt-reactivenav]
 
-<small> <a href="index.html#libs">Back to list of libraries</a> </small>
+<small> <a href="index.html#libs">Back to list of all libraries</a> </small>
 <br>
 
-<h2>mrpt-reactivenav</h2>
+<h2>Library <code>mrpt-reactivenav</code></h2>
 <hr>
 
 This library implements:

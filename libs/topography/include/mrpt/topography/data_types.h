@@ -40,9 +40,10 @@ namespace mrpt
 		using namespace std;
 		using namespace mrpt::utils;
 
+		/** \addtogroup mrpt_topography_grp
+		  *  @{ */
 
-	/** =======================================================================
-	   @name Data structures
+	/** @name Data structures
 	   @{ */
 
 		/** A coordinate that is stored as a simple "decimal" angle in degrees, but can be retrieved/set in the form of DEGREES + arc-MINUTES + arc-SECONDS.
@@ -325,9 +326,10 @@ namespace mrpt
 			}
 		};
 
-		/** @}
-	    ======================================================================= */
-
+		/** @} */
+	
+		/** @} */ // end of grouping
+		
 	} // End of namespace
 
 } // End of namespace

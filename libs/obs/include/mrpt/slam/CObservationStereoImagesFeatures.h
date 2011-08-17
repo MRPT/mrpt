@@ -55,6 +55,7 @@ namespace slam
 	 <b>NOTE:</b> The image features stored in this class are NOT supposed to be UNDISTORTED, but the TCamera members must provide their distortion params. 
 	 A zero-vector of distortion params means a set of UNDISTORTED pixels.<br>
 	 * \sa CObservation
+	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CObservationStereoImagesFeatures : public CObservation
 	{

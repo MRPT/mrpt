@@ -37,6 +37,7 @@ namespace mrpt
 	{
 		/** This class implements initialization and comunication methods to
 		  * control a generic Pan and Tilt Unit, working in radians.
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CPtuBase 
 		{

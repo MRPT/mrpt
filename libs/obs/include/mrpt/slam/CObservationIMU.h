@@ -42,6 +42,7 @@ namespace slam
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationIMU , CObservation,OBS_IMPEXP )
 
 	/** Symbolic names for the indices of IMU data (refer to mrpt::slam::CObservationIMU)
+	 * \ingroup mrpt_obs_grp
 	  */
 	enum TIMUDataIndex
 	{
@@ -86,6 +87,7 @@ namespace slam
 	 *  The first 6 values are directly measured by accelerometers & gyroscopes. The rest, if present, are estimates from the IMU unit.
 	 *
 	 * \sa CObservation
+	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CObservationIMU : public CObservation
 	{

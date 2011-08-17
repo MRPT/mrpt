@@ -55,10 +55,12 @@ namespace mrpt
 		using namespace poses;
 
 		/** Used for CObservationBearingRange::TMeasurement::beaconID
+		 * \ingroup mrpt_obs_grp
 		  */
 		#define INVALID_LANDMARK_ID 	(-1)
 
 		/** Used for CObservationBeaconRange
+		 * \ingroup mrpt_obs_grp
 		  */
 		#define INVALID_BEACON_ID  		(-1)
 
@@ -74,6 +76,7 @@ namespace mrpt
 				orientation respect to robotic coordinates origin.
 		 *
 		 * \sa CSensoryFrame, CMetricMap
+	 	 * \ingroup mrpt_obs_grp
 		 */
 		class OBS_IMPEXP CObservation : public mrpt::utils::CSerializable
 		{

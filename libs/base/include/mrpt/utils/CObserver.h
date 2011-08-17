@@ -46,7 +46,7 @@ namespace mrpt
 		  *  Note that if custom (child) mrptEvent classes are used, you can tell between them in runtime with "dynamic_cast<>()". 
 		  *
 		  * \note The pairs CObservable / CObserver automatically notify each other the destruction of any of them, effectively ending the subscription of events.
-		  *
+		  * \ingroup mrpt_base_grp
 		  *  \sa CObservable, mrptEvent
 		  */
 		class BASE_IMPEXP CObserver

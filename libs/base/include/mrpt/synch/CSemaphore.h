@@ -37,7 +37,7 @@
   ---------------------------------------------------------------*/
 namespace mrpt
 {
-	/** This namespace provides multitask, synchronization utilities.
+	/** This namespace provides multitask, synchronization utilities. \ingroup mrpt_base_grp
 	 */
 	namespace synch
 	{
@@ -48,6 +48,7 @@ namespace mrpt
 		  *  signaled state, the count of the semaphore is decreased by one. Use the release function
 		  *  to increment a semaphore's count by a specified amount. The count can never be less
 		  *   than zero or greater than the value specified in the maxCount parameter.
+		  * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP CSemaphore
 		{

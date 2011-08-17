@@ -41,6 +41,7 @@ namespace mrpt
 
 	namespace slam { class CObservation3DRangeScan; }
 
+	/** \ingroup mrpt_detectors_grp  */
 	namespace detectors
 	{
 		using namespace mrpt::slam;
@@ -50,6 +51,7 @@ namespace mrpt
 		/** Specific class for face detection.
 		  * Methods and variables labeled as experimentals are temporals (for debug or testing
 		  * purposes) and may disappear in future versions.
+		  * \ingroup mrpt_detectors_grp
 		  */
 		class DETECTORS_IMPEXP CFaceDetection: public CObjectDetection
 		{

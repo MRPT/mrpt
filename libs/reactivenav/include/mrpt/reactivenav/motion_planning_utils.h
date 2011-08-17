@@ -46,6 +46,7 @@ namespace mrpt
 		  *  \param cacheFilesPrefix The prefix of the files where the collision grids will be dumped to speed-up future recalculations.
 		  *  \param verbose
 		  * \sa CReactiveNavigationSystem
+		  *  \ingroup mrpt_reactivenav_grp
 		  */
 		
 		void REACTIVENAV_IMPEXP build_PTG_collision_grids(

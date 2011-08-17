@@ -48,6 +48,7 @@ namespace mrpt
   namespace reactivenav
   {
 	  /**  The implemented reactive navigation methods
+	    *  \ingroup mrpt_reactivenav_grp
 	    */
 	  enum THolonomicMethod
 	  {
@@ -55,21 +56,22 @@ namespace mrpt
 		  hmSEARCH_FOR_BEST_GAP = 1
 	  };
 
-	  /** Implements a reactive navigation system based on TP-Space, with an arbitrary holonomic
-	    *  reactive method running on it, and any desired number of PTG for transforming the navigation space.
-	    *  Both, the holonomic method and the PTGs can be customized by the apropriate user derived classes.
-	    *
-	    *   How to use:
-	    *      - A class with callbacks must be defined by the user and provided to the constructor.
-	    *      - loadConfigFile() must be called to set up the bunch of parameters from a config file (could be a memory-based virtual config file).
-	    *      - navigationStep() must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.
-	    *
-	    * - 17/JUN/2004: First design.
-	    * - 16/SEP/2004: Totally redesigned, according to document "MultiParametric Based Space Transformation for Reactive Navigation"
-	    * - 29/SEP/2005: Totally rewritten again, for integration into MRPT library and according to the ICRA paper.
-	    * - 17/OCT/2007: Whole code updated to accomodate to MRPT 0.5 and make it portable to Linux.
-        *
-		*	\sa CAbstractReactiveNavigationSystem, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
+		/** Implements a reactive navigation system based on TP-Space, with an arbitrary holonomic
+		*  reactive method running on it, and any desired number of PTG for transforming the navigation space.
+		*  Both, the holonomic method and the PTGs can be customized by the apropriate user derived classes.
+		*
+		*   How to use:
+		*      - A class with callbacks must be defined by the user and provided to the constructor.
+		*      - loadConfigFile() must be called to set up the bunch of parameters from a config file (could be a memory-based virtual config file).
+		*      - navigationStep() must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.
+		*
+		* - 17/JUN/2004: First design.
+		* - 16/SEP/2004: Totally redesigned, according to document "MultiParametric Based Space Transformation for Reactive Navigation"
+		* - 29/SEP/2005: Totally rewritten again, for integration into MRPT library and according to the ICRA paper.
+		* - 17/OCT/2007: Whole code updated to accomodate to MRPT 0.5 and make it portable to Linux.
+		*
+		*  \sa CAbstractReactiveNavigationSystem, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
+		*  \ingroup mrpt_reactivenav_grp
 		*/
 		class REACTIVENAV_IMPEXP  CReactiveNavigationSystem : public CAbstractReactiveNavigationSystem
 		{

@@ -41,6 +41,7 @@ namespace mrpt
 namespace utils
 {
 	/** This class implements a config file-like interface over a memory-stored string list.
+	 * \ingroup mrpt_base_grp
 	  */
 	class BASE_IMPEXP CConfigFileMemory : public CConfigFileBase
 	{

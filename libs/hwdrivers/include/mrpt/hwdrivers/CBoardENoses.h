@@ -67,6 +67,7 @@ namespace mrpt
 		  *
 		  *  \endcode
 		  *
+		  * \ingroup mrpt_hwdrivers_grp
  		  */
 		class HWDRIVERS_IMPEXP CBoardENoses : public mrpt::hwdrivers::CGenericSensor
 		{

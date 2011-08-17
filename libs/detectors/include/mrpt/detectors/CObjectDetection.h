@@ -44,6 +44,7 @@ namespace mrpt
 
 		typedef std::vector<CDetectableObjectPtr> vector_detectable_object;
 
+		/** \ingroup mrpt_detectors_grp */
 		class DETECTORS_IMPEXP CObjectDetection	
 		{
 		public:

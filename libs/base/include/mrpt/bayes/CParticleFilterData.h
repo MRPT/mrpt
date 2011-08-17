@@ -51,6 +51,7 @@ namespace bayes
 	 *    and new objects will be created internally instead of copying the internal pointers, which would lead to memory corruption.
 	 *
 	 * \sa CParticleFilter, CParticleFilterCapable, IMPLEMENT_PARTICLE_FILTER_CAPABLE
+	 * \ingroup mrpt_base_grp
 	 */
 	template <class T>
 	class CParticleFilterData

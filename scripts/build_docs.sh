@@ -64,9 +64,9 @@ fi
 CUR_DIR=`pwd`
 EIGEN_BASE_DIR="$CUR_DIR/otherlibs/eigen3/Eigen"
 EXTRA_INDIV_FILES=`find libs -name '*SSE*.cpp' | xargs -I FIL printf "$CUR_DIR/FIL "`
-EIGEN_INDIV_FILES="$EIGEN_BASE_DIR $EIGEN_BASE_DIR/Dense $EIGEN_BASE_DIR/Eigenvalues $EIGEN_BASE_DIR/Cholesky $EIGEN_BASE_DIR/QR"
-MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/ $EIGEN_INDIV_FILES)
-MRPT_LIST_INPUT="$MRPT_LIST_DIRECTORIES $EXTRA_INDIV_FILES"
+EIGEN_INDIV_FILES="$EIGEN_BASE_DIR/Array  $EIGEN_BASE_DIR/Cholesky  $EIGEN_BASE_DIR/Core  $EIGEN_BASE_DIR/Dense  $EIGEN_BASE_DIR/Eigen  $EIGEN_BASE_DIR/Eigenvalues  $EIGEN_BASE_DIR/Geometry  $EIGEN_BASE_DIR/Householder  $EIGEN_BASE_DIR/Jacobi  $EIGEN_BASE_DIR/LeastSquares  $EIGEN_BASE_DIR/LU  $EIGEN_BASE_DIR/QR  $EIGEN_BASE_DIR/Sparse  $EIGEN_BASE_DIR/SVD"
+MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/)
+MRPT_LIST_INPUT="$MRPT_LIST_DIRECTORIES $EXTRA_INDIV_FILES $EIGEN_INDIV_FILES"
 
 # Checks
 # --------------------------------
@@ -155,7 +155,6 @@ mkdir html 2> /dev/null
 cp design_of_images/*.gif images/
 cp design_of_images/*.png images/
 cp design_of_images/*.map images/
-cp screenshots/*.* images/
 cp images/*.* html/
 cp html_postbuild/*.* html/
 # Perf stats:

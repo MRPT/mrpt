@@ -65,6 +65,7 @@ namespace mrpt
 		  *   - mrpt::opengl::mrptEventGLPostRender
 		  *
 		  *  Refer to mrpt::opengl::COpenGLScene for further details.
+		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP COpenGLViewport :
 			public mrpt::utils::CSerializable,

@@ -1,10 +1,9 @@
-/** \page mrpt-detectors Library overview: mrpt-detectors
- *
+/** \defgroup mrpt_detectors_grp [mrpt-detectors]
 
-<small> <a href="index.html#libs">Back to list of libraries</a> </small>
+<small> <a href="index.html#libs">Back to list of all libraries</a> </small>
 <br>
 
-<h2>mrpt-detectors</h2>
+<h2>Library <code>mrpt-detectors</code></h2>
 <hr>
 
 A set of generic computer-vision-based detectors. There is a hierarchy of 

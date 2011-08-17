@@ -98,6 +98,7 @@ namespace mrpt
 		  *    pose_roll=0
 		  *
 		  *  \endcode
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP  CSwissRanger3DCamera : public mrpt::hwdrivers::CGenericSensor
 		{

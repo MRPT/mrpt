@@ -45,7 +45,7 @@ namespace slam
 
 	/**
      *
-	 * \sa CPointsMap
+	 * \sa CPointsMap   \ingroup mrpt_slam_grp
 	 */
 	class SLAM_IMPEXP CDetectorDoorCrossing : public utils::CDebugOutputCapable
 	{

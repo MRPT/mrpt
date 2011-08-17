@@ -36,6 +36,9 @@ namespace mrpt
 {
 	namespace slam
 	{
+		/**  \addtogroup mrpt_slam_grp 
+		  *   @{ */
+	
 		/** @name Observations overlap functions 
 		    @{  */
 	
@@ -80,6 +83,8 @@ namespace mrpt
 		}
 
 		/** @} */
+		
+		/** @} */ // end grouping
 
 	} // End of namespace
 } // End of namespace

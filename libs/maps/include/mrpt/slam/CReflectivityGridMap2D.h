@@ -61,6 +61,7 @@ namespace mrpt
 		  *
 		  *   Each cell contains the up-to-date average height from measured falling in that cell. Algorithms that can be used:
 		  *		- mrSimpleAverage: Each cell only stores the current average value.
+	  	  * \ingroup mrpt_maps_grp
 		  */
 		class MAPS_IMPEXP CReflectivityGridMap2D :
 			public CMetricMap,

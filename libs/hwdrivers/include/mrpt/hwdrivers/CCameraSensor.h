@@ -173,6 +173,7 @@ namespace mrpt
 		  *  \note The execution rate (in rawlog-grabber) should be greater than the required capture FPS.
 		  *  \note In Linux you may need to execute "chmod 666 /dev/video1394/ * " and "chmod 666 /dev/raw1394" for allowing any user R/W access to firewire cameras.
 		  *  \sa mrpt::hwdrivers::CImageGrabber_OpenCV, mrpt::hwdrivers::CImageGrabber_dc1394, CGenericSensor, prepareVideoSourceFromUserSelection
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CCameraSensor : public utils::CDebugOutputCapable, public CGenericSensor
 		{

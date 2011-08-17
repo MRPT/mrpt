@@ -29,7 +29,6 @@
 #define CMatrixTemplateNumeric_H
 
 #include <mrpt/math/CMatrixTemplate.h>
-#include <mrpt/math/matrix_iterators.h>
 #include <mrpt/utils/CSerializable.h>
 
 #include <mrpt/system/os.h>
@@ -58,6 +57,7 @@ namespace mrpt
 		  *
 		  * \sa CMatrixTemplate (a non Eigen lib-based  class, which can hold arbitrary objects, not only numerical types).
 		 * \note For a complete introduction to Matrices and vectors in MRPT, see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
+		 * \ingroup mrpt_base_grp
 		  */
 		template <class T>
 		class CMatrixTemplateNumeric : 

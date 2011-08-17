@@ -46,6 +46,7 @@ namespace mrpt
 		/** A cloud of points in 2D or 3D, which can be built from a sequence of laser scans.
 		 *    This class stores the coordinates (x,y,z) and a "weight", or counter of how many times that point has been seen, used only if points fusion is enabled in the options structure.
 		 * \sa CMetricMap, CPoint, mrpt::utils::CSerializable, CSimplePointsMap
+	  	 * \ingroup mrpt_maps_grp
 		 */
 		class MAPS_IMPEXP CWeightedPointsMap : public CPointsMap
 		{

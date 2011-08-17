@@ -68,6 +68,7 @@ namespace mrpt
 		  * Notice that contained observations objects are automatically deleted on
 		  *  this object's destruction or clear.
 		  * \sa CObservation
+	 	  * \ingroup mrpt_obs_grp
 		  */
 		class OBS_IMPEXP CSensoryFrame : public mrpt::utils::CSerializable
 		{

@@ -35,6 +35,7 @@ namespace mrpt
   namespace reactivenav
   {
 	/** The alpha-PTG
+	 *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP  CPTG2 : public CParameterizedTrajectoryGenerator
 	{

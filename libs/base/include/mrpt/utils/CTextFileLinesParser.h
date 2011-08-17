@@ -39,6 +39,7 @@ namespace mrpt
 			  *  Lines are strip out of leading and trailing whitespaces.
 			  *  By default, lines starting with either "#", "//" or "%" are skipped (comment lines),
 			  *   unless this behavior is explicitly disabled with  \a enableCommentFilters
+		 * \ingroup mrpt_base_grp
 			  */
 			class BASE_IMPEXP CTextFileLinesParser
 			{

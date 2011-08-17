@@ -40,6 +40,7 @@ namespace math
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPolygon, mrpt::utils::CSerializable )
 
 	/** A wrapper of a TPolygon2D class, implementing CSerializable.
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CPolygon : public mrpt::utils::CSerializable, public mrpt::math::TPolygon2D
 	{

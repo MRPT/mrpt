@@ -40,6 +40,7 @@ namespace mrpt
 	/** A class for storing extra information about the execution of
 	 *    CHolonomicVFF navigation.
 	 * \sa CHolonomicVFF, CHolonomicLogFileRecord
+	 *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP CLogFileRecord_VFF : public CHolonomicLogFileRecord
 	{

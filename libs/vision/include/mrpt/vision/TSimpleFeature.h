@@ -39,9 +39,8 @@ namespace mrpt
 {
 	namespace vision
 	{
-		/** \addtogroup  mrptvision_features
+		/** \addtogroup  mrptvision_features 
 		    @{ */
-
 
 		/** A simple structure for representing one image feature (without descriptor nor patch) - This is
 		  *  the template which allows you to select if pixels are represented as integers or floats.

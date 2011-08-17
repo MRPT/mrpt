@@ -34,8 +34,9 @@ namespace mrpt
 {
 	namespace system
 	{
-		/** @name Threads
-		@{ */
+		/** \addtogroup mrpt_thread Threads
+		  *  \ingroup mrpt_base_grp
+		  * @{ */
 
 		/** This structure contains the information needed to interface the threads API on each platform:
 		  * \sa createThread
@@ -187,113 +188,113 @@ namespace mrpt
 			};
 		} // end detail
 
-        /** Creates a new thread from a function (or static method) with one generic parameter.
-          *  This function creates, and start, a new thread running some code given by a function.
-          *  The thread function should end by returning as normal.
-          * \param func The function with the code to run in the thread.
-          * \param param The parameter to be passed to the new thread function.
-          * \return A structure that represents the thread (it contains its ID and, in Windows, its HANDLE).
-          * \exception std::exception If the operation fails
-          * \sa createThreadFromObjectMethod, joinThread, changeThreadPriority
-          */
+		/** Creates a new thread from a function (or static method) with one generic parameter.
+		  *  This function creates, and start, a new thread running some code given by a function.
+		  *  The thread function should end by returning as normal.
+		  * \param func The function with the code to run in the thread.
+		  * \param param The parameter to be passed to the new thread function.
+		  * \return A structure that represents the thread (it contains its ID and, in Windows, its HANDLE).
+		  * \exception std::exception If the operation fails
+		  * \sa createThreadFromObjectMethod, joinThread, changeThreadPriority
+		  */
 		template<typename T> inline TThreadHandle createThread(void (*func)(T),T param)	{
 			return detail::ThreadCreateFunctor<T>::createThread(func,param);
 		}
-        //! \overload
+		//! \overload
 		template<typename T> inline TThreadHandle createThreadRef(void (*func)(T&),T& param)	{
 			return detail::ThreadCreateFunctor<T&>::createThread(func,param);
 		}
-        //! \overload
+		//! \overload
 		inline TThreadHandle createThread(void (*func)(void))	{
 			return detail::ThreadCreateFunctorNoParams::createThread(func);
 		}
 
-        /** Creates a new thread running a non-static method (so it will have access to "this") from another method of the same class - with one generic parameter.
-          *  This function creates, and start, a new thread running some code given by a function.
-          *  The thread function should end by returning as normal.
-          *  Example of usage:
-          *
-          *  \code
-          *    class MyClass {
-          *    public:
-          *      void myThread(int n);
-          *      void someMethod() {
-          *         createThreadFromObjectMethod(this, &MyClass::myThread, 123 );
-          *         ....
-          *      }
-          *    };
-          *  \endcode
-          *
-          * \param func The function with the code to run in the thread.
-          * \param param The parameter to be passed to the new thread function.
-          * \return A structure that represents the thread (it contains its ID and, in Windows, its HANDLE).
-          * \exception std::exception If the operation fails
-          * \sa createThread, joinThread, changeThreadPriority
-          */
+		/** Creates a new thread running a non-static method (so it will have access to "this") from another method of the same class - with one generic parameter.
+		  *  This function creates, and start, a new thread running some code given by a function.
+		  *  The thread function should end by returning as normal.
+		  *  Example of usage:
+		  *
+		  *  \code
+		  *    class MyClass {
+		  *    public:
+		  *      void myThread(int n);
+		  *      void someMethod() {
+		  *         createThreadFromObjectMethod(this, &MyClass::myThread, 123 );
+		  *         ....
+		  *      }
+		  *    };
+		  *  \endcode
+		  *
+		  * \param func The function with the code to run in the thread.
+		  * \param param The parameter to be passed to the new thread function.
+		  * \return A structure that represents the thread (it contains its ID and, in Windows, its HANDLE).
+		  * \exception std::exception If the operation fails
+		  * \sa createThread, joinThread, changeThreadPriority
+		  */
 		template <typename CLASS,typename PARAM>
 		inline TThreadHandle createThreadFromObjectMethod(CLASS *obj, void (CLASS::*func)(PARAM), PARAM param)	{
 			return detail::ThreadCreateObjectFunctor<CLASS,PARAM>::createThread(obj,func,param);
 		}
-        //! \overload
+		//! \overload
 		template <typename CLASS,typename PARAM>
 		inline TThreadHandle createThreadFromObjectMethodRef(CLASS *obj, void (CLASS::*func)(PARAM), PARAM &param)	{
 			return detail::ThreadCreateObjectFunctor<CLASS,PARAM&>::createThread(obj,func,param);
 		}
-        //! \overload
+		//! \overload
 		template <typename CLASS>
 		inline TThreadHandle createThreadFromObjectMethod(CLASS *obj, void (CLASS::*func)(void))	{
 			return detail::ThreadCreateObjectFunctorNoParams<CLASS>::createThread(obj,func);
 		}
 
 
-        /** Waits until the given thread ends.
-          * \sa createThread
-          */
-        void BASE_IMPEXP joinThread( const TThreadHandle &threadHandle );
+		/** Waits until the given thread ends.
+		  * \sa createThread
+		  */
+		void BASE_IMPEXP joinThread( const TThreadHandle &threadHandle );
 
-        /** Returns the ID of the current thread.
-          * \sa getCurrentThreadHandle
-          */
-        unsigned long BASE_IMPEXP getCurrentThreadId() MRPT_NO_THROWS;
+		/** Returns the ID of the current thread.
+		  * \sa getCurrentThreadHandle
+		  */
+		unsigned long BASE_IMPEXP getCurrentThreadId() MRPT_NO_THROWS;
 
-        /** Returns a handle to the current thread.
-          */
-        TThreadHandle BASE_IMPEXP getCurrentThreadHandle() MRPT_NO_THROWS;
+		/** Returns a handle to the current thread.
+		  */
+		TThreadHandle BASE_IMPEXP getCurrentThreadHandle() MRPT_NO_THROWS;
 
-        /** Explicit close of the current (running) thread.
-          *  Do not use normally, it's better just to return from the running thread function.
-          * \sa createThread
-          */
-        void BASE_IMPEXP exitThread() MRPT_NO_THROWS;
+		/** Explicit close of the current (running) thread.
+		  *  Do not use normally, it's better just to return from the running thread function.
+		  * \sa createThread
+		  */
+		void BASE_IMPEXP exitThread() MRPT_NO_THROWS;
 
-		/** Returns the creation and exit times of the current thread and its CPU time consumed.
-		  * \param creationTime The creation time of the thread.
-		  * \param exitTime The exit time of the thread, or undefined if it is still running.
-		  * \param cpuTime The CPU time consumed by the thread, in seconds.
-          * \exception std::exception If the operation fails
-          * \sa getCurrentThreadHandle, getCurrentThreadId, createThread
-          */
-		void BASE_IMPEXP getCurrentThreadTimes(
-			time_t			&creationTime,
-			time_t			&exitTime,
-			double			&cpuTime );
+			/** Returns the creation and exit times of the current thread and its CPU time consumed.
+			  * \param creationTime The creation time of the thread.
+			  * \param exitTime The exit time of the thread, or undefined if it is still running.
+			  * \param cpuTime The CPU time consumed by the thread, in seconds.
+		  * \exception std::exception If the operation fails
+		  * \sa getCurrentThreadHandle, getCurrentThreadId, createThread
+		  */
+			void BASE_IMPEXP getCurrentThreadTimes(
+				time_t			&creationTime,
+				time_t			&exitTime,
+				double			&cpuTime );
 
-        /** Change the priority of the given thread.
-          * \sa createThread, changeCurrentProcessPriority
-          */
-        void BASE_IMPEXP changeThreadPriority( const TThreadHandle &threadHandle, TThreadPriority priority );
+		/** Change the priority of the given thread.
+		  * \sa createThread, changeCurrentProcessPriority
+		  */
+		void BASE_IMPEXP changeThreadPriority( const TThreadHandle &threadHandle, TThreadPriority priority );
 
 		/** Terminate a thread, giving it no choice to delete objects, etc (use only as a last resource) */
 		void BASE_IMPEXP terminateThread( TThreadHandle &threadHandle) MRPT_NO_THROWS;
 
-        /** Change the priority of the given process (it applies to all the threads, plus independent modifiers for each thread).
-          * \sa createThread, changeThreadPriority
-          */
-        void BASE_IMPEXP changeCurrentProcessPriority( TProcessPriority priority );
+		/** Change the priority of the given process (it applies to all the threads, plus independent modifiers for each thread).
+		  * \sa createThread, changeThreadPriority
+		  */
+		void BASE_IMPEXP changeCurrentProcessPriority( TProcessPriority priority );
 
-        /** Return the number of processors ("cores"), or 1 if it cannot be determined.
-          */
-        unsigned int BASE_IMPEXP getNumberOfProcessors();
+		/** Return the number of processors ("cores"), or 1 if it cannot be determined.
+		  */
+		unsigned int BASE_IMPEXP getNumberOfProcessors();
 
 		/** An OS-independent method for sending the current thread to "sleep" for a given period of time.
 		  * \param time_ms The sleep period, in miliseconds.

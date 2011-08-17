@@ -44,6 +44,7 @@ namespace mrpt
 		/** This element keeps a set of objects imported from a 3DStudio file (.3ds).
 		  *  This class uses the opensource library <a href="http://lib3ds.sourceforge.net/" >lib3ds</a> internally.
 		  *  \sa opengl::COpenGLScene
+		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP C3DSScene : public CRenderizableDisplayList
 		{

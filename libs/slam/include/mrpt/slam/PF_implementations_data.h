@@ -58,6 +58,7 @@ namespace mrpt
 
 
 		/** A set of common data shared by PF implementations for both SLAM and localization
+		  *   \ingroup mrpt_slam_grp
 		  */
 		template <class PARTICLE_TYPE, class MYSELF>
 		class PF_implementation

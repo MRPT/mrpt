@@ -37,7 +37,8 @@ namespace mrpt
 	namespace utils
 	{
 
-		/** A RGB color - 8bit */
+		/** A RGB color - 8bit 
+		 * \ingroup mrpt_base_grp */
 		struct BASE_IMPEXP TColor
 		{
 			inline TColor() : R(0),G(0),B(0),A(255) { }
@@ -56,7 +57,8 @@ namespace mrpt
 			static TColor gray;	//!< Predefined colors
 		};
 
-		/** A RGB color - floats in the range [0,1] */
+		/** A RGB color - floats in the range [0,1] 
+		 * \ingroup mrpt_base_grp */
 		struct BASE_IMPEXP TColorf
 		{
 			TColorf(float r=0,float g=0,float b=0, float alpha=1.0f) : R(r),G(g),B(b),A(alpha) { }

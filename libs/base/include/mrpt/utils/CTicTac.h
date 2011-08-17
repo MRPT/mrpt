@@ -37,6 +37,7 @@ namespace utils
 	/** This class implements a high-performance stopwatch.
 	 *  Typical resolution is about 1e-6 seconds.
 	 *  \note The class is named after the Spanish equivalent of "Tic-Toc" ;-)
+		 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CTicTac
 	{

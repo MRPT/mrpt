@@ -41,8 +41,6 @@
 
 #include <mrpt/slam/link_pragmas.h>
 
-#include <map>
-
 namespace mrpt
 {
 	namespace poses { class CPose3DPDF; }
@@ -52,6 +50,7 @@ namespace slam
 
 	/** This class can be used to make partitions on a map/graph build from
 	  *   observations taken at some poses/nodes.
+	  * \ingroup mrpt_slam_grp
 	  */
 	class SLAM_IMPEXP  CIncrementalMapPartitioner : public utils::CDebugOutputCapable, public CSerializable
 	{

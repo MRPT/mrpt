@@ -84,6 +84,7 @@ namespace mrpt
 		 * kit a GP2D12 (min range 4 cm) and a GP2Y0A21 (min range 8 cm), then CObservationrange::minSensorDistance = min(0.04,0.08) = 0.04. Respectively for the maximal range.
 		 * \endlatexonly
 		 * \warning{The Phidget library use udev. By default, udev require to be root to be launched, if you want to be able to run a program wich use a phidget board without be root, you must modify files in /etc/udev/rules.d .}
+		  * \ingroup mrpt_hwdrivers_grp
 		 */
 		enum SensorType{SHARP_30cm, SHARP_80cm, EZ1, UNPLUGGED};
 

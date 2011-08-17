@@ -51,6 +51,7 @@ namespace mrpt
 		  *   For an example of usage, see the file "samples/grab_camera_ffmpeg"
 		  *
 		  * \note This class is an easy to use C++ wrapper for ffmpeg libraries (libavcodec). In Unix systems these libraries must be installed in the system as explained in <a href="http://www.mrpt.org/Building_and_Installing_Instructions" > MRPT's wiki</a>. In Win32, a precompiled version for Visual Studio must be also downloaded as explained in <a href="http://www.mrpt.org/Building_and_Installing_Instructions" >the wiki</a>.
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CFFMPEG_InputStream
 		{

@@ -53,6 +53,7 @@ namespace mrpt
 		/** Options used when creating an OpenCV capture object
 		  *  Some options apply to IEEE1394 cameras only.
 		  * \sa CImageGrabber_OpenCV
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		struct TCaptureCVOptions
 		{
@@ -79,6 +80,7 @@ namespace mrpt
 		  * \note Some code is based on the class CaptureCamera from the Orocos project.
 		  * \sa mrpt::hwdrivers::CCameraSensor, CImageGrabber_dc1394
 		  * \sa The most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CImageGrabber_OpenCV
 		{

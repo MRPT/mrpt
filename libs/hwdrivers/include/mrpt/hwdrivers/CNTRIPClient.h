@@ -51,6 +51,7 @@ namespace mrpt
 		  *  It is not neccesary to call "close", the connection is ended at destruction.
 		  *
 		  * \note For a good reference of the NTRIP protocol, see http://gnss.itacyl.es/opencms/opencms/system/modules/es.jcyl.ita.site.gnss/resources/documentos_gnss/NtripDocumentation.pdf
+		  * \ingroup mrpt_hwdrivers_grp
 		  *
 		  */
 		class HWDRIVERS_IMPEXP CNTRIPClient

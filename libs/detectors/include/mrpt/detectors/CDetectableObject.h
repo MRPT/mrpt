@@ -45,6 +45,7 @@ namespace mrpt
 		/** Base class that contains common atributes and functions of detectable objects.
 		  * It was initially thought for detected objects in images from cams, but it's easily
 		  * expandable to other source types (f.i. scanners).
+		  * \ingroup mrpt_detectors_grp
 		  */
 		class DETECTORS_IMPEXP CDetectableObject: public mrpt::utils::CSerializable
 		{

@@ -39,6 +39,7 @@
 
 namespace mrpt
 {
+	/** \ingroup mrpt_maps_grp */
 	namespace opengl
 	{
 		class CPlanarLaserScan;
@@ -57,6 +58,7 @@ namespace mrpt
 		  *  \note The laser points are projected at the sensor pose as given in the "scan" object, so this CPlanarLaserScan object should be placed at the exact pose of the robot coordinates origin.
 		  *
 		  *  \sa mrpt::opengl::CPointCloud, opengl::COpenGLScene
+	  	  * \ingroup mrpt_maps_grp
 		  */
 		class MAPS_IMPEXP CPlanarLaserScan : public CRenderizableDisplayList
 		{

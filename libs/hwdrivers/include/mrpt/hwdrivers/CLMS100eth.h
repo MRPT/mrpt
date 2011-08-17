@@ -82,6 +82,7 @@ namespace mrpt
           * This class doesn't configure the SICK LMS sensor, it is recomended to configure the sensor via the
 	  * the SICK software : SOPAS.
           * \note This class was contributed by Adrien Barral - Robopec (France)
+	  * \ingroup mrpt_hwdrivers_grp
           */
         class HWDRIVERS_IMPEXP CLMS100Eth : C2DRangeFinderAbstract
         {

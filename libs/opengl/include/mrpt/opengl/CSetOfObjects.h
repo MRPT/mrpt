@@ -50,6 +50,7 @@ namespace mrpt
 		  *   one will be referenced to the parent's one.
 		  *	The list of child objects is accessed directly as in the class "COpenGLScene"
 		  *  \sa opengl::COpenGLScene
+		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP CSetOfObjects : public CRenderizable
 		{

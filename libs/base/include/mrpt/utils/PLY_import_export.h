@@ -40,6 +40,7 @@ namespace mrpt
 		/** A virtual base class that implements the capability of importing 3D point clouds and faces from a file in the Stanford PLY format.
 		  * \sa http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
 		  * \sa PLY_Exporter
+		 * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP PLY_Importer
 		{
@@ -84,6 +85,7 @@ namespace mrpt
 		/** A virtual base class that implements the capability of exporting 3D point clouds and faces to a file in the Stanford PLY format.
 		  * \sa http://www.mrpt.org/Support_for_the_Stanford_3D_models_file_format_PLY
 		  * \sa PLY_Importer
+		 * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP PLY_Exporter
 		{

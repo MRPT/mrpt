@@ -43,6 +43,7 @@ namespace mrpt
 		  *  Apart from arbitrary data, specific methods are provided for easing the serialization of MRPT's "CSerializable" objects.
 		  *  This class is also used for passing data to hardware interfaces (see )
 		  * \sa CClientTCPSocket
+		 * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP CMessage
 		{

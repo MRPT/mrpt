@@ -38,6 +38,7 @@
 namespace mrpt
 {
 	/** Classes for serialization, sockets, ini-file manipulation, streams, list of properties-values, timewatch, extensions to STL.
+	  * \ingroup mrpt_base_grp
 	  */
 	namespace utils
 	{
@@ -47,6 +48,7 @@ namespace mrpt
 		 *  Many important properties of this class are inherited from mrpt::utils::CObject. See that class for more details.
 		 *	 Refer to the tutorial about <a href="http://www.mrpt.org/Serialization" >serialization</a> in the wiki.
 		 * \sa CStream
+		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP CSerializable : public mrpt::utils::CObject
 		{

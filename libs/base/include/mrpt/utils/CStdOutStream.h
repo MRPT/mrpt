@@ -43,6 +43,7 @@ namespace utils
 	 *    desired.
 	 *
 	 * \sa CStream
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CStdOutStream : public CStream
 	{

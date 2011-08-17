@@ -41,6 +41,7 @@ namespace mrpt
 		using std::string;
 
 		/** This class implements a STL container with features of both, a std::set and a std::list.
+		 * \ingroup mrpt_base_grp
 		  */
 		template <class T>
 		class list_searchable : public std::list<T>

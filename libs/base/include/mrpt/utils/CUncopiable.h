@@ -44,7 +44,7 @@ namespace mrpt
 		 *     ...
 		 *   };
 		 *  \endcode
-		 *
+		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP CUncopiable
 		{

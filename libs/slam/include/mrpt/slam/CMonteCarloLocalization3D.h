@@ -50,6 +50,7 @@ namespace mrpt
 		 *   application "app/pf-localization" for an example of usage.
 		 *
 		 * \sa CMonteCarloLocalization2D, CPose2D, CPosePDF, CPoseGaussianPDF, CParticleFilterCapable
+		 * \ingroup mrpt_slam_grp 
 		 */
 		class SLAM_IMPEXP CMonteCarloLocalization3D :
 			public CPose3DPDFParticles,

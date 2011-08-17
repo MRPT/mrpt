@@ -50,6 +50,7 @@ namespace mrpt
 		 *  For different color schemes, see CColouredPointsMap::colorScheme
 		 *  Colors are defined in the range [0,1].
 		 * \sa mrpt::slam::CPointsMap, mrpt::slam::CMetricMap, mrpt::utils::CSerializable
+	  	 * \ingroup mrpt_maps_grp
 		 */
 		class MAPS_IMPEXP CColouredPointsMap : public CPointsMap
 		{

@@ -42,6 +42,7 @@ namespace mrpt
 	namespace hwdrivers
 	{
 		/** Options used when creating a bumblebee camera capture object
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		struct HWDRIVERS_IMPEXP TCaptureOptions_bumblebee
 		{
@@ -65,6 +66,7 @@ namespace mrpt
 		  * Once connected to a camera, you can call "getStereoObservation" to retrieve the stereo images.
 		  *
 		  * \sa You'll probably want to use instead the most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP  CStereoGrabber_Bumblebee : public mrpt::utils::CUncopiable
 		{

@@ -36,6 +36,7 @@
 
 namespace mrpt
 {
+/** \ingroup mrpt_obs_grp */
 namespace slam
 {
 	// This must be added to any CSerializable derived class:
@@ -44,8 +45,9 @@ namespace slam
 	/** Declares a class for storing a robot action. It is used in mrpt::slam::CRawlog,
 	 *    for logs storage and particle filter based simulations.
 	 *  See derived classes for implementations.
-     *
+	 *
 	 * \sa CActionCollection, CRawlog
+	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CAction : public mrpt::utils::CSerializable
 	{

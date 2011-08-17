@@ -65,6 +65,7 @@ namespace mrpt
 		  *  \endcode
 		  *
 		  * \sa C2DRangeFinderAbstract
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CSickLaserSerial : public C2DRangeFinderAbstract
 		{

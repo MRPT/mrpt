@@ -59,6 +59,7 @@ namespace slam
 	  *
 	  * \note The images stored in this class can be raw or undistorted images. In the latter case, the "distortion" params of the corresponding "leftCamera" and "rightCamera" fields should be all zeros.
 	  * \sa CObservation
+	 * \ingroup mrpt_obs_grp
 	  */
 	class OBS_IMPEXP CObservationStereoImages : public CObservation
 	{

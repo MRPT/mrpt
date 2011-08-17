@@ -1,10 +1,9 @@
-/** \page mrpt-hwdrivers Library overview: mrpt-hwdrivers
- *
+/** \defgroup mrpt_hwdrivers_grp [mrpt-hwdrivers]
 
-<small> <a href="index.html#libs">Back to list of libraries</a> </small>
+<small> <a href="index.html#libs">Back to list of all libraries</a> </small>
 <br>
 
-<h2>mrpt-hwdrivers</h2>
+<h2>Library <code>mrpt-hwdrivers</code></h2>
 <hr>
 
 This namespace includes several hardware-related classes, from serial port 

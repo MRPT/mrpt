@@ -63,6 +63,7 @@ namespace slam
 	 *
 	 *   Refer to the papers: []
 	 *
+	  * \ingroup mrpt_maps_grp
 	 * \sa CMetricMap
 	 */
 	class MAPS_IMPEXP CBeaconMap : public CMetricMap

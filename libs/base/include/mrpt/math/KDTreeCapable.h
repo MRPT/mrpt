@@ -76,6 +76,7 @@ namespace mrpt
 		 *  queries of each dimensionality, etc.
 		 *
 		 *  \sa KDTreeMatrixAdaptor, See some of the derived classes for example implementations.
+		 * \ingroup mrpt_base_grp
 		 */
 		template <class Derived, typename num_t = float, typename metric_t = mrpt_flann::L2_Simple_Adaptor<num_t,Derived> >
 		class KDTreeCapable

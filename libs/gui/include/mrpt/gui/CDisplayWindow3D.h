@@ -90,6 +90,7 @@ namespace mrpt
 		  *
 		  *
 		  * \sa  The example /samples/display3D, the <a href="http://www.mrpt.org/Tutorial_3D_Scenes" > tutorial only</a>.
+		  * \ingroup mrpt_gui_grp
 		  */
 		class GUI_IMPEXP CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 		{

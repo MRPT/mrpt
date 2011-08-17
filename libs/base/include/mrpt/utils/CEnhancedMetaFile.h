@@ -41,6 +41,7 @@ namespace utils
 {
 	/** This class represents a Windows Enhanced Meta File (EMF) for generating and saving graphics.
 	  *  If used under Linux, a ".png", non-vectorial, file will be generated instead.
+	  * \ingroup mrpt_base_grp
 	  */
 	class BASE_IMPEXP CEnhancedMetaFile : public CCanvas
 	{

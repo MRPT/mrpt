@@ -66,7 +66,7 @@ namespace mrpt
 		 *    
 	     * \note This class is superseded by more modern implementations of graph-slam. See mrpt::graphslam
 		 *
-		 * \sa CSimpleMap, CPosePDF, CObservation, utils::CDebugOutputCapable
+		 * \sa CSimpleMap, CPosePDF, CObservation, utils::CDebugOutputCapable   \ingroup mrpt_slam_grp
 		 */
 		class SLAM_IMPEXP CConsistentObservationAlignment : public mrpt::utils::CDebugOutputCapable
 		{

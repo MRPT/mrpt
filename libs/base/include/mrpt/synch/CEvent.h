@@ -38,10 +38,12 @@
 namespace mrpt
 {
         /** This namespace provides multitask, synchronization utilities.
+	 * \ingroup mrpt_base_grp
          */
         namespace synch
         {
                 /** This class provides a simple way of waiting for and signaling events (NOT IMPLEMENTED YET!).
+		 * \ingroup mrpt_base_grp
                   */
                 class BASE_IMPEXP CEvent
                 {

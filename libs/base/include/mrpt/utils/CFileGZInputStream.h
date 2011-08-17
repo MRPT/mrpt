@@ -45,6 +45,7 @@ namespace mrpt
 		 *  This class requires compiling MRPT with wxWidgets. If wxWidgets is not available then the class is actually mapped to the standard CFileInputStream
 		 *
 		 * \sa CFileInputStream
+		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP CFileGZInputStream : public CStream, public CUncopiable
 		{

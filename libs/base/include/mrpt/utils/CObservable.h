@@ -45,6 +45,7 @@ namespace mrpt
 		  * \note The pairs CObservable / CObserver automatically notify each other the destruction of any of them, effectively ending the subscription of events.
 		  *
 		  *  \sa CObserver, mrptEvent
+		 * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP CObservable
 		{

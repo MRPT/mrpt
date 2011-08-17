@@ -41,6 +41,7 @@ namespace slam
 		/** Represents a probabilistic 3D (6D) movement.
 	 *   Currently this can be determined from visual odometry for full 6D, or from wheel encoders for 2D movements only.
      *
+	 * \ingroup mrpt_obs_grp
 	 * \sa CAction
 	 */
 	class OBS_IMPEXP CActionRobotMovement3D : public CAction

@@ -39,6 +39,7 @@ namespace mrpt
 
 
 		/** Options used when creating a STOC Videre Design camera capture object
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		struct HWDRIVERS_IMPEXP TCaptureOptions_SVS
 		{
@@ -75,6 +76,7 @@ namespace mrpt
 		  * Once connected to a camera, you can call "getStereoObservation" to retrieve the Disparity images.
 		  *
 		  * \sa You'll probably want to use instead the most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
         class HWDRIVERS_IMPEXP  CStereoGrabber_SVS : public mrpt::utils::CUncopiable
 		{

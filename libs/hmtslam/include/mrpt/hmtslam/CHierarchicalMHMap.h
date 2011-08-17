@@ -47,6 +47,7 @@ namespace mrpt
 		/** The most high level class for storing hybrid, multi-hypothesis maps in a graph-based model.
 		 *   This class is used within the HMT-SLAM implementation in CHMTSLAM.
 		 * \sa CHMTSLAM, CHMHMapArc, CHMHMapNode, CHierarchicalMHMapPartition
+		  * \ingroup mrpt_hmtslam_grp
 		 */
 		class HMTSLAM_IMPEXP CHierarchicalMHMap : public mrpt::utils::CSerializable, public CHierarchicalMapMHPartition
 		{

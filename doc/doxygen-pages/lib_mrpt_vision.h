@@ -1,10 +1,9 @@
-/** \page mrpt-vision Library overview: mrpt-vision
- *
+/** \defgroup mrpt_vision_grp [mrpt-vision]
 
-<small> <a href="index.html#libs">Back to list of libraries</a> </small>
+<small> <a href="index.html#libs">Back to list of all libraries</a> </small>
 <br>
 
-<h2>mrpt-vision</h2>
+<h2>Library <code>mrpt-vision</code></h2>
 <hr>
 
 This library includes some extensions to OpenCV functionality, plus some

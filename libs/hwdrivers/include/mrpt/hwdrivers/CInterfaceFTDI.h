@@ -42,6 +42,7 @@ namespace mrpt
 
 		/** A list of FTDI devices and their descriptors.
 		  * \sa CInterfaceFTDI::ListAllDevices
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		struct HWDRIVERS_IMPEXP TFTDIDevice
 		{
@@ -86,6 +87,7 @@ namespace mrpt
 		 *		- 15/APR/2008: Implemented for Linux using libftdi. JLBC
 		 *
 		 * \sa CInterfaceFTDIMessages, CStream
+		  * \ingroup mrpt_hwdrivers_grp
 		 */
 		class HWDRIVERS_IMPEXP CInterfaceFTDI : public utils::CStream
 		{

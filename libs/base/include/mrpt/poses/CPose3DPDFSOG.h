@@ -47,7 +47,7 @@ namespace poses
 	 *  Where the number of modes N is the size of CPose3DPDFSOG::m_modes. Angles are always in radians.
 	 *
 	 *  See mrpt::poses::CPose3DPDF for more details.
-     *
+	 * \ingroup mrpt_base_grp
 	 * \sa CPose3DPDF
 	 */
 	class BASE_IMPEXP CPose3DPDFSOG : public CPose3DPDF

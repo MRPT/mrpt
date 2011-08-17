@@ -44,6 +44,7 @@ namespace math
  *			- Asignament operator with matrixes will COPY THE POINTERS, thus a copy of objects is not performed.
  *			- WARNING: Objects are not deleted while shrinking the matrix by calling "setSize", thus please call ""CMatrixTemplateObjects<T>::freeAllObjects" or manually delete objects before shrinking.
  *
+ * \ingroup mrpt_base_grp
  * \sa CMatrixTemplate
  */
 template <class T>

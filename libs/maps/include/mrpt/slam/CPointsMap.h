@@ -43,6 +43,7 @@
 
 namespace mrpt
 {
+/** \ingroup mrpt_maps_grp */
 namespace slam
 {
 	// Fordward declarations:
@@ -71,6 +72,7 @@ namespace slam
 	 *		- mrpt::slam::CObservationRange: IRs, Sonars, etc.
 	 *
 	 * \sa CMetricMap, CPoint, mrpt::utils::CSerializable
+	  * \ingroup mrpt_maps_grp
 	 */
 	class MAPS_IMPEXP CPointsMap :
 		public CMetricMap,

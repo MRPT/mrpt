@@ -39,6 +39,9 @@ namespace mrpt
 {
 	namespace vision
 	{
+		/** \addtogroup mrpt_vision_grp
+		  *  @{ */
+	
 		using std::vector;
 		//using namespace mrpt::slam;
 		using namespace mrpt::math;
@@ -488,6 +491,8 @@ namespace mrpt
 
         }; // end TMultiResDescOptions
 
+
+	/** @} */ // end of grouping
 
 	}
 }

@@ -64,6 +64,7 @@ namespace mrpt
 		  *
 		  *  \endcode
 		  *
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CBoardSonars : public hwdrivers::CInterfaceFTDIMessages, public CGenericSensor
 		{

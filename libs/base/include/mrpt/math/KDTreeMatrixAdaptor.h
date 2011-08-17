@@ -40,6 +40,7 @@ namespace mrpt
 	{
 		/** A simple FLANN KD-tree adaptor for working with data directly stored in an Eigen Matrix, without duplicating the data storage.
 		 * \sa KDTreeCapable
+		 * \ingroup mrpt_base_grp
 		 */
 		template <class MatrixType>
 		struct KDTreeMatrixAdaptor

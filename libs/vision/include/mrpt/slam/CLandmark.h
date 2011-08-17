@@ -39,6 +39,7 @@
 
 namespace mrpt
 {
+	/** \ingroup mrpt_vision_grp */
 	namespace slam
 	{
 		using namespace mrpt::poses;
@@ -53,6 +54,7 @@ namespace mrpt
 		  *   will typically consists of only 1 element, or 2 elements for landmarks obtained from stereo images.
 		  *
 		  * \sa CLandmarksMap
+	 	  * \ingroup mrpt_vision_grp
 		  */
 		class VISION_IMPEXP CLandmark : public mrpt::utils::CSerializable
 		{

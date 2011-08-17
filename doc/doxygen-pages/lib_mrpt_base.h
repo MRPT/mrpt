@@ -1,16 +1,15 @@
-/** \page mrpt-base Library overview: mrpt-base
- *
+/** \defgroup mrpt_base_grp [mrpt-base]
 
-<small> <a href="index.html#libs">Back to list of libraries</a> </small>
+<small> <a href="index.html#libs">Back to list of all libraries</a> </small>
 <br>
 
-<h2>mrpt-base</h2>
+<h2>Library <code>mrpt-base</code></h2>
 <hr>
 
 This is the most fundamental library in MRPT, since it provides a vast amount of utilities and OS-abstraction classes upon which
 the rest of MRPT is built. Here resides critical functionality such as mathematics, linear algebra, serialization, smart pointers
 and multi-threading.
-
+l
 This library comprises classes in a number of namespaces, briefly described below (click on the namespaces names to see the
 complete list of its classes):
 

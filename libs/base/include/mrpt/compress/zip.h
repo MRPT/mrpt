@@ -34,13 +34,13 @@ namespace mrpt
 {
 	namespace utils { class CStream; }
 
-	/** Data compression/decompression algorithms.
+	/** Data compression/decompression algorithms.  \ingroup mrpt_base_grp
 	 */
 	namespace compress
 	{
 		using namespace mrpt::utils;
 
-		/** Compression using the "zip" algorithm and from/to gzip (gz) files.
+		/** Compression using the "zip" algorithm and from/to gzip (gz) files. \ingroup mrpt_base_grp
 		 */
 		namespace zip
 		{

@@ -40,6 +40,7 @@ namespace mrpt
 
 		/** Event emitted by a metric up upon call of clear()
 		  * \sa CMetricMap
+	 	  * \ingroup mrpt_obs_grp
 		  */
 		class mrptEventMetricMapClear : public mrpt::utils::mrptEvent
 		{
@@ -53,6 +54,7 @@ namespace mrpt
 
 		/** Event emitted by a metric up upon a succesful call to insertObservation()
 		  * \sa CMetricMap
+	 	  * \ingroup mrpt_obs_grp
 		  */
 		class mrptEventMetricMapInsert : public mrpt::utils::mrptEvent
 		{

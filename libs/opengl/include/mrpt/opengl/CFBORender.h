@@ -43,6 +43,7 @@ namespace mrpt
 		  *  You can add overlaid text messages, see base class CTextMessageCapable
 		  *
 		  *  \sa Example "fbo_render_test"
+		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP CFBORender : public mrpt::opengl::CTextMessageCapable
 		{

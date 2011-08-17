@@ -58,6 +58,7 @@ namespace mrpt
 		/** Represents a set of nodes and arcs, posibly only a part of the whole hierarchical, multi-hypothesis map.
 		 *  A usar will never create an instance of this class, rather it will employ CHierarchicalMHMap.
 		 * \sa CHierarchicalMHMap, CHMHMapArc, CHMHMapNode
+		  * \ingroup mrpt_hmtslam_grp
 		 */
 		class HMTSLAM_IMPEXP CHierarchicalMapMHPartition : public mrpt::utils::CDebugOutputCapable
 		{

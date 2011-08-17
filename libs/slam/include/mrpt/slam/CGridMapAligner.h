@@ -50,6 +50,7 @@ namespace mrpt
 		 * See CGridMapAligner::Align for more instructions.
 		 *
 		 * \sa CMetricMapsAlignmentAlgorithm
+		 * \ingroup mrpt_slam_grp
 		 */
 		class SLAM_IMPEXP  CGridMapAligner : public CMetricMapsAlignmentAlgorithm
 		{

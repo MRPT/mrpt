@@ -51,6 +51,7 @@ namespace math
 	std::cout << hist.getBinCount(0) << std::endl;		// Result: "1"
 	std::cout << hist.getBinRatio(0) << std::endl;		// Result: "0.33"
 	\endcode
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CHistogram
 	{

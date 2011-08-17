@@ -53,6 +53,7 @@ namespace poses
 	 *  see <a href="http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty" >this report</a>.
 	 *
 	 * \sa CPose3DQuat, CPose3DQuatPDF, CPose3DPDF
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	{

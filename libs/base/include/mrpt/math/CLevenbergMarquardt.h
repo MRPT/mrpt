@@ -45,6 +45,7 @@ namespace math
 	 *
 	 * \tparam NUMTYPE The numeric type for all the operations (float, double, or long double)
 	 * \tparam USERPARAM The type of the "y" input to the user supplied evaluation functor. Default type is a vector of NUMTYPE.
+	 * \ingroup mrpt_base_grp
 	 */
 	template <typename VECTORTYPE = mrpt::vector_double, class USERPARAM = VECTORTYPE >
 	class CLevenbergMarquardtTempl : public mrpt::utils::CDebugOutputCapable

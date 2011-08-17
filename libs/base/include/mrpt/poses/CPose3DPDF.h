@@ -56,6 +56,7 @@ namespace poses
 	 *  See also the tutorial on <a href="http://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations">probabilistic spatial representations in the MRPT</a>.
 	 *
 	 * \sa CPose3D, CPosePDF, CPointPDF
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CPose3DPDF : public mrpt::utils::CSerializable, public mrpt::utils::CProbabilityDensityFunction<CPose3D,6>
 	{

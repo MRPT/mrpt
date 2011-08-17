@@ -69,6 +69,7 @@ namespace math
 	 * \note For a summary and classification of all MRPT vector, array and matrix classes see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
 	 *
      * \sa CArrayNumeric (for another, non-related base template class that DOES support maths)
+	 * \ingroup mrpt_base_grp
 	 */
     template <typename T, std::size_t N>
     class CArray {

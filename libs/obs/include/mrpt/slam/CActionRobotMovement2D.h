@@ -48,6 +48,7 @@ namespace mrpt
 		 *  See the tutorial on <a href="http://www.mrpt.org/Probabilistic_Motion_Models" >probabilistic motion models</a>.
 		 *
 		 * \sa CAction
+	 	 * \ingroup mrpt_obs_grp
 		 */
 		class OBS_IMPEXP  CActionRobotMovement2D : public CAction
 		{

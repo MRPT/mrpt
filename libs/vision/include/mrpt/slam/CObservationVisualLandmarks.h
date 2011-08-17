@@ -43,6 +43,7 @@ namespace slam
 	/** Declares a class derived from "CObservation" that stores a Landmarks Map as seen from a stereo camera at a given instant of time.
 	 *
 	 * \sa CLandmarksMap, CObservation
+	 * \ingroup mrpt_vision_grp
 	 */
 	class VISION_IMPEXP CObservationVisualLandmarks : public CObservation
 	{

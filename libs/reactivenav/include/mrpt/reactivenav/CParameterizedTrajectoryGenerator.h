@@ -44,9 +44,10 @@ namespace mrpt
 	 *
 	 * Changes history:
 	 *		- 30/JUN/2004: Creation (JLBC)
-     *		- 16/SEP/2004: Totally redesigned.
+	 *		- 16/SEP/2004: Totally redesigned.
 	 *		- 15/SEP/2005: Totally rewritten again, for integration into MRPT Applications Repository.
 	 *		- 19/JUL/2009: Simplified to use only STL data types, and created the class factory interface.
+	 *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP  CParameterizedTrajectoryGenerator
 	{

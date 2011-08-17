@@ -47,6 +47,7 @@ namespace opengl	{
 	  *  </table>
 	  *  </div>
 	  *  
+	  * \ingroup mrpt_opengl_grp
 	  */
 	class OPENGL_IMPEXP CBox :public CRenderizableDisplayList	{
 		DEFINE_SERIALIZABLE(CBox)

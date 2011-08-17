@@ -44,6 +44,7 @@ namespace mrpt
 		  *  Any derived class must implement "getMean" and "getCovarianceAndMean".
 		  *  Other methods such as "getCovariance" are implemented here for convenience.
 		  * \sa mprt::poses::CPosePDF, mprt::poses::CPose3DPDF, mprt::poses::CPointPDF
+		 * \ingroup mrpt_base_grp
  		  */
 		template <class TDATA, size_t STATE_LEN>
 		class CProbabilityDensityFunction

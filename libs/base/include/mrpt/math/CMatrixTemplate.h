@@ -54,6 +54,7 @@ namespace mrpt
 		 * \note Memory blocks for each row are 16-bytes aligned (since MRPT 0.7.0).
 		 * \note For a complete introduction to Matrices and vectors in MRPT, see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
 		 * \sa CMatrixTemplateNumeric
+		 * \ingroup mrpt_base_grp
 		 */
 		template <class T>
 		class CMatrixTemplate

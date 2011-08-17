@@ -34,8 +34,9 @@ namespace mrpt
 {
 	namespace system
 	{
-		/** @name Directories, files, and file names
-		@{*/
+		/** @defgroup filesystem Directories, files, and file names
+		  * \ingroup mrpt_base_grp
+		  * @{ */
 
 		/** Returns the name of a proposed temporary file name */
 		std::string BASE_IMPEXP getTempFileName();

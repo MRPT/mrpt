@@ -56,6 +56,7 @@ namespace mrpt
 		  *   points want to be ignored (see C2DRangeFinderAbstract::loadExclusionAreas).
 		  *
 		  * \sa hwdrivers::CSerialPort
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP C2DRangeFinderAbstract : public mrpt::utils::CDebugOutputCapable, public mrpt::hwdrivers::CGenericSensor
 		{

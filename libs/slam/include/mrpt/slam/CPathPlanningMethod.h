@@ -42,7 +42,7 @@ namespace slam
 	 *	  from a origin location to a target point. See derived classes for
 	 *    implementations.
      *
-	 * \sa CDebugOutputCapable
+	 * \sa CDebugOutputCapable  \ingroup mrpt_slam_grp
 	 */
 	class SLAM_IMPEXP CPathPlanningMethod : public mrpt::utils::CDebugOutputCapable
 	{

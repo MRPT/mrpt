@@ -38,6 +38,7 @@ namespace mrpt
 		 *  Only work with graylevels (for convenience), so if a color image is passed it'll be passed first to grayscale.
 		 *
 		 * \sa CImage
+		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP CMappedImage
 		{

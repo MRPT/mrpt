@@ -39,6 +39,7 @@ namespace utils
 
 	/** This class represents a std::string derived class which is also CSerializable
 	 * \sa CSerializable
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CTypeSelector : public mrpt::utils::CSerializable
 	{

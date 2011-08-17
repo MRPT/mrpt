@@ -44,6 +44,7 @@ namespace slam
 	 *     for example to store measurements from infrared proximity sensors (IR) or ultrasonic sensors (sonars).
 	 *
 	 * \sa CObservation
+	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CObservationRange : public CObservation
 	{

@@ -45,6 +45,7 @@ namespace mrpt
 		  *
 		  *  The filter can be asked for an extrapolation for some arbitrary time "t'", and it'll do a simple linear prediction.
 		  *  All methods are thread-safe.
+		  * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP CRobot2DPoseEstimator
 		{

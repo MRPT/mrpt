@@ -59,6 +59,7 @@ namespace slam
 	  * 	  , Lilienthal, A.J. and Reggente, M. and Trincavelli, M. and Blanco, J.L. and Gonzalez, J., IROS 2009.
 	  *
 	  * \sa mrpt::slam::CRandomFieldGridMap2D, mrpt::slam::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::slam::CMultiMetricMap
+	  * \ingroup mrpt_maps_grp
 	  */
 	class MAPS_IMPEXP CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 	{

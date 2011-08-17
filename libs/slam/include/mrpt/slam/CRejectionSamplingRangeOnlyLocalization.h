@@ -49,7 +49,7 @@ namespace mrpt
 		/** An implementation of rejection sampling for generating 2D robot pose from range-only measurements within a landmarks (beacons) map.
 		 *    Before calling the method "rejectionSampling" to generate the samples, you must call "setParams".
 		 *    It is assumed a planar scenario, where the robot is at a fixed height (default=0).
-		 * \sa bayes::CRejectionSamplingCapable
+		 * \sa bayes::CRejectionSamplingCapable  \ingroup mrpt_slam_grp 
 		 */
 		class SLAM_IMPEXP CRejectionSamplingRangeOnlyLocalization : public bayes::CRejectionSamplingCapable<poses::CPose2D>
 		{

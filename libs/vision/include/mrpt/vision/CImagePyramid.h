@@ -67,6 +67,7 @@ namespace mrpt
 		  *  \note Both converting to grayscale and building the octave images have SSE2-optimized implementations (if available).
 		  *
 		  * \sa mrpt::utils::CImage
+		  * \ingroup mrpt_vision_grp 
 		  */
 		class VISION_IMPEXP CImagePyramid
 		{

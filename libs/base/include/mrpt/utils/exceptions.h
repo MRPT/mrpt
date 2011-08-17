@@ -34,7 +34,7 @@ namespace mrpt
 {
 	namespace utils
 	{
-		/** The base for MRPT-especific exceptions */
+		/** The base for MRPT-especific exceptions \ingroup mrpt_base_grp */
 		class CMRPTException: public std::logic_error
 		{
 		public:

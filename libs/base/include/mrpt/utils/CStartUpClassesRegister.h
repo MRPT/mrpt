@@ -46,6 +46,7 @@ namespace mrpt
 		  *    CStartUpClassesRegister   doReg( &registerAllMyClasses );
 		  *
 		  *  \endcode
+		 * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP CStartUpClassesRegister
 		{

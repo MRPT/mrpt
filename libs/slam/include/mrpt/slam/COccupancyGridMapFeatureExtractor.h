@@ -50,6 +50,7 @@ namespace mrpt
 		  *  For an uncached version (which is a static method that can be called without instantiating COccupancyGridMapFeatureExtractor)
 		  *  see COccupancyGridMapFeatureExtractor::uncached_extractFeatures()
 		  *
+		  * \ingroup mrpt_slam_grp
 		  */
 		class SLAM_IMPEXP COccupancyGridMapFeatureExtractor : public mrpt::utils::CObserver
 		{

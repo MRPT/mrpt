@@ -1,10 +1,9 @@
-/** \page mrpt-obs Library overview: mrpt-obs
- *
+/** \defgroup mrpt_obs_grp [mrpt-obs]
 
-<small> <a href="index.html#libs">Back to list of libraries</a> </small>
+<small> <a href="index.html#libs">Back to list of all libraries</a> </small>
 <br>
 
-<h2>mrpt-obs</h2>
+<h2>Library <code>mrpt-obs</code></h2>
 <hr>
 
 In this library there are <b>five</b> key elements or groups of elements:

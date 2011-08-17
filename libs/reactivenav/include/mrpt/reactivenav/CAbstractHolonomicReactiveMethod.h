@@ -41,6 +41,7 @@ namespace mrpt
 
 	/** A base class for holonomic reactive navigation methods.
 	 *  \sa CHolonomicVFF,CHolonomicND, CReactiveNavigationSystem
+	 *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP CAbstractHolonomicReactiveMethod
 	{

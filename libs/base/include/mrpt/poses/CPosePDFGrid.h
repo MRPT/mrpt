@@ -43,8 +43,9 @@ namespace poses
 	/** Declares a class that represents a Probability Distribution
 	 *    function (PDF) of a 2D pose (x,y,phi).
 	 *   This class implements that PDF using a 3D grid.
-     *
+	 *
 	 * \sa CPose2D, CPosePDF, CPose2DGridTemplate
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 	{

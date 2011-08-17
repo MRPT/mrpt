@@ -45,6 +45,7 @@ namespace mrpt	{	namespace math	{
 	  * with the return value of a function. Although it theoretically supports objects with non-trivial constructors or destructors (indicated by specifying
 	  * "true" as the thrid parameter of the template instantiation), certain operations will cause memory leaks and may even cause undefined behaviour, so it's
 	  * reccomended to use only basic types for the parameter U. The parameter T may be any complex object, however, like a smart pointer.
+	 * \ingroup mrpt_base_grp
 	  */
 	template<typename T,typename U,bool UIsObject=false> class CBinaryRelation	{
 	private:

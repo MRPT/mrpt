@@ -40,6 +40,7 @@ namespace mrpt
 	{
 		/** A collection of functions to compute jacobians of diverse transformations, etc (some functions are redirections to existing methods elsewhere, so this namespace is actually used with grouping purposes).
 		  *  Since most functions in this namespace are inline, their use implies no execution time overload and the code may be more clear to read, so it's recommended to use them where needed.
+		 * \ingroup mrpt_base_grp
 		  */
 		namespace jacobians
 		{

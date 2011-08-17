@@ -34,9 +34,10 @@
 
 namespace mrpt
 {
+	/** \ingroup mrpt_opengl_grp */
 	namespace opengl
 	{
-		/** Tool functions for graphs of pose constraints.  */
+		/** Tool functions for graphs of pose constraints. \ingroup mrpt_opengl_grp  */
 		namespace graph_tools
 		{
 			/** @name Tool functions for graphs of pose constraints
@@ -100,6 +101,7 @@ namespace mrpt
 			  *	  </table>
 			  *
 			  * \sa mrpt::poses::CNetworkOfPoses2D, mrpt::poses::CNetworkOfPoses3D, mrpt::poses::CNetworkOfPoses2DInf, mrpt::poses::CNetworkOfPoses3DInf
+			  * \ingroup mrpt_opengl_grp
 			  */
 			template<class CPOSE,class MAPIMPL>
 			CSetOfObjectsPtr OPENGL_IMPEXP graph_visualize(

@@ -43,6 +43,7 @@ namespace mrpt
 		/** A set of colored triangles.
 		  *  This class can be used to draw any solid, arbitrarily complex object (without textures).
 		  *  \sa opengl::COpenGLScene, CSetOfTexturedTriangles
+		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP CSetOfTriangles : public CRenderizableDisplayList
 		{

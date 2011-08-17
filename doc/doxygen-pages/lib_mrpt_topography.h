@@ -1,10 +1,9 @@
-/** \page mrpt-topography Library overview: mrpt-topography
- *
+/** \defgroup mrpt_topography_grp [mrpt-topography]
 
-<small> <a href="index.html#libs">Back to list of libraries</a> </small>
+<small> <a href="index.html#libs">Back to list of all libraries</a> </small>
 <br>
 
-<h2>mrpt-topography</h2>
+<h2>Library <code>mrpt-topography</code></h2>
 <hr>
 
 Conversion and useful data structures to handle topographic data, perform 

@@ -68,6 +68,7 @@ namespace mrpt
 		 * \note There is a static helper method "detectImagesDirectory" for localizing the external images directory of a rawlog.
 		 *
 		 * \sa CSensoryFrame, CPose2D, <a href="http://www.mrpt.org/Rawlog_Format"> RawLog file format</a>.
+	 	 * \ingroup mrpt_obs_grp
 		 */
 		class OBS_IMPEXP CRawlog : public mrpt::utils::CSerializable
 		{

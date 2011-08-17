@@ -37,12 +37,13 @@
   ---------------------------------------------------------------*/
 namespace mrpt
 {
-	/** This namespace provides multitask, synchronization utilities.
+	/** This namespace provides multitask, synchronization utilities. \ingroup mrpt_base_grp
 	 */
 	namespace synch
 	{
 		/** This class provides simple critical sections functionality.
 		  * \sa CCriticalSectionLocker
+		  * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP CCriticalSection
 		{

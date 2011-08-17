@@ -52,6 +52,7 @@ namespace slam
 		 </center>
 	 *
 	 * \sa CObservation, CObservationStereoImages
+	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CObservationImage : public CObservation
 	{

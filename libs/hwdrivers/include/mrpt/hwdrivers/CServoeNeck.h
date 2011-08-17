@@ -37,6 +37,9 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
+
+		/** A USB-interface for a custom "robotic neck" designed at MAPIR lab.
+		  * \ingroup mrpt_hwdrivers_grp */
 		class HWDRIVERS_IMPEXP CServoeNeck : public hwdrivers::CInterfaceFTDIMessages
 		{
 		public:

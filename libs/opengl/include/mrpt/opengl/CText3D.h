@@ -57,6 +57,7 @@ namespace mrpt
 		  *  </div>
 		  *
 		  * \note This class is based on code from libcvd (LGPL, http://www.edwardrosten.com/cvd/ )
+		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP CText3D : public CRenderizableDisplayList
 		{

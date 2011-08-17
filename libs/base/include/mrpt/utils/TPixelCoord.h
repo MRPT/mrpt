@@ -36,7 +36,7 @@ namespace mrpt
 {
 	namespace utils
 	{
-		/** A pair (x,y) of pixel coordinates (subpixel resolution). */
+		/** A pair (x,y) of pixel coordinates (subpixel resolution). \ingroup mrpt_base_grp  */
 		struct BASE_IMPEXP TPixelCoordf
 		{
 			float x,y;

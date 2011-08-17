@@ -39,15 +39,18 @@
 namespace mrpt
 {
 	/** This namespace provides topography helper functions, coordinate transformations.
+	 * \ingroup mrpt_topography_grp
 	 */
 	namespace topography
 	{
 		using namespace std;
 		using namespace mrpt::utils;
+		
+		/** \addtogroup mrpt_topography_grp
+		  *  @{ */
 
-	/** =======================================================================
-		   @name Topography coordinate conversion functions
-		   @{ */
+		/** @name Topography coordinate conversion functions
+		    @{ */
 
 		/** Coordinates transformation from longitude/latitude/height to ENU (East-North-Up)  X/Y/Z coordinates
 		  *  The WGS84 ellipsoid is used for the transformation. The coordinates are in 3D
@@ -292,6 +295,7 @@ namespace mrpt
 	/** @}
 	    ======================================================================= */
 
+		/**  @} */  // end of grouping
 
 	} // End of namespace
 

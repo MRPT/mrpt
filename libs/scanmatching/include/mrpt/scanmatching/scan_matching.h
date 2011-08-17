@@ -46,12 +46,16 @@ namespace mrpt
 
 	/** A set of scan matching-related static functions.
 	 * \sa mrpt::slam::CICP
+	 * \ingroup mrpt_scanmatching_grp
 	 */
 	namespace scanmatching
 	{
 		using namespace mrpt::poses;
 		using namespace mrpt::math;
 		using namespace mrpt::utils;
+		
+		/** \addtogroup mrpt_scanmatching_grp
+		  * @{ */
 
 		/** This function implements the Horn method for computing the change in pose between two coordinate systems
 		  * \param[in] inPoints		A vector containing the coordinates of the input points in the format:
@@ -217,12 +221,10 @@ namespace mrpt
 			unsigned int				ransac_min_nSimulations = 1500
 			);
 
+
+		/** @} */  // end of grouping
+
 	}
-
-
-#ifdef MRPT_BACKCOMPATIB_08X	// For backward compatibility
-	namespace scan_matching = scanmatching;
-#endif
 
 } // End of namespace
 

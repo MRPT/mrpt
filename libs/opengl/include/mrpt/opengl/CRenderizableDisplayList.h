@@ -50,6 +50,7 @@ namespace mrpt
 		  *		- Implement the rendering method: render_dl(), calling to OpenGL primitives as usual. They'll be saved in a display list transparently.
 		  *
 		  *  \sa mrpt::opengl::CRenderizable
+		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP CRenderizableDisplayList : public mrpt::opengl::CRenderizable
 		{

@@ -49,16 +49,22 @@
 namespace mrpt
 {
 	/** This namespace provides a OS-independent interface to many useful functions: filenames manipulation, time and date, string parsing, file I/O, threading, memory allocation, etc.
-	 *  \sa mrpt::system::os
+	 *  \sa mrpt::system::os \ingroup mrpt_base_grp
 	 */
 	namespace system
 	{
+		/** \defgroup mrpt_system_os OS and compiler abstraction
+		  * \ingroup mrpt_base_grp */
+	
 		/** This namespace provides a OS-independent interface to low-level functions.
 		 *   Most of these functions are converted into calls to standard functions, unless we are into Visual Studio 2005 (or newer). In that case the secure version
-		 *     of the standard library functions (prefix "_s") are used instead.
+		 *     of the standard library functions (prefix "_s") are used instead. \ingroup mrpt_base_grp mrpt_system_os
 		 */
 		namespace os
 		{
+			/** \addtogroup mrpt_system_os
+			  * @{ */
+
 			/** An OS-independent version of sprintf (Notice the bufSize param, which may be ignored in some compilers)
 			  *  \sa utils::format
 			  */
@@ -153,8 +159,13 @@ namespace mrpt
 			/** An OS-independent version of kbhit, which returns true if a key has been pushed.
 			  */
 			bool BASE_IMPEXP kbhit() MRPT_NO_THROWS;
+	
+			/** @} */
 
 		}	// end namespace "os"
+		
+		/** \addtogroup mrpt_system_os
+		  * @{ */
 
 		/** Shows the message "Press any key to continue" (or other custom message) to the current standard output and returns when a key is pressed.
 		  */
@@ -238,13 +249,8 @@ namespace mrpt
 		  * By default the color of "cout" is changed, unless changeStdErr=true, in which case "cerr" is changed.
 		  */
 		void BASE_IMPEXP setConsoleColor( TConsoleColor color, bool changeStdErr=false );
-
-
-		// The following templates are taken from libcvd (LGPL). See http://mi.eng.cam.ac.uk/~er258/cvd/
-		// Check if the pointer is aligned to the specified byte granularity
-		template<int bytes> bool is_aligned(const void* ptr);
-		template<> inline bool is_aligned<8>(const void* ptr) {   return ((reinterpret_cast<size_t>(ptr)) & 0x7) == 0;   }
-		template<> inline bool is_aligned<16>(const void* ptr) {  return ((reinterpret_cast<size_t>(ptr)) & 0xF) == 0;   }
+		
+		/** @} */
 
 	} // End of namespace
 

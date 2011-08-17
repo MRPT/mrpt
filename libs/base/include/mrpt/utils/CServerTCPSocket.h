@@ -42,6 +42,7 @@ namespace utils
 
 	/** A TCP socket that can be wait for client connections to enter.
 	  *  Unless otherwise noticed, operations are blocking.
+	 * \ingroup mrpt_base_grp
 	  */
 	class BASE_IMPEXP CServerTCPSocket : public utils::CDebugOutputCapable
 	{

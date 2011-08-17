@@ -46,6 +46,7 @@ namespace mrpt
 		  *  Refer to the example in /samples/UTILS/directoryExplorer
 		  *
 		  *  \sa CFileSystemWatcher
+		 * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP CDirectoryExplorer
 		{

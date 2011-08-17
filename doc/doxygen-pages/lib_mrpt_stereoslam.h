@@ -1,10 +1,9 @@
-/** \page mrpt-stereoslam Library overview: mrpt-stereoslam
- *
+/** \defgroup mrpt_stereoslam_grp [mrpt-stereoslam]
 
-<small> <a href="index.html#libs">Back to list of libraries</a> </small>
+<small> <a href="index.html#libs">Back to list of all libraries</a> </small>
 <br>
 
-<h2>mrpt-stereoslam</h2>
+<h2>Library <code>mrpt-stereoslam</code></h2>
 <hr>
 
 Implementations of stereo-vision visual odometry and SLAM. This library 

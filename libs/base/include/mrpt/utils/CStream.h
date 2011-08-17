@@ -49,6 +49,7 @@ namespace mrpt
 		 *    can be directly written and read to and from any CStream easily.
 		 *  Please, it is recomendable to read CSerializable documentation also.
 		 *
+		 * \ingroup mrpt_base_grp
 		 * \sa CFileStream, CMemoryStream,CSerializable
 		 */
 		class BASE_IMPEXP CStream

@@ -55,6 +55,7 @@ namespace mrpt
 		  *    - The method writeImage, which does not raise any exception on errors.
 		  *
 		  * \note This class is a wrapper for OpenCV's CvVideoWriter.
+		  *  \ingroup mrpt_vision_grp
  		  */
 		class VISION_IMPEXP CVideoFileWriter
 		{

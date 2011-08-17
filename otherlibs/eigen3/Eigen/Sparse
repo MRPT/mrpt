@@ -21,7 +21,8 @@
 
 namespace Eigen {
 
-/** \defgroup Sparse_Module Sparse module
+/** \defgroup Sparse_Module Sparse module 
+ * \ingroup eigen_grp
   *
   *
   *

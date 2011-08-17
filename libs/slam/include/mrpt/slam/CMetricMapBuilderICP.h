@@ -42,6 +42,7 @@ namespace slam
 	/** A class for very simple 2D SLAM based on ICP. This is a non-probabilistic pose tracking algorithm.
 	 *   Map are stored as in files as binary dumps of "mrpt::slam::CSimpleMap" objects. The methods are
 	 *	 thread-safe.
+	 * \ingroup mrpt_slam_grp
 	 */
 	class SLAM_IMPEXP  CMetricMapBuilderICP : public CMetricMapBuilder
 	{

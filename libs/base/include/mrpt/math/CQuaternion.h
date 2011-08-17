@@ -54,6 +54,7 @@ namespace mrpt
 		 *  - http://people.csail.mit.edu/bkph/articles/Quaternions.pdf
 		 *  - http://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
 		 *
+		 * \ingroup mrpt_base_grp
 		 * \sa mrpt::poses::CPose3D
 		 */
 		template <class T>

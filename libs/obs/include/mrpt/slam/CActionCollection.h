@@ -44,6 +44,7 @@ namespace mrpt
 		 *    for logs storage and particle filter based simulations.
 		 *
 		 * \sa CAction, CRawlog
+	 	 * \ingroup mrpt_obs_grp
 		 */
 		class OBS_IMPEXP CActionCollection : public mrpt::utils::CSerializable
 		{

@@ -55,6 +55,7 @@ namespace utils
 			- 1/DIC/2004: (JLBC) Odometry, cumulative errors added.
 			- 18/JUN/2004: (JLBC) First creation.
 	 *
+	 * \ingroup mrpt_base_grp
 	 */
 	class BASE_IMPEXP CRobotSimulator
 	{

@@ -49,6 +49,7 @@ namespace mrpt
 		 *  See mrpt::slam::CPointsMap and derived classes for other point cloud classes.
 		 *
 		 * \sa CMetricMap, CWeightedPointsMap, CPoint, mrpt::utils::CSerializable
+	  	 * \ingroup mrpt_maps_grp
 		 */
 		class MAPS_IMPEXP CSimplePointsMap : public CPointsMap
 		{

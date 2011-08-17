@@ -39,7 +39,7 @@ namespace mrpt
 	{
 		/** The struct for passing extra simulation parameters to the prediction stage
 			*    when running a particle filter.
-			* \sa prediction
+			*   \ingroup mrpt_slam_grp
 			*/
 		struct SLAM_IMPEXP TMonteCarloLocalizationParams
 		{

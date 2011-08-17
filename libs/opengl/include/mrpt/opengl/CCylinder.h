@@ -44,6 +44,7 @@ namespace opengl	{
 	  *  </table>
 	  *  </div>
 	  *  
+	  * \ingroup mrpt_opengl_grp
 	  */
 	class OPENGL_IMPEXP CCylinder:public CRenderizableDisplayList	{
 		DEFINE_SERIALIZABLE(CCylinder)

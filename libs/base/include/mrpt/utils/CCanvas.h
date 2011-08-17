@@ -60,6 +60,7 @@ namespace mrpt
 		 *  For an example of each font check the <a href="http://www.mrpt.org/Implemented_2D_Fonts">corresponding wiki page</a>.
 		 *
 		 * \sa CImage
+		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP CCanvas
 		{

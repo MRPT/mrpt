@@ -71,6 +71,7 @@ namespace mrpt
 		 *    - mrpt::slam::mrptEventMetricMapInsert: Upon insertion of an observation that effectively modifies the map (e.g. inserting an image into a grid map will NOT raise an event, inserting a laser scan will).
 		 *
 		 * \sa CObservation, CSensoryFrame, CMultiMetricMap
+	 	 * \ingroup mrpt_obs_grp
 		 */
 		class OBS_IMPEXP CMetricMap :
 			public mrpt::utils::CSerializable,

@@ -49,6 +49,7 @@ namespace mrpt
 		  *  Note that edges are stored as a std::multimap<> to allow <b>multiple edges</b> between the same pair of nodes.
 		  *
 		  * \sa mrpt::math::CDijkstra, mrpt::poses::CNetworkOfPoses, mrpt::math::CDirectedTree
+		 * \ingroup mrpt_base_grp
 		  */
 		template<class TYPE_EDGES>
 		class CDirectedGraph
@@ -231,6 +232,7 @@ namespace mrpt
 		  *
 		  *  If annotations in edges are not required, you can leave TYPE_EDGES to its default type "uint8_t".
 		  *  \sa CDirectedGraph, CDijkstra, mrpt::poses::CNetworkOfPoses,
+		 * \ingroup mrpt_base_grp
 		  */
 		template <class TYPE_EDGES = uint8_t>
 		class CDirectedTree

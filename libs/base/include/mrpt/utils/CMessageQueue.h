@@ -37,6 +37,7 @@ namespace mrpt
 
 		/** A thread-safe class for message passing between threads.   
 		  * \sa CThreadSafeQueue 
+		  * \ingroup mrpt_base_grp
 		  */
 		typedef CThreadSafeQueue<CMessage> CMessageQueue;
 

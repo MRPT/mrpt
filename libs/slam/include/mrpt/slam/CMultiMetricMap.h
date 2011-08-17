@@ -74,7 +74,7 @@ namespace slam
 	 *   see TSetOfMetricMapInitializers::loadFromConfigFile for a template of ".ini"-like configuration
 	 *   file that can be used to define what maps to create and all their parameters.
 	 *
-	 * \sa CMetricMap
+	 * \sa CMetricMap  \ingroup mrpt_slam_grp 
 	 */
 	class SLAM_IMPEXP CMultiMetricMap : public CMetricMap
 	{

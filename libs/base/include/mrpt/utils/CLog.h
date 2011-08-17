@@ -48,6 +48,7 @@ namespace mrpt
 	{
 		/** A decorator of CStringList special for keeping logs.
 		  * \note Class written by Vicente Arevalo
+		 * \ingroup mrpt_base_grp
 		  */
 		class BASE_IMPEXP CLog : protected mrpt::utils::CStringList
 		{

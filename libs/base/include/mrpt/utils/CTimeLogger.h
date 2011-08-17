@@ -43,6 +43,7 @@ namespace mrpt
 		 *  The results can be dumped to cout or to Visual Studio's output panel.
 		 *  Recursive methods are supported with no problems, that is, calling "enter(X) enter(X) ... leave(X) leave(X)".
 		 * \note The default behavior is dumping all the information at destruction.
+		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP CTimeLogger : public mrpt::utils::CDebugOutputCapable
 		{

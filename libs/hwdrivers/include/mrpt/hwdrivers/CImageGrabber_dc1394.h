@@ -64,6 +64,7 @@ namespace mrpt
 		/** Options used when creating an dc1394 capture object
 		  *   All but the frame size, framerate, and color_coding can be changed dynamically by CImageGrabber_dc1394::changeCaptureOptions
 		  * \sa CImageGrabber_dc1394
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		struct TCaptureOptions_dc1394
 		{
@@ -113,6 +114,7 @@ namespace mrpt
 		  * \note This class requires MRPT compiled with "libdc1394-2" (Only works under Linux for now) and "opencv".
 		  * \note In Linux you may need to execute "chmod 666 /dev/video1394/ * " and "chmod 666 /dev/raw1394" for allowing any user R/W access to firewire cameras.
 		  * \sa The most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
+		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CImageGrabber_dc1394
 		{
