@@ -41,6 +41,7 @@
 		- Changes in applications:
 			- navlog-viewer: Now allows exporting the global navigation map as a MATLAB script for generating vector plots.
 			- rawlog-edit: New operation: "--generate-3d-pointclouds" - <a href="http://code.google.com/p/mrpt/source/detail?r=2579" >r2579</a>
+			- 2d-slam-demo: New menu "Tools"->"Save last data association state" for saving observation predictions and the innovation covariance S_k for debugging or didactic purposes.
 		- New classes:
 			- A batch of changes to introduce WiFi signal strength receivers and building maps out of such observations (by Emil Khatib) - <a href="http://code.google.com/p/mrpt/source/detail?r=2572" >r2572</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2573" >r2573</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2574" >r2574</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2577" >r2577</a>:
 				- [mrpt-obs] mrpt::slam::CObservationWirelessPower 

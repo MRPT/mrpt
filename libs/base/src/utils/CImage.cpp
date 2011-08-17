@@ -40,6 +40,7 @@
 #include <mrpt/math/fourier.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/memory.h>
 
 // OpenCV headers for any old/new version of them:
 #include "do_opencv_includes.h"
@@ -50,6 +51,7 @@
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::system;
 using namespace std;
 
 // This must be added to any CSerializable class implementation file.

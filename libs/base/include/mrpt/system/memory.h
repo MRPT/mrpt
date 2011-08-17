@@ -112,16 +112,19 @@ namespace mrpt
 			{
 				return (_Tp*)(((size_t)ptr + n-1) & -n);
 			}
-			
-			// The following templates are taken from libcvd (LGPL). See http://mi.eng.cam.ac.uk/~er258/cvd/
-			// Check if the pointer is aligned to the specified byte granularity
-			template<int bytes> bool is_aligned(const void* ptr);
-			template<> inline bool is_aligned<8>(const void* ptr) {   return ((reinterpret_cast<size_t>(ptr)) & 0x7) == 0;   }
-			template<> inline bool is_aligned<16>(const void* ptr) {  return ((reinterpret_cast<size_t>(ptr)) & 0xF) == 0;   }
 
 			/** @} */
-
 		}	// end namespace "os"
+
+		/** \addtogroup mrpt_memory Memory utilities
+		  *  @{ */
+		// The following templates are taken from libcvd (LGPL). See http://mi.eng.cam.ac.uk/~er258/cvd/
+		// Check if the pointer is aligned to the specified byte granularity
+		template<int bytes> bool is_aligned(const void* ptr);
+		template<> inline bool is_aligned<8>(const void* ptr) {   return ((reinterpret_cast<size_t>(ptr)) & 0x7) == 0;   }
+		template<> inline bool is_aligned<16>(const void* ptr) {  return ((reinterpret_cast<size_t>(ptr)) & 0xF) == 0;   }
+		/** @} */
+
 	} // End of namespace
 } // End of namespace
 

@@ -150,6 +150,7 @@ const long slamdemoFrame::ID_MENUITEM4 = wxNewId();
 const long slamdemoFrame::ID_MENUITEM5 = wxNewId();
 const long slamdemoFrame::idMenuQuit = wxNewId();
 const long slamdemoFrame::ID_MENUITEM8 = wxNewId();
+const long slamdemoFrame::ID_MENUITEM11 = wxNewId();
 const long slamdemoFrame::ID_MENUITEM9 = wxNewId();
 const long slamdemoFrame::ID_MENUITEM10 = wxNewId();
 const long slamdemoFrame::ID_MENUITEM7 = wxNewId();
@@ -478,6 +479,8 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Menu3 = new wxMenu();
     MenuItem5 = new wxMenuItem(Menu3, ID_MENUITEM8, _("Save filter state..."), wxEmptyString, wxITEM_NORMAL);
     Menu3->Append(MenuItem5);
+    mnuSaveLastDA = new wxMenuItem(Menu3, ID_MENUITEM11, _("Save last data association state..."), wxEmptyString, wxITEM_NORMAL);
+    Menu3->Append(mnuSaveLastDA);
     Menu3->AppendSeparator();
     MenuItem4 = new wxMenu();
     MenuItem6 = new wxMenuItem(MenuItem4, ID_MENUITEM9, _("View stats"), wxEmptyString, wxITEM_NORMAL);
@@ -523,6 +526,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_MENUITEM5,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&slamdemoFrame::OnConfigClicked);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&slamdemoFrame::OnQuit);
     Connect(ID_MENUITEM8,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&slamdemoFrame::OnMenuSaveFilterState);
+    Connect(ID_MENUITEM11,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&slamdemoFrame::OnmnuSaveLastDASelected);
     Connect(ID_MENUITEM9,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&slamdemoFrame::OnMenuProfilerViewStats);
     Connect(ID_MENUITEM10,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&slamdemoFrame::OnMenuProfilerReset);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&slamdemoFrame::OnAbout);
@@ -1975,3 +1979,52 @@ void slamdemoFrame::OnMenuProfilerReset(wxCommandEvent& event)
 	m_SLAM.getProfiler().clear();
 }
 
+
+void slamdemoFrame::OnmnuSaveLastDASelected(wxCommandEvent& event)
+{
+	// Data association graphs ------------------------
+	const CRangeBearingKFSLAM2D::TDataAssocInfo & da =  m_SLAM.getLastDataAssociation();
+
+	{
+		wxFileDialog dialog(
+			this,
+			_("Save prediction landmark IDs...") /*caption*/,
+			_(".") /* defaultDir */,
+			_("prediction_IDs.txt") /* defaultFilename */,
+			_("Text files (*.txt)|*.txt|All files (*.*)|*.*") /* wildcard */,
+			wxFD_SAVE | wxFD_OVERWRITE_PROMPT  );
+
+		if (dialog.ShowModal() != wxID_OK) return;
+		string filName( dialog.GetPath().mb_str() );
+
+		mrpt::system::vectorToTextFile(da.predictions_IDs,filName);
+	}
+	{
+		wxFileDialog dialog(
+			this,
+			_("Save prediction means...") /*caption*/,
+			_(".") /* defaultDir */,
+			_("prediction_means.txt") /* defaultFilename */,
+			_("Text files (*.txt)|*.txt|All files (*.*)|*.*") /* wildcard */,
+			wxFD_SAVE | wxFD_OVERWRITE_PROMPT  );
+
+		if (dialog.ShowModal() != wxID_OK) return;
+		string filName( dialog.GetPath().mb_str() );
+
+		da.Y_pred_means.saveToTextFile(filName);
+	}
+	{
+		wxFileDialog dialog(
+			this,
+			_("Save prediction covariance...") /*caption*/,
+			_(".") /* defaultDir */,
+			_("prediction_cov.txt") /* defaultFilename */,
+			_("Text files (*.txt)|*.txt|All files (*.*)|*.*") /* wildcard */,
+			wxFD_SAVE | wxFD_OVERWRITE_PROMPT  );
+
+		if (dialog.ShowModal() != wxID_OK) return;
+		string filName( dialog.GetPath().mb_str() );
+
+		da.Y_pred_covs.saveToTextFile(filName);
+	}
+}

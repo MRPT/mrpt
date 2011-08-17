@@ -72,6 +72,7 @@ class slamdemoFrame: public wxFrame
         void OnMenuSaveFilterState(wxCommandEvent& event);
         void OnMenuProfilerViewStats(wxCommandEvent& event);
         void OnMenuProfilerReset(wxCommandEvent& event);
+        void OnmnuSaveLastDASelected(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(slamdemoFrame)
@@ -126,6 +127,7 @@ class slamdemoFrame: public wxFrame
         static const long ID_MENUITEM5;
         static const long idMenuQuit;
         static const long ID_MENUITEM8;
+        static const long ID_MENUITEM11;
         static const long ID_MENUITEM9;
         static const long ID_MENUITEM10;
         static const long ID_MENUITEM7;
@@ -205,6 +207,7 @@ class slamdemoFrame: public wxFrame
         wxStaticText* StaticText6;
         wxGrid* gridDA;
         mpWindow* plotDaFN;
+        wxMenuItem* mnuSaveLastDA;
         wxToolBarToolBase* ToolBarItem8;
         wxMenuItem* mnuRunBatch;
         wxMenuItem* MenuItem8;

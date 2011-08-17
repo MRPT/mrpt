@@ -574,6 +574,10 @@
 					<label>Save filter state...</label>
 					<handler function="OnMenuSaveFilterState" entry="EVT_MENU" />
 				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM11" variable="mnuSaveLastDA" member="yes">
+					<label>Save last data association state...</label>
+					<handler function="OnmnuSaveLastDASelected" entry="EVT_MENU" />
+				</object>
 				<object class="separator" />
 				<object class="wxMenu" name="ID_MENUITEM7" variable="MenuItem4" member="yes">
 					<label>Profiler</label>
