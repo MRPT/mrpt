@@ -57,7 +57,7 @@ namespace mrpt
 		 *  See also the tutorial on <a href="http://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations" >probabilistic spatial representations in the MRPT</a>.
 		 *
 		 * \sa CPose3DQuatPDF, CPose3DPDF
-		 * \ingroup mrpt_base_grp
+		 * \ingroup poses_pdf_grp
 		 */
 		class BASE_IMPEXP CPose3DQuatPDF :
 			public mrpt::utils::CSerializable,

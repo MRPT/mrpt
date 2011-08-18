@@ -40,8 +40,9 @@ namespace mrpt
 {
 	namespace math
 	{
-		/** @name Gaussian PDF transformation functions
-		    @{ */
+		/** @addtogroup  gausspdf_transform_grp Gaussian PDF transformation functions
+		  *  \ingroup mrpt_base_grp
+		  * @{ */
 
 		/** Scaled unscented transformation (SUT) for estimating the Gaussian distribution of a variable Y=f(X) for an arbitrary function f() provided by the user.
 		  *  The user must supply the function in "functor" which takes points in the X space and returns the mapped point in Y, optionally using an extra, constant parameter ("fixed_param") which remains constant.

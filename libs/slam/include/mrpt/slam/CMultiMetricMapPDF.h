@@ -72,9 +72,9 @@ namespace slam
 
 	/** Declares a class that represents a Rao-Blackwellized set of particles for solving the SLAM problem (This class is the base of RBPF-SLAM applications).
 	 *   This class is used internally by the map building algorithm in "mrpt::slam::CMetricMapBuilderRBPF"
-	 * 
+	 *
 	 * \sa mrpt::slam::CMetricMapBuilderRBPF
-	 * \ingroup mrpt_slam_grp
+	 * \ingroup metric_slam_grp
 	 */
 	class SLAM_IMPEXP CMultiMetricMapPDF :
 		public mrpt::utils::CSerializable,

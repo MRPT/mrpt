@@ -42,7 +42,7 @@ namespace poses
 	/** This class stores a sequence of relative, incremental 3D poses. It is useful as the bases storing unit for more complex probability particles and for computing the absolute pose of any intermediate pose.
 	 *
 	 * \sa CPose3D, CMultiMetricMap
-	 * \ingroup mrpt_base_grp
+	 * \ingroup poses_grp
 	 */
 	class BASE_IMPEXP CPoses3DSequence : public mrpt::utils::CSerializable
 	{

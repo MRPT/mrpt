@@ -39,8 +39,9 @@ namespace mrpt
 	namespace math
 	{
 
-		/** @name Fourier functions
-		@{ */
+		/** \addtogroup fourier_grp Fourier transform functions
+		  *  \ingroup mrpt_base_grp
+		  * @{ */
 
 		/** Computes the FFT of a 2^N-size vector of real numbers, and returns the Re+Im+Magnitude parts.
 		  * \sa fft2_real

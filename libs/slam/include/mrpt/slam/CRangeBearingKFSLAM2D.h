@@ -65,7 +65,7 @@ namespace mrpt
 		  *		- http://www.mrpt.org/Application:2d-slam-demo
 		  *		- http://www.mrpt.org/Application:kf-slam
 		  *
-		  * \sa CRangeBearingKFSLAM  \ingroup mrpt_slam_grp
+		  * \sa CRangeBearingKFSLAM  \ingroup metric_slam_grp
 		  */
 		class SLAM_IMPEXP  CRangeBearingKFSLAM2D :
 			public bayes::CKalmanFilterCapable<3 /* x y yaw */, 2 /* range yaw */, 2 /* x y */,      3 /* Ax Ay Ayaw */>

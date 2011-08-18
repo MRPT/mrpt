@@ -39,6 +39,11 @@ namespace mrpt
 {
 	namespace math
 	{
+		/** \addtogroup kdtree_grp KD-Trees
+		  *  \ingroup mrpt_base_grp
+		  *  @{ */
+
+
 		/** A generic adaptor class for providing Approximate Nearest Neighbors (ANN) (via the FLANN library) to MRPT classses.
 		 *   This makes use of the CRTP design pattern.
 		 *
@@ -683,6 +688,8 @@ namespace mrpt
 			} // end of rebuild_kdTree
 
 		};  // end of KDTreeCapable
+
+		/**  @} */  // end of grouping
 
 	} // End of namespace
 } // End of namespace

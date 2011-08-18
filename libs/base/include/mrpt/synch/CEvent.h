@@ -37,42 +37,39 @@
   ---------------------------------------------------------------*/
 namespace mrpt
 {
-        /** This namespace provides multitask, synchronization utilities.
-	 * \ingroup mrpt_base_grp
-         */
-        namespace synch
-        {
-                /** This class provides a simple way of waiting for and signaling events (NOT IMPLEMENTED YET!).
-		 * \ingroup mrpt_base_grp
-                  */
-                class BASE_IMPEXP CEvent
-                {
-                private:
-                        utils::CReferencedMemBlock              m_data;
+	namespace synch
+	{
+		/** This class provides a simple way of waiting for and signaling events (NOT IMPLEMENTED YET!).
+		 * \ingroup synch_grp
+		  */
+		class BASE_IMPEXP CEvent
+		{
+		private:
+				utils::CReferencedMemBlock              m_data;
 
-                public:
-                        /** Constructor: set the initial signaled state of the event.
-                          */
-                        CEvent( bool initialSignaled );
+		public:
+				/** Constructor: set the initial signaled state of the event.
+				  */
+				CEvent( bool initialSignaled );
 
-                        /** Destructor
-                          */
-                        ~CEvent();
+				/** Destructor
+				  */
+				~CEvent();
 
-                        /** Signal the event: the first waiting thread resumes execution (if no thread is waiting, the object keeps signaled)
-                          */
-                        void  signal();
+				/** Signal the event: the first waiting thread resumes execution (if no thread is waiting, the object keeps signaled)
+				  */
+				void  signal();
 
-                        /** Waits for the event to be signaled.
-                          */
-                        void  wait();
+				/** Waits for the event to be signaled.
+				  */
+				void  wait();
 
-                        /** Manual reset of the event, without waiting to a signaled state (without effect if it is currently not signaled)
-                          */
-                        void  reset();
-                };
+				/** Manual reset of the event, without waiting to a signaled state (without effect if it is currently not signaled)
+				  */
+				void  reset();
+		};
 
-        } // End of namespace
+	} // End of namespace
 
 } // End of namespace
 

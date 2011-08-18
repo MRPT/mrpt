@@ -51,6 +51,9 @@ namespace mrpt
 {
 	namespace math
 	{
+		/** \addtogroup container_ops_grp
+		  *  @{ */
+
 		/** @name Operators for binary streaming of MRPT matrices
 		    @{ */
 
@@ -299,6 +302,8 @@ namespace mrpt
 		}
 
 	} // end of detail namespace
+
+		/**  @} */  // end of grouping
 
 	} // End of math namespace
 } // End of mrpt namespace

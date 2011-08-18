@@ -66,7 +66,7 @@ namespace poses
 	 *   <img src="CPose3D.gif">
 	 *  </div>
 	 *
-	 * \ingroup mrpt_base_grp
+	 * \ingroup poses_grp
 	 * \sa CPoseOrPoint,CPoint3D, mrpt::math::CQuaternion
 	 */
 	class BASE_IMPEXP CPose3D : public CPose<CPose3D>, public mrpt::utils::CSerializable

@@ -38,6 +38,9 @@ namespace mrpt
 	{
 		using namespace mrpt::poses;
 
+		/** \addtogroup geometry_grp
+		  *  @{ */
+
 		/** @name SLERP (Spherical Linear Interpolation) functions
 		    @{ */
 
@@ -113,6 +116,8 @@ namespace mrpt
 			CPose3DQuat       & p);
 
 		/** @} */
+
+		/** @} */  // grouping
 	}
 }
 #endif

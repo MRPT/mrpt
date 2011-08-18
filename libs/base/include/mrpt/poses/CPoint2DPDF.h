@@ -50,7 +50,7 @@ namespace poses
 	 *  For a similar class for 6D poses (a 3D point with attitude), see CPose3DPDF
 	 *
 	 *  See also the tutorial on <a href="http://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations" >probabilistic spatial representations in the MRPT</a>.
-	 * \ingroup mrpt_base_grp
+	 * \ingroup poses_pdf_grp
 	 * \sa CPoint2D, CPointPDF
 	 */
 	class BASE_IMPEXP CPoint2DPDF : public mrpt::utils::CSerializable, public mrpt::utils::CProbabilityDensityFunction<CPoint2D,2>

@@ -55,7 +55,7 @@ namespace mrpt
 		 *  See the application "app/pf-localization" for an example of usage.
 		 *
 		 * \sa CPose3D, CPose3DPDF, CPoseGaussianPDF
-		 * \ingroup mrpt_base_grp
+		 * \ingroup poses_pdf_grp
 		 */
 		class BASE_IMPEXP CPose3DPDFParticles :
 			public CPose3DPDF,

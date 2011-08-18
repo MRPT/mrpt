@@ -37,13 +37,17 @@
   ---------------------------------------------------------------*/
 namespace mrpt
 {
-	/** This namespace provides multitask, synchronization utilities. \ingroup mrpt_base_grp
+	/** @defgroup synch_grp Synchronization, multi-threading synch tools
+	  * \ingroup mrpt_base_grp */
+
+
+	/** This namespace provides multitask, synchronization utilities. \ingroup synch_grp
 	 */
 	namespace synch
 	{
 		/** This class provides simple critical sections functionality.
 		  * \sa CCriticalSectionLocker
-		  * \ingroup mrpt_base_grp
+		  * \ingroup synch_grp
 		  */
 		class BASE_IMPEXP CCriticalSection
 		{
@@ -122,7 +126,7 @@ namespace mrpt
 		  *    CCriticalSection  cs;
 		  *    MyObject  obj;
 		  *    ...
-		  *    
+		  *
 		  *    THREADSAFE_OPERATION(cs,  obj.foo(); )
 		  *    ...
 		  *    THREADSAFE_OPERATION(cs,  obj.foo(); obj.bar(); }

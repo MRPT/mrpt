@@ -47,7 +47,7 @@ namespace poses
 	 *   This class implements that PDF using a mono-modal Gaussian distribution. See mrpt::poses::CPosePDF for more details.
 	 *
 	 * \sa CPose2D, CPosePDF, CPosePDFParticles
-	 * \ingroup mrpt_base_grp
+	 * \ingroup poses_pdf_grp
 	 */
 	class BASE_IMPEXP CPosePDFGaussian : public CPosePDF
 	{

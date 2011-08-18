@@ -34,6 +34,7 @@
 namespace mrpt {
 	namespace math {
 
+
 	/** Model search implementations: RANSAC and genetic algorithm
 	  *
 	  *  The type  \a TModelFit is a user-supplied struct/class that implements this interface:
@@ -60,7 +61,7 @@ namespace mrpt {
 	  *  \sa mrpt::math::RANSAC_Template, another RANSAC implementation where models can be matrices only.
 	  *
 	  *  \author Zoltar Gaal
-	 * \ingroup mrpt_base_grp
+	  * \ingroup ransac_grp
 	  */
 	class BASE_IMPEXP ModelSearch {
 	private:

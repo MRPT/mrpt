@@ -40,7 +40,7 @@ namespace math
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPolygon, mrpt::utils::CSerializable )
 
 	/** A wrapper of a TPolygon2D class, implementing CSerializable.
-	 * \ingroup mrpt_base_grp
+	 * \ingroup geometry_grp
 	 */
 	class BASE_IMPEXP CPolygon : public mrpt::utils::CSerializable, public mrpt::math::TPolygon2D
 	{
@@ -53,7 +53,7 @@ namespace math
 		  *  This parameters are NOT used in PointIntoPolygon, so they can be ignored.
 		  * \sa PointIntoPolygon
 		 */
-		CPolygon() : TPolygon2D() 
+		CPolygon() : TPolygon2D()
 		{
 		}
 

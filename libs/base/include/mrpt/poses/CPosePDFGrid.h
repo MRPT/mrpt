@@ -45,7 +45,7 @@ namespace poses
 	 *   This class implements that PDF using a 3D grid.
 	 *
 	 * \sa CPose2D, CPosePDF, CPose2DGridTemplate
-	 * \ingroup mrpt_base_grp
+	 * \ingroup poses_pdf_grp
 	 */
 	class BASE_IMPEXP CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 	{

@@ -39,7 +39,7 @@ namespace poses
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPoint2DPDFGaussian, CPoint2DPDF )
 
 	/** A gaussian distribution for 2D points. Also a method for bayesian fusion is provided.
-	 * \ingroup mrpt_base_grp
+	 * \ingroup poses_pdf_grp
 	 * \sa CPoint2DPDF
 	 */
 	class BASE_IMPEXP CPoint2DPDFGaussian : public CPoint2DPDF
@@ -114,9 +114,9 @@ namespace poses
 		double  productIntegralWith( const CPoint2DPDFGaussian &p) const;
 
 		/** Computes the "correspondence likelihood" of this PDF with another one: This is implemented as the integral from -inf to +inf of the product of both PDF.
-		  * The resulting number is in the range [0,1]. 
-		  *  Note that the resulting value is in fact 
-		  *  \f[ exp( -\frac{1}{2} D^2 ) \f] 
+		  * The resulting number is in the range [0,1].
+		  *  Note that the resulting value is in fact
+		  *  \f[ exp( -\frac{1}{2} D^2 ) \f]
 		  *  , with \f$ D^2 \f$ being the square Mahalanobis distance between the two pdfs.
 		  * \sa productIntegralWith
 		  * \exception std::exception On errors like covariance matrix with null determinant, etc...

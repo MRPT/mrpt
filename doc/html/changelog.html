@@ -53,6 +53,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Changes in applications:<ul>
 <li>navlog-viewer: Now allows exporting the global navigation map as a MATLAB script for generating vector plots.</li>
 <li>rawlog-edit: New operation: "--generate-3d-pointclouds" - <a href="http://code.google.com/p/mrpt/source/detail?r=2579">r2579</a></li>
+<li>2d-slam-demo: New menu "Tools"-&gt;"Save last data association state" for saving observation predictions and the innovation covariance S_k for debugging or didactic purposes.</li>
 </ul>
 </li>
 <li>New classes:<ul>
@@ -396,7 +397,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><b>BUG FIXES:</b><ul>
 <li>Serialization dumps of many objects (observations, maps,...) should be now compatible between big and little endian architectures.</li>
 <li>Doing a clear() on <a class="el" href="classmrpt_1_1slam_1_1_c_coloured_points_map.html" title="A map of 2D/3D points with individual colours (RGB).">mrpt::slam::CColouredPointsMap</a> didn't actually clear the internal vectors for RGB+Distance values.</li>
-<li><a class="el" href="namespacemrpt_1_1utils_1_1net.html#a7fcf57ef73acb52f5423ccc4384bd7e4" title="Resolve a server address by its name, returning its IP address as a string - This method has a timeou...">mrpt::utils::net::DNS_resolve_async</a> didn't work properly.</li>
+<li>mrpt::utils::net::DNS_resolve_async didn't work properly.</li>
 <li>RawlogViewer, module "Raw-map": It didn't display or save the robot path for observations-only rawlogs.</li>
 <li>Fixed exception when rendering a <a class="el" href="classmrpt_1_1opengl_1_1_c_point_cloud.html" title="A cloud of points, all with the same color or each depending on its value along a particular coordina...">mrpt::opengl::CPointCloud</a> with no points in it.</li>
 <li>Fixed bad computation of SAD in mrpt::vision::matchFeatures() because bad usage of IplImage fields <em>width</em> and <em>widthstep</em>.</li>
@@ -519,9 +520,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>New functions:<ul>
 <li>mrpt::graphslam::optimize_graph_spa_levmarq , a graph-slam implementation in the new namespace <a class="el" href="namespacemrpt_1_1graphslam.html" title="SLAM methods related to graphs of pose constraints.">mrpt::graphslam</a></li>
-<li><a class="el" href="namespacemrpt_1_1math.html#ad318e0460782a02bc9e938b181798edd" title="SLERP interpolation between two quaternions.">mrpt::math::slerp</a></li>
-<li><a class="el" href="namespacemrpt_1_1math.html#acb86f87afdf4445de176eb99723626cf" title="Computes the 3x3 skew symmetric matrix from a 3-vector or 3-array: .">mrpt::math::skew_symmetric3</a> &amp; <a class="el" href="namespacemrpt_1_1math.html#a58bb69af50724ded7115e017eb965553" title="Computes the negative version of a 3x3 skew symmetric matrix from a 3-vector or 3-array: ...">mrpt::math::skew_symmetric3_neg</a></li>
-<li><a class="el" href="namespacemrpt_1_1math.html#a893cd2fd94a871731cc233c53b8e0dba" title="Compute a rotation exponential using the Rodrigues Formula.">mrpt::math::rodrigues_so3_exp</a></li>
+<li>mrpt::math::slerp</li>
+<li>mrpt::math::skew_symmetric3 &amp; mrpt::math::skew_symmetric3_neg</li>
+<li>mrpt::math::rodrigues_so3_exp</li>
 <li>mrpt::vision::pinhole::undistort_point</li>
 <li>ostream text print &lt;&lt; operators for <a class="el" href="structmrpt_1_1utils_1_1_t_pixel_coordf.html" title="A pair (x,y) of pixel coordinates (subpixel resolution).">mrpt::utils::TPixelCoordf</a> and <a class="el" href="structmrpt_1_1utils_1_1_t_pixel_coordf.html" title="A pair (x,y) of pixel coordinates (subpixel resolution).">mrpt::utils::TPixelCoordf</a>.</li>
 <li>New ASSERT macros: ASSERT_EQUAL_, ASSERT_NOT_EQUAL_, ASSERT_BELOW_, ASSERT_ABOVE_.</li>
@@ -559,7 +560,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Fixed exception in <a class="el" href="classmrpt_1_1math_1_1_c_levenberg_marquardt_templ.html" title="An implementation of the Levenberg-Marquardt algorithm for least-square minimization.">mrpt::math::CLevenbergMarquardtTempl</a> when saving the optimization path.</li>
 <li>Iterators in <a class="el" href="classmrpt_1_1slam_1_1_c_rawlog.html" title="This class stores a rawlog (robotic datasets) in one of two possible formats:Format #1: A sequence of...">mrpt::slam::CRawlog</a> only had the post-increment form, but actually implemented a pre-increment. Both, correct, versions now exist.</li>
 <li><a class="el" href="classmrpt_1_1gui_1_1_c_base_g_u_i_window.html#af877c8001eef3292f9affc04ca4aa137" title="Changes the window title text.">mrpt::gui::CBaseGUIWindow::setWindowTitle()</a> didn't work (for some versions of wxWidgets only?).</li>
-<li>mrpt::gui::CDisplayWindowPlots::plot(y) asserted on empty input vector (actually a bug in <a class="el" href="namespacemrpt_1_1math.html#a461935b183c007724a63be80d4a52f3a" title="Generates an equidistant sequence of numbers given the first one, the last one and the desired number...">mrpt::math::linspace</a> for len=0)</li>
+<li>mrpt::gui::CDisplayWindowPlots::plot(y) asserted on empty input vector (actually a bug in mrpt::math::linspace for len=0)</li>
 <li><a class="el" href="classmrpt_1_1gui_1_1_c_display_window_plots.html" title="Create a GUI window and display plots with MATLAB-like interfaces and commands.">mrpt::gui::CDisplayWindowPlots</a> did ignore the construction-time width x height.</li>
 <li>Fixed bug in <a class="el" href="classmrpt_1_1utils_1_1_c_image.html#afd0dbc513f07e36a3764e674fdff6c1e" title="Compute the KLT response at a given pixel (x,y) - Only for grayscale images (for efficiency it avoids...">mrpt::utils::CImage::KLT_response</a>: due to wrong signed numbers usage, responses were high in textureless parts of images.</li>
 <li>FIXED: <a class="el" href="classmrpt_1_1gui_1_1_c_display_window3_d.html" title="A graphical user interface (GUI) for efficiently rendering 3D scenes in real-time.">mrpt::gui::CDisplayWindow3D</a> crashes when hitting ALT+Enter for fullscreen when user is waiting for a key to close the window.</li>
@@ -843,9 +844,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ul>
 </li>
 <li>Set of new functions for propagating a Gaussian PDF trough an arbitrary function (see also example 'unscented_transformation_test')<ul>
-<li><a class="el" href="namespacemrpt_1_1math.html#ac82a2da963038ef7dbd2aca1f985f42c" title="Simple Montecarlo-base estimation of the Gaussian distribution of a variable Y=f(X) for an arbitrary ...">mrpt::math::transform_gaussian_montecarlo</a> : Monte Carlo approximation</li>
-<li><a class="el" href="namespacemrpt_1_1math.html#ad943dc8d8b4dec3107016b970786f0fb" title="First order uncertainty propagation estimator of the Gaussian distribution of a variable Y=f(X) for a...">mrpt::math::transform_gaussian_linear</a> : First order approximation (as in EKF)</li>
-<li><a class="el" href="namespacemrpt_1_1math.html#aaec0af57e31ddbcdcdd1586f28539456" title="Scaled unscented transformation (SUT) for estimating the Gaussian distribution of a variable Y=f(X) f...">mrpt::math::transform_gaussian_unscented</a> : Scaled Unscented Transformation (as in UKF).</li>
+<li>mrpt::math::transform_gaussian_montecarlo : Monte Carlo approximation</li>
+<li>mrpt::math::transform_gaussian_linear : First order approximation (as in EKF)</li>
+<li>mrpt::math::transform_gaussian_unscented : Scaled Unscented Transformation (as in UKF).</li>
 </ul>
 </li>
 <li><a class="el" href="classmrpt_1_1slam_1_1_c_landmarks_map.html#ad7e91ccd233e610a748c2438715e1b62" title="Save to a text file.">mrpt::slam::CLandmarksMap::saveToTextFile()</a> now generates a text header in each file explaining the format of the file (compatible with MATLAB comments).</li>
@@ -853,8 +854,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>3D windows can display an arbitrary number of 2D text messages. See mrpt::gui::CDisplayWindow3D::add2DTextMessage().</li>
 <li><a class="el" href="structmrpt_1_1utils_1_1_t_type_name.html" title="A template to obtain the type of its argument as a string at compile time.">mrpt::utils::TTypeName</a> now also supports matrix and CArray-derived classes.</li>
 <li>Functions that have been "templatized":<ul>
-<li><a class="el" href="namespacemrpt_1_1math.html#a2ec8bf7897f7b8b0fee1ca9ae46443bb" title="Evaluates the univariate normal (Gaussian) distribution at a given point &quot;x&quot;.">mrpt::math::normalPDF</a></li>
-<li><a class="el" href="namespacemrpt_1_1math.html#a9ed2005589fa01a91063e4008cf055ca" title="Computes covariances and mean of any vector of containers.">mrpt::math::covariancesAndMean</a></li>
+<li>mrpt::math::normalPDF</li>
+<li>mrpt::math::covariancesAndMean</li>
 </ul>
 </li>
 <li>New methods in all kind of matrices (some were only in CMatrixTemplate).<ul>
@@ -866,8 +867,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>mrpt::system::terminateThread.</li>
 <li>mrpt::math::unscented_transform_gaussian</li>
 <li>mrpt::math::montecarlo_transform_gaussian</li>
-<li><a class="el" href="namespacemrpt_1_1math.html#a52234e08a658a81ded4a6fd932dd7e30" title="Computes covariances and mean of any vector of containers, given optional weights for the different s...">mrpt::math::covariancesAndMeanWeighted</a></li>
-<li><a class="el" href="namespacemrpt_1_1math.html#a772e54a8aacb068395f9823a90d8df50" title="Extract a column from a vector of vectors, and store it in another vector.">mrpt::math::extractColumnFromVectorOfVectors</a></li>
+<li>mrpt::math::covariancesAndMeanWeighted</li>
+<li>mrpt::math::extractColumnFromVectorOfVectors</li>
 </ul>
 </li>
 </ul>
@@ -886,7 +887,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Initial size of the window was ignored in <a class="el" href="classmrpt_1_1gui_1_1_c_display_window3_d.html" title="A graphical user interface (GUI) for efficiently rendering 3D scenes in real-time.">mrpt::gui::CDisplayWindow3D</a>.</li>
 <li>Error returning 2x1 <a class="el" href="namespacemrpt_1_1math.html#a34f37758cc35f29279a8e6ad91215ad1">size()</a> in dynamic matrices, since there was only one static member shared by all matrices.</li>
 <li>Swapped red-blue channels in mrpt::gui::wxImage2MRPTImage (Closes <a href="http://www.mrpt.org/node/70">this issue</a>).</li>
-<li><a class="el" href="classmrpt_1_1poses_1_1_c_pose3_d.html" title="A class used to store a 3D pose (a 3D translation + a rotation in 3D).">mrpt::poses::CPose3D</a> undefined values when initializing from a "-" operator, due to bug in <a class="el" href="namespacemrpt_1_1math.html#aa1aa35b2b00c218c77b0b18ad4c2ca3d" title="Efficiently compute the inverse of a 4x4 homogeneous matrix by only transposing the rotation 3x3 part...">mrpt::math::homogeneousMatrixInverse()</a>.</li>
+<li><a class="el" href="classmrpt_1_1poses_1_1_c_pose3_d.html" title="A class used to store a 3D pose (a 3D translation + a rotation in 3D).">mrpt::poses::CPose3D</a> undefined values when initializing from a "-" operator, due to bug in mrpt::math::homogeneousMatrixInverse().</li>
 <li><a class="el" href="classmrpt_1_1math_1_1_c_histogram.html#a3c73f961d0d19bb6feb8c91da2128709" title="Retuns the ratio in [0,1] range for the selected bin index, where first one is 0.">mrpt::math::CHistogram::getBinRatio()</a> and hence <a class="el" href="namespacemrpt_1_1math.html#aef776ce87afba44765d7a98fa3bf3e8a" title="Computes the normalized or normal histogram of a sequence of numbers given the number of bins and the...">mrpt::math::histogram</a> when do_normalization=true, always returned zero.</li>
 <li>Fixed crash in rawlog-grabber when grabbing from a (non-stereo) camera and enabling preview (Closes <a href="https://sourceforge.net/tracker/?func=detail&amp;aid=2988657&amp;group_id=205280&amp;atid=993006">SF #2988657 </a>).</li>
 <li>When grabbing images with <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_camera_sensor.html" title="The central class for camera grabbers in MRPT, implementing the &quot;generic sensor&quot; interface...">mrpt::hwdrivers::CCameraSensor</a> and decimation is enabled in <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_generic_sensor.html" title="A generic interface for a wide-variety of sensors designed to be used in the application RawLogGrabbe...">mrpt::hwdrivers::CGenericSensor</a>, all the images were saved to disk. It's been fixed so only the decimated ones are saved.</li>
@@ -956,7 +957,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ul>
 </li>
 <li>Functions modified as templates to allow its usage with a wider variety of parameter types:<ul>
-<li><a class="el" href="namespacemrpt_1_1math.html#ac0ce577d29a01ff3ddf74686abd7005d" title="Estimate the Jacobian of a multi-dimensional function around a point &quot;x&quot;, using finite differences of a given size in each input dimension.">mrpt::math::estimateJacobian</a>, <a class="el" href="namespacemrpt_1_1math.html#aa1aa35b2b00c218c77b0b18ad4c2ca3d" title="Efficiently compute the inverse of a 4x4 homogeneous matrix by only transposing the rotation 3x3 part...">mrpt::math::homogeneousMatrixInverse</a></li>
+<li>mrpt::math::estimateJacobian, mrpt::math::homogeneousMatrixInverse</li>
 </ul>
 </li>
 <li>New "STL extension" class: mrpt::utils::bimap&lt;KEY,VAL&gt;, a bidirectional equivalent of std::map.</li>
@@ -975,8 +976,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ul>
 </li>
 <li>New small functions:<ul>
-<li><a class="el" href="namespacemrpt_1_1math.html#a031b06489a1ba993cc1200e4da42dfac">mrpt::math::chi2PDF</a>, <a class="el" href="namespacemrpt_1_1math.html#adaf15d0ae96eb360f18107703ff8ffc9">mrpt::math::chi2CDF</a>, <a class="el" href="namespacemrpt_1_1math.html#abe14bc934138342f5aeb1e92516eaca7">mrpt::math::noncentralChi2CDF</a> (adapted from code in the Vigra project).</li>
-<li>trace() (in all matrices), <a class="el" href="namespacemrpt_1_1math.html#aede55ba0a3b97c18a06dd19322c16578" title="Kullback-Leibler divergence (KLD) between two independent multivariate Gaussians.">mrpt::math::KLD_Gaussians</a>, <a class="el" href="namespacemrpt_1_1math.html#a580a20d9c7270a89d5ef8f99e68db932" title="Return the mean and the 10-90% confidence points (or with any other confidence value) of a set of sam...">mrpt::math::condidenceIntervals</a></li>
+<li>mrpt::math::chi2PDF, mrpt::math::chi2CDF, mrpt::math::noncentralChi2CDF (adapted from code in the Vigra project).</li>
+<li>trace() (in all matrices), mrpt::math::KLD_Gaussians, mrpt::math::condidenceIntervals</li>
 <li><a class="el" href="namespacemrpt_1_1random.html#a4b8c2d5323417f5760fb2ed586b07d0c" title="A random number generator for usage in STL algorithms expecting a function like this (eg...">mrpt::random::random_generator_for_STL</a></li>
 </ul>
 </li>
@@ -1117,7 +1118,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>mrpt::system::os::timegm</li>
 <li>mrpt::math::CMatrixTemplate::extractSubmatrixSymmetricalBlocks</li>
 <li><a class="el" href="namespacemrpt_1_1utils.html#ac08ec2e92830b21c437f81629b81b9eb" title="If the second argument is above the first one, set the first argument to this higher value...">mrpt::utils::keep_max</a> and <a class="el" href="namespacemrpt_1_1utils.html#a9538c06bf3330bc27e412a568293c1c5" title="If the second argument is below the first one, set the first argument to this lower value...">mrpt::utils::keep_min</a></li>
-<li><a class="el" href="namespacemrpt_1_1math.html#a816638baf88338f71838c60b6a392707" title="A versatile template to build vectors on-the-fly in a style close to MATLAB&#39;s v=[a b c d ...">mrpt::math::make_vector</a></li>
+<li>mrpt::math::make_vector</li>
 </ul>
 </li>
 <li>New examples:<ul>
@@ -1339,7 +1340,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Added support for intersections in vectors and generic objects (Pablo).</li>
 <li>Minor change in <a class="el" href="classmrpt_1_1poses_1_1_c_pose3_d.html#aaabe44aa147e5391009051b49a6d524e" title="An alternative, slightly more efficient way of doing  with G and L being 3D points and P this 6D pose...">mrpt::poses::CPose3D::composePoint</a> for efficiency purposes (Pablo).</li>
 <li>Added methods to estimate lines and planes using linear regression (Pablo).</li>
-<li>Added method <a class="el" href="namespacemrpt_1_1math.html#a9ed2005589fa01a91063e4008cf055ca" title="Computes covariances and mean of any vector of containers.">mrpt::math::covariancesAndMean</a> to get covariances and mean of any set of points in N-dimensions (Pablo).</li>
+<li>Added method mrpt::math::covariancesAndMean to get covariances and mean of any set of points in N-dimensions (Pablo).</li>
 <li>The Levenberg-Marquardt implementation now has a second template parameter for the type of the "user parameter" passed to the evaluation functor. Instead of forcing it being a numeric vector, it can now be any arbitrary object. See <a class="el" href="classmrpt_1_1math_1_1_c_levenberg_marquardt_templ.html" title="An implementation of the Levenberg-Marquardt algorithm for least-square minimization.">mrpt::math::CLevenbergMarquardtTempl</a></li>
 <li>New consistent pose-network optimizers (Experimental!):<ul>
 <li>Based on Levenberg-Marquardt. See mrpt::slam::optimizePoseGraph_levmarq</li>
@@ -1370,7 +1371,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Added a video file writer from a sequence of images. See <a class="el" href="classmrpt_1_1vision_1_1_c_video_file_writer.html" title="An output stream which takes a sequence of images and writes a video file in any of a given of compat...">mrpt::vision::CVideoFileWriter</a></li>
 <li>Deleted old obsolete classes from <a class="el" href="namespacemrpt_1_1vision.html" title="Classes for computer vision, detectors, features, etc.">mrpt::vision</a>: CGaussianConvolutionKernel, CImageConvolution</li>
 <li>New utilities added to <a class="el" href="namespacemrpt_1_1utils_1_1metaprogramming.html" title="A set of utility objects for metaprogramming with STL algorithms.">mrpt::utils::metaprogramming</a></li>
-<li>Applied uses of RANSAC added in <a class="el" href="ransac__applications_8h.html">ransac_applications.h</a>. See <a class="el" href="namespacemrpt_1_1math.html#a2e098dd1b01790803a7a12c9bee51409" title="Fit a number of 3-D planes to a given point cloud, automatically determining the number of existing p...">mrpt::math::ransac_detect_3D_planes</a>, <a class="el" href="namespacemrpt_1_1math.html#a9582976e85ae5a7994aae75f3bf21304" title="Fit a number of 2-D lines to a given point cloud, automatically determining the number of existing li...">mrpt::math::ransac_detect_2D_lines</a> and <a href="http://www.mrpt.org/RANSAC_C++_examples">examples</a>.</li>
+<li>Applied uses of RANSAC added in <a class="el" href="ransac__applications_8h.html">ransac_applications.h</a>. See mrpt::math::ransac_detect_3D_planes, mrpt::math::ransac_detect_2D_lines and <a href="http://www.mrpt.org/RANSAC_C++_examples">examples</a>.</li>
 <li>Fonts used in <a class="el" href="classmrpt_1_1utils_1_1_c_canvas.html" title="This virtual class defines the interface of any object accepting drawing primitives on it...">mrpt::utils::CCanvas</a> are now internally saved as gz-compressed data streams, automatically decompressed on first use. This saves ~1Mb in the .DLL/.so file for mrpt-core when compiled with Asian fonts.</li>
 <li>Two new gz-compression methods: <a class="el" href="namespacemrpt_1_1compress_1_1zip.html#a19ffeb11cd206759b10f07dabd180faa" title="Compress a memory buffer in gz-file format and return it as a block a memory.">mrpt::compress::zip::compress_gz_data_block</a> and <a class="el" href="namespacemrpt_1_1compress_1_1zip.html#a9f33fa39c5dc810d14fa459141e8b6b1" title="Decompress an array of bytes storing a gz-compressed stream of data into a memory buffer...">mrpt::compress::zip::decompress_gz_data_block</a></li>
 <li>Load/Save of matrices as text files moved from <a class="el" href="classmrpt_1_1math_1_1_c_matrix_template_numeric.html" title="A matrix of dynamic size.">mrpt::math::CMatrixTemplateNumeric</a> to <a class="el" href="classmrpt_1_1math_1_1_c_matrix_template.html" title="This template class provides the basic functionality for a general 2D any-size, resizable container o...">mrpt::math::CMatrixTemplate</a>.</li>
@@ -1429,7 +1430,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>CText now accepts color changes (Pablo Moreno).</li>
 <li>Added "contains" method for CSetOfObjects (Pablo Moreno).</li>
 <li>Added methods for loading matrices from MATLAB-like strings. See mrpt::math::CMatrixTemplate&lt;T&gt;::fromMatlabStringFormat and <a class="el" href="classmrpt_1_1utils_1_1_c_config_file_base.html#a1d9a7617494016980a1ea4e5a5ff3e49" title="Reads a configuration parameter as a matrix written in a matlab-like format - for example: &quot;[2 3...">mrpt::utils::CConfigFileBase::read_matrix</a>.</li>
-<li>New method for computing the mahalanobis distance. See <a class="el" href="namespacemrpt_1_1math.html#a4cd811ce384b89dcde154df501ea75ba" title="Computes the mahalanobis distance of a vector X given the mean MU and the covariance *inverse* COV_in...">mrpt::math::mahalanobisDistance</a></li>
+<li>New method for computing the mahalanobis distance. See mrpt::math::mahalanobisDistance</li>
 <li>Levenberg-Marquardt and many other functions in <a class="el" href="namespacemrpt_1_1random.html" title="A namespace of pseudo-random numbers genrators of diferent distributions.">mrpt::random</a> converted into templates.</li>
 <li>Added some minor methods to graphic classes, especially CSetOfLines (Pablo Moreno).</li>
 <li>Matrix's method to save as plain text has been extended with the possibility of adding user comments and selecting the output format. See <a class="el" href="namespacemrpt_1_1math.html#a5c655254dc91e1e5e5b7e43ab7572d85">mrpt::math::TMatrixTextFileFormat</a>.</li>
@@ -1459,9 +1460,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Important changes to improve the design of <a class="el" href="namespacemrpt_1_1opengl.html" title="The namespace for 3D scene representation and rendering.">mrpt::opengl</a> classes: "render" method is "const", more set/get methods instead of public members, etc.</li>
 <li>New exception class <a class="el" href="classmrpt_1_1utils_1_1_c_exception_e_o_f.html" title="Used in mrpt::utils::CStream.">mrpt::utils::CExceptionEOF</a>, used to distinguish between normal and erroneous EOFs found while de-serializing objects from a stream.</li>
 <li>Added method for RTK GPS path reconstruction: mrpt::topography::path_from_rtk_gps</li>
-<li>New math methods: <a class="el" href="namespacemrpt_1_1math.html#a6b94c41c7406e0d606111a7b771b72e0" title="Modify a sequence of angle values such as no consecutive values have a jump larger than PI in absolut...">mrpt::math::unwrap2PiSequence</a>, <a class="el" href="namespacemrpt_1_1math.html#a3bd9ff688b42b58bd8c2f5d6f420868f" title="Computes the average of a sequence of angles in radians taking into account the correct wrapping in t...">mrpt::math::averageWrap2Pi</a></li>
-<li>Added template function <a class="el" href="namespacemrpt_1_1utils.html#a27cfe12743ce29177466bff9e8d64a09" title="Returns the index of the value &quot;T&quot; in the container &quot;vect&quot; (std::vector,std::deque,etc), or string::npos if not found.">mrpt::utils::find_in_vector</a> for searching an element in any std::vector container (like "find" in other containers).</li>
-<li>New interpolation methods for 1D functions: <a class="el" href="namespacemrpt_1_1math.html#a199ae09bf97644048fe53590964abd1b" title="Linear interpolation/extrapolation: evaluates at &quot;x&quot; the line (x0,y0)-(x1,y1).">mrpt::math::interpolate2points</a>, <a class="el" href="namespacemrpt_1_1math.html#a25fa2d8b0c20370e79b17eb6bf4c7024" title="Interpolates or extrapolates using a least-square linear fit of the set of values &quot;x&quot; and &...">mrpt::math::leastSquareLinearFit</a>.</li>
+<li>New math methods: mrpt::math::unwrap2PiSequence, mrpt::math::averageWrap2Pi</li>
+<li>Added template function mrpt::utils::find_in_vector for searching an element in any std::vector container (like "find" in other containers).</li>
+<li>New interpolation methods for 1D functions: mrpt::math::interpolate2points, mrpt::math::leastSquareLinearFit.</li>
 <li>CStream::printf now correctly returns an "int" instead of "void".</li>
 <li>Types vector_XXX moved from global to "mrpt" namespace.</li>
 <li>New color types <a class="el" href="structmrpt_1_1utils_1_1_t_color.html" title="A RGB color - 8bit.">mrpt::utils::TColor</a> &amp; <a class="el" href="structmrpt_1_1utils_1_1_t_colorf.html" title="A RGB color - floats in the range [0,1].">mrpt::utils::TColorf</a>.</li>
@@ -1532,7 +1533,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>New class <a class="el" href="classmrpt_1_1opengl_1_1_c_set_of_textured_triangles.html" title="A set of textured triangles.">mrpt::opengl::CSetOfTexturedTriangles</a> for arbitrary shapes in 3D scenes with textures (by Vicente Arevalo).</li>
 <li>Preview of image capture is posible in rawlog-grabber, thru new option in <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_camera_sensor.html" title="The central class for camera grabbers in MRPT, implementing the &quot;generic sensor&quot; interface...">mrpt::hwdrivers::CCameraSensor</a>.</li>
 <li>Added support for grabbing FireWire cameras using the library dc1394-2 (The Windows port of dc1394-2 is not released yet). See the new class mrpt::vision::CImageGrabber_dc1394.</li>
-<li>New methods in matrix classes (and for vectors in <a class="el" href="namespacemrpt_1_1math.html#a40e8e47dea9f504a28d2a70ea8ddb158" title="Loads one row of a text file as a numerical std::vector.">mrpt::math::loadVector</a>) for initializing directly from const C arrays.</li>
+<li>New methods in matrix classes (and for vectors in mrpt::math::loadVector) for initializing directly from const C arrays.</li>
 <li>RawlogViewer:<ul>
 <li>Many small improvements in laser &amp; image animations.</li>
 <li>New menu commands for transforming rawlogs, manipulating gps data, etc...</li>
@@ -2305,4 +2306,4 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 </ul>
 </div></div>
-<br><hr><br> <table border="0" width="100%"> <tr> <td> Page generated by <a href="http://www.doxygen.org" target="_blank">Doxygen 1.7.3</a> for MRPT 0.9.5 SVN:2627M at Wed Aug 17 03:28:25 CEST 2011</td><td></td> <td width="100"> </td> <td width="150">  </td></tr> </table>  </body></html>
+<br><hr><br> <table border="0" width="100%"> <tr> <td> Page generated by <a href="http://www.doxygen.org" target="_blank">Doxygen 1.7.3</a> for MRPT 0.9.5 SVN:2629M at Fri Aug 19 01:42:16 CEST 2011</td><td></td> <td width="100"> </td> <td width="150">  </td></tr> </table>  </body></html>

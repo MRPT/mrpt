@@ -38,6 +38,10 @@ namespace mrpt
 {
 	namespace math
 	{
+		/** \addtogroup kdtree_grp
+		  *  @{ */
+
+
 		/** A simple FLANN KD-tree adaptor for working with data directly stored in an Eigen Matrix, without duplicating the data storage.
 		 * \sa KDTreeCapable
 		 * \ingroup mrpt_base_grp
@@ -102,6 +106,8 @@ namespace mrpt
 			bool kdtree_get_bbox(BBOX &bb) const { return false; }
 
 		}; // end of KDTreeMatrixAdaptor
+
+		/** @} */  // end of grouping
 
 	} // End of namespace
 } // End of namespace

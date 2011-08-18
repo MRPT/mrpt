@@ -49,7 +49,7 @@ namespace mrpt
 		 *  See mrpt::poses::CPointPDF for more details.
 		 *
 		 * \sa CPointPDF, CPosePDF,
-		 * \ingroup mrpt_base_grp
+		 * \ingroup poses_pdf_grp
 		 */
 		class BASE_IMPEXP  CPointPDFSOG : public CPointPDF
 		{
@@ -123,10 +123,10 @@ namespace mrpt
 			iterator end() { return m_modes.end(); }
 			const_iterator begin() const { return m_modes.begin(); }
 			const_iterator end()const { return m_modes.end(); }
-			
+
 			iterator erase(iterator i) { return m_modes.erase(i); }
 
-			void resize(const size_t N); //!< Resize the number of SOG modes 
+			void resize(const size_t N); //!< Resize the number of SOG modes
 			size_t size() const { return m_modes.size(); } //!< Return the number of Gaussian modes.
 			bool empty() const { return m_modes.empty(); } //!< Return whether there is any Gaussian mode.
 

@@ -265,14 +265,14 @@ namespace mrpt
 			/** @name Static methods with low-level detector functionality
 			    @{ */
 
-			/** A SSE2-optimized implementation of FASTER-9 (requires img to be grayscale) - If SSE2 is not available, it gratefully falls back to a non-optimized version
-			  *  Only the pt.{x,y} fields are filled out for each feature: the rest of fields are left *uninitialized* and their content is *undefined*.
+			/** A SSE2-optimized implementation of FASTER-9 (requires img to be grayscale). If SSE2 is not available, it gratefully falls back to a non-optimized version
+			  *  Only the pt.{x,y} fields are filled out for each feature: the rest of fields are left <b>uninitialized</b> and their content is <b>undefined</b>
 			  *  Note that (x,y) are already scaled to the 0-level image coordinates if octave>0, by means of:
 			  *
 			  *    pt.x = detected.x << octave;
 			  *    pt.y = detected.y << octave;
 			  *
-			  *  If \a append_to_list is false, the \a corners list is not cleared before adding the newly detected feats.
+			  *  If \a append_to_list is true, the \a corners list is not cleared before adding the newly detected feats.
 			  * \ingroup mrptvision_features
 			  */
 			static void detectFeatures_SSE2_FASTER9(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20, bool append_to_list = false, uint8_t octave = 0);

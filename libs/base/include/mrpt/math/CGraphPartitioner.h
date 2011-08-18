@@ -43,7 +43,7 @@ namespace math
 	 *  It is based on the Shi-Malik method, proposed for example in:<br><br>
 	 *  <code>J. Shi and J. Malik, "Normalized Cuts and Image Segmentation,"IEEE Transactions on Pattern Analysis and Machine Intelligence, vol.22, no.8, pp. 888-905, Aug. 2000.</code><br>
 	 *
-	* \ingroup mrpt_base_grp
+	* \ingroup graph_utils_grp
 	 */
 	class BASE_IMPEXP CGraphPartitioner : public mrpt::utils::CDebugOutputCapable
 	{

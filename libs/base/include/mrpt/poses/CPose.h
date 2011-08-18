@@ -38,7 +38,7 @@ namespace mrpt
 		 *   For more information refer to the <a href="http://www.mrpt.org/2D_3D_Geometry"> 2D/3D Geometry tutorial</a> online.
 		 * \note This class is based on the CRTP design pattern
 		 * \sa CPoseOrPoint, CPoint
-		 * \ingroup mrpt_base_grp
+		 * \ingroup poses_grp
 		 */
 		template <class DERIVEDCLASS>
 		class CPose : public CPoseOrPoint<DERIVEDCLASS>

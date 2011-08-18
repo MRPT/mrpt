@@ -48,7 +48,7 @@ namespace synch
 	  *  \endcode
 	  *
 	  * \sa CCriticalSection
-	  * \ingroup mrpt_base_grp
+	  * \ingroup synch_grp
 	  */
 	template <typename T>
 	class CThreadSafeVariable

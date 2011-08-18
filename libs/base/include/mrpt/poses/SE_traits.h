@@ -36,10 +36,11 @@ namespace mrpt
 {
 	namespace poses
 	{
+		/** \addtogroup poses_grp
+		  *  @{ */
 
 		/** A helper class for SE(2) and SE(3) geometry-related transformations, on-manifold optimization Jacobians, etc.
 		  * \sa SE_traits<2>, SE_traits<3>, CPose3D, CPose2D
-		 * \ingroup mrpt_base_grp
 		  */
 		template <size_t DOF> struct BASE_IMPEXP SE_traits;
 
@@ -52,12 +53,12 @@ namespace mrpt
 			typedef CPose3D  pose_t;
 
 			/** Exponential map in SE(3) */
-			static void exp(const array_t &x, CPose3D &P) { P = CPose3D::exp(x); } 
+			static void exp(const array_t &x, CPose3D &P) { P = CPose3D::exp(x); }
 
 			/** Logarithm map in SE(3) */
-			static void ln(const CPose3D &P, array_t &x) { P.ln(x); } 
+			static void ln(const CPose3D &P, array_t &x) { P.ln(x); }
 
-			/** A pseudo-Logarithm map in SE(3), where the output = [X,Y,Z, Ln(ROT)], that is, the normal 
+			/** A pseudo-Logarithm map in SE(3), where the output = [X,Y,Z, Ln(ROT)], that is, the normal
 			  *  SO(3) logarithm is used for the rotation components, but the translation is left unmodified.
 			  */
 			static void pseudo_ln(const CPose3D &P, array_t &x);
@@ -69,7 +70,7 @@ namespace mrpt
 			  */
 			static void jacobian_dP1DP2inv_depsilon(
 				const CPose3D &P1DP2inv,
-				matrix_VxV_t *df_de1, 
+				matrix_VxV_t *df_de1,
 				matrix_VxV_t *df_de2);
 
 		}; // end SE_traits
@@ -83,12 +84,12 @@ namespace mrpt
 			typedef CPose2D  pose_t;
 
 			/** Exponential map in SE(2) */
-			static void exp(const array_t &x, CPose2D &P) { P.x(x[0]); P.y(x[1]); P.phi(x[2]); } 
+			static void exp(const array_t &x, CPose2D &P) { P.x(x[0]); P.y(x[1]); P.phi(x[2]); }
 
 			/** Logarithm map in SE(2) */
-			static void ln(const CPose2D &P, array_t &x) { x[0] = P.x(); x[1] = P.y(); x[2] = P.phi();  } 
+			static void ln(const CPose2D &P, array_t &x) { x[0] = P.x(); x[1] = P.y(); x[2] = P.phi();  }
 
-			/** A pseudo-Logarithm map in SE(2), where the output = [X,Y, Ln(ROT)], that is, the normal 
+			/** A pseudo-Logarithm map in SE(2), where the output = [X,Y, Ln(ROT)], that is, the normal
 			  *  SO(2) logarithm is used for the rotation components, but the translation is left unmodified.
 			  */
 			static void pseudo_ln(const CPose2D &P, array_t &x) { ln(P,x); }
@@ -100,11 +101,12 @@ namespace mrpt
 			  */
 			static void jacobian_dP1DP2inv_depsilon(
 				const CPose2D &P1DP2inv,
-				matrix_VxV_t *df_de1, 
+				matrix_VxV_t *df_de1,
 				matrix_VxV_t *df_de2);
 
 		}; // end SE_traits
 
+		/** @} */ // end of grouping
 
 	} // End of namespace
 } // End of namespace

@@ -33,6 +33,7 @@
 #include <mrpt/utils/CTicTac.h>
 
 namespace mrpt	{	namespace math	{
+
 	/**
 	  * This class is intended to efficiently solve graph-search problems using heuristics to determine the best path. To use it, a solution class must be defined
 	  * so that it contains all the information about any partial or complete solution. Then, a class inheriting from CAStarAlgorithm<Solution class> must also be
@@ -45,7 +46,7 @@ namespace mrpt	{	namespace math	{
   	  * \sa CAStarAlgorithm::generateChildren
 	  * \sa CAStarAlgorithm::getHeuristic
 	  * \sa CAStarAlgorithm::getCost
-	 * \ingroup mrpt_base_grp
+	 * \ingroup graph_utils_grp
 	  */
 template<typename T> class CAStarAlgorithm	{
 public:

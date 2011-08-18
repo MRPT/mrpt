@@ -69,7 +69,7 @@ namespace mrpt
 		  *     http://www.mrpt.org/6D-SLAM
 		  *
 		  * \sa An implementation for 2D only: CRangeBearingKFSLAM2D
-		  * \ingroup mrpt_slam_grp
+		  * \ingroup metric_slam_grp
 		  */
 		class SLAM_IMPEXP  CRangeBearingKFSLAM :
 			public bayes::CKalmanFilterCapable<7 /* x y z  qr qx qy qz*/,3 /* range yaw pitch */, 3 /* x y z */,   7  /* Ax Ay Az Aqr Aqx Aqy Aqz */      >
@@ -144,7 +144,7 @@ namespace mrpt
 			/** Returns the mean & the 6x6 covariance matrix of the robot 6D pose (with rotation as 3 angles).
 			  * \sa getCurrentState
 			  */
-			inline void  getCurrentRobotPose( CPose3DPDFGaussian &out_robotPose ) const 
+			inline void  getCurrentRobotPose( CPose3DPDFGaussian &out_robotPose ) const
 			{
 				CPose3DQuatPDFGaussian q(UNINITIALIZED_QUATERNION);
 				this->getCurrentRobotPose(q);
@@ -212,7 +212,7 @@ namespace mrpt
 				double					data_assoc_IC_ml_threshold;//!< Only if data_assoc_IC_metric==ML, the log-ML threshold (Default=0.0)
 
 				bool			create_simplemap; //!< Whether to fill m_SFs (default=false)
-				
+
 				bool		force_ignore_odometry; //!< Whether to ignore the input odometry and behave as if there was no odometry at all (default: false)
 			} options;
 

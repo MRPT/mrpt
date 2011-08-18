@@ -66,7 +66,7 @@ namespace mrpt
 		  *  See TInterpolatorMethod for the list of interpolation methods. The default method at constructor is "imLinearSlerp".
 		  *
 		  * \sa CPoseOrPoint
-		 * \ingroup mrpt_base_grp
+		 * \ingroup interpolation_grp poses_grp
 		 */
 		class BASE_IMPEXP CPose3DInterpolator : public mrpt::utils::CSerializable
 		{

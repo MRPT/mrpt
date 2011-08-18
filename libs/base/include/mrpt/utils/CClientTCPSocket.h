@@ -40,11 +40,14 @@ namespace utils
 	class CServerTCPSocket;
 	class CMessage;
 
+	/** \defgroup network_grp Networking, sockets, DNS
+	  * \ingroup mrpt_base_grp */
+
 	/** A TCP socket that can be connected to a TCP server, implementing MRPT's CStream interface for passing objects as well as generic read/write methods.
 	  *  Unless otherwise noticed, operations are blocking.
 	  *
 	  *  Note that for convenience, DNS lookup is performed with a timeout (default=3000ms), which can be changed by the static member CClientTCPSocket::DNS_LOOKUP_TIMEOUT_MS
-	  * \ingroup mrpt_base_grp
+	  * \ingroup network_grp
 	  */
 	class BASE_IMPEXP CClientTCPSocket : public CStream
 	{

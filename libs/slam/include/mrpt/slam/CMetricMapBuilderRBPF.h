@@ -60,7 +60,7 @@ namespace slam
 	 *  \note Since MRPT 0.7.1 the semantics of the parameters "insertionLinDistance" and "insertionAngDistance" changes: the entire RBFP is now NOT updated unless odometry increments surpass the threshold (previously, only the map was NOT updated). This is done to gain efficiency.
 	 *  \note Since MRPT 0.6.2 this class implements full 6D SLAM. Previous versions worked in 2D + heading only.
 	 *
-	 * \sa CMetricMap   \ingroup mrpt_slam_grp
+	 * \sa CMetricMap   \ingroup metric_slam_grp
 	 */
 	class SLAM_IMPEXP CMetricMapBuilderRBPF : public CMetricMapBuilder
 	{

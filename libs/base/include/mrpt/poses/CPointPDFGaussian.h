@@ -42,7 +42,7 @@ namespace poses
 	/** A gaussian distribution for 3D points. Also a method for bayesian fusion is provided.
 	 *
 	 * \sa CPointPDF
-	 * \ingroup mrpt_base_grp
+	 * \ingroup poses_pdf_grp
 	 */
 	class BASE_IMPEXP CPointPDFGaussian : public CPointPDF
 	{

@@ -88,7 +88,7 @@ namespace mrpt
 		  *		- MAPS_IMPLEMENTATION: Can be either mrpt::utils::map_traits_stdmap or mrpt::utils::map_traits_map_as_vector. Determines the type of the list of global poses (member \a nodes).
 		  *
 		  * \sa mrpt::graphslam
-		  * \ingroup mrpt_base_grp
+		  * \ingroup graph_utils_grp poses_grp poses_pdf_grp
 		  */
 		template<class CPOSE, class MAPS_IMPLEMENTATION = map_traits_stdmap >
 		class CNetworkOfPoses : public mrpt::math::CDirectedGraph< CPOSE >
@@ -127,7 +127,7 @@ namespace mrpt
 			TNodeID         root;
 
 			/** False (default) if an edge i->j stores the normal relative pose of j as seen from i: \f$ \Delta_i^j = j \ominus i \f$
-			  * True if an edge i->j stores the inverse relateive pose, that is, i as seen from j: \f$ \Delta_i^j = i \ominus j \f$  
+			  * True if an edge i->j stores the inverse relateive pose, that is, i as seen from j: \f$ \Delta_i^j = i \ominus j \f$
 			  */
 			bool            edges_store_inverse_poses;
 
@@ -249,6 +249,9 @@ namespace mrpt
 
 
 
+		/** \addtogroup graph_utils_grp
+		    @{ */
+
 		// Define serializable versions of the template above for each specific kind of "edge":
 
 		// This must be added to any CSerializable derived class:
@@ -312,6 +315,8 @@ namespace mrpt
 			DEFINE_MRPT_OBJECT( CNetworkOfPoses3DInf )	// Should be DEFINE_SERIALIZABLE but the next macro defines what that macro only declared.
 			DEFINE_SERIALIZABLE_GRAPH
 		};
+
+		/** @} */  // end of grouping
 
 	} // End of namespace
 } // End of namespace

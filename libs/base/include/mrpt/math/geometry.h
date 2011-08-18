@@ -49,6 +49,11 @@ namespace mrpt
 		using namespace mrpt::utils;
 		using namespace mrpt::poses;
 
+
+		/** \addtogroup geometry_grp Geometry: lines, planes, intersections, SLERP, "lightweight" point & pose classes
+		  *  \ingroup mrpt_base_grp
+		  * @{ */
+
 		/**
 		  * Global epsilon to overcome small precision errors
 		  */
@@ -1160,6 +1165,8 @@ namespace mrpt
 		}
 
 		/** @} */  // end of misc. geom. methods
+
+		/** @} */  // end of grouping
 
 	} // End of namespace
 

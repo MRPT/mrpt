@@ -41,6 +41,8 @@ namespace mrpt
 
 	namespace math
 	{
+		/** \addtogroup container_ops_grp
+		  *  @{ */
 
 		/** \name Generic std::vector element-wise operations
 		  * @{
@@ -168,6 +170,8 @@ namespace mrpt
 			return istrm;
 		}
 
+
+		/**  @} */  // end of grouping
 
 	} // End of math namespace
 

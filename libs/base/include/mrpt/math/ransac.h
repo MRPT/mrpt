@@ -36,10 +36,14 @@ namespace mrpt
 {
 	namespace math
 	{
+		/** @addtogroup ransac_grp RANSAC and other model fitting algorithms
+		  * \ingroup mrpt_base_grp
+		  * @{ */
+
+
 		/** A generic RANSAC implementation with models as matrices.
 		  *  See \a RANSAC_Template::execute for more info on usage.
 		  *  \sa mrpt::math::ModelSearch, a more versatile RANSAC implementation where models can be anything else, not only matrices.
-		  * \ingroup mrpt_base_grp
 		  */
 		template <typename NUMTYPE = double>
 		class BASE_IMPEXP RANSAC_Template : public mrpt::utils::CDebugOutputCapable
@@ -90,6 +94,8 @@ namespace mrpt
 		}; // end class
 
 		typedef RANSAC_Template<double> RANSAC;   //!< The default instance of RANSAC, for double type
+
+		/** @} */
 
 	} // End of namespace
 } // End of namespace

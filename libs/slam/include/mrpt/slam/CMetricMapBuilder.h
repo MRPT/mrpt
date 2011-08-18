@@ -44,9 +44,12 @@ namespace mrpt
 {
 namespace slam
 {
+	/** @defgroup metric_slam_grp Metric SLAM algorithms
+	  * \ingroup mrpt_slam_grp */
+
 	/** This virtual class is the base for SLAM implementations. See derived classes for more information.
 	 *
-	 * \sa CMetricMap  \ingroup mrpt_slam_grp
+	 * \sa CMetricMap  \ingroup metric_slam_grp
 	 */
 	class SLAM_IMPEXP CMetricMapBuilder : public mrpt::utils::CDebugOutputCapable
 	{
@@ -167,7 +170,7 @@ namespace slam
 			  * \sa mrpt::utils::CListOfClasses
 			  */
 			mrpt::utils::CListOfClasses		alwaysInsertByClass;
-			
+
 		} options;
 
 	}; // End of class def.

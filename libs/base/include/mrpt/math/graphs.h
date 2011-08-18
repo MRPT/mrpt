@@ -40,7 +40,8 @@ namespace mrpt
 	{
 		using mrpt::utils::TNodeID;
 
-		/** @name Graph-related classes
+		/** \addtogroup graph_utils_grp Graph classes and algorithms
+		  *  \ingroup mrpt_base_grp
 		    @{ */
 
 		/** A directed graph with the argument of the template specifying the type of the annotations in the edges.
@@ -49,7 +50,7 @@ namespace mrpt
 		  *  Note that edges are stored as a std::multimap<> to allow <b>multiple edges</b> between the same pair of nodes.
 		  *
 		  * \sa mrpt::math::CDijkstra, mrpt::poses::CNetworkOfPoses, mrpt::math::CDirectedTree
-		 * \ingroup mrpt_base_grp
+		 * \ingroup graph_utils_grp
 		  */
 		template<class TYPE_EDGES>
 		class CDirectedGraph
@@ -202,7 +203,7 @@ namespace mrpt
 				}
 			}
 
-			/** Just like \a getAdjacencyMatrix but return only the adjacency for those node_ids in the set \a onlyForTheseNodes 
+			/** Just like \a getAdjacencyMatrix but return only the adjacency for those node_ids in the set \a onlyForTheseNodes
 			  *  (both endings nodes of an edge must be within the set for it to be returned) */
 			template <class MAP_NODEID_SET_NODEIDS,class SET_NODEIDS>
 			void getAdjacencyMatrix( MAP_NODEID_SET_NODEIDS  &outAdjacency, const SET_NODEIDS &onlyForTheseNodes ) const
@@ -232,7 +233,7 @@ namespace mrpt
 		  *
 		  *  If annotations in edges are not required, you can leave TYPE_EDGES to its default type "uint8_t".
 		  *  \sa CDirectedGraph, CDijkstra, mrpt::poses::CNetworkOfPoses,
-		 * \ingroup mrpt_base_grp
+		 * \ingroup graph_utils_grp
 		  */
 		template <class TYPE_EDGES = uint8_t>
 		class CDirectedTree

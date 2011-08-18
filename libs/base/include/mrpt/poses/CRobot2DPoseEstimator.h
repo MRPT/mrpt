@@ -45,7 +45,7 @@ namespace mrpt
 		  *
 		  *  The filter can be asked for an extrapolation for some arbitrary time "t'", and it'll do a simple linear prediction.
 		  *  All methods are thread-safe.
-		  * \ingroup mrpt_base_grp
+		  * \ingroup poses_grp poses_pdf_grp
 		  */
 		class BASE_IMPEXP CRobot2DPoseEstimator
 		{
@@ -88,18 +88,18 @@ namespace mrpt
 			 {
 			 	TPose2D  p;
 			 	bool ret = getCurrentEstimate(p,v,w,tim_query);
-			 	if (ret) 
+			 	if (ret)
 					pose = CPose2D(p);
-			 	return ret;			 	
+			 	return ret;
 			 }
-			 
-			 /** Get the latest known robot pose, either from odometry or localization. 
+
+			 /** Get the latest known robot pose, either from odometry or localization.
 			   *  This differs from getCurrentEstimate() in that this method does NOT extrapolate as getCurrentEstimate() does.
 			   * \return false if there is not estimation yet.
 			   * \sa getCurrentEstimate
 			   */
 			 bool getLatestRobotPose(TPose2D &pose) const;
-			 
+
 			 /** Get the latest known robot pose, either from odometry or localization.
 			   * \return false if there is not estimation yet.
 			   */
@@ -107,7 +107,7 @@ namespace mrpt
 			 {
 			 	TPose2D p;
 			 	bool v = getLatestRobotPose(p);
-				if (v) 
+				if (v)
 				{
 			 		pose.x(p.x);
 			 		pose.y(p.y);
@@ -115,7 +115,7 @@ namespace mrpt
 				}
 			 	return v;
 			 }
-			 
+
 
 			 struct TOptions
 			 {

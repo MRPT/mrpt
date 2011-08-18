@@ -43,8 +43,9 @@ namespace mrpt
 	{
 		using namespace mrpt::utils;
 
-		/** @name Statistics functions
-		@{ */
+		/** \addtogroup stats_grp Statistics functions, probability distributions
+		  *  \ingroup mrpt_base_grp
+		  * @{ */
 
 		/** Evaluates the univariate normal (Gaussian) distribution at a given point "x".
 		  */

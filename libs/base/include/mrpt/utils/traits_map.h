@@ -35,6 +35,9 @@ namespace mrpt
 {
 	namespace utils
 	{
+		/** \addtogroup stlext_grp
+		  *  @{ */
+
 		/** @name Trait helper classes for templatized selection of a std::map implementation
 		    @{ */
 
@@ -45,13 +48,14 @@ namespace mrpt
 			};
 		};
 
-		/**  Traits for using a mrpt::utils::map_as_vector<> (dense, fastest representation) \sa map_traits_stdmap */
+		/**  Traits for using a mrpt::utils::map_as_vector<> (dense, fastest representation) \sa map_traits_stdmap  */
 		struct map_traits_map_as_vector	{
 			template <class KEY,class VALUE,class _LessPred = std::less<KEY>, class _Alloc = Eigen::aligned_allocator<std::pair<const KEY, VALUE> > >
 			struct map : public mrpt::utils::map_as_vector<KEY,VALUE> { };
 		};
 
 		/** @} */
+		/** @} */  // end of grouping
 	} // End of namespace
 } // End of namespace
 

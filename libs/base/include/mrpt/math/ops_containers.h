@@ -36,6 +36,10 @@
 #include <algorithm>
 #include <cmath>
 
+/** \addtogroup container_ops_grp Vector and matrices mathematical operations and other utilities
+  *  \ingroup mrpt_base_grp
+  *  @{ */
+
 /** \file ops_containers.h
   * This file implements several operations that operate element-wise on individual or pairs of containers.
   *  Containers here means any of: mrpt::math::CVectorTemplace, mrpt::math::CArray, mrpt::math::CMatrixFixedNumeric, mrpt::math::CMatrixTemplate.
@@ -408,5 +412,6 @@ namespace mrpt
 	} // End of math namespace
 } // End of mrpt namespace
 
+/**  @} */  // end of grouping
 
 #endif

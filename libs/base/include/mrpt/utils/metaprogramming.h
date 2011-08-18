@@ -35,10 +35,13 @@ namespace mrpt
 	namespace utils
 	{
 		/** A set of utility objects for metaprogramming with STL algorithms.
-		  * \ingroup mrpt_base_grp
+		  * \ingroup stlext_grp
 		  */
 		namespace metaprogramming
 		{
+			/** \addtogroup stlext_grp
+			  * @{ */
+
 			/** An object for deleting pointers (intended for STL algorithms) */
 			struct ObjectDelete {
 				template<typename T>
@@ -372,6 +375,8 @@ namespace mrpt
 			template<typename Op> inline NonConstBind2nd<Op> nonConstBind2nd(Op &o,typename Op::second_argument_type &t)	{
 				return NonConstBind2nd<Op>(o,t);
 			}
+
+			/** @} */  // end of grouping
 
 		} // end metaprogramming
 	} // End of namespace

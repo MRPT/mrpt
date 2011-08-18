@@ -57,6 +57,10 @@ namespace math	{
 	struct TPose3D;
 	struct TPose3DQuat;
 
+	/** \addtogroup geometry_grp
+	  * @{ */
+
+
 	//Pragma defined to ensure no structure packing
 #pragma pack(push,1)
 	//Set of typedefs for lightweight geometric items.
@@ -2424,6 +2428,9 @@ namespace math	{
 	  * TObject3D binary output.
 	  */
 	BASE_IMPEXP mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TObject3D &o);
+
+
+	/** @} */ // end of grouping
 
 	}	//end of namespace math
 

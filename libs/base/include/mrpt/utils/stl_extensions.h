@@ -49,6 +49,10 @@ namespace mrpt
 {
 	namespace utils
 	{
+		/** \addtogroup stlext_grp STL extensions and metaprogramming
+		  * \ingroup mrpt_base_grp
+		  * @{ */
+
 		using namespace mrpt::utils::metaprogramming;
 		using std::for_each;
 		using std::string;
@@ -271,6 +275,8 @@ namespace mrpt
 				return std::lexicographical_compare(s1.begin(),s1.end(), s2.begin(),s2.end(), nocase_compare());
 			}
 		}; // end of ci_less
+
+		/** @} */  // end of grouping
 
 	} // End of namespace
 } // End of namespace

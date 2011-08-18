@@ -37,10 +37,13 @@ namespace mrpt
 	namespace utils
 	{
 		/** A set of useful routines for networking.
-		  * \ingroup mrpt_base_grp
+		  * \ingroup network_grp
 		  */
 		namespace net
 		{
+			/** \addtogroup network_grp
+			  * @{ */
+
 			using std::string;
 
 			/** Possible returns from a HTTP request.
@@ -121,6 +124,7 @@ namespace mrpt
 				const unsigned int timeout_ms = 3000
 				);
 
+			/** @} */  // end grouping
 
 		} // End of namespace
 	} // End of namespace

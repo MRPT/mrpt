@@ -42,6 +42,8 @@ namespace mrpt
 {
 	namespace poses
 	{
+		/** \addtogroup poses_pdf_grp
+		  *  @{ */
 		/**  @name Helper templates to convert a pose or a pose PDF to its mean value at compile time.
 			 @{
 		  */
@@ -67,7 +69,7 @@ namespace mrpt
 		template <> inline       CPose3D &getPoseMean<CPose3DPDFGaussianInf>(CPose3DPDFGaussianInf &p) { return p.mean;}
 		template <> inline       CPose3DQuat &getPoseMean<CPose3DQuatPDFGaussian>(CPose3DQuatPDFGaussian &p) { return p.mean;}
 		/** @}  */
-
+		/** @}  */ // grouping
 	} // End of namespace
 } // End of namespace
 

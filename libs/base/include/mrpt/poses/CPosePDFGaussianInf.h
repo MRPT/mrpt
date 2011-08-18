@@ -50,7 +50,7 @@ namespace poses
 	 *  This class is the dual of CPosePDFGaussian.
 	 *
 	 * \sa CPose2D, CPosePDF, CPosePDFParticles
-	 * \ingroup mrpt_base_grp
+	 * \ingroup poses_pdf_grp
 	 */
 	class BASE_IMPEXP CPosePDFGaussianInf : public CPosePDF
 	{

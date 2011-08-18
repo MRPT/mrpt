@@ -49,7 +49,7 @@ namespace mrpt
 		 *  See the application "app/pf-localization" for an example of usage.
 		 *
 		 * \sa CPose2D, CPosePDF, CPoseGaussianPDF, CParticleFilterCapable
-		 * \ingroup mrpt_base_grp
+		 * \ingroup poses_pdf_grp
 		 */
 		class BASE_IMPEXP CPosePDFParticles :
 			public CPosePDF,

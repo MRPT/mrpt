@@ -50,6 +50,9 @@ namespace mrpt
 	{
 	    using namespace mrpt::utils;
 
+		/** \addtogroup container_ops_grp
+		  * @{ */
+
 		/** Loads one row of a text file as a numerical std::vector.
 		  * \return false on EOF or invalid format.
 		  * The body of the function is implemented in MATH.cpp
@@ -216,7 +219,6 @@ namespace mrpt
 			else out_v.assign(v.size(),0);
 		}
 
-
 		/** Computes covariances and mean of any vector of containers, given optional weights for the different samples.
 		  * \param elements Any kind of vector of vectors/arrays, eg. std::vector<vector_double>, with all the input samples, each sample in a "row".
 		  * \param covariances Output estimated covariance; it can be a fixed/dynamic matrix or a matrixview.
@@ -225,6 +227,7 @@ namespace mrpt
 		  * \param weights_cov If !=NULL, it must point to a vector of size()==number of elements, with normalized weights to take into account for the covariance.
 		  * \param elem_do_wrap2pi If !=NULL; it must point to an array of "bool" of size()==dimension of each element, stating if it's needed to do a wrap to [-pi,pi] to each dimension.
 		  * \sa This method is used in mrpt::math::unscented_transform_gaussian
+		  * \ingroup stats_grp
 		  */
 		template<class VECTOR_OF_VECTORS, class MATRIXLIKE,class VECTORLIKE,class VECTORLIKE2,class VECTORLIKE3>
 		inline void covariancesAndMeanWeighted(   // Done inline to speed-up the special case expanded in covariancesAndMean() below.
@@ -327,6 +330,7 @@ namespace mrpt
 		  * \param covariances Output estimated covariance; it can be a fixed/dynamic matrix or a matrixview.
 		  * \param means Output estimated mean; it can be vector_double/CArrayDouble, etc...
 		  * \param elem_do_wrap2pi If !=NULL; it must point to an array of "bool" of size()==dimension of each element, stating if it's needed to do a wrap to [-pi,pi] to each dimension.
+		  * \ingroup stats_grp
 		  */
 		template<class VECTOR_OF_VECTORS, class MATRIXLIKE,class VECTORLIKE>
 		void covariancesAndMean(const VECTOR_OF_VECTORS &elements,MATRIXLIKE &covariances,VECTORLIKE &means, const bool *elem_do_wrap2pi = NULL)
@@ -534,57 +538,18 @@ namespace mrpt
 			return sxy / sqrt(sxx * syy);
 		}
 
-
-//		/**	Matrix QR decomposition. A = QR, where R is upper triangular and Q is orthogonal, that is, ~QQ = 1
-//		  * If A is a LxM dimension matrix, this function only return the LxL upper triangular matrix R instead of LxM pseudo-upper
-//		  * triangular matrix (been L<=M)
-//		  * This function has been extracted from "Numerical Recipes in C".
-//		  *	/param A is the original matrix to decompose
-//		  * /param c,Q. The orthogonal matrix Q is represented as a product of n-1 Householder matrices Q1,...Qn-1, where Qj = 1 - u[j] x u[j]/c[j]
-//		  *				The i'th component of u[j] is zero for i = 1,...,j-1 while the nonzero components are returned in Q(i,j) for i=j,...,n
-//		  *	/param R is the upper triangular matrix
-//		  *	/param sign returns as true (1) is singularity is encountered during the decomposition, but the decomposition is still complete
-//		  *				in this case; otherwise it returns false (0)
-//		  */
-//
-//			template<class T>
-//			void BASE_IMPEXP qr_decomposition(
-//				CMatrixTemplateNumeric<T>	&A,
-//				CMatrixTemplateNumeric<T>	&R,
-//				CMatrixTemplateNumeric<T>	&Q,
-//				CVectorTemplate<T>			&c,
-//				int								&sing);
-//
-
-//		/**If R = CHOL(A) is the original Cholesky factorization of A, then R1 = CHOLUPDATE(R,X) returns the upper triangular
-//		  * Cholesky factor of A + X*X', where X is a column vector of appropriate length.
-//		  */
-//		template<class T>
-//			void BASE_IMPEXP UpdateCholesky(
-//				CMatrixTemplateNumeric<T>	&chol,
-//				CVectorTemplate<T>			&r1Modification);
-
-//		/** Compute the two eigenvalues of a 2x2 matrix.
-//		  * \param in_matrx The 2x2 input matrix.
-//		  * \param min_eigenvalue (out) The minimum eigenvalue of the matrix.
-//		  * \param max_eigenvalue (out) The maximum eigenvalue of the matrix.
-//		  * by FAMD, MAR-2007
-//		  */
-//		void BASE_IMPEXP  computeEigenValues2x2(
-//			const CMatrixFloat	&in_matrix,
-//			float								&min_eigenvalue,
-//			float								&max_eigenvalue );
-
 		/** A numerically-stable method to compute average likelihood values with strongly different ranges (unweighted likelihoods: compute the arithmetic mean).
 		  *  This method implements this equation:
 		  *
 		  *  \f[ return = - \log N + \log  \sum_{i=1}^N e^{ll_i-ll_{max}} + ll_{max} \f]
 		  *
 		  * See also the <a href="http://www.mrpt.org/Averaging_Log-Likelihood_Values:Numerical_Stability">tutorial page</a>.
+		  * \ingroup stats_grp
 		  */
 		double BASE_IMPEXP averageLogLikelihood( const vector_double &logLikelihoods );
 
 		/** Computes the average of a sequence of angles in radians taking into account the correct wrapping in the range \f$ ]-\pi,\pi [ \f$, for example, the mean of (2,-2) is \f$ \pi \f$, not 0.
+		  * \ingroup stats_grp
 		  */
 		double BASE_IMPEXP averageWrap2Pi(const vector_double &angles );
 
@@ -594,6 +559,7 @@ namespace mrpt
 		  *  \f[ return = \log \left( \frac{1}{\sum_i e^{lw_i}} \sum_i  e^{lw_i} e^{ll_i}  \right) \f]
 		  *
 		  * See also the <a href="http://www.mrpt.org/Averaging_Log-Likelihood_Values:Numerical_Stability">tutorial page</a>.
+		  * \ingroup stats_grp
 		  */
 		double BASE_IMPEXP  averageLogLikelihood(
 			const vector_double &logWeights,
@@ -605,6 +571,7 @@ namespace mrpt
 		  *  \param stdCount How many "quantiles" to get into the area of the ellipse: 2: 95%, 3:99.97%,...
 		  *  \param style A matlab style string, for colors, line styles,...
 		  *  \param nEllipsePoints The number of points in the ellipse to generate
+		  * \ingroup stats_grp
 		  */
 		std::string BASE_IMPEXP  MATLAB_plotCovariance2D(
 			const CMatrixFloat  &cov22,
@@ -619,6 +586,7 @@ namespace mrpt
 		  *  \param stdCount How many "quantiles" to get into the area of the ellipse: 2: 95%, 3:99.97%,...
 		  *  \param style A matlab style string, for colors, line styles,...
 		  *  \param nEllipsePoints The number of points in the ellipse to generate
+		  * \ingroup stats_grp
 		  */
 		std::string BASE_IMPEXP  MATLAB_plotCovariance2D(
 			const CMatrixDouble  &cov22,
@@ -785,155 +753,6 @@ namespace mrpt
 			MRPT_END
 		}
 
-		/** @name Interpolation functions
-		@{ */
-
-		/** Interpolate a data sequence "ys" ranging from "x0" to "x1" (equally spaced), to obtain the approximation of the sequence at the point "x".
-		  *  If the point "x" is out of the range [x0,x1], the closest extreme "ys" value is returned.
-		  * \sa spline, interpolate2points
-		  */
-		template <class T,class VECTOR>
-		T interpolate(
-			const T			&x,
-			const VECTOR	&ys,
-			const T			&x0,
-			const T			&x1 )
-		{
-			MRPT_START
-			ASSERT_(x1>x0); ASSERT_(!ys.empty());
-			const size_t N = ys.size();
-			if (x<=x0)	return ys[0];
-			if (x>=x1)	return ys[N-1];
-			const T Ax = (x1-x0)/T(N);
-			const size_t i = int( (x-x0)/Ax );
-			if (i>=N-1) return ys[N-1];
-			const T Ay = ys[i+1]-ys[i];
-			return ys[i] + (x-(x0+i*Ax))*Ay/Ax;
-			MRPT_END
-		}
-
-		/** Linear interpolation/extrapolation: evaluates at "x" the line (x0,y0)-(x1,y1).
-		  *  If wrap2pi is true, output is wrapped to ]-pi,pi] (It is assumed that input "y" values already are in the correct range).
-		  * \sa spline, interpolate, leastSquareLinearFit
-		  */
-		double BASE_IMPEXP interpolate2points(const double x, const double x0, const double y0, const double x1, const double y1, bool wrap2pi = false);
-
-		/** Interpolates the value of a function in a point "t" given 4 SORTED points where "t" is between the two middle points
-		  *  If wrap2pi is true, output "y" values are wrapped to ]-pi,pi] (It is assumed that input "y" values already are in the correct range).
-		  * \sa leastSquareLinearFit
-		  */
-		double BASE_IMPEXP  spline(const double t, const vector_double &x, const vector_double &y, bool wrap2pi = false);
-
-		/** Interpolates or extrapolates using a least-square linear fit of the set of values "x" and "y", evaluated at a single point "t".
-		  *  The vectors x and y must have size >=2, and all values of "x" must be different.
-		  *  If wrap2pi is true, output "y" values are wrapped to ]-pi,pi] (It is assumed that input "y" values already are in the correct range).
-		  * \sa spline
-		  * \sa getRegressionLine, getRegressionPlane
-		  */
-		template <typename NUMTYPE,class VECTORLIKE>
-		NUMTYPE leastSquareLinearFit(const NUMTYPE t, const VECTORLIKE &x, const VECTORLIKE &y, bool wrap2pi = false)
-		{
-			MRPT_START
-
-			// http://en.wikipedia.org/wiki/Linear_least_squares
-			ASSERT_(x.size()==y.size());
-			ASSERT_(x.size()>1);
-
-			const size_t N = x.size();
-
-			typedef typename VECTORLIKE::value_type NUM;
-
-			// X= [1 columns of ones, x' ]
-			const NUM x_min = x.minimum();
-			CMatrixTemplateNumeric<NUM> Xt(2,N);
-			for (size_t i=0;i<N;i++)
-			{
-				Xt.set_unsafe(0,i, 1);
-				Xt.set_unsafe(1,i, x[i]-x_min);
-			}
-
-			CMatrixTemplateNumeric<NUM> XtX;
-			XtX.multiply_AAt(Xt);
-
-			CMatrixTemplateNumeric<NUM> XtXinv;
-			XtX.inv_fast(XtXinv);
-
-			CMatrixTemplateNumeric<NUM> XtXinvXt;	// B = inv(X' * X)*X'  (pseudoinverse)
-			XtXinvXt.multiply(XtXinv,Xt);
-
-			VECTORLIKE B;
-			XtXinvXt.multiply_Ab(y,B);
-
-			ASSERT_(B.size()==2)
-
-			NUM ret = B[0] + B[1]*(t-x_min);
-
-			// wrap?
-			if (!wrap2pi)
-					return ret;
-			else 	return mrpt::math::wrapToPi(ret);
-
-			MRPT_END
-		}
-
-		/** Interpolates or extrapolates using a least-square linear fit of the set of values "x" and "y", evaluated at a sequence of points "ts" and returned at "outs".
-		  *  If wrap2pi is true, output "y" values are wrapped to ]-pi,pi] (It is assumed that input "y" values already are in the correct range).
-		  * \sa spline, getRegressionLine, getRegressionPlane
-		  */
-		template <class VECTORLIKE1,class VECTORLIKE2,class VECTORLIKE3>
-		void leastSquareLinearFit(
-			const VECTORLIKE1 &ts,
-			VECTORLIKE2 &outs,
-			const VECTORLIKE3 &x,
-			const VECTORLIKE3 &y,
-			bool wrap2pi = false)
-		{
-			MRPT_START
-
-			// http://en.wikipedia.org/wiki/Linear_least_squares
-			ASSERT_(x.size()==y.size());
-			ASSERT_(x.size()>1);
-
-			const size_t N = x.size();
-
-			// X= [1 columns of ones, x' ]
-			typedef typename VECTORLIKE3::value_type NUM;
-			const NUM x_min = x.minimum();
-			CMatrixTemplateNumeric<NUM> Xt(2,N);
-			for (size_t i=0;i<N;i++)
-			{
-				Xt.set_unsafe(0,i, 1);
-				Xt.set_unsafe(1,i, x[i]-x_min);
-			}
-
-			CMatrixTemplateNumeric<NUM> XtX;
-			XtX.multiply_AAt(Xt);
-
-			CMatrixTemplateNumeric<NUM> XtXinv;
-			XtX.inv_fast(XtXinv);
-
-			CMatrixTemplateNumeric<NUM> XtXinvXt;	// B = inv(X' * X)*X' (pseudoinverse)
-			XtXinvXt.multiply(XtXinv,Xt);
-
-			VECTORLIKE3 B;
-			XtXinvXt.multiply_Ab(y,B);
-
-			ASSERT_(B.size()==2)
-
-			const size_t tsN = size_t(ts.size());
-			outs.resize(tsN);
-			if (!wrap2pi)
-				for (size_t k=0;k<tsN;k++)
-					outs[k] = B[0] + B[1]*(ts[k]-x_min);
-			else
-				for (size_t k=0;k<tsN;k++)
-					outs[k] = mrpt::math::wrapToPi( B[0] + B[1]*(ts[k]-x_min) );
-			MRPT_END
-		}
-
-		/** @} */
-
-
 		/** Assignment operator for initializing a std::vector from a C array (The vector will be automatically set to the correct size).
 		  * \code
 		  *	 vector_double  v;
@@ -966,6 +785,39 @@ namespace mrpt
 		  * \sa wrapToPi
 		  */
 		void unwrap2PiSequence(vector_double &x);
+
+		/** A versatile template to build vectors on-the-fly in a style close to MATLAB's  v=[a b c d ...]
+		  *  The first argument of the template is the vector length, and the second the type of the numbers.
+		  *  Some examples:
+		  *
+		  *  \code
+		  *    vector_double  = make_vector<4,double>(1.0,3.0,4.0,5.0);
+		  *    vector_float   = make_vector<2,float>(-8.12, 3e4);
+		  *  \endcode
+		  */
+		template <size_t N, typename T>
+		std::vector<T> make_vector(const T val1, ...)
+		{
+			MRPT_COMPILE_TIME_ASSERT( N>0 )
+			std::vector<T>	ret;
+			ret.reserve(N);
+
+			ret.push_back(val1);
+
+			va_list args;
+			va_start(args,val1);
+			for (size_t i=0;i<N-1;i++)
+				ret.push_back( va_arg(args,T) );
+
+			va_end(args);
+			return ret;
+		}
+
+		/**  @} */  // end of grouping container_ops_grp
+
+		/** \addtogroup stats_grp
+		  * @{
+		  */
 
 		/** @name Probability density distributions (pdf) distance metrics
 		@{ */
@@ -1180,33 +1032,156 @@ namespace mrpt
 		}
 
 		/** @} */
+		/** @} */  // end of grouping statistics
 
-		/** A versatile template to build vectors on-the-fly in a style close to MATLAB's  v=[a b c d ...]
-		  *  The first argument of the template is the vector length, and the second the type of the numbers.
-		  *  Some examples:
-		  *
-		  *  \code
-		  *    vector_double  = make_vector<4,double>(1.0,3.0,4.0,5.0);
-		  *    vector_float   = make_vector<2,float>(-8.12, 3e4);
-		  *  \endcode
+		/** @addtogroup interpolation_grp Interpolation, least-squares fit, splines
+		  * \ingroup mrpt_base_grp
+		  *  @{ */
+
+		/** Interpolate a data sequence "ys" ranging from "x0" to "x1" (equally spaced), to obtain the approximation of the sequence at the point "x".
+		  *  If the point "x" is out of the range [x0,x1], the closest extreme "ys" value is returned.
+		  * \sa spline, interpolate2points
 		  */
-		template <size_t N, typename T>
-		std::vector<T> make_vector(const T val1, ...)
+		template <class T,class VECTOR>
+		T interpolate(
+			const T			&x,
+			const VECTOR	&ys,
+			const T			&x0,
+			const T			&x1 )
 		{
-			MRPT_COMPILE_TIME_ASSERT( N>0 )
-			std::vector<T>	ret;
-			ret.reserve(N);
-
-			ret.push_back(val1);
-
-			va_list args;
-			va_start(args,val1);
-			for (size_t i=0;i<N-1;i++)
-				ret.push_back( va_arg(args,T) );
-
-			va_end(args);
-			return ret;
+			MRPT_START
+			ASSERT_(x1>x0); ASSERT_(!ys.empty());
+			const size_t N = ys.size();
+			if (x<=x0)	return ys[0];
+			if (x>=x1)	return ys[N-1];
+			const T Ax = (x1-x0)/T(N);
+			const size_t i = int( (x-x0)/Ax );
+			if (i>=N-1) return ys[N-1];
+			const T Ay = ys[i+1]-ys[i];
+			return ys[i] + (x-(x0+i*Ax))*Ay/Ax;
+			MRPT_END
 		}
+
+		/** Linear interpolation/extrapolation: evaluates at "x" the line (x0,y0)-(x1,y1).
+		  *  If wrap2pi is true, output is wrapped to ]-pi,pi] (It is assumed that input "y" values already are in the correct range).
+		  * \sa spline, interpolate, leastSquareLinearFit
+		  */
+		double BASE_IMPEXP interpolate2points(const double x, const double x0, const double y0, const double x1, const double y1, bool wrap2pi = false);
+
+		/** Interpolates the value of a function in a point "t" given 4 SORTED points where "t" is between the two middle points
+		  *  If wrap2pi is true, output "y" values are wrapped to ]-pi,pi] (It is assumed that input "y" values already are in the correct range).
+		  * \sa leastSquareLinearFit
+		  */
+		double BASE_IMPEXP  spline(const double t, const vector_double &x, const vector_double &y, bool wrap2pi = false);
+
+		/** Interpolates or extrapolates using a least-square linear fit of the set of values "x" and "y", evaluated at a single point "t".
+		  *  The vectors x and y must have size >=2, and all values of "x" must be different.
+		  *  If wrap2pi is true, output "y" values are wrapped to ]-pi,pi] (It is assumed that input "y" values already are in the correct range).
+		  * \sa spline
+		  * \sa getRegressionLine, getRegressionPlane
+		  */
+		template <typename NUMTYPE,class VECTORLIKE>
+		NUMTYPE leastSquareLinearFit(const NUMTYPE t, const VECTORLIKE &x, const VECTORLIKE &y, bool wrap2pi = false)
+		{
+			MRPT_START
+
+			// http://en.wikipedia.org/wiki/Linear_least_squares
+			ASSERT_(x.size()==y.size());
+			ASSERT_(x.size()>1);
+
+			const size_t N = x.size();
+
+			typedef typename VECTORLIKE::value_type NUM;
+
+			// X= [1 columns of ones, x' ]
+			const NUM x_min = x.minimum();
+			CMatrixTemplateNumeric<NUM> Xt(2,N);
+			for (size_t i=0;i<N;i++)
+			{
+				Xt.set_unsafe(0,i, 1);
+				Xt.set_unsafe(1,i, x[i]-x_min);
+			}
+
+			CMatrixTemplateNumeric<NUM> XtX;
+			XtX.multiply_AAt(Xt);
+
+			CMatrixTemplateNumeric<NUM> XtXinv;
+			XtX.inv_fast(XtXinv);
+
+			CMatrixTemplateNumeric<NUM> XtXinvXt;	// B = inv(X' * X)*X'  (pseudoinverse)
+			XtXinvXt.multiply(XtXinv,Xt);
+
+			VECTORLIKE B;
+			XtXinvXt.multiply_Ab(y,B);
+
+			ASSERT_(B.size()==2)
+
+			NUM ret = B[0] + B[1]*(t-x_min);
+
+			// wrap?
+			if (!wrap2pi)
+					return ret;
+			else 	return mrpt::math::wrapToPi(ret);
+
+			MRPT_END
+		}
+
+		/** Interpolates or extrapolates using a least-square linear fit of the set of values "x" and "y", evaluated at a sequence of points "ts" and returned at "outs".
+		  *  If wrap2pi is true, output "y" values are wrapped to ]-pi,pi] (It is assumed that input "y" values already are in the correct range).
+		  * \sa spline, getRegressionLine, getRegressionPlane
+		  */
+		template <class VECTORLIKE1,class VECTORLIKE2,class VECTORLIKE3>
+		void leastSquareLinearFit(
+			const VECTORLIKE1 &ts,
+			VECTORLIKE2 &outs,
+			const VECTORLIKE3 &x,
+			const VECTORLIKE3 &y,
+			bool wrap2pi = false)
+		{
+			MRPT_START
+
+			// http://en.wikipedia.org/wiki/Linear_least_squares
+			ASSERT_(x.size()==y.size());
+			ASSERT_(x.size()>1);
+
+			const size_t N = x.size();
+
+			// X= [1 columns of ones, x' ]
+			typedef typename VECTORLIKE3::value_type NUM;
+			const NUM x_min = x.minimum();
+			CMatrixTemplateNumeric<NUM> Xt(2,N);
+			for (size_t i=0;i<N;i++)
+			{
+				Xt.set_unsafe(0,i, 1);
+				Xt.set_unsafe(1,i, x[i]-x_min);
+			}
+
+			CMatrixTemplateNumeric<NUM> XtX;
+			XtX.multiply_AAt(Xt);
+
+			CMatrixTemplateNumeric<NUM> XtXinv;
+			XtX.inv_fast(XtXinv);
+
+			CMatrixTemplateNumeric<NUM> XtXinvXt;	// B = inv(X' * X)*X' (pseudoinverse)
+			XtXinvXt.multiply(XtXinv,Xt);
+
+			VECTORLIKE3 B;
+			XtXinvXt.multiply_Ab(y,B);
+
+			ASSERT_(B.size()==2)
+
+			const size_t tsN = size_t(ts.size());
+			outs.resize(tsN);
+			if (!wrap2pi)
+				for (size_t k=0;k<tsN;k++)
+					outs[k] = B[0] + B[1]*(ts[k]-x_min);
+			else
+				for (size_t k=0;k<tsN;k++)
+					outs[k] = mrpt::math::wrapToPi( B[0] + B[1]*(ts[k]-x_min) );
+			MRPT_END
+		}
+
+		/** @} */  // end grouping interpolation_grp
 
 	} // End of MATH namespace
 

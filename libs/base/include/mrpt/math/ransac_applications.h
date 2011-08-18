@@ -37,6 +37,9 @@ namespace mrpt
 	{
 		using std::vector;
 
+		/** @addtogroup ransac_grp
+		  * @{ */
+
 		/** @name RANSAC detectors
 			@{
 		  */
@@ -87,7 +90,7 @@ namespace mrpt
 		}
 
 		/** @} */
-
+		/** @} */  // end of grouping
 
 	} // End of namespace
 } // End of namespace

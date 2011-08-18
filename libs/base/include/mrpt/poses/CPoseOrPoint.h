@@ -37,8 +37,14 @@
 
 namespace mrpt
 {
+	/** \defgroup poses_grp 2D/3D points and poses
+	  *  \ingroup mrpt_base_grp */
+
+	/** \defgroup poses_pdf_grp 2D/3D point and pose PDFs
+	  *  \ingroup mrpt_base_grp */
+
 	/** Classes for 2D/3D geometry representation, both of single values and probability density distributions (PDFs) in many forms.
-	 * \ingroup mrpt_base_grp
+	 * \ingroup poses_grp poses_pdf_grp
 	  */
 	namespace poses
 	{
@@ -117,7 +123,7 @@ namespace mrpt
 		 * </div>
 		 *
 		 * \sa CPose,CPoint
-		 * \ingroup mrpt_base_grp
+		 * \ingroup poses_grp
 		 */
 		template <class DERIVEDCLASS>
 		class CPoseOrPoint : public mrpt::poses::detail::pose_point_impl<DERIVEDCLASS, mrpt::poses::detail::T3DTypeHelper<DERIVEDCLASS>::is_3D_val>

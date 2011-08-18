@@ -58,7 +58,7 @@ namespace poses
 	 *  This class and CPose3D are very similar, and they can be converted to the each other automatically via transformation constructors.
 	 *
 	 * \sa CPose3D (for a class based on a 4x4 matrix instead of a quaternion), mrpt::math::TPose3DQuat, mrpt::poses::CPose3DQuatPDF for a probabilistic version of this class,  mrpt::math::CQuaternion, CPoseOrPoint
-	 * \ingroup mrpt_base_grp
+	 * \ingroup poses_grp
 	 */
 	class BASE_IMPEXP CPose3DQuat : public CPose<CPose3DQuat>, public mrpt::utils::CSerializable
 	{
