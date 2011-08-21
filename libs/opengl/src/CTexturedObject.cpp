@@ -43,7 +43,7 @@ using namespace std;
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CTexturedObject, CRenderizableDisplayList, mrpt::opengl )
 
 // Whether to profile memory allocations:
-// #define TEXTUREOBJ_PROFILE_MEM_ALLOC
+//#define TEXTUREOBJ_PROFILE_MEM_ALLOC
 
 // Whether to use a memory pool for the texture buffer:
 #define TEXTUREOBJ_USE_MEMPOOL
@@ -222,14 +222,15 @@ void  CTexturedObject::loadTextureInOpenGL() const
 		glBindTexture( GL_TEXTURE_2D, m_glTextureName );
 		checkOpenGLError();
 
-		// when texture area is small, bilinear filter the closest mipmap
-		// Other options: //  GL_LINEAR ); // _MIPMAP_NEAREST  ); // GL_LINEAR_MIPMAP_NEAREST );  // GL_LINEAR
+		// when texture area is small, linear interpolation. Default is GL_LINEAR_MIPMAP_NEAREST but we
+		// are not building mipmaps.
 		//  See also: http://www.opengl.org/discussion_boards/ubbthreads.php?ubb=showflat&Number=133116&page=1
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 		checkOpenGLError();
 
-		// when texture area is large, bilinear filter the first mipmap
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //GL_LINEAR );
+		// when texture area is large, NEAREST: this is mainly thinking of rendering
+		//  occupancy grid maps, such as we want those "big pixels" to be clearly visible ;-)
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	    checkOpenGLError();
 
 		// if wrap is true, the texture wraps over at the edges (repeat)
@@ -250,12 +251,12 @@ void  CTexturedObject::loadTextureInOpenGL() const
 			m_textureImageAlpha = m_textureImageAlpha.scaleHalf();
 		}
 
-		int		width = m_textureImage.getWidth();
-		int		height = m_textureImage.getHeight();
+		const int width  = m_textureImage.getWidth();
+		const int height = m_textureImage.getHeight();
 
 #		ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
 		{
-			const std::string sSec = mrpt::format("opengl_texture: load %ix%i",width,height);
+			const std::string sSec = mrpt::format("opengl_texture: load %ix%i %s %stransp",width,height, m_textureImage.isColor() ? "RGB":"BW", m_enableTransparency ? "":"no ");
 			tim.enter(sSec.c_str());
 		}
 #		endif
@@ -282,8 +283,6 @@ void  CTexturedObject::loadTextureInOpenGL() const
 			{
 				// Color texture WITH trans.
 				// --------------------------------------
-				const GLenum pixels_format = mrpt::system::os::_strcmp(m_textureImage.getChannelsOrder(),"BGR")==0 ? GL_BGRA : GL_RGBA;
-
 #			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
 				const std::string sSec = mrpt::format("opengl_texture_alloc %ix%i (color,trans)",r_width,r_height);
 				tim.enter(sSec.c_str());
@@ -309,39 +308,47 @@ void  CTexturedObject::loadTextureInOpenGL() const
     					*ptr++ = *ptrSrcAlfa++;
 					}
 				}
-				// build our texture mipmaps
-				gluBuild2DMipmaps( GL_TEXTURE_2D, 4, r_width, r_height,pixels_format, GL_UNSIGNED_BYTE, dataAligned );
+
+				// Prepare image data types:
+				const GLenum img_type = GL_UNSIGNED_BYTE;
+				const bool is_RGB_order = (!::strcmp(m_textureImage.getChannelsOrder(),"RGB"));  // Reverse RGB <-> BGR order?
+				const GLenum img_format = (is_RGB_order ? GL_RGBA : GL_BGRA);
+
+				// Send image data to OpenGL:
+				glPixelStorei(GL_UNPACK_ALIGNMENT,4);
+				glPixelStorei(GL_UNPACK_ROW_LENGTH,r_width );
+				glTexImage2D(GL_TEXTURE_2D, 0 /*level*/, 4 /* RGB components */, r_width, r_height,0 /*border*/, img_format, img_type, dataAligned );
 				checkOpenGLError();
+				glPixelStorei(GL_UNPACK_ROW_LENGTH,0);  // Reset
 			} // End of color texture WITH trans.
 			else
 			{
 				// Color texture WITHOUT trans.
 				// --------------------------------------
-				const GLenum pixels_format = mrpt::system::os::_strcmp(m_textureImage.getChannelsOrder(),"BGR")==0 ? GL_BGR : GL_RGB;
+				//const GLenum pixels_format = mrpt::system::os::_strcmp(m_textureImage.getChannelsOrder(),"BGR")==0 ? GL_BGR : GL_RGB;
 
 #			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
 				const std::string sSec = mrpt::format("opengl_texture_alloc %ix%i (color)",r_width,r_height);
 				tim.enter(sSec.c_str());
 #			endif
 
-				dataAligned = reserveDataBuffer(r_height*r_width*3 + 512, data );
+				//dataAligned = reserveDataBuffer(r_height*r_width*3 + 512, data );
 
 #			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
 				tim.leave(sSec.c_str());
 #			endif
 
-				const size_t bytesPerLineSrc =   width*3;
-				const size_t bytesPerLineDst = r_width*3;
-				unsigned char *ptrDst = dataAligned + (m_fill_x_left)*3 + m_fill_y_top*r_width*3;
-				for (int y=0;y<height;y++)
-				{
-					memcpy(ptrDst,m_textureImage(0,y,0),bytesPerLineSrc);
-					ptrDst += bytesPerLineDst;
-				}
+				// Prepare image data types:
+				const GLenum img_type = GL_UNSIGNED_BYTE;
+				const int nBytesPerPixel = m_textureImage.isColor() ? 3 : 1;
+				const bool is_RGB_order = (!::strcmp(m_textureImage.getChannelsOrder(),"RGB"));  // Reverse RGB <-> BGR order?
+				const GLenum img_format = nBytesPerPixel==3 ? (is_RGB_order ? GL_RGB : GL_BGR): GL_LUMINANCE;
 
-				// Build texture:
-				gluBuild2DMipmaps( GL_TEXTURE_2D, 3, r_width, r_height,pixels_format, GL_UNSIGNED_BYTE, dataAligned );
-				checkOpenGLError();
+				// Send image data to OpenGL:
+				glPixelStorei(GL_UNPACK_ALIGNMENT,4);
+				glPixelStorei(GL_UNPACK_ROW_LENGTH,m_textureImage.getRowStride()/nBytesPerPixel );
+				glTexImage2D(GL_TEXTURE_2D, 0 /*level*/, 3 /* RGB components */, width, height,0 /*border*/, img_format, img_type, m_textureImage.get_unsafe(0,0) );
+				glPixelStorei(GL_UNPACK_ROW_LENGTH,0);  // Reset
 
 			} // End of color texture WITHOUT trans.
 		}
@@ -373,47 +380,67 @@ void  CTexturedObject::loadTextureInOpenGL() const
 					}
 				}
 
-				// build our texture mipmaps
-				gluBuild2DMipmaps( GL_TEXTURE_2D, 2, r_width, r_height, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, dataAligned );
+				// Prepare image data types:
+				const GLenum img_type = GL_UNSIGNED_BYTE;
+				const GLenum img_format = GL_LUMINANCE_ALPHA;
+
+				// Send image data to OpenGL:
+				glPixelStorei(GL_UNPACK_ALIGNMENT,4);
+				glPixelStorei(GL_UNPACK_ROW_LENGTH,r_width );
+				glTexImage2D(GL_TEXTURE_2D, 0 /*level*/, 2 /* RGB components */, r_width, r_height,0 /*border*/, img_format, img_type, dataAligned );
 				checkOpenGLError();
+				glPixelStorei(GL_UNPACK_ROW_LENGTH,0);  // Reset
+
 			}// End of gray-scale texture WITH trans.
 			else
 			{
-#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
-				const std::string sSec = mrpt::format("opengl_texture_alloc %ix%i (gray)",r_width,r_height);
-				tim.enter(sSec.c_str());
-#			endif
+//#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+////				const std::string sSec = mrpt::format("opengl_texture_alloc %ix%i (gray)",r_width,r_height);
+////				tim.enter(sSec.c_str());
+//#			endif
 
-				dataAligned = reserveDataBuffer(r_height*r_width + 1024, data );
+//				dataAligned = reserveDataBuffer(r_height*r_width + 1024, data );
 
-#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
-				tim.leave(sSec.c_str());
-#			endif
+//#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+//				tim.leave(sSec.c_str());
+//#			endif
 
-#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
-				{
-					const std::string sSec = mrpt::format("opengl_texture: memcpy %ix%i",width,height);
-					tim.enter(sSec.c_str());
-				}
-#			endif
+//#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+//				{
+//					const std::string sSec = mrpt::format("opengl_texture: memcpy %ix%i",width,height);
+//					tim.enter(sSec.c_str());
+//				}
+//#			endif
 
-				for (int y=0;y<height;y++)
-				{
-					unsigned char 	*ptrSrcCol = m_textureImage(0,y);
-					unsigned char 	*ptr = dataAligned + m_fill_x_left + (m_fill_y_top+y)*r_width;
-					memcpy(ptr,ptrSrcCol, r_width);
-				}
-
-#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
-				{
-					const std::string sSec = mrpt::format("opengl_texture: memcpy %ix%i",width,height);
-					tim.leave(sSec.c_str());
-				}
-#			endif
+//				for (int y=0;y<height;y++)
+//				{
+//					unsigned char 	*ptrSrcCol = m_textureImage(0,y);
+//					unsigned char 	*ptr = dataAligned + m_fill_x_left + (m_fill_y_top+y)*r_width;
+//					memcpy(ptr,ptrSrcCol, r_width);
+//				}
+//
+//#			ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
+//				{
+//					const std::string sSec = mrpt::format("opengl_texture: memcpy %ix%i",width,height);
+//					tim.leave(sSec.c_str());
+//				}
+//#			endif
 
 				// build our texture mipmaps
-				gluBuild2DMipmaps( GL_TEXTURE_2D, 1, r_width, r_height, GL_LUMINANCE, GL_UNSIGNED_BYTE, dataAligned );
+//				gluBuild2DMipmaps( GL_TEXTURE_2D, 1, r_width, r_height, GL_LUMINANCE, GL_UNSIGNED_BYTE, dataAligned );
+//				checkOpenGLError();
+
+				// Prepare image data types:
+				const GLenum img_type = GL_UNSIGNED_BYTE;
+				const GLenum img_format = GL_LUMINANCE;
+
+				// Send image data to OpenGL:
+				glPixelStorei(GL_UNPACK_ALIGNMENT,4);
+				glPixelStorei(GL_UNPACK_ROW_LENGTH, m_textureImage.getRowStride() );
+				glTexImage2D(GL_TEXTURE_2D, 0 /*level*/, 1 /* RGB components */, width, height,0 /*border*/, img_format, img_type, m_textureImage(0,0) );
 				checkOpenGLError();
+				glPixelStorei(GL_UNPACK_ROW_LENGTH,0);  // Reset
+
 			}// End of gray-scale texture WITHOUT trans.
 
 		}
@@ -422,7 +449,7 @@ void  CTexturedObject::loadTextureInOpenGL() const
 
 #		ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC
 		{
-			const std::string sSec = mrpt::format("opengl_texture: load %ix%i",width,height);
+			const std::string sSec = mrpt::format("opengl_texture: load %ix%i %s %stransp",width,height, m_textureImage.isColor() ? "RGB":"BW", m_enableTransparency ? "":"no ");
 			tim.leave(sSec.c_str());
 		}
 #		endif
