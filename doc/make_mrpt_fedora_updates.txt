@@ -22,7 +22,10 @@ fedpkg build
 In the other branches:
 
 Update mrpt.spec
-git commit &&  git push
+
+git commit  # or commit -a
+git push 
+
 fedpkg build
 fedpkg update
 BODHI_USER=foo fedpkg update

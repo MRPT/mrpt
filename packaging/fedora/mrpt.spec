@@ -1,7 +1,7 @@
 Summary: Libraries and programs for mobile robot SLAM and navigation
 Name: mrpt
-Version: 0.9.4
-Release: 0.1.20110110svn2383%{?dist}
+Version: 0.9.5
+Release: 0.1.20110823svn2634%{?dist}
 License: GPLv3+
 Group: Development/Libraries
 URL: http://www.mrpt.org/
@@ -15,14 +15,14 @@ URL: http://www.mrpt.org/
 # following commands to generate the tarball:
 #  svn export http://babel.isa.uma.es/mrpt-browse-code/mrpt-0.7.0 mrpt-0.7.0
 #  tar -czvf mrpt-0.7.0-20090529svn1047.tar.gz mrpt-0.70
-Source: http://archive.mrpt.org/fedora-packages/mrpt-0.9.4-20110110svn2383.tar.gz
+Source: http://archive.mrpt.org/fedora-packages/mrpt-0.9.5-20110823svn2634.tar.gz
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: cmake
 BuildRequires: wxGTK-devel, opencv-devel, freeglut-devel, lib3ds-devel
 BuildRequires: boost-devel
-BuildRequires: doxygen, ghostscript
+BuildRequires: doxygen, ghostscript, graphviz
 BuildRequires: tex(latex), tex(dvips)
 BuildRequires: libdc1394-devel
 BuildRequires: libftdi-devel, libusb-devel
@@ -75,6 +75,12 @@ Requires: %{name}-base = %{version}-%{release}
 %description bayes
 The Mobile Robot Programming Toolkit (MRPT) library mrpt-bayes
 
+%package graphs
+Summary: Mobile Robot Programming Toolkit - mrpt-graphs
+Group: Development/Libraries
+Requires: %{name}-base = %{version}-%{release}
+%description graphs
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-graphs
 
 %package gui
 Summary: Mobile Robot Programming Toolkit - mrpt-gui
@@ -143,6 +149,13 @@ Requires: %{name}-vision = %{version}-%{release}
 %description slam
 The Mobile Robot Programming Toolkit (MRPT) library mrpt-slam
 
+%package graphslam
+Summary: Mobile Robot Programming Toolkit - mrpt-graphslam
+Group: Development/Libraries
+Requires: %{name}-slam = %{version}-%{release}
+Requires: %{name}-graphs = %{version}-%{release}
+%description graphslam
+The Mobile Robot Programming Toolkit (MRPT) library mrpt-graphslam
 
 
 %package reactivenav
@@ -185,6 +198,8 @@ Requires: %{name}-maps = %{version}-%{release}
 Requires: %{name}-opengl = %{version}-%{release}
 Requires: %{name}-base = %{version}-%{release}
 Requires: %{name}-bayes = %{version}-%{release}
+Requires: %{name}-graphs = %{version}-%{release}
+Requires: %{name}-graphslam = %{version}-%{release}
 %description libs
 The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
 and open source C++ library aimed to help robotics researchers to design and
@@ -292,6 +307,11 @@ rm -rf $RPM_BUILD_ROOT
 %doc README COPYING
 %{_libdir}/libmrpt-bayes.so.*
 
+%files graphs
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_libdir}/libmrpt-graphs.so.*
+
 %files obs
 %defattr(-,root,root,-)
 %doc README COPYING
@@ -336,6 +356,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc README COPYING
 %{_libdir}/libmrpt-slam.so.*
+
+%files graphslam
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_libdir}/libmrpt-graphslam.so.*
 
 %files hmtslam
 %defattr(-,root,root,-)
@@ -416,6 +441,15 @@ rm -rf $RPM_BUILD_ROOT
 %post hmtslam -p /sbin/ldconfig
 %postun hmtslam -p /sbin/ldconfig
 
+%post bayes -p /sbin/ldconfig
+%postun bayes -p /sbin/ldconfig
+
+%post graphs -p /sbin/ldconfig
+%postun graphs -p /sbin/ldconfig
+
+%post graphslam -p /sbin/ldconfig
+%postun graphslam -p /sbin/ldconfig
+
 %post apps
 update-desktop-database &> /dev/null || :
 
@@ -434,6 +468,9 @@ update-mime-database %{_datadir}/mime &> /dev/null || :
 
 
 %changelog
+* Tue Aug 23 2011 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.9.5-0.1.20110823svn2634
+- New 0.9.5 svn snapshot.
+
 * Mon Jan 10 2011 - Jose Luis Blanco <joseluisblancoc@gmail.com> 0.9.4-0.1.20110110svn2383
 - New 0.9.4 svn snapshot, with more secure unit tests for autobuilders.
 
