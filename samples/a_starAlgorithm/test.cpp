@@ -27,13 +27,13 @@
    +---------------------------------------------------------------------------+ */
 #define _CRT_SECURE_NO_WARNINGS
 
-#include "mrpt/math/CAStarAlgorithm.h"
+#include <mrpt/graphs/CAStarAlgorithm.h>
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
 
 using namespace std;
-using namespace mrpt::math;
+using namespace mrpt::graphs;
 
 /**
   * This is a example of problem resolution using the CAStarAlgorithm template. Although this problem is better solved with dynamic programming, it illustrates

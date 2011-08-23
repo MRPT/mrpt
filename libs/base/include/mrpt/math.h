@@ -42,7 +42,6 @@
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/ransac.h>
 #include <mrpt/math/ransac_applications.h>
-#include <mrpt/math/dijkstra.h>
 
 #include <mrpt/math/CHistogram.h>
 #include <mrpt/math/CMatrix.h>
@@ -52,8 +51,6 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CArray.h>
 
-#include <mrpt/math/graphs.h>
-#include <mrpt/math/CGraphPartitioner.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/geometry.h>
 
@@ -63,7 +60,6 @@
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/CSparseMatrix.h>
 
-#include <mrpt/math/CAStarAlgorithm.h>
 #include <mrpt/math/CBinaryRelation.h>
 #include <mrpt/math/CMonteCarlo.h>
 #include <mrpt/math/jacobians.h>

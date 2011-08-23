@@ -26,12 +26,11 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers 
-
-
-#include <mrpt/math/CGraphPartitioner.h>
+#include <mrpt/base.h>  // Precompiled headers
+#include <mrpt/graphs/CGraphPartitioner.h>
 
 using namespace mrpt;
+using namespace mrpt::graphs;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace std;

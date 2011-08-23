@@ -122,10 +122,8 @@ IF(BUILD_EXAMPLES)
 		smart_pointers_test
 		stl_containers_serialize
 		polygonSplit
-		dijkstra-example
 		setOfTexturedTrianglesTest
 		gui_windows_events
-		a_starAlgorithm
 		quaternions
 		unscented_transform_test
 		grab3Dvideo
@@ -134,12 +132,33 @@ IF(BUILD_EXAMPLES)
 		checkerboardDetectors
 		multipleCheckerboards		
 		voronoi_test
-		graph_slam_demo
 		keypoint_matching
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-vision mrpt-gui mrpt-topography)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+
+	# === Depending on: graphs & gui ===
+	#  list of examples for each directory:
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		a_starAlgorithm
+		dijkstra-example
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-graphs mrpt-gui)
+	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+		
+		
+	# === Depending on: graphslam & gui ===
+	#  list of examples for each directory:
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		graph_slam_demo
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-graphslam mrpt-gui)
+	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+		
 
 	# === Depending on: vision & gui ===
 	#  list of examples for each directory:

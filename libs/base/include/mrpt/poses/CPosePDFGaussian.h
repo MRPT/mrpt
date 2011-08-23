@@ -68,6 +68,9 @@ namespace poses
 
 		/** @} */
 
+		inline const CPose2D & getPoseMean() const { return mean; }
+		inline       CPose2D & getPoseMean()       { return mean; }
+
 		/** Default constructor
 		  */
 		CPosePDFGaussian();

@@ -32,47 +32,54 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
-#include <mrpt/math/graphs.h>
+#include <mrpt/graphs/CDirectedGraph.h>
+#include <mrpt/graphs/CDirectedTree.h>
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 
+#include <mrpt/utils/traits_map.h>
 #include <mrpt/utils/stl_extensions.h>
+
+#include <mrpt/graphs/link_pragmas.h>
 
 // The main class in this file is CNetworkOfPoses, a generic basic template for
 //  predefined 2D/3D graphs of pose contraints.
-
 namespace mrpt
 {
-	namespace poses
+	namespace graphs
 	{
 		using mrpt::utils::TNodeID;
-		template<class CPOSE,class MAPS_IMPLEMENTATION > class CNetworkOfPoses;	// Forward decl. needed by detail functions.
+		using namespace mrpt::utils;
 
 		/** Internal functions for MRPT */
 		namespace detail
 		{
-			template<class CPOSE,class MAPS_IMPLEMENTATION> void BASE_IMPEXP save_graph_of_poses_from_text_file(const CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION> *g, const std::string &fil);
-			template<class CPOSE,class MAPS_IMPLEMENTATION> void BASE_IMPEXP load_graph_of_poses_from_text_file(CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION>*g, const std::string &fil);
-			template<class CPOSE,class MAPS_IMPLEMENTATION> void BASE_IMPEXP graph_of_poses_dijkstra_init(CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION>*g);
-			template<class CPOSE,class MAPS_IMPLEMENTATION> size_t BASE_IMPEXP graph_of_poses_collapse_dup_edges(CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION>*g);
-			template<class CPOSE,class MAPS_IMPLEMENTATION> double BASE_IMPEXP graph_edge_sqerror(const CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION>*g, const typename mrpt::math::CDirectedGraph<CPOSE>::edges_map_t::const_iterator &itEdge, bool ignoreCovariances );
+			template <class GRAPH_T> struct graph_ops;
+//			template<class GRAPH_T> void save_graph_of_poses_from_text_file(const GRAPH_T *g, const std::string &fil);
+//			template<class GRAPH_T> void load_graph_of_poses_from_text_file(GRAPH_T* g, const std::string &fil);
+//			template<class GRAPH_T> void graph_of_poses_dijkstra_init(GRAPH_T *g);
+//			template<class GRAPH_T> size_t graph_of_poses_collapse_dup_edges(GRAPH_T *g);
+//			template<class GRAPH_T> double graph_edge_sqerror(const GRAPH_T *g, const typename mrpt::graphs::CDirectedGraph<typename GRAPH_T::constraint_t>::edges_map_t::const_iterator &itEdge, bool ignoreCovariances );
+
+			/** An empty structure */
+			struct node_annotations_empty {  };
 		}
 
 		/** A directed graph of pose constraints, with edges being the relative pose between pairs of nodes indentified by their numeric IDs (of type TNodeID).
 		  *  A link or edge between two nodes "i" and "j", that is, the pose \f$ p_{ij} \f$, holds the relative position of "j" with respect to "i".
 		  *   These poses are stored in the edges in the format specified by the template argument CPOSE. Users should employ the following derived classes
 		  *   depending on the desired representation of edges:
-		  *      - mrpt::poses::CNetworkOfPoses2D    : 2D edges as a simple CPose2D (x y phi)
-		  *      - mrpt::poses::CNetworkOfPoses3D    : 3D edges as a simple CPose3D (x y z yaw pitch roll)
-		  *      - mrpt::poses::CNetworkOfPoses2DInf : 2D edges as a Gaussian PDF with information matrix ( CPosePDFGaussianInf )
-		  *      - mrpt::poses::CNetworkOfPoses3DInf : 3D edges as a Gaussian PDF with information matrix ( CPose3DPDFGaussianInf )
-		  *      - mrpt::poses::CNetworkOfPoses2DCov : 2D edges as a Gaussian PDF with covariance matrix ( CPosePDFGaussian ). It's more efficient to use the information matrix version instead!
-		  *      - mrpt::poses::CNetworkOfPoses3DCov : 3D edges as a Gaussian PDF with covariance matrix ( CPose3DPDFGaussian ). It's more efficient to use the information matrix version instead!
+		  *      - mrpt::graphs::CNetworkOfPoses2D    : 2D edges as a simple CPose2D (x y phi)
+		  *      - mrpt::graphs::CNetworkOfPoses3D    : 3D edges as a simple CPose3D (x y z yaw pitch roll)
+		  *      - mrpt::graphs::CNetworkOfPoses2DInf : 2D edges as a Gaussian PDF with information matrix ( CPosePDFGaussianInf )
+		  *      - mrpt::graphs::CNetworkOfPoses3DInf : 3D edges as a Gaussian PDF with information matrix ( CPose3DPDFGaussianInf )
+		  *      - mrpt::graphs::CNetworkOfPoses2DCov : 2D edges as a Gaussian PDF with covariance matrix ( CPosePDFGaussian ). It's more efficient to use the information matrix version instead!
+		  *      - mrpt::graphs::CNetworkOfPoses3DCov : 3D edges as a Gaussian PDF with covariance matrix ( CPose3DPDFGaussian ). It's more efficient to use the information matrix version instead!
 		  *
 		  *  Two main members store all the information in this class:
-		  *		- \a edge  (in the base class mrpt::math::CDirectedGraph::edge): A map from pairs of node ID -> pose constraints.
+		  *		- \a edge  (in the base class mrpt::graphs::CDirectedGraph::edge): A map from pairs of node ID -> pose constraints.
 		  *		- \a nodes : A map from node ID -> estimated pose of that node (actually, read below on the template argument MAPS_IMPLEMENTATION).
 		  *
 		  *  Graphs can be loaded and saved to text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a> ),
@@ -88,29 +95,43 @@ namespace mrpt
 		  *		- MAPS_IMPLEMENTATION: Can be either mrpt::utils::map_traits_stdmap or mrpt::utils::map_traits_map_as_vector. Determines the type of the list of global poses (member \a nodes).
 		  *
 		  * \sa mrpt::graphslam
-		  * \ingroup graph_utils_grp poses_grp poses_pdf_grp
+		  * \ingroup mrpt_graphs_grp
 		  */
-		template<class CPOSE, class MAPS_IMPLEMENTATION = map_traits_stdmap >
-		class CNetworkOfPoses : public mrpt::math::CDirectedGraph< CPOSE >
+		template<
+			class CPOSE, // Type of edges
+			class MAPS_IMPLEMENTATION = map_traits_stdmap, // Use std::map<> vs. std::vector<>
+			class NODE_ANNOTATIONS = mrpt::graphs::detail::node_annotations_empty,
+			class EDGE_ANNOTATIONS = mrpt::graphs::detail::edge_annotations_empty
+			>
+		class CNetworkOfPoses : public mrpt::graphs::CDirectedGraph< CPOSE, EDGE_ANNOTATIONS >
 		{
 		public:
 			/** @name Typedef's
 			    @{ */
+			typedef mrpt::graphs::CDirectedGraph<CPOSE,EDGE_ANNOTATIONS> BASE;	//!< The base class "CDirectedGraph<CPOSE,EDGE_ANNOTATIONS>" */
+			typedef CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> self_t; //!< My own type
 
-			/** The base class "CDirectedGraph<CPOSE>" */
-			typedef mrpt::math::CDirectedGraph< CPOSE > BASE;
+			typedef CPOSE              constraint_t;        //!< The type of PDF poses in the contraints (edges) (=CPOSE template argument)
+			typedef NODE_ANNOTATIONS   node_annotations_t;  //!< The extra annotations in nodes, apart from a \a constraint_no_pdf_t
+			typedef EDGE_ANNOTATIONS   edge_annotations_t;  //!< The extra annotations in edges, apart from a \a constraint_t
 
-			/** The type of PDF poses in the contraints (edges) (=CPOSE template argument) */
-			typedef CPOSE                               constraint_t;
+			typedef MAPS_IMPLEMENTATION         maps_implementation_t; //!< The type of map's implementation (=MAPS_IMPLEMENTATION template argument)
+			typedef typename CPOSE::type_value  constraint_no_pdf_t;   //!< The type of edges or their means if they are PDFs (that is, a simple "edge" value)
 
-			/** The type of map's implementation (=MAPS_IMPLEMENTATION template argument) */
-			typedef MAPS_IMPLEMENTATION                 maps_implementation_t;
+			/** The type of each global pose in \a nodes: an extension of the \a constraint_no_pdf_t pose with any optional user-defined data */
+			struct global_pose_t : public constraint_no_pdf_t, public NODE_ANNOTATIONS
+			{
+				// Replicate possible constructors:
+				inline global_pose_t() : constraint_no_pdf_t() { }
+				template <typename ARG1> inline global_pose_t(const ARG1 &a1) : constraint_no_pdf_t(a1) { }
+				template <typename ARG1,typename ARG2> inline global_pose_t(const ARG1 &a1,const ARG2 &a2) : constraint_no_pdf_t(a1,a2) { }
+			};
 
 			/** A map from pose IDs to their global coordinates estimates, with uncertainty */
 			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,CPOSE>     global_poses_pdf_t;
 
 			/** A map from pose IDs to their global coordinates estimates, without uncertainty (the "most-likely value") */
-			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,typename CPOSE::type_value> global_poses_t;
+			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,global_pose_t> global_poses_t;
 
 			/** @} */
 
@@ -144,7 +165,7 @@ namespace mrpt
 			  * \exception On any error
 			  */
 			inline void saveToTextFile( const std::string &fileName ) const {
-				mrpt::poses::detail::save_graph_of_poses_from_text_file(this,fileName);
+				detail::graph_ops<self_t>::save_graph_of_poses_from_text_file(this,fileName);
 			}
 
 			/** Loads from a text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a> )
@@ -157,7 +178,7 @@ namespace mrpt
 			  * \exception On any error, as a malformed line or loading a 3D graph in a 2D graph.
 			  */
 			inline void loadFromTextFile( const std::string &fileName, bool collapse_dup_edges = true ) {
-				mrpt::poses::detail::load_graph_of_poses_from_text_file(this,fileName);
+				detail::graph_ops<self_t>::load_graph_of_poses_from_text_file(this,fileName);
 				if (collapse_dup_edges) this->collapseDuplicatedEdges();
 			}
 
@@ -171,13 +192,13 @@ namespace mrpt
 			  * \note This method takes into account the value of \a edges_store_inverse_poses
 			  * \sa node, root
 			  */
-			inline void dijkstra_nodes_estimate() { detail::graph_of_poses_dijkstra_init(this); }
+			inline void dijkstra_nodes_estimate() { detail::graph_ops<self_t>::graph_of_poses_dijkstra_init(this); }
 
 			/** Look for duplicated edges (even in opposite directions) between all pairs of nodes and fuse them.
 			  *  Upon return, only one edge remains between each pair of nodes with the mean & covariance (or information matrix) corresponding to the Bayesian fusion of all the Gaussians.
 			  * \return Overall number of removed edges.
 			  */
-			inline size_t collapseDuplicatedEdges() { return detail::graph_of_poses_collapse_dup_edges(this); }
+			inline size_t collapseDuplicatedEdges() { return detail::graph_ops<self_t>::graph_of_poses_collapse_dup_edges(this); }
 
 			/** Computes the overall square error from all the pose constraints (edges) with respect to the global poses in \nodes
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
@@ -188,7 +209,7 @@ namespace mrpt
 				double sqErr=0;
 				const typename BASE::edges_map_t::const_iterator last_it=BASE::edges.end();
 				for (typename BASE::edges_map_t::const_iterator itEdge=BASE::edges.begin();itEdge!=last_it;++itEdge)
-					sqErr+=detail::graph_edge_sqerror(this,itEdge,ignoreCovariances);
+					sqErr+=detail::graph_ops<self_t>::graph_edge_sqerror(this,itEdge,ignoreCovariances);
 				return sqErr;
 			}
 
@@ -196,7 +217,7 @@ namespace mrpt
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
 			  * \exception std::exception On global poses not in \a nodes
 			  */
-			inline double getEdgeSquareError(const typename BASE::edges_map_t::const_iterator &itEdge, bool ignoreCovariances = true) const { return detail::graph_edge_sqerror(this,itEdge,ignoreCovariances); }
+			inline double getEdgeSquareError(const typename BASE::edges_map_t::const_iterator &itEdge, bool ignoreCovariances = true) const { return detail::graph_ops<self_t>::graph_edge_sqerror(this,itEdge,ignoreCovariances); }
 
 			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \nodes
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
@@ -218,7 +239,7 @@ namespace mrpt
 			}
 
 			/** Return number of nodes in the list \nodes of global coordinates (may be differente that all nodes appearing in edges)
-			  * \sa mrpt::math::CDirectedGraph::countDifferentNodesInEdges
+			  * \sa mrpt::graphs::CDirectedGraph::countDifferentNodesInEdges
 			  */
 			inline size_t nodeCount() const { return nodes.size(); }
 
@@ -249,7 +270,7 @@ namespace mrpt
 
 
 
-		/** \addtogroup graph_utils_grp
+		/** \addtogroup mrpt_graphs_grp
 		    @{ */
 
 		// Define serializable versions of the template above for each specific kind of "edge":
@@ -265,7 +286,7 @@ namespace mrpt
 		/** The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing serialization.
 		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
 		  */
-		class BASE_IMPEXP CNetworkOfPoses2D : public CNetworkOfPoses<CPose2D,map_traits_stdmap>, public mrpt::utils::CSerializable
+		class GRAPHS_IMPEXP CNetworkOfPoses2D : public CNetworkOfPoses<CPose2D,map_traits_stdmap>, public mrpt::utils::CSerializable
 		{
 			DEFINE_MRPT_OBJECT( CNetworkOfPoses2D )	// Should be DEFINE_SERIALIZABLE but the next macro defines what that macro only declared.
 			DEFINE_SERIALIZABLE_GRAPH
@@ -274,7 +295,7 @@ namespace mrpt
 		/** The specialization of CNetworkOfPoses for poses of type CPose3D (not a PDF!), also implementing serialization.
 		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
 		  */
-		class BASE_IMPEXP CNetworkOfPoses3D : public CNetworkOfPoses<CPose3D,map_traits_stdmap>, public mrpt::utils::CSerializable
+		class GRAPHS_IMPEXP CNetworkOfPoses3D : public CNetworkOfPoses<CPose3D,map_traits_stdmap>, public mrpt::utils::CSerializable
 		{
 			DEFINE_MRPT_OBJECT( CNetworkOfPoses3D )	// Should be DEFINE_SERIALIZABLE but the next macro defines what that macro only declared.
 			DEFINE_SERIALIZABLE_GRAPH
@@ -283,7 +304,7 @@ namespace mrpt
 		/** The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian, also implementing serialization.
 		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
 		  */
-		class BASE_IMPEXP CNetworkOfPoses2DCov : public CNetworkOfPoses<CPosePDFGaussian,map_traits_stdmap>, public mrpt::utils::CSerializable
+		class GRAPHS_IMPEXP CNetworkOfPoses2DCov : public CNetworkOfPoses<CPosePDFGaussian,map_traits_stdmap>, public mrpt::utils::CSerializable
 		{
 			DEFINE_MRPT_OBJECT( CNetworkOfPoses2DCov )	// Should be DEFINE_SERIALIZABLE but the next macro defines what that macro only declared.
 			DEFINE_SERIALIZABLE_GRAPH
@@ -292,7 +313,7 @@ namespace mrpt
 		/** The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian, also implementing serialization.
 		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
 		  */
-		class BASE_IMPEXP CNetworkOfPoses3DCov : public CNetworkOfPoses<CPose3DPDFGaussian,map_traits_stdmap>, public mrpt::utils::CSerializable
+		class GRAPHS_IMPEXP CNetworkOfPoses3DCov : public CNetworkOfPoses<CPose3DPDFGaussian,map_traits_stdmap>, public mrpt::utils::CSerializable
 		{
 			DEFINE_MRPT_OBJECT( CNetworkOfPoses3DCov )	// Should be DEFINE_SERIALIZABLE but the next macro defines what that macro only declared.
 			DEFINE_SERIALIZABLE_GRAPH
@@ -301,7 +322,7 @@ namespace mrpt
 		/** The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf, also implementing serialization.
 		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
 		  */
-		class BASE_IMPEXP CNetworkOfPoses2DInf : public CNetworkOfPoses<CPosePDFGaussianInf,map_traits_stdmap>, public mrpt::utils::CSerializable
+		class GRAPHS_IMPEXP CNetworkOfPoses2DInf : public CNetworkOfPoses<CPosePDFGaussianInf,map_traits_stdmap>, public mrpt::utils::CSerializable
 		{
 			DEFINE_MRPT_OBJECT( CNetworkOfPoses2DInf )	// Should be DEFINE_SERIALIZABLE but the next macro defines what that macro only declared.
 			DEFINE_SERIALIZABLE_GRAPH
@@ -310,15 +331,18 @@ namespace mrpt
 		/** The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussianInf, also implementing serialization.
 		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
 		  */
-		class BASE_IMPEXP CNetworkOfPoses3DInf : public CNetworkOfPoses<CPose3DPDFGaussianInf,map_traits_stdmap>, public mrpt::utils::CSerializable
+		class GRAPHS_IMPEXP CNetworkOfPoses3DInf : public CNetworkOfPoses<CPose3DPDFGaussianInf,map_traits_stdmap>, public mrpt::utils::CSerializable
 		{
 			DEFINE_MRPT_OBJECT( CNetworkOfPoses3DInf )	// Should be DEFINE_SERIALIZABLE but the next macro defines what that macro only declared.
 			DEFINE_SERIALIZABLE_GRAPH
 		};
 
 		/** @} */  // end of grouping
-
 	} // End of namespace
 } // End of namespace
+
+
+// Implementation of templates (in a separate file for clarity)
+#include "CNetworkOfPoses_impl.h"
 
 #endif

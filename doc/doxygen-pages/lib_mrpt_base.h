@@ -22,14 +22,6 @@ A comprehensive collection of geometry-related classes to represent all kind of 
 There are also implemented representations for probability distributions over all of these transformations, in a generic way that
 allow mono and multi-modal Gaussians and particle-based representations.
 
-Graphs of pose constraints are also defined in this library, via a generic template mrpt::poses::CNetworkOfPoses, capable
-of reading and writing to both binary and <a href="http://www.mrpt.org/Robotics_file_formats" >text pose-graph file</a> formats.
-Predefined typedefs exist for:
- - mrpt::poses::CNetworkOfPoses2D     -> 2D graphs (x,y,phi), covariance matrix.
- - mrpt::poses::CNetworkOfPoses3D     -> 3D graphs (x,y,z,yaw,pitch,roll), covariance matrix.
- - mrpt::poses::CNetworkOfPoses2DInf  -> 2D graphs (x,y,phi), inverse covariance (information) matrix.
- - mrpt::poses::CNetworkOfPoses3DInf  -> 3D graphs (x,y,z,yaw,pitch,roll), inverse covariance (information) matrix.
-
 See mrpt::poses for the complete list of classes here.
 
 

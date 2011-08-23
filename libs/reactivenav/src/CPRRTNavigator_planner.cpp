@@ -28,7 +28,7 @@
 
 #include <mrpt/reactivenav.h>  // Precomp header
 
-#include <mrpt/math/CAStarAlgorithm.h>
+#include <mrpt/graphs/CAStarAlgorithm.h>
 
 using namespace mrpt::reactivenav;
 using namespace mrpt::synch;
@@ -44,7 +44,7 @@ struct CPath
  }
 };
 
-class CPathPlannerAstar : public CAStarAlgorithm<CPath>
+class CPathPlannerAstar : public mrpt::graphs::CAStarAlgorithm<CPath>
 {
 public:
 	/**

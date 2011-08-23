@@ -26,13 +26,13 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/graphs.h>
 #include <mrpt/gui.h>
 #include <mrpt/base.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::graphs;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
@@ -41,7 +41,10 @@ using namespace mrpt::random;
 using namespace std;
 
 // The type of my Dijkstra problem:
-typedef CDijkstra<CNetworkOfPoses2D::edge_t> CMyDijkstra;   // See other options in mrpt::poses::CNetworkOfPoses<>
+typedef CDijkstra<CNetworkOfPoses2D>   CMyDijkstra;   // See other options in mrpt::poses::CNetworkOfPoses<>
+
+// Before MRPT 0.9.5 it was:
+// typedef CDijkstra<CNetworkOfPoses2D::edge_t> CMyDijkstra;
 
 // adds a new edge to the graph. The edge is annotated with the relative position of the two nodes
 void addEdge(TNodeID from, TNodeID to, const aligned_containers<TNodeID,CPose2D>::map_t &real_poses,CNetworkOfPoses2D &graph_links)
@@ -157,7 +160,7 @@ void TestDijkstra()
 	{
 		if (i==SOURCE_NODE) continue;
 
-		CDijkstra<CPosePDFGaussian>::edge_list_t	  path;
+		CMyDijkstra::edge_list_t	  path;
 
 		myDijkstra.getShortestPathTo(i,path);
 
@@ -181,7 +184,7 @@ void TestDijkstra()
 		}
 
 		// Draw the shortest path:
-		for (CDijkstra<CPosePDFGaussian>::edge_list_t::const_iterator a=path.begin();a!=path.end();++a)
+		for (CMyDijkstra::edge_list_t::const_iterator a=path.begin();a!=path.end();++a)
 		{
 			const CPose2D &p1 = real_poses[ a->first];
 			const CPose2D &p2 = real_poses[ a->second ];

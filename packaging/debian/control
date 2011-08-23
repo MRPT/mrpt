@@ -103,6 +103,22 @@ Description: Mobile Robot Programming Toolkit - bayes library
  .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
+Package: libmrpt-graphs0.9
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+          libmrpt-base0.9
+Description: Mobile Robot Programming Toolkit - graphs library
+ The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
+ and open source C++ library aimed to help robotics researchers to design and
+ implement algorithms in the fields of Simultaneous Localization and Mapping
+ (SLAM), computer vision, and motion planning (obstacle avoidance).
+ .
+ This package includes the mrpt-graphs library (mathematical graph algorithms, 
+ graphs of pose constraints, etc.)
+ .
+ More about MRPT libraries in: http://www.mrpt.org/Libraries
+
 
 
 Package: libmrpt-gui0.9
@@ -241,6 +257,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-maps0.9,
 	  libmrpt-vision0.9,
 	  libmrpt-scanmatching0.9,
+	  libmrpt-graphs0.9,
 	  libmrpt-bayes0.9
 Description: Mobile Robot Programming Toolkit - slam library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
@@ -249,6 +266,21 @@ Description: Mobile Robot Programming Toolkit - slam library
  (SLAM), computer vision, and motion planning (obstacle avoidance).
  .
  This package includes the mrpt-slam library. 
+ . 
+ More about MRPT libraries in: http://www.mrpt.org/Libraries
+
+Package: libmrpt-graphslam0.9
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+	  libmrpt-slam0.9
+Description: Mobile Robot Programming Toolkit - graphslam library
+ The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
+ and open source C++ library aimed to help robotics researchers to design and
+ implement algorithms in the fields of Simultaneous Localization and Mapping 
+ (SLAM), computer vision, and motion planning (obstacle avoidance).
+ .
+ This package includes the mrpt-graphslam library. 
  . 
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
@@ -292,11 +324,13 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
          libmrpt-opengl0.9, 
          libmrpt-scanmatching0.9,
          libmrpt-bayes0.9,
+         libmrpt-graphs0.9,
          libmrpt-gui0.9, 
          libmrpt-obs0.9, 
          libmrpt-maps0.9, 
          libmrpt-vision0.9, 
          libmrpt-slam0.9, 
+         libmrpt-graphslam0.9, 
          libmrpt-topography0.9, 
          libmrpt-detectors0.9, 
          libmrpt-hwdrivers0.9,
@@ -344,6 +378,7 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
   - camera-calib: Interactive camera calibration tool.
   - icp-slam
   - kf-slam
+  - graph-slam
   - 2d-slam-demo: GUI didactic robotic SLAM demo.
   - map-partition
   - observations2map: Converts simplemaps into metric maps.
@@ -359,7 +394,7 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
   - navlog-viewer: GUI viewer of navigation logs.
   - features-matching: Computer vision demo.
   - kinect-icp-slam: Example 3D mapping with Xbox Kinect
-  - mono-slam   (Experimental!)
+  - kinect-view: Example 3D mapping with Xbox Kinect
   - prrt-navigator-demo   (Experimental!)
 
 

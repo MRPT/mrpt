@@ -253,13 +253,15 @@ namespace poses
 			) const;
 
 	public:
-		typedef CPose3DQuat type_value; //!< Used to emulate CPosePDF types, for example, in CNetworkOfPoses
+		typedef CPose3DQuat type_value; //!< Used to emulate CPosePDF types, for example, in mrpt::graphs::CNetworkOfPoses
 		enum { is_3D_val = 1 };
 		static inline bool is_3D() { return is_3D_val!=0; }
 		enum { rotation_dimensions = 3 };
 		enum { is_PDF_val = 1 };
 		static inline bool is_PDF() { return is_PDF_val!=0; }
 
+		inline const type_value & getPoseMean() const { return *this; }
+		inline       type_value & getPoseMean()       { return *this; }
 
 		/** @name STL-like methods and typedefs
 		   @{   */

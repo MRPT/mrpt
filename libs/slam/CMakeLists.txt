@@ -5,11 +5,10 @@
 LIST(APPEND slam_EXTRA_SRCS		
 	"${MRPT_LIBS_ROOT}/slam/src/maps/*.cpp"
 	"${MRPT_LIBS_ROOT}/slam/src/slam/*.cpp"
-	"${MRPT_LIBS_ROOT}/slam/src/graphslam/*.cpp"
 	"${MRPT_LIBS_ROOT}/slam/include/mrpt/slam/*.h"
 	)
 LIST(APPEND slam_EXTRA_SRCS_NAME 	
-	"slam" "slam" "graphslam" "slam-headers")
+	"slam" "slam" "slam-headers")
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -19,6 +18,7 @@ define_mrpt_lib(
 	slam 		
 	# Dependencies
 	mrpt-bayes
+	mrpt-graphs
 	mrpt-vision
 	mrpt-scanmatching
 	mrpt-maps

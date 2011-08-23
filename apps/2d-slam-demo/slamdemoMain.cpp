@@ -44,6 +44,8 @@
 #include <wx/artprov.h>
 //*)
 
+#include <mrpt/utils/CFileGZOutputStream.h>
+
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;

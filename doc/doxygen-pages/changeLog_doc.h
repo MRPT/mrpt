@@ -37,11 +37,24 @@
 	- <b>Most important changes:</b>
 		- Tons of <a href="perf-html/index.html" >performance</a> optimizations, mostly in: point clouds, feature detection, opengl rendering and icp-slam (which is now with default params ~4 times faster).
 		- Doxygen documentation is now organized around <a href="modules.html" >modules</a>, such as the page for each class or namespace indicates to which <code>mrpt-*</code> library it belongs to.
+		- New libraries: <a href="group__mrpt__graphs__grp.html" > mrpt-graphs</a> and <a href="group__mrpt__graphslam__grp.html" > mrpt-graphslam</a>, including two associated namespaces mrpt::graphs and mrpt::graphslam. Read more below on this change and its reasons.
 	- <b>Detailed list of changes:</b>
 		- Changes in applications:
 			- navlog-viewer: Now allows exporting the global navigation map as a MATLAB script for generating vector plots.
 			- rawlog-edit: New operation: "--generate-3d-pointclouds" - <a href="http://code.google.com/p/mrpt/source/detail?r=2579" >r2579</a>
 			- 2d-slam-demo: New menu "Tools"->"Save last data association state" for saving observation predictions and the innovation covariance S_k for debugging or didactic purposes.
+		- Refactoring of code around the two new libraries/modules <a href="group__mrpt__graphs__grp.html" > mrpt-graphs</a> and <a href="group__mrpt__graphslam__grp.html" > mrpt-graphslam</a>: <a href="http://code.google.com/p/mrpt/source/detail?r=2632" >r2632</a>
+			- Now all graphs abstract datatypes and algorithms are in mrpt::graphs (they were previously part of mrpt-base).
+			- And graphslam algorithms are into mrpt::graphslam, in its own library mrpt-graphslam (it was previously part of mrpt-slam).
+			- This change responds to a convenience of having these two libraries as being (almost entirely) header-only libs, to allow a maximum of freedom in the definition of graph data types by users.
+			- The most important new feature available after these changes is the possibility of working with nodes and edges with arbitrarily-complex "annotations", defined as structs via template arguments, and which augment the "poses" of global poses (in nodes) and constraints (edges). See: mrpt::graphs::CDirectedGraph and mrpt::graphs::CNetworkOfPoses
+			- For the sake of maintainability of future classes, the following changes will be required in user code (only when explicitly including/using these classes):
+				- mrpt::math::CDijkstra<CPOSE,MAPS_IMPL> --> mrpt::graphs::CDijkstra<GRAPH_T> , that is, CDijstra<> now accepts as template argument the entire description of a graph (this is much more versatile).
+				- #include <mrpt/math/CAStarAlgorithm.h> --> #include <mrpt/graphs/CAStarAlgorithm.h>
+				- #include <mrpt/poses/CNetworkOfPoses.h> --> #include <mrpt/graphs/CNetworkOfPoses.h>
+				- #include <mrpt/math/dijkstra.h> --> #include <mrpt/graphs/dijkstra.h>
+				- #include <mrpt/math/graphs.h> --> #include <mrpt/graphs/CDirectedTree.h> & #include <mrpt/graphs/CDirectedGraph.h>
+				- #include <mrpt/slam/graph_slam.h> --> #include <mrpt/graphslam.h>
 		- New classes:
 			- A batch of changes to introduce WiFi signal strength receivers and building maps out of such observations (by Emil Khatib) - <a href="http://code.google.com/p/mrpt/source/detail?r=2572" >r2572</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2573" >r2573</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2574" >r2574</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2577" >r2577</a>:
 				- [mrpt-obs] mrpt::slam::CObservationWirelessPower 
@@ -80,6 +93,7 @@
 				- FLANN has been also changed to avoid virtual functions in inner loops (mostly around mrpt_flan::ResultSet<>).
 				- mrpt::math::KDTreeCapable maintains its API, so the change is backward compatible
 				- New class mrpt::math::KDTreeMatrixAdaptor to build KD-tree directly from Eigen matrices.
+			- [mrpt-base] templates mrpt::poses::getPoseMean() have been replaced by methods within each pose class, e.g: mrpt::poses::CPose2D::getPoseMean(), mrpt::poses::CPose3DPDFGaussianInf::getPoseMean(), ... 
 			- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".
 			- [mrpt-opengl & mrpt-gui] All text labels in 3D rendering windows are now drawn as OpenGL primitives instead of bitmaps, which are ~10x faster to draw. See mrpt::opengl::CTextMessageCapable
 			- [mrpt-opengl & mrpt-gui] mrpt::opengl::CTextMessageCapable and mrpt::gui::CDisplayWindow3D now have an overloaded ::addTextMessage() method with many more font size/style options.

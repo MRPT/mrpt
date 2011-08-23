@@ -56,11 +56,12 @@
 #include <mrpt/poses/CPoses3DSequence.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/poses/CPoseRandomSampler.h>
-#include <mrpt/poses/CNetworkOfPoses.h>
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussianInf.h>
+#include <mrpt/poses/CPose3DPDFGaussianInf.h>
+
 #include <mrpt/poses/SE_traits.h>
-#include <mrpt/poses/helper_templates.h>
 
 
 #endif

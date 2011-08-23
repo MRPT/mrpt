@@ -25,71 +25,21 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-#ifndef GRAPH_SLAM_H
-#define GRAPH_SLAM_H
+#ifndef GRAPH_SLAM_LEVMARQ_H
+#define GRAPH_SLAM_LEVMARQ_H
 
-#include <mrpt/poses/CNetworkOfPoses.h>
-#include <mrpt/poses/SE_traits.h>
+#include <mrpt/graphslam/types.h>
 #include <mrpt/utils/TParameters.h>
-
-#include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
-	/** \defgroup mrpt_graphslam_grp GraphSLAM  
-	  *  \ingroup mrpt_slam_grp  */
-
-	/** SLAM methods related to graphs of pose constraints
-          * \sa mrpt::poses::CNetworkOfPoses   \ingroup mrpt_graphslam_grp
-          */
 	namespace graphslam
 	{
-		/** \addtogroup mrpt_graphslam_grp 
-		  *  @{ */
-
-		/** Auxiliary traits template for use among graph-slam problems to make life easier with these complicated, long data type names */
-		template <class EDGE_TYPE, class MAPS_IMPLEMENTATION>
-		struct graphslam_traits
-		{
-			typedef mrpt::poses::CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION>  graph_t;
-			typedef typename graph_t::edges_map_t::const_iterator   edge_const_iterator;
-			typedef EDGE_TYPE                                       edge_t;
-			typedef typename EDGE_TYPE::type_value                  edge_poses_type;
-			typedef mrpt::poses::SE_traits<edge_poses_type::rotation_dimensions> SE_TYPE;
-			typedef typename SE_TYPE::matrix_VxV_t                  matrix_VxV_t;
-			typedef typename SE_TYPE::array_t                       Array_O; // An array of the correct size for an "observation" (i.e. a relative pose in an edge)
-			typedef std::pair<matrix_VxV_t,matrix_VxV_t>            TPairJacobs;
-			typedef typename mrpt::aligned_containers<
-				mrpt::utils::TPairNodeIDs,
-				TPairJacobs
-				>::map_t  map_pairIDs_pairJacobs_t;
-
-			/** Auxiliary struct used in graph-slam implementation: It holds the relevant information for each of the constraints being taking into account. */
-			struct observation_info_t
-			{
-				typedef graphslam_traits<EDGE_TYPE,MAPS_IMPLEMENTATION> gst;
-				// Data:
-				typename gst::edge_const_iterator                     edge;
-				const typename gst::graph_t::constraint_t::type_value *edge_mean;
-				typename gst::graph_t::constraint_t::type_value       *P1,*P2;
-			};
-
-			typedef void (*TFunctorFeedback)(const typename graphslam_traits<EDGE_TYPE,MAPS_IMPLEMENTATION>::graph_t &graph, const size_t iter, const size_t max_iter, const double cur_sq_error );
-		};
-
-		/** Output information for mrpt::graphslam::optimize_graph_spa_levmarq() */
-		struct TResultInfoSpaLevMarq
-		{
-			size_t  num_iters;             //!< The number of LM iterations executed.
-			double  final_total_sq_error;  //!< The sum of all the squared errors for every constraint involved in the problem.
-		};
-
-
 		/** Optimize a graph of pose constraints using the Sparse Pose Adjustment (SPA) sparse representation and a Levenberg-Marquartd optimizer.
-		  *  This method works for all types of graphs derived from \a CNetworkOfPoses (see its reference mrpt::poses::CNetworkOfPoses for the list).
+		  *  This method works for all types of graphs derived from \a CNetworkOfPoses (see its reference mrpt::graphs::CNetworkOfPoses for the list).
 		  *  The input data are all the pose constraints in \a graph (graph.edges), and the gross first estimations of the "global" pose coordinates (in graph.nodes).
 		  *
-		  *  Note that these first coordinates can be obtained with mrpt::poses::CNetworkOfPoses::dijkstra_nodes_estimate().
+		  *  Note that these first coordinates can be obtained with mrpt::graphs::CNetworkOfPoses::dijkstra_nodes_estimate().
 		  *
 		  * The method implemented in this file is based on this work:
 		  *  - "Efficient Sparse Pose Adjustment for 2D Mapping", Kurt Konolige et al., 2010.
@@ -104,27 +54,33 @@ namespace mrpt
 		  * List of optional parameters by name in "extra_params":
 		  *		- "verbose": (default=0) If !=0, produce verbose ouput.
 		  *		- "max_iterations": (default=100) Maximum number of Lev-Marq. iterations.
+		  *		- "scale_hessian": (default=0.1) Multiplies the Hessian matrix by this scalar (may improve convergence speed).
+		  *		- "initial_lambda": (default=0) <=0 means auto guess, otherwise, initial lambda value for the lev-marq algorithm.
+		  *		- "tau": (default=1e-3) Initial tau value for the lev-marq algorithm.
+		  *		- "e1": (default=1e-6) Lev-marq algorithm iteration stopping criterion #1: |gradient| < e1
+		  *		- "e2": (default=1e-6) Lev-marq algorithm iteration stopping criterion #2: |delta_incr| < e2*(x_norm+e2)
 		  *
-		  * \note The following graph types are supported: mrpt::poses::CNetworkOfPoses2D, mrpt::poses::CNetworkOfPoses3D, mrpt::poses::CNetworkOfPoses2DInf, mrpt::poses::CNetworkOfPoses3DInf
+		  * \note The following graph types are supported: mrpt::graphs::CNetworkOfPoses2D, mrpt::graphs::CNetworkOfPoses3D, mrpt::graphs::CNetworkOfPoses2DInf, mrpt::graphs::CNetworkOfPoses3DInf
 		  *
-		  * \tparam EDGE_TYPE The type of the edges. Typically users won't have to write this template argument by hand, since the compiler will auto-fit it depending on the type of the graph object.
-		  * \tparam MAPS_IMPLEMENTATION The implementation for the map: NodeID -> node_pose. Read more on this in mrpt::poses::CNetworkOfPoses
+		  * \tparam GRAPH_T Normally a mrpt::graphs::CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION>. Users won't have to write this template argument by hand, since the compiler will auto-fit it depending on the type of the graph object.
 		  * \sa The example "graph_slam_demo"
+		  * \ingroup mrpt_graphslam_grp
+		  * \note Implementation can be found in file \a levmarq_impl.h
 		  */
-		template <class EDGE_TYPE, class MAPS_IMPLEMENTATION>
-		void SLAM_IMPEXP optimize_graph_spa_levmarq(
-			mrpt::poses::CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION > & graph,
+		template <class GRAPH_T>
+		void optimize_graph_spa_levmarq(
+			GRAPH_T & graph,
 			TResultInfoSpaLevMarq                                        & out_info,
 			const std::set<mrpt::utils::TNodeID>            * nodes_to_optimize = NULL,
 			const mrpt::utils::TParametersDouble            & extra_params = mrpt::utils::TParametersDouble(),
-			typename graphslam_traits<EDGE_TYPE,MAPS_IMPLEMENTATION>::TFunctorFeedback  functor_feedback = NULL
+			typename graphslam_traits<GRAPH_T>::TFunctorFeedback  functor_feedback = NULL
 			);
 
 	/**  @} */  // end of grouping
 
 	} // End of namespace
-
-	
 } // End of namespace
+
+#include <mrpt/graphslam/levmarq_impl.h>
 
 #endif

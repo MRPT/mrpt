@@ -28,25 +28,23 @@
 #ifndef  MRPT_DIJKSTRA_H
 #define  MRPT_DIJKSTRA_H
 
-#include <mrpt/math/graphs.h>
+#include <mrpt/graphs/CDirectedGraph.h>
+#include <mrpt/graphs/CDirectedTree.h>
 #include <mrpt/utils/stl_extensions.h>
 
 namespace mrpt
 {
-	namespace math
+	namespace graphs
 	{
 	    using namespace std;
 		using namespace mrpt::utils;
-
-		/** @name Graph-related classes
-		    @{ */
 
 		/** The Dijkstra algorithm for finding the shortest path between a given source node in a (weighted) directed graph and all other nodes in the form of a tree.
 		  *  The constructor takes as input the graph (the set of directed edges) computes all the needed data, then
 		  *   successive calls to \a getShortestPathTo return the paths efficiently from the root.
 		  *  The entire generated tree can be also retrieved with \a getTreeGraph.
 		  *
-		  *  Input graphs are represented by instances of (or classes derived from) mrpt::math::CDirectedGraph, and node's IDs are uint64_t values,
+		  *  Input graphs are represented by instances of (or classes derived from) mrpt::graphs::CDirectedGraph, and node's IDs are uint64_t values,
 		  *   although the type mrpt::utils::TNodeID is also provided for clarity in the code.
 		  *
 		  *  The second template argument MAPS_IMPLEMENTATION allows choosing between a sparse std::map<> representation (using mrpt::utils::map_traits_stdmap)
@@ -56,7 +54,8 @@ namespace mrpt
 		  * See <a href="http://www.mrpt.org/Example:Dijkstra_optimal_path_search_in_graphs" > this page </a> for a complete example.
 		  * \ingroup mrpt_base_grp
 		  */
-		template<class TYPE_EDGES, class MAPS_IMPLEMENTATION = map_traits_stdmap >
+		//Was: template<class TYPE_EDGES, class MAPS_IMPLEMENTATION = map_traits_stdmap >
+		template<class TYPE_GRAPH, class MAPS_IMPLEMENTATION = map_traits_stdmap >
 		class CDijkstra
 		{
 		protected:
@@ -77,8 +76,8 @@ namespace mrpt
 			};
 
 			// Cached input data:
-			const mrpt::math::CDirectedGraph<TYPE_EDGES>  & m_cached_graph;
-			const TNodeID                                   m_source_node_ID;
+			const TYPE_GRAPH & m_cached_graph;
+			const TNodeID      m_source_node_ID;
 
 			// Private typedefs:
 			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID, std::set<TNodeID> >  list_all_neighbors_t; //!< A std::map (or a similar container according to MAPS_IMPLEMENTATION) with all the neighbors of every node.
@@ -95,18 +94,18 @@ namespace mrpt
 			list_all_neighbors_t           m_allNeighbors;
 
 		public:
-			/** @name Useful typedefs 
+			/** @name Useful typedefs
 			    @{ */
 
-			typedef mrpt::math::CDirectedGraph<TYPE_EDGES>  graph_t;	//!< The type of a graph with TYPE_EDGES edges
-			typedef TYPE_EDGES                              edge_t;	    //!< The type of edge data in graph_t
-			typedef std::list<TPairNodeIDs>                 edge_list_t; //!< A list of edges used to describe a path on the graph
-			
+			typedef TYPE_GRAPH                 graph_t;	//!< The type of the graph, typically a mrpt::graphs::CDirectedGraph<> or any other derived class
+			typedef typename graph_t::edge_t   edge_t;	    //!< The type of edge data in graph_t
+			typedef std::list<TPairNodeIDs>    edge_list_t; //!< A list of edges used to describe a path on the graph
+
 			/** @} */
 
 			/** Constructor, which takes the input graph and executes the entire Dijkstra algorithm from the given root node ID.
 			  *
-			  *  The graph is given by the set of directed edges, stored in a mrpt::math::CDirectedGraph class.
+			  *  The graph is given by the set of directed edges, stored in a mrpt::graphs::CDirectedGraph class.
 			  *
 			  *  If a function \a functor_edge_weight is provided, it will be used to compute the weight of edges.
 			  *  Otherwise, all edges weight the unity.
@@ -119,7 +118,7 @@ namespace mrpt
 			CDijkstra(
 				const graph_t  &graph,
 				const TNodeID   source_node_ID,
-				double (*functor_edge_weight)(const graph_t& graph, const TNodeID id_from, const TNodeID id_to, const TYPE_EDGES &edge) =  NULL,
+				double (*functor_edge_weight)(const graph_t& graph, const TNodeID id_from, const TNodeID id_to, const edge_t &edge) =  NULL,
 				void   (*functor_on_progress)(const graph_t& graph, size_t visitedCount) = NULL
 				)
 				: m_cached_graph(graph), m_source_node_ID(source_node_ID)
@@ -261,7 +260,7 @@ namespace mrpt
 			/** Return the node ID of the tree root, as passed in the constructor */
 			inline TNodeID getRootNodeID() const { return m_source_node_ID; }
 
-			/** Return the adjacency matrix of the input graph, which is cached at construction so if needed later just use this copy to avoid recomputing it \sa  mrpt::math::CDirectedGraph::getAdjacencyMatrix */
+			/** Return the adjacency matrix of the input graph, which is cached at construction so if needed later just use this copy to avoid recomputing it \sa  mrpt::graphs::CDirectedGraph::getAdjacencyMatrix */
 			inline const list_all_neighbors_t & getCachedAdjacencyMatrix() const { return m_allNeighbors; }
 
 			/** Returns the shortest path between the source node passed in the constructor and the given target node.
@@ -294,7 +293,7 @@ namespace mrpt
 
 			/** Type for graph returned by \a getTreeGraph: a graph like the original input graph, but with edge data being pointers to the original data (to save copy time & memory)
 			  */
-			typedef CDirectedTree<const TYPE_EDGES*>  tree_graph_t;
+			typedef CDirectedTree<const edge_t *>  tree_graph_t;
 
 			/** Returns a tree representation of the graph, as determined by the Dijkstra shortest paths from the root node.
 			  * Note that the annotations on each edge in the tree are "const pointers" to the original graph edge data, so
@@ -330,8 +329,6 @@ namespace mrpt
 			/** @} */
 
 		}; // end class
-
-		/** @} */
 
 	} // End of namespace
 } // End of namespace

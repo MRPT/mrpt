@@ -47,7 +47,7 @@ TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-slam mrpt-gui mrpt-scanmatching)
+DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-slam mrpt-gui mrpt-scanmatching mrpt-graphs mrpt-graphslam)
 
 
 # ----------------------------------------------------------------------------

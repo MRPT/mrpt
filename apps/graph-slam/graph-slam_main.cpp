@@ -36,13 +36,15 @@
          http://www.mrpt.org/Application:graph-slam
  ---------------------------------------------------------------*/
 
-#include <mrpt/slam.h>
+#include <mrpt/graphs.h>
+#include <mrpt/graphslam.h>
 #include <mrpt/gui.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::graphslam;
+using namespace mrpt::graphs;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::system;

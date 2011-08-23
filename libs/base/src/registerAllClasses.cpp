@@ -106,11 +106,6 @@ void registerAllClasses_mrpt_base()
 	registerClass( CLASS_ID( TCamera ) );
 	registerClass( CLASS_ID( CSplineInterpolator1D  ) );
 	registerClass( CLASS_ID( CStringList ) );
-
-	registerClass( CLASS_ID( CNetworkOfPoses2D ) );
-	registerClass( CLASS_ID( CNetworkOfPoses3D ) );
-	registerClass( CLASS_ID( CNetworkOfPoses2DInf ) );
-	registerClass( CLASS_ID( CNetworkOfPoses3DInf ) );
 }
 
 

@@ -95,6 +95,9 @@ namespace poses
 		 */
 		CMatrixDouble66		cov;
 
+		inline const CPose3D & getPoseMean() const { return mean; }
+		inline       CPose3D & getPoseMean()       { return mean; }
+
 		 /** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF).
 		   * \sa getCovariance
 		   */

@@ -35,11 +35,13 @@
 #include <mrpt/slam/observations_overlap.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
-#include <mrpt/math/CGraphPartitioner.h>
+#include <mrpt/graphs/CGraphPartitioner.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/opengl.h>
 
-using namespace mrpt::slam; using namespace mrpt::utils; using namespace mrpt::poses;
+using namespace mrpt::slam;
+using namespace mrpt::graphs;
+using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace std;
 

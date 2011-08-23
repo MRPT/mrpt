@@ -46,6 +46,7 @@
 #include <wx/artprov.h>
 //*)
 
+#include <mrpt/utils.h>
 
 using namespace std;
 using namespace mrpt;

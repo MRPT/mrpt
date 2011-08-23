@@ -71,6 +71,8 @@ namespace poses
 
 		/** @} */
 
+		inline const CPose2D & getPoseMean() const { return mean; }
+		inline       CPose2D & getPoseMean()       { return mean; }
 
 		/** Default constructor (mean=all zeros, inverse covariance=all zeros -> so be careful!) */
 		CPosePDFGaussianInf();

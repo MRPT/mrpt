@@ -72,6 +72,8 @@ namespace poses
 
 		/** @} */
 
+		inline const CPose3D & getPoseMean() const { return mean; }
+		inline       CPose3D & getPoseMean()       { return mean; }
 
 		 /** Default constructor - mean: all zeros, inverse covariance=all zeros -> so be careful!
 		  */

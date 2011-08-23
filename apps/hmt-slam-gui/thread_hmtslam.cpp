@@ -31,6 +31,8 @@
 
 #include <wx/msgdlg.h>
 
+#include <mrpt/utils.h>
+
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::hmtslam;

@@ -27,12 +27,14 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/base.h>
-#include <mrpt/slam/graph_slam.h>
+#include <mrpt/graphs.h>
+#include <mrpt/graphslam.h>
 #include <mrpt/gui.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::graphs;
+using namespace mrpt::graphslam;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
@@ -89,9 +91,9 @@ vector_double  log_sq_err_evolution;
 template <class my_graph_t>
 struct ExampleDemoGraphSLAM
 {
-	template <class EDGE_TYPE, class MAPS_IMPLEMENTATION>
+	template <class GRAPH_T>
 	static void my_levmarq_feedback(
-		const typename mrpt::graphslam::graphslam_traits<EDGE_TYPE,MAPS_IMPLEMENTATION>::graph_t &graph,
+		const GRAPH_T &graph,
 		const size_t iter,
 		const size_t max_iter,
 		const double cur_sq_error )
@@ -162,7 +164,7 @@ struct ExampleDemoGraphSLAM
 
 			// Tweak this last node to make it incompatible with the rest:
 			typename my_graph_t::edge_t &ed = graph.edges.find(make_pair<TNodeID,TNodeID>(0,N_VERTEX/2))->second; // It must exist, don't check errors...
-			mrpt::poses::getPoseMean(ed).x( (1-ERROR_IN_INCOMPATIBLE_EDGE) * mrpt::poses::getPoseMean(ed).x() );
+			ed.getPoseMean().x( (1-ERROR_IN_INCOMPATIBLE_EDGE) * ed.getPoseMean().x() );
 		}
 
 		// The root node (the origin of coordinates):
@@ -184,13 +186,13 @@ struct ExampleDemoGraphSLAM
 				randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_ANG),
 				randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_ANG),
 				randomGenerator.drawGaussian1D(0,STD_NOISE_EDGE_ANG) ));
-			mrpt::poses::getPoseMean(itEdge->second) += typename my_graph_t::edge_t::type_value(delta_noise);
+			itEdge->second.getPoseMean() += typename my_graph_t::edge_t::type_value(delta_noise);
 		}
 
 
 		for (typename my_graph_t::global_poses_t::iterator itNode=graph.nodes.begin();itNode!=graph.nodes.end();++itNode)
 			if (itNode->first!=graph.root)
-				mrpt::poses::getPoseMean(itNode->second) += typename my_graph_t::edge_t::type_value( CPose3D(
+				itNode->second.getPoseMean() += typename my_graph_t::edge_t::type_value( CPose3D(
 					randomGenerator.drawGaussian1D(0,STD_NOISE_NODE_XYZ),
 					randomGenerator.drawGaussian1D(0,STD_NOISE_NODE_XYZ),
 					randomGenerator.drawGaussian1D(0,STD_NOISE_NODE_XYZ),
@@ -210,7 +212,13 @@ struct ExampleDemoGraphSLAM
 		TParametersDouble  params;
 		//params["verbose"]  = 1;
 		params["profiler"] = 1;
-		params["max_iterations"] = 100; //5000;
+		params["max_iterations"] = 500;
+		params["scale_hessian"] = 0.1;
+		params["tau"] = 1e-3;
+
+		// e2: Lev-marq algorithm iteration stopping criterion #2: |delta_incr| < e2*(x_norm+e2)
+//		params["e1"] = 1e-6;
+//		params["e2"] = 1e-6;
 
 		graphslam::TResultInfoSpaLevMarq  levmarq_info;
 		log_sq_err_evolution.clear();
@@ -224,7 +232,7 @@ struct ExampleDemoGraphSLAM
 			levmarq_info,
 			NULL,  // List of nodes to optimize. NULL -> all but the root node.
 			params,
-			&my_levmarq_feedback<typename my_graph_t::constraint_t,typename my_graph_t::maps_implementation_t>);
+			&my_levmarq_feedback<my_graph_t>);
 
 		cout << "Global graph RMS error / edge = " << std::sqrt(graph.getGlobalSquareError(false)/graph.edgeCount()) << endl;
 		cout << "Global graph RMS error / edge = " << std::sqrt(graph.getGlobalSquareError(true)/graph.edgeCount()) << " (ignoring information matrices)." << endl;

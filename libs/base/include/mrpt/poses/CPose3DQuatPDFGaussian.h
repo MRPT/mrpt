@@ -90,6 +90,9 @@ namespace poses
 		/** The 7x7 covariance matrix */
 		CMatrixDouble77		cov;
 
+		inline const CPose3DQuat & getPoseMean() const { return mean; }
+		inline       CPose3DQuat & getPoseMean()       { return mean; }
+
 		 /** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF).
 		   * \sa getCovariance
 		   */

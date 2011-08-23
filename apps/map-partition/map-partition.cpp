@@ -35,6 +35,7 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/base.h>
+#include <mrpt/graphs.h>
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
 
@@ -42,6 +43,7 @@ using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
+using namespace mrpt::graphs;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;

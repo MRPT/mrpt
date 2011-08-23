@@ -36,7 +36,7 @@
 
 // This is to try to avoid an internal compiler error in MSVC 2008... :-(
 #if defined(mrpt_slam_EXPORTS) && MRPT_ENABLE_PRECOMPILED_HDRS
-	#include <mrpt/base.h>  
+	#include <mrpt/base.h>
 #endif
 
 // Maps:
@@ -103,7 +103,6 @@
 #include <mrpt/slam/CPathPlanningCircularRobot.h>
 #include <mrpt/slam/CRejectionSamplingRangeOnlyLocalization.h>
 
-#include <mrpt/slam/graph_slam.h>
 #include <mrpt/slam/data_association.h>
 
 // PDFs:

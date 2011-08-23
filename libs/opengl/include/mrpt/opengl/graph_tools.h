@@ -29,7 +29,6 @@
 #define opengl_graph_tools_H
 
 #include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/poses/CNetworkOfPoses.h>
 #include <mrpt/utils/TParameters.h>
 
 namespace mrpt
@@ -44,7 +43,7 @@ namespace mrpt
 			    @{ */
 
 			/** Returns an opengl objects representation of an arbitrary graph, as a network of 3D pose frames.
-			  *  Note that the "global" coordinates of each node are taken from mrpt::poses::CNetworkOfPoses::nodes, so
+			  *  Note that the "global" coordinates of each node are taken from mrpt::graphs::CNetworkOfPoses::nodes, so
 			  *   if a node appears in "edges" but not in "nodes" it will be not displayed.
 			  *
 			  *  \param g             The graph
@@ -100,12 +99,13 @@ namespace mrpt
 			  *   </tr>
 			  *	  </table>
 			  *
-			  * \sa mrpt::poses::CNetworkOfPoses2D, mrpt::poses::CNetworkOfPoses3D, mrpt::poses::CNetworkOfPoses2DInf, mrpt::poses::CNetworkOfPoses3DInf
+			  * \sa mrpt::graphs::CNetworkOfPoses2D, mrpt::graphs::CNetworkOfPoses3D, mrpt::graphs::CNetworkOfPoses2DInf, mrpt::graphs::CNetworkOfPoses3DInf
+			  * \note Implemented as headers-only in \a graph_tools_impl.h
 			  * \ingroup mrpt_opengl_grp
 			  */
-			template<class CPOSE,class MAPIMPL>
-			CSetOfObjectsPtr OPENGL_IMPEXP graph_visualize(
-				const mrpt::poses::CNetworkOfPoses<CPOSE,MAPIMPL> &g,
+			template<class GRAPH_T>
+			CSetOfObjectsPtr graph_visualize(
+				const GRAPH_T &g,
 				const mrpt::utils::TParametersDouble &extra_params = mrpt::utils::TParametersDouble()
 				);
 
@@ -115,5 +115,6 @@ namespace mrpt
 
 } // End of namespace
 
+#include "graph_tools_impl.h"
 
 #endif

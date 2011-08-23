@@ -3,6 +3,7 @@ digraph MRPT_LIBS {
 	node [shape=box,style=filled, fillcolor="#D0D0D0",fontsize=12];
 
 	base 		[label="mrpt-base",URL="group__mrpt__base__grp.html"];
+	graphs		[label="mrpt-graphs",URL="group__mrpt__graphs__grp.html"];
 	bayes 		[label="mrpt-bayes",URL="group__mrpt__bayes__grp.html"];
 	opengl 		[label="mrpt-opengl", URL="group__mrpt__opengl__grp.html"];
 	gui 		[label="mrpt-gui",URL="group__mrpt__gui__grp.html"];
@@ -14,6 +15,7 @@ digraph MRPT_LIBS {
 	scanmatching 		[label="mrpt-scanmatching",URL="group__mrpt__scanmatching__grp.html"];
 
 	slam 		[label="mrpt-slam",URL="group__mrpt__slam__grp.html"];
+	graphslam	[label="mrpt-graphslam",URL="group__mrpt__graphslam__grp.html"];
 	
 	hmtslam		[label="mrpt-hmtslam",URL="group__mrpt__hmtslam__grp.html"];
 	reactivenav	[label="mrpt-reactivenav",URL="group__mrpt__reactivenav__grp.html"];
@@ -21,7 +23,7 @@ digraph MRPT_LIBS {
 	
 	detectors	[label="mrpt-detectors",URL="group__mrpt__detectors__grp.html"];
 	
-	
+	graphs -> base;
 	scanmatching -> base;
 
 	bayes -> base;
@@ -46,6 +48,9 @@ digraph MRPT_LIBS {
 	slam -> vision;
 	slam -> scanmatching;
 	slam -> bayes;
+	slam -> graphs;
+
+	graphslam -> slam;
 	
 	detectors -> vision;
 	detectors -> maps;
@@ -57,5 +62,5 @@ digraph MRPT_LIBS {
 	stereoslam -> vision;
 	
 	reactivenav -> maps;
-	//reactivenav -> gui;
+	reactivenav -> graphs;
 }

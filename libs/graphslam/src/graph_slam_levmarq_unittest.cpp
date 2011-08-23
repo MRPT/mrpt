@@ -27,7 +27,8 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/slam/graph_slam.h>
+#include <mrpt/graphslam.h>
+#include <mrpt/graphs.h>
 #include <mrpt/random.h>
 #include <gtest/gtest.h>
 
@@ -35,6 +36,7 @@ using namespace mrpt;
 using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::graphs;
 using namespace mrpt::math;
 using namespace std;
 

@@ -26,8 +26,8 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/math/dijkstra.h>
-#include <mrpt/slam/graph_slam.h>
+#include <mrpt/graphs.h>
+#include <mrpt/graphslam.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
@@ -37,6 +37,8 @@
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::graphs;
+using namespace mrpt::graphslam;
 using namespace mrpt::poses;
 using namespace mrpt::random;
 using namespace std;
@@ -51,12 +53,12 @@ double graphs_test_populate(int nEdges, int _N)
 {
 	const long N = _N;
 
-	std::vector< mrpt::poses::CNetworkOfPoses<EDGE_TYPE,MAPIMPL> > gs(N);
+	std::vector< mrpt::graphs::CNetworkOfPoses<EDGE_TYPE,MAPIMPL> > gs(N);
 
 	CTicTac	 tictac;
 	for (long i=0;i<N;i++)
 	{
-		mrpt::poses::CNetworkOfPoses<EDGE_TYPE,MAPIMPL>  &g = gs[i];
+		mrpt::graphs::CNetworkOfPoses<EDGE_TYPE,MAPIMPL>  &g = gs[i];
 		for (int j=0;j<nEdges;++j)
 		{
 			g.insertEdge(j,j+1, EDGE_TYPE() );
@@ -70,12 +72,12 @@ double graphs_test_populate_at_end(int nEdges, int _N)
 {
 	const long N = _N;
 
-	std::vector< mrpt::poses::CNetworkOfPoses<EDGE_TYPE,MAPIMPL> > gs(N);
+	std::vector< mrpt::graphs::CNetworkOfPoses<EDGE_TYPE,MAPIMPL> > gs(N);
 
 	CTicTac	 tictac;
 	for (long i=0;i<N;i++)
 	{
-		mrpt::poses::CNetworkOfPoses<EDGE_TYPE,MAPIMPL>  &g = gs[i];
+		mrpt::graphs::CNetworkOfPoses<EDGE_TYPE,MAPIMPL>  &g = gs[i];
 		for (int j=0;j<nEdges;++j)
 		{
 			//g.insertEdgeAtEnd(j,j+1, EDGE_TYPE() );
@@ -92,7 +94,8 @@ double graphs_dijkstra(int nNodes, int _N)
 
 	randomGenerator.randomize(111);
 	// Generate random graph:
-	mrpt::poses::CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION> gs;
+	typedef mrpt::graphs::CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION> graph_t;
+	graph_t gs;
 	{
 		double edge_node_ratio = 2.0;
 		for (unsigned int i=0;i<(unsigned int)nNodes;i++)
@@ -116,7 +119,7 @@ double graphs_dijkstra(int nNodes, int _N)
 	for (long i=0;i<N;i++)
 	{
 		tims.enter("op");
-		mrpt::math::CDijkstra<EDGE_TYPE,MAPS_IMPLEMENTATION> dij(gs, TNodeID(0) );
+		mrpt::graphs::CDijkstra<graph_t> dij(gs, TNodeID(0) );
 		tims.leave("op");
 		// Don't count the time of the destructor.
 	}

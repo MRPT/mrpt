@@ -27,11 +27,13 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/base.h>
-#include <mrpt/slam.h>
+#include <mrpt/graphs.h>
+#include <mrpt/graphslam.h>
 #include <mrpt/gui.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::graphs;
+using namespace mrpt::graphslam;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::system;

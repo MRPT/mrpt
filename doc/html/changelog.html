@@ -47,6 +47,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><b>Most important changes:</b><ul>
 <li>Tons of <a href="perf-html/index.html">performance</a> optimizations, mostly in: point clouds, feature detection, opengl rendering and icp-slam (which is now with default params ~4 times faster).</li>
 <li>Doxygen documentation is now organized around <a href="modules.html">modules</a>, such as the page for each class or namespace indicates to which <code>mrpt-*</code> library it belongs to.</li>
+<li>New libraries: <a href="group__mrpt__graphs__grp.html">mrpt-graphs</a> and <a href="group__mrpt__graphslam__grp.html">mrpt-graphslam</a>, including two associated namespaces <a class="el" href="namespacemrpt_1_1graphs.html" title="Abstract graph and tree data structures, plus generic graph algorithms.">mrpt::graphs</a> and <a class="el" href="namespacemrpt_1_1graphslam.html" title="SLAM methods related to graphs of pose constraints.">mrpt::graphslam</a>. Read more below on this change and its reasons.</li>
 </ul>
 </li>
 <li><b>Detailed list of changes:</b><ul>
@@ -54,6 +55,22 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>navlog-viewer: Now allows exporting the global navigation map as a MATLAB script for generating vector plots.</li>
 <li>rawlog-edit: New operation: "--generate-3d-pointclouds" - <a href="http://code.google.com/p/mrpt/source/detail?r=2579">r2579</a></li>
 <li>2d-slam-demo: New menu "Tools"-&gt;"Save last data association state" for saving observation predictions and the innovation covariance S_k for debugging or didactic purposes.</li>
+</ul>
+</li>
+<li>Refactoring of code around the two new libraries/modules <a href="group__mrpt__graphs__grp.html">mrpt-graphs</a> and <a href="group__mrpt__graphslam__grp.html">mrpt-graphslam</a>: <a href="http://code.google.com/p/mrpt/source/detail?r=2632">r2632</a><ul>
+<li>Now all graphs abstract datatypes and algorithms are in <a class="el" href="namespacemrpt_1_1graphs.html" title="Abstract graph and tree data structures, plus generic graph algorithms.">mrpt::graphs</a> (they were previously part of mrpt-base).</li>
+<li>And graphslam algorithms are into <a class="el" href="namespacemrpt_1_1graphslam.html" title="SLAM methods related to graphs of pose constraints.">mrpt::graphslam</a>, in its own library mrpt-graphslam (it was previously part of mrpt-slam).</li>
+<li>This change responds to a convenience of having these two libraries as being (almost entirely) header-only libs, to allow a maximum of freedom in the definition of graph data types by users.</li>
+<li>The most important new feature available after these changes is the possibility of working with nodes and edges with arbitrarily-complex "annotations", defined as structs via template arguments, and which augment the "poses" of global poses (in nodes) and constraints (edges). See: <a class="el" href="classmrpt_1_1graphs_1_1_c_directed_graph.html" title="A directed graph with the argument of the template specifying the type of the annotations in the edge...">mrpt::graphs::CDirectedGraph</a> and <a class="el" href="classmrpt_1_1graphs_1_1_c_network_of_poses.html" title="A directed graph of pose constraints, with edges being the relative pose between pairs of nodes inden...">mrpt::graphs::CNetworkOfPoses</a></li>
+<li>For the sake of maintainability of future classes, the following changes will be required in user code (only when explicitly including/using these classes):<ul>
+<li>mrpt::math::CDijkstra&lt;CPOSE,MAPS_IMPL&gt; --&gt; mrpt::graphs::CDijkstra&lt;GRAPH_T&gt; , that is, CDijstra&lt;&gt; now accepts as template argument the entire description of a graph (this is much more versatile).</li>
+<li>#include &lt;mrpt/math/CAStarAlgorithm.h&gt; --&gt; #include &lt;<a class="el" href="_c_a_star_algorithm_8h.html">mrpt/graphs/CAStarAlgorithm.h</a>&gt;</li>
+<li>#include &lt;mrpt/poses/CNetworkOfPoses.h&gt; --&gt; #include &lt;<a class="el" href="_c_network_of_poses_8h.html">mrpt/graphs/CNetworkOfPoses.h</a>&gt;</li>
+<li>#include &lt;mrpt/math/dijkstra.h&gt; --&gt; #include &lt;<a class="el" href="dijkstra_8h.html">mrpt/graphs/dijkstra.h</a>&gt;</li>
+<li>#include &lt;mrpt/math/graphs.h&gt; --&gt; #include &lt;<a class="el" href="_c_directed_tree_8h.html">mrpt/graphs/CDirectedTree.h</a>&gt; &amp; #include &lt;<a class="el" href="_c_directed_graph_8h.html">mrpt/graphs/CDirectedGraph.h</a>&gt;</li>
+<li>#include &lt;mrpt/slam/graph_slam.h&gt; --&gt; #include &lt;<a class="el" href="graphslam_8h.html">mrpt/graphslam.h</a>&gt;</li>
+</ul>
+</li>
 </ul>
 </li>
 <li>New classes:<ul>
@@ -110,6 +127,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>New class <a class="el" href="structmrpt_1_1math_1_1_k_d_tree_matrix_adaptor.html" title="A simple FLANN KD-tree adaptor for working with data directly stored in an Eigen Matrix, without duplicating the data storage.">mrpt::math::KDTreeMatrixAdaptor</a> to build KD-tree directly from <a class="el" href="namespace_eigen.html" title="Namespace containing all symbols from the Eigen library.">Eigen</a> matrices.</li>
 </ul>
 </li>
+<li>[mrpt-base] templates mrpt::poses::getPoseMean() have been replaced by methods within each pose class, e.g: <a class="el" href="classmrpt_1_1poses_1_1_c_pose2_d.html#a857c386c0eb2548fb1984ea2c19f3392">mrpt::poses::CPose2D::getPoseMean()</a>, <a class="el" href="classmrpt_1_1poses_1_1_c_pose3_d_p_d_f_gaussian_inf.html#ab1c015f8f254302f908d6eff0892433b">mrpt::poses::CPose3DPDFGaussianInf::getPoseMean()</a>, ...</li>
 <li>[mrpt-reactivenav] <a class="el" href="classmrpt_1_1reactivenav_1_1_c_log_file_record.html" title="A class for storing, saving and loading a reactive navigation log record for the CReactiveNavigationS...">mrpt::reactivenav::CLogFileRecord</a> has a new field "timestamp".</li>
 <li>[mrpt-opengl &amp; mrpt-gui] All text labels in 3D rendering windows are now drawn as OpenGL primitives instead of bitmaps, which are ~10x faster to draw. See <a class="el" href="classmrpt_1_1opengl_1_1_c_text_message_capable.html" title="Keeps a list of text messages which can be rendered to OpenGL contexts by graphic classes...">mrpt::opengl::CTextMessageCapable</a></li>
 <li>[mrpt-opengl &amp; mrpt-gui] <a class="el" href="classmrpt_1_1opengl_1_1_c_text_message_capable.html" title="Keeps a list of text messages which can be rendered to OpenGL contexts by graphic classes...">mrpt::opengl::CTextMessageCapable</a> and <a class="el" href="classmrpt_1_1gui_1_1_c_display_window3_d.html" title="A graphical user interface (GUI) for efficiently rendering 3D scenes in real-time.">mrpt::gui::CDisplayWindow3D</a> now have an overloaded ::addTextMessage() method with many more font size/style options.</li>
@@ -123,6 +141,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>It now emits pre/post rendering events (via the <a class="el" href="classmrpt_1_1utils_1_1_c_observable.html" title="Inherit from this class for those objects capable of being observed by a CObserver class...">mrpt::utils::CObservable</a> pattern), for the user to customize the rendering process. See example display3d_custom_render</li>
 </ul>
 </li>
+<li>[mrpt-opengl] <a class="el" href="classmrpt_1_1opengl_1_1_c_textured_object.html" title="A base class for all OpenGL objects with loadable textures.">mrpt::opengl::CTexturedObject</a> now loads textures faster (not building mipmaps) - <a href="http://code.google.com/p/mrpt/source/detail?r=2631">r2631</a></li>
 <li>[mrpt-vision] New feature detectors: SSE2 optimized FASTER (-9,-10,-12), from libcvd by Edward Rosten <a href="http://code.google.com/p/mrpt/source/detail?r=2599">r2599</a><ul>
 <li><a class="el" href="classmrpt_1_1vision_1_1_c_feature_extraction.html" title="The central class from which images can be analyzed in search of different kinds of interest points a...">mrpt::vision::CFeatureExtraction</a></li>
 <li>mrpt::vision::TFeatureType</li>
@@ -237,7 +256,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>[mrpt-base] <a class="el" href="classmrpt_1_1poses_1_1_c_pose3_d.html" title="A class used to store a 3D pose (a 3D translation + a rotation in 3D).">mrpt::poses::CPose3D</a> was too strict in checking that the rotation matrix is orthogonal: admisible threshold is now 1 (plus/minus)3e-3.</li>
 <li>[mrpt-base] New method: <a class="el" href="classmrpt_1_1utils_1_1_c_thread_safe_queue.html#aa6facae220ff0bff5b2dd144bbc26087" title="Skip all old messages in the queue and directly return the last one (the most recent, at the bottom of the queue), or NULL if there is no message.">mrpt::utils::CThreadSafeQueue::get_lastest_purge_old()</a></li>
 <li>[mrpt-base] <a class="el" href="classmrpt_1_1synch_1_1_c_semaphore.html" title="A semaphore for inter-thread synchronization.">mrpt::synch::CSemaphore</a> now supports named semaphores in Linux too.</li>
-<li>[mrpt-base] Graph-SLAM maps (<a class="el" href="classmrpt_1_1poses_1_1_c_network_of_poses.html" title="A directed graph of pose constraints, with edges being the relative pose between pairs of nodes inden...">mrpt::poses::CNetworkOfPoses</a>) have a new field "edges_store_inverse_poses", taken into account in <a class="el" href="classmrpt_1_1poses_1_1_c_network_of_poses.html#a40d349a9d61eda215edb9af1f9a4722d" title="Spanning tree computation of a simple estimation of the global coordinates of each node just from the...">mrpt::poses::CNetworkOfPoses::dijkstra_nodes_estimate()</a></li>
+<li>[mrpt-base] Graph-SLAM maps (mrpt::poses::CNetworkOfPoses) have a new field "edges_store_inverse_poses", taken into account in mrpt::poses::CNetworkOfPoses::dijkstra_nodes_estimate()</li>
 <li>[mrpt-base] <a class="el" href="classmrpt_1_1poses_1_1_c_pose3_d_quat.html" title="A class used to store a 3D pose as a translation (x,y,z) and a quaternion (qr,qx,qy,qz).">mrpt::poses::CPose3DQuat</a> constructor from a <a class="el" href="classmrpt_1_1poses_1_1_c_pose3_d.html" title="A class used to store a 3D pose (a 3D translation + a rotation in 3D).">mrpt::poses::CPose3D</a> is not explicit to avoid unintentional conversions.</li>
 <li>[mrpt-hwdrivers] <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_kinect.html" title="A class for grabing &quot;range images&quot;, intensity images (either RGB or IR) and other informati...">mrpt::hwdrivers::CKinect</a> changes:<ul>
 <li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_kinect.html#a6f9ef0ed138921c22961bf0b433e74e8" title="Changes the video channel to open (RGB or IR) - you can call this method before start grabbing or in ...">mrpt::hwdrivers::CKinect::setVideoChannel()</a>: New method (and .ini parameter) for switching between the RGB and IR channels for the intensity images.</li>
@@ -416,7 +435,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <h2>Version 0.9.2: 27-OCT-2010 </h2>
 <ul>
 <li><b>Most important changes:</b><ul>
-<li>Basic support for Graph-SLAM. Among others, see <a class="el" href="classmrpt_1_1poses_1_1_c_network_of_poses.html" title="A directed graph of pose constraints, with edges being the relative pose between pairs of nodes inden...">mrpt::poses::CNetworkOfPoses</a>, the new namespace <a class="el" href="namespacemrpt_1_1graphslam.html" title="SLAM methods related to graphs of pose constraints.">mrpt::graphslam</a> and the program <a href="http://www.mrpt.org/Application:graph-slam">graph-slam</a></li>
+<li>Basic support for Graph-SLAM. Among others, see mrpt::poses::CNetworkOfPoses, the new namespace <a class="el" href="namespacemrpt_1_1graphslam.html" title="SLAM methods related to graphs of pose constraints.">mrpt::graphslam</a> and the program <a href="http://www.mrpt.org/Application:graph-slam">graph-slam</a></li>
 <li>First working version of Sparse Bundle-Adjustment (see mrpt::vision::bundle_adj_full).</li>
 <li>New hardware supported: Phidget kits &amp; Fiber Optic Gyro KVH DSP3000 (both contributed by Adrien Barral, Robopec).</li>
 <li>Tons of performance optimizations, mostly in geometry classes.</li>
@@ -450,7 +469,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>New classes:<ul>
 <li>New sensor driver for Phidget kit (see <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_phidget_interface_kit_proximity_sensors.html" title=": An interface for the phidget Interface kit board (1018).">mrpt::hwdrivers::CPhidgetInterfaceKitProximitySensors</a>), contributed by Adrien Barral (Robopec).</li>
 <li>New sensor driver for Fiber Optic Gyro KVH DSP3000 (see <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_gyro_k_v_h_d_s_p3000.html" title="A class for interfacing KVH DSP 3000 gyroscope with an assynchronous serial communication (product SN...">mrpt::hwdrivers::CGyroKVHDSP3000</a>), contributed by Adrien Barral (Robopec).</li>
-<li><a class="el" href="classmrpt_1_1math_1_1_c_directed_tree.html" title="A special kind of graph in the form of a tree with directed edges and optional edge annotations of te...">mrpt::math::CDirectedTree</a> template for directed tree-like graphs. Includes generic depth-first &amp; breath-first visitors.</li>
+<li>mrpt::math::CDirectedTree template for directed tree-like graphs. Includes generic depth-first &amp; breath-first visitors.</li>
 <li><a class="el" href="classmrpt_1_1vision_1_1_c_undistort_map.html" title="Use this class to undistort images if the same distortion map is used over and over again...">mrpt::vision::CUndistortMap</a>, a class for efficiently undistorting sequences of images with the same camera parameters.</li>
 <li>New PDF classes for "information" (inverse covariance) forms:<ul>
 <li><a class="el" href="classmrpt_1_1poses_1_1_c_pose_p_d_f_gaussian_inf.html" title="A Probability Density function (PDF) of a 2D pose  as a Gaussian with a mean and the inverse of the c...">mrpt::poses::CPosePDFGaussianInf</a></li>
@@ -458,12 +477,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ul>
 </li>
 <li>Data types for graph SLAM (only two of them existed before, and now they are all classes and support serialization):<ul>
-<li><a class="el" href="classmrpt_1_1poses_1_1_c_network_of_poses2_d.html" title="The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing seria...">mrpt::poses::CNetworkOfPoses2D</a></li>
-<li><a class="el" href="classmrpt_1_1poses_1_1_c_network_of_poses3_d.html" title="The specialization of CNetworkOfPoses for poses of type CPose3D (not a PDF!), also implementing seria...">mrpt::poses::CNetworkOfPoses3D</a></li>
-<li><a class="el" href="classmrpt_1_1poses_1_1_c_network_of_poses2_d_inf.html" title="The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf, also implementing serial...">mrpt::poses::CNetworkOfPoses2DInf</a></li>
-<li><a class="el" href="classmrpt_1_1poses_1_1_c_network_of_poses3_d_inf.html" title="The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussianInf, also implementing seri...">mrpt::poses::CNetworkOfPoses3DInf</a></li>
-<li><a class="el" href="classmrpt_1_1poses_1_1_c_network_of_poses2_d_cov.html" title="The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian, also implementing serializa...">mrpt::poses::CNetworkOfPoses2DCov</a></li>
-<li><a class="el" href="classmrpt_1_1poses_1_1_c_network_of_poses3_d_cov.html" title="The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian, also implementing seriali...">mrpt::poses::CNetworkOfPoses3DCov</a></li>
+<li>mrpt::poses::CNetworkOfPoses2D</li>
+<li>mrpt::poses::CNetworkOfPoses3D</li>
+<li>mrpt::poses::CNetworkOfPoses2DInf</li>
+<li>mrpt::poses::CNetworkOfPoses3DInf</li>
+<li>mrpt::poses::CNetworkOfPoses2DCov</li>
+<li>mrpt::poses::CNetworkOfPoses3DCov</li>
 </ul>
 </li>
 <li><a class="el" href="classmrpt_1_1utils_1_1map__as__vector.html" title="A STL-like container which looks and behaves (almost exactly) like a std::map&lt;&gt; but is implemen...">mrpt::utils::map_as_vector</a> a vector-based implementation of a std::map-like container. It can be used as a map implementation optionally in the template mrpt::poses::CNetworkOfPoses&lt;&gt;</li>
@@ -471,20 +490,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>New event for GUI windows: <a class="el" href="classmrpt_1_1gui_1_1mrpt_event_mouse_down.html" title="An event sent by a window upon a mouse click, giving the (x,y) pixel coordinates.">mrpt::gui::mrptEventMouseDown</a></li>
 <li>New metaprogramming class: <a class="el" href="structmrpt_1_1utils_1_1_t_enum_type.html" title="A helper class that can convert an enum value into its textual representation, and viceversa...">mrpt::utils::TEnumType</a>, allows converting between numerical and symbolic text values for enum types.</li>
 <li>New SE(2) and SE(3) geometry helper classes. See mrpt::poses::SE_traits</li>
-<li>Helper templates to handle poses and pose PDFs at build time. See &lt;<a class="el" href="helper__templates_8h.html">mrpt/poses/helper_templates.h</a>&gt;</li>
+<li>Helper templates to handle poses and pose PDFs at build time. See &lt;mrpt/poses/helper_templates.h&gt;</li>
 </ul>
 </li>
 <li>Changes in classes:<ul>
 <li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_hokuyo_u_r_g.html" title="This software driver implements the protocol SCIP-2.0 for interfacing HOKUYO URG, UTM and UXM laser s...">mrpt::hwdrivers::CHokuyoURG</a> has new configuration variable "HOKUYO_HS_mode" to enable the high sensitivity mode.</li>
 <li>removeObservationsByTimestamp() removed from mrpt::slam::CheightGridMap2D, which now doesn't have the "sliding window" insertion method. It was too memory intensive for large maps.</li>
 <li><a class="el" href="classmrpt_1_1poses_1_1_c_pose_or_point.html" title="The base template class for 2D &amp; 3D points and poses.">mrpt::poses::CPoseOrPoint</a>, <a class="el" href="classmrpt_1_1poses_1_1_c_pose.html" title="A base class for representing a pose in 2D or 3D.">mrpt::poses::CPose</a> and <a class="el" href="classmrpt_1_1poses_1_1_c_point.html" title="A base class for representing a point in 2D or 3D.">mrpt::poses::CPoint</a> are now templates and use the CRTP pattern instead of virtual functions, increasing the performance of all the derived classes.</li>
-<li><a class="el" href="classmrpt_1_1poses_1_1_c_network_of_poses.html" title="A directed graph of pose constraints, with edges being the relative pose between pairs of nodes inden...">mrpt::poses::CNetworkOfPoses</a> has many improvements and new methods (see its documentation).</li>
-<li><a class="el" href="classmrpt_1_1math_1_1_c_dijkstra.html" title="The Dijkstra algorithm for finding the shortest path between a given source node in a (weighted) dire...">mrpt::math::CDijkstra</a>:<ul>
+<li>mrpt::poses::CNetworkOfPoses has many improvements and new methods (see its documentation).</li>
+<li>mrpt::math::CDijkstra:<ul>
 <li>Algorithm is now much faster (eg: 70x times faster for graphs of 4K nodes &amp; 60K arcs).</li>
 <li>Many changes in its interface, including new feedback functors, support for returning the built tree and many handy typedef's.</li>
 </ul>
 </li>
-<li>Added a new type <a class="el" href="namespacemrpt_1_1utils.html#a718b4f99645b7e9f6501c9b7bb2a2fe7" title="The type for node IDs in graphs of different types.">mrpt::utils::TNodeID</a>, used in graph-related classes: <a class="el" href="classmrpt_1_1math_1_1_c_directed_graph.html" title="A directed graph with the argument of the template specifying the type of the annotations in the edge...">mrpt::math::CDirectedGraph</a>, <a class="el" href="classmrpt_1_1math_1_1_c_dijkstra.html" title="The Dijkstra algorithm for finding the shortest path between a given source node in a (weighted) dire...">mrpt::math::CDijkstra</a></li>
+<li>Added a new type <a class="el" href="namespacemrpt_1_1utils.html#a718b4f99645b7e9f6501c9b7bb2a2fe7" title="The type for node IDs in graphs of different types.">mrpt::utils::TNodeID</a>, used in graph-related classes: mrpt::math::CDirectedGraph, mrpt::math::CDijkstra</li>
 <li><a class="el" href="classmrpt_1_1opengl_1_1_c_point_cloud.html" title="A cloud of points, all with the same color or each depending on its value along a particular coordina...">mrpt::opengl::CPointCloud</a> &amp; <a class="el" href="classmrpt_1_1opengl_1_1_c_point_cloud_coloured.html" title="A cloud of points, each one with an individual colour (R,G,B).">mrpt::opengl::CPointCloudColoured</a> now have an option to draw smoothed points (see <a class="el" href="classmrpt_1_1opengl_1_1_c_point_cloud.html#a25d0c42df8cc9f9a3e35e4f5e143e552">mrpt::opengl::CPointCloud::enablePointSmooth</a>).</li>
 <li><a class="el" href="structmrpt_1_1utils_1_1_t_colorf.html" title="A RGB color - floats in the range [0,1].">mrpt::utils::TColorf</a>: New explicit copy constructor from a <a class="el" href="structmrpt_1_1utils_1_1_t_color.html" title="A RGB color - 8bit.">mrpt::utils::TColor</a></li>
 <li><a class="el" href="classmrpt_1_1opengl_1_1_c_renderizable.html" title="The base class of 3D objects that can be directly rendered through OpenGL.">mrpt::opengl::CRenderizable</a>: Many "set" methods that returned "void" now return a reference to "this" so several calls can be chained (e.g. obj.setColor(...).setScale(1.0) )</li>
@@ -759,7 +778,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>CImageGrabber_OpenCV, CImageGrabber_dc1394 and CStereoGrabber_Bumblebee: Have been moved from <a class="el" href="namespacemrpt_1_1vision.html" title="Classes for computer vision, detectors, features, etc.">mrpt::vision</a> to <a class="el" href="namespacemrpt_1_1hwdrivers.html" title="Contains classes for various device interfaces.">mrpt::hwdrivers</a>, its natural place. Users using these classes thru CCameraSensor will not realize of the difference.</li>
 <li><a class="el" href="structmrpt_1_1utils_1_1_t_matching_pair.html" title="A structure for holding correspondences between two sets of points or points-like entities in 2D or 3...">mrpt::utils::TMatchingPair</a> and <a class="el" href="classmrpt_1_1utils_1_1_t_matching_pair_list.html" title="A list of TMatchingPair.">mrpt::utils::TMatchingPairList</a> have been moved from been member classes of <a class="el" href="classmrpt_1_1slam_1_1_c_metric_map.html" title="Declares a virtual base class for all metric maps storage classes.">mrpt::slam::CMetricMap</a> to be independent structures, now sited in mrpt-base for a more spread usage. Note that for compatibility there are still typedefs within CMetricMap, but it's recommended to use the new names of the structs.</li>
 <li>The member mrpt::slam::CPointsMap::TInsertionOptions::matchStaticPointsOnly has been removed, since it had little practical utility and broke independence between sub-libraries.</li>
-<li>The header &lt;mrpt/slam/pose_graph_optimizers.h&gt; has been renamed &lt;<a class="el" href="graph__slam_8h.html">mrpt/slam/graph_slam.h</a>&gt;.</li>
+<li>The header &lt;mrpt/slam/pose_graph_optimizers.h&gt; has been renamed &lt;mrpt/slam/graph_slam.h&gt;.</li>
 <li>The class CRobotSimulator has been moved from <a class="el" href="namespacemrpt_1_1slam.html" title="This namespace contains algorithms for SLAM, localization, map building, representation of robot&#39;...">mrpt::slam</a> to <a class="el" href="namespacemrpt_1_1utils.html" title="Classes for serialization, sockets, ini-file manipulation, streams, list of properties-values, timewatch, extensions to STL.">mrpt::utils</a>, since it had nothing to do with SLAM.</li>
 <li>The function mrpt::hwdrivers::registerAllSensors() has been removed, since it's now not needed (registration is now done reliably at startup).</li>
 </ul>
@@ -1087,7 +1106,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>COpenGLViewport now has settable min/max clipping values. See <a class="el" href="classmrpt_1_1opengl_1_1_c_open_g_l_viewport.html#aa9e328e1afe4e3523649c01c656bcfb9" title="Set the min/max clip depth distances of the rendering frustum (default: 0.1 - 10000)">mrpt::opengl::COpenGLViewport::setViewportClipDistances</a>.</li>
 <li><a class="el" href="classmrpt_1_1utils_1_1_c_config_file.html" title="This class allows loading and storing values and vectors of different types from &quot;.ini&quot; files easily.">mrpt::utils::CConfigFile</a> now can be created without specifying the associated file and do the association later with a new method.</li>
 <li>Apart from 2D exclusion areas in laser scanners, 3D prism zones are now supported as well. C2DRangeFinderAbstract::loadExclusionAreas</li>
-<li>A* algorithm implemented in <a class="el" href="classmrpt_1_1math_1_1_c_a_star_algorithm.html" title="This class is intended to efficiently solve graph-search problems using heuristics to determine the b...">mrpt::math::CAStarAlgorithm</a>. (By Pablo Moreno)</li>
+<li>A* algorithm implemented in mrpt::math::CAStarAlgorithm. (By Pablo Moreno)</li>
 <li>The central registry of MRPT classes (derived from CSerializable) rewritten as a proper Singleton.</li>
 <li>New interface to SICK LMS100 via ethernet. Contributed by Adrien Barral (Robopec). See <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_l_m_s100_eth.html" title="This &quot;software driver&quot; implements the communication protocol for interfacing a SICK LMS100 ...">mrpt::hwdrivers::CLMS100Eth</a> and new example "SICK_lms100eth_test".</li>
 <li><a class="el" href="classmrpt_1_1utils_1_1_c_client_t_c_p_socket.html" title="A TCP socket that can be connected to a TCP server, implementing MRPT&#39;s CStream interface for pas...">mrpt::utils::CClientTCPSocket</a> now gives a textual description of the error reasons (win32).</li>
@@ -1346,7 +1365,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Based on Levenberg-Marquardt. See mrpt::slam::optimizePoseGraph_levmarq</li>
 </ul>
 </li>
-<li>A new generic implementation of Dijkstra algorithm for shortest paths on a directed, possibly weighted, graph. See <a class="el" href="classmrpt_1_1math_1_1_c_dijkstra.html" title="The Dijkstra algorithm for finding the shortest path between a given source node in a (weighted) dire...">mrpt::math::CDijkstra</a></li>
+<li>A new generic implementation of Dijkstra algorithm for shortest paths on a directed, possibly weighted, graph. See mrpt::math::CDijkstra</li>
 <li>New centralized class for random number generators: <a class="el" href="classmrpt_1_1random_1_1_c_random_generator.html" title="A thred-safe pseudo random number generator, based on an internal MT19937 randomness generator...">mrpt::random::CRandomGenerator</a> . Old methods marked as deprecated.</li>
 <li>Random Generators rewritten as a class for thread-safety: Each object has its own internal state for the PRNG.</li>
 <li>New base class <a class="el" href="classmrpt_1_1utils_1_1_c_probability_density_function.html" title="A generic template for probability density distributions (PDFs).">mrpt::utils::CProbabilityDensityFunction</a> for all PDF classes.</li>
@@ -2306,4 +2325,4 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 </ul>
 </div></div>
-<br><hr><br> <table border="0" width="100%"> <tr> <td> Page generated by <a href="http://www.doxygen.org" target="_blank">Doxygen 1.7.3</a> for MRPT 0.9.5 SVN:2629M at Fri Aug 19 01:42:16 CEST 2011</td><td></td> <td width="100"> </td> <td width="150">  </td></tr> </table>  </body></html>
+<br><hr><br> <table border="0" width="100%"> <tr> <td> Page generated by <a href="http://www.doxygen.org" target="_blank">Doxygen 1.7.3</a> for MRPT 0.9.5 SVN:2631M at Tue Aug 23 04:14:32 CEST 2011</td><td></td> <td width="100"> </td> <td width="150">  </td></tr> </table>  </body></html>
