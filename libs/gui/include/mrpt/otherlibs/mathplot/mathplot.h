@@ -1053,7 +1053,7 @@ public:
 
     /** Counts the number of plot layers, whether or not they have a bounding box.
     	\return The number of layers in the mpWindow. */
-    unsigned int CountAllLayers() { return m_layers.size(); };
+    size_t CountAllLayers() { return m_layers.size(); };
 
     /** Draws the mpWindow on a page for printing
         \param print the mpPrintout where to print the graph */

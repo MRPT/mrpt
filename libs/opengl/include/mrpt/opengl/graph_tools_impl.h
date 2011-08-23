@@ -37,7 +37,7 @@ namespace mrpt
 			template<class GRAPH_T>
 			CSetOfObjectsPtr graph_visualize(
 				const GRAPH_T &g,
-				const mrpt::utils::TParametersDouble &extra_params = mrpt::utils::TParametersDouble())
+				const mrpt::utils::TParametersDouble &extra_params)
 			{
 				MRPT_TRY_START
 

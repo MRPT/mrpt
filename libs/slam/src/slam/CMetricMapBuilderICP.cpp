@@ -44,29 +44,10 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 /*---------------------------------------------------------------
-		OLD, * DEPRECATED * Constructor
+		 Constructor
   ---------------------------------------------------------------*/
 CMetricMapBuilderICP::CMetricMapBuilderICP()
 {
-	this->initialize( CSimpleMap() );
-}
-
-
-/*---------------------------------------------------------------
-		OLD, * DEPRECATED * Constructor
-  ---------------------------------------------------------------*/
-CMetricMapBuilderICP::CMetricMapBuilderICP(
-	TSetOfMetricMapInitializers	*_mapInitializers,
-	float						_insertionLinDistance,
-	float						_insertionAngDistance,
-	CICP::TConfigParams			*icpParams
-	)
-{
-	ICP_options.insertionLinDistance = _insertionLinDistance;
-	ICP_options.insertionAngDistance = _insertionAngDistance;
-	ICP_options.mapInitializers = *_mapInitializers;
-	if (icpParams)  ICP_params = *icpParams;
-
 	this->initialize( CSimpleMap() );
 }
 
@@ -313,10 +294,6 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		bool update = 	( m_distSinceLastInsertion[obs->sensorLabel].lin >= ICP_options.insertionLinDistance ||
 						  m_distSinceLastInsertion[obs->sensorLabel].ang >= ICP_options.insertionAngDistance )
 						&& (!can_do_icp || icpReturn.goodness>ICP_options.minICPgoodnessToAccept);
-
-		// DEPRECATED option "insertImagesAlways "
-		if (options.insertImagesAlways && !options.alwaysInsertByClass.contains(CLASS_ID(CObservationImage)))
-			options.alwaysInsertByClass.insert(CLASS_ID(CObservationImage));
 
 		// Used any "options.alwaysInsertByClass" ??
 		if (options.alwaysInsertByClass.contains(obs->GetRuntimeClass()))

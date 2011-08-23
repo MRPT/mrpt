@@ -276,12 +276,12 @@ namespace mrpt
 		// Define serializable versions of the template above for each specific kind of "edge":
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE( CNetworkOfPoses2D )
-		DEFINE_SERIALIZABLE_PRE( CNetworkOfPoses3D )
-		DEFINE_SERIALIZABLE_PRE( CNetworkOfPoses2DCov )
-		DEFINE_SERIALIZABLE_PRE( CNetworkOfPoses3DCov )
-		DEFINE_SERIALIZABLE_PRE( CNetworkOfPoses2DInf )
-		DEFINE_SERIALIZABLE_PRE( CNetworkOfPoses3DInf )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( CNetworkOfPoses2D, GRAPHS_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( CNetworkOfPoses3D, GRAPHS_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( CNetworkOfPoses2DCov, GRAPHS_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( CNetworkOfPoses3DCov, GRAPHS_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( CNetworkOfPoses2DInf, GRAPHS_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( CNetworkOfPoses3DInf, GRAPHS_IMPEXP )
 
 		/** The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing serialization.
 		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf

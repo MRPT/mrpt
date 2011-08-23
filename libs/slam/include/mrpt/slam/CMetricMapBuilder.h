@@ -60,40 +60,27 @@ namespace slam
 
 		/** Enter critical section for map updating:
 		  */
-		void  enterCriticalSection()
-		{
-			critZoneChangingMap.enter();
-		}
+		inline void  enterCriticalSection() { critZoneChangingMap.enter(); }
 
 		/** Leave critical section for map updating:
 		  */
-		void  leaveCriticalSection()
-		{
-			critZoneChangingMap.leave();
-		}
+		inline void  leaveCriticalSection() { critZoneChangingMap.leave(); }
 
 	public:
-		/** Constructor
-		  */
-		CMetricMapBuilder();
+		CMetricMapBuilder();           //!< Constructor
+		virtual ~CMetricMapBuilder( ); //!< Destructor.
 
-		/** Destructor.
-		 */
-		virtual ~CMetricMapBuilder( );
+		// ---------------------------------------------------------------------
+		/** @name Pure virtual methods to implement in any particular SLAM algorithm
+		    @{ */
 
-		/** Initialize the method, starting with a known location PDF "x0"(if supplied, set to NULL to left unmodified) and a given fixed, past map.
-		  */
+		/** Initialize the method, starting with a known location PDF "x0"(if supplied, set to NULL to left unmodified) and a given fixed, past map. */
 		virtual void  initialize(
 				const CSimpleMap &initialMap = CSimpleMap(),
 				CPosePDF					*x0 = NULL
 				) = 0;
 
-		/** Clear all elements of the maps, and reset localization to (0,0,0deg).
-		  */
-		void  clear();
-
-		/** Returns a copy of the current best pose estimation as a pose PDF.
-		  */
+		/** Returns a copy of the current best pose estimation as a pose PDF. */
 		virtual CPose3DPDFPtr  getCurrentPoseEstimation() const = 0;
 
 		/** Process a new action and observations pair to update this map: See the description of the class at the top of this page to see a more complete description.
@@ -102,21 +89,14 @@ namespace slam
 		 */
 		virtual void  processActionObservation( CActionCollection &action,CSensoryFrame	&observations ) = 0;
 
-		/** Fills "out_map" with the set of "poses"-"sensory-frames", thus the so far built map.
-		  */
+		/** Fills "out_map" with the set of "poses"-"sensory-frames", thus the so far built map. */
 		virtual void  getCurrentlyBuiltMap(CSimpleMap &out_map) const = 0;
 
-		/** Returns just how many sensory-frames are stored in the currently build map.
-		  */
+		/** Returns just how many sensory-frames are stored in the currently build map. */
 		virtual unsigned int  getCurrentlyBuiltMapSize() = 0;
 
-		/** Returns the map built so far. NOTE that for efficiency a pointer to the internal object is passed, DO NOT delete nor modify the object in any way, if desired, make a copy of ir with "duplicate()".
-		  */
+		/** Returns the map built so far. NOTE that for efficiency a pointer to the internal object is passed, DO NOT delete nor modify the object in any way, if desired, make a copy of ir with "duplicate()". */
 		virtual CMultiMetricMap*   getCurrentlyBuiltMetricMap() = 0;
-
-		/** Enables or disables the map updating (default state is enabled)
-		  */
-		void  enableMapUpdating( bool enable );
 
 		/** A useful method for debugging: the current map (and/or poses) estimation is dumped to an image file.
 		  * \param file The output file name
@@ -124,43 +104,37 @@ namespace slam
 		  */
 		virtual void  saveCurrentEstimationToImage(const std::string &file, bool formatEMF_BMP = true) = 0;
 
+		/** @} */ 
+		// ---------------------------------------------------------------------
 
-		/** Load map (CSimpleMap) from a ".simplemap" file
-		  */
+		/** Clear all elements of the maps, and reset localization to (0,0,0deg). */
+		void  clear();
+
+		/** Enables or disables the map updating (default state is enabled) */
+		void  enableMapUpdating( bool enable )
+		{
+			options.enableMapUpdating = enable;
+		}
+
+		/** Load map (mrpt::slam::CSimpleMap) from a ".simplemap" file */
 		void  loadCurrentMapFromFile(const std::string &fileName);
 
-		/** Save map (CSimpleMap) to a ".simplemap" file.
-		  */
+		/** Save map (mrpt::slam::CSimpleMap) to a ".simplemap" file. */
 		void  saveCurrentMapToFile(const std::string &fileName, bool compressGZ=true) const;
 
-
-		/** Options for the algorithm
-		  */
+		/** Options for the algorithm */
 		struct SLAM_IMPEXP TOptions
 		{
 			TOptions() : verbose(true),
 						 enableMapUpdating(true),
 						 debugForceInsertion(false),
-						 insertImagesAlways(false),
 						 alwaysInsertByClass()
 			{
 			}
 
-			/** If true shows debug information in the console, default is true.
-			  */
-			bool	verbose;
-
-			/** Enable map updating, default is true.
-			  */
-			bool	enableMapUpdating;
-
-			/** Always insert into map. Default is false: detect if necesary.
-			  */
-			bool	debugForceInsertion;
-
-			/** *DEPRECATED (Use "alwaysInserByClass") * Always include a SF into the map if an image is included. Default is false.
-			  */
-			bool	insertImagesAlways;
+			bool	verbose;             //!< If true shows debug information in the console, default is true.
+			bool	enableMapUpdating;   //!< Enable map updating, default is true.
+			bool	debugForceInsertion; //!< Always insert into map. Default is false: detect if necesary.
 
 			/** A list of observation classes (derived from mrpt::slam::CObservation) which will be always inserted in the map, disregarding the minimum insertion distances).
 			  *  Default: Empty. How to insert classes:
@@ -171,7 +145,9 @@ namespace slam
 			  */
 			mrpt::utils::CListOfClasses		alwaysInsertByClass;
 
-		} options;
+		};
+
+		TOptions options;
 
 	}; // End of class def.
 

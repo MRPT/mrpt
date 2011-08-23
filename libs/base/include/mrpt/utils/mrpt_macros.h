@@ -408,4 +408,11 @@
 /** Used after member declarations */
 #define MRPT_NO_THROWS		throw()
 
+/** Tells the compiler we really want to inline that function */
+#if (defined _MSC_VER) || (defined __INTEL_COMPILER)
+#define MRPT_FORCE_INLINE __forceinline
+#else
+#define MRPT_FORCE_INLINE inline
+#endif
+
 #endif

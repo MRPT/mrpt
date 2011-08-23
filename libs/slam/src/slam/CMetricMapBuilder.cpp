@@ -72,15 +72,6 @@ void  CMetricMapBuilder::clear()
 
 
 /*---------------------------------------------------------------
-					enableMapUpdating
-  ---------------------------------------------------------------*/
-void  CMetricMapBuilder::enableMapUpdating( bool enable )
-{
-	printf("[enableMapUpdating] Enabling map update set to '%s'\n", enable ? "TRUE":"FALSE");
-	options.enableMapUpdating = enable;
-}
-
-/*---------------------------------------------------------------
 					loadCurrentMapFromFile
   ---------------------------------------------------------------*/
 void  CMetricMapBuilder::loadCurrentMapFromFile(const std::string &fileName)

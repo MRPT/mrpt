@@ -58,15 +58,14 @@ double icp_test_1(int a1, int a2)
 
 	const bool use_grid = a1!=0;
 
-	//if (use_grid)
+	if (use_grid)
 	{
 		TMetricMapInitializer ini;
 		ini.metricMapClassType = CLASS_ID( COccupancyGridMap2D );
 		ini.occupancyGridMap2D_options.resolution = 0.05;
 		metricMapsOpts.push_back( ini );
 	}
-	//else
-
+	else
 	{
 		TMetricMapInitializer ini;
 		ini.metricMapClassType = CLASS_ID( CSimplePointsMap );
@@ -85,14 +84,18 @@ double icp_test_1(int a1, int a2)
 	// ---------------------------------
 	//		Constructor
 	// ---------------------------------
-	CMetricMapBuilderICP mapBuilder(
-		&metricMapsOpts,
-		insertionLinDistance,
-		insertionAngDistance,
-		&icpOptions
-		);
+	CMetricMapBuilderICP mapBuilder;
+
+	mapBuilder.ICP_options.mapInitializers = metricMapsOpts;
+
+	mapBuilder.ICP_options.insertionLinDistance = insertionLinDistance;
+	mapBuilder.ICP_options.insertionAngDistance = insertionAngDistance;
 
 	mapBuilder.ICP_options.matchAgainstTheGrid = use_grid ;
+	mapBuilder.ICP_params = icpOptions;
+
+	// Start with an empty map:
+	mapBuilder.initialize( CSimpleMap() );
 
 	// ---------------------------------
 	//   CMetricMapBuilder::TOptions

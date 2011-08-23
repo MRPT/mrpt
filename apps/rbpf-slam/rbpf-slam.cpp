@@ -204,7 +204,6 @@ void MapBuilding_RBPF()
 	mapBuilder.options.verbose					= true;
 	mapBuilder.options.enableMapUpdating		= true;
     mapBuilder.options.debugForceInsertion		= false;
-	mapBuilder.options.insertImagesAlways		= false;
 
 	randomGenerator.randomize();
 

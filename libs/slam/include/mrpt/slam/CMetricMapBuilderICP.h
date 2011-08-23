@@ -51,18 +51,6 @@ namespace slam
 		   */
 		 CMetricMapBuilderICP();
 
-		 /** *DEPRECATED* Constructor with arguments - use the default constructor, then set the parameters in the "ICP_options" member.
-		   * \param mapInitializers What maps to create (at least one points map and/or a grid map are needed).
-		   * \param insertionLinDistance Minimum robot linear displacement for a new observation to be inserted in the map.
-		   * \param insertionAngDistance Minimum robot angular displacement for a new observation to be inserted in the map.
-		   */
-		 CMetricMapBuilderICP(
-			TSetOfMetricMapInitializers	*mapInitializers,
-			float						insertionLinDistance = 1.0f,
-			float						insertionAngDistance = DEG2RAD(30),
-			CICP::TConfigParams			*icpParams = NULL
-			);
-
 		 /** Destructor:
 		   */
 		 virtual ~CMetricMapBuilderICP();

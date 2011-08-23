@@ -138,10 +138,6 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 			odoIncrementSinceLastMapUpdate.norm()>insertionLinDistance ||
 			std::abs(odoIncrementSinceLastMapUpdate.yaw())>insertionAngDistance);
 
-	// DEPRECATED option "insertImagesAlways "
-	if (options.insertImagesAlways && !options.alwaysInsertByClass.contains(CLASS_ID(CObservationImage)))
-		options.alwaysInsertByClass.insert(CLASS_ID(CObservationImage));
-
 	// Used any "options.alwaysInsertByClass" ??
 	for (CListOfClasses::const_iterator itCl=options.alwaysInsertByClass.begin();!do_map_update && itCl!=options.alwaysInsertByClass.end();++itCl)
 		for ( CSensoryFrame::iterator it=observations.begin();it!=observations.end();++it)

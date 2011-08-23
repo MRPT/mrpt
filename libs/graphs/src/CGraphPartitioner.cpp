@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include <mrpt/graphs.h>  // Precompiled headers
 #include <mrpt/graphs/CGraphPartitioner.h>
 
 using namespace mrpt;
