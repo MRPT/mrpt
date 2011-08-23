@@ -52,7 +52,7 @@ namespace mrpt
 		  *   dense implementation which is much faster, but can be only used if the TNodeID's start in 0 or a low value.
 		  *
 		  * See <a href="http://www.mrpt.org/Example:Dijkstra_optimal_path_search_in_graphs" > this page </a> for a complete example.
-		  * \ingroup mrpt_base_grp
+		  * \ingroup mrpt_graphs_grp
 		  */
 		//Was: template<class TYPE_EDGES, class MAPS_IMPLEMENTATION = map_traits_stdmap >
 		template<class TYPE_GRAPH, class MAPS_IMPLEMENTATION = map_traits_stdmap >
