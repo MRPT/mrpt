@@ -4780,6 +4780,10 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
 		if (!f)
 			THROW_EXCEPTION("Cannot open output file for write.");
 
+		::fprintf(f,
+		"%% TIMESTAMP IMU_X_ACC IMU_Y_ACC IMU_Z_ACC IMU_YAW_VEL IMU_PITCH_VEL IMU_ROLL_VEL IMU_X_VEL IMU_Y_VEL IMU_Z_VEL IMU_YAW IMU_PITCH IMU_ROLL IMU_X IMU_Y IMU_Z\n"
+		"%% ---------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+
 		for (i=0;i<n;i++)
 		{
 			switch (rawlog.getType(i))
