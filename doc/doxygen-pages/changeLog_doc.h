@@ -130,6 +130,7 @@
 			- captureVideoAndBuildPyr - A GUI live demo to test the effects of the options while building an image pyramid.
 		- New datasets:
 			- malaga-cs-fac-building.simplemap.gz - A new prebuilt simplemap of the ground floor of one Computer Science building (Malaga University) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2575" >r2575</a>.
+			- test_rtk_path.rawlog - A short sequence of 3 RTK GPS readings, for usage within unit tests of mrpt-topography
 		- Build error FIXES:
 			- Build error in platforms that don't support SSE2 (Thanks rovoreed!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2550" >r2550</a>
 			- Build error when OpenCV exists but is not used. - <a href="http://code.google.com/p/mrpt/source/detail?r=2555" >r2555</a>
@@ -138,6 +139,7 @@
 		- BUG FIXES:
 			- [mrpt-obs] Wrong usage of focal distances "fx"<->"fy" when generating the 3D point clouds from Kinect observations with the method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() - <a href="http://code.google.com/p/mrpt/source/detail?r=r2578" >r2578</a>.
 			- [mrpt-hwdrivers], [mrpt-obs] Gyroscopic rotation rates in yaw and roll were stored in the wrong order in mrpt::hwdrivers::CIMUXSens and mrpt::slam::CObservationIMU. It has been fixed so new grabbed data is saved correctly but also such as old datasets are automatically fixed when loading them. Thanks Lianfen for noticing! - <a href="http://code.google.com/p/mrpt/source/detail?r=r2622" >r2622</a>.
+			- [mrpt-topography] Fixed an old bug in mrpt::topography::path_from_rtk_gps() (and added new unit tests to avoid the same happening in the future) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2637" >r2637</a> 
 
 <br> <hr>
 

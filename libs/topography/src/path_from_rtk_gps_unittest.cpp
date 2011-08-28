@@ -28,56 +28,85 @@
 
 
 #include <mrpt/topography.h>
+#include <mrpt/poses/CPose3DInterpolator.h>
+#include <mrpt/system/filesystem.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::poses;
 using namespace mrpt::topography;
 using namespace std;
 
-void do_test_geodetic_geocentric(const TGeodeticCoords  c1)
-{
-	TGeocentricCoords  geo1;
-	mrpt::topography::geodeticToGeocentric(c1,geo1, TEllipsoid::Ellipsoid_WGS84() );
-
-	TGeodeticCoords  c2;
-	mrpt::topography::geocentricToGeodetic(geo1, c2, TEllipsoid::Ellipsoid_WGS84() );
-
-	EXPECT_NEAR( c1.lat,c2.lat, 1e-8 );
-	EXPECT_NEAR( c1.lon,c2.lon, 1e-8 );
-	EXPECT_NEAR( c1.height,c2.height, 1e-4 );
+// Defined in run_unittests.cpp
+namespace mrpt { namespace utils {
+	extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
+  }
 }
 
 
-
-TEST(TopographyConversion, GeodeticToGeocentricToGeodetic )
+TEST(TopographyReconstructPathFrom3RTK, sampleDataset )
 {
-	do_test_geodetic_geocentric(  TGeodeticCoords( TCoords(36,1,30), TCoords(3,2,40), 20 ) );
-	do_test_geodetic_geocentric(  TGeodeticCoords( TCoords(-36,1,30), TCoords(3,2,40), 20 ) );
-	do_test_geodetic_geocentric(  TGeodeticCoords( TCoords(36,1,30), TCoords(-3,2,40), 20 ) );
-	do_test_geodetic_geocentric(  TGeodeticCoords( TCoords(-36,1,30), TCoords(-3,2,40), 20 ) );
+	mrpt::poses::CPose3DInterpolator robot_path;
 
-}
+	mrpt::slam::CRawlog  rawlog;
 
-TEST(TopographyConversion, geodeticToENU_WGS84 )
-{
-	// A test of GPS WGS84 -> ENU Cartessian coordinates with known solution
-	mrpt::topography::TGeodeticCoords gps_point;
-	gps_point.lon = -4.475828390;
-	gps_point.lat = 36.716411055;
-	gps_point.height = 48.243;
+	const string dataset_fil = MRPT_GLOBAL_UNITTEST_SRC_DIR + string("/share/mrpt/datasets/test_rtk_path.rawlog");
+	if (!mrpt::system::fileExists(dataset_fil))
+	{
+		cerr << "WARNING: Skipping test due to missing file: " << dataset_fil << "\n";
+		return;
+	}
+	if (!rawlog.loadFromRawLogFile(dataset_fil))
+	{
+		cerr << "WARNING: Skipping test due to error loading file: " << dataset_fil << "\n";
+	}
+	else
+	{
+		mrpt::topography::TPathFromRTKInfo	rtk_path_info;
 
-	mrpt::topography::TGeodeticCoords gps_ref;
-	gps_ref.lon = -4.4789588283333330;
-	gps_ref.lat = 36.714459075;
-	gps_ref.height = 38.8887;
+		// -------------------------------------------
+		// Run path reconstruction:
+		// -------------------------------------------
+		mrpt::topography::path_from_rtk_gps(
+			robot_path,
+			rawlog,
+			0, // first entry
+			rawlog.size()-1, // last entry
+			false, // Isn't a GUI
+			false, // disableGPSInterp
+			1, // path_smooth_filter_size
+			&rtk_path_info );
 
-	TPoint3D P;
-	mrpt::topography::geodeticToENU_WGS84(gps_point, P,gps_ref);
+		EXPECT_EQ(robot_path.size(),75);
 
-	TPoint3D P_true(279.679068,216.650884,8.647818);
-	EXPECT_NEAR(P.x,P_true.x, 3e-3); // Precision should be *much* better than 1mm, but don't be so hard...
-	EXPECT_NEAR(P.y,P_true.y, 3e-3);
-	EXPECT_NEAR(P.z,P_true.z, 3e-3);
+		// Expected values:
+		//1226225355.000000 279.705647 216.651473 8.517821 0.194222 -0.083873 -0.045293
+		//1226225380.000000 377.095830 233.343569 9.724171 0.177037 -0.073565 -0.019024
+		const mrpt::system::TTimeStamp t1 = mrpt::system::time_tToTimestamp( 1226225355.000000 );
+		const mrpt::system::TTimeStamp t2 = mrpt::system::time_tToTimestamp( 1226225380.000000 );
+		const CPose3D pose_GT_1(279.705647,216.651473,8.517821,0.194222,-0.083873,-0.045293);
+		const CPose3D pose_GT_2(377.095830,233.343569,9.724171,0.177037,-0.073565,-0.019024);
+
+		CPose3D pose1,pose2;
+		bool    valid;
+		robot_path.interpolate(t1,pose1,valid);
+		EXPECT_TRUE(valid);
+
+		robot_path.interpolate(t2,pose2,valid);
+		EXPECT_TRUE(valid);
+
+
+		vector_double p1vec(12), p2vec(12);
+		pose1.getAs12Vector(p1vec);
+		pose2.getAs12Vector(p2vec);
+
+		vector_double p1vec_gt(12), p2vec_gt(12);
+		pose_GT_1.getAs12Vector(p1vec_gt);
+		pose_GT_2.getAs12Vector(p2vec_gt);
+
+		EXPECT_NEAR( (p1vec - p1vec_gt).array().abs().sum(), 0, 1e-3);
+		EXPECT_NEAR( (p2vec - p2vec_gt).array().abs().sum(), 0, 1e-3);
+	}
 }

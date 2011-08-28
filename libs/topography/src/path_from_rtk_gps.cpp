@@ -421,8 +421,8 @@ void  mrpt::topography::path_from_rtk_gps(
 					// Create the correspondence:
 					corrs.push_back( TMatchingPair(
 						k,k, 	// Indices
-						g_it->second->sensorPose.x(),g_it->second->sensorPose.y(),g_it->second->sensorPose.z(), // "other"/local coordinates
-						P.x,P.y,P.z // "This"/Global coords
+						P.x,P.y,P.z, // "This"/Global coords
+						g_it->second->sensorPose.x(),g_it->second->sensorPose.y(),g_it->second->sensorPose.z() // "other"/local coordinates
 						));
 
 					X[k] = P.x;
@@ -461,7 +461,6 @@ void  mrpt::topography::path_from_rtk_gps(
 				// "other" -> GPS local coordinates on the vehicle
 				mrpt::scanmatching::leastSquareErrorRigidTransformation6D( corrs,optimal_pose,optimal_scale, true ); // Force scale=1
 				//cout << "optimal pose: " << optimal_pose << " " << optimal_scale << endl;
-				//mrpt::system::pause();
 
 				// Final vehicle pose:
 				CPose3D	&veh_pose= optimal_pose;
