@@ -18,4 +18,5 @@ List of pending stuff to be integrated into MRPT someday:
 - Colour point clouds store colors as u8 insteaf of float.
 - CColouredPointsMap no longer has a the "m_min_dist" field: Create a new class?
 - KLT tracking: make custom implementation: with explicit pyramids, subpixel, ...
+- Impl FASTSLAM 2.0
 

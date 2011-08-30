@@ -349,12 +349,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 			if (i==particleWithHighestW)
 			{
-				// Check if update is needed:
-//					newStaticPointsRatio = partIt->d->mapTillNow.getNewStaticPointsRatio(
-//								&localMap,
-//								icpEstimation->mean );
 				newInfoIndex = 1 - icpInfo.goodness; //newStaticPointsRatio; //* icpInfo.goodness;
-				//printf("\ninfo index=%f  --- staticRatio=%f Goodness=%f\n",newInfoIndex,newStaticPointsRatio,icpInfo.goodness);
 			}
 
 			// Set the gaussian pose:
