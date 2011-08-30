@@ -30,9 +30,8 @@
 
 #include <mrpt/utils/utils_defs.h>
 
-// FLANN library:
-#include <mrpt/otherlibs/flann/flann.hpp>
-#include <mrpt/otherlibs/flann/algorithms/kdtree_single_index_mrpt.h> // An index class with an MRPT adaptor instead of a Matrix<> for the dataset
+// nanoflann library:
+#include <mrpt/otherlibs/nanoflann/nanoflann.hpp>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
@@ -44,11 +43,11 @@ namespace mrpt
 		  *  @{ */
 
 
-		/** A generic adaptor class for providing Approximate Nearest Neighbors (ANN) (via the FLANN library) to MRPT classses.
+		/** A generic adaptor class for providing Approximate Nearest Neighbors (ANN) (via the nanoflann library) to MRPT classses.
 		 *   This makes use of the CRTP design pattern.
 		 *
 		 *  Derived classes must be aware of the need to call "kdtree_mark_as_outdated()" when the data points
-		 *   change to mark the cached KD-tree ("index" in FLANN terminology) as invalid, and also implement the following interface
+		 *   change to mark the cached KD-tree (an "index") as invalid, and also implement the following interface
 		 *   (note that these are not virtual functions due to the usage of CRTP):
 		 *
 		 *  \code
@@ -80,10 +79,10 @@ namespace mrpt
 		 *  to group all the calls for a given dimensionality together or build different class instances for
 		 *  queries of each dimensionality, etc.
 		 *
-		 *  \sa KDTreeMatrixAdaptor, See some of the derived classes for example implementations.
+		 *  \sa See some of the derived classes for example implementations. See also the documentation of nanoflann
 		 * \ingroup mrpt_base_grp
 		 */
-		template <class Derived, typename num_t = float, typename metric_t = mrpt_flann::L2_Simple_Adaptor<num_t,Derived> >
+		template <class Derived, typename num_t = float, typename metric_t = nanoflann::L2_Simple_Adaptor<num_t,Derived> >
 		class KDTreeCapable
 		{
 		public:
@@ -148,12 +147,12 @@ namespace mrpt
 
 				const int knn = 1; // Number of points to retrieve
 				int ret_index;
-				mrpt_flann::KNNResultSet<num_t> resultSet(knn);
+				nanoflann::KNNResultSet<num_t> resultSet(knn);
 				resultSet.init(&ret_index, &out_dist_sqr );
 
 				m_kdtree2d_data.query_point[0] = x0;
 				m_kdtree2d_data.query_point[1] = y0;
-		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], mrpt_flann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
 
 				// Copy output to user vars:
 				out_x = derived().kdtree_get_pt(ret_index,0);
@@ -175,12 +174,12 @@ namespace mrpt
 
 				const int knn = 1; // Number of points to retrieve
 				int ret_index;
-				mrpt_flann::KNNResultSet<num_t> resultSet(knn);
+				nanoflann::KNNResultSet<num_t> resultSet(knn);
 				resultSet.init(&ret_index, &out_dist_sqr );
 
 				m_kdtree2d_data.query_point[0] = x0;
 				m_kdtree2d_data.query_point[1] = y0;
-		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], mrpt_flann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
 
 				return static_cast<size_t>(ret_index);
 				MRPT_END
@@ -244,12 +243,12 @@ namespace mrpt
 				const int knn = 2; // Number of points to retrieve
 				int   ret_indexes[2];
 				float ret_sqdist[2];
-				mrpt_flann::KNNResultSet<num_t> resultSet(knn);
+				nanoflann::KNNResultSet<num_t> resultSet(knn);
 				resultSet.init(&ret_indexes[0], &ret_sqdist[0] );
 
 				m_kdtree2d_data.query_point[0] = x0;
 				m_kdtree2d_data.query_point[1] = y0;
-		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], mrpt_flann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
 
 				// Copy output to user vars:
 				out_x1 = derived().kdtree_get_pt(ret_indexes[0],0);
@@ -308,12 +307,12 @@ namespace mrpt
 				out_y.resize(knn);
 				out_dist_sqr.resize(knn);
 
-				mrpt_flann::KNNResultSet<num_t> resultSet(knn);
+				nanoflann::KNNResultSet<num_t> resultSet(knn);
 				resultSet.init(&ret_indexes[0], &out_dist_sqr[0] );
 
 				m_kdtree2d_data.query_point[0] = x0;
 				m_kdtree2d_data.query_point[1] = y0;
-		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], mrpt_flann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
 
 				for (size_t i=0;i<knn;i++)
 				{
@@ -362,12 +361,12 @@ namespace mrpt
 
 				out_idx.resize(knn);
 				out_dist_sqr.resize(knn);
-				mrpt_flann::KNNResultSet<num_t> resultSet(knn);
+				nanoflann::KNNResultSet<num_t> resultSet(knn);
 				resultSet.init(&out_idx[0], &out_dist_sqr[0] );
 
 				m_kdtree2d_data.query_point[0] = x0;
 				m_kdtree2d_data.query_point[1] = y0;
-		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], mrpt_flann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
 				MRPT_END
 			}
 
@@ -408,13 +407,13 @@ namespace mrpt
 
 				const int knn = 1; // Number of points to retrieve
 				int ret_index;
-				mrpt_flann::KNNResultSet<num_t> resultSet(knn);
+				nanoflann::KNNResultSet<num_t> resultSet(knn);
 				resultSet.init(&ret_index, &out_dist_sqr );
 
 				m_kdtree3d_data.query_point[0] = x0;
 				m_kdtree3d_data.query_point[1] = y0;
 				m_kdtree3d_data.query_point[2] = z0;
-		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], mrpt_flann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
 
 				// Copy output to user vars:
 				out_x = derived().kdtree_get_pt(ret_index,0);
@@ -439,13 +438,13 @@ namespace mrpt
 
 				const int knn = 1; // Number of points to retrieve
 				int ret_index;
-				mrpt_flann::KNNResultSet<num_t> resultSet(knn);
+				nanoflann::KNNResultSet<num_t> resultSet(knn);
 				resultSet.init(&ret_index, &out_dist_sqr );
 
 				m_kdtree3d_data.query_point[0] = x0;
 				m_kdtree3d_data.query_point[1] = y0;
 				m_kdtree3d_data.query_point[2] = z0;
-		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], mrpt_flann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
 
 				return static_cast<size_t>(ret_index);
 				MRPT_END
@@ -498,13 +497,13 @@ namespace mrpt
 				out_z.resize(knn);
 				out_dist_sqr.resize(knn);
 
-				mrpt_flann::KNNResultSet<num_t> resultSet(knn);
+				nanoflann::KNNResultSet<num_t> resultSet(knn);
 				resultSet.init(&ret_indexes[0], &out_dist_sqr[0] );
 
 				m_kdtree3d_data.query_point[0] = x0;
 				m_kdtree3d_data.query_point[1] = y0;
 				m_kdtree3d_data.query_point[2] = z0;
-		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], mrpt_flann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
 
 				for (size_t i=0;i<knn;i++)
 				{
@@ -555,13 +554,13 @@ namespace mrpt
 
 				out_idx.resize(knn);
 				out_dist_sqr.resize(knn);
-				mrpt_flann::KNNResultSet<num_t> resultSet(knn);
+				nanoflann::KNNResultSet<num_t> resultSet(knn);
 				resultSet.init(&out_idx[0], &out_dist_sqr[0] );
 
 				m_kdtree3d_data.query_point[0] = x0;
 				m_kdtree3d_data.query_point[1] = y0;
 				m_kdtree3d_data.query_point[2] = z0;
-		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], mrpt_flann::SearchParams(kdtree_search_params.nChecks));
+		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
 				MRPT_END
 			}
 
@@ -598,7 +597,7 @@ namespace mrpt
 				/** Free memory (if allocated)  */
 				inline void clear()	{ mrpt::utils::delete_safe( index ); }
 
-				typedef mrpt_flann::KDTreeSingleIndexAdaptor<metric_t,self_t, _DIM> kdtree_index_t;
+				typedef nanoflann::KDTreeSingleIndexAdaptor<metric_t,Derived, _DIM> kdtree_index_t;
 
 				kdtree_index_t *index;  //!< NULL or the up-to-date index
 
@@ -630,7 +629,7 @@ namespace mrpt
 					m_kdtree2d_data.query_point.resize(2);
 					if (N)
 					{
-						m_kdtree2d_data.index = new tree2d_t(2, *this,  mrpt_flann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size, 2 ) );
+						m_kdtree2d_data.index = new tree2d_t(2, derived(),  nanoflann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size, 2 ) );
 						m_kdtree2d_data.index->buildIndex();
 					}
 					m_kdtree_is_uptodate = true;
@@ -655,7 +654,7 @@ namespace mrpt
 					m_kdtree3d_data.query_point.resize(3);
 					if (N)
 					{
-						m_kdtree3d_data.index = new tree3d_t(3, *this,  mrpt_flann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size, 3 ) );
+						m_kdtree3d_data.index = new tree3d_t(3, derived(),  nanoflann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size, 3 ) );
 						m_kdtree3d_data.index->buildIndex();
 					}
 					m_kdtree_is_uptodate = true;
@@ -680,7 +679,7 @@ namespace mrpt
 					m_kdtreeNd_data.query_point.resize(nDims);
 					if (N)
 					{
-						m_kdtreeNd_data.index = new treeNd_t(nDims, *this,  mrpt_flann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size, nDims ) );
+						m_kdtreeNd_data.index = new treeNd_t(nDims, derived(),  nanoflann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size, nDims ) );
 						m_kdtreeNd_data.index->buildIndex();
 					}
 					m_kdtree_is_uptodate = true;

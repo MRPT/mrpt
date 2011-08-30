@@ -43,14 +43,13 @@
 #include <mrpt/slam/data_association.h>
 #include <mrpt/math/distributions.h>  // for chi2inv
 #include <mrpt/math/utils.h>
-#include <mrpt/math/KDTreeMatrixAdaptor.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 
 #include <numeric>  // accumulate
 #include <memory>   // auto_ptr
 
-#include <mrpt/otherlibs/flann/flann.hpp>   // For kd-tree's
+#include <mrpt/otherlibs/nanoflann/nanoflann.hpp> // For kd-tree's
 #include <mrpt/math/KDTreeCapable.h>   // For kd-tree's
 
 using namespace std;
@@ -296,7 +295,7 @@ void mrpt::slam::data_association_full_covariance(
 {
 	// For details on the theory, see the papers cited at the beginning of this file.
 
-	using mrpt::math::KDTreeMatrixAdaptor;
+	using nanoflann::KDTreeEigenMatrixAdaptor;
 
 	MRPT_START
 
@@ -321,8 +320,7 @@ void mrpt::slam::data_association_full_covariance(
 	// ------------------------------------------------------------
 	// Build a KD-tree of the predictions for quick look-up:
 	// ------------------------------------------------------------
-	std::auto_ptr<KDTreeMatrixAdaptor<CMatrixDouble> >  kd_tree;
-	//stlplus::smart_ptr_nocopy<ANNkd_tree> kd_tree; // Use smrt pointers to enable automatic deallocation on exception, etc...
+	std::auto_ptr<KDTreeEigenMatrixAdaptor<CMatrixDouble> >  kd_tree;
 	const size_t N_KD_RESULTS = nPredictions;
 	std::vector<double>	kd_result_distances(DAT_ASOC_USE_KDTREE ? N_KD_RESULTS : 0);
 	std::vector<int>	kd_result_indices(DAT_ASOC_USE_KDTREE ? N_KD_RESULTS : 0);
@@ -331,7 +329,7 @@ void mrpt::slam::data_association_full_covariance(
 	if (DAT_ASOC_USE_KDTREE)
 	{
 		// Construct kd-tree for the predictions:
-		kd_tree = std::auto_ptr<KDTreeMatrixAdaptor<CMatrixDouble> >( new KDTreeMatrixAdaptor<CMatrixDouble>(length_O, Y_predictions_mean) );
+		kd_tree = std::auto_ptr<KDTreeEigenMatrixAdaptor<CMatrixDouble> >( new KDTreeEigenMatrixAdaptor<CMatrixDouble>(length_O, Y_predictions_mean) );
 	}
 
 	// Initialize with the worst possible distance:

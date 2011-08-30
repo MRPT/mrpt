@@ -57,7 +57,7 @@
 				- #include <mrpt/slam/graph_slam.h> --> #include <mrpt/graphslam.h>
 		- New classes:
 			- A batch of changes to introduce WiFi signal strength receivers and building maps out of such observations (by Emil Khatib) - <a href="http://code.google.com/p/mrpt/source/detail?r=2572" >r2572</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2573" >r2573</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2574" >r2574</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2577" >r2577</a>:
-				- [mrpt-obs] mrpt::slam::CObservationWirelessPower 
+				- [mrpt-obs] mrpt::slam::CObservationWirelessPower
 				- [mrpt-maps] mrpt::slam::CWirelessPowerGridMap2D
 				- [mrpt-hwdrivers] mrpt::hwdrivers::CWirelessPower
 			- [mrpt-maps] New class mrpt::slam::CRandomFieldGridMap2D to generalize previous WiFi and GasConcentration grid mapping - <a href="http://code.google.com/p/mrpt/source/detail?r=2577" >r2577</a>
@@ -65,18 +65,17 @@
 			- [mrpt-opengl] mrpt::opengl::CText3D, a new way to display texts using OpenGL primitives instead of bitmaps.
 			- [mrpt-vision] mrpt::vision::CImagePyramid, a tool for managing pyramids of images in different octaves (each being half the size of the previous one) - <a href="http://code.google.com/p/mrpt/source/detail?r=2602" >r2602</a>
 			- [mrpt-vision] New "lightweight" image feature classes: mrpt::vision::TSimpleFeature, mrpt::vision::TSimpleFeatureList
-			- [mrpt-base] New class mrpt::math::KDTreeMatrixAdaptor to build KD-tree directly from Eigen matrices. (read more below on changes about FLANN)
 		- Changes in classes:
 			- [mrpt-maps] mrpt::slam::CPointsMap (and all derived point-cloud maps) have undergone a big code refactoring and optimizations:
 				- New method mrpt::slam::CPointsMap::addFrom() and an "operator +=" to add the points from another point map  - <a href="http://code.google.com/p/mrpt/source/detail?r=2553" >r2553</a>
 				- Now mrpt::slam::CSimplePointsMap no longer has weights associated to each point. If users want weights (mainly for ::fuseWith()) please use the newly created class mrpt::slam::CWeightedPointsMap - <a href="http://code.google.com/p/mrpt/source/detail?r=2582" >r2582</a>
 				- Filter by height is now available in all point maps, not only in mrpt::slam::CColourPointMap.
 				- mrpt::slam::CColouredPointsMap no longer has a the "m_min_dist" field.
-				- Many optimizations for SSE2 - <a href="http://code.google.com/p/mrpt/source/detail?r=2583" >r2583</a> 
+				- Many optimizations for SSE2 - <a href="http://code.google.com/p/mrpt/source/detail?r=2583" >r2583</a>
 			- [mrpt-maps] Basic support for PCL library (version 1.0.0+): ( <a href="http://code.google.com/p/mrpt/source/detail?r=2560" >r2560</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2562" >r2562</a> )
-				- mrpt::slam::CPointsMap::savePCDFile() 
+				- mrpt::slam::CPointsMap::savePCDFile()
 				- mrpt::slam::CPointsMap::getPCLPointCloud()
-				- mrpt::slam::CColouredPointsMap::savePCDFile() 
+				- mrpt::slam::CColouredPointsMap::savePCDFile()
 			- [mrpt-slam] New configuration parameters in ICP: mrpt::slam::CICP::TConfigParams::corresponding_points_decimation  to speed-up ICP with dense point clouds that can be safely decimated.
 			- [mrpt-obs] In mrpt::slam::CObservation3DRangeScan - <a href="http://code.google.com/p/mrpt/source/detail?r=r2578" >r2578</a>:
 				- New data field: mrpt::slam::CObservation3DRangeScan::range_is_depth
@@ -87,13 +86,13 @@
 				- mrpt::utils::CImage::KLT_response() has been optimized for time.
 			- [mrpt-base] mrpt::utils::CCanvas (which includes mrpt::utils::CImage):
 				- New bitmapped font: "5x7". See mrpt::utils::CCanvas::selectTextFont() - <a href="http://code.google.com/p/mrpt/source/detail?r=2598" >r2598</a>
-			- [mrpt-base] MRPT moves from ANN to FLANN for kd-tree library, such as: ( <a href="http://code.google.com/p/mrpt/source/detail?r=2623" >r2623</a> )
-				- New namespace mrpt_flann, holding a modified version of FLANN.
-				- A modified FLANN class has been created, mrpt_flann::KDTreeSingleIndexAdaptor, to allow building a kd-tree index and performing search without duplicating all the dataset within the KD-tree index.
-				- FLANN has been also changed to avoid virtual functions in inner loops (mostly around mrpt_flan::ResultSet<>).
+			- [mrpt-base] MRPT moves from ANN to FLANN for kd-tree library, such as: ( <a href="http://code.google.com/p/mrpt/source/detail?r=2623" >r2623</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2639" >r2639</a> )
+				- New namespace nanoflann, holding a modified version of FLANN.
+				- A modified FLANN class has been created, nanoflann::KDTreeSingleIndexAdaptor, to allow building a kd-tree index and performing search without duplicating all the dataset within the KD-tree index.
+				- FLANN has been also changed to avoid virtual functions in inner loops (mostly around nanoflann::ResultSet<>).
 				- mrpt::math::KDTreeCapable maintains its API, so the change is backward compatible
-				- New class mrpt::math::KDTreeMatrixAdaptor to build KD-tree directly from Eigen matrices.
-			- [mrpt-base] templates mrpt::poses::getPoseMean() have been replaced by methods within each pose class, e.g: mrpt::poses::CPose2D::getPoseMean(), mrpt::poses::CPose3DPDFGaussianInf::getPoseMean(), ... 
+				- The nanoflann project has been released separately: http://code.google.com/p/nanoflann/
+			- [mrpt-base] templates mrpt::poses::getPoseMean() have been replaced by methods within each pose class, e.g: mrpt::poses::CPose2D::getPoseMean(), mrpt::poses::CPose3DPDFGaussianInf::getPoseMean(), ...
 			- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".
 			- [mrpt-opengl & mrpt-gui] All text labels in 3D rendering windows are now drawn as OpenGL primitives instead of bitmaps, which are ~10x faster to draw. See mrpt::opengl::CTextMessageCapable
 			- [mrpt-opengl & mrpt-gui] mrpt::opengl::CTextMessageCapable and mrpt::gui::CDisplayWindow3D now have an overloaded ::addTextMessage() method with many more font size/style options.
@@ -139,7 +138,7 @@
 		- BUG FIXES:
 			- [mrpt-obs] Wrong usage of focal distances "fx"<->"fy" when generating the 3D point clouds from Kinect observations with the method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() - <a href="http://code.google.com/p/mrpt/source/detail?r=r2578" >r2578</a>.
 			- [mrpt-hwdrivers], [mrpt-obs] Gyroscopic rotation rates in yaw and roll were stored in the wrong order in mrpt::hwdrivers::CIMUXSens and mrpt::slam::CObservationIMU. It has been fixed so new grabbed data is saved correctly but also such as old datasets are automatically fixed when loading them. Thanks Lianfen for noticing! - <a href="http://code.google.com/p/mrpt/source/detail?r=r2622" >r2622</a>.
-			- [mrpt-topography] Fixed an old bug in mrpt::topography::path_from_rtk_gps() (and added new unit tests to avoid the same happening in the future) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2637" >r2637</a> 
+			- [mrpt-topography] Fixed an old bug in mrpt::topography::path_from_rtk_gps() (and added new unit tests to avoid the same happening in the future) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2637" >r2637</a>
 
 <br> <hr>
 
@@ -159,7 +158,7 @@
 		- mrpt-monoslam is no longer shown in the graph of libraries since it's unmaintained.
 	- Build system:
 		- Embedded Eigen version updated to release Eigen 3.0.1 (May 30th 2011).
-		- Linux/Mac: Don't enable BUILD_KINECT by default if libusb1-dev is not present. 
+		- Linux/Mac: Don't enable BUILD_KINECT by default if libusb1-dev is not present.
 		- Win64: Fixed building warnings and errors with MSVC9
 		- MinGW: Fixed building.
 		- Fixed compiling with MSVC 2005 (Patch by Z.P.Gaal)
@@ -180,7 +179,7 @@
 		- Support for "reflectivity" maps and observations:
 			- [mrpt-obs] mrpt::slam::CObservationReflectivity
 			- [mrpt-maps] mrpt::slam::CReflectivityGridMap2D
-		- [mrpt-maps] mrpt::slam::CLogOddsGridMap2D, a new class due to a refactoring of mrpt::slam::COccupancyGridMap2D.		
+		- [mrpt-maps] mrpt::slam::CLogOddsGridMap2D, a new class due to a refactoring of mrpt::slam::COccupancyGridMap2D.
 	- Changes in classes:
 		- [mrpt-bases] mrpt::utils::CImage changes:
 			- Some methods have been optimized for use of SSE2/SSE3 functions, falling back to the (slower) OpenCV functions when it's not possible.
@@ -211,7 +210,7 @@
 		- [mrpt-slam] mrpt::slam::CICP has a new option: skip_cov_calculation that can save some time in some cases.
 		- [mrpt-vision] mrpt::slam::CLandmarksMap::simulateRangeBearingReadings() now also simulates spurious readings.
 		- [mrpt-vision] mrpt::slam::CLandmarksMap now has new fields in the insertionOptions and likelihoodOptions to allow users control the exact parameters of SIFT detectors/descriptors.
-		- [mrpt-vision] Added missing rbegin() and rend() methods to mrpt::vision::CFeatureList 
+		- [mrpt-vision] Added missing rbegin() and rend() methods to mrpt::vision::CFeatureList
 		- [mrpt-vision] Backward incompatible change in the ABI/API of mrpt::vision::CFeatureExtraction::detectFeatures(): The optional \a mask is now passed as a pointer instead of a const ref to avoid linking errors in MSVC.
 		- [mrpt-reactivenav] Clean up of code and smarter detection of mismatches in precomputed collision grid files.
 		- [mrpt-bayes] Kalman filter: If the prediction heuristics in mrpt::bayes::CKalmanFilterCapable::OnPreComputingPredictions() fails it doesn't raise an exception anymore but recompute all the required matrices, sending a performance warning to console.
@@ -231,7 +230,7 @@
 		- Fixed situations were RTTI registrations were not updated before usage, leading to "uregistered class?" exceptions.
 		- [mrpt-bayes] Kalman filter: Fixed wrong use of use_analytic_transition_jacobian instead of use_analytic_observation_jacobian (thanks "bgrigorian"!)
 		- [mrpt-base] Fixed out of buffer access in mrpt::math::CSparseMatrix::cs2dense() when the sparse matrix still is in the triplet format.
-		- pf-localization: Fixed wrong execution of batchs of experiments when "experimentRepetitions" > 1. Thanks to  yyfeng88625 for noticing! (http://www.mrpt.org/node/694 ) 
+		- pf-localization: Fixed wrong execution of batchs of experiments when "experimentRepetitions" > 1. Thanks to  yyfeng88625 for noticing! (http://www.mrpt.org/node/694 )
 
 
 
@@ -271,7 +270,7 @@
 				- multiScales. A vector containing the set of different scales at which the SIFT-like descriptor must be computed.
 				- multiOrientations. For each scale in multiScales there is a vector containing the main orientations of the feature.
 				- descriptors.multiSIFTDescriptors. For each scale and orientation there is a SIFT-like descriptor.
-				- multiHashCoeffs. For each descriptor, a 3-d vector containing its Hash coefficients computed through the Haar wavelets. 
+				- multiHashCoeffs. For each descriptor, a 3-d vector containing its Hash coefficients computed through the Haar wavelets.
 				- hasDescriptorMultiSIFT(). Indicates if the multi-resolution SIFT-like descriptor has been computed for this feature.
 			- New method mrpt::gui::CDisplayWindow3D::getRenderingFPS()
 			- Both mrpt::opengl::CPointCloud and mrpt::opengl::CPointCloudColoured are now much more optimized to render huge point clouds:
@@ -282,7 +281,7 @@
 			- Many mrpt::opengl classes now are derived from a display-list-cached base class (mrpt::opengl::CRenderizableDisplayList)
 			- mrpt::utils::CStream now has two new methods (mrpt::utils::CStream::ReadBufferFixEndianness & mrpt::utils::CStream::WriteBufferFixEndianness) to correctly handle arrays of elemental data types so they are saved in MRPT endianness standard (see http://www.mrpt.org/Serialization).
 		- Changes in functions:
-			- mrpt::vision::matchFeatures(). Implemented a new method for managing ambiguous matches, now taking into account which of the conflicting matches is the most probable.			
+			- mrpt::vision::matchFeatures(). Implemented a new method for managing ambiguous matches, now taking into account which of the conflicting matches is the most probable.
 		- New structures/classes:
 			- mrpt::hwdrivers::CKinect: Support for grabbing XBox Kinect. Read the class documentation for more details.
 			- TMultiResDescMatchOptions. Struct containing the options when matching multi-resolution SIFT-like descriptors.

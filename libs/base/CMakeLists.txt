@@ -16,28 +16,6 @@ add_base_srcs(synch)
 add_base_srcs(system)
 add_base_srcs(utils)
 
-# This is required by "flann/saving.cpp"
-set(FLANN_VERSION 1.6.11)
-add_definitions(-D_FLANN_VERSION=${FLANN_VERSION})
-
-LIST(APPEND base_EXTRA_SRCS			
-	"${MRPT_LIBS_ROOT}/base/src/flann/*.cpp" 
-	"${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/flann/*.hpp"
-	"${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/flann/*.h"
-	"${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/flann/algorithms/*.h"
-	"${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/flann/io/*.h"
-	"${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/flann/nn/*.h"
-	"${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/flann/util/*.h"
-	)
-LIST(APPEND base_EXTRA_SRCS_NAME 	
-	"flann_cpp" 
-	"flann_h"
-	"flann_h"
-	"flann_h"
-	"flann_h"
-	"flann_h"
-	"flann_h"
-	)
 
 LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/utils/simpleini/*.c" "${MRPT_LIBS_ROOT}/base/src/utils/simpleini/*.h")
 LIST(APPEND base_EXTRA_SRCS_NAME 	"utils/simpleini" "utils/simpleini")
@@ -97,7 +75,6 @@ IF(MRPT_ENABLE_PRECOMPILED_HDRS)
 			${utils/simpleini_FILES}	
 			${utils/jpeglib_FILES}
 			${compress/zlib_FILES}
-			${flann_cpp_FILES}
 			PROPERTIES COMPILE_FLAGS "/Y-"
 			)
 
