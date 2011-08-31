@@ -51,9 +51,9 @@ namespace nanoflann
 {
 /** @addtogroup nanoflann_grp nanoflann C++ library for ANN
   *  @{ */
-  
+
   	/** Library version: 0xMmP (M=Major,m=minor,P=path) */
-	#define NANOFLANN_VERSION 0x100
+	#define NANOFLANN_VERSION 0x101
 
 	/** @addtogroup result_sets_grp Result set classes
 	  *  @{ */
@@ -123,57 +123,45 @@ namespace nanoflann
 	 * A result-set class used when performing a radius based search.
 	 */
 	template <typename DistanceType>
-	class RadiusResultSet // : public ResultSet<DistanceType>
+	class RadiusResultSet
 	{
-		DistanceType radius;
-		int* indices;
-		DistanceType* dists;
-		size_t capacity;
-		size_t count;
-
 	public:
-		inline RadiusResultSet(DistanceType radius_, int* indices_, DistanceType* dists_, int capacity_) :
-			radius(radius_), indices(indices_), dists(dists_), capacity(capacity_)
+		const DistanceType radius;
+
+		std::vector<std::pair<int,DistanceType> >& m_indices_dists;
+
+		inline RadiusResultSet(DistanceType radius_, std::vector<std::pair<int,DistanceType> >& indices_dists) : radius(radius_), m_indices_dists(indices_dists)
 		{
 			init();
 		}
 
-		inline ~RadiusResultSet()
-		{
-		}
+		inline ~RadiusResultSet() { }
 
-		inline void init()
-		{
-			count = 0;
-		}
+		inline void init() { m_indices_dists.clear(); }
 
-		inline size_t size() const
-		{
-			return count;
-		}
+		inline size_t size() const { return m_indices_dists.size(); }
 
-		inline bool full() const
-		{
-			return true;
-		}
+		inline bool full() const { return true; }
 
 		inline void addPoint(DistanceType dist, int index)
 		{
-			if (dist<radius) {
-				if ((capacity>0)&&(count < capacity)) {
-					dists[count] = dist;
-					indices[count] = index;
-				}
-				count++;
-			}
+			if (dist<radius)
+				m_indices_dists.push_back(std::make_pair<int,DistanceType>(index,dist));
 		}
 
-		inline DistanceType worstDist() const
-		{
-			return radius;
-		}
-
+		inline DistanceType worstDist() const { return radius; }
 	};
+
+	/** operator "<" for std::sort() */
+	template <typename DistanceType>
+	struct IndexDist_Sorter
+	{
+		inline bool operator()(const std::pair<int,DistanceType> &p1, const std::pair<int,DistanceType> &p2) const
+		{
+			return p1.second < p2.second;
+		}
+	};
+
 	/** @} */
 
 
@@ -396,9 +384,9 @@ namespace nanoflann
 		SearchParams(int checks_ = 32, float eps_ = 0, bool sorted_ = true ) :
 			checks(checks_), eps(eps_), sorted(sorted_) {}
 
-		int checks;  // how many leafs to visit when searching for neighbours (-1 for unlimited)
-		float eps;  // search for eps-approximate neighbours (default: 0)
-		bool sorted; // only for radius search, require neighbours sorted by distance (default: true)
+		int checks;  //!< how many leafs to visit when searching for neighbours (-1 for unlimited)
+		float eps;  //!< search for eps-approximate neighbours (default: 0)
+		bool sorted; //!< only for radius search, require neighbours sorted by distance (default: true)
 	};
 	/** @} */
 
@@ -545,7 +533,7 @@ namespace nanoflann
 		template <typename T>
 		T* allocate(size_t count = 1)
 		{
-			T* mem = (T*) this->malloc(sizeof(T)*count);
+			T* mem = (T*) this->malloc(static_cast<int>( sizeof(T)*count ));
 			return mem;
 		}
 
@@ -567,10 +555,10 @@ namespace nanoflann
 	 *   // Must return the number of data points
 	 *   inline size_t kdtree_get_point_count() const { ... }
 	 *
-	 *   // Returns the distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
+	 *   // Must return the Euclidean (L2) distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
 	 *   inline float kdtree_distance(const float *p1, const size_t idx_p2,size_t size) const { ... }
 	 *
-	 *   // Returns the dim'th component of the idx'th point in the class:
+	 *   // Must return the dim'th component of the idx'th point in the class:
 	 *   inline num_t kdtree_get_pt(const size_t idx, int dim) const { ... }
 	 *
 	 *   // Optional bounding-box computation: return false to default to a standard bbox computation loop.
@@ -579,7 +567,9 @@ namespace nanoflann
 	 *   template <class BBOX>
 	 *   bool kdtree_get_bbox(BBOX &bb) const
 	 *   {
-	 *      bb[0].low = ...; bb[0].high = ...;  // "x" limits
+	 *      bb[0].low = ...; bb[0].high = ...;  // 0th dimension limits
+	 *      bb[1].low = ...; bb[1].high = ...;  // 1st dimension limits
+	 *      ...
 	 *      return true;
 	 *   }
 	 *
@@ -606,8 +596,8 @@ namespace nanoflann
 
 		const KDTreeSingleIndexAdaptorParams index_params;
 
-		size_t size_;
-		size_t dim;
+		int size_;
+		int dim;
 
 
 		/*--------------------- Internal Data Structures --------------------------*/
@@ -700,7 +690,7 @@ namespace nanoflann
 		KDTreeSingleIndexAdaptor(const int dimensionality, const DatasetAdaptor& inputData, const KDTreeSingleIndexAdaptorParams& params = KDTreeSingleIndexAdaptorParams() ) :
 			dataset(inputData), index_params(params), distance(inputData)
 		{
-			size_ = dataset.kdtree_get_point_count();
+			size_ = static_cast<int>(dataset.kdtree_get_point_count());
 			dim = dimensionality;
 			if (DIM>0) dim=DIM;
 			else {
@@ -710,7 +700,7 @@ namespace nanoflann
 
 			// Create a permutable array of indices to the input vectors.
 			vind.resize(size_);
-			for (size_t i = 0; i < size_; i++) {
+			for (int i = 0; i < size_; i++) {
 				vind[i] = i;
 			}
 		}
@@ -760,7 +750,7 @@ namespace nanoflann
 		  * @{ */
 
 		/**
-		 * Find set of nearest neighbors to vec. Their indices are stored inside
+		 * Find set of nearest neighbors to vec[0:dim-1]. Their indices are stored inside
 		 * the result object.
 		 *
 		 * Params:
@@ -783,8 +773,9 @@ namespace nanoflann
 		}
 
 		/**
-		 * Find the "num_closest" nearest neighbors to the \a query_point. Their indices are stored inside
+		 * Find the "num_closest" nearest neighbors to the \a query_point[0:dim-1]. Their indices are stored inside
 		 * the result object.
+		 *  \sa radiusSearch, findNeighbors
 		 */
 		inline void knnSearch(const ElementType *query_point, int num_closest, int *out_indices, ElementType *out_distances_sq, const int nChecks = 10) const
 		{
@@ -794,42 +785,27 @@ namespace nanoflann
 		}
 
 		/**
-		 * Find all the neighbors to \a query_point. Their indices are stored inside
-		 * the result object.
+		 * Find all the neighbors to \a query_point[0:dim-1] within a maximum radius.
+		 *  The output is given as a vector of pairs, of which the first element is a point index and the second the corresponding distance.
+		 *  Previous contents of \a IndicesDists are cleared.
+		 *
+		 *  If searchParams.sorted==true, the output list is sorted by ascending distances.
+		 *
+		 *  For a better performance, it is advisable to do a .reserve() on the vector if you have any wild guess about the number of expected matches.
+		 *
+		 *  \sa knnSearch, findNeighbors
+		 * \return The number of points within the given radius (i.e. indices.size() or dists.size() )
 		 */
-//	int radiusSearch(const Matrix<ElementType>& query, Matrix<int>& indices, Matrix<DistanceType>& dists, float radius, const SearchParams& searchParams)
-//	{
-//		if (!built) {
-//			throw runtime_error("You must build the index before searching.");
-//		}
-//		if (query.rows != 1) {
-//			fprintf(stderr, "I can only search one feature at a time for range search\n");
-//			return -1;
-//		}
-//		assert(query.cols == nnIndex->veclen());
-//		assert(indices.cols == dists.cols);
-//
-//		int n = 0;
-//		int* indices_ptr = NULL;
-//		DistanceType* dists_ptr = NULL;
-//		if (indices.cols > 0) {
-//			n = indices.cols;
-//			indices_ptr = indices[0];
-//			dists_ptr = dists[0];
-//		}
-//
-//		RadiusResultVector<DistanceType> resultSet(radius, (n>0));
-//		resultSet.clear();
-//		nnIndex->findNeighbors(resultSet, query[0], searchParams);
-//		if (n>0) {
-//			if (searchParams.sorted)
-//				resultSet.sortAndCopy(indices_ptr, dists_ptr, n);
-//			else
-//				resultSet.copy(indices_ptr, dists_ptr, n);
-//		}
-//
-//		return resultSet.size();
-//	}
+		size_t radiusSearch(const ElementType *query_point,const DistanceType radius, std::vector<std::pair<int,DistanceType> >& IndicesDists, const SearchParams& searchParams) const
+		{
+			RadiusResultSet<DistanceType> resultSet(radius,IndicesDists);
+			this->findNeighbors(resultSet, query_point, searchParams);
+
+			if (searchParams.sorted)
+				std::sort(IndicesDists.begin(),IndicesDists.end(), IndexDist_Sorter<DistanceType>() );
+
+			return resultSet.size();
+		}
 
 		/** @} */
 
@@ -875,13 +851,13 @@ namespace nanoflann
 			}
 			else
 			{
-				for (size_t i=0; i<(DIM>0 ? DIM : dim); ++i) {
+				for (int i=0; i<(DIM>0 ? DIM : dim); ++i) {
 					bbox[i].low =
 						bbox[i].high = dataset_get(0,i);
 				}
 				const size_t N = dataset.kdtree_get_point_count();
 				for (size_t k=1; k<N; ++k) {
-					for (size_t i=0; i<(DIM>0 ? DIM : dim); ++i) {
+					for (int i=0; i<(DIM>0 ? DIM : dim); ++i) {
 						if (dataset_get(k,i)<bbox[i].low) bbox[i].low = dataset_get(k,i);
 						if (dataset_get(k,i)>bbox[i].high) bbox[i].high = dataset_get(k,i);
 					}
@@ -910,12 +886,12 @@ namespace nanoflann
 				node->lr.right = right;
 
 				// compute bounding-box of leaf points
-				for (size_t i=0; i<(DIM>0 ? DIM : dim); ++i) {
+				for (int i=0; i<(DIM>0 ? DIM : dim); ++i) {
 					bbox[i].low = dataset_get(vind[left],i);
 					bbox[i].high = dataset_get(vind[left],i);
 				}
 				for (int k=left+1; k<right; ++k) {
-					for (size_t i=0; i<(DIM>0 ? DIM : dim); ++i) {
+					for (int i=0; i<(DIM>0 ? DIM : dim); ++i) {
 						if (bbox[i].low>dataset_get(vind[k],i)) bbox[i].low=dataset_get(vind[k],i);
 						if (bbox[i].high<dataset_get(vind[k],i)) bbox[i].high=dataset_get(vind[k],i);
 					}
@@ -1007,7 +983,7 @@ namespace nanoflann
 
 		void middleSplit_(int* ind, int count, int& index, int& cutfeat, DistanceType& cutval, const BoundingBox& bbox)
 		{
-			const float EPS=0.00001;
+			const DistanceType EPS=static_cast<DistanceType>(0.00001);
 			ElementType max_span = bbox[0].high-bbox[0].low;
 			for (size_t i=1; i<(DIM>0 ? DIM : dim); ++i) {
 				ElementType span = bbox[i].high-bbox[i].low;
@@ -1017,7 +993,7 @@ namespace nanoflann
 			}
 			ElementType max_spread = -1;
 			cutfeat = 0;
-			for (size_t i=0; i<(DIM>0 ? DIM : dim); ++i) {
+			for (int i=0; i<(DIM>0 ? DIM : dim); ++i) {
 				ElementType span = bbox[i].high-bbox[i].low;
 				if (span>(1-EPS)*max_span) {
 					ElementType min_elem, max_elem;
@@ -1089,7 +1065,7 @@ namespace nanoflann
 		{
 			DistanceType distsq = 0.0;
 
-			for (size_t i = 0; i < (DIM>0 ? DIM : dim); ++i) {
+			for (int i = 0; i < (DIM>0 ? DIM : dim); ++i) {
 				if (vec[i] < root_bbox[i].low) {
 					dists[i] = distance.accum_dist(vec[i], root_bbox[i].low, i);
 					distsq += dists[i];
