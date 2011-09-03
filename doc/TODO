@@ -8,7 +8,7 @@ List of pending stuff to be integrated into MRPT someday:
 - Fix WifiMaps... (WTF was this??)
 - doc: Finish list of dependencies
 - icp-graph-slam
-- Integration of PCL via a new pointcloud class??
+- Integration of PCL: generate point clouds from Kinect observation
 
 
   WISHLIST FOR THE THREE WISE MEN
@@ -19,4 +19,6 @@ List of pending stuff to be integrated into MRPT someday:
 - CColouredPointsMap no longer has a the "m_min_dist" field: Create a new class?
 - KLT tracking: make custom implementation: with explicit pyramids, subpixel, ...
 - Impl FASTSLAM 2.0
+- Recover a working version of stereo-slam with RBPF
+- Recover a working version of monoslam with EKF
 

@@ -69,13 +69,15 @@ DECLARE_OP_FUNCTION(op_export_gps_txt);
 DECLARE_OP_FUNCTION(op_sensors_pose);
 DECLARE_OP_FUNCTION(op_camera_params);
 DECLARE_OP_FUNCTION(op_generate_3d_pointclouds);
-
+DECLARE_OP_FUNCTION(op_generate_pcd);
 
 // Declare the supported command line switches ===========
 TCLAP::CmdLine cmd("rawlog-edit", ' ', MRPT_getVersion().c_str());
 
 TCLAP::ValueArg<std::string> arg_input_file ("i","input","Input dataset (required) (*.rawlog)",true,"","dataset.rawlog",cmd);
 TCLAP::ValueArg<std::string> arg_output_file("o","output","Output dataset (*.rawlog)",false,"","dataset_out.rawlog",cmd);
+
+TCLAP::ValueArg<std::string> arg_outdir ("","out-dir","Output directory (used by some commands only)",false,".",".",cmd);
 
 TCLAP::ValueArg<std::string> arg_external_img_extension("","image-format","External image format",false,"jpg","jpg,png,pgm,...",cmd);
 
@@ -169,6 +171,13 @@ int main(int argc, char **argv)
 			"Requires: -o (or --output)\n"
 			,cmd,false));
 		ops_functors["generate-3d-pointclouds"] = &op_generate_3d_pointclouds;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","generate-pcd",
+			"Op: Generate a PointCloud Library (PCL) PCD file with the point cloud for each sensor observation that can be converted into"
+			" this representation: laser scans, 3D camera images, etc.\n"
+			"May use: --out-dir to change the output directory (default: \"./\")\n"
+			,cmd,false));
+		ops_functors["generate-pcd"] = &op_generate_pcd;
 
 		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","sensors-pose",
 			"Op: batch change the poses of sensors from a rawlog-grabber-like configuration file that specifies the pose of sensors by their sensorLabel names.\n"
