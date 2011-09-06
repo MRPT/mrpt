@@ -810,7 +810,7 @@ float  CPointsMap::compute3DMatchingRatio(
 	TMatchingPairList correspondences;
 
 	this->computeMatchingWith3D(
-		otherMap2,
+		otherMap2->getAsSimplePointsMap(),
 		otherMapPose,
 		minDistForCorr,
 		0, // maxAngularDistForCorrespondence,
