@@ -51,8 +51,7 @@ namespace mrpt
 	{
 		DEFINE_SERIALIZABLE( CLogFileRecord )
 
-
-	 public:
+	public:
         CLogFileRecord();  //!< Constructor, builds an empty record.
         virtual ~CLogFileRecord();   //!< Destructor, free all objects.
 

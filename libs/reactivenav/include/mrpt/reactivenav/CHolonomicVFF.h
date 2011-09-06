@@ -45,7 +45,6 @@ namespace mrpt
 	class REACTIVENAV_IMPEXP CLogFileRecord_VFF : public CHolonomicLogFileRecord
 	{
 		DEFINE_SERIALIZABLE( CLogFileRecord_VFF )
-
 	 public:
 
 		 /** Member data.
@@ -59,7 +58,9 @@ namespace mrpt
 	 */
 	class CHolonomicVFF : public CAbstractHolonomicReactiveMethod
 	{
-	 public:
+	public:
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+	public:
 		 /**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL.
 		   */
 		 CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE=NULL);

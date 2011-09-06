@@ -220,6 +220,8 @@ namespace mrpt
 
 		CReactiveInterfaceImplementation   &m_robot; //!< The navigator-robot interface.
 
+	public:
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 	};
   }
 }

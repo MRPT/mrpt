@@ -47,7 +47,9 @@ namespace mrpt
 	 */
 	class REACTIVENAV_IMPEXP CHolonomicND : public CAbstractHolonomicReactiveMethod
 	{
-	 public:
+	public:
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+	public:
 		 /**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL.
 		   */
 		 CHolonomicND( const mrpt::utils::CConfigFileBase *INI_FILE = NULL );

@@ -72,7 +72,6 @@ namespace mrpt
 		   */
 		 virtual void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE  ) = 0;
 
-
 	};
   }
 }
