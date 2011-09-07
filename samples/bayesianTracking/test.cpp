@@ -603,14 +603,12 @@ void  CRangeBearingParticleFilter::prediction_and_update_pfStandardProposal(
 
 void  CRangeBearingParticleFilter::initializeParticles(size_t  M)
 {
-	CParticleList::iterator		it;
-
 	clearParticles();
 	m_particles.resize(M);
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();it++)
 		it->d = new CParticleVehicleData();
 
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();it++)
 	{
 		(*it).d->x  = randomGenerator.drawUniform( VEHICLE_INITIAL_X - 2.0f, VEHICLE_INITIAL_X + 2.0f );
 		(*it).d->y  = randomGenerator.drawUniform( VEHICLE_INITIAL_Y - 2.0f, VEHICLE_INITIAL_Y + 2.0f );
@@ -627,26 +625,22 @@ void  CRangeBearingParticleFilter::initializeParticles(size_t  M)
   */
 void CRangeBearingParticleFilter::getMean( float &x, float &y, float &vx, float &vy )
 {
-	CParticleList::iterator		it;
-
 	double sumW=0;
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();it++)
 		sumW+=exp( it->log_w );
 
 	ASSERT_(sumW>0)
 
 	x = y = vx = vy = 0;
 
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();it++)
 	{
-		double w = exp(it->log_w) / sumW;
+		const double w = exp(it->log_w) / sumW;
 
 		x += (float)w * (*it).d->x;
 		y += (float)w * (*it).d->y;
 		vx+= (float)w * (*it).d->vx;
 		vy+= (float)w * (*it).d->vy;
-
-		it->log_w	= 0;
 	}
 }
 
