@@ -134,7 +134,7 @@ void  CFeatureExtraction::extractFeaturesSURF(
 		} // end if
 	} // end for
 
-	cvClearMemStorage(storage); // Free memory
+	cvReleaseMemStorage(&storage); // Free memory
 
 	if( img->nChannels != 1 )
 		cvReleaseImage( &cGrey );
@@ -217,7 +217,7 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 	} // end for
 
 
-	cvClearMemStorage(storage); // Free memory
+	cvReleaseMemStorage(&storage); // Free memory
 
 	if( img->nChannels != 1 )
 		cvReleaseImage( &cGrey );
