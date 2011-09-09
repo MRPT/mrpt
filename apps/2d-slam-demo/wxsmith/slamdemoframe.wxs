@@ -579,6 +579,12 @@
 					<handler function="OnmnuSaveLastDASelected" entry="EVT_MENU" />
 				</object>
 				<object class="separator" />
+				<object class="wxMenuItem" name="ID_MENUITEM_SAVE_RAWLOG" variable="mnuItemSaveRawlog" member="yes">
+					<label>Enable save rawlog...</label>
+					<handler function="OnmnuItemSaveRawlogSelected" entry="EVT_MENU" />
+					<checkable>1</checkable>
+				</object>
+				<object class="separator" />
 				<object class="wxMenu" name="ID_MENUITEM7" variable="MenuItem4" member="yes">
 					<label>Profiler</label>
 					<object class="wxMenuItem" name="ID_MENUITEM9" variable="MenuItem6" member="yes">

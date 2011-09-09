@@ -45,6 +45,7 @@
 
 #include <mrpt/slam.h>
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
 
 class slamdemoApp;
 
@@ -73,6 +74,7 @@ class slamdemoFrame: public wxFrame
         void OnMenuProfilerViewStats(wxCommandEvent& event);
         void OnMenuProfilerReset(wxCommandEvent& event);
         void OnmnuSaveLastDASelected(wxCommandEvent& event);
+        void OnmnuItemSaveRawlogSelected(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(slamdemoFrame)
@@ -128,6 +130,7 @@ class slamdemoFrame: public wxFrame
         static const long idMenuQuit;
         static const long ID_MENUITEM8;
         static const long ID_MENUITEM11;
+        static const long ID_MENUITEM_SAVE_RAWLOG;
         static const long ID_MENUITEM9;
         static const long ID_MENUITEM10;
         static const long ID_MENUITEM7;
@@ -160,6 +163,7 @@ class slamdemoFrame: public wxFrame
         mpWindow* plotGT;
         wxStaticText* lbDaTN;
         mpWindow* plotDaTN;
+        wxMenuItem* mnuItemSaveRawlog;
         wxToolBarToolBase* ToolBarItem6;
         mpWindow* plotIndivCompat;
         wxMenu* Menu3;
@@ -280,6 +284,9 @@ class slamdemoFrame: public wxFrame
 	      */
 		std::map<size_t,size_t>  m_estimatedIDX2realIDX;
 		std::set<size_t>  m_realIDX_already_mapped; //!< At least inserted in the map once (or more if due to errors it's more than once).
+
+		/** The output rawlog file to save simulated sensor obs (if enabled) */
+		mrpt::utils::CFileGZOutputStream  m_rawlog_out_file;
 
 		/** Historic data */
 		struct THistoric

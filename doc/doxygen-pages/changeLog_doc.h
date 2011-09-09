@@ -41,10 +41,12 @@
 	- <b>Detailed list of changes:</b>
 		- Changes in applications:
 			- navlog-viewer: Now allows exporting the global navigation map as a MATLAB script for generating vector plots.
-			- rawlog-edit: New operations: 
+			- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: New operations: 
 				- "--generate-3d-pointclouds" - <a href="http://code.google.com/p/mrpt/source/detail?r=2579" >r2579</a>
 				- "--generate-pcd": Creates one PointCloud Library (PCL) PCD file for each laser or 3D camera (Kinect) observation in a rawlog - <a href="http://code.google.com/p/mrpt/source/detail?r=2641" >r2641</a>
-			- 2d-slam-demo: New menu "Tools"->"Save last data association state" for saving observation predictions and the innovation covariance S_k for debugging or didactic purposes.
+			- <a href="http://www.mrpt.org/Application:2d-slam-demo" >2d-slam-demo</a>: New menus:
+				- "Tools"->"Save last data association state" for saving observation predictions and the innovation covariance S_k for debugging or didactic purposes.
+				- "Tools"->"Enable save rawlog..." for grabbing simulated range-bearing SLAM data sets  - <a href="http://code.google.com/p/mrpt/source/detail?r=2646" >r2646</a>
 		- Refactoring of code around the two new libraries/modules <a href="group__mrpt__graphs__grp.html" > mrpt-graphs</a> and <a href="group__mrpt__graphslam__grp.html" > mrpt-graphslam</a>: <a href="http://code.google.com/p/mrpt/source/detail?r=2632" >r2632</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2633" >r2633</a>
 			- Now all graphs abstract datatypes and algorithms are in mrpt::graphs (they were previously part of mrpt-base).
 			- And graphslam algorithms are into mrpt::graphslam, in its own library mrpt-graphslam (it was previously part of mrpt-slam).

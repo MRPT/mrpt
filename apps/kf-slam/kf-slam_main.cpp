@@ -367,6 +367,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 
 	vector<TPose3D>  meanPath; // The estimated path
 	typename traits_t::posepdf_t   robotPose;
+	const bool is_pose_3d = robotPose.state_length != 3;
 
 	std::vector<typename traits_t::lm_t>	 LMs;
 	std::map<unsigned int,CLandmark::TLandmarkID>    LM_IDs;
@@ -689,7 +690,11 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 
 					win3d->addTextMessage(
 						0.02,0.06,
-						format("Estimated pose: (x y z qr qx qy qz) = %s", robotPose.mean.asString().c_str() ),
+						format(is_pose_3d ? 
+							"Estimated pose: (x y z qr qx qy qz) = %s"
+							:
+							"Estimated pose: (x y yaw) = %s"
+							, robotPose.mean.asString().c_str() ),
 						TColorf(1,1,1), 1, MRPT_GLUT_BITMAP_HELVETICA_12 );
 
 					static vector<double> estHz_vals;
