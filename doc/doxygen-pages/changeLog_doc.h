@@ -107,6 +107,7 @@
 				- The "image display mode" is now based on glDrawPixels(), which is ~40 times faster than the old method.
 				- It now emits pre/post rendering events (via the mrpt::utils::CObservable pattern), for the user to customize the rendering process. See example display3d_custom_render
 			- [mrpt-opengl] mrpt::opengl::CTexturedObject now loads textures faster (not building mipmaps) - <a href="http://code.google.com/p/mrpt/source/detail?r=2631" >r2631</a>
+			- [mrpt-opengl] Removal of function mrpt::opengl::stock_objects::SICKLaser(), since it was seldom used, its rendering was too slow; so it does not make sense to deserve ~3Mb of source code to it - <a href="http://code.google.com/p/mrpt/source/detail?r=2649" >r2649</a>
 			- [mrpt-vision] New feature detectors: SSE2 optimized FASTER (-9,-10,-12), from libcvd by Edward Rosten <a href="http://code.google.com/p/mrpt/source/detail?r=2599" >r2599</a>
 				- mrpt::vision::CFeatureExtraction
 				- mrpt::vision::TFeatureType

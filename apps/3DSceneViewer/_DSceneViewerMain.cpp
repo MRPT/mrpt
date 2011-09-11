@@ -32,12 +32,12 @@
 #include <wx/app.h>
 
 //(*InternalHeaders(_DSceneViewerFrame)
-#include <wx/artprov.h>
+#include <wx/string.h>
+#include <wx/intl.h>
 #include <wx/bitmap.h>
 #include <wx/icon.h>
-#include <wx/intl.h>
 #include <wx/image.h>
-#include <wx/string.h>
+#include <wx/artprov.h>
 //*)
 
 #include "CDialogOptions.h"
@@ -388,25 +388,21 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     //(*Initialize(_DSceneViewerFrame)
     wxMenuItem* MenuItem2;
     wxMenu* MenuItem15;
-    wxMenu* MenuItem20;
     wxMenuItem* MenuItem1;
-    wxMenuItem* MenuItem4;
-    wxMenuItem* MenuItem13;
     wxMenu* Menu1;
     wxMenuItem* MenuItem12;
     wxMenuItem* MenuItem3;
     wxMenuBar* MenuBar1;
-    wxMenuItem* MenuItem21;
+    wxMenuItem* MenuItem4;
+    wxMenuItem* MenuItem13;
     wxMenu* Menu2;
-    wxMenu* MenuItem18;
-    wxMenuItem* MenuItem19;
 
     Create(parent, id, _("3DSceneViewer - Part of the MRPT project - Jose Luis Blanco (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetClientSize(wxSize(672,539));
     {
-    	wxIcon FrameIcon;
-    	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
-    	SetIcon(FrameIcon);
+    wxIcon FrameIcon;
+    FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
+    SetIcon(FrameIcon);
     }
     MenuBar1 = new wxMenuBar();
     Menu1 = new wxMenu();
@@ -454,7 +450,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     MenuItem13 = new wxMenuItem(Menu3, ID_MENUITEM11, _("Delete all objects"), wxEmptyString, wxITEM_NORMAL);
     Menu3->Append(MenuItem13);
     MenuItem11 = new wxMenu();
-    MenuItem12 = new wxMenuItem(MenuItem11, ID_MENUITEM9, _("SICK laser"), wxEmptyString, wxITEM_NORMAL);
+    MenuItem12 = new wxMenuItem(MenuItem11, ID_MENUITEM9, _("Simple robot model"), wxEmptyString, wxITEM_NORMAL);
     MenuItem11->Append(MenuItem12);
     Menu3->Append(ID_MENUITEM8, _("Insert stock object"), MenuItem11, wxEmptyString);
     Menu3->AppendSeparator();
@@ -1083,7 +1079,7 @@ void _DSceneViewerFrame::OnMenuAddSICK(wxCommandEvent& event)
 {
 	try
 	{
-		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::SICKLaser();
+		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::RobotPioneer();
 		m_canvas->m_openGLScene->insert( obj );
 		m_canvas->Refresh();
     }

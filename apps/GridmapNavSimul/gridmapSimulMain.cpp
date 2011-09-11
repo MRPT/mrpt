@@ -542,14 +542,6 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
 	gl_robot = mrpt::opengl::stock_objects::RobotPioneer();
 	m_canvas->m_openGLScene->insert( gl_robot );
 
-	// The scan & SICK laser are embedded into the robot,
-	//  so they move as a block:
-/*	CSetOfObjectsPtr	glSICK = opengl::stock_objects::SICKLaser();
-	glSICK->m_x = 0.10;
-	glSICK->m_y = 0;
-	glSICK->m_z = 0.30;
-	gl_robot->insert(glSICK);*/
-
 	gl_scan = mrpt::opengl::CPlanarLaserScan::Create();
 	gl_robot->insert(gl_scan);
 

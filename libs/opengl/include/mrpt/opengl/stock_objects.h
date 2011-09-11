@@ -95,10 +95,6 @@ namespace mrpt
 			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP CornerXYSimple(float scale=1.0, float lineWidth=1.0);
 
-			/** Returns a high-quality 3D model of a SICK laser scanner (Model by Miguel Angel Espada Bernal)
-			  */
-			CSetOfObjectsPtr OPENGL_IMPEXP SICKLaser();
-
 			/** Returns a simple 3D model of a PointGrey Bumblebee stereo camera.
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
 			  *  <div align="center">

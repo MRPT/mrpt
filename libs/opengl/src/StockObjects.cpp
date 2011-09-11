@@ -235,37 +235,6 @@ CSetOfObjectsPtr stock_objects::BumblebeeCamera()
 }
 
 
-// const char * SICK_LASER_MODEL_3DS_GZ
-#include "internal_SICK_model3d.h"
-/*---------------------------------------------------------------
-					SICKLaser
- ---------------------------------------------------------------*/
-CSetOfObjectsPtr stock_objects::SICKLaser()
-{
-	MRPT_START
-
-	CSetOfObjectsPtr ret = CSetOfObjects::Create();
-
-	// Save
-	const std::string tmp_fil = mrpt::system::getTempFileName() + ".gz";  // Required for the "loadFrom3DSFile" method...
-	{
-		CFileOutputStream f(tmp_fil);
-		f.WriteBuffer( SICK_LASER_MODEL_3DS_GZ, sizeof(SICK_LASER_MODEL_3DS_GZ) );
-	}
-
-	// load as gz-3ds scene:
-	C3DSScenePtr obj3d = C3DSScene::Create();
-	obj3d->loadFrom3DSFile(tmp_fil);
-	obj3d->enableExtraAmbientLight();
-
-	mrpt::system::deleteFile(tmp_fil);
-
-    ret->insert( obj3d );
-
-    return ret;
-    MRPT_END
-}
-
 CSetOfObjectsPtr stock_objects::CornerXYZSimple(float scale, float lineWidth)
 {
 	CSetOfObjectsPtr ret = CSetOfObjects::Create();

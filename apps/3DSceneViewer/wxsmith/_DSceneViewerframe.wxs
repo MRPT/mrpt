@@ -94,7 +94,7 @@
 				<object class="wxMenu" name="ID_MENUITEM8" variable="MenuItem11" member="yes">
 					<label>Insert stock object</label>
 					<object class="wxMenuItem" name="ID_MENUITEM9" variable="MenuItem12" member="no">
-						<label>SICK laser</label>
+						<label>Simple robot model</label>
 						<handler function="OnMenuAddSICK" entry="EVT_MENU" />
 					</object>
 				</object>
