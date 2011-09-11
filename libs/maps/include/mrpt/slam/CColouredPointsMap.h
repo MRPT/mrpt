@@ -196,6 +196,9 @@ namespace mrpt
 			  */
 			virtual void  getPoint( size_t index, float &x, float &y, float &z, float &R, float &G, float &B ) const;
 
+			/** Retrieves a point  */
+			unsigned long  getPoint( size_t index, float &x, float &y, float &z) const;
+
 			/** Retrieves a point color (colors range is [0,1]) */
 			void  getPointColor( size_t index, float &R, float &G, float &B ) const;
 

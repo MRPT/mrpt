@@ -8,6 +8,7 @@ List of pending stuff to be integrated into MRPT someday:
 - Fix WifiMaps... (WTF was this??)
 - doc: Finish list of dependencies
 - icp-graph-slam
+- Rewrite CPointsMap methods as CRTP, if possible.
 - Integration of PCL: generate point clouds from Kinect observation
 
 
@@ -21,4 +22,8 @@ List of pending stuff to be integrated into MRPT someday:
 - Impl FASTSLAM 2.0
 - Recover a working version of stereo-slam with RBPF
 - Recover a working version of monoslam with EKF
+- Tutorial (web): PF localization with grid maps
+- Tutorial (web): KF localization with landmarks
+- samples/CMakeLists as independent project
+
 

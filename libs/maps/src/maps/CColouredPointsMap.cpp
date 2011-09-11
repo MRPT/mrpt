@@ -438,6 +438,21 @@ void  CColouredPointsMap::TColourOptions::dumpToTextStream(CStream	&out) const
 /*---------------------------------------------------------------
 					getPoint
  ---------------------------------------------------------------*/
+unsigned long CColouredPointsMap::getPoint( size_t index, float &x, float &y, float &z) const
+{
+	if (index >= this->x.size())
+		THROW_EXCEPTION("Index out of bounds");
+
+	x = this->x[index];
+	y = this->y[index];
+	z = this->z[index];
+
+	return 1; // Weight
+}
+
+/*---------------------------------------------------------------
+					getPoint
+ ---------------------------------------------------------------*/
 void  CColouredPointsMap::getPoint( size_t index, float &x, float &y, float &z, float &R, float &G, float &B ) const
 {
 	if (index >= this->x.size())

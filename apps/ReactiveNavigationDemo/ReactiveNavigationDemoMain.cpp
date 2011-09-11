@@ -169,6 +169,16 @@ public:
 		obstacles.clear();
 		obstacles.insertObservation( &laserScan );
 
+		// Draw points:
+		vector<float> xs,ys,zs;
+		obstacles.getAllPoints(xs,ys,zs);
+
+		the_frame->lyLaserPoints->setPoints(xs,ys);
+		the_frame->lyLaserPoints->SetCoordinateBase(
+			robotSim.getX(),
+			robotSim.getY(),
+			robotSim.getPHI() );
+
 		return true;
 	}
 
@@ -176,6 +186,8 @@ public:
 	{
 
 	}
+	
+	ReactiveNavigationDemoFrame *the_frame;
 };
 
 CMyReactInterface  myReactiveInterface;
@@ -378,7 +390,9 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
 
     lyVehicle = new mpPolygon();
     lyTarget  = new mpPolygon();
+    lyLaserPoints = new mpPolygon();
 
+	plot->AddLayer( lyLaserPoints );
 	plot->AddLayer( lyVehicle );
 	plot->AddLayer( lyTarget );
 
@@ -396,6 +410,9 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
 
     lyVehicle->SetPen( wxPen(wxColour(255,0,0),2) );
     lyTarget->SetPen( wxPen(wxColour(0,0,255),2) );
+
+    lyLaserPoints->SetPen( wxPen(wxColour(255,0,0),5) );
+    lyLaserPoints->SetContinuity(false);
 
     plot->LockAspect(true);
     plot->EnableDoubleBuffer(true);
@@ -533,6 +550,8 @@ void ReactiveNavigationDemoFrame::tryConstructReactiveNavigator()
 {
 	try
 	{
+		myReactiveInterface.the_frame = this;
+
 		CConfigFileBase    *iniReactive=NULL, *configRobotIni=NULL;
 
 		// Get ini-data:

@@ -262,14 +262,11 @@ void  CPointsMap::getPointsBuffer( size_t &outPointsCount, const float *&xs, con
  ---------------------------------------------------------------*/
 void  CPointsMap::clipOutOfRangeInZ(float zMin, float zMax)
 {
-	size_t			i,n=getPointsCount();
-	vector<bool>	deletionMask;
-
-	// The deletion mask:
-	deletionMask.resize(n);
+	const size_t	n=getPointsCount();
+	vector<bool>	deletionMask(n);
 
 	// Compute it:
-	for (i=0;i<n;i++)
+	for (size_t i=0;i<n;i++)
 		deletionMask[i] = ( z[i]<zMin || z[i]>zMax );
 
 	// Perform deletion:
@@ -1475,7 +1472,7 @@ bool CPointsMap::savePCDFile(const std::string &filename, bool save_as_binary) c
 /*---------------------------------------------------------------
 						applyDeletionMask
  ---------------------------------------------------------------*/
-void  CPointsMap::applyDeletionMask( std::vector<bool> &mask )
+void  CPointsMap::applyDeletionMask( const std::vector<bool> &mask )
 {
 	ASSERT_EQUAL_( getPointsCount(), mask.size() )
 
@@ -1489,7 +1486,7 @@ void  CPointsMap::applyDeletionMask( std::vector<bool> &mask )
 		{
 			// Pt[j] <---- Pt[i]
 			this->getPointAllFieldsFast(i,Pt);
-			this->setPointAllFieldsFast(j,Pt);
+			this->setPointAllFieldsFast(j++,Pt);
 		}
 	}
 

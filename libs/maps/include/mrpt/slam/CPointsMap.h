@@ -498,7 +498,7 @@ namespace slam
 		/** Remove from the map the points marked in a bool's array as "true".
 		  * \exception std::exception If mask size is not equal to points count.
 		  */
-		void  applyDeletionMask( std::vector<bool> &mask );
+		void  applyDeletionMask( const std::vector<bool> &mask );
 
 		/** Computes the matchings between this and another 2D/3D points map.
 		   This includes finding:

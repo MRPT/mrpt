@@ -448,7 +448,6 @@ void  CReactiveNavigationSystem::performNavigationStep()
 			return;
 		}
 
-
 		// Start timer
 		executionTime.Tic();
 
@@ -465,7 +464,6 @@ void  CReactiveNavigationSystem::performNavigationStep()
 			// Clip obstacles out of the reactive method range:
 			CPoint2D    dumm(0,0);
 			WS_Obstacles.clipOutOfRange( dumm, refDistance+1.5f );
-
 
 			//  STEP3: Build TP-Obstacles and transform target location into TP-Space
 			// -----------------------------------------------------------------------------

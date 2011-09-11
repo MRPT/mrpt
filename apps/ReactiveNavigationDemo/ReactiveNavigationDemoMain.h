@@ -131,9 +131,6 @@ class ReactiveNavigationDemoFrame: public wxFrame
         //*)
 
 
-        mpBitmapLayer   *lyGridmap;
-        mpPolygon       *lyVehicle, *lyTarget;
-
 		CMyRedirector   *myRedirector;
 
 
@@ -143,6 +140,11 @@ class ReactiveNavigationDemoFrame: public wxFrame
 
 
         DECLARE_EVENT_TABLE()
+
+	public:
+        mpBitmapLayer   *lyGridmap;
+        mpPolygon       *lyVehicle, *lyTarget, *lyLaserPoints;
+
 };
 
 #endif // REACTIVENAVIGATIONDEMOMAIN_H
