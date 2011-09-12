@@ -1959,12 +1959,6 @@ add_subdirectory(otherlibs)
 add_subdirectory(libs)
 
 #-----------------------------------
-# The examples
-#-----------------------------------
-add_definitions(-DMRPT_OPENCV_SRC_DIR="${MRPT_OPENCV_SRC_DIR}")
-include(cmakemodules/DefineExamples.cmake REQUIRED)
-
-#-----------------------------------
 # The applications:
 #-----------------------------------
 SET( BUILD_APPLICATIONS ON CACHE BOOL "If you only want the MRPT libraries, disable this.")
@@ -2062,6 +2056,14 @@ MARK_AS_ADVANCED(FORCE
 	wxWidgets_USE_REL_AND_DBG
 	wxWidgets_wxrc_EXECUTABLE
 )
+
+#-----------------------------------
+# The examples
+# *Note*: This must nw be AFTER the generation of the MRPTConfig.cmake files
+#-----------------------------------
+add_definitions(-DMRPT_OPENCV_SRC_DIR="${MRPT_OPENCV_SRC_DIR}")
+SET(MRPT_DIR ${MRPT_BINARY_DIR})
+include(cmakemodules/DefineExamples.cmake REQUIRED)
 
 # ----------------------------------------------------------------------------
 #   An auxiliary function to show messages:

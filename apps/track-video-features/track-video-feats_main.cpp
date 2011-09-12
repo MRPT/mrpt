@@ -72,7 +72,10 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	bool  SHOW_RESPONSES = true;
 	bool  SHOW_FEAT_TRACKS = true;
 
-	bool  DO_SAVE_VIDEO = false;
+	bool  DO_SAVE_VIDEO  = false;
+	const double SAVE_VIDEO_FPS = 30; // If DO_SAVE_VIDEO=true, the FPS of the video file
+	const char*  SAVE_VIDEO_CODEC = "XVID"; // "XVID", "PIM1", "MJPG"
+	
 	bool  DO_HIST_EQUALIZE_IN_GRAYSCALE = false;
 	string VIDEO_OUTPUT_FILE = "./tracking_video.avi";
 
@@ -327,8 +330,8 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 				first=false;
 				if (vidWritter.open(
 						VIDEO_OUTPUT_FILE,
-						30 /* fps */, theImg.getSize(),
-						"XVID",  // PIM1: MPEG1
+						SAVE_VIDEO_FPS /* fps */, theImg.getSize(),
+						SAVE_VIDEO_CODEC,
 						true /* force color video */ ) )
 				{
 					cout << "[track-video] Saving tracking video to: " << VIDEO_OUTPUT_FILE << endl;
@@ -467,7 +470,11 @@ int main(int argc, char **argv)
 		}
 
 		// do it:
-		return DoTrackingDemo(cam);
+		const int ret = DoTrackingDemo(cam);
+		
+		win.clear();
+		mrpt::system::sleep(150); // give time to close GUI threads
+		return ret;
 	}
 	catch (std::exception &e)
 	{

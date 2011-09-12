@@ -16,6 +16,17 @@ IF(BUILD_EXAMPLES)
 	#  MACRO for samples directories
 	# ---------------------------------------------------------------
 	MACRO(GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY)
+		# Convert CMAKE_EXAMPLE_DEPS -> CMAKE_EXAMPLE_DEPS_STRIP
+		#          "mrpt-xxx mrpt-yyy" -> "xxx yyy"
+		SET(CMAKE_EXAMPLE_DEPS_STRIP "")
+		FOREACH(DEP ${CMAKE_EXAMPLE_DEPS})
+			# Only for "mrpt-XXX" libs:
+			STRING(REGEX REPLACE "mrpt-(.*)" "\\1" STRIP_DEP ${DEP})
+			IF(NOT "${STRIP_DEP}" STREQUAL "")
+				LIST(APPEND CMAKE_EXAMPLE_DEPS_STRIP ${STRIP_DEP})
+			ENDIF(NOT "${STRIP_DEP}" STREQUAL "")
+		ENDFOREACH(DEP)
+
 		FOREACH(CMAKE_MRPT_EXAMPLE_NAME ${LIST_EXAMPLES_IN_THIS_DIR})
 			#MESSAGE(STATUS "Example: ${CMAKE_MRPT_EXAMPLE_NAME}")
 			# Generate project file:

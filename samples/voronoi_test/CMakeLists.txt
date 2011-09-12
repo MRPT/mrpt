@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  @CMAKE_MRPT_EXAMPLE_SCOPE_NAME@/@CMAKE_MRPT_EXAMPLE_NAME@
+# CMake file for the MRPT example:  /voronoi_test
 #
 #  Run with "ccmake ." at the root directory, or use it as a template for 
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-SET(sampleName @CMAKE_MRPT_EXAMPLE_NAME@)
+SET(sampleName voronoi_test)
 SET(PRJ_NAME "EXAMPLE_${sampleName}")
 
 # ---------------------------------------
@@ -31,13 +31,13 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 #   The dependencies of a library are automatically added, so you only 
 #    need to specify the top-most libraries your code depend on.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED @CMAKE_EXAMPLE_DEPS_STRIP@)
+FIND_PACKAGE(MRPT REQUIRED slam;vision;gui;topography)
 
 # ---------------------------------------------
 # TARGET:
 # ---------------------------------------------
 # Define the executable target:
-ADD_EXECUTABLE(${sampleName} test.cpp @CMAKE_EXAMPLE_EXTRA_SRCS@ ) 
+ADD_EXECUTABLE(${sampleName} test.cpp  ) 
 
 SET_TARGET_PROPERTIES(
 	${sampleName} 
@@ -45,7 +45,7 @@ SET_TARGET_PROPERTIES(
 	PROJECT_LABEL "(EXAMPLE) ${sampleName}")
 
 # Add special defines needed by this example, if any:
-SET(MY_DEFS @CMAKE_EXAMPLE_EXTRA_DEFINES@)
+SET(MY_DEFS )
 IF(MY_DEFS) # If not empty
 	ADD_DEFINITIONS("-D${MY_DEFS}")
 ENDIF(MY_DEFS)
@@ -53,7 +53,7 @@ ENDIF(MY_DEFS)
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${sampleName} 
 	${MRPT_LIBS}  # This is filled by FIND_PACKAGE(MRPT ...)
-	"@CMAKE_EXAMPLE_LINK_LIBS@"  # Optional extra libs...
+	""  # Optional extra libs...
 	)
 
 # Set optimized building:
@@ -67,7 +67,7 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 #  the MRPT tree:
 # -------------------------------------------------------------------------
 IF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT") # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} @CMAKE_EXAMPLE_DEPS@) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt-slam;mrpt-vision;mrpt-gui;mrpt-topography) # Dependencies
 ENDIF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT")
 # -------------------------------------------------------------------------
 
