@@ -108,7 +108,7 @@ namespace mrpt
 		 *
 		 * \note This class acts as a wrapper class to a small subset of OpenCV functions. IplImage is the internal storage structure.
 		 *
-		 * \sa mrpt::vision, mrpt::vision::CFeatureExtractor, CSerializable, CCanvas
+		 * \sa mrpt::vision, mrpt::vision::CFeatureExtractor, mrpt::vision::CImagePyramid, CSerializable, CCanvas
 		 * \ingroup mrpt_base_grp
 		 */
 		class BASE_IMPEXP CImage : public mrpt::utils::CSerializable, public CCanvas

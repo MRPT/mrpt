@@ -43,7 +43,7 @@ namespace mrpt
 		  *  Color (RGB) or grayscale pyramids can be built from color input images; only grayscale pyramids can be built from
 		  *   grayscale images.
 		  *
-		  *  The algorithm to halve the images can be either a 1:2 decimation or a smooth filter (aritmethic mean of every 4 pixels).
+		  *  The algorithm to halve the images can be either a 1:2 decimation or a smooth filter (arithmetic mean of every 4 pixels).
 		  *
 		  *  Pyramids are built by invoking the method \a buildPyramid() or \a buildPyramidFast()
 		  *
