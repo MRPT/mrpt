@@ -115,6 +115,8 @@ CICP::TConfigParams::TConfigParams() :
 	onlyClosestCorrespondences	( true ),
 	onlyUniqueRobust			( false ),
 	maxIterations				( 40 ),
+	minAbsStep_trans		( 1e-6f ),
+	minAbsStep_rot			( 1e-6f ),
 	thresholdDist				( 0.75f ),
 	thresholdAng				( DEG2RAD(0.15f) ),
 	ALFA						( 0.50f ),
@@ -151,6 +153,9 @@ void  CICP::TConfigParams::loadFromConfigFile(
 	const std::string &section)
 {
 	MRPT_LOAD_CONFIG_VAR( maxIterations, int,			iniFile, section);
+	MRPT_LOAD_CONFIG_VAR( minAbsStep_trans, float,			iniFile, section);
+	MRPT_LOAD_CONFIG_VAR( minAbsStep_rot, float,			iniFile, section);
+
 	MRPT_LOAD_CONFIG_VAR_CAST( ICP_algorithm, int, TICPAlgorithm, iniFile, section);
 
 	MRPT_LOAD_CONFIG_VAR( thresholdDist, float,			iniFile, section);
@@ -196,6 +201,9 @@ void  CICP::TConfigParams::dumpToTextStream(CStream	&out) const
 		ICP_algorithm==icpIKF ? "icpIKF" : "(INVALID VALUE!)" );
 
 	out.printf("maxIterations                           = %i\n",maxIterations);
+	out.printf("minAbsStep_trans                        = %f\n",minAbsStep_trans);
+	out.printf("minAbsStep_rot                          = %f\n",minAbsStep_rot);
+
 	out.printf("thresholdDist                           = %f\n",thresholdDist);
 	out.printf("thresholdAng                            = %f deg\n",RAD2DEG(thresholdAng));
 	out.printf("ALFA                                    = %f\n",ALFA);
@@ -247,13 +255,13 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 	CPosePDFGaussianPtr						gaussPdf;
 	CPosePDFSOGPtr							SOG;
 
-	size_t									nCorrespondences=0;
-	float									umbral_dist,umbral_ang;
-	bool									keepApproaching;
-	CPose2D									grossEst = initialEstimationPDF.mean;
-	mrpt::utils::TMatchingPairList			correspondences,old_correspondences;
-	float									correspondencesRatio;
-	CPose2D									lastMeanPose;
+	size_t  nCorrespondences=0;
+	float   umbral_dist,umbral_ang;
+	bool    keepApproaching;
+	CPose2D	grossEst = initialEstimationPDF.mean;
+	mrpt::utils::TMatchingPairList correspondences,old_correspondences;
+	float   correspondencesRatio;
+	CPose2D lastMeanPose;
 
 	const bool onlyUniqueRobust = options.onlyUniqueRobust;
 	const bool onlyKeepTheClosest = options.onlyClosestCorrespondences;
@@ -263,7 +271,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 
 	// Asserts:
 	// -----------------
-	ASSERT_( options.ALFA>0 && options.ALFA<1 );
+	ASSERT_( options.ALFA>=0 && options.ALFA<1 );
 
 	// The algorithm output auxiliar info:
 	// -------------------------------------------------
@@ -333,9 +341,9 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 				// If matching has not changed, decrease the thresholds:
 				// --------------------------------------------------------
 				keepApproaching = true;
-				if	(!(fabs(lastMeanPose.x()-gaussPdf->mean.x())>1e-6 ||
-					fabs(lastMeanPose.y()-gaussPdf->mean.y())>1e-6 ||
-					fabs(math::wrapToPi(lastMeanPose.phi()-gaussPdf->mean.phi()))>1e-6))
+				if	(!(fabs(lastMeanPose.x()-gaussPdf->mean.x())>options.minAbsStep_trans ||
+					fabs(lastMeanPose.y()-gaussPdf->mean.y())>options.minAbsStep_trans ||
+					fabs(math::wrapToPi(lastMeanPose.phi()-gaussPdf->mean.phi()))>options.minAbsStep_rot))
 				{
 					umbral_dist		*= options.ALFA;
 					umbral_ang		*= options.ALFA;
@@ -851,13 +859,10 @@ CPosePDFPtr CICP::ICP_Method_LM(
 					mrpt::system::pause();
 #endif
 
-#define TOL_XY 		1e-9f
-#define TOL_THETA 	(0.001f * M_PIf/180.0f)
-
 					keepIteratingLM =
-						fabs(LM_delta[0])>TOL_XY ||
-						fabs(LM_delta[1])>TOL_XY ||
-						fabs(LM_delta[2])>TOL_THETA;
+						fabs(LM_delta[0])>options.minAbsStep_trans ||
+						fabs(LM_delta[1])>options.minAbsStep_trans ||
+						fabs(LM_delta[2])>options.minAbsStep_rot;
 
 					if(improved)
 					{
@@ -881,9 +886,9 @@ CPosePDFPtr CICP::ICP_Method_LM(
 				// now the conditions for the outer ICP loop
 				// --------------------------------------------------------
 				keepIteratingICP = true;
-				if	(fabs(lastMeanPose.x()-q.x())<1e-6 &&
-					fabs(lastMeanPose.y()-q.y())<1e-6 &&
-					fabs( math::wrapToPi( lastMeanPose.phi()-q.phi()) )<1e-6)
+				if	(fabs(lastMeanPose.x()-q.x())<options.minAbsStep_trans &&
+					fabs(lastMeanPose.y()-q.y())<options.minAbsStep_trans &&
+					fabs( math::wrapToPi( lastMeanPose.phi()-q.phi()) )<options.minAbsStep_rot)
 				{
 					umbral_dist		*= options.ALFA;
 					umbral_ang		*= options.ALFA;
@@ -1177,12 +1182,12 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 				// If matching has not changed, decrease the thresholds:
 				// --------------------------------------------------------
 				keepApproaching = true;
-				if	(!(fabs(lastMeanPose.x()-gaussPdf->mean.x())>1e-6 ||
-					fabs(lastMeanPose.y()-gaussPdf->mean.y())>1e-6 ||
-					fabs(lastMeanPose.z()-gaussPdf->mean.z())>1e-6 ||
-					fabs(math::wrapToPi(lastMeanPose.yaw()-gaussPdf->mean.yaw()))>1e-6 ||
-					fabs(math::wrapToPi(lastMeanPose.pitch()-gaussPdf->mean.pitch()))>1e-6 ||
-					fabs(math::wrapToPi(lastMeanPose.roll()-gaussPdf->mean.roll()))>1e-6 ))
+				if	(!(fabs(lastMeanPose.x()-gaussPdf->mean.x())>options.minAbsStep_trans ||
+					fabs(lastMeanPose.y()-gaussPdf->mean.y())>options.minAbsStep_trans ||
+					fabs(lastMeanPose.z()-gaussPdf->mean.z())>options.minAbsStep_trans ||
+					fabs(math::wrapToPi(lastMeanPose.yaw()-gaussPdf->mean.yaw()))>options.minAbsStep_rot ||
+					fabs(math::wrapToPi(lastMeanPose.pitch()-gaussPdf->mean.pitch()))>options.minAbsStep_rot ||
+					fabs(math::wrapToPi(lastMeanPose.roll()-gaussPdf->mean.roll()))>options.minAbsStep_rot ))
 				{
 					umbral_dist		*= options.ALFA;
 					umbral_ang		*= options.ALFA;

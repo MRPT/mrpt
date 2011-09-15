@@ -80,7 +80,9 @@
 				- mrpt::slam::CPointsMap::savePCDFile()
 				- mrpt::slam::CPointsMap::getPCLPointCloud()
 				- mrpt::slam::CColouredPointsMap::savePCDFile()
-			- [mrpt-slam] New configuration parameters in ICP: mrpt::slam::CICP::TConfigParams::corresponding_points_decimation  to speed-up ICP with dense point clouds that can be safely decimated.
+			- [mrpt-slam] New configuration parameters in ICP: 
+				- mrpt::slam::CICP::TConfigParams::corresponding_points_decimation  to speed-up ICP with dense point clouds that can be safely decimated.
+				- Configurable "smallest step" termination critera (which was fixed in previous MRPT versions): mrpt::slam::CICP::TConfigParams::minAbsStep_trans, mrpt::slam::CICP::TConfigParams::minAbsStep_rot  - <a href="http://code.google.com/p/mrpt/source/detail?r=2653" >r2653</a> 
 			- [mrpt-obs] In mrpt::slam::CObservation3DRangeScan - <a href="http://code.google.com/p/mrpt/source/detail?r=r2578" >r2578</a>:
 				- New data field: mrpt::slam::CObservation3DRangeScan::range_is_depth
 				- Method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() can now also recover 3D point clouds from 3D range scans not in the "Kinect" depth format.

@@ -73,19 +73,13 @@ namespace mrpt
 			class SLAM_IMPEXP TConfigParams : public utils::CLoadableOptions
 			{
 			public:
-				/** Initializer for default values:
-				  */
-				TConfigParams();
+				TConfigParams();	//!< Initializer for default values:
 
-				/** See utils::CLoadableOptions
-				  */
 				void  loadFromConfigFile(
 					const mrpt::utils::CConfigFileBase  &source,
-					const std::string &section);
+					const std::string &section); //!< See utils::CLoadableOptions
 
-				/** See utils::CLoadableOptions
-				  */
-				void  dumpToTextStream(CStream	&out) const;
+				void  dumpToTextStream(CStream	&out) const; //!<See utils::CLoadableOptions
 
 
 				/** The algorithm to use (default: icpClassic)
@@ -93,29 +87,19 @@ namespace mrpt
 				  */
 				TICPAlgorithm	ICP_algorithm;
 
-				/** The usual approach: to consider only the closest correspondence for each local point (Default to true)
-				  */
-				bool	onlyClosestCorrespondences;
+				bool	onlyClosestCorrespondences;  //!< The usual approach: to consider only the closest correspondence for each local point (Default to true)
+				bool 	onlyUniqueRobust; //! Apart of "onlyClosestCorrespondences=true", if this option is enabled only the closest correspondence for each reference point will be kept (default=false).
 
-				/** Apart of "onlyClosestCorrespondences=true", if this option is enabled only the closest correspondence for each reference point will be kept (default=false).
-				  */
-				bool 	onlyUniqueRobust;
+				/** @name Termination criteria
+				    @{ */
+				unsigned int	maxIterations;  //!< Maximum number of iterations to run.
+				float           minAbsStep_trans; //!< If the correction in all translation coordinates (X,Y,Z) is below this threshold (in meters), iterations are terminated (Default:1e-6)
+				float           minAbsStep_rot;   //!< If the correction in all rotation coordinates (yaw,pitch,roll) is below this threshold (in radians), iterations are terminated (Default:1e-6)
+				/** @} */
 
-				/** Maximum number of iterations to run.
-				  */
-				unsigned int	maxIterations;
-
-				/** Initial threshold distance for two points to become a correspondence.
-				  */
-				float	thresholdDist,thresholdAng;
-
-				/**	The scale factor for threshold everytime convergence is achieved.
-				 */
-				float	ALFA;
-
-				/** The size for threshold such that iterations will stop, since it is considered precise enough.
-				 */
-				float	smallestThresholdDist;
+				float	thresholdDist,thresholdAng; //!< Initial threshold distance for two points to become a correspondence.
+				float	ALFA;  //!< The scale factor for threshold everytime convergence is achieved.
+				float	smallestThresholdDist;  //!< The size for threshold such that iterations will stop, since it is considered precise enough.
 
 				/** This is the normalization constant \f$ \sigma^2_p \f$ that is used to scale the whole 3x3 covariance.
 				  *  This has a default value of \f$ (0.02)^2 \f$, that is, a 2cm sigma.
@@ -123,9 +107,7 @@ namespace mrpt
 				  */
 				float	covariance_varPoints;
 
-				/** Perform a RANSAC step after the ICP convergence, to obtain a better estimation of the pose PDF.
-				  */
-				bool	doRANSAC;
+				bool	doRANSAC;  //!< Perform a RANSAC step after the ICP convergence, to obtain a better estimation of the pose PDF.
 
 				/** RANSAC-step options:
 				  * \sa CICP::robustRigidTransformation
@@ -152,20 +134,16 @@ namespace mrpt
 				  */
 				float			ransac_fuseMaxDiffXY, ransac_fuseMaxDiffPhi;
 
-				/** Cauchy kernel rho, for estimating the optimal transformation covariance, in meters (default = 0.07m).
-				  */
+				/** Cauchy kernel rho, for estimating the optimal transformation covariance, in meters (default = 0.07m). */
 				float			kernel_rho;
 
-				/** Whether to use kernel_rho to smooth distances, or use distances directly (default=true)
-				  */
+				/** Whether to use kernel_rho to smooth distances, or use distances directly (default=true) */
 				bool			use_kernel;
 
-				/** The size of the perturbance in x & y used to estimate the Jacobians of the square error (in LM & IKF methods, default=0.05).
-				  */
+				/** The size of the perturbance in x & y used to estimate the Jacobians of the square error (in LM & IKF methods, default=0.05).*/
 				float			Axy_aprox_derivatives;
 
-				/** The initial value of the lambda parameter in the LM method (default=1e-4).
-				  */
+				/** The initial value of the lambda parameter in the LM method (default=1e-4). */
 				float			LM_initial_lambda;
 
 				/** Skip the computation of the covariance (saves some time) (default=false) */
