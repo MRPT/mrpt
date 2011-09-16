@@ -47,6 +47,7 @@
 			- <a href="http://www.mrpt.org/Application:2d-slam-demo" >2d-slam-demo</a>: New menus:
 				- "Tools"->"Save last data association state" for saving observation predictions and the innovation covariance S_k for debugging or didactic purposes.
 				- "Tools"->"Enable save rawlog..." for grabbing simulated range-bearing SLAM data sets  - <a href="http://code.google.com/p/mrpt/source/detail?r=2646" >r2646</a>
+			- <a href="http://www.mrpt.org/Application:track-video-features" >track-video-features</a>: New optional argument --save-video.
 		- Refactoring of code around the two new libraries/modules <a href="group__mrpt__graphs__grp.html" > mrpt-graphs</a> and <a href="group__mrpt__graphslam__grp.html" > mrpt-graphslam</a>: <a href="http://code.google.com/p/mrpt/source/detail?r=2632" >r2632</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2633" >r2633</a>
 			- Now all graphs abstract datatypes and algorithms are in mrpt::graphs (they were previously part of mrpt-base).
 			- And graphslam algorithms are into mrpt::graphslam, in its own library mrpt-graphslam (it was previously part of mrpt-slam).

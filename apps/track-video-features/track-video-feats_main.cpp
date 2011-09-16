@@ -55,7 +55,7 @@ mrpt::gui::CDisplayWindow3DPtr win;  // This is global such as an exception with
 // ------------------------------------------------------
 //		DoTrackingDemo
 // ------------------------------------------------------
-int DoTrackingDemo(CCameraSensorPtr  cam)
+int DoTrackingDemo(CCameraSensorPtr  cam, bool  DO_SAVE_VIDEO)
 {
 	win = mrpt::gui::CDisplayWindow3D::Create("Tracked features",800,600);
 
@@ -72,7 +72,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam)
 	bool  SHOW_RESPONSES = true;
 	bool  SHOW_FEAT_TRACKS = true;
 
-	bool  DO_SAVE_VIDEO  = false;
+	
 	const double SAVE_VIDEO_FPS = 30; // If DO_SAVE_VIDEO=true, the FPS of the video file
 	const char*  SAVE_VIDEO_CODEC = "XVID"; // "XVID", "PIM1", "MJPG"
 	
@@ -395,12 +395,16 @@ int main(int argc, char **argv)
 
 		// process cmd line arguments?
 
-		if (argc!=1 && argc!=2)
+		if (argc<1 || argc>3)
 		{
 			cerr << "Incorrect number of arguments.\n";
 			showUsage(argv[0]);
 			return -1;
 		}
+		
+		const bool last_arg_is_save_video = !strcmp("--save-video",argv[argc-1]);
+		if (last_arg_is_save_video)
+			argc--; // Discard last argument
 
 		if (argc==2)
 		{
@@ -470,7 +474,7 @@ int main(int argc, char **argv)
 		}
 
 		// do it:
-		const int ret = DoTrackingDemo(cam);
+		const int ret = DoTrackingDemo(cam, last_arg_is_save_video);
 		
 		win.clear();
 		mrpt::system::sleep(150); // give time to close GUI threads
@@ -495,9 +499,11 @@ void showUsage(char *cmd)
 {
 	cout <<
 		"Usage:\n"
-		"  " << cmd << "                 -> Ask the user for video source.\n"
-		"  " << cmd << " dataset.rawlog  -> Use a rawlog file.\n"
-		"  " << cmd << " video.{avi,mpg} -> Use a video file.\n"
+		"  " << cmd << " [--save-video]                -> Ask the user for video source.\n"
+		"  " << cmd << " dataset.rawlog [--save-video]  -> Use a rawlog file.\n"
+		"  " << cmd << " video.{avi,mpg}[--save-video]  -> Use a video file.\n"
 		"  " << cmd << " --help          -> Show this information.\n"
+		"  " << cmd << " If added --save-video, an video file will be created with results.\n"
 		"\n";
 }
+
