@@ -1218,7 +1218,7 @@ ELSE(MSVC OR BORLAND)
 	
 	# In Windows, link against ole32 & uuid & oleaut32, etc...
 	IF(MINGW)
-		APPEND_MRPT_LIBS(ole32 uuid oleaut32 gdi32 winmm setupapi)
+		APPEND_MRPT_LIBS(ole32 uuid oleaut32 gdi32 winmm setupapi ws2_32)
 		#ADD_DEFINITIONS(-D__MSVCRT_VERSION__=0x7000)
 	ENDIF(MINGW)
 	
