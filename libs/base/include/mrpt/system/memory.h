@@ -53,7 +53,7 @@ namespace mrpt
 #	define		mrpt_alloca( nBytes )	::alloca(nBytes)
 #else
 	// Default: Emulate with memory in the heap:
-#	define		mrpt_alloca( nBytes )	::malloc( nBytes );
+#	define		mrpt_alloca( nBytes )	::malloc( nBytes )
 #endif
 
 		/** This method must be called to "free" each memory block allocated with "system::alloca": If the block was really allocated in the stack, no operation is actually performed, otherwise it will be freed from the heap.
