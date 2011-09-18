@@ -136,6 +136,7 @@
 			- offscreen-render - A demo program to load a 3D scene and render it off-screen (in memory) at any arbitrary size, even larger than the screen  - <a href="http://code.google.com/p/mrpt/source/detail?r=r2575" >r2575</a>.
 			- display3d_custom_render
 			- captureVideoAndBuildPyr - A GUI live demo to test the effects of the options while building an image pyramid.
+			- rgbd_dataset2rawlog - A tool for convering RGB+D TUM datasets to rawlogs.
 		- New datasets:
 			- malaga-cs-fac-building.simplemap.gz - A new prebuilt simplemap of the ground floor of one Computer Science building (Malaga University) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2575" >r2575</a>.
 			- test_rtk_path.rawlog - A short sequence of 3 RTK GPS readings, for usage within unit tests of mrpt-topography

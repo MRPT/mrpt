@@ -48,7 +48,7 @@ namespace slam
 	 *      encapsules a 3D range scan measurement (e.g. from a time of flight range camera).
 	 *  This kind of observations can carry one or more of these data fields:
 	 *    - 3D point cloud (as float's instead of double's to save storage space - precision is not a problem in this case).
-	 *    - 2D range image (as a matrix): Each entry in the matrix "rangeImage(x,y)" contains the distance of the pixel (x,y), in meters.
+	 *    - 2D range image (as a matrix): Each entry in the matrix "rangeImage(ROW,COLUMN)" contains the distance of the pixel (x,y), in meters.
 	 *    - 2D intensity image (as a CImage): A logarithmic A-law compression is used to convert the original 16bit intensity to a more standard 8bit graylevel.
 	 *    - 2D confidence image (as a CImage): For each pixel, a 0x00 and a 0xFF mean the lowest and highest confidence levels, respectively.
 	 *

@@ -274,7 +274,10 @@
 	#define ASSERT_BELOWEQ_( __A, __B)  { if (__A>__B) { std::ostringstream s;s<<"ASSERT_BELOWEQ_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(s.str()) } }
 	#define ASSERT_ABOVEEQ_( __A, __B)  { if (__A<__B) { std::ostringstream s;s<<"ASSERT_ABOVEEQ_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(s.str()) } }
 
-#else
+	#define ASSERT_FILE_EXISTS_(FIL)      ASSERTMSG_( mrpt::system::fileExists(FIL), std::string("Assert file existence failed: ") + ::std::string(FIL) )
+	#define ASSERT_DIRECTORY_EXISTS_(DIR) ASSERTMSG_( mrpt::system::directoryExists(DIR), std::string("Assert directory existence failed: ") + ::std::string(DIR) )
+
+#else // MRPT_HAS_ASSERT
 #	define ASSERTMSG_(f,__ERROR_MSG)  { }
 #	define ASSERT_(f) { }
 #	define MRPT_CHECK_NORMAL_NUMBER(val) { }
@@ -285,7 +288,10 @@
 #	define ASSERT_ABOVE_( __A, __B)  { }
 #	define ASSERT_BELOWEQ_( __A, __B)  { }
 #	define ASSERT_ABOVEEQ_( __A, __B)  { }
-#endif
+
+#	define ASSERT_FILE_EXISTS_(FIL)      { }
+#	define ASSERT_DIRECTORY_EXISTS_(DIR) { }
+#endif // MRPT_HAS_ASSERT
 
 /** Defines an assertion mechanism - only when compiled in debug.
  * \note Do NOT put code that must be always executed inside this statement, but just comparisons. This is because users might require ASSERT_'s to be ignored for optimized releases.
