@@ -152,7 +152,7 @@ void rgbd2rawlog(const string &src_path, const string &out_name)
 	obs.cameraParams.fx(FOCAL);   obs.cameraParams.fy(FOCAL);
 	obs.cameraParams.cx(319.5);   obs.cameraParams.cy(239.5);
 	obs.cameraParamsIntensity = obs.cameraParams;
-	obs.relativePoseIntensityWRTDepth = mrpt::poses::CPose3D(0,0,0,0,0,0);
+	obs.relativePoseIntensityWRTDepth = mrpt::poses::CPose3D(0,0,0,DEG2RAD(-90),0,DEG2RAD(-90));  // No translation between rgb & range cameras, and rotation only due to XYZ axes conventions.
 
 	CObservationIMU obs_imu;
 	obs_imu.sensorLabel = "KINECT_ACC";
@@ -171,7 +171,11 @@ void rgbd2rawlog(const string &src_path, const string &out_name)
 		map<double,string>::const_iterator it_list_depth = find_closest( list_depth, it_list_rgb->first );
 
 		const double At = std::abs( it_list_rgb->first - it_list_depth->first );
-		if (At< (1./KINECT_FPS)*.5 )
+		if (At> (1./KINECT_FPS)*.5 )
+		{
+			cout << "\nWarning: Discarding observation for too separated RGB/D timestamps: " << At*1e3 << " ms\n";
+		}
+		else
 		{
 			// OK, we accept this RGB-DEPTH pair:
 			const double avrg_time = .5* (it_list_rgb->first + it_list_depth->first);
@@ -180,12 +184,13 @@ void rgbd2rawlog(const string &src_path, const string &out_name)
 			// RGB img:
 			obs.hasIntensityImage = true;
 			obs.intensityImage.loadFromFile( src_path + string("/") + it_list_rgb->second );
-			const string sRGBfile = mrpt::format("rgb_%.06f.png", avrg_time );
+			const string sRGBfile = mrpt::format("%.06f_rgb.png", avrg_time );
 			obs.intensityImage.saveToFile( out_img_dir + string("/") + sRGBfile );
 			obs.intensityImage.setExternalStorage(sRGBfile);
 
 			// Depth:
 			obs.hasRangeImage = true;
+			obs.rangeImage_forceResetExternalStorage();
 			mrpt::utils::CImage depth_img;
 			if (!depth_img.loadFromFile(src_path + string("/") + it_list_depth->second ))
 				throw std::runtime_error(string("Error loading depth image!: ") + it_list_depth->second);
@@ -200,6 +205,9 @@ void rgbd2rawlog(const string &src_path, const string &out_name)
 				for (unsigned int col=0;col<w;col++)
 					obs.rangeImage(row,col) = (*ptr++) * (1./5000);
 			}
+
+			const string sDepthfile = mrpt::format("%.06f_depth.bin", avrg_time );
+			obs.rangeImage_convertToExternalStorage( sDepthfile, out_img_dir + string("/") );
 
 			// save:
 			f_out << obs;

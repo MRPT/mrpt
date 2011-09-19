@@ -58,12 +58,12 @@ DECLARE_OP_FUNCTION(op_generate_3d_pointclouds)
 
 		bool processOneObservation(CObservationPtr  &obs)
 		{
-			const string label_time = format("%s_%f", obs->sensorLabel.c_str(), timestampTotime_t(obs->timestamp) );
 			if (IS_CLASS(obs, CObservation3DRangeScan ) )
 			{
 				CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(obs);
 				if (obs3D->hasRangeImage)
 				{
+					obs3D->load();  // We must be sure that depth has been loaded, if stored separately.
 					obs3D->project3DPointsFromDepthImage();
 					entries_modified++;
 				}

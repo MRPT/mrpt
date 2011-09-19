@@ -47,10 +47,10 @@ namespace slam
 	/** Declares a class derived from "CObservation" that
 	 *      encapsules a 3D range scan measurement (e.g. from a time of flight range camera).
 	 *  This kind of observations can carry one or more of these data fields:
-	 *    - 3D point cloud (as float's instead of double's to save storage space - precision is not a problem in this case).
-	 *    - 2D range image (as a matrix): Each entry in the matrix "rangeImage(ROW,COLUMN)" contains the distance of the pixel (x,y), in meters.
-	 *    - 2D intensity image (as a CImage): A logarithmic A-law compression is used to convert the original 16bit intensity to a more standard 8bit graylevel.
-	 *    - 2D confidence image (as a CImage): For each pixel, a 0x00 and a 0xFF mean the lowest and highest confidence levels, respectively.
+	 *    - 3D point cloud (as float's).
+	 *    - 2D range image (as a matrix): Each entry in the matrix "rangeImage(ROW,COLUMN)" contains a distance or a depth (in meters), depending on \a range_is_depth.
+	 *    - 2D intensity (grayscale or RGB) image (as a mrpt::utils::CImage): For SwissRanger cameras, a logarithmic A-law compression is used to convert the original 16bit intensity to a more standard 8bit graylevel.
+	 *    - 2D confidence image (as a mrpt::utils::CImage): For each pixel, a 0x00 and a 0xFF mean the lowest and highest confidence levels, respectively.
 	 *
 	 *  The coordinates of the 3D point cloud are in meters with respect to the depth camera origin of coordinates
 	 *    (in SwissRanger, the front face of the camera: a small offset ~1cm in front of the physical focal point),
@@ -64,6 +64,10 @@ namespace slam
 	 *   <img src="CObservation3DRangeScan_figRefSystem.png">
 	 *  </div>
 	 *
+	 *  In any case, check the field \a relativePoseIntensityWRTDepth, or the method \a doDepthAndIntensityCamerasCoincide()
+	 *    to determine if both frames of reference coincide, since even for Kinect cameras both can coincide if the images
+	 *    have been rectified.
+	 *
 	 *  The 2D images and matrices are stored as common images, with an up->down rows order and left->right, as usual.
 	 *   Optionally, the intensity and confidence channels can be set to delayed-load images for off-rawlog storage so it saves
 	 *   memory by having loaded in memory just the needed images. See the methods load() and unload().
@@ -76,9 +80,12 @@ namespace slam
 	 *		- mrpt::hwdrivers::CSwissRanger3DCamera
 	 *		- mrpt::hwdrivers::CKinect
 	 *
-	 *  There are two sets of calibration parameters (in some cameras, like SwissRanger, both are the same):
+	 *  There are two sets of calibration parameters:
 	 *		- cameraParams: Projection parameters of the depth camera.
 	 *		- cameraParamsIntensity: Projection parameters of the intensity (gray-level or RGB) camera.
+	 *
+	 *  In some cameras, like SwissRanger, both are the same. Also, it is possible in Kinect to rectify the range images such both cameras
+	 *   seem to coincide and then both sets of camera parameters will be identical.
 	 *
 	 *  Range data can be interpreted in two different ways depending on the 3D camera (this field is already set to the
 	 *    correct setting when grabbing observations from an mrpt::hwdrivers sensor):
@@ -192,6 +199,8 @@ namespace slam
 				return tmp;
 		}
 		void rangeImage_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir ); //!< Users won't normally want to call this, it's only used from internal MRPT programs.
+		/** Forces marking this observation as non-externally stored - it doesn't anything else apart from reseting the corresponding flag (Users won't normally want to call this, it's only used from internal MRPT programs) */
+		void rangeImage_forceResetExternalStorage() { m_rangeImage_external_stored=false; }
 		// ---------
 
 		bool hasIntensityImage; 			//!< true means the field intensityImage contains valid data
@@ -204,10 +213,16 @@ namespace slam
 		mrpt::utils::TCamera	cameraParamsIntensity;	//!< Projection parameters of the intensity (graylevel or RGB) camera.
 
 		/** Relative pose of the intensity camera wrt the depth camera (which is the coordinates origin for this observation).
-		  *  In a SwissRanger camera, this will be (0,0,0,0,0,0) since both cameras coincide.
+		  *  In a SwissRanger camera, this will be (0,0,0,-90deg,0,-90deg) since both cameras coincide.
 		  *  In a Kinect, this will include a small lateral displacement and a rotation, according to the drawing on the top of this page.
+		  *  \sa doDepthAndIntensityCamerasCoincide
 		  */
 		mrpt::poses::CPose3D    relativePoseIntensityWRTDepth;
+
+		/** Return true if \a relativePoseIntensityWRTDepth equals the pure rotation (0,0,0,-90deg,0,-90deg) (with a small comparison epsilon)
+		  * \sa relativePoseIntensityWRTDepth
+		  */
+		bool doDepthAndIntensityCamerasCoincide() const;
 
 
 		float  	maxRange;	//!< The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)

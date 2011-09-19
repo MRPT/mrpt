@@ -87,6 +87,7 @@
 			- [mrpt-obs] In mrpt::slam::CObservation3DRangeScan - <a href="http://code.google.com/p/mrpt/source/detail?r=r2578" >r2578</a>:
 				- New data field: mrpt::slam::CObservation3DRangeScan::range_is_depth
 				- Method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() can now also recover 3D point clouds from 3D range scans not in the "Kinect" depth format.
+				- New method CObservation3DRangeScan::doDepthAndIntensityCamerasCoincide()
 			- [mrpt-base] All classes derived from mrpt::utils::CObjectPtr now have a proper "value_type" typedef with the most specific data type of the class being pointed by the smart pointer, overriding the inherited, too generic, mrpt::utils::CObject. - <a href="http://code.google.com/p/mrpt/source/detail?r=2568" >r2568</a>
 			- [mrpt-base] mrpt::utils::CImage:
 				- New method mrpt::utils::CImage::getRowStride()

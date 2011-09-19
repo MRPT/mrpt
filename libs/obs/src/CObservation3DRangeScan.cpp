@@ -944,3 +944,14 @@ void CObservation3DRangeScan::rangeImage_setSize(const int H, const int W)
 	// Fall-back to normal method:
 	rangeImage.setSize(H,W);
 }
+
+// Return true if \a relativePoseIntensityWRTDepth equals the pure rotation (0,0,0,-90deg,0,-90deg) (with a small comparison epsilon)
+bool CObservation3DRangeScan::doDepthAndIntensityCamerasCoincide() const
+{
+	static const double EPSILON=1e-7;
+	static mrpt::poses::CPose3D ref_pose(0,0,0,DEG2RAD(-90),0,DEG2RAD(-90));
+
+	return
+		(relativePoseIntensityWRTDepth.m_coords.array() < EPSILON ).all() &&
+		((ref_pose.m_ROT - relativePoseIntensityWRTDepth.m_ROT).array().abs() < EPSILON).all();
+}
