@@ -310,9 +310,9 @@ void CObservationGasSensors::CMOSmodel::noise_filtering(const float &reading, co
 void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &reading, const CPose3D &sensorPose, const mrpt::system::TTimeStamp &timestamp)
 {
 	try{
-		unsigned int N;	//Memory efect delay
+		unsigned int N;	//Number of samples to delay
 
-		//update minimum reading
+		//Keep the minimum reading value
 		if (reading < min_reading)
 			min_reading = reading;
 
@@ -356,7 +356,7 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &readi
 					//Do Nothing, keep the same tauD as last observation (we are in the same decaying phase)
 				}
 
-				//Dealy effect compensation
+				//Delay effect compensation
 				N = mrpt::math::leastSquareLinearFit(last_Obs.speed ,calibrated_delay_RobotSpeeds, calibrated_delay_values,false);
 				N = round(N);
 
@@ -384,10 +384,10 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &readi
 			last_Obs.k = 1.0/tauR;
 			last_Obs.reading = reading;
 			last_Obs.timestamp = timestamp;
-			last_Obs.speed = 0;
+			last_Obs.speed = 0.0;
 			last_Obs.sensorPose = sensorPose;
-			last_Obs.estimation = reading;
-			N = 1;
+			last_Obs.estimation = reading;		//No estimation possible at this step
+			N = 1;								//Default delay (number of samples)
 
 			//populate the vector m_lastObservations
 			for (unsigned int i=0; i<lastObservations_size; i++)
