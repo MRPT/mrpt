@@ -48,16 +48,19 @@ namespace mrpt
 			icpIKF
 		};
 
-		/** Several implementations of ICP (Iterative closest point) algorithms for aligning two point maps.
+		/** Several implementations of ICP (Iterative closest point) algorithms for aligning two point maps or a point map wrt a grid map.
 		 *
-		 *   See CICP::AlignPDF for the entry point of the algorithm, and CICP::TConfigParams for all the parameters to the method.
-		 *  The algorithm has been exteneded with multihypotheses-support for the correspondences, which generates a Sum-of-Gaussians (SOG)
+		 *  CICP::AlignPDF() or CICP::Align() are the two main entry points of the algorithm.
+		 *
+		 *  To choose among existing ICP algorithms or customizing their parameters, see CICP::TConfigParams and the member \a options.
+		 *
+		 *  There exists an extension of the original ICP algorithm that provides multihypotheses-support for the correspondences, and which generates a Sum-of-Gaussians (SOG)
 		 *    PDF as output. See scanmatching::robustRigidTransformation.
 		 *
-		 * For further details on the method, check the wiki:
-		 *   http://www.mrpt.org/Scan_Matching_Algorithms
+		 * For further details on the implemented methods, check the web:
+		 *   http://www.mrpt.org/Iterative_Closest_Point_(ICP)_and_other_matching_algorithms
 		 *
-		 *  For a paper explaining the used equations, see for example:
+		 *  For a paper explaining some of the basic equations, see for example:
 		 *   J. Martinez, J. Gonzalez, J. Morales, A. Mandow, A. Garcia-Cerezo,
 		 *   "Genetic and ICP Laser Point Matching for 2D Mobile Robot Motion Estimation",
 		 *    Journal of Field Robotics, vol. 23, no. 1, 2006. ( http://babel.isa.uma.es/~jlblanco/papers/martinez2006gil.pdf )

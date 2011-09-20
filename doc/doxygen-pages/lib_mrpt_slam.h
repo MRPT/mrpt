@@ -18,8 +18,6 @@ Interesting stuff in this library:
 
 - Data association: The NN and the JCBB algorithms, as very generic templates. See data_association.h
 
-- Graph-SLAM: See the namespace mrpt::graphslam
-
 
 
 See the full list of classes in mrpt::slam. 
@@ -27,6 +25,8 @@ Note that there are many classes
 in that namespace not in the library mrpt-slam, but in libraries mrpt-slam depends
 on. However, in you set mrpt-slam as a dependence of your project, you can be safe
 all mrpt::slam classes will be available to you.
+
+See also: For Graph-SLAM, see the namespace mrpt::graphslam in the library mrpt-graphslam.
 
 
 */
