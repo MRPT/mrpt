@@ -41,8 +41,8 @@ namespace mrpt
 
 		/** A generic template for probability density distributions (PDFs).
 		  * This template is used as base for many classes in mrpt::poses
-		  *  Any derived class must implement "getMean" and "getCovarianceAndMean".
-		  *  Other methods such as "getCovariance" are implemented here for convenience.
+		  *  Any derived class must implement \a getMean() and a getCovarianceAndMean().
+		  *  Other methods such as \a getMean() or \a getCovariance() are implemented here for convenience.
 		  * \sa mprt::poses::CPosePDF, mprt::poses::CPose3DPDF, mprt::poses::CPointPDF
 		 * \ingroup mrpt_base_grp
  		  */
