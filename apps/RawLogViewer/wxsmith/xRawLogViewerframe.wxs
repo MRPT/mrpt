@@ -715,7 +715,6 @@
 					</object>
 					<object class="wxMenuItem" name="ID_MENUITEM90" variable="mnuItemEnable3DCamAutoGenPoints" member="yes">
 						<label>Enable on-the-fly generate 3D point cloud</label>
-						<checked>1</checked>
 						<checkable>1</checkable>
 					</object>
 				</object>

@@ -28,8 +28,8 @@
 #include "CScanAnimation.h"
 
 //(*InternalHeaders(CScanAnimation)
-#include <wx/intl.h>
 #include <wx/string.h>
+#include <wx/intl.h>
 //*)
 
 #include <wx/app.h>
@@ -52,7 +52,7 @@ const long CScanAnimation::ID_STATICTEXT4 = wxNewId();
 const long CScanAnimation::ID_SPINCTRL2 = wxNewId();
 const long CScanAnimation::ID_CHECKBOX1 = wxNewId();
 const long CScanAnimation::ID_BUTTON3 = wxNewId();
-const long CScanAnimation::ID_CUSTOM2 = wxNewId();
+const long CScanAnimation::ID_XY_GLCANVAS = wxNewId();
 const long CScanAnimation::ID_SLIDER1 = wxNewId();
 const long CScanAnimation::ID_STATICTEXT1 = wxNewId();
 const long CScanAnimation::ID_SPINCTRL1 = wxNewId();
@@ -80,13 +80,13 @@ using namespace std;
 CScanAnimation::CScanAnimation(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size)
 {
 	//(*Initialize(CScanAnimation)
-	wxFlexGridSizer* FlexGridSizer4;
-	wxFlexGridSizer* FlexGridSizer3;
-	wxFlexGridSizer* FlexGridSizer5;
+	wxFlexGridSizer* FlexGridSizer1;
 	wxFlexGridSizer* FlexGridSizer2;
 	wxFlexGridSizer* FlexGridSizer7;
+	wxFlexGridSizer* FlexGridSizer4;
 	wxFlexGridSizer* FlexGridSizer6;
-	wxFlexGridSizer* FlexGridSizer1;
+	wxFlexGridSizer* FlexGridSizer3;
+	wxFlexGridSizer* FlexGridSizer5;
 
 	Create(parent, wxID_ANY, _("Animate laser scans"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER, _T("wxID_ANY"));
 	FlexGridSizer1 = new wxFlexGridSizer(4, 1, 0, 0);
@@ -142,8 +142,8 @@ CScanAnimation::CScanAnimation(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	FlexGridSizer5 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer5->AddGrowableCol(0);
 	FlexGridSizer5->AddGrowableRow(0);
-	plotMap = new mpWindow(this,ID_CUSTOM2,wxDefaultPosition,wxSize(764,517),0);
-	FlexGridSizer5->Add(plotMap, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	m_plot3D = new CMyGLCanvas(this,ID_XY_GLCANVAS,wxDefaultPosition,wxDefaultSize,wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
+	FlexGridSizer5->Add(m_plot3D, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
 	FlexGridSizer2->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	FlexGridSizer3 = new wxFlexGridSizer(2, 1, 0, 0);
@@ -190,18 +190,14 @@ CScanAnimation::CScanAnimation(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	Connect(wxID_ANY,wxEVT_INIT_DIALOG,(wxObjectEventFunction)&CScanAnimation::OnInit);
 	//*)
 
-	// The point map:
-	plotMap->AddLayer( new mpScaleX() );
-	plotMap->AddLayer( new mpScaleY() );
-	plotMap->LockAspect( true);
-	plotMap->Fit(-10,10,-10,10);
+	// Initialize 3D view:
+	m_plot3D->m_openGLScene->insert( mrpt::opengl::CGridPlaneXY::Create(-50,50, -50,50, 0 /* z */, 5 /* freq */) );
+	m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(1.0 /*scale*/, 3.0 /*line width*/) );
 
-	m_lyMapPoints = new mpFXYVector(_("points"));
-	m_lyMapPoints ->SetPen( wxPen(wxColour(0,0,255),3) );
-	m_lyMapPoints ->SetContinuity( false );
-	plotMap->AddLayer( m_lyMapPoints );
+	m_gl_point_cloud = mrpt::opengl::CPointCloudColoured::Create();
+	m_gl_point_cloud->setPointSize(3.0);
 
-	plotMap->EnableDoubleBuffer(true);
+	m_plot3D->m_openGLScene->insert( m_gl_point_cloud );
 
 	m_mixlasers = cbAllowMix->GetValue();
 
@@ -246,37 +242,76 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 {
 	WX_START_TRY
 
-	CSimplePointsMap	pointMap;
+	CColouredPointsMap  pointMap;
+	pointMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
+
+	// Preprocess: make sure 3D observations are ready:
+	std::vector<CObservation3DRangeScanPtr> obs3D_to_clear;
+	for (CSensoryFrame::iterator it=sf->begin();it!=sf->end();++it)
+	{
+		(*it)->load();
+		// force generate 3D point clouds:
+		if (IS_CLASS(*it, CObservation3DRangeScan))
+		{
+			CObservation3DRangeScanPtr o= CObservation3DRangeScanPtr(*it);
+			if (o->hasRangeImage && !o->hasPoints3D)
+			{
+				o->project3DPointsFromDepthImage();
+				obs3D_to_clear.push_back(o);
+			}
+		}
+	}
+
 
 	// Mix?
 	if (m_mixlasers)
 	{
-		static std::map< std::string, CObservation2DRangeScanPtr > lstScans;
-
 		// Insert new scans:
 		mrpt::system::TTimeStamp  	tim_last = INVALID_TIMESTAMP;
 		bool						wereScans = false;
-		size_t idx=0;
-		CObservation2DRangeScanPtr obs;
-		do
+		// 2D:
 		{
-			obs = sf->getObservationByClass<CObservation2DRangeScan>(idx++);
-			if (obs)
+			size_t idx=0;
+			CObservation2DRangeScanPtr obs;
+			do
 			{
-				wereScans = true;
-				if (tim_last==INVALID_TIMESTAMP || tim_last<obs->timestamp)
-					tim_last = obs->timestamp;
+				obs = sf->getObservationByClass<CObservation2DRangeScan>(idx++);
+				if (obs)
+				{
+					wereScans = true;
+					if (tim_last==INVALID_TIMESTAMP || tim_last<obs->timestamp)
+						tim_last = obs->timestamp;
 
-				// Add to list:
-				lstScans[obs->sensorLabel] = obs;
-			}
-		} while (obs.present());
+					// Add to list:
+					m_lstScans[obs->sensorLabel] = obs;
+				}
+			} while (obs.present());
+		}
+
+		// 3D scans:
+		{
+			size_t idx=0;
+			CObservation3DRangeScanPtr obs;
+			do
+			{
+				obs = sf->getObservationByClass<CObservation3DRangeScan>(idx++);
+				if (obs)
+				{
+					wereScans = true;
+					if (tim_last==INVALID_TIMESTAMP || tim_last<obs->timestamp)
+						tim_last = obs->timestamp;
+
+					// Add to list:
+					m_lstScans[obs->sensorLabel] = obs;
+				}
+			} while (obs.present());
+		}
 
 
 		// And now insert all the observations (this includes the current ones in "sf")
 		const double largest_period = 0.2;
 		vector_string lst_to_delete;
-		for (std::map< std::string, CObservation2DRangeScanPtr >::iterator it=lstScans.begin();it!=lstScans.end();++it)
+		for (std::map< std::string, CObservationPtr >::iterator it=m_lstScans.begin();it!=m_lstScans.end();++it)
 		{
 			pointMap.insertObservation( it->second.pointer() );
 			if (tim_last!=INVALID_TIMESTAMP && fabs(mrpt::system::timeDifference( it->second->timestamp, tim_last)) > largest_period )
@@ -285,12 +320,10 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 
 		// Remove too old observations:
 		for (vector_string::iterator s=lst_to_delete.begin();s!=lst_to_delete.end();++s)
-		{
-			lstScans.erase(*s);
-		}
+			m_lstScans.erase(*s);
 
 		if (tim_last==INVALID_TIMESTAMP && wereScans)
-			lstScans.clear(); // we dont' have info
+			m_lstScans.clear(); // we dont' have info
 	}
 	else
 	{
@@ -299,11 +332,18 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 	}
 
 	// Draw points:
-	vector<float> xs,ys;
-	pointMap.getAllPoints(xs,ys);
-	m_lyMapPoints->SetData( xs, ys );
+	m_gl_point_cloud->loadFromPointsMap( &pointMap );
+	m_plot3D->Refresh();
 
-	plotMap->Refresh();
+	// Post-process: unload 3D observations.
+	for (CSensoryFrame::iterator it=sf->begin();it!=sf->end();++it)
+		(*it)->unload();
+	for (size_t i=0;i<obs3D_to_clear.size();i++)
+	{
+		obs3D_to_clear[i]->resizePoints3DVectors(0);
+		obs3D_to_clear[i]->hasPoints3D = false;
+	}
+
 
 	WX_END_TRY
 }

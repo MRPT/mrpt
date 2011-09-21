@@ -746,7 +746,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	MenuItem81->Append(MenuItem82);
 	mnuItemEnable3DCamAutoGenPoints = new wxMenuItem(MenuItem81, ID_MENUITEM90, _("Enable on-the-fly generate 3D point cloud"), wxEmptyString, wxITEM_CHECK);
 	MenuItem81->Append(mnuItemEnable3DCamAutoGenPoints);
-	mnuItemEnable3DCamAutoGenPoints->Check(true);
 	Menu6->Append(ID_MENUITEM85, _("&3D depth cameras"), MenuItem81, wxEmptyString);
 	Menu23 = new wxMenu();
 	MenuItem31 = new wxMenuItem(Menu23, ID_MENUITEM29, _("Sequence of PNG files with images..."), _("Extract all the images of the rawlog to a given directory"), wxITEM_NORMAL);
@@ -968,6 +967,10 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 
 	tree_view->ConnectSelectedItemChange( OntreeViewSelectionChanged );
 	tree_view->setWinParent(this);
+
+
+	// Force this menu item starts checked.
+	mnuItemEnable3DCamAutoGenPoints->Check(true);
 
 
 	// The graphs:
@@ -2404,28 +2407,28 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 														//this->m_gl3DRangeScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 														this->m_gl3DRangeScan->m_openGLScene->insert( mrpt::opengl::CAxis::Create(-20,-20,-20,20,20,20,1,2,true ));
 
-														mrpt::opengl::CPointCloudPtr pnts = mrpt::opengl::CPointCloud::Create();
-														pnts->enableColorFromX();
-														const TColorf red(1,0,0);
-														const TColorf yellow(1,1,0);
-														pnts->setGradientColors(red,yellow);
+														mrpt::opengl::CPointCloudColouredPtr pnts = mrpt::opengl::CPointCloudColoured::Create();
+														CColouredPointsMap  pointMap;
+														pointMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
 
 														if (obs->hasPoints3D)
 														{
 															// Assign only those points above a certain threshold:
 															const int confThreshold =   obs->hasConfidenceImage ? slid3DcamConf->GetValue() : 0;
 
-															const vector<float>  &obs_xs = obs->points3D_x;
-															const vector<float>  &obs_ys = obs->points3D_y;
-															const vector<float>  &obs_zs = obs->points3D_z;
-
 															if (confThreshold==0) // This includes when there is no confidence image.
 															{
-																pnts->setAllPoints(obs_xs,obs_ys,obs_zs);
+																pointMap.insertionOptions.minDistBetweenLaserPoints = 0; // don't drop any point
+																pointMap.insertObservation(obs.pointer());
+																pnts->loadFromPointsMap(&pointMap);
 															}
 															else
 															{
 																pnts->clear();
+
+																const vector<float>  &obs_xs = obs->points3D_x;
+																const vector<float>  &obs_ys = obs->points3D_y;
+																const vector<float>  &obs_zs = obs->points3D_z;
 
 																size_t i=0;
 
@@ -2442,7 +2445,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 																	{
 																		unsigned char conf = *ptr_lin++;
 																		if (conf>=confThreshold)
-																			pnts->insertPoint(obs_xs[i],obs_ys[i],obs_zs[i]);
+																			pnts->push_back(obs_xs[i],obs_ys[i],obs_zs[i],1,1,1);
 																	}
 																}
 															}

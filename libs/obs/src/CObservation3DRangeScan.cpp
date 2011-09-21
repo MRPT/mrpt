@@ -374,11 +374,15 @@ void CObservation3DRangeScan::load() const
 
 void CObservation3DRangeScan::unload()
 {
-	vector_strong_clear( points3D_x );
-	vector_strong_clear( points3D_y );
-	vector_strong_clear( points3D_z );
+	if (hasPoints3D && m_points3D_external_stored)
+	{
+		vector_strong_clear( points3D_x );
+		vector_strong_clear( points3D_y );
+		vector_strong_clear( points3D_z );
+	}
 
-	rangeImage.setSize(0,0);
+	if (hasRangeImage && m_rangeImage_external_stored)
+		rangeImage.setSize(0,0);
 
 	intensityImage.unload();
 	confidenceImage.unload();

@@ -50,6 +50,7 @@
 			- <a href="http://www.mrpt.org/Application:track-video-features" >track-video-features</a>: New optional argument --save-video.
 			- <a href="http://www.mrpt.org/Application:RawLogViewer" >RawLogViewer</a>:
 				- Now generates 3D point clouds on-the-fly for 3D camera data sets if the points weren't saved (obviously, only if range information is present).
+				- The "scan animation" window has become a 3D viewer which is now capable of visualizing 2D laser scans and 3D point clouds from Kinect and other 3D cameras.
 		- Refactoring of code around the two new libraries/modules <a href="group__mrpt__graphs__grp.html" > mrpt-graphs</a> and <a href="group__mrpt__graphslam__grp.html" > mrpt-graphslam</a>: <a href="http://code.google.com/p/mrpt/source/detail?r=2632" >r2632</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2633" >r2633</a>
 			- Now all graphs abstract datatypes and algorithms are in mrpt::graphs (they were previously part of mrpt-base).
 			- And graphslam algorithms are into mrpt::graphslam, in its own library mrpt-graphslam (it was previously part of mrpt-slam).

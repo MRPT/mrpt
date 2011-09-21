@@ -29,15 +29,16 @@
 #define CSCANANIMATION_H
 
 //(*Headers(CScanAnimation)
-#include <wx/sizer.h>
-#include <wx/stattext.h>
-#include <wx/textctrl.h>
-#include <wx/checkbox.h>
 #include <wx/spinctrl.h>
+#include <wx/checkbox.h>
+#include <wx/dialog.h>
+#include <wx/sizer.h>
+#include <wx/button.h>
 #include <wx/radiobut.h>
 #include <wx/slider.h>
-#include <wx/button.h>
-#include <wx/dialog.h>
+#include "MyGLCanvas.h"
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
 //*)
 
 // The "custom class" mpWindow, from the wxMathPlot libray by David Schalig
@@ -45,6 +46,7 @@
 #include <mrpt/otherlibs/mathplot/mathplot.h>
 
 #include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
 
 class CScanAnimation: public wxDialog
 {
@@ -54,28 +56,28 @@ class CScanAnimation: public wxDialog
 		virtual ~CScanAnimation();
 
 		//(*Declarations(CScanAnimation)
-		wxBoxSizer* BoxSizer4;
 		wxStaticText* StaticText22;
-		wxButton* btnStop;
-		wxRadioButton* rbLoaded;
-		wxSlider* slPos;
-		wxBoxSizer* BoxSizer5;
-		wxSpinCtrl* edDelay;
-		wxStaticText* StaticText2;
-		wxButton* btnClose;
-		wxStaticText* StaticText1;
-		wxButton* btnJump;
-		wxStaticText* lbNumScans;
-		wxButton* btnPickInput;
-		wxSpinCtrl* edIndex;
-		wxFlexGridSizer* FlexGridSizer8;
-		mpWindow* plotMap;
 		wxCheckBox* cbAllowMix;
-		wxRadioButton* rbFile;
-		wxStaticBoxSizer* StaticBoxSizer1;
-		wxStaticText* lbNumPoints;
-		wxButton* btnPlay;
+		wxFlexGridSizer* FlexGridSizer8;
+		wxButton* btnClose;
+		wxSlider* slPos;
+		wxButton* btnPickInput;
 		wxTextCtrl* edFile;
+		wxButton* btnPlay;
+		wxSpinCtrl* edIndex;
+		wxStaticText* StaticText1;
+		wxRadioButton* rbFile;
+		wxButton* btnJump;
+		wxStaticText* lbNumPoints;
+		CMyGLCanvas* m_plot3D;
+		wxStaticText* lbNumScans;
+		wxButton* btnStop;
+		wxBoxSizer* BoxSizer4;
+		wxRadioButton* rbLoaded;
+		wxStaticText* StaticText2;
+		wxSpinCtrl* edDelay;
+		wxBoxSizer* BoxSizer5;
+		wxStaticBoxSizer* StaticBoxSizer1;
 		//*)
 
 	protected:
@@ -92,7 +94,7 @@ class CScanAnimation: public wxDialog
 		static const long ID_SPINCTRL2;
 		static const long ID_CHECKBOX1;
 		static const long ID_BUTTON3;
-		static const long ID_CUSTOM2;
+		static const long ID_XY_GLCANVAS;
 		static const long ID_SLIDER1;
 		static const long ID_STATICTEXT1;
 		static const long ID_SPINCTRL1;
@@ -119,13 +121,10 @@ class CScanAnimation: public wxDialog
 
 		DECLARE_EVENT_TABLE()
 
-
-		mpFXYVector		*m_lyMapPoints;
-
 		bool			m_stop;
-
 		bool			m_mixlasers;
-
+		std::map< std::string, mrpt::slam::CObservationPtr > m_lstScans;
+		mrpt::opengl::CPointCloudColouredPtr m_gl_point_cloud;
 
 		void RebuildMaps();
 		void BuildMapAndRefresh( mrpt::slam::CSensoryFrame *sf);
