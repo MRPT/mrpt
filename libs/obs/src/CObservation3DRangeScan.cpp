@@ -374,9 +374,9 @@ void CObservation3DRangeScan::load() const
 
 void CObservation3DRangeScan::unload()
 {
-	points3D_x.clear();
-	points3D_y.clear();
-	points3D_z.clear();
+	vector_strong_clear( points3D_x );
+	vector_strong_clear( points3D_y );
+	vector_strong_clear( points3D_z );
 
 	rangeImage.setSize(0,0);
 
@@ -449,18 +449,9 @@ void CObservation3DRangeScan::points3D_convertToExternalStorage( const std::stri
 	m_points3D_external_stored = true;
 
 	// Really dealloc memory, clear() is not enough:
-	{
-		std::vector<float> dumm;
-		dumm.swap(points3D_x);
-	}
-	{
-		std::vector<float> dumm;
-		dumm.swap(points3D_y);
-	}
-	{
-		std::vector<float> dumm;
-		dumm.swap(points3D_z);
-	}
+	vector_strong_clear(points3D_x);
+	vector_strong_clear(points3D_y);
+	vector_strong_clear(points3D_z);
 }
 void CObservation3DRangeScan::rangeImage_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir )
 {
@@ -896,6 +887,16 @@ void do_project_3d_pointcloud_SSE2(const int H,const int W,const float *kys,cons
 void CObservation3DRangeScan::resizePoints3DVectors(const size_t WH)
 {
 #ifdef COBS3DRANGE_USE_MEMPOOL
+	// If WH=0 this is a clear:
+	if (!WH)
+	{
+		vector_strong_clear(points3D_x);
+		vector_strong_clear(points3D_y);
+		vector_strong_clear(points3D_z);
+		return;
+	}
+
+
 	// Request memory for the X,Y,Z buffers from the memory pool:
 	TMyPointsMemPool &pool = TMyPointsMemPool::getInstance();
 

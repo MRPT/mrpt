@@ -713,6 +713,11 @@
 						<help>Executes a Levenberg-Marquart optimization to recover the camera calibration matrix</help>
 						<handler function="OnMenuItem3DObsRecoverParams" entry="EVT_MENU" />
 					</object>
+					<object class="wxMenuItem" name="ID_MENUITEM90" variable="mnuItemEnable3DCamAutoGenPoints" member="yes">
+						<label>Enable on-the-fly generate 3D point cloud</label>
+						<checked>1</checked>
+						<checkable>1</checkable>
+					</object>
 				</object>
 				<object class="wxMenu" name="ID_MENUITEM21" variable="Menu23" member="yes">
 					<label>&amp;Images (Mono &amp;&amp; Stereo)</label>

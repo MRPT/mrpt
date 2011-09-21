@@ -228,10 +228,10 @@ void  COccupancyGridMap2D::resizeGrid(float new_x_min,float new_x_max,float new_
 	assert(0==(new_size_x % 16));
 #endif
 
-	// Reservar la nueva memoria:
-    new_map.resize(new_size_x*new_size_y, p2l(new_cells_default_value));
+	// Reserve new mem block
+	new_map.resize(new_size_x*new_size_y, p2l(new_cells_default_value));
 
-	// Copiar todas las filas del mapa antiguo dentro del nuevo:
+	// Copy all the old map rows into the new map:
 	{
 		cellType  	*dest_ptr = &new_map[extra_x_izq + extra_y_arr*new_size_x];
 		cellType  	*src_ptr  = &map[0];
@@ -249,14 +249,14 @@ void  COccupancyGridMap2D::resizeGrid(float new_x_min,float new_x_max,float new_
 		}
 	}
 
-    // Copiar ya los nuevos valores al objeto:
-    x_min = new_x_min;
-    x_max = new_x_max;
-    y_min = new_y_min;
-    y_max = new_y_max;
+	// Move new values into the new map:
+	x_min = new_x_min;
+	x_max = new_x_max;
+	y_min = new_y_min;
+	y_max = new_y_max;
 
-    size_x = new_size_x;
-    size_y = new_size_y;
+	size_x = new_size_x;
+	size_y = new_size_y;
 
 	// Free old map, replace by new one:
 	map.swap( new_map );

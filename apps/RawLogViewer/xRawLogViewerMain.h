@@ -359,6 +359,7 @@ private:
     static const long ID_MENUITEM79;
     static const long ID_MENUITEM18;
     static const long ID_MENUITEM86;
+    static const long ID_MENUITEM90;
     static const long ID_MENUITEM85;
     static const long ID_MENUITEM29;
     static const long ID_MENUITEM9;
@@ -541,6 +542,7 @@ private:
     wxMenu* Menu23;
     wxMenuItem* MenuItem28;
     wxMenuItem* MenuItem37;
+    wxMenuItem* mnuItemEnable3DCamAutoGenPoints;
     wxMenuItem* MenuItem61;
     wxToolBarToolBase* ToolBarItem8;
     wxMenu* MenuItem8;

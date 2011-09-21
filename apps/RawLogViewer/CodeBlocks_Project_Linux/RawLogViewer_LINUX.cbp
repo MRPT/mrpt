@@ -49,6 +49,8 @@
 		</Linker>
 		<Unit filename="../CAboutBox.cpp" />
 		<Unit filename="../CAboutBox.h" />
+		<Unit filename="../CFormBatchSensorPose.cpp" />
+		<Unit filename="../CFormBatchSensorPose.h" />
 		<Unit filename="../CFormChangeSensorPositions.cpp" />
 		<Unit filename="../CFormChangeSensorPositions.h" />
 		<Unit filename="../CFormEdit.cpp" />
@@ -66,9 +68,8 @@
 		<Unit filename="../CScanAnimation.h" />
 		<Unit filename="../CScanMatching.cpp" />
 		<Unit filename="../CScanMatching.h" />
-		<Unit filename="../CFormBatchSensorPose.cpp" />
-		<Unit filename="../CFormBatchSensorPose.h" />
 		<Unit filename="../wxsmith/CAboutBox.wxs" />
+		<Unit filename="../wxsmith/CFormBatchSensorPose.wxs" />
 		<Unit filename="../wxsmith/CFormChangeSensorPositions.wxs" />
 		<Unit filename="../wxsmith/CFormEdit.wxs" />
 		<Unit filename="../wxsmith/CFormMotionModel.wxs" />
@@ -77,7 +78,6 @@
 		<Unit filename="../wxsmith/COdometryParams.wxs" />
 		<Unit filename="../wxsmith/CScanMatching.wxs" />
 		<Unit filename="../wxsmith/xRawLogViewerframe.wxs" />
-		<Unit filename="../wxsmith/CFormBatchSensorPose.wxs" />
 		<Unit filename="../xRawLogViewerApp.cpp" />
 		<Unit filename="../xRawLogViewerApp.h" />
 		<Unit filename="../xRawLogViewerMain.cpp" />

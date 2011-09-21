@@ -236,10 +236,10 @@ void  CWeightedPointsMap::readFromStream(CStream &in, int version)
 void  CWeightedPointsMap::internal_clear()
 {
 	// This swap() thing is the only way to really deallocate the memory.
-	{ vector<float> empt;  x.swap(empt); }
-	{ vector<float> empt;  y.swap(empt); }
-	{ vector<float> empt;  z.swap(empt); }
-	{ vector<uint32_t> empt;  pointWeight.swap(empt); }
+	vector_strong_clear(x);
+	vector_strong_clear(y);
+	vector_strong_clear(z);
+	vector_strong_clear(pointWeight);
 
 	mark_as_modified();
 }

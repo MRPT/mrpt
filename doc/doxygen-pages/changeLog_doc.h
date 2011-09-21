@@ -48,6 +48,8 @@
 				- "Tools"->"Save last data association state" for saving observation predictions and the innovation covariance S_k for debugging or didactic purposes.
 				- "Tools"->"Enable save rawlog..." for grabbing simulated range-bearing SLAM data sets  - <a href="http://code.google.com/p/mrpt/source/detail?r=2646" >r2646</a>
 			- <a href="http://www.mrpt.org/Application:track-video-features" >track-video-features</a>: New optional argument --save-video.
+			- <a href="http://www.mrpt.org/Application:RawLogViewer" >RawLogViewer</a>:
+				- Now generates 3D point clouds on-the-fly for 3D camera data sets if the points weren't saved (obviously, only if range information is present).
 		- Refactoring of code around the two new libraries/modules <a href="group__mrpt__graphs__grp.html" > mrpt-graphs</a> and <a href="group__mrpt__graphslam__grp.html" > mrpt-graphslam</a>: <a href="http://code.google.com/p/mrpt/source/detail?r=2632" >r2632</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2633" >r2633</a>
 			- Now all graphs abstract datatypes and algorithms are in mrpt::graphs (they were previously part of mrpt-base).
 			- And graphslam algorithms are into mrpt::graphslam, in its own library mrpt-graphslam (it was previously part of mrpt-slam).
@@ -70,6 +72,8 @@
 			- [mrpt-opengl] mrpt::opengl::CText3D, a new way to display texts using OpenGL primitives instead of bitmaps.
 			- [mrpt-vision] mrpt::vision::CImagePyramid, a tool for managing pyramids of images in different octaves (each being half the size of the previous one) - <a href="http://code.google.com/p/mrpt/source/detail?r=2602" >r2602</a>
 			- [mrpt-vision] New "lightweight" image feature classes: mrpt::vision::TSimpleFeature, mrpt::vision::TSimpleFeatureList
+		- New functions:
+			- [mrpt-base] mrpt::utils::vector_strong_clear() 
 		- Changes in classes:
 			- [mrpt-maps] mrpt::slam::CPointsMap (and all derived point-cloud maps) have undergone a big code refactoring and optimizations:
 				- New method mrpt::slam::CPointsMap::addFrom() and an "operator +=" to add the points from another point map  - <a href="http://code.google.com/p/mrpt/source/detail?r=2553" >r2553</a>
@@ -152,6 +156,7 @@
 			- [mrpt-topography] Fixed an old bug in mrpt::topography::path_from_rtk_gps() (and added new unit tests to avoid the same happening in the future) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2637" >r2637</a>
 			- Example: samples/bayesianTracking: Fixed an incorrect reset of all particles weight at each iteration (Thanks "parnurzeal" for noticing!)
 			- Fixed memory leak when using SURF descriptors. Thanks "hochdorfer" for detecting and reporting the solution. - <a href="http://code.google.com/p/mrpt/source/detail?r=r2647" >r2647</a>
+			- RawLogViewer: Wrong depth to grayscale conversion while displaying 3D range observations.
 
 <br> <hr>
 

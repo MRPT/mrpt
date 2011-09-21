@@ -287,6 +287,7 @@ const long xRawLogViewerFrame::ID_MENUITEM77 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM79 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM18 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM86 = wxNewId();
+const long xRawLogViewerFrame::ID_MENUITEM90 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM85 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM29 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM9 = wxNewId();
@@ -401,7 +402,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxFlexGridSizer* FlexGridSizer12;
 	wxMenu* Menu2;
 	wxFlexGridSizer* FlexGridSizer5;
-	
+
 	Create(parent, id, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("id"));
 	SetClientSize(wxSize(700,500));
 	{
@@ -743,6 +744,9 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	MenuItem81 = new wxMenu();
 	MenuItem82 = new wxMenuItem(MenuItem81, ID_MENUITEM86, _("Recover camera params..."), _("Executes a Levenberg-Marquart optimization to recover the camera calibration matrix"), wxITEM_NORMAL);
 	MenuItem81->Append(MenuItem82);
+	mnuItemEnable3DCamAutoGenPoints = new wxMenuItem(MenuItem81, ID_MENUITEM90, _("Enable on-the-fly generate 3D point cloud"), wxEmptyString, wxITEM_CHECK);
+	MenuItem81->Append(mnuItemEnable3DCamAutoGenPoints);
+	mnuItemEnable3DCamAutoGenPoints->Check(true);
 	Menu6->Append(ID_MENUITEM85, _("&3D depth cameras"), MenuItem81, wxEmptyString);
 	Menu23 = new wxMenu();
 	MenuItem31 = new wxMenuItem(Menu23, ID_MENUITEM29, _("Sequence of PNG files with images..."), _("Extract all the images of the rawlog to a given directory"), wxITEM_NORMAL);
@@ -853,7 +857,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	mnuTree.Append(ID_MENUITEM48, _("Add action"), MenuItem45, wxEmptyString);
 	timAutoLoad.SetOwner(this, ID_TIMER1);
 	timAutoLoad.Start(50, true);
-	
+
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnbtnEditCommentsClick1);
 	Connect(ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
 	Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
@@ -2333,6 +2337,12 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 														cout << endl;
 														cout << "maxRange = " << obs->maxRange << " m" << endl;
 
+														const bool generate3Donthefly = !obs->hasPoints3D && mnuItemEnable3DCamAutoGenPoints->IsChecked();
+														if (generate3Donthefly)
+														{
+															obs->project3DPointsFromDepthImage();
+														}
+
 														cout << "Has 3D point cloud? ";
 														if (obs->hasPoints3D)
 														{
@@ -2342,6 +2352,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 															else cout << " (embedded)." << endl;
 														}
 														else	cout << "NO" << endl;
+
+														if (generate3Donthefly)
+															cout << "NOTICE: The stored observation didn't contain 3D points, but these have been generated on-the-fly just for visualization purposes.\n"
+															"(You can disable this behavior from the menu Sensors->3D depth cameras\n\n";
 
 														cout << "Has raw range data? " << (obs->hasRangeImage ? "YES": "NO");
 														if (obs->hasRangeImage)
@@ -2405,7 +2419,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 															const vector<float>  &obs_ys = obs->points3D_y;
 															const vector<float>  &obs_zs = obs->points3D_z;
 
-															if (confThreshold==0)
+															if (confThreshold==0) // This includes when there is no confidence image.
 															{
 																pnts->setAllPoints(obs_xs,obs_ys,obs_zs);
 															}
@@ -2440,6 +2454,14 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 														}
 														this->m_gl3DRangeScan->m_openGLScene->insert(pnts);
 														this->m_gl3DRangeScan->Refresh();
+
+														// Free memory:
+														if (generate3Donthefly)
+														{
+															obs->hasPoints3D = false;
+															obs->resizePoints3DVectors(0);
+														}
+
 													#endif
 
 														// Update intensity image ======
@@ -2459,7 +2481,13 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 														{
 															CImage  auxImg;
 															if (obs->hasRangeImage)
-																auxImg.setFromMatrix(obs->rangeImage);
+															{
+																// Convert to range [0,255]
+																mrpt::math::CMatrix normalized_range = obs->rangeImage;
+																const float max_rang = std::max(obs->maxRange, normalized_range.maximum() );
+																if (max_rang>0) normalized_range *= 255./max_rang;
+																auxImg.setFromMatrix(normalized_range, false /* it's in range [0,255] */);
+															}
 															else auxImg.resize(10,10, CH_GRAY, true );
 
 															wxImage *img = mrpt::gui::MRPTImage2wxImage( auxImg );

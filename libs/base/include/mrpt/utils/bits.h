@@ -204,6 +204,10 @@ namespace mrpt
 			}
 		}
 
+		/** Like calling a std::vector<>'s clear() method, but really forcing deallocating the memory. */
+		template <class T>
+		inline void vector_strong_clear(std::vector<T> & v) { std::vector<T> dummy; dummy.swap(v); }
+
 	} // End of namespace
 } // end of namespace
 
