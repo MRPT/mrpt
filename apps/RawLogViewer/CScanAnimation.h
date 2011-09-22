@@ -123,8 +123,14 @@ class CScanAnimation: public wxDialog
 
 		bool			m_stop;
 		bool			m_mixlasers;
-		std::map< std::string, mrpt::slam::CObservationPtr > m_lstScans;
-		mrpt::opengl::CPointCloudColouredPtr m_gl_point_cloud;
+
+		struct TRenderObject
+		{
+			mrpt::system::TTimeStamp       timestamp;
+			mrpt::opengl::CRenderizablePtr obj;
+		};
+		typedef std::map<std::string,TRenderObject> TListGlObjects;
+		TListGlObjects  m_gl_objects;  //!< All the observations added to the map.
 
 		void RebuildMaps();
 		void BuildMapAndRefresh( mrpt::slam::CSensoryFrame *sf);

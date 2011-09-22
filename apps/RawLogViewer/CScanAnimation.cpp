@@ -67,6 +67,7 @@ BEGIN_EVENT_TABLE(CScanAnimation,wxDialog)
 END_EVENT_TABLE()
 
 #include <mrpt/slam.h>
+#include <mrpt/opengl/CPlanarLaserScan.h> // in library mrpt-maps
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -194,11 +195,6 @@ CScanAnimation::CScanAnimation(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	m_plot3D->m_openGLScene->insert( mrpt::opengl::CGridPlaneXY::Create(-50,50, -50,50, 0 /* z */, 5 /* freq */) );
 	m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(1.0 /*scale*/, 3.0 /*line width*/) );
 
-	m_gl_point_cloud = mrpt::opengl::CPointCloudColoured::Create();
-	m_gl_point_cloud->setPointSize(3.0);
-
-	m_plot3D->m_openGLScene->insert( m_gl_point_cloud );
-
 	m_mixlasers = cbAllowMix->GetValue();
 
 }
@@ -242,9 +238,6 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 {
 	WX_START_TRY
 
-	CColouredPointsMap  pointMap;
-	pointMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
-
 	// Preprocess: make sure 3D observations are ready:
 	std::vector<CObservation3DRangeScanPtr> obs3D_to_clear;
 	for (CSensoryFrame::iterator it=sf->begin();it!=sf->end();++it)
@@ -264,75 +257,121 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 
 
 	// Mix?
-	if (m_mixlasers)
+	if (!m_mixlasers)
 	{
-		// Insert new scans:
-		mrpt::system::TTimeStamp  	tim_last = INVALID_TIMESTAMP;
-		bool						wereScans = false;
-		// 2D:
+		// if not, just clear all old objects:
+		for (TListGlObjects::iterator it = m_gl_objects.begin();it!=m_gl_objects.end();++it)
 		{
-			size_t idx=0;
-			CObservation2DRangeScanPtr obs;
-			do
-			{
-				obs = sf->getObservationByClass<CObservation2DRangeScan>(idx++);
-				if (obs)
-				{
-					wereScans = true;
-					if (tim_last==INVALID_TIMESTAMP || tim_last<obs->timestamp)
-						tim_last = obs->timestamp;
-
-					// Add to list:
-					m_lstScans[obs->sensorLabel] = obs;
-				}
-			} while (obs.present());
+			TRenderObject &ro = it->second;
+			m_plot3D->m_openGLScene->removeObject(ro.obj);  // Remove from the opengl viewport
 		}
-
-		// 3D scans:
-		{
-			size_t idx=0;
-			CObservation3DRangeScanPtr obs;
-			do
-			{
-				obs = sf->getObservationByClass<CObservation3DRangeScan>(idx++);
-				if (obs)
-				{
-					wereScans = true;
-					if (tim_last==INVALID_TIMESTAMP || tim_last<obs->timestamp)
-						tim_last = obs->timestamp;
-
-					// Add to list:
-					m_lstScans[obs->sensorLabel] = obs;
-				}
-			} while (obs.present());
-		}
-
-
-		// And now insert all the observations (this includes the current ones in "sf")
-		const double largest_period = 0.2;
-		vector_string lst_to_delete;
-		for (std::map< std::string, CObservationPtr >::iterator it=m_lstScans.begin();it!=m_lstScans.end();++it)
-		{
-			pointMap.insertObservation( it->second.pointer() );
-			if (tim_last!=INVALID_TIMESTAMP && fabs(mrpt::system::timeDifference( it->second->timestamp, tim_last)) > largest_period )
-				lst_to_delete.push_back(it->second->sensorLabel);
-		}
-
-		// Remove too old observations:
-		for (vector_string::iterator s=lst_to_delete.begin();s!=lst_to_delete.end();++s)
-			m_lstScans.erase(*s);
-
-		if (tim_last==INVALID_TIMESTAMP && wereScans)
-			m_lstScans.clear(); // we dont' have info
-	}
-	else
-	{
-		// Add the current laser:
-		sf->insertObservationsInto( &pointMap );
+		m_gl_objects.clear();
 	}
 
-	// Draw points:
-	m_gl_point_cloud->loadFromPointsMap( &pointMap );
+	// Insert new scans:
+	mrpt::system::TTimeStamp  	tim_last = INVALID_TIMESTAMP;
+	bool						wereScans = false;
+	for (CSensoryFrame::iterator it=sf->begin();it!=sf->end();++it)
+	{
+		if (IS_CLASS(*it,CObservation2DRangeScan))
+		{
+			CObservation2DRangeScanPtr obs = CObservation2DRangeScanPtr(*it);
+			wereScans = true;
+			if (tim_last==INVALID_TIMESTAMP || tim_last<obs->timestamp)
+				tim_last = obs->timestamp;
+
+			// Already in the map with the same sensor label?
+			TListGlObjects::iterator it_gl = m_gl_objects.find(obs->sensorLabel);
+			if (it_gl!=m_gl_objects.end())
+			{
+				// Update existing object:
+				TRenderObject &ro = it_gl->second;
+				CPlanarLaserScanPtr(ro.obj)->setScan(*obs);
+				ro.timestamp = obs->timestamp;
+			}
+			else
+			{
+				// Create object:
+				CPlanarLaserScanPtr gl_obj = CPlanarLaserScan::Create();
+				gl_obj->setScan(*obs);
+
+				TRenderObject ro;
+				ro.obj = gl_obj;
+				ro.timestamp = obs->timestamp;
+				m_gl_objects[obs->sensorLabel]=ro;
+				m_plot3D->m_openGLScene->insert( gl_obj );
+			}
+		}
+		else
+		if (IS_CLASS(*it,CObservation3DRangeScan))
+		{
+			CObservation3DRangeScanPtr obs = CObservation3DRangeScanPtr(*it);
+			wereScans = true;
+			if (tim_last==INVALID_TIMESTAMP || tim_last<obs->timestamp)
+				tim_last = obs->timestamp;
+
+			CColouredPointsMap  pointMap;
+			pointMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
+			pointMap.insertionOptions.minDistBetweenLaserPoints = 0;
+
+			pointMap.insertObservation( obs.pointer() );
+
+			// Already in the map with the same sensor label?
+			TListGlObjects::iterator it_gl = m_gl_objects.find(obs->sensorLabel);
+			if (it_gl!=m_gl_objects.end())
+			{
+				// Update existing object:
+				TRenderObject &ro = it_gl->second;
+				CPointCloudColouredPtr gl_obj = CPointCloudColouredPtr(ro.obj);
+				gl_obj->loadFromPointsMap(&pointMap);
+				ro.timestamp = obs->timestamp;
+			}
+			else
+			{
+				// Create object:
+				CPointCloudColouredPtr gl_obj = CPointCloudColoured::Create();
+				gl_obj->setPointSize(3.0);
+				gl_obj->loadFromPointsMap(&pointMap);
+
+				TRenderObject ro;
+				ro.obj = gl_obj;
+				ro.timestamp = obs->timestamp;
+				m_gl_objects[obs->sensorLabel]=ro;
+				m_plot3D->m_openGLScene->insert( gl_obj );
+			}
+
+
+//
+			// Add to list:
+//				m_lstScans[obs->sensorLabel] = obs;
+		}
+	}
+
+	// Check what observations are too old and must be deleted:
+	const double largest_period = 0.2;
+	vector_string lst_to_delete;
+	for (TListGlObjects::iterator it=m_gl_objects.begin();it!=m_gl_objects.end();++it)
+	{
+		TRenderObject &ro = it->second;
+
+		if ((tim_last==INVALID_TIMESTAMP && wereScans)  // Scans without timestamps
+			||
+			(tim_last!=INVALID_TIMESTAMP && fabs(mrpt::system::timeDifference( ro.timestamp, tim_last)) > largest_period ))
+		{
+			lst_to_delete.push_back(it->first);
+		}
+	}
+
+	// Remove too old observations:
+	for (vector_string::iterator s=lst_to_delete.begin();s!=lst_to_delete.end();++s)
+	{
+		TRenderObject &ro = m_gl_objects[*s];
+
+		m_plot3D->m_openGLScene->removeObject(ro.obj);  // Remove from the opengl viewport
+		m_gl_objects.erase(*s); // and from my list
+	}
+
+	// Force refresh view:
 	m_plot3D->Refresh();
 
 	// Post-process: unload 3D observations.
