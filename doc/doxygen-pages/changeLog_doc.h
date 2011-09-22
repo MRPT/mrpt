@@ -31,7 +31,6 @@
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</i></p>
 
-
  <a name="0.9.5">
   <h2>Version 0.9.5 - (Under development) </h2></a>
 	- <b>Most important changes:</b>
@@ -86,6 +85,7 @@
 				- mrpt::slam::CPointsMap::savePCDFile()
 				- mrpt::slam::CPointsMap::getPCLPointCloud()
 				- mrpt::slam::CColouredPointsMap::savePCDFile()
+			- [mrpt-maps] mrpt::opengl::CPlanarLaserScan no longer has its fields m_enable_points, m_enable_line, m_enable_surface exposed as public, since that breaks the OpenGL display-lists update mechanism. Instead, use the methods enablePoints(), enableLine(), enableSurface(). - <a href="http://code.google.com/p/mrpt/source/detail?r=2667" >r2667</a>
 			- [mrpt-slam] New configuration parameters in ICP: 
 				- mrpt::slam::CICP::TConfigParams::corresponding_points_decimation  to speed-up ICP with dense point clouds that can be safely decimated.
 				- Configurable "smallest step" termination critera (which was fixed in previous MRPT versions): mrpt::slam::CICP::TConfigParams::minAbsStep_trans, mrpt::slam::CICP::TConfigParams::minAbsStep_rot  - <a href="http://code.google.com/p/mrpt/source/detail?r=2653" >r2653</a> 

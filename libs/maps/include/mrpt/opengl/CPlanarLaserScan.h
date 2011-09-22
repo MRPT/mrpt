@@ -48,12 +48,15 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CPlanarLaserScan, CRenderizableDisplayList, MAPS_IMPEXP )
 
 		/** This object renders a 2D laser scan by means of three elements: the points, the line along end-points and the 2D scanned surface.
-		  *  You can change the public members :
-		  *    - CPlanarLaserScan::m_enable_points
-		  *    - CPlanarLaserScan::m_enable_line
-		  *    - CPlanarLaserScan::m_enable_surface
-		  *  To change the final result. More methods allow further customization of the 3D object.
-		  *  The scan is passed to "CPlanarLaserScan::setScan"
+		  *
+		  *  By default, all those three elements are drawn, but you can individually switch them on/off with:
+		  *    - CPlanarLaserScan::enablePoints()
+		  *    - CPlanarLaserScan::enableLine()
+		  *    - CPlanarLaserScan::enableSurface()
+		  *
+		  *  To change the final result, more methods allow further customization of the 3D object (color of each element, etc.).
+		  *
+		  *  The scan is passed or updated through CPlanarLaserScan::setScan()
 		  *
 		  *  \note The laser points are projected at the sensor pose as given in the "scan" object, so this CPlanarLaserScan object should be placed at the exact pose of the robot coordinates origin.
 		  *
@@ -77,12 +80,21 @@ namespace mrpt
 
             float	m_plane_R,m_plane_G,m_plane_B,m_plane_A;
 
-		public:
-			void clear();	//!<< Clear the scan
-
 			bool	m_enable_points;
 			bool	m_enable_line;
 			bool	m_enable_surface;
+
+		public:
+			void clear();	//!<< Clear the scan
+
+			/** Show or hides the scanned points \sa sePointsWidth, setPointsColor*/
+			inline void enablePoints(bool enable=true) { m_enable_points=enable; CRenderizableDisplayList::notifyChange(); }
+
+			/** Show or hides lines along all scanned points \sa setLineWidth, setLineColor*/
+			inline void enableLine(bool enable=true) { m_enable_line=enable; CRenderizableDisplayList::notifyChange(); }
+
+			/** Show or hides the scanned area as a 2D surface \sa setSurfaceColor */
+			inline void enableSurface(bool enable=true) { m_enable_surface=enable; CRenderizableDisplayList::notifyChange(); }
 
 			void setLineWidth(float w) { m_line_width=w; }
 			float getLineWidth() const { return  m_line_width;}

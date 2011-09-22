@@ -48,5 +48,9 @@ Below follows a table with the preview of most rendering primitive classes:
 </table>
 </div>
 
+Note: The following extra OpenGL classes are provided by other libraries:
+* mrpt::opengl::CAngularObservationMesh (In mrpt-maps)
+* mrpt::opengl::CPlanarLaserScan (In mrpt-maps)
+
 */
 
