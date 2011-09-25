@@ -47,6 +47,7 @@
 				- "Tools"->"Save last data association state" for saving observation predictions and the innovation covariance S_k for debugging or didactic purposes.
 				- "Tools"->"Enable save rawlog..." for grabbing simulated range-bearing SLAM data sets  - <a href="http://code.google.com/p/mrpt/source/detail?r=2646" >r2646</a>
 				- Now shows missing running total of true positives/negatives in data association (Thanks Kasra Khosoussi!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2669" >r2669</a>
+				- Added a new graph with number of JCBB iterations.
 			- <a href="http://www.mrpt.org/Application:track-video-features" >track-video-features</a>: New optional argument --save-video.
 			- <a href="http://www.mrpt.org/Application:RawLogViewer" >RawLogViewer</a>:
 				- Now generates 3D point clouds on-the-fly for 3D camera data sets if the points weren't saved (obviously, only if range information is present).

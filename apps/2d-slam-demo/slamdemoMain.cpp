@@ -142,6 +142,9 @@ const long slamdemoFrame::ID_PANEL2 = wxNewId();
 const long slamdemoFrame::ID_STATICTEXT8 = wxNewId();
 const long slamdemoFrame::ID_PANEL13 = wxNewId();
 const long slamdemoFrame::ID_CUSTOM10 = wxNewId();
+const long slamdemoFrame::ID_STATICTEXT14 = wxNewId();
+const long slamdemoFrame::ID_PANEL17 = wxNewId();
+const long slamdemoFrame::ID_CUSTOM13 = wxNewId();
 const long slamdemoFrame::ID_PANEL12 = wxNewId();
 const long slamdemoFrame::ID_NOTEBOOK1 = wxNewId();
 const long slamdemoFrame::ID_MENUITEM1 = wxNewId();
@@ -207,6 +210,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     wxGridSizer* GridSizer11;
     wxGridSizer* GridSizer5;
     wxFlexGridSizer* FlexGridSizer3;
+    wxGridSizer* GridSizer14;
     wxGridSizer* GridSizer10;
     wxGridSizer* GridSizer8;
     wxMenuBar* MenuBar1;
@@ -433,7 +437,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     FlexGridSizer9->Fit(Panel2);
     FlexGridSizer9->SetSizeHints(Panel2);
     Panel11 = new wxPanel(Notebook1, ID_PANEL12, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL12"));
-    FlexGridSizer2 = new wxFlexGridSizer(2, 1, 0, 0);
+    FlexGridSizer2 = new wxFlexGridSizer(4, 1, 0, 0);
     FlexGridSizer2->AddGrowableCol(0);
     FlexGridSizer2->AddGrowableRow(1);
     Panel12 = new wxPanel(Panel11, ID_PANEL13, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL13"));
@@ -449,6 +453,19 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     FlexGridSizer2->Add(Panel12, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
     plotStatTime = new mpWindow(Panel11,ID_CUSTOM10,wxDefaultPosition,wxDefaultSize,0);
     FlexGridSizer2->Add(plotStatTime, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 3);
+    Panel17 = new wxPanel(Panel11, ID_PANEL17, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL17"));
+    Panel17->SetBackgroundColour(wxColour(255,255,0));
+    GridSizer14 = new wxGridSizer(0, 1, 0, 0);
+    StaticText5 = new wxStaticText(Panel17, ID_STATICTEXT14, _("JCBB iterations (if used)"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT14"));
+    wxFont StaticText5Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    StaticText5->SetFont(StaticText5Font);
+    GridSizer14->Add(StaticText5, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    Panel17->SetSizer(GridSizer14);
+    GridSizer14->Fit(Panel17);
+    GridSizer14->SetSizeHints(Panel17);
+    FlexGridSizer2->Add(Panel17, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
+    plotDaJCBB = new mpWindow(Panel11,ID_CUSTOM13,wxDefaultPosition,wxDefaultSize,0);
+    FlexGridSizer2->Add(plotDaJCBB, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 3);
     Panel11->SetSizer(FlexGridSizer2);
     FlexGridSizer2->Fit(Panel11);
     FlexGridSizer2->SetSizeHints(Panel11);
@@ -579,6 +596,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
 	INIT_PLOT_TIME(plotDaFP)
 	INIT_PLOT_TIME(plotDaTN)
 	INIT_PLOT_TIME(plotDaTP)
+	INIT_PLOT_TIME(plotDaJCBB)
 
 	vector<float> robot_shape_xs(3);
 	vector<float> robot_shape_ys(3);
@@ -731,6 +749,8 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
 	INIT_DA_PLOT(FN);
 	INIT_DA_PLOT(TP);
 	INIT_DA_PLOT(TN);
+
+	INIT_DA_PLOT(JCBB);
 
 	// Set some default params:
 	m_SLAM.options.std_sensor_range = 0.03;
@@ -1451,10 +1471,18 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap )
 			totalFN+=m_historicData[i].da_false_neg;
 		StaticText7->SetLabel(wxString::Format(wxT("False negatives: %u"),totalFN));
 
+		// JCBB iterations --------------
+		if (m_lyDaJCBB->GetDataLength()>=N)
+			m_lyDaJCBB->Clear();
+		for (size_t i=m_lyDaJCBB->GetDataLength();i<N;i++)
+			m_lyDaJCBB->AppendDataPoint( i, m_historicData[i].jcbb_iters );
+
 		plotDaFN->Fit(); plotDaFN->Refresh();
 		plotDaFP->Fit(); plotDaFP->Refresh();
 		plotDaTN->Fit(); plotDaTN->Refresh();
 		plotDaTP->Fit(); plotDaTP->Refresh();
+
+		plotDaJCBB->Fit(); plotDaJCBB->Refresh();
 	}
 
 }

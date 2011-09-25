@@ -119,6 +119,9 @@ class slamdemoFrame: public wxFrame
         static const long ID_STATICTEXT8;
         static const long ID_PANEL13;
         static const long ID_CUSTOM10;
+        static const long ID_STATICTEXT14;
+        static const long ID_PANEL17;
+        static const long ID_CUSTOM13;
         static const long ID_PANEL12;
         static const long ID_NOTEBOOK1;
         static const long ID_MENUITEM1;
@@ -170,6 +173,7 @@ class slamdemoFrame: public wxFrame
         mpWindow* plotDaTP;
         wxMenu* MenuItem4;
         wxPanel* Panel16;
+        mpWindow* plotDaJCBB;
         wxPanel* Panel12;
         mpWindow* plotMap;
         wxPanel* Panel9;
@@ -202,6 +206,7 @@ class slamdemoFrame: public wxFrame
         wxToolBarToolBase* ToolBarItem1;
         wxMenuItem* mnuRun;
         wxTimer timSimul;
+        wxStaticText* StaticText5;
         wxMenuItem* mnuOneStep;
         wxStaticText* StaticText2;
         wxNotebook* Notebook1;
@@ -214,6 +219,7 @@ class slamdemoFrame: public wxFrame
         wxMenuItem* mnuSaveLastDA;
         wxToolBarToolBase* ToolBarItem8;
         wxMenuItem* mnuRunBatch;
+        wxPanel* Panel17;
         wxMenuItem* MenuItem8;
         //*)
 
@@ -265,6 +271,8 @@ class slamdemoFrame: public wxFrame
 		mpFXYVector	 *m_lyDaFN;
 		mpFXYVector	 *m_lyDaTP;
 		mpFXYVector	 *m_lyDaTN;
+
+		mpFXYVector	 *m_lyDaJCBB;
 
 
 		/** The main object which handles all 2D-EKF SLAM */
