@@ -90,6 +90,9 @@ the University of Malaga.
   - A few new classes to handle WiFi-signal strength receivers and build 
     maps out of such observations: mrpt::slam::CObservationWirelessPower, 
     mrpt::hwdrivers::CWirelessPower and mrpt::slam::CWirelessPowerGridMap2D
+    
+*  Kasra Khosoussi (K.N.Toosi University, Iran)
+  - Patches to improve the JCBB data association implementation.
 
 Several bug reports have been provided from MRPT users world-wide. We kindly thank all of
 them for this valuable feedback, and they are usually mentioned in changelogs.

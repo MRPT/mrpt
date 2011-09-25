@@ -215,7 +215,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     wxMenu* Menu2;
     wxGridSizer* GridSizer12;
     wxFlexGridSizer* FlexGridSizer5;
-
+    
     Create(parent, wxID_ANY, _("2D SLAM Demo - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
     {
     wxIcon FrameIcon;
@@ -523,7 +523,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     timSimul.SetOwner(this, ID_TIMER1);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
-
+    
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&slamdemoFrame::OnbtnResetClicked);
     Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&slamdemoFrame::OnbtnOneStepClicked);
     Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&slamdemoFrame::OnbtnRunClicked);
@@ -1412,11 +1412,22 @@ void slamdemoFrame::updateAllGraphs(bool alsoGTMap )
 		for (size_t i=m_lyDaTP->GetDataLength();i<N;i++)
 			m_lyDaTP->AppendDataPoint( i, m_historicData[i].da_true_pos );
 
+		unsigned int totalTP=0;
+		for (size_t i=0;i<N;i++)
+			totalTP+=m_historicData[i].da_true_pos;
+		lbDaTP->SetLabel(wxString::Format(wxT("True positives: %u"),totalTP));
+
 		// DA True negatives --------------
 		if (m_lyDaTN->GetDataLength()>=N)
 			m_lyDaTN->Clear();
 		for (size_t i=m_lyDaTN->GetDataLength();i<N;i++)
 			m_lyDaTN->AppendDataPoint( i, m_historicData[i].da_true_neg );
+
+		unsigned int totalTN=0;
+		for (size_t i=0;i<N;i++)
+			totalTN+=m_historicData[i].da_true_neg;
+		lbDaTN->SetLabel(wxString::Format(wxT("True negatives: %u"),totalTN));
+
 
 		// DA false positives --------------
 		if (m_lyDaFP->GetDataLength()>=N)

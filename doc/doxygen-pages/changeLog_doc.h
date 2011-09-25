@@ -46,6 +46,7 @@
 			- <a href="http://www.mrpt.org/Application:2d-slam-demo" >2d-slam-demo</a>: New menus:
 				- "Tools"->"Save last data association state" for saving observation predictions and the innovation covariance S_k for debugging or didactic purposes.
 				- "Tools"->"Enable save rawlog..." for grabbing simulated range-bearing SLAM data sets  - <a href="http://code.google.com/p/mrpt/source/detail?r=2646" >r2646</a>
+				- Now shows missing running total of true positives/negatives in data association (Thanks Kasra Khosoussi!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2669" >r2669</a>
 			- <a href="http://www.mrpt.org/Application:track-video-features" >track-video-features</a>: New optional argument --save-video.
 			- <a href="http://www.mrpt.org/Application:RawLogViewer" >RawLogViewer</a>:
 				- Now generates 3D point clouds on-the-fly for 3D camera data sets if the points weren't saved (obviously, only if range information is present).
@@ -89,6 +90,7 @@
 			- [mrpt-slam] New configuration parameters in ICP: 
 				- mrpt::slam::CICP::TConfigParams::corresponding_points_decimation  to speed-up ICP with dense point clouds that can be safely decimated.
 				- Configurable "smallest step" termination critera (which was fixed in previous MRPT versions): mrpt::slam::CICP::TConfigParams::minAbsStep_trans, mrpt::slam::CICP::TConfigParams::minAbsStep_rot  - <a href="http://code.google.com/p/mrpt/source/detail?r=2653" >r2653</a> 
+			- [mrpt-slam] Data association: JCBB implementation in mrpt::slam::data_association_full_covariance() is now more efficient by skipping some unnecesary B&B iterations (Thanks Kasra Khosoussi!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2669" >r2669</a>
 			- [mrpt-obs] In mrpt::slam::CObservation3DRangeScan - <a href="http://code.google.com/p/mrpt/source/detail?r=r2578" >r2578</a>:
 				- New data field: mrpt::slam::CObservation3DRangeScan::range_is_depth
 				- Method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() can now also recover 3D point clouds from 3D range scans not in the "Kinect" depth format.

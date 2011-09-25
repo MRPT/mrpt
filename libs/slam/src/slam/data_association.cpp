@@ -206,39 +206,47 @@ void JCBB_recursive(
 		const observation_index_t obsIdx = curObsIdx;
 
 		const size_t nPreds = results.indiv_compatibility.getRowCount();
+
+		// Can we do it better than the current "results.associations"?
+		// This can be checked by counting the potential new pairings+the so-far established ones.
+		//    Matlab: potentials  = pairings(compatibility.AL(i+1:end))
+		// Moved up by Kasra Khosoussi
+		const size_t potentials = std::accumulate( results.indiv_compatibility_counts.begin()+(obsIdx+1), results.indiv_compatibility_counts.end(),0 );
 		for (prediction_index_t predIdx=0;predIdx<nPreds;predIdx++)
 		{
-			if ( results.indiv_compatibility(predIdx,obsIdx) )
+			if ((info.currentAssociation.size() + potentials) >= results.associations.size())
 			{
 				// Only if predIdx is NOT already assigned:
-				bool already_asigned = false;
-				for (map<size_t,size_t>::const_iterator itS=info.currentAssociation.begin();itS!=info.currentAssociation.end();++itS)
+				if ( results.indiv_compatibility(predIdx,obsIdx) )
 				{
-					if (itS->second==predIdx)
+					// Only if predIdx is NOT already assigned:
+					bool already_asigned = false;
+					for (map<size_t,size_t>::const_iterator itS=info.currentAssociation.begin();itS!=info.currentAssociation.end();++itS)
 					{
-						already_asigned = true;
-						break;
+						if (itS->second==predIdx)
+						{
+							already_asigned = true;
+							break;
+						}
 					}
-				}
-				if (!already_asigned)
-				{
-					// Launch a new recursive line for this hipothesis:
-					TAuxDataRecursiveJCBB new_info = info;
-					new_info.currentAssociation[ curObsIdx ] = predIdx;
 
-					results.nNodesExploredInJCBB++;
+					if (!already_asigned)
+					{
+						// Launch a new recursive line for this hipothesis:
+						TAuxDataRecursiveJCBB new_info = info;
+						new_info.currentAssociation[ curObsIdx ] = predIdx;
 
-					JCBB_recursive<T,METRIC>(
-						Z_observations_mean, Y_predictions_mean, Y_predictions_cov,
-						results, new_info, curObsIdx+1);
+						results.nNodesExploredInJCBB++;
+
+						JCBB_recursive<T,METRIC>(
+							Z_observations_mean, Y_predictions_mean, Y_predictions_cov,
+							results, new_info, curObsIdx+1);
+					}
 				}
 			}
 		}
 
 		// Can we do it better than the current "results.associations"?
-		// This can be checked by counting the potential new pairings+the so-far established ones.
-		//    Matlab: potentials  = pairings(compatibility.AL(i+1:end))
-		const size_t potentials = std::accumulate( results.indiv_compatibility_counts.begin()+(obsIdx+1), results.indiv_compatibility_counts.end(),0 );
 		if ((info.currentAssociation.size() + potentials) >= results.associations.size() )
 		{
 			// Yes we can </obama>
