@@ -218,7 +218,15 @@ namespace mrpt
 			J.get_unsafe(3,0)=z(); J.get_unsafe(3,1)=-y(); J.get_unsafe(3,2)= x(); J.get_unsafe(3,3)= r();
 		}
 
-		/** Calculate the 3x3 rotation matrix associated to this quaternion */
+		/** Calculate the 3x3 rotation matrix associated to this quaternion: \f[ \mathbf{R} = \left(
+		  *    \begin{array}{ccc}
+		  *     q_r^2+q_x^2-q_y^2-q_z^2 	&  2(q_x q_y - q_r q_z)	&  	2(q_z q_x+q_r q_y) \\
+		  *     2(q_x q_y+q_r q_z) 		& q_r^2-q_x^2+q_y^2-q_z^2 	& 2(q_y q_z-q_r q_x) \\
+		  *     2(q_z q_x-q_r q_y) & 2(q_y q_z+q_r q_x)  & q_r^2- q_x^2 - q_y^2 + q_z^2
+		  *    \end{array}
+		  *  \right)\f]
+		  *
+		  */
 		template <class MATRIXLIKE>
         inline void  rotationMatrix(MATRIXLIKE &M) const
 		{
@@ -226,7 +234,7 @@ namespace mrpt
 			rotationMatrixNoResize(M);
 		}
 
-		/** Fill out the top-left 3x3 block of the given matrix with the rotation matrix associated to this quaternion (does not resize the matrix, for that, see rotationMatrix) */
+		/** Fill out the top-left 3x3 block of the given matrix with the rotation matrix associated to this quaternion (does not resize the matrix, for that, see rotationMatrix). */
 		template <class MATRIXLIKE>
         inline void  rotationMatrixNoResize(MATRIXLIKE &M) const
 		{

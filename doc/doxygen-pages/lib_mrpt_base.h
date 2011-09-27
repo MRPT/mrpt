@@ -80,6 +80,7 @@ Apart from the containers, this namespace contains much more functionality:
 <li>A huge amount of geometry-related functions: Lines (mrpt::math::TLine3D), planes (mrpt::math::TPlane3D), segments, polygons, intersections between them, etc. </li>
 <li>Graph-related stuff: generic directed graphs (mrpt::math::CDirectedGraph) and trees (mrpt::math::CDirectedTree).</li>
 <li>PDF transformations (uncertainty propagation): See mrpt::math::transform_gaussian_linear, mrpt::math::transform_gaussian_montecarlo, mrpt::math::transform_gaussian_unscented.</li>
+<li>A templatized implementation of quaternions, mrpt::math::CQuaternion, with support for rotation matrix convertions, Jacobians, etc.</li>
 </ul>
 
 
