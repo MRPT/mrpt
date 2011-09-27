@@ -180,6 +180,8 @@ namespace mrpt
 		  *    pose_pitch=0
 		  *    pose_roll=0
 		  *
+		  *    initial_tilt_angle = 0; // Optional: Set the initial tilt angle of Kinect. This field must be take in account by the user in the sensor pose.
+		  *
 		  *  \endcode
 		  *
 		  *  More references to read:
@@ -369,6 +371,8 @@ namespace mrpt
 			mrpt::utils::TCamera  	m_cameraParamsRGB;  //!< Params for the RGB camera
 			mrpt::utils::TCamera  	m_cameraParamsDepth;  //!< Params for the Depth camera
 			mrpt::poses::CPose3D    m_relativePoseIntensityWRTDepth; //!< See mrpt::slam::CObservation3DRangeScan for a diagram of this pose
+
+			size_t					m_initial_tilt_angle; //!< Set Kinect tilt to an initial deegre (it should be take in account in the sensor pose by the user)
 
 			double  m_maxRange; //!< Sensor max range (meters)
 

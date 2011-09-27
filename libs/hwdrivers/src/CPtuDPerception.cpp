@@ -207,7 +207,7 @@ bool CPtuDPerception::enableLimitsQ(bool &enable) {
 
 	char response[150];
 
-	if (!transmit("L") | !receive("L",response)) return false;
+	if (!transmit("L") || !receive("L",response)) return false;
 
     if (strstr( upperCase(response).c_str(),"ENABLE")!=NULL) enable=true;
 	else enable=false;
@@ -222,8 +222,8 @@ bool CPtuDPerception::enableLimitsQ(bool &enable) {
 
 bool CPtuDPerception::enableLimits(bool set) {
 
-	if (set) return ( transmit("LE") & receive("LE",NULL) );
-	else return (transmit("LD") & receive("LD",NULL) );
+	if (set) return ( transmit("LE") && receive("LE",NULL) );
+	else return (transmit("LD") && receive("LD",NULL) );
 }
 
 
@@ -233,8 +233,8 @@ bool CPtuDPerception::enableLimits(bool set) {
 
 bool CPtuDPerception::inmediateExecution(bool set) {
 
-   if (set) return ( transmit("I") & receive("I",NULL) );
-   else return ( transmit("S") & receive("S",NULL) );
+   if (set) return ( transmit("I") && receive("I",NULL) );
+   else return ( transmit("S") && receive("S",NULL) );
 
 }
 
@@ -245,7 +245,7 @@ bool CPtuDPerception::inmediateExecution(bool set) {
 
 bool CPtuDPerception::aWait(void) {
 
-	return ( transmit("A") & receive("A",NULL) );
+	return ( transmit("A") && receive("A",NULL) );
 }
 
 
@@ -255,7 +255,7 @@ bool CPtuDPerception::aWait(void) {
 
 bool CPtuDPerception::haltAll() {
 
-	return ( transmit("H") & receive("H",NULL) );
+	return ( transmit("H") && receive("H",NULL) );
 }
 
 /*-------------------------------------------------------------
@@ -267,7 +267,7 @@ bool CPtuDPerception::halt(char axis) {
 	char sTrans[3];
     sTrans[0]='H';sTrans[1]=axis;sTrans[2]='\0';
 
-	return ( transmit(sTrans) & receive(sTrans,NULL) );
+	return ( transmit(sTrans) && receive(sTrans,NULL) );
 }
 
 
@@ -289,7 +289,7 @@ bool CPtuDPerception::reset(void) {
 
 bool CPtuDPerception::save(void) {
 
-	return ( transmit("DS") & receive("DS",NULL) );
+	return ( transmit("DS") && receive("DS",NULL) );
 }
 
 
@@ -299,7 +299,7 @@ bool CPtuDPerception::save(void) {
 
 bool CPtuDPerception::restoreDefaults(void){
 
-	return ( transmit("DR") & receive("DR",NULL) );
+	return ( transmit("DR") && receive("DR",NULL) );
 }
 
 
@@ -309,7 +309,7 @@ bool CPtuDPerception::restoreDefaults(void){
 
 bool CPtuDPerception::restoreFactoryDefaults(void){
 
-	return ( transmit("DF") & receive("DF",NULL) );
+	return ( transmit("DF") && receive("DF",NULL) );
 }
 
 
@@ -319,7 +319,7 @@ bool CPtuDPerception::restoreFactoryDefaults(void){
 
 bool CPtuDPerception::version(char * sVersion) {
 
-	return ( transmit("V") & receive("V",sVersion) );
+	return ( transmit("V") && receive("V",sVersion) );
 
 }
 
@@ -364,7 +364,7 @@ bool CPtuDPerception::powerMode(bool transit,char mode){
 	sTrans[2]=mode;
 	sTrans[3]='\0';
 
-	return ( transmit(sTrans) & receive(sTrans,NULL) );
+	return ( transmit(sTrans) && receive(sTrans,NULL) );
 }
 
 
@@ -401,9 +401,9 @@ bool CPtuDPerception::init(const string port){
 
 		// PTU initial configuration
 		cout << "[PTU::setInitialConfiguration] Setting initial configuration...";
-		if ( (!verbose(true)) |	// Original: false	Actual: true
-			 (!resolution()) |
-			 (!echoMode(true)) |
+		if ( (!verbose(true)) ||	// Original: false	Actual: true
+			 (!resolution()) ||
+			 (!echoMode(true)) ||
 			 (!inmediateExecution(true))
 			 ) {
 			cout << " Error setting initial configuration";
@@ -488,7 +488,7 @@ bool CPtuDPerception::receive(const char * command,char * response) {
     do {
 		   nReaden=serPort.Read(&str[cnt],1);
 		   if (nReaden!=0) cnt++;
-    } while ( (nReaden!=0) & (((tmp=strstr(str,command))==NULL) |
+    } while ( (nReaden!=0) && (((tmp=strstr(str,command))==NULL) ||
 		       (str[cnt-1]!='\n')) );
 
  	if (nReaden==0) { nError=nError*TimeoutError; return false; }
@@ -503,7 +503,7 @@ bool CPtuDPerception::receive(const char * command,char * response) {
 
     if (strstr(tmp,"!")==NULL) { nError=nError*NoError; return true; }
 
-	if ((strstr(tmp,"!P")!=NULL) & (strstr(tmp,"!T")!=NULL )) nError=nError*PanTiltHitError;
+	if ((strstr(tmp,"!P")!=NULL) && (strstr(tmp,"!T")!=NULL )) nError=nError*PanTiltHitError;
 	else if (strstr(tmp,"!T")!=NULL ) nError=nError*TiltHitError;
     else if (strstr(tmp,"!P")!=NULL) nError=nError*PanHitError;
 	else if (strstr(tmp,"! Maximum")!=NULL) nError=nError*MaxLimitError;
@@ -525,7 +525,7 @@ bool CPtuDPerception::verboseQ(bool &mode) {
 
 	char response[150];
 
-	if (!transmit("F") | !receive("F",response)) return false;
+	if (!transmit("F") || !receive("F",response)) return false;
 
     if (strstr(response,"VERBOSE")!=NULL) mode=true;
 	else mode=false;
@@ -541,8 +541,8 @@ bool CPtuDPerception::verboseQ(bool &mode) {
 
 bool CPtuDPerception::verbose(bool set) {
 
-	if (set) return (transmit("FV") & (receive("FV",NULL)) );
-	else return (transmit("FT") & (receive("FT",NULL)) );
+	if (set) return (transmit("FV") && (receive("FV",NULL)) );
+	else return (transmit("FT") && (receive("FT",NULL)) );
 }
 
 
@@ -554,7 +554,7 @@ bool CPtuDPerception::echoModeQ(bool &mode) {
 
 	char response[150];
 
-	if (!transmit("E") | !receive("E",response)) return false;
+	if (!transmit("E") || !receive("E",response)) return false;
 
     if (strstr(upperCase(response).c_str(),"ENABLE")!=NULL) mode=true;
 	else mode=false;
@@ -569,8 +569,8 @@ bool CPtuDPerception::echoModeQ(bool &mode) {
 
 bool CPtuDPerception::echoMode(bool mode) {
 
-	if (mode) return (transmit("EE") & receive("EE",NULL) );
-	else return (transmit("ED") & receive("ED",NULL) );
+	if (mode) return (transmit("EE") && receive("EE",NULL) );
+	else return (transmit("ED") && receive("ED",NULL) );
 }
 
 
@@ -582,10 +582,10 @@ bool CPtuDPerception::resolution(void) {
 
 	char response[150];
 
-	if ( (!transmit("PR")) | (!receive("PR",response)) ) return false;
+	if ( (!transmit("PR")) || (!receive("PR",response)) ) return false;
     panResolution=DEG2RAD(convertToDouble(response) / 3600);
 
-	if ( (!transmit("TR")) | (!receive("TR",response)) ) return false;
+	if ( (!transmit("TR")) || (!receive("TR",response)) ) return false;
     tiltResolution=DEG2RAD(convertToDouble(response) / 3600);
 
     return true;
@@ -606,7 +606,7 @@ bool CPtuDPerception::radQuerry(char axis,char command,double &rad) {
 	sTrans[2]='\0';
 
 
-	if ( ( !transmit(sTrans) ) | (!receive(sTrans,response)) ) return false;
+	if ( ( !transmit(sTrans) ) || (!receive(sTrans,response)) ) return false;
 
     rad=posToRad(axis,convertToLong(response));
 
@@ -631,7 +631,7 @@ bool CPtuDPerception::radAsign(char axis,char command,double nRad) {
 	sTrans[1]=command;
 	strcpy(&sTrans[2],sPos);
 
-	return (transmit(sTrans) & receive(sTrans,response));
+	return (transmit(sTrans) && receive(sTrans,response));
 }
 
 

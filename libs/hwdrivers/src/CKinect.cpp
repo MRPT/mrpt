@@ -81,6 +81,7 @@ MRPT_TODO("Use an unified formula for both resolutions!")
 
 	for (size_t i=0; i<KINECT_RANGES_TABLE_LEN; i++)
 			m_range2meters[i] = k3 * tanf(i/k2 + k1);
+
 #else
 	for (size_t i=0; i<KINECT_RANGES_TABLE_LEN; i++)
 		m_range2meters[i] = 1.0f / (i * (-0.0030711016) + 3.3309495161);
@@ -100,6 +101,7 @@ CKinect::CKinect()  :
 	m_preview_window_decimation(1),
 	m_preview_decim_counter_range(0),
 	m_preview_decim_counter_rgb(0),
+	m_initial_tilt_angle(0),
 
 #if MRPT_HAS_KINECT_FREENECT
 	m_f_ctx(NULL), // The "freenect_context", or NULL if closed
@@ -246,6 +248,8 @@ void  CKinect::loadConfig_sensorSpecific(
 		if (!s.empty())
 			m_relativePoseIntensityWRTDepth.fromString(s);
 	}
+
+	m_initial_tilt_angle = configSource.read_uint64_t(iniSection,"initial_tilt_angle",m_initial_tilt_angle);	
 }
 
 bool CKinect::isOpen() const
@@ -370,7 +374,7 @@ void CKinect::open()
 		THROW_EXCEPTION_CUSTOM_MSG1("Error opening Kinect sensor with index: %d",m_user_device_number)
 
 	// Setup:
-	setTiltAngleDegrees(0);
+	setTiltAngleDegrees(m_initial_tilt_angle);
 	freenect_set_led(f_dev,LED_RED);
 	freenect_set_depth_callback(f_dev, depth_cb);
 	freenect_set_video_callback(f_dev, rgb_cb);
