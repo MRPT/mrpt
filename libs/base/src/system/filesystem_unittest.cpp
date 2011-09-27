@@ -66,3 +66,24 @@ TEST(FileSystem, extractFileName)
 	EXPECT_EQ( mrpt::system::extractFileName("d:\\imgs\\dataset.log"),"dataset");
 }
 
+TEST(FileSystem, filePathSeparatorsToNative)
+{
+#ifdef MRPT_OS_WINDOWS
+	EXPECT_EQ( mrpt::system::filePathSeparatorsToNative("C:"),"C:");
+	EXPECT_EQ( mrpt::system::filePathSeparatorsToNative("C:\\"),"C:\\");
+	EXPECT_EQ( mrpt::system::filePathSeparatorsToNative("C:/"),"C:\\");
+	EXPECT_EQ( mrpt::system::filePathSeparatorsToNative("/loco"),"\\loco");
+	EXPECT_EQ( mrpt::system::filePathSeparatorsToNative("/loco/perico"),"\\loco\\perico");
+	EXPECT_EQ( mrpt::system::filePathSeparatorsToNative("/loco\\perico"),"\\loco\\perico");
+	EXPECT_EQ( mrpt::system::filePathSeparatorsToNative("/loco\\perico/"),"\\loco\\perico\\");
+#else
+	EXPECT_EQ( mrpt::system::filePathSeparatorsToNative("C:"),"C:");
+	EXPECT_EQ( mrpt::system::filePathSeparatorsToNative("C:\\"),"C:/");
+	EXPECT_EQ( mrpt::system::filePathSeparatorsToNative("C:/"),"C:/");
+	EXPECT_EQ( mrpt::system::filePathSeparatorsToNative("/loco"),"/loco");
+	EXPECT_EQ( mrpt::system::filePathSeparatorsToNative("/loco/perico"),"/loco/perico");
+	EXPECT_EQ( mrpt::system::filePathSeparatorsToNative("/loco\\perico"),"/loco/perico");
+	EXPECT_EQ( mrpt::system::filePathSeparatorsToNative("/loco\\perico/"),"/loco/perico/");
+#endif
+}
+

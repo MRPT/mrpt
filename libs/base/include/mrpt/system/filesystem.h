@@ -120,6 +120,24 @@ namespace mrpt
 		  */
 		uint64_t BASE_IMPEXP getFileSize(const std::string &fileName);
 
+		/** Windows: replace all '/'->'\' , in Linux/MacOS: replace all '\'->'/' */
+		std::string BASE_IMPEXP filePathSeparatorsToNative(const std::string & filePath);
+
+		/** Copies file \a sourceFile to \a targetFile. If the target file exists, it will be overwritten.
+		  *  If the target file cannot be overwritten, the function first tries to change its permissions/attributes and retries opening it for write.
+		  *
+		  * \note Only for Windows: After a successful copy, if \a copyAttribs is true, the attributes of the source file are also copied. Note that not all
+		  *   attributes can be copied: http://msdn2.microsoft.com/en-us/library/aa365535.aspx
+		  *
+		  * \return true on success, false on any error, whose description can be optionally get in outErrStr
+		  */
+		bool BASE_IMPEXP copyFile(
+			const std::string &sourceFile,
+			const std::string &targetFile,
+			std::string *outErrStr = NULL,
+			bool copyAttribs = true );
+
+
 		/** @} */
 
 

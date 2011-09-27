@@ -332,11 +332,11 @@ void CSparseMatrix::CholeskyDecomp::backsub(
 	mrpt::vector_double tmp = b;
 	sol = b;
 
-	cs_ipvec(m_symbolic_structure->pinv,&b[0],&tmp[0],b.size());
+	cs_ipvec(m_symbolic_structure->pinv,&b[0],&tmp[0],b.size()); /* tmp = PERMUT*b */
 	//permute con. pivoting
-	cs_lsolve(m_numeric_structure->L,&tmp[0]);
-	cs_ltsolve(m_numeric_structure->L,&tmp[0]);
-	cs_pvec(m_symbolic_structure->pinv,&tmp[0],&sol[0],b.size());
+	cs_lsolve(m_numeric_structure->L,&tmp[0]);   /* tmp = L\tmp */
+	cs_ltsolve(m_numeric_structure->L,&tmp[0]);  /* tmp = L'\tmp */ 
+	cs_pvec(m_symbolic_structure->pinv,&tmp[0],&sol[0],b.size()); /* sol = PERMUT'*tmp */
 	//unpermute con. pivoting
 
 	// Result is now in "sol".
