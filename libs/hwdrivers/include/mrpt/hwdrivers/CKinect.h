@@ -372,7 +372,7 @@ namespace mrpt
 			mrpt::utils::TCamera  	m_cameraParamsDepth;  //!< Params for the Depth camera
 			mrpt::poses::CPose3D    m_relativePoseIntensityWRTDepth; //!< See mrpt::slam::CObservation3DRangeScan for a diagram of this pose
 
-			size_t					m_initial_tilt_angle; //!< Set Kinect tilt to an initial deegre (it should be take in account in the sensor pose by the user)
+			int					m_initial_tilt_angle; //!< Set Kinect tilt to an initial deegre (it should be take in account in the sensor pose by the user)
 
 			double  m_maxRange; //!< Sensor max range (meters)
 

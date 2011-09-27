@@ -73,7 +73,6 @@ mrpt::utils::CTimeLogger alloc_tim;
 
 void CKinect::calculate_range2meters()
 {
-MRPT_TODO("Use an unified formula for both resolutions!")
 #ifdef MRPT_KINECT_DEPTH_10BIT
 	const float k1 = 1.1863f;
 	const float k2 = 2842.5f;
@@ -249,7 +248,7 @@ void  CKinect::loadConfig_sensorSpecific(
 			m_relativePoseIntensityWRTDepth.fromString(s);
 	}
 
-	m_initial_tilt_angle = configSource.read_uint64_t(iniSection,"initial_tilt_angle",m_initial_tilt_angle);	
+	m_initial_tilt_angle = configSource.read_int(iniSection,"initial_tilt_angle",m_initial_tilt_angle);	
 }
 
 bool CKinect::isOpen() const
