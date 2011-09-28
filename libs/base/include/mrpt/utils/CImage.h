@@ -81,7 +81,7 @@ namespace mrpt
 		 *  \endcode
 		 *
 		 * Additional notes:
-		 *		- The OpenCV "IplImage" format is used internally for compatibility with all OpenCV functions. See CImage::getAsIplImage and CImage::getAs<>(). Example:
+		 *		- The OpenCV "IplImage" format is used internally for compatibility with all OpenCV functions. See CImage::getAsIplImage() and CImage::getAs<>(). Example:
 		 *         \code
 		 *            CImage  img;
 		 *            ...
@@ -535,18 +535,19 @@ namespace mrpt
 			/** @name Access to image contents (IplImage structure and raw pixels).
 			    @{ */
 
-			/** Returns a pointer to an T* containing the image - the idea is to call like "img.getAs<IplImage>()" so we can avoid here including OpenCV's headers. \sa getAsIplImage */
+			/** Returns a pointer to a const T* containing the image - the idea is to call like "img.getAs<IplImage>()" so we can avoid here including OpenCV's headers. */
 			template <typename T> inline const T* getAs() const {
 				makeSureImageIsLoaded();
 				return reinterpret_cast<const T*>(img);
 			}
-			/** Returns a pointer to an T* containing the image - the idea is to call like "img.getAs<IplImage>()" so we can avoid here including OpenCV's headers. \sa getAsIplImage */
+			/** Returns a pointer to a T* containing the image - the idea is to call like "img.getAs<IplImage>()" so we can avoid here including OpenCV's headers. */
 			template <typename T> inline T* getAs(){
 				makeSureImageIsLoaded();
 				return reinterpret_cast<T*>(img);
 			}
 
-			/** Returns a pointer to an OpenCV's IplImage struct containing the image, which is linked to this class: free neigther that pointer nor this class until they are not required anymore, since this class is in charge of freeing the memory buffers inside of the returned image.  \sa getAs */
+			/** Returns a pointer to an OpenCV's IplImage struct containing the image, which is linked to this class; NOTE: it's preferred to call getAs<IplImage>() instead since code will look clearer.
+			  * Do not manually free that pointer, since this object is its owner and will delete it upon destruction.  \sa getAs */
 			inline void*  getAsIplImage() const {
 				makeSureImageIsLoaded();
 				return img;

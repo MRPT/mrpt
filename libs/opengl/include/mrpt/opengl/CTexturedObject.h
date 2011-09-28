@@ -56,7 +56,7 @@ namespace mrpt
 			mutable mrpt::utils::CImage	m_textureImageAlpha;
 			mutable bool				m_enableTransparency;  //!< Of the texture using "m_textureImageAlpha"
 			mutable int					r_width,r_height;		//!< Size of the texture image, rounded up to next power of 2
-			mutable int					m_fill_x_left,m_fill_y_top,m_fill_x_right,m_fill_y_bottom; //!< The size of the fill in pixels in the textured image, w.r.t the image passed by the user.
+			mutable int					m_pad_x_right,m_pad_y_bottom; //!< The size of the fill in pixels in the textured image, w.r.t the image passed by the user.
 
 			CTexturedObject();
 			virtual ~CTexturedObject();
