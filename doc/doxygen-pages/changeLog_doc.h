@@ -98,6 +98,9 @@
 				- New data field: mrpt::slam::CObservation3DRangeScan::range_is_depth
 				- Method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() can now also recover 3D point clouds from 3D range scans not in the "Kinect" depth format.
 				- New method CObservation3DRangeScan::doDepthAndIntensityCamerasCoincide()
+				- New field CObservation3DRangeScan::intensityImageChannel
+			- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect:
+				- Now reports the selected channel (visible/IR) into the field CObservation3DRangeScan::intensityImageChannel of grabbed objects.
 			- [mrpt-base] All classes derived from mrpt::utils::CObjectPtr now have a proper "value_type" typedef with the most specific data type of the class being pointed by the smart pointer, overriding the inherited, too generic, mrpt::utils::CObject. - <a href="http://code.google.com/p/mrpt/source/detail?r=2568" >r2568</a>
 			- [mrpt-base] mrpt::utils::CImage:
 				- New method mrpt::utils::CImage::getRowStride()
@@ -122,6 +125,7 @@
 				- It now emits pre/post rendering events (via the mrpt::utils::CObservable pattern), for the user to customize the rendering process. See example display3d_custom_render
 			- [mrpt-opengl] mrpt::opengl::CTexturedObject now loads textures faster (not building mipmaps) - <a href="http://code.google.com/p/mrpt/source/detail?r=2631" >r2631</a>
 			- [mrpt-opengl] Removal of function mrpt::opengl::stock_objects::SICKLaser(), since it was seldom used, its rendering was too slow; so it does not make sense to deserve ~3Mb of source code to it - <a href="http://code.google.com/p/mrpt/source/detail?r=2649" >r2649</a>
+			- [mrpt-gui] New method CDisplayWindow3D::getDefaultViewport()
 			- [mrpt-vision] New feature detectors: SSE2 optimized FASTER (-9,-10,-12), from libcvd by Edward Rosten <a href="http://code.google.com/p/mrpt/source/detail?r=2599" >r2599</a>
 				- mrpt::vision::CFeatureExtraction
 				- mrpt::vision::TFeatureType

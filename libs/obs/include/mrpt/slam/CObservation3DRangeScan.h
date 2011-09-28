@@ -84,7 +84,7 @@ namespace slam
 	 *		- cameraParams: Projection parameters of the depth camera.
 	 *		- cameraParamsIntensity: Projection parameters of the intensity (gray-level or RGB) camera.
 	 *
-	 *  In some cameras, like SwissRanger, both are the same. Also, it is possible in Kinect to rectify the range images such both cameras
+	 *  In some cameras, like SwissRanger, both are the same. It is possible in Kinect to rectify the range images such both cameras
 	 *   seem to coincide and then both sets of camera parameters will be identical.
 	 *
 	 *  Range data can be interpreted in two different ways depending on the 3D camera (this field is already set to the
@@ -92,11 +92,16 @@ namespace slam
 	 *		- range_is_depth=true  -> Kinect-like ranges: entries of \a rangeImage are distances along the +X axis
 	 *		- range_is_depth=false -> Ranges in \a rangeImage are actual distances in 3D.
 	 *
-	 *  3D point clouds can be generated at any moment after grabbing with CObservation3DRangeScan::project3DPointsFromDepthImage()
+	 *  The "intensity" channel may come from different channels in sesnsors as Kinect. Look at field \a intensityImageChannel to
+	 *    find out if the image was grabbed from the visible (RGB) or IR channels.
+	 *
+	 *  3D point clouds can be generated at any moment after grabbing with CObservation3DRangeScan::project3DPointsFromDepthImage(), provided the correct
+	 *   calibration parameters.
 	 *
 	 *  \note Starting at serialization version 2 (MRPT 0.9.1+), the confidence channel is stored as an image instead of a matrix to optimize memory and disk space.
 	 *  \note Starting at serialization version 3 (MRPT 0.9.1+), the 3D point cloud and the rangeImage can both be stored externally to save rawlog space.
-	 *  \note Starting at serialization version 5 (MRPT 0.9.5+), the new field \a range_is_depth.
+	 *  \note Starting at serialization version 5 (MRPT 0.9.5+), the new field \a range_is_depth
+	 *  \note Starting at serialization version 6 (MRPT 0.9.5+), the new field \a intensityImageChannel
 	 *
 	 * \sa mrpt::hwdrivers::CSwissRanger3DCamera, mrpt::hwdrivers::CKinect, CObservation
 	 * \ingroup mrpt_obs_grp
@@ -203,8 +208,16 @@ namespace slam
 		void rangeImage_forceResetExternalStorage() { m_rangeImage_external_stored=false; }
 		// ---------
 
-		bool hasIntensityImage; 			//!< true means the field intensityImage contains valid data
-		mrpt::utils::CImage intensityImage; 	//!< If hasIntensityImage=true, a color or gray-level intensity image of the same size than "rangeImage"
+		/** Enum type for intensityImageChannel */
+		enum TIntensityChannelID
+		{
+			CH_VISIBLE = 0, //!< Grayscale or RGB visible channel of the camera sensor.
+			CH_IR      = 1  //!< Infrarred (IR) channel
+		};
+
+		bool hasIntensityImage;                    //!< true means the field intensityImage contains valid data
+		mrpt::utils::CImage intensityImage;        //!< If hasIntensityImage=true, a color or gray-level intensity image of the same size than "rangeImage"
+		TIntensityChannelID intensityImageChannel; //!< The source of the intensityImage; typically the visible channel \sa TIntensityChannelID
 
 		bool hasConfidenceImage; 			//!< true means the field confidenceImage contains valid data
 		mrpt::utils::CImage confidenceImage;  //!< If hasConfidenceImage=true, an image with the "confidence" value [range 0-255] as estimated by the capture drivers.
@@ -266,6 +279,18 @@ namespace slam
 		using namespace ::mrpt::slam;
 		// Specialization must occur in the same namespace
 		MRPT_DECLARE_TTYPENAME_PTR(CObservation3DRangeScan)
+
+		// Enum <-> string converter:
+		template <>
+		struct TEnumTypeFiller<slam::CObservation3DRangeScan::TIntensityChannelID>
+		{
+			typedef slam::CObservation3DRangeScan::TIntensityChannelID enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(slam::CObservation3DRangeScan::CH_VISIBLE, "CH_VISIBLE");
+				m_map.insert(slam::CObservation3DRangeScan::CH_IR, "CH_IR");
+			}
+		};
 	}
 
 } // End of namespace

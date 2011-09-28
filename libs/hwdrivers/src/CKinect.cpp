@@ -100,7 +100,6 @@ CKinect::CKinect()  :
 	m_preview_window_decimation(1),
 	m_preview_decim_counter_range(0),
 	m_preview_decim_counter_rgb(0),
-	m_initial_tilt_angle(0),
 
 #if MRPT_HAS_KINECT_FREENECT
 	m_f_ctx(NULL), // The "freenect_context", or NULL if closed
@@ -116,6 +115,7 @@ CKinect::CKinect()  :
 #endif
 
 	m_relativePoseIntensityWRTDepth(0,-0.02,0, DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90)),
+	m_initial_tilt_angle(0),
 	m_user_device_number(0),
 	m_grab_image(true),
 	m_grab_depth(true),
@@ -248,7 +248,7 @@ void  CKinect::loadConfig_sensorSpecific(
 			m_relativePoseIntensityWRTDepth.fromString(s);
 	}
 
-	m_initial_tilt_angle = configSource.read_int(iniSection,"initial_tilt_angle",m_initial_tilt_angle);	
+	m_initial_tilt_angle = configSource.read_int(iniSection,"initial_tilt_angle",m_initial_tilt_angle);
 }
 
 bool CKinect::isOpen() const
@@ -319,7 +319,10 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 	alloc_tim.enter("depth_rgb loadFromMemoryBuffer");
 #endif
 
+	MRPT_TODO("Try to optimize this: either avoid R-B swap, or reuse memory block, etc.")
+
 	obs.hasIntensityImage = true;
+	obs.intensityImageChannel = obj->getVideoChannel()==CKinect::VIDEO_CHANNEL_RGB ? mrpt::slam::CObservation3DRangeScan::CH_VISIBLE : mrpt::slam::CObservation3DRangeScan::CH_IR;
 	obs.intensityImage.loadFromMemoryBuffer(
 		frMode.width,
 		frMode.height,
@@ -346,7 +349,7 @@ void CKinect::open()
 		close();
 
 	// Alloc memory, if this is the first time:
-	m_buf_depth.resize(640*480*3);
+	m_buf_depth.resize(640*480*3); // We'll resize this below if needed
 	m_buf_rgb.resize(640*480*3);
 
 #if MRPT_HAS_KINECT_FREENECT  // ----> libfreenect
@@ -612,6 +615,7 @@ void CKinect::getNextObservation(
 		if (m_grab_image)
 		{
 			newObs.hasIntensityImage  = true;
+			newObs.intensityImageChannel = mrpt::slam::CObservation3DRangeScan::CH_VISIBLE;
 			newObs.intensityImage.loadFromMemoryBuffer(KINECT_W,KINECT_H,true,&m_buf_rgb[0]);
 		}
 

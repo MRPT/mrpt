@@ -2373,7 +2373,9 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 														{
 															if (obs->intensityImage.isExternallyStored())
 																cout << ". External file: " << obs->intensityImage.getExternalStorageFile() << endl;
-															else cout << " (embedded)." << endl;
+															else cout << " (embedded).\n";
+															// Channel?
+															cout << "Source channel: " << mrpt::utils::TEnumType<CObservation3DRangeScan::TIntensityChannelID>::value2name(obs->intensityImageChannel) << endl;
 														}
 
 														cout << endl << "Has confidence data? " << (obs->hasConfidenceImage ? "YES": "NO");

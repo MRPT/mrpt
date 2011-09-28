@@ -898,3 +898,12 @@ void CDisplayWindow3D::internal_emitGrabImageEvent(const std::string &fil)
 	const mrptEvent3DWindowGrabImageFile ev(this,fil);
 	publishEvent(ev);
 }
+
+// Returns the "main" viewport of the scene.
+mrpt::opengl::COpenGLViewportPtr CDisplayWindow3D::getDefaultViewport()
+{
+	m_csAccess3DScene.enter();
+	mrpt::opengl::COpenGLViewportPtr view = m_3Dscene->getViewport("main");
+	m_csAccess3DScene.leave();
+	return view;
+}

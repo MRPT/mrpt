@@ -357,6 +357,15 @@ namespace mrpt
 			/** Get the average Frames Per Second (FPS) value from the last 250 rendering events */
 			double getRenderingFPS() const { return m_last_FPS; }
 
+			/** A short cut for getting the "main" viewport of the scene object, it is equivalent to:
+			  *  \code
+			  *    mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
+			  *    viewport = scene->getViewport("main");
+			  *    win3D.unlockAccess3DScene();
+			  *  \endcode
+			  */
+			mrpt::opengl::COpenGLViewportPtr getDefaultViewport();
+
 		protected:
 			void internal_setRenderingFPS(double FPS);  //!< Set the rendering FPS (users don't call this, the method is for internal MRPT objects only) \sa getRenderingFPS
 			void internal_emitGrabImageEvent(const std::string &fil); //!< called by CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers

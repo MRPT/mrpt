@@ -102,6 +102,7 @@ CObservation3DRangeScan::CObservation3DRangeScan( ) :
 	hasRangeImage(false),
 	range_is_depth(true),
 	hasIntensityImage(false),
+	intensityImageChannel(CH_VISIBLE),
 	hasConfidenceImage(false),
 	cameraParams(),
 	cameraParamsIntensity(),
@@ -158,7 +159,7 @@ CObservation3DRangeScan::~CObservation3DRangeScan()
 void  CObservation3DRangeScan::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 5;
+		*version = 6;
 	else
 	{
 		// The data
@@ -195,6 +196,9 @@ void  CObservation3DRangeScan::writeToStream(CStream &out, int *version) const
 
 		// New in v5:
 		out << range_is_depth;
+
+		// New in v6:
+		out << static_cast<int8_t>(intensityImageChannel);
 	}
 }
 
@@ -211,6 +215,7 @@ void  CObservation3DRangeScan::readFromStream(CStream &in, int version)
 	case 3:
 	case 4:
 	case 5:
+	case 6:
 		{
 			uint32_t		N;
 
@@ -301,6 +306,17 @@ void  CObservation3DRangeScan::readFromStream(CStream &in, int version)
 				range_is_depth = true;
 			}
 
+			if (version>=6)
+			{
+				int8_t i;
+				in >> i;
+				intensityImageChannel = static_cast<TIntensityChannelID>(i);
+			}
+			else
+			{
+				intensityImageChannel = CH_VISIBLE;
+			}
+
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -326,6 +342,7 @@ void CObservation3DRangeScan::swap(CObservation3DRangeScan &o)
 	std::swap(m_rangeImage_external_file, o.m_rangeImage_external_file);
 
 	std::swap(hasIntensityImage,o.hasIntensityImage);
+	std::swap(intensityImageChannel,o.intensityImageChannel);
 	intensityImage.swap(o.intensityImage);
 
 	std::swap(hasConfidenceImage,o.hasConfidenceImage);
@@ -657,6 +674,7 @@ void CObservation3DRangeScan::getZoneAsObs(
 
 	// Copy zone of intensity image
 	obs.hasIntensityImage = hasIntensityImage;
+	obs.intensityImageChannel = intensityImageChannel;
 	if ( hasIntensityImage )
 		intensityImage.extract_patch( obs.intensityImage, c1, r1, c2-c1, r2-r1 );
 

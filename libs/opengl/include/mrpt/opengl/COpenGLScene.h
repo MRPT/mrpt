@@ -112,9 +112,9 @@ namespace mrpt
 			  */
 			COpenGLViewportPtr createViewport( const std::string &viewportName );
 
-			/** Returns the viewport with the given name, or NULL if it does not exist
+			/** Returns the viewport with the given name, or NULL if it does not exist; note that the default viewport is named "main" and initially occupies the entire rendering area.
 			  */
-			COpenGLViewportPtr getViewport( const std::string &viewportName ) const;
+			COpenGLViewportPtr getViewport( const std::string &viewportName = std::string("main") ) const;
 
 			/** Render this scene.
 			  */
