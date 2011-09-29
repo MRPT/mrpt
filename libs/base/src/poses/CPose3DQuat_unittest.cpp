@@ -387,7 +387,6 @@ protected:
 			<< "Error: " << endl << df_dpose-num_df_dpose << endl;
 	}
 
-
 };
 
 
@@ -483,7 +482,6 @@ TEST_F(Pose3DQuatTests,NormalizationJacobian)
 	test_normalizeJacob(DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60));
 	test_normalizeJacob(DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40));
 }
-
 
 
 

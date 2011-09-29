@@ -35,6 +35,7 @@
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 
 using namespace mrpt;
@@ -94,24 +95,6 @@ void CPose3DPDFGaussianInf::copyFrom( const CPose3DQuatPDFGaussian &o)
 {
 	const CPose3DPDFGaussian p(o);
 	this->copyFrom(p);
-}
-
-/*---------------------------------------------------------------
-						getMean
-  Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF)
- ---------------------------------------------------------------*/
-void CPose3DPDFGaussianInf::getMean(CPose3D &p) const
-{
-	p=mean;
-}
-
-/*---------------------------------------------------------------
-						getCovarianceAndMean
- ---------------------------------------------------------------*/
-void  CPose3DPDFGaussianInf::getCovarianceAndMean(CMatrixDouble66 &C, CPose3D &p) const
-{
-	this->cov_inv.inv(C);
-	p=mean;
 }
 
 /*---------------------------------------------------------------
@@ -346,7 +329,7 @@ void  CPose3DPDFGaussianInf::operator += ( const CPose3D &Ap)
 	const CMatrixDouble66  OLD_COV_INV = this->cov_inv;
 	CMatrixDouble66  df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
-	CPose3DPDFGaussianInf::jacobiansPoseComposition(
+	CPose3DPDF::jacobiansPoseComposition(
 		this->mean,  // x
 		Ap,     // u
 		df_dx,
@@ -359,22 +342,6 @@ void  CPose3DPDFGaussianInf::operator += ( const CPose3D &Ap)
 
 	// MEAN:
 	this->mean = this->mean + Ap;
-}
-
-/*---------------------------------------------------------------
-					jacobiansPoseComposition
- ---------------------------------------------------------------*/
-void CPose3DPDFGaussianInf::jacobiansPoseComposition(
-	const CPose3D &x,
-	const CPose3D &u,
-	CMatrixDouble66	 &df_dx,
-	CMatrixDouble66	 &df_du)
-{
-	// See this techical report: http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
-	CPose3DPDFGaussian::jacobiansPoseComposition(
-		x,u,
-		df_dx,
-		df_du);
 }
 
 /*---------------------------------------------------------------

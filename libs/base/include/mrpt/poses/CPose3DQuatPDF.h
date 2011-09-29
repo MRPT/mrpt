@@ -77,13 +77,22 @@ namespace mrpt
 			  */
 			static CPose3DQuatPDF* createFrom2D(const CPosePDF &o);
 
-			/** Bayesian fusion of two pose distributions, then save the result in this object (WARNING: Currently only distributions of the same class can be fused! eg, gaussian with gaussian,etc)
-			  */
-			virtual void  bayesianFusion(const  CPose3DQuatPDF &p1, const CPose3DQuatPDF &p2 )  = 0 ;
-
-			/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
-			  */
+			/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
 			virtual void  inverse(CPose3DQuatPDF &o) const = 0;
+
+			/** This static method computes the two Jacobians of a pose composition operation $f(x,u)= x \oplus u$
+			  *  \param out_x_oplus_u If set to !=NULL, the result of "x+u" will be stored here (it will be computed internally anyway).
+			  *  To see the mathematical derivation of the formulas, refer to the technical report here:
+			  *   - http://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations
+			  */
+			static void jacobiansPoseComposition(
+				const CPose3DQuat &x,
+				const CPose3DQuat &u,
+				CMatrixDouble77	  &df_dx,
+				CMatrixDouble77	  &df_du,
+				CPose3DQuat       *out_x_oplus_u=NULL);
+
+
 
 			/** Returns a 3D representation of this PDF.
 			  * \note Needs the mrpt-opengl library, and using mrpt::opengl::CSetOfObjectsPtr as template argument.

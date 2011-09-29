@@ -222,24 +222,6 @@ void CPose3DPDFGaussian::copyFrom( const CPose3DQuatPDFGaussian &o)
 }
 
 /*---------------------------------------------------------------
-						getMean
-  Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF)
- ---------------------------------------------------------------*/
-void CPose3DPDFGaussian::getMean(CPose3D &p) const
-{
-	p=mean;
-}
-
-/*---------------------------------------------------------------
-						getCovarianceAndMean
- ---------------------------------------------------------------*/
-void  CPose3DPDFGaussian::getCovarianceAndMean(CMatrixDouble66 &C, CPose3D &p) const
-{
-	C=cov;
-	p=mean;
-}
-
-/*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
 void  CPose3DPDFGaussian::writeToStream(CStream &out,int *version) const
@@ -498,7 +480,7 @@ void  CPose3DPDFGaussian::operator += ( const CPose3D &Ap)
 	const CMatrixDouble66  OLD_COV = this->cov;
 	CMatrixDouble66  df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
-	CPose3DPDFGaussian::jacobiansPoseComposition(
+	CPose3DPDF::jacobiansPoseComposition(
 		this->mean,  // x
 		Ap,     // u
 		df_dx,
@@ -511,105 +493,6 @@ void  CPose3DPDFGaussian::operator += ( const CPose3D &Ap)
 	// MEAN:
 	this->mean = this->mean + Ap;
 }
-
-/*---------------------------------------------------------------
-					jacobiansPoseComposition
- ---------------------------------------------------------------*/
-void CPose3DPDFGaussian::jacobiansPoseComposition(
-	const CPose3D &x,
-	const CPose3D &u,
-	CMatrixDouble66	 &df_dx,
-	CMatrixDouble66	 &df_du)
-{
-	// See this techical report: http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
-
-	// Direct equations (for the covariances) in yaw-pitch-roll are too complex.
-	//  Make a way around them and consider instead this path:
-	//
-	//      X(6D)       U(6D)
-	//        |           |
-	//        v           v
-	//      X(7D)       U(7D)
-	//        |           |
-	//        +--- (+) ---+
-	//              |
-	//              v
-	//            RES(7D)
-	//              |
-	//              v
-	//            RES(6D)
-	//
-
-	// FUNCTION = f_quat2eul(  f_quat_comp(  f_eul2quat(x) , f_eul2quat(u)  )   )
-	//  Jacobians chain rule:
-	//
-	//  JACOB_dx = J_Q2E (6x7) * quat_df_dx (7x7) * J_E2Q_dx (7x6)
-	//  JACOB_du = J_Q2E (6x7) * quat_df_du (7x7) * J_E2Q_du (7x6)
-
-	// J_E2Q_dx:
-	CMatrixFixedNumeric<double,7,6>  J_E2Q_dx; // Init to zeros
-	{
-		CMatrixFixedNumeric<double,4,3>  dq_dr_sub(UNINITIALIZED_MATRIX);
-		CQuaternionDouble  q_dumm(UNINITIALIZED_QUATERNION);
-		x.getAsQuaternion(q_dumm, &dq_dr_sub);
-		J_E2Q_dx.get_unsafe(0,0)=J_E2Q_dx.get_unsafe(1,1)=J_E2Q_dx.get_unsafe(2,2)=1;
-		J_E2Q_dx.insertMatrix(3,3,dq_dr_sub);
-	}
-
-	// J_E2Q_du:
-	CMatrixFixedNumeric<double,7,6>  J_E2Q_du; // Init to zeros
-	{
-		CMatrixFixedNumeric<double,4,3>  dq_dr_sub(UNINITIALIZED_MATRIX);
-		CQuaternionDouble  q_dumm(UNINITIALIZED_QUATERNION);
-		u.getAsQuaternion(q_dumm, &dq_dr_sub);
-		J_E2Q_du.get_unsafe(0,0)=J_E2Q_du.get_unsafe(1,1)=J_E2Q_du.get_unsafe(2,2)=1;
-		J_E2Q_du.insertMatrix(3,3,dq_dr_sub);
-	}
-
-	// quat_df_dx & quat_df_du
-	CMatrixDouble77  quat_df_dx(UNINITIALIZED_MATRIX), quat_df_du(UNINITIALIZED_MATRIX);
-	const CPose3DQuat  quat_x(x);
-	const CPose3DQuat  quat_u(u);
-
-	CPose3DQuatPDFGaussian::jacobiansPoseComposition(
-		quat_x,  // x
-		quat_u,     // u
-		quat_df_dx,
-		quat_df_du );
-
-	// And now J_Q2E:
-	//         [  I_3   |    0         ]
-	// J_Q2E = [ -------+------------- ]
-	//         [  0     | dr_dq_angles ]
-	//
-	CMatrixFixedNumeric<double,6,7> J_Q2E; // Init to zeros
-	J_Q2E.get_unsafe(0,0) = J_Q2E.get_unsafe(1,1) = J_Q2E.get_unsafe(2,2) = 1;
-	{
-		// The end result of the pose composition, as a quaternion:
-		CQuaternionDouble q_xu(UNINITIALIZED_QUATERNION);
-		q_xu.crossProduct(quat_x.quat(),quat_u.quat());
-
-		// Compute the jacobian:
-		CMatrixFixedNumeric<double,3,4> dr_dq_sub_aux(UNINITIALIZED_MATRIX);
-		double yaw,pitch,roll;
-		q_xu.rpy_and_jacobian(roll,pitch,yaw,&dr_dq_sub_aux,false);
-
-		CMatrixDouble44 dnorm_dq(UNINITIALIZED_MATRIX);
-		q_xu.normalizationJacobian(dnorm_dq);
-
-		CMatrixFixedNumeric<double,3,4> dr_dq_sub(UNINITIALIZED_MATRIX);
-		dr_dq_sub.multiply(dr_dq_sub_aux,dnorm_dq);
-
-		J_Q2E.insertMatrix(3,3,dr_dq_sub);
-	}
-
-	// And finally:
-	//  JACOB_dx = J_Q2E (6x7) * quat_df_dx (7x7) * J_E2Q_dx (7x6)
-	//  JACOB_du = J_Q2E (6x7) * quat_df_du (7x7) * J_E2Q_du (7x6)
-	df_dx.multiply_ABC(J_Q2E, quat_df_dx, J_E2Q_dx);
-	df_du.multiply_ABC(J_Q2E, quat_df_du, J_E2Q_du);
-}
-
 
 /*---------------------------------------------------------------
 							+=

@@ -54,8 +54,31 @@ namespace mrpt
 		/** Evaluates the multivariate normal (Gaussian) distribution at a given point "x".
 		  *  \param  x   A vector or column or row matrix with the point at which to evaluate the pdf.
 		  *  \param  mu  A vector or column or row matrix with the Gaussian mean.
+		  *  \param  cov_inv  The inverse covariance (information) matrix of the Gaussian.
+		  *  \param  scaled_pdf If set to true, the PDF will be scaled to be in the range [0,1], in contrast to its integral from [-inf,+inf] being 1.
+		  */
+		template <class VECTORLIKE1,class VECTORLIKE2,class MATRIXLIKE>
+		inline typename MATRIXLIKE::value_type
+			normalPDFInf(
+				const VECTORLIKE1  & x,
+				const VECTORLIKE2  & mu,
+				const MATRIXLIKE   & cov_inv,
+				const bool scaled_pdf = false )
+		{
+			MRPT_START
+			typedef typename MATRIXLIKE::value_type T;
+			ASSERTDEB_(cov_inv.isSquare())
+			ASSERTDEB_(size_t(cov_inv.getColCount())==size_t(x.size()) && size_t(cov_inv.getColCount())==size_t(mu.size()))
+			T ret = ::exp( static_cast<T>(-0.5) * mrpt::math::multiply_HCHt_scalar((x-mu), cov_inv ) );
+			return scaled_pdf ? ret : ret * ::sqrt(cov_inv.det()) / ::pow(static_cast<T>(M_2PI),static_cast<T>( size(cov_inv,1) ));
+			MRPT_END
+		}
+
+		/** Evaluates the multivariate normal (Gaussian) distribution at a given point "x".
+		  *  \param  x   A vector or column or row matrix with the point at which to evaluate the pdf.
+		  *  \param  mu  A vector or column or row matrix with the Gaussian mean.
 		  *  \param  cov  The covariance matrix of the Gaussian.
-		  *  \param  scaled_pdf If set to true, the PDF will be scaled to be in the range [0,1].
+		  *  \param  scaled_pdf If set to true, the PDF will be scaled to be in the range [0,1], in contrast to its integral from [-inf,+inf] being 1.
 		  */
 		template <class VECTORLIKE1,class VECTORLIKE2,class MATRIXLIKE>
 		inline typename MATRIXLIKE::value_type
@@ -65,13 +88,7 @@ namespace mrpt
 				const MATRIXLIKE   & cov,
 				const bool scaled_pdf = false )
 		{
-			MRPT_START
-			typedef typename MATRIXLIKE::value_type T;
-			ASSERTDEB_(cov.isSquare())
-			ASSERTDEB_(size_t(cov.getColCount())==size_t(x.size()) && size_t(cov.getColCount())==size_t(mu.size()))
-			T ret = ::exp( static_cast<T>(-0.5) * mrpt::math::multiply_HCHt_scalar((x-mu), cov.inverse() ) );
-			return scaled_pdf ? ret : ret / (::pow(static_cast<T>(M_2PI),static_cast<T>( size(cov,1) )) * ::sqrt(cov.det()));
-			MRPT_END
+			return normalPDFInf(x,mu,cov.inverse(),scaled_pdf);
 		}
 
 		/** Evaluates the multivariate normal (Gaussian) distribution at a given point given its distance vector "d" from the Gaussian mean.

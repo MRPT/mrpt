@@ -31,8 +31,9 @@
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPose3DQuatPDF.h>
+#include <mrpt/poses/CPose3DPDF.h>
 
 namespace mrpt
 {
@@ -100,7 +101,7 @@ namespace mrpt
 			}
 
 			/** Given the 3D(6D) pose composition \f$ f(x,u) = x \oplus u \f$, compute the two 6x6 Jacobians \f$ \frac{\partial f}{\partial x} \f$ and \f$ \frac{\partial f}{\partial u} \f$.
-			  * For the equations, see CPose3DPDFGaussian::jacobiansPoseComposition
+			  * For the equations, see CPose3DPDF::jacobiansPoseComposition
 			  */
 			inline void jacobs_6D_pose_comp(
 				const CPose3D	&x,
@@ -108,11 +109,23 @@ namespace mrpt
 				CMatrixDouble66		&out_df_dx,
 				CMatrixDouble66		&out_df_du)
 			{
-				CPose3DPDFGaussian::jacobiansPoseComposition(x,u,out_df_dx,out_df_du);
+				CPose3DPDF::jacobiansPoseComposition(x,u,out_df_dx,out_df_du);
+			}
+
+			/** Given the 3D(6D) pose composition \f$ f(x,u) = x \oplus u \f$, compute the two 6x6 Jacobians \f$ \frac{\partial f}{\partial x} \f$ and \f$ \frac{\partial f}{\partial u} \f$.
+			  * For the equations, see CPose3DQuatPDF::jacobiansPoseComposition
+			  */
+			inline void jacobs_6D_pose_comp(
+				const CPose3DQuat	&x,
+				const CPose3DQuat	&u,
+				CMatrixDouble77		&out_df_dx,
+				CMatrixDouble77		&out_df_du)
+			{
+				CPose3DQuatPDF::jacobiansPoseComposition(x,u,out_df_dx,out_df_du);
 			}
 
 			/** Given the 2D pose composition \f$ f(x,u) = x \oplus u \f$, compute the two 3x3 Jacobians \f$ \frac{\partial f}{\partial x} \f$ and \f$ \frac{\partial f}{\partial u} \f$.
-			  * For the equations, see CPosePDFGaussian::jacobiansPoseComposition
+			  * For the equations, see CPosePDF::jacobiansPoseComposition
 			  */
 			inline void jacobs_2D_pose_comp(
 				const CPosePDFGaussian &x,
@@ -120,7 +133,7 @@ namespace mrpt
 				CMatrixDouble33			 &out_df_dx,
 				CMatrixDouble33			 &out_df_du)
 			{
-				CPosePDFGaussian::jacobiansPoseComposition(x,u,out_df_dx,out_df_du);
+				CPosePDF::jacobiansPoseComposition(x,u,out_df_dx,out_df_du);
 			}
 
 			/** Numerical estimation of the Jacobian of a user-supplied function - this template redirects to mrpt::math::estimateJacobian, see that function for documentation. */

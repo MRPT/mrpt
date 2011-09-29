@@ -40,6 +40,8 @@ namespace poses
 {
 	using namespace mrpt::math;
 
+	class CPosePDFGaussian; // frd decl.
+
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPosePDF, mrpt::utils::CSerializable )
 
@@ -75,6 +77,35 @@ namespace poses
 		/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 		  */
 		virtual void  inverse(CPosePDF &o) const = 0;
+
+
+		/** This static method computes the pose composition Jacobians, with these formulas:
+			\code
+				df_dx =
+				[ 1, 0, -sin(phi_x)*x_u-cos(phi_x)*y_u ]
+				[ 0, 1,  cos(phi_x)*x_u-sin(phi_x)*y_u ]
+				[ 0, 0,                              1 ]
+
+				df_du =
+				[ cos(phi_x) , -sin(phi_x) ,  0  ]
+				[ sin(phi_x) ,  cos(phi_x) ,  0  ]
+				[         0  ,          0  ,  1  ]
+			\endcode
+		  */
+		static void jacobiansPoseComposition(
+			const CPose2D &x,
+			const CPose2D &u,
+			CMatrixDouble33			 &df_dx,
+			CMatrixDouble33			 &df_du);
+
+		/** \overload */
+		static void jacobiansPoseComposition(
+			const CPosePDFGaussian &x,
+			const CPosePDFGaussian &u,
+			CMatrixDouble33			 &df_dx,
+			CMatrixDouble33			 &df_du);
+
+
 
 		enum { is_3D_val = 0 };
 		static inline bool is_3D() { return is_3D_val!=0; }

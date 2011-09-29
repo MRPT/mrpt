@@ -79,6 +79,38 @@ protected:
 			<< "  p3:" << p3 << endl;
 	}
 
+	void test_lnAndExpMatches(double yaw1,double pitch1,double roll1)
+	{
+		const CPose3D pp(0,0,0,yaw1,pitch1,roll1);
+		CQuaternionDouble q1;
+		pp.getAsQuaternion(q1);
+
+		mrpt::vector_double q1_ln = q1.ln<mrpt::vector_double>();
+		const CQuaternionDouble q2 = CQuaternionDouble::exp(q1_ln);
+
+		// q2 should be == q1
+		EXPECT_NEAR(0, (q1-q2).Abs().sumAll(), 1e-10 )
+			<< "q1:\n" << q1 << endl
+			<< "q2:\n" << q2 << endl
+			<< "Error:\n" << (q1-q2) << endl;
+	}
+
+	void test_ExpAndLnMatches(double v0,double v1,double v2)
+	{
+		CArrayDouble<3> v;
+		v[0]=v0;
+		v[1]=v1;
+		v[2]=v2;
+
+		const CQuaternionDouble q1 = CQuaternionDouble::exp(v);
+		CArrayDouble<3> q1_ln = q1.ln<CArrayDouble<3> >();
+
+		// q1_ln should be == v
+		EXPECT_NEAR(0, (q1_ln-v).Abs().sumAll(), 1e-10 )
+			<< "v:\n" << v << endl
+			<< "q1_ln:\n" << q1_ln << endl
+			<< "Error:\n" << (q1_ln-v) << endl;
+	}
 };
 
 TEST_F(QuaternionTests, crossProduct)
@@ -124,4 +156,39 @@ TEST_F(QuaternionTests,ToYPRAndBack)
 	test_toYPRAndBack(DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60));
 
 }
+
+TEST_F(QuaternionTests,LnAndExpMatches)
+{
+	const double list_test_YPR_angles_degrees[][3] =  {
+		{  0, 0, 0 },
+		{ -1, 0, 0 }, {  1, 0, 0 },
+		{  0,-1, 0 }, {  0, 1, 0 },
+		{  0, 0, -1}, {  0, 0,  1},
+		{  40, 0, 0 }, {  0, 40, 0 }, {  0, 0, 40 },
+		{ -40, 0, 0 }, {  0,-40, 0 }, {  0, 0,-40 },
+		{ -30, 20, 50 }, { -30, 20,-50 }, {  30,-20,-50 }
+	};
+
+	const size_t N = sizeof(list_test_YPR_angles_degrees)/sizeof(list_test_YPR_angles_degrees[0]);
+	for (size_t i=0;i<N;i++)
+		test_lnAndExpMatches(DEG2RAD(list_test_YPR_angles_degrees[i][0]),DEG2RAD(list_test_YPR_angles_degrees[i][1]),DEG2RAD(list_test_YPR_angles_degrees[i][2]));
+}
+
+TEST_F(QuaternionTests,ExpAndLnMatches)
+{
+	const double list_test_XYZ[][3] =  {
+		{  0, 0, 0 },
+		{ -1, 0, 0 }, {  1, 0, 0 },
+		{  0,-1, 0 }, {  0, 1, 0 },
+		{  0, 0, -1}, {  0, 0,  1},
+		{  1e-3, 0, 0}, {  0, 1e-3, 0}, {0,0, 1e-3},
+		{ -1e-3, 0, 0}, {  0,-1e-3, 0}, {0,0,-1e-3},
+		{ -0.1,0.2,0.3 },{-0.1,-0.2,0.3 },{-0.1,-0.2,-0.3 },{-0.1,0.2,-0.3 },{0.1,0.2,-0.3 },{0.1,0.2,0.3}
+	};
+
+	const size_t N = sizeof(list_test_XYZ)/sizeof(list_test_XYZ[0]);
+	for (size_t i=0;i<N;i++)
+		test_ExpAndLnMatches(list_test_XYZ[i][0],list_test_XYZ[i][1],list_test_XYZ[i][2]);
+}
+
 

@@ -100,6 +100,7 @@ void registerAllClasses_mrpt_base()
 
 	registerClass( CLASS_ID( CPose3DQuatPDF ) );
 	registerClass( CLASS_ID( CPose3DQuatPDFGaussian ) );
+	registerClass( CLASS_ID( CPose3DQuatPDFGaussianInf ) );
 
 	registerClass( CLASS_ID( CPose3DInterpolator ) );
 

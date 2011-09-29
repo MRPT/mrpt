@@ -360,7 +360,7 @@ void  CRangeBearingKFSLAM::OnTransitionJacobian( KFMatrix_VxV  &F ) const
 	// Compute jacobians:
 	CMatrixDouble77 df_du(UNINITIALIZED_MATRIX);
 
-	CPose3DQuatPDFGaussian::jacobiansPoseComposition(
+	CPose3DQuatPDF::jacobiansPoseComposition(
 		robotPose,  // x
 		theIncr,       // u
 		F,   // df_dx,
@@ -513,7 +513,7 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
 	CMatrixFixedNumeric<kftype,7,7>  H_senpose_vehpose(UNINITIALIZED_MATRIX);
 	CMatrixFixedNumeric<kftype,7,7>  H_senpose_senrelpose(UNINITIALIZED_MATRIX);  // Not actually used
 
-	CPose3DQuatPDFGaussian::jacobiansPoseComposition(
+	CPose3DQuatPDF::jacobiansPoseComposition(
 		robotPose,
 		sensorPoseOnRobot,
 		H_senpose_vehpose,
@@ -827,7 +827,7 @@ void CRangeBearingKFSLAM::OnInverseObservationModel(
 	CMatrixFixedNumeric<kftype,7,7>  dsensorabs_dvehpose(UNINITIALIZED_MATRIX);
 	CMatrixFixedNumeric<kftype,7,7>  dsensorabs_dsenrelpose(UNINITIALIZED_MATRIX);  // Not actually used
 
-	CPose3DQuatPDFGaussian::jacobiansPoseComposition(
+	CPose3DQuatPDF::jacobiansPoseComposition(
 		robotPose,
 		sensorPoseOnRobot,
 		dsensorabs_dvehpose,

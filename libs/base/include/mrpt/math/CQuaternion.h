@@ -100,26 +100,35 @@ namespace mrpt
 		inline void  y(const T y) {(*this)[2]=y;}	//!< Set y coordinate of the quaternion
 		inline void  z(const T z) {(*this)[3]=z;}	//!< Set z coordinate of the quaternion
 
-		/**	Set this quaternion to the rotation described by a 3D Rodrigues rotation vector.
+		/**	Set this quaternion to the rotation described by a 3D (Rodrigues) rotation vector \f$ \mathbf{v} \f$:
+		  *   If \f$ \mathbf{v}=0 \f$, then the quaternion is \f$ \mathbf{q} = [1 ~ 0 ~ 0 ~ 0]^\top \f$, otherwise:
+		  *    \f[ \mathbf{q} = \left[ \begin{array}{c}
+		  *       \cos(\frac{\theta}{2}) \\
+		  *       v_x \frac{\sin(\frac{\theta}{2})}{\theta} \\
+		  *       v_y \frac{\sin(\frac{\theta}{2})}{\theta} \\
+		  *       v_z \frac{\sin(\frac{\theta}{2})}{\theta}
+		  *    \end{array} \right] \f]
+		  *    where \f$ \theta = |\mathbf{v}| = \sqrt{v_x^2+v_y^2+v_z^2} \f$.
+		  *  \sa "Representing Attitude: Euler Angles, Unit Quaternions, and Rotation Vectors (2006)", James Diebel.
 		  */
-		template <class ARRAYLIKE>
-		void  fromRodriguesVector(const ARRAYLIKE &in)
+		template <class ARRAYLIKE3>
+		void  fromRodriguesVector(const ARRAYLIKE3 &v)
 		{
-			if (in.size()!=3) THROW_EXCEPTION("Wrong Dimension in input vector for quaternion Constructor");
+			if (v.size()!=3) THROW_EXCEPTION("Vector v must have a length=3");
 
-			const T x = in[0];
-			const T y = in[1];
-			const T z = in[2];
-			if ((x==0)&&(y==0)&&(z==0))
+			const T x = v[0];
+			const T y = v[1];
+			const T z = v[2];
+			const T angle = std::sqrt(x*x+y*y+z*z);
+			if (angle<1e-7)
 			{
 				(*this)[0] = 1;
-				(*this)[1] = 0;
-				(*this)[2] = 0;
-				(*this)[3] = 0;
+				(*this)[1] = static_cast<T>(0.5)*x;
+				(*this)[2] = static_cast<T>(0.5)*y;
+				(*this)[3] = static_cast<T>(0.5)*z;
 			}
 			else
 			{
-				const T angle = sqrt(x*x+y*y+z*z);
 				const T s = (sin(angle/2))/angle;
 				const T c = cos(angle/2);
 				(*this)[0] = c;
@@ -128,6 +137,60 @@ namespace mrpt
 				(*this)[3] = z * s;
 			}
 		}
+
+
+		/** @name Lie Algebra methods
+		    @{ */
+
+
+		/** Logarithm of the 3x3 matrix defined by this pose, generating the corresponding vector in the SO(3) Lie Algebra,
+		  *  which coincides with the so-called "rotation vector" (I don't have space here for the proof ;-).
+		  *  \param[out] out_ln The target vector, which can be: std::vector<>, or mrpt::vector_double or any row or column Eigen::Matrix<>.
+		  *  \sa exp,  mrpt::poses::SE_traits  */
+		template <class ARRAYLIKE3>
+		inline void ln(ARRAYLIKE3 &out_ln) const
+		{
+			if (out_ln.size()!=3) out_ln.resize(3);
+			this->ln_noresize(out_ln);
+		}
+		/** \overload that returns by value */
+		template <class ARRAYLIKE3>
+		inline ARRAYLIKE3 ln() const
+		{
+			ARRAYLIKE3 out_ln;
+			this->ln(out_ln);
+			return out_ln;
+		}
+		/** Like ln() but does not try to resize the output vector. */
+		template <class ARRAYLIKE3>
+		void ln_noresize(ARRAYLIKE3 &out_ln) const
+		{
+			using mrpt::utils::square;
+			const T xyz_norm = std::sqrt(square(x())+square(y())+square(z()));
+			const T K = (xyz_norm<1e-7) ?  2 : 2*acos(r())/xyz_norm;
+			out_ln[0] = K*x();
+			out_ln[1] = K*y();
+			out_ln[2] = K*z();
+		}
+
+		/** Exponential map from the SO(3) Lie Algebra to unit quaternions.
+		  *  \sa ln,  mrpt::poses::SE_traits  */
+		template <class ARRAYLIKE3>
+		inline static CQuaternion<T> exp(const ARRAYLIKE3 & v)
+		{
+			CQuaternion<T> q(UNINITIALIZED_QUATERNION);
+			q.fromRodriguesVector(v);
+			return q;
+		}
+		/** \overload */
+		template <class ARRAYLIKE3>
+		inline static void exp(const ARRAYLIKE3 & v, CQuaternion<T> & out_quat)
+		{
+			out_quat.fromRodriguesVector(v);
+		}
+
+		/** @} */  // end of Lie algebra
+
 
 		/**	Calculate the "cross" product (or "composed rotation") of two quaternion: this = q1 x q2
 		  *   After the operation, "this" will represent the composed rotations of q1 and q2 (q2 applied "after" q1).
@@ -164,7 +227,10 @@ namespace mrpt
 		}
 
 		/** Return the squared norm of the quaternion */
-		inline double normSqr() const { return mrpt::utils::square(r()) + mrpt::utils::square(x()) + mrpt::utils::square(y()) + mrpt::utils::square(z()); }
+		inline double normSqr() const {
+			using mrpt::utils::square;
+			return square(r()) + square(x()) + square(y()) + square(z());
+		}
 
 		/**	Normalize this quaternion, so its norm becomes the unitity.
 		  */

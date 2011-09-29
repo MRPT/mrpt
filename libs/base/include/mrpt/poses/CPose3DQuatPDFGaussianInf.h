@@ -25,8 +25,8 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-#ifndef CPose3DQuatPDFGaussian_H
-#define CPose3DQuatPDFGaussian_H
+#ifndef CPose3DQuatPDFGaussianInf_H
+#define CPose3DQuatPDFGaussianInf_H
 
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPose3DPDF.h>
@@ -40,83 +40,70 @@ namespace poses
 	class CPosePDFGaussian;
 	class CPose3DPDFGaussian;
 
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPose3DQuatPDFGaussian , CPose3DQuatPDF )
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPose3DQuatPDFGaussianInf , CPose3DQuatPDF )
 
 	/** Declares a class that represents a Probability Density function (PDF) of a 3D pose using a quaternion \f$ p(\mathbf{x}) = [x ~ y ~ z ~ qr ~ qx ~ qy ~ qz]^\top \f$.
 	 *
-	 *   This class implements that PDF using a mono-modal Gaussian distribution. See mrpt::poses::CPose3DQuatPDF for more details, or
-	 *    mrpt::poses::CPose3DPDF for classes based on Euler angles instead.
+	 *   This class implements that PDF using a mono-modal Gaussian distribution storing the information matrix instead of its inverse, the covariance matrix.
+	 *     See mrpt::poses::CPose3DQuatPDF for more details, or
+	 *     mrpt::poses::CPose3DPDF for classes based on Euler angles instead.
 	 *
-	 *  Uncertainty of pose composition operations (\f$ y = x \oplus u \f$) is implemented in the methods "CPose3DQuatPDFGaussian::operator+=" and "CPose3DQuatPDF::jacobiansPoseComposition".
+	 *  Uncertainty of pose composition operations (\f$ y = x \oplus u \f$) is implemented in the methods "CPose3DQuatPDFGaussianInf::operator+=" and "CPose3DQuatPDF::jacobiansPoseComposition".
 	 *
 	 *  For further details on implemented methods and the theory behind them,
 	 *  see <a href="http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty" >this report</a>.
 	 *
-	 * \sa CPose3DQuat, CPose3DQuatPDF, CPose3DPDF, CPose3DQuatPDFGaussianInf
+	 * \sa CPose3DQuat, CPose3DQuatPDF, CPose3DPDF, CPose3DQuatPDFGaussian
 	 * \ingroup poses_pdf_grp
 	 */
-	class BASE_IMPEXP CPose3DQuatPDFGaussian : public CPose3DQuatPDF
+	class BASE_IMPEXP CPose3DQuatPDFGaussianInf : public CPose3DQuatPDF
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE( CPose3DQuatPDFGaussian )
-
-	protected:
-		/** Assures the symmetry of the covariance matrix (eventually certain operations in the math-coprocessor lead to non-symmetric matrixes!)
-		  */
-		void  assureSymmetry();
+		DEFINE_SERIALIZABLE( CPose3DQuatPDFGaussianInf )
 
 	 public:
 		 /** Default constructor - set all values to zero. */
-		CPose3DQuatPDFGaussian();
+		CPose3DQuatPDFGaussianInf();
 
 		/** Constructor which left all the member uninitialized, for using when speed is critical - as argument, use UNINITIALIZED_QUATERNION. */
-		CPose3DQuatPDFGaussian(TConstructorFlags_Quaternions constructor_dummy_param);
+		CPose3DQuatPDFGaussianInf(TConstructorFlags_Quaternions constructor_dummy_param);
 
-		/** Constructor from a default mean value, covariance equals to zero. */
-		explicit CPose3DQuatPDFGaussian( const CPose3DQuat &init_Mean );
+		/** Constructor from a default mean value, information matrix equals to zero. */
+		explicit CPose3DQuatPDFGaussianInf( const CPose3DQuat &init_Mean );
 
-		/** Constructor with mean and covariance. */
-		CPose3DQuatPDFGaussian( const CPose3DQuat &init_Mean, const CMatrixDouble77 &init_Cov );
-
-		/** Constructor from a Gaussian 2D pose PDF (sets to 0 the missing variables). */
-		explicit CPose3DQuatPDFGaussian( const CPosePDFGaussian &o );
-
-		/** Constructor from an equivalent Gaussian in Euler angles representation. */
-		explicit CPose3DQuatPDFGaussian( const CPose3DPDFGaussian &o );
+		/** Constructor with mean and inverse covariance (information matrix). */
+		CPose3DQuatPDFGaussianInf( const CPose3DQuat &init_Mean, const CMatrixDouble77 &init_CovInv );
 
 		/** The mean value */
 		CPose3DQuat		mean;
 
-		/** The 7x7 covariance matrix */
-		CMatrixDouble77		cov;
+		/** The 7x7 information matrix (the inverse of the covariance) */
+		CMatrixDouble77		cov_inv;
 
 		inline const CPose3DQuat & getPoseMean() const { return mean; }
 		inline       CPose3DQuat & getPoseMean()       { return mean; }
 
 		 /** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF).
-		   * \sa getCovariance
-		   */
-		void getMean(CPose3DQuat &mean_pose) const;
+		   * \sa getCovariance */
+		void getMean(CPose3DQuat &mean_pose) const {
+			mean_pose = mean;
+		}
 
 		/** Returns an estimate of the pose covariance matrix (7x7 cov matrix) and the mean, both at once.
-		  * \sa getMean
-		  */
-		void getCovarianceAndMean(CMatrixDouble77 &cov,CPose3DQuat &mean_point) const;
+		  * \sa getMean */
+		void getCovarianceAndMean(CMatrixDouble77 &cov,CPose3DQuat &mean_point) const {
+			cov_inv.inv(cov);
+			mean_point = mean;
+		}
 
-		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
-		  */
+		/** Returns the information (inverse covariance) matrix (a STATE_LEN x STATE_LEN matrix) \sa getMean, getCovarianceAndMean */
+		virtual void getInformationMatrix(CMatrixDouble77 &inf) const { inf=cov_inv; }
+
+
+		/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */
 		void  copyFrom(const CPose3DQuatPDF &o);
 
-		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
-		  */
-		void  copyFrom(const CPosePDF &o);
-
-		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
-		  */
-		void  copyFrom(const CPose3DPDFGaussian &o);
-
-		/** Save the PDF to a text file, containing the 3D pose in the first line (x y z qr qx qy qz), then the covariance matrix in the next 7 lines.
-		 */
+		/** Save the PDF to a text file, containing the 3D pose in the first line (x y z qr qx qy qz), then the information matrix in the next 7 lines. */
 		void  saveToTextFile(const std::string &file) const;
 
 		/** This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
@@ -129,22 +116,19 @@ namespace poses
 		  */
 		void  changeCoordinatesReference(  const CPose3D &newReferenceBase );
 
-		/** Draws a single sample from the distribution
-		  */
+		/** Draws a single sample from the distribution */
 		void  drawSingleSample( CPose3DQuat &outPart ) const;
 
-		/** Draws a number of samples from the distribution, and saves as a list of 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum.
-		  */
+		/** Draws a number of samples from the distribution, and saves as a list of 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum. */
 		void  drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const;
 
-		/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
-		  */
+		/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
 		void	 inverse(CPose3DQuatPDF &o) const;
 
 		/** Unary - operator, returns the PDF of the inverse pose.  */
-		inline CPose3DQuatPDFGaussian operator -() const
+		inline CPose3DQuatPDFGaussianInf operator -() const
 		{
-			CPose3DQuatPDFGaussian p(UNINITIALIZED_QUATERNION);
+			CPose3DQuatPDFGaussianInf p(UNINITIALIZED_QUATERNION);
 			this->inverse(p);
 			return p;
 		}
@@ -155,11 +139,11 @@ namespace poses
 
 		/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated) (see formulas in jacobiansPoseComposition ).
 		  */
-		void  operator += ( const CPose3DQuatPDFGaussian &Ap);
+		void  operator += ( const CPose3DQuatPDFGaussianInf &Ap);
 
 		/** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition (both the mean, and the covariance matrix are updated).
 		  */
-		void  operator -= ( const CPose3DQuatPDFGaussian &Ap);
+		void  operator -= ( const CPose3DQuatPDFGaussianInf &Ap);
 
 		/** Evaluates the PDF at a given point.
 		  */
@@ -169,48 +153,32 @@ namespace poses
 		  */
 		double  evaluateNormalizedPDF( const CPose3DQuat &x ) const;
 
-		/** Computes the Mahalanobis distance between the centers of two Gaussians.
-		  *  The variables with a variance exactly equal to 0 are not taken into account in the process, but
-		  *   "infinity" is returned if the corresponding elements are not exactly equal.
-		  */
-		double  mahalanobisDistanceTo( const CPose3DQuatPDFGaussian& theOther);
-
 	}; // End of class def.
 
 
-	/** Pose composition for two 3D pose Gaussians  \sa CPose3DQuatPDFGaussian::operator += */
-	inline CPose3DQuatPDFGaussian operator +( const CPose3DQuatPDFGaussian &x, const CPose3DQuatPDFGaussian &u )
+	/** Pose composition for two 3D pose Gaussians  \sa CPose3DQuatPDFGaussianInf::operator += */
+	inline CPose3DQuatPDFGaussianInf operator +( const CPose3DQuatPDFGaussianInf &x, const CPose3DQuatPDFGaussianInf &u )
 	{
-		CPose3DQuatPDFGaussian 	res(x);
+		CPose3DQuatPDFGaussianInf 	res(x);
 		res+=u;
 		return res;
 	}
 
-	/** Inverse pose composition for two 3D pose Gaussians  \sa CPose3DQuatPDFGaussian::operator -= */
-	inline CPose3DQuatPDFGaussian operator -( const CPose3DQuatPDFGaussian &x, const CPose3DQuatPDFGaussian &u )
+	/** Inverse pose composition for two 3D pose Gaussians  \sa CPose3DQuatPDFGaussianInf::operator -= */
+	inline CPose3DQuatPDFGaussianInf operator -( const CPose3DQuatPDFGaussianInf &x, const CPose3DQuatPDFGaussianInf &u )
 	{
-		CPose3DQuatPDFGaussian 	res(x);
+		CPose3DQuatPDFGaussianInf 	res(x);
 		res-=u;
 		return res;
 	}
 
 	/** Dumps the mean and covariance matrix to a text stream.
 	  */
-	std::ostream  BASE_IMPEXP & operator << (std::ostream & out, const CPose3DQuatPDFGaussian& obj);
+	std::ostream  BASE_IMPEXP & operator << (std::ostream & out, const CPose3DQuatPDFGaussianInf& obj);
 
-	bool BASE_IMPEXP operator==(const CPose3DQuatPDFGaussian &p1,const CPose3DQuatPDFGaussian &p2);
+	bool BASE_IMPEXP operator==(const CPose3DQuatPDFGaussianInf &p1,const CPose3DQuatPDFGaussianInf &p2);
 
 	} // End of namespace
-
-	namespace global_settings
-	{
-		/** If set to true (default), a Scaled Unscented Transform is used instead of a linear approximation with Jacobians.
-		  * Affects to:
-		  *		- CPose3DQuatPDFGaussian::copyFrom(const CPose3DPDFGaussian &o)
-		  *		- CPose3DQuatPDFGaussianInf::copyFrom(const CPose3DPDFGaussianInf &o)
-		  */
-		extern BASE_IMPEXP bool USE_SUT_EULER2QUAT_CONVERSION;
-	}
 
 } // End of namespace
 

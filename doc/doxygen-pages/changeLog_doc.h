@@ -65,6 +65,7 @@
 				- #include <mrpt/math/graphs.h> --> #include <mrpt/graphs/CDirectedTree.h> & #include <mrpt/graphs/CDirectedGraph.h>
 				- #include <mrpt/slam/graph_slam.h> --> #include <mrpt/graphslam.h>
 		- New classes:
+			- [mrpt-base] Missing PDF for 3D poses with quaternions and information matrix: in mrpt::poses::CPose3DQuatPDFGaussianInf
 			- A batch of changes to introduce WiFi signal strength receivers and building maps out of such observations (by Emil Khatib) - <a href="http://code.google.com/p/mrpt/source/detail?r=2572" >r2572</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2573" >r2573</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2574" >r2574</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2577" >r2577</a>:
 				- [mrpt-obs] mrpt::slam::CObservationWirelessPower
 				- [mrpt-maps] mrpt::slam::CWirelessPowerGridMap2D
@@ -114,6 +115,11 @@
 				- mrpt::math::KDTreeCapable maintains its API, so the change is backward compatible
 				- The nanoflann project has been released separately: http://code.google.com/p/nanoflann/
 			- [mrpt-base] templates mrpt::poses::getPoseMean() have been replaced by methods within each pose class, e.g: mrpt::poses::CPose2D::getPoseMean(), mrpt::poses::CPose3DPDFGaussianInf::getPoseMean(), ...
+			- [mrpt-base] Refactoring in pose PDF classes: The jacobiansPoseComposition() static method now lives in their base classes: 
+				- mrpt::poses::CPosePDF::jacobiansPoseComposition()
+				- mrpt::poses::CPose3DPDF::jacobiansPoseComposition()
+				- mrpt::poses::CPose3DQuatPDF::jacobiansPoseComposition() 
+			- [mrpt-base] Quaternions now also have Lie group exp() and ln() maps. See mrpt::math::CQuaternion
 			- [mrpt-reactivenav] mrpt::reactivenav::CLogFileRecord has a new field "timestamp".
 			- [mrpt-opengl & mrpt-gui] All text labels in 3D rendering windows are now drawn as OpenGL primitives instead of bitmaps, which are ~10x faster to draw. See mrpt::opengl::CTextMessageCapable
 			- [mrpt-opengl & mrpt-gui] mrpt::opengl::CTextMessageCapable and mrpt::gui::CDisplayWindow3D now have an overloaded ::addTextMessage() method with many more font size/style options.

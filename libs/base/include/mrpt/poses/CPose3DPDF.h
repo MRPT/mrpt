@@ -74,13 +74,40 @@ namespace poses
 		  */
 		static CPose3DPDF* createFrom2D(const CPosePDF &o);
 
-		/** Bayesian fusion of two pose distributions, then save the result in this object (WARNING: Currently only distributions of the same class can be fused! eg, gaussian with gaussian,etc)
-		  */
+		/** Bayesian fusion of two pose distributions, then save the result in this object (WARNING: Currently only distributions of the same class can be fused! eg, gaussian with gaussian,etc) */
 		virtual void  bayesianFusion( const CPose3DPDF &p1, const CPose3DPDF &p2 )  = 0 ;
 
-		/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
-		  */
+		/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
 		virtual void  inverse(CPose3DPDF &o) const = 0;
+
+		/** This static method computes the pose composition Jacobians.
+		*
+		* See this techical report: http:///www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
+		*
+		* Direct equations (for the covariances) in yaw-pitch-roll are too complex.
+		*  Make a way around them and consider instead this path:
+		* \code
+		*      X(6D)       U(6D)
+		*        |           |
+		*        v           v
+		*      X(7D)       U(7D)
+		*        |           |
+		*        +--- (+) ---+
+		*              |
+		*              v
+		*            RES(7D)
+		*              |
+		*              v
+		*            RES(6D)
+		* \endcode
+		*
+		*/
+		static void jacobiansPoseComposition(
+			const CPose3D &x,
+			const CPose3D &u,
+			CMatrixDouble66  &df_dx,
+			CMatrixDouble66	 &df_du);
+
 
 		enum { is_3D_val = 1 };
 		static inline bool is_3D() { return is_3D_val!=0; }

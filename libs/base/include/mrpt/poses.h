@@ -60,6 +60,7 @@
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
+#include <mrpt/poses/CPose3DQuatPDFGaussianInf.h>
 
 #include <mrpt/poses/SE_traits.h>
 

@@ -54,27 +54,27 @@ namespace mrpt
 			typedef TDATA type_value;  //!< The type of the state the PDF represents
 
 			 /** Returns the mean, or mathematical expectation of the probability density distribution (PDF).
-			   * \sa getCovarianceAndMean
+			   * \sa getCovarianceAndMean, getInformationMatrix
 			   */
 			virtual void getMean(TDATA &mean_point) const = 0;
 
 			/** Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN cov matrix) and the mean, both at once.
-			  * \sa getMean
+			  * \sa getMean, getInformationMatrix
 			  */
 			virtual void getCovarianceAndMean(CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> &cov,TDATA  &mean_point) const = 0;
 
 			/** Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN cov matrix) and the mean, both at once.
-			  * \sa getMean
+			  * \sa getMean, getInformationMatrix
 			  */
 			inline void getCovarianceDynAndMean(CMatrixDouble &cov,TDATA  &mean_point) const
 			{
-				CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> C;
+				CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> C(UNINITIALIZED_MATRIX);
 				this->getCovarianceAndMean(C,mean_point);
 				cov = C; // Convert to dynamic size matrix
 			}
 
 			/** Returns the mean, or mathematical expectation of the probability density distribution (PDF).
-			   * \sa getCovariance
+			   * \sa getCovariance, getInformationMatrix
 			   */
 			inline TDATA getMeanVal() const
 			{
@@ -84,7 +84,7 @@ namespace mrpt
 			}
 
 			/** Returns the estimate of the covariance matrix (STATE_LEN x STATE_LEN covariance matrix)
-			  * \sa getMean, getCovarianceAndMean
+			  * \sa getMean, getCovarianceAndMean, getInformationMatrix
 			  */
 			inline void getCovariance(CMatrixDouble &cov) const
 			{
@@ -93,7 +93,7 @@ namespace mrpt
 			}
 
 			/** Returns the estimate of the covariance matrix (STATE_LEN x STATE_LEN covariance matrix)
-			  * \sa getMean, getCovarianceAndMean
+			  * \sa getMean, getCovarianceAndMean, getInformationMatrix
 			  */
 			inline void getCovariance(CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> &cov) const
 			{
@@ -102,14 +102,27 @@ namespace mrpt
 			}
 
 			/** Returns the estimate of the covariance matrix (STATE_LEN x STATE_LEN covariance matrix)
-			  * \sa getMean
+			  * \sa getMean, getInformationMatrix
 			  */
 			inline CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> getCovariance() const
 			{
-				CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> cov;
+				CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> cov(UNINITIALIZED_MATRIX);
 				TDATA p;
 				this->getCovarianceAndMean(cov,p);
 				return cov;
+			}
+
+
+			/** Returns the information (inverse covariance) matrix (a STATE_LEN x STATE_LEN matrix)
+			  *  Unless reimplemented in derived classes, this method first reads the covariance, then invert it.
+			  * \sa getMean, getCovarianceAndMean
+			  */
+			virtual void getInformationMatrix(CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> &inf) const
+			{
+				CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> cov(UNINITIALIZED_MATRIX);
+				TDATA p;
+				this->getCovarianceAndMean(cov,p);
+				cov.inv_fast(inf); // Destroy source cov matrix, since we don't need it anymore.
 			}
 
 			/** Save PDF's particles to a text file. See derived classes for more information about the format of generated files.

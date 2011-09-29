@@ -75,25 +75,6 @@ CPosePDFGaussian::CPosePDFGaussian(const CPose2D  &init_Mean ) : mean(init_Mean)
 	cov.zeros();
 }
 
-
-/*---------------------------------------------------------------
-						getMean
-  Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF)
- ---------------------------------------------------------------*/
-void CPosePDFGaussian::getMean(CPose2D &p) const
-{
-	p=mean;
-}
-
-/*---------------------------------------------------------------
-						getCovarianceAndMean
- ---------------------------------------------------------------*/
-void CPosePDFGaussian::getCovarianceAndMean(CMatrixDouble33 &C,CPose2D &p) const
-{
-	p=mean;
-	C=cov;
-}
-
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
@@ -555,51 +536,6 @@ void CPosePDFGaussian::inverseComposition(
 	mean = x1.mean - x0.mean;
 }
 
-
-/*---------------------------------------------------------------
-					jacobiansPoseComposition
- ---------------------------------------------------------------*/
-void CPosePDFGaussian::jacobiansPoseComposition(
-	const CPosePDFGaussian &x,
-	const CPosePDFGaussian &u,
-	CMatrixDouble33			 &df_dx,
-	CMatrixDouble33			 &df_du)
-{
-/*
-	df_dx =
-	[ 1, 0, -sin(phi_x)*x_u-cos(phi_x)*y_u ]
-	[ 0, 1,  cos(phi_x)*x_u-sin(phi_x)*y_u ]
-	[ 0, 0,                              1 ]
-*/
-	df_dx.unit(3,1.0);
-
-	const double   xu = u.mean.x();
-	const double   yu = u.mean.y();
-	const double   spx = sin(x.mean.phi());
-	const double   cpx = cos(x.mean.phi());
-
-	df_dx.get_unsafe(0,2) = -spx*xu-cpx*yu;
-	df_dx.get_unsafe(1,2) =  cpx*xu-spx*yu;
-
-/*
-	df_du =
-	[ cos(phi_x) , -sin(phi_x) ,  0  ]
-	[ sin(phi_x) ,  cos(phi_x) ,  0  ]
-	[         0  ,          0  ,  1  ]
-*/
-	// This is the homogeneous matrix of "x":
-	df_du.get_unsafe(0,2) =
-	df_du.get_unsafe(1,2) =
-	df_du.get_unsafe(2,0) =
-	df_du.get_unsafe(2,1) = 0;
-	df_du.get_unsafe(2,2) = 1;
-
-	df_du.get_unsafe(0,0) =  cpx;
-	df_du.get_unsafe(0,1) = -spx;
-	df_du.get_unsafe(1,0) =  spx;
-	df_du.get_unsafe(1,1) =  cpx;
-}
-
 /*---------------------------------------------------------------
 							+=
  ---------------------------------------------------------------*/
@@ -609,9 +545,9 @@ void  CPosePDFGaussian::operator += ( const CPosePDFGaussian &Ap)
 	const CMatrixDouble33  OLD_COV = this->cov;
 	CMatrixDouble33  df_dx, df_du;
 
-	CPosePDFGaussian::jacobiansPoseComposition(
-		*this,  // x
-		Ap,     // u
+	CPosePDF::jacobiansPoseComposition(
+		this->mean,  // x
+		Ap.mean,     // u
 		df_dx,
 		df_du );
 

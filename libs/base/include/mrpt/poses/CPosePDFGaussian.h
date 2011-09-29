@@ -92,12 +92,17 @@ namespace poses
 		 /** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF).
 		   * \sa getCovariance
 		   */
-		void getMean(CPose2D &mean_pose) const;
+		void getMean(CPose2D &mean_pose) const {
+			mean_pose = mean;
+		}
 
 		/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(CMatrixDouble33 &cov,CPose2D &mean_point) const;
+		void getCovarianceAndMean(CMatrixDouble33 &cov,CPose2D &mean_point) const {
+			mean_point = mean;
+			cov = this->cov;
+		}
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		  */
@@ -189,28 +194,6 @@ namespace poses
 		inline void operator -=( const CPosePDFGaussian &ref  ) {
 			this->inverseComposition(*this,ref);
 		}
-
-
-
-		/** This static method computes the pose composition Jacobians, with these formulas:
-			\code
-				df_dx =
-				[ 1, 0, -sin(phi_x)*x_u-cos(phi_x)*y_u ]
-				[ 0, 1,  cos(phi_x)*x_u-sin(phi_x)*y_u ]
-				[ 0, 0,                              1 ]
-
-				df_du =
-				[ cos(phi_x) , -sin(phi_x) ,  0  ]
-				[ sin(phi_x) ,  cos(phi_x) ,  0  ]
-				[         0  ,          0  ,  1  ]
-			\endcode
-		  */
-		static void jacobiansPoseComposition(
-			const CPosePDFGaussian &x,
-			const CPosePDFGaussian &u,
-			CMatrixDouble33			 &df_dx,
-			CMatrixDouble33			 &df_du);
-
 
 
 	}; // End of class def.

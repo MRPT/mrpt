@@ -144,7 +144,7 @@ protected:
 
 		// Theoretical Jacobians:
 		CMatrixDouble77  df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
-		CPose3DQuatPDFGaussian::jacobiansPoseComposition(
+		CPose3DQuatPDF::jacobiansPoseComposition(
 			q1,  // x
 			q2,     // u
 			df_dx,

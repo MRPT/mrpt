@@ -101,12 +101,17 @@ namespace poses
 		 /** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF).
 		   * \sa getCovariance
 		   */
-		void getMean(CPose3D &mean_pose) const;
+		void getMean(CPose3D &mean_pose) const {
+			mean_pose = mean;
+		}
 
 		/** Returns an estimate of the pose covariance matrix (6x6 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mean_point) const;
+		void getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mean_point) const {
+			cov = this->cov;
+			mean_point = this->mean;
+		}
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		  */
@@ -187,35 +192,6 @@ namespace poses
 		  *   "infinity" is returned if the corresponding elements are not exactly equal.
 		  */
 		double  mahalanobisDistanceTo( const CPose3DPDFGaussian& theOther);
-
-		/** This static method computes the pose composition Jacobians.
-		*
-		* See this techical report: http:///www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
-		*
-		* Direct equations (for the covariances) in yaw-pitch-roll are too complex.
-		*  Make a way around them and consider instead this path:
-		* \code
-		*      X(6D)       U(6D)
-		*        |           |
-		*        v           v
-		*      X(7D)       U(7D)
-		*        |           |
-		*        +--- (+) ---+
-		*              |
-		*              v
-		*            RES(7D)
-		*              |
-		*              v
-		*            RES(6D)
-		* \endcode
-		*
-		*/
-		static void jacobiansPoseComposition(
-			const CPose3D &x,
-			const CPose3D &u,
-			CMatrixDouble66  &df_dx,
-			CMatrixDouble66	 &df_du);
-
 
 		/** Returns a 3x3 matrix with submatrix of the covariance for the variables (x,y,yaw) only.
 		  */
