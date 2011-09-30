@@ -222,7 +222,7 @@ namespace mrpt
 						if ( !(s >> key) || key.empty() )
 							THROW_EXCEPTION(format("Line %u: Can't read string for entry type in: '%s'", lineNum, lin.c_str() ) );
 
-						if ( strCmpI(key,"VERTEX2") )
+						if ( strCmpI(key,"VERTEX2") || strCmpI(key,"VERTEX")  )
 						{
 							TNodeID  id;
 							TPose2D  p2D;
@@ -251,6 +251,7 @@ namespace mrpt
 							if (!graph_is_3D)
 								THROW_EXCEPTION(format("Line %u: Try to load VERTEX3 into a 2D graph: '%s'", lineNum, lin.c_str() ) );
 
+
 							//  VERTEX3 id x y z roll pitch yaw
 							TNodeID  id;
 							TPose3D  p3D;
@@ -274,7 +275,7 @@ namespace mrpt
 								g->nodes[id] = typename CNetworkOfPoses<CPOSE>::constraint_t::type_value( CPose3D(p3D) ); // Auto converted to CPose2D if needed
 							}
 						}
-						else if ( strCmpI(key,"EDGE2") )
+						else if ( strCmpI(key,"EDGE2") || strCmpI(key,"EDGE") )
 						{
 							//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
 							//                                   s00   s01     s11    s22    s02    s12
