@@ -367,6 +367,8 @@ namespace poses
 
 		/** Returns a 1x6 vector with [x y z yaw pitch roll] */
 		void getAsVector(vector_double &v) const;
+		/// \overload
+		void getAsVector(mrpt::math::CArrayDouble<6> &v) const;
 
 		/** Returns the quaternion associated to the rotation of this object (NOTE: XYZ translation is ignored)
 		  * \f[ \mathbf{q} = \left( \begin{array}{c} \cos (\phi /2) \cos (\theta /2) \cos (\psi /2) +  \sin (\phi /2) \sin (\theta /2) \sin (\psi /2) \\ \sin (\phi /2) \cos (\theta /2) \cos (\psi /2) -  \cos (\phi /2) \sin (\theta /2) \sin (\psi /2) \\ \cos (\phi /2) \sin (\theta /2) \cos (\psi /2) +  \sin (\phi /2) \cos (\theta /2) \sin (\psi /2) \\ \cos (\phi /2) \cos (\theta /2) \sin (\psi /2) -  \sin (\phi /2) \sin (\theta /2) \cos (\psi /2) \\ \end{array}\right) \f]

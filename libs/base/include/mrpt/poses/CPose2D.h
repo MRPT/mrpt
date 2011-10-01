@@ -96,6 +96,8 @@ namespace poses
 
 		/** Returns a 1x3 vector with [x y phi] */
 		void getAsVector(vector_double &v) const;
+		/// \overload
+		void getAsVector(mrpt::math::CArrayDouble<3> &v) const;
 
 		 /** Returns the corresponding 4x4 homogeneous transformation matrix for the point(translation) or pose (translation+orientation).
 		   * \sa getInverseHomogeneousMatrix

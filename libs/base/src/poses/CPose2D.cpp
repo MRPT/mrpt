@@ -304,6 +304,14 @@ void CPose2D::getAsVector(vector_double &v) const
 	v[2]=m_phi;
 }
 
+void CPose2D::getAsVector(mrpt::math::CArrayDouble<3> &v) const
+{
+	v[0]=m_coords[0];
+	v[1]=m_coords[1];
+	v[2]=m_phi;
+}
+
+
 
 bool mrpt::poses::operator==(const CPose2D &p1,const CPose2D &p2)
 {

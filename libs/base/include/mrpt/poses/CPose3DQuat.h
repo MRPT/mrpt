@@ -107,6 +107,11 @@ namespace poses
 
 		/** Returns a 1x7 vector with [x y z qr qx qy qz] */
 		void getAsVector(vector_double &v) const;
+		/// \overload
+		void getAsVector(mrpt::math::CArrayDouble<7> &v) const {
+			v[0] = m_coords[0]; v[1] = m_coords[1]; v[2] = m_coords[2];
+			v[3] = m_quat[0]; v[4] = m_quat[1]; v[5] = m_quat[2]; v[6] = m_quat[3];
+		}
 
 		/**  Makes \f$ this = A \oplus B \f$  this method is slightly more efficient than "this= A + B;" since it avoids the temporary object.
 		  *  \note A or B can be "this" without problems.

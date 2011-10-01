@@ -503,6 +503,17 @@ void CPose3D::getAsVector(vector_double &r) const
 	r[5]=m_roll;
 }
 
+void CPose3D::getAsVector(mrpt::math::CArrayDouble<6> &r) const
+{
+	updateYawPitchRoll();
+	r[0]=m_coords[0];
+	r[1]=m_coords[1];
+	r[2]=m_coords[2];
+	r[3]=m_yaw;
+	r[4]=m_pitch;
+	r[5]=m_roll;
+}
+
 
 /*---------------------------------------------------------------
 		unary -
