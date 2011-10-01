@@ -1,0 +1,24 @@
+How to create new examples under the MRPT tree:
+--------------------------------------------------------
+
+1) Go to [MRPT]/samples
+
+2) Create a directory with the example name, e.g. "foo" ->
+   [MRPT]/samples/foo/
+   
+3) Create the C++ file and save it as "test.cpp":
+   [MRPT]/samples/foo/test.cpp
+   
+4) Add the example name to any of the lists in:
+   [MRPT]/cmakemodules/DefineExamples.cmake
+
+5) In the build directory, run "cmake . -DBUILD_EXAMPLES=ON"
+
+6) An automatically generated CMake script will be created in:
+   [MRPT]/samples/foo/CMakeLists.txt
+   
+7) Add both files to svn: 
+   svn add [MRPT]/samples/foo/CMakeLists.txt [MRPT]/samples/foo/test.cpp
+
+done!
+
