@@ -85,6 +85,9 @@ else
 	svn export . $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
 fi
 
+# Copy dummy "configure" script:
+cp scripts/configure $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/
+
 # Copy the MRPT book:
 if [ -f /Trabajo/Papers/mrpt-book/mrpt-book.ps ];
 then
