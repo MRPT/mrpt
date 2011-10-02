@@ -106,6 +106,7 @@ add_subdirectory(captureVideoOpenCV)
 add_subdirectory(captureVideoDC1394)
 add_subdirectory(enumerateCameras1394)
 add_subdirectory(phidgetProximitySensor)
+add_subdirectory(kinect_online_offline_demo)
 add_subdirectory(captureVideoAndBuildPyr)
 add_subdirectory(face_detection)
 

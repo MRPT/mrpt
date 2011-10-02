@@ -158,6 +158,7 @@
 			- display3d_custom_render
 			- captureVideoAndBuildPyr - A GUI live demo to test the effects of the options while building an image pyramid.
 			- rgbd_dataset2rawlog - A tool for convering RGB+D TUM datasets to rawlogs.
+			- kinect_online_offline_demo - See http://www.mrpt.org/Switching_between_reading_live_Kinect_RGBD_dataset_for_debugging
 		- New datasets:
 			- malaga-cs-fac-building.simplemap.gz - A new prebuilt simplemap of the ground floor of one Computer Science building (Malaga University) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2575" >r2575</a>.
 			- test_rtk_path.rawlog - A short sequence of 3 RTK GPS readings, for usage within unit tests of mrpt-topography

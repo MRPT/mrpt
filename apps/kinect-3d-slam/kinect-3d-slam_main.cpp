@@ -153,6 +153,18 @@ void Test_Kinect()
 	TThreadParam thrPar;
 	mrpt::system::TThreadHandle thHandle= mrpt::system::createThreadRef(thread_grabbing ,thrPar);
 
+	// Wait until data stream starts so we can say for sure the sensor has been initialized OK:
+	cout << "Waiting for sensor initialization...\n";
+	do {
+		CObservation3DRangeScanPtr possiblyNewObs = thrPar.new_obs.get();
+		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP)
+				break;
+		else 	mrpt::system::sleep(10);
+	} while (!thrPar.quit);
+
+	// Check error condition:
+	if (thrPar.quit) return;
+
 
 	// Feature tracking variables:
 	CFeatureList	trackedFeats;
