@@ -90,6 +90,7 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects &objectsToRender)
 			glColor4f( it->getColorR(),it->getColorG(),it->getColorB(),it->getColorA());
 
 			it->render();
+			gl_utils::checkOpenGLError();
 
 			if (it->isShowNameEnabled())
 			{
@@ -147,7 +148,7 @@ void	gl_utils::checkOpenGLError()
 	{
 		const std::string sErr = std::string("OpenGL error: ") + std::string( (char*)gluErrorString(openglErr) );
 		std::cerr << "[gl_utils::checkOpenGLError] " << sErr << std::endl;
-		THROW_EXCEPTION(sErr)
+		//THROW_EXCEPTION(sErr)
 	}
 #endif
 }

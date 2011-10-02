@@ -255,46 +255,48 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 				const int img_w = img->getWidth();
 				const int img_h = img->getHeight();
 
-				// Prepare an ortho projection:
-				glMatrixMode(GL_PROJECTION);
-				glLoadIdentity();
+				if (img_w!=0 && img_h!=0)
+				{
+					// Prepare an ortho projection:
+					glMatrixMode(GL_PROJECTION);
+					glLoadIdentity();
 
-				// Need to adjust the aspect ratio?
-				const double ratio = vw*img_h/double(vh*img_w);
-				double ortho_w = img_w;
-				double ortho_h = img_h;
-				if (ratio>1)
-					ortho_w *= ratio;
-					else
-				if (ratio!=0) ortho_h /=ratio;
+					// Need to adjust the aspect ratio?
+					const double ratio = vw*img_h/double(vh*img_w);
+					double ortho_w = img_w;
+					double ortho_h = img_h;
+					if (ratio>1)
+						ortho_w *= ratio;
+						else
+					if (ratio!=0) ortho_h /=ratio;
 
-				glOrtho(
-					-0.5, ortho_h - 0.5,
-					ortho_w - 0.5, -0.5,
-					-1,1);
+					glOrtho(
+						-0.5, ortho_h - 0.5,
+						ortho_w - 0.5, -0.5,
+						-1,1);
 
-				// Prepare raster pos & pixel copy direction in -Y.
-				glRasterPos2f(-0.5f,-0.5f);
-				glPixelZoom(
-					 vw / float(ortho_w),
-					-vh / float(ortho_h) );
+					// Prepare raster pos & pixel copy direction in -Y.
+					glRasterPos2f(-0.5f,-0.5f);
+					glPixelZoom(
+						 vw / float(ortho_w),
+						-vh / float(ortho_h) );
 
-				// Prepare image data types:
-				const GLenum img_type = GL_UNSIGNED_BYTE;
-				const int nBytesPerPixel = img->isColor() ? 3 : 1;
-				const bool is_RGB_order = (!::strcmp(img->getChannelsOrder(),"RGB"));  // Reverse RGB <-> BGR order?
-				const GLenum img_format = nBytesPerPixel==3 ? (is_RGB_order ? GL_RGB : GL_BGR): GL_LUMINANCE;
+					// Prepare image data types:
+					const GLenum img_type = GL_UNSIGNED_BYTE;
+					const int nBytesPerPixel = img->isColor() ? 3 : 1;
+					const bool is_RGB_order = (!::strcmp(img->getChannelsOrder(),"RGB"));  // Reverse RGB <-> BGR order?
+					const GLenum img_format = nBytesPerPixel==3 ? (is_RGB_order ? GL_RGB : GL_BGR): GL_LUMINANCE;
 
-				// Send image data to OpenGL:
-				//glPixelStorei(GL_UNPACK_ALIGNMENT,4);
-				glPixelStorei(GL_UNPACK_ROW_LENGTH,img->getRowStride()/nBytesPerPixel );
-				glDrawPixels(
-					img_w, img_h,
-					img_format, img_type,
-					img->get_unsafe(0,0)
-					);
-				glPixelStorei(GL_UNPACK_ROW_LENGTH,0);  // Reset
-
+					// Send image data to OpenGL:
+					glPixelStorei(GL_UNPACK_ROW_LENGTH,img->getRowStride()/nBytesPerPixel );
+					glDrawPixels(
+						img_w, img_h,
+						img_format, img_type,
+						img->get_unsafe(0,0)
+						);
+					glPixelStorei(GL_UNPACK_ROW_LENGTH,0);  // Reset
+					CRenderizable::checkOpenGLError();
+				}
 			}
 			// done.
 #if defined(OPENGLVIEWPORT_ENABLE_TIMEPROFILING)
@@ -379,6 +381,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 			if (myCamera->m_projectiveModel)
 			{
 				gluPerspective( myCamera->m_projectiveFOVdeg, vw/double(vh),m_clip_min,m_clip_max);
+				CRenderizable::checkOpenGLError();
 			}
 			else
 			{
@@ -394,6 +397,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 				}
 
 				glOrtho( -Ax,Ax,-Ay,Ay,-0.5*m_clip_max,0.5*m_clip_max);
+				CRenderizable::checkOpenGLError();
 			}
 
 			if (myCamera->is6DOFMode())
