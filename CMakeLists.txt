@@ -1450,6 +1450,25 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	endif(wxLibsCount GREATER 0)
 ENDIF(CMAKE_MRPT_HAS_WXWIDGETS)
 
+# SuiteSparse: (for Cholmod)
+# ----------------------------
+SET(CMAKE_MRPT_HAS_CHOLDMOD 0)
+SET(CMAKE_MRPT_HAS_CHOLDMOD_SYSTEM 0)
+
+FIND_PACKAGE(SuiteSparse)
+IF(CHOLMOD_FOUND)
+	IF($ENV{VERBOSE})
+		MESSAGE(STATUS "Choldmod includedir: ${CHOLMOD_INCLUDE_DIR}")
+		MESSAGE(STATUS "Choldmod libs: ${CHOLMOD_LIBRARIES}")
+	ENDIF($ENV{VERBOSE})
+
+	INCLUDE_DIRECTORIES(${CHOLMOD_INCLUDE_DIR})
+	APPEND_MRPT_LIBS(${CHOLMOD_LIBRARIES})
+	
+	SET(CMAKE_MRPT_HAS_CHOLDMOD 1)
+	SET(CMAKE_MRPT_HAS_CHOLDMOD_SYSTEM 1)
+ENDIF(CHOLMOD_FOUND)
+
 # Save the basic list of libraries (without MRPT-libs):
 # -------------------------------------------------------------------------------------
 SET(MRPTLIB_LINKER_LIBS ${MRPT_LINKER_LIBS} ${MRPT_FFMPEG_LIBS_TO_LINK})
@@ -2332,6 +2351,7 @@ SHOW_CONFIG_LINE("Use SSE2?                               " CMAKE_MRPT_HAS_SSE2)
 SHOW_CONFIG_LINE("Use SSE3/SSSE3?                         " CMAKE_MRPT_HAS_SSE3)
 
 SHOW_CONFIG_LINE_SYSTEM("Has eigen3                              " CMAKE_MRPT_HAS_EIGEN "Version: ${PKG_EIGEN3_VERSION}")
+SHOW_CONFIG_LINE_SYSTEM("Has SuiteSparse/CHOLMOD                 " CMAKE_MRPT_HAS_CHOLDMOD)
 
 IF(NOT UNIX)	# In fact, it's not "support for Bumblebee" but for it thru PGR vendor libraries. 
 	SHOW_CONFIG_LINE("Has PGR Digiclops/Triclops              " CMAKE_MRPT_HAS_BUMBLEBEE)

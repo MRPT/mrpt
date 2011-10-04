@@ -207,6 +207,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Use MRPT global profiler? */
 #define MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER ${CMAKE_MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER}
 
+/** Has CHOLDMOD library? (From SuiteSparse) */
+#define MRPT_HAS_CHOLMOD ${CMAKE_MRPT_HAS_CHOLMOD}
+
 /** Standard headers */
 #ifndef HAVE_INTTYPES_H
 #cmakedefine HAVE_INTTYPES_H 1

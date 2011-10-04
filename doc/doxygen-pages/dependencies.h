@@ -45,6 +45,10 @@
 	<td align="center" > \ref  dep-pcl "pcl" </td>
 	<td align="center" > Optional </td>
 </tr>
+<tr>
+	<td align="center" > \ref dep-suitesparse "suitesparse" </td>
+	<td align="center" > Optional </td>
+</tr>
 </table>
 </center>
 
