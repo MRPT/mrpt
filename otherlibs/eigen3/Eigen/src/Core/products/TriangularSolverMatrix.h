@@ -75,43 +75,33 @@ struct triangular_solve_matrix<Scalar,Index,OnTheLeft,Mode,Conjugate,TriStorageO
     ei_declare_aligned_stack_constructed_variable(Scalar, blockA, kc*mc, 0);
     ei_declare_aligned_stack_constructed_variable(Scalar, allocatedBlockB, sizeB, 0);
     Scalar* blockB = allocatedBlockB + sizeW;
-    Scalar* blockW = allocatedBlockB;
 
     conj_if<Conjugate> conj;
     gebp_kernel<Scalar, Scalar, Index, Traits::mr, Traits::nr, Conjugate, false> gebp_kernel;
     gemm_pack_lhs<Scalar, Index, Traits::mr, Traits::LhsProgress, TriStorageOrder> pack_lhs;
     gemm_pack_rhs<Scalar, Index, Traits::nr, ColMajor, false, true> pack_rhs;
 
-    // the goal here is to subdivise the Rhs panels such that we keep some cache
-    // coherence when accessing the rhs elements
-    std::ptrdiff_t l1, l2;
-    manage_caching_sizes(GetAction, &l1, &l2);
-    Index subcols = cols>0 ? l2/(4 * sizeof(Scalar) * otherStride) : 0;
-    subcols = std::max<Index>((subcols/Traits::nr)*Traits::nr, Traits::nr);
-
     for(Index k2=IsLower ? 0 : size;
         IsLower ? k2<size : k2>0;
         IsLower ? k2+=kc : k2-=kc)
     {
-      const Index actual_kc = std::min(IsLower ? size-k2 : k2, kc);
+      const Index actual_kc = (std::min)(IsLower ? size-k2 : k2, kc);
 
       // We have selected and packed a big horizontal panel R1 of rhs. Let B be the packed copy of this panel,
       // and R2 the remaining part of rhs. The corresponding vertical panel of lhs is split into
       // A11 (the triangular part) and A21 the remaining rectangular part.
       // Then the high level algorithm is:
       //  - B = R1                    => general block copy (done during the next step)
-      //  - R1 = A11^-1 B             => tricky part
+      //  - R1 = L1^-1 B              => tricky part
       //  - update B from the new R1  => actually this has to be performed continuously during the above step
-      //  - R2 -= A21 * B             => GEPP
+      //  - R2 = L2 * B               => GEPP
 
-      // The tricky part: compute R1 = A11^-1 B while updating B from R1
-      // The idea is to split A11 into multiple small vertical panels.
-      // Each panel can be split into a small triangular part T1k which is processed without optimization,
-      // and the remaining small part T2k which is processed using gebp with appropriate block strides
-      for(Index j2=0; j2<cols; j2+=subcols)
+      // The tricky part: compute R1 = L1^-1 B while updating B from R1
+      // The idea is to split L1 into multiple small vertical panels.
+      // Each panel can be split into a small triangular part A1 which is processed without optimization,
+      // and the remaining small part A2 which is processed using gebp with appropriate block strides
       {
-        Index actual_cols = std::min(cols-j2,subcols);
-        // for each small vertical panels [T1k^T, T2k^T]^T of lhs
+        // for each small vertical panels of lhs
         for (Index k1=0; k1<actual_kc; k1+=SmallPanelWidth)
         {
           Index actualPanelWidth = std::min<Index>(actual_kc-k1, SmallPanelWidth);
@@ -124,7 +114,7 @@ struct triangular_solve_matrix<Scalar,Index,OnTheLeft,Mode,Conjugate,TriStorageO
             Index rs = actualPanelWidth - k - 1; // remaining size
 
             Scalar a = (Mode & UnitDiag) ? Scalar(1) : Scalar(1)/conj(tri(i,i));
-            for (Index j=j2; j<j2+actual_cols; ++j)
+            for (Index j=0; j<cols; ++j)
             {
               if (TriStorageOrder==RowMajor)
               {
@@ -153,7 +143,7 @@ struct triangular_solve_matrix<Scalar,Index,OnTheLeft,Mode,Conjugate,TriStorageO
           Index blockBOffset = IsLower ? k1 : lengthTarget;
 
           // update the respective rows of B from other
-          pack_rhs(blockB+actual_kc*j2, &other(startBlock,j2), otherStride, actualPanelWidth, actual_cols, actual_kc, blockBOffset);
+          pack_rhs(blockB, _other+startBlock, otherStride, actualPanelWidth, cols, actual_kc, blockBOffset);
 
           // GEBP
           if (lengthTarget>0)
@@ -162,19 +152,19 @@ struct triangular_solve_matrix<Scalar,Index,OnTheLeft,Mode,Conjugate,TriStorageO
 
             pack_lhs(blockA, &tri(startTarget,startBlock), triStride, actualPanelWidth, lengthTarget);
 
-            gebp_kernel(&other(startTarget,j2), otherStride, blockA, blockB+actual_kc*j2, lengthTarget, actualPanelWidth, actual_cols, Scalar(-1),
-                        actualPanelWidth, actual_kc, 0, blockBOffset, blockW);
+            gebp_kernel(_other+startTarget, otherStride, blockA, blockB, lengthTarget, actualPanelWidth, cols, Scalar(-1),
+                        actualPanelWidth, actual_kc, 0, blockBOffset);
           }
         }
       }
-      
-      // R2 -= A21 * B => GEPP
+
+      // R2 = A2 * B => GEPP
       {
         Index start = IsLower ? k2+kc : 0;
         Index end   = IsLower ? size : k2-kc;
         for(Index i2=start; i2<end; i2+=mc)
         {
-          const Index actual_mc = std::min(mc,end-i2);
+          const Index actual_mc = (std::min)(mc,end-i2);
           if (actual_mc>0)
           {
             pack_lhs(blockA, &tri(i2, IsLower ? k2 : k2-kc), triStride, actual_kc, actual_mc);
@@ -232,7 +222,7 @@ struct triangular_solve_matrix<Scalar,Index,OnTheRight,Mode,Conjugate,TriStorage
         IsLower ? k2>0 : k2<size;
         IsLower ? k2-=kc : k2+=kc)
     {
-      const Index actual_kc = std::min(IsLower ? k2 : size-k2, kc);
+      const Index actual_kc = (std::min)(IsLower ? k2 : size-k2, kc);
       Index actual_k2 = IsLower ? k2-actual_kc : k2 ;
 
       Index startPanel = IsLower ? 0 : k2+actual_kc;
@@ -261,7 +251,7 @@ struct triangular_solve_matrix<Scalar,Index,OnTheRight,Mode,Conjugate,TriStorage
 
       for(Index i2=0; i2<rows; i2+=mc)
       {
-        const Index actual_mc = std::min(mc,rows-i2);
+        const Index actual_mc = (std::min)(mc,rows-i2);
 
         // triangular solver kernel
         {

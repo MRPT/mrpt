@@ -12,8 +12,7 @@
 
 namespace Eigen {
 
-/** \defgroup Eigenvalues_Module Eigenvalues module 
- * \ingroup eigen_grp
+/** \defgroup Eigenvalues_Module Eigenvalues module
   *
   *
   *

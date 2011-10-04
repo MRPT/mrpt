@@ -141,7 +141,7 @@ class DynamicSparseMatrix
     {
       if (outerSize()>0)
       {
-        Index reserveSizePerVector = std::max(reserveSize/outerSize(),Index(4));
+        Index reserveSizePerVector = (std::max)(reserveSize/outerSize(),Index(4));
         for (Index j=0; j<outerSize(); ++j)
         {
           m_data[j].reserve(reserveSizePerVector);
@@ -328,9 +328,9 @@ class DynamicSparseMatrix
 };
 
 template<typename Scalar, int _Options, typename _Index>
-class DynamicSparseMatrix<Scalar,_Options,_Index>::InnerIterator : public SparseVector<Scalar,_Options,_Index>::InnerIterator
+class DynamicSparseMatrix<Scalar,_Options,_Index>::InnerIterator : public SparseVector<Scalar,_Options>::InnerIterator
 {
-    typedef typename SparseVector<Scalar,_Options,_Index>::InnerIterator Base;
+    typedef typename SparseVector<Scalar,_Options>::InnerIterator Base;
   public:
     InnerIterator(const DynamicSparseMatrix& mat, Index outer)
       : Base(mat.m_data[outer]), m_outer(outer)

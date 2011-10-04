@@ -364,8 +364,7 @@ class Matrix
     using Base::m_storage;
 };
 
-/** \defgroup matrixtypedefs Global matrix typedefs 
- * \ingroup eigen_grp
+/** \defgroup matrixtypedefs Global matrix typedefs
   *
   * \ingroup Core_Module
   *

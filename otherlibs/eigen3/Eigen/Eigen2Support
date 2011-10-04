@@ -33,8 +33,7 @@
 
 namespace Eigen {
 
-/** \defgroup Eigen2Support_Module Eigen2 support module 
- * \ingroup eigen_grp
+/** \defgroup Eigen2Support_Module Eigen2 support module
   * This module provides a couple of deprecated functions improving the compatibility with Eigen2.
   *
   * To use it, define EIGEN2_SUPPORT before including any Eigen header

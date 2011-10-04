@@ -7,8 +7,7 @@
 
 namespace Eigen {
 
-/** \defgroup Cholesky_Module Cholesky module 
- * \ingroup eigen_grp
+/** \defgroup Cholesky_Module Cholesky module
   *
   *
   *

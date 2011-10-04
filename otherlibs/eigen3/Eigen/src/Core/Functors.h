@@ -116,7 +116,7 @@ struct functor_traits<scalar_conj_product_op<LhsScalar,RhsScalar> > {
   */
 template<typename Scalar> struct scalar_min_op {
   EIGEN_EMPTY_STRUCT_CTOR(scalar_min_op)
-  EIGEN_STRONG_INLINE const Scalar operator() (const Scalar& a, const Scalar& b) const { using std::min; return min(a, b); }
+  EIGEN_STRONG_INLINE const Scalar operator() (const Scalar& a, const Scalar& b) const { using std::min; return (min)(a, b); }
   template<typename Packet>
   EIGEN_STRONG_INLINE const Packet packetOp(const Packet& a, const Packet& b) const
   { return internal::pmin(a,b); }
@@ -139,7 +139,7 @@ struct functor_traits<scalar_min_op<Scalar> > {
   */
 template<typename Scalar> struct scalar_max_op {
   EIGEN_EMPTY_STRUCT_CTOR(scalar_max_op)
-  EIGEN_STRONG_INLINE const Scalar operator() (const Scalar& a, const Scalar& b) const { using std::max; return max(a, b); }
+  EIGEN_STRONG_INLINE const Scalar operator() (const Scalar& a, const Scalar& b) const { using std::max; return (max)(a, b); }
   template<typename Packet>
   EIGEN_STRONG_INLINE const Packet packetOp(const Packet& a, const Packet& b) const
   { return internal::pmax(a,b); }
@@ -167,8 +167,8 @@ template<typename Scalar> struct scalar_hypot_op {
   {
     using std::max;
     using std::min;
-    Scalar p = max(_x, _y);
-    Scalar q = min(_x, _y);
+    Scalar p = (max)(_x, _y);
+    Scalar q = (min)(_x, _y);
     Scalar qp = q/p;
     return p * sqrt(Scalar(1) + qp*qp);
   }
@@ -217,38 +217,6 @@ struct functor_traits<scalar_quotient_op<Scalar> > {
   enum {
     Cost = 2 * NumTraits<Scalar>::MulCost,
     PacketAccess = packet_traits<Scalar>::HasDiv
-  };
-};
-
-/** \internal
-  * \brief Template functor to compute the and of two booleans
-  *
-  * \sa class CwiseBinaryOp, ArrayBase::operator&&
-  */
-struct scalar_boolean_and_op {
-  EIGEN_EMPTY_STRUCT_CTOR(scalar_boolean_and_op)
-  EIGEN_STRONG_INLINE bool operator() (const bool& a, const bool& b) const { return a && b; }
-};
-template<> struct functor_traits<scalar_boolean_and_op> {
-  enum {
-    Cost = NumTraits<bool>::AddCost,
-    PacketAccess = false
-  };
-};
-
-/** \internal
-  * \brief Template functor to compute the or of two booleans
-  *
-  * \sa class CwiseBinaryOp, ArrayBase::operator||
-  */
-struct scalar_boolean_or_op {
-  EIGEN_EMPTY_STRUCT_CTOR(scalar_boolean_or_op)
-  EIGEN_STRONG_INLINE bool operator() (const bool& a, const bool& b) const { return a || b; }
-};
-template<> struct functor_traits<scalar_boolean_or_op> {
-  enum {
-    Cost = NumTraits<bool>::AddCost,
-    PacketAccess = false
   };
 };
 

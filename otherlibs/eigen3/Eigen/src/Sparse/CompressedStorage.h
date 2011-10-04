@@ -216,10 +216,10 @@ class CompressedStorage
     {
       Scalar* newValues  = new Scalar[size];
       Index* newIndices = new Index[size];
-      size_t copySize = std::min(size, m_size);
+      size_t copySize = (std::min)(size, m_size);
       // copy
-      internal::smart_copy(m_values, m_values+copySize, newValues);
-      internal::smart_copy(m_indices, m_indices+copySize, newIndices);
+      memcpy(newValues,  m_values,  copySize * sizeof(Scalar));
+      memcpy(newIndices, m_indices, copySize * sizeof(Index));
       // delete old stuff
       delete[] m_values;
       delete[] m_indices;

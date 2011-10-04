@@ -38,9 +38,7 @@ const int Dynamic = -1;
   */
 const int Infinity = -1;
 
-/** \defgroup flags Flags  
- * \ingroup eigen_grp
- * \ingroup eigen_grp
+/** \defgroup flags Flags
   * \ingroup Core_Module
   *
   * These are the possible bits which can be OR'ed to constitute the flags of a matrix or
@@ -163,9 +161,7 @@ const unsigned int HereditaryBits = RowMajorBit
                                   | EvalBeforeNestingBit
                                   | EvalBeforeAssigningBit;
 
-/** \defgroup enums Enumerations  
- * \ingroup eigen_grp
- * \ingroup eigen_grp
+/** \defgroup enums Enumerations
   * \ingroup Core_Module
   *
   * Various enumerations used in %Eigen. Many of these are used as template parameters.
@@ -204,6 +200,8 @@ enum {
   Aligned=1 
 };
 
+enum { ConditionalJumpCost = 5 };
+
 /** \ingroup enums
  * Enum used by DenseBase::corner() in Eigen2 compatibility mode. */
 // FIXME after the corner() API change, this was not needed anymore, except by AlignedBox
@@ -224,6 +222,8 @@ enum DirectionType {
     * not used for PartialReduxExpr and VectorwiseOp. */
   BothDirections 
 };
+
+enum ProductEvaluationMode { NormalProduct, CacheFriendlyProduct };
 
 /** \internal \ingroup enums
   * Enum to specify how to traverse the entries of a matrix. */

@@ -15,8 +15,7 @@
 
 namespace Eigen {
 
-/** \defgroup Geometry_Module Geometry module 
- * \ingroup eigen_grp
+/** \defgroup Geometry_Module Geometry module
   *
   *
   *

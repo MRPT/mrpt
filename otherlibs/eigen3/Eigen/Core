@@ -175,13 +175,6 @@
   #include <new>
 #endif
 
-// this needs to be done after all possible windows C header includes and before any Eigen source includes
-// (system C++ includes are supposed to be able to deal with this already):
-// windows.h defines min and max macros which would make Eigen fail to compile.
-#if defined(min) || defined(max)
-#error The preprocessor symbols 'min' or 'max' are defined. If you are compiling on Windows, do #define NOMINMAX to prevent windows.h from defining these symbols.
-#endif
-
 // defined in bits/termios.h
 #undef B0
 
@@ -244,9 +237,7 @@ using std::size_t;
 // gcc 4.6.0 wants std:: for ptrdiff_t 
 using std::ptrdiff_t;
 
-/** \defgroup eigen_grp The Eigen3 library 
-  \defgroup Core_Module Core module 
- * \ingroup eigen_grp
+/** \defgroup Core_Module Core module
   * This is the main module of Eigen providing dense matrix and vector support
   * (both fixed and dynamic size) with all the features corresponding to a BLAS library
   * and much more...
@@ -327,7 +318,7 @@ using std::ptrdiff_t;
 #include "src/Core/CommaInitializer.h"
 #include "src/Core/Flagged.h"
 #include "src/Core/ProductBase.h"
-#include "src/Core/GeneralProduct.h"
+#include "src/Core/Product.h"
 #include "src/Core/TriangularMatrix.h"
 #include "src/Core/SelfAdjointView.h"
 #include "src/Core/SolveTriangular.h"
@@ -355,12 +346,6 @@ using std::ptrdiff_t;
 #include "src/Core/Reverse.h"
 #include "src/Core/ArrayBase.h"
 #include "src/Core/ArrayWrapper.h"
-
-#ifdef EIGEN_ENABLE_EVALUATORS
-#include "src/Core/Product.h"
-#include "src/Core/CoreEvaluators.h"
-#include "src/Core/AssignEvaluator.h"
-#endif 
 
 } // namespace Eigen
 

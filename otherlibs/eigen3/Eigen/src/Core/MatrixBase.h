@@ -111,7 +111,7 @@ template<typename Derived> class MatrixBase
 
     /** \returns the size of the main diagonal, which is min(rows(),cols()).
       * \sa rows(), cols(), SizeAtCompileTime. */
-    inline Index diagonalSize() const { return std::min(rows(),cols()); }
+    inline Index diagonalSize() const { return (std::min)(rows(),cols()); }
 
     /** \brief The plain matrix type corresponding to this expression.
       *
@@ -465,8 +465,6 @@ template<typename Derived> class MatrixBase
     const MatrixFunctionReturnValue<Derived> sinh() const;
     const MatrixFunctionReturnValue<Derived> cos() const;
     const MatrixFunctionReturnValue<Derived> sin() const;
-    const MatrixSquareRootReturnValue<Derived> sqrt() const;
-    const MatrixLogarithmReturnValue<Derived> log() const;
 
 #ifdef EIGEN2_SUPPORT
     template<typename ProductDerived, typename Lhs, typename Rhs>

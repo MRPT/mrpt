@@ -119,8 +119,6 @@ template<typename ExpressionType> class SwapWrapper
       _other.template writePacket<LoadMode>(index, tmp);
     }
 
-    ExpressionType& expression() const { return m_expression; }
-
   protected:
     ExpressionType& m_expression;
 };

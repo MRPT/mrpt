@@ -227,6 +227,46 @@ template<typename _MatrixType> class ComplexSchur
     friend struct internal::complex_schur_reduce_to_hessenberg<MatrixType, NumTraits<Scalar>::IsComplex>;
 };
 
+namespace internal {
+
+/** Computes the principal value of the square root of the complex \a z. */
+template<typename RealScalar>
+std::complex<RealScalar> sqrt(const std::complex<RealScalar> &z)
+{
+  RealScalar t, tre, tim;
+
+  t = abs(z);
+
+  if (abs(real(z)) <= abs(imag(z)))
+  {
+    // No cancellation in these formulas
+    tre = sqrt(RealScalar(0.5)*(t + real(z)));
+    tim = sqrt(RealScalar(0.5)*(t - real(z)));
+  }
+  else
+  {
+    // Stable computation of the above formulas
+    if (z.real() > RealScalar(0))
+    {
+      tre = t + z.real();
+      tim = abs(imag(z))*sqrt(RealScalar(0.5)/tre);
+      tre = sqrt(RealScalar(0.5)*tre);
+    }
+    else
+    {
+      tim = t - z.real();
+      tre = abs(imag(z))*sqrt(RealScalar(0.5)/tim);
+      tim = sqrt(RealScalar(0.5)*tim);
+    }
+  }
+  if(z.imag() < RealScalar(0))
+    tim = -tim;
+
+  return (std::complex<RealScalar>(tre,tim));
+}
+} // end namespace internal
+
+
 /** If m_matT(i+1,i) is neglegible in floating point arithmetic
   * compared to m_matT(i,i) and m_matT(j,j), then set it to zero and
   * return true, else return false. */
@@ -262,7 +302,7 @@ typename ComplexSchur<MatrixType>::ComplexScalar ComplexSchur<MatrixType>::compu
 
   ComplexScalar b = t.coeff(0,1) * t.coeff(1,0);
   ComplexScalar c = t.coeff(0,0) - t.coeff(1,1);
-  ComplexScalar disc = sqrt(c*c + RealScalar(4)*b);
+  ComplexScalar disc = internal::sqrt(c*c + RealScalar(4)*b);
   ComplexScalar det = t.coeff(0,0) * t.coeff(1,1) - b;
   ComplexScalar trace = t.coeff(0,0) + t.coeff(1,1);
   ComplexScalar eival1 = (trace + disc) / RealScalar(2);
@@ -383,7 +423,7 @@ void ComplexSchur<MatrixType>::reduceToTriangularForm(bool computeU)
     JacobiRotation<ComplexScalar> rot;
     rot.makeGivens(m_matT.coeff(il,il) - shift, m_matT.coeff(il+1,il));
     m_matT.rightCols(m_matT.cols()-il).applyOnTheLeft(il, il+1, rot.adjoint());
-    m_matT.topRows(std::min(il+2,iu)+1).applyOnTheRight(il, il+1, rot);
+    m_matT.topRows((std::min)(il+2,iu)+1).applyOnTheRight(il, il+1, rot);
     if(computeU) m_matU.applyOnTheRight(il, il+1, rot);
 
     for(Index i=il+1 ; i<iu ; i++)
@@ -391,7 +431,7 @@ void ComplexSchur<MatrixType>::reduceToTriangularForm(bool computeU)
       rot.makeGivens(m_matT.coeffRef(i,i-1), m_matT.coeffRef(i+1,i-1), &m_matT.coeffRef(i,i-1));
       m_matT.coeffRef(i+1,i-1) = ComplexScalar(0);
       m_matT.rightCols(m_matT.cols()-i).applyOnTheLeft(i, i+1, rot.adjoint());
-      m_matT.topRows(std::min(i+2,iu)+1).applyOnTheRight(i, i+1, rot);
+      m_matT.topRows((std::min)(i+2,iu)+1).applyOnTheRight(i, i+1, rot);
       if(computeU) m_matU.applyOnTheRight(i, i+1, rot);
     }
   }

@@ -7,8 +7,7 @@
 
 namespace Eigen {
 
-/** \defgroup Householder_Module Householder module 
- * \ingroup eigen_grp
+/** \defgroup Householder_Module Householder module
   * This module provides Householder transformations.
   *
   * \code

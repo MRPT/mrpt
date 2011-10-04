@@ -156,7 +156,7 @@ inline void* generic_aligned_realloc(void* ptr, size_t size, size_t old_size)
 
   if (ptr != 0)
   {
-    std::memcpy(newptr, ptr, std::min(size,old_size));
+    std::memcpy(newptr, ptr, (std::min)(size,old_size));
     aligned_free(ptr);
   }
 
@@ -462,27 +462,6 @@ inline static Index first_aligned(const Scalar* array, Index size)
   }
 }
 
-
-// std::copy is much slower than std::copy, so let's introduce a smart_copy which
-// use memcpy on trivial types, i.e., on types that does not require an initialization ctor.
-template<typename T, bool UseMemcpy> struct smart_copy_helper;
-
-template<typename T> void smart_copy(const T* start, const T* end, T* target)
-{
-  smart_copy_helper<T,!NumTraits<T>::RequireInitialization>::run(start, end, target);
-}
-
-template<typename T> struct smart_copy_helper<T,true> {
-  inline static void run(const T* start, const T* end, T* target)
-  { memcpy(target, start, std::ptrdiff_t(end)-std::ptrdiff_t(start)); }
-};
-
-template<typename T> struct smart_copy_helper<T,false> {
-  inline static void run(const T* start, const T* end, T* target)
-  { std::copy(start, end, target); }
-};
-
-
 } // end namespace internal
 
 /*****************************************************************************
@@ -538,7 +517,7 @@ template<typename T> class aligned_stack_memory_handler
   * if SIZE is smaller than EIGEN_STACK_ALLOCATION_LIMIT, and if stack allocation is supported by the platform
   * (currently, this is Linux and Visual Studio only). Otherwise the memory is allocated on the heap.
   * The allocated buffer is automatically deleted when exiting the scope of this declaration.
-  * If BUFFER is non null, then the declared variable is simply an alias for BUFFER, and no allocation/deletion occurs.
+  * If BUFFER is non nul, then the declared variable is simply an alias for BUFFER, and no allocation/deletion occurs.
   * Here is an example:
   * \code
   * {
@@ -684,7 +663,7 @@ public:
 
     size_type max_size() const throw()
     {
-        return std::numeric_limits<size_type>::max();
+        return (std::numeric_limits<size_type>::max)();
     }
 
     pointer allocate( size_type num, const void* hint = 0 )
@@ -924,7 +903,7 @@ inline int queryTopLevelCacheSize()
 {
   int l1, l2(-1), l3(-1);
   queryCacheSizes(l1,l2,l3);
-  return std::max(l2,l3);
+  return (std::max)(l2,l3);
 }
 
 } // end namespace internal

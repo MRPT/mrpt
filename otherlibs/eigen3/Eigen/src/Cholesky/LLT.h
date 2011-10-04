@@ -178,9 +178,6 @@ template<typename _MatrixType, int _UpLo> class LLT
     inline Index rows() const { return m_matrix.rows(); }
     inline Index cols() const { return m_matrix.cols(); }
 
-    template<typename VectorType>
-    void rankUpdate(const VectorType& vec);
-
   protected:
     /** \internal
       * Used to compute and store L
@@ -236,7 +233,7 @@ template<> struct llt_inplace<Lower>
 
     Index blockSize = size/8;
     blockSize = (blockSize/16)*16;
-    blockSize = std::min(std::max(blockSize,Index(8)), Index(128));
+    blockSize = (std::min)((std::max)(blockSize,Index(8)), Index(128));
 
     for (Index k=0; k<size; k+=blockSize)
     {
@@ -244,7 +241,7 @@ template<> struct llt_inplace<Lower>
       //       A00 |  -  |  -
       // lu  = A10 | A11 |  -
       //       A20 | A21 | A22
-      Index bs = std::min(blockSize, size-k);
+      Index bs = (std::min)(blockSize, size-k);
       Index rs = size - k - bs;
       Block<MatrixType,Dynamic,Dynamic> A11(m,k,   k,   bs,bs);
       Block<MatrixType,Dynamic,Dynamic> A21(m,k+bs,k,   rs,bs);
@@ -256,35 +253,6 @@ template<> struct llt_inplace<Lower>
       if(rs>0) A22.template selfadjointView<Lower>().rankUpdate(A21,-1); // bottleneck
     }
     return -1;
-  }
-
-  template<typename MatrixType, typename VectorType>
-  static void rankUpdate(MatrixType& mat, const VectorType& vec)
-  {
-    typedef typename MatrixType::ColXpr ColXpr;
-    typedef typename internal::remove_all<ColXpr>::type ColXprCleaned;
-    typedef typename ColXprCleaned::SegmentReturnType ColXprSegment;
-    typedef typename MatrixType::Scalar Scalar;
-    typedef Matrix<Scalar,Dynamic,1> TempVectorType;
-    typedef typename TempVectorType::SegmentReturnType TempVecSegment;
-
-    int n = mat.cols();
-    eigen_assert(mat.rows()==n && vec.size()==n);
-    TempVectorType temp(vec);
-
-    for(int i=0; i<n; ++i)
-    {
-      JacobiRotation<Scalar> g;
-      g.makeGivens(mat(i,i), -temp(i), &mat(i,i));
-
-      int rs = n-i-1;
-      if(rs>0)
-      {
-        ColXprSegment x(mat.col(i).tail(rs));
-        TempVecSegment y(temp.tail(rs));
-        apply_rotation_in_the_plane(x, y, g);
-      }
-    }
   }
 };
 
@@ -301,12 +269,6 @@ template<> struct llt_inplace<Upper>
   {
     Transpose<MatrixType> matt(mat);
     return llt_inplace<Lower>::blocked(matt);
-  }
-  template<typename MatrixType, typename VectorType>
-  static void rankUpdate(MatrixType& mat, const VectorType& vec)
-  {
-    Transpose<MatrixType> matt(mat);
-    return llt_inplace<Lower>::rankUpdate(matt, vec);
   }
 };
 
@@ -352,20 +314,6 @@ LLT<MatrixType,_UpLo>& LLT<MatrixType,_UpLo>::compute(const MatrixType& a)
   return *this;
 }
 
-/** Performs a rank one update of the current decomposition.
-  * If A = LL^* before the rank one update,
-  * then after it we have LL^* = A + vv^* where \a v must be a vector
-  * of same dimension.
-  *
-  */
-template<typename MatrixType, int _UpLo>
-template<typename VectorType>
-void LLT<MatrixType,_UpLo>::rankUpdate(const VectorType& v)
-{
-  EIGEN_STATIC_ASSERT_VECTOR_ONLY(VectorType);
-  internal::llt_inplace<UpLo>::rankUpdate(m_matrix,v);
-}
-    
 namespace internal {
 template<typename _MatrixType, int UpLo, typename Rhs>
 struct solve_retval<LLT<_MatrixType, UpLo>, Rhs>
@@ -436,4 +384,3 @@ SelfAdjointView<MatrixType, UpLo>::llt() const
 }
 
 #endif // EIGEN_LLT_H
-

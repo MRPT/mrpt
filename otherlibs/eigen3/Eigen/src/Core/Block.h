@@ -242,21 +242,6 @@ template<typename XprType, int BlockRows, int BlockCols, bool InnerPanel, bool H
     inline Index outerStride() const;
     #endif
 
-    const typename internal::remove_all<typename XprType::Nested>::type& nestedExpression() const 
-    { 
-      return m_xpr; 
-    }
-      
-    Index startRow() const 
-    { 
-      return m_startRow.value(); 
-    }
-      
-    Index startCol() const 
-    { 
-      return m_startCol.value(); 
-    }
-
   protected:
 
     const typename XprType::Nested m_xpr;
@@ -319,11 +304,6 @@ class Block<XprType,BlockRows,BlockCols, InnerPanel,true>
       init();
     }
 
-    const typename internal::remove_all<typename XprType::Nested>::type& nestedExpression() const 
-    { 
-      return m_xpr; 
-    }
-      
     /** \sa MapBase::innerStride() */
     inline Index innerStride() const
     {

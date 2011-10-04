@@ -87,7 +87,7 @@ template<typename MatrixType, int DiagIndex> class Diagonal
     EIGEN_INHERIT_ASSIGNMENT_OPERATORS(Diagonal)
 
     inline Index rows() const
-    { return m_index.value()<0 ? std::min(m_matrix.cols(),m_matrix.rows()+m_index.value()) : std::min(m_matrix.rows(),m_matrix.cols()-m_index.value()); }
+    { return m_index.value()<0 ? (std::min)(m_matrix.cols(),m_matrix.rows()+m_index.value()) : (std::min)(m_matrix.rows(),m_matrix.cols()-m_index.value()); }
 
     inline Index cols() const { return 1; }
 
@@ -131,17 +131,6 @@ template<typename MatrixType, int DiagIndex> class Diagonal
     inline CoeffReturnType coeff(Index index) const
     {
       return m_matrix.coeff(index+rowOffset(), index+colOffset());
-    }
-
-    const typename internal::remove_all<typename MatrixType::Nested>::type& 
-    nestedExpression() const 
-    {
-      return m_matrix;
-    }
-
-    int index() const
-    {
-      return m_index.value();
     }
 
   protected:

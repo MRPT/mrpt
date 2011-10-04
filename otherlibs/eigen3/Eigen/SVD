@@ -9,8 +9,7 @@
 
 namespace Eigen {
 
-/** \defgroup SVD_Module SVD module 
- * \ingroup eigen_grp
+/** \defgroup SVD_Module SVD module
   *
   *
   *

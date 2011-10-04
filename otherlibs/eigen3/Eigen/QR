@@ -11,8 +11,7 @@
 
 namespace Eigen {
 
-/** \defgroup QR_Module QR module 
- * \ingroup eigen_grp
+/** \defgroup QR_Module QR module
   *
   *
   *

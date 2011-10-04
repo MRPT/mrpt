@@ -101,9 +101,6 @@ class CwiseNullaryOp : internal::no_assignment_operator,
       return m_functor.packetOp(index);
     }
 
-    /** \returns the functor representing the nullary operation */
-    const NullaryOp& functor() const { return m_functor; }
-
   protected:
     const internal::variable_if_dynamic<Index, RowsAtCompileTime> m_rows;
     const internal::variable_if_dynamic<Index, ColsAtCompileTime> m_cols;
@@ -745,7 +742,7 @@ struct setIdentity_impl<Derived, true>
   static EIGEN_STRONG_INLINE Derived& run(Derived& m)
   {
     m.setZero();
-    const Index size = std::min(m.rows(), m.cols());
+    const Index size = (std::min)(m.rows(), m.cols());
     for(Index i = 0; i < size; ++i) m.coeffRef(i,i) = typename Derived::Scalar(1);
     return m;
   }

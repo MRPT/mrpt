@@ -106,6 +106,9 @@ template<typename MatrixType, unsigned int UpLo> class SparseSelfAdjointView
       *
       * \returns a reference to \c *this
       *
+      * Note that it is faster to set alpha=0 than initializing the matrix to zero
+      * and then keep the default value alpha=1.
+      *
       * To perform \f$ this = this + \alpha ( u^* u ) \f$ you can simply
       * call this function with u.adjoint().
       */
@@ -113,21 +116,21 @@ template<typename MatrixType, unsigned int UpLo> class SparseSelfAdjointView
     SparseSelfAdjointView& rankUpdate(const SparseMatrixBase<DerivedU>& u, Scalar alpha = Scalar(1));
     
     /** \internal triggered by sparse_matrix = SparseSelfadjointView; */
-    template<typename DestScalar> void evalTo(SparseMatrix<DestScalar,ColMajor,Index>& _dest) const
+    template<typename DestScalar> void evalTo(SparseMatrix<DestScalar>& _dest) const
     {
       internal::permute_symm_to_fullsymm<UpLo>(m_matrix, _dest);
     }
     
-    template<typename DestScalar> void evalTo(DynamicSparseMatrix<DestScalar,ColMajor,Index>& _dest) const
+    template<typename DestScalar> void evalTo(DynamicSparseMatrix<DestScalar>& _dest) const
     {
       // TODO directly evaluate into _dest;
-      SparseMatrix<DestScalar,ColMajor,Index> tmp(_dest.rows(),_dest.cols());
+      SparseMatrix<DestScalar> tmp(_dest.rows(),_dest.cols());
       internal::permute_symm_to_fullsymm<UpLo>(m_matrix, tmp);
       _dest = tmp;
     }
     
     /** \returns an expression of P^-1 H P */
-    SparseSymmetricPermutationProduct<_MatrixTypeNested,UpLo> twistedBy(const PermutationMatrix<Dynamic,Dynamic,Index>& perm) const
+    SparseSymmetricPermutationProduct<_MatrixTypeNested,UpLo> twistedBy(const PermutationMatrix<Dynamic>& perm) const
     {
       return SparseSymmetricPermutationProduct<_MatrixTypeNested,UpLo>(m_matrix, perm);
     }
@@ -232,6 +235,7 @@ class SparseSelfAdjointTimeDenseProduct
           dest.row(j) += i.value() * m_rhs.row(j);
           ++i;
         }
+        Block<Dest,1,Dest::ColsAtCompileTime> dest_j(dest.row(LhsIsRowMajor ? j : 0));
         for(; (ProcessFirstHalf ? i && i.index() < j : i) ; ++i)
         {
           Index a = LhsIsRowMajor ? j : i.index();
@@ -379,7 +383,7 @@ void permute_symm_to_symm(const MatrixType& mat, SparseMatrix<typename MatrixTyp
         continue;
                   
       Index ip = perm ? perm[i] : i;
-      count[DstUpLo==Lower ? std::min(ip,jp) : std::max(ip,jp)]++;
+      count[DstUpLo==Lower ? (std::min)(ip,jp) : (std::max)(ip,jp)]++;
     }
   }
   dest._outerIndexPtr()[0] = 0;
@@ -399,8 +403,8 @@ void permute_symm_to_symm(const MatrixType& mat, SparseMatrix<typename MatrixTyp
         continue;
                   
       Index ip = perm? perm[i] : i;
-      Index k = count[DstUpLo==Lower ? std::min(ip,jp) : std::max(ip,jp)]++;
-      dest._innerIndexPtr()[k] = DstUpLo==Lower ? std::max(ip,jp) : std::min(ip,jp);
+      Index k = count[DstUpLo==Lower ? (std::min)(ip,jp) : (std::max)(ip,jp)]++;
+      dest._innerIndexPtr()[k] = DstUpLo==Lower ? (std::max)(ip,jp) : (std::min)(ip,jp);
       
       if((DstUpLo==Lower && ip<jp) || (DstUpLo==Upper && ip>jp))
         dest._valuePtr()[k] = conj(it.value());
@@ -416,12 +420,10 @@ template<typename MatrixType,int UpLo>
 class SparseSymmetricPermutationProduct
   : public EigenBase<SparseSymmetricPermutationProduct<MatrixType,UpLo> >
 {
+    typedef PermutationMatrix<Dynamic> Perm;
   public:
     typedef typename MatrixType::Scalar Scalar;
     typedef typename MatrixType::Index Index;
-  protected:
-    typedef PermutationMatrix<Dynamic,Dynamic,Index> Perm;
-  public:
     typedef Matrix<Index,Dynamic,1> VectorI;
     typedef typename MatrixType::Nested MatrixTypeNested;
     typedef typename internal::remove_all<MatrixTypeNested>::type _MatrixTypeNested;

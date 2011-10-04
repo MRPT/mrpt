@@ -492,7 +492,7 @@ struct triangular_assignment_selector<Derived1, Derived2, Upper, Dynamic, ClearO
   {
     for(Index j = 0; j < dst.cols(); ++j)
     {
-      Index maxi = std::min(j, dst.rows()-1);
+      Index maxi = (std::min)(j, dst.rows()-1);
       for(Index i = 0; i <= maxi; ++i)
         dst.copyCoeff(i, j, src);
       if (ClearOpposite)
@@ -512,7 +512,7 @@ struct triangular_assignment_selector<Derived1, Derived2, Lower, Dynamic, ClearO
     {
       for(Index i = j; i < dst.rows(); ++i)
         dst.copyCoeff(i, j, src);
-      Index maxi = std::min(j, dst.rows());
+      Index maxi = (std::min)(j, dst.rows());
       if (ClearOpposite)
         for(Index i = 0; i < maxi; ++i)
           dst.coeffRef(i, j) = static_cast<typename Derived1::Scalar>(0);
@@ -528,7 +528,7 @@ struct triangular_assignment_selector<Derived1, Derived2, StrictlyUpper, Dynamic
   {
     for(Index j = 0; j < dst.cols(); ++j)
     {
-      Index maxi = std::min(j, dst.rows());
+      Index maxi = (std::min)(j, dst.rows());
       for(Index i = 0; i < maxi; ++i)
         dst.copyCoeff(i, j, src);
       if (ClearOpposite)
@@ -548,7 +548,7 @@ struct triangular_assignment_selector<Derived1, Derived2, StrictlyLower, Dynamic
     {
       for(Index i = j+1; i < dst.rows(); ++i)
         dst.copyCoeff(i, j, src);
-      Index maxi = std::min(j, dst.rows()-1);
+      Index maxi = (std::min)(j, dst.rows()-1);
       if (ClearOpposite)
         for(Index i = 0; i <= maxi; ++i)
           dst.coeffRef(i, j) = static_cast<typename Derived1::Scalar>(0);
@@ -564,7 +564,7 @@ struct triangular_assignment_selector<Derived1, Derived2, UnitUpper, Dynamic, Cl
   {
     for(Index j = 0; j < dst.cols(); ++j)
     {
-      Index maxi = std::min(j, dst.rows());
+      Index maxi = (std::min)(j, dst.rows());
       for(Index i = 0; i < maxi; ++i)
         dst.copyCoeff(i, j, src);
       if (ClearOpposite)
@@ -584,7 +584,7 @@ struct triangular_assignment_selector<Derived1, Derived2, UnitLower, Dynamic, Cl
   {
     for(Index j = 0; j < dst.cols(); ++j)
     {
-      Index maxi = std::min(j, dst.rows());
+      Index maxi = (std::min)(j, dst.rows());
       for(Index i = maxi+1; i < dst.rows(); ++i)
         dst.copyCoeff(i, j, src);
       if (ClearOpposite)
@@ -796,7 +796,7 @@ bool MatrixBase<Derived>::isUpperTriangular(RealScalar prec) const
   RealScalar maxAbsOnUpperPart = static_cast<RealScalar>(-1);
   for(Index j = 0; j < cols(); ++j)
   {
-    Index maxi = std::min(j, rows()-1);
+    Index maxi = (std::min)(j, rows()-1);
     for(Index i = 0; i <= maxi; ++i)
     {
       RealScalar absValue = internal::abs(coeff(i,j));
@@ -828,7 +828,7 @@ bool MatrixBase<Derived>::isLowerTriangular(RealScalar prec) const
   RealScalar threshold = maxAbsOnLowerPart * prec;
   for(Index j = 1; j < cols(); ++j)
   {
-    Index maxi = std::min(j, rows()-1);
+    Index maxi = (std::min)(j, rows()-1);
     for(Index i = 0; i < maxi; ++i)
       if(internal::abs(coeff(i, j)) > threshold) return false;
   }

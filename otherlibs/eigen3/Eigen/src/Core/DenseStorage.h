@@ -128,16 +128,6 @@ template<typename T, int _Rows, int _Cols, int _Options> class DenseStorage<T, 0
     inline T *data() { return 0; }
 };
 
-// more specializations for null matrices; these are necessary to resolve ambiguities
-template<typename T, int _Options> class DenseStorage<T, 0, Dynamic, Dynamic, _Options>
-: public DenseStorage<T, 0, 0, 0, _Options> { };
-
-template<typename T, int _Rows, int _Options> class DenseStorage<T, 0, _Rows, Dynamic, _Options>
-: public DenseStorage<T, 0, 0, 0, _Options> { };
-
-template<typename T, int _Cols, int _Options> class DenseStorage<T, 0, Dynamic, _Cols, _Options>
-: public DenseStorage<T, 0, 0, 0, _Options> { };
-
 // dynamic-size matrix with fixed-size storage
 template<typename T, int Size, int _Options> class DenseStorage<T, Size, Dynamic, Dynamic, _Options>
 {
