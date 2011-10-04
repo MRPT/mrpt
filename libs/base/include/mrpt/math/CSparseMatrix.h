@@ -37,6 +37,10 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 
+// I don't like this solution, since can cause problems if CSparse structs
+//  change in the future (unlikely): even if we are linking against the CSparse
+//  embedded lib or a system lib, use the embedded headers. The reason: not to
+//  force MRPT users to install CSparse headers.
 extern "C"{
 #include <mrpt/otherlibs/CSparse/cs.h>
 }
@@ -259,8 +263,8 @@ namespace mrpt
 			  */
 			void insert_entry(const size_t row, const size_t col, const double val );
 
-			/** ONLY for TRIPLET matrices: Insert an element into a "cs", without checking if the matrix is in Triplet format and without extending the matrix extension/limits if (row,col) is out of the current size. */
-			void insert_entry_fast(const size_t row, const size_t col, const double val );
+			/** This was an optimized version, but is now equivalent to insert_entry() due to the need to be compatible with unmodified CSparse system libraries. */
+			inline void insert_entry_fast(const size_t row, const size_t col, const double val )  { insert_entry(row,col,val); }
 
 			/** ONLY for TRIPLET matrices: insert a given matrix (in any of the MRPT formats) at a given location of the sparse matrix.
 			  *  This method cannot be used once the matrix is in column-compressed form.

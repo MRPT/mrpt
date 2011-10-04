@@ -30,6 +30,17 @@
 
 #include <mrpt/math/CSparseMatrix.h>
 
+// Read the note in the .h: Use embedded headers even for compiling against
+//  a system library.
+//#ifdef MRPT_HAS_CSPARSE_SYSTEM
+//#	include <cs.h>
+//#else
+extern "C"{
+#include <mrpt/otherlibs/CSparse/cs.h>
+}
+//#endif
+
+
 using std::string;
 using std::cout;
 using std::endl;
@@ -165,14 +176,6 @@ void CSparseMatrix::insert_entry(const size_t row, const size_t col, const doubl
 	if (!cs_entry(&sparse_matrix,row,col,val))
 		THROW_EXCEPTION("Error inserting element in sparse matrix (out of mem?)")
 }
-
-/** Insert an element into a "cs", without checking if the matrix is in Triplet format */
-void CSparseMatrix::insert_entry_fast(const size_t row, const size_t col, const double val )
-{
-	if (!cs_entry_no_extend(&sparse_matrix,row,col,val))
-		THROW_EXCEPTION("Error inserting element in sparse matrix (out of mem?)")
-}
-
 
 /** Copy operator from another existing object */
 void CSparseMatrix::operator = (const CSparseMatrix & other)
@@ -335,7 +338,7 @@ void CSparseMatrix::CholeskyDecomp::backsub(
 	cs_ipvec(m_symbolic_structure->pinv,&b[0],&tmp[0],b.size()); /* tmp = PERMUT*b */
 	//permute con. pivoting
 	cs_lsolve(m_numeric_structure->L,&tmp[0]);   /* tmp = L\tmp */
-	cs_ltsolve(m_numeric_structure->L,&tmp[0]);  /* tmp = L'\tmp */ 
+	cs_ltsolve(m_numeric_structure->L,&tmp[0]);  /* tmp = L'\tmp */
 	cs_pvec(m_symbolic_structure->pinv,&tmp[0],&sol[0],b.size()); /* sol = PERMUT'*tmp */
 	//unpermute con. pivoting
 

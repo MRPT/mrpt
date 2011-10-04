@@ -30,7 +30,6 @@ int cs_cholsol (int order, const cs *A, double *b) ;
 cs *cs_compress (const cs *T) ;
 int cs_dupl (cs *A) ;
 int cs_entry (cs *T, int i, int j, double x) ;
-int cs_entry_no_extend (cs *T, int i, int j, double x) ;   //! Added by JLBC for MRPT: Just like cs_entry but doesn't extend the matrix limits.
 int cs_gaxpy (const cs *A, const double *x, double *y) ;
 cs *cs_load (FILE *f) ;
 int cs_lusol (int order, const cs *A, double *b, double tol) ;

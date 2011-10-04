@@ -24,9 +24,11 @@ LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.cpp"
 LIST(APPEND base_EXTRA_SRCS_NAME 	"utils/xmlparser" "utils/xmlparser")
 
 # CSparse
-LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/math/CSparse/*.c" "${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/CSparse/*.h")
-LIST(APPEND base_EXTRA_SRCS_NAME 	"math/CSparse" "math/CSparse")
-INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/CSparse/")
+IF(NOT CMAKE_MRPT_HAS_CSPARSE_SYSTEM)
+	LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/math/CSparse/*.c" "${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/CSparse/*.h")
+	LIST(APPEND base_EXTRA_SRCS_NAME 	"math/CSparse" "math/CSparse")
+	INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/CSparse/")
+ENDIF(NOT CMAKE_MRPT_HAS_CSPARSE_SYSTEM)
 
 # Eigen library
 LIST(APPEND base_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/include/Eigen/*")

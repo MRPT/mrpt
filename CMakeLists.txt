@@ -1458,8 +1458,8 @@ SET(CMAKE_MRPT_HAS_CHOLDMOD_SYSTEM 0)
 FIND_PACKAGE(SuiteSparse)
 IF(CHOLMOD_FOUND)
 	IF($ENV{VERBOSE})
-		MESSAGE(STATUS "Choldmod includedir: ${CHOLMOD_INCLUDE_DIR}")
-		MESSAGE(STATUS "Choldmod libs: ${CHOLMOD_LIBRARIES}")
+		MESSAGE(STATUS "Choldmod: includedir: ${CHOLMOD_INCLUDE_DIR}")
+		MESSAGE(STATUS "          libs: ${CHOLMOD_LIBRARIES}")
 	ENDIF($ENV{VERBOSE})
 
 	INCLUDE_DIRECTORIES(${CHOLMOD_INCLUDE_DIR})
@@ -1468,6 +1468,26 @@ IF(CHOLMOD_FOUND)
 	SET(CMAKE_MRPT_HAS_CHOLDMOD 1)
 	SET(CMAKE_MRPT_HAS_CHOLDMOD_SYSTEM 1)
 ENDIF(CHOLMOD_FOUND)
+
+# SuiteSparse: CSparse
+# ----------------------------
+IF(CSPARSE_FOUND)
+	IF($ENV{VERBOSE})
+		MESSAGE(STATUS "CSparse: includedir: ${CSPARSE_INCLUDE_DIR}")
+		MESSAGE(STATUS "         libs: ${CSPARSE_LIBRARY}")
+	ENDIF($ENV{VERBOSE})
+
+	INCLUDE_DIRECTORIES(${CSPARSE_INCLUDE_DIR})
+	APPEND_MRPT_LIBS(${CSPARSE_LIBRARY})
+	
+	SET(CMAKE_MRPT_HAS_CSPARSE 1)
+	SET(CMAKE_MRPT_HAS_CSPARSE_SYSTEM 1)
+ELSE(CSPARSE_FOUND)
+	# Default: use embedded version
+	SET(CMAKE_MRPT_HAS_CSPARSE 1)
+	SET(CMAKE_MRPT_HAS_CSPARSE_SYSTEM 0)
+ENDIF(CSPARSE_FOUND)
+
 
 # Save the basic list of libraries (without MRPT-libs):
 # -------------------------------------------------------------------------------------
@@ -2352,6 +2372,7 @@ SHOW_CONFIG_LINE("Use SSE3/SSSE3?                         " CMAKE_MRPT_HAS_SSE3)
 
 SHOW_CONFIG_LINE_SYSTEM("Has eigen3                              " CMAKE_MRPT_HAS_EIGEN "Version: ${PKG_EIGEN3_VERSION}")
 SHOW_CONFIG_LINE_SYSTEM("Has SuiteSparse/CHOLMOD                 " CMAKE_MRPT_HAS_CHOLDMOD)
+SHOW_CONFIG_LINE_SYSTEM("Has SuiteSparse/CSparse                 " CMAKE_MRPT_HAS_CSPARSE)
 
 IF(NOT UNIX)	# In fact, it's not "support for Bumblebee" but for it thru PGR vendor libraries. 
 	SHOW_CONFIG_LINE("Has PGR Digiclops/Triclops              " CMAKE_MRPT_HAS_BUMBLEBEE)
