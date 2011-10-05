@@ -67,13 +67,13 @@ namespace mrpt
 				static void write_VERTEX_line(const TNodeID id, const CPose2D &p, std::ofstream &f)
 				{
 					//  VERTEX2 id x y phi
-					f << "VERTEX2 " << id << format(" %.04f %.04f %.04f\n",p.x(),p.y(),p.phi() );
+					f << "VERTEX2 " << id << " " << p.x() << " " << p.y() << " " << p.phi() << endl;
 				}
 				static void write_VERTEX_line(const TNodeID id, const CPose3D &p, std::ofstream &f)
 				{
 					//  VERTEX3 id x y z roll pitch yaw
 					// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
-					f << "VERTEX3 " << id << format(" %.04f %.04f %.04f %.04f %.04f %.04f\n",p.x(),p.y(),p.z(),p.roll(),p.pitch(),p.yaw() );
+					f << "VERTEX3 " << id << " " << p.x() << " " << p.y() << " " << p.z()<< " " << p.roll()<< " " << p.pitch()<< " " << p.yaw() << endl;
 				}
 
 
@@ -82,7 +82,6 @@ namespace mrpt
 					//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
 					// **CAUTION** TORO docs say "from_id" "to_id" in the opposite order, but it seems from the data that this is the correct expected format.
 					f << "EDGE2 " << edgeIDs.first << " " << edgeIDs.second << " " <<
-						//format(" %.06f %.06f %.06f %e %e %e %e %e %e\n",
 							edge.mean.x()<<" "<<edge.mean.y()<<" "<<edge.mean.phi()<<" "<<
 							edge.cov_inv(0,0)<<" "<<edge.cov_inv(0,1)<<" "<<edge.cov_inv(1,1)<<" "<<
 							edge.cov_inv(2,2)<<" "<<edge.cov_inv(0,2)<<" "<<edge.cov_inv(1,2) << endl;
@@ -93,7 +92,6 @@ namespace mrpt
 					// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
 					// **CAUTION** TORO docs say "from_id" "to_id" in the opposite order, but it seems from the data that this is the correct expected format.
 					f << "EDGE3 " << edgeIDs.first << " " << edgeIDs.second << " " <<
-						//format(" %.06f %.06f %.06f %.06f %.06f %.06f %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e %e\n",
 							edge.mean.x()<<" "<<edge.mean.y()<<" "<<edge.mean.z()<<" "<<
 							edge.mean.roll()<<" "<<edge.mean.pitch()<<" "<<edge.mean.yaw()<<" "<<
 							edge.cov_inv(0,0)<<" "<<edge.cov_inv(0,1)<<" "<<edge.cov_inv(0,2)<<" "<<edge.cov_inv(0,5)<<" "<<edge.cov_inv(0,4)<<" "<<edge.cov_inv(0,3)<<" "<<
