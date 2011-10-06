@@ -28,7 +28,9 @@
 namespace Eigen {
 
 /** \ingroup Unsupported_modules
-  * \defgroup AutoDiff_Module Auto Diff module
+  * \defgroup AutoDiff_Module Auto Diff module  
+ * \ingroup eigen_grp
+ * \ingroup eigen_grp
   *
   * This module features forward automatic differentation via a simple
   * templated scalar type wrapper AutoDiffScalar.

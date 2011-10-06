@@ -14,7 +14,9 @@
 namespace Eigen {
 
     /** \ingroup Unsupported_modules
-     *  \defgroup Skyline_Module Skyline module
+     *  \defgroup Skyline_Module Skyline module  
+ * \ingroup eigen_grp
+ * \ingroup eigen_grp
      *
      *
      *

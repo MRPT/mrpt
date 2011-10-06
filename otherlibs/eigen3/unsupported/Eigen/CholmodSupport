@@ -12,7 +12,9 @@ extern "C" {
 namespace Eigen {
 
 /** \ingroup Unsupported_modules
-  * \defgroup CholmodSupport_Module Cholmod Support module
+  * \defgroup CholmodSupport_Module Cholmod Support module  
+ * \ingroup eigen_grp
+ * \ingroup eigen_grp
   *
   *
   * \code

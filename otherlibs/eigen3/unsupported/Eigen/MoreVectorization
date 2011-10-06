@@ -6,7 +6,9 @@
 namespace Eigen {
 
 /** \ingroup Unsupported_modules
-  * \defgroup MoreVectorization More vectorization module
+  * \defgroup MoreVectorization More vectorization module  
+ * \ingroup eigen_grp
+ * \ingroup eigen_grp
   */
 
 #include "src/MoreVectorization/MathFunctions.h"

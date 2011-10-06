@@ -35,7 +35,9 @@
 namespace Eigen {
 
 /** \ingroup Unsupported_modules
-  * \defgroup NonLinearOptimization_Module Non linear optimization module
+  * \defgroup NonLinearOptimization_Module Non linear optimization module  
+ * \ingroup eigen_grp
+ * \ingroup eigen_grp
   *
   * \code
   * #include <unsupported/Eigen/NonLinearOptimization>

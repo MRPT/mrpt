@@ -7,7 +7,8 @@
 
 namespace Eigen {
 
-/** \defgroup Jacobi_Module Jacobi module
+/** \defgroup Jacobi_Module Jacobi module 
+ * \ingroup eigen_grp
   * This module provides Jacobi and Givens rotations.
   *
   * \code

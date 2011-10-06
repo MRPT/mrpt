@@ -32,7 +32,9 @@
 
 
 /** \ingroup Unsupported_modules
-  * \defgroup FFT_Module Fast Fourier Transform module
+  * \defgroup FFT_Module Fast Fourier Transform module  
+ * \ingroup eigen_grp
+ * \ingroup eigen_grp
   *
   * \code
   * #include <unsupported/Eigen/FFT>

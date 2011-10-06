@@ -15,7 +15,9 @@ namespace Eigen { struct SluMatrix; }
 namespace Eigen {
 
 /** \ingroup Unsupported_modules
-  * \defgroup SuperLUSupport_Module Super LU support
+  * \defgroup SuperLUSupport_Module Super LU support  
+ * \ingroup eigen_grp
+ * \ingroup eigen_grp
   *
   *
   *

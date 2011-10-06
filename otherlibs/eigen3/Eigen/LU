@@ -7,7 +7,8 @@
 
 namespace Eigen {
 
-/** \defgroup LU_Module LU module
+/** \defgroup LU_Module LU module 
+ * \ingroup eigen_grp
   * This module includes %LU decomposition and related notions such as matrix inversion and determinant.
   * This module defines the following MatrixBase methods:
   *  - MatrixBase::inverse()

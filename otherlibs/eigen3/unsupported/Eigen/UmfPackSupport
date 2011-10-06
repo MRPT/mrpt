@@ -12,7 +12,9 @@ extern "C" {
 namespace Eigen {
 
 /** \ingroup Unsupported_modules
-  * \defgroup UmfPackSupport_Module UmfPack support module
+  * \defgroup UmfPackSupport_Module UmfPack support module  
+ * \ingroup eigen_grp
+ * \ingroup eigen_grp
   *
   *
   *

@@ -17,7 +17,8 @@
 
 namespace Eigen {
 
-/** \defgroup LeastSquares_Module LeastSquares module
+/** \defgroup LeastSquares_Module LeastSquares module 
+ * \ingroup eigen_grp
   * This module provides linear regression and related features.
   *
   * \code
