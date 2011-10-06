@@ -254,9 +254,8 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPose3DPDF &o)
 
 		for (size_t i=0;i<p->size();i++)
 		{
-			opengl::CSetOfObjectsPtr axes = opengl::stock_objects::CornerXYZ();
+			opengl::CSetOfObjectsPtr axes = opengl::stock_objects::CornerXYZSimple(POSE_AXIS_SCALE);
 			axes->setPose(*p->m_particles[i].d);
-			axes->setScale(POSE_AXIS_SCALE);
 			outObj->insert(axes);
 		}
 

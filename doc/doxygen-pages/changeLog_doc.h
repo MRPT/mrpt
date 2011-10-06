@@ -778,7 +778,7 @@
 		- Fixed the detection of some standard functions (erfc,lrint,...) under GCC for defining the HAVE_XXX's in config.h
 	- New small functions:
 		- mrpt::math::chi2PDF, mrpt::math::chi2CDF, mrpt::math::noncentralChi2CDF  (adapted from code in the Vigra project).
-		- trace() (in all matrices), mrpt::math::KLD_Gaussians, mrpt::math::condidenceIntervals
+		- trace() (in all matrices), mrpt::math::KLD_Gaussians, mrpt::math::confidenceIntervals
 		- mrpt::random::random_generator_for_STL
 	- New examples:
 		- math_iterators_test

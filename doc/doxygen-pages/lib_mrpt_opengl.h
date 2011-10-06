@@ -48,9 +48,22 @@ Below follows a table with the preview of most rendering primitive classes:
 </table>
 </div>
 
+Also, pose PDF classes can be converted into OpenGL objects with CSetOfObjects::posePDF2opengl():
+
+<div align="center">
+<table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+ <tr> <td> CSetOfObjects::posePDF2opengl() <br> for mrpt::poses::CPosePDFParticles</td> <td> \image html preview_CPosePDFParticles_as_opengl.png </td> </tr>
+</table>
+</div>
+
+
 Note: The following extra OpenGL classes are provided by other libraries:
-* mrpt::opengl::CAngularObservationMesh (In mrpt-maps)
-* mrpt::opengl::CPlanarLaserScan (In mrpt-maps)
+ * mrpt::opengl::CAngularObservationMesh (In mrpt-maps)
+ * mrpt::opengl::CPlanarLaserScan (In mrpt-maps)
+
+
+
+preview_CPosePDFParticles_as_opengl
 
 */
 

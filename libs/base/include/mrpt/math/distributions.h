@@ -302,7 +302,7 @@ namespace mrpt
 		  * \param confidenceInterval A number in the range (0,1) such as the confidence interval will be [100*confidenceInterval, 100*(1-confidenceInterval)].
 		  */
 		template <typename CONTAINER>
-		void condidenceIntervals(
+		void confidenceIntervals(
 			const CONTAINER &data,
 			typename CONTAINER::value_type &out_mean,
 			typename CONTAINER::value_type &out_lower_conf_interval,

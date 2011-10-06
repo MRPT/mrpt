@@ -825,7 +825,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 		// Avr. error:
 		double covergenceErrorMean, covergenceErrorsMin,covergenceErrorsMax;
-		math::condidenceIntervals(covergenceErrors, covergenceErrorMean, covergenceErrorsMin,covergenceErrorsMax, STATS_CONF_INTERVAL);
+		math::confidenceIntervals(covergenceErrors, covergenceErrorMean, covergenceErrorsMin,covergenceErrorsMax, STATS_CONF_INTERVAL);
 
 		// Save overall results:
 		{
