@@ -25,51 +25,65 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-#ifndef CPOSEORPOINT_DETAIL_H
-#define CPOSEORPOINT_DETAIL_H
 
-namespace mrpt
-{
-	namespace poses
+#include <mrpt/base.h>
+#include <gtest/gtest.h>
+
+using namespace mrpt;
+using namespace mrpt::poses;
+using namespace mrpt::utils;
+using namespace mrpt::math;
+using namespace std;
+
+
+
+class Pose3DRotVecTests : public ::testing::Test {
+protected:
+	virtual void SetUp()
 	{
-		class CPoint2D;
-		class CPoint3D;
-		class CPose2D;
-		class CPose3D;
-		class CPose3DQuat;
-		class CPose3DRotVec;
+	}
 
-		/** Internal, auxiliary templates for MRPT classes */
-		namespace detail
-		{
-			template <class POSEORPOINT>  struct T3DTypeHelper; // generic version. Specialized below.
+	virtual void TearDown() {  }
 
-			template <>  struct T3DTypeHelper<CPoint2D> { enum { is_3D_val = 0 }; };
-			template <>  struct T3DTypeHelper<CPoint3D> { enum { is_3D_val = 1 }; };
-			template <>  struct T3DTypeHelper<CPose2D> { enum { is_3D_val = 0 }; };
-			template <>  struct T3DTypeHelper<CPose3D> { enum { is_3D_val = 1 }; };
-			template <>  struct T3DTypeHelper<CPose3DQuat> { enum { is_3D_val = 1 }; };
-			template <>  struct T3DTypeHelper<CPose3DRotVec> { enum { is_3D_val = 1 }; };
+	void test_default_values(const CPose3DRotVec &p, const std::string & label)
+	{
+		EXPECT_EQ(p.x(),0);
+		EXPECT_EQ(p.y(),0);
+		EXPECT_EQ(p.z(),0);
+		EXPECT_EQ(p.rx(),0);
+		EXPECT_EQ(p.ry(),0);
+		EXPECT_EQ(p.rz(),0);
 
-
-			template <class DERIVEDCLASS, int IS3D> struct pose_point_impl;  // generic template, specialized below:
-
-			// Extra members for 3D implementation:
-			template <class DERIVEDCLASS> struct pose_point_impl<DERIVEDCLASS,1>
-			{
-				inline double z() const /*!< Get Z coord. */ { return static_cast<const DERIVEDCLASS*>(this)->m_coords[2]; }
-				inline double &z() /*!< Get ref to Z coord. */ { return static_cast<DERIVEDCLASS*>(this)->m_coords[2]; }
-				inline void z(const double v) /*!< Set Z coord. */ { static_cast<DERIVEDCLASS*>(this)->m_coords[2]=v; }
-				inline void z_incr(const double v) /*!< Z+=v */ { static_cast<DERIVEDCLASS*>(this)->m_coords[2]+=v; }
-			};
-
-			// Extra members for 2D implementation:
-			template <class DERIVEDCLASS> struct pose_point_impl<DERIVEDCLASS,0>
-			{
-			};
-
-		} // End of namespace
-	} // End of namespace
-} // End of namespace
-
+#if 0
+		CMatrixDouble44 HM = p.getHomogeneousMatrixVal();
+		for (size_t i=0;i<4;i++)
+			for (size_t j=0;j<4;j++)
+				EXPECT_NEAR(HM(i,j), i==j ? 1.0 : 0.0, 1e-8 )
+					<< "Failed for (i,j)=" << i << "," << j << endl
+					<< "Matrix is: " << endl << HM << endl
+					<< "case was: " << label << endl;
 #endif
+	}
+
+};
+
+// Elemental tests:
+TEST_F(Pose3DRotVecTests,DefaultValues)
+{
+	{
+		CPose3DRotVec   p;
+		test_default_values(p, "Default");
+	}
+}
+
+TEST_F(Pose3DRotVecTests,Initialization)
+{
+    MRPT_TODO("Continue with unit tests")
+//	Pose3DRotVecTests   p(1,2,3,0.2,0.3,0.4);
+//	EXPECT_NEAR(p.x(),1,  1e-7);
+//	EXPECT_NEAR(p.y(),2,  1e-7);
+//	EXPECT_NEAR(p.z(),3,  1e-7);
+//	EXPECT_NEAR(p.yaw(),0.2,  1e-7);
+//	EXPECT_NEAR(p.pitch(),0.3,  1e-7);
+//	EXPECT_NEAR(p.roll(),0.4,  1e-7);
+}

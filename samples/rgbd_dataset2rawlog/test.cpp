@@ -81,17 +81,18 @@ typename CONTAINER::const_iterator find_closest(
 void rgbd2rawlog(const string &src_path, const string &out_name)
 {
 	const string in_fil_acc   = src_path+string("/accelerometer.txt");
-	const string in_fil_depth = src_path+string("/depth.txt");
+	const string in_fil_depth = mrpt::system::fileExists(src_path+string("/ir.txt")) ? src_path+string("/ir.txt") : src_path+string("/depth.txt");
 	const string in_fil_rgb = src_path+string("/rgb.txt");
 
-	ASSERT_FILE_EXISTS_(in_fil_acc)
-	ASSERT_FILE_EXISTS_(in_fil_depth)
-	ASSERT_FILE_EXISTS_(in_fil_rgb)
+	//ASSERT_FILE_EXISTS_(in_fil_acc)
+	//ASSERT_FILE_EXISTS_(in_fil_depth)
+	//ASSERT_FILE_EXISTS_(in_fil_rgb)
 
 	// make a list with RGB & DEPTH files ------------------------
 	map<double,string>  list_rgb, list_depth;
 	map<double,vector<double> >  list_acc;
 	std::istringstream line;
+	if (mrpt::system::fileExists(in_fil_rgb))
 	{
 		mrpt::utils::CTextFileLinesParser  fparser(in_fil_rgb);
 		while (fparser.getNextLine(line))
@@ -102,6 +103,7 @@ void rgbd2rawlog(const string &src_path, const string &out_name)
 				list_rgb[tim]=f;
 		}
 	}
+	if (mrpt::system::fileExists(in_fil_depth))
 	{
 		mrpt::utils::CTextFileLinesParser  fparser(in_fil_depth);
 		while (fparser.getNextLine(line))
@@ -112,6 +114,7 @@ void rgbd2rawlog(const string &src_path, const string &out_name)
 				list_depth[tim]=f;
 		}
 	}
+	if (mrpt::system::fileExists(in_fil_acc))
 	{
 		mrpt::utils::CTextFileLinesParser  fparser(in_fil_acc);
 		while (fparser.getNextLine(line))
@@ -129,6 +132,10 @@ void rgbd2rawlog(const string &src_path, const string &out_name)
 		}
 	}
 	cout << "Parsed: " << list_depth.size() << " / " << list_rgb.size() << " / " << list_acc.size() << " depth/rgb/acc entries.\n";
+
+	const bool only_ir  = list_depth.size()>10 && list_rgb.empty();
+	const bool only_rgb = list_depth.empty() && list_rgb.size()>10;
+
 
 	// Create output directory for images ------------------------------
 	const string  out_img_dir = out_name + string("_Images");
@@ -162,31 +169,83 @@ void rgbd2rawlog(const string &src_path, const string &out_name)
 
 	// Go thru the data:
 	unsigned int counter = 0;
-	for (map<double,string>::const_iterator it_list_rgb=list_rgb.begin();it_list_rgb!=list_rgb.end();++it_list_rgb)
+	if (!only_ir && !only_rgb)
 	{
-		cout << "Processing image " << counter<< "\r"; cout.flush();
-		counter++;
-
-		// This is not the most efficient solution in the world, but...come on! it's just a rawlog converter tool!
-		map<double,string>::const_iterator it_list_depth = find_closest( list_depth, it_list_rgb->first );
-
-		const double At = std::abs( it_list_rgb->first - it_list_depth->first );
-		if (At> (1./KINECT_FPS)*.5 )
+		for (map<double,string>::const_iterator it_list_rgb=list_rgb.begin();it_list_rgb!=list_rgb.end();++it_list_rgb)
 		{
-			cout << "\nWarning: Discarding observation for too separated RGB/D timestamps: " << At*1e3 << " ms\n";
+			cout << "Processing image " << counter<< "\r"; cout.flush();
+			counter++;
+
+			// This is not the most efficient solution in the world, but...come on! it's just a rawlog converter tool!
+			map<double,string>::const_iterator it_list_depth = find_closest( list_depth, it_list_rgb->first );
+
+			const double At = std::abs( it_list_rgb->first - it_list_depth->first );
+			if (At> (1./KINECT_FPS)*.5 )
+			{
+				cout << "\nWarning: Discarding observation for too separated RGB/D timestamps: " << At*1e3 << " ms\n";
+			}
+			else
+			{
+				// OK, we accept this RGB-DEPTH pair:
+				const double avrg_time = .5* (it_list_rgb->first + it_list_depth->first);
+				obs.timestamp   = mrpt::system::time_tToTimestamp(avrg_time);
+
+				// RGB img:
+				obs.hasIntensityImage = true;
+				obs.intensityImage.loadFromFile( src_path + string("/") + it_list_rgb->second );
+				const string sRGBfile = mrpt::format("%.06f_rgb.png", avrg_time );
+				obs.intensityImage.saveToFile( out_img_dir + string("/") + sRGBfile );
+				obs.intensityImage.setExternalStorage(sRGBfile);
+
+				// Depth:
+				obs.hasRangeImage = true;
+				obs.rangeImage_forceResetExternalStorage();
+				mrpt::utils::CImage depth_img;
+				if (!depth_img.loadFromFile(src_path + string("/") + it_list_depth->second ))
+					throw std::runtime_error(string("Error loading depth image!: ") + it_list_depth->second);
+
+				const unsigned int w = depth_img.getWidth();
+				const unsigned int h = depth_img.getHeight();
+				obs.rangeImage_setSize(h,w);
+
+				for (unsigned int row=0;row<h;row++)
+				{
+					const uint16_t *ptr = reinterpret_cast<const uint16_t *>( depth_img.get_unsafe(0,row) );
+					for (unsigned int col=0;col<w;col++)
+						obs.rangeImage(row,col) = (*ptr++) * (1./5000);
+				}
+
+				const string sDepthfile = mrpt::format("%.06f_depth.bin", avrg_time );
+				obs.rangeImage_convertToExternalStorage( sDepthfile, out_img_dir + string("/") );
+
+				// save:
+				f_out << obs;
+
+				// Search for acc data:
+				map<double,vector<double> >::const_iterator it_list_acc = find_closest(list_acc ,avrg_time);
+				const double At_acc = std::abs( it_list_rgb->first - it_list_acc->first );
+				if (At_acc<1e-2)
+				{
+					obs_imu.timestamp = mrpt::system::time_tToTimestamp(avrg_time);
+
+					obs_imu.rawMeasurements[IMU_X_ACC] = it_list_acc->second[0];
+					obs_imu.rawMeasurements[IMU_Y_ACC] = it_list_acc->second[1];
+					obs_imu.rawMeasurements[IMU_Z_ACC] = it_list_acc->second[2];
+
+					f_out << obs_imu;
+				}
+			}
 		}
-		else
+	}
+	else if (only_ir)
+	{
+		for (map<double,string>::const_iterator it_list_depth=list_depth.begin();it_list_depth!=list_depth.end();++it_list_depth)
 		{
-			// OK, we accept this RGB-DEPTH pair:
-			const double avrg_time = .5* (it_list_rgb->first + it_list_depth->first);
-			obs.timestamp   = mrpt::system::time_tToTimestamp(avrg_time);
+			cout << "Processing image " << counter<< "\r"; cout.flush();
+			counter++;
 
-			// RGB img:
-			obs.hasIntensityImage = true;
-			obs.intensityImage.loadFromFile( src_path + string("/") + it_list_rgb->second );
-			const string sRGBfile = mrpt::format("%.06f_rgb.png", avrg_time );
-			obs.intensityImage.saveToFile( out_img_dir + string("/") + sRGBfile );
-			obs.intensityImage.setExternalStorage(sRGBfile);
+			const double avrg_time = it_list_depth->first;
+			obs.timestamp   = mrpt::system::time_tToTimestamp(it_list_depth->first);
 
 			// Depth:
 			obs.hasRangeImage = true;
@@ -211,20 +270,27 @@ void rgbd2rawlog(const string &src_path, const string &out_name)
 
 			// save:
 			f_out << obs;
+		}
+	}
+	else if (only_rgb)
+	{
+		for (map<double,string>::const_iterator it_list_rgb=list_rgb.begin();it_list_rgb!=list_rgb.end();++it_list_rgb)
+		{
+			cout << "Processing image " << counter<< "\r"; cout.flush();
+			counter++;
 
-			// Search for acc data:
-			map<double,vector<double> >::const_iterator it_list_acc = find_closest(list_acc ,avrg_time);
-			const double At_acc = std::abs( it_list_rgb->first - it_list_acc->first );
-			if (At_acc<1e-2)
-			{
-				obs_imu.timestamp = mrpt::system::time_tToTimestamp(avrg_time);
+			const double avrg_time = it_list_rgb->first;
+			obs.timestamp   = mrpt::system::time_tToTimestamp(it_list_rgb->first);
 
-				obs_imu.rawMeasurements[IMU_X_ACC] = it_list_acc->second[0];
-				obs_imu.rawMeasurements[IMU_Y_ACC] = it_list_acc->second[1];
-				obs_imu.rawMeasurements[IMU_Z_ACC] = it_list_acc->second[2];
+			// RGB img:
+			obs.hasIntensityImage = true;
+			obs.intensityImage.loadFromFile( src_path + string("/") + it_list_rgb->second );
+			const string sRGBfile = mrpt::format("%.06f_rgb.png", avrg_time );
+			obs.intensityImage.saveToFile( out_img_dir + string("/") + sRGBfile );
+			obs.intensityImage.setExternalStorage(sRGBfile);
 
-				f_out << obs_imu;
-			}
+			// save:
+			f_out << obs;
 		}
 	}
 
