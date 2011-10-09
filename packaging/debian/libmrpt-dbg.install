@@ -1,1 +1,2 @@
 usr/lib/lib*-dbg.so
+usr/share/lintian/overrides/libmrpt-dbg

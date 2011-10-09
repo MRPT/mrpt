@@ -80,6 +80,11 @@ install: build
 	mkdir -p $(CURDIR)/debian/libmrpt-dbg/usr/lib/
 	find $(CURDIR)/debian/ -name "*-dbg.so*" | grep -v 'libmrpt-dev' | grep -v 'libmrpt-dbg' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dbg/usr/lib/
 
+	# Create Lintian overrides:
+	mkdir -p $(CURDIR)/debian/libmrpt-dbg/usr/share/lintian/overrides/
+	echo "libmrpt-dbg: non-dev-pkg-with-shlib-symlink" > $(CURDIR)/debian/libmrpt-dbg/usr/share/lintian/overrides/libmrpt-dbg
+	echo "libmrpt-dbg: package-name-doesnt-match-sonames" >> $(CURDIR)/debian/libmrpt-dbg/usr/share/lintian/overrides/libmrpt-dbg
+
 	
 # Build architecture-independent files here.
 binary-indep: build install
