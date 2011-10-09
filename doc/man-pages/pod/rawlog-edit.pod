@@ -5,14 +5,16 @@ rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
 =head1 SYNOPSIS
 
    rawlog-edit  [--camera-params <SENSOR_LABEL,file.ini>] [--sensors-pose
-                <file.ini>] [--cut] [--export-gps-txt] [--export-gps-kml]
-                [--keep-label <label[,label...]>] [--remove-label <label[
-                ,label...]>] [--list-images] [--info] [--externalize] [-q]
-                [-w] [--to-time <T1>] [--from-time <T0>] [--to-index <N1>]
-                [--from-index <N0>] [--text-file-output <out.txt>]
-                [--image-format <jpg,png,pgm,...>] [-o
-                <dataset_out.rawlog>] -i <dataset.rawlog> [--] [--version]
-                [-h]
+                <file.ini>] [--generate-pcd] [--generate-3d-pointclouds]
+                [--cut] [--export-gps-txt] [--export-gps-kml] [--keep-label
+                <label[,label...]>] [--remove-label <label[,label...]>]
+                [--list-range-bearing] [--list-images] [--info]
+                [--externalize] [-q] [-w] [--to-time <T1>] [--from-time
+                <T0>] [--to-index <N1>] [--from-index <N0>]
+                [--text-file-output <out.txt>] [--image-format <jpg,png,pgm
+                ,...>] [--out-dir <.>] [-o <dataset_out.rawlog>] -i
+                <dataset.rawlog> [--] [--version] [-h]
+
 
 
 =head1 USAGE EXAMPLES
@@ -80,6 +82,21 @@ These are the supported arguments and operations:
      Requires: -o (or --output)
 
 
+   --generate-pcd
+     Op: Generate a PointCloud Library (PCL) PCD file with the point cloud
+     for each sensor observation that can be converted into this
+     representation: laser scans, 3D camera images, etc.
+
+     May use: --out-dir to change the output directory (default: "./")
+
+
+   --generate-3d-pointclouds
+     Op: (re)generate the 3D pointclouds within CObservation3DRangeScan
+     objects that have range data.
+
+     Requires: -o (or --output)
+
+
    --cut
      Op: Cut a part of the input rawlog.
 
@@ -120,6 +137,13 @@ These are the supported arguments and operations:
      labels can be provided separated by commas.
 
      Requires: -o (or --output)
+
+   --list-range-bearing
+     Op: dump a list of all landmark observations of type
+     range-bearing.
+
+     Optionally the output text file can be changed with
+     --text-file-output.
 
    --list-images
      Op: dump a list of all external image files in the dataset.
@@ -163,6 +187,9 @@ These are the supported arguments and operations:
    --image-format <jpg,png,pgm,...>
      External image format
 
+   --out-dir <.>
+     Output directory (used by some commands only)
+
    -o <dataset_out.rawlog>,  --output <dataset_out.rawlog>
      Output dataset (*.rawlog)
 
@@ -178,7 +205,7 @@ These are the supported arguments and operations:
    -h,  --help
      Displays usage information and exits.
 
-
+--
 
 
 =head1 BUGS

@@ -7,6 +7,8 @@ track-video-features - Demonstration of image feature detection and tracking
 track-video-features                        # Asks the user for video input
 track-video-features  I<path_to_video.avi>  # Use video file
 track-video-features  I<dataset.rawlog>     # Use images from rawlog
+track-video-features [...] --save-video     # Also save an output video
+
 
 =head1 DESCRIPTION
 
