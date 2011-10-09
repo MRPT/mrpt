@@ -10,6 +10,8 @@ Build-Depends: debhelper (>= 5),
                libjpeg62-dev | libjpeg8-dev ,
                libwxgtk2.8-dev,
                wx2.8-headers,
+               libwxgtk2.8-dbg,
+               libwxgtk2.8-dbg,
                libftdi-dev,
                freeglut3-dev,
                libcv-dev |libopencv-calib3d-dev, 
@@ -358,6 +360,20 @@ Description: Mobile Robot Programming Toolkit - Development headers
  (SLAM), computer vision, and motion planning (obstacle avoidance).
  .
  This package provides the MRPT headers and libraries for development.
+
+Package: libmrpt-dbg
+Section: debug
+Architecture: any
+Depends: ${misc:Depends},
+         mrpt-libs
+Description: Mobile Robot Programming Toolkit - Debug libraries
+ The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
+ and open source C++ library aimed to help robotics researchers to design and
+ implement algorithms in the fields of Simultaneous Localization and Mapping 
+ (SLAM), computer vision, and motion planning (obstacle avoidance).
+ .
+ This package provides the MRPT *-dbg debug libraries.
+
 
 Package: mrpt-apps
 Architecture: any

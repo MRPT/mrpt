@@ -349,6 +349,9 @@ ELSE(EIGEN_USE_EMBEDDED_VERSION)
 ENDIF(EIGEN_USE_EMBEDDED_VERSION)
 
 INCLUDE_DIRECTORIES("${MRPT_EIGEN_INCLUDE_DIR}")
+IF(EXISTS "${MRPT_EIGEN_INCLUDE_DIR}/unsupported/")
+	INCLUDE_DIRECTORIES("${MRPT_EIGEN_INCLUDE_DIR}/unsupported/")
+ENDIF(EXISTS "${MRPT_EIGEN_INCLUDE_DIR}/unsupported/")
 
 # Create variables just for the final summary of the configuration (see bottom of this file):
 SET(CMAKE_MRPT_HAS_EIGEN 1)        # Always, it's a fundamental dep.!
@@ -1930,10 +1933,12 @@ IF ("${CMAKE_CONFIGURE_LDFLAGS}")
 	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_CONFIGURE_LDFLAGS}")
 ENDIF ("${CMAKE_CONFIGURE_LDFLAGS}")
 
-#MESSAGE(STATUS "Final CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
-#MESSAGE(STATUS "Final CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
-#MESSAGE(STATUS "Final CMAKE_SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
-#MESSAGE(STATUS "Final MRPTLIB_LINKER_LIBS: ${MRPTLIB_LINKER_LIBS}")
+IF($ENV{VERBOSE})
+	MESSAGE(STATUS "Final CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
+	MESSAGE(STATUS "Final CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
+	MESSAGE(STATUS "Final CMAKE_SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
+	MESSAGE(STATUS "Final MRPTLIB_LINKER_LIBS: ${MRPTLIB_LINKER_LIBS}")
+ENDIF($ENV{VERBOSE})
 
 # ----------------------------------------------------------------------------
 #      					PROCESS SUBDIRECTORIES:
@@ -1958,7 +1963,14 @@ MARK_AS_ADVANCED(BUILD_HWDRIVERS)
 IF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 	# Values when building a Debian package ---------------
 	MESSAGE(STATUS "** mrpt cmake: Using Debian post-fix for install directories **")
-	SET(libmrpt_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-dev/usr/")
+	IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		# Debug packages
+		SET(libmrpt_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-dbg/usr/")
+	ELSE(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		# Normal packages
+		SET(libmrpt_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-dev/usr/")
+	ENDIF(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	
 	SET(mrpt_apps_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-apps/usr/")
 	SET(mrpt_doc_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-doc/usr/")
 	SET(mrpt_pkgconfig_INSTALL_PREFIX "/usr")	# Values when building a Debian package
@@ -2190,23 +2202,29 @@ IF( BUILD_TESTING)
 ENDIF( BUILD_TESTING)
 
 
+SET(IS_DEBIAN_DBG_PKG 0)
+IF (CMAKE_MRPT_USE_DEB_POSTFIXS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+	SET(IS_DEBIAN_DBG_PKG 1)
+ENDIF (CMAKE_MRPT_USE_DEB_POSTFIXS AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 # ----------------------------------------------------------------------------
 #   More installation commands:
 # ----------------------------------------------------------------------------
 FILE(GLOB MRPT_PKGCONFIG_PC_FILES "${MRPT_BINARY_DIR}/pkgconfig/mrpt-*.pc")
 
-IF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/mrpt-base.pc")
+IF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/mrpt-base.pc" AND NOT IS_DEBIAN_DBG_PKG)
 	INSTALL(
 		FILES ${MRPT_PKGCONFIG_PC_FILES}
 		DESTINATION ${libmrpt_dev_INSTALL_PREFIX}lib${LIB_SUFFIX}/pkgconfig )
-ENDIF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/mrpt-base.pc")
+ENDIF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/mrpt-base.pc" AND NOT IS_DEBIAN_DBG_PKG)
 
 # CMake will look for MRPTConfig.cmake at: /usr/share|lib/mrpt
 IF(WIN32)
 	INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig.cmake" DESTINATION ./ )
 ELSE(WIN32)
-	INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig.cmake" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}share/mrpt )
+	IF (NOT IS_DEBIAN_DBG_PKG)
+		INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig.cmake" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}share/mrpt )
+	ENDIF(NOT IS_DEBIAN_DBG_PKG)
 ENDIF(WIN32)
 
 # Docs, examples and the rest of files:
@@ -2284,26 +2302,28 @@ IF(WIN32)
 	ENDFOREACH(F)
 	
 ELSE(WIN32)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/doc/html" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/  PATTERN ".svn" EXCLUDE)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/samples" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/  PATTERN ".svn" EXCLUDE)
-	INSTALL(FILES "${MRPT_SOURCE_DIR}/doc/mrpt_example1.tar.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
-	IF(EXISTS "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz")
-		INSTALL(FILES "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
-	ENDIF(EXISTS "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz")
+	IF (NOT IS_DEBIAN_DBG_PKG)
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/doc/html" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/  PATTERN ".svn" EXCLUDE)
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/samples" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/  PATTERN ".svn" EXCLUDE)
+		INSTALL(FILES "${MRPT_SOURCE_DIR}/doc/mrpt_example1.tar.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
+		IF(EXISTS "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz")
+			INSTALL(FILES "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
+		ENDIF(EXISTS "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz")
 	
-	# applications config files
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/applications" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share PATTERN ".svn" EXCLUDE)
-	#INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/menu" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share  PATTERN ".svn" EXCLUDE)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/mrpt" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share  PATTERN ".svn" EXCLUDE)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/pixmaps" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share  PATTERN ".svn" EXCLUDE)
+		# applications config files
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/applications" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share PATTERN ".svn" EXCLUDE)
+		#INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/menu" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share  PATTERN ".svn" EXCLUDE)
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/mrpt" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share  PATTERN ".svn" EXCLUDE)
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/pixmaps" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share  PATTERN ".svn" EXCLUDE)
 
- 	# Mime types go to the mrpt-core package
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/mime" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share  PATTERN ".svn" EXCLUDE)
+	 	# Mime types go to the mrpt-core package
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/mime" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share  PATTERN ".svn" EXCLUDE)
+	ENDIF(NOT IS_DEBIAN_DBG_PKG)
 ENDIF(WIN32)
 
 # The headers of all the MRPT libs:
 # (in win32 the /libs/* tree is install entirely, not only the headers):
-IF (UNIX)
+IF (UNIX AND NOT IS_DEBIAN_DBG_PKG)
 	FOREACH(_LIB ${ALL_MRPT_LIBS})
 		STRING(REGEX REPLACE "mrpt-(.*)" "\\1" _LIB ${_LIB})
 		SET(SRC_DIR "${MRPT_SOURCE_DIR}/libs/${_LIB}/include/")
@@ -2311,15 +2331,17 @@ IF (UNIX)
 			INSTALL(DIRECTORY "${SRC_DIR}" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}include/mrpt/${_LIB}/include/  PATTERN ".svn" EXCLUDE)
 		ENDIF (EXISTS "${SRC_DIR}")
 	ENDFOREACH(_LIB)
-ENDIF(UNIX)
+ENDIF(UNIX AND NOT IS_DEBIAN_DBG_PKG)
 
 
 # Config-dependent headers:
-INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
-INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
+IF (NOT IS_DEBIAN_DBG_PKG)
+	INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
+	INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
+ENDIF(NOT IS_DEBIAN_DBG_PKG)
 
 # If using embedded version, install embedded version as part of mrpt-base's headers:
-IF (EIGEN_USE_EMBEDDED_VERSION)
+IF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
 	IF(WIN32)
 		# Eigen headers must end up in /Program Files/MRPT-X.Y.Z/libs/base/...
 		SET(MRPT_INSTALL_EIGEN_PREFIX "libs/base/include/")
@@ -2331,7 +2353,7 @@ IF (EIGEN_USE_EMBEDDED_VERSION)
 	INSTALL(
 		DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/Eigen" 
 		DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" PATTERN ".svn" EXCLUDE)
-ENDIF (EIGEN_USE_EMBEDDED_VERSION)
+ENDIF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
 
 # ----------------------------------------------------------------------------
 #   Sumary:

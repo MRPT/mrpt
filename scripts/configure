@@ -27,7 +27,7 @@ EOF
 # separate word. The quotes around `$@' are essential!
 # We need TEMP as the `eval set --' would nuke the return value of getopt.
 
-TEMP=`getopt -o h --long help,prefix:,host:,build:,mandir:,infodir:,target:,program-prefix:,exec-prefix:,bindir:,sbindir:,sysconfdir:,datadir:,includedir:,libdir:,libexecdir:,localstatedir:,sharedstatedir: \
+TEMP=`getopt -o h --long help,prefix:,host:,build:,buildtype:,mandir:,infodir:,target:,program-prefix:,exec-prefix:,bindir:,sbindir:,sysconfdir:,datadir:,includedir:,libdir:,libexecdir:,localstatedir:,sharedstatedir: \
      -n 'configure' -- "$@"`
 
 
@@ -43,6 +43,7 @@ while true ; do
 		--prefix) prefix="$2" ; shift 2 ;;
 		--host) host="$2" ; shift 2 ;;
 		--build) build="$2" ; shift 2 ;;
+		--buildtype) buildtype="$2" ; shift 2 ;;
 		--mandir) mandir="$2" ; shift 2 ;;
 		--infodir) infodir="$2" ; shift 2 ;;
 		--target) target="$2" ; shift 2 ;;
@@ -82,6 +83,6 @@ if [ "${MRPT_IS_DEB_PACKAGE}" != "1" ] && [ "${MRPT_IS_RPM_PACKAGE}" != "1" ] ; 
 #echo "   CFLAGS: ${CFLAGS}"
 #echo "   LDFLAGS: ${LDFLAGS}"
 
-cmake . -DCMAKE_INSTALL_PREFIX="${prefix}" -DCMAKE_HOST=${host} -DCMAKE_BUILD=${build} -DCMAKE_MANDIR="${MANDIR}" -DCMAKE_INFODIR="${INFODIR}" -DCMAKE_CONFIGURE_CFLAGS="${CFLAGS}" -DCMAKE_CONFIGURE_LDFLAGS="${LDFLAGS}" -DCMAKE_MRPT_USE_DEB_POSTFIXS="${CMAKE_MRPT_USE_DEB_POSTFIXS}" -DCMAKE_MRPT_IS_RPM_PACKAGE="${MRPT_IS_RPM_PACKAGE}"
+cmake . -DCMAKE_INSTALL_PREFIX="${prefix}" -DCMAKE_HOST=${host} -DCMAKE_BUILD=${build} -DCMAKE_BUILD_TYPE=${buildtype} -DCMAKE_MANDIR="${MANDIR}" -DCMAKE_INFODIR="${INFODIR}" -DCMAKE_CONFIGURE_CFLAGS="${CFLAGS}" -DCMAKE_CONFIGURE_LDFLAGS="${LDFLAGS}" -DCMAKE_MRPT_USE_DEB_POSTFIXS="${CMAKE_MRPT_USE_DEB_POSTFIXS}" -DCMAKE_MRPT_IS_RPM_PACKAGE="${MRPT_IS_RPM_PACKAGE}"
 
 

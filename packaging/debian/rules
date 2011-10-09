@@ -66,6 +66,20 @@ install: build
 	mkdir -p $(CURDIR)/debian/libmrpt-dev/usr/lib/
 	find $(CURDIR)/debian/ -name "*.so" | grep -v 'libmrpt-dev' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dev/usr/lib/
 
+	# DEBUG PACKAGES -------------	
+	./configure MRPT_IS_DEB_PACKAGE=1 --prefix=$(CURDIR)/debian/ CMAKE_MRPT_USE_DEB_POSTFIXS="1" --buildtype=Debug
+
+	# Build libs only
+	cmake . -DBUILD_APPLICATIONS=OFF
+	$(MAKE) VERBOSE=1
+
+	# Install
+	$(MAKE) install
+
+	# Move all the "-dbg.so" files to the proper place: the -dev package:
+	mkdir -p $(CURDIR)/debian/libmrpt-dbg/usr/lib/
+	find $(CURDIR)/debian/ -name "*-dbg.so" | grep -v 'libmrpt-dev' | grep -v 'libmrpt-dbg' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dbg/usr/lib/
+
 	
 # Build architecture-independent files here.
 binary-indep: build install
@@ -83,8 +97,8 @@ binary-arch: build install
 	# Register .desktop files with a MIME type:
 #	dh_desktop -p mrpt-apps
 	dh_link
-#	dh_strip --dbg-package=libmrpt-core-dbg
-	dh_strip
+	#dh_strip -plibmrpt-dbg --dbg-package=libmrpt-dbg
+	dh_strip --exclude=-dbg
 	dh_compress
 	dh_fixperms
 	#export LD_LIBRARY_PATH=$(CURDIR)/debian/libmrpt-base0.X/usr/lib
