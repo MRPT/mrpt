@@ -363,6 +363,7 @@ Description: Mobile Robot Programming Toolkit - Development headers
 
 Package: libmrpt-dbg
 Section: debug
+Priority: extra
 Architecture: any
 Depends: ${misc:Depends},
          mrpt-libs

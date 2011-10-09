@@ -78,7 +78,7 @@ install: build
 
 	# Move all the "-dbg.so" files to the proper place: the -dev package:
 	mkdir -p $(CURDIR)/debian/libmrpt-dbg/usr/lib/
-	find $(CURDIR)/debian/ -name "*-dbg.so" | grep -v 'libmrpt-dev' | grep -v 'libmrpt-dbg' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dbg/usr/lib/
+	find $(CURDIR)/debian/ -name "*-dbg.so*" | grep -v 'libmrpt-dev' | grep -v 'libmrpt-dbg' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dbg/usr/lib/
 
 	
 # Build architecture-independent files here.

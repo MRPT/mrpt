@@ -69,6 +69,8 @@ EIGEN_INDIV_FILES="$EIGEN_BASE_DIR/Array  $EIGEN_BASE_DIR/Cholesky  $EIGEN_BASE_
 MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/)
 MRPT_LIST_INPUT="$MRPT_LIST_DIRECTORIES $EXTRA_INDIV_FILES $EIGEN_INDIV_FILES"
 
+MRPT_EXAMPLE_PATH="$CUR_DIR/doc/doxygen-examples/"
+
 # Checks
 # --------------------------------
 if [ -f version_prefix.txt ]
