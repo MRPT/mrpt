@@ -438,7 +438,7 @@ bool mrpt::system::copyFile(
 
 #ifdef MRPT_OS_WINDOWS
 			// Try changing the permisions of the target file:
-			DWORD dwProp = GetFileAttributes( trg.c_str() );
+			DWORD dwProp = GetFileAttributesA( trg.c_str() );
 			if (dwProp==INVALID_FILE_ATTRIBUTES)
 			{
 				if (outErrStr) *outErrStr = string("Cannot get file attributes for target file, trying to remove a possible read-only attribute after first attempt of copy failed, for: ")+trg;
@@ -450,7 +450,7 @@ bool mrpt::system::copyFile(
 			dwProp &= ~FILE_ATTRIBUTE_READONLY;
 			dwProp &= ~FILE_ATTRIBUTE_SYSTEM;
 
-			if (!SetFileAttributes( trg.c_str(), dwProp ))
+			if (!SetFileAttributesA( trg.c_str(), dwProp ))
 			{
 				if (outErrStr) *outErrStr = string("Cannot get file attributes for target file, trying to remove a possible read-only attribute after first attempt of copy failed, for: ")+trg;
 				fclose(f_src);
@@ -508,13 +508,13 @@ bool mrpt::system::copyFile(
 	if (copyAttribs)
 	{
 #ifdef MRPT_OS_WINDOWS
-		DWORD dwPropSrc = GetFileAttributes( org.c_str() );
+		DWORD dwPropSrc = GetFileAttributesA( org.c_str() );
 		if (dwPropSrc==INVALID_FILE_ATTRIBUTES)
 		{
 			if (outErrStr) *outErrStr = string("Cannot get the file attributes for source file:  ")+org;
 			return false;
 		}
-		DWORD dwPropTrg = GetFileAttributes( trg.c_str() );
+		DWORD dwPropTrg = GetFileAttributesA( trg.c_str() );
 		if (dwPropTrg==INVALID_FILE_ATTRIBUTES)
 		{
 			if (outErrStr) *outErrStr = string("Cannot get the file attributes for target file:  ")+trg;
@@ -534,7 +534,7 @@ bool mrpt::system::copyFile(
 		dwPropTrg |= dwPropSrc;
 
 		// Set attributes of target file:
-		if (!SetFileAttributes( trg.c_str(), dwPropTrg ))
+		if (!SetFileAttributesA( trg.c_str(), dwPropTrg ))
 		{
 			if (outErrStr) *outErrStr = string("Cannot set file attributes for target file: ")+trg;
 			return false;
@@ -543,15 +543,6 @@ bool mrpt::system::copyFile(
 		// Linux: No file attributes to copy.
 #endif
 	} // end // if (copyAttribs)
-
-#ifndef MRPT_OS_WINDOWS
-	// Assure the write permissions by the user:
-//	if (chmod( trg.c_str(), S_IRWXU | S_IRGRP | S_IROTH ) )
-//	{
-//		if (outErrStr) *outErrStr = string("Cannot change file permissions: ")+trg;
-//		return false;
-//	}
-#endif
 
 	return true;
 }
