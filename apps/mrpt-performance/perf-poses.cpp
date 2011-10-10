@@ -117,6 +117,28 @@ double poses_test_compose3Dpoint2(int a1, int a2)
 	return T;
 }
 
+double poses_test_compose3Dpoint3(int a1, int a2)
+{
+	const long N = 500000;
+	CTicTac	 tictac;
+
+	CPose3D   a(1.0,2.0,3.0,DEG2RAD(10),DEG2RAD(50),DEG2RAD(-30));
+	CPoint3D  b(8.0,-5.0,-1.0);
+
+	double x,y,z;
+	mrpt::math::CMatrixFixedNumeric<double,3,3>  df_dpoint;
+	mrpt::math::CMatrixFixedNumeric<double,3,6>  df_dpose;
+	mrpt::math::CMatrixFixedNumeric<double,3,6>  df_dse3;
+
+	for (long i=0;i<N;i++)
+	{
+		a.composePoint(b.x(),b.y(),b.z(),x,y,z, &df_dpoint, &df_dpose, &df_dse3);
+	}
+	double T = tictac.Tac()/N;
+	dummy_do_nothing_with_string( mrpt::format("%f",x) );
+	return T;
+}
+
 double poses_test_invcompose3Dpoint(int a1, int a2)
 {
 	const long N = 500000;
@@ -456,6 +478,7 @@ void register_tests_poses()
 	lstTests.push_back( TestData("poses: CPose3D.composeFrom()",poses_test_compose3D2) );
 	lstTests.push_back( TestData("poses: CPose3D (+) CPoint3D",poses_test_compose3Dpoint ) );
 	lstTests.push_back( TestData("poses: CPose3D.composePoint()",poses_test_compose3Dpoint2 ) );
+	lstTests.push_back( TestData("poses: CPose3D.composePoint()+Jacobs",poses_test_compose3Dpoint3 ) );
 
 	lstTests.push_back( TestData("poses: CPoint3D (-) CPose3D",poses_test_invcompose3Dpoint ) );
 	lstTests.push_back( TestData("poses: CPose3D.inverseComposePoint()",poses_test_invcompose3Dpoint2 ) );

@@ -75,8 +75,8 @@ namespace poses
 
 		/** Default constructor, with all the coordinates set to zero. */
 		inline CPose3DRotVec() {
-		    m_coords[0]=m_coords[1]=m_coords[1]=0;
-		    m_rotvec[0]=m_rotvec[2]=m_rotvec[2]=0;
+		    m_coords[0]=m_coords[1]=m_coords[2]=0;
+		    m_rotvec[0]=m_rotvec[1]=m_rotvec[2]=0;
 		}
 
 		/** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
@@ -84,14 +84,14 @@ namespace poses
 
 		/** Constructor with initilization of the pose */
 		inline CPose3DRotVec(const double x,const double  y,const double  z,const double  vx, const double  vy, const double vz) {
-		    m_coords[0]= x; m_coords[1]= y; m_coords[1]= z;
-		    m_rotvec[0]=vx; m_rotvec[2]=vy; m_rotvec[2]=vz;
+		    m_coords[0]= x; m_coords[1]= y; m_coords[2]= z;
+		    m_rotvec[0]=vx; m_rotvec[1]=vy; m_rotvec[2]=vz;
 		}
 
 		/** Constructor with initilization of the pose from a vector [x y z rx ry rz] */
 		inline CPose3DRotVec(const CArrayDouble<6> &v) {
-		    m_coords[0]=v[0]; m_coords[1]=v[1]; m_coords[1]=v[2];
-		    m_rotvec[0]=v[3]; m_rotvec[2]=v[4]; m_rotvec[2]=v[5];
+		    m_coords[0]=v[0]; m_coords[1]=v[1]; m_coords[2]=v[2];
+		    m_rotvec[0]=v[3]; m_rotvec[1]=v[4]; m_rotvec[2]=v[5];
 		}
 
 		/** Constructor from a 4x4 homogeneous matrix: */

@@ -132,6 +132,38 @@ double matrix_test_chol_Nx6x6_sparse(int DIM, int a2)
 	return tictac.Tac()/N;
 }
 
+double matrix_test_loadFromArray(int N, int a2)
+{
+	EIGEN_ALIGN16 double nums[4*4] = {
+	 0,1,2,3,
+	 4,5,6,7,
+	 8,9,10,11,
+	 12,13,14,15 };
+
+	CMatrixFixedNumeric<double,4,4> M;
+
+	CTicTac	 tictac;
+	M.loadFromArray(nums);
+	return tictac.Tac();
+}
+
+double matrix_test_loadWithEigenMap(int N, int a2)
+{
+	EIGEN_ALIGN16 double nums[4*4] = {
+	 0,1,2,3,
+	 4,5,6,7,
+	 8,9,10,11,
+	 12,13,14,15 };
+
+	CMatrixFixedNumeric<double,4,4> M;
+
+	CTicTac	 tictac;
+	M = Eigen::Map<CMatrixFixedNumeric<double,4,4>::Base,Eigen::Aligned >(nums);
+	const double t= tictac.Tac();
+	dummy_do_nothing_with_string(mrpt::format("%e",M(0,0)));
+	return t;
+}
+
 // ------------------------------------------------------
 // register_tests_matrices: Part 2
 // ------------------------------------------------------
@@ -157,5 +189,8 @@ void register_tests_matrices2()
 	lstTests.push_back( TestData("matrix: chol, sparse      120x[6x6]",matrix_test_chol_Nx6x6_sparse,120) );
 	lstTests.push_back( TestData("matrix: chol, dyn[double] 140x[6x6]",matrix_test_chol_Nx6x6_dyn,140, 2) );
 	lstTests.push_back( TestData("matrix: chol, sparse      140x[6x6]",matrix_test_chol_Nx6x6_sparse,140) );
+
+	lstTests.push_back( TestData("matrix: loadFromArray[double] 4x4",matrix_test_loadFromArray,1e7) );
+	lstTests.push_back( TestData("matrix: load Eigen::Map[double] 4x4",matrix_test_loadWithEigenMap,1e7) );
 
 }
