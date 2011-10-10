@@ -53,7 +53,7 @@ IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation,mrpt::slam)
 #define COBS3DRANGE_USE_MEMPOOL
 
 // Do performance time logging?
-// #define  PROJ3D_PERFLOG
+//#define  PROJ3D_PERFLOG
 
 
 // Data types for memory pooling CObservation3DRangeScan:
@@ -89,6 +89,43 @@ IMPLEMENTS_SERIALIZABLE(CObservation3DRangeScan, CObservation,mrpt::slam)
 	};
 	typedef CGenericMemoryPool<CObservation3DRangeScan_Ranges_MemPoolParams,CObservation3DRangeScan_Ranges_MemPoolData> TMyRangesMemPool;
 
+	void mempool_donate_xyz_buffers(CObservation3DRangeScan &obs)
+	{
+		if (!obs.points3D_x.empty())
+		{
+			// Before dying, donate my memory to the pool for the joy of future class-brothers...
+			TMyPointsMemPool &pool = TMyPointsMemPool::getInstance();
+
+			CObservation3DRangeScan_Points_MemPoolParams mem_params;
+			mem_params.WH = obs.points3D_x.size();
+
+			CObservation3DRangeScan_Points_MemPoolData *mem_block = new CObservation3DRangeScan_Points_MemPoolData();
+			obs.points3D_x.swap( mem_block->pts_x );
+			obs.points3D_y.swap( mem_block->pts_y );
+			obs.points3D_z.swap( mem_block->pts_z );
+
+			pool.dump_to_pool(mem_params, mem_block);
+		}
+	}
+	void mempool_donate_range_matrix(CObservation3DRangeScan &obs)
+	{
+		if (obs.rangeImage.cols()>1 && obs.rangeImage.rows()>1)
+		{
+			// Before dying, donate my memory to the pool for the joy of future class-brothers...
+			TMyRangesMemPool &pool = TMyRangesMemPool::getInstance();
+
+			CObservation3DRangeScan_Ranges_MemPoolParams mem_params;
+			mem_params.H = obs.rangeImage.rows();
+			mem_params.W = obs.rangeImage.cols();
+
+			CObservation3DRangeScan_Ranges_MemPoolData *mem_block = new CObservation3DRangeScan_Ranges_MemPoolData();
+			obs.rangeImage.swap( mem_block->rangeImage );
+
+			pool.dump_to_pool(mem_params, mem_block);
+		}
+	}
+
+
 
 #endif
 
@@ -116,40 +153,12 @@ CObservation3DRangeScan::CObservation3DRangeScan( ) :
 /*---------------------------------------------------------------
 							Destructor
  ---------------------------------------------------------------*/
+
 CObservation3DRangeScan::~CObservation3DRangeScan()
 {
 #ifdef COBS3DRANGE_USE_MEMPOOL
-	if (!points3D_x.empty())
-	{
-		// Before dying, donate my memory to the pool for the joy of future class-brothers...
-		TMyPointsMemPool &pool = TMyPointsMemPool::getInstance();
-
-		CObservation3DRangeScan_Points_MemPoolParams mem_params;
-		mem_params.WH = points3D_x.size();
-
-		CObservation3DRangeScan_Points_MemPoolData *mem_block = new CObservation3DRangeScan_Points_MemPoolData();
-		points3D_x.swap( mem_block->pts_x );
-		points3D_y.swap( mem_block->pts_y );
-		points3D_z.swap( mem_block->pts_z );
-
-		pool.dump_to_pool(mem_params, mem_block);
-	}
-
-	if (rangeImage.cols()>1 && rangeImage.rows()>1)
-	{
-		// Before dying, donate my memory to the pool for the joy of future class-brothers...
-		TMyRangesMemPool &pool = TMyRangesMemPool::getInstance();
-
-		CObservation3DRangeScan_Ranges_MemPoolParams mem_params;
-		mem_params.H = rangeImage.rows();
-		mem_params.W = rangeImage.cols();
-
-		CObservation3DRangeScan_Ranges_MemPoolData *mem_block = new CObservation3DRangeScan_Ranges_MemPoolData();
-		rangeImage.swap( mem_block->rangeImage );
-
-		pool.dump_to_pool(mem_params, mem_block);
-	}
-
+	mempool_donate_xyz_buffers(*this);
+	mempool_donate_range_matrix(*this);
 #endif
 }
 
@@ -245,16 +254,20 @@ void  CObservation3DRangeScan::readFromStream(CStream &in, int version)
 			}
 			else
 			{
-				points3D_x.clear();
-				points3D_y.clear();
-				points3D_z.clear();
+				this->resizePoints3DVectors(0);
 			}
 
 			if (version>=1)
 			{
 				in >> hasRangeImage;
 				if (hasRangeImage)
+				{
+#ifdef COBS3DRANGE_USE_MEMPOOL
+					// We should call "rangeImage_setSize()" to exploit the mempool:
+					this->rangeImage_setSize(480,640);
+#endif
 					in >> rangeImage;
+				}
 
 				in >> hasIntensityImage;
 				if (hasIntensityImage)

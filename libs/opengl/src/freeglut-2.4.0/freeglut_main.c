@@ -1116,7 +1116,7 @@ LRESULT CALLBACK fgWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 {
     SFG_Window* window;
     PAINTSTRUCT ps;
-    LONG lRet = 1;
+    LRESULT lRet = 1;
 
     FREEGLUT_INTERNAL_ERROR_EXIT_IF_NOT_INITIALISED ( "Event Handler" ) ;
 
@@ -1649,7 +1649,7 @@ LRESULT CALLBACK fgWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 
             GetKeyboardState( state );
 
-            if( ToAscii( wParam, 0, state, code, 0 ) == 1 )
+            if( ToAscii( (UINT)wParam, 0, state, code, 0 ) == 1 )
                 wParam=code[ 0 ];
 
             INVOKE_WCB( *window, KeyboardUp,

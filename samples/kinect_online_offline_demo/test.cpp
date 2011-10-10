@@ -301,7 +301,7 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 			// Show intensity image:
 			if (newObs->hasIntensityImage )
 			{
-				viewInt->setImageView(newObs->intensityImage); // This is not "_fast" since the intensity image is needed later on.
+				viewInt->setImageView(newObs->intensityImage); // This is not "_fast" since the intensity image may be needed later on.
 			}
 			win3D.unlockAccess3DScene();
 
