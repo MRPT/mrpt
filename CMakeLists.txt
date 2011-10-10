@@ -1453,12 +1453,12 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	endif(wxLibsCount GREATER 0)
 ENDIF(CMAKE_MRPT_HAS_WXWIDGETS)
 
-# SuiteSparse: (for Cholmod)
+# SuiteSparse: (for Cholmod & CSparse)
 # ----------------------------
+FIND_PACKAGE(SuiteSparse)
+
 SET(CMAKE_MRPT_HAS_CHOLDMOD 0)
 SET(CMAKE_MRPT_HAS_CHOLDMOD_SYSTEM 0)
-
-FIND_PACKAGE(SuiteSparse)
 IF(CHOLMOD_FOUND)
 	IF($ENV{VERBOSE})
 		MESSAGE(STATUS "Choldmod: includedir: ${CHOLMOD_INCLUDE_DIR}")

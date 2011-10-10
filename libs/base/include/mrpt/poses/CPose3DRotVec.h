@@ -260,27 +260,32 @@ namespace poses
             m_rotvec[0]=vx; m_rotvec[1]=vy; m_rotvec[2]=vz;
         }
 
-		/** Set pose from an array with these 6 elements: [vx vy vz x y z]
-		  *  where v{xyz} is the rotation vector and t{xyz} the 3D translation of the pose
+		/** Set pose from an array with these 6 elements: [x y z vx vy vz]
+		  *  where v{xyz} is the rotation vector and {xyz} the 3D translation of the pose
 		  *  \sa getAs6Vector
 		  */
 		template <class ARRAYORVECTOR>
 		inline void setFrom6Vector(const ARRAYORVECTOR &vec6)
 		{
-		    m_rotvec[0]=vec6[0]; m_rotvec[1]=vec6[1]; m_rotvec[2]=vec6[2];
-		    m_coords[0]=vec6[3]; m_coords[1]=vec6[4]; m_coords[2]=vec6[5];
+		    m_rotvec[0]=vec6[3]; m_rotvec[1]=vec6[4]; m_rotvec[2]=vec6[5];
+		    m_coords[0]=vec6[0]; m_coords[1]=vec6[1]; m_coords[2]=vec6[2];
 		}
 
-		/** Gets pose as an array with these 6 elements: [vx vy vz x y z]
-		  *  where v{xyz} is the rotation vector and t{xyz} the 3D translation of the pose
-		  *  \sa setAs6Vector
+		/** Gets pose as an array with these 6 elements: [x y z vx vy vz]
+		  *  where v{xyz} is the rotation vector and {xyz} the 3D translation of the pose
+		  *  The target vector MUST ALREADY have space for 6 elements (i.e. no .resize() method will be called).
+		  *  \sa setAs6Vector, getAsVector
 		  */
 		template <class ARRAYORVECTOR>
 		inline void getAs6Vector(ARRAYORVECTOR &vec6) const
 		{
-		    vec6[0]=m_rotvec[0]; vec6[1]=m_rotvec[1]; vec6[2]=m_rotvec[2];
-		    vec6[3]=m_coords[0]; vec6[4]=m_coords[1]; vec6[5]=m_coords[2];
+		    vec6[0]=m_coords[0]; vec6[1]=m_coords[1]; vec6[2]=m_coords[2];
+		    vec6[3]=m_rotvec[0]; vec6[4]=m_rotvec[1]; vec6[5]=m_rotvec[2];
 		}
+
+		/** Like getAs6Vector() but for dynamic size vectors (required by base class CPoseOrPoint) */
+		template <class ARRAYORVECTOR>
+		inline void getAsVector(ARRAYORVECTOR &v) const { v.resize(6); getAs6Vector(v); }
 
 		inline const double &operator[](unsigned int i) const
 		{
