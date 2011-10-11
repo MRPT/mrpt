@@ -102,7 +102,7 @@ namespace mrpt
 			/** Get RGBu8 color of i'th point */
 			inline void getPointRGBu8(const size_t idx, uint8_t &r,uint8_t &g,uint8_t &b) const { r=g=b=255; }
 			/** Set RGBu8 coordinates of i'th point */
-			inline void setPointXYZ_RGBu8(const size_t idx,const uint8_t r,const uint8_t g,const uint8_t b) { }
+			inline void setPointRGBu8(const size_t idx,const uint8_t r,const uint8_t g,const uint8_t b) { }
 		}; // end of PointCloudAdapterHelperNoRGB
 	} // End of namespace detail
 

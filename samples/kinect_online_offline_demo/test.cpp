@@ -315,14 +315,50 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 			//
 			// There are several methods to do this.
 			//  Switch the #if's to select among the options:
+			// See also: http://www.mrpt.org/Generating_3D_point_clouds_from_RGB_D_observations
 			// -------------------------------------------------------
 			if (newObs->hasRangeImage)
 			{
 				static mrpt::utils::CTimeLogger logger;
 				logger.enter("RGBD->3D");
 
-// Pathway: RGB+D --> internal local XYZ pointcloud --> XYZ+RGB point cloud
+// Pathway: RGB+D --> PCL <PointXYZ> --> XYZ opengl
+#if 0
+				static pcl::PointCloud<pcl::PointXYZ> cloud;
+				newObs->project3DPointsFromDepthImageInto(cloud, false /* without obs.sensorPose */);
+
+				win3D.get3DSceneAndLock();
+					gl_points->loadFromPointsMap(&cloud);
+				win3D.unlockAccess3DScene();
+#endif
+
+// Pathway: RGB+D --> PCL <PointXYZRGB> --> XYZ+RGB opengl
 #if 1
+				static pcl::PointCloud<pcl::PointXYZRGB> cloud;
+				newObs->project3DPointsFromDepthImageInto(cloud, false /* without obs.sensorPose */);
+
+				win3D.get3DSceneAndLock();
+					gl_points->loadFromPointsMap(&cloud);
+				win3D.unlockAccess3DScene();
+#endif
+
+// Pathway: RGB+D --> XYZ+RGB opengl
+#if 0
+				win3D.get3DSceneAndLock();
+					newObs->project3DPointsFromDepthImageInto(*gl_points, false /* without obs.sensorPose */);
+				win3D.unlockAccess3DScene();
+#endif
+
+// Pathway: RGB+D --> XYZ+RGB opengl (With a 6D global pose of the robot)
+#if 0
+				const CPose3D globalPose(1,2,3,DEG2RAD(10),DEG2RAD(20),DEG2RAD(30));
+				win3D.get3DSceneAndLock();
+					newObs->project3DPointsFromDepthImageInto(*gl_points, false /* without obs.sensorPose */, &globalPose);
+				win3D.unlockAccess3DScene();
+#endif
+
+// Pathway: RGB+D --> internal local XYZ pointcloud --> XYZ+RGB point cloud map --> XYZ+RGB opengl
+#if 0
 				// Project 3D points:
 				if (!newObs->hasPoints3D)
 					newObs->project3DPointsFromDepthImage();
@@ -336,32 +372,6 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 				win3D.unlockAccess3DScene();
 #endif
 
-// Pathway: ...
-#if 0
-				static pcl::PointCloud<pcl::PointXYZ> cloud;
-				newObs->project3DPointsFromDepthImageInto(cloud, false /* in local coordinates is OK */);
-
-				win3D.get3DSceneAndLock();
-					gl_points->loadFromPointsMap(&cloud);
-				win3D.unlockAccess3DScene();
-#endif
-
-// Pathway: ...
-#if 0
-				static pcl::PointCloud<pcl::PointXYZRGB> cloud;
-				newObs->project3DPointsFromDepthImageInto(cloud, false /* in local coordinates is OK */);
-
-				win3D.get3DSceneAndLock();
-					gl_points->loadFromPointsMap(&cloud);
-				win3D.unlockAccess3DScene();
-#endif
-
-// Pathway: ...
-#if 0
-				win3D.get3DSceneAndLock();
-					newObs->project3DPointsFromDepthImageInto(*gl_points, false /* in local coordinates is OK */);
-				win3D.unlockAccess3DScene();
-#endif
 				logger.leave("RGBD->3D");
 			}
 

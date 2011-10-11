@@ -155,6 +155,13 @@ namespace mrpt
 				markAllPointsAsNew();
 			}
 
+			/** Like \a setPoint() but does not check for index out of bounds */
+			inline void setPoint_fast(const size_t i, const float x,const float y, const float z ) {
+				TPointColour &p = m_points[i];
+				p.x=x; p.y=y; p.z=z;
+				markAllPointsAsNew();
+			}
+
 			/** Like \c setPointColor but without checking for out-of-index erors */
 			inline void setPointColor_fast(size_t index,float R, float G, float B)
 			{
@@ -284,7 +291,7 @@ namespace mrpt
 			}
 			/** Set XYZ coordinates of i'th point */
 			inline void setPointXYZ(const size_t idx, const coords_t x,const coords_t y, const coords_t z) {
-				m_obj.setPoint_fast(idx, mrpt::opengl::CPointCloudColoured::TPointColour(x,y,z, 1.f,1.f,1.f ) );
+				m_obj.setPoint_fast(idx, x,y,z);
 			}
 
 			/** Get XYZ_RGBf coordinates of i'th point */
@@ -323,7 +330,7 @@ namespace mrpt
 				r=R*255; g=G*255; b=B*255;
 			}
 			/** Set RGBu8 coordinates of i'th point */
-			inline void setPointXYZ_RGBu8(const size_t idx,const uint8_t r,const uint8_t g,const uint8_t b) {
+			inline void setPointRGBu8(const size_t idx,const uint8_t r,const uint8_t g,const uint8_t b) {
 				m_obj.setPointColor_fast(idx,r/255.f,g/255.f,b/255.f);
 			}
 

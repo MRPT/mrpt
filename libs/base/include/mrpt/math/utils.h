@@ -666,9 +666,10 @@ namespace mrpt
 			out_xyz.resize(3);
 
 			// translation part:
-			const double tx = -in_xyz[0];
-			const double ty = -in_xyz[1];
-			const double tz = -in_xyz[2];
+			typedef typename IN_XYZ::value_type T;
+			const T tx = -in_xyz[0];
+			const T ty = -in_xyz[1];
+			const T tz = -in_xyz[2];
 
 			out_xyz[0] = tx*in_R.get_unsafe(0,0)+ty*in_R.get_unsafe(1,0)+tz*in_R.get_unsafe(2,0);
 			out_xyz[1] = tx*in_R.get_unsafe(0,1)+ty*in_R.get_unsafe(1,1)+tz*in_R.get_unsafe(2,1);

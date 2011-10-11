@@ -386,7 +386,7 @@ namespace mrpt
 				r=R*255; g=G*255; b=B*255;
 			}
 			/** Set RGBu8 coordinates of i'th point */
-			inline void setPointXYZ_RGBu8(const size_t idx,const uint8_t r,const uint8_t g,const uint8_t b) {
+			inline void setPointRGBu8(const size_t idx,const uint8_t r,const uint8_t g,const uint8_t b) {
 				m_obj.setPointColor_fast(idx,r/255.f,g/255.f,b/255.f);
 			}
 

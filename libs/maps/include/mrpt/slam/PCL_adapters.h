@@ -152,7 +152,7 @@ namespace mrpt
 				r=p.r; g=p.g; b=p.b;
 			}
 			/** Set RGBu8 coordinates of i'th point */
-			inline void setPointXYZ_RGBu8(const size_t idx,const uint8_t r,const uint8_t g,const uint8_t b) {
+			inline void setPointRGBu8(const size_t idx,const uint8_t r,const uint8_t g,const uint8_t b) {
 				pcl::PointXYZRGB &p=m_obj.points[idx];
 				p.r=r; p.g=g; p.b=b;
 			}
