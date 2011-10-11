@@ -42,6 +42,11 @@
 #include <mrpt/slam/CRawlog.h>
 #include <memory> // for std::auto_ptr<>
 
+// Demonstrate MRPT RGB+D --> PCL point cloud conversion:
+#if MRPT_HAS_PCL
+#	include <mrpt/slam/pcl_adapters.h>
+#endif
+
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;

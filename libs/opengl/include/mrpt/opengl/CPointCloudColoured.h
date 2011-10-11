@@ -32,6 +32,7 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/COctreePointRenderer.h>
 #include <mrpt/utils/PLY_import_export.h>
+#include <mrpt/utils/adapters.h>
 
 namespace mrpt
 {
@@ -147,6 +148,12 @@ namespace mrpt
 
 			/** Write an individual point (checks for "i" in the valid range only in Debug). */
 			void setPoint(size_t i, const TPointColour &p );
+
+			/** Like \a setPoint() but does not check for index out of bounds */
+			inline void setPoint_fast(const size_t i, const TPointColour &p ) {
+				m_points[i] = p;
+				markAllPointsAsNew();
+			}
 
 			inline size_t size() const { return m_points.size(); } //!< Return the number of points
 
@@ -270,6 +277,68 @@ namespace mrpt
 		// Specialization must occur in the same namespace
 		MRPT_DECLARE_TTYPENAME(CPointCloudColoured::TPointColour)
 	}
+
+	namespace utils
+	{
+		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::opengl::CPointCloudColoured> */
+		template <> 
+		class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
+		{
+		private:
+			mrpt::opengl::CPointCloudColoured &m_obj;
+		public:
+			typedef float  coords_t;  //!< The type of each point XYZ coordinates
+			static const int HAS_RGB   = 1;  //!< Has any color RGB info?
+			static const int HAS_RGBf  = 1;  //!< Has native RGB info (as floats)?
+			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
+
+			/** Constructor (accept a const ref for convenience) */
+			inline PointCloudAdapter(const mrpt::opengl::CPointCloudColoured &obj) : m_obj(*const_cast<mrpt::opengl::CPointCloudColoured*>(&obj)) { }
+			/** Get number of points */
+			inline size_t size() const { return m_obj.size(); }
+			/** Set number of points (to uninitialized values) */
+			inline void resize(const size_t N) { m_obj.resize(N); }
+
+			/** Get XYZ coordinates of i'th point */
+			template <typename T>
+			inline void getPointXYZ(const size_t idx, T &x,T &y, T &z) const {
+				const mrpt::opengl::CPointCloudColoured::TPointColour &pc = m_obj[idx];
+				x=pc.x;
+				y=pc.y;
+				z=pc.z;
+			}
+			/** Set XYZ coordinates of i'th point */
+			inline void setPointXYZ(const size_t idx, const coords_t x,const coords_t y, const coords_t z) {
+				m_obj.setPoint_fast(idx, mrpt::opengl::CPointCloudColoured::TPointColour(x,y,z, 1.f,1.f,1.f ) );
+			}
+
+			/** Get XYZ_RGBf coordinates of i'th point */
+			template <typename T>
+			inline void getPointXYZ_RGBf(const size_t idx, T &x,T &y, T &z, float &r,float &g,float &b) const {
+				const mrpt::opengl::CPointCloudColoured::TPointColour &pc = m_obj[idx];
+				x=pc.x; y=pc.y; z=pc.z;
+				r=pc.R; g=pc.G; b=pc.B;
+			}
+			/** Set XYZ_RGBf coordinates of i'th point */
+			inline void setPointXYZ_RGBf(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const float r,const float g,const float b) {
+				m_obj.setPoint_fast(idx, mrpt::opengl::CPointCloudColoured::TPointColour(x,y,z,r,g,b) );
+			}
+
+			/** Get XYZ_RGBu8 coordinates of i'th point */
+			template <typename T>
+			inline void getPointXYZ_RGBu8(const size_t idx, T &x,T &y, T &z, uint8_t &r,uint8_t &g,uint8_t &b) const {
+				const mrpt::opengl::CPointCloudColoured::TPointColour &pc = m_obj[idx];
+				x=pc.x; y=pc.y; z=pc.z;
+				r=pc.R*255; g=pc.G*255; b=pc.B*255;
+			}
+			/** Set XYZ_RGBu8 coordinates of i'th point */
+			inline void setPointXYZ_RGBu8(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const uint8_t r,const uint8_t g,const uint8_t b) {
+				m_obj.setPoint_fast(idx, mrpt::opengl::CPointCloudColoured::TPointColour(x,y,z,r/255.f,g/255.f,b/255.f) );
+			}
+		}; // end of PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
+
+	};
+
 
 } // End of namespace
 

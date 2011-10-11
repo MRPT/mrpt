@@ -66,6 +66,7 @@
 				- #include <mrpt/slam/graph_slam.h> --> #include <mrpt/graphslam.h>
 		- New classes:
 			- [mrpt-base] Missing PDF for 3D poses with quaternions and information matrix: in mrpt::poses::CPose3DQuatPDFGaussianInf
+			- [mrpt-base & others] mrpt::utils::PointCloudAdapter<>: An adapter pattern for point clouds.
 			- A batch of changes to introduce WiFi signal strength receivers and building maps out of such observations (by Emil Khatib) - <a href="http://code.google.com/p/mrpt/source/detail?r=2572" >r2572</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2573" >r2573</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2574" >r2574</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2577" >r2577</a>:
 				- [mrpt-obs] mrpt::slam::CObservationWirelessPower
 				- [mrpt-maps] mrpt::slam::CWirelessPowerGridMap2D

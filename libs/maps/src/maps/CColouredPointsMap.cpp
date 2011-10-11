@@ -92,6 +92,7 @@ void CColouredPointsMap::resize(size_t newLength)
 	m_color_R.resize( newLength, 1 );
 	m_color_G.resize( newLength, 1 );
 	m_color_B.resize( newLength, 1 );
+	mark_as_modified();
 }
 
 // Resizes all point buffers so they can hold the given number of points, *erasing* all previous contents
@@ -104,6 +105,7 @@ void CColouredPointsMap::setSize(size_t newLength)
 	m_color_R.assign( newLength, 1 );
 	m_color_G.assign( newLength, 1 );
 	m_color_B.assign( newLength, 1 );
+	mark_as_modified();
 }
 
 
@@ -312,16 +314,6 @@ void  CColouredPointsMap::internal_clear()
 	mark_as_modified();
 }
 
-/*---------------------------------------------------------------
-					setPoint
-			Store a points coordinates:
-  ---------------------------------------------------------------*/
-void  CColouredPointsMap::setPointFast(size_t index,float x,float y,float z)
-{
-	this->x[index] = x;
-	this->y[index] = y;
-	this->z[index] = z;
-}
 
 /** Changes a given point from map. First index is 0.
  * \exception Throws std::exception on index out of bound.

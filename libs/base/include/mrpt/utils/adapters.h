@@ -25,35 +25,39 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
+#ifndef mrpt_utils_adapters_H
+#define mrpt_utils_adapters_H
 
-#ifndef _mrpt_maps_H
-#define _mrpt_maps_H
+#include <mrpt/utils/utils_defs.h>
 
-#include <mrpt/config.h>
+namespace mrpt
+{
+	namespace utils
+	{
+		/** \defgroup mrpt_adapters_grp Adapter (wrapper) template classes
+			\addtogroup mrpt_base_grp
+		*/
+		
+		/** \addtogroup mrpt_adapters_grp
+		  * @{ */
 
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_maps_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
+		/** An adapter to different kinds of point cloud object. 
+		  *  Implemented as a pure C++ template with specializations for the highest flexibility and efficiency in compiler-generated implementations.
+		  *  Usage:
+		  *   \code
+		  *     PC  my_obj; 
+		  *     my_obj.specific_methods();
+		  *     // ...
+		  *     PointCloudAdapter<PC> pca(my_obj);
+		  *     pca.unified_interface_methods(); 
+		  *     // ...
+		  *   \endcode
+		  *  See specializations for details on the exposed API.
+		  */
+		template <class POINTCLOUD> class PointCloudAdapter;
 
-#include <mrpt/slam/CBeacon.h>
-#include <mrpt/slam/CBeaconMap.h>
-#include <mrpt/slam/CColouredPointsMap.h>
-#include <mrpt/slam/CGasConcentrationGridMap2D.h>
-#include <mrpt/slam/CWirelessPowerGridMap2D.h>
-#include <mrpt/slam/CHeightGridMap2D.h>
-#include <mrpt/slam/CReflectivityGridMap2D.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CWeightedPointsMap.h>
-#include <mrpt/slam/CPointsMap.h>
+		/** @} */  // end of grouping
 
-//#include <mrpt/slam/PCL_adapters.h>  // NOTE: This file must be included from the user 
-                                       // code only if he has already #include'd PCL headers.
-
-#include <mrpt/opengl/CAngularObservationMesh.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
-
-#endif // end precomp.headers
-
+	} // End of namespace
+} // end of namespace
 #endif

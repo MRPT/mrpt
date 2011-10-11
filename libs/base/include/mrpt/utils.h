@@ -99,6 +99,8 @@
 #include <mrpt/utils/CObserver.h>
 #include <mrpt/utils/mrptEvent.h>
 
+// Adapter patterns:
+#include <mrpt/utils/adapters.h>
 
 #endif
 

@@ -40,6 +40,7 @@
 #include <mrpt/utils/PLY_import_export.h>
 
 #include <mrpt/maps/link_pragmas.h>
+#include <mrpt/utils/adapters.h>
 
 namespace mrpt
 {
@@ -894,6 +895,63 @@ namespace slam
 		  */
 		extern MAPS_IMPEXP float POINTSMAPS_3DOBJECT_POINTSIZE;
 	}
+
+	namespace utils
+	{
+		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::slam::CPointsMap> */
+		template <> 
+		class PointCloudAdapter<mrpt::slam::CPointsMap>
+		{
+		private:
+			mrpt::slam::CPointsMap &m_obj;
+		public:
+			typedef float  coords_t;         //!< The type of each point XYZ coordinates
+			static const int HAS_RGB   = 0;  //!< Has any color RGB info?
+			static const int HAS_RGBf  = 0;  //!< Has native RGB info (as floats)?
+			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
+
+			/** Constructor (accept a const ref for convenience) */
+			inline PointCloudAdapter(const mrpt::slam::CPointsMap &obj) : m_obj(*const_cast<mrpt::slam::CPointsMap*>(&obj)) { }
+			/** Get number of points */
+			inline size_t size() const { return m_obj.size(); }
+			/** Set number of points (to uninitialized values) */
+			inline void resize(const size_t N) { m_obj.resize(N); }
+
+			/** Get XYZ coordinates of i'th point */
+			template <typename T>
+			inline void getPointXYZ(const size_t idx, T &x,T &y, T &z) const {
+				m_obj.getPointFast(idx,x,y,z);
+			}
+			/** Set XYZ coordinates of i'th point */
+			inline void setPointXYZ(const size_t idx, const coords_t x,const coords_t y, const coords_t z) {
+				m_obj.setPointFast(idx,x,y,z);
+			}
+
+			/** Get XYZ_RGBf coordinates of i'th point */
+			template <typename T>
+			inline void getPointXYZ_RGBf(const size_t idx, T &x,T &y, T &z, float &r,float &g,float &b) const {
+				this->getPointXYZ(idx,x,y,z);
+				r=g=b=1.0f;
+			}
+			/** Set XYZ_RGBf coordinates of i'th point */
+			inline void setPointXYZ_RGBf(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const float r,const float g,const float b) {
+				this->setPointXYZ(idx,x,y,z);
+			}
+
+			/** Get XYZ_RGBu8 coordinates of i'th point */
+			template <typename T>
+			inline void getPointXYZ_RGBu8(const size_t idx, T &x,T &y, T &z, uint8_t &r,uint8_t &g,uint8_t &b) const {
+				this->getPointXYZ(idx,x,y,z);
+				r=g=b=255;
+			}
+			/** Set XYZ_RGBu8 coordinates of i'th point */
+			inline void setPointXYZ_RGBu8(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const uint8_t r,const uint8_t g,const uint8_t b) {
+				this->setPointXYZ(idx,x,y,z);
+			}
+		}; // end of PointCloudAdapter<mrpt::slam::CPointsMap>
+
+	};
+
 } // End of namespace
 
 #endif

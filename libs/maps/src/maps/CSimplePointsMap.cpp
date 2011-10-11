@@ -73,6 +73,7 @@ void CSimplePointsMap::resize(size_t newLength)
 	x.resize( newLength, 0 );
 	y.resize( newLength, 0 );
 	z.resize( newLength, 0 );
+	mark_as_modified();
 }
 
 // Resizes all point buffers so they can hold the given number of points, *erasing* all previous contents
@@ -82,6 +83,7 @@ void CSimplePointsMap::setSize(size_t newLength)
 	x.assign( newLength, 0);
 	y.assign( newLength, 0);
 	z.assign( newLength, 0);
+	mark_as_modified();
 }
 
 
