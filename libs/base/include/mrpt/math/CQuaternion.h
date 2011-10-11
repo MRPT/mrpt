@@ -129,8 +129,8 @@ namespace mrpt
 			}
 			else
 			{
-				const T s = (sin(angle/2))/angle;
-				const T c = cos(angle/2);
+				const T s = (::sin(angle/2))/angle;
+				const T c = ::cos(angle/2);
 				(*this)[0] = c;
 				(*this)[1] = x * s;
 				(*this)[2] = y * s;
@@ -167,7 +167,7 @@ namespace mrpt
 		{
 			using mrpt::utils::square;
 			const T xyz_norm = std::sqrt(square(x())+square(y())+square(z()));
-			const T K = (xyz_norm<1e-7) ?  2 : 2*acos(r())/xyz_norm;
+			const T K = (xyz_norm<1e-7) ?  2 : 2*::acos(r())/xyz_norm;
 			out_ln[0] = K*x();
 			out_ln[1] = K*y();
 			out_ln[2] = K*z();
@@ -374,9 +374,9 @@ namespace mrpt
 			}
 			else
 			{	// Non-degenerate case:
-				yaw   = atan2( 2*(r()*z()+x()*y()), 1-2*(y()*y()+z()*z()) );
-				pitch = asin ( 2*discr );
-				roll  = atan2( 2*(r()*x()+y()*z()), 1-2*(x()*x()+y()*y()) );
+				yaw   = ::atan2( 2*(r()*z()+x()*y()), 1-2*(y()*y()+z()*z()) );
+				pitch = ::asin ( 2*discr );
+				roll  = ::atan2( 2*(r()*x()+y()*z()), 1-2*(x()*x()+y()*y()) );
 				if (out_dr_dq) {
 					// Auxiliary terms:
 					const double val1=(2*x()*x() + 2*y()*y() - 1);
