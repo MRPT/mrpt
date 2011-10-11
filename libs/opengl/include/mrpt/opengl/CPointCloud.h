@@ -49,7 +49,7 @@ namespace mrpt
 		  *
 		  *  To load from a points-map, CPointCloud::loadFromPointsMap().
 		  *
-		  *   This class uses smart optimizations while rendering to efficiently draw clouds of millions of points, 
+		  *   This class uses smart optimizations while rendering to efficiently draw clouds of millions of points,
 		  *   as described in this page: http://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
 		  *
 		  *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene, opengl::CPointCloudColoured, mrpt::slam::CPointsMap
@@ -88,7 +88,7 @@ namespace mrpt
 			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_face */
 			virtual void PLY_import_set_face_count(const size_t N) {  }
 
-			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point. 
+			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
 			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
 			  */
 			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL);
@@ -103,12 +103,12 @@ namespace mrpt
 			/** In a base class, return the number of faces */
 			virtual size_t PLY_export_get_face_count() const { return 0; }
 
-			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point. 
+			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
 			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
 			  */
 			virtual void PLY_export_get_vertex(
-				const size_t idx, 
-				mrpt::math::TPoint3Df &pt, 
+				const size_t idx,
+				mrpt::math::TPoint3Df &pt,
 				bool &pt_has_color,
 				mrpt::utils::TColorf &pt_color) const;
 
@@ -123,7 +123,7 @@ namespace mrpt
 			inline size_t size() const { return m_xs.size(); }
 
 			/** Set the number of points (with contents undefined) */
-			inline void resize(size_t N) { m_xs.resize(N); m_ys.resize(N); m_zs.resize(N);  }
+			inline void resize(size_t N) { m_xs.resize(N); m_ys.resize(N); m_zs.resize(N); m_minmax_valid = false; markAllPointsAsNew(); }
 
 			/** Like STL std::vector's reserve */
 			inline void reserve(size_t N) { m_xs.reserve(N); m_ys.reserve(N); m_zs.reserve(N);  }
@@ -134,6 +134,7 @@ namespace mrpt
 				m_xs = x;
 				m_ys = y;
 				m_zs = z;
+				m_minmax_valid = false;
 				markAllPointsAsNew();
 			}
 
@@ -144,6 +145,7 @@ namespace mrpt
 				m_xs.swap(x);
 				m_ys.swap(y);
 				m_zs.swap(z);
+				m_minmax_valid = false;
 				markAllPointsAsNew();
 			}
 
@@ -194,14 +196,10 @@ namespace mrpt
 			}
 
 
-			/** Load the points from a pointsMap (mrpt::slam::CPointsMap), passed as a pointer.
-			  * Note that the method is a template since CPointsMap belongs to a different mrpt library.
-			  */
+			/** Load the points from any other point map class supported by the adapter mrpt::utils::PointCloudAdapter. */
 			template <class POINTSMAP>
-			inline void  loadFromPointsMap( const POINTSMAP *themap) {
-				themap->getAllPoints(m_xs,m_ys,m_zs);
-				markAllPointsAsNew();
-			}
+			void loadFromPointsMap( const POINTSMAP *themap);
+			// Must be implemented at the end of the header.
 
 			/** Load the points from a list of TPoint3D
 			  */
@@ -278,9 +276,9 @@ namespace mrpt
 
 	namespace utils
 	{
-		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::opengl::CPointCloud> */
-		template <> 
-		class PointCloudAdapter<mrpt::opengl::CPointCloud>
+		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::opengl::CPointCloud> \ingroup mrpt_adapters_grp */
+		template <>
+		class PointCloudAdapter<mrpt::opengl::CPointCloud> : public detail::PointCloudAdapterHelperNoRGB<mrpt::opengl::CPointCloud,float>
 		{
 		private:
 			mrpt::opengl::CPointCloud &m_obj;
@@ -309,29 +307,26 @@ namespace mrpt
 				m_obj.setPoint_fast(idx,x,y,z);
 			}
 
-			/** Get XYZ_RGBf coordinates of i'th point */
-			template <typename T>
-			inline void getPointXYZ_RGBf(const size_t idx, T &x,T &y, T &z, float &r,float &g,float &b) const {
-				this->getPointXYZ(idx,x,y,z);
-				r=g=b=1.0f;
-			}
-			/** Set XYZ_RGBf coordinates of i'th point */
-			inline void setPointXYZ_RGBf(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const float r,const float g,const float b) {
-				this->setPointXYZ(idx,x,y,z);
-			}
-
-			/** Get XYZ_RGBu8 coordinates of i'th point */
-			template <typename T>
-			inline void getPointXYZ_RGBu8(const size_t idx, T &x,T &y, T &z, uint8_t &r,uint8_t &g,uint8_t &b) const {
-				this->getPointXYZ(idx,x,y,z);
-				r=g=b=255;
-			}
-			/** Set XYZ_RGBu8 coordinates of i'th point */
-			inline void setPointXYZ_RGBu8(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const uint8_t r,const uint8_t g,const uint8_t b) {
-				this->setPointXYZ(idx,x,y,z);
-			}
-
 		}; // end of PointCloudAdapter<mrpt::opengl::CPointCloud>
+	}
+
+	namespace opengl
+	{
+		// After declaring the adapter we can here implement this method:
+		template <class POINTSMAP>
+		void CPointCloud::loadFromPointsMap( const POINTSMAP *themap)
+		{
+			mrpt::utils::PointCloudAdapter<CPointCloud>     pc_dst(*this);
+			const mrpt::utils::PointCloudAdapter<POINTSMAP> pc_src(*themap);
+			const size_t N=pc_src.size();
+			pc_dst.resize(N);
+			for (size_t i=0;i<N;i++)
+			{
+				float x,y,z;
+				pc_src.getPointXYZ(i,x,y,z);
+				pc_dst.setPointXYZ(i,x,y,z);
+			}
+		}
 	}
 
 } // End of namespace

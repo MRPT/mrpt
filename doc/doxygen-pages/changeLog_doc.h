@@ -101,6 +101,7 @@
 				- Method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() can now also recover 3D point clouds from 3D range scans not in the "Kinect" depth format.
 				- New method CObservation3DRangeScan::doDepthAndIntensityCamerasCoincide()
 				- New field CObservation3DRangeScan::intensityImageChannel
+			- [mrpt-obs] New method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImageInto() which allows avoiding all the old twisted pathways for rendering 3D RGB+D point clouds from Kinect.
 			- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect:
 				- Now reports the selected channel (visible/IR) into the field CObservation3DRangeScan::intensityImageChannel of grabbed objects.
 			- [mrpt-base] All classes derived from mrpt::utils::CObjectPtr now have a proper "value_type" typedef with the most specific data type of the class being pointed by the smart pointer, overriding the inherited, too generic, mrpt::utils::CObject. - <a href="http://code.google.com/p/mrpt/source/detail?r=2568" >r2568</a>

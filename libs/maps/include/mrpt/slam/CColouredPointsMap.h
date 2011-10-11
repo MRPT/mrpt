@@ -197,6 +197,14 @@ namespace mrpt
 			 */
 			void  setPointColor(size_t index,float R, float G, float B);
 
+			/** Like \c setPointColor but without checking for out-of-index erors */
+			inline void  setPointColor_fast(size_t index,float R, float G, float B)
+			{
+				this->m_color_R[index]=R;
+				this->m_color_G[index]=G;
+				this->m_color_B[index]=B;
+			}
+
 			/** Retrieves a point and its color (colors range is [0,1])
 			  */
 			virtual void  getPoint( size_t index, float &x, float &y, float &z, float &R, float &G, float &B ) const;
@@ -206,6 +214,14 @@ namespace mrpt
 
 			/** Retrieves a point color (colors range is [0,1]) */
 			void  getPointColor( size_t index, float &R, float &G, float &B ) const;
+
+			/** Like \c getPointColor but without checking for out-of-index erors */
+			inline void  getPointColor_fast( size_t index, float &R, float &G, float &B ) const
+			{
+				R = m_color_R[index];
+				G = m_color_G[index];
+				B = m_color_B[index];
+			}
 
 			/** Returns true if the point map has a color field for each point */
 			virtual bool hasColorPoints() const { return true; }
@@ -307,8 +323,8 @@ namespace mrpt
 #include <mrpt/utils/adapters.h>
 	namespace utils
 	{
-		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::slam::CColouredPointsMap> */
-		template <> 
+		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::slam::CColouredPointsMap> \ingroup mrpt_adapters_grp */
+		template <>
 		class PointCloudAdapter<mrpt::slam::CColouredPointsMap>
 		{
 		private:
@@ -357,6 +373,23 @@ namespace mrpt
 			inline void setPointXYZ_RGBu8(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const uint8_t r,const uint8_t g,const uint8_t b) {
 				m_obj.setPoint(idx,x,y,z,r/255.f,g/255.f,b/255.f);
 			}
+
+			/** Get RGBf color of i'th point */
+			inline void getPointRGBf(const size_t idx, float &r,float &g,float &b) const { m_obj.getPointColor_fast(idx,r,g,b); }
+			/** Set XYZ_RGBf coordinates of i'th point */
+			inline void setPointRGBf(const size_t idx, const float r,const float g,const float b) { m_obj.setPointColor_fast(idx,r,g,b); }
+
+			/** Get RGBu8 color of i'th point */
+			inline void getPointRGBu8(const size_t idx, uint8_t &r,uint8_t &g,uint8_t &b) const {
+				float R,G,B;
+				m_obj.getPointColor_fast(idx,R,G,B);
+				r=R*255; g=G*255; b=B*255;
+			}
+			/** Set RGBu8 coordinates of i'th point */
+			inline void setPointXYZ_RGBu8(const size_t idx,const uint8_t r,const uint8_t g,const uint8_t b) {
+				m_obj.setPointColor_fast(idx,r/255.f,g/255.f,b/255.f);
+			}
+
 		}; // end of PointCloudAdapter<mrpt::slam::CColouredPointsMap>
 
 	}

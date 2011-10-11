@@ -44,7 +44,7 @@
 
 // Demonstrate MRPT RGB+D --> PCL point cloud conversion:
 #if MRPT_HAS_PCL
-#	include <mrpt/slam/pcl_adapters.h>
+#	include <mrpt/slam/PCL_adapters.h>
 #endif
 
 using namespace mrpt;
@@ -310,9 +310,19 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 			}
 			win3D.unlockAccess3DScene();
 
-			// Show 3D points:
+			// -------------------------------------------------------
+			//           Create 3D points from RGB+D data
+			//
+			// There are several methods to do this.
+			//  Switch the #if's to select among the options:
+			// -------------------------------------------------------
 			if (newObs->hasRangeImage)
 			{
+				static mrpt::utils::CTimeLogger logger;
+				logger.enter("RGBD->3D");
+
+// Pathway: RGB+D --> internal local XYZ pointcloud --> XYZ+RGB point cloud
+#if 1
 				// Project 3D points:
 				if (!newObs->hasPoints3D)
 					newObs->project3DPointsFromDepthImage();
@@ -324,10 +334,38 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 				win3D.get3DSceneAndLock();
 					gl_points->loadFromPointsMap(&pntsMap);
 				win3D.unlockAccess3DScene();
+#endif
+
+// Pathway: ...
+#if 0
+				static pcl::PointCloud<pcl::PointXYZ> cloud;
+				newObs->project3DPointsFromDepthImageInto(cloud, false /* in local coordinates is OK */);
+
+				win3D.get3DSceneAndLock();
+					gl_points->loadFromPointsMap(&cloud);
+				win3D.unlockAccess3DScene();
+#endif
+
+// Pathway: ...
+#if 0
+				static pcl::PointCloud<pcl::PointXYZRGB> cloud;
+				newObs->project3DPointsFromDepthImageInto(cloud, false /* in local coordinates is OK */);
+
+				win3D.get3DSceneAndLock();
+					gl_points->loadFromPointsMap(&cloud);
+				win3D.unlockAccess3DScene();
+#endif
+
+// Pathway: ...
+#if 0
+				win3D.get3DSceneAndLock();
+					newObs->project3DPointsFromDepthImageInto(*gl_points, false /* in local coordinates is OK */);
+				win3D.unlockAccess3DScene();
+#endif
+				logger.leave("RGBD->3D");
 			}
 
 			win3D.repaint();
-
 		} // end update visualization:
 
 

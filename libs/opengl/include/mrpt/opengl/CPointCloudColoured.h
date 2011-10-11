@@ -117,7 +117,7 @@ namespace mrpt
 			void push_back(float x,float y,float z, float R, float G, float B);
 
 			/** Set the number of points, with undefined contents */
-			inline void resize(size_t N) { m_points.resize(N); }
+			inline void resize(size_t N) { m_points.resize(N); markAllPointsAsNew(); }
 
 			/** Like STL std::vector's reserve */
 			inline void reserve(size_t N) { m_points.reserve(N); }
@@ -155,54 +155,29 @@ namespace mrpt
 				markAllPointsAsNew();
 			}
 
+			/** Like \c setPointColor but without checking for out-of-index erors */
+			inline void setPointColor_fast(size_t index,float R, float G, float B)
+			{
+				m_points[index].R=R;
+				m_points[index].G=G;
+				m_points[index].B=B;
+			}
+			/** Like \c getPointColor but without checking for out-of-index erors */
+			inline void getPointColor_fast( size_t index, float &R, float &G, float &B ) const
+			{
+				R = m_points[index].R;
+				G = m_points[index].G;
+				B = m_points[index].B;
+			}
+
 			inline size_t size() const { return m_points.size(); } //!< Return the number of points
 
 			inline void clear() { m_points.clear(); markAllPointsAsNew(); }  //!< Erase all the points
 
-
-			/** Load the points from a points map (passed as a pointer), depending on the type of point map passed: for the case of a mrpt::slam::CColouredPointMap the colours of individual points will be also copied.
-			  *  The possible classes accepted as arguments are: mrpt::slam::CColouredPointsMap, or in general any mrpt::slam::CPointsMap.
-			  * \note The method is a template since CPointsMap belongs to a different mrpt library.
-			  */
+			/** Load the points from any other point map class supported by the adapter mrpt::utils::PointCloudAdapter. */
 			template <class POINTSMAP>
-			void  loadFromPointsMap( const POINTSMAP *m)
-			{
-				if (m->hasColorPoints())
-				{
-					size_t N = m->size();
-					m_points.resize(N);
-					for (size_t i=0;i<N;i++)
-					{
-						m->getPoint(i,
-							m_points[i].x,
-							m_points[i].y,
-							m_points[i].z,
-							m_points[i].R,
-							m_points[i].G,
-							m_points[i].B );
-					}
-				}
-				else
-				{
-					// Default colors:
-					vector_float	xs,ys,zs;
-					m->getAllPoints(xs,ys,zs);
-
-					size_t N = xs.size();
-					m_points.resize(N);
-					const mrpt::utils::TColorf col(m_color);
-					for (size_t i=0;i<N;i++)
-					{
-						m_points[i].x = xs[i];
-						m_points[i].y = ys[i];
-						m_points[i].z = zs[i];
-						m_points[i].R = col.R;
-						m_points[i].G = col.G;
-						m_points[i].B = col.B;
-					}
-				}
-				markAllPointsAsNew();
-			}
+			void  loadFromPointsMap( const POINTSMAP *themap);
+			// Must be implemented at the end of the header.
 
 			/** Get the number of elements actually rendered in the last render event. */
 			size_t getActuallyRendered() const { return m_last_rendered_count; }
@@ -235,8 +210,8 @@ namespace mrpt
 			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */
 			virtual void PLY_import_set_vertex_count(const size_t N);
 			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_face */
-			virtual void PLY_import_set_face_count(const size_t N) {  } 
-			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point. 
+			virtual void PLY_import_set_face_count(const size_t N) {  }
+			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
 			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
 			  */
 			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL);
@@ -251,12 +226,12 @@ namespace mrpt
 			/** In a base class, return the number of faces */
 			virtual size_t PLY_export_get_face_count() const { return 0; }
 
-			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point. 
+			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
 			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
 			  */
 			virtual void PLY_export_get_vertex(
-				const size_t idx, 
-				mrpt::math::TPoint3Df &pt, 
+				const size_t idx,
+				mrpt::math::TPoint3Df &pt,
 				bool &pt_has_color,
 				mrpt::utils::TColorf &pt_color) const;
 
@@ -280,8 +255,8 @@ namespace mrpt
 
 	namespace utils
 	{
-		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::opengl::CPointCloudColoured> */
-		template <> 
+		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::opengl::CPointCloudColoured>  \ingroup mrpt_adapters_grp*/
+		template <>
 		class PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 		{
 		private:
@@ -335,10 +310,45 @@ namespace mrpt
 			inline void setPointXYZ_RGBu8(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const uint8_t r,const uint8_t g,const uint8_t b) {
 				m_obj.setPoint_fast(idx, mrpt::opengl::CPointCloudColoured::TPointColour(x,y,z,r/255.f,g/255.f,b/255.f) );
 			}
+
+			/** Get RGBf color of i'th point */
+			inline void getPointRGBf(const size_t idx, float &r,float &g,float &b) const { m_obj.getPointColor_fast(idx,r,g,b); }
+			/** Set XYZ_RGBf coordinates of i'th point */
+			inline void setPointRGBf(const size_t idx, const float r,const float g,const float b) { m_obj.setPointColor_fast(idx,r,g,b); }
+
+			/** Get RGBu8 color of i'th point */
+			inline void getPointRGBu8(const size_t idx, uint8_t &r,uint8_t &g,uint8_t &b) const {
+				float R,G,B;
+				m_obj.getPointColor_fast(idx,R,G,B);
+				r=R*255; g=G*255; b=B*255;
+			}
+			/** Set RGBu8 coordinates of i'th point */
+			inline void setPointXYZ_RGBu8(const size_t idx,const uint8_t r,const uint8_t g,const uint8_t b) {
+				m_obj.setPointColor_fast(idx,r/255.f,g/255.f,b/255.f);
+			}
+
 		}; // end of PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 
 	}
 
+	namespace opengl
+	{
+		// After declaring the adapter we can here implement this method:
+		template <class POINTSMAP>
+		void  CPointCloudColoured::loadFromPointsMap( const POINTSMAP *themap)
+		{
+			mrpt::utils::PointCloudAdapter<CPointCloudColoured> pc_dst(*this);
+			const mrpt::utils::PointCloudAdapter<POINTSMAP>     pc_src(*themap);
+			const size_t N=pc_src.size();
+			pc_dst.resize(N);
+			for (size_t i=0;i<N;i++)
+			{
+				float x,y,z,r,g,b;
+				pc_src.getPointXYZ_RGBf(i,x,y,z,r,g,b);
+				pc_dst.setPointXYZ_RGBf(i,x,y,z,r,g,b);
+			}
+		}
+	}
 
 } // End of namespace
 

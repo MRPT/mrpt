@@ -33,16 +33,21 @@
 #include <mrpt/slam/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
-
 #include <mrpt/math/CPolygon.h>
+#include <mrpt/utils/adapters.h>
 
 
 namespace mrpt
 {
 namespace slam
 {
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation3DRangeScan, CObservation,OBS_IMPEXP )
+
+	namespace detail {
+		// Implemented in CObservation3DRangeScan_project3D_impl.h
+		template <class POINTMAP>
+		void project3DPointsFromDepthImageInto(CObservation3DRangeScan    & src_obs,POINTMAP                   & dest_pointcloud,const bool                   takeIntoAccountSensorPoseOnRobot,const mrpt::poses::CPose3D * robotPoseInTheWorld,const bool                   PROJ3D_USE_LUT);
+	}
 
 	/** Declares a class derived from "CObservation" that
 	 *      encapsules a 3D range scan measurement (e.g. from a time of flight range camera).
@@ -136,7 +141,8 @@ namespace slam
 		virtual void unload();
 		/** @} */
 
-		/** Compute the 3D points coordinates from the depth image (\a rangeImage) and the depth camera camera parameters (\a cameraParams).
+		/** Project the RGB+D images into a 3D point cloud (with color if the target map supports it) and optionally at a given 3D pose.
+		  *  The 3D point coordinates are computed from the depth image (\a rangeImage) and the depth camera camera parameters (\a cameraParams).
 		  *  There exist two set of formulas for projecting the i'th point, depending on the value of "range_is_depth".
 		  *   In all formulas below, "rangeImage" is the matrix of ranges and the pixel coordinates are (r,c).
 		  *
@@ -162,11 +168,32 @@ namespace slam
 		  *   z(i) = Kz * x(i)
 		  * \endcode
 		  *
+		  *  The color of each point is determined by projecting the 3D local point into the RGB image using \a cameraParamsIntensity.
+		  *
+		  *  By default the local coordinates of points are directly stored into the local map, but if indicated so in \a takeIntoAccountSensorPoseOnRobot
+		  *  the points are transformed with \a sensorPose. Furthermore, if provided, those coordinates are transformed with \a robotPoseInTheWorld
+		  *
 		  * \param[in] PROJ3D_USE_LUT (Only when range_is_depth=true) Whether to use a Look-up-table (LUT) to speed up the conversion. It's thread safe in all situations <b>except</b> when you call this method from different threads <b>and</b> with different camera parameter matrices. In all other cases, it's a good idea to left it enabled.
+		  * \tparam POINTMAP Supported maps are all those covered by mrpt::utils::PointCloudAdapter (mrpt::slam::CPointsMap and derived, mrpt::opengl::CPointCloudColoured, PCL point clouds,...)
 		  *
 		  * \note In MRPT < 0.9.5, this method always assumes that ranges were in Kinect-like format.
 		  */
-		void project3DPointsFromDepthImage(const bool PROJ3D_USE_LUT=true);
+		template <class POINTMAP>
+		inline void project3DPointsFromDepthImageInto(
+			POINTMAP                   & dest_pointcloud,
+			const bool takeIntoAccountSensorPoseOnRobot,
+			const mrpt::poses::CPose3D *robotPoseInTheWorld=NULL,
+			const bool PROJ3D_USE_LUT=true)
+		{
+			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,takeIntoAccountSensorPoseOnRobot,robotPoseInTheWorld,PROJ3D_USE_LUT);
+		}
+
+		/** This method is equivalent to \c project3DPointsFromDepthImageInto() storing the projected 3D points (without color, in local coordinates) in this same class.
+		  *  For new code it's recommended to use instead \c project3DPointsFromDepthImageInto() which is much more versatile.
+		  */
+		inline void project3DPointsFromDepthImage(const bool PROJ3D_USE_LUT=true) {
+			this->project3DPointsFromDepthImageInto(*this,false,NULL,PROJ3D_USE_LUT);
+		}
 
 		bool hasPoints3D; 								//!< true means the field points3D contains valid data.
 		std::vector<float> points3D_x;   //!< If hasPoints3D=true, the X coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors
@@ -268,6 +295,13 @@ namespace slam
 			mrpt::utils::TCamera			&out_camParams,
 			const double camera_offset = 0.01 );
 
+		/** Look-up-table struct for project3DPointsFromDepthImageInto() */
+		struct TCached3DProjTables
+		{
+			mrpt::vector_float Kzs,Kys;
+			TCamera  prev_camParams;
+		};
+		static TCached3DProjTables m_3dproj_lut; //!< 3D point cloud projection look-up-table \sa project3DPointsFromDepthImage
 
 	}; // End of class def.
 
@@ -293,6 +327,49 @@ namespace slam
 		};
 	}
 
+	namespace utils
+	{
+		using mrpt::slam::CObservation3DRangeScan;
+
+		/** Specialization mrpt::utils::PointCloudAdapter<CObservation3DRangeScan> \ingroup mrpt_adapters_grp */
+		template <>
+		class PointCloudAdapter<CObservation3DRangeScan> : public detail::PointCloudAdapterHelperNoRGB<CObservation3DRangeScan,float>
+		{
+		private:
+			CObservation3DRangeScan &m_obj;
+		public:
+			typedef float  coords_t;  //!< The type of each point XYZ coordinates
+			static const int HAS_RGB   = 0;  //!< Has any color RGB info?
+			static const int HAS_RGBf  = 0;  //!< Has native RGB info (as floats)?
+			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
+
+			/** Constructor (accept a const ref for convenience) */
+			inline PointCloudAdapter(const CObservation3DRangeScan &obj) : m_obj(*const_cast<CObservation3DRangeScan*>(&obj)) { }
+			/** Get number of points */
+			inline size_t size() const { return m_obj.points3D_x.size(); }
+			/** Set number of points (to uninitialized values) */
+			inline void resize(const size_t N) {
+				if (N) m_obj.hasPoints3D = true;
+				m_obj.resizePoints3DVectors(N);
+			}
+
+			/** Get XYZ coordinates of i'th point */
+			template <typename T>
+			inline void getPointXYZ(const size_t idx, T &x,T &y, T &z) const {
+				x=m_obj.points3D_x[idx];
+				y=m_obj.points3D_y[idx];
+				z=m_obj.points3D_z[idx];
+			}
+			/** Set XYZ coordinates of i'th point */
+			inline void setPointXYZ(const size_t idx, const coords_t x,const coords_t y, const coords_t z) {
+				m_obj.points3D_x[idx]=x;
+				m_obj.points3D_y[idx]=y;
+				m_obj.points3D_z[idx]=z;
+			}
+		}; // end of PointCloudAdapter<CObservation3DRangeScan>
+	}
 } // End of namespace
+
+#include "CObservation3DRangeScan_project3D_impl.h"
 
 #endif

@@ -898,9 +898,9 @@ namespace slam
 
 	namespace utils
 	{
-		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::slam::CPointsMap> */
-		template <> 
-		class PointCloudAdapter<mrpt::slam::CPointsMap>
+		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::slam::CPointsMap>  \ingroup mrpt_adapters_grp*/
+		template <>
+		class PointCloudAdapter<mrpt::slam::CPointsMap> : public detail::PointCloudAdapterHelperNoRGB<mrpt::slam::CPointsMap,float>
 		{
 		private:
 			mrpt::slam::CPointsMap &m_obj;
@@ -925,28 +925,6 @@ namespace slam
 			/** Set XYZ coordinates of i'th point */
 			inline void setPointXYZ(const size_t idx, const coords_t x,const coords_t y, const coords_t z) {
 				m_obj.setPointFast(idx,x,y,z);
-			}
-
-			/** Get XYZ_RGBf coordinates of i'th point */
-			template <typename T>
-			inline void getPointXYZ_RGBf(const size_t idx, T &x,T &y, T &z, float &r,float &g,float &b) const {
-				this->getPointXYZ(idx,x,y,z);
-				r=g=b=1.0f;
-			}
-			/** Set XYZ_RGBf coordinates of i'th point */
-			inline void setPointXYZ_RGBf(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const float r,const float g,const float b) {
-				this->setPointXYZ(idx,x,y,z);
-			}
-
-			/** Get XYZ_RGBu8 coordinates of i'th point */
-			template <typename T>
-			inline void getPointXYZ_RGBu8(const size_t idx, T &x,T &y, T &z, uint8_t &r,uint8_t &g,uint8_t &b) const {
-				this->getPointXYZ(idx,x,y,z);
-				r=g=b=255;
-			}
-			/** Set XYZ_RGBu8 coordinates of i'th point */
-			inline void setPointXYZ_RGBu8(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const uint8_t r,const uint8_t g,const uint8_t b) {
-				this->setPointXYZ(idx,x,y,z);
 			}
 		}; // end of PointCloudAdapter<mrpt::slam::CPointsMap>
 

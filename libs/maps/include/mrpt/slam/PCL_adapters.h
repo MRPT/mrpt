@@ -42,9 +42,9 @@ namespace mrpt
 {
 	namespace utils
 	{
-		/** Specialization mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ> > for an XYZ point cloud (without RGB) */
-		template <> 
-		class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ> >
+		/** Specialization mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ> > for an XYZ point cloud (without RGB) \ingroup mrpt_adapters_grp */
+		template <>
+		class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ> > :  public detail::PointCloudAdapterHelperNoRGB<pcl::PointCloud<pcl::PointXYZ>,float>
 		{
 		private:
 			pcl::PointCloud<pcl::PointXYZ> &m_obj;
@@ -72,33 +72,11 @@ namespace mrpt
 				pcl::PointXYZ &p=m_obj.points[idx];
 				p.x=x; p.y=y; p.z=z;
 			}
-
-			/** Get XYZ_RGBf coordinates of i'th point */
-			template <typename T>
-			inline void getPointXYZ_RGBf(const size_t idx, T &x,T &y, T &z, float &r,float &g,float &b) const {
-				this->getPointXYZ(idx,x,y,z);
-				r=g=b=1.0f;
-			}
-			/** Set XYZ_RGBf coordinates of i'th point */
-			inline void setPointXYZ_RGBf(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const float r,const float g,const float b) {
-				this->setPointXYZ(idx,x,y,z);
-			}
-
-			/** Get XYZ_RGBu8 coordinates of i'th point */
-			template <typename T>
-			inline void getPointXYZ_RGBu8(const size_t idx, T &x,T &y, T &z, uint8_t &r,uint8_t &g,uint8_t &b) const {
-				this->getPointXYZ(idx,x,y,z);
-				r=g=b=255;
-			}
-			/** Set XYZ_RGBu8 coordinates of i'th point */
-			inline void setPointXYZ_RGBu8(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const uint8_t r,const uint8_t g,const uint8_t b) {
-				this->setPointXYZ(idx,x,y,z);
-			}
 		}; // end of mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZ> >
 
 
-		/** Specialization mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB> > for an XYZ point cloud with RGB */
-		template <> 
+		/** Specialization mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB> > for an XYZ point cloud with RGB  \ingroup mrpt_adapters_grp */
+		template <>
 		class PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB> >
 		{
 		private:
@@ -134,7 +112,7 @@ namespace mrpt
 			inline void getPointXYZ_RGBf(const size_t idx, T &x,T &y, T &z, float &r,float &g,float &b) const {
 				const pcl::PointXYZRGB &p=m_obj.points[idx];
 				x=p.x; y=p.y; z=p.z;
-				r=p.r/255.f; g=p.g/255.f; b=p.b/255.f; 
+				r=p.r/255.f; g=p.g/255.f; b=p.b/255.f;
 			}
 			/** Set XYZ_RGBf coordinates of i'th point */
 			inline void setPointXYZ_RGBf(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const float r,const float g,const float b) {
@@ -148,7 +126,7 @@ namespace mrpt
 			inline void getPointXYZ_RGBu8(const size_t idx, T &x,T &y, T &z, uint8_t &r,uint8_t &g,uint8_t &b) const {
 				const pcl::PointXYZRGB &p=m_obj.points[idx];
 				x=p.x; y=p.y; z=p.z;
-				r=p.r; g=p.g; b=p.b; 
+				r=p.r; g=p.g; b=p.b;
 			}
 			/** Set XYZ_RGBu8 coordinates of i'th point */
 			inline void setPointXYZ_RGBu8(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const uint8_t r,const uint8_t g,const uint8_t b) {
@@ -156,6 +134,29 @@ namespace mrpt
 				p.x=x; p.y=y; p.z=z;
 				p.r=r; p.g=g; p.b=b;
 			}
+
+			/** Get RGBf color of i'th point */
+			inline void getPointRGBf(const size_t idx, float &r,float &g,float &b) const {
+				const pcl::PointXYZRGB &p=m_obj.points[idx];
+				r=p.r/255.f; g=p.g/255.f; b=p.b/255.f;
+			}
+			/** Set XYZ_RGBf coordinates of i'th point */
+			inline void setPointRGBf(const size_t idx, const float r,const float g,const float b) {
+				pcl::PointXYZRGB &p=m_obj.points[idx];
+				p.r=r*255; p.g=g*255; p.b=b*255;
+			}
+
+			/** Get RGBu8 color of i'th point */
+			inline void getPointRGBu8(const size_t idx, uint8_t &r,uint8_t &g,uint8_t &b) const {
+				const pcl::PointXYZRGB &p=m_obj.points[idx];
+				r=p.r; g=p.g; b=p.b;
+			}
+			/** Set RGBu8 coordinates of i'th point */
+			inline void setPointXYZ_RGBu8(const size_t idx,const uint8_t r,const uint8_t g,const uint8_t b) {
+				pcl::PointXYZRGB &p=m_obj.points[idx];
+				p.r=r; p.g=g; p.b=b;
+			}
+
 		}; // end of mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB> >
 
 	}
