@@ -337,7 +337,7 @@ namespace mrpt
 			}
 		}; // end of PointCloudAdapter<mrpt::opengl::CPointCloudColoured>
 
-	};
+	}
 
 
 } // End of namespace

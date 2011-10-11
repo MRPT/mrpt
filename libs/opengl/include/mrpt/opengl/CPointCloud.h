@@ -332,9 +332,7 @@ namespace mrpt
 			}
 
 		}; // end of PointCloudAdapter<mrpt::opengl::CPointCloud>
-
-
-	};
+	}
 
 } // End of namespace
 

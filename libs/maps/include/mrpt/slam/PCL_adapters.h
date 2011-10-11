@@ -158,8 +158,7 @@ namespace mrpt
 			}
 		}; // end of mrpt::utils::PointCloudAdapter<pcl::PointCloud<pcl::PointXYZRGB> >
 
-	};
-
+	}
 } // End of namespace
 
 #endif

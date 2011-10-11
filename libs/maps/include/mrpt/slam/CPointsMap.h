@@ -950,7 +950,7 @@ namespace slam
 			}
 		}; // end of PointCloudAdapter<mrpt::slam::CPointsMap>
 
-	};
+	}
 
 } // End of namespace
 

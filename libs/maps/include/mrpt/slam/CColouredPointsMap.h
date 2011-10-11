@@ -359,7 +359,7 @@ namespace mrpt
 			}
 		}; // end of PointCloudAdapter<mrpt::slam::CColouredPointsMap>
 
-	};
+	}
 
 } // End of namespace
 
