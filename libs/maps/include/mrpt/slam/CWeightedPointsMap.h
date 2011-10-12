@@ -157,8 +157,40 @@ namespace mrpt
 			/** @} */
 
 		}; // End of class def.
-
 	} // End of namespace
+
+	namespace utils
+	{
+		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::slam::CWeightedPointsMap>  \ingroup mrpt_adapters_grp*/
+		template <>
+		class PointCloudAdapter<mrpt::slam::CWeightedPointsMap> : public detail::PointCloudAdapterHelperNoRGB<mrpt::slam::CWeightedPointsMap,float>
+		{
+		private:
+			mrpt::slam::CWeightedPointsMap &m_obj;
+		public:
+			typedef float  coords_t;         //!< The type of each point XYZ coordinates
+			static const int HAS_RGB   = 0;  //!< Has any color RGB info?
+			static const int HAS_RGBf  = 0;  //!< Has native RGB info (as floats)?
+			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
+
+			/** Constructor (accept a const ref for convenience) */
+			inline PointCloudAdapter(const mrpt::slam::CWeightedPointsMap &obj) : m_obj(*const_cast<mrpt::slam::CWeightedPointsMap*>(&obj)) { }
+			/** Get number of points */
+			inline size_t size() const { return m_obj.size(); }
+			/** Set number of points (to uninitialized values) */
+			inline void resize(const size_t N) { m_obj.resize(N); }
+
+			/** Get XYZ coordinates of i'th point */
+			template <typename T>
+			inline void getPointXYZ(const size_t idx, T &x,T &y, T &z) const {
+				m_obj.getPointFast(idx,x,y,z);
+			}
+			/** Set XYZ coordinates of i'th point */
+			inline void setPointXYZ(const size_t idx, const coords_t x,const coords_t y, const coords_t z) {
+				m_obj.setPointFast(idx,x,y,z);
+			}
+		}; // end of PointCloudAdapter<mrpt::slam::CPointsMap>
+	}
 } // End of namespace
 
 #endif
