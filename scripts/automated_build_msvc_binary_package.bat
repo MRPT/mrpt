@@ -13,6 +13,9 @@ REM  Extra params we want on all public binary releases:
 set EXTRA_CMAKE_VARS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON
 set MSBUILDPARALLEL=/maxcpucount:2
 
+REM set MSVC_VERBOSITY=minimal
+set MSVC_VERBOSITY=normal
+
 REM Make sure params are OK:
 REM ------------------------------
 IF "%1" == "" GOTO SHOW_USAGE
@@ -28,8 +31,13 @@ IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
 REM 2) Compile debug libs (so Cmake find them in the next run)
 REM ----------------------------------------------
-msbuild libs\ALL_MRPT_LIBS.sln /p:Configuration=Debug %MSBUILDPARALLEL% /verbosity:minimal
-IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
+:RETRY_BUILD
+msbuild libs\ALL_MRPT_LIBS.sln /p:Configuration=Debug %MSBUILDPARALLEL% /verbosity:%MSVC_VERBOSITY%
+REM IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
+REM Repeat several times with MSVC9 since its linker crashes... (yes, fuck yeah!)
+IF %ERRORLEVEL% NEQ 0 GOTO RETRY_BUILD
+
+
 
 REM 3) re-call CMake to detect the debug libs
 REM ----------------------------------------------
@@ -38,23 +46,18 @@ IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
 REM 4) Do unit tests:
 REM ----------------------------------------------
-msbuild tests\tests.sln /p:Configuration=Release %MSBUILDPARALLEL% /verbosity:minimal
+msbuild tests\tests.sln /p:Configuration=Release %MSBUILDPARALLEL% /verbosity:%MSVC_VERBOSITY%
 IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
 REM 5) All seem OK. Build all.
 REM ----------------------------------------------
-msbuild MRPT.sln /p:Configuration=Release %MSBUILDPARALLEL% /verbosity:minimal
+msbuild MRPT.sln /p:Configuration=Release %MSBUILDPARALLEL% /verbosity:%MSVC_VERBOSITY%
 IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
-REM Repeat several times with MSVC9 since its linker crashes... (yes, fuck yeah!)
-REM msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL% /verbosity:minimal
-REM msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
-REM msbuild MRPT.sln /p:Configuration=Debug %MSBUILDPARALLEL%
-REM ...
 
 REM 6) Build package:
 REM ----------------------------------------------
-msbuild PACKAGE.vcxproj /p:Configuration=Release /verbosity:minimal
+msbuild PACKAGE.vcxproj /p:Configuration=Release /verbosity:%MSVC_VERBOSITY%
 
 
 goto END_BATCH

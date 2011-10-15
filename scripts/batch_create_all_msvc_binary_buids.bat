@@ -74,7 +74,7 @@ cmake . %ALL_PARAMS%
 echo off
 
 REM Create compilation script:
-echo SET PATH=C:\Windows\system32;C:\Windows;C:\Program Files\TortoiseSVN\bin;D:\code\opencv-%COMP%\bin\Release;D:\code\opencv-%COMP%\bin\Debug;%WXLIBDIR%;%FFMPEGDIR%;%LIBUSBDIR%\bin\%ARCH_NAME%;%CMAKE_DIR%;%CD%\bin\Release;%CD%\bin\Debug >> AUTOBUILD.bat
+echo SET PATH=C:\Windows\system32;C:\Windows;C:\Program Files\TortoiseSVN\bin;D:\code\opencv-%COMP%-%ARCH%\bin\Release;D:\code\opencv-%COMP%-%ARCH%\bin\Debug;%WXLIBDIR%;%FFMPEGDIR%;%LIBUSBDIR%\bin\%ARCH_NAME%;%CMAKE_DIR%;%CD%\bin\Release;%CD%\bin\Debug >> AUTOBUILD.bat
 echo call "%MSVC_DIR%\VC\vcvarsall.bat" %ARCH_NAME% >> AUTOBUILD.bat
 echo call ..\%MRPT_BASE_DIR%\scripts\automated_build_msvc_binary_package.bat ..\%MRPT_BASE_DIR%\ >> AUTOBUILD.bat
 
