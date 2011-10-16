@@ -57,7 +57,8 @@ IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
 REM 6) Build package:
 REM ----------------------------------------------
-msbuild PACKAGE.vcxproj /p:Configuration=Release /verbosity:%MSVC_VERBOSITY%
+IF EXIST PACKAGE.vcproj msbuild PACKAGE.vcproj /p:Configuration=Release /verbosity:detailed
+IF EXIST PACKAGE.vcxproj msbuild PACKAGE.vcxproj /p:Configuration=Release /verbosity:detailed
 
 
 goto END_BATCH

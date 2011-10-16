@@ -4,7 +4,7 @@ set MRPT_BASE_DIR=mrpt-0.9.5
 set msvc9_DIR=d:\Program Files (x86)\Microsoft Visual Studio 9.0
 set msvc10_DIR=c:\Program Files (x86)\Microsoft Visual Studio 10.0
 set CMAKE_DIR=C:\Program Files (x86)\CMake 2.8\bin
-set LIBUSBDIR=D:\code\libusb-win32-bin-1.2.2.0
+set LIBUSBDIR=D:\code\libusb-win32-bin
 
 REM msvc9 ========================
 set COMP=msvc9
@@ -54,7 +54,7 @@ set DIR=%MRPT_BASE_DIR%-%COMP%-%ARCH%
 if %KINECT%==1 set DIR=%DIR%-kinect
 if %ARCHN%==32 set ARCH_NAME=x86
 if %ARCHN%==64 set ARCH_NAME=amd64
-set FFMPEGDIR=D:/code/ffmpeg-git-5501afa-win%ARCHN%-dev
+set FFMPEGDIR=D:/code/ffmpeg-win%ARCHN%-dev
 set WXDIR=D:/wxWidgets-2.9.2-win%ARCHN%-%COMP%
 if %ARCHN%==32 set WXLIBDIR=%WXDIR%/lib/vc_dll
 if %ARCHN%==64 set WXLIBDIR=%WXDIR%/lib/vc_amd64_dll
@@ -63,7 +63,10 @@ mkdir %DIR%
 cd %DIR%
 set ALL_PARAMS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON -DOpenCV_DIR=d:/code/opencv-%COMP%-%ARCH% -DMRPT_HAS_FFMPEG_WIN32=ON -DFFMPEG_WIN32_ROOT_DIR=%FFMPEGDIR% -DwxWidgets_ROOT_DIR=%WXDIR% -DwxWidgets_LIB_DIR=%WXLIBDIR%
 
-if %KINECT%==1 set ALL_PARAMS=%ALL_PARAMS% -DBUILD_KINECT=ON -DBUILD_KINECT_USE_FREENECT=ON -DLIBUSB_1_INCLUDE_DIR=%LIBUSBDIR%/include -DLIBUSB_1_LIBRARY=%LIBUSBDIR%/lib/msvc_%ARCH_NAME%/libusb.lib 
+if %ARCHN%==32 set LIBUSBLIB=%LIBUSBDIR%\lib\msvc\libusb.lib 
+if %ARCHN%==64 set LIBUSBLIB=%LIBUSBDIR%\lib\msvc_x64\libusb.lib 
+
+if %KINECT%==1 set ALL_PARAMS=%ALL_PARAMS% -DBUILD_KINECT=ON -DBUILD_KINECT_USE_FREENECT=ON -DLIBUSB_1_INCLUDE_DIR=%LIBUSBDIR%/include -DLIBUSB_1_LIBRARY=%LIBUSBLIB%
 
 REM Create Project:
 echo on
@@ -74,9 +77,16 @@ cmake . %ALL_PARAMS%
 echo off
 
 REM Create compilation script:
-echo SET PATH=C:\Windows\system32;C:\Windows;C:\Program Files\TortoiseSVN\bin;D:\code\opencv-%COMP%-%ARCH%\bin\Release;D:\code\opencv-%COMP%-%ARCH%\bin\Debug;%WXLIBDIR%;%FFMPEGDIR%;%LIBUSBDIR%\bin\%ARCH_NAME%;%CMAKE_DIR%;%CD%\bin\Release;%CD%\bin\Debug >> AUTOBUILD.bat
-echo call "%MSVC_DIR%\VC\vcvarsall.bat" %ARCH_NAME% >> AUTOBUILD.bat
+set PATH_FIL=paths_%COMP%_%ARCH_NAME%
+if %KINECT%==1 set PATH_FIL=%PATH_FIL%-kinect
+set PATH_FIL=%PATH_FIL%.bat
+
+echo SET PATH=C:\Windows\system32;C:\Windows;C:\Program Files\TortoiseSVN\bin;D:\code\opencv-%COMP%-%ARCH%\bin\Release;D:\code\opencv-%COMP%-%ARCH%\bin\Debug;%WXLIBDIR%;%FFMPEGDIR%/bin;%LIBUSBDIR%\bin\%ARCH_NAME%;%CMAKE_DIR%;%CD%\bin\Release;%CD%\bin\Debug > %PATH_FIL%
+echo call "%MSVC_DIR%\VC\vcvarsall.bat" %ARCH_NAME% >> %PATH_FIL%
+echo call %PATH_FIL% > AUTOBUILD.bat
 echo call ..\%MRPT_BASE_DIR%\scripts\automated_build_msvc_binary_package.bat ..\%MRPT_BASE_DIR%\ >> AUTOBUILD.bat
+echo move mrpt*.exe ..\%DIR%.exe >> AUTOBUILD.bat
+echo rmdir /Q /S _CPack_Packages  >> AUTOBUILD.bat
 
 cd ..
 

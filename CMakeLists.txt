@@ -153,7 +153,6 @@ IF(WIN32)
 		cmake_uninstall.cmake.in
 		CMakeLists.txt
 		config_file_examples.txt
-		configure
 		COPYING
 		DATASETS.txt
 		INSTALL_COMPILE.html
