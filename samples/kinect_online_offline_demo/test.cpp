@@ -325,27 +325,37 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 // Pathway: RGB+D --> PCL <PointXYZ> --> XYZ opengl
 #if 0
 				static pcl::PointCloud<pcl::PointXYZ> cloud;
+				logger.enter("RGBD->3D.projectInto");
 				newObs->project3DPointsFromDepthImageInto(cloud, false /* without obs.sensorPose */);
+				logger.leave("RGBD->3D.projectInto");
 
 				win3D.get3DSceneAndLock();
+				logger.enter("RGBD->3D.load in OpenGL");
 					gl_points->loadFromPointsMap(&cloud);
+				logger.leave("RGBD->3D.load in OpenGL");
 				win3D.unlockAccess3DScene();
 #endif
 
 // Pathway: RGB+D --> PCL <PointXYZRGB> --> XYZ+RGB opengl
-#if 1
+#if 0
 				static pcl::PointCloud<pcl::PointXYZRGB> cloud;
+				logger.enter("RGBD->3D.projectInto");
 				newObs->project3DPointsFromDepthImageInto(cloud, false /* without obs.sensorPose */);
+				logger.leave("RGBD->3D.projectInto");
 
 				win3D.get3DSceneAndLock();
+				logger.enter("RGBD->3D.load in OpenGL");
 					gl_points->loadFromPointsMap(&cloud);
+				logger.leave("RGBD->3D.load in OpenGL");
 				win3D.unlockAccess3DScene();
 #endif
 
 // Pathway: RGB+D --> XYZ+RGB opengl
-#if 0
+#if 1
 				win3D.get3DSceneAndLock();
+				logger.enter("RGBD->3D.projectInto");
 					newObs->project3DPointsFromDepthImageInto(*gl_points, false /* without obs.sensorPose */);
+				logger.leave("RGBD->3D.projectInto");
 				win3D.unlockAccess3DScene();
 #endif
 
@@ -353,7 +363,9 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 #if 0
 				const CPose3D globalPose(1,2,3,DEG2RAD(10),DEG2RAD(20),DEG2RAD(30));
 				win3D.get3DSceneAndLock();
+				logger.enter("RGBD->3D.projectInto");
 					newObs->project3DPointsFromDepthImageInto(*gl_points, false /* without obs.sensorPose */, &globalPose);
+				logger.leave("RGBD->3D.projectInto");
 				win3D.unlockAccess3DScene();
 #endif
 
@@ -361,14 +373,20 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 #if 0
 				// Project 3D points:
 				if (!newObs->hasPoints3D)
+				{
+				logger.enter("RGBD->3D.projectInto");
 					newObs->project3DPointsFromDepthImage();
+				logger.leave("RGBD->3D.projectInto");
+				}
 
 				CColouredPointsMap pntsMap;
 				pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
 				pntsMap.loadFromRangeScan(*newObs);
 
 				win3D.get3DSceneAndLock();
+				logger.enter("RGBD->3D.load in OpenGL");
 					gl_points->loadFromPointsMap(&pntsMap);
+				logger.leave("RGBD->3D.load in OpenGL");
 				win3D.unlockAccess3DScene();
 #endif
 

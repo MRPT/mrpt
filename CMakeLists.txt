@@ -5,7 +5,7 @@
 #   the MRPT C++ library, the samples, and the applications. Some scripts
 #   for generating the documentation, etc... are also updated.
 #
-#  For compiling instructions for all compilers and platforms, see 
+#  For compiling instructions for all compilers and platforms, see
 #   http://www.mrpt.org/Building_and_Installing_Instructions
 #
 #  2007-2011, Jose Luis Blanco <jlblanco@ctima.uma.es>
@@ -133,7 +133,7 @@ IF(WIN32)
 	SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\mrpt.sourceforge.net")
 	SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.isa.uma.es\\\\jlblanco")
 	SET(CPACK_NSIS_CONTACT "jlblanco@ctima.uma.es")
-	
+
 	# Add mrpt/bin dir to system PATH
 	SET(CPACK_NSIS_MODIFY_PATH ON)
 
@@ -148,8 +148,8 @@ IF(WIN32)
 		DESTINATION apps
 		PATTERN ".svn" EXCLUDE
 		PATTERN "*~" EXCLUDE)
-		
-	INSTALL(FILES 
+
+	INSTALL(FILES
 		cmake_uninstall.cmake.in
 		CMakeLists.txt
 		config_file_examples.txt
@@ -165,30 +165,30 @@ IF(WIN32)
 		version_prefix.txt
 		version_prefix_README.txt
 	DESTINATION .)
-		
-	SET(CPACK_PACKAGE_EXECUTABLES 
+
+	SET(CPACK_PACKAGE_EXECUTABLES
 		"camera-calib;Camera calibration GUI;features-matching;Visual feature matching;GridmapNavSimul;Gridmap simulator;RawLogViewer;RawLog Viewer;ReactiveNavigationDemo;Reactive navigation demo;prrt-navigator-demo;PRRT robot navigator demo;SceneViewer3D;Scene Viewer 3D;2d-slam-demo;2D KF-SLAM Simulator;navlog-viewer;Viewer of navigation log files;kinect-3d-slam;Simple live 3D-SLAM with Kinect")
-		
+
 	IF (EXISTS "${MRPT_SOURCE_DIR}/apps/hmt-slam-gui")
 		SET(CPACK_PACKAGE_EXECUTABLES "${CPACK_PACKAGE_EXECUTABLES};hmt-slam-gui;HMT-SLAM visual interface")
 	ENDIF (EXISTS "${MRPT_SOURCE_DIR}/apps/hmt-slam-gui")
-	
-		
+
+
 	SET(CPACK_NSIS_MENU_LINKS
 	    "doc;Documentation directory;bin;Directory of executables (bin);doc/chm/libMRPT-@CMAKE_MRPT_VERSION_NUMBER_MAJOR@.@CMAKE_MRPT_VERSION_NUMBER_MINOR@.@CMAKE_MRPT_VERSION_NUMBER_PATCH@.chm;MRPT libraries reference (CHM);README.txt;Read me;http://www.mrpt.org/;Online help;doc/mrpt-book.pdf;The MRPT book (PDF)")
-		
+
 	# File types association:
 	SET(CPACK_NSIS_DEFINES "
 		!include registerExtension.nsh
 		")
-	
+
 	SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
-		\\\${registerExtension} \\\"$INSTDIR\\\\bin\\\\RawLogViewer.exe\\\" \\\".rawlog\\\" \\\"Robotic Dataset File\\\" 
-		\\\${registerExtension} \\\"$INSTDIR\\\\bin\\\\SceneViewer3D.exe\\\" \\\".3Dscene\\\" \\\"Robotic 3D scene\\\" 
+		\\\${registerExtension} \\\"$INSTDIR\\\\bin\\\\RawLogViewer.exe\\\" \\\".rawlog\\\" \\\"Robotic Dataset File\\\"
+		\\\${registerExtension} \\\"$INSTDIR\\\\bin\\\\SceneViewer3D.exe\\\" \\\".3Dscene\\\" \\\"Robotic 3D scene\\\"
 		")
-	SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "  
-		\\\${unregisterExtension} \\\".rawlog\\\" \\\"Robotic Dataset File\\\" 
-		\\\${unregisterExtension} \\\".3Dscene\\\" \\\"Robotic 3D scene\\\" 
+	SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+		\\\${unregisterExtension} \\\".rawlog\\\" \\\"Robotic Dataset File\\\"
+		\\\${unregisterExtension} \\\".3Dscene\\\" \\\"Robotic 3D scene\\\"
 		")
 
 	# Install to "Program files (x86)" or "Program files" correctly:
@@ -197,7 +197,7 @@ IF(WIN32)
 	else(CMAKE_SIZEOF_VOID_P EQUAL 8)
 	  set(CPACK_NSIS_PROGRAMFILES PROGRAMFILES)
 	endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
-		
+
 ENDIF(WIN32)
 IF(UNIX)
 	# ------------------------------------------------------------------
@@ -217,7 +217,7 @@ INCLUDE(CPack)
 set(CMAKE_DEBUG_POSTFIX  "-dbg")
 # Libs are: "libmrpt-xxx"
 #            ---
-IF(MSVC)	
+IF(MSVC)
 	set(MRPT_LIB_PREFIX "lib")
 ENDIF(MSVC)
 
@@ -408,10 +408,10 @@ if (MRPT_HAS_TBB)
             APPEND_MRPT_LIBS(${TBB_LIBRARIES})
         endif(TBB_FOUND)
     endif(UNIX AND NOT APPLE AND NOT ANDROID)
-    
+
     if (NOT CMAKE_MRPT_HAS_TBB)
         set(TBB_DEFAULT_INCLUDE_DIRS "/opt/intel/tbb" "/usr/local/include" "/usr/include" "C:/Program Files/Intel/TBB" "C:/Program Files (x86)/Intel/TBB" "C:/Program Files (x86)/TBB" "${CMAKE_INSTALL_PREFIX}/include")
-        
+
         find_path(TBB_INCLUDE_DIR "tbb/tbb.h" PATHS ${TBB_DEFAULT_INCLUDE_DIRS} DOC "The path to TBB headers")
         if (TBB_INCLUDE_DIR)
             if (UNIX)
@@ -431,11 +431,11 @@ if (MRPT_HAS_TBB)
                     link_directories("${TBB_LIB_DIR}")
                     APPEND_MRPT_LIBS(tbb)
                 else(CMAKE_COMPILER_IS_GNUCXX)
-                    get_filename_component(_TBB_LIB_PATH "${TBB_INCLUDE_DIR}/../lib" ABSOLUTE)                          
-                   
+                    get_filename_component(_TBB_LIB_PATH "${TBB_INCLUDE_DIR}/../lib" ABSOLUTE)
+
                     if(${CMAKE_SYSTEM_PROCESSOR} MATCHES amd64*|x86_64*)
                         set(_TBB_LIB_PATH "${_TBB_LIB_PATH}/intel64")
-                    endif(${CMAKE_SYSTEM_PROCESSOR} MATCHES amd64*|x86_64*)                   
+                    endif(${CMAKE_SYSTEM_PROCESSOR} MATCHES amd64*|x86_64*)
                     if(${CMAKE_SYSTEM_PROCESSOR} MATCHES x86*|i386*|i686*)
                         set(_TBB_LIB_PATH "${_TBB_LIB_PATH}/ia32")
                     endif(${CMAKE_SYSTEM_PROCESSOR} MATCHES x86*|i386*|i686*)
@@ -443,7 +443,7 @@ if (MRPT_HAS_TBB)
                     if (MSVC80)
                        set(_TBB_LIB_PATH "${_TBB_LIB_PATH}/vc8")
                     elseif(MSVC90)
-                       set(_TBB_LIB_PATH "${_TBB_LIB_PATH}/vc9")                    
+                       set(_TBB_LIB_PATH "${_TBB_LIB_PATH}/vc9")
                     elseif(MSVC10)
                         set(_TBB_LIB_PATH "${_TBB_LIB_PATH}/vc10")
                     endif(MSVC80)
@@ -550,9 +550,9 @@ SET( MRPT_HAS_SVS OFF CACHE BOOL "Add support for STOC Stereo Camera?")
 
 IF(MRPT_HAS_SVS)
 	SET( SVS_ROOT_DIR "" CACHE PATH "Path to SVS library root directory")
-	
 
-	IF(UNIX)		
+
+	IF(UNIX)
 		# Set to 1, next check for missing things and set to 0 on any error & report message:
 		SET(CMAKE_MRPT_HAS_SVS 1)
 
@@ -571,7 +571,7 @@ IF(MRPT_HAS_SVS)
 			MESSAGE("The directory 'SVS_ROOT_DIR' does not contain src/dcs.h. Turn off SVS support or provide the correct path.")
 		ENDIF(NOT EXISTS ${SVS_ROOT_DIR}/src/dcs.h)
 	ELSE(UNIX)
-		
+
 
 		MESSAGE("Sorry! STOC camera is supported only for LINUX yet. Set MRPT_HAS_SVS to OFF")
 		SET(CMAKE_MRPT_HAS_SVS 0)
@@ -646,7 +646,7 @@ ENDIF(UNIX)
 #  we use the equivalent API for file system monitoring):
 # =======================================================
 IF(UNIX)
-	FIND_FILE(INOTIFY_HEADER_FILE sys/inotify.h)
+	FIND_FILE(INOTIFY_HEADER_FILE sys/inotify.h HINTS /usr/include/x86_64-linux-gnu/)
 	IF(INOTIFY_HEADER_FILE)
 		SET(CMAKE_MRPT_HAS_INOTIFY 1)
 		MARK_AS_ADVANCED(INOTIFY_HEADER_FILE)
@@ -690,7 +690,7 @@ ENDIF(UNIX)
 
 
 # Check for the OpenCV libraries:
-#  pkg-config if available (Linux), otherwise CMake module 
+#  pkg-config if available (Linux), otherwise CMake module
 # =========================================================
 SET(CMAKE_MRPT_HAS_OPENCV 0)
 SET(MRPT_OPENCV_VERSION 0.0.0)
@@ -705,7 +705,7 @@ IF(PKG_CONFIG_FOUND AND NOT OpenCV_IGNORE_PKGCONFIG)
 	IF(OPENCV_FOUND)
 		SET(CMAKE_MRPT_HAS_OPENCV 1)
 		SET(MRPT_OPENCV_VERSION ${OPENCV_VERSION})
-	 	
+
 		IF ("${OPENCV_INCLUDEDIR}")
 			INCLUDE_DIRECTORIES(${OPENCV_INCLUDEDIR})
 		ENDIF("${OPENCV_INCLUDEDIR}")
@@ -750,24 +750,24 @@ IF(NOT CMAKE_MRPT_HAS_OPENCV)
 			MESSAGE(STATUS "OPENCV_INCLUDE_DIR: ${OPENCV_INCLUDE_DIR}")
 			MESSAGE(STATUS "OpenCV_LIBRARIES: ${OpenCV_LIBRARIES}")
 		ENDIF($ENV{VERBOSE})
-	
+
 		FILE(GLOB_RECURSE CV_VER_H "${OpenCV_CXCORE_INCLUDE_DIR}/cvver.h")
 		file(READ "${CV_VER_H}" STR_CV_VERSION)
 
 		# Extract the CV version from the cvver.h file, lines "#define CV_MAJOR_VERSION  XX", etc...
-		
+
 		#STRING(REGEX MATCHALL "[0-9]+.[0-9]+.[0-9]+" MRPT_OPENCV_VERSION "${STR_CV_VERSION}")
 		STRING(REGEX MATCH "CV_MAJOR_VERSION[ ]+[0-9]+" CMAKE_OPENCV_VERSION_NUMBER_MAJOR "${STR_CV_VERSION}")
 		STRING(REGEX MATCH "[0-9]+" CMAKE_OPENCV_VERSION_NUMBER_MAJOR "${CMAKE_OPENCV_VERSION_NUMBER_MAJOR}")
-		
+
 		STRING(REGEX MATCH "CV_MINOR_VERSION[ ]+[0-9]+" CMAKE_OPENCV_VERSION_NUMBER_MINOR "${STR_CV_VERSION}")
 		STRING(REGEX MATCH "[0-9]+" CMAKE_OPENCV_VERSION_NUMBER_MINOR "${CMAKE_OPENCV_VERSION_NUMBER_MINOR}")
-		
+
 		STRING(REGEX MATCH "CV_SUBMINOR_VERSION[ ]+[0-9]+" CMAKE_OPENCV_VERSION_NUMBER_PATCH "${STR_CV_VERSION}")
 		STRING(REGEX MATCH "[0-9]+" CMAKE_OPENCV_VERSION_NUMBER_PATCH "${CMAKE_OPENCV_VERSION_NUMBER_PATCH}")
-	
+
 		SET(MRPT_OPENCV_VERSION "${CMAKE_OPENCV_VERSION_NUMBER_MAJOR}.${CMAKE_OPENCV_VERSION_NUMBER_MINOR}.${CMAKE_OPENCV_VERSION_NUMBER_PATCH}")
-		
+
 		MESSAGE(STATUS "OpenCV version detected: ${MRPT_OPENCV_VERSION}")
 
 		SET(CMAKE_MRPT_HAS_OPENCV 1)
@@ -790,7 +790,7 @@ SET(MRPT_OPENCV_VERSION_HEX "0x${CMAKE_OPENCV_VERSION_NUMBER_MAJOR}${CMAKE_OPENC
 SET(CMAKE_MRPT_HAS_FFMPEG 0)
 SET(CMAKE_MRPT_HAS_FFMPEG_SYSTEM 0)
 SET(MRPT_FFMPEG_LIBS_TO_LINK "")
-  
+
 IF(PKG_CONFIG_FOUND)
 	PKG_CHECK_MODULES(LIBAVCODEC  libavcodec)
 	PKG_CHECK_MODULES(LIBAVUTIL   libavutil)
@@ -799,7 +799,7 @@ IF(PKG_CONFIG_FOUND)
 	IF(LIBAVCODEC_FOUND AND LIBAVUTIL_FOUND AND LIBAVFORMAT_FOUND AND LIBSWSCALE_FOUND)
 		SET(CMAKE_MRPT_HAS_FFMPEG 1)
 		SET(CMAKE_MRPT_HAS_FFMPEG_SYSTEM 1)
-	 
+
 		INCLUDE_DIRECTORIES("${LIBAVCODEC_INCLUDEDIR}/")
 		INCLUDE_DIRECTORIES("${LIBAVCODEC_INCLUDEDIR}/ffmpeg")
 		INCLUDE_DIRECTORIES("${LIBAVCODEC_INCLUDEDIR}/libavcodec")
@@ -855,13 +855,13 @@ IF(MRPT_HAS_FFMPEG_WIN32)
 		SET(CMAKE_MRPT_HAS_FFMPEG_SYSTEM 0)
 		MESSAGE("The directory 'FFMPEG_WIN32_ROOT_DIR' does not contain /lib/. Turn off FFmpeg support or provide the correct path.")
 	ENDIF(NOT EXISTS "${FFMPEG_WIN32_ROOT_DIR}/lib")
-	
+
 	# We need the .lib files: avcodec-52.lib, avformat-52.lib, avutil-49.lib, swscale-0.lib
 	FILE(GLOB FFMPEG_WIN32_AVCODEC_LIB "${FFMPEG_WIN32_ROOT_DIR}/lib/avcodec*.lib")
 	FILE(GLOB FFMPEG_WIN32_AVUTIL_LIB "${FFMPEG_WIN32_ROOT_DIR}/lib/avutil*.lib")
 	FILE(GLOB FFMPEG_WIN32_AVFORMAT_LIB "${FFMPEG_WIN32_ROOT_DIR}/lib/avformat*.lib")
 	FILE(GLOB FFMPEG_WIN32_SWSCALE_LIB "${FFMPEG_WIN32_ROOT_DIR}/lib/swscale*.lib")
-			
+
 	IF (NOT EXISTS ${FFMPEG_WIN32_AVCODEC_LIB})
 		SET(CMAKE_MRPT_HAS_FFMPEG 0)
 		SET(CMAKE_MRPT_HAS_FFMPEG_SYSTEM 0)
@@ -885,7 +885,7 @@ IF(MRPT_HAS_FFMPEG_WIN32)
 		SET(CMAKE_MRPT_HAS_FFMPEG_SYSTEM 0)
 		MESSAGE("swscale-XX.lib not found under '${FFMPEG_WIN32_ROOT_DIR}/lib'. Turn off FFmpeg support or provide the correct path.")
 	ENDIF (NOT EXISTS ${FFMPEG_WIN32_SWSCALE_LIB})
-	
+
 	INCLUDE_DIRECTORIES("${FFMPEG_WIN32_ROOT_DIR}/include")
 	INCLUDE_DIRECTORIES("${FFMPEG_WIN32_ROOT_DIR}/include/libavcodec")
 	INCLUDE_DIRECTORIES("${FFMPEG_WIN32_ROOT_DIR}/include/libavformat")
@@ -911,7 +911,7 @@ SET(CMAKE_MRPT_HAS_JPEG 1)	# Always present: system or built-in
 # Check for wxWidgets + GL
 #  If it is found, will set CMAKE_MRPT_HAS_WXWIDGETS=1
 # ===================================================
-# Here you can define what libraries of wxWidgets you need for your application. 
+# Here you can define what libraries of wxWidgets you need for your application.
 #  You can figure out what libraries you need here;  http://www.wxwidgets.org/manuals/2.8/wx_librarieslist.html
 SET(wxWidgets_MRPT_COMPONENTS_TO_SEARCH "base;core;gl;adv;aui" CACHE STRING "Components to search in wxWidgets")
 
@@ -977,7 +977,7 @@ IF(wxWidgets_FOUND)
 
 	SET(CMAKE_MRPT_HAS_WXWIDGETS 1)
 ELSE(wxWidgets_FOUND)
-	# Monolithic?	
+	# Monolithic?
 	IF (WX_mono)
 		SET(wxWidgets_MRPT_COMPONENTS_TO_SEARCH mono CACHE STRING "Components to search in wxWidgets" FORCE)
 		FIND_PACKAGE(wxWidgets COMPONENTS ${wxWidgets_MRPT_COMPONENTS_TO_SEARCH})
@@ -1055,7 +1055,7 @@ IF(DISABLE_WXWIDGETS)
 	SET(wxWidgets_LIBRARIES "")
 ENDIF(DISABLE_WXWIDGETS)
 
-# Check for libdc1394-2 (Only in Linux, there is no 
+# Check for libdc1394-2 (Only in Linux, there is no
 #  Windows version yet...)
 # ===================================================
 SET(CMAKE_MRPT_HAS_LIBDC1394_2 0)
@@ -1182,7 +1182,7 @@ ELSE(MSVC OR BORLAND)
 	IF(ZLIB_FOUND)
 			#MESSAGE(STATUS "Found library: zlib - Include: ${ZLIB_INCLUDE_DIR}")
 			INCLUDE_DIRECTORIES("${ZLIB_INCLUDE_DIR}")
-			
+
 			APPEND_MRPT_LIBS(z)
 
 			SET(CMAKE_MRPT_HAS_ZLIB_SYSTEM 1)
@@ -1196,13 +1196,13 @@ ELSE(MSVC OR BORLAND)
 
 			SET(CMAKE_MRPT_HAS_ZLIB_SYSTEM 0)
 	ENDIF(ZLIB_FOUND)
-	
+
 	# JPEG:
 	FIND_PACKAGE(JPEG)
 	IF(JPEG_FOUND)
 			#MESSAGE(STATUS "Found library: jpeg  - Include: ${JPEG_INCLUDE_DIR}")
 			INCLUDE_DIRECTORIES("${JPEG_INCLUDE_DIR}")
-			
+
 			APPEND_MRPT_LIBS(jpeg)
 
 			SET(CMAKE_MRPT_HAS_JPEG_SYSTEM 1)
@@ -1218,20 +1218,20 @@ ELSE(MSVC OR BORLAND)
 			APPEND_MRPT_LIBS(rt)
 		ENDIF(NOT APPLE)
 	ENDIF(UNIX)
-	
+
 	# In Windows, link against ole32 & uuid & oleaut32, etc...
 	IF(MINGW)
 		APPEND_MRPT_LIBS(ole32 uuid oleaut32 gdi32 winmm setupapi ws2_32)
 		#ADD_DEFINITIONS(-D__MSVCRT_VERSION__=0x7000)
 	ENDIF(MINGW)
-	
+
 ENDIF(MSVC OR BORLAND)
 
 # OpenCV (all compilers):
 IF(CMAKE_MRPT_HAS_OPENCV)
 	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR})
 	APPEND_MRPT_LIBS(${OpenCV_LIBRARIES})
-	
+
 	IF($ENV{VERBOSE})
 		MESSAGE(STATUS "OpenCV:")
 		MESSAGE(STATUS "        OpenCV_LIBRARIES:   ${OpenCV_LIBRARIES}")
@@ -1268,11 +1268,11 @@ ELSE(UNIX)
 	IF (MSVC)
 		# Windows: ...
 		FIND_PATH(SWR_LIBMESASR_DIR  MesaImaging/Swissranger/libMesaSR/)
-		
+
 		IF(SWR_LIBMESASR_DIR)
 			SET(SWR_LIBMESASR_DIR "${SWR_LIBMESASR_DIR}/MesaImaging/Swissranger/libMesaSR/")
-			MESSAGE(STATUS "SwissRanger Library found in: ${SWR_LIBMESASR_DIR}")			
-			
+			MESSAGE(STATUS "SwissRanger Library found in: ${SWR_LIBMESASR_DIR}")
+
 			# We expect to find there "libMesaSR.lib" & "libMesaSR.h"
 			IF (EXISTS "${SWR_LIBMESASR_DIR}/libMesaSR.lib" AND EXISTS "${SWR_LIBMESASR_DIR}/libMesaSR.h")
 				SET(CMAKE_MRPT_HAS_SWISSRANGE 1)
@@ -1348,12 +1348,12 @@ IF(BUILD_KINECT)
 		ENDIF(NOT PKG_CONFIG_FOUND)
 	ELSEIF(WIN32)
 		# Kinect for Win32: CL NUI or external libfreenect built by the user ---------
-		
+
 		SET(BUILD_KINECT_USE_CLNUI    OFF CACHE BOOL "Kinect using CL NUI SDK")
 		SET(BUILD_KINECT_USE_FREENECT ON  CACHE BOOL "Kinect using OpenKinect's libfreenect")
-		
+
 		IF((NOT BUILD_KINECT_USE_FREENECT AND NOT BUILD_KINECT_USE_CLNUI) OR (BUILD_KINECT_USE_FREENECT AND BUILD_KINECT_USE_CLNUI))
-			MESSAGE(SEND_ERROR 
+			MESSAGE(SEND_ERROR
 				"You must select the Kinect preferred SDK: OpenKinect freenect or CL NUI\n"
 				"Mark just one from BUILD_KINECT_USE_CLNUI or BUILD_KINECT_USE_CLNUI, or disable BUILD_KINECT.\n"
 				"For more info read: http://www.mrpt.org/Kinect_and_MRPT\n")
@@ -1363,13 +1363,13 @@ IF(BUILD_KINECT)
 		IF (BUILD_KINECT_USE_FREENECT)
 			# Find packages needed to build library in Windows
 			find_package(libusb-1.0 REQUIRED)
-			
+
 			if (LIBUSB_1_FOUND)
 				SET(FREENECT_LIBS ${LIBUSB_1_LIBRARIES})
-				
+
 				SET(LIBUSB_1_DLL_FOR_INSTALL "" CACHE PATH "Path to the libusb0.dll file to install along MRPT packages")
 				MARK_AS_ADVANCED(LIBUSB_1_DLL_FOR_INSTALL)
-			
+
 				# All OK:
 				SET(CMAKE_MRPT_HAS_KINECT 1)
 				SET(CMAKE_MRPT_HAS_FREENECT 1)
@@ -1380,30 +1380,30 @@ IF(BUILD_KINECT)
 			endif (LIBUSB_1_FOUND)
 
 		ENDIF (BUILD_KINECT_USE_FREENECT)
-		
+
 		# With the CL NUI SDK:
 		IF (BUILD_KINECT_USE_CLNUI)
 			FIND_PATH(BASE_CLNUI_SDK_DIR  "Code Laboratories/CL NUI Platform/SDK/")
 			MARK_AS_ADVANCED(BASE_CLNUI_SDK_DIR)
-					
+
 			IF(BASE_CLNUI_SDK_DIR)
 				SET(CLNUI_SDK_DIR "${BASE_CLNUI_SDK_DIR}/Code Laboratories/CL NUI Platform/SDK/" CACHE PATH "Path to CL NUI Platform/SDK/ directory")
 				MESSAGE(STATUS "Kinect CL NUI SDK found in: ${CLNUI_SDK_DIR}")
 			ELSE(BASE_CLNUI_SDK_DIR)
 				SET(CLNUI_SDK_DIR "" CACHE PATH "Path to CL NUI Platform/SDK/ directory")
 			ENDIF(BASE_CLNUI_SDK_DIR)
-			
+
 			IF (EXISTS "${CLNUI_SDK_DIR}/Include/CLNUIDevice.h")
 				SET(CMAKE_MRPT_HAS_KINECT 1)
 				SET(CMAKE_MRPT_HAS_CL_NUI 1)
-				
+
 				INCLUDE_DIRECTORIES("${CLNUI_SDK_DIR}/Include")
 				APPEND_MRPT_LIBS("${CLNUI_SDK_DIR}/Lib/CLNUIDevice.lib")
 			ELSE (EXISTS "${CLNUI_SDK_DIR}/Include/CLNUIDevice.h")
 				MESSAGE(SEND_ERROR "*** ERROR *** CL NUI Platform needed for Kinect. Please, install it and set CLNUI_SDK_DIR or disable BUILD_KINECT")
 			ENDIF (EXISTS "${CLNUI_SDK_DIR}/Include/CLNUIDevice.h")
 		ENDIF (BUILD_KINECT_USE_CLNUI)
-		
+
 	ELSE(UNIX)
 		MESSAGE(SEND_ERROR "Sorry! Kinect is supported on Unix or Win32 only. Please, disable BUILD_KINECT.")
 	ENDIF(UNIX)
@@ -1416,7 +1416,7 @@ ENDIF(BUILD_KINECT)
 set(BCK_wxWidgets_LIB_DIR ${wxWidgets_LIB_DIR})
 set(BCK_wxWidgets_LIBRARIES ${wxWidgets_LIBRARIES})
 
-# PCL library: 
+# PCL library:
 # --------------------------------------------
 SET(CMAKE_MRPT_HAS_PCL 0)
 find_package(PCL COMPONENTS io common registration QUIET)
@@ -1449,7 +1449,7 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 		FOREACH(WXLIB ${wxWidgets_LIBRARIES})
 			SET(MRPT_LINKER_LIBS_FOR_PKGCONFIG "${MRPT_LINKER_LIBS_FOR_PKGCONFIG} ${WXLIB}")
 		ENDFOREACH(WXLIB)
-		
+
 	endif(wxLibsCount GREATER 0)
 ENDIF(CMAKE_MRPT_HAS_WXWIDGETS)
 
@@ -1467,7 +1467,7 @@ IF(CHOLMOD_FOUND)
 
 	INCLUDE_DIRECTORIES(${CHOLMOD_INCLUDE_DIR})
 	APPEND_MRPT_LIBS(${CHOLMOD_LIBRARIES})
-	
+
 	SET(CMAKE_MRPT_HAS_CHOLDMOD 1)
 	SET(CMAKE_MRPT_HAS_CHOLDMOD_SYSTEM 1)
 ENDIF(CHOLMOD_FOUND)
@@ -1482,7 +1482,7 @@ IF(CSPARSE_FOUND)
 
 	INCLUDE_DIRECTORIES(${CSPARSE_INCLUDE_DIR})
 	APPEND_MRPT_LIBS(${CSPARSE_LIBRARY})
-	
+
 	SET(CMAKE_MRPT_HAS_CSPARSE 1)
 	SET(CMAKE_MRPT_HAS_CSPARSE_SYSTEM 1)
 ELSE(CSPARSE_FOUND)
@@ -1503,9 +1503,9 @@ ENDIF($ENV{VERBOSE})
 IF(BUILD_SHARED_LIBS)
 	SET(MRPT_LINKER_LIBS "")
 ENDIF(BUILD_SHARED_LIBS)
- 
 
-IF(NOT MSVC AND NOT BORLAND)	
+
+IF(NOT MSVC AND NOT BORLAND)
 	FOREACH(_LIB ${ALL_MRPT_LIBS})
 		LIST(APPEND MRPT_LINKER_LIBS_FOR_PKGCONFIG "-l${_LIB}")
 	ENDFOREACH(_LIB)
@@ -1558,9 +1558,9 @@ CHECK_FUNCTION_EXISTS(_aligned_malloc HAVE_ALIGNED_MALLOC)
 #CHECK_FUNCTION_EXISTS(OpenThread HAVE_OPENTHREAD)
 
 if(MSVC AND NOT MSVC6 AND NOT MSVC7)
-	SET(HAVE_OPENTHREAD 1) 
+	SET(HAVE_OPENTHREAD 1)
 else(MSVC AND NOT MSVC6 AND NOT MSVC7)
-	SET(HAVE_OPENTHREAD 0) 
+	SET(HAVE_OPENTHREAD 0)
 endif(MSVC AND NOT MSVC6 AND NOT MSVC7)
 
 
@@ -1593,7 +1593,7 @@ CHECK_INCLUDE_FILE("winsock2.h" HAVE_WINSOCK2_H)
 IF (CMAKE_MRPT_HAS_SSE2)
 	CHECK_INCLUDE_FILE("emmintrin.h" HAVE_EMMINTRIN_H)
 	CHECK_INCLUDE_FILE("mmintrin.h"  HAVE_MMINTRIN_H)
-	
+
 	# If the headers are not found, disable optimizations:
 	IF (NOT HAVE_MMINTRIN_H OR NOT HAVE_EMMINTRIN_H)
 		SET(CMAKE_MRPT_HAS_SSE2 0)
@@ -1602,9 +1602,9 @@ ENDIF(CMAKE_MRPT_HAS_SSE2)
 
 # If we want SSE3, check for the expected headers:
 IF (CMAKE_MRPT_HAS_SSE3)
-	
-	# JL: Before the CHECK_INCLUDE_FILE() we need to temporarily enable 
-	#  the -msse3 flag in GCC or the test program that CMake builds will 
+
+	# JL: Before the CHECK_INCLUDE_FILE() we need to temporarily enable
+	#  the -msse3 flag in GCC or the test program that CMake builds will
 	#  always fail even if the header is present:
 	IF(CMAKE_COMPILER_IS_GNUCXX)
 		SET(TEMP_BACKUP_CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
@@ -1617,7 +1617,7 @@ IF (CMAKE_MRPT_HAS_SSE3)
 	IF(CMAKE_COMPILER_IS_GNUCXX)
 		SET(CMAKE_C_FLAGS ${TEMP_BACKUP_CMAKE_C_FLAGS})
 	ENDIF(CMAKE_COMPILER_IS_GNUCXX)
-	
+
 	# If the headers are not found, disable optimizations:
 	IF (NOT HAVE_PMMINTRIN_H)
 		SET(CMAKE_MRPT_HAS_SSE3 0)
@@ -1720,13 +1720,13 @@ IF(CMAKE_MRPT_HAS_BUMBLEBEE)
 ENDIF(CMAKE_MRPT_HAS_BUMBLEBEE)
 
 IF(CMAKE_MRPT_HAS_PHIDGET)
-	INCLUDE_DIRECTORIES("${PHIDGET_ROOT_DIR}/include/")	
+	INCLUDE_DIRECTORIES("${PHIDGET_ROOT_DIR}/include/")
 	LINK_DIRECTORIES("${PHIDGET_ROOT_DIR}/lib")
 ENDIF(CMAKE_MRPT_HAS_PHIDGET)
 
 IF(CMAKE_MRPT_HAS_SVS)
 	INCLUDE_DIRECTORIES("${SVS_ROOT_DIR}/src")
-	
+
 	LINK_DIRECTORIES("${SVS_ROOT_DIR}/bin")
 ENDIF(CMAKE_MRPT_HAS_SVS)
 
@@ -1776,10 +1776,10 @@ IF(MSVC)
 
 	# SSE3?
 	# TODO: Any flag needed?
-	
+
 	# Fast math:
 	#SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /fp:fast")
-	
+
 ENDIF(MSVC)
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
@@ -1795,7 +1795,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	SET( MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
 	MARK_AS_ADVANCED(MRPT_BUILD_GCC_PEDANTIC)
 
-	# High level of warnings. 
+	# High level of warnings.
 	# The -Wno-long-long is required in 64bit systems when including sytem headers.
 	# The -Wno-variadic-macros was needed for Eigen3, StdVector.h
  	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-write-strings -Wno-variadic-macros")
@@ -1807,7 +1807,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 
 	IF(MRPT_BUILD_GCC_PEDANTIC)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
- 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")		
+ 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
 	ENDIF(MRPT_BUILD_GCC_PEDANTIC)
 
 	# We need pthread's
@@ -1919,7 +1919,7 @@ if(MSVC)
 	# For MSVC to avoid the C1128 error about too large object files:
 	SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /bigobj")
 	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /bigobj")
-	
+
 endif(MSVC)
 
 IF(CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
@@ -1970,7 +1970,7 @@ IF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 		# Normal packages
 		SET(libmrpt_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-dev/usr/")
 	ENDIF(CMAKE_BUILD_TYPE STREQUAL "Debug")
-	
+
 	SET(mrpt_apps_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-apps/usr/")
 	SET(mrpt_doc_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-doc/usr/")
 	SET(mrpt_pkgconfig_INSTALL_PREFIX "/usr")	# Values when building a Debian package
@@ -2037,7 +2037,7 @@ list(REMOVE_DUPLICATES _auxvar)
 set_property(GLOBAL PROPERTY "mrpt-core_LIB_DEPS" ${_auxvar})
 
 
-# Create the code fragment: "DECLARE_LIBS_DEPS", for usage below while 
+# Create the code fragment: "DECLARE_LIBS_DEPS", for usage below while
 #  generating "MRPTConfig.cmake"
 SET(DECLARE_LIBS_DEPS "")
 FOREACH(_LIB ${ALL_MRPT_LIBS})
@@ -2149,7 +2149,7 @@ ENDMACRO(SHOW_CONFIG_LINE_SYSTEM)
 # ----------------------------------------------------------------------------
 SET( BUILD_TESTING ON CACHE BOOL "Build MRPT tests")
 
-# By default, use embedded version of gtest:	
+# By default, use embedded version of gtest:
 SET(CMAKE_MRPT_HAS_GTEST         1)
 SET(CMAKE_MRPT_HAS_GTEST_SYSTEM  0)
 SET(CMAKE_MRPT_HAS_GTEST_VERSION  "1.5.0")  # In "otherlibs/gtest-x.y.z"
@@ -2238,7 +2238,7 @@ IF(WIN32)
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/scripts" DESTINATION ./  PATTERN ".svn" EXCLUDE)
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/swig" DESTINATION ./ PATTERN ".svn" EXCLUDE)
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/tests" DESTINATION ./  PATTERN ".svn" EXCLUDE)
-	
+
 	# Smart determination of the dependencies DLLs so they are also copied when installing:
 	# ---------------------------------------------------------------------------------------
 	# wxWidgets:
@@ -2248,7 +2248,7 @@ IF(WIN32)
 			INSTALL(FILES "${F}" DESTINATION bin)
 		ENDFOREACH(F)
 	ENDIF (EXISTS "${wxWidgets_LIB_DIR}")
-	
+
 	# OpenCV:
 	IF (EXISTS "${OpenCV_DIR}/bin/Release")
 		FILE(GLOB_RECURSE EXTRA_DLLS "${OpenCV_DIR}/bin/*.dll") # This includes debug & release DLLs
@@ -2256,7 +2256,7 @@ IF(WIN32)
 			INSTALL(FILES "${F}" DESTINATION bin)
 		ENDFOREACH(F)
 	ENDIF (EXISTS "${OpenCV_DIR}/bin/Release")
-	
+
         # Intel TBB dlls
         if(CMAKE_MRPT_HAS_TBB)
             string(REGEX REPLACE "/lib" "/bin" TBB_DLL_DIR "${TBB_LIB_DIR}")
@@ -2270,7 +2270,7 @@ IF(WIN32)
 		FOREACH(F ${EXTRA_DLLS})
 			INSTALL(FILES "${F}" DESTINATION bin)
 		ENDFOREACH(F)
-	ENDIF (EXISTS "${FFMPEG_WIN32_ROOT_DIR}/bin")	
+	ENDIF (EXISTS "${FFMPEG_WIN32_ROOT_DIR}/bin")
 
 	# libfreenect for windows: Copy the libusb.dll file:
 	IF (NOT UNIX AND CMAKE_MRPT_HAS_FREENECT)
@@ -2278,7 +2278,7 @@ IF(WIN32)
 			INSTALL(FILES "${LIBUSB_1_DLL_FOR_INSTALL}/libusb0.dll" DESTINATION bin)
 		ENDIF (NOT "${LIBUSB_1_DLL_FOR_INSTALL}" STREQUAL "")
 	ENDIF (NOT UNIX AND CMAKE_MRPT_HAS_FREENECT)
-	
+
 	# Extra optional DLLs to be installed in the "bin" folder:
 	file(TO_CMAKE_PATH "$ENV{MRPT_EXTRA_DLLS_TO_INSTALL}" MRPT_EXTRA_DLLS_TO_INSTALL)
 	IF (NOT "${MRPT_EXTRA_DLLS_TO_INSTALL}" STREQUAL "")
@@ -2300,7 +2300,7 @@ IF(WIN32)
 	FOREACH(F ${EXTRA_LIBS})
 		INSTALL(FILES "${F}" DESTINATION lib)
 	ENDFOREACH(F)
-	
+
 ELSE(WIN32)
 	IF (NOT IS_DEBIAN_DBG_PKG)
 		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/doc/html" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/  PATTERN ".svn" EXCLUDE)
@@ -2309,7 +2309,7 @@ ELSE(WIN32)
 		IF(EXISTS "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz")
 			INSTALL(FILES "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
 		ENDIF(EXISTS "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz")
-	
+
 		# applications config files
 		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/applications" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share PATTERN ".svn" EXCLUDE)
 		#INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/menu" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share  PATTERN ".svn" EXCLUDE)
@@ -2351,10 +2351,10 @@ IF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
 	ENDIF(WIN32)
 
 	INSTALL(
-		DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/Eigen" 
+		DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/Eigen"
 		DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" PATTERN ".svn" EXCLUDE)
 	INSTALL(
-		DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/unsupported" 
+		DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/unsupported"
 		DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" PATTERN ".svn" EXCLUDE)
 ENDIF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
 
@@ -2399,7 +2399,7 @@ SHOW_CONFIG_LINE_SYSTEM("Has eigen3                              " CMAKE_MRPT_HA
 SHOW_CONFIG_LINE_SYSTEM("Has SuiteSparse/CHOLMOD                 " CMAKE_MRPT_HAS_CHOLDMOD)
 SHOW_CONFIG_LINE_SYSTEM("Has SuiteSparse/CSparse                 " CMAKE_MRPT_HAS_CSPARSE)
 
-IF(NOT UNIX)	# In fact, it's not "support for Bumblebee" but for it thru PGR vendor libraries. 
+IF(NOT UNIX)	# In fact, it's not "support for Bumblebee" but for it thru PGR vendor libraries.
 	SHOW_CONFIG_LINE("Has PGR Digiclops/Triclops              " CMAKE_MRPT_HAS_BUMBLEBEE)
 ENDIF(NOT UNIX)
 SHOW_CONFIG_LINE("Has Phidget                             " CMAKE_MRPT_HAS_PHIDGET)
