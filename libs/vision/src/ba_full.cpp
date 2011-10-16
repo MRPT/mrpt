@@ -45,7 +45,7 @@ using namespace mrpt::math;
 using mrpt::aligned_containers;
 
 
-MRPT_TODO("Check valid Hessians when enabling robustifying kernel");
+MRPT_TODO("Check valid Hessians when enabling robustifying kernel")
 
 // Define -> estimate the inverse of poses; Undefined -> estimate the camera poses (read the doc of mrpt::vision::bundle_adj_full)
 #define USE_INVERSE_POSES

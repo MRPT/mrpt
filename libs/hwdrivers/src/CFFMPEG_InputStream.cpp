@@ -142,12 +142,17 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
 	this->m_grab_as_grayscale = grab_as_grayscale;
 
     // Open video file
-    if(av_open_input_file( &ctx->pFormatCtx, url.c_str(), NULL, 0, NULL)!=0)
-    {
-    	ctx->pFormatCtx = NULL;
-    	std::cerr << "[CFFMPEG_InputStream::openURL] Cannot open video: " << url << std::endl;
-        return false;
-    }
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(53,2,0)
+     if(avformat_open_input( &ctx->pFormatCtx, url.c_str(), NULL, NULL)!=0)
+#else
+     if(av_open_input_file( &ctx->pFormatCtx, url.c_str(), NULL, 0, NULL)!=0)
+#endif
+
+     {
+          ctx->pFormatCtx = NULL;
+          std::cerr << "[CFFMPEG_InputStream::openURL] Cannot open video: " << url << std::endl;
+               return false;
+     }
 
     // Retrieve stream information
     if(av_find_stream_info(ctx->pFormatCtx)<0)
@@ -158,7 +163,13 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
 
     // Dump information about file onto standard error
     if (verbose)
+    {
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(53,2,0)
+          av_dump_format(ctx->pFormatCtx, 0, url.c_str(), false);
+#else
 		dump_format(ctx->pFormatCtx, 0, url.c_str(), false);
+#endif
+    }
 
     // Find the first video stream
     ctx->videoStream=-1;

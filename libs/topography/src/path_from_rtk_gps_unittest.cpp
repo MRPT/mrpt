@@ -79,7 +79,7 @@ TEST(TopographyReconstructPathFrom3RTK, sampleDataset )
 			1, // path_smooth_filter_size
 			&rtk_path_info );
 
-		EXPECT_EQ(robot_path.size(),75);
+		EXPECT_EQ(robot_path.size(),75u);
 
 		// Expected values:
 		//1226225355.000000 279.705647 216.651473 8.517821 0.194222 -0.083873 -0.045293

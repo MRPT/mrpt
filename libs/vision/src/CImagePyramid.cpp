@@ -53,7 +53,7 @@ void buildPyramid_templ(
 {
 	ASSERT_ABOVE_(nOctaves,0)
 
-	TImageSize  img_size = img.getSize();
+	//TImageSize  img_size = img.getSize();
 	obj.images.resize(nOctaves);
 
 	// First octave: Just copy the image:

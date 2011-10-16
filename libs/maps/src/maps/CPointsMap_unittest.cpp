@@ -104,21 +104,21 @@ void do_test_clipOutOfRangeInZ()
 	{
 		MAP  pts = pts0;
 		pts.clipOutOfRangeInZ(-10,-1);
-		EXPECT_EQ(pts.size(),0);
+		EXPECT_EQ(pts.size(),0u);
 	}
 
 	// Clip: z=[-10,10] -> 9 pts
 	{
 		MAP  pts = pts0;
 		pts.clipOutOfRangeInZ(-10,10);
-		EXPECT_EQ(pts.size(),9);
+		EXPECT_EQ(pts.size(),9u);
 	}
 
 	// Clip: z=[0.5,1.5] -> 3 pts
 	{
 		MAP  pts = pts0;
 		pts.clipOutOfRangeInZ(0.5,1.5);
-		EXPECT_EQ(pts.size(),3);
+		EXPECT_EQ(pts.size(),3u);
 	}
 
 }
@@ -136,7 +136,7 @@ void do_test_clipOutOfRange()
 
 		MAP  pts = pts0;
 		pts.clipOutOfRange(pivot,radius);
-		EXPECT_EQ(pts.size(),1);
+		EXPECT_EQ(pts.size(),1u);
 	}
 
 	// Clip:
@@ -146,7 +146,7 @@ void do_test_clipOutOfRange()
 
 		MAP  pts = pts0;
 		pts.clipOutOfRange(pivot,radius);
-		EXPECT_EQ(pts.size(),0);
+		EXPECT_EQ(pts.size(),0u);
 	}
 
 	// Clip:
@@ -156,7 +156,7 @@ void do_test_clipOutOfRange()
 
 		MAP  pts = pts0;
 		pts.clipOutOfRange(pivot,radius);
-		EXPECT_EQ(pts.size(),3);
+		EXPECT_EQ(pts.size(),3u);
 	}
 
 }

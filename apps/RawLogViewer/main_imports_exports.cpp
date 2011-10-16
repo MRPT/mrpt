@@ -1601,7 +1601,7 @@ Units are m and radian.
 			newImg->timestamp = cur_timestamp;
 			newImg->sensorLabel = "CAMERA";
 			newImg->image.setExternalStorage(words[1] + std::string(".jpg"));
-			MRPT_TODO("Camera params, ...")
+			//MRPT_TODO("Camera params, ...")
 			// newImg->cameraParams
 			set_of_obs.insert( newImg );
 

@@ -411,8 +411,8 @@ AREXPORT bool ArArgumentBuilder::isArgInt(size_t whichArg) const
     return false;
 
   str = getArg(whichArg);
-  //ret =
-  strtol(str, &endPtr, 10);
+  int ret = strtol(str, &endPtr, 10);
+  (void)(ret); // Avoid unused var warning
   if (endPtr[0] == '\0' && endPtr != str)
     return true;
   else
@@ -454,8 +454,8 @@ AREXPORT bool ArArgumentBuilder::isArgDouble(size_t whichArg) const
   }
   else
   {
-    //ret =
-    strtod(str, &endPtr);
+    double ret = strtod(str, &endPtr);
+    (void)(ret); // Avoid unused var warning
     if (endPtr[0] == '\0' && endPtr != str)
       return true;
     else
