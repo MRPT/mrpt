@@ -32,7 +32,7 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</i></p>
 
  <a name="0.9.5">
-  <h2>Version 0.9.5 - (Version 1.0.0-Release_Candidate_3): Released 15-OCT-2011 (SVN 2714) </h2></a>
+  <h2>Version 0.9.5 - (Version 1.0.0-Release_Candidate_3): Released 16-OCT-2011 (SVN 2715) </h2></a>
 	- <b>Most important changes:</b>
 		- Tons of <a href="perf-html/index.html" >performance</a> optimizations, mostly in: point clouds, feature detection, opengl rendering and icp-slam (which is now with default params ~4 times faster).
 		- Doxygen documentation is now organized around <a href="modules.html" >modules</a>, such as the page for each class or namespace indicates to which <code>mrpt-*</code> library it belongs to.

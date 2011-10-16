@@ -39,13 +39,13 @@
 #include <wx/imaglist.h>
 #include <wx/dcbuffer.h>
 
-wxIMPLEMENT_DYNAMIC_CLASS(CRawlogTreeView, wxScrolledWindow);
+IMPLEMENT_DYNAMIC_CLASS(CRawlogTreeView, wxScrolledWindow)
 
-wxBEGIN_EVENT_TABLE(CRawlogTreeView, wxScrolledWindow)
+BEGIN_EVENT_TABLE(CRawlogTreeView, wxScrolledWindow)
 	EVT_LEFT_DOWN ( CRawlogTreeView::OnLeftDown )
     EVT_MOUSEWHEEL( CRawlogTreeView::OnMouseWheel )
 	EVT_CHAR      ( CRawlogTreeView::OnKey )
-wxEND_EVENT_TABLE();
+END_EVENT_TABLE()
 
 #include <mrpt/slam.h>
 
