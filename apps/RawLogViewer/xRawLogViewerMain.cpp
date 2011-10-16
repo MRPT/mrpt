@@ -90,14 +90,14 @@
 const long wxStaticBitmapPopup::ID_MENUITEM_IMG_LOAD = wxNewId();
 const long wxStaticBitmapPopup::ID_MENUITEM_IMG_SAVE = wxNewId();
 
-IMPLEMENT_DYNAMIC_CLASS(wxStaticBitmapPopup, wxStaticBitmap)
+wxIMPLEMENT_DYNAMIC_CLASS(wxStaticBitmapPopup, wxStaticBitmap);
 
-BEGIN_EVENT_TABLE(wxStaticBitmapPopup, wxStaticBitmap)
+wxBEGIN_EVENT_TABLE(wxStaticBitmapPopup, wxStaticBitmap)
 	EVT_MIDDLE_UP( wxStaticBitmapPopup::OnShowPopupMenu)
 	EVT_RIGHT_UP ( wxStaticBitmapPopup::OnShowPopupMenu)
 	EVT_MENU( ID_MENUITEM_IMG_SAVE, wxStaticBitmapPopup::OnPopupSaveImage  )
 	EVT_MENU( ID_MENUITEM_IMG_LOAD, wxStaticBitmapPopup::OnPopupLoadImage  )
-END_EVENT_TABLE()
+wxEND_EVENT_TABLE();
 
 // Constructors
 wxStaticBitmapPopup::wxStaticBitmapPopup( wxWindow *parent, wxWindowID id, const wxBitmap&img, const wxPoint &pos, const wxSize &size, int flag,const wxString &name )

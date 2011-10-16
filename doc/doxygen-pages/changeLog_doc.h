@@ -32,7 +32,7 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</i></p>
 
  <a name="0.9.5">
-  <h2>Version 0.9.5 - (Version 1.0.0-Release_Candidate_3): Released 15-OCT-2011 (SVN 2707) </h2></a>
+  <h2>Version 0.9.5 - (Version 1.0.0-Release_Candidate_3): Released 15-OCT-2011 (SVN 2714) </h2></a>
 	- <b>Most important changes:</b>
 		- Tons of <a href="perf-html/index.html" >performance</a> optimizations, mostly in: point clouds, feature detection, opengl rendering and icp-slam (which is now with default params ~4 times faster).
 		- Doxygen documentation is now organized around <a href="modules.html" >modules</a>, such as the page for each class or namespace indicates to which <code>mrpt-*</code> library it belongs to.
@@ -169,6 +169,7 @@
 			- Build error when OpenCV exists but is not used. - <a href="http://code.google.com/p/mrpt/source/detail?r=2555" >r2555</a>
 			- Build error in mrpt-hwdrivers with latest OpenCV 2.3 - <a href="http://code.google.com/p/mrpt/source/detail?r=r2566" >r2566</a>
 			- Linking error with MinGW around the mrpt::opengl::posePDF2opengl() templates - <a href="http://code.google.com/p/mrpt/source/detail?r=r2567" >r2567</a> (Thanks Miyamoto Musashi for <a href="http://www.mrpt.org/node/1031" >reporting</a>!).
+			- Error compiling against wxWidgets 2.9.2 (wrong usage of wxDECLARE_CLASS instead of wxDECLARE_DYNAMIC_CLASS)
 		- BUG FIXES:
 			- [mrpt-obs] Wrong usage of focal distances "fx"<->"fy" when generating the 3D point clouds from Kinect observations with the method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() - <a href="http://code.google.com/p/mrpt/source/detail?r=r2578" >r2578</a>.
 			- [mrpt-hwdrivers], [mrpt-obs] Gyroscopic rotation rates in yaw and roll were stored in the wrong order in mrpt::hwdrivers::CIMUXSens and mrpt::slam::CObservationIMU. It has been fixed so new grabbed data is saved correctly but also such as old datasets are automatically fixed when loading them. Thanks Lianfen for noticing! - <a href="http://code.google.com/p/mrpt/source/detail?r=r2622" >r2622</a>.

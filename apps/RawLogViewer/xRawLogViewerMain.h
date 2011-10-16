@@ -96,8 +96,8 @@ protected:
     static const long ID_MENUITEM_IMG_LOAD;
     static const long ID_MENUITEM_IMG_SAVE;
 
-    DECLARE_CLASS(wxStaticBitmapPopup )
-    DECLARE_EVENT_TABLE()
+    wxDECLARE_DYNAMIC_CLASS(wxStaticBitmapPopup );
+    wxDECLARE_EVENT_TABLE();
 };
 
 

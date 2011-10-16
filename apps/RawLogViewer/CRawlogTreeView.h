@@ -158,11 +158,8 @@ protected:
 	void OnKey(wxKeyEvent &event);
 
 
-    DECLARE_CLASS(CRawlogTreeView )
-    DECLARE_EVENT_TABLE()
-
-
-
+    wxDECLARE_DYNAMIC_CLASS(CRawlogTreeView );
+    wxDECLARE_EVENT_TABLE();
 };
 
 #endif
