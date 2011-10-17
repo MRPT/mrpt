@@ -31,6 +31,13 @@
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</i></p>
 
+ <hr>
+ <a name="0.9.6">
+  <h2>Version 0.9.6 - (Under development) </h2></a>
+	- ...
+
+
+ <hr>
  <a name="0.9.5">
   <h2>Version 0.9.5 - (Version 1.0.0-Release_Candidate_3): Released 16-OCT-2011 (SVN 2715) </h2></a>
 	- <b>Most important changes:</b>
