@@ -57,10 +57,10 @@ do
 
 	echo 
 	echo "===== Distribution: ${DEBIAN_DIST}  ========="
-	cd ${MRPT_DEB_DIR}/mrpt-${MRPT_VER_MMP}svn${MRPT_VERSION_SVN}${DEBIAN_DIST}/debian
+	cd ${MRPT_DEB_DIR}/mrpt-${MRPT_VER_MMP}~svn${MRPT_VERSION_SVN}${DEBIAN_DIST}/debian
 	#cp ${MRPT_EXTERN_DEBIAN_DIR}/changelog changelog
 	cp /tmp/my_changelog changelog
-	DEBCHANGE_CMD="--newversion 1:${MRPT_VERSION_STR}svn${MRPT_VERSION_SVN}${DEBIAN_DIST}-1~ppa1~${DEBIAN_DIST}"
+	DEBCHANGE_CMD="--newversion 1:${MRPT_VERSION_STR}~svn${MRPT_VERSION_SVN}${DEBIAN_DIST}-1~ppa1~${DEBIAN_DIST}"
 	echo "Changing to a new Debian version: ${DEBCHANGE_CMD}"
 	echo "Adding a new entry to debian/changelog for distribution ${DEBIAN_DIST}"
 	DEBEMAIL=${EMAIL4DEB} debchange $DEBCHANGE_CMD -b --distribution ${DEBIAN_DIST} --force-distribution New version of upstream sources.
@@ -69,12 +69,7 @@ do
 
 	echo "Now, let's build the source Deb package with 'debuild -S -sa':"
 	cd ..
-#	if [ $IDX == "0" ];
-#	then
-		debuild -S -sa
-#	else
-#		debuild -S -sd
-#	fi
+	debuild -S -sa
 	
 	# Make a copy of all these packages:
 	cd ..
