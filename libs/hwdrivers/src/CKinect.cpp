@@ -31,6 +31,8 @@
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/utils/CTimeLogger.h>
 
+#include "do_opencv_includes.h"
+
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::synch;
@@ -303,10 +305,9 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 			obs.rangeImage.coeffRef(r,c) = r2m[v & KINECT_RANGES_TABLE_MASK];
 		}
 	obj->internal_tim_latest_depth() = timestamp;
-
 }
 
-void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
+void rgb_cb(freenect_device *dev, void *img_data, uint32_t timestamp)
 {
 	CKinect *obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
 	const freenect_frame_mode frMode = freenect_get_current_video_mode(dev);
@@ -319,17 +320,39 @@ void rgb_cb(freenect_device *dev, void *rgb, uint32_t timestamp)
 	alloc_tim.enter("depth_rgb loadFromMemoryBuffer");
 #endif
 
-	MRPT_TODO("Try to optimize this: either avoid R-B swap, or reuse memory block, etc.")
-
 	obs.hasIntensityImage = true;
-	obs.intensityImageChannel = obj->getVideoChannel()==CKinect::VIDEO_CHANNEL_RGB ? mrpt::slam::CObservation3DRangeScan::CH_VISIBLE : mrpt::slam::CObservation3DRangeScan::CH_IR;
-	obs.intensityImage.loadFromMemoryBuffer(
-		frMode.width,
-		frMode.height,
-		obj->getVideoChannel()==CKinect::VIDEO_CHANNEL_RGB, // Color image?
-		reinterpret_cast<unsigned char*>(rgb),
-		true  // Swap red/blue
-		);
+	if (obj->getVideoChannel()==CKinect::VIDEO_CHANNEL_RGB)
+	{
+	     // Color image: We asked for Bayer data, so we can decode it outselves here
+	     //  and avoid having to reorder Green<->Red channels, as would be needed with
+	     //  the RGB image from freenect.
+          obs.intensityImageChannel = mrpt::slam::CObservation3DRangeScan::CH_VISIBLE;
+
+#if MRPT_HAS_OPENCV
+          const cv::Mat  src_img_bayer( frMode.height, frMode.width, CV_8UC1, img_data, frMode.width );
+
+          obs.intensityImage.resize(frMode.width, frMode.height, CH_RGB, true /* origin=top-left */ );
+          cv::Mat        dst_img_RGB( obs.intensityImage.getAs<IplImage>(), false /* dont copy buffers */ );
+
+          // Decode Bayer image:
+          cv::cvtColor(src_img_bayer, dst_img_RGB, CV_BayerGB2BGR);
+#else
+     THROW_EXCEPTION("Need building with OpenCV!")
+#endif
+
+	}
+	else
+	{
+	     // IR data: grayscale 8bit
+          obs.intensityImageChannel = mrpt::slam::CObservation3DRangeScan::CH_IR;
+          obs.intensityImage.loadFromMemoryBuffer(
+               frMode.width,
+               frMode.height,
+               false, // Color image?
+               reinterpret_cast<unsigned char*>(img_data)
+               );
+
+	}
 
 	//obs.intensityImage.setChannelsOrder_RGB();
 
@@ -387,7 +410,7 @@ void CKinect::open()
 		m_video_channel==VIDEO_CHANNEL_IR ?
 			FREENECT_VIDEO_IR_8BIT
 			:
-			FREENECT_VIDEO_RGB
+			FREENECT_VIDEO_BAYER // FREENECT_VIDEO_RGB: Use Bayer instead so we can directly decode it here
 		);
 
 	// Switch to that video mode:
@@ -502,7 +525,7 @@ void  CKinect::setVideoChannel(const TVideoChannel vch)
 		m_video_channel==VIDEO_CHANNEL_IR ?
 			FREENECT_VIDEO_IR_8BIT
 			:
-			FREENECT_VIDEO_RGB
+			FREENECT_VIDEO_BAYER // FREENECT_VIDEO_RGB: Use Bayer instead so we can directly decode it here
 		);
 
 	// Switch to that video mode:
