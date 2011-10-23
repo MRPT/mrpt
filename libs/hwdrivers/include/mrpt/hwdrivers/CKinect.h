@@ -180,8 +180,9 @@ namespace mrpt
 		  *    pose_pitch=0
 		  *    pose_roll=0
 		  *
-		  *    // Optional: Set the initial tilt angle of Kinect: upon initialization, the motor is sent a command to 
+		  *    // Optional: Set the initial tilt angle of Kinect: upon initialization, the motor is sent a command to
 		  *    //            rotate to this angle (in degrees). Note: You must be aware of the tilt when interpreting the sensor readings.
+		  *    //           If not present or set to "360", no motor command will be sent at start up.
 		  *    initial_tilt_angle = 0
 		  *
 		  *  \endcode

@@ -117,7 +117,7 @@ CKinect::CKinect()  :
 #endif
 
 	m_relativePoseIntensityWRTDepth(0,-0.02,0, DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90)),
-	m_initial_tilt_angle(0),
+	m_initial_tilt_angle(360),
 	m_user_device_number(0),
 	m_grab_image(true),
 	m_grab_depth(true),
@@ -399,7 +399,8 @@ void CKinect::open()
 		THROW_EXCEPTION_CUSTOM_MSG1("Error opening Kinect sensor with index: %d",m_user_device_number)
 
 	// Setup:
-	setTiltAngleDegrees(m_initial_tilt_angle);
+	if (m_initial_tilt_angle!=360) // 360 means no motor command.
+          setTiltAngleDegrees(m_initial_tilt_angle);
 	freenect_set_led(f_dev,LED_RED);
 	freenect_set_depth_callback(f_dev, depth_cb);
 	freenect_set_video_callback(f_dev, rgb_cb);

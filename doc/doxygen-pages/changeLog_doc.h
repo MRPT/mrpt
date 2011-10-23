@@ -36,6 +36,7 @@
   <h2>Version 0.9.6 - (Under development) </h2></a>
 	- Kinect stuff: 
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect now decodes Bayer color using OpenCV instead of default freenect - <a href="http://code.google.com/p/mrpt/source/detail?r=r2721" >r2721</a>
+		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect no longer forces a horizontal tilt at start up by default, what may be annoying (if required, set "initial_tilt_angle") - <a href="http://code.google.com/p/mrpt/source/detail?r=r2722" >r2722</a>
 
 
  <hr>
