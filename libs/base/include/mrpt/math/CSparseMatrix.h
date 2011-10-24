@@ -57,14 +57,14 @@ namespace mrpt
 		};
 
 
-		/** A sparse matrix capable of efficient math operations (a wrapper around the CSparse library)
-		  *  The type of cells is fixed to "double".
+		/** A sparse matrix structure, wrapping T. Davis' CSparse library (part of suitesparse)
+		  *  The type of the matrix entries is fixed to "double".
 		  *
-		  *  There are two main formats for the non-zero entries in this matrix:
+		  *  There are two formats for the non-zero entries in this matrix:
 		  *		- A "triplet" matrix: a set of (r,c)=val triplet entries.
-		  *		- A column-compressed sparse matrix.
+		  *		- A column-compressed sparse (CCS) matrix.
 		  *
-		  *  The latter is the "normal" format, which is expected by most mathematical operations defined
+		  *  The latter is the "normal" format, which is expected by all mathematical operations defined
 		  *   in this class. There're two three ways of initializing and populating a sparse matrix:
 		  *
 		  *   <ol>
@@ -96,7 +96,6 @@ namespace mrpt
 		  *   </ol>
 		  *
 		  *  Due to its practical utility, there is a special inner class CSparseMatrix::CholeskyDecomp to handle Cholesky-related methods and data.
-		  *
 		  *
 		  * \note This class was initially adapted from "robotvision", by Hauke Strasdat, Steven Lovegrove and Andrew J. Davison. See http://www.openslam.org/robotvision.html
 		  * \note CSparse is maintained by Timothy Davis: http://people.sc.fsu.edu/~jburkardt/c_src/csparse/csparse.html .
@@ -305,6 +304,31 @@ namespace mrpt
 			  */
 			bool saveToTextFile_dense(const std::string &filName);
 
+			/** Save sparse structure to a text file loadable from MATLAB (can be called on triplet or CCS matrices).
+			  *
+			  *  The format of the text file is:
+			  *  \code
+			  *   NUM_ROWS   NUM_COLS   NUM_NON_ZERO_MAX
+			  *   row_1   col_1   value_1
+			  *   row_2   col_2   value_2
+			  *   ...
+			  *  \endcode
+			  *
+			  *  Instructions for loading from MATLAB in triplet form will be automatically writen to the
+			  *  output file as comments in th first lines:
+			  *
+			  *   \code
+			  *      D=load('file.txt');
+			  *      SM=spconvert(D(2:end,:));
+			  *        or, to always preserve the actual matrix size m x n:
+                 *      m=D(1,1); n=D(1,2); nzmax=D(1,3);
+			  *      Di=D(2:end,1); Dj=D(2:end,2); Ds=D(2:end,3);
+			  *      M=sparse(Di,Dj,Ds, m,n, nzmax);
+			  *   \endcode
+			  * \return False on any error.
+			  */
+			bool saveToTextFile_sparse(const std::string &filName);
+
 			// Very basic, standard methods that MRPT methods expect for any matrix:
 			inline size_t getRowCount() const { return sparse_matrix.m; }
 			inline size_t getColCount() const { return sparse_matrix.n; }
@@ -326,6 +350,8 @@ namespace mrpt
 			    @{  */
 
 			/** Auxiliary class to hold the results of a Cholesky factorization of a sparse matrix.
+			  *  This implementation does not allow updating/downdating.
+			  *
 			  *  Usage example:
 			  *   \code
 			  *     CSparseMatrix  SM(100,100);

@@ -286,6 +286,51 @@ bool CSparseMatrix::saveToTextFile_dense(const std::string &filName)
 	catch(...) { return false; }
 }
 
+// Format:
+//   NUM_ROWS   NUM_COLS   NUM_NON_ZERO_MAX
+//   row_1   col_1   value_1
+//   row_2   col_2   value_2
+bool CSparseMatrix::saveToTextFile_sparse(const std::string &filName)
+{
+     FILE *f=fopen(filName.c_str(),"wt");
+     if (!f) return false;
+
+     // Help notes:
+     fprintf(f,"\
+# This sparse matrix can be loaded in Octave/Matlab as follows:\n\
+# D=load('file.txt');\n\
+# SM=spconvert(D(2:end,:));\n\
+#  or...\n\
+# m=D(1,1); n=D(1,2); nzmax=D(1,3);\n\
+# Di=D(2:end,1); Dj=D(2:end,2); Ds=D(2:end,3);\n\
+# SM=sparse(Di,Dj,Ds, m,n, nzmax);\n\n");
+
+     // First line:
+     fprintf(f,"%i %i %i\n",sparse_matrix.m, sparse_matrix.n, sparse_matrix.nzmax); // Rows, cols, nzmax
+
+     // Data lines:
+	if (sparse_matrix.nz>=0)  // isTriplet ??
+	{	// It's in triplet form.
+          for (int i=0;i<sparse_matrix.nzmax;i++)
+               if (sparse_matrix.x[i]!=0)
+                    fprintf(f,"%4i %4i %e\n", 1+sparse_matrix.i[i], 1+sparse_matrix.p[i], sparse_matrix.x[i]);
+	}
+	else
+	{	// Column compressed format:
+          ASSERT_(sparse_matrix.x)  // JL: Could it be NULL and be OK???
+
+          for (int j = 0 ; j < sparse_matrix.n ; j++)
+          {
+               const int p0 = sparse_matrix.p [j];
+               const int p1 = sparse_matrix.p [j+1];
+               for (int p = p0 ; p < p1 ; p++)
+                    fprintf(f, "%4i %4i %e\n", 1+sparse_matrix.i[p],1+j, sparse_matrix.x[p]);
+          }
+	}
+
+     return true;
+}
+
 
 
 // ===============  START OF:   CSparseMatrix::CholeskyDecomp  inner class  ==============================
