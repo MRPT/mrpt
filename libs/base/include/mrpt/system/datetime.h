@@ -37,7 +37,7 @@ namespace mrpt
 {
 	namespace system
 	{
-		/** @defgroup time_date Time and date functions
+		/** @defgroup time_date Time and date functions (in #include <mrpt/system/datetime.h>)
 		  * \ingroup mrpt_base_grp
 		  * @{ */
 

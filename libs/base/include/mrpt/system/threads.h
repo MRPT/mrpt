@@ -34,7 +34,7 @@ namespace mrpt
 {
 	namespace system
 	{
-		/** \addtogroup mrpt_thread Threads
+		/** \addtogroup mrpt_thread Threads (in #include <mrpt/system/threads.h>)
 		  *  \ingroup mrpt_base_grp
 		  * @{ */
 

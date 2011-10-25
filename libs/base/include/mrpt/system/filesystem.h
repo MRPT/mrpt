@@ -34,7 +34,7 @@ namespace mrpt
 {
 	namespace system
 	{
-		/** @defgroup filesystem Directories, files, and file names
+		/** @defgroup filesystem Directories, files, and file names (in #include <mrpt/system/filesystem.h>)
 		  * \ingroup mrpt_base_grp
 		  * @{ */
 

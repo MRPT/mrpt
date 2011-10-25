@@ -34,7 +34,7 @@ namespace mrpt
 {
 	namespace system
 	{
-		/** \addtogroup mrpt_memory Memory utilities
+		/** \addtogroup mrpt_memory Memory utilities (in #include <mrpt/system/memory.h>)
 		  * \ingroup mrpt_base_grp
 		  *  @{ */
 

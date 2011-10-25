@@ -178,8 +178,6 @@ namespace mrpt
 			/** Set a background color different from that of the parent GUI window */
 			inline void setCustomBackgroundColor( const TColorf &color ) { m_custom_backgb_color = true; m_background_color = color; }
 
-			inline bool hasCustomBackgroundColor() const { return m_custom_backgb_color; }
-
 			inline TColorf getCustomBackgroundColor() const { return m_background_color; }
 
 			/** Compute the 3D ray corresponding to a given pixel; this can be used to allow the user to pick and select 3D objects by clicking onto the 2D image.

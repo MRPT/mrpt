@@ -34,7 +34,7 @@ namespace mrpt
 {
 	namespace system
 	{
-		/** \addtogroup string_manage String management and utilities
+		/** \addtogroup string_manage String management and utilities (in #include <mrpt/system/string_utils.h>)
 		  * \ingroup mrpt_base_grp
 		  * @{ */
 
