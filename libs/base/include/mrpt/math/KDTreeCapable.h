@@ -503,7 +503,7 @@ namespace mrpt
 				m_kdtree3d_data.query_point[0] = x0;
 				m_kdtree3d_data.query_point[1] = y0;
 				m_kdtree3d_data.query_point[2] = z0;
-		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
+				m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
 
 				for (size_t i=0;i<knn;i++)
 				{
@@ -525,6 +525,69 @@ namespace mrpt
 				}
 			}
 
+			/** KD Tree-based search for all the points within a given radius of some 3D point.
+			  *  This method automatically build the "m_kdtree_data" structure when:
+			  *		- It is called for the first time
+			  *		- The map has changed
+			  *		- The KD-tree was build for 2D.
+			  *
+			  * \param x0  The X coordinate of the query.
+			  * \param y0  The Y coordinate of the query.
+			  * \param z0  The Z coordinate of the query.
+			  * \param maxRadius The search radius.
+			  * \param out_indices_dist The output list, with pairs of indeces/squared distances for the found correspondences.
+			  * \return Number of found points.
+			  *
+			  *  \sa kdTreeRadiusSearch2D, kdTreeNClosestPoint3DIdx
+			  */
+			inline size_t kdTreeRadiusSearch3D(
+				const float x0, const float y0, const float z0,
+				const float maxRadius,
+				std::vector<std::pair<int,float> >& out_indices_dist ) const
+			{
+				MRPT_START
+				rebuild_kdTree_3D(); // First: Create the 3D KD-Tree if required
+				out_indices_dist.clear();
+				if ( m_kdtree3d_data.m_num_points!=0 )
+				{
+					const float xyz[3] = {x0,y0,z0};
+					m_kdtree3d_data.index->radiusSearch(&xyz[0], maxRadius, out_indices_dist, nanoflann::SearchParams(kdtree_search_params.nChecks) );
+				}
+				return out_indices_dist.size();
+				MRPT_END
+			}
+
+			/** KD Tree-based search for all the points within a given radius of some 2D point.
+			  *  This method automatically build the "m_kdtree_data" structure when:
+			  *		- It is called for the first time
+			  *		- The map has changed
+			  *		- The KD-tree was build for 3D.
+			  *
+			  * \param x0  The X coordinate of the query.
+			  * \param y0  The Y coordinate of the query.
+			  * \param maxRadius The search radius.
+			  * \param out_indices_dist The output list, with pairs of indeces/squared distances for the found correspondences.
+			  * \return Number of found points.
+			  *
+			  *  \sa kdTreeRadiusSearch3D, kdTreeNClosestPoint2DIdx
+			  */
+			inline size_t kdTreeRadiusSearch2D(
+				const float x0, const float y0,
+				const float maxRadius,
+				std::vector<std::pair<int,float> >& out_indices_dist ) const
+			{
+				MRPT_START
+				rebuild_kdTree_2D(); // First: Create the 2D KD-Tree if required
+				out_indices_dist.clear();
+				if ( m_kdtree3d_data.m_num_points!=0 )
+				{
+					const float xyz[2] = {x0,y0};
+					m_kdtree3d_data.index->radiusSearch(&xyz[0], maxRadius, out_indices_dist, nanoflann::SearchParams(kdtree_search_params.nChecks) );
+				}
+				return out_indices_dist.size();
+				MRPT_END
+			}
+
 			/** KD Tree-based search for the N closest point to some given 3D coordinates and returns their indexes.
 			  *  This method automatically build the "m_kdtree_data" structure when:
 			  *		- It is called for the first time
@@ -538,7 +601,7 @@ namespace mrpt
 			  * \param out_idx The indexes of the found closest correspondence.
 			  * \param out_dist_sqr The square distance between the query and the returned point.
 			  *
-			  *  \sa kdTreeClosestPoint2D
+			  *  \sa kdTreeClosestPoint2D,  kdTreeRadiusSearch3D
 			  */
 			inline void kdTreeNClosestPoint3DIdx(
 				float			x0,
@@ -560,7 +623,7 @@ namespace mrpt
 				m_kdtree3d_data.query_point[0] = x0;
 				m_kdtree3d_data.query_point[1] = y0;
 				m_kdtree3d_data.query_point[2] = z0;
-		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
+				m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
 				MRPT_END
 			}
 

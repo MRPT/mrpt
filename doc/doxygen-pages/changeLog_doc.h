@@ -39,6 +39,7 @@
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect no longer forces a horizontal tilt at start up by default, what may be annoying (if required, set "initial_tilt_angle") - <a href="http://code.google.com/p/mrpt/source/detail?r=r2722" >r2722</a>
 	- Changes in classes:
 		- [mrpt-base] New method mrpt::math::CSparseMatrix::saveToTextFile_sparse() 
+		- [mrpt-base] KD-trees now also exposes methods for Radius search: mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D(), mrpt::math::KDTreeCapable::kdTreeRadiusSearch3D()  - <a href="http://code.google.com/p/mrpt/source/detail?r=r2726" >r2726</a> 
 	- New examples:
 		- csparse_demo
 
