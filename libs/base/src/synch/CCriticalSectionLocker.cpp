@@ -46,10 +46,13 @@ using namespace std;
 CCriticalSectionLocker::CCriticalSectionLocker( const CCriticalSection * cs)
 	: m_cs(cs)
 {
+	if (m_cs)
+	{
 #if CS_LOCKER_VERBOSE
-	cout << "[CCriticalSectionLocker] Locking " << static_cast<const void*>(m_cs) << ": " << m_cs->getName() << endl;
+		cout << "[CCriticalSectionLocker] Locking " << static_cast<const void*>(m_cs) << ": " << m_cs->getName() << endl;
 #endif
-	m_cs->enter();
+		m_cs->enter();
+	}
 }
 
 /*---------------------------------------------------------------
@@ -57,8 +60,11 @@ CCriticalSectionLocker::CCriticalSectionLocker( const CCriticalSection * cs)
 ---------------------------------------------------------------*/
 CCriticalSectionLocker::~CCriticalSectionLocker()
 {
+	if (m_cs)
+	{
 #if CS_LOCKER_VERBOSE
-	cout << "[CCriticalSectionLocker] Unlocking " << static_cast<const void*>(m_cs) << ": " << m_cs->getName() << endl;
+		cout << "[CCriticalSectionLocker] Unlocking " << static_cast<const void*>(m_cs) << ": " << m_cs->getName() << endl;
 #endif
-	m_cs->leave();
+		m_cs->leave();
+	}
 }

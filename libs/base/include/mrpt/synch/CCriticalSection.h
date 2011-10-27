@@ -100,6 +100,7 @@ namespace mrpt
 
 		public:
 			/** Constructor: enters the critical section.
+			  * \note [Since MRPT 0.9.6] The pointer can be NULL, in which case no action at all will be taken.
 			  */
 			CCriticalSectionLocker( const CCriticalSection *cs  );
 
