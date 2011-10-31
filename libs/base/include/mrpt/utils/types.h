@@ -31,6 +31,7 @@
 
 #include <vector>
 #include <map>
+#include <list>
 #include <string>
 #include <stdexcept>
 #include <cstdarg>
@@ -136,6 +137,7 @@ namespace mrpt
 		typedef std::pair<TYPE1,TYPE2> pair_t;
 		typedef std::vector<TYPE1, Eigen::aligned_allocator<TYPE1> > vector_t;
 		typedef std::deque<TYPE1, Eigen::aligned_allocator<TYPE1> > deque_t;
+		typedef std::list<TYPE1, Eigen::aligned_allocator<TYPE1> > list_t;
 		typedef std::map<TYPE1,TYPE2,std::less<TYPE1>,Eigen::aligned_allocator<std::pair<const TYPE1,TYPE2> > > map_t;
 		typedef std::multimap<TYPE1,TYPE2,std::less<TYPE1>,Eigen::aligned_allocator<std::pair<const TYPE1,TYPE2> > > multimap_t;
 	};
