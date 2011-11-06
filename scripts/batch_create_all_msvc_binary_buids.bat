@@ -2,9 +2,9 @@
 set MRPT_BASE_DIR=mrpt-0.9.5
 
 set msvc9_DIR=d:\Program Files (x86)\Microsoft Visual Studio 9.0
-set msvc10_DIR=c:\Program Files (x86)\Microsoft Visual Studio 10.0
-set CMAKE_DIR=C:\Program Files (x86)\CMake 2.8\bin
-set LIBUSBDIR=D:\code\libusb-win32-bin
+set msvc10_DIR=d:\Program Files (x86)\Microsoft Visual Studio 10.0
+set CMAKE_DIR=d:\Program Files (x86)\CMake 2.8\bin
+set LIBUSBDIR=d:\code\libusb-win32-bin
 
 REM msvc9 ========================
 set COMP=msvc9
