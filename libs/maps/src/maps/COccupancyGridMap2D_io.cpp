@@ -576,7 +576,7 @@ void  COccupancyGridMap2D::saveMetricMapRepresentationToFile(
 	LIMITS(0,1) = x_max;
 	LIMITS(0,2) = y_min;
 	LIMITS(0,3) = y_max;
-	LIMITS.saveToTextFile( fil, MATRIX_FORMAT_FIXED );
+	LIMITS.saveToTextFile( fil, MATRIX_FORMAT_FIXED, false /* add mrpt header */, "% Grid limits: [x_min x_max y_min y_max]\n" );
 }
 
 

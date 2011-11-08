@@ -903,7 +903,7 @@ void  CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 		DIMs(0,2)=m_y_min;
 		DIMs(0,3)=m_y_max;
 
-		DIMs.saveToTextFile( filNamePrefix + std::string("_grid_limits.txt"), MATRIX_FORMAT_FIXED );
+		DIMs.saveToTextFile( filNamePrefix + std::string("_grid_limits.txt"), MATRIX_FORMAT_FIXED, false /* add mrpt header */, "% Grid limits: [x_min x_max y_min y_max]\n" );
 
 		// Save the mean matrix:
 		CMatrix	MEAN( m_size_y,m_size_x);
