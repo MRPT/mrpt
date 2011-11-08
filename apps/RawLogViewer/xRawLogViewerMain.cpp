@@ -58,13 +58,13 @@
 #include <mrpt/vision/CVideoFileWriter.h>
 
 //(*InternalHeaders(xRawLogViewerFrame)
-#include <wx/string.h>
-#include <wx/intl.h>
-#include <wx/font.h>
+#include <wx/artprov.h>
 #include <wx/bitmap.h>
 #include <wx/icon.h>
+#include <wx/font.h>
+#include <wx/intl.h>
 #include <wx/image.h>
-#include <wx/artprov.h>
+#include <wx/string.h>
 //*)
 
 #include <wx/tooltip.h>
@@ -361,54 +361,54 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxArtProvider::Push(new MyArtProvider);
 
 	//(*Initialize(xRawLogViewerFrame)
-	wxMenuItem* MenuItem2;
-	wxMenu* MenuItem81;
-	wxMenuItem* MenuItem1;
-	wxFlexGridSizer* FlexGridSizer8;
-	wxFlexGridSizer* FlexGridSizer1;
-	wxFlexGridSizer* FlexGridSizer2;
-	wxMenuItem* MenuItem43;
 	wxMenu* Menu39;
-	wxMenuItem* MenuItem75;
-	wxMenu* Menu1;
-	wxMenuItem* MenuItem12;
-	wxMenuItem* MenuItem25;
-	wxMenuItem* MenuItem55;
-	wxMenuItem* MenuItem19;
-	wxFlexGridSizer* FlexGridSizer11;
-	wxMenuItem* MenuItem65;
-	wxMenuItem* MenuItem56;
-	wxMenuItem* MenuItem67;
-	wxMenuItem* MenuItem33;
-	wxFlexGridSizer* FlexGridSizer7;
-	wxMenuItem* MenuItem24;
 	wxFlexGridSizer* FlexGridSizer4;
-	wxMenuItem* MenuItem69;
-	wxFlexGridSizer* FlexGridSizer9;
-	wxFlexGridSizer* FlexGridSizer6;
-	wxMenuItem* MenuItem17;
-	wxFlexGridSizer* FlexGridSizer3;
-	wxMenuItem* MenuItem60;
-	wxMenuItem* MenuItem22;
-	wxMenuItem* MenuItem41;
-	wxFlexGridSizer* FlexGridSizer10;
-	wxMenuItem* MenuItem82;
-	wxFlexGridSizer* FlexGridSizer13;
-	wxMenuBar* MenuBar1;
-	wxMenuItem* MenuItem27;
-	wxMenuItem* MenuItem18;
+	wxMenuItem* MenuItem33;
 	wxMenuItem* MenuItem26;
-	wxMenuItem* MenuItem70;
-	wxFlexGridSizer* FlexGridSizer12;
-	wxMenu* Menu2;
+	wxMenuItem* MenuItem25;
+	wxMenuItem* MenuItem2;
+	wxFlexGridSizer* FlexGridSizer10;
+	wxFlexGridSizer* FlexGridSizer3;
+	wxMenuItem* MenuItem55;
+	wxMenuItem* MenuItem1;
+	wxMenuItem* MenuItem56;
 	wxFlexGridSizer* FlexGridSizer5;
-
+	wxFlexGridSizer* FlexGridSizer9;
+	wxMenuItem* MenuItem22;
+	wxFlexGridSizer* FlexGridSizer2;
+	wxMenuItem* MenuItem17;
+	wxMenu* Menu1;
+	wxFlexGridSizer* FlexGridSizer7;
+	wxMenuItem* MenuItem82;
+	wxMenuItem* MenuItem75;
+	wxMenuItem* MenuItem60;
+	wxMenuItem* MenuItem12;
+	wxMenuItem* MenuItem24;
+	wxMenuItem* MenuItem69;
+	wxMenuItem* MenuItem27;
+	wxFlexGridSizer* FlexGridSizer8;
+	wxMenuItem* MenuItem70;
+	wxMenuItem* MenuItem67;
+	wxMenuItem* MenuItem65;
+	wxFlexGridSizer* FlexGridSizer13;
+	wxMenuItem* MenuItem41;
+	wxFlexGridSizer* FlexGridSizer12;
+	wxMenu* MenuItem81;
+	wxMenuBar* MenuBar1;
+	wxFlexGridSizer* FlexGridSizer6;
+	wxFlexGridSizer* FlexGridSizer1;
+	wxFlexGridSizer* FlexGridSizer11;
+	wxMenuItem* MenuItem43;
+	wxMenu* Menu2;
+	wxMenuItem* MenuItem18;
+	wxMenuItem* MenuItem19;
+	
 	Create(parent, id, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("id"));
 	SetClientSize(wxSize(700,500));
 	{
-	wxIcon FrameIcon;
-	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_OTHER));
-	SetIcon(FrameIcon);
+		wxIcon FrameIcon;
+		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_OTHER));
+		SetIcon(FrameIcon);
 	}
 	SplitterWindow1 = new wxSplitterWindow(this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_3DBORDER|wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW1"));
 	SplitterWindow1->SetMinSize(wxSize(10,10));
@@ -829,7 +829,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	StatusBar1->SetFieldsCount(1,__wxStatusBarWidths_1);
 	StatusBar1->SetStatusStyles(1,__wxStatusBarStyles_1);
 	SetStatusBar(StatusBar1);
-	ToolBar1 = new wxToolBar(this, ID_TOOLBAR1, wxDefaultPosition, wxDefaultSize, wxTB_FLAT|wxTB_HORIZONTAL|wxTB_3DBUTTONS|wxTB_TEXT|wxNO_BORDER, _T("ID_TOOLBAR1"));
+	ToolBar1 = new wxToolBar(this, ID_TOOLBAR1, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|wxTB_TEXT|wxNO_BORDER, _T("ID_TOOLBAR1"));
 	ToolBar1->SetToolBitmapSize(wxSize(32,32));
 	ToolBarItem1 = ToolBar1->AddTool(ID_TOOLBARITEM1, _("Load..."), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")),wxART_TOOLBAR), wxITEM_NORMAL, _("Open a rawlog..."), _("Open a rawlog"));
 	ToolBarItem2 = ToolBar1->AddTool(ID_TOOLBARITEM2, _("Save as..."), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")),wxART_TOOLBAR), wxITEM_NORMAL, _("Save the rawlog in memory as..."), _("Save the current rawlog to a file"));
@@ -856,7 +856,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	mnuTree.Append(ID_MENUITEM48, _("Add action"), MenuItem45, wxEmptyString);
 	timAutoLoad.SetOwner(this, ID_TIMER1);
 	timAutoLoad.Start(50, true);
-
+	
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnbtnEditCommentsClick1);
 	Connect(ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
 	Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
