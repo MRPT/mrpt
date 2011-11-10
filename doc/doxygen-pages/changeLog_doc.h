@@ -41,6 +41,7 @@
 		- [mrpt-base] New method mrpt::math::CSparseMatrix::saveToTextFile_sparse() 
 		- [mrpt-base] KD-trees now also exposes methods for Radius search: mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D(), mrpt::math::KDTreeCapable::kdTreeRadiusSearch3D()  - <a href="http://code.google.com/p/mrpt/source/detail?r=r2726" >r2726</a> 
 		- [mrpt-base] mrpt::sync::CCriticalSectionLocker now can accept a NULL pointer as input, in which case no action will be taken (previosly, it led to segfault) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2727" >r2727</a> 
+		- [mrpt-maps] mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
 	- New examples:
 		- csparse_demo
 
