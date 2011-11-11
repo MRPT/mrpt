@@ -26,6 +26,11 @@
 #    - MRPT_VERSION: The MRPT version (e.g. "1.0.0"). 
 #    - MRPT_VERSION_{MAJOR,MINOR,PATCH}: 3 variables for the version parts
 #
+#   Optional input variables:
+#    - MRPT_DONT_USE_DBG_LIBS: If defined at input, before the 
+#         "FIND_PACKAGE(MRPT...)", and set to "1", the release libraries
+#         will be used even for linking against "Debug" CMake builds.
+#
 # =========================================================================
 
 # MRPT version numbers:
@@ -164,7 +169,11 @@ FOREACH(MRPTLIB ${MRPT_FIND_COMPONENTS})
 
 	# List of link libs only needed in GCC. In MSVC we use pragma link libs.
 	IF(NOT MSVC AND NOT BORLAND)
-		LIST(APPEND MRPT_LIBS  optimized mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@ debug mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@-dbg)
+		IF(NOT MRPT_DONT_USE_DBG_LIBS)
+			LIST(APPEND MRPT_LIBS  optimized mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@ debug mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@-dbg)
+		ELSE(NOT MRPT_DONT_USE_DBG_LIBS)
+			LIST(APPEND MRPT_LIBS  mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@)
+		ENDIF(NOT MRPT_DONT_USE_DBG_LIBS)
 	ENDIF(NOT MSVC AND NOT BORLAND)
 	
 	IF(MRPTLIB MATCHES "hwdrivers")
