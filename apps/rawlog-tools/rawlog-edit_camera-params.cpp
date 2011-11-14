@@ -37,74 +37,86 @@ using namespace std;
 
 
 // ======================================================================
-//		op_sensors_pose
+//		op_camera_params
 // ======================================================================
-DECLARE_OP_FUNCTION(op_sensors_pose)
+DECLARE_OP_FUNCTION(op_camera_params)
 {
 	// A class to do this operation:
-	class CRawlogProcessor_SensorsPose : public CRawlogProcessorOnEachObservation
+	class CRawlogProcessor_CamParams : public CRawlogProcessorOnEachObservation
 	{
 	protected:
 		TOutputRawlogCreator	outrawlog;
 
-		std::map<std::string,mrpt::poses::CPose3D>	desiredSensorPoses;
+		string   target_label;
+		mrpt::utils::TCamera    new_cam_params;
+		mrpt::utils::TCamera    new_cam_params_left, new_cam_params_right;
+		bool   is_stereo;
 
 	public:
-		size_t  m_changedPoses;
+		size_t  m_changedCams;
 
-		CRawlogProcessor_SensorsPose(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
+		CRawlogProcessor_CamParams(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
 			CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose)
 		{
-			m_changedPoses = 0;
+			m_changedCams = 0;
 
 			// Load .ini file with poses:
-			string ini_poses;
-			getArgValue<string>(cmdline,"sensors-pose",ini_poses);
-			ini_poses = trim(ini_poses);
-			if (ini_poses.empty())throw std::runtime_error("--sensors-pose op: missing argument: config file to load");
-			if (!fileExists(ini_poses)) throw std::runtime_error(string("--sensors-pose op: config file can't be open:")+ini_poses);
+			string   str;
+			getArgValue<string>(cmdline,"camera-params",str);
 
-			// Load the "ini-file" from the text control:
-			CConfigFile  cfg( ini_poses );
+			vector<string> lstTokens;
+			tokenize(str,",",lstTokens);
+			if (lstTokens.size()!=2)
+				throw std::runtime_error("--camera-params op: argument must be in the format: --camera-params LABEL,file.ini");
 
-			// make a list  "sensor_label -> sensor_pose" by parsing the ini-file:
+			target_label = lstTokens[0];
 
-			vector_string	sections;
-			cfg.getAllSections( sections );
+			const string &fil = lstTokens[1];
+			if (!fileExists(fil)) throw std::runtime_error(string("--camera-params op: config file can't be open:")+fil);
 
-			for (vector_string::iterator it=sections.begin();it!=sections.end();++it)
+			// Load:
+			CConfigFile  cfg( fil );
+			is_stereo = true;
+			string sErrorCam;
+			try {
+				new_cam_params.loadFromConfigFile("CAMERA_PARAMS",cfg);
+				is_stereo = false;
+			}
+			catch(std::exception &e) {
+				sErrorCam = e.what();
+			}
+
+			if (!sErrorCam.empty())
 			{
-				if (it->empty()) continue;
-
-				// Get sensor label:
-				string label = cfg.read_string(*it,"sensorLabel","");
-				if (label.empty()) continue;
-
-				CPose3D  the_pose(
-					cfg.read_double(*it,"pose_x",0,true),
-					cfg.read_double(*it,"pose_y",0,true),
-					cfg.read_double(*it,"pose_z",0,true),
-					DEG2RAD( cfg.read_double(*it,"pose_yaw",0 ) ),
-					DEG2RAD( cfg.read_double(*it,"pose_pitch",0 ) ),
-					DEG2RAD( cfg.read_double(*it,"pose_roll",0 ) ) );
-
-				// insert:
-				desiredSensorPoses[label] = the_pose;
-			} // end for sections
-
-			if (desiredSensorPoses.empty())
-				throw std::runtime_error(string("No valid 'sensorLabel' entry was found in ")+ini_poses);
-
+				// Try with STEREO PARAMS:
+				try {
+					new_cam_params_left.loadFromConfigFile("CAMERA_PARAMS_LEFT",cfg);
+					new_cam_params_right.loadFromConfigFile("CAMERA_PARAMS_RIGHT",cfg);
+				}
+				catch(std::exception &e) {
+					throw std::runtime_error(string("--camera-params op: Error loading monocular camera params:\n")+sErrorCam+string("\nBut also an error found loading stereo config:\n")+string(e.what()) );
+				}
+			}
 		}
 
 		bool processOneObservation(CObservationPtr  &obs)
 		{
-			// Check the sensor label:
-			std::map<std::string,mrpt::poses::CPose3D>::iterator i = desiredSensorPoses.find(obs->sensorLabel);
-			if (i!=desiredSensorPoses.end())
+			if ( strCmpI(obs->sensorLabel,target_label))
 			{
-				obs->setSensorPose( i->second );
-				m_changedPoses++;
+				if (IS_CLASS(obs,CObservationImage))
+				{
+					CObservationImagePtr o = CObservationImagePtr(obs);
+					o->cameraParams = new_cam_params;
+					m_changedCams++;
+				}
+				else
+				if (IS_CLASS(obs,CObservationStereoImages))
+				{
+					CObservationStereoImagesPtr o = CObservationStereoImagesPtr(obs);
+					o->leftCamera = new_cam_params_left;
+					o->rightCamera = new_cam_params_right;
+					m_changedCams++;
+				}
 			}
 			return true;
 		}
@@ -125,12 +137,13 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 
 	// Process
 	// ---------------------------------
-	CRawlogProcessor_SensorsPose proc(in_rawlog,cmdline,verbose);
+	CRawlogProcessor_CamParams proc(in_rawlog,cmdline,verbose);
 	proc.doProcessRawlog();
 
 	// Dump statistics:
 	// ---------------------------------
 	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
-	VERBOSE_COUT << "Number of modified entries        : " << proc.m_changedPoses << "\n";
+	VERBOSE_COUT << "Number of modified entries        : " << proc.m_changedCams << "\n";
 
 }
+
