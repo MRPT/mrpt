@@ -2219,6 +2219,19 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 												obs->power);
 										}
 										else
+										if ( classID  == CLASS_ID(CObservationRFID) )
+										{
+											// ----------------------------------------------------------------------
+											//              CObservationBatteryState
+											// ----------------------------------------------------------------------
+											CObservationRFIDPtr obs = CObservationRFIDPtr( sel_obj);
+											curSelectedObservation = CObservationPtr( sel_obj );
+											cout << endl;
+
+											cout << format("Measured Power UNFINISHED MODULE: %.02f/100\n",
+												obs->power);
+										}
+										else
 											if ( classID  == CLASS_ID(CObservationIMU) )
 											{
 												// ----------------------------------------------------------------------

@@ -1451,6 +1451,123 @@ void xRawLogViewerFrame::OnGenWifiTxt(wxCommandEvent& event)
 }
 
 
+void xRawLogViewerFrame::OnGenRFIDTxt(wxCommandEvent& event)
+{
+	WX_START_TRY
+
+	wxString caption = wxT("Save as...");
+	wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
+	wxString defaultDir( _U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ) );
+	wxString defaultFilename = _U( (loadedFileName+string("_RFIDSensors.txt")).c_str() );
+	wxFileDialog dialog(this, caption, defaultDir, defaultFilename,wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+
+	if (dialog.ShowModal() == wxID_OK)
+	{
+		wxString fileName = dialog.GetPath();
+		string        fil( fileName.mbc_str() );
+
+
+		size_t          i, M = 0,  n = rawlog.size();
+		FILE            *f = os::fopen( fil.c_str(), "wt");
+		if (!f)
+			THROW_EXCEPTION("Cannot open output file for write.");
+
+		bool	genTimes = rawlog_first_timestamp != INVALID_TIMESTAMP;
+		if (!genTimes)
+			::wxMessageBox(_("It seems that there are no valid timestamps in the rawlog. Timestamps will be zero."));
+
+		for (i=0;i<n;i++)
+		{
+			CObservationRFIDPtr obs;
+
+			switch ( rawlog.getType(i) )
+			{
+
+			case CRawlog::etSensoryFrame:
+				{
+					CSensoryFramePtr sf = rawlog.getAsObservations(i);
+					obs = sf->getObservationByClass<CObservationRFID>();
+				}
+				break;
+
+			case CRawlog::etObservation:
+				{
+					CObservationPtr o = rawlog.getAsObservation(i);		//get the observation
+					if (IS_CLASS(o,CObservationRFID))
+					{
+						obs = CObservationRFIDPtr(o);	//Get the GAS observation
+					}
+				}
+				break;
+
+			default: continue;
+			}//end-case
+
+
+			//If we have a RFID obs, then process it:
+			if (obs)
+			{
+				// Timestamp:
+				double t = 0;
+				if (genTimes)
+				{
+					if (obs->timestamp!=INVALID_TIMESTAMP)
+						t = mrpt::system::timeDifference(rawlog_first_timestamp, obs->timestamp);
+				}
+
+				::fprintf(f,"%f ", t );
+
+				size_t lineCount = 0;
+
+				//run each Enose (if more than one)
+			/*	for (size_t j=0;j<obs->m_readings.size();j++)
+				{
+					//Temperature
+					if (obs->m_readings[j].hasTemperature== true)
+					{
+						float temp=obs->m_readings[j].temperature;
+						::fprintf(f,"%f ",temp);
+					}
+
+					//Run each sensor on Enose
+					for (vector<float>::iterator it=obs->m_readings[j].readingsVoltage.begin();it!=obs->m_readings[j].readingsVoltage.end();++it)
+					{
+						::fprintf(f,"%f ",*it);
+						lineCount++;
+					}
+				}*/
+
+
+				// Fill:
+				while (lineCount<32)
+				{
+					::fprintf(f,"0 ");
+					lineCount++;
+				}
+
+				::fprintf(f,"\n");
+					M++;
+			}//end-if(obs)
+
+		}//end-for
+
+		os::fclose(f);
+
+		char auxStr[100];
+		os::sprintf(auxStr,sizeof(auxStr),"%u entries saved!",(unsigned)M);
+		wxMessageBox(_U(auxStr),_("Done"),wxOK,this);
+	}//end-if
+
+	WX_END_TRY
+}
+
+
+
+
+
+
+
+
 // --------------------------------------------------------------------------------
 // Datasets and docs from these nice guys:
 //  http://www.informatik.uni-bremen.de/agebv/en/DlrSpatialCognitionDataSet

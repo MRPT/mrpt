@@ -72,6 +72,7 @@
 #include <mrpt/slam/CObservationBeaconRanges.h>
 #include <mrpt/slam/CObservationGasSensors.h>
 #include <mrpt/slam/CObservationWirelessPower.h>
+#include <mrpt/slam/CObservationRFID.h>
 #include <mrpt/slam/CObservationGPS.h>
 #include <mrpt/slam/CObservationBatteryState.h>
 #include <mrpt/slam/CObservationIMU.h>

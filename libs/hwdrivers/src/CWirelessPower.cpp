@@ -46,6 +46,12 @@ void  CWirelessPower::loadConfig_sensorSpecific(
 	const std::string			&iniSection )
 {
 	MRPT_START
+		pose_x = configSource.read_float(iniSection,"pose_x",0,true);
+		pose_y = configSource.read_float(iniSection,"pose_y",0,true);
+		pose_z = configSource.read_float(iniSection,"pose_z",0,true);
+		pose_roll = configSource.read_float(iniSection,"pose_roll",0,true);
+		pose_pitch = configSource.read_float(iniSection,"pose_pitch",0,true);
+		pose_yaw = configSource.read_float(iniSection,"pose_yaw",0,true);
 	MRPT_END
 }
 
@@ -527,7 +533,7 @@ bool CWirelessPower::getObservation( mrpt::slam::CObservationWirelessPower &outO
 		outObservation.power = (float)GetPower();
 		outObservation.timestamp = mrpt::system::getCurrentTime();
 		outObservation.sensorLabel = m_sensorLabel;
-		std::cout << "mrpt::hwdrivers::CWirelessPower::getObservation() " << "\n\tsensorLabel: " << outObservation.sensorLabel << "\n\ttimestamp: " << outObservation.timestamp << "\n\tpower: " << outObservation.power << std::endl;
+	//	std::cout << "mrpt::hwdrivers::CWirelessPower::getObservation() " << "\n\tsensorLabel: " << outObservation.sensorLabel << "\n\ttimestamp: " << outObservation.timestamp << "\n\tpower: " << outObservation.power << std::endl;
 		return true;
 	}
 	catch(exception &e)

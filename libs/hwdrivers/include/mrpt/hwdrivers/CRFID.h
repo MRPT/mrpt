@@ -25,87 +25,62 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-#ifndef  CWirelessPower_H
-#define  CWirelessPower_H
+#ifndef  CRFID_H
+#define  CRFID_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/slam/CObservationWirelessPower.h>
+#include <mrpt/slam/CObservationRFID.h>
 #include <mrpt/utils/CConfigFileBase.h>
+
+#include <mrpt/utils/CClientTCPSocket.h>
+#include <mrpt/utils/CServerTCPSocket.h>
 
 namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** This class implements a wireless power probe.
-		  *  \sa mrpt::slam::CWirelessPowerGridMap2D, mrpt::slam::CObservationWirelessPower
-		  * \ingroup mrpt_hwdrivers_grp
+		/** This class implements an interface to an Impinj RFID reader. This object connects to a program that does the actual communication with the receiver. This is done because the manufacturer only provides libraries for C# and Java. The program that runs the device must be started after this object
 		  */
-		class HWDRIVERS_IMPEXP CWirelessPower : public mrpt::hwdrivers::CGenericSensor
+		class HWDRIVERS_IMPEXP CRFID : public mrpt::hwdrivers::CGenericSensor
 		{
-				DEFINE_GENERIC_SENSOR(CWirelessPower)
+				DEFINE_GENERIC_SENSOR(CRFID)
 
 		private:
-			/** SSID of the WiFi network
-			 */
-			std::string ssid;
 
-			/** GUID of the WiFi interface
+			/** Poses (Antenna 1)
 			 */
-			std::string guid;
+			float pose_x_1, pose_y_1, pose_z_1, pose_yaw_1, pose_pitch_1, pose_roll_1;
 
-			/** Handle to the WLAN server (Windows)
+			/** Poses (Antenna 2)
 			 */
-			void* hClient;
+			float pose_x_2, pose_y_2, pose_z_2, pose_yaw_2, pose_pitch_2, pose_roll_2;
 
-			/** Poses
+			/** Server port
 			 */
-			float pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll;
+			int port;
+
+			/** Server socket (listens for the incoming connection)
+			 */
+			mrpt::utils::CServerTCPSocket *server;
+
+			/** Client socket (handles the connection to the client)
+			 */
+			mrpt::utils::CClientTCPSocket *client;
+
+
 
 		public:
 			/** Default constructor.
 			 */
-			CWirelessPower();
-			virtual ~CWirelessPower(){};
-
-			/** Set the SSID and GUID of the target network.
-			 * \exception std::exception In case there is a failure
-			 * \param ssid_ SSID of the target network
-			 * \param guid_ GUID of the network interface
-			 */
-			void setNet(std::string ssid_, std::string guid_);
-
-			 void doProcess(){};
-			 void  loadConfig_sensorSpecific(
-				 const mrpt::utils::CConfigFileBase &configSource,
+			CRFID();
+			virtual ~CRFID(){};
+			void connect();
+			void doProcess(){};
+			void  loadConfig_sensorSpecific(
+				const mrpt::utils::CConfigFileBase &configSource,
 				const std::string			&section);
-
-			/** Gets a list of the interfaces
-			 * \exception std::exception In case there is a failure
-			 * \return std::vector returns the identifiers (GUID) of the available interfaces
-			 */
-			std::vector<std::string>	ListInterfaces();
-
-
-			/** Gets the power of a given network
-			 * \exception std::exception In case there is a failure
-			 * \return Returns the power (0-100).
-			 */
-			int		GetPower();
-
-
-			/** Gets the power of a given network as a timestamped observation
-			 * \return Returns true if the observation was correct, and false otherwise
-			 */
-
-			bool getObservation( mrpt::slam::CObservationWirelessPower &outObservation );
-
-
-			/** Gets a list of the networks available for an interface
-			 * \exception std::exception In case there is a failure
-			 * \return std::vector returns handles to the available networks of a given interface
-			 */
-			std::vector<std::string>	ListNetworks();
-
+			bool getObservation( mrpt::slam::CObservationRFID &outObservation );
+			void closeReader();
 		}; // End of class def.
 
 	} // End of namespace

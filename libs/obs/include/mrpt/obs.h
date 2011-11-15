@@ -53,6 +53,7 @@
 #include <mrpt/slam/CObservationComment.h>
 #include <mrpt/slam/CObservationReflectivity.h>
 #include <mrpt/slam/CObservationWirelessPower.h>
+#include <mrpt/slam/CObservationRFID.h>
 #include <mrpt/slam/CSensoryFrame.h>
 
 

@@ -446,6 +446,8 @@ int CRawlogTreeView::iconIndexFromClass( const TRuntimeClassId* class_ID )
 		iconIndex = 8;
 	else if ( class_ID==CLASS_ID(CObservationWirelessPower) )
 		iconIndex = 8;
+	else if ( class_ID==CLASS_ID(CObservationRFID) )
+		iconIndex = 8;
 	else if (class_ID->derivedFrom( CLASS_ID(CObservation) ))
 		iconIndex = 2;	// Default observation
 	else if ( class_ID==CLASS_ID(CActionCollection) )
