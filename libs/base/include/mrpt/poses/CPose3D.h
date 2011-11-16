@@ -108,7 +108,7 @@ namespace poses
 		template <class MATRIX33,class VECTOR3>
 		inline CPose3D(const MATRIX33 &rot, const VECTOR3& xyz) : m_ROT(UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
 		{
-			ASSERT_EQUAL_(size(rot,1),3); ASSERT_EQUAL_(size(rot,2),3);ASSERT_EQUAL_(xyz.size(),3)
+			ASSERT_EQUAL_(mrpt::math::size(rot,1),3); ASSERT_EQUAL_(mrpt::math::size(rot,2),3);ASSERT_EQUAL_(xyz.size(),3)
 			for (int r=0;r<3;r++)
 				for (int c=0;c<3;c++)
 					m_ROT(r,c)=rot.get_unsafe(r,c);
