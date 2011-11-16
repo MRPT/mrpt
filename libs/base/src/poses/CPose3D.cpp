@@ -607,9 +607,6 @@ CPoint3D  CPose3D::operator + (const CPoint2D& b) const
   ---------------------------------------------------------------*/
 void CPose3D::composeFrom(const CPose3D& A, const CPose3D& B )
 {
-	//Was: m_HM.multiply( A.m_HM, B.m_HM );
-	m_ROT.multiply_AB( A.m_ROT, B.m_ROT );
-
 	// The translation part HM(0:3,3)
 	if (this==&B)
 	{
@@ -623,6 +620,9 @@ void CPose3D::composeFrom(const CPose3D& A, const CPose3D& B )
 		for (int r=0;r<3;r++)
 			m_coords[r] = A.m_coords[r] + A.m_ROT(r,0)*B.m_coords[0]+A.m_ROT(r,1)*B.m_coords[1]+A.m_ROT(r,2)*B.m_coords[2];
 	}
+
+	// Important: Make this multiplication AFTER the translational part, to cope with the case when A==this
+	m_ROT.multiply_AB( A.m_ROT, B.m_ROT );
 
 	m_ypr_uptodate=false;
 }

@@ -101,6 +101,48 @@ protected:
 			<< "p2_c_p1_i_p2: " << p2_c_p1_i_p2 << endl;
 	}
 
+	void test_composeFrom(double x1,double y1,double z1, double yaw1,double pitch1,double roll1,
+	                 double x2,double y2,double z2, double yaw2,double pitch2,double roll2 )
+	{
+		const CPose3D p1(x1,y1,z1,yaw1,pitch1,roll1);
+		const CPose3D p2(x2,y2,z2,yaw2,pitch2,roll2);
+
+		const CPose3D p1_plus_p2 = p1 + p2;
+
+		{
+			CPose3D p1_plus_p2bis;
+			p1_plus_p2bis.composeFrom(p1,p2);
+
+			EXPECT_NEAR(0, (p1_plus_p2bis.getAsVectorVal()-p1_plus_p2.getAsVectorVal()).Abs().sumAll(), 1e-5)
+				<< "p2 : " << p2 << endl
+				<< "p1 : " << p1 << endl
+				<< "p1_plus_p2    : " << p1_plus_p2 << endl
+				<< "p1_plus_p2bis : " << p1_plus_p2bis<< endl;
+		}
+
+		{
+			CPose3D p1_plus_p2bis = p1;
+			p1_plus_p2bis.composeFrom(p1_plus_p2bis,p2);
+
+			EXPECT_NEAR(0, (p1_plus_p2bis.getAsVectorVal()-p1_plus_p2.getAsVectorVal()).Abs().sumAll(), 1e-5)
+				<< "p2 : " << p2 << endl
+				<< "p1 : " << p1 << endl
+				<< "p1_plus_p2    : " << p1_plus_p2 << endl
+				<< "p1_plus_p2bis : " << p1_plus_p2bis<< endl;
+		}
+
+		{
+			CPose3D p1_plus_p2bis = p2;
+			p1_plus_p2bis.composeFrom(p1,p1_plus_p2bis);
+
+			EXPECT_NEAR(0, (p1_plus_p2bis.getAsVectorVal()-p1_plus_p2.getAsVectorVal()).Abs().sumAll(), 1e-5)
+				<< "p2 : " << p2 << endl
+				<< "p1 : " << p1 << endl
+				<< "p1_plus_p2    : " << p1_plus_p2 << endl
+				<< "p1_plus_p2bis : " << p1_plus_p2bis<< endl;
+		}
+	}
+
 	void test_composePoint(double x1,double y1,double z1, double yaw1,double pitch1,double roll1,
 	                 double x,double y,double z)
 	{
@@ -494,6 +536,21 @@ TEST_F(Pose3DTests,Compose)
 	test_compose(25.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(89),DEG2RAD(0),
 	             -10.0,4.0,-8.0, DEG2RAD(20),DEG2RAD(9),DEG2RAD(0));
 }
+
+TEST_F(Pose3DTests,composeFrom)
+{
+	test_composeFrom(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),
+	             0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));
+	test_composeFrom(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),
+	             4.0,5.0,6.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));
+
+	test_composeFrom(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60),
+	             2.0,-5.0,8.0, DEG2RAD(40),DEG2RAD(-5),DEG2RAD(25));
+
+	test_composeFrom(25.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(89),DEG2RAD(0),
+	             -10.0,4.0,-8.0, DEG2RAD(20),DEG2RAD(9),DEG2RAD(0));
+}
+
 
 TEST_F(Pose3DTests,ComposeAndInvComposeWithPoint)
 {
