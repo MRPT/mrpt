@@ -136,12 +136,13 @@ namespace slam
 
 						size_t        winNoise_size;              //!< The size of the mobile average window used to reduce noise on sensor reagings.
 						int           decimate_value;             //!< [useMOSmodel] The decimate frecuency applied after noise filtering
-						float         tauR;                       //!< Tau value for the rise (tauR) sensor phase.
-						unsigned int  lastObservations_size;      //!< The number of observations to keep in m_lastObservations (Must be > max(delay) )
-						vector_float  calibrated_tauD_voltages;   //!< Calibrated values of K= 1/tauD for different volatile concentrations
-						vector_float  calibrated_tauD_values;     //!< Calibrated values of K= 1/tauD for different volatile concentrations
-						vector_float  calibrated_delay_RobotSpeeds; //!< Calibrated values of the delay for different robot speeds
-						vector_float  calibrated_delay_values;      //!< Calibrated values of the delay for different robot speeds
+						
+						float         a_rise;                     //!< tau = a*AMPLITUDE +b (linear relationship)
+						float         b_rise;                     //!< tau = a*AMPLITUDE +b (linear relationship)
+						float         a_decay;                    //!< tau = a*AMPLITUDE +b (linear relationship)
+						float         b_decay;                    //!< tau = a*AMPLITUDE +b (linear relationship)
+
+						unsigned int  lastObservations_size;      //!< The number of observations to keep in m_lastObservations (Must be > max(delay) )						
 						bool          save_maplog;                //!< If true save generated gas map as a log file
 
 						/** @} */
@@ -158,23 +159,22 @@ namespace slam
 							*/
 						struct OBS_IMPEXP TdataMap
 						{
-								float						reading;
-								mrpt::system::TTimeStamp	timestamp;
-								float						k;
-								CPose3D						sensorPose;
-								float						estimation;
-								float						reading_filtered;
-								float						speed;
+								float						reading;			//!< Sensore reading
+								mrpt::system::TTimeStamp	timestamp;			//!< Timestamp of the observation
+								float						tau;				//!< tau value applied
+								CPose3D						sensorPose;			//!< sensorPose of the observation
+								float						estimation;			//!< The value estimated according to the MOXmodel
+								float						reading_filtered;	//!< Reading after smooth (noise averaging)								
 						};
 
 						TdataMap              last_Obs, temporal_Obs; //!< The content of each m_lastObservations in the estimation when using the option : MOS_MODEl (useMOSmodel =1)
-						std::vector<TdataMap> m_lastObservations;  //!< The last N GasObservations, used for the MOS MODEL estimation.
 						std::vector<TdataMap> m_antiNoise_window;  //!< Vector to temporally store and averge readings to reduce noise
 						std::ofstream        *m_debug_dump;     //!< Ofstream to save to file option "save_maplog"
 						uint16_t              decimate_count; //!< Decimate value for oversampled enose readings
 						double                fixed_incT;  //!< To force e-nose samples to have fixed time increments
 						bool                  first_incT;  //!< To force e-nose samples to have fixed time increments
-						float                 min_reading;
+						float                 min_reading;	//!< Minimum reading value till the moment, used as approximation to baeline level
+						bool                  first_iteration;  //!< To avoid the model estimation on first iteration
 
 						/** Estimates the gas concentration based on readings and sensor model
 						  */
@@ -196,9 +196,8 @@ namespace slam
 							const mrpt::system::TTimeStamp	&timestamp,
 							const float						&reading,
 							const float						&estimation,
-							const float						&k,
-							const double					&yaw,
-							const float						&speed);
+							const float						&tau,
+							const double					&yaw);
 
 					}; //End of CMOSmodel class def.
 

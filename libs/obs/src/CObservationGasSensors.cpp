@@ -208,7 +208,10 @@ void CObservationGasSensors::setSensorPose( const CPose3D &newSensorPose )
 CObservationGasSensors::CMOSmodel::CMOSmodel():
 	winNoise_size(30),
 	decimate_value(6),
-	tauR(),
+	a_rise(0),
+	b_rise(0),
+	a_decay(0),
+	b_decay(0),
 	lastObservations_size(10),
 	save_maplog(false),
 	last_Obs(),
@@ -217,6 +220,7 @@ CObservationGasSensors::CMOSmodel::CMOSmodel():
 	decimate_count(1),
 	fixed_incT(0),
 	first_incT(true),
+	first_iteration(true),
 	min_reading(10)
 {
 }
@@ -245,14 +249,13 @@ bool CObservationGasSensors::CMOSmodel::get_GasDistribution_estimation(float &re
 		inverse_MOSmodeling( m_antiNoise_window[winNoise_size/2].reading_filtered, m_antiNoise_window[winNoise_size/2].sensorPose, m_antiNoise_window[winNoise_size/2].timestamp);
 		decimate_count = 1;
 
-		//update
-		std::vector<TdataMap>::iterator iter = m_lastObservations.begin();
-		reading = iter->estimation;
-		sensorPose = CPose2D(iter->sensorPose);
+		//update		
+		reading = last_Obs.estimation;
+		sensorPose = last_Obs.sensorPose;
 
 		//Save data map in log file for Matlab visualization
 		if (save_maplog)
-			save_log_map(iter->timestamp, iter->reading, iter->estimation, iter->k, iter->sensorPose.yaw(), iter->speed);
+			save_log_map(last_Obs.timestamp, last_Obs.reading, last_Obs.estimation, last_Obs.tau, last_Obs.sensorPose.yaw());
 
 		return true;
 
@@ -264,7 +267,7 @@ bool CObservationGasSensors::CMOSmodel::get_GasDistribution_estimation(float &re
 }
 
 /*---------------------------------------------------------------
-                     noise_filtering
+                     noise_filtering (smooth)
  ---------------------------------------------------------------*/
 void CObservationGasSensors::CMOSmodel::noise_filtering(const float &reading, const CPose3D &sensorPose, const	mrpt::system::TTimeStamp &timestamp )
 {
@@ -310,110 +313,63 @@ void CObservationGasSensors::CMOSmodel::noise_filtering(const float &reading, co
 void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &reading, const CPose3D &sensorPose, const mrpt::system::TTimeStamp &timestamp)
 {
 	try{
-		unsigned int N;	//Number of samples to delay
-
-		//Keep the minimum reading value
+		
+		//Keep the minimum reading value as an approximation to the basline level
 		if (reading < min_reading)
 			min_reading = reading;
 
-		// Check if estimation posible (at least one previous reading)
-		if ( !m_lastObservations.empty() )
+		// Check if estimation posible (not possible in the first iteration)
+		if ( !first_iteration)
 		{
-			//Enose movement speed
-			double speed_x = sensorPose.x() - last_Obs.sensorPose.x();
-			double speed_y = sensorPose.y() - last_Obs.sensorPose.y();
+			//Assure the samples are provided at constant rate (important for the correct gas distribution estimation)
 			double incT = mrpt::system::timeDifference(last_Obs.timestamp,timestamp);
 
-			//Assure the samples are provided at constant rate (important for the correct gas distribution estimation)
-			if ( (incT >0) & (!first_incT) ){	//not the same sample (initialization of buffers)
+			if ( (incT >0) & (!first_incT) ){	//not the same sample due to initialization of buffers
 				if (fixed_incT == 0)
 					fixed_incT = incT;
 				else
-					ASSERT_(fabs(incT - fixed_incT) < (double)(0.05));
-				last_Obs.speed = (sqrt (speed_x*speed_x + speed_y*speed_y)) / incT;
+					ASSERT_(fabs(incT - fixed_incT) < (double)(0.05));				
 			}
 			else
-			{
-				last_Obs.speed = 0;
+			{				
 				if (incT > 0)
 					first_incT = false;
 			}
 
 
-			//slope>=0 -->Rise
-			if ( reading >= last_Obs.reading )
+			//slope<0 -->Decay
+			if ( reading < last_Obs.reading )
 			{
-				last_Obs.k = 1.0/tauR;
-				N = 1;	//Delay effect compensation
+				last_Obs.tau = a_decay * abs(reading-min_reading) + b_decay;
 			}
-			else //slope<0 -->decay
+			else //slope>=0 -->rise
 			{
-				//start decaying
-				if (last_Obs.k == (float) (1.0/tauR) ){
-					//Use the amplitude of the reading to calculate the tauD time constant for the next decaying phase
-					last_Obs.k = 1.0 / mrpt::math::leastSquareLinearFit((reading - min_reading),calibrated_tauD_voltages,calibrated_tauD_values,false);
-				}else{
-					//Do Nothing, keep the same tauD as last observation (we are in the same decaying phase)
-				}
-
-				//Delay effect compensation
-				N = mrpt::math::leastSquareLinearFit(last_Obs.speed ,calibrated_delay_RobotSpeeds, calibrated_delay_values,false);
-				N = round(N);
-
-				if (N >lastObservations_size -1)
-				{
-					N = lastObservations_size-1;
-				}
+				last_Obs.tau = a_rise * abs(reading-min_reading) + b_rise;				
 			}//end-if
 
 			//New estimation values -- Ziegler-Nichols model --
 			if( incT >0)
 				//Initially there may come repetetive values till m_antiNoise_window is full populated.
-				last_Obs.estimation = ( ((reading -last_Obs.reading)/(incT* last_Obs.k)) )+ reading;
+				last_Obs.estimation = ( (reading -last_Obs.reading)*last_Obs.tau/incT) + reading;
 			else
 				last_Obs.estimation = reading;
 
 
 			//Prepare the New observation
-			last_Obs.timestamp = timestamp ;
+			last_Obs.timestamp = timestamp;
 			last_Obs.reading = reading;
 			last_Obs.sensorPose = sensorPose;
 
 		}else{
 			// First filtered reading (use default values)
-			last_Obs.k = 1.0/tauR;
+			last_Obs.tau = b_rise;
 			last_Obs.reading = reading;
-			last_Obs.timestamp = timestamp;
-			last_Obs.speed = 0.0;
+			last_Obs.timestamp = timestamp;			
 			last_Obs.sensorPose = sensorPose;
 			last_Obs.estimation = reading;		//No estimation possible at this step
-			N = 1;								//Default delay (number of samples)
-
-			//populate the vector m_lastObservations
-			for (unsigned int i=0; i<lastObservations_size; i++)
-				m_lastObservations.push_back(last_Obs);
-
+			first_iteration = false;
 		}//end-if estimation values
 
-
-
-		/* Update m_lastObservations
-		   due to the delay in the sensor response, the gas estimation of the last_Obs may be introduced in any position of m_lastObservations
-		   In order o maintain the time flow, only the last_Obs.estimation is not introduced in order.
-		 */
-
-		//-20 is a dummy value, just to detect a non-valid esimation for this Observation
-		if (m_lastObservations[1].estimation == -20.0){
-			//Copy right
-			m_lastObservations[1].estimation = m_lastObservations[0].estimation;
-		}
-
-		m_lastObservations.erase( m_lastObservations.begin() );		//Erase the first element (the oldest)
-		m_lastObservations.push_back(last_Obs);						//Add last_Obs in temporal order
-		m_lastObservations.rbegin()->estimation = -20.0;			//Add Dummy value to estimation
-
-		//Modify queue estimation in the -Nth position
-		m_lastObservations.at(lastObservations_size - N-1).estimation = last_Obs.estimation;
 
 	}catch(exception e){
 		cerr << "**ERROR** " << e.what() << endl;
@@ -427,9 +383,8 @@ void CObservationGasSensors::CMOSmodel::save_log_map(
 	const mrpt::system::TTimeStamp	&timestamp,
 	const float						&reading,
 	const float						&estimation,
-	const float						&k,
-	const double					&yaw,
-	const float						&speed
+	const float						&tau,
+	const double					&yaw
 	)
 {
 
@@ -447,9 +402,8 @@ void CObservationGasSensors::CMOSmodel::save_log_map(
 		*m_debug_dump << format("%f \t", time );
 		*m_debug_dump << format("%f \t", reading );
 		*m_debug_dump << format("%f \t", estimation );
-		*m_debug_dump << format("%f \t", k );
-		*m_debug_dump << format("%f \t", yaw );
-		*m_debug_dump << format("%f \t", speed );
+		*m_debug_dump << format("%f \t", tau );
+		*m_debug_dump << format("%f \t", yaw );		
 		*m_debug_dump << "\n";
 	}
 	else cout << "Unable to open file";
