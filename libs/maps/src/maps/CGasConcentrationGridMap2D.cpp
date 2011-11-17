@@ -39,6 +39,8 @@
 
 #include <mrpt/opengl.h>
 #include <numeric>
+#include <ios>
+#include <sstream>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -127,7 +129,7 @@ void CGasConcentrationGridMap2D::save_log_map(
   ---------------------------------------------------------------*/
 bool  CGasConcentrationGridMap2D::internal_insertObservation(
 	const CObservation	*obs,
-	const CPose3D			*robotPose )
+	const CPose3D		*robotPose )
 {
 	MRPT_START
 
@@ -186,9 +188,6 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 					sensorReading = math::mean( it->readingsVoltage );
 				}
 			}
-
-			// Conversion Voltage(V)-->1/Resistance(1/Ohms)
-			//sensorReading = 1/ (5 * insertionOptions.VoltageDivider_Res /sensorReading - insertionOptions.VoltageDivider_Res);
 
 			// Normalization:
 			sensorReading = (sensorReading - insertionOptions.R_min) /( insertionOptions.R_max - insertionOptions.R_min );
@@ -437,8 +436,7 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 	calibrated_delay_RobotSpeeds ( 0 ),			//[m/s]
 	calibrated_delay_values		( 0 ),			//Number of delayed samples before decimation
 	enose_id					( 0 ),			//By default use the first enose
-	save_maplog					( false )
-	//VoltageDivider_Res			( 10000 ),
+	save_maplog					( false )	
 {
 }
 
@@ -450,10 +448,9 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&o
 	out.printf("\n----------- [CGasConcentrationGridMap2D::TInsertionOptions] ------------ \n\n");
 	internal_dumpToTextStream_common(out);  // Common params to all random fields maps:
 
-	out.printf("sensorType                           = %u\n", (unsigned)sensorType);
+	out.printf("sensorType								= %u\n", (unsigned)sensorType);
 	out.printf("enose_id								= %u\n", (unsigned)enose_id);
-	out.printf("useMOSmodel								= %c\n", useMOSmodel ? 'Y':'N' );
-	//out.printf("VoltageDivider_Res						= %f\n", VoltageDivider_Res);
+	out.printf("useMOSmodel								= %c\n", useMOSmodel ? 'Y':'N' );	
 	//MOSmodel parameters
 	out.printf("tauR		                            = %f\n", tauR);
 	out.printf("winNoise_size		                    = %u\n", (unsigned)winNoise_size);
@@ -477,7 +474,12 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 	internal_loadFromConfigFile_common(iniFile,section);
 
 	{
-		int tmpSensorType = iniFile.read_int(section.c_str(),"sensorType",-1);
+		//Read sensor type in hexadecimal
+		std::string sensorType_str = iniFile.read_string(section.c_str(),"sensorType","-1");
+		int tmpSensorType;
+		stringstream convert ( sensorType_str );
+		convert>> std::hex >> tmpSensorType;
+
 		if (tmpSensorType>=0)
 		{
 			// Valid number found:
@@ -485,16 +487,14 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 		}
 		else
 		{ // fall back to old name, or default to current value:
-			sensorType = iniFile.read_int(section.c_str(),"KF_sensorType",sensorType);
+			sensorType = iniFile.read_int(section.c_str(),"KF_sensorType",sensorType);			
 		}
 	}
 
-	enose_id				= iniFile.read_int(section.c_str(),"enose_id",enose_id);
-	//VoltageDivider_Res		= iniFile.read_float(section.c_str(),"VoltageDivider_Res",VoltageDivider_Res);
+	enose_id				= iniFile.read_int(section.c_str(),"enose_id",enose_id);	
+	
+	//MOXmodel parameters
 	useMOSmodel				= iniFile.read_bool(section.c_str(),"useMOSmodel",useMOSmodel);
-
-	//MOSmodel parameters
-
 	tauR					= iniFile.read_float(section.c_str(),"tauR",tauR);
 	winNoise_size			= iniFile.read_int(section.c_str(),"winNoise_size",winNoise_size);
 	decimate_value			= iniFile.read_int(section.c_str(),"decimate_value",decimate_value);
