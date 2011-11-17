@@ -52,6 +52,8 @@ namespace math
 	{
 	public:
 		typedef typename VECTORTYPE::value_type  NUMTYPE;
+		typedef mrpt::math::CMatrixTemplateNumeric<NUMTYPE>  matrix_t;
+		typedef VECTORTYPE vector_t;
 
 
 		/** The type of the function passed to execute. The user must supply a function which evaluates the error of a given point in the solution space.
@@ -77,13 +79,13 @@ namespace math
 			NUMTYPE		final_sqr_err;
 			size_t		iterations_executed;
 			VECTORTYPE	last_err_vector;		//!< The last error vector returned by the user-provided functor.
-			CMatrixTemplateNumeric<NUMTYPE>	path;	//!< Each row is the optimized value at each iteration.
+			matrix_t	path;	//!< Each row is the optimized value at each iteration.
 
 			/** This matrix can be used to obtain an estimate of the optimal parameters covariance matrix:
 			  *  \f[ COV = H M H^\top \f]
 			  *  With COV the covariance matrix of the optimal parameters, H this matrix, and M the covariance of the input (observations).
 			  */
- 			//CMatrixTemplateNumeric<NUMTYPE> H;
+ 			matrix_t H;
 		};
 
 		/** Executes the LM-method, with derivatives estimated from
@@ -125,16 +127,15 @@ namespace math
 
 			x=x0;									// Start with the starting point
 			VECTORTYPE	f_x;					// The vector error from the user function
-			CMatrixTemplateNumeric<NUMTYPE> AUX;
-			CMatrixTemplateNumeric<NUMTYPE> J;		// The Jacobian of "f"
-			CMatrixTemplateNumeric<NUMTYPE>	H;		// The Hessian of "f"
+			matrix_t AUX;
+			matrix_t J;		// The Jacobian of "f"
 			VECTORTYPE	g;						// The gradient
 
 			// Compute the jacobian and the Hessian:
 			mrpt::math::estimateJacobian( x, functor, increments, userParam, J);
-			H.multiply_AtA(J);
+			out_info.H.multiply_AtA(J);
 
-			const size_t  H_len = H.getColCount();
+			const size_t  H_len = out_info.H.getColCount();
 
 			// Compute the gradient:
 			functor(x, userParam ,f_x);
@@ -144,7 +145,7 @@ namespace math
 			bool	found = math::norm_inf(g)<=e1;
 			if (verbose && found)	printf_debug("[LM] End condition: math::norm_inf(g)<=e1 :%f\n",math::norm_inf(g));
 
-			NUMTYPE	lambda = tau * H.maximumDiagonal();
+			NUMTYPE	lambda = tau * out_info.H.maximumDiagonal();
 			size_t  iter = 0;
 			NUMTYPE	v = 2;
 
@@ -162,9 +163,9 @@ namespace math
 			while (!found && ++iter<maxIter)
 			{
 				// H_lm = -( H + \lambda I ) ^-1 * g
+				matrix_t H = out_info.H;
 				for (size_t k=0;k<H_len;k++)
 					H(k,k)+= lambda;
-					//H(k,k) *= 1+lambda;
 
 				H.inv_fast(AUX);
 				AUX.multiply_Ab(g,h_lm);
@@ -207,7 +208,7 @@ namespace math
 						F_x = F_xnew;
 
 						math::estimateJacobian( x, functor, increments, userParam, J);
-						H.multiply_AtA(J);
+						out_info.H.multiply_AtA(J);
 						J.multiply_Atb(f_x, g);
 
 						found = math::norm_inf(g)<=e1;
