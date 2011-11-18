@@ -40,7 +40,9 @@
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect now decodes Bayer color using OpenCV instead of default freenect - <a href="http://code.google.com/p/mrpt/source/detail?r=r2721" >r2721</a>
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect no longer forces a horizontal tilt at start up by default, what may be annoying (if required, set "initial_tilt_angle") - <a href="http://code.google.com/p/mrpt/source/detail?r=r2722" >r2722</a>
 	- Changes in classes:
-		- [mrpt-base] New method mrpt::math::CSparseMatrix::saveToTextFile_sparse() 
+		- [mrpt-base] Changes in mrpt::math::CSparseMatrix: 
+			- New method mrpt::math::CSparseMatrix::saveToTextFile_sparse()
+			- Overloaded method for "double*" mrpt::math::CSparseMatrix::CholeskyDecomp::backsub()
 		- [mrpt-base] KD-trees now also exposes methods for Radius search: mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D(), mrpt::math::KDTreeCapable::kdTreeRadiusSearch3D()  - <a href="http://code.google.com/p/mrpt/source/detail?r=r2726" >r2726</a> 
 		- [mrpt-base] mrpt::sync::CCriticalSectionLocker now can accept a NULL pointer as input, in which case no action will be taken (previosly, it led to segfault) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2727" >r2727</a> 
 		- [mrpt-base] mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.

@@ -377,19 +377,29 @@ void CSparseMatrix::CholeskyDecomp::backsub(
 	const mrpt::vector_double &b,
 	mrpt::vector_double &sol) const
 {
-	mrpt::vector_double tmp = b;
-	sol = b;
+	ASSERT_(!b.empty())
+	sol.resize(b.size());
+	this->backsub(&b[0],&sol[0],b.size());
+}
 
-	cs_ipvec(m_symbolic_structure->pinv,&b[0],&tmp[0],b.size()); /* tmp = PERMUT*b */
+/** Return the vector from a back-substitution step that solves: Ux=b   */
+void CSparseMatrix::CholeskyDecomp::backsub(
+	const double *b,
+	double       *sol,
+	const size_t N) const
+{
+	ASSERT_(N>0)
+	std::vector<double> tmp(N);
+	
+	cs_ipvec(m_symbolic_structure->pinv,&b[0],&tmp[0],N); /* tmp = PERMUT*b */
 	//permute con. pivoting
 	cs_lsolve(m_numeric_structure->L,&tmp[0]);   /* tmp = L\tmp */
 	cs_ltsolve(m_numeric_structure->L,&tmp[0]);  /* tmp = L'\tmp */
-	cs_pvec(m_symbolic_structure->pinv,&tmp[0],&sol[0],b.size()); /* sol = PERMUT'*tmp */
+	cs_pvec(m_symbolic_structure->pinv,&tmp[0],&sol[0],N); /* sol = PERMUT'*tmp */
 	//unpermute con. pivoting
 
 	// Result is now in "sol".
 }
-
 
 /** Update the Cholesky factorization from an updated vesion of the original input, square definite-positive sparse matrix.
 *  NOTE: This new matrix MUST HAVE exactly the same sparse structure than the original one.

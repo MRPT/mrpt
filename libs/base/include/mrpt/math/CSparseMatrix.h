@@ -400,6 +400,9 @@ namespace mrpt
 				/** Return the vector from a back-substitution step that solves: Ux=b   */
 				void backsub(const mrpt::vector_double &b, mrpt::vector_double &result_x) const;
 
+				/** \overload for double pointers which assume the user has reserved the output memory for \a result */
+				void backsub(const double *b, double *result, const size_t N) const;
+
 				/** Update the Cholesky factorization from an updated vesion of the original input, square definite-positive sparse matrix.
 				  *  NOTE: This new matrix MUST HAVE exactly the same sparse structure than the original one.
 				  */
