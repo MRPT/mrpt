@@ -949,6 +949,10 @@ CCameraSensorPtr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 #else
 		6000;
 #endif
+	// If we have an "MRPT_WXSUBSYS_TIMEOUT_MS" environment variable, use that timeout instead:
+	const char *envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS");
+	if (envVal) maxTimeout = atoi(envVal);
+
 	if(!semDlg.waitForSignal(maxTimeout))
 	{
 		cerr << "[prepareVideoSourceFromUserSelection] Timeout waiting window creation." << endl;
