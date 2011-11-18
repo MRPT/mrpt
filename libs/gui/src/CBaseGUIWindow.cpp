@@ -94,12 +94,17 @@ void CBaseGUIWindow::createWxWindow(unsigned int initialWidth, unsigned int init
     	mrpt::system::sleep(20);	// Force at least 1-2 timer ticks for processing the event:
     	wxApp::GetInstance()->Yield(true);
     }
-	const int maxTimeout =
+	int maxTimeout =
 #ifdef _DEBUG
 		30000;
 #else
 		6000;
 #endif
+	// If we have an "MRPT_WXSUBSYS_TIMEOUT_MS" environment variable, use that timeout instead:
+	const char *envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS");
+	if (envVal) maxTimeout = atoi(envVal);
+
+
 	if(!m_semThreadReady.waitForSignal(maxTimeout))  // 2 secs should be enough...
 	{
 		cerr << "[CBaseGUIWindow::ctor] Timeout waiting window creation." << endl;

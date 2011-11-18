@@ -535,7 +535,11 @@ CObservationPtr CCameraSensor::getNextFrame()
 
 		// Specially at start-up, there may be a delay grabbing so a few calls return false: add a timeout.
 		const mrpt::system::TTimeStamp t0 = mrpt::system::now();
-		static const double max_timeout = 3.0; // seconds
+		double max_timeout = 3.0; // seconds
+
+		// If we have an "MRPT_WXSUBSYS_TIMEOUT_MS" environment variable, use that timeout instead:
+		const char *envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS");
+		if (envVal) max_timeout = atoi(envVal)*0.001f;
 
 		bool there_is_obs, hardware_error;
 		do 

@@ -48,6 +48,7 @@
 		- [mrpt-base] mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.
 		- [mrpt-maps] mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
 		- [mrpt-vision] Interface of mrpt::vision::CGenericFeatureTracker extended to handle subpixel feature coordinates (mrpt::vision::TSimpleFeaturefList)
+		- [mrpt-gui] & [mrpt-hwdrivers] Environment variable MRPT_WXSUBSYS_TIMEOUT_MS is now observed in all places where a GUI window is expected to be launched.
 	- Build system:
 		- Support for a new CMake variable: "MRPT_DONT_USE_DBG_LIBS", which if set to "1" before doing a "FIND_PACKAGE(MRPT ...)" from a user program, forces the usage of normal release libs (vs the -dbg versions) even for "Debug" CMake builds (this is mostly useful for GCC builds in GNU/Linux).
 	- New examples:
