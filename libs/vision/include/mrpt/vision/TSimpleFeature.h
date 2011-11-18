@@ -62,6 +62,17 @@ namespace mrpt
 
 			/** Default constructor, leaves all fields uninitialized */
 			inline TSimpleFeature_templ() {}
+
+			template <typename OTHER_TSIMPLEFEATURE>
+			explicit TSimpleFeature_templ(const OTHER_TSIMPLEFEATURE &o) :
+				pt(o.pt.x,o.pt.y),
+				ID(o.ID),
+				track_status(o.track_status),
+				response(o.response),
+				octave(o.octave),
+				user_flags(o.user_flags)
+			{
+			}
 		};
 
 		/** A simple structure for representing one image feature (without descriptor nor patch).
@@ -97,6 +108,7 @@ namespace mrpt
 		{
 		public:
 			typedef std::vector<FEATURE> TFeatureVector;
+			typedef FEATURE feature_t;
 
 			/** @name Utilities
 			    @{ */

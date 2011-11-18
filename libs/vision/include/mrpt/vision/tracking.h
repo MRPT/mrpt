@@ -150,16 +150,13 @@ namespace mrpt
 			  *    - Call the pure virtual "trackFeatures_impl" method.
 			  *    - Implement the optional detection of new features if "add_new_features"!=0.
 			  */
-			void trackFeatures(
-				const CImage &old_img,
-				const CImage &new_img,
-				TSimpleFeatureList &inout_featureList );
+			void trackFeatures(const CImage &old_img,const CImage &new_img,TSimpleFeatureList &inout_featureList );
+
+			/** \overload with subpixel precision */
+			void trackFeatures(const CImage &old_img,const CImage &new_img,TSimpleFeaturefList &inout_featureList );
 
 			/** \overload This overload version uses the old (and much slower) CFeatureList  */
-			void trackFeatures(
-				const CImage &old_img,
-				const CImage &new_img,
-				CFeatureList &inout_featureList );
+			void trackFeatures(const CImage &old_img,const CImage &new_img,CFeatureList &inout_featureList );
 
 			/** A wrapper around the basic trackFeatures() method, but keeping the original list of features unmodified and returns the tracked ones in a new list. */
 			inline void trackFeaturesNewList(
@@ -197,16 +194,13 @@ namespace mrpt
 
 		protected:
 			/** The tracking method implementation, to be implemented in children classes. */
-			virtual void trackFeatures_impl(
-				const CImage &old_img,
-				const CImage &new_img,
-				TSimpleFeatureList  &inout_featureList ) = 0;
+			virtual void trackFeatures_impl(const CImage &old_img,const CImage &new_img,TSimpleFeaturefList  &inout_featureList );
+
+			/** The tracking method implementation, to be implemented in children classes. */
+			virtual void trackFeatures_impl(const CImage &old_img,const CImage &new_img,TSimpleFeatureList  &inout_featureList ) = 0;
 
 			/** This version falls back to the version with TSimpleFeatureList if the derived class does not implement it. */
-			virtual void trackFeatures_impl(
-				const CImage &old_img,
-				const CImage &new_img,
-				CFeatureList &inout_featureList ) = 0;
+			virtual void trackFeatures_impl(const CImage &old_img,const CImage &new_img,CFeatureList &inout_featureList ) = 0;
 
 			mrpt::utils::CTimeLogger  m_timlog; //!< the internal time logger, disabled by default.
 
@@ -225,7 +219,6 @@ namespace mrpt
 			size_t		m_update_patches_counter;	//!< for use when "update_patches_every">=1
 			size_t		m_check_KLT_counter;	//!< For use when "check_KLT_response_every">=1
 			int			m_detector_adaptive_thres;  //!< For use in "add_new_features" == true
-
 
 			template <typename FEATLIST>
 			void internal_trackFeatures(
@@ -259,16 +252,9 @@ namespace mrpt
 			inline CFeatureTracker_KL(mrpt::utils::TParametersDouble extraParams) : CGenericFeatureTracker(extraParams)	{ }
 
 		protected:
-			virtual void trackFeatures_impl(
-				const CImage &old_img,
-				const CImage &new_img,
-				vision::CFeatureList &inout_featureList );
-
-			/** The tracking method implementation, to be implemented in children classes. */
-			virtual void trackFeatures_impl(
-				const CImage &old_img,
-				const CImage &new_img,
-				TSimpleFeatureList  &inout_featureList );
+			virtual void trackFeatures_impl(const CImage &old_img,const CImage &new_img,vision::CFeatureList &inout_featureList );
+			virtual void trackFeatures_impl(const CImage &old_img,const CImage &new_img,TSimpleFeatureList  &inout_featureList );
+			virtual void trackFeatures_impl(const CImage &old_img,const CImage &new_img,TSimpleFeaturefList  &inout_featureList );
 
 		private:
 			template <typename FEATLIST>

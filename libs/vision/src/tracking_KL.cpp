@@ -168,4 +168,13 @@ void CFeatureTracker_KL::trackFeatures_impl(
 	trackFeatures_impl_templ<TSimpleFeatureList>(old_img,new_img,featureList);
 }
 
+void CFeatureTracker_KL::trackFeatures_impl(
+	const CImage &old_img,
+	const CImage &new_img,
+	TSimpleFeaturefList &featureList )
+{
+	trackFeatures_impl_templ<TSimpleFeaturefList>(old_img,new_img,featureList);
+}
+
+
 

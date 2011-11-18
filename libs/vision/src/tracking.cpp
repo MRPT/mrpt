@@ -79,22 +79,20 @@ namespace mrpt {
 				}
 			} // end of trackFeatures_checkResponses<>
 
-			template <>
-			inline void trackFeatures_checkResponses<TSimpleFeatureList>(TSimpleFeatureList &featureList,const CImage &cur_gray,const float minimum_KLT_response,const unsigned int KLT_response_half_win,const unsigned int max_x, const unsigned int max_y)
+			template <class FEAT_LIST>
+			inline void trackFeatures_checkResponses_impl_simple(FEAT_LIST &featureList,const CImage &cur_gray,const float minimum_KLT_response,const unsigned int KLT_response_half_win,const unsigned int max_x, const unsigned int max_y)
 			{
 				if (featureList.empty()) return;
 
 				for (int N = featureList.size()-1; N>=0 ; --N)
 				{
-					TSimpleFeature & ft = featureList[N];
+					typename FEAT_LIST::feature_t & ft = featureList[N];
 					if (ft.track_status!=status_TRACKED)
 						continue; // Skip if it's not correctly tracked.
 
-					const unsigned int x = ft.pt.x;
-					const unsigned int y = ft.pt.y;
-					if (x>KLT_response_half_win && y>KLT_response_half_win && x<max_x && y<max_y)
+					if (ft.pt.x>KLT_response_half_win && ft.pt.y>KLT_response_half_win && ft.pt.x<max_x && ft.pt.y<max_y)
 					{	// Update response:
-						ft.response = cur_gray.KLT_response(x,y,KLT_response_half_win);
+						ft.response = cur_gray.KLT_response(ft.pt.x,ft.pt.y,KLT_response_half_win);
 
 						// Is it good enough? http://grooveshark.com/s/Goonies+Are+Good+Enough/2beBfO?src=5
 						if (ft.response<minimum_KLT_response)
@@ -109,6 +107,18 @@ namespace mrpt {
 					}
 				}
 			} // end of trackFeatures_checkResponses<>
+
+			template <>
+			inline void trackFeatures_checkResponses<TSimpleFeatureList>(TSimpleFeatureList &featureList,const CImage &cur_gray,const float minimum_KLT_response,const unsigned int KLT_response_half_win,const unsigned int max_x, const unsigned int max_y)
+			{
+				trackFeatures_checkResponses_impl_simple<TSimpleFeatureList>(featureList,cur_gray,minimum_KLT_response,KLT_response_half_win,max_x,max_y);
+			}
+			template <>
+			inline void trackFeatures_checkResponses<TSimpleFeaturefList>(TSimpleFeaturefList &featureList,const CImage &cur_gray,const float minimum_KLT_response,const unsigned int KLT_response_half_win,const unsigned int max_x, const unsigned int max_y)
+			{
+				trackFeatures_checkResponses_impl_simple<TSimpleFeaturefList>(featureList,cur_gray,minimum_KLT_response,KLT_response_half_win,max_x,max_y);
+			}
+
 
 			template <typename FEATLIST>
 			inline void trackFeatures_updatePatch(FEATLIST &featureList,const CImage &cur_gray);
@@ -145,6 +155,11 @@ namespace mrpt {
 			} // end of trackFeatures_updatePatch<>
 			template <>
 			inline void trackFeatures_updatePatch<TSimpleFeatureList>(TSimpleFeatureList &featureList,const CImage &cur_gray)
+			{
+				// This list type does not have patch stored explicitly
+			} // end of trackFeatures_updatePatch<>
+			template <>
+			inline void trackFeatures_updatePatch<TSimpleFeaturefList>(TSimpleFeaturefList &featureList,const CImage &cur_gray)
 			{
 				// This list type does not have patch stored explicitly
 			} // end of trackFeatures_updatePatch<>
@@ -205,8 +220,8 @@ namespace mrpt {
 				}
 			} // end of trackFeatures_addNewFeats<>
 
-			template <>
-			inline void trackFeatures_addNewFeats<TSimpleFeatureList>(TSimpleFeatureList &featureList,const TSimpleFeatureList &new_feats, const std::vector<size_t> &sorted_indices, const size_t nNewToCheck,const size_t maxNumFeatures,const float minimum_KLT_response_to_add,const double threshold_sqr_dist_to_add_new,const size_t patchSize,const CImage &cur_gray, TFeatureID  &max_feat_ID_at_input)
+			template <class FEAT_LIST>
+			inline void trackFeatures_addNewFeats_simple_list(FEAT_LIST &featureList,const TSimpleFeatureList &new_feats, const std::vector<size_t> &sorted_indices, const size_t nNewToCheck,const size_t maxNumFeatures,const float minimum_KLT_response_to_add,const double threshold_sqr_dist_to_add_new,const size_t patchSize,const CImage &cur_gray, TFeatureID  &max_feat_ID_at_input)
 			{
 #if 0
 				// Brute-force version:
@@ -309,7 +324,7 @@ namespace mrpt {
 				}
 #else
 				// Version with KD-tree
-				CFeatureListKDTree<TSimpleFeature>  kdtree(featureList.getVector());
+				CFeatureListKDTree<typename FEAT_LIST::feature_t>  kdtree(featureList.getVector());
 
 
 				for (size_t i=0;i<nNewToCheck && featureList.size()<maxNumFeatures;i++)
@@ -334,7 +349,7 @@ namespace mrpt {
 						kdtree.mark_as_outdated();
 
 						// Fill out the rest of data:
-						TSimpleFeature &newFeat = featureList.back();
+						typename FEAT_LIST::feature_t &newFeat = featureList.back();
 
 						newFeat.ID			= ++max_feat_ID_at_input;
 						newFeat.response	= feat.response;
@@ -346,6 +361,18 @@ namespace mrpt {
 #endif
 			} // end of trackFeatures_addNewFeats<>
 
+			template <>
+			inline void trackFeatures_addNewFeats<TSimpleFeatureList>(TSimpleFeatureList &featureList,const TSimpleFeatureList &new_feats, const std::vector<size_t> &sorted_indices, const size_t nNewToCheck,const size_t maxNumFeatures,const float minimum_KLT_response_to_add,const double threshold_sqr_dist_to_add_new,const size_t patchSize,const CImage &cur_gray, TFeatureID  &max_feat_ID_at_input)
+			{
+				trackFeatures_addNewFeats_simple_list<TSimpleFeatureList>(featureList,new_feats,sorted_indices,nNewToCheck,maxNumFeatures,minimum_KLT_response_to_add,threshold_sqr_dist_to_add_new,patchSize,cur_gray, max_feat_ID_at_input);
+			}
+			template <>
+			inline void trackFeatures_addNewFeats<TSimpleFeaturefList>(TSimpleFeaturefList &featureList,const TSimpleFeatureList &new_feats, const std::vector<size_t> &sorted_indices, const size_t nNewToCheck,const size_t maxNumFeatures,const float minimum_KLT_response_to_add,const double threshold_sqr_dist_to_add_new,const size_t patchSize,const CImage &cur_gray, TFeatureID  &max_feat_ID_at_input)
+			{
+				trackFeatures_addNewFeats_simple_list<TSimpleFeaturefList>(featureList,new_feats,sorted_indices,nNewToCheck,maxNumFeatures,minimum_KLT_response_to_add,threshold_sqr_dist_to_add_new,patchSize,cur_gray, max_feat_ID_at_input);
+			}
+
+
 			// Return the number of removed features
 			template <typename FEATLIST>
 			inline size_t trackFeatures_deleteOOB(
@@ -353,9 +380,9 @@ namespace mrpt {
 				const size_t img_width, const size_t img_height,
 				const int MIN_DIST_MARGIN_TO_STOP_TRACKING);
 
-			template <>
-			inline size_t trackFeatures_deleteOOB(
-				TSimpleFeatureList &trackedFeats,
+			template <typename FEATLIST>
+			inline size_t trackFeatures_deleteOOB_impl_simple_feat(
+				FEATLIST &trackedFeats,
 				const size_t img_width, const size_t img_height,
 				const int MIN_DIST_MARGIN_TO_STOP_TRACKING)
 			{
@@ -368,7 +395,7 @@ namespace mrpt {
 				survival_idxs.reserve(N);
 				for (size_t i=0;i<N;i++)
 				{
-					const TSimpleFeature &ft = trackedFeats[i];
+					const typename FEATLIST::feature_t &ft = trackedFeats[i];
 					const TFeatureTrackStatus status = ft.track_status;
 					bool eras = (status_TRACKED!=status && status_IDLE!=status);
 					if (!eras)
@@ -397,6 +424,23 @@ namespace mrpt {
 				trackedFeats.resize(N2);
 				return n_removed;
 			} // end of trackFeatures_deleteOOB
+
+			template <>
+			inline size_t trackFeatures_deleteOOB(
+				TSimpleFeatureList &trackedFeats,
+				const size_t img_width, const size_t img_height,
+				const int MIN_DIST_MARGIN_TO_STOP_TRACKING)
+			{
+				return trackFeatures_deleteOOB_impl_simple_feat<TSimpleFeatureList>(trackedFeats,img_width,img_height,MIN_DIST_MARGIN_TO_STOP_TRACKING);
+			}
+			template <>
+			inline size_t trackFeatures_deleteOOB(
+				TSimpleFeaturefList &trackedFeats,
+				const size_t img_width, const size_t img_height,
+				const int MIN_DIST_MARGIN_TO_STOP_TRACKING)
+			{
+				return trackFeatures_deleteOOB_impl_simple_feat<TSimpleFeaturefList>(trackedFeats,img_width,img_height,MIN_DIST_MARGIN_TO_STOP_TRACKING);
+			}
 
 			template <>
 			inline size_t trackFeatures_deleteOOB(
@@ -438,6 +482,12 @@ namespace mrpt {
 	}
 } // end NS's
 // ---------------------------- end of internal helper templates -------------------------------
+
+
+void CGenericFeatureTracker::trackFeatures_impl(const CImage &old_img,const CImage &new_img,TSimpleFeaturefList  &inout_featureList )
+{
+	THROW_EXCEPTION("Method not implemented by derived class!")
+}
 
 
 /** Perform feature tracking from "old_img" to "new_img", with a (possibly empty) list of previously tracked features "featureList".
@@ -633,6 +683,14 @@ void CGenericFeatureTracker::trackFeatures(
 	TSimpleFeatureList &featureList )
 {
 	internal_trackFeatures<TSimpleFeatureList>(old_img,new_img,featureList);
+}
+
+void CGenericFeatureTracker::trackFeatures(
+	const CImage &old_img,
+	const CImage &new_img,
+	TSimpleFeaturefList &featureList )
+{
+	internal_trackFeatures<TSimpleFeaturefList>(old_img,new_img,featureList);
 }
 
 void CGenericFeatureTracker::updateAdaptiveNewFeatsThreshold(

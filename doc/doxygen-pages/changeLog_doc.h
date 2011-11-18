@@ -47,6 +47,7 @@
 		- [mrpt-base] mrpt::sync::CCriticalSectionLocker now can accept a NULL pointer as input, in which case no action will be taken (previosly, it led to segfault) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2727" >r2727</a> 
 		- [mrpt-base] mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.
 		- [mrpt-maps] mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
+		- [mrpt-vision] Interface of mrpt::vision::CGenericFeatureTracker extended to handle subpixel feature coordinates (mrpt::vision::TSimpleFeaturefList)
 	- Build system:
 		- Support for a new CMake variable: "MRPT_DONT_USE_DBG_LIBS", which if set to "1" before doing a "FIND_PACKAGE(MRPT ...)" from a user program, forces the usage of normal release libs (vs the -dbg versions) even for "Debug" CMake builds (this is mostly useful for GCC builds in GNU/Linux).
 	- New examples:

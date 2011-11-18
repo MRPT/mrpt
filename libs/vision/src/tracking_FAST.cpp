@@ -163,7 +163,7 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 	// Do the detection
 	m_timlog.enter("[CFeatureTracker_FAST::track]: detect FAST");
 
-	TSimpleFeatureList & new_feats = m_newly_detected_feats; // Var rename
+	TSimpleFeatureList   & new_feats = m_newly_detected_feats;
 
 	// Do the detection
 	CFeatureExtraction::detectFeatures_SSE2_FASTER12(
