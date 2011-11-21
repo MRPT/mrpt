@@ -47,10 +47,11 @@ bool ModelSearch::ransacSingleModel( const TModelFit& p_state,
 									 typename TModelFit::Model& p_bestModel,
 									 vector_size_t& p_inliers )
 {
-	size_t bestScore = 0;
+    size_t bestScore = std::string::npos; // npos will mean "none"
 	size_t iter = 0;
 	size_t softIterLimit = 1; // will be updated by the size of inliers
 	size_t hardIterLimit = 100; // a fixed iteration step
+	p_inliers.clear();
 	size_t nSamples = p_state.getSampleCount();
 	vector_size_t ind( p_kernelSize );
 
@@ -79,17 +80,22 @@ bool ModelSearch::ransacSingleModel( const TModelFit& p_state,
 
 		// Find the number of inliers to this model.
 		const size_t ninliers = inliers.size();
+        bool  update_estim_num_iters = (iter==0); // Always update on the first iteration, regardless of the result (even for ninliers=0)
 
-		if ( ninliers > bestScore )
+        if ( ninliers > bestScore || (bestScore==std::string::npos && ninliers!=0))
 		{
 			bestScore = ninliers;
 			p_bestModel = currentModel;
 			p_inliers = inliers;
+			update_estim_num_iters = true;
+		}
 
+		if (update_estim_num_iters)
+		{
 			// Update the estimation of maxIter to pick dataset with no outliers at propability p
-			float f =  ninliers / static_cast<float>( nSamples );
-			float p = 1 -  pow( f, static_cast<float>( p_kernelSize ) );
-			float eps = std::numeric_limits<float>::epsilon();
+			double f =  ninliers / static_cast<double>( nSamples );
+			double p = 1 -  pow( f, static_cast<double>( p_kernelSize ) );
+			const double eps = std::numeric_limits<double>::epsilon();
 			p = std::max( eps, p);	// Avoid division by -Inf
 			p = std::min( 1-eps, p);	// Avoid division by 0.
 			softIterLimit = log(1-p) / log(p);

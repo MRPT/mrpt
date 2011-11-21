@@ -77,9 +77,10 @@ bool RANSAC_Template<NUMTYPE>::execute(
 	const size_t maxDataTrials = 100; // Maximum number of attempts to select a non-degenerate data set.
 
 	out_best_model.setSize(0,0);  // Sentinel value allowing detection of solution failure.
+	out_best_inliers.clear();
 
-    size_t trialcount = 0;  //
-    size_t bestscore =  0;
+    size_t trialcount = 0;
+    size_t bestscore = std::string::npos; // npos will mean "none"
     size_t N = 1;     // Dummy initialisation for number of trials.
 
     vector_size_t   ind( minimumSizeSamplesToFit );
@@ -141,14 +142,19 @@ bool RANSAC_Template<NUMTYPE>::execute(
 
         // Find the number of inliers to this model.
         const size_t ninliers = inliers.size();
+        bool  update_estim_num_iters = (trialcount==0); // Always update on the first iteration, regardless of the result (even for ninliers=0)
 
-        if (ninliers > bestscore )
+        if (ninliers > bestscore || (bestscore==std::string::npos && ninliers!=0))
         {
             bestscore = ninliers;  // Record data for this model
 
             out_best_model    = MODELS[bestModelIdx];
             out_best_inliers  = inliers;
+            update_estim_num_iters=true;
+        }
 
+        if (update_estim_num_iters)
+        {
             // Update estimate of N, the number of trials to ensure we pick,
             // with probability p, a data set with no outliers.
             double fracinliers =  ninliers/static_cast<double>(Npts);
