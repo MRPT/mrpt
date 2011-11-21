@@ -88,8 +88,10 @@ the University of Malaga.
 
 *  Emil Khatib, University of Malaga (2011-) 
   - A few new classes to handle WiFi-signal strength receivers and build 
-    maps out of such observations: mrpt::slam::CObservationWirelessPower, 
-    mrpt::hwdrivers::CWirelessPower and mrpt::slam::CWirelessPowerGridMap2D
+     maps out of such observations: mrpt::slam::CObservationWirelessPower, 
+     mrpt::hwdrivers::CWirelessPower and mrpt::slam::CWirelessPowerGridMap2D.
+  - Classes for RFID observations and sensors: mrpt::slam::CObservationRFID, 
+     mrpt::hwdrivers::CRFID.
     
 *  Kasra Khosoussi (K.N.Toosi University, Iran)
   - Patches to improve the JCBB data association implementation.
