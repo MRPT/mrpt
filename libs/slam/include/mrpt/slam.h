@@ -94,7 +94,6 @@
 #include <mrpt/slam/CMonteCarloLocalization2D.h>
 #include <mrpt/slam/CMonteCarloLocalization3D.h>
 
-#include <mrpt/slam/CConsistentObservationAlignment.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CGridMapAligner.h>
 

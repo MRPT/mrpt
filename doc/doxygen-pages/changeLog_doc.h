@@ -53,6 +53,8 @@
 		- Support for a new CMake variable: "MRPT_DONT_USE_DBG_LIBS", which if set to "1" before doing a "FIND_PACKAGE(MRPT ...)" from a user program, forces the usage of normal release libs (vs the -dbg versions) even for "Debug" CMake builds (this is mostly useful for GCC builds in GNU/Linux).
 	- New examples:
 		- csparse_demo
+	- Deleted classes:
+		- mrpt::slam::CConsistentObservationAlignment: It implemented the Lu & Milios algorithm, now superseded by graph-slam methods. See the mrpt::graphslam namespace (this should have been deleted in 0.9.3 but for some error it wasn't!) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2747" >r2747</a> 
 	- BUG FIXES:
 		- [mrpt-base] mrpt::poses::CPose3D::composeFrom() gave wrong results when its first argument was the same object being invoked - <a href="http://code.google.com/p/mrpt/source/detail?r=r2737" >r2737</a> 
 		- [mrpt-base] RANSAC implementation could fail if the first random subset contained only outliers. <a href="http://code.google.com/p/mrpt/issues/detail?id=11" >Patch provided</a> by Robert Schattschneider (University of Canterbury, New Zealand) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2746" >r2746</a> 
