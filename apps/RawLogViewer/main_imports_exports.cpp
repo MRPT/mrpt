@@ -1879,3 +1879,184 @@ Units are m and radian.
 	WX_END_TRY
 }
 
+
+void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
+{
+	WX_START_TRY
+
+	wxString caption = wxT("Save as...");
+	wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
+	wxString defaultDir( _U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ) );
+	wxString defaultFilename = _U( (loadedFileName+string("_IMU.txt")).c_str() );
+	wxFileDialog dialog(this, caption, defaultDir, defaultFilename,wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+
+	if ( dialog.ShowModal() == wxID_OK )
+	{
+		wxString fileName = dialog.GetPath();
+		string        fil( fileName.mbc_str() );
+
+		int             i, M = 0,  n = (int)rawlog.size();
+		FILE            *f = os::fopen( fil.c_str(), "wt");
+		if (!f)
+			THROW_EXCEPTION("Cannot open output file for write.");
+
+		::fprintf(f,
+		"%% TIMESTAMP IMU_X_ACC IMU_Y_ACC IMU_Z_ACC IMU_YAW_VEL IMU_PITCH_VEL IMU_ROLL_VEL IMU_X_VEL IMU_Y_VEL IMU_Z_VEL IMU_YAW IMU_PITCH IMU_ROLL IMU_X IMU_Y IMU_Z\n"
+		"%% ---------------------------------------------------------------------------------------------------------------------------------------------------------\n");
+
+		for (i=0;i<n;i++)
+		{
+			switch (rawlog.getType(i))
+			{
+				default:
+					break;
+
+				case CRawlog::etSensoryFrame:
+				{
+					CSensoryFramePtr sf = rawlog.getAsObservations(i);
+					size_t k = 0;
+					CObservationIMUPtr obs;
+					do {
+						obs =sf->getObservationByClass<CObservationIMU>(k++);
+						if (obs)
+						{
+							// For each entry in this sequence:
+							if (obs->rawMeasurements.size()>0)
+							{
+								ASSERT_( obs->dataIsPresent.size()==obs->rawMeasurements.size() );
+								size_t nValuesPerRow = obs->dataIsPresent.size();
+
+								// For each entry in this sequence: Compute the timestamp and save all 15 values:
+								ASSERT_(obs->timestamp!=INVALID_TIMESTAMP);
+								TTimeStamp	t  = obs->timestamp;
+
+								//double 	sampleTime = timeDifference( rawlog_first_timestamp ,t);
+								double 	sampleTime = timestampTotime_t(t);
+
+								// Time:
+								::fprintf(f,"%f ",sampleTime);
+								ASSERT_( obs->rawMeasurements.size()==obs->rawMeasurements.size() );
+								for (size_t idx=0;idx<nValuesPerRow;idx++)
+									::fprintf(f,"%f ",obs->dataIsPresent[idx] ? obs->rawMeasurements[idx] : 0);
+								::fprintf(f,"\n");
+								M++;
+							} // end if
+						} // end if
+					} while(obs);
+				}
+				break;
+
+				case CRawlog::etObservation:
+				{
+					CObservationPtr oo = rawlog.getAsObservation(i);
+
+					if ( oo->GetRuntimeClass() == CLASS_ID(CObservationIMU) )
+					{
+						CObservationIMUPtr obs = CObservationIMUPtr(oo);
+						// For each entry in this sequence:
+						if (obs->rawMeasurements.size()>0)
+						{
+							ASSERT_( obs->dataIsPresent.size()==obs->rawMeasurements.size() );
+							size_t nValuesPerRow = obs->dataIsPresent.size();
+
+							// For each entry in this sequence: Compute the timestamp and save all 15 values:
+							ASSERT_(obs->timestamp!=INVALID_TIMESTAMP);
+							TTimeStamp	t  = obs->timestamp;
+
+							double 	sampleTime = timestampTotime_t(t); //timeDifference(rawlog_first_timestamp,t);
+
+							// Time:
+							::fprintf(f,"%f ",sampleTime);
+							ASSERT_( obs->rawMeasurements.size()==obs->rawMeasurements.size() );
+							for (size_t idx=0;idx<nValuesPerRow;idx++)
+								::fprintf(f,"%f ",obs->dataIsPresent[idx] ? obs->rawMeasurements[idx] : 0);
+							::fprintf(f,"\n");
+							M++;
+						} // end if
+					}
+				}
+				break;
+
+			} // end switch.
+
+		}
+
+		os::fclose(f);
+
+		wxMessageBox(_U( format("%u IMU data entries saved!",M).c_str() ),_("Done"),wxOK,this);
+	}
+
+	WX_END_TRY
+}
+
+void xRawLogViewerFrame::OnGenerateTextFileRangeBearing(wxCommandEvent& event)
+{
+	WX_START_TRY
+
+	wxString caption = wxT("Save as...");
+	wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
+	wxString defaultDir( _U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ) );
+	wxString defaultFilename = _U( (loadedFileName+string("_RANGE_BEARING.txt")).c_str() );
+	wxFileDialog dialog(this, caption, defaultDir, defaultFilename,wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+
+	if ( dialog.ShowModal() == wxID_OK )
+	{
+		wxString fileName = dialog.GetPath();
+		string        fil( fileName.mbc_str() );
+
+		int             i, M = 0,  n = (int)rawlog.size();
+		FILE            *f = os::fopen( fil.c_str(), "wt");
+		if (!f)
+			THROW_EXCEPTION("Cannot open output file for write.");
+
+		for (i=0;i<n;i++)
+		{
+			if ( rawlog.getType(i)==CRawlog::etSensoryFrame )
+			{
+				CSensoryFramePtr sf = rawlog.getAsObservations(i);
+				CObservationBearingRangePtr obs = sf->getObservationByClass<CObservationBearingRange>();
+				if (obs)
+				{
+					// For each entry in this sequence:
+					for (size_t q=0;q<obs->sensedData.size();q++)
+					{
+						M++;
+						::fprintf(f,"%u %i %f %f %f\n",
+								i,
+								obs->sensedData[q].landmarkID,
+								obs->sensedData[q].range,
+								obs->sensedData[q].yaw,
+								obs->sensedData[q].pitch);
+					}
+				}
+			}
+			else if ( rawlog.getType(i)==CRawlog::etObservation )
+			{
+				CObservationPtr o = rawlog.getAsObservation(i);
+
+				if (IS_CLASS(o,CObservationBearingRange))
+				{
+					CObservationBearingRangePtr obs = CObservationBearingRangePtr(o);
+					// For each entry in this sequence:
+					for (size_t q=0;q<obs->sensedData.size();q++)
+					{
+						M++;
+						::fprintf(f,"%u %i %f %f %f\n",
+								i,
+								obs->sensedData[q].landmarkID,
+								obs->sensedData[q].range,
+								obs->sensedData[q].yaw,
+								obs->sensedData[q].pitch);
+					}
+				}
+			}
+		}
+
+		os::fclose(f);
+
+		wxMessageBox(_U( format("%u bearing-range data entries saved!",M).c_str() ),_("Done"),wxOK,this);
+	}
+
+	WX_END_TRY
+}
+
