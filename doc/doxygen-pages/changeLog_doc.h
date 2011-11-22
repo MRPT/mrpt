@@ -37,14 +37,14 @@
 	- Changes in applications:
 		- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: Operation "camera-params" now also handles stereo observations.
 	- Kinect stuff: 
-		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect now decodes Bayer color using OpenCV instead of default freenect - <a href="http://code.google.com/p/mrpt/source/detail?r=r2721" >r2721</a>
-		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect no longer forces a horizontal tilt at start up by default, what may be annoying (if required, set "initial_tilt_angle") - <a href="http://code.google.com/p/mrpt/source/detail?r=r2722" >r2722</a>
+		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect now decodes Bayer color using OpenCV instead of default freenect - <a href="http://code.google.com/p/mrpt/source/detail?r=2721" >r2721</a>
+		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect no longer forces a horizontal tilt at start up by default, what may be annoying (if required, set "initial_tilt_angle") - <a href="http://code.google.com/p/mrpt/source/detail?r=2722" >r2722</a>
 	- Changes in classes:
 		- [mrpt-base] Changes in mrpt::math::CSparseMatrix: 
 			- New method mrpt::math::CSparseMatrix::saveToTextFile_sparse()
 			- Overloaded method for "double*" mrpt::math::CSparseMatrix::CholeskyDecomp::backsub()
-		- [mrpt-base] KD-trees now also exposes methods for Radius search: mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D(), mrpt::math::KDTreeCapable::kdTreeRadiusSearch3D()  - <a href="http://code.google.com/p/mrpt/source/detail?r=r2726" >r2726</a> 
-		- [mrpt-base] mrpt::sync::CCriticalSectionLocker now can accept a NULL pointer as input, in which case no action will be taken (previosly, it led to segfault) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2727" >r2727</a> 
+		- [mrpt-base] KD-trees now also exposes methods for Radius search: mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D(), mrpt::math::KDTreeCapable::kdTreeRadiusSearch3D()  - <a href="http://code.google.com/p/mrpt/source/detail?r=2726" >r2726</a> 
+		- [mrpt-base] mrpt::sync::CCriticalSectionLocker now can accept a NULL pointer as input, in which case no action will be taken (previosly, it led to segfault) - <a href="http://code.google.com/p/mrpt/source/detail?r=2727" >r2727</a> 
 		- [mrpt-base] mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.
 		- [mrpt-maps] mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
 		- [mrpt-vision] Interface of mrpt::vision::CGenericFeatureTracker extended to handle subpixel feature coordinates (mrpt::vision::TSimpleFeaturefList)
@@ -57,10 +57,10 @@
 	- New examples:
 		- csparse_demo
 	- Deleted classes:
-		- mrpt::slam::CConsistentObservationAlignment: It implemented the Lu & Milios algorithm, now superseded by graph-slam methods. See the mrpt::graphslam namespace (this should have been deleted in 0.9.3 but for some error it wasn't!) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2747" >r2747</a> 
+		- mrpt::slam::CConsistentObservationAlignment: It implemented the Lu & Milios algorithm, now superseded by graph-slam methods. See the mrpt::graphslam namespace (this should have been deleted in 0.9.3 but for some error it wasn't!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2747" >r2747</a> 
 	- BUG FIXES:
-		- [mrpt-base] mrpt::poses::CPose3D::composeFrom() gave wrong results when its first argument was the same object being invoked - <a href="http://code.google.com/p/mrpt/source/detail?r=r2737" >r2737</a> 
-		- [mrpt-base] RANSAC implementation could fail if the first random subset contained only outliers. <a href="http://code.google.com/p/mrpt/issues/detail?id=11" >Patch provided</a> by Robert Schattschneider (University of Canterbury, New Zealand) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2746" >r2746</a> 
+		- [mrpt-base] mrpt::poses::CPose3D::composeFrom() gave wrong results when its first argument was the same object being invoked - <a href="http://code.google.com/p/mrpt/source/detail?r=2737" >r2737</a> 
+		- [mrpt-base] RANSAC implementation could fail if the first random subset contained only outliers. <a href="http://code.google.com/p/mrpt/issues/detail?id=11" >Patch provided</a> by Robert Schattschneider (University of Canterbury, New Zealand) - <a href="http://code.google.com/p/mrpt/source/detail?r=2746" >r2746</a> 
 
 
  <hr>
@@ -129,7 +129,7 @@
 				- mrpt::slam::CICP::TConfigParams::corresponding_points_decimation  to speed-up ICP with dense point clouds that can be safely decimated.
 				- Configurable "smallest step" termination critera (which was fixed in previous MRPT versions): mrpt::slam::CICP::TConfigParams::minAbsStep_trans, mrpt::slam::CICP::TConfigParams::minAbsStep_rot  - <a href="http://code.google.com/p/mrpt/source/detail?r=2653" >r2653</a> 
 			- [mrpt-slam] Data association: JCBB implementation in mrpt::slam::data_association_full_covariance() is now more efficient by skipping some unnecesary B&B iterations (Thanks Kasra Khosoussi!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2669" >r2669</a>
-			- [mrpt-obs] In mrpt::slam::CObservation3DRangeScan - <a href="http://code.google.com/p/mrpt/source/detail?r=r2578" >r2578</a>:
+			- [mrpt-obs] In mrpt::slam::CObservation3DRangeScan - <a href="http://code.google.com/p/mrpt/source/detail?r=2578" >r2578</a>:
 				- New data field: mrpt::slam::CObservation3DRangeScan::range_is_depth
 				- Method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() can now also recover 3D point clouds from 3D range scans not in the "Kinect" depth format.
 				- New method CObservation3DRangeScan::doDepthAndIntensityCamerasCoincide()
@@ -175,7 +175,7 @@
 		- Build system/external libs:
 			- All the <b>CMakeLists.txt</b> of examples are now included into SVN and in source packages. These are now scripts ready for the user to copy them and start a new independent program, out of the MRPT source tree.
 			- Update of Eigen3 to a more recent version (11-Jul-2011), which avoids warnings in MSVC x64 - <a href="http://code.google.com/p/mrpt/source/detail?r=2556" >r2556</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2558" >r2558</a>
-			- Automatic check for existence of system "libgtest-dev" not to build embedded version of Google unit testing library and link to system lib instead - <a href="http://code.google.com/p/mrpt/source/detail?r=r2576" >r2576</a>
+			- Automatic check for existence of system "libgtest-dev" not to build embedded version of Google unit testing library and link to system lib instead - <a href="http://code.google.com/p/mrpt/source/detail?r=2576" >r2576</a>
 			- Support for Intel threading blocks library (TBB). Enable it from the CMake option "MRPT_HAS_TBB" - <a href="http://code.google.com/p/mrpt/source/detail?r=2606" >r2606</a>
 		- Removal of old deprecated APIs:
 			- Header <mrpt/core.h> has been removed (it was emitting a warning about deprecation since 0.9.0 - Jun 2010)
@@ -189,26 +189,26 @@
 			- mrpt::poses::CPose3DPDFGaussian constructor from CMatrixD -> Use constructor from fixed-size matrix.
 			- mrpt::random global functions -> replace with method of object mrpt::random::randomGenerator or instantiate your own mrpt::random::CRandomGenerator
 		- New examples:
-			- offscreen-render - A demo program to load a 3D scene and render it off-screen (in memory) at any arbitrary size, even larger than the screen  - <a href="http://code.google.com/p/mrpt/source/detail?r=r2575" >r2575</a>.
+			- offscreen-render - A demo program to load a 3D scene and render it off-screen (in memory) at any arbitrary size, even larger than the screen  - <a href="http://code.google.com/p/mrpt/source/detail?r=2575" >r2575</a>.
 			- display3d_custom_render
 			- captureVideoAndBuildPyr - A GUI live demo to test the effects of the options while building an image pyramid.
 			- rgbd_dataset2rawlog - A tool for convering RGB+D TUM datasets to rawlogs.
 			- kinect_online_offline_demo - See http://www.mrpt.org/Switching_between_reading_live_Kinect_RGBD_dataset_for_debugging
 		- New datasets:
-			- malaga-cs-fac-building.simplemap.gz - A new prebuilt simplemap of the ground floor of one Computer Science building (Malaga University) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2575" >r2575</a>.
+			- malaga-cs-fac-building.simplemap.gz - A new prebuilt simplemap of the ground floor of one Computer Science building (Malaga University) - <a href="http://code.google.com/p/mrpt/source/detail?r=2575" >r2575</a>.
 			- test_rtk_path.rawlog - A short sequence of 3 RTK GPS readings, for usage within unit tests of mrpt-topography
 		- Build error FIXES:
 			- Build error in platforms that don't support SSE2 (Thanks rovoreed!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2550" >r2550</a>
 			- Build error when OpenCV exists but is not used. - <a href="http://code.google.com/p/mrpt/source/detail?r=2555" >r2555</a>
-			- Build error in mrpt-hwdrivers with latest OpenCV 2.3 - <a href="http://code.google.com/p/mrpt/source/detail?r=r2566" >r2566</a>
-			- Linking error with MinGW around the mrpt::opengl::posePDF2opengl() templates - <a href="http://code.google.com/p/mrpt/source/detail?r=r2567" >r2567</a> (Thanks Miyamoto Musashi for <a href="http://www.mrpt.org/node/1031" >reporting</a>!).
+			- Build error in mrpt-hwdrivers with latest OpenCV 2.3 - <a href="http://code.google.com/p/mrpt/source/detail?r=2566" >r2566</a>
+			- Linking error with MinGW around the mrpt::opengl::posePDF2opengl() templates - <a href="http://code.google.com/p/mrpt/source/detail?r=2567" >r2567</a> (Thanks Miyamoto Musashi for <a href="http://www.mrpt.org/node/1031" >reporting</a>!).
 			- Error compiling against wxWidgets 2.9.2 (wrong usage of wxDECLARE_CLASS instead of wxDECLARE_DYNAMIC_CLASS)
 		- BUG FIXES:
-			- [mrpt-obs] Wrong usage of focal distances "fx"<->"fy" when generating the 3D point clouds from Kinect observations with the method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() - <a href="http://code.google.com/p/mrpt/source/detail?r=r2578" >r2578</a>.
-			- [mrpt-hwdrivers], [mrpt-obs] Gyroscopic rotation rates in yaw and roll were stored in the wrong order in mrpt::hwdrivers::CIMUXSens and mrpt::slam::CObservationIMU. It has been fixed so new grabbed data is saved correctly but also such as old datasets are automatically fixed when loading them. Thanks Lianfen for noticing! - <a href="http://code.google.com/p/mrpt/source/detail?r=r2622" >r2622</a>.
-			- [mrpt-topography] Fixed an old bug in mrpt::topography::path_from_rtk_gps() (and added new unit tests to avoid the same happening in the future) - <a href="http://code.google.com/p/mrpt/source/detail?r=r2637" >r2637</a>
+			- [mrpt-obs] Wrong usage of focal distances "fx"<->"fy" when generating the 3D point clouds from Kinect observations with the method mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage() - <a href="http://code.google.com/p/mrpt/source/detail?r=2578" >r2578</a>.
+			- [mrpt-hwdrivers], [mrpt-obs] Gyroscopic rotation rates in yaw and roll were stored in the wrong order in mrpt::hwdrivers::CIMUXSens and mrpt::slam::CObservationIMU. It has been fixed so new grabbed data is saved correctly but also such as old datasets are automatically fixed when loading them. Thanks Lianfen for noticing! - <a href="http://code.google.com/p/mrpt/source/detail?r=2622" >r2622</a>.
+			- [mrpt-topography] Fixed an old bug in mrpt::topography::path_from_rtk_gps() (and added new unit tests to avoid the same happening in the future) - <a href="http://code.google.com/p/mrpt/source/detail?r=2637" >r2637</a>
 			- Example: samples/bayesianTracking: Fixed an incorrect reset of all particles weight at each iteration (Thanks "parnurzeal" for noticing!)
-			- Fixed memory leak when using SURF descriptors. Thanks "hochdorfer" for detecting and reporting the solution. - <a href="http://code.google.com/p/mrpt/source/detail?r=r2647" >r2647</a>
+			- Fixed memory leak when using SURF descriptors. Thanks "hochdorfer" for detecting and reporting the solution. - <a href="http://code.google.com/p/mrpt/source/detail?r=2647" >r2647</a>
 			- RawLogViewer: Wrong depth to grayscale conversion while displaying 3D range observations.
 
 <br> <hr>
