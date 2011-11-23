@@ -41,7 +41,7 @@ namespace slam
 
 	/** This represents an RFID tag observed by a receiver.
 	 *
-	 * \sa CObservation, mrpt::hwdrivers::CRFID for a software sensor capable of reading this kind of observations.
+	 * \sa CObservation, mrpt::hwdrivers::CImpinjRFID for a software sensor capable of reading this kind of observations.
 	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CObservationRFID : public CObservation

@@ -25,8 +25,8 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-#ifndef  CRFID_H
-#define  CRFID_H
+#ifndef  CImpinjRFID_H
+#define  CImpinjRFID_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/slam/CObservationRFID.h>
@@ -41,9 +41,9 @@ namespace mrpt
 	{
 		/** This class implements an interface to an Impinj RFID reader. This object connects to a program that does the actual communication with the receiver. This is done because the manufacturer only provides libraries for C# and Java. The program that runs the device must be started after this object
 		  */
-		class HWDRIVERS_IMPEXP CRFID : public mrpt::hwdrivers::CGenericSensor
+		class HWDRIVERS_IMPEXP CImpinjRFID : public mrpt::hwdrivers::CGenericSensor
 		{
-				DEFINE_GENERIC_SENSOR(CRFID)
+				DEFINE_GENERIC_SENSOR(CImpinjRFID)
 
 		private:
 
@@ -72,8 +72,8 @@ namespace mrpt
 		public:
 			/** Default constructor.
 			 */
-			CRFID();
-			virtual ~CRFID(){};
+			CImpinjRFID();
+			virtual ~CImpinjRFID(){};
 			void connect();
 			void doProcess(){};
 			void  loadConfig_sensorSpecific(

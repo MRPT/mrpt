@@ -30,19 +30,19 @@
 
 #include <mrpt/hwdrivers.h>  // Precompiled headers
 
-#include <mrpt/hwdrivers/CRFID.h>
+#include <mrpt/hwdrivers/CImpinjRFID.h>
 
 #include <string.h>
 using namespace mrpt::hwdrivers;
 
-IMPLEMENTS_GENERIC_SENSOR(CRFID,mrpt::hwdrivers)
+IMPLEMENTS_GENERIC_SENSOR(CImpinjRFID,mrpt::hwdrivers)
 
-CRFID::CRFID()
+CImpinjRFID::CImpinjRFID()
 {
 	m_sensorLabel = "RFID";
 }
 
-void  CRFID::loadConfig_sensorSpecific(
+void  CImpinjRFID::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &configSource,
 	const std::string			&iniSection )
 {
@@ -72,7 +72,7 @@ void  CRFID::loadConfig_sensorSpecific(
 					getObservation
     Get the power of a given network as an observation
  ---------------------------------------------------------------*/
-void CRFID::connect()
+void CImpinjRFID::connect()
 {
 	
 		// Start the server
@@ -86,7 +86,7 @@ void CRFID::connect()
 					getObservation
     Get the power of a given network as an observation
  ---------------------------------------------------------------*/
-bool CRFID::getObservation( mrpt::slam::CObservationRFID &outObservation )
+bool CImpinjRFID::getObservation( mrpt::slam::CObservationRFID &outObservation )
 {
 	try{
 		char msg[34];
@@ -113,14 +113,14 @@ bool CRFID::getObservation( mrpt::slam::CObservationRFID &outObservation )
 			outObservation.epc = std::string(epc);
 			outObservation.power = atof(rx_pwr);
 			outObservation.sensorLabel = m_sensorLabel;
-			//std::cout << "mrpt::hwdrivers::CRFID::getObservation() " << "\n\tsensorLabel: " << outObservation.sensorLabel << "\n\ttimestamp: " << outObservation.timestamp << "\n\tEPC: " << outObservation.epc << std::endl;
+			//std::cout << "mrpt::hwdrivers::CImpinjRFID::getObservation() " << "\n\tsensorLabel: " << outObservation.sensorLabel << "\n\ttimestamp: " << outObservation.timestamp << "\n\tEPC: " << outObservation.epc << std::endl;
 			return true;
 		} 
 		else { return false; }
 	}
 	catch(exception &e)
 	{
-		cerr << "[CRFID::getObservation] Returning false due to exception: " << endl;
+		cerr << "[CImpinjRFID::getObservation] Returning false due to exception: " << endl;
 		cerr << e.what() << endl;
 		return false;
 	}
@@ -130,7 +130,7 @@ bool CRFID::getObservation( mrpt::slam::CObservationRFID &outObservation )
 					getObservation
     Get the power of a given network as an observation
  ---------------------------------------------------------------*/
-void CRFID::closeReader()
+void CImpinjRFID::closeReader()
 {
 	char cmd[5];
 	// send a kill command to the device interface program
