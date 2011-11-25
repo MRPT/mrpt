@@ -102,29 +102,11 @@ namespace slam
 
 			/** @name For all mapping methods
 			    @{ */
+			std::string sensorLabel;	//!< The label of the CObservationGasSensor used to generate the map
+			uint16_t enose_id;		//!< id for the enose used to generate this map (must be < gasGrid_count)
 			uint16_t sensorType;	//!< The sensor type for the gas concentration map (0x0000 ->mean of all installed sensors, 0x2600, 0x6810, ...)
-			/** @} */
-
-			/** @name Parameters of the "MOS model"
-			    @{ */
-			bool useMOSmodel;	//!< If true use MOS model before map algorithm
-
-			float	tauR;	//!< Tau values for the rise sensor's phases.
-			float	tauD;	//!< Tau values for the decay (tauD) sensor's phases.
-
-			uint16_t lastObservations_size;	//!< The number of observations to keep in m_lastObservations
-			size_t	winNoise_size;	//!< The number of observations used to reduce noise on signal.
-			uint16_t	decimate_value;	//!< The decimate frecuency applied after noise filtering
-
-			vector_float calibrated_tauD_voltages;	//!< Measured values of K= 1/tauD for different volatile concentrations
-			vector_float calibrated_tauD_values;
-
-			vector_float calibrated_delay_RobotSpeeds;	//!< Measured values of the delay (memory effect) for different robot speeds
-			vector_float calibrated_delay_values;
-
-			uint16_t enose_id;	//!< id for the enose used to generate this map (must be < gasGrid_count)
-			bool save_maplog;	//!< If true save generated gas map as a log file
-			/** @} */ // end: Parameters of the "MOS model"
+			
+			/** @} */			
 
 		} insertionOptions;
 
@@ -153,63 +135,7 @@ namespace slam
 		virtual CRandomFieldGridMap2D::TInsertionOptionsCommon * getCommonInsertOptions() {
 			return &insertionOptions;
 		}
-
-		/** The content of each m_lastObservations in the estimation when using the option : MOS_MODEl (insertionOptions.useMOSmodel =1)
-			*/
-		struct MAPS_IMPEXP TdataMap
-		{
-				float						reading;
-				mrpt::system::TTimeStamp	timestamp;
-				float						k;
-				CPose3D						sensorPose;
-				float						estimation;
-				float						reading_filtered;
-				float						speed;
-		};
-
-		/** [useMOSmodel] The last N GasObservations, used for the MOS MODEL estimation. */
-		TdataMap m_new_Obs, m_new_ANS;
-		std::vector<TdataMap> m_lastObservations;
-		std::vector<TdataMap> m_antiNoise_window;
-
-		/** [useMOSmodel] Ofstream to save to file option "save_maplog"
-		  */
-		std::ofstream			*m_debug_dump;
-
-		/** [useMOSmodel] Decimate value for oversampled enose readings
-		  */
-		uint16_t				decimate_count;
-
-		/** [useMOSmodel] To force e-nose samples to have fixed time increments
-		  */
-		double					fixed_incT;
-		bool					first_incT;
-
-		/** Estimates the gas concentration based on readings and sensor model
-		  */
-		void CGasConcentration_estimation (
-			float							reading,
-			const CPose3D					&sensorPose,
-			const mrpt::system::TTimeStamp	timestamp);
-
-		/** Reduce noise by averaging with a mobile window
-		  */
-		void noise_filtering (
-			float	reading,
-			const	CPose3D	&sensorPose,
-			const	mrpt::system::TTimeStamp timestamp );
-
-		/** Save the GAS_MAP generated into a log file for offline representation
-		  */
-		void save_log_map(
-			const mrpt::system::TTimeStamp	timestamp,
-			const float						reading,
-			const float						estimation,
-			const float						k,
-			const double					yaw,
-			const float						speed);
-
-
+		
 		 /** Erase all the contents of the map */
 		 virtual void  internal_clear();
 

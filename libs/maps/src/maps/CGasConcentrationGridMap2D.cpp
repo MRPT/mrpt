@@ -61,11 +61,7 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 	float		y_max,
 	float		resolution ) :
 		CRandomFieldGridMap2D(mapType, x_min,x_max,y_min,y_max,resolution ),
-		insertionOptions(),
-		m_debug_dump(NULL),
-		decimate_count(1),
-		fixed_incT(0),
-		first_incT(true)
+		insertionOptions()		
 {
 	// Set the grid to initial values (and adjusts the KF covariance matrix!)
 	//  Also, calling clear() is mandatory to end initialization of our base class (read note in CRandomFieldGridMap2D::CRandomFieldGridMap2D)
@@ -73,8 +69,7 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 }
 
 CGasConcentrationGridMap2D::~CGasConcentrationGridMap2D()
-{
-	mrpt::utils::delete_safe(m_debug_dump);
+{	
 }
 
 /*---------------------------------------------------------------
@@ -89,40 +84,6 @@ void  CGasConcentrationGridMap2D::internal_clear()
 	// ...
 }
 
-/*---------------------------------------------------------------
-						save_log_map
-  ---------------------------------------------------------------*/
-void CGasConcentrationGridMap2D::save_log_map(
-	const mrpt::system::TTimeStamp	timestamp,
-	const float						reading,
-	const float						estimation,
-	const float						k,
-	const double					yaw,
-	const float						speed
-	)
-{
-
-	//function to save in a log file the information of the generated map
-
-	double time = mrpt::system::timestampTotime_t(timestamp);
-	char buffer [50];
-	sprintf (buffer, "./log_MOSmodel_MAP_%X.txt",insertionOptions.sensorType);
-
-	if (!m_debug_dump)
-		m_debug_dump=new ofstream(buffer);
-
-	if (m_debug_dump->is_open())
-	{
-		*m_debug_dump << format("%f \t", time );
-		*m_debug_dump << format("%f \t", reading );
-		*m_debug_dump << format("%f \t", estimation );
-		*m_debug_dump << format("%f \t", k );
-		*m_debug_dump << format("%f \t", yaw );
-		*m_debug_dump << format("%f \t", speed );
-		*m_debug_dump << "\n";
-	}
-	else cout << "Unable to open file";
-}
 
 /*---------------------------------------------------------------
 						insertObservation
@@ -152,94 +113,72 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 					OBSERVATION TYPE: CObservationGasSensors
 		********************************************************************/
 		const CObservationGasSensors	*o = static_cast<const CObservationGasSensors*>( obs );
-		float						sensorReading;
-
-		//Cover all robot e-noses (m_readings)
-
-		// Get index to differentiate between enoses --> insertionoptions.enose_id
-		for (std::vector<CObservationGasSensors::TObservationENose>::const_iterator it = o->m_readings.begin(); it!=o->m_readings.end();it+=1)
-
-//		ASSERT_(o->m_readings.size() > insertionOptions.enose_id);
-//		const CObservationGasSensors::TObservationENose *it = &o->m_readings[insertionOptions.enose_id];
+		
+		if (o->sensorLabel == insertionOptions.sensorLabel)
 		{
-			// Compute the 3D sensor pose in world coordinates:
-			CPose2D		sensorPose( CPose3D(robotPose2D) + it->eNosePoseOnTheRobot );
+			/** Correct sensorLabel, process the observation */
+			
+			float sensorReading;
+			// Get index to differentiate between enoses --> insertionoptions.enose_id
+			//for (std::vector<CObservationGasSensors::TObservationENose>::const_iterator it = o->m_readings.begin(); it!=o->m_readings.end();it+=1)
 
-			// Compute the sensor reading value (Volts):
-			if (insertionOptions.sensorType==0x0000){	//compute the mean
-				sensorReading = math::mean( it->readingsVoltage );
-			}
-			else
+			ASSERT_(o->m_readings.size() > insertionOptions.enose_id);
+			const CObservationGasSensors::TObservationENose *it = &o->m_readings[insertionOptions.enose_id];
 			{
-				// Look for the correct sensor type
-				size_t i;
-				for (i=0; i<it->sensorTypes.size(); i++)
-				{
-					if (it->sensorTypes.at(i) == int(insertionOptions.sensorType) )
-						break;
-				}
+				// Compute the 3D sensor pose in world coordinates:
+				CPose2D		sensorPose( CPose3D(robotPose2D) + it->eNosePoseOnTheRobot );
 
-				if (i<it->sensorTypes.size()){
-					sensorReading = it->readingsVoltage[i];
+				// Compute the sensor reading value (Volts):
+				if (insertionOptions.sensorType==0x0000){	//compute the mean
+					sensorReading = math::mean( it->readingsVoltage );
 				}
 				else
 				{
-					//Sensor especified not found, compute default mean value
-					sensorReading = math::mean( it->readingsVoltage );
-				}
-			}
+					// Look for the correct sensor type
+					size_t i;
+					for (i=0; i<it->sensorTypes.size(); i++)
+					{
+						if (it->sensorTypes.at(i) == int(insertionOptions.sensorType) )
+							break;
+					}
 
-			// Normalization:
-			sensorReading = (sensorReading - insertionOptions.R_min) /( insertionOptions.R_max - insertionOptions.R_min );
-
-
-			// MOS model
-			if(insertionOptions.useMOSmodel)
-			{
-				// Anti-Noise filtering
-				noise_filtering(sensorReading, sensorPose, o->timestamp);
-
-				//Decimate
-				if ( decimate_count != insertionOptions.decimate_value ){
-					decimate_count++;
-					return true;
+					if (i<it->sensorTypes.size()){
+						sensorReading = it->readingsVoltage[i];
+					}
+					else
+					{
+						//Sensor especified not found, compute default mean value
+						sensorReading = math::mean( it->readingsVoltage );
+					}
 				}
 
-				//Gas concentration estimation based on FIRST ORDER + NONLINEAR COMPENSATIONS DYNAMICS
-				CGasConcentration_estimation(m_antiNoise_window[insertionOptions.winNoise_size/2].reading_filtered, m_antiNoise_window[insertionOptions.winNoise_size/2].sensorPose, m_antiNoise_window[insertionOptions.winNoise_size/2].timestamp);
-				decimate_count = 1;
+				// Normalization:
+				sensorReading = (sensorReading - insertionOptions.R_min) /( insertionOptions.R_max - insertionOptions.R_min );
 
-				//Use estimation to generate the map
-				std::vector<TdataMap>::iterator iter = m_lastObservations.begin();
-				sensorReading = iter->estimation;
-				sensorPose = CPose2D(iter->sensorPose);
 
-				//Save data map in log file for Matlab visualization
-				if (insertionOptions.save_maplog)
-					save_log_map(iter->timestamp, iter->reading, iter->estimation, iter->k, iter->sensorPose.yaw(), iter->speed);
-			}
-
-			// Update the gross estimates of mean/vars for the whole reading history (see IROS2009 paper):
-			m_average_normreadings_mean = (sensorReading + m_average_normreadings_count*m_average_normreadings_mean)/(1+m_average_normreadings_count);
-			m_average_normreadings_var  = (square(sensorReading - m_average_normreadings_mean) + m_average_normreadings_count*m_average_normreadings_var) /(1+m_average_normreadings_count);
-			m_average_normreadings_count++;
+				// Update the gross estimates of mean/vars for the whole reading history (see IROS2009 paper):
+				m_average_normreadings_mean = (sensorReading + m_average_normreadings_count*m_average_normreadings_mean)/(1+m_average_normreadings_count);
+				m_average_normreadings_var  = (square(sensorReading - m_average_normreadings_mean) + m_average_normreadings_count*m_average_normreadings_var) /(1+m_average_normreadings_count);
+				m_average_normreadings_count++;
 
 #if 0
 			cout << "[DEBUG] m_average_normreadings_count: " << m_average_normreadings_count << " -> mean: " << m_average_normreadings_mean << " var: " <<  m_average_normreadings_var  << endl;
 #endif
 
-			// Finally, do the actual map update with that value:
-			switch (m_mapType)
-			{
-				case mrKernelDM:           insertObservation_KernelDM_DMV(sensorReading,sensorPose, false); break;
-				case mrKernelDMV:          insertObservation_KernelDM_DMV(sensorReading,sensorPose, true); break;
-				case mrKalmanFilter:       insertObservation_KF(sensorReading,sensorPose); break;
-				case mrKalmanApproximate:  insertObservation_KF2(sensorReading,sensorPose);
-			};
+				// Finally, do the actual map update with that value:
+				switch (m_mapType)
+				{
+					case mrKernelDM:           insertObservation_KernelDM_DMV(sensorReading,sensorPose, false); break;
+					case mrKernelDMV:          insertObservation_KernelDM_DMV(sensorReading,sensorPose, true); break;
+					case mrKalmanFilter:       insertObservation_KF(sensorReading,sensorPose); break;
+					case mrKalmanApproximate:  insertObservation_KF2(sensorReading,sensorPose);
+				};
 
-		} // for each e-nose obs.
+			} // Selected e-noseID obs.
 
-		return true;	// Done!
+			return true;	// Done!
+
+		} //endif correct "sensorLabel"
 
 	} // end if "CObservationGasSensors"
 
@@ -423,20 +362,8 @@ void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
  ---------------------------------------------------------------*/
 CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 	sensorType				( 0x0000 ),		//By default use the mean between all e-nose sensors
+	enose_id				( 0 )			//By default use the first enose
 
-	//MOSmodel parameters (only if useMOSmodel = true)
-	useMOSmodel					( false ),
-	tauR						( 4 ),			//Time constant for the rise phase
-	tauD						( 4 ),
-	lastObservations_size		( 5 ),
-	winNoise_size				( 30 ),
-	decimate_value				( 2 ),
-	calibrated_tauD_voltages	( 0 ),			//Voltages values of the sensorID at the calibration points.
-	calibrated_tauD_values		( 0 ),			//Tau_d
-	calibrated_delay_RobotSpeeds ( 0 ),			//[m/s]
-	calibrated_delay_values		( 0 ),			//Number of delayed samples before decimation
-	enose_id					( 0 ),			//By default use the first enose
-	save_maplog					( false )	
 {
 }
 
@@ -450,15 +377,6 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&o
 
 	out.printf("sensorType								= %u\n", (unsigned)sensorType);
 	out.printf("enose_id								= %u\n", (unsigned)enose_id);
-	out.printf("useMOSmodel								= %c\n", useMOSmodel ? 'Y':'N' );	
-	//MOSmodel parameters
-	out.printf("tauR		                            = %f\n", tauR);
-	out.printf("winNoise_size		                    = %u\n", (unsigned)winNoise_size);
-	out.printf("decimate_value		                    = %u\n", (unsigned)decimate_value);
-	out.printf("lastObservations_size                   = %u\n", (unsigned)lastObservations_size);
-
-	//Need to dump the vector parameters (ToDo)
-	out.printf("save_maplog		                        = %c\n", save_maplog ? 'Y':'N' );
 
 	out.printf("\n");
 }
@@ -472,7 +390,10 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 {
 	// Common data fields for all random fields maps:
 	internal_loadFromConfigFile_common(iniFile,section);
-
+	
+	// Specific data fields for gasGridMaps
+	sensorLabel	= iniFile.read_string(section.c_str(),"sensorLabel","Full_MCEnose");
+	enose_id	= iniFile.read_int(section.c_str(),"enoseID",enose_id);
 	{
 		//Read sensor type in hexadecimal
 		std::string sensorType_str = iniFile.read_string(section.c_str(),"sensorType","-1");
@@ -490,31 +411,7 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 			sensorType = iniFile.read_int(section.c_str(),"KF_sensorType",sensorType);			
 		}
 	}
-
-	enose_id				= iniFile.read_int(section.c_str(),"enose_id",enose_id);	
 	
-	//MOXmodel parameters
-	useMOSmodel				= iniFile.read_bool(section.c_str(),"useMOSmodel",useMOSmodel);
-	tauR					= iniFile.read_float(section.c_str(),"tauR",tauR);
-	winNoise_size			= iniFile.read_int(section.c_str(),"winNoise_size",winNoise_size);
-	decimate_value			= iniFile.read_int(section.c_str(),"decimate_value",decimate_value);
-	lastObservations_size	= iniFile.read_int(section.c_str(),"lastObservations_size",lastObservations_size);
-	iniFile.read_vector(section.c_str(),"calibrated_tauD_voltages",calibrated_tauD_voltages,calibrated_tauD_voltages);
-	iniFile.read_vector(section.c_str(),"calibrated_tauD_values",calibrated_tauD_values,calibrated_tauD_values);
-	iniFile.read_vector(section.c_str(),"calibrated_delay_RobotSpeeds",calibrated_delay_RobotSpeeds,calibrated_delay_RobotSpeeds);
-	iniFile.read_vector(section.c_str(),"calibrated_delay_values",calibrated_delay_values,calibrated_delay_values);
-	save_maplog				= iniFile.read_bool(section.c_str(),"save_maplog",save_maplog);
-
-	if (useMOSmodel)
-	{
-		//Update the values of delay according to decimation
-		for (int i = 0; i<calibrated_delay_values.size(); i++){
-			calibrated_delay_values[i] = round( calibrated_delay_values[i]/decimate_value );
-		}
-		//Get the lastObservations_size (Must be higher than max delay_value/decimate_value)
-		if ( lastObservations_size < *max_element(calibrated_delay_values.begin(), calibrated_delay_values.end()) )
-			lastObservations_size = *max_element( calibrated_delay_values.begin(), calibrated_delay_values.end() )+1 ;
-	}
 }
 
 
@@ -571,160 +468,4 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 	CRandomFieldGridMap2D::getAs3DObject(outObj);
 
 	MRPT_END
-}
-
-
-/*---------------------------------------------------------------
-				CGasConcentration_estimation
-  ---------------------------------------------------------------*/
-	// First order estimator model with non-linear dynamics compensation : x(i-N) =  ((y(i) -y(i-1))/(incT* k)) + y(i);
-void CGasConcentrationGridMap2D::CGasConcentration_estimation (
-	float	reading,
-	const	CPose3D	&sensorPose,
-	const	mrpt::system::TTimeStamp timestamp )
-{
-	int N;	//Memory efect delay
-
-	// Check if estimation posible (at least one previous reading)
-	if ( !m_lastObservations.empty() )
-	{
-
-		//Enose movement speed
-		double speed_x = sensorPose.x() - m_new_Obs.sensorPose.x();
-		double speed_y = sensorPose.y() - m_new_Obs.sensorPose.y();
-		double incT = mrpt::system::timeDifference(m_new_Obs.timestamp,timestamp);
-
-		if ( (incT >0) & (!first_incT) ){	//not the same sample (initialization of buffers)
-			if (fixed_incT == 0)
-				fixed_incT = incT;
-			else
-				ASSERT_(fabs(incT - fixed_incT) < (double)(0.05));
-			m_new_Obs.speed = (sqrt (speed_x*speed_x + speed_y*speed_y)) / incT;
-		}
-		else
-		{
-			m_new_Obs.speed = 0;
-			if (incT > 0)
-				first_incT = false;
-		}
-
-
-		//slope>=0 -->Rise
-		if ( reading >= m_new_Obs.reading )
-		{
-			m_new_Obs.k = 1.0/insertionOptions.tauR;
-            N = 1;	//Memory effect compensation
-		}
-		//slope<0 -->decay
-		else
-		{
-			//start decaying
-			if (m_new_Obs.k == (float) (1.0/insertionOptions.tauR) ){
-				//Use amplitude or just value?
-				// Non-Linear compensation = f(sensor, amplitude, speed)
-				m_new_Obs.k = 1.0/mrpt::math::leastSquareLinearFit((reading - insertionOptions.R_min),insertionOptions.calibrated_tauD_voltages,insertionOptions.calibrated_tauD_values,false);
-			}else{
-				//Do Nothing, keep the same tauD as last observation
-
-			}// end-if(start decaying)
-
-			//Dealy effect compensation
-			N = mrpt::math::leastSquareLinearFit(m_new_Obs.speed ,insertionOptions.calibrated_delay_RobotSpeeds, insertionOptions.calibrated_delay_values,false);
-			N = round(N);
-
-			if (N >insertionOptions.lastObservations_size -1)
-			{
-				N = insertionOptions.lastObservations_size-1;
-			}
-		}//end-if  tau = f(slope)
-
-
-		//New estimation values -- Ziegler-Nichols model --
-		if( incT >0)
-			//Initially there may come repetetive values till m_antiNoise_window is completed.
-			m_new_Obs.estimation = ( ((reading -m_new_Obs.reading)/(incT* m_new_Obs.k)) )+ reading;
-		else
-			m_new_Obs.estimation = reading;
-
-
-        //Prepare the New observation
-		m_new_Obs.timestamp = timestamp ;
-		m_new_Obs.reading = reading;
-		m_new_Obs.sensorPose = sensorPose;
-
-	}else{
-		// First reading (use default values)
-		m_new_Obs.k = 1.0/insertionOptions.tauR;
-		m_new_Obs.reading = reading;
-		m_new_Obs.timestamp = timestamp;
-		m_new_Obs.speed = 0;
-		m_new_Obs.sensorPose = sensorPose;
-		m_new_Obs.estimation = reading;
-		N = 1;
-
-		//initialize the queue
-		for (int i=0; i<insertionOptions.lastObservations_size; i++)
-			m_lastObservations.push_back(m_new_Obs);
-
-	}//end-if estimation values
-
-
-
-	//Update m_lastObservations (due to memory efect)
-	if (m_lastObservations[1].estimation == -20.0){
-		//Copy right
-		m_lastObservations[1].estimation = m_lastObservations[0].estimation;
-	}
-
-	m_lastObservations.erase( m_lastObservations.begin() );	//Erase the first element (the oldest)
-	m_lastObservations.push_back(m_new_Obs);										//Add NULL obs as actual Obss
-	m_lastObservations.rbegin()->estimation = -20.0;	//Non valid value to decect non valid observation
-
-	//Modify queue estimation in the -Nth position
-	try{
-		m_lastObservations.at(insertionOptions.lastObservations_size - N-1).estimation = m_new_Obs.estimation;
-
-	}catch(...){
-		cout << "Error al acceder al array de m_readings \n" ;
-		mrpt::system::pause();
-	}
-
-}//end-CGasConcentration_estimation
-
-
-
-/*---------------------------------------------------------------
-			noise_filtering
----------------------------------------------------------------*/
-void CGasConcentrationGridMap2D::noise_filtering (
-	float	reading,
-	const	CPose3D	&sensorPose,
-	const	mrpt::system::TTimeStamp timestamp )
-{
-	float partial_sum;
-
-	m_new_ANS.reading = reading;
-	m_new_ANS.timestamp = timestamp;
-	m_new_ANS.sensorPose = sensorPose;
-
-	if ( m_antiNoise_window.empty() )
-	{
-		// First reading (use default values)
-		m_new_ANS.reading_filtered = reading;
-
-		//initialize the queue
-		m_antiNoise_window.assign( insertionOptions.winNoise_size, m_new_ANS );
-
-	}else{
-		m_antiNoise_window.erase( m_antiNoise_window.begin() );	//Erase the first element (the oldest)
-		m_antiNoise_window.push_back(m_new_ANS);
-	}
-
-	//Average data to reduce noise
-	partial_sum = 0;
-	for (size_t i=0; i<m_antiNoise_window.size(); i++)
-		partial_sum += m_antiNoise_window.at(i).reading;
-
-	m_antiNoise_window.at(insertionOptions.winNoise_size/2).reading_filtered = partial_sum / insertionOptions.winNoise_size;
-
 }
