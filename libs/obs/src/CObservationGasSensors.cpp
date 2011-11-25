@@ -211,8 +211,7 @@ CObservationGasSensors::CMOSmodel::CMOSmodel():
 	a_rise(0),
 	b_rise(0),
 	a_decay(0),
-	b_decay(0),
-	lastObservations_size(10),
+	b_decay(0),	
 	save_maplog(false),
 	last_Obs(),
 	temporal_Obs(),
@@ -328,7 +327,9 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &readi
 				if (fixed_incT == 0)
 					fixed_incT = incT;
 				else
-					ASSERT_(fabs(incT - fixed_incT) < (double)(0.05));				
+					//ASSERT_(fabs(incT - fixed_incT) < (double)(0.05));
+					if (fabs(incT - fixed_incT) > (double)(0.05))
+						cout << "IncT is not constant by HW." << endl;
 			}
 			else
 			{				
@@ -372,7 +373,7 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &readi
 
 
 	}catch(exception e){
-		cerr << "**ERROR** " << e.what() << endl;
+		cerr << "**Exception in CObservationGasSensors::CMOSmodel::inverse_MOSmodeling** " << e.what() << endl;
 	}
 }
 

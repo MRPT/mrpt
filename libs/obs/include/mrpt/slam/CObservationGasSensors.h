@@ -141,8 +141,7 @@ namespace slam
 						float         b_rise;                     //!< tau = a*AMPLITUDE +b (linear relationship)
 						float         a_decay;                    //!< tau = a*AMPLITUDE +b (linear relationship)
 						float         b_decay;                    //!< tau = a*AMPLITUDE +b (linear relationship)
-
-						unsigned int  lastObservations_size;      //!< The number of observations to keep in m_lastObservations (Must be > max(delay) )						
+												
 						bool          save_maplog;                //!< If true save generated gas map as a log file
 
 						/** @} */
