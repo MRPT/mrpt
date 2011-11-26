@@ -38,8 +38,8 @@ namespace poses
 {
 	using namespace mrpt::math;
 
-	class BASE_IMPEXP CPose3D;
-	class BASE_IMPEXP CPose3DQuat;
+	class CPose3D;
+	class CPose3DQuat;
 
 	DEFINE_SERIALIZABLE_PRE( CPose3DRotVec )
 

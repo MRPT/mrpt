@@ -346,7 +346,7 @@ void mrpt::system::getCurrentThreadTimes(
 
 #if !defined(HAVE_OPENTHREAD) // defined(_MSC_VER) && (_MSC_VER<1300)
 	// In MSVC6/GCC the ID is just the HANDLE:
-	threadHandle = (HANDLE) mrpt::system::getCurrentThreadId(); //threadId;
+	threadHandle = static_cast<HANDLE>( mrpt::system::getCurrentThreadId() );
 #else
 	// Get the handle from the ID:
 	threadHandle = OpenThread( READ_CONTROL | THREAD_QUERY_INFORMATION, FALSE,  GetCurrentThreadId() );  // threadId);

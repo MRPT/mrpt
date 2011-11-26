@@ -1927,7 +1927,7 @@ bool PLY_Importer::loadFromPlyFile(
 		{
 			/* get the description of the first element */
 			const string &elem_name = elist[i];
-			int num_elems, nprops;
+			int num_elems=0, nprops=0;
 
 			//vector<PlyProperty> plist =
 			ply_get_element_description (ply, elem_name, num_elems, nprops);
