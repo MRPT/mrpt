@@ -91,7 +91,7 @@ the University of Malaga.
      maps out of such observations: mrpt::slam::CObservationWirelessPower, 
      mrpt::hwdrivers::CWirelessPower and mrpt::slam::CWirelessPowerGridMap2D.
   - Classes for RFID observations and sensors: mrpt::slam::CObservationRFID, 
-     mrpt::hwdrivers::CRFID.
+     mrpt::hwdrivers::CImpinjRFID.
     
 *  Kasra Khosoussi (K.N.Toosi University, Iran)
   - Patches to improve the JCBB data association implementation.

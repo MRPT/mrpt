@@ -51,7 +51,7 @@
 		- [mrpt-gui] & [mrpt-hwdrivers] Environment variable MRPT_WXSUBSYS_TIMEOUT_MS is now observed in all places where a GUI window is expected to be launched.
 	- Support for RFID sensors: (Batch of changed by Emil Khatib) - <a href="http://code.google.com/p/mrpt/source/detail?r=2736" >r2736</a>
 		- [mrpt-obs] New class mrpt::slam::CObservationRFID
-		- [mrpt-hwdrivers] Support for Impinj's "Speedway Revolution RFID reader", see new class mrpt::hwdrivers::CRFID
+		- [mrpt-hwdrivers] Support for Impinj's "Speedway Revolution RFID reader", see new class mrpt::hwdrivers::CImpinjRFID
 	- Build system:
 		- Support for a new CMake variable: "MRPT_DONT_USE_DBG_LIBS", which if set to "1" before doing a "FIND_PACKAGE(MRPT ...)" from a user program, forces the usage of normal release libs (vs the -dbg versions) even for "Debug" CMake builds (this is mostly useful for GCC builds in GNU/Linux).
 	- New examples:
