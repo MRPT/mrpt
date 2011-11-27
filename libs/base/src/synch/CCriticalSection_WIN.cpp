@@ -72,7 +72,7 @@ CCriticalSection::~CCriticalSection()
 {
 	if (m_data.alias_count()==1)
 	{
-		unsigned long	cur_own = m_data.getAs<CRIT_SECT_WIN*>()->currentThreadOwner;
+		//unsigned long	cur_own = m_data.getAs<CRIT_SECT_WIN*>()->currentThreadOwner;
 		// JL (mar/2011): Disabled to avoid weird errors when suddenly closing a pogram with running mrpt::gui windows.
 //		if ( cur_own != 0 )
 //			THROW_EXCEPTION(format("Destroying a critical section ('%s') currently locked by thread %lu", m_name.c_str(), cur_own ) )

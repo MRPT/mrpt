@@ -54,9 +54,11 @@
 #include <sys/stat.h>
 
 #if !defined(_MSC_VER)
-	#define _access access
-	#define _rmdir rmdir
-	#define _stat stat
+#	define _access access
+#	define _rmdir rmdir
+#	ifndef _stat   // It seems MinGW already defines this.
+#		define _stat stat
+#	endif
 #endif
 
 using namespace mrpt;

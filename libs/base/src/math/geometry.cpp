@@ -2040,7 +2040,7 @@ void math::getAngleBisector(const TLine3D &l1,const TLine3D &l2,TLine3D &bis)	{
 
 bool math::traceRay(const vector<TPolygonWithPlane> &vec,const CPose3D &pose,double &dist)	{
 	dist=HUGE_VAL;
-	double nDist;
+	double nDist=0;
 	TLine3D lin;
 	createFromPoseX(pose,lin);
 	lin.unitarize();

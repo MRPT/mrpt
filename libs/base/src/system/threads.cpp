@@ -223,7 +223,7 @@ void mrpt::system::joinThread( const TThreadHandle &threadHandle )
 unsigned long mrpt::system::getCurrentThreadId() MRPT_NO_THROWS
 {
 #ifdef MRPT_OS_WINDOWS
-	return static_cast<unsigned long>(GetCurrentThreadId());
+	return GetCurrentThreadId();
 
 /* Jerome Monceaux 2011/03/08: bilock@gmail.com
  * The next precompilation directive didn't compile under osx
@@ -346,7 +346,7 @@ void mrpt::system::getCurrentThreadTimes(
 
 #if !defined(HAVE_OPENTHREAD) // defined(_MSC_VER) && (_MSC_VER<1300)
 	// In MSVC6/GCC the ID is just the HANDLE:
-	threadHandle = static_cast<HANDLE>( mrpt::system::getCurrentThreadId() );
+	threadHandle = reinterpret_cast<HANDLE>( mrpt::system::getCurrentThreadId() );
 #else
 	// Get the handle from the ID:
 	threadHandle = OpenThread( READ_CONTROL | THREAD_QUERY_INFORMATION, FALSE,  GetCurrentThreadId() );  // threadId);

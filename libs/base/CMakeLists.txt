@@ -46,13 +46,15 @@ ENDIF (CMAKE_MRPT_HAS_JPEG AND NOT CMAKE_MRPT_HAS_JPEG_SYSTEM)
 
 # Embedded version of zlib, if really needed:
 # Only include zlib if not available as system library OR it's already in wxWidgets:
-IF(CMAKE_MRPT_HAS_ZLIB AND NOT CMAKE_MRPT_HAS_ZLIB_SYSTEM)
-	INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/src/compress/zlib/")
-	IF (NOT WIN32 OR NOT CMAKE_MRPT_HAS_WXWIDGETS)
-		LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/compress/zlib/*.c" "${MRPT_LIBS_ROOT}/base/src/compress/zlib/*.h")
-		LIST(APPEND base_EXTRA_SRCS_NAME 	"compress/zlib" "compress/zlib")
-	ENDIF (NOT WIN32 OR NOT CMAKE_MRPT_HAS_WXWIDGETS)
-ENDIF(CMAKE_MRPT_HAS_ZLIB AND NOT CMAKE_MRPT_HAS_ZLIB_SYSTEM)
+IF(CMAKE_MRPT_HAS_ZLIB)
+	IF (CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX OR NOT CMAKE_MRPT_HAS_ZLIB_SYSTEM)
+		INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/src/compress/zlib/")
+		IF (NOT WIN32 OR NOT CMAKE_MRPT_HAS_WXWIDGETS)
+			LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/compress/zlib/*.c" "${MRPT_LIBS_ROOT}/base/src/compress/zlib/*.h")
+			LIST(APPEND base_EXTRA_SRCS_NAME 	"compress/zlib" "compress/zlib")
+		ENDIF (NOT WIN32 OR NOT CMAKE_MRPT_HAS_WXWIDGETS)
+	ENDIF (CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX OR NOT CMAKE_MRPT_HAS_ZLIB_SYSTEM)
+ENDIF(CMAKE_MRPT_HAS_ZLIB)
 
 
 # Documentation files:
