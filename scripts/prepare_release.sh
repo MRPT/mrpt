@@ -70,8 +70,6 @@ rm -fR lib
 rm -fR packaging
 
 rm -fR apps/HolonomicNavigatorTester
-rm -fR apps/PTG_Designer
-rm -fR apps/SimpleMapsViewer
 rm -fR apps/vOdometry
 rm -fR share/mrpt/config_files/vOdometry
 
