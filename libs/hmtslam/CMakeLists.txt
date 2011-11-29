@@ -4,7 +4,9 @@ define_mrpt_lib(
 	hmtslam
 	# Dependencies
 	mrpt-slam
+	mrpt-graphslam
 	# Deps of deps
+	mrpt-graphs
 	mrpt-vision
 	mrpt-maps
 	mrpt-base

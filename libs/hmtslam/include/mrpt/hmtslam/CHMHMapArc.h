@@ -39,8 +39,6 @@ namespace mrpt
 		using namespace mrpt::slam;
 		class HMTSLAM_IMPEXP CHierarchicalMHMap;
 
-		//DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CHMHMapArc, mrpt::utils::CSerializable, HMTSLAM_IMPEXP )
-
 		/** A class for representing an arc between two nodes in a hierarchical, multi-hypothesis map.
 		 *   The arc itself will be considered only if some given hypothesisID matchs its own ID.
 		 * \note Create objects by invoking the class factory "::Create"

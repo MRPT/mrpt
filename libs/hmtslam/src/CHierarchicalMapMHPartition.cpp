@@ -36,17 +36,7 @@
 #include <mrpt/opengl/CSimpleLine.h>
 
 #include <mrpt/random.h>
-#include <mrpt/slam/CConsistentObservationAlignment.h>
-
-//#include <mrpt/hmtslam/CHierarchicalMapMHPartition.h>
-//#include <mrpt/hmtslam/CRobotPosesGraph.h>
-//#include <mrpt/poses/CPosePDFParticles.h>
-//#include <mrpt/slam/CSimpleMap.h>
-//#include <mrpt/poses/CPosePDFParticles.h>
-//#include <mrpt/poses/CPosePDFGaussian.h>
-//#include <mrpt/poses/CPosePDFSOG.h>
-
-//#include <mrpt/utils.h>
+#include <mrpt/graphslam.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -1291,225 +1281,55 @@ void  CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 {
 	MRPT_START
 
-	CMatrixTemplateObjects<CPosePDFGaussian>		inputRelativePosesMatrix,outputOptimalPoses;
-	TArcList					arcsList;
-	vector<CHMHMapNode::TNodeID> listNodes;
-
-	const CHMHMapNodePtr refNode = getNodeByID( idReferenceNode );
-	ASSERT_(refNode);
-	ASSERT_(refNode->m_nodeType.isType("Area"));
-
-	// 1) Compute a first estimate of the ORIENTATION in GLOBAL COODINATES of each node
-	// --------------------------------------------------------------------------------
-	aligned_containers<CHMHMapNode::TNodeID,CPose2D>::map_t approxNodesPoses;			// The ref. pose of each area
-	aligned_containers<CHMHMapNode::TNodeID,CMatrixDouble>::map_t approxNodesPoseCov;			// Only for the case of "numberOfIterations==0"!!
-
-	size_t											nAreaNodes=0;
-
-#define __computeGloballyConsistentNodeCoordinates__VERBOSE  0
-
-	// First, insert the reference node:
-	approxNodesPoses[refNode->getID()] = CPose2D(0,0,0);
-	if (!numberOfIterations)
-		approxNodesPoseCov[refNode->getID()] = CMatrixDouble(3,3);
-
-	listNodes.reserve( m_nodes.size() );
-	listNodes.push_back( refNode->getID() );
-
-	// Find the rest of "Area" m_nodes:
-	int nMonteCarloSamples_for_FirstAprox =  100; //(numberOfIterations==0) ? 100 : 30;
-
-	for (TNodeList::const_iterator nodesIt=m_nodes.begin();nodesIt!=m_nodes.end();++nodesIt)
-	{
-		// Is this a Area node, and of the valid hypothesis ID?
-		if (nodesIt->second->m_nodeType.isType("Area") && nodesIt->second->m_hypotheses.has( hypothesisID ) )
-		{
-			nAreaNodes++;	// Counter
-			if ( nodesIt->first != idReferenceNode )
-			{
-				CPose3DPDFParticles		posePDF;
-				computeCoordinatesTransformationBetweenNodes(
-								refNode->getID(),
-								nodesIt->first,
-								posePDF,
-								hypothesisID,
-								nMonteCarloSamples_for_FirstAprox );
-								/*0.15f,
-								DEG2RAD(5.0f) );*/
-
-				CPose2D			pdf_mean;
-				CMatrixDouble33	pdf_cov;
-				CPosePDFGaussian(posePDF).getCovarianceAndMean(pdf_cov,pdf_mean);
-
-				approxNodesPoses[nodesIt->first] = pdf_mean;
-				listNodes.push_back(nodesIt->first);
-
-				if (!numberOfIterations)
-					approxNodesPoseCov[nodesIt->first] = pdf_cov;
-			}
-		}
-	} // for each node
-
-	// Assure that all area m_nodes have been localized:
-	ASSERT_(nAreaNodes == approxNodesPoses.size() );
-
-	// 2) Build the matrix of constrains, in (approximate) GLOBAL coordinates
-	//     and according to all available m_arcs
-	// ------------------------------------------------------------------------
-	inputRelativePosesMatrix.setSize(nAreaNodes,nAreaNodes);
-	inputRelativePosesMatrix.allocAllObjects();
-
-#if 1
-	static int DEBUG_CNT = 0;
-	{
-		if (++DEBUG_CNT==114)
-		{
-			CMatrix	A(3,3);
-		}
-	}
-#endif
-
-
-	// Repeat iterative (due to the linearization of non-linear functions...)
-	// ------------------------------------------------------------------------------------------------
-	for (unsigned int iterationCount = 0; iterationCount<numberOfIterations; iterationCount++)
-	{
-		// Initialize the input matrix of objects:
-		{
-			CPosePDFGaussian	defaultBigCovariance;
-			defaultBigCovariance.cov.setIdentity();
-			defaultBigCovariance.cov *= square( 1000.0f ); // a large 'sigma', in meters
-			defaultBigCovariance.mean = CPose2D(0,0,0);
-
-			for (size_t i=0;i<nAreaNodes;i++)
-				for (size_t j=0;j<nAreaNodes;j++)
-					(*inputRelativePosesMatrix(i,j)) = defaultBigCovariance;
-		}
-
-		for (size_t j=0;j<(nAreaNodes-1);j++)
-		{
-			for (size_t i=j+1;i<nAreaNodes;i++)
-			{
-				// Find for the relative pose arc (We should find only one!!)
-				findArcsOfTypeBetweenNodes( listNodes[i], listNodes[j], hypothesisID, "RelativePose", arcsList );
-				ASSERT_(arcsList.size()<=1);
-
-
-				// We want to fill out the matrix entry (j,i) with the pose
-				//   of the node "i" as seen from node "j", that is,
-				//   the value of an arc FROM "j" TO "i":
-				if ( arcsList.size() )
-				{
-					const CHMHMapArcPtr theArc = *arcsList.begin();
-
-					// We have to provide the "linear increment" in the CPose2D between the m_nodes,
-					//  which coincides with the value of the arc, rotated by the (approximate!) global orientation
-					//  of the "FROM" node.
-					CPose2D	rotationPose(0,0, approxNodesPoses[ listNodes[j] ].phi() );
-
-					CSerializablePtr obj = theArc->m_annotations.get( ARC_ANNOTATION_DELTA, hypothesisID );  // "relativePose"
-					ASSERT_( obj );
-
-					CPose3DPDFGaussian relativePoseAcordToArc; // Convert to gaussian
-					relativePoseAcordToArc.copyFrom(*CPose3DPDFPtr(obj));
-
-					// Is "theArc" in the correct direction (FROM "j" TO "i")??
-					if ( theArc->getNodeFrom() != listNodes[j] )
-					{
-						// No, we have to reverse the relative pose:
-						relativePoseAcordToArc.mean = CPose3D(0,0,0) - relativePoseAcordToArc.mean;
-						// Note: The covariance does not change
-					}
-
-					// Save it into the matrix of objects:
-					relativePoseAcordToArc.changeCoordinatesReference( rotationPose );
-
-					CPosePDFGaussian  pdf2D( relativePoseAcordToArc );
-					inputRelativePosesMatrix(j,i)->mean = pdf2D.mean;
-					inputRelativePosesMatrix(j,i)->cov = pdf2D.cov;
-
-					// ====================================================================
-					// NOTE:  Due to the problems found with the "phi" dimension,
-					//         the "global optimal alignment" will be performed
-					//         using GLOBAL X and Y coordinates and relative PHI
-					//         orientations, relative to the "approximateGlobalPoses"
-					// ====================================================================
-					inputRelativePosesMatrix(j,i)->mean.phi( math::wrapToPi( inputRelativePosesMatrix(j,i)->mean.phi() - approxNodesPoses[listNodes[i] ].phi() ) );
-
-					// Minimum variances!
-					/*inputRelativePosesMatrix(j,i)->cov(0,0) = max( inputRelativePosesMatrix(j,i)->cov(0,0), square(0.1) );
-					inputRelativePosesMatrix(j,i)->cov(1,1) = max( inputRelativePosesMatrix(j,i)->cov(1,1), square(0.1) );
-					inputRelativePosesMatrix(j,i)->cov(2,2) = max( inputRelativePosesMatrix(j,i)->cov(2,2), square(DEG2RAD( 1.0 )) );*/
-
-					inputRelativePosesMatrix(j,i)->cov.zeros();
-					inputRelativePosesMatrix(j,i)->cov(0,0) = max( pdf2D.cov(0,0), square(0.1) );
-					inputRelativePosesMatrix(j,i)->cov(1,1) = max( pdf2D.cov(1,1), square(0.1) );
-					inputRelativePosesMatrix(j,i)->cov(2,2) = max( pdf2D.cov(2,2), square(DEG2RAD( 1.0 )) );
-
-#if __computeGloballyConsistentNodeCoordinates__VERBOSE
-//					cout << listNodes[j]<< "->" << listNodes[i] << ": " << relativePoseAcordToArc.mean << endl;
-#endif
-				}
-
-			} // end for i
-		} // end for j
-
-
-		// 3) Compute the optimal poses:
-		// --------------------------------------------------------
-		CConsistentObservationAlignment::optimizeUserSuppliedData(
-			inputRelativePosesMatrix,
-			outputOptimalPoses );
-
-
-		// Prepare for the next iteration....
-		// --------------------------------------------------------
-		for (size_t i = 0;i<outputOptimalPoses.getColCount();i++)
-		{
-			// Restore the PHI value:
-			outputOptimalPoses(0,i)->mean.phi( math::wrapToPi( outputOptimalPoses(0,i)->mean.phi() + approxNodesPoses[listNodes[i]].phi() ) );
-
-			CPose2D		globalPose( outputOptimalPoses(0,i)->mean );
-
-			// Substitute into the approxNodesPoses:
-			approxNodesPoses[listNodes[i]] = globalPose;
-#if __computeGloballyConsistentNodeCoordinates__VERBOSE
-//			cout << listNodes[i] << ": " << approxNodesPoses[listNodes[i]] << " -> " << globalPose << endl;
-#endif
-		}
-
-	} // end for "iterationCount"
-
-	// 4) Transform into the proper format:
-	// --------------------------------------------------------
 	nodePoses.clear();
-	if (!numberOfIterations)
+
+	// 1) Convert hmt-slam graph into graphslam graph... (this should be avoided in future version of HTML-SLAM!!)
+	graphs::CNetworkOfPoses3DInf  pose_graph;
+
+	for (TArcList::const_iterator it_arc=m_arcs.begin();it_arc!=m_arcs.end();++it_arc)
 	{
-		// Especial case: Dijisktra shortest path only (this just for a graph in a paper! not to be used in practice)
-		for (size_t i = 0;i<nAreaNodes;i++)
-		{
-			CPosePDFGaussian	pdf;
-			pdf.mean = approxNodesPoses[ listNodes[i] ];
-			pdf.cov = approxNodesPoseCov[ listNodes[i] ];
+		if (!(*it_arc)->m_hypotheses.has(hypothesisID)) continue;
 
-			// Minimum variances!
-			pdf.cov(0,0) = max( pdf.cov(0,0), square(0.1) );
-			pdf.cov(1,1) = max( pdf.cov(1,1), square(0.1) );
-			pdf.cov(2,2) = max( pdf.cov(2,2), square(DEG2RAD( 1.0 )) );
+		const CHMHMapNode::TNodeID id_from = (*it_arc)->getNodeFrom();
+		const CHMHMapNode::TNodeID id_to   = (*it_arc)->getNodeTo();
 
-			nodePoses[listNodes[i]] = CPose3DPDFGaussian(pdf);
-		}
+		CSerializablePtr anotation = (*it_arc)->m_annotations.get( ARC_ANNOTATION_DELTA, hypothesisID );
+		if (!anotation) continue;
+		
+		CPose3DPDFGaussianInf edge_rel_pose_pdf; // Convert to gaussian
+		edge_rel_pose_pdf.copyFrom(*CPose3DPDFPtr(anotation));
+
+		pose_graph.insertEdgeAtEnd(id_from,id_to,edge_rel_pose_pdf);
 	}
-	else
+
+	// 2) Initialize global poses of nodes with Dijkstra:
+	pose_graph.root = idReferenceNode;
+	pose_graph.dijkstra_nodes_estimate();
+
+	// 3) Optimize with graph-slam:
+	graphslam::TResultInfoSpaLevMarq out_info;
+	TParametersDouble  graphslam_params;
+	graphslam_params["max_iterations"] = numberOfIterations;
+
+	graphslam::optimize_graph_spa_levmarq(
+		pose_graph,
+		out_info,
+		NULL,   // Optimize all nodes
+		graphslam_params
+		);
+
+	// 4) Copy back optimized results into the HMT-SLAM graph:
+	for (graphs::CNetworkOfPoses3DInf::global_poses_t::const_iterator it_node=pose_graph.nodes.begin();it_node!=pose_graph.nodes.end();++it_node)
 	{
-		// Globally optimal coordinates:
-		ASSERT_( outputOptimalPoses.getColCount() == nAreaNodes );
-		for (size_t i = 0;i<nAreaNodes;i++)
-			nodePoses[listNodes[i]] = CPose3DPDFGaussian(*outputOptimalPoses(0,i));
+		const CHMHMapNode::TNodeID node_id = it_node->first;
+		
+		// To the output map:
+		CPose3DPDFGaussian & new_pose = nodePoses[node_id];
+		new_pose.mean = it_node->second;
+		new_pose.cov.setIdentity();  // *** At present, graphslam does not output the uncertainty of poses... ***
 	}
 
 #if __computeGloballyConsistentNodeCoordinates__VERBOSE
-	cout << endl;
 	for ( map<CHMHMapNode::TNodeID,CPose3DPDFGaussian>::const_iterator it=nodePoses.begin();it!=nodePoses.end();++it)
 		cout << it->first << ": " << it->second.mean << endl;
 	cout << endl;
