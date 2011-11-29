@@ -3411,12 +3411,12 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
 
 		cout << "[xRawLogViewerFrame::OnPopupSaveImage] Current observation class: " << curSelectedObservation->GetRuntimeClass()->className << endl;
 
-		if (curSelectedObservation->GetRuntimeClass()==CLASS_ID(CObservationImage))
+		if (IS_CLASS(curSelectedObservation,CObservationImage))
 		{
 			CObservationImage	*obs = (CObservationImage*) curSelectedObservation.pointer();
 			imgToSave = &obs->image;
 		}
-		else if ( curSelectedObservation->GetRuntimeClass()==CLASS_ID(CObservationStereoImages) )
+		else if ( IS_CLASS(curSelectedObservation,CObservationStereoImages) )
 		{
 			CObservationStereoImages *obs = (CObservationStereoImages*) curSelectedObservation.pointer();
 
@@ -3426,6 +3426,32 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
 				case 1: imgToSave = &obs->imageRight; break;
 				case 2: imgToSave = &obs->imageDisparity; break;
 			}
+		}
+		else if ( IS_CLASS(curSelectedObservation,CObservation3DRangeScan) )
+		{
+			CObservation3DRangeScan *obs = (CObservation3DRangeScan*) curSelectedObservation.pointer();
+			obs->load();
+			switch(theMainWindow->nb_3DObsChannels->GetSelection())
+			{
+				case 1: 
+					if (obs->hasRangeImage) 
+					{
+						static CImage  auxImg;
+						// Convert to range [0,255]
+						mrpt::math::CMatrix normalized_range = obs->rangeImage;
+						const float max_rang = std::max(obs->maxRange, normalized_range.maximum() );
+						if (max_rang>0) normalized_range *= 255./max_rang;
+						auxImg.setFromMatrix(normalized_range, false /* it's in range [0,255] */);
+
+						imgToSave = &auxImg; 
+					}
+					break;
+				case 2: 
+					if (obs->hasIntensityImage) 
+						imgToSave = &obs->intensityImage; 
+					break;
+			}
+			obs->unload();
 		}
 
 		if (imgToSave)
@@ -3459,12 +3485,12 @@ void wxStaticBitmapPopup::OnPopupLoadImage(wxCommandEvent& event)
 
 		CImage *imgToLoad = NULL;
 
-		if (curSelectedObservation->GetRuntimeClass()==CLASS_ID(CObservationImage))
+		if (IS_CLASS(curSelectedObservation,CObservationImage))
 		{
 			CObservationImage	*obs = (CObservationImage*) curSelectedObservation.pointer();
 			imgToLoad = &obs->image;
 		}
-		else if ( curSelectedObservation->GetRuntimeClass()==CLASS_ID(CObservationStereoImages) )
+		else if ( IS_CLASS(curSelectedObservation,CObservationStereoImages) )
 		{
 			CObservationStereoImages *obs = (CObservationStereoImages*) curSelectedObservation.pointer();
 
