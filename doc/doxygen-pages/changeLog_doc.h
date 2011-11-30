@@ -37,7 +37,7 @@
 	- Changes in applications:
 		- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: Operation "camera-params" now also handles stereo observations.
 	- Kinect stuff: 
-		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect now decodes Bayer color using OpenCV instead of default freenect - <a href="http://code.google.com/p/mrpt/source/detail?r=2721" >r2721</a>
+		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect now decodes Bayer color using OpenCV instead of default freenect - <a href="http://code.google.com/p/mrpt/source/detail?r=2721" >r2721</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2762" >r2762</a>
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect no longer forces a horizontal tilt at start up by default, what may be annoying (if required, set "initial_tilt_angle") - <a href="http://code.google.com/p/mrpt/source/detail?r=2722" >r2722</a>
 	- Changes in classes:
 		- [mrpt-base] Changes in mrpt::math::CSparseMatrix: 
