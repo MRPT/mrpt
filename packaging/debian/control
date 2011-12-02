@@ -14,7 +14,7 @@ Build-Depends: debhelper (>= 5),
                libwxgtk2.8-dbg,
                libftdi-dev,
                freeglut3-dev,
-               libcv-dev |libopencv-calib3d-dev, 
+               libcv-dev | libopencv-calib3d-dev, 
                libcv-dev | libopencv-features2d-dev,
                libcv-dev | libopencv-imgproc-dev,
                libcv-dev | libopencv-legacy-dev,
@@ -28,9 +28,9 @@ Build-Depends: debhelper (>= 5),
                texlive | tetex,
                doxygen-latex | perl,
                subversion,
+               libeigen3-dev | perl,
                libdc1394-22-dev [!hurd-i386],
-               libusb-1.0-0-dev [!hurd-i386],
-               libeigen3-dev | perl
+               libusb-1.0-0-dev [!hurd-i386]
 Standards-Version: 3.9.2
 Homepage: http://www.mrpt.org/
 
