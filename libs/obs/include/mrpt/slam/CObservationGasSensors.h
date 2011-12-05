@@ -148,9 +148,8 @@ namespace slam
 
 						/** Obtain an estimation of the gas distribution based on raw sensor readings  */
 						bool get_GasDistribution_estimation(
-							float							&reading,
-							CPose3D							&sensorPose,
-							const mrpt::system::TTimeStamp	&timestamp );
+							float							&reading,							
+							mrpt::system::TTimeStamp		&timestamp );
 
 					protected:
 
@@ -160,8 +159,7 @@ namespace slam
 						{
 								float						reading;			//!< Sensore reading
 								mrpt::system::TTimeStamp	timestamp;			//!< Timestamp of the observation
-								float						tau;				//!< tau value applied
-								CPose3D						sensorPose;			//!< sensorPose of the observation
+								float						tau;				//!< tau value applied								
 								float						estimation;			//!< The value estimated according to the MOXmodel
 								float						reading_filtered;	//!< Reading after smooth (noise averaging)								
 						};
@@ -178,15 +176,13 @@ namespace slam
 						/** Estimates the gas concentration based on readings and sensor model
 						  */
 						void inverse_MOSmodeling (
-							const float							&reading,
-							const CPose3D					&sensorPose,
+							const float						&reading,							
 							const mrpt::system::TTimeStamp	&timestamp);
 
 						/** Reduce noise by averaging with a mobile window of specific size (winNoise_size)
 						  */
 						void noise_filtering (
-							const float						&reading,
-							const CPose3D					&sensorPose,
+							const float						&reading,							
 							const mrpt::system::TTimeStamp	&timestamp );
 
 						/** Save the gas distribution estiamtion into a log file for offline representation
@@ -195,8 +191,7 @@ namespace slam
 							const mrpt::system::TTimeStamp	&timestamp,
 							const float						&reading,
 							const float						&estimation,
-							const float						&tau,
-							const double					&yaw);
+							const float						&tau);
 
 					}; //End of CMOSmodel class def.
 
