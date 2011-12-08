@@ -11,10 +11,10 @@ Graph-related stuff: generic directed graphs (mrpt::graphs::CDirectedGraph) and 
 Graphs of pose constraints are also defined in this library, via a generic template mrpt::graphs::CNetworkOfPoses, capable
 of reading and writing to both binary and <a href="http://www.mrpt.org/Robotics_file_formats" >text pose-graph file</a> formats.
 Predefined typedefs exist for:
- - mrpt::graphs::CNetworkOfPoses2D     -> 2D graphs (x,y,phi), covariance matrix.
- - mrpt::graphs::CNetworkOfPoses3D     -> 3D graphs (x,y,z,yaw,pitch,roll), covariance matrix.
- - mrpt::graphs::CNetworkOfPoses2DInf  -> 2D graphs (x,y,phi), inverse covariance (information) matrix.
- - mrpt::graphs::CNetworkOfPoses3DInf  -> 3D graphs (x,y,z,yaw,pitch,roll), inverse covariance (information) matrix.
+ - mrpt::graphs::CNetworkOfPoses2D     -> Edges are 2D graphs (x,y,phi), without uncertainty.
+ - mrpt::graphs::CNetworkOfPoses3D     -> Edges are 3D graphs (x,y,z,yaw,pitch,roll),  without uncertainty.
+ - mrpt::graphs::CNetworkOfPoses2DInf  -> Edges are 2D graphs (x,y,phi), with an inverse covariance (information) matrix.
+ - mrpt::graphs::CNetworkOfPoses3DInf  -> Edges are 3D graphs (x,y,z,yaw,pitch,roll), with an inverse covariance (information) matrix.
 
 
 

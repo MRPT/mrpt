@@ -57,12 +57,6 @@ namespace mrpt
 		namespace detail
 		{
 			template <class GRAPH_T> struct graph_ops;
-//			template<class GRAPH_T> void save_graph_of_poses_from_text_file(const GRAPH_T *g, const std::string &fil);
-//			template<class GRAPH_T> void load_graph_of_poses_from_text_file(GRAPH_T* g, const std::string &fil);
-//			template<class GRAPH_T> void graph_of_poses_dijkstra_init(GRAPH_T *g);
-//			template<class GRAPH_T> size_t graph_of_poses_collapse_dup_edges(GRAPH_T *g);
-//			template<class GRAPH_T> double graph_edge_sqerror(const GRAPH_T *g, const typename mrpt::graphs::CDirectedGraph<typename GRAPH_T::constraint_t>::edges_map_t::const_iterator &itEdge, bool ignoreCovariances );
-
 			/** An empty structure */
 			struct node_annotations_empty {  };
 		}
