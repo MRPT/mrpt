@@ -72,13 +72,13 @@ void display_graph(const GRAPHTYPE & g)
 	mrpt::opengl::COpenGLScenePtr &scene = win.get3DSceneAndLock();
 	scene->insert(objGraph);
 
-	win.addTextMessage(2, 2+14*0,"'q': Quit", TColorf(0.8,0.8,0.8), "mono", 10, mrpt::opengl::NICE, 1000);
-	win.addTextMessage(2, 2+14*1,"'i': Switch view/hide node IDs", TColorf(1,1,1), "mono", 10, mrpt::opengl::NICE, 1001);
-	win.addTextMessage(2, 2+14*2,"'e': Switch view/hide edges", TColorf(1,1,1), "mono", 10, mrpt::opengl::NICE, 1002);
-	win.addTextMessage(2, 2+14*3,"'c': Switch view/hide node corners", TColorf(1,1,1), "mono", 10, mrpt::opengl::NICE, 1003);
-	win.addTextMessage(2, 2+14*4,"'v': Switch view/hide edge pose values", TColorf(1,1,1), "mono", 10, mrpt::opengl::NICE, 1004);
-	win.addTextMessage(2, 2+14*5,"+/-: Increase/reduce size of node points", TColorf(1,1,1), "mono", 10, mrpt::opengl::NICE, 1005);
-	win.addTextMessage(2, 2+14*6,"o/p: Increase/reduce length of node corners", TColorf(1,1,1), "mono", 10, mrpt::opengl::NICE, 1006);
+	win.addTextMessage(2, 2+14*0,"'q': Quit", TColorf(0.8,0.8,0.8), "mono", 10, mrpt::opengl::FILL, 1000);
+	win.addTextMessage(2, 2+14*1,"'i': Switch view/hide node IDs", TColorf(1,1,1), "mono", 10, mrpt::opengl::FILL, 1001);
+	win.addTextMessage(2, 2+14*2,"'e': Switch view/hide edges", TColorf(1,1,1), "mono", 10, mrpt::opengl::FILL, 1002);
+	win.addTextMessage(2, 2+14*3,"'c': Switch view/hide node corners", TColorf(1,1,1), "mono", 10, mrpt::opengl::FILL, 1003);
+	win.addTextMessage(2, 2+14*4,"'v': Switch view/hide edge pose values", TColorf(1,1,1), "mono", 10, mrpt::opengl::FILL, 1004);
+	win.addTextMessage(2, 2+14*5,"+/-: Increase/reduce size of node points", TColorf(1,1,1), "mono", 10, mrpt::opengl::FILL, 1005);
+	win.addTextMessage(2, 2+14*6,"o/p: Increase/reduce length of node corners", TColorf(1,1,1), "mono", 10, mrpt::opengl::FILL, 1006);
 
 	win.unlockAccess3DScene();
 	win.repaint();
