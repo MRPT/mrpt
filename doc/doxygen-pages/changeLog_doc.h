@@ -61,6 +61,7 @@
 	- BUG FIXES:
 		- [mrpt-base] mrpt::poses::CPose3D::composeFrom() gave wrong results when its first argument was the same object being invoked - <a href="http://code.google.com/p/mrpt/source/detail?r=2737" >r2737</a> 
 		- [mrpt-base] RANSAC implementation could fail if the first random subset contained only outliers. <a href="http://code.google.com/p/mrpt/issues/detail?id=11" >Patch provided</a> by Robert Schattschneider (University of Canterbury, New Zealand) - <a href="http://code.google.com/p/mrpt/source/detail?r=2746" >r2746</a> 
+		- [mrpt-base] File names from mrpt::system::getTempFileName() could be not system-wide unique under Windows - <a href="http://code.google.com/p/mrpt/source/detail?r=2766" >r2766</a> 
 
 
  <hr>

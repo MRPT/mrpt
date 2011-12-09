@@ -285,11 +285,13 @@ std::string mrpt::system::getcwd()
 std::string mrpt::system::getTempFileName()
 {
 #ifdef MRPT_OS_WINDOWS
-	static int	uniq = 0;
+	FILETIME		tt;
+	GetSystemTimeAsFileTime(&tt);
+	const UINT uniq = static_cast<UINT>(tt.dwLowDateTime);
 	char	TMP_PATH[ MAX_PATH ];
 	char	tmpPath[ MAX_PATH ];
 	GetTempPathA(MAX_PATH,tmpPath);
-	GetTempFileNameA(tmpPath,"mrpt", ++uniq, TMP_PATH);
+	GetTempFileNameA(tmpPath,"mrpt", uniq, TMP_PATH);
 	return std::string( TMP_PATH );
 #else
 	char tmp[] = "/tmp/mrpt_tempXXXXXX";
