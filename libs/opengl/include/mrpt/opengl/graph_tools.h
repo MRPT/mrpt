@@ -83,6 +83,21 @@ namespace mrpt
 			  *        <td align="center" > 1 (do show) </td>
 			  *   </tr>
 			  *   <tr>
+			  *        <td align="center" ><code> show_edge_rel_poses </code></td>
+			  *        <td> If set to !=0, draw the relative poses stored in each edge as a small extra 3D corner frame at each node pose (+) the edge pose (see mrpt::opengl::stock_objects::CornerXYZSimple). </td>
+			  *        <td align="center" > 1 (do show) </td>
+			  *   </tr>
+			  *   <tr>
+			  *        <td align="center" ><code> edge_rel_poses_color </code></td>
+			  *        <td> If show_edge_rel_poses is !=0, the color of those edges as a hexadecimal int value 0xAARRGGBB with Alpha+RGB color (Alpha=0xFF:opaque,0x00:transparent).</td>
+			  *        <td align="center" > 0x40FF8000 </td>
+			  *   </tr>
+			  *   <tr>
+			  *        <td align="center" ><code> nodes_edges_corner_scale </code></td>
+			  *        <td> If show_edge_rel_poses is !=0, the size of the corners at the end of each drawn edge.</td>
+			  *        <td align="center" > 0.4 </td>
+			  *   </tr>
+			  *   <tr>
 			  *        <td align="center" ><code> nodes_corner_scale </code></td>
 			  *        <td> If show_node_corners!=0, the size (length) of te corner lines. </td>
 			  *        <td align="center" > 0.7 </td>

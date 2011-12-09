@@ -52,10 +52,13 @@ namespace mrpt
 				const bool   show_ground_grid         = 0!=extra_params.getWithDefaultVal("show_ground_grid", 1);
 				const bool   show_edges               = 0!=extra_params.getWithDefaultVal("show_edges", 1);
 				const bool   show_node_corners        = 0!=extra_params.getWithDefaultVal("show_node_corners", 1);
+				const bool   show_edge_rel_poses      = 0!=extra_params.getWithDefaultVal("show_edge_rel_poses", 0);
 				const double nodes_point_size         = extra_params.getWithDefaultVal("nodes_point_size", 0. );
 				const double nodes_corner_scale       = extra_params.getWithDefaultVal("nodes_corner_scale", 0.7 );
+				const double nodes_edges_corner_scale = extra_params.getWithDefaultVal("nodes_edges_corner_scale", 0.4 );
 				const unsigned int nodes_point_color  = extra_params.getWithDefaultVal("nodes_point_color", (unsigned int)0xA0A0A0 );
 				const unsigned int edge_color         = extra_params.getWithDefaultVal("edge_color", (unsigned int)0x400000FF );
+				const unsigned int edge_rel_poses_color = extra_params.getWithDefaultVal("edge_rel_poses_color", (unsigned int)0x40FF8000 );
 				const double edge_width               = extra_params.getWithDefaultVal("edge_width", 2. );
 
 				if (show_ground_grid)
@@ -123,13 +126,49 @@ namespace mrpt
 					}
 				} // end draw node corners
 
+				if (show_edge_rel_poses) 
+				{
+					const TColor col8bit(edge_rel_poses_color & 0xffffff, edge_rel_poses_color >> 24);
+
+					for (typename GRAPH_T::const_iterator itEd = g.begin();itEd!=g.end();++itEd)
+					{
+						// Node ID of the source pose:
+						const TNodeID node_id_start = g.edges_store_inverse_poses ? itEd->first.second : itEd->first.first;
+
+						// Draw only if we have the global coords of starting nodes:
+						typename GRAPH_T::global_poses_t::const_iterator itNod = g.nodes.find(node_id_start);
+						if (itNod!=g.nodes.end())
+						{
+							const CPose3D pSource = CPose3D(itNod->second);
+							// Create a set of objects at that pose and do the rest in relative coords:
+							mrpt::opengl::CSetOfObjectsPtr gl_rel_edge = mrpt::opengl::CSetOfObjects::Create();
+							gl_rel_edge->setPose(pSource);
+
+							const typename GRAPH_T::constraint_no_pdf_t & edge_pose = itEd->second.getPoseMean();
+							const mrpt::poses::CPoint3D edge_pose_pt = mrpt::poses::CPoint3D(edge_pose);
+
+							mrpt::opengl::CSetOfObjectsPtr gl_edge_corner =
+								(is_3D_graph ? stock_objects::CornerXYZSimple(nodes_edges_corner_scale, 1.0 /*line width*/ ) : stock_objects::CornerXYSimple(nodes_edges_corner_scale, 1.0 /*line width*/ ));
+
+							gl_edge_corner->setPose(edge_pose);
+							gl_rel_edge->insert(gl_edge_corner);
+
+							mrpt::opengl::CSimpleLinePtr gl_line = mrpt::opengl::CSimpleLine::Create(0,0,0, edge_pose_pt.x(), edge_pose_pt.y(), edge_pose_pt.z() );
+							gl_line->setColor_u8( col8bit );
+							gl_line->setLineWidth(edge_width);
+							gl_rel_edge->insert(gl_line);
+
+							ret->insert( gl_rel_edge );
+						}
+					}
+				}
+
 				if (show_edges)
 				{
 					CSetOfLinesPtr  gl_edges = CSetOfLines::Create();
-					const TColor col8bit(edge_color & 0xffffff);
-					const uint8_t col_alpha = edge_color >> 24;
+					const TColor col8bit(edge_color & 0xffffff, edge_color >> 24);
 
-					gl_edges->setColor( col8bit.R*(1./255), col8bit.G*(1./255), col8bit.B*(1./255), col_alpha*(1./255) );
+					gl_edges->setColor_u8( col8bit );
 					gl_edges->setLineWidth( edge_width );
 
 					for (typename GRAPH_T::const_iterator itEd = g.begin();itEd!=g.end();++itEd)

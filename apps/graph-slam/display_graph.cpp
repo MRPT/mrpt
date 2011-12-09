@@ -72,12 +72,13 @@ void display_graph(const GRAPHTYPE & g)
 	mrpt::opengl::COpenGLScenePtr &scene = win.get3DSceneAndLock();
 	scene->insert(objGraph);
 
-	win.addTextMessage(2, 2+14*0,"'q': Quit", TColorf(0.8,0.8,0.8), 1000, MRPT_GLUT_BITMAP_HELVETICA_12 );
-	win.addTextMessage(2, 2+14*1,"'i': Switch view/hide node IDs", TColorf(1,1,1), 1001, MRPT_GLUT_BITMAP_HELVETICA_12 );
-	win.addTextMessage(2, 2+14*2,"'e': Switch view/hide edges", TColorf(1,1,1), 1002, MRPT_GLUT_BITMAP_HELVETICA_12 );
-	win.addTextMessage(2, 2+14*3,"'c': Switch view/hide node corners", TColorf(1,1,1), 1003, MRPT_GLUT_BITMAP_HELVETICA_12 );
-	win.addTextMessage(2, 2+14*4,"+/-: Increase/reduce size of node points", TColorf(1,1,1), 1004, MRPT_GLUT_BITMAP_HELVETICA_12 );
-	win.addTextMessage(2, 2+14*5,"o/p: Increase/reduce length of node corners", TColorf(1,1,1), 1005, MRPT_GLUT_BITMAP_HELVETICA_12 );
+	win.addTextMessage(2, 2+14*0,"'q': Quit", TColorf(0.8,0.8,0.8), "mono", 10, mrpt::opengl::NICE, 1000);
+	win.addTextMessage(2, 2+14*1,"'i': Switch view/hide node IDs", TColorf(1,1,1), "mono", 10, mrpt::opengl::NICE, 1001);
+	win.addTextMessage(2, 2+14*2,"'e': Switch view/hide edges", TColorf(1,1,1), "mono", 10, mrpt::opengl::NICE, 1002);
+	win.addTextMessage(2, 2+14*3,"'c': Switch view/hide node corners", TColorf(1,1,1), "mono", 10, mrpt::opengl::NICE, 1003);
+	win.addTextMessage(2, 2+14*4,"'v': Switch view/hide edge pose values", TColorf(1,1,1), "mono", 10, mrpt::opengl::NICE, 1004);
+	win.addTextMessage(2, 2+14*5,"+/-: Increase/reduce size of node points", TColorf(1,1,1), "mono", 10, mrpt::opengl::NICE, 1005);
+	win.addTextMessage(2, 2+14*6,"o/p: Increase/reduce length of node corners", TColorf(1,1,1), "mono", 10, mrpt::opengl::NICE, 1006);
 
 	win.unlockAccess3DScene();
 	win.repaint();
@@ -109,6 +110,7 @@ void display_graph(const GRAPHTYPE & g)
 			if (e.isOfType<mrpt::gui::mrptEventWindowChar>())
 			{
 				const mrpt::gui::mrptEventWindowChar * ev = e.getAs<mrpt::gui::mrptEventWindowChar>();
+				bool rebuild_3d_obj = false;
 				switch (ev->char_code)
 				{
 				case 'q':
@@ -118,42 +120,46 @@ void display_graph(const GRAPHTYPE & g)
 				case 'i':
 				case 'I':
 					params["show_ID_labels"] = params["show_ID_labels"]!=0 ? 0:1;
-					m_new_3dobj = mrpt::opengl::graph_tools::graph_visualize(m_graph,params);
-					request_to_refresh_3D_view = true;
+					rebuild_3d_obj = true;
 					break;
 				case 'e':
 				case 'E':
 					params["show_edges"] = params["show_edges"]!=0 ? 0:1;
-					m_new_3dobj = mrpt::opengl::graph_tools::graph_visualize(m_graph,params);
-					request_to_refresh_3D_view = true;
+					rebuild_3d_obj = true;
 					break;
 				case 'c':
 				case 'C':
 					params["show_node_corners"] = params["show_node_corners"]!=0 ? 0:1;
-					m_new_3dobj = mrpt::opengl::graph_tools::graph_visualize(m_graph,params);
-					request_to_refresh_3D_view = true;
+					rebuild_3d_obj = true;
+					break;
+				case 'v':
+				case 'V':
+					params["show_edge_rel_poses"] = params["show_edge_rel_poses"]!=0 ? 0:1;
+					rebuild_3d_obj = true;
 					break;
 				case '+':
 					params["nodes_point_size"]+=1.0;
-					m_new_3dobj = mrpt::opengl::graph_tools::graph_visualize(m_graph,params);
-					request_to_refresh_3D_view = true;
+					rebuild_3d_obj = true;
 					break;
 				case '-':
 					params["nodes_point_size"]=std::max(0.0, params["nodes_point_size"] - 1.0 );
-					m_new_3dobj = mrpt::opengl::graph_tools::graph_visualize(m_graph,params);
-					request_to_refresh_3D_view = true;
+					rebuild_3d_obj = true;
 					break;
 				case 'p':
 					params["nodes_corner_scale"]*=1.2;
-					m_new_3dobj = mrpt::opengl::graph_tools::graph_visualize(m_graph,params);
-					request_to_refresh_3D_view = true;
+					rebuild_3d_obj = true;
 					break;
 				case 'o':
 					params["nodes_corner_scale"]*=1.0/1.2;
-					m_new_3dobj = mrpt::opengl::graph_tools::graph_visualize(m_graph,params);
-					request_to_refresh_3D_view = true;
+					rebuild_3d_obj = true;
 					break;
 				};
+
+				if (rebuild_3d_obj) 
+				{
+					m_new_3dobj = mrpt::opengl::graph_tools::graph_visualize(m_graph,params);
+					request_to_refresh_3D_view = true;
+				}
 			}
 		}
 	};

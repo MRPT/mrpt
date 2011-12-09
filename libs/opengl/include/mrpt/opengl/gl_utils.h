@@ -174,7 +174,7 @@ namespace mrpt
 			/** @name OpenGL vector 3D fonts
 			    @{ */
 
-			/// sets the font to use for future font rendering commands. currently sans, serif and mono are available.
+			/// sets the font to use for future font rendering commands. currently "sans", "serif" and "mono" are available.
 			/// @param fontname string containing font name
 			void OPENGL_IMPEXP  glSetFont( const std::string & fontname );
 
