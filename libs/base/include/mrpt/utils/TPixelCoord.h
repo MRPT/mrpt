@@ -39,6 +39,8 @@ namespace mrpt
 		/** A pair (x,y) of pixel coordinates (subpixel resolution). \ingroup mrpt_base_grp  */
 		struct BASE_IMPEXP TPixelCoordf
 		{
+			typedef float pixel_coord_t; //!< The type of \a x and \a y
+
 			float x,y;
 
 			/** Default constructor: undefined values of x,y */
@@ -53,6 +55,8 @@ namespace mrpt
 		/** A pair (x,y) of pixel coordinates (integer resolution). */
 		struct BASE_IMPEXP TPixelCoord
 		{
+			typedef int pixel_coord_t; //!< The type of \a x and \a y
+
 			TPixelCoord() : x(0),y(0) { }
 			TPixelCoord(const int _x,const int _y) : x(_x), y(_y) { }
 

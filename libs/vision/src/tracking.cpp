@@ -80,9 +80,14 @@ namespace mrpt {
 			} // end of trackFeatures_checkResponses<>
 
 			template <class FEAT_LIST>
-			inline void trackFeatures_checkResponses_impl_simple(FEAT_LIST &featureList,const CImage &cur_gray,const float minimum_KLT_response,const unsigned int KLT_response_half_win,const unsigned int max_x, const unsigned int max_y)
+			inline void trackFeatures_checkResponses_impl_simple(FEAT_LIST &featureList,const CImage &cur_gray,const float minimum_KLT_response,const unsigned int KLT_response_half_win,const unsigned int max_x_, const unsigned int max_y_)
 			{
 				if (featureList.empty()) return;
+
+				typedef typename FEAT_LIST::feature_t::pixel_coord_t pixel_coord_t;
+				const pixel_coord_t half_win = static_cast<pixel_coord_t>(KLT_response_half_win);
+				const pixel_coord_t max_x = static_cast<pixel_coord_t>(max_x_);
+				const pixel_coord_t max_y = static_cast<pixel_coord_t>(max_y_);
 
 				for (int N = featureList.size()-1; N>=0 ; --N)
 				{
@@ -90,7 +95,7 @@ namespace mrpt {
 					if (ft.track_status!=status_TRACKED)
 						continue; // Skip if it's not correctly tracked.
 
-					if (ft.pt.x>KLT_response_half_win && ft.pt.y>KLT_response_half_win && ft.pt.x<max_x && ft.pt.y<max_y)
+					if (ft.pt.x>half_win && ft.pt.y>half_win && ft.pt.x<max_x && ft.pt.y<max_y)
 					{	// Update response:
 						ft.response = cur_gray.KLT_response(ft.pt.x,ft.pt.y,KLT_response_half_win);
 

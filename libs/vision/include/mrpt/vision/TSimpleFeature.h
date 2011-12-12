@@ -49,7 +49,10 @@ namespace mrpt
 		template <typename PIXEL_COORD_TYPE>
 		struct TSimpleFeature_templ
 		{
-			PIXEL_COORD_TYPE    pt;             //!< Coordinates in the image
+			typedef PIXEL_COORD_TYPE pixel_coords_t; //!< The type of \a pt
+			typedef typename PIXEL_COORD_TYPE::pixel_coord_t pixel_coord_t; //!< The type of pt.x and pt.y
+
+			pixel_coords_t      pt;             //!< Coordinates in the image
 			TFeatureID          ID;             //!< ID of the feature
 			TFeatureTrackStatus	track_status;	//!< Status of the feature tracking process
 			float				response;		//!< A measure of the "goodness" of the feature (typically, the KLT_response value)
