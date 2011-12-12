@@ -61,7 +61,7 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 	float		y_max,
 	float		resolution ) :
 		CRandomFieldGridMap2D(mapType, x_min,x_max,y_min,y_max,resolution ),
-		insertionOptions()		
+		insertionOptions()
 {
 	// Set the grid to initial values (and adjusts the KF covariance matrix!)
 	//  Also, calling clear() is mandatory to end initialization of our base class (read note in CRandomFieldGridMap2D::CRandomFieldGridMap2D)
@@ -69,7 +69,7 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 }
 
 CGasConcentrationGridMap2D::~CGasConcentrationGridMap2D()
-{	
+{
 }
 
 /*---------------------------------------------------------------
@@ -113,11 +113,11 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 					OBSERVATION TYPE: CObservationGasSensors
 		********************************************************************/
 		const CObservationGasSensors	*o = static_cast<const CObservationGasSensors*>( obs );
-		
+
 		if (o->sensorLabel == insertionOptions.sensorLabel)
 		{
 			/** Correct sensorLabel, process the observation */
-			
+
 			float sensorReading;
 			// Get index to differentiate between enoses --> insertionoptions.enose_id
 			//for (std::vector<CObservationGasSensors::TObservationENose>::const_iterator it = o->m_readings.begin(); it!=o->m_readings.end();it+=1)
@@ -361,8 +361,8 @@ void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
 					TInsertionOptions
  ---------------------------------------------------------------*/
 CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
-	sensorType				( 0x0000 ),		//By default use the mean between all e-nose sensors
-	enose_id				( 0 )			//By default use the first enose
+	enose_id				( 0 ),			//By default use the first enose
+	sensorType				( 0x0000 )		//By default use the mean between all e-nose sensors
 
 {
 }
@@ -390,7 +390,7 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 {
 	// Common data fields for all random fields maps:
 	internal_loadFromConfigFile_common(iniFile,section);
-	
+
 	// Specific data fields for gasGridMaps
 	sensorLabel	= iniFile.read_string(section.c_str(),"sensorLabel","Full_MCEnose");
 	enose_id	= iniFile.read_int(section.c_str(),"enoseID",enose_id);
@@ -408,10 +408,10 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 		}
 		else
 		{ // fall back to old name, or default to current value:
-			sensorType = iniFile.read_int(section.c_str(),"KF_sensorType",sensorType);			
+			sensorType = iniFile.read_int(section.c_str(),"KF_sensorType",sensorType);
 		}
 	}
-	
+
 }
 
 

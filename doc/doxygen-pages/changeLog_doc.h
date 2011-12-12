@@ -43,7 +43,9 @@
 		- [mrpt-base] Changes in mrpt::math::CSparseMatrix: 
 			- New method mrpt::math::CSparseMatrix::saveToTextFile_sparse()
 			- Overloaded method for "double*" mrpt::math::CSparseMatrix::CholeskyDecomp::backsub()
-		- [mrpt-base] KD-trees now also exposes methods for Radius search: mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D(), mrpt::math::KDTreeCapable::kdTreeRadiusSearch3D()  - <a href="http://code.google.com/p/mrpt/source/detail?r=2726" >r2726</a> 
+		- [mrpt-base] KD-trees: 
+			- Now also exposes methods for Radius search: mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D(), mrpt::math::KDTreeCapable::kdTreeRadiusSearch3D()  - <a href="http://code.google.com/p/mrpt/source/detail?r=2726" >r2726</a> 
+			- Updated to nanoflann 1.1.0: the main change is that (by default) all KD-tree indices are "size_t" instead of "int" - <a href="http://code.google.com/p/mrpt/source/detail?r=2771" >r2771</a> 
 		- [mrpt-base] mrpt::sync::CCriticalSectionLocker now can accept a NULL pointer as input, in which case no action will be taken (previosly, it led to segfault) - <a href="http://code.google.com/p/mrpt/source/detail?r=2727" >r2727</a> 
 		- [mrpt-base] mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.
 		- [mrpt-maps] mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.

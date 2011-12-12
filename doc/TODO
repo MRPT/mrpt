@@ -5,11 +5,9 @@ List of pending stuff to be integrated into MRPT someday:
  PRIORITY LIST
 ==================
 
-- Fix WifiMaps... (WTF was this??)
 - doc: Finish list of dependencies
 - icp-graph-slam
 - Rewrite CPointsMap methods as CRTP, if possible.
-- Integration of PCL: generate point clouds from Kinect observation
 
 
   WISHLIST FOR THE THREE WISE MEN

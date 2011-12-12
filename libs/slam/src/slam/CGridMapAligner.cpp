@@ -563,8 +563,8 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 						Hq(1,1) = 1;
 
 						CPoint2D p2_j_local;
-						vector<float>  matches_x,matches_y, matches_dist;
-						std::vector<int> matches_idx;
+						vector<float>  matches_dist;
+						std::vector<size_t> matches_idx;
 
 						CPoint2DPDFGaussian  pdf_M2_j;
 						CPoint2DPDFGaussian  pdf_M1_i;
@@ -602,10 +602,10 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 							static const unsigned int N_KDTREE_SEARCHED = 3;
 
 							// Look for a few close features which may be potential matches:
-							matches_idx = lm1_pnts.kdTreeNClosestPoint2D(
+							lm1_pnts.kdTreeNClosestPoint2DIdx(
 								pdf_M2_j.mean.x(),pdf_M2_j.mean.y(),
 								N_KDTREE_SEARCHED,
-								matches_x,matches_y,
+								matches_idx,
 								matches_dist);
 
 							// And for each one, compute the product-integral:
@@ -621,8 +621,10 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 								Hc.multiply_HCHt(COV_pnt,pdf_M1_i.cov);
 								Hq.multiply_HCHt(temptPose.cov,pdf_M1_i.cov,true);
 
-								pdf_M1_i.mean.x( matches_x[u] );
-								pdf_M1_i.mean.y( matches_y[u] );
+								float px,py;
+								lm1_pnts.getPoint(matches_idx[u], px,py);
+								pdf_M1_i.mean.x(px);
+								pdf_M1_i.mean.y(py);
 
 #ifdef SHOW_CORRS
 								win.plotEllipse( pdf_M1_i.mean.x(),pdf_M1_i.mean.y(),pdf_M1_i.cov,2,"r-",format("M1_%u",(unsigned)matches_idx[u]),true);

@@ -110,7 +110,7 @@ namespace mrpt
 				}
 
 				int nChecks; //!< The number of checks for ANN (default: 32) - corresponds to FLANN's SearchParams::check
-				int leaf_max_size; //!< Max points per leaf
+				size_t leaf_max_size; //!< Max points per leaf
 			};
 
 			TKDTreeSearchParams  kdtree_search_params; //!< Parameters to tune the ANN searches
@@ -145,8 +145,8 @@ namespace mrpt
 				rebuild_kdTree_2D(); // First: Create the 2D KD-Tree if required
 				if ( !m_kdtree2d_data.m_num_points ) THROW_EXCEPTION("There are no points in the KD-tree.")
 
-				const int knn = 1; // Number of points to retrieve
-				int ret_index;
+				const size_t knn = 1; // Number of points to retrieve
+				size_t ret_index;
 				nanoflann::KNNResultSet<num_t> resultSet(knn);
 				resultSet.init(&ret_index, &out_dist_sqr );
 
@@ -158,7 +158,7 @@ namespace mrpt
 				out_x = derived().kdtree_get_pt(ret_index,0);
 				out_y = derived().kdtree_get_pt(ret_index,1);
 
-				return static_cast<size_t>(ret_index);
+				return ret_index;
 				MRPT_END
 			}
 
@@ -172,8 +172,8 @@ namespace mrpt
 				rebuild_kdTree_2D(); // First: Create the 2D KD-Tree if required
 				if ( !m_kdtree2d_data.m_num_points ) THROW_EXCEPTION("There are no points in the KD-tree.")
 
-				const int knn = 1; // Number of points to retrieve
-				int ret_index;
+				const size_t knn = 1; // Number of points to retrieve
+				size_t ret_index;
 				nanoflann::KNNResultSet<num_t> resultSet(knn);
 				resultSet.init(&ret_index, &out_dist_sqr );
 
@@ -181,7 +181,7 @@ namespace mrpt
 				m_kdtree2d_data.query_point[1] = y0;
 		        m_kdtree2d_data.index->findNeighbors(resultSet, &m_kdtree2d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
 
-				return static_cast<size_t>(ret_index);
+				return ret_index;
 				MRPT_END
 			}
 
@@ -240,9 +240,9 @@ namespace mrpt
 				rebuild_kdTree_2D(); // First: Create the 2D KD-Tree if required
 				if ( !m_kdtree2d_data.m_num_points ) THROW_EXCEPTION("There are no points in the KD-tree.")
 
-				const int knn = 2; // Number of points to retrieve
-				int   ret_indexes[2];
-				float ret_sqdist[2];
+				const size_t knn = 2; // Number of points to retrieve
+				size_t  ret_indexes[2];
+				float   ret_sqdist[2];
 				nanoflann::KNNResultSet<num_t> resultSet(knn);
 				resultSet.init(&ret_indexes[0], &ret_sqdist[0] );
 
@@ -290,7 +290,7 @@ namespace mrpt
 			  *  \sa kdTreeTwoClosestPoint2D
 			  */
 			inline
-			std::vector<int> kdTreeNClosestPoint2D(
+			std::vector<size_t> kdTreeNClosestPoint2D(
 				float			x0,
 				float			y0,
 				size_t  knn,
@@ -302,7 +302,7 @@ namespace mrpt
 				rebuild_kdTree_2D(); // First: Create the 2D KD-Tree if required
 				if ( !m_kdtree2d_data.m_num_points ) THROW_EXCEPTION("There are no points in the KD-tree.")
 
-				std::vector<int> ret_indexes(knn);
+				std::vector<size_t> ret_indexes(knn);
 				out_x.resize(knn);
 				out_y.resize(knn);
 				out_dist_sqr.resize(knn);
@@ -323,9 +323,9 @@ namespace mrpt
 				MRPT_END
 			}
 
-			inline std::vector<int> kdTreeNClosestPoint2D(const TPoint2D &p0,size_t N,std::vector<TPoint2D> &pOut,std::vector<float> &outDistSqr) const	{
+			inline std::vector<size_t> kdTreeNClosestPoint2D(const TPoint2D &p0,size_t N,std::vector<TPoint2D> &pOut,std::vector<float> &outDistSqr) const	{
 				std::vector<float> dmy1,dmy2;
-				std::vector<int> res=kdTreeNClosestPoint2D(static_cast<float>(p0.x),static_cast<float>(p0.y),N,dmy1,dmy2,outDistSqr);
+				std::vector<size_t> res=kdTreeNClosestPoint2D(static_cast<float>(p0.x),static_cast<float>(p0.y),N,dmy1,dmy2,outDistSqr);
 				pOut.resize(dmy1.size());
 				for (size_t i=0;i<dmy1.size();i++)	{
 					pOut[i].x=static_cast<double>(dmy1[i]);
@@ -352,7 +352,7 @@ namespace mrpt
 				float			x0,
 				float			y0,
 				size_t  knn,
-				std::vector<int>	&out_idx,
+				std::vector<size_t>	&out_idx,
 				std::vector<float>  &out_dist_sqr ) const
 			{
 				MRPT_START
@@ -370,7 +370,7 @@ namespace mrpt
 				MRPT_END
 			}
 
-			inline void kdTreeNClosestPoint2DIdx(const TPoint2D &p0,size_t N,std::vector<int> &outIdx,std::vector<float> &outDistSqr) const	{
+			inline void kdTreeNClosestPoint2DIdx(const TPoint2D &p0,size_t N,std::vector<size_t> &outIdx,std::vector<float> &outDistSqr) const	{
 				return kdTreeNClosestPoint2DIdx(static_cast<float>(p0.x),static_cast<float>(p0.y),N,outIdx,outDistSqr);
 			}
 
@@ -405,8 +405,8 @@ namespace mrpt
 				rebuild_kdTree_3D(); // First: Create the 3D KD-Tree if required
 				if ( !m_kdtree3d_data.m_num_points ) THROW_EXCEPTION("There are no points in the KD-tree.")
 
-				const int knn = 1; // Number of points to retrieve
-				int ret_index;
+				const size_t knn = 1; // Number of points to retrieve
+				size_t ret_index;
 				nanoflann::KNNResultSet<num_t> resultSet(knn);
 				resultSet.init(&ret_index, &out_dist_sqr );
 
@@ -420,7 +420,7 @@ namespace mrpt
 				out_y = derived().kdtree_get_pt(ret_index,1);
 				out_z = derived().kdtree_get_pt(ret_index,2);
 
-				return static_cast<size_t>(ret_index);
+				return ret_index;
 				MRPT_END
 			}
 
@@ -436,8 +436,8 @@ namespace mrpt
 				rebuild_kdTree_3D(); // First: Create the 3D KD-Tree if required
 				if ( !m_kdtree3d_data.m_num_points ) THROW_EXCEPTION("There are no points in the KD-tree.")
 
-				const int knn = 1; // Number of points to retrieve
-				int ret_index;
+				const size_t knn = 1; // Number of points to retrieve
+				size_t ret_index;
 				nanoflann::KNNResultSet<num_t> resultSet(knn);
 				resultSet.init(&ret_index, &out_dist_sqr );
 
@@ -446,7 +446,7 @@ namespace mrpt
 				m_kdtree3d_data.query_point[2] = z0;
 		        m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
 
-				return static_cast<size_t>(ret_index);
+				return ret_index;
 				MRPT_END
 			}
 
@@ -491,7 +491,7 @@ namespace mrpt
 				rebuild_kdTree_3D(); // First: Create the 3D KD-Tree if required
 				if ( !m_kdtree3d_data.m_num_points ) THROW_EXCEPTION("There are no points in the KD-tree.")
 
-				std::vector<int> ret_indexes(knn);
+				std::vector<size_t> ret_indexes(knn);
 				out_x.resize(knn);
 				out_y.resize(knn);
 				out_z.resize(knn);
@@ -543,7 +543,7 @@ namespace mrpt
 			inline size_t kdTreeRadiusSearch3D(
 				const float x0, const float y0, const float z0,
 				const float maxRadius,
-				std::vector<std::pair<int,float> >& out_indices_dist ) const
+				std::vector<std::pair<size_t,float> >& out_indices_dist ) const
 			{
 				MRPT_START
 				rebuild_kdTree_3D(); // First: Create the 3D KD-Tree if required
@@ -574,7 +574,7 @@ namespace mrpt
 			inline size_t kdTreeRadiusSearch2D(
 				const float x0, const float y0,
 				const float maxRadius,
-				std::vector<std::pair<int,float> >& out_indices_dist ) const
+				std::vector<std::pair<size_t,float> >& out_indices_dist ) const
 			{
 				MRPT_START
 				rebuild_kdTree_2D(); // First: Create the 2D KD-Tree if required
@@ -608,7 +608,7 @@ namespace mrpt
 				float			y0,
 				float			z0,
 				size_t  knn,
-				std::vector<int>	&out_idx,
+				std::vector<size_t>	&out_idx,
 				std::vector<float>  &out_dist_sqr ) const
 			{
 				MRPT_START
@@ -627,7 +627,7 @@ namespace mrpt
 				MRPT_END
 			}
 
-			inline void kdTreeNClosestPoint3DIdx(const TPoint3D &p0,size_t N,std::vector<int> &outIdx,std::vector<float> &outDistSqr) const	{
+			inline void kdTreeNClosestPoint3DIdx(const TPoint3D &p0,size_t N,std::vector<size_t> &outIdx,std::vector<float> &outDistSqr) const	{
 				kdTreeNClosestPoint3DIdx(static_cast<float>(p0.x),static_cast<float>(p0.y),static_cast<float>(p0.z),N,outIdx,outDistSqr);
 			}
 

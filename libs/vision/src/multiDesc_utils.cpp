@@ -1029,12 +1029,12 @@ TMultiResMatchingOutput vision::matchMultiResolutionFeatures(
                             bool isMax = true;
                             if( list2.size() >= 8 )
                             {
-                                std::vector< int > out_idx;
+                                std::vector< size_t > out_idx;
                                 std::vector< float > out_dist_sqr;
                                 maxResponse = (*it2)->response;
 
                                 list2.kdTreeNClosestPoint2DIdx(	(*it2)->x, (*it2)->y, 8, out_idx, out_dist_sqr );
-                                for( int kdcounter = 0; kdcounter < (int)out_idx.size(); ++kdcounter )
+                                for( size_t kdcounter = 0; kdcounter < out_idx.size(); ++kdcounter )
                                 {
                                     if( out_dist_sqr[kdcounter] > 1.4142 )
                                         continue;
