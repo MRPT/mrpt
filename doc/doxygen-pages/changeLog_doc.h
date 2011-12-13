@@ -52,6 +52,7 @@
 		- [mrpt-vision] Interface of mrpt::vision::CGenericFeatureTracker extended to handle subpixel feature coordinates (mrpt::vision::TSimpleFeaturefList)
 		- [mrpt-gui] & [mrpt-hwdrivers] Environment variable MRPT_WXSUBSYS_TIMEOUT_MS is now observed in all places where a GUI window is expected to be launched.
 		- [mrpt-opengl] Method mrpt::opengl::graph_tools::graph_visualize() now also shows the pose constraints for better visualization of graph maps - <a href="http://code.google.com/p/mrpt/source/detail?r=2767" >r2767</a>
+		- [mrpt-opengl] All mrpt::opengl::CRenderizable classes now have a much more versatile serialization mechanism, which also saves a few bytes per object - <a href="http://code.google.com/p/mrpt/source/detail?r=2774" >r2774</a>
 	- Support for RFID sensors: (Batch of changed by Emil Khatib) - <a href="http://code.google.com/p/mrpt/source/detail?r=2736" >r2736</a>
 		- [mrpt-obs] New class mrpt::slam::CObservationRFID
 		- [mrpt-hwdrivers] Support for Impinj's "Speedway Revolution RFID reader", see new class mrpt::hwdrivers::CImpinjRFID

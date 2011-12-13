@@ -135,74 +135,163 @@ void CRenderizable::releaseTextureName(unsigned int i)
 
 void  CRenderizable::writeToStreamRender(CStream &out) const
 {
-	out << m_name << (float)(m_color.R*255.f) << (float)(m_color.G*255.f) << (float)(m_color.B*255.f) << (float)(m_color.A*255.f);
-	out << (float)m_pose.x() << (float)m_pose.y() << (float)m_pose.z();
+	// MRPT 0.9.5 svn 2774 (Dec 14th 2011): 
+	// Added support of versioning at this level of serialization too.
+	// Should have been done from the beginning, terrible mistake on my part. 
+	// Now, the only solution is something as ugly as this:
+	//
+	// For reference: In the past this started as:
+	// out << m_name << (float)(m_color.R) << (float)(m_color.G) << (float)(m_color.B) << (float)(m_color.A);
+	// ...
 
-	// Version 2 (dummy=16.0f): Added scale vars
-	// Version 3 (dummy=17.0f): Added "m_visible"
-	if (m_scale_x==1.0f && m_scale_y==1.0f && m_scale_z==1.0f)
+	const uint8_t serialization_version = 0;   // can't be >31 (but it would be mad geting to that situation!)
+
+	const bool all_scales_equal = (m_scale_x==m_scale_y && m_scale_z==m_scale_x);
+	const bool all_scales_unity = (all_scales_equal && m_scale_x==1.0f);
+
+	// Write signature:
+	const uint8_t magic_signature[2] = { 
+		0xFF,
+		// bit7: fixed to 1 to mark this new header format
+		// bit6: whether the 3 scale{x,y,z} are equal to 1.0
+		// bit5: whether the 3 scale{x,y,z} are equal to each other
+		serialization_version | (all_scales_unity ? 0xC0 : (all_scales_equal ? 0xA0 : 0x80) )
+	};
+
+	out << magic_signature[0] << magic_signature[1];
+
+	// "m_name"
+	const uint16_t nameLen = static_cast<uint16_t>(m_name.size());
+	out << nameLen;
+	if (nameLen) out.WriteBuffer(m_name.c_str(),m_name.size());
+
+	// Color, as u8:
+	out << m_color.R << m_color.G << m_color.B << m_color.A;
+
+	// the rest of fields:
+	out << (float)m_pose.x() << (float)m_pose.y() << (float)m_pose.z()
+		<< (float)m_pose.yaw() << (float)m_pose.pitch() << (float)m_pose.roll();
+
+	if (!all_scales_unity)
 	{
-		// Keep old format for compatibility:
-		out << (float)RAD2DEG(m_pose.yaw())
-		    << (float)RAD2DEG(m_pose.pitch())
-			<< (float)RAD2DEG(m_pose.roll())
-		    << m_show_name;
+		if (all_scales_equal)
+				out << m_scale_x;
+		else	out << m_scale_x << m_scale_y << m_scale_z;
 	}
-	else
-	{
-		const float dummy = 17.0f;
-		out << (float)RAD2DEG(m_pose.yaw())
-		    << (float)RAD2DEG(m_pose.pitch())
-		    << dummy
-		    << (float)RAD2DEG(m_pose.roll())
-		    << m_show_name
-		    << m_scale_x << m_scale_y << m_scale_z
-		    << m_visible; // Added in v3
-	}
+
+	out  << m_show_name
+		 << m_visible;
 }
 
 void  CRenderizable::readFromStreamRender(CStream &in)
 {
-	in >> m_name;
-	float f;
+	// MRPT 0.9.5 svn 2774 (Dec 14th 2011): 
+	// See comments in CRenderizable::writeToStreamRender() for the employed serialization mechanism.
+	//
 
-	float yaw_deg,pitch_deg,roll_deg;
+	// Read signature:
+	uint8_t magic_signature[2+2];  // (the extra 4 bytes will be used only for the old format)
+	in >> magic_signature[0] >> magic_signature[1];
 
-	mrpt::utils::TColorf col;
-	in >> col.R >> col.G >> col.B >> col.A;
-	m_color = mrpt::utils::TColor(col.R*255,col.G*255,col.B*255,col.A*255);
+	const bool is_new_format = (magic_signature[0]==0xFF) && ((magic_signature[1]&0x80)!=0);
 
-	in >> f; m_pose.x(f);
-	in >> f; m_pose.y(f);
-	in >> f; m_pose.z(f);
-	in >> yaw_deg;
-	in >> pitch_deg;
-	in >> roll_deg;
-	// Version 2: Add scale vars:
-	//  JL: Yes, this is a crappy hack since I forgot to enable versions here...what? :-P
-	if (f!=16.0f && f!=17.0f)
+	if (is_new_format)
 	{
-		// Old version:
-		// "roll_deg" is the actual roll.
-		in >> m_show_name;
-		m_scale_x=m_scale_y=m_scale_z=1;	// Default values
+		// NEW FORMAT:
+		uint8_t serialization_version = (magic_signature[1] & 0x1F);
+		const bool all_scales_unity = ((magic_signature[1]&0x40)!=0);
+		const bool all_scales_equal_but_not_unity = ((magic_signature[1]&0x20)!=0);
+		
+		switch(serialization_version)
+		{
+		case 0:
+			{
+			// "m_name"
+			uint16_t nameLen;
+			in >> nameLen;
+			m_name.resize(nameLen);
+			if (nameLen) in.ReadBuffer((void*)(&m_name[0]),m_name.size());
+
+			// Color, as u8:
+			in >> m_color.R >> m_color.G >> m_color.B >> m_color.A;
+
+			// the rest of fields:
+			float x,y,z,yaw,pitch,roll;
+			in >> x >> y >> z >> yaw >> pitch >> roll;
+			m_pose.x(x); m_pose.y(y); m_pose.z(z);
+			m_pose.setYawPitchRoll( yaw,pitch,roll );
+
+			if (all_scales_unity)
+					m_scale_x=m_scale_y=m_scale_z=1;
+			else {
+				if (all_scales_equal_but_not_unity)
+				{
+					in >> m_scale_x;
+					m_scale_y = m_scale_z = m_scale_x;
+				}
+				else in >> m_scale_x >> m_scale_y >> m_scale_z;
+			}
+
+			in >> m_show_name
+			   >> m_visible;
+			}
+			break;
+		default:
+			THROW_EXCEPTION_CUSTOM_MSG1("Can't parse CRenderizable standard data field: corrupt data stream or format in a newer MRPT format? (serialization version=%u)",static_cast<unsigned int>(serialization_version))
+		};
 	}
 	else
 	{
-		// New version >=v2:
-		in >> roll_deg;
-		in >> m_show_name;
+		// OLD FORMAT:
+		//Was: in >> m_name;
+		// We already read 2 bytes from the string uint32_t length: 
+		in >> magic_signature[2] >> magic_signature[3];
+		{
+			const uint32_t nameLen = *reinterpret_cast<const uint32_t*>(&magic_signature[0]);
+			m_name.resize(nameLen);
+			if (nameLen)
+				in.ReadBuffer((void*)(&m_name[0]),m_name.size());
+		}
 
-		// Scale data:
-		in >> m_scale_x >> m_scale_y >> m_scale_z;
+		float f;
+		float yaw_deg,pitch_deg,roll_deg;
 
-		if (f==17.0f)  // version>=v3
-			in >>m_visible;
+		mrpt::utils::TColorf col;
+		in >> col.R >> col.G >> col.B >> col.A;
+		m_color = mrpt::utils::TColor(col.R/255,col.G/255,col.B/255,col.A/255);  // For some stupid reason, colors were saved multiplied by 255... (facepalm)
+
+		in >> f; m_pose.x(f);
+		in >> f; m_pose.y(f);
+		in >> f; m_pose.z(f);
+		in >> yaw_deg;
+		in >> pitch_deg;
+		in >> f; roll_deg = f; 
+		// Version 2: Add scale vars:
+		//  JL: Yes, this is a crappy hack since I forgot to enable versions here...what? :-P
+		if (f!=16.0f && f!=17.0f)
+		{
+			// Old version:
+			// "roll_deg" is the actual roll.
+			in >> m_show_name;
+			m_scale_x=m_scale_y=m_scale_z=1;	// Default values
+		}
 		else
-			m_visible = true; // Default
-	}
+		{
+			// New version >=v2:
+			in >> roll_deg;
+			in >> m_show_name;
 
-	m_pose.setYawPitchRoll( DEG2RAD(yaw_deg),DEG2RAD(pitch_deg),DEG2RAD(roll_deg) );
+			// Scale data:
+			in >> m_scale_x >> m_scale_y >> m_scale_z;
+
+			if (f==17.0f)  // version>=v3
+				in >>m_visible;
+			else
+				m_visible = true; // Default
+		}
+
+		m_pose.setYawPitchRoll( DEG2RAD(yaw_deg),DEG2RAD(pitch_deg),DEG2RAD(roll_deg) );
+	}
 }
 
 
