@@ -459,13 +459,15 @@ void  C3DSScene::writeToStream(CStream &out,int *version) const
 	else
 	{
 		writeToStreamRender(out);
-		string	tmpFil = mrpt::system::getTempFileName();
-
-		lib3ds_file_save( (Lib3dsFile*) m_3dsfile->file, tmpFil.c_str() );
 
 		CMemoryChunk chunk;
-		chunk.loadBufferFromFile( tmpFil  );
-		mrpt::system::deleteFile( tmpFil );
+		if (m_3dsfile && m_3dsfile->file)
+		{
+			const string	tmpFil = mrpt::system::getTempFileName();
+			lib3ds_file_save( (Lib3dsFile*) m_3dsfile->file, tmpFil.c_str() );
+			chunk.loadBufferFromFile( tmpFil  );
+			mrpt::system::deleteFile( tmpFil );
+		}
 
 		// Write the "3dsfile":
 		out << chunk;
@@ -490,25 +492,28 @@ void  C3DSScene::readFromStream(CStream &in,int version)
 			readFromStreamRender(in);
 
 			// Read the memory block, save to a temp. "3dsfile" and load...
-			string	tmpFil = mrpt::system::getTempFileName();
 			clear();
 
 			CMemoryChunk chunk;
 			in >> chunk;
 
-			if (!chunk.saveBufferToFile( tmpFil ) )
-				THROW_EXCEPTION("Error saving temporary 3ds file");
-
-			try
+			if (chunk.getTotalBytesCount())
 			{
-				loadFrom3DSFile( tmpFil );
-			}
-			catch (...)
-			{
-				THROW_EXCEPTION("Error loading temporary 3ds file");
+				const string	tmpFil = mrpt::system::getTempFileName();
+				if (!chunk.saveBufferToFile( tmpFil ) )
+					THROW_EXCEPTION("Error saving temporary 3ds file");
+
+				try
+				{
+					loadFrom3DSFile( tmpFil );
+				}
+				catch (...)
+				{
+					THROW_EXCEPTION("Error loading temporary 3ds file");
+				}
+				mrpt::system::deleteFile( tmpFil );
 			}
 
-			mrpt::system::deleteFile( tmpFil );
 
 			if (version>=1)
 			{
