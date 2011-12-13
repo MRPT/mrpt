@@ -128,7 +128,6 @@ double joint_pdf_metric (
 	}
 
 	// Compute mahalanobis distance squared:
-	const T cov_det = COV.det();
 	CMatrixTemplateNumeric<T>	COV_inv;
 	COV.inv_fast(COV_inv);
 
@@ -140,6 +139,7 @@ double joint_pdf_metric (
 	ASSERT_(METRIC==metricML);
 
 	// Matching likelihood: The evaluation at 0 of the PDF of the difference between the two Gaussians:
+	const T cov_det = COV.det();
 	const double ml = exp(-0.5*d2) / ( std::pow(M_2PI, info.length_O * 0.5) * std::sqrt(cov_det) );
 	return ml;
 }
