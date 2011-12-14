@@ -50,24 +50,31 @@ using namespace mrpt::opengl;
 /*---------------------------------------------------------------
 						Constructor
 ---------------------------------------------------------------*/
-CFBORender::CFBORender( unsigned int width, unsigned int height ) : m_width(width), m_height(height)
+CFBORender::CFBORender( unsigned int width, unsigned int height, const bool skip_glut_window ) : 
+	m_width(width), 
+	m_height(height), 
+	m_win_used(!skip_glut_window),
+	m_default_bk_color(.6f,.6f,.6f,1)
 {
 #if MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT
 
 	MRPT_START
 
-	// check a previous initialization of the GLUT
-	if(!glutGet(GLUT_INIT_STATE))
+	if (m_win_used)
 	{
-		// create the context (a little trick)
-		int argc = 1;
-		char *argv[1] = { NULL };
-		glutInit(&argc, argv);
-	}
+		// check a previous initialization of the GLUT
+		if(!glutGet(GLUT_INIT_STATE))
+		{
+			// create the context (a little trick)
+			int argc = 1;
+			char *argv[1] = { NULL };
+			glutInit(&argc, argv);
+		}
 
-	// create a hidden window
-	m_win = glutCreateWindow("CFBORender");
-	glutHideWindow();
+		// create a hidden window
+		m_win = glutCreateWindow("CFBORender");
+		glutHideWindow();
+	}
 
 	// call after creating the hidden window
 	if(!isExtensionSupported("GL_EXT_framebuffer_object"))
@@ -128,7 +135,7 @@ CFBORender::~CFBORender()
 	// delete the current texture, the framebuffer object and the GLUT window
 	glDeleteTextures(1, &m_tex);
 	glDeleteFramebuffersEXT(1, &m_fbo);
-	glutDestroyWindow(m_win);
+	if (m_win_used) glutDestroyWindow(m_win);
 
 	MRPT_END
 
@@ -206,6 +213,8 @@ void  CFBORender::getFrame2( const COpenGLScene& scene, CImage& buffer )
 	// bind the framebuffer, fbo, so operations will now occur on it
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_fbo);
 
+	glClearColor(m_default_bk_color.R,m_default_bk_color.G,m_default_bk_color.B,m_default_bk_color.A);
+
 	// Render opengl objects:
 	// ---------------------------
 	scene.render();
@@ -217,8 +226,8 @@ void  CFBORender::getFrame2( const COpenGLScene& scene, CImage& buffer )
 
 	// get the current read buffer setting and save it
 	IplImage* image = (IplImage*)buffer.getAsIplImage();
+	// TODO NOTE: This should fail if the image has padding bytes. See glPixelStore() etc.
 	glReadPixels(0, 0, m_width, m_height, GL_BGR_EXT, GL_UNSIGNED_BYTE, image->imageData);
-	image = NULL;
 
 	//'unbind' the frambuffer object, so subsequent drawing ops are not drawn into the FBO.
 	// '0' means "windowing system provided framebuffer

@@ -51,6 +51,10 @@
 					<help>Saves the current window image to a file</help>
 					<handler function="OnMenuItem14Selected" entry="EVT_MENU" />
 				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM23" variable="MenuItem22" member="yes">
+					<label>High-resolution render to file...</label>
+					<handler function="OnMenuItemHighResRender" entry="EVT_MENU" />
+				</object>
 				<object class="wxMenuItem" name="ID_MENUITEM18" variable="mnuSceneStats" member="yes">
 					<label>Scene stats</label>
 					<handler function="OnmnuSceneStatsSelected" entry="EVT_MENU" />

@@ -32,18 +32,19 @@
 #include <wx/app.h>
 
 //(*InternalHeaders(_DSceneViewerFrame)
-#include <wx/string.h>
-#include <wx/intl.h>
+#include <wx/artprov.h>
 #include <wx/bitmap.h>
 #include <wx/icon.h>
+#include <wx/intl.h>
 #include <wx/image.h>
-#include <wx/artprov.h>
+#include <wx/string.h>
 //*)
 
 #include "CDialogOptions.h"
 #include "CAboutBox.h"
 
 #include <wx/msgdlg.h>
+#include <wx/numdlg.h>
 #include <wx/filedlg.h>
 #include <wx/progdlg.h>
 #include <wx/imaglist.h>
@@ -68,6 +69,7 @@
 #endif
 
 #include <mrpt/gui/CMyGLCanvasBase.h>
+#include <mrpt/opengl/CFBORender.h>
 
 
 // A custom Art provider for customizing the icons:
@@ -329,6 +331,7 @@ const long _DSceneViewerFrame::ID_MENUITEM19 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM22 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM21 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM12 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM23 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM18 = wxNewId();
 const long _DSceneViewerFrame::idMenuQuit = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM4 = wxNewId();
@@ -389,20 +392,20 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     wxMenuItem* MenuItem2;
     wxMenu* MenuItem15;
     wxMenuItem* MenuItem1;
+    wxMenuItem* MenuItem4;
+    wxMenuItem* MenuItem13;
     wxMenu* Menu1;
     wxMenuItem* MenuItem12;
     wxMenuItem* MenuItem3;
     wxMenuBar* MenuBar1;
-    wxMenuItem* MenuItem4;
-    wxMenuItem* MenuItem13;
     wxMenu* Menu2;
-
+    
     Create(parent, id, _("3DSceneViewer - Part of the MRPT project - Jose Luis Blanco (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetClientSize(wxSize(672,539));
     {
-    wxIcon FrameIcon;
-    FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
-    SetIcon(FrameIcon);
+    	wxIcon FrameIcon;
+    	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
+    	SetIcon(FrameIcon);
     }
     MenuBar1 = new wxMenuBar();
     Menu1 = new wxMenu();
@@ -428,6 +431,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     Menu1->AppendSeparator();
     MenuItem14 = new wxMenuItem(Menu1, ID_MENUITEM12, _("Take snapshot...\tF2"), _("Saves the current window image to a file"), wxITEM_NORMAL);
     Menu1->Append(MenuItem14);
+    MenuItem22 = new wxMenuItem(Menu1, ID_MENUITEM23, _("High-resolution render to file..."), wxEmptyString, wxITEM_NORMAL);
+    Menu1->Append(MenuItem22);
     mnuSceneStats = new wxMenuItem(Menu1, ID_MENUITEM18, _("Scene stats"), wxEmptyString, wxITEM_NORMAL);
     Menu1->Append(mnuSceneStats);
     Menu1->AppendSeparator();
@@ -492,7 +497,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     timLoadFileCmdLine.SetOwner(this, ID_TIMER1);
     timLoadFileCmdLine.Start(50, true);
     Center();
-
+    
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
     Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
     Connect(ID_MENUITEM5,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnReload);
@@ -501,6 +506,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_MENUITEM20,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemImportPLYPointCloud);
     Connect(ID_MENUITEM22,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemExportPointsPLY);
     Connect(ID_MENUITEM12,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItem14Selected);
+    Connect(ID_MENUITEM23,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemHighResRender);
     Connect(ID_MENUITEM18,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSceneStatsSelected);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnQuit);
     Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuBackColor);
@@ -1495,7 +1501,7 @@ void _DSceneViewerFrame::OnMenuItemExportPointsPLY(wxCommandEvent& event)
 			_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ),
 			_("*.ply"),
 			_("PLY files (*.ply, *.PLY)|*.ply;*.PLY|All files (*.*)|*.*"),
-			wxFD_SAVE );
+			wxFD_SAVE | wxFD_OVERWRITE_PROMPT   );
 
 		if (dialog.ShowModal() != wxID_OK)
 			return;
@@ -1520,3 +1526,47 @@ void _DSceneViewerFrame::OnMenuItemExportPointsPLY(wxCommandEvent& event)
         wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
     }
 }
+
+// Off-screen high-resolution render to image file:
+void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
+{
+	try
+	{
+		wxFileDialog dialog(
+			this,
+			_("Choose target image file"),
+			_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ),
+			_("render.png"),
+			_("Image files (*.png,*.tif,*.jpg,...)|*.png;*.tif;*.jpg;*.bmp|All files (*.*)|*.*"),
+			wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+		if (dialog.ShowModal() != wxID_OK)
+			return;
+
+		const std::string sTargetFil = string(dialog.GetPath().mb_str());
+		saveLastUsedDirectoryToCfgFile(sTargetFil);
+
+		{
+			wxBusyCursor busy;
+
+			const long width  = wxGetNumberFromUser	(_("Render image size"),_("Width in pixels:"),_("Width:"),1024, 1,std::numeric_limits<long>::max(), this );
+			const long height = wxGetNumberFromUser	(_("Render image size"),_("Height in pixels:"),_("Height:"),768, 1,std::numeric_limits<long>::max(), this );
+
+			CFBORender render(width, height, true /* skip Glut extra window */);
+			CImage frame(width, height, 3, false);
+
+			render.setBackgroundColor(mrpt::utils::TColorf(m_canvas->clearColorR,m_canvas->clearColorG,m_canvas->clearColorB,1));
+
+			// render the scene
+			render.getFrame(*m_canvas->m_openGLScene, frame);
+			
+			frame.saveToFile(sTargetFil);
+		}
+
+    }
+    catch(std::exception &e)
+    {
+        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+    }
+
+}
+

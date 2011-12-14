@@ -48,13 +48,12 @@ namespace mrpt
 		class OPENGL_IMPEXP CFBORender : public mrpt::opengl::CTextMessageCapable
 		{
 		public:
-
-			/** Constructor
+			/** Constructor. 
+			  * \param[in] skip_glut_window Should be set to true only if another GUI windows already exist with an associated OpenGL context. If left to false, a hidden GLUT window will be created.
 			  */
-			CFBORender( unsigned int width = 800, unsigned int height = 600 );
+			CFBORender( unsigned int width = 800, unsigned int height = 600, const bool skip_glut_window = false );
 
-			/** Destructor
-			 */
+			/** Destructor */
 			virtual ~CFBORender();
 
 			/** Change the scene camera.
@@ -75,13 +74,20 @@ namespace mrpt
 			  */
 			void  getFrame2( const COpenGLScene& scene, mrpt::utils::CImage& image );
 
-			/** Resize the image size.
-			  */
+			/** Resize the rendering canvas size. */
 			void  resize( unsigned int width, unsigned int height );
 
+			/** Get the default background color (unles an COpenGLViewport defines a custom color) */
+			const mrpt::utils::TColorf & getBackgroundColor() const { return m_default_bk_color; }
+
+			/** Set the default background color (unles an COpenGLViewport defines a custom color) */
+			void setBackgroundColor(const mrpt::utils::TColorf &col){ m_default_bk_color=col; }
+
 		protected:
-			int m_win, m_width, m_height;
-			unsigned int m_fbo, m_tex;
+			int                  m_win, m_width, m_height;
+			unsigned int         m_fbo, m_tex;
+			bool                 m_win_used;
+			mrpt::utils::TColorf m_default_bk_color;
 
 			/** Provide information on Framebuffer object extension.
 			  */
