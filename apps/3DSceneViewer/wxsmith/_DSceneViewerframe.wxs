@@ -67,8 +67,28 @@
 					<handler function="OnQuit" entry="EVT_MENU" />
 				</object>
 			</object>
+			<object class="wxMenu" variable="Menu4" member="yes">
+				<label>&amp;Edit</label>
+				<object class="wxMenuItem" name="ID_MENUITEM24" variable="mnuSelectNone" member="yes">
+					<label>Select none</label>
+					<handler function="OnmnuSelectNoneSelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM26" variable="mnuSelectByClass" member="yes">
+					<label>Select by class...</label>
+					<handler function="OnmnuSelectByClassSelected" entry="EVT_MENU" />
+				</object>
+				<object class="separator" />
+				<object class="wxMenuItem" name="ID_MENUITEM27" variable="mnuSelectionScale" member="yes">
+					<label>Re-scale selected...</label>
+					<handler function="OnmnuSelectionScaleSelected" entry="EVT_MENU" />
+				</object>
+				<object class="wxMenuItem" name="ID_MENUITEM28" variable="mnuSelectionDelete" member="yes">
+					<label>Delete selected</label>
+					<handler function="OnmnuSelectionDeleteSelected" entry="EVT_MENU" />
+				</object>
+			</object>
 			<object class="wxMenu" variable="Menu3" member="yes">
-				<label>Tools</label>
+				<label>&amp;Tools</label>
 				<object class="wxMenuItem" name="ID_MENUITEM4" variable="MenuItem6" member="yes">
 					<label>Background color...</label>
 					<handler function="OnMenuBackColor" entry="EVT_MENU" />
@@ -115,7 +135,7 @@
 				</object>
 			</object>
 			<object class="wxMenu" variable="Menu2" member="no">
-				<label>Help</label>
+				<label>&amp;Help</label>
 				<object class="wxMenuItem" name="idMenuAbout" variable="MenuItem2" member="no">
 					<label>About</label>
 					<accel>F1</accel>

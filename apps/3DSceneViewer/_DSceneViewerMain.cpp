@@ -45,6 +45,7 @@
 
 #include <wx/msgdlg.h>
 #include <wx/numdlg.h>
+#include <wx/choicdlg.h>
 #include <wx/filedlg.h>
 #include <wx/progdlg.h>
 #include <wx/imaglist.h>
@@ -97,6 +98,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 // Used for feedback from the glcanvas component to its parent.
 _DSceneViewerFrame		*theWindow=NULL;
 
+
 #include <mrpt/utils.h>
 #include <mrpt/system.h>
 using namespace mrpt;
@@ -113,17 +115,10 @@ using namespace std;
 
 #include <GL/gl.h>
 #include <GL/glu.h>
-//#ifdef HAVE_FREEGLUT_EXT_H
-//	#include <GL/freeglut_ext.h>
-//#endif
 
 
 // Critical section for updating the scene:
 synch::CCriticalSection	critSec_UpdateScene;
-
-// For TCP streams...
-extern opengl::COpenGLScenePtr newOpenGLScene;
-opengl::COpenGLScenePtr newOpenGLScene;	// TEMP!!
 
 // The file to open (from cmd line), or an empty string
 extern std::string     global_fileToOpen;
@@ -170,14 +165,10 @@ void CMyGLCanvas::OnRenderError( const wxString &str )
 
 void CMyGLCanvas::OnPreRender()
 {
+	// This was used to receive scenes from a TCP stream, but it's not used anymore now:
 	// Do we have to update the scene??
-	synch::CCriticalSectionLocker   lock( &critSec_UpdateScene );
-	if (newOpenGLScene)
-	{
-		m_openGLScene.clear_unique();
-		m_openGLScene = newOpenGLScene;
-		newOpenGLScene.clear_unique();
-	}
+//	synch::CCriticalSectionLocker   lock( &critSec_UpdateScene );
+//	if (newOpenGLScene) { m_openGLScene.clear_unique(); m_openGLScene = newOpenGLScene; newOpenGLScene.clear_unique(); }
 }
 
 void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)
@@ -334,6 +325,10 @@ const long _DSceneViewerFrame::ID_MENUITEM12 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM23 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM18 = wxNewId();
 const long _DSceneViewerFrame::idMenuQuit = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM24 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM26 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM27 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM28 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM4 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM3 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM15 = wxNewId();
@@ -439,6 +434,17 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     MenuItem1 = new wxMenuItem(Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
     Menu1->Append(MenuItem1);
     MenuBar1->Append(Menu1, _("&File"));
+    Menu4 = new wxMenu();
+    mnuSelectNone = new wxMenuItem(Menu4, ID_MENUITEM24, _("Select none"), wxEmptyString, wxITEM_NORMAL);
+    Menu4->Append(mnuSelectNone);
+    mnuSelectByClass = new wxMenuItem(Menu4, ID_MENUITEM26, _("Select by class..."), wxEmptyString, wxITEM_NORMAL);
+    Menu4->Append(mnuSelectByClass);
+    Menu4->AppendSeparator();
+    mnuSelectionScale = new wxMenuItem(Menu4, ID_MENUITEM27, _("Re-scale selected..."), wxEmptyString, wxITEM_NORMAL);
+    Menu4->Append(mnuSelectionScale);
+    mnuSelectionDelete = new wxMenuItem(Menu4, ID_MENUITEM28, _("Delete selected"), wxEmptyString, wxITEM_NORMAL);
+    Menu4->Append(mnuSelectionDelete);
+    MenuBar1->Append(Menu4, _("&Edit"));
     Menu3 = new wxMenu();
     MenuItem6 = new wxMenuItem(Menu3, ID_MENUITEM4, _("Background color..."), wxEmptyString, wxITEM_NORMAL);
     Menu3->Append(MenuItem6);
@@ -465,11 +471,11 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     MenuItem16 = new wxMenuItem(MenuItem15, ID_MENUITEM14, _("Arbitrary path..."), wxEmptyString, wxITEM_NORMAL);
     MenuItem15->Append(MenuItem16);
     Menu3->Append(ID_MENUITEM13, _("Camera tracking"), MenuItem15, wxEmptyString);
-    MenuBar1->Append(Menu3, _("Tools"));
+    MenuBar1->Append(Menu3, _("&Tools"));
     Menu2 = new wxMenu();
     MenuItem2 = new wxMenuItem(Menu2, idMenuAbout, _("About\tF1"), _("Show info about this application"), wxITEM_NORMAL);
     Menu2->Append(MenuItem2);
-    MenuBar1->Append(Menu2, _("Help"));
+    MenuBar1->Append(Menu2, _("&Help"));
     SetMenuBar(MenuBar1);
     StatusBar1 = new wxStatusBar(this, ID_STATUSBAR1, 0, _T("ID_STATUSBAR1"));
     int __wxStatusBarWidths_1[4] = { -10, -10, -4, -5 };
@@ -509,6 +515,10 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_MENUITEM23,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemHighResRender);
     Connect(ID_MENUITEM18,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSceneStatsSelected);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnQuit);
+    Connect(ID_MENUITEM24,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSelectNoneSelected);
+    Connect(ID_MENUITEM26,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSelectByClassSelected);
+    Connect(ID_MENUITEM27,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSelectionScaleSelected);
+    Connect(ID_MENUITEM28,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSelectionDeleteSelected);
     Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuBackColor);
     Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuOptions);
     Connect(ID_MENUITEM15,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected);
@@ -1558,7 +1568,7 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 
 			// render the scene
 			render.getFrame(*m_canvas->m_openGLScene, frame);
-			
+
 			frame.saveToFile(sTargetFil);
 		}
 
@@ -1569,4 +1579,113 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
     }
 
 }
+
+
+// Select: none
+void _DSceneViewerFrame::OnmnuSelectNoneSelected(wxCommandEvent& event)
+{
+	m_selected_gl_objects.clear();
+}
+
+
+class OpenGlObjectsFilterVirtual
+{
+public:
+	OpenGlObjectsFilterVirtual(std::vector<mrpt::opengl::CRenderizablePtr> &out_list) : m_out_list(out_list) {}
+
+	virtual void operator()(const mrpt::opengl::CRenderizablePtr &obj)
+	{
+		if (checkObj(obj)) m_out_list.push_back(obj);
+	}
+
+	std::vector<mrpt::opengl::CRenderizablePtr> & m_out_list;
+protected:
+	virtual bool checkObj(const mrpt::opengl::CRenderizablePtr &obj) = 0;
+};
+
+class OpenGlObjectsFilter_ByClass : public OpenGlObjectsFilterVirtual
+{
+public:
+	OpenGlObjectsFilter_ByClass(
+		std::vector<mrpt::opengl::CRenderizablePtr> &out_list, 
+		const vector<const TRuntimeClassId*> &selected_classes) 
+		: OpenGlObjectsFilterVirtual(out_list),
+		  m_selected_classes(selected_classes)
+	{ 
+	}
+
+protected:
+	virtual bool checkObj(const mrpt::opengl::CRenderizablePtr &obj)
+	{
+		for(size_t i=0;i<m_selected_classes.size();i++) {
+			if (obj->GetRuntimeClass()==m_selected_classes[i])
+				return true;
+		}
+		return false;
+	}
+
+	const vector<const TRuntimeClassId*> &m_selected_classes;
+};
+
+
+
+// Select: by class
+void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
+{
+	static bool init_list = true;
+	static wxArrayString  glClassNames;
+	if (init_list)
+	{
+		init_list = false;
+		vector<const TRuntimeClassId*> all_mrpt_classes = mrpt::utils::getAllRegisteredClasses();
+		for (size_t i=0;i<all_mrpt_classes.size();i++)
+			if (all_mrpt_classes[i]->derivedFrom(CLASS_ID(CRenderizable)))
+				glClassNames.Add(_U(all_mrpt_classes[i]->className));
+	}
+
+	wxArrayInt selections;
+	wxGetMultipleChoices(selections, _("Select by class:"),_("Select objects"),glClassNames,this);
+
+	// Build list of classes IDs:
+	vector<const TRuntimeClassId*> selected_classes;
+	for (size_t i=0;i<selections.Count();i++)
+	{
+		const std::string sName = std::string(glClassNames[selections[i]].mb_str());
+		selected_classes.push_back(mrpt::utils::findRegisteredClass(sName));
+	}
+	
+	// Go thru objects and do filter:
+	OpenGlObjectsFilter_ByClass filter(m_selected_gl_objects, selected_classes);
+	m_canvas->m_openGLScene->visitAllObjects( filter );
+	
+	theWindow->StatusBar1->SetStatusText( _U(mrpt::format("%u objects selected",static_cast<unsigned int>(m_selected_gl_objects.size())).c_str()), 0);
+}
+
+
+// On selection: delete
+void _DSceneViewerFrame::OnmnuSelectionDeleteSelected(wxCommandEvent& event)
+{
+	for (size_t i=0;i<m_selected_gl_objects.size();i++)
+		m_selected_gl_objects[i].clear();
+    Refresh(false);
+}
+
+// On selection: re-scale
+void _DSceneViewerFrame::OnmnuSelectionScaleSelected(wxCommandEvent& event)
+{
+	wxString ssScale = wxGetTextFromUser(_("Multiply scale of selected objects"), _("Scale factor:"), _("1.0"), this);
+	std::string sScale = std::string(ssScale.mb_str());
+	const float s = atof(sScale.c_str());
+
+	for (size_t i=0;i<m_selected_gl_objects.size();i++)
+		if (m_selected_gl_objects[i]) 
+		{
+			const float sx = m_selected_gl_objects[i]->getScaleX();
+			const float sy = m_selected_gl_objects[i]->getScaleY();
+			const float sz = m_selected_gl_objects[i]->getScaleZ();
+			m_selected_gl_objects[i]->setScale( s*sx,s*sy,s*sz );
+		}
+    Refresh(false);
+}
+
 

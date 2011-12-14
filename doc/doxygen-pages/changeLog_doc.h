@@ -36,7 +36,9 @@
   <h2>Version 0.9.6 - (Under development) </h2></a>
 	- Changes in applications:
 		- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: Operation "camera-params" now also handles stereo observations.
-		- <a href="http://www.mrpt.org/Application:SceneViewer" >SceneViewer3D</a>: New tool for generating high-resolution renders of any scene directly to imag files - <a href="http://code.google.com/p/mrpt/source/detail?r=2775" >r2775</a>
+		- <a href="http://www.mrpt.org/Application:SceneViewer" >SceneViewer3D</a>: 
+			- New menu for generating high-resolution renders of any scene directly to imag files - <a href="http://code.google.com/p/mrpt/source/detail?r=2775" >r2775</a>
+			- Many new menus for selective selecting objects and applying operations on them - <a href="http://code.google.com/p/mrpt/source/detail?r=2776" >r2776</a>
 	- Kinect stuff: 
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect now decodes Bayer color using OpenCV instead of default freenect - <a href="http://code.google.com/p/mrpt/source/detail?r=2721" >r2721</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2762" >r2762</a>
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect no longer forces a horizontal tilt at start up by default, what may be annoying (if required, set "initial_tilt_angle") - <a href="http://code.google.com/p/mrpt/source/detail?r=2722" >r2722</a>

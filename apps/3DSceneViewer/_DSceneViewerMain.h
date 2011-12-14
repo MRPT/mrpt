@@ -113,6 +113,10 @@ class _DSceneViewerFrame: public wxFrame
         void OnMenuItemImportPLYPointCloud(wxCommandEvent& event);
         void OnMenuItemExportPointsPLY(wxCommandEvent& event);
         void OnMenuItemHighResRender(wxCommandEvent& event);
+        void OnmnuSelectionDeleteSelected(wxCommandEvent& event);
+        void OnmnuSelectionScaleSelected(wxCommandEvent& event);
+        void OnmnuSelectByClassSelected(wxCommandEvent& event);
+        void OnmnuSelectNoneSelected(wxCommandEvent& event);
         //*)
 
 		void OntimAutoplay(wxTimerEvent& event);
@@ -131,6 +135,10 @@ class _DSceneViewerFrame: public wxFrame
         static const long ID_MENUITEM23;
         static const long ID_MENUITEM18;
         static const long idMenuQuit;
+        static const long ID_MENUITEM24;
+        static const long ID_MENUITEM26;
+        static const long ID_MENUITEM27;
+        static const long ID_MENUITEM28;
         static const long ID_MENUITEM4;
         static const long ID_MENUITEM3;
         static const long ID_MENUITEM15;
@@ -166,6 +174,7 @@ class _DSceneViewerFrame: public wxFrame
         wxToolBarToolBase* btnOrtho;
         wxToolBarToolBase* ToolBarItem4;
         wxMenuItem* MenuItem8;
+        wxMenuItem* mnuSelectionDelete;
         wxToolBar* ToolBar1;
         wxMenuItem* MenuItem7;
         wxToolBarToolBase* ToolBarItem3;
@@ -182,17 +191,21 @@ class _DSceneViewerFrame: public wxFrame
         wxMenuItem* MenuItem10;
         wxToolBarToolBase* ToolBarItem6;
         wxToolBarToolBase* ToolBarItem1;
+        wxMenuItem* mnuSelectNone;
         wxMenuItem* mnuSceneStats;
+        wxMenuItem* mnuSelectionScale;
         wxStatusBar* StatusBar1;
         wxMenuItem* MenuItem6;
         wxToolBarToolBase* ToolBarItem5;
         wxTimer timLoadFileCmdLine;
         wxMenuItem* MenuItem21;
+        wxMenuItem* mnuSelectByClass;
         wxMenuItem* MenuItem16;
         wxMenuItem* MenuItem9;
         wxMenu* MenuItem18;
         wxMenuItem* mnuItemShowCloudOctrees;
         wxToolBarToolBase* ToolBarItem2;
+        wxMenu* Menu4;
         wxMenuItem* MenuItem19;
         wxMenu* MenuItem11;
         wxMenu* MenuItem17;
@@ -200,6 +213,8 @@ class _DSceneViewerFrame: public wxFrame
 
 		CMyGLCanvas	*m_canvas;
 		wxTimer		*m_autoplayTimer;
+
+		std::vector<mrpt::opengl::CRenderizablePtr> m_selected_gl_objects; //!< The list of currently selected objects
 
         wxTimer 	m_tTravelling;
         bool		m_travelling_is_arbitrary;
