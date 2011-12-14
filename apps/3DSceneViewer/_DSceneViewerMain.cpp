@@ -1558,8 +1558,15 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 		{
 			wxBusyCursor busy;
 
-			const long width  = wxGetNumberFromUser	(_("Render image size"),_("Width in pixels:"),_("Width:"),1024, 1,std::numeric_limits<long>::max(), this );
-			const long height = wxGetNumberFromUser	(_("Render image size"),_("Height in pixels:"),_("Height:"),768, 1,std::numeric_limits<long>::max(), this );
+			// It seems wxGetNumberFromUser() leads to a crash with wxGTK (tested with wx2.8.11)
+			// So use wxGetTextFromUser() instead
+			wxString ssW = wxGetTextFromUser(_("Render image size"),_("Width in pixels:"),_("1024"), this);
+			std::string sW = std::string(ssW.mb_str());
+			const long width = atoi(sW.c_str());
+
+			wxString ssH = wxGetTextFromUser(_("Render image size"),_("Height in pixels:"),_("768"), this);
+			std::string sH = std::string(ssH.mb_str());
+			const long height = atoi(sH.c_str());
 
 			CFBORender render(width, height, true /* skip Glut extra window */);
 			CImage frame(width, height, 3, false);

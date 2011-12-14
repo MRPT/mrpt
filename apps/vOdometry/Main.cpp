@@ -823,7 +823,7 @@ int main(int argc, char **argv)
 		}
 
 		INI_FILENAME = std::string( argv[1] );
-		ASSERT_(fileExists(INI_FILENAME));
+		ASSERT_FILE_EXISTS_(INI_FILENAME)
 
 		iniFile = new utils::CConfigFile( INI_FILENAME );
 

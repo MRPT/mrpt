@@ -82,7 +82,7 @@ int main(int argc, char **argv)
 		}
 
 		const string INI_FILENAME = string( argv[1] );
-		ASSERT_(fileExists(INI_FILENAME));
+		ASSERT_FILE_EXISTS_(INI_FILENAME)
 
 		string override_rawlog_file;
 		if (argc>=3)
@@ -183,8 +183,8 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 
 
 	// Checks:
-	ASSERT_(RAWLOG_FILE.size()>0);
-	ASSERT_(fileExists(RAWLOG_FILE));
+	ASSERT_(RAWLOG_FILE.size()>0)
+	ASSERT_FILE_EXISTS_(RAWLOG_FILE)
 
 	CTicTac								tictac,tictacGlobal,tictac_JH;
 	int									step = 0;

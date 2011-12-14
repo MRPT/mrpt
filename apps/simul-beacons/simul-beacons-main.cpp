@@ -65,7 +65,7 @@ int main(int argc, char ** argv)
 		}
 
 		string INI_FILENAME = std::string( argv[1] );
-		ASSERT_(fileExists(INI_FILENAME));
+		ASSERT_FILE_EXISTS_(INI_FILENAME)
 
 		CConfigFile		ini( INI_FILENAME );
 

@@ -274,7 +274,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 	string ground_truth_data_association = cfgFile.read_string("MappingApplication","ground_truth_data_association","");
 
 	cout << "RAWLOG FILE:" << endl << rawlogFileName << endl;
-	ASSERT_( fileExists( rawlogFileName ) );
+	ASSERT_FILE_EXISTS_( rawlogFileName )
 	CFileGZInputStream	rawlogFile( rawlogFileName );
 
 

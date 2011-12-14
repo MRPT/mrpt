@@ -108,17 +108,17 @@ int main(int argc, char ** argv)
 
 void do_simulation()
 {
-	ASSERT_( mrpt::system::fileExists(gt_file) );
+	ASSERT_FILE_EXISTS_(gt_file)
 
 	bool have_in_rawlog;
 	if (!in_rawlog_file.empty())
 	{
-		ASSERT_( mrpt::system::fileExists(in_rawlog_file) );
+		ASSERT_FILE_EXISTS_(in_rawlog_file)
 		have_in_rawlog = true;
 	}
 	else have_in_rawlog = false;
 
-	ASSERT_( mrpt::system::fileExists(grid_file) );
+	ASSERT_FILE_EXISTS_(grid_file)
 
 	// Load the grid:
 	COccupancyGridMap2D the_grid;

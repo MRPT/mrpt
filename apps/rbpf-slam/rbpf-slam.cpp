@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 		}
 
 		INI_FILENAME = std::string( argv[1] );
-		ASSERT_(fileExists(INI_FILENAME));
+		ASSERT_FILE_EXISTS_(INI_FILENAME)
 
 		string override_rawlog_file; 
 		if (argc>=3)
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 
 		// Checks:
 		ASSERT_(RAWLOG_FILE.size()>0);
-		ASSERT_(fileExists(RAWLOG_FILE));
+		ASSERT_FILE_EXISTS_(RAWLOG_FILE)
 
 		// Set relative path for externally-stored images in rawlogs:
 		string	rawlog_images_path = extractFileDirectory( RAWLOG_FILE );

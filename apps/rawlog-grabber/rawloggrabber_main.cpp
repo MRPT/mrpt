@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 #endif
 
 		string INI_FILENAME( argv[1] );
-		ASSERT_(fileExists(INI_FILENAME));
+		ASSERT_FILE_EXISTS_(INI_FILENAME)
 
 		CConfigFile		iniFile( INI_FILENAME );
 

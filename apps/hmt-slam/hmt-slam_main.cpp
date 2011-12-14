@@ -118,7 +118,7 @@ void Run_HMT_SLAM()
 	const std::string OUT_DIR =  cfgFile.read_string("HMT-SLAM","LOG_OUTPUT_DIR", "HMT_SLAM_OUTPUT");
 
 
-	ASSERT_( fileExists( rawlogFileName ) );
+	ASSERT_FILE_EXISTS_( rawlogFileName )
 	CFileGZInputStream	 rawlogFile( rawlogFileName);
 
 	mapping.printf_debug("---------------------------------------------------\n\n");

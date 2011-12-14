@@ -103,7 +103,7 @@ int main(int argc, char **argv)
 // ------------------------------------------------------
 void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_rawlog_file)
 {
-	ASSERT_( fileExists(ini_fil) );
+	ASSERT_FILE_EXISTS_(ini_fil)
 
 	CConfigFile	iniFile(ini_fil);
 

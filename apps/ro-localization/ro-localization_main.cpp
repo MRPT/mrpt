@@ -107,7 +107,7 @@ void TestParticlesLocalization()
 	MRPT_LOAD_CONFIG_VAR(SAVE_3D_TO_VIDEO, bool, (*iniFile), "ro-localization");
 
 
-	ASSERT_(fileExists(RAWLOG_FILE));
+	ASSERT_FILE_EXISTS_(RAWLOG_FILE)
 
 	// Load GT:
 	CMatrix			groundTruth;

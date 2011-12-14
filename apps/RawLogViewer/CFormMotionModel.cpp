@@ -503,11 +503,11 @@ void CFormMotionModel::applyToRawlogFile()
         if ( !txtOutputFile->GetValue().size() )
             THROW_EXCEPTION("An output rawlog file must be selected")
 
-            string   fileName_IN( txtInputFile->GetValue().mbc_str() );
-    if (!mrpt::system::fileExists(fileName_IN) )
-        THROW_EXCEPTION("Input file does not exist!")
+	string   fileName_IN( txtInputFile->GetValue().mbc_str() );
 
-        string   fileName_OUT( txtOutputFile->GetValue().mbc_str() );
+	ASSERT_FILE_EXISTS_(fileName_IN)
+
+	string   fileName_OUT( txtOutputFile->GetValue().mbc_str() );
 
     if (!fileName_OUT.compare(fileName_IN))
         THROW_EXCEPTION("Input and output files must be different!")
@@ -913,7 +913,7 @@ void CFormMotionModel::OnbtnGetFromFileClick(wxCommandEvent& event)
     WX_START_TRY
 
     string   fileName( txtInputFile->GetValue().mbc_str() );
-    ASSERT_( mrpt::system::fileExists(fileName) );
+    ASSERT_FILE_EXISTS_(fileName)
 
     CFileGZInputStream	fil(fileName);
 
