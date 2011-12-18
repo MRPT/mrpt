@@ -281,7 +281,7 @@ namespace mrpt {
 
 					if (!section_idx_x || !section_idx_y || section_idx_x>=grid_lx-1 || section_idx_y>=grid_ly-1)
 						continue; // This may be too radical, but speeds up the logic below...
-					
+
 					// Mark sections as occupied
 					bool *ptr1 = &occupied_sections.get_unsafe(section_idx_x-1,section_idx_y-1);
 					bool *ptr2 = &occupied_sections.get_unsafe(section_idx_x-1,section_idx_y  );
@@ -409,8 +409,8 @@ namespace mrpt {
 						const int x= ft.pt.x;
 						const int y= ft.pt.y;
 						if (x<MIN_DIST_MARGIN_TO_STOP_TRACKING  || y<MIN_DIST_MARGIN_TO_STOP_TRACKING ||
-							x>(img_width-MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
-							y>(img_height-MIN_DIST_MARGIN_TO_STOP_TRACKING))
+							x>static_cast<int>(img_width-MIN_DIST_MARGIN_TO_STOP_TRACKING) ||
+							y>static_cast<int>(img_height-MIN_DIST_MARGIN_TO_STOP_TRACKING))
 						{
 							eras = true;
 						}
@@ -580,7 +580,7 @@ void CGenericFeatureTracker::internal_trackFeatures(
 
 		last_execution_extra_info.num_deleted_feats = nRemoved;
 	}
-	else 
+	else
 	{
 		last_execution_extra_info.num_deleted_feats = 0;
 	}
