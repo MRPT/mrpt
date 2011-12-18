@@ -28,8 +28,7 @@
 namespace Eigen {
 
 /** \ingroup Unsupported_modules
-  * \defgroup AutoDiff_Module Auto Diff module  
- * \ingroup eigen_grp
+  * \defgroup AutoDiff_Module Auto Diff module 
  * \ingroup eigen_grp
   *
   * This module features forward automatic differentation via a simple

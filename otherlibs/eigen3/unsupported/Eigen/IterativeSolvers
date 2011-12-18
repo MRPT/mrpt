@@ -30,8 +30,7 @@
 namespace Eigen {
 
 /** \ingroup Unsupported_modules
-  * \defgroup IterativeSolvers_Module Iterative solvers module  
- * \ingroup eigen_grp
+  * \defgroup IterativeSolvers_Module Iterative solvers module 
  * \ingroup eigen_grp
   * This module aims to provide various iterative linear and non linear solver algorithms.
   * It currently provides:

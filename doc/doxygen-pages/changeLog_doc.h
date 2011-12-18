@@ -63,6 +63,7 @@
 	- Build system:
 		- Support for a new CMake variable: "MRPT_DONT_USE_DBG_LIBS", which if set to "1" before doing a "FIND_PACKAGE(MRPT ...)" from a user program, forces the usage of normal release libs (vs the -dbg versions) even for "Debug" CMake builds (this is mostly useful for GCC builds in GNU/Linux).
 		- [mrpt-opengl] Added new unit tests for serialization of all the classes in this library - <a href="http://code.google.com/p/mrpt/source/detail?r=2773" >2773</a> 
+		- Update of the embedded version of Eigen to 3.0.4 (Dec 6th, 2011) - <a href="http://code.google.com/p/mrpt/source/detail?r=2778" >2778</a>
 	- New examples:
 		- csparse_demo
 	- Deleted classes:

@@ -36,8 +36,7 @@
 namespace Eigen {
 
 /** \ingroup Unsupported_modules
-  * \defgroup MatrixFunctions_Module Matrix functions module  
- * \ingroup eigen_grp
+  * \defgroup MatrixFunctions_Module Matrix functions module 
  * \ingroup eigen_grp
   * \brief This module aims to provide various methods for the computation of
   * matrix functions. 

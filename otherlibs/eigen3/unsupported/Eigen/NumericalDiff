@@ -30,8 +30,7 @@
 namespace Eigen {
 
 /** \ingroup Unsupported_modules
-  * \defgroup NumericalDiff_Module Numerical differentiation module  
- * \ingroup eigen_grp
+  * \defgroup NumericalDiff_Module Numerical differentiation module 
  * \ingroup eigen_grp
   *
   * \code
