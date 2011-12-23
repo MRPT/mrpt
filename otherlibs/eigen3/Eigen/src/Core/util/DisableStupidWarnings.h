@@ -10,6 +10,7 @@
   // 4244 - 'argument' : conversion from 'type1' to 'type2', possible loss of data
   // 4273 - QtAlignedMalloc, inconsistent DLL linkage
   // 4324 - structure was padded due to declspec(align())
+  // 4307 - integral constant overflow while checking templates params
   // 4512 - assignment operator could not be generated
   // 4522 - 'class' : multiple assignment operators specified
   // 4700 - uninitialized local variable 'xyz' used
@@ -17,7 +18,7 @@
   #ifndef EIGEN_PERMANENTLY_DISABLE_STUPID_WARNINGS
     #pragma warning( push )
   #endif
-  #pragma warning( disable : 4100 4101 4127 4181 4211 4244 4273 4324 4512 4522 4700 4717 )
+  #pragma warning( disable : 4100 4101 4127 4181 4211 4244 4273 4307 4324 4512 4522 4700 4717 )
 #elif defined __INTEL_COMPILER
   // 2196 - routine is both "inline" and "noinline" ("noinline" assumed)
   //        ICC 12 generates this warning even without any inline keyword, when defining class methods 'inline' i.e. inside of class body

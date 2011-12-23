@@ -46,7 +46,7 @@ int main(int argc, char ** argv)
 		bool showHelp    = argc>1 && !os::_strcmp(argv[1],"--help");
 		bool showVersion = argc>1 && !os::_strcmp(argv[1],"--version");
 
-		printf(" simul-beacons version 0.1 - Part of the MRPT\n");
+		printf(" simul-beacons - Part of the MRPT\n");
 		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
 
 		if (showVersion)
