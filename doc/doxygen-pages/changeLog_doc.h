@@ -73,7 +73,7 @@
 		- [mrpt-base] RANSAC implementation could fail if the first random subset contained only outliers. <a href="http://code.google.com/p/mrpt/issues/detail?id=11" >Patch provided</a> by Robert Schattschneider (University of Canterbury, New Zealand) - <a href="http://code.google.com/p/mrpt/source/detail?r=2746" >r2746</a> 
 		- [mrpt-base] File names from mrpt::system::getTempFileName() could be not system-wide unique under Windows - <a href="http://code.google.com/p/mrpt/source/detail?r=2766" >r2766</a> 
 		- [mrpt-opengl] Fixed potential SIGSEGV while serializing an uninitialized mrpt::opengl::C3DSScene object - <a href="http://code.google.com/p/mrpt/source/detail?r=2773" >2773</a> 
-
+		- [mrpt-base/mrpt-opengl] Method getAs3DObject() of mrpt::poses' poses PDFs cleared the previous contents of the passed CSetOfObjects argument, which shouldn't be the expected behavior  - <a href="http://code.google.com/p/mrpt/source/detail?r=2781" >2781</a> 
 
  <hr>
  <a name="0.9.5">
