@@ -41,11 +41,14 @@ using namespace std;
 /*---------------------------------------------------------------
 						Render: 2D implementation
   ---------------------------------------------------------------*/
+namespace mrpt {
+namespace opengl {
+namespace detail {
 template <>
-void mrpt::opengl::detail::renderGeneralizedEllipsoidTemplate<2>(
+void renderGeneralizedEllipsoidTemplate<2>(
 	const std::vector<mrpt::math::CArray<float,2> > & pts,
 	const float    lineWidth,
-	const uint32_t slices, 
+	const uint32_t slices,
 	const uint32_t stacks)
 {
 #if MRPT_HAS_OPENGL_GLUT
@@ -67,10 +70,10 @@ void mrpt::opengl::detail::renderGeneralizedEllipsoidTemplate<2>(
 						Render: 3D implementation
   ---------------------------------------------------------------*/
 template <>
-void mrpt::opengl::detail::renderGeneralizedEllipsoidTemplate<3>(
+void renderGeneralizedEllipsoidTemplate<3>(
 	const std::vector<mrpt::math::CArray<float,3> > & pts,
 	const float    lineWidth,
-	const uint32_t slices, 
+	const uint32_t slices,
 	const uint32_t stacks
 	)
 {
@@ -79,7 +82,7 @@ void mrpt::opengl::detail::renderGeneralizedEllipsoidTemplate<3>(
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);   gl_utils::checkOpenGLError();
 	glLineWidth(lineWidth); gl_utils::checkOpenGLError();
 
-	// Points in the ellipsoid: 
+	// Points in the ellipsoid:
 	//  * "#slices" slices, with "#stacks" points each, but for the two ends
 	//  * 1 point at each end slice
 	// #total points = stacks*(slices-2) + 2
@@ -146,7 +149,7 @@ void mrpt::opengl::detail::renderGeneralizedEllipsoidTemplate<3>(
 			generalizedEllipsoidPoints: 2D
   ---------------------------------------------------------------*/
 template <>
-void OPENGL_IMPEXP mrpt::opengl::detail::generalizedEllipsoidPoints<2>(
+void OPENGL_IMPEXP generalizedEllipsoidPoints<2>(
 	const mrpt::math::CMatrixFixedNumeric<double,2,2> & U,
 	const mrpt::math::CMatrixFixedNumeric<double,2,1>   & mean,
 	std::vector<mrpt::math::CArray<float,2> >   &out_params_pts,
@@ -164,7 +167,7 @@ void OPENGL_IMPEXP mrpt::opengl::detail::generalizedEllipsoidPoints<2>(
 		out_params_pts.resize(out_params_pts.size()+1);
 
 		mrpt::math::CArray<float,2> &pt = out_params_pts.back();
-		
+
 		pt[0] = mean[0] + ccos * U.get_unsafe(0,0) + ssin * U.get_unsafe(0,1);
 		pt[1] = mean[1] + ccos * U.get_unsafe(1,0) + ssin * U.get_unsafe(1,1);
 	}
@@ -172,7 +175,7 @@ void OPENGL_IMPEXP mrpt::opengl::detail::generalizedEllipsoidPoints<2>(
 
 
 
-inline 
+inline
 void aux_add3DpointWithEigenVectors(
 	const double x,
 	const double y,
@@ -193,11 +196,11 @@ void aux_add3DpointWithEigenVectors(
 			generalizedEllipsoidPoints: 3D
   ---------------------------------------------------------------*/
 template <>
-void OPENGL_IMPEXP mrpt::opengl::detail::generalizedEllipsoidPoints<3>(
+void OPENGL_IMPEXP generalizedEllipsoidPoints<3>(
 	const mrpt::math::CMatrixFixedNumeric<double,3,3> & U,
 	const mrpt::math::CMatrixFixedNumeric<double,3,1>   & mean,
 	std::vector<mrpt::math::CArray<float,3> >   & pts,
-	const uint32_t slices, 
+	const uint32_t slices,
 	const uint32_t stacks)
 {
 	MRPT_START
@@ -207,7 +210,7 @@ void OPENGL_IMPEXP mrpt::opengl::detail::generalizedEllipsoidPoints<3>(
 	// sin/cos cache --------
 	// Slices: [0,pi]
 	std::vector<double> slice_cos(slices),slice_sin(slices);
-    for (uint32_t i = 0; i < slices; i++) 
+    for (uint32_t i = 0; i < slices; i++)
 	{
 		double angle = M_PI * i / double(slices-1);
 		slice_sin[i] = sin(angle);
@@ -215,14 +218,14 @@ void OPENGL_IMPEXP mrpt::opengl::detail::generalizedEllipsoidPoints<3>(
 	}
 	// Stacks: [0,2*pi]
 	std::vector<double> stack_sin(stacks),stack_cos(stacks);
-    for (uint32_t i = 0; i < stacks; i++) 
+    for (uint32_t i = 0; i < stacks; i++)
 	{
 		double angle = 2*M_PI * i / double(stacks);
 		stack_sin[i] = sin(angle);
 		stack_cos[i] = cos(angle);
 	}
 
-	// Points in the ellipsoid: 
+	// Points in the ellipsoid:
 	//  * "#slices" slices, with "#stacks" points each, but for the two ends
 	//  * 1 point at each end slice
 	// #total points = stacks*(slices-2) + 2
@@ -252,3 +255,5 @@ void OPENGL_IMPEXP mrpt::opengl::detail::generalizedEllipsoidPoints<3>(
 	MRPT_END
 }
 
+
+}}} // end namespaces

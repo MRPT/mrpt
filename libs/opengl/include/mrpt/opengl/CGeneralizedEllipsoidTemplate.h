@@ -35,25 +35,25 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		namespace detail 
+		namespace detail
 		{
 			template <int DIM>
 			void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate(
 				const std::vector<mrpt::math::CArray<float,DIM> > & pts,
 				const float    lineWidth,
-				const uint32_t slices, 
+				const uint32_t slices,
 				const uint32_t stacks);
 			template <int DIM>
 			void OPENGL_IMPEXP generalizedEllipsoidPoints(
 				const mrpt::math::CMatrixFixedNumeric<double,DIM,DIM> & U,
 				const mrpt::math::CMatrixFixedNumeric<double,DIM,1>   & mean,
 				std::vector<mrpt::math::CArray<float,DIM> >   &out_params_pts,
-				const uint32_t slices, 
+				const uint32_t slices,
 				const uint32_t stacks);
 		}
 
-		/** A class that generalizes the concept of an ellipsoid to arbitrary parameterizations of 
-		  *  uncertainty shapes in either 2D or 3D. See derived classes for examples. 
+		/** A class that generalizes the concept of an ellipsoid to arbitrary parameterizations of
+		  *  uncertainty shapes in either 2D or 3D. See derived classes for examples.
 		  *
 		  *  The main method to set the modeled uncertainty is \a setCovMatrixAndMean()
 		  *
@@ -67,11 +67,11 @@ namespace mrpt
 		public:
 			typedef mrpt::math::CMatrixFixedNumeric<double,DIM,DIM> cov_matrix_t;   //!< The type of fixed-size covariance matrices for this representation
 			typedef mrpt::math::CMatrixFixedNumeric<double,DIM,1> mean_vector_t;   //!< The type of fixed-size vector for this representation
-				
+
 			typedef mrpt::math::CArray<float,DIM> array_parameter_t;
 			typedef mrpt::math::CArray<float,DIM>     array_point_t;
 
-			/**  Set the NxN covariance matrix that will determine the aspect of the ellipsoid - Notice that the 
+			/**  Set the NxN covariance matrix that will determine the aspect of the ellipsoid - Notice that the
 			  *  covariance determines the uncertainty in the parameter space, which would be transformed by derived function
 			  */
 			template <typename MATRIX, typename VECTOR>
@@ -94,7 +94,7 @@ namespace mrpt
 			float getQuantiles() const { return m_quantiles; }
 
 			/** The line width for 2D ellipses or 3D wireframe ellipsoids (default=1) */
-			void setLineWidth(float w) { m_lineWidth=w; CRenderizableDisplayList::notifyChange(); } 
+			void setLineWidth(float w) { m_lineWidth=w; CRenderizableDisplayList::notifyChange(); }
 			float getLineWidth() const { return m_lineWidth; }
 
 			/** Set the number of segments of the surface/curve (higher means with greater resolution) */
@@ -109,7 +109,7 @@ namespace mrpt
 			{
 				MRPT_START
 				// 1) Update eigenvectors/values:
-				if (m_needToRecomputeEigenVals) 
+				if (m_needToRecomputeEigenVals)
 				{
 					m_needToRecomputeEigenVals = false;
 					// Handle the special case of an ellipsoid of volume = 0
@@ -125,17 +125,17 @@ namespace mrpt
 
 				// Only if all the eigenvalues are !=0
 				bool eig_ok = true;
-				for (int i=0;i<DIM;i++) 
-					if (m_U.coeff(i,i)==0) 
+				for (int i=0;i<DIM;i++)
+					if (m_U.coeff(i,i)==0)
 						eig_ok=false;
 
 				if(eig_ok)
 				{
 					// 2) Generate "standard" ellipsoid:
-					std::vector<array_point_t> params_pts;
+					std::vector<array_parameter_t> params_pts;
 					const cov_matrix_t Uscaled = static_cast<double>(m_quantiles) * m_U;
-					detail::generalizedEllipsoidPoints(Uscaled,m_mean, params_pts,m_numSegments,m_numSegments);
-					
+					detail::generalizedEllipsoidPoints<DIM>(Uscaled,m_mean, params_pts,m_numSegments,m_numSegments);
+
 					// 3) Transform into 2D/3D render space:
 					std::vector<array_point_t> render_pts;
 					this->transformFromParameterSpace(params_pts,render_pts);
@@ -148,13 +148,13 @@ namespace mrpt
 
 				MRPT_END
 			}
-			
+
 			/** Ray tracing
 			  */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const { THROW_EXCEPTION("Not implemented ") }
 
 		protected:
-			/** To be implemented by derived classes: maps, using some arbitrary space transformation, a list of points 
+			/** To be implemented by derived classes: maps, using some arbitrary space transformation, a list of points
 			  *  defining an ellipsoid in parameter space into their corresponding points in 2D/3D space.
 			  */
 			virtual void transformFromParameterSpace(
@@ -162,22 +162,22 @@ namespace mrpt
 				std::vector<array_point_t> & out_pts) const = 0;
 
 			mutable cov_matrix_t m_cov;
-			mean_vector_t   m_mean; 
+			mean_vector_t   m_mean;
 			mutable bool    m_needToRecomputeEigenVals;
 			float           m_quantiles;	//!< The number of "sigmas" for drawing the ellipse/ellipsoid (default=3)
 			float           m_lineWidth;	//!< The line width for 2D ellipses or 3D wireframe ellipsoids (default=1)
 			uint32_t        m_numSegments;  //!< Number of segments in 2D/3D ellipsoids (default=10)
-			
+
 			mutable cov_matrix_t  m_U;  //!< Cholesky U triangular matrix cache. */
 
-			void  thisclass_writeToStream(CStream &out) const
+			void  thisclass_writeToStream(mrpt::utils::CStream &out) const
 			{
 				const uint8_t version = 0;
-				out << version 
+				out << version
 					<< m_cov << m_mean
 					<< m_quantiles << m_lineWidth << m_numSegments;
 			}
-			void  thisclass_readFromStream(CStream &in)
+			void  thisclass_readFromStream(mrpt::utils::CStream &in)
 			{
 				uint8_t version;
 				in >> version;
@@ -195,7 +195,7 @@ namespace mrpt
 				};
 			}
 
-			CGeneralizedEllipsoidTemplate() : 
+			CGeneralizedEllipsoidTemplate() :
 				m_needToRecomputeEigenVals(true),
 				m_quantiles(3.f),
 				m_lineWidth(1.f),
