@@ -25,62 +25,56 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
+#ifndef opengl_CEllipsoidRangeBearing2D_H
+#define opengl_CEllipsoidRangeBearing2D_H
 
-#include <mrpt/opengl.h>
+#include <mrpt/opengl/CGeneralizedEllipsoidTemplate.h>
 
-#ifndef MRPT_ENABLE_PRECOMPILED_HDRS
-#	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
-#	undef _mrpt_opengl_H
-#	include <mrpt/opengl.h>
-#endif
-
-#include <mrpt/utils/CStartUpClassesRegister.h>
-
-using namespace mrpt::opengl;
-using namespace mrpt::utils;
-
-void registerAllClasses_mrpt_opengl();
-
-CStartUpClassesRegister  mrpt_opengl_class_reg(&registerAllClasses_mrpt_opengl);
-
-/*---------------------------------------------------------------
-					registerAllClasses_mrpt_opengl
-  ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_opengl()
+namespace mrpt
 {
-	// Opengl classes:
-	registerClass( CLASS_ID( CRenderizable ) );
-	registerClass( CLASS_ID( C3DSScene ) );
-	registerClass( CLASS_ID( CAxis ) );
-	registerClass( CLASS_ID( CBox ) );
-	registerClass( CLASS_ID( CDisk ) );
-	registerClass( CLASS_ID( CGridPlaneXY ) );
-	registerClass( CLASS_ID( CMesh ) );
-	registerClass( CLASS_ID( COpenGLViewport ) );
-	registerClass( CLASS_ID( CPointCloud ) );
-	registerClass( CLASS_ID( CPointCloudColoured ) );
-	registerClass( CLASS_ID( CSetOfLines ) );
-	registerClass( CLASS_ID( CSetOfTriangles ) );
-	registerClass( CLASS_ID( CSphere ) );
-	registerClass( CLASS_ID( CCylinder ) );
-	registerClass( CLASS_ID( CGeneralizedCylinder ) );
-	registerClass( CLASS_ID( CPolyhedron ) );
-	registerClass( CLASS_ID( CTexturedPlane ) );
-	registerClass( CLASS_ID( CArrow ) );
-	registerClass( CLASS_ID( CCamera ) );
-	registerClass( CLASS_ID( CEllipsoid  ) );
-	registerClass( CLASS_ID( CGridPlaneXZ ) );
-	registerClass( CLASS_ID( COpenGLScene ) );
-	registerClass( CLASS_ID( CSetOfObjects ) );
-	registerClass( CLASS_ID( CSimpleLine ) );
-	registerClass( CLASS_ID( CText ) );
-	registerClass( CLASS_ID( CText3D ) );
-	registerClass( CLASS_ID( CEllipsoidInverseDepth2D ) );
-	registerClass( CLASS_ID( CEllipsoidInverseDepth3D ) );
-	registerClass( CLASS_ID( CEllipsoidRangeBearing2D ) );
+	namespace opengl
+	{
+		// This must be added to any CSerializable derived class:
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CEllipsoidRangeBearing2D, CRenderizableDisplayList, OPENGL_IMPEXP )
 
-	// These ones are in the lib: mrpt-obsmaps
-	//registerClass( CLASS_ID( CPlanarLaserScan ) );
-	//registerClass( CLASS_ID( CAngularObservationMesh ) );
-}
+		/** An especial "ellipsoid" in 2D computed as the uncertainty iso-surfaces of a (range,bearing) variable.
+		  *  The parameter space of this ellipsoid comprises these variables (in this order):
+		  *   - range: Distance from sensor to feature.
+		  *   - bearing: Angle from +X to the line that goes from the sensor towards the feature.
+		  *
+		  *  This class expects you to provide a mean vector of length 2 and a 2x2 covariance matrix, set with \a setCovMatrixAndMean().
+		  *
+		  *  <div align="center">
+		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+		  *   <tr> <td> mrpt::opengl::CEllipsoidRangeBearing2D </td> <td> \image html preview_CEllipsoidRangeBearing2D.png </td> </tr>
+		  *  </table>
+		  *  </div>
+		  *
+		  * \ingroup mrpt_opengl_grp
+		  */
+		class OPENGL_IMPEXP CEllipsoidRangeBearing2D : public CGeneralizedEllipsoidTemplate<2>
+		{
+			typedef CGeneralizedEllipsoidTemplate<2> BASE;
+			DEFINE_SERIALIZABLE( CEllipsoidRangeBearing2D )
+		protected:
+			/** To be implemented by derived classes: maps, using some arbitrary space transformation, a list of points 
+			  *  defining an ellipsoid in parameter space into their corresponding points in 2D/3D space.
+			  */
+			virtual void transformFromParameterSpace(
+				const std::vector<BASE::array_parameter_t> &in_pts,
+				std::vector<BASE::array_point_t> & out_pts) const;
+		private:
+			/** Constructor
+			  */
+			CEllipsoidRangeBearing2D()
+			{
+			}
+			/** Private, virtual destructor: only can be deleted from smart pointers */
+			virtual ~CEllipsoidRangeBearing2D() { }
+		};
 
+	} // end namespace
+
+} // End of namespace
+
+#endif

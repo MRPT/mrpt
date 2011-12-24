@@ -26,61 +26,72 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>
+#include <mrpt/opengl.h>  // Precompiled header
 
-#ifndef MRPT_ENABLE_PRECOMPILED_HDRS
-#	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
-#	undef _mrpt_opengl_H
-#	include <mrpt/opengl.h>
-#endif
 
-#include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/opengl/CEllipsoidRangeBearing2D.h>
 
+using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
+using namespace mrpt::math;
+using namespace std;
 
-void registerAllClasses_mrpt_opengl();
-
-CStartUpClassesRegister  mrpt_opengl_class_reg(&registerAllClasses_mrpt_opengl);
+IMPLEMENTS_SERIALIZABLE( CEllipsoidRangeBearing2D, CRenderizableDisplayList, mrpt::opengl )
 
 /*---------------------------------------------------------------
-					registerAllClasses_mrpt_opengl
+							transformFromParameterSpace
   ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_opengl()
+  void CEllipsoidRangeBearing2D::transformFromParameterSpace(
+	const std::vector<BASE::array_parameter_t> &in_pts,
+	std::vector<BASE::array_point_t> & out_pts) const
 {
-	// Opengl classes:
-	registerClass( CLASS_ID( CRenderizable ) );
-	registerClass( CLASS_ID( C3DSScene ) );
-	registerClass( CLASS_ID( CAxis ) );
-	registerClass( CLASS_ID( CBox ) );
-	registerClass( CLASS_ID( CDisk ) );
-	registerClass( CLASS_ID( CGridPlaneXY ) );
-	registerClass( CLASS_ID( CMesh ) );
-	registerClass( CLASS_ID( COpenGLViewport ) );
-	registerClass( CLASS_ID( CPointCloud ) );
-	registerClass( CLASS_ID( CPointCloudColoured ) );
-	registerClass( CLASS_ID( CSetOfLines ) );
-	registerClass( CLASS_ID( CSetOfTriangles ) );
-	registerClass( CLASS_ID( CSphere ) );
-	registerClass( CLASS_ID( CCylinder ) );
-	registerClass( CLASS_ID( CGeneralizedCylinder ) );
-	registerClass( CLASS_ID( CPolyhedron ) );
-	registerClass( CLASS_ID( CTexturedPlane ) );
-	registerClass( CLASS_ID( CArrow ) );
-	registerClass( CLASS_ID( CCamera ) );
-	registerClass( CLASS_ID( CEllipsoid  ) );
-	registerClass( CLASS_ID( CGridPlaneXZ ) );
-	registerClass( CLASS_ID( COpenGLScene ) );
-	registerClass( CLASS_ID( CSetOfObjects ) );
-	registerClass( CLASS_ID( CSimpleLine ) );
-	registerClass( CLASS_ID( CText ) );
-	registerClass( CLASS_ID( CText3D ) );
-	registerClass( CLASS_ID( CEllipsoidInverseDepth2D ) );
-	registerClass( CLASS_ID( CEllipsoidInverseDepth3D ) );
-	registerClass( CLASS_ID( CEllipsoidRangeBearing2D ) );
+	MRPT_START
 
-	// These ones are in the lib: mrpt-obsmaps
-	//registerClass( CLASS_ID( CPlanarLaserScan ) );
-	//registerClass( CLASS_ID( CAngularObservationMesh ) );
+	// (range,bearing) --> (x,y)
+	const size_t N = in_pts.size();
+	out_pts.resize(N);
+	for (size_t i=0;i<N;i++)
+	{
+		const double range   = in_pts[i][0];
+		const double bearing = in_pts[i][1];
+		out_pts[i][0] = range * cos(bearing);
+		out_pts[i][1] = range * sin(bearing);
+	}
+
+	MRPT_END
 }
 
+
+/*---------------------------------------------------------------
+   Implements the writing to a CStream capability of
+     CSerializable objects
+  ---------------------------------------------------------------*/
+void  CEllipsoidRangeBearing2D::writeToStream(CStream &out,int *version) const
+{
+	if (version)
+		*version = 0;
+	else
+	{
+		writeToStreamRender(out);
+		BASE::thisclass_writeToStream(out);
+	}
+}
+
+/*---------------------------------------------------------------
+	Implements the reading from a CStream capability of
+		CSerializable objects
+  ---------------------------------------------------------------*/
+void  CEllipsoidRangeBearing2D::readFromStream(CStream &in,int version)
+{
+	switch(version)
+	{
+	case 0:
+		{
+			readFromStreamRender(in);
+			BASE::thisclass_readFromStream(in);
+		} break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	};
+}

@@ -68,6 +68,9 @@
 #include <mrpt/opengl/CGeneralizedCylinder.h>
 #include <mrpt/opengl/COpenGLStandardObject.h>
 #include <mrpt/opengl/CFBORender.h>
+#include <mrpt/opengl/CEllipsoidInverseDepth2D.h>
+#include <mrpt/opengl/CEllipsoidInverseDepth3D.h>
+#include <mrpt/opengl/CEllipsoidRangeBearing2D.h>
 
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/pose_pdfs.h>

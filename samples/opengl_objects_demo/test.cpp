@@ -207,6 +207,136 @@ mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 10000;
 	off_x+=STEP_X;
 
 
+	// CEllipsoidRangeBearing2D
+	{	// (range,bearing) -> (x,y)
+		const double cov_params_dat[] = {
+			0.2,  0, 
+			0,   0.1
+		};
+		const double mean_params_dat[] = {
+			3.0, 0.5 
+		};
+		mrpt::math::CMatrixFixedNumeric<double,2,2> cov_params(cov_params_dat);
+		mrpt::math::CMatrixFixedNumeric<double,2,1> mean_params(mean_params_dat);
+
+		{
+			opengl::CEllipsoidRangeBearing2DPtr obj = opengl::CEllipsoidRangeBearing2D::Create();
+			obj->setCovMatrixAndMean(cov_params,mean_params);
+			obj->setLocation(off_x,6,0);
+			obj->setQuantiles(2.0f);
+			//obj->setNumberOfSegments(50);
+			theScene->insert( obj );
+
+			opengl::CSetOfObjectsPtr obj_corner = opengl::stock_objects::CornerXYSimple(1,3);
+			obj_corner->setLocation(off_x,6,0);
+			theScene->insert( obj_corner );
+		}
+	}
+	{	// (range,bearing) -> (x,y)
+		const double cov_params_dat[] = {
+			0.2,  0.09, 
+			0.09,   0.1
+		};
+		const double mean_params_dat[] = {
+			5.0, -0.5 
+		};
+		mrpt::math::CMatrixFixedNumeric<double,2,2> cov_params(cov_params_dat);
+		mrpt::math::CMatrixFixedNumeric<double,2,1> mean_params(mean_params_dat);
+
+		{
+			opengl::CEllipsoidRangeBearing2DPtr obj = opengl::CEllipsoidRangeBearing2D::Create();
+			obj->setCovMatrixAndMean(cov_params,mean_params);
+			obj->setLocation(off_x,0,0);
+			obj->setQuantiles(2.0f);
+			//obj->setNumberOfSegments(50);
+			theScene->insert( obj );
+
+			opengl::CSetOfObjectsPtr obj_corner = opengl::stock_objects::CornerXYSimple(1,3);
+			obj_corner->setLocation(off_x,0,0);
+			theScene->insert( obj_corner );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("CEllipsoidRangeBearing2D");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
+	// CEllipsoidInverseDepth2D
+	{	// (inv_range,yaw) -> (x,y)
+		// Formula from our book (ch8) for confidence intervals of 3sigmas:
+		const double max_dist = 1e4;
+		const double min_dist = 1;
+		const double rho_mean = 0.5*(1./min_dist+1./max_dist);
+		const double rho_std  = (1./6.)*(1./min_dist-1./max_dist);
+
+		const double cov_params_dat[] = {
+			square(rho_std),  0, 
+			0,   square(DEG2RAD(2))
+		};
+		const double mean_params_dat[] = {
+			rho_mean, DEG2RAD(70)
+		};
+		mrpt::math::CMatrixFixedNumeric<double,2,2> cov_params(cov_params_dat);
+		mrpt::math::CMatrixFixedNumeric<double,2,1> mean_params(mean_params_dat);
+
+		{
+			opengl::CEllipsoidInverseDepth2DPtr obj = opengl::CEllipsoidInverseDepth2D::Create();
+			obj->setCovMatrixAndMean(cov_params,mean_params);
+			obj->setLocation(off_x,6,0);
+			obj->setQuantiles(3.f);
+			obj->setNumberOfSegments(100);
+			theScene->insert( obj );
+
+			opengl::CSetOfObjectsPtr obj_corner = opengl::stock_objects::CornerXYSimple(1,3);
+			obj_corner->setLocation(off_x,6,0);
+			theScene->insert( obj_corner );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("CEllipsoidInverseDepth2D");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
+	// CEllipsoidInverseDepth3D
+	{	// (inv_range,yaw,pitch) -> (x,y,z)
+		// Formula from our book (ch8) for confidence intervals of 3sigmas:
+		const double max_dist = 1e2;
+		const double min_dist = 1;
+		const double rho_mean = 0.5*(1./min_dist+1./max_dist);
+		const double rho_std  = (1./6.)*(1./min_dist-1./max_dist);
+
+		const double cov_params_dat[] = {
+			square(rho_std),      0,                    0,
+			0,   square(DEG2RAD(2)),                    0, 
+			0,                    0,   square(DEG2RAD(2))
+		};
+		const double mean_params_dat[] = {
+			rho_mean, DEG2RAD(30), DEG2RAD(-45)
+		};
+		mrpt::math::CMatrixFixedNumeric<double,3,3> cov_params(cov_params_dat);
+		mrpt::math::CMatrixFixedNumeric<double,3,1> mean_params(mean_params_dat);
+
+		{
+			opengl::CEllipsoidInverseDepth3DPtr obj = opengl::CEllipsoidInverseDepth3D::Create();
+			obj->setCovMatrixAndMean(cov_params,mean_params);
+			obj->setLocation(off_x,0,0);
+			obj->setQuantiles(3.f);
+			//obj->setNumberOfSegments(50);
+			theScene->insert( obj );
+
+			opengl::CSetOfObjectsPtr obj_corner = opengl::stock_objects::CornerXYZSimple(1,3);
+			obj_corner->setLocation(off_x,0,0);
+			theScene->insert( obj_corner );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("CEllipsoidInverseDepth3D");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
 	// CMesh
 	{
 		opengl::CMeshPtr obj = opengl::CMesh::Create();

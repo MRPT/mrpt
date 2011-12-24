@@ -68,7 +68,17 @@ void   CEllipsoid::render_dl() const
 			// ---------------------
 			//     2D ellipse
 			// ---------------------
-			float			x1=0,y1=0,x2=0,y2=0;
+
+			/* Equivalent MATLAB code: 
+			 *
+			 * q=1;
+			 * [vec val]=eig(C); 
+			 * M=(q*val*vec)';  
+			 * R=M*[x;y];
+			 * xx=R(1,:);yy=R(2,:);  
+			 * plot(xx,yy), axis equal;
+			 */
+
 			double			ang;
 			unsigned int	i;
 
@@ -76,25 +86,18 @@ void   CEllipsoid::render_dl() const
 			CMatrixDouble 	M;
 			M.noalias() = double(m_quantiles) * m_eigVal * m_eigVec.adjoint();
 
-			glBegin( GL_LINES );
+			glBegin( GL_LINE_LOOP );
 
 			// Compute the points of the 2D ellipse:
-			for (i=0,ang=0;i<m_2D_segments;i++,ang+= (M_2PI/(m_2D_segments-1)))
+			for (i=0,ang=0;i<m_2D_segments;i++,ang+= (M_2PI/m_2D_segments))
 			{
 				double ccos = cos(ang);
 				double ssin = sin(ang);
 
-				x2 = ccos * M.get_unsafe(0,0) + ssin * M.get_unsafe(1,0);
-				y2 = ccos * M.get_unsafe(0,1) + ssin * M.get_unsafe(1,1);
+				const float x = ccos * M.get_unsafe(0,0) + ssin * M.get_unsafe(1,0);
+				const float y = ccos * M.get_unsafe(0,1) + ssin * M.get_unsafe(1,1);
 
-				if (i>0)
-				{
-					glVertex2f( x1,y1 );
-					glVertex2f( x2,y2 );
-				}
-
-				x1 = x2;
-				y1 = y2;
+				glVertex2f( x,y );
 			} // end for points on ellipse
 
 			glEnd();

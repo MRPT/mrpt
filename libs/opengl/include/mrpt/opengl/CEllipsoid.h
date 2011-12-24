@@ -100,7 +100,7 @@ namespace mrpt
 			void set2DsegmentsCount(unsigned int N) { m_2D_segments=N; CRenderizableDisplayList::notifyChange(); }  //!< The number of segments of a 2D ellipse (default=20)
 			void set3DsegmentsCount(unsigned int N) { m_3D_segments=N; CRenderizableDisplayList::notifyChange(); } //!< The number of segments of a 3D ellipse (in both "axis") (default=20)
 
-			void setLineWidth(float w) { m_lineWidth=w; } //!< The line width for 2D ellipses or 3D wireframe ellipsoids (default=1)
+			void setLineWidth(float w) { m_lineWidth=w; CRenderizableDisplayList::notifyChange(); } //!< The line width for 2D ellipses or 3D wireframe ellipsoids (default=1)
 			float getLineWidth() const { return m_lineWidth; }
 
 

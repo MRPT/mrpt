@@ -42,6 +42,12 @@
 	- Kinect stuff: 
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect now decodes Bayer color using OpenCV instead of default freenect - <a href="http://code.google.com/p/mrpt/source/detail?r=2721" >r2721</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2762" >r2762</a>
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect no longer forces a horizontal tilt at start up by default, what may be annoying (if required, set "initial_tilt_angle") - <a href="http://code.google.com/p/mrpt/source/detail?r=2722" >r2722</a>
+	- New classes:
+		- [mrpt-opengl] New classes for representing confidence intervals (ellipsoids) in transformed spaces - <a href="http://code.google.com/p/mrpt/source/detail?r=2783" >r2783</a>
+			- mrpt::opengl::CGeneralizedEllipsoidTemplate<> 
+			- mrpt::opengl::CEllipsoidRangeBearing2D
+			- mrpt::opengl::CEllipsoidInverseDepth2D
+			- mrpt::opengl::CEllipsoidInverseDepth3D
 	- Changes in classes:
 		- [mrpt-base] Changes in mrpt::math::CSparseMatrix: 
 			- New method mrpt::math::CSparseMatrix::saveToTextFile_sparse()
