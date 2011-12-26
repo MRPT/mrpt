@@ -230,6 +230,28 @@ void MapBuilding_RBPF()
 	CFileOutputStream   f_jinfo (format("%s/log_jinfo.txt",OUT_DIR));
 	CFileOutputStream   f_path (format("%s/log_estimated_path.txt",OUT_DIR));
 	CFileOutputStream   f_pathOdo (format("%s/log_odometry_path.txt",OUT_DIR));
+	CFileOutputStream   f_partStats (format("%s/log_ParticlesStats.txt",OUT_DIR));
+
+	f_log.printf(
+		"%% time_step  execution_time(ms)  map_size(#frames)  frame_inserted? \n"
+		"%%-------------------------------------------------------------------\n");
+
+	f_info.printf(
+		"%% EMI    H    EMMI    effecMappedArea  effecMappedCells \n"
+		"%%-------------------------------------------------------\n");
+
+	f_pathOdo.printf(
+		"%% time_step  x  y z yaw pitch roll timestamp \n"
+		"%%--------------------------------------------\n");
+
+	f_pathOdo.printf(
+		"%% time_step  x  y z yaw pitch roll \n"
+		"%%----------------------------------\n");
+
+	f_partStats.printf(
+		"%% time_step   #particles   ESS \n"
+		"%%------------------------------\n");
+
 
 	// ----------------------------------------------------------
 	//						Map Building
@@ -295,7 +317,8 @@ void MapBuilding_RBPF()
 
 			// Info log:
 			// -----------
-			f_log.printf("%f %i %i\n",
+			f_log.printf("%u %f %i %i\n",
+				static_cast<unsigned int>(step),
 				1000.0f*t_exec,
 				mapBuilder.getCurrentlyBuiltMapSize(),
 				mapBuilder.m_statsLastIteration.observationsInserted ? int(1):int(0)
@@ -504,21 +527,11 @@ void MapBuilding_RBPF()
 			}
 
 			// Save the parts stats:
-			// ------------------------------------------------------------------
-			{
-				printf("Saving particles stats...");
-				FILE *f=os::fopen(format("%s/log_ParticlesStats.txt",OUT_DIR).c_str(),"at");
-				if (f)
-				{
-					os::fprintf(f,"%u %u %f\n",
-						(unsigned int)step,
-						(unsigned int)curPDF.size(),
-						curPDF.ESS()
-						);
-					os::fclose(f);
-				}
-				printf("Ok!\n");
-			}
+			f_partStats.printf("%u %u %f\n",
+					(unsigned int)step,
+					(unsigned int)curPDF.size(),
+					curPDF.ESS()
+					);
 
 			// Save the robot estimated pose for each step:
 			CPose3D   meanPose;
