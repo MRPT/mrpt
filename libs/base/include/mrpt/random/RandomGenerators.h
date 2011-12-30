@@ -63,6 +63,9 @@ namespace mrpt
 				bool		seed_initialized;
 			} m_MT19937_data;
 
+			bool   m_std_gauss_set; 
+			double m_std_gauss_next;
+
 			void MT19937_generateNumbers();
 			void MT19937_initializeGenerator(const uint32_t &seed);
 
@@ -72,7 +75,7 @@ namespace mrpt
 			 @{ */
 
 				/** Default constructor: initialize random seed based on current time */
-				CRandomGenerator() : m_MT19937_data() { randomize(); }
+				CRandomGenerator() : m_MT19937_data(),m_std_gauss_set(false) { randomize(); }
 
 				/** Constructor for providing a custom random seed to initialize the PRNG */
 				CRandomGenerator(const uint32_t seed) : m_MT19937_data() { randomize(seed); }

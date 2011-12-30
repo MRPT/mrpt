@@ -68,11 +68,11 @@ void CRandomGenerator::MT19937_initializeGenerator(const uint32_t &seed)
 
 // Code from the implementation by Rick Wagner
 //  http://www-personal.umich.edu/~wagnerr/MersenneTwister.html
-uint32_t hiBit( const uint32_t& u ) { return u & 0x80000000UL; }
-uint32_t loBit( const uint32_t& u ) { return u & 0x00000001UL; }
-uint32_t loBits( const uint32_t& u ) { return u & 0x7fffffffUL; }
-uint32_t mixBits( const uint32_t& u, const uint32_t& v ) { return hiBit(u) | loBits(v); }
-uint32_t twist( const uint32_t& m, const uint32_t& s0, const uint32_t& s1 ) { return m ^ (mixBits(s0,s1)>>1) ^ (-loBit(s1) & 0x9908b0dfUL); }
+inline uint32_t hiBit( const uint32_t u ) { return u & 0x80000000UL; }
+inline uint32_t loBit( const uint32_t u ) { return u & 0x00000001UL; }
+inline uint32_t loBits( const uint32_t u ) { return u & 0x7fffffffUL; }
+inline uint32_t mixBits( const uint32_t u, const uint32_t v ) { return hiBit(u) | loBits(v); }
+inline uint32_t twist( const uint32_t m, const uint32_t s0, const uint32_t s1 ) { return m ^ (mixBits(s0,s1)>>1) ^ (-loBit(s1) & 0x9908b0dfUL); }
 
 #if defined(_MSC_VER)
 	#pragma warning(pop)
@@ -96,8 +96,11 @@ void CRandomGenerator::MT19937_generateNumbers()
 #else
 	// Code from the implementation by Rick Wagner
 	//  http://www-personal.umich.edu/~wagnerr/MersenneTwister.html
-	static const int N = 624;	// length of state vector
-	static const int M = 397;	// period parameter
+	// and: 
+	//  http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/CODES/mt19937ar.c
+	//
+	const int N = 624;	// length of state vector
+	const int M = 397;	// period parameter
 
 	register uint32_t *p = m_MT19937_data.MT;
 	for( int i = N - M; i--; ++p )
@@ -155,27 +158,25 @@ void CRandomGenerator::randomize()
   ---------------------------------------------------------------*/
 double CRandomGenerator::drawGaussian1D_normalized( double *likelihood  )
 {
-   static int iset = 0;
-   static double gset;
-   double fac,r,v1,v2,x;
-
-   if (iset == 0) {   /* We don't have an extra deviate handy so */
-       do {
-	   v1 = this->drawUniform(-1.0,1.0);   /* pick two uniform numbers in */
-	   v2 = this->drawUniform(-1.0,1.0);   /* square extending from -1 to +1*/
-	                                 /* in each direction, */
-
-	   r = v1 * v1 + v2 * v2;        /* see if they are in the unitcircle*/
-       } while (r >= 1.0 && r!=0);               /* and if they are not, try again. */
-       fac = sqrt(-2.0*log(r)/r);
+   if (!m_std_gauss_set) 
+   {   /* We don't have an extra deviate handy so */
+	   double v1,v2,r;
+       do 
+	   {
+		   v1 = this->drawUniform(-1.0,1.0);   /* pick two uniform numbers in */
+		   v2 = this->drawUniform(-1.0,1.0);   /* square extending from -1 to +1*/
+										 /* in each direction, */
+			r = v1 * v1 + v2 * v2;        /* see if they are in the unitcircle*/
+       } while (r >= 1.0 || r==0.0);               /* and if they are not, try again. */
+	   const double fac = std::sqrt(-2.0*log(r)/r);
        /* Now make the Box-Muller transformation to get two normal deviates.
 	  Return one and save the other for next time. */
-       gset = v1 * fac;
-       iset = 1;
+       m_std_gauss_next = v1 * fac;
+       m_std_gauss_set = true;
 
 	   if (likelihood)
 	   {
-		   x = v2*fac;
+		   const double x = v2*fac;
 		   *likelihood = 0.39894228040143267794 * exp( -0.5*x*x );
 		   return x;
 	   }
@@ -183,20 +184,20 @@ double CRandomGenerator::drawGaussian1D_normalized( double *likelihood  )
 	   {
 	       return v2*fac;
 	   }
-
-   } else
+   } 
+   else
    {      /* We have an extra deviate handy, */
-       iset = 0; /* so unset the flag,              */
+       m_std_gauss_set = false; /* so unset the flag,              */
 
 	   if (likelihood)
 	   {
-		   x = (float)gset;
+		   const double x = m_std_gauss_next;
 		   *likelihood = 0.39894228040143267794 * exp( -0.5*x*x );
 		   return x;
 	   }
 	   else
 	   {
-	       return (float)gset;
+	       return m_std_gauss_next;
 	   }
    }
 }
