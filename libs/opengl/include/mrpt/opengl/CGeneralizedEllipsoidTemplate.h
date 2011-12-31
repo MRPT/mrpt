@@ -55,6 +55,9 @@ namespace mrpt
 		/** A class that generalizes the concept of an ellipsoid to arbitrary parameterizations of
 		  *  uncertainty shapes in either 2D or 3D. See derived classes for examples.
 		  *
+		  * Please read the documentation of CGeneralizedEllipsoidTemplate::setQuantiles() for learning
+		  *  the mathematical details about setting the desired confidence interval.
+		  *
 		  *  The main method to set the modeled uncertainty is \a setCovMatrixAndMean()
 		  *
 		  * \tparam DIM The dimensionality of the parameter space, which must coincide with that of the rendering space (2 or 3)
@@ -89,8 +92,32 @@ namespace mrpt
 			/** Gets the current uncertainty covariance of parameter space */
 			const cov_matrix_t &getCovMatrix() const { return m_cov; }
 
-			/** Changes the number of "sigmas" for drawing the ellipse/ellipsoid (default=3) */
+			/** Changes the scale of the "sigmas" for drawing the ellipse/ellipsoid (default=3, ~97 or ~98% CI); the exact mathematical meaning is:
+			  *   This value of "quantiles" \a q should be set to the square root of the chi-squared inverse cdf corresponding to 
+			  *   the desired confidence interval. 
+			  *   <b>Note that this value depends on the dimensionality</b>. 
+			  *   Refer to the MATLAB functions \a chi2inv() and \a chi2cdf().
+			  *
+			  *  Some common values follow here for the convenience of users:
+			  *		- Dimensionality=3 (3D ellipsoids):
+			  *			- 19.8748% CI -> q=1
+			  *			- 73.8536% CI -> q=2
+			  *			- 97.0709% CI -> q=3
+			  *			- 99.8866% CI -> q=4
+			  *		- Dimensionality=2 (2D ellipses):
+			  *			- 39.347% CI -> q=1
+			  *			- 86.466% CI -> q=2
+			  *			- 98.8891% CI -> q=3
+			  *			- 99.9664% CI -> q=4
+			  *		- Dimensionality=1 (Not aplicable to this class but provided for reference):
+			  *			- 68.27% CI -> q=1
+			  *			- 95.45% CI -> q=2
+			  *			- 99.73% CI -> q=3
+			  *			- 99.9937% CI -> q=4
+			  * 
+			  */
 			void setQuantiles(float q) { m_quantiles=q; CRenderizableDisplayList::notifyChange(); }
+			/** Refer to documentation of \a setQuantiles() */
 			float getQuantiles() const { return m_quantiles; }
 
 			/** The line width for 2D ellipses or 3D wireframe ellipsoids (default=1) */

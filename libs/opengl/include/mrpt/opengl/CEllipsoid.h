@@ -49,6 +49,10 @@ namespace mrpt
 		  *	 If one of the eigen value of the covariance matrix of the ellipsoid is null, ellipsoid will not be rendered.
 		  *  \sa opengl::COpenGLScene
 		  *
+		  *
+		  * Please read the documentation of CGeneralizedEllipsoidTemplate::setQuantiles() for learning
+		  *  the mathematical details about setting the desired confidence interval.
+		  *
 		  *  <div align="center">
 		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
 		  *   <tr> <td> mrpt::opengl::CEllipsoid </td> <td> \image html preview_CEllipsoid.png </td> </tr>

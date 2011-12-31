@@ -47,6 +47,9 @@ namespace mrpt
 		  *
 		  *  This class expects you to provide a mean vector of length 4 and a 4x4 covariance matrix, set with \a setCovMatrixAndMean().
 		  *
+		  * Please read the documentation of CGeneralizedEllipsoidTemplate::setQuantiles() for learning
+		  *  the mathematical details about setting the desired confidence interval.
+		  *
 		  *  <div align="center">
 		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
 		  *   <tr> <td> mrpt::opengl::CEllipsoidInverseDepth2D </td> <td> \image html preview_CEllipsoidInverseDepth2D.png </td> </tr>
