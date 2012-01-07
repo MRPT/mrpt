@@ -3,7 +3,7 @@
    |                                                                           |
    |                       http://www.mrpt.org/                                |
    |                                                                           |
-   |   Copyright (C) 2005-2011  University of Malaga                           |
+   |   Copyright (C) 2005-2012  University of Malaga                           |
    |                                                                           |
    |    This software was written by the Machine Perception and Intelligent    |
    |      Robotics Lab, University of Malaga (Spain).                          |
@@ -105,7 +105,7 @@ CAboutBox::CAboutBox(wxWindow* parent,wxWindowID id)
     lbInfo = new wxTextCtrl(Notebook1, ID_TEXTCTRL1, wxEmptyString, wxPoint(4,24), wxSize(545,222), wxTE_MULTILINE|wxTE_READONLY|wxTE_AUTO_URL, wxDefaultValidator, _T("ID_TEXTCTRL1"));
     wxFont lbInfoFont(10,wxSWISS,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Courier New"),wxFONTENCODING_DEFAULT);
     lbInfo->SetFont(lbInfoFont);
-    lbLicense = new wxTextCtrl(Notebook1, ID_TEXTCTRL2, _("License for the Mobile Robot Programming Toolkit (MRPT)\n\nCopyright (C) 2005-2011  University of Malaga                        \n                                                       \nThis software was written by the Perception and Robotics            \nresearch group, University of Malaga (Spain).                     \nContact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>                  \n                                                               \n\nMRPT is free software: you can redistribute it and/or modify       \nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version 3 of the License, or  \n(at your option) any later version.                                \n                                                               \nMRPT is distributed in the hope that it will be useful,              \nbut WITHOUT ANY WARRANTY; without even the implied warranty of     \nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the      \nGNU General Public License for more details.                       \n                                                               \nYou should have received a copy of the GNU General Public License  \nalong with MRPT.  If not, see <http://www.gnu.org/licenses/>.      \n\n"), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxTE_AUTO_URL, wxDefaultValidator, _T("ID_TEXTCTRL2"));
+    lbLicense = new wxTextCtrl(Notebook1, ID_TEXTCTRL2, _("License for the Mobile Robot Programming Toolkit (MRPT)\n\nCopyright (C) 2005-2012  University of Malaga                        \n                                                       \nThis software was written by the Perception and Robotics            \nresearch group, University of Malaga (Spain).                     \nContact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>                  \n                                                               \n\nMRPT is free software: you can redistribute it and/or modify       \nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version 3 of the License, or  \n(at your option) any later version.                                \n                                                               \nMRPT is distributed in the hope that it will be useful,              \nbut WITHOUT ANY WARRANTY; without even the implied warranty of     \nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the      \nGNU General Public License for more details.                       \n                                                               \nYou should have received a copy of the GNU General Public License  \nalong with MRPT.  If not, see <http://www.gnu.org/licenses/>.      \n\n"), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxTE_AUTO_URL, wxDefaultValidator, _T("ID_TEXTCTRL2"));
     wxFont lbLicenseFont(10,wxSWISS,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Courier New"),wxFONTENCODING_DEFAULT);
     lbLicense->SetFont(lbLicenseFont);
     TextCtrl1 = new wxTextCtrl(Notebook1, ID_TEXTCTRL3, _("Up to date documentation and tutorials are maintained at the MRPT website:\n\nhttp://www.mrpt.org/\nor\nhttp://mrpt.sourceforge.net\n\n\n\n\n"), wxPoint(4,24), wxSize(545,222), wxTE_MULTILINE|wxTE_READONLY|wxTE_AUTO_URL, wxDefaultValidator, _T("ID_TEXTCTRL3"));
@@ -166,7 +166,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 
 		cout << " SceneViewer3D\n";
 		cout << "--------------------------------\n";
-		cout << "Jose Luis Blanco (C) 2005-2011\n";
+		cout << "Jose Luis Blanco (C) 2005-2012\n";
 		cout << "For bug reports or to collaborate: <jlblanco@ctima.uma.es>\n";
 		cout << "http://www.isa.uma.es/jlblanco\n\n";
 

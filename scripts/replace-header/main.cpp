@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 				of << "   |                                                                           |\r\n";
 				of << "   |                       http://www.mrpt.org/                                |\r\n";
 				of << "   |                                                                           |\r\n";
-				of << "   |   Copyright (C) 2005-2011  University of Malaga                           |\r\n";
+				of << "   |   Copyright (C) 2005-2012  University of Malaga                           |\r\n";
 				of << "   |                                                                           |\r\n";
 				of << "   |    This software was written by the Machine Perception and Intelligent    |\r\n";
 				of << "   |      Robotics Lab, University of Malaga (Spain).                          |\r\n";

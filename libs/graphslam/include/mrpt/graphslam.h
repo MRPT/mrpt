@@ -3,7 +3,7 @@
    |                                                                           |
    |                   http://mrpt.sourceforge.net/                            |
    |                                                                           |
-   |   Copyright (C) 2005-2011  University of Malaga                           |
+   |   Copyright (C) 2005-2012  University of Malaga                           |
    |                                                                           |
    |    This software was written by the Machine Perception and Intelligent    |
    |      Robotics Lab, University of Malaga (Spain).                          |
