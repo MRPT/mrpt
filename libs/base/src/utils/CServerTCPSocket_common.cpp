@@ -184,9 +184,10 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 		ret->m_remotePartIP = std::string( inet_ntoa( otherPart.sin_addr ) );
 		ret->m_remotePartPort = ntohs( otherPart.sin_port );
 
-		printf_debug("[CServerTCPSocket::accept] Conection accepted from %s:%u\n",
-			ret->m_remotePartIP.c_str(),
-			ret->m_remotePartPort );
+		if ( m_verbose )
+			printf_debug("[CServerTCPSocket::accept] Conection accepted from %s:%u\n",
+				ret->m_remotePartIP.c_str(),
+				ret->m_remotePartPort );
 
 		return ret;
 	}
