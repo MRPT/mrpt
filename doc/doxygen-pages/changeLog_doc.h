@@ -75,6 +75,7 @@
 	- Deleted classes:
 		- mrpt::slam::CConsistentObservationAlignment: It implemented the Lu & Milios algorithm, now superseded by graph-slam methods. See the mrpt::graphslam namespace (this should have been deleted in 0.9.3 but for some error it wasn't!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2747" >r2747</a> 
 	- BUG FIXES:
+		- [mrpt-maps] mrpt::slam::CPointsMap::loadFromRange() for 3D range scans took as invalid any point with any of its 3 coordinates set to exactly zero. It's now fixed so invalid points are those at (0,0,0). - <a href="http://code.google.com/p/mrpt/source/detail?r=2790" >r2790</a> 
 		- [mrpt-base] mrpt::poses::CPose3D::composeFrom() gave wrong results when its first argument was the same object being invoked - <a href="http://code.google.com/p/mrpt/source/detail?r=2737" >r2737</a> 
 		- [mrpt-base] RANSAC implementation could fail if the first random subset contained only outliers. <a href="http://code.google.com/p/mrpt/issues/detail?id=11" >Patch provided</a> by Robert Schattschneider (University of Canterbury, New Zealand) - <a href="http://code.google.com/p/mrpt/source/detail?r=2746" >r2746</a> 
 		- [mrpt-base] File names from mrpt::system::getTempFileName() could be not system-wide unique under Windows - <a href="http://code.google.com/p/mrpt/source/detail?r=2766" >r2766</a> 
