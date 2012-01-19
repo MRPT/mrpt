@@ -82,6 +82,7 @@
 		- [mrpt-base] mrpt::random::CRandomGenerator::drawGaussian1D_normalized() fixed potential collision of internal data in multithreaded applications, and fixed a potential, but unlike (1 in 2^32) divide-by-zero error - <a href="http://code.google.com/p/mrpt/source/detail?r=2786" >r2786</a> 
 		- [mrpt-opengl] Fixed potential SIGSEGV while serializing an uninitialized mrpt::opengl::C3DSScene object - <a href="http://code.google.com/p/mrpt/source/detail?r=2773" >2773</a> 
 		- [mrpt-base/mrpt-opengl] Method getAs3DObject() of mrpt::poses' poses PDFs cleared the previous contents of the passed CSetOfObjects argument, which shouldn't be the expected behavior  - <a href="http://code.google.com/p/mrpt/source/detail?r=2781" >2781</a> 
+		- [mrpt-hwdrivers] Fixed Bumblebee capture of rectified images will return two left images (<a href="http://code.google.com/p/mrpt/issues/detail?id=18" > Issue & patch #18</a>) -  <a href="http://code.google.com/p/mrpt/source/detail?r=2791" >2791</a> 
 
  <hr>
  <a name="0.9.5">

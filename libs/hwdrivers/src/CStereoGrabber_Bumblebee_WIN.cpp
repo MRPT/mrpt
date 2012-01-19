@@ -344,8 +344,16 @@ bool  CStereoGrabber_Bumblebee::getStereoObservation( mrpt::slam::CObservationSt
 			IplImage *tmpImageL = cvCreateImage( cvSize( m_options.frame_width, m_options.frame_height ), IPL_DEPTH_8U, 4 );
 			IplImage *tmpImageR = cvCreateImage( cvSize( m_options.frame_width, m_options.frame_height ), IPL_DEPTH_8U, 4 );
 
-			TriclopsInput				colorInput;
+			TriclopsInput				colorInputL, colorInputR;
 			TriclopsPackedColorImage	colorImageL, colorImageR;
+
+			unsigned char* redMono = NULL;
+			unsigned char* greenMono = NULL;
+			unsigned char* blueMono = NULL;
+			
+			redMono		= &m_imgBuff[0];
+			greenMono	= redMono + rowInc * nImages;
+			blueMono	= greenMono + rowInc * nImages;
 
 			// Use the row interleaved images to build up a packed TriclopsInput.
 			// A packed triclops input will contain a single image with 32 bpp.
@@ -355,15 +363,26 @@ bool  CStereoGrabber_Bumblebee::getStereoObservation( mrpt::slam::CObservationSt
 				rowInc * 4,
 				flycaptureImage.timeStamp.ulSeconds,
 				flycaptureImage.timeStamp.ulMicroSeconds,
-				&m_imgBuff[0],
-				&colorInput );
+				greenMono,
+				&colorInputL );
+			_HANDLE_TRICLOPS_ERROR_RET( "triclopsBuildPackedTriclopsInput()", te );
+			
+			te = triclopsBuildPackedTriclopsInput(
+				nCols,
+				nRows,
+				rowInc * 4,
+				flycaptureImage.timeStamp.ulSeconds,
+				flycaptureImage.timeStamp.ulMicroSeconds,
+				redMono,
+				&colorInputR );
+
 			_HANDLE_TRICLOPS_ERROR_RET( "triclopsBuildPackedTriclopsInput()", te );
 
 			// Rectify
-			te = triclopsRectifyPackedColorImage( m_triclops, TriCam_LEFT, &colorInput, &colorImageL );
+			te = triclopsRectifyPackedColorImage( m_triclops, TriCam_LEFT, &colorInputL, &colorImageL );
 			_HANDLE_TRICLOPS_ERROR_RET( "triclopsRectifyPackedColorImage()", te );
 
-			te = triclopsRectifyPackedColorImage( m_triclops, TriCam_RIGHT, &colorInput, &colorImageR );
+			te = triclopsRectifyPackedColorImage( m_triclops, TriCam_RIGHT, &colorInputR, &colorImageR );
 			_HANDLE_TRICLOPS_ERROR_RET( "triclopsRectifyPackedColorImage()", te );
 
 			// Copy image data
