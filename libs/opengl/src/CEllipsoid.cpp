@@ -268,7 +268,8 @@ void CEllipsoid::setCovMatrix( const mrpt::math::CMatrixDouble &m, int resizeToS
 	CRenderizableDisplayList::notifyChange();
 
 	// Handle the special case of an ellipsoid of volume = 0
-	if (m_cov.det()==0)
+	const double d=m_cov.det();
+	if (d==0 || d!=d) // Note: "d!=d" is a great test for invalid numbers, don't remove!
 	{
 		// All zeros:
 		m_prevComputedCov = m_cov;
