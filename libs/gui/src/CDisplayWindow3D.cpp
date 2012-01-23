@@ -907,3 +907,21 @@ mrpt::opengl::COpenGLViewportPtr CDisplayWindow3D::getDefaultViewport()
 	m_csAccess3DScene.leave();
 	return view;
 }
+
+void CDisplayWindow3D::setImageView(const mrpt::utils::CImage &img)
+{
+	m_csAccess3DScene.enter();
+	mrpt::opengl::COpenGLViewportPtr view = m_3Dscene->getViewport("main");
+	view->setImageView(img);
+	m_csAccess3DScene.leave();
+}
+
+void CDisplayWindow3D::setImageView_fast(mrpt::utils::CImage &img)
+{
+	m_csAccess3DScene.enter();
+	mrpt::opengl::COpenGLViewportPtr view = m_3Dscene->getViewport("main");
+	view->setImageView_fast(img);
+	m_csAccess3DScene.leave();
+}
+
+

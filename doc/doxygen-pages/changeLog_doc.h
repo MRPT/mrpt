@@ -60,6 +60,7 @@
 		- [mrpt-maps] mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
 		- [mrpt-vision] Interface of mrpt::vision::CGenericFeatureTracker extended to handle subpixel feature coordinates (mrpt::vision::TSimpleFeaturefList)
 		- [mrpt-gui] & [mrpt-hwdrivers] Environment variable MRPT_WXSUBSYS_TIMEOUT_MS is now observed in all places where a GUI window is expected to be launched.
+		- [mrpt-gui] New shortcut methods mrpt::gui::CDisplayWindow3D::setImageView() and mrpt::gui::CDisplayWindow3D::setImageView_fast() - <a href="http://code.google.com/p/mrpt/source/detail?r=2793" >r2793</a> 
 		- [mrpt-opengl] Method mrpt::opengl::graph_tools::graph_visualize() now also shows the pose constraints for better visualization of graph maps - <a href="http://code.google.com/p/mrpt/source/detail?r=2767" >r2767</a>
 		- [mrpt-opengl] All mrpt::opengl::CRenderizable classes now have a much more versatile serialization mechanism, which also saves a few bytes per object - <a href="http://code.google.com/p/mrpt/source/detail?r=2774" >r2774</a>
 		- [mrpt-opengl] New methods mrpt::opengl::CFBORender::setBackgroundColor() for the new capability of this class of defining a background color - <a href="http://code.google.com/p/mrpt/source/detail?r=2775" >r2775</a>

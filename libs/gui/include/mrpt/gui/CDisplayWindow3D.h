@@ -54,6 +54,9 @@ namespace mrpt
 		  *  Images can be grabbed automatically to disk for easy creation of videos.
 		  *  See CDisplayWindow3D::grabImagesStart  (and for creating videos, mrpt::utils::CVideoFileWriter).
 		  *
+		  *  A short-cut for displaying 2D images (using the OpenGL rendering hardware) is available
+		  *  through \a setImageView() and \a setImageView_fast(). Internally, these methods call methods
+		  *  in the "main" viewport of the window (see \a COpenGLViewport).
 		  *
 		  *  Since the 3D rendering is performed in a detached thread, especial care must be taken
 		  *   when updating the 3D scene to be rendered. The process involves an internal critical section
@@ -366,6 +369,20 @@ namespace mrpt
 			  *  \endcode
 			  */
 			mrpt::opengl::COpenGLViewportPtr getDefaultViewport();
+
+			/** Set the "main" viewport into "image view"-mode, where an image is efficiently drawn (fitting the viewport area) using an OpenGL textured quad.
+			  *  Call this method with the new image to update the displayed image (but recall to first lock the parent openglscene's critical section, then do the update, then release the lock, and then issue a window repaint).
+			  *  Internally, the texture is drawn using a mrpt::opengl::CTexturedPlane
+			  *  The viewport can be reverted to behave like a normal viewport by calling setNormalMode()
+			  * \sa setImageView_fast, COpenGLViewport
+			  */
+			void setImageView(const mrpt::utils::CImage &img);
+
+			/** Just like \a setImageView but moves the internal image memory instead of making a copy, so it's faster but empties the input image.
+			  * \sa setImageView, COpenGLViewport
+			  */
+			void setImageView_fast(mrpt::utils::CImage &img);
+
 
 		protected:
 			void internal_setRenderingFPS(double FPS);  //!< Set the rendering FPS (users don't call this, the method is for internal MRPT objects only) \sa getRenderingFPS
