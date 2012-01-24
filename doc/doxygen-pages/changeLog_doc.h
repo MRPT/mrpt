@@ -40,38 +40,50 @@
 			- New menu for generating high-resolution renders of any scene directly to imag files - <a href="http://code.google.com/p/mrpt/source/detail?r=2775" >r2775</a>
 			- Many new menus for selective selecting objects and applying operations on them - <a href="http://code.google.com/p/mrpt/source/detail?r=2776" >r2776</a>
 	- Kinect stuff: 
-		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect now decodes Bayer color using OpenCV instead of default freenect - <a href="http://code.google.com/p/mrpt/source/detail?r=2721" >r2721</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2762" >r2762</a>
-		- [mrpt-hwdrivers] mrpt::hwdrivers::CKinect no longer forces a horizontal tilt at start up by default, what may be annoying (if required, set "initial_tilt_angle") - <a href="http://code.google.com/p/mrpt/source/detail?r=2722" >r2722</a>
+		- [mrpt-hwdrivers] 
+			- mrpt::hwdrivers::CKinect now decodes Bayer color using OpenCV instead of default freenect - <a href="http://code.google.com/p/mrpt/source/detail?r=2721" >r2721</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2762" >r2762</a>
+			- mrpt::hwdrivers::CKinect no longer forces a horizontal tilt at start up by default, what may be annoying (if required, set "initial_tilt_angle") - <a href="http://code.google.com/p/mrpt/source/detail?r=2722" >r2722</a>
 	- New classes:
-		- [mrpt-opengl] New classes for representing confidence intervals (ellipsoids) in transformed spaces - <a href="http://code.google.com/p/mrpt/source/detail?r=2783" >r2783</a>
-			- mrpt::opengl::CGeneralizedEllipsoidTemplate<> 
-			- mrpt::opengl::CEllipsoidRangeBearing2D
-			- mrpt::opengl::CEllipsoidInverseDepth2D
-			- mrpt::opengl::CEllipsoidInverseDepth3D
+		- [mrpt-opengl] 
+			- New classes for representing confidence intervals (ellipsoids) in transformed spaces - <a href="http://code.google.com/p/mrpt/source/detail?r=2783" >r2783</a>
+				- mrpt::opengl::CGeneralizedEllipsoidTemplate<> 
+				- mrpt::opengl::CEllipsoidRangeBearing2D
+				- mrpt::opengl::CEllipsoidInverseDepth2D
+				- mrpt::opengl::CEllipsoidInverseDepth3D
+		- [mrpt-vision] 
+			- mrpt::vision::TSIFTDescriptorsKDTreeIndex, TSURFDescriptorsKDTreeIndex  - <a href="http://code.google.com/p/mrpt/source/detail?r=2799" >2799</a>
 	- Changes in classes:
-		- [mrpt-base] Changes in mrpt::math::CSparseMatrix: 
-			- New method mrpt::math::CSparseMatrix::saveToTextFile_sparse()
-			- Overloaded method for "double*" mrpt::math::CSparseMatrix::CholeskyDecomp::backsub()
-		- [mrpt-base] KD-trees: 
-			- Now also exposes methods for Radius search: mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D(), mrpt::math::KDTreeCapable::kdTreeRadiusSearch3D()  - <a href="http://code.google.com/p/mrpt/source/detail?r=2726" >r2726</a> 
-			- Updated to nanoflann 1.1.0: the main change is that (by default) all KD-tree indices are "size_t" instead of "int" - <a href="http://code.google.com/p/mrpt/source/detail?r=2771" >r2771</a> 
-		- [mrpt-base] mrpt::sync::CCriticalSectionLocker now can accept a NULL pointer as input, in which case no action will be taken (previosly, it led to segfault) - <a href="http://code.google.com/p/mrpt/source/detail?r=2727" >r2727</a> 
-		- [mrpt-base] mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.
-		- [mrpt-maps] mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
-		- [mrpt-vision] Interface of mrpt::vision::CGenericFeatureTracker extended to handle subpixel feature coordinates (mrpt::vision::TSimpleFeaturefList)
-		- [mrpt-vision] mrpt::vision::CFeatureExtraction has new parameters to change the thresholds of SIFT detector implementations - <a href="http://code.google.com/p/mrpt/source/detail?r=2797" >r2797</a> 
-		- [mrpt-gui] & [mrpt-hwdrivers] Environment variable MRPT_WXSUBSYS_TIMEOUT_MS is now observed in all places where a GUI window is expected to be launched.
-		- [mrpt-gui] New shortcut methods mrpt::gui::CDisplayWindow3D::setImageView() and mrpt::gui::CDisplayWindow3D::setImageView_fast() - <a href="http://code.google.com/p/mrpt/source/detail?r=2793" >r2793</a> 
-		- [mrpt-opengl] Method mrpt::opengl::graph_tools::graph_visualize() now also shows the pose constraints for better visualization of graph maps - <a href="http://code.google.com/p/mrpt/source/detail?r=2767" >r2767</a>
-		- [mrpt-opengl] All mrpt::opengl::CRenderizable classes now have a much more versatile serialization mechanism, which also saves a few bytes per object - <a href="http://code.google.com/p/mrpt/source/detail?r=2774" >r2774</a>
-		- [mrpt-opengl] New methods mrpt::opengl::CFBORender::setBackgroundColor() for the new capability of this class of defining a background color - <a href="http://code.google.com/p/mrpt/source/detail?r=2775" >r2775</a>
-	- Support for RFID sensors: (Batch of changed by Emil Khatib) - <a href="http://code.google.com/p/mrpt/source/detail?r=2736" >r2736</a>
+		- [mrpt-base] 
+			- Changes in mrpt::math::CSparseMatrix: 
+				- New method mrpt::math::CSparseMatrix::saveToTextFile_sparse()
+				- Overloaded method for "double*" mrpt::math::CSparseMatrix::CholeskyDecomp::backsub()
+			- KD-trees: 
+				- Now also exposes methods for Radius search: mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D(), mrpt::math::KDTreeCapable::kdTreeRadiusSearch3D()  - <a href="http://code.google.com/p/mrpt/source/detail?r=2726" >r2726</a> 
+				- Updated to nanoflann 1.1.0: the main change is that (by default) all KD-tree indices are "size_t" instead of "int" - <a href="http://code.google.com/p/mrpt/source/detail?r=2771" >r2771</a> 
+			-  mrpt::sync::CCriticalSectionLocker now can accept a NULL pointer as input, in which case no action will be taken (previosly, it led to segfault) - <a href="http://code.google.com/p/mrpt/source/detail?r=2727" >r2727</a> 
+			-  mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.
+		- [mrpt-maps] 
+			- mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
+		- [mrpt-vision] 
+			- Interface of mrpt::vision::CGenericFeatureTracker extended to handle subpixel feature coordinates (mrpt::vision::TSimpleFeaturefList)
+			- mrpt::vision::CFeatureExtraction has new parameters to change the thresholds of SIFT detector implementations - <a href="http://code.google.com/p/mrpt/source/detail?r=2797" >r2797</a> 
+		- [mrpt-gui] 
+			- Environment variable MRPT_WXSUBSYS_TIMEOUT_MS is now observed in all places where a GUI window is expected to be launched.
+			- New shortcut methods mrpt::gui::CDisplayWindow3D::setImageView() and mrpt::gui::CDisplayWindow3D::setImageView_fast() - <a href="http://code.google.com/p/mrpt/source/detail?r=2793" >r2793</a> 
+		- [mrpt-opengl] 
+			- Method mrpt::opengl::graph_tools::graph_visualize() now also shows the pose constraints for better visualization of graph maps - <a href="http://code.google.com/p/mrpt/source/detail?r=2767" >r2767</a>
+			- All mrpt::opengl::CRenderizable classes now have a much more versatile serialization mechanism, which also saves a few bytes per object - <a href="http://code.google.com/p/mrpt/source/detail?r=2774" >r2774</a>
+			- New methods mrpt::opengl::CFBORender::setBackgroundColor() for the new capability of this class of defining a background color - <a href="http://code.google.com/p/mrpt/source/detail?r=2775" >r2775</a>
+	- Support for RFID sensors: (Batch of changes by Emil Khatib) - <a href="http://code.google.com/p/mrpt/source/detail?r=2736" >r2736</a>
 		- [mrpt-obs] New class mrpt::slam::CObservationRFID
 		- [mrpt-hwdrivers] Support for Impinj's "Speedway Revolution RFID reader", see new class mrpt::hwdrivers::CImpinjRFID
 	- Build system:
 		- Support for a new CMake variable: "MRPT_DONT_USE_DBG_LIBS", which if set to "1" before doing a "FIND_PACKAGE(MRPT ...)" from a user program, forces the usage of normal release libs (vs the -dbg versions) even for "Debug" CMake builds (this is mostly useful for GCC builds in GNU/Linux).
 		- [mrpt-opengl] Added new unit tests for serialization of all the classes in this library - <a href="http://code.google.com/p/mrpt/source/detail?r=2773" >2773</a> 
 		- Update of the embedded version of Eigen to 3.0.4 (Dec 6th, 2011) - <a href="http://code.google.com/p/mrpt/source/detail?r=2778" >2778</a>
+	- New functions:
+		- [mrpt-vision] 
+			- mrpt::vision::find_descriptor_pairings() - <a href="http://code.google.com/p/mrpt/source/detail?r=2799" >2799</a>
 	- New examples:
 		- csparse_demo
 	- Deleted classes:

@@ -22,6 +22,8 @@ patch, with or without a set of descriptors.
 - mrpt::vision::CFeatureExtraction: A hub for a number of detection algorithms and
  different descriptors.
 
+- mrpt::vision::TSIFTDescriptorsKDTreeIndex, mrpt::vision::find_descriptor_pairings() and others: KD-tree-based SIFT/SURF feature matching.
+
 - mrpt::vision::CVideoFileWriter: A class to write video files.
 
 - mrpt::vision::CUndistortMap: A cache of the map for undistorting image, very efficient for sequences of images all with the same distortion parameters.
