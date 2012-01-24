@@ -70,13 +70,14 @@ detected features are stored in the array pointed to by \a feat.
 @return Returns the number of features stored in \a feat or -1 on failure
 @see _sift_features()
 */
+#if 0
 int sift_features( IplImage* img, struct feature** feat )
 {
 	return _sift_features( img, feat, SIFT_INTVLS, SIFT_SIGMA, SIFT_CONTR_THR,
 							SIFT_CURV_THR, SIFT_IMG_DBL, SIFT_DESCR_WIDTH,
 							SIFT_DESCR_HIST_BINS );
 }
-
+#endif
 
 
 /**

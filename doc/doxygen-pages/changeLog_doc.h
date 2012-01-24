@@ -59,6 +59,7 @@
 		- [mrpt-base] mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.
 		- [mrpt-maps] mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
 		- [mrpt-vision] Interface of mrpt::vision::CGenericFeatureTracker extended to handle subpixel feature coordinates (mrpt::vision::TSimpleFeaturefList)
+		- [mrpt-vision] mrpt::vision::CFeatureExtraction has new parameters to change the thresholds of SIFT detector implementations - <a href="http://code.google.com/p/mrpt/source/detail?r=2797" >r2797</a> 
 		- [mrpt-gui] & [mrpt-hwdrivers] Environment variable MRPT_WXSUBSYS_TIMEOUT_MS is now observed in all places where a GUI window is expected to be launched.
 		- [mrpt-gui] New shortcut methods mrpt::gui::CDisplayWindow3D::setImageView() and mrpt::gui::CDisplayWindow3D::setImageView_fast() - <a href="http://code.google.com/p/mrpt/source/detail?r=2793" >r2793</a> 
 		- [mrpt-opengl] Method mrpt::opengl::graph_tools::graph_visualize() now also shows the pose constraints for better visualization of graph maps - <a href="http://code.google.com/p/mrpt/source/detail?r=2767" >r2767</a>

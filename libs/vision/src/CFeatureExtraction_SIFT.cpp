@@ -307,8 +307,10 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 			dog_pyr = build_dog_pyr( gauss_pyr, octvs, SIFT_INTVLS );
 
 			storage = cvCreateMemStorage( 0 );
-			features = scale_space_extrema( dog_pyr, octvs, SIFT_INTVLS, SIFT_CONTR_THR,
-				SIFT_CURV_THR, storage );
+			features = scale_space_extrema( dog_pyr, octvs, SIFT_INTVLS, 
+				options.SIFTOptions.threshold, // SIFT_CONTR_THR,
+				options.SIFTOptions.edgeThreshold, // SIFT_CURV_THR
+				storage );
 			calc_feature_scales( features, SIFT_SIGMA, SIFT_INTVLS );
 			if( SIFT_IMG_DBL )
 				adjust_for_img_dbl( features );
@@ -348,8 +350,9 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 		{
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x211
 			SiftFeatureDetector SIFTDetector(
-				SIFT::DetectorParams::GET_DEFAULT_THRESHOLD(),
-				SIFT::DetectorParams::GET_DEFAULT_EDGE_THRESHOLD() );
+				options.SIFTOptions.threshold, //SIFT::DetectorParams::GET_DEFAULT_THRESHOLD(),
+				options.SIFTOptions.edgeThreshold //SIFT::DetectorParams::GET_DEFAULT_EDGE_THRESHOLD() );
+				); 
 
 			SiftDescriptorExtractor SIFTDescriptor;
 
@@ -533,8 +536,10 @@ void  CFeatureExtraction::internal_computeSiftDescriptors( const CImage	&in_img,
 			dog_pyr = build_dog_pyr( gauss_pyr, octvs, SIFT_INTVLS );
 
 			storage = cvCreateMemStorage( 0 );
-			features = static_cast<CvSeq*>(my_scale_space_extrema( in_features, dog_pyr, octvs, SIFT_INTVLS, SIFT_CONTR_THR,
-				SIFT_CURV_THR, storage ));
+			features = static_cast<CvSeq*>(my_scale_space_extrema( in_features, dog_pyr, octvs, SIFT_INTVLS, 
+				options.SIFTOptions.threshold, // SIFT_CONTR_THR,
+				options.SIFTOptions.edgeThreshold, // SIFT_CURV_THR
+				storage ));
 			calc_feature_scales( features, SIFT_SIGMA, SIFT_INTVLS );
 			if( SIFT_IMG_DBL )
 				my_adjust_for_img_dbl( features );

@@ -413,6 +413,8 @@ void CFeatureExtraction::TOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(KLTOptions.radius,int,  iniFile,section)
 
 	MRPT_LOAD_CONFIG_VAR_CAST(SIFTOptions.implementation,int,TSIFTImplementation, iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(SIFTOptions.threshold,double,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(SIFTOptions.edgeThreshold,double,  iniFile,section)
 
 	MRPT_LOAD_CONFIG_VAR(SURFOptions.rotation_invariant,bool,  iniFile,section)
 

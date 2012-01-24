@@ -156,11 +156,14 @@ namespace mrpt
 					bool    use_KLT_response; //!< (default=false) If true, use CImage::KLT_response to compute the response at each point instead of the FAST "standard response".
 				} FASTOptions;
 
+				/** SIFT Options  */
 				struct VISION_IMPEXP TSIFTOptions
 				{
-					/** SIFT Options
-					  */
+					TSIFTOptions() : threshold(0.04), edgeThreshold(10) { }
+
 					TSIFTImplementation implementation;
+					double threshold;  //!< default= 0.04
+					double edgeThreshold; //!< default= 10
 				} SIFTOptions;
 
 				struct VISION_IMPEXP TSURFOptions

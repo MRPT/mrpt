@@ -50,10 +50,10 @@ struct feature;
 #define SIFT_SIGMA 1.6
 
 /** default threshold on keypoint contrast |D(x)| */
-#define SIFT_CONTR_THR 0.04
+//#define SIFT_CONTR_THR 0.04
 
 /** default threshold on keypoint ratio of principle curvatures */
-#define SIFT_CURV_THR 10
+//#define SIFT_CURV_THR 10
 
 /** double image size before pyramid construction? */
 #define SIFT_IMG_DBL 1
