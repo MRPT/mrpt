@@ -25,9 +25,8 @@ that accompanied this distribution.
 #include <cv.h>
 
 /************************* Local Function Prototypes *************************/
-
-IplImage* create_init_img( IplImage*, int, double );
-IplImage* convert_to_gray32( IplImage* );
+IplImage* create_init_img( const IplImage*, int, double );
+IplImage* convert_to_gray32( const IplImage* );
 IplImage*** build_gauss_pyr( IplImage*, int, int, double );
 IplImage* downsample( IplImage* );
 IplImage*** build_dog_pyr( IplImage***, int, int );
@@ -57,7 +56,6 @@ void normalize_descr( struct feature* );
 int feature_cmp( void*, void*, void* );
 void release_descr_hist( double****, int );
 void release_pyr( IplImage****, int, int );
-
 
 /*********************** Functions prototyped in sift.h **********************/
 
@@ -167,7 +165,7 @@ optionally doubled in size prior to smoothing.
 @param img_dbl if true, image is doubled in size prior to smoothing
 @param sigma total std of Gaussian smoothing
 */
-IplImage* create_init_img( IplImage* img, int img_dbl, double sigma )
+IplImage* create_init_img(const IplImage* img, int img_dbl, double sigma )
 {
 	IplImage* gray, * dbl;
 	float sig_diff;
@@ -200,7 +198,7 @@ Converts an image to 32-bit grayscale
 
 @return Returns a 32-bit grayscale image
 */
-IplImage* convert_to_gray32( IplImage* img )
+IplImage* convert_to_gray32( const IplImage* img )
 {
 	IplImage* gray8, * gray32;
 

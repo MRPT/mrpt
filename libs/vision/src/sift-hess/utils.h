@@ -13,6 +13,11 @@ Copyright (C) 2006  Rob Hess <hess@eecs.oregonstate.edu>
 
 #include <stdio.h>
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
+
 /* absolute value */
 #ifndef ABS
 #define ABS(x) ( ( x < 0 )? -x : x )
@@ -241,5 +246,9 @@ Checks if a HighGUI window is still open or not
 @return Returns 1 if the window named \a name has been closed or 0 otherwise
 */
 extern int win_closed( char* name );
+
+#ifdef __cplusplus
+ }
+#endif
 
 #endif

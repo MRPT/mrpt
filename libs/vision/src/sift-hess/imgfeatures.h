@@ -11,6 +11,11 @@ Copyright (C) 2006  Rob Hess <hess@eecs.oregonstate.edu>
 
 #include "cxcore.h"
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
+
 /** FEATURE_OXFD <BR> FEATURE_LOWE */
 enum feature_type
 {
@@ -117,5 +122,8 @@ Calculates the squared Euclidian distance between two feature descriptors.
 */
 extern double descr_dist_sq( struct feature* f1, struct feature* f2 );
 
+#ifdef __cplusplus
+ }
+#endif
 
 #endif
