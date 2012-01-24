@@ -231,7 +231,9 @@
 #endif
 #ifndef uint32_t
 #if (ULONG_MAX == UINT32_MAX) || defined (S_SPLINT_S)
+#	ifndef OPENCV_FLANN_DIST_H_  // An ugly solution to a collision of cvflann for MSC
   typedef unsigned long uint32_t;
+#	endif
 # define UINT32_C(v) v ## UL
 # ifndef PRINTF_INT32_MODIFIER
 #  define PRINTF_INT32_MODIFIER "l"
