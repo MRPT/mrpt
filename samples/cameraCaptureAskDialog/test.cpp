@@ -32,6 +32,7 @@
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
+using namespace mrpt::slam;
 using namespace mrpt::hwdrivers;
 using namespace std;
 
@@ -51,7 +52,7 @@ void TestCameraCaptureAsk()
 
 	CDisplayWindow  win("Live video");
 
-	cout << "Close the window to exit." << endl;
+	cout << "Press 's' to save frames.\nClose the window to exit.\n";
 
 	double counter = 0;
 	mrpt::utils::CTicTac	tictac;
@@ -64,22 +65,57 @@ void TestCameraCaptureAsk()
 		mrpt::slam::CObservationPtr  obs = cam->getNextFrame();
 		ASSERT_(obs);
 
+		CImage *img = NULL;
+
 		if (IS_CLASS(obs,CObservationImage))
 		{
 			CObservationImagePtr o=CObservationImagePtr(obs);
-			win.showImage(o->image);
+			img = &o->image;
 		}
 		else if (IS_CLASS(obs,CObservationStereoImages))
 		{
 			CObservationStereoImagesPtr o=CObservationStereoImagesPtr(obs);
-			win.showImage(o->imageRight);
+			img = &o->imageRight;
 		}
+		else if (IS_CLASS(obs,CObservation3DRangeScan))
+		{
+			CObservation3DRangeScanPtr o=CObservation3DRangeScanPtr(obs);
+			if (o->hasIntensityImage)
+				img = &o->intensityImage;
+		}
+
+		if (img)
+			win.showImage(*img);
+
 		if( ++counter == 10 )
 		{
 			double t = tictac.Tac();
 			cout << "Frame Rate: " << counter/t << " fps" << endl;
 			counter = 0;
 		}
+
+		// Process keystrokes:
+		if (mrpt::system::os::kbhit())
+		{
+			const int key_code = mrpt::system::os::getch();
+			switch (key_code)
+			{
+			case 's':
+			case 'S':
+				{
+					static int cnt=0;
+					const std::string sFile = mrpt::format("frame%05i.png",cnt++);
+					cout << "Saving frame to: " << sFile << endl;
+					img->saveToFile(sFile);
+				}
+				break;
+			default:
+				break;
+
+			};
+		}
+
+
 		mrpt::system::sleep(2);
 	}
 
