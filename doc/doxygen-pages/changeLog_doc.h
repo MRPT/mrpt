@@ -39,6 +39,7 @@
 		- <a href="http://www.mrpt.org/Application:SceneViewer" >SceneViewer3D</a>: 
 			- New menu for generating high-resolution renders of any scene directly to imag files - <a href="http://code.google.com/p/mrpt/source/detail?r=2775" >r2775</a>
 			- Many new menus for selective selecting objects and applying operations on them - <a href="http://code.google.com/p/mrpt/source/detail?r=2776" >r2776</a>
+		- stereo-calib-gui: Now generates a report with detailed and clear results from stereo calibration and allows the user to change most parameters interactively - <a href="http://code.google.com/p/mrpt/source/detail?r=2801" >r2801</a>
 	- Kinect stuff: 
 		- [mrpt-hwdrivers] 
 			- mrpt::hwdrivers::CKinect now decodes Bayer color using OpenCV instead of default freenect - <a href="http://code.google.com/p/mrpt/source/detail?r=2721" >r2721</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2762" >r2762</a>
