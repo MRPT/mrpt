@@ -31,17 +31,6 @@
 #include <mrpt/opengl/CFBORender.h>
 #include "opengl_internals.h"
 
-#if MRPT_HAS_OPENCV
-#	if MRPT_OPENCV_VERSION_NUM>=0x211
-#		include <opencv2/core/core.hpp>
-#		include <opencv2/imgproc/imgproc.hpp>
-#		include <opencv2/imgproc/imgproc_c.h>
-#	else
-#		include <cv.h>
-#	endif
-#endif
-
-
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -200,7 +189,7 @@ void  CFBORender::getFrame( const COpenGLScene& scene, CImage& buffer )
  ---------------------------------------------------------------*/
 void  CFBORender::getFrame2( const COpenGLScene& scene, CImage& buffer )
 {
-#if MRPT_HAS_OPENCV && MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT
 
 	MRPT_START
 
@@ -224,10 +213,8 @@ void  CFBORender::getFrame2( const COpenGLScene& scene, CImage& buffer )
 	render_text_messages(m_width,m_height);
 
 
-	// get the current read buffer setting and save it
-	IplImage* image = (IplImage*)buffer.getAsIplImage();
 	// TODO NOTE: This should fail if the image has padding bytes. See glPixelStore() etc.
-	glReadPixels(0, 0, m_width, m_height, GL_BGR_EXT, GL_UNSIGNED_BYTE, image->imageData);
+	glReadPixels(0, 0, m_width, m_height, GL_BGR_EXT, GL_UNSIGNED_BYTE, buffer(0,0) );
 
 	//'unbind' the frambuffer object, so subsequent drawing ops are not drawn into the FBO.
 	// '0' means "windowing system provided framebuffer
