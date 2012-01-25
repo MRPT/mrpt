@@ -28,8 +28,8 @@
 
 #include <mrpt/base.h>  // Precompiled headers
 
-#include <mrpt/utils/TCamera.h>
-#include <mrpt/math/ops_matrices.h>  // For "<<" ">>" operators.
+#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/utils/CConfigFileMemory.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -110,5 +110,12 @@ void TStereoCamera::readFromStream( CStream &in, int version )
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION( version )
 	}
+}
+
+std::string TStereoCamera::dumpAsText() const
+{
+	mrpt::utils::CConfigFileMemory cfg;
+	saveToConfigFile("",cfg);
+	return cfg.getContent();
 }
 

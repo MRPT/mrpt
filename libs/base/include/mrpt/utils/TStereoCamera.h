@@ -88,16 +88,11 @@ namespace mrpt
 			void loadFromConfigFile(const std::string &section, const mrpt::utils::CConfigFileBase &cfg );
 
 			/** Dumps all the parameters as a multi-line string, with the same format than \a saveToConfigFile.  \sa saveToConfigFile */
-			std::string dumpAsText()
-			{
-				mrpt::utils::CConfigFileMemory cfg;
-				saveToConfigFile("",cfg);
-				return cfg.getContent();
-			}
+			std::string dumpAsText() const;
 
 			/** Rescale all the parameters for a new camera resolution (it raises an exception if the aspect ratio is modified, which is not permitted).
 			  */
-			void scaleToResolution(unsigned int new_ncols, unsigned int new_nrows) 
+			void scaleToResolution(unsigned int new_ncols, unsigned int new_nrows)
 			{
 				leftCamera.scaleToResolution(new_ncols,new_nrows);
 				rightCamera.scaleToResolution(new_ncols,new_nrows);

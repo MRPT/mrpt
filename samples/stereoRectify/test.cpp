@@ -50,7 +50,7 @@ void TestStereoRectify(int argc, char** argv)
 	// Parse optional arguments:
 	if (argc!=1 && argc!=2)
 	{
-		cout<< "Usage:\n" 
+		cout<< "Usage:\n"
 			<< argv[0] << " ==> Run with default camera parameters (from rawlog file)\n"
 			<< argv[0] << "[params.cfg] ==> Load stereo camera parameters from cfg file\n";
 	}
@@ -67,7 +67,7 @@ void TestStereoRectify(int argc, char** argv)
 
 	mrpt::hwdrivers::CCameraSensorPtr cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
 	if (!cam) return;
-	
+
 	cout << "Video stream open OK\n";
 
 	// Create 3D window:
@@ -98,12 +98,12 @@ void TestStereoRectify(int argc, char** argv)
 	cout << "Close the window to end.\n";
 	while (win.isOpen())
 	{
-		win.addTextMessage (5,5, 
-			format("%.02fFPS - 'r': Switch rectify (Now is: %s)", 
-				win.getRenderingFPS(), 
+		win.addTextMessage (5,5,
+			format("%.02fFPS - 'r': Switch rectify (Now is: %s)",
+				win.getRenderingFPS(),
 				enable_rectify ? "ON":"OFF"
-				), 
-			TColorf(1,1,1),"sans",8, mrpt::opengl::FILL, 0 
+				),
+			TColorf(1,1,1),"sans",8, mrpt::opengl::FILL, 0
 			);
 		mrpt::system::sleep(1);
 
@@ -133,15 +133,15 @@ void TestStereoRectify(int argc, char** argv)
 					img_right_rectified = o->imageRight;
 				}
 
-				// Warning: I can use _fast() here because I don't mind 
+				// Warning: I can use _fast() here because I don't mind
 				//  destroying the temporary rectified images.
 				gl_views[0]->setImageView_fast(img_left_rectified);
 				gl_views[1]->setImageView_fast(img_right_rectified);
 
 				win.addTextMessage(
-					5,25, 
-					mrpt::system::timeToString(o->timestamp), 
-					TColorf(1,1,1),"sans",8, mrpt::opengl::FILL, 1 
+					5,25,
+					mrpt::system::timeToString(o->timestamp),
+					TColorf(1,1,1),"sans",8, mrpt::opengl::FILL, 1
 					);
 
 				win.unlockAccess3DScene();
@@ -168,7 +168,8 @@ int main(int argc, char** argv)
 {
 	try
 	{
-		return TestStereoRectify(argc,argv);
+		TestStereoRectify(argc,argv);
+		return 0;
 	} catch (std::exception &e)
 	{
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
