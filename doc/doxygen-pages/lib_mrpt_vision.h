@@ -31,6 +31,10 @@ patch, with or without a set of descriptors.
 - This library defines a new type of observation (mrpt::slam::CObservationVisualLandmarks)
   and a new type of map (mrpt::slam::CLandmarksMap).
 
+- Notice that sets of parameters for monocular and stereo cameras are defined in [mrpt-base] for convenience, in the classes:
+	- mrpt::utils::TCamera
+	- mrpt::utils::TStereoCamera
+
 See all the classes in mrpt::vision
 
 

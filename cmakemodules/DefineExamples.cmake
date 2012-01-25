@@ -242,6 +242,7 @@ IF(BUILD_EXAMPLES)
 		# === HWDRIVERS & VISION ===
 		SET(LIST_EXAMPLES_IN_THIS_DIR
 			captureVideoAndBuildPyr
+			stereoRectify
 			)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-vision mrpt-hwdrivers)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

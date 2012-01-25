@@ -53,6 +53,7 @@
 				- mrpt::opengl::CEllipsoidInverseDepth3D
 		- [mrpt-vision] 
 			- mrpt::vision::TSIFTDescriptorsKDTreeIndex, TSURFDescriptorsKDTreeIndex  - <a href="http://code.google.com/p/mrpt/source/detail?r=2799" >2799</a>
+			- mrpt::vision::CStereoRectifyMap
 	- Changes in classes:
 		- [mrpt-base] 
 			- Changes in mrpt::math::CSparseMatrix: 
@@ -63,6 +64,7 @@
 				- Updated to nanoflann 1.1.0: the main change is that (by default) all KD-tree indices are "size_t" instead of "int" - <a href="http://code.google.com/p/mrpt/source/detail?r=2771" >r2771</a> 
 			-  mrpt::sync::CCriticalSectionLocker now can accept a NULL pointer as input, in which case no action will be taken (previosly, it led to segfault) - <a href="http://code.google.com/p/mrpt/source/detail?r=2727" >r2727</a> 
 			-  mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.
+			-  mrpt::utils::TStereoCamera changes its I/O format to config files, now it's consistent with rawlog-edit, stereo-calib-gui and others.
 		- [mrpt-maps] 
 			- mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
 		- [mrpt-vision] 

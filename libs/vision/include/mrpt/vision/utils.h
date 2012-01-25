@@ -393,6 +393,7 @@ namespace mrpt
                 \param rightCameraPose      [IN]    The change in pose of the second camera wrt the first one
                 \param outMap1x,outMap1y    [OUT]   The x-and-y maps corresponding to cam1 (should be converted to *cv::Mat)
                 \param outMap2x,outMap2y    [OUT]   The x-and-y maps corresponding to cam2 (should be converted to *cv::Mat)
+			* \sa An easier to use class for stereo rectification mrpt::vision::CStereoRectifyMap
             */
             void VISION_IMPEXP computeStereoRectificationMaps(
                                 const TCamera                       & cam1,

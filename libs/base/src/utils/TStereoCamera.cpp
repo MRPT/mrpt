@@ -26,39 +26,89 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef __mrpt_vision_H
-#define __mrpt_vision_H
+#include <mrpt/base.h>  // Precompiled headers
 
-#include <mrpt/config.h>
+#include <mrpt/utils/TCamera.h>
+#include <mrpt/math/ops_matrices.h>  // For "<<" ">>" operators.
 
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_vision_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
+using namespace mrpt::utils;
+using namespace mrpt::math;
+using namespace std;
 
-#include <mrpt/vision/utils.h>
-#include <mrpt/vision/TSimpleFeature.h>
-#include <mrpt/vision/multiDesc_utils.h>
-#include <mrpt/vision/chessboard_camera_calib.h>
-#include <mrpt/vision/chessboard_find_corners.h>
-#include <mrpt/vision/pinhole.h>
-#include <mrpt/vision/CCamModel.h>
-#include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/vision/CVideoFileWriter.h>
-#include <mrpt/vision/tracking.h>
-#include <mrpt/vision/descriptor_kdtrees.h>
-#include <mrpt/vision/descriptor_pairing.h>
-#include <mrpt/vision/bundle_adjustment.h>
-#include <mrpt/vision/CUndistortMap.h>
-#include <mrpt/vision/CStereoRectifyMap.h>
-#include <mrpt/vision/CImagePyramid.h>
+IMPLEMENTS_SERIALIZABLE( TStereoCamera, CSerializable, mrpt::utils )
 
-// Maps:
-#include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CLandmarksMap.h>
+TStereoCamera::TStereoCamera()
+{
+}
 
-// Obs:
-#include <mrpt/slam/CObservationVisualLandmarks.h>
 
-#endif // end precomp.headers
+/**  Save as a config block:
+  */
+void TStereoCamera::saveToConfigFile(const std::string &section,  mrpt::utils::CConfigFileBase &cfg ) const
+{
+	// [<SECTION>_LEFT]
+	//   ...
+	// [<SECTION>_RIGHT]
+	//   ...
+	// [<SECTION>_LEFT2RIGHT_POSE]
+	//  pose_quaternion = [x y z qr qx qy qz]
 
-#endif
+	leftCamera.saveToConfigFile(section+string("_LEFT"), cfg);
+	rightCamera.saveToConfigFile(section+string("_RIGHT"), cfg);
+
+	const CPose3DQuat q = CPose3DQuat(rightCameraPose); // Don't remove this line, it's a safe against future possible bugs if rightCameraPose changes!
+	cfg.write(section+string("_LEFT2RIGHT_POSE"), "pose_quaternion",q.asString() );
+}
+
+/**  Load all the params from a config source, in the format described in saveToConfigFile()
+  */
+void TStereoCamera::loadFromConfigFile(const std::string &section,  const mrpt::utils::CConfigFileBase &cfg )
+{
+	// [<SECTION>_LEFT]
+	//   ...
+	// [<SECTION>_RIGHT]
+	//   ...
+	// [<SECTION>_LEFT2RIGHT_POSE]
+	//  pose_quaternion = [x y z qr qx qy qz]
+
+	leftCamera.loadFromConfigFile(section+string("_LEFT"), cfg);
+	rightCamera.loadFromConfigFile(section+string("_RIGHT"), cfg);
+	rightCameraPose.fromString( cfg.read_string(section+string("_LEFT2RIGHT_POSE"), "pose_quaternion","" ) );
+}
+
+// WriteToStream
+void TStereoCamera::writeToStream( CStream &out, int *version ) const
+{
+	if( version )
+		*version = 1;
+	else
+	{
+	    out << leftCamera
+            << rightCamera
+            << rightCameraPose;
+	} // end else
+}
+
+// ReadFromStream
+void TStereoCamera::readFromStream( CStream &in, int version )
+{
+	switch( version )
+	{
+	case 0:
+	case 1:
+    {
+		if (version==0)
+		{
+			uint8_t _model;
+			in  >> _model;  // unused now
+		}
+
+        in  >> leftCamera
+            >> rightCamera
+            >> rightCameraPose;
+    } break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION( version )
+	}
+}
+

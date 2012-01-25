@@ -91,6 +91,7 @@
 #include <mrpt/utils/CRobotSimulator.h>
 
 #include <mrpt/utils/TCamera.h>
+#include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/utils/PLY_import_export.h>
 

@@ -109,5 +109,6 @@ add_subdirectory(enumerateCameras1394)
 add_subdirectory(phidgetProximitySensor)
 add_subdirectory(kinect_online_offline_demo)
 add_subdirectory(captureVideoAndBuildPyr)
+add_subdirectory(stereoRectify)
 add_subdirectory(face_detection)
 

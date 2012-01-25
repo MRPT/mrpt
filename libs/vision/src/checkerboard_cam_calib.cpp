@@ -29,6 +29,7 @@
 #include <mrpt/vision.h>  // Precompiled headers
 
 #include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CConfigFileMemory.h>
 
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/pinhole.h>

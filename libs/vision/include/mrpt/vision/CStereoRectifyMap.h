@@ -25,11 +25,12 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-#ifndef mrpt_CUndistortMap_H
-#define mrpt_CUndistortMap_H
+#ifndef mrpt_CStereoRectifyMap_H
+#define mrpt_CStereoRectifyMap_H
 
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/CImage.h>
+#include <mrpt/slam/CObservationStereoImages.h>
 
 #include <mrpt/vision/link_pragmas.h>
 
@@ -37,48 +38,40 @@ namespace mrpt
 {
 	namespace vision
 	{
-		/** Use this class to undistort monocular images if the same distortion map is used over and over again.
-		  *  Using this class is much more efficient that calling mrpt::utils::CImage::rectifyImage or OpenCV's cvUndistort2(), since
-		  *  the remapping data is computed only once for the camera parameters (typical times: 640x480 image -> 70% build map / 30% actual undistort).
+		/** Use this class to rectify stereo images if the same distortion maps are reused over and over again.
+		  *  The rectify maps are cached internally and only computed once for the camera parameters.
 		  *
 		  *  Works with grayscale or color images.
 		  *
+		  *  Refer to the program stereo-calib-gui for a tool that generates the required stereo camera parameters
+		  *  from a set of stereo images of a checkerboard.
+		  *
 		  * Example of usage:
 		  * \code
-		  *   CUndistortMap   unmap;
-		  *   mrpt::utils::TCamera  cam_params;
-		  *
-		  *   unmap.setFromCamParams( cam_params );
-		  *
-		  *   mrpt::utils::CImage  img, img_out;
+		  *   CStereoRectifyMap   unmap;
 		  *
 		  *   while (true) {
-		  *     unmap.undistort(img, img_out);  // or:
-		  *     unmap.undistort(img);  // output in place
+		  *     XXX unmap.undistort(imgXXX, img_out);  // or:
+		  *     XXX unmap.undistort(img);  // output in place
 		  *   }
 		  *
 		  * \endcode
 		  *
-		  * \sa CStereoRectifyMap, mrpt::utils::TCamera, the application <a href="http://www.mrpt.org/Application:camera-calib" >camera-calib</a> for calibrating a camera.
+		  * \sa CUndistortMap, mrpt::slam::CObservationStereoImages, mrpt::utils::TCamera, the application <a href="http://www.mrpt.org/Application:camera-calib" >camera-calib</a> for calibrating a camera.
 		  * \ingroup mrpt_vision_grp
 		  */
-		class VISION_IMPEXP  CUndistortMap
+		class VISION_IMPEXP  CStereoRectifyMap
 		{
 		public:
-			CUndistortMap(); //!< Default ctor
+			CStereoRectifyMap(); //!< Default ctor
+
+		/** @name Setting/getting the parameters 
+		    @{ */
 
 			/** Prepares the mapping from the distortion parameters of a camera.
 			  * Must be called before invoking \a undistort().
 			  */
 			void setFromCamParams(const mrpt::utils::TCamera &params);
-
-			/** Undistort the input image and saves the result in the output one - \a setFromCamParams() must have been set prior to calling this.
-			  */
-			void undistort(const mrpt::utils::CImage &in_img, mrpt::utils::CImage &out_img) const;
-
-			/** Undistort the input image and saves the result in-place- \a setFromCamParams() must have been set prior to calling this.
-			  */
-			void undistort(mrpt::utils::CImage &in_out_img) const;
 
 			/** Returns the camera parameters which were used to generate the distortion map, as passed by the user to \a setFromCamParams */
 			inline const mrpt::utils::TCamera & getCameraParams() const { return m_camera_params; }
@@ -87,6 +80,21 @@ namespace mrpt
 			  *  Can be used within loops to determine the first usage of the object and when it needs to be initialized.
 			  */
 			inline bool isSet() const { return !m_dat_mapx.empty(); }
+
+		/** @} */
+
+		/** @name Rectify methods
+		    @{ */
+
+			/** Rectify the input image pair and save the result in a different output images - \a setFromCamParams() must have been set prior to calling this.
+			  */
+			void undistort(const mrpt::utils::CImage &in_img, mrpt::utils::CImage &out_img) const;
+
+			/** Undistort the input image and saves the result in-place- \a setFromCamParams() must have been set prior to calling this.
+			  */
+			void undistort(mrpt::utils::CImage &in_out_img) const;
+
+		/** @} */
 
 		private:
 			std::vector<int16_t>  m_dat_mapx;

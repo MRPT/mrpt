@@ -48,8 +48,8 @@ DECLARE_OP_FUNCTION(op_camera_params)
 		TOutputRawlogCreator	outrawlog;
 
 		string   target_label;
-		mrpt::utils::TCamera    new_cam_params;
-		mrpt::utils::TCamera    new_cam_params_left, new_cam_params_right;
+		mrpt::utils::TCamera        new_cam_params;
+		mrpt::utils::TStereoCamera  new_stereo_cam_params;
 		bool   is_stereo;
 
 	public:
@@ -90,8 +90,7 @@ DECLARE_OP_FUNCTION(op_camera_params)
 			{
 				// Try with STEREO PARAMS:
 				try {
-					new_cam_params_left.loadFromConfigFile("CAMERA_PARAMS_LEFT",cfg);
-					new_cam_params_right.loadFromConfigFile("CAMERA_PARAMS_RIGHT",cfg);
+					new_stereo_cam_params.loadFromConfigFile("CAMERA_PARAMS",cfg);
 				}
 				catch(std::exception &e) {
 					throw std::runtime_error(string("--camera-params op: Error loading monocular camera params:\n")+sErrorCam+string("\nBut also an error found loading stereo config:\n")+string(e.what()) );
@@ -113,8 +112,9 @@ DECLARE_OP_FUNCTION(op_camera_params)
 				if (IS_CLASS(obs,CObservationStereoImages))
 				{
 					CObservationStereoImagesPtr o = CObservationStereoImagesPtr(obs);
-					o->leftCamera = new_cam_params_left;
-					o->rightCamera = new_cam_params_right;
+					o->leftCamera = new_stereo_cam_params.leftCamera;
+					o->rightCamera = new_stereo_cam_params.rightCamera;
+					o->rightCameraPose = new_stereo_cam_params.rightCameraPose;
 					m_changedCams++;
 				}
 			}
