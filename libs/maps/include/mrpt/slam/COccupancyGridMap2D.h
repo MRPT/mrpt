@@ -570,7 +570,7 @@ namespace slam
 			/** Size of the Median filter used in getAsImageFiltered (for features detection) (Default=3) (0:Disabled) */
 			float	CFD_features_median_size;
 
-			bool	wideningBeamsWithDistance;	//!< Enabled: Rays widen with distance to approximate the real behavior of lasers, disabled: insert rays as simple lines (Default=true)
+			bool	wideningBeamsWithDistance;	//!< Enabled: Rays widen with distance to approximate the real behavior of lasers, disabled: insert rays as simple lines (Default=false)
 
 		};
 
