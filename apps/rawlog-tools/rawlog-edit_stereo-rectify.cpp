@@ -53,7 +53,11 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 		string   imgFileExtension;
 		double   rectify_alpha; // [0,1] see cvStereoRectify()
 
+		bool     m_this_obs_is_ok;
+
 		mrpt::vision::CStereoRectifyMap   rectify_map;
+
+		size_t  m_num_external_files_failures;
 
 	public:
 		size_t  m_changedCams;
@@ -62,6 +66,7 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 			CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose)
 		{
 			m_changedCams = 0;
+			m_num_external_files_failures = 0;
 
 			// Load .ini file with poses:
 			string   str;
@@ -116,36 +121,60 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 
 		bool processOneObservation(CObservationPtr  &obs)
 		{
+		    m_this_obs_is_ok = true;
+
 			if ( strCmpI(obs->sensorLabel,target_label))
 			{
 				if (IS_CLASS(obs,CObservationStereoImages))
 				{
 					CObservationStereoImagesPtr o = CObservationStereoImagesPtr(obs);
 
-					// Already initialized the rectification map?
-					if (!rectify_map.isSet())
+					try
 					{
-						// On the first ocassion, initialize map:
-						rectify_map.setAlpha( rectify_alpha );
-						rectify_map.setFromCamParams( *o );
-					}
+                        // Already initialized the rectification map?
+                        if (!rectify_map.isSet())
+                        {
+                            // On the first ocassion, initialize map:
+                            rectify_map.setAlpha( rectify_alpha );
+                            rectify_map.setFromCamParams( *o );
+                        }
 
-					// This call rectifies the images in-place and also updates
-					// all the camera parameters as needed:
-					rectify_map.rectify(*o);
+			// This is needed to raise an exception of the correct type that reveal any missing external file:
+			o->imageLeft.getWidth();
+			o->imageRight.getWidth();
 
-					const string label_time = format("%s_%f", o->sensorLabel.c_str(), timestampTotime_t(o->timestamp) );
-					{
-						const string fileName = string("img_") + label_time + string("_left.") + imgFileExtension;
-						o->imageLeft.saveToFile( outDir + fileName );
-						o->imageLeft.setExternalStorage( fileName );
+                        // This call rectifies the images in-place and also updates
+                        // all the camera parameters as needed:
+                        rectify_map.rectify(*o);
+
+                        const string label_time = format("%s_%f", o->sensorLabel.c_str(), timestampTotime_t(o->timestamp) );
+                        {
+                            const string fileName = string("img_") + label_time + string("_left.") + imgFileExtension;
+                            o->imageLeft.saveToFile( outDir + fileName );
+                            o->imageLeft.setExternalStorage( fileName );
+                        }
+                        {
+                            const string fileName = string("img_") + label_time + string("_right.") + imgFileExtension;
+                            o->imageRight.saveToFile( outDir + fileName );
+                            o->imageRight.setExternalStorage( fileName );
+                        }
+                        m_changedCams++;
 					}
+					catch (mrpt::utils::CExceptionExternalImageNotFound &e)
 					{
-						const string fileName = string("img_") + label_time + string("_right.") + imgFileExtension;
-						o->imageRight.saveToFile( outDir + fileName );
-						o->imageRight.setExternalStorage( fileName );
+					    const size_t MAX_FAILURES = 1000;
+					    m_num_external_files_failures++;
+
+					    if (m_num_external_files_failures<MAX_FAILURES)
+					    {
+					        m_this_obs_is_ok = false;
+                            cerr << "\n *WARNING*: Dropping one observation due to missing external image file at rawlog entry " << m_rawlogEntry << endl;
+					    }
+					    else
+					    {
+					        throw std::runtime_error("*ERROR* Too many external images missing, this doesn't seem spureous missings!");
+					    }
 					}
-					m_changedCams++;
 				}
 			}
 			return true;
@@ -157,6 +186,8 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 			mrpt::slam::CSensoryFramePtr     &SF,
 			mrpt::slam::CObservationPtr      &obs)
 		{
+		    if (!m_this_obs_is_ok) return;
+
 			ASSERT_((actions && SF) || obs)
 			if (actions)
 					outrawlog.out_rawlog << actions << SF;
