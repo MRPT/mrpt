@@ -357,9 +357,10 @@ void StereoCalib(
     CvMat* vdisp = cvCreateMat( imageSize.height,
         imageSize.width, CV_8U );
     CvMat* pair;
-    double R1[3][3], R2[3][3], P1[3][4], P2[3][4];
+    double R1[3][3], R2[3][3], P1[3][4], P2[3][4], Q[4][4];
     CvMat _R1 = cvMat(3, 3, CV_64F, R1);
     CvMat _R2 = cvMat(3, 3, CV_64F, R2);
+    CvMat _Q = cvMat(4, 4, CV_64F, Q);
 // IF BY CALIBRATED (BOUGUET'S METHOD)
     if( useUncalibrated == 0 )
     {
@@ -367,7 +368,7 @@ void StereoCalib(
         CvMat _P2 = cvMat(3, 4, CV_64F, P2);
         cvStereoRectify( &_M1, &_M2, &_D1, &_D2, imageSize,
             &_R, &_T,
-            &_R1, &_R2, &_P1, &_P2, 0,
+            &_R1, &_R2, &_P1, &_P2, &_Q,
             0/*CV_CALIB_ZERO_DISPARITY*/, 
 			alpha 
 			);
@@ -472,19 +473,20 @@ void StereoCalib(
 	mT.y = cvGet2D(&_T,1,0).val[0];
 	mT.z = cvGet2D(&_T,2,0).val[0];
 
-	const mrpt::poses::CPose3D     RT_YPR(mROT,mT);
+	// NOTE: OpenCV seems to return the inverse of what we want, so invert the pose:
+	const mrpt::poses::CPose3D     RT_YPR(-mrpt::poses::CPose3D(mROT,mT));
 	const mrpt::poses::CPose3DQuat RT_quat(RT_YPR);
 
 	fprintf( f_out, 
-		"# Relative right-camera pose:\n" 
+		"# Relative pose of the right camera wrt to the left camera:\n" 
 		"[CAMERA_PARAMS_LEFT2RIGHT_POSE]\n"
 		"translation_only     = [%e %e %e]\n"
 		"rotation_matrix_only = %s\n"
 		"pose_yaw_pitch_roll  = %s\n"
 		"pose_quaternion      = %s\n\n"
 		,
-			mT.x,mT.y,mT.z,
-			mROT.inMatlabFormat(13).c_str(),
+			RT_YPR.x(),RT_YPR.y(),RT_YPR.z(),
+			RT_YPR.getRotationMatrix().inMatlabFormat(13).c_str(),
 			RT_YPR.asString().c_str(),
 			RT_quat.asString().c_str()
 		);
@@ -493,6 +495,7 @@ void StereoCalib(
 	// Convert RT to MRPT classes:
 	mrpt::math::CMatrixFixedNumeric<double,3,3> mR1, mR2;
 	mrpt::math::CMatrixFixedNumeric<double,3,4> mP1, mP2;
+	mrpt::math::CMatrixFixedNumeric<double,4,4> mQ;
 	for (int i=0;i<3;i++) 
 		for (int j=0;j<3;j++) 
 		{
@@ -505,6 +508,9 @@ void StereoCalib(
 			mP1(i,j)=P1[i][j];
 			mP2(i,j)=P2[i][j];
 		}
+	for (int i=0;i<4;i++) 
+		for (int j=0;j<4;j++) 
+			mQ(i,j)=Q[i][j];
 
 	fprintf( f_out, 
 		"# Stereo rectify matrices (see http://opencv.willowgarage.com/documentation/camera_calibration_and_3d_reconstruction.html ):\n" 
@@ -515,11 +521,13 @@ void StereoCalib(
 		"R2 = %s\n"
 		"P1 = %s\n"
 		"P2 = %s\n\n"
+		"Q  = %s\n\n"
 		,
 		mR1.inMatlabFormat(13).c_str(), 
 		mR2.inMatlabFormat(13).c_str(),
 		mP1.inMatlabFormat(13).c_str(), 
-		mP2.inMatlabFormat(13).c_str()
+		mP2.inMatlabFormat(13).c_str(),
+		mQ.inMatlabFormat(13).c_str()
 		);
 
 
@@ -556,56 +564,6 @@ void StereoCalib(
 	fprintf( f_out, "\n"); 
 
 	fclose(f_out);
-
-#if 0
-	FILE *f_out = fopen("leftCamera.txt","wt");
-	fprintf( f_out, "%e %e %e %e %e %e %e %e %e\n",
-		(double)cvGet2D(&_M1,0,0).val[0],(double)cvGet2D(&_M1,0,1).val[0],(double)cvGet2D(&_M1,0,2).val[0],
-		(double)cvGet2D(&_M1,1,0).val[0],(double)cvGet2D(&_M1,1,1).val[0],(double)cvGet2D(&_M1,1,2).val[0],
-		(double)cvGet2D(&_M1,2,0).val[0],(double)cvGet2D(&_M1,2,1).val[0],(double)cvGet2D(&_M1,2,2).val[0] );
-
-	fprintf( f_out, "%e %e %e %e %e \n",
-		(double)cvGet2D(&_D1,0,0).val[0],(double)cvGet2D(&_D1,0,1).val[0],(double)cvGet2D(&_D1,0,2).val[0],
-		(double)cvGet2D(&_D1,0,3).val[0],(double)cvGet2D(&_D1,0,4).val[0] );
-	fclose( f_out );
-
-	f_out = fopen("rightCamera.txt","wt");
-	fprintf( f_out, "%e %e %e %e %e %e %e %e %e\n",
-		(double)cvGet2D(&_M2,0,0).val[0],(double)cvGet2D(&_M2,0,1).val[0],(double)cvGet2D(&_M2,0,2).val[0],
-		(double)cvGet2D(&_M2,1,0).val[0],(double)cvGet2D(&_M2,1,1).val[0],(double)cvGet2D(&_M2,1,2).val[0],
-		(double)cvGet2D(&_M2,2,0).val[0],(double)cvGet2D(&_M2,2,1).val[0],(double)cvGet2D(&_M2,2,2).val[0] );
-
-	fprintf( f_out, "%e %e %e %e %e \n",
-		(double)cvGet2D(&_D2,0,0).val[0],(double)cvGet2D(&_D2,0,1).val[0],(double)cvGet2D(&_D2,0,2).val[0],
-		(double)cvGet2D(&_D2,0,3).val[0],(double)cvGet2D(&_D2,0,4).val[0] );
-	fclose( f_out );
-
-	f_out = fopen("fundamentalMatrix.txt","wt");
-	fprintf( f_out, "%e %e %e\n%e %e %e\n%e %e %e\n",
-		(double)cvGet2D(&_F,0,0).val[0],(double)cvGet2D(&_F,0,1).val[0],(double)cvGet2D(&_F,0,2).val[0],
-		(double)cvGet2D(&_F,1,0).val[0],(double)cvGet2D(&_F,1,1).val[0],(double)cvGet2D(&_F,1,2).val[0],
-		(double)cvGet2D(&_F,2,0).val[0],(double)cvGet2D(&_F,2,1).val[0],(double)cvGet2D(&_F,2,2).val[0] );
-	fclose( f_out );
-
-	f_out = fopen("essentialMatrix.txt","wt");
-	fprintf( f_out, "%e %e %e\n%e %e %e\n%e %e %e\n",
-		(double)cvGet2D(&_E,0,0).val[0],(double)cvGet2D(&_E,0,1).val[0],(double)cvGet2D(&_E,0,2).val[0],
-		(double)cvGet2D(&_E,1,0).val[0],(double)cvGet2D(&_E,1,1).val[0],(double)cvGet2D(&_E,1,2).val[0],
-		(double)cvGet2D(&_E,2,0).val[0],(double)cvGet2D(&_E,2,1).val[0],(double)cvGet2D(&_E,2,2).val[0] );
-	fclose( f_out );
-
-	f_out = fopen("RT.txt","wt");
-	fprintf( f_out, "%e %e %e %e %e %e %e %e %e\n",
-		(double)cvGet2D(&_R,0,0).val[0],(double)cvGet2D(&_R,0,1).val[0],(double)cvGet2D(&_R,0,2).val[0],
-		(double)cvGet2D(&_R,1,0).val[0],(double)cvGet2D(&_R,1,1).val[0],(double)cvGet2D(&_R,1,2).val[0],
-		(double)cvGet2D(&_R,2,0).val[0],(double)cvGet2D(&_R,2,1).val[0],(double)cvGet2D(&_R,2,2).val[0] );
-
-	fprintf( f_out, "%e %e %e\n",
-		(double)cvGet2D(&_T,0,0).val[0],(double)cvGet2D(&_T,1,0).val[0],(double)cvGet2D(&_T,2,0).val[0] );
-	fclose( f_out );
-#endif
-
-
 
 	// DISPLAY RECTIFICATION
 	// ========================================================

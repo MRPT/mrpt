@@ -29,7 +29,6 @@
 #include <mrpt/obs.h>   // Precompiled headers
 
 #include <mrpt/slam/CObservationStereoImages.h>
-//#include <mrpt/slam/CLandmarksMap.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;
@@ -192,6 +191,29 @@ void  CObservationStereoImages::readFromStream(CStream &in, int version)
 	};
 }
 
+/** Populates a TStereoCamera structure with the parameters in \a leftCamera, \a rightCamera and \a rightCameraPose */
+void CObservationStereoImages::getStereoCameraParams(mrpt::utils::TStereoCamera &out_params) const
+{
+	out_params.leftCamera  = this->leftCamera;
+	out_params.rightCamera = this->rightCamera;
+	out_params.rightCameraPose = this->rightCameraPose;
+}
+
+/** Sets \a leftCamera, \a rightCamera and \a rightCameraPose from a TStereoCamera structure */
+void CObservationStereoImages::setStereoCameraParams(const mrpt::utils::TStereoCamera &in_params)
+{
+	this->leftCamera      = in_params.leftCamera;
+	this->rightCamera     = in_params.rightCamera;
+	this->rightCameraPose = in_params.rightCameraPose;
+}
+
+/** This method only checks whether ALL the distortion parameters in \a leftCamera are set to zero, which is 
+  * the convention in MRPT to denote that this pair of stereo images has been rectified. 
+  */
+bool CObservationStereoImages::areImagesRectified() const
+{
+	return (leftCamera.dist.array()==0).all();
+}
 
 // Do an efficient swap of all data members of this object with "o".
 void CObservationStereoImages::swap( CObservationStereoImages &o)

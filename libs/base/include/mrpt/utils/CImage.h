@@ -417,6 +417,7 @@ namespace mrpt
 			/** Rectify (un-distort) the image according to some camera parameters, and returns an output un-distorted image.
 			  * \param out_img The output rectified image
 			  * \param cameraParams The input camera params (containing the intrinsic and distortion parameters of the camera)
+			  * \sa mrpt::vision::CUndistortMap
 			  */
 			void rectifyImage( CImage &out_img, const mrpt::utils::TCamera &cameraParams) const;
 
@@ -424,6 +425,7 @@ namespace mrpt
 			  * \param out_img The output rectified image
 			  * \param cameraMatrix The input camera matrix (containing the intrinsic parameters of the camera): [fx 0 cx; 0 fy cy; 0 0 1]: (fx,fy)  focal length and (cx,cy) principal point coordinates
 			  * \param distCoeff The (input) distortion coefficients: [k1, k2, p1, p2]:  k1 and k2 (radial) and p1 and p2 (tangential)
+			  * \sa mrpt::vision::CUndistortMap
 			  */
 			inline void rectifyImage( CImage &out_img, const math::CMatrixDouble33 &cameraMatrix, const vector_double &distCoeff ) const
 			{
@@ -435,12 +437,14 @@ namespace mrpt
 
 			/** Rectify (un-distort) the image according to a certain camera matrix and vector of distortion coefficients, replacing "this" with the rectified image
 			  * \param cameraParams The input camera params (containing the intrinsic and distortion parameters of the camera)
+			  * \sa mrpt::vision::CUndistortMap
 			  */
 			void rectifyImageInPlace(const mrpt::utils::TCamera &cameraParams );
 
 			/** Rectify (un-distort) the image according to a certain camera matrix and vector of distortion coefficients, replacing "this" with the rectified image
 			  * \param cameraMatrix The input camera matrix (containing the intrinsic parameters of the camera): [fx 0 cx; 0 fy cy; 0 0 1]: (fx,fy)  focal length and (cx,cy) principal point coordinates
 			  * \param distCoeff The (input) distortion coefficients: [k1, k2, p1, p2]:  k1 and k2 (radial) and p1 and p2 (tangential)
+			  * \sa mrpt::vision::CUndistortMap
 			  */
 			inline void rectifyImageInPlace( const math::CMatrixDouble33 &cameraMatrix, const vector_double &distCoeff )
 			{
@@ -452,7 +456,7 @@ namespace mrpt
 
 			/** Rectify an image (undistorts and rectification) from a stereo pair according to a pair of precomputed rectification maps
 			  * \param mapX, mapY   [IN] The pre-computed maps of the rectification (should be computed beforehand)
-			  * \sa vision::computeStereoRectificationMaps
+			  * \sa mrpt::vision::CStereoRectifyMap, mrpt::vision::computeStereoRectificationMaps
 			  */
             void rectifyImageInPlace( void *mapX, void *mapY );
 

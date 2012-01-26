@@ -70,6 +70,7 @@ DECLARE_OP_FUNCTION(op_sensors_pose);
 DECLARE_OP_FUNCTION(op_camera_params);
 DECLARE_OP_FUNCTION(op_generate_3d_pointclouds);
 DECLARE_OP_FUNCTION(op_generate_pcd);
+DECLARE_OP_FUNCTION(op_stereo_rectify);
 
 // Declare the supported command line switches ===========
 TCLAP::CmdLine cmd("rawlog-edit", ' ', MRPT_getVersion().c_str());
@@ -175,7 +176,7 @@ int main(int argc, char **argv)
 		arg_ops.push_back(new TCLAP::SwitchArg("","generate-pcd",
 			"Op: Generate a PointCloud Library (PCL) PCD file with the point cloud for each sensor observation that can be converted into"
 			" this representation: laser scans, 3D camera images, etc.\n"
-			"May use: --out-dir to change the output directory (default: \"./\")\n"
+			"Optional: --out-dir to change the output directory (default: \"./\")\n"
 			,cmd,false));
 		ops_functors["generate-pcd"] = &op_generate_pcd;
 
@@ -191,6 +192,15 @@ int main(int argc, char **argv)
 			"Requires: -o (or --output)\n"
 			,false,"","SENSOR_LABEL,file.ini",cmd) );
 		ops_functors["camera-params"] = &op_camera_params;
+
+		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","stereo-rectify",
+			"Op: creates a new set of external images for all CObservationStereoImages with the given SENSOR_LABEL, using the camera parameters stored in the "
+			"observations (which must be a valid calibration) and with the given alpha value. Alpha can be -1 for auto, or otherwise be in the range [0,1] (see OpenCV's docs for cvStereoRectify).\n"
+			"Requires: -o (or --output)\n"
+			"Optional: --image-format to set image format (default=jpg)\n"
+			,false,"","SENSOR_LABEL,0.5",cmd) );
+		ops_functors["stereo-rectify"] = &op_stereo_rectify;
+
 
 		// --------------- End of list of possible operations --------
 

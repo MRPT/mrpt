@@ -27,6 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include "rawlog-edit-declarations.h"
+#include <mrpt/vision/CStereoRectifyMap.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -37,84 +38,97 @@ using namespace std;
 
 
 // ======================================================================
-//		op_camera_params
+//		op_stereo_rectify
 // ======================================================================
-DECLARE_OP_FUNCTION(op_camera_params)
+DECLARE_OP_FUNCTION(op_stereo_rectify)
 {
 	// A class to do this operation:
-	class CRawlogProcessor_CamParams : public CRawlogProcessorOnEachObservation
+	class CRawlogProcessor_StereoRectify : public CRawlogProcessorOnEachObservation
 	{
 	protected:
 		TOutputRawlogCreator	outrawlog;
 
 		string   target_label;
-		mrpt::utils::TCamera        new_cam_params;
-		mrpt::utils::TStereoCamera  new_stereo_cam_params;
-		bool   is_stereo;
+		string   outDir;
+		string   imgFileExtension;
+		double   rectify_alpha; // [0,1] see cvStereoRectify()
+		
+		mrpt::vision::CStereoRectifyMap   rectify_map;
 
 	public:
 		size_t  m_changedCams;
 
-		CRawlogProcessor_CamParams(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
+		CRawlogProcessor_StereoRectify(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
 			CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose)
 		{
 			m_changedCams = 0;
 
 			// Load .ini file with poses:
 			string   str;
-			getArgValue<string>(cmdline,"camera-params",str);
+			getArgValue<string>(cmdline,"stereo-rectify",str);
 
 			vector<string> lstTokens;
 			tokenize(str,",",lstTokens);
 			if (lstTokens.size()!=2)
-				throw std::runtime_error("--camera-params op: argument must be in the format: --camera-params LABEL,file.ini");
+				throw std::runtime_error("--stereo-rectify op: argument must be in the format: --stereo-rectify LABEL,ALPHA_VALUE");
 
 			target_label = lstTokens[0];
 
-			const string &fil = lstTokens[1];
-			if (!fileExists(fil)) throw std::runtime_error(string("--camera-params op: config file can't be open:")+fil);
+			const string &sAlpha = lstTokens[1];
+			rectify_alpha = atof(sAlpha.c_str());
+			if (rectify_alpha!=-1 && !(rectify_alpha>=0 && rectify_alpha<=1)) 
+				throw std::runtime_error("--stereo-rectify op: Invalid ALPHA value. Use '-1' for auto guess.");
 
-			// Load:
-			CConfigFile  cfg( fil );
-			is_stereo = true;
-			string sErrorCam;
-			try {
-				new_cam_params.loadFromConfigFile("CAMERA_PARAMS",cfg);
-				is_stereo = false;
-			}
-			catch(std::exception &e) {
-				sErrorCam = e.what();
-			}
+			getArgValue<string>(cmdline,"image-format",imgFileExtension);
 
-			if (!sErrorCam.empty())
-			{
-				// Try with STEREO PARAMS:
-				try {
-					new_stereo_cam_params.loadFromConfigFile("CAMERA_PARAMS",cfg);
-					//cout << new_stereo_cam_params.dumpAsText() << endl;
-				}
-				catch(std::exception &e) {
-					throw std::runtime_error(string("--camera-params op: Error loading monocular camera params:\n")+sErrorCam+string("\nBut also an error found loading stereo config:\n")+string(e.what()) );
-				}
-			}
-			VERBOSE_COUT << "Type of camera configuration file found: " << (is_stereo ? "stereo":"monocular") << "\n";
+			// Create a "/Images_Rectified" directory.
+			const string out_rawlog_basedir = extractFileDirectory(outrawlog.out_rawlog_filename);
+
+			outDir = (out_rawlog_basedir.empty() ? string() : (out_rawlog_basedir+string("/") )) + extractFileName(outrawlog.out_rawlog_filename) + string("_Images");
+			if (directoryExists(outDir))
+				throw runtime_error(string("*ABORTING*: Output directory for rectified images already exists: ") + outDir + string("\n. Select a different output path or remove the directory.") );
+
+			VERBOSE_COUT << "Creating directory: " << outDir << endl;
+
+			mrpt::system::createDirectory( outDir );
+			if (!fileExists(outDir))
+				throw runtime_error(string("*ABORTING*: Couldn't create directory: ") + outDir );
+
+			// Add the final /
+			outDir+="/";
 		}
 
 		bool processOneObservation(CObservationPtr  &obs)
 		{
 			if ( strCmpI(obs->sensorLabel,target_label))
 			{
-				if (IS_CLASS(obs,CObservationImage))
-				{
-					CObservationImagePtr o = CObservationImagePtr(obs);
-					o->cameraParams = new_cam_params;
-					m_changedCams++;
-				}
-				else
 				if (IS_CLASS(obs,CObservationStereoImages))
 				{
 					CObservationStereoImagesPtr o = CObservationStereoImagesPtr(obs);
-					o->setStereoCameraParams(new_stereo_cam_params);
+
+					// Already initialized the rectification map?
+					if (!rectify_map.isSet())
+					{
+						// On the first ocassion, initialize map:
+						rectify_map.setAlpha( rectify_alpha );
+						rectify_map.setFromCamParams( *o );
+					}
+
+					// This call rectifies the images in-place and also updates 
+					// all the camera parameters as needed:
+					rectify_map.rectify(*o);
+					
+					const string label_time = format("%s_%f", o->sensorLabel.c_str(), timestampTotime_t(o->timestamp) );
+					{
+						const string fileName = string("img_") + label_time + string("_left.") + imgFileExtension;
+						o->imageLeft.saveToFile( outDir + fileName );
+						o->imageLeft.setExternalStorage( fileName );
+					}
+					{
+						const string fileName = string("img_") + label_time + string("_right.") + imgFileExtension;
+						o->imageRight.saveToFile( outDir + fileName );
+						o->imageRight.setExternalStorage( fileName );
+					}
 					m_changedCams++;
 				}
 			}
@@ -137,7 +151,7 @@ DECLARE_OP_FUNCTION(op_camera_params)
 
 	// Process
 	// ---------------------------------
-	CRawlogProcessor_CamParams proc(in_rawlog,cmdline,verbose);
+	CRawlogProcessor_StereoRectify proc(in_rawlog,cmdline,verbose);
 	proc.doProcessRawlog();
 
 	// Dump statistics:

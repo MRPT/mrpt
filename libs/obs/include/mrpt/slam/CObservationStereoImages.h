@@ -30,13 +30,11 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CImage.h>
+#include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/slam/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose2D.h>
-//#include <mrpt/slam/CLandmark.h>
-//#include <mrpt/slam/CLandmarksMap.h>
-//#include <mrpt/vision/CCamModel.h>
 
 namespace mrpt
 {
@@ -86,10 +84,10 @@ namespace slam
 		/** @name Main observation data members
 		    @{ */
 
-		/** Image from the left camera (this image will be ALWAYS present) */
+		/** Image from the left camera (this image will be ALWAYS present) \sa areImagesRectified() */
 		mrpt::utils::CImage	imageLeft;
 
-		/** Image from the right camera, only contains a valid image if hasImageRight == true. */
+		/** Image from the right camera, only contains a valid image if hasImageRight == true. \sa areImagesRectified() */
 		mrpt::utils::CImage	imageRight;
 
 		/** Disparity image, only contains a valid image if hasImageDisparity == true.
@@ -101,6 +99,7 @@ namespace slam
 
 		/** Parameters for the left/right cameras: individual intrinsic and distortion parameters of the cameras.
 		  * See the <a href="http://www.mrpt.org/Camera_Parameters" >tutorial</a> for a discussion of these parameters.
+		  * \sa areImagesRectified(), getStereoCameraParams()
 		  */
 		TCamera		leftCamera, rightCamera;
 
@@ -112,6 +111,17 @@ namespace slam
 		  *   at position (BL, 0, 0) with yaw=pitch=roll=0, where BL is the BASELINE.
 		  */
 		CPose3DQuat	rightCameraPose;
+
+		/** Populates a TStereoCamera structure with the parameters in \a leftCamera, \a rightCamera and \a rightCameraPose \sa areImagesRectified() */
+		void getStereoCameraParams(mrpt::utils::TStereoCamera &out_params) const;
+
+		/** Sets \a leftCamera, \a rightCamera and \a rightCameraPose from a TStereoCamera structure */
+		void setStereoCameraParams(const mrpt::utils::TStereoCamera &in_params);
+
+		/** This method only checks whether ALL the distortion parameters in \a leftCamera are set to zero, which is 
+		  * the convention in MRPT to denote that this pair of stereo images has been rectified. 
+		  */
+		bool areImagesRectified() const;
 
 		/** @} */
 

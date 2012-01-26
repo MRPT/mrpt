@@ -29,6 +29,7 @@ ADD_EXECUTABLE(rawlog-edit
 	rawlog-edit_list-rangbear.cpp
 	rawlog-edit_generate-3d-pointclouds.cpp
 	rawlog-edit_generate-pcd.cpp
+	rawlog-edit_stereo-rectify.cpp
 	)
 SET(TMP_TARGET_NAME "rawlog-edit")
 SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(APP) ${TMP_TARGET_NAME}")
@@ -40,7 +41,7 @@ INSTALL(TARGETS ${TMP_TARGET_NAME}
 	ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
 # Dependencies on MRPT libraries: Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-obs mrpt-topography mrpt-maps)
+DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-obs mrpt-topography mrpt-maps mrpt-vision)
 
 
 

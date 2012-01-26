@@ -1880,15 +1880,11 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 					cout << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
 					cout << obs->cameraPose.getHomogeneousMatrixVal()
-					<< obs->cameraPose << endl;
+					<< obs->cameraPose << endl << endl;
 
-					cout << "Homogeneous matrix for the RIGHT camera's 3D pose, relative to LEFT camera reference system:\n";
-					cout << obs->rightCameraPose.getHomogeneousMatrixVal()
-					<< obs->rightCameraPose << endl;
-
-					cout << "Intrinsic parameters matrix for the camera:"<< endl;
-					CMatrixDouble33 aux = obs->leftCamera.intrinsicParams;
-					cout << aux.inMatlabFormat() << endl << aux << endl;
+					mrpt::utils::TStereoCamera stParams;
+					obs->getStereoCameraParams(stParams);
+					cout << stParams.dumpAsText() << endl;
 
 					if (obs->imageLeft.isExternallyStored())
 						cout << " Left image is stored externally in file: " << obs->imageLeft.getExternalStorageFile() << endl;

@@ -48,11 +48,10 @@ namespace mrpt
 		{
             DEFINE_SERIALIZABLE( TStereoCamera )
         public:
-		    TCamera             leftCamera, rightCamera;
-		    CPose3DQuat         rightCameraPose;
+		    TCamera     leftCamera, rightCamera;  //!< Intrinsic and distortion parameters of the left and right cameras
+		    CPose3DQuat rightCameraPose;  //!< Pose of the right camera with respect to the coordinate origin of the left camera
 
             // Default constructor:
-            // Bumblebee with 640x480 images
 		    TStereoCamera();
 
 		    /**  Save all params to a plain text config file in this format:

@@ -35,7 +35,9 @@
  <a name="0.9.6">
   <h2>Version 0.9.6 - (Under development) </h2></a>
 	- Changes in applications:
-		- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: Operation "camera-params" now also handles stereo observations.
+		- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: 
+			- Operation "--camera-params" now also handles stereo observations.
+			- New operation "--stereo-rectify" for batch rectifying datasets with stereo images.
 		- <a href="http://www.mrpt.org/Application:SceneViewer" >SceneViewer3D</a>: 
 			- New menu for generating high-resolution renders of any scene directly to imag files - <a href="http://code.google.com/p/mrpt/source/detail?r=2775" >r2775</a>
 			- Many new menus for selective selecting objects and applying operations on them - <a href="http://code.google.com/p/mrpt/source/detail?r=2776" >r2776</a>
@@ -53,7 +55,7 @@
 				- mrpt::opengl::CEllipsoidInverseDepth3D
 		- [mrpt-vision] 
 			- mrpt::vision::TSIFTDescriptorsKDTreeIndex, TSURFDescriptorsKDTreeIndex  - <a href="http://code.google.com/p/mrpt/source/detail?r=2799" >2799</a>
-			- mrpt::vision::CStereoRectifyMap
+			- mrpt::vision::CStereoRectifyMap - See tutorial online: http://www.mrpt.org/Rectifying_stereo_images
 	- Changes in classes:
 		- [mrpt-base] 
 			- Changes in mrpt::math::CSparseMatrix: 
@@ -65,6 +67,7 @@
 			-  mrpt::sync::CCriticalSectionLocker now can accept a NULL pointer as input, in which case no action will be taken (previosly, it led to segfault) - <a href="http://code.google.com/p/mrpt/source/detail?r=2727" >r2727</a> 
 			-  mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.
 			-  mrpt::utils::TStereoCamera changes its I/O format to config files, now it's consistent with rawlog-edit, stereo-calib-gui and others.
+			-  mrpt::utils::CImage::changeSize() is now smart enough to avoid deallocating & re-allocating an image if the requested params exactly coincide with the current image.
 		- [mrpt-maps] 
 			- mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
 		- [mrpt-vision] 
@@ -73,6 +76,8 @@
 		- [mrpt-gui] 
 			- Environment variable MRPT_WXSUBSYS_TIMEOUT_MS is now observed in all places where a GUI window is expected to be launched.
 			- New shortcut methods mrpt::gui::CDisplayWindow3D::setImageView() and mrpt::gui::CDisplayWindow3D::setImageView_fast() - <a href="http://code.google.com/p/mrpt/source/detail?r=2793" >r2793</a> 
+		- [mrpt-obs]
+			- New method mrpt::slam::CObservationStereoImages::areImagesRectified()
 		- [mrpt-opengl] 
 			- Method mrpt::opengl::graph_tools::graph_visualize() now also shows the pose constraints for better visualization of graph maps - <a href="http://code.google.com/p/mrpt/source/detail?r=2767" >r2767</a>
 			- All mrpt::opengl::CRenderizable classes now have a much more versatile serialization mechanism, which also saves a few bytes per object - <a href="http://code.google.com/p/mrpt/source/detail?r=2774" >r2774</a>

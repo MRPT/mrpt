@@ -2064,6 +2064,7 @@ void vision::computeStereoRectificationMaps(
         nSize,
         R, T,
         R1, R2, P1, P2, Q,
+		cv::CALIB_ZERO_DISPARITY,
 		alpha
 		);
         // Rest of arguments -> default

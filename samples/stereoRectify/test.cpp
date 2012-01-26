@@ -26,6 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
+#include <mrpt/utils.h>
 #include <mrpt/gui.h>
 #include <mrpt/opengl.h>
 #include <mrpt/system/filesystem.h> // for ASSERT_FILE_EXISTS_
@@ -45,6 +46,7 @@ using namespace std;
 // ------------------------------------------------------
 void TestStereoRectify(int argc, char** argv)
 {
+	CTimeLogger  timlog;
 	mrpt::vision::CStereoRectifyMap  rectifyMap;
 
 	// Parse optional arguments:
@@ -59,7 +61,14 @@ void TestStereoRectify(int argc, char** argv)
 		const string sCfgFile = argv[1];
 		ASSERT_FILE_EXISTS_(sCfgFile)
 
-		// rectifyMap.setFromCamParams
+		// Load params from file:
+		mrpt::utils::TStereoCamera params;
+		params.loadFromConfigFile("CAMERA_PARAMS", CConfigFile(sCfgFile) );
+	
+		// Prepare rectify map:
+		timlog.enter("rectifyMap.setFromCamParams");
+		rectifyMap.setFromCamParams(params);
+		timlog.leave("rectifyMap.setFromCamParams");
 	}
 
 	// Show to the user a list of possible camera drivers and creates and open the selected camera.
@@ -93,18 +102,31 @@ void TestStereoRectify(int argc, char** argv)
 //	win.addTextMessage(...
 
 	bool enable_rectify = true;
-
+	bool enable_draw_epipolar_lines = true;
+	CImage img_left_rectified, img_right_rectified; // Declared here to serve as a memory buffer (avoid deallocating/allocating)
 
 	cout << "Close the window to end.\n";
 	while (win.isOpen())
 	{
 		win.addTextMessage (5,5,
-			format("%.02fFPS - 'r': Switch rectify (Now is: %s)",
-				win.getRenderingFPS(),
-				enable_rectify ? "ON":"OFF"
-				),
-			TColorf(1,1,1),"sans",8, mrpt::opengl::FILL, 0
+			format("%.02fFPS",win.getRenderingFPS()),
+			TColorf(1,1,1),"sans",15, mrpt::opengl::FILL, 0
 			);
+		win.addTextMessage (5,25,
+			format("'r': Switch rectify (Now is: %s) | '+'/'-': Modify alpha (Now is: %.02f)",
+				enable_rectify ? "ON":"OFF",
+				rectifyMap.getAlpha()
+				),
+			TColorf(1,1,1),"sans",15, mrpt::opengl::FILL, 10
+			);
+		win.addTextMessage (5,50,
+			format("'s': Switch resize output to 320x240 (Now is: %s) | 'c': Switch no-disparity (Now is: %s) | 'e': Switch epipolar lines",
+				rectifyMap.isEnabledResizeOutput() ? "ON":"OFF",
+				rectifyMap.isEnabledBothCentersCoincide() ? "ON":"OFF"
+				),
+			TColorf(1,1,1),"sans",15, mrpt::opengl::FILL, 11
+			);
+
 		mrpt::system::sleep(1);
 
 		// Grab new video frame:
@@ -116,15 +138,32 @@ void TestStereoRectify(int argc, char** argv)
 				// Get the observation object:
 				CObservationStereoImagesPtr o = CObservationStereoImagesPtr(obs);
 
-				win.get3DSceneAndLock();
+				// If the rectification maps are still not ready, prepare them now:
+				if (!rectifyMap.isSet())
+				{
+					timlog.enter("rectifyMap.setFromCamParams");
+					rectifyMap.setFromCamParams(*o);
+					timlog.leave("rectifyMap.setFromCamParams");
 
-				CImage img_left_rectified, img_right_rectified;
+					/*mrpt::utils::TStereoCamera params;
+					o->getStereoCameraParams(params);
+					cout << params.dumpAsText() << endl;*/
+				}
+
+				win.get3DSceneAndLock();
 
 				if (enable_rectify)
 				{
 					// Rectify:
-					img_left_rectified = o->imageLeft;
-					img_right_rectified = o->imageRight;
+					timlog.enter("rectifyMap.rectify()");
+					
+					rectifyMap.rectify(
+						o->imageLeft, 
+						o->imageRight,
+						img_left_rectified,
+						img_right_rectified);
+
+					timlog.leave("rectifyMap.rectify()");
 				}
 				else
 				{
@@ -133,15 +172,26 @@ void TestStereoRectify(int argc, char** argv)
 					img_right_rectified = o->imageRight;
 				}
 
-				// Warning: I can use _fast() here because I don't mind
-				//  destroying the temporary rectified images.
-				gl_views[0]->setImageView_fast(img_left_rectified);
-				gl_views[1]->setImageView_fast(img_right_rectified);
+				// Draw lines:
+				if (enable_draw_epipolar_lines)
+				{
+					const unsigned int LINES_SEP = 40;
+					const unsigned int w = img_left_rectified.getWidth();
+					const unsigned int h = img_left_rectified.getHeight();
+					for (unsigned int y=0;y<h;y+=LINES_SEP)
+					{
+						img_left_rectified.line(0,y,w-1,y, mrpt::utils::TColor::red, 2 );
+						img_right_rectified.line(0,y,w-1,y, mrpt::utils::TColor::red, 2 );
+					}
+				}
+
+				gl_views[0]->setImageView(img_left_rectified);
+				gl_views[1]->setImageView(img_right_rectified);
 
 				win.addTextMessage(
-					5,25,
+					150,5,
 					mrpt::system::timeToString(o->timestamp),
-					TColorf(1,1,1),"sans",8, mrpt::opengl::FILL, 1
+					TColorf(1,1,1),"sans",15, mrpt::opengl::FILL, 2
 					);
 
 				win.unlockAccess3DScene();
@@ -155,6 +205,21 @@ void TestStereoRectify(int argc, char** argv)
 
 				if (key==MRPTK_ESCAPE) break;
 				if (key=='r' || key=='R') enable_rectify= !enable_rectify;
+				if (key=='e' || key=='E') enable_draw_epipolar_lines=!enable_draw_epipolar_lines;
+				if (key=='+' || key=='-') 
+				{
+					double alpha = rectifyMap.getAlpha() + (key=='-' ? -0.1:0.1);
+					alpha=std::min(1.,std::max(0.,alpha));
+					rectifyMap.setAlpha(alpha);
+				}
+				if (key=='s' || key=='S') {
+					rectifyMap.enableResizeOutput( 
+						!rectifyMap.isEnabledResizeOutput(),
+						320,240);
+				}
+				if (key=='c' || key=='C') {
+					rectifyMap.enableBothCentersCoincide(!rectifyMap.isEnabledBothCentersCoincide() );
+				}
 			}
 
 		}

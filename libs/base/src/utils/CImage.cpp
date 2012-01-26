@@ -254,9 +254,24 @@ void  CImage::changeSize(
 {
 	MRPT_START
 
-	releaseIpl();
-
 #if MRPT_HAS_OPENCV
+	// If we're resizing to exactly the current size, do nothing and avoid wasting mem allocs/deallocs!
+	if (img)
+	{
+		makeSureImageIsLoaded();   // For delayed loaded images stored externally
+		IplImage *ipl = static_cast<IplImage*>(img);
+		if (ipl->width==width && 
+			ipl->height==height && 
+			ipl->nChannels == nChannels && 
+			ipl->origin == ( originTopLeft ? 0:1)
+			)
+		{
+			return; // nothing to do, we're already right with the current IplImage!
+		}
+	}
+
+	// Delete current img	
+	releaseIpl();
 
 #	if IMAGE_ALLOC_PERFLOG
 	const std::string sLog = mrpt::format("cvCreateImage %ux%u",width,height);
