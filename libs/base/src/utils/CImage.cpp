@@ -260,10 +260,10 @@ void  CImage::changeSize(
 	{
 		makeSureImageIsLoaded();   // For delayed loaded images stored externally
 		IplImage *ipl = static_cast<IplImage*>(img);
-		if (ipl->width==width && 
-			ipl->height==height && 
-			ipl->nChannels == nChannels && 
-			ipl->origin == ( originTopLeft ? 0:1)
+		if (static_cast<unsigned int>(ipl->width)==width && 
+		    static_cast<unsigned int>(ipl->height)==height && 
+		    ipl->nChannels == nChannels && 
+		    ipl->origin == ( originTopLeft ? 0:1)
 			)
 		{
 			return; // nothing to do, we're already right with the current IplImage!

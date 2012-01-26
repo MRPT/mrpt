@@ -33,36 +33,38 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::utils;
+using namespace mrpt::math;
 
 
 // Ctor: Leave all vectors empty
-CStereoRectifyMap::CStereoRectifyMap() : 
+CStereoRectifyMap::CStereoRectifyMap() :
 	m_alpha(-1),
 	m_resize_output(false),
 	m_enable_both_centers_coincide(false),
 	m_resize_output_value(0,0),
-	m_interpolation_method(IMG_INTERP_LINEAR)
+	m_interpolation_method(mrpt::utils::IMG_INTERP_LINEAR)
 {
 }
 
 void CStereoRectifyMap::internal_invalidate()
 {
-	m_dat_mapx_left.clear();  // don't do a "strong clear" since memory is likely 
+	m_dat_mapx_left.clear();  // don't do a "strong clear" since memory is likely
 	m_dat_mapx_right.clear(); // to be reasigned soon.
-	m_dat_mapy_left.clear(); 
+	m_dat_mapy_left.clear();
 	m_dat_mapy_right.clear();
 }
 
 void CStereoRectifyMap::setAlpha(double alpha)
 {
-	m_alpha = alpha; 
+	m_alpha = alpha;
 
 	this->internal_invalidate();
 }
 
 void CStereoRectifyMap::enableResizeOutput(bool enable, unsigned int target_width, unsigned int target_height)
 {
-	m_resize_output = enable; 
+	m_resize_output = enable;
 	m_resize_output_value.x = target_width;
 	m_resize_output_value.y = target_height;
 
@@ -93,9 +95,9 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::utils::TStereoCamera & para
 	const uint32_t ncols = cam1.ncols;
 	const uint32_t nrows = cam1.nrows;
 
-	const cv::Size trg_size = m_resize_output ? 
+	const cv::Size trg_size = m_resize_output ?
 		cv::Size(m_resize_output_value.x,m_resize_output_value.y)  // User requested image scaling
-		: 
+		:
 		cv::Size();  // Default=don't scale
 
 	const uint32_t ncols_out = m_resize_output ? m_resize_output_value.x : ncols;
@@ -173,7 +175,7 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::utils::TStereoCamera & para
         img_size,
         R, T,
         R1, R2, P1, P2, Q,
-		m_enable_both_centers_coincide ? cv::CALIB_ZERO_DISPARITY : 0, 
+		m_enable_both_centers_coincide ? cv::CALIB_ZERO_DISPARITY : 0,
 		m_alpha,
 		trg_size // Size() by default=no resize
 		);
@@ -192,11 +194,11 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::utils::TStereoCamera & para
 	// They have no distortion:
 	m_rectified_image_params.leftCamera.dist.fill(0);
 	m_rectified_image_params.rightCamera.dist.fill(0);
-	
+
 	// Target image size:
 	m_rectified_image_params.leftCamera.ncols = real_trg_size.width;
 	m_rectified_image_params.leftCamera.nrows = real_trg_size.height;
-	
+
 	m_rectified_image_params.rightCamera.ncols = real_trg_size.width;
 	m_rectified_image_params.rightCamera.nrows = real_trg_size.height;
 
@@ -212,10 +214,10 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::utils::TStereoCamera & para
 }
 
 void CStereoRectifyMap::rectify(
-	const mrpt::utils::CImage &in_left_image, 
-	const mrpt::utils::CImage &in_right_image, 
+	const mrpt::utils::CImage &in_left_image,
+	const mrpt::utils::CImage &in_right_image,
 	mrpt::utils::CImage &out_left_image,
-	mrpt::utils::CImage &out_right_image 
+	mrpt::utils::CImage &out_right_image
 	) const
 {
 	MRPT_START
@@ -224,9 +226,9 @@ void CStereoRectifyMap::rectify(
 	const uint32_t ncols = m_camera_params.leftCamera.ncols;
 	const uint32_t nrows = m_camera_params.leftCamera.nrows;
 
-	const CvSize trg_size = m_resize_output ? 
-		cvSize(m_resize_output_value.x, m_resize_output_value.y) 
-		: 
+	const CvSize trg_size = m_resize_output ?
+		cvSize(m_resize_output_value.x, m_resize_output_value.y)
+		:
 		cvSize(ncols,nrows);
 
 	out_left_image.resize( trg_size.width, trg_size.height, in_left_image.isColor() ? 3:1, in_left_image.isOriginTopLeft() );
@@ -246,8 +248,8 @@ void CStereoRectifyMap::rectify(
 
 // In place:
 void CStereoRectifyMap::rectify(
-	mrpt::utils::CImage &left_image, 
-	mrpt::utils::CImage &right_image, 
+	mrpt::utils::CImage &left_image,
+	mrpt::utils::CImage &right_image,
 	const bool use_internal_mem_cache) const
 {
 	MRPT_START
@@ -256,9 +258,9 @@ void CStereoRectifyMap::rectify(
 	const uint32_t ncols = m_camera_params.leftCamera.ncols;
 	const uint32_t nrows = m_camera_params.leftCamera.nrows;
 
-	const CvSize trg_size = m_resize_output ? 
-		cvSize(m_resize_output_value.x, m_resize_output_value.y) 
-		: 
+	const CvSize trg_size = m_resize_output ?
+		cvSize(m_resize_output_value.x, m_resize_output_value.y)
+		:
 		cvSize(ncols,nrows);
 
 	const IplImage * in_left  = left_image.getAs<IplImage>();
@@ -280,7 +282,7 @@ void CStereoRectifyMap::rectify(
 	}
 
 	this->rectify_IPL(
-		in_left, in_right, 
+		in_left, in_right,
 		out_left_image, out_right_image);
 
 	if (use_internal_mem_cache)
@@ -304,16 +306,16 @@ void CStereoRectifyMap::rectify(
 	MRPT_END
 }
 
-/** Overloaded version for in-place rectification of image pairs stored in a mrpt::slam::CObservationStereoImages. 
+/** Overloaded version for in-place rectification of image pairs stored in a mrpt::slam::CObservationStereoImages.
   *  Upon return, the new camera intrinsic parameters will be already stored in the observation object.
   */
-void CStereoRectifyMap::rectify( 
-	mrpt::slam::CObservationStereoImages & stereo_image_observation, 
+void CStereoRectifyMap::rectify(
+	mrpt::slam::CObservationStereoImages & stereo_image_observation,
 	const bool use_internal_mem_cache) const
 {
 	MRPT_START
 	ASSERT_(stereo_image_observation.hasImageRight)
-	
+
 	// Rectify images:
 	this->rectify( stereo_image_observation.imageLeft, stereo_image_observation.imageRight, use_internal_mem_cache );
 
@@ -326,8 +328,8 @@ void CStereoRectifyMap::rectify(
 
 /** Just like rectify() but directly works with OpenCV's "IplImage*", which must be passed as "void*" to avoid header dependencies */
 void CStereoRectifyMap::rectify_IPL(
-	const void* srcImg_left, 
-	const void* srcImg_right, 
+	const void* srcImg_left,
+	const void* srcImg_right,
 	void* outImg_left,
 	void* outImg_right) const
 {
@@ -348,7 +350,7 @@ void CStereoRectifyMap::rectify_IPL(
 	const CvMat mapy_left = cvMat(nrows_out,ncols_out,  CV_16UC1, const_cast<uint16_t*>(&m_dat_mapy_left[0]) );
 	const CvMat mapx_right = cvMat(nrows_out,ncols_out,  CV_16SC2, const_cast<int16_t*>(&m_dat_mapx_right[0]) );
 	const CvMat mapy_right = cvMat(nrows_out,ncols_out,  CV_16UC1, const_cast<uint16_t*>(&m_dat_mapy_right[0]) );
-	
+
 	const cv::Mat mapx1 = cv::cvarrToMat(&mapx_left);
 	const cv::Mat mapy1 = cv::cvarrToMat(&mapy_left);
 	const cv::Mat mapx2 = cv::cvarrToMat(&mapx_right);
@@ -358,9 +360,9 @@ void CStereoRectifyMap::rectify_IPL(
 	const cv::Mat src2 = cv::cvarrToMat(srcImg_right);
 	cv::Mat dst1 = cv::cvarrToMat(outImg_left);
 	cv::Mat dst2 = cv::cvarrToMat(outImg_right);
-    
-    cv::remap( src1, dst1, mapx1, mapy1,static_cast<int>(m_interpolation_method),cv::BORDER_CONSTANT, cvScalarAll(0) ); 
-    cv::remap( src2, dst2, mapx2, mapy2,static_cast<int>(m_interpolation_method),cv::BORDER_CONSTANT, cvScalarAll(0) ); 
+
+    cv::remap( src1, dst1, mapx1, mapy1,static_cast<int>(m_interpolation_method),cv::BORDER_CONSTANT, cvScalarAll(0) );
+    cv::remap( src2, dst2, mapx2, mapy2,static_cast<int>(m_interpolation_method),cv::BORDER_CONSTANT, cvScalarAll(0) );
 
 #endif
 	MRPT_END
