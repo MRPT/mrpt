@@ -52,7 +52,7 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 		string   outDir;
 		string   imgFileExtension;
 		double   rectify_alpha; // [0,1] see cvStereoRectify()
-		
+
 		mrpt::vision::CStereoRectifyMap   rectify_map;
 
 	public:
@@ -76,7 +76,7 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 
 			const string &sAlpha = lstTokens[1];
 			rectify_alpha = atof(sAlpha.c_str());
-			if (rectify_alpha!=-1 && !(rectify_alpha>=0 && rectify_alpha<=1)) 
+			if (rectify_alpha!=-1 && !(rectify_alpha>=0 && rectify_alpha<=1))
 				throw std::runtime_error("--stereo-rectify op: Invalid ALPHA value. Use '-1' for auto guess.");
 
 			getArgValue<string>(cmdline,"image-format",imgFileExtension);
@@ -96,6 +96,22 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 
 			// Add the final /
 			outDir+="/";
+
+			// Optional argument:  "--image-size=640x480"
+			string   strResize;
+			if (getArgValue<string>(cmdline,"image-size",str))
+			{
+                vector<string> lstTokens;
+                tokenize(str,"x",lstTokens);
+                if (lstTokens.size()!=2)
+                    throw std::runtime_error("--stereo-rectify op: Expected format: --image-size NCOLSxNROWS");
+
+                const int nCols = atoi(lstTokens[0].c_str());
+                const int nRows = atoi(lstTokens[1].c_str());
+                VERBOSE_COUT << "Will rectify and resize to " << nCols << "x" << nRows << " simultaneously.\n";
+
+                rectify_map.enableResizeOutput(true,nCols,nRows);
+			}
 		}
 
 		bool processOneObservation(CObservationPtr  &obs)
@@ -114,10 +130,10 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 						rectify_map.setFromCamParams( *o );
 					}
 
-					// This call rectifies the images in-place and also updates 
+					// This call rectifies the images in-place and also updates
 					// all the camera parameters as needed:
 					rectify_map.rectify(*o);
-					
+
 					const string label_time = format("%s_%f", o->sensorLabel.c_str(), timestampTotime_t(o->timestamp) );
 					{
 						const string fileName = string("img_") + label_time + string("_left.") + imgFileExtension;

@@ -81,6 +81,7 @@ TCLAP::ValueArg<std::string> arg_output_file("o","output","Output dataset (*.raw
 TCLAP::ValueArg<std::string> arg_outdir ("","out-dir","Output directory (used by some commands only)",false,".",".",cmd);
 
 TCLAP::ValueArg<std::string> arg_external_img_extension("","image-format","External image format",false,"jpg","jpg,png,pgm,...",cmd);
+TCLAP::ValueArg<std::string> arg_img_size("","image-size","Resize output images",false,"","COLSxROWS",cmd);
 
 TCLAP::ValueArg<std::string> arg_out_text_file("","text-file-output","Output for a text file",false,"out.txt","out.txt",cmd);
 
@@ -197,7 +198,8 @@ int main(int argc, char **argv)
 			"Op: creates a new set of external images for all CObservationStereoImages with the given SENSOR_LABEL, using the camera parameters stored in the "
 			"observations (which must be a valid calibration) and with the given alpha value. Alpha can be -1 for auto, or otherwise be in the range [0,1] (see OpenCV's docs for cvStereoRectify).\n"
 			"Requires: -o (or --output)\n"
-			"Optional: --image-format to set image format (default=jpg)\n"
+			"Optional: --image-format to set image format (default=jpg), \n"
+			"          --image-size to resize output images (example: --image-size 640x480) \n"
 			,false,"","SENSOR_LABEL,0.5",cmd) );
 		ops_functors["stereo-rectify"] = &op_stereo_rectify;
 

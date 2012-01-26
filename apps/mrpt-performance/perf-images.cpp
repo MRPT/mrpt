@@ -205,6 +205,77 @@ double image_buildPyramid(int N, int NOCTS)
 }
 
 
+const char* EXAMPLE_STEREO_CALIB =
+    "[CAMERA_PARAMS_LEFT]\n"
+    "resolution = [1024 768]\n"
+    "cx         = 523.098290\n"
+    "cy         = 402.599910\n"
+    "fx         = 839.161865\n"
+    "fy         = 841.168710\n"
+    "dist       = [-3.747584e-001 2.468493e-001 0.000000e+000 0.000000e+000 -1.281381e-001]    // The order is: [K1 K2 T1 T2 K3]\n"
+    "[CAMERA_PARAMS_RIGHT]\n"
+    "resolution = [1024 768]\n"
+    "cx         = 511.173904\n"
+    "cy         = 388.440870\n"
+    "fx         = 836.761931\n"
+    "fy         = 838.133088\n"
+    "dist       = [-3.606276e-001 2.116929e-001 0.000000e+000 0.000000e+000 -9.216787e-002]    // The order is: [K1 K2 T1 T2 K3]\n"
+    "[CAMERA_PARAMS_LEFT2RIGHT_POSE]\n"
+    "translation_only     = [1.193203e-001 -3.361637e-004 3.729054e-004]\n"
+    "rotation_matrix_only = [9.9997534298507e-001 -6.2827062556904e-003 -3.1370406439725e-003 ;6.2847721003742e-003 9.9998003994880e-001 6.4910988856303e-004 ;3.1328998617231e-003 -6.6880946896783e-004 9.9999486880301e-001 ]\n"
+    "pose_yaw_pitch_roll  = [0.119320 -0.000336 0.000373 0.360095 -0.179502 -0.038320]\n"
+    "pose_quaternion      = [0.119320 -0.000336 0.000373 0.999994 -0.000329 -0.001567 0.003142]\n"
+    ;
+
+
+template <int IMG_CHANNELS,int w, int h, int w2, int h2>
+double stereoimage_rectify_prepare_map(int, int)
+{
+    mrpt::utils::TStereoCamera params;
+    params.loadFromConfigFile("CAMERA_PARAMS", mrpt::utils::CConfigFileMemory(std::string(EXAMPLE_STEREO_CALIB)) );
+    params.scaleToResolution(w,h);
+
+	mrpt::vision::CStereoRectifyMap  rectify_map;
+	rectify_map.enableResizeOutput((w2!=w || h2!=h), w2,h2);
+
+	CTicTac	 tictac;
+
+	const size_t N = 100;
+	tictac.Tic();
+	for (size_t i=0;i<N;i++)
+	{
+	    rectify_map.setAlpha(-1); // This invalidates the old map & forces recomputing
+        rectify_map.setFromCamParams(params);
+	}
+
+	return tictac.Tac()/N;
+}
+
+template <int IMG_CHANNELS,int w, int h, int w2, int h2>
+double stereoimage_rectify(int, int)
+{
+	const CImage  imgL(w,h,IMG_CHANNELS), imgR(w,h,IMG_CHANNELS);
+	CImage  imgL2, imgR2;
+
+    mrpt::utils::TStereoCamera params;
+    params.loadFromConfigFile("CAMERA_PARAMS", mrpt::utils::CConfigFileMemory(std::string(EXAMPLE_STEREO_CALIB)) );
+    params.scaleToResolution(w,h);
+
+	mrpt::vision::CStereoRectifyMap  rectify_map;
+	rectify_map.enableResizeOutput((w2!=w || h2!=h), w2,h2);
+	rectify_map.setFromCamParams(params);
+
+	CTicTac	 tictac;
+	const size_t N = 20;
+	tictac.Tic();
+	for (size_t i=0;i<N;i++)
+	{
+	    rectify_map.rectify(imgL,imgR, imgL2,imgR2);
+	}
+
+	return tictac.Tac()/N;
+}
+
 // ------------------------------------------------------
 // register_tests_image
 // ------------------------------------------------------
@@ -286,6 +357,24 @@ void register_tests_image()
 	lstTests.push_back( TestData("images: buildPyramid 640x480,8 levs,no smooth,   gray",    image_buildPyramid<false,true>, 500, 8) );
 	lstTests.push_back( TestData("images: buildPyramid 640x480,8 levs,   smooth,   gray",       image_buildPyramid<true,true>, 500, 8) );
 
+
+	lstTests.push_back( TestData("stereo: prepare rectify map 640x480 RGB",  stereoimage_rectify_prepare_map<CH_RGB,640,480,640,480>) );
+	lstTests.push_back( TestData("stereo: prepare rectify map 800x600 RGB", stereoimage_rectify_prepare_map<CH_RGB,800,600,800,600>) );
+	lstTests.push_back( TestData("stereo: prepare rectify map 1024x768 RGB", stereoimage_rectify_prepare_map<CH_RGB,1024,768,1024,768>) );
+	lstTests.push_back( TestData("stereo: prepare rectify map 1024x768->800x600 RGB", stereoimage_rectify_prepare_map<CH_RGB,1024,768,800,600>) );
+	lstTests.push_back( TestData("stereo: prepare rectify map 1024x768->640x480 RGB", stereoimage_rectify_prepare_map<CH_RGB,1024,768,640,480>) );
+
+	lstTests.push_back( TestData("stereo: rectify 640x480 RGB",  stereoimage_rectify<CH_RGB,640,480,640,480>) );
+	lstTests.push_back( TestData("stereo: rectify 800x600 RGB", stereoimage_rectify<CH_RGB,800,600,800,600>) );
+	lstTests.push_back( TestData("stereo: rectify 1024x768 RGB", stereoimage_rectify<CH_RGB,1024,768,1024,768>) );
+	lstTests.push_back( TestData("stereo: rectify 1024x768->800x600 RGB", stereoimage_rectify<CH_RGB,1024,768,800,600>) );
+	lstTests.push_back( TestData("stereo: rectify 1024x768->640x480 RGB", stereoimage_rectify<CH_RGB,1024,768,640,480>) );
+
+	lstTests.push_back( TestData("stereo: rectify 640x480 GRAY",  stereoimage_rectify<CH_GRAY,640,480,640,480>) );
+	lstTests.push_back( TestData("stereo: rectify 800x600 GRAY", stereoimage_rectify<CH_GRAY,800,600,800,600>) );
+	lstTests.push_back( TestData("stereo: rectify 1024x768 GRAY", stereoimage_rectify<CH_GRAY,1024,768,1024,768>) );
+	lstTests.push_back( TestData("stereo: rectify 1024x768->800x600 GRAY", stereoimage_rectify<CH_GRAY,1024,768,800,600>) );
+	lstTests.push_back( TestData("stereo: rectify 1024x768->640x480 GRAY", stereoimage_rectify<CH_GRAY,1024,768,640,480>) );
 
 }
 
