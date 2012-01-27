@@ -333,8 +333,8 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 			// Possible algorithms: { TM_SQDIFF=0, TM_SQDIFF_NORMED=1, TM_CCORR=2, TM_CCORR_NORMED=3, TM_CCOEFF=4, TM_CCOEFF_NORMED=5 };
 
 			double match_quality  = match_template_SQDIFF(
-				reinterpret_cast<IplImage*>( new_img_gray.getAsIplImage()),
-				reinterpret_cast<IplImage*>( feat->patch.getAsIplImage()),
+				new_img_gray.getAs<IplImage>(),
+				feat->patch.getAs<IplImage>(),
 				px-patch_half_size-1,
 				py-patch_half_size-1);
 
@@ -506,8 +506,8 @@ void CFeatureTracker_FAST::trackFeatures_impl(
 
 			double match_quality  = match_template_SQDIFF_2(
 				patch_size,
-				reinterpret_cast<IplImage*>( new_img_gray.getAsIplImage()),
-				reinterpret_cast<IplImage*>( old_img_gray.getAsIplImage()),
+				new_img_gray.getAs<IplImage>(),
+				old_img_gray.getAs<IplImage>(),
 				// The patch position in the previous image:
 				feat.pt.x-patch_half_size-1,
 				feat.pt.y-patch_half_size-1,

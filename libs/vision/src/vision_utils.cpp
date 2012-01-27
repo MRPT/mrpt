@@ -101,8 +101,8 @@ void  vision::openCV_cross_correlation(
 	{
 		ASSERT_(!img.isColor() && !patch_img.isColor())
 
-		im.setFromIplImageReadOnly( img.getAsIplImage() );
-		patch_im.setFromIplImageReadOnly( patch_img.getAsIplImage() );
+		im.setFromIplImageReadOnly( const_cast<IplImage*>(img.getAs<IplImage>()) );
+		patch_im.setFromIplImageReadOnly( const_cast<IplImage*>(patch_img.getAs<IplImage>()) );
 	}
 
 	const int im_w = im.getWidth();
@@ -148,8 +148,8 @@ void  vision::openCV_cross_correlation(
 
 	// Compute cross correlation:
 	cvMatchTemplate(
-		img_region_to_search.getAsIplImage(),
-		patch_im.getAsIplImage(),
+		img_region_to_search.getAs<IplImage>(),
+		patch_im.getAs<IplImage>(),
 		result,
 		CV_TM_CCORR_NORMED
 		);
@@ -178,7 +178,7 @@ void  vision::flip(
 	MRPT_START
 
 #if MRPT_HAS_OPENCV
-	cvFlip((IplImage*)img.getAsIplImage());	// More params exists, they could be added in the future?
+	cvFlip(img.getAs<IplImage>());	// More params exists, they could be added in the future?
 	img.setOriginTopLeft(true);
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
@@ -649,9 +649,8 @@ size_t vision::matchFeatures(
 					IplImage *aux1, *aux2;
 					if( (*itList1)->patch.isColor() && (*itList2)->patch.isColor() )
 					{
-
-						IplImage* preAux1 = (IplImage*)(*itList1)->patch.getAsIplImage();
-						IplImage* preAux2 = (IplImage*)(*itList2)->patch.getAsIplImage();
+						const IplImage* preAux1 = (*itList1)->patch.getAs<IplImage>();
+						const IplImage* preAux2 = (*itList2)->patch.getAs<IplImage>();
 
 						aux1 = cvCreateImage( cvSize( (*itList1)->patch.getHeight(), (*itList1)->patch.getWidth() ), IPL_DEPTH_8U, 1 );
 						aux2 = cvCreateImage( cvSize( (*itList2)->patch.getHeight(), (*itList2)->patch.getWidth() ), IPL_DEPTH_8U, 1 );
@@ -661,8 +660,8 @@ size_t vision::matchFeatures(
 					}
 					else
 					{
-						aux1 = (IplImage*)(*itList1)->patch.getAsIplImage();
-						aux2 = (IplImage*)(*itList2)->patch.getAsIplImage();
+						aux1 = const_cast<IplImage*>((*itList1)->patch.getAs<IplImage>());
+						aux2 = const_cast<IplImage*>((*itList2)->patch.getAs<IplImage>());
 					}
 
                     // OLD CODE (for checking purposes)
@@ -886,8 +885,8 @@ double vision::computeSAD(
 {
     MRPT_START
 #if MRPT_HAS_OPENCV
-    IplImage *im1 = static_cast<IplImage*>(patch1.getAsIplImage());
-    IplImage *im2 = static_cast<IplImage*>(patch2.getAsIplImage());
+    const IplImage *im1 = patch1.getAs<IplImage>();
+    const IplImage *im2 = patch2.getAs<IplImage>();
 
     ASSERT_( im1->width == im2->width &&  im1->height == im2->height );
     double res = 0.0;
@@ -1981,66 +1980,6 @@ void vision::computeStereoRectificationMaps(
         dpr[i] = cam2.dist[i];
     }
 
-    // WITH OLD OPENCV VERSION
-    // *****************************************************************
-    /** /
-    CvMat R = cvMat( 3, 3, CV_64F, &m1 );
-    CvMat T = cvMat( 3, 1, CV_64F, &rcTrans );
-
-    CvMat K1 = cvMat(3,3,CV_64F,ipl);
-    CvMat K2 = cvMat(3,3,CV_64F,ipr);
-    CvMat D1 = cvMat(1,5,CV_64F,dpl);
-    CvMat D2 = cvMat(1,5,CV_64F,dpr);
-
-    double _R1[3][3], _R2[3][3], _P1[3][4], _P2[3][4];
-    CvMat R1 = cvMat(3,3,CV_64F,_R1);
-    CvMat R2 = cvMat(3,3,CV_64F,_R2);
-    CvMat P1 = cvMat(3,4,CV_64F,_P1);
-    CvMat P2 = cvMat(3,4,CV_64F,_P2);
-
-    CvSize imageSize = {resX,resY};
-    cvStereoRectify( &K1, &K2, &D1, &D2, imageSize,
-        &R, &T,
-        &R1, &R2, &P1, &P2, 0, 0 );
-
-    CvMat* mx1 = cvCreateMat( imageSize.height,
-            imageSize.width, CV_32F );
-    CvMat* my1 = cvCreateMat( imageSize.height,
-            imageSize.width, CV_32F );
-    CvMat* mx2 = cvCreateMat( imageSize.height,
-            imageSize.width, CV_32F );
-    CvMat* my2 = cvCreateMat( imageSize.height,
-            imageSize.width, CV_32F );
-    CvMat* img1r = cvCreateMat( imageSize.height,
-            imageSize.width, CV_8U );
-    CvMat* img2r = cvCreateMat( imageSize.height,
-            imageSize.width, CV_8U );
-
-    cvInitUndistortRectifyMap(&K1,&D1,&R1,&P1,mx1,my1);
-    cvInitUndistortRectifyMap(&K2,&D2,&R2,&P2,mx2,my2);
-
-    CImage im1, im2;
-    im1.loadFromFile("imgs/leftImage1024.jpg");
-    im2.loadFromFile("imgs/rightImage1024.jpg");
-
-    cvRemap( static_cast<IplImage *>( im1.getAsIplImage() ), img1r, mx1, my1 );
-    cvRemap( static_cast<IplImage *>( im2.getAsIplImage() ), img2r, mx2, my2 );
-
-    cvSaveImage( "imgs/leftImage1024_rect.jpg", img1r );
-    cvSaveImage( "imgs/rightImage1024_rect.jpg", img2r );
-
-    IplImage stub, *dst_img, stub2, *dst_img2;
-    dst_img = cvGetImage(img1r, &stub);
-    dst_img2 = cvGetImage(img2r, &stub2);
-
-    CImage im1out( dst_img );
-    CImage im2out( dst_img2 );
-    / * */
-    // *****************************************************************
-
-    // WITH NEW OPENCV VERSION
-    // *****************************************************************
-    /**/
     cv::Mat R( 3, 3, CV_64F, &m1 );
     cv::Mat T( 3, 1, CV_64F, &rcTrans );
 

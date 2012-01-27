@@ -553,13 +553,14 @@ namespace mrpt
 			/** Returns a pointer to an OpenCV's IplImage struct containing the image, which is linked to this class.
 			  *
 			  *  NOTE: This method is DEPRECATED, consider using getAs<IplImage>() instead, which will also make code look clearer.
-			  * Do not manually free the returned pointer, since this object is its owner and will delete it upon destruction.  
+			  * Do not manually free the returned pointer, since this object is its owner and will delete it upon destruction.
 			  *  \sa getAs */
 			MRPT_DECLARE_DEPRECATED_FUNCTION("Deprecated: Use getAs<> instead",
-			inline void*  getAsIplImage() const {
+			inline void*  getAsIplImage() const )
+			{
 				makeSureImageIsLoaded();
 				return img;
-			})
+			}
 
 			/**  Access to pixels without checking boundaries - Use normally the () operator better, which checks the coordinates.
 			  \sa CImage::operator()
@@ -920,7 +921,7 @@ namespace mrpt
 
 		}; // End of class
 
-		typedef CImage CMRPTImage;	//!< Deprecated name.
+		typedef CImage CMRPTImage;	//!< Deprecated name (but don't remove this typedef to enable class registration for loading ancient datasets)
 
 
 	} // end of namespace utils

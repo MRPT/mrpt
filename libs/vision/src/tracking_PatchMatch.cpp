@@ -140,8 +140,8 @@ void CFeatureTracker_PatchMatch::trackFeatures_impl(
 
 		// Compute cross correlation:
 		cvMatchTemplate(
-			img_region_to_search.getAsIplImage(),
-			feat->patch.getAsIplImage(),
+			img_region_to_search.getAs<IplImage>(),
+			feat->patch.getAs<IplImage>(),
 			result,
 			CV_TM_CCORR_NORMED
 			//CV_TM_CCOEFF_NORMED

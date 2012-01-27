@@ -94,8 +94,8 @@ MRPT_START
 		} // end for
 
 		// local scope for auxiliary variables around cvCalcOpticalFlowPyrLK()
-		IplImage *prev_gray_ipl = reinterpret_cast<IplImage *>(prev_gray.getAsIplImage());
-		IplImage *cur_gray_ipl  = reinterpret_cast<IplImage *>(cur_gray.getAsIplImage());
+		const IplImage *prev_gray_ipl = prev_gray.getAs<IplImage>();
+		const IplImage *cur_gray_ipl  = cur_gray.getAs<IplImage>();
 
 		// Pyramids
 		// JL: It seems that cache'ing the pyramids of previous images doesn't really improve the efficiency (!?!?)
