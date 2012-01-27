@@ -1997,6 +1997,32 @@ void vision::computeStereoRectificationMaps(
 
     cv::Size nSize(resX,resY);
     double alpha = 0.0;                  // alpha value: 0.0 = zoom and crop the image so that there's not black areas
+
+#if MRPT_OPENCV_VERSION_NUM<0x210
+	// OpenCV 2.0.X
+    cv::stereoRectify(
+        K1, D1,
+        K2, D2,
+        nSize,
+        R, T,
+        R1, R2, P1, P2, Q,
+		cv::CALIB_ZERO_DISPARITY
+		);
+#elif MRPT_OPENCV_VERSION_NUM<0x230
+	// OpenCV 2.1.X - 2.2.X
+    cv::stereoRectify(
+        K1, D1,
+        K2, D2,
+        nSize,
+        R, T,
+        R1, R2, P1, P2, Q,
+		alpha,
+		nSize, // Size() by default=no resize
+		NULL,NULL, // Out ROIs
+		cv::CALIB_ZERO_DISPARITY
+		);
+#else
+	// OpenCV 2.3+ has this signature:
     cv::stereoRectify(
         K1, D1,
         K2, D2,
@@ -2007,6 +2033,7 @@ void vision::computeStereoRectificationMaps(
 		alpha
 		);
         // Rest of arguments -> default
+#endif
 
     cv::Size sz1, sz2;
     cv::initUndistortRectifyMap( K1, D1, R1, P1, cv::Size(resX,resY), CV_32FC1, *mapx1, *mapy1 );
