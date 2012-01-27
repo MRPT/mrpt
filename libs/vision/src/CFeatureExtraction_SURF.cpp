@@ -54,16 +54,8 @@ void  CFeatureExtraction::extractFeaturesSURF(
 
 	const int EXTENDED_DESCRIPTOR = options.SURFOptions.rotation_invariant ? 1:0;
 
-	IplImage* img, *cGrey;
-	img = (IplImage*)inImg.getAsIplImage();
-
-	if( img->nChannels == 1 )
-		cGrey = img;										// Input image is already 'grayscale'
-	else
-	{
-		cGrey = cvCreateImage( cvGetSize( img ), 8, 1);
-		cvCvtColor( img, cGrey, CV_BGR2GRAY );				// Convert input image into 'grayscale'
-	}
+	const CImage img_grayscale(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
+	const IplImage* cGrey = img_grayscale.getAs<IplImage>();
 
 	CvSeq *kp	=	NULL;
 	CvSeq *desc	=	NULL;
@@ -136,9 +128,6 @@ void  CFeatureExtraction::extractFeaturesSURF(
 
 	cvReleaseMemStorage(&storage); // Free memory
 
-	if( img->nChannels != 1 )
-		cvReleaseImage( &cGrey );
-
 #else
 	THROW_EXCEPTION("Method not available since either MRPT has been compiled without OpenCV or OpenCV version is incorrect (Required 1.1.0)")
 #endif //MRPT_HAS_OPENCV
@@ -158,16 +147,8 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 
 	const int EXTENDED_DESCRIPTOR = options.SURFOptions.rotation_invariant ? 1:0;
 
-	IplImage* img, *cGrey;
-	img = (IplImage*)inImg.getAsIplImage();
-
-	if( img->nChannels == 1 )
-		cGrey = img;										// Input image is already 'grayscale'
-	else
-	{
-		cGrey = cvCreateImage( cvGetSize( img ), 8, 1);
-		cvCvtColor( img, cGrey, CV_BGR2GRAY );				// Convert input image into 'grayscale'
-	}
+	const CImage img_grayscale(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
+	const IplImage* cGrey = img_grayscale.getAs<IplImage>();
 
 	CvMemStorage *storage = cvCreateMemStorage(0);
 
@@ -218,9 +199,6 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 
 
 	cvReleaseMemStorage(&storage); // Free memory
-
-	if( img->nChannels != 1 )
-		cvReleaseImage( &cGrey );
 
 #else
 			THROW_EXCEPTION("Method not available since either MRPT has been compiled without OpenCV or OpenCV version is incorrect (Required 1.1.0)")

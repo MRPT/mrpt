@@ -143,7 +143,7 @@ const CVideoFileWriter& CVideoFileWriter::operator << (const mrpt::utils::CImage
 		THROW_EXCEPTION(format("Video frame size is %ix%i but image is %ux%u", m_img_size.x,m_img_size.y,(unsigned)img.getWidth(),(unsigned)img.getHeight() ));
 
 #if MRPT_HAS_OPENCV
-	if (! cvWriteFrame( M_WRITER, (IplImage*)img.getAsIplImage() ) )
+	if (! cvWriteFrame( M_WRITER, img.getAs<IplImage>() ) )
 		THROW_EXCEPTION("Error writing image frame to video file")
 #endif
 	return *this;
@@ -164,7 +164,7 @@ bool CVideoFileWriter::writeImage(const mrpt::utils::CImage& img) const
 	}
 
 #if MRPT_HAS_OPENCV
-	return 0!= cvWriteFrame( M_WRITER, (IplImage*)img.getAsIplImage() );
+	return 0!= cvWriteFrame( M_WRITER, img.getAs<IplImage>() );
 #else
 	return false;
 #endif

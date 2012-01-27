@@ -64,34 +64,25 @@ using namespace std;
 // An auxiliary function for passing MRPT images to wxWidgets images.
 //   The returned object MUST be deleted by hand!
 //------------------------------------------------------------------------
-wxImage * mrpt::gui::MRPTImage2wxImage( const mrpt::utils::CImage &img )
+wxImage * mrpt::gui::MRPTImage2wxImage( const mrpt::utils::CImage &in_img )
 {
 #if MRPT_HAS_OPENCV
-	IplImage* image = static_cast<IplImage *>( img.getAsIplImage() );
-	bool	free_image_at_end = false;
 
-	// If the image is GRAYSCALE, we need to convert it into RGB, so do it manually:
-	if (image->nChannels==1)
-	{
-		IplImage* new_image = cvCreateImage( cvSize(image->width,image->height),image->depth, 3 );
-		new_image->origin = image->origin;
-		cvCvtColor(image,new_image, CV_GRAY2RGB);
-		image = new_image; // Use this new image instead
-		free_image_at_end = true;
-	}
+	// If the image is GRAYSCALE, we need to convert it into RGB:
+	const CImage img(in_img, FAST_REF_OR_CONVERT_TO_GRAY);
+	const IplImage* image = img.getAs<IplImage>();
+	bool	free_image_at_end = false;
 
 	int options = 0;
 	if( image->origin == 1 ) options |= CV_CVTIMG_FLIP;
 	if( image->nChannels == 3 && image->channelSeq[0] == 'B' && image->channelSeq[2]== 'R') options |= CV_CVTIMG_SWAP_RB;
 	if( options )
 	{
-		IplImage *the_input_img = image;
+		IplImage *aux_img = cvCreateImage( cvSize(image->width,image->height),image->depth, 3 );
+		if (image->width && image->height)
+			cvConvertImage(image, aux_img, options); // convert image
 
-		image = cvCreateImage( cvSize(the_input_img->width,the_input_img->height),the_input_img->depth, 3 );
-		if (the_input_img->width && the_input_img->height)
-			cvConvertImage(the_input_img, image, options); // convert image
-
-		if (free_image_at_end) cvReleaseImage(&the_input_img);
+		image = aux_img;
 		free_image_at_end = true; // for "image"
 	}
 
@@ -116,7 +107,9 @@ wxImage * mrpt::gui::MRPTImage2wxImage( const mrpt::utils::CImage &img )
 
 	if (free_image_at_end)
 	{
-		cvReleaseImage(&image);
+		IplImage* aux = const_cast<IplImage*>(image);
+		cvReleaseImage(&aux);
+		image=NULL;
 	}
 
 	// create and return the object
@@ -193,33 +186,25 @@ wxImage * mrpt::gui::MRPTImage2wxImage( const mrpt::utils::CImage &img )
 // An auxiliary function for passing MRPT images to wxWidgets images.
 //   The returned object MUST be deleted by hand!
 //------------------------------------------------------------------------
-wxBitmap* mrpt::gui::MRPTImage2wxBitmap( const CImage &img )
+wxBitmap* mrpt::gui::MRPTImage2wxBitmap( const CImage &in_img )
 {
 #if MRPT_HAS_OPENCV
-	IplImage* image = static_cast<IplImage *>( img.getAsIplImage() );
+	// If the image is GRAYSCALE, we need to convert it into RGB:
+	const CImage img(in_img, FAST_REF_OR_CONVERT_TO_GRAY);
+	const IplImage* image = img.getAs<IplImage>();
 	bool	free_image_at_end = false;
 
-	// If the image is GRAYSCALE, we need to convert it into RGB, so do it manually:
-	if (image->nChannels==1)
-	{
-		IplImage* new_image = cvCreateImage( cvSize(image->width,image->height),image->depth, 3 );
-		new_image->origin = image->origin;
-		cvCvtColor(image,new_image, CV_GRAY2RGB);
-		image = new_image; // Use this new image instead
-		free_image_at_end = true;
-	}
 
 	int options = 0;
 	if( image->origin == 1 ) options |= CV_CVTIMG_FLIP;
 	if( image->nChannels == 3 && image->channelSeq[0] == 'B' && image->channelSeq[2]== 'R') options |= CV_CVTIMG_SWAP_RB;
 	if( options )
 	{
-		IplImage *the_input_img = image;
+		IplImage *aux_img = cvCreateImage( cvSize(image->width,image->height),image->depth, 3 );
+		if (image->width && image->height)
+			cvConvertImage(image, aux_img, options); // convert image
 
-		image = cvCreateImage( cvSize(the_input_img->width,the_input_img->height),the_input_img->depth, 3 );
-		cvConvertImage(the_input_img, image, options); // convert image
-
-		if (free_image_at_end) cvReleaseImage(&the_input_img);
+		image = aux_img;
 		free_image_at_end = true; // for "image"
 	}
 
@@ -244,7 +229,9 @@ wxBitmap* mrpt::gui::MRPTImage2wxBitmap( const CImage &img )
 
 	if (free_image_at_end)
 	{
-		cvReleaseImage(&image);
+		IplImage* aux = const_cast<IplImage*>(image);
+		cvReleaseImage(&aux);
+		image=NULL;
 	}
 
 	// create and return the object

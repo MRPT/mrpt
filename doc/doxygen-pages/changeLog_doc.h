@@ -68,11 +68,13 @@
 			-  mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.
 			-  mrpt::utils::TStereoCamera changes its I/O format to config files, now it's consistent with rawlog-edit, stereo-calib-gui and others.
 			-  mrpt::utils::CImage::changeSize() is now smart enough to avoid deallocating & re-allocating an image if the requested params exactly coincide with the current image.
+			-  mrpt::utils::CImage::getAsIplImage() marked as deprecated - replace with mrpt::utils::CImage::getAs<IplImage>() instead.
 		- [mrpt-maps] 
 			- mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
 		- [mrpt-vision] 
 			- Interface of mrpt::vision::CGenericFeatureTracker extended to handle subpixel feature coordinates (mrpt::vision::TSimpleFeaturefList)
 			- mrpt::vision::CFeatureExtraction has new parameters to change the thresholds of SIFT detector implementations - <a href="http://code.google.com/p/mrpt/source/detail?r=2797" >r2797</a> 
+			- mrpt::vision::CFeatureExtraction::detectFeatures_SSE2_FASTER9() (and others) now build an optional index of feature indices sorted by rows for quick look up.
 		- [mrpt-gui] 
 			- Environment variable MRPT_WXSUBSYS_TIMEOUT_MS is now observed in all places where a GUI window is expected to be launched.
 			- New shortcut methods mrpt::gui::CDisplayWindow3D::setImageView() and mrpt::gui::CDisplayWindow3D::setImageView_fast() - <a href="http://code.google.com/p/mrpt/source/detail?r=2793" >r2793</a> 

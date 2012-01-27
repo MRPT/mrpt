@@ -526,7 +526,6 @@ void  CFeatureExtraction::internal_computeSiftDescriptors( const CImage	&in_img,
 			ASSERT_(in_img.getWidth() != 0 && in_img.getHeight() != 0);
 
 			/* build scale space pyramid; smallest dimension of top level is ~4 pixels */
-			//IplImage* ipl_im = static_cast<IplImage *>( in_img.getAsIplImage() );
 			const CImage img_grayscale(in_img, FAST_REF_OR_CONVERT_TO_GRAY);
 			const IplImage* ipl_im = img_grayscale.getAs<IplImage>();
 

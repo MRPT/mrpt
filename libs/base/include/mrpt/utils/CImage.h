@@ -81,7 +81,7 @@ namespace mrpt
 		 *  \endcode
 		 *
 		 * Additional notes:
-		 *		- The OpenCV "IplImage" format is used internally for compatibility with all OpenCV functions. See CImage::getAsIplImage() and CImage::getAs<>(). Example:
+		 *		- The OpenCV "IplImage" format is used internally for compatibility with all OpenCV functions. Use CImage::getAs<IplImage>() to retrieve the internal structure. Example:
 		 *         \code
 		 *            CImage  img;
 		 *            ...
@@ -542,20 +542,24 @@ namespace mrpt
 			/** Returns a pointer to a const T* containing the image - the idea is to call like "img.getAs<IplImage>()" so we can avoid here including OpenCV's headers. */
 			template <typename T> inline const T* getAs() const {
 				makeSureImageIsLoaded();
-				return reinterpret_cast<const T*>(img);
+				return static_cast<const T*>(img);
 			}
 			/** Returns a pointer to a T* containing the image - the idea is to call like "img.getAs<IplImage>()" so we can avoid here including OpenCV's headers. */
 			template <typename T> inline T* getAs(){
 				makeSureImageIsLoaded();
-				return reinterpret_cast<T*>(img);
+				return static_cast<T*>(img);
 			}
 
-			/** Returns a pointer to an OpenCV's IplImage struct containing the image, which is linked to this class; NOTE: it's preferred to call getAs<IplImage>() instead since code will look clearer.
-			  * Do not manually free that pointer, since this object is its owner and will delete it upon destruction.  \sa getAs */
+			/** Returns a pointer to an OpenCV's IplImage struct containing the image, which is linked to this class.
+			  *
+			  *  NOTE: This method is DEPRECATED, consider using getAs<IplImage>() instead, which will also make code look clearer.
+			  * Do not manually free the returned pointer, since this object is its owner and will delete it upon destruction.  
+			  *  \sa getAs */
+			MRPT_DECLARE_DEPRECATED_FUNCTION("Deprecated: Use getAs<> instead",
 			inline void*  getAsIplImage() const {
 				makeSureImageIsLoaded();
 				return img;
-			}
+			})
 
 			/**  Access to pixels without checking boundaries - Use normally the () operator better, which checks the coordinates.
 			  \sa CImage::operator()
@@ -765,7 +769,7 @@ namespace mrpt
 			  *  When assigning an IPLImage to this object with this method, the IPLImage will NOT be released/freed at this object destructor.
 			  *  \sa setFromIplImageReadOnly
 			  */
-			inline void setFromImageReadOnly( const CImage &other_img ) { setFromIplImageReadOnly(other_img.getAsIplImage() ); }
+			inline void setFromImageReadOnly( const CImage &other_img ) { setFromIplImageReadOnly(const_cast<void*>(other_img.getAs<void>()) ); }
 
 			/** Set the image from a matrix, interpreted as grayscale intensity values, in the range [0,1] (normalized=true) or [0,255] (normalized=false)
 			  * \sa getAsMatrix

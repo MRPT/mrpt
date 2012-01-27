@@ -68,8 +68,8 @@ void  CFeatureExtraction::internal_computeLogPolarImageDescriptors(
 
 		// Use OpenCV to convert:
 		cvLogPolar(
-			in_img.getAsIplImage(),
-			logpolar_frame.getAsIplImage(),
+			in_img.getAs<IplImage>(),
+			logpolar_frame.getAs<IplImage>(),
 			cvPoint2D32f( (*it)->x,(*it)->y ),
 			rho_scale,
 			CV_INTER_LINEAR+CV_WARP_FILL_OUTLIERS );

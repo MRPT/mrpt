@@ -66,8 +66,10 @@ namespace mrpt
 		  *		- A log-polar image patch (Log-polar images): The matrix descriptor is the 2D log-polar image centered at the interest point.
 		  *
 		  *
-		  *  Apart from the normal entry point \a detectFeatures(), these other low-level functions are provided for convenience:
-		  *   -
+		  *  Apart from the normal entry point \a detectFeatures(), these other low-level static methods are provided for convenience:
+		  *   - CFeatureExtraction::detectFeatures_SSE2_FASTER9()
+		  *   - CFeatureExtraction::detectFeatures_SSE2_FASTER10()
+		  *   - CFeatureExtraction::detectFeatures_SSE2_FASTER12()
 		  *
 		  * \note The descriptor "Intensity-domain spin images" is described in "A sparse texture representation using affine-invariant regions", S Lazebnik, C Schmid, J Ponce, 2003 IEEE Computer Society Conference on Computer Vision.
 		  * \sa mrpt::vision::CFeature
@@ -268,25 +270,51 @@ namespace mrpt
 			/** @name Static methods with low-level detector functionality
 			    @{ */
 
-			/** A SSE2-optimized implementation of FASTER-9 (requires img to be grayscale). If SSE2 is not available, it gratefully falls back to a non-optimized version
-			  *  Only the pt.{x,y} fields are filled out for each feature: the rest of fields are left <b>uninitialized</b> and their content is <b>undefined</b>
+			/** A SSE2-optimized implementation of FASTER-9 (requires img to be grayscale). If SSE2 is not available, it gratefully falls back to a non-optimized version.
+			  *
+			  *  Only the pt.{x,y} fields are filled out for each feature: the rest of fields are left <b>uninitialized</b> and their content is <b>undefined</b>.
 			  *  Note that (x,y) are already scaled to the 0-level image coordinates if octave>0, by means of:
 			  *
+			  *  \code
 			  *    pt.x = detected.x << octave;
 			  *    pt.y = detected.y << octave;
+			  *  \endcode
 			  *
-			  *  If \a append_to_list is true, the \a corners list is not cleared before adding the newly detected feats.
+			  * If \a append_to_list is true, the \a corners list is not cleared before adding the newly detected feats.
+			  *
+			  * If a valid pointer is provided for \a out_feats_index_by_row, upon return you will find a vector with 
+			  *  as many entries as rows in the image. The number in each entry is the 0-based index (in \a corners) of 
+			  *  the first feature that falls in that line of the image. This index can be used to fasten looking for correspondences.
+			  *
 			  * \ingroup mrptvision_features
 			  */
-			static void detectFeatures_SSE2_FASTER9(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20, bool append_to_list = false, uint8_t octave = 0);
+			static void detectFeatures_SSE2_FASTER9(
+				const CImage &img, 
+				TSimpleFeatureList & corners, 
+				const int threshold = 20, 
+				bool append_to_list = false, 
+				uint8_t octave = 0,
+				std::vector<size_t> * out_feats_index_by_row = NULL );
 
 			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector.
 			  * \ingroup mrptvision_features */
-			static void detectFeatures_SSE2_FASTER10(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20, bool append_to_list = false, uint8_t octave = 0);
+			static void detectFeatures_SSE2_FASTER10(
+				const CImage &img, 
+				TSimpleFeatureList & corners, 
+				const int threshold = 20, 
+				bool append_to_list = false, 
+				uint8_t octave = 0,
+				std::vector<size_t> * out_feats_index_by_row = NULL );
 
 			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector.
 			  * \ingroup mrptvision_features */
-			static void detectFeatures_SSE2_FASTER12(const CImage &img, TSimpleFeatureList & corners, const int threshold = 20, bool append_to_list = false, uint8_t octave = 0);
+			static void detectFeatures_SSE2_FASTER12(
+				const CImage &img, 
+				TSimpleFeatureList & corners, 
+				const int threshold = 20, 
+				bool append_to_list = false, 
+				uint8_t octave = 0,
+				std::vector<size_t> * out_feats_index_by_row = NULL );
 
 			/** @} */
 

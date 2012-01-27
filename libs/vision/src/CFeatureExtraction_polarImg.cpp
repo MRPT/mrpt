@@ -177,8 +177,8 @@ void  CFeatureExtraction::internal_computePolarImageDescriptors(
 #else
 		cvLinearPolar(		// Use version sent to OpenCV
 #endif
-			in_img.getAsIplImage(),
-			linpolar_frame.getAsIplImage(),
+			in_img.getAs<IplImage>(),
+			linpolar_frame.getAs<IplImage>(),
 			cvPoint2D32f( (*it)->x,(*it)->y ),
 			radius,
 			CV_INTER_LINEAR+CV_WARP_FILL_OUTLIERS );

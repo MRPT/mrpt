@@ -43,8 +43,19 @@ using namespace mrpt::utils;
 
 #if MRPT_HAS_OPENCV
 
-void fast_corner_detect_plain_10(const IplImage* i, TSimpleFeatureList &corners, int b, uint8_t octave)
+void fast_corner_detect_plain_10(const IplImage* i, TSimpleFeatureList &corners, int b, uint8_t octave, std::vector<size_t> * out_feats_index_by_row)
 {
+	size_t *ptr_feat_index_by_row;
+	if (out_feats_index_by_row) 
+	{
+		out_feats_index_by_row->resize(i->height);
+		ptr_feat_index_by_row = &(*out_feats_index_by_row)[0];
+	}
+	else {
+		ptr_feat_index_by_row = NULL;
+	}
+
+
 	int y, cb, c_b;
 	const uint8_t  *line_max, *line_min;
 	const uint8_t* cache_0;
@@ -68,8 +79,18 @@ void fast_corner_detect_plain_10(const IplImage* i, TSimpleFeatureList &corners,
 		-1 + i->widthStep * 3,
 	};
 
+	// 3 first rows have no features: 
+	if (ptr_feat_index_by_row) {
+		*ptr_feat_index_by_row++ = corners.size();
+		*ptr_feat_index_by_row++ = corners.size();
+		*ptr_feat_index_by_row++ = corners.size();
+	}
+
 	for(y = 3 ; y < i->height - 3; y++)
 	{
+		if (ptr_feat_index_by_row)  // save index by row:
+			*ptr_feat_index_by_row++=corners.size();
+
 		cache_0 = (const uint8_t*) i->imageData + i->widthStep*y + 3; // &i[y][3];
 		line_min = cache_0 - 3;
 		line_max = (const uint8_t*) i->imageData + i->widthStep*y+i->width-3; //&i[y][i.size().x - 3];
@@ -3195,6 +3216,13 @@ void fast_corner_detect_plain_10(const IplImage* i, TSimpleFeatureList &corners,
 			success:
 				corners.push_back_fast((cache_0-line_min)<<octave, y<<octave);
 		}
+	}
+
+	// 3 last rows have no features: 
+	if (ptr_feat_index_by_row) {
+		*ptr_feat_index_by_row++ = corners.size();
+		*ptr_feat_index_by_row++ = corners.size();
+		*ptr_feat_index_by_row++ = corners.size();
 	}
 }
 

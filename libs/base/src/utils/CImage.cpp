@@ -1410,23 +1410,24 @@ void  CImage::cross_correlation(
 
 	bool entireImg = (x_search_ini<0 || y_search_ini<0 || x_search_size<0 || y_search_size<0);
 
-	IplImage *im, *patch_im;
+	const IplImage *im, *patch_im;
 
 	if( this->isColor() && patch_img.isColor() )
 	{
-		IplImage *im_ = (IplImage*)this->getAsIplImage();
-		IplImage *patch_im_ = (IplImage*)patch_img.getAsIplImage();
+		const IplImage *im_ = this->getAs<IplImage>();
+		const IplImage *patch_im_ = patch_img.getAs<IplImage>();
 
-		im = cvCreateImage( cvGetSize( im_ ), 8, 1 );
-		patch_im = cvCreateImage( cvGetSize( patch_im_ ), 8, 1 );
-
-		cvCvtColor( im_, im, CV_BGR2GRAY );
-		cvCvtColor( patch_im_, patch_im, CV_BGR2GRAY );
+		IplImage *aux = cvCreateImage( cvGetSize( im_ ), 8, 1 );
+		IplImage *aux2 = cvCreateImage( cvGetSize( patch_im_ ), 8, 1 );
+		cvCvtColor( im_, aux, CV_BGR2GRAY );
+		cvCvtColor( patch_im_, aux2, CV_BGR2GRAY );
+		im = aux;
+		patch_im = aux2;
 	}
 	else
 	{
-		im = (IplImage*)this->getAsIplImage();
-		patch_im = (IplImage*)patch_img.getAsIplImage();
+		im = this->getAs<IplImage>();
+		patch_im = patch_img.getAs<IplImage>();
 	}
 
 	if (entireImg)
@@ -1447,17 +1448,18 @@ void  CImage::cross_correlation(
 
 	IplImage *result = cvCreateImage(cvSize(x_search_size+1,y_search_size+1),IPL_DEPTH_32F, 1);
 
-	IplImage *ipl_ext;
+	const IplImage *ipl_ext;
 
 	if (!entireImg)
 	{
-		ipl_ext = cvCreateImage(cvSize(patch_im->width+x_search_size,patch_im->height+y_search_size),IPL_DEPTH_8U, 1);
+		IplImage *aux= cvCreateImage(cvSize(patch_im->width+x_search_size,patch_im->height+y_search_size),IPL_DEPTH_8U, 1);
 		for (unsigned int i = 0 ; i < (unsigned int)y_search_size ; i++)
 		{
-			memcpy( &ipl_ext->imageData[i * ipl_ext->widthStep ],
+			memcpy( &aux->imageData[i * aux->widthStep ],
 					&im->imageData[(i+y_search_ini) * im->widthStep + x_search_ini * im->nChannels],
-					ipl_ext->width * ipl_ext->nChannels ); //widthStep);  <-- JLBC: widthstep SHOULD NOT be used as the length of each row (the last one may be shorter!!)
+					aux->width * aux->nChannels ); //widthStep);  <-- JLBC: widthstep SHOULD NOT be used as the length of each row (the last one may be shorter!!)
 		}
+		ipl_ext = aux;
 	}
 	else
 	{
@@ -1474,7 +1476,11 @@ void  CImage::cross_correlation(
 	y_max = max_point.y+y_search_ini+(round(patch_im->height-1)/2);
 
 	// Free memory:
-	if (!entireImg) cvReleaseImage( &ipl_ext );
+	if (!entireImg) {
+		IplImage *aux = const_cast<IplImage*>(ipl_ext);
+		cvReleaseImage( &aux );
+		ipl_ext=NULL;
+	}
 
 	// Leave output image?
 	if (out_corr_image)
@@ -1870,7 +1876,7 @@ void CImage::rectifyImageInPlace( void *mapX, void *mapY )
     makeSureImageIsLoaded();   // For delayed loaded images stored externally
     ASSERT_(img!=NULL);
 
-    IplImage *srcImg = static_cast<IplImage *>( getAsIplImage() );	// Source Image
+    IplImage *srcImg = getAs<IplImage>();	// Source Image
 	IplImage *outImg;												// Output Image
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
@@ -1900,7 +1906,7 @@ void CImage::rectifyImageInPlace( const mrpt::utils::TCamera &cameraParams  )
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
     ASSERT_(img!=NULL);
 	// MRPT -> OpenCV Input Transformation
-	IplImage *srcImg = static_cast<IplImage *>( getAsIplImage() );	// Source Image
+	IplImage *srcImg = getAs<IplImage>();	// Source Image
 	IplImage *outImg;												// Output Image
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
@@ -1936,7 +1942,7 @@ void CImage::rectifyImage(
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
     ASSERT_(img!=NULL);
 	// MRPT -> OpenCV Input Transformation
-	IplImage *srcImg = static_cast<IplImage *>( getAsIplImage() );	// Source Image
+	const IplImage *srcImg = getAs<IplImage>();	// Source Image
 	IplImage *outImg;												// Output Image
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
@@ -1973,7 +1979,7 @@ void CImage::filterMedian( CImage &out_img, int W ) const
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
     ASSERT_(img!=NULL);
 	// MRPT -> OpenCV Input Transformation
-	IplImage *srcImg = static_cast<IplImage *>( getAsIplImage() );	// Source Image
+	const IplImage *srcImg = getAs<IplImage>();	// Source Image
 	IplImage *outImg;												// Output Image
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
@@ -1999,7 +2005,7 @@ void CImage::filterMedianInPlace( int W )
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
     ASSERT_(img!=NULL);
 	// MRPT -> OpenCV Input Transformation
-	IplImage *srcImg = static_cast<IplImage *>( getAsIplImage() );	// Source Image
+	IplImage *srcImg = getAs<IplImage>();	// Source Image
 	IplImage *outImg;												// Output Image
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
@@ -2023,7 +2029,7 @@ void CImage::filterGaussian( CImage &out_img, int W, int H ) const
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
     ASSERT_(img!=NULL);
 	// MRPT -> OpenCV Input Transformation
-	IplImage *srcImg = static_cast<IplImage *>( getAsIplImage() );	// Source Image
+	const IplImage *srcImg = getAs<IplImage>();	// Source Image
 	IplImage *outImg;												// Output Image
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
@@ -2049,7 +2055,7 @@ void CImage::filterGaussianInPlace( int W, int H )
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
     ASSERT_(img!=NULL);
 	// MRPT -> OpenCV Input Transformation
-	IplImage *srcImg = static_cast<IplImage *>( getAsIplImage() );	// Source Image
+	IplImage *srcImg = getAs<IplImage>();	// Source Image
 	IplImage *outImg;												// Output Image
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
@@ -2073,7 +2079,7 @@ void CImage::scaleImage( unsigned int width, unsigned int height, TInterpolation
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
     ASSERT_(img!=NULL);
-	IplImage *srcImg = static_cast<IplImage*>( getAsIplImage() );	// Source Image
+	IplImage *srcImg = getAs<IplImage>();	// Source Image
 
 	if( static_cast<unsigned int>(srcImg->width) == width && static_cast<unsigned int>(srcImg->height) == height )
 		return;
@@ -2100,7 +2106,7 @@ void CImage::scaleImage( CImage &out_img, unsigned int width, unsigned int heigh
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
     ASSERT_(img!=NULL);
-	IplImage *srcImg = static_cast<IplImage*>( getAsIplImage() );	// Source Image
+	const IplImage *srcImg = getAs<IplImage>();	// Source Image
 
 	if( static_cast<unsigned int>(srcImg->width) == width && static_cast<unsigned int>(srcImg->height) == height )
 	{
@@ -2131,7 +2137,7 @@ void CImage::rotateImage( double angle_radians, unsigned int center_x, unsigned 
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
     ASSERT_(img!=NULL);
 
-	IplImage *srcImg = static_cast<IplImage*>( getAsIplImage() );	// Source Image
+	IplImage *srcImg = getAs<IplImage>();	// Source Image
 	IplImage *outImg;												// Output Image
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
 
@@ -2178,7 +2184,7 @@ bool CImage::drawChessboardCorners(
 
 	if (cornerCoords.size()!=check_size_x*check_size_y) return false;
 
-	IplImage* img = static_cast<IplImage*>(getAsIplImage());
+	IplImage* img = this->getAs<IplImage>();
 
     const int r = 4;
 
@@ -2236,9 +2242,8 @@ void CImage::colorImage( CImage  &ret ) const
 		return;
 	}
 
-	IplImage *srcImg = static_cast<IplImage*>( getAsIplImage() );	// Source Image
-	IplImage *outImg;												// Output Image
-	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, 3 );
+	const IplImage *srcImg = getAs<IplImage>();	// Source Image
+	IplImage *outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, 3 );
 
 	cvCvtColor( srcImg, outImg, CV_GRAY2BGR );
 
@@ -2257,7 +2262,7 @@ void CImage::colorImageInPlace()
 #if MRPT_HAS_OPENCV
 	if (this->isColor()) return;
 
-	IplImage *srcImg = static_cast<IplImage*>( getAsIplImage() );	// Source Image
+	IplImage *srcImg = getAs<IplImage>();	// Source Image
 	IplImage *outImg;												// Output Image
 	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, 3 );
 
@@ -2279,8 +2284,8 @@ void CImage::joinImagesHorz( const CImage &im1, const CImage &im2 )
 #if MRPT_HAS_OPENCV
 	ASSERT_( im1.getHeight() == im2.getHeight() );
 
-	IplImage* _im1 = static_cast<IplImage*>( im1.getAsIplImage() );
-	IplImage* _im2 = static_cast<IplImage*>( im2.getAsIplImage() );
+	const IplImage* _im1 = im1.getAs<IplImage>();
+	const IplImage* _im2 = im2.getAs<IplImage>();
 
 	ASSERT_( _im1->depth == _im2->depth && _im1->nChannels == _im2->nChannels );
 
@@ -2315,13 +2320,13 @@ void CImage::equalizeHist( CImage  &outImg ) const
 {
 #if MRPT_HAS_OPENCV
 	// Convert to a single luminance channel image
-	IplImage *ipl = static_cast<IplImage*>( getAsIplImage() );	// Source Image
+	const IplImage *ipl = getAs<IplImage>();	// Source Image
     ASSERT_(ipl!=NULL);
 
 	int	 cx = getWidth(), cy = getHeight();
 	outImg.changeSize(cx,cy,1,isOriginTopLeft());
 
-	cvEqualizeHist(ipl, (IplImage*)outImg.img );
+	cvEqualizeHist(ipl, outImg.getAs<IplImage>() );
 #endif
 }
 
@@ -2332,7 +2337,7 @@ void CImage::equalizeHistInPlace()
 {
 #if MRPT_HAS_OPENCV
 	// Convert to a single luminance channel image
-	IplImage *srcImg = static_cast<IplImage*>( getAsIplImage() );	// Source Image
+	IplImage *srcImg = getAs<IplImage>();	// Source Image
     ASSERT_(srcImg!=NULL);
 
 	IplImage *outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );

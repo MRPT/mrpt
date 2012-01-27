@@ -48,7 +48,7 @@
 		#ifndef _SCL_SECURE_NO_WARNINGS
 			#define _SCL_SECURE_NO_WARNINGS
 		#endif
-		#pragma warning(disable:4996)
+		//#pragma warning(disable:4996)  // Deprecated functions
 		// For the new secure library in VC++8
 		#if !defined(_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES)
 			#define _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES 1

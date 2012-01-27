@@ -44,37 +44,40 @@ using namespace std;
 
 
 // ------------  SSE2-optimized implementations of FASTER -------------
-void CFeatureExtraction::detectFeatures_SSE2_FASTER9(const CImage &img, TSimpleFeatureList & corners, const int threshold, bool append_to_list, uint8_t octave)
+void CFeatureExtraction::detectFeatures_SSE2_FASTER9(const CImage &img, TSimpleFeatureList & corners, const int threshold, bool append_to_list, uint8_t octave,std::vector<size_t> * out_feats_index_by_row)
 {
 #if MRPT_HAS_OPENCV
-	const IplImage *IPL = (const IplImage*)img.getAsIplImage();
-	ASSERTDEB_(IPL)
-	ASSERT_(!img.isColor())
+	const IplImage *IPL = img.getAs<IplImage>();
+	ASSERTDEB_(IPL && IPL->nChannels==1)
 	if (!append_to_list) corners.clear();
 
-	fast_corner_detect_9 (IPL,corners,threshold,octave);
+	fast_corner_detect_9 (IPL,corners,threshold,octave,out_feats_index_by_row);
+#else
+	THROW_EXCEPTION("MRPT built without OpenCV support!")
 #endif
 }
-void CFeatureExtraction::detectFeatures_SSE2_FASTER10(const CImage &img, TSimpleFeatureList & corners, const int threshold, bool append_to_list, uint8_t octave)
+void CFeatureExtraction::detectFeatures_SSE2_FASTER10(const CImage &img, TSimpleFeatureList & corners, const int threshold, bool append_to_list, uint8_t octave,std::vector<size_t> * out_feats_index_by_row)
 {
 #if MRPT_HAS_OPENCV
-	const IplImage *IPL = (const IplImage*)img.getAsIplImage();
-	ASSERTDEB_(IPL)
-	ASSERT_(!img.isColor())
+	const IplImage *IPL = img.getAs<IplImage>();
+	ASSERTDEB_(IPL && IPL->nChannels==1)
 	if (!append_to_list) corners.clear();
 
-	fast_corner_detect_10 (IPL,corners,threshold,octave);
+	fast_corner_detect_10 (IPL,corners,threshold,octave,out_feats_index_by_row);
+#else
+	THROW_EXCEPTION("MRPT built without OpenCV support!")
 #endif
 }
-void CFeatureExtraction::detectFeatures_SSE2_FASTER12(const CImage &img, TSimpleFeatureList & corners, const int threshold, bool append_to_list, uint8_t octave)
+void CFeatureExtraction::detectFeatures_SSE2_FASTER12(const CImage &img, TSimpleFeatureList & corners, const int threshold, bool append_to_list, uint8_t octave,std::vector<size_t> * out_feats_index_by_row)
 {
 #if MRPT_HAS_OPENCV
-	const IplImage *IPL = (const IplImage*)img.getAsIplImage();
-	ASSERTDEB_(IPL)
-	ASSERT_(!img.isColor())
+	const IplImage *IPL = img.getAs<IplImage>();
+	ASSERTDEB_(IPL && IPL->nChannels==1)
 	if (!append_to_list) corners.clear();
 
-	fast_corner_detect_12 (IPL,corners,threshold,octave);
+	fast_corner_detect_12 (IPL,corners,threshold,octave,out_feats_index_by_row);
+#else
+	THROW_EXCEPTION("MRPT built without OpenCV support!")
 #endif
 }
 
@@ -96,16 +99,16 @@ void  CFeatureExtraction::extractFeaturesFASTER_N(
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray( inImg, FAST_REF_OR_CONVERT_TO_GRAY );
 
-	const IplImage *IPL = (const IplImage*)inImg_gray.getAsIplImage();
+	const IplImage *IPL = inImg_gray.getAs<IplImage>();
 
 	TSimpleFeatureList corners;
 	TFeatureType type_of_this_feature;
 
 	switch (N_fast)
 	{
-	case 9:  fast_corner_detect_9 (IPL,corners, options.FASTOptions.threshold, 0); type_of_this_feature=featFASTER9; break;
-	case 10: fast_corner_detect_10(IPL,corners, options.FASTOptions.threshold, 0); type_of_this_feature=featFASTER10; break;
-	case 12: fast_corner_detect_12(IPL,corners, options.FASTOptions.threshold, 0); type_of_this_feature=featFASTER12; break;
+	case 9:  fast_corner_detect_9 (IPL,corners, options.FASTOptions.threshold, 0, NULL); type_of_this_feature=featFASTER9; break;
+	case 10: fast_corner_detect_10(IPL,corners, options.FASTOptions.threshold, 0, NULL); type_of_this_feature=featFASTER10; break;
+	case 12: fast_corner_detect_12(IPL,corners, options.FASTOptions.threshold, 0, NULL); type_of_this_feature=featFASTER12; break;
 	default:
 		THROW_EXCEPTION("Only the 9,10,12 FASTER detectors are implemented.")
 		break;

@@ -203,6 +203,41 @@ double feature_extraction_test_FAST( int N, int h )
 }
 
 // ------------------------------------------------------
+//				Benchmark: FAST9/10/12
+// ------------------------------------------------------
+#define GENERATE_BENCHMARK_FASTERS(__BENCH_FUNC__, __FAST_FUNC_NAME__) \
+	template <int W,int H, bool ROW_INDEX> \
+	double __BENCH_FUNC__( int N, int dummy ) \
+	{ \
+		CImage img; \
+		getTestImage(0,img); \
+		img.grayscaleInPlace(); \
+		img.scaleImage(W,H); \
+		TSimpleFeatureList corners; \
+		const int threshold = 20; \
+		std::vector<size_t> feats_index_by_row; \
+		CTicTac tictac; \
+		tictac.Tic(); \
+		for (int i=0;i<N;i++) \
+		{ \
+			CFeatureExtraction::__FAST_FUNC_NAME__( \
+				img, \
+				corners,  \
+				threshold,  \
+				false /*don't append*/, \
+				0 /* octave */, \
+				ROW_INDEX ? &feats_index_by_row : NULL \
+				); \
+		} \
+		const double T = tictac.Tac()/N; \
+		return T; \
+	} 
+
+GENERATE_BENCHMARK_FASTERS(feature_extraction_test_FAST9,  detectFeatures_SSE2_FASTER9)
+GENERATE_BENCHMARK_FASTERS(feature_extraction_test_FAST10, detectFeatures_SSE2_FASTER10)
+GENERATE_BENCHMARK_FASTERS(feature_extraction_test_FAST12, detectFeatures_SSE2_FASTER12)
+
+// ------------------------------------------------------
 //				Benchmark: Spin descriptor
 // ------------------------------------------------------
 double feature_extraction_test_Spin_desc( int N, int h )
@@ -259,34 +294,6 @@ double feature_extraction_test_FASTER( int N, int threshold )
 	return T;
 }
 
-template <mrpt::vision::TFeatureType TYP>
-double feature_extraction_test_FASTER_quick( int N, int threshold )
-{
-	CTicTac			tictac;
-
-	// Generate a random image
-	CImage  img;
-	getTestImage(0,img);
-	img.grayscaleInPlace();
-
-	TSimpleFeatureList  corners;
-
-	tictac.Tic();
-
-	if (TYP==featFASTER9)
-		for (int i=0;i<N;i++)
-			CFeatureExtraction::detectFeatures_SSE2_FASTER9(img,corners,threshold);
-	else if (TYP==featFASTER10)
-		for (int i=0;i<N;i++)
-			CFeatureExtraction::detectFeatures_SSE2_FASTER10(img,corners,threshold);
-	else if (TYP==featFASTER12)
-		for (int i=0;i<N;i++)
-			CFeatureExtraction::detectFeatures_SSE2_FASTER12(img,corners,threshold);
-
-	const double T = tictac.Tac()/N;
-	return T;
-}
-
 
 // ------------------------------------------------------
 // register_tests_feature_extraction
@@ -310,8 +317,25 @@ void register_tests_feature_extraction()
 	lstTests.push_back( TestData("feature_extraction [640x480]: FASTER-12", feature_extraction_test_FASTER<featFASTER12,0>, 100 , 20 ) );
 	lstTests.push_back( TestData("feature_extraction [640x480]: FASTER-12 (sorted best 200)", feature_extraction_test_FASTER<featFASTER12,200>, 100 , 20 ) );
 
-	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER9()", feature_extraction_test_FASTER_quick<featFASTER9>, 1000 , 20 ) );
-	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER10()", feature_extraction_test_FASTER_quick<featFASTER10>, 1000 , 20 ) );
-	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER12()", feature_extraction_test_FASTER_quick<featFASTER12>, 1000 , 20 ) );
+	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER9()", feature_extraction_test_FAST9<640,480,false>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER10()", feature_extraction_test_FAST10<640,480,false>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER12()", feature_extraction_test_FAST12<640,480,false>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER9()+row-index", feature_extraction_test_FAST9<640,480,true>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER10()+row-index", feature_extraction_test_FAST10<640,480,true>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [640x480]: detectFeatures_SSE2_FASTER12()+row-index", feature_extraction_test_FAST12<640,480,true>, 1000 ) );
+
+	lstTests.push_back( TestData("feature_extraction [800x600]: detectFeatures_SSE2_FASTER9()", feature_extraction_test_FAST9<800,600,false>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [800x600]: detectFeatures_SSE2_FASTER10()", feature_extraction_test_FAST10<800,600,false>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [800x600]: detectFeatures_SSE2_FASTER12()", feature_extraction_test_FAST12<800,600,false>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [800x600]: detectFeatures_SSE2_FASTER9()+row-index", feature_extraction_test_FAST9<800,600,true>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [800x600]: detectFeatures_SSE2_FASTER10()+row-index", feature_extraction_test_FAST10<800,600,true>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [800x600]: detectFeatures_SSE2_FASTER12()+row-index", feature_extraction_test_FAST12<800,600,true>, 1000 ) );
+
+	lstTests.push_back( TestData("feature_extraction [1024x768]: detectFeatures_SSE2_FASTER9()", feature_extraction_test_FAST9<1024,768,false>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [1024x768]: detectFeatures_SSE2_FASTER10()", feature_extraction_test_FAST10<1024,768,false>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [1024x768]: detectFeatures_SSE2_FASTER12()", feature_extraction_test_FAST12<1024,768,false>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [1024x768]: detectFeatures_SSE2_FASTER9()+row-index", feature_extraction_test_FAST9<1024,768,true>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [1024x768]: detectFeatures_SSE2_FASTER10()+row-index", feature_extraction_test_FAST10<1024,768,true>, 1000 ) );
+	lstTests.push_back( TestData("feature_extraction [1024x768]: detectFeatures_SSE2_FASTER12()+row-index", feature_extraction_test_FAST12<1024,768,true>, 1000 ) );
 
 }

@@ -87,7 +87,7 @@ bool mrpt::vision::findChessboardCorners(
 	{
 		// Standard OpenCV's function:
 		corners_found = 0 != cvFindChessboardCorners(
-			static_cast<IplImage*>(img.getAsIplImage()),
+			img.getAs<IplImage>(),
 			check_size,
 			&corners_list[0],
 			&corners_count,
@@ -111,7 +111,7 @@ bool mrpt::vision::findChessboardCorners(
 	{
 		// Refine corners:
 		cvFindCornerSubPix(
-			static_cast<IplImage*>(img.getAsIplImage()),
+			img.getAs<IplImage>(),
 			&corners_list[0],
 			corners_count,
 			cvSize(5,5), 	// window
@@ -178,7 +178,7 @@ void mrpt::vision::findMultipleChessboardsCorners(
 			ASSERT_(corners_list[i].size()==check_size_x*check_size_y)
 
 			cvFindCornerSubPix(
-				static_cast<IplImage*>(img.getAsIplImage()),
+				img.getAs<IplImage>(),
 				&corners_list[i][0],
 				check_size_x*check_size_y,
 				cvSize(5,5), 	// window

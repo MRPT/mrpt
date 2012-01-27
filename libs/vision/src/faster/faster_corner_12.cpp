@@ -81,9 +81,20 @@ for (int i=0; i<CHUNKS; ++i) {
 #if MRPT_HAS_SSE2 && MRPT_HAS_OPENCV
 
 template <bool Aligned>
-void faster_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier, uint8_t octave)
+void faster_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier, uint8_t octave, std::vector<size_t> * out_feats_index_by_row)
 {
+	corners.reserve(corners.size()+500);
 	//corners.mark_kdtree_as_outdated();
+
+	size_t *ptr_feat_index_by_row;
+	if (out_feats_index_by_row) 
+	{
+		out_feats_index_by_row->resize(I->height);
+		ptr_feat_index_by_row = &(*out_feats_index_by_row)[0];
+	}
+	else {
+		ptr_feat_index_by_row = NULL;
+	}
 
 const int w = I->width;
 const int stride = 3*I->widthStep; // 3*w;
@@ -169,18 +180,41 @@ for (int i=3; i<I->height-3; ++i) {
 
     passed.push_back(0);
 }
-corners.reserve(corners.size()+passed.size());
-int row = 3;
-const uint8_t* row_start = (const uint8_t*)I->imageData + I->widthStep*3;
-for (Passed::iterator it = passed.begin(); it != passed.end(); ++it) {
-    if (*it == 0) {
-	row_start= (const uint8_t*)I->imageData + I->widthStep*(++row); //  I[++row];
-	continue;
-    }
-    int x = *it - row_start;
-    if (x > 2 && x < w-3)
-	corners.push_back_fast(x<<octave, row<<octave);
-}
+
+	// 3 first rows have no features: 
+	if (ptr_feat_index_by_row) {
+		*ptr_feat_index_by_row++ = corners.size();
+		*ptr_feat_index_by_row++ = corners.size();
+		*ptr_feat_index_by_row++ = corners.size();
+		// and for row=3
+		*ptr_feat_index_by_row++ = corners.size();
+	}
+
+	int row = 3;
+
+	const uint8_t* row_start = (const uint8_t*)I->imageData + I->widthStep*3;
+	for (Passed::iterator it = passed.begin(); it != passed.end(); ++it) {
+		if (*it == 0) 
+		{
+			// next row:
+			if (ptr_feat_index_by_row)  // save index by row:
+				*ptr_feat_index_by_row++=corners.size();
+
+			row_start= (const uint8_t*)I->imageData + I->widthStep*(++row); //  I[++row];
+			continue;
+		}
+		int x = *it - row_start;
+		if (x > 2 && x < w-3)
+		corners.push_back_fast(x<<octave, row<<octave);
+	}
+
+	// 3 last rows have no features: 
+	if (ptr_feat_index_by_row) {
+		*ptr_feat_index_by_row++ = corners.size();
+		*ptr_feat_index_by_row++ = corners.size();
+		*ptr_feat_index_by_row++ = corners.size();
+	}
+
 }
 
 
@@ -189,11 +223,11 @@ for (Passed::iterator it = passed.begin(); it != passed.end(); ++it) {
 
 #if MRPT_HAS_OPENCV
 
-void fast_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier, uint8_t octave)
+void fast_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier, uint8_t octave, std::vector<size_t> * out_feats_index_by_row)
 {
 	if (I->width < 22)
 	{
-		fast_corner_detect_plain_12(I,corners,barrier, octave);
+		fast_corner_detect_plain_12(I,corners,barrier, octave,out_feats_index_by_row);
 		return;
 	}
 	else if (I->width < 22 || I->height < 7)
@@ -201,11 +235,11 @@ void fast_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList &
 
 #if MRPT_HAS_SSE2
 	if (mrpt::system::is_aligned<16>(I->imageData) && is_aligned<16>(I->imageData+I->widthStep))
-		faster_corner_detect_12<true>(I, corners, barrier, octave);
+		faster_corner_detect_12<true>(I, corners, barrier, octave,out_feats_index_by_row);
 	else
-		faster_corner_detect_12<false>(I, corners, barrier, octave);
+		faster_corner_detect_12<false>(I, corners, barrier, octave,out_feats_index_by_row);
 #else
-	fast_corner_detect_plain_12(I,corners,barrier, octave);
+	fast_corner_detect_plain_12(I,corners,barrier, octave,out_feats_index_by_row);
 #endif
 }
 #endif

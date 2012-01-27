@@ -55,7 +55,7 @@ namespace mrpt
 		    bothLists
 		};
 
-		/** \defgroup mrptvision_features Feature detection, tracking, descriptors and matching 
+		/** \defgroup mrptvision_features Feature detection, descriptors and matching 
 		  * \ingroup mrpt_vision_grp
 		  */
 

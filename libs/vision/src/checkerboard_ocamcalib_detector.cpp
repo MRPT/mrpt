@@ -1921,7 +1921,7 @@ int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out
     root = cvCreateSeq( 0, sizeof(CvSeq), sizeof(CvSeq*), temp_storage );
 
     // Initialize contour retrieving routine
-    scanner = cvStartFindContours( (IplImage*)image.getAsIplImage(), temp_storage, sizeof(CvContourEx), CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
+    scanner = cvStartFindContours( const_cast<IplImage*>(image.getAs<IplImage>()), temp_storage, sizeof(CvContourEx), CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
 
     // Get all the contours one by one
     while( (src_contour = cvFindNextContour( scanner )) != 0 )

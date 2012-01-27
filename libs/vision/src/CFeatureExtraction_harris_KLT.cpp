@@ -74,7 +74,7 @@ void CFeatureExtraction::selectGoodFeaturesKLT(
 #ifdef VERBOSE_TIMING
 		tictac.Tic();
 #endif
-		img.attach( (IplImage*)inImg.getAsIplImage(), false );	// Attach Image as IplImage and do not use ref counter
+		img.attach( const_cast<IplImage*>(inImg.getAs<IplImage>()), false );	// Attach Image as IplImage and do not use ref counter
 #ifdef VERBOSE_TIMING
 		cout << "[KLT] Attach: " << tictac.Tac()*1000.0f << endl;
 #endif

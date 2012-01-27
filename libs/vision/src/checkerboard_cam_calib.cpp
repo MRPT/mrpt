@@ -234,7 +234,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 					// Checkboad as color image:
 					dat.img_original.colorImage( dat.img_checkboard );
 
-					void *rgb_img = dat.img_checkboard.getAsIplImage();
+					void *rgb_img = dat.img_checkboard.getAs<IplImage>();
 
 					for( y = 0, k = 0; y < check_size.height; y++ )
 					{
@@ -429,7 +429,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				if (!dat.img_original.isExternallyStored())
 				{
 					if( px >= 0 && px < imgSize.width && py >= 0 && py < imgSize.height )
-						cvCircle( dat.img_rectified.getAsIplImage(), cvPoint(px,py), 4, CV_RGB(0,0,255) );
+						cvCircle( dat.img_rectified.getAs<IplImage>(), cvPoint(px,py), 4, CV_RGB(0,0,255) );
 				}
 
 				// Accumulate error:
