@@ -52,6 +52,7 @@ install: build
 
 	# Create mrpt documentation
 	make documentation_html
+	make documentation_performance_html
 	# Create man pages:
 	make man_pages_all
 	# Build all

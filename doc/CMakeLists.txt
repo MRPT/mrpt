@@ -12,6 +12,18 @@ ENDIF(UNIX)
 
 FIND_PACKAGE(Doxygen)
 
+# --------------------------------
+# documentation_performance_html
+# --------------------------------
+GET_TARGET_PROPERTY(PERF2HTML_GENERATED_EXE mrpt-perfdata2html LOCATION)
+add_custom_target(documentation_performance_html
+	COMMAND 		${PERF2HTML_GENERATED_EXE} "${MRPT_SOURCE_DIR}/doc/perf-data/"
+	WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
+	COMMENT 		"Generating performance HTML pages"
+	)
+add_dependencies(documentation_performance_html mrpt-perfdata2html)
+
+
 IF(DOXYGEN_EXECUTABLE)
 	# --------------------------------
 	#   documentation_html
