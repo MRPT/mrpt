@@ -32,7 +32,6 @@ add_subdirectory(kinect-3d-view)
 add_subdirectory(simul-beacons)
 add_subdirectory(simul-landmarks)
 add_subdirectory(simul-gridmap)
-#add_subdirectory(simul-stereo-images-features)   # Missing dir!!
 add_subdirectory(GridmapNavSimul)
 
 add_subdirectory(grid-matching)
@@ -42,6 +41,7 @@ add_subdirectory(map-partition)
 add_subdirectory(features-matching)
 add_subdirectory(track-video-features)
 add_subdirectory(mrpt-performance)
+add_subdirectory(mrpt-perfdata2html)
 
 add_subdirectory(rawlog-tools)
 
