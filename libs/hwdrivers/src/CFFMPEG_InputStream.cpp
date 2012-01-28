@@ -205,7 +205,11 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
     }
 
     // Open codec
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(53,6,0)
+    if(avcodec_open2(ctx->pCodecCtx, ctx->pCodec,NULL)<0)
+#else
     if(avcodec_open(ctx->pCodecCtx, ctx->pCodec)<0)
+#endif
     {
     	std::cerr << "[CFFMPEG_InputStream::openURL] Could not open codec: " << url << std::endl;
         return false;
@@ -405,4 +409,3 @@ double CFFMPEG_InputStream::getVideoFPS() const
 	return false;
 #endif
 }
-
