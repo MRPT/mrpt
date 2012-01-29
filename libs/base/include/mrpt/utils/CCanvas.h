@@ -326,13 +326,13 @@ namespace mrpt
 			 * \sa drawFeatures
 			 */
 			template <class FEATURELIST>
-			void  drawFeaturesSimple( const FEATURELIST &list, const TColor &color = TColor::red )
+			void  drawFeaturesSimple( const FEATURELIST &list, const TColor &color = TColor::red, const int cross_size = 5 )
 			{
 				for(size_t i=0;i<list.size(); ++i )
 				{
 					const int x = round( list.getFeatureX(i) );
 					const int y = round( list.getFeatureY(i) );
-					this->cross( x,y, color, '+' );
+					this->cross( x,y, color, '+', cross_size );
 				}
 			}
 

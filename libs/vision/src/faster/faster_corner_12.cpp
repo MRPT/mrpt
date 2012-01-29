@@ -86,14 +86,16 @@ void faster_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList
 	corners.reserve(corners.size()+500);
 	//corners.mark_kdtree_as_outdated();
 
-	size_t *ptr_feat_index_by_row;
+	size_t *ptr_feat_index_by_row, *ptr_feat_index_end;
 	if (out_feats_index_by_row) 
 	{
 		out_feats_index_by_row->resize(I->height);
 		ptr_feat_index_by_row = &(*out_feats_index_by_row)[0];
+		ptr_feat_index_end = ptr_feat_index_by_row+out_feats_index_by_row->size();
 	}
 	else {
 		ptr_feat_index_by_row = NULL;
+		ptr_feat_index_end=NULL;
 	}
 
 const int w = I->width;
@@ -186,8 +188,6 @@ for (int i=3; i<I->height-3; ++i) {
 		*ptr_feat_index_by_row++ = corners.size();
 		*ptr_feat_index_by_row++ = corners.size();
 		*ptr_feat_index_by_row++ = corners.size();
-		// and for row=3
-		*ptr_feat_index_by_row++ = corners.size();
 	}
 
 	int row = 3;
@@ -213,6 +213,7 @@ for (int i=3; i<I->height-3; ++i) {
 		*ptr_feat_index_by_row++ = corners.size();
 		*ptr_feat_index_by_row++ = corners.size();
 		*ptr_feat_index_by_row++ = corners.size();
+		ASSERT_(ptr_feat_index_by_row==ptr_feat_index_end)
 	}
 
 }
