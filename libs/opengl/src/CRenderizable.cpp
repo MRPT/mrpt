@@ -135,9 +135,9 @@ void CRenderizable::releaseTextureName(unsigned int i)
 
 void  CRenderizable::writeToStreamRender(CStream &out) const
 {
-	// MRPT 0.9.5 svn 2774 (Dec 14th 2011): 
+	// MRPT 0.9.5 svn 2774 (Dec 14th 2011):
 	// Added support of versioning at this level of serialization too.
-	// Should have been done from the beginning, terrible mistake on my part. 
+	// Should have been done from the beginning, terrible mistake on my part.
 	// Now, the only solution is something as ugly as this:
 	//
 	// For reference: In the past this started as:
@@ -150,7 +150,7 @@ void  CRenderizable::writeToStreamRender(CStream &out) const
 	const bool all_scales_unity = (all_scales_equal && m_scale_x==1.0f);
 
 	// Write signature:
-	const uint8_t magic_signature[2] = { 
+	const uint8_t magic_signature[2] = {
 		0xFF,
 		// bit7: fixed to 1 to mark this new header format
 		// bit6: whether the 3 scale{x,y,z} are equal to 1.0
@@ -185,12 +185,16 @@ void  CRenderizable::writeToStreamRender(CStream &out) const
 
 void  CRenderizable::readFromStreamRender(CStream &in)
 {
-	// MRPT 0.9.5 svn 2774 (Dec 14th 2011): 
+	// MRPT 0.9.5 svn 2774 (Dec 14th 2011):
 	// See comments in CRenderizable::writeToStreamRender() for the employed serialization mechanism.
 	//
 
 	// Read signature:
-	uint8_t magic_signature[2+2];  // (the extra 4 bytes will be used only for the old format)
+	union {
+		uint8_t  magic_signature[2+2];  // (the extra 4 bytes will be used only for the old format)
+		uint32_t magic_signature_uint32;  // So we can interpret the 4bytes above as a 32bit number cleanly.
+	};
+
 	in >> magic_signature[0] >> magic_signature[1];
 
 	const bool is_new_format = (magic_signature[0]==0xFF) && ((magic_signature[1]&0x80)!=0);
@@ -201,7 +205,7 @@ void  CRenderizable::readFromStreamRender(CStream &in)
 		uint8_t serialization_version = (magic_signature[1] & 0x1F);
 		const bool all_scales_unity = ((magic_signature[1]&0x40)!=0);
 		const bool all_scales_equal_but_not_unity = ((magic_signature[1]&0x20)!=0);
-		
+
 		switch(serialization_version)
 		{
 		case 0:
@@ -244,10 +248,10 @@ void  CRenderizable::readFromStreamRender(CStream &in)
 	{
 		// OLD FORMAT:
 		//Was: in >> m_name;
-		// We already read 2 bytes from the string uint32_t length: 
+		// We already read 2 bytes from the string uint32_t length:
 		in >> magic_signature[2] >> magic_signature[3];
 		{
-			const uint32_t nameLen = *reinterpret_cast<const uint32_t*>(&magic_signature[0]);
+			const uint32_t nameLen = magic_signature_uint32;  // *reinterpret_cast<const uint32_t*>(&magic_signature[0]);
 			m_name.resize(nameLen);
 			if (nameLen)
 				in.ReadBuffer((void*)(&m_name[0]),m_name.size());
@@ -265,7 +269,7 @@ void  CRenderizable::readFromStreamRender(CStream &in)
 		in >> f; m_pose.z(f);
 		in >> yaw_deg;
 		in >> pitch_deg;
-		in >> f; roll_deg = f; 
+		in >> f; roll_deg = f;
 		// Version 2: Add scale vars:
 		//  JL: Yes, this is a crappy hack since I forgot to enable versions here...what? :-P
 		if (f!=16.0f && f!=17.0f)
