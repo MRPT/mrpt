@@ -189,7 +189,16 @@ CWindowDialogPlots::~CWindowDialogPlots()
 // OnClose event:
 void CWindowDialogPlots::OnClose(wxCloseEvent& event)
 {
-    // Set the m_hwnd=NULL in our parent object.
+	// Send the event:
+	bool allow_close=true;
+	try {
+		mrptEventWindowClosed ev(m_winPlots, true /* allow close */);
+		m_winPlots->publishEvent(ev);
+		allow_close = ev.allow_close;
+	} catch(...){}
+	if (!allow_close) return; // Don't process this close event.
+
+	// Set the m_hwnd=NULL in our parent object.
     m_winPlots->notifyChildWindowDestruction();
 
     // Decrement number of windows:

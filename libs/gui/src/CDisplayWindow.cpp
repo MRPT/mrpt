@@ -215,7 +215,16 @@ CWindowDialog::~CWindowDialog()
 // OnClose event:
 void CWindowDialog::OnClose(wxCloseEvent& event)
 {
-    // Set the m_hwnd=NULL in our parent object.
+	// Send the event:
+	bool allow_close=true;
+	try {
+		mrptEventWindowClosed ev(m_win2D, true /* allow close */);
+		m_win2D->publishEvent(ev);
+		allow_close = ev.allow_close;
+	} catch(...){}
+	if (!allow_close) return; // Don't process this close event.
+
+	// Set the m_hwnd=NULL in our parent object.
     m_win2D->notifyChildWindowDestruction();
 
     // Decrement number of windows:

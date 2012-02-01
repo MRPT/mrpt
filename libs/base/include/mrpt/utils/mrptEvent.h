@@ -64,6 +64,9 @@ namespace mrpt
 
 			template <class EVENTTYPE>
 			inline const EVENTTYPE* getAs() const { return dynamic_cast<const EVENTTYPE*>(this); }
+			
+			template <class EVENTTYPE>
+			inline EVENTTYPE* getAsNonConst() const { return const_cast<EVENTTYPE*>(dynamic_cast<const EVENTTYPE*>(this)); }
 
 			mrpt::system::TTimeStamp  timestamp;
 

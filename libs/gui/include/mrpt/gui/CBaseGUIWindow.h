@@ -56,6 +56,7 @@ namespace mrpt
 		  *   - mrpt::gui::mrptEventWindowChar
 		  *   - mrpt::gui::mrptEventWindowResize
 		  *   - mrpt::gui::mrptEventMouseDown
+		  *   - mrpt::gui::mrptEventWindowClosed
 		  *
 		  *  See derived classes to check if they emit other additional events.
 		  *
@@ -228,6 +229,29 @@ namespace mrpt
 			bool   leftButton;
 			bool   rightButton;
 		}; // End of class def.
+
+		/**  An event sent by a window upon when it's about to be closed, either manually by the user or programatically.
+		  *   The event field member \a allow_close is default by default, but can be set to false in the event callback 
+		  *   to forbid the window to be closed by the user. If the event corresponds to a programatic close, this field is ignored.
+		  *
+		  *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked from the wxWidgets internal MRPT thread,
+		  *    so all your code in the handler must be thread safe.
+		  *
+		  * \sa CBaseGUIWindow
+		  */
+		class GUI_IMPEXP mrptEventWindowClosed : public mrptEvent
+		{
+		protected:
+			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+		public:
+			inline mrptEventWindowClosed (
+				CBaseGUIWindow *obj,
+				bool _allow_close = true ) 
+				: source_object(obj), allow_close(_allow_close)
+			{ }
+			CBaseGUIWindow *source_object;
+			bool   allow_close;
+		}; // End of class def.		
 
 		/**  @} */
 

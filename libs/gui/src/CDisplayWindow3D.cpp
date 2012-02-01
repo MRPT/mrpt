@@ -308,7 +308,16 @@ C3DWindowDialog::~C3DWindowDialog()
 // OnClose event:
 void C3DWindowDialog::OnClose(wxCloseEvent& event)
 {
-//	cout << "[C3DWindowDialog::OnClose]" << endl;
+	// Send the event:
+	bool allow_close=true;
+	try {
+		mrptEventWindowClosed ev(m_win3D, true /* allow close */);
+		m_win3D->publishEvent(ev);
+		allow_close = ev.allow_close;
+	} catch(...){}
+	if (!allow_close) return; // Don't process this close event.
+
+	//	cout << "[C3DWindowDialog::OnClose]" << endl;
     // Set the m_hwnd=NULL in our parent object.
     m_win3D->notifyChildWindowDestruction();
 
