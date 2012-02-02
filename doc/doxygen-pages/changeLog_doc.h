@@ -109,7 +109,7 @@
 		- [mrpt-opengl] Fixed potential SIGSEGV while serializing an uninitialized mrpt::opengl::C3DSScene object - <a href="http://code.google.com/p/mrpt/source/detail?r=2773" >2773</a> 
 		- [mrpt-base/mrpt-opengl] Method getAs3DObject() of mrpt::poses' poses PDFs cleared the previous contents of the passed CSetOfObjects argument, which shouldn't be the expected behavior  - <a href="http://code.google.com/p/mrpt/source/detail?r=2781" >2781</a> 
 		- [mrpt-hwdrivers] Fixed Bumblebee capture of rectified images will return two left images - (<a href="http://code.google.com/p/mrpt/issues/detail?id=18" > Issue & patch #18</a>) -  <a href="http://code.google.com/p/mrpt/source/detail?r=2791" >2791</a> 
-		- [mrpt-vision] Fixed memory corruption in SIFT detector with the OpenCV implementation - (<a href="http://code.google.com/p/mrpt/issues/detail?id=18" > Issue & patch #18</a>) -  <a href="http://code.google.com/p/mrpt/source/detail?r=2796" >2796</a> 
+		- [mrpt-vision] Fixed memory corruption in SIFT detector with the OpenCV implementation -  <a href="http://code.google.com/p/mrpt/source/detail?r=2796" >2796</a> 
 
  <hr>
  <a name="0.9.5">
