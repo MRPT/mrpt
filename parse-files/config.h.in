@@ -169,6 +169,14 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 	#define MRPT_HAS_SSE3  0
 #endif
 
+/** Use optimized functions with the SSE4 machine instructions set */
+#if defined WIN32 && (!defined WIN64 || defined EM64T) && \
+ (_MSC_VER >= 1500) || (defined __SSE4__ && defined __GNUC__ && __GNUC__ >= 4)
+	#define MRPT_HAS_SSE4  ${CMAKE_MRPT_HAS_SSE4}   // This value can be set to 0 from CMake with DISABLE_SSE4
+#else
+	#define MRPT_HAS_SSE4  0
+#endif
+
 
 /** Whether to include the ActivMedia Robotics ARIA: */
 #define MRPT_HAS_ARIA ${CMAKE_MRPT_HAS_ARIA}

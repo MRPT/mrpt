@@ -39,7 +39,7 @@
     }
 #endif
 
-// SSE3/SSE3 types:
+// SSE3/SSSE3 types:
 #if MRPT_HAS_SSE3
     extern "C" {
 	#include <pmmintrin.h>
@@ -48,6 +48,14 @@
 	#endif
     }
 #endif
+
+// SSE4 types:
+#if MRPT_HAS_SSE4  
+    extern "C" {
+	#include <smmintrin.h>
+    }
+#endif
+
 
 #endif
 
