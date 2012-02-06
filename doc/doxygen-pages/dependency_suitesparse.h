@@ -9,8 +9,12 @@
 
 This suite provides many efficient sparse algebra routines, e.g. CHOLMOD.
 
-(Not used in any MRPT class yet)
+<h3>SuiteSparse's CSparse library</h3>
 
+Mandatory, but an embedded version exists if the library is not found in the system.
 
+Used in these classes:
+	- mrpt::math::CSparseMatrix relies on the CSparse library. 
+
+	
 */
-

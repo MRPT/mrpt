@@ -5,16 +5,13 @@ List of pending stuff to be integrated into MRPT someday:
  PRIORITY LIST
 ==================
 
-- doc: Finish list of dependencies
 - icp-graph-slam
-- Rewrite CPointsMap methods as CRTP, if possible.
 
 
   WISHLIST FOR THE THREE WISE MEN
 =====================================
 
 - Make sparse Kalman implementation, if would improve anything.
-- Colour point clouds store colors as u8 insteaf of float.
 - CColouredPointsMap no longer has a the "m_min_dist" field: Create a new class?
 - KLT tracking: make custom implementation: with explicit pyramids, subpixel, ...
 - Impl FASTSLAM 2.0
@@ -22,6 +19,4 @@ List of pending stuff to be integrated into MRPT someday:
 - Recover a working version of monoslam with EKF
 - Tutorial (web): PF localization with grid maps
 - Tutorial (web): KF localization with landmarks
-- samples/CMakeLists as independent project
-
 

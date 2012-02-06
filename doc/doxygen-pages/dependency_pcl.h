@@ -15,8 +15,6 @@ If available, it will provide the following functionality:
 	- mrpt::slam::CPointsMap::getPCLPointCloud() (*)
 	- mrpt::slam::CPointsMap::savePCDFile()
 		
-		
-		
 <b>Note:</b> (*) means that the functionality is header-only. This means that will be
  available even if MRPT is built without PCL, but the user program includes both
  PCL and MRPT headers.

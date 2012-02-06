@@ -7,10 +7,10 @@
 <h2>Dependency: <code>libusb</code></h2>
 <hr>
 
-This is the...
+This optional library is needed as a dependency of the embedded version of libfreenect for communicating with Kinect sensors. 
 
-
-
+If not present, the following classes will raise exceptions upon usage:
+- mrpt::hwdrivers::CKinect ( unless a different underlying implementation is used, see http://www.mrpt.org/Kinect_and_MRPT )
 
 */
 

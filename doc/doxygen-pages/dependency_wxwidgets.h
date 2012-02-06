@@ -7,9 +7,10 @@
 <h2>Dependency: <code>wxWidgets</code></h2>
 <hr>
 
-This is the...
+If this library is not present in the system, the following will raise an exception upon usage:
 
-
+- All window classes in mrpt::gui
+- The function  mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 
 
 */

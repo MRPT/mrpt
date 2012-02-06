@@ -15,7 +15,7 @@
 </tr>
 <tr>
 	<td align="center" > \ref dep-eigen3 "eigen3" </td>
-	<td align="center" > Mandatory </td>
+	<td align="center" > Mandatory (embedded if not external found) </td>
 </tr>
 <tr>
 	<td align="center" > \ref dep-opencv "opencv" </td>
@@ -39,7 +39,7 @@
 </tr>
 <tr>
 	<td align="center" > \ref dep-libusb "libfusb" </td>
-	<td align="center" > Optional </td>
+	<td align="center" > Optional (needed for Kinect) </td>
 </tr>
 <tr>
 	<td align="center" > \ref  dep-pcl "pcl" </td>
@@ -47,7 +47,7 @@
 </tr>
 <tr>
 	<td align="center" > \ref dep-suitesparse "suitesparse" </td>
-	<td align="center" > Optional </td>
+	<td align="center" > Optional (but partly embedded) </td>
 </tr>
 </table>
 </center>
