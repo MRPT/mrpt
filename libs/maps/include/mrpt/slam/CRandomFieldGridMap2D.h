@@ -251,9 +251,13 @@ namespace slam
 		  */
 		void  getAsMatlab3DGraphScript(std::string  &out_script) const;
 
-		/** Returns a 3D object representing the map.
+		/** Returns a 3D object representing the map (mean).
 		  */
 		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+
+		/** Returns two 3D objects representing the mean and variance maps.
+		  */
+		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const;
 
 		/** Return the type of the random-field grid map, according to parameters passed on construction.
 		  */

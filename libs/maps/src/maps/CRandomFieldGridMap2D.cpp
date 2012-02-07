@@ -731,6 +731,10 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 	const TPose3D sensorPose= TPose3D(sensorPose_);
 	const TPose2D sensorPose2D = TPose2D( sensorPose );
 
+	// DEBUG
+	// Save to file the actual cov_matrix to plot it with matlab
+	//m_cov.saveToTextFile( std::string("LOG_ICP-SLAM\_mean_compressed_cov.txt"), MATRIX_FORMAT_FIXED );
+
 	// Assure we have room enough in the grid!
 	resize(	sensorPose2D.x - 1,
 			sensorPose2D.x + 1,
@@ -1075,6 +1079,20 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outO
 	if (m_disableSaveAs3DObject)
 		return;
 
+	//Returns only the mean map
+	mrpt::opengl::CSetOfObjectsPtr other_obj = mrpt::opengl::CSetOfObjects::Create();
+	getAs3DObject(outObj, other_obj);
+}
+
+
+/*---------------------------------------------------------------
+						getAs3DObject
+---------------------------------------------------------------*/
+void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const
+{
+	if (m_disableSaveAs3DObject)
+		return;
+
 	recoverMeanAndCov();
 
 	opengl::CSetOfTriangles::TTriangle		triag;
@@ -1288,7 +1306,8 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outO
 
 
 			obj->enableTransparency(true);;
-			outObj->insert( obj );
+			meanObj->insert( obj );
+			varObj->insert( obj);
 		}
 		break; // end KF models
 
@@ -1297,29 +1316,38 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outO
 		{
 			// Draw for Kernel model:
 			// ----------------------------------
-			opengl::CSetOfTrianglesPtr obj = opengl::CSetOfTriangles::Create();
-			obj->enableTransparency(false);
+			opengl::CSetOfTrianglesPtr obj_m = opengl::CSetOfTriangles::Create();
+			obj_m->enableTransparency(false);
+			opengl::CSetOfTrianglesPtr obj_v = opengl::CSetOfTriangles::Create();
+			obj_v->enableTransparency(false);
 
-			//  Compute max/min values:
+			//  Compute mean max/min values:
 			// ---------------------------------------
-			double 	maxVal=0, minVal=1, AMaxMin;
-			double c;
+			double 	maxVal_m=0, minVal_m=1, AMaxMin_m, maxVal_v=0, minVal_v=1, AMaxMin_v;
+			double c,v;
 			for (cy=1;cy<m_size_y;cy++)
 			{
 				for (cx=1;cx<m_size_x;cx++)
 				{
 					const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-					c = computeMeanCellValue_DM_DMV( cell_xy );
-					minVal = min(minVal, c);
-					maxVal = max(maxVal, c);
+					//mean
+					c = computeMeanCellValue_DM_DMV( cell_xy );					
+					minVal_m = min(minVal_m, c);
+					maxVal_m = max(maxVal_m, c);
+					//variance
+					v = computeVarCellValue_DM_DMV( cell_xy );
+					minVal_v = min(minVal_v, v);
+					maxVal_v = max(maxVal_v, v);
 				}
 			}
 
-			AMaxMin = maxVal - minVal;
-			if (AMaxMin==0) AMaxMin=1;
+			AMaxMin_m = maxVal_m - minVal_m;			
+			if (AMaxMin_m==0) AMaxMin_m=1;
+			AMaxMin_v = maxVal_v - minVal_v;
+			if (AMaxMin_v==0) AMaxMin_v=1;
 
 			// ---------------------------------------
-			//  MID LAYER:  mean
+			//  Compute Maps
 			// ---------------------------------------
 			triag.a[0]=triag.a[1]=triag.a[2]= 0.75f;	// alpha (transparency)
 			for (cy=1;cy<m_size_y;cy++)
@@ -1332,15 +1360,17 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outO
 					const TRandomFieldCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
 					const TRandomFieldCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
 
-					double c_xy	= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_xy) ) );
-					double c_x_1y	= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_x_1y) ) );
-					double c_xy_1	= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_xy_1) ) );
-					double c_x_1y_1= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_x_1y_1) ) );
+					// MEAN values
+					//-----------------
+					double c_xy			= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_xy) ) );
+					double c_x_1y		= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_x_1y) ) );
+					double c_xy_1		= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_xy_1) ) );
+					double c_x_1y_1		= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_x_1y_1) ) );
 
-					double col_xy		= c_xy;
-					double col_xy_1	= c_xy_1;
-					double col_x_1y	= c_x_1y;
-					double col_x_1y_1	= c_x_1y_1;
+					double col_xy		= min(1.0,max(0.0, (c_xy-minVal_m)/AMaxMin_m ) );
+					double col_x_1y		= min(1.0,max(0.0, (c_x_1y-minVal_m)/AMaxMin_m ) );
+					double col_xy_1		= min(1.0,max(0.0, (c_xy_1-minVal_m)/AMaxMin_m ) );
+					double col_x_1y_1	= min(1.0,max(0.0, (c_x_1y_1-minVal_m)/AMaxMin_m ) );
 
 					// Triangle #1:
 					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
@@ -1350,20 +1380,54 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outO
 					jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
 					jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
 
-					obj->insertTriangle( triag );
+					obj_m->insertTriangle( triag );
 
 					// Triangle #2:
 					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
 					triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = c_x_1y_1;
 					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = c_x_1y;
-
 					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
 					jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
 					jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
-					obj->insertTriangle( triag );
+					obj_m->insertTriangle( triag );
+
+					// VARIANCE values
+					//------------------
+					double v_xy			= min(1.0,max(0.0, computeVarCellValue_DM_DMV(cell_xy) ) );
+					double v_x_1y		= min(1.0,max(0.0, computeVarCellValue_DM_DMV(cell_x_1y) ) );
+					double v_xy_1		= min(1.0,max(0.0, computeVarCellValue_DM_DMV(cell_xy_1) ) );
+					double v_x_1y_1		= min(1.0,max(0.0, computeVarCellValue_DM_DMV(cell_x_1y_1) ) );
+
+					col_xy				= min(1.0,max(0.0, (v_xy-minVal_v)/AMaxMin_v ) );
+					col_x_1y			= min(1.0,max(0.0, (v_x_1y-minVal_v)/AMaxMin_v ) );
+					col_xy_1			= min(1.0,max(0.0, (v_xy_1-minVal_v)/AMaxMin_v ) );
+					col_x_1y_1			= min(1.0,max(0.0, (v_x_1y_1-minVal_v)/AMaxMin_v ) );
+
+
+					// Triangle #1:
+					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = v_xy;
+					triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = v_xy_1;
+					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = v_x_1y_1;
+					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+					jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
+					jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
+
+					obj_v->insertTriangle( triag );
+
+					// Triangle #2:
+					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = v_xy;
+					triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = v_x_1y_1;
+					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = v_x_1y;
+					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+					jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
+					jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
+					obj_v->insertTriangle( triag );
+
+
 				} // for cx
 			} // for cy
-			outObj->insert( obj );
+			meanObj->insert( obj_m );
+			varObj->insert( obj_v );
 		}
 		break; // end Kernel models
 	}; // end switch maptype
@@ -1500,6 +1564,10 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 	const CPose3D	&sensorPose_ )
 {
 	MRPT_START
+
+	// DEBUG
+	// Save to file the actual cov_matrix to plot it with matlab
+	//m_stackedCov.saveToTextFile( std::string("LOG_ICP-SLAM\_mean_compressed_cov.txt"), MATRIX_FORMAT_FIXED );
 
 	const signed	W = m_insertOptions_common->KF_W_size;
 	const size_t	K = 2*W*(W+1)+1;

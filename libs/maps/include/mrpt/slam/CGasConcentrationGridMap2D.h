@@ -103,8 +103,8 @@ namespace slam
 			/** @name For all mapping methods
 			    @{ */
 			std::string sensorLabel;	//!< The label of the CObservationGasSensor used to generate the map
-			uint16_t enose_id;		//!< id for the enose used to generate this map (must be < gasGrid_count)
-			uint16_t sensorType;	//!< The sensor type for the gas concentration map (0x0000 ->mean of all installed sensors, 0x2600, 0x6810, ...)
+			uint16_t enose_id;			//!< id for the enose used to generate this map (must be < gasGrid_count)
+			uint16_t sensorType;		//!< The sensor type for the gas concentration map (0x0000 ->mean of all installed sensors, 0x2600, 0x6810, ...)
 			
 			/** @} */			
 
@@ -128,6 +128,10 @@ namespace slam
 		/** Returns a 3D object representing the map.
 		  */
 		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+
+		/** Returns two 3D objects representing the mean and variance maps.
+		  */
+		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const;
 
 	protected:
 

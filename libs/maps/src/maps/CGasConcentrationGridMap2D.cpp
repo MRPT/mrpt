@@ -459,13 +459,27 @@ void  CGasConcentrationGridMap2D::saveAsMatlab3DGraph(const std::string  &filNam
 /*---------------------------------------------------------------
 						getAs3DObject
 ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
+void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj) const
 {
 	MRPT_START
 	if (m_disableSaveAs3DObject)
 		return;
 
 	CRandomFieldGridMap2D::getAs3DObject(outObj);
+
+	MRPT_END
+}
+
+/*---------------------------------------------------------------
+						getAs3DObject
+---------------------------------------------------------------*/
+void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const
+{
+	MRPT_START
+	if (m_disableSaveAs3DObject)
+		return;
+
+	CRandomFieldGridMap2D::getAs3DObject(meanObj,varObj);
 
 	MRPT_END
 }
