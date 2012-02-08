@@ -41,7 +41,7 @@
 
 // Standard headers:
 #include <cstddef>
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <cstdlib>
 #include <cmath>
 #if HAVE_ALLOCA_H

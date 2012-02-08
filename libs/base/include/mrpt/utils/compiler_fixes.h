@@ -90,11 +90,3 @@
 #	define max3(A,B,C) max(A,max(B,C))
 #	define min3(A,B,C) min(A,min(B,C))
 #endif
-
-// Enable leak memory debugging:
-#if defined(_DEBUG) && defined(_MSC_VER) && (_MSC_VER>=1400)
-	#define _CRTDBG_MAP_ALLOC
-	#include <stdlib.h>
-	#include <crtdbg.h>
-#endif
-

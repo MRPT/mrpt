@@ -40,11 +40,11 @@
                      // to have "MessageBoxA" to display error messages for openFilHelper
 #endif
 
-#include <memory.h>
-#include <assert.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cmemory>
+#include <cassert>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
 
 XMLCSTR XMLNode::getVersion() { return _CXML("v2.39"); }
 void freeXMLString(XMLSTR t){if(t)free(t);}
