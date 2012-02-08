@@ -40,7 +40,7 @@
                      // to have "MessageBoxA" to display error messages for openFilHelper
 #endif
 
-#include <cmemory>
+#include <memory.h>
 #include <cassert>
 #include <cstdio>
 #include <cstring>
