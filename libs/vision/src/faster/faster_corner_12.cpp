@@ -31,6 +31,7 @@
 //             released under LGPL 2.1 by Edward Rosten
 // ---------------------------------------------------------------------------
 
+#include <mrpt/utils/utils_defs.h>
 #include "faster_corner_prototypes.h"
 
 #include <mrpt/utils/SSE_types.h>
