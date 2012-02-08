@@ -51,9 +51,7 @@
 
 // SSE4 types:
 #if MRPT_HAS_SSE4  
-    extern "C" {
 	#include <smmintrin.h>
-    }
 #endif
 
 
