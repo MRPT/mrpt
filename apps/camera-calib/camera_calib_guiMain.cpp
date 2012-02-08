@@ -673,13 +673,13 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 	// Draw the board:
 	for (unsigned int k=0;k<it->second.detected_corners.size();k++)
 	{
-		imgCheck.cross(it->second.detected_corners[k].x *zoomVal, it->second.detected_corners[k].y *zoomVal, TColor::blue, 3 );
+		imgCheck.cross(it->second.detected_corners[k].x *zoomVal, it->second.detected_corners[k].y *zoomVal, TColor::blue, '+', 3 );
 		imgCheck.drawCircle( it->second.projectedPoints_distorted[k].x*zoomVal, it->second.projectedPoints_distorted[k].y*zoomVal, 4, TColor(0,255,64) );
 	}
 	imgCheck.drawCircle( 10,10, 4, TColor(0,255,64) );
 	imgCheck.textOut(18,4,"Reprojected corners",TColor::white);
 
-	imgCheck.cross( 10,30, TColor::blue, 3 );
+	imgCheck.cross( 10,30, TColor::blue, '+', 3 );
 	imgCheck.textOut(18,24,"Detected corners",TColor::white);
 
 

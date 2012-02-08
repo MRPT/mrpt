@@ -372,6 +372,8 @@ void  CCanvas::cross(int x0,int y0, const mrpt::utils::TColor	color, char type, 
 		line(x0,y0-size,x0,y0-2,color,width);
 		line(x0,y0+2,x0,y0+size,color,width);
 		break;
+	default:
+		THROW_EXCEPTION("Unexpected 'type' of cross to be drawn")
 	}
 }
 

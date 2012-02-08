@@ -135,7 +135,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		//const unsigned int N = images.size();
 		unsigned int i;
 
-        vector<CvPoint2D32f> corners_list; //  = new CvPoint2D32f[ N * CORNERS_COUNT];
+		vector<CvPoint2D64f> corners_list; //  = new CvPoint2D32f[ N * CORNERS_COUNT];
         unsigned int  valid_detected_imgs = 0;
 
         CvSize	imgSize = cvSize(0,0);
@@ -279,7 +279,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		// Calculate the camera parameters
 		// ---------------------------------------------
 		// Was: FillEtalonObjPoints
-		vector<CvPoint3D32f> obj_points( valid_detected_imgs * CORNERS_COUNT );
+		vector<CvPoint3D64f> obj_points( valid_detected_imgs * CORNERS_COUNT );
 
 		{
 			unsigned int y,k;
@@ -301,16 +301,14 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		// Number of detected points in each image (constant):
 		vector<int> numsPoints(valid_detected_imgs, (int)CORNERS_COUNT );
 
-		float   proj_matrix[9];
-		float   distortion[4];
-		//float   rotMatr[9];
-		//float   transVect[3];
+		double proj_matrix[9];
+		double distortion[4];
 
-		vector<CvPoint3D32f> transVects( valid_detected_imgs );
-        vector<float>        rotMatrs( valid_detected_imgs * 9 );
+		vector<CvPoint3D64f> transVects( valid_detected_imgs );
+        vector<double>        rotMatrs( valid_detected_imgs * 9 );
 
-		// Calirate camera
-		cvCalibrateCamera(
+		// Calibrate camera
+		cvCalibrateCamera_64d(
 			valid_detected_imgs,
 			&numsPoints[0],
 			imgSize,
@@ -318,13 +316,12 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 			&obj_points[0],
 			distortion,
 			proj_matrix,
-			(float*)&transVects[0],
+			(double*)&transVects[0],
 			&rotMatrs[0],
 			0 );
 
 		// Load matrix:
-		//out_camera_params.intrinsicParams = CMatrixDouble33( CMatrixFloat33( proj_matrix ) );
-		out_camera_params.intrinsicParams = CMatrixFloat33( proj_matrix ).cast<double>();
+		out_camera_params.intrinsicParams = CMatrixDouble33( proj_matrix );
 
 		out_camera_params.dist.assign(0);
 		for (int i=0;i<4;i++)
@@ -333,7 +330,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		// Load camera poses:
 		for (i=0;i<valid_detected_imgs;i++)
 		{
-			float *R = &rotMatrs[9*i];
+			const double *R = &rotMatrs[9*i];
 
 			CMatrixDouble HM(4,4);
 			HM.zeros();

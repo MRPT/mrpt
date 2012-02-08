@@ -77,6 +77,7 @@
 			- Interface of mrpt::vision::CGenericFeatureTracker extended to handle subpixel feature coordinates (mrpt::vision::TSimpleFeaturefList)
 			- mrpt::vision::CFeatureExtraction has new parameters to change the thresholds of SIFT detector implementations - <a href="http://code.google.com/p/mrpt/source/detail?r=2797" >r2797</a> 
 			- mrpt::vision::CFeatureExtraction::detectFeatures_SSE2_FASTER9() (and others) now build an optional index of feature indices sorted by rows for quick look up.
+			- mrpt::vision::checkerBoardCameraCalibration() now uses the 64f version of OpenCV's cvCalibrateCamera_64d
 		- [mrpt-gui] 
 			- Environment variable MRPT_WXSUBSYS_TIMEOUT_MS is now observed in all places where a GUI window is expected to be launched.
 			- New shortcut methods mrpt::gui::CDisplayWindow3D::setImageView() and mrpt::gui::CDisplayWindow3D::setImageView_fast() - <a href="http://code.google.com/p/mrpt/source/detail?r=2793" >r2793</a> 
@@ -110,6 +111,7 @@
 		- [mrpt-base/mrpt-opengl] Method getAs3DObject() of mrpt::poses' poses PDFs cleared the previous contents of the passed CSetOfObjects argument, which shouldn't be the expected behavior  - <a href="http://code.google.com/p/mrpt/source/detail?r=2781" >2781</a> 
 		- [mrpt-hwdrivers] Fixed Bumblebee capture of rectified images will return two left images - (<a href="http://code.google.com/p/mrpt/issues/detail?id=18" > Issue & patch #18</a>) -  <a href="http://code.google.com/p/mrpt/source/detail?r=2791" >2791</a> 
 		- [mrpt-vision] Fixed memory corruption in SIFT detector with the OpenCV implementation -  <a href="http://code.google.com/p/mrpt/source/detail?r=2796" >2796</a> 
+		- App: camera-calib didn't show the marks for the detected corners.
 
  <hr>
  <a name="0.9.5">
