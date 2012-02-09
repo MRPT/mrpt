@@ -59,6 +59,7 @@
 #endif
 
 // Avoid conflicting declaration of max macro in windows headers
+#include <algorithm>
 #if defined(MRPT_OS_WINDOWS) && !defined(NOMINMAX)
 #	define NOMINMAX
 #	ifdef max
