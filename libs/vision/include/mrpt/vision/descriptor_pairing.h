@@ -89,7 +89,7 @@ namespace mrpt
 
 			const size_t N=feats_img1.size();
 			if (pairings_1_to_multi_2) pairings_1_to_multi_2->assign(N, vector_size_t()); // Reset output container
-			if (pairings_1_to_2) pairings_1_to_2->reserve(N);
+			if (pairings_1_to_2) { pairings_1_to_2->clear(); pairings_1_to_2->reserve(N); }
 
 			size_t overall_pairs = 0;
 
@@ -126,7 +126,7 @@ namespace mrpt
 				const KDTreeDistanceType this_thresh = std::min( max_relative_distance*distances[0], max_distance);
 				for (size_t j=0;j<max_neighbors;j++)
 				{
-					if (distances[j]<this_thresh) {
+					if (distances[j]<=this_thresh) {
 						overall_pairs++;
 						if (pairings_1_to_multi_2) (*pairings_1_to_multi_2)[i].push_back(indices[j]);
 						if (pairings_1_to_2) pairings_1_to_2->push_back(std::make_pair(i,indices[j]));
