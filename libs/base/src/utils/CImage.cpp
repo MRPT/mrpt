@@ -164,7 +164,8 @@ void CImage::copyFromForceLoad(const CImage &o)
 	if (o.isExternallyStored())
 	{
 		// Load from that file:
-		this->loadFromFile( o.getExternalStorageFileAbsolutePath() );
+		if (!this->loadFromFile( o.getExternalStorageFileAbsolutePath() ))
+			THROW_TYPED_EXCEPTION_CUSTOM_MSG1("Error loading externally-stored image from: %s", o.getExternalStorageFileAbsolutePath().c_str() ,CExceptionExternalImageNotFound);
 	}
 	else
 	{	// It's not external storage.

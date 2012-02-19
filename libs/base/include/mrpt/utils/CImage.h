@@ -521,6 +521,7 @@ namespace mrpt
 
 			/** Copies from another image, and, if that one is externally stored, the image file will be actually loaded into memory in "this" object.
 			  * \sa operator =
+			  * \exception CExceptionExternalImageNotFound If the external image couldn't be loaded. 
 			  */
 			void copyFromForceLoad(const CImage &o);
 

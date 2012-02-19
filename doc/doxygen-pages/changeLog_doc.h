@@ -72,6 +72,7 @@
 			-  mrpt::utils::TStereoCamera changes its I/O format to config files, now it's consistent with rawlog-edit, stereo-calib-gui and others.
 			-  mrpt::utils::CImage::changeSize() is now smart enough to avoid deallocating & re-allocating an image if the requested params exactly coincide with the current image.
 			-  mrpt::utils::CImage::getAsIplImage() marked as deprecated - replace with mrpt::utils::CImage::getAs<IplImage>() instead.
+			-  mrpt::utils::CImage::copyFromForceLoad() now raises an exception if the external image wasn't found.
 		- [mrpt-maps] 
 			- mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
 		- [mrpt-vision] 
