@@ -38,6 +38,7 @@
 		- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: 
 			- Operation "--camera-params" now also handles stereo observations.
 			- New operation "--stereo-rectify" for batch rectifying datasets with stereo images.
+			- New operation "--rename-externals".
 		- <a href="http://www.mrpt.org/Application:SceneViewer" >SceneViewer3D</a>: 
 			- New menu for generating high-resolution renders of any scene directly to imag files - <a href="http://code.google.com/p/mrpt/source/detail?r=2775" >r2775</a>
 			- Many new menus for selective selecting objects and applying operations on them - <a href="http://code.google.com/p/mrpt/source/detail?r=2776" >r2776</a>

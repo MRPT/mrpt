@@ -71,6 +71,7 @@ DECLARE_OP_FUNCTION(op_camera_params);
 DECLARE_OP_FUNCTION(op_generate_3d_pointclouds);
 DECLARE_OP_FUNCTION(op_generate_pcd);
 DECLARE_OP_FUNCTION(op_stereo_rectify);
+DECLARE_OP_FUNCTION(op_rename_externals);
 
 // Declare the supported command line switches ===========
 TCLAP::CmdLine cmd("rawlog-edit", ' ', MRPT_getVersion().c_str());
@@ -202,6 +203,12 @@ int main(int argc, char **argv)
 			"          --image-size to resize output images (example: --image-size 640x480) \n"
 			,false,"","SENSOR_LABEL,0.5",cmd) );
 		ops_functors["stereo-rectify"] = &op_stereo_rectify;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","rename-externals",
+			"Op: Renames all the external storage file names within the rawlog (it doesn't change the external files, which may even not exist).\n"
+			,cmd,false));
+		ops_functors["rename-externals"] = &op_rename_externals;
+		
 
 
 		// --------------- End of list of possible operations --------

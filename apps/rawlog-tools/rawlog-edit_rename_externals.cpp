@@ -37,17 +37,15 @@ using namespace std;
 
 
 // ======================================================================
-//		op_externalize
+//		op_rename_externals
 // ======================================================================
-DECLARE_OP_FUNCTION(op_externalize)
+DECLARE_OP_FUNCTION(op_rename_externals)
 {
 	// A class to do this operation:
-	class CRawlogProcessor_Externalize : public CRawlogProcessorOnEachObservation
+	class CRawlogProcessor_RenameExternals : public CRawlogProcessorOnEachObservation
 	{
 	protected:
 		TOutputRawlogCreator	outrawlog;
-		//CFileGZOutputStream out_rawlog;
-		//string output_rawlog;
 
 		string	imgFileExtension;
 		string 	outDir;
@@ -56,28 +54,14 @@ DECLARE_OP_FUNCTION(op_externalize)
 		size_t  entries_converted;
 		size_t  entries_skipped; // Already external
 
-		CRawlogProcessor_Externalize(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
+		CRawlogProcessor_RenameExternals(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
 			CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose)
 		{
 			entries_converted = 0;
 			entries_skipped  = 0;
-			getArgValue<string>(cmdline,"image-format",imgFileExtension); 
 
-			// Create the default "/Images" directory.
-			const string out_rawlog_basedir = extractFileDirectory(outrawlog.out_rawlog_filename);
+			getArgValue<string>(cmdline,"image-format",imgFileExtension);
 
-			outDir = (out_rawlog_basedir.empty() ? string() : (out_rawlog_basedir+string("/") )) + extractFileName(outrawlog.out_rawlog_filename) + string("_Images");
-			if (directoryExists(outDir))
-				throw runtime_error(string("*ABORTING*: Output directory for images already exists: ") + outDir + string("\n. Select a different output path or remove the directory.") );
-
-			VERBOSE_COUT << "Creating directory: " << outDir << endl;
-
-			mrpt::system::createDirectory( outDir );
-			if (!fileExists(outDir))
-				throw runtime_error(string("*ABORTING*: Couldn't create directory: ") + outDir );
-
-			// Add the final /
-			outDir+="/";
 		}
 
 		bool processOneObservation(CObservationPtr  &obs)
@@ -87,19 +71,17 @@ DECLARE_OP_FUNCTION(op_externalize)
 			{
 				CObservationStereoImagesPtr obsSt = CObservationStereoImagesPtr(obs);
 				// save image to file & convert into external storage:
-				if (!obsSt->imageLeft.isExternallyStored())
+				if (obsSt->imageLeft.isExternallyStored())
 				{
 					const string fileName = string("img_") + label_time + string("_left.") + imgFileExtension;
-					obsSt->imageLeft.saveToFile( outDir + fileName );
 					obsSt->imageLeft.setExternalStorage( fileName );
 					entries_converted++;
 				}
 				else entries_skipped++;
 
-				if (!obsSt->imageRight.isExternallyStored())
+				if (obsSt->imageRight.isExternallyStored())
 				{
 					const string fileName = string("img_") + label_time + string("_right.") + imgFileExtension;
-					obsSt->imageRight.saveToFile( outDir + fileName );
 					obsSt->imageRight.setExternalStorage( fileName );
 					entries_converted++;
 				}
@@ -109,10 +91,9 @@ DECLARE_OP_FUNCTION(op_externalize)
 			{
 				CObservationImagePtr obsIm = CObservationImagePtr(obs);
 
-				if (!obsIm->image.isExternallyStored())
+				if (obsIm->image.isExternallyStored())
 				{
 					const string fileName = string("img_") + label_time +string(".")+ imgFileExtension;
-					obsIm->image.saveToFile( outDir + fileName );
 					obsIm->image.setExternalStorage( fileName );
 					entries_converted++;
 				}
@@ -124,39 +105,19 @@ DECLARE_OP_FUNCTION(op_externalize)
 
 				// save images to file & convert into external storage:
 				// Intensity channel:
-				if (obs3D->hasIntensityImage && !obs3D->intensityImage.isExternallyStored())
+				if (obs3D->hasIntensityImage && obs3D->intensityImage.isExternallyStored())
 				{
 					const string fileName = string("3DCAM_") + label_time + string("_INT.") + imgFileExtension;
-					obs3D->intensityImage.saveToFile( outDir + fileName );
 					obs3D->intensityImage.setExternalStorage( fileName );
 					entries_converted++;
 				}
 				else entries_skipped++;
 
 				// Confidence channel:
-				if (obs3D->hasConfidenceImage && !obs3D->confidenceImage.isExternallyStored())
+				if (obs3D->hasConfidenceImage && obs3D->confidenceImage.isExternallyStored())
 				{
 					const string fileName = string("3DCAM_") + label_time + string("_CONF.") + imgFileExtension;
-					obs3D->confidenceImage.saveToFile( outDir + fileName );
 					obs3D->confidenceImage.setExternalStorage( fileName );
-					entries_converted++;
-				}
-				else entries_skipped++;
-
-				// 3D points:
-				if (obs3D->hasPoints3D && !obs3D->points3D_isExternallyStored())
-				{
-					const string fileName = string("3DCAM_") + label_time + string("_3D.bin");
-					obs3D->points3D_convertToExternalStorage(fileName, outDir);
-					entries_converted++;
-				}
-				else entries_skipped++;
-
-				// Range image:
-				if (obs3D->hasRangeImage  && !obs3D->rangeImage_isExternallyStored())
-				{
-					const string fileName = string("3DCAM_") + label_time + string("_RANGES.bin");
-					obs3D->rangeImage_convertToExternalStorage(fileName, outDir);
 					entries_converted++;
 				}
 				else entries_skipped++;
@@ -181,14 +142,14 @@ DECLARE_OP_FUNCTION(op_externalize)
 
 	// Process
 	// ---------------------------------
-	CRawlogProcessor_Externalize proc(in_rawlog,cmdline,verbose);
+	CRawlogProcessor_RenameExternals proc(in_rawlog,cmdline,verbose);
 	proc.doProcessRawlog();
 
 	// Dump statistics:
 	// ---------------------------------
 	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
 	VERBOSE_COUT << "Entries converted                 : " << proc.entries_converted << "\n";
-	VERBOSE_COUT << "Entries skipped (already external): " << proc.entries_skipped << "\n";
+	VERBOSE_COUT << "Entries skipped (not external)    : " << proc.entries_skipped << "\n";
 
 }
 

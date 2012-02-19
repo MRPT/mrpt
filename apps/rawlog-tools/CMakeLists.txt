@@ -30,6 +30,7 @@ ADD_EXECUTABLE(rawlog-edit
 	rawlog-edit_generate-3d-pointclouds.cpp
 	rawlog-edit_generate-pcd.cpp
 	rawlog-edit_stereo-rectify.cpp
+	rawlog-edit_rename_externals.cpp
 	)
 SET(TMP_TARGET_NAME "rawlog-edit")
 SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(APP) ${TMP_TARGET_NAME}")
