@@ -52,8 +52,6 @@ void  CFeatureExtraction::extractFeaturesSURF(
 {
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x111
 
-	const int EXTENDED_DESCRIPTOR = options.SURFOptions.rotation_invariant ? 1:0;
-
 	const CImage img_grayscale(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
 	const IplImage* cGrey = img_grayscale.getAs<IplImage>();
 
@@ -62,8 +60,11 @@ void  CFeatureExtraction::extractFeaturesSURF(
 	CvMemStorage *storage = cvCreateMemStorage(0);
 
 	// Extract the SURF points:
-	cvExtractSURF( cGrey, NULL, &kp, &desc, storage, cvSURFParams(600, EXTENDED_DESCRIPTOR) );
-	// *** HAVE YOU HAD A COMPILER ERROR NEAR THIS LINE?? : You need OpenCV >=1.1.0, final release or a SVN version ***
+	CvSURFParams surf_params = cvSURFParams(options.SURFOptions.hessianThreshold, options.SURFOptions.rotation_invariant ? 1:0);
+	surf_params.nOctaves = options.SURFOptions.nOctaves;
+	surf_params.nOctaveLayers = options.SURFOptions.nLayersPerOctave;
+
+	cvExtractSURF( cGrey, NULL, &kp, &desc, storage, surf_params);
 
 	// -----------------------------------------------------------------
 	// MRPT Wrapping
@@ -114,7 +115,7 @@ void  CFeatureExtraction::extractFeaturesSURF(
 
 			// Get the SURF descriptor
 			float* d = (float*)cvGetSeqElem( desc, i );
-			ft->descriptors.SURF.resize( EXTENDED_DESCRIPTOR ? 128 : 64 );
+			ft->descriptors.SURF.resize( options.SURFOptions.rotation_invariant ? 128 : 64 );
 			std::vector<float>::iterator itDesc;
 			unsigned int k;
 
@@ -145,8 +146,6 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 
 	if (in_features.empty()) return;
 
-	const int EXTENDED_DESCRIPTOR = options.SURFOptions.rotation_invariant ? 1:0;
-
 	const CImage img_grayscale(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
 	const IplImage* cGrey = img_grayscale.getAs<IplImage>();
 
@@ -169,7 +168,12 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 	CvSeq *desc	=  NULL;
 
 	// Only computes the descriptors:
-	cvExtractSURF( cGrey, NULL, &kp, &desc, storage, cvSURFParams(600, EXTENDED_DESCRIPTOR), 1 /* Use precomputed key-points */ );
+	// Extract the SURF points:
+	CvSURFParams surf_params = cvSURFParams(options.SURFOptions.hessianThreshold, options.SURFOptions.rotation_invariant ? 1:0);
+	surf_params.nOctaves = options.SURFOptions.nOctaves;
+	surf_params.nOctaveLayers = options.SURFOptions.nLayersPerOctave;
+
+	cvExtractSURF( cGrey, NULL, &kp, &desc, storage, surf_params, 1 /* Use precomputed key-points */ );
 	// *** HAVE YOU HAD A COMPILER ERROR NEAR THIS LINE?? : You need OpenCV >=1.1.0, final release or a SVN version ***
 
 	// -----------------------------------------------------------------
@@ -189,7 +193,7 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 
 		// Get the SURF descriptor
 		float* d = (float*)cvGetSeqElem( desc, i );
-		ft->descriptors.SURF.resize( EXTENDED_DESCRIPTOR ? 128 : 64 );
+		ft->descriptors.SURF.resize( options.SURFOptions.rotation_invariant ? 128 : 64 );
 		std::vector<float>::iterator itDesc;
 		unsigned int k;
 		for( k = 0, itDesc = ft->descriptors.SURF.begin(); k < ft->descriptors.SURF.size(); k++, itDesc++ )

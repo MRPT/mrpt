@@ -170,9 +170,14 @@ namespace mrpt
 
 				struct VISION_IMPEXP TSURFOptions
 				{
+					TSURFOptions() : rotation_invariant(true),hessianThreshold(600), nOctaves(2), nLayersPerOctave(4) { }
+
 					/** SURF Options
 					  */
 					bool   rotation_invariant; //!< Compute the rotation invariant SURF (dim=128) if set to true (default), or the smaller uSURF otherwise (dim=64)
+					int    hessianThreshold;   //!< Default: 600
+					int    nOctaves;           //!< Default: 2
+					int    nLayersPerOctave;   //!< Default: 4
 				} SURFOptions;
 
 				struct VISION_IMPEXP TSpinImagesOptions
@@ -282,38 +287,38 @@ namespace mrpt
 			  *
 			  * If \a append_to_list is true, the \a corners list is not cleared before adding the newly detected feats.
 			  *
-			  * If a valid pointer is provided for \a out_feats_index_by_row, upon return you will find a vector with 
-			  *  as many entries as rows in the image (the real number of rows, disregarding the value of \a octave). 
-			  * The number in each entry is the 0-based index (in \a corners) of 
+			  * If a valid pointer is provided for \a out_feats_index_by_row, upon return you will find a vector with
+			  *  as many entries as rows in the image (the real number of rows, disregarding the value of \a octave).
+			  * The number in each entry is the 0-based index (in \a corners) of
 			  *  the first feature that falls in that line of the image. This index can be used to fasten looking for correspondences.
 			  *
 			  * \ingroup mrptvision_features
 			  */
 			static void detectFeatures_SSE2_FASTER9(
-				const CImage &img, 
-				TSimpleFeatureList & corners, 
-				const int threshold = 20, 
-				bool append_to_list = false, 
+				const CImage &img,
+				TSimpleFeatureList & corners,
+				const int threshold = 20,
+				bool append_to_list = false,
 				uint8_t octave = 0,
 				std::vector<size_t> * out_feats_index_by_row = NULL );
 
 			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector.
 			  * \ingroup mrptvision_features */
 			static void detectFeatures_SSE2_FASTER10(
-				const CImage &img, 
-				TSimpleFeatureList & corners, 
-				const int threshold = 20, 
-				bool append_to_list = false, 
+				const CImage &img,
+				TSimpleFeatureList & corners,
+				const int threshold = 20,
+				bool append_to_list = false,
 				uint8_t octave = 0,
 				std::vector<size_t> * out_feats_index_by_row = NULL );
 
 			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector.
 			  * \ingroup mrptvision_features */
 			static void detectFeatures_SSE2_FASTER12(
-				const CImage &img, 
-				TSimpleFeatureList & corners, 
-				const int threshold = 20, 
-				bool append_to_list = false, 
+				const CImage &img,
+				TSimpleFeatureList & corners,
+				const int threshold = 20,
+				bool append_to_list = false,
 				uint8_t octave = 0,
 				std::vector<size_t> * out_feats_index_by_row = NULL );
 

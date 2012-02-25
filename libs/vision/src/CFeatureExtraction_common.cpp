@@ -310,7 +310,6 @@ CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType) :
 	SIFTOptions.implementation	= Hess;		// Default implementation: Hess
 
 	// SURF Options
-	SURFOptions.rotation_invariant	= true;
 
 	// BCD Options
 
@@ -365,6 +364,9 @@ void CFeatureExtraction::TOptions::dumpToTextStream(CStream	&out) const
 	LOADABLEOPTS_DUMP_VAR(SIFTOptions.implementation,int)
 
 	LOADABLEOPTS_DUMP_VAR(SURFOptions.rotation_invariant,bool)
+	LOADABLEOPTS_DUMP_VAR(SURFOptions.hessianThreshold,int)
+	LOADABLEOPTS_DUMP_VAR(SURFOptions.nOctaves,int)
+	LOADABLEOPTS_DUMP_VAR(SURFOptions.nLayersPerOctave,int)
 
 	LOADABLEOPTS_DUMP_VAR(FASTOptions.threshold,int)
 	LOADABLEOPTS_DUMP_VAR(FASTOptions.nonmax_suppression,bool)
@@ -417,6 +419,9 @@ void CFeatureExtraction::TOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(SIFTOptions.edgeThreshold,double,  iniFile,section)
 
 	MRPT_LOAD_CONFIG_VAR(SURFOptions.rotation_invariant,bool,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(SURFOptions.hessianThreshold,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(SURFOptions.nOctaves,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(SURFOptions.nLayersPerOctave,int,  iniFile,section)
 
 	MRPT_LOAD_CONFIG_VAR(FASTOptions.threshold,int,  iniFile,section)
 	MRPT_LOAD_CONFIG_VAR(FASTOptions.nonmax_suppression,bool,  iniFile,section)
