@@ -129,7 +129,7 @@ void CCascadeClassifierDetection::detectObjects_Impl(const CObservation *obs, ve
 	const CImage img_gray( *img, FAST_REF_OR_CONVERT_TO_GRAY );
 
 	// Convert to IplImage and copy it
-	IplImage *image = static_cast<IplImage*>(img_gray.getAsIplImage());
+	const IplImage *image = img_gray.getAs<IplImage>();
 
 	// Detect objects
 	CASCADE->detectMultiScale( cv::cvarrToMat(image), objects, m_options.scaleFactor,
