@@ -65,17 +65,14 @@ CRobotSimulator::~CRobotSimulator()
 }
 
 /*************************************************************************
-                        Incremento de tiempo
-
- Simula el robot durante este tiempo: Velocidades, giros, movimientos,...
+    Simulate the robot behavior during a time interval
 *************************************************************************/
 void    CRobotSimulator::simulateInterval( double At )
 {
 	CPose2D  dP,dPodo;  // Delta poses
-	double  AAt, tt;
 
-	tt = 0.0;
-	AAt = 0.001;     // Minimum step size
+	double tt = 0.0;
+	const double AAt = 0.001;  // Minimum step size
 
 	while (tt<At)
 	{
@@ -84,9 +81,9 @@ void    CRobotSimulator::simulateInterval( double At )
 
         // Change velocities:
         // ----------------------------------------------------------------
-        double t_transcurrido = t - Command_Time;
-		t_transcurrido-=cDELAY;
-		t_transcurrido = max(0.0,t_transcurrido);
+        double elapsed_time = t - Command_Time;
+		elapsed_time-=cDELAY;
+		elapsed_time = max(0.0,elapsed_time);
 
 		if (cTAU==0 && cDELAY==0)
 		{
@@ -95,8 +92,8 @@ void    CRobotSimulator::simulateInterval( double At )
 		}
 		else
 		{
-			v = Command_v0 + (Command_v-Command_v0)*(1-exp(-t_transcurrido/cTAU));
-			w = Command_w0 + (Command_w-Command_w0)*(1-exp(-t_transcurrido/cTAU));
+			v = Command_v0 + (Command_v-Command_v0)*(1-exp(-elapsed_time/cTAU));
+			w = Command_w0 + (Command_w-Command_w0)*(1-exp(-elapsed_time/cTAU));
 		}
 
         // Simulate movement during At:
@@ -111,7 +108,7 @@ void    CRobotSimulator::simulateInterval( double At )
 		if (usar_error_odometrico)
 		{
 			dPodo.x( dP.x() + m_Ax_err_bias + m_Ax_err_std * randomGenerator.drawGaussian1D_normalized() );
-			dPodo.y( dP.y() + m_Ay_err_bias + m_Ax_err_std * randomGenerator.drawGaussian1D_normalized() );
+			dPodo.y( dP.y() + m_Ay_err_bias + m_Ay_err_std * randomGenerator.drawGaussian1D_normalized() );
 			dPodo.phi( dP.phi() + m_Aphi_err_bias + m_Aphi_err_std * randomGenerator.drawGaussian1D_normalized() );
 		}
 		m_odometry = m_odometry + dPodo;
@@ -120,22 +117,20 @@ void    CRobotSimulator::simulateInterval( double At )
 }
 
 /*************************************************************************
-        Dar un comando de movimiento al robot:
-
-   Guarda los valores para ir ejecutando el movimiento poco a poco,
-    teniendo en cuenta los tiempos de reaccion.
+        Gives a movement command to the robot: 
+ This actually saves the command for execution later on, if we have 
+ to take into account the robot low-pass behavior in velocities.
 *************************************************************************/
 void CRobotSimulator::movementCommand ( double lin_vel, double ang_vel )
 {
-        // Apuntar datos para ejecutarlos lentamente, segun
-        //   la respuesta del robot:
-        Command_Time = t;
-        Command_v = lin_vel;
-        Command_w = ang_vel;
+	// Just save the command:
+	Command_Time = t;
+	Command_v = lin_vel;
+	Command_w = ang_vel;
 
-        // Actuales:
-        Command_v0 = v;
-        Command_w0 = w;
+	// Current values:
+	Command_v0 = v;
+	Command_w0 = w;
 }
 
 
