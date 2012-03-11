@@ -58,24 +58,25 @@ namespace mrpt
 			NICE = 2        ///< renders glyphs filled with antialiased outlines
 		};
 
-		/** An auxiliary struct for holding a list of text messages in some mrpt::opengl & mrpt::gui classes
-		  *  The font can be either a bitmapped or a vectorized font.
-		  *  \sa mrpt::opengl::CTextMessageCapable
-		  * \ingroup mrpt_opengl_grp
+		/** A description of a bitmapped or vectorized text font.
+		  *  (Vectorized fonts are recommended for new code).
+		  *
+		  * \sa mrpt::opengl::gl_utils::glSetFont(), mrpt::opengl::gl_utils::glDrawText()
 		  */
-		struct OPENGL_IMPEXP T2DTextData
+		struct OPENGL_IMPEXP TFontParams
 		{
-			T2DTextData() :
+			TFontParams() :
 				font(MRPT_GLUT_BITMAP_NONE),
-				vfont_name(),
+				vfont_name("sans"),
+				vfont_scale(10),
+				vfont_style(),
 				vfont_spacing(1.5),
 				vfont_kerning(0.1)
 			{
 			}
 
-			std::string 			text;
 			mrpt::utils::TColorf	color;
-			double					x,y;
+
 			/** @name Bitmapped font params
 			    @{ */
 			mrpt::opengl::TOpenGLFont font;
@@ -85,10 +86,23 @@ namespace mrpt
 			    @{ */
 			std::string             vfont_name;  //!< Vectorized font name ("sans","mono","serif")
 			double                  vfont_scale; //!< Size of characters
-			TOpenGLFontStyle        vfont_style;
-			double                  vfont_spacing; //!< Refer to mrpt::opengl::gl_utils::glDrawText
-			double                  vfont_kerning; //!< Refer to mrpt::opengl::gl_utils::glDrawText
+			TOpenGLFontStyle        vfont_style; //!< (default: NICE) See TOpenGLFontStyle.
+			double                  vfont_spacing; //!< (default: 1.5) Refer to mrpt::opengl::gl_utils::glDrawText
+			double                  vfont_kerning; //!< (default: 0.1) Refer to mrpt::opengl::gl_utils::glDrawText
 			/** @} */
+		};
+
+		/** An auxiliary struct for holding a list of text messages in some mrpt::opengl & mrpt::gui classes
+		  *  The font can be either a bitmapped or a vectorized font.
+		  *  \sa mrpt::opengl::CTextMessageCapable
+		  * \ingroup mrpt_opengl_grp
+		  */
+		struct OPENGL_IMPEXP T2DTextData : public TFontParams
+		{
+			T2DTextData() { }
+
+			std::string text;
+			double      x,y;
 		};
 
 	}
