@@ -28,6 +28,7 @@ add_subdirectory(icp-slam)
 add_subdirectory(graph-slam)
 add_subdirectory(kinect-3d-slam)
 add_subdirectory(kinect-3d-view)
+add_subdirectory(kinect-calibrate)
 
 add_subdirectory(simul-beacons)
 add_subdirectory(simul-landmarks)

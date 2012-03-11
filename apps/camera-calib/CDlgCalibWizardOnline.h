@@ -31,15 +31,15 @@
 #define CDLGCALIBWIZARDONLINE_H
 
 //(*Headers(CDlgCalibWizardOnline)
-#include <wx/sizer.h>
-#include <wx/stattext.h>
-#include <wx/radiobox.h>
-#include <wx/textctrl.h>
-#include <wx/checkbox.h>
 #include <wx/spinctrl.h>
-#include <wx/button.h>
+#include <wx/checkbox.h>
 #include <wx/dialog.h>
+#include <wx/sizer.h>
+#include <wx/button.h>
 #include <mrpt/gui/WxUtils.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+#include <wx/radiobox.h>
 #include <wx/timer.h>
 //*)
 
@@ -58,28 +58,28 @@ class CDlgCalibWizardOnline: public wxDialog
 		CMyRedirector	*redire;
 
 		//(*Declarations(CDlgCalibWizardOnline)
-		wxButton* btnStop;
-		wxCheckBox* cbNormalize;
-		wxTextCtrl* edLengthX;
-		mrpt::gui::wxMRPTImageControl* m_realtimeview;
 		wxStaticText* lbProgress;
-		wxRadioBox* rbMethod;
-		wxStaticText* StaticText2;
-		wxButton* btnStart;
-		wxButton* btnClose;
-		wxStaticText* StaticText6;
-		wxSpinCtrl* edNumCapture;
+		wxFlexGridSizer* FlexGridSizer1;
 		wxTextCtrl* edLengthY;
+		wxButton* btnClose;
+		wxCheckBox* cbNormalize;
+		wxRadioBox* rbMethod;
+		mrpt::gui::wxMRPTImageControl* m_realtimeview;
 		wxSpinCtrl* edSizeY;
 		wxStaticText* StaticText1;
-		wxTextCtrl* txtLog;
-		wxStaticText* StaticText3;
-		wxStaticText* StaticText5;
-		wxSpinCtrl* edSizeX;
-		wxFlexGridSizer* FlexGridSizer1;
-		wxStaticText* StaticText4;
-		wxTimer timCapture;
 		mrpt::gui::CPanelCameraSelection* m_panelCamera;
+		wxStaticText* StaticText3;
+		wxButton* btnStop;
+		wxTimer timCapture;
+		wxSpinCtrl* edSizeX;
+		wxTextCtrl* txtLog;
+		wxStaticText* StaticText4;
+		wxStaticText* StaticText5;
+		wxStaticText* StaticText2;
+		wxSpinCtrl* edNumCapture;
+		wxStaticText* StaticText6;
+		wxTextCtrl* edLengthX;
+		wxButton* btnStart;
 		//*)
 
 	protected:

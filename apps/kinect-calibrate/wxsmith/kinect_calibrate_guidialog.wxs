@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxDialog" name="kinect_calibrate_guiDialog">
+		<title>Kinect calibration Wizard - Part of MRPT</title>
+		<centered>1</centered>
+		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
+			<cols>1</cols>
+			<rows>2</rows>
+			<growablecols>0</growablecols>
+			<growablerows>0</growablerows>
+			<object class="sizeritem">
+				<object class="wxNotebook" name="ID_NOTEBOOK1" variable="Notebook1" member="yes">
+					<handler function="OnNotebook1PageChanging" entry="EVT_NOTEBOOK_PAGE_CHANGING" />
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL1" variable="Panel1" member="yes">
+							<object class="Custom" name="ID_CUSTOM2" subclass="mrpt::gui::wxMRPTImageControl" variable="m_imgStaticKinect" member="yes">
+								<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS).x,$(POS).y,$(SIZE).GetWidth(), $(SIZE).GetHeight() );</creating_code>
+								<include_file>mrpt/gui/WxUtils.h</include_file>
+								<style></style>
+								<pos>280,96</pos>
+								<size>300,116</size>
+							</object>
+							<object class="wxStaticText" name="ID_STATICTEXT6" variable="StaticText6" member="yes">
+								<label>Prepare to calibrate your Kinect sensor:</label>
+								<pos>40,32</pos>
+							</object>
+							<object class="wxStaticText" name="ID_STATICTEXT7" variable="StaticText7" member="yes">
+								<label>1) Make sure the IR projector is covered, for example, by tapying a piece of some opaque material on it.</label>
+								<pos>56,56</pos>
+								<size>805,45</size>
+							</object>
+							<object class="wxStaticText" name="ID_STATICTEXT8" variable="StaticText8" member="yes">
+								<label>2) Print a checkerboard and stick it firmly to some rigid board or paperboard.&#x0A;   If you don&apos;t have any pattern at hand, get one from:</label>
+								<pos>48,256</pos>
+								<size>661,37</size>
+							</object>
+							<object class="wxStaticText" name="ID_STATICTEXT5" variable="StaticText5" member="yes">
+								<label>3) Connect the Kinect to the computer and wait a few seconds until the driver establishes connection.</label>
+								<pos>40,360</pos>
+								<size>757,45</size>
+							</object>
+							<object class="wxButton" name="ID_BUTTON3" variable="btnNext1" member="yes">
+								<label>START</label>
+								<default>1</default>
+								<pos>384,416</pos>
+								<size>117,45</size>
+								<handler function="OnbtnNext1Click" entry="EVT_BUTTON" />
+							</object>
+							<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="TextCtrl1" member="yes">
+								<value>http://www.mrpt.org/downloads/camera-calibration-checker-board__9x7.pdf</value>
+								<pos>64,296</pos>
+								<size>605,27</size>
+								<style>wxTE_READONLY</style>
+							</object>
+						</object>
+						<label>0) Instructions</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL3" variable="Panel3" member="yes" />
+						<label>1) Test connection</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL4" variable="Panel4" member="yes">
+							<object class="wxFlexGridSizer" variable="FlexGridSizer3" member="no">
+								<cols>2</cols>
+								<rows>1</rows>
+								<growablecols>0</growablecols>
+								<object class="sizeritem">
+									<object class="Custom" name="ID_CUSTOM1" subclass="mrpt::gui::wxMRPTImageControl" variable="m_realtimeview" member="yes">
+										<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS).x,$(POS).y,$(SIZE).GetWidth(), $(SIZE).GetHeight() );</creating_code>
+										<include_file>mrpt/gui/WxUtils.h</include_file>
+										<style></style>
+										<size>640,480</size>
+									</object>
+									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="sizeritem">
+									<object class="wxPanel" name="ID_PANEL7" variable="Panel7" member="yes">
+										<object class="wxFlexGridSizer" variable="FlexGridSizer4" member="no">
+											<cols>3</cols>
+											<object class="sizeritem">
+												<object class="wxStaticBoxSizer" variable="StaticBoxSizer3" member="no">
+													<label>Checkerboard parameters </label>
+													<object class="sizeritem">
+														<object class="wxFlexGridSizer" variable="FlexGridSizer6" member="no">
+															<cols>1</cols>
+															<rows>2</rows>
+															<growablecols>0,1</growablecols>
+															<object class="sizeritem">
+																<object class="wxStaticBoxSizer" variable="StaticBoxSizer4" member="no">
+																	<label>Number of inner corners: </label>
+																	<object class="sizeritem">
+																		<object class="wxFlexGridSizer" variable="FlexGridSizer17" member="no">
+																			<cols>4</cols>
+																			<rows>1</rows>
+																			<object class="sizeritem">
+																				<object class="wxStaticText" name="ID_STATICTEXT1" variable="StaticText1" member="yes">
+																					<label>In X:</label>
+																				</object>
+																				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>5</border>
+																				<option>1</option>
+																			</object>
+																			<object class="sizeritem">
+																				<object class="wxSpinCtrl" name="ID_SPINCTRL1" variable="edSizeX" member="yes">
+																					<value>5</value>
+																					<min>1</min>
+																					<max>200</max>
+																					<size>50,-1</size>
+																				</object>
+																				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>5</border>
+																				<option>1</option>
+																			</object>
+																			<object class="sizeritem">
+																				<object class="wxStaticText" name="ID_STATICTEXT2" variable="StaticText2" member="yes">
+																					<label>In Y:</label>
+																				</object>
+																				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>5</border>
+																				<option>1</option>
+																			</object>
+																			<object class="sizeritem">
+																				<object class="wxSpinCtrl" name="ID_SPINCTRL2" variable="edSizeY" member="yes">
+																					<value>8</value>
+																					<min>1</min>
+																					<max>200</max>
+																					<size>50,-1</size>
+																				</object>
+																				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>5</border>
+																				<option>1</option>
+																			</object>
+																		</object>
+																		<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																		<option>1</option>
+																	</object>
+																</object>
+																<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxStaticBoxSizer" variable="StaticBoxSizer5" member="no">
+																	<label> Size of quads (in mm): </label>
+																	<object class="sizeritem">
+																		<object class="wxFlexGridSizer" variable="FlexGridSizer18" member="no">
+																			<cols>4</cols>
+																			<rows>1</rows>
+																			<object class="sizeritem">
+																				<object class="wxStaticText" name="ID_STATICTEXT3" variable="StaticText3" member="yes">
+																					<label>In X:</label>
+																				</object>
+																				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>5</border>
+																				<option>1</option>
+																			</object>
+																			<object class="sizeritem">
+																				<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="edLengthX" member="yes">
+																					<value>40.0</value>
+																					<size>40,-1</size>
+																				</object>
+																				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>5</border>
+																				<option>1</option>
+																			</object>
+																			<object class="sizeritem">
+																				<object class="wxStaticText" name="ID_STATICTEXT4" variable="StaticText4" member="yes">
+																					<label>In Y:</label>
+																				</object>
+																				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>5</border>
+																				<option>1</option>
+																			</object>
+																			<object class="sizeritem">
+																				<object class="wxTextCtrl" name="ID_TEXTCTRL3" variable="edLengthY" member="yes">
+																					<value>40.0</value>
+																					<size>40,-1</size>
+																				</object>
+																				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																				<border>5</border>
+																				<option>1</option>
+																			</object>
+																		</object>
+																		<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																		<option>1</option>
+																	</object>
+																</object>
+																<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxCheckBox" name="ID_CHECKBOX1" variable="cbNormalize" member="yes">
+																	<label>Normalize image</label>
+																	<checked>1</checked>
+																</object>
+																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+														</object>
+														<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+														<border>3</border>
+														<option>1</option>
+													</object>
+												</object>
+												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+										</object>
+									</object>
+									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+							</object>
+						</object>
+						<label>2) Capture</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL5" variable="Panel5" member="yes" />
+						<label>3) Verify</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL6" variable="Panel6" member="yes" />
+						<label>4) Optimization</label>
+					</object>
+				</object>
+				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+			<object class="sizeritem">
+				<object class="wxPanel" name="ID_PANEL2" variable="Panel2" member="yes">
+					<object class="wxFlexGridSizer" variable="FlexGridSizer2" member="no">
+						<cols>3</cols>
+						<growablecols>0</growablecols>
+						<object class="spacer">
+							<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+							<border>5</border>
+							<option>1</option>
+						</object>
+						<object class="sizeritem">
+							<object class="wxButton" name="ID_BUTTON1" variable="bntAbout" member="yes">
+								<label>About</label>
+								<handler function="OnAbout" entry="EVT_BUTTON" />
+							</object>
+							<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+							<border>5</border>
+							<option>1</option>
+						</object>
+						<object class="sizeritem">
+							<object class="wxButton" name="ID_BUTTON2" variable="btnQuit" member="yes">
+								<label>Quit</label>
+								<handler function="OnbtnQuitClick" entry="EVT_BUTTON" />
+							</object>
+							<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+							<border>5</border>
+							<option>1</option>
+						</object>
+					</object>
+				</object>
+				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<option>1</option>
+			</object>
+		</object>
+	</object>
+</wxsmith>

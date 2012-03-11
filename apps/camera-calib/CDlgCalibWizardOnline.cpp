@@ -32,9 +32,9 @@
 
 //(*InternalHeaders(CDlgCalibWizardOnline)
 #include <wx/settings.h>
-#include <wx/font.h>
-#include <wx/intl.h>
 #include <wx/string.h>
+#include <wx/intl.h>
+#include <wx/font.h>
 //*)
 
 
@@ -81,18 +81,18 @@ CDlgCalibWizardOnline::CDlgCalibWizardOnline(wxWindow* parent,wxWindowID id,cons
 
 	//(*Initialize(CDlgCalibWizardOnline)
 	wxStaticBoxSizer* StaticBoxSizer2;
-	wxFlexGridSizer* FlexGridSizer4;
-	wxStaticBoxSizer* StaticBoxSizer4;
-	wxFlexGridSizer* FlexGridSizer3;
-	wxFlexGridSizer* FlexGridSizer5;
 	wxFlexGridSizer* FlexGridSizer2;
-	wxFlexGridSizer* FlexGridSizer7;
-	wxStaticBoxSizer* StaticBoxSizer3;
-	wxFlexGridSizer* FlexGridSizer18;
-	wxFlexGridSizer* FlexGridSizer6;
-	wxStaticBoxSizer* StaticBoxSizer1;
-	wxFlexGridSizer* FlexGridSizer17;
 	wxStaticBoxSizer* StaticBoxSizer5;
+	wxFlexGridSizer* FlexGridSizer17;
+	wxFlexGridSizer* FlexGridSizer7;
+	wxFlexGridSizer* FlexGridSizer4;
+	wxStaticBoxSizer* StaticBoxSizer3;
+	wxFlexGridSizer* FlexGridSizer6;
+	wxFlexGridSizer* FlexGridSizer3;
+	wxStaticBoxSizer* StaticBoxSizer4;
+	wxFlexGridSizer* FlexGridSizer18;
+	wxFlexGridSizer* FlexGridSizer5;
+	wxStaticBoxSizer* StaticBoxSizer1;
 	
 	Create(parent, id, _("Grab chessboard calibration pattern"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("id"));
 	SetClientSize(wxDefaultSize);
@@ -127,8 +127,8 @@ CDlgCalibWizardOnline::CDlgCalibWizardOnline(wxWindow* parent,wxWindowID id,cons
 	FlexGridSizer6->Add(StaticBoxSizer4, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 2);
 	wxString __wxRadioBoxChoices_1[2] = 
 	{
-		_("OpenCV\'s default"),
-		_("Scaramuzza et al.\'s")
+	_("OpenCV\'s default"),
+	_("Scaramuzza et al.\'s")
 	};
 	rbMethod = new wxRadioBox(this, ID_RADIOBOX1, _(" Detector method: "), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX1"));
 	FlexGridSizer6->Add(rbMethod, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
