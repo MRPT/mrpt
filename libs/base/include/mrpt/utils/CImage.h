@@ -271,8 +271,8 @@ namespace mrpt
 				const mrpt::utils::TColor &color = mrpt::utils::TColor(255,255,255),
 				unsigned int	width = 1);
 
-			void equalizeHistInPlace(); //!< Equalize the image histogram, replacing the original image.
-			void equalizeHist( CImage  &outImg ) const; //!< Equalize the image histogram, saving the new image in the given output object.
+			void equalizeHistInPlace(); //!< Equalize the image histogram, replacing the original image. \note RGB images are first converted to HSV color space, then equalized for brightness (V)
+			void equalizeHist( CImage  &outImg ) const; //!< Equalize the image histogram, saving the new image in the given output object.  \note RGB images are first converted to HSV color space, then equalized for brightness (V)
 
 			/** Returns a new image scaled down to half its original size.
 			  * \exception std::exception On odd size
@@ -399,9 +399,10 @@ namespace mrpt
 				) const;
 
 
-			/** Optimize de brightness range of a image without using histogram
-			* Only for one channel images.
-			*/
+			/** Optimize the brightness range of an image without using histogram
+			  * Only for one channel images.
+			  * \sa equalizeHist
+			  */
 			void  normalize();
 
 			/** Flips vertically the image.
@@ -521,7 +522,7 @@ namespace mrpt
 
 			/** Copies from another image, and, if that one is externally stored, the image file will be actually loaded into memory in "this" object.
 			  * \sa operator =
-			  * \exception CExceptionExternalImageNotFound If the external image couldn't be loaded. 
+			  * \exception CExceptionExternalImageNotFound If the external image couldn't be loaded.
 			  */
 			void copyFromForceLoad(const CImage &o);
 

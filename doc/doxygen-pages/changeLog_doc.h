@@ -71,9 +71,11 @@
 			-  mrpt::sync::CCriticalSectionLocker now can accept a NULL pointer as input, in which case no action will be taken (previosly, it led to segfault) - <a href="http://code.google.com/p/mrpt/source/detail?r=2727" >r2727</a> 
 			-  mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.
 			-  mrpt::utils::TStereoCamera changes its I/O format to config files, now it's consistent with rawlog-edit, stereo-calib-gui and others.
-			-  mrpt::utils::CImage::changeSize() is now smart enough to avoid deallocating & re-allocating an image if the requested params exactly coincide with the current image.
-			-  mrpt::utils::CImage::getAsIplImage() marked as deprecated - replace with mrpt::utils::CImage::getAs<IplImage>() instead.
-			-  mrpt::utils::CImage::copyFromForceLoad() now raises an exception if the external image wasn't found.
+			- mrpt::utils::CImage:
+				-  mrpt::utils::CImage::changeSize() is now smart enough to avoid deallocating & re-allocating an image if the requested params exactly coincide with the current image.
+				-  mrpt::utils::CImage::getAsIplImage() marked as deprecated - replace with mrpt::utils::CImage::getAs<IplImage>() instead.
+				-  mrpt::utils::CImage::copyFromForceLoad() now raises an exception if the external image wasn't found.
+				-  mrpt::utils::CImage::equalizeHist() now also works for RGB images (doing equalization in HSV colorspace)
 		- [mrpt-maps] 
 			- mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
 		- [mrpt-vision] 

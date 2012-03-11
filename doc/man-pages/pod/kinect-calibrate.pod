@@ -1,0 +1,41 @@
+=head1 NAME
+
+kinect-calibrate - Calibration utility for the Microsoft Kinect sensor
+
+=head1 SYNOPSIS
+
+kinect-calibrate
+
+=head1 DESCRIPTION
+
+B<kinect-calibrate> is designed to allow an easy calibration of the 
+camera intrinsic and extrinsic parameters required for an accurate
+reconstruction of colored 3D point clouds with the sensor. 
+Calibration will require a printed checkerboard as those used
+in common camera calibration.
+
+
+=head1 BUGS
+
+Please report bugs at http://www.mrpt.org/project/issues/MRPT
+
+=head1 SEE ALSO
+
+The application wiki page at http://www.mrpt.org/Kinect_and_MRPT
+
+=head1 AUTHORS
+
+B<kinect-calibrate> is part of the Mobile Robot Programming Toolkit (MRPT), 
+and was originally written by Jose Luis Blanco (University of Malaga).
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3, or (at your option) any
+later version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
+=cut

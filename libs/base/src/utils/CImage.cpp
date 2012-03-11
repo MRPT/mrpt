@@ -261,9 +261,9 @@ void  CImage::changeSize(
 	{
 		makeSureImageIsLoaded();   // For delayed loaded images stored externally
 		IplImage *ipl = static_cast<IplImage*>(img);
-		if (static_cast<unsigned int>(ipl->width)==width && 
-		    static_cast<unsigned int>(ipl->height)==height && 
-		    ipl->nChannels == nChannels && 
+		if (static_cast<unsigned int>(ipl->width)==width &&
+		    static_cast<unsigned int>(ipl->height)==height &&
+		    ipl->nChannels == nChannels &&
 		    ipl->origin == ( originTopLeft ? 0:1)
 			)
 		{
@@ -271,7 +271,7 @@ void  CImage::changeSize(
 		}
 	}
 
-	// Delete current img	
+	// Delete current img
 	releaseIpl();
 
 #	if IMAGE_ALLOC_PERFLOG
@@ -2321,13 +2321,36 @@ void CImage::equalizeHist( CImage  &outImg ) const
 {
 #if MRPT_HAS_OPENCV
 	// Convert to a single luminance channel image
-	const IplImage *ipl = getAs<IplImage>();	// Source Image
-    ASSERT_(ipl!=NULL);
+	const IplImage *srcImg = getAs<IplImage>();	// Source Image
+    ASSERT_(srcImg!=NULL)
 
-	int	 cx = getWidth(), cy = getHeight();
-	outImg.changeSize(cx,cy,1,isOriginTopLeft());
+	outImg.changeSize( srcImg->width, srcImg->height, 1,isOriginTopLeft());
 
-	cvEqualizeHist(ipl, outImg.getAs<IplImage>() );
+	if (srcImg->nChannels==1)
+	{	// Grayscale:
+		cvEqualizeHist(srcImg, outImg.getAs<IplImage>() );
+	}
+	else
+	{	// Color:
+		IplImage *hsv = cvCreateImage(cvGetSize(srcImg), 8, 3);
+		IplImage *h = cvCreateImage(cvGetSize(srcImg), 8, 1);
+		IplImage *s = cvCreateImage(cvGetSize(srcImg), 8, 1);
+		IplImage *v = cvCreateImage(cvGetSize(srcImg), 8, 1);
+
+		cvCvtColor(srcImg, hsv, CV_BGR2HSV);
+		cvSplit(hsv, h, s, v, NULL);
+
+		cvEqualizeHist(v, v);
+
+		cvMerge(h, s, v, NULL, hsv);
+		cvCvtColor(hsv, outImg.getAs<IplImage>(), CV_HSV2BGR);
+
+		cvReleaseImage(&hsv);
+		cvReleaseImage(&h);
+		cvReleaseImage(&s);
+		cvReleaseImage(&v);
+	}
+
 #endif
 }
 
@@ -2342,10 +2365,32 @@ void CImage::equalizeHistInPlace()
     ASSERT_(srcImg!=NULL);
 
 	IplImage *outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
-
-	cvEqualizeHist(srcImg, outImg );
-
 	outImg->origin = srcImg->origin;
+
+	if (srcImg->nChannels==1)
+	{	// Grayscale:
+		cvEqualizeHist(srcImg, outImg );
+	}
+	else
+	{	// Color:
+		IplImage *hsv = cvCreateImage(cvGetSize(srcImg), 8, 3);
+		IplImage *h = cvCreateImage(cvGetSize(srcImg), 8, 1);
+		IplImage *s = cvCreateImage(cvGetSize(srcImg), 8, 1);
+		IplImage *v = cvCreateImage(cvGetSize(srcImg), 8, 1);
+
+		cvCvtColor(srcImg, hsv, CV_BGR2HSV);
+		cvSplit(hsv, h, s, v, NULL);
+
+		cvEqualizeHist(v, v);
+
+		cvMerge(h, s, v, NULL, hsv);
+		cvCvtColor(hsv, outImg, CV_HSV2BGR);
+
+		cvReleaseImage(&hsv);
+		cvReleaseImage(&h);
+		cvReleaseImage(&s);
+		cvReleaseImage(&v);
+	}
 
 	// Assign the output image to the IPLImage pointer within the CImage
 	releaseIpl();
