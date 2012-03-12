@@ -42,8 +42,14 @@
 #include <wx/intl.h>
 //*)
 
-#include <mrpt/utils/CImage.h>
-#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/hwdrivers/CKinect.h>
+
+using namespace mrpt;
+using namespace mrpt::utils;
+using namespace mrpt::slam;
+using namespace mrpt::hwdrivers;
+using namespace std;
+
 
 #include "../wx-common/mrpt_logo.xpm"
 #include "imgs/kinect.xpm"
@@ -80,6 +86,13 @@ const long kinect_calibrate_guiDialog::ID_STATICTEXT5 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_BUTTON3 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_TEXTCTRL2 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_PANEL1 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_CUSTOM3 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_STATICTEXT11 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_BUTTON5 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_STATICTEXT9 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_BUTTON4 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_STATICTEXT10 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_TEXTCTRL4 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_PANEL3 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_CUSTOM1 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_STATICTEXT1 = wxNewId();
@@ -99,6 +112,8 @@ const long kinect_calibrate_guiDialog::ID_NOTEBOOK1 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_BUTTON1 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_BUTTON2 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_PANEL2 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_TIMER1 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_TIMER2 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(kinect_calibrate_guiDialog,wxDialog)
@@ -107,6 +122,7 @@ BEGIN_EVENT_TABLE(kinect_calibrate_guiDialog,wxDialog)
 END_EVENT_TABLE()
 
 kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindowID id)
+	: m_my_redirector(NULL)
 {
 	// Load my custom icons:
 #if wxCHECK_VERSION(2, 8, 0)
@@ -115,18 +131,19 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     wxArtProvider::PushProvider(new MyArtProvider);
 #endif
 
-
     //(*Initialize(kinect_calibrate_guiDialog)
     wxFlexGridSizer* FlexGridSizer1;
     wxFlexGridSizer* FlexGridSizer2;
     wxStaticBoxSizer* StaticBoxSizer5;
     wxFlexGridSizer* FlexGridSizer17;
+    wxFlexGridSizer* FlexGridSizer7;
     wxFlexGridSizer* FlexGridSizer4;
     wxStaticBoxSizer* StaticBoxSizer3;
     wxFlexGridSizer* FlexGridSizer6;
     wxFlexGridSizer* FlexGridSizer3;
     wxStaticBoxSizer* StaticBoxSizer4;
     wxFlexGridSizer* FlexGridSizer18;
+    wxFlexGridSizer* FlexGridSizer5;
 
     Create(parent, id, _("Kinect calibration Wizard - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("id"));
     FlexGridSizer1 = new wxFlexGridSizer(2, 1, 0, 0);
@@ -143,11 +160,36 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     btnNext1->SetDefault();
     TextCtrl1 = new wxTextCtrl(Panel1, ID_TEXTCTRL2, _("http://www.mrpt.org/downloads/camera-calibration-checker-board_9x7.pdf"), wxPoint(64,296), wxSize(605,27), wxTE_READONLY, wxDefaultValidator, _T("ID_TEXTCTRL2"));
     Panel3 = new wxPanel(Notebook1, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL3"));
+    FlexGridSizer5 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer5->AddGrowableCol(1);
+    m_realtimeview_test = new mrpt::gui::wxMRPTImageControl(Panel3,ID_CUSTOM3,wxDefaultPosition.x,wxDefaultPosition.y,wxSize(640,480).GetWidth(), wxSize(640,480).GetHeight() );
+    FlexGridSizer5->Add(m_realtimeview_test, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer7 = new wxFlexGridSizer(6, 1, 0, 0);
+    FlexGridSizer7->AddGrowableCol(0);
+    FlexGridSizer7->AddGrowableRow(5);
+    StaticText11 = new wxStaticText(Panel3, ID_STATICTEXT11, _("Press \"Connect\" to start grabbing:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT11"));
+    FlexGridSizer7->Add(StaticText11, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    btnConnect = new wxButton(Panel3, ID_BUTTON5, _("Connect..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON5"));
+    FlexGridSizer7->Add(btnConnect, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText9 = new wxStaticText(Panel3, ID_STATICTEXT9, _("You should be seeing the \nRGB channel on the left panel.\n\nIf everything works OK, \npress \"Continue\"."), wxPoint(40,32), wxDefaultSize, 0, _T("ID_STATICTEXT9"));
+    FlexGridSizer7->Add(StaticText9, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    btnNext2 = new wxButton(Panel3, ID_BUTTON4, _("CONTINUE..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON4"));
+    btnNext2->SetDefault();
+    btnNext2->Disable();
+    FlexGridSizer7->Add(btnNext2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText10 = new wxStaticText(Panel3, ID_STATICTEXT10, _("Log:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT10"));
+    FlexGridSizer7->Add(StaticText10, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    edLogTest = new wxTextCtrl(Panel3, ID_TEXTCTRL4, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_AUTO_SCROLL|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL4"));
+    FlexGridSizer7->Add(edLogTest, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer5->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    Panel3->SetSizer(FlexGridSizer5);
+    FlexGridSizer5->Fit(Panel3);
+    FlexGridSizer5->SetSizeHints(Panel3);
     Panel4 = new wxPanel(Notebook1, ID_PANEL4, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL4"));
     FlexGridSizer3 = new wxFlexGridSizer(1, 2, 0, 0);
-    FlexGridSizer3->AddGrowableCol(0);
-    m_realtimeview = new mrpt::gui::wxMRPTImageControl(Panel4,ID_CUSTOM1,wxDefaultPosition.x,wxDefaultPosition.y,wxSize(640,480).GetWidth(), wxSize(640,480).GetHeight() );
-    FlexGridSizer3->Add(m_realtimeview, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer3->AddGrowableCol(1);
+    m_realtimeview_cap = new mrpt::gui::wxMRPTImageControl(Panel4,ID_CUSTOM1,wxDefaultPosition.x,wxDefaultPosition.y,wxSize(640,480).GetWidth(), wxSize(640,480).GetHeight() );
+    FlexGridSizer3->Add(m_realtimeview_cap, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel7 = new wxPanel(Panel4, ID_PANEL7, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL7"));
     FlexGridSizer4 = new wxFlexGridSizer(0, 3, 0, 0);
     StaticBoxSizer3 = new wxStaticBoxSizer(wxHORIZONTAL, Panel7, _("Checkerboard parameters "));
@@ -213,18 +255,37 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer2->SetSizeHints(Panel2);
     FlexGridSizer1->Add(Panel2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     SetSizer(FlexGridSizer1);
+    timConsoleDump.SetOwner(this, ID_TIMER1);
+    timConsoleDump.Start(100, false);
+    timMisc.SetOwner(this, ID_TIMER2);
+    timMisc.Start(2, false);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     Center();
 
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnNext1Click);
+    Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnConnectClick);
+    Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnNext1Click);
     Connect(ID_NOTEBOOK1,wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnNotebook1PageChanging);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnAbout);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnQuitClick);
+    Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OntimConsoleDumpTrigger);
+    Connect(ID_TIMER2,wxEVT_TIMER,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OntimMiscTrigger);
+    Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnClose);
     //*)
 
-    this->SetIcon( wxIcon(kinect_xpm) );
+	// Set std::cout/cerr out:
+	m_my_redirector = new CMyRedirector(
+		edLogTest,
+		false, // yieldApplication
+		3000, // bufferSize
+		true, // also_cerr
+		true, // threadSafe -> we must call dumpNow()
+		true // also_to_cout_cerr
+		);
 
+	// App icon:
+    this->SetIcon( wxIcon(kinect_xpm) );
 
     // Load image from embedded JPEG image in .h:
     try
@@ -240,6 +301,8 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
 
 kinect_calibrate_guiDialog::~kinect_calibrate_guiDialog()
 {
+	delete m_my_redirector; m_my_redirector = NULL;
+
     //(*Destroy(kinect_calibrate_guiDialog)
     //*)
 }
@@ -270,3 +333,189 @@ void kinect_calibrate_guiDialog::OnbtnQuitClick(wxCommandEvent& event)
 {
 	Close();
 }
+
+void kinect_calibrate_guiDialog::OnbtnConnectClick(wxCommandEvent& event)
+{
+	btnNext2->Enable(false);
+
+	if (!m_cap_thread.isClear())
+	{
+		// Shoulnd't reach here...just in case:
+		btnConnect->Enable(false);
+		return;
+	}
+
+	m_cap_thread_data.quit = false;
+
+	// Launch thread:
+	m_cap_thread = mrpt::system::createThreadFromObjectMethod(this, &kinect_calibrate_guiDialog::thread_grabbing);
+	btnConnect->Enable(false);
+
+	// ...
+
+}
+
+
+void kinect_calibrate_guiDialog::OntimConsoleDumpTrigger(wxTimerEvent& event)
+{
+	if (m_my_redirector) m_my_redirector->dumpNow();
+}
+
+
+// The thread in charge of opening the Kinect sensor & grabbing data.
+void kinect_calibrate_guiDialog::thread_grabbing()
+{
+	TThreadParam &p = this->m_cap_thread_data;
+	p.terminated = false;
+
+	try
+	{
+		CKinect  kinect;
+
+		// Set params:
+		// kinect.enableGrab3DPoints(true);
+		// kinect.enablePreviewRGB(true);
+		//...
+
+		// Open:
+		cout << "Calling CKinect::initialize()...";
+		kinect.initialize();
+		cout << "OK\n";
+
+		CTicTac tictac;
+		int nImgs = 0;
+		bool there_is_obs=true, hard_error=false;
+
+		while (!hard_error && !p.quit)
+		{
+			// Grab new observation from the camera:
+			CObservation3DRangeScanPtr  obs     = CObservation3DRangeScan::Create(); // Smart pointers to observations
+
+			kinect.getNextObservation(*obs,there_is_obs,hard_error);
+
+			if (!hard_error && there_is_obs)
+			{
+				p.new_obs.set(obs);
+			}
+
+			if (p.command!=0)
+			{
+				switch (p.command)
+				{
+					case 's':
+						p.tilt_ang_deg-=1;
+						if (p.tilt_ang_deg<-31) p.tilt_ang_deg=-31;
+						kinect.setTiltAngleDegrees(p.tilt_ang_deg);
+						break;
+					case 'w':
+						p.tilt_ang_deg+=1;
+						if (p.tilt_ang_deg>31) p.tilt_ang_deg=31;
+						kinect.setTiltAngleDegrees(p.tilt_ang_deg);
+						break;
+					case 'c':
+						// Switch video input:
+						kinect.setVideoChannel( kinect.getVideoChannel()==CKinect::VIDEO_CHANNEL_RGB ?  CKinect::VIDEO_CHANNEL_IR : CKinect::VIDEO_CHANNEL_RGB);
+						break;
+					case 27:
+						p.quit = true;
+						break;
+				}
+
+				// Clear pushed key flag:
+				p.command = 0;
+			}
+
+			nImgs++;
+			if (nImgs>10)
+			{
+				p.Hz = nImgs / tictac.Tac();
+				nImgs=0;
+				tictac.Tic();
+			}
+		}
+	}
+	catch(std::exception &e)
+	{
+		cout << "Exception in Kinect thread: " << e.what() << endl;
+		p.quit = true;  // Exit for some error
+	}
+	p.terminated = true;
+}
+
+
+void kinect_calibrate_guiDialog::OntimMiscTrigger(wxTimerEvent& event)
+{
+	// if the thread was launched and has closed (e.g. for some error), clear the handle:
+	if (!m_cap_thread.isClear() && m_cap_thread_data.terminated)
+	{
+		m_cap_thread.clear();
+		btnConnect->Enable(true);
+	}
+
+	// If we have a new image, process it depending on the current tab:
+	// -----------------------------------------------------------------
+	if (!m_cap_thread.isClear())
+	{	// we're grabbing:
+
+		CObservation3DRangeScanPtr possiblyNewObs = m_cap_thread_data.new_obs.get();
+		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP &&
+			(!m_last_obs  || possiblyNewObs->timestamp!=m_last_obs->timestamp ) )
+		{	// It IS a new observation:
+			m_last_obs     = possiblyNewObs;
+
+			if (m_last_obs->hasIntensityImage )
+			{
+				try
+				{
+					ProcessNewGrabbedObs();
+				}
+				catch(std::exception &e)
+				{
+					cerr << e.what();
+				}
+			}
+
+		} // end It IS a new observation
+	} // end if m_cap_thread -> we're grabbing
+}
+
+void kinect_calibrate_guiDialog::OnClose(wxCloseEvent& event)
+{
+	if (!m_cap_thread.isClear() && !m_cap_thread_data.terminated)
+	{
+		m_cap_thread_data.quit = true;
+		cout << "Waiting for the grabbing thread to end...\n";
+		mrpt::system::joinThread( m_cap_thread );
+		m_cap_thread.clear();
+		cout << "Grabbing thread closed.\n";
+	}
+	event.Skip();
+}
+
+
+// ---------------------------------------
+// PROCESS NEW IMAGE (In: m_last_obs)
+// ---------------------------------------
+void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
+{
+	switch (Notebook1->GetSelection())
+	{
+	default:
+		break;
+
+	// ------------------------------------------
+	//   Tab 1: Testing
+	// ------------------------------------------
+	case 1:
+		{
+			m_realtimeview_test->AssignImage( m_last_obs->intensityImage );
+			m_realtimeview_test->Refresh();
+			if (!btnNext2->IsEnabled()) btnNext2->Enable();
+		}
+		break;
+
+	}
+
+
+}
+

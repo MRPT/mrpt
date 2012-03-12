@@ -47,7 +47,31 @@
 #include <mrpt/gui/WxUtils.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+#include <wx/timer.h>
 //*)
+
+#include "../wx-common/CMyRedirector.h"
+
+
+#include <mrpt/utils.h>
+#include <mrpt/obs.h>
+#include <mrpt/system/threads.h>
+
+// Thread for grabbing: Do this is another thread so we divide rendering and grabbing
+//   and exploit multicore CPUs.
+struct TThreadParam
+{
+	TThreadParam() : quit(false), terminated(false), command(0), tilt_ang_deg(0), Hz(0) { }
+
+	volatile bool   quit;
+	volatile bool   terminated;
+	volatile int    command;
+	volatile double tilt_ang_deg;
+	volatile double Hz;
+
+	mrpt::synch::CThreadSafeVariable<mrpt::slam::CObservation3DRangeScanPtr> new_obs;     // RGB+D (+3D points)
+};
+
 
 class kinect_calibrate_guiDialog: public wxDialog
 {
@@ -58,12 +82,26 @@ class kinect_calibrate_guiDialog: public wxDialog
 
     private:
 
+		CMyRedirector  *m_my_redirector;
+
+		mrpt::system::TThreadHandle  m_cap_thread;
+		TThreadParam                 m_cap_thread_data;
+
+		mrpt::slam::CObservation3DRangeScanPtr  m_last_obs;
+
+		void thread_grabbing();
+		void ProcessNewGrabbedObs();
+
         //(*Handlers(kinect_calibrate_guiDialog)
         void OnQuit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
         void OnNotebook1PageChanging(wxNotebookEvent& event);
         void OnbtnNext1Click(wxCommandEvent& event);
         void OnbtnQuitClick(wxCommandEvent& event);
+        void OnbtnConnectClick(wxCommandEvent& event);
+        void OntimConsoleDumpTrigger(wxTimerEvent& event);
+        void OntimMiscTrigger(wxTimerEvent& event);
+        void OnClose(wxCloseEvent& event);
         //*)
 
         //(*Identifiers(kinect_calibrate_guiDialog)
@@ -75,6 +113,13 @@ class kinect_calibrate_guiDialog: public wxDialog
         static const long ID_BUTTON3;
         static const long ID_TEXTCTRL2;
         static const long ID_PANEL1;
+        static const long ID_CUSTOM3;
+        static const long ID_STATICTEXT11;
+        static const long ID_BUTTON5;
+        static const long ID_STATICTEXT9;
+        static const long ID_BUTTON4;
+        static const long ID_STATICTEXT10;
+        static const long ID_TEXTCTRL4;
         static const long ID_PANEL3;
         static const long ID_CUSTOM1;
         static const long ID_STATICTEXT1;
@@ -94,20 +139,26 @@ class kinect_calibrate_guiDialog: public wxDialog
         static const long ID_BUTTON1;
         static const long ID_BUTTON2;
         static const long ID_PANEL2;
+        static const long ID_TIMER1;
+        static const long ID_TIMER2;
         //*)
 
         //(*Declarations(kinect_calibrate_guiDialog)
         wxButton* btnQuit;
+        mrpt::gui::wxMRPTImageControl* m_realtimeview_cap;
         wxTextCtrl* edLengthY;
         wxPanel* Panel6;
         wxPanel* Panel1;
         wxPanel* Panel7;
         wxCheckBox* cbNormalize;
         mrpt::gui::wxMRPTImageControl* m_imgStaticKinect;
+        wxButton* btnConnect;
         wxButton* bntAbout;
-        mrpt::gui::wxMRPTImageControl* m_realtimeview;
+        wxTimer timMisc;
         wxSpinCtrl* edSizeY;
         wxStaticText* StaticText1;
+        wxStaticText* StaticText10;
+        wxTimer timConsoleDump;
         wxPanel* Panel2;
         wxStaticText* StaticText3;
         wxPanel* Panel4;
@@ -124,9 +175,16 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxNotebook* Notebook1;
         wxTextCtrl* edLengthX;
         wxStaticText* StaticText6;
+        wxButton* btnNext2;
+        mrpt::gui::wxMRPTImageControl* m_realtimeview_test;
+        wxTextCtrl* edLogTest;
+        wxStaticText* StaticText9;
+        wxStaticText* StaticText11;
         //*)
 
         DECLARE_EVENT_TABLE()
+
+
 };
 
 #endif // KINECT_CALIBRATE_GUIMAIN_H

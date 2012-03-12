@@ -3,6 +3,7 @@
 	<object class="wxDialog" name="kinect_calibrate_guiDialog">
 		<title>Kinect calibration Wizard - Part of MRPT</title>
 		<centered>1</centered>
+		<handler function="OnClose" entry="EVT_CLOSE" />
 		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
 			<cols>1</cols>
 			<rows>2</rows>
@@ -56,7 +57,87 @@
 						<label>0) Instructions</label>
 					</object>
 					<object class="notebookpage">
-						<object class="wxPanel" name="ID_PANEL3" variable="Panel3" member="yes" />
+						<object class="wxPanel" name="ID_PANEL3" variable="Panel3" member="yes">
+							<object class="wxFlexGridSizer" variable="FlexGridSizer5" member="no">
+								<cols>2</cols>
+								<rows>1</rows>
+								<growablecols>1</growablecols>
+								<object class="sizeritem">
+									<object class="Custom" name="ID_CUSTOM3" subclass="mrpt::gui::wxMRPTImageControl" variable="m_realtimeview_test" member="yes">
+										<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS).x,$(POS).y,$(SIZE).GetWidth(), $(SIZE).GetHeight() );</creating_code>
+										<include_file>mrpt/gui/WxUtils.h</include_file>
+										<style></style>
+										<size>640,480</size>
+									</object>
+									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="sizeritem">
+									<object class="wxFlexGridSizer" variable="FlexGridSizer7" member="no">
+										<cols>1</cols>
+										<rows>6</rows>
+										<growablecols>0</growablecols>
+										<growablerows>5</growablerows>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT11" variable="StaticText11" member="yes">
+												<label>Press &quot;Connect&quot; to start grabbing:</label>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxButton" name="ID_BUTTON5" variable="btnConnect" member="yes">
+												<label>Connect...</label>
+												<handler function="OnbtnConnectClick" entry="EVT_BUTTON" />
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT9" variable="StaticText9" member="yes">
+												<label>You should be seeing the &#x0A;RGB channel on the left panel.&#x0A;&#x0A;If everything works OK, &#x0A;press &quot;Continue&quot;.</label>
+												<pos>40,32</pos>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxButton" name="ID_BUTTON4" variable="btnNext2" member="yes">
+												<label>CONTINUE...</label>
+												<default>1</default>
+												<enabled>0</enabled>
+												<handler function="OnbtnNext1Click" entry="EVT_BUTTON" />
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT10" variable="StaticText10" member="yes">
+												<label>Log:</label>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxTextCtrl" name="ID_TEXTCTRL4" variable="edLogTest" member="yes">
+												<style>wxTE_AUTO_SCROLL|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL</style>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+									</object>
+									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<option>1</option>
+								</object>
+							</object>
+						</object>
 						<label>1) Test connection</label>
 					</object>
 					<object class="notebookpage">
@@ -64,9 +145,9 @@
 							<object class="wxFlexGridSizer" variable="FlexGridSizer3" member="no">
 								<cols>2</cols>
 								<rows>1</rows>
-								<growablecols>0</growablecols>
+								<growablecols>1</growablecols>
 								<object class="sizeritem">
-									<object class="Custom" name="ID_CUSTOM1" subclass="mrpt::gui::wxMRPTImageControl" variable="m_realtimeview" member="yes">
+									<object class="Custom" name="ID_CUSTOM1" subclass="mrpt::gui::wxMRPTImageControl" variable="m_realtimeview_cap" member="yes">
 										<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS).x,$(POS).y,$(SIZE).GetWidth(), $(SIZE).GetHeight() );</creating_code>
 										<include_file>mrpt/gui/WxUtils.h</include_file>
 										<style></style>
@@ -267,6 +348,14 @@
 				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 				<option>1</option>
 			</object>
+		</object>
+		<object class="wxTimer" name="ID_TIMER1" variable="timConsoleDump" member="yes">
+			<interval>100</interval>
+			<handler function="OntimConsoleDumpTrigger" entry="EVT_TIMER" />
+		</object>
+		<object class="wxTimer" name="ID_TIMER2" variable="timMisc" member="yes">
+			<interval>2</interval>
+			<handler function="OntimMiscTrigger" entry="EVT_TIMER" />
 		</object>
 	</object>
 </wxsmith>
