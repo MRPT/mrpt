@@ -28,7 +28,7 @@ LANGUAGE LANG_SPANISH, SUBLANG_SPANISH_MODERN
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-AAAA                    ICON                    "imgs/icono_main.ico"
+AAAA                    ICON                    "imgs/kinect.ico"
 WXICON_AAA              ICON                    "wx/msw/std.ico"
 WXICON_SMALL_CLOSED_FOLDER ICON                    "wx/msw/folder1.ico"
 WXICON_SMALL_OPEN_FOLDER ICON                    "wx/msw/folder2.ico"

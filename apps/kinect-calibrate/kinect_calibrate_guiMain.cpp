@@ -509,7 +509,7 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 	case 1:
 		{
 			m_realtimeview_test->AssignImage( m_last_obs->intensityImage );
-			m_realtimeview_test->Refresh();
+			m_realtimeview_test->Refresh(false);
 			if (!btnNext2->IsEnabled()) btnNext2->Enable();
 		}
 		break;
