@@ -1,3 +1,6 @@
+# Install this file into /etc/udev/rules.d/ for accessing Kinect 
+# without root privileges.
+
 # ATTR{product}=="Xbox NUI Motor"
 SUBSYSTEM=="usb", ATTR{idVendor}=="045e", ATTR{idProduct}=="02b0", MODE="0666"
 
