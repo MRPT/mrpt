@@ -51,29 +51,27 @@ void  CObservationRFID::writeToStream(CStream &out, int *version) const
 		//std::cout << "AP-1" << std::endl;
 	MRPT_UNUSED_PARAM(out);
 	if (version)
-		*version = 3;
+		*version = 4;
 	else
 	{
 		//std::cout << "AP0" << std::endl;
-		
 
 		// The data
-		char buff[3];
-		out << std::string(itoa(Ntags,buff,10));
+		// out <<  std::string(itoa(Ntags,buff,10));  // (Was in v3)
+		out << static_cast<int32_t>(Ntags);  // new in v4
 		//std::cout << "AP1: " << std::string(itoa(Ntags,buff,10)) << std::endl;
 
-		int i;
-		for (i=0;i<Ntags;i++){
+		for (int i=0;i<Ntags;i++){
 			out << power[i];
 			//std::cout << "AP2: " << power[i] << std::endl;
 		}
 
-		for (i=0;i<Ntags;i++){
+		for (int i=0;i<Ntags;i++){
 			out	<< epc[i];
 			//std::cout << "AP3: " << epc[i] << std::endl;
 		}
-		
-		for (i=0;i<Ntags;i++){
+
+		for (int i=0;i<Ntags;i++){
 			out	<< antennaPort[i];
 			//std::cout << "AP4: " << antennaPort[i] << std::endl;
 		}
@@ -96,43 +94,42 @@ void  CObservationRFID::readFromStream(CStream &in, int version)
 	case 1:
 	case 2:
 	case 3:
+	case 4:
 		{
-			std::string ntags;
-			
-			in >> ntags;
-			Ntags = atoi(ntags.c_str());
-			int i;
-			//std::cout << "P1: " << Ntags << std::endl;
-			 double power_tmp;
-			for (i=0;i<Ntags;i++)
+			if (version<4)
 			{
-				in	>> power_tmp;
-				power.push_back(power_tmp);
-				//std::cout << power_tmp << std::endl;
+				std::string ntags;
+				in >> ntags;
+				Ntags = atoi(ntags.c_str());
+			}
+			else
+			{
+				int32_t n;
+				in >> n;
+				Ntags = static_cast<int>(n);
+			}
+
+			//std::cout << "P1: " << Ntags << std::endl;
+			power.resize(Ntags);
+			for (int i=0;i<Ntags;i++)
+			{
+				in	>> power[i];
+				//std::cout << power[i] << std::endl;
 			}
 			//std::cout << "P2: ";
-			char epc_tmp[40];
-			for (i=0;i<Ntags;i++)
+			epc.resize(Ntags);
+			for (int i=0;i<Ntags;i++)
 			{
-				//std::cout << "a ";
-				in >> epc_tmp;
-				//in >> epc[i];
-				//std::cout << "b: " << std::string(epc_tmp) << " ";
-				epc.push_back(std::string(epc_tmp));
-				//std::cout << "c ";
-				free(epc_tmp);
-				//std::cout << "d " << std::endl;
+				in >> epc[i];
 			}
 			//std::cout << "P3" << std::endl;
-			std::string ant_tmp;
-			for (i=0;i<Ntags;i++)
+			antennaPort.resize(Ntags);
+			for (int i=0;i<Ntags;i++)
 			{
-				in >> ant_tmp;
-				antennaPort.push_back(ant_tmp);
-				ant_tmp.clear();
+				in >> antennaPort[i];
 			}
 			//std::cout << "P4" << std::endl;
-			
+
 			if (version>=1)
 				in >> sensorLabel;
 			else sensorLabel="";

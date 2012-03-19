@@ -54,7 +54,7 @@ void  CImpinjRFID::loadConfig_sensorSpecific(
 		pose_roll_1 = configSource.read_float(iniSection,"pose_roll_1",0,true);
 		pose_pitch_1 = configSource.read_float(iniSection,"pose_pitch_1",0,true);
 		pose_yaw_1 = configSource.read_float(iniSection,"pose_yaw_1",0,true);
-		
+
 		pose_x_2 = configSource.read_float(iniSection,"pose_x_2",0,true);
 		pose_y_2 = configSource.read_float(iniSection,"pose_y_2",0,true);
 		pose_z_2 = configSource.read_float(iniSection,"pose_z_2",0,true);
@@ -74,7 +74,7 @@ void  CImpinjRFID::loadConfig_sensorSpecific(
  ---------------------------------------------------------------*/
 void CImpinjRFID::connect()
 {
-	
+
 		// Start the server
 		server = new mrpt::utils::CServerTCPSocket(port);
 
@@ -109,7 +109,7 @@ bool CImpinjRFID::getObservation( mrpt::slam::CObservationRFID &obs)
 			ant_port =  *(strtok(msg," ",&tmp));
 			strcpy(epc,strtok(NULL," ",&tmp));
 			strcpy(rx_pwr,strtok(NULL, " ",&tmp));
-			
+
 			// Fill the observation
 			obs.Ntags ++;
 			std::stringstream antennaPortB;
@@ -119,11 +119,11 @@ bool CImpinjRFID::getObservation( mrpt::slam::CObservationRFID &obs)
 			obs.power.push_back(atof(rx_pwr));
 			obs.sensorLabel = m_sensorLabel;
 			std::cout << "mrpt::hwdrivers::CImpinjRFID::getObservation() " << "\n\tRXPWR: " << atof(rx_pwr) << " PWR READ: " << rx_pwr << std::endl;
-			
-		} 
+
+		}
 		if (receivedSomething)
 			return true;
-		else 
+		else
 			return false;
 	}
 	catch(exception &e)
@@ -150,8 +150,7 @@ void CImpinjRFID::closeReader()
 
 void CImpinjRFID::doProcess(){
 
-	mrpt::slam::CObservationRFID obs;
-	getObservation(obs);
-	appendObservation(CObservationRFID(new CObservationRFIDPtr(obs)));
-
-};
+	mrpt::slam::CObservationRFIDPtr obs = mrpt::slam::CObservationRFID::Create();
+	getObservation(*obs);
+	appendObservation(obs);
+}

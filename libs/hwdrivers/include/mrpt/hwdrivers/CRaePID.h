@@ -36,7 +36,11 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** This class implements a driver for the RAE Systems PID (Tested on a MiniRAE Lite)
+		/** This class implements a driver for the RAE Systems gas PhotoIonization Detector (PID) (Tested on a MiniRAE Lite)
+		  *   The sensor is accessed via a standard (or USB) serial port.
+		  *
+		  *   Refer to the manufacturer website for details on this sensor: http://www.raesystems.com/products/minirae-lite
+		  *
 		  *  \sa mrpt::slam::CObservationGasSensors
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
@@ -100,7 +104,7 @@ namespace mrpt
 			 /** Get alarm limits
 			  */
 			 void getLimits(float &min, float &max);
-			 
+
 
 		}; // End of class def.
 

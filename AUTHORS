@@ -92,6 +92,7 @@ the University of Malaga.
      mrpt::hwdrivers::CWirelessPower and mrpt::slam::CWirelessPowerGridMap2D.
   - Classes for RFID observations and sensors: mrpt::slam::CObservationRFID, 
      mrpt::hwdrivers::CImpinjRFID.
+  - Interface to PID sensor: mrpt::hwdrivers::CRaePID
     
 *  Kasra Khosoussi (K.N.Toosi University, Iran)
   - Patches to improve the JCBB data association implementation.

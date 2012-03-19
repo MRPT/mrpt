@@ -29,9 +29,21 @@
 
 
 #include <mrpt/hwdrivers.h>  // Precompiled headers
-
 #include <mrpt/hwdrivers/CRaePID.h>
 
+#include <iostream>
+#include <sstream>
+
+#ifdef MRPT_OS_WINDOWS
+	#  if defined(__GNUC__)
+		// MinGW: Nothing to do here (yet)
+	# else
+
+	# endif
+//#include <windows.h> // Rly needed?
+#endif
+
+using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 
 IMPLEMENTS_GENERIC_SENSOR(CRaePID,mrpt::hwdrivers)
@@ -54,7 +66,7 @@ void  CRaePID::loadConfig_sensorSpecific(
 	#ifdef MRPT_OS_WINDOWS
 		com_port = configSource.read_string(iniSection, "COM_port_PID", "COM1", true ) ;
 	#else
-		com_port = configSource.read_string(iniSection, "COM_port_PID", "/dev/tty0", true ) );
+		com_port = configSource.read_string(iniSection, "COM_port_PID", "/dev/tty0", true );
 	#endif
 		COM.open(com_port);
 		COM.setConfig(9600,0,8,1,true);
@@ -62,33 +74,8 @@ void  CRaePID::loadConfig_sensorSpecific(
 		COM.purgeBuffers();
 		mrpt::system::sleep(10);
 		COM.setTimeouts(50,1,100, 1,20);
-	std::cout << "PASA config" << std::endl;
+	//std::cout << "PASA config" << std::endl;
 }
-
-
-
-#ifdef MRPT_OS_LINUX
-#include <iostream>
-#include <sstream>
-#endif
-
-#ifdef MRPT_OS_WINDOWS
-	#  if defined(__GNUC__)
-		// MinGW: Nothing to do here (yet)
-	# else
-
-	# endif
-
-#include <windows.h>
-
-
-#endif
-
-using namespace mrpt::utils;
-
-
-
-
 
 void CRaePID::doProcess()
 {
@@ -101,20 +88,18 @@ void CRaePID::doProcess()
 	power_reading = COM.ReadString();
 
 	// Convert the text to a number (ppm)
-	float readnum,val_ppm;
-	readnum = atof(power_reading.c_str());
-	val_ppm = readnum/1000;
+	const float readnum = atof(power_reading.c_str());
+	const float val_ppm = readnum/1000;
 
-	
 	// Fill the observation
 	mrpt::slam::CObservationGasSensors::TObservationENose obs;
 	obs.readingsVoltage.push_back(val_ppm);
-	
+
 	CObservationGasSensors obsG;
 	obsG.sensorLabel = this->getSensorLabel();
 	obsG.m_readings.push_back(obs);
 	obsG.timestamp = now();
-	
+
 	appendObservation(CObservationGasSensorsPtr(new CObservationGasSensors(obsG)));
 
 }
@@ -152,7 +137,7 @@ std::string CRaePID::getSerialNumber()
 }
 
 std::string CRaePID::getName()
-{	
+{
 	// Send the command
 	COM.purgeBuffers();
 	COM.Write("N",1);
@@ -201,22 +186,19 @@ CObservationGasSensors CRaePID::getFullInfo()
 	mrpt::slam::CObservationGasSensors::TObservationENose obs;
 	CObservationGasSensors obsG;
 
-	for (int k=0; k < measurements_text.size(); k++)
+	for (size_t k=0; k < measurements_text.size(); k++)
 	{
+		const float readnum = atof(measurements_text[k].c_str());
+		const float val_ppm = readnum/1000.f;
 
-		float readnum,val_ppm;
-		readnum = atof(measurements_text[k].c_str());
-		val_ppm = readnum/1000;
-
-	
 		// Fill the observation
 		obs.readingsVoltage.push_back(val_ppm);
 		obsG.m_readings.push_back(obs);
 	}
-	
+
 	obsG.sensorLabel = this->getSensorLabel();
 	obsG.timestamp = now();
-	
+
 	return obsG;
 
 }
@@ -254,7 +236,7 @@ bool CRaePID::errorStatus(std::string &errorString)
 }
 
 void CRaePID::getLimits(float &min, float &max)
-{	
+{
 	// Send the command
 	COM.purgeBuffers();
 	COM.Write("L",1);
