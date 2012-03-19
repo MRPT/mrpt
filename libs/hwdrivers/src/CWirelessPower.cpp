@@ -7,7 +7,7 @@
    |                                                                           |
    |    This software was written by the Machine Perception and Intelligent    |
    |      Robotics Lab, University of Malaga (Spain).                          |
-   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>                     |
+   |    Contact: Emil Khatib  <emilkhatib@uma.es>		                       |
    |                                                                           |
    |  This file is part of the MRPT project.                                   |
    |                                                                           |
@@ -525,6 +525,8 @@ int		CWirelessPower::GetPower()
 /*---------------------------------------------------------------
 					getObservation
     Get the power of a given network as an observation
+	NOTE: Deprecated, use getObservations. Use this class as
+	      GenericSensor. See the CGenericSensor documentation
  ---------------------------------------------------------------*/
 bool CWirelessPower::getObservation( mrpt::slam::CObservationWirelessPower &outObservation )
 {
@@ -543,3 +545,13 @@ bool CWirelessPower::getObservation( mrpt::slam::CObservationWirelessPower &outO
 		return false;
 	}
 }
+
+
+void CWirelessPower::doProcess()
+{
+	// Wrapper to getObservation
+	mrpt::slam::CObservationWirelessPower outObservation;
+	getObservation(outObservation);
+
+	appendObservation(CObservationWirelessPowerPtr(new CObservationWirelessPower(outObservation)));
+};

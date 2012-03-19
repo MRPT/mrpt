@@ -7,7 +7,7 @@
    |                                                                           |
    |    This software was written by the Machine Perception and Intelligent    |
    |      Robotics Lab, University of Malaga (Spain).                          |
-   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>                     |
+   |    Contact: Emil Khatib  <emilkhatib@uma.es>		                       |
    |                                                                           |
    |  This file is part of the MRPT project.                                   |
    |                                                                           |
@@ -25,56 +25,85 @@
    |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
    |                                                                           |
    +---------------------------------------------------------------------------+ */
-#ifndef CObservationRFID_H
-#define CObservationRFID_H
+#ifndef  CRaePID_H
+#define  CRaePID_H
 
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/slam/CObservation.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPose2D.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/utils/CConfigFileBase.h>
 
 namespace mrpt
 {
-namespace slam
-{
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationRFID, CObservation, OBS_IMPEXP)
-
-	/** This represents an RFID tag observed by a receiver.
-	 *
-	 * \sa CObservation, mrpt::hwdrivers::CImpinjRFID for a software sensor capable of reading this kind of observations.
-	 * \ingroup mrpt_obs_grp
-	 */
-	class OBS_IMPEXP CObservationRFID : public CObservation
+	namespace hwdrivers
 	{
-		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE( CObservationRFID )
+		/** This class implements a driver for the RAE Systems PID (Tested on a MiniRAE Lite)
+		  *  \sa mrpt::slam::CObservationGasSensors
+		  * \ingroup mrpt_hwdrivers_grp
+		  */
+		class HWDRIVERS_IMPEXP CRaePID : public mrpt::hwdrivers::CGenericSensor
+		{
+				DEFINE_GENERIC_SENSOR(CRaePID)
 
-	 public:
-		/** Constructor */
-		CObservationRFID();
+		private:
+			/** COM port name
+			 */
+			std::string com_port;
 
-		 /** @name The data members
-		  * @{ */
+			/** COM port
+			 */
+			CSerialPort COM;
 
-		std::vector<double> power;  //!< The power or signal strength as sensed by the RFID receiver (in dBm)
-		mrpt::poses::CPose3D  sensorPoseOnRobot; //!< The location of the sensing antenna on the robot coordinate framework
-		std::vector<std::string> epc; //!< EPC code of the observed tag
-		std::vector<std::string> antennaPort; //!< Port of the antenna that did the reading
-		int Ntags; //!< Number of tags contained in the observation
+			/** Poses
+			 */
+			float pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll;
 
-		/** @} */
+		public:
+			/** Default constructor.
+			 */
+			CRaePID();
+			virtual ~CRaePID(){COM.close();};
 
-		void getSensorPose( CPose3D &out_sensorPose ) const;
 
-		/** A general method to change the sensor pose on the robot.
-		  *  It has no effects in this class
-		  * \sa getSensorPose  */
-		void setSensorPose( const CPose3D &newSensorPose );
+			 void doProcess();
+			 void  loadConfig_sensorSpecific(
+				 const mrpt::utils::CConfigFileBase &configSource,
+				const std::string			&section);
 
-	}; // End of class def.
+			 /** Get firmware version string.
+			  */
+			 std::string getFirmware();
 
+			 /** Get model string.
+			  */
+			 std::string getModel();
+
+			 /** Get serial number as a string.
+			  */
+			 std::string getSerialNumber();
+
+			 /** Get name string.
+			  */
+			 std::string getName();
+
+			 /** Switch power on or off (returns true if turned on).
+			  */
+			 bool switchPower();
+
+			 /** Get full reading (see PID documentation). In the returned observation, each reding is saved as a separate e-nose
+			  */
+			 CObservationGasSensors getFullInfo();
+
+			 /** Get error status (true if an error was found). errorString shows the error code (see PID documentation)
+			  */
+			 bool errorStatus(std::string &errorString);
+
+			 /** Get alarm limits
+			  */
+			 void getLimits(float &min, float &max);
+			 
+
+		}; // End of class def.
 
 	} // End of namespace
 } // End of namespace
-
 #endif

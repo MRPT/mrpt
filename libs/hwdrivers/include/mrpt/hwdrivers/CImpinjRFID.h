@@ -7,7 +7,7 @@
    |                                                                           |
    |    This software was written by the Machine Perception and Intelligent    |
    |      Robotics Lab, University of Malaga (Spain).                          |
-   |    Contact: Emil Khatib  <emilkhatib@gmail.com>	                       |
+   |    Contact: Emil Khatib  <emilkhatib@uma.es>	                           |
    |                                                                           |
    |  This file is part of the MRPT project.                                   |
    |                                                                           |
@@ -74,12 +74,28 @@ namespace mrpt
 			 */
 			CImpinjRFID();
 			virtual ~CImpinjRFID(){};
+
+			/** Connect to the reader.
+			 */
 			void connect();
-			void doProcess(){};
+
+			void doProcess();
+
+
 			void  loadConfig_sensorSpecific(
 				const mrpt::utils::CConfigFileBase &configSource,
 				const std::string			&section);
-			bool getObservation( mrpt::slam::CObservationRFID &outObservation );
+
+			/** Gets the information of the tags as a timestamped observation
+			* NOTE: Deprecated, use getObservations instead. See CGenericSensor documentation. This function is kept for internal use of the module
+			* \return Returns true if the observation was correct, and false otherwise
+			* \sa mrpt::hwdrivers::CGenericSensor
+			*/
+			bool getObservation( mrpt::slam::CObservationRFID &obs );
+
+			
+			/** Close the connection to the reader.
+			 */
 			void closeReader();
 		}; // End of class def.
 

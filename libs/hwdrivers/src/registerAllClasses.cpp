@@ -54,6 +54,7 @@ void registerAllClasses_mrpt_hwdrivers()
 	CActivMediaRobotBase::doRegister();
 	CPtuHokuyo::doRegister();
 	CWirelessPower::doRegister();
+	CRaePID::doRegister();
 	CImpinjRFID::doRegister();
 	CSickLaserSerial::doRegister();
 	CBoardENoses::doRegister();

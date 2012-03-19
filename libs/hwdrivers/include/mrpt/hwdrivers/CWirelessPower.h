@@ -7,7 +7,7 @@
    |                                                                           |
    |    This software was written by the Machine Perception and Intelligent    |
    |      Robotics Lab, University of Malaga (Spain).                          |
-   |    Contact: Emil Khatib  <emilkhatib@gmail.com>	                       |
+   |    Contact: Emil Khatib  <emilkhatib@uma.es>		                       |
    |                                                                           |
    |  This file is part of the MRPT project.                                   |
    |                                                                           |
@@ -74,7 +74,7 @@ namespace mrpt
 			 */
 			void setNet(std::string ssid_, std::string guid_);
 
-			 void doProcess(){};
+			 void doProcess();
 			 void  loadConfig_sensorSpecific(
 				 const mrpt::utils::CConfigFileBase &configSource,
 				const std::string			&section);
@@ -94,7 +94,9 @@ namespace mrpt
 
 
 			/** Gets the power of a given network as a timestamped observation
+			 * NOTE: Deprecated, use getObservations instead. See CGenericSensor documentation. This function is kept for internal use of the module
 			 * \return Returns true if the observation was correct, and false otherwise
+			 * \sa mrpt::hwdrivers::CGenericSensor
 			 */
 
 			bool getObservation( mrpt::slam::CObservationWirelessPower &outObservation );

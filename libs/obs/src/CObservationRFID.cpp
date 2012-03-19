@@ -48,15 +48,36 @@ CObservationRFID::CObservationRFID()
  ---------------------------------------------------------------*/
 void  CObservationRFID::writeToStream(CStream &out, int *version) const
 {
+		//std::cout << "AP-1" << std::endl;
 	MRPT_UNUSED_PARAM(out);
 	if (version)
 		*version = 3;
 	else
 	{
+		//std::cout << "AP0" << std::endl;
+		
+
 		// The data
-		out << power;
-		out	<< epc;
-		out	<< antennaPort;
+		char buff[3];
+		out << std::string(itoa(Ntags,buff,10));
+		//std::cout << "AP1: " << std::string(itoa(Ntags,buff,10)) << std::endl;
+
+		int i;
+		for (i=0;i<Ntags;i++){
+			out << power[i];
+			//std::cout << "AP2: " << power[i] << std::endl;
+		}
+
+		for (i=0;i<Ntags;i++){
+			out	<< epc[i];
+			//std::cout << "AP3: " << epc[i] << std::endl;
+		}
+		
+		for (i=0;i<Ntags;i++){
+			out	<< antennaPort[i];
+			//std::cout << "AP4: " << antennaPort[i] << std::endl;
+		}
+
 		out	<< sensorLabel;
 		out	<< timestamp;
 		out	<< sensorPoseOnRobot; // Added in v3
@@ -76,7 +97,41 @@ void  CObservationRFID::readFromStream(CStream &in, int version)
 	case 2:
 	case 3:
 		{
-			in	>> power >> epc >> antennaPort;
+			std::string ntags;
+			
+			in >> ntags;
+			Ntags = atoi(ntags.c_str());
+			int i;
+			//std::cout << "P1: " << Ntags << std::endl;
+			 double power_tmp;
+			for (i=0;i<Ntags;i++)
+			{
+				in	>> power_tmp;
+				power.push_back(power_tmp);
+				//std::cout << power_tmp << std::endl;
+			}
+			//std::cout << "P2: ";
+			char epc_tmp[40];
+			for (i=0;i<Ntags;i++)
+			{
+				//std::cout << "a ";
+				in >> epc_tmp;
+				//in >> epc[i];
+				//std::cout << "b: " << std::string(epc_tmp) << " ";
+				epc.push_back(std::string(epc_tmp));
+				//std::cout << "c ";
+				free(epc_tmp);
+				//std::cout << "d " << std::endl;
+			}
+			//std::cout << "P3" << std::endl;
+			std::string ant_tmp;
+			for (i=0;i<Ntags;i++)
+			{
+				in >> ant_tmp;
+				antennaPort.push_back(ant_tmp);
+				ant_tmp.clear();
+			}
+			//std::cout << "P4" << std::endl;
 			
 			if (version>=1)
 				in >> sensorLabel;

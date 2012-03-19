@@ -7,7 +7,7 @@
    |                                                                           |
    |    This software was written by the Machine Perception and Intelligent    |
    |      Robotics Lab, University of Malaga (Spain).                          |
-   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>                     |
+   |    Contact: Emil Khatib  <emilkhatib@uma.es>		                       |
    |                                                                           |
    |  This file is part of the MRPT project.                                   |
    |                                                                           |
@@ -86,37 +86,45 @@ void CImpinjRFID::connect()
 					getObservation
     Get the power of a given network as an observation
  ---------------------------------------------------------------*/
-bool CImpinjRFID::getObservation( mrpt::slam::CObservationRFID &outObservation )
+bool CImpinjRFID::getObservation( mrpt::slam::CObservationRFID &obs)
 {
 	try{
+		bool receivedSomething = false;
 		char msg[34];
 		char cmd[20];
 		char ant_port;
 		char epc[24];
 		char rx_pwr[5];
 		char *tmp;
-
+		obs.Ntags = 0;
 		// send an observation command to the device interface program
 		strcpy(cmd, "OBS\0");
 		client->writeAsync(cmd,10);
 
 		// receive a reading from the sensor through the socket
-		if (client->readAsync(msg,34) > 0)
+		while (client->readAsync(msg,34,100) > 0)
 		{
+			receivedSomething = true;
 			// the received string is in the format: ANT_PORT EPC RX_PWR ZERO_FILL
 			ant_port =  *(strtok(msg," ",&tmp));
 			strcpy(epc,strtok(NULL," ",&tmp));
 			strcpy(rx_pwr,strtok(NULL, " ",&tmp));
 			
 			// Fill the observation
-			outObservation.antennaPort = ant_port;
-			outObservation.epc = std::string(epc);
-			outObservation.power = atof(rx_pwr);
-			outObservation.sensorLabel = m_sensorLabel;
-			//std::cout << "mrpt::hwdrivers::CImpinjRFID::getObservation() " << "\n\tsensorLabel: " << outObservation.sensorLabel << "\n\ttimestamp: " << outObservation.timestamp << "\n\tEPC: " << outObservation.epc << std::endl;
-			return true;
+			obs.Ntags ++;
+			std::stringstream antennaPortB;
+			antennaPortB << ant_port;
+			obs.antennaPort.push_back(antennaPortB.str());
+			obs.epc.push_back(std::string(epc));
+			obs.power.push_back(atof(rx_pwr));
+			obs.sensorLabel = m_sensorLabel;
+			std::cout << "mrpt::hwdrivers::CImpinjRFID::getObservation() " << "\n\tRXPWR: " << atof(rx_pwr) << " PWR READ: " << rx_pwr << std::endl;
+			
 		} 
-		else { return false; }
+		if (receivedSomething)
+			return true;
+		else 
+			return false;
 	}
 	catch(exception &e)
 	{
@@ -138,3 +146,12 @@ void CImpinjRFID::closeReader()
 	client->writeAsync(cmd,10);
 	client->close();
 }
+
+
+void CImpinjRFID::doProcess(){
+
+	mrpt::slam::CObservationRFID obs;
+	getObservation(obs);
+	appendObservation(CObservationRFID(new CObservationRFIDPtr(obs)));
+
+};

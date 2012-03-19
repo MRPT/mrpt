@@ -44,6 +44,7 @@
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/hwdrivers/CInterfaceFTDIMessages.h>
 #include <mrpt/hwdrivers/CWirelessPower.h>
+#include <mrpt/hwdrivers/CRaePID.h>
 #include <mrpt/hwdrivers/CImpinjRFID.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/hwdrivers/CBoardDLMS.h>
