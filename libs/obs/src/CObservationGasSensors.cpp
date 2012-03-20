@@ -219,8 +219,8 @@ CObservationGasSensors::CMOSmodel::CMOSmodel():
 	decimate_count(1),
 	fixed_incT(0),
 	first_incT(true),
-	first_iteration(true),
-	min_reading(10)
+	min_reading(10),
+	first_iteration(true)
 {
 }
 
