@@ -59,6 +59,9 @@ IMPLEMENTS_SERIALIZABLE(CImage, CSerializable, mrpt::utils)
 
 
 bool CImage::DISABLE_ZIP_COMPRESSION  = false;
+bool CImage::DISABLE_JPEG_COMPRESSION = false;
+int CImage::SERIALIZATION_JPEG_QUALITY = 95;
+
 std::string CImage::IMAGES_PATH_BASE(".");
 
 // Do performance time logging?
@@ -538,7 +541,7 @@ void  CImage::writeToStream(CStream &out, int *version) const
 {
 #if MRPT_HAS_OPENCV
 	if (version)
-		*version = 7;
+		*version = 8;
 	else
 	{
 		// Added in version 6: possibility of being stored offline:
@@ -553,7 +556,7 @@ void  CImage::writeToStream(CStream &out, int *version) const
 
 			ASSERT_(img!=NULL);
 
-			bool	hasColor = isColor();
+			const bool hasColor = isColor();
 
 			out << hasColor;
 
@@ -601,26 +604,41 @@ void  CImage::writeToStream(CStream &out, int *version) const
 				// COLOR: High quality JPEG image
 
 				// v7: If size is 0xN or Nx0, don't call "saveToStreamAsJPEG"!!
-				int32_t width = ((IplImage*)img)->width;
-				int32_t height = ((IplImage*)img)->height;
+				const int32_t width = ((IplImage*)img)->width;
+				const int32_t height = ((IplImage*)img)->height;
 
-				out << width << height;
-
-				if (width>=1 && height>=1)
+				// v8: If DISABLE_JPEG_COMPRESSION
+				if (!CImage::DISABLE_JPEG_COMPRESSION)
 				{
-					// Save to temporary memory stream:
-					CMemoryStream		aux;
-					uint32_t			nBytes;
+					// normal behavior: compress images:
+					out << width << height;
 
-					saveToStreamAsJPEG( aux );
-					nBytes = (uint32_t)aux.getTotalBytesCount();
+					if (width>=1 && height>=1)
+					{
+						// Save to temporary memory stream:
+						CMemoryStream		aux;
+						saveToStreamAsJPEG( aux, CImage::SERIALIZATION_JPEG_QUALITY );
 
-					out << nBytes;
-					out.WriteBuffer( aux.getRawBufferData(), nBytes );
+						const uint32_t nBytes = static_cast<uint32_t>(aux.getTotalBytesCount());
+
+						out << nBytes;
+						out.WriteBuffer( aux.getRawBufferData(), nBytes );
+					}
 				}
 				else
-				{
-					// No image to save!
+				{   // (New in v8)
+					// Don't JPEG-compress behavior:
+					// Use negative image sizes to signal this behavior:
+					const int32_t neg_width = -width;
+					const int32_t neg_height = -height;
+
+					out << neg_width << neg_height;
+
+					// Dump raw image data:
+					const IplImage *ipl = static_cast<const IplImage*>(img);
+					const size_t bytes_per_row = ipl->width * 3;
+					for (int y=0;y<ipl->height;y++)
+						out.WriteBuffer( &ipl->imageData[y*ipl->widthStep], bytes_per_row);
 				}
 			}
 		} // end m_imgIsExternalStorage=false
@@ -673,6 +691,7 @@ void  CImage::readFromStream(CStream &in, int version)
 	case 5:
 	case 6:
 	case 7:
+	case 8:
 		{
 			// Version 6: 	m_imgIsExternalStorage ??
 			if (version>=6)
@@ -750,11 +769,39 @@ void  CImage::readFromStream(CStream &in, int version)
 
 					if (version>=7)
 					{
-						uint32_t		width, height;
+						int32_t width, height;
 						in >> width >> height;
-						loadJPEG = (width>=1 && height>=1);
-						if (!loadJPEG)
-							changeSize(width,height,3,true);
+
+						if (width>=1 && height>=1)
+						{
+							loadJPEG = true;
+						}
+						else
+						{
+							loadJPEG = false;
+
+							if (width<0 && height<0)
+							{
+								// v8: raw image:
+								const int32_t real_w = -width;
+								const int32_t real_h = -height;
+
+								this->changeSize(real_w,real_h,3,true);
+
+								const IplImage *ipl = static_cast<const IplImage*>(img);
+								const size_t bytes_per_row = ipl->width * 3;
+								for (int y=0;y<ipl->height;y++)
+								{
+									const size_t nRead = in.ReadBuffer( &ipl->imageData[y*ipl->widthStep], bytes_per_row);
+									if (nRead!=bytes_per_row) THROW_EXCEPTION("Error: Truncated data stream while parsing raw image?")
+								}
+							}
+							else
+							{
+								// it's a 0xN or Nx0 image: just resize and load nothing:
+								this->changeSize(width,height,3,true);
+							}
+						}
 					}
 
 					// COLOR IMAGE: JPEG

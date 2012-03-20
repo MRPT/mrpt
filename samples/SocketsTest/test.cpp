@@ -34,7 +34,7 @@ using namespace mrpt::utils;
 using namespace std;
 
 #include <mrpt/examples_config.h>
-string   myDataDir( MRPT_EXAMPLES_BASE_DIRECTORY + string("imageCorrelation/") ); // Reuse it's images
+string   myDataDir( MRPT_EXAMPLES_BASE_DIRECTORY + string("imageBasics/") ); // Reuse it's images
 
 
 void thread_server()
@@ -54,7 +54,7 @@ void thread_server()
 
 			// Load test image:
 			CImage	img;
-			img.loadFromFile(myDataDir+string("fft2_test_image.jpg"));
+			img.loadFromFile(myDataDir+string("frame_color.jpg"));
 
 			// Send a message with the image:
 			CMessage	msg;
@@ -111,6 +111,7 @@ void thread_client()
 		{
 			printf("[Client] Message received OK!:\n");
 			printf("  MSG Type: %i\n", msg.type );
+			printf("  MSG Length: %u bytes\n", (unsigned int)msg.content.size() );
 
 			printf("[Client] Parsing image...\n");
 			CImage		img;
@@ -140,6 +141,9 @@ void thread_client()
 // ------------------------------------------------------
 void SocketsTest()
 {
+	// mrpt::utils::CImage::DISABLE_JPEG_COMPRESSION = true;
+	//mrpt::utils::CImage::SERIALIZATION_JPEG_QUALITY = 90;
+
 	mrpt::system::createThread(thread_server);
 	mrpt::system::createThread(thread_client);
 

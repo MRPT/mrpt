@@ -186,12 +186,22 @@ namespace mrpt
 			/** @} */
 			// ================================================================
 
+			/** @name Serialization format global flags
+			    @{ */
 
 			/** By default, when storing images through the CSerializable interface, grayscale images will be ZIP compressed if they are larger than 16Kb: this flag can be turn on to disable ZIP compression and gain speed versus occupied space.
-			  *  The default value of this variable is "false".
-			  */
+			  *  (Default = false) */
 			static bool DISABLE_ZIP_COMPRESSION;
 
+			/** By default, when storing images through the CSerializable interface, RGB images are JPEG-compressed to save space. If for some reason you prefer storing RAW image data, disable this feature by setting this flag to true.
+			  *  (Default = false) */
+			static bool DISABLE_JPEG_COMPRESSION;
+
+			/** Unless DISABLE_JPEG_COMPRESSION=true, this sets the JPEG quality (range 1-100) of serialized RGB images.
+			  *  (Default = 95) */
+			static int SERIALIZATION_JPEG_QUALITY;
+
+			/** @} */
 
 			// ================================================================
 			/** @name Manipulate the image contents or size, various computer-vision methods (image filters, undistortion, etc.)
@@ -847,11 +857,11 @@ namespace mrpt
 			 */
 			bool  saveToFile( const std::string& fileName, int jpeg_quality = 95 ) const;
 
-			/** Save image to binary stream as a JPEG (.jpg) compresed format.
-			 * \exception std::exception On number of rows or cols equal to zero, or other errors.
+			/** Save image to binary stream as a JPEG (.jpg) compressed format.
+			 * \exception std::exception On number of rows or cols equal to zero or other errors.
 			 * \sa saveToJPEG
 			 */
-			void  saveToStreamAsJPEG( CStream		&out  )const;
+			void  saveToStreamAsJPEG(CStream &out, const int jpeg_quality = 95 ) const;
 
 			/** @}  */
 			// ================================================================

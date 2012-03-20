@@ -78,6 +78,7 @@
 				-  mrpt::utils::CImage::getAsIplImage() marked as deprecated - replace with mrpt::utils::CImage::getAs<IplImage>() instead.
 				-  mrpt::utils::CImage::copyFromForceLoad() now raises an exception if the external image wasn't found.
 				-  mrpt::utils::CImage::equalizeHist() now also works for RGB images (doing equalization in HSV colorspace)
+				-  New global flags for a better control of serialization format. See mrpt::utils::CImage::DISABLE_JPEG_COMPRESSION & mrpt::utils::CImage::SERIALIZATION_JPEG_QUALITY - <a href="http://code.google.com/p/mrpt/source/detail?r=2844" >r2844</a>
 		- [mrpt-maps] 
 			- mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
 		- [mrpt-vision] 

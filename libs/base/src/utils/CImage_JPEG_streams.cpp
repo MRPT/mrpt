@@ -383,7 +383,7 @@ jpeg_stdio_src (j_decompress_ptr cinfo, CStream * in)
 /*---------------------------------------------------------------
 					saveToStreamAsJPEG
  ---------------------------------------------------------------*/
-void  CImage::saveToStreamAsJPEG( CStream		&out  )const
+void  CImage::saveToStreamAsJPEG( CStream &out, const int jpeg_quality ) const
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START
@@ -392,52 +392,51 @@ void  CImage::saveToStreamAsJPEG( CStream		&out  )const
 
 	struct jpeg_compress_struct		cinfo;
 	struct jpeg_error_mgr			jerr;
-	unsigned int					nCols = getWidth();
-	unsigned int					nRows = getHeight();
-//	int								row_stride;			/* physical row width in buffer */
-	IplImage						*ipl = ((IplImage*)img);
+
+	const IplImage *ipl = static_cast<const IplImage*>(img);
+
+	const unsigned int nCols = ipl->width;
+	const unsigned int nRows = ipl->height;
+	const bool is_color = (ipl->nChannels==3);
+
 
 	// Some previous verification:
-	ASSERT_(nCols>=1 && nRows>=1);
-	ASSERT_(ipl);
-	ASSERT_(ipl->nChannels == 1 || ipl->nChannels == 3);
+	ASSERT_(nCols>=1 && nRows>=1)
+	ASSERT_(ipl)
+	ASSERT_(ipl->nChannels == 1 || ipl->nChannels == 3)
 
 	// 1) Initialization of the JPEG compresion object:
 	// --------------------------------------------------
-	cinfo.err = /*mrpt::utils::jpeglib::*/ jpeg_std_error(&jerr);
-	/*mrpt::utils::jpeglib::*/ jpeg_create_compress(&cinfo);
+	cinfo.err =  jpeg_std_error(&jerr);
+	 jpeg_create_compress(&cinfo);
 
 	// 2) Set the destination of jpeg data:
 	// --------------------------------------------------
-	/*mrpt::utils::jpeglib::*/ jpeg_stdio_dest( &cinfo, &out );
+	jpeg_stdio_dest( &cinfo, &out );
 
 	// 3) Set parameters for compression:
 	// --------------------------------------------------
 	cinfo.image_width = nCols;
 	cinfo.image_height = nRows;
-	cinfo.input_components = isColor() ? 3:1;
-	cinfo.in_color_space = isColor() ? JCS_RGB : JCS_GRAYSCALE;
+	cinfo.input_components = is_color ? 3:1;
+	cinfo.in_color_space = is_color ? JCS_RGB : JCS_GRAYSCALE;
 
-	/*mrpt::utils::jpeglib::*/ jpeg_set_defaults(&cinfo);
+	jpeg_set_defaults(&cinfo);
 	/* Make optional parameter settings here */
 	/* Now you can set any non-default parameters you wish to.
 	* Here we just illustrate the use of quality (quantization table) scaling:
 	*/
-	/*mrpt::utils::jpeglib::*/ jpeg_set_quality(&cinfo, 95 /* quality per cent */, TRUE /* limit to baseline-JPEG values */);
+	jpeg_set_quality(&cinfo, jpeg_quality /* quality per cent */, TRUE /* limit to baseline-JPEG values */);
 
 	// 4) Start:
 	// --------------------------------------------------
-	/*mrpt::utils::jpeglib::*/ jpeg_start_compress(&cinfo, TRUE);
+	jpeg_start_compress(&cinfo, TRUE);
 
 	// 5) Write scan lines:
 	// --------------------------------------------------
-//	row_stride = nCols * (isColor() ? 3:1);	/* JSAMPLEs per row in image_buffer */
-
-	unsigned int col;
-
-	if (isColor())
+	if (is_color)
 	{
-		JSAMPROW						row_pointer[1];		/* pointer to a single row */
+		JSAMPROW row_pointer[1];		/* pointer to a single row */
 		row_pointer[0] = (JSAMPROW)new char[ ipl->widthStep ];
 
 		for (unsigned int row = 0; row<nRows;row++)
@@ -448,7 +447,7 @@ void  CImage::saveToStreamAsJPEG( CStream		&out  )const
 					src = &ipl->imageData[ row * ipl->widthStep ];
 			else	src = &ipl->imageData[ (nRows-1-row) * ipl->widthStep ];
 			char *target = (char *)row_pointer[0];
-			for (col=0;col<nCols;col++)
+			for (unsigned int col=0;col<nCols;col++)
 			{
 				target[0] = src[2];
 				target[1] = src[1];
@@ -458,7 +457,7 @@ void  CImage::saveToStreamAsJPEG( CStream		&out  )const
 				src+=3;
 			}
 
-			if (1!= /*mrpt::utils::jpeglib::*/ jpeg_write_scanlines(&cinfo, row_pointer, 1))
+			if (1!=  jpeg_write_scanlines(&cinfo, row_pointer, 1))
 			{
 				THROW_EXCEPTION("jpeg_write_scanlines: didn't work!!");
 			}
@@ -477,18 +476,17 @@ void  CImage::saveToStreamAsJPEG( CStream		&out  )const
 			else	row_pointer[0] = (JSAMPROW) &ipl->imageData[ (nRows-1-row) * ipl->widthStep ];
 
 			// Gray scale:
-			if (1!= /*mrpt::utils::jpeglib::*/ jpeg_write_scanlines(&cinfo, row_pointer, 1))
+			if (1!=  jpeg_write_scanlines(&cinfo, row_pointer, 1))
 			{
 				THROW_EXCEPTION("jpeg_write_scanlines: didn't work!!");
 			}
 		}
 	}
 
-
 	// 6) Compress and finish:
 	// --------------------------------------------------
-	/*mrpt::utils::jpeglib::*/ jpeg_finish_compress(&cinfo);
-	/*mrpt::utils::jpeglib::*/ jpeg_destroy_compress(&cinfo);
+	jpeg_finish_compress(&cinfo);
+	jpeg_destroy_compress(&cinfo);
 
 	// DONE!
 	MRPT_END
@@ -504,29 +502,27 @@ void  CImage::loadFromStreamAsJPEG( CStream &in )
 #if MRPT_HAS_OPENCV
 	MRPT_START
 
-	struct jpeg_decompress_struct		cinfo;
-	struct jpeg_error_mgr				jerr;
-	JSAMPARRAY							buffer;		/* Output row buffer */
-	int									row_stride;		/* physical row width in output buffer */
+	struct jpeg_decompress_struct cinfo;
+	struct jpeg_error_mgr         jerr;
 
 	/* Step 1: allocate and initialize JPEG decompression object */
 
 	/* We set up the normal JPEG error routines, then override error_exit. */
-	cinfo.err = /*mrpt::utils::jpeglib::*/ jpeg_std_error(&jerr);
+	cinfo.err =  jpeg_std_error(&jerr);
 
 	/* Now we can initialize the JPEG decompression object. */
-	/*mrpt::utils::jpeglib::*/ jpeg_create_decompress(&cinfo);
+	jpeg_create_decompress(&cinfo);
 
 	/* Step 2: specify data source (eg, a file) */
-	/*mrpt::utils::jpeglib::*/ jpeg_stdio_src(&cinfo, &in);
+	jpeg_stdio_src(&cinfo, &in);
 
 	/* Step 3: read file parameters with jpeg_read_header() */
-	/*mrpt::utils::jpeglib::*/ jpeg_read_header(&cinfo, TRUE);
+	jpeg_read_header(&cinfo, TRUE);
 
 	/* Step 4: set parameters for decompression */
 
 	/* Step 5: Start decompressor */
-	/*mrpt::utils::jpeglib::*/ jpeg_start_decompress(&cinfo);
+	jpeg_start_decompress(&cinfo);
 
 	/* We may need to do some setup of our own at this point before reading
 	* the data.  After jpeg_start_decompress() we have the correct scaled
@@ -535,15 +531,17 @@ void  CImage::loadFromStreamAsJPEG( CStream &in )
 	* In this example, we need to make an output work buffer of the right size.
 	*/
 	/* JSAMPLEs per row in output buffer */
-	row_stride = cinfo.output_width * cinfo.output_components;
+	/* physical row width in output buffer */
+	const int row_stride = cinfo.output_width * cinfo.output_components;
 	/* Make a one-row-high sample array that will go away when done with image */
-	buffer = (*cinfo.mem->alloc_sarray)
+	/* Output row buffer */
+	JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray)
 		((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
 
 	// Resize the CImage now:
 	this->changeSize( cinfo.output_width, cinfo.output_height, cinfo.out_color_components, true );
-	IplImage		*ipl = ((IplImage*)img);
+	IplImage *ipl = static_cast<IplImage*>(img);
 
 	/* Step 6: while (scan lines remain to be read) */
 	/*           jpeg_read_scanlines(...); */
@@ -551,25 +549,24 @@ void  CImage::loadFromStreamAsJPEG( CStream &in )
 	/* Here we use the library's state variable cinfo.output_scanline as the
 	* loop counter, so that we don't have to keep track ourselves.
 	*/
-	unsigned int	nCols = cinfo.output_width;
-	unsigned int	nRows = cinfo.output_height;
-	unsigned int	col, row;
+	const unsigned int nCols = cinfo.output_width;
+	const unsigned int nRows = cinfo.output_height;
 
-	for (row = 0; row<nRows;row++)
+	for (unsigned int row = 0; row<nRows;row++)
 	{
 		/* jpeg_read_scanlines expects an array of pointers to scanlines.
 		* Here the array is only one element long, but you could ask for
 		* more than one scanline at a time if that's more convenient.
 		*/
-		/*mrpt::utils::jpeglib::*/ jpeg_read_scanlines(&cinfo, buffer, 1);
+		jpeg_read_scanlines(&cinfo, buffer, 1);
 
 		/* Copy into the CImage object */
 		if (isColor())
 		{
 			// Flip RGB bytes order!
 			char *target = &ipl->imageData[ row * ipl->widthStep ];
-			char *src = (char *)buffer[0];
-			for (col=0;col<nCols;col++)
+			const char *src = (char *)buffer[0];
+			for (unsigned int col=0;col<nCols;col++)
 			{
 				target[0] = src[2];
 				target[1] = src[1];
@@ -591,7 +588,7 @@ void  CImage::loadFromStreamAsJPEG( CStream &in )
 
 	/* Step 7: Finish decompression */
 
-	(void) jpeg_finish_decompress(&cinfo);
+	jpeg_finish_decompress(&cinfo);
 	/* We can ignore the return value since suspension is not possible
 	* with the stdio data source.
 	*/
