@@ -117,10 +117,11 @@
 		- [mrpt-base] File names from mrpt::system::getTempFileName() could be not system-wide unique under Windows - <a href="http://code.google.com/p/mrpt/source/detail?r=2766" >r2766</a> 
 		- [mrpt-base] mrpt::random::CRandomGenerator::drawGaussian1D_normalized() fixed potential collision of internal data in multithreaded applications, and fixed a potential, but unlike (1 in 2^32) divide-by-zero error - <a href="http://code.google.com/p/mrpt/source/detail?r=2786" >r2786</a> 
 		- [mrpt-base] mrpt::utils::CRobotSimulator used the variance of the error in X for both X & Y odometry errors - <a href="http://code.google.com/p/mrpt/source/detail?r=2837" >r2837</a>  - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=25" >#25</a>
-		- [mrpt-opengl] Fixed potential SIGSEGV while serializing an uninitialized mrpt::opengl::C3DSScene object - <a href="http://code.google.com/p/mrpt/source/detail?r=2773" >2773</a> 
-		- [mrpt-base/mrpt-opengl] Method getAs3DObject() of mrpt::poses' poses PDFs cleared the previous contents of the passed CSetOfObjects argument, which shouldn't be the expected behavior  - <a href="http://code.google.com/p/mrpt/source/detail?r=2781" >2781</a> 
-		- [mrpt-hwdrivers] Fixed Bumblebee capture of rectified images will return two left images - (<a href="http://code.google.com/p/mrpt/issues/detail?id=18" > Issue & patch #18</a>) -  <a href="http://code.google.com/p/mrpt/source/detail?r=2791" >2791</a> 
-		- [mrpt-vision] Fixed memory corruption in SIFT detector with the OpenCV implementation -  <a href="http://code.google.com/p/mrpt/source/detail?r=2796" >2796</a> 
+		- [mrpt-opengl] Fixed potential SIGSEGV while serializing an uninitialized mrpt::opengl::C3DSScene object - <a href="http://code.google.com/p/mrpt/source/detail?r=2773" >r2773</a> 
+		- [mrpt-base/mrpt-opengl] Method getAs3DObject() of mrpt::poses' poses PDFs cleared the previous contents of the passed CSetOfObjects argument, which shouldn't be the expected behavior  - <a href="http://code.google.com/p/mrpt/source/detail?r=2781" >r2781</a> 
+		- [mrpt-hwdrivers] Fixed Bumblebee capture of rectified images will return two left images - (<a href="http://code.google.com/p/mrpt/issues/detail?id=18" > Issue & patch #18</a>) -  <a href="http://code.google.com/p/mrpt/source/detail?r=2791" >r2791</a> 
+		- [mrpt-hwdrivers] Fixed GPS NMEA driver not working with "common" (vs RTK,...) GPS devices -  <a href="http://code.google.com/p/mrpt/source/detail?r=2846" >r2846</a> 
+		- [mrpt-vision] Fixed memory corruption in SIFT detector with the OpenCV implementation -  <a href="http://code.google.com/p/mrpt/source/detail?r=2796" >r2796</a> 
 		- App: camera-calib didn't show the marks for the detected corners.
 
  <hr>

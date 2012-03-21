@@ -303,101 +303,72 @@ void  CGPSInterface::doProcess()
 		}
 	};
 
-#if 0
-	// Write command to buffer:
-	if ( m_latestGPS_data.has_GGA_datum ||
-	     m_latestGPS_data.has_RMC_datum )
-	{
-		// Add observation to the output queue:
-		CObservationGPSPtr newObs = CObservationGPSPtr( new  CObservationGPS( m_latestGPS_data ) );
-		appendObservation( newObs );
+	if (m_customInit.empty())
+	{ // "Normal" GPS device
+		// Write command to buffer:
+		if ( m_latestGPS_data.has_GGA_datum ||
+			 m_latestGPS_data.has_RMC_datum )
+		{
+			// Add observation to the output queue:
+			CObservationGPSPtr newObs = CObservationGPSPtr( new  CObservationGPS( m_latestGPS_data ) );
+			appendObservation( newObs );
 
-		m_latestGPS_data.has_GGA_datum = false;
-		m_latestGPS_data.has_RMC_datum = false;
+			m_latestGPS_data.has_GGA_datum = false;
+			m_latestGPS_data.has_RMC_datum = false;
+		}
 	}
+	else
+	{	// "Advanced" (RTK,mmGPS) device
+		// FAMD
+		// Append observation if:
+		// 0. the timestamp seems to be correct!
+		// 1. it contains both synched GGA and RMC data
+		// 2. it contains only GGA or RMC but the next one is not synched with it
+		if( m_last_timestamp == INVALID_TIMESTAMP )
+		{
+			cout << "Initial timestamp: " << mrpt::system::timeToString(m_latestGPS_data.timestamp) << endl;
+			// Check if the initial timestamp seems to be OK (not a spurio one)
+			TTimeStamp tmNow = mrpt::system::now();
+			const double tdif = mrpt::system::timeDifference( m_latestGPS_data.timestamp, tmNow );
+			if( tdif >= 0 && tdif < 7500 /*Up to two hours*/)
+				m_last_timestamp = m_latestGPS_data.timestamp;
+			else
+				cout << "WARNING [CGPSInterface] -> The initial timestamp seems to be wrong! : " << tdif << endl;
+		} // end-if
+		else
+		{
+			const double time_diff = mrpt::system::timeDifference( m_last_timestamp, m_latestGPS_data.timestamp );
+			if( time_diff < 0 || time_diff > 300 )     // Assert that the current timestamp is after the previous one and not more than 5 minutes later -> remove spurious
+				{ cout << "Bad timestamp difference" << endl; return; }
 
-#else
-    // FAMD
-	// Append observation if:
-    // 0. the timestamp seems to be correct!
-    // 1. it contains both synched GGA and RMC data
-    // 2. it contains only GGA or RMC but the next one is not synched with it
-    if( m_last_timestamp == INVALID_TIMESTAMP )
-    {
-        cout << "Initial timestamp: " << mrpt::system::timeToString(m_latestGPS_data.timestamp) << endl;
-        // Check if the initial timestamp seems to be OK (not a spurio one)
-        TTimeStamp tmNow = mrpt::system::now();
-        const double tdif = mrpt::system::timeDifference( m_latestGPS_data.timestamp, tmNow );
-        if( tdif >= 0 && tdif < 7500 /*Up to two hours*/)
-            m_last_timestamp = m_latestGPS_data.timestamp;
-        else
-            cout << "WARNING [CGPSInterface] -> The initial timestamp seems to be wrong! : " << tdif << endl;
-    } // end-if
-    else
-    {
-        const double time_diff = mrpt::system::timeDifference( m_last_timestamp, m_latestGPS_data.timestamp );
-        if( time_diff < 0 || time_diff > 300 )     // Assert that the current timestamp is after the previous one and not more than 5 minutes later -> remove spurious
-            { cout << "Bad timestamp difference" << endl; return; }
+			if( time_diff-m_data_period > 0.25*m_data_period )
+				cout << "WARNING [CGPSInterface] -> According to the timestamps, we probably skipped one frame!" << endl;
 
-        if( time_diff-m_data_period > 0.25*m_data_period )
-            cout << "WARNING [CGPSInterface] -> According to the timestamps, we probably skipped one frame!" << endl;
+	//        TTimeStamp tnow = mrpt::system::now();
+	//        const double now_diff = mrpt::system::timeDifference( m_latestGPS_data.timestamp,tnow );
 
-//        TTimeStamp tnow = mrpt::system::now();
-//        const double now_diff = mrpt::system::timeDifference( m_latestGPS_data.timestamp,tnow );
+			// a. These GPS data have both synched RMC and GGA data
+			// don't append observation until we have both data
+			if( m_latestGPS_data.has_GGA_datum && m_latestGPS_data.has_RMC_datum )
+			{
+				// Add observation to the output queue:
+				CObservationGPSPtr newObs = CObservationGPSPtr( new  CObservationGPS( m_latestGPS_data ) );
+				appendObservation( newObs );
 
-        // a. These GPS data have both synched RMC and GGA data
-        // don't append observation until we have both data
-        if( m_latestGPS_data.has_GGA_datum && m_latestGPS_data.has_RMC_datum )
-        {
-            // Add observation to the output queue:
-            CObservationGPSPtr newObs = CObservationGPSPtr( new  CObservationGPS( m_latestGPS_data ) );
-            appendObservation( newObs );
+				// Reset for the next frame
+				m_latestGPS_data.has_GGA_datum = false;
+				m_latestGPS_data.has_RMC_datum = false;
 
-            // Reset for the next frame
-            m_latestGPS_data.has_GGA_datum = false;
-            m_latestGPS_data.has_RMC_datum = false;
+				m_last_timestamp = m_latestGPS_data.timestamp;
 
-            m_last_timestamp = m_latestGPS_data.timestamp;
+	//            cout << "FAMD: [GPS_GPS____GR3]: " << int(m_latestGPS_data.GGA_datum.UTCTime.hour) << ":" << int(m_latestGPS_data.GGA_datum.UTCTime.minute) << ":" << double(m_latestGPS_data.GGA_datum.UTCTime.sec);
+	//            cout /*<< " -> Lat:" << m_latestGPS_data.GGA_datum.latitude_degrees << ", Lon:" << m_latestGPS_data.GGA_datum.longitude_degrees << ", Hei:" << m_latestGPS_data.GGA_datum.altitude_meters*/ << endl;
 
-//            cout << "FAMD: [GPS_GPS____GR3]: " << int(m_latestGPS_data.GGA_datum.UTCTime.hour) << ":" << int(m_latestGPS_data.GGA_datum.UTCTime.minute) << ":" << double(m_latestGPS_data.GGA_datum.UTCTime.sec);
-//            cout /*<< " -> Lat:" << m_latestGPS_data.GGA_datum.latitude_degrees << ", Lon:" << m_latestGPS_data.GGA_datum.longitude_degrees << ", Hei:" << m_latestGPS_data.GGA_datum.altitude_meters*/ << endl;
+			}
 
-        }
+		} // end-else
 
-    } // end-else
-
-//    // b. These GPS data only have RMC or GGA but they are synched with the previous one because:
-//	// It may happen that the GGA and RMC messages come in different timestamps --> join them in the same message
-//	// Check if this message has the same timestamp (inside the GPS info) that the last one
-//	if ( m_latestGPS_data.has_GGA_datum && (m_last_UTC_time == m_latestGPS_data.RMC_datum.UTCTime) )
-//    {
-//		// Add observation to the output queue:
-//		CObservationGPSPtr newObs = CObservationGPSPtr( new  CObservationGPS( m_latestGPS_data ) );
-//		appendObservation( newObs );
-//
-//		m_latestGPS_data.has_GGA_datum = false;
-//		m_latestGPS_data.has_RMC_datum = false;
-//
-//        m_last_UTC_time.hour = m_latestGPS_data.RMC_datum.UTCTime.hour;
-//        m_last_UTC_time.minute = m_latestGPS_data.RMC_datum.UTCTime.minute;
-//        m_last_UTC_time.sec = m_latestGPS_data.RMC_datum.UTCTime.sec;
-//    }
-//
-//	if ( m_latestGPS_data.has_RMC_datum && (m_last_UTC_time == m_latestGPS_data.GGA_datum.UTCTime) )
-//    {
-//		// Add observation to the output queue:
-//		CObservationGPSPtr newObs = CObservationGPSPtr( new  CObservationGPS( m_latestGPS_data ) );
-//		appendObservation( newObs );
-//
-//		m_latestGPS_data.has_GGA_datum = false;
-//		m_latestGPS_data.has_RMC_datum = false;
-//
-//        m_last_UTC_time.hour = m_latestGPS_data.GGA_datum.UTCTime.hour;
-//        m_last_UTC_time.minute = m_latestGPS_data.GGA_datum.UTCTime.minute;
-//        m_last_UTC_time.sec = m_latestGPS_data.GGA_datum.UTCTime.sec;
-//    }
-
-#endif
+	}
 
 }
 
