@@ -45,8 +45,6 @@ void  myFun1(const  CArrayDouble<5> &x,const double &user_param, CArrayDouble<3>
 	y[2] = x[4]/(1+square(x[3])) + sin(x[1]*x[0]);
 }
 
-CArrayDouble<7>::iterator it = CArrayDouble<7>::iterator();
-
 /* ------------------------------------------------------------------------
 					Test_SUT: Scaled Unscented Transform
    ------------------------------------------------------------------------ */
