@@ -402,7 +402,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxMenu* Menu2;
 	wxMenuItem* MenuItem18;
 	wxMenuItem* MenuItem19;
-	
+
 	Create(parent, id, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("id"));
 	SetClientSize(wxSize(700,500));
 	{
@@ -856,7 +856,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	mnuTree.Append(ID_MENUITEM48, _("Add action"), MenuItem45, wxEmptyString);
 	timAutoLoad.SetOwner(this, ID_TIMER1);
 	timAutoLoad.Start(50, true);
-	
+
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnbtnEditCommentsClick1);
 	Connect(ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
 	Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
@@ -2218,14 +2218,23 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 										if ( classID  == CLASS_ID(CObservationRFID) )
 										{
 											// ----------------------------------------------------------------------
-											//              CObservationBatteryState
+											//              CObservationRFID
 											// ----------------------------------------------------------------------
 											CObservationRFIDPtr obs = CObservationRFIDPtr( sel_obj);
 											curSelectedObservation = CObservationPtr( sel_obj );
 											cout << endl;
 
-											cout << format("Measured Power UNFINISHED MODULE: %.02f/100\n",
-												obs->power);
+											cout << "Number of RFID tags sensed: " << obs->tag_readings.size() << endl << endl;
+
+											for (size_t i=0;i<obs->tag_readings.size();i++)
+											{
+											    const CObservationRFID::TTagReading &rfid = obs->tag_readings[i];
+
+											    cout << "#"<< i
+                                                    << ": Power=" << rfid.power
+                                                    << " (dBm) | AntennaPort=" << rfid.antennaPort
+                                                    << " | EPC=" << rfid.epc << endl;
+											}
 										}
 										else
 											if ( classID  == CLASS_ID(CObservationIMU) )
@@ -3429,8 +3438,8 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
 			obs->load();
 			switch(theMainWindow->nb_3DObsChannels->GetSelection())
 			{
-				case 1: 
-					if (obs->hasRangeImage) 
+				case 1:
+					if (obs->hasRangeImage)
 					{
 						static CImage  auxImg;
 						// Convert to range [0,255]
@@ -3439,12 +3448,12 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
 						if (max_rang>0) normalized_range *= 255./max_rang;
 						auxImg.setFromMatrix(normalized_range, false /* it's in range [0,255] */);
 
-						imgToSave = &auxImg; 
+						imgToSave = &auxImg;
 					}
 					break;
-				case 2: 
-					if (obs->hasIntensityImage) 
-						imgToSave = &obs->intensityImage; 
+				case 2:
+					if (obs->hasIntensityImage)
+						imgToSave = &obs->intensityImage;
 					break;
 			}
 			obs->unload();
