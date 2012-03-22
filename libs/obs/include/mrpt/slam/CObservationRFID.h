@@ -39,7 +39,7 @@ namespace slam
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationRFID, CObservation, OBS_IMPEXP)
 
-	/** This represents an RFID tag observed by a receiver.
+	/** This represents one or more RFID tags observed by a receiver.
 	 *
 	 * \sa CObservation, mrpt::hwdrivers::CImpinjRFID for a software sensor capable of reading this kind of observations.
 	 * \ingroup mrpt_obs_grp
@@ -55,12 +55,22 @@ namespace slam
 
 		 /** @name The data members
 		  * @{ */
-
-		std::vector<double> power;  //!< The power or signal strength as sensed by the RFID receiver (in dBm)
 		mrpt::poses::CPose3D  sensorPoseOnRobot; //!< The location of the sensing antenna on the robot coordinate framework
-		std::vector<std::string> epc; //!< EPC code of the observed tag
-		std::vector<std::string> antennaPort; //!< Port of the antenna that did the reading
-		int Ntags; //!< Number of tags contained in the observation
+
+        /** Each of the individual readings of a RFID tag */
+        struct OBS_IMPEXP TTagReading
+        {
+            TTagReading() : power(-1000) {}
+
+            double      power;  //!< The power or signal strength as sensed by the RFID receiver (in dBm)
+            std::string epc; //!< EPC code of the observed tag
+            std::string antennaPort; //!< Port of the antenna that did the reading
+        };
+
+        /** The vector of individual tag observations */
+        std::vector<TTagReading>  tag_readings;
+
+		inline uint32_t getNtags() const { return tag_readings.size(); }
 
 		/** @} */
 

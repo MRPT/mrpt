@@ -92,11 +92,10 @@ bool CImpinjRFID::getObservation( mrpt::slam::CObservationRFID &obs)
 		bool receivedSomething = false;
 		char msg[34];
 		char cmd[20];
-		char ant_port;
 		char epc[24];
 		char rx_pwr[5];
 		char *tmp;
-		obs.Ntags = 0;
+		obs.tag_readings.clear();
 		// send an observation command to the device interface program
 		strcpy(cmd, "OBS\0");
 		client->writeAsync(cmd,10);
@@ -106,20 +105,27 @@ bool CImpinjRFID::getObservation( mrpt::slam::CObservationRFID &obs)
 		{
 			receivedSomething = true;
 			// the received string is in the format: ANT_PORT EPC RX_PWR ZERO_FILL
-			ant_port =  *(strtok(msg," ",&tmp));
+			const char *ant_port_ptr = strtok(msg," ",&tmp);
+			if (!ant_port_ptr)
+			{
+			    std::cerr << "[CImpinjRFID::getObservation] Unexpected format in sensor data! (skipping).\n";
+			    continue;
+			}
+			const char ant_port =  *ant_port_ptr;
 			strcpy(epc,strtok(NULL," ",&tmp));
 			strcpy(rx_pwr,strtok(NULL, " ",&tmp));
 
 			// Fill the observation
-			obs.Ntags ++;
-			std::stringstream antennaPortB;
-			antennaPortB << ant_port;
-			obs.antennaPort.push_back(antennaPortB.str());
-			obs.epc.push_back(std::string(epc));
-			obs.power.push_back(atof(rx_pwr));
-			obs.sensorLabel = m_sensorLabel;
-			std::cout << "mrpt::hwdrivers::CImpinjRFID::getObservation() " << "\n\tRXPWR: " << atof(rx_pwr) << " PWR READ: " << rx_pwr << std::endl;
+			obs.tag_readings.resize(obs.tag_readings.size()+1);  // Alloc space for one more tag obs
+			mrpt::slam::CObservationRFID::TTagReading & new_tag = *obs.tag_readings.rbegin();  // Get a reference to the latest new tag structure
 
+			// Fill in fields in "new_tag":
+			new_tag.antennaPort = mrpt::format("%c",ant_port);
+			new_tag.epc = std::string(epc);
+			new_tag.power = atof(rx_pwr);
+			obs.sensorLabel = m_sensorLabel;
+
+			std::cout << "mrpt::hwdrivers::CImpinjRFID::getObservation() " << "\n\tRXPWR: " << atof(rx_pwr) << " PWR READ: " << rx_pwr << std::endl;
 		}
 		if (receivedSomething)
 			return true;

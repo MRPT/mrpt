@@ -60,6 +60,7 @@ TEST(SerializeTestObs, WriteReadToMem)
 		CLASS_ID(CObservationGasSensors),
 		CLASS_ID(CObservationGPS),
 		CLASS_ID(CObservationImage),
+		CLASS_ID(CObservationReflectivity),
 		CLASS_ID(CObservationIMU),
 		CLASS_ID(CObservationOdometry),
 		CLASS_ID(CObservationRange),
@@ -75,6 +76,7 @@ TEST(SerializeTestObs, WriteReadToMem)
 		{
 			CMemoryStream  buf;
 			{
+			    //cout << lstClasses[i]->className << endl;
 				CSerializable* o = static_cast<CSerializable*>(lstClasses[i]->createObject());
 				buf << *o;
 				delete o;

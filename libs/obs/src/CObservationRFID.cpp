@@ -28,18 +28,18 @@
 
 #include <mrpt/obs.h>   // Precompiled headers
 
-
-
 #include <mrpt/slam/CObservationRFID.h>
 
-using namespace mrpt::slam; using namespace mrpt::utils; using namespace mrpt::poses;
+using namespace mrpt::slam;
+using namespace mrpt::utils;
+using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationRFID, CObservation,mrpt::slam)
 
 /** Constructor
  */
-CObservationRFID::CObservationRFID()
+CObservationRFID::CObservationRFID() : tag_readings()
 {
 }
 
@@ -54,27 +54,14 @@ void  CObservationRFID::writeToStream(CStream &out, int *version) const
 		*version = 4;
 	else
 	{
-		//std::cout << "AP0" << std::endl;
-
 		// The data
-		// out <<  std::string(itoa(Ntags,buff,10));  // (Was in v3)
-		out << static_cast<int32_t>(Ntags);  // new in v4
-		//std::cout << "AP1: " << std::string(itoa(Ntags,buff,10)) << std::endl;
+		const uint32_t Ntags = tag_readings.size();
+		out << Ntags;  // new in v4
 
-		for (int i=0;i<Ntags;i++){
-			out << power[i];
-			//std::cout << "AP2: " << power[i] << std::endl;
-		}
-
-		for (int i=0;i<Ntags;i++){
-			out	<< epc[i];
-			//std::cout << "AP3: " << epc[i] << std::endl;
-		}
-
-		for (int i=0;i<Ntags;i++){
-			out	<< antennaPort[i];
-			//std::cout << "AP4: " << antennaPort[i] << std::endl;
-		}
+        // (Fields are dumped in separate for loops for backward compatibility with old serialization versions)
+		for (uint32_t i=0;i<Ntags;i++) out << tag_readings[i].power;
+		for (uint32_t i=0;i<Ntags;i++) out << tag_readings[i].epc;
+		for (uint32_t i=0;i<Ntags;i++) out << tag_readings[i].antennaPort;
 
 		out	<< sensorLabel;
 		out	<< timestamp;
@@ -96,6 +83,7 @@ void  CObservationRFID::readFromStream(CStream &in, int version)
 	case 3:
 	case 4:
 		{
+		    uint32_t Ntags=0;
 			if (version<4)
 			{
 				std::string ntags;
@@ -104,31 +92,14 @@ void  CObservationRFID::readFromStream(CStream &in, int version)
 			}
 			else
 			{
-				int32_t n;
-				in >> n;
-				Ntags = static_cast<int>(n);
+				in >> Ntags;
 			}
 
-			//std::cout << "P1: " << Ntags << std::endl;
-			power.resize(Ntags);
-			for (int i=0;i<Ntags;i++)
-			{
-				in	>> power[i];
-				//std::cout << power[i] << std::endl;
-			}
-			//std::cout << "P2: ";
-			epc.resize(Ntags);
-			for (int i=0;i<Ntags;i++)
-			{
-				in >> epc[i];
-			}
-			//std::cout << "P3" << std::endl;
-			antennaPort.resize(Ntags);
-			for (int i=0;i<Ntags;i++)
-			{
-				in >> antennaPort[i];
-			}
-			//std::cout << "P4" << std::endl;
+            // (Fields are read in separate for loops for backward compatibility with old serialization versions)
+			tag_readings.resize(Ntags);
+			for (uint32_t i=0;i<Ntags;i++) in >> tag_readings[i].power;
+			for (uint32_t i=0;i<Ntags;i++) in >> tag_readings[i].epc;
+			for (uint32_t i=0;i<Ntags;i++) in >> tag_readings[i].antennaPort;
 
 			if (version>=1)
 				in >> sensorLabel;
@@ -145,11 +116,9 @@ void  CObservationRFID::readFromStream(CStream &in, int version)
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
 	};
 
 }
-
 
 
 void CObservationRFID::getSensorPose( CPose3D &out_sensorPose ) const
