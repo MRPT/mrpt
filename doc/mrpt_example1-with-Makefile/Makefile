@@ -35,7 +35,7 @@ LDFLAGS    += `pkg-config --libs mrpt-base`
 all: $(SOURCES) $(EXECUTABLE)
 	
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS) 
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@

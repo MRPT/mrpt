@@ -234,8 +234,14 @@ endif(1)
 			SET(mrpt_pkgconfig_REQUIRES "${mrpt_pkgconfig_REQUIRES},eigen3")
 		ENDIF(NOT EIGEN_USE_EMBEDDED_VERSION)
 
+		# Generate the .pc file for "make install"
 		CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/parse-files/mrpt_template.pc.in" "${CMAKE_BINARY_DIR}/pkgconfig/mrpt-${name}.pc" @ONLY)
-	ENDIF(UNIX)
 
+		# And another .pc file for local usage:
+		SET(mrpt_pkgconfig_NO_INSTALL_SOURCE "${MRPT_SOURCE_DIR}")
+		SET(mrpt_pkgconfig_NO_INSTALL_BINARY "${MRPT_BINARY_DIR}")
+		CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/parse-files/mrpt_template_no_install.pc.in" "${CMAKE_BINARY_DIR}/pkgconfig-no-install/mrpt-${name}.pc" @ONLY)
+		
+	ENDIF(UNIX)
 
 endmacro(define_mrpt_lib)
