@@ -320,3 +320,10 @@ void CLMS100Eth::doProcess( )
 	    THROW_EXCEPTION("No observation received from the Phidget board!");
 	}
 }
+
+/** A method to set the sensor pose on the robot.
+ */
+void CLMS100Eth::setSensorPose(const CPose3D& _pose)
+{
+	m_sensorPose = _pose;
+}

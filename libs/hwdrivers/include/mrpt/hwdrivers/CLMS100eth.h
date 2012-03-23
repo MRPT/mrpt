@@ -111,9 +111,11 @@ namespace mrpt
                 /** This method could be called manually to stop communication with the device. Method is also called by destructor.
                  */
                 bool turnOff();
+
                 /** A method to set the sensor pose on the robot.
-                 */
-                void setSensorPose(CPose3D& _pose);
+                  * Equivalent to setting the sensor pose via loading it from a config file.
+                  */
+                void setSensorPose(const CPose3D& _pose);
 
 				/** This method should be called periodically. Period depend on the process_rate in the configuration file.
 			 	 */
