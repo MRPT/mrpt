@@ -7,7 +7,7 @@
    |                                                                           |
    |    This software was written by the Machine Perception and Intelligent    |
    |      Robotics Lab, University of Malaga (Spain).                          |
-   |    Contact: Emil Khatib  <emilkhatib@uma.es>		                       |
+   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>		                       |
    |                                                                           |
    |  This file is part of the MRPT project.                                   |
    |                                                                           |

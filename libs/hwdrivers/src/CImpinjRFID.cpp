@@ -7,7 +7,7 @@
    |                                                                           |
    |    This software was written by the Machine Perception and Intelligent    |
    |      Robotics Lab, University of Malaga (Spain).                          |
-   |    Contact: Emil Khatib  <emilkhatib@uma.es>		                       |
+   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>		                       |
    |                                                                           |
    |  This file is part of the MRPT project.                                   |
    |                                                                           |
@@ -33,6 +33,10 @@
 #include <mrpt/hwdrivers/CImpinjRFID.h>
 
 #include <string.h>
+
+#include <stdlib.h>
+
+
 using namespace mrpt::hwdrivers;
 
 IMPLEMENTS_GENERIC_SENSOR(CImpinjRFID,mrpt::hwdrivers)
@@ -40,12 +44,60 @@ IMPLEMENTS_GENERIC_SENSOR(CImpinjRFID,mrpt::hwdrivers)
 CImpinjRFID::CImpinjRFID()
 {
 	m_sensorLabel = "RFID";
+	connected = false;
+}
+
+
+CImpinjRFID::~CImpinjRFID()
+{
+	closeReader();
+}
+
+
+void CImpinjRFID::initialize()
+{
+	
+
+	// start the driver
+	//use a separate thread so the connection can be established while the program starts. This is essential because the module will stall on the accept() call until the driver executable requests a connection, and, on the other hand, if the module is not listening, the driver will fail
+	mrpt::system::createThread(dummy_startDriver,this);
+//	system::createThreadFromObjectMethod<CImpinjRFID>(this,startDriver);
+	
+	// start connection
+
+	connect();
+
+}
+
+
+
+void CImpinjRFID::dummy_startDriver(CImpinjRFID *o)
+{
+	o->startDriver();
+}
+
+void CImpinjRFID::startDriver()
+{
+	// start the driver
+	std::stringstream cmdline;
+	std::cout << "Waiting for the driver to start ... ";
+	
+	// create the command line (executable path + parameters)
+	cmdline << driver_path << " " << reader_name.c_str() << " " << IPm.c_str() << " " << port;
+
+	// wait until the current module starts the sockets and listens to it
+	system::sleep(2000);
+
+	::system(cmdline.str().c_str());
+	system::exitThread();
+
 }
 
 void  CImpinjRFID::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &configSource,
 	const std::string			&iniSection )
 {
+			
 	MRPT_START
 		// TEMPORARILY DISABLED
 /*		pose_x_1 = configSource.read_float(iniSection,"pose_x_1",0,true);
@@ -62,8 +114,10 @@ void  CImpinjRFID::loadConfig_sensorSpecific(
 		pose_pitch_2 = configSource.read_float(iniSection,"pose_pitch_2",0,true);
 		pose_yaw_2 = configSource.read_float(iniSection,"pose_yaw_2",0,true);
 */
+		IPm = configSource.read_string(iniSection,"local_IP","127.0.0.1",false);
+		reader_name = configSource.read_string(iniSection,"reader_name","", true);
 		port = configSource.read_int(iniSection,"listen_port",0,true);
-
+		driver_path = configSource.read_string(iniSection,"driver_path","",true);
 
 	MRPT_END
 }
@@ -74,12 +128,16 @@ void  CImpinjRFID::loadConfig_sensorSpecific(
  ---------------------------------------------------------------*/
 void CImpinjRFID::connect()
 {
+	if (!connected)
 
 		// Start the server
 		server = new mrpt::utils::CServerTCPSocket(port);
 
-		// The server waits for the client to connect
-		client = server->accept();
+	client = server->accept();
+
+	system::sleep(1000);
+	connected = true;
+
 }
 
 /*---------------------------------------------------------------
@@ -125,18 +183,18 @@ bool CImpinjRFID::getObservation( mrpt::slam::CObservationRFID &obs)
 			new_tag.power = atof(rx_pwr);
 			obs.sensorLabel = m_sensorLabel;
 
-			std::cout << "mrpt::hwdrivers::CImpinjRFID::getObservation() " << "\n\tRXPWR: " << atof(rx_pwr) << " PWR READ: " << rx_pwr << std::endl;
+			//std::cout << "mrpt::hwdrivers::CImpinjRFID::getObservation() " << "\n\tRXPWR: " << atof(rx_pwr) << " PWR READ: " << rx_pwr << std::endl;
 		}
 		if (receivedSomething)
 			return true;
 		else
 			return false;
+		
 	}
-	catch(exception &e)
+		catch (std::exception &e)
 	{
-		cerr << "[CImpinjRFID::getObservation] Returning false due to exception: " << endl;
 		cerr << e.what() << endl;
-		return false;
+		
 	}
 }
 
@@ -157,6 +215,6 @@ void CImpinjRFID::closeReader()
 void CImpinjRFID::doProcess(){
 
 	mrpt::slam::CObservationRFIDPtr obs = mrpt::slam::CObservationRFID::Create();
-	getObservation(*obs);
-	appendObservation(obs);
+	if(getObservation(*obs))
+		appendObservation(obs);
 }

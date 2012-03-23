@@ -41,19 +41,6 @@ CWirelessPower::CWirelessPower()
 	m_sensorLabel = "WIRELESS_POWER";
 }
 
-void  CWirelessPower::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase &configSource,
-	const std::string			&iniSection )
-{
-	MRPT_START
-		pose_x = configSource.read_float(iniSection,"pose_x",0,true);
-		pose_y = configSource.read_float(iniSection,"pose_y",0,true);
-		pose_z = configSource.read_float(iniSection,"pose_z",0,true);
-		pose_roll = configSource.read_float(iniSection,"pose_roll",0,true);
-		pose_pitch = configSource.read_float(iniSection,"pose_pitch",0,true);
-		pose_yaw = configSource.read_float(iniSection,"pose_yaw",0,true);
-	MRPT_END
-}
 
 
 
@@ -248,16 +235,22 @@ PWLAN_INTERFACE_INFO GetInterfaceW(std::string guid, HANDLE hClient)
 std::vector<PWLAN_AVAILABLE_NETWORK>	ListNetworksW(PWLAN_INTERFACE_INFO iface, HANDLE hClient)
 {
 	// Start variables
+	
 	DWORD dwResult = 0;
     PWLAN_AVAILABLE_NETWORK_LIST pBssList = NULL;	// list of available networks
     PWLAN_AVAILABLE_NETWORK pBssEntry = NULL;		// information element for one interface
+
+	
 	GUID ifaceGuid = iface->InterfaceGuid;			// Get GUID of the interface
+	
 	std::vector<PWLAN_AVAILABLE_NETWORK> outputVector;	// output vector
+	
 	WCHAR GuidString[39] = {0};
+	
+	
 	// Force a scan (to obtain new data)
 	WLAN_RAW_DATA IeData;
 	WlanScan((HANDLE)hClient, &ifaceGuid, NULL, &IeData, NULL);
-
 
 	// Call the Windows API and get a list of the networks available through the interface
 	dwResult = WlanGetAvailableNetworkList((HANDLE)hClient, &ifaceGuid, 0, NULL, &pBssList);
@@ -275,6 +268,7 @@ std::vector<PWLAN_AVAILABLE_NETWORK>	ListNetworksW(PWLAN_INTERFACE_INFO iface, H
 			outputVector.push_back(pBssEntry);	// save entry
 		}
 	}
+	
 	return outputVector;
 }
 
@@ -292,9 +286,10 @@ PWLAN_AVAILABLE_NETWORK GetNetworkW(HANDLE hClient, std::string ssid, std::strin
 	PWLAN_INTERFACE_INFO iface;			// interface handler
 	PWLAN_AVAILABLE_NETWORK output;		// output network handler
 
+
 	// Get a handler to the interface
 	iface = GetInterfaceW(guid, hClient);
-
+	
 	// Get the list of networks
 	std::vector<PWLAN_AVAILABLE_NETWORK> pBssList = ListNetworksW(iface,hClient);
 
@@ -315,26 +310,6 @@ PWLAN_AVAILABLE_NETWORK GetNetworkW(HANDLE hClient, std::string ssid, std::strin
 
 #endif // end of Windows auxiliary functions definition
 
-
-/*---------------------------------------------------------------
-					setNet
-   Set the SSID and GUID of the target network
- ---------------------------------------------------------------*/
-
-void CWirelessPower::setNet(std::string ssid_, std::string guid_)
-{
-	ssid = ssid_;
-	guid = guid_;   // in the case of Linux, the "GUID" is the interface name (wlanX)
-
-#ifdef MRPT_OS_WINDOWS
-	#  if defined(__GNUC__)
-     THROW_EXCEPTION("Sorry, method not available for MinGW")
-	# else
-	hClient = ConnectWlanServerW();
-	#endif
-#endif
-
-}
 
 
 /*---------------------------------------------------------------
@@ -531,9 +506,12 @@ int		CWirelessPower::GetPower()
 bool CWirelessPower::getObservation( mrpt::slam::CObservationWirelessPower &outObservation )
 {
 	try{
+		
 	//	outObservation.m_readings.clear();
 		outObservation.power = (float)GetPower();
+		
 		outObservation.timestamp = mrpt::system::getCurrentTime();
+		
 		outObservation.sensorLabel = m_sensorLabel;
 	//	std::cout << "mrpt::hwdrivers::CWirelessPower::getObservation() " << "\n\tsensorLabel: " << outObservation.sensorLabel << "\n\ttimestamp: " << outObservation.timestamp << "\n\tpower: " << outObservation.power << std::endl;
 		return true;
@@ -549,9 +527,42 @@ bool CWirelessPower::getObservation( mrpt::slam::CObservationWirelessPower &outO
 
 void CWirelessPower::doProcess()
 {
+	
 	// Wrapper to getObservation
 	mrpt::slam::CObservationWirelessPowerPtr  outObservation = mrpt::slam::CObservationWirelessPower::Create();
 	getObservation(*outObservation);
+	
+	
+	appendObservation(CObservationWirelessPowerPtr(new CObservationWirelessPower(*outObservation)));
+	
+	
 
-	appendObservation(outObservation);
+};
+
+
+void  CWirelessPower::loadConfig_sensorSpecific(
+	const mrpt::utils::CConfigFileBase &configSource,
+	const std::string			&iniSection )
+{
+	MRPT_START
+		pose_x = configSource.read_float(iniSection,"pose_x",0,true);
+		pose_y = configSource.read_float(iniSection,"pose_y",0,true);
+		pose_z = configSource.read_float(iniSection,"pose_z",0,true);
+		pose_roll = configSource.read_float(iniSection,"pose_roll",0,true);
+		pose_pitch = configSource.read_float(iniSection,"pose_pitch",0,true);
+		pose_yaw = configSource.read_float(iniSection,"pose_yaw",0,true);
+
+		ssid = configSource.read_string(iniSection,"ssid","",true);
+		guid = configSource.read_string(iniSection,"guid","",true);   // in the case of Linux, the "GUID" is the interface name (wlanX)
+
+		#ifdef MRPT_OS_WINDOWS
+			#  if defined(__GNUC__)
+			 THROW_EXCEPTION("Sorry, method not available for MinGW")
+			# else
+			hClient = ConnectWlanServerW();
+			#endif
+		#endif
+
+	MRPT_END
+		
 }

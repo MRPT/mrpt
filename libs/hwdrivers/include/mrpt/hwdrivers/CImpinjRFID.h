@@ -7,7 +7,7 @@
    |                                                                           |
    |    This software was written by the Machine Perception and Intelligent    |
    |      Robotics Lab, University of Malaga (Spain).                          |
-   |    Contact: Emil Khatib  <emilkhatib@uma.es>	                           |
+   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>	                           |
    |                                                                           |
    |  This file is part of the MRPT project.                                   |
    |                                                                           |
@@ -59,27 +59,51 @@ namespace mrpt
 			 */
 			int port;
 
+			/** IP of the module (usually 127.0.0.1)
+			 */
+			std::string IPm;
+
+			/** Reader name
+			 */
+			std::string reader_name;
+
 			/** Server socket (listens for the incoming connection)
 			 */
 			mrpt::utils::CServerTCPSocket *server;
 
 			/** Client socket (handles the connection to the client)
+			/** Client socket (handles the connection to the driver)
 			 */
 			mrpt::utils::CClientTCPSocket *client;
 
+			/** Driver executable path
+			 */
+			std::string driver_path;
+
+			/** Connection status
+			 */
+			bool connected;
+
+			/** start the external driver
+			 */
+			void startDriver();
+
+			static void dummy_startDriver(CImpinjRFID *o);
 
 
 		public:
 			/** Default constructor.
 			 */
 			CImpinjRFID();
-			virtual ~CImpinjRFID(){};
+			virtual ~CImpinjRFID();
 
 			/** Connect to the reader.
 			 */
 			void connect();
 
 			void doProcess();
+			
+			void initialize();
 
 
 			void  loadConfig_sensorSpecific(
