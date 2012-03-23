@@ -7,7 +7,7 @@
    |                                                                           |
    |    This software was written by the Machine Perception and Intelligent    |
    |      Robotics Lab, University of Malaga (Spain).                          |
-   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>		                       |
+   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>		               |
    |                                                                           |
    |  This file is part of the MRPT project.                                   |
    |                                                                           |
@@ -56,13 +56,13 @@ CImpinjRFID::~CImpinjRFID()
 
 void CImpinjRFID::initialize()
 {
-	
+
 
 	// start the driver
 	//use a separate thread so the connection can be established while the program starts. This is essential because the module will stall on the accept() call until the driver executable requests a connection, and, on the other hand, if the module is not listening, the driver will fail
 	mrpt::system::createThread(dummy_startDriver,this);
 //	system::createThreadFromObjectMethod<CImpinjRFID>(this,startDriver);
-	
+
 	// start connection
 
 	connect();
@@ -81,23 +81,25 @@ void CImpinjRFID::startDriver()
 	// start the driver
 	std::stringstream cmdline;
 	std::cout << "Waiting for the driver to start ... ";
-	
+
 	// create the command line (executable path + parameters)
 	cmdline << driver_path << " " << reader_name.c_str() << " " << IPm.c_str() << " " << port;
 
 	// wait until the current module starts the sockets and listens to it
 	system::sleep(2000);
 
-	::system(cmdline.str().c_str());
-	system::exitThread();
+	const int ret = ::system(cmdline.str().c_str());
+	if (0!=ret)
+		std::cerr << "[CImpinjRFID::startDriver] Error ("<< ret << ") invoking command:\n" << cmdline << std::endl;
 
+	system::exitThread();  // JL->Emil: Really needed? If not, just remove...
 }
 
 void  CImpinjRFID::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &configSource,
 	const std::string			&iniSection )
 {
-			
+
 	MRPT_START
 		// TEMPORARILY DISABLED
 /*		pose_x_1 = configSource.read_float(iniSection,"pose_x_1",0,true);
@@ -189,12 +191,12 @@ bool CImpinjRFID::getObservation( mrpt::slam::CObservationRFID &obs)
 			return true;
 		else
 			return false;
-		
+
 	}
-		catch (std::exception &e)
+	catch (std::exception &e)
 	{
 		cerr << e.what() << endl;
-		
+		return false;
 	}
 }
 
@@ -204,10 +206,10 @@ bool CImpinjRFID::getObservation( mrpt::slam::CObservationRFID &obs)
  ---------------------------------------------------------------*/
 void CImpinjRFID::closeReader()
 {
-	char cmd[5];
+	char cmd[20];
 	// send a kill command to the device interface program
 	strcpy(cmd, "END\0");
-	client->writeAsync(cmd,10);
+	client->writeAsync(cmd,10);  // JL->Emil: Why 10 not strlen(cmd)? Is the server expecting a fixed length data block?
 	client->close();
 }
 

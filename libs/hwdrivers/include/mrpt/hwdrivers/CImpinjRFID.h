@@ -72,7 +72,6 @@ namespace mrpt
 			mrpt::utils::CServerTCPSocket *server;
 
 			/** Client socket (handles the connection to the client)
-			/** Client socket (handles the connection to the driver)
 			 */
 			mrpt::utils::CClientTCPSocket *client;
 
@@ -102,7 +101,7 @@ namespace mrpt
 			void connect();
 
 			void doProcess();
-			
+
 			void initialize();
 
 
@@ -117,7 +116,7 @@ namespace mrpt
 			*/
 			bool getObservation( mrpt::slam::CObservationRFID &obs );
 
-			
+
 			/** Close the connection to the reader.
 			 */
 			void closeReader();
