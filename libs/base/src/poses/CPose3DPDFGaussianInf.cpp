@@ -217,25 +217,10 @@ void  CPose3DPDFGaussianInf::changeCoordinatesReference( const CPose3D &newRefer
 {
 	MRPT_START
 
-	CMatrixDouble44	HM(UNINITIALIZED_MATRIX);
-	newReferenceBase.getHomogeneousMatrix(HM);
-
-	CMatrixDouble66   M;
-	M.block(0,0,4,4)=HM;
-
-	// The variance in yaw,pitch & roll is unmodified:
-	M.get_unsafe(3,3) = M.get_unsafe(4,4) = M.get_unsafe(5,5) = 1;
-	M.get_unsafe(0,3) = M.get_unsafe(1,3) = M.get_unsafe(2,3) = 0;
-
-	// The mean:
-	mean = newReferenceBase + mean;
-
-	// The covariance:
-	// cov     =    M  *   cov   * (~M);
-	// cov_inv = !(~M) * cov_inv * !M
-	//         =    M  * cov_inv * (~M)
-
-	M.multiply_HCHt( CMatrixDouble66(cov_inv), cov_inv );  // CMatrixDouble66() makes a temporary copy of the input so it can be used as output.
+	CPose3DPDFGaussian a;
+	a.copyFrom(*this);
+	a.changeCoordinatesReference(newReferenceBase);
+	this->copyFrom(a);
 
 	MRPT_END
 }

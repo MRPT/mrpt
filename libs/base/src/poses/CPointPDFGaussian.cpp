@@ -165,8 +165,7 @@ void  CPointPDFGaussian::saveToTextFile(const std::string &file) const
  ---------------------------------------------------------------*/
 void  CPointPDFGaussian::changeCoordinatesReference(const CPose3D &newReferenceBase )
 {
-	// Clip the 4x4 matrix
-	CMatrixDouble33 M = newReferenceBase.getRotationMatrix();
+	const CMatrixDouble33 &M = newReferenceBase.getRotationMatrix();
 
 	// The mean:
 	mean = newReferenceBase + mean;

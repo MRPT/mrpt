@@ -385,11 +385,10 @@ CPose2D	 CPosePDFParticles::getParticlePose(size_t i) const
  ---------------------------------------------------------------*/
 void  CPosePDFParticles::changeCoordinatesReference(const CPose3D &newReferenceBase_ )
 {
-	CParticleList::iterator	it;
-	CPose2D newReferenceBase = CPose2D(newReferenceBase_);
+	const CPose2D newReferenceBase = CPose2D(newReferenceBase_);
 
-	for (it=m_particles.begin();it!=m_particles.end();it++)
-		(*it->d) = newReferenceBase + (*it->d);
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();it++)
+		it->d->composeFrom(newReferenceBase, *it->d);
 }
 
 /*---------------------------------------------------------------
@@ -397,11 +396,10 @@ void  CPosePDFParticles::changeCoordinatesReference(const CPose3D &newReferenceB
  ---------------------------------------------------------------*/
 void  CPosePDFParticles::drawSingleSample( CPose2D &outPart ) const
 {
-	double									uni = randomGenerator.drawUniform(0.0f,0.9999f);
-	double									cum = 0;
-	CParticleList::const_iterator	it;
+	const double uni = randomGenerator.drawUniform(0.0f,0.9999f);
+	double cum = 0;
 
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (CParticleList::const_iterator it=m_particles.begin();it!=m_particles.end();it++)
 	{
 		cum+= exp(it->log_w);
 		if ( uni<= cum )
@@ -412,7 +410,7 @@ void  CPosePDFParticles::drawSingleSample( CPose2D &outPart ) const
 	}
 
 	// Might not come here normally:
-	outPart = *(m_particles.end()-1)->d;
+	outPart = *(m_particles.rbegin())->d;
 }
 
 /*---------------------------------------------------------------
@@ -420,10 +418,8 @@ void  CPosePDFParticles::drawSingleSample( CPose2D &outPart ) const
  ---------------------------------------------------------------*/
 void  CPosePDFParticles::operator += ( const CPose2D &Ap)
 {
-	CParticleList::iterator	it;
-
-	for (it=m_particles.begin();it!=m_particles.end();it++)
-		(*it->d) = (*it->d) + Ap;
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();it++)
+		it->d->composeFrom(*it->d, Ap);
 }
 
 /*---------------------------------------------------------------

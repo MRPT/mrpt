@@ -118,7 +118,7 @@ namespace poses
 		 */
 		void  saveToTextFile(const std::string &file) const;
 
-		/** This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
+		/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 		  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object. Both the mean value and the covariance matrix are updated correctly.
 		  */
 		void  changeCoordinatesReference( const CPose3D &newReferenceBase );

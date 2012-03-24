@@ -606,16 +606,13 @@ void  CPointsMap::computeMatchingWith2D(
  ---------------------------------------------------------------*/
 void  CPointsMap::changeCoordinatesReference(const CPose2D	&newBase)
 {
-	CPoint2D		l,g;
+	const size_t N = x.size();
 
-	size_t i, N = x.size();
-
-	for (i=0;i<N;i++)
-	{
-		getPoint(i,l);
-		g = newBase + l;
-		setPoint(i,g);
-	}
+	for (size_t i=0;i<N;i++)
+		newBase.composePoint(
+			x[i],y[i],z[i],  // In
+			x[i],y[i],z[i]   // Out
+		);
 
 	mark_as_modified();
 }
@@ -625,16 +622,13 @@ void  CPointsMap::changeCoordinatesReference(const CPose2D	&newBase)
  ---------------------------------------------------------------*/
 void  CPointsMap::changeCoordinatesReference(const CPose3D	&newBase)
 {
-	CPoint3D		l,g;
+	const size_t N = x.size();
 
-	size_t i, N = x.size();
-
-	for (i=0;i<N;i++)
-	{
-		getPoint(i,l);
-		g = newBase + l;
-		setPoint(i,g);
-	}
+	for (size_t i=0;i<N;i++)
+		newBase.composePoint(
+			x[i],y[i],z[i],  // In
+			x[i],y[i],z[i]   // Out
+		);
 
 	mark_as_modified();
 }

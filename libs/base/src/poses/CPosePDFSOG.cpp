@@ -272,7 +272,7 @@ void  CPosePDFSOG::saveToTextFile(const std::string &file) const
  ---------------------------------------------------------------*/
 void  CPosePDFSOG::changeCoordinatesReference(const CPose3D &newReferenceBase_ )
 {
-	CPose2D newReferenceBase = CPose2D(newReferenceBase_);
+	const CPose2D newReferenceBase = CPose2D(newReferenceBase_);
 
 	CMatrixDouble44 HM;
 	newReferenceBase.getHomogeneousMatrix(HM);
@@ -288,7 +288,7 @@ void  CPosePDFSOG::changeCoordinatesReference(const CPose3D &newReferenceBase_ )
 	for (iterator it=m_modes.begin();it!=m_modes.end();++it)
 	{
 		// The mean:
-		(it)->mean = newReferenceBase + (it)->mean;
+		(it)->mean.composeFrom(newReferenceBase, (it)->mean);
 
 		// The covariance:
 		// NOTE: The CMatrixDouble33() is NEEDED to create a temporary copy of (it)->cov

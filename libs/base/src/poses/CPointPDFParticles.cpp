@@ -238,13 +238,16 @@ void  CPointPDFParticles::saveToTextFile(const std::string &file) const
  ---------------------------------------------------------------*/
 void  CPointPDFParticles::changeCoordinatesReference(const CPose3D &newReferenceBase )
 {
-	for (CParticleList::iterator	it=m_particles.begin();it!=m_particles.end();++it)
+	TPoint3D pt;
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
 	{
-		CPoint3D	a(it->d->x,it->d->y,it->d->z);
-		CPoint3D	b( newReferenceBase + a );
-		it->d->x = b.x();
-		it->d->y = b.y();
-		it->d->z = b.z();
+		newReferenceBase.composePoint(
+			it->d->x, it->d->y, it->d->z,  // In
+			pt.x, pt.y, pt.z // Out
+			);
+		it->d->x = pt.x;
+		it->d->y = pt.y;
+		it->d->z = pt.z;
 	}
 }
 

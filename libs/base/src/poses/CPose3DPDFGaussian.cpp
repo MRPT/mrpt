@@ -343,23 +343,23 @@ void  CPose3DPDFGaussian::saveToTextFile(const string &file) const
 void  CPose3DPDFGaussian::changeCoordinatesReference( const CPose3D &newReferenceBase )
 {
 	MRPT_START
+	// this = p (+) this
 
-	CMatrixDouble44	HM;
-	newReferenceBase.getHomogeneousMatrix(HM);
+	// COV:
+	const CMatrixDouble66  OLD_COV = this->cov;
+	CMatrixDouble66  df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
-	CMatrixDouble66   M;
-	M.block(0,0,4,4) = HM;	// Clip the 4x4 matrix
+	CPose3DPDF::jacobiansPoseComposition(
+		newReferenceBase,     // x
+		this->mean,  // u
+		df_dx,
+		df_du );
 
-	// The variance in yaw,pitch & roll is unmodified:
-	M.get_unsafe(3,3) = M.get_unsafe(4,4) = M.get_unsafe(5,5) = 1;
-	M.get_unsafe(0,3) = M.get_unsafe(1,3) = M.get_unsafe(2,3) = 0;
+	// this->cov = H1*this->cov*~H1 + H2* 0 *~H2;
+	df_du.multiply_HCHt( OLD_COV, cov );
 
-	// The mean:
-	mean = newReferenceBase + mean;
-
-	// The covariance:
-	//cov = M * cov * (~M);
-	M.multiply_HCHt( CMatrixDouble66(cov), cov );  // CMatrixDouble66() makes a temporary copy of the input so it can be used as output.
+	// MEAN:
+	this->mean.composeFrom(newReferenceBase, this->mean);
 
 	MRPT_END
 }
@@ -369,7 +369,6 @@ void  CPose3DPDFGaussian::changeCoordinatesReference( const CPose3D &newReferenc
  ---------------------------------------------------------------*/
 void  CPose3DPDFGaussian::drawSingleSample( CPose3D &outPart ) const
 {
-	MRPT_UNUSED_PARAM(outPart);
 	MRPT_START
 
 	vector_double	v;
@@ -491,7 +490,7 @@ void  CPose3DPDFGaussian::operator += ( const CPose3D &Ap)
 	// df_du: Nothing to do, since COV(Ap) = zeros
 
 	// MEAN:
-	this->mean = this->mean + Ap;
+	this->mean.composeFrom(this->mean,  Ap);
 }
 
 /*---------------------------------------------------------------

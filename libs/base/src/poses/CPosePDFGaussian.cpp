@@ -190,10 +190,10 @@ void  CPosePDFGaussian::saveToTextFile(const std::string &file) const
  ---------------------------------------------------------------*/
 void  CPosePDFGaussian::changeCoordinatesReference(const CPose3D &newReferenceBase_ )
 {
-	CPose2D newReferenceBase = CPose2D(newReferenceBase_);
+	const CPose2D newReferenceBase = CPose2D(newReferenceBase_);
 
 	// The mean:
-	mean = CPose2D( newReferenceBase + mean );
+	mean.composeFrom(newReferenceBase, mean);
 
 	// The covariance:
 	rotateCov( newReferenceBase.phi() );
@@ -205,7 +205,7 @@ void  CPosePDFGaussian::changeCoordinatesReference(const CPose3D &newReferenceBa
 void  CPosePDFGaussian::changeCoordinatesReference(const CPose2D &newReferenceBase )
 {
 	// The mean:
-	mean = newReferenceBase + mean;
+	mean.composeFrom(newReferenceBase, mean);
 	// The covariance:
 	rotateCov( newReferenceBase.phi() );
 }

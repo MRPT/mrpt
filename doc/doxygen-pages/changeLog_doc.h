@@ -114,6 +114,7 @@
 	- BUG FIXES:
 		- [mrpt-maps] mrpt::slam::CPointsMap::loadFromRange() for 3D range scans took as invalid any point with any of its 3 coordinates set to exactly zero. It's now fixed so invalid points are those at (0,0,0). - <a href="http://code.google.com/p/mrpt/source/detail?r=2790" >r2790</a> 
 		- [mrpt-base] mrpt::poses::CPose3D::composeFrom() gave wrong results when its first argument was the same object being invoked - <a href="http://code.google.com/p/mrpt/source/detail?r=2737" >r2737</a> 
+		- [mrpt-base] mrpt::poses::CPose3DPDFGaussian::changeCoordinatesReference() computed the covariance incorrectly - <a href="http://code.google.com/p/mrpt/source/detail?r=2854" >r2854</a> 
 		- [mrpt-base] RANSAC implementation could fail if the first random subset contained only outliers. <a href="http://code.google.com/p/mrpt/issues/detail?id=11" >Patch provided</a> by Robert Schattschneider (University of Canterbury, New Zealand) - <a href="http://code.google.com/p/mrpt/source/detail?r=2746" >r2746</a> 
 		- [mrpt-base] File names from mrpt::system::getTempFileName() could be not system-wide unique under Windows - <a href="http://code.google.com/p/mrpt/source/detail?r=2766" >r2766</a> 
 		- [mrpt-base] mrpt::random::CRandomGenerator::drawGaussian1D_normalized() fixed potential collision of internal data in multithreaded applications, and fixed a potential, but unlike (1 in 2^32) divide-by-zero error - <a href="http://code.google.com/p/mrpt/source/detail?r=2786" >r2786</a> 

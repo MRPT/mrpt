@@ -402,9 +402,8 @@ CPose3D	 CPose3DPDFParticles::getParticlePose(int i) const
  ---------------------------------------------------------------*/
 void  CPose3DPDFParticles::changeCoordinatesReference( const CPose3D &newReferenceBase )
 {
-	CParticleList::iterator	it;
-	for (it=m_particles.begin();it!=m_particles.end();it++)
-		(*it->d) = newReferenceBase + (*it->d);
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();it++)
+		it->d->composeFrom(newReferenceBase, *it->d);
 }
 
 /*---------------------------------------------------------------

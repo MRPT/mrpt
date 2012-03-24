@@ -134,11 +134,11 @@ void  CPoint2DPDFGaussian::saveToTextFile(const std::string &file) const
  ---------------------------------------------------------------*/
 void  CPoint2DPDFGaussian::changeCoordinatesReference(const CPose3D &newReferenceBase )
 {
-	// Clip the 4x4 matrix
-	CMatrixDouble22 M = newReferenceBase.getRotationMatrix().block(0,0,2,2);
+	// Clip the 3x3 rotation matrix
+	const CMatrixDouble22 M = newReferenceBase.getRotationMatrix().block(0,0,2,2);
 
 	// The mean:
-	mean = CPoint2D( newReferenceBase +mean );
+	mean = CPoint2D( newReferenceBase + mean );
 
 	// The covariance:
 	cov = M*cov*M.transpose();

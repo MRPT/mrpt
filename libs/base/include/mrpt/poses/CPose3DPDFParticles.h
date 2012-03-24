@@ -122,7 +122,7 @@ namespace mrpt
 			 */
 			size_t  size() const { return m_particles.size(); }
 
-			/** This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
+			/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 			  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object.
 			  */
 			void  changeCoordinatesReference( const CPose3D &newReferenceBase );

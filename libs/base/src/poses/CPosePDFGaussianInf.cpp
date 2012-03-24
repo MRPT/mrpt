@@ -195,7 +195,7 @@ void  CPosePDFGaussianInf::changeCoordinatesReference(const CPose3D &newReferenc
 	const CPose2D newReferenceBase = CPose2D(newReferenceBase_);
 
 	// The mean:
-	mean = CPose2D( newReferenceBase + mean );
+	mean.composeFrom(newReferenceBase, mean);
 
 	// The covariance:
 	rotateCov( newReferenceBase.phi() );
@@ -207,7 +207,7 @@ void  CPosePDFGaussianInf::changeCoordinatesReference(const CPose3D &newReferenc
 void  CPosePDFGaussianInf::changeCoordinatesReference(const CPose2D &newReferenceBase )
 {
 	// The mean:
-	mean = newReferenceBase + mean;
+	mean.composeFrom(newReferenceBase, mean);
 	// The covariance:
 	rotateCov( newReferenceBase.phi() );
 }
