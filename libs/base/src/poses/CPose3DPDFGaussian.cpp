@@ -465,8 +465,9 @@ void	 CPose3DPDFGaussian::inverse(CPose3DPDF &o) const
 
 	// This is like: b=(0,0,0)
 	//  OUT = b - THIS
-	CPose3DPDFGaussian b;  // Init: all zeros.
-	out = b - *this;
+	CPose3DPDFGaussian p_zero( CPose3D(0,0,0, 0,0,0), CMatrixDouble66() ); // COV=All zeros
+
+	out = p_zero - *this;
 }
 
 

@@ -90,6 +90,7 @@ protected:
 		for (int i=0;i<6;i++) Y[i]=p[i];
 	}
 
+	// Test "+" & "+=" operator
 	void testPoseComposition(
 		double x,double y, double z, double yaw, double pitch, double roll, double std_scale,
 		double x2,double y2, double z2, double yaw2, double pitch2, double roll2, double std_scale2 )
@@ -97,40 +98,49 @@ protected:
 		CPose3DPDFGaussian  p6pdf1 = generateRandomPose3DPDF(x,y,z,yaw,pitch,roll, std_scale);
 		CPose3DPDFGaussian  p6pdf2 = generateRandomPose3DPDF(x2,y2,z2,yaw2,pitch2,roll2, std_scale2);
 
-		// With "+"/"-" operators:
+		// With "+" operators:
+		CPose3DPDFGaussian  p6_comp = p6pdf1 + p6pdf2;
+
+		// Numeric approximation:
+		CArrayDouble<6> y_mean;
+		CMatrixFixedNumeric<double,6,6>  y_cov;
 		{
-			CPose3DPDFGaussian  p6_comp = p6pdf1 + p6pdf2;
+			CArrayDouble<12> x_mean;
+			for (int i=0;i<6;i++) x_mean[i]=p6pdf1.mean[i];
+			for (int i=0;i<6;i++) x_mean[6+i]=p6pdf2.mean[i];
 
-			// Numeric approximation:
-			CArrayDouble<6> y_mean;
-			CMatrixFixedNumeric<double,6,6>  y_cov;
-			{
-				CArrayDouble<12> x_mean;
-				for (int i=0;i<6;i++) x_mean[i]=p6pdf1.mean[i];
-				for (int i=0;i<6;i++) x_mean[6+i]=p6pdf2.mean[i];
+			CMatrixFixedNumeric<double,12,12>  x_cov;
+			x_cov.insertMatrix(0,0, p6pdf1.cov);
+			x_cov.insertMatrix(6,6, p6pdf2.cov);
 
-				CMatrixFixedNumeric<double,12,12>  x_cov;
-				x_cov.insertMatrix(0,0, p6pdf1.cov);
-				x_cov.insertMatrix(6,6, p6pdf2.cov);
-
-				double DUMMY=0;
-				CArrayDouble<12> x_incrs;
-				x_incrs.assign(1e-6);
-				transform_gaussian_linear(x_mean,x_cov,func_compose,DUMMY, y_mean,y_cov, x_incrs );
-
-			}
-			// Compare:
-			EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().mean(), 1e-2 )
-				<< "Numeric approximation of covariance: " << endl << y_cov << endl
-				<< "Returned covariance: " << endl << p6_comp.cov << endl;
-
-			// Try to recover the individual poses:
-
-			CPose3DPDFGaussian  p2_rec = p6_comp - p6pdf1;
-//			cout << "p2 rec: " << p2_rec << endl;
-			CPose3DPDFGaussian  p1_rec = p6_comp - p6pdf2;
-//			cout << "p1 rec: " << p1_rec << endl;
+			double DUMMY=0;
+			CArrayDouble<12> x_incrs;
+			x_incrs.assign(1e-6);
+			transform_gaussian_linear(x_mean,x_cov,func_compose,DUMMY, y_mean,y_cov, x_incrs );
 		}
+		// Compare mean:
+		EXPECT_NEAR(0, (y_mean-p6_comp.mean.getAsVectorVal()).Abs().sumAll(), 1e-2 )
+			<< "p1 mean: " << p6pdf1.mean << endl
+			<< "p2 mean: " << p6pdf2.mean << endl;
+
+		// Compare cov:
+		EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().sumAll(), 1e-2 )
+			<< "p1 mean: " << p6pdf1.mean << endl
+			<< "p2 mean: " << p6pdf2.mean << endl;
+
+		// Test +=
+		p6_comp = p6pdf1;
+		p6_comp += p6pdf2;
+
+		// Compare mean:
+		EXPECT_NEAR(0, (y_mean-p6_comp.mean.getAsVectorVal()).Abs().sumAll(), 1e-2 )
+			<< "p1 mean: " << p6pdf1.mean << endl
+			<< "p2 mean: " << p6pdf2.mean << endl;
+
+		// Compare cov:
+		EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().sumAll(), 1e-2 )
+			<< "p1 mean: " << p6pdf1.mean << endl
+			<< "p2 mean: " << p6pdf2.mean << endl;
 	}
 
 
@@ -183,6 +193,7 @@ protected:
 
 	}
 
+	// Test the "-" & "-=" operator
 	void testPoseInverseComposition(
 		double x,double y, double z, double yaw, double pitch, double roll, double std_scale,
 		double x2,double y2, double z2, double yaw2, double pitch2, double roll2, double std_scale2 )
@@ -190,6 +201,7 @@ protected:
 		CPose3DPDFGaussian  p6pdf1 = generateRandomPose3DPDF(x,y,z,yaw,pitch,roll, std_scale);
 		CPose3DPDFGaussian  p6pdf2 = generateRandomPose3DPDF(x2,y2,z2,yaw2,pitch2,roll2, std_scale2);
 
+		// With the "-" operator
 		CPose3DPDFGaussian  p6_comp = p6pdf1 - p6pdf2;
 
 		// Numeric approximation:
@@ -209,12 +221,81 @@ protected:
 			x_incrs.assign(1e-6);
 			transform_gaussian_linear(x_mean,x_cov,func_inv_compose,DUMMY, y_mean,y_cov, x_incrs );
 		}
-		// Compare:
-		EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().mean(), 1e-2 )
+		// Compare mean:
+		EXPECT_NEAR(0, (y_mean-p6_comp.mean.getAsVectorVal()).Abs().sumAll(), 1e-2 )
 			<< "p1 mean: " << p6pdf1.mean << endl
-			<< "p2 mean: " << p6pdf2.mean << endl
-			<< "Numeric approximation of covariance: " << endl << y_cov << endl
-			<< "Returned covariance: " << endl << p6_comp.cov << endl;
+			<< "p2 mean: " << p6pdf2.mean << endl;
+
+		// Compare cov:
+		EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().sumAll(), 1e-2 )
+			<< "p1 mean: " << p6pdf1.mean << endl
+			<< "p2 mean: " << p6pdf2.mean << endl;
+
+		// With the "-=" operator
+		p6_comp = p6pdf1;
+		p6_comp -= p6pdf2;
+
+		// Compare mean:
+		EXPECT_NEAR(0, (y_mean-p6_comp.mean.getAsVectorVal()).Abs().sumAll(), 1e-2 )
+			<< "p1 mean: " << p6pdf1.mean << endl
+			<< "p2 mean: " << p6pdf2.mean << endl;
+
+		// Compare cov:
+		EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().sumAll(), 1e-2 )
+			<< "p1 mean: " << p6pdf1.mean << endl
+			<< "p2 mean: " << p6pdf2.mean << endl;
+	}
+
+	// Test the unary "-" operator
+	void testPoseInverse(
+		double x,double y, double z, double yaw, double pitch, double roll, double std_scale )
+	{
+		CPose3DPDFGaussian  p6pdf2 = generateRandomPose3DPDF(x,y,z,yaw,pitch,roll, std_scale);
+		CPose3DPDFGaussian  p6_zero( CPose3D(0,0,0, 0,0,0), CMatrixDouble66() ); // COV=All zeros
+
+		// Unary "-":
+		const CPose3DPDFGaussian p6_inv = -p6pdf2;
+
+		// Compare to the binary "-" operator:
+		const CPose3DPDFGaussian p6_comp = p6_zero - p6pdf2;
+
+		// Compare mean:
+		EXPECT_NEAR(0, (p6_inv.mean.getAsVectorVal()-p6_comp.mean.getAsVectorVal()).Abs().sumAll(), 1e-2 )
+			<< "p mean: " << p6pdf2.mean << endl;
+
+		// Compare cov:
+		EXPECT_NEAR(0, (p6_inv.cov-p6_comp.cov).Abs().sumAll(), 1e-2 )
+			<< "p mean: " << p6pdf2.mean << endl;
+
+
+		// Compare to the "inverse()" method:
+		CPose3DPDFGaussian p6_inv2;
+		p6pdf2.inverse(p6_inv2);
+
+		// Compare mean:
+		EXPECT_NEAR(0, (p6_inv2.mean.getAsVectorVal()-p6_comp.mean.getAsVectorVal()).Abs().sumAll(), 1e-2 )
+			<< "p mean: " << p6pdf2.mean << endl 
+			<< "p6_inv2 mean: " << p6_inv2.mean << endl 
+			<< "p6_comp mean: " << p6_comp.mean << endl;
+
+		// Compare cov:
+		EXPECT_NEAR(0, (p6_inv2.cov-p6_comp.cov).Abs().sumAll(), 1e-2 )
+			<< "p mean: " << p6pdf2.mean << endl 
+			<< "p6_inv2 mean: " << p6_inv2.mean << endl 
+			<< "p6_comp mean: " << p6_comp.mean << endl;
+	}
+
+	// Test all operators
+	void testAllPoseOperators(
+		double x,double y, double z, double yaw, double pitch, double roll, double std_scale,
+		double x2,double y2, double z2, double yaw2, double pitch2, double roll2, double std_scale2 )
+	{
+		// +, +=
+		testPoseComposition(x,y,z,yaw,pitch,roll,std_scale, x2,y2,z2,yaw2,pitch2,roll2,std_scale2 );
+		// -, -=, unary "-"
+		testPoseInverseComposition(x,y,z,yaw,pitch,roll,std_scale, x2,y2,z2,yaw2,pitch2,roll2,std_scale2 );
+		// unitary "-" & ".inverse()"
+		testPoseInverse(x,y,z,yaw,pitch,roll,std_scale);
 	}
 
 
@@ -235,17 +316,12 @@ protected:
 		EXPECT_NEAR(0, (p6_new_base_pdf.cov - p6pdf1.cov).Abs().mean(), 1e-2 )
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "new_base: " << new_base << endl;
-		EXPECT_NEAR(0, (p6pdf1.mean.getAsVectorVal() - p6pdf1.mean.getAsVectorVal() ).Abs().mean(), 1e-2 )
+		EXPECT_NEAR(0, (p6_new_base_pdf.mean.getAsVectorVal() - p6pdf1.mean.getAsVectorVal() ).Abs().mean(), 1e-2 )
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "new_base: " << new_base << endl;
 	}
 
 };
-
-/* TODO: Make tests for
-  - operators: +=, -=, +, -
-  - inverse
-*/
 
 
 TEST_F(Pose3DPDFGaussTests,ToQuatGaussPDFAndBack)
@@ -281,20 +357,21 @@ TEST_F(Pose3DPDFGaussTests,CompositionJacobian)
 	testCompositionJacobian(1,2,3,DEG2RAD(20),DEG2RAD(80),DEG2RAD(70), -8,45,10,DEG2RAD(50),DEG2RAD(-10),DEG2RAD(-30) );
 }
 
-TEST_F(Pose3DPDFGaussTests,InverseComposition)
+// Test the +, -, +=, -=, "-" operators
+TEST_F(Pose3DPDFGaussTests,AllOperators)
 {
-	testPoseInverseComposition(0,0,0,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1,  0,0,0,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
-	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1,  -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
+	testAllPoseOperators(0,0,0,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1,  0,0,0,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
+	testAllPoseOperators(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1,  -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
 
-	testPoseInverseComposition(1,2,3,DEG2RAD(20),DEG2RAD(80),DEG2RAD(70), 0.1, -8,45,10,DEG2RAD(50),DEG2RAD(-10),DEG2RAD(30), 0.1 );
-	testPoseInverseComposition(1,2,3,DEG2RAD(20),DEG2RAD(80),DEG2RAD(70), 0.2, -8,45,10,DEG2RAD(50),DEG2RAD(-10),DEG2RAD(30), 0.2 );
+	testAllPoseOperators(1,2,3,DEG2RAD(20),DEG2RAD(80),DEG2RAD(70), 0.1, -8,45,10,DEG2RAD(50),DEG2RAD(-10),DEG2RAD(30), 0.1 );
+	testAllPoseOperators(1,2,3,DEG2RAD(20),DEG2RAD(80),DEG2RAD(70), 0.2, -8,45,10,DEG2RAD(50),DEG2RAD(-10),DEG2RAD(30), 0.2 );
 
-	testPoseInverseComposition(1,2,3,DEG2RAD(10),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
-	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(10),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
-	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(10), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
-	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(10),DEG2RAD(0),DEG2RAD(0), 0.1 );
-	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(10),DEG2RAD(0), 0.1 );
-	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(10), 0.1 );
+	testAllPoseOperators(1,2,3,DEG2RAD(10),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
+	testAllPoseOperators(1,2,3,DEG2RAD(0),DEG2RAD(10),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
+	testAllPoseOperators(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(10), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1 );
+	testAllPoseOperators(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(10),DEG2RAD(0),DEG2RAD(0), 0.1 );
+	testAllPoseOperators(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(10),DEG2RAD(0), 0.1 );
+	testAllPoseOperators(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(10), 0.1 );
 }
 
 TEST_F(Pose3DPDFGaussTests,ChangeCoordsRef)

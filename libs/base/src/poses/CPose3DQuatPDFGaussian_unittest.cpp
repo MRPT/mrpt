@@ -251,12 +251,28 @@ protected:
 
 	}
 
+	void testChangeCoordsRef(
+		double x,double y, double z, double yaw, double pitch, double roll, double std_scale,
+		double x2,double y2, double z2, double yaw2, double pitch2, double roll2 )
+	{
+		CPose3DQuatPDFGaussian  p7pdf1 = generateRandomPoseQuat3DPDF(x,y,z,yaw,pitch,roll, std_scale);
+		
+		const CPose3DQuat             new_base = CPose3DQuat( CPose3D(x2,y2,z2,yaw2,pitch2,roll2) );
+		const CPose3DQuatPDFGaussian  new_base_pdf( new_base, CMatrixDouble77() ); // COV = Zeros
+
+		const CPose3DQuatPDFGaussian  p7_new_base_pdf = new_base_pdf + p7pdf1;
+		p7pdf1.changeCoordinatesReference(new_base);
+		
+		// Compare:
+		EXPECT_NEAR(0, (p7_new_base_pdf.cov - p7pdf1.cov).Abs().mean(), 1e-2 )
+			<< "p1 mean: " << p7pdf1.mean << endl
+			<< "new_base: " << new_base << endl;
+		EXPECT_NEAR(0, (p7_new_base_pdf.mean.getAsVectorVal() - p7pdf1.mean.getAsVectorVal() ).Abs().mean(), 1e-2 )
+			<< "p1 mean: " << p7pdf1.mean << endl
+			<< "new_base: " << new_base << endl;
+	}
 
 };
-
-/* TODO: Make tests for
-  - changeCoordinatesReference
-*/
 
 
 TEST_F(Pose3DQuatPDFGaussTests,ToYPRGaussPDFAndBack)
@@ -347,4 +363,14 @@ TEST_F(Pose3DQuatPDFGaussTests,InverseComposition)
 	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(10),DEG2RAD(0),DEG2RAD(0), 0.1 );
 	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(10),DEG2RAD(0), 0.1 );
 	testPoseInverseComposition(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1, -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(10), 0.1 );
+}
+
+
+TEST_F(Pose3DQuatPDFGaussTests,ChangeCoordsRef)
+{
+	testChangeCoordsRef(0,0,0,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1,  0,0,0,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0)  );
+	testChangeCoordsRef(1,2,3,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0), 0.1,  -8,45,10,DEG2RAD(0),DEG2RAD(0),DEG2RAD(0)  );
+
+	testChangeCoordsRef(1,2,3,DEG2RAD(20),DEG2RAD(80),DEG2RAD(70), 0.1, -8,45,10,DEG2RAD(50),DEG2RAD(-10),DEG2RAD(30) );
+	testChangeCoordsRef(1,2,3,DEG2RAD(20),DEG2RAD(80),DEG2RAD(70), 0.2, -8,45,10,DEG2RAD(50),DEG2RAD(-10),DEG2RAD(30) );
 }
