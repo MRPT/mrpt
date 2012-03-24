@@ -60,7 +60,10 @@ namespace slam
 		IMU_ROLL,
 		IMU_X,
 		IMU_Y,
-		IMU_Z
+		IMU_Z, 
+
+		// Always leave this last value to reflect the number of enum values:
+		COUNT_IMU_DATA_FIELDS
 	};
 
 	/** This class stores measurements from an Inertial Measurement Unit (IMU), and/or its attitude estimation (integration of raw measurements).

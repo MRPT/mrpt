@@ -2253,12 +2253,33 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 													RAD2DEG( obs->rawMeasurements[IMU_PITCH] ),
 													RAD2DEG( obs->rawMeasurements[IMU_ROLL] ) );
 
+												// Units: 
+												// Use "COUNT_IMU_DATA_FIELDS" so a compile error happens if the sizes don't fit ;-)
+												static const char * imu_units[ mrpt::slam::COUNT_IMU_DATA_FIELDS ] = 
+												{
+													"m/s^2", //	IMU_X_ACC,
+													"m/s^2", //	IMU_Y_ACC,
+													"m/s^2", //	IMU_Z_ACC,
+													"rad/s", //	IMU_YAW_VEL,
+													"rad/s", //	IMU_PITCH_VEL,
+													"rad/s", //	IMU_ROLL_VEL,
+													"m/s", //	IMU_X_VEL,
+													"m/s", //	IMU_Y_VEL,
+													"m/s", //	IMU_Z_VEL,
+													"rad", //	IMU_YAW,
+													"rad", //	IMU_PITCH,
+													"rad", //	IMU_ROLL,
+													"m", //	IMU_X,
+													"m", //	IMU_Y,
+													"m"  //	IMU_Z
+												};
+
 	#define DUMP_IMU_DATA(x)  \
-		cout << #x << " = "; \
+		cout << format("%15s = ",#x); \
 		if (obs->dataIsPresent[x]) \
-			cout << obs->rawMeasurements[x]; \
-		else  	cout << "(not present)"; \
-		cout << endl;
+			cout << format("%10f %s\n", obs->rawMeasurements[x], imu_units[x]); \
+		else  	cout << "(not present)\n"; 
+
 
 												DUMP_IMU_DATA(IMU_X_ACC)
 												DUMP_IMU_DATA(IMU_Y_ACC)

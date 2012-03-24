@@ -608,8 +608,10 @@ void  CPointsMap::changeCoordinatesReference(const CPose2D	&newBase)
 {
 	const size_t N = x.size();
 
+	const CPose3D	newBase3D(newBase);
+
 	for (size_t i=0;i<N;i++)
-		newBase.composePoint(
+		newBase3D.composePoint(
 			x[i],y[i],z[i],  // In
 			x[i],y[i],z[i]   // Out
 		);
