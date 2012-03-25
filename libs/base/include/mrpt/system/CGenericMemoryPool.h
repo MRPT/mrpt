@@ -60,20 +60,25 @@ namespace mrpt
 			TList                          m_pool;
 			mrpt::synch::CCriticalSection  m_pool_cs;
 			size_t                         m_maxPoolEntries;
+			bool                           & m_was_destroyed;  //!< With this trick we get rid of the "global destruction order fiasco" ;-)
 
-			CGenericMemoryPool() : m_maxPoolEntries(5)
+			CGenericMemoryPool(const size_t max_pool_entries, bool &was_destroyed ) : m_maxPoolEntries(max_pool_entries), m_was_destroyed(was_destroyed)
 			{
+				m_was_destroyed = false;
 			}
 
 		public:
 			inline size_t getMemoryPoolMaxSize() const                     { return m_maxPoolEntries; }
 			inline void   setMemoryPoolMaxSize(const size_t maxNumEntries) { m_maxPoolEntries = maxNumEntries; }
 
-			/** Singleton: Return the unique instance of this class for a given template arguments: */
-			static CGenericMemoryPool<DATA_PARAMS,POOLABLE_DATA> & getInstance()
+			/** Construct-on-first-use (~singleton) pattern: Return the unique instance of this class for a given template arguments,
+			  *  or NULL if it was once created but it's been destroyed (which means we're in the program global destruction phase).
+			  */
+			static CGenericMemoryPool<DATA_PARAMS,POOLABLE_DATA> * getInstance(const size_t max_pool_entries = 5)
 			{
-				static CGenericMemoryPool<DATA_PARAMS,POOLABLE_DATA> inst;
-				return inst;
+				static bool was_destroyed = false;
+				static CGenericMemoryPool<DATA_PARAMS,POOLABLE_DATA> inst(max_pool_entries, was_destroyed);
+				return was_destroyed ? NULL : &inst;
 			}
 
 			/** Request a block of data which fulfils the size requirements stated in \a params.
@@ -107,13 +112,17 @@ namespace mrpt
 				mrpt::synch::CCriticalSectionLocker lock( &m_pool_cs );
 
 				while (m_pool.size()>=m_maxPoolEntries) // Free old data if needed
+				{
+					if (m_pool.begin()->second) delete m_pool.begin()->second;
 					m_pool.erase(m_pool.begin());
+				}
 
 				m_pool.push_back( typename TList::value_type(params,block) );
 			}
 
 			~CGenericMemoryPool()
 			{
+				m_was_destroyed = true;
 				// Free remaining memory blocks:
 				mrpt::synch::CCriticalSectionLocker lock( &m_pool_cs );
 				for (typename TList::iterator it=m_pool.begin();it!=m_pool.end();++it)

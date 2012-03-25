@@ -97,17 +97,19 @@ CObservation3DRangeScan::TCached3DProjTables CObservation3DRangeScan::m_3dproj_l
 		if (!obs.points3D_x.empty())
 		{
 			// Before dying, donate my memory to the pool for the joy of future class-brothers...
-			TMyPointsMemPool &pool = TMyPointsMemPool::getInstance();
+			TMyPointsMemPool *pool = TMyPointsMemPool::getInstance();
+			if (pool)
+			{
+				CObservation3DRangeScan_Points_MemPoolParams mem_params;
+				mem_params.WH = obs.points3D_x.size();
 
-			CObservation3DRangeScan_Points_MemPoolParams mem_params;
-			mem_params.WH = obs.points3D_x.size();
+				CObservation3DRangeScan_Points_MemPoolData *mem_block = new CObservation3DRangeScan_Points_MemPoolData();
+				obs.points3D_x.swap( mem_block->pts_x );
+				obs.points3D_y.swap( mem_block->pts_y );
+				obs.points3D_z.swap( mem_block->pts_z );
 
-			CObservation3DRangeScan_Points_MemPoolData *mem_block = new CObservation3DRangeScan_Points_MemPoolData();
-			obs.points3D_x.swap( mem_block->pts_x );
-			obs.points3D_y.swap( mem_block->pts_y );
-			obs.points3D_z.swap( mem_block->pts_z );
-
-			pool.dump_to_pool(mem_params, mem_block);
+				pool->dump_to_pool(mem_params, mem_block);
+			}
 		}
 	}
 	void mempool_donate_range_matrix(CObservation3DRangeScan &obs)
@@ -115,16 +117,18 @@ CObservation3DRangeScan::TCached3DProjTables CObservation3DRangeScan::m_3dproj_l
 		if (obs.rangeImage.cols()>1 && obs.rangeImage.rows()>1)
 		{
 			// Before dying, donate my memory to the pool for the joy of future class-brothers...
-			TMyRangesMemPool &pool = TMyRangesMemPool::getInstance();
+			TMyRangesMemPool *pool = TMyRangesMemPool::getInstance();
+			if (pool)
+			{
+				CObservation3DRangeScan_Ranges_MemPoolParams mem_params;
+				mem_params.H = obs.rangeImage.rows();
+				mem_params.W = obs.rangeImage.cols();
 
-			CObservation3DRangeScan_Ranges_MemPoolParams mem_params;
-			mem_params.H = obs.rangeImage.rows();
-			mem_params.W = obs.rangeImage.cols();
+				CObservation3DRangeScan_Ranges_MemPoolData *mem_block = new CObservation3DRangeScan_Ranges_MemPoolData();
+				obs.rangeImage.swap( mem_block->rangeImage );
 
-			CObservation3DRangeScan_Ranges_MemPoolData *mem_block = new CObservation3DRangeScan_Ranges_MemPoolData();
-			obs.rangeImage.swap( mem_block->rangeImage );
-
-			pool.dump_to_pool(mem_params, mem_block);
+				pool->dump_to_pool(mem_params, mem_block);
+			}
 		}
 	}
 
@@ -743,19 +747,21 @@ void CObservation3DRangeScan::resizePoints3DVectors(const size_t WH)
 
 
 	// Request memory for the X,Y,Z buffers from the memory pool:
-	TMyPointsMemPool &pool = TMyPointsMemPool::getInstance();
+	TMyPointsMemPool *pool = TMyPointsMemPool::getInstance();
+	if (pool)
+	{
+		CObservation3DRangeScan_Points_MemPoolParams mem_params;
+		mem_params.WH = WH;
 
-	CObservation3DRangeScan_Points_MemPoolParams mem_params;
-	mem_params.WH = WH;
+		CObservation3DRangeScan_Points_MemPoolData *mem_block = pool->request_memory(mem_params);
 
-	CObservation3DRangeScan_Points_MemPoolData *mem_block = pool.request_memory(mem_params);
-
-	if (mem_block)
-	{	// Take the memory via swaps:
-		points3D_x.swap( mem_block->pts_x );
-		points3D_y.swap( mem_block->pts_y );
-		points3D_z.swap( mem_block->pts_z );
-		delete mem_block;
+		if (mem_block)
+		{	// Take the memory via swaps:
+			points3D_x.swap( mem_block->pts_x );
+			points3D_y.swap( mem_block->pts_y );
+			points3D_z.swap( mem_block->pts_z );
+			delete mem_block;
+		}
 	}
 #endif
 
@@ -771,19 +777,21 @@ void CObservation3DRangeScan::rangeImage_setSize(const int H, const int W)
 {
 #ifdef COBS3DRANGE_USE_MEMPOOL
 	// Request memory from the memory pool:
-	TMyRangesMemPool &pool = TMyRangesMemPool::getInstance();
+	TMyRangesMemPool *pool = TMyRangesMemPool::getInstance();
+	if (pool)
+	{
+		CObservation3DRangeScan_Ranges_MemPoolParams mem_params;
+		mem_params.H = H;
+		mem_params.W = W;
 
-	CObservation3DRangeScan_Ranges_MemPoolParams mem_params;
-	mem_params.H = H;
-	mem_params.W = W;
+		CObservation3DRangeScan_Ranges_MemPoolData *mem_block = pool->request_memory(mem_params);
 
-	CObservation3DRangeScan_Ranges_MemPoolData *mem_block = pool.request_memory(mem_params);
-
-	if (mem_block)
-	{	// Take the memory via swaps:
-		rangeImage.swap(mem_block->rangeImage);
-		delete mem_block;
-		return;
+		if (mem_block)
+		{	// Take the memory via swaps:
+			rangeImage.swap(mem_block->rangeImage);
+			delete mem_block;
+			return;
+		}
 	}
 	// otherwise, continue with the normal method:
 #endif
