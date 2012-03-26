@@ -60,7 +60,7 @@ void TestTrackFeatures()
 	CFeatureTracker_KL	tracker;
 	// tracker.extra_params["add_new_features"]  = 1;   // track, AND ALSO, add new features
 	// ...
-	
+
 	// Do tracking:
 	tracker.trackFeatures(im1, im2, feats);
 
@@ -135,12 +135,13 @@ void TestExtractMatchProjectAndPaint()
 	cout << "***************************************************" << endl;
 
 	// Match features:
-	size_t nMatches;
+	//size_t nMatches;
 	TMatchingOptions opt;
 
 	// HARRIS
 	cout << "Matching HARRIS features by CORRELATION" << endl;
-	nMatches = matchFeatures( featsHarris_L, featsHarris_R, mHarris );
+	//nMatches =
+	matchFeatures( featsHarris_L, featsHarris_R, mHarris );
 	cout << "Matches found: " << mHarris.size() << endl;
 
 	cout << "***************************************************" << endl;
@@ -238,20 +239,22 @@ void TestMatchFeatures()
 	fast2.showImageAndPoints( imR, featsFAST_R );
 
 	// Match features:
-	size_t nMatches;
+	//size_t nMatches;
 	TMatchingOptions opt;
 
 	// HARRIS
 	CTicTac tictac;
 	cout << "Matching HARRIS features by CORRELATION" << endl;
 	tictac.Tic();
-	nMatches = matchFeatures( featsHarris_L, featsHarris_R, mHarris );
+	//nMatches =
+	matchFeatures( featsHarris_L, featsHarris_R, mHarris );
 	double T = tictac.Tac();
 	cout << "[CC] Matches found: " << mHarris.size() << " in " << T*1000.0f << " ms " << endl;
 
 	opt.matching_method = TMatchingOptions::mmSAD;
 	tictac.Tic();
-	nMatches = matchFeatures( featsHarris_L, featsHarris_R, mHarris_SAD, opt );
+	//nMatches =
+	matchFeatures( featsHarris_L, featsHarris_R, mHarris_SAD, opt );
 	T = tictac.Tac();
 	cout << "[SAD] Matches found: " << mHarris_SAD.size() << " in " << T*1000.0f << " ms " << endl;
 	cout << "***************************************************" << endl;
@@ -260,27 +263,31 @@ void TestMatchFeatures()
 	// SIFT
 	cout << "Matching SIFT features by DESCRIPTOR" << endl;
 	opt.matching_method = TMatchingOptions::mmDescriptorSIFT;
-	nMatches = matchFeatures( featsSIFT_L, featsSIFT_R, mSIFT, opt );
+	//nMatches =
+	matchFeatures( featsSIFT_L, featsSIFT_R, mSIFT, opt );
 	cout << "Matches found: " << mSIFT.size() << endl;
 	cout << "***************************************************" << endl;
 
 	// SURF
 	cout << "Matching SURF features by DESCRIPTOR" << endl;
 	opt.matching_method = TMatchingOptions::mmDescriptorSURF;
-	nMatches = matchFeatures( featsSURF_L, featsSURF_R, mSURF, opt );
+	//nMatches =
+	matchFeatures( featsSURF_L, featsSURF_R, mSURF, opt );
 	cout << "Matches found: " << mSURF.size() << endl;
 	cout << "***************************************************" << endl;
 
 	// FAST
 	cout << "Matching FAST features by CC" << endl;
 	tictac.Tic();
-	nMatches = matchFeatures( featsFAST_L, featsFAST_R, mFAST_CC );
+	//nMatches =
+	matchFeatures( featsFAST_L, featsFAST_R, mFAST_CC );
 	T = tictac.Tac();
 	cout << "[CC] Matches found: " << mFAST_CC.size() << " in " << T*1000.0f << " ms " << endl;
 
 	opt.matching_method = TMatchingOptions::mmSAD;
 	tictac.Tic();
-	nMatches = matchFeatures( featsFAST_L, featsFAST_R, mFAST_SAD, opt );
+	//nMatches =
+	matchFeatures( featsFAST_L, featsFAST_R, mFAST_SAD, opt );
 	T = tictac.Tac();
 	cout << "[SAD] Matches found: " << mFAST_SAD.size() << " in " << T*1000.0f << " ms " << endl;
 	cout << "***************************************************" << endl;

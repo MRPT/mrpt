@@ -43,6 +43,7 @@
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CBox.h>
+#include <mrpt/opengl/CFrustum.h>
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CEllipsoid.h>

@@ -41,7 +41,7 @@ using namespace mrpt::math;
 // ------------------------------------------------------
 void TestOpenGLObjects()
 {
-mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 10000;
+	mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 10000;
 
 	CDisplayWindow3D	win("Demo of MRPT's OpenGL objects",640,480);
 
@@ -114,6 +114,22 @@ mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 10000;
 		theScene->insert( obj2 );
 
 		opengl::CTextPtr gl_txt = opengl::CText::Create("CBox");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
+	// Frustum
+	{
+		opengl::CFrustumPtr obj = opengl::CFrustum::Create(1,5, 60,45, 1.5f, true, false);
+		obj->setLocation(off_x,0,0);
+		theScene->insert( obj );
+
+		opengl::CFrustumPtr obj2 = opengl::CFrustum::Create(1,5, 60,45, 2.5f, true, true);
+		obj2->setLocation(off_x,6,0);
+		theScene->insert( obj2 );
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("CFrustum");
 		gl_txt->setLocation(off_x,off_y_label,0);
 		theScene->insert(gl_txt);
 	}
@@ -210,11 +226,11 @@ mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 10000;
 	// CEllipsoidRangeBearing2D
 	{	// (range,bearing) -> (x,y)
 		const double cov_params_dat[] = {
-			0.2,  0, 
+			0.2,  0,
 			0,   0.1
 		};
 		const double mean_params_dat[] = {
-			3.0, 0.5 
+			3.0, 0.5
 		};
 		mrpt::math::CMatrixFixedNumeric<double,2,2> cov_params(cov_params_dat);
 		mrpt::math::CMatrixFixedNumeric<double,2,1> mean_params(mean_params_dat);
@@ -234,11 +250,11 @@ mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 10000;
 	}
 	{	// (range,bearing) -> (x,y)
 		const double cov_params_dat[] = {
-			0.2,  0.09, 
+			0.2,  0.09,
 			0.09,   0.1
 		};
 		const double mean_params_dat[] = {
-			5.0, -0.5 
+			5.0, -0.5
 		};
 		mrpt::math::CMatrixFixedNumeric<double,2,2> cov_params(cov_params_dat);
 		mrpt::math::CMatrixFixedNumeric<double,2,1> mean_params(mean_params_dat);
@@ -271,7 +287,7 @@ mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 10000;
 		const double rho_std  = (1./6.)*(1./min_dist-1./max_dist);
 
 		const double cov_params_dat[] = {
-			square(rho_std),  0, 
+			square(rho_std),  0,
 			0,   square(DEG2RAD(2))
 		};
 		const double mean_params_dat[] = {
@@ -309,7 +325,7 @@ mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 10000;
 
 		const double cov_params_dat[] = {
 			square(rho_std),      0,                    0,
-			0,   square(DEG2RAD(2)),                    0, 
+			0,   square(DEG2RAD(2)),                    0,
 			0,                    0,   square(DEG2RAD(2))
 		};
 		const double mean_params_dat[] = {

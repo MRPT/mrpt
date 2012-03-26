@@ -27,13 +27,11 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/base.h>
-#include <mrpt/slam.h>
 #include <mrpt/hwdrivers/CInterfaceFTDI.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
 using namespace std;
 
 

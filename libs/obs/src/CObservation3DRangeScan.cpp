@@ -809,3 +809,107 @@ bool CObservation3DRangeScan::doDepthAndIntensityCamerasCoincide() const
 		(relativePoseIntensityWRTDepth.m_coords.array() < EPSILON ).all() &&
 		((ref_pose.m_ROT - relativePoseIntensityWRTDepth.m_ROT).array().abs() < EPSILON).all();
 }
+
+
+// Convert into equivalent 2D "fake" laser scan. See .h for doc
+void CObservation3DRangeScan::convertTo2DScan(
+	CObservation2DRangeScan &out_scan2d,
+	const std::string &sensorLabel,
+	const double angle_sup,
+	const double angle_inf,
+	const double oversampling_ratio
+	)
+{
+	out_scan2d.sensorLabel = sensorLabel;
+	out_scan2d.timestamp = this->timestamp;
+
+	if (!this->hasRangeImage)
+	{	// Nothing to do!
+		out_scan2d.validRange.clear();
+		out_scan2d.scan.clear();
+		return;
+	}
+
+	const size_t nCols = this->rangeImage.cols();
+	const size_t nRows = this->rangeImage.rows();
+
+	// Compute the real horizontal FOV from the range camera intrinsic calib data:
+	// Note: this assumes the range image has been "undistorted", which is true for data
+	//        from OpenNI, and will be in the future for libfreenect in MRPT, but it's
+	//        not implemented yet (as of Mar 2012), so this is an approximation in that case.
+	const double cx = this->cameraParams.cx();
+	const double cy = this->cameraParams.cy();
+	const double fx = this->cameraParams.fx();
+	const double fy = this->cameraParams.fy();
+
+	// (Imagine the camera seen from above to understand this geometry)
+	const double  real_FOV_left  = atan2(cx, fx);
+	const double  real_FOV_right = atan2(nCols-1-cx, fx);
+
+	// FOV of the equivalent "fake" "laser scanner":
+	const float  FOV_equiv = 2. * std::max(real_FOV_left,real_FOV_right);
+
+	// Now, we should create more "fake laser" points than columns in the image,
+	//  since laser scans are assumed to sample space at evenly-spaced angles,
+	//  while in images it is like ~tan(angle).
+	ASSERT_ABOVE_(oversampling_ratio,1.0)
+	const size_t nLaserRays = static_cast<size_t>( nCols * oversampling_ratio );
+
+
+	// Prepare 2D scan data fields:
+	out_scan2d.aperture = FOV_equiv;
+	out_scan2d.maxRange = this->maxRange;
+	out_scan2d.rightToLeft = false;
+	out_scan2d.validRange.assign(nLaserRays, false);  // default: all ranges=invalid
+	out_scan2d.scan.assign(nLaserRays, 0);
+
+	// Precompute the tangents of the vertical angles of each "ray"
+	// for every row in the range image:
+	std::vector<float> vert_ang_tan(nRows);
+	for (size_t r=0;r<nRows;r++)
+		vert_ang_tan[r] = static_cast<float>( (cy-r)/fy );
+
+	// The vertical FOVs given by the user can be translated into limits of the tangents (tan>0 means above, i.e. z>0):
+	const float tan_min = -tan( std::abs(angle_inf) );
+	const float tan_max =  tan( std::abs(angle_sup) );
+
+	// Angle "counter" for the fake laser scan direction, and the increment:
+	double ang  = -FOV_equiv*0.5;
+	const double A_ang = FOV_equiv/(nLaserRays-1);
+
+	// Go thru columns, and keep the minimum distance (along the +X axis, not 3D distance!)
+	// for each direction (i.e. for each column) which also lies within the vertical FOV passed
+	// by the user.
+	for (size_t i=0;i<nLaserRays;i++, ang+=A_ang )
+	{
+		// Equivalent column in the range image for the "i'th" ray:
+		const double tan_ang = tan(ang);
+		// make sure we don't go out of range (just in case):
+		const size_t c = std::min(static_cast<size_t>(std::max(0.0,cx + fx*tan_ang)),nCols-1);
+
+		bool any_valid = false;
+		float closest_range = out_scan2d.maxRange;
+
+		for (size_t r=0;r<nRows;r++)
+		{
+			const float D = this->rangeImage.coeff(r,c);
+			if (D>0)
+			{
+				const float this_point_tan = vert_ang_tan[r] * D;
+				if (this_point_tan>tan_min && this_point_tan<tan_max)
+				{
+					any_valid = true;
+					mrpt::utils::keep_min(closest_range, D);
+				}
+			}
+		}
+
+		if (any_valid)
+		{
+			out_scan2d.validRange[i] = true;
+			// Compute the distance in 2D from the "depth" in closest_range:
+			out_scan2d.scan[i] = closest_range*std::sqrt(1.0+tan_ang*tan_ang);
+		}
+	} // end for columns
+
+}

@@ -86,10 +86,11 @@ void TestExtractMatchProjectAndPaint()
 	cout << "***************************************************" << endl;
 
 	// Match features:
-	size_t nMatches;
+	//size_t nMatches;
 	TMatchingOptions opt;
 	cout << "Matching HARRIS features by CORRELATION" << endl;
-	nMatches = matchFeatures( featsHarris_L, featsHarris_R, mHarris );
+	//nMatches =
+	matchFeatures( featsHarris_L, featsHarris_R, mHarris );
 	cout << "Matches found: " << mHarris.size() << endl;
 
 	cout << "***************************************************" << endl;

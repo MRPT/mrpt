@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /FTDI_USB_enumerate_test
+# CMake file for the MRPT example:  /kinect-to-2d-laser-demo
 #
 #  Run with "ccmake ." at the root directory, or use it as a template for 
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-SET(sampleName FTDI_USB_enumerate_test)
+SET(sampleName kinect-to-2d-laser-demo)
 SET(PRJ_NAME "EXAMPLE_${sampleName}")
 
 # ---------------------------------------
@@ -31,7 +31,7 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 #   The dependencies of a library are automatically added, so you only 
 #    need to specify the top-most libraries your code depend on.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED hwdrivers;gui)
+FIND_PACKAGE(MRPT REQUIRED hwdrivers;maps)
 
 # ---------------------------------------------
 # TARGET:
@@ -67,7 +67,7 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 #  the MRPT tree:
 # -------------------------------------------------------------------------
 IF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT") # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt-hwdrivers;mrpt-gui) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt-hwdrivers;mrpt-maps) # Dependencies
 ENDIF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT")
 # -------------------------------------------------------------------------
 

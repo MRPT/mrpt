@@ -27,11 +27,9 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CPtuHokuyo.h>
-
-#include <iostream>
-#include <stdlib.h>
-#include <mrpt/slam.h>
+#include <mrpt/obs.h>
 #include <mrpt/gui.h>
+#include <mrpt/maps.h>
 
 using namespace std;
 using namespace mrpt::hwdrivers;
@@ -93,7 +91,7 @@ int main(){
 			case 's':
 
 				// Get parameters for the scan
-				
+
 				if (!ptu_type) //
 				{
 					cout << endl << "Enter axis to scan (T for Tilt or P for Pan): ";
@@ -147,7 +145,7 @@ int main(){
 					ph.saveVObs2File("Puntos.rawlog");
 
 					c='q';
-				} 
+				}
 				else if (ptu_type == 1)
 				{
 					cout << endl << "[ERROR] TU Micos not support this scan mode" << endl;

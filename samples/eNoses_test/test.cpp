@@ -28,7 +28,7 @@
 
 #include <mrpt/hwdrivers/CBoardENoses.h>
 #include <mrpt/base.h>
-#include <mrpt/slam.h>
+#include <mrpt/obs.h>
 
 
 using namespace mrpt;
@@ -47,9 +47,9 @@ int main()
 		CObservationGasSensors	obs;
 		FILE					*f_log = os::fopen("./log.txt","wt");
 		TTimeStamp				timStart = mrpt::system::getCurrentTime();
-		
-		
-		// Load configuration:	
+
+
+		// Load configuration:
 		if (mrpt::system::fileExists("./CONFIG_eNoses.ini"))
 		{
 			cout << "Using configuration from './CONFIG_eNoses.ini'" << endl;
@@ -66,7 +66,7 @@ int main()
 		CConfigFile conf("./CONFIG_eNoses.ini");
 		eNoses.loadConfig( conf, "eNoses" );
 
-		
+
 		/*if (!eNoses.queryFirmwareVersion( firmVers ) )
 		{
 			printf("Error!!\n");
@@ -94,7 +94,7 @@ int main()
 				{
 					//E-Nose Pose
 					printf("#%u (%.02f,%.02f,%.02f): ",(unsigned int)i,obs.m_readings[i].eNosePoseOnTheRobot.x,obs.m_readings[i].eNosePoseOnTheRobot.y,obs.m_readings[i].eNosePoseOnTheRobot.z);
-					
+
 					//E-Nose Sensor's Data
 					for (size_t j=0;j<obs.m_readings[i].sensorTypes.size();j++)
 					{
@@ -123,7 +123,7 @@ int main()
 					printf("-----------------------------------------\n");
 				}
 				if (f_log) fprintf(f_log,"\n");
-			
+
 				mrpt::system::sleep(5);
 			}
 

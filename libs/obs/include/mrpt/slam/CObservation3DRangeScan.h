@@ -31,6 +31,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/slam/CObservation.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CPolygon.h>
@@ -194,6 +195,42 @@ namespace slam
 		inline void project3DPointsFromDepthImage(const bool PROJ3D_USE_LUT=true) {
 			this->project3DPointsFromDepthImageInto(*this,false,NULL,PROJ3D_USE_LUT);
 		}
+
+
+		/** Convert this 3D observation into an "equivalent 2D fake laser scan", with a configurable vertical FOV.
+		  *
+		  *  The result is a 2D laser scan with more "rays" (N) than columns has the 3D observation (W), exactly: N = W * oversampling_ratio.
+		  *  This oversampling is required since laser scans sample the space at evenly-separated angles, while
+		  *  a range camera follows a tangent-like distribution. By oversampling we make sure we don't leave "gaps" unseen by the virtual "2D laser".
+		  *
+		  *  All obstacles within a frustum are considered and the minimum distance is kept in each direction.
+		  *  The horizontal FOV of the frustum is automatically computed from the intrinsic parameters, but the
+		  *  vertical FOV must be provided by the user, and can be set to be assymetric which may be useful
+		  *  depending on the zone of interest where to look for obstacles.
+		  *
+		  *  All spatial transformations are riguorosly taken into account in this class, using the depth camera
+		  *  intrinsic calibration parameters.
+		  *
+		  *  The timestamp of the new object is copied from the 3D object.
+		  *  Obviously, a requisite for calling this method is the 3D observation having range data,
+		  *  i.e. hasRangeImage must be true. It's not needed to have RGB data nor the raw 3D point clouds
+		  *  for this method to work.
+		  *
+		  *  \param[out] out_scan2d The resulting 2D equivalent scan.
+		  *  \param[in] sensorLabel The sensor label that will have the newly created observation.
+		  *  \param[in] angle_sup (Default=5deg) The upper half-FOV angle (in radians)
+		  *  \param[in] angle_sup (Default=5deg) The lower half-FOV angle (in radians)
+		  *  \param[in] oversampling_ratio (Default=1.2=120%) How many more laser scans rays to create (read above).
+		  *
+		  * \sa The example in http://www.mrpt.org/Example_Kinect_To_2D_laser_scan
+		  */
+		void convertTo2DScan(
+			mrpt::slam::CObservation2DRangeScan & out_scan2d,
+			const std::string       & sensorLabel,
+			const double angle_sup = DEG2RAD(5),
+			const double angle_inf = DEG2RAD(5),
+			const double oversampling_ratio = 1.2 );
+
 
 		bool hasPoints3D; 								//!< true means the field points3D contains valid data.
 		std::vector<float> points3D_x;   //!< If hasPoints3D=true, the X coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors

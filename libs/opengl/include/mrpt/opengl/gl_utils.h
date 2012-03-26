@@ -101,6 +101,10 @@ namespace mrpt
 
 			/** Can be used by derived classes to draw a triangle with a normal vector computed automatically - to be called within a glBegin()-glEnd() block. */
 			void OPENGL_IMPEXP renderTriangleWithNormal( const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2,const mrpt::math::TPoint3D &p3 );
+			void OPENGL_IMPEXP renderTriangleWithNormal( const mrpt::math::TPoint3Df &p1,const mrpt::math::TPoint3Df &p2,const mrpt::math::TPoint3Df &p3 );
+
+			/** Can be used by derived classes to draw a quad with a normal vector computed automatically - to be called within a glBegin()-glEnd() block. */
+			void OPENGL_IMPEXP renderQuadWithNormal( const mrpt::math::TPoint3Df &p1,const mrpt::math::TPoint3Df &p2,const mrpt::math::TPoint3Df &p3, const mrpt::math::TPoint3Df &p4 );
 
 
 			/** Gather useful information on the render parameters.

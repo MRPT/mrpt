@@ -27,16 +27,14 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
-#include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils.h>
+#include <mrpt/obs.h>
 #include <mrpt/system.h>
-#include <mrpt/slam.h>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::slam;
-#include <string>
 using namespace std;
 
 /** Usage : ./test <conf file name>.ini

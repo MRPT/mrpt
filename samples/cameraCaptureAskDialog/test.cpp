@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/gui.h>
 #include <mrpt/hwdrivers.h>
 
 using namespace mrpt;

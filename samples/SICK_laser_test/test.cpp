@@ -27,7 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/base.h>
-#include <mrpt/slam.h>
+#include <mrpt/maps.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/hwdrivers/CSickLaserUSB.h>
 

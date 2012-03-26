@@ -27,7 +27,6 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/base.h>
-#include <mrpt/slam.h>
 #include <mrpt/hwdrivers/CJoystick.h>
 
 using namespace mrpt;

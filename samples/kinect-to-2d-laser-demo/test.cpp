@@ -27,13 +27,13 @@
    +---------------------------------------------------------------------------+ */
 
 /*
-  Example  : kinect_3d_view
-  Web page : http://www.mrpt.org/Kinect_and_MRPT
+  Example  : kinect-to-2d-laser-demo
+  Web page : http://www.mrpt.org/Example_Kinect_To_2D_laser_scan (includes video demo)
 
   Purpose  : Demonstrate grabbing from CKinect, multi-threading
-             and live 3D rendering.
+             and converting the 3D range data into an equivalent
+             2D planar scan.
 */
-
 
 #include <mrpt/hwdrivers.h>
 #include <mrpt/gui.h>
@@ -51,11 +51,10 @@ using namespace std;
 //   and exploit multicore CPUs.
 struct TThreadParam
 {
-	TThreadParam() : quit(false), pushed_key(0), tilt_ang_deg(0), Hz(0) { }
+	TThreadParam() : quit(false), pushed_key(0), Hz(0) { }
 
 	volatile bool   quit;
 	volatile int    pushed_key;
-	volatile double tilt_ang_deg;
 	volatile double Hz;
 
 	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScanPtr> new_obs;     // RGB+D (+3D points)
@@ -100,20 +99,6 @@ void thread_grabbing(TThreadParam &p)
 			{
 				switch (p.pushed_key)
 				{
-					case 's':
-						p.tilt_ang_deg-=1;
-						if (p.tilt_ang_deg<-31) p.tilt_ang_deg=-31;
-						kinect.setTiltAngleDegrees(p.tilt_ang_deg);
-						break;
-					case 'w':
-						p.tilt_ang_deg+=1;
-						if (p.tilt_ang_deg>31) p.tilt_ang_deg=31;
-						kinect.setTiltAngleDegrees(p.tilt_ang_deg);
-						break;
-					case 'c':
-						// Switch video input:
-						kinect.setVideoChannel( kinect.getVideoChannel()==CKinect::VIDEO_CHANNEL_RGB ?  CKinect::VIDEO_CHANNEL_IR : CKinect::VIDEO_CHANNEL_RGB);
-						break;
 					case 27:
 						p.quit = true;
 						break;
@@ -164,16 +149,26 @@ void Test_Kinect()
 
 	// Create window and prepare OpenGL object in the scene:
 	// --------------------------------------------------------
-	mrpt::gui::CDisplayWindow3D  win3D("Kinect 3D view",800,600);
+	mrpt::gui::CDisplayWindow3D  win3D("Kinect 3D -> 2D laser scan",800,600);
 
 	win3D.setCameraAzimuthDeg(140);
-	win3D.setCameraElevationDeg(20);
-	win3D.setCameraZoom(8.0);
+	win3D.setCameraElevationDeg(30);
+	win3D.setCameraZoom(10.0);
 	win3D.setFOV(90);
 	win3D.setCameraPointingToPoint(2.5,0,0);
 
+	// The 3D point cloud OpenGL object:
 	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(2.5);
+
+	// The 2D "laser scan" OpenGL object:
+	mrpt::opengl::CPlanarLaserScanPtr gl_2d_scan = mrpt::opengl::CPlanarLaserScan::Create();
+	gl_2d_scan->enablePoints(true);
+	gl_2d_scan->enableLine(true);
+	gl_2d_scan->enableSurface(true);
+	gl_2d_scan->setSurfaceColor(0,0,1, 0.3);  // RGBA
+
+	mrpt::opengl::CFrustumPtr gl_frustum = mrpt::opengl::CFrustum::Create(0.2f, 5.0f, 90.0f, 5.0f, 2.0f, true, true );
 
 	const double aspect_ratio =  480.0 / 640.0; // kinect.getRowCount() / double( kinect.getColCount() );
 
@@ -183,8 +178,19 @@ void Test_Kinect()
 
 		// Create the Opengl object for the point cloud:
 		scene->insert( gl_points );
-		scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
-		scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
+		scene->insert( gl_2d_scan );
+		scene->insert( gl_frustum );
+
+		{
+			mrpt::opengl::CGridPlaneXYPtr gl_grid = mrpt::opengl::CGridPlaneXY::Create();
+			gl_grid->setColor(0.6,0.6,0.6);
+			scene->insert( gl_grid );
+		}
+		{
+			mrpt::opengl::CSetOfObjectsPtr gl_corner = mrpt::opengl::stock_objects::CornerXYZ();
+			gl_corner->setScale(0.2);
+			scene->insert(gl_corner);
+		}
 
 		const int VW_WIDTH = 250;	// Size of the viewport into the window, in pixel units.
 		const int VW_HEIGHT = aspect_ratio*VW_WIDTH;
@@ -220,7 +226,7 @@ void Test_Kinect()
 			// Update visualization ---------------------------------------
 			bool do_refresh = false;
 
-			// Show ranges as 2D:
+			// Show 2D ranges as a grayscale image:
 			if (last_obs->hasRangeImage )
 			{
 				mrpt::utils::CImage  img;
@@ -237,6 +243,20 @@ void Test_Kinect()
 				do_refresh=true;
 			}
 
+
+			// Convert ranges to an equivalent 2D "fake laser" scan:
+			if (last_obs->hasRangeImage )
+			{
+				// Convert to scan:
+				CObservation2DRangeScanPtr obs_2d = CObservation2DRangeScan::Create();
+				const float vert_FOV = DEG2RAD( gl_frustum->getVertFOV() );
+
+				last_obs->convertTo2DScan(*obs_2d, "KINECT_2D_SCAN", .5f*vert_FOV, .5f*vert_FOV );
+
+				// And load scan in the OpenGL object:
+				gl_2d_scan->setScan(*obs_2d);
+			}
+
 			// Show intensity image:
 			if (last_obs->hasIntensityImage )
 			{
@@ -249,30 +269,31 @@ void Test_Kinect()
 			// Show 3D points:
 			if (last_obs->hasPoints3D )
 			{
-				//mrpt::slam::CSimplePointsMap  pntsMap;
-				CColouredPointsMap pntsMap;
-				pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
-				pntsMap.loadFromRangeScan(*last_obs);
-
 				win3D.get3DSceneAndLock();
-					gl_points->loadFromPointsMap(&pntsMap);
+					last_obs->project3DPointsFromDepthImageInto(*gl_points, false /* ignore pose_on_robot of the sensor */ );
 				win3D.unlockAccess3DScene();
 				do_refresh=true;
 			}
 
-
-			// Estimated grabbing rate:
+			// Some text messages:
 			win3D.get3DSceneAndLock();
-				win3D.addTextMessage(-100,-20, format("%.02f Hz", thrPar.Hz ), TColorf(1,1,1), 100, MRPT_GLUT_BITMAP_HELVETICA_18 );
+				// Estimated grabbing rate:
+				win3D.addTextMessage(-100,-20, format("%.02f Hz", thrPar.Hz ),  TColorf(1,1,1), "sans", 15, mrpt::opengl::FILL, 100 );
+
+				win3D.addTextMessage(10,10, "'o'/'i'-zoom out/in, '2'/'3'/'f':show/hide 2D/3D/frustum data, mouse: orbit 3D, ESC: quit", TColorf(1,1,1), "sans", 10, mrpt::opengl::FILL, 110 );
+
+				win3D.addTextMessage(10,25,
+					format("Show: 3D=%s 2D=%s Frustum=%s (vert. FOV=%.1fdeg)", gl_points->isVisible() ? "YES":"NO", gl_2d_scan->isVisible() ? "YES":"NO", gl_frustum->isVisible() ? "YES":"NO", gl_frustum->getVertFOV() ),
+					TColorf(1,1,1), "sans", 10, mrpt::opengl::FILL, 111 );
 			win3D.unlockAccess3DScene();
 
 			// Do we have accelerometer data?
 			if (last_obs_imu && last_obs_imu->dataIsPresent[IMU_X_ACC])
 			{
 				win3D.get3DSceneAndLock();
-					win3D.addTextMessage(10,60,
+					win3D.addTextMessage(10,65,
 						format("Acc: x=%.02f y=%.02f z=%.02f", last_obs_imu->rawMeasurements[IMU_X_ACC], last_obs_imu->rawMeasurements[IMU_Y_ACC], last_obs_imu->rawMeasurements[IMU_Z_ACC] ),
-						TColorf(0,0,1), 102, MRPT_GLUT_BITMAP_HELVETICA_18 );
+						TColorf(.7,.7,.7), "sans", 10, mrpt::opengl::FILL, 102 );
 				win3D.unlockAccess3DScene();
 				do_refresh=true;
 			}
@@ -300,6 +321,22 @@ void Test_Kinect()
 					win3D.setCameraZoom( win3D.getCameraZoom() / 1.2 );
 					win3D.repaint();
 					break;
+				case '2':
+					gl_2d_scan->setVisibility( !gl_2d_scan->isVisible() );
+					break;
+				case '3':
+					gl_points->setVisibility( !gl_points->isVisible() );
+					break;
+				case 'F':
+				case 'f':
+					gl_frustum->setVisibility( !gl_frustum->isVisible() );
+					break;
+				case '+':
+					gl_frustum->setVertFOV( gl_frustum->getVertFOV()+1);
+					break;
+				case '-':
+					gl_frustum->setVertFOV( gl_frustum->getVertFOV()-1);
+					break;
 				// ...and the rest in the kinect thread:
 				default:
 					thrPar.pushed_key = key;
@@ -307,14 +344,6 @@ void Test_Kinect()
 			};
 		}
 
-		win3D.get3DSceneAndLock();
-		win3D.addTextMessage(10,10,
-			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, mouse: orbit 3D,'c':Switch RGB/IR, ESC: quit"),
-				TColorf(0,0,1), 110, MRPT_GLUT_BITMAP_HELVETICA_18 );
-		win3D.addTextMessage(10,35,
-			format("Tilt angle: %.01f deg", thrPar.tilt_ang_deg),
-				TColorf(0,0,1), 111, MRPT_GLUT_BITMAP_HELVETICA_18 );
-		win3D.unlockAccess3DScene();
 
 		mrpt::system::sleep(1);
 	}

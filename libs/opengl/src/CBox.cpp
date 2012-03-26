@@ -56,13 +56,10 @@ void CBox::render_dl() const	{
 		glDisable(GL_BLEND);
     }
 
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-    glEnable(GL_COLOR_MATERIAL);
-    glShadeModel(GL_SMOOTH);
-
 	if (this->m_wireframe)
 	{
+		glDisable(GL_LIGHTING);
+
 		// wireframe:
 		glLineWidth(m_lineWidth); checkOpenGLError();
 		glBegin(GL_LINE_STRIP);
@@ -106,6 +103,11 @@ void CBox::render_dl() const	{
 	}
 	else
 	{
+		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
+		glEnable(GL_COLOR_MATERIAL);
+		glShadeModel(GL_SMOOTH);
+
 		// solid:
 		glBegin(GL_TRIANGLES);
 		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);

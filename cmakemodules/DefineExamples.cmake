@@ -200,39 +200,48 @@ IF(BUILD_EXAMPLES)
 	        SET(LIST_EXAMPLES_IN_THIS_DIR
 	                opengl_video_demo
 	                opengl_video_viewport_demo
+			captureVideoOpenCV
+			captureVideoDC1394
+			enumerateCameras1394
+			GPS_test
+			sonar_SRF10_test
+			eNoses_test
+			SerialPort_test
+			FTDI_USB_enumerate_test
+			joystick
+			pioneerRobotDemo
+			captureVideoFFmpeg
+			ptuDPerception
+			tuMicos
+			ntrip-client
+			eNeck_test
+			cameraCaptureAskDialog
+			eNosesRealtime_test
+			IRBoard_test
+			phidgetProximitySensor
 	                )
 	        SET(CMAKE_EXAMPLE_DEPS mrpt-hwdrivers mrpt-gui)
+	        SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+	        GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+	        # === Depending on: maps & hwdrivers ===
+	        #  list of examples for each directory:
+	        SET(LIST_EXAMPLES_IN_THIS_DIR
+			ptuHokuyo
+			swissranger_cam_demo
+			SICK_laser_serial_test
+			SICK_laser_test
+			HOKUYO_laser_test
+			SICK_lms100eth_test
+			kinect-to-2d-laser-demo
+	                )
+	        SET(CMAKE_EXAMPLE_DEPS mrpt-hwdrivers mrpt-maps)
 	        SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	        GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 		# === Depending on: slam & hwdrivers ===
 		#  list of examples for each directory:
 		SET(LIST_EXAMPLES_IN_THIS_DIR
-			swissranger_cam_demo
-			GPS_test
-			sonar_SRF10_test
-			eNoses_test
-			SerialPort_test
-			FTDI_USB_enumerate_test
-			SICK_laser_test
-			HOKUYO_laser_test
-			joystick
-			pioneerRobotDemo
-			ptuDPerception
-			ptuHokuyo
-			tuMicos
-			captureVideoFFmpeg
-			SICK_laser_serial_test
-			ntrip-client
-			SICK_lms100eth_test
-			eNeck_test
-			cameraCaptureAskDialog
-			eNosesRealtime_test
-			IRBoard_test
-			captureVideoOpenCV
-			captureVideoDC1394
-			enumerateCameras1394
-			phidgetProximitySensor
 			kinect_online_offline_demo
 			)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-hwdrivers)

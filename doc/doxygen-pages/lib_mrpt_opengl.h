@@ -7,14 +7,14 @@
 <hr>
 
 
-This library includes several data classes that represent objects that can be 
+This library includes several data classes that represent objects that can be
 inserted into a 3D scene, which can be then rendered or streamed to disk or whatever.
 
-A good starting point to explore this library is the base class for all the 
+A good starting point to explore this library is the base class for all the
 3D objects: mrpt::opengl::CRenderizable
 
-A 3D scene is represented by an object of the type mrpt::opengl::COpenGLScene, 
-which in turn can contain one or several "viewports" in such a way that the 
+A 3D scene is represented by an object of the type mrpt::opengl::COpenGLScene,
+which in turn can contain one or several "viewports" in such a way that the
 rendering area is divided into several spaces, each displaying the same or different
 objects. See the tutorial online: http://www.mrpt.org/Tutorial_3D_Scenes
 
@@ -27,6 +27,7 @@ Below follows a table with the preview of most rendering primitive classes:
  <tr> <td> mrpt::opengl::CArrow </td> <td> \image html preview_CArrow.png </td> </tr>
  <tr> <td> mrpt::opengl::CAxis </td> <td> \image html preview_CAxis.png </td> </tr>
  <tr> <td> mrpt::opengl::CBox </td> <td> \image html preview_CBox.png </td> </tr>
+ <tr> <td> mrpt::opengl::CFrustum </td> <td> \image html preview_CFrustum.png </td> </tr>
  <tr> <td> mrpt::opengl::CCylinder </td> <td> \image html preview_CCylinder.png </td> </tr>
  <tr> <td> mrpt::opengl::CDisk </td> <td> \image html preview_CDisk.png </td> </tr>
  <tr> <td> mrpt::opengl::CEllipsoid </td> <td> \image html preview_CEllipsoid.png </td> </tr>

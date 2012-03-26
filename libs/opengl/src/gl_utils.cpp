@@ -156,13 +156,13 @@ void	gl_utils::checkOpenGLError()
 void gl_utils::renderTriangleWithNormal( const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2,const mrpt::math::TPoint3D &p3 )
 {
 #if MRPT_HAS_OPENGL_GLUT
-	float	ax= p2.x - p1.x;
-    float	ay= p2.y - p1.y;
-	float	az= p2.z - p1.z;
+	const float	ax= p2.x - p1.x;
+    const float	ay= p2.y - p1.y;
+	const float	az= p2.z - p1.z;
 
-	float	bx= p3.x - p1.x;
-	float	by= p3.y - p1.y;
-	float	bz= p3.z - p1.z;
+	const float	bx= p3.x - p1.x;
+	const float	by= p3.y - p1.y;
+	const float	bz= p3.z - p1.z;
 
 	glNormal3f(ay*bz-az*by,-ax*bz+az*bx,ax*by-ay*bx);
 
@@ -170,6 +170,29 @@ void gl_utils::renderTriangleWithNormal( const mrpt::math::TPoint3D &p1,const mr
 	glVertex3f(p2.x,p2.y,p2.z);
 	glVertex3f(p3.x,p3.y,p3.z);
 #endif
+}
+void gl_utils::renderTriangleWithNormal( const mrpt::math::TPoint3Df &p1,const mrpt::math::TPoint3Df &p2,const mrpt::math::TPoint3Df &p3 )
+{
+#if MRPT_HAS_OPENGL_GLUT
+	const float	ax= p2.x - p1.x;
+    const float	ay= p2.y - p1.y;
+	const float	az= p2.z - p1.z;
+
+	const float	bx= p3.x - p1.x;
+	const float	by= p3.y - p1.y;
+	const float	bz= p3.z - p1.z;
+
+	glNormal3f(ay*bz-az*by,-ax*bz+az*bx,ax*by-ay*bx);
+
+	glVertex3f(p1.x,p1.y,p1.z);
+	glVertex3f(p2.x,p2.y,p2.z);
+	glVertex3f(p3.x,p3.y,p3.z);
+#endif
+}
+void gl_utils::renderQuadWithNormal( const mrpt::math::TPoint3Df &p1,const mrpt::math::TPoint3Df &p2,const mrpt::math::TPoint3Df &p3, const mrpt::math::TPoint3Df &p4 )
+{
+	renderTriangleWithNormal(p1,p2,p3);
+	renderTriangleWithNormal(p3,p4,p1);
 }
 
 

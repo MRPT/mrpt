@@ -32,7 +32,7 @@
 */
 
 #include <mrpt/gui.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>  // [mrpt-maps]
 #include <mrpt/hwdrivers/CLMS100eth.h>
 
 using namespace mrpt;

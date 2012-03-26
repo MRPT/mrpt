@@ -26,7 +26,7 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/obs.h>
 #include <mrpt/hwdrivers/CBoardIR.h>
 #include <mrpt/gui.h>
 
@@ -52,7 +52,7 @@ int main()
 		{
 			mrpt::slam::CObservationRange obs;
 			bool thereIsObservation,hardwareError;
-			
+
 			IRBoard.getObservation(thereIsObservation,obs,hardwareError);
 
 			if (thereIsObservation)

@@ -27,7 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/base.h>
-#include <mrpt/slam.h>
+#include <mrpt/obs.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 
 using namespace mrpt;

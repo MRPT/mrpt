@@ -53,6 +53,7 @@ void registerAllClasses_mrpt_opengl()
 	registerClass( CLASS_ID( C3DSScene ) );
 	registerClass( CLASS_ID( CAxis ) );
 	registerClass( CLASS_ID( CBox ) );
+	registerClass( CLASS_ID( CFrustum ) );
 	registerClass( CLASS_ID( CDisk ) );
 	registerClass( CLASS_ID( CGridPlaneXY ) );
 	registerClass( CLASS_ID( CMesh ) );
