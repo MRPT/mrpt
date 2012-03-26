@@ -859,6 +859,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 	// Prepare 2D scan data fields:
 	out_scan2d.aperture = FOV_equiv;
 	out_scan2d.maxRange = this->maxRange;
+	out_scan2d.sensorPose = this->sensorPose;
 	out_scan2d.rightToLeft = false;
 	out_scan2d.validRange.assign(nLaserRays, false);  // default: all ranges=invalid
 	out_scan2d.scan.assign(nLaserRays, 0);
