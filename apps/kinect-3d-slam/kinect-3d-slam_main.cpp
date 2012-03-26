@@ -49,6 +49,7 @@ Note: This is a very *simple* approach to SLAM. It would be better to first sele
 #include <mrpt/maps.h>
 #include <mrpt/vision.h>
 #include <mrpt/scanmatching.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -83,6 +84,13 @@ void thread_grabbing(TThreadParam &p)
 		// kinect.enableGrab3DPoints(true);
 		// kinect.enablePreviewRGB(true);
 		//...
+		const std::string cfgFile = "kinect_calib.cfg";
+		if (mrpt::system::fileExists(cfgFile))
+		{
+			cout << "Loading calibration from: "<< cfgFile << endl;
+			kinect.loadConfig( mrpt::utils::CConfigFile(cfgFile), "KINECT" );
+		}
+		else cerr << "Warning: Calibration file ["<< cfgFile <<"] not found -> Using default params.\n";
 
 		// Open:
 		cout << "Calling CKinect::initialize()...";
