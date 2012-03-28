@@ -435,7 +435,12 @@ CDisplayWindow3D::CDisplayWindow3D(
  ---------------------------------------------------------------*/
 CDisplayWindow3D::~CDisplayWindow3D( )
 {
+	// get lock so we make sure nobody else is touching the window while we destroy it:
+	m_csAccess3DScene.enter();
+
 	CBaseGUIWindow::destroyWxWindow();
+
+	m_csAccess3DScene.leave();
 }
 
 

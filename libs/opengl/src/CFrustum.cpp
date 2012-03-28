@@ -67,8 +67,8 @@ void CFrustum::render_dl() const	{
 		pts[4*j+2].y =  r*sin(m_fov_horz_right);
 		pts[4*j+3].y =  r*sin(m_fov_horz_right);
 		pts[4*j+0].z = -r*sin(m_fov_vert_down);
-		pts[4*j+1].z =  r*sin(m_fov_vert_down);
-		pts[4*j+2].z = -r*sin(m_fov_vert_up);
+		pts[4*j+1].z =  r*sin(m_fov_vert_up);
+		pts[4*j+2].z = -r*sin(m_fov_vert_down);
 		pts[4*j+3].z =  r*sin(m_fov_vert_up);
     }
 
