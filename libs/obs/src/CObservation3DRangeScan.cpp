@@ -807,7 +807,7 @@ bool CObservation3DRangeScan::doDepthAndIntensityCamerasCoincide() const
 
 	return
 		(relativePoseIntensityWRTDepth.m_coords.array() < EPSILON ).all() &&
-		((ref_pose.m_ROT - relativePoseIntensityWRTDepth.m_ROT).array().abs() < EPSILON).all();
+		((ref_pose.getRotationMatrix() - relativePoseIntensityWRTDepth.getRotationMatrix()).array().abs() < EPSILON).all();
 }
 
 

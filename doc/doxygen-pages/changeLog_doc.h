@@ -73,15 +73,16 @@
 			- KD-trees: 
 				- Now also exposes methods for Radius search: mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D(), mrpt::math::KDTreeCapable::kdTreeRadiusSearch3D()  - <a href="http://code.google.com/p/mrpt/source/detail?r=2726" >r2726</a> 
 				- Updated to nanoflann 1.1.0: the main change is that (by default) all KD-tree indices are "size_t" instead of "int" - <a href="http://code.google.com/p/mrpt/source/detail?r=2771" >r2771</a> 
-			-  mrpt::sync::CCriticalSectionLocker now can accept a NULL pointer as input, in which case no action will be taken (previosly, it led to segfault) - <a href="http://code.google.com/p/mrpt/source/detail?r=2727" >r2727</a> 
-			-  mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.
-			-  mrpt::utils::TStereoCamera changes its I/O format to config files, now it's consistent with rawlog-edit, stereo-calib-gui and others.
+			- mrpt::sync::CCriticalSectionLocker now can accept a NULL pointer as input, in which case no action will be taken (previosly, it led to segfault) - <a href="http://code.google.com/p/mrpt/source/detail?r=2727" >r2727</a> 
+			- mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.
+			- mrpt::utils::TStereoCamera changes its I/O format to config files, now it's consistent with rawlog-edit, stereo-calib-gui and others.
 			- mrpt::utils::CImage:
 				-  mrpt::utils::CImage::changeSize() is now smart enough to avoid deallocating & re-allocating an image if the requested params exactly coincide with the current image.
 				-  mrpt::utils::CImage::getAsIplImage() marked as deprecated - replace with mrpt::utils::CImage::getAs<IplImage>() instead.
 				-  mrpt::utils::CImage::copyFromForceLoad() now raises an exception if the external image wasn't found.
 				-  mrpt::utils::CImage::equalizeHist() now also works for RGB images (doing equalization in HSV colorspace)
 				-  New global flags for a better control of serialization format. See mrpt::utils::CImage::DISABLE_JPEG_COMPRESSION & mrpt::utils::CImage::SERIALIZATION_JPEG_QUALITY - <a href="http://code.google.com/p/mrpt/source/detail?r=2844" >r2844</a>
+			- mrpt::utils::CPose3D::m_ROT is protected since leaving it public may lead to out-dating of yaw-pitch-roll values.
 		- [mrpt-maps] 
 			- mrpt::slam::CRandomFieldGridMap2D::saveMetricMapRepresentationToFile() now saves the "_grid_limits.txt" file for all mapping algorithms.
 		- [mrpt-vision] 

@@ -73,7 +73,7 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects &objectsToRender)
 			//     3  7  11 15
 			//
 			const CPose3D & pos = it->getPoseRef();
-			const CMatrixDouble33 &R = pos.m_ROT;
+			const CMatrixDouble33 &R = pos.getRotationMatrix();
 			const GLdouble m[16] = {
 				R.coeff(0,0),R.coeff(1,0),R.coeff(2,0), 0,
 				R.coeff(0,1),R.coeff(1,1),R.coeff(2,1), 0,

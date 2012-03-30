@@ -571,12 +571,12 @@ void CPose3D::getAsQuaternion(mrpt::math::CQuaternionDouble &q, mrpt::math::CMat
 
 bool mrpt::poses::operator==(const CPose3D &p1,const CPose3D &p2)
 {
-	return (p1.m_coords==p2.m_coords)&&(p1.m_ROT==p2.m_ROT);
+	return (p1.m_coords==p2.m_coords)&&(p1.getRotationMatrix()==p2.getRotationMatrix());
 }
 
 bool mrpt::poses::operator!=(const CPose3D &p1,const CPose3D &p2)
 {
-	return (p1.m_coords!=p2.m_coords)||(p1.m_ROT!=p2.m_ROT);
+	return (p1.m_coords!=p2.m_coords)||(p1.getRotationMatrix()!=p2.getRotationMatrix());
 }
 
 /*---------------------------------------------------------------

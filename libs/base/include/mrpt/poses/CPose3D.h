@@ -75,10 +75,10 @@ namespace poses
 		DEFINE_SERIALIZABLE( CPose3D )
 
 	public:
-		CArrayDouble<3>   m_coords; //!< The translation vector [x,y,z]
-		CMatrixDouble33   m_ROT;    //!< The 3x3 rotation matrix
-
+		CArrayDouble<3>   m_coords; //!< The translation vector [x,y,z] access directly or with x(), y(), z() setter/getter methods.
 	protected:
+		CMatrixDouble33   m_ROT;    //!< The 3x3 rotation matrix, access with getRotationMatrix(), setRotationMatrix() (It's not safe to set this field as public)
+
 		mutable bool 	m_ypr_uptodate;			//!< Whether yaw/pitch/roll members are up-to-date since the last rotation matrix update.
 		mutable double	m_yaw, m_pitch, m_roll;	//!< These variables are updated every time that the object rotation matrix is modified (construction, loading from values, pose composition, etc )
 
@@ -170,6 +170,9 @@ namespace poses
 		inline void getRotationMatrix( mrpt::math::CMatrixDouble33 & ROT ) const { ROT = m_ROT; }
 		//! \overload
 		inline const mrpt::math::CMatrixDouble33 & getRotationMatrix() const { return m_ROT; }
+
+		/** Sets the 3x3 rotation matrix \sa getRotationMatrix, getHomogeneousMatrix  */
+		inline void setRotationMatrix( const mrpt::math::CMatrixDouble33 & ROT ) { m_ROT = ROT; m_ypr_uptodate = false; }
 
 		/** @} */  // end rot and HM
 
@@ -336,6 +339,7 @@ namespace poses
 			m_ROT.set_unsafe(0,0, vec12[0]); m_ROT.set_unsafe(0,1, vec12[3]); m_ROT.set_unsafe(0,2, vec12[6]);
 			m_ROT.set_unsafe(1,0, vec12[1]); m_ROT.set_unsafe(1,1, vec12[4]); m_ROT.set_unsafe(1,2, vec12[7]);
 			m_ROT.set_unsafe(2,0, vec12[2]); m_ROT.set_unsafe(2,1, vec12[5]); m_ROT.set_unsafe(2,2, vec12[8]);
+			m_ypr_uptodate = false;
 			m_coords[0] = vec12[ 9];
 			m_coords[1] = vec12[10];
 			m_coords[2] = vec12[11];

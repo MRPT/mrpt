@@ -177,7 +177,7 @@ namespace detail {
 				CMatrixFixedNumeric<double,3,3> R_inv;
 				CMatrixFixedNumeric<double,3,1> t_inv;
 				mrpt::math::homogeneousMatrixInverse(
-					src_obs.relativePoseIntensityWRTDepth.m_ROT,src_obs.relativePoseIntensityWRTDepth.m_coords,
+					src_obs.relativePoseIntensityWRTDepth.getRotationMatrix(),src_obs.relativePoseIntensityWRTDepth.m_coords,
 					R_inv,t_inv);
 
 				T_inv(3,3)=1;
