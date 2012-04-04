@@ -111,10 +111,11 @@
 		- Better pkg-config support even without doing a "make install": just do a "export PKG_CONFIG_PATH=${MRPT_BUILD_DIR}/pkg-no-install/"  - <a href="http://code.google.com/p/mrpt/source/detail?r=2853" >r2853</a>
 	- New functions:
 		- [mrpt-vision] 
-			- mrpt::vision::find_descriptor_pairings() - <a href="http://code.google.com/p/mrpt/source/detail?r=2799" >2799</a>
+			- mrpt::vision::find_descriptor_pairings() - <a href="http://code.google.com/p/mrpt/source/detail?r=2799" >r2799</a>
 	- New examples:
 		- csparse_demo
 		- kinect-to-2d-laser-demo
+		- A new directory for examples of ROS-MRPT integration - <a href="http://code.google.com/p/mrpt/source/detail?r=2865" >r2865</a>
 	- Deleted classes:
 		- mrpt::slam::CConsistentObservationAlignment: It implemented the Lu & Milios algorithm, now superseded by graph-slam methods. See the mrpt::graphslam namespace (this should have been deleted in 0.9.3 but for some error it wasn't!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2747" >r2747</a> 
 	- BUG FIXES:

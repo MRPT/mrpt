@@ -1,0 +1,16 @@
+<package>
+  <description brief="mrpt_ros_tutorial">
+
+     mrpt_ros_tutorial
+
+  </description>
+  <author>Jose Luis</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/mrpt_ros_tutorial</url>
+  <depend package="roscpp"/>
+  <depend package="mrpt_libs"/>
+
+</package>
+
+
