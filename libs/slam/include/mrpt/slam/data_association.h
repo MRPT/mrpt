@@ -56,11 +56,13 @@ namespace mrpt
 		};
 
 		/** Different metrics for data association, used in mrpt::slam::data_association
+		  *  For a comparison of both methods see paper:
+		  *  * J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "An alternative to the Mahalanobis distance for determining optimal correspondences in data association", IEEE Transactions on Robotics (T-RO), (2012) DOI: 10.1109/TRO.2012.2193706 Draft: http://mapir.isa.uma.es/~jlblanco/papers/blanco2012amd.pdf
 		  */
 		enum TDataAssociationMetric
 		{
 			metricMaha= 0,  //!< Mahalanobis distance
-			metricML 	 	//!< Matching likelihood (See paper: http://www.mrpt.org/Paper:Matching_Likelihood )
+			metricML 	 	//!< Matching likelihood (See TDataAssociationMetric for a paper explaining this metric)
 		};
 
 		typedef size_t observation_index_t; //!< Used in mrpt::slam::TDataAssociationResults
@@ -114,7 +116,8 @@ namespace mrpt
 		  *		- NN: Nearest-neighbor
 		  *		- JCBB: Joint Compatibility Branch & Bound [Neira, Tardos 2001]
 		  *
-		  *  With both a Mahalanobis-distance or Matching-likelihood metric (See paper: http://www.mrpt.org/Paper:Matching_Likelihood )
+		  *  With both a Mahalanobis-distance or Matching-likelihood metric. For a comparison of both methods, see paper:
+		  *  * J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "An alternative to the Mahalanobis distance for determining optimal correspondences in data association", IEEE Transactions on Robotics (T-RO), (2012) DOI: 10.1109/TRO.2012.2193706 Draft: http://mapir.isa.uma.es/~jlblanco/papers/blanco2012amd.pdf		  
 		  *
 		  * \param Z_observations_mean [IN] An MxO matrix with the M observations, each row containing the observation "mean".
 		  * \param Y_predictions_mean [IN] An NxO matrix with the N predictions, each row containing the mean of one prediction.
@@ -146,7 +149,8 @@ namespace mrpt
 		  *		- NN: Nearest-neighbor
 		  *		- JCBB: Joint Compatibility Branch & Bound [Neira, Tardos 2001]
 		  *
-		  *  With both a Mahalanobis-distance or Matching-likelihood metric (See paper: http://www.mrpt.org/Paper:Matching_Likelihood )
+		  *  With both a Mahalanobis-distance or Matching-likelihood metric. For a comparison of both methods, see paper:
+		  *  * J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "An alternative to the Mahalanobis distance for determining optimal correspondences in data association", IEEE Transactions on Robotics (T-RO), (2012) DOI: 10.1109/TRO.2012.2193706 Draft: http://mapir.isa.uma.es/~jlblanco/papers/blanco2012amd.pdf		  
 		  *
 		  * \param Z_observations_mean [IN] An MxO matrix with the M observations, each row containing the observation "mean".
 		  * \param Y_predictions_mean [IN] An NxO matrix with the N predictions, each row containing the mean of one prediction.
