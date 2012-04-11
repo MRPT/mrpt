@@ -386,6 +386,12 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	SET(MRPT_ENABLE_LIBSTD_PARALLEL_MODE OFF CACHE BOOL "Enable parallel mode in libstdc++ (requires GCC 4.2.2+)")
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
+# Enable Parallel compilation in MSVC
+# ===================================================
+IF(MSVC)
+	SET(COMPILE_IN_PARALLEL OFF CACHE BOOL "Enable parallel compilation in Visual Studio")
+ENDIF(MSVC)
+
 # Enable Intel Threading Building Blocks (TBB) lib
 # ===================================================
 SET(MRPT_HAS_TBB OFF CACHE BOOL "Enable Intel TBB threading library for parallelization.")
@@ -1915,7 +1921,9 @@ if(MSVC)
 	STRING(REGEX REPLACE "/EHsc" "/EHa" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GS-")
 
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")  # Multi-CPU compilation (Suggested by  robert.schattschneide)
+	if (COMPILE_IN_PARALLEL)
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")  # Multi-CPU parallel compilation (Suggested by  robert.schattschneide)
+	endif (COMPILE_IN_PARALLEL)
 
 	# For MSVC to avoid the C1128 error about too large object files:
 	SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /bigobj")
