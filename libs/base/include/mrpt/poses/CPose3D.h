@@ -46,12 +46,31 @@ namespace poses
 	 *   The 6D transformation in SE(3) stored in this class is kept in two
 	 *   separate containers: a 3-array for the translation, and a 3x3 rotation matrix.
 	 *
-	 *  The 6D pose is parameterized as a 6-vector: [x y z yaw pitch roll]. Note however,
+	 *  This class allows parameterizing 6D poses as a 6-vector: [x y z yaw pitch roll] (read below
+	 *   for the angles convention). Note however,
 	 *   that the yaw/pitch/roll angles are only computed (on-demand and transparently)
-	 *   when the user requests them. Normally, rotations are handled via the 3x3 rotation matrix only.
+	 *   when the user requests them. Normally, rotations and transformations are always handled 
+	 *   via the 3x3 rotation matrix.
 	 *
-	 *  For a complete descriptionan of Points/Poses, see mrpt::poses::CPoseOrPoint, or refer
-	 *    to the <a href="http://www.mrpt.org/2D_3D_Geometry"> 2D/3D Geometry tutorial</a> in the wiki.
+	 *  Yaw/Pitch/Roll angles are defined as successive rotations around *local* (dynamic) axes in the Z/Y/X order:
+	 *
+	 *  <div align=center>
+	 *   <img src="CPose3D.gif">
+	 *  </div>
+	 *
+	 * It may be extremely confusing and annoying to find a different criterion also involving
+	 * the names "yaw, pitch, roll" but regarding rotations around *global* (static) axes. 
+	 * Fortunately, it's very easy to see (by writing down the product of the three 
+	 * rotation matrices) that both conventions lead to exactly the same numbers. 
+	 * Only, that it's conventional to write the numbers in reverse order. 
+	 * That is, the same rotation can be described equivalently with any of these two 
+	 *  parameterizations:
+	 * 
+ 	 * - In local axes Z/Y/X convention: [yaw pitch roll]   (This is the convention used in mrpt::poses::CPose3D)
+ 	 * - In global axes X/Y/Z convention: [roll pitch yaw] (One of the Euler angles conventions)
+	 *
+	 *  For further descriptions of point & pose classes, see mrpt::poses::CPoseOrPoint or refer
+	 *    to the <a href="http://www.mrpt.org/2D_3D_Geometry"> 2D/3D Geometry tutorial</a> online.
 	 *
 	 *  To change the individual components of the pose, use CPose3D::setFromValues. This class assures that the internal
 	 *   3x3 rotation matrix is always up-to-date with the "yaw pitch roll" members.
@@ -62,9 +81,6 @@ namespace poses
 	 *
 	 *  There are Lie algebra methods: \a exp and \a ln (see the methods for documentation).
 	 *
-	 *  <div align=center>
-	 *   <img src="CPose3D.gif">
-	 *  </div>
 	 *
 	 * \ingroup poses_grp
 	 * \sa CPoseOrPoint,CPoint3D, mrpt::math::CQuaternion
