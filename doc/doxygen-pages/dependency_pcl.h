@@ -14,6 +14,9 @@ If available, it will provide the following functionality:
 - In point map classes:
 	- mrpt::slam::CPointsMap::getPCLPointCloud() (*)
 	- mrpt::slam::CPointsMap::savePCDFile()
+- In mrpt::slam::CObservation3DRangeScan (observations from 3D cameras, e.g. Kinect):
+	- mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImageInto() (*)
+- Read also: <a href="http://www.mrpt.org/Generating_3D_point_clouds_from_RGB_D_observations" >"Generating 3D point clouds from RGB+D observations"</a>.
 		
 <b>Note:</b> (*) means that the functionality is header-only. This means that will be
  available even if MRPT is built without PCL, but the user program includes both
