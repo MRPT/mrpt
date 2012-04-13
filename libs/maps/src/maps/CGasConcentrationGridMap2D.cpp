@@ -61,11 +61,14 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 	float		y_max,
 	float		resolution ) :
 		CRandomFieldGridMap2D(mapType, x_min,x_max,y_min,y_max,resolution ),
-		insertionOptions()
+		insertionOptions()		
 {
 	// Set the grid to initial values (and adjusts the KF covariance matrix!)
 	//  Also, calling clear() is mandatory to end initialization of our base class (read note in CRandomFieldGridMap2D::CRandomFieldGridMap2D)
 	CMetricMap::clear();
+
+	//Set initial map center position to (0,0).
+	mapCenterPose = CPose2D(0,0,0);
 }
 
 CGasConcentrationGridMap2D::~CGasConcentrationGridMap2D()
@@ -116,7 +119,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 
 		if (o->sensorLabel == insertionOptions.sensorLabel)
 		{
-			/** Correct sensorLabel, process the observation */
+			/** Correct sensorLabel, process the observation */			
 
 			float sensorReading;
 			// Get index to differentiate between enoses --> insertionoptions.enose_id
@@ -147,7 +150,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 					}
 					else
 					{
-						//Sensor especified not found, compute default mean value
+						cout << "Sensor especified not found, compute default mean value" << endl;
 						sensorReading = math::mean( it->readingsVoltage );
 					}
 				}
@@ -473,7 +476,9 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 /*---------------------------------------------------------------
 						getAs3DObject
 ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const
+void  CGasConcentrationGridMap2D::getAs3DObject( 
+	mrpt::opengl::CSetOfObjectsPtr	&meanObj, 
+	mrpt::opengl::CSetOfObjectsPtr	&varObj ) const
 {
 	MRPT_START
 	if (m_disableSaveAs3DObject)
@@ -482,4 +487,256 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 	CRandomFieldGridMap2D::getAs3DObject(meanObj,varObj);
 
 	MRPT_END
+}
+
+/*---------------------------------------------------------------
+						centerMapAtLocation
+---------------------------------------------------------------*/
+void CGasConcentrationGridMap2D::centerMapAtLocation( 
+	CGasConcentrationGridMap2D &reference_map,
+	const CPose3D &newSensorPose)
+{
+
+	// REFERENCE MAP
+	// Assure we have room enough in the reference grid!
+	//----------------------------------------------------
+	const TRandomFieldCell defCell(
+				m_insertOptions_common->KF_defaultCellMeanValue,	// mean
+				m_insertOptions_common->KF_initialCellStd			// std
+				);
+
+	const double AspaceX = m_size_x*m_resolution /2;	//Half width of the Mobile_map (meters)
+	const double AspaceY = m_size_y*m_resolution /2;	//Half height of the Mobile_map (meters)
+
+	const TPose3D sensorPose = TPose3D(newSensorPose);
+	const TPose2D sensorPose2D = TPose2D(sensorPose);
+
+
+	//cout << "Resizing( " << sensorPose2D.x - AspaceX << " , " << sensorPose2D.x + AspaceX;
+	//cout << " , " << sensorPose2D.y - AspaceY << " , " << sensorPose2D.y + AspaceY;
+	//cout << " , " << 4*max(AspaceX,AspaceY) << endl;
+
+	reference_map.resize(	sensorPose2D.x - AspaceX,
+			sensorPose2D.x + AspaceX,
+			sensorPose2D.y - AspaceY,
+			sensorPose2D.y + AspaceY,
+			defCell,
+			4*max(AspaceX,AspaceY) );
+	
+	//cout << "Resized OK" << endl;
+	// MOBILE MAP
+	// Update mobile m_map according to the new position
+	//---------------------------------------------------------------
+	
+	//Estimate cell displacement of the mobile map over the reference map
+	int old_cx = reference_map.x2idx(mapCenterPose.x);
+    int old_cy = reference_map.y2idx(mapCenterPose.y);
+
+    int new_cx = reference_map.x2idx(sensorPose2D.x);
+    int new_cy = reference_map.y2idx(sensorPose2D.y);
+	
+	int Ax = new_cx - old_cx;
+	int Ay = new_cy - old_cy;
+
+	//make a copy of the fixed size m_map mobile grid
+	std::vector<TRandomFieldCell> old_m_map;
+	std::vector<TRandomFieldCell>::iterator	itSrc,itOld;
+	unsigned int cx,cy;
+	old_m_map = m_map;
+
+
+	int local_map_center_x = x2idx(0);//m_size_x/2;
+	int local_map_center_y = y2idx(0);//m_size_y/2;
+
+	//update mobile m_map
+	for (cy=0; cy<m_size_y; cy++)
+    {
+        for (cx=0,itSrc=(m_map.begin()+cy*m_size_x),itOld=(old_m_map.begin()+cy*m_size_x); cx<m_size_x; cx++,itSrc++,itOld++)
+        {
+			if ( (cx+Ax>0) && (cx+Ax<m_size_x) && (cy+Ay>0) && (cy+Ay<m_size_y) )
+			{
+				//Copy from old_m_map
+				*itSrc = old_m_map[ (cx+Ax) + (cy+Ay)*m_size_x ];
+			}
+			else
+			{
+				//Copy from reference grid
+				int ref_x = new_cx + (cx- local_map_center_x);
+				int ref_y = new_cy + (cy- local_map_center_x);
+				*itSrc = *reference_map.cellByIndex(ref_x,ref_y);
+			}
+        }
+    }
+
+	
+	// MOBILE MAP
+	// Update mobile Cov. Matrix
+	//---------------------------------------------------------------
+	switch (m_mapType)
+	{
+	case mrKalmanFilter:
+		{
+			// ------------------------------------------
+			//		Update the covariance matrix
+			// ------------------------------------------
+			size_t			i,j,N = m_size_y*m_size_x;	// The new number of cells
+			CMatrixD		oldCov( m_cov );			// Make a copy
+
+			// -------------------------------------------------------
+			// STEP 1: Copy the old map values:
+			// -------------------------------------------------------
+			for (i = 0;i<N;i++)
+			{
+				size_t	cx1 = i % m_size_x;
+				size_t	cy1 = i / m_size_x;
+
+				bool	C1_isFromOldMap =	(cx1+Ax>0) && (cx1+Ax<m_size_x) && (cy1+Ay>0) && (cy1+Ay<m_size_y);
+
+				if ( C1_isFromOldMap )
+				{
+					for (j = i;j<N;j++)
+					{
+						size_t	cx2 = j % m_size_x;
+						size_t	cy2 = j / m_size_x;
+
+						bool	C2_isFromOldMap =	(cx2+Ax>0) && (cx2+Ax<m_size_x) && (cy2+Ay>0) && (cy2+Ay<m_size_y);
+
+						// Were both cells in the old map??? --> Copy it!
+						if ( C1_isFromOldMap && C2_isFromOldMap )
+						{
+							// Copy values from the old Cov. matrix:
+							unsigned int	idx_c1 = cx1+Ax + (cy1+Ay)*m_size_x;
+							unsigned int	idx_c2 = cx2+Ax + (cy2+Ay)*m_size_x;
+
+							m_cov(i,j) = oldCov( idx_c1, idx_c2 );
+							m_cov(j,i) = m_cov(i,j);
+
+							if (i==j)
+								ASSERT_( idx_c1 == idx_c2 );							
+						}
+
+						ASSERT_( !isNaN( m_cov(i,j) ) );
+
+					} // for j
+				}
+				else //Compute only the m_cov(i,i)
+				{	
+					//Update according to the STD from reference grid cell
+					const double ref_cell_std = m_map[cx1 + cy1*m_size_x].kf_std;
+					m_cov(i,i) = square(  ref_cell_std );					
+				}
+
+			} // for i
+
+			// -------------------------------------------------------
+			// STEP 2: Set default values (or values from the main_map) for new cells
+			// -------------------------------------------------------
+			for (i=0;i<N;i++)
+			{
+				size_t	cx1 = i % m_size_x;
+				size_t	cy1 = i / m_size_x;
+
+				bool	C1_isFromOldMap =	(cx1+Ax>0) && (cx1+Ax<m_size_x) && (cy1+Ay>0) && (cy1+Ay<m_size_y);
+
+				for (j=i;j<N;j++)
+				{
+					size_t	cx2 = j % m_size_x;
+					size_t	cy2 = j / m_size_x;
+
+					bool	C2_isFromOldMap =	(cx2+Ax>0) && (cx2+Ax<m_size_x) && (cy2+Ay>0) && (cy2+Ay<m_size_y);
+
+					double	dist=0;
+
+					// Ensure is not case 1
+					if ( !C1_isFromOldMap || !C2_isFromOldMap )
+					{
+						// Update according to the reference_map(main_map):
+						if (i!=j)						
+						{
+							dist = m_resolution*sqrt( static_cast<double>( square(cx1-cx2) +  square(cy1-cy2) ));
+							double K = sqrt(m_cov(i,i)*m_cov(j,j));
+
+							if ( isNaN( K ) )
+							{
+								printf("c(i,i)=%e   c(j,j)=%e\n",m_cov(i,i),m_cov(j,j));
+								ASSERT_( !isNaN( K ) );
+							}
+
+							m_cov(i,j) = K * exp( -0.5 * square( dist/m_insertOptions_common->KF_covSigma ) );
+							m_cov(j,i) = m_cov(i,j);
+						}
+
+						ASSERT_( !isNaN( m_cov(i,j) ) );
+					}
+				} // for j
+			} // for i
+
+			// m_cov Updated done!			
+
+		} // end of Kalman Filter map		
+		break;
+	};
+
+	//update center pose
+	mapCenterPose = sensorPose2D;
+	
+}
+
+/*---------------------------------------------------------------
+						updateFromMobileMap
+---------------------------------------------------------------*/
+void CGasConcentrationGridMap2D::updateFromMobileMap(
+	const CGasConcentrationGridMap2D &mobile_map)
+{
+
+	//Get cell indexes of the mobile_map center in the main_map reference system
+	
+	int centerMob_cx = x2idx(mobile_map.mapCenterPose.x);
+    int centerMob_cy = y2idx(mobile_map.mapCenterPose.y);
+
+	//Get cell indexes of the mobile_map in the mobile_map reference system
+	float local_map_center_x = mobile_map.x2idx(0);
+	float local_map_center_y = mobile_map.y2idx(0);
+
+	//cout << "\nCopying values from the mobile_map provided (" <<mobile_map.m_size_x <<","<< mobile_map.m_size_y<<")" << endl;
+	//cout << "Copying values to reference_map (" <<m_size_x <<","<< m_size_y<<")" << endl;
+	//cout << "mapCenterPose of mobile on reference system is " << mobile_map.mapCenterPose << endl;
+
+	//update main_map (copying values from the mobile_map provided)
+	unsigned int cx,cy;
+	for (cy=0; cy<mobile_map.m_size_y; cy++)
+    {
+        for (cx=0; cx<mobile_map.m_size_x; cx++)
+        {
+			//Copy from mobile_map to reference_map
+//			printf("Main_map(%u,%u) = %.3f",cx,cy,m_map[(centerMob_cx+cx-local_map_center_x),(centerMob_cy+cy-local_map_center_y)]);
+			TRandomFieldCell *main_map_cell;
+			main_map_cell = cellByIndex((centerMob_cx+cx-local_map_center_x),(centerMob_cy+cy-local_map_center_y));
+			*main_map_cell = *mobile_map.cellByIndex(cx,cy);
+			//update last_updated time
+			main_map_cell->last_updated = now();
+			main_map_cell->updated_std = main_map_cell->kf_std;
+        }
+    }
+}
+
+/*---------------------------------------------------------------
+						increaseMapCells_STD
+---------------------------------------------------------------*/
+void CGasConcentrationGridMap2D::increaseMapCells_STD(const double memory_relative_strenght)
+{
+	//Increase kf_std of all cells within the m_map
+	unsigned int cx,cy;
+	double memory_retention;
+	
+	for (cy=0; cy<m_size_y; cy++)
+    {
+        for (cx=0; cx<m_size_x; cx++)
+        {
+			// Forgetting_curve --> memory_retention = exp(-time/memory_relative_strenght)
+			memory_retention = exp(- mrpt::system::timeDifference(m_map[cx + cy*m_size_x].last_updated, now()) / memory_relative_strenght);
+			//Update Uncertainty (STD)
+			m_map[cx + cy*m_size_x].kf_std = 1 - ( (1-m_map[cx + cy*m_size_x].updated_std) * memory_retention );
+        }
+    }
 }

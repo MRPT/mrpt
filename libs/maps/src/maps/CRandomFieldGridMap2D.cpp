@@ -115,15 +115,16 @@ void  CRandomFieldGridMap2D::internal_clear()
 				);
 
 			fill( def );
-
+	
 			// Reset the covariance matrix:
 			m_cov.setSize( m_size_y*m_size_x, m_size_y*m_size_x );
+			
 
 			// And load its default values:
 			const double KF_covSigma2 = square(m_insertOptions_common->KF_covSigma);
 			const double res2 = square(m_resolution);
 			const double std0sqr = square(  m_insertOptions_common->KF_initialCellStd );
-
+			
 			for (size_t i = 0;i<m_cov.getRowCount();i++)
 			{
 				int		cx1 = ( i % m_size_x );
@@ -152,13 +153,12 @@ void  CRandomFieldGridMap2D::internal_clear()
 		// and continue with:
 	case mrKalmanApproximate:
 		{
-
 			m_hasToRecoverMeanAndCov = true;
 
 			CTicTac	tictac;
 			tictac.Tic();
 
-			//printf("[CRandomFieldGridMap2D::clear] Resetting compressed cov. matrix and cells\n");
+			printf("[CRandomFieldGridMap2D::clear] Resetting compressed cov. matrix and cells\n");
 			TRandomFieldCell	def(
 				m_insertOptions_common->KF_defaultCellMeanValue,									// mean
 				m_insertOptions_common->KF_initialCellStd		// std
@@ -836,7 +836,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 			if (i==j)
 			{
 				if (m_cov(i,i)<0){
-					printf("fallo");
+					printf("Fallo al insertar observación en KF. m_cov(%u,%u) = %.5f",i,i,m_cov(i,i));
 				}
 
 				ASSERT_( m_cov(i,i)>=0 );
@@ -1114,32 +1114,42 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 	case mrKalmanFilter:
 	case mrKalmanApproximate:
 		{
-			opengl::CSetOfTrianglesPtr obj = opengl::CSetOfTriangles::Create();
-			const double  std_times = 2;
-			const double  z_aspect_ratio = 4;
+			// for Kalman models:
+			// ----------------------------------
+			opengl::CSetOfTrianglesPtr obj_m = opengl::CSetOfTriangles::Create();
+			obj_m->enableTransparency(true);
+			opengl::CSetOfTrianglesPtr obj_v = opengl::CSetOfTriangles::Create();
+			obj_v->enableTransparency(true);			
 
-			//  Compute max/min values:
+			//  Compute mean max/min values:
 			// ---------------------------------------
-			double	maxVal=0, minVal=1, AMaxMin;
+			double 	maxVal_m=0, minVal_m=1, AMaxMin_m, maxVal_v=0, minVal_v=1, AMaxMin_v;
+			double c,v;
 			for (cy=1;cy<m_size_y;cy++)
 			{
 				for (cx=1;cx<m_size_x;cx++)
 				{
 					const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-					minVal = min(minVal, cell_xy->kf_mean);
-					maxVal = max(maxVal, cell_xy->kf_mean);
+					//mean
+					c = cell_xy->kf_mean;
+					minVal_m = min(minVal_m, c);
+					maxVal_m = max(maxVal_m, c);
+					//variance
+					v = square(cell_xy->kf_std);
+					minVal_v = min(minVal_v, v);
+					maxVal_v = max(maxVal_v, v);
 				}
 			}
 
-			AMaxMin = maxVal - minVal;
-			if (AMaxMin==0) AMaxMin=1;
-
+			AMaxMin_m = maxVal_m - minVal_m;			
+			if (AMaxMin_m==0) AMaxMin_m=1;
+			AMaxMin_v = maxVal_v - minVal_v;
+			if (AMaxMin_v==0) AMaxMin_v=1;
 
 			// ---------------------------------------
-			//  BOTTOM LAYER:  mean - K*std
+			//  Compute Maps
 			// ---------------------------------------
-			triag.a[0]=triag.a[1]=triag.a[2]= 0.8f;
-
+			triag.a[0]=triag.a[1]=triag.a[2]= 0.75f;	// alpha (transparency)
 			for (cy=1;cy<m_size_y;cy++)
 			{
 				for (cx=1;cx<m_size_x;cx++)
@@ -1150,164 +1160,275 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 					const TRandomFieldCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
 					const TRandomFieldCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
 
-					double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean - std_times*cell_xy->kf_std ) );
-					double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean - std_times*cell_x_1y->kf_std ) );
-					double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean - std_times*cell_xy_1->kf_std ) );
-					double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean - std_times*cell_x_1y_1->kf_std) );
+					// MEAN values
+					//-----------------
+					double c_xy			= min(1.0,max(0.0, cell_xy->kf_mean) );
+					double c_x_1y		= min(1.0,max(0.0, cell_x_1y->kf_mean) );
+					double c_xy_1		= min(1.0,max(0.0, cell_xy_1->kf_mean) );
+					double c_x_1y_1		= min(1.0,max(0.0, cell_x_1y_1->kf_mean) );
 
-					double col_xy		= min(1.0,max(0.0, (cell_xy->kf_mean-minVal)/AMaxMin ) );
-					double col_x_1y	= min(1.0,max(0.0, (cell_x_1y->kf_mean-minVal)/AMaxMin ) );
-					double col_xy_1	= min(1.0,max(0.0, (cell_xy_1->kf_mean-minVal)/AMaxMin ) );
-					double col_x_1y_1	= min(1.0,max(0.0, (cell_x_1y_1->kf_mean-minVal)/AMaxMin ) );
-
-					// Triangle #1:
-					//if ( fabs(c_xy-0.5f)<0.49f ||
-					//	 fabs(c_x_1y-0.5f)<0.49f ||
-					//	 fabs(c_xy_1-0.5f)<0.49f ||
-					//	 fabs(c_x_1y_1-0.5f)<0.49f )
-					{
-						triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
-						triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = c_xy_1;
-						triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = c_x_1y_1;
-						jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-						jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
-						jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
-
-						obj->insertTriangle( triag );
-					}
-
-					// Triangle #2:
-					//if ( fabs(c_xy-0.5f)<0.49f ||
-					//	 fabs(c_x_1y-0.5f)<0.49f ||
-					//	 fabs(c_xy_1-0.5f)<0.49f ||
-					//	 fabs(c_x_1y_1-0.5f)<0.49f )
-					{
-						triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
-						triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = c_x_1y_1;
-						triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = c_x_1y;
-
-						jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-						jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
-						jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
-
-						obj->insertTriangle( triag );
-					}
-				} // for cx
-			} // for cy
-	/**/
-			// ---------------------------------------
-			//  MID LAYER:  mean
-			// ---------------------------------------
-	/**/
-			triag.a[0]=triag.a[1]=triag.a[2]= 0.8f;
-			for (cy=1;cy<m_size_y;cy++)
-			{
-				for (cx=1;cx<m_size_x;cx++)
-				{
-					// Cell values:
-					const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-					const TRandomFieldCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
-					const TRandomFieldCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
-					const TRandomFieldCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
-
-					double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean ) );
-					double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean ) );
-					double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean ) );
-					double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean ) );
-
-					double col_xy		= min(1.0,max(0.0, cell_xy->kf_mean ) );
-					double col_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean ) );
-					double col_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean ) );
-					double col_x_1y_1	= min(1.0,max(0.0, cell_x_1y_1->kf_mean ) );
+					double col_xy		= c_xy;		//min(1.0,max(0.0, (c_xy-minVal_m)/AMaxMin_m ) );
+					double col_x_1y		= c_x_1y;	//min(1.0,max(0.0, (c_x_1y-minVal_m)/AMaxMin_m ) );
+					double col_xy_1		= c_xy_1;	//min(1.0,max(0.0, (c_xy_1-minVal_m)/AMaxMin_m ) );
+					double col_x_1y_1	= c_x_1y_1; //min(1.0,max(0.0, (c_x_1y_1-minVal_m)/AMaxMin_m ) );
 
 					// Triangle #1:
-					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
-					triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_xy_1;
-					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = z_aspect_ratio*c_x_1y_1;
+					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
+					triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = c_xy_1;
+					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = c_x_1y_1;
 					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
 					jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
 					jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
-
-					obj->insertTriangle( triag );
+					obj_m->insertTriangle( triag );
 
 					// Triangle #2:
-					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
-					triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_x_1y_1;
-					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = z_aspect_ratio*c_x_1y;
-
+					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
+					triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = c_x_1y_1;
+					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = c_x_1y;
 					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
 					jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
 					jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
-					obj->insertTriangle( triag );
+					obj_m->insertTriangle( triag );
 
-				} // for cx
-			} // for cy
-	/**/
+					// VARIANCE values
+					//------------------
+					double v_xy			= min(1.0,max(0.0, square(cell_xy->kf_std) ) );
+					double v_x_1y		= min(1.0,max(0.0, square(cell_x_1y->kf_std) ) );
+					double v_xy_1		= min(1.0,max(0.0, square(cell_xy_1->kf_std) ) );
+					double v_x_1y_1		= min(1.0,max(0.0, square(cell_x_1y_1->kf_std) ) );
 
-			// ---------------------------------------
-			//  TOP LAYER:  mean + K*std
-			// ---------------------------------------
-			triag.a[0]=triag.a[1]=triag.a[2]= 0.5f;
+					col_xy				= v_xy;		//min(1.0,max(0.0, (v_xy-minVal_v)/AMaxMin_v ) );
+					col_x_1y			= v_x_1y;	//min(1.0,max(0.0, (v_x_1y-minVal_v)/AMaxMin_v ) );
+					col_xy_1			= v_xy_1;	//min(1.0,max(0.0, (v_xy_1-minVal_v)/AMaxMin_v ) );
+					col_x_1y_1			= v_x_1y_1;	//min(1.0,max(0.0, (v_x_1y_1-minVal_v)/AMaxMin_v ) );
 
-			for (cy=1;cy<m_size_y;cy++)
-			{
-				for (cx=1;cx<m_size_x;cx++)
-				{
-					// Cell values:
-					const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-					const TRandomFieldCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
-					const TRandomFieldCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
-					const TRandomFieldCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
-
-					double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean + std_times*cell_xy->kf_std ) );
-					double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean + std_times*cell_x_1y->kf_std ) );
-					double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean + std_times*cell_xy_1->kf_std ) );
-					double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean + std_times*cell_x_1y_1->kf_std) );
-
-					double col_xy		= min(1.0,max(0.0, (cell_xy->kf_mean-minVal)/AMaxMin ) );
-					double col_x_1y	= min(1.0,max(0.0, (cell_x_1y->kf_mean-minVal)/AMaxMin ) );
-					double col_xy_1	= min(1.0,max(0.0, (cell_xy_1->kf_mean-minVal)/AMaxMin ) );
-					double col_x_1y_1	= min(1.0,max(0.0, (cell_x_1y_1->kf_mean-minVal)/AMaxMin ) );
 
 					// Triangle #1:
-					/*if ( fabs(c_xy-0.5f)<0.49f ||
-						 fabs(c_x_1y-0.5f)<0.49f ||
-						 fabs(c_xy_1-0.5f)<0.49f ||
-						 fabs(c_x_1y_1-0.5f)<0.49f )*/
-					{
-						triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
-						triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_xy_1;
-						triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = z_aspect_ratio*c_x_1y_1;
-						jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-						jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
-						jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
-
-						obj->insertTriangle( triag );
-					}
+					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = v_xy;
+					triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = v_xy_1;
+					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = v_x_1y_1;
+					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+					jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
+					jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
+					obj_v->insertTriangle( triag );
 
 					// Triangle #2:
-					/*if ( fabs(c_xy-0.5f)<0.49f ||
-						 fabs(c_x_1y-0.5f)<0.49f ||
-						 fabs(c_xy_1-0.5f)<0.49f ||
-						 fabs(c_x_1y_1-0.5f)<0.49f )*/
-					{
-						triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
-						triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_x_1y_1;
-						triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = z_aspect_ratio*c_x_1y;
+					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = v_xy;
+					triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = v_x_1y_1;
+					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = v_x_1y;
+					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+					jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
+					jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
+					obj_v->insertTriangle( triag );
 
-						jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
-						jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
-						jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
-
-						obj->insertTriangle( triag );
-					}
 				} // for cx
 			} // for cy
+			meanObj->insert( obj_m );
+			varObj->insert( obj_v );
 
 
-			obj->enableTransparency(true);;
-			meanObj->insert( obj );
-			varObj->insert( obj);
+//-----------------------------			
+//Code from JL starts here
+//-----------------------------
+	//		opengl::CSetOfTrianglesPtr obj = opengl::CSetOfTriangles::Create();
+	//		const double  std_times = 2;
+	//		const double  z_aspect_ratio = 4;
+
+	//		//  Compute max/min values:
+	//		// ---------------------------------------
+	//		double	maxVal=0, minVal=1, AMaxMin;
+	//		for (cy=1;cy<m_size_y;cy++)
+	//		{
+	//			for (cx=1;cx<m_size_x;cx++)
+	//			{
+	//				const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
+	//				minVal = min(minVal, cell_xy->kf_mean);
+	//				maxVal = max(maxVal, cell_xy->kf_mean);
+	//			}
+	//		}
+
+	//		AMaxMin = maxVal - minVal;
+	//		if (AMaxMin==0) AMaxMin=1;
+
+
+	//		// ---------------------------------------
+	//		//  BOTTOM LAYER:  mean - K*std
+	//		// ---------------------------------------
+	//		triag.a[0]=triag.a[1]=triag.a[2]= 0.8f;
+
+	//		for (cy=1;cy<m_size_y;cy++)
+	//		{
+	//			for (cx=1;cx<m_size_x;cx++)
+	//			{
+	//				// Cell values:
+	//				const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
+	//				const TRandomFieldCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
+	//				const TRandomFieldCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
+	//				const TRandomFieldCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
+
+	//				double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean - std_times*cell_xy->kf_std ) );
+	//				double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean - std_times*cell_x_1y->kf_std ) );
+	//				double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean - std_times*cell_xy_1->kf_std ) );
+	//				double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean - std_times*cell_x_1y_1->kf_std) );
+
+	//				double col_xy		= min(1.0,max(0.0, (cell_xy->kf_mean-minVal)/AMaxMin ) );
+	//				double col_x_1y	= min(1.0,max(0.0, (cell_x_1y->kf_mean-minVal)/AMaxMin ) );
+	//				double col_xy_1	= min(1.0,max(0.0, (cell_xy_1->kf_mean-minVal)/AMaxMin ) );
+	//				double col_x_1y_1	= min(1.0,max(0.0, (cell_x_1y_1->kf_mean-minVal)/AMaxMin ) );
+
+	//				// Triangle #1:
+	//				//if ( fabs(c_xy-0.5f)<0.49f ||
+	//				//	 fabs(c_x_1y-0.5f)<0.49f ||
+	//				//	 fabs(c_xy_1-0.5f)<0.49f ||
+	//				//	 fabs(c_x_1y_1-0.5f)<0.49f )
+	//				{
+	//					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
+	//					triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = c_xy_1;
+	//					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = c_x_1y_1;
+	//					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+	//					jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
+	//					jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
+
+	//					obj->insertTriangle( triag );
+	//				}
+
+	//				// Triangle #2:
+	//				//if ( fabs(c_xy-0.5f)<0.49f ||
+	//				//	 fabs(c_x_1y-0.5f)<0.49f ||
+	//				//	 fabs(c_xy_1-0.5f)<0.49f ||
+	//				//	 fabs(c_x_1y_1-0.5f)<0.49f )
+	//				{
+	//					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
+	//					triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = c_x_1y_1;
+	//					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = c_x_1y;
+
+	//					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+	//					jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
+	//					jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
+
+	//					obj->insertTriangle( triag );
+	//				}
+	//			} // for cx
+	//		} // for cy
+	///**/
+	//		// ---------------------------------------
+	//		//  MID LAYER:  mean
+	//		// ---------------------------------------
+	///**/
+	//		triag.a[0]=triag.a[1]=triag.a[2]= 0.8f;
+	//		for (cy=1;cy<m_size_y;cy++)
+	//		{
+	//			for (cx=1;cx<m_size_x;cx++)
+	//			{
+	//				// Cell values:
+	//				const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
+	//				const TRandomFieldCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
+	//				const TRandomFieldCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
+	//				const TRandomFieldCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
+
+	//				double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean ) );
+	//				double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean ) );
+	//				double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean ) );
+	//				double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean ) );
+
+	//				double col_xy		= min(1.0,max(0.0, cell_xy->kf_mean ) );
+	//				double col_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean ) );
+	//				double col_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean ) );
+	//				double col_x_1y_1	= min(1.0,max(0.0, cell_x_1y_1->kf_mean ) );
+
+	//				// Triangle #1:
+	//				triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
+	//				triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_xy_1;
+	//				triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = z_aspect_ratio*c_x_1y_1;
+	//				jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+	//				jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
+	//				jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
+
+	//				obj->insertTriangle( triag );
+
+	//				// Triangle #2:
+	//				triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
+	//				triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_x_1y_1;
+	//				triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = z_aspect_ratio*c_x_1y;
+
+	//				jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+	//				jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
+	//				jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
+	//				obj->insertTriangle( triag );
+
+	//			} // for cx
+	//		} // for cy
+	///**/
+
+	//		// ---------------------------------------
+	//		//  TOP LAYER:  mean + K*std
+	//		// ---------------------------------------
+	//		triag.a[0]=triag.a[1]=triag.a[2]= 0.5f;
+
+	//		for (cy=1;cy<m_size_y;cy++)
+	//		{
+	//			for (cx=1;cx<m_size_x;cx++)
+	//			{
+	//				// Cell values:
+	//				const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
+	//				const TRandomFieldCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
+	//				const TRandomFieldCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
+	//				const TRandomFieldCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
+
+	//				double c_xy	= min(1.0,max(0.0, cell_xy->kf_mean + std_times*cell_xy->kf_std ) );
+	//				double c_x_1y	= min(1.0,max(0.0, cell_x_1y->kf_mean + std_times*cell_x_1y->kf_std ) );
+	//				double c_xy_1	= min(1.0,max(0.0, cell_xy_1->kf_mean + std_times*cell_xy_1->kf_std ) );
+	//				double c_x_1y_1= min(1.0,max(0.0, cell_x_1y_1->kf_mean + std_times*cell_x_1y_1->kf_std) );
+
+	//				double col_xy		= min(1.0,max(0.0, (cell_xy->kf_mean-minVal)/AMaxMin ) );
+	//				double col_x_1y	= min(1.0,max(0.0, (cell_x_1y->kf_mean-minVal)/AMaxMin ) );
+	//				double col_xy_1	= min(1.0,max(0.0, (cell_xy_1->kf_mean-minVal)/AMaxMin ) );
+	//				double col_x_1y_1	= min(1.0,max(0.0, (cell_x_1y_1->kf_mean-minVal)/AMaxMin ) );
+
+	//				// Triangle #1:
+	//				/*if ( fabs(c_xy-0.5f)<0.49f ||
+	//					 fabs(c_x_1y-0.5f)<0.49f ||
+	//					 fabs(c_xy_1-0.5f)<0.49f ||
+	//					 fabs(c_x_1y_1-0.5f)<0.49f )*/
+	//				{
+	//					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
+	//					triag.x[1] = xs[cx];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_xy_1;
+	//					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy-1];	triag.z[2] = z_aspect_ratio*c_x_1y_1;
+	//					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+	//					jet2rgb( col_xy_1,triag.r[1],triag.g[1],triag.b[1] );
+	//					jet2rgb( col_x_1y_1,triag.r[2],triag.g[2],triag.b[2] );
+
+	//					obj->insertTriangle( triag );
+	//				}
+
+	//				// Triangle #2:
+	//				/*if ( fabs(c_xy-0.5f)<0.49f ||
+	//					 fabs(c_x_1y-0.5f)<0.49f ||
+	//					 fabs(c_xy_1-0.5f)<0.49f ||
+	//					 fabs(c_x_1y_1-0.5f)<0.49f )*/
+	//				{
+	//					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = z_aspect_ratio*c_xy;
+	//					triag.x[1] = xs[cx-1];	triag.y[1] = ys[cy-1];	triag.z[1] = z_aspect_ratio*c_x_1y_1;
+	//					triag.x[2] = xs[cx-1];	triag.y[2] = ys[cy];	triag.z[2] = z_aspect_ratio*c_x_1y;
+
+	//					jet2rgb( col_xy,triag.r[0],triag.g[0],triag.b[0] );
+	//					jet2rgb( col_x_1y_1,triag.r[1],triag.g[1],triag.b[1] );
+	//					jet2rgb( col_x_1y,triag.r[2],triag.g[2],triag.b[2] );
+
+	//					obj->insertTriangle( triag );
+	//				}
+	//			} // for cx
+	//		} // for cy
+
+
+	//		obj->enableTransparency(true);;
+	//		meanObj->insert( obj );
+	//		varObj->insert( obj );
+
+//-----------------------------			
+//Code from JL ends here
+//-----------------------------
+
 		}
 		break; // end KF models
 
@@ -1317,9 +1438,9 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 			// Draw for Kernel model:
 			// ----------------------------------
 			opengl::CSetOfTrianglesPtr obj_m = opengl::CSetOfTriangles::Create();
-			obj_m->enableTransparency(false);
+			obj_m->enableTransparency(true);
 			opengl::CSetOfTrianglesPtr obj_v = opengl::CSetOfTriangles::Create();
-			obj_v->enableTransparency(false);
+			obj_v->enableTransparency(true);			
 
 			//  Compute mean max/min values:
 			// ---------------------------------------
@@ -1367,10 +1488,10 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 					double c_xy_1		= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_xy_1) ) );
 					double c_x_1y_1		= min(1.0,max(0.0, computeMeanCellValue_DM_DMV(cell_x_1y_1) ) );
 
-					double col_xy		= min(1.0,max(0.0, (c_xy-minVal_m)/AMaxMin_m ) );
-					double col_x_1y		= min(1.0,max(0.0, (c_x_1y-minVal_m)/AMaxMin_m ) );
-					double col_xy_1		= min(1.0,max(0.0, (c_xy_1-minVal_m)/AMaxMin_m ) );
-					double col_x_1y_1	= min(1.0,max(0.0, (c_x_1y_1-minVal_m)/AMaxMin_m ) );
+					double col_xy		= c_xy;		//min(1.0,max(0.0, (c_xy-minVal_m)/AMaxMin_m ) );
+					double col_x_1y		= c_x_1y;	//min(1.0,max(0.0, (c_x_1y-minVal_m)/AMaxMin_m ) );
+					double col_xy_1		= c_xy_1;	//min(1.0,max(0.0, (c_xy_1-minVal_m)/AMaxMin_m ) );
+					double col_x_1y_1	= c_x_1y_1;	//min(1.0,max(0.0, (c_x_1y_1-minVal_m)/AMaxMin_m ) );
 
 					// Triangle #1:
 					triag.x[0] = xs[cx];	triag.y[0] = ys[cy];	triag.z[0] = c_xy;
@@ -1398,10 +1519,10 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 					double v_xy_1		= min(1.0,max(0.0, computeVarCellValue_DM_DMV(cell_xy_1) ) );
 					double v_x_1y_1		= min(1.0,max(0.0, computeVarCellValue_DM_DMV(cell_x_1y_1) ) );
 
-					col_xy				= min(1.0,max(0.0, (v_xy-minVal_v)/AMaxMin_v ) );
-					col_x_1y			= min(1.0,max(0.0, (v_x_1y-minVal_v)/AMaxMin_v ) );
-					col_xy_1			= min(1.0,max(0.0, (v_xy_1-minVal_v)/AMaxMin_v ) );
-					col_x_1y_1			= min(1.0,max(0.0, (v_x_1y_1-minVal_v)/AMaxMin_v ) );
+					col_xy				= v_xy;		//min(1.0,max(0.0, (v_xy-minVal_v)/AMaxMin_v ) );
+					col_x_1y			= v_x_1y;	//min(1.0,max(0.0, (v_x_1y-minVal_v)/AMaxMin_v ) );
+					col_xy_1			= v_xy_1;	//min(1.0,max(0.0, (v_xy_1-minVal_v)/AMaxMin_v ) );
+					col_x_1y_1			= v_x_1y_1;	//min(1.0,max(0.0, (v_x_1y_1-minVal_v)/AMaxMin_v ) );
 
 
 					// Triangle #1:
@@ -1616,7 +1737,6 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 	//const double	KF_covSigma2 = square(m_insertOptions_common->KF_covSigma);
 	//const double	std0 = m_insertOptions_common->KF_initialCellStd;
 	//const double	res2 = square(m_resolution);
-
 	const int				cellIdx = xy2idx( sensorPose.x, sensorPose.y );
 	TRandomFieldCell	*cell = cellByPos( sensorPose.x, sensorPose.y );
 	ASSERT_(cell!=NULL);
@@ -1684,6 +1804,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 	}
 
 
+
 	// 2) The cell "c" itself, and the rest within the window:
 	for (int Acy=0;Acy<=Acy1;Acy++)
 	{
@@ -1712,6 +1833,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 			idx++;
 		}
 	}
+
 
 	// ------------------------------------------------------------
 	// Update cross-covariances values:
@@ -1812,4 +1934,9 @@ void CRandomFieldGridMap2D::getMeanAndCov( vector_double &out_means, CMatrixDoub
 
 	recoverMeanAndCov();
 	out_cov = m_cov;
+}
+
+CRandomFieldGridMap2D::TMapRepresentation	 CRandomFieldGridMap2D::getMapType()
+{
+	return m_mapType;
 }
