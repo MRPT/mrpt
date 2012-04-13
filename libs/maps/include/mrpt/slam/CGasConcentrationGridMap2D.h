@@ -133,6 +133,26 @@ namespace slam
 		  */
 		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const;
 
+		/** Center the map on the given location keeping the actual dimensions.
+		 *	This mehod is usually called by the mobile map.
+		 * \param reference_map The main map over which the mobile map works
+		 * \param centerPose The 3D pose on the reference_map over which center the mobile map
+		 */
+		 virtual void centerMapAtLocation( CGasConcentrationGridMap2D &reference_map,const CPose3D &centerPose );
+		
+		 /** Updates the main_map with the information of the mobile_map
+		 *	This mehod is usually called by the main_map, after a insertObservation in the mobile_map.		 
+		 */
+		 virtual void updateFromMobileMap(const CGasConcentrationGridMap2D &mobile_map);
+		 /** Increase the kf_std of all cells from the m_map
+		 *	This mehod is usually called by the main_map to simulate loss of confidence in measurements when time passes
+		 */
+		 virtual void increaseMapCells_STD(const double memory_relative_strenght);
+		 /** Map center Pose2D in the main_map reference system
+		 * Only applies for the case of mrMobile mapTypes
+		 */
+		 mrpt::poses::TPose2D		mapCenterPose;
+
 	protected:
 
 		/** Get the part of the options common to all CRandomFieldGridMap2D classes */
@@ -151,6 +171,7 @@ namespace slam
 		  * \sa CObservation::insertObservationInto
 		  */
 		 virtual bool  internal_insertObservation( const CObservation *obs, const CPose3D *robotPose = NULL );
+		 
 
 	};
 

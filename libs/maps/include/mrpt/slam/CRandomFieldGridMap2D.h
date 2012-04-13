@@ -60,7 +60,9 @@ namespace slam
 		TRandomFieldCell(double kfmean_dm_mean = 1e-20, double kfstd_dmmeanw = 0) :
 			kf_mean      (kfmean_dm_mean),
 			kf_std       (kfstd_dmmeanw),
-			dmv_var_mean (0)
+			dmv_var_mean (0),
+			last_updated(mrpt::system::now()),
+			updated_std (kfstd_dmmeanw)
 		{ }
 
 		// *Note*: Use unions to share memory between data fields, since only a set
@@ -84,6 +86,9 @@ namespace slam
 		};
 
 		double dmv_var_mean;   //!< [Kernel DM-V only] The cumulative weighted variance of this cell
+
+		TTimeStamp last_updated;	//!< [Dynamic maps only] The timestamp of the last time the cell was updated
+		double updated_std;			//!< [Dynamic maps only] The std cell value that was updated (to be used in the Forgetting_curve
 	};
 #pragma pack(pop)
 
@@ -136,7 +141,7 @@ namespace slam
 			mrAchim = 0,      // Another alias for "mrKernelDM", for backward compatibility
 			mrKalmanFilter,
 			mrKalmanApproximate,
-			mrKernelDMV
+			mrKernelDMV			
 		};
 
 		/** Constructor
