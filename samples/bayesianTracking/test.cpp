@@ -59,6 +59,9 @@ using namespace std;
 
 #define NUM_PARTICLES				2000
 
+// Uncomment to save text files with grount truth vs. estimated states
+//#define SAVE_GT_LOGS
+
 // ------------------------------------------------------
 //		Implementation of the system models as a EKF
 // ------------------------------------------------------
@@ -246,6 +249,10 @@ void TestBayesianTracking()
 	CParticleFilter	PF;
 	PF.m_options = PF_options;
 
+#ifdef SAVE_GT_LOGS
+	CFileOutputStream  fo_log_ekf("log_GT_vs_EKF.txt");
+	fo_log_ekf.printf("%%%% GT_X  GT_Y  EKF_MEAN_X  EKF_MEAN_Y   EKF_STD_X   EKF_STD_Y\n");
+#endif
 
 	// Init. simulation:
 	// -------------------------
@@ -306,6 +313,16 @@ void TestBayesianTracking()
 		COVXY(0,1) = COVXY(1,0) = EKF_pkk(0,1);
 
 		winEKF.plotEllipse( EKF_xkk[0], EKF_xkk[1], COVXY, 3, "b-2", "ellipse_EKF" );
+
+		// Save GT vs EKF state:
+#ifdef SAVE_GT_LOGS
+		// %% GT_X  GT_Y  EKF_MEAN_X  EKF_MEAN_Y   EKF_STD_X   EKF_STD_Y:
+		fo_log_ekf.printf("%f %f %f %f %f %f\n",
+			x,y, // Real (GT)
+			EKF_xkk[0], EKF_xkk[1],
+			std::sqrt(EKF_pkk(0,0)), std::sqrt(EKF_pkk(1,1))
+			);
+#endif
 
 		// Draw the velocity vector:
 		vector_float vx(2),vy(2);

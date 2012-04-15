@@ -246,13 +246,6 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 		printf("Ground truth file: NO\n");
 
 
-	// The experiment directory is:
-//	string sOUT_DIR_OVERALL = format("%s_SUMMARY",OUT_DIR_PREFIX.c_str());
-//	const char * OUT_DIR_OVERALL = sOUT_DIR_OVERALL.c_str();
-//	createDirectory( OUT_DIR_OVERALL );
-//	deleteFiles( format("%s/*.*",OUT_DIR_OVERALL));
-
-
 	// Create 3D window if requested:
 	CDisplayWindow3DPtr	win3D;
 	if (SHOW_PROGRESS_3D_REAL_TIME)
@@ -530,6 +523,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 									getAs<CEllipsoid>(ellip)->setLineWidth(2);
 									getAs<CEllipsoid>(ellip)->setQuantiles(3);
+									getAs<CEllipsoid>(ellip)->set2DsegmentsCount(60);
 									ptrScene->insert( ellip );
 								}
 								ellip->setLocation(meanPose.x(), meanPose.y(), 0.05 );
@@ -680,6 +674,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 					{
 						// Generate 3D scene:
 						// ------------------------------
+						MRPT_TODO("Someday I should clean up this mess, since two different 3D scenes are built -> refactor code")
 
 						// The Ground Truth (GT):
 						{
@@ -717,8 +712,9 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								ellip->setName( "parts_cov");
 								ellip->setColor(1,0,0, 0.6);
 
-								getAs<CEllipsoid>(ellip)->setLineWidth(2);
+								getAs<CEllipsoid>(ellip)->setLineWidth(4);
 								getAs<CEllipsoid>(ellip)->setQuantiles(3);
+								getAs<CEllipsoid>(ellip)->set2DsegmentsCount(60);
 								scene.insert( ellip );
 							}
 							ellip->setLocation(meanPose.x(),meanPose.y(),0);

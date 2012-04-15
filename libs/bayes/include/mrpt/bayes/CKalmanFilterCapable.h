@@ -1422,15 +1422,26 @@ namespace mrpt
 
 					const double tim_update = m_timLogger.leave("KF:8.update stage");
 
+					m_timLogger.enter("KF:9.OnNormalizeStateVector");
 					OnNormalizeStateVector();
+					m_timLogger.leave("KF:9.OnNormalizeStateVector");
 
 					// =============================================================
 					//  8. INTRODUCE NEW LANDMARKS
 					// =============================================================
 					if (!data_association.empty())
 					{
+						m_timLogger.enter("KF:A.add new landmarks");
  						detail::CRunOneKalmanIteration_addNewLandmarks()(*this, Z, data_association,R);
+						m_timLogger.leave("KF:A.add new landmarks");
 					} // end if data_association!=empty
+
+					// Post iteration user code:
+					m_timLogger.enter("KF:B.OnPostIteration");
+					OnPostIteration();
+					m_timLogger.leave("KF:B.OnPostIteration");
+
+					m_timLogger.leave("KF:complete_step");
 
 					if (KF_options.verbose)
 					{
@@ -1442,12 +1453,6 @@ namespace mrpt
 							1e3*tim_update
 							);
 					}
-
-					// Post iteration user code:
-					OnPostIteration();
-
-					m_timLogger.leave("KF:complete_step");
-
 					MRPT_END
 
 				} // End of "runOneKalmanIteration"
