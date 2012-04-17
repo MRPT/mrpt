@@ -109,6 +109,7 @@
 		- [mrpt-opengl] Added new unit tests for serialization of all the classes in this library - <a href="http://code.google.com/p/mrpt/source/detail?r=2773" >r2773</a> 
 		- Update of the embedded version of Eigen to 3.0.4 (Dec 6th, 2011) - <a href="http://code.google.com/p/mrpt/source/detail?r=2778" >2778</a>
 		- Better pkg-config support even without doing a "make install": just do a "export PKG_CONFIG_PATH=${MRPT_BUILD_DIR}/pkg-no-install/"  - <a href="http://code.google.com/p/mrpt/source/detail?r=2853" >r2853</a>
+		- Fixed building against the new OpenCV 2.4 - <a href="http://code.google.com/p/mrpt/source/detail?r=2876" >r2876</a>
 	- New functions:
 		- [mrpt-vision] 
 			- mrpt::vision::find_descriptor_pairings() - <a href="http://code.google.com/p/mrpt/source/detail?r=2799" >r2799</a>

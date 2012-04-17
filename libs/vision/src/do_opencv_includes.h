@@ -47,6 +47,9 @@
 
 #		include <opencv2/legacy/legacy.hpp>  // CvImage
 #		include <opencv2/legacy/compat.hpp>
+#		if MRPT_OPENCV_VERSION_NUM>=0x240
+#			include <opencv2/nonfree/nonfree.hpp>
+#		endif
 #	else
 		// For OpenCV <=2.1
 #		include <cv.h>
