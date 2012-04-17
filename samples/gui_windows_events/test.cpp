@@ -56,10 +56,24 @@ protected:
 			const mrptEventWindowChar &ee = static_cast<const mrptEventWindowChar &>(e);
 			cout << "[MyObserver] Char event received from: " << ee.source_object<< ". Char code: " <<  ee.char_code << " modif: " << ee.key_modifiers << "\n";
 		}
+		else if (e.isOfType<mrptEventWindowClosed>())
+		{
+			const mrptEventWindowClosed &ee = static_cast<const mrptEventWindowClosed &>(e);
+			cout << "[MyObserver] Window closed event received from: " << ee.source_object<< "\n";
+		}
+		else if (e.isOfType<mrptEventMouseDown>())
+		{
+			const mrptEventMouseDown &ee = static_cast<const mrptEventMouseDown&>(e);
+			cout << "[MyObserver] Mouse down event received from: " << ee.source_object<< "pt: " <<ee.coords.x << "," << ee.coords.y << "\n";
+		}
 		else
-			cout << "[MyObserver] Event received: Generic mrptEvent \n";
+			cout << "[MyObserver] Event received: Another mrptEvent \n";
 	}
 };
+
+// Observe windows for events.
+// Declared out of the scope of windows so we can observe their destructors
+MyObserver  observer;
 
 void TestGuiWindowsEvents()
 {
@@ -90,8 +104,6 @@ void TestGuiWindowsEvents()
 	win3D.setPos(340,10);
 	winPlot.setPos(10,340);
 
-	// Observe them for events:
-	MyObserver  observer;
 
 	observer.observeBegin(win2D);
 	observer.observeBegin(win3D);

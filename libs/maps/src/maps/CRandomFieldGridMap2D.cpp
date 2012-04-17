@@ -115,16 +115,16 @@ void  CRandomFieldGridMap2D::internal_clear()
 				);
 
 			fill( def );
-	
+
 			// Reset the covariance matrix:
 			m_cov.setSize( m_size_y*m_size_x, m_size_y*m_size_x );
-			
+
 
 			// And load its default values:
 			const double KF_covSigma2 = square(m_insertOptions_common->KF_covSigma);
 			const double res2 = square(m_resolution);
 			const double std0sqr = square(  m_insertOptions_common->KF_initialCellStd );
-			
+
 			for (size_t i = 0;i<m_cov.getRowCount();i++)
 			{
 				int		cx1 = ( i % m_size_x );
@@ -836,7 +836,8 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 			if (i==j)
 			{
 				if (m_cov(i,i)<0){
-					printf("Fallo al insertar observación en KF. m_cov(%u,%u) = %.5f",i,i,m_cov(i,i));
+					// JL on static_cast<unsigned int>(i): gcc warns (rightly!) that size_t != unsigned int ("%u")
+					printf("Wrong insertion in KF! m_cov(%u,%u) = %.5f",static_cast<unsigned int>(i),static_cast<unsigned int>(i),m_cov(i,i));
 				}
 
 				ASSERT_( m_cov(i,i)>=0 );
@@ -1119,7 +1120,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 			opengl::CSetOfTrianglesPtr obj_m = opengl::CSetOfTriangles::Create();
 			obj_m->enableTransparency(true);
 			opengl::CSetOfTrianglesPtr obj_v = opengl::CSetOfTriangles::Create();
-			obj_v->enableTransparency(true);			
+			obj_v->enableTransparency(true);
 
 			//  Compute mean max/min values:
 			// ---------------------------------------
@@ -1141,7 +1142,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 				}
 			}
 
-			AMaxMin_m = maxVal_m - minVal_m;			
+			AMaxMin_m = maxVal_m - minVal_m;
 			if (AMaxMin_m==0) AMaxMin_m=1;
 			AMaxMin_v = maxVal_v - minVal_v;
 			if (AMaxMin_v==0) AMaxMin_v=1;
@@ -1227,7 +1228,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 			varObj->insert( obj_v );
 
 
-//-----------------------------			
+//-----------------------------
 //Code from JL starts here
 //-----------------------------
 	//		opengl::CSetOfTrianglesPtr obj = opengl::CSetOfTriangles::Create();
@@ -1425,7 +1426,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 	//		meanObj->insert( obj );
 	//		varObj->insert( obj );
 
-//-----------------------------			
+//-----------------------------
 //Code from JL ends here
 //-----------------------------
 
@@ -1440,7 +1441,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 			opengl::CSetOfTrianglesPtr obj_m = opengl::CSetOfTriangles::Create();
 			obj_m->enableTransparency(true);
 			opengl::CSetOfTrianglesPtr obj_v = opengl::CSetOfTriangles::Create();
-			obj_v->enableTransparency(true);			
+			obj_v->enableTransparency(true);
 
 			//  Compute mean max/min values:
 			// ---------------------------------------
@@ -1452,7 +1453,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 				{
 					const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
 					//mean
-					c = computeMeanCellValue_DM_DMV( cell_xy );					
+					c = computeMeanCellValue_DM_DMV( cell_xy );
 					minVal_m = min(minVal_m, c);
 					maxVal_m = max(maxVal_m, c);
 					//variance
@@ -1462,7 +1463,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 				}
 			}
 
-			AMaxMin_m = maxVal_m - minVal_m;			
+			AMaxMin_m = maxVal_m - minVal_m;
 			if (AMaxMin_m==0) AMaxMin_m=1;
 			AMaxMin_v = maxVal_v - minVal_v;
 			if (AMaxMin_v==0) AMaxMin_v=1;

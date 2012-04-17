@@ -562,7 +562,7 @@ void CGasConcentrationGridMap2D::centerMapAtLocation(
 			{
 				//Copy from reference grid
 				int ref_x = new_cx + (cx- local_map_center_x);
-				int ref_y = new_cy + (cy- local_map_center_x);
+				int ref_y = new_cy + (cy- local_map_center_y);
 				*itSrc = *reference_map.cellByIndex(ref_x,ref_y);
 			}
         }
@@ -574,6 +574,10 @@ void CGasConcentrationGridMap2D::centerMapAtLocation(
 	//---------------------------------------------------------------
 	switch (m_mapType)
 	{
+	default:
+		THROW_EXCEPTION("Operation not implemented for this map type")
+		break;
+
 	case mrKalmanFilter:
 		{
 			// ------------------------------------------
