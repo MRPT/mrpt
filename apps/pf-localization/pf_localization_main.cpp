@@ -253,6 +253,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 		win3D = CDisplayWindow3D::Create("pf-localization - The MRPT project", 1000, 600);
 		win3D->setCameraZoom(20);
 		win3D->setCameraAzimuthDeg(-45);
+		//win3D->waitForKey();
 	}
 
 	// Create the 3D scene and get the map only once, later we'll modify only the particles, etc..
@@ -485,6 +486,21 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 							win3D->setCameraPointingToPoint(meanPose.x(),meanPose.y(),0);
 
+							win3D->addTextMessage(
+								10,10, mrpt::format("timestamp: %s", mrpt::system::dateTimeLocalToString(cur_obs_timestamp).c_str() ),
+								mrpt::utils::TColorf(.8f,.8f,.8f),
+								"mono", 15, mrpt::opengl::NICE, 6001 );
+
+							win3D->addTextMessage(
+								10,33, mrpt::format("#particles= %7u", static_cast<unsigned int>(pdf.size()) ),
+								mrpt::utils::TColorf(.8f,.8f,.8f),
+								"mono", 15, mrpt::opengl::NICE, 6002 );
+
+							win3D->addTextMessage(
+								10,55, mrpt::format("mean pose (x y phi_deg)= %s", meanPose.asString().c_str() ),
+								mrpt::utils::TColorf(.8f,.8f,.8f),
+								"mono", 15, mrpt::opengl::NICE, 6003 );
+
 							// The Ground Truth (GT):
 							{
 								CRenderizablePtr GTpt = ptrScene->getByName("GT");
@@ -572,7 +588,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								cam.setOrthogonal();
 							}
 
-							COpenGLViewportPtr view2= ptrScene->createViewport("small_view"); // Create, or get existing one.
+							/*COpenGLViewportPtr view2= ptrScene->createViewport("small_view"); // Create, or get existing one.
 							view2->setCloneView("main");
 							view2->setCloneCamera(false);
 							view2->setBorderSize(3);
@@ -586,7 +602,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 								view2->setTransparent(false);
 								view2->setViewportPosition(0.59,0.01,0.4,0.3);
-							}
+							}*/
 
 							win3D->unlockAccess3DScene();
 
@@ -763,7 +779,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 							cam.setOrthogonal();
 						}
 
-						COpenGLViewportPtr view2= scene.createViewport("small_view"); // Create, or get existing one.
+						/*COpenGLViewportPtr view2= scene.createViewport("small_view"); // Create, or get existing one.
 						view2->setCloneView("main");
 						view2->setCloneCamera(false);
 						view2->setBorderSize(3);
@@ -777,7 +793,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 							view2->setTransparent(false);
 							view2->setViewportPosition(0.59,0.01,0.4,0.3);
-						}
+						}*/
 					}
 
 					if (!SAVE_STATS_ONLY && SCENE3D_FREQ!=-1 && (step % SCENE3D_FREQ)==0)
