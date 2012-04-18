@@ -19,14 +19,14 @@ ENDMACRO(STRING_APPEND)
 # For usage below. Checks whether we have to add the "general" prefix.
 # ------------------------------------------------------------------------
 MACRO(APPEND_MRPT_LIBS )
-	IF(NOT ARGV STREQUAL "")  # Do nothing for an empty string
+	IF(NOT "${ARGV}" STREQUAL "")  # Do nothing for an empty string
 		IF(${ARGV0} STREQUAL "debug" OR ${ARGV0} STREQUAL "optimized")
 			set(_libs ${ARGV})
 		ELSE(${ARGV0} STREQUAL "debug" OR ${ARGV0} STREQUAL "optimized")
 			set(_libs general ${ARGV})
 		ENDIF(${ARGV0} STREQUAL "debug" OR ${ARGV0} STREQUAL "optimized")
 		LIST(APPEND MRPT_LINKER_LIBS ${_libs})
-	ENDIF(NOT ARGV STREQUAL "")
+	ENDIF(NOT "${ARGV}" STREQUAL "")
 ENDMACRO(APPEND_MRPT_LIBS)
 
 
