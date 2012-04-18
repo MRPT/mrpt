@@ -8,7 +8,8 @@ set +o verbose # echo off
 APPEND_SVN_NUM=0
 IS_FOR_UBUNTU=0
 APPEND_LINUX_DISTRO=""
-while getopts "sud:" OPTION
+VALUE_EXTRA_CMAKE_PARAMS=""
+while getopts "sud:c:" OPTION
 do
      case $OPTION in
          s)
@@ -19,6 +20,9 @@ do
              ;;
          d)
              APPEND_LINUX_DISTRO=$OPTARG
+             ;;
+         c)
+             VALUE_EXTRA_CMAKE_PARAMS=$OPTARG
              ;;
          ?)
              echo "Unknown command line argument!"
@@ -86,7 +90,13 @@ else
 fi
 
 # Copy dummy "configure" script:
-cp scripts/configure $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/
+TRG_CONFIGURE_FILE=$MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/configure
+cp scripts/configure $TRG_CONFIGURE_FILE
+
+# Replace the text "REPLACE_HERE_EXTRA_CMAKE_PARAMS" in the "configure" file
+# with: ${${VALUE_EXTRA_CMAKE_PARAMS}}
+sed -i -e "s/REPLACE_HERE_EXTRA_CMAKE_PARAMS/${VALUE_EXTRA_CMAKE_PARAMS}/g" $TRG_CONFIGURE_FILE
+echo "Using these extra parameters for CMake: '${VALUE_EXTRA_CMAKE_PARAMS}'"
 
 # Copy the MRPT book:
 if [ -f /Trabajo/Papers/mrpt-book/mrpt-book.ps ];

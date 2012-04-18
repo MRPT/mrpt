@@ -8,6 +8,10 @@ build=`uname -m`-`uname -o`
 mandir='${prefix}/share/man'
 infodir='${prefix}/share/info'
 
+# The right-hand of the following line will be replaced with 
+# an empty string or some sets of "PARAM=VALUE" for CMake, 
+# from the prepare_debian.sh script
+EXTRA_CMAKE_PARAMS=REPLACE_HERE_EXTRA_CMAKE_PARAMS
 
 usage()
 {
@@ -17,7 +21,7 @@ usage: $0 options
 This script configures the MRPT cmake build system, only for compatibility 
 with Debian packages tools. To compile manually, please use the CMake system.
 
-Please see README or the help online at http://babel.isa.uma.es/mrpt/
+Please see README or the help online at http://www.mrpt.org/
 
 EOF
 }
@@ -83,6 +87,6 @@ if [ "${MRPT_IS_DEB_PACKAGE}" != "1" ] && [ "${MRPT_IS_RPM_PACKAGE}" != "1" ] ; 
 #echo "   CFLAGS: ${CFLAGS}"
 #echo "   LDFLAGS: ${LDFLAGS}"
 
-cmake . -DCMAKE_INSTALL_PREFIX="${prefix}" -DCMAKE_HOST=${host} -DCMAKE_BUILD=${build} -DCMAKE_BUILD_TYPE=${buildtype} -DCMAKE_MANDIR="${MANDIR}" -DCMAKE_INFODIR="${INFODIR}" -DCMAKE_CONFIGURE_CFLAGS="${CFLAGS}" -DCMAKE_CONFIGURE_LDFLAGS="${LDFLAGS}" -DCMAKE_MRPT_USE_DEB_POSTFIXS="${CMAKE_MRPT_USE_DEB_POSTFIXS}" -DCMAKE_MRPT_IS_RPM_PACKAGE="${MRPT_IS_RPM_PACKAGE}"
+cmake . -DCMAKE_INSTALL_PREFIX="${prefix}" -DCMAKE_HOST=${host} -DCMAKE_BUILD=${build} -DCMAKE_BUILD_TYPE=${buildtype} -DCMAKE_MANDIR="${MANDIR}" -DCMAKE_INFODIR="${INFODIR}" -DCMAKE_CONFIGURE_CFLAGS="${CFLAGS}" -DCMAKE_CONFIGURE_LDFLAGS="${LDFLAGS}" -DCMAKE_MRPT_USE_DEB_POSTFIXS="${CMAKE_MRPT_USE_DEB_POSTFIXS}" -DCMAKE_MRPT_IS_RPM_PACKAGE="${MRPT_IS_RPM_PACKAGE}" ${EXTRA_CMAKE_PARAMS}
 
 

@@ -4,6 +4,12 @@
 #   https://launchpad.net/~joseluisblancoc/+archive/mrpt
 #
 # JLBC, 2010
+# [Addition 2012:]
+#
+# You can declare a variable (in the caller shell) with extra flags for the 
+# CMake in the final ./configure like: 
+#  MRPT_PKG_CUSTOM_CMAKE_PARAMS="\"-DDISABLE_SSE3=ON\""
+#
 
 # Checks
 # --------------------------------
@@ -53,7 +59,7 @@ do
 	# Call the standard "prepare_debian.sh" script:
 	# -------------------------------------------------------------------
 	cd ${MRPTSRC}
-	bash scripts/prepare_debian.sh -s -u -d ${DEBIAN_DIST}
+	bash scripts/prepare_debian.sh -s -u -d ${DEBIAN_DIST} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}"
 
 	echo 
 	echo "===== Distribution: ${DEBIAN_DIST}  ========="
