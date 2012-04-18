@@ -37,6 +37,8 @@
 
 #include <mrpt/base.h>
 #include <mrpt/slam.h>
+#include <mrpt/opengl.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>  // This class lives in the lib [mrpt-maps] and must be included by hand
 #include <mrpt/gui.h>
 
 using namespace mrpt;
@@ -142,8 +144,10 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 
 	bool 	SHOW_PROGRESS_3D_REAL_TIME = false;
 	int		SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS = 0;
+	bool 	SHOW_LASER_SCANS_3D = true;
 
 	MRPT_LOAD_CONFIG_VAR( SHOW_PROGRESS_3D_REAL_TIME, bool,  iniFile, "MappingApplication");
+	MRPT_LOAD_CONFIG_VAR( SHOW_LASER_SCANS_3D , bool,  iniFile, "MappingApplication");
 	MRPT_LOAD_CONFIG_VAR( SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS, int, iniFile, "MappingApplication");
 
 	const char* OUT_DIR = OUT_DIR_STD.c_str();
@@ -245,6 +249,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 			break; // file EOF
 
 		const bool isObsBasedRawlog = observation.present();
+		std::vector<mrpt::slam::CObservation2DRangeScanPtr> lst_current_laser_scans;   // Just for drawing in 3D views
 
 		if (rawlogEntry>=rawlog_offset)
 		{
@@ -269,6 +274,31 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 				if (act)
 					odoPose = odoPose + act->poseChange->getMeanVal();
 			}
+
+			// Build list of scans:
+			if (SHOW_LASER_SCANS_3D)
+			{
+				// Rawlog in "Observation-only" format:
+				if (isObsBasedRawlog)
+				{
+					if (IS_CLASS(observation,CObservation2DRangeScan))
+					{
+						lst_current_laser_scans.push_back( CObservation2DRangeScanPtr(observation) );
+					}
+				}
+				else
+				{
+					// Rawlog in the Actions-SF format:
+					for (size_t i=0; ; i++)
+					{
+						CObservation2DRangeScanPtr new_obs = observations->getObservationByClass<CObservation2DRangeScan>(i);
+						if (!new_obs)
+						     break; // There're no more scans
+						else lst_current_laser_scans.push_back( new_obs );
+					}
+				}
+			}
+
 
 			// Execute:
 			// ----------------------------------------
@@ -368,6 +398,21 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 					opengl::CSetOfObjectsPtr obj = opengl::stock_objects::RobotPioneer();
 					obj->setPose( curRobotPose );
 					view_map->insert( obj );
+				}
+
+				// Draw laser scanners in 3D:
+				if (SHOW_LASER_SCANS_3D)
+				{
+					for (size_t i=0;i<lst_current_laser_scans.size();i++)
+					{
+						// Create opengl object and load scan data from the scan observation:
+						opengl::CPlanarLaserScanPtr obj = opengl::CPlanarLaserScan::Create();
+						obj->setScan(*lst_current_laser_scans[i]);
+						obj->setPose( curRobotPose );
+						obj->setSurfaceColor(1.0f,0.0f,0.0f, 0.5f);
+						// inser into the scene:
+						view->insert(obj);
+					}
 				}
 
 				// Save as file:

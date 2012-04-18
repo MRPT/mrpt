@@ -35,6 +35,8 @@
  <a name="0.9.6">
   <h2>Version 0.9.6 - (Under development) </h2></a>
 	- Changes in applications:
+		- <a href="http://www.mrpt.org/Application:icp-slam" >icp-slam</a>: 
+			- Added a new option (SHOW_LASER_SCANS_3D in config files) to draw laser scans in the live 3D view - <a href="http://code.google.com/p/mrpt/source/detail?r=2881" >r2881</a>
 		- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>: 
 			- Operation "--camera-params" now also handles stereo observations.
 			- New operation "--stereo-rectify" for batch rectifying datasets with stereo images.
