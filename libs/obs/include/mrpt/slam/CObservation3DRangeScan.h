@@ -60,7 +60,7 @@ namespace slam
 	 *
 	 *  The coordinates of the 3D point cloud are in meters with respect to the depth camera origin of coordinates
 	 *    (in SwissRanger, the front face of the camera: a small offset ~1cm in front of the physical focal point),
-	 *    with the +X axis pointing forward, +Y pointing left-hand and +Z pointing up.
+	 *    with the +X axis pointing forward, +Y pointing left-hand and +Z pointing up. By convention, a 3D point with its coordinates set to (0,0,0), will be considered as invalid.
 	 *  The field CObservation3DRangeScan::relativePoseIntensityWRTDepth describes the change of coordinates from
 	 *    the depth camera to the intensity (RGB or grayscale) camera. In a SwissRanger camera both cameras coincide,
 	 *    so this pose is just a rotation (0,0,0,-90deg,0,-90deg). But in
