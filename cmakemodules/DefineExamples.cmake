@@ -144,7 +144,7 @@ IF(BUILD_EXAMPLES)
 		checkerboardDetectors
 		multipleCheckerboards		
 		voronoi_test
-		keypoint_matching
+		keypoint_matching		
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-vision mrpt-gui mrpt-topography)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
@@ -243,6 +243,7 @@ IF(BUILD_EXAMPLES)
 		#  list of examples for each directory:
 		SET(LIST_EXAMPLES_IN_THIS_DIR
 			kinect_online_offline_demo
+			MOXmodel-rawlog
 			)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-hwdrivers)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
