@@ -48,7 +48,7 @@ namespace vision
 	enum TRobustKernelType
 	{
 		rkLeastSquares = 0,   //!< No robust kernel, use standard least squares: rho(r)= 1/2 * r^2
-		rkPseudoHuber,        //!< Pseudo-huber robust kernel
+		rkPseudoHuber         //!< Pseudo-huber robust kernel
 	};
 
 	// Generic declaration.
