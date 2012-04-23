@@ -30,6 +30,7 @@
 
 #include <mrpt/vision/bundle_adjustment.h>
 #include <mrpt/vision/pinhole.h>
+#include <mrpt/vision/robust_kernels.h>
 #include "ba_internals.h"
 
 using namespace std;
@@ -107,14 +108,9 @@ void mrpt::vision::ba_initial_estimate(
 	MRPT_END
 }
 
-
-/** pseudo-huber cost function */
-inline double kernel(double delta, const double kernel_param)
-{
-	return std::abs(2*square(kernel_param)*(std::sqrt(1+square(delta/kernel_param))-1));
-}
-
 // This function is what to do for each feature in the reprojection loops below.
+// -> residual: the raw residual, even if using robust kernel
+// -> sum+= scaled squared norm of the residual (which != squared norm if using robust kernel)
 template <bool POSES_INVERSE>
 inline void reprojectionResidualsElement(
 	const TCamera  & camera_params,
@@ -124,28 +120,31 @@ inline void reprojectionResidualsElement(
 	const TLandmarkLocationsVec::value_type & point,
 	double &sum,
 	const bool  use_robust_kernel,
-	const double kernel_param )
+	const double kernel_param,
+	double * out_kernel_1st_deriv
+	)
 {
 	const TPixelCoordf  z_pred = mrpt::vision::pinhole::projectPoint_no_distortion<POSES_INVERSE>(camera_params, frame, point);
 	const TPixelCoordf &z_meas = OBS.px;
 
-	CArray<double,2> delta;
-	delta[0] = z_meas.x-z_pred.x;
-	delta[1] = z_meas.y-z_pred.y;
+	out_residual[0] = z_meas.x-z_pred.x;
+	out_residual[1] = z_meas.y-z_pred.y;
+	
+	const double sum_2= square(out_residual[0])+square(out_residual[1]);
 
-	const double sum_2= square(delta[0])+square(delta[1]);
 	if (use_robust_kernel)
 	{
-		const double nrm = std::max(1e-11,std::sqrt(sum_2));
-		const double w = std::sqrt(kernel(nrm,kernel_param))/nrm;
-		delta[0] *= w;
-		delta[1] *= w;
-		out_residual = delta;
-		sum += square(delta[0])+square(delta[1]);
+#if 1
+		RobustKernel<rkPseudoHuber> kernel;
+		kernel.b_sq = square(kernel_param);
+#else
+		RobustKernel<rkLeastSquares> kernel;
+#endif
+
+		sum += kernel.eval(std::sqrt(sum_2), out_kernel_1st_deriv);
 	}
 	else
 	{
-		out_residual = delta;
 		sum += sum_2;
 	}
 }
@@ -164,7 +163,8 @@ double mrpt::vision::reprojectionResiduals(
 	std::vector<CArray<double,2> > & out_residuals,
 	const bool  frame_poses_are_inverse,
 	const bool  use_robust_kernel,
-	const double kernel_param
+	const double kernel_param,
+	std::vector<double> * out_kernel_1st_deriv
 	)
 {
 	MRPT_START
@@ -173,6 +173,7 @@ double mrpt::vision::reprojectionResiduals(
 
 	const size_t N = observations.size();
 	out_residuals.resize(N);
+	if (out_kernel_1st_deriv) out_kernel_1st_deriv->resize(N);
 
 	for (size_t i=0;i<N;i++)
 	{
@@ -189,10 +190,12 @@ double mrpt::vision::reprojectionResiduals(
 		const TFramePosesMap::mapped_type        & frame = itF->second;
 		const TLandmarkLocationsMap::mapped_type & point = itP->second;
 
+		double *ptr_1st_deriv = out_kernel_1st_deriv ? &((*out_kernel_1st_deriv)[i]) : NULL;
+
 		if (frame_poses_are_inverse)
-			reprojectionResidualsElement<true>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel,kernel_param);
+			reprojectionResidualsElement<true>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel,kernel_param,ptr_1st_deriv);
 		else
-			reprojectionResidualsElement<false>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel,kernel_param);
+			reprojectionResidualsElement<false>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel,kernel_param,ptr_1st_deriv);
 	}
 
 	return sum;
@@ -208,7 +211,8 @@ double mrpt::vision::reprojectionResiduals(
 	std::vector<CArray<double,2> > & out_residuals,
 	const bool  frame_poses_are_inverse,
 	const bool  use_robust_kernel,
-	const double kernel_param
+	const double kernel_param,
+	std::vector<double> * out_kernel_1st_deriv
 	)
 {
 	MRPT_START
@@ -217,6 +221,7 @@ double mrpt::vision::reprojectionResiduals(
 
 	const size_t N = observations.size();
 	out_residuals.resize(N);
+	if (out_kernel_1st_deriv) out_kernel_1st_deriv->resize(N);
 
 	for (size_t i=0;i<N;i++)
 	{
@@ -231,10 +236,12 @@ double mrpt::vision::reprojectionResiduals(
 		const TFramePosesVec::value_type        & frame = frame_poses[i_f];
 		const TLandmarkLocationsVec::value_type & point = landmark_points[i_p];
 
+		double *ptr_1st_deriv = out_kernel_1st_deriv ? &((*out_kernel_1st_deriv)[i]) : NULL;
+
 		if (frame_poses_are_inverse)
-			reprojectionResidualsElement<true>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel,kernel_param);
+			reprojectionResidualsElement<true>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel,kernel_param,ptr_1st_deriv);
 		else
-			reprojectionResidualsElement<false>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel,kernel_param);
+			reprojectionResidualsElement<false>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel,kernel_param,ptr_1st_deriv);
 	}
 
 	return sum;
@@ -242,21 +249,24 @@ double mrpt::vision::reprojectionResiduals(
 }
 
 
-// Compute temporary matrices during BA:
-void mrpt::vision::ba_calcUVeps(
+// Compute gradients & Hessian blocks
+void mrpt::vision::ba_build_gradient_Hessians(
 	const TSequenceFeatureObservations          & observations,
 	const vector<CArray<double,2> >              & residual_vec,
-	const vector<JacData<6,3,2>, Eigen::aligned_allocator<JacData<6,3,2> > >               & jac_data_vec,
-	vector<CMatrixFixedNumeric<double,6,6>, Eigen::aligned_allocator<CMatrixFixedNumeric<double,6,6> > >    & U,
-	vector<CArrayDouble<6>, Eigen::aligned_allocator<CArrayDouble<6> > >                    & eps_frame,
-	vector<CMatrixFixedNumeric<double,3,3>, Eigen::aligned_allocator<CMatrixFixedNumeric<double,3,3> > >    & V,
-	vector<CArrayDouble<3>, Eigen::aligned_allocator<CArrayDouble<3> > >                    & eps_point,
+	const mrpt::aligned_containers<JacData<6,3,2> >::vector_t & jac_data_vec,
+	mrpt::aligned_containers<CMatrixFixedNumeric<double,6,6> >::vector_t  & U,
+	mrpt::aligned_containers<CArrayDouble<6> >::vector_t & eps_frame,
+	mrpt::aligned_containers<CMatrixFixedNumeric<double,3,3> >::vector_t & V,
+	mrpt::aligned_containers<CArrayDouble<3> >::vector_t & eps_point,
 	const size_t                                  num_fix_frames,
-	const size_t                                  num_fix_points )
+	const size_t                                  num_fix_points,
+	const vector<double>   * kernel_1st_deriv
+	)
 {
 	MRPT_START
 
 	const size_t N = observations.size();
+	const bool use_robust_kernel = (kernel_1st_deriv!=NULL);
 
 	for (size_t i=0;i<N;i++)
 	{
@@ -277,11 +287,19 @@ void mrpt::vision::ba_calcUVeps(
 
 			CMatrixDouble66 JtJ(UNINITIALIZED_MATRIX);
 			JtJ.multiply_AtA(JACOB.J_frame);
-			U[frame_id]+=JtJ;
 
 			CArrayDouble<6> eps_delta;
 			JACOB.J_frame.multiply_Atb(RESID, eps_delta); // eps_delta = J^t * RESID
-			eps_frame[frame_id] += eps_delta;
+			if (!use_robust_kernel)
+			{
+				eps_frame[frame_id] += eps_delta;
+			}
+			else  
+			{
+				const double rho_1st_der = (*kernel_1st_deriv)[i];
+				eps_frame[frame_id] += eps_delta * rho_1st_der;
+			}
+			U[frame_id]+=JtJ;
 		}
 		if (i_p >= num_fix_points)
 		{
@@ -291,11 +309,20 @@ void mrpt::vision::ba_calcUVeps(
 
 			CMatrixDouble33 JtJ(UNINITIALIZED_MATRIX);
 			JtJ.multiply_AtA(JACOB.J_point);
-			V[point_id]+=JtJ;
 
 			CArrayDouble<3> eps_delta;
 			JACOB.J_point.multiply_Atb(RESID, eps_delta); // eps_delta = J^t * RESID
-			eps_point[point_id] += eps_delta;
+			if (!use_robust_kernel)
+			{
+				eps_point[point_id] += eps_delta;
+			}
+			else  
+			{
+				const double rho_1st_der = (*kernel_1st_deriv)[i];
+				eps_point[point_id] += eps_delta  * rho_1st_der;
+			}
+				
+			V[point_id]+=JtJ;
 		}
 	}
 

@@ -178,7 +178,7 @@ namespace mrpt
 			const TFramePosesVec         & frame_poses,
 			const TLandmarkLocationsVec  & landmark_points,
 			const TCamera                & camera_params,
-			vector<JacData<6,3,2>,Eigen::aligned_allocator<JacData<6,3,2> > >      & jac_data_vec,
+			mrpt::aligned_containers<JacData<6,3,2> >::vector_t & jac_data_vec,
 			const size_t                   num_fix_frames,
 			const size_t                   num_fix_points)
 		{
@@ -214,17 +214,21 @@ namespace mrpt
 			MRPT_END
 		}
 
-		// Compute temporary matrices during BA:
-		void ba_calcUVeps(
+		/** Construct the BA linear system.
+		  *  Set kernel_1st_deriv!=NULL if using robust kernel. 
+		  */
+		void ba_build_gradient_Hessians(
 			const TSequenceFeatureObservations          & observations,
 			const vector<CArray<double,2> >              & residual_vec,
-			const vector<JacData<6,3,2>, Eigen::aligned_allocator<JacData<6,3,2> > >               & jac_data_vec,
-			vector<CMatrixFixedNumeric<double,6,6>, Eigen::aligned_allocator<CMatrixFixedNumeric<double,6,6> > >    & U,
-			vector<CArrayDouble<6>, Eigen::aligned_allocator<CArrayDouble<6> > >                    & eps_frame,
-			vector<CMatrixFixedNumeric<double,3,3>, Eigen::aligned_allocator<CMatrixFixedNumeric<double,3,3> > >    & V,
-			vector<CArrayDouble<3>, Eigen::aligned_allocator<CArrayDouble<3> > >                    & eps_point,
+			const mrpt::aligned_containers<JacData<6,3,2> >::vector_t & jac_data_vec,
+			mrpt::aligned_containers<CMatrixFixedNumeric<double,6,6> >::vector_t  & U,
+			mrpt::aligned_containers<CArrayDouble<6> >::vector_t & eps_frame,
+			mrpt::aligned_containers<CMatrixFixedNumeric<double,3,3> >::vector_t & V,
+			mrpt::aligned_containers<CArrayDouble<3> >::vector_t & eps_point,
 			const size_t                                  num_fix_frames,
-			const size_t                                  num_fix_points );
+			const size_t                                  num_fix_points,
+			const vector<double>   * kernel_1st_deriv
+			);
 
 
 	}

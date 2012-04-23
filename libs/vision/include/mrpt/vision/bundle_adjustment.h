@@ -143,7 +143,8 @@ namespace mrpt
 			std::vector<CArray<double,2> > & out_residuals,
 			const bool  frame_poses_are_inverse,
 			const bool  use_robust_kernel = true,
-			const double kernel_param = 3.0
+			const double kernel_param = 3.0,
+			std::vector<double> * out_kernel_1st_deriv = NULL
 			);
 
 		//! \overload
@@ -155,7 +156,8 @@ namespace mrpt
 			std::vector<CArray<double,2> > & out_residuals,
 			const bool  frame_poses_are_inverse,
 			const bool  use_robust_kernel = true,
-			const double kernel_param = 3.0
+			const double kernel_param = 3.0,
+			std::vector<double> * out_kernel_1st_deriv = NULL
 			);
 
 

@@ -68,7 +68,7 @@ void my_BundleAdjustmentFeedbackFunctor(
 	const TLandmarkLocationsVec & current_landmark_estimate )
 {
 	const double avr_err = std::sqrt(cur_total_sq_error/input_observations.size());
-	history_avr_err.push_back(avr_err);
+	history_avr_err.push_back(std::log(1e-100+avr_err));
 	if ((cur_iter % 10)==0)
 	{
 		cout << "[PROGRESS] Iter: " << cur_iter << " avrg err in px: " << avr_err << endl;
@@ -94,7 +94,8 @@ void bundle_adj_full_demo(
 	extra_params["max_iterations"]= 2000; //250;
 	//extra_params["num_fix_frames"] = 1;
 	//extra_params["num_fix_points"] = 0;
-	//extra_params["robust_kernel"] = 0;
+	extra_params["robust_kernel"] = 0;
+	extra_params["kernel_param"]  = 5.0;
 	extra_params["profiler"] = 1;
 
 	mrpt::vision::bundle_adj_full(
@@ -106,6 +107,7 @@ void bundle_adj_full_demo(
 		&my_BundleAdjustmentFeedbackFunctor
 		);
 }
+// ---------------------------------------------------------
 
 mrpt::opengl::CSetOfObjectsPtr framePosesVecVisualize(
 	const TFramePosesVec &poses,
@@ -150,7 +152,7 @@ int main(int argc, char **argv)
 			// The projective camera model:
 			camera_params.ncols = 800;
 			camera_params.nrows = 600;
-			camera_params.fx(700); camera_params.fy(700);
+			camera_params.fx(400); camera_params.fy(400);
 			camera_params.cx(400); camera_params.cy(300);
 
 			//      Generate synthetic dataset:
@@ -166,6 +168,10 @@ int main(int argc, char **argv)
 			//const double cameraPathEllipRadius2 = L2*2;
 			// Noise params:
 			const double STD_PX_ERROR= 0.10; // pixels
+			
+			const double STD_PX_ERROR_OUTLIER= 5; // pixels
+			const double PROBABILITY_OUTLIERS = 0; //0.01;
+
 			const double STD_PT3D    = 0.10; // meters
 			const double STD_CAM_XYZ = 0.05; // meters
 			const double STD_CAM_ANG = DEG2RAD(5); // degs
@@ -197,6 +203,7 @@ int main(int argc, char **argv)
 			}
 
 			// Simulate the feature observations:
+			size_t numOutliers=0;
 			allObs.clear();
 			map<TCameraPoseID, size_t> numViewedFrom;
 			for (size_t i=0;i<frame_poses_real.size();i++) // for each pose
@@ -206,8 +213,9 @@ int main(int argc, char **argv)
 				{
 					TPixelCoordf px = mrpt::vision::pinhole::projectPoint_no_distortion<false>(camera_params, frame_poses_real[i], landmark_points_real[j]);
 
-					px.x += rg.drawGaussian1D(0,STD_PX_ERROR);
-					px.y += rg.drawGaussian1D(0,STD_PX_ERROR);
+					const bool is_outlier = (rg.drawUniform(0.0,1.0)<PROBABILITY_OUTLIERS);
+					px.x += rg.drawGaussian1D(0, is_outlier ? STD_PX_ERROR_OUTLIER : STD_PX_ERROR);
+					px.y += rg.drawGaussian1D(0, is_outlier ? STD_PX_ERROR_OUTLIER : STD_PX_ERROR);
 
 					// Out of image?
 					if (px.x<0 || px.y<0 || px.x>camera_params.ncols || px.y>camera_params.nrows)
@@ -219,10 +227,12 @@ int main(int argc, char **argv)
 						continue;
 
 					// Ok, accept it:
+					if (is_outlier) numOutliers++;
 					allObs.push_back( TFeatureObservation(j,i, px) );
 					numViewedFrom[i]++;
 				}
 			}
+			cout << "Simulated: " << allObs.size() << " observations (of which: "<< numOutliers << " are outliers).\n";
 
 			ASSERT_EQUAL_(numViewedFrom.size(), frame_poses_real.size())
 
@@ -260,11 +270,28 @@ int main(int argc, char **argv)
 			frame_poses     = frame_poses_noisy;
 			landmark_points = landmark_points_noisy;
 
+#if 0
 			vector<CArray<double,2> > resids;
 			const double initial_total_sq_err = mrpt::vision::reprojectionResiduals(allObs,camera_params,frame_poses, landmark_points,resids, false);
-			cout << "Initial avr error in px: " << std::sqrt(initial_total_sq_err)/allObs.size() << endl;
+			cout << "Initial avr error in px: " << std::sqrt(initial_total_sq_err/allObs.size()) << endl;
+#endif
 
+			// Run Bundle Adjustmen
 			bundle_adj_full_demo( camera_params, allObs, frame_poses, landmark_points );
+
+
+			// Evaluate vs. ground truth:
+			double landmarks_total_sq_err=0;
+			for (size_t i=0;i<landmark_points.size();i++)
+				landmarks_total_sq_err+= square( landmark_points_real[i].distanceTo(landmark_points[i]) );
+
+			double cam_point_total_sq_err=0;
+			for (size_t i=0;i<frame_poses.size();i++)
+				cam_point_total_sq_err+= square( frame_poses[i].distanceTo(frame_poses_real[i]) );
+
+			cout << "RMSE of recovered landmark positions: " << std::sqrt(landmarks_total_sq_err/landmark_points.size()) << endl;
+			cout << "RMSE of recovered camera positions: " << std::sqrt(cam_point_total_sq_err/frame_poses.size()) << endl;
+
 		}
 		else
 		{
@@ -434,7 +461,7 @@ int main(int argc, char **argv)
 		win.repaint();
 
 		// Also, show history of error:
-		gui::CDisplayWindowPlots winPlot("Avr error with iterations",500,200);
+		gui::CDisplayWindowPlots winPlot("Avr log-error with iterations",500,200);
 		//winPlot.setPos(0,620);
 		winPlot.plot( history_avr_err, "b.3");
 		winPlot.axis_fit();

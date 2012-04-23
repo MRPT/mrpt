@@ -44,9 +44,6 @@ using namespace mrpt::math;
 
 using mrpt::aligned_containers;
 
-
-MRPT_TODO("Check valid Hessians when enabling robustifying kernel")
-
 // Define -> estimate the inverse of poses; Undefined -> estimate the camera poses (read the doc of mrpt::vision::bundle_adj_full)
 #define USE_INVERSE_POSES
 
@@ -133,6 +130,7 @@ double mrpt::vision::bundle_adj_full(
 
 	MyJacDataVec     jac_data_vec(num_obs);
 	vector<Array_O>  residual_vec(num_obs);
+	vector<double>   kernel_1st_deriv(num_obs);
 
 	// prepare structure of sparse Jacobians:
 	for (size_t i=0; i<num_obs; i++)
@@ -153,7 +151,8 @@ double mrpt::vision::bundle_adj_full(
 					 residual_vec,
 					 INV_POSES_BOOL, // are poses inverse?
 					 use_robust_kernel,
-					 kernel_param );
+					 kernel_param,
+					 use_robust_kernel ? &kernel_1st_deriv : NULL );
 	profiler.leave("reprojectionResiduals");
 
 	MRPT_CHECK_NORMAL_NUMBER(res)
@@ -171,14 +170,14 @@ double mrpt::vision::bundle_adj_full(
 	const size_t len_free_frames = FrameDof * num_free_frames;
 	const size_t len_free_points = PointDof * num_free_points;
 
-	aligned_containers<Matrix_FxF>::vector_t    U         (num_free_frames);
+	aligned_containers<Matrix_FxF>::vector_t    H_f         (num_free_frames);
 	aligned_containers<Array_F>::vector_t       eps_frame (num_free_frames, arrF_zeros);
-	aligned_containers<Matrix_PxP>::vector_t    V         (num_free_points);
+	aligned_containers<Matrix_PxP>::vector_t    H_p         (num_free_points);
 	aligned_containers<Array_P>::vector_t       eps_point (num_free_points, arrP_zeros);
 
-	profiler.enter("calcUVeps");
-	ba_calcUVeps(observations,residual_vec,jac_data_vec, U,eps_frame,V,eps_point, num_fix_frames, num_fix_points );
-	profiler.leave("calcUVeps");
+	profiler.enter("build_gradient_Hessians");
+	ba_build_gradient_Hessians(observations,residual_vec,jac_data_vec, H_f,eps_frame,H_p,eps_point, num_fix_frames, num_fix_points, use_robust_kernel ? &kernel_1st_deriv : NULL  );
+	profiler.leave("build_gradient_Hessians");
 
 	double nu = 2;
 	double eps = 1e-16; // 0.000000000000001;
@@ -191,11 +190,11 @@ double mrpt::vision::bundle_adj_full(
 		double norm_max_A = 0;
 		for (size_t j=0; j<num_free_frames; ++j)
 			for (size_t dim=0; dim<FrameDof; dim++)
-				keep_max(norm_max_A, U[j](dim,dim) );
+				keep_max(norm_max_A, H_f[j](dim,dim) );
 
 		for (size_t i=0; i<num_free_points; ++i)
 			for (size_t dim=0; dim<PointDof; dim++)
-				keep_max(norm_max_A, V[i](dim,dim) );
+				keep_max(norm_max_A, H_p[i](dim,dim) );
 		double tau = 1e-3;
 		mu = tau*norm_max_A;
 	}
@@ -229,10 +228,10 @@ double mrpt::vision::bundle_adj_full(
 			aligned_containers<Matrix_PxP>::vector_t   V_inv (num_free_points);
 
 			for (size_t i=0; i<U_star.size(); ++i)
-				U_star[i] += U[i];
+				U_star[i] += H_f[i];
 
-			for (size_t i=0; i<V.size(); ++i)
-				(V[i]+I_muPoint).inv_fast( V_inv[i] );
+			for (size_t i=0; i<H_p.size(); ++i)
+				(H_p[i]+I_muPoint).inv_fast( V_inv[i] );
 
 
 			typedef aligned_containers<pair<TCameraPoseID,TLandmarkID>,Matrix_FxP>::map_t  WMap;
@@ -262,21 +261,21 @@ double mrpt::vision::bundle_adj_full(
 					ASSERT_(retInsert.second==true)
 					W_entries[feat_id].push_back(retInsert.first); // Keep the iterator
 
-					// Y[ids] = W[ids] * V^{-1}
+					// Y[ids] = W[ids] * H_p^{-1}
 					Y[id_pair].multiply_AB(tmp, V_inv[feat_id-num_fix_points]);
 				}
 				++jac_iter;
 			}
 
 			aligned_containers<pair<TCameraPoseID,TLandmarkID>,Matrix_FxF>::map_t  YW_map;
-			for (size_t i=0; i<U.size(); ++i)
+			for (size_t i=0; i<H_f.size(); ++i)
 				YW_map[make_pair<TCameraPoseID,TLandmarkID>(i,i)] = U_star[i];
 
-			vector_double  delta( len_free_frames + len_free_points );
+			vector_double  delta( len_free_frames + len_free_points ); // The optimal step
 			vector_double  e    ( len_free_frames );
 
 
-			profiler.enter("e");
+			profiler.enter("Schur.build.reduced.frames");
 			for (size_t j=0; j<num_free_frames; ++j)
 				::memcpy( &e[j*FrameDof], &eps_frame[j][0], sizeof(e[0])*FrameDof ); // e.slice(j*FrameDof,FrameDof) = AT(eps_frame,j);
 
@@ -312,7 +311,7 @@ double mrpt::vision::bundle_adj_full(
 				for (size_t k=0; k<FrameDof; k++)
 					e[j*FrameDof+k]-=r[k];
 			}
-			profiler.leave("e");
+			profiler.leave("Schur.build.reduced.frames");
 
 
 			profiler.enter("sS:ALL");
@@ -345,7 +344,7 @@ double mrpt::vision::bundle_adj_full(
 
 				profiler.enter("sS:backsub");
 				vector_double  bck_res;
-				ptrCh->backsub(e,bck_res);
+				ptrCh->backsub(e, bck_res);  // Ax = b -->  delta= x*
 				::memcpy(&delta[0],&bck_res[0],bck_res.size()*sizeof(bck_res[0]));	// delta.slice(0,...) = Ch.backsub(e);
 				profiler.leave("sS:backsub");
 				profiler.leave("sS:ALL");
@@ -360,9 +359,7 @@ double mrpt::vision::bundle_adj_full(
 				continue;
 			}
 
-			//VERBOSE_COUT << "delta: " << delta << endl;
-
-			profiler.enter("g");
+			profiler.enter("PostSchur.landmarks");
 
 			vector_double g(len_free_frames+len_free_points);
 			::memcpy(&g[0],&e[0],len_free_frames*sizeof(g[0])); //g.slice(0,FrameDof*(num_frames-num_fix_frames)) = e;
@@ -388,10 +385,10 @@ double mrpt::vision::bundle_adj_full(
 				Array_P Vi_tmp;
 				V_inv[i].multiply_Ab(tmp, Vi_tmp); // Vi_tmp = V_inv[i] * tmp
 
-				::memcpy(&delta[len_free_frames + i*PointDof], &Vi_tmp[0], sizeof(Vi_tmp[0])*PointDof ); // delta.slice((num_frames-num_fix_frames)*FrameDof + i*PointDof, PointDof) = V_inv[i] * tmp;
-				::memcpy(&g[len_free_frames + i*PointDof], &eps_point[i][0], sizeof(eps_point[0][0])*PointDof ); // g.slice(, PointDof) = eps_point[i]; // .slice(PointDof*i,PointDof);
+				::memcpy(&delta[len_free_frames + i*PointDof], &Vi_tmp[0], sizeof(Vi_tmp[0])*PointDof );
+				::memcpy(&g[len_free_frames + i*PointDof], &eps_point[i][0], sizeof(eps_point[0][0])*PointDof );
 			}
-			profiler.leave("g");
+			profiler.leave("PostSchur.landmarks");
 
 
 			// Vars for temptative new estimates:
@@ -412,14 +409,18 @@ double mrpt::vision::bundle_adj_full(
 				new_landmark_points, num_fix_points );
 			profiler.leave("add_3d_deltas_to_points");
 
+			vector<Array_O>  new_residual_vec(num_obs);
+			vector<double>   new_kernel_1st_deriv(num_obs);
 
 			profiler.enter("reprojectionResiduals");
 			double res_new = mrpt::vision::reprojectionResiduals(
 								 observations, camera_params,
 								 new_frame_poses, new_landmark_points,
-								 residual_vec,
+								 new_residual_vec,
 								 INV_POSES_BOOL, // are poses inverse?
-								 use_robust_kernel );
+								 use_robust_kernel,
+								 kernel_param,
+								 use_robust_kernel ? &new_kernel_1st_deriv : NULL );
 			profiler.leave("reprojectionResiduals");
 
 			MRPT_CHECK_NORMAL_NUMBER(res_new)
@@ -429,11 +430,13 @@ double mrpt::vision::bundle_adj_full(
 			if(rho>0)
 			{
 				// Good: Accept new values
-				VERBOSE_COUT << "res_new: " << res_new << ", avr. err in px=" <<  sqrt(res_new)/num_obs <<  " rho: " << rho << endl;
+				VERBOSE_COUT << "new total sqr.err=" << res_new << " avr.err(px):"<< std::sqrt(res/num_obs)  <<"->" <<  std::sqrt(res_new/num_obs) <<  " rho: " << rho << endl;
 
 				// swap is faster than "="
 				frame_poses.swap(new_frame_poses);
 				landmark_points.swap(new_landmark_points);
+				residual_vec.swap( new_residual_vec );
+				kernel_1st_deriv.swap( new_kernel_1st_deriv );
 
 				res = res_new;
 
@@ -443,14 +446,14 @@ double mrpt::vision::bundle_adj_full(
 
 
 				// Reset to zeros:
-				U.assign(num_free_frames,Matrix_FxF() );
-				V.assign(num_free_points,Matrix_PxP() );
+				H_f.assign(num_free_frames,Matrix_FxF() );
+				H_p.assign(num_free_points,Matrix_PxP() );
 				eps_frame.assign(num_free_frames, arrF_zeros);
 				eps_point.assign(num_free_points, arrP_zeros);
 
-				profiler.enter("calcUVeps");
-				ba_calcUVeps(observations,residual_vec,jac_data_vec,U,eps_frame,V,eps_point, num_fix_frames, num_fix_points );
-				profiler.leave("calcUVeps");
+				profiler.enter("build_gradient_Hessians");
+				ba_build_gradient_Hessians(observations,residual_vec,jac_data_vec,H_f,eps_frame,H_p,eps_point, num_fix_frames, num_fix_points, use_robust_kernel ? &kernel_1st_deriv : NULL );
+				profiler.leave("build_gradient_Hessians");
 
 				stop = norm_inf(g)<=eps;
 				mu *= max(1.0/3.0, 1-std::pow(2*rho-1,3.0) );

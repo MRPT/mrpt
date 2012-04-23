@@ -67,6 +67,7 @@
 		- [mrpt-vision] 
 			- mrpt::vision::TSIFTDescriptorsKDTreeIndex, TSURFDescriptorsKDTreeIndex  - <a href="http://code.google.com/p/mrpt/source/detail?r=2799" >2799</a>
 			- mrpt::vision::CStereoRectifyMap - See tutorial online: http://www.mrpt.org/Rectifying_stereo_images
+			- New templates mrpt::vision::RobustKernel<> with a common implementing of Pseudo-Huber kernel and related functions - <a href="http://code.google.com/p/mrpt/source/detail?r=2886" >r2886</a>
 	- Changes in classes:
 		- [mrpt-base] 
 			- Changes in mrpt::math::CSparseMatrix: 
@@ -93,6 +94,7 @@
 			- mrpt::vision::CFeatureExtraction has new parameters to change the params of SURF detector implementations - <a href="http://code.google.com/p/mrpt/source/detail?r=2832" >r2832</a>
 			- mrpt::vision::CFeatureExtraction::detectFeatures_SSE2_FASTER9() (and others) now build an optional index of feature indices sorted by rows for quick look up.
 			- mrpt::vision::checkerBoardCameraCalibration() now uses the 64f version of OpenCV's cvCalibrateCamera_64d
+			- mrpt::vision::bundle_adj_full(): Bundle Adjustment now uses the corrected gradient with robustified least squares.
 		- [mrpt-gui] 
 			- Environment variable MRPT_WXSUBSYS_TIMEOUT_MS is now observed in all places where a GUI window is expected to be launched.
 			- New shortcut methods mrpt::gui::CDisplayWindow3D::setImageView() and mrpt::gui::CDisplayWindow3D::setImageView_fast() - <a href="http://code.google.com/p/mrpt/source/detail?r=2793" >r2793</a> 
