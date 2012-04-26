@@ -116,10 +116,10 @@ void TCamera::readFromStream( CStream &in, int version )
 void TCamera::saveToConfigFile(const std::string &section,  mrpt::utils::CConfigFileBase &cfg ) const
 {
 	cfg.write(section,"resolution",format("[%u %u]",(unsigned int)ncols,(unsigned int)nrows));
-	cfg.write(section,"cx", cx() );
-	cfg.write(section,"cy", cy() );
-	cfg.write(section,"fx", fx() );
-	cfg.write(section,"fy", fy() );
+	cfg.write(section,"cx", format("%.05f",cx()) );
+	cfg.write(section,"cy", format("%.05f",cy()) );
+	cfg.write(section,"fx", format("%.05f",fx()) );
+	cfg.write(section,"fy", format("%.05f",fy()) );
 	cfg.write(section,"dist", format("[%e %e %e %e %e]", dist[0],dist[1],dist[2],dist[3],dist[4] ) );
 	cfg.write(section,"focal_length", focalLengthMeters );
 }
