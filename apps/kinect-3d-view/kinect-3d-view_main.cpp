@@ -257,7 +257,8 @@ void Test_Kinect()
 			// Show 3D points:
 			if (last_obs->hasPoints3D )
 			{
-				//mrpt::slam::CSimplePointsMap  pntsMap;
+				// For alternative ways to generate the 3D point cloud, read:
+				// http://www.mrpt.org/Generating_3D_point_clouds_from_RGB_D_observations
 				CColouredPointsMap pntsMap;
 				pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
 				pntsMap.loadFromRangeScan(*last_obs);
@@ -280,7 +281,7 @@ void Test_Kinect()
 				win3D.get3DSceneAndLock();
 					win3D.addTextMessage(10,60,
 						format("Acc: x=%.02f y=%.02f z=%.02f", last_obs_imu->rawMeasurements[IMU_X_ACC], last_obs_imu->rawMeasurements[IMU_Y_ACC], last_obs_imu->rawMeasurements[IMU_Z_ACC] ),
-						TColorf(0,0,1), 102, MRPT_GLUT_BITMAP_HELVETICA_18 );
+						TColorf(0,0,1), "mono", 10, mrpt::opengl::FILL, 102);
 				win3D.unlockAccess3DScene();
 				do_refresh=true;
 			}
@@ -308,6 +309,19 @@ void Test_Kinect()
 					win3D.setCameraZoom( win3D.getCameraZoom() / 1.2 );
 					win3D.repaint();
 					break;
+				case '9':
+					{
+						// Save latest image (intensity or IR) to disk:
+						static int cnt = 0;
+						if (last_obs->hasIntensityImage )
+						{
+							const std::string s = mrpt::format("kinect_image_%04i.png",cnt++);
+							std::cout << "Writing intensity/IR image to disk: " << s << std::endl;
+							if (!last_obs->intensityImage.saveToFile(s))
+								std::cerr << "(error writing file!)\n";
+						}
+					}
+					break;
 				// ...and the rest in the kinect thread:
 				default:
 					thrPar.pushed_key = key;
@@ -317,11 +331,11 @@ void Test_Kinect()
 
 		win3D.get3DSceneAndLock();
 		win3D.addTextMessage(10,10,
-			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, mouse: orbit 3D,'c':Switch RGB/IR, ESC: quit"),
-				TColorf(0,0,1), 110, MRPT_GLUT_BITMAP_HELVETICA_18 );
+			format("'o'/'i'-zoom out/in, 'w'-tilt up,'s'-tilt down, mouse: orbit 3D,'c':Switch RGB/IR,'9':Save image,ESC: quit"),
+				TColorf(0,0,1), "mono", 10, mrpt::opengl::FILL, 110);
 		win3D.addTextMessage(10,35,
 			format("Tilt angle: %.01f deg", thrPar.tilt_ang_deg),
-				TColorf(0,0,1), 111, MRPT_GLUT_BITMAP_HELVETICA_18 );
+				TColorf(0,0,1), "mono", 10, mrpt::opengl::FILL, 111);
 		win3D.unlockAccess3DScene();
 
 		mrpt::system::sleep(1);

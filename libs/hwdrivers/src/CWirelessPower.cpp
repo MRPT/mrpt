@@ -235,19 +235,19 @@ PWLAN_INTERFACE_INFO GetInterfaceW(std::string guid, HANDLE hClient)
 std::vector<PWLAN_AVAILABLE_NETWORK>	ListNetworksW(PWLAN_INTERFACE_INFO iface, HANDLE hClient)
 {
 	// Start variables
-	
+
 	DWORD dwResult = 0;
     PWLAN_AVAILABLE_NETWORK_LIST pBssList = NULL;	// list of available networks
     PWLAN_AVAILABLE_NETWORK pBssEntry = NULL;		// information element for one interface
 
-	
+
 	GUID ifaceGuid = iface->InterfaceGuid;			// Get GUID of the interface
-	
+
 	std::vector<PWLAN_AVAILABLE_NETWORK> outputVector;	// output vector
-	
+
 	WCHAR GuidString[39] = {0};
-	
-	
+
+
 	// Force a scan (to obtain new data)
 	WLAN_RAW_DATA IeData;
 	WlanScan((HANDLE)hClient, &ifaceGuid, NULL, &IeData, NULL);
@@ -268,7 +268,7 @@ std::vector<PWLAN_AVAILABLE_NETWORK>	ListNetworksW(PWLAN_INTERFACE_INFO iface, H
 			outputVector.push_back(pBssEntry);	// save entry
 		}
 	}
-	
+
 	return outputVector;
 }
 
@@ -289,7 +289,7 @@ PWLAN_AVAILABLE_NETWORK GetNetworkW(HANDLE hClient, std::string ssid, std::strin
 
 	// Get a handler to the interface
 	iface = GetInterfaceW(guid, hClient);
-	
+
 	// Get the list of networks
 	std::vector<PWLAN_AVAILABLE_NETWORK> pBssList = ListNetworksW(iface,hClient);
 
@@ -506,12 +506,12 @@ int		CWirelessPower::GetPower()
 bool CWirelessPower::getObservation( mrpt::slam::CObservationWirelessPower &outObservation )
 {
 	try{
-		
+
 	//	outObservation.m_readings.clear();
 		outObservation.power = (float)GetPower();
-		
+
 		outObservation.timestamp = mrpt::system::getCurrentTime();
-		
+
 		outObservation.sensorLabel = m_sensorLabel;
 	//	std::cout << "mrpt::hwdrivers::CWirelessPower::getObservation() " << "\n\tsensorLabel: " << outObservation.sensorLabel << "\n\ttimestamp: " << outObservation.timestamp << "\n\tpower: " << outObservation.power << std::endl;
 		return true;
@@ -527,17 +527,15 @@ bool CWirelessPower::getObservation( mrpt::slam::CObservationWirelessPower &outO
 
 void CWirelessPower::doProcess()
 {
-	
+
 	// Wrapper to getObservation
 	mrpt::slam::CObservationWirelessPowerPtr  outObservation = mrpt::slam::CObservationWirelessPower::Create();
 	getObservation(*outObservation);
-	
-	
-	appendObservation(CObservationWirelessPowerPtr(new CObservationWirelessPower(*outObservation)));
-	
-	
 
-};
+
+	appendObservation(CObservationWirelessPowerPtr(new CObservationWirelessPower(*outObservation)));
+
+}
 
 
 void  CWirelessPower::loadConfig_sensorSpecific(
@@ -564,5 +562,5 @@ void  CWirelessPower::loadConfig_sensorSpecific(
 		#endif
 
 	MRPT_END
-		
+
 }
