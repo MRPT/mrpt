@@ -39,6 +39,7 @@
 #include <mrpt/vision/TSimpleFeature.h>
 #include <mrpt/vision/multiDesc_utils.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
+#include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/pinhole.h>
 #include <mrpt/vision/CCamModel.h>

@@ -71,7 +71,7 @@ namespace mrpt
 
 			uint32_t			ncols,nrows;        //!< Camera resolution
 			CMatrixDouble33 	intrinsicParams;    //!< Matrix of intrinsic parameters (containing the focal length and principal point coordinates)
-			CArrayDouble<5> 	dist;               //!< [k1 k2 t1 t2 t3] -> k_i: parameters of radial distortion, t_i: parameters of tangential distortion (default=0)
+			CArrayDouble<5> 	dist;               //!< [k1 k2 t1 t2 k3] -> k_i: parameters of radial distortion, t_i: parameters of tangential distortion (default=0)
 			double  			focalLengthMeters;  //!< The focal length of the camera, in meters (can be used among 'intrinsicParams' to determine the pixel size).
 
 			/** @} */

@@ -41,7 +41,7 @@ namespace mrpt
 	{
 		using namespace mrpt::utils;
 
-		/** \addtogroup chessboard_calib Chessboard calibration 
+		/** \addtogroup chessboard_calib Chessboard calibration
 		  *  \ingroup mrpt_vision_grp
 		  *  @{  */
 
@@ -77,7 +77,7 @@ namespace mrpt
 		  * \param useScaramuzzaAlternativeDetector [IN] Whether to use an alternative detector. See CImage::findChessboardCorners for more deatails and references.
 		  * \sa The <a href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui application</a> is a user-friendly GUI to this class.
 		  * \return false on any error (more info will be dumped to cout), or true on success.
-		  * \sa CImage::findChessboardCorners
+		  * \sa CImage::findChessboardCorners, checkerBoardStereoCalibration
 		  */
 		bool VISION_IMPEXP checkerBoardCameraCalibration(
 			TCalibrationImageList &images,
