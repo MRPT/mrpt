@@ -77,6 +77,7 @@
 			- KD-trees: 
 				- Now also exposes methods for Radius search: mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D(), mrpt::math::KDTreeCapable::kdTreeRadiusSearch3D()  - <a href="http://code.google.com/p/mrpt/source/detail?r=2726" >r2726</a> 
 				- Updated to nanoflann 1.1.0: the main change is that (by default) all KD-tree indices are "size_t" instead of "int" - <a href="http://code.google.com/p/mrpt/source/detail?r=2771" >r2771</a> 
+				- Updated to nanoflann 1.1.2: minor changes -  <a href="http://code.google.com/p/mrpt/source/detail?r=2897" >r2897</a> 
 			- mrpt::sync::CCriticalSectionLocker now can accept a NULL pointer as input, in which case no action will be taken (previosly, it led to segfault) - <a href="http://code.google.com/p/mrpt/source/detail?r=2727" >r2727</a> 
 			- mrpt::math::CLevenbergMarquardtTempl now exposes more typedefs and returns the last Hessian matrix in "out_info" so the user can estimate the uncertainty in the results.
 			- mrpt::utils::TStereoCamera changes its I/O format to config files, now it's consistent with rawlog-edit, stereo-calib-gui and others.
