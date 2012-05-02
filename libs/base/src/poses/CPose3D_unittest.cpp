@@ -101,6 +101,20 @@ protected:
 			<< "p2_c_p1_i_p2: " << p2_c_p1_i_p2 << endl;
 	}
 
+	void test_to_from_2d(double x,double y, double phi)
+	{
+	    const CPose2D p2d = CPose2D(x,y,phi);
+	    const CPose3D p3d = CPose3D(p2d);
+
+	    const CPose2D p2d_bis = CPose2D(p3d);
+
+        EXPECT_FLOAT_EQ( p2d.x(), p2d_bis.x() ) << "p2d: " << p2d << endl;
+        EXPECT_FLOAT_EQ( p2d.y(), p2d_bis.y() ) << "p2d: " << p2d << endl;
+        EXPECT_FLOAT_EQ( p2d.phi(), p2d_bis.phi() ) << "p2d: " << p2d << endl;
+
+        EXPECT_FLOAT_EQ( p2d.phi(), p3d.yaw() )  << "p2d: " << p2d << endl;
+	}
+
 	void test_composeFrom(double x1,double y1,double z1, double yaw1,double pitch1,double roll1,
 	                 double x2,double y2,double z2, double yaw2,double pitch2,double roll2 )
 	{
@@ -551,6 +565,29 @@ TEST_F(Pose3DTests,composeFrom)
 	             -10.0,4.0,-8.0, DEG2RAD(20),DEG2RAD(9),DEG2RAD(0));
 }
 
+TEST_F(Pose3DTests,ToFromCPose2D)
+{
+	test_to_from_2d(0,0,0);
+	test_to_from_2d(1,2,0);
+
+	test_to_from_2d( 1, 2, 3);
+	test_to_from_2d(-1, 2, 3);
+	test_to_from_2d(-1,-2, 3);
+	test_to_from_2d( 1,-2, 3);
+	test_to_from_2d( 1, 2,-3);
+	test_to_from_2d(-1, 2,-3);
+	test_to_from_2d(-1,-2,-3);
+	test_to_from_2d( 1,-2,-3);
+
+	test_to_from_2d( 1, 2, .4);
+	test_to_from_2d(-1, 2, .4);
+	test_to_from_2d(-1,-2, .4);
+	test_to_from_2d( 1,-2, .4);
+	test_to_from_2d( 1, 2,-.4);
+	test_to_from_2d(-1, 2,-.4);
+	test_to_from_2d(-1,-2,-.4);
+	test_to_from_2d( 1,-2,-.4);
+}
 
 TEST_F(Pose3DTests,ComposeAndInvComposeWithPoint)
 {
