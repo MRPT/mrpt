@@ -60,22 +60,29 @@ namespace mrpt
 			bool          normalize_image;
 			bool          skipDrawDetectedImgs;
 			bool          verbose;                   //!< Show progress messages to std::cout console (default=true)
+			size_t        maxIters;                  //!< Maximum number of iterations of the optimizer (default=300)
+			
+			/** Select which distortion parameters (of both left/right cameras) will be optimzed: 
+			  *  k1,k2,k3 are the r^2, r^4 and r^6 radial distorion coeficients, and t1 and t2 are the tangential distortion coeficients (see mrpt::utils::TCamera).
+			  * Those set to false will be assumed to be fixed to zero (no distortion).
+			  * \note Default values are to only assume distortion via k1 and k2 (the rest are zeros).
+			  */
+			bool          optimize_k1, optimize_k2, optimize_k3, optimize_t1, optimize_t2;
 
-
-			TStereoCalibParams() : 
-				check_size_x(7),check_size_y(9),
-				check_squares_length_X_meters(0.02),check_squares_length_Y_meters(0.02),
-				normalize_image(true),
-				skipDrawDetectedImgs(false),
-				verbose(true)
-			{}
+			// Ctor: Set default values
+			TStereoCalibParams();
 		};
 
 		/** Output results for mrpt::vision::checkerBoardStereoCalibration */
 		struct VISION_IMPEXP TStereoCalibResults
 		{
 			mrpt::utils::TStereoCamera  cam_params;  //!< Recovered parameters of the stereo camera
-			// Uncertainty...
+			mrpt::poses::CPose3D        right2left_camera_pose; //!< The pose of the left camera as seen from the right camera
+
+			/** The inverse variance (information/precision) of each of the 9 left/right camera parameters [fx fy cx cy k1 k2 k3 t1 t2].
+			  *  Those not estimated as indicated in TStereoCalibParams will be zeros (i.e. an "infinite uncertainty")
+			  */
+			Eigen::Array<double,9,1>    left_params_inv_variance, right_params_inv_variance; 
 		};
 
 		/**  A list of images, used in checkerBoardStereoCalibration

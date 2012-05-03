@@ -60,6 +60,15 @@ int TestStereoCalibrate(int argc, char** argv)
 	TStereoCalibResults         calib_result;
 	TStereoCalibParams          calib_params;
 
+	// ============ Set parameters ============
+	calib_params.check_size_x = 7;
+	calib_params.check_size_y = 9;
+	calib_params.check_squares_length_X_meters = 22.83e-3;
+	calib_params.check_squares_length_Y_meters = 24.31e-3;
+	//calib_params.maxIters = 300;
+	//calib_params.verbose = true;
+
+
 	// Load images:
 	const size_t nPairs = (argc>>1);
 	for (size_t i=0;i<nPairs;i++)
@@ -117,8 +126,8 @@ int TestStereoCalibrate(int argc, char** argv)
 			{
 				win.get3DSceneAndLock();
 
-				view1->setImageView( calib_imgs[i].left.img_checkboard );
-				view2->setImageView( calib_imgs[i].right.img_checkboard );
+				view1->setImageView( calib_imgs[i].left.img_rectified); // img_checkboard );
+				view2->setImageView( calib_imgs[i].right.img_rectified); // img_checkboard );
 				
 				win.setWindowTitle(mrpt::format("Detected corners: %u / %u", static_cast<unsigned int>(i+1),static_cast<unsigned int>(nPairs) ));
 
