@@ -31,6 +31,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 
+#include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <mrpt/vision/pinhole.h>
 
@@ -80,8 +81,6 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 
 		// For each image, find checkerboard corners:
 		// -----------------------------------------------
-        unsigned int valid_detected_stereo_imgs = 0;
-
 		// Left/Right sizes (may be different)
         TImageSize imgSize[2] = { TImageSize(0,0), TImageSize(0,0) };
 
@@ -191,7 +190,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		// Select which cam. parameters to optimize (for each camera!) and which to leave fixed:
 		// Indices:  [0   1  2  3  4  5  6  7  8]
 		// Variables:[fx fy cx cy k1 k2 k3 t1 t2]
-		vector_size_t  vars_to_optimize; 
+		vector_size_t  vars_to_optimize;
 		vars_to_optimize.push_back(0);
 		vars_to_optimize.push_back(1);
 		vars_to_optimize.push_back(2);
@@ -213,19 +212,19 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		// Initial state:
 		//Within lm_stat: CArrayDouble<9> left_cam_params, right_cam_params; // [fx fy cx cy k1 k2 k3 t1 t2]
 		lm_stat_t        lm_stat(images,valid_image_pair_indices,obj_points);
-	
+
 		lm_stat.left_cam_params[0] = imgSize[0].x * 0.9;
 		lm_stat.left_cam_params[1] = imgSize[0].y * 0.9;
 		lm_stat.left_cam_params[2] = imgSize[0].x * 0.5;
 		lm_stat.left_cam_params[3] = imgSize[0].y * 0.5;
-		lm_stat.left_cam_params[4] = lm_stat.left_cam_params[5] = lm_stat.left_cam_params[6] = 
+		lm_stat.left_cam_params[4] = lm_stat.left_cam_params[5] = lm_stat.left_cam_params[6] =
 		lm_stat.left_cam_params[7] = lm_stat.left_cam_params[8] = 0;
 
 		lm_stat.right_cam_params[0] = imgSize[1].x * 0.9;
 		lm_stat.right_cam_params[1] = imgSize[1].y * 0.9;
 		lm_stat.right_cam_params[2] = imgSize[1].x * 0.5;
 		lm_stat.right_cam_params[3] = imgSize[1].y * 0.5;
-		lm_stat.right_cam_params[4] = lm_stat.right_cam_params[5] = lm_stat.right_cam_params[6] = 
+		lm_stat.right_cam_params[4] = lm_stat.right_cam_params[5] = lm_stat.right_cam_params[6] =
 		lm_stat.right_cam_params[7] = lm_stat.right_cam_params[8] = 0;
 
 
@@ -238,7 +237,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		Eigen::MatrixXd  H;       // Hessian matrix
 		build_linear_system(res_jacob,vars_to_optimize,minus_g,H);
 
-		ASSERT_EQUAL_(nUnknowns, H.cols())
+		ASSERT_EQUAL_(nUnknowns,(size_t) H.cols())
 
 		// Lev-Marq. parameters:
 		double nu = 2;
@@ -259,7 +258,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 				lambda *= nu;
 				nu *= 2;
 				done = (lambda>1e10);
-				
+
 				if (p.verbose && !done) cout << "LM iter#"<<iter<<": Couldn't solve LLt, retrying with large 'lambda'=" << lambda << endl;
 				continue;
 			}
@@ -375,7 +374,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 
 			TImageCalibData &dat_l = images[valid_image_pair_indices[i]].left;
 			TImageCalibData &dat_r = images[valid_image_pair_indices[i]].right;
-			
+
 			// Rectify image.
 			MRPT_TODO("rect")
 			dat_l.img_original.colorImage( dat_l.img_rectified );
@@ -415,7 +414,7 @@ Jacobian:
 
 \left(\begin{array}{ccc} \frac{1}{\mathrm{pz}} & 0 & -\frac{\mathrm{px}}{{\mathrm{pz}}^2}\\ 0 & \frac{1}{\mathrm{pz}} & -\frac{\mathrm{py}}{{\mathrm{pz}}^2}\\ \frac{2\, \mathrm{px}}{{\mathrm{pz}}^2} & \frac{2\, \mathrm{py}}{{\mathrm{pz}}^2} &  - \frac{2\, {\mathrm{px}}^2}{{\mathrm{pz}}^3} - \frac{2\, {\mathrm{py}}^2}{{\mathrm{pz}}^3}\\ \frac{4\, \mathrm{px}\, \left(\frac{{\mathrm{px}}^2}{{\mathrm{pz}}^2} + \frac{{\mathrm{py}}^2}{{\mathrm{pz}}^2}\right)}{{\mathrm{pz}}^2} & \frac{4\, \mathrm{py}\, \left(\frac{{\mathrm{px}}^2}{{\mathrm{pz}}^2} + \frac{{\mathrm{py}}^2}{{\mathrm{pz}}^2}\right)}{{\mathrm{pz}}^2} & - 2\, \left(\frac{{\mathrm{px}}^2}{{\mathrm{pz}}^2} + \frac{{\mathrm{py}}^2}{{\mathrm{pz}}^2}\right)\, \left(\frac{2\, {\mathrm{px}}^2}{{\mathrm{pz}}^3} + \frac{2\, {\mathrm{py}}^2}{{\mathrm{pz}}^3}\right)\\ \frac{6\, \mathrm{px}\, {\left(\frac{{\mathrm{px}}^2}{{\mathrm{pz}}^2} + \frac{{\mathrm{py}}^2}{{\mathrm{pz}}^2}\right)}^2}{{\mathrm{pz}}^2} & \frac{6\, \mathrm{py}\, {\left(\frac{{\mathrm{px}}^2}{{\mathrm{pz}}^2} + \frac{{\mathrm{py}}^2}{{\mathrm{pz}}^2}\right)}^2}{{\mathrm{pz}}^2} & - 3\, {\left(\frac{{\mathrm{px}}^2}{{\mathrm{pz}}^2} + \frac{{\mathrm{py}}^2}{{\mathrm{pz}}^2}\right)}^2\, \left(\frac{2\, {\mathrm{px}}^2}{{\mathrm{pz}}^3} + \frac{2\, {\mathrm{py}}^2}{{\mathrm{pz}}^3}\right) \end{array}\right)
 
-*/ 
+*/
 
 void jacob_db_dp(
 	const TPoint3D &p,   // 3D coordinates wrt the camera
@@ -425,7 +424,7 @@ void jacob_db_dp(
 	const double pz_2 = pz_*pz_;
 	const double pz_3 = pz_2*pz_;
 
-	G(0,0) = pz_; 
+	G(0,0) = pz_;
 	G(0,1) = 0;
 	G(0,2) = -p.x * pz_2;
 
@@ -477,8 +476,8 @@ void jacob_dh_db_and_dh_dc(
 	const double r4 = r2*r2;
 	const double r6 = r4*r2;
 
-	const double fx=c[0], fy=c[1]; 
-	const double cx=c[2], cy=c[3];
+	const double fx=c[0], fy=c[1];
+	//const double cx=c[2], cy=c[3]; // Un-unused
 	const double k1=c[4], k2=c[5], k3=c[6];
 	const double t1=c[7], t2=c[8];
 
@@ -488,7 +487,7 @@ void jacob_dh_db_and_dh_dc(
 	Hb(0,2) = fx*(t2 + k1*x);
 	Hb(0,3) = fx*k2*x;
 	Hb(0,4) = fx*k3*x;
-	
+
 	Hb(1,0) = 2*fy*t2*y;
 	Hb(1,1) = fy*(k1*r2 + k2*r4 + k3*r6 + 2*t2*x + 4*t1*y + 1);
 	Hb(1,2) = fy*(t1 + k1*y);
@@ -527,13 +526,13 @@ void jacob_deps_D_p_deps(
 }
 
 void jacob_dA_eps_D_p_deps(
-	const CPose3D  &A, 
-	const CPose3D  &D, 
+	const CPose3D  &A,
+	const CPose3D  &D,
 	const TPoint3D &p,
 	Eigen::Matrix<double,3,6> &dp_deps)
 {
 	// Jacobian 10.3.7 in technical report "A tutorial on SE(3) transformation parameterizations and on-manifold optimization"
-	const Eigen::Matrix<double,1,3> P(p.x,p.y,p.z); 
+	const Eigen::Matrix<double,1,3> P(p.x,p.y,p.z);
 	const Eigen::Matrix<double,1,3> dr1 = D.getRotationMatrix().block<1,3>(0,0);
 	const Eigen::Matrix<double,1,3> dr2 = D.getRotationMatrix().block<1,3>(1,0);
 	const Eigen::Matrix<double,1,3> dr3 = D.getRotationMatrix().block<1,3>(2,0);
@@ -582,7 +581,7 @@ void project_point(
 //  * Left-cam-params (<=9)
 //  * Right-cam-params (<=9)
 void mrpt::vision::build_linear_system(
-	const TResidualJacobianList  & res_jac,  
+	const TResidualJacobianList  & res_jac,
 	const vector_size_t & var_indxs,
 	Eigen::VectorXd &minus_g,
 	Eigen::MatrixXd &H)
@@ -601,11 +600,11 @@ void mrpt::vision::build_linear_system(
 		for (size_t j=0;j<nObs;j++)
 		{
 			const TResidJacobElement & rje = res_jac[i][j];
-			// Sub-Hessian & sub-gradient are variables in this order: 
+			// Sub-Hessian & sub-gradient are variables in this order:
 			//  eps_left_cam, eps_right2left_cam, left_cam_params, right_cam_params
 			const Eigen::Matrix<double,30,30> Hij = rje.J.transpose() * rje.J;
 			const Eigen::Matrix<double,30,1>  gij = rje.J.transpose() * rje.residual;
-			
+
 			// Assemble in their place:
 			minus_g_tot.block<6,1>(i*6,0)     -= gij.block<6,1>(0,0);
 			minus_g_tot.block<6+9+9,1>(N*6,0) -= gij.block<6+9+9,1>(6,0);
@@ -649,8 +648,8 @@ void mrpt::vision::build_linear_system(
 //  * Left-cam-params (<=9)
 //  * Right-cam-params (<=9)
 void mrpt::vision::add_lm_increment(
-	const Eigen::VectorXd & eps, 
-	const vector_size_t   & var_indxs, 
+	const Eigen::VectorXd & eps,
+	const vector_size_t   & var_indxs,
 	lm_stat_t             & lm_stat)
 {
 	// Increment of the N cam poses
@@ -683,7 +682,7 @@ void mrpt::vision::add_lm_increment(
 	// Increment of the camera params:
 	const size_t idx=6*N+6;
 	const size_t nPC = var_indxs.size();  // Number of camera parameters being optimized
-	for (int i=0;i<nPC;i++)
+	for (size_t i=0;i<nPC;i++)
 	{
 		lm_stat.left_cam_params [var_indxs[i]] += eps[idx+i];
 		lm_stat.right_cam_params[var_indxs[i]] += eps[idx+nPC+i];
@@ -699,9 +698,9 @@ void mrpt::vision::add_lm_increment(
 	struct TNumJacobData
 	{
 		const lm_stat_t & lm_stat;
-		const TPoint3D  & obj_point; 
-		const CPose3D   & left_cam; 
-		const CPose3D   & right2left; 
+		const TPoint3D  & obj_point;
+		const CPose3D   & left_cam;
+		const CPose3D   & right2left;
 		const Eigen::Matrix<double,4,1> & real_obs;
 
 		TNumJacobData(
@@ -713,12 +712,12 @@ void mrpt::vision::add_lm_increment(
 			) : lm_stat(_lm_stat), obj_point(_obj_point), left_cam(_left_cam), right2left(_right2left), real_obs(_real_obs)
 		{
 		}
-		
+
 	};
 
 	void numeric_jacob_eval_function(
 		const CArrayDouble<30> &x,
-		const TNumJacobData &dat, 
+		const TNumJacobData &dat,
 		CArrayDouble<4> &out)
 	{
 		// Recover the state out from "x":
@@ -769,7 +768,7 @@ void mrpt::vision::add_lm_increment(
 
 // the 4x1 prediction are the (u,v) pixel coordinates for the left / right cameras:
 double mrpt::vision::recompute_errors_and_Jacobians(
-	const lm_stat_t       & lm_stat, 
+	const lm_stat_t       & lm_stat,
 	TResidualJacobianList & res_jac )
 {
 	double total_err=0;
@@ -781,12 +780,12 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 	camparam_l.fx( lm_stat.left_cam_params[0] ); camparam_l.fy( lm_stat.left_cam_params[1] );
 	camparam_l.cx( lm_stat.left_cam_params[2] ); camparam_l.cy( lm_stat.left_cam_params[3] );
 	camparam_l.k1( lm_stat.left_cam_params[4] ); camparam_l.k2( lm_stat.left_cam_params[5] ); camparam_l.k3( lm_stat.left_cam_params[6] );
-	camparam_l.p1( lm_stat.left_cam_params[7] ); camparam_l.p2( lm_stat.left_cam_params[8] ); 
+	camparam_l.p1( lm_stat.left_cam_params[7] ); camparam_l.p2( lm_stat.left_cam_params[8] );
 	TCamera camparam_r;
 	camparam_r.fx( lm_stat.right_cam_params[0] ); camparam_r.fy( lm_stat.right_cam_params[1] );
 	camparam_r.cx( lm_stat.right_cam_params[2] ); camparam_r.cy( lm_stat.right_cam_params[3] );
 	camparam_r.k1( lm_stat.right_cam_params[4] ); camparam_r.k2( lm_stat.right_cam_params[5] ); camparam_r.k3( lm_stat.right_cam_params[6] );
-	camparam_r.p1( lm_stat.right_cam_params[7] ); camparam_r.p2( lm_stat.right_cam_params[8] ); 
+	camparam_r.p1( lm_stat.right_cam_params[7] ); camparam_r.p2( lm_stat.right_cam_params[8] );
 
 	// process all points from all N image pairs:
 	for (size_t k=0;k<N;k++)
@@ -813,7 +812,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 
 			// Residual:
 			rje.residual = rje.predicted_obs - obs;
-			
+
 			// Accum. total squared error:
 			total_err += rje.residual.squaredNorm();
 
@@ -853,16 +852,16 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			dhr_der = dhr_dbr * dbr_dpr * dpr_der;
 
 			rje.J.setZero(4,30);
-			rje.J.block<2,6>(0,0) = dhl_del; 
-			rje.J.block<2,6>(2,0) = dhr_del; 
+			rje.J.block<2,6>(0,0) = dhl_del;
+			rje.J.block<2,6>(2,0) = dhr_del;
 			rje.J.block<2,6>(2,6) = dhr_der;
 			rje.J.block<2,9>(0,12) = dhl_dcl;
 			rje.J.block<2,9>(2,21) = dhr_dcr;
 			// ---- end of theoretical Jacobians ----
 #else		// ----- Numeric Jacobians ----
 
-			
-			CArrayDouble<30> x0;  // eps_l (6) + eps_lr (6) + l_camparams (9) + r_camparams (9) 
+
+			CArrayDouble<30> x0;  // eps_l (6) + eps_lr (6) + l_camparams (9) + r_camparams (9)
 			x0.setZero();
 			x0.segment<9>(6+6)   = lm_stat.left_cam_params;
 			x0.segment<9>(6+6+9) = lm_stat.right_cam_params;
@@ -887,7 +886,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 
 
 // Ctor:
-TStereoCalibParams::TStereoCalibParams() : 
+TStereoCalibParams::TStereoCalibParams() :
 	check_size_x(7),check_size_y(9),
 	check_squares_length_X_meters(0.02),check_squares_length_Y_meters(0.02),
 	normalize_image(true),
@@ -898,4 +897,3 @@ TStereoCalibParams::TStereoCalibParams() :
 	optimize_t1(false),optimize_t2(false)
 {
 }
-
