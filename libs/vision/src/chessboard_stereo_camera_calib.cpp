@@ -37,10 +37,10 @@
 
 #include "chessboard_stereo_camera_calib_internal.h"
 
-#define USE_NUMERIC_JACOBIANS   1
-//#define USE_NUMERIC_JACOBIANS   0
+//#define USE_NUMERIC_JACOBIANS
+//#define COMPARE_NUMERIC_JACOBIANS
 
-#if USE_NUMERIC_JACOBIANS
+#ifdef USE_NUMERIC_JACOBIANS
 #	include <mrpt/math/jacobians.h>
 #endif
 
@@ -280,7 +280,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 			// discriminant:
 			double err_new = recompute_errors_and_Jacobians(new_lm_stat, new_res_jacob);
 
-			const double l = (err-err_new)/ (eps.array()*(lambda*eps + minus_g).array() ).sum();
+			const double l = (err-err_new)/ (eps.dot( lambda*eps + minus_g) );
 			if(l>0)
 			{
 				// Good: Accept new values
@@ -296,6 +296,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 				// Too small gradient?
 				done = (minus_g.array().abs().maxCoeff() < t1);
 				lambda *= max(1.0/3.0, 1-std::pow(2*l-1,3.0) );
+				lambda = std::max(lambda, 1e-100); // hack...
 				nu = 2.0;
 
 				iter++;
@@ -412,17 +413,16 @@ Jacobian:
 ------------------  (5x3) =
   d{ px py pz }
 
-\left(\begin{array}{ccc} \frac{1}{\mathrm{pz}} & 0 & -\frac{\mathrm{px}}{{\mathrm{pz}}^2}\\ 0 & \frac{1}{\mathrm{pz}} & -\frac{\mathrm{py}}{{\mathrm{pz}}^2}\\ \frac{2\, \mathrm{px}}{{\mathrm{pz}}^2} & \frac{2\, \mathrm{py}}{{\mathrm{pz}}^2} &  - \frac{2\, {\mathrm{px}}^2}{{\mathrm{pz}}^3} - \frac{2\, {\mathrm{py}}^2}{{\mathrm{pz}}^3}\\ \frac{4\, \mathrm{px}\, \left(\frac{{\mathrm{px}}^2}{{\mathrm{pz}}^2} + \frac{{\mathrm{py}}^2}{{\mathrm{pz}}^2}\right)}{{\mathrm{pz}}^2} & \frac{4\, \mathrm{py}\, \left(\frac{{\mathrm{px}}^2}{{\mathrm{pz}}^2} + \frac{{\mathrm{py}}^2}{{\mathrm{pz}}^2}\right)}{{\mathrm{pz}}^2} & - 2\, \left(\frac{{\mathrm{px}}^2}{{\mathrm{pz}}^2} + \frac{{\mathrm{py}}^2}{{\mathrm{pz}}^2}\right)\, \left(\frac{2\, {\mathrm{px}}^2}{{\mathrm{pz}}^3} + \frac{2\, {\mathrm{py}}^2}{{\mathrm{pz}}^3}\right)\\ \frac{6\, \mathrm{px}\, {\left(\frac{{\mathrm{px}}^2}{{\mathrm{pz}}^2} + \frac{{\mathrm{py}}^2}{{\mathrm{pz}}^2}\right)}^2}{{\mathrm{pz}}^2} & \frac{6\, \mathrm{py}\, {\left(\frac{{\mathrm{px}}^2}{{\mathrm{pz}}^2} + \frac{{\mathrm{py}}^2}{{\mathrm{pz}}^2}\right)}^2}{{\mathrm{pz}}^2} & - 3\, {\left(\frac{{\mathrm{px}}^2}{{\mathrm{pz}}^2} + \frac{{\mathrm{py}}^2}{{\mathrm{pz}}^2}\right)}^2\, \left(\frac{2\, {\mathrm{px}}^2}{{\mathrm{pz}}^3} + \frac{2\, {\mathrm{py}}^2}{{\mathrm{pz}}^3}\right) \end{array}\right)
+\left(\begin{array}{ccc} \frac{1}{\mathrm{pz}} & 0 & -\frac{\mathrm{px}}{{\mathrm{pz}}^2}\\ 0 & \frac{1}{\mathrm{pz}} & -\frac{\mathrm{py}}{{\mathrm{pz}}^2} \end{array}\right)
 
 */
 
 void jacob_db_dp(
 	const TPoint3D &p,   // 3D coordinates wrt the camera
-	Eigen::Matrix<double,5,3> &G)
+	Eigen::Matrix<double,2,3> &G)
 {
 	const double pz_ = 1/p.z;
 	const double pz_2 = pz_*pz_;
-	const double pz_3 = pz_2*pz_;
 
 	G(0,0) = pz_;
 	G(0,1) = 0;
@@ -430,91 +430,77 @@ void jacob_db_dp(
 
 	G(1,0) = 0;
 	G(1,1) = pz_;
-	G(1,2) = -p.x * pz_2;
-
-	G(2,0) = 2*p.x * pz_2;
-	G(2,1) = 2*p.y * pz_2;
-	G(2,2) = -2*p.x*p.x*pz_3 - 2*p.y*p.y*pz_3;
-
-	G(3,0) = (4*p.x*(p.x*p.x*pz_2 + p.y*p.y*pz_2))*pz_2;
-	G(3,1) = (4*p.y*(p.x*p.x*pz_2 + p.y*p.y*pz_2))*pz_2;
-	G(3,2) = -2*(p.x*p.x *pz_2 + p.y*p.y*pz_2)*((2*p.x*p.x*pz_3) + (2*p.y*p.y)*pz_3);
-
-	G(4,0) = (6*p.x* square(p.x*p.x*pz_2 + p.y*p.y*pz_2) )*pz_2;
-	G(4,1) = (6*p.y* square(p.x*p.x*pz_2 + p.y*p.y*pz_2) )*pz_2;
-	G(4,2) = -3*square(p.x*p.x *pz_2 + p.y*p.y*pz_2) * ((2*p.x*p.x)*pz_3 + (2*p.y*p.y)*pz_3);
+	G(1,2) = -p.y * pz_2;
 }
 
 /*
 Jacobian:
 
  dh( b,c )
------------ = Hb  | 2x5
+----------- = Hb  | 2x2  (b=[x=px/pz y=py/pz])
   d{ b }
 
-\left(\begin{array}{ccccc} \mathrm{fx}\, \left(\mathrm{k1}\, \mathrm{r2} + \mathrm{k2}\, \mathrm{r4} + \mathrm{k3}\, \mathrm{r6} + 4\, \mathrm{t2}\, x + 2\, \mathrm{t1}\, y + 1\right) & 2\, \mathrm{fx}\, \mathrm{t1}\, x & \mathrm{fx}\, \left(\mathrm{t2} + \mathrm{k1}\, x\right) & \mathrm{fx}\, \mathrm{k2}\, x & \mathrm{fx}\, \mathrm{k3}\, x\\ 2\, \mathrm{fy}\, \mathrm{t2}\, y & \mathrm{fy}\, \left(\mathrm{k1}\, \mathrm{r2} + \mathrm{k2}\, \mathrm{r4} + \mathrm{k3}\, \mathrm{r6} + 2\, \mathrm{t2}\, x + 4\, \mathrm{t1}\, y + 1\right) & \mathrm{fy}\, \left(\mathrm{t1} + \mathrm{k1}\, y\right) & \mathrm{fy}\, \mathrm{k2}\, y & \mathrm{fy}\, \mathrm{k3}\, y \end{array}\right)
+\left(\begin{array}{cc} \mathrm{fx}\, \left(\mathrm{k2}\, {\left(x^2 + y^2\right)}^2 + \mathrm{k3}\, {\left(x^2 + y^2\right)}^3 + 6\, \mathrm{t2}\, x + 2\, \mathrm{t1}\, y + x\, \left(2\, \mathrm{k1}\, x + 4\, \mathrm{k2}\, x\, \left(x^2 + y^2\right) + 6\, \mathrm{k3}\, x\, {\left(x^2 + y^2\right)}^2\right) + \mathrm{k1}\, \left(x^2 + y^2\right) + 1\right) & \mathrm{fx}\, \left(2\, \mathrm{t1}\, x + 2\, \mathrm{t2}\, y + x\, \left(2\, \mathrm{k1}\, y + 4\, \mathrm{k2}\, y\, \left(x^2 + y^2\right) + 6\, \mathrm{k3}\, y\, {\left(x^2 + y^2\right)}^2\right)\right)\\ \mathrm{fy}\, \left(2\, \mathrm{t1}\, x + 2\, \mathrm{t2}\, y + y\, \left(2\, \mathrm{k1}\, x + 4\, \mathrm{k2}\, x\, \left(x^2 + y^2\right) + 6\, \mathrm{k3}\, x\, {\left(x^2 + y^2\right)}^2\right)\right) & \mathrm{fy}\, \left(\mathrm{k2}\, {\left(x^2 + y^2\right)}^2 + \mathrm{k3}\, {\left(x^2 + y^2\right)}^3 + 2\, \mathrm{t2}\, x + 6\, \mathrm{t1}\, y + y\, \left(2\, \mathrm{k1}\, y + 4\, \mathrm{k2}\, y\, \left(x^2 + y^2\right) + 6\, \mathrm{k3}\, y\, {\left(x^2 + y^2\right)}^2\right) + \mathrm{k1}\, \left(x^2 + y^2\right) + 1\right) \end{array}\right)
 
  dh( b,c )
 ----------- = Hc  | 2x9
   d{ c }
 
-\left(\begin{array}{ccccccccc} \mathrm{t2}\, \left(2\, x^2 + \mathrm{r2}\right) + x\, \left(\mathrm{k1}\, \mathrm{r2} + \mathrm{k2}\, \mathrm{r4} + \mathrm{k3}\, \mathrm{r6} + 1\right) + 2\, \mathrm{t1}\, x\, y & 0 & 1 & 0 & \mathrm{fx}\, \mathrm{r2}\, x & \mathrm{fx}\, \mathrm{r4}\, x & \mathrm{fx}\, \mathrm{r6}\, x & 2\, \mathrm{fx}\, x\, y & \mathrm{fx}\, \left(2\, x^2 + \mathrm{r2}\right)\\ 0 & \mathrm{t1}\, \left(2\, y^2 + \mathrm{r2}\right) + y\, \left(\mathrm{k1}\, \mathrm{r2} + \mathrm{k2}\, \mathrm{r4} + \mathrm{k3}\, \mathrm{r6} + 1\right) + 2\, \mathrm{t2}\, x\, y & 0 & 1 & \mathrm{fy}\, \mathrm{r2}\, y & \mathrm{fy}\, \mathrm{r4}\, y & \mathrm{fy}\, \mathrm{r6}\, y & \mathrm{fy}\, \left(2\, y^2 + \mathrm{r2}\right) & 2\, \mathrm{fy}\, x\, y \end{array}\right)
+\left(\begin{array}{ccccccccc} \mathrm{t2}\, \left(3\, x^2 + y^2\right) + x\, \left(\mathrm{k2}\, {\left(x^2 + y^2\right)}^2 + \mathrm{k3}\, {\left(x^2 + y^2\right)}^3 + \mathrm{k1}\, \left(x^2 + y^2\right) + 1\right) + 2\, \mathrm{t1}\, x\, y & 0 & 1 & 0 & \mathrm{fx}\, x\, \left(x^2 + y^2\right) & \mathrm{fx}\, x\, {\left(x^2 + y^2\right)}^2 & \mathrm{fx}\, x\, {\left(x^2 + y^2\right)}^3 & 2\, \mathrm{fx}\, x\, y & \mathrm{fx}\, \left(3\, x^2 + y^2\right)\\ 0 & \mathrm{t1}\, \left(x^2 + 3\, y^2\right) + y\, \left(\mathrm{k2}\, {\left(x^2 + y^2\right)}^2 + \mathrm{k3}\, {\left(x^2 + y^2\right)}^3 + \mathrm{k1}\, \left(x^2 + y^2\right) + 1\right) + 2\, \mathrm{t2}\, x\, y & 0 & 1 & \mathrm{fy}\, y\, \left(x^2 + y^2\right) & \mathrm{fy}\, y\, {\left(x^2 + y^2\right)}^2 & \mathrm{fy}\, y\, {\left(x^2 + y^2\right)}^3 & \mathrm{fy}\, \left(x^2 + 3\, y^2\right) & 2\, \mathrm{fy}\, x\, y \end{array}\right)
 
 */
 
 void jacob_dh_db_and_dh_dc(
 	const TPoint3D & nP,  // Point in relative coords wrt the camera
 	const Eigen::Matrix<double,9,1>  & c,  // camera parameters
-	Eigen::Matrix<double,2,5>  & Hb,
+	Eigen::Matrix<double,2,2>  & Hb,
 	Eigen::Matrix<double,2,9> & Hc
 	)
 {
 	const double x = nP.x/nP.z;
 	const double y = nP.y/nP.z;
 
-	const double r2 = x*x + y*y;
-	const double r4 = r2*r2;
-	const double r6 = r4*r2;
+	const double r2   = x*x + y*y;
+	const double r    = std::sqrt(r2);
+	const double r6   = r2*r2*r2; // (x^2+y^2)^3 = r^6
 
+	// c=[fx fy cx cy k1 k2 k3 t1 t2]
 	const double fx=c[0], fy=c[1];
 	//const double cx=c[2], cy=c[3]; // Un-unused
 	const double k1=c[4], k2=c[5], k3=c[6];
 	const double t1=c[7], t2=c[8];
 
-	// Hb = dh(b,c)/db  (2x5)
-	Hb(0,0) = fx*(k1*r2 + k2*r4 + k3*r6 + 4*t2*x + 2*t1*y + 1);
-	Hb(0,1) = 2*fx*t1*x;
-	Hb(0,2) = fx*(t2 + k1*x);
-	Hb(0,3) = fx*k2*x;
-	Hb(0,4) = fx*k3*x;
+	// Hb = dh(b,c)/db  (2x2)
+	Hb(0,0) = fx*(k2*r2 + k3*r6 + 6*t2*x + 2*t1*y + x*(2*k1*x + 4*k2*x*r + 6*k3*x*r2) + k1*r + 1);
+	Hb(0,1) = fx*(2*t1*x + 2*t2*y + x*(2*k1*y + 4*k2*y*r + 6*k3*y*r2));
 
-	Hb(1,0) = 2*fy*t2*y;
-	Hb(1,1) = fy*(k1*r2 + k2*r4 + k3*r6 + 2*t2*x + 4*t1*y + 1);
-	Hb(1,2) = fy*(t1 + k1*y);
-	Hb(1,3) = fy*k2*y;
-	Hb(1,4) = fy*k3*y;
+	Hb(1,0) = fy*(2*t1*x + 2*t2*y + y*(2*k1*x + 4*k2*x*r + 6*k3*x*r2));
+	Hb(1,1) = fy*(k2*r2 + k3*r6 + 2*t2*x + 6*t1*y + y*(2*k1*y + 4*k2*y*r + 6*k3*y*r2) + k1*r + 1);
+
 
 	// Hc = dh(b,c)/dc  (2x9)
-	Hc(0,0) = t2*(2*x*x + r2) + x*(k1*r2 + k2*r4 + k3*r6 + 1) + 2*t1*x*y;
+	Hc(0,0) = t2*(3*x*x + y*y) + x*(k2*r2 + k3*r6 + k1*r + 1) + 2*t1*x*y;
 	Hc(0,1) = 0;
 	Hc(0,2) = 1;
 	Hc(0,3) = 0;
-	Hc(0,4) = fx*r2*x;
-	Hc(0,5) = fx*r4*x;
-	Hc(0,6) = fx*r6*x;
+	Hc(0,4) = fx*x*r;
+	Hc(0,5) = fx*x*r2;
+	Hc(0,6) = fx*x*r6;
 	Hc(0,7) = 2*fx*x*y;
-	Hc(0,8) = fx*(2*x*x + r2);
+	Hc(0,8) = fx*(3*x*x + y*y);
 
 	Hc(1,0) = 0;
-	Hc(1,1) = t1*(2*y*y + r2) + y*(k1*r2 + k2*r4 + k3*r6 + 1) + 2*t2*x*y;
+	Hc(1,1) = t1*(x*x + 3*y*y) + y*(k2*r2 + k3*r6 + k1*r + 1) + 2*t2*x*y;
 	Hc(1,2) = 0;
 	Hc(1,3) = 1;
-	Hc(1,4) = fy*r2*y;
-	Hc(1,5) = fy*r4*y;
-	Hc(1,6) = fy*r6*y;
-	Hc(1,7) = fy*(2*y*y + r2);
+	Hc(1,4) = fy*y*r;
+	Hc(1,5) = fy*y*r2;
+	Hc(1,6) = fy*y*r6;
+	Hc(1,7) = fy*(x*x + 3*y*y);
 	Hc(1,8) = 2*fy*x*y;
+
 }
+ 
 
 void jacob_deps_D_p_deps(
 	const TPoint3D &p_D,   // D (+) p
@@ -541,7 +527,7 @@ void jacob_dA_eps_D_p_deps(
 
 	Eigen::Matrix<double,3,6> H;
 	H.block<3,3>(0,0).setIdentity();
-	H.block<3,3>(0,3) = mrpt::math::skew_symmetric3(v);
+	H.block<3,3>(0,3) = mrpt::math::skew_symmetric3_neg(v);
 
 	dp_deps.noalias() = A.getRotationMatrix() * H;
 }
@@ -556,7 +542,6 @@ void project_point(
 {
 	// Change the reference system to that wrt the camera
 	TPoint3D nP;
-	//cameraPose.inverseComposePoint( P.x, P.y, P.z, nP.x, nP.y, nP.z );
 	cameraPose.composePoint( P.x, P.y, P.z, nP.x, nP.y, nP.z );
 
 	// Pinhole model:
@@ -656,7 +641,7 @@ void mrpt::vision::add_lm_increment(
 	const size_t N = lm_stat.valid_image_pair_indices.size();
 	for (size_t i=0;i<N;i++)
 	{
-		const CPose3D &old_pose = lm_stat.left_cam_poses[ lm_stat.valid_image_pair_indices[i] ];
+		CPose3D &cam_pose = lm_stat.left_cam_poses[ lm_stat.valid_image_pair_indices[i] ];
 
 		// Use the Lie Algebra methods for the increment:
 		const CArrayDouble<6> incr( &eps[6*i] );
@@ -664,10 +649,7 @@ void mrpt::vision::add_lm_increment(
 
 		//new_pose =  old_pose  [+] delta
 		//         = exp(delta) (+) old_pose
-		CPose3D new_pose;
-		new_pose.composeFrom(incrPose, old_pose);
-
-		lm_stat.left_cam_poses[ lm_stat.valid_image_pair_indices[i] ] = new_pose;
+		cam_pose.composeFrom(incrPose, cam_pose );
 	}
 
 	// Increment of the right-left pose:
@@ -676,7 +658,9 @@ void mrpt::vision::add_lm_increment(
 		const CArrayDouble<6> incr( &eps[6*N] );
 		const CPose3D         incrPose = CPose3D::exp(incr);
 
-		lm_stat.right2left_pose = incrPose + lm_stat.right2left_pose;
+		//new_pose =  old_pose  [+] delta
+		//         = exp(delta) (+) old_pose
+		lm_stat.right2left_pose.composeFrom(incrPose, lm_stat.right2left_pose );
 	}
 
 	// Increment of the camera params:
@@ -691,7 +675,7 @@ void mrpt::vision::add_lm_increment(
 } // end of add_lm_increment
 
 
-#if USE_NUMERIC_JACOBIANS
+#ifdef USE_NUMERIC_JACOBIANS
 // ---------------------------------------------------------------
 // Aux. function, only if we evaluate Jacobians numerically:
 // ---------------------------------------------------------------
@@ -759,12 +743,75 @@ void mrpt::vision::add_lm_increment(
 		const Eigen::Matrix<double,4,1> predicted_obs( px_l.x,px_l.y, px_r.x,px_r.y );
 
 		// Residual:
-		out = predicted_obs - dat.real_obs;
+		out = predicted_obs; // - dat.real_obs;
+	}
+
+	void eval_h_b(
+		const CArrayDouble<2> &X,
+		const TCamera &params,
+		CArrayDouble<2> &out)
+	{
+		// Radial distortion:
+		const double x = X[0], y=X[1];
+		const double r2 = square(x)+square(y);
+		const double r4 = square(r2);
+		const double r6 = r2*r4;
+		const double A  = 1+params.dist[0]*r2+params.dist[1]*r4+params.dist[4]*r6;
+		const double B  = 2*x*y;
+
+		out[0] = params.cx() + params.fx() * ( x*A + params.dist[2]*B + params.dist[3]*(r2+2*square(x)) );
+		out[1] = params.cy() + params.fy() * ( y*A + params.dist[3]*B + params.dist[2]*(r2+2*square(y)) );
+	}
+
+	void eval_b_p(
+		const CArrayDouble<3> &P,
+		const int &dummy,
+		CArrayDouble<2> &b)
+	{
+		// Radial distortion:
+		b[0] = P[0]/P[2];
+		b[1] = P[1]/P[2];
+	}
+
+	
+	void eval_deps_D_p(
+		const CArrayDouble<6> &eps,
+		const TPoint3D &D_p,
+		CArrayDouble<3> &out)
+	{
+		const CArrayDouble<6> incr( &eps[0] );
+		const CPose3D         incrPose = CPose3D::exp(incr);
+		TPoint3D D_p_out;
+		incrPose.composePoint(D_p,D_p_out);
+		for (int i=0;i<3;i++) out[i]=D_p_out[i];
+	}
+
+	struct TEvalData_A_eps_D_p
+	{
+		CPose3D  A, D;
+		TPoint3D p;
+	};
+
+	void eval_dA_eps_D_p(
+		const CArrayDouble<6> &eps,
+		const TEvalData_A_eps_D_p  &dat,
+		CArrayDouble<3> &out)
+	{
+		const CArrayDouble<6> incr( &eps[0] );
+		const CPose3D  incrPose = CPose3D::exp(incr);
+		const CPose3D  A_eps_D = dat.A + (incrPose + dat.D);
+		TPoint3D pt;
+		A_eps_D.composePoint(dat.p,pt);
+		for (int i=0;i<3;i++) out[i]=pt[i];
 	}
 // ---------------------------------------------------------------
 // End of aux. function, only if we evaluate Jacobians numerically:
 // ---------------------------------------------------------------
 #endif
+
+
+
+
 
 // the 4x1 prediction are the (u,v) pixel coordinates for the left / right cameras:
 double mrpt::vision::recompute_errors_and_Jacobians(
@@ -820,7 +867,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			// Jacobian: (4x30)
 			// See technical report cited in the headers for the theory behind these formulas.
 			// ---------------------------------------------------------------------------------
-#if !USE_NUMERIC_JACOBIANS
+#if !defined(USE_NUMERIC_JACOBIANS) || defined(COMPARE_NUMERIC_JACOBIANS)
 			// ----- Theoretical Jacobians -----
 			Eigen::Matrix<double,2,6> dhl_del, dhr_del, dhr_der;
 			Eigen::Matrix<double,2,9> dhl_dcl, dhr_dcr;
@@ -831,13 +878,64 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			(lm_stat.right2left_pose+lm_stat.left_cam_poses[k]).composePoint(lm_stat.obj_points[i], pt_wrt_right);
 
 			// Build partial Jacobians:
-			Eigen::Matrix<double,2,5> dhl_dbl, dhr_dbr;
+			Eigen::Matrix<double,2,2> dhl_dbl, dhr_dbr;
 			jacob_dh_db_and_dh_dc(pt_wrt_left,  lm_stat.left_cam_params,  dhl_dbl, dhl_dcl );
 			jacob_dh_db_and_dh_dc(pt_wrt_right, lm_stat.right_cam_params, dhr_dbr, dhr_dcr );
 
-			Eigen::Matrix<double,5,3> dbl_dpl, dbr_dpr;
+#if 0
+			// Almost exact....
+			{
+				CArrayDouble<2> x0;
+				TPoint3D nP = pt_wrt_left;
+				x0[0] = nP.x/nP.z;
+				x0[1] = nP.y/nP.z;
+	
+				CArrayDouble<2> x_incrs;
+				x_incrs.setConstant(1e-6);
+
+				Eigen::Matrix<double,2,2> num_dhl_dbl, num_dhr_dbr;
+				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_h_b, x_incrs, camparam_l, num_dhl_dbl );
+
+				nP = pt_wrt_right;
+				x0[0] = nP.x/nP.z;
+				x0[1] = nP.y/nP.z;
+				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_h_b, x_incrs, camparam_r, num_dhr_dbr );
+
+				cout << "num_dhl_dbl:\n" << num_dhl_dbl << "\ndiff dhl_dbl:\n" << dhl_dbl-num_dhl_dbl << endl << endl;
+				cout << "num_dhr_dbr:\n" << num_dhr_dbr << "\ndiff dhr_dbr:\n" << dhr_dbr-num_dhr_dbr << endl << endl;
+
+			}
+#endif
+
+			Eigen::Matrix<double,2,3> dbl_dpl, dbr_dpr;
 			jacob_db_dp(pt_wrt_left,  dbl_dpl);
 			jacob_db_dp(pt_wrt_right, dbr_dpr);
+
+#if 0
+			// OK! 100% exact.
+			{
+				CArrayDouble<3> x0;
+				x0[0]=pt_wrt_left.x;
+				x0[1]=pt_wrt_left.y;
+				x0[2]=pt_wrt_left.z;
+	
+				CArrayDouble<3> x_incrs;
+				x_incrs.setConstant(1e-8);
+
+				Eigen::Matrix<double,2,3> num_dbl_dpl, num_dbr_dpr;
+				const int dumm=0;
+				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_b_p, x_incrs, dumm, num_dbl_dpl );
+
+				x0[0]=pt_wrt_right.x;
+				x0[1]=pt_wrt_right.y;
+				x0[2]=pt_wrt_right.z;
+				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_b_p, x_incrs, dumm, num_dbr_dpr );
+
+				cout << "num_dbl_dpl:\n" << num_dbl_dpl << "\ndbl_dpl:\n" << dbl_dpl << endl << endl;
+				cout << "num_dbr_dpr:\n" << num_dbr_dpr << "\ndbr_dpr:\n" << dbr_dpr << endl << endl;
+
+			}
+#endif
 
 			// p_l = exp(epsilon_l) (+) pose_left (+) point_ij
 			// p_l = [exp(epsilon_r) (+) pose_right2left] (+) [exp(epsilon_l) (+) pose_left] (+) point_ij
@@ -845,6 +943,47 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			jacob_deps_D_p_deps(pt_wrt_left,  dpl_del);
 			jacob_deps_D_p_deps(pt_wrt_right, dpr_der);
 			jacob_dA_eps_D_p_deps(lm_stat.right2left_pose, lm_stat.left_cam_poses[k],lm_stat.obj_points[i], dpr_del);
+
+#if 0
+			// 100% Exact.
+			{
+				// Test jacob_deps_D_p_deps:
+				CArrayDouble<6> x0; 
+				x0.setConstant(0);
+
+				CArrayDouble<6> x_incrs;
+				x_incrs.setConstant(1e-8);
+
+				Eigen::Matrix<double,3,6> num_dpl_del, num_dpr_der;
+				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_deps_D_p, x_incrs, pt_wrt_left , num_dpl_del );
+				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_deps_D_p, x_incrs, pt_wrt_right, num_dpr_der );
+
+				cout << "num_dpl_del:\n" << num_dpl_del << "\ndiff dpl_del:\n" << dpl_del-num_dpl_del << endl << endl;
+				cout << "num_dpr_der:\n" << num_dpr_der << "\ndiff dpr_der:\n" << dpr_der-num_dpr_der << endl << endl;
+			}
+#endif
+
+#if 0
+			// 100% Exact.
+			{
+				// Test jacob_dA_eps_D_p_deps:
+				CArrayDouble<6> x0; 
+				x0.setConstant(0);
+
+				CArrayDouble<6> x_incrs;
+				x_incrs.setConstant(1e-8);
+
+				TEvalData_A_eps_D_p dat;
+				dat.A = lm_stat.right2left_pose;
+				dat.D = lm_stat.left_cam_poses[k];
+				dat.p = lm_stat.obj_points[i];
+
+				Eigen::Matrix<double,3,6> num_dpr_del;
+				mrpt::math::jacobians::jacob_numeric_estimate(x0, &eval_dA_eps_D_p, x_incrs,dat , num_dpr_del );
+
+				cout << "num_dpr_del:\n" << num_dpr_del << "\ndiff dpr_del:\n" << num_dpr_del-dpr_del << endl << endl;
+			}
+#endif
 
 			// Jacobian chain rule:
 			dhl_del = dhl_dbl * dbl_dpl * dpl_del;
@@ -857,9 +996,15 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			rje.J.block<2,6>(2,6) = dhr_der;
 			rje.J.block<2,9>(0,12) = dhl_dcl;
 			rje.J.block<2,9>(2,21) = dhr_dcr;
-			// ---- end of theoretical Jacobians ----
-#else		// ----- Numeric Jacobians ----
 
+#	if defined(COMPARE_NUMERIC_JACOBIANS)
+			const Eigen::Matrix<double,4,30> J_theor=rje.J;
+#	endif
+			// ---- end of theoretical Jacobians ----
+#endif
+
+#if defined(USE_NUMERIC_JACOBIANS) || defined(COMPARE_NUMERIC_JACOBIANS)
+			// ----- Numeric Jacobians ----
 
 			CArrayDouble<30> x0;  // eps_l (6) + eps_lr (6) + l_camparams (9) + r_camparams (9)
 			x0.setZero();
@@ -877,7 +1022,23 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 
 			mrpt::math::jacobians::jacob_numeric_estimate(x0, &numeric_jacob_eval_function, x_incrs, dat, rje.J );
 
+#	if defined(COMPARE_NUMERIC_JACOBIANS)
+			const Eigen::Matrix<double,4,30> J_num=rje.J;
+#	endif
 #endif		// ---- end of numeric Jacobians ----
+
+// Only for debugging: 
+#if defined(COMPARE_NUMERIC_JACOBIANS)
+			//if ( (J_num-J_theor).array().abs().maxCoeff()>1e-2) 
+			{
+				ofstream f;
+				f.open("dbg.txt", ios_base::out | ios_base::app);
+				f << "J_num:\n" << J_num << endl
+				  << "J_theor:\n" << J_theor << endl
+				  << "diff:\n" << J_num - J_theor << endl 
+				  << "diff (ratio):\n" << (J_num - J_theor).cwiseQuotient(J_num) << endl << endl;
+			}
+#endif
 		} // for i
 	} // for k
 
@@ -892,7 +1053,7 @@ TStereoCalibParams::TStereoCalibParams() :
 	normalize_image(true),
 	skipDrawDetectedImgs(false),
 	verbose(true),
-	maxIters(300),
+	maxIters(2000),
 	optimize_k1(true), optimize_k2(true), optimize_k3(false),
 	optimize_t1(false),optimize_t2(false)
 {

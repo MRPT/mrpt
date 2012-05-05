@@ -121,7 +121,7 @@ void TCamera::saveToConfigFile(const std::string &section,  mrpt::utils::CConfig
 	cfg.write(section,"fx", format("%.05f",fx()) );
 	cfg.write(section,"fy", format("%.05f",fy()) );
 	cfg.write(section,"dist", format("[%e %e %e %e %e]", dist[0],dist[1],dist[2],dist[3],dist[4] ) );
-	cfg.write(section,"focal_length", focalLengthMeters );
+	if (focalLengthMeters!=0) cfg.write(section,"focal_length", focalLengthMeters );
 }
 
 /**  Load all the params from a config source, in the format described in saveToConfigFile()
@@ -155,7 +155,7 @@ void TCamera::loadFromConfigFile(const std::string &section,  const mrpt::utils:
 	for (vector_double::Index i=0;i<dists.size();i++)
 		dist[i] = dists[i];
 
-	focalLengthMeters = cfg.read_double(section,"focal_length",0.002, false /* optional value */ );
+	focalLengthMeters = cfg.read_double(section,"focal_length",0, false /* optional value */ );
 
 }
 

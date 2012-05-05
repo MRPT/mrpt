@@ -67,6 +67,8 @@ int TestStereoCalibrate(int argc, char** argv)
 	calib_params.check_squares_length_Y_meters = 24.31e-3;
 	//calib_params.maxIters = 300;
 	//calib_params.verbose = true;
+	calib_params.optimize_k1 = true;
+	calib_params.optimize_k2 = true;
 
 
 	// Load images:

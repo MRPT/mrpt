@@ -86,7 +86,7 @@ namespace slam
 	 *		- mrpt::hwdrivers::CSwissRanger3DCamera
 	 *		- mrpt::hwdrivers::CKinect
 	 *
-	 *  There are two sets of calibration parameters:
+	 *  There are two sets of calibration parameters (see mrpt::vision::checkerBoardStereoCalibration() or the ready-to-use GUI program <a href="http://www.mrpt.org/Application:kinect-calibrate" >kinect-calibrate</a>):
 	 *		- cameraParams: Projection parameters of the depth camera.
 	 *		- cameraParamsIntensity: Projection parameters of the intensity (gray-level or RGB) camera.
 	 *

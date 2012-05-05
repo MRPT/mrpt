@@ -90,10 +90,17 @@ namespace mrpt
 		  */
 		typedef std::vector<TImageStereoCalibData> TCalibrationStereoImageList;
 
-		/** Performs stereo camera calibration (computation of projection and distortion parameters) from a sequence of pairs of captured images of a checkerboard.
-		  * \param input_images [IN/OUT] At input, this list must have one entry for each image to process. At output the original, detected checkboard and rectified images can be found here. See TImageCalibData.
+		/** Optimize the calibration parameters of a stereo camera or a RGB+D (Kinect) camera. 
+		  *  This computes the projection and distortion parameters of each camera, and their relative spatial pose, 
+		  *  from a sequence of pairs of captured images of a checkerboard.
+		  *
+		  *  \param input_images [IN/OUT] At input, this list must have one entry for each image to process. At output the original, detected checkboard and rectified images can be found here. See TImageCalibData.
+		  *  \param params [IN] Mandatory: the user must provide the size of the checkerboard, which parameters to optimize and which to leave fixed to zero, etc.
+		  *  \param out_results [OUT] The results of the calibration, and its uncertainty measure, will be found here upon return.
+		  *
 		  * \return false on any error (more info will be dumped to cout), or true on success.
-		  * \sa CImage::findChessboardCorners, checkerBoardCameraCalibration
+		  * \note See also the ready-to-use application: <a href="http://www.mrpt.org/Application:kinect-calibrate" >kinect-calibrate</a>
+		  * \sa CImage::findChessboardCorners, checkerBoardCameraCalibration, mrpt::hwdrivers::CKinect
 		  */
 		bool VISION_IMPEXP checkerBoardStereoCalibration(
 			TCalibrationStereoImageList & images,
