@@ -1550,30 +1550,35 @@ void  CImage::normalize()
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
-	IplImage *ipl = ((IplImage*)img);
-	ASSERT_(ipl);
+    IplImage *ipl = getAs<IplImage>();	// Source Image
+	ASSERT_(ipl)
+	ASSERTMSG_( ipl->nChannels==1, "CImage::normalize() only defined for grayscale images.")
 
-	int			i;
-	if (ipl->nChannels!=1)
-		THROW_EXCEPTION("CImage Error using normalize, wrong number of channel");
-
-	unsigned char val,min_=255,max_=1;
-	for (i=0;i<ipl->height;i++)
+	uint8_t min_=255,max_=1;
+	for (int y=0;y<ipl->height;y++)
 	{
-		for (int j=0;j<ipl->width;j++)
+		const uint8_t *ptr = reinterpret_cast<const uint8_t*>( ipl->imageData + y*ipl->widthStep );
+		for (int x=0;x<ipl->width;x++)
 		{
-			val = ipl->imageData[i*ipl->widthStep + j];
+			const uint8_t val = *ptr++;
 			if (min_ > val) min_=val;
 			if (max_ < val) max_=val;
 		}
 	}
 
-	double esc=255.0/((double)max_-(double)min_);
-	for (i=0;i<ipl->height;i++)
+	// Compute scale factor & build convert look-up-table:
+	const double s=255.0/((double)max_-(double)min_);
+	uint8_t lut[256];
+	for (int v=0;v<256;v++) lut[v] = static_cast<uint8_t>( (v-min_)*s );
+
+	// Apply LUT:
+	for (int y=0;y<ipl->height;y++)
 	{
-		for (int j=0;j<ipl->width;j++)
+		uint8_t *ptr = reinterpret_cast<uint8_t*>( ipl->imageData + y*ipl->widthStep );
+		for (int x=0;x<ipl->width;x++)
 		{
-			ipl->imageData[i*ipl->widthStep + j]=(unsigned char) (esc*(ipl->imageData[i*ipl->widthStep + j]-min_));
+			*ptr = lut[*ptr];
+			ptr++;
 		}
 	}
 #endif

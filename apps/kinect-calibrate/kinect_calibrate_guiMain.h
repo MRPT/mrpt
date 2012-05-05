@@ -37,16 +37,17 @@
 #define KINECT_CALIBRATE_GUIMAIN_H
 
 //(*Headers(kinect_calibrate_guiDialog)
-#include <wx/spinctrl.h>
-#include <wx/checkbox.h>
-#include <wx/dialog.h>
-#include <wx/sizer.h>
 #include <wx/notebook.h>
-#include <wx/button.h>
-#include <wx/panel.h>
-#include <mrpt/gui/WxUtils.h>
+#include <wx/sizer.h>
 #include <wx/stattext.h>
+#include <wx/radiobox.h>
 #include <wx/textctrl.h>
+#include <wx/checkbox.h>
+#include <wx/spinctrl.h>
+#include <wx/panel.h>
+#include <wx/button.h>
+#include <wx/dialog.h>
+#include <mrpt/gui/WxUtils.h>
 #include <wx/timer.h>
 //*)
 
@@ -61,15 +62,31 @@
 //   and exploit multicore CPUs.
 struct TThreadParam
 {
-	TThreadParam() : quit(false), terminated(false), command(0), tilt_ang_deg(0), Hz(0) { }
+	TThreadParam() : quit(false), terminated(false), command(0), tilt_ang_deg(0), Hz(0),select_IR_channel(false) { }
 
 	volatile bool   quit;
 	volatile bool   terminated;
 	volatile int    command;
 	volatile double tilt_ang_deg;
 	volatile double Hz;
+	volatile bool   select_IR_channel; 
 
 	mrpt::synch::CThreadSafeVariable<mrpt::slam::CObservation3DRangeScanPtr> new_obs;     // RGB+D (+3D points)
+};
+
+// Thread for (async) live detecting corners: Do in another thread so the GUI doesn't freeze.
+struct TThreadDetectCornerParam
+{
+	TThreadDetectCornerParam() : ready_for_new_images(true), quit(false), terminated(false), image_timestamp(INVALID_TIMESTAMP), detected_corners_done(false) {}
+
+	volatile bool   quit;
+	volatile bool   terminated;
+
+	volatile bool ready_for_new_images;
+	mrpt::utils::CImage  image;
+	volatile mrpt::system::TTimeStamp  image_timestamp; 
+	std::vector<mrpt::utils::TPixelCoordf>  detected_corners;
+	volatile bool  detected_corners_done;
 };
 
 
@@ -87,9 +104,13 @@ class kinect_calibrate_guiDialog: public wxDialog
 		mrpt::system::TThreadHandle  m_cap_thread;
 		TThreadParam                 m_cap_thread_data;
 
+		mrpt::system::TThreadHandle  m_findcorners_thread;
+		TThreadDetectCornerParam     m_findcorners_thread_data;
+
 		mrpt::slam::CObservation3DRangeScanPtr  m_last_obs;
 
 		void thread_grabbing();
+		void thread_find_corners();
 		void ProcessNewGrabbedObs();
 
         //(*Handlers(kinect_calibrate_guiDialog)
@@ -102,6 +123,7 @@ class kinect_calibrate_guiDialog: public wxDialog
         void OntimConsoleDumpTrigger(wxTimerEvent& event);
         void OntimMiscTrigger(wxTimerEvent& event);
         void OnClose(wxCloseEvent& event);
+        void OnrbChannelSwitchSelect(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(kinect_calibrate_guiDialog)
@@ -118,24 +140,32 @@ class kinect_calibrate_guiDialog: public wxDialog
         static const long ID_BUTTON5;
         static const long ID_STATICTEXT9;
         static const long ID_BUTTON4;
-        static const long ID_STATICTEXT10;
-        static const long ID_TEXTCTRL4;
         static const long ID_PANEL3;
         static const long ID_CUSTOM1;
+        static const long ID_TEXTCTRL5;
         static const long ID_STATICTEXT1;
         static const long ID_SPINCTRL1;
         static const long ID_STATICTEXT2;
         static const long ID_SPINCTRL2;
-        static const long ID_STATICTEXT3;
-        static const long ID_TEXTCTRL1;
-        static const long ID_STATICTEXT4;
-        static const long ID_TEXTCTRL3;
+        static const long ID_RADIOBOX1;
         static const long ID_CHECKBOX1;
+        static const long ID_BUTTON6;
+        static const long ID_STATICTEXT12;
         static const long ID_PANEL7;
         static const long ID_PANEL4;
-        static const long ID_PANEL5;
+        static const long ID_STATICTEXT13;
+        static const long ID_SPINCTRL3;
+        static const long ID_STATICTEXT14;
+        static const long ID_SPINCTRL4;
+        static const long ID_STATICTEXT15;
+        static const long ID_TEXTCTRL6;
+        static const long ID_STATICTEXT16;
+        static const long ID_TEXTCTRL7;
+        static const long ID_CHECKBOX2;
         static const long ID_PANEL6;
         static const long ID_NOTEBOOK1;
+        static const long ID_STATICTEXT10;
+        static const long ID_TEXTCTRL4;
         static const long ID_BUTTON1;
         static const long ID_BUTTON2;
         static const long ID_PANEL2;
@@ -144,42 +174,50 @@ class kinect_calibrate_guiDialog: public wxDialog
         //*)
 
         //(*Declarations(kinect_calibrate_guiDialog)
-        wxButton* btnQuit;
-        mrpt::gui::wxMRPTImageControl* m_realtimeview_cap;
-        wxTextCtrl* edLengthY;
-        wxPanel* Panel6;
-        wxPanel* Panel1;
-        wxPanel* Panel7;
-        wxCheckBox* cbNormalize;
-        mrpt::gui::wxMRPTImageControl* m_imgStaticKinect;
-        wxButton* btnConnect;
-        wxButton* bntAbout;
-        wxTimer timMisc;
-        wxSpinCtrl* edSizeY;
-        wxStaticText* StaticText1;
         wxStaticText* StaticText10;
-        wxTimer timConsoleDump;
-        wxPanel* Panel2;
-        wxStaticText* StaticText3;
-        wxPanel* Panel4;
-        wxPanel* Panel5;
-        wxStaticText* StaticText8;
-        wxSpinCtrl* edSizeX;
-        wxPanel* Panel3;
-        wxStaticText* StaticText7;
-        wxButton* btnNext1;
-        wxTextCtrl* TextCtrl1;
-        wxStaticText* StaticText4;
-        wxStaticText* StaticText5;
-        wxStaticText* StaticText2;
-        wxNotebook* Notebook1;
-        wxTextCtrl* edLengthX;
-        wxStaticText* StaticText6;
         wxButton* btnNext2;
-        mrpt::gui::wxMRPTImageControl* m_realtimeview_test;
-        wxTextCtrl* edLogTest;
         wxStaticText* StaticText9;
+        wxTextCtrl* edLogTest;
+        wxCheckBox* cbNormalize;
+        wxTimer timConsoleDump;
+        wxStaticText* lbNumCaptured;
+        wxButton* bntAbout;
+        mrpt::gui::wxMRPTImageControl* m_realtimeview_test;
+        wxTextCtrl* TextCtrl4;
+        wxNotebook* Notebook1;
+        wxSpinCtrl* SpinCtrl1;
+        wxStaticText* StaticText13;
+        wxStaticText* StaticText2;
+        wxButton* btnConnect;
+        wxPanel* Panel4;
+        wxStaticText* StaticText14;
+        wxButton* btnNext1;
+        wxStaticText* StaticText6;
+        mrpt::gui::wxMRPTImageControl* m_realtimeview_cap;
+        wxSpinCtrl* edSizeY;
+        wxButton* btnQuit;
+        wxStaticText* StaticText8;
         wxStaticText* StaticText11;
+        wxPanel* Panel1;
+        wxStaticText* StaticText1;
+        wxPanel* Panel6;
+        wxCheckBox* CheckBox1;
+        wxPanel* Panel3;
+        wxTimer timMisc;
+        wxRadioBox* rbChannelSwitch;
+        wxStaticText* StaticText5;
+        wxStaticText* StaticText7;
+        wxPanel* Panel7;
+        wxSpinCtrl* SpinCtrl2;
+        wxTextCtrl* TextCtrl2;
+        wxSpinCtrl* edSizeX;
+        wxTextCtrl* TextCtrl1;
+        wxStaticText* StaticText15;
+        wxStaticText* StaticText12;
+        wxPanel* Panel2;
+        mrpt::gui::wxMRPTImageControl* m_imgStaticKinect;
+        wxTextCtrl* TextCtrl3;
+        wxButton* btnCapture;
         //*)
 
         DECLARE_EVENT_TABLE()
