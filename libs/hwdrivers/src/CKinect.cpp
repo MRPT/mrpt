@@ -147,7 +147,7 @@ CKinect::CKinect()  :
 
 	// ----- Depth -----
 	m_cameraParamsDepth.ncols = 640;
-	m_cameraParamsDepth.nrows = 480;
+	m_cameraParamsDepth.nrows = 488;
 
 	m_cameraParamsDepth.cx(339.30781);
 	m_cameraParamsDepth.cy(242.7391);
@@ -289,8 +289,8 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 #endif
 
 	// This method will try to exploit memory pooling if possible:
-	obs.rangeImage_setSize(frMode.height,frMode.width); // Was: obs.rangeImage.setSize(frMode.height,frMode.width);
-
+	obs.rangeImage_setSize(frMode.height,frMode.width);
+	
 #ifdef KINECT_PROFILE_MEM_ALLOC
 	alloc_tim.leave("depth_cb alloc");
 #endif
@@ -615,8 +615,11 @@ void CKinect::getNextObservation(
 		// Mark the entire range data as invalid:
 		m_latest_obs.hasRangeImage = true;
 		m_latest_obs.range_is_depth = true;
+		
+		m_latest_obs_cs.enter(); // Important: if system is running slow, etc. we cannot tell for sure that the depth buffer is not beeing filled right now:
 		m_latest_obs.rangeImage.setSize(m_cameraParamsDepth.nrows,m_cameraParamsDepth.ncols);
 		m_latest_obs.rangeImage.setConstant(0); // "0" means: error in range
+		m_latest_obs_cs.leave();
 		there_is_obs=true;
 	}
 

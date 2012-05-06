@@ -50,6 +50,9 @@ namespace mrpt
 		struct VISION_IMPEXP TImageStereoCalibData
 		{
 			TImageCalibData left, right;
+
+			/** Empty all the data */
+			void clear() { *this = TImageStereoCalibData(); }
 		};
 
 		/** Input parameters for mrpt::vision::checkerBoardStereoCalibration */

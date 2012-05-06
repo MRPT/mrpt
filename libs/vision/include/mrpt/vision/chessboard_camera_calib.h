@@ -56,6 +56,9 @@ namespace mrpt
 			mrpt::poses::CPose3D			reconstructed_camera_pose;   //!< At output, the reconstructed pose of the camera.
 			std::vector<TPixelCoordf>		projectedPoints_distorted;   //!< At output, only will have an empty vector if the checkerboard was not found in this image, or the predicted (reprojected) corners, which were used to estimate the average square error.
 			std::vector<TPixelCoordf>		projectedPoints_undistorted; //!< At output, like projectedPoints_distorted but for the undistorted image.
+
+			/** Empty all the data */
+			void clear() { *this = TImageCalibData(); }
 		};
 
 		/**  A list of images, used in checkerBoardCameraCalibration

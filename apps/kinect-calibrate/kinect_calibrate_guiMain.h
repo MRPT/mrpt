@@ -57,6 +57,7 @@
 #include <mrpt/utils.h>
 #include <mrpt/obs.h>
 #include <mrpt/system/threads.h>
+#include <mrpt/vision/chessboard_stereo_camera_calib.h>
 
 // Thread for grabbing: Do this is another thread so we divide rendering and grabbing
 //   and exploit multicore CPUs.
@@ -89,6 +90,15 @@ struct TThreadDetectCornerParam
 	volatile bool  detected_corners_done;
 };
 
+enum TGrabState
+{
+	gsIdle = 0,
+	gsSwitchingRGB,
+	gsCapturingRGB,
+	gsSwitchingIR,
+	gsCapturingIR
+};
+
 
 class kinect_calibrate_guiDialog: public wxDialog
 {
@@ -108,10 +118,17 @@ class kinect_calibrate_guiDialog: public wxDialog
 		TThreadDetectCornerParam     m_findcorners_thread_data;
 
 		mrpt::slam::CObservation3DRangeScanPtr  m_last_obs;
+		
+		mrpt::vision::TCalibrationStereoImageList  m_calib_images;
+		TGrabState                                 m_grabstate;
+
 
 		void thread_grabbing();
 		void thread_find_corners();
 		void ProcessNewGrabbedObs();
+
+		void StopLiveGrabThreads();
+
 
         //(*Handlers(kinect_calibrate_guiDialog)
         void OnQuit(wxCommandEvent& event);
@@ -124,6 +141,8 @@ class kinect_calibrate_guiDialog: public wxDialog
         void OntimMiscTrigger(wxTimerEvent& event);
         void OnClose(wxCloseEvent& event);
         void OnrbChannelSwitchSelect(wxCommandEvent& event);
+        void OnbtnCaptureClick(wxCommandEvent& event);
+        void OnbtnNextCalibClick(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(kinect_calibrate_guiDialog)
@@ -151,6 +170,7 @@ class kinect_calibrate_guiDialog: public wxDialog
         static const long ID_CHECKBOX1;
         static const long ID_BUTTON6;
         static const long ID_STATICTEXT12;
+        static const long ID_BUTTON7;
         static const long ID_PANEL7;
         static const long ID_PANEL4;
         static const long ID_STATICTEXT13;
@@ -163,6 +183,16 @@ class kinect_calibrate_guiDialog: public wxDialog
         static const long ID_TEXTCTRL7;
         static const long ID_CHECKBOX2;
         static const long ID_PANEL6;
+        static const long ID_STATICTEXT3;
+        static const long ID_SPINCTRL5;
+        static const long ID_STATICTEXT4;
+        static const long ID_SPINCTRL6;
+        static const long ID_STATICTEXT17;
+        static const long ID_TEXTCTRL1;
+        static const long ID_STATICTEXT18;
+        static const long ID_TEXTCTRL3;
+        static const long ID_CHECKBOX3;
+        static const long ID_PANEL5;
         static const long ID_NOTEBOOK1;
         static const long ID_STATICTEXT10;
         static const long ID_TEXTCTRL4;
@@ -181,9 +211,11 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxCheckBox* cbNormalize;
         wxTimer timConsoleDump;
         wxStaticText* lbNumCaptured;
+        wxSpinCtrl* SpinCtrl4;
         wxButton* bntAbout;
         mrpt::gui::wxMRPTImageControl* m_realtimeview_test;
         wxTextCtrl* TextCtrl4;
+        wxPanel* Panel5;
         wxNotebook* Notebook1;
         wxSpinCtrl* SpinCtrl1;
         wxStaticText* StaticText13;
@@ -192,19 +224,24 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxPanel* Panel4;
         wxStaticText* StaticText14;
         wxButton* btnNext1;
+        wxButton* btnNextCalib;
         wxStaticText* StaticText6;
+        wxTextCtrl* TextCtrl6;
         mrpt::gui::wxMRPTImageControl* m_realtimeview_cap;
         wxSpinCtrl* edSizeY;
         wxButton* btnQuit;
         wxStaticText* StaticText8;
         wxStaticText* StaticText11;
+        wxCheckBox* CheckBox2;
         wxPanel* Panel1;
         wxStaticText* StaticText1;
+        wxStaticText* StaticText3;
         wxPanel* Panel6;
         wxCheckBox* CheckBox1;
         wxPanel* Panel3;
         wxTimer timMisc;
         wxRadioBox* rbChannelSwitch;
+        wxSpinCtrl* SpinCtrl3;
         wxStaticText* StaticText5;
         wxStaticText* StaticText7;
         wxPanel* Panel7;
@@ -215,9 +252,13 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxStaticText* StaticText15;
         wxStaticText* StaticText12;
         wxPanel* Panel2;
+        wxTextCtrl* TextCtrl5;
         mrpt::gui::wxMRPTImageControl* m_imgStaticKinect;
+        wxStaticText* StaticText17;
+        wxStaticText* StaticText4;
         wxTextCtrl* TextCtrl3;
         wxButton* btnCapture;
+        wxStaticText* StaticText16;
         //*)
 
         DECLARE_EVENT_TABLE()

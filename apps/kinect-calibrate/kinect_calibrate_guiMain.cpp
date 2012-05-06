@@ -106,6 +106,7 @@ const long kinect_calibrate_guiDialog::ID_RADIOBOX1 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_CHECKBOX1 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_BUTTON6 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_STATICTEXT12 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_BUTTON7 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_PANEL7 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_PANEL4 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_STATICTEXT13 = wxNewId();
@@ -118,6 +119,16 @@ const long kinect_calibrate_guiDialog::ID_STATICTEXT16 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_TEXTCTRL7 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_CHECKBOX2 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_PANEL6 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_STATICTEXT3 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_SPINCTRL5 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_STATICTEXT4 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_SPINCTRL6 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_STATICTEXT17 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_TEXTCTRL1 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_STATICTEXT18 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_TEXTCTRL3 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_CHECKBOX3 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_PANEL5 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_NOTEBOOK1 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_STATICTEXT10 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_TEXTCTRL4 = wxNewId();
@@ -136,6 +147,8 @@ END_EVENT_TABLE()
 kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindowID id)
 	: m_my_redirector(NULL)
 {
+	m_grabstate = gsIdle;
+
 	// Load my custom icons:
 #if wxCHECK_VERSION(2, 8, 0)
     wxArtProvider::Push(new MyArtProvider);
@@ -146,17 +159,23 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     //(*Initialize(kinect_calibrate_guiDialog)
     wxStaticBoxSizer* StaticBoxSizer2;
     wxFlexGridSizer* FlexGridSizer4;
+    wxFlexGridSizer* FlexGridSizer16;
+    wxFlexGridSizer* FlexGridSizer19;
     wxStaticBoxSizer* StaticBoxSizer4;
     wxFlexGridSizer* FlexGridSizer10;
     wxFlexGridSizer* FlexGridSizer3;
     wxFlexGridSizer* FlexGridSizer5;
     wxFlexGridSizer* FlexGridSizer9;
     wxFlexGridSizer* FlexGridSizer2;
+    wxStaticBoxSizer* StaticBoxSizer9;
     wxFlexGridSizer* FlexGridSizer7;
     wxStaticBoxSizer* StaticBoxSizer7;
+    wxStaticBoxSizer* StaticBoxSizer10;
     wxStaticBoxSizer* StaticBoxSizer8;
     wxStaticBoxSizer* StaticBoxSizer3;
     wxStaticBoxSizer* StaticBoxSizer6;
+    wxFlexGridSizer* FlexGridSizer15;
+    wxFlexGridSizer* FlexGridSizer18;
     wxFlexGridSizer* FlexGridSizer8;
     wxFlexGridSizer* FlexGridSizer14;
     wxBoxSizer* BoxSizer1;
@@ -167,12 +186,13 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     wxFlexGridSizer* FlexGridSizer1;
     wxFlexGridSizer* FlexGridSizer11;
     wxFlexGridSizer* FlexGridSizer17;
+    wxStaticBoxSizer* StaticBoxSizer5;
     
     Create(parent, wxID_ANY, _("Kinect calibration Wizard - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("wxID_ANY"));
     FlexGridSizer1 = new wxFlexGridSizer(2, 1, 0, 0);
     FlexGridSizer1->AddGrowableCol(0);
     FlexGridSizer1->AddGrowableRow(0);
-    Notebook1 = new wxNotebook(this, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_NOTEBOOK1"));
+    Notebook1 = new wxNotebook(this, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM, _T("ID_NOTEBOOK1"));
     Panel1 = new wxPanel(Notebook1, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
     m_imgStaticKinect = new mrpt::gui::wxMRPTImageControl(Panel1,ID_CUSTOM2,wxPoint(280,96).x,wxPoint(280,96).y,wxSize(300,116).GetWidth(), wxSize(300,116).GetHeight() );
     StaticText6 = new wxStaticText(Panel1, ID_STATICTEXT6, _("Prepare to calibrate your Kinect sensor:"), wxPoint(40,32), wxDefaultSize, 0, _T("ID_STATICTEXT6"));
@@ -219,9 +239,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     StaticBoxSizer1->Add(BoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer4->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticBoxSizer3 = new wxStaticBoxSizer(wxHORIZONTAL, Panel7, _("Checkerboard parameters "));
-    FlexGridSizer6 = new wxFlexGridSizer(2, 1, 0, 0);
-    FlexGridSizer6->AddGrowableCol(0);
-    FlexGridSizer6->AddGrowableCol(1);
+    FlexGridSizer6 = new wxFlexGridSizer(1, 1, 0, 0);
     StaticBoxSizer4 = new wxStaticBoxSizer(wxHORIZONTAL, Panel7, _("Number of inner corners: "));
     FlexGridSizer17 = new wxFlexGridSizer(1, 4, 0, 0);
     StaticText1 = new wxStaticText(Panel7, ID_STATICTEXT1, _("In X:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
@@ -239,9 +257,8 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     StaticBoxSizer3->Add(FlexGridSizer6, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 3);
     FlexGridSizer4->Add(StaticBoxSizer3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticBoxSizer2 = new wxStaticBoxSizer(wxHORIZONTAL, Panel7, _(" Controls "));
-    FlexGridSizer8 = new wxFlexGridSizer(3, 1, 0, 0);
+    FlexGridSizer8 = new wxFlexGridSizer(5, 1, 0, 0);
     FlexGridSizer8->AddGrowableCol(0);
-    FlexGridSizer8->AddGrowableCol(1);
     wxString __wxRadioBoxChoices_1[2] = 
     {
     	_("RGB (Visible)"),
@@ -259,6 +276,11 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer8->Add(btnCapture, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     lbNumCaptured = new wxStaticText(Panel7, ID_STATICTEXT12, _("Captured image pairs: 0"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT12"));
     FlexGridSizer8->Add(lbNumCaptured, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    btnNextCalib = new wxButton(Panel7, ID_BUTTON7, _("OK, go to calibrate >>"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON7"));
+    btnNextCalib->Disable();
+    wxFont btnNextCalibFont(10,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    btnNextCalib->SetFont(btnNextCalibFont);
+    FlexGridSizer8->Add(btnNextCalib, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticBoxSizer2->Add(FlexGridSizer8, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 3);
     FlexGridSizer4->Add(StaticBoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel7->SetSizer(FlexGridSizer4);
@@ -271,9 +293,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     Panel6 = new wxPanel(Notebook1, ID_PANEL6, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL6"));
     FlexGridSizer9 = new wxFlexGridSizer(3, 3, 0, 0);
     StaticBoxSizer6 = new wxStaticBoxSizer(wxHORIZONTAL, Panel6, _("Checkerboard parameters "));
-    FlexGridSizer10 = new wxFlexGridSizer(2, 1, 0, 0);
-    FlexGridSizer10->AddGrowableCol(0);
-    FlexGridSizer10->AddGrowableCol(1);
+    FlexGridSizer10 = new wxFlexGridSizer(3, 1, 0, 0);
     StaticBoxSizer7 = new wxStaticBoxSizer(wxHORIZONTAL, Panel6, _("Number of inner corners: "));
     FlexGridSizer11 = new wxFlexGridSizer(1, 4, 0, 0);
     StaticText12 = new wxStaticText(Panel6, ID_STATICTEXT13, _("In X:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT13"));
@@ -308,10 +328,49 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     Panel6->SetSizer(FlexGridSizer9);
     FlexGridSizer9->Fit(Panel6);
     FlexGridSizer9->SetSizeHints(Panel6);
+    Panel5 = new wxPanel(Notebook1, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL5"));
+    FlexGridSizer15 = new wxFlexGridSizer(3, 3, 0, 0);
+    StaticBoxSizer5 = new wxStaticBoxSizer(wxHORIZONTAL, Panel5, _("Checkerboard parameters "));
+    FlexGridSizer16 = new wxFlexGridSizer(3, 1, 0, 0);
+    StaticBoxSizer9 = new wxStaticBoxSizer(wxHORIZONTAL, Panel5, _("Number of inner corners: "));
+    FlexGridSizer18 = new wxFlexGridSizer(1, 4, 0, 0);
+    StaticText3 = new wxStaticText(Panel5, ID_STATICTEXT3, _("In X:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
+    FlexGridSizer18->Add(StaticText3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    SpinCtrl3 = new wxSpinCtrl(Panel5, ID_SPINCTRL5, _T("5"), wxDefaultPosition, wxSize(50,-1), 0, 1, 200, 5, _T("ID_SPINCTRL5"));
+    SpinCtrl3->SetValue(_T("5"));
+    FlexGridSizer18->Add(SpinCtrl3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText4 = new wxStaticText(Panel5, ID_STATICTEXT4, _("In Y:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT4"));
+    FlexGridSizer18->Add(StaticText4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    SpinCtrl4 = new wxSpinCtrl(Panel5, ID_SPINCTRL6, _T("8"), wxDefaultPosition, wxSize(50,-1), 0, 1, 200, 8, _T("ID_SPINCTRL6"));
+    SpinCtrl4->SetValue(_T("8"));
+    FlexGridSizer18->Add(SpinCtrl4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticBoxSizer9->Add(FlexGridSizer18, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer16->Add(StaticBoxSizer9, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    StaticBoxSizer10 = new wxStaticBoxSizer(wxHORIZONTAL, Panel5, _(" Size of quads (in mm): "));
+    FlexGridSizer19 = new wxFlexGridSizer(1, 4, 0, 0);
+    StaticText16 = new wxStaticText(Panel5, ID_STATICTEXT17, _("In X:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT17"));
+    FlexGridSizer19->Add(StaticText16, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    TextCtrl5 = new wxTextCtrl(Panel5, ID_TEXTCTRL1, _("40.0"), wxDefaultPosition, wxSize(40,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
+    FlexGridSizer19->Add(TextCtrl5, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText17 = new wxStaticText(Panel5, ID_STATICTEXT18, _("In Y:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT18"));
+    FlexGridSizer19->Add(StaticText17, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    TextCtrl6 = new wxTextCtrl(Panel5, ID_TEXTCTRL3, _("40.0"), wxDefaultPosition, wxSize(40,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL3"));
+    FlexGridSizer19->Add(TextCtrl6, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticBoxSizer10->Add(FlexGridSizer19, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer16->Add(StaticBoxSizer10, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    CheckBox2 = new wxCheckBox(Panel5, ID_CHECKBOX3, _("Normalize image"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
+    CheckBox2->SetValue(true);
+    FlexGridSizer16->Add(CheckBox2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticBoxSizer5->Add(FlexGridSizer16, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 3);
+    FlexGridSizer15->Add(StaticBoxSizer5, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    Panel5->SetSizer(FlexGridSizer15);
+    FlexGridSizer15->Fit(Panel5);
+    FlexGridSizer15->SetSizeHints(Panel5);
     Notebook1->AddPage(Panel1, _("0) Instructions"), false);
     Notebook1->AddPage(Panel3, _("1) Test connection"), false);
     Notebook1->AddPage(Panel4, _("2) Capture"), false);
-    Notebook1->AddPage(Panel6, _("3) Optimization"), false);
+    Notebook1->AddPage(Panel6, _("3) Stereo/RGBD calibration"), false);
+    Notebook1->AddPage(Panel5, _("4) Live Kinect test"), false);
     FlexGridSizer1->Add(Notebook1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel2 = new wxPanel(this, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
     FlexGridSizer2 = new wxFlexGridSizer(0, 2, 0, 0);
@@ -347,6 +406,8 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnConnectClick);
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnNext1Click);
     Connect(ID_RADIOBOX1,wxEVT_COMMAND_RADIOBOX_SELECTED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnrbChannelSwitchSelect);
+    Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnCaptureClick);
+    Connect(ID_BUTTON7,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnNextCalibClick);
     Connect(ID_NOTEBOOK1,wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnNotebook1PageChanging);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnAbout);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnQuitClick);
@@ -426,6 +487,9 @@ void kinect_calibrate_guiDialog::OnbtnConnectClick(wxCommandEvent& event)
 		return;
 	}
 
+	m_grabstate = gsIdle;
+	m_calib_images.clear();
+
 	m_cap_thread_data.quit = false;
 	m_findcorners_thread_data.quit = false;
 
@@ -455,10 +519,11 @@ void kinect_calibrate_guiDialog::thread_grabbing()
 	{
 		CKinect  kinect;
 
-		// Set params:
-		// kinect.enableGrab3DPoints(true);
-		// kinect.enablePreviewRGB(true);
-		//...
+		// We only have to grab the intensity channel:
+		kinect.enableGrabRGB(true); // RGB / IR channels:
+		kinect.enableGrab3DPoints(false);
+		kinect.enableGrabDepth(false);
+		kinect.enableGrabAccelerometers(false);
 
 		// Open:
 		kinect.setVideoChannel( p.select_IR_channel ? CKinect::VIDEO_CHANNEL_IR : CKinect::VIDEO_CHANNEL_RGB);
@@ -573,13 +638,17 @@ void kinect_calibrate_guiDialog::OntimMiscTrigger(wxTimerEvent& event)
 	} // end if m_cap_thread -> we're grabbing
 }
 
-void kinect_calibrate_guiDialog::OnClose(wxCloseEvent& event)
+void kinect_calibrate_guiDialog::StopLiveGrabThreads()
 {
+	wxBusyInfo info(_("Waiting for grab threads to close..."),this); 
+	wxTheApp->Yield();
+
 	if (!m_cap_thread.isClear() && !m_cap_thread_data.terminated)
 	{
 		m_cap_thread_data.quit = true;
 		cout << "Waiting for the grabbing thread to end...\n";
-		mrpt::system::joinThread( m_cap_thread );
+		for (int i=0;i<1000 && !m_cap_thread_data.terminated;i++) mrpt::system::sleep(1);
+		mrpt::system::terminateThread( m_cap_thread );
 		m_cap_thread.clear();
 		cout << "Grabbing thread closed.\n";
 	}
@@ -587,11 +656,17 @@ void kinect_calibrate_guiDialog::OnClose(wxCloseEvent& event)
 	{
 		m_findcorners_thread_data.quit = true;
 		cout << "Waiting for the corner find thread to end...\n";
-		mrpt::system::joinThread( m_findcorners_thread );
+		for (int i=0;i<1000 && !m_findcorners_thread_data.terminated;i++) mrpt::system::sleep(1);
+		mrpt::system::terminateThread( m_findcorners_thread );
 		m_findcorners_thread.clear();
 		cout << "Corner finding thread closed.\n";
 	}
+}
 
+
+void kinect_calibrate_guiDialog::OnClose(wxCloseEvent& event)
+{
+	StopLiveGrabThreads();
 	event.Skip();
 }
 
@@ -622,6 +697,73 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 	// ------------------------------------------
 	case 2:
 		{
+			// Capture stuff --------------------
+			static int cnt_skip_frames = 0;
+			vector<string> center_messages;
+
+			if (m_grabstate!=gsIdle)
+				center_messages.push_back(string("* DON'T MOVE EITHER THE SENSOR OR THE CHESSBOARD *"));
+
+			switch (m_grabstate)
+			{
+			case gsIdle:
+				cnt_skip_frames = 0;
+				break;
+
+			case gsSwitchingRGB:
+				center_messages.push_back(string(" Switching to RGB channel..."));
+				m_cap_thread_data.select_IR_channel = false;
+				if (m_last_obs->intensityImageChannel == CObservation3DRangeScan::CH_VISIBLE) {
+					if (cnt_skip_frames++>40) {
+						cnt_skip_frames = 0;
+						m_grabstate = gsCapturingRGB;
+					}
+				}
+				break;
+
+			case gsCapturingRGB:
+				{
+				// Grab RGB (left) image:
+				m_calib_images.resize(m_calib_images.size()+1);
+
+				mrpt::vision::TImageStereoCalibData &scd = *m_calib_images.rbegin();
+				scd.left.img_original = m_last_obs->intensityImage;
+				
+				// Switch to IR:
+				m_grabstate = gsSwitchingIR;
+				}
+				break;
+
+			case gsSwitchingIR:
+				center_messages.push_back(string(" Switching to IR channel..."));
+				m_cap_thread_data.select_IR_channel = true;
+				if (m_last_obs->intensityImageChannel == CObservation3DRangeScan::CH_IR) {
+					if (cnt_skip_frames++>40) {
+						cnt_skip_frames = 0;
+						m_grabstate = gsCapturingIR;
+					}
+				}
+				break;
+
+			case gsCapturingIR:
+				{
+				// Grab IR (right) image:
+				mrpt::vision::TImageStereoCalibData &scd = *m_calib_images.rbegin();
+				scd.right.img_original = m_last_obs->intensityImage;
+
+				// Done capturing: Back to idle:
+				m_grabstate = gsIdle;
+				lbNumCaptured->SetLabel( wxString::Format(_("Captured image pairs: %u"),static_cast<unsigned int>(m_calib_images.size()) ) );
+				btnCapture->Enable();
+				btnNextCalib->Enable();
+
+				// Switch back to user-selected channel:
+				m_cap_thread_data.select_IR_channel = (rbChannelSwitch->GetSelection() == 1);
+				}
+				break;
+			};
+
+			// Display stuff --------------------
 			CImage img_to_show;
 			img_to_show.copyFastFrom(m_last_obs->intensityImage); // (Destroys org img)
 
@@ -653,15 +795,29 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 			img_to_show.colorImageInPlace();
 
 			// Draw detected corners "persistently" during some instants:
+			static bool at_least_detected_once = false;
 			if (mrpt::system::timeDifference(last_valid_corners_tim, mrpt::system::now()) < 0.5 )
 			{
 				const unsigned int cx = edSizeX->GetValue(), cy = edSizeY->GetValue();
 				img_to_show.drawChessboardCorners( last_valid_corners, cx,cy );
+				
+				if (!last_valid_corners.empty()) at_least_detected_once = true;
 			}
 			else
 			{
-				img_to_show.textOut(5,5, "*WARNING*: No chessboard detected!", TColor(255,255,100) );
-				img_to_show.textOut(5,20,"           Make sure the Rows x Cols size is correct.", TColor(255,255,100) );
+				center_messages.push_back("*WARNING*: No chessboard detected!");
+				if (!at_least_detected_once) center_messages.push_back("Make sure the Rows x Cols size is correct.");
+			}
+
+			// Messages:
+			img_to_show.selectTextFont("10x20");
+			for (size_t i=0;i<center_messages.size();i++)
+			{
+				const string &s = center_messages[i];
+				const int x = img_to_show.getWidth()/2 - 10*s.size()/2;
+				const int y = 230 + 25*i;
+				img_to_show.textOut(x,y,s,TColor::black);
+				img_to_show.textOut(x-1,y-1,s,TColor::white);
 			}
 
 			// Show:
@@ -669,9 +825,7 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 			m_realtimeview_cap->Refresh(false);
 		}
 		break;
-
 	}
-
 
 }
 
@@ -714,11 +868,11 @@ void kinect_calibrate_guiDialog::thread_find_corners()
 					);
 
 				if (!detect_ok) p.detected_corners.clear();
-				
+
 				p.detected_corners_done = true; // will be set to false when the buffer "p.detected_corners" has been read.
 				p.ready_for_new_images=true;
 			}
-			else 
+			else
 			{
 				mrpt::system::sleep(2);
 			}
@@ -729,4 +883,20 @@ void kinect_calibrate_guiDialog::thread_find_corners()
 		}
 	}
 	p.terminated = true;
+}
+
+// Button: Capture one image pair.
+void kinect_calibrate_guiDialog::OnbtnCaptureClick(wxCommandEvent& event)
+{
+	btnCapture->Disable();
+	btnNextCalib->Disable();
+	m_grabstate = gsSwitchingRGB;
+}
+
+
+void kinect_calibrate_guiDialog::OnbtnNextCalibClick(wxCommandEvent& event)
+{
+	// Stop grabbing:
+	StopLiveGrabThreads();
+	Notebook1->ChangeSelection( Notebook1->GetSelection() + 1 );
 }
