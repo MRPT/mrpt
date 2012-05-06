@@ -19,7 +19,9 @@ Version: 1.1.1-20070913
 #include "imgfeatures.h"
 #include "utils.h"
 
-#include <highgui.h>
+//#include "cxcore.h"
+//#include <highgui.h>
+#include "../do_opencv_includes.h"
 
 #include <stdio.h>
 

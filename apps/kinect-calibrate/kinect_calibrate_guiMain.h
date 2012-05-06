@@ -78,7 +78,7 @@ struct TThreadParam
 // Thread for (async) live detecting corners: Do in another thread so the GUI doesn't freeze.
 struct TThreadDetectCornerParam
 {
-	TThreadDetectCornerParam() : ready_for_new_images(true), quit(false), terminated(false), image_timestamp(INVALID_TIMESTAMP), detected_corners_done(false) {}
+	TThreadDetectCornerParam() : quit(false), terminated(false), ready_for_new_images(true), image_timestamp(INVALID_TIMESTAMP), detected_corners_done(false) {}
 
 	volatile bool   quit;
 	volatile bool   terminated;

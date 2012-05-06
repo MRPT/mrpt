@@ -11,7 +11,9 @@ Copyright (C) 2006  Rob Hess <hess@eecs.oregonstate.edu>
 #include "imgfeatures.h"
 #include "utils.h"
 
-#include <cxcore.h>
+//#include "cxcore.h"
+//#include <highgui.h>
+#include "../do_opencv_includes.h"
 
 #include <gsl/gsl_sf.h>
 #include <gsl/gsl_rng.h>

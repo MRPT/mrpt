@@ -21,8 +21,9 @@ that accompanied this distribution.
 #include "imgfeatures.h"
 #include "utils.h"
 
-#include <cxcore.h>
-#include <cv.h>
+//#include "cxcore.h"
+//#include <highgui.h>
+#include "../do_opencv_includes.h"
 
 /************************* Local Function Prototypes *************************/
 IplImage* create_init_img( const IplImage*, int, double );

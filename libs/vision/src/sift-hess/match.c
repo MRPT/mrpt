@@ -12,9 +12,9 @@ Copyright (C) 2006  Rob Hess <hess@eecs.oregonstate.edu>
 #include "utils.h"
 #include "xform.h"
 
-#include <cv.h>
-#include <cxcore.h>
-#include <highgui.h>
+//#include "cxcore.h"
+//#include <highgui.h>
+#include "../do_opencv_includes.h"
 
 #include <stdio.h>
 

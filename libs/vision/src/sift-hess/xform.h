@@ -8,7 +8,8 @@ Copyright (C) 2006  Rob Hess <hess@eecs.oregonstate.edu>
 #ifndef XFORM_H
 #define XFORM_H
 
-#include <cxcore.h>
+//#include "cxcore.h"
+#include "../do_opencv_includes.h"
 
 
 /********************************** Structures *******************************/

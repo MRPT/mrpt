@@ -9,7 +9,8 @@ Copyright (C) 2006  Rob Hess <hess@eecs.oregonstate.edu>
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "cxcore.h"
+//#include "cxcore.h"
+#include "../do_opencv_includes.h"
 
 #include <stdio.h>
 

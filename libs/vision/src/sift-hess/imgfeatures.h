@@ -9,7 +9,8 @@ Copyright (C) 2006  Rob Hess <hess@eecs.oregonstate.edu>
 #ifndef IMGFEATURES_H
 #define IMGFEATURES_H
 
-#include "cxcore.h"
+//#include "cxcore.h"
+#include "../do_opencv_includes.h"
 
 #ifdef __cplusplus
  extern "C" {

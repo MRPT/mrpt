@@ -19,7 +19,8 @@ that accompanied this distribution.
 #ifndef SIFT_H
 #define SIFT_H
 
-#include "cxcore.h"
+//#include "cxcore.h"
+#include "../do_opencv_includes.h"
 
 #ifdef __cplusplus
  extern "C" {

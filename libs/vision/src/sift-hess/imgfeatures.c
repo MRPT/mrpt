@@ -9,8 +9,6 @@ Copyright (C) 2006  Rob Hess <hess@eecs.oregonstate.edu>
 #include "utils.h"
 #include "imgfeatures.h"
 
-#include <cxcore.h>
-
 #include <math.h>
 
 int import_oxfd_features( char*, struct feature** );
