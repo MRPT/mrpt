@@ -155,7 +155,13 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
      }
 
     // Retrieve stream information
-    if(av_find_stream_info(ctx->pFormatCtx)<0)
+    if (
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(53,35,0)
+		avformat_find_stream_info(ctx->pFormatCtx, NULL)<0
+#else
+		av_find_stream_info(ctx->pFormatCtx)<0
+#endif
+		)
     {
     	std::cerr << "[CFFMPEG_InputStream::openURL] Couldn't find stream information: " << url << std::endl;
         return false;
@@ -270,7 +276,11 @@ void CFFMPEG_InputStream::close()
     // Close the video file
     if (ctx->pFormatCtx)
     {
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(53,35,0)
+		avformat_close_input(&ctx->pFormatCtx);
+#else
 		av_close_input_file(ctx->pFormatCtx);
+#endif
 		ctx->pFormatCtx = NULL;
     }
 
