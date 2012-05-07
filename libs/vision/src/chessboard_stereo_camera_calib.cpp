@@ -37,6 +37,7 @@
 
 #include "chessboard_stereo_camera_calib_internal.h"
 
+//MRPT_TODO("It seems theoretic jacobs are still wrong?")
 //#define USE_NUMERIC_JACOBIANS
 //#define COMPARE_NUMERIC_JACOBIANS
 
@@ -316,6 +317,10 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		// -------------------------------------------------------------------------------
 
 		// Save final optimum values to the output structure
+		out.final_rmse  = std::sqrt(err/nObs);
+		out.final_iters = iter;
+		out.final_number_good_image_pairs = N;
+
 		// [fx fy cx cy k1 k2 k3 t1 t2]
 		out.cam_params.leftCamera.fx( lm_stat.left_cam_params[0] );
 		out.cam_params.leftCamera.fy( lm_stat.left_cam_params[1] );
@@ -355,15 +360,6 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		{
 			out.left_params_inv_variance [ vars_to_optimize[i] ] = H(base_idx_H_CPs+i,base_idx_H_CPs+i);
 			out.right_params_inv_variance[ vars_to_optimize[i] ] = H(base_idx_H_CPs+nUnknownsCamParams+i,base_idx_H_CPs+nUnknownsCamParams+i);
-		}
-
-		if (p.verbose)
-		{
-			cout << "LEFT CAM PARAMS:\n" << out.cam_params.leftCamera.dumpAsText();
-			cout << "Uncertainty: " << out.left_params_inv_variance.transpose() << endl;
-			cout << "RIGHT  CAM PARAMS:\n" << out.cam_params.rightCamera.dumpAsText();
-			cout << "Uncertainty: " << out.right_params_inv_variance.transpose() << endl;
-			cout << "RIGHT2LEFT pose:\n" << out.right2left_camera_pose << endl;
 		}
 
 		// Draw projected points
@@ -500,7 +496,7 @@ void jacob_dh_db_and_dh_dc(
 	Hc(1,8) = 2*fy*x*y;
 
 }
- 
+
 
 void jacob_deps_D_p_deps(
 	const TPoint3D &p_D,   // D (+) p
@@ -773,7 +769,7 @@ void mrpt::vision::add_lm_increment(
 		b[1] = P[1]/P[2];
 	}
 
-	
+
 	void eval_deps_D_p(
 		const CArrayDouble<6> &eps,
 		const TPoint3D &D_p,
@@ -889,7 +885,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 				TPoint3D nP = pt_wrt_left;
 				x0[0] = nP.x/nP.z;
 				x0[1] = nP.y/nP.z;
-	
+
 				CArrayDouble<2> x_incrs;
 				x_incrs.setConstant(1e-6);
 
@@ -918,7 +914,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 				x0[0]=pt_wrt_left.x;
 				x0[1]=pt_wrt_left.y;
 				x0[2]=pt_wrt_left.z;
-	
+
 				CArrayDouble<3> x_incrs;
 				x_incrs.setConstant(1e-8);
 
@@ -948,7 +944,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			// 100% Exact.
 			{
 				// Test jacob_deps_D_p_deps:
-				CArrayDouble<6> x0; 
+				CArrayDouble<6> x0;
 				x0.setConstant(0);
 
 				CArrayDouble<6> x_incrs;
@@ -967,7 +963,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			// 100% Exact.
 			{
 				// Test jacob_dA_eps_D_p_deps:
-				CArrayDouble<6> x0; 
+				CArrayDouble<6> x0;
 				x0.setConstant(0);
 
 				CArrayDouble<6> x_incrs;
@@ -1027,15 +1023,15 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 #	endif
 #endif		// ---- end of numeric Jacobians ----
 
-// Only for debugging: 
+// Only for debugging:
 #if defined(COMPARE_NUMERIC_JACOBIANS)
-			//if ( (J_num-J_theor).array().abs().maxCoeff()>1e-2) 
+			//if ( (J_num-J_theor).array().abs().maxCoeff()>1e-2)
 			{
 				ofstream f;
 				f.open("dbg.txt", ios_base::out | ios_base::app);
 				f << "J_num:\n" << J_num << endl
 				  << "J_theor:\n" << J_theor << endl
-				  << "diff:\n" << J_num - J_theor << endl 
+				  << "diff:\n" << J_num - J_theor << endl
 				  << "diff (ratio):\n" << (J_num - J_theor).cwiseQuotient(J_num) << endl << endl;
 			}
 #endif
@@ -1056,5 +1052,12 @@ TStereoCalibParams::TStereoCalibParams() :
 	maxIters(2000),
 	optimize_k1(true), optimize_k2(true), optimize_k3(false),
 	optimize_t1(false),optimize_t2(false)
+{
+}
+
+TStereoCalibResults::TStereoCalibResults() :
+	final_rmse (0),
+	final_iters(0),
+	final_number_good_image_pairs(0)
 {
 }

@@ -64,8 +64,8 @@ namespace mrpt
 			bool          skipDrawDetectedImgs;
 			bool          verbose;                   //!< Show progress messages to std::cout console (default=true)
 			size_t        maxIters;                  //!< Maximum number of iterations of the optimizer (default=300)
-			
-			/** Select which distortion parameters (of both left/right cameras) will be optimzed: 
+
+			/** Select which distortion parameters (of both left/right cameras) will be optimzed:
 			  *  k1,k2,k3 are the r^2, r^4 and r^6 radial distorion coeficients, and t1 and t2 are the tangential distortion coeficients (see mrpt::utils::TCamera).
 			  * Those set to false will be assumed to be fixed to zero (no distortion).
 			  * \note Default values are to only assume distortion via k1 and k2 (the rest are zeros).
@@ -79,13 +79,18 @@ namespace mrpt
 		/** Output results for mrpt::vision::checkerBoardStereoCalibration */
 		struct VISION_IMPEXP TStereoCalibResults
 		{
+			TStereoCalibResults();
+
 			mrpt::utils::TStereoCamera  cam_params;  //!< Recovered parameters of the stereo camera
 			mrpt::poses::CPose3D        right2left_camera_pose; //!< The pose of the left camera as seen from the right camera
+			double  final_rmse;  //!< Final reprojection square Root Mean Square Error (in pixels).
+			size_t  final_iters; //!< Final number of optimization iterations executed.
+			size_t  final_number_good_image_pairs; //!< Number of image pairs in which valid checkerboards were correctly detected.
 
 			/** The inverse variance (information/precision) of each of the 9 left/right camera parameters [fx fy cx cy k1 k2 k3 t1 t2].
 			  *  Those not estimated as indicated in TStereoCalibParams will be zeros (i.e. an "infinite uncertainty")
 			  */
-			Eigen::Array<double,9,1>    left_params_inv_variance, right_params_inv_variance; 
+			Eigen::Array<double,9,1>    left_params_inv_variance, right_params_inv_variance;
 		};
 
 		/**  A list of images, used in checkerBoardStereoCalibration
@@ -93,8 +98,8 @@ namespace mrpt
 		  */
 		typedef std::vector<TImageStereoCalibData> TCalibrationStereoImageList;
 
-		/** Optimize the calibration parameters of a stereo camera or a RGB+D (Kinect) camera. 
-		  *  This computes the projection and distortion parameters of each camera, and their relative spatial pose, 
+		/** Optimize the calibration parameters of a stereo camera or a RGB+D (Kinect) camera.
+		  *  This computes the projection and distortion parameters of each camera, and their relative spatial pose,
 		  *  from a sequence of pairs of captured images of a checkerboard.
 		  *
 		  *  \param input_images [IN/OUT] At input, this list must have one entry for each image to process. At output the original, detected checkboard and rectified images can be found here. See TImageCalibData.
