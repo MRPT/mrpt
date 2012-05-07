@@ -166,7 +166,7 @@ IF(WIN32)
 	DESTINATION .)
 
 	SET(CPACK_PACKAGE_EXECUTABLES
-		"camera-calib;Camera calibration GUI;features-matching;Visual feature matching;GridmapNavSimul;Gridmap simulator;RawLogViewer;RawLog Viewer;ReactiveNavigationDemo;Reactive navigation demo;prrt-navigator-demo;PRRT robot navigator demo;SceneViewer3D;Scene Viewer 3D;2d-slam-demo;2D KF-SLAM Simulator;navlog-viewer;Viewer of navigation log files;kinect-3d-slam;Simple live 3D-SLAM with Kinect")
+		"camera-calib;Camera calibration GUI;features-matching;Visual feature matching;GridmapNavSimul;Gridmap simulator;RawLogViewer;RawLog Viewer;ReactiveNavigationDemo;Reactive navigation demo;prrt-navigator-demo;PRRT robot navigator demo;SceneViewer3D;Scene Viewer 3D;2d-slam-demo;2D KF-SLAM Simulator;navlog-viewer;Viewer of navigation log files;kinect-3d-slam;Simple live 3D-SLAM with Kinect;kinect-stereo-calib;Kinect (and generic stereo cams) calibration tool")
 
 	IF (EXISTS "${MRPT_SOURCE_DIR}/apps/hmt-slam-gui")
 		SET(CPACK_PACKAGE_EXECUTABLES "${CPACK_PACKAGE_EXECUTABLES};hmt-slam-gui;HMT-SLAM visual interface")

@@ -25,9 +25,9 @@ IF(wxWidgets_FOUND)
 	ENDIF(WIN32)
 
 	# Define the executable target:
-	ADD_EXECUTABLE(kinect-calibrate WIN32 ${SRCS})
+	ADD_EXECUTABLE(kinect-stereo-calib WIN32 ${SRCS})
 
-	SET(TMP_TARGET_NAME "kinect-calibrate")
+	SET(TMP_TARGET_NAME "kinect-stereo-calib")
 
 
 	SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(APP) ${TMP_TARGET_NAME}")

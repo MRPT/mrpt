@@ -1,18 +1,21 @@
 =head1 NAME
 
-kinect-calibrate - Calibration utility for the Microsoft Kinect sensor
+kinect-stereo-calib - Calibration utility for the Microsoft Kinect sensor
 
 =head1 SYNOPSIS
 
-kinect-calibrate
+kinect-stereo-calib
 
 =head1 DESCRIPTION
 
-B<kinect-calibrate> is designed to allow an easy calibration of the 
+B<kinect-stereo-calib> is designed to allow an easy calibration of the 
 camera intrinsic and extrinsic parameters required for an accurate
-reconstruction of colored 3D point clouds with the sensor. 
+reconstruction of colored 3D point clouds with this sensor.
 Calibration will require a printed checkerboard as those used
-in common camera calibration.
+in common camera calibration. 
+
+It can be also used to calibrate any arbitrary stereo camera, provided
+stereo images of a checkerboard are already saved to disk.
 
 
 =head1 BUGS
@@ -25,7 +28,7 @@ The application wiki page at http://www.mrpt.org/Kinect_and_MRPT
 
 =head1 AUTHORS
 
-B<kinect-calibrate> is part of the Mobile Robot Programming Toolkit (MRPT), 
+B<kinect-stereo-calib> is part of the Mobile Robot Programming Toolkit (MRPT), 
 and was originally written by Jose Luis Blanco (University of Malaga).
 
 =head1 COPYRIGHT
