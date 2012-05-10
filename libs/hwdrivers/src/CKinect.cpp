@@ -225,16 +225,29 @@ void  CKinect::loadConfig_sensorSpecific(
 
 	m_preview_window = configSource.read_bool(iniSection,"preview_window",m_preview_window);
 
-	m_cameraParamsRGB.cx( configSource.read_double(iniSection,"rgb_cx", m_cameraParamsRGB.cx() ) );
-	m_cameraParamsRGB.cy( configSource.read_double(iniSection,"rgb_cy", m_cameraParamsRGB.cy() ) );
-	m_cameraParamsRGB.fx( configSource.read_double(iniSection,"rgb_fx", m_cameraParamsRGB.fx() ) );
-	m_cameraParamsRGB.fy( configSource.read_double(iniSection,"rgb_fy", m_cameraParamsRGB.fy() ) );
+	// "Stereo" calibration data:
+	// [<SECTION>_LEFT]  // Depth
+	//   ...
+	// [<SECTION>_RIGHT] // RGB
+	//   ...
+	// [<SECTION>_LEFT2RIGHT_POSE]
+	//  pose_quaternion = [x y z qr qx qy qz]
 
-	m_cameraParamsDepth.cx( configSource.read_double(iniSection,"d_cx", m_cameraParamsDepth.cx() ) );
-	m_cameraParamsDepth.cy( configSource.read_double(iniSection,"d_cy", m_cameraParamsDepth.cy() ) );
-	m_cameraParamsDepth.fx( configSource.read_double(iniSection,"d_fx", m_cameraParamsDepth.fx() ) );
-	m_cameraParamsDepth.fy( configSource.read_double(iniSection,"d_fy", m_cameraParamsDepth.fy() ) );
+	mrpt::utils::TStereoCamera  sc;
+	sc.leftCamera  = m_cameraParamsDepth;  // Load default values so that if we fail to load from cfg at least we have some reasonable numbers.
+	sc.rightCamera = m_cameraParamsRGB;
+	sc.rightCameraPose = mrpt::poses::CPose3DQuat(m_relativePoseIntensityWRTDepth);
 
+	try {
+		sc.loadFromConfigFile(iniSection,configSource);
+	} catch (std::exception &e) {
+		std::cout << "[CKinect::loadConfig_sensorSpecific] Warning: Ignoring error loading calibration parameters:\n" << e.what();
+	}
+	m_cameraParamsDepth = sc.leftCamera;
+	m_cameraParamsRGB   = sc.rightCamera;
+	m_relativePoseIntensityWRTDepth = mrpt::poses::CPose3D(sc.rightCameraPose);
+
+	// Id:
 	m_user_device_number = configSource.read_int(iniSection,"device_number",m_user_device_number );
 
 	m_grab_image = configSource.read_bool(iniSection,"grab_image",m_grab_image);
@@ -290,7 +303,7 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 
 	// This method will try to exploit memory pooling if possible:
 	obs.rangeImage_setSize(frMode.height,frMode.width);
-	
+
 #ifdef KINECT_PROFILE_MEM_ALLOC
 	alloc_tim.leave("depth_cb alloc");
 #endif
@@ -615,7 +628,7 @@ void CKinect::getNextObservation(
 		// Mark the entire range data as invalid:
 		m_latest_obs.hasRangeImage = true;
 		m_latest_obs.range_is_depth = true;
-		
+
 		m_latest_obs_cs.enter(); // Important: if system is running slow, etc. we cannot tell for sure that the depth buffer is not beeing filled right now:
 		m_latest_obs.rangeImage.setSize(m_cameraParamsDepth.nrows,m_cameraParamsDepth.ncols);
 		m_latest_obs.rangeImage.setConstant(0); // "0" means: error in range
