@@ -96,6 +96,25 @@ namespace mrpt
 #	endif
 #endif
 
+#ifndef WX_START_TRY
+
+	#define WX_START_TRY \
+		try \
+		{
+
+	#define WX_END_TRY \
+		} \
+		catch(std::exception &e) \
+		{ \
+			wxMessageBox( wxString(e.what(),wxConvUTF8), wxT("Exception"), wxOK, this); \
+		} \
+		catch(...) \
+		{ \
+			wxMessageBox( _("Untyped exception!"), _("Exception"), wxOK, this); \
+		}
+
+#endif
+
 
 		/** Create a wxImage from a MRPT image. The new object must be freed by the user when not required anymore.
 		  * \sa MRPTImage2wxImage

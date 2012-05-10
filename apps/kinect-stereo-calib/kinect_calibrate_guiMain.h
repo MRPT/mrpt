@@ -39,7 +39,6 @@
 #include "wx/defs.h"
 
 //(*Headers(kinect_calibrate_guiDialog)
-#include <wx/checklst.h>
 #include <wx/spinctrl.h>
 #include <wx/checkbox.h>
 #include <wx/dialog.h>
@@ -52,7 +51,10 @@
 #include <wx/textctrl.h>
 #include <wx/radiobox.h>
 #include <wx/timer.h>
+#include <wx/listbox.h>
 //*)
+
+#include <wx/config.h>  // wxConfig
 
 #include "../wx-common/CMyRedirector.h"
 
@@ -110,6 +112,8 @@ class kinect_calibrate_guiDialog: public wxDialog
 
     private:
 
+		wxConfig      m_config;
+
 		CMyRedirector  *m_my_redirector;
 
 		mrpt::system::TThreadHandle  m_cap_thread;
@@ -149,31 +153,41 @@ class kinect_calibrate_guiDialog: public wxDialog
         void OnrbChannelSwitchSelect(wxCommandEvent& event);
         void OnbtnCaptureClick(wxCommandEvent& event);
         void OnbtnNextCalibClick(wxCommandEvent& event);
-        void OnbtnSkipToCalibClick(wxCommandEvent& event);
         void OnedTiltChange(wxSpinEvent& event);
-        void OnbtnListMarkAllClick(wxCommandEvent& event);
-        void OnbtnListMarkNoneClick(wxCommandEvent& event);
         void OnlbImagePairsSelect(wxCommandEvent& event);
         void OnbtnRunCalibClick(wxCommandEvent& event);
         void OnbtnSaveCalibClick(wxCommandEvent& event);
+        void OnbtnOpCalibKinectClick(wxCommandEvent& event);
+        void OnbtnOpCalibStereoGenericClick(wxCommandEvent& event);
+        void OnbtnOpTestKinectClick(wxCommandEvent& event);
+        void OnbtnDisconnectClick(wxCommandEvent& event);
+        void OnbtnListLoadClick(wxCommandEvent& event);
+        void OnbtnListSaveClick(wxCommandEvent& event);
+        void OnbtnListRemoveSelectedClick(wxCommandEvent& event);
+        void OnbtnLoadImageListClick(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(kinect_calibrate_guiDialog)
+        static const long ID_STATICTEXT27;
+        static const long ID_BUTTON15;
+        static const long ID_BUTTON16;
+        static const long ID_BUTTON17;
+        static const long ID_PANEL8;
+        static const long ID_STATICTEXT28;
+        static const long ID_STATICTEXT29;
         static const long ID_CUSTOM2;
-        static const long ID_STATICTEXT6;
-        static const long ID_STATICTEXT7;
-        static const long ID_STATICTEXT8;
-        static const long ID_STATICTEXT5;
-        static const long ID_STATICTEXT21;
+        static const long ID_STATICTEXT30;
+        static const long ID_TEXTCTRL10;
+        static const long ID_STATICTEXT31;
         static const long ID_BUTTON3;
-        static const long ID_BUTTON8;
-        static const long ID_TEXTCTRL2;
-        static const long ID_PANEL1;
+        static const long ID_PANEL9;
         static const long ID_CUSTOM3;
         static const long ID_STATICTEXT11;
         static const long ID_BUTTON5;
         static const long ID_STATICTEXT9;
         static const long ID_BUTTON4;
+        static const long ID_STATICTEXT5;
+        static const long ID_BUTTON8;
         static const long ID_PANEL3;
         static const long ID_CUSTOM1;
         static const long ID_TEXTCTRL5;
@@ -191,8 +205,7 @@ class kinect_calibrate_guiDialog: public wxDialog
         static const long ID_PANEL7;
         static const long ID_PANEL4;
         static const long ID_STATICTEXT23;
-        static const long ID_CHECKLISTBOX1;
-        static const long ID_TEXTCTRL9;
+        static const long ID_LISTBOX1;
         static const long ID_BUTTON9;
         static const long ID_BUTTON10;
         static const long ID_BUTTON11;
@@ -250,37 +263,41 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxCheckBox* cbOptT1;
         wxButton* btnQuit;
         mrpt::gui::wxMRPTImageControl* m_realtimeview_cap;
+        wxTextCtrl* TextCtrl3;
         wxPanel* Panel6;
-        wxPanel* Panel1;
         wxStaticText* StaticText21;
         wxStaticText* StaticText13;
         wxStaticText* StaticText14;
         wxStaticText* StaticText15;
         wxPanel* Panel7;
-        wxButton* btnSkipToCalib;
+        wxButton* btnOpCalibKinect;
         wxStaticText* StaticText17;
         wxStaticText* lbNumCaptured;
+        wxStaticText* StaticText28;
         wxCheckBox* cbNormalize;
+        wxListBox* lbImagePairs;
         wxSpinCtrl* SpinCtrl4;
         mrpt::gui::wxMRPTImageControl* m_imgStaticKinect;
+        wxButton* btnDisconnect;
         wxButton* btnConnect;
         wxButton* bntAbout;
         wxButton* btnSaveCalib;
         wxButton* btnListLoad;
         wxButton* btnRunCalib;
         wxTimer timMisc;
+        wxButton* btnOpTestKinect;
         wxCheckBox* cbCalibNormalize;
         wxSpinCtrl* edSizeY;
-        wxStaticText* StaticText20;
-        wxCheckListBox* lbImagePairs;
+        wxPanel* Panel9;
+        wxPanel* Panel8;
         wxCheckBox* cbOptK2;
         wxStaticText* StaticText18;
         wxSpinCtrl* edTilt;
         wxStaticText* StaticText1;
         wxStaticText* StaticText10;
-        wxButton* btnListMarkAll;
         wxStaticText* StaticText16;
         wxTimer timConsoleDump;
+        wxButton* btnLoadImageList;
         wxPanel* Panel2;
         wxTextCtrl* TextCtrl5;
         wxStaticText* StaticText3;
@@ -292,33 +309,32 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxSpinCtrl* SpinCtrl3;
         wxCheckBox* cbOptK1;
         wxCheckBox* CheckBox2;
-        wxStaticText* StaticText8;
         wxStaticText* StaticText12;
         wxSpinCtrl* edSizeX;
         wxSpinCtrl* edCalibCheckY;
         wxRadioBox* rbChannelSwitch;
         wxTextCtrl* TextCtrl6;
         wxPanel* Panel3;
-        wxStaticText* StaticText7;
         wxButton* btnNext1;
         wxButton* btnListSave;
         wxSpinCtrl* edCalibCheckX;
         wxSpinCtrl* edMaxIters;
-        wxButton* btnListMarkNone;
-        wxTextCtrl* TextCtrl1;
         wxStaticText* StaticText4;
         wxStaticText* StaticText5;
         wxButton* btnNextCalib;
         wxStaticText* StaticText2;
+        wxStaticText* StaticText30;
+        wxStaticText* StaticText27;
         wxNotebook* Notebook1;
         mrpt::gui::wxMRPTImageControl* m_view_right;
+        wxButton* btnOpCalibStereoGeneric;
+        wxStaticText* StaticText26;
         wxCheckBox* cbOptT2;
-        wxStaticText* StaticText6;
         wxButton* btnCapture;
         wxButton* btnNext2;
         wxStaticText* StaticText19;
+        wxStaticText* StaticText29;
         mrpt::gui::wxMRPTImageControl* m_realtimeview_test;
-        wxTextCtrl* TextCtrl7;
         wxTextCtrl* edLogTest;
         wxStaticText* StaticText9;
         wxTextCtrl* edLogCalibResult;
@@ -326,6 +342,7 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxStaticText* StaticText11;
         wxStaticText* StaticText25;
         mrpt::gui::wxMRPTImageControl* m_view_left;
+        wxButton* btnListRemoveSelected;
         //*)
 
         DECLARE_EVENT_TABLE()

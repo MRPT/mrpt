@@ -505,7 +505,6 @@ namespace mrpt
 			#endif
 		#endif
 
-
 	#endif
 
 	} // End of namespace

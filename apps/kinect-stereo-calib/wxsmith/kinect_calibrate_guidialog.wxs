@@ -3,6 +3,7 @@
 	<object class="wxDialog" name="kinect_calibrate_guiDialog">
 		<title>Kinect calibration Wizard - Part of MRPT</title>
 		<centered>1</centered>
+		<pos>-1,-1</pos>
 		<id_arg>0</id_arg>
 		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX</style>
 		<handler function="OnClose" entry="EVT_CLOSE" />
@@ -16,57 +17,165 @@
 					<style>wxNB_BOTTOM</style>
 					<handler function="OnNotebook1PageChanging" entry="EVT_NOTEBOOK_PAGE_CHANGING" />
 					<object class="notebookpage">
-						<object class="wxPanel" name="ID_PANEL1" variable="Panel1" member="yes">
-							<object class="Custom" name="ID_CUSTOM2" subclass="mrpt::gui::wxMRPTImageControl" variable="m_imgStaticKinect" member="yes">
-								<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS).x,$(POS).y,$(SIZE).GetWidth(), $(SIZE).GetHeight() );</creating_code>
-								<include_file>mrpt/gui/WxUtils.h</include_file>
-								<style></style>
-								<pos>280,96</pos>
-								<size>300,116</size>
+						<object class="wxPanel" name="ID_PANEL8" variable="Panel8" member="yes">
+							<object class="wxFlexGridSizer" variable="FlexGridSizer37" member="no">
+								<cols>1</cols>
+								<rows>1</rows>
+								<growablecols>0</growablecols>
+								<growablerows>0</growablerows>
+								<object class="sizeritem">
+									<object class="wxFlexGridSizer" variable="FlexGridSizer38" member="no">
+										<cols>1</cols>
+										<rows>3</rows>
+										<growablecols>0</growablecols>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT27" variable="StaticText26" member="yes">
+												<label>What do you want to do?</label>
+												<font>
+													<size>16</size>
+												</font>
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="spacer">
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxFlexGridSizer" variable="FlexGridSizer39" member="no">
+												<cols>1</cols>
+												<rows>3</rows>
+												<growablecols>0</growablecols>
+												<object class="sizeritem">
+													<object class="wxButton" name="ID_BUTTON15" variable="btnOpCalibKinect" member="yes">
+														<label>Calibrate a Kinect sensor (live)</label>
+														<size>-1,50</size>
+														<handler function="OnbtnOpCalibKinectClick" entry="EVT_BUTTON" />
+													</object>
+													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
+													<option>1</option>
+												</object>
+												<object class="sizeritem">
+													<object class="wxButton" name="ID_BUTTON16" variable="btnOpCalibStereoGeneric" member="yes">
+														<label>Calibrate a stereo/Kinect camera (from images in disk)</label>
+														<size>-1,50</size>
+														<handler function="OnbtnOpCalibStereoGenericClick" entry="EVT_BUTTON" />
+													</object>
+													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
+													<option>1</option>
+												</object>
+												<object class="sizeritem">
+													<object class="wxButton" name="ID_BUTTON17" variable="btnOpTestKinect" member="yes">
+														<label>Visually inspect the correctness of a Kinect calib. (live)</label>
+														<size>-1,50</size>
+														<handler function="OnbtnOpTestKinectClick" entry="EVT_BUTTON" />
+													</object>
+													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
+													<option>1</option>
+												</object>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<option>1</option>
+										</object>
+									</object>
+									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<option>1</option>
+								</object>
 							</object>
-							<object class="wxStaticText" name="ID_STATICTEXT6" variable="StaticText6" member="yes">
-								<label>Prepare to calibrate your Kinect sensor:</label>
-								<pos>40,32</pos>
-							</object>
-							<object class="wxStaticText" name="ID_STATICTEXT7" variable="StaticText7" member="yes">
-								<label>1) Make sure the IR projector is covered, for example, by tapying a piece of some opaque material on it.</label>
-								<pos>56,56</pos>
-								<size>805,45</size>
-							</object>
-							<object class="wxStaticText" name="ID_STATICTEXT8" variable="StaticText8" member="yes">
-								<label>2) Print a checkerboard and stick it firmly to some rigid board or paperboard.&#x0A;   If you don&apos;t have any pattern at hand, get one from:</label>
-								<pos>48,256</pos>
-								<size>661,37</size>
-							</object>
-							<object class="wxStaticText" name="ID_STATICTEXT5" variable="StaticText5" member="yes">
-								<label>3) Connect the Kinect to the computer and wait a few seconds until the driver establishes connection.</label>
-								<pos>32,344</pos>
-								<size>757,45</size>
-							</object>
-							<object class="wxStaticText" name="ID_STATICTEXT21" variable="StaticText20" member="yes">
-								<label>... or, if you already have stereo images saved to disk, go straight to the calibration optimizer:</label>
-								<pos>32,432</pos>
-								<size>757,21</size>
-							</object>
-							<object class="wxButton" name="ID_BUTTON3" variable="btnNext1" member="yes">
-								<label>START</label>
-								<default>1</default>
-								<pos>376,368</pos>
-								<size>117,45</size>
-								<handler function="OnbtnNext1Click" entry="EVT_BUTTON" />
-							</object>
-							<object class="wxButton" name="ID_BUTTON8" variable="btnSkipToCalib" member="yes">
-								<label>Skip to Calibration Optimizer</label>
-								<default>1</default>
-								<pos>320,448</pos>
-								<size>245,40</size>
-								<handler function="OnbtnSkipToCalibClick" entry="EVT_BUTTON" />
-							</object>
-							<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="TextCtrl1" member="yes">
-								<value>http://www.mrpt.org/downloads/camera-calibration-checker-board__9x7.pdf</value>
-								<pos>64,296</pos>
-								<size>605,27</size>
-								<style>wxTE_READONLY</style>
+						</object>
+						<label>Welcome</label>
+					</object>
+					<object class="notebookpage">
+						<object class="wxPanel" name="ID_PANEL9" variable="Panel9" member="yes">
+							<object class="wxFlexGridSizer" variable="FlexGridSizer40" member="no">
+								<cols>1</cols>
+								<rows>1</rows>
+								<growablecols>0</growablecols>
+								<growablerows>0</growablerows>
+								<object class="sizeritem">
+									<object class="wxFlexGridSizer" variable="FlexGridSizer41" member="no">
+										<cols>1</cols>
+										<rows>7</rows>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT28" variable="StaticText27" member="yes">
+												<label>Prepare to calibrate your Kinect sensor</label>
+												<font>
+													<size>15</size>
+												</font>
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT29" variable="StaticText28" member="yes">
+												<label>1) Make sure the IR projector is covered, for example, by tapying a piece of some opaque material on it.</label>
+											</object>
+											<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="Custom" name="ID_CUSTOM2" subclass="mrpt::gui::wxMRPTImageControl" variable="m_imgStaticKinect" member="yes">
+												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS).x,$(POS).y,$(SIZE).GetWidth(), $(SIZE).GetHeight() );</creating_code>
+												<include_file>mrpt/gui/WxUtils.h</include_file>
+												<style></style>
+												<size>300,116</size>
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT30" variable="StaticText29" member="yes">
+												<label>2) Print a checkerboard and stick it firmly to some rigid board or paperboard.&#x0A;   If you don&apos;t have any pattern at hand, get one from:</label>
+												<pos>48,256</pos>
+												<size>661,37</size>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxTextCtrl" name="ID_TEXTCTRL10" variable="TextCtrl3" member="yes">
+												<value>http://www.mrpt.org/downloads/camera-calibration-checker-board__9x7.pdf</value>
+												<style>wxTE_READONLY</style>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT31" variable="StaticText30" member="yes">
+												<label>3) Connect the Kinect to the computer and wait a few seconds until the driver establishes connection.</label>
+											</object>
+											<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxButton" name="ID_BUTTON3" variable="btnNext1" member="yes">
+												<label>START</label>
+												<default>1</default>
+												<pos>376,368</pos>
+												<size>117,45</size>
+												<handler function="OnbtnNext1Click" entry="EVT_BUTTON" />
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+									</object>
+									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
 							</object>
 						</object>
 						<label>0) Instructions</label>
@@ -92,9 +201,9 @@
 								<object class="sizeritem">
 									<object class="wxFlexGridSizer" variable="FlexGridSizer7" member="no">
 										<cols>1</cols>
-										<rows>6</rows>
+										<rows>7</rows>
 										<growablecols>0</growablecols>
-										<growablerows>5</growablerows>
+										<growablerows>6</growablerows>
 										<object class="sizeritem">
 											<object class="wxStaticText" name="ID_STATICTEXT11" variable="StaticText11" member="yes">
 												<label>Press &quot;Connect&quot; to start grabbing:</label>
@@ -129,6 +238,24 @@
 												<handler function="OnbtnNext1Click" entry="EVT_BUTTON" />
 											</object>
 											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT5" variable="StaticText5" member="yes">
+												<label>(If no error was found but still &#x0A;have no images, try disconnecting &#x0A;and connecting again:)</label>
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxButton" name="ID_BUTTON8" variable="btnDisconnect" member="yes">
+												<label>Disconnect</label>
+												<enabled>0</enabled>
+												<handler function="OnbtnDisconnectClick" entry="EVT_BUTTON" />
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
 											<option>1</option>
 										</object>
@@ -411,7 +538,8 @@
 													<option>1</option>
 												</object>
 												<object class="sizeritem">
-													<object class="wxCheckListBox" name="ID_CHECKLISTBOX1" variable="lbImagePairs" member="yes">
+													<object class="wxListBox" name="ID_LISTBOX1" variable="lbImagePairs" member="yes">
+														<default>-1</default>
 														<style>wxLB_SINGLE</style>
 														<handler function="OnlbImagePairsSelect" entry="EVT_LISTBOX" />
 													</object>
@@ -420,62 +548,43 @@
 													<option>1</option>
 												</object>
 												<object class="sizeritem">
-													<object class="wxFlexGridSizer" variable="FlexGridSizer32" member="no">
-														<cols>1</cols>
-														<rows>1</rows>
-														<growablecols>0</growablecols>
-														<growablerows>0</growablerows>
-														<object class="sizeritem">
-															<object class="wxTextCtrl" name="ID_TEXTCTRL9" variable="TextCtrl7" member="yes">
-																<value>Only the marked image pairs will be used in the optimization.</value>
-																<font>
-																	<size>8</size>
-																</font>
-																<style>wxTE_MULTILINE|wxTE_READONLY|wxTE_WORDWRAP</style>
-															</object>
-															<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-															<option>1</option>
-														</object>
-													</object>
-													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-													<option>1</option>
-												</object>
-												<object class="sizeritem">
 													<object class="wxFlexGridSizer" variable="FlexGridSizer26" member="no">
-														<cols>2</cols>
-														<rows>2</rows>
+														<cols>1</cols>
+														<rows>3</rows>
 														<growablecols>0,1</growablecols>
 														<object class="sizeritem">
-															<object class="wxButton" name="ID_BUTTON9" variable="btnListMarkAll" member="yes">
-																<label>Mark all</label>
-																<handler function="OnbtnListMarkAllClick" entry="EVT_BUTTON" />
+															<object class="wxButton" name="ID_BUTTON9" variable="btnListRemoveSelected" member="yes">
+																<label>Remove selected</label>
+																<handler function="OnbtnListRemoveSelectedClick" entry="EVT_BUTTON" />
 															</object>
-															<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 															<border>5</border>
 															<option>1</option>
 														</object>
 														<object class="sizeritem">
 															<object class="wxButton" name="ID_BUTTON10" variable="btnListLoad" member="yes">
-																<label>Load...</label>
+																<label>Load image pair...</label>
+																<handler function="OnbtnListLoadClick" entry="EVT_BUTTON" />
 															</object>
-															<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 															<border>5</border>
 															<option>1</option>
 														</object>
 														<object class="sizeritem">
-															<object class="wxButton" name="ID_BUTTON11" variable="btnListMarkNone" member="yes">
-																<label>Mark none</label>
-																<handler function="OnbtnListMarkNoneClick" entry="EVT_BUTTON" />
+															<object class="wxButton" name="ID_BUTTON11" variable="btnLoadImageList" member="yes">
+																<label>Load list of images...</label>
+																<handler function="OnbtnLoadImageListClick" entry="EVT_BUTTON" />
 															</object>
-															<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 															<border>5</border>
 															<option>1</option>
 														</object>
 														<object class="sizeritem">
 															<object class="wxButton" name="ID_BUTTON12" variable="btnListSave" member="yes">
-																<label>Save...</label>
+																<label>Save all images...</label>
+																<handler function="OnbtnListSaveClick" entry="EVT_BUTTON" />
 															</object>
-															<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 															<border>5</border>
 															<option>1</option>
 														</object>
