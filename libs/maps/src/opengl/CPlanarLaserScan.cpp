@@ -121,7 +121,7 @@ void   CPlanarLaserScan::render_dl() const
 
 	// LINES
 	// ----------------------------
-	if (n>1)
+	if (n>1 && m_enable_line)
 	{
 		glLineWidth(m_line_width);	checkOpenGLError();
 
@@ -139,7 +139,7 @@ void   CPlanarLaserScan::render_dl() const
 
 	// POINTS
 	// ----------------------------
-	if (n>0)
+	if (n>0 && m_enable_points)
 	{
 		glPointSize(m_points_width);
 		checkOpenGLError();
@@ -157,7 +157,7 @@ void   CPlanarLaserScan::render_dl() const
 
 	// SURFACE:
 	// ------------------------------
-	if (n>1)
+	if (n>1 && m_enable_surface)
 	{
 		glBegin( GL_TRIANGLES );
 
@@ -186,7 +186,7 @@ void  CPlanarLaserScan::writeToStream(CStream &out,int *version) const
 {
 
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
 		writeToStreamRender(out);
@@ -195,7 +195,8 @@ void  CPlanarLaserScan::writeToStream(CStream &out,int *version) const
 			<< m_line_R << m_line_G << m_line_B << m_line_A
 			<< m_points_width
 			<< m_points_R << m_points_G << m_points_B << m_points_A
-			<< m_plane_R << m_plane_G << m_plane_B << m_plane_A;
+			<< m_plane_R << m_plane_G << m_plane_B << m_plane_A
+			<< m_enable_points << m_enable_line << m_enable_surface; // new in v1
 	}
 }
 
@@ -208,6 +209,7 @@ void  CPlanarLaserScan::readFromStream(CStream &in,int version)
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
 			readFromStreamRender(in);
 			in >> m_scan;
@@ -216,6 +218,15 @@ void  CPlanarLaserScan::readFromStream(CStream &in,int version)
 				>> m_points_width
 				>> m_points_R >> m_points_G >> m_points_B >> m_points_A
 				>> m_plane_R >> m_plane_G >> m_plane_B >> m_plane_A;
+
+            if (version>=1)
+            {
+                in >> m_enable_points >> m_enable_line >> m_enable_surface; // new in v1
+            }
+            else
+            {
+                m_enable_points = m_enable_line = m_enable_surface = true;
+            }
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
