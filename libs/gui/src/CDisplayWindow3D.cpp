@@ -622,6 +622,33 @@ void CDisplayWindow3D::setCameraProjective( bool isProjective )
 #endif
 }
 
+void CDisplayWindow3D::setMinRange(double new_min)
+{
+	if (m_3Dscene)
+	{
+		mrpt::opengl::COpenGLViewportPtr gl_view = m_3Dscene->getViewport("main");
+		if (gl_view)
+		{
+			double m,M;
+			gl_view->getViewportClipDistances(m,M);
+			gl_view->setViewportClipDistances(new_min,M);
+		}
+	}
+}
+void CDisplayWindow3D::setMaxRange(double new_max)
+{
+	if (m_3Dscene)
+	{
+		mrpt::opengl::COpenGLViewportPtr gl_view = m_3Dscene->getViewport("main");
+		if (gl_view)
+		{
+			double m,M;
+			gl_view->getViewportClipDistances(m,M);
+			gl_view->setViewportClipDistances(m,new_max);
+		}
+	}
+}
+
 
 /*---------------------------------------------------------------
 					getCameraElevationDeg

@@ -188,15 +188,15 @@ namespace mrpt
 			  */
 			float getFOV() const { return m_FOV; };
 
-			/** Changes the camera min range (z) (used for gluPerspective).
+			/** Changes the camera min clip range (z) (used for gluPerspective).
 			  *  The window is not updated with this method, call "forceRepaint" to update the 3D view.
 			  */
-			void setMinRange(float v);
+			void setMinRange(double new_min);
 
-			/** Changes the camera max range (z) (used for gluPerspective).
+			/** Changes the camera max clip range (z) (used for gluPerspective).
 			  *  The window is not updated with this method, call "forceRepaint" to update the 3D view.
 			  */
-			void setMaxRange(float v);
+			void setMaxRange(double new_max);
 
 			/** Changes the camera field of view (in degrees) (used for gluPerspective).
 			  *  The window is not updated with this method, call "forceRepaint" to update the 3D view.
