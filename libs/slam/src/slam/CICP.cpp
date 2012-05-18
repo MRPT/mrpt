@@ -458,8 +458,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			// COV = ( D*D^T + lamba*I )^-1
 			CMatrixDouble33  DDt = D*D.transpose();
 
-			for (i=0;i<3;i++)
-				DDt( i,i ) += 6000.0;  // Lambda...
+			for (i=0;i<3;i++) DDt( i,i ) += 1;  // Just to make sure the matrix is not singular, while not changing its covariance significantly.
 
 			DDt.inv(gaussPdf->cov);
 #endif
@@ -826,7 +825,6 @@ CPosePDFPtr CICP::ICP_Method_LM(
 					C = H;
 					for (i=0;i<3;i++)
 						C(i,i) *= (1+lambda);	// Levenberg-Maquardt heuristic
-					//	C(i,i) += lambda;		// Levenberg  heuristic
 
 					C_inv = C.inv();
 
@@ -1176,8 +1174,6 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 				// ----------------------------------------------------------------------
 				double transf_scale;
 				scanmatching::leastSquareErrorRigidTransformation6D( correspondences, gaussPdf->mean, transf_scale, false );
-
-				//cout << gaussPdf->mean << " scale: " << transf_scale << " corrs: " << correspondences.size() << endl;
 
 				// If matching has not changed, decrease the thresholds:
 				// --------------------------------------------------------

@@ -188,6 +188,25 @@ double scanmatching::HornMethod(
 	return s;
 }
 
+bool scanmatching::leastSquareErrorRigidTransformation6D(
+    const TMatchingPairList	&in_correspondences,
+    CPose3D								&out_transformation,
+    double								&out_scale,
+    const bool 							forceScaleToUnity )
+{
+    MRPT_START
+
+    CPose3DQuat qAux(UNINITIALIZED_QUATERNION);		// Convert the CPose3D to CPose3DQuat
+
+    if( !scanmatching::leastSquareErrorRigidTransformation6D( in_correspondences, qAux, out_scale, forceScaleToUnity ) )
+        return false;
+    out_transformation = CPose3D( qAux );			// Convert back the CPose3DQuat to CPose3D
+
+    return true;
+
+    MRPT_END
+}
+
 
 //*---------------------------------------------------------------
 //	leastSquareErrorRigidTransformation6D

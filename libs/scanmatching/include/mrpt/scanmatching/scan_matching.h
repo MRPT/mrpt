@@ -53,7 +53,7 @@ namespace mrpt
 		using namespace mrpt::poses;
 		using namespace mrpt::math;
 		using namespace mrpt::utils;
-		
+
 		/** \addtogroup mrpt_scanmatching_grp
 		  * @{ */
 
@@ -104,24 +104,11 @@ namespace mrpt
 		  *  Implemented by FAMD, 2007. Revised in 2010
 		  * \sa robustRigidTransformation
 		  */
-		inline bool leastSquareErrorRigidTransformation6D(
+		bool SCANMATCHING_IMPEXP leastSquareErrorRigidTransformation6D(
 			const TMatchingPairList	&in_correspondences,
 			CPose3D								&out_transformation,
 			double								&out_scale,
-			const bool 							forceScaleToUnity = false )
-		{
-			MRPT_START
-
-			CPose3DQuat qAux(UNINITIALIZED_QUATERNION);		// Convert the CPose3D to CPose3DQuat
-
-			if( !scanmatching::leastSquareErrorRigidTransformation6D( in_correspondences, qAux, out_scale, forceScaleToUnity ) )
-				return false;
-			out_transformation = CPose3D( qAux );			// Convert back the CPose3DQuat to CPose3D
-
-			return true;
-
-			MRPT_END
-		}
+			const bool 							forceScaleToUnity = false );
 
 		/** This method provides the closed-form solution of absolute orientation using unit quaternions to a set of over-constrained correspondences for finding the 6D rigid transformation between two cloud of 3D points using RANSAC.
 		  *  The output 3D pose is computed using the method described in "Closed-form solution of absolute orientation using unit quaternions", BKP Horn, Journal of the Optical Society of America, 1987.
