@@ -55,6 +55,18 @@ namespace mrpt
 			void clear() { *this = TImageStereoCalibData(); }
 		};
 
+		/** Params of the optional callback provided by the user */
+		struct VISION_IMPEXP TImageStereoCallbackData
+		{
+			int     calibRound; //!<  =0: Initial calib without distortion, =1: Calib of all parameters
+			size_t current_iter;
+			double current_rmse; //!< Current root-mean square reprojection error (in pixels)
+		};
+
+		/** Prototype of optional user callback function. */
+		typedef void (*TSteroCalibCallbackFunctor)(const TImageStereoCallbackData &d, void* user_data);
+
+
 		/** Input parameters for mrpt::vision::checkerBoardStereoCalibration */
 		struct VISION_IMPEXP TStereoCalibParams
 		{
@@ -71,6 +83,10 @@ namespace mrpt
 			  * \note Default values are to only assume distortion via k1 and k2 (the rest are zeros).
 			  */
 			bool          optimize_k1, optimize_k2, optimize_k3, optimize_t1, optimize_t2;
+
+
+			TSteroCalibCallbackFunctor  callback; //!< If set to !=NULL, this function will be called within each Lev-Marq. iteration (don't do heavy stuff here since performance will degrade)
+			void * callback_user_param; //!< If using a callback function, you can use this to pass custom data to your callback.
 
 			// Ctor: Set default values
 			TStereoCalibParams();

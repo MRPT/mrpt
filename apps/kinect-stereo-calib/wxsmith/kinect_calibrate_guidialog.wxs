@@ -7,6 +7,7 @@
 		<id_arg>0</id_arg>
 		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX</style>
 		<handler function="OnClose" entry="EVT_CLOSE" />
+		<handler function="OnResize" entry="EVT_SIZE" />
 		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
 			<cols>1</cols>
 			<rows>2</rows>
@@ -515,9 +516,9 @@
 								<growablerows>0,1</growablerows>
 								<object class="sizeritem">
 									<object class="wxFlexGridSizer" variable="FlexGridSizer10" member="no">
-										<cols>3</cols>
+										<cols>2</cols>
 										<rows>1</rows>
-										<growablecols>0,1,2</growablecols>
+										<growablecols>0,1</growablecols>
 										<growablerows>0</growablerows>
 										<object class="sizeritem">
 											<object class="wxFlexGridSizer" variable="FlexGridSizer22" member="no">
@@ -597,61 +598,97 @@
 											<option>1</option>
 										</object>
 										<object class="sizeritem">
-											<object class="wxFlexGridSizer" variable="FlexGridSizer23" member="no">
+											<object class="wxFlexGridSizer" variable="FlexGridSizer32" member="no">
 												<cols>1</cols>
 												<rows>2</rows>
 												<growablecols>0</growablecols>
 												<growablerows>1</growablerows>
 												<object class="sizeritem">
-													<object class="wxStaticText" name="ID_STATICTEXT19" variable="StaticText18" member="yes">
-														<label>(Left camera)</label>
+													<object class="wxRadioBox" name="ID_RADIOBOX2" variable="rbShowImages" member="yes">
+														<label> Show: </label>
+														<content>
+															<item>Original</item>
+															<item>Detected chessboard</item>
+															<item>Reprojected corners</item>
+															<item>Undistorted</item>
+															<item>Rectified</item>
+														</content>
+														<handler function="OnrbShowImagesSelect" entry="EVT_RADIOBOX" />
 													</object>
-													<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-													<border>1</border>
+													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
 													<option>1</option>
 												</object>
 												<object class="sizeritem">
-													<object class="Custom" name="ID_CUSTOM4" subclass="mrpt::gui::wxMRPTImageControl" variable="m_view_left" member="yes">
-														<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS).x,$(POS).y,$(SIZE).GetWidth(), $(SIZE).GetHeight() );</creating_code>
-														<include_file>mrpt/gui/WxUtils.h</include_file>
-														<style></style>
-														<size>320,240</size>
+													<object class="wxFlexGridSizer" variable="FlexGridSizer42" member="no">
+														<cols>2</cols>
+														<rows>1</rows>
+														<growablecols>0,1</growablecols>
+														<growablerows>0</growablerows>
+														<object class="sizeritem">
+															<object class="wxFlexGridSizer" variable="FlexGridSizer23" member="no">
+																<cols>1</cols>
+																<rows>2</rows>
+																<growablecols>0</growablecols>
+																<growablerows>1</growablerows>
+																<object class="sizeritem">
+																	<object class="wxStaticText" name="ID_STATICTEXT19" variable="StaticText18" member="yes">
+																		<label>(Left camera)</label>
+																	</object>
+																	<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																	<border>1</border>
+																	<option>1</option>
+																</object>
+																<object class="sizeritem">
+																	<object class="Custom" name="ID_CUSTOM4" subclass="mrpt::gui::wxMRPTImageControl" variable="m_view_left" member="yes">
+																		<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS).x,$(POS).y,$(SIZE).GetWidth(), $(SIZE).GetHeight() );</creating_code>
+																		<include_file>mrpt/gui/WxUtils.h</include_file>
+																		<style></style>
+																		<size>320,240</size>
+																	</object>
+																	<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																	<option>1</option>
+																</object>
+															</object>
+															<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<border>1</border>
+															<option>1</option>
+														</object>
+														<object class="sizeritem">
+															<object class="wxFlexGridSizer" variable="FlexGridSizer24" member="no">
+																<cols>1</cols>
+																<rows>2</rows>
+																<growablecols>0</growablecols>
+																<growablerows>1</growablerows>
+																<object class="sizeritem">
+																	<object class="wxStaticText" name="ID_STATICTEXT20" variable="StaticText19" member="yes">
+																		<label>(Right camera)</label>
+																	</object>
+																	<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																	<border>1</border>
+																	<option>1</option>
+																</object>
+																<object class="sizeritem">
+																	<object class="Custom" name="ID_CUSTOM5" subclass="mrpt::gui::wxMRPTImageControl" variable="m_view_right" member="yes">
+																		<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS).x,$(POS).y,$(SIZE).GetWidth(), $(SIZE).GetHeight() );</creating_code>
+																		<include_file>mrpt/gui/WxUtils.h</include_file>
+																		<style></style>
+																		<size>320,240</size>
+																	</object>
+																	<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																	<option>1</option>
+																</object>
+															</object>
+															<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<border>1</border>
+															<option>1</option>
+														</object>
 													</object>
-													<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+													<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 													<option>1</option>
 												</object>
 											</object>
 											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-											<border>1</border>
-											<option>1</option>
-										</object>
-										<object class="sizeritem">
-											<object class="wxFlexGridSizer" variable="FlexGridSizer24" member="no">
-												<cols>1</cols>
-												<rows>2</rows>
-												<growablecols>0</growablecols>
-												<growablerows>1</growablerows>
-												<object class="sizeritem">
-													<object class="wxStaticText" name="ID_STATICTEXT20" variable="StaticText19" member="yes">
-														<label>(Right camera)</label>
-													</object>
-													<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-													<border>1</border>
-													<option>1</option>
-												</object>
-												<object class="sizeritem">
-													<object class="Custom" name="ID_CUSTOM5" subclass="mrpt::gui::wxMRPTImageControl" variable="m_view_right" member="yes">
-														<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS).x,$(POS).y,$(SIZE).GetWidth(), $(SIZE).GetHeight() );</creating_code>
-														<include_file>mrpt/gui/WxUtils.h</include_file>
-														<style></style>
-														<size>320,240</size>
-													</object>
-													<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-													<option>1</option>
-												</object>
-											</object>
-											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-											<border>1</border>
 											<option>1</option>
 										</object>
 									</object>
@@ -816,6 +853,7 @@
 																					<object class="wxCheckBox" name="ID_CHECKBOX2" variable="cbCalibNormalize" member="yes">
 																						<label>Normalize images</label>
 																						<checked>1</checked>
+																						<handler function="OncbCalibNormalizeClick" entry="EVT_CHECKBOX" />
 																					</object>
 																					<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 																					<border>5</border>

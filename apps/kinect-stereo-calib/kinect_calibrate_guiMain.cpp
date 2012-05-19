@@ -36,6 +36,7 @@
 
 #include "kinect_calibrate_guiMain.h"
 #include <wx/msgdlg.h>
+#include <wx/progdlg.h>
 #include "CAboutBox.h"
 
 //(*InternalHeaders(kinect_calibrate_guiDialog)
@@ -128,6 +129,7 @@ const long kinect_calibrate_guiDialog::ID_BUTTON9 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_BUTTON10 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_BUTTON11 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_BUTTON12 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_RADIOBOX2 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_STATICTEXT19 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_CUSTOM4 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_STATICTEXT20 = wxNewId();
@@ -220,6 +222,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     wxFlexGridSizer* FlexGridSizer6;
     wxFlexGridSizer* FlexGridSizer38;
     wxFlexGridSizer* FlexGridSizer27;
+    wxFlexGridSizer* FlexGridSizer42;
     wxFlexGridSizer* FlexGridSizer37;
     wxFlexGridSizer* FlexGridSizer3;
     wxFlexGridSizer* FlexGridSizer22;
@@ -242,6 +245,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     wxFlexGridSizer* FlexGridSizer35;
     wxFlexGridSizer* FlexGridSizer5;
     wxFlexGridSizer* FlexGridSizer24;
+    wxFlexGridSizer* FlexGridSizer32;
     wxStaticBoxSizer* StaticBoxSizer1;
     wxFlexGridSizer* FlexGridSizer20;
 
@@ -412,10 +416,9 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer9->AddGrowableCol(0);
     FlexGridSizer9->AddGrowableRow(0);
     FlexGridSizer9->AddGrowableRow(1);
-    FlexGridSizer10 = new wxFlexGridSizer(1, 3, 0, 0);
+    FlexGridSizer10 = new wxFlexGridSizer(1, 2, 0, 0);
     FlexGridSizer10->AddGrowableCol(0);
     FlexGridSizer10->AddGrowableCol(1);
-    FlexGridSizer10->AddGrowableCol(2);
     FlexGridSizer10->AddGrowableRow(0);
     FlexGridSizer22 = new wxFlexGridSizer(4, 1, 0, 0);
     FlexGridSizer22->AddGrowableCol(0);
@@ -440,22 +443,42 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer26->Add(btnListSave, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer22->Add(FlexGridSizer26, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer10->Add(FlexGridSizer22, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer32 = new wxFlexGridSizer(2, 1, 0, 0);
+    FlexGridSizer32->AddGrowableCol(0);
+    FlexGridSizer32->AddGrowableRow(1);
+    wxString __wxRadioBoxChoices_2[5] =
+    {
+    _("Original"),
+    _("Detected chessboard"),
+    _("Reprojected corners"),
+    _("Undistorted"),
+    _("Rectified")
+    };
+    rbShowImages = new wxRadioBox(Panel6, ID_RADIOBOX2, _(" Show: "), wxDefaultPosition, wxDefaultSize, 5, __wxRadioBoxChoices_2, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX2"));
+    rbShowImages->SetSelection(0);
+    FlexGridSizer32->Add(rbShowImages, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer42 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer42->AddGrowableCol(0);
+    FlexGridSizer42->AddGrowableCol(1);
+    FlexGridSizer42->AddGrowableRow(0);
     FlexGridSizer23 = new wxFlexGridSizer(2, 1, 0, 0);
     FlexGridSizer23->AddGrowableCol(0);
     FlexGridSizer23->AddGrowableRow(1);
     StaticText18 = new wxStaticText(Panel6, ID_STATICTEXT19, _("(Left camera)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT19"));
     FlexGridSizer23->Add(StaticText18, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
     m_view_left = new mrpt::gui::wxMRPTImageControl(Panel6,ID_CUSTOM4,wxDefaultPosition.x,wxDefaultPosition.y,wxSize(320,240).GetWidth(), wxSize(320,240).GetHeight() );
-    FlexGridSizer23->Add(m_view_left, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer10->Add(FlexGridSizer23, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer23->Add(m_view_left, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer42->Add(FlexGridSizer23, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
     FlexGridSizer24 = new wxFlexGridSizer(2, 1, 0, 0);
     FlexGridSizer24->AddGrowableCol(0);
     FlexGridSizer24->AddGrowableRow(1);
     StaticText19 = new wxStaticText(Panel6, ID_STATICTEXT20, _("(Right camera)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT20"));
     FlexGridSizer24->Add(StaticText19, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
     m_view_right = new mrpt::gui::wxMRPTImageControl(Panel6,ID_CUSTOM5,wxDefaultPosition.x,wxDefaultPosition.y,wxSize(320,240).GetWidth(), wxSize(320,240).GetHeight() );
-    FlexGridSizer24->Add(m_view_right, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer10->Add(FlexGridSizer24, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer24->Add(m_view_right, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer42->Add(FlexGridSizer24, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer32->Add(FlexGridSizer42, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer10->Add(FlexGridSizer32, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer9->Add(FlexGridSizer10, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer11 = new wxFlexGridSizer(1, 2, 0, 0);
     FlexGridSizer11->AddGrowableCol(1);
@@ -661,6 +684,8 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     Connect(ID_BUTTON10,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnListLoadClick);
     Connect(ID_BUTTON11,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnLoadImageListClick);
     Connect(ID_BUTTON12,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnListSaveClick);
+    Connect(ID_RADIOBOX2,wxEVT_COMMAND_RADIOBOX_SELECTED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnrbShowImagesSelect);
+    Connect(ID_CHECKBOX2,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OncbCalibNormalizeClick);
     Connect(ID_BUTTON14,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnRunCalibClick);
     Connect(ID_BUTTON13,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnSaveCalibClick);
     Connect(ID_NOTEBOOK1,wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnNotebook1PageChanging);
@@ -669,6 +694,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OntimConsoleDumpTrigger);
     Connect(ID_TIMER2,wxEVT_TIMER,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OntimMiscTrigger);
     Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnClose);
+    Connect(wxEVT_SIZE,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnResize);
     //*)
 
 	// Set std::cout/cerr out:
@@ -1214,17 +1240,103 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 		}
 		else
 		{
-			CImage il = m_calib_images[sel].left.img_original;
-			CImage ir = m_calib_images[sel].right.img_original;
+			const int image_mode = rbShowImages->GetSelection();
 
-			while (il.getWidth()>321) il.scaleHalf(il);
-			while (ir.getWidth()>321) ir.scaleHalf(ir);
+			CImage il, ir;
 
-			if (cbCalibNormalize->IsChecked())
+			// Common part to all (but one) modes:
+			if (image_mode!=1)
 			{
-				if (!il.isColor()) il.equalizeHistInPlace();
-				if (!ir.isColor()) ir.equalizeHistInPlace();
+				il = m_calib_images[sel].left.img_original;
+				ir = m_calib_images[sel].right.img_original;
+
+				if (cbCalibNormalize->IsChecked()) {
+					if (!il.isColor()) il.equalizeHistInPlace();
+					if (!ir.isColor()) ir.equalizeHistInPlace();
+				}
 			}
+
+
+			switch (image_mode)
+			{
+			// ======= Original images =======
+			case 0:
+				{ // Nothing else to do.
+				}
+				break;
+			// ======= Detected chessboard =======
+			case 1:
+				{
+					il = m_calib_images[sel].left.img_checkboard;
+					ir = m_calib_images[sel].right.img_checkboard;
+				}
+				break;
+
+			// ======= Reprojected corners =======
+			case 2:
+				{
+					il.colorImageInPlace();
+					ir.colorImageInPlace();
+
+					il.drawChessboardCorners(m_calib_images[sel].left.projectedPoints_distorted, m_calib_params.check_size_x, m_calib_params.check_size_y );
+					ir.drawChessboardCorners(m_calib_images[sel].right.projectedPoints_distorted, m_calib_params.check_size_x, m_calib_params.check_size_y );
+				}
+				break;
+			// ======= Undistorted image =======
+			case 3:
+				{
+					il.rectifyImageInPlace( m_calib_result.cam_params.leftCamera );
+					ir.rectifyImageInPlace( m_calib_result.cam_params.rightCamera );
+				}
+				break;
+			// ======= Rectified images =======
+			case 4:
+				{
+
+//					projectedPoints_distorted
+//					m_calib_images[sel].left.
+				}
+				break;
+
+			default:
+					// Shouldn't arrive here!
+					break;
+			}
+
+			// Resize images, keeping aspect ratio:
+			const wxSize szView = m_view_left->GetSize();  // In theory, right&left will be always equal.
+			const double szRatio = static_cast<double>(szView.x)/szView.y;
+
+			const mrpt::utils::TImageSize szL = il.getSize();
+			const mrpt::utils::TImageSize szR = ir.getSize();
+
+			const double lRatio = static_cast<double>(szL.x)/szL.y; // Don't assume both images have equal size
+			const double rRatio = static_cast<double>(szR.x)/szR.y;
+
+			mrpt::utils::TImageSize trg_sz_l, trg_sz_r;
+
+			if (szRatio<lRatio)
+			{	// Fill y
+				trg_sz_l.x = szView.x;
+				trg_sz_l.y = szL.y * szView.x/static_cast<double>(szL.x);
+			} else
+			{	// Fill x
+				trg_sz_l.x = szL.x * szView.y/static_cast<double>(szL.y);
+				trg_sz_l.y = szView.y;
+			}
+
+			if (szRatio<rRatio)
+			{	// Fill y
+				trg_sz_r.x = szView.x;
+				trg_sz_r.y = szR.y * szView.x/static_cast<double>(szR.x);
+			} else
+			{	// Fill x
+				trg_sz_r.x = szR.x * szView.y/static_cast<double>(szR.y);
+				trg_sz_r.y = szView.y;
+			}
+
+			il.scaleImage(trg_sz_l.x,trg_sz_l.y, IMG_INTERP_AREA );
+			ir.scaleImage(trg_sz_r.x,trg_sz_r.y, IMG_INTERP_AREA );
 
 			this->m_view_left->AssignImage ( il );
 			this->m_view_right->AssignImage( ir );
@@ -1238,6 +1350,25 @@ void kinect_calibrate_guiDialog::ProcessNewSelectedImageListBox()
 		wxMessageBox( wxString::Format(_("[Draw selected image] Exception:\n %s"), e.what() ) );
 	}
 }
+
+void myCalibCallback(const mrpt::vision::TImageStereoCallbackData &d, void* user_data)
+{
+	if ((d.current_iter & 0x0F)!=0) return;
+
+	string s;
+	if (d.calibRound==0)
+			s = "Round #1: Calibration without distortion";
+	else 	s = "Round #2: Full calibration";
+
+	s+= mrpt::format(" (RMSE=%.05f px)", d.current_rmse);
+
+	wxProgressDialog *pd = reinterpret_cast<wxProgressDialog *>(user_data);
+	pd->Update(d.current_iter, _U(s.c_str()));
+	pd->SetSize(500,100);
+
+	wxTheApp->Yield();
+}
+
 
 // button: Run optimizer
 void kinect_calibrate_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
@@ -1266,16 +1397,26 @@ void kinect_calibrate_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 
 		m_calib_params.normalize_image = cbCalibNormalize->IsChecked();
 
+//			wxBusyInfo info(_("Running optimizer..."),this);
+//			wxTheApp->Yield();
+
+		wxProgressDialog  pd(_("Calibration in progress..."), _("(starting)"), m_calib_params.maxIters, this, wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_ELAPSED_TIME );
+		pd.SetSize(500,100);
+		wxTheApp->Yield();
+
+		// Prep. callback function:
+		m_calib_params.callback = &myCalibCallback;
+		m_calib_params.callback_user_param = reinterpret_cast<void*>(&pd);
+
 		edLogCalibResult->Clear();
 
 		// Run calibration:
 		bool res;
 		{
-			wxBusyInfo info(_("Running optimizer..."),this);
-			wxTheApp->Yield();
-
 			res = mrpt::vision::checkerBoardStereoCalibration( m_calib_images, m_calib_params, m_calib_result );
 		}
+
+		pd.Close();
 
 		if (!res)
 		{
@@ -1307,7 +1448,7 @@ void kinect_calibrate_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 			const double std_detector = 0.2; // pixels
 
 			cout << mrpt::format(
-				"# Left camera (RGB in Kinect) calibration parameters (and 95%% confidence intervals):\n"
+				"# Left camera (IR/Depth in Kinect) calibration parameters (and 95%% confidence intervals):\n"
 				"[CAMERA_PARAMS_LEFT]\n"
 				"resolution = [%u %u]\n"
 				"cx         = %f  // +/- %.03f\n"
@@ -1323,7 +1464,7 @@ void kinect_calibrate_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 					lc.k1(), lc.k2(), lc.p1(), lc.p2(), lc.k3() );
 
 			cout << mrpt::format(
-				"# Right camera (Depth in Kinect) calibration parameters  (and 95%% confidence intervals):\n"
+				"# Right camera (RGB in Kinect) calibration parameters  (and 95%% confidence intervals):\n"
 				"[CAMERA_PARAMS_RIGHT]\n"
 				"resolution = [%u %u]\n"
 				"cx         = %f  // +/- %.03f\n"
@@ -1386,6 +1527,19 @@ void kinect_calibrate_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 
 void kinect_calibrate_guiDialog::OnbtnSaveCalibClick(wxCommandEvent& event)
 {
+	WX_START_TRY
+
+	wxString startPath;
+	m_config.Read(_("last_path"),&startPath);
+
+    wxFileDialog  dialog(this, _("Save calibration file"), startPath, _("calib.ini") ,_("Configuration files (*.ini,*.cfg)|*.ini;*.cfg|All files (*.*)|*.*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+    if (dialog.ShowModal() == wxID_OK)
+    {
+        if (!edLogCalibResult->SaveFile( dialog.GetPath() ))
+			throw std::runtime_error("Error saving file!");
+    }
+
+    WX_END_TRY
 }
 
 void kinect_calibrate_guiDialog::OnbtnOpCalibKinectClick(wxCommandEvent& event)
@@ -1417,7 +1571,6 @@ void kinect_calibrate_guiDialog::OnbtnListLoadClick(wxCommandEvent& event)
 
 	wxString startPath;
 	m_config.Read(_("last_path"),&startPath);
-
 
     wxFileDialog  dialog1(this, _("Choose LEFT image"), startPath, _("") ,imageWildcards, wxFD_OPEN | wxFD_FILE_MUST_EXIST );
     if (dialog1.ShowModal() == wxID_OK)
@@ -1451,12 +1604,89 @@ void kinect_calibrate_guiDialog::OnbtnListLoadClick(wxCommandEvent& event)
 
 void kinect_calibrate_guiDialog::OnbtnListSaveClick(wxCommandEvent& event)
 {
+    WX_START_TRY
+
+    WX_END_TRY
 }
 
 void kinect_calibrate_guiDialog::OnbtnListRemoveSelectedClick(wxCommandEvent& event)
 {
+    WX_START_TRY
+	const int sel = lbImagePairs->GetSelection();
+
+	if (sel==wxNOT_FOUND || sel>=(int)m_calib_images.size() ) return;
+
+	m_calib_images.erase( m_calib_images.begin() + sel );
+	UpdateListOfImages();
+    WX_END_TRY
 }
 
 void kinect_calibrate_guiDialog::OnbtnLoadImageListClick(wxCommandEvent& event)
 {
+    WX_START_TRY
+
+	wxMessageBox(_("Image list files contain one file name per line, in order:\nLEFT1\nRIGHT1\nLEFT2\nRIGHT2\n..."),  _("Information") );
+
+	wxString startPath;
+	m_config.Read(_("last_path"),&startPath);
+
+    wxFileDialog  dialog(this, _("Select text file with list of image files"), startPath, _("") ,_("Text files (*.txt)|*.txt|All files (*.*)|*.*"), wxFD_OPEN | wxFD_FILE_MUST_EXIST );
+    if (dialog.ShowModal() == wxID_OK)
+    {
+        const string file_list = string( dialog.GetPath().mb_str() );
+
+        const string fil_dir = mrpt::system::extractFileDirectory(file_list);
+        startPath = _U(fil_dir.c_str());
+        m_config.Write(_("last_path"),startPath);
+
+        mrpt::utils::CStringList lst;
+        lst.loadFromFile(file_list);
+
+        if (lst.size()==0) throw std::runtime_error("Error: List file seems to be empty.");
+        if ((lst.size() & 1)!=0) throw std::runtime_error("Error: Number of lines in file must be even.");
+
+        const unsigned int N = lst.size()/2;
+
+		m_calib_images.clear();
+		m_calib_images.resize(N);
+
+		wxBusyCursor  busy;
+		wxTheApp->Yield();
+
+
+        for (unsigned int i=0;i<N;i++)
+        {
+        	const string &sL = lst(2*i+0);
+        	const string &sR = lst(2*i+1);
+
+			mrpt::vision::TImageStereoCalibData & scd = m_calib_images[i];
+
+			if (!scd.left.img_original.loadFromFile(sL) &&
+				!scd.left.img_original.loadFromFile(fil_dir+string("/")+sL) ) throw std::runtime_error(mrpt::format("Error: loading left image '%s' of %u'th pair",sL.c_str(),i).c_str() );
+
+			if (!scd.right.img_original.loadFromFile(sR) &&
+				!scd.right.img_original.loadFromFile(fil_dir+string("/")+sR) ) throw std::runtime_error(mrpt::format("Error: loading right image '%s' of %u'th pair",sR.c_str(),i).c_str() );
+        }
+		UpdateListOfImages();
+    }
+
+    WX_END_TRY
+}
+
+void kinect_calibrate_guiDialog::OnrbShowImagesSelect(wxCommandEvent& event)
+{
+	ProcessNewSelectedImageListBox();
+}
+
+void kinect_calibrate_guiDialog::OncbCalibNormalizeClick(wxCommandEvent& event)
+{
+	ProcessNewSelectedImageListBox();
+}
+
+void kinect_calibrate_guiDialog::OnResize(wxSizeEvent& event)
+{
+	if (Notebook1->GetSelection()==4)
+		ProcessNewSelectedImageListBox();
+
+	event.Skip();
 }

@@ -188,28 +188,6 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		const double t1 = 1e-8;
 		const double t2 = 1e-8;
 
-		// Select which cam. parameters to optimize (for each camera!) and which to leave fixed:
-		// Indices:  [0   1  2  3  4  5  6  7  8]
-		// Variables:[fx fy cx cy k1 k2 k3 t1 t2]
-		vector_size_t  vars_to_optimize;
-		vars_to_optimize.push_back(0);
-		vars_to_optimize.push_back(1);
-		vars_to_optimize.push_back(2);
-		vars_to_optimize.push_back(3);
-		if (p.optimize_k1) vars_to_optimize.push_back(4);
-		if (p.optimize_k2) vars_to_optimize.push_back(5);
-		if (p.optimize_t1) vars_to_optimize.push_back(6);
-		if (p.optimize_t2) vars_to_optimize.push_back(7);
-		if (p.optimize_k3) vars_to_optimize.push_back(8);
-
-		const size_t nUnknownsCamParams = vars_to_optimize.size();
-
-		//  * N x Manifold Epsilon of left camera pose (6)
-		//  * Manifold Epsilon of right2left pose (6)
-		//  * Left-cam-params (<=9)
-		//  * Right-cam-params (<=9)
-		const size_t nUnknowns = N*6 + 6+ 2*nUnknownsCamParams;
-
 		// Initial state:
 		//Within lm_stat: CArrayDouble<9> left_cam_params, right_cam_params; // [fx fy cx cy k1 k2 k3 t1 t2]
 		lm_stat_t        lm_stat(images,valid_image_pair_indices,obj_points);
@@ -229,89 +207,144 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		lm_stat.right_cam_params[7] = lm_stat.right_cam_params[8] = 0;
 
 
-		// Residuals & Jacobians:
-		TResidualJacobianList res_jacob;
-		double err = recompute_errors_and_Jacobians(lm_stat,res_jacob);
-
-		// Build linear system:
-		Eigen::VectorXd  minus_g; // minus gradient
-		Eigen::MatrixXd  H;       // Hessian matrix
-		build_linear_system(res_jacob,vars_to_optimize,minus_g,H);
-
-		ASSERT_EQUAL_(nUnknowns,(size_t) H.cols())
-
-		// Lev-Marq. parameters:
-		double nu = 2;
-		double lambda = tau * H.diagonal().array().maxCoeff();
-		bool   done = (minus_g.array().abs().maxCoeff() < t1);
-
-		// Lev-Marq. main loop:
+		// ===============================================================================
+		//   Run stereo calibration in two stages:
+		//   (0) Estimate all parameters except distortion
+		//   (1) Estimate all parameters, using as starting point the guess from (0)
+		// ===============================================================================
+		size_t nUnknownsCamParams=0;
 		size_t iter=0;
-		while (iter<p.maxIters && !done)
+		double err=0;
+		vector_size_t  vars_to_optimize;
+		Eigen::MatrixXd  H;       // Hessian matrix  (Declared here so it's accessible as the final uncertainty measure)
+		TImageStereoCallbackData cbPars;
+
+		for (int calibRound=0; calibRound<2;calibRound++)
 		{
-			// Solve for increment: (H + \lambda I) eps = -gradient
-			Eigen::MatrixXd  HH = H;
-			for (size_t i=0;i<nUnknowns;i++) HH(i,i)+=lambda;
+			cbPars.calibRound = calibRound;
+			if (p.verbose)
+				cout << ((calibRound==0) ?
+				"LM calibration round #0: WITHOUT distortion ----------\n"
+				:
+				"LM calibration round #1: ALL parameters --------------\n");
 
-			Eigen::LLT<Eigen::MatrixXd> llt(HH);
-			if (llt.info()!=Eigen::Success)
+			// Select which cam. parameters to optimize (for each camera!) and which to leave fixed:
+			// Indices:  [0   1  2  3  4  5  6  7  8]
+			// Variables:[fx fy cx cy k1 k2 k3 t1 t2]
+			vars_to_optimize.clear();
+			vars_to_optimize.push_back(0);
+			vars_to_optimize.push_back(1);
+			vars_to_optimize.push_back(2);
+			vars_to_optimize.push_back(3);
+			if (calibRound==1)
 			{
-				lambda *= nu;
-				nu *= 2;
-				done = (lambda>1e10);
-
-				if (p.verbose && !done) cout << "LM iter#"<<iter<<": Couldn't solve LLt, retrying with large 'lambda'=" << lambda << endl;
-				continue;
-			}
-			const Eigen::VectorXd eps = llt.solve(minus_g);
-
-			const double eps_norm = eps.norm();
-			if (eps_norm < t2*(eps_norm+t2))
-			{
-				done=true;
-				break;
-			}
-
-			// Tentative new state:
-			lm_stat_t new_lm_stat(lm_stat); //images,valid_image_pair_indices,obj_points);
-			add_lm_increment(eps,vars_to_optimize, new_lm_stat);
-
-			TResidualJacobianList new_res_jacob;
-
-			// discriminant:
-			double err_new = recompute_errors_and_Jacobians(new_lm_stat, new_res_jacob);
-
-			const double l = (err-err_new)/ (eps.dot( lambda*eps + minus_g) );
-			if(l>0)
-			{
-				// Good: Accept new values
-				if (p.verbose) cout << "LM iter#"<<iter<<": Avr.err(px):"<< std::sqrt(err/nObs)  <<"->" <<  std::sqrt(err_new/nObs) << " lambda:" << lambda << endl;
-
-				// swap: faster than "lm_stat <- new_lm_stat"
-				lm_stat.swap( new_lm_stat );
-				res_jacob.swap( new_res_jacob );
-
-				err = err_new;
-				build_linear_system(res_jacob,vars_to_optimize,minus_g,H);
-
-				// Too small gradient?
-				done = (minus_g.array().abs().maxCoeff() < t1);
-				lambda *= max(1.0/3.0, 1-std::pow(2*l-1,3.0) );
-				lambda = std::max(lambda, 1e-100); // hack...
-				nu = 2.0;
-
-				iter++;
-			}
-			else
-			{
-				if (p.verbose) cout << "LM iter#"<<iter<<": No update: err=" << err << " -> err_new=" << err_new << endl;
-				lambda *= nu;
-				nu *= 2.0;
-				done = (lambda>1e10);
+				if (p.optimize_k1) vars_to_optimize.push_back(4);
+				if (p.optimize_k2) vars_to_optimize.push_back(5);
+				if (p.optimize_t1) vars_to_optimize.push_back(6);
+				if (p.optimize_t2) vars_to_optimize.push_back(7);
+				if (p.optimize_k3) vars_to_optimize.push_back(8);
 			}
 
-		} // end while
+			nUnknownsCamParams = vars_to_optimize.size();
 
+			//  * N x Manifold Epsilon of left camera pose (6)
+			//  * Manifold Epsilon of right2left pose (6)
+			//  * Left-cam-params (<=9)
+			//  * Right-cam-params (<=9)
+			const size_t nUnknowns = N*6 + 6+ 2*nUnknownsCamParams;
+
+			// Residuals & Jacobians:
+			TResidualJacobianList res_jacob;
+			err = recompute_errors_and_Jacobians(lm_stat,res_jacob);
+
+			// Build linear system:
+			Eigen::VectorXd  minus_g; // minus gradient
+			build_linear_system(res_jacob,vars_to_optimize,minus_g,H);
+
+			ASSERT_EQUAL_(nUnknowns,(size_t) H.cols())
+
+			// Lev-Marq. parameters:
+			double nu = 2;
+			double lambda = tau * H.diagonal().array().maxCoeff();
+			bool   done = (minus_g.array().abs().maxCoeff() < t1);
+
+			// Lev-Marq. main loop:
+			iter=0;
+			while (iter<p.maxIters && !done)
+			{
+				// User Callback?
+				if (p.callback)
+				{
+					cbPars.current_iter = iter;
+					cbPars.current_rmse = std::sqrt(err/nObs);
+					(*p.callback)(cbPars, p.callback_user_param);
+				}
+
+
+				// Solve for increment: (H + \lambda I) eps = -gradient
+				Eigen::MatrixXd  HH = H;
+				for (size_t i=0;i<nUnknowns;i++) HH(i,i)+=lambda;
+
+				Eigen::LLT<Eigen::MatrixXd> llt(HH);
+				if (llt.info()!=Eigen::Success)
+				{
+					lambda *= nu;
+					nu *= 2;
+					done = (lambda>1e10);
+
+					if (p.verbose && !done) cout << "LM iter#"<<iter<<": Couldn't solve LLt, retrying with large 'lambda'=" << lambda << endl;
+					continue;
+				}
+				const Eigen::VectorXd eps = llt.solve(minus_g);
+
+				const double eps_norm = eps.norm();
+				if (eps_norm < t2*(eps_norm+t2))
+				{
+					done=true;
+					break;
+				}
+
+				// Tentative new state:
+				lm_stat_t new_lm_stat(lm_stat); //images,valid_image_pair_indices,obj_points);
+				add_lm_increment(eps,vars_to_optimize, new_lm_stat);
+
+				TResidualJacobianList new_res_jacob;
+
+				// discriminant:
+				double err_new = recompute_errors_and_Jacobians(new_lm_stat, new_res_jacob);
+
+				const double l = (err-err_new)/ (eps.dot( lambda*eps + minus_g) );
+				if(l>0)
+				{
+					// Good: Accept new values
+					if (p.verbose) cout << "LM iter#"<<iter<<": Avr.err(px):"<< std::sqrt(err/nObs)  <<"->" <<  std::sqrt(err_new/nObs) << " lambda:" << lambda << endl;
+
+					// swap: faster than "lm_stat <- new_lm_stat"
+					lm_stat.swap( new_lm_stat );
+					res_jacob.swap( new_res_jacob );
+
+					err = err_new;
+					build_linear_system(res_jacob,vars_to_optimize,minus_g,H);
+
+					// Too small gradient?
+					done = (minus_g.array().abs().maxCoeff() < t1);
+					lambda *= max(1.0/3.0, 1-std::pow(2*l-1,3.0) );
+					lambda = std::max(lambda, 1e-100); // hack...
+					nu = 2.0;
+
+					iter++;
+				}
+				else
+				{
+					if (p.verbose) cout << "LM iter#"<<iter<<": No update: err=" << err << " -> err_new=" << err_new << endl;
+					lambda *= nu;
+					nu *= 2.0;
+					done = (lambda>1e10);
+				}
+
+			} // end while LevMarq.
+
+		} // end for each calibRound = [0,1]
 		// -------------------------------------------------------------------------------
 		//  End of Levenberg-Marquardt
 		// -------------------------------------------------------------------------------
@@ -1051,7 +1084,9 @@ TStereoCalibParams::TStereoCalibParams() :
 	verbose(true),
 	maxIters(2000),
 	optimize_k1(true), optimize_k2(true), optimize_k3(false),
-	optimize_t1(false),optimize_t2(false)
+	optimize_t1(false),optimize_t2(false),
+	callback(NULL),
+	callback_user_param(NULL)
 {
 }
 

@@ -165,6 +165,9 @@ class kinect_calibrate_guiDialog: public wxDialog
         void OnbtnListSaveClick(wxCommandEvent& event);
         void OnbtnListRemoveSelectedClick(wxCommandEvent& event);
         void OnbtnLoadImageListClick(wxCommandEvent& event);
+        void OnrbShowImagesSelect(wxCommandEvent& event);
+        void OncbCalibNormalizeClick(wxCommandEvent& event);
+        void OnResize(wxSizeEvent& event);
         //*)
 
         //(*Identifiers(kinect_calibrate_guiDialog)
@@ -210,6 +213,7 @@ class kinect_calibrate_guiDialog: public wxDialog
         static const long ID_BUTTON10;
         static const long ID_BUTTON11;
         static const long ID_BUTTON12;
+        static const long ID_RADIOBOX2;
         static const long ID_STATICTEXT19;
         static const long ID_CUSTOM4;
         static const long ID_STATICTEXT20;
@@ -295,6 +299,7 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxSpinCtrl* edTilt;
         wxStaticText* StaticText1;
         wxStaticText* StaticText10;
+        wxRadioBox* rbShowImages;
         wxStaticText* StaticText16;
         wxTimer timConsoleDump;
         wxButton* btnLoadImageList;
