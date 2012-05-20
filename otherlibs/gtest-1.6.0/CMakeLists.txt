@@ -7,7 +7,7 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 
 PROJECT(mrptgtest)
 
-INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/gtest-1.5.0/fused-src/")
+INCLUDE_DIRECTORIES("fused-src")
 
 ADD_LIBRARY(mrptgtest 
 	STATIC

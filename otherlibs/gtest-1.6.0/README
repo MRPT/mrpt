@@ -171,7 +171,7 @@ workflow starts with:
 If you want to build Google Test's samples, you should replace the
 last command with
 
-  cmake -Dbuild_gtest_samples=ON ${GTEST_DIR}
+  cmake -Dgtest_build_samples=ON ${GTEST_DIR}
 
 If you are on a *nix system, you should now see a Makefile in the
 current directory.  Just type 'make' to build gtest.
@@ -262,7 +262,7 @@ and all features using tuple will be disabled.
 ### Multi-threaded Tests ###
 
 Google Test is thread-safe where the pthread library is available.
-After #include <gtest/gtest.h>, you can check the GTEST_IS_THREADSAFE
+After #include "gtest/gtest.h", you can check the GTEST_IS_THREADSAFE
 macro to see whether this is the case (yes if the macro is #defined to
 1, no if it's undefined.).
 
@@ -288,7 +288,7 @@ Google Test is compact, so most users can build and link it as a
 static library for the simplicity.  You can choose to use Google Test
 as a shared library (known as a DLL on Windows) if you prefer.
 
-To compile gtest as a shared library, add
+To compile *gtest* as a shared library, add
 
   -DGTEST_CREATE_SHARED_LIBRARY=1
 
@@ -296,11 +296,19 @@ to the compiler flags.  You'll also need to tell the linker to produce
 a shared library instead - consult your linker's manual for how to do
 it.
 
-To compile your tests that use the gtest shared library, add
+To compile your *tests* that use the gtest shared library, add
 
   -DGTEST_LINKED_AS_SHARED_LIBRARY=1
 
 to the compiler flags.
+
+Note: while the above steps aren't technically necessary today when
+using some compilers (e.g. GCC), they may become necessary in the
+future, if we decide to improve the speed of loading the library (see
+http://gcc.gnu.org/wiki/Visibility for details).  Therefore you are
+recommended to always add the above flags when using Google Test as a
+shared library.  Otherwise a future release of Google Test may break
+your build script.
 
 ### Avoiding Macro Name Clashes ###
 
@@ -371,7 +379,7 @@ For that you can use CMake:
 
   mkdir mybuild
   cd mybuild
-  cmake -Dbuild_all_gtest_tests=ON ${GTEST_DIR}
+  cmake -Dgtest_build_tests=ON ${GTEST_DIR}
 
 Make sure you have Python installed, as some of Google Test's tests
 are written in Python.  If the cmake command complains about not being
@@ -379,8 +387,7 @@ able to find Python ("Could NOT find PythonInterp (missing:
 PYTHON_EXECUTABLE)"), try telling it explicitly where your Python
 executable can be found:
 
-  cmake -DPYTHON_EXECUTABLE=path/to/python -Dbuild_all_gtest_tests=ON \
-      ${GTEST_DIR}
+  cmake -DPYTHON_EXECUTABLE=path/to/python -Dgtest_build_tests=ON ${GTEST_DIR}
 
 Next, you can build Google Test and all of its own tests.  On *nix,
 this is usually done by 'make'.  To run the tests, do

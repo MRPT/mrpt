@@ -115,6 +115,7 @@
 		- [mrpt-obs] New class mrpt::slam::CObservationRFID
 		- [mrpt-hwdrivers] Support for Impinj's "Speedway Revolution RFID reader", see new class mrpt::hwdrivers::CImpinjRFID
 	- Build system:
+		- Updated to gtest 1.6.0 (fused-src).
 		- Support for a new CMake variable: "MRPT_DONT_USE_DBG_LIBS", which if set to "1" before doing a "FIND_PACKAGE(MRPT ...)" from a user program, forces the usage of normal release libs (vs the -dbg versions) even for "Debug" CMake builds (this is mostly useful for GCC builds in GNU/Linux).
 		- [mrpt-opengl] Added new unit tests for serialization of all the classes in this library - <a href="http://code.google.com/p/mrpt/source/detail?r=2773" >r2773</a>
 		- Update of the embedded version of Eigen to 3.0.4 (Dec 6th, 2011) - <a href="http://code.google.com/p/mrpt/source/detail?r=2778" >2778</a>
