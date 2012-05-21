@@ -26,8 +26,11 @@
    |                                                                           |
    +---------------------------------------------------------------------------+ */
 
-#ifndef MRPT_DETECTORS_INTERNAL_OPECV_INCL_H
-#define MRPT_DETECTORS_INTERNAL_OPECV_INCL_H
+#ifndef MRPT_DO_OPENCV_INCL_H
+#define MRPT_DO_OPENCV_INCL_H
+
+// By including this file you make sure of #including all the relevant OpenCV
+// headers, from OpenCV 1.0 up to the latest version.
 
 #include <mrpt/config.h>
 
@@ -36,6 +39,11 @@
 #	define CV_NO_CVV_IMAGE // Avoid CImage name crash
 
 #	if MRPT_OPENCV_VERSION_NUM>=0x211
+#	if !defined(__cplusplus)
+#		include <opencv2/core/core_c.h>
+#		include <opencv2/highgui/highgui_c.h>
+#		include <opencv2/imgproc/imgproc_c.h>
+#	else
 #		include <opencv2/core/core.hpp>
 #		include <opencv2/highgui/highgui.hpp>
 #		include <opencv2/imgproc/imgproc.hpp>
@@ -46,7 +54,13 @@
 #		include <opencv2/objdetect/objdetect.hpp>
 
 #		include <opencv2/legacy/legacy.hpp>  // CvImage
+#		include <opencv2/legacy/compat.hpp>
+#		if MRPT_OPENCV_VERSION_NUM>=0x240
+#			include <opencv2/nonfree/nonfree.hpp>
+#		endif
+#	endif
 #	else
+		// For OpenCV <=2.1
 #		include <cv.h>
 #		include <highgui.h>
 #		include <cvaux.h>
@@ -56,8 +70,12 @@
 	#undef CImage
 	#endif
 
-	using mrpt::utils::CImage;
+#	if defined(__cplusplus)
+		#include <mrpt/utils/CImage.h>
+		using mrpt::utils::CImage;
 
+		typedef std::vector<CvPoint2D32f> CvPoint2D32fVector;
+#	endif
 #endif // MRPT_HAS_OPENCV
 
 #endif

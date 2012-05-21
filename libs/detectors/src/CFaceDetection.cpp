@@ -37,7 +37,8 @@
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/slam/CICP.h>
 
-#include "do_opencv_includes.h"
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 
 using namespace std;

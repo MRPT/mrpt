@@ -30,7 +30,8 @@
 
 #include <mrpt/vision/chessboard_find_corners.h>
 
-#include "do_opencv_includes.h"
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 #include "checkerboard_ocamcalib_detector.h"
 
 using namespace mrpt;

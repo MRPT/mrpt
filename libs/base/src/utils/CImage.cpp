@@ -42,8 +42,8 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/memory.h>
 
-// OpenCV headers for any old/new version of them:
-#include "do_opencv_includes.h"
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 // Prototypes of SSE2/SSE3/SSSE3 optimized functions:
 #include "CImage_SSEx.h"

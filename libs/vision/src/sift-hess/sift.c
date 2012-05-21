@@ -23,7 +23,8 @@ that accompanied this distribution.
 
 //#include "cxcore.h"
 //#include <highgui.h>
-#include "../do_opencv_includes.h"
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 /************************* Local Function Prototypes *************************/
 IplImage* create_init_img( const IplImage*, int, double );

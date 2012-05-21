@@ -32,8 +32,8 @@
 #include <mrpt/vision/pinhole.h>
 
 
-#include "do_opencv_includes.h"
-
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 using namespace mrpt;
 using namespace mrpt::vision;

@@ -10,7 +10,8 @@ Copyright (C) 2006  Rob Hess <hess@eecs.oregonstate.edu>
 #define IMGFEATURES_H
 
 //#include "cxcore.h"
-#include "../do_opencv_includes.h"
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 #ifdef __cplusplus
  extern "C" {

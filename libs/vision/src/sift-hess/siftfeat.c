@@ -21,7 +21,8 @@ Version: 1.1.1-20070913
 
 //#include "cxcore.h"
 //#include <highgui.h>
-#include "../do_opencv_includes.h"
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 #include <stdio.h>
 

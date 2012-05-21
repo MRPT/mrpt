@@ -27,7 +27,7 @@
    +---------------------------------------------------------------------------+ */
 
 // Note: Matrices unit tests have been split in different files since
-// building them with eigen3 eats a lot of RAM and may be a problem while 
+// building them with eigen3 eats a lot of RAM and may be a problem while
 // compiling in small systems.
 
 #include <mrpt/base.h>
@@ -109,7 +109,7 @@ TEST(Matrices,multiply_A_skew3)
 
 		CMatrixDouble  R;
 		R.multiply_A_skew3(A,v);
-		EXPECT_EQ(R, A*S );
+		EXPECT_EQ(R, (A*S).eval() );
 	}
 	{
 		const double dat_A[] = {

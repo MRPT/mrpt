@@ -46,11 +46,6 @@ add_subdirectory(mrpt-perfdata2html)
 
 add_subdirectory(rawlog-tools)
 
-# This program requires opencv version 1.1.0:
-IF (MRPT_OPENCV_VERSION STRGREATER "1.0.0")
-	add_subdirectory(stereo-calib-gui)
-ENDIF (MRPT_OPENCV_VERSION STRGREATER "1.0.0")
-
 add_subdirectory(observations2map)
 add_subdirectory(rawlog-grabber)
 

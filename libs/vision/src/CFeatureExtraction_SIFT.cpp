@@ -38,7 +38,8 @@
 #endif
 
 
-#include "do_opencv_includes.h"
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 
 // TODO: Remove, it's just for GetTempPathA

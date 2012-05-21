@@ -29,7 +29,8 @@
 #ifndef INTERNAL_CHECKERBOARD_INCL_H
 #define INTERNAL_CHECKERBOARD_INCL_H
 
-#include "do_opencv_includes.h"
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 #include <cmath>
 #include <cstdio>

@@ -30,8 +30,8 @@
 
 #include <mrpt/utils/CImage.h>
 
-// OpenCV headers for any old/new version of them:
-#include "do_opencv_includes.h"
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 using namespace mrpt;
 using namespace mrpt::utils;

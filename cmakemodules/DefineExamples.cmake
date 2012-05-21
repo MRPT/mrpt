@@ -87,6 +87,7 @@ IF(BUILD_EXAMPLES)
 		kmeans
 		slerp_demo
 		texture_sizes_test
+		stereo-calib-opencv
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-gui)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

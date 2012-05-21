@@ -28,12 +28,13 @@
 
 #include <mrpt/detectors.h>  // Precompiled headers
 
-#include "do_opencv_includes.h"
-
 #include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/obs.h>
 #include <mrpt/slam/CObservationImage.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
+
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 using namespace mrpt::detectors;
 

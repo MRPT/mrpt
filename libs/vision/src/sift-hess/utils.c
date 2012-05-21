@@ -10,7 +10,8 @@ Copyright (C) 2006  Rob Hess <hess@eecs.oregonstate.edu>
 
 //#include "cxcore.h"
 //#include <highgui.h>
-#include "../do_opencv_includes.h"
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 #include <errno.h>
 #include <string.h>

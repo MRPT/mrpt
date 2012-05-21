@@ -36,6 +36,8 @@
   <h2>Version 0.9.6 - (Under development) </h2></a>
 	- New applications:
 		- <a href="http://www.mrpt.org/Application:kinect-stereo-calibrate" >kinect-stereo-calibrate</a>: A GUI tool for quickly calibrating RGB+D cameras.
+	- Removed applications:
+		- stereo-calib-gui: it's not superseded by kinect-stereo-gui. The old command line tool is still useful, so it's still there as the example "stereo-calib-opencv".
 	- Changes in applications:
 		- <a href="http://www.mrpt.org/Application:icp-slam" >icp-slam</a>:
 			- Added a new option (SHOW_LASER_SCANS_3D in config files) to draw laser scans in the live 3D view - <a href="http://code.google.com/p/mrpt/source/detail?r=2881" >r2881</a>
@@ -121,6 +123,7 @@
 		- Update of the embedded version of Eigen to 3.0.4 (Dec 6th, 2011) - <a href="http://code.google.com/p/mrpt/source/detail?r=2778" >2778</a>
 		- Better pkg-config support even without doing a "make install": just do a "export PKG_CONFIG_PATH=${MRPT_BUILD_DIR}/pkg-no-install/"  - <a href="http://code.google.com/p/mrpt/source/detail?r=2853" >r2853</a>
 		- Fixed building against the new OpenCV 2.4 - <a href="http://code.google.com/p/mrpt/source/detail?r=2876" >r2876</a>
+		- Fixed building against Eigen 3.0.5 & gtest 1.6.0 - <a href="http://code.google.com/p/mrpt/source/detail?r=2917" >r2917</a>
 	- New functions:
 		- [mrpt-vision]
 			- mrpt::vision::find_descriptor_pairings() - <a href="http://code.google.com/p/mrpt/source/detail?r=2799" >r2799</a>
@@ -128,6 +131,7 @@
 	- New examples:
 		- csparse_demo
 		- kinect-to-2d-laser-demo
+		- stereo-calib-opencv - <a href="http://code.google.com/p/mrpt/source/detail?r=2917" >r2917</a>
 		- A new directory for examples of ROS-MRPT integration - <a href="http://code.google.com/p/mrpt/source/detail?r=2865" >r2865</a>
 	- Deleted classes:
 		- mrpt::slam::CConsistentObservationAlignment: It implemented the Lu & Milios algorithm, now superseded by graph-slam methods. See the mrpt::graphslam namespace (this should have been deleted in 0.9.3 but for some error it wasn't!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2747" >r2747</a>

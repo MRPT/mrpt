@@ -32,7 +32,8 @@
 #include <mrpt/vision/tracking.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 
-#include "do_opencv_includes.h"
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 
 using namespace mrpt;

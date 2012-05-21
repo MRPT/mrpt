@@ -28,10 +28,11 @@
 
 #include <mrpt/detectors.h>  // Precompiled headers
 
-#include "do_opencv_includes.h"
-
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
 #include <mrpt/obs.h>
+
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 using namespace mrpt::detectors;
 using namespace mrpt::slam;

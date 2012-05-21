@@ -53,14 +53,11 @@
 
 #include <mrpt/config.h>
 
-#if MRPT_HAS_OPENCV
-#	include "cv.h"
-#	include "cxmisc.h"
-#	include "highgui.h"
-#	include <vector>
-#	include <string>
-#	include <algorithm>
-#endif // MRPT_HAS_OPENCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
+
+#include <vector>
+#include <string>
+#include <algorithm>
 
 #include <stdio.h>
 
@@ -524,8 +521,8 @@ void StereoCalib(
 
 	fprintf( f_out,
 		"# Stereo rectify matrices (see http://opencv.willowgarage.com/documentation/camera_calibration_and_3d_reconstruction.html ):\n"
-		"# R1, R2 – The output 3x3 rectification transforms (rotation matrices) for the first and the second cameras, respectively.\n"
-		"# P1, P2 – The output 3x4 projection matrices in the new (rectified) coordinate systems.\n"
+		"# R1, R2: The output 3x3 rectification transforms (rotation matrices) for the first and the second cameras, respectively.\n"
+		"# P1, P2: The output 3x4 projection matrices in the new (rectified) coordinate systems.\n"
 		"[STEREO_RECTIFY_MATRICES]\n"
 		"R1 = %s\n"
 		"R2 = %s\n"
@@ -664,7 +661,7 @@ void StereoCalib(
 
 int main(void)
 {
-#if MRPT_HAS_OPENCV
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x100
 	//CvMat leftCamMat, rightCamMat;
 	//CvMat leftDisCoe, rightDisCoe;
     //StereoCalib("stereo_calib.txt", 6, 7, 1, &leftCamMat, &leftDisCoe, &rightCamMat, &rightDisCoe );
@@ -708,7 +705,7 @@ int main(void)
 
 	StereoCalib(sInFile.c_str(),sOutFile.c_str(), nx,ny, 0, squareSize, alpha, flag_fix_aspect_ratio, flag_zero_tangent_dist, flag_same_focal_len );
 #else
-	printf("MRPT built without OpenCV\n");
+	printf("OpenCV 1.1.0 or above required.\n");
 #endif
     return 0;
 }

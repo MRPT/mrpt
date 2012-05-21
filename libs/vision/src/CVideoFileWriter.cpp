@@ -30,7 +30,8 @@
 
 #include <mrpt/vision/CVideoFileWriter.h>
 
-#include "do_opencv_includes.h"
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 #define M_WRITER (const_cast<CvVideoWriter*>( static_cast<const CvVideoWriter*>(m_video.get())) )
 #define M_WRITER_PTR (reinterpret_cast<CvVideoWriter**>(m_video.getPtrToPtr()))

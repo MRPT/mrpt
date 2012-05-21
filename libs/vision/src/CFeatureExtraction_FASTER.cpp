@@ -30,7 +30,8 @@
 
 #include <mrpt/vision/CFeatureExtraction.h>
 
-#include "do_opencv_includes.h"
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 
 #if MRPT_HAS_OPENCV
