@@ -39,9 +39,7 @@ using namespace mrpt::random;
 using namespace mrpt::vision;
 using namespace std;
 
-#if MRPT_HAS_OPENCV
-	#include <cxcore.h>
-#endif
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 extern void getTestImage(unsigned int img_index, mrpt::utils::CImage &out_img );
 
