@@ -143,7 +143,6 @@ const long kinect_calibrate_guiDialog::ID_STATICTEXT15 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_TEXTCTRL6 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_STATICTEXT16 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_TEXTCTRL7 = wxNewId();
-const long kinect_calibrate_guiDialog::ID_CHECKBOX2 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_CHECKBOX4 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_CHECKBOX5 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_CHECKBOX6 = wxNewId();
@@ -151,20 +150,21 @@ const long kinect_calibrate_guiDialog::ID_CHECKBOX7 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_CHECKBOX8 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_STATICTEXT26 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_SPINCTRL8 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_CHECKBOX2 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_BUTTON14 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_STATICTEXT24 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_BUTTON13 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_TEXTCTRL8 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_PANEL6 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_XY_GLCANVAS = wxNewId();
 const long kinect_calibrate_guiDialog::ID_STATICTEXT3 = wxNewId();
-const long kinect_calibrate_guiDialog::ID_SPINCTRL5 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_BUTTON18 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_BUTTON20 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_STATICTEXT4 = wxNewId();
-const long kinect_calibrate_guiDialog::ID_SPINCTRL6 = wxNewId();
-const long kinect_calibrate_guiDialog::ID_STATICTEXT17 = wxNewId();
-const long kinect_calibrate_guiDialog::ID_TEXTCTRL1 = wxNewId();
-const long kinect_calibrate_guiDialog::ID_STATICTEXT18 = wxNewId();
-const long kinect_calibrate_guiDialog::ID_TEXTCTRL3 = wxNewId();
-const long kinect_calibrate_guiDialog::ID_CHECKBOX3 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_BUTTON19 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_BUTTON21 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_BUTTON22 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_GRID1 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_PANEL5 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_NOTEBOOK1 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_STATICTEXT10 = wxNewId();
@@ -199,16 +199,13 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     wxFlexGridSizer* FlexGridSizer21;
     wxFlexGridSizer* FlexGridSizer28;
     wxFlexGridSizer* FlexGridSizer8;
-    wxStaticBoxSizer* StaticBoxSizer10;
     wxFlexGridSizer* FlexGridSizer1;
     wxFlexGridSizer* FlexGridSizer2;
     wxFlexGridSizer* FlexGridSizer25;
     wxFlexGridSizer* FlexGridSizer15;
     wxStaticBoxSizer* StaticBoxSizer7;
-    wxStaticBoxSizer* StaticBoxSizer5;
     wxFlexGridSizer* FlexGridSizer17;
     wxFlexGridSizer* FlexGridSizer29;
-    wxFlexGridSizer* FlexGridSizer19;
     wxFlexGridSizer* FlexGridSizer11;
     wxFlexGridSizer* FlexGridSizer41;
     wxFlexGridSizer* FlexGridSizer40;
@@ -229,7 +226,6 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     wxStaticBoxSizer* StaticBoxSizer8;
     wxFlexGridSizer* FlexGridSizer31;
     wxFlexGridSizer* FlexGridSizer39;
-    wxStaticBoxSizer* StaticBoxSizer9;
     wxStaticBoxSizer* StaticBoxSizer4;
     wxStaticBoxSizer* StaticBoxSizer6;
     wxFlexGridSizer* FlexGridSizer16;
@@ -423,23 +419,30 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer22 = new wxFlexGridSizer(4, 1, 0, 0);
     FlexGridSizer22->AddGrowableCol(0);
     FlexGridSizer22->AddGrowableRow(1);
-    FlexGridSizer22->AddGrowableRow(2);
     StaticText22 = new wxStaticText(Panel6, ID_STATICTEXT23, _("List of stereo images:"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT23"));
     wxFont StaticText22Font(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     StaticText22->SetFont(StaticText22Font);
     FlexGridSizer22->Add(StaticText22, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     lbImagePairs = new wxListBox(Panel6, ID_LISTBOX1, wxDefaultPosition, wxDefaultSize, 0, 0, wxLB_SINGLE, wxDefaultValidator, _T("ID_LISTBOX1"));
     FlexGridSizer22->Add(lbImagePairs, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer26 = new wxFlexGridSizer(3, 1, 0, 0);
+    FlexGridSizer26 = new wxFlexGridSizer(3, 2, 0, 0);
     FlexGridSizer26->AddGrowableCol(0);
     FlexGridSizer26->AddGrowableCol(1);
     btnListRemoveSelected = new wxButton(Panel6, ID_BUTTON9, _("Remove selected"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON9"));
+    wxFont btnListRemoveSelectedFont(8,wxDEFAULT,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    btnListRemoveSelected->SetFont(btnListRemoveSelectedFont);
     FlexGridSizer26->Add(btnListRemoveSelected, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnListLoad = new wxButton(Panel6, ID_BUTTON10, _("Load image pair..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON10"));
+    wxFont btnListLoadFont(8,wxDEFAULT,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    btnListLoad->SetFont(btnListLoadFont);
     FlexGridSizer26->Add(btnListLoad, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnLoadImageList = new wxButton(Panel6, ID_BUTTON11, _("Load list of images..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON11"));
+    wxFont btnLoadImageListFont(8,wxDEFAULT,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    btnLoadImageList->SetFont(btnLoadImageListFont);
     FlexGridSizer26->Add(btnLoadImageList, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnListSave = new wxButton(Panel6, ID_BUTTON12, _("Save all images..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON12"));
+    wxFont btnListSaveFont(8,wxDEFAULT,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    btnListSave->SetFont(btnListSaveFont);
     FlexGridSizer26->Add(btnListSave, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer22->Add(FlexGridSizer26, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer10->Add(FlexGridSizer22, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
@@ -456,7 +459,9 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     };
     rbShowImages = new wxRadioBox(Panel6, ID_RADIOBOX2, _(" Show: "), wxDefaultPosition, wxDefaultSize, 5, __wxRadioBoxChoices_2, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX2"));
     rbShowImages->SetSelection(0);
-    FlexGridSizer32->Add(rbShowImages, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    wxFont rbShowImagesFont(8,wxDEFAULT,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    rbShowImages->SetFont(rbShowImagesFont);
+    FlexGridSizer32->Add(rbShowImages, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer42 = new wxFlexGridSizer(1, 2, 0, 0);
     FlexGridSizer42->AddGrowableCol(0);
     FlexGridSizer42->AddGrowableCol(1);
@@ -500,7 +505,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer12->AddGrowableCol(1);
     FlexGridSizer12->AddGrowableRow(0);
     StaticBoxSizer6 = new wxStaticBoxSizer(wxHORIZONTAL, Panel6, _("Checkerboard parameters "));
-    FlexGridSizer20 = new wxFlexGridSizer(3, 1, 0, 0);
+    FlexGridSizer20 = new wxFlexGridSizer(2, 1, 0, 0);
     StaticBoxSizer7 = new wxStaticBoxSizer(wxHORIZONTAL, Panel6, _("Number of inner corners: "));
     FlexGridSizer21 = new wxFlexGridSizer(1, 4, 0, 0);
     StaticText12 = new wxStaticText(Panel6, ID_STATICTEXT13, _("In X:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT13"));
@@ -514,7 +519,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     edCalibCheckY->SetValue(_T("9"));
     FlexGridSizer21->Add(edCalibCheckY, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticBoxSizer7->Add(FlexGridSizer21, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer20->Add(StaticBoxSizer7, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer20->Add(StaticBoxSizer7, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 0);
     StaticBoxSizer8 = new wxStaticBoxSizer(wxHORIZONTAL, Panel6, _(" Size of quads (in mm): "));
     FlexGridSizer33 = new wxFlexGridSizer(1, 4, 0, 0);
     StaticText14 = new wxStaticText(Panel6, ID_STATICTEXT15, _("In X:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT15"));
@@ -526,26 +531,24 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     edCalibSizeY = new wxTextCtrl(Panel6, ID_TEXTCTRL7, _("40.0"), wxDefaultPosition, wxSize(40,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL7"));
     FlexGridSizer33->Add(edCalibSizeY, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticBoxSizer8->Add(FlexGridSizer33, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer20->Add(StaticBoxSizer8, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-    cbCalibNormalize = new wxCheckBox(Panel6, ID_CHECKBOX2, _("Normalize images"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
-    cbCalibNormalize->SetValue(true);
-    FlexGridSizer20->Add(cbCalibNormalize, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer20->Add(StaticBoxSizer8, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 0);
     StaticBoxSizer6->Add(FlexGridSizer20, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 3);
     FlexGridSizer12->Add(StaticBoxSizer6, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer34 = new wxFlexGridSizer(2, 1, 0, 0);
+    FlexGridSizer34 = new wxFlexGridSizer(3, 1, 0, 0);
     FlexGridSizer34->AddGrowableCol(0);
     StaticBoxSizer11 = new wxStaticBoxSizer(wxHORIZONTAL, Panel6, _(" Parameters to optimize  "));
-    FlexGridSizer35 = new wxFlexGridSizer(5, 1, 0, 0);
+    FlexGridSizer35 = new wxFlexGridSizer(3, 2, 0, 0);
     FlexGridSizer35->AddGrowableCol(0);
-    cbOptK1 = new wxCheckBox(Panel6, ID_CHECKBOX4, _("k1 (r^2 distortion)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX4"));
+    cbOptK1 = new wxCheckBox(Panel6, ID_CHECKBOX4, _("k1 (r^2 dist.)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX4"));
     cbOptK1->SetValue(true);
     FlexGridSizer35->Add(cbOptK1, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 1);
-    cbOptK2 = new wxCheckBox(Panel6, ID_CHECKBOX5, _("k2 (r^4 distortion)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX5"));
+    cbOptK2 = new wxCheckBox(Panel6, ID_CHECKBOX5, _("k2 (r^4 dist.)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX5"));
     cbOptK2->SetValue(true);
     FlexGridSizer35->Add(cbOptK2, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 1);
-    cbOptK3 = new wxCheckBox(Panel6, ID_CHECKBOX6, _("k3 (r^6 distortion)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX6"));
+    cbOptK3 = new wxCheckBox(Panel6, ID_CHECKBOX6, _("k3 (r^6 dist.)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX6"));
     cbOptK3->SetValue(false);
     FlexGridSizer35->Add(cbOptK3, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer35->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     cbOptT1 = new wxCheckBox(Panel6, ID_CHECKBOX7, _("t1 (tang. dist.)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX7"));
     cbOptT1->SetValue(false);
     FlexGridSizer35->Add(cbOptT1, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 1);
@@ -562,6 +565,9 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     edMaxIters->SetValue(_T("1000"));
     FlexGridSizer36->Add(edMaxIters, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer34->Add(FlexGridSizer36, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    cbCalibNormalize = new wxCheckBox(Panel6, ID_CHECKBOX2, _("Normalize images"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
+    cbCalibNormalize->SetValue(true);
+    FlexGridSizer34->Add(cbCalibNormalize, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer12->Add(FlexGridSizer34, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer31->Add(FlexGridSizer12, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     btnRunCalib = new wxButton(Panel6, ID_BUTTON14, _("Run optimizer..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON14"));
@@ -592,40 +598,51 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer9->Fit(Panel6);
     FlexGridSizer9->SetSizeHints(Panel6);
     Panel5 = new wxPanel(Notebook1, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL5"));
-    FlexGridSizer15 = new wxFlexGridSizer(3, 3, 0, 0);
-    StaticBoxSizer5 = new wxStaticBoxSizer(wxHORIZONTAL, Panel5, _("Checkerboard parameters "));
-    FlexGridSizer16 = new wxFlexGridSizer(3, 1, 0, 0);
-    StaticBoxSizer9 = new wxStaticBoxSizer(wxHORIZONTAL, Panel5, _("Number of inner corners: "));
-    FlexGridSizer18 = new wxFlexGridSizer(1, 4, 0, 0);
-    StaticText3 = new wxStaticText(Panel5, ID_STATICTEXT3, _("In X:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
-    FlexGridSizer18->Add(StaticText3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    SpinCtrl3 = new wxSpinCtrl(Panel5, ID_SPINCTRL5, _T("5"), wxDefaultPosition, wxSize(50,-1), 0, 1, 200, 5, _T("ID_SPINCTRL5"));
-    SpinCtrl3->SetValue(_T("5"));
-    FlexGridSizer18->Add(SpinCtrl3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText4 = new wxStaticText(Panel5, ID_STATICTEXT4, _("In Y:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT4"));
-    FlexGridSizer18->Add(StaticText4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    SpinCtrl4 = new wxSpinCtrl(Panel5, ID_SPINCTRL6, _T("8"), wxDefaultPosition, wxSize(50,-1), 0, 1, 200, 8, _T("ID_SPINCTRL6"));
-    SpinCtrl4->SetValue(_T("8"));
-    FlexGridSizer18->Add(SpinCtrl4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticBoxSizer9->Add(FlexGridSizer18, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer16->Add(StaticBoxSizer9, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-    StaticBoxSizer10 = new wxStaticBoxSizer(wxHORIZONTAL, Panel5, _(" Size of quads (in mm): "));
-    FlexGridSizer19 = new wxFlexGridSizer(1, 4, 0, 0);
-    StaticText16 = new wxStaticText(Panel5, ID_STATICTEXT17, _("In X:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT17"));
-    FlexGridSizer19->Add(StaticText16, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    TextCtrl5 = new wxTextCtrl(Panel5, ID_TEXTCTRL1, _("40.0"), wxDefaultPosition, wxSize(40,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-    FlexGridSizer19->Add(TextCtrl5, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText17 = new wxStaticText(Panel5, ID_STATICTEXT18, _("In Y:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT18"));
-    FlexGridSizer19->Add(StaticText17, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    TextCtrl6 = new wxTextCtrl(Panel5, ID_TEXTCTRL3, _("40.0"), wxDefaultPosition, wxSize(40,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL3"));
-    FlexGridSizer19->Add(TextCtrl6, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticBoxSizer10->Add(FlexGridSizer19, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer16->Add(StaticBoxSizer10, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-    CheckBox2 = new wxCheckBox(Panel5, ID_CHECKBOX3, _("Normalize image"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
-    CheckBox2->SetValue(true);
-    FlexGridSizer16->Add(CheckBox2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticBoxSizer5->Add(FlexGridSizer16, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 3);
-    FlexGridSizer15->Add(StaticBoxSizer5, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer15 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer15->AddGrowableCol(0);
+    FlexGridSizer15->AddGrowableRow(0);
+    m_plot3D = new CMyGLCanvas(Panel5,ID_XY_GLCANVAS,wxDefaultPosition,wxDefaultSize,wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
+    FlexGridSizer15->Add(m_plot3D, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer16 = new wxFlexGridSizer(6, 1, 0, 0);
+    FlexGridSizer16->AddGrowableCol(0);
+    FlexGridSizer16->AddGrowableRow(6);
+    StaticText3 = new wxStaticText(Panel5, ID_STATICTEXT3, _("Press \"Connect\" to start grabbing:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
+    FlexGridSizer16->Add(StaticText3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    btnConnectLive3D = new wxButton(Panel5, ID_BUTTON18, _("Connect..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON18"));
+    FlexGridSizer16->Add(btnConnectLive3D, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    btnDisconnectLive = new wxButton(Panel5, ID_BUTTON20, _("Disconnect"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON20"));
+    btnDisconnectLive->Disable();
+    FlexGridSizer16->Add(btnDisconnectLive, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText4 = new wxStaticText(Panel5, ID_STATICTEXT4, _("You should be seeing the\nlive colored 3D point cloud. \n\nBy loading a correct calibration\nfile, the colors should match \naccurately to the real objects\neven close to sharp edges.\n\nIf no error was found but still\nhave no images, try disconnecting \nand connecting again."), wxPoint(40,32), wxDefaultSize, 0, _T("ID_STATICTEXT4"));
+    FlexGridSizer16->Add(StaticText4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer18 = new wxFlexGridSizer(1, 3, 0, 0);
+    btnLoadCalib = new wxButton(Panel5, ID_BUTTON19, _("Load calib..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON19"));
+    wxFont btnLoadCalibFont(8,wxDEFAULT,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    btnLoadCalib->SetFont(btnLoadCalibFont);
+    FlexGridSizer18->Add(btnLoadCalib, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    btnSaveCalibLive = new wxButton(Panel5, ID_BUTTON21, _("Save calib..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON21"));
+    wxFont btnSaveCalibLiveFont(8,wxDEFAULT,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    btnSaveCalibLive->SetFont(btnSaveCalibLiveFont);
+    FlexGridSizer18->Add(btnSaveCalibLive, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    btnApplyCalibLive = new wxButton(Panel5, ID_BUTTON22, _("APPLY"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON22"));
+    wxFont btnApplyCalibLiveFont(8,wxDEFAULT,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    btnApplyCalibLive->SetFont(btnApplyCalibLiveFont);
+    FlexGridSizer18->Add(btnApplyCalibLive, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer16->Add(FlexGridSizer18, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    m_grid_live_calib = new wxGrid(Panel5, ID_GRID1, wxDefaultPosition, wxDefaultSize, wxVSCROLL|wxHSCROLL, _T("ID_GRID1"));
+    m_grid_live_calib->CreateGrid(10,1);
+    wxFont m_grid_live_calibFont(8,wxDEFAULT,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    m_grid_live_calib->SetFont(m_grid_live_calibFont);
+    m_grid_live_calib->EnableEditing(true);
+    m_grid_live_calib->EnableGridLines(true);
+    m_grid_live_calib->SetRowLabelSize(90);
+    m_grid_live_calib->SetDefaultColSize(100, true);
+    wxFont GridLabelFont_1(8,wxDEFAULT,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    m_grid_live_calib->SetLabelFont(GridLabelFont_1);
+    m_grid_live_calib->SetDefaultCellFont( m_grid_live_calib->GetFont() );
+    m_grid_live_calib->SetDefaultCellTextColour( m_grid_live_calib->GetForegroundColour() );
+    FlexGridSizer16->Add(m_grid_live_calib, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer15->Add(FlexGridSizer16, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     Panel5->SetSizer(FlexGridSizer15);
     FlexGridSizer15->Fit(Panel5);
     FlexGridSizer15->SetSizeHints(Panel5);
@@ -644,17 +661,17 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer13->AddGrowableRow(0);
     StaticText10 = new wxStaticText(Panel2, ID_STATICTEXT10, _("Log:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT10"));
     FlexGridSizer13->Add(StaticText10, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    edLogTest = new wxTextCtrl(Panel2, ID_TEXTCTRL4, wxEmptyString, wxDefaultPosition, wxSize(700,63), wxTE_AUTO_SCROLL|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL4"));
+    edLogTest = new wxTextCtrl(Panel2, ID_TEXTCTRL4, wxEmptyString, wxDefaultPosition, wxSize(-1,50), wxTE_AUTO_SCROLL|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL4"));
     wxFont edLogTestFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edLogTest->SetFont(edLogTestFont);
     FlexGridSizer13->Add(edLogTest, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer2->Add(FlexGridSizer13, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer14 = new wxFlexGridSizer(2, 1, 0, 0);
+    FlexGridSizer14 = new wxFlexGridSizer(1, 2, 0, 0);
     bntAbout = new wxButton(Panel2, ID_BUTTON1, _("About"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
     FlexGridSizer14->Add(bntAbout, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnQuit = new wxButton(Panel2, ID_BUTTON2, _("Quit"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
     FlexGridSizer14->Add(btnQuit, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer2->Add(FlexGridSizer14, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer2->Add(FlexGridSizer14, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     Panel2->SetSizer(FlexGridSizer2);
     FlexGridSizer2->Fit(Panel2);
     FlexGridSizer2->SetSizeHints(Panel2);
@@ -688,6 +705,12 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     Connect(ID_CHECKBOX2,wxEVT_COMMAND_CHECKBOX_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OncbCalibNormalizeClick);
     Connect(ID_BUTTON14,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnRunCalibClick);
     Connect(ID_BUTTON13,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnSaveCalibClick);
+    Connect(ID_BUTTON18,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnConnectLive3DClick);
+    Connect(ID_BUTTON20,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnDisconnectLiveClick);
+    Connect(ID_BUTTON19,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnLoadCalibClick);
+    Connect(ID_BUTTON21,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnSaveCalibLiveClick);
+    Connect(ID_BUTTON22,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnApplyCalibLiveClick);
+    Panel5->Connect(wxEVT_SET_FOCUS,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnPanel5SetFocus,0,this);
     Connect(ID_NOTEBOOK1,wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnNotebook1PageChanging);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnAbout);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnQuitClick);
@@ -721,7 +744,27 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     }
 	catch(...) { }
 
+
+
+	// Prepare 3D scene:
+	m_plot3D->m_openGLScene = mrpt::opengl::COpenGLScene::Create();
+
+	// Ground plane:
+	{
+		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-10,10, -10,10, 0, 1);
+		obj->setColor_u8( TColor(200,200,200) );
+		m_plot3D->m_openGLScene->insert(obj);
+	}
+	// XYZ corner:
+	m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(0.5,2) );
+
+	// 3D points:
+	m_gl_3d_points = mrpt::opengl::CPointCloudColoured::Create();
+	m_gl_3d_points->setPointSize(2);
+	m_plot3D->m_openGLScene->insert( m_gl_3d_points );
+
 }
+
 
 kinect_calibrate_guiDialog::~kinect_calibrate_guiDialog()
 {
@@ -798,6 +841,7 @@ void kinect_calibrate_guiDialog::OnbtnConnectClick(wxCommandEvent& event)
 	m_calib_images.clear();
 
 	m_cap_thread_data.quit = false;
+	m_cap_thread_data.flag_grab_depth = false; // we don't need depth data for image registration.
 	m_findcorners_thread_data.quit = false;
 
 	// Launch thread:
@@ -829,8 +873,8 @@ void kinect_calibrate_guiDialog::thread_grabbing()
 
 		// We only have to grab the intensity channel:
 		kinect.enableGrabRGB(true); // RGB / IR channels:
+		kinect.enableGrabDepth( p.flag_grab_depth );
 		kinect.enableGrab3DPoints(false);
-		kinect.enableGrabDepth(false);
 		kinect.enableGrabAccelerometers(false);
 
 		// Open:
@@ -1019,11 +1063,11 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 
 			case gsCapturingRGB:
 				{
-				// Grab RGB (left) image:
+				// Grab RGB (right) image:
 				m_calib_images.resize(m_calib_images.size()+1);
 
 				mrpt::vision::TImageStereoCalibData &scd = *m_calib_images.rbegin();
-				scd.left.img_original = m_last_obs->intensityImage;
+				scd.right.img_original = m_last_obs->intensityImage;
 
 				// Switch to IR:
 				m_grabstate = gsSwitchingIR;
@@ -1043,9 +1087,9 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 
 			case gsCapturingIR:
 				{
-				// Grab IR (right) image:
+				// Grab IR (left) image:
 				mrpt::vision::TImageStereoCalibData &scd = *m_calib_images.rbegin();
-				scd.right.img_original = m_last_obs->intensityImage;
+				scd.left.img_original = m_last_obs->intensityImage;
 
 				// Done capturing: Back to idle:
 				m_grabstate = gsIdle;
@@ -1120,6 +1164,23 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 			// Show:
 			m_realtimeview_cap->AssignImage( img_to_show );
 			m_realtimeview_cap->Refresh(false);
+		}
+		break;
+
+	// ------------------------------------------
+	//   Tab 4: Live test:
+	// ------------------------------------------
+	case 5:
+		{
+			m_plot3D->last_timestamp = m_last_obs->timestamp;
+
+			m_last_obs->cameraParams          = m_calib_result.cam_params.leftCamera;
+			m_last_obs->cameraParamsIntensity = m_calib_result.cam_params.rightCamera;
+			m_last_obs->relativePoseIntensityWRTDepth = mrpt::poses::CPose3D(0,0,0, DEG2RAD(-90),0,DEG2RAD(-90)) + m_calib_result.right2left_camera_pose; // L2R
+
+			m_last_obs->project3DPointsFromDepthImageInto(*m_gl_3d_points, false /* without obs.sensorPose */ );
+
+			m_plot3D->Refresh(false);
 		}
 		break;
 	}
@@ -1485,10 +1546,12 @@ void kinect_calibrate_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 
 			cout << mrpt::format(
 				"# Relative pose of the right camera wrt to the left camera:\n"
+				"# This assumes that both camera frames are such that +Z points\n"
+				"# forwards, and +X and +Y to the right and downwards.\n"
 				"[CAMERA_PARAMS_LEFT2RIGHT_POSE]\n"
 				"translation_only     = [%e %e %e]\n"
 				"rotation_matrix_only = %s\n"
-				"pose_yaw_pitch_roll  = %s\n"
+				"pose_yaw_pitch_roll  = %s  // (YPR in degrees)\n"
 				"pose_quaternion      = %s\n\n"
 				,
 					RT_YPR.x(),RT_YPR.y(),RT_YPR.z(),
@@ -1606,6 +1669,55 @@ void kinect_calibrate_guiDialog::OnbtnListSaveClick(wxCommandEvent& event)
 {
     WX_START_TRY
 
+    if (m_calib_images.empty())
+		throw std::runtime_error("There are no images to save!");
+
+	wxString startPath;
+	m_config.Read(_("last_path"),&startPath);
+
+	startPath = startPath + _("/calib_images");
+
+    wxDirDialog dlg(this, _("Choose destination DIRECTORY (will be created if it does not exist)"), startPath, wxDD_DEFAULT_STYLE);
+
+    if (dlg.ShowModal() == wxID_OK)
+    {
+		const string trg_dir = string( dlg.GetPath().mb_str() );
+		mrpt::system::createDirectory(trg_dir);
+
+    	const size_t N = m_calib_images.size();
+
+    	const string sListFile = mrpt::format("%s/list_calibration_images.txt",trg_dir.c_str());
+		if (mrpt::system::fileExists(sListFile)) throw std::runtime_error(mrpt::format("Error: target listing file already exists (won't overwrite as precaution): %s",sListFile.c_str()));
+
+		{
+			wxBusyCursor  busy;
+			wxTheApp->Yield();
+
+			ofstream fo(sListFile.c_str());
+
+			for (unsigned int i=0;i<N;i++)
+			{
+				const mrpt::vision::TImageStereoCalibData & scd = m_calib_images[i];
+
+				const string sLr = mrpt::format("left_%04u.png",i);
+				const string sRr = mrpt::format("right_%04u.png",i);
+
+				const string sL = mrpt::format("%s/%s",trg_dir.c_str(),sLr.c_str());
+				const string sR = mrpt::format("%s/%s",trg_dir.c_str(),sRr.c_str());
+
+				if (mrpt::system::fileExists(sL)) throw std::runtime_error(mrpt::format("Error: target image filename already exists (won't overwrite as precaution): %s",sL.c_str()));
+				if (mrpt::system::fileExists(sR)) throw std::runtime_error(mrpt::format("Error: target image filename already exists (won't overwrite as precaution): %s",sR.c_str()));
+
+				if (!scd.left.img_original.saveToFile(sL) ) throw std::runtime_error(mrpt::format("Error: can't write image file: %s",sL.c_str()));
+				if (!scd.right.img_original.saveToFile(sR)) throw std::runtime_error(mrpt::format("Error: can't write image file: %s",sR.c_str()));
+
+				fo << sLr << endl << sRr << endl;
+			}
+		}
+
+		wxMessageBox(_U(mrpt::format("Images saved! An index file has been also generated:\n%s",sListFile.c_str()).c_str()), _("Done!") );
+	}
+
     WX_END_TRY
 }
 
@@ -1689,4 +1801,65 @@ void kinect_calibrate_guiDialog::OnResize(wxSizeEvent& event)
 		ProcessNewSelectedImageListBox();
 
 	event.Skip();
+}
+
+void kinect_calibrate_guiDialog::OnbtnConnectLive3DClick(wxCommandEvent& event)
+{
+	btnConnectLive3D->Enable(false);
+
+	if (!m_cap_thread.isClear()) {
+		// Shoulnd't reach here...just in case:
+		return;
+	}
+
+	m_cap_thread_data.quit = false;
+	m_cap_thread_data.flag_grab_depth = true;
+
+	// Launch thread:
+	m_cap_thread         = mrpt::system::createThreadFromObjectMethod(this, &kinect_calibrate_guiDialog::thread_grabbing);
+
+	btnDisconnectLive->Enable(true);
+}
+
+void kinect_calibrate_guiDialog::OnbtnDisconnectLiveClick(wxCommandEvent& event)
+{
+	this->StopLiveGrabThreads();
+
+	btnConnectLive3D->Enable(true);
+	btnDisconnectLive->Enable(false);
+}
+
+
+void kinect_calibrate_guiDialog::OnbtnApplyCalibLiveClick(wxCommandEvent& event)
+{
+}
+
+void kinect_calibrate_guiDialog::OnbtnSaveCalibLiveClick(wxCommandEvent& event)
+{
+}
+
+void kinect_calibrate_guiDialog::OnbtnLoadCalibClick(wxCommandEvent& event)
+{
+}
+
+// m_calib_result -> m_grid_live_calib
+void kinect_calibrate_guiDialog::LiveCalibUpdateToGrid()
+{
+	// Fill all the fields of the calibration:
+	m_grid_live_calib->BeginBatch();
+
+
+
+	m_grid_live_calib->EndBatch();
+}
+
+// m_grid_live_calib -> m_calib_result
+void kinect_calibrate_guiDialog::LiveCalibUpdateFromGrid()
+{
+
+}
+
+void kinect_calibrate_guiDialog::OnPanel5SetFocus(wxFocusEvent& event)
+{
+	LiveCalibUpdateToGrid();
 }

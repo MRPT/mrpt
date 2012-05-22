@@ -13,13 +13,14 @@ IF(wxWidgets_FOUND)
 	# ---------------------------------------------
 	# TARGET:
 	# ---------------------------------------------
-	SET(SRCS 
+	SET(SRCS
 		kinect_calibrate_guiApp.cpp kinect_calibrate_guiApp.h
 		kinect_calibrate_guiMain.cpp kinect_calibrate_guiMain.h
 		CAboutBox.cpp  CAboutBox.h
 		../wx-common/CMyRedirector.h
+		MyGLCanvas.cpp MyGLCanvas.h
 		)
-	 
+
 	IF(WIN32)
 		SET(SRCS ${SRCS} resource.rc)
 	ENDIF(WIN32)
@@ -38,7 +39,7 @@ IF(wxWidgets_FOUND)
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 
 	# Dependencies on MRPT libraries:
-	#  Just mention the top-level dependency, the rest will be detected automatically, 
+	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-hwdrivers mrpt-gui mrpt-vision)
 
