@@ -151,6 +151,7 @@
 		- [mrpt-hwdrivers] mrpt::hwdrivers::CLMS100Eth::setSensorPose() was not implemented - <a href="http://code.google.com/p/mrpt/source/detail?r=2851" >r2851</a>
 		- [mrpt-vision] Fixed memory corruption in SIFT detector with the OpenCV implementation -  <a href="http://code.google.com/p/mrpt/source/detail?r=2796" >r2796</a>
 		- [mrpt-maps] mrpt::opengl::CPlanarLaserScan ignored the show/hide options for plane/lines/points -  <a href="http://code.google.com/p/mrpt/source/detail?r=2912" >r2912</a>
+		- [mrpt-obs] Generation of 3D colored point clouds from 3D scan observations (e.g. Kinect) used incorrectly the calibrated translation left->right camera - <a href="http://code.google.com/p/mrpt/source/detail?r=2920" >r2920</a>
 		- App: camera-calib didn't show the marks for the detected corners.
 
  <hr>
