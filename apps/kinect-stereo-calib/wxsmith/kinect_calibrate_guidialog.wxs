@@ -91,6 +91,7 @@
 							</object>
 						</object>
 						<label>Welcome</label>
+						<selected>1</selected>
 					</object>
 					<object class="notebookpage">
 						<object class="wxPanel" name="ID_PANEL9" variable="Panel9" member="yes">
@@ -1090,7 +1091,7 @@
 										<cols>1</cols>
 										<rows>6</rows>
 										<growablecols>0</growablecols>
-										<growablerows>6</growablerows>
+										<growablerows>5</growablerows>
 										<object class="sizeritem">
 											<object class="wxStaticText" name="ID_STATICTEXT3" variable="StaticText3" member="yes">
 												<label>Press &quot;Connect&quot; to start grabbing:</label>
@@ -1156,12 +1157,11 @@
 													<option>1</option>
 												</object>
 												<object class="sizeritem">
-													<object class="wxButton" name="ID_BUTTON22" variable="btnApplyCalibLive" member="yes">
-														<label>APPLY</label>
-														<font>
-															<size>8</size>
-														</font>
-														<handler function="OnbtnApplyCalibLiveClick" entry="EVT_BUTTON" />
+													<object class="wxBitmapButton" name="ID_BITMAPBUTTON1" variable="btnHelpLiveCalib" member="yes">
+														<bitmap stock_id="wxART_HELP" stock_client="wxART_BUTTON" />
+														<default>1</default>
+														<tooltip>Help...</tooltip>
+														<handler function="OnbtnHelpLiveCalibClick" entry="EVT_BUTTON" />
 													</object>
 													<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 													<border>5</border>
@@ -1174,7 +1174,7 @@
 										<object class="sizeritem">
 											<object class="wxGrid" name="ID_GRID1" variable="m_grid_live_calib" member="yes">
 												<cols>1</cols>
-												<rows>10</rows>
+												<rows>3</rows>
 												<labelcolwidth>90</labelcolwidth>
 												<defaultcolsize>100</defaultcolsize>
 												<labelfont>
@@ -1184,6 +1184,7 @@
 													<size>8</size>
 												</font>
 												<style>wxVSCROLL|wxHSCROLL</style>
+												<handler function="Onm_grid_live_calibCellChange" entry="EVT_CMD_GRID_CELL_CHANGE" />
 											</object>
 											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>

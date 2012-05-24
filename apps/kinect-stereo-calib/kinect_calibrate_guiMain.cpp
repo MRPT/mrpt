@@ -44,6 +44,9 @@
 #include <wx/string.h>
 #include <wx/intl.h>
 #include <wx/font.h>
+#include <wx/bitmap.h>
+#include <wx/image.h>
+#include <wx/artprov.h>
 //*)
 
 #include <mrpt/hwdrivers/CKinect.h>
@@ -163,7 +166,7 @@ const long kinect_calibrate_guiDialog::ID_BUTTON20 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_STATICTEXT4 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_BUTTON19 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_BUTTON21 = wxNewId();
-const long kinect_calibrate_guiDialog::ID_BUTTON22 = wxNewId();
+const long kinect_calibrate_guiDialog::ID_BITMAPBUTTON1 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_GRID1 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_PANEL5 = wxNewId();
 const long kinect_calibrate_guiDialog::ID_NOTEBOOK1 = wxNewId();
@@ -605,7 +608,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     FlexGridSizer15->Add(m_plot3D, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
     FlexGridSizer16 = new wxFlexGridSizer(6, 1, 0, 0);
     FlexGridSizer16->AddGrowableCol(0);
-    FlexGridSizer16->AddGrowableRow(6);
+    FlexGridSizer16->AddGrowableRow(5);
     StaticText3 = new wxStaticText(Panel5, ID_STATICTEXT3, _("Press \"Connect\" to start grabbing:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
     FlexGridSizer16->Add(StaticText3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnConnectLive3D = new wxButton(Panel5, ID_BUTTON18, _("Connect..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON18"));
@@ -624,13 +627,13 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     wxFont btnSaveCalibLiveFont(8,wxDEFAULT,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     btnSaveCalibLive->SetFont(btnSaveCalibLiveFont);
     FlexGridSizer18->Add(btnSaveCalibLive, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    btnApplyCalibLive = new wxButton(Panel5, ID_BUTTON22, _("APPLY"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON22"));
-    wxFont btnApplyCalibLiveFont(8,wxDEFAULT,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
-    btnApplyCalibLive->SetFont(btnApplyCalibLiveFont);
-    FlexGridSizer18->Add(btnApplyCalibLive, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    btnHelpLiveCalib = new wxBitmapButton(Panel5, ID_BITMAPBUTTON1, wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP")),wxART_BUTTON), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW, wxDefaultValidator, _T("ID_BITMAPBUTTON1"));
+    btnHelpLiveCalib->SetDefault();
+    btnHelpLiveCalib->SetToolTip(_("Help..."));
+    FlexGridSizer18->Add(btnHelpLiveCalib, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer16->Add(FlexGridSizer18, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     m_grid_live_calib = new wxGrid(Panel5, ID_GRID1, wxDefaultPosition, wxDefaultSize, wxVSCROLL|wxHSCROLL, _T("ID_GRID1"));
-    m_grid_live_calib->CreateGrid(10,1);
+    m_grid_live_calib->CreateGrid(3,1);
     wxFont m_grid_live_calibFont(8,wxDEFAULT,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     m_grid_live_calib->SetFont(m_grid_live_calibFont);
     m_grid_live_calib->EnableEditing(true);
@@ -646,7 +649,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     Panel5->SetSizer(FlexGridSizer15);
     FlexGridSizer15->Fit(Panel5);
     FlexGridSizer15->SetSizeHints(Panel5);
-    Notebook1->AddPage(Panel8, _("Welcome"), false);
+    Notebook1->AddPage(Panel8, _("Welcome"), true);
     Notebook1->AddPage(Panel9, _("0) Instructions"), false);
     Notebook1->AddPage(Panel3, _("1) Test connection"), false);
     Notebook1->AddPage(Panel4, _("2) Capture"), false);
@@ -709,7 +712,8 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     Connect(ID_BUTTON20,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnDisconnectLiveClick);
     Connect(ID_BUTTON19,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnLoadCalibClick);
     Connect(ID_BUTTON21,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnSaveCalibLiveClick);
-    Connect(ID_BUTTON22,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnApplyCalibLiveClick);
+    Connect(ID_BITMAPBUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnbtnHelpLiveCalibClick);
+    Connect(ID_GRID1,wxEVT_GRID_CELL_CHANGE,(wxObjectEventFunction)&kinect_calibrate_guiDialog::Onm_grid_live_calibCellChange);
     Panel5->Connect(wxEVT_SET_FOCUS,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnPanel5SetFocus,0,this);
     Connect(ID_NOTEBOOK1,wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGING,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnNotebook1PageChanging);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&kinect_calibrate_guiDialog::OnAbout);
@@ -755,14 +759,21 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
 		obj->setColor_u8( TColor(200,200,200) );
 		m_plot3D->m_openGLScene->insert(obj);
 	}
-	// XYZ corner:
-	m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(0.5,2) );
+//	// XYZ corner:
+//	m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(0.5,2) );
 
 	// 3D points:
 	m_gl_3d_points = mrpt::opengl::CPointCloudColoured::Create();
 	m_gl_3d_points->setPointSize(2);
 	m_plot3D->m_openGLScene->insert( m_gl_3d_points );
 
+	m_gl_corner_left  = mrpt::opengl::stock_objects::CornerXYZSimple(0.03,2);
+	m_gl_corner_right = mrpt::opengl::stock_objects::CornerXYZSimple(0.03,2);
+	m_plot3D->m_openGLScene->insert( m_gl_corner_left );
+	m_plot3D->m_openGLScene->insert( m_gl_corner_right );
+
+	// Init. grid cells:
+	this->LiveCalibGridInitialize();
 }
 
 
@@ -1176,9 +1187,15 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 
 			m_last_obs->cameraParams          = m_calib_result.cam_params.leftCamera;
 			m_last_obs->cameraParamsIntensity = m_calib_result.cam_params.rightCamera;
-			m_last_obs->relativePoseIntensityWRTDepth = mrpt::poses::CPose3D(0,0,0, DEG2RAD(-90),0,DEG2RAD(-90)) + m_calib_result.right2left_camera_pose; // L2R
+
+			const mrpt::poses::CPose3D l2r =  mrpt::poses::CPose3D(0,0,0, DEG2RAD(-90),0,DEG2RAD(-90)) + (-m_calib_result.right2left_camera_pose);
+
+			m_last_obs->relativePoseIntensityWRTDepth = l2r; // L->R (Depth -> Intensity/RGB)
 
 			m_last_obs->project3DPointsFromDepthImageInto(*m_gl_3d_points, false /* without obs.sensorPose */ );
+
+			m_gl_corner_left->setPose( CPose3D() );
+			m_gl_corner_right->setPose( l2r );
 
 			m_plot3D->Refresh(false);
 		}
@@ -1192,7 +1209,6 @@ void kinect_calibrate_guiDialog::OnrbChannelSwitchSelect(wxCommandEvent& event)
 {
 	// The actual change of channel is done in the grabber thread.
 	m_cap_thread_data.select_IR_channel = (rbChannelSwitch->GetSelection() == 1);
-	cout << "m_cap_thread_data.select_IR_channel: " << m_cap_thread_data.select_IR_channel << endl;
 }
 
 // The thread in charge of finding corners in parallel to the GUI
@@ -1617,6 +1633,7 @@ void kinect_calibrate_guiDialog::OnbtnOpCalibStereoGenericClick(wxCommandEvent& 
 
 void kinect_calibrate_guiDialog::OnbtnOpTestKinectClick(wxCommandEvent& event)
 {
+	LiveCalibUpdateToGrid();
 	Notebook1->ChangeSelection(5);
 }
 
@@ -1834,12 +1851,151 @@ void kinect_calibrate_guiDialog::OnbtnApplyCalibLiveClick(wxCommandEvent& event)
 {
 }
 
+
+// Save current live-panel calib to disk:
 void kinect_calibrate_guiDialog::OnbtnSaveCalibLiveClick(wxCommandEvent& event)
 {
+	WX_START_TRY
+
+	wxString startPath;
+	m_config.Read(_("last_path"),&startPath);
+
+    wxFileDialog  dialog(this, _("Save calibration file"), startPath, _("calib.ini") ,_("Configuration files (*.ini,*.cfg)|*.ini;*.cfg|All files (*.*)|*.*"), wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+    if (dialog.ShowModal() == wxID_OK)
+    {
+        const string outFil = string( dialog.GetPath().mb_str() );
+
+    	std::ofstream f(outFil.c_str());
+
+    	if (!f.is_open()) throw std::runtime_error("Error opening file for writing!");
+
+		time_t systime;
+		time(&systime);
+		struct tm * timeinfo=localtime(&systime);
+
+		f << mrpt::format(
+			"# Stereo camera (manual) calibration report\n"
+			"# Generated by kinect-stereo-calib - MRPT at %s"
+			"# (This file is loadable from rawlog-edit and other MRPT tools)\n"
+			"# ---------------------------------------------------------------------\n\n",
+			asctime(timeinfo)
+			);
+
+		const TCamera &lc = m_calib_result.cam_params.leftCamera;
+		const TCamera &rc = m_calib_result.cam_params.rightCamera;
+
+		f << mrpt::format(
+			"# Left camera (IR/Depth in Kinect) calibration parameters:\n"
+			"[CAMERA_PARAMS_LEFT]\n"
+			"resolution = [%u %u]\n"
+			"cx         = %f\n"
+			"cy         = %f\n"
+			"fx         = %f\n"
+			"fy         = %f\n"
+			"dist       = [%e %e %e %e %e]    // The order is: [K1 K2 T1 T2 K3]\n\n",
+				lc.ncols, lc.nrows,
+				lc.cx(),
+				lc.cy(),
+				lc.fx(),
+				lc.fy(),
+				lc.k1(), lc.k2(), lc.p1(), lc.p2(), lc.k3() );
+
+		f << mrpt::format(
+			"# Right camera (RGB in Kinect) calibration parameters:\n"
+			"[CAMERA_PARAMS_RIGHT]\n"
+			"resolution = [%u %u]\n"
+			"cx         = %f\n"
+			"cy         = %f\n"
+			"fx         = %f\n"
+			"fy         = %f\n"
+			"dist       = [%e %e %e %e %e]    // The order is: [K1 K2 T1 T2 K3]\n\n",
+				rc.ncols, rc.nrows,
+				rc.cx(),
+				rc.cy(),
+				rc.fx(),
+				rc.fy(),
+				rc.k1(), rc.k2(), rc.p1(), rc.p2(), rc.k3() );
+
+		// pose:
+		const mrpt::poses::CPose3D     RT_YPR(- m_calib_result.right2left_camera_pose );
+		const mrpt::poses::CPose3DQuat RT_quat(RT_YPR);
+
+		f << mrpt::format(
+			"# Relative pose of the right camera wrt to the left camera:\n"
+			"# This assumes that both camera frames are such that +Z points\n"
+			"# forwards, and +X and +Y to the right and downwards.\n"
+			"[CAMERA_PARAMS_LEFT2RIGHT_POSE]\n"
+			"translation_only     = [%e %e %e]\n"
+			"rotation_matrix_only = %s\n"
+			"pose_yaw_pitch_roll  = %s  // (YPR in degrees)\n"
+			"pose_quaternion      = %s\n\n"
+			,
+				RT_YPR.x(),RT_YPR.y(),RT_YPR.z(),
+				RT_YPR.getRotationMatrix().inMatlabFormat(13).c_str(),
+				RT_YPR.asString().c_str(),
+				RT_quat.asString().c_str()
+			);
+    }
+
+    WX_END_TRY
 }
 
 void kinect_calibrate_guiDialog::OnbtnLoadCalibClick(wxCommandEvent& event)
 {
+	WX_START_TRY
+
+	wxString startPath;
+	m_config.Read(_("last_path"),&startPath);
+
+    wxFileDialog  dialog(this, _("Load calibration file"), startPath, _("calib.ini") ,_("Configuration files (*.ini,*.cfg)|*.ini;*.cfg|All files (*.*)|*.*"), wxFD_OPEN |  wxFD_FILE_MUST_EXIST );
+    if (dialog.ShowModal() == wxID_OK)
+    {
+        const string inFil = string( dialog.GetPath().mb_str() );
+
+        mrpt::utils::CConfigFile cfg(inFil);
+
+
+        m_calib_result.cam_params.leftCamera.loadFromConfigFile("CAMERA_PARAMS_LEFT",cfg);
+        m_calib_result.cam_params.rightCamera.loadFromConfigFile("CAMERA_PARAMS_RIGHT",cfg);
+
+        const string sYPR = cfg.read_string("CAMERA_PARAMS_LEFT2RIGHT_POSE","pose_yaw_pitch_roll","", true);
+
+		// Load L->R pose
+        mrpt::poses::CPose3D p;
+        p.fromString(sYPR);
+
+        // Convert to R->L pose:
+        m_calib_result.right2left_camera_pose = -p;
+
+        // Update grid:
+		LiveCalibUpdateToGrid();
+    }
+
+    WX_END_TRY
+}
+
+// Aux. function
+void kinect_calibrate_guiDialog::fillGridLine(int r,  const char *label_prefix, const char *label, const std::string &val )
+{
+	m_grid_live_calib->SetRowLabelValue(r,_U( (std::string(label_prefix)+std::string(".")+std::string(label)).c_str() ) );
+	m_grid_live_calib->SetCellValue(r,0,_U(val.c_str()));
+}
+
+void kinect_calibrate_guiDialog::LiveCalibGridInitialize()
+{
+	// Fill all the fields of the calibration:
+	m_grid_live_calib->BeginBatch();
+
+	// Clear:
+	m_grid_live_calib->DeleteCols(0,m_grid_live_calib->GetNumberCols(),false);
+	m_grid_live_calib->DeleteRows(0,m_grid_live_calib->GetNumberRows(),false);
+
+	// Build cells & labels:
+	m_grid_live_calib->AppendCols(1,false);
+	m_grid_live_calib->AppendRows(24,false);
+	m_grid_live_calib->SetColLabelSize(0); // Hide
+
+	m_grid_live_calib->EndBatch();
 }
 
 // m_calib_result -> m_grid_live_calib
@@ -1848,18 +2004,92 @@ void kinect_calibrate_guiDialog::LiveCalibUpdateToGrid()
 	// Fill all the fields of the calibration:
 	m_grid_live_calib->BeginBatch();
 
+	// Fill-in data:
+	int r=0;
+	for (int lr=0;lr<2;lr++)
+	{
+		const char * sN = (lr==0 ? "Left" : "Right");
+		const mrpt::utils::TCamera &c = (lr==0 ? m_calib_result.cam_params.leftCamera : m_calib_result.cam_params.rightCamera);
 
+		fillGridLine(r++, sN,"cx", format("%.4f",c.cx()) );
+		fillGridLine(r++, sN,"cy", format("%.4f",c.cy()) );
+		fillGridLine(r++, sN,"fx", format("%.4f",c.fx()) );
+		fillGridLine(r++, sN,"fy", format("%.4f",c.fy()) );
+		fillGridLine(r++, sN,"k1", format("%.4e",c.k1()) );
+		fillGridLine(r++, sN,"k2", format("%.4e",c.k2()) );
+		fillGridLine(r++, sN,"k3", format("%.4e",c.k3()) );
+		fillGridLine(r++, sN,"t1", format("%.4e",c.p1()) );
+		fillGridLine(r++, sN,"t2", format("%.4e",c.p2()) );
+	}
+
+	// Show the L->R pose (more intuitive to edit by hand):
+	const mrpt::poses::CPose3D l2r = - m_calib_result.right2left_camera_pose;
+	fillGridLine(r++, "L2R_pose","x", format("%.4f", l2r.x() ) );
+	fillGridLine(r++, "L2R_pose","y", format("%.4f", l2r.y() ) );
+	fillGridLine(r++, "L2R_pose","z", format("%.4f", l2r.z() ) );
+	fillGridLine(r++, "L2R_pose","yaw", format("%.4f", l2r.yaw() ) );
+	fillGridLine(r++, "L2R_pose","pitch", format("%.4f", l2r.pitch() ) );
+	fillGridLine(r++, "L2R_pose","roll", format("%.4f", l2r.roll() ) );
 
 	m_grid_live_calib->EndBatch();
+}
+
+
+double kinect_calibrate_guiDialog::parseGridLine(int r)
+{
+	double R;
+	const wxString s = m_grid_live_calib->GetCellValue(r,0);
+
+	if (!s.ToDouble(&R))
+			throw std::runtime_error( mrpt::format("Error parsing double string: '%s'",s.mb_str(wxConvUTF8).data() ).c_str() );
+	else 	return R;
 }
 
 // m_grid_live_calib -> m_calib_result
 void kinect_calibrate_guiDialog::LiveCalibUpdateFromGrid()
 {
+	WX_START_TRY
 
+	// Parse data:
+	int r=0;
+	for (int lr=0;lr<2;lr++)
+	{
+		mrpt::utils::TCamera &c = (lr==0 ? m_calib_result.cam_params.leftCamera : m_calib_result.cam_params.rightCamera);
+
+		c.cx( parseGridLine(r++) );
+		c.cy( parseGridLine(r++) );
+		c.fx( parseGridLine(r++) );
+		c.fy( parseGridLine(r++) );
+
+		c.k1( parseGridLine(r++) );
+		c.k2( parseGridLine(r++) );
+		c.k3( parseGridLine(r++) );
+		c.p1( parseGridLine(r++) );
+		c.p2( parseGridLine(r++) );
+	}
+
+	// Show the L->R pose in Kinect coordinates (more intuitive to edit by hand):
+	const mrpt::poses::CPose3D l2r(
+		parseGridLine(r), parseGridLine(r+1), parseGridLine(r+2),  // x,y,z
+		parseGridLine(r+3), parseGridLine(r+4), parseGridLine(r+5)  // yaw,pitch,roll
+		);
+
+	const mrpt::poses::CPose3D r2l = (-l2r);
+	m_calib_result.right2left_camera_pose = r2l;
+
+	WX_END_TRY
 }
 
 void kinect_calibrate_guiDialog::OnPanel5SetFocus(wxFocusEvent& event)
 {
-	LiveCalibUpdateToGrid();
+}
+
+void kinect_calibrate_guiDialog::Onm_grid_live_calibCellChange(wxGridEvent& event)
+{
+	this->LiveCalibUpdateFromGrid();
+}
+
+
+void kinect_calibrate_guiDialog::OnbtnHelpLiveCalibClick(wxCommandEvent& event)
+{
 }

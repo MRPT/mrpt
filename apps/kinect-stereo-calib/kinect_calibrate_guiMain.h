@@ -39,6 +39,7 @@
 #include "wx/defs.h"
 
 //(*Headers(kinect_calibrate_guiDialog)
+#include <wx/bmpbuttn.h>
 #include <wx/grid.h>
 #include <wx/spinctrl.h>
 #include <wx/checkbox.h>
@@ -136,6 +137,7 @@ class kinect_calibrate_guiDialog: public wxDialog
 		mrpt::vision::TStereoCalibParams           m_calib_params;
 
 		mrpt::opengl::CPointCloudColouredPtr  m_gl_3d_points; // For live Kinect tests
+		mrpt::opengl::CSetOfObjectsPtr  m_gl_corner_left,m_gl_corner_right; // For live Kinect tests
 
 		void thread_grabbing();
 		void thread_find_corners();
@@ -146,8 +148,13 @@ class kinect_calibrate_guiDialog: public wxDialog
 		void UpdateListOfImages();
 		void ProcessNewSelectedImageListBox();
 
+		void LiveCalibGridInitialize();
+
 		void LiveCalibUpdateToGrid();
 		void LiveCalibUpdateFromGrid();
+
+		void fillGridLine(int r,  const char *label_prefix, const char *label, const std::string &val );
+		double parseGridLine(int r);
 
 
         //(*Handlers(kinect_calibrate_guiDialog)
@@ -184,6 +191,8 @@ class kinect_calibrate_guiDialog: public wxDialog
         void OnbtnSaveCalibLiveClick(wxCommandEvent& event);
         void OnbtnLoadCalibClick(wxCommandEvent& event);
         void OnPanel5SetFocus(wxFocusEvent& event);
+        void Onm_grid_live_calibCellChange(wxGridEvent& event);
+        void OnbtnHelpLiveCalibClick(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(kinect_calibrate_guiDialog)
@@ -263,7 +272,7 @@ class kinect_calibrate_guiDialog: public wxDialog
         static const long ID_STATICTEXT4;
         static const long ID_BUTTON19;
         static const long ID_BUTTON21;
-        static const long ID_BUTTON22;
+        static const long ID_BITMAPBUTTON1;
         static const long ID_GRID1;
         static const long ID_PANEL5;
         static const long ID_NOTEBOOK1;
@@ -302,6 +311,7 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxButton* bntAbout;
         wxButton* btnSaveCalib;
         wxButton* btnListLoad;
+        wxBitmapButton* btnHelpLiveCalib;
         wxButton* btnRunCalib;
         wxTimer timMisc;
         wxButton* btnOpTestKinect;
@@ -327,7 +337,6 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxCheckBox* cbOptK3;
         wxPanel* Panel5;
         wxCheckBox* cbOptK1;
-        wxButton* btnApplyCalibLive;
         wxStaticText* StaticText12;
         wxSpinCtrl* edSizeX;
         wxSpinCtrl* edCalibCheckY;
