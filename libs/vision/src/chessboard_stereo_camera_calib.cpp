@@ -34,6 +34,7 @@
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <mrpt/vision/pinhole.h>
+#include <mrpt/vision/robust_kernels.h>
 
 #include "chessboard_stereo_camera_calib_internal.h"
 
@@ -70,6 +71,9 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		ASSERT_(p.check_size_y>2)
 		ASSERT_(p.check_squares_length_X_meters>0)
 		ASSERT_(p.check_squares_length_Y_meters>0)
+
+		const bool user_wants_use_robust = false; // ...p.use_robust;
+		const double robust_kernel_param = 20;
 
 		if (images.size()<1)
 		{
@@ -255,7 +259,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 
 			// Residuals & Jacobians:
 			TResidualJacobianList res_jacob;
-			err = recompute_errors_and_Jacobians(lm_stat,res_jacob);
+			err = recompute_errors_and_Jacobians(lm_stat,res_jacob, false /* no robust */, robust_kernel_param);
 
 			// Build linear system:
 			Eigen::VectorXd  minus_g; // minus gradient
@@ -267,6 +271,8 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 			double nu = 2;
 			double lambda = tau * H.diagonal().array().maxCoeff();
 			bool   done = (minus_g.array().abs().maxCoeff() < t1);
+			int    numItersImproving = 0;
+			bool   use_robust = false;
 
 			// Lev-Marq. main loop:
 			iter=0;
@@ -283,7 +289,9 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 
 				// Solve for increment: (H + \lambda I) eps = -gradient
 				Eigen::MatrixXd  HH = H;
-				for (size_t i=0;i<nUnknowns;i++) HH(i,i)+=lambda;
+				for (size_t i=0;i<nUnknowns;i++)
+					HH(i,i)+=lambda;
+					//HH(i,i)*= (1.0 + lambda);
 
 				Eigen::LLT<Eigen::MatrixXd> llt(HH);
 				if (llt.info()!=Eigen::Success)
@@ -311,11 +319,14 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 				TResidualJacobianList new_res_jacob;
 
 				// discriminant:
-				double err_new = recompute_errors_and_Jacobians(new_lm_stat, new_res_jacob);
+				double err_new = recompute_errors_and_Jacobians(new_lm_stat, new_res_jacob, use_robust, robust_kernel_param);
 
 				const double l = (err-err_new)/ (eps.dot( lambda*eps + minus_g) );
 				if(l>0)
 				{
+					if (numItersImproving++>5)
+						use_robust  = user_wants_use_robust;
+
 					// Good: Accept new values
 					if (p.verbose) cout << "LM iter#"<<iter<<": Avr.err(px):"<< std::sqrt(err/nObs)  <<"->" <<  std::sqrt(err_new/nObs) << " lambda:" << lambda << endl;
 
@@ -328,7 +339,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 
 					// Too small gradient?
 					done = (minus_g.array().abs().maxCoeff() < t1);
-					lambda *= max(1.0/3.0, 1-std::pow(2*l-1,3.0) );
+					lambda *= 0.3; // max(1.0/3.0, 1-std::pow(2*l-1,3.0) );
 					lambda = std::max(lambda, 1e-100); // hack...
 					nu = 2.0;
 
@@ -632,6 +643,7 @@ void mrpt::vision::build_linear_system(
 	}
 
 	// Ignore those derivatives of "fixed" (non-optimizable) variables in camera parameters
+	// --------------------------------------------------------------------------------------
 	const size_t N_Cs = var_indxs.size();  // [0-8]
 	const size_t nUnknowns = N*6 + 6 + 2*N_Cs;
 	const size_t nUnkPoses = N*6 + 6;
@@ -647,13 +659,41 @@ void mrpt::vision::build_linear_system(
 	{
 		minus_g[nUnkPoses+i]      = minus_g_tot[nUnkPoses +     var_indxs[i] ];
 		minus_g[nUnkPoses+N_Cs+i] = minus_g_tot[nUnkPoses + 9 + var_indxs[i] ];
+	}
 
+	for (size_t k=0;k<nUnkPoses;k++)
+	{
+		for (size_t i=0;i<N_Cs;i++)
+		{
+			H(nUnkPoses+i,k) = H(k,nUnkPoses+i) = H_tot(k,nUnkPoses+var_indxs[i]);
+			H(nUnkPoses+i+N_Cs,k) = H(k,nUnkPoses+i+N_Cs) = H_tot(k,nUnkPoses+9+var_indxs[i]);
+		}
+	}
+
+	for (size_t i=0;i<N_Cs;i++)
+	{
 		for (size_t j=0;j<N_Cs;j++)
 		{
 			H(nUnkPoses+i,nUnkPoses+j) = H_tot( nUnkPoses + var_indxs[i], nUnkPoses + var_indxs[j] );
 			H(nUnkPoses+N_Cs+i,nUnkPoses+N_Cs+j) = H_tot( nUnkPoses +9+var_indxs[i], nUnkPoses +9+ var_indxs[j] );
 		}
 	}
+
+#if 0
+	{
+		CMatrixDouble M1 = H_tot;
+		CMatrixDouble g1 = minus_g_tot;
+		M1.saveToTextFile("H1.txt");
+		g1.saveToTextFile("g1.txt");
+
+		CMatrixDouble M2 = H;
+		CMatrixDouble g2 = minus_g;
+		M2.saveToTextFile("H2.txt");
+		g2.saveToTextFile("g2.txt");
+		mrpt::system::pause();
+	}
+#endif
+
 } // end of build_linear_system
 
 
@@ -845,7 +885,9 @@ void mrpt::vision::add_lm_increment(
 // the 4x1 prediction are the (u,v) pixel coordinates for the left / right cameras:
 double mrpt::vision::recompute_errors_and_Jacobians(
 	const lm_stat_t       & lm_stat,
-	TResidualJacobianList & res_jac )
+	TResidualJacobianList & res_jac,
+	bool use_robust_kernel,
+	double kernel_param )
 {
 	double total_err=0;
 	const size_t N = lm_stat.valid_image_pair_indices.size();
@@ -890,7 +932,19 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			rje.residual = rje.predicted_obs - obs;
 
 			// Accum. total squared error:
-			total_err += rje.residual.squaredNorm();
+			const double err_sqr_norm = rje.residual.squaredNorm();
+			if (use_robust_kernel)
+			{
+				RobustKernel<rkPseudoHuber>  rk;
+				rk.b_sq = kernel_param;
+
+				double kernel_1st_deriv;
+				const double scaled_err = rk.eval( std::sqrt(err_sqr_norm ), &kernel_1st_deriv );
+
+				rje.residual *= kernel_1st_deriv;
+				total_err += scaled_err;
+			}
+			else	total_err += err_sqr_norm;
 
 			// ---------------------------------------------------------------------------------
 			// Jacobian: (4x30)
