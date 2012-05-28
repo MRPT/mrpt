@@ -84,6 +84,9 @@ namespace mrpt
 			  */
 			bool          optimize_k1, optimize_k2, optimize_k3, optimize_t1, optimize_t2;
 
+			bool          use_robust_kernel; //!< Employ a Pseudo-Huber robustifier kernel (Default: false)
+			double        robust_kernel_param; //!< The parameter of the robust kernel, in pixels (only if use_robust_kernel=true) (Default=10)
+
 
 			TSteroCalibCallbackFunctor  callback; //!< If set to !=NULL, this function will be called within each Lev-Marq. iteration (don't do heavy stuff here since performance will degrade)
 			void * callback_user_param; //!< If using a callback function, you can use this to pass custom data to your callback.
@@ -99,6 +102,12 @@ namespace mrpt
 
 			mrpt::utils::TStereoCamera  cam_params;  //!< Recovered parameters of the stereo camera
 			mrpt::poses::CPose3D        right2left_camera_pose; //!< The pose of the left camera as seen from the right camera
+
+			/** Poses of the origin of coordinates of the pattern wrt the left camera (i.e. the origin of coordinates, as seen from the different camera poses)
+			  */
+			mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t  left_cam_poses;
+			std::vector<bool> image_pair_was_used; //!< true if a checkerboard was correctly detected in both left/right images. false if it wasn't, so the image pair didn't make it to the optimization.
+
 			double  final_rmse;  //!< Final reprojection square Root Mean Square Error (in pixels).
 			size_t  final_iters; //!< Final number of optimization iterations executed.
 			size_t  final_number_good_image_pairs; //!< Number of image pairs in which valid checkerboards were correctly detected.

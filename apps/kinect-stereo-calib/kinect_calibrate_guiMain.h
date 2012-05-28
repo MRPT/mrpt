@@ -108,9 +108,10 @@ enum TGrabState
 	gsCapturingIR
 };
 
-
 class kinect_calibrate_guiDialog: public wxDialog
 {
+	friend void myCalibCallback(const mrpt::vision::TImageStereoCallbackData &d, void* user_data);
+
     public:
 
         kinect_calibrate_guiDialog(wxWindow* parent,wxWindowID id = -1);
@@ -148,10 +149,13 @@ class kinect_calibrate_guiDialog: public wxDialog
 		void UpdateListOfImages();
 		void ProcessNewSelectedImageListBox();
 
+		void CalibUpdate3DViewCameras();
+
 		void LiveCalibGridInitialize();
 
 		void LiveCalibUpdateToGrid();
 		void LiveCalibUpdateFromGrid();
+
 
 		void fillGridLine(int r,  const char *label_prefix, const char *label, const std::string &val );
 		double parseGridLine(int r);
@@ -193,6 +197,8 @@ class kinect_calibrate_guiDialog: public wxDialog
         void OnPanel5SetFocus(wxFocusEvent& event);
         void Onm_grid_live_calibCellChange(wxGridEvent& event);
         void OnbtnHelpLiveCalibClick(wxCommandEvent& event);
+        void OnNeedsToUpdate6DCamPlot(wxSpinEvent& event);
+        void OnedCalibSizeXText(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(kinect_calibrate_guiDialog)
@@ -252,18 +258,27 @@ class kinect_calibrate_guiDialog: public wxDialog
         static const long ID_TEXTCTRL6;
         static const long ID_STATICTEXT16;
         static const long ID_TEXTCTRL7;
+        static const long ID_PANEL11;
         static const long ID_CHECKBOX4;
         static const long ID_CHECKBOX5;
         static const long ID_CHECKBOX6;
         static const long ID_CHECKBOX7;
         static const long ID_CHECKBOX8;
+        static const long ID_PANEL12;
         static const long ID_STATICTEXT26;
         static const long ID_SPINCTRL8;
+        static const long ID_CHECKBOX3;
         static const long ID_CHECKBOX2;
+        static const long ID_PANEL13;
+        static const long ID_NOTEBOOK3;
         static const long ID_BUTTON14;
         static const long ID_STATICTEXT24;
         static const long ID_BUTTON13;
         static const long ID_TEXTCTRL8;
+        static const long ID_PANEL1;
+        static const long ID_CUSTOM6;
+        static const long ID_PANEL10;
+        static const long ID_NOTEBOOK2;
         static const long ID_PANEL6;
         static const long ID_XY_GLCANVAS;
         static const long ID_STATICTEXT3;
@@ -294,6 +309,8 @@ class kinect_calibrate_guiDialog: public wxDialog
         mrpt::gui::wxMRPTImageControl* m_realtimeview_cap;
         wxTextCtrl* TextCtrl3;
         wxPanel* Panel6;
+        wxPanel* Panel1;
+        wxPanel* Panel11;
         wxStaticText* StaticText21;
         wxStaticText* StaticText13;
         wxStaticText* StaticText14;
@@ -309,6 +326,7 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxButton* btnDisconnect;
         wxButton* btnConnect;
         wxButton* bntAbout;
+        wxPanel* Panel12;
         wxButton* btnSaveCalib;
         wxButton* btnListLoad;
         wxBitmapButton* btnHelpLiveCalib;
@@ -324,6 +342,7 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxSpinCtrl* edTilt;
         wxStaticText* StaticText1;
         wxStaticText* StaticText10;
+        wxPanel* Panel10;
         wxRadioBox* rbShowImages;
         wxTimer timConsoleDump;
         wxButton* btnConnectLive3D;
@@ -331,6 +350,7 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxPanel* Panel2;
         wxStaticText* StaticText3;
         CMyGLCanvas* m_plot3D;
+        wxCheckBox* cbCalibUseRobust;
         wxPanel* Panel4;
         wxTextCtrl* edCalibSizeY;
         wxStaticText* StaticText23;
@@ -340,6 +360,7 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxStaticText* StaticText12;
         wxSpinCtrl* edSizeX;
         wxSpinCtrl* edCalibCheckY;
+        CMyGLCanvas* m_plot3D_cameras;
         wxRadioBox* rbChannelSwitch;
         wxButton* btnSaveCalibLive;
         wxPanel* Panel3;
@@ -347,6 +368,8 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxGrid* m_grid_live_calib;
         wxButton* btnNext1;
         wxButton* btnListSave;
+        wxNotebook* Notebook2;
+        wxPanel* Panel13;
         wxSpinCtrl* edCalibCheckX;
         wxSpinCtrl* edMaxIters;
         wxStaticText* StaticText4;
@@ -362,6 +385,7 @@ class kinect_calibrate_guiDialog: public wxDialog
         wxCheckBox* cbOptT2;
         wxButton* btnCapture;
         wxButton* btnNext2;
+        wxNotebook* NotebookCalibResults;
         wxStaticText* StaticText19;
         wxStaticText* StaticText29;
         mrpt::gui::wxMRPTImageControl* m_realtimeview_test;

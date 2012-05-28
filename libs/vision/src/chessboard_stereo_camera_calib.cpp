@@ -38,7 +38,6 @@
 
 #include "chessboard_stereo_camera_calib_internal.h"
 
-//MRPT_TODO("It seems theoretic jacobs are still wrong?")
 //#define USE_NUMERIC_JACOBIANS
 //#define COMPARE_NUMERIC_JACOBIANS
 
@@ -64,7 +63,6 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 	TStereoCalibResults         & out
 	)
 {
-#if MRPT_HAS_OPENCV
 	try
 	{
 		ASSERT_(p.check_size_x>2)
@@ -72,8 +70,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		ASSERT_(p.check_squares_length_X_meters>0)
 		ASSERT_(p.check_squares_length_Y_meters>0)
 
-		const bool user_wants_use_robust = false; // ...p.use_robust;
-		const double robust_kernel_param = 20;
+		const bool user_wants_use_robust = p.use_robust_kernel;
 
 		if (images.size()<1)
 		{
@@ -83,6 +80,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 
 		const unsigned   CORNERS_COUNT = p.check_size_x * p.check_size_y;
 		const TImageSize check_size    = TImageSize(p.check_size_x, p.check_size_y);
+		TImageStereoCallbackData cbPars;
 
 		// For each image, find checkerboard corners:
 		// -----------------------------------------------
@@ -138,6 +136,13 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 					corners_found[lr] = false;
 
 				if (p.verbose) cout << format("%s img #%u: %s\n", lr==0 ? "LEFT":"RIGHT", static_cast<unsigned int>(i), corners_found[lr] ? "DETECTED" : "NOT DETECTED" );
+				// User Callback?
+				if (p.callback)
+				{
+					cbPars.current_iter = 0;
+					cbPars.current_rmse = 0;
+					(*p.callback)(cbPars, p.callback_user_param);
+				}
 
 				if( corners_found[lr] )
 				{
@@ -191,6 +196,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		const double tau = 0.3;
 		const double t1 = 1e-8;
 		const double t2 = 1e-8;
+		const double MAX_LAMBDA = 1e20;
 
 		// Initial state:
 		//Within lm_stat: CArrayDouble<9> left_cam_params, right_cam_params; // [fx fy cx cy k1 k2 k3 t1 t2]
@@ -221,7 +227,6 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		double err=0;
 		vector_size_t  vars_to_optimize;
 		Eigen::MatrixXd  H;       // Hessian matrix  (Declared here so it's accessible as the final uncertainty measure)
-		TImageStereoCallbackData cbPars;
 
 		for (int calibRound=0; calibRound<2;calibRound++)
 		{
@@ -259,7 +264,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 
 			// Residuals & Jacobians:
 			TResidualJacobianList res_jacob;
-			err = recompute_errors_and_Jacobians(lm_stat,res_jacob, false /* no robust */, robust_kernel_param);
+			err = recompute_errors_and_Jacobians(lm_stat,res_jacob, false /* no robust */, p.robust_kernel_param);
 
 			// Build linear system:
 			Eigen::VectorXd  minus_g; // minus gradient
@@ -286,21 +291,20 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 					(*p.callback)(cbPars, p.callback_user_param);
 				}
 
-
 				// Solve for increment: (H + \lambda I) eps = -gradient
 				Eigen::MatrixXd  HH = H;
 				for (size_t i=0;i<nUnknowns;i++)
 					HH(i,i)+=lambda;
 					//HH(i,i)*= (1.0 + lambda);
 
-				Eigen::LLT<Eigen::MatrixXd> llt(HH);
+				Eigen::LLT<Eigen::MatrixXd> llt( HH.selfadjointView<Eigen::Lower>() );
 				if (llt.info()!=Eigen::Success)
 				{
 					lambda *= nu;
 					nu *= 2;
-					done = (lambda>1e10);
+					done = (lambda>MAX_LAMBDA);
 
-					if (p.verbose && !done) cout << "LM iter#"<<iter<<": Couldn't solve LLt, retrying with large 'lambda'=" << lambda << endl;
+					if (p.verbose && !done) cout << "LM iter#"<<iter<<": Couldn't solve LLt, retrying with larger lambda=" << lambda << endl;
 					continue;
 				}
 				const Eigen::VectorXd eps = llt.solve(minus_g);
@@ -308,6 +312,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 				const double eps_norm = eps.norm();
 				if (eps_norm < t2*(eps_norm+t2))
 				{
+					if (p.verbose) cout << "Termination criterion: eps_norm < t2*(eps_norm+t2): "<<eps_norm << " < " << t2*(eps_norm+t2) <<endl;
 					done=true;
 					break;
 				}
@@ -319,11 +324,12 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 				TResidualJacobianList new_res_jacob;
 
 				// discriminant:
-				double err_new = recompute_errors_and_Jacobians(new_lm_stat, new_res_jacob, use_robust, robust_kernel_param);
+				double err_new = recompute_errors_and_Jacobians(new_lm_stat, new_res_jacob, use_robust, p.robust_kernel_param);
 
-				const double l = (err-err_new)/ (eps.dot( lambda*eps + minus_g) );
-				if(l>0)
+				if(err_new<err)
 				{
+					//const double l = (err-err_new)/ (eps.dot( lambda*eps + minus_g) );
+
 					if (numItersImproving++>5)
 						use_robust  = user_wants_use_robust;
 
@@ -339,18 +345,19 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 
 					// Too small gradient?
 					done = (minus_g.array().abs().maxCoeff() < t1);
-					lambda *= 0.3; // max(1.0/3.0, 1-std::pow(2*l-1,3.0) );
-					lambda = std::max(lambda, 1e-100); // hack...
+					//lambda *= max(1.0/3.0, 1-std::pow(2*l-1,3.0) );
+					lambda*=0.6;
+					lambda = std::max(lambda, 1e-100);
 					nu = 2.0;
 
 					iter++;
 				}
 				else
 				{
-					if (p.verbose) cout << "LM iter#"<<iter<<": No update: err=" << err << " -> err_new=" << err_new << endl;
 					lambda *= nu;
+					if (p.verbose) cout << "LM iter#"<<iter<<": No update: err=" << err << " -> err_new=" << err_new << " retrying with larger lambda=" << lambda << endl;
 					nu *= 2.0;
-					done = (lambda>1e10);
+					done = (lambda>MAX_LAMBDA);
 				}
 
 			} // end while LevMarq.
@@ -391,6 +398,13 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		// R2L pose:
 		out.right2left_camera_pose = lm_stat.right2left_pose;
 
+		// All the estimated camera poses:
+		out.left_cam_poses = lm_stat.left_cam_poses;
+
+		out.image_pair_was_used.assign(images.size(), false);
+		for (size_t i=0;i<valid_image_pair_indices.size();i++)
+			out.image_pair_was_used[valid_image_pair_indices[i]]=true;
+
 		// Uncertainties ---------------------
 		// The order of inv. variances in the diagonal of the Hessian is:
 		//  * N x Manifold Epsilon of left camera pose (6)
@@ -412,9 +426,10 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 			//mrpt::poses::CPose3D			reconstructed_camera_pose;   //!< At output, the reconstructed pose of the camera.
 			//std::vector<TPixelCoordf>		projectedPoints_distorted;   //!< At output, only will have an empty vector if the checkerboard was not found in this image, or the predicted (reprojected) corners, which were used to estimate the average square error.
 			//std::vector<TPixelCoordf>		projectedPoints_undistorted; //!< At output, like projectedPoints_distorted but for the undistorted image.
+			const size_t idx = valid_image_pair_indices[i];
 
-			TImageCalibData &dat_l = images[valid_image_pair_indices[i]].left;
-			TImageCalibData &dat_r = images[valid_image_pair_indices[i]].right;
+			TImageCalibData &dat_l = images[idx].left;
+			TImageCalibData &dat_r = images[idx].right;
 
 			// Rectify image.
 			MRPT_TODO("rect")
@@ -422,8 +437,8 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 			dat_r.img_original.colorImage( dat_r.img_rectified );
 
 			// Camera poses:
-			dat_l.reconstructed_camera_pose = - lm_stat.left_cam_poses[i];
-			dat_r.reconstructed_camera_pose = -(lm_stat.right2left_pose + lm_stat.left_cam_poses[i]);
+			dat_l.reconstructed_camera_pose = - lm_stat.left_cam_poses[idx];
+			dat_r.reconstructed_camera_pose = -(lm_stat.right2left_pose + lm_stat.left_cam_poses[idx]);
 
 			// Project distorted images:
 			mrpt::vision::pinhole::projectPoints_with_distortion(obj_points, out.cam_params.leftCamera,  CPose3DQuat(dat_l.reconstructed_camera_pose), dat_l.projectedPoints_distorted, true);
@@ -441,9 +456,6 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 		std::cout << e.what() << std::endl;
 		return false;
 	}
-#else
-	THROW_EXCEPTION("Function not available: MRPT was compiled without OpenCV")
-#endif
 }
 
 /*
@@ -641,6 +653,14 @@ void mrpt::vision::build_linear_system(
 			H_tot.block<6+9+9,6>(N*6,i*6) += Hij.block<6+9+9,6>(6,0);
 		}
 	}
+
+#if 0
+	// Also include additional cost terms to stabilize estimation:
+	// -----------------------------------------------------------------
+	// In the left->right pose increment: Add cost if we know that both cameras are almost parallel:
+	const double cost_lr_angular = 1e10;
+	H_tot.block<3,3>(N*6+3,N*6+3) += Eigen::Matrix<double,3,3>::Identity() * cost_lr_angular;
+#endif
 
 	// Ignore those derivatives of "fixed" (non-optimizable) variables in camera parameters
 	// --------------------------------------------------------------------------------------
@@ -924,8 +944,8 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			// Predict i'th corner on left & right cameras:
 			// ---------------------------------------------
 			TPixelCoordf px_l, px_r;
-			project_point( lm_stat.obj_points[i], camparam_l, lm_stat.left_cam_poses[k], px_l );
-			project_point( lm_stat.obj_points[i], camparam_r, lm_stat.right2left_pose+lm_stat.left_cam_poses[k], px_r );
+			project_point( lm_stat.obj_points[i], camparam_l, lm_stat.left_cam_poses[k_idx], px_l );
+			project_point( lm_stat.obj_points[i], camparam_r, lm_stat.right2left_pose+lm_stat.left_cam_poses[k_idx], px_r );
 			rje.predicted_obs = Eigen::Matrix<double,4,1>( px_l.x,px_l.y, px_r.x,px_r.y );
 
 			// Residual:
@@ -957,8 +977,8 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 
 			// 3D coordinates of the corner point wrt both cameras:
 			TPoint3D pt_wrt_left, pt_wrt_right;
-			lm_stat.left_cam_poses[k].composePoint(lm_stat.obj_points[i], pt_wrt_left );
-			(lm_stat.right2left_pose+lm_stat.left_cam_poses[k]).composePoint(lm_stat.obj_points[i], pt_wrt_right);
+			lm_stat.left_cam_poses[k_idx].composePoint(lm_stat.obj_points[i], pt_wrt_left );
+			(lm_stat.right2left_pose+lm_stat.left_cam_poses[k_idx]).composePoint(lm_stat.obj_points[i], pt_wrt_right);
 
 			// Build partial Jacobians:
 			Eigen::Matrix<double,2,2> dhl_dbl, dhr_dbr;
@@ -1025,7 +1045,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			Eigen::Matrix<double,3,6> dpl_del, dpr_del, dpr_der;
 			jacob_deps_D_p_deps(pt_wrt_left,  dpl_del);
 			jacob_deps_D_p_deps(pt_wrt_right, dpr_der);
-			jacob_dA_eps_D_p_deps(lm_stat.right2left_pose, lm_stat.left_cam_poses[k],lm_stat.obj_points[i], dpr_del);
+			jacob_dA_eps_D_p_deps(lm_stat.right2left_pose, lm_stat.left_cam_poses[k_idx],lm_stat.obj_points[i], dpr_del);
 
 #if 0
 			// 100% Exact.
@@ -1058,7 +1078,7 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 
 				TEvalData_A_eps_D_p dat;
 				dat.A = lm_stat.right2left_pose;
-				dat.D = lm_stat.left_cam_poses[k];
+				dat.D = lm_stat.left_cam_poses[k_idx];
 				dat.p = lm_stat.obj_points[i];
 
 				Eigen::Matrix<double,3,6> num_dpr_del;
@@ -1095,13 +1115,13 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			x0.segment<9>(6+6+9) = lm_stat.right_cam_params;
 
 			const double x_incrs_val[30] =  {
-				1e-5,1e-5,1e-5, 1e-6,1e-6,1e-6,  // eps_l
-				1e-5,1e-5,1e-5, 1e-6,1e-6,1e-6,  // eps_r
-				1e-3,1e-3,1e-3,1e-3, 1e-5,1e-5,1e-5,1e-5, 1e-4,  // cam_l
-				1e-3,1e-3,1e-3,1e-3, 1e-5,1e-5,1e-5,1e-5, 1e-4  // cam_rl
+				1e-6,1e-6,1e-6, 1e-7,1e-7,1e-7,  // eps_l
+				1e-6,1e-6,1e-6, 1e-7,1e-7,1e-7,  // eps_r
+				1e-3,1e-3,1e-3,1e-3, 1e-8,1e-8,1e-8,1e-8, 1e-4,  // cam_l
+				1e-3,1e-3,1e-3,1e-3, 1e-8,1e-8,1e-8,1e-8, 1e-4  // cam_rl
 			};
 			const CArrayDouble<30> x_incrs(x_incrs_val);
-			TNumJacobData dat(lm_stat,lm_stat.obj_points[i],lm_stat.left_cam_poses[k], lm_stat.right2left_pose, obs);
+			TNumJacobData dat(lm_stat,lm_stat.obj_points[i],lm_stat.left_cam_poses[k_idx], lm_stat.right2left_pose, obs);
 
 			mrpt::math::jacobians::jacob_numeric_estimate(x0, &numeric_jacob_eval_function, x_incrs, dat, rje.J );
 
@@ -1139,6 +1159,8 @@ TStereoCalibParams::TStereoCalibParams() :
 	maxIters(2000),
 	optimize_k1(true), optimize_k2(true), optimize_k3(false),
 	optimize_t1(false),optimize_t2(false),
+	use_robust_kernel(false),
+	robust_kernel_param(10),
 	callback(NULL),
 	callback_user_param(NULL)
 {

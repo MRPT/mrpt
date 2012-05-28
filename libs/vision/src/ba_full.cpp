@@ -214,7 +214,7 @@ double mrpt::vision::bundle_adj_full(
 		if (user_feedback)
 			(*user_feedback)(iter, res, max_iters, observations, frame_poses, landmark_points );
 
-		double rho = 0;
+		bool has_improved = false;
 		do
 		{
 			profiler.enter("COMPLETE_ITER");
@@ -425,12 +425,13 @@ double mrpt::vision::bundle_adj_full(
 
 			MRPT_CHECK_NORMAL_NUMBER(res_new)
 
-			rho = (res-res_new)/ (delta.array()*(mu*delta + g).array() ).sum();
+			has_improved = (res_new<res);
 
-			if(rho>0)
+			if(has_improved)
 			{
+				//rho = (res-)/ (delta.array()*(mu*delta + g).array() ).sum();
 				// Good: Accept new values
-				VERBOSE_COUT << "new total sqr.err=" << res_new << " avr.err(px):"<< std::sqrt(res/num_obs)  <<"->" <<  std::sqrt(res_new/num_obs) <<  " rho: " << rho << endl;
+				VERBOSE_COUT << "new total sqr.err=" << res_new << " avr.err(px):"<< std::sqrt(res/num_obs)  <<"->" <<  std::sqrt(res_new/num_obs) << endl;
 
 				// swap is faster than "="
 				frame_poses.swap(new_frame_poses);
@@ -456,7 +457,9 @@ double mrpt::vision::bundle_adj_full(
 				profiler.leave("build_gradient_Hessians");
 
 				stop = norm_inf(g)<=eps;
-				mu *= max(1.0/3.0, 1-std::pow(2*rho-1,3.0) );
+				//mu *= max(1.0/3.0, 1-std::pow(2*rho-1,3.0) );
+				mu *= 0.1;
+				mu = std::max(mu, 1e-100);
 				nu = 2.0;
 			}
 			else
@@ -473,11 +476,12 @@ double mrpt::vision::bundle_adj_full(
 
 			profiler.leave("COMPLETE_ITER");
 		}
-		while(rho<=0 && !stop);
+		while(!has_improved && !stop);
 
 		if (stop)
 			break;
-	}
+
+	} // end for each "iter"
 
 	// *Warning*: This implementation assumes inverse camera poses: inverse them at the entrance and at exit:
 #ifdef USE_INVERSE_POSES

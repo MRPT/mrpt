@@ -213,7 +213,7 @@ struct ExampleDemoGraphSLAM
 		//params["verbose"]  = 1;
 		params["profiler"] = 1;
 		params["max_iterations"] = 500;
-		params["scale_hessian"] = 0.1;
+		params["scale_hessian"] = 0.1;  // If <1, will "exagerate" the scale of the gradient and, normally, will converge much faster.
 		params["tau"] = 1e-3;
 
 		// e2: Lev-marq algorithm iteration stopping criterion #2: |delta_incr| < e2*(x_norm+e2)

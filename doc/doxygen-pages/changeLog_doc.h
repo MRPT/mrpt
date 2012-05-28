@@ -35,9 +35,9 @@
  <a name="0.9.6">
   <h2>Version 0.9.6 - (Under development) </h2></a>
 	- New applications:
-		- <a href="http://www.mrpt.org/Application:kinect-stereo-calibrate" >kinect-stereo-calibrate</a>: A GUI tool for quickly calibrating RGB+D cameras.
+		- <a href="http://www.mrpt.org/Application:kinect-stereo-calibrate" >kinect-stereo-calibrate</a>: A GUI tool for calibrating RGB+D and/or stereo cameras, including live Kinect capturing.
 	- Removed applications:
-		- stereo-calib-gui: it's not superseded by kinect-stereo-gui. The old command line tool is still useful, so it's still there as the example "stereo-calib-opencv".
+		- stereo-calib-gui: it's now superseded by kinect-stereo-gui. The old command line tool is still useful, so it's still there as the example "stereo-calib-opencv".
 	- Changes in applications:
 		- <a href="http://www.mrpt.org/Application:icp-slam" >icp-slam</a>:
 			- Added a new option (SHOW_LASER_SCANS_3D in config files) to draw laser scans in the live 3D view - <a href="http://code.google.com/p/mrpt/source/detail?r=2881" >r2881</a>
