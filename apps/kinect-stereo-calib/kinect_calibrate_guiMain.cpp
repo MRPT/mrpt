@@ -1905,6 +1905,7 @@ void kinect_calibrate_guiDialog::OnbtnConnectLive3DClick(wxCommandEvent& event)
 
 	m_cap_thread_data.quit = false;
 	m_cap_thread_data.flag_grab_depth = true;
+	m_cap_thread_data.select_IR_channel = false;
 
 	// Launch thread:
 	m_cap_thread         = mrpt::system::createThreadFromObjectMethod(this, &kinect_calibrate_guiDialog::thread_grabbing);
