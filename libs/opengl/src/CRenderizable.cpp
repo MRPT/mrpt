@@ -149,13 +149,12 @@ void  CRenderizable::writeToStreamRender(CStream &out) const
 	const bool all_scales_equal = (m_scale_x==m_scale_y && m_scale_z==m_scale_x);
 	const bool all_scales_unity = (all_scales_equal && m_scale_x==1.0f);
 
-	// Write signature:
 	const uint8_t magic_signature[2] = {
 		0xFF,
 		// bit7: fixed to 1 to mark this new header format
 		// bit6: whether the 3 scale{x,y,z} are equal to 1.0
 		// bit5: whether the 3 scale{x,y,z} are equal to each other
-		serialization_version | (all_scales_unity ? 0xC0 : (all_scales_equal ? 0xA0 : 0x80) )
+		static_cast<uint8_t>( serialization_version | (all_scales_unity ? 0xC0 : (all_scales_equal ? 0xA0 : 0x80) ) )
 	};
 
 	out << magic_signature[0] << magic_signature[1];

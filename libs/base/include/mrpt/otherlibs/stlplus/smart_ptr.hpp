@@ -271,8 +271,8 @@ namespace stlplus
     smart_ptr(void) {}
     explicit smart_ptr(const T& data) : smart_ptr_base<T, constructor_copy<T>,COUNTER >(data) {}
     explicit smart_ptr(T* data) : smart_ptr_base<T, constructor_copy<T>,COUNTER >(data) {}
-    smart_ptr<T>& operator=(const T& data) {set_value(data); return *this;}
-    smart_ptr<T>& operator=(const smart_ptr<T>& r) {alias(r); return *this;}
+    smart_ptr<T>& operator=(const T& data) {this->set_value(data); return *this;}
+    smart_ptr<T>& operator=(const smart_ptr<T>& r) {this->alias(r); return *this;}
     ~smart_ptr(void) {}
   };
 
@@ -286,8 +286,8 @@ namespace stlplus
     smart_ptr_clone(void) {}
     explicit smart_ptr_clone(const T& data) : smart_ptr_base<T, clone_copy<T>, COUNTER >(data) {}
     explicit smart_ptr_clone(T* data) : smart_ptr_base<T, clone_copy<T>, COUNTER >(data) {}
-    smart_ptr_clone<T>& operator=(const T& data) {set_value(data); return *this;}
-    smart_ptr_clone<T>& operator=(const smart_ptr_clone<T>& r) {alias(r); return *this;}
+    smart_ptr_clone<T>& operator=(const T& data) {this->set_value(data); return *this;}
+    smart_ptr_clone<T>& operator=(const smart_ptr_clone<T>& r) {this->alias(r); return *this;}
     ~smart_ptr_clone(void) {}
   };
 
@@ -301,8 +301,8 @@ namespace stlplus
     smart_ptr_nocopy(void) {}
     explicit smart_ptr_nocopy(const T& data) : smart_ptr_base<T, no_copy<T>, COUNTER >(data) {}
     explicit smart_ptr_nocopy(T* data) : smart_ptr_base<T, no_copy<T>, COUNTER >(data) {}
-    smart_ptr_nocopy<T>& operator=(const T& data) {set_value(data); return *this;}
-    smart_ptr_nocopy<T>& operator=(const smart_ptr_nocopy<T>& r) {alias(r); return *this;}
+    smart_ptr_nocopy<T>& operator=(const T& data) {this->set_value(data); return *this;}
+    smart_ptr_nocopy<T>& operator=(const smart_ptr_nocopy<T>& r) {this->alias(r); return *this;}
     ~smart_ptr_nocopy(void) {}
   };
 

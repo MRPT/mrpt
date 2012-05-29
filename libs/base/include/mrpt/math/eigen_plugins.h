@@ -394,8 +394,8 @@ public:
 		outStdVector.resize(cols());
 		for (Index i=0;i<cols();i++)
 		{
-			outMeanVector[i]= col(i).array().sum() * N_inv;
-			outStdVector[i] = std::sqrt( (col(i).array()-outMeanVector[i]).square().sum() * N_ );
+			outMeanVector[i]= this->col(i).array().sum() * N_inv;
+			outStdVector[i] = std::sqrt( (this->col(i).array()-outMeanVector[i]).square().sum() * N_ );
 		}
 	}
 

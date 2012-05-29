@@ -33,7 +33,7 @@
 
  <hr>
  <a name="0.9.6">
-  <h2>Version 0.9.6 - (Version 1.0.0-Release_Candidate_4): Released 30-MAY-2012 (SVN 2927) </h2></a>
+  <h2>Version 0.9.6 - (Version 1.0.0-Release_Candidate_4): Released 30-MAY-2012 (SVN 2930) </h2></a>
 	- New applications:
 		- <a href="http://www.mrpt.org/Application:kinect-stereo-calibrate" >kinect-stereo-calibrate</a>: A GUI tool for calibrating RGB+D and/or stereo cameras, including live Kinect capturing.
 	- Removed applications:
@@ -125,6 +125,7 @@
 		- Better pkg-config support even without doing a "make install": just do a "export PKG_CONFIG_PATH=${MRPT_BUILD_DIR}/pkg-no-install/"  - <a href="http://code.google.com/p/mrpt/source/detail?r=2853" >r2853</a>
 		- Fixed building against the new OpenCV 2.4 - <a href="http://code.google.com/p/mrpt/source/detail?r=2876" >r2876</a>
 		- Fixed building against Eigen 3.0.5 & gtest 1.6.0 - <a href="http://code.google.com/p/mrpt/source/detail?r=2917" >r2917</a>
+		- Fixed build errors & warnings with GCC 4.7 & 4.8 - <a href="http://code.google.com/p/mrpt/source/detail?r=2930" >r2930</a>
 	- New functions:
 		- [mrpt-vision]
 			- mrpt::vision::find_descriptor_pairings() - <a href="http://code.google.com/p/mrpt/source/detail?r=2799" >r2799</a>
