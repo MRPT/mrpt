@@ -33,7 +33,7 @@
 
  <hr>
  <a name="0.9.6">
-  <h2>Version 0.9.6 - (Under development) </h2></a>
+  <h2>Version 0.9.6 - (Version 1.0.0-Release_Candidate_4): Released 30-MAY-2012 (SVN 2927) </h2></a>
 	- New applications:
 		- <a href="http://www.mrpt.org/Application:kinect-stereo-calibrate" >kinect-stereo-calibrate</a>: A GUI tool for calibrating RGB+D and/or stereo cameras, including live Kinect capturing.
 	- Removed applications:
