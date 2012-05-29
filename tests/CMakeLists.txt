@@ -17,7 +17,7 @@ ADD_CUSTOM_TARGET(test)
 
 # Include gtest from embeded lib:
 IF (NOT CMAKE_MRPT_HAS_GTEST_SYSTEM)
-	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/gtest-1.5.0/fused-src/")
+	INCLUDE_DIRECTORIES("${CMAKE_MRPT_GTEST_SRC_DIR}/fused-src/")
 ENDIF(NOT CMAKE_MRPT_HAS_GTEST_SYSTEM)
 
 # If using system library, add C++ flags:
