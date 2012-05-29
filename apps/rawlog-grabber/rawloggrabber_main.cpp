@@ -161,7 +161,8 @@ int main(int argc, char **argv)
 
 		for (vector_string::iterator it=sections.begin();it!=sections.end();++it)
 		{
-			if (*it==GLOBAL_SECTION_NAME || it->empty()) continue;	// This is not a sensor:
+			if (*it==GLOBAL_SECTION_NAME || it->empty() || iniFile.read_bool(*it,"rawlog-grabber-ignore",false,false) ) 
+				continue;	// This is not a sensor:
 
 			//cout << "Launching thread for sensor '" << *it << "'" << endl;
 

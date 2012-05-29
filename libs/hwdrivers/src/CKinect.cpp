@@ -32,7 +32,7 @@
 #include <mrpt/utils/CTimeLogger.h>
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
@@ -234,10 +234,12 @@ void  CKinect::loadConfig_sensorSpecific(
 	// [<SECTION>_LEFT2RIGHT_POSE]
 	//  pose_quaternion = [x y z qr qx qy qz]
 
+	const mrpt::poses::CPose3D twist(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90));
+
 	mrpt::utils::TStereoCamera  sc;
 	sc.leftCamera  = m_cameraParamsDepth;  // Load default values so that if we fail to load from cfg at least we have some reasonable numbers.
 	sc.rightCamera = m_cameraParamsRGB;
-	sc.rightCameraPose = mrpt::poses::CPose3DQuat(m_relativePoseIntensityWRTDepth);
+	sc.rightCameraPose = mrpt::poses::CPose3DQuat(m_relativePoseIntensityWRTDepth - twist);
 
 	try {
 		sc.loadFromConfigFile(iniSection,configSource);
@@ -246,7 +248,7 @@ void  CKinect::loadConfig_sensorSpecific(
 	}
 	m_cameraParamsDepth = sc.leftCamera;
 	m_cameraParamsRGB   = sc.rightCamera;
-	m_relativePoseIntensityWRTDepth = mrpt::poses::CPose3D(sc.rightCameraPose);
+	m_relativePoseIntensityWRTDepth = twist + mrpt::poses::CPose3D(sc.rightCameraPose);
 
 	// Id:
 	m_user_device_number = configSource.read_int(iniSection,"device_number",m_user_device_number );

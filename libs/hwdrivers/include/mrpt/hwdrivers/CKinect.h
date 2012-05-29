@@ -76,6 +76,8 @@ namespace mrpt
 		  *    - Camera parameters for the depth camera. See CKinect::setCameraParamsDepth()
 		  *    - The 3D relative pose of the two cameras. See CKinect::setRelativePoseIntensityWrtDepth()
 		  *
+		  *   See http://www.mrpt.org/Kinect_calibration for a procedure to calibrate Kinect sensors with an interactive GUI program.
+		  *
 		  * <h2>Coordinates convention</h2><hr>
 		  *   The origin of coordinates is the focal point of the depth camera, with the axes oriented as in the
 		  *   diagram shown in mrpt::slam::CObservation3DRangeScan. Notice in that picture that the RGB camera is
@@ -83,6 +85,16 @@ namespace mrpt
 		  *
 		  *   The X,Y,Z axes used to report the data from accelerometers coincide with those of the depth camera
 		  *    (e.g. the camera standing on a table would have an ACC_Z=-9.8m/s2).
+		  *
+		  *   Notice however that, for consistency with stereo cameras, when loading the calibration parameters from
+		  *    a configuration file, the left-to-right pose increment is expected as if both RGB & IR cameras had
+		  *    their +Z axes pointing forward, +X to the right, +Y downwards (just like it's the standard in stereo cameras
+		  *    and in computer vision literature). In other words: the pose stored in this class uses a different
+		  *    axes convention for the depth camera than in a stereo camera, so when a pose L2R is loaded from a calibration file
+		  *    it's actually converted like:
+		  *
+		  *      L2R(this class convention) = CPose3D(0,0,0,-90deg,0deg,-90deg) (+) L2R(in the config file)
+		  *
 		  *
 		  * <h2>Some general comments</h2><hr>
 		  *		- Depth is grabbed in 10bit depth, and a range N it's converted to meters as: range(m) = 0.1236 * tan(N/2842.5 + 1.1863)
@@ -157,22 +169,6 @@ namespace mrpt
 		  *
 		  *    video_channel   = VIDEO_CHANNEL_RGB // Optional. Can be: VIDEO_CHANNEL_RGB (default) or VIDEO_CHANNEL_IR
 		  *
-		  *    // Calibration matrix of the RGB camera:
-		  *    rgb_cx        = 328.9427     // (cx,cy): Optical center, pixels
-		  *    rgb_cy        = 267.4807
-		  *    rgb_fx        = 529.2151     // (fx,fy): Focal distance, pixels
-		  *    rgb_fy        = 525.5639
-		  *
-		  *    // Calibration matrix of the Depth camera:
-		  *    d_cx          = 339.3078     // (cx,cy): Optical center, pixels
-		  *    d_cy          = 242.7391
-		  *    d_fx          = 594.2143     // (fx,fy): Focal distance, pixels
-		  *    d_fy          = 591.0405
-		  *
-		  *    // The relative pose of the RGB camera wrt the depth camera.
-		  *    //  (See mrpt::slam::CObservation3DRangeScan for a 3D diagram of this pose)
-		  *    relativePoseIntensityWRTDepth  =  [0 -0.02 0 -90 0 -90]   //  [x(m) y(m) z(m) yaw(deg) pitch(deg) roll(deg)]
-		  *
 		  *    pose_x=0	// Camera position in the robot (meters)
 		  *    pose_y=0
 		  *    pose_z=0
@@ -184,6 +180,40 @@ namespace mrpt
 		  *    //            rotate to this angle (in degrees). Note: You must be aware of the tilt when interpreting the sensor readings.
 		  *    //           If not present or set to "360", no motor command will be sent at start up.
 		  *    initial_tilt_angle = 0
+		  *
+		  *    // Kinect sensor calibration:
+		  *    // See http://www.mrpt.org/Kinect_and_MRPT
+		  *
+		  *    // Left/Depth camera
+		  *    [supplied_section_name_LEFT]
+		  *    rawlog-grabber-ignore = true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
+		  *
+		  *    resolution = [640 488]
+		  *    cx         = 314.649173
+		  *    cy         = 240.160459
+		  *    fx         = 572.882768
+		  *    fy         = 542.739980
+		  *    dist       = [-4.747169e-03 -4.357976e-03 0.000000e+00 0.000000e+00 0.000000e+00]    // The order is: [K1 K2 T1 T2 K3]
+		  *
+		  *    // Right/RGB camera
+		  *    [supplied_section_name_RIGHT]
+		  *    rawlog-grabber-ignore = true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
+		  *
+		  *    resolution = [640 480]
+		  *    cx         = 322.515987
+		  *    cy         = 259.055966
+		  *    fx         = 521.179233
+		  *    fy         = 493.033034
+		  *    dist       = [5.858325e-02 3.856792e-02 0.000000e+00 0.000000e+00 0.000000e+00]    // The order is: [K1 K2 T1 T2 K3]
+		  *
+		  *    // Relative pose of the right camera wrt to the left camera:
+		  *    // This assumes that both camera frames are such that +Z points
+		  *    // forwards, and +X and +Y to the right and downwards.
+		  *    // For the actual coordinates employed in 3D observations, see figure in mrpt::slam::CObservation3DRangeScan
+		  *    [supplied_section_name_LEFT2RIGHT_POSE]
+		  *    rawlog-grabber-ignore = true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
+		  *
+		  *    pose_quaternion      = [0.025575 -0.000609 -0.001462 0.999987 0.002038 0.004335 -0.001693]
 		  *
 		  *  \endcode
 		  *

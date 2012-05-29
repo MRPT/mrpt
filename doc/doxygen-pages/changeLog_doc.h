@@ -54,6 +54,7 @@
 		- [mrpt-hwdrivers]
 			- mrpt::hwdrivers::CKinect now decodes Bayer color using OpenCV instead of default freenect - <a href="http://code.google.com/p/mrpt/source/detail?r=2721" >r2721</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2762" >r2762</a>
 			- mrpt::hwdrivers::CKinect no longer forces a horizontal tilt at start up by default, what may be annoying (if required, set "initial_tilt_angle") - <a href="http://code.google.com/p/mrpt/source/detail?r=2722" >r2722</a>
+			- mrpt::hwdrivers::CKinect now loads Kinect calibration files in a format compatible with stereo cameras. See http://www.mrpt.org/Kinect_calibration
 		- [mrpt-obs]
 			- New method mrpt::slam::CObservation3DRangeScan::convertTo2DScan() allows simulating a "fake 2D laser scanner" from a Kinect. See the example: http://www.mrpt.org/Example_Kinect_To_2D_laser_scan
 		- [mrpt-vision]
