@@ -30,6 +30,8 @@
 #ifndef EIGEN_MATH_FUNCTIONS_SSE_H
 #define EIGEN_MATH_FUNCTIONS_SSE_H
 
+namespace Eigen {
+
 namespace internal {
 
 template<> EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED
@@ -391,5 +393,7 @@ Packet4f psqrt<Packet4f>(const Packet4f& _x)
 }
 
 } // end namespace internal
+
+} // end namespace Eigen
 
 #endif // EIGEN_MATH_FUNCTIONS_SSE_H

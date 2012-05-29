@@ -26,8 +26,9 @@
 #ifndef EIGEN_EIGENSOLVER_H
 #define EIGEN_EIGENSOLVER_H
 
-#include "./EigenvaluesCommon.h"
 #include "./RealSchur.h"
+
+namespace Eigen { 
 
 /** \eigenvalues_module \ingroup Eigenvalues_Module
   *
@@ -291,7 +292,7 @@ template<typename _MatrixType> class EigenSolver
 
     ComputationInfo info() const
     {
-      eigen_assert(m_isInitialized && "ComplexEigenSolver is not initialized.");
+      eigen_assert(m_isInitialized && "EigenSolver is not initialized.");
       return m_realSchur.info();
     }
 
@@ -339,7 +340,7 @@ typename EigenSolver<MatrixType>::EigenvectorsType EigenSolver<MatrixType>::eige
   EigenvectorsType matV(n,n);
   for (Index j=0; j<n; ++j)
   {
-    if (internal::isMuchSmallerThan(internal::imag(m_eivalues.coeff(j)), internal::real(m_eivalues.coeff(j))))
+    if (internal::isMuchSmallerThan(internal::imag(m_eivalues.coeff(j)), internal::real(m_eivalues.coeff(j))) || j+1==n)
     {
       // we have a real eigen value
       matV.col(j) = m_eivec.col(j).template cast<ComplexScalar>();
@@ -432,7 +433,7 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
   const Scalar eps = NumTraits<Scalar>::epsilon();
 
   // inefficient! this is already computed in RealSchur
-  Scalar norm = 0.0;
+  Scalar norm(0);
   for (Index j = 0; j < size; ++j)
   {
     norm += m_matT.row(j).segment((std::max)(j-1,Index(0)), size-(std::max)(j-1,Index(0))).cwiseAbs().sum();
@@ -452,7 +453,7 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
     // Scalar vector
     if (q == Scalar(0))
     {
-      Scalar lastr=0, lastw=0;
+      Scalar lastr(0), lastw(0);
       Index l = n;
 
       m_matT.coeffRef(n,n) = 1.0;
@@ -498,7 +499,7 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
     }
     else if (q < Scalar(0) && n > 0) // Complex vector
     {
-      Scalar lastra=0, lastsa=0, lastw=0;
+      Scalar lastra(0), lastsa(0), lastw(0);
       Index l = n-1;
 
       // Last vector component imaginary so matrix is triangular
@@ -570,10 +571,13 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
 
         }
       }
+      
+      // We handled a pair of complex conjugate eigenvalues, so need to skip them both
+      n--;
     }
     else
     {
-      eigen_assert("Internal bug in EigenSolver"); // this should not happen
+      eigen_assert(0 && "Internal bug in EigenSolver"); // this should not happen
     }
   }
 
@@ -584,5 +588,7 @@ void EigenSolver<MatrixType>::doComputeEigenvectors()
     m_eivec.col(j) = m_tmp;
   }
 }
+
+} // end namespace Eigen
 
 #endif // EIGEN_EIGENSOLVER_H

@@ -28,6 +28,8 @@
 #ifndef EIGEN_NUMERICAL_DIFF_H
 #define EIGEN_NUMERICAL_DIFF_H
 
+namespace Eigen { 
+
 enum NumericalDiffMode {
     Forward,
     Central
@@ -133,6 +135,8 @@ private:
 
     NumericalDiff& operator=(const NumericalDiff&);
 };
+
+} // end namespace Eigen
 
 //vim: ai ts=4 sts=4 et sw=4
 #endif // EIGEN_NUMERICAL_DIFF_H

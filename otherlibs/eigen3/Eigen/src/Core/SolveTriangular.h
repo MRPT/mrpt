@@ -25,6 +25,8 @@
 #ifndef EIGEN_SOLVETRIANGULAR_H
 #define EIGEN_SOLVETRIANGULAR_H
 
+namespace Eigen { 
+
 namespace internal {
 
 // Forward declarations:
@@ -100,7 +102,7 @@ struct triangular_solver_selector<Lhs,Rhs,Side,Mode,NoUnrolling,Dynamic>
   typedef typename LhsProductTraits::DirectLinearAccessType ActualLhsType;
   static void run(const Lhs& lhs, Rhs& rhs)
   {
-    const ActualLhsType actualLhs = LhsProductTraits::extract(lhs);
+    typename internal::add_const_on_value_type<ActualLhsType>::type actualLhs = LhsProductTraits::extract(lhs);
     triangular_solve_matrix<Scalar,Index,Side,Mode,LhsProductTraits::NeedToConjugate,(int(Lhs::Flags) & RowMajorBit) ? RowMajor : ColMajor,
                                (Rhs::Flags&RowMajorBit) ? RowMajor : ColMajor>
       ::run(lhs.rows(), Side==OnTheLeft? rhs.cols() : rhs.rows(), &actualLhs.coeffRef(0,0), actualLhs.outerStride(), &rhs.coeffRef(0,0), rhs.outerStride());
@@ -177,10 +179,8 @@ template<int Side, typename OtherDerived>
 void TriangularView<MatrixType,Mode>::solveInPlace(const MatrixBase<OtherDerived>& _other) const
 {
   OtherDerived& other = _other.const_cast_derived();
-  eigen_assert(cols() == rows());
-  eigen_assert( (Side==OnTheLeft && cols() == other.rows()) || (Side==OnTheRight && cols() == other.cols()) );
-  eigen_assert(!(Mode & ZeroDiag));
-  eigen_assert((Mode & (Upper|Lower)) != 0);
+  eigen_assert( cols() == rows() && ((Side==OnTheLeft && cols() == other.rows()) || (Side==OnTheRight && cols() == other.cols())) );
+  eigen_assert((!(Mode & ZeroDiag)) && bool(Mode & (Upper|Lower)));
 
   enum { copy = internal::traits<OtherDerived>::Flags & RowMajorBit  && OtherDerived::IsVectorAtCompileTime };
   typedef typename internal::conditional<copy,
@@ -255,9 +255,11 @@ template<int Side, typename TriangularType, typename Rhs> struct triangular_solv
 
   protected:
     const TriangularType& m_triangularMatrix;
-    const typename Rhs::Nested m_rhs;
+    typename Rhs::Nested m_rhs;
 };
 
 } // namespace internal
+
+} // end namespace Eigen
 
 #endif // EIGEN_SOLVETRIANGULAR_H

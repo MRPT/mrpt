@@ -26,6 +26,8 @@
 #ifndef EIGEN_HYPERPLANE_H
 #define EIGEN_HYPERPLANE_H
 
+namespace Eigen { 
+
 /** \geometry_module \ingroup Geometry_Module
   *
   * \class Hyperplane
@@ -225,7 +227,7 @@ public:
       normal() = mat * normal();
     else
     {
-      eigen_assert("invalid traits value in Hyperplane::transform()");
+      eigen_assert(0 && "invalid traits value in Hyperplane::transform()");
     }
     return *this;
   }
@@ -276,5 +278,7 @@ protected:
 
   Coefficients m_coeffs;
 };
+
+} // end namespace Eigen
 
 #endif // EIGEN_HYPERPLANE_H

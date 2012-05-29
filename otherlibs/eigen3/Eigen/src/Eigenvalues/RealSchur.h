@@ -26,8 +26,9 @@
 #ifndef EIGEN_REAL_SCHUR_H
 #define EIGEN_REAL_SCHUR_H
 
-#include "./EigenvaluesCommon.h"
 #include "./HessenbergDecomposition.h"
+
+namespace Eigen { 
 
 /** \eigenvalues_module \ingroup Eigenvalues_Module
   *
@@ -235,7 +236,7 @@ RealSchur<MatrixType>& RealSchur<MatrixType>::compute(const MatrixType& matrix, 
   // Rows iu+1,...,end are already brought in triangular form.
   Index iu = m_matT.cols() - 1;
   Index iter = 0; // iteration count
-  Scalar exshift = 0.0; // sum of exceptional shifts
+  Scalar exshift(0); // sum of exceptional shifts
   Scalar norm = computeNormOfT();
 
   while (iu >= 0)
@@ -288,7 +289,7 @@ inline typename MatrixType::Scalar RealSchur<MatrixType>::computeNormOfT()
   // FIXME to be efficient the following would requires a triangular reduxion code
   // Scalar norm = m_matT.upper().cwiseAbs().sum() 
   //               + m_matT.bottomLeftCorner(size-1,size-1).diagonal().cwiseAbs().sum();
-  Scalar norm = 0.0;
+  Scalar norm(0);
   for (Index j = 0; j < size; ++j)
     norm += m_matT.row(j).segment((std::max)(j-1,Index(0)), size-(std::max)(j-1,Index(0))).cwiseAbs().sum();
   return norm;
@@ -470,5 +471,7 @@ inline void RealSchur<MatrixType>::performFrancisQRStep(Index il, Index im, Inde
       m_matT.coeffRef(i,i-3) = Scalar(0);
   }
 }
+
+} // end namespace Eigen
 
 #endif // EIGEN_REAL_SCHUR_H

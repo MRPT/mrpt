@@ -26,6 +26,8 @@
 #ifndef EIGEN_MAP_H
 #define EIGEN_MAP_H
 
+namespace Eigen { 
+
 /** \class Map
   * \ingroup Core_Module
   *
@@ -102,7 +104,7 @@ struct traits<Map<PlainObjectType, MapOptions, StrideType> >
                            || HasNoOuterStride
                            || ( OuterStrideAtCompileTime!=Dynamic
                            && ((static_cast<int>(sizeof(Scalar))*OuterStrideAtCompileTime)%16)==0 ) ),
-    Flags0 = TraitsBase::Flags,
+    Flags0 = TraitsBase::Flags & (~NestByRefBit),
     Flags1 = IsAligned ? (int(Flags0) | AlignedBit) : (int(Flags0) & ~AlignedBit),
     Flags2 = (bool(HasNoStride) || bool(PlainObjectType::IsVectorAtCompileTime))
            ? int(Flags1) : int(Flags1 & ~LinearAccessBit),
@@ -120,7 +122,6 @@ template<typename PlainObjectType, int MapOptions, typename StrideType> class Ma
   public:
 
     typedef MapBase<Map> Base;
-
     EIGEN_DENSE_PUBLIC_INTERFACE(Map)
 
     typedef typename Base::PointerType PointerType;
@@ -181,7 +182,6 @@ template<typename PlainObjectType, int MapOptions, typename StrideType> class Ma
       PlainObjectType::Base::_check_template_params();
     }
 
-
     EIGEN_INHERIT_ASSIGNMENT_OPERATORS(Map)
 
   protected:
@@ -201,5 +201,7 @@ inline Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>
 {
   this->_set_noalias(Eigen::Map<const Matrix>(data));
 }
+
+} // end namespace Eigen
 
 #endif // EIGEN_MAP_H

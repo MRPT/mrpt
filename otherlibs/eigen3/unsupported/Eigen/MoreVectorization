@@ -10,8 +10,8 @@ namespace Eigen {
  * \ingroup eigen_grp
   */
 
-#include "src/MoreVectorization/MathFunctions.h"
-
 }
+
+#include "src/MoreVectorization/MathFunctions.h"
 
 #endif // EIGEN_MOREVECTORIZATION_MODULE_H

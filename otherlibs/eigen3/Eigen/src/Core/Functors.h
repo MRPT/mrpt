@@ -25,6 +25,8 @@
 #ifndef EIGEN_FUNCTORS_H
 #define EIGEN_FUNCTORS_H
 
+namespace Eigen {
+
 namespace internal {
 
 // associative functors:
@@ -178,6 +180,18 @@ struct functor_traits<scalar_hypot_op<Scalar> > {
   enum { Cost = 5 * NumTraits<Scalar>::MulCost, PacketAccess=0 };
 };
 
+/** \internal
+  * \brief Template functor to compute the pow of two scalars
+  */
+template<typename Scalar, typename OtherScalar> struct scalar_binary_pow_op {
+  EIGEN_EMPTY_STRUCT_CTOR(scalar_binary_pow_op)
+  inline Scalar operator() (const Scalar& a, const OtherScalar& b) const { return internal::pow(a, b); }
+};
+template<typename Scalar, typename OtherScalar>
+struct functor_traits<scalar_binary_pow_op<Scalar,OtherScalar> > {
+  enum { Cost = 5 * NumTraits<Scalar>::MulCost, PacketAccess = false };
+};
+
 // other binary functors:
 
 /** \internal
@@ -217,6 +231,38 @@ struct functor_traits<scalar_quotient_op<Scalar> > {
   enum {
     Cost = 2 * NumTraits<Scalar>::MulCost,
     PacketAccess = packet_traits<Scalar>::HasDiv
+  };
+};
+
+/** \internal
+  * \brief Template functor to compute the and of two booleans
+  *
+  * \sa class CwiseBinaryOp, ArrayBase::operator&&
+  */
+struct scalar_boolean_and_op {
+  EIGEN_EMPTY_STRUCT_CTOR(scalar_boolean_and_op)
+  EIGEN_STRONG_INLINE bool operator() (const bool& a, const bool& b) const { return a && b; }
+};
+template<> struct functor_traits<scalar_boolean_and_op> {
+  enum {
+    Cost = NumTraits<bool>::AddCost,
+    PacketAccess = false
+  };
+};
+
+/** \internal
+  * \brief Template functor to compute the or of two booleans
+  *
+  * \sa class CwiseBinaryOp, ArrayBase::operator||
+  */
+struct scalar_boolean_or_op {
+  EIGEN_EMPTY_STRUCT_CTOR(scalar_boolean_or_op)
+  EIGEN_STRONG_INLINE bool operator() (const bool& a, const bool& b) const { return a || b; }
+};
+template<> struct functor_traits<scalar_boolean_or_op> {
+  enum {
+    Cost = NumTraits<bool>::AddCost,
+    PacketAccess = false
   };
 };
 
@@ -584,7 +630,7 @@ template <typename Scalar, bool RandomAccess> struct functor_traits< linspaced_o
 template <typename Scalar, bool RandomAccess> struct linspaced_op
 {
   typedef typename packet_traits<Scalar>::type Packet;
-  linspaced_op(Scalar low, Scalar high, int num_steps) : impl(low, (high-low)/(num_steps-1)) {}
+  linspaced_op(Scalar low, Scalar high, int num_steps) : impl((num_steps==1 ? high : low), (num_steps==1 ? Scalar() : (high-low)/(num_steps-1))) {}
 
   template<typename Index>
   EIGEN_STRONG_INLINE const Scalar operator() (Index i) const { return impl(i); }
@@ -782,6 +828,20 @@ struct functor_traits<scalar_pow_op<Scalar> >
 { enum { Cost = 5 * NumTraits<Scalar>::MulCost, PacketAccess = false }; };
 
 /** \internal
+  * \brief Template functor to compute the quotient between a scalar and array entries.
+  * \sa class CwiseUnaryOp, Cwise::inverse()
+  */
+template<typename Scalar>
+struct scalar_inverse_mult_op {
+  scalar_inverse_mult_op(const Scalar& other) : m_other(other) {}
+  inline Scalar operator() (const Scalar& a) const { return m_other / a; }
+  template<typename Packet>
+  inline const Packet packetOp(const Packet& a) const
+  { return internal::pdiv(pset1<Packet>(m_other),a); }
+  Scalar m_other;
+};
+
+/** \internal
   * \brief Template functor to compute the inverse of a scalar
   * \sa class CwiseUnaryOp, Cwise::inverse()
   */
@@ -938,5 +998,7 @@ struct functor_traits<std::binary_compose<T0,T1,T2> >
 #endif
 
 } // end namespace internal
+
+} // end namespace Eigen
 
 #endif // EIGEN_FUNCTORS_H

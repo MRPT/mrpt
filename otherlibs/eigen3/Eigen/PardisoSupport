@@ -1,0 +1,27 @@
+#ifndef EIGEN_PARDISOSUPPORT_MODULE_H
+#define EIGEN_PARDISOSUPPORT_MODULE_H
+
+#include "SparseCore"
+
+#include "src/Core/util/DisableStupidWarnings.h"
+
+#include <mkl_pardiso.h>
+
+#include <unsupported/Eigen/SparseExtra>
+
+/** \ingroup Support_modules
+  * \defgroup PardisoSupport_Module PardisoSupport module 
+ * \ingroup eigen_grp
+  *
+  * This module brings support for the Intel(R) MKL PARDISO direct sparse solvers
+  *
+  * \code
+  * #include <Eigen/PardisoSupport>
+  * \endcode
+  */
+
+#include "src/PardisoSupport/PardisoSupport.h"
+
+#include "src/Core/util/ReenableStupidWarnings.h"
+
+#endif // EIGEN_PARDISOSUPPORT_MODULE_H

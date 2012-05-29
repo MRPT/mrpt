@@ -42,6 +42,8 @@
 #ifndef EIGEN_INVERSE_SSE_H
 #define EIGEN_INVERSE_SSE_H
 
+namespace Eigen { 
+
 namespace internal {
 
 template<typename MatrixType, typename ResultType>
@@ -55,7 +57,7 @@ struct compute_inverse_size4<Architecture::SSE, float, MatrixType, ResultType>
   
   static void run(const MatrixType& matrix, ResultType& result)
   {
-    EIGEN_ALIGN16 const  int _Sign_PNNP[4] = { 0x00000000, 0x80000000, 0x80000000, 0x00000000 };
+    EIGEN_ALIGN16 const unsigned int _Sign_PNNP[4] = { 0x00000000, 0x80000000, 0x80000000, 0x00000000 };
 
     // Load the full matrix into registers
     __m128 _L1 = matrix.template packet<MatrixAlignment>( 0);
@@ -335,6 +337,8 @@ struct compute_inverse_size4<Architecture::SSE, double, MatrixType, ResultType>
   }
 };
 
-}
+} // end namespace internal
+
+} // end namespace Eigen
 
 #endif // EIGEN_INVERSE_SSE_H

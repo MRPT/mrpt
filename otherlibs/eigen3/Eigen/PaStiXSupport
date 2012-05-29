@@ -1,0 +1,35 @@
+#ifndef EIGEN_PASTIXSUPPORT_MODULE_H
+#define EIGEN_PASTIXSUPPORT_MODULE_H
+
+#include "SparseCore"
+
+#include "src/Core/util/DisableStupidWarnings.h"
+
+#include <complex.h>
+extern "C" {
+#include <pastix_nompi.h>
+#include <pastix.h>
+}
+
+#ifdef complex
+#undef complex
+#endif
+
+/** \ingroup Support_modules
+  * \defgroup PaStiXSupport_Module PaStiXSupport module 
+ * \ingroup eigen_grp
+  *
+  * \code
+  * #include <Eigen/PaStiXSupport>
+  * \endcode
+  */
+
+#include "src/misc/Solve.h"
+#include "src/misc/SparseSolve.h"
+
+#include "src/PaStiXSupport/PaStiXSupport.h"
+
+
+#include "src/Core/util/ReenableStupidWarnings.h"
+
+#endif // EIGEN_PASTIXSUPPORT_MODULE_H

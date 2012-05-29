@@ -5,8 +5,6 @@
 
 #include "src/Core/util/DisableStupidWarnings.h"
 
-namespace Eigen {
-
 /** \defgroup Householder_Module Householder module 
  * \ingroup eigen_grp
   * This module provides Householder transformations.
@@ -19,8 +17,6 @@ namespace Eigen {
 #include "src/Householder/Householder.h"
 #include "src/Householder/HouseholderSequence.h"
 #include "src/Householder/BlockHouseholder.h"
-
-} // namespace Eigen
 
 #include "src/Core/util/ReenableStupidWarnings.h"
 

@@ -1,0 +1,31 @@
+#ifndef EIGEN_UMFPACKSUPPORT_MODULE_H
+#define EIGEN_UMFPACKSUPPORT_MODULE_H
+
+#include "SparseCore"
+
+#include "src/Core/util/DisableStupidWarnings.h"
+
+extern "C" {
+#include <umfpack.h>
+}
+
+/** \ingroup Support_modules
+  * \defgroup UmfPackSupport_Module UmfPackSupport module 
+ * \ingroup eigen_grp
+  *
+  *
+  *
+  *
+  * \code
+  * #include <Eigen/UmfPackSupport>
+  * \endcode
+  */
+
+#include "src/misc/Solve.h"
+#include "src/misc/SparseSolve.h"
+
+#include "src/UmfPackSupport/UmfPackSupport.h"
+
+#include "src/Core/util/ReenableStupidWarnings.h"
+
+#endif // EIGEN_UMFPACKSUPPORT_MODULE_H

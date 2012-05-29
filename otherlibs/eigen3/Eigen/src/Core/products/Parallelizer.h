@@ -25,6 +25,8 @@
 #ifndef EIGEN_PARALLELIZER_H
 #define EIGEN_PARALLELIZER_H
 
+namespace Eigen { 
+
 namespace internal {
 
 /** \internal */
@@ -85,7 +87,9 @@ template<typename Index> struct GemmParallelInfo
 template<bool Condition, typename Functor, typename Index>
 void parallelize_gemm(const Functor& func, Index rows, Index cols, bool transpose)
 {
-#ifndef EIGEN_HAS_OPENMP
+  // TODO when EIGEN_USE_BLAS is defined,
+  // we should still enable OMP for other scalar types
+#if !(defined (EIGEN_HAS_OPENMP)) || defined (EIGEN_USE_BLAS)
   // FIXME the transpose variable is only needed to properly split
   // the matrix product when multithreading is enabled. This is a temporary
   // fix to support row-major destination matrices. This whole
@@ -150,5 +154,7 @@ void parallelize_gemm(const Functor& func, Index rows, Index cols, bool transpos
 }
 
 } // end namespace internal
+
+} // end namespace Eigen
 
 #endif // EIGEN_PARALLELIZER_H

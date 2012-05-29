@@ -26,6 +26,8 @@
 #ifndef EIGEN_META_H
 #define EIGEN_META_H
 
+namespace Eigen {
+
 namespace internal {
 
 /** \internal
@@ -80,8 +82,6 @@ template<> struct is_arithmetic<signed int>    { enum { value = true }; };
 template<> struct is_arithmetic<unsigned int>  { enum { value = true }; };
 template<> struct is_arithmetic<signed long>   { enum { value = true }; };
 template<> struct is_arithmetic<unsigned long> { enum { value = true }; };
-template<> struct is_arithmetic<signed long long>   { enum { value = true }; };
-template<> struct is_arithmetic<unsigned long long> { enum { value = true }; };
 
 template <typename T> struct add_const { typedef const T type; };
 template <typename T> struct add_const<T&> { typedef T& type; };
@@ -225,5 +225,7 @@ template<typename T, int S> struct is_diagonal<DiagonalMatrix<T,S> >
 { enum { ret = true }; };
 
 } // end namespace internal
+
+} // end namespace Eigen
 
 #endif // EIGEN_META_H

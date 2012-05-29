@@ -1,0 +1,31 @@
+#ifndef EIGEN_CHOLMODSUPPORT_MODULE_H
+#define EIGEN_CHOLMODSUPPORT_MODULE_H
+
+#include "SparseCore"
+
+#include "src/Core/util/DisableStupidWarnings.h"
+
+extern "C" {
+  #include <cholmod.h>
+}
+
+/** \ingroup Support_modules
+  * \defgroup CholmodSupport_Module CholmodSupport module 
+ * \ingroup eigen_grp
+  *
+  *
+  * \code
+  * #include <Eigen/CholmodSupport>
+  * \endcode
+  */
+
+#include "src/misc/Solve.h"
+#include "src/misc/SparseSolve.h"
+
+#include "src/CholmodSupport/CholmodSupport.h"
+
+
+#include "src/Core/util/ReenableStupidWarnings.h"
+
+#endif // EIGEN_CHOLMODSUPPORT_MODULE_H
+

@@ -5,8 +5,6 @@
 
 #include "src/Core/util/DisableStupidWarnings.h"
 
-namespace Eigen {
-
 /** \defgroup Jacobi_Module Jacobi module 
  * \ingroup eigen_grp
   * This module provides Jacobi and Givens rotations.
@@ -21,8 +19,6 @@ namespace Eigen {
   */
 
 #include "src/Jacobi/Jacobi.h"
-
-} // namespace Eigen
 
 #include "src/Core/util/ReenableStupidWarnings.h"
 

@@ -25,6 +25,8 @@
 #ifndef EIGEN_GENERAL_MATRIX_MATRIX_H
 #define EIGEN_GENERAL_MATRIX_MATRIX_H
 
+namespace Eigen { 
+
 namespace internal {
 
 template<typename _LhsScalar, typename _RhsScalar> class level3_blocking;
@@ -412,8 +414,8 @@ class GeneralProduct<Lhs, Rhs, GemmProduct>
     {
       eigen_assert(dst.rows()==m_lhs.rows() && dst.cols()==m_rhs.cols());
 
-      const ActualLhsType lhs = LhsBlasTraits::extract(m_lhs);
-      const ActualRhsType rhs = RhsBlasTraits::extract(m_rhs);
+      typename internal::add_const_on_value_type<ActualLhsType>::type lhs = LhsBlasTraits::extract(m_lhs);
+      typename internal::add_const_on_value_type<ActualRhsType>::type rhs = RhsBlasTraits::extract(m_rhs);
 
       Scalar actualAlpha = alpha * LhsBlasTraits::extractScalarFactor(m_lhs)
                                  * RhsBlasTraits::extractScalarFactor(m_rhs);
@@ -435,5 +437,7 @@ class GeneralProduct<Lhs, Rhs, GemmProduct>
       internal::parallelize_gemm<(Dest::MaxRowsAtCompileTime>32 || Dest::MaxRowsAtCompileTime==Dynamic)>(GemmFunctor(lhs, rhs, dst, actualAlpha, blocking), this->rows(), this->cols(), Dest::Flags&RowMajorBit);
     }
 };
+
+} // end namespace Eigen
 
 #endif // EIGEN_GENERAL_MATRIX_MATRIX_H

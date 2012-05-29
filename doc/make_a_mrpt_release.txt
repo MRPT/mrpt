@@ -30,8 +30,12 @@ Now for windows binary packages:
 > Go to mrpt_debian
 > debuild -S -sa
 
+Test with: "lintian *.changes"
+
 3) Try compilation in Debian Unstable
 > sudo ARCH=amd64 DIST=sid pbuilder --update
 > sudo ARCH=amd64 DIST=sid pbuilder --build  MRPT*.dsc
+
+Test all binary pkgs with: "lintian *.deb"
 
 

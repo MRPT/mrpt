@@ -60,12 +60,13 @@ namespace Eigen {
   * package.
   *
   */
+}
+
 //@{
 
 #include "src/NumericalDiff/NumericalDiff.h"
 
 //@}
-}
 
 
 #endif // EIGEN_NUMERICALDIFF_MODULE

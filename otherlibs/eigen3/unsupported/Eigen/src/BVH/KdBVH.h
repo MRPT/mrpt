@@ -25,6 +25,8 @@
 #ifndef KDBVH_H_INCLUDED
 #define KDBVH_H_INCLUDED
 
+namespace Eigen { 
+
 namespace internal {
 
 //internal pair class for the BVH--used instead of std::pair because of alignment
@@ -229,5 +231,7 @@ private:
   VolumeList boxes;
   ObjectList objects;
 };
+
+} // end namespace Eigen
 
 #endif //KDBVH_H_INCLUDED
