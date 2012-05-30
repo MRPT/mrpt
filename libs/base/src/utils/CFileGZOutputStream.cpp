@@ -40,6 +40,7 @@
 
 #include <zlib.h>
 
+#define THE_GZFILE   reinterpret_cast<gzFile>(m_f)
 
 using namespace mrpt::utils;
 using namespace std;
@@ -72,7 +73,7 @@ bool CFileGZOutputStream::open( const string	&fileName, int compress_level )
 {
 	MRPT_START
 
-	if (m_f) gzclose(m_f);
+	if (m_f) gzclose(THE_GZFILE);
 
 	// Open gz stream:
 	m_f = gzopen(fileName.c_str(),format("wb%i",compress_level).c_str() );
@@ -96,7 +97,7 @@ void CFileGZOutputStream::close()
 {
 	if (m_f)
 	{
-		gzclose(m_f);
+		gzclose(THE_GZFILE);
 		m_f = NULL;
 	}
 }
@@ -117,7 +118,7 @@ size_t  CFileGZOutputStream::Read(void *Buffer, size_t Count)
 size_t  CFileGZOutputStream::Write(const void *Buffer, size_t Count)
 {
 	if (!m_f) { THROW_EXCEPTION("File is not open."); }
-	return gzwrite(m_f,(void*)Buffer,Count);
+	return gzwrite(THE_GZFILE,const_cast<void*>(Buffer),Count);
 }
 
 /*---------------------------------------------------------------
@@ -126,7 +127,7 @@ size_t  CFileGZOutputStream::Write(const void *Buffer, size_t Count)
 uint64_t CFileGZOutputStream::getPosition()
 {
 	if (!m_f) { THROW_EXCEPTION("File is not open."); }
-	return gztell(m_f);
+	return gztell(THE_GZFILE);
 }
 
 /*---------------------------------------------------------------

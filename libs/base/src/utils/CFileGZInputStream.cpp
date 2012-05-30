@@ -43,6 +43,8 @@
 using namespace mrpt::utils;
 using namespace std;
 
+#define THE_GZFILE   reinterpret_cast<gzFile>(m_f)
+
 /*---------------------------------------------------------------
 							Constructor
  ---------------------------------------------------------------*/
@@ -66,7 +68,7 @@ bool CFileGZInputStream::open(const std::string &fileName )
 {
 	MRPT_START
 
-	if (m_f) gzclose(m_f);
+	if (m_f) gzclose(THE_GZFILE);
 
 	// Get compressed file size:
 	m_file_size = mrpt::system::getFileSize(fileName);
@@ -87,7 +89,7 @@ void CFileGZInputStream::close()
 {
 	if (m_f)
 	{
-		gzclose(m_f);
+		gzclose(THE_GZFILE);
 		m_f = NULL;
 	}
 }
@@ -108,7 +110,7 @@ size_t  CFileGZInputStream::Read(void *Buffer, size_t Count)
 {
 	if (!m_f) { THROW_EXCEPTION("File is not open."); }
 
-	return gzread(m_f,Buffer,Count);
+	return gzread(THE_GZFILE,Buffer,Count);
 }
 
 /*---------------------------------------------------------------
@@ -135,7 +137,7 @@ uint64_t CFileGZInputStream::getTotalBytesCount()
 uint64_t CFileGZInputStream::getPosition()
 {
 	if (!m_f) { THROW_EXCEPTION("File is not open."); }
-	return gztell(m_f);
+	return gztell(THE_GZFILE);
 }
 
 /*---------------------------------------------------------------
@@ -152,5 +154,5 @@ bool  CFileGZInputStream::fileOpenCorrectly()
 bool CFileGZInputStream::checkEOF()
 {
 	if (!m_f)	return true;
-	else		return 0!=gzeof(m_f);
+	else		return 0!=gzeof(THE_GZFILE);
 }
