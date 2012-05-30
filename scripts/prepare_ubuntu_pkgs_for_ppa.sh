@@ -42,8 +42,11 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 
 # -------------------------------------------------------------------
 # And now create the custom packages for each Ubuntu distribution
+# LTS distros: 
+#  - 10.04 (lucid)
+#  - 12.04 (precise)
 # -------------------------------------------------------------------
-LST_DISTROS=(precise oneiric natty karmic lucid)
+LST_DISTROS=(quantal precise oneiric natty lucid)
 
 count=${#LST_DISTROS[@]}
 IDXS=$(seq 0 $(expr $count - 1))

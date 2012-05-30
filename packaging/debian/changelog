@@ -1,3 +1,9 @@
+mrpt (1:0.9.6-1) unstable; urgency=low
+
+  * New version of upstream sources.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Wed, 30 May 2012 16:41:50 +0200
+
 mrpt (1:0.9.5svn2717-1) unstable; urgency=low
 
   * New version of upstream sources.
