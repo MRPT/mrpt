@@ -56,7 +56,7 @@ namespace mrpt
 	/** A holonomic reactive navigation method, based on Virtual Force Fields (VFF).
 	 *  \sa CAbstractHolonomicReactiveMethod,CReactiveNavigationSystem
 	 */
-	class CHolonomicVFF : public CAbstractHolonomicReactiveMethod
+	class REACTIVENAV_IMPEXP CHolonomicVFF : public CAbstractHolonomicReactiveMethod
 	{
 	public:
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
