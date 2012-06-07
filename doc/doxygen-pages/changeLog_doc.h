@@ -34,7 +34,7 @@
  <hr>
  <a name="1.0.0">
   <h2>Version 1.0.0 - (Under development) </h2></a>
-        - ...
+        - Update to nanoflann 1.1.3 - <a href="http://code.google.com/p/mrpt/source/detail?r=2937" >r2937</a>
 	- BUG FIXES:
 		- [mrpt-reactivenav] Class mrpt::reactivenav::CHolonomicVFF was not exported in Windows DLL's (Thanks Mariano for noticing!).
  

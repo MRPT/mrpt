@@ -34,18 +34,21 @@
 #define  NANOFLANN_HPP_
 
 #include <vector>
-#include <string>
 #include <cassert>
-#include <map>
 #include <algorithm>
 #include <stdexcept>
+#include <cstdio>  // for fwrite()
+#include <cmath>   // for fabs(),...
 #include <limits>
 
-#include <cassert>
-#include <cstring>
-#include <cstdio>
-#include <cmath>
-
+// Avoid conflicting declaration of min/max macros in windows headers
+#if !defined(NOMINMAX) && (defined(_WIN32) || defined(_WIN32_)  || defined(WIN32) || defined(_WIN64))
+# define NOMINMAX
+# ifdef max
+#  undef   max
+#  undef   min
+# endif
+#endif
 
 namespace nanoflann
 {
@@ -53,7 +56,7 @@ namespace nanoflann
   *  @{ */
 
   	/** Library version: 0xMmP (M=Major,m=minor,P=path) */
-	#define NANOFLANN_VERSION 0x112
+	#define NANOFLANN_VERSION 0x113
 
 	/** @addtogroup result_sets_grp Result set classes
 	  *  @{ */
@@ -93,7 +96,7 @@ namespace nanoflann
 		{
 			CountType i;
 			for (i=count; i>0; --i) {
-#ifdef NANOFLANN_FIRST_MATCH
+#ifdef NANOFLANN_FIRST_MATCH   // If defined and two poins have the same distance, the one with the lowest-index will be returned first.
 				if ( (dists[i-1]>dist) || ((dist==dists[i-1])&&(indices[i-1]>index)) ) {
 #else
 				if (dists[i-1]>dist) {
@@ -137,7 +140,8 @@ namespace nanoflann
 
 		inline ~RadiusResultSet() { }
 
-		inline void init() { m_indices_dists.clear(); }
+		inline void init() { clear(); }
+		inline void clear() { m_indices_dists.clear(); }
 
 		inline size_t size() const { return m_indices_dists.size(); }
 
@@ -150,6 +154,25 @@ namespace nanoflann
 		}
 
 		inline DistanceType worstDist() const { return radius; }
+
+		/** Clears the result set and adjusts the search radius. */
+		inline void set_radius_and_clear( const DistanceType r )
+		{
+			radius = r;
+			clear();
+		}
+
+		/**
+		 * Find the worst result (furtherest neighbor) without copying or sorting
+		 * Pre-conditions: size() > 0
+		 */
+		std::pair<IndexType,DistanceType> worst_item() const
+		{
+		   if (m_indices_dists.empty()) throw std::runtime_error("Cannot invoke RadiusResultSet::worst_item() on an empty list of results.");
+		   typedef typename std::vector<std::pair<IndexType,DistanceType> >::const_iterator DistIt;
+		   DistIt it = std::max_element(m_indices_dists.begin(), m_indices_dists.end());
+		   return *it;
+		}
 	};
 
 	/** operator "<" for std::sort() */
@@ -765,6 +788,7 @@ namespace nanoflann
 		template <typename RESULTSET>
 		void findNeighbors(RESULTSET& result, const ElementType* vec, const SearchParams& searchParams) const
 		{
+			assert(vec);
 			float epsError = 1+searchParams.eps;
 
 			std::vector<DistanceType> dists( (DIM>0 ? DIM : dim) ,0);
@@ -816,7 +840,7 @@ namespace nanoflann
 		{
 			// Create a permutable array of indices to the input vectors.
 			m_size = dataset.kdtree_get_point_count();
-			if (vind.size()!=m_size) 
+			if (vind.size()!=m_size)
 			{
 				vind.resize(m_size);
 				for (size_t i = 0; i < m_size; i++) vind[i] = i;
@@ -1075,6 +1099,7 @@ namespace nanoflann
 
 		DistanceType computeInitialDistances(const ElementType* vec, std::vector<DistanceType>& dists) const
 		{
+			assert(vec);
 			DistanceType distsq = 0.0;
 
 			for (int i = 0; i < (DIM>0 ? DIM : dim); ++i) {
