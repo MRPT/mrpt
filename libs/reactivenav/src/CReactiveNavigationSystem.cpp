@@ -84,14 +84,14 @@ void CReactiveNavigationSystem::initialize()
 /*---------------------------------------------------------------
 						changeRobotShape
   ---------------------------------------------------------------*/
-void CReactiveNavigationSystem::changeRobotShape( math::CPolygon &shape )
+void CReactiveNavigationSystem::changeRobotShape( const math::CPolygon &shape )
 {
-	collisionGridsMustBeUpdated = true;
+	m_collisionGridsMustBeUpdated = true;
 
 	if ( shape.verticesCount()<3 )
 		THROW_EXCEPTION("The robot shape has less than 3 vertices!!")
 
-	robotShape = shape;
+	m_robotShape = shape;
 }
 
 /*---------------------------------------------------------------
@@ -102,10 +102,7 @@ void CReactiveNavigationSystem::changeRobotShape( math::CPolygon &shape )
 void CReactiveNavigationSystem::getLastLogRecord( CLogFileRecord &o )
 {
 	mrpt::synch::CCriticalSectionLocker lock(&m_critZoneLastLog);
-	try {
-		o = lastLogRecord;
-	}
-	catch (...) { }
+	o = lastLogRecord;
 }
 
 
@@ -116,7 +113,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 {
 	MRPT_START
 
-	collisionGridsMustBeUpdated = true;
+	m_collisionGridsMustBeUpdated = true;
 
 	// Load config from INI file:
 	// ------------------------------------------------------------
@@ -200,7 +197,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 		printf_debug(PTGs[n]->getDescription().c_str());
 
 		PTGs[n]->simulateTrajectories(
-		    nAlfas,					// alfas,
+		    nAlfas,					// alphas,
 		    75,						// max.tim,
 		    refDistance,			// max.dist,
 		    600,					// max.n,
@@ -240,7 +237,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	printf_debug("  Max. ref. distance\t\t= %f\n", refDistance );
 	printf_debug("  Cells resolution (x,y) \t= (%.04f,%.04f)\n", colGridRes_x,colGridRes_y );
 	printf_debug("  Max. speed (v,w)\t\t= (%.04f m/sec, %.04f deg/sec)\n", robotMax_V_mps, robotMax_W_degps );
-	printf_debug("  Robot Shape Points Count \t= %u\n", robotShape.verticesCount() );
+	printf_debug("  Robot Shape Points Count \t= %u\n", m_robotShape.verticesCount() );
 	printf_debug("  Obstacles 'z' axis range \t= [%.03f,%.03f]\n", minObstaclesHeight, maxObstaclesHeight );
 	printf_debug("\n\n");
 
@@ -484,7 +481,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 			for (size_t indexPTG=0;indexPTG<PTGs.size();indexPTG++)
 			{
 				// Target location:
-				float	alfa,dist;
+				float	alpha,dist;
 				int		k;
 
 				// Firstly, check if target falls into the PTG domain!!
@@ -499,9 +496,9 @@ void  CReactiveNavigationSystem::performNavigationStep()
 					    k,
 					    dist );
 
-					alfa = PTGs[indexPTG]->index2alfa(k);
-					TP_Targets[indexPTG].x( cos(alfa) * dist );
-					TP_Targets[indexPTG].y( sin(alfa) * dist );
+					alpha = PTGs[indexPTG]->index2alpha(k);
+					TP_Targets[indexPTG].x( cos(alpha) * dist );
+					TP_Targets[indexPTG].y( sin(alpha) * dist );
 				}
 
 				// And for each security distance:
@@ -585,7 +582,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 					float x=1;
 					float y=0;
 					float p,t;
-					selectedHolonomicMovement.PTG->getCPointWhen_d_Is(2.0, selectedHolonomicMovement.PTG->alfa2index(selectedHolonomicMovement.direction),x,y,p,t);
+					selectedHolonomicMovement.PTG->getCPointWhen_d_Is(2.0, selectedHolonomicMovement.PTG->alpha2index(selectedHolonomicMovement.direction),x,y,p,t);
 
 					cur_approx_heading_dir = atan2(y,x);
 					m_robot.notifyHeadingDirection(cur_approx_heading_dir);
@@ -669,7 +666,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 		newLogRec.nPTGs					= PTGs.size();
 		newLogRec.navigatorBehavior		= 0;  // Not used now
 
-		const size_t nVerts = robotShape.size();
+		const size_t nVerts = m_robotShape.size();
 		if (size_t(newLogRec.robotShape_x.size()) != nVerts)
 		{
 			newLogRec.robotShape_x.resize(nVerts);
@@ -677,8 +674,8 @@ void  CReactiveNavigationSystem::performNavigationStep()
 		}
 		for (size_t i=0;i<nVerts;i++)
 		{
-			newLogRec.robotShape_x[i]= robotShape.GetVertex_x(i);
-			newLogRec.robotShape_y[i]= robotShape.GetVertex_y(i);
+			newLogRec.robotShape_x[i]= m_robotShape.GetVertex_x(i);
+			newLogRec.robotShape_y[i]= m_robotShape.GetVertex_y(i);
 		}
 
 		// For each PTG:
@@ -742,13 +739,13 @@ void CReactiveNavigationSystem::STEP1_CollisionGridsBuilder()
 {
 	try
 	{
-		if (collisionGridsMustBeUpdated)
+		if (m_collisionGridsMustBeUpdated)
 		{
-			collisionGridsMustBeUpdated = false;
+			m_collisionGridsMustBeUpdated = false;
 
 			mrpt::reactivenav::build_PTG_collision_grids(
 				PTGs,
-				robotShape,
+				m_robotShape,
 				format("ReacNavGrid_%s",robotName.c_str())
 				);
 		}
@@ -918,9 +915,9 @@ void CReactiveNavigationSystem::STEP5_Evaluator(
 
 		DEBUG_POINT = 1;
 
-		const int		TargetSector = in_holonomicMovement.PTG->alfa2index( a );
+		const int		TargetSector = in_holonomicMovement.PTG->alpha2index( a );
 		const double	TargetDist = TP_Target.norm();
-		const int		kDirection = in_holonomicMovement.PTG->alfa2index( in_holonomicMovement.direction );
+		const int		kDirection = in_holonomicMovement.PTG->alpha2index( in_holonomicMovement.direction );
 		const double	refDist	   = in_holonomicMovement.PTG->refDistance;
 
 		DEBUG_POINT = 2;
@@ -1113,7 +1110,7 @@ void CReactiveNavigationSystem::STEP7_NonHolonomicMovement(
 		{
 			// Take the normalized movement command:
 			in_movement.PTG->directionToMotionCommand(
-			    in_movement.PTG->alfa2index( in_movement.direction ),
+			    in_movement.PTG->alpha2index( in_movement.direction ),
 			    out_v,
 			    out_w );
 

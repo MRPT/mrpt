@@ -648,7 +648,7 @@ void  CHolonomicND::evaluateGaps(
         // -------------------------------------------
         double   dif = fabs(((double)( TargetSector - gap->representative_sector )));
 //		if (dif> (0.5f*obstacles.size()) ) dif = obstacles.size() - dif;
-		// Solo si NO estan el target y el gap atravesando el alfa = "-pi" o "pi"
+		// Solo si NO estan el target y el gap atravesando el alpha = "-pi" o "pi"
 		if (dif> (0.5f*obstacles.size()) && (TargetSector-0.5f*obstacles.size())*(gap->representative_sector-0.5f*obstacles.size())<0 )
 			dif = obstacles.size() - dif;
 

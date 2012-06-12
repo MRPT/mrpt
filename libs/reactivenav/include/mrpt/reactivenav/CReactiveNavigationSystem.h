@@ -128,7 +128,7 @@ namespace mrpt
 			/** Change the robot shape, which is taken into account for collision
 			  *  grid building.
 			  */
-			void changeRobotShape( math::CPolygon &shape );
+			void changeRobotShape( const math::CPolygon &shape );
 
 			/** Provides a copy of the last log record with information about execution. On any unexpected error "*o" will be NULL.
 			  * \param o An object where the log will be stored into.
@@ -209,8 +209,8 @@ namespace mrpt
 
 			/** The robot 2D shape model
 			  */
-			math::CPolygon		robotShape;
-			bool				collisionGridsMustBeUpdated;
+			math::CPolygon		m_robotShape;
+			bool				m_collisionGridsMustBeUpdated;
 
 
 			/** @name Variables for CReactiveNavigationSystem::performNavigationStep

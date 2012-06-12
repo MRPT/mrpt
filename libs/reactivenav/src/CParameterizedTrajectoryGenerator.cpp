@@ -29,10 +29,6 @@
 
 #include <mrpt/reactivenav.h>  // Precomp header
 
-//#if defined(_MSC_VER)
-//	#pragma warning(disable:4267)
-//#endif
-
 #include <mrpt/utils/CStartUpClassesRegister.h>
 extern mrpt::utils::CStartUpClassesRegister  mrpt_reactivenav_class_reg;
 const int dumm = mrpt_reactivenav_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
@@ -64,7 +60,7 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const TPara
 	this->TAU			= params.has("system_TAU") ? params["system_TAU"] : 0;
 	this->DELAY			= params.has("system_DELAY") ? params["system_DELAY"] : 0;
 
-    alfaValuesCount=0;
+    m_alphaValuesCount=0;
     nVertices = 0;
 	turningRadiusReference = 0.10f;
 
@@ -106,7 +102,7 @@ void CParameterizedTrajectoryGenerator::initializeCollisionsGrid(float refDistan
   ---------------------------------------------------------------*/
 void CParameterizedTrajectoryGenerator::FreeMemory()
 {
-	if (alfaValuesCount)
+	if (m_alphaValuesCount)
 	{
 		// Free trajectories:
 		CPoints.clear();
@@ -116,7 +112,7 @@ void CParameterizedTrajectoryGenerator::FreeMemory()
 		vertexPoints_y.clear();
 
 		// Signal an empty PTG:
-		alfaValuesCount = 0;
+		m_alphaValuesCount = 0;
 	}
 }
 
@@ -125,11 +121,11 @@ void CParameterizedTrajectoryGenerator::FreeMemory()
   ---------------------------------------------------------------*/
 void CParameterizedTrajectoryGenerator::allocMemForVerticesData( int nVertices )
 {
-		vertexPoints_x.resize(alfaValuesCount);
-		vertexPoints_y.resize(alfaValuesCount);
+		vertexPoints_x.resize(m_alphaValuesCount);
+		vertexPoints_y.resize(m_alphaValuesCount);
 
 		// Alloc the exact number of items, all of them set to 0:
-        for (unsigned int i=0;i<alfaValuesCount;i++)
+        for (unsigned int i=0;i<m_alphaValuesCount;i++)
 		{
 			vertexPoints_x[i].resize( nVertices * getPointsCountInCPath_k(i), 0 );
 			vertexPoints_y[i].resize( nVertices * getPointsCountInCPath_k(i), 0 );
@@ -144,7 +140,7 @@ void CParameterizedTrajectoryGenerator::allocMemForVerticesData( int nVertices )
 	Solve trajectories and fill cells.
   ---------------------------------------------------------------*/
 void CParameterizedTrajectoryGenerator::simulateTrajectories(
-        uint16_t	alfaValuesCount,
+        uint16_t	    alphaValuesCount,
         float			max_time,
         float			max_dist,
         unsigned int	max_n,
@@ -156,23 +152,18 @@ void CParameterizedTrajectoryGenerator::simulateTrajectories(
         // Primero, liberar memoria:
         FreeMemory();
 
-        // The number of discreet values for ALFA:
-        this->alfaValuesCount = alfaValuesCount;
+        // The number of discreet values for ALPHA:
+        this->m_alphaValuesCount = alphaValuesCount;
 
 		// Reserve the size in the buffers:
-		CPoints.resize( alfaValuesCount );
+		CPoints.resize( m_alphaValuesCount );
 
         // Calcular maxima distancia del contorno del robot (para 1 calculo auxiliar)
         float  radio_max_robot=1.0;    // Aprox.
 
-        // Buffer auxiliar:
-//        TCPoint         *points = (TCPoint*)calloc(max_n, sizeof(TCPoint));
-//        int             nPoints;
+        // Aux buffer:
 		TCPointVector	points;
 
-        float          alfa;
-        float          x,y,phi,v,w,cmd_v,cmd_w,t, dist, girado;
-        float          _x,_y,_phi;     // De la iteracion anteriormente guardada
         float          ult_dist, ult_dist1, ult_dist2;
 
 		// For the grid:
@@ -181,206 +172,164 @@ void CParameterizedTrajectoryGenerator::simulateTrajectories(
 
 		// Para averiguar las maximas ACELERACIONES lineales y angulares:
 		float			max_acc_lin, max_acc_ang;
-		float			acc_lin, acc_ang;
-
-        int				k;
 
 		maxV_inTPSpace = 0;
 		max_acc_lin = max_acc_ang = 0;
 
 	try
 	{
-        for (k=0;k<alfaValuesCount;k++)
+        for (unsigned int k=0;k<m_alphaValuesCount;k++)
         {
-                // Simular / calcular trayectoria con "alfa":
-                // --------------------------------------------------------
-                alfa = index2alfa( k );
+			// Simulate / evaluate the trajectory selected by this "alpha":
+			// ------------------------------------------------------------
+			const float alpha = index2alpha( k );
 
-				points.clear();
-                t = dist = girado = 0.0;
-                x = y = phi = v = w =
-                _x = _y = _phi = 0.0;
-                flag1 = flag2 = false;
+			points.clear();
+			float t = .0f, dist = .0f, girado = .0f;
+			float x = .0f, y = .0f, phi = .0f, v = .0f, w = .0f, _x = .0f, _y = .0f, _phi = .0f;
 
-                // Ventana deslizante de ultimos comandos:
-                vector<float>   last_cmd_vs, last_cmd_ws;
-                vector<float>   last_vs, last_ws;
-                int             M = 5;
+			// Sliding window with latest movement commands (for the optional low-pass filtering):
+			vector<float>   last_cmd_vs, last_cmd_ws;
+			vector<float>   last_vs, last_ws;
+			int             M = 5;
 
-				// cmd_v[i] = cmd_v[k-i]
-				last_cmd_vs.clear();last_cmd_ws.clear();
-                last_cmd_vs.resize(M,0);
-                last_cmd_ws.resize(M,0);
+			// cmd_v[i] = cmd_v[k-i]
+			last_cmd_vs.clear();last_cmd_ws.clear();
+			last_cmd_vs.resize(M,0);
+			last_cmd_ws.resize(M,0);
 
-				// cmd_v[i] = cmd_v[k-i]
-                last_vs.clear();last_ws.clear();
-				last_vs.resize(M,0);
-                last_ws.resize(M,0);
+			// cmd_v[i] = cmd_v[k-i]
+			last_vs.clear();last_ws.clear();
+			last_vs.resize(M,0);
+			last_ws.resize(M,0);
 
-                // ________________________________________
-                // Parametros del sistema:
-                //
-                //            (1-alfa)·z(-NDELAY)
-                //  H(z) = ------------------------
-                //            1 -  z(-1)·alfa
-                //
-                //    alfa = exp( -1 / d ), d = TAU/T
-                // ________________________________________
-                int             N_Delay = round(DELAY / diferencial_t);
-                if (TAU==0)	       TAU=0.01f;
-                double          filter_alfa = exp(-1/(TAU/diferencial_t));
+			// -------------------------------------------
+			// Low-pass filter model:
+			//
+			//            (1-alpha)·z(-NDELAY)
+			//  H(z) = ------------------------
+			//            1 -  z(-1)·alpha
+			//
+			//    alpha = exp( -1 / d ), d = TAU/T
+			// -------------------------------------------
+			const int N_Delay = round(DELAY / diferencial_t);
+			if (TAU==0) TAU=0.01f;
+			const double filter_alpha = exp(-1/(TAU/diferencial_t));
 
-                // Add the first, initial point:
-				points.push_back( TCPoint(	x,
-											y,
-											phi,
-											t,
-											dist,
-											v,
-											w
-											) );
-                // Simular hasta que se cumpla algo de esto:
-                while ( t < max_time && dist < max_dist && points.size() < max_n && fabs(girado) < 1.95 * M_PI )
-                {
-						// Max. aceleraciones:
-						if (t>1)
-						{
-							acc_lin = fabs( (last_vs[0]-last_vs[1])/diferencial_t);
-							acc_ang = fabs( (last_ws[0]-last_ws[1])/diferencial_t);
+			// Add the first, initial point:
+			points.push_back( TCPoint(	x,y,phi, t,dist, v,w ) );
+			
+			// Simulate until...
+			while ( t < max_time && dist < max_dist && points.size() < max_n && fabs(girado) < 1.95 * M_PI )
+			{
+				// Max. aceleraciones:
+				if (t>1)
+				{
+					float acc_lin = fabs( (last_vs[0]-last_vs[1])/diferencial_t);
+					float acc_ang = fabs( (last_ws[0]-last_ws[1])/diferencial_t);
+					mrpt::utils::keep_max(max_acc_lin, acc_lin);
+					mrpt::utils::keep_max(max_acc_ang, acc_ang);
+				}
 
-							if (acc_lin>max_acc_lin)
-									max_acc_lin = acc_lin;
-							if (acc_ang>max_acc_ang)
-									max_acc_ang =acc_ang;
-						}
+				// Compute new movement command (v,w):
+				float cmd_v, cmd_w;
+				PTG_Generator( alpha,t, x, y, phi, cmd_v,cmd_w );
 
-                        // Calcular nuevo comando de (v,w):
-						PTG_Generator( alfa,t, x, y, phi, cmd_v,cmd_w );
+				if (t==0) 
+					mrpt::utils::keep_max(maxV_inTPSpace, (float)( sqrt( square(cmd_v) + square(cmd_w*turningRadiusReference) ) ) );
 
-                        if (t==0)
-                                maxV_inTPSpace=max(maxV_inTPSpace,(float)( sqrt( square(cmd_v) + square(cmd_w*turningRadiusReference) ) ) );
+				// Low-pass filter ----------------------------------
+				for (int i=M-1;i>=1;i--)
+				{
+					last_cmd_vs[i]=last_cmd_vs[i-1];
+					last_cmd_ws[i]=last_cmd_ws[i-1];
+					last_vs[i]=last_vs[i-1];
+					last_ws[i]=last_ws[i-1];
+				}
+				last_vs[0] = v;
+				last_ws[0] = w;
+				last_cmd_vs[0] = cmd_v;
+				last_cmd_ws[0] = cmd_w;
 
-                        // FILTRAR ----------------------------------
-                        for (int i=M-1;i>=1;i--)
-                        {
-                                last_cmd_vs[i]=last_cmd_vs[i-1];
-                                last_cmd_ws[i]=last_cmd_ws[i-1];
-                                last_vs[i]=last_vs[i-1];
-                                last_ws[i]=last_ws[i-1];
-                        }
-                        last_vs[0] = v;
-                        last_ws[0] = w;
-                        last_cmd_vs[0] = cmd_v;
-                        last_cmd_ws[0] = cmd_w;
+				v = (float)(last_cmd_vs[ N_Delay ]*(1-filter_alpha) + filter_alpha*last_vs[1]);
+				w = (float)(last_cmd_ws[ N_Delay ]*(1-filter_alpha) + filter_alpha*last_ws[1]);
 
-                        // Procesar respuesta del sistema para tener (v,w) "reales":
-                        v = (float)(last_cmd_vs[ N_Delay ]*(1-filter_alfa) + filter_alfa*last_vs[1]);
-                        w = (float)(last_cmd_ws[ N_Delay ]*(1-filter_alfa) + filter_alfa*last_ws[1]);
+				// -------------------------------------------
 
-                        // -------------------------------------------
+				// Finite difference equation:
+				x += cos(phi)* v * diferencial_t;
+				y += sin(phi)* v * diferencial_t;
+				phi+= w * diferencial_t;
 
-                        // Ecuacion en diferencias:
-                        x += cos(phi)* v * diferencial_t;
-                        y += sin(phi)* v * diferencial_t;
-                        phi+= w * diferencial_t;
+				// Counters:
+				girado += w * diferencial_t;
 
-                        // Contadores:
-                        girado += w * diferencial_t;
+				float v_inTPSpace = sqrt( square(v)+square(w*turningRadiusReference) );
 
-                        float v_inTPSpace = sqrt( square(v)+square(w*turningRadiusReference) );
+				dist += v_inTPSpace  * diferencial_t;
 
-                        dist += v_inTPSpace  * diferencial_t;
+				t += diferencial_t;
 
-                        t += diferencial_t;
+				// Save sample if we moved far enough:
+				ult_dist1 = sqrt( square( _x - x )+square( _y - y  ) );
+				ult_dist2 = fabs( radio_max_robot* ( _phi - phi ) );
+				ult_dist = max( ult_dist1, ult_dist2 );
 
-                        // Si nos hemos movido suficiente, guardar esta muestra:
-                        ult_dist1 = sqrt( square( _x - x )+square( _y - y  ) );
-                        ult_dist2 = fabs( radio_max_robot* ( _phi - phi ) );
-                        ult_dist = max( ult_dist1, ult_dist2 );
+				if (ult_dist > min_dist)
+				{
+					// Set the (v,w) to the last record:
+					points.back().v = v;
+					points.back().w = w;
 
-                        if (ult_dist > min_dist)
-                        {
-							// Set the (v,w) to the last record:
-							points.back().v = v;
-							points.back().w = w;
+					// And add the new record:
+					points.push_back( TCPoint(	x,y,phi,t,dist,v,w) );
 
-							// And add the new record:
-							points.push_back( TCPoint(	x,
-														y,
-														phi,
-														t,
-														dist,
-														v,
-														w
-														) );
+					// For the next iter:
+					_x = x;
+					_y = y;
+					_phi = phi;
+				}
 
-							// For the next iter:
-                            _x = x;
-                            _y = y;
-                            _phi = phi;
-                        }
+				// for the grid:
+				x_min = min(x_min,x); x_max = max(x_max,x);
+				y_min = min(y_min,y); y_max = max(y_max,y);
+			}
 
-					// for the grid:
-					x_min = min(x_min,x); x_max = max(x_max,x);
-					y_min = min(y_min,y); y_max = max(y_max,y);
-                }
+			// Add the final point:
+			points.back().v = v;
+			points.back().w = w;
+			points.push_back( TCPoint(	x,y,phi,t,dist,v,w) );
 
-				// Add the final point:
-				// -------------------------------------
-				points.back().v = v;
-				points.back().w = w;
-				points.push_back( TCPoint(	x,
-											y,
-											phi,
-											t,
-											dist,
-											v,
-											w
-											) );
+			// Save data to C-Space path structure:
+			CPoints[k] = points;
 
-                // Guardar datos en la estructura:
-                // --------------------------------------------------------
-                CPoints[k] = points;
+        } // end for "k"
 
-        }       // for "k"
-
-		// Poner las aceleraciones:
+		// Save accelerations
 		if (out_max_acc_v) *out_max_acc_v = max_acc_lin;
         if (out_max_acc_w) *out_max_acc_w = max_acc_ang;
 
 		// --------------------------------------------------------
 		// Build the speeding-up grid for lambda function:
 		// --------------------------------------------------------
+		const TCellForLambdaFunction defaultCell;
 		m_lambdaFunctionOptimizer.setSize(
 			x_min-0.5f,x_max+0.5f,
-			y_min-0.5f,y_max+0.5f,  0.25f);
+			y_min-0.5f,y_max+0.5f,  0.25f, 
+			&defaultCell);
 
-		TCellForLambdaFunction	defCell;
-		defCell.k_max = defCell.k_min = defCell.n_max = defCell.n_min = -1;
-		m_lambdaFunctionOptimizer.fill( defCell );
-
-		for (k=0;k<alfaValuesCount;k++)
+		for (uint16_t k=0;k<m_alphaValuesCount;k++)
 		{
-			for (int n=0;n<(int)CPoints[k].size();n++)
+			const uint32_t M = static_cast<uint32_t>(CPoints[k].size());
+			for (uint32_t n=0;n<M;n++)
 			{
 				TCellForLambdaFunction	*cell = m_lambdaFunctionOptimizer.cellByPos(CPoints[k][n].x,CPoints[k][n].y);
-				ASSERT_(cell);
-				if (cell->k_max==-1)
-				{
-					// First time: copy
-					cell->k_min =
-					cell->k_max = k;
-					cell->n_min =
-					cell->n_max = n;
-				}
-				else
-				{
-					// Keep limits:
-					cell->k_min = min( cell->k_min, k );
-					cell->k_max = max( cell->k_max, k );
-					cell->n_min = min( cell->n_min, n );
-					cell->n_max = max( cell->n_max, n );
-				}
+				ASSERT_(cell)
+				// Keep limits:
+				mrpt::utils::keep_min(cell->k_min, k );
+				mrpt::utils::keep_max(cell->k_max, k );
+				mrpt::utils::keep_min(cell->n_min, n );
+				mrpt::utils::keep_max(cell->n_max, n );
 			}
 		}
 	}
@@ -396,7 +345,7 @@ void CParameterizedTrajectoryGenerator::simulateTrajectories(
   ---------------------------------------------------------------*/
 void CParameterizedTrajectoryGenerator::directionToMotionCommand( uint16_t k, float &v, float &w )
 {
-	PTG_Generator( index2alfa(k),0, 0, 0, 0, v, w );
+	PTG_Generator( index2alpha(k),0, 0, 0, 0, v, w );
 }
 
 /*---------------------------------------------------------------
@@ -414,7 +363,7 @@ void CParameterizedTrajectoryGenerator::getCPointWhen_d_Is (
 {
         unsigned int     n=0;
 
-        if (k>=alfaValuesCount)
+        if (k>=m_alphaValuesCount)
 		{
 			x=y=phi=0;
 			return;  // Por si acaso
@@ -454,16 +403,14 @@ void CParameterizedTrajectoryGenerator::debugDumpInFiles( int nPT )
 	sprintf(str, "./reactivenav.logs/PTGs/PTG%u_d.txt",nPT); FILE* fd = fopen(str,"wt");
 #endif
 
-	int		nPaths = getAlfaValuesCount();
-	//int    maxPoints=0;
-	int    k;
+	const size_t nPaths = getAlfaValuesCount();
 
 #ifdef alsoDumpForMATLAB
 	// Version texto:
-	for (k=0;k<nPaths;k++)
+	for (size_t k=0;k<nPaths;k++)
 		maxPoints = max( maxPoints, getPointsCountInCPath_k(k) );
 
-	for ( k=0;k<nPaths;k++)
+	for (size_t k=0;k<nPaths;k++)
 	{
 		for (int n=0;n< maxPoints;n++)
 		{
@@ -482,21 +429,19 @@ void CParameterizedTrajectoryGenerator::debugDumpInFiles( int nPT )
 	fclose(fx);fclose(fy);fclose(fp);fclose(ft);fclose(fd);
 #endif
 
-	size_t wr;
-
-	// Version binaria:
-	for ( k=0;k<nPaths;k++)
+	// Binary dump:
+	for (size_t k=0;k<nPaths;k++)
 	{
 		int     nPoints = getPointsCountInCPath_k(k);
 		float   fl;
-		wr=fwrite( &nPoints ,sizeof(int),1 , f ); ASSERT_(wr>0);
+		size_t wr=fwrite( &nPoints ,sizeof(int),1 , f ); ASSERT_(wr>0);
 		for (int n=0;n<nPoints;n++)
 		{
-				fl = GetCPathPoint_x(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
-				fl = GetCPathPoint_y(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
-				fl = GetCPathPoint_phi(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
-				fl = GetCPathPoint_t(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
-				fl = GetCPathPoint_d(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
+			fl = GetCPathPoint_x(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
+			fl = GetCPathPoint_y(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
+			fl = GetCPathPoint_phi(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
+			fl = GetCPathPoint_t(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
+			fl = GetCPathPoint_d(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
 		}
 	}
 
@@ -544,7 +489,7 @@ void CParameterizedTrajectoryGenerator::CColisionGrid::updateCellInfo(
 /*---------------------------------------------------------------
 					Save to file
   ---------------------------------------------------------------*/
-bool CParameterizedTrajectoryGenerator::SaveColGridsToFile( const std::string &filename )
+bool CParameterizedTrajectoryGenerator::SaveColGridsToFile( const std::string &filename, const mrpt::math::CPolygon & computed_robotShape )
 {
 	try
 	{
@@ -553,7 +498,7 @@ bool CParameterizedTrajectoryGenerator::SaveColGridsToFile( const std::string &f
 
 		const uint32_t n = 1; // for backwards compatibility...
 		fo << n;
-		return m_collisionGrid.saveToFile(&fo);
+		return m_collisionGrid.saveToFile(&fo, computed_robotShape);
 	}
 	catch (...)
 	{
@@ -564,7 +509,7 @@ bool CParameterizedTrajectoryGenerator::SaveColGridsToFile( const std::string &f
 /*---------------------------------------------------------------
 					Load from file
   ---------------------------------------------------------------*/
-bool CParameterizedTrajectoryGenerator::LoadColGridsFromFile( const std::string &filename )
+bool CParameterizedTrajectoryGenerator::LoadColGridsFromFile( const std::string &filename, const mrpt::math::CPolygon & current_robotShape  )
 {
 	try
 	{
@@ -573,14 +518,9 @@ bool CParameterizedTrajectoryGenerator::LoadColGridsFromFile( const std::string 
 
 		uint32_t n;
 		fi >> n;
+		if (n!=1) return false; // Incompatible (old) format, just discard and recompute.
 
-		if (n!=1)
-		{
-			//std::cerr << format("[LoadColGridsFromFile] WARNING: n!=1 --> return false;\n");
-			return false;
-		}
-
-		return m_collisionGrid.loadFromFile(&fi);
+		return m_collisionGrid.loadFromFile(&fi,current_robotShape);
 	}
 	catch(...)
 	{
@@ -588,19 +528,31 @@ bool CParameterizedTrajectoryGenerator::LoadColGridsFromFile( const std::string 
 	}
 }
 
-const uint32_t COLGRID_FILE_MAGIC = 0xC0C0C0C0;
+const uint32_t OLD_COLGRID_FILE_MAGIC = 0xC0C0C0C0;
+const uint32_t COLGRID_FILE_MAGIC     = 0xC0C0C0C1;
 
 /*---------------------------------------------------------------
 					Save to file
   ---------------------------------------------------------------*/
-bool CParameterizedTrajectoryGenerator::CColisionGrid::saveToFile( CStream *f )
+bool CParameterizedTrajectoryGenerator::CColisionGrid::saveToFile( CStream *f, const mrpt::math::CPolygon & computed_robotShape )
 {
 	try
 	{
 		if (!f) return false;
 
-		*f << COLGRID_FILE_MAGIC;
-		*f << m_parent->getDescription();
+		const uint8_t serialize_version = 1; // v1: As of jun 2012
+
+		// Save magic signature && serialization version:
+		*f << COLGRID_FILE_MAGIC << serialize_version;
+		
+		// Robot shape: 
+		*f << computed_robotShape;
+
+		// and standard PTG data:
+		*f << m_parent->getDescription() 
+			<< m_parent->getAlfaValuesCount()
+			<< m_parent->getMax_V() 
+			<< m_parent->getMax_W();
 
 		*f << m_x_min << m_x_max << m_y_min << m_y_max;
 		*f << m_resolution;
@@ -616,7 +568,7 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::saveToFile( CStream *f )
 /*---------------------------------------------------------------
 						loadFromFile
   ---------------------------------------------------------------*/
-bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f )
+bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f, const mrpt::math::CPolygon & current_robotShape  )
 {
 	try
 	{
@@ -625,25 +577,59 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f 
 		// Return false if the file contents doesn't match what we expected:
 		uint32_t file_magic;
 		*f >> file_magic;
-
+		
 		if (COLGRID_FILE_MAGIC!=file_magic)
-			return false;
+		{
+			// May it be a file in the old format?
+			if (OLD_COLGRID_FILE_MAGIC==file_magic)
+					return false;  // We can't be sure of the robot shape: return false and recompute the grid.
+			else	return false;  // It doesn't seem to be a valid file: recompute the grid.
+		}
 
+		uint8_t serialized_version;
+		*f >> serialized_version;
+
+		switch (serialized_version)
+		{
+		case 1:
+			{
+				mrpt::math::CPolygon stored_shape;
+				*f >> stored_shape;
+
+				const bool shapes_match = 
+					( stored_shape.size()==current_robotShape.size() && 
+					  std::equal(stored_shape.begin(),stored_shape.end(), current_robotShape.begin() ) );
+
+				if (!shapes_match) return false; // Must recompute if the robot shape changed.
+			}
+			break;
+
+		default:
+			// Unknown version: Maybe we are loading a file from a more recent version of MRPT? Whatever, we can't read it:
+			return false;
+		};
+
+		// Standard PTG data:		
 		const std::string expected_desc = m_parent->getDescription();
 		std::string desc;
 		*f >> desc;
+		if (desc!=expected_desc) return false;
 
-		if (desc!=expected_desc)
-			return false;
+		// and standard PTG data:
+        float	  ff;
+		uint16_t  nAlphaStored;
+		*f >> nAlphaStored; if (nAlphaStored!=m_parent->getAlfaValuesCount()) return false;
+		*f >> ff; if (ff!=m_parent->getMax_V()) return false;
+		*f >> ff; if (ff!=m_parent->getMax_W()) return false;
 
-        // Datos descriptivos de la rejilla:
-        float	ff;
+        // Cell dimensions:
 		*f >> ff; if(ff!=m_x_min) return false;
 		*f >> ff; if(ff!=m_x_max) return false;
 		*f >> ff; if(ff!=m_y_min) return false;
 		*f >> ff; if(ff!=m_y_max) return false;
 		*f >> ff; if(ff!=m_resolution) return false;
 
+		// OK, all parameters seem to be exactly the same than when we precomputed the table: load it.
 		*f >> m_map;
 		return true;
 	}
@@ -659,46 +645,41 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f 
   ---------------------------------------------------------------*/
 void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k_out, float &d_out )
 {
-	// Esta en la zona donde las trayectorias son curvas:
-	//   comparar con simulaciones
-
 	// -------------------------------------------------------------------
 	// Optimization: (24-JAN-2007 @ Jose Luis Blanco):
 	//  Use a "grid" to determine the range of [k,d] values to check!!
 	//  If the point (x,y) is not found in the grid, then directly skip
 	//  to the next step.
 	// -------------------------------------------------------------------
-	int		k_min = 0;
-	int		k_max = alfaValuesCount-1;
-	int		n_min = 0;
-	int		n_max = -1; // This is to force that, if no cell contains the area of interest in the first loop below, we skip straight to the next part.
+	uint16_t k_min = 0, k_max = m_alphaValuesCount-1;
+	uint32_t n_min = 0, n_max = 0;
+	bool at_least_one = false;
 
 	// Cell indexes:
 	int		cx0 = m_lambdaFunctionOptimizer.x2idx(x);
 	int		cy0 = m_lambdaFunctionOptimizer.y2idx(y);
 
 	// (cx,cy)
-	bool	firstCell = true;
 	for (int cx=cx0-1;cx<=cx0+1;cx++)
 	{
 		for (int cy=cy0-1;cy<=cy0+1;cy++)
 		{
 			TCellForLambdaFunction	*cell = m_lambdaFunctionOptimizer.cellByIndex(cx,cy);
-			if (cell)
+			if (cell && !cell->isEmpty())
 			{
-				if (cell->k_max!=-1)
+				if (!at_least_one)
 				{
-					if (firstCell)
-					{
-						k_min = cell->k_min;	k_max = cell->k_max;
-						n_min = cell->n_min;	n_max = cell->n_max;
-						firstCell = false;
-					}
-					else
-					{
-						k_min = min(cell->k_min,k_min);	k_max = max(cell->k_max,k_max);
-						n_min = min(cell->n_min,n_min);	n_max = max(cell->n_max,n_max);
-					}
+					k_min = cell->k_min;	k_max = cell->k_max;
+					n_min = cell->n_min;	n_max = cell->n_max;
+					at_least_one = true;
+				}
+				else
+				{
+					mrpt::utils::keep_min(k_min, cell->k_min);
+					mrpt::utils::keep_max(k_max, cell->k_max);
+					
+					mrpt::utils::keep_min(n_min, cell->n_min);
+					mrpt::utils::keep_max(n_max, cell->n_max);
 				}
 			}
 		}
@@ -710,13 +691,15 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 	float	selected_d= 0;
 	float   selected_dist = std::numeric_limits<float>::max();
 
-	if (n_max>=n_min) // Otherwise, don't even lose time checking...
+	if (at_least_one) // Otherwise, don't even lose time checking...
 	{
+		ASSERT_BELOW_(k_max, CPoints.size())
 		for (int k=k_min;k<=k_max;k++)
 		{
-			const int n_max_this = min( int(CPoints[k].size())-1, n_max);
+			const size_t n_real = CPoints[k].size();
+			const uint32_t n_max_this = std::min( static_cast<uint32_t>(n_real ? n_real-1 : 0), n_max);
 
-			for (int n = n_min;n<=n_max_this; n++)
+			for (uint32_t n = n_min;n<=n_max_this; n++)
 			{
 				const float dist_a_punto= square( CPoints[k][n].x - x ) + square( CPoints[k][n].y - y );
 				if (dist_a_punto<selected_dist)
@@ -733,12 +716,10 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 	{
 		k_out = selected_k;
 		d_out = selected_d / refDistance;
-		//cerr << "selected_d:" << selected_d << " refDistance:"<< refDistance << " d_out:" << d_out << "k_out:"<<k_out<<endl;
 		return;
 	}
 
-	// If not found, compute an extrapolation!
-	// ----------------------------------------------
+	// If not found, compute an extrapolation:
 
 	// ------------------------------------------------------------------------------------
 	// Given a point (x,y), compute the "k_closest" whose extrapolation
@@ -746,7 +727,7 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 	//  which can be normalized by "1/refDistance" to get TP-Space distances.
 	// ------------------------------------------------------------------------------------
 	selected_dist = std::numeric_limits<float>::max();
-	for ( int k=0;k<static_cast<int>(alfaValuesCount);k++)
+	for (uint16_t k=0;k<m_alphaValuesCount;k++)
 	{
 		const int n = int (CPoints[k].size()) -1;
 		const float dist_a_punto = square( CPoints[k][n].dist ) + square( CPoints[k][n].x - x ) + square( CPoints[k][n].y - y );
@@ -763,8 +744,6 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 
 	k_out = selected_k;
 	d_out = selected_d / refDistance;
-
-	//cerr << "extrapol: selected_d:" << selected_d << " refDistance:"<< refDistance << " d_out:" << d_out << "k_out:"<<k_out<<endl;
 }
 
 

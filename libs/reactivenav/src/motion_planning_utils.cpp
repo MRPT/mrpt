@@ -99,7 +99,7 @@ void mrpt::reactivenav::build_PTG_collision_grids(
 		std::string auxStr = format( "%s_PTG%03u.dat.gz",cacheFilesPrefix.c_str(),static_cast<unsigned int>(nPT));
 
 		// Load the cached version, if possible
-		if ( PT->LoadColGridsFromFile( auxStr ) )
+		if ( PT->LoadColGridsFromFile( auxStr, robotShape ) )
 		{
 			if (verbose)
 				cout << "loaded from file OK" << endl;
@@ -185,7 +185,7 @@ void mrpt::reactivenav::build_PTG_collision_grids(
 				cout << format("Done! [%.03f sec]\n",tictac.Tac() );
 
 			// save it to the cache file for the next run:
-			PT->SaveColGridsToFile( auxStr );
+			PT->SaveColGridsToFile( auxStr, robotShape );
 
 		}	// "else" recompute all PTG
 	}	// for nPT

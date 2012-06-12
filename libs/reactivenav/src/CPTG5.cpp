@@ -56,15 +56,15 @@ std::string CPTG5::getDescription() const
 /*---------------------------------------------------------------
 						PTG_Generator
   ---------------------------------------------------------------*/
-void CPTG5::PTG_Generator( float alfa, float t,float x, float y, float phi, float &v, float &w )
+void CPTG5::PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w )
 {
-	float T = 0.5f*fabs(alfa)*R/V_MAX;
+	float T = 0.5f*fabs(alpha)*R/V_MAX;
 
 	if (t< T)
 	{
 		// l+
 		v = V_MAX;
-		w = W_MAX * min( 1.0f , 1.0f - (float)exp( -square(alfa/0.40f) ));
+		w = W_MAX * min( 1.0f , 1.0f - (float)exp( -square(alpha/0.40f) ));
 	}
 	else
 	{
@@ -74,7 +74,7 @@ void CPTG5::PTG_Generator( float alfa, float t,float x, float y, float phi, floa
 	}
 
 	// Turn in the opposite direction??
-	if (alfa<0)
+	if (alpha<0)
 		w*=-1;
 
 	v*=K;

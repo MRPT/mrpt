@@ -52,14 +52,14 @@ std::string CPTG7::getDescription() const
 /*---------------------------------------------------------------
 						PTG_Generator
   ---------------------------------------------------------------*/
-void CPTG7::PTG_Generator( float alfa, float t,float x, float y, float phi, float &v, float &w )
+void CPTG7::PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w )
 {
   	float	R  = V_MAX / W_MAX;
- 	float	Ty = 2*(alfa/M_PIf)*R;
+ 	float	Ty = 2*(alpha/M_PIf)*R;
 
     v = V_MAX;
 	w = W_MAX;
-    if (alfa<0) w*=-1;
+    if (alpha<0) w*=-1;
 
 	if (fabs(x)>fabs(0.5f*Ty)) w *= -1;
     if (x>=fabs(Ty)) w = 0;

@@ -48,20 +48,18 @@ CPTG1::CPTG1(const TParameters<double> &params ) :
   ---------------------------------------------------------------*/
 std::string CPTG1::getDescription() const
 {
-	char str[100];
-	os::sprintf(str,100,"Type#1PTG,circular,K=%i",(int)K );
-	return std::string(str);
+	return mrpt::format("Type#1PTG,circ.arcs,K=%i",(int)K);
 }
 
 
 /*---------------------------------------------------------------
 
   ---------------------------------------------------------------*/
-void CPTG1::PTG_Generator( float alfa, float t,float x, float y, float phi, float &v, float &w )
+void CPTG1::PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w )
 {
     // (v,w)
     v = V_MAX * sign(K);
-    w = tan( alfa/CTE_DIV_ALFA ) * W_MAX * sign(K);
+    w = tan( alpha/CTE_DIV_ALFA ) * W_MAX * sign(K);
 }
 
 /*---------------------------------------------------------------
@@ -83,7 +81,7 @@ void CPTG1::lambdaFunction( float x, float y, int &k_out, float &d_out )
 	{
 		R = (x*x+y*y)/(2*y);
 		a = sign(K)*2*atan( V_MAX / (W_MAX*R) );
-		k_out = alfa2index( (float)a );
+		k_out = alpha2index( (float)a );
 
 		double theta;
 
@@ -108,12 +106,12 @@ void CPTG1::lambdaFunction( float x, float y, int &k_out, float &d_out )
 	{
 		if (sign(x)==sign(K))
 		{
-			k_out = alfa2index(0);
+			k_out = alpha2index(0);
 			d_out = x;
 		}
 		else
 		{
-			k_out = alfa2index((float)M_PI);
+			k_out = alpha2index((float)M_PI);
 			d_out = 1e+3;
 		}
 	}

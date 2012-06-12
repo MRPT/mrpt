@@ -77,14 +77,20 @@ namespace mrpt
             {
             }
 
-            /** Changes the size of the grid, ERASING all previous contents.
-              * \sa resize
+            /** Changes the size of the grid, ERASING all previous contents. 
+			  * If \a fill_value is left as NULL, the contents of cells may be undefined (some will remain with 
+			  *  their old values, the new ones will have the default cell value, but the location of old values
+			  *  may change wrt their old places). 
+			  * If \a fill_value is not NULL, it is assured that all cells will have a copy of that value after resizing.
+              * \sa resize, fill
               */
-            void  setSize(	float	x_min,
-                                        float	x_max,
-                                        float	y_min,
-                                        float	y_max,
-                                        float	resolution )
+            void  setSize(
+				const float	x_min,
+				const float x_max,
+				const float y_min,
+				const float y_max,
+				const float resolution,
+				const T * fill_value = NULL)
             {
                 // Adjust sizes to adapt them to full sized cells acording to the resolution:
                 m_x_min = resolution*round(x_min/resolution);
@@ -100,7 +106,9 @@ namespace mrpt
                 m_size_y = round((m_y_max-m_y_min)/m_resolution);
 
                 // Cells memory:
-                m_map.resize(m_size_x*m_size_y);
+                if (fill_value) 
+				     m_map.assign(m_size_x*m_size_y, *fill_value);
+				else m_map.resize(m_size_x*m_size_y);
             }
 
             /** Erase the contents of all the cells.

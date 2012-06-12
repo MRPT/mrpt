@@ -56,9 +56,9 @@ std::string CPTG4::getDescription() const
 /*---------------------------------------------------------------
 						PTG_Generator
   ---------------------------------------------------------------*/
-void CPTG4::PTG_Generator( float alfa, float t,float x, float y, float phi, float &v, float &w )
+void CPTG4::PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w )
 {
-	float	u = fabs(alfa) * 0.5f; /// 6.0f;
+	float	u = fabs(alpha) * 0.5f; /// 6.0f;
 
 	if (t< u*R/V_MAX)
 	{
@@ -80,7 +80,7 @@ void CPTG4::PTG_Generator( float alfa, float t,float x, float y, float phi, floa
 	}
 
 	// Turn in the opposite direction??
-	if (alfa<0)
+	if (alpha<0)
 		w*=-1;
 
 	v*=K;

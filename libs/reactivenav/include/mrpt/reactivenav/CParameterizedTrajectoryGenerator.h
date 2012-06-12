@@ -86,7 +86,7 @@ namespace mrpt
         /** The main method: solves the diferential equation to generate a family of parametrical trajectories.
 		 */
         void simulateTrajectories(
-				uint16_t	alfaValuesCount,
+				uint16_t	    alphaValuesCount,
 				float			max_time,
 				float			max_dist,
 				unsigned int	max_n,
@@ -99,22 +99,22 @@ namespace mrpt
 		 */
         virtual void lambdaFunction( float x, float y, int &out_k, float &out_d );
 
-        /** Converts an "alfa" value (into the discrete set) into a feasible motion command.
+        /** Converts an "alpha" value (into the discrete set) into a feasible motion command.
 		 */
         void directionToMotionCommand( uint16_t k, float &out_v, float &out_w );
 
-        size_t getAlfaValuesCount() { return alfaValuesCount; };
-        size_t getPointsCountInCPath_k(uint16_t k) { return CPoints[k].size(); };
+        uint16_t getAlfaValuesCount() const { return m_alphaValuesCount; };
+        size_t getPointsCountInCPath_k(uint16_t k)  const { return CPoints[k].size(); };
 
         void   getCPointWhen_d_Is ( float d, uint16_t k, float &x, float &y, float &phi, float &t, float *v = NULL, float *w = NULL );
 
-        float  GetCPathPoint_x( uint16_t k, int n ){ return CPoints[k][n].x; }
-        float  GetCPathPoint_y( uint16_t k, int n ){ return CPoints[k][n].y; }
-        float  GetCPathPoint_phi(uint16_t k, int n ){ return CPoints[k][n].phi; }
-        float  GetCPathPoint_t( uint16_t k, int n ){ return CPoints[k][n].t; }
-        float  GetCPathPoint_d( uint16_t k, int n ){ return CPoints[k][n].dist; }
-        float  GetCPathPoint_v( uint16_t k, int n ){ return CPoints[k][n].v; }
-        float  GetCPathPoint_w( uint16_t k, int n ){ return CPoints[k][n].w; }
+        float  GetCPathPoint_x( uint16_t k, int n ) const { return CPoints[k][n].x; }
+        float  GetCPathPoint_y( uint16_t k, int n ) const { return CPoints[k][n].y; }
+        float  GetCPathPoint_phi(uint16_t k, int n ) const { return CPoints[k][n].phi; }
+        float  GetCPathPoint_t( uint16_t k, int n ) const { return CPoints[k][n].t; }
+        float  GetCPathPoint_d( uint16_t k, int n ) const { return CPoints[k][n].dist; }
+        float  GetCPathPoint_v( uint16_t k, int n ) const { return CPoints[k][n].v; }
+        float  GetCPathPoint_w( uint16_t k, int n ) const { return CPoints[k][n].w; }
 
         void    allocMemForVerticesData( int nVertices );
 
@@ -124,14 +124,14 @@ namespace mrpt
             vertexPoints_y[k][ n*nVertices + m ] = y;
         }
 
-        float  getVertex_x( uint16_t k, int n, int m )
+        float  getVertex_x( uint16_t k, int n, int m ) const
         {
                 int idx = n*nVertices + m;
 //                assert( idx>=0);assert(idx<nVertices * nPointsInEachPath[k] );
 				return vertexPoints_x[k][idx];
         }
 
-        float  getVertex_y( uint16_t k, int n, int m )
+        float  getVertex_y( uint16_t k, int n, int m ) const
         {
                 int idx = n*nVertices + m;
 //                assert( idx>=0);assert(idx<nVertices * nPointsInEachPath[k] );
@@ -150,28 +150,28 @@ namespace mrpt
 				return &vertexPoints_y[k][idx];
 		}
 
-		unsigned int getVertixesCount() { return nVertices; }
+		unsigned int getVertixesCount() const { return nVertices; }
 
-        float   getMax_V() { return V_MAX; }
-        float   getMax_W() { return W_MAX; }
-        float   getMax_V_inTPSpace() { return maxV_inTPSpace; }
+        float   getMax_V() const { return V_MAX; }
+        float   getMax_W() const { return W_MAX; }
+        float   getMax_V_inTPSpace() const { return maxV_inTPSpace; }
 
 		/** Alfa value for the discrete corresponding value.
-		 * \sa alfa2index
+		 * \sa alpha2index
 		 */
-		float  index2alfa( uint16_t k )
+		float  index2alpha( uint16_t k ) const
 		{
-			return (float)(M_PI * (-1 + 2 * (k+0.5f) / ((float)alfaValuesCount) ));
+			return (float)(M_PI * (-1 + 2 * (k+0.5f) / ((float)m_alphaValuesCount) ));
 		}
 
-		/** Discrete index value for the corresponding alfa value.
-		 * \sa index2alfa
+		/** Discrete index value for the corresponding alpha value.
+		 * \sa index2alpha
 		 */
-		uint16_t  alfa2index( float alfa )
+		uint16_t  alpha2index( float alpha ) const
 		{
-			if (alfa>M_PI)  alfa-=(float)M_2PI;
-			if (alfa<-M_PI) alfa+=(float)M_2PI;
-			return (uint16_t)(0.5f*(alfaValuesCount*(1+alfa/M_PI) - 1));
+			if (alpha>M_PI)  alpha-=(float)M_2PI;
+			if (alpha<-M_PI) alpha+=(float)M_2PI;
+			return (uint16_t)(0.5f*(m_alphaValuesCount*(1+alpha/M_PI) - 1));
 		}
 
 		/** Dump PTG trajectories in files in directory "./PTGs/".
@@ -198,8 +198,8 @@ namespace mrpt
 				}
 				virtual ~CColisionGrid() { }
 
-				bool    saveToFile( mrpt::utils::CStream* fil );	//!< Save to file, true = OK
-                bool    loadFromFile( mrpt::utils::CStream* fil );	//!< Load from file,  true = OK
+				bool    saveToFile( mrpt::utils::CStream* fil, const mrpt::math::CPolygon & computed_robotShape );	//!< Save to file, true = OK
+                bool    loadFromFile( mrpt::utils::CStream* fil, const mrpt::math::CPolygon & current_robotShape );	//!< Load from file,  true = OK
 
                 /** For an obstacle (x,y), returns a vector with all the pairs (a,d) such as the robot collides.
 				  */
@@ -207,32 +207,32 @@ namespace mrpt
 
                 /** Updates the info into a cell: It updates the cell only if the distance d for the path k is lower than the previous value:
 				  *	\param cellInfo The index of the cell
-				  * \param k The path index (alfa discreet value)
+				  * \param k The path index (alpha discreet value)
 				  * \param d The distance (in TP-Space, range 0..1) to collision.
 				  */
                 void updateCellInfo( const unsigned int icx, const unsigned int icy, const uint16_t k, const float dist );
-        };
+
+        }; // end of class CColisionGrid
 
 		/** The collision grid */
 		CColisionGrid	m_collisionGrid;
 
         // Save/Load from files.
-		bool    SaveColGridsToFile( const std::string &filename );	// true = OK
-        bool    LoadColGridsFromFile( const std::string &filename ); // true = OK
+		bool    SaveColGridsToFile( const std::string &filename, const mrpt::math::CPolygon & computed_robotShape );	// true = OK
+        bool    LoadColGridsFromFile( const std::string &filename, const mrpt::math::CPolygon & current_robotShape ); // true = OK
 
 
 		float	refDistance;
 
 		/** The main method to be implemented in derived classes.
 		 */
-        virtual void PTG_Generator( float alfa, float t, float x, float y, float phi, float &v, float &w) = 0;
+        virtual void PTG_Generator( float alpha, float t, float x, float y, float phi, float &v, float &w) = 0;
 
 		/** To be implemented in derived classes:
 		  */
 		virtual bool PTG_IsIntoDomain( float x, float y ) = 0;
 
 protected:
-		// Given a-priori:
         float			V_MAX, W_MAX;
 		float			TAU, DELAY;
 
@@ -243,12 +243,17 @@ protected:
 		  */
 		struct TCellForLambdaFunction
 		{
-			TCellForLambdaFunction()
-			{
-				k_min=k_max=n_min=n_max=-1;
-			}
+			TCellForLambdaFunction() : 
+				k_min( std::numeric_limits<uint16_t>::max() ),
+				k_max( std::numeric_limits<uint16_t>::min() ),
+				n_min( std::numeric_limits<uint32_t>::max() ),
+				n_max( std::numeric_limits<uint32_t>::min() )
+			{}
 
-			int		k_min,k_max,n_min,n_max;
+			uint16_t k_min,k_max;
+			uint32_t n_min,n_max;
+
+			bool isEmpty() const { return k_min==std::numeric_limits<uint16_t>::max();	}
 		};
 
 		/** This grid will contain indexes data for speeding-up the default, brute-force lambda function.
@@ -258,34 +263,21 @@ protected:
 		// Computed from simulations while generating trajectories:
 		float	maxV_inTPSpace;
 
-        bool    flag1, flag2;
-
-		/** The number of discrete values for ALFA between -PI and +PI.
+		/** The number of discrete values for "alpha" between -PI and +PI.
 		  */
-        unsigned int     alfaValuesCount;
+        uint16_t  m_alphaValuesCount;
 
 		/** The trajectories in the C-Space:
 		  */
         struct TCPoint
         {
-			TCPoint(	float	x,
-						float	y,
-						float	phi,
-						float	t,
-						float	dist,
-						float	v,
-						float	w)
-			{
-				this->x = x;
-				this->y = y;
-				this->phi = phi;
-				this->t = t;
-				this->dist = dist;
-				this->v = v;
-				this->w = w;
-			};
+			TCPoint(const float	x_,const float	y_,const float	phi_,
+					const float	t_,const float	dist_,
+					const float	v_,const float	w_) : 
+				x(x_), y(y_), phi(phi_), t(t_), dist(dist_), v(v_), w(w_) 
+			{}
 
-			float  x, y, phi,t, dist,v,w;
+			float x, y, phi,t, dist,v,w;
         };
 		typedef std::vector<TCPoint> TCPointVector;
 		std::vector<TCPointVector>	CPoints;
@@ -295,8 +287,7 @@ protected:
 		std::vector<vector_float> vertexPoints_x,vertexPoints_y;
         int     nVertices;
 
-		/** Free all the memory buffers:
-		  */
+		/** Free all the memory buffers */
         void    FreeMemory();
 
 	}; // end of class

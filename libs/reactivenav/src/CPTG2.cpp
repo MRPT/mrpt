@@ -55,9 +55,9 @@ std::string CPTG2::getDescription() const
 /*---------------------------------------------------------------
 						PTG_Generator
   ---------------------------------------------------------------*/
-void CPTG2::PTG_Generator( float alfa, float t,float x, float y, float phi, float &v, float &w )
+void CPTG2::PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w )
 {
-    float At_a = alfa - phi;
+    float At_a = alpha - phi;
 
     while (At_a>M_PI) At_a -= (float) M_2PI;
     while (At_a<-M_PI) At_a += (float) M_2PI;

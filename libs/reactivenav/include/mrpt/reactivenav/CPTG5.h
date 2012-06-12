@@ -57,7 +57,7 @@ namespace mrpt
 
 			bool PTG_IsIntoDomain( float x, float y );
 
-			void PTG_Generator( float alfa, float t,float x, float y, float phi, float &v, float &w );
+			void PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w );
 
 
 	 protected:
