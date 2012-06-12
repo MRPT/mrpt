@@ -34,6 +34,9 @@
  <hr>
  <a name="1.0.0">
   <h2>Version 1.0.0 - (Under development) </h2></a>
+	- Changes in apps:
+		- RawLogViewer: 
+			- Import sequence of images as rawlog: Didn't detect "png" file extension as images - <a href="http://code.google.com/p/mrpt/source/detail?r=2940" >r2940</a> - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=34" >#34</a>
 	- Changes in classes:
 		- [mrpt-base]
 			- mrpt::utils::CDynamicGrid::setSize() now also accepts a "fill_value" argument.
@@ -44,7 +47,7 @@
         - Update to nanoflann 1.1.3 - <a href="http://code.google.com/p/mrpt/source/detail?r=2937" >r2937</a>
 	- BUG FIXES:
 		- [mrpt-reactivenav] Class mrpt::reactivenav::CHolonomicVFF was not exported in Windows DLL's (Thanks Mariano for noticing!).
-		- [mrpt-reactivenav] Precomputed collision grids could be loaded in mrpt::reactivenav::CParameterizedTrajectoryGenerator even for different robot parameters/shape: now it correctly detects such situations and recompute when needed - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>
+		- [mrpt-reactivenav] Precomputed collision grids could be loaded in mrpt::reactivenav::CParameterizedTrajectoryGenerator even for different robot parameters/shape: now it correctly detects such situations and recompute when needed - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>  - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=33" >#33</a>
 
 
  <br>

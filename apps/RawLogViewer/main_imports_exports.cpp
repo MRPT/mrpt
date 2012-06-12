@@ -329,6 +329,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 			if ( !os::_strcmpi( "pgm",filExt.c_str() ) ||
 					!os::_strcmpi( "jpg",filExt.c_str() ) ||
 					!os::_strcmpi( "bmp",filExt.c_str() ) ||
+					!os::_strcmpi( "png",filExt.c_str() ) ||
 					!os::_strcmpi( "jpeg",filExt.c_str() ) ||
 					!os::_strcmpi( "tif",filExt.c_str() ) ||
 					!os::_strcmpi( "tiff",filExt.c_str() ) ||
