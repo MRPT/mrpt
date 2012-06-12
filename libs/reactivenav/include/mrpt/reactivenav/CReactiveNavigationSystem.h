@@ -245,11 +245,11 @@ namespace mrpt
 									vector_double						&out_TPObstacles);
 
 			void            STEP4_HolonomicMethod(
-									vector_double						&in_Obstacles,
-									poses::CPoint2D						&in_Target,
-									float								in_maxRobotSpeed,
-									THolonomicMovement					&out_selectedMovement,
-									CHolonomicLogFileRecordPtr			&in_HLFR );
+									const vector_double         & in_Obstacles,
+									const mrpt::math::TPoint2D  & in_Target,
+									const float                   in_maxRobotSpeed,
+									THolonomicMovement          & out_selectedMovement,
+									CHolonomicLogFileRecordPtr  & in_HLFR );
 
 			void            STEP5_Evaluator(
 									THolonomicMovement					&in_holonomicMovement,

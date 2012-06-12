@@ -152,6 +152,13 @@ namespace mrpt
 		#endif
 		}
 
+		/** Efficient and portable evaluation of the absolute difference of two unsigned integer values 
+		  * (but will also work for signed and floating point types) */
+		template <typename T> 
+		inline T abs_diff(const T a, const T b) {
+			return std::max(a,b) - std::min(a,b);
+		}
+
 		/** Rounds toward zero  */
 		template <typename T>
 		inline int fix(T x) { return  x>0 ? static_cast<int>(floor(static_cast<double>(x))) : static_cast<int>(ceil(static_cast<double>(x))) ; }

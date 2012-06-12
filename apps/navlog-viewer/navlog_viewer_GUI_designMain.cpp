@@ -488,7 +488,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		xs.reserve(nAlphas); ys.reserve(nAlphas);
 		for (size_t i=0;i<nAlphas;++i)
 		{
-			const double a = -M_PI + i*2*M_PI/double(nAlphas);
+			const double a = -M_PI + (i+0.5)*2*M_PI/double(nAlphas);
 			const double r = pI.TP_Obstacles[i];
 			xs.push_back(r*cos(a));
 			ys.push_back(r*sin(a));

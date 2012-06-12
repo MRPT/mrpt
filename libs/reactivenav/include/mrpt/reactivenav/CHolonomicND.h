@@ -42,6 +42,23 @@ namespace mrpt
 	 *  Nearness diagram (ND) navigation: collision avoidance in troublesome scenarios, IEEE Transactions on
 	 *   Robotics and Automation, Minguez, J. and Montano, L., vol. 20, no. 1, pp. 45-59, 2004.
 	 *
+	 * These are the optional parameters of the method which can be set by means of a configuration file (passed to the constructor or to CHolonomicND::initialize).
+	 *
+	 * \code
+	 * [ND_CONFIG]
+	 * factorWeights=1.0 0.5 2.0 0.4
+	 * // 1: Free space
+	 * // 2: Dist. in sectors
+	 * // 3: Closer to target (euclidean)
+	 * // 4: Hysteresis
+	 * WIDE_GAP_SIZE_PERCENT            = 0.50
+	 * MAX_SECTOR_DIST_FOR_D2_PERCENT   = 0.25
+	 * RISK_EVALUATION_SECTORS_PERCENT  = 0.25
+	 * RISK_EVALUATION_DISTANCE         = 0.15  // In normalized ps-meters [0,1]
+	 * TARGET_SLOW_APPROACHING_DISTANCE = 0.60  // For stop gradually
+	 * TOO_CLOSE_OBSTACLE               = 0.02  //In normalized ps-meters
+	 * \endcode
+	 *
 	 *  \sa CAbstractHolonomicReactiveMethod,CReactiveNavigationSystem
 	 *  \ingroup mrpt_reactivenav_grp
 	 */
@@ -65,8 +82,8 @@ namespace mrpt
 		   *  NOTE: With "pseudometers" we refer to the distance unit in TP-Space, thus:
 		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad · r)<sup>2</sup></code><br></center>
 		   */
-		 void  navigate(	poses::CPoint2D	&target,
-							vector_double	&obstacles,
+		 void  navigate(	const mrpt::math::TPoint2D &target,
+							const vector_double	&obstacles,
 							double			maxRobotSpeed,
 							double			&desiredDirection,
 							double			&desiredSpeed,
@@ -74,26 +91,26 @@ namespace mrpt
 
 		 /** The structure used to store a detected gap in obstacles.
 		   */
-        struct TGap
+		struct TGap
 		{
-                int		ini;
-                int		end;
-                double	entranceDistance;
-                double	maxDistance;
-                int		representative_sector;
-        };
+			unsigned int  ini;
+			unsigned int  end;
+			double        entranceDistance;
+			double        maxDistance;
+			unsigned int  representative_sector;
+		};
 
 		typedef std::vector<TGap> TGapArray;
 
 		/** The set of posible situations for each trajectory.
 		  */
-        enum TSituations
+		enum TSituations
 		{
-                SITUATION_TARGET_DIRECTLY = 1,
-                SITUATION_SMALL_GAP,
-                SITUATION_WIDE_GAP,
-                SITUATION_NO_WAY_FOUND
-                };
+			SITUATION_TARGET_DIRECTLY = 1,
+			SITUATION_SMALL_GAP,
+			SITUATION_WIDE_GAP,
+			SITUATION_NO_WAY_FOUND
+		};
 
 		 /**  Initialize the parameters of the navigator.
 		   */
@@ -101,10 +118,10 @@ namespace mrpt
 
 
 
-	 private:
-		 int	last_selected_sector;
+	private:
+		unsigned int m_last_selected_sector;
 
-		 int  direction2sector(double a, int N);
+		unsigned int direction2sector(const double a, const unsigned int N);
 
 		/** Configuration:
 		  */
@@ -116,41 +133,42 @@ namespace mrpt
 
 		/**  Find gaps in the obtacles.
 		  */
-        void  gapsEstimator(
-					vector_double		&obstacles,
-					poses::CPoint2D		&in_target,
-					TGapArray			&gaps );
+		void  gapsEstimator(
+			const vector_double         & obstacles,
+			const mrpt::math::TPoint2D  & in_target,
+			TGapArray                   & gaps );
 
 		/** Search the best gap.
 		  */
-        void  searchBestGap(
-					vector_double		&in_obstacles,
-					double				in_maxObsRange,
-					TGapArray			&in_gaps,
-					poses::CPoint2D		&in_target,
-					int					&out_selDirection,
-					double				&out_selEvaluation,
-					TSituations			&out_situation,
-					double				&out_riskEvaluation,
-					CLogFileRecord_NDPtr	log);
+		void  searchBestGap(
+			const vector_double         & in_obstacles,
+			const double                  in_maxObsRange,
+			const TGapArray             & in_gaps,
+			const mrpt::math::TPoint2D  & in_target,
+			unsigned int                & out_selDirection,
+			double                      & out_selEvaluation,
+			TSituations                 & out_situation,
+			double                      & out_riskEvaluation,
+			CLogFileRecord_NDPtr	      log);
 
 		/** Fills in the representative sector field in the gap structure:
 		  */
-        void  calcRepresentativeSectorForGap(
-					TGap					&gap,
-					const poses::CPoint2D	&target,
-					const vector_double		&obstacles);
+		void  calcRepresentativeSectorForGap(
+			TGap                        & gap,
+			const mrpt::math::TPoint2D  & target,
+			const vector_double         & obstacles);
 
 		/** Evaluate each gap:
 		  */
 		void  evaluateGaps(
-                    const vector_double	&in_obstacles,
-					const double			in_maxObsRange,
-					const TGapArray		&in_gaps,
-                    const int			TargetSector,
-                    const double			TargetDist,
-                    vector_double		&out_gaps_evaluation );
-	};
+			const vector_double & in_obstacles,
+			const double          in_maxObsRange,
+			const TGapArray     & in_gaps,
+			const unsigned int	  TargetSector,
+			const double          TargetDist,
+			vector_double       & out_gaps_evaluation );
+
+	}; // end of CHolonomicND
 
         /** A class for storing extra information about the execution of
 	 *    CHolonomicND navigation.
@@ -160,15 +178,15 @@ namespace mrpt
 	{
 		DEFINE_SERIALIZABLE( CLogFileRecord_ND )
 
-	 public:
+	public:
 		 /** Member data.
 		   */
-                vector_int				gaps_ini,gaps_end;
-				vector_double			gaps_eval;
-                int32_t                 selectedSector;
-                double                   evaluation;
-				double					riskEvaluation;
-                CHolonomicND::TSituations      situation;
+		vector_int				gaps_ini,gaps_end;
+		vector_double			gaps_eval;
+		int32_t                 selectedSector;
+		double                   evaluation;
+		double					riskEvaluation;
+		CHolonomicND::TSituations      situation;
 	};
 
   }

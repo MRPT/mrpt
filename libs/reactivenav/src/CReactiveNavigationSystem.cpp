@@ -863,11 +863,11 @@ void CReactiveNavigationSystem::STEP3_SpaceTransformer(
 
 *************************************************************************/
 void CReactiveNavigationSystem::STEP4_HolonomicMethod(
-    vector_double						&in_Obstacles,
-    mrpt::poses::CPoint2D						&in_Target,
-    float								in_maxRobotSpeed,
-    THolonomicMovement					&out_selectedMovement,
-    CHolonomicLogFileRecordPtr			&in_HLFR )
+	const vector_double         & in_Obstacles,
+	const mrpt::math::TPoint2D  & in_Target,
+    const float                   in_maxRobotSpeed,
+    THolonomicMovement          & out_selectedMovement,
+    CHolonomicLogFileRecordPtr  & in_HLFR )
 {
 	try
 	{

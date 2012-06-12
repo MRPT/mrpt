@@ -28,10 +28,6 @@
 
 #include <mrpt/reactivenav.h>  // Precomp header
 
-//#if defined(_MSC_VER)
-//	#pragma warning(disable:4267)
-//#endif
-
 #include <mrpt/poses/CPoint2D.h>
 
 using namespace mrpt;
@@ -46,10 +42,12 @@ IMPLEMENTS_SERIALIZABLE( CLogFileRecord_VFF, CHolonomicLogFileRecord,mrpt::react
 /*---------------------------------------------------------------
 						initialize
   ---------------------------------------------------------------*/
-CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE)
+CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE) :
+	TARGET_SLOW_APPROACHING_DISTANCE ( 0.10 ),
+	TARGET_ATTRACTIVE_FORCE          ( 20.0 )
 {
-    if (INI_FILE!=NULL)
-        initialize( *INI_FILE );
+	if (INI_FILE!=NULL)
+		initialize( *INI_FILE );
 }
 
 
@@ -58,19 +56,27 @@ CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE)
   ---------------------------------------------------------------*/
 void  CHolonomicVFF::initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
 {
+	MRPT_START
 
+	const std::string section("VFF_CONFIG");
+
+	// Load from config text:
+	MRPT_LOAD_CONFIG_VAR(TARGET_SLOW_APPROACHING_DISTANCE,double,  INI_FILE,section );
+	MRPT_LOAD_CONFIG_VAR(TARGET_ATTRACTIVE_FORCE,double,  INI_FILE,section );
+
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
 						navigate
   ---------------------------------------------------------------*/
 void  CHolonomicVFF::navigate(
-				poses::CPoint2D	&target,
-				vector_double	&obstacles,
-				double			maxRobotSpeed,
-				double			&desiredDirection,
-				double			&desiredSpeed,
-				CHolonomicLogFileRecordPtr &logRecord)
+	const mrpt::math::TPoint2D &target,
+	const vector_double	&obstacles,
+	double			maxRobotSpeed,
+	double			&desiredDirection,
+	double			&desiredSpeed,
+	CHolonomicLogFileRecordPtr &logRecord)
 {
 	// Create a log record for returning data.
 	if (logRecord)
@@ -78,38 +84,39 @@ void  CHolonomicVFF::navigate(
 		logRecord = CLogFileRecord_VFF::Create();
 	}
 
-        // Forces vector:
-        mrpt::poses::CPoint2D  resultantForce,instantaneousForce;
+	// Forces vector:
+	mrpt::poses::CPoint2D  resultantForce,instantaneousForce;
 
-        // Obstacles:
+	// Obstacles:
+	{
 		const size_t n = obstacles.size();
-        for (size_t i=0;i<n;i++)
-        {
-			double ang = M_PI *( -1 + 2*i/double(n) );
-
+		const double inc_ang = M_PI/n;
+		double ang = M_PI *( -1.0 + 2.0*(0.5)/n );
+		for (size_t i=0;i<n;i++, ang+=inc_ang )
+		{
 			// Compute force strength:
-			double mod = exp(- obstacles[i] );
+			const double mod = exp(- obstacles[i] );
 
 			// Add repulsive force:
 			instantaneousForce.x( -cos(ang) * mod );
 			instantaneousForce.y( -sin(ang) * mod );
 			resultantForce.AddComponents( instantaneousForce );
-        }
+		}
+	}
 
-        // Target:
-        double ang = atan2( target.y(), target.x() );
-        double mod = 20;
-        instantaneousForce.x( cos(ang) * mod );
-        instantaneousForce.y( sin(ang) * mod );
-        resultantForce.AddComponents( instantaneousForce );
+	// Target:
+	const double ang = atan2( target.y, target.x );
+	const double mod = TARGET_ATTRACTIVE_FORCE;
+	instantaneousForce.x( cos(ang) * mod );
+	instantaneousForce.y( sin(ang) * mod );
+	resultantForce.AddComponents( instantaneousForce );
 
-        // Result:
-        desiredDirection = atan2( resultantForce.y(), resultantForce.x() );
+	// Result:
+	desiredDirection = atan2( resultantForce.y(), resultantForce.x() );
 
 	// Speed control: Reduction factors
 	// ---------------------------------------------
-	double TARGET_SLOW_APPROACHING_DISTANCE = 0.05;
-	double targetNearnessFactor = min( 1.0, target.norm()/(2*TARGET_SLOW_APPROACHING_DISTANCE));
+	double targetNearnessFactor = std::min( 1.0, target.norm()/(2*TARGET_SLOW_APPROACHING_DISTANCE));
 	desiredSpeed = maxRobotSpeed * targetNearnessFactor;
 }
 
@@ -124,9 +131,7 @@ void  CLogFileRecord_VFF::writeToStream(CStream &out,int *version) const
 		*version = 0;
 	else
 	{
-
 	}
-
 }
 
 /*---------------------------------------------------------------
@@ -138,13 +143,9 @@ void  CLogFileRecord_VFF::readFromStream(CStream &in,int version)
 	{
 	case 0:
 		{
-
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
 	};
-
-
 }
 

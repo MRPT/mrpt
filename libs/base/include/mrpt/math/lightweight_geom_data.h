@@ -190,6 +190,9 @@ namespace math	{
 		   */
 		 void fromString(const std::string &s);
 		 static size_t size() { return 2; }
+
+		 /** Point norm. */
+		inline double norm() const	{ return sqrt(square(x)+square(y)); }
 	};
 
 	/**

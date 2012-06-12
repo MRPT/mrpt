@@ -28,10 +28,6 @@
 
 #include <mrpt/reactivenav.h>  // Precomp header
 
-//#if defined(_MSC_VER)
-//	#pragma warning(disable:4267)
-//#endif
-
 #include <mrpt/math.h>
 
 using namespace mrpt;
@@ -48,11 +44,18 @@ IMPLEMENTS_SERIALIZABLE( CLogFileRecord_ND, CHolonomicLogFileRecord,mrpt::reacti
 /**  Initialize the parameters of the navigator, from some
 *    configuration file, or default values if filename is set to NULL.
 */
-CHolonomicND::CHolonomicND(const mrpt::utils::CConfigFileBase *INI_FILE )
+CHolonomicND::CHolonomicND(const mrpt::utils::CConfigFileBase *INI_FILE ) :
+	m_last_selected_sector ( std::numeric_limits<unsigned int>::max() ),
+	// Default values:
+	WIDE_GAP_SIZE_PERCENT              ( 0.50 ),
+	MAX_SECTOR_DIST_FOR_D2_PERCENT     ( 0.25 ),
+	RISK_EVALUATION_SECTORS_PERCENT    ( 0.10 ),
+	RISK_EVALUATION_DISTANCE           ( 0.4  ),
+	TOO_CLOSE_OBSTACLE                 ( 0.15 ),
+	TARGET_SLOW_APPROACHING_DISTANCE   ( 0.60 )
 {
-	last_selected_sector = -1;
 	if (INI_FILE!=NULL)
-        initialize( *INI_FILE );
+		initialize( *INI_FILE );
 }
 
 /*---------------------------------------------------------------
@@ -60,19 +63,11 @@ CHolonomicND::CHolonomicND(const mrpt::utils::CConfigFileBase *INI_FILE )
   ---------------------------------------------------------------*/
 void  CHolonomicND::initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
 {
-    MRPT_START
+	MRPT_START
 
 	const std::string section("ND_CONFIG");
 
-	// Default values:
-	WIDE_GAP_SIZE_PERCENT               = 0.50f;
-	MAX_SECTOR_DIST_FOR_D2_PERCENT      = 0.25f;
-	RISK_EVALUATION_SECTORS_PERCENT     = 0.10f;
-	RISK_EVALUATION_DISTANCE            = 0.4f;
-	TOO_CLOSE_OBSTACLE                  = 0.15f;
-	TARGET_SLOW_APPROACHING_DISTANCE    = 0.20f;
-
-    // Load from config text:
+	// Load from config text:
 	MRPT_LOAD_CONFIG_VAR(WIDE_GAP_SIZE_PERCENT,double,  INI_FILE,section );
 	MRPT_LOAD_CONFIG_VAR(MAX_SECTOR_DIST_FOR_D2_PERCENT,double,  INI_FILE,section );
 	MRPT_LOAD_CONFIG_VAR(RISK_EVALUATION_SECTORS_PERCENT,double,  INI_FILE,section );
@@ -80,10 +75,10 @@ void  CHolonomicND::initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
 	MRPT_LOAD_CONFIG_VAR(TOO_CLOSE_OBSTACLE,double,  INI_FILE,section );
 	MRPT_LOAD_CONFIG_VAR(TARGET_SLOW_APPROACHING_DISTANCE,double,  INI_FILE,section );
 
-    INI_FILE.read_vector(section,"factorWeights", vector_double(0), factorWeights, true );
-    ASSERT_(factorWeights.size()==4);
+	INI_FILE.read_vector(section,"factorWeights", vector_double(0), factorWeights, true );
+	ASSERT_(factorWeights.size()==4);
 
-    MRPT_END
+	MRPT_END
 }
 
 
@@ -91,16 +86,16 @@ void  CHolonomicND::initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
 						Navigate
   ---------------------------------------------------------------*/
 void  CHolonomicND::navigate(
-				poses::CPoint2D	&target,
-				vector_double	&obstacles,
-				double			maxRobotSpeed,
-				double			&desiredDirection,
-				double			&desiredSpeed,
-				CHolonomicLogFileRecordPtr &logRecord)
+	const mrpt::math::TPoint2D &target,
+	const vector_double	&obstacles,
+	double			maxRobotSpeed,
+	double			&desiredDirection,
+	double			&desiredSpeed,
+	CHolonomicLogFileRecordPtr &logRecord)
 {
 	TGapArray			gaps;
 	TSituations			situation;
-	int					selectedSector;
+	unsigned int		selectedSector;
 	double				riskEvaluation;
 	CLogFileRecord_NDPtr log;
 	double				evaluation;
@@ -114,7 +109,7 @@ void  CHolonomicND::navigate(
 
 
 	// Search gaps:
-    gaps.clear();
+	gaps.clear();
 	gapsEstimator(	obstacles,
 					target,
 					gaps );
@@ -122,7 +117,7 @@ void  CHolonomicND::navigate(
 
 	// Select best gap:
 	searchBestGap(	obstacles,
-					1.0f,
+					1.0,
 					gaps,
 					target,
 					selectedSector,
@@ -151,7 +146,7 @@ void  CHolonomicND::navigate(
 		desiredSpeed = maxRobotSpeed * min(riskFactor,targetNearnessFactor);
 	}
 
-	last_selected_sector = selectedSector;
+	m_last_selected_sector = selectedSector;
 
 	// LOG --------------------------
 	if (log)
@@ -168,11 +163,11 @@ void  CHolonomicND::navigate(
 				log->gaps_end[i]  = gaps[i].end;
 			}
 		}
-        // Selection:
-        log->selectedSector = selectedSector;
-        log->evaluation = evaluation;
-        log->situation = situation;
-        log->riskEvaluation = riskEvaluation;
+		// Selection:
+		log->selectedSector = selectedSector;
+		log->evaluation = evaluation;
+		log->situation = situation;
+		log->riskEvaluation = riskEvaluation;
 	}
 }
 
@@ -181,210 +176,187 @@ void  CHolonomicND::navigate(
 						Find gaps in the obtacles.
   ---------------------------------------------------------------*/
 void  CHolonomicND::gapsEstimator(
-		vector_double		&obstacles,
-		poses::CPoint2D		&target,
-		TGapArray			&gaps_out )
+	const vector_double         & obstacles,
+	const mrpt::math::TPoint2D  & target,
+	TGapArray                   & gaps_out)
 {
-	unsigned int	i,n;
-	int				nMaximos=0;
-    double			MaximoAbsoluto = -100;
-	double			MinimoAbsoluto = 100;
-    vector_int		MaximoIdx;
-    vector_double	MaximoValor;
+	const size_t n = obstacles.size();
 
-    // Hacer una lista con los maximos de las distancias a obs:
-    // ----------------------------------------------------------
-	MaximoIdx.resize(obstacles.size());
-	MaximoValor.resize(obstacles.size());
-	n = obstacles.size();
+	// ===== Parameters =====
+	const double GAPS_MIN_RELATIVE_DEPTH = 0.1; // Minimum ratio gap_entrance_depth/max_depth_of_all_gaps for being considered as a gap.
+	const double GAPS_REMOVE_INNER_IF_INNER_WIDTH_RATIO_BELOW = 0.05;
+	const double GAPS_REMOVE_INNER_IF_OUTER_WIDTH_RATIO_BELOW = 0.25;
+	const double GAPS_MINIMUM_DEPTH_DIFFERENCES_RATIO = 0.1; // The ratio of overall_maximum_depth/overall_minimum_depth which will be the minimum significative difference in depth of two gaps for considering both the outer and the inner gap.
+// ======================
 
-    for (i=1;i<(n-1);i++)
-    {
-		// Actualizar max. y min. absolutos:
-		MaximoAbsoluto= max( MaximoAbsoluto, obstacles[i] );
-		MinimoAbsoluto= min( MinimoAbsoluto, obstacles[i] );
-
-		// Buscar maximos locales:
-		if ( ( obstacles[i] >= obstacles[i+1] &&
-			  obstacles[i] > obstacles[i-1] ) ||
-			  ( obstacles[i] > obstacles[i+1] &&
-			  obstacles[i] >= obstacles[i-1] ) )
-		{
-				MaximoIdx[nMaximos] = i;
-				MaximoValor[nMaximos++] = obstacles[i];
-		}
-    }
-
-    //  Crear GAPS:
-    // --------------------------------------------------------
-	TGapArray    gaps_temp;
-   	gaps_temp.reserve( 150 );
-
-	for (double factorUmbral = 0.975f;factorUmbral>=0.04f;factorUmbral-=0.05f)
+	// Find the maximum distances to obstacles:
+	// ----------------------------------------------------------
+	double overall_max_dist = std::numeric_limits<double>::min(), overall_min_dist = std::numeric_limits<double>::max();
+	for (size_t i=1;i<(n-1);i++)
 	{
-            double   umbral = factorUmbral* MaximoAbsoluto + (1.0f-factorUmbral)*MinimoAbsoluto;
-			bool	dentro = false;
-			int		sec_ini=0, sec_end;
-			double	maxDist=0;
+		mrpt::utils::keep_max(overall_max_dist, obstacles[i]);
+		mrpt::utils::keep_min(overall_min_dist, obstacles[i]);
+	}
 
-			for (i=0;i<n;i++)
+	//  Build list of "GAPS":
+	// --------------------------------------------------------
+	TGapArray gaps_temp;
+	gaps_temp.reserve( 150 );
+
+	for (double threshold_ratio = 0.975;threshold_ratio>=0.04;threshold_ratio-=0.05)
+	{
+			const double  dist_threshold = threshold_ratio* overall_max_dist + (1.0f-threshold_ratio)*overall_min_dist;
+			
+			bool    is_inside = false;
+			size_t  sec_ini=0, sec_end=0;
+			double  maxDist=0;
+
+			for (size_t i=0;i<n;i++)
 			{
-				if ( !dentro && (!i || obstacles[i]>=umbral) )
+				if ( !is_inside && (!i || obstacles[i]>=dist_threshold) )
 				{
 					sec_ini = i;
 					maxDist = obstacles[i];
-					dentro = true;
+					is_inside = true;
 				}
-				else if (dentro && (i==(n-1) || obstacles[i]<umbral ))
+				else if (is_inside && (i==(n-1) || obstacles[i]<dist_threshold ))
 				{
 					sec_end = i;
-					dentro = false;
+					is_inside = false;
 
 					if ( (sec_end-sec_ini) > 2 )
 					{
 						// Add new gap:
-						TGap	newGap;
+						gaps_temp.resize( gaps_temp.size() + 1 );
+						TGap	& newGap = *gaps_temp.rbegin();
+
 						newGap.ini				= sec_ini;
 						newGap.end				= sec_end;
 						newGap.entranceDistance = min( obstacles[sec_ini], obstacles[sec_end] );
 						newGap.maxDistance		= maxDist;
-
-						gaps_temp.push_back(newGap);
 					}
 				}
 
-				if (dentro) maxDist = max( maxDist, obstacles[i] );
+				if (is_inside) maxDist = std::max( maxDist, obstacles[i] );
 			}
 	}
 
-    // Proceso de eliminacion de huecos redundantes:
-    // -------------------------------------------------------------
-	std::vector<bool>	borrar_gap;
-	borrar_gap.resize( gaps_temp.size() );
-        for (i=0;i<gaps_temp.size();i++)
-			borrar_gap[i] = false;
+	// Remove redundant gaps:
+	// -------------------------------------------------------------
+	const size_t nTempGaps = gaps_temp.size();
 
+	std::vector<bool> delete_gaps;
+	delete_gaps.assign( nTempGaps, false);
 
-    // Eliminar huecos con muy poca profundidad si estan dentro de otros:
-	double	maxProfundidad = 0;
-	for (i=0;i<gaps_temp.size();i++)
-    {
-		double profundidad =
-				gaps_temp[i].maxDistance -
-				gaps_temp[i].entranceDistance;
-		maxProfundidad = max(maxProfundidad, profundidad);
+	// Remove gaps with a tiny depth
+	double max_depth = 0;
+	for (size_t i=0;i<nTempGaps;i++)
+	{
+		const double depth = gaps_temp[i].maxDistance - gaps_temp[i].entranceDistance;
+		mrpt::utils::keep_max(max_depth, depth);
 	}
 
-	for (i=0;i<gaps_temp.size();i++)
-    {
-		double profundidad =
-				gaps_temp[i].maxDistance -
-				gaps_temp[i].entranceDistance;
+	for (size_t i=0;i<nTempGaps;i++)
+	{
+		const double depth = gaps_temp[i].maxDistance - gaps_temp[i].entranceDistance;
+		if ( depth< max_depth * GAPS_MIN_RELATIVE_DEPTH )
+				delete_gaps[i]=true;
+	}
 
-		if ( profundidad< maxProfundidad / 10.0f )
-				borrar_gap[i]=true;
-    }
+	// If a gap is very narrow but it's inside another gap (a bit wider), then delete the former:
+	for (size_t i=0;i<nTempGaps;i++)
+	{
+		const unsigned int ini_i = gaps_temp[i].ini;
+		const unsigned int end_i = gaps_temp[i].end;
+		const unsigned int width_i = end_i - ini_i;
 
-
-	// Si es muy estrecho, pero hay uno casi igual pero UN POCO mas grande,
-	//  borrar el estrecho:
-    for (i=0;i<gaps_temp.size();i++)
-    {
-        int     ini_i = gaps_temp[i].ini;
-        int     fin_i = gaps_temp[i].end;
-		int		ancho_i = fin_i - ini_i;
-
-		if ( !borrar_gap[i] )
+		if ( !delete_gaps[i] )
 		{
-			for (unsigned int j=0;j<gaps_temp.size() && !borrar_gap[i];j++)
+			for (unsigned int j=0;j<nTempGaps;j++)
 			{
-				if (i!=j)
-				{
-					int     ini_j = gaps_temp[j].ini;
-					int     fin_j = gaps_temp[j].end;
-					int		ancho_j = fin_j - ini_j;
+				if (i==j || delete_gaps[j]) continue;
 
-					// j dentro de i y UN POCO mas grande nada mas:
-					if (	!borrar_gap[j] &&
-							ini_j>=ini_i &&
-							fin_j<=fin_i &&
-							ancho_i < (0.05f*n) &&
-							ancho_j < (0.25f*n)
-						)
-						borrar_gap[i] = true;
+				const unsigned int ini_j = gaps_temp[j].ini;
+				const unsigned int end_j = gaps_temp[j].end;
+				const unsigned int width_j = end_j - ini_j;
+
+				// "j" is inside "i" and only SLIGHTLY larger -> delete
+				if (ini_j>=ini_i && end_j<=end_i &&
+				    width_i < (GAPS_REMOVE_INNER_IF_INNER_WIDTH_RATIO_BELOW*n) && 
+				    width_j < (GAPS_REMOVE_INNER_IF_OUTER_WIDTH_RATIO_BELOW*n) )
+				{
+					delete_gaps[i] = true;
+					break;
 				}
 			}
 		}
 	}
 
-	// Si dentro tiene mas de 1, borrarlo:
-   for (i=0;i<gaps_temp.size();i++)
-    {
-        int     ini_i = gaps_temp[i].ini;
-        int     fin_i = gaps_temp[i].end;
-		int		nDentro = 0;
+	// Delete all gaps that have more than one inner gaps (and leave those inner ones!)
+	for (size_t i=0;i<nTempGaps;i++)
+	{
+		if (delete_gaps[i]) continue;
 
-		if ( !borrar_gap[i] )
+		const unsigned int ini_i = gaps_temp[i].ini;
+		const unsigned int end_i = gaps_temp[i].end;
+		unsigned int inner_gap_count = 0;
+
+		for (unsigned int j=0;j<nTempGaps;j++)
 		{
-			for (unsigned int j=0;j<gaps_temp.size();j++)
-			{
-				if (i!=j)
-				{
-					int     ini_j = gaps_temp[j].ini;
-					int     fin_j = gaps_temp[j].end;
+			if (i==j || delete_gaps[j]) continue;
 
-					// j dentro de i:
-					if (    !borrar_gap[j] &&
-							ini_j>=ini_i &&
-							fin_j<=fin_i ) nDentro++;
-				}
+			const unsigned int ini_j = gaps_temp[j].ini;
+			const unsigned int end_j = gaps_temp[j].end;
+
+			// j is_inside de i:
+			if (ini_j>=ini_i && end_j<=end_i ) 
+				if (++inner_gap_count>1) 
+					break;
+		}
+		if (inner_gap_count>1) delete_gaps[i] = true;
+	}
+
+	// If there're still 
+	const double MIN_GAPS_ENTR_DIST = (overall_max_dist-overall_min_dist) * GAPS_MINIMUM_DEPTH_DIFFERENCES_RATIO;
+	for (size_t i=0;i<nTempGaps;i++)
+	{
+		if (delete_gaps[i]) continue;
+
+		const double	   ent_i = gaps_temp[i].entranceDistance;
+		const unsigned int ini_i = gaps_temp[i].ini;
+		const unsigned int end_i = gaps_temp[i].end;
+
+		for (unsigned int j=0;j<nTempGaps;j++)
+		{
+			if (i==j || delete_gaps[j]) continue;
+
+			const double	ent_j = gaps_temp[j].entranceDistance;
+			const unsigned int ini_j = gaps_temp[j].ini;
+			const unsigned int end_j = gaps_temp[j].end;
+
+			// "j" is inside "i" and have almost the same entrance depths: -> delete "i"
+			if (ini_j>=ini_i && end_j<=end_i &&
+			    std::abs(ent_i-ent_j)< MIN_GAPS_ENTR_DIST )
+			{
+				delete_gaps[i]=true;
+				break;
 			}
-			if (nDentro>1) borrar_gap[i] = true;
 		}
 	}
 
+	// Copy as result only those gaps not marked for deletion:
+	// --------------------------------------------------------
+	gaps_out.clear();
+	gaps_out.reserve( nTempGaps/2 );
+	for (size_t i=0;i<nTempGaps;i++)
+	{
+		if (delete_gaps[i]) continue;
 
-	// Uno dentro de otro y practicamente a la misma altura: Eliminarlo tambien:
-   for (i=0;i<gaps_temp.size();i++)
-    {
-		if (!borrar_gap[i])
-		{
-            double	ent_i = gaps_temp[i].entranceDistance;
-            int     ini_i = gaps_temp[i].ini;
-            int     fin_i = gaps_temp[i].end;
+		// Compute the representative direction ("sector") for this gap:
+		calcRepresentativeSectorForGap( gaps_temp[i], target, obstacles);
 
-            double MIN_GAPS_ENTR_DIST = (MaximoAbsoluto-MinimoAbsoluto)/10.0f;
-
-            for (unsigned int j=0;j<gaps_temp.size() && !borrar_gap[i];j++)
-				if (i!=j)
-				{
-                    double	ent_j = gaps_temp[j].entranceDistance;
-                    int		ini_j = gaps_temp[j].ini;
-                    int		fin_j = gaps_temp[j].end;
-
-                    // j dentro de i y casi misma "altura":
-                    if (    !borrar_gap[j] &&
-							!borrar_gap[i] &&
-                            ini_j>=ini_i &&
-                            fin_j<=fin_i &&
-                            fabs(ent_i-ent_j)< MIN_GAPS_ENTR_DIST )
-                                    borrar_gap[i]=true;
-				}
-		}
-    }
-
-    // Copiar solo huecos no marcados para borrar:
-    // ---------------------------------------------------
-    gaps_out.clear();
-	gaps_out.reserve(15);
-    for (i=0;i<gaps_temp.size();i++)
-            if ( !borrar_gap[i] )
-			{
-				// Calcular direccion representativa:
-				calcRepresentativeSectorForGap( gaps_temp[i], target, obstacles);
-
-				gaps_out.push_back( gaps_temp[i] );
-			}
+		gaps_out.push_back( gaps_temp[i] );
+	}
 
 }
 
@@ -392,69 +364,67 @@ void  CHolonomicND::gapsEstimator(
 						Search the best gap.
   ---------------------------------------------------------------*/
 void  CHolonomicND::searchBestGap(
-			vector_double		&obstacles,
-			double				maxObsRange,
-			TGapArray			&in_gaps,
-			poses::CPoint2D		&target,
-			int					&out_selDirection,
-			double				&out_selEvaluation,
-			TSituations			&out_situation,
-			double				&out_riskEvaluation,
-			CLogFileRecord_NDPtr log)
+	const vector_double         & obstacles,
+	const double                  maxObsRange,
+	const TGapArray             & in_gaps,
+	const mrpt::math::TPoint2D  & target,
+	unsigned int                & out_selDirection,
+	double                      & out_selEvaluation,
+	TSituations                 & out_situation,
+	double                      & out_riskEvaluation,
+	CLogFileRecord_NDPtr	      log)
 {
-	// Para evaluar el risk:
-	unsigned int min_risk_eval_sector	= 0;
-	unsigned int max_risk_eval_sector	= obstacles.size()-1;
-	unsigned int TargetSector		= direction2sector(atan2(target.y(),target.x()),obstacles.size());
-	const double TargetDist	= std::max(0.01,target.norm());
+	// For evaluating the "risk":
+	unsigned int min_risk_eval_sector = 0;
+	unsigned int max_risk_eval_sector = obstacles.size()-1;
+	const unsigned int target_sector  = direction2sector(atan2(target.y,target.x),obstacles.size());
+	const double target_dist          = std::max(0.01,target.norm());
+	// (Risk is evaluated at the end, for all the situations)
 
-    // El "risk" se calcula al final para todos los casos.
+	// D1 : Straight path?
+	// --------------------------------------------------------
+	const int freeSectorsNearTarget = 10;  // 3
+	bool theyAreFree = true, caseD1 = false;
+	if (target_sector>static_cast<unsigned int>(freeSectorsNearTarget) &&
+		target_sector<static_cast<unsigned int>(obstacles.size()-freeSectorsNearTarget) )
+	{
+		for (int j=-freeSectorsNearTarget;j<=freeSectorsNearTarget;j++)
+				if (obstacles[ target_sector + j ]<0.95*target_dist)
+						theyAreFree = false;
+		caseD1 = theyAreFree;
+	}
 
-    // D1 : Camino directo?
-    // --------------------------------------------------------
-    const int freeSectorsNearTarget = 10;  // 3
-    bool theyAreFree = true, caseD1 = false;
-    if (TargetSector>(unsigned int)freeSectorsNearTarget &&
-		TargetSector<(unsigned int)(obstacles.size()-freeSectorsNearTarget) )
-    {
-        for (int j=-freeSectorsNearTarget;j<=freeSectorsNearTarget;j++)
-                if (obstacles[ TargetSector + j ]<0.95*TargetDist)
-                        theyAreFree = false;
-        caseD1 = theyAreFree;
-    }
+	if (caseD1)
+	{
+		// S1: Move straight towards target:
+		out_selDirection	= target_sector;
 
-    if (caseD1)
-    {
-        // S1: Camino libre hacia target:
-        out_selDirection	= TargetSector;
+		// In case of several paths, the shortest:
+		out_selEvaluation   =	1.0 + std::max( 0.0, (maxObsRange - target_dist) / maxObsRange );
+		out_situation		=	SITUATION_TARGET_DIRECTLY;
+	}
+	else
+	{
+		// Evaluate all gaps (if any):
+		vector_double  gaps_evaluation;
+		int            selected_gap		=-1;
+		double         selected_gap_eval	= -100;
 
-		// Si hay mas de una, la que llegue antes
-		out_selEvaluation   =	1.0 + std::max( 0.0, (maxObsRange - TargetDist) / maxObsRange );
-        out_situation		=	SITUATION_TARGET_DIRECTLY;
-    }
-    else
-    {
-        // Evaluar los GAPs (Si no hay ninguno, nada, claro):
-        vector_double	gaps_evaluation;
-        int				selected_gap		=-1;
-        double			selected_gap_eval	= -100;
-
-        evaluateGaps(
-                obstacles,
+		evaluateGaps(
+				obstacles,
 				maxObsRange,
-                in_gaps,
-                TargetSector,
-                TargetDist,
-                gaps_evaluation );
+				in_gaps,
+				target_sector,
+				target_dist,
+				gaps_evaluation );
 
 		if (log) log->gaps_eval = gaps_evaluation;
 
-        // D2: Hay algun gap que pase por detras del target?
-        //   ( y no este demasiado lejos):
-        // -------------------------------------------------
-        for ( unsigned int i=0;i<in_gaps.size();i++ )
-			if ( in_gaps[i].maxDistance >= TargetDist &&
-				 abs((int)(in_gaps[i].representative_sector-(int)TargetSector)) <= (int)floor(MAX_SECTOR_DIST_FOR_D2_PERCENT * obstacles.size()) )
+		// D2: is there any gap "beyond" the target (and not too far away)?
+		// -----------------------------------------------------------------
+		for ( unsigned int i=0;i<in_gaps.size();i++ )
+			if ( in_gaps[i].maxDistance >= target_dist &&
+				 abs((int)(in_gaps[i].representative_sector-(int)target_sector)) <= (int)floor(MAX_SECTOR_DIST_FOR_D2_PERCENT * obstacles.size()) )
 					if ( gaps_evaluation[i]>selected_gap_eval )
 					{
 						selected_gap_eval = gaps_evaluation[i];
@@ -462,66 +432,63 @@ void  CHolonomicND::searchBestGap(
 					}
 
 
-        // Coger el mejor GAP:
-        //  (Esto ya solo si no se ha cogido antes)
-        if ( selected_gap==-1 )
+		// Keep the best gaps (if none was picked up to this point)
+		if ( selected_gap==-1 )
 			for ( unsigned int i=0;i<in_gaps.size();i++ )
 				if ( gaps_evaluation[i]>selected_gap_eval )
 				{
-						selected_gap_eval = gaps_evaluation[i];
-						selected_gap = i;
+					selected_gap_eval = gaps_evaluation[i];
+					selected_gap = i;
 				}
-        //  D3:  No es suficientemente bueno? ( o no habia ninguno?)
-        // ------------------------------------------------------------
-        if ( selected_gap_eval <= 0 )
-        {
-            // S2: No way found
-            // ------------------------------------------------------
-            out_selDirection	= 0;
-            out_selEvaluation	= 0.0f; // La peor
-            out_situation		= SITUATION_NO_WAY_FOUND;
-        }
-        else
-        {
-            // El seleccionado:
-            TGap    gap = in_gaps[selected_gap];
+		//  D3: Wasn't a good enough gap (or there were none)?
+		// ------------------------------------------------------------
+		if ( selected_gap_eval <= 0 )
+		{
+			// S2: No way found
+			// ------------------------------------------------------
+			out_selDirection	= 0;
+			out_selEvaluation	= 0.0; // Worst case
+			out_situation		= SITUATION_NO_WAY_FOUND;
+		}
+		else
+		{
+			// The selected gap:
+			const TGap & gap = in_gaps[selected_gap];
 
-            int     sectors_to_be_wide = round( WIDE_GAP_SIZE_PERCENT * obstacles.size() );
+			const unsigned int sectors_to_be_wide = round( WIDE_GAP_SIZE_PERCENT * obstacles.size() );
 
-            out_selDirection	= in_gaps[selected_gap].representative_sector;
-            out_selEvaluation	= selected_gap_eval;
+			out_selDirection	= in_gaps[selected_gap].representative_sector;
+			out_selEvaluation	= selected_gap_eval;
 
-            // D4: Es un gap ancho?
-            // -----------------------------------------------------
-            if ( (gap.end-gap.ini) < sectors_to_be_wide )
-            {
-                    // S3: Small gap
-                    // -------------------------------------------
-                    out_situation	= SITUATION_SMALL_GAP;
-            }
-            else
-            {
-                    // S4: Wide gap
-                    // -------------------------------------------
-                    out_situation	= SITUATION_WIDE_GAP;
-            }
+			// D4: Is it a WIDE gap?
+			// -----------------------------------------------------
+			if ( (gap.end-gap.ini) < sectors_to_be_wide )
+			{
+				// S3: Narrow gap
+				// -------------------------------------------
+				out_situation	= SITUATION_SMALL_GAP;
+			}
+			else
+			{
+				// S4: Wide gap
+				// -------------------------------------------
+				out_situation	= SITUATION_WIDE_GAP;
+			}
 
-			// Que el risk no salga del gap:
+			// Evaluate the risk only within the gap:
 			min_risk_eval_sector = gap.ini;
 			max_risk_eval_sector = gap.end;
-        }
-    }
+		}
+	}
 
-    // Calcular minima distancia a obstaculos a corto plazo, en
-    //   un intervalo de sectores en torno al sector elegido:
-    int     ancho_sectores = round( RISK_EVALUATION_SECTORS_PERCENT * obstacles.size() );
-    int     sec_ini = max((int)min_risk_eval_sector, out_selDirection - ancho_sectores );
-    int     sec_fin = min((int)max_risk_eval_sector, out_selDirection + ancho_sectores );
+	// Evaluate short-term minimum distance to obstacles, in a small interval around the selected direction:
+	const unsigned int risk_eval_nsectors = round( RISK_EVALUATION_SECTORS_PERCENT * obstacles.size() );
+	const unsigned int sec_ini = std::max(min_risk_eval_sector, risk_eval_nsectors<out_selDirection ? out_selDirection-risk_eval_nsectors : 0 );
+	const unsigned int sec_fin = std::min(max_risk_eval_sector, out_selDirection + risk_eval_nsectors );
 
-    out_riskEvaluation = 0.0;
-    for (int i=sec_ini;i<=sec_fin;i++) out_riskEvaluation+= obstacles[ i ];
-    out_riskEvaluation /= (sec_fin - sec_ini + 1 );
-
+	out_riskEvaluation = 0.0;
+	for (unsigned int i=sec_ini;i<=sec_fin;i++) out_riskEvaluation+= obstacles[ i ];
+	out_riskEvaluation /= (sec_fin - sec_ini + 1 );
 }
 
 
@@ -530,16 +497,16 @@ void  CHolonomicND::searchBestGap(
 		field in the gap structure:
   ---------------------------------------------------------------*/
 void  CHolonomicND::calcRepresentativeSectorForGap(
-	TGap					&gap,
-	const poses::CPoint2D	&target,
-	const vector_double		&obstacles)
+	TGap                        & gap,
+	const mrpt::math::TPoint2D  & target,
+	const vector_double         & obstacles)
 {
-    int     sector;
-    int     sectors_to_be_wide = round( WIDE_GAP_SIZE_PERCENT * obstacles.size());
-	int		TargetSector = direction2sector( atan2(target.y(),target.x()), obstacles.size() );
+	int sector;
+	const unsigned int sectors_to_be_wide = round( WIDE_GAP_SIZE_PERCENT * obstacles.size());
+	const unsigned int target_sector = direction2sector( atan2(target.y,target.x), obstacles.size() );
 
-    if ( (gap.end-gap.ini) < sectors_to_be_wide )
-    {
+	if ( (gap.end-gap.ini) < sectors_to_be_wide )
+	{
 #if	1
 		sector = round(0.5f*gap.ini+0.5f*gap.end);
 #else
@@ -551,42 +518,25 @@ void  CHolonomicND::calcRepresentativeSectorForGap(
 			min_dist_obs_near_end = min(min_dist_obs_near_end, obstacles[i]);
 		sector = round((min_dist_obs_near_ini*gap.ini+min_dist_obs_near_end*gap.end)/(min_dist_obs_near_ini+min_dist_obs_near_end));
 #endif
-    }
-    else
-    {
-        // Para gaps anchos que NO contengan al target, cerca del borde
-        //  mas cercano a este:
-		//if ( TargetSector < gap.ini || TargetSector > gap.end )
-  //      {
-            int     dir;
-            int     dist_ini = abs( TargetSector - gap.ini );
-            int     dist_end = abs( TargetSector - gap.end );
-            if (dist_ini<dist_end) {
-                    sector = gap.ini;
-                    dir = +1; }
-            else {
-                    sector = gap.end;
-                    dir = -1; }
-            sector = sector + dir * sectors_to_be_wide/2 ;
-    //    }
-    //    else
-    //    {
-    //        // Es un valle ancho con el Target dentro:
-    //        // Buscar la maxima "distance" en un rango cerca del target:
-    //        int     ini = max( gap.ini, TargetSector - sectors_to_be_wide / 2 );
-    //        int     end = min( TargetSector + sectors_to_be_wide / 2, gap.end);
-
-    //        sector = TargetSector;
-    //        for (int i = ini;i<=end;i++)
-				//if ( obstacles[i] > obstacles[sector] )
-				//	sector = i;
-    //    }
-    }
+	}
+	else
+	{
+		const unsigned int dist_ini = mrpt::utils::abs_diff(target_sector, gap.ini );
+		const unsigned int dist_end = mrpt::utils::abs_diff(target_sector, gap.end );
+		int dir;
+		if (dist_ini<dist_end) {
+				sector = gap.ini;
+				dir = +1; }
+		else {
+				sector = gap.end;
+				dir = -1; }
+		sector = sector + dir * sectors_to_be_wide/2 ;
+	}
 
 	keep_max(sector, 0);
-	keep_min(sector, (int)obstacles.size()-1);
+	keep_min(sector, static_cast<int>(obstacles.size())-1 );
 
-    gap.representative_sector = sector;
+	gap.representative_sector = sector;
 }
 
 
@@ -598,85 +548,79 @@ void  CHolonomicND::evaluateGaps(
 	const vector_double	&obstacles,
 	const double		maxObsRange,
 	const TGapArray		&gaps,
-	const int			TargetSector,
-	const double		TargetDist,
+	const unsigned int	target_sector,
+	const double		target_dist,
 	vector_double		&out_gaps_evaluation )
 {
 	out_gaps_evaluation.resize( gaps.size());
 
-	double	targetAng = M_PI*(-1 + 2*(0.5+TargetSector)/double(obstacles.size()));
-	double	target_x =  TargetDist*cos(targetAng);
-	double	target_y =  TargetDist*sin(targetAng);
+	double	targetAng = M_PI*(-1 + 2*(0.5+target_sector)/double(obstacles.size()));
+	double	target_x =  target_dist*cos(targetAng);
+	double	target_y =  target_dist*sin(targetAng);
 
-    for (unsigned int i=0;i<gaps.size();i++)
-    {
-        // Para referenciarlo mas facilmente:
-        const TGap	*gap = &gaps[i];
+	for (unsigned int i=0;i<gaps.size();i++)
+	{
+		// Short cut:
+		const TGap *gap = &gaps[i];
 
-        double   d;
-        d = min( obstacles[ gap->representative_sector ],
-				min( maxObsRange,  0.95f*TargetDist) );
+		const double d = min3( 
+			obstacles[ gap->representative_sector ],
+			maxObsRange,
+			0.95*target_dist );
 
-		// Las coordenadas (en el TP-Space) representativas del gap:
-		double	phi = M_PI*(-1 + 2*(0.5+gap->representative_sector)/double(obstacles.size()));
-		double	x =  d*cos(phi);
-		double	y =  d*sin(phi);
+		// The TP-Space representative coordinates for this gap:
+		const double	phi = M_PI*(-1 + 2*(0.5+gap->representative_sector)/double(obstacles.size()));
+		const double	x =  d*cos(phi);
+		const double	y =  d*sin(phi);
 
-        // Factor 1: Distancia hasta donde llego por esta GPT:
-        // -----------------------------------------------------
-		double factor1;
-/*		if (gap->representative_sector == TargetSector )
-				factor1 = min(TargetDist,obstacles[gap->representative_sector]) / TargetDist;
-		else
-		{
-			if (TargetDist>1)
-					factor1 = obstacles[gap->representative_sector] / TargetDist;
-			else	factor1 = obstacles[gap->representative_sector];
-		}
-*/
+		// Factor #1: Maximum reachable distance with this PTG:
+		// -----------------------------------------------------
 		// Calcular la distancia media a donde llego por este gap:
 		double	meanDist = 0;
-		for (int j=gap->ini;j<=gap->end;j++)
+		for (unsigned int j=gap->ini;j<=gap->end;j++)
 			meanDist+= obstacles[j];
 		meanDist/= ( gap->end - gap->ini + 1);
 
-		if (abs(gap->representative_sector-TargetSector)<=1 && TargetDist<1)
-				factor1 = min(TargetDist,meanDist) / TargetDist;
-		else	factor1 = meanDist;
+		double factor1;
+		if (mrpt::utils::abs_diff(gap->representative_sector,target_sector)<=1 && target_dist<1)
+		      factor1 = std::min(target_dist,meanDist) / target_dist;
+		else  factor1 = meanDist;
 
-        // Factor 2: Distancia en sectores:
-        // -------------------------------------------
-        double   dif = fabs(((double)( TargetSector - gap->representative_sector )));
-//		if (dif> (0.5f*obstacles.size()) ) dif = obstacles.size() - dif;
-		// Solo si NO estan el target y el gap atravesando el alpha = "-pi" o "pi"
-		if (dif> (0.5f*obstacles.size()) && (TargetSector-0.5f*obstacles.size())*(gap->representative_sector-0.5f*obstacles.size())<0 )
+		// Factor #2: Distance to target in "sectors"
+		// -------------------------------------------
+		unsigned int dif = mrpt::utils::abs_diff(target_sector, gap->representative_sector );
+		// Handle the -PI,PI circular topology:
+		if (dif> (obstacles.size()/2) && (target_sector- obstacles.size()/2)*(gap->representative_sector-obstacles.size()/2)<0 )
 			dif = obstacles.size() - dif;
 
-        double   factor2= exp(-square( dif / (obstacles.size()/4))) ;
+		const double factor2= exp(-square( dif / (obstacles.size()*0.25))) ;
 
-        // Factor3: Para evitar cabeceos entre 2 o mas caminos que sean casi iguales:
-        // -------------------------------------------
-		double dist = (double)(abs(last_selected_sector - gap->representative_sector));
-		//
-		if (dist> (0.5f*obstacles.size()) ) dist = obstacles.size() - dist;
-
+		// Factor #4: Stabilizing factor (hysteresis) to avoid quick switch among very similar paths:
+		// -------------------------------------------
 		double factor_AntiCab;
-		if (last_selected_sector==-1)
-				factor_AntiCab = 0;
-		else	factor_AntiCab = (dist > 0.10f*obstacles.size()) ? 0.0f:1.0f;
+		if (m_last_selected_sector != std::numeric_limits<unsigned int>::max() )
+		{
+			unsigned int dist = mrpt::utils::abs_diff(m_last_selected_sector, gap->representative_sector);
+			if (dist> (obstacles.size()/2) )
+				dist = obstacles.size() - dist;
 
-        // Factor3: Minima distancia entre el segmento y el target:
-		//  Se valora negativamente el alejarse del target
-        // -----------------------------------------------------
+			factor_AntiCab = (dist > 0.10*obstacles.size()) ? 0.0:1.0;
+		}
+		else
+		{
+			factor_AntiCab = 0;
+		}
+
+		// Factor #3: Punish paths that take us far away wrt the target:
+		// -----------------------------------------------------
 		double	closestX,closestY;
-        double dist_eucl = math::minimumDistanceFromPointToSegment(
-					target_x,
-					target_y,
-					0,0,
-					x,y,
-					closestX,closestY);
+		double dist_eucl = math::minimumDistanceFromPointToSegment(
+			target_x, target_y, // Point
+			0,0,  x,y,          // Segment
+			closestX,closestY   // Out
+			);
 
-        double factor3=  ( maxObsRange - min(maxObsRange ,dist_eucl) ) / maxObsRange;
+		const double factor3=  ( maxObsRange - std::min(maxObsRange ,dist_eucl) ) / maxObsRange;
 
 		ASSERT_(factorWeights.size()==4);
 
@@ -687,17 +631,14 @@ void  CHolonomicND::evaluateGaps(
 				  factorWeights[1] * factor2 +
 				  factorWeights[2] * factor3 +
 				  factorWeights[3] * factor_AntiCab ) / (math::sum(factorWeights)) ;
-
 	} // for each gap
-
 }
 
-int  CHolonomicND::direction2sector(double a, int N)
+unsigned int CHolonomicND::direction2sector(const double a, const unsigned int N)
 {
- 		if (a>M_PI)  a-=(double)M_2PI;
-		if (a<-M_PI) a+=(double)M_2PI;
-
-		return round(0.5f*(N*(1+a/M_PI) - 1));
+	const int idx = round(0.5*(N*(1+ mrpt::math::wrapToPi(a)/M_PI) - 1));
+	if (idx<0) return 0;
+	else return static_cast<unsigned int>(idx);
 }
 
 /*---------------------------------------------------------------
@@ -743,10 +684,10 @@ void  CLogFileRecord_ND::readFromStream(CStream &in,int version)
 		} break;
 	case 1:
 		{
-		    uint32_t    n;
-            in >> gaps_ini >> gaps_end >> gaps_eval;
-            in >> selectedSector >> evaluation >> riskEvaluation >> n;
-            situation  = (CHolonomicND::TSituations) n;
+			uint32_t    n;
+			in >> gaps_ini >> gaps_end >> gaps_eval;
+			in >> selectedSector >> evaluation >> riskEvaluation >> n;
+			situation  = (CHolonomicND::TSituations) n;
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

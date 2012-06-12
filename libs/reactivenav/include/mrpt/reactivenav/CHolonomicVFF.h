@@ -54,6 +54,15 @@ namespace mrpt
 
 
 	/** A holonomic reactive navigation method, based on Virtual Force Fields (VFF).
+	 * 
+	 * These are the optional parameters of the method which can be set by means of a configuration file (passed to the constructor or to CHolonomicND::initialize).
+	 *
+	 * \code
+	 * [VFF_CONFIG]
+	 * TARGET_SLOW_APPROACHING_DISTANCE = 0.10  // For stop gradually
+	 * TARGET_ATTRACTIVE_FORCE          = 20    // Dimension-less (may have to be tuned depending on the density of obstacle sampling)
+	 * \endcode
+	 * 
 	 *  \sa CAbstractHolonomicReactiveMethod,CReactiveNavigationSystem
 	 */
 	class REACTIVENAV_IMPEXP CHolonomicVFF : public CAbstractHolonomicReactiveMethod
@@ -76,8 +85,8 @@ namespace mrpt
 		   *  NOTE: With "pseudometers" we refer to the distance unit in TP-Space, thus:
 		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad · r)<sup>2</sup></code><br></center>
 		   */
-		 void  navigate(	poses::CPoint2D	&target,
-							vector_double	&obstacles,
+		 void  navigate(	const mrpt::math::TPoint2D &target,
+							const vector_double	&obstacles,
 							double			maxRobotSpeed,
 							double			&desiredDirection,
 							double			&desiredSpeed,
@@ -86,6 +95,11 @@ namespace mrpt
 		 /**  Initialize the parameters of the navigator.
 		   */
 		 void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE  );
+
+	private:
+		double TARGET_SLOW_APPROACHING_DISTANCE;
+		double TARGET_ATTRACTIVE_FORCE;
+
 
 	};
   }

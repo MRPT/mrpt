@@ -60,8 +60,8 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const TPara
 	this->TAU			= params.has("system_TAU") ? params["system_TAU"] : 0;
 	this->DELAY			= params.has("system_DELAY") ? params["system_DELAY"] : 0;
 
-    m_alphaValuesCount=0;
-    nVertices = 0;
+	m_alphaValuesCount=0;
+	nVertices = 0;
 	turningRadiusReference = 0.10f;
 
 	initializeCollisionsGrid( refDistance, params["resolution"] );
@@ -125,14 +125,14 @@ void CParameterizedTrajectoryGenerator::allocMemForVerticesData( int nVertices )
 		vertexPoints_y.resize(m_alphaValuesCount);
 
 		// Alloc the exact number of items, all of them set to 0:
-        for (unsigned int i=0;i<m_alphaValuesCount;i++)
+		for (unsigned int i=0;i<m_alphaValuesCount;i++)
 		{
 			vertexPoints_x[i].resize( nVertices * getPointsCountInCPath_k(i), 0 );
 			vertexPoints_y[i].resize( nVertices * getPointsCountInCPath_k(i), 0 );
 		}
 
 		// Save it:
-        this->nVertices= nVertices;
+		this->nVertices= nVertices;
 }
 
 /*---------------------------------------------------------------
@@ -140,31 +140,31 @@ void CParameterizedTrajectoryGenerator::allocMemForVerticesData( int nVertices )
 	Solve trajectories and fill cells.
   ---------------------------------------------------------------*/
 void CParameterizedTrajectoryGenerator::simulateTrajectories(
-        uint16_t	    alphaValuesCount,
-        float			max_time,
-        float			max_dist,
-        unsigned int	max_n,
-        float			diferencial_t,
-        float			min_dist,
-        float			*out_max_acc_v,
-        float			*out_max_acc_w)
+		uint16_t	    alphaValuesCount,
+		float			max_time,
+		float			max_dist,
+		unsigned int	max_n,
+		float			diferencial_t,
+		float			min_dist,
+		float			*out_max_acc_v,
+		float			*out_max_acc_w)
 {
-        // Primero, liberar memoria:
-        FreeMemory();
+		// Primero, liberar memoria:
+		FreeMemory();
 
-        // The number of discreet values for ALPHA:
-        this->m_alphaValuesCount = alphaValuesCount;
+		// The number of discreet values for ALPHA:
+		this->m_alphaValuesCount = alphaValuesCount;
 
 		// Reserve the size in the buffers:
 		CPoints.resize( m_alphaValuesCount );
 
-        // Calcular maxima distancia del contorno del robot (para 1 calculo auxiliar)
-        float  radio_max_robot=1.0;    // Aprox.
+		// Calcular maxima distancia del contorno del robot (para 1 calculo auxiliar)
+		float  radio_max_robot=1.0;    // Aprox.
 
-        // Aux buffer:
+		// Aux buffer:
 		TCPointVector	points;
 
-        float          ult_dist, ult_dist1, ult_dist2;
+		float          ult_dist, ult_dist1, ult_dist2;
 
 		// For the grid:
 		float		   x_min = 1e3f, x_max = -1e3;
@@ -178,8 +178,8 @@ void CParameterizedTrajectoryGenerator::simulateTrajectories(
 
 	try
 	{
-        for (unsigned int k=0;k<m_alphaValuesCount;k++)
-        {
+		for (unsigned int k=0;k<m_alphaValuesCount;k++)
+		{
 			// Simulate / evaluate the trajectory selected by this "alpha":
 			// ------------------------------------------------------------
 			const float alpha = index2alpha( k );
@@ -303,11 +303,11 @@ void CParameterizedTrajectoryGenerator::simulateTrajectories(
 			// Save data to C-Space path structure:
 			CPoints[k] = points;
 
-        } // end for "k"
+		} // end for "k"
 
 		// Save accelerations
 		if (out_max_acc_v) *out_max_acc_v = max_acc_lin;
-        if (out_max_acc_w) *out_max_acc_w = max_acc_ang;
+		if (out_max_acc_w) *out_max_acc_w = max_acc_ang;
 
 		// --------------------------------------------------------
 		// Build the speeding-up grid for lambda function:
@@ -358,26 +358,26 @@ void CParameterizedTrajectoryGenerator::getCPointWhen_d_Is (
 		float		&y,
 		float		&phi,
 		float		&t,
-                float *v,
-                float *w)
+				float *v,
+				float *w)
 {
-        unsigned int     n=0;
+		unsigned int     n=0;
 
-        if (k>=m_alphaValuesCount)
+		if (k>=m_alphaValuesCount)
 		{
 			x=y=phi=0;
 			return;  // Por si acaso
 		}
 
 		while ( n < (CPoints[k].size()-1) && CPoints[k][n].dist<d )
-                n++;
+				n++;
 
-        x=CPoints[k][n].x;
-        y=CPoints[k][n].y;
-        phi=CPoints[k][n].phi;
-        t=CPoints[k][n].t;
-        if (v) *v =CPoints[k][n].v;
-        if (w) *w =CPoints[k][n].w;
+		x=CPoints[k][n].x;
+		y=CPoints[k][n].y;
+		phi=CPoints[k][n].phi;
+		t=CPoints[k][n].t;
+		if (v) *v =CPoints[k][n].v;
+		if (w) *w =CPoints[k][n].w;
 }
 
 /*---------------------------------------------------------------
@@ -572,7 +572,7 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 {
 	try
 	{
-        if (!f) return false;
+		if (!f) return false;
 
 		// Return false if the file contents doesn't match what we expected:
 		uint32_t file_magic;
@@ -616,13 +616,13 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 		if (desc!=expected_desc) return false;
 
 		// and standard PTG data:
-        float	  ff;
+		float	  ff;
 		uint16_t  nAlphaStored;
 		*f >> nAlphaStored; if (nAlphaStored!=m_parent->getAlfaValuesCount()) return false;
 		*f >> ff; if (ff!=m_parent->getMax_V()) return false;
 		*f >> ff; if (ff!=m_parent->getMax_W()) return false;
 
-        // Cell dimensions:
+		// Cell dimensions:
 		*f >> ff; if(ff!=m_x_min) return false;
 		*f >> ff; if(ff!=m_x_max) return false;
 		*f >> ff; if(ff!=m_y_min) return false;
@@ -641,7 +641,7 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 
 
 /*---------------------------------------------------------------
-                lambdaFunction
+				lambdaFunction
   ---------------------------------------------------------------*/
 void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k_out, float &d_out )
 {

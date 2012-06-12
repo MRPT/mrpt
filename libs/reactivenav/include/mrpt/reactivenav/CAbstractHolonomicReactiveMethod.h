@@ -57,8 +57,8 @@ namespace mrpt
 		   *  NOTE: With "pseudometers" we refer to the distance unit in TP-Space, thus:
 		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad · r)<sup>2</sup></code><br></center>
 		   */
-		 virtual void  navigate(	poses::CPoint2D	&target,
-								vector_double	&obstacles,
+		 virtual void  navigate(const mrpt::math::TPoint2D &target,
+								const vector_double	&obstacles,
 								double			maxRobotSpeed,
 								double			&desiredDirection,
 								double			&desiredSpeed,
