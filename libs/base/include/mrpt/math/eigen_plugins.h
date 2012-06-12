@@ -44,9 +44,9 @@ public:
 	typedef const Scalar* const_iterator;
 
 	EIGEN_STRONG_INLINE iterator begin() { return derived().data(); }
-	EIGEN_STRONG_INLINE iterator end()   { return &(derived().data()[size()-1]); }
+	EIGEN_STRONG_INLINE iterator end()   { return (&(derived().data()[size()-1]))+1; }
 	EIGEN_STRONG_INLINE const_iterator begin() const { return derived().data(); }
-	EIGEN_STRONG_INLINE const_iterator end() const   { return &(derived().data()[size()-1]); }
+	EIGEN_STRONG_INLINE const_iterator end() const   { return (&(derived().data()[size()-1]))+1; }
 
 	/** @} */
 
