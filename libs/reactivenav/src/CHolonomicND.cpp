@@ -47,11 +47,11 @@ IMPLEMENTS_SERIALIZABLE( CLogFileRecord_ND, CHolonomicLogFileRecord,mrpt::reacti
 CHolonomicND::CHolonomicND(const mrpt::utils::CConfigFileBase *INI_FILE ) :
 	m_last_selected_sector ( std::numeric_limits<unsigned int>::max() ),
 	// Default values:
+	TOO_CLOSE_OBSTACLE                 ( 0.15 ),
 	WIDE_GAP_SIZE_PERCENT              ( 0.50 ),
-	MAX_SECTOR_DIST_FOR_D2_PERCENT     ( 0.25 ),
 	RISK_EVALUATION_SECTORS_PERCENT    ( 0.10 ),
 	RISK_EVALUATION_DISTANCE           ( 0.4  ),
-	TOO_CLOSE_OBSTACLE                 ( 0.15 ),
+	MAX_SECTOR_DIST_FOR_D2_PERCENT     ( 0.25 ),
 	TARGET_SLOW_APPROACHING_DISTANCE   ( 0.60 )
 {
 	if (INI_FILE!=NULL)
