@@ -41,6 +41,11 @@
 		- [mrpt-base]
 			- mrpt::utils::CDynamicGrid::setSize() now also accepts a "fill_value" argument.
 			- Added method mrpt::math::TPoint2D::norm() for consistency with mrpt::math::TPoint3D
+		- [mrpt-maps]
+			- Better integration of point cloud classes with PCL: - <a href="http://code.google.com/p/mrpt/source/detail?r=2943" >r2943</a>
+				- mrpt::slam::CPointsMap::loadPCDFile()
+				- mrpt::slam::CPointsMap::setFromPCLPointCloud()
+				- mrpt::slam::CColouredPointsMap::setFromPCLPointCloudRGB()
 		- [mrpt-reactivenav]
 			- Much code of mrpt::reactivenav classes have undergone a clean-up, slight optimizations and a translation of old Spanish names/comments to English - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2942" >r2942</a>
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::CColisionGrid now has a more maintainable binary serialization format - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>

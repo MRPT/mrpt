@@ -50,7 +50,7 @@ namespace mrpt
 		 *  For different color schemes, see CColouredPointsMap::colorScheme
 		 *  Colors are defined in the range [0,1].
 		 * \sa mrpt::slam::CPointsMap, mrpt::slam::CMetricMap, mrpt::utils::CSerializable
-	  	 * \ingroup mrpt_maps_grp
+  		 * \ingroup mrpt_maps_grp
 		 */
 		class MAPS_IMPEXP CColouredPointsMap : public CPointsMap
 		{
@@ -273,13 +273,34 @@ namespace mrpt
 
 			 void resetPointsMinDist( float defValue = 2000.0f ); //!< Reset the minimum-observed-distance buffer for all the points to a predefined value
 
-            /** @name PCL library support
-                @{ */
+			/** @name PCL library support
+				@{ */
 
-            /** Save the point cloud as a PCL PCD file, in either ASCII or binary format \return false on any error */
-            virtual bool savePCDFile(const std::string &filename, bool save_as_binary) const;
+			/** Save the point cloud as a PCL PCD file, in either ASCII or binary format \return false on any error */
+			virtual bool savePCDFile(const std::string &filename, bool save_as_binary) const;
 
-            /** @} */
+			/** Loads a PCL point cloud (WITH RGB information) into this MRPT class (for clouds without RGB data, see CPointsMap::setFromPCLPointCloud() ).
+			  *  Usage example:
+			  *  \code
+			  *    pcl::PointCloud<pcl::PointXYZRGB> cloud;
+			  *    mrpt::slam::CColouredPointsMap       pc;
+			  *
+			  *    pc.setFromPCLPointCloudRGB(cloud);
+			  *  \endcode
+			  * \sa CPointsMap::setFromPCLPointCloud()
+			  */
+			template <class POINTCLOUD>
+			void setFromPCLPointCloudRGB(const POINTCLOUD &cloud)
+			{
+				const size_t N = cloud.points.size();
+				clear();
+				reserve(N);
+				const float f = 1.0f/255.0f;
+				for (size_t i=0;i<N;++i)
+					this->insertPoint(cloud.points[i].x,cloud.points[i].y,cloud.points[i].z,cloud.points[i].r*f,cloud.points[i].g*f,cloud.points[i].b*f);
+			}
+
+			/** @} */
 
 
 		protected:
@@ -294,7 +315,7 @@ namespace mrpt
 			virtual void  internal_clear();
 
 			/** @name Redefinition of PLY Import virtual methods from CPointsMap
-			    @{ */
+				@{ */
 			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
 			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
 			  */
@@ -305,7 +326,7 @@ namespace mrpt
 			/** @} */
 
 			/** @name Redefinition of PLY Export virtual methods from CPointsMap
-			    @{ */
+				@{ */
 			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
 			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
 			  */

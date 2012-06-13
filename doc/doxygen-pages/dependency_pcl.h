@@ -13,7 +13,10 @@ If available, it will provide the following functionality:
 - <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a> program: The --generate-pcd command.
 - In point map classes:
 	- mrpt::slam::CPointsMap::getPCLPointCloud() (*)
+	- mrpt::slam::CPointsMap::setFromPCLPointCloud() (*)
+	- mrpt::slam::CColouredPointsMap::getPCLPointCloudRGB() (*)
 	- mrpt::slam::CPointsMap::savePCDFile()
+	- mrpt::slam::CPointsMap::loadPCDFile()
 - In mrpt::slam::CObservation3DRangeScan (observations from 3D cameras, e.g. Kinect):
 	- mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImageInto() (*)
 - Read also: <a href="http://www.mrpt.org/Generating_3D_point_clouds_from_RGB_D_observations" >"Generating 3D point clouds from RGB+D observations"</a>.

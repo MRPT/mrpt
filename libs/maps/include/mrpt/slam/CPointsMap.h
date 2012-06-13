@@ -115,7 +115,7 @@ namespace slam
 
 		// --------------------------------------------
 		/** @name Pure virtual interfaces to be implemented by any class derived from CPointsMap
-		    @{ */
+			@{ */
 
 		/** Reserves memory for a given number of points: the size of the map does not change, it only reserves the memory.
 		  *  This is useful for situations where it is approximately known the final size of the map. This method is more
@@ -199,7 +199,7 @@ namespace slam
 			float   horizontalTolerance;	     //!< The tolerance in rads in pitch & roll for a laser scan to be considered horizontal, considered only when isPlanarMap=true (default=0).
 			float   maxDistForInterpolatePoints; //!< The maximum distance between two points to interpolate between them (ONLY when also_interpolate=true)
 
-   		 };
+		 };
 
 		TInsertionOptions insertionOptions; //!< The options used when inserting observations in the map
 
@@ -261,7 +261,7 @@ namespace slam
 
 		// --------------------------------------------------
 		/** @name File input/output methods
-		    @{ */
+			@{ */
 
 		/** Load from a text file. Each line should contain an "X Y" coordinate pair, separated by whitespaces.
 		 *   Returns false if any error occured, true elsewere.
@@ -296,8 +296,11 @@ namespace slam
 			save3D_to_text_file( fil );
 		}
 
-        /** Save the point cloud as a PCL PCD file, in either ASCII or binary format (requires MRPT built against PCL) \return false on any error */
-        virtual bool savePCDFile(const std::string &filename, bool save_as_binary) const;
+		/** Save the point cloud as a PCL PCD file, in either ASCII or binary format (requires MRPT built against PCL) \return false on any error */
+		virtual bool savePCDFile(const std::string &filename, bool save_as_binary) const;
+
+		/** Load the point cloud from a PCL PCD file (requires MRPT built against PCL) \return false on any error */
+		virtual bool loadPCDFile(const std::string &filename);
 
 		/** @} */ // End of: File input/output methods
 		// --------------------------------------------------
@@ -717,36 +720,57 @@ namespace slam
 		 */
 		virtual double computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
 
-        /** @name PCL library support
-            @{ */
+		/** @name PCL library support
+			@{ */
 
 
-        /** Use to convert this MRPT point cloud object into a PCL point cloud object.
-          *  Usage example:
-          *  \code
-          *    mrpt::slam::CPointsCloud       pc;
-          *    pcl::PointCloud<pcl::PointXYZ> cloud;
-          *
-          *    pc.getPCLPointCloud(cloud);
-          *  \endcode
-          */
-        template <class POINTCLOUD>
-        void getPCLPointCloud(POINTCLOUD &cloud) const
-        {
-            const size_t nThis = this->size();
-            // Fill in the cloud data
-            cloud.width    = nThis;
-            cloud.height   = 1;
-            cloud.is_dense = false;
-            cloud.points.resize(cloud.width * cloud.height);
-            for (size_t i = 0; i < nThis; ++i) {
-                cloud.points[i].x =this->x[i];
-                cloud.points[i].y =this->y[i];
-                cloud.points[i].z =this->z[i];
-            }
-        }
+		/** Use to convert this MRPT point cloud object into a PCL point cloud object.
+		  *  Usage example:
+		  *  \code
+		  *    mrpt::slam::CPointsCloud       pc;
+		  *    pcl::PointCloud<pcl::PointXYZ> cloud;
+		  *
+		  *    pc.getPCLPointCloud(cloud);
+		  *  \endcode
+		  * \sa setFromPCLPointCloud
+		  */
+		template <class POINTCLOUD>
+		void getPCLPointCloud(POINTCLOUD &cloud) const
+		{
+			const size_t nThis = this->size();
+			// Fill in the cloud data
+			cloud.width    = nThis;
+			cloud.height   = 1;
+			cloud.is_dense = false;
+			cloud.points.resize(cloud.width * cloud.height);
+			for (size_t i = 0; i < nThis; ++i) {
+				cloud.points[i].x =this->x[i];
+				cloud.points[i].y =this->y[i];
+				cloud.points[i].z =this->z[i];
+			}
+		}
 
-        /** @} */
+		/** Loads a PCL point cloud into this MRPT class (note: this method ignores potential RGB information, see CColouredPointsMap::setFromPCLPointCloudRGB() ).
+		  *  Usage example:
+		  *  \code
+		  *    pcl::PointCloud<pcl::PointXYZ> cloud;
+		  *    mrpt::slam::CPointsCloud       pc;
+		  *
+		  *    pc.setFromPCLPointCloud(cloud);
+		  *  \endcode
+		  * \sa getPCLPointCloud, CColouredPointsMap::setFromPCLPointCloudRGB()
+		  */
+		template <class POINTCLOUD>
+		void setFromPCLPointCloud(const POINTCLOUD &cloud)
+		{
+			const size_t N = cloud.points.size();
+			clear();
+			reserve(N);
+			for (size_t i=0;i<N;++i)
+				this->insertPointFast(cloud.points[i].x,cloud.points[i].y,cloud.points[i].z);
+		}
+
+		/** @} */
 
 		/** @name Methods that MUST be implemented by children classes of KDTreeCapable
 			@{ */

@@ -100,7 +100,7 @@ CPointsMap::~CPointsMap()
 /*---------------------------------------------------------------
 					save2D_to_text_file
   Save to a text file. In each line there are a point coordinates.
-    Returns false if any error occured, true elsewere.
+	Returns false if any error occured, true elsewere.
   ---------------------------------------------------------------*/
 bool  CPointsMap::save2D_to_text_file(const string &file) const
 {
@@ -117,7 +117,7 @@ bool  CPointsMap::save2D_to_text_file(const string &file) const
 /*---------------------------------------------------------------
 					save3D_to_text_file
   Save to a text file. In each line there are a point coordinates.
-    Returns false if any error occured, true elsewere.
+	Returns false if any error occured, true elsewere.
   ---------------------------------------------------------------*/
 bool  CPointsMap::save3D_to_text_file(const string &file) const
 {
@@ -135,7 +135,7 @@ bool  CPointsMap::save3D_to_text_file(const string &file) const
 /*---------------------------------------------------------------
 					load2Dor3D_from_text_file
   Load from a text file. In each line there are a point coordinates.
-    Returns false if any error occured, true elsewere.
+	Returns false if any error occured, true elsewere.
   ---------------------------------------------------------------*/
 bool  CPointsMap::load2Dor3D_from_text_file(
 	const std::string &file,
@@ -319,15 +319,15 @@ void  CPointsMap::clipOutOfRange(const CPoint2D	&point, float maxRange)
  covariance					  [OUT] The resulting matching covariance 3x3 matrix, or NULL if undesired.
   ---------------------------------------------------------------*/
 void  CPointsMap::computeMatchingWith2D(
-    const CMetricMap								*otherMap2,
-    const CPose2D									&otherMapPose_,
-    float									maxDistForCorrespondence,
-    float									maxAngularDistForCorrespondence,
-    const CPose2D									&angularDistPivotPoint,
-    TMatchingPairList						&correspondences,
-    float									&correspondencesRatio,
-    float									*sumSqrDist	,
-    bool									onlyKeepTheClosest,
+	const CMetricMap								*otherMap2,
+	const CPose2D									&otherMapPose_,
+	float									maxDistForCorrespondence,
+	float									maxAngularDistForCorrespondence,
+	const CPose2D									&angularDistPivotPoint,
+	TMatchingPairList						&correspondences,
+	float									&correspondencesRatio,
+	float									*sumSqrDist	,
+	bool									onlyKeepTheClosest,
 	bool									onlyUniqueRobust,
 	const size_t          decimation_other_map_points,
 	const size_t                            offset_other_map_points ) const
@@ -1041,15 +1041,15 @@ void CPointsMap::boundingBox(
 				computeMatchingWith3D
 ---------------------------------------------------------------*/
 void  CPointsMap::computeMatchingWith3D(
-    const CMetricMap						*otherMap2,
-    const CPose3D							&otherMapPose,
-    float									maxDistForCorrespondence,
-    float									maxAngularDistForCorrespondence,
-    const CPoint3D 							&angularDistPivotPoint,
-    TMatchingPairList						&correspondences,
-    float									&correspondencesRatio,
-    float									*sumSqrDist	,
-    bool									onlyKeepTheClosest,
+	const CMetricMap						*otherMap2,
+	const CPose3D							&otherMapPose,
+	float									maxDistForCorrespondence,
+	float									maxAngularDistForCorrespondence,
+	const CPoint3D 							&angularDistPivotPoint,
+	TMatchingPairList						&correspondences,
+	float									&correspondencesRatio,
+	float									*sumSqrDist	,
+	bool									onlyKeepTheClosest,
 	bool									onlyUniqueRobust,
 	const size_t          					decimation_other_map_points,
 	const size_t                            offset_other_map_points ) const
@@ -1454,15 +1454,32 @@ void  CPointsMap::addFrom(const CPointsMap &anotherMap)
 bool CPointsMap::savePCDFile(const std::string &filename, bool save_as_binary) const
 {
 #if MRPT_HAS_PCL
-    pcl::PointCloud<pcl::PointXYZ> cloud;
-    this->getPCLPointCloud(cloud);
+	pcl::PointCloud<pcl::PointXYZ> cloud;
+	this->getPCLPointCloud(cloud);
 
-    return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
+	return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
 
 #else
-    THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
+	THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
 #endif
 }
+
+/** Load the point cloud from a PCL PCD file (requires MRPT built against PCL) \return false on any error */
+bool CPointsMap::loadPCDFile(const std::string &filename)
+{
+#if MRPT_HAS_PCL
+	pcl::PointCloud<pcl::PointXYZ> cloud;
+	if (0!=pcl::io::loadPCDFile(filename,cloud))
+		return false;
+
+	this->getPCLPointCloud(cloud);
+
+	return true;
+#else
+	THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
+#endif
+}
+
 
 
 /*---------------------------------------------------------------
@@ -1558,7 +1575,7 @@ void  CPointsMap::base_copyFrom(const CPointsMap &obj)
  ---------------------------------------------------------------*/
 bool  CPointsMap::internal_insertObservation(
 	const CObservation	*obs,
-    const CPose3D *robotPose)
+	const CPose3D *robotPose)
 {
 	MRPT_START
 
