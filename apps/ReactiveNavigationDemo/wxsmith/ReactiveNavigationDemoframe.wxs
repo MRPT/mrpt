@@ -293,8 +293,8 @@
 				<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="edLog" member="yes">
 					<size>496,166</size>
 					<font>
-						<sysfont>wxSYS_OEM_FIXED_FONT</sysfont>
-						<relativesize>1.000000</relativesize>
+						<size>7</size>
+						<family>teletype</family>
 					</font>
 					<style>wxTE_MULTILINE|wxTE_READONLY|wxVSCROLL</style>
 				</object>

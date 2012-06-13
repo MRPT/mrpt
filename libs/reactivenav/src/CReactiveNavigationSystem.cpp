@@ -55,15 +55,15 @@ CReactiveNavigationSystem::CReactiveNavigationSystem(
 	logFile                      (NULL),
 	m_enableConsoleOutput        (enableConsoleOutput),
 	m_init_done                  (false),
+	nIteration                   (0),
+	meanExecutionPeriod          (0.1f),
+	m_timelogger                 (false), // default: disabled
 	meanExecutionTime            (0.1f),
 	meanTotalExecutionTime       (0.1f),
 	nLastSelectedPTG             (-1),
 	m_decimateHeadingEstimate    (0),
 	m_closing_navigator          (false)
 {
-	// Initialize some members:
-	nIteration			= 0;
-	meanExecutionPeriod	= 0.1f;
 	last_cmd_v			= 0;
 	last_cmd_w			= 0;
 
@@ -196,6 +196,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 		printf_debug(PTGs[n]->getDescription().c_str());
 
+		m_timelogger.enter("PTG.simulateTrajectories");
 		PTGs[n]->simulateTrajectories(
 		    nAlfas,					// alphas,
 		    75,						// max.tim,
@@ -203,7 +204,8 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 		    600,					// max.n,
 		    0.010f,					// diferencial_t
 		    0.015f					// min_dist
-		);
+			);
+		m_timelogger.leave("PTG.simulateTrajectories");
 
 		// Solo para depurar, hacer graficas, etc...
 		PTGs[n]->debugDumpInFiles(n);
@@ -241,9 +243,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	printf_debug("  Obstacles 'z' axis range \t= [%.03f,%.03f]\n", minObstaclesHeight, maxObstaclesHeight );
 	printf_debug("\n\n");
 
-
 	m_init_done = true;
-
 
 	MRPT_END
 }
@@ -360,6 +360,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 	// Lock
 	mrpt::synch::CCriticalSectionLocker lock( &m_critZoneNavigating );
 
+	m_timelogger.enter("navigationStep");
 	try
 	{
 		// Iterations count:
@@ -373,11 +374,15 @@ void  CReactiveNavigationSystem::performNavigationStep()
 		/* ----------------------------------------------------------------
 		 	  Request current robot pose and velocities
 		   ---------------------------------------------------------------- */
+		m_timelogger.enter("navigationStep.getCurrentPoseAndSpeeds");
 		if ( !m_robot.getCurrentPoseAndSpeeds(curPose, curVL, curW ) )
 		{
+			m_timelogger.leave("navigationStep.getCurrentPoseAndSpeeds");
+			m_timelogger.leave("navigationStep");
 			doEmergencyStop("ERROR calling m_robot.getCurrentPoseAndSpeeds, stopping robot and finishing navigation");
 			return;
 		}
+		m_timelogger.leave("navigationStep.getCurrentPoseAndSpeeds");
 
 		/* ----------------------------------------------------------------
 		 	  Have we reached the target location?
@@ -403,7 +408,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 				navigationEndEventSent = true;
 				m_robot.sendNavigationEndEvent();
 			}
-
+			m_timelogger.leave("navigationStep");
 			return;
 		}
 
@@ -422,6 +427,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 				std::cout << "\n--------------------------------------------\nWARNING: Timeout for approaching toward the target expired!! Aborting navigation!! \n---------------------------------\n";
 
 				m_navigationState = NAV_ERROR;
+				m_timelogger.leave("navigationStep");
 				return;
 			}
 		}
@@ -442,6 +448,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 			printf_debug("Warning: Error while sensing obstacles. Robot will be stopped.\n");
 			m_robot.stop();
 			m_navigationState = NAV_ERROR;
+			m_timelogger.leave("navigationStep");
 			return;
 		}
 
@@ -610,6 +617,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 			if ( !m_robot.changeSpeeds( cmd_v, cmd_w ) )
 			{
 				doEmergencyStop("\nERROR calling RobotMotionControl::changeSpeeds!! Stopping robot and finishing navigation\n");
+				m_timelogger.leave("navigationStep");
 				return;
 			}
 		}
@@ -652,6 +660,8 @@ void  CReactiveNavigationSystem::performNavigationStep()
 		// ---------------------------------------
 		// Generate log record
 		// ---------------------------------------
+		m_timelogger.enter("navigationStep.populate_log_info");
+
 		newLogRec.WS_Obstacles			= WS_Obstacles;
 		newLogRec.robotOdometryPose		= curPose;
 		newLogRec.WS_target_relative	= relTarget;
@@ -699,10 +709,14 @@ void  CReactiveNavigationSystem::performNavigationStep()
 			newLogRec.infoPerPTG.clear();
 		}
 
+		m_timelogger.leave("navigationStep.populate_log_info");
+
 		// --------------------------------------
 		//  Save to log file:
 		// --------------------------------------
+		m_timelogger.enter("navigationStep.write_log_file");
 		if (logFile) (*logFile) << newLogRec;
+		m_timelogger.leave("navigationStep.write_log_file");
 
 		// --------------------------------------
 		// Set as last log record
@@ -724,6 +738,7 @@ void  CReactiveNavigationSystem::performNavigationStep()
 		std::cout << "[CReactiveNavigationSystem::performNavigationStep] Unexpected exception!!:\n";
 	}
 
+	m_timelogger.leave("navigationStep");
 }
 
 /*************************************************************************
@@ -743,11 +758,15 @@ void CReactiveNavigationSystem::STEP1_CollisionGridsBuilder()
 		{
 			m_collisionGridsMustBeUpdated = false;
 
+			m_timelogger.enter("build_PTG_collision_grids");
+
 			mrpt::reactivenav::build_PTG_collision_grids(
 				PTGs,
 				m_robotShape,
 				format("ReacNavGrid_%s",robotName.c_str())
 				);
+
+			m_timelogger.leave("build_PTG_collision_grids");
 		}
 	}
 	catch (std::exception &e)
@@ -769,7 +788,13 @@ bool CReactiveNavigationSystem::STEP2_Sense(
 {
 	try
 	{
-		return m_robot.senseObstacles( out_obstacles );
+		m_timelogger.enter("navigationStep.STEP2_Sense");
+
+		const bool ret = m_robot.senseObstacles( out_obstacles );
+
+		m_timelogger.leave("navigationStep.STEP2_Sense");
+
+		return ret;
 	}
 	catch (std::exception &e)
 	{
@@ -800,6 +825,8 @@ void CReactiveNavigationSystem::STEP3_SpaceTransformer(
 {
 	try
 	{
+		m_timelogger.enter("navigationStep.STEP3_SpaceTransformer");
+
 		const size_t Ki = in_PTG->getAlfaValuesCount();
 
 		// Ver si hay espacio ya reservado en los TP-Obstacles:
@@ -839,14 +866,18 @@ void CReactiveNavigationSystem::STEP3_SpaceTransformer(
 		// Distances in TP-Space are normalized to [0,1]:
 		for (size_t i=0;i<Ki;i++)
 			out_TPObstacles[i] /= in_PTG->refDistance;
+
+		m_timelogger.leave("navigationStep.STEP3_SpaceTransformer");
 	}
 	catch (std::exception &e)
 	{
+		m_timelogger.leave("navigationStep.STEP3_SpaceTransformer");
 		printf_debug("[CReactiveNavigationSystem::STEP3_SpaceTransformer] Exception:");
 		printf_debug((char*)(e.what()));
 	}
 	catch (...)
 	{
+		m_timelogger.leave("navigationStep.STEP3_SpaceTransformer");
 		std::cout << "\n[CReactiveNavigationSystem::STEP3_SpaceTransformer] Unexpected exception!:\n";
 		std::cout << format("*in_PTG = %p\n", (void*)in_PTG );
 		if (in_PTG)
@@ -871,20 +902,26 @@ void CReactiveNavigationSystem::STEP4_HolonomicMethod(
 {
 	try
 	{
+		m_timelogger.enter("navigationStep.STEP4_HolonomicMethod");
+
 		holonomicMethod->navigate(	in_Target,
 		                           in_Obstacles,
 		                           in_maxRobotSpeed,
 		                           out_selectedMovement.direction,
 		                           out_selectedMovement.speed,
 		                           in_HLFR );
+
+		m_timelogger.leave("navigationStep.STEP4_HolonomicMethod");
 	}
 	catch (std::exception &e)
 	{
+		m_timelogger.leave("navigationStep.STEP4_HolonomicMethod");
 		printf_debug("[CReactiveNavigationSystem::STEP4_HolonomicMethod] Exception:");
 		printf_debug((char*)(e.what()));
 	}
 	catch (...)
 	{
+		m_timelogger.leave("navigationStep.STEP4_HolonomicMethod");
 		printf_debug("[CReactiveNavigationSystem::STEP4_HolonomicMethod] Unexpected exception!\n");
 	}
 }
@@ -902,10 +939,10 @@ void CReactiveNavigationSystem::STEP5_Evaluator(
     bool						wasSelectedInLast,
     CLogFileRecord::TInfoPerPTG	&log)
 {
-	int		DEBUG_POINT = 0;
-
 	try
 	{
+		m_timelogger.enter("navigationStep.STEP5_Evaluator");
+
 		float	a;
 		float	factor1, factor2,factor3,factor4,factor5,factor6;
 
@@ -913,21 +950,16 @@ void CReactiveNavigationSystem::STEP5_Evaluator(
 			a = atan2( TP_Target.y(), TP_Target.x());
 		else	a = 0;
 
-		DEBUG_POINT = 1;
 
 		const int		TargetSector = in_holonomicMovement.PTG->alpha2index( a );
 		const double	TargetDist = TP_Target.norm();
 		const int		kDirection = in_holonomicMovement.PTG->alpha2index( in_holonomicMovement.direction );
 		const double	refDist	   = in_holonomicMovement.PTG->refDistance;
 
-		DEBUG_POINT = 2;
-
 		// Las coordenadas en C-Space representativas de la trajectoria seleccionada:
 		float	x,y,phi,t,d;
 		d = min( in_TPObstacles[ kDirection ], 0.90f*TargetDist);
 		in_holonomicMovement.PTG->getCPointWhen_d_Is( d, kDirection,x,y,phi,t );
-
-		DEBUG_POINT = 3;
 
 		// Factor 1: Distancia hasta donde llego por esta GPT:
 		// -----------------------------------------------------
@@ -937,16 +969,12 @@ void CReactiveNavigationSystem::STEP5_Evaluator(
 		//			factor1 = 1 - TargetDist;				// Llego todo lo lejos q quiero ir!! :-)
 		//	else	factor1 = in_TPObstacles[kDirection];
 
-		DEBUG_POINT = 4;
-
 		// Factor 2: Distancia en sectores:
 		// -------------------------------------------
 		float   dif = fabs(((float)( TargetSector - kDirection )));
 		float	nSectors = (float)in_TPObstacles.size();
 		if ( dif > (0.5f*nSectors)) dif = nSectors - dif;
 		factor2= exp(-square( dif / (in_TPObstacles.size()/3.0f))) ;
-
-		DEBUG_POINT = 5;
 
 		// Factor 3: Angulo que hará el robot con target en (x,y):
 		// -----------------------------------------------------
@@ -957,8 +985,6 @@ void CReactiveNavigationSystem::STEP5_Evaluator(
 		while (t_ang<-M_PI)  t_ang+=(float)M_2PI;
 
 		factor3 = exp(-square( t_ang / (float)(0.5f*M_PI)) );
-
-		DEBUG_POINT = 5;
 
 		// Factor4:		DECREMENTO de la distancia euclidea entre (x,y) y target:
 		//  Se valora negativamente el alejarse del target
@@ -980,8 +1006,6 @@ void CReactiveNavigationSystem::STEP5_Evaluator(
 		//	factor4 = min(2*refDist2,max(0,decrementDistanc + refDist2)) / (2*refDist2);
 		//  factor4=  (refDist2 - min( refDist2, dist_eucl ) ) / refDist2;
 
-		DEBUG_POINT = 6;
-
 		// Factor5: Histeresis:
 		// -----------------------------------------------------
 		float	want_v,want_w;
@@ -993,13 +1017,9 @@ void CReactiveNavigationSystem::STEP5_Evaluator(
 		factor5 = min( likely_v,likely_w );
 		//factor5 = wasSelectedInLast ? 1:0;
 
-		DEBUG_POINT = 7;
-
 		// Factor6: Security distance !!
 		// -----------------------------------------------------
 		factor6 = 0;
-
-		DEBUG_POINT = 8;
 
 		// --------------------
 		//  SAVE LOG
@@ -1011,8 +1031,6 @@ void CReactiveNavigationSystem::STEP5_Evaluator(
 		log.evalFactors[3] = factor4;
 		log.evalFactors[4] = factor5;
 		log.evalFactors[5] = factor6;
-
-		DEBUG_POINT = 9;
 
 		if (in_holonomicMovement.speed==0)
 		{
@@ -1044,16 +1062,17 @@ void CReactiveNavigationSystem::STEP5_Evaluator(
 			}
 		}
 
-		DEBUG_POINT = 10;
+		m_timelogger.leave("navigationStep.STEP5_Evaluator");
 	}
 	catch (std::exception &e)
 	{
+		m_timelogger.leave("navigationStep.STEP5_Evaluator");
 		THROW_STACKED_EXCEPTION(e);
 	}
 	catch (...)
 	{
+		m_timelogger.leave("navigationStep.STEP5_Evaluator");
 		std::cout << "[CReactiveNavigationSystem::STEP5_Evaluator] Unexpected exception!:\n";
-		std::cout << format("DEBUG_POINT = %u\n",DEBUG_POINT );
 	}
 
 }
@@ -1068,6 +1087,8 @@ void CReactiveNavigationSystem::STEP6_Selector(
     THolonomicMovement					&out_selected,
     int									&out_nSelectedPTG)
 {
+	m_timelogger.enter("navigationStep.STEP6_Selector");
+
 	// Si no encontramos nada mejor, es que no hay movimiento posible:
 	out_selected.direction= 0;
 	out_selected.speed = 0;
@@ -1087,6 +1108,8 @@ void CReactiveNavigationSystem::STEP6_Selector(
 			out_nSelectedPTG = i;
 		}
 	}
+
+	m_timelogger.leave("navigationStep.STEP6_Selector");
 }
 
 /*************************************************************************
@@ -1101,6 +1124,8 @@ void CReactiveNavigationSystem::STEP7_NonHolonomicMovement(
 {
 	try
 	{
+		m_timelogger.enter("navigationStep.STEP7_NonHolonomicMovement");
+
 		if (in_movement.speed==0)
 		{
 			// The robot will stop:
@@ -1138,14 +1163,17 @@ void CReactiveNavigationSystem::STEP7_NonHolonomicMovement(
 				out_w *= F;
 			}
 		}
+		m_timelogger.leave("navigationStep.STEP7_NonHolonomicMovement");
 	}
 	catch (std::exception &e)
 	{
+		m_timelogger.leave("navigationStep.STEP7_NonHolonomicMovement");
 		printf_debug("[CReactiveNavigationSystem::STEP7_NonHolonomicMovement] Exception:");
 		printf_debug((char*)(e.what()));
 	}
 	catch (...)
 	{
+		m_timelogger.leave("navigationStep.STEP7_NonHolonomicMovement");
 		printf_debug("[CReactiveNavigationSystem::STEP7_NonHolonomicMovement] Unexpected exception!\n");
 	}
 }

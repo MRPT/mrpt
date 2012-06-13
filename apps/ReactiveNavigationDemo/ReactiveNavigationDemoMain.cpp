@@ -35,7 +35,6 @@
 #define SIMULATION_TIME_STEPS   100
 
 //(*InternalHeaders(ReactiveNavigationDemoFrame)
-#include <wx/settings.h>
 #include <wx/string.h>
 #include <wx/intl.h>
 #include <wx/font.h>
@@ -186,7 +185,7 @@ public:
 	{
 
 	}
-	
+
 	ReactiveNavigationDemoFrame *the_frame;
 };
 
@@ -257,7 +256,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
     wxFlexGridSizer* FlexGridSizer3;
     wxFlexGridSizer* FlexGridSizer5;
     wxStaticBoxSizer* StaticBoxSizer1;
-    
+
     Create(parent, id, _("Reactive Navigation Demo - Part of the MRPT project - J.L. Blanco (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     {
     wxIcon FrameIcon;
@@ -349,9 +348,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
     plot = new mpWindow(this,ID_CUSTOM1,wxPoint(192,240),wxSize(496,346),0);
     FlexGridSizer1->Add(plot, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     edLog = new wxTextCtrl(this, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(496,166), wxTE_MULTILINE|wxTE_READONLY|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-    wxFont edLogFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
-    if ( !edLogFont.Ok() ) edLogFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
-    edLogFont.SetPointSize((int)(edLogFont.GetPointSize() * 1.000000));
+    wxFont edLogFont(7,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edLog->SetFont(edLogFont);
     FlexGridSizer1->Add(edLog, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     SetSizer(FlexGridSizer1);
@@ -366,7 +363,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-    
+
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnStartClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnPauseClick);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnExitClick);
@@ -567,6 +564,8 @@ void ReactiveNavigationDemoFrame::tryConstructReactiveNavigator()
 				myReactiveInterface,
 				true,
 				ENABLE_reactivenav_LOG_FILES );
+
+			reacNavObj->enableTimeLog();
 		}
 
 		// Reload config:
@@ -735,7 +734,9 @@ void ReactiveNavigationDemoFrame::OntimSimulateTrigger(wxTimerEvent& event)
 	// Navigation end?
 	if (reacNavObj->getCurrentState() != CAbstractReactiveNavigationSystem::NAVIGATING )
 	{
-		cout << "NAVIGATION FINISHED - Select a new target and press 'Start' again." << endl;
+		reacNavObj->getTimeLogger().dumpAllStats();
+
+		cout << endl << "NAVIGATION FINISHED - Select a new target and press 'Start' again." << endl;
 		wxCommandEvent dummy;
 		OnbtnPauseClick( dummy );
 		IamIN=false;

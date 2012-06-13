@@ -32,6 +32,7 @@
 #include <mrpt/poses.h>
 #include <mrpt/math.h>
 #include <mrpt/synch.h>
+#include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/reactivenav/link_pragmas.h>
 
 #include "CAbstractReactiveNavigationSystem.h"
@@ -139,6 +140,15 @@ namespace mrpt
 			  */
 			void enableLogFile(bool enable);
 
+			/** Enables/disables the detailed time logger (default:disabled upon construction)
+			  *  When enabled, a report will be dumped to std::cout upon destruction.
+			  * \sa getTimeLogger
+			  */
+			void enableTimeLog(bool enable=true) { m_timelogger.enable(true); }
+
+			/** Gives access to a const-ref to the internal time logger \sa enableTimeLog */
+			const mrpt::utils::CTimeLogger & getTimeLogger() const { return m_timelogger; }
+
 		private:
 			// ------------------------------------------------------
 			//					PRIVATE DEFINITIONS
@@ -198,6 +208,7 @@ namespace mrpt
 
 			unsigned long	nIteration;	//!< The iteration count.
 			float			meanExecutionPeriod;	//!< Runtime estimation of execution period of the method.
+			mrpt::utils::CTimeLogger  m_timelogger; //!< A complete time logger \sa enableTimeLog()
 
 
 			/** For sending an alarm (error event) when it seems that we are not approaching toward the target in a while...
