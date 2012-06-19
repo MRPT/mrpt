@@ -35,8 +35,10 @@
  <a name="1.0.0">
   <h2>Version 1.0.0 - (Under development) </h2></a>
 	- Changes in apps:
-		- RawLogViewer: 
+		- RawLogViewer:
 			- Import sequence of images as rawlog: Didn't detect "png" file extension as images - <a href="http://code.google.com/p/mrpt/source/detail?r=2940" >r2940</a> - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=34" >#34</a>
+		- navlog-viewer:
+			- Fixed some minor visualization errors.
 	- Changes in classes:
 		- [mrpt-base]
 			- mrpt::utils::CDynamicGrid::setSize() now also accepts a "fill_value" argument.

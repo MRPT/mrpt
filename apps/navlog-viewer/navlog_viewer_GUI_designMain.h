@@ -90,6 +90,8 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
         static const long ID_STATICTEXT3;
         static const long ID_STATICTEXT4;
         static const long ID_STATICTEXT5;
+        static const long ID_STATICTEXT6;
+        static const long ID_STATICTEXT7;
         static const long ID_PANEL3;
         static const long ID_BUTTON6;
         static const long ID_PANEL1;
@@ -103,6 +105,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
         wxPanel* Panel1;
         wxTextCtrl* edLogFile;
         wxButton* btnPlay;
+        wxStaticText* txtSelectedPTG;
         wxStaticText* StaticText1;
         wxFlexGridSizer* FlexGridSizer9;
         wxStaticText* StaticText3;
@@ -111,6 +114,7 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
         wxTimer timPlay;
         wxCustomButton* btnLoad;
         wxPanel* Panel3;
+        wxStaticText* StaticText4;
         wxStaticText* StaticText2;
         wxStaticText* txtLogDuration;
         wxTimer timAutoload;

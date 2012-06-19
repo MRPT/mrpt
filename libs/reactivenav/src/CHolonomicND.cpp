@@ -206,7 +206,7 @@ void  CHolonomicND::gapsEstimator(
 	for (double threshold_ratio = 0.975;threshold_ratio>=0.04;threshold_ratio-=0.05)
 	{
 			const double  dist_threshold = threshold_ratio* overall_max_dist + (1.0f-threshold_ratio)*overall_min_dist;
-			
+
 			bool    is_inside = false;
 			size_t  sec_ini=0, sec_end=0;
 			double  maxDist=0;
@@ -282,7 +282,7 @@ void  CHolonomicND::gapsEstimator(
 
 				// "j" is inside "i" and only SLIGHTLY larger -> delete
 				if (ini_j>=ini_i && end_j<=end_i &&
-				    width_i < (GAPS_REMOVE_INNER_IF_INNER_WIDTH_RATIO_BELOW*n) && 
+				    width_i < (GAPS_REMOVE_INNER_IF_INNER_WIDTH_RATIO_BELOW*n) &&
 				    width_j < (GAPS_REMOVE_INNER_IF_OUTER_WIDTH_RATIO_BELOW*n) )
 				{
 					delete_gaps[i] = true;
@@ -309,14 +309,14 @@ void  CHolonomicND::gapsEstimator(
 			const unsigned int end_j = gaps_temp[j].end;
 
 			// j is_inside de i:
-			if (ini_j>=ini_i && end_j<=end_i ) 
-				if (++inner_gap_count>1) 
+			if (ini_j>=ini_i && end_j<=end_i )
+				if (++inner_gap_count>1)
 					break;
 		}
 		if (inner_gap_count>1) delete_gaps[i] = true;
 	}
 
-	// If there're still 
+	// If there're still
 	const double MIN_GAPS_ENTR_DIST = (overall_max_dist-overall_min_dist) * GAPS_MINIMUM_DEPTH_DIFFERENCES_RATIO;
 	for (size_t i=0;i<nTempGaps;i++)
 	{
@@ -388,8 +388,10 @@ void  CHolonomicND::searchBestGap(
 	if (target_sector>static_cast<unsigned int>(freeSectorsNearTarget) &&
 		target_sector<static_cast<unsigned int>(obstacles.size()-freeSectorsNearTarget) )
 	{
+		//const double min_free_dist = std::min(1.05*target_dist, 0.95*maxObsRange);
+		const double min_free_dist = 0.95*target_dist;
 		for (int j=-freeSectorsNearTarget;j<=freeSectorsNearTarget;j++)
-				if (obstacles[ target_sector + j ]<0.95*target_dist)
+				if (obstacles[ target_sector + j ]<min_free_dist)
 						theyAreFree = false;
 		caseD1 = theyAreFree;
 	}
@@ -563,7 +565,7 @@ void  CHolonomicND::evaluateGaps(
 		// Short cut:
 		const TGap *gap = &gaps[i];
 
-		const double d = min3( 
+		const double d = min3(
 			obstacles[ gap->representative_sector ],
 			maxObsRange,
 			0.95*target_dist );

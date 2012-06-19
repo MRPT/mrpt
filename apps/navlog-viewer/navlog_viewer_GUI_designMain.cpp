@@ -76,6 +76,8 @@ const long navlog_viewer_GUI_designDialog::ID_STATICTEXT2 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT3 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT4 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_STATICTEXT5 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_STATICTEXT6 = wxNewId();
+const long navlog_viewer_GUI_designDialog::ID_STATICTEXT7 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_PANEL3 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_BUTTON6 = wxNewId();
 const long navlog_viewer_GUI_designDialog::ID_PANEL1 = wxNewId();
@@ -195,6 +197,10 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     FlexGridSizer9->Add(StaticText3, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     txtLogDuration = new wxStaticText(Panel3, ID_STATICTEXT5, _("0"), wxDefaultPosition, wxSize(80,-1), 0, _T("ID_STATICTEXT5"));
     FlexGridSizer9->Add(txtLogDuration, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText4 = new wxStaticText(Panel3, ID_STATICTEXT6, _("Selected PTG:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT6"));
+    FlexGridSizer9->Add(StaticText4, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+    txtSelectedPTG = new wxStaticText(Panel3, ID_STATICTEXT7, _("-"), wxDefaultPosition, wxSize(80,-1), 0, _T("ID_STATICTEXT7"));
+    FlexGridSizer9->Add(txtSelectedPTG, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel3->SetSizer(FlexGridSizer9);
     FlexGridSizer9->Fit(Panel3);
     FlexGridSizer9->SetSizeHints(Panel3);
@@ -414,6 +420,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 	CLogFileRecordPtr logptr = CLogFileRecordPtr(m_logdata[i]);
 	const CLogFileRecord &log = *logptr;
 
+	txtSelectedPTG->SetLabel( wxString::Format(_("%u from [0-%u]"), static_cast<unsigned int>(log.nSelectedPTG), static_cast<unsigned int>(log.nPTGs-1) ) );
+
 	// Draw WS-obstacles
 	// --------------------------------
 	{
@@ -450,7 +458,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			const static int W = 290;
 			const static int H = 270;
 
-			win= CDisplayWindowPlots::Create(format("PT-Obstacles [%s]",log.infoPerPTG[nPTG].PTG_desc.c_str()),W,H);
+			win= CDisplayWindowPlots::Create(format("%u|TP-Obstacles [%s]",nPTG,log.infoPerPTG[nPTG].PTG_desc.c_str()),W,H);
 			win->setPos(20+(W+30)*nPTG, 380);
 			win->axis(-1,1,-1,1, true);
 
@@ -476,7 +484,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		xs.resize(2);
 		ys.resize(2);
 		xs[0] = 0; ys[0] = 0;
-		const double aDir = pI.desiredDirection*2*M_PI/double(nAlphas);
+		const double aDir = pI.desiredDirection;
 		xs[1] = 0.8*cos(aDir);
 		ys[1] = 0.8*sin(aDir);
 

@@ -197,6 +197,23 @@
 																<border>5</border>
 																<option>1</option>
 															</object>
+															<object class="sizeritem">
+																<object class="wxStaticText" name="ID_STATICTEXT6" variable="StaticText4" member="yes">
+																	<label>Selected PTG:</label>
+																</object>
+																<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxStaticText" name="ID_STATICTEXT7" variable="txtSelectedPTG" member="yes">
+																	<label>-</label>
+																	<size>80,-1</size>
+																</object>
+																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
 														</object>
 													</object>
 													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
