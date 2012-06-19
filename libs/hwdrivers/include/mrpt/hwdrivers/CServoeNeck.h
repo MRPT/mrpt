@@ -67,6 +67,14 @@ namespace mrpt
 			  */
 			bool setAngle( double angle, const uint8_t servo = 0, bool fast = false );
 
+			/** Turns the servo up to the specified angle (in radians in the range -pi,pi, other values will be saturated to the maximum or the mininum)
+			  * \param Angle: the desired angle to turn.
+			  * \param Servo: the id of the servo to move (in our ATMEGA16, from 0 to 2).
+			  * \param Speed: indicates the speed of the servo
+			  * \return Whether or not the procedure succeded.
+			  */
+			bool setAngleAndSpeed( double angle, const uint8_t servo, const uint8_t speed );
+
 			/** Turns the servo up to the specified angle (in radians in the range -pi,pi) filtered by average with the last N specified angles.
 			  * \param Angle: the new desired angle to turn.
 			  * \param Servo: the id of the servo to move (in our ATMEGA16, from 0 to 2).
@@ -115,6 +123,7 @@ namespace mrpt
 			unsigned int m_NumPrevAngles;				//!< Number of previous angles to store for averaging
 
 			bool setRegisterValue( const uint16_t value, const uint8_t servo = 0, bool fast = false );
+			bool setRegisterValueAndSpeed( const uint16_t value, const uint8_t servo, const uint16_t speed );
 			bool getRegisterValue( uint16_t &value, const uint8_t servo = 0 );
 
 		private:

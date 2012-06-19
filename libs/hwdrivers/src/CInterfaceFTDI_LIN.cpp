@@ -132,6 +132,7 @@ void  CInterfaceFTDI::OpenBySerialNumber( const std::string &serialNumber )
 
 	for (TFTDIDeviceList::iterator it=lstDevs.begin();it!=lstDevs.end();++it)
 	{
+	    cout << "MF: " << it->ftdi_manufacturer << endl;
 		if (it->ftdi_serial == serialNumber)
 		{
 			myDev = it->usb_device_struct;

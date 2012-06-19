@@ -64,7 +64,9 @@ bool CServoeNeck::queryFirmwareVersion( string &out_firmwareVersion )
 		utils::CMessage		msg,msgRx;
 
 		// Try to connect to the device:
-		if (!checkConnectionAndConnect())	return false;
+		if (!checkConnectionAndConnect())
+            return false;
+
 
 		msg.type = 0x10;
 		sendMessage( msg );
@@ -76,7 +78,8 @@ bool CServoeNeck::queryFirmwareVersion( string &out_firmwareVersion )
 			return true;
 		}
 		else
-			return false;
+		    return false;
+
 	}
 	catch(...)
 	{
@@ -90,7 +93,11 @@ bool CServoeNeck::queryFirmwareVersion( string &out_firmwareVersion )
 -------------------------------------------------------------*/
 unsigned int CServoeNeck::angle2RegValue( const double angle /* rad */ )
 {
-	return ( (uint16_t)( (m_MaxValue/20)*(-2*angle/M_PI+1.5) ) );			// equation: v = s*(a-a0) + v0 where s = 450/pi; a0 = 0 and v0 = 750
+	const uint16_t reg = 1250+(1000/M_PI)*(angle-M_PI*0.5); // equation: v = s*(a-a0) + v0 where s = 450/pi; a0 = 0 and v0 = 750
+	//cout << "Reg: " << reg << endl;
+	return ( reg );								
+	
+	//return ( (uint16_t)( (m_MaxValue/20)*(-2*angle/M_PI+1.5) ) );			// equation: v = s*(a-a0) + v0 where s = 450/pi; a0 = 0 and v0 = 750
 	//return ( (uint16_t)( (m_MaxValue/20)*(2*angle/M_PI+1.5) ) );			// equation: v = s*(a-a0) + v0 where s = 450/pi; a0 = 0 and v0 = 750
 	//return ( (uint16_t)( (900/M_PI)*nangle + 750 ) );			// equation: v = s*(a-a0) + v0 where s = 450/pi; a0 = 0 and v0 = 750
 } // end-angle2RegValue
@@ -100,7 +107,11 @@ unsigned int CServoeNeck::angle2RegValue( const double angle /* rad */ )
 -------------------------------------------------------------*/
 double CServoeNeck::regValue2angle( const uint16_t value )
 {
-	return ( -M_PI*0.5*(20*value/m_MaxValue-1.5) );					// equation: angle = (pi/2)*(20*OCR/ICR-1.5)
+	double angle = M_PI*0.5+(M_PI/1000)*(value-1250);
+	return angle;
+
+	//return ( -M_PI*0.5*(20*value/m_MaxValue-1.5) );					// equation: angle = (pi/2)*(20*OCR/ICR-1.5)
+	//return ( -M_PI*0.25+(M_PI/1800)*(value-1050) );					// equation: angle = (pi/2)*(20*OCR/ICR-1.5)
 	// return ( M_PI*0.5*(20*value/m_MaxValue-1.5) );					// equation: angle = (pi/2)*(20*OCR/ICR-1.5)
 	// return ( (value-750)/(900/M_PI) );
 } // end-regValue2angle
@@ -124,6 +135,44 @@ bool CServoeNeck::setRegisterValue( const uint16_t value, const uint8_t servo, b
 		else
 			msg.type = 0x11;
 		msg.content.resize( 3 );
+		msg.content[2] = (uint8_t)value;		// Low byte
+		msg.content[1] = (uint8_t)(value>>8);	// High byte
+		msg.content[0] = servo;					// Servo number
+
+		sendMessage(msg);
+		if (!receiveMessage(msgRx) )
+			return false;	// Error
+
+		mrpt::system::sleep(200);
+		return true;
+	}
+	catch(...)
+	{
+		// Error opening device:
+		Close();
+		return false;
+	}
+
+} // end-setRegisterValue
+
+/*-------------------------------------------------------------
+					setRegisterValue
+-------------------------------------------------------------*/
+bool CServoeNeck::setRegisterValueAndSpeed( const uint16_t value, const uint8_t servo, const uint16_t speed )
+{
+	try
+	{
+		if (!isOpen())
+			return false;
+
+		utils::CMessage		msg,msgRx;
+
+		// Send cmd for setting the value of the register:
+		// ------------------------------------------------
+		msg.type = 0x16;
+		msg.content.resize(5);
+		msg.content[4] = (uint8_t)speed;		// Low byte of the speed of the servo
+		msg.content[3] = (uint8_t)(speed>>8);	// High byte of the speed of the servo
 		msg.content[2] = (uint8_t)value;		// Low byte
 		msg.content[1] = (uint8_t)(value>>8);	// High byte
 		msg.content[0] = servo;					// Servo number
@@ -222,6 +271,24 @@ bool CServoeNeck::setAngle( double angle, const uint8_t servo, bool fast )
 
 	std::cout << "Angle: " << RAD2DEG( angle ) << " - Reg: " << reg << std::endl;
 	return setRegisterValue( reg, servo, fast );
+
+} // end-getCurrentAngle
+
+/*-------------------------------------------------------------
+					setAngleAndSpeed
+-------------------------------------------------------------*/
+bool CServoeNeck::setAngleAndSpeed( double angle, const uint8_t servo, const uint8_t speed )
+{
+	// speed in the range 15º/s-250º/s
+	if( angle < -m_TruncateFactor*M_PI/2 )	angle = -m_TruncateFactor*M_PI/2;
+	if( angle > m_TruncateFactor*M_PI/2 )	angle = m_TruncateFactor*M_PI/2;
+
+	unsigned int reg	= angle2RegValue( angle );
+	uint8_t thisSpeed	= speed < 15 ? 15 : speed > 250 ? 250 : speed;
+	uint16_t delSpeed	= uint16_t(0.25*1000000/(500+1000*(thisSpeed/180.0f-0.5)));
+	//cout << "Speed: " << int(speed) << " -> " << delSpeed << endl;
+	//std::cout << "Angle: " << RAD2DEG( angle ) << " - Reg: " << reg << std::endl;
+	return setRegisterValueAndSpeed( reg, servo, delSpeed );
 
 } // end-getCurrentAngle
 
@@ -325,7 +392,7 @@ bool CServoeNeck::center( const uint8_t servo )
 bool CServoeNeck::checkConnectionAndConnect()
 {
 	if( isOpen() )
-		return true;
+	    return true;
 
 	try
 	{
@@ -334,8 +401,7 @@ bool CServoeNeck::checkConnectionAndConnect()
 		Purge();
 		mrpt::system::sleep(10);
 		SetLatencyTimer(1);
-		SetTimeouts(300,100);
-
+        SetTimeouts(300,100);
 		return true;
 	}
 	catch(...)

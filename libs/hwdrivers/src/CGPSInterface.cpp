@@ -61,7 +61,7 @@ CGPSInterface::CGPSInterface( int BUFFER_LENGTH, mrpt::hwdrivers::CSerialPort *o
 	m_useAIMMode            ( false ),
 	m_last_timestamp        ( INVALID_TIMESTAMP ),
 	m_AIMConfigured         ( false ),
-	m_data_period           ( 0.1 ) // 10 Hz
+	m_data_period           ( 0.2 ) // 20 Hz
 {
 	m_sensorLabel = "GPS";
 	m_latestGPS_data.has_GGA_datum = false;
@@ -100,6 +100,7 @@ void  CGPSInterface::loadConfig_sensorSpecific(
 	m_JAVAD_rtk_format   = configSource.read_string(iniSection,"JAVAD_rtk_format", m_JAVAD_rtk_format );
 
     m_useAIMMode = configSource.read_bool( iniSection,"JAVAD_useAIMMode", m_useAIMMode );
+    m_data_period = 1.0/configSource.read_bool( iniSection,"outputRate", m_data_period );
 }
 
 
@@ -379,7 +380,6 @@ void  CGPSInterface::processBuffer()
 {
 	unsigned int	i=0, lineStart = 0;
 
-//	printf_debug("[GPS raw string:] %s\n",s.c_str());
 //    cout << m_buffer << endl;
 	while (i<m_bufferLength)
 	{
@@ -435,7 +435,7 @@ void  CGPSInterface::processBuffer()
 void  CGPSInterface::processGPSstring(const std::string &s)
 {
 //	printf_debug("[GPS raw string:] %s\n",s.c_str());
-//    cout << "[GPS raw string:] " << s << endl;
+    cout << "[GPS raw string:] " << s << endl;
 	// Firstly! If the string does not start with "$GP" it is not valid:
 	if ( s[0]!='$' ||
          s[1]!='G' ) return;
@@ -524,7 +524,7 @@ void  CGPSInterface::processGPSstring(const std::string &s)
 
         // Units of the altitude:
         getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-        ASSERT_(token == "M");
+//        ASSERT_(token == "M");
 
         // Geoidal separation [B]:
         getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
@@ -532,7 +532,7 @@ void  CGPSInterface::processGPSstring(const std::string &s)
 
         // Units of the geoidal separation:
         getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-        ASSERT_(token == "M");
+//        ASSERT_(token == "M");
 
         // Total altitude [A]+[B] and mmGPS Corrected total altitude Corr([A]+[B]):
         m_latestGPS_data.GGA_datum.orthometric_altitude =
