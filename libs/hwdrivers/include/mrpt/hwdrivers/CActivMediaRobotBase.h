@@ -187,6 +187,9 @@ namespace mrpt
 			/** Get state of manual control with a joystick */
 			bool isJoystickControlEnabled() const { return m_enableJoyControl;}
 
+			void DisableMotors();
+			void EnableMotors();
+
 		protected:
 			std::string		m_com_port;		//!< The serial port name to use for communications (COM1, ttyS1,...)
 			int				m_robotBaud;	//!< The bauds for ARIA communications to the robot.
@@ -208,10 +211,8 @@ namespace mrpt
 			mrpt::system::TTimeStamp  m_last_do_process;
 			double  	m_capture_rate;  //!< In Hz, the rate at which sonars & odometry are gathered (default=10Hz)
 
-
 			void disconnectAndDisableMotors();
 			void connectAndEnableMotors();
-
 			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
 			  *  See hwdrivers::CActivMediaRobotBase for the possible parameters
 			  * \sa setSerialPortConfig

@@ -264,6 +264,33 @@ void CActivMediaRobotBase::connectAndEnableMotors()
 #endif
 }
 
+void CActivMediaRobotBase::DisableMotors()
+{
+	THE_ROBOT->lock();
+	if (THE_ROBOT->areMotorsEnabled())
+	{
+			//THE_ROBOT->stopRunning(false);		// Detiene movimiento
+			cout << "[CActivMediaRobotBase] Disabling motors...";
+			THE_ROBOT->disableMotors();		// Desactiva los motores
+			cout << "Ok" << endl;
+	}
+	THE_ROBOT->unlock();
+
+}
+void CActivMediaRobotBase::EnableMotors()
+{
+	THE_ROBOT->lock();
+	//if (!THE_ROBOT->areMotorsEnabled())
+	{
+			cout << "[CActivMediaRobotBase] Enabling motors...";
+			THE_ROBOT->enableMotors();		
+		
+			cout << "Ok" << endl;
+	}
+	THE_ROBOT->unlock();
+
+}
+
 /*-------------------------------------------------------------
 				disconnectAndDisableMotors
 -------------------------------------------------------------*/
