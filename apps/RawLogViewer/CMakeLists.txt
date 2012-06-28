@@ -43,6 +43,8 @@ IF(wxWidgets_FOUND)
 		SET(SRCS ${SRCS} resource.rc)
 	ENDIF(WIN32)
 
+	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
+
 	# Define the executable target:
 	ADD_EXECUTABLE(RawLogViewer WIN32 ${SRCS})
 
@@ -54,6 +56,9 @@ IF(wxWidgets_FOUND)
 	# Add the required libraries for linking:
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
+
+	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrptwxthings)
+	ADD_DEPENDENCIES(${TMP_TARGET_NAME} mrptwxthings)
 
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically, 

@@ -31,16 +31,16 @@
 #define NAVLOG_VIEWER_GUI_DESIGNMAIN_H
 
 //(*Headers(navlog_viewer_GUI_designDialog)
-#include <wx/dialog.h>
 #include <wx/sizer.h>
-#include <wx/button.h>
-#include <wx/menu.h>
-#include <wx/panel.h>
-#include <wx/slider.h>
 #include <wx/stattext.h>
+#include <wx/menu.h>
 #include <wx/textctrl.h>
-#include <wx/timer.h>
 #include <wx/things/toggle.h>
+#include <wx/slider.h>
+#include <wx/panel.h>
+#include <wx/button.h>
+#include <wx/dialog.h>
+#include <wx/timer.h>
 //*)
 #include <wx/frame.h>
 
@@ -101,30 +101,30 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
         //*)
 
         //(*Declarations(navlog_viewer_GUI_designDialog)
-        wxMenu mnuMoreOps;
-        wxPanel* Panel1;
-        wxTextCtrl* edLogFile;
-        wxButton* btnPlay;
-        wxStaticText* txtSelectedPTG;
-        wxStaticText* StaticText1;
-        wxFlexGridSizer* FlexGridSizer9;
-        wxStaticText* StaticText3;
         wxButton* btnStop;
         wxButton* btnMoreOps;
-        wxTimer timPlay;
-        wxCustomButton* btnLoad;
-        wxPanel* Panel3;
-        wxStaticText* StaticText4;
-        wxStaticText* StaticText2;
-        wxStaticText* txtLogDuration;
-        wxTimer timAutoload;
-        wxSlider* slidLog;
-        wxMenuItem* mnuMatlabPlots;
         wxPanel* Panel_AUX;
+        wxStaticText* txtLogDuration;
+        wxStaticText* StaticText2;
+        wxTimer timAutoload;
+        wxFlexGridSizer* FlexGridSizer9;
+        wxCustomButton* btnQuit;
+        wxPanel* Panel1;
+        wxStaticText* StaticText1;
+        wxMenu mnuMoreOps;
+        wxStaticText* StaticText3;
+        wxPanel* Panel3;
+        wxSlider* slidLog;
+        wxTimer timPlay;
         wxStaticText* txtLogEntries;
+        wxMenuItem* mnuMatlabPlots;
         wxFlexGridSizer* flexGridRightHand;
         wxCustomButton* btnHelp;
-        wxCustomButton* btnQuit;
+        wxTextCtrl* edLogFile;
+        wxCustomButton* btnLoad;
+        wxStaticText* StaticText4;
+        wxStaticText* txtSelectedPTG;
+        wxButton* btnPlay;
         //*)
 
         DECLARE_EVENT_TABLE()

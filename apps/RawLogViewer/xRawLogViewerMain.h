@@ -37,8 +37,9 @@
 #include <wx/stattext.h>
 #include <wx/menu.h>
 #include <wx/textctrl.h>
+#include <wx/things/toggle.h>
 #include <wx/splitter.h>
-#include <wx/toolbar.h>
+#include <wx/statline.h>
 #include "MyGLCanvas.h"
 #include <wx/slider.h>
 #include <wx/panel.h>
@@ -46,6 +47,7 @@
 #include <wx/button.h>
 #include <wx/frame.h>
 #include <wx/timer.h>
+#include <wx/combobox.h>
 #include <wx/statusbr.h>
 //*)
 
@@ -256,6 +258,22 @@ private:
     //*)
 
     //(*Identifiers(xRawLogViewerFrame)
+    static const long ID_BUTTON2;
+    static const long ID_BUTTON3;
+    static const long ID_STATICLINE2;
+    static const long ID_BUTTON4;
+    static const long ID_BUTTON5;
+    static const long ID_BUTTON6;
+    static const long ID_BUTTON7;
+    static const long ID_STATICLINE3;
+    static const long ID_BUTTON8;
+    static const long ID_BUTTON9;
+    static const long ID_STATICLINE4;
+    static const long ID_BUTTON10;
+    static const long ID_BUTTON11;
+    static const long ID_STATICLINE1;
+    static const long ID_STATICTEXT4;
+    static const long ID_COMBO_IMG_DIRS;
     static const long ID_CUSTOM5;
     static const long ID_PANEL1;
     static const long ID_TEXTCTRL1;
@@ -397,17 +415,6 @@ private:
     static const long ID_MENUITEM27;
     static const long idMenuAbout;
     static const long ID_STATUSBAR1;
-    static const long ID_TOOLBARITEM1;
-    static const long ID_TOOLBARITEM2;
-    static const long ID_TOOLBARITEM3;
-    static const long ID_TOOLBARITEM4;
-    static const long ID_TOOLBARITEM5;
-    static const long ID_TOOLBARITEM9;
-    static const long ID_TOOLBARITEM10;
-    static const long ID_TOOLBARITEM6;
-    static const long ID_TOOLBARITEM7;
-    static const long ID_TOOLBARITEM8;
-    static const long ID_TOOLBAR1;
     static const long MNU_1;
     static const long ID_MENUITEM49;
     static const long ID_MENUITEM50;
@@ -420,7 +427,6 @@ private:
     wxBoxSizer* BoxSizer4;
     wxMenu* MenuItem42;
     mpWindow* plotRangeBearing;
-    wxToolBarToolBase* ToolBarItem4;
     wxMenuItem* MenuItem61;
     wxMenuItem* MenuItem31;
     wxMenuItem* MenuItem57;
@@ -429,9 +435,8 @@ private:
     wxMenuItem* MenuItem59;
     wxPanel* pn_CSensorialFrame;
     wxPanel* Panel5;
-    wxToolBar* ToolBar1;
+    wxCustomButton* Button4;
     wxPanel* pn_CObservation2DRangeScan;
-    wxToolBarToolBase* ToolBarItem9;
     wxMenuItem* MenuItem7;
     wxMenuItem* MenuItem74;
     wxBoxSizer* BoxSizer5;
@@ -439,8 +444,8 @@ private:
     wxNotebook* Notebook1;
     wxPanel* pn_CObservationGasSensors;
     wxMenuItem* MenuItem80;
-    wxToolBarToolBase* ToolBarItem3;
     wxBoxSizer* BoxSizer8;
+    wxCustomButton* Button2;
     wxMenuItem* MenuItem54;
     wxMenu* MenuItem84;
     wxPanel* pn_CObservationBeaconRanges;
@@ -453,7 +458,7 @@ private:
     wxMenu* Menu14;
     wxStaticBitmapPopup* bmp3Dobs_depth;
     wxMenu* Menu3;
-    wxToolBarToolBase* ToolBarItem10;
+    wxCustomButton* Button6;
     wxMenu* Menu20;
     wxMenuItem* MenuItem71;
     mpWindow* plotAct2D_PHI;
@@ -465,13 +470,16 @@ private:
     wxPanel* pn_Action;
     wxMenuItem* MenuItem14;
     wxMenuItem* MenuItem36;
+    wxCustomButton* btnToolbarOpen;
     wxMenuItem* mnuItemEnable3DCamAutoGenPoints;
     wxMenuItem* MenuItem11;
     wxPanel* pn3Dobs_3D;
     wxMenu mnuTree;
     wxPanel* Panel9;
     wxMenuItem* MenuItem29;
+    wxCustomButton* Button1;
     wxMenu* Menu40;
+    wxCustomButton* Button7;
     wxPanel* Panel8;
     wxPanel* pn_CObservationImage;
     wxMenuItem* MenuItem15;
@@ -495,15 +503,18 @@ private:
     wxMenuItem* MenuItem62;
     wxPanel* Panel6;
     wxPanel* Panel3;
-    wxToolBarToolBase* ToolBarItem6;
+    wxStaticLine* StaticLine4;
+    wxStaticLine* StaticLine2;
     wxMenuItem* MenuItem72;
     wxMenuItem* MenuItem44;
     wxPanel* pn_CObservationBearingRange;
+    wxCustomButton* Button8;
     wxMenuItem* MenuItem79;
-    wxToolBarToolBase* ToolBarItem1;
+    wxComboBox* toolbarcomboImages;
     wxMenu* Menu23;
     wxMenuItem* MenuItem38;
     wxMenuItem* MenuItem3;
+    wxCustomButton* Button3;
     CRawlogTreeView* tree_view;
     wxMenuItem* MenuItem64;
     wxStaticBitmapPopup* bmp3Dobs_int;
@@ -520,16 +531,17 @@ private:
     wxStatusBar* StatusBar1;
     wxMenuItem* MenuItem52;
     wxStaticBitmapPopup* bmpObsStereoDisp;
+    wxCustomButton* Button5;
+    wxStaticLine* StaticLine3;
     wxMenuItem* MenuItem35;
+    wxStaticLine* StaticLine1;
     wxSplitterWindow* SplitterWindow3;
     wxMenuItem* MenuItem23;
-    wxToolBarToolBase* ToolBarItem5;
     wxBoxSizer* BoxSizer1;
     wxStaticBitmapPopup* bmp3Dobs_conf;
     wxMenuItem* MenuItem58;
     wxPanel* pn3Dobs_Int;
     wxTextCtrl* memStats;
-    wxToolBarToolBase* ToolBarItem8;
     wxPanel* pn_CObservationStereoImage;
     wxSlider* slid3DcamConf;
     wxPanel* Panel2;
@@ -544,6 +556,7 @@ private:
     wxNotebook* Notebook3;
     wxMenu* Menu6;
     wxMenuItem* MenuItem9;
+    wxStaticText* StaticText4;
     wxPanel* pn_CObservation3DRangeScan;
     wxMenuItem* MenuItem47;
     wxMenuItem* MenuItem30;
@@ -551,18 +564,15 @@ private:
     wxMenuItem* MenuItem77;
     wxMenuItem* MenuItem66;
     wxMenuItem* MenuItem53;
-    wxToolBarToolBase* ToolBarItem2;
     wxMenuItem* MenuItem48;
+    wxCustomButton* Button9;
     wxMenu* Menu4;
     wxTextCtrl* txtException;
     wxButton* btnEditComments;
     wxMenuItem* MenuItem85;
-    wxToolBarToolBase* ToolBarItem7;
     //*)
 
 
-    wxComboBox* toolbarcomboImages;
-	static const long ID_COMBO_IMG_DIRS;
     void OnComboImageDirsChange(wxCommandEvent& event);
 
 	//void OntreeViewItemRightClick(wxTreeEvent& event);

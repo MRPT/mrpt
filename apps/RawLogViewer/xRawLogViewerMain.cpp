@@ -60,6 +60,7 @@
 //(*InternalHeaders(xRawLogViewerFrame)
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
+#include <wx/tglbtn.h>
 #include <wx/icon.h>
 #include <wx/font.h>
 #include <wx/intl.h>
@@ -183,6 +184,22 @@ wxString wxbuildinfo(wxbuildinfoformat format)
 }
 
 //(*IdInit(xRawLogViewerFrame)
+const long xRawLogViewerFrame::ID_BUTTON2 = wxNewId();
+const long xRawLogViewerFrame::ID_BUTTON3 = wxNewId();
+const long xRawLogViewerFrame::ID_STATICLINE2 = wxNewId();
+const long xRawLogViewerFrame::ID_BUTTON4 = wxNewId();
+const long xRawLogViewerFrame::ID_BUTTON5 = wxNewId();
+const long xRawLogViewerFrame::ID_BUTTON6 = wxNewId();
+const long xRawLogViewerFrame::ID_BUTTON7 = wxNewId();
+const long xRawLogViewerFrame::ID_STATICLINE3 = wxNewId();
+const long xRawLogViewerFrame::ID_BUTTON8 = wxNewId();
+const long xRawLogViewerFrame::ID_BUTTON9 = wxNewId();
+const long xRawLogViewerFrame::ID_STATICLINE4 = wxNewId();
+const long xRawLogViewerFrame::ID_BUTTON10 = wxNewId();
+const long xRawLogViewerFrame::ID_BUTTON11 = wxNewId();
+const long xRawLogViewerFrame::ID_STATICLINE1 = wxNewId();
+const long xRawLogViewerFrame::ID_STATICTEXT4 = wxNewId();
+const long xRawLogViewerFrame::ID_COMBO_IMG_DIRS = wxNewId();
 const long xRawLogViewerFrame::ID_CUSTOM5 = wxNewId();
 const long xRawLogViewerFrame::ID_PANEL1 = wxNewId();
 const long xRawLogViewerFrame::ID_TEXTCTRL1 = wxNewId();
@@ -324,25 +341,12 @@ const long xRawLogViewerFrame::ID_MENUITEM32 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM27 = wxNewId();
 const long xRawLogViewerFrame::idMenuAbout = wxNewId();
 const long xRawLogViewerFrame::ID_STATUSBAR1 = wxNewId();
-const long xRawLogViewerFrame::ID_TOOLBARITEM1 = wxNewId();
-const long xRawLogViewerFrame::ID_TOOLBARITEM2 = wxNewId();
-const long xRawLogViewerFrame::ID_TOOLBARITEM3 = wxNewId();
-const long xRawLogViewerFrame::ID_TOOLBARITEM4 = wxNewId();
-const long xRawLogViewerFrame::ID_TOOLBARITEM5 = wxNewId();
-const long xRawLogViewerFrame::ID_TOOLBARITEM9 = wxNewId();
-const long xRawLogViewerFrame::ID_TOOLBARITEM10 = wxNewId();
-const long xRawLogViewerFrame::ID_TOOLBARITEM6 = wxNewId();
-const long xRawLogViewerFrame::ID_TOOLBARITEM7 = wxNewId();
-const long xRawLogViewerFrame::ID_TOOLBARITEM8 = wxNewId();
-const long xRawLogViewerFrame::ID_TOOLBAR1 = wxNewId();
 const long xRawLogViewerFrame::MNU_1 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM49 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM50 = wxNewId();
 const long xRawLogViewerFrame::ID_MENUITEM48 = wxNewId();
 const long xRawLogViewerFrame::ID_TIMER1 = wxNewId();
 //*)
-
-const long xRawLogViewerFrame::ID_COMBO_IMG_DIRS = wxNewId();
 
 
 BEGIN_EVENT_TABLE(xRawLogViewerFrame,wxFrame)
@@ -363,6 +367,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	//(*Initialize(xRawLogViewerFrame)
 	wxMenu* Menu39;
 	wxFlexGridSizer* FlexGridSizer4;
+	wxFlexGridSizer* FlexGridSizer16;
 	wxMenuItem* MenuItem33;
 	wxMenuItem* MenuItem26;
 	wxMenuItem* MenuItem25;
@@ -386,10 +391,12 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxMenuItem* MenuItem24;
 	wxMenuItem* MenuItem69;
 	wxMenuItem* MenuItem27;
+	wxFlexGridSizer* FlexGridSizer15;
 	wxFlexGridSizer* FlexGridSizer8;
 	wxMenuItem* MenuItem70;
 	wxMenuItem* MenuItem67;
 	wxMenuItem* MenuItem65;
+	wxFlexGridSizer* FlexGridSizer14;
 	wxFlexGridSizer* FlexGridSizer13;
 	wxMenuItem* MenuItem41;
 	wxFlexGridSizer* FlexGridSizer12;
@@ -402,7 +409,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxMenu* Menu2;
 	wxMenuItem* MenuItem18;
 	wxMenuItem* MenuItem19;
-
+	
 	Create(parent, id, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("id"));
 	SetClientSize(wxSize(700,500));
 	{
@@ -410,17 +417,81 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_OTHER));
 		SetIcon(FrameIcon);
 	}
+	FlexGridSizer1 = new wxFlexGridSizer(2, 1, 0, 0);
+	FlexGridSizer1->AddGrowableCol(0);
+	FlexGridSizer1->AddGrowableRow(1);
+	FlexGridSizer15 = new wxFlexGridSizer(1, 16, 0, 0);
+	FlexGridSizer15->AddGrowableCol(14);
+	btnToolbarOpen = new wxCustomButton(this,ID_BUTTON2,_("  Load...  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON2"));
+	btnToolbarOpen->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")),wxART_TOOLBAR));
+	btnToolbarOpen->SetMargins(wxSize(5,5));
+	FlexGridSizer15->Add(btnToolbarOpen, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	Button1 = new wxCustomButton(this,ID_BUTTON3,_("  Save as...  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON3"));
+	Button1->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")),wxART_TOOLBAR));
+	Button1->SetMargins(wxSize(5,5));
+	FlexGridSizer15->Add(Button1, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	StaticLine2 = new wxStaticLine(this, ID_STATICLINE2, wxDefaultPosition, wxSize(3,70), wxLI_VERTICAL, _T("ID_STATICLINE2"));
+	FlexGridSizer15->Add(StaticLine2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	Button2 = new wxCustomButton(this,ID_BUTTON4,_("  Edit...  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_COPY")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON4"));
+	Button2->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_COPY")),wxART_TOOLBAR));
+	Button2->SetMargins(wxSize(5,5));
+	FlexGridSizer15->Add(Button2, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	Button3 = new wxCustomButton(this,ID_BUTTON5,_("  \"Raw-map\"...  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_RAWMAP")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON5"));
+	Button3->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_RAWMAP")),wxART_TOOLBAR));
+	Button3->SetMargins(wxSize(5,5));
+	FlexGridSizer15->Add(Button3, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	Button4 = new wxCustomButton(this,ID_BUTTON6,_("  Motion model  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_MOTION")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON6"));
+	Button4->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_MOTION")),wxART_TOOLBAR));
+	Button4->SetMargins(wxSize(5,5));
+	FlexGridSizer15->Add(Button4, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	Button5 = new wxCustomButton(this,ID_BUTTON7,_("  ICP...  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ICP")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON7"));
+	Button5->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ICP")),wxART_TOOLBAR));
+	Button5->SetMargins(wxSize(5,5));
+	FlexGridSizer15->Add(Button5, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	StaticLine3 = new wxStaticLine(this, ID_STATICLINE3, wxDefaultPosition, wxSize(3,70), wxLI_VERTICAL, _T("ID_STATICLINE3"));
+	FlexGridSizer15->Add(StaticLine3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	Button6 = new wxCustomButton(this,ID_BUTTON8,_("  Animate...  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON8"));
+	Button6->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")),wxART_TOOLBAR));
+	Button6->SetMargins(wxSize(5,5));
+	FlexGridSizer15->Add(Button6, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	Button7 = new wxCustomButton(this,ID_BUTTON9,_("  Video...  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TIP")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON9"));
+	Button7->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TIP")),wxART_TOOLBAR));
+	Button7->SetMargins(wxSize(5,5));
+	FlexGridSizer15->Add(Button7, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	StaticLine4 = new wxStaticLine(this, ID_STATICLINE4, wxDefaultPosition, wxSize(3,70), wxLI_VERTICAL, _T("ID_STATICLINE4"));
+	FlexGridSizer15->Add(StaticLine4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	Button8 = new wxCustomButton(this,ID_BUTTON10,_("  About  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ABOUT")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON10"));
+	Button8->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ABOUT")),wxART_TOOLBAR));
+	Button8->SetMargins(wxSize(5,5));
+	FlexGridSizer15->Add(Button8, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	Button9 = new wxCustomButton(this,ID_BUTTON11,_("  Quit  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_QUIT")),wxART_TOOLBAR),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON11"));
+	Button9->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_QUIT")),wxART_TOOLBAR));
+	Button9->SetMargins(wxSize(5,5));
+	FlexGridSizer15->Add(Button9, 1, wxALL|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	StaticLine1 = new wxStaticLine(this, ID_STATICLINE1, wxDefaultPosition, wxSize(3,70), wxLI_VERTICAL, _T("ID_STATICLINE1"));
+	FlexGridSizer15->Add(StaticLine1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	FlexGridSizer16 = new wxFlexGridSizer(2, 1, 0, 0);
+	FlexGridSizer16->AddGrowableCol(0);
+	StaticText4 = new wxStaticText(this, ID_STATICTEXT4, _("Image dirs:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT4"));
+	FlexGridSizer16->Add(StaticText4, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	toolbarcomboImages = new wxComboBox(this, ID_COMBO_IMG_DIRS, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_COMBO_IMG_DIRS"));
+	toolbarcomboImages->SetMinSize(wxSize(250,-1));
+	toolbarcomboImages->SetToolTip(_("Found external images paths"));
+	toolbarcomboImages->SetHelpText(_("Found external images paths"));
+	FlexGridSizer16->Add(toolbarcomboImages, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer15->Add(FlexGridSizer16, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer1->Add(FlexGridSizer15, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	SplitterWindow1 = new wxSplitterWindow(this, ID_SPLITTERWINDOW1, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_3DBORDER|wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW1"));
 	SplitterWindow1->SetMinSize(wxSize(10,10));
 	SplitterWindow1->SetMinimumPaneSize(10);
 	Panel1 = new wxPanel(SplitterWindow1, ID_PANEL1, wxDefaultPosition, wxSize(337,-1), wxTAB_TRAVERSAL, _T("ID_PANEL1"));
-	FlexGridSizer1 = new wxFlexGridSizer(1, 1, 0, 0);
-	FlexGridSizer1->AddGrowableCol(0);
-	FlexGridSizer1->AddGrowableRow(0);
+	FlexGridSizer2 = new wxFlexGridSizer(1, 1, 0, 0);
+	FlexGridSizer2->AddGrowableCol(0);
+	FlexGridSizer2->AddGrowableRow(0);
 	tree_view = new CRawlogTreeView(Panel1,ID_CUSTOM5,wxDefaultPosition,wxDefaultSize,wxVSCROLL,_T("ID_CUSTOM5"));
-	FlexGridSizer1->Add(tree_view, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-	Panel1->SetSizer(FlexGridSizer1);
-	FlexGridSizer1->SetSizeHints(Panel1);
+	FlexGridSizer2->Add(tree_view, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	Panel1->SetSizer(FlexGridSizer2);
+	FlexGridSizer2->SetSizeHints(Panel1);
 	Panel2 = new wxPanel(SplitterWindow1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
 	BoxSizer1 = new wxBoxSizer(wxHORIZONTAL);
 	SplitterWindow3 = new wxSplitterWindow(Panel2, ID_SPLITTERWINDOW3, wxDefaultPosition, wxDefaultSize, wxSP_3D, _T("ID_SPLITTERWINDOW3"));
@@ -490,30 +561,30 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	FlexGridSizer3->Fit(pn_CObservationImage);
 	FlexGridSizer3->SetSizeHints(pn_CObservationImage);
 	pn_CObservationStereoImage = new wxPanel(Notebook1, ID_PANEL10, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL|wxFULL_REPAINT_ON_RESIZE, _T("ID_PANEL10"));
-	FlexGridSizer2 = new wxFlexGridSizer(2, 1, 0, 0);
-	FlexGridSizer2->AddGrowableCol(0);
-	FlexGridSizer2->AddGrowableRow(1);
+	FlexGridSizer4 = new wxFlexGridSizer(2, 1, 0, 0);
+	FlexGridSizer4->AddGrowableCol(0);
+	FlexGridSizer4->AddGrowableRow(1);
 	StaticText1 = new wxStaticText(pn_CObservationStereoImage, ID_STATICTEXT1, _("Right click on the images to see the popup menu:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-	FlexGridSizer2->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer4->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	Notebook2 = new wxNotebook(pn_CObservationStereoImage, ID_NOTEBOOK2, wxDefaultPosition, wxDefaultSize, 0, _T("ID_NOTEBOOK2"));
 	Panel6 = new wxPanel(Notebook2, ID_PANEL13, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL13"));
-	FlexGridSizer4 = new wxFlexGridSizer(1, 1, 0, 0);
-	FlexGridSizer4->AddGrowableCol(0);
-	FlexGridSizer4->AddGrowableRow(0);
-	bmpObsStereoLeft = new wxStaticBitmapPopup(Panel6, ID_STATICBITMAP2, wxNullBitmap, wxPoint(0,0), wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP2"));
-	FlexGridSizer4->Add(bmpObsStereoLeft, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 0);
-	Panel6->SetSizer(FlexGridSizer4);
-	FlexGridSizer4->Fit(Panel6);
-	FlexGridSizer4->SetSizeHints(Panel6);
-	Panel7 = new wxPanel(Notebook2, ID_PANEL14, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL14"));
 	FlexGridSizer5 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer5->AddGrowableCol(0);
 	FlexGridSizer5->AddGrowableRow(0);
+	bmpObsStereoLeft = new wxStaticBitmapPopup(Panel6, ID_STATICBITMAP2, wxNullBitmap, wxPoint(0,0), wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP2"));
+	FlexGridSizer5->Add(bmpObsStereoLeft, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	Panel6->SetSizer(FlexGridSizer5);
+	FlexGridSizer5->Fit(Panel6);
+	FlexGridSizer5->SetSizeHints(Panel6);
+	Panel7 = new wxPanel(Notebook2, ID_PANEL14, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL14"));
+	FlexGridSizer7 = new wxFlexGridSizer(1, 1, 0, 0);
+	FlexGridSizer7->AddGrowableCol(0);
+	FlexGridSizer7->AddGrowableRow(0);
 	bmpObsStereoRight = new wxStaticBitmapPopup(Panel7, ID_STATICBITMAP3, wxNullBitmap, wxPoint(0,0), wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP3"));
-	FlexGridSizer5->Add(bmpObsStereoRight, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 0);
-	Panel7->SetSizer(FlexGridSizer5);
-	FlexGridSizer5->Fit(Panel7);
-	FlexGridSizer5->SetSizeHints(Panel7);
+	FlexGridSizer7->Add(bmpObsStereoRight, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	Panel7->SetSizer(FlexGridSizer7);
+	FlexGridSizer7->Fit(Panel7);
+	FlexGridSizer7->SetSizeHints(Panel7);
 	Panel10 = new wxPanel(Notebook2, ID_PANEL24, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL24"));
 	FlexGridSizer13 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer13->AddGrowableCol(0);
@@ -526,10 +597,10 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	Notebook2->AddPage(Panel6, _("Left"), false);
 	Notebook2->AddPage(Panel7, _("Right"), false);
 	Notebook2->AddPage(Panel10, _("Disparity"), false);
-	FlexGridSizer2->Add(Notebook2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-	pn_CObservationStereoImage->SetSizer(FlexGridSizer2);
-	FlexGridSizer2->Fit(pn_CObservationStereoImage);
-	FlexGridSizer2->SetSizeHints(pn_CObservationStereoImage);
+	FlexGridSizer4->Add(Notebook2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	pn_CObservationStereoImage->SetSizer(FlexGridSizer4);
+	FlexGridSizer4->Fit(pn_CObservationStereoImage);
+	FlexGridSizer4->SetSizeHints(pn_CObservationStereoImage);
 	pn_CObservationBeaconRanges = new wxPanel(Notebook1, ID_PANEL11, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL11"));
 	pn_CObservationGasSensors = new wxPanel(Notebook1, ID_PANEL12, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL12"));
 	pn_CObservationGPS = new wxPanel(Notebook1, ID_PANEL15, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL15"));
@@ -543,16 +614,16 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	BoxSizer4->Fit(pn_CObservationBearingRange);
 	BoxSizer4->SetSizeHints(pn_CObservationBearingRange);
 	pn_CObservation3DRangeScan = new wxPanel(Notebook1, ID_PANEL19, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL19"));
-	FlexGridSizer7 = new wxFlexGridSizer(1, 1, 0, 0);
-	FlexGridSizer7->AddGrowableCol(0);
-	FlexGridSizer7->AddGrowableRow(0);
-	nb_3DObsChannels = new wxNotebook(pn_CObservation3DRangeScan, ID_NOTEBOOK4, wxDefaultPosition, wxDefaultSize, 0, _T("ID_NOTEBOOK4"));
-	pn3Dobs_3D = new wxPanel(nb_3DObsChannels, ID_PANEL20, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL20"));
-	FlexGridSizer8 = new wxFlexGridSizer(1, 2, 0, 0);
+	FlexGridSizer8 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer8->AddGrowableCol(0);
 	FlexGridSizer8->AddGrowableRow(0);
+	nb_3DObsChannels = new wxNotebook(pn_CObservation3DRangeScan, ID_NOTEBOOK4, wxDefaultPosition, wxDefaultSize, 0, _T("ID_NOTEBOOK4"));
+	pn3Dobs_3D = new wxPanel(nb_3DObsChannels, ID_PANEL20, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL20"));
+	FlexGridSizer9 = new wxFlexGridSizer(1, 2, 0, 0);
+	FlexGridSizer9->AddGrowableCol(0);
+	FlexGridSizer9->AddGrowableRow(0);
 	m_gl3DRangeScan = new CMyGLCanvas(pn3Dobs_3D,ID_XY_GLCANVAS,wxDefaultPosition,wxDefaultSize,wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
-	FlexGridSizer8->Add(m_gl3DRangeScan, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer9->Add(m_gl3DRangeScan, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	FlexGridSizer12 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer12->AddGrowableCol(0);
 	FlexGridSizer12->AddGrowableRow(1);
@@ -560,45 +631,45 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	FlexGridSizer12->Add(StaticText3, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
 	slid3DcamConf = new wxSlider(pn3Dobs_3D, ID_SLIDER1, 127, 0, 255, wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL|wxSL_INVERSE, wxDefaultValidator, _T("ID_SLIDER1"));
 	FlexGridSizer12->Add(slid3DcamConf, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
-	FlexGridSizer8->Add(FlexGridSizer12, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
-	pn3Dobs_3D->SetSizer(FlexGridSizer8);
-	FlexGridSizer8->Fit(pn3Dobs_3D);
-	FlexGridSizer8->SetSizeHints(pn3Dobs_3D);
+	FlexGridSizer9->Add(FlexGridSizer12, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
+	pn3Dobs_3D->SetSizer(FlexGridSizer9);
+	FlexGridSizer9->Fit(pn3Dobs_3D);
+	FlexGridSizer9->SetSizeHints(pn3Dobs_3D);
 	pn3Dobs_Depth = new wxPanel(nb_3DObsChannels, ID_PANEL21, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL21"));
-	FlexGridSizer9 = new wxFlexGridSizer(1, 1, 0, 0);
-	FlexGridSizer9->AddGrowableCol(0);
-	FlexGridSizer9->AddGrowableRow(0);
-	bmp3Dobs_depth = new wxStaticBitmapPopup(pn3Dobs_Depth, ID_STATICBITMAP4, wxNullBitmap, wxPoint(0,0), wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP4"));
-	FlexGridSizer9->Add(bmp3Dobs_depth, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
-	pn3Dobs_Depth->SetSizer(FlexGridSizer9);
-	FlexGridSizer9->Fit(pn3Dobs_Depth);
-	FlexGridSizer9->SetSizeHints(pn3Dobs_Depth);
-	pn3Dobs_Int = new wxPanel(nb_3DObsChannels, ID_PANEL22, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL22"));
 	FlexGridSizer10 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer10->AddGrowableCol(0);
 	FlexGridSizer10->AddGrowableRow(0);
-	bmp3Dobs_int = new wxStaticBitmapPopup(pn3Dobs_Int, ID_STATICBITMAP5, wxNullBitmap, wxPoint(0,0), wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP5"));
-	FlexGridSizer10->Add(bmp3Dobs_int, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
-	pn3Dobs_Int->SetSizer(FlexGridSizer10);
-	FlexGridSizer10->Fit(pn3Dobs_Int);
-	FlexGridSizer10->SetSizeHints(pn3Dobs_Int);
-	pn3Dobs_Conf = new wxPanel(nb_3DObsChannels, ID_PANEL23, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL23"));
+	bmp3Dobs_depth = new wxStaticBitmapPopup(pn3Dobs_Depth, ID_STATICBITMAP4, wxNullBitmap, wxPoint(0,0), wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP4"));
+	FlexGridSizer10->Add(bmp3Dobs_depth, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	pn3Dobs_Depth->SetSizer(FlexGridSizer10);
+	FlexGridSizer10->Fit(pn3Dobs_Depth);
+	FlexGridSizer10->SetSizeHints(pn3Dobs_Depth);
+	pn3Dobs_Int = new wxPanel(nb_3DObsChannels, ID_PANEL22, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL22"));
 	FlexGridSizer11 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer11->AddGrowableCol(0);
 	FlexGridSizer11->AddGrowableRow(0);
+	bmp3Dobs_int = new wxStaticBitmapPopup(pn3Dobs_Int, ID_STATICBITMAP5, wxNullBitmap, wxPoint(0,0), wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP5"));
+	FlexGridSizer11->Add(bmp3Dobs_int, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	pn3Dobs_Int->SetSizer(FlexGridSizer11);
+	FlexGridSizer11->Fit(pn3Dobs_Int);
+	FlexGridSizer11->SetSizeHints(pn3Dobs_Int);
+	pn3Dobs_Conf = new wxPanel(nb_3DObsChannels, ID_PANEL23, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL23"));
+	FlexGridSizer14 = new wxFlexGridSizer(1, 1, 0, 0);
+	FlexGridSizer14->AddGrowableCol(0);
+	FlexGridSizer14->AddGrowableRow(0);
 	bmp3Dobs_conf = new wxStaticBitmapPopup(pn3Dobs_Conf, ID_STATICBITMAP6, wxNullBitmap, wxPoint(0,0), wxDefaultSize, wxFULL_REPAINT_ON_RESIZE, _T("ID_STATICBITMAP6"));
-	FlexGridSizer11->Add(bmp3Dobs_conf, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
-	pn3Dobs_Conf->SetSizer(FlexGridSizer11);
-	FlexGridSizer11->Fit(pn3Dobs_Conf);
-	FlexGridSizer11->SetSizeHints(pn3Dobs_Conf);
+	FlexGridSizer14->Add(bmp3Dobs_conf, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	pn3Dobs_Conf->SetSizer(FlexGridSizer14);
+	FlexGridSizer14->Fit(pn3Dobs_Conf);
+	FlexGridSizer14->SetSizeHints(pn3Dobs_Conf);
 	nb_3DObsChannels->AddPage(pn3Dobs_3D, _("3D points"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Depth, _("Depth"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Int, _("Intensity"), false);
 	nb_3DObsChannels->AddPage(pn3Dobs_Conf, _("Confidence"), false);
-	FlexGridSizer7->Add(nb_3DObsChannels, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-	pn_CObservation3DRangeScan->SetSizer(FlexGridSizer7);
-	FlexGridSizer7->Fit(pn_CObservation3DRangeScan);
-	FlexGridSizer7->SetSizeHints(pn_CObservation3DRangeScan);
+	FlexGridSizer8->Add(nb_3DObsChannels, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+	pn_CObservation3DRangeScan->SetSizer(FlexGridSizer8);
+	FlexGridSizer8->Fit(pn_CObservation3DRangeScan);
+	FlexGridSizer8->SetSizeHints(pn_CObservation3DRangeScan);
 	Notebook1->AddPage(pn_CSensorialFrame, _("Rawlog information"), true);
 	Notebook1->AddPage(pn_Action, _("2D Mov. Action"), false);
 	Notebook1->AddPage(pn_CObservation2DRangeScan, _("Obs: 2D scan"), false);
@@ -619,6 +690,8 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	BoxSizer1->Fit(Panel2);
 	BoxSizer1->SetSizeHints(Panel2);
 	SplitterWindow1->SplitVertically(Panel1, Panel2);
+	FlexGridSizer1->Add(SplitterWindow1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	SetSizer(FlexGridSizer1);
 	MenuBar1 = new wxMenuBar();
 	Menu1 = new wxMenu();
 	MenuItem3 = new wxMenuItem(Menu1, ID_MENUITEM1, _("Open..."), _("Loads a whole rawlog file in memory"), wxITEM_NORMAL);
@@ -829,23 +902,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	StatusBar1->SetFieldsCount(1,__wxStatusBarWidths_1);
 	StatusBar1->SetStatusStyles(1,__wxStatusBarStyles_1);
 	SetStatusBar(StatusBar1);
-	ToolBar1 = new wxToolBar(this, ID_TOOLBAR1, wxDefaultPosition, wxDefaultSize, wxTB_HORIZONTAL|wxTB_TEXT|wxNO_BORDER, _T("ID_TOOLBAR1"));
-	ToolBar1->SetToolBitmapSize(wxSize(32,32));
-	ToolBarItem1 = ToolBar1->AddTool(ID_TOOLBARITEM1, _("Load..."), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")),wxART_TOOLBAR), wxITEM_NORMAL, _("Open a rawlog..."), _("Open a rawlog"));
-	ToolBarItem2 = ToolBar1->AddTool(ID_TOOLBARITEM2, _("Save as..."), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_SAVE_AS")),wxART_TOOLBAR), wxITEM_NORMAL, _("Save the rawlog in memory as..."), _("Save the current rawlog to a file"));
-	ToolBar1->AddSeparator();
-	ToolBarItem3 = ToolBar1->AddTool(ID_TOOLBARITEM3, _("Edit..."), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_COPY")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_COPY")),wxART_TOOLBAR), wxITEM_NORMAL, _("Edit the rawlog: Cut, batch remove,..."), _("Edit the rawlog (cut, remove observations,...)"));
-	ToolBarItem4 = ToolBar1->AddTool(ID_TOOLBARITEM4, _("\"Raw-map\""), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_RAWMAP")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_RAWMAP")),wxART_TOOLBAR), wxITEM_NORMAL, _("Generate a map of laser points from odometry..."), _("Generate a map of laser points from odometry"));
-	ToolBarItem5 = ToolBar1->AddTool(ID_TOOLBARITEM5, _("Motion model"), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_MOTION")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_MOTION")),wxART_TOOLBAR), wxITEM_NORMAL, _("Shows/modifies the probabilistic motion model"), _("Shows/modifies the probabilistic motion model"));
-	ToolBarItem6 = ToolBar1->AddTool(ID_TOOLBARITEM9, _("ICP..."), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ICP")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ICP")),wxART_TOOLBAR), wxITEM_NORMAL, _("Opens the scan matching experimenting module..."), _("Opens the scan matching experimenting module"));
-	ToolBar1->AddSeparator();
-	ToolBarItem7 = ToolBar1->AddTool(ID_TOOLBARITEM10, _("Animate..."), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ANIMATE_SCANS")),wxART_TOOLBAR), wxNullBitmap, wxITEM_NORMAL, _("Shows an animation with the laser scans"), _("Shows an animation with the laser scans"));
-	ToolBarItem8 = ToolBar1->AddTool(ID_TOOLBARITEM6, _("Video..."), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TIP")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TIP")),wxART_TOOLBAR), wxITEM_NORMAL, _("View images as a video..."), _("View images as a video..."));
-	ToolBar1->AddSeparator();
-	ToolBarItem9 = ToolBar1->AddTool(ID_TOOLBARITEM7, _("About..."), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ABOUT")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_ABOUT")),wxART_TOOLBAR), wxITEM_NORMAL, _("Shows the application info"), _("Show information about this program"));
-	ToolBarItem10 = ToolBar1->AddTool(ID_TOOLBARITEM8, _("Quit"), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_QUIT")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("ICON_QUIT")),wxART_TOOLBAR), wxITEM_NORMAL, _("Close the application"), _("Close the application"));
-	ToolBar1->Realize();
-	SetToolBar(ToolBar1);
 	MenuItem37 = new wxMenuItem((&mnuTree), MNU_1, _("Delete element"), _("Erases the selected element"), wxITEM_NORMAL);
 	mnuTree.Append(MenuItem37);
 	MenuItem45 = new wxMenu();
@@ -856,7 +912,18 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	mnuTree.Append(ID_MENUITEM48, _("Add action"), MenuItem45, wxEmptyString);
 	timAutoLoad.SetOwner(this, ID_TIMER1);
 	timAutoLoad.Start(50, true);
-
+	FlexGridSizer1->SetSizeHints(this);
+	
+	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnFileOpen);
+	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnSaveFile);
+	Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnEditRawlog);
+	Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnRawMapOdo);
+	Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnChangeMotionModel);
+	Connect(ID_BUTTON7,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnShowICP);
+	Connect(ID_BUTTON8,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnShowAnimateScans);
+	Connect(ID_BUTTON9,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnShowImagesAsVideo);
+	Connect(ID_BUTTON10,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnAbout);
+	Connect(ID_BUTTON11,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnQuit);
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnbtnEditCommentsClick1);
 	Connect(ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
 	Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&xRawLogViewerFrame::Onslid3DcamConfCmdScrollChanged);
@@ -934,16 +1001,6 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	Connect(ID_MENUITEM32,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnGenOdoLaser);
 	Connect(ID_MENUITEM27,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuShowTips);
 	Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnAbout);
-	Connect(ID_TOOLBARITEM1,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnFileOpen);
-	Connect(ID_TOOLBARITEM2,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnSaveFile);
-	Connect(ID_TOOLBARITEM3,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnEditRawlog);
-	Connect(ID_TOOLBARITEM4,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnRawMapOdo);
-	Connect(ID_TOOLBARITEM5,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnChangeMotionModel);
-	Connect(ID_TOOLBARITEM9,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnShowICP);
-	Connect(ID_TOOLBARITEM10,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnShowAnimateScans);
-	Connect(ID_TOOLBARITEM6,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnShowImagesAsVideo);
-	Connect(ID_TOOLBARITEM7,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnAbout);
-	Connect(ID_TOOLBARITEM8,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnQuit);
 	Connect(MNU_1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuItem37Selected);
 	Connect(ID_MENUITEM49,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuItem46Selected);
 	Connect(ID_MENUITEM50,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnMenuItem47Selected);
@@ -1039,22 +1096,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 
 	// Image directory selector on the toolbar:
 	// --------------------------------------------
-	{
-		ToolBar1->AddSeparator();
-
-		toolbarcomboImages =new wxComboBox(ToolBar1, ID_COMBO_IMG_DIRS, _(""), wxDefaultPosition, wxDefaultSize,0, NULL, wxCB_DROPDOWN );
-
-		Connect(ID_COMBO_IMG_DIRS, wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnComboImageDirsChange);
-
-		toolbarcomboImages->SetToolTip(_("Found external images paths"));
-		toolbarcomboImages->SetMinSize(wxSize(300,-1));
-
-		const long ID_TOOLBAR_TXT = wxNewId();
-		ToolBar1->AddControl( new wxStaticText(ToolBar1,ID_TOOLBAR_TXT,_("Image dirs:")));
-		ToolBar1->AddControl( toolbarcomboImages );
-
-		ToolBar1->Realize();
-	}
+	Connect(ID_COMBO_IMG_DIRS, wxEVT_COMMAND_COMBOBOX_SELECTED,(wxObjectEventFunction)&xRawLogViewerFrame::OnComboImageDirsChange);
 
 	// Construction of "global" dialog variables:
 	// ----------------------------------------------
@@ -1325,12 +1367,11 @@ void xRawLogViewerFrame::loadRawlogFile(
 					toolbarcomboImages->Append( s );
 			}
 	}
+
 #ifdef __WXMSW__
 	SendMessage( (HWND)toolbarcomboImages->GetHandle(), CB_SETDROPPEDWIDTH, toolbarcomboImages->GetBestSize().GetWidth()  , 0);
 #endif
-	ToolBar1->Realize();
-
-
+	//ToolBar1->Realize();
 
 	wxBusyCursor        waitCursor;
 

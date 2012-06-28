@@ -39,8 +39,6 @@ IF(wxWidgets_FOUND)
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrpt-reactivenav mrptwxthings)
-
-	# Assure the MRPT library is updated:
 	ADD_DEPENDENCIES(${TMP_TARGET_NAME} mrptwxthings)
 	
 	# Dependencies on MRPT libraries:
