@@ -56,7 +56,6 @@
 #include <wx/artprov.h>
 #include <wx/combobox.h>
 
-
 #include <map>
 #include <string>
 #include <wx/docview.h>
@@ -65,6 +64,18 @@
 #include <mrpt/base.h>
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
+
+// JLBC: Unix X headers have these funny things...
+#ifdef Button1
+#	undef Button1
+#	undef Button2
+#	undef Button3
+#	undef Button4
+#	undef Button5
+#	undef Button6
+#	undef Button7
+#endif
+
 
 // A list of sensor labels (and the times they appear) in the currently loaded rawlog.
 struct TInfoPerSensorLabel
