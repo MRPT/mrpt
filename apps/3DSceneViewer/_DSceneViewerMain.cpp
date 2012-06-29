@@ -34,6 +34,7 @@
 //(*InternalHeaders(_DSceneViewerFrame)
 #include <wx/artprov.h>
 #include <wx/bitmap.h>
+#include <wx/tglbtn.h>
 #include <wx/icon.h>
 #include <wx/intl.h>
 #include <wx/image.h>
@@ -72,6 +73,9 @@
 #include <mrpt/gui/CMyGLCanvasBase.h>
 #include <mrpt/opengl/CFBORender.h>
 
+#include <mrpt/opengl.h>  // All objects in mrpt-opengl
+#include <mrpt/opengl/CPlanarLaserScan.h>			// It's in lib mrpt-maps
+#include <mrpt/opengl/CAngularObservationMesh.h>	// It's in lib mrpt-maps
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider
@@ -312,6 +316,20 @@ void CMyGLCanvas::OnCharCustom( wxKeyEvent& event )
 }
 
 //(*IdInit(_DSceneViewerFrame)
+const long _DSceneViewerFrame::ID_BUTTON1 = wxNewId();
+const long _DSceneViewerFrame::ID_BUTTON2 = wxNewId();
+const long _DSceneViewerFrame::ID_STATICLINE1 = wxNewId();
+const long _DSceneViewerFrame::ID_BUTTON3 = wxNewId();
+const long _DSceneViewerFrame::ID_BUTTON4 = wxNewId();
+const long _DSceneViewerFrame::ID_BUTTON5 = wxNewId();
+const long _DSceneViewerFrame::ID_STATICLINE2 = wxNewId();
+const long _DSceneViewerFrame::ID_BUTTON6 = wxNewId();
+const long _DSceneViewerFrame::ID_BUTTON7 = wxNewId();
+const long _DSceneViewerFrame::ID_BUTTON8 = wxNewId();
+const long _DSceneViewerFrame::ID_BUTTON9 = wxNewId();
+const long _DSceneViewerFrame::ID_STATICLINE3 = wxNewId();
+const long _DSceneViewerFrame::ID_BUTTON10 = wxNewId();
+const long _DSceneViewerFrame::ID_BUTTON11 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM1 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM2 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM5 = wxNewId();
@@ -342,18 +360,6 @@ const long _DSceneViewerFrame::ID_MENUITEM14 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM13 = wxNewId();
 const long _DSceneViewerFrame::idMenuAbout = wxNewId();
 const long _DSceneViewerFrame::ID_STATUSBAR1 = wxNewId();
-const long _DSceneViewerFrame::ID_TOOLBARITEM7 = wxNewId();
-const long _DSceneViewerFrame::ID_TOOLBARITEM1 = wxNewId();
-const long _DSceneViewerFrame::ID_TOOLBARITEM5 = wxNewId();
-const long _DSceneViewerFrame::ID_TOOLBARITEM6 = wxNewId();
-const long _DSceneViewerFrame::ID_TOOLBARITEM11 = wxNewId();
-const long _DSceneViewerFrame::ID_TOOLBARITEM2 = wxNewId();
-const long _DSceneViewerFrame::ID_TOOLBARITEM10 = wxNewId();
-const long _DSceneViewerFrame::ID_TOOLBARITEM8 = wxNewId();
-const long _DSceneViewerFrame::ID_TOOLBARITEM9 = wxNewId();
-const long _DSceneViewerFrame::ID_TOOLBARITEM3 = wxNewId();
-const long _DSceneViewerFrame::ID_TOOLBARITEM4 = wxNewId();
-const long _DSceneViewerFrame::ID_TOOLBAR1 = wxNewId();
 const long _DSceneViewerFrame::ID_TIMER1 = wxNewId();
 //*)
 
@@ -373,8 +379,12 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
 {
 	//wxLogNull logQuiet;  // There're some issues with the toolbar icons.. just ignore them
 	logWin = new wxLogWindow(this,wxT("Log window"),false);
-
 	theWindow = this;
+
+	// make sure we register all mrpt-maps classes: 
+	registerClass( CLASS_ID( CPlanarLaserScan ));
+	registerClass( CLASS_ID( CAngularObservationMesh ));
+
 
 	// Load my custom icons:
 #if wxCHECK_VERSION(2, 8, 0)
@@ -388,20 +398,78 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     wxMenu* MenuItem15;
     wxMenuItem* MenuItem1;
     wxMenuItem* MenuItem4;
+    wxFlexGridSizer* FlexGridSizer2;
     wxMenuItem* MenuItem13;
     wxMenu* Menu1;
     wxMenuItem* MenuItem12;
     wxMenuItem* MenuItem3;
     wxMenuBar* MenuBar1;
+    wxFlexGridSizer* FlexGridSizer1;
     wxMenu* Menu2;
     
     Create(parent, id, _("3DSceneViewer - Part of the MRPT project - Jose Luis Blanco (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
-    SetClientSize(wxSize(672,539));
+    SetMinSize(wxSize(150,100));
     {
     	wxIcon FrameIcon;
     	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
     	SetIcon(FrameIcon);
     }
+    FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer1->AddGrowableCol(1);
+    FlexGridSizer1->AddGrowableRow(0);
+    FlexGridSizer2 = new wxFlexGridSizer(0, 1, 0, 0);
+    btnNew = new wxCustomButton(this,ID_BUTTON1,_("  New  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NORMAL_FILE")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON1"));
+    btnNew->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NORMAL_FILE")),wxART_TOOLBAR));
+    btnNew->SetMargins(wxSize(5,5));
+    FlexGridSizer2->Add(btnNew, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    btnToolbarOpen = new wxCustomButton(this,ID_BUTTON2,_("  Open... "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON2"));
+    btnToolbarOpen->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_TOOLBAR));
+    btnToolbarOpen->SetMargins(wxSize(5,5));
+    FlexGridSizer2->Add(btnToolbarOpen, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    StaticLine1 = new wxStaticLine(this, ID_STATICLINE1, wxDefaultPosition, wxSize(50,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE1"));
+    FlexGridSizer2->Add(StaticLine1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    btnPrev = new wxCustomButton(this,ID_BUTTON3,_("  Previous  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_BACK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON3"));
+    btnPrev->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_BACK")),wxART_TOOLBAR));
+    btnPrev->SetMargins(wxSize(5,5));
+    FlexGridSizer2->Add(btnPrev, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    btnNext = new wxCustomButton(this,ID_BUTTON4,_("  Next  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON4"));
+    btnNext->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_TOOLBAR));
+    btnNext->SetMargins(wxSize(5,5));
+    FlexGridSizer2->Add(btnNext, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    btnReload = new wxCustomButton(this,ID_BUTTON5,_("  Reload  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REDO")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON5"));
+    btnReload->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REDO")),wxART_TOOLBAR));
+    btnReload->SetMargins(wxSize(5,5));
+    FlexGridSizer2->Add(btnReload, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, wxDLG_UNIT(this,wxSize(1,0)).GetWidth());
+    StaticLine2 = new wxStaticLine(this, ID_STATICLINE2, wxDefaultPosition, wxSize(50,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE2"));
+    FlexGridSizer2->Add(StaticLine2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    btnOptions = new wxCustomButton(this,ID_BUTTON6,_("  Options  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON6"));
+    btnOptions->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_TOOLBAR));
+    btnOptions->SetMargins(wxSize(5,5));
+    FlexGridSizer2->Add(btnOptions, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    btnOrtho = new wxCustomButton(this,ID_BUTTON7,_("  Ortho  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_TOGGLE|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON7"));
+    btnOrtho->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")),wxART_TOOLBAR));
+    btnOrtho->SetMargins(wxSize(5,5));
+    FlexGridSizer2->Add(btnOrtho, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    btnAutoplay = new wxCustomButton(this,ID_BUTTON8,_("  Autoplay  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REMOVABLE")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_TOGGLE|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON8"));
+    btnAutoplay->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REMOVABLE")),wxART_TOOLBAR));
+    btnAutoplay->SetMargins(wxSize(5,5));
+    FlexGridSizer2->Add(btnAutoplay, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    btnCapture = new wxCustomButton(this,ID_BUTTON9,_("  Capture  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HARDDISK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_TOGGLE|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON9"));
+    btnCapture->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HARDDISK")),wxART_TOOLBAR));
+    btnCapture->SetMargins(wxSize(5,5));
+    FlexGridSizer2->Add(btnCapture, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    StaticLine3 = new wxStaticLine(this, ID_STATICLINE3, wxDefaultPosition, wxSize(50,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE3"));
+    FlexGridSizer2->Add(StaticLine3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    btnAbout = new wxCustomButton(this,ID_BUTTON10,_("  About..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON10"));
+    btnAbout->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")),wxART_TOOLBAR));
+    btnAbout->SetMargins(wxSize(5,5));
+    FlexGridSizer2->Add(btnAbout, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    btnQuit = new wxCustomButton(this,ID_BUTTON11,_("  Quit  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON11"));
+    btnQuit->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_TOOLBAR));
+    btnQuit->SetMargins(wxSize(5,5));
+    FlexGridSizer2->Add(btnQuit, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    SetSizer(FlexGridSizer1);
     MenuBar1 = new wxMenuBar();
     Menu1 = new wxMenu();
     MenuItem3 = new wxMenuItem(Menu1, ID_MENUITEM1, _("New scene"), wxEmptyString, wxITEM_NORMAL);
@@ -483,27 +551,23 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     StatusBar1->SetFieldsCount(4,__wxStatusBarWidths_1);
     StatusBar1->SetStatusStyles(4,__wxStatusBarStyles_1);
     SetStatusBar(StatusBar1);
-    ToolBar1 = new wxToolBar(this, ID_TOOLBAR1, wxDefaultPosition, wxDefaultSize, wxTB_FLAT|wxTB_VERTICAL|wxTB_TEXT|wxNO_BORDER, _T("ID_TOOLBAR1"));
-    ToolBarItem1 = ToolBar1->AddTool(ID_TOOLBARITEM7, _("New"), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NORMAL_FILE")),wxART_TOOLBAR), wxNullBitmap, wxITEM_NORMAL, _("New scene"), _("New scene"));
-    ToolBarItem2 = ToolBar1->AddTool(ID_TOOLBARITEM1, _("Open"), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_TOOLBAR), wxITEM_NORMAL, _("Open a \"3Dscene\" file..."), _("Open a \"3Dscene\" file..."));
-    ToolBar1->AddSeparator();
-    ToolBarItem3 = ToolBar1->AddTool(ID_TOOLBARITEM5, _("Previous"), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_BACK")),wxART_TOOLBAR), wxNullBitmap, wxITEM_NORMAL, _("Open previous file in directory..."), _("Open previous file in directory..."));
-    ToolBarItem4 = ToolBar1->AddTool(ID_TOOLBARITEM6, _("Next"), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_TOOLBAR), wxNullBitmap, wxITEM_NORMAL, _("Open next file in directory..."), _("Open next file in directory..."));
-    ToolBarItem5 = ToolBar1->AddTool(ID_TOOLBARITEM11, _("Reload"), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REDO")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(_T("wxART_REDO")))), wxNullBitmap, wxITEM_NORMAL, _("Reload current file (F5)"), wxEmptyString);
-    ToolBar1->AddSeparator();
-    ToolBarItem6 = ToolBar1->AddTool(ID_TOOLBARITEM2, _("Options"), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_TOOLBAR), wxNullBitmap, wxITEM_NORMAL, _("View the options of 3DSceneViewer"), _("View the options of 3DSceneViewer"));
-    btnOrtho = ToolBar1->AddTool(ID_TOOLBARITEM10, _("Ortho"), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")),wxART_TOOLBAR), wxNullBitmap, wxITEM_CHECK, _("Toogle projective/orthogonal view..."), _("Toogle projective/orthogonal view"));
-    btnAutoplay = ToolBar1->AddTool(ID_TOOLBARITEM8, _("Autoplay"), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REMOVABLE")),wxART_TOOLBAR), wxNullBitmap, wxITEM_CHECK, _("Play a sequence of files"), _("Play consecutive files in the current directory"));
-    btnRecord = ToolBar1->AddTool(ID_TOOLBARITEM9, _("Capture..."), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HARDDISK")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HARDDISK")),wxART_TOOLBAR), wxITEM_CHECK, _("Start capturing screenshots to a directory..."), _("Start capturing screenshots to a directory..."));
-    ToolBar1->AddSeparator();
-    ToolBarItem10 = ToolBar1->AddTool(ID_TOOLBARITEM3, _("About..."), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")),wxART_TOOLBAR), wxNullBitmap, wxITEM_NORMAL, _("About..."), _("Show program information"));
-    ToolBarItem11 = ToolBar1->AddTool(ID_TOOLBARITEM4, _("Quit"), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_TOOLBAR), wxNullBitmap, wxITEM_NORMAL, _("Close the application"), _("Close the application"));
-    ToolBar1->Realize();
-    SetToolBar(ToolBar1);
     timLoadFileCmdLine.SetOwner(this, ID_TIMER1);
     timLoadFileCmdLine.Start(50, true);
+    FlexGridSizer1->Fit(this);
+    FlexGridSizer1->SetSizeHints(this);
     Center();
     
+    Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
+    Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
+    Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnPrevious);
+    Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNext);
+    Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnReload);
+    Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuOptions);
+    Connect(ID_BUTTON7,wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnbtnOrthoClicked);
+    Connect(ID_BUTTON8,wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnbtnAutoplayClicked);
+    Connect(ID_BUTTON9,wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnBtnRecordClicked);
+    Connect(ID_BUTTON10,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnAbout);
+    Connect(ID_BUTTON11,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnQuit);
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
     Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
     Connect(ID_MENUITEM5,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnReload);
@@ -527,17 +591,6 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_MENUITEM9,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuAddSICK);
     Connect(ID_MENUITEM10,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnStartCameraTravelling);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnAbout);
-    Connect(ID_TOOLBARITEM7,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
-    Connect(ID_TOOLBARITEM1,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
-    Connect(ID_TOOLBARITEM5,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnPrevious);
-    Connect(ID_TOOLBARITEM6,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNext);
-    Connect(ID_TOOLBARITEM11,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnReload);
-    Connect(ID_TOOLBARITEM2,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuOptions);
-    Connect(ID_TOOLBARITEM10,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnbtnOrthoClicked);
-    Connect(ID_TOOLBARITEM8,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnbtnAutoplayClicked);
-    Connect(ID_TOOLBARITEM9,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnBtnRecordClicked);
-    Connect(ID_TOOLBARITEM3,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnAbout);
-    Connect(ID_TOOLBARITEM4,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnQuit);
     Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&_DSceneViewerFrame::OntimLoadFileCmdLineTrigger);
     //*)
 
@@ -548,7 +601,9 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_TRAVELLING_TIMER,wxEVT_TIMER,(wxObjectEventFunction)&_DSceneViewerFrame::OnTravellingTrigger);
 
     // Create the wxCanvas object:
-    m_canvas = new CMyGLCanvas( this, wxID_ANY, wxDefaultPosition, wxDefaultSize );
+	m_canvas = new CMyGLCanvas( this, wxID_ANY, wxDefaultPosition, wxDefaultSize );
+	m_canvas->SetMinClientSize( wxSize(100,100));
+    FlexGridSizer1->Add(m_canvas, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 
 	// Load an empty scene:
     wxCommandEvent dummEvent;
@@ -676,7 +731,7 @@ void _DSceneViewerFrame::loadFromFile( const std::string &fil, bool isInASequenc
 			)
 		{
 			wxMessageBox( _("File is empty or format unrecognized."), _("Warning"), wxOK, this);
-			theWindow->ToolBar1->ToggleTool(ID_TOOLBARITEM8, false);
+			btnAutoplay->SetValue( false );
 		}
 
 
@@ -725,12 +780,12 @@ void _DSceneViewerFrame::loadFromFile( const std::string &fil, bool isInASequenc
     catch(std::exception &e)
     {
         std::cerr << e.what() << std::endl;
-		theWindow->ToolBar1->ToggleTool(ID_TOOLBARITEM8, false);
+		btnAutoplay->SetValue( false );
         wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
     }
     catch(...)
     {
-		theWindow->ToolBar1->ToggleTool(ID_TOOLBARITEM8, false);
+		btnAutoplay->SetValue( false );
         wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
     }
 }
@@ -752,7 +807,7 @@ void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent& event)
 
 void _DSceneViewerFrame::OnbtnAutoplayClicked(wxCommandEvent& event)
 {
-	if ( btnAutoplay->IsToggled() )
+	if ( btnAutoplay->GetValue() )
 		m_autoplayTimer->Start(5,true); // One-shot:
 }
 
@@ -764,7 +819,7 @@ void _DSceneViewerFrame::OntimAutoplay(wxTimerEvent& event)
 	m_canvas->OnCharCustom( dummyEvent );
 
 	// Continue?
-	if ( btnAutoplay->IsToggled() )
+	if ( btnAutoplay->GetValue() )
 		m_autoplayTimer->Start( delayBetweenAutoplay  ,true); // One-shot:
 }
 
@@ -835,7 +890,7 @@ void _DSceneViewerFrame::OnClose(wxCloseEvent& event)
 
 void _DSceneViewerFrame::OnBtnRecordClicked(wxCommandEvent& event)
 {
-	if ( btnRecord->IsToggled() )
+	if ( btnCapture->GetValue() )
 	{
 	    // Starting recording:
         wxDirDialog dirDialog(
@@ -848,10 +903,11 @@ void _DSceneViewerFrame::OnBtnRecordClicked(wxCommandEvent& event)
             capturingDir = string( dirDialog.GetPath().mb_str() );
             isCapturing = true;
             captureCount=0;
+            btnCapture->SetValue(true);
         }
         else
         {
-            btnRecord->SetToggle(false);
+            btnCapture->SetValue(false);
         }
 	}
 	else
@@ -862,7 +918,7 @@ void _DSceneViewerFrame::OnBtnRecordClicked(wxCommandEvent& event)
 
 void _DSceneViewerFrame::OnbtnOrthoClicked(wxCommandEvent& event)
 {
-	bool ortho = btnOrtho->IsToggled();
+	bool ortho = btnOrtho->GetValue();
 	m_canvas->cameraIsProjective = !ortho;
 
     m_canvas->Refresh(false);
@@ -902,12 +958,12 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
     catch(std::exception &e)
     {
         std::cerr << e.what() << std::endl;
-		ToolBar1->ToggleTool(ID_TOOLBARITEM8, false);
+		btnAutoplay->SetValue( false );
         wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
     }
     catch(...)
     {
-		ToolBar1->ToggleTool(ID_TOOLBARITEM8, false);
+		btnAutoplay->SetValue( false );
         wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
     }
 }
@@ -935,12 +991,12 @@ void _DSceneViewerFrame::OnMenuSave(wxCommandEvent& event)
     catch(std::exception &e)
     {
         std::cerr << e.what() << std::endl;
-		ToolBar1->ToggleTool(ID_TOOLBARITEM8, false);
+		btnAutoplay->SetValue( false );
         wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
     }
     catch(...)
     {
-		ToolBar1->ToggleTool(ID_TOOLBARITEM8, false);
+		btnAutoplay->SetValue( false );
         wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
     }
 }
@@ -1651,7 +1707,7 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 	}
 
 	wxArrayInt selections;
-	wxGetMultipleChoices(selections, _("Select by class:"),_("Select objects"),glClassNames,this);
+	wxGetSelectedChoices(selections, _("Select by class:"),_("Select objects"),glClassNames,this);
 
 	// Build list of classes IDs:
 	vector<const TRuntimeClassId*> selected_classes;

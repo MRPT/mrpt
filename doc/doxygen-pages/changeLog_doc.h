@@ -35,11 +35,13 @@
  <a name="1.0.0">
   <h2>Version 1.0.0 - (Under development) </h2></a>
 	- Changes in apps:
+		- navlog-viewer:
+			- Fixed some minor visualization errors.
 		- RawLogViewer:
 			- Import sequence of images as rawlog: Didn't detect "png" file extension as images - <a href="http://code.google.com/p/mrpt/source/detail?r=2940" >r2940</a> - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=34" >#34</a>
 			- The GUI toolbar has been ported from wxWidget's ToolBar to sets of wxCustomButton's to avoid visualization problems in wx 2.9.X - <a href="http://code.google.com/p/mrpt/source/detail?r=2950" >r2950</a>
-		- navlog-viewer:
-			- Fixed some minor visualization errors.
+		- SceneViewer3D:
+			- The GUI toolbar has been ported from wxWidget's ToolBar to sets of wxCustomButton's to avoid visualization problems in wx 2.9.X - <a href="http://code.google.com/p/mrpt/source/detail?r=2952" >r2952</a>
 	- Changes in classes:
 		- [mrpt-base]
 			- mrpt::utils::CDynamicGrid::setSize() now also accepts a "fill_value" argument.

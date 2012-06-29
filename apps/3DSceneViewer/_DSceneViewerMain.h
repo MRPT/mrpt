@@ -40,7 +40,9 @@
 #include <wx/intl.h>
 #include <wx/image.h>
 #include <wx/string.h>
+#include <wx/statline.h>
 
+#include <wx/things/toggle.h>
 
 class CDlgCamTracking;
 
@@ -122,6 +124,20 @@ class _DSceneViewerFrame: public wxFrame
 		void OntimAutoplay(wxTimerEvent& event);
 
         //(*Identifiers(_DSceneViewerFrame)
+        static const long ID_BUTTON1;
+        static const long ID_BUTTON2;
+        static const long ID_STATICLINE1;
+        static const long ID_BUTTON3;
+        static const long ID_BUTTON4;
+        static const long ID_BUTTON5;
+        static const long ID_STATICLINE2;
+        static const long ID_BUTTON6;
+        static const long ID_BUTTON7;
+        static const long ID_BUTTON8;
+        static const long ID_BUTTON9;
+        static const long ID_STATICLINE3;
+        static const long ID_BUTTON10;
+        static const long ID_BUTTON11;
         static const long ID_MENUITEM1;
         static const long ID_MENUITEM2;
         static const long ID_MENUITEM5;
@@ -152,18 +168,6 @@ class _DSceneViewerFrame: public wxFrame
         static const long ID_MENUITEM13;
         static const long idMenuAbout;
         static const long ID_STATUSBAR1;
-        static const long ID_TOOLBARITEM7;
-        static const long ID_TOOLBARITEM1;
-        static const long ID_TOOLBARITEM5;
-        static const long ID_TOOLBARITEM6;
-        static const long ID_TOOLBARITEM11;
-        static const long ID_TOOLBARITEM2;
-        static const long ID_TOOLBARITEM10;
-        static const long ID_TOOLBARITEM8;
-        static const long ID_TOOLBARITEM9;
-        static const long ID_TOOLBARITEM3;
-        static const long ID_TOOLBARITEM4;
-        static const long ID_TOOLBAR1;
         static const long ID_TIMER1;
         //*)
 
@@ -171,40 +175,42 @@ class _DSceneViewerFrame: public wxFrame
         static const long ID_TIMER_AUTOPLAY;
 
         //(*Declarations(_DSceneViewerFrame)
-        wxToolBarToolBase* btnOrtho;
-        wxToolBarToolBase* ToolBarItem4;
         wxMenuItem* MenuItem8;
         wxMenuItem* mnuSelectionDelete;
-        wxToolBar* ToolBar1;
         wxMenuItem* MenuItem7;
-        wxToolBarToolBase* ToolBarItem3;
+        wxCustomButton* btnCapture;
+        wxCustomButton* btnNew;
+        wxCustomButton* btnNext;
         wxMenuItem* MenuItem5;
-        wxToolBarToolBase* ToolBarItem11;
-        wxToolBarToolBase* btnRecord;
-        wxToolBarToolBase* btnAutoplay;
         wxMenu* Menu3;
-        wxToolBarToolBase* ToolBarItem10;
         wxMenu* MenuItem20;
         wxMenuItem* MenuItem14;
+        wxCustomButton* btnToolbarOpen;
         wxMenuItem* mnuItemChangeMaxPointsPerOctreeNode;
+        wxCustomButton* btnQuit;
+        wxCustomButton* btnAutoplay;
         wxMenuItem* MenuItem22;
         wxMenuItem* MenuItem10;
-        wxToolBarToolBase* ToolBarItem6;
-        wxToolBarToolBase* ToolBarItem1;
+        wxStaticLine* StaticLine2;
+        wxCustomButton* btnOptions;
         wxMenuItem* mnuSelectNone;
         wxMenuItem* mnuSceneStats;
         wxMenuItem* mnuSelectionScale;
+        wxCustomButton* btnOrtho;
         wxStatusBar* StatusBar1;
         wxMenuItem* MenuItem6;
-        wxToolBarToolBase* ToolBarItem5;
+        wxStaticLine* StaticLine3;
+        wxStaticLine* StaticLine1;
         wxTimer timLoadFileCmdLine;
+        wxCustomButton* btnAbout;
         wxMenuItem* MenuItem21;
         wxMenuItem* mnuSelectByClass;
         wxMenuItem* MenuItem16;
         wxMenuItem* MenuItem9;
         wxMenu* MenuItem18;
         wxMenuItem* mnuItemShowCloudOctrees;
-        wxToolBarToolBase* ToolBarItem2;
+        wxCustomButton* btnReload;
+        wxCustomButton* btnPrev;
         wxMenu* Menu4;
         wxMenuItem* MenuItem19;
         wxMenu* MenuItem11;

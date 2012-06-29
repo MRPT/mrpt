@@ -27,6 +27,8 @@ IF(wxWidgets_FOUND AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		SET(SRCS ${SRCS} resource.rc)
 	ENDIF(WIN32)
 
+	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
+	
 	# Define the executable target:
 	ADD_EXECUTABLE(SceneViewer3D WIN32 ${SRCS})
 
@@ -41,10 +43,13 @@ IF(wxWidgets_FOUND AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 
+	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrptwxthings)
+	ADD_DEPENDENCIES(${TMP_TARGET_NAME} mrptwxthings)
+
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically, 
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-opengl mrpt-gui)
+	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-opengl mrpt-gui mrpt-maps)
 
 	# ----------------------------------------------------------------------------
 	#   				INSTALL
