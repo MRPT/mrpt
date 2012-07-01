@@ -79,7 +79,7 @@ void  CHolonomicVFF::navigate(
 	CHolonomicLogFileRecordPtr &logRecord)
 {
 	// Create a log record for returning data.
-	if (logRecord)
+	if (!logRecord)
 	{
 		logRecord = CLogFileRecord_VFF::Create();
 	}
@@ -90,8 +90,8 @@ void  CHolonomicVFF::navigate(
 	// Obstacles:
 	{
 		const size_t n = obstacles.size();
-		const double inc_ang = M_PI/n;
-		double ang = M_PI *( -1.0 + 2.0*(0.5)/n );
+		const double inc_ang = 2*M_PI/n;
+		double ang = -M_PI + 0.5*inc_ang;
 		for (size_t i=0;i<n;i++, ang+=inc_ang )
 		{
 			// Compute force strength:
