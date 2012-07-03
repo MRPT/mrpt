@@ -18,6 +18,7 @@
 							<cols>1</cols>
 							<rows>2</rows>
 							<growablecols>0</growablecols>
+							<growablerows>0,1</growablerows>
 							<object class="sizeritem">
 								<object class="wxBoxSizer" variable="BoxSizer1" member="no">
 									<object class="sizeritem">
@@ -141,6 +142,7 @@
 													<item>ND (Nearnest  Diagram)</item>
 												</content>
 												<default>-1</default>
+												<style>wxRA_HORIZONTAL</style>
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
@@ -152,6 +154,7 @@
 													<size>8</size>
 													<family>teletype</family>
 												</font>
+												<minsize>-1,100</minsize>
 												<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB</style>
 											</object>
 											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>

@@ -30,17 +30,29 @@
 #define HOLONOMIC_NAVIGATOR_DEMOMAIN_H
 
 //(*Headers(holonomic_navigator_demoFrame)
-#include <wx/notebook.h>
 #include <wx/sizer.h>
-#include <wx/radiobox.h>
+#include <wx/notebook.h>
 #include <wx/menu.h>
-#include <wx/textctrl.h>
-#include <wx/things/toggle.h>
-#include "MyGLCanvas.h"
 #include <wx/panel.h>
-#include <wx/frame.h>
 #include <wx/statusbr.h>
+#include <wx/frame.h>
+#include "MyGLCanvas.h"
+#include <wx/textctrl.h>
+#include <wx/radiobox.h>
+#include <wx/things/toggle.h>
 //*)
+
+// JLBC: Unix X headers have these funny things...
+#ifdef Button1
+#	undef Button1
+#	undef Button2
+#	undef Button3
+#	undef Button4
+#	undef Button5
+#	undef Button6
+#	undef Button7
+#endif
+
 
 class holonomic_navigator_demoFrame: public wxFrame
 {
@@ -79,21 +91,21 @@ class holonomic_navigator_demoFrame: public wxFrame
         //*)
 
         //(*Declarations(holonomic_navigator_demoFrame)
-        wxCustomButton* btnStop;
-        wxNotebook* Notebook1;
-        wxRadioBox* rbHoloMethod;
-        wxCustomButton* Button2;
-        wxCustomButton* btnStart;
-        wxTextCtrl* edHoloParams;
-        wxCustomButton* Button1;
-        wxCustomButton* btnLoadMap;
-        wxCustomButton* btnQuit;
         wxPanel* Panel1;
         wxStatusBar* StatusBar1;
-        wxCustomButton* btnHelp;
+        wxTextCtrl* edHoloParams;
         wxPanel* Panel2;
-        CMyGLCanvas* m_plotScan;
         CMyGLCanvas* m_plot3D;
+        wxCustomButton* btnLoadMap;
+        wxCustomButton* btnStart;
+        wxRadioBox* rbHoloMethod;
+        wxCustomButton* Button1;
+        wxCustomButton* btnStop;
+        wxNotebook* Notebook1;
+        wxCustomButton* Button2;
+        CMyGLCanvas* m_plotScan;
+        wxCustomButton* btnHelp;
+        wxCustomButton* btnQuit;
         //*)
 
         DECLARE_EVENT_TABLE()

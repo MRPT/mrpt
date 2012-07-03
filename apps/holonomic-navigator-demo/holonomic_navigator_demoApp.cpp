@@ -33,7 +33,7 @@
 #include <wx/image.h>
 //*)
 
-IMPLEMENT_APP(holonomic_navigator_demoApp);
+IMPLEMENT_APP(holonomic_navigator_demoApp)
 
 bool holonomic_navigator_demoApp::OnInit()
 {
