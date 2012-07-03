@@ -36,111 +36,99 @@ using namespace std;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 
-/*---------------------------------------------------------------
-					write
- ---------------------------------------------------------------*/
-void  CConfigFileBase::write(const std::string &section, const std::string &name, double value)
+void  CConfigFileBase::write(const std::string &section, const std::string &name, double value, const int name_padding_width, const int value_padding_width, const std::string &comment )
 {
-	writeString(section, name, format("%e",value));
+	writeString(section, name, format("%e",value), name_padding_width,value_padding_width,comment);
 }
-
-/*---------------------------------------------------------------
-					write
- ---------------------------------------------------------------*/
-void  CConfigFileBase::write(const std::string &section, const std::string &name, float value)
+void  CConfigFileBase::write(const std::string &section, const std::string &name, float value, const int name_padding_width, const int value_padding_width, const std::string &comment )
 {
-	writeString(section, name, format("%e",value) );
+	writeString(section, name, format("%e",value), name_padding_width,value_padding_width,comment);
 }
-
-/*---------------------------------------------------------------
-					write
- ---------------------------------------------------------------*/
-void  CConfigFileBase::write(const std::string &section, const std::string &name, int value)
+void  CConfigFileBase::write(const std::string &section, const std::string &name, int value, const int name_padding_width, const int value_padding_width, const std::string &comment )
 {
-	writeString(section, name, format("%i",value) );
+	writeString(section, name, format("%i",value), name_padding_width,value_padding_width,comment);
 }
-
-/*---------------------------------------------------------------
-					write
- ---------------------------------------------------------------*/
-void  CConfigFileBase::write(const std::string &section, const std::string &name, unsigned int value)
+void  CConfigFileBase::write(const std::string &section, const std::string &name, unsigned int value, const int name_padding_width, const int value_padding_width, const std::string &comment )
 {
-	writeString(section, name, format("%u",value) );
+	writeString(section, name, format("%u",value), name_padding_width,value_padding_width,comment);
 }
-
 #if MRPT_WORD_SIZE>32
-/*---------------------------------------------------------------
-					write
- ---------------------------------------------------------------*/
-void  CConfigFileBase::write(const std::string &section, const std::string &name, size_t value)
+void  CConfigFileBase::write(const std::string &section, const std::string &name, size_t value, const int name_padding_width, const int value_padding_width, const std::string &comment )
 {
-	writeString(section, name, format("%u",static_cast<unsigned int>(value)) );
+	writeString(section, name, format("%u",static_cast<unsigned int>(value)) , name_padding_width,value_padding_width,comment);
 }
 #endif
 
-
-/*---------------------------------------------------------------
-					write
- ---------------------------------------------------------------*/
-void  CConfigFileBase::write(const std::string &section, const std::string &name, const std::string &value)
+void  CConfigFileBase::write(const std::string &section, const std::string &name, const std::string &value, const int name_padding_width, const int value_padding_width, const std::string &comment )
 {
-	writeString(section, name, value );
+	writeString(section, name, value , name_padding_width,value_padding_width,comment);
 }
 
-/*---------------------------------------------------------------
-					write
- ---------------------------------------------------------------*/
-void  CConfigFileBase::write(const std::string &section, const std::string &name, const std::vector<int> &value)
+void  CConfigFileBase::write(const std::string &section, const std::string &name, const std::vector<int> &value, const int name_padding_width, const int value_padding_width, const std::string &comment )
 {
 	string str;
 	for (std::vector<int>::const_iterator it=value.begin();it!=value.end();++it)
 		str+=format("%i ", *it);
-	writeString(section, name, str  );
+	writeString(section, name, str , name_padding_width,value_padding_width,comment);
 }
 
-/*---------------------------------------------------------------
-					write
- ---------------------------------------------------------------*/
-void  CConfigFileBase::write(const std::string &section, const std::string &name, const std::vector<unsigned int> &value)
+void  CConfigFileBase::write(const std::string &section, const std::string &name, const std::vector<unsigned int> &value, const int name_padding_width, const int value_padding_width, const std::string &comment )
 {
 	string str;
 	for (std::vector<unsigned int>::const_iterator it=value.begin();it!=value.end();++it)
 		str+=format("%u ", *it);
-	writeString(section, name, str  );
+	writeString(section, name, str , name_padding_width,value_padding_width,comment);
 }
 
-/*---------------------------------------------------------------
-					write
- ---------------------------------------------------------------*/
-void  CConfigFileBase::write(const std::string &section, const std::string &name, const std::vector<float> &value)
+void  CConfigFileBase::write(const std::string &section, const std::string &name, const std::vector<float> &value, const int name_padding_width, const int value_padding_width, const std::string &comment )
 {
 	string str;
 	for (std::vector<float>::const_iterator it=value.begin();it!=value.end();++it)
 		str+=format("%.9e ", *it);
-	writeString(section, name, str  );
+	writeString(section, name, str , name_padding_width,value_padding_width,comment);
 }
 
-/*---------------------------------------------------------------
-					write
- ---------------------------------------------------------------*/
-void  CConfigFileBase::write(const std::string &section, const std::string &name, const std::vector<double> &value)
+void  CConfigFileBase::write(const std::string &section, const std::string &name, const std::vector<double> &value, const int name_padding_width, const int value_padding_width, const std::string &comment )
 {
 	string str;
 	for (std::vector<double>::const_iterator it=value.begin();it!=value.end();++it)
 		str+=format("%.16e ", *it);
-	writeString(section, name, str  );
+	writeString(section, name, str , name_padding_width,value_padding_width,comment);
 }
 
-/*---------------------------------------------------------------
-					write
- ---------------------------------------------------------------*/
-void  CConfigFileBase::write(const std::string &section, const std::string &name, const std::vector<bool> &value)
+void  CConfigFileBase::write(const std::string &section, const std::string &name, const std::vector<bool> &value, const int name_padding_width, const int value_padding_width, const std::string &comment )
 {
 	string str;
 	for (std::vector<bool>::const_iterator it=value.begin();it!=value.end();++it)
 		str+=format("%c ", *it ? '1':'0');
-	writeString(section, name, str  );
+	writeString(section, name, str , name_padding_width,value_padding_width,comment);
 }
+
+/** Write a generic string with optional padding and a comment field ("// ...") at the end of the line. */
+void  CConfigFileBase::writeString(const std::string &section,const std::string &name, const std::string &str, const int name_padding_width, const int value_padding_width, const std::string &comment)
+{
+	if (name_padding_width<1 && value_padding_width<1 && comment.empty()) 
+		this->writeString(section,name,str);  // Default (old) behavior.
+
+	std::string name_pad;
+	if (name_padding_width>=1)
+	     name_pad = mrpt::format("%*s",-name_padding_width, name.c_str());  // negative width: printf right padding
+	else name_pad = name;
+
+	std::string value_pad;
+	if (value_padding_width>=1)
+	     value_pad = mrpt::format(" %*s",-value_padding_width, str.c_str());   // negative width: printf right padding
+	else value_pad = name;
+
+	if (!comment.empty())
+	{
+		value_pad += std::string("// ");
+		value_pad += comment;
+	}
+
+	this->writeString(section,name_pad,value_pad);
+}
+
 
 /*---------------------------------------------------------------
 					read_double

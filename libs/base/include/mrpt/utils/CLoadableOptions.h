@@ -64,48 +64,47 @@ namespace utils
 		 *   values loaded at initialization). An example of an ".ini" file:
 		 *  \code
 		 *  [section]
-		 *	resolution=0.10		; blah blah...
-		 *	modeSelection=1		; 0=blah, 1=blah,...
+		 *  resolution    = 0.10   // blah blah...
+		 *  modeSelection = 1      // 0=blah, 1=blah,...
 		 *  \endcode
 		 *
 		 * \sa loadFromConfigFileName, saveToConfigFile
 		 */
 		virtual void  loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase	&source,
-			const std::string		&section) = 0;
+			const mrpt::utils::CConfigFileBase & source,
+			const std::string                  & section) = 0;
 
 		/** Behaves like loadFromConfigFile, but you can pass directly a file name and a temporary CConfigFile object will be created automatically to load the file.
 		  * \sa loadFromConfigFile
 		  */
 		void  loadFromConfigFileName(
-			const std::string		&config_file,
-			const std::string		&section);
+			const std::string   & config_file,
+			const std::string   & section);
 
 		/** This method saves the options to a ".ini"-like file or memory-stored string list.
 		 * \sa loadFromConfigFile, saveToConfigFileName
 		 */
 		virtual void  saveToConfigFile(
-			mrpt::utils::CConfigFileBase	&source,
-			const std::string		&section) /*= 0*/
+			mrpt::utils::CConfigFileBase &target,
+			const std::string            &section) const
 			{
 				THROW_EXCEPTION("The child class does not implement this method.");
 			}
-
 
 		/** Behaves like saveToConfigFile, but you can pass directly a file name and a temporary CConfigFile object will be created automatically to save the file.
 		  * \sa saveToConfigFile, loadFromConfigFileName
 		  */
 		void  saveToConfigFileName(
 			const std::string		&config_file,
-			const std::string		&section);
+			const std::string		&section)  const;
 
-		/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
-		  */
+		/** Just like \a dumpToTextStream() but sending the text to the console (std::cout) */
 		void  dumpToConsole() const;
 
-		/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
+		/** This method should clearly display all the contents of the structure in textual form, sending it to a CStream.
+		  * The default implementation in this base class relies on \a saveToConfigFile() to generate a plain text representation of all the parameters.
 		  */
-		virtual void  dumpToTextStream( CStream		&out) const = 0;
+		virtual void  dumpToTextStream(CStream	&out) const;
 
         /** Virtual destructor
           */

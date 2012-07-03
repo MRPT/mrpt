@@ -32,6 +32,7 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CConfigFileMemory.h>
 
 using namespace mrpt::utils;
 
@@ -50,7 +51,7 @@ void  CLoadableOptions::loadFromConfigFileName(
 
 void  CLoadableOptions::saveToConfigFileName(
 	const std::string		&config_file,
-	const std::string		&section)
+	const std::string		&section) const
 {
 	CConfigFile f(config_file);
 	this->saveToConfigFile(f,section);
@@ -84,4 +85,14 @@ void CLoadableOptions::dumpVar_bool( CStream &out, const char *varName, bool v )
 void CLoadableOptions::dumpVar_string( CStream &out, const char *varName, const std::string &v )
 {
 	out.printf("%-*s= %s\n",LOADABLEOPTS_COLUMN_WIDTH, varName, v.c_str() );
+}
+
+/** This method should clearly display all the contents of the structure in textual form, sending it to a CStream.
+  * The default implementation in this base class relies on \a saveToConfigFile() to generate a plain text representation of all the parameters.
+  */
+void CLoadableOptions::dumpToTextStream(CStream &out) const
+{
+	CConfigFileMemory cfg;
+	this->saveToConfigFile(cfg,"");
+	out.printf("%s", cfg.getContent().c_str() );
 }

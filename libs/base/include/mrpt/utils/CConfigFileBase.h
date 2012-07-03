@@ -51,6 +51,9 @@ namespace utils
 		  */
 		virtual void  writeString(const std::string &section,const std::string &name, const std::string &str) = 0;
 
+		/** Write a generic string with optional padding and a comment field ("// ...") at the end of the line. */
+		void  writeString(const std::string &section,const std::string &name, const std::string &str, const int name_padding_width, const int value_padding_width, const std::string &comment);
+
 		/** A virtual method to read a generic string.
          * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
 		 */
@@ -78,51 +81,22 @@ namespace utils
 		/** Checks if a given section exists (name is case insensitive) */
 		bool sectionExists( const std::string &section_name) const;
 
-		/** Save a configuration parameter of type "double"
-		 */
-		void  write(const std::string &section, const std::string &name, double value);
-
-		/** Save a configuration parameter of type "float"
-		 */
-		void  write(const std::string &section, const std::string &name, float value);
-
-		/** Save a configuration parameter of type "int"
-		 */
-		void  write(const std::string &section, const std::string &name, int value);
-
-		/** Save a configuration parameter of type "unsigned int"
-		 */
-		void  write(const std::string &section, const std::string &name, unsigned int value);
-
+		/** @name Save a configuration parameter. Optionally pads with spaces up to the desired width in number of characters (-1: no fill), and add a final comment field at the end of the line (a "// " prefix is automatically inserted).
+		  * @{ */
+		void  write(const std::string &section, const std::string &name, double value, const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
+		void  write(const std::string &section, const std::string &name, float value , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
+		void  write(const std::string &section, const std::string &name, int value   , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
+		void  write(const std::string &section, const std::string &name, unsigned int value , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
 #if MRPT_WORD_SIZE>32
-		/** Save a configuration parameter of type "size_t"
-		 */
-		void  write(const std::string &section, const std::string &name, size_t value);
+		void  write(const std::string &section, const std::string &name, size_t value, const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
 #endif
-
-		/** Save a configuration parameter of type "string"
-		 */
-		void  write(const std::string &section, const std::string &name, const std::string &value);
-
-		/** Save a configuration parameter of type "std::vector<int>"
-		 */
-		void  write(const std::string &section, const std::string &name, const std::vector<int> &value);
-
-		/** Save a configuration parameter of type "std::vector<unsigned int>"
-		 */
-		void  write(const std::string &section, const std::string &name, const std::vector<unsigned int> &value);
-
-		/** Save a configuration parameter of type "std::vector<float>"
-		 */
-		void  write(const std::string &section, const std::string &name, const std::vector<float> &value);
-
-		/** Save a configuration parameter of type "std::vector<double>"
-		 */
-		void  write(const std::string &section, const std::string &name, const std::vector<double> &value);
-
-		/** Save a configuration parameter of type "std::vector<bool>"
-		 */
-		void  write(const std::string &section, const std::string &name, const std::vector<bool> &value);
+		void  write(const std::string &section, const std::string &name, const std::string &value        , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
+		void  write(const std::string &section, const std::string &name, const std::vector<int> &value   , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
+		void  write(const std::string &section, const std::string &name, const std::vector<unsigned int> &value, const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
+		void  write(const std::string &section, const std::string &name, const std::vector<float> &value , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
+		void  write(const std::string &section, const std::string &name, const std::vector<double> &value, const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
+		void  write(const std::string &section, const std::string &name, const std::vector<bool> &value  , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
+		/** @} */
 
 		/** Reads a configuration parameter of type "double"
          * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned.
