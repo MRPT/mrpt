@@ -185,22 +185,18 @@ void  COccupancyGridMap2D::getAs3DObject(mrpt::opengl::CSetOfObjectsPtr	&outSetO
 	CImage			imgTrans(size_x,size_y,1);
 
 
-	unsigned int x,y;
-
 	const cellType		*srcPtr = &map[0];
-	unsigned char		*destPtr_color;
-	unsigned char		*destPtr_trans;
-
-	for (y=0;y<size_y;y++)
+	
+	for (unsigned int y=0;y<size_y;y++)
 	{
-		destPtr_color = imgColor(0,y);
-		destPtr_trans = imgTrans(0,y);
-		for (x=0;x<size_x;x++)
+		unsigned char *destPtr_color = imgColor(0,y);
+		unsigned char *destPtr_trans = imgTrans(0,y);
+		for (unsigned int x=0;x<size_x;x++)
 		{
 			uint8_t  cell255 = l2p_255(*srcPtr++);
 			*destPtr_color++ = cell255;
 
-			int8_t   auxC = (int8_t)((signed short)cell255)-128;
+			int8_t   auxC = (int8_t)((signed short)cell255)-127;
 			*destPtr_trans++ = auxC>0 ? (auxC << 1) : ((-auxC) << 1);
 		}
 	}
