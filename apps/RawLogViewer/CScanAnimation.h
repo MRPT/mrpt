@@ -29,16 +29,16 @@
 #define CSCANANIMATION_H
 
 //(*Headers(CScanAnimation)
-#include <wx/spinctrl.h>
-#include <wx/checkbox.h>
-#include <wx/dialog.h>
 #include <wx/sizer.h>
-#include <wx/button.h>
-#include <wx/radiobut.h>
-#include <wx/slider.h>
-#include "MyGLCanvas.h"
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+#include <wx/checkbox.h>
+#include <wx/spinctrl.h>
+#include <wx/radiobut.h>
+#include "MyGLCanvas.h"
+#include <wx/slider.h>
+#include <wx/button.h>
+#include <wx/dialog.h>
 //*)
 
 // The "custom class" mpWindow, from the wxMathPlot libray by David Schalig
@@ -56,28 +56,28 @@ class CScanAnimation: public wxDialog
 		virtual ~CScanAnimation();
 
 		//(*Declarations(CScanAnimation)
-		wxStaticText* StaticText22;
-		wxCheckBox* cbAllowMix;
-		wxFlexGridSizer* FlexGridSizer8;
-		wxButton* btnClose;
-		wxSlider* slPos;
-		wxButton* btnPickInput;
-		wxTextCtrl* edFile;
-		wxButton* btnPlay;
-		wxSpinCtrl* edIndex;
-		wxStaticText* StaticText1;
-		wxRadioButton* rbFile;
-		wxButton* btnJump;
-		wxStaticText* lbNumPoints;
-		CMyGLCanvas* m_plot3D;
-		wxStaticText* lbNumScans;
-		wxButton* btnStop;
 		wxBoxSizer* BoxSizer4;
+		wxStaticText* StaticText22;
+		wxButton* btnStop;
 		wxRadioButton* rbLoaded;
-		wxStaticText* StaticText2;
-		wxSpinCtrl* edDelay;
+		wxSlider* slPos;
 		wxBoxSizer* BoxSizer5;
+		wxSpinCtrl* edDelay;
+		wxStaticText* StaticText2;
+		wxButton* btnClose;
+		wxStaticText* StaticText1;
+		wxButton* btnJump;
+		wxStaticText* lbNumScans;
+		wxButton* btnPickInput;
+		wxSpinCtrl* edIndex;
+		wxFlexGridSizer* FlexGridSizer8;
+		wxCheckBox* cbAllowMix;
+		wxRadioButton* rbFile;
 		wxStaticBoxSizer* StaticBoxSizer1;
+		wxStaticText* lbNumPoints;
+		wxButton* btnPlay;
+		CMyGLCanvas* m_plot3D;
+		wxTextCtrl* edFile;
 		//*)
 
 	protected:

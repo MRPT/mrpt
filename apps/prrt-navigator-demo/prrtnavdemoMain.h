@@ -30,16 +30,16 @@
 #define REACTIVENAVIGATIONDEMOMAIN_H
 
 //(*Headers(ReactiveNavigationDemoFrame)
-#include <wx/checkbox.h>
 #include <wx/sizer.h>
-#include <wx/button.h>
-#include <wx/menu.h>
-#include <wx/panel.h>
-#include <wx/statusbr.h>
-#include <wx/frame.h>
 #include <wx/stattext.h>
+#include <wx/menu.h>
 #include <wx/textctrl.h>
+#include <wx/checkbox.h>
+#include <wx/panel.h>
+#include <wx/button.h>
+#include <wx/frame.h>
 #include <wx/timer.h>
+#include <wx/statusbr.h>
 //*)
 
 // The navigator (we must implement a derived class - read the docs of CMyNavigator)
@@ -126,44 +126,44 @@ class ReactiveNavigationDemoFrame: public wxFrame
 		static const long ID_MENUITEM_SET_reactivenav_TARGET;
 
         //(*Declarations(ReactiveNavigationDemoFrame)
-        wxMenuItem* MenuItem2;
-        wxButton* btnNavigatePose;
-        wxMenuItem* MenuItem1;
-        wxTextCtrl* edPath;
-        wxTextCtrl* edMapFile;
-        wxPanel* Panel1;
-        wxTextCtrl* edX;
-        mpWindow* plot;
-        wxTextCtrl* edY;
-        wxMenu* Menu1;
-        wxPanel* panParams;
-        wxStatusBar* StatusBar1;
-        wxTextCtrl* edPhi;
-        wxStaticBoxSizer* boxParams;
-        wxTextCtrl* edX2;
-        wxButton* btnNavigate;
         wxStaticText* StaticText10;
-        wxButton* btnPause;
-        wxCheckBox* cbExtMap;
-        wxStaticText* StaticText3;
-        wxButton* btnEditNavParams;
-        wxPanel* panCmds;
-        wxStaticText* StaticText8;
+        wxStaticBoxSizer* boxParams;
         wxButton* btnResetSim;
-        wxTextCtrl* edLog;
-        wxStaticText* StaticText7;
-        wxStaticBoxSizer* boxCommands;
-        wxStaticText* StaticText4;
-        wxStaticText* StaticText5;
-        wxMenuBar* MenuBar1;
-        wxStaticText* StaticText2;
-        wxStaticText* StaticText6;
-        wxTextCtrl* edY2;
-        wxMenu* Menu2;
-        wxTimer timSimulate;
-        wxButton* btnStart;
         wxStaticText* StaticText9;
+        wxTextCtrl* edX2;
+        wxStaticText* StaticText2;
+        wxButton* btnStart;
+        wxMenuItem* MenuItem2;
+        wxTextCtrl* edMapFile;
+        wxButton* btnEditNavParams;
+        wxStaticText* StaticText6;
         wxButton* btnPath;
+        wxMenuItem* MenuItem1;
+        wxTextCtrl* edPhi;
+        wxButton* btnNavigate;
+        wxStaticText* StaticText8;
+        wxTextCtrl* edX;
+        wxStaticBoxSizer* boxCommands;
+        wxPanel* Panel1;
+        wxStaticText* StaticText3;
+        wxMenu* Menu1;
+        wxCheckBox* cbExtMap;
+        wxTextCtrl* edY;
+        wxTextCtrl* edY2;
+        wxTextCtrl* edLog;
+        wxStaticText* StaticText5;
+        wxStaticText* StaticText7;
+        wxButton* btnNavigatePose;
+        wxPanel* panParams;
+        wxButton* btnPause;
+        wxStatusBar* StatusBar1;
+        wxPanel* panCmds;
+        wxTimer timSimulate;
+        wxMenuBar* MenuBar1;
+        wxMenu* Menu2;
+        wxStaticText* StaticText4;
+        wxTextCtrl* edPath;
+        mpWindow* plot;
         //*)
 
 

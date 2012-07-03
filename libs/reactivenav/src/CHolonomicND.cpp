@@ -45,40 +45,10 @@ IMPLEMENTS_SERIALIZABLE( CLogFileRecord_ND, CHolonomicLogFileRecord,mrpt::reacti
 *    configuration file, or default values if filename is set to NULL.
 */
 CHolonomicND::CHolonomicND(const mrpt::utils::CConfigFileBase *INI_FILE ) :
-	m_last_selected_sector ( std::numeric_limits<unsigned int>::max() ),
-	// Default values:
-	TOO_CLOSE_OBSTACLE                 ( 0.15 ),
-	WIDE_GAP_SIZE_PERCENT              ( 0.50 ),
-	RISK_EVALUATION_SECTORS_PERCENT    ( 0.10 ),
-	RISK_EVALUATION_DISTANCE           ( 0.4  ),
-	MAX_SECTOR_DIST_FOR_D2_PERCENT     ( 0.25 ),
-	TARGET_SLOW_APPROACHING_DISTANCE   ( 0.60 )
+	m_last_selected_sector ( std::numeric_limits<unsigned int>::max() )
 {
 	if (INI_FILE!=NULL)
 		initialize( *INI_FILE );
-}
-
-/*---------------------------------------------------------------
-						initialize
-  ---------------------------------------------------------------*/
-void  CHolonomicND::initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
-{
-	MRPT_START
-
-	const std::string section("ND_CONFIG");
-
-	// Load from config text:
-	MRPT_LOAD_CONFIG_VAR(WIDE_GAP_SIZE_PERCENT,double,  INI_FILE,section );
-	MRPT_LOAD_CONFIG_VAR(MAX_SECTOR_DIST_FOR_D2_PERCENT,double,  INI_FILE,section );
-	MRPT_LOAD_CONFIG_VAR(RISK_EVALUATION_SECTORS_PERCENT,double,  INI_FILE,section );
-	MRPT_LOAD_CONFIG_VAR(RISK_EVALUATION_DISTANCE,double,  INI_FILE,section );
-	MRPT_LOAD_CONFIG_VAR(TOO_CLOSE_OBSTACLE,double,  INI_FILE,section );
-	MRPT_LOAD_CONFIG_VAR(TARGET_SLOW_APPROACHING_DISTANCE,double,  INI_FILE,section );
-
-	INI_FILE.read_vector(section,"factorWeights", vector_double(0), factorWeights, true );
-	ASSERT_(factorWeights.size()==4);
-
-	MRPT_END
 }
 
 
@@ -139,9 +109,9 @@ void  CHolonomicND::navigate(
 
 		// Speed control: Reduction factors
 		// ---------------------------------------------
-		double		targetNearnessFactor = max(0.20, min(1.0, 1.0-exp(-(target.norm()+0.01)/TARGET_SLOW_APPROACHING_DISTANCE)));
+		double		targetNearnessFactor = max(0.20, min(1.0, 1.0-exp(-(target.norm()+0.01)/options.TARGET_SLOW_APPROACHING_DISTANCE)));
 		//printf(" TARGET NEARNESS = %f\n",targetNearnessFactor);
-		double		riskFactor = min(1.0, riskEvaluation / RISK_EVALUATION_DISTANCE );
+		double		riskFactor = min(1.0, riskEvaluation / options.RISK_EVALUATION_DISTANCE );
 
 		desiredSpeed = maxRobotSpeed * min(riskFactor,targetNearnessFactor);
 	}
@@ -426,7 +396,7 @@ void  CHolonomicND::searchBestGap(
 		// -----------------------------------------------------------------
 		for ( unsigned int i=0;i<in_gaps.size();i++ )
 			if ( in_gaps[i].maxDistance >= target_dist &&
-				 abs((int)(in_gaps[i].representative_sector-(int)target_sector)) <= (int)floor(MAX_SECTOR_DIST_FOR_D2_PERCENT * obstacles.size()) )
+				 abs((int)(in_gaps[i].representative_sector-(int)target_sector)) <= (int)floor(options.MAX_SECTOR_DIST_FOR_D2_PERCENT * obstacles.size()) )
 					if ( gaps_evaluation[i]>selected_gap_eval )
 					{
 						selected_gap_eval = gaps_evaluation[i];
@@ -457,7 +427,7 @@ void  CHolonomicND::searchBestGap(
 			// The selected gap:
 			const TGap & gap = in_gaps[selected_gap];
 
-			const unsigned int sectors_to_be_wide = round( WIDE_GAP_SIZE_PERCENT * obstacles.size() );
+			const unsigned int sectors_to_be_wide = round( options.WIDE_GAP_SIZE_PERCENT * obstacles.size() );
 
 			out_selDirection	= in_gaps[selected_gap].representative_sector;
 			out_selEvaluation	= selected_gap_eval;
@@ -484,7 +454,7 @@ void  CHolonomicND::searchBestGap(
 	}
 
 	// Evaluate short-term minimum distance to obstacles, in a small interval around the selected direction:
-	const unsigned int risk_eval_nsectors = round( RISK_EVALUATION_SECTORS_PERCENT * obstacles.size() );
+	const unsigned int risk_eval_nsectors = round( options.RISK_EVALUATION_SECTORS_PERCENT * obstacles.size() );
 	const unsigned int sec_ini = std::max(min_risk_eval_sector, risk_eval_nsectors<out_selDirection ? out_selDirection-risk_eval_nsectors : 0 );
 	const unsigned int sec_fin = std::min(max_risk_eval_sector, out_selDirection + risk_eval_nsectors );
 
@@ -504,7 +474,7 @@ void  CHolonomicND::calcRepresentativeSectorForGap(
 	const vector_double         & obstacles)
 {
 	int sector;
-	const unsigned int sectors_to_be_wide = round( WIDE_GAP_SIZE_PERCENT * obstacles.size());
+	const unsigned int sectors_to_be_wide = round( options.WIDE_GAP_SIZE_PERCENT * obstacles.size());
 	const unsigned int target_sector = direction2sector( atan2(target.y,target.x), obstacles.size() );
 
 	if ( (gap.end-gap.ini) < sectors_to_be_wide )
@@ -624,15 +594,15 @@ void  CHolonomicND::evaluateGaps(
 
 		const double factor3=  ( maxObsRange - std::min(maxObsRange ,dist_eucl) ) / maxObsRange;
 
-		ASSERT_(factorWeights.size()==4);
+		ASSERT_(options.factorWeights.size()==4);
 
-		if ( obstacles[gap->representative_sector] < TOO_CLOSE_OBSTACLE ) // Too close to obstacles
+		if ( obstacles[gap->representative_sector] < options.TOO_CLOSE_OBSTACLE ) // Too close to obstacles
 				out_gaps_evaluation[i] = 0;
 		else	out_gaps_evaluation[i] = (
-				  factorWeights[0] * factor1 +
-				  factorWeights[1] * factor2 +
-				  factorWeights[2] * factor3 +
-				  factorWeights[3] * factor_AntiCab ) / (math::sum(factorWeights)) ;
+				  options.factorWeights[0] * factor1 +
+				  options.factorWeights[1] * factor2 +
+				  options.factorWeights[2] * factor3 +
+				  options.factorWeights[3] * factor_AntiCab ) / (math::sum(options.factorWeights)) ;
 	} // for each gap
 }
 
@@ -695,5 +665,56 @@ void  CLogFileRecord_ND::readFromStream(CStream &in,int version)
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 
 	};
+}
 
+/*---------------------------------------------------------------
+						TOptions
+  ---------------------------------------------------------------*/
+CHolonomicND::TOptions::TOptions() :
+	// Default values:
+	TOO_CLOSE_OBSTACLE                 ( 0.15 ),
+	WIDE_GAP_SIZE_PERCENT              ( 0.50 ),
+	RISK_EVALUATION_SECTORS_PERCENT    ( 0.10 ),
+	RISK_EVALUATION_DISTANCE           ( 0.4  ),
+	MAX_SECTOR_DIST_FOR_D2_PERCENT     ( 0.25 ),
+	TARGET_SLOW_APPROACHING_DISTANCE   ( 0.60 )
+{
+	factorWeights.resize(4);
+	factorWeights[0]=1.0;
+	factorWeights[1]=0.5;
+	factorWeights[2]=2.0;
+	factorWeights[3]=0.4;
+}
+
+void CHolonomicND::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section)
+{
+	MRPT_START
+
+	// Load from config text:
+	MRPT_LOAD_CONFIG_VAR(WIDE_GAP_SIZE_PERCENT,double,  source,section );
+	MRPT_LOAD_CONFIG_VAR(MAX_SECTOR_DIST_FOR_D2_PERCENT,double,  source,section );
+	MRPT_LOAD_CONFIG_VAR(RISK_EVALUATION_SECTORS_PERCENT,double,  source,section );
+	MRPT_LOAD_CONFIG_VAR(RISK_EVALUATION_DISTANCE,double,  source,section );
+	MRPT_LOAD_CONFIG_VAR(TOO_CLOSE_OBSTACLE,double,  source,section );
+	MRPT_LOAD_CONFIG_VAR(TARGET_SLOW_APPROACHING_DISTANCE,double,  source,section );
+
+	source.read_vector(section,"factorWeights", vector_double(0), factorWeights, true );
+	ASSERT_(factorWeights.size()==4);
+
+	MRPT_END
+}
+
+void CHolonomicND::TOptions::saveToConfigFile(const std::string &section,  mrpt::utils::CConfigFileBase &cfg ) const
+{
+	MRPT_START
+	const int WN = 40, WV = 20;
+
+	cfg.write(section,"WIDE_GAP_SIZE_PERCENT",WIDE_GAP_SIZE_PERCENT,   WN,WV, "");
+	cfg.write(section,"MAX_SECTOR_DIST_FOR_D2_PERCENT",MAX_SECTOR_DIST_FOR_D2_PERCENT,   WN,WV, "");
+	cfg.write(section,"RISK_EVALUATION_SECTORS_PERCENT",RISK_EVALUATION_SECTORS_PERCENT,   WN,WV, "");
+	cfg.write(section,"RISK_EVALUATION_DISTANCE",RISK_EVALUATION_DISTANCE,   WN,WV, "In normalized ps-meters [0,1]");
+	cfg.write(section,"TOO_CLOSE_OBSTACLE",TOO_CLOSE_OBSTACLE,   WN,WV, "For stopping gradually");
+	cfg.write(section,"TARGET_SLOW_APPROACHING_DISTANCE",TARGET_SLOW_APPROACHING_DISTANCE,   WN,WV, "In normalized ps-meters");
+
+	MRPT_END
 }

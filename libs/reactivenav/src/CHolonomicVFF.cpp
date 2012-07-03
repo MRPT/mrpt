@@ -42,29 +42,10 @@ IMPLEMENTS_SERIALIZABLE( CLogFileRecord_VFF, CHolonomicLogFileRecord,mrpt::react
 /*---------------------------------------------------------------
 						initialize
   ---------------------------------------------------------------*/
-CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE) :
-	TARGET_SLOW_APPROACHING_DISTANCE ( 0.10 ),
-	TARGET_ATTRACTIVE_FORCE          ( 20.0 )
+CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE)
 {
 	if (INI_FILE!=NULL)
 		initialize( *INI_FILE );
-}
-
-
-/*---------------------------------------------------------------
-						initialize
-  ---------------------------------------------------------------*/
-void  CHolonomicVFF::initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
-{
-	MRPT_START
-
-	const std::string section("VFF_CONFIG");
-
-	// Load from config text:
-	MRPT_LOAD_CONFIG_VAR(TARGET_SLOW_APPROACHING_DISTANCE,double,  INI_FILE,section );
-	MRPT_LOAD_CONFIG_VAR(TARGET_ATTRACTIVE_FORCE,double,  INI_FILE,section );
-
-	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -85,7 +66,7 @@ void  CHolonomicVFF::navigate(
 	}
 
 	// Forces vector:
-	mrpt::poses::CPoint2D  resultantForce,instantaneousForce;
+	mrpt::math::TPoint2D resultantForce(0,0),instantaneousForce(0,0);
 
 	// Obstacles:
 	{
@@ -98,25 +79,24 @@ void  CHolonomicVFF::navigate(
 			const double mod = exp(- obstacles[i] );
 
 			// Add repulsive force:
-			instantaneousForce.x( -cos(ang) * mod );
-			instantaneousForce.y( -sin(ang) * mod );
-			resultantForce.AddComponents( instantaneousForce );
+			instantaneousForce.x = -cos(ang) * mod;
+			instantaneousForce.y = -sin(ang) * mod;
+			resultantForce += instantaneousForce;
 		}
 	}
 
 	// Target:
 	const double ang = atan2( target.y, target.x );
-	const double mod = TARGET_ATTRACTIVE_FORCE;
-	instantaneousForce.x( cos(ang) * mod );
-	instantaneousForce.y( sin(ang) * mod );
-	resultantForce.AddComponents( instantaneousForce );
+	const double mod = options.TARGET_ATTRACTIVE_FORCE;
+	resultantForce += mrpt::math::TPoint2D(cos(ang) * mod, sin(ang) * mod );
 
 	// Result:
-	desiredDirection = atan2( resultantForce.y(), resultantForce.x() );
+	desiredDirection = (resultantForce.y==0 && resultantForce.x==0) ? 
+		0 : atan2( resultantForce.y, resultantForce.x );
 
 	// Speed control: Reduction factors
 	// ---------------------------------------------
-	double targetNearnessFactor = std::min( 1.0, target.norm()/(2*TARGET_SLOW_APPROACHING_DISTANCE));
+	const double targetNearnessFactor = std::min( 1.0, target.norm()/(2*options.TARGET_SLOW_APPROACHING_DISTANCE));
 	desiredSpeed = maxRobotSpeed * targetNearnessFactor;
 }
 
@@ -149,3 +129,33 @@ void  CLogFileRecord_VFF::readFromStream(CStream &in,int version)
 	};
 }
 
+/*---------------------------------------------------------------
+						TOptions
+  ---------------------------------------------------------------*/
+CHolonomicVFF::TOptions::TOptions() :
+	TARGET_SLOW_APPROACHING_DISTANCE ( 0.10 ),
+	TARGET_ATTRACTIVE_FORCE          ( 20.0 )	
+{
+}
+
+void CHolonomicVFF::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section)
+{
+	MRPT_START
+
+	// Load from config text:
+	MRPT_LOAD_CONFIG_VAR(TARGET_SLOW_APPROACHING_DISTANCE,double,  source,section );
+	MRPT_LOAD_CONFIG_VAR(TARGET_ATTRACTIVE_FORCE,double,  source,section );
+
+	MRPT_END
+}
+
+void CHolonomicVFF::TOptions::saveToConfigFile(const std::string &section,  mrpt::utils::CConfigFileBase &cfg ) const
+{
+	MRPT_START
+	const int WN = 40, WV = 20;
+
+	cfg.write(section,"TARGET_SLOW_APPROACHING_DISTANCE",TARGET_SLOW_APPROACHING_DISTANCE,   WN,WV, "For stopping gradually");
+	cfg.write(section,"TARGET_ATTRACTIVE_FORCE",TARGET_ATTRACTIVE_FORCE,   WN,WV, "Dimension-less (may have to be tuned depending on the density of obstacle sampling)");
+
+	MRPT_END
+}

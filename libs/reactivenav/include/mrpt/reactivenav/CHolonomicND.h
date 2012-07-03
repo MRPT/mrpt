@@ -42,7 +42,7 @@ namespace mrpt
 	 *  Nearness diagram (ND) navigation: collision avoidance in troublesome scenarios, IEEE Transactions on
 	 *   Robotics and Automation, Minguez, J. and Montano, L., vol. 20, no. 1, pp. 45-59, 2004.
 	 *
-	 * These are the optional parameters of the method which can be set by means of a configuration file (passed to the constructor or to CHolonomicND::initialize).
+	 * These are the optional parameters of the method which can be set by means of a configuration file passed to the constructor or to CHolonomicND::initialize() or directly in \a CHolonomicND::options
 	 *
 	 * \code
 	 * [ND_CONFIG]
@@ -55,8 +55,8 @@ namespace mrpt
 	 * MAX_SECTOR_DIST_FOR_D2_PERCENT   = 0.25
 	 * RISK_EVALUATION_SECTORS_PERCENT  = 0.25
 	 * RISK_EVALUATION_DISTANCE         = 0.15  // In normalized ps-meters [0,1]
-	 * TARGET_SLOW_APPROACHING_DISTANCE = 0.60  // For stop gradually
-	 * TOO_CLOSE_OBSTACLE               = 0.02  //In normalized ps-meters
+	 * TARGET_SLOW_APPROACHING_DISTANCE = 0.60  // For stopping gradually
+	 * TOO_CLOSE_OBSTACLE               = 0.02  // In normalized ps-meters
 	 * \endcode
 	 *
 	 *  \sa CAbstractHolonomicReactiveMethod,CReactiveNavigationSystem
@@ -112,24 +112,33 @@ namespace mrpt
 			SITUATION_NO_WAY_FOUND
 		};
 
-		 /**  Initialize the parameters of the navigator.
-		   */
-		 void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE );
+		/**  Initialize the parameters of the navigator.
+		  */
+		void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
+		{
+			options.loadFromConfigFile(INI_FILE, std::string("ND_CONFIG"));
+		}
+
+		/** Algorithm options */
+		struct REACTIVENAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
+		{
+			double TOO_CLOSE_OBSTACLE,WIDE_GAP_SIZE_PERCENT,RISK_EVALUATION_SECTORS_PERCENT;
+			double RISK_EVALUATION_DISTANCE,MAX_SECTOR_DIST_FOR_D2_PERCENT;
+			double TARGET_SLOW_APPROACHING_DISTANCE;
+			vector_double factorWeights;  //!< Vector of 4 weights: [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis
 
 
+			TOptions();
+			virtual void saveToConfigFile(const std::string &section,  mrpt::utils::CConfigFileBase &cfg ) const;
+			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section);
+		};
+
+		TOptions options;  //!< Parameters of the algorithm (can be set manually or loaded from CHolonomicND::initialize or options.loadFromConfigFile(), etc.)
 
 	private:
 		unsigned int m_last_selected_sector;
 
 		unsigned int direction2sector(const double a, const unsigned int N);
-
-		/** Configuration:
-		  */
-		double TOO_CLOSE_OBSTACLE,WIDE_GAP_SIZE_PERCENT,RISK_EVALUATION_SECTORS_PERCENT;
-		double RISK_EVALUATION_DISTANCE,MAX_SECTOR_DIST_FOR_D2_PERCENT;
-		double TARGET_SLOW_APPROACHING_DISTANCE;
-
-		vector_double factorWeights;
 
 		/**  Find gaps in the obtacles.
 		  */

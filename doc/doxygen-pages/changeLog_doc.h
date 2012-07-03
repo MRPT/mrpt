@@ -34,10 +34,12 @@
  <hr>
  <a name="1.0.0">
   <h2>Version 1.0.0 - (Under development) </h2></a>
+	- New apps:
+		- <a href="http://www.mrpt.org/Application:holonomic-navigator-demo" >holonomic-navigator-demo</a>
 	- Changes in apps:
-		- navlog-viewer:
+		- <a href="http://www.mrpt.org/Application%3Anavlog-viewer" >navlog-viewer</a>:
 			- Fixed some minor visualization errors.
-		- RawLogViewer:
+		- <a href="http://www.mrpt.org/Application%3ARawLogViewer" >RawLogViewer</a>:
 			- Import sequence of images as rawlog: Didn't detect "png" file extension as images - <a href="http://code.google.com/p/mrpt/source/detail?r=2940" >r2940</a> - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=34" >#34</a>
 			- The GUI toolbar has been ported from wxWidget's ToolBar to sets of wxCustomButton's to avoid visualization problems in wx 2.9.X - <a href="http://code.google.com/p/mrpt/source/detail?r=2950" >r2950</a>
 		- SceneViewer3D:

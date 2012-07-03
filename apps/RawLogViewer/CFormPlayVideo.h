@@ -29,18 +29,18 @@
 #define CFORMPLAYVIDEO_H
 
 //(*Headers(CFormPlayVideo)
-#include <wx/bmpbuttn.h>
-#include <wx/spinctrl.h>
-#include <wx/combobox.h>
-#include <wx/checkbox.h>
-#include <wx/dialog.h>
 #include <wx/sizer.h>
-#include <wx/button.h>
-#include <wx/radiobut.h>
-#include <wx/panel.h>
-#include <wx/slider.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
+#include <wx/checkbox.h>
+#include <wx/spinctrl.h>
+#include <wx/radiobut.h>
+#include <wx/slider.h>
+#include <wx/panel.h>
+#include <wx/bmpbuttn.h>
+#include <wx/button.h>
+#include <wx/dialog.h>
+#include <wx/combobox.h>
 //*)
 
 class CFormPlayVideo: public wxDialog
@@ -108,42 +108,42 @@ protected:
     bool showSensoryFrame(void *SF, size_t &nImgs);
 
     //(*Declarations(CFormPlayVideo)
-    wxStaticText* lbCam2;
-    wxCheckBox* cbReduceLarge;
-    wxStaticText* StaticText22;
-    wxStaticText* lbProgress;
-    wxFlexGridSizer* FlexGridSizer8;
-    wxFlexGridSizer* FlexGridSizer1;
-    wxBitmapButton* btnSaveCam3;
-    wxPanel* Panel1;
-    wxButton* btnClose;
-    wxButton* btnPickInput;
-    wxTextCtrl* edFile;
-    wxComboBox* cbImageDirs;
-    wxButton* btnPlay;
-    wxSpinCtrl* edIndex;
-    wxStaticText* StaticText1;
-    wxRadioButton* rbFile;
-    wxButton* btnJump;
-    wxFlexGridSizer* FlexGridSizer6;
-    wxButton* btnStop;
-    wxStaticText* lbCam3;
     wxBoxSizer* BoxSizer4;
-    wxStaticText* lbCam1;
-    wxTextCtrl* edDelay;
-    wxPanel* pnLeft;
-    wxBitmapButton* btnSaveCam1;
-    wxPanel* pnRight;
+    wxStaticText* StaticText22;
+    wxButton* btnStop;
     wxRadioButton* rbLoaded;
-    wxStaticText* StaticText2;
     wxBitmapButton* btnSaveCam2;
+    wxStaticText* lbProgress;
+    wxBoxSizer* BoxSizer5;
+    wxStaticText* StaticText2;
+    wxButton* btnClose;
+    wxPanel* pnRight;
     wxStaticText* StaticText6;
-    wxCheckBox* cbOrderByY;
     wxSlider* progressBar;
     wxPanel* pnRight2;
-    wxCheckBox* cbOrderByYaw;
-    wxBoxSizer* BoxSizer5;
+    wxPanel* Panel1;
+    wxStaticText* StaticText1;
+    wxCheckBox* cbOrderByY;
+    wxButton* btnJump;
+    wxBitmapButton* btnSaveCam1;
+    wxButton* btnPickInput;
+    wxStaticText* lbCam1;
+    wxComboBox* cbImageDirs;
+    wxSpinCtrl* edIndex;
+    wxBitmapButton* btnSaveCam3;
+    wxFlexGridSizer* FlexGridSizer8;
+    wxRadioButton* rbFile;
+    wxStaticText* lbCam3;
+    wxFlexGridSizer* FlexGridSizer6;
     wxStaticBoxSizer* StaticBoxSizer1;
+    wxFlexGridSizer* FlexGridSizer1;
+    wxCheckBox* cbReduceLarge;
+    wxPanel* pnLeft;
+    wxCheckBox* cbOrderByYaw;
+    wxTextCtrl* edDelay;
+    wxStaticText* lbCam2;
+    wxButton* btnPlay;
+    wxTextCtrl* edFile;
     //*)
 
 private:

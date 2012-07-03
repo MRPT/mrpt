@@ -7,6 +7,8 @@ INCLUDE(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake
 add_subdirectory(ReactiveNavigationDemo)
 add_subdirectory(navlog-viewer)
 add_subdirectory(prrt-navigator-demo)
+add_subdirectory(holonomic-navigator-demo)
+
 add_subdirectory(RawLogViewer)
 add_subdirectory(3DSceneViewer)
 add_subdirectory(2d-slam-demo)
