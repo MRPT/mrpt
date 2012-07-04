@@ -31,13 +31,13 @@
 #include "CAboutBox.h"
 
 //(*InternalHeaders(holonomic_navigator_demoFrame)
-#include <wx/artprov.h>
-#include <wx/bitmap.h>
-#include <wx/tglbtn.h>
-#include <wx/font.h>
-#include <wx/intl.h>
-#include <wx/image.h>
 #include <wx/string.h>
+#include <wx/intl.h>
+#include <wx/font.h>
+#include <wx/tglbtn.h>
+#include <wx/bitmap.h>
+#include <wx/image.h>
+#include <wx/artprov.h>
 //*)
 
 #include <mrpt/gui/WxUtils.h>
@@ -71,6 +71,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 #include <mrpt/reactivenav.h>
 #include <mrpt/gui.h>
 #include <mrpt/opengl.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -78,6 +79,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::utils;
+using namespace mrpt::reactivenav;
 using namespace std;
 
 
@@ -96,7 +98,11 @@ const long holonomic_navigator_demoFrame::ID_PANEL2 = wxNewId();
 const long holonomic_navigator_demoFrame::ID_NOTEBOOK1 = wxNewId();
 const long holonomic_navigator_demoFrame::ID_XY_GLCANVAS = wxNewId();
 const long holonomic_navigator_demoFrame::ID_CUSTOM1 = wxNewId();
+const long holonomic_navigator_demoFrame::ID_MENUITEM4 = wxNewId();
 const long holonomic_navigator_demoFrame::idMenuQuit = wxNewId();
+const long holonomic_navigator_demoFrame::ID_MENUITEM1 = wxNewId();
+const long holonomic_navigator_demoFrame::ID_MENUITEM2 = wxNewId();
+const long holonomic_navigator_demoFrame::ID_MENUITEM3 = wxNewId();
 const long holonomic_navigator_demoFrame::idMenuAbout = wxNewId();
 const long holonomic_navigator_demoFrame::ID_STATUSBAR1 = wxNewId();
 const long holonomic_navigator_demoFrame::ID_TIMER1 = wxNewId();
@@ -124,19 +130,19 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 
 
     //(*Initialize(holonomic_navigator_demoFrame)
-    wxFlexGridSizer* FlexGridSizer4;
     wxMenuItem* MenuItem2;
-    wxFlexGridSizer* FlexGridSizer3;
     wxMenuItem* MenuItem1;
+    wxFlexGridSizer* FlexGridSizer1;
     wxFlexGridSizer* FlexGridSizer2;
-    wxBoxSizer* BoxSizer2;
     wxMenu* Menu1;
     wxFlexGridSizer* FlexGridSizer7;
+    wxBoxSizer* BoxSizer2;
+    wxFlexGridSizer* FlexGridSizer4;
+    wxFlexGridSizer* FlexGridSizer3;
     wxBoxSizer* BoxSizer1;
     wxMenuBar* MenuBar1;
-    wxFlexGridSizer* FlexGridSizer1;
     wxMenu* Menu2;
-    
+
     Create(parent, id, _("Holonomic Navigation Demo - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     FlexGridSizer1 = new wxFlexGridSizer(2, 1, 0, 0);
     FlexGridSizer1->AddGrowableCol(0);
@@ -184,10 +190,10 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
     FlexGridSizer7 = new wxFlexGridSizer(1, 2, 0, 0);
     FlexGridSizer7->AddGrowableCol(1);
     FlexGridSizer7->AddGrowableRow(0);
-    wxString __wxRadioBoxChoices_1[2] = 
+    wxString __wxRadioBoxChoices_1[2] =
     {
-    	_("VFF (Virtual Force Field)"),
-    	_("ND (Nearnest  Diagram)")
+    _("VFF (Virtual Force Field)"),
+    _("ND (Nearnest  Diagram)")
     };
     rbHoloMethod = new wxRadioBox(Panel1, ID_RADIOBOX1, _(" Holonomic method "), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, wxRA_HORIZONTAL, wxDefaultValidator, _T("ID_RADIOBOX1"));
     FlexGridSizer7->Add(rbHoloMethod, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
@@ -216,9 +222,20 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
     SetSizer(FlexGridSizer1);
     MenuBar1 = new wxMenuBar();
     Menu1 = new wxMenu();
+    MenuItem3 = new wxMenuItem(Menu1, ID_MENUITEM4, _("Load map..."), wxEmptyString, wxITEM_NORMAL);
+    Menu1->Append(MenuItem3);
     MenuItem1 = new wxMenuItem(Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
     Menu1->Append(MenuItem1);
     MenuBar1->Append(Menu1, _("&File"));
+    Menu3 = new wxMenu();
+    mnuViewMaxRange = new wxMenuItem(Menu3, ID_MENUITEM1, _("Maximum sensor range"), wxEmptyString, wxITEM_CHECK);
+    Menu3->Append(mnuViewMaxRange);
+    mnuViewRobotPath = new wxMenuItem(Menu3, ID_MENUITEM2, _("Robot path"), wxEmptyString, wxITEM_CHECK);
+    Menu3->Append(mnuViewRobotPath);
+    Menu3->AppendSeparator();
+    MenuItem5 = new wxMenuItem(Menu3, ID_MENUITEM3, _("Clear robot path"), wxEmptyString, wxITEM_NORMAL);
+    Menu3->Append(MenuItem5);
+    MenuBar1->Append(Menu3, _("&View"));
     Menu2 = new wxMenu();
     MenuItem2 = new wxMenuItem(Menu2, idMenuAbout, _("About\tF1"), _("Show info about this application"), wxITEM_NORMAL);
     Menu2->Append(MenuItem2);
@@ -235,14 +252,19 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-    
+
+    Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnbtnLoadMapClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnAbout);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnQuit);
     Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnbtnPlaceRobotClick);
     Connect(ID_BUTTON7,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnbtnPlaceTargetClick);
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnbtnStartClick);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnbtnStopClick);
+    Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnbtnLoadMapClick);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnQuit);
+    Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnMenuItemChangeVisibleStuff);
+    Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnMenuItemChangeVisibleStuff);
+    Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnMenuItemClearRobotPath);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnAbout);
     Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OntimRunSimulTrigger);
     //*)
@@ -267,11 +289,6 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 		obj->setColor_u8(TColor(30,30,30,50));
 		m_plot3D->m_openGLScene->insert( obj );
 	}
-	{
-		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-20,20, -20,20, 0, 1);
-		obj->setColor_u8(TColor(30,30,30,50));
-		m_plotScan->m_openGLScene->insert( obj );
-	}
 
 	gl_grid = mrpt::opengl::CSetOfObjects::Create();
 	m_plot3D->m_openGLScene->insert(gl_grid);
@@ -295,9 +312,14 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 	gl_robot_sensor_range->setLocation(0,0,0.01);
 	gl_robot->insert(gl_robot_sensor_range);
 
+	gl_robot_path = mrpt::opengl::CSetOfLines::Create();
+	gl_robot_path->setLineWidth(1);
+	gl_robot_path->setColor_u8( TColor(40,40,40, 200));
+	m_plot3D->m_openGLScene->insert(gl_robot_path);
+
 	gl_target = mrpt::opengl::CSetOfObjects::Create();
 	{
-		mrpt::opengl::CArrowPtr obj; 
+		mrpt::opengl::CArrowPtr obj;
 		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
 		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
 		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
@@ -316,22 +338,70 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 		m_gl_placing_nav_target->setVisibility(false); // Start invisible.
 		m_plot3D->m_openGLScene->insert(m_gl_placing_nav_target);
 	}
+	{	// Sign of "replacing the robot":
+		m_gl_placing_robot = opengl::CSetOfObjects::Create();
+		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.2,0.1,0.9);
+		obj->setColor_u8( TColor(255,0,0, 120) );
+		m_gl_placing_robot->insert(obj);
+
+		m_gl_placing_robot->setVisibility(false); // Start invisible.
+		m_plot3D->m_openGLScene->insert(m_gl_placing_robot);
+	}
+
+	m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZ(1) );
+
+	// Set camera:
+	m_plot3D->cameraPointingX=0;
+	m_plot3D->cameraPointingY=0;
+	m_plot3D->cameraPointingZ=0;
+	m_plot3D->cameraZoomDistance = 40;
+	m_plot3D->cameraElevationDeg = 70;
+	m_plot3D->cameraAzimuthDeg = -100;
+	m_plot3D->cameraIsProjective = true;
 
 
 	// 2D view ==============
+	{
+		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001, -1,1.001, 0, 1);
+		obj->setColor_u8(TColor(30,30,30,50));
+		m_plotScan->m_openGLScene->insert( obj );
+	}
+
 	gl_scan2D = mrpt::opengl::CPlanarLaserScan::Create();
 	gl_scan2D->enableLine(false);
 	gl_scan2D->enableSurface(false);
 	gl_scan2D->setPointsWidth(3.0);
 	m_plotScan->m_openGLScene->insert(gl_scan2D);
 
+	gl_line_direction = mrpt::opengl::CSimpleLine::Create();
+	gl_line_direction->setLineWidth(3);
+	gl_line_direction->setColor_u8(TColor(0,0,0));
+	m_plotScan->m_openGLScene->insert(gl_line_direction);
+
+	gl_rel_target = mrpt::opengl::CPointCloud::Create();
+	gl_rel_target->setPointSize(7);
+	gl_rel_target->setColor_u8(TColor(0,0,255));
+	gl_rel_target->insertPoint(0,0,0);
+	m_plotScan->m_openGLScene->insert(gl_rel_target);
+
+	m_plotScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1,2) );
+
 
 	m_plotScan->clearColorR = 0.9f;
 	m_plotScan->clearColorG = 0.9f;
 	m_plotScan->clearColorB = 0.9f;
 
-	//m_plotScan->useCameraFromScene = true;
+	// Set camera:
+	m_plotScan->cameraPointingX=0;
+	m_plotScan->cameraPointingY=0;
+	m_plotScan->cameraPointingZ=0;
+	m_plotScan->cameraZoomDistance = 2.2;
+	m_plotScan->cameraElevationDeg = 90;
+	m_plotScan->cameraAzimuthDeg = -90;
+	m_plotScan->cameraIsProjective = false;
 
+
+	// Update positions of stuff:
 	this->updateViewsDynamicObjects();
 
 
@@ -376,16 +446,26 @@ void holonomic_navigator_demoFrame::OnAbout(wxCommandEvent& event)
 
 void holonomic_navigator_demoFrame::updateMap3DView()
 {
+	gl_grid->clear();
 	m_gridMap.getAs3DObject(gl_grid);
-}
-
-void holonomic_navigator_demoFrame::updateRobotTarget3DView()
-{
 }
 
 
 void holonomic_navigator_demoFrame::OnbtnPlaceRobotClick(wxCommandEvent& event)
 {
+	if (m_cursorPickState!=cpsPlaceRobot)
+	{
+		m_cursorPickState = cpsPlaceRobot;
+		m_plot3D->SetCursor( *wxCROSS_CURSOR );
+	}
+	else
+	{	// Cancel:
+		m_cursorPickState = cpsNone;
+		m_plot3D->SetCursor( *wxSTANDARD_CURSOR );
+		m_gl_placing_robot->setVisibility(false);
+	}
+	btnPlaceRobot->SetValue( m_cursorPickState == cpsPlaceRobot );
+	btnPlaceRobot->Refresh();
 }
 
 void holonomic_navigator_demoFrame::OnbtnPlaceTargetClick(wxCommandEvent& event)
@@ -412,6 +492,7 @@ void holonomic_navigator_demoFrame::OnbtnStartClick(wxCommandEvent& event)
 	btnStart->Enable(false); btnStart->Refresh();
 	btnStop->Enable(true);   btnStop->Refresh();
 	edHoloParams->Enable(false);
+	rbHoloMethod->Enable(false);
 }
 
 void holonomic_navigator_demoFrame::OnbtnStopClick(wxCommandEvent& event)
@@ -419,6 +500,7 @@ void holonomic_navigator_demoFrame::OnbtnStopClick(wxCommandEvent& event)
 	btnStart->Enable(true); btnStart->Refresh();
 	btnStop->Enable(false);   btnStop->Refresh();
 	edHoloParams->Enable(true);
+	rbHoloMethod->Enable(true);
 }
 
 // Run simulator (when "running"):
@@ -452,7 +534,7 @@ void holonomic_navigator_demoFrame::reinitSimulator()
 	{
 	case 0: m_holonomicMethod = new mrpt::reactivenav::CHolonomicVFF(); break;
 	case 1: m_holonomicMethod = new mrpt::reactivenav::CHolonomicND(); break;
-	default: 
+	default:
 		throw std::runtime_error("Invalid holonomic method selected!");
 	};
 
@@ -512,6 +594,60 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	m_robotPose.x += cos(desiredDirection) * desiredSpeed * time_step;
 	m_robotPose.y += sin(desiredDirection) * desiredSpeed * time_step;
 
+	// Update path graph:
+	const TPoint3D  cur_pt(m_robotPose.x,m_robotPose.y,0.01);
+	const TPoint3D  prev_pt = (gl_robot_path->getLineCount()==0) ? cur_pt : gl_robot_path->rbegin()->point2;
+
+	gl_robot_path->appendLine(prev_pt, cur_pt);
+
+	gl_rel_target->setLocation(relTargetPose.x, relTargetPose.y,0);
+
+	// Update 2D view graphs:
+	if (out_log && IS_CLASS(out_log, CLogFileRecord_ND))
+	{
+		CLogFileRecord_NDPtr log = CLogFileRecord_NDPtr(out_log);
+
+//
+//		lbSituation->Caption = IntToStr(l->situation);
+//
+//		puntosSectors->LockInvalidate = true;
+//		puntosSectors->Clear();
+//		int nGaps = l->gaps_ini.size();
+//		for (int i=0;i<nGaps;i++)
+//		{
+//			float ang,d;
+//
+//			puntosSectors->AddXY(0,0);
+//
+//			ang = M_PI *( -1 + 2*l->gaps_ini[i]/((float)simulatedScan.scan.size()) );
+//			d = simulatedScan.scan[l->gaps_ini[i]]-0.1;
+//			puntosSectors->AddXY( - d*sin(ang), d*cos(ang));
+//
+//			for (int j=0;j<10;j++)
+//			{
+//			float sec = l->gaps_ini[i] + j*(l->gaps_end[i]-l->gaps_ini[i])/10.0;
+//			ang = M_PI *( -1 + 2*sec/((float)simulatedScan.scan.size()) );
+//			d = simulatedScan.scan[sec]-0.1;
+//			puntosSectors->AddXY( - d*sin(ang), d*cos(ang));
+//			}
+//
+//			ang = M_PI *( -1 + 2*l->gaps_end[i]/((float)simulatedScan.scan.size()) );
+//			d = simulatedScan.scan[l->gaps_end[i]]-0.1;
+//			puntosSectors->AddXY( - d*sin(ang), d*cos(ang));
+//
+//			puntosSectors->AddXY(0,0);
+//		}
+//
+//		puntosSectors->LockInvalidate = false;
+	}
+
+	// Movement direction:
+	const double d = desiredSpeed/m_simul_options.ROBOT_MAX_SPEED;
+	gl_line_direction->setLineCoords(
+		0,0,0,
+		cos(desiredDirection) * d, sin(desiredDirection) * d, 0 );
+
+
 }
 
 void holonomic_navigator_demoFrame::updateViewsDynamicObjects()
@@ -537,6 +673,11 @@ void holonomic_navigator_demoFrame::updateViewsDynamicObjects()
 	StatusBar1->SetStatusText( _U( mrpt::format("Robot: (%.03f,%.03f)", m_robotPose.x, m_robotPose.y ).c_str() ), 0 );
 	StatusBar1->SetStatusText( _U( mrpt::format("Target: (%.03f,%.03f)", m_targetPoint.x, m_targetPoint.y ).c_str()  ), 1 );
 
+	// Show/hide:
+	gl_robot_sensor_range->setVisibility( mnuViewMaxRange->IsChecked() );
+	gl_robot_path->setVisibility( mnuViewRobotPath->IsChecked() );
+
+	// Refresh:
 	m_plot3D->Refresh();
 	m_plotScan->Refresh();
 }
@@ -566,6 +707,13 @@ void holonomic_navigator_demoFrame::Onplot3DMouseMove(wxMouseEvent& event)
 			m_gl_placing_nav_target->setVisibility(true);
 			m_gl_placing_nav_target->setLocation(m_curCursorPos.x,m_curCursorPos.y,0.05);
 		}
+		else
+		if (m_cursorPickState==cpsPlaceRobot)
+		{
+			m_gl_placing_robot->setVisibility(true);
+			m_gl_placing_robot->setLocation(m_curCursorPos.x,m_curCursorPos.y,0.05);
+		}
+
 		StatusBar1->SetStatusText(wxString::Format(wxT("X=%.03f Y=%.04f Z=0"),m_curCursorPos.x,m_curCursorPos.y), 2);
 	}
 
@@ -584,6 +732,16 @@ void holonomic_navigator_demoFrame::Onplot3DMouseClick(wxMouseEvent& event)
 			btnPlaceTarget->SetValue(false);
 			btnPlaceTarget->Refresh();
 			m_gl_placing_nav_target->setVisibility(false);
+			break;
+		}
+	case cpsPlaceRobot:
+		{
+			m_robotPose.x = m_curCursorPos.x;
+			m_robotPose.y = m_curCursorPos.y;
+
+			btnPlaceRobot->SetValue(false);
+			btnPlaceRobot->Refresh();
+			m_gl_placing_robot->setVisibility(false);
 			break;
 		}
 	default:
@@ -631,3 +789,74 @@ void holonomic_navigator_demoFrame::TOptions::saveToConfigFile(const std::string
 	MRPT_END
 }
 
+
+void holonomic_navigator_demoFrame::OnMenuItemChangeVisibleStuff(wxCommandEvent& event)
+{
+	updateViewsDynamicObjects();
+}
+
+void holonomic_navigator_demoFrame::OnMenuItemClearRobotPath(wxCommandEvent& event)
+{
+	gl_robot_path->clear();
+	updateViewsDynamicObjects();
+}
+
+void holonomic_navigator_demoFrame::OnbtnLoadMapClick(wxCommandEvent& event)
+{
+	WX_START_TRY
+
+	wxFileDialog dlg(
+		this,
+		_("Select grid map to load"),
+		_("."),
+		_("grid.png"),
+		wxT("Image files (*.png,*.jpg,*.gif)|*.png;*.jpg;*.gif|Binary gridmap files (*.gridmap,*.gridmap.gz)|*.gridmap;*.gridmap.gz|All files (*.*)|*.*"),
+		wxFD_OPEN | wxFD_FILE_MUST_EXIST );
+
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+
+	const wxString sFil =  dlg.GetPath();
+	const std::string fil = std::string(sFil.mb_str());
+
+	const std::string fil_ext = mrpt::system::extractFileExtension(fil,true);
+
+	if (mrpt::system::lowerCase(fil_ext)=="gridmap")
+	{
+		CFileGZInputStream f(fil);
+		f >> m_gridMap;
+	}
+	else
+	{
+		// Try loading the image:
+		CImage img;
+		if (!img.loadFromFile(fil, 0 /* force grayscale */ ))
+		{
+			wxMessageBox(_("Error"),_("Can't load the image file (check its format)."));
+		}
+		else
+		{
+			// We also need the size of each pixel:
+			double cx =-1;
+			double cy =-1;
+			double cell_size = 0.05;
+
+			const wxString sCellSize = wxGetTextFromUser(_("Enter the size (in meters) of each pixel:"),_("Grid parameters"),_("0.05"), this);
+			const wxString sCX = wxGetTextFromUser(_("Enter the central pixel (x-coordinate), or -1 = the image center:"),_("Grid parameters"),_("-1"), this);
+			const wxString sCY = wxGetTextFromUser(_("Enter the central pixel (y-coordinate), or -1 = the image center:"),_("Grid parameters"),_("-1"), this);
+
+			if (sCellSize.ToDouble(&cell_size) && sCX.ToDouble(&cx) && sCY.ToDouble(&cy) )
+			{
+				if (!m_gridMap.loadFromBitmap(img,cell_size,cx,cy))
+					wxMessageBox(_("Error"),_("Can't load the image file into the gridmap..."));
+			}
+			else
+				wxMessageBox(_("Error"),_("Error parsing the numbers you entered..."));
+		}
+	}
+
+	updateMap3DView();
+	m_plot3D->Refresh();
+
+	WX_END_TRY
+}

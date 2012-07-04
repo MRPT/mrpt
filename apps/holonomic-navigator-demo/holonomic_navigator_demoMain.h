@@ -30,17 +30,17 @@
 #define HOLONOMIC_NAVIGATOR_DEMOMAIN_H
 
 //(*Headers(holonomic_navigator_demoFrame)
-#include <wx/notebook.h>
 #include <wx/sizer.h>
-#include <wx/radiobox.h>
+#include <wx/notebook.h>
 #include <wx/menu.h>
-#include <wx/textctrl.h>
-#include <wx/things/toggle.h>
-#include "MyGLCanvas.h"
 #include <wx/panel.h>
-#include <wx/frame.h>
-#include <wx/timer.h>
 #include <wx/statusbr.h>
+#include <wx/frame.h>
+#include "MyGLCanvas.h"
+#include <wx/textctrl.h>
+#include <wx/radiobox.h>
+#include <wx/timer.h>
+#include <wx/things/toggle.h>
 //*)
 
 #include <mrpt/opengl.h>
@@ -76,6 +76,9 @@ class holonomic_navigator_demoFrame: public wxFrame
         void OnbtnStartClick(wxCommandEvent& event);
         void OnbtnStopClick(wxCommandEvent& event);
         void OntimRunSimulTrigger(wxTimerEvent& event);
+        void OnMenuItemChangeVisibleStuff(wxCommandEvent& event);
+        void OnMenuItemClearRobotPath(wxCommandEvent& event);
+        void OnbtnLoadMapClick(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(holonomic_navigator_demoFrame)
@@ -93,36 +96,44 @@ class holonomic_navigator_demoFrame: public wxFrame
         static const long ID_NOTEBOOK1;
         static const long ID_XY_GLCANVAS;
         static const long ID_CUSTOM1;
+        static const long ID_MENUITEM4;
         static const long idMenuQuit;
+        static const long ID_MENUITEM1;
+        static const long ID_MENUITEM2;
+        static const long ID_MENUITEM3;
         static const long idMenuAbout;
         static const long ID_STATUSBAR1;
         static const long ID_TIMER1;
         //*)
 
         //(*Declarations(holonomic_navigator_demoFrame)
-        wxTimer timRunSimul;
-        wxCustomButton* btnStop;
-        wxNotebook* Notebook1;
-        wxRadioBox* rbHoloMethod;
-        wxCustomButton* btnStart;
-        wxTextCtrl* edHoloParams;
-        wxCustomButton* btnLoadMap;
-        wxCustomButton* btnQuit;
+        wxMenuItem* mnuViewMaxRange;
         wxPanel* Panel1;
         wxStatusBar* StatusBar1;
-        wxCustomButton* btnHelp;
-        wxCustomButton* btnPlaceRobot;
+        wxTextCtrl* edHoloParams;
+        wxMenu* Menu3;
+        wxTimer timRunSimul;
+        wxMenuItem* mnuViewRobotPath;
         wxPanel* Panel2;
-        wxCustomButton* btnPlaceTarget;
-        CMyGLCanvas* m_plotScan;
         CMyGLCanvas* m_plot3D;
+        wxCustomButton* btnLoadMap;
+        wxCustomButton* btnPlaceRobot;
+        wxMenuItem* MenuItem3;
+        wxCustomButton* btnStart;
+        wxRadioBox* rbHoloMethod;
+        wxMenuItem* MenuItem5;
+        wxCustomButton* btnStop;
+        wxCustomButton* btnPlaceTarget;
+        wxNotebook* Notebook1;
+        CMyGLCanvas* m_plotScan;
+        wxCustomButton* btnHelp;
+        wxCustomButton* btnQuit;
         //*)
 
         DECLARE_EVENT_TABLE()
 
 		/* Methods: */
 		void updateMap3DView();
-		void updateRobotTarget3DView();
 		void reinitSimulator();  // Create navigator object & load params from GUI
 		void simulateOneStep(double time_step);
 		void updateViewsDynamicObjects(); // Update 3D object positions and refresh views.
@@ -168,11 +179,15 @@ class holonomic_navigator_demoFrame: public wxFrame
 		mrpt::opengl::CSetOfObjectsPtr		gl_grid;
 		mrpt::opengl::CSetOfObjectsPtr		gl_robot, gl_target;
 		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_nav_target;
+		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_robot;
 		mrpt::opengl::CDiskPtr		        gl_robot_sensor_range;
+		mrpt::opengl::CSetOfLinesPtr        gl_robot_path;
 		mrpt::opengl::CPlanarLaserScanPtr   gl_scan3D, gl_scan2D;
 		mrpt::opengl::CPointCloudPtr 		gl_path;
 
 		// ========= Opengl View: Local view (holonomic)  =======
+		mrpt::opengl::CSimpleLinePtr        gl_line_direction;
+		mrpt::opengl::CPointCloudPtr        gl_rel_target;
 
 };
 
