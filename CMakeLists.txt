@@ -582,7 +582,7 @@ MARK_AS_ADVANCED(FORCE
 
 #-----------------------------------
 # The examples
-# *Note*: This must nw be AFTER the generation of the MRPTConfig.cmake files
+# *Note*: This must be AFTER the generation of the MRPTConfig.cmake files
 #-----------------------------------
 add_definitions(-DMRPT_OPENCV_SRC_DIR="${MRPT_OPENCV_SRC_DIR}")
 SET(MRPT_DIR ${MRPT_BINARY_DIR})
@@ -598,3 +598,4 @@ include(cmakemodules/script_install_commands.cmake REQUIRED)
 
 # Summary
 include(cmakemodules/script_show_final_summary.cmake REQUIRED)
+
