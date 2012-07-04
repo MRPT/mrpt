@@ -1,0 +1,21 @@
+# ----------------------------------------------------------------------------
+# Detect GNU version:
+# ----------------------------------------------------------------------------
+IF(CMAKE_COMPILER_IS_GNUCXX)
+	execute_process(COMMAND ${CMAKE_CXX_COMPILER} --version
+		          OUTPUT_VARIABLE CMAKE_MRPT_GCC_VERSION_FULL
+		          OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+	# Typical output in CMAKE_MRPT_GCC_VERSION_FULL: "c++ (whatever) 4.2.3 (...)"
+	#  Look for the version number
+	STRING(REGEX MATCH "[0-9]+.[0-9]+.[0-9]+" CMAKE_GCC_REGEX_VERSION "${CMAKE_MRPT_GCC_VERSION_FULL}")
+	#MESSAGE(STATUS "match: ${CMAKE_GCC_REGEX_VERSION}")
+
+	# Split the three parts:
+	STRING(REGEX MATCHALL "[0-9]+" CMAKE_MRPT_GCC_VERSIONS "${CMAKE_GCC_REGEX_VERSION}")
+
+	LIST(GET CMAKE_MRPT_GCC_VERSIONS 0 CMAKE_MRPT_GCC_VERSION_MAJOR)
+	LIST(GET CMAKE_MRPT_GCC_VERSIONS 1 CMAKE_MRPT_GCC_VERSION_MINOR)
+
+	SET(CMAKE_MRPT_GCC_VERSION ${CMAKE_MRPT_GCC_VERSION_MAJOR}${CMAKE_MRPT_GCC_VERSION_MINOR})
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
