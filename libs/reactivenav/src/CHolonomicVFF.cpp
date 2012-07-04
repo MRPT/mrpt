@@ -76,7 +76,8 @@ void  CHolonomicVFF::navigate(
 		for (size_t i=0;i<n;i++, ang+=inc_ang )
 		{
 			// Compute force strength:
-			const double mod = exp(- obstacles[i] );
+			//const double mod = exp(- obstacles[i] );
+			const double mod = std::min(1e6, 1.0/ obstacles[i] );
 
 			// Add repulsive force:
 			instantaneousForce.x = -cos(ang) * mod;
@@ -84,6 +85,9 @@ void  CHolonomicVFF::navigate(
 			resultantForce += instantaneousForce;
 		}
 	}
+
+	const double obstcl_weight = 20.0/obstacles.size();
+	resultantForce *= obstcl_weight;
 
 	// Target:
 	const double ang = atan2( target.y, target.x );

@@ -716,5 +716,8 @@ void CHolonomicND::TOptions::saveToConfigFile(const std::string &section,  mrpt:
 	cfg.write(section,"TOO_CLOSE_OBSTACLE",TOO_CLOSE_OBSTACLE,   WN,WV, "For stopping gradually");
 	cfg.write(section,"TARGET_SLOW_APPROACHING_DISTANCE",TARGET_SLOW_APPROACHING_DISTANCE,   WN,WV, "In normalized ps-meters");
 
+	ASSERT_EQUAL_(factorWeights.size(),4)
+	cfg.write(section,"factorWeights",mrpt::format("%.2f %.2f %.2f %.2f",factorWeights[0],factorWeights[1],factorWeights[2],factorWeights[3]),   WN,WV, "[0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis");
+
 	MRPT_END
 }

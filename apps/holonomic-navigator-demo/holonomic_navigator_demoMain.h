@@ -30,17 +30,22 @@
 #define HOLONOMIC_NAVIGATOR_DEMOMAIN_H
 
 //(*Headers(holonomic_navigator_demoFrame)
-#include <wx/sizer.h>
 #include <wx/notebook.h>
-#include <wx/menu.h>
-#include <wx/panel.h>
-#include <wx/statusbr.h>
-#include <wx/frame.h>
-#include "MyGLCanvas.h"
-#include <wx/textctrl.h>
+#include <wx/sizer.h>
 #include <wx/radiobox.h>
+#include <wx/menu.h>
+#include <wx/textctrl.h>
 #include <wx/things/toggle.h>
+#include "MyGLCanvas.h"
+#include <wx/panel.h>
+#include <wx/frame.h>
+#include <wx/timer.h>
+#include <wx/statusbr.h>
 //*)
+
+#include <mrpt/opengl.h>
+#include <mrpt/reactivenav.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>			// It's in the lib mrpt-maps
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
@@ -66,8 +71,11 @@ class holonomic_navigator_demoFrame: public wxFrame
         //(*Handlers(holonomic_navigator_demoFrame)
         void OnQuit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
-        void OnButton1Click(wxCommandEvent& event);
-        void OnButton2Click(wxCommandEvent& event);
+        void OnbtnPlaceRobotClick(wxCommandEvent& event);
+        void OnbtnPlaceTargetClick(wxCommandEvent& event);
+        void OnbtnStartClick(wxCommandEvent& event);
+        void OnbtnStopClick(wxCommandEvent& event);
+        void OntimRunSimulTrigger(wxTimerEvent& event);
         //*)
 
         //(*Identifiers(holonomic_navigator_demoFrame)
@@ -88,27 +96,84 @@ class holonomic_navigator_demoFrame: public wxFrame
         static const long idMenuQuit;
         static const long idMenuAbout;
         static const long ID_STATUSBAR1;
+        static const long ID_TIMER1;
         //*)
 
         //(*Declarations(holonomic_navigator_demoFrame)
-        wxPanel* Panel1;
-        wxStatusBar* StatusBar1;
-        wxTextCtrl* edHoloParams;
-        wxPanel* Panel2;
-        CMyGLCanvas* m_plot3D;
-        wxCustomButton* btnLoadMap;
-        wxCustomButton* btnStart;
-        wxRadioBox* rbHoloMethod;
-        wxCustomButton* Button1;
+        wxTimer timRunSimul;
         wxCustomButton* btnStop;
         wxNotebook* Notebook1;
-        wxCustomButton* Button2;
-        CMyGLCanvas* m_plotScan;
-        wxCustomButton* btnHelp;
+        wxRadioBox* rbHoloMethod;
+        wxCustomButton* btnStart;
+        wxTextCtrl* edHoloParams;
+        wxCustomButton* btnLoadMap;
         wxCustomButton* btnQuit;
+        wxPanel* Panel1;
+        wxStatusBar* StatusBar1;
+        wxCustomButton* btnHelp;
+        wxCustomButton* btnPlaceRobot;
+        wxPanel* Panel2;
+        wxCustomButton* btnPlaceTarget;
+        CMyGLCanvas* m_plotScan;
+        CMyGLCanvas* m_plot3D;
         //*)
 
         DECLARE_EVENT_TABLE()
+
+		/* Methods: */
+		void updateMap3DView();
+		void updateRobotTarget3DView();
+		void reinitSimulator();  // Create navigator object & load params from GUI
+		void simulateOneStep(double time_step);
+		void updateViewsDynamicObjects(); // Update 3D object positions and refresh views.
+
+		void Onplot3DMouseClick(wxMouseEvent& event);
+		void Onplot3DMouseMove(wxMouseEvent& event);
+
+		/* Vars: */
+		struct TOptions : public mrpt::utils::CLoadableOptions
+		{
+			double ROBOT_MAX_SPEED;
+			double MAX_SENSOR_RADIUS;
+			unsigned int SENSOR_NUM_RANGES;
+			double SENSOR_RANGE_NOISE_STD;
+
+			TOptions();
+			virtual void saveToConfigFile(const std::string &section,  mrpt::utils::CConfigFileBase &cfg ) const;
+			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section);
+		};
+
+		TOptions m_simul_options;
+
+		/**  The state of the cursor onto the 3D view:
+          */
+        enum TCursorPickState
+        {
+        	cpsNone = 0,
+        	cpsPickTarget,
+			cpsPlaceRobot
+        };
+
+
+		mrpt::reactivenav::CAbstractHolonomicReactiveMethod *m_holonomicMethod;
+		mrpt::slam::COccupancyGridMap2D  m_gridMap;
+		mrpt::math::TPoint2D             m_targetPoint;
+		mrpt::math::TPose2D              m_robotPose;
+
+		mrpt::utils::CTicTac             m_runtime;
+		mrpt::math::TPoint2D             m_curCursorPos; //!< Of the cursor on the 3D view (in world coordinates at Z=0)
+        TCursorPickState                 m_cursorPickState;   //!< The state of the cursor onto the 3D view:
+
+		// ========= Opengl View: Map & robot  =======
+		mrpt::opengl::CSetOfObjectsPtr		gl_grid;
+		mrpt::opengl::CSetOfObjectsPtr		gl_robot, gl_target;
+		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_nav_target;
+		mrpt::opengl::CDiskPtr		        gl_robot_sensor_range;
+		mrpt::opengl::CPlanarLaserScanPtr   gl_scan3D, gl_scan2D;
+		mrpt::opengl::CPointCloudPtr 		gl_path;
+
+		// ========= Opengl View: Local view (holonomic)  =======
+
 };
 
 #endif // HOLONOMIC_NAVIGATOR_DEMOMAIN_H

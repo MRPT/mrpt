@@ -99,7 +99,7 @@ namespace mrpt
 			void setLineWidth(float w) { m_line_width=w; }
 			float getLineWidth() const { return  m_line_width;}
 
-			void sePointsWidth(float w) { m_points_width=w; }
+			void setPointsWidth(float w) { m_points_width=w; }
 
 			void setLineColor(float R,float G, float B, float A=1.0f)
 			{

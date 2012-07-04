@@ -65,26 +65,26 @@
 							<object class="sizeritem">
 								<object class="wxBoxSizer" variable="BoxSizer2" member="no">
 									<object class="sizeritem">
-										<object class="wxCustomButton" name="ID_BUTTON6" variable="Button1" member="yes">
+										<object class="wxCustomButton" name="ID_BUTTON6" variable="btnPlaceRobot" member="yes">
 											<label>Place robot...</label>
 											<bitmap stock_id="wxART_FIND" />
 											<bitmap_margin>2,4</bitmap_margin>
 											<minsize>-1,-1</minsize>
 											<maxsize>-1,-1</maxsize>
-											<handler function="OnButton1Click" entry="EVT_BUTTON" />
+											<handler function="OnbtnPlaceRobotClick" entry="EVT_BUTTON" />
 										</object>
 										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 										<border>2</border>
 										<option>1</option>
 									</object>
 									<object class="sizeritem">
-										<object class="wxCustomButton" name="ID_BUTTON7" variable="Button2" member="yes">
+										<object class="wxCustomButton" name="ID_BUTTON7" variable="btnPlaceTarget" member="yes">
 											<label>Set target...</label>
 											<bitmap stock_id="wxART_FIND" />
 											<bitmap_margin>2,4</bitmap_margin>
 											<minsize>-1,-1</minsize>
 											<maxsize>-1,-1</maxsize>
-											<handler function="OnButton1Click" entry="EVT_BUTTON" />
+											<handler function="OnbtnPlaceTargetClick" entry="EVT_BUTTON" />
 										</object>
 										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 										<border>2</border>
@@ -97,7 +97,7 @@
 											<bitmap_margin>2,4</bitmap_margin>
 											<minsize>-1,-1</minsize>
 											<maxsize>-1,-1</maxsize>
-											<handler function="OnButton1Click" entry="EVT_BUTTON" />
+											<handler function="OnbtnStartClick" entry="EVT_BUTTON" />
 										</object>
 										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 										<border>2</border>
@@ -111,7 +111,7 @@
 											<enabled>0</enabled>
 											<minsize>-1,-1</minsize>
 											<maxsize>-1,-1</maxsize>
-											<handler function="OnButton2Click" entry="EVT_BUTTON" />
+											<handler function="OnbtnStopClick" entry="EVT_BUTTON" />
 										</object>
 										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 										<border>2</border>
@@ -239,9 +239,13 @@
 			</object>
 		</object>
 		<object class="wxStatusBar" name="ID_STATUSBAR1" variable="StatusBar1" member="yes">
-			<fields>1</fields>
-			<widths>-1</widths>
-			<styles>wxSB_NORMAL</styles>
+			<fields>3</fields>
+			<widths>-2,-2,-3</widths>
+			<styles>wxSB_NORMAL,wxSB_NORMAL,wxSB_NORMAL</styles>
+		</object>
+		<object class="wxTimer" name="ID_TIMER1" variable="timRunSimul" member="yes">
+			<interval>10</interval>
+			<handler function="OntimRunSimulTrigger" entry="EVT_TIMER" />
 		</object>
 	</object>
 </wxsmith>
