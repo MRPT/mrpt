@@ -142,7 +142,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
     wxBoxSizer* BoxSizer1;
     wxMenuBar* MenuBar1;
     wxMenu* Menu2;
-
+    
     Create(parent, id, _("Holonomic Navigation Demo - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     FlexGridSizer1 = new wxFlexGridSizer(2, 1, 0, 0);
     FlexGridSizer1->AddGrowableCol(0);
@@ -190,7 +190,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
     FlexGridSizer7 = new wxFlexGridSizer(1, 2, 0, 0);
     FlexGridSizer7->AddGrowableCol(1);
     FlexGridSizer7->AddGrowableRow(0);
-    wxString __wxRadioBoxChoices_1[2] =
+    wxString __wxRadioBoxChoices_1[2] = 
     {
     _("VFF (Virtual Force Field)"),
     _("ND (Nearnest  Diagram)")
@@ -230,8 +230,10 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
     Menu3 = new wxMenu();
     mnuViewMaxRange = new wxMenuItem(Menu3, ID_MENUITEM1, _("Maximum sensor range"), wxEmptyString, wxITEM_CHECK);
     Menu3->Append(mnuViewMaxRange);
+    mnuViewMaxRange->Check(true);
     mnuViewRobotPath = new wxMenuItem(Menu3, ID_MENUITEM2, _("Robot path"), wxEmptyString, wxITEM_CHECK);
     Menu3->Append(mnuViewRobotPath);
+    mnuViewRobotPath->Check(true);
     Menu3->AppendSeparator();
     MenuItem5 = new wxMenuItem(Menu3, ID_MENUITEM3, _("Clear robot path"), wxEmptyString, wxITEM_NORMAL);
     Menu3->Append(MenuItem5);
@@ -252,7 +254,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-
+    
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnbtnLoadMapClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnAbout);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&holonomic_navigator_demoFrame::OnQuit);

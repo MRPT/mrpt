@@ -237,11 +237,13 @@
 				<label>&amp;View</label>
 				<object class="wxMenuItem" name="ID_MENUITEM1" variable="mnuViewMaxRange" member="yes">
 					<label>Maximum sensor range</label>
+					<checked>1</checked>
 					<handler function="OnMenuItemChangeVisibleStuff" entry="EVT_MENU" />
 					<checkable>1</checkable>
 				</object>
 				<object class="wxMenuItem" name="ID_MENUITEM2" variable="mnuViewRobotPath" member="yes">
 					<label>Robot path</label>
+					<checked>1</checked>
 					<handler function="OnMenuItemChangeVisibleStuff" entry="EVT_MENU" />
 					<checkable>1</checkable>
 				</object>
