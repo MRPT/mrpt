@@ -16,9 +16,12 @@ add_base_srcs(synch)
 add_base_srcs(system)
 add_base_srcs(utils)
 
-
-LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/utils/simpleini/*.c" "${MRPT_LIBS_ROOT}/base/src/utils/simpleini/*.h")
-LIST(APPEND base_EXTRA_SRCS_NAME 	"utils/simpleini" "utils/simpleini")
+LIST(APPEND base_EXTRA_SRCS       "${MRPT_LIBS_ROOT}/base/src/utils/simpleini/*.h")
+LIST(APPEND base_EXTRA_SRCS_NAME  "utils/simpleini")
+IF(NOT CMAKE_MRPT_HAS_CLANG_SYSTEM)
+	LIST(APPEND base_EXTRA_SRCS       "${MRPT_LIBS_ROOT}/base/src/utils/simpleini/*.c")
+	LIST(APPEND base_EXTRA_SRCS_NAME  "utils/simpleini")
+ENDIF(NOT CMAKE_MRPT_HAS_CLANG_SYSTEM)
 
 LIST(APPEND base_EXTRA_SRCS			"${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.cpp" "${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.h")
 LIST(APPEND base_EXTRA_SRCS_NAME 	"utils/xmlparser" "utils/xmlparser")

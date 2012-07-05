@@ -112,7 +112,7 @@ ENDIF(BUILD_XSENS)
 #-----------------------------------
 #  Build the hardware drivers?
 #-----------------------------------
-SET( BUILD_HWDRIVERS ON CACHE BOOL "Build hardware drivers (library apps/lib_hwdrivers)?.")
+SET(BUILD_HWDRIVERS ON CACHE BOOL "Build hardware drivers (library apps/lib_hwdrivers)?.")
 MARK_AS_ADVANCED(BUILD_HWDRIVERS)
 
 
@@ -174,10 +174,12 @@ include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C lib
 include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
 include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
 include(cmakemodules/script_lib3ds.cmake REQUIRED)      # Check for system lib3ds
+include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
 include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
 include(cmakemodules/script_jpeg.cmake REQUIRED)        # Check for jpeg
 include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE 3D camera:
 include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
+include(cmakemodules/script_clang.cmake REQUIRED)       # clang library (For UTFConvert)
 
 include(cmakemodules/script_disable_stuff.cmake REQUIRED)  # Let the user disable auto-detected stuff.
 
