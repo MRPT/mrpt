@@ -36,6 +36,7 @@
 #include "CAboutBox.h"
 
 //(*InternalHeaders(holonomic_navigator_demoFrame)
+#include <wx/settings.h>
 #include <wx/string.h>
 #include <wx/intl.h>
 #include <wx/font.h>
@@ -101,8 +102,11 @@ const long holonomic_navigator_demoFrame::ID_TEXTCTRL1 = wxNewId();
 const long holonomic_navigator_demoFrame::ID_PANEL1 = wxNewId();
 const long holonomic_navigator_demoFrame::ID_PANEL2 = wxNewId();
 const long holonomic_navigator_demoFrame::ID_NOTEBOOK1 = wxNewId();
+const long holonomic_navigator_demoFrame::ID_STATICTEXT2 = wxNewId();
+const long holonomic_navigator_demoFrame::ID_STATICTEXT1 = wxNewId();
 const long holonomic_navigator_demoFrame::ID_XY_GLCANVAS = wxNewId();
 const long holonomic_navigator_demoFrame::ID_CUSTOM1 = wxNewId();
+const long holonomic_navigator_demoFrame::ID_TEXTCTRL2 = wxNewId();
 const long holonomic_navigator_demoFrame::ID_MENUITEM4 = wxNewId();
 const long holonomic_navigator_demoFrame::idMenuQuit = wxNewId();
 const long holonomic_navigator_demoFrame::ID_MENUITEM1 = wxNewId();
@@ -147,6 +151,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
     wxBoxSizer* BoxSizer1;
     wxMenuBar* MenuBar1;
     wxMenu* Menu2;
+    wxFlexGridSizer* FlexGridSizer5;
     
     Create(parent, id, _("Holonomic Navigation Demo - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     FlexGridSizer1 = new wxFlexGridSizer(2, 1, 0, 0);
@@ -198,7 +203,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
     wxString __wxRadioBoxChoices_1[2] = 
     {
     _("VFF (Virtual Force Field)"),
-    _("ND (Nearnest  Diagram)")
+    _("ND (Nearness  Diagram)")
     };
     rbHoloMethod = new wxRadioBox(Panel1, ID_RADIOBOX1, _(" Holonomic method "), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, wxRA_HORIZONTAL, wxDefaultValidator, _T("ID_RADIOBOX1"));
     FlexGridSizer7->Add(rbHoloMethod, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
@@ -215,14 +220,28 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
     Notebook1->AddPage(Panel2, _("Stats"), false);
     FlexGridSizer2->Add(Notebook1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer3 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer3 = new wxFlexGridSizer(2, 2, 0, 0);
     FlexGridSizer3->AddGrowableCol(0);
     FlexGridSizer3->AddGrowableCol(1);
-    FlexGridSizer3->AddGrowableRow(0);
+    FlexGridSizer3->AddGrowableRow(1);
+    StaticText2 = new wxStaticText(this, ID_STATICTEXT2, _("[3D view of the simulated world]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+    FlexGridSizer3->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("[Local view]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
+    FlexGridSizer3->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     m_plot3D = new CMyGLCanvas(this,ID_XY_GLCANVAS,wxDefaultPosition,wxSize(450,350),wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
     FlexGridSizer3->Add(m_plot3D, 1, wxALL|wxEXPAND|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer5 = new wxFlexGridSizer(2, 1, 0, 0);
+    FlexGridSizer5->AddGrowableCol(0);
+    FlexGridSizer5->AddGrowableRow(0);
     m_plotScan = new CMyGLCanvas(this,ID_CUSTOM1,wxDefaultPosition,wxSize(150,150),wxTAB_TRAVERSAL,_T("ID_CUSTOM1"));
-    FlexGridSizer3->Add(m_plotScan, 1, wxALL|wxEXPAND|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer5->Add(m_plotScan, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    edInfoLocalView = new wxTextCtrl(this, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL2"));
+    edInfoLocalView->SetMinSize(wxSize(-1,50));
+    edInfoLocalView->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
+    wxFont edInfoLocalViewFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    edInfoLocalView->SetFont(edInfoLocalViewFont);
+    FlexGridSizer5->Add(edInfoLocalView, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    FlexGridSizer3->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer1->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     SetSizer(FlexGridSizer1);
     MenuBar1 = new wxMenuBar();
@@ -235,10 +254,8 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
     Menu3 = new wxMenu();
     mnuViewMaxRange = new wxMenuItem(Menu3, ID_MENUITEM1, _("Maximum sensor range"), wxEmptyString, wxITEM_CHECK);
     Menu3->Append(mnuViewMaxRange);
-    mnuViewMaxRange->Check(true);
     mnuViewRobotPath = new wxMenuItem(Menu3, ID_MENUITEM2, _("Robot path"), wxEmptyString, wxITEM_CHECK);
     Menu3->Append(mnuViewRobotPath);
-    mnuViewRobotPath->Check(true);
     Menu3->AppendSeparator();
     MenuItem5 = new wxMenuItem(Menu3, ID_MENUITEM3, _("Clear robot path"), wxEmptyString, wxITEM_NORMAL);
     Menu3->Append(MenuItem5);
@@ -278,6 +295,9 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 
 	m_plot3D->Connect(wxEVT_MOTION,(wxObjectEventFunction)&holonomic_navigator_demoFrame::Onplot3DMouseMove,0,this);
 	m_plot3D->Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&holonomic_navigator_demoFrame::Onplot3DMouseClick,0,this);
+
+	mnuViewMaxRange->Check(true);
+	mnuViewRobotPath->Check(true);
 
 	btnStart->Enable(true);
 	btnStop->Enable(false);
@@ -381,7 +401,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 	m_plotScan->m_openGLScene->insert(gl_scan2D);
 
 	gl_line_direction = mrpt::opengl::CSimpleLine::Create();
-	gl_line_direction->setLineWidth(3);
+	gl_line_direction->setLineWidth(4);
 	gl_line_direction->setColor_u8(TColor(0,0,0));
 	m_plotScan->m_openGLScene->insert(gl_line_direction);
 
@@ -393,6 +413,10 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 
 	m_plotScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1,2) );
 
+	gl_nd_gaps = mrpt::opengl::CSetOfLines::Create();
+	gl_nd_gaps->setLineWidth(2);
+	gl_nd_gaps->setColor_u8( TColor(204,102,51) );
+	m_plotScan->m_openGLScene->insert(gl_nd_gaps);
 
 	m_plotScan->clearColorR = 0.9f;
 	m_plotScan->clearColorG = 0.9f;
@@ -603,49 +627,45 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 
 	// Update path graph:
 	const TPoint3D  cur_pt(m_robotPose.x,m_robotPose.y,0.01);
-	const TPoint3D  prev_pt = (gl_robot_path->getLineCount()==0) ? cur_pt : gl_robot_path->rbegin()->point2;
 
-	gl_robot_path->appendLine(prev_pt, cur_pt);
+	if (gl_robot_path->empty())
+	     gl_robot_path->appendLine(cur_pt,cur_pt);
+	else gl_robot_path->appendLineStrip(cur_pt);
 
 	gl_rel_target->setLocation(relTargetPose.x, relTargetPose.y,0);
+
+	// Clear stuff which will be updated if used below:
+	edInfoLocalView->Clear();
+	gl_nd_gaps->clear();
 
 	// Update 2D view graphs:
 	if (out_log && IS_CLASS(out_log, CLogFileRecord_ND))
 	{
 		CLogFileRecord_NDPtr log = CLogFileRecord_NDPtr(out_log);
+		const size_t nGaps = log->gaps_ini.size();
 
-//
-//		lbSituation->Caption = IntToStr(l->situation);
-//
-//		puntosSectors->LockInvalidate = true;
-//		puntosSectors->Clear();
-//		int nGaps = l->gaps_ini.size();
-//		for (int i=0;i<nGaps;i++)
-//		{
-//			float ang,d;
-//
-//			puntosSectors->AddXY(0,0);
-//
-//			ang = M_PI *( -1 + 2*l->gaps_ini[i]/((float)simulatedScan.scan.size()) );
-//			d = simulatedScan.scan[l->gaps_ini[i]]-0.1;
-//			puntosSectors->AddXY( - d*sin(ang), d*cos(ang));
-//
-//			for (int j=0;j<10;j++)
-//			{
-//			float sec = l->gaps_ini[i] + j*(l->gaps_end[i]-l->gaps_ini[i])/10.0;
-//			ang = M_PI *( -1 + 2*sec/((float)simulatedScan.scan.size()) );
-//			d = simulatedScan.scan[sec]-0.1;
-//			puntosSectors->AddXY( - d*sin(ang), d*cos(ang));
-//			}
-//
-//			ang = M_PI *( -1 + 2*l->gaps_end[i]/((float)simulatedScan.scan.size()) );
-//			d = simulatedScan.scan[l->gaps_end[i]]-0.1;
-//			puntosSectors->AddXY( - d*sin(ang), d*cos(ang));
-//
-//			puntosSectors->AddXY(0,0);
-//		}
-//
-//		puntosSectors->LockInvalidate = false;
+		const string sSitu = mrpt::utils::TEnumType<CHolonomicND::TSituations>::value2name(log->situation);
+
+		string sLog =
+		      mrpt::format("ND situation : %s\n",sSitu.c_str());
+		sLog+=mrpt::format("Gap count    : %u\n", static_cast<unsigned int>(nGaps) );
+
+		edInfoLocalView->SetValue(_U(sLog.c_str()));
+
+		gl_nd_gaps->appendLine(0,0,0, 0,0,0);
+
+		for (size_t i=0;i<nGaps;i++)
+		{
+			const size_t N_STEPS = 20;
+			for (size_t j=0;j<N_STEPS;j++)
+			{
+				const double sec = log->gaps_ini[i] + j*(log->gaps_end[i]-log->gaps_ini[i])/static_cast<double>(N_STEPS-1);
+				const double ang = M_PI *( -1 + 2*sec/((float)simulatedScan.scan.size()) );
+				const double d = simulatedScan.scan[sec]-0.05;
+				gl_nd_gaps->appendLineStrip(d*cos(ang),d*sin(ang),0);
+			}
+			gl_nd_gaps->appendLineStrip(0,0,0);
+		}
 	}
 
 	// Movement direction:

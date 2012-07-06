@@ -107,7 +107,7 @@ namespace mrpt
 
 		typedef std::vector<TGap> TGapArray;
 
-		/** The set of posible situations for each trajectory.
+		/** The set of posible situations for each trajectory. (mrpt::utils::TEnumType works with this enum)
 		  */
 		enum TSituations
 		{
@@ -203,7 +203,24 @@ namespace mrpt
 		CHolonomicND::TSituations      situation;
 	};
 
-  }
+	} // end namespace
+
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<reactivenav::CHolonomicND::TSituations>
+		{
+			typedef reactivenav::CHolonomicND::TSituations enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(reactivenav::CHolonomicND::SITUATION_TARGET_DIRECTLY, "SITUATION_TARGET_DIRECTLY");
+				m_map.insert(reactivenav::CHolonomicND::SITUATION_SMALL_GAP,       "SITUATION_SMALL_GAP");
+				m_map.insert(reactivenav::CHolonomicND::SITUATION_WIDE_GAP,        "SITUATION_WIDE_GAP");
+				m_map.insert(reactivenav::CHolonomicND::SITUATION_NO_WAY_FOUND,    "SITUATION_NO_WAY_FOUND");
+			}
+		};
+	} // End of namespace
 }
 
 

@@ -42,6 +42,7 @@
 #include <wx/statusbr.h>
 #include <wx/frame.h>
 #include "MyGLCanvas.h"
+#include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/radiobox.h>
 #include <wx/timer.h>
@@ -99,8 +100,11 @@ class holonomic_navigator_demoFrame: public wxFrame
         static const long ID_PANEL1;
         static const long ID_PANEL2;
         static const long ID_NOTEBOOK1;
+        static const long ID_STATICTEXT2;
+        static const long ID_STATICTEXT1;
         static const long ID_XY_GLCANVAS;
         static const long ID_CUSTOM1;
+        static const long ID_TEXTCTRL2;
         static const long ID_MENUITEM4;
         static const long idMenuQuit;
         static const long ID_MENUITEM1;
@@ -118,6 +122,8 @@ class holonomic_navigator_demoFrame: public wxFrame
         wxTextCtrl* edHoloParams;
         wxMenu* Menu3;
         wxTimer timRunSimul;
+        wxTextCtrl* edInfoLocalView;
+        wxStaticText* StaticText1;
         wxMenuItem* mnuViewRobotPath;
         wxPanel* Panel2;
         CMyGLCanvas* m_plot3D;
@@ -129,6 +135,7 @@ class holonomic_navigator_demoFrame: public wxFrame
         wxMenuItem* MenuItem5;
         wxCustomButton* btnStop;
         wxCustomButton* btnPlaceTarget;
+        wxStaticText* StaticText2;
         wxNotebook* Notebook1;
         CMyGLCanvas* m_plotScan;
         wxCustomButton* btnHelp;
@@ -193,6 +200,7 @@ class holonomic_navigator_demoFrame: public wxFrame
 		// ========= Opengl View: Local view (holonomic)  =======
 		mrpt::opengl::CSimpleLinePtr        gl_line_direction;
 		mrpt::opengl::CPointCloudPtr        gl_rel_target;
+		mrpt::opengl::CSetOfLinesPtr        gl_nd_gaps;
 
 };
 
