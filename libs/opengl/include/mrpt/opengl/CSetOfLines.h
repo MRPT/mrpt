@@ -51,13 +51,13 @@ namespace mrpt
 
 		/** A set of independent lines (or segments), one line with its own start and end positions (X,Y,Z).
 		  *  \sa opengl::COpenGLScene
-		  *  
+		  *
 		  *  <div align="center">
 		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
 		  *   <tr> <td> mrpt::opengl::CSetOfLines </td> <td> \image html preview_CSetOfLines.png </td> </tr>
 		  *  </table>
 		  *  </div>
-		  *  
+		  *
 		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP CSetOfLines : public CRenderizableDisplayList
@@ -102,6 +102,20 @@ namespace mrpt
 				appendLine(TSegment3D(TPoint3D(x0,y0,z0),TPoint3D(x1,y1,z1)));
 				CRenderizableDisplayList::notifyChange();
 			}
+
+			/** Appends a line whose starting point is the end point of the last line (similar to OpenGL's GL_LINE_STRIP)
+			  *  \exception std::exception If there is no previous segment */
+			inline void appendLineStrip(float x,float y,float z)	{
+				ASSERT_(!this->empty())
+				this->appendLine(this->rbegin()->point2, TPoint3D(x,y,z));
+			}
+			//! \overload
+			template<class U>
+			inline void appendLineStrip(const U &point)	{
+				ASSERT_(!this->empty())
+				this->appendLine(this->rbegin()->point2,point);
+			}
+
 			/**
 			  * Appends any iterable collection of lines to the set. Note that this includes another CSetOfLines.
 			  * \sa appendLine
@@ -142,12 +156,12 @@ namespace mrpt
 				appendLine(p0.x,p0.y,p0.z,p1.x,p1.y,p1.z);
 				CRenderizableDisplayList::notifyChange();
 			}
-			/**
-			  * Returns the total count of lines in this set.
-			  */
-			inline size_t getLineCount() const	{
-				return mSegments.size();
-			}
+			/** Returns the total count of lines in this set. */
+			inline size_t getLineCount() const	{ return mSegments.size(); }
+			/** Returns the total count of lines in this set. */
+			inline size_t size() const { return mSegments.size(); }
+			/** Returns true if there are no line segments. */
+			inline bool empty() const { return mSegments.empty(); }
 			/**
 			  * Sets a specific line in the set, given its index.
 			  * \sa appendLine

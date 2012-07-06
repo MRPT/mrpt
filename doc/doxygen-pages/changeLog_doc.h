@@ -64,6 +64,9 @@
 				- mrpt::slam::CPointsMap::loadPCDFile()
 				- mrpt::slam::CPointsMap::setFromPCLPointCloud()
 				- mrpt::slam::CColouredPointsMap::setFromPCLPointCloudRGB()
+		- [mrpt-opengl]
+			- New methods in mrpt::opengl::CSetOfLines: - <a href="http://code.google.com/p/mrpt/source/detail?r=2967" >r2967</a>
+				- mrpt::opengl::CSetOfLines::appendLineStrip(), mrpt::opengl::CSetOfLines::size(), mrpt::opengl::CSetOfLines::empty()
 		- [mrpt-reactivenav]
 			- Much code of mrpt::reactivenav classes have undergone a clean-up, slight optimizations and a translation of old Spanish names/comments to English - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2942" >r2942</a>, , <a href="http://code.google.com/p/mrpt/source/detail?r=2958" >r2958</a>
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::CColisionGrid now has a more maintainable binary serialization format - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>
