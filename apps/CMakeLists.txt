@@ -62,3 +62,4 @@ ENDIF (BUILD_STEREOSLAM AND EXISTS "${MRPT_SOURCE_DIR}/apps/multiResLocalization
 if(BUILD_MONOSLAM)
 	add_subdirectory(mono-slam)
 endif(BUILD_MONOSLAM)
+

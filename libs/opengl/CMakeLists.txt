@@ -40,18 +40,21 @@ define_mrpt_lib(
 	# Dependencies: 
 	mrpt-base		
 	)
-	
-# Ignore precompiled headers in some sources:
-IF(MRPT_ENABLE_PRECOMPILED_HDRS)
-	IF (MSVC)
-		set_source_files_properties(
-			${lib3ds_FILES}
-			${freeglut_FILES}
-			${glew_FILES}
-			PROPERTIES COMPILE_FLAGS "/Y-"
-			)
-		# Params for glew:	
-		set_source_files_properties(${glew_FILES} PROPERTIES COMPILE_FLAGS "/Y- /DGLEW_STATIC")
-ENDIF (MSVC)
-ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
+
+IF(BUILD_mrpt-opengl) 
+	# Ignore precompiled headers in some sources:
+	IF(MRPT_ENABLE_PRECOMPILED_HDRS)
+		IF (MSVC)
+			set_source_files_properties(
+				${lib3ds_FILES}
+				${freeglut_FILES}
+				${glew_FILES}
+				PROPERTIES COMPILE_FLAGS "/Y-"
+				)
+			# Params for glew:	
+			set_source_files_properties(${glew_FILES} PROPERTIES COMPILE_FLAGS "/Y- /DGLEW_STATIC")
+	ENDIF (MSVC)
+	ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
+
+ENDIF(BUILD_mrpt-opengl) 
 

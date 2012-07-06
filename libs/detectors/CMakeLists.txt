@@ -14,3 +14,8 @@ define_mrpt_lib(
 	mrpt-opengl
 	mrpt-obs	
 	)
+
+IF(BUILD_mrpt-detectors) 
+
+ENDIF(BUILD_mrpt-detectors) 
+

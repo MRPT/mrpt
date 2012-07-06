@@ -10,3 +10,8 @@ define_mrpt_lib(
 	mrpt-opengl
 	mrpt-scanmatching
 	)
+
+IF(BUILD_mrpt-topography) 
+
+ENDIF(BUILD_mrpt-topography) 
+

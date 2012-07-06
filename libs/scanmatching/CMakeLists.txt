@@ -7,3 +7,8 @@ define_mrpt_lib(
 	# Dependencies
 	mrpt-base
 	)
+
+IF(BUILD_mrpt-scanmatching) 
+
+ENDIF(BUILD_mrpt-scanmatching) 
+

@@ -87,9 +87,7 @@ IF(PKG_CONFIG_FOUND)
 	INCLUDE(FindPkgConfig)
 ENDIF(PKG_CONFIG_FOUND)
 
-
-# Build the ARIA library
-# ===================================================
+# Build the ARIA library?
 SET(BUILD_ARIA ON CACHE BOOL "Build an embedded version of ActivMedia ARIA library (interface to mobile robots)")
 #MARK_AS_ADVANCED(BUILD_ARIA)
 IF(BUILD_ARIA)

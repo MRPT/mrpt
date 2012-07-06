@@ -1,7 +1,11 @@
 # Declares an MRPT library target:
 macro(define_mrpt_lib name)
-
 	INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
+
+	SET(BUILD_mrpt-${name} ON CACHE BOOL "Include module mrpt-${name} in MRPT build.")
+	IF(BUILD_mrpt-${name}) 
+	# --- Start of conditional build of module ---
+
 	PROJECT(mrpt-${name})
 	
 	# There is an optional LISTS of extra sources from the caller: 
@@ -243,5 +247,8 @@ endif(1)
 		CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/parse-files/mrpt_template_no_install.pc.in" "${CMAKE_BINARY_DIR}/pkgconfig-no-install/mrpt-${name}.pc" @ONLY)
 		
 	ENDIF(UNIX)
+
+	# --- End of conditional build of module ---
+	ENDIF(BUILD_mrpt-${name}) 
 
 endmacro(define_mrpt_lib)

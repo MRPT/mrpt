@@ -37,21 +37,22 @@ define_mrpt_lib(
 	mrpt-opengl  # needed by mrpt-gui
 	)
 
-	
-IF(CMAKE_MRPT_HAS_SIFT_HESS)
+IF(BUILD_mrpt-vision) 
+	IF(CMAKE_MRPT_HAS_SIFT_HESS)
+		IF (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+			# Ignore precompiled headers in sift-hess sources:
+			set_source_files_properties(${sift-hess_FILES} PROPERTIES COMPILE_FLAGS "/Y- /wd4244")
+		ENDIF (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+
+		# Avoid some annoying warnings:
+		IF (CMAKE_COMPILER_IS_GNUCXX)
+			set_source_files_properties(${sift-hess_FILES} PROPERTIES COMPILE_FLAGS "-Wno-unused-function")
+		ENDIF (CMAKE_COMPILER_IS_GNUCXX)
+	ENDIF(CMAKE_MRPT_HAS_SIFT_HESS)
+
+	# Ignore precompiled headers in faster sources:
 	IF (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-		# Ignore precompiled headers in sift-hess sources:
-		set_source_files_properties(${sift-hess_FILES} PROPERTIES COMPILE_FLAGS "/Y- /wd4244")
+		set_source_files_properties(${faster_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
 	ENDIF (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-
-	# Avoid some annoying warnings:
-	IF (CMAKE_COMPILER_IS_GNUCXX)
-		set_source_files_properties(${sift-hess_FILES} PROPERTIES COMPILE_FLAGS "-Wno-unused-function")
-	ENDIF (CMAKE_COMPILER_IS_GNUCXX)
-ENDIF(CMAKE_MRPT_HAS_SIFT_HESS)
-
-# Ignore precompiled headers in faster sources:
-IF (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-	set_source_files_properties(${faster_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
-ENDIF (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+ENDIF(BUILD_mrpt-vision) 
 

@@ -39,14 +39,16 @@ define_mrpt_lib(
 	mrpt-opengl
 	mrpt-base		
 	)
-	
-# Ignore precompiled headers in some sources:
-IF(MRPT_ENABLE_PRECOMPILED_HDRS)
-	IF (MSVC)
-		set_source_files_properties(
-			${mathplot_FILES} 
-			${freeglut_FILES}
-			PROPERTIES COMPILE_FLAGS "/Y-")
-	ENDIF (MSVC)
-ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
-	
+
+IF(BUILD_mrpt-gui) 
+	# Ignore precompiled headers in some sources:
+	IF(MRPT_ENABLE_PRECOMPILED_HDRS)
+		IF (MSVC)
+			set_source_files_properties(
+				${mathplot_FILES} 
+				${freeglut_FILES}
+				PROPERTIES COMPILE_FLAGS "/Y-")
+		ENDIF (MSVC)
+	ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
+ENDIF(BUILD_mrpt-gui) 
+

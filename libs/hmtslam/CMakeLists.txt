@@ -13,3 +13,8 @@ define_mrpt_lib(
 	mrpt-obs 
 	mrpt-opengl
 	)
+
+IF(BUILD_mrpt-hmtslam) 
+
+ENDIF(BUILD_mrpt-hmtslam) 
+

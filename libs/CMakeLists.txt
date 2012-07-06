@@ -16,17 +16,7 @@ add_subdirectory(maps)
 add_subdirectory(vision)
 add_subdirectory(slam)
 add_subdirectory(graphslam)
-
 add_subdirectory(reactivenav)
 add_subdirectory(hmtslam)
-
-# These ones are still experimental...
 add_subdirectory(detectors)
 
-IF(BUILD_MONOSLAM)
-	add_subdirectory(monoslam)
-ENDIF(BUILD_MONOSLAM)
-
-IF(BUILD_STEREOSLAM)
-	add_subdirectory(stereoslam)
-ENDIF(BUILD_STEREOSLAM)

@@ -7,3 +7,8 @@ define_mrpt_lib(
 	# Dependencies
 	mrpt-base
 	)
+
+IF(BUILD_mrpt-bayes) 
+
+ENDIF(BUILD_mrpt-bayes) 
+

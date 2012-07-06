@@ -20,3 +20,8 @@ define_mrpt_lib(
 	mrpt-opengl
 	mrpt-base
 	)
+
+IF(BUILD_mrpt-obs) 
+
+ENDIF(BUILD_mrpt-obs) 
+

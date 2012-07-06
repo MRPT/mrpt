@@ -27,3 +27,8 @@ define_mrpt_lib(
 	mrpt-opengl
 	mrpt-base
 	)
+
+IF(BUILD_mrpt-slam) 
+
+ENDIF(BUILD_mrpt-slam) 
+

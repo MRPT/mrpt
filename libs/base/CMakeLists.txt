@@ -71,29 +71,31 @@ define_mrpt_lib(
 	base 		# Lib name
 				# Dependencies: None
 	)
-	
-# Ignore precompiled headers in some sources:
-IF(MRPT_ENABLE_PRECOMPILED_HDRS)
-	IF (MSVC)
+
+IF(BUILD_mrpt-base) 
+	# Ignore precompiled headers in some sources:
+	IF(MRPT_ENABLE_PRECOMPILED_HDRS)
+		IF (MSVC)
+			set_source_files_properties(
+				${math/CSparse_FILES}
+				${math/kmeans_FILES}
+				${utils/xmlparser_FILES}
+				${utils/simpleini_FILES}	
+				${utils/jpeglib_FILES}
+				${compress/zlib_FILES}
+				PROPERTIES COMPILE_FLAGS "/Y-"
+				)
+
+		ENDIF (MSVC)
+	ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
+
+	# For GCC<4.5.1 and 64bit architectures, we need to disable vectorization at one problematic file (weird bug!)
+	# JL: It seems the bug is still there for GCC 4.6.0, so disable vect. in all cases for that file :-(
+	#IF(CMAKE_COMPILER_IS_GNUCXX AND "${CMAKE_GCC_REGEX_VERSION}" VERSION_LESS "4.5.1" AND CMAKE_MRPT_WORD_SIZE EQUAL 64)
 		set_source_files_properties(
-			${math/CSparse_FILES}
-			${math/kmeans_FILES}
-			${utils/xmlparser_FILES}
-			${utils/simpleini_FILES}	
-			${utils/jpeglib_FILES}
-			${compress/zlib_FILES}
-			PROPERTIES COMPILE_FLAGS "/Y-"
+			${MRPT_LIBS_ROOT}/base/src/poses/CPose3DQuatPDF.cpp
+			PROPERTIES COMPILE_FLAGS -DEIGEN_DONT_VECTORIZE
 			)
-
-	ENDIF (MSVC)
-ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
-
-# For GCC<4.5.1 and 64bit architectures, we need to disable vectorization at one problematic file (weird bug!)
-# JL: It seems the bug is still there for GCC 4.6.0, so disable vect. in all cases for that file :-(
-#IF(CMAKE_COMPILER_IS_GNUCXX AND "${CMAKE_GCC_REGEX_VERSION}" VERSION_LESS "4.5.1" AND CMAKE_MRPT_WORD_SIZE EQUAL 64)
-	set_source_files_properties(
-		${MRPT_LIBS_ROOT}/base/src/poses/CPose3DQuatPDF.cpp
-		PROPERTIES COMPILE_FLAGS -DEIGEN_DONT_VECTORIZE
-		)
-#ENDIF(CMAKE_COMPILER_IS_GNUCXX AND "${CMAKE_GCC_REGEX_VERSION}" VERSION_LESS "4.5.1" AND CMAKE_MRPT_WORD_SIZE EQUAL 64)
+	#ENDIF(CMAKE_COMPILER_IS_GNUCXX AND "${CMAKE_GCC_REGEX_VERSION}" VERSION_LESS "4.5.1" AND CMAKE_MRPT_WORD_SIZE EQUAL 64)
+ENDIF(BUILD_mrpt-base) 
 

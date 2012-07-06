@@ -12,3 +12,8 @@ define_mrpt_lib(
 	mrpt-opengl
 	mrpt-base
 	)
+
+IF(BUILD_mrpt-reactivenav) 
+
+ENDIF(BUILD_mrpt-reactivenav) 
+

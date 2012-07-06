@@ -27,13 +27,16 @@ define_mrpt_lib(
 	mrpt-base
 	)
 
-IF (CMAKE_MRPT_HAS_PCL)
-        target_link_libraries(mrpt-maps ${PCL_LIBRARIES})
-ENDIF(CMAKE_MRPT_HAS_PCL)
+IF(BUILD_mrpt-maps) 
+	IF (CMAKE_MRPT_HAS_PCL)
+		target_link_libraries(mrpt-maps ${PCL_LIBRARIES})
+	ENDIF(CMAKE_MRPT_HAS_PCL)
 
 
-# Ignore precompiled headers in some sources:
-IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-	#...
-ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+	# Ignore precompiled headers in some sources:
+	IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+		#...
+	ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+
+ENDIF(BUILD_mrpt-maps) 
 
