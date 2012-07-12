@@ -69,10 +69,11 @@
 #define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include "xsens_list.hpp"
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
+
+#include "xsens_list.hpp"
 
 namespace xsens {
 
