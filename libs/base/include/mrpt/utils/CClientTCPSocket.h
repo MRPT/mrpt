@@ -218,6 +218,24 @@ namespace utils
 		/** Return the number of bytes already in the receive queue (they can be read without waiting) */
 		size_t  getReadPendingBytes();
 
+		/** Set the TCP no delay option of the protocol (Nagle algorithm).
+		  * \param newValue New value (0 enable Nagle algorithm, 1 disable).
+		  * \return Return a number lower than 0 if any error occurred.
+		  */
+		int setTCPNoDelay( const int &newValue );
+
+		/** Return the value of the TCPNoDelay option. */
+		int getTCPNoDelay();
+
+		/** Set the size of the SO send buffer. This buffer is used to store data, and is sended when is full.
+		  * \param newValue New size of the SO send buffer.
+		  * \return Return a number lower than 0 if any error occurred.
+		  */
+		int setSOSendBufffer( const int &newValue );
+
+		/** Return the current size of the SO send buffer. */
+		int getSOSendBufffer();
+
 	}; // End of class def.
 
 	} // End of namespace

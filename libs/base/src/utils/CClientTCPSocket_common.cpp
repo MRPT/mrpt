@@ -497,3 +497,51 @@ size_t  CClientTCPSocket::getReadPendingBytes()
 	}
 	else  return ret;
 }
+
+
+/*---------------------------------------------------------------
+						setTCPNoDelay
+ ---------------------------------------------------------------*/
+int CClientTCPSocket::setTCPNoDelay( const int &newValue )
+{
+	int length = sizeof( newValue );
+
+	return setsockopt(m_hSock,IPPROTO_TCP,TCP_NODELAY,(char*)&newValue,length);
+}
+
+
+/*---------------------------------------------------------------
+						getTCPNoDelay
+ ---------------------------------------------------------------*/
+int CClientTCPSocket::getTCPNoDelay()
+{
+	int value;
+	int length = sizeof ( value );
+	getsockopt(m_hSock, IPPROTO_TCP, TCP_NODELAY, (char*)&value, &length );
+
+	return value;
+}
+
+
+/*---------------------------------------------------------------
+						setSOSendBufffer
+ ---------------------------------------------------------------*/
+int CClientTCPSocket::setSOSendBufffer( const int &newValue )
+{
+	int length = sizeof( newValue );
+
+	return setsockopt(m_hSock, SOL_SOCKET, SO_SNDBUF, (char*)&newValue, length );
+}
+
+
+/*---------------------------------------------------------------
+						getSOSendBufffer
+ ---------------------------------------------------------------*/
+int CClientTCPSocket::getSOSendBufffer()
+{
+	int value;
+	int length = sizeof ( value );
+	getsockopt(m_hSock, SOL_SOCKET, SO_SNDBUF, (char*)&value, &length );
+
+	return value;
+}
