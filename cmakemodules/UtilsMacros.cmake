@@ -48,3 +48,17 @@ MACRO(ADD_DIRECTORIES_AS_INCLUDE_AND_ISYSTEM INCLUDE_DIRS)
 		ENDFOREACH(DIR)
 	ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 ENDMACRO(ADD_DIRECTORIES_AS_INCLUDE_AND_ISYSTEM)
+
+
+# Based on: http://www.cmake.org/pipermail/cmake/2008-February/020114.html
+# Usage: list_subdirectories(the_list_is_returned_here C:/cwd)
+macro(list_subdirectories retval curdir)
+  file(GLOB sub_dir RELATIVE ${curdir} *)
+  set(list_of_dirs "")
+  foreach(dir ${sub_dir})
+    if(IS_DIRECTORY ${curdir}/${dir})
+        set(list_of_dirs ${list_of_dirs} ${dir})
+    endif(IS_DIRECTORY ${curdir}/${dir})
+  endforeach(dir ${sub_dir})
+  set(${retval} ${list_of_dirs})
+endmacro(list_subdirectories)
