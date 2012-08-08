@@ -54,6 +54,7 @@ using namespace mrpt::system;
 	#include <netdb.h>
 	#include <arpa/inet.h>
 	#include <netinet/in.h>
+	#include <netinet/tcp.h>
 #endif
 
 unsigned int CClientTCPSocket::DNS_LOOKUP_TIMEOUT_MS = 3000;
@@ -516,10 +517,12 @@ int CClientTCPSocket::setTCPNoDelay( const int &newValue )
 int CClientTCPSocket::getTCPNoDelay()
 {
 	int value;
-	int length = sizeof ( value );
-	getsockopt(m_hSock, IPPROTO_TCP, TCP_NODELAY, (char*)&value, &length );
+	unsigned int length = sizeof ( value );
+	int res = getsockopt(m_hSock, IPPROTO_TCP, TCP_NODELAY, (char*)&value, &length );
 
-	return value;
+	if (res==-1)
+	     return -1;
+	else return value;
 }
 
 
@@ -528,7 +531,7 @@ int CClientTCPSocket::getTCPNoDelay()
  ---------------------------------------------------------------*/
 int CClientTCPSocket::setSOSendBufffer( const int &newValue )
 {
-	int length = sizeof( newValue );
+	const unsigned int length = sizeof( newValue );
 
 	return setsockopt(m_hSock, SOL_SOCKET, SO_SNDBUF, (char*)&newValue, length );
 }
@@ -540,7 +543,7 @@ int CClientTCPSocket::setSOSendBufffer( const int &newValue )
 int CClientTCPSocket::getSOSendBufffer()
 {
 	int value;
-	int length = sizeof ( value );
+	unsigned int length = sizeof ( value );
 	getsockopt(m_hSock, SOL_SOCKET, SO_SNDBUF, (char*)&value, &length );
 
 	return value;
