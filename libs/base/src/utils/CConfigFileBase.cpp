@@ -112,7 +112,7 @@ void  CConfigFileBase::write(const std::string &section, const std::string &name
 /** Write a generic string with optional padding and a comment field ("// ...") at the end of the line. */
 void  CConfigFileBase::writeString(const std::string &section,const std::string &name, const std::string &str, const int name_padding_width, const int value_padding_width, const std::string &comment)
 {
-	if (name_padding_width<1 && value_padding_width<1 && comment.empty()) 
+	if (name_padding_width<1 && value_padding_width<1 && comment.empty())
 		this->writeString(section,name,str);  // Default (old) behavior.
 
 	std::string name_pad;
@@ -123,7 +123,7 @@ void  CConfigFileBase::writeString(const std::string &section,const std::string 
 	std::string value_pad;
 	if (value_padding_width>=1)
 	     value_pad = mrpt::format(" %*s",-value_padding_width, str.c_str());   // negative width: printf right padding
-	else value_pad = name;
+	else value_pad = str;
 
 	if (!comment.empty())
 	{
