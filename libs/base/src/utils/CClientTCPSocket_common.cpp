@@ -517,7 +517,11 @@ int CClientTCPSocket::setTCPNoDelay( const int &newValue )
 int CClientTCPSocket::getTCPNoDelay()
 {
 	int value;
+#ifdef MRPT_OS_WINDOWS
+	int length = sizeof ( value );
+#else
 	unsigned int length = sizeof ( value );
+#endif
 	int res = getsockopt(m_hSock, IPPROTO_TCP, TCP_NODELAY, (char*)&value, &length );
 
 	if (res==-1)
@@ -543,7 +547,11 @@ int CClientTCPSocket::setSOSendBufffer( const int &newValue )
 int CClientTCPSocket::getSOSendBufffer()
 {
 	int value;
+#ifdef MRPT_OS_WINDOWS
+	int length = sizeof ( value );
+#else
 	unsigned int length = sizeof ( value );
+#endif
 	getsockopt(m_hSock, SOL_SOCKET, SO_SNDBUF, (char*)&value, &length );
 
 	return value;
