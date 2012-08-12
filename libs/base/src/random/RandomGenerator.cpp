@@ -101,7 +101,7 @@ void CRandomGenerator::MT19937_generateNumbers()
 #else
 	// Code from the implementation by Rick Wagner
 	//  http://www-personal.umich.edu/~wagnerr/MersenneTwister.html
-	// and: 
+	// and:
 	//  http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/CODES/mt19937ar.c
 	//
 	const int N = 624;	// length of state vector
@@ -116,6 +116,12 @@ void CRandomGenerator::MT19937_generateNumbers()
 #endif
 }
 
+uint64_t CRandomGenerator::drawUniform64bit()
+{
+	uint32_t n1 = drawUniform32bit();
+	uint32_t n2 = drawUniform32bit();
+	return static_cast<uint64_t>(n1) | (static_cast<uint64_t>(n2)<<32);
+}
 
 // MT19937 algorithm
 // http://en.wikipedia.org/wiki/Mersenne_twister
@@ -136,7 +142,6 @@ uint32_t CRandomGenerator::drawUniform32bit()
 
 	return y;
 }
-
 
 /*---------------------------------------------------------------
 						Randomize
@@ -163,10 +168,10 @@ void CRandomGenerator::randomize()
   ---------------------------------------------------------------*/
 double CRandomGenerator::drawGaussian1D_normalized( double *likelihood  )
 {
-   if (!m_std_gauss_set) 
+   if (!m_std_gauss_set)
    {   /* We don't have an extra deviate handy so */
 	   double v1,v2,r;
-       do 
+       do
 	   {
 		   v1 = this->drawUniform(-1.0,1.0);   /* pick two uniform numbers in */
 		   v2 = this->drawUniform(-1.0,1.0);   /* square extending from -1 to +1*/
@@ -189,7 +194,7 @@ double CRandomGenerator::drawGaussian1D_normalized( double *likelihood  )
 	   {
 	       return v2*fac;
 	   }
-   } 
+   }
    else
    {      /* We have an extra deviate handy, */
        m_std_gauss_set = false; /* so unset the flag,              */

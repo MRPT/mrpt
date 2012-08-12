@@ -159,7 +159,7 @@ namespace mrpt
 
 		typedef uint64_t TNodeID;  //!< The type for node IDs in graphs of different types.
 		typedef std::pair<TNodeID,TNodeID> TPairNodeIDs; //!< A pair of node IDs.
-		#define INVALID_NODEID  static_cast<TNodeID>(-1)
+		#define INVALID_NODEID  static_cast<mrpt::utils::TNodeID>(-1)
 
 	} // end namespace
 }

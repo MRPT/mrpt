@@ -68,7 +68,7 @@ namespace mrpt
 				bool		seed_initialized;
 			} m_MT19937_data;
 
-			bool   m_std_gauss_set; 
+			bool   m_std_gauss_set;
 			double m_std_gauss_next;
 
 			void MT19937_generateNumbers();
@@ -96,6 +96,23 @@ namespace mrpt
 				/** Generate a uniformly distributed pseudo-random number using the MT19937 algorithm, in the whole range of 32-bit integers.
 				  *  See: http://en.wikipedia.org/wiki/Mersenne_twister */
 				uint32_t drawUniform32bit();
+
+				/** Returns a uniformly distributed pseudo-random number by joining two 32bit numbers from \a drawUniform32bit() */
+				uint64_t drawUniform64bit();
+
+				/** You can call this overloaded method with either 32 or 64bit unsigned ints for the sake of general coding. */
+				void drawUniformUnsignedInt(uint32_t &ret_number) { ret_number=drawUniform32bit(); }
+				void drawUniformUnsignedInt(uint64_t &ret_number) { ret_number=drawUniform64bit(); }
+
+				/** Return a uniform unsigned integer in the range [min_val,max_val] (both inclusive) */
+				template <typename T, typename U,typename V>
+				void drawUniformUnsignedIntRange(T &ret_number,const U min_val,const V max_val)
+				{
+					const T range = max_val-min_val+1;
+					T rnd;
+					drawUniformUnsignedInt(rnd);
+					ret_number=min_val+ (rnd%range);
+				}
 
 				/** Generate a uniformly distributed pseudo-random number using the MT19937 algorithm, scaled to the selected range. */
 				double drawUniform( const double Min, const double Max) {

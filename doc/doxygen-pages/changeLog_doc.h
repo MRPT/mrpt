@@ -59,6 +59,10 @@
 			- Better support for saving (and not only loading) plain text configuration files, including commented files with default values of all existing parameters: - <a href="http://code.google.com/p/mrpt/source/detail?r=2954" >r2954</a>
 				- All mrpt::utils::CConfigFileBase::write() now have an extended signature for formatting.
 				- mrpt::utils::CLoadableOptions::dumpToTextStream() is no longer pure virtual: it now relies on mrpt::utils::CLoadableOptions::saveToConfigFile()
+			- Added methods: - <a href="http://code.google.com/p/mrpt/source/detail?r=2979" >r2979</a>
+				- mrpt::random::CRandomGenerator::drawUniform64bit()
+				- mrpt::random::CRandomGenerator::drawUniformUnsignedInt()
+				- mrpt::random::CRandomGenerator::drawUniformUnsignedIntRange()
 		- [mrpt-maps]
 			- Better integration of point cloud classes with PCL: - <a href="http://code.google.com/p/mrpt/source/detail?r=2943" >r2943</a>
 				- mrpt::slam::CPointsMap::loadPCDFile()
