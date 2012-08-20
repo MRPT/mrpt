@@ -34,11 +34,7 @@
 #define  MRPT_DIRECTEDGRAPH_H
 
 #include <mrpt/utils/utils_defs.h>
-//#include <mrpt/math/utils.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 	namespace graphs
@@ -48,6 +44,17 @@ namespace mrpt
 
 		/** \addtogroup mrpt_graphs_grp
 		    @{ */
+
+		/** Used in mrpt::graphs export functions to .dot files \sa mrpt::graphs::CDirectedGraph::saveAsDot */
+		struct TGraphvizExportParams
+		{
+			bool mark_edges_as_not_constraint;        //!< If true (default=false), an "[constraint=false]" will be added to all edges (see Graphviz docs).
+			std::map<TNodeID,std::string> node_names; //!< If provided, these textual names will be used for naming the nodes instead of their numeric IDs given in the edges.
+			std::map<TNodeID,std::string> node_props; //!< If provided, an extra line will be added setting Graphviz properties for each node, e.g. to set a node position, use the string "pos = \"x,y\""
+
+			TGraphvizExportParams() : mark_edges_as_not_constraint(false) 
+			{}
+		};
 
 		namespace detail
 		{
@@ -243,10 +250,10 @@ namespace mrpt
 
 			/** @name I/O utilities
 				@{ */
+
 			/** Save the graph in a Graphviz (.dot files) text format; useful for quickly rendering the graph with "dot" 
-			  * \param node_names If provided, these textual names will be used for naming the nodes instead of their numeric IDs given in the edges.
 			  * \return false on any error */
-			bool saveAsDot(std::ostream &o, const std::map<TNodeID,std::string> *node_names = NULL) const
+			bool saveAsDot(std::ostream &o, const TGraphvizExportParams &p = TGraphvizExportParams() ) const
 			{
 				o << "digraph G {\n";
 				for (const_iterator it=begin();it!=end();++it)
@@ -254,26 +261,35 @@ namespace mrpt
 					const TNodeID id1 = it->first.first;
 					const TNodeID id2 = it->first.second;
 					std::string s1,s2;
-					if (node_names)
+					if (!p.node_names.empty())
 					{
-						std::map<TNodeID,std::string>::const_iterator itNam1=node_names->find(id1);
-						if (itNam1!=node_names->end()) s1 =itNam1->second;
-						std::map<TNodeID,std::string>::const_iterator itNam2=node_names->find(id2);
-						if (itNam2!=node_names->end()) s2 =itNam2->second;
+						std::map<TNodeID,std::string>::const_iterator itNam1=p.node_names.find(id1);
+						if (itNam1!=p.node_names.end()) s1 =itNam1->second;
+						std::map<TNodeID,std::string>::const_iterator itNam2=p.node_names.find(id2);
+						if (itNam2!=p.node_names.end()) s2 =itNam2->second;
 					}
 					if (s1.empty()) s1 = mrpt::format("%u",static_cast<unsigned int>(id1));
 					if (s2.empty()) s2 = mrpt::format("%u",static_cast<unsigned int>(id2));
-					o << " \"" << s1 << "\" -> \"" << s2 << "\";\n";
+					if (p.node_props.empty())
+					{
+						std::map<TNodeID,std::string>::const_iterator itP1=p.node_props.find(id1);
+						if (itP1!=p.node_props.end()) o << "\""<<s1<<"\""<< " [" << itP1->second << "];\n";
+						std::map<TNodeID,std::string>::const_iterator itP2=p.node_props.find(id2);
+						if (itP2!=p.node_props.end()) o << "\""<<s2<<"\""<< " [" << itP2->second << "];\n";
+					}
+					o << " \"" << s1 << "\" -> \"" << s2 << "\"";
+					if (p.mark_edges_as_not_constraint) o << " [constraint=false]";
+					o << ";\n";
 				}
 				return !((o << "}\n").fail());
 			}
 			
 			/** \overload */
-			bool saveAsDot(const std::string &fileName, const std::map<TNodeID,std::string> *node_names = NULL) const
+			bool saveAsDot(const std::string &fileName, const TGraphvizExportParams &p = TGraphvizExportParams() ) const
 			{
 				std::ofstream f(fileName.c_str());
 				if (!f.is_open()) return false;
-				return saveAsDot(f,node_names);
+				return saveAsDot(f,p);
 			}
 			/** @} */
 
