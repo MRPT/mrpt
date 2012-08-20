@@ -153,7 +153,7 @@ namespace mrpt
 
 			/** Class factory returning a smart pointer */
 			static CDisplayWindow3DPtr Create(
-				const std::string	&windowCaption = std::string(),
+				const std::string	&windowCaption,
 				unsigned int		initialWindowWidth = 400,
 				unsigned int		initialWindowHeight = 300 )
 			{
