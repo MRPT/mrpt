@@ -63,6 +63,8 @@
 				- mrpt::random::CRandomGenerator::drawUniform64bit()
 				- mrpt::random::CRandomGenerator::drawUniformUnsignedInt()
 				- mrpt::random::CRandomGenerator::drawUniformUnsignedIntRange()
+		- [mrpt-graphs]
+			- New method mrpt::graphs::CDirectedGraph::saveAsDot() - <a href="http://code.google.com/p/mrpt/source/detail?r=2980" >r2980</a>
 		- [mrpt-maps]
 			- Better integration of point cloud classes with PCL: - <a href="http://code.google.com/p/mrpt/source/detail?r=2943" >r2943</a>
 				- mrpt::slam::CPointsMap::loadPCDFile()

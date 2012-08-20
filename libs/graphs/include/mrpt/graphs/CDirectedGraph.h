@@ -60,7 +60,7 @@ namespace mrpt
 		  *
 		  *  Note that edges are stored as a std::multimap<> to allow <b>multiple edges</b> between the same pair of nodes.
 		  *
-		  * \sa mrpt::math::CDijkstra, mrpt::graphs::CNetworkOfPoses, mrpt::graphs::CDirectedTree
+		  * \sa mrpt::graphs::CDijkstra, mrpt::graphs::CNetworkOfPoses, mrpt::graphs::CDirectedTree
 		 * \ingroup mrpt_graphs_grp
 		  */
 		template<class TYPE_EDGES, class EDGE_ANNOTATIONS = detail::edge_annotations_empty>
@@ -92,7 +92,6 @@ namespace mrpt
 			inline iterator end() { return edges.end(); }
 			inline const_iterator begin() const { return edges.begin(); }
 			inline const_iterator end() const { return edges.end(); }
-
 
 			/** @name Edges/nodes utility methods
 				@{ */
@@ -240,6 +239,43 @@ namespace mrpt
 			}
 
 			/** @} */  // end of edge/nodes utilities
+
+
+			/** @name I/O utilities
+				@{ */
+			/** Save the graph in a Graphviz (.dot files) text format; useful for quickly rendering the graph with "dot" 
+			  * \param node_names If provided, these textual names will be used for naming the nodes instead of their numeric IDs given in the edges.
+			  * \return false on any error */
+			bool saveAsDot(std::ostream &o, const std::map<TNodeID,std::string> *node_names = NULL) const
+			{
+				o << "digraph G {\n";
+				for (const_iterator it=begin();it!=end();++it)
+				{
+					const TNodeID id1 = it->first.first;
+					const TNodeID id2 = it->first.second;
+					std::string s1,s2;
+					if (node_names)
+					{
+						std::map<TNodeID,std::string>::const_iterator itNam1=node_names->find(id1);
+						if (itNam1!=node_names->end()) s1 =itNam1->second;
+						std::map<TNodeID,std::string>::const_iterator itNam2=node_names->find(id2);
+						if (itNam2!=node_names->end()) s2 =itNam2->second;
+					}
+					if (s1.empty()) s1 = mrpt::format("%u",static_cast<unsigned int>(id1));
+					if (s2.empty()) s2 = mrpt::format("%u",static_cast<unsigned int>(id2));
+					o << " \"" << s1 << "\" -> \"" << s2 << "\";\n";
+				}
+				return !((o << "}\n").fail());
+			}
+			
+			/** \overload */
+			bool saveAsDot(const std::string &fileName, const std::map<TNodeID,std::string> *node_names = NULL) const
+			{
+				std::ofstream f(fileName.c_str());
+				if (!f.is_open()) return false;
+				return saveAsDot(f,node_names);
+			}
+			/** @} */
 
 		}; // end class CDirectedGraph
 
