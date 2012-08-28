@@ -445,9 +445,23 @@ std::ostream& operator<<(std::ostream& out, MD5 md5)
 
 //////////////////////////////
 
-std::string mrpt::utils::md5(const std::string str)
+std::string mrpt::utils::md5(const std::string &str)
 {
     MD5 md5 = MD5(str);
+    return md5.hexdigest();
+}
+
+std::string mrpt::utils::md5(const unsigned char * data, const size_t len)
+{
+	ASSERT_(data)
+    MD5 md5;
+	md5.update(data,len);
+	md5.finalize();
 
     return md5.hexdigest();
+}
+
+std::string mrpt::utils::md5(const mrpt::vector_byte &str)
+{
+	return mrpt::utils::md5(&str[0],str.size());
 }

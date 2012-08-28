@@ -39,10 +39,12 @@ namespace mrpt
 {
 	namespace utils
 	{
-		/** Computes the md5 of a block of data.  */
-		std::string BASE_IMPEXP md5(const std::string str);
-
-
+		/** Computes the md5 of a block of data. */
+		std::string BASE_IMPEXP md5(const std::string &str);
+		/** Computes the md5 of a block of data. */
+		std::string BASE_IMPEXP md5(const mrpt::vector_byte &str);
+		/** Computes the md5 of a block of data. */
+		std::string BASE_IMPEXP md5(const unsigned char * data, const size_t len);
 	}
 }
 

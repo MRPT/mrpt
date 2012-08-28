@@ -63,6 +63,7 @@
 				- mrpt::random::CRandomGenerator::drawUniform64bit()
 				- mrpt::random::CRandomGenerator::drawUniformUnsignedInt()
 				- mrpt::random::CRandomGenerator::drawUniformUnsignedIntRange()
+			- mrpt::utils::md5() now has its argument passed by reference and a new signature that accepts mrpt::vector_byte - <a href="http://code.google.com/p/mrpt/source/detail?r=2983" >r2983</a>
 		- [mrpt-graphs]
 			- New method mrpt::graphs::CDirectedGraph::saveAsDot() - <a href="http://code.google.com/p/mrpt/source/detail?r=2980" >r2980</a>
 		- [mrpt-maps]
