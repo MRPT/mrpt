@@ -50,7 +50,6 @@
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/gui/CDisplayWindow.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h> 
@@ -61,7 +60,6 @@ using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::math;
 using namespace mrpt::system;
-using namespace mrpt::gui;
 using namespace std;
 
 #ifdef MRPT_OS_WINDOWS
