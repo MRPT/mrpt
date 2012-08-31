@@ -536,7 +536,6 @@ SET(ALL_MRPT_LIBS "" CACHE INTERNAL "")  # This emulates global vars
 # ----------------------------------------------------------------------------
 #      					PROCESS SUBDIRECTORIES:
 # ----------------------------------------------------------------------------
-add_subdirectory(doc)         # Documentation targets:
 add_subdirectory(otherlibs)   # The third-party libraries
 add_subdirectory(libs)        # The MRPT C++ libraries:
 
@@ -544,6 +543,9 @@ SET( BUILD_APPLICATIONS ON CACHE BOOL "If you only want the MRPT libraries, disa
 IF(BUILD_APPLICATIONS)
 	add_subdirectory(apps)    # The applications:
 ENDIF(BUILD_APPLICATIONS)
+
+# Documentation targets (must be AFTER "apps" because it uses the aux program "mrpt-perfdata2html")
+add_subdirectory(doc)
 
 #   UNIT TESTS:
 # ----------------------------------------------------------------------------
