@@ -11,6 +11,8 @@ PROJECT(vOdometry)
 
 #MESSAGE(STATUS "Makefile for application: /apps/vOdometry")
 
+if(0) # **Ey!** This app is unmaintaned? (JLBC 1-sep-2012)
+
 # ---------------------------------------------
 # TARGET:
 # ---------------------------------------------
@@ -27,7 +29,7 @@ TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically, 
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-vision mrpt-stereoslam mrpt-hwdrivers)
+DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-vision mrpt-stereoslam mrpt-hwdrivers mrpt-slam)
 
 IF(CMAKE_COMPILER_IS_GNUCXX)
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrpt-stereoslam${MRPT_LINKER_LIBS_POSTFIX})
@@ -42,3 +44,4 @@ INSTALL(TARGETS vOdometry
 	LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX}
 	ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
 
+endif(0)
