@@ -91,7 +91,6 @@ namespace mrpt
 			using namespace std;
 
 			MRPT_START
-		#define VERBOSE_PREFIX "[optimize_graph_spa_levmarq] "
 
 			// Typedefs to make life easier:
 			typedef graphslam_traits<GRAPH_T> gst;
@@ -141,7 +140,7 @@ namespace mrpt
 
 			if (verbose)
 			{
-				cout << VERBOSE_PREFIX << nFreeNodes << " nodes to optimize: ";
+				cout << "["<<__CURRENT_FUNCTION_NAME__<<"] " << nFreeNodes << " nodes to optimize: ";
 				if (nFreeNodes<14)
 				{
 					ostream_iterator<TNodeID> out_it (cout,", ");
@@ -308,7 +307,7 @@ namespace mrpt
 					if (grad_norm_inf<=e1)
 					{
 						// Change is too small
-						if (verbose) printf(VERBOSE_PREFIX "End condition #1: math::norm_inf(g)<=e1 :%f<=%f\n",grad_norm_inf,e1);
+						if (verbose) cout << "["<<__CURRENT_FUNCTION_NAME__<<"] " << mrpt::format("End condition #1: math::norm_inf(g)<=e1 :%f<=%f\n",grad_norm_inf,e1);
 						break;
 					}
 
@@ -404,7 +403,7 @@ namespace mrpt
 				} // end "have_to_recompute_H_and_grad"
 
 				if (verbose )
-					cout << VERBOSE_PREFIX "Iter: " << iter << " ,total sqr. err: " << total_sqr_err  << ", avrg. err per edge: " << std::sqrt(total_sqr_err/nObservations) << " lambda: " << lambda << endl;
+					cout << "["<<__CURRENT_FUNCTION_NAME__<<"] Iter: " << iter << " ,total sqr. err: " << total_sqr_err  << ", avrg. err per edge: " << std::sqrt(total_sqr_err/nObservations) << " lambda: " << lambda << endl;
 
 				// Feedback to the user:
 				if (functor_feedback)
@@ -469,7 +468,7 @@ namespace mrpt
 				catch (CExceptionNotDefPos &)
 				{
 					// not positive definite so increase mu and try again
-					if (verbose ) cout << VERBOSE_PREFIX "Got non-definite positive matrix, retrying with a larger lambda...\n";
+					if (verbose ) cout << "["<<__CURRENT_FUNCTION_NAME__<<"] Got non-definite positive matrix, retrying with a larger lambda...\n";
 					lambda *= v;
 					v*= 2;
 					if (lambda>1e9)
@@ -504,7 +503,7 @@ namespace mrpt
 				if (delta_norm<thres_norm)
 				{
 					// The change is too small: we're done here...
-					if (verbose ) cout << VERBOSE_PREFIX << format("End condition #2: %e < %e\n", delta_norm, thres_norm );
+					if (verbose ) cout << "["<<__CURRENT_FUNCTION_NAME__<<"] " << format("End condition #2: %e < %e\n", delta_norm, thres_norm );
 					break;
 				}
 				else
@@ -564,7 +563,7 @@ namespace mrpt
 						for (typename gst::graph_t::global_poses_t::const_iterator it=old_poses_backup.begin();it!=old_poses_backup.end();++it)
 							graph.nodes[it->first] = it->second;
 
-						if (verbose ) cout << VERBOSE_PREFIX "Got larger error=" << new_total_sqr_err << ", retrying with a larger lambda...\n";
+						if (verbose ) cout << "["<<__CURRENT_FUNCTION_NAME__<<"] Got larger error=" << new_total_sqr_err << ", retrying with a larger lambda...\n";
 						// Change params and try again:
 						lambda *= v;
 						v*= 2;
