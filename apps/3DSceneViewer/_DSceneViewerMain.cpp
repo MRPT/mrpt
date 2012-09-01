@@ -386,7 +386,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
 	logWin = new wxLogWindow(this,wxT("Log window"),false);
 	theWindow = this;
 
-	// make sure we register all mrpt-maps classes: 
+	// make sure we register all mrpt-maps classes:
 	registerClass( CLASS_ID( CPlanarLaserScan ));
 	registerClass( CLASS_ID( CAngularObservationMesh ));
 
@@ -411,7 +411,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     wxMenuBar* MenuBar1;
     wxFlexGridSizer* FlexGridSizer1;
     wxMenu* Menu2;
-    
+
     Create(parent, id, _("3DSceneViewer - Part of the MRPT project - Jose Luis Blanco (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetMinSize(wxSize(150,100));
     {
@@ -561,7 +561,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-    
+
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnPrevious);
@@ -607,7 +607,9 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
 
     // Create the wxCanvas object:
 	m_canvas = new CMyGLCanvas( this, wxID_ANY, wxDefaultPosition, wxDefaultSize );
+#if wxCHECK_VERSION(2, 9, 0)
 	m_canvas->SetMinClientSize( wxSize(100,100));
+#endif
     FlexGridSizer1->Add(m_canvas, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 
 	// Load an empty scene:
@@ -1675,11 +1677,11 @@ class OpenGlObjectsFilter_ByClass : public OpenGlObjectsFilterVirtual
 {
 public:
 	OpenGlObjectsFilter_ByClass(
-		std::vector<mrpt::opengl::CRenderizablePtr> &out_list, 
-		const vector<const TRuntimeClassId*> &selected_classes) 
+		std::vector<mrpt::opengl::CRenderizablePtr> &out_list,
+		const vector<const TRuntimeClassId*> &selected_classes)
 		: OpenGlObjectsFilterVirtual(out_list),
 		  m_selected_classes(selected_classes)
-	{ 
+	{
 	}
 
 protected:
@@ -1712,7 +1714,11 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 	}
 
 	wxArrayInt selections;
+#if wxCHECK_VERSION(2, 9, 0)
 	wxGetSelectedChoices(selections, _("Select by class:"),_("Select objects"),glClassNames,this);
+#else
+	wxGetMultipleChoices(selections, _("Select by class:"),_("Select objects"),glClassNames,this);
+#endif
 
 	// Build list of classes IDs:
 	vector<const TRuntimeClassId*> selected_classes;
@@ -1721,11 +1727,11 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 		const std::string sName = std::string(glClassNames[selections[i]].mb_str());
 		selected_classes.push_back(mrpt::utils::findRegisteredClass(sName));
 	}
-	
+
 	// Go thru objects and do filter:
 	OpenGlObjectsFilter_ByClass filter(m_selected_gl_objects, selected_classes);
 	m_canvas->m_openGLScene->visitAllObjects( filter );
-	
+
 	theWindow->StatusBar1->SetStatusText( _U(mrpt::format("%u objects selected",static_cast<unsigned int>(m_selected_gl_objects.size())).c_str()), 0);
 }
 
@@ -1746,7 +1752,7 @@ void _DSceneViewerFrame::OnmnuSelectionScaleSelected(wxCommandEvent& event)
 	const float s = atof(sScale.c_str());
 
 	for (size_t i=0;i<m_selected_gl_objects.size();i++)
-		if (m_selected_gl_objects[i]) 
+		if (m_selected_gl_objects[i])
 		{
 			const float sx = m_selected_gl_objects[i]->getScaleX();
 			const float sy = m_selected_gl_objects[i]->getScaleY();
