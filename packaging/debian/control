@@ -60,7 +60,7 @@ Description: Mobile Robot Programming Toolkit - Documentation and examples
   Writing Scientific Applications with the Mobile Robot Programming Toolkit 
   in .ps.gz format.
 
-Package: libmrpt-base0.9
+Package: libmrpt-base1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
@@ -74,11 +74,11 @@ Description: Mobile Robot Programming Toolkit - base library
  . 
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
-Package: libmrpt-opengl0.9
+Package: libmrpt-opengl1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-base0.9
+	  libmrpt-base1.0
 Description: Mobile Robot Programming Toolkit - opengl library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -89,11 +89,11 @@ Description: Mobile Robot Programming Toolkit - opengl library
  . 
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
-Package: libmrpt-bayes0.9
+Package: libmrpt-bayes1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-          libmrpt-base0.9
+          libmrpt-base1.0
 Description: Mobile Robot Programming Toolkit - bayes library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -105,11 +105,11 @@ Description: Mobile Robot Programming Toolkit - bayes library
  .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
-Package: libmrpt-graphs0.9
+Package: libmrpt-graphs1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-          libmrpt-base0.9
+          libmrpt-base1.0
 Description: Mobile Robot Programming Toolkit - graphs library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -123,11 +123,11 @@ Description: Mobile Robot Programming Toolkit - graphs library
 
 
 
-Package: libmrpt-gui0.9
+Package: libmrpt-gui1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-opengl0.9
+	  libmrpt-opengl1.0
 Description: Mobile Robot Programming Toolkit - gui library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -138,11 +138,11 @@ Description: Mobile Robot Programming Toolkit - gui library
  . 
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
-Package: libmrpt-obs0.9
+Package: libmrpt-obs1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-opengl0.9
+	  libmrpt-opengl1.0
 Description: Mobile Robot Programming Toolkit - obs library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -153,11 +153,11 @@ Description: Mobile Robot Programming Toolkit - obs library
  . 
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
-Package: libmrpt-maps0.9
+Package: libmrpt-maps1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-obs0.9
+	  libmrpt-obs1.0
 Description: Mobile Robot Programming Toolkit - maps library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -169,12 +169,12 @@ Description: Mobile Robot Programming Toolkit - maps library
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
-Package: libmrpt-hwdrivers0.9
+Package: libmrpt-hwdrivers1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-obs0.9,
-	  libmrpt-gui0.9
+	  libmrpt-obs1.0,
+	  libmrpt-gui1.0
 Description: Mobile Robot Programming Toolkit - hwdrivers library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -186,11 +186,11 @@ Description: Mobile Robot Programming Toolkit - hwdrivers library
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
-Package: libmrpt-vision0.9
+Package: libmrpt-vision1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-obs0.9
+	  libmrpt-obs1.0
 Description: Mobile Robot Programming Toolkit - vision library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -201,11 +201,11 @@ Description: Mobile Robot Programming Toolkit - vision library
  . 
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
-Package: libmrpt-scanmatching0.9
+Package: libmrpt-scanmatching1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-          libmrpt-base0.9
+          libmrpt-base1.0
 Description: Mobile Robot Programming Toolkit - scanmatching library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -217,12 +217,12 @@ Description: Mobile Robot Programming Toolkit - scanmatching library
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
-Package: libmrpt-topography0.9
+Package: libmrpt-topography1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-scanmatching0.9,
-	  libmrpt-obs0.9
+	  libmrpt-scanmatching1.0,
+	  libmrpt-obs1.0
 Description: Mobile Robot Programming Toolkit - topography library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -234,13 +234,13 @@ Description: Mobile Robot Programming Toolkit - topography library
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
-Package: libmrpt-detectors0.9
+Package: libmrpt-detectors1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-maps0.9,
-	  libmrpt-vision0.9,
-	  libmrpt-gui0.9
+	  libmrpt-maps1.0,
+	  libmrpt-vision1.0,
+	  libmrpt-gui1.0
 Description: Mobile Robot Programming Toolkit - detectors library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -252,15 +252,15 @@ Description: Mobile Robot Programming Toolkit - detectors library
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
-Package: libmrpt-slam0.9
+Package: libmrpt-slam1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-maps0.9,
-	  libmrpt-vision0.9,
-	  libmrpt-scanmatching0.9,
-	  libmrpt-graphs0.9,
-	  libmrpt-bayes0.9
+	  libmrpt-maps1.0,
+	  libmrpt-vision1.0,
+	  libmrpt-scanmatching1.0,
+	  libmrpt-graphs1.0,
+	  libmrpt-bayes1.0
 Description: Mobile Robot Programming Toolkit - slam library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -271,11 +271,11 @@ Description: Mobile Robot Programming Toolkit - slam library
  . 
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
-Package: libmrpt-graphslam0.9
+Package: libmrpt-graphslam1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-slam0.9
+	  libmrpt-slam1.0
 Description: Mobile Robot Programming Toolkit - graphslam library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -287,11 +287,11 @@ Description: Mobile Robot Programming Toolkit - graphslam library
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
-Package: libmrpt-reactivenav0.9
+Package: libmrpt-reactivenav1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-maps0.9
+	  libmrpt-maps1.0
 Description: Mobile Robot Programming Toolkit - reactivenav library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -303,11 +303,11 @@ Description: Mobile Robot Programming Toolkit - reactivenav library
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
-Package: libmrpt-hmtslam0.9
+Package: libmrpt-hmtslam1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-slam0.9
+	  libmrpt-slam1.0
 Description: Mobile Robot Programming Toolkit - hmtslam library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -322,22 +322,22 @@ Description: Mobile Robot Programming Toolkit - hmtslam library
 Package: mrpt-libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, 
-         libmrpt-base0.9, 
-         libmrpt-opengl0.9, 
-         libmrpt-scanmatching0.9,
-         libmrpt-bayes0.9,
-         libmrpt-graphs0.9,
-         libmrpt-gui0.9, 
-         libmrpt-obs0.9, 
-         libmrpt-maps0.9, 
-         libmrpt-vision0.9, 
-         libmrpt-slam0.9, 
-         libmrpt-graphslam0.9, 
-         libmrpt-topography0.9, 
-         libmrpt-detectors0.9, 
-         libmrpt-hwdrivers0.9,
-         libmrpt-reactivenav0.9,
-         libmrpt-hmtslam0.9
+         libmrpt-base1.0, 
+         libmrpt-opengl1.0, 
+         libmrpt-scanmatching1.0,
+         libmrpt-bayes1.0,
+         libmrpt-graphs1.0,
+         libmrpt-gui1.0, 
+         libmrpt-obs1.0, 
+         libmrpt-maps1.0, 
+         libmrpt-vision1.0, 
+         libmrpt-slam1.0, 
+         libmrpt-graphslam1.0, 
+         libmrpt-topography1.0, 
+         libmrpt-detectors1.0, 
+         libmrpt-hwdrivers1.0,
+         libmrpt-reactivenav1.0,
+         libmrpt-hmtslam1.0
 Description: Mobile Robot Programming Toolkit - All the libraries
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
