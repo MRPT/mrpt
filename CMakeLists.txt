@@ -165,7 +165,6 @@ include(cmakemodules/script_tbb.cmake REQUIRED)         # Enable Intel Threading
 include(cmakemodules/script_bumblebee.cmake REQUIRED)   # Support for Bumblebee stereo camera (actually: PGR Digiclops/Triclops Windows libraries)
 include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
 include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
-include(cmakemodules/script_fabmap.cmake REQUIRED)      # FabMap module for HMT-SLAM? (optional)
 include(cmakemodules/script_ftdi.cmake REQUIRED)        # Check for the FTDI headers (Linux only, in win32 we use built-in header & dynamic DLL load):
 include(cmakemodules/script_inotify.cmake REQUIRED)     # Check for the sys/inotify headers (Linux only, in win32 we use the equivalent API for file system monitoring):
 include(cmakemodules/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries 
