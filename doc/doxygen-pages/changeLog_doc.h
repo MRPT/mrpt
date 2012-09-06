@@ -1,34 +1,29 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
+   |          The Mobile Robot Programming Toolkit (MRPT) C++ library          |
    |                                                                           |
-   |                          http://www.mrpt.org/                             |
+   |                       http://www.mrpt.org/                                |
    |                                                                           |
-   | Copyright (c) 2005-2012, MAPIR group, University of Malaga                |
-   | All rights reserved.                                                      |
+   |   Copyright (C) 2004-2011  University of Malaga                           |
    |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
+   |    This software was written by the Perception and Robotics               |
+   |      research group, University of Malaga (Spain).                        |
+   |    Contact: Jose-Luis Blanco  <jlblanco@ctima.uma.es>                     |
    |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   |  This file is part of the MRPT project.                                   |
+   |                                                                           |
+   |     MRPT is free software: you can redistribute it and/or modify          |
+   |     it under the terms of the GNU General Public License as published by  |
+   |     the Free Software Foundation, either version 3 of the License, or     |
+   |     (at your option) any later version.                                   |
+   |                                                                           |
+   |   MRPT is distributed in the hope that it will be useful,                 |
+   |     but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+   |     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         |
+   |     GNU General Public License for more details.                          |
+   |                                                                           |
+   |     You should have received a copy of the GNU General Public License     |
+   |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
+   |                                                                           |
    +---------------------------------------------------------------------------+ */
 
 /** \page changelog Change Log
@@ -39,7 +34,6 @@
  <hr>
  <a name="1.0.0">
   <h2>Version 1.0.0 - (Under development) </h2></a>
-	- MRPT is now released under the 3-clause "New BSD License" - <a href="http://code.google.com/p/mrpt/source/detail?r=2964" >r2964</a>
 	- New apps:
 		- <a href="http://www.mrpt.org/Application:holonomic-navigator-demo" >holonomic-navigator-demo</a>
 	- Changes in apps:
@@ -59,21 +53,11 @@
 			- Better support for saving (and not only loading) plain text configuration files, including commented files with default values of all existing parameters: - <a href="http://code.google.com/p/mrpt/source/detail?r=2954" >r2954</a>
 				- All mrpt::utils::CConfigFileBase::write() now have an extended signature for formatting.
 				- mrpt::utils::CLoadableOptions::dumpToTextStream() is no longer pure virtual: it now relies on mrpt::utils::CLoadableOptions::saveToConfigFile()
-			- Added methods: - <a href="http://code.google.com/p/mrpt/source/detail?r=2979" >r2979</a>
-				- mrpt::random::CRandomGenerator::drawUniform64bit()
-				- mrpt::random::CRandomGenerator::drawUniformUnsignedInt()
-				- mrpt::random::CRandomGenerator::drawUniformUnsignedIntRange()
-			- mrpt::utils::md5() now has its argument passed by reference and a new signature that accepts mrpt::vector_byte - <a href="http://code.google.com/p/mrpt/source/detail?r=2983" >r2983</a>
-		- [mrpt-graphs]
-			- New method mrpt::graphs::CDirectedGraph::saveAsDot() - <a href="http://code.google.com/p/mrpt/source/detail?r=2980" >r2980</a>
 		- [mrpt-maps]
 			- Better integration of point cloud classes with PCL: - <a href="http://code.google.com/p/mrpt/source/detail?r=2943" >r2943</a>
 				- mrpt::slam::CPointsMap::loadPCDFile()
 				- mrpt::slam::CPointsMap::setFromPCLPointCloud()
 				- mrpt::slam::CColouredPointsMap::setFromPCLPointCloudRGB()
-		- [mrpt-opengl]
-			- New methods in mrpt::opengl::CSetOfLines: - <a href="http://code.google.com/p/mrpt/source/detail?r=2967" >r2967</a>
-				- mrpt::opengl::CSetOfLines::appendLineStrip(), mrpt::opengl::CSetOfLines::size(), mrpt::opengl::CSetOfLines::empty()
 		- [mrpt-reactivenav]
 			- Much code of mrpt::reactivenav classes have undergone a clean-up, slight optimizations and a translation of old Spanish names/comments to English - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2942" >r2942</a>, , <a href="http://code.google.com/p/mrpt/source/detail?r=2958" >r2958</a>
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::CColisionGrid now has a more maintainable binary serialization format - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>
@@ -87,8 +71,6 @@
 		- MRPT's root "CMakeLists.txt" has undergone a big refactoring and cleanup - <a href="http://code.google.com/p/mrpt/source/detail?r=2961" >r2961</a>
 		- Backward compatible "mrpt-core" has been removed as a fake lib for which to search with CMake from user programs - <a href="http://code.google.com/p/mrpt/source/detail?r=2961" >r2961</a>
 		- More system libs are detected in Linux (libclang-dev, lib3ds-dev), discarding embedded versions then - <a href="http://code.google.com/p/mrpt/source/detail?r=2963" >r2963</a> - <a href="http://code.google.com/p/mrpt/issues/detail?id=17" >Closes #17</a>
-		- Users now have a finer-grained selection on what MRPT libs/modules to compile or not via individual CMake variables for each one - <a href="http://code.google.com/p/mrpt/source/detail?r=2969" >r2969</a>
-		- Automatic detection of all subdirectories under MRPT/apps & MRPT/libs instead of manual listings, for a better modularity and maintenance in the future - <a href="http://code.google.com/p/mrpt/source/detail?r=2974" >r2974</a>
 	- BUG FIXES:
 		- [mrpt-base] The iterator returned by end() in all MRPT vectors and matrices (based on Eigen) pointed to the last element, not to the (now correct) next position after the last element - <a href="http://code.google.com/p/mrpt/source/detail?r=2941" >r2941</a>
 		- [mrpt-maps] mrpt::slam::COccupancyGridMap2D::getAs3DObject() returned cells with an occupancy of exactly "0" as transparent - <a href="http://code.google.com/p/mrpt/source/detail?r=2957" >r2957</a>

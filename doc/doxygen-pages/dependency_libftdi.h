@@ -31,3 +31,20 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
+/** \page dep-libftdi External dependency: libftdi
+ *
+
+<small> <a href="dependencies.html">Back to list of dependencies</a> </small>
+<br>
+
+<h2>Dependency: <code>libftdi</code></h2>
+<hr>
+
+This optional library is needed for interfacing FTDI USB chips in the FIFO parallel mode. 
+
+If not present, the following classes will raise exceptions upon usage:
+- mrpt::hwdrivers::CInterfaceFTDI
+- All its children classes.
+
+*/
+

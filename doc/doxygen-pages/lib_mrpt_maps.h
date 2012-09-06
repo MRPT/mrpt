@@ -31,3 +31,43 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
+/** \defgroup mrpt_maps_grp [mrpt-maps]
+
+<small> <a href="index.html#libs">Back to list of all libraries</a> | <a href="modules.html" >See all modules</a> </small>
+<br>
+
+<h2>Library <code>mrpt-maps</code></h2>
+<hr>
+
+This library includes (almost) all the maps usable for localization or mapping
+in the rest of MRPT classes.
+
+Interesting starting points:
+<ul>
+<li> To see the list of existing metric maps, see the classes inheriting from
+the base virtual mrpt::slam::CMetricMap. <b>Note:</b> There are two special
+maps which are not declared here in mrpt-maps, but 
+in <a href="mrpt-vision.html" >mrpt-vision</a>, due to their
+heavy dependence on computer vision functions. </li>
+<li> This library includes an embedded version of the ANN library for 
+kd-tree fast construction and queries. It's used internally in CPointsMap, but 
+could be used directly by the user. See ANNkd_tree. </li>
+<li> This library also adds new classes to the namespace mrpt::opengl, which 
+couldn't be included in the library mrpt-opengl due to its heavy dependence on
+map classes declared here. The classes are:
+mrpt::opengl::CAngularObservationMesh,
+mrpt::opengl::CPlanarLaserScan </li> 
+</ul> 
+
+Please, note that there is another very important map class 
+(mrpt::slam::CMultiMetricMap) which is not in mrpt-maps, but in the library mrpt-slam 
+(the reason is that there is not another reasonable way to factor MRPT into small libraries).
+
+
+See the list of classes in mrpt::slam (not all those classes are in mrpt-maps).
+
+
+
+
+*/
+
