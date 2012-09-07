@@ -64,6 +64,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/CSparseMatrix.h>
+#include <mrpt/math/MatrixBlockSparseCols.h>
 
 #include <mrpt/math/CBinaryRelation.h>
 #include <mrpt/math/CMonteCarlo.h>
