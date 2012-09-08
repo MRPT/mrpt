@@ -3,7 +3,9 @@
    |                                                                           |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
+   | Copyright (c) 2005-2012, Individual contributors, see AUTHORS file        |
    | Copyright (c) 2005-2012, MAPIR group, University of Malaga                |
+   | Copyright (c) 2012, University of Almeria                                 |
    | All rights reserved.                                                      |
    |                                                                           |
    | Redistribution and use in source and binary forms, with or without        |
@@ -116,7 +118,9 @@ int main(int argc, char **argv)
 				of << "   |                                                                           |\r\n";
 				of << "   |                          http://www.mrpt.org/                             |\r\n";
 				of << "   |                                                                           |\r\n";
-				of << "   | Copyright (c) 2005-2012, MAPIR group, University of Malaga                |\r\n";
+				of << "   | Copyright (c) 2005-2012, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2012, MAPIR group, University of Malaga                |
+   | Copyright (c) 2012, University of Almeria                                 |\r\n";
 				of << "   | All rights reserved.                                                      |\r\n";
 				of << "   |                                                                           |\r\n";
 				of << "   | Redistribution and use in source and binary forms, with or without        |\r\n";
