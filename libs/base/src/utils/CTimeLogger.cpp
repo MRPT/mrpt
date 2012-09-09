@@ -71,9 +71,15 @@ CTimeLogger::~CTimeLogger()
         dumpAllStats();
 }
 
-void CTimeLogger::clear()
+void CTimeLogger::clear(bool deep_clear)
 {
-	m_data.clear();
+	if (deep_clear)
+		m_data.clear();
+	else
+	{
+		for (map<string,TCallData>::iterator i=m_data.begin();i!=m_data.end();++i)
+			i->second = TCallData();
+	}
 }
 
 std::string  aux_format_string_multilines(const std::string &s, const size_t len)
