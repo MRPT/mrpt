@@ -60,9 +60,16 @@ namespace mrpt
 		  *   their first & second entries (for the corresponding std::pair) will be <b>undefined</b>. This was intentional in order to
 		  *   gain efficiency (in particular, each std::pair<> doesn't have a constructor when resizing the underlying std::vector).
 		  *
+		  * The default underlying non-associative container is a "memory-aligned std::vector<>", but it can be changed to a 
+		  *  standard vector<> or to a deque<> (to avoid memory reallocations) by changing the template parameter \a VECTOR_T.
+		  *
 		  * \ingroup stlext_grp
 		  */
-		template <typename KEY,typename VALUE>
+		template <
+			typename KEY,
+			typename VALUE, 
+			typename VECTOR_T = typename mrpt::aligned_containers<std::pair<KEY,VALUE> >::vector_t
+			>
 		class map_as_vector
 		{
 		public:
@@ -70,7 +77,7 @@ namespace mrpt
 			    @{ */
 			typedef KEY                                     key_type;
 			typedef std::pair<KEY,VALUE>                    value_type;
-			typedef typename mrpt::aligned_containers<value_type>::vector_t  vec_t;
+			typedef VECTOR_T                                vec_t; 
 			typedef typename vec_t::size_type               size_type;
 			typedef typename vec_t::iterator                iterator;
 			typedef typename vec_t::const_iterator          const_iterator;
