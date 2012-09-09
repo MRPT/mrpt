@@ -74,9 +74,17 @@ namespace mrpt
 			double do_leave( const char *func_name );
 
 		public:
+			/** Data of each call section: # of calls, minimum, maximum, average and overall execution time (in seconds) \sa getStats */
+			struct TCallStats
+			{
+				size_t n_calls;
+				double min_t,max_t,mean_t,total_t;
+			};
+
 			CTimeLogger(bool enabled = true); //! Default constructor
 			virtual ~CTimeLogger(); //!< Destructor
 			std::string getStatsAsText(const size_t column_width=80) const; //!< Dump all stats to a multi-line text string. \sa dumpAllStats, saveToCVSFile
+			void getStats(std::map<std::string,TCallStats> &out_stats) const; //!< Returns all the current stats as a map: section_name => stats. \sa getStatsAsText, dumpAllStats, saveToCVSFile
 			void dumpAllStats(const size_t column_width=80) const; //!< Dump all stats through the CDebugOutputCapable interface. \sa getStatsAsText, saveToCVSFile
 			void clear();
 			void enable(bool enabled = true) { m_enabled = enabled; }

@@ -89,24 +89,41 @@ std::string  aux_format_string_multilines(const std::string &s, const size_t len
 	return ret;
 }
 
+void CTimeLogger::getStats(std::map<std::string,TCallStats> &out_stats) const
+{
+	out_stats.clear();
+	for (map<string,TCallData>::const_iterator i=m_data.begin();i!=m_data.end();++i)
+	{
+		TCallStats &cs = out_stats[i->first];
+		cs.min_t   = i->second.min_t;
+		cs.max_t   = i->second.max_t;
+		cs.total_t = i->second.mean_t;
+		cs.mean_t  = i->second.n_calls ? i->second.mean_t/i->second.n_calls : 0;
+		cs.n_calls = i->second.n_calls;
+	}
+}
+
 std::string CTimeLogger::getStatsAsText(const size_t column_width)  const
 {
 	std::string s;
 
 	s+="--------------------------- MRPT CTimeLogger report --------------------------\n";
-	s+="           FUNCTION                                #CALLS  MIN.T  MEAN.T MAX.T\n";
+	s+="           FUNCTION                         #CALLS  MIN.T  MEAN.T MAX.T TOTAL \n";
 	s+="------------------------------------------------------------------------------\n";
 	for (map<string,TCallData>::const_iterator i=m_data.begin();i!=m_data.end();++i)
 	{
-		const string sMinT = unitsFormat(i->second.min_t,1,false);
-		const string sMaxT = unitsFormat(i->second.max_t,1,false);
-		const string sMeanT = unitsFormat(i->second.n_calls ? i->second.mean_t/i->second.n_calls : 0,1,false);
-		s+=format("%s %7u %6ss %6ss %6ss\n",
-			aux_format_string_multilines(i->first,47).c_str(),
+		const string sMinT   = unitsFormat(i->second.min_t,1,false);
+		const string sMaxT   = unitsFormat(i->second.max_t,1,false);
+		const string sTotalT = unitsFormat(i->second.mean_t,1,false);
+		const string sMeanT  = unitsFormat(i->second.n_calls ? i->second.mean_t/i->second.n_calls : 0,1,false);
+
+		s+=format("%s %7u %6ss %6ss %6ss %6ss\n",
+			aux_format_string_multilines(i->first,40).c_str(),
 			static_cast<unsigned int>(i->second.n_calls),
 			sMinT.c_str(),
 			sMeanT.c_str(),
-			sMaxT.c_str() );
+			sMaxT.c_str(),
+			sTotalT.c_str() );
 	}
 
 	s+="---------------------- End of MRPT CTimeLogger report ------------------------\n";
@@ -117,15 +134,16 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width)  const
 void CTimeLogger::saveToCSVFile(const std::string &csv_file)  const
 {
 	std::string s;
-	s+="FUNCTION, #CALLS, MIN.T, MEAN.T, MAX.T\n";
+	s+="FUNCTION, #CALLS, MIN.T, MEAN.T, MAX.T, TOTAL.T\n";
 	for (map<string,TCallData>::const_iterator i=m_data.begin();i!=m_data.end();++i)
 	{
-		s+=format("\"%s\",\"%7u\",\"%e\",\"%e\",\"%e\"\n",
+		s+=format("\"%s\",\"%7u\",\"%e\",\"%e\",\"%e\",\"%e\"\n",
 			i->first.c_str(),
 			static_cast<unsigned int>(i->second.n_calls),
 			i->second.min_t,
 			i->second.n_calls ? i->second.mean_t/i->second.n_calls : 0,
-			i->second.max_t );
+			i->second.max_t,
+			i->second.mean_t );
 	}
 	CFileOutputStream(csv_file).printf("%s",s.c_str() );
 }
