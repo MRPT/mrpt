@@ -124,7 +124,7 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width)  const
 		const string sMeanT  = unitsFormat(i->second.n_calls ? i->second.mean_t/i->second.n_calls : 0,1,false);
 
 		s+=format("%s %7u %6ss %6ss %6ss %6ss\n",
-			aux_format_string_multilines(i->first,40).c_str(),
+			aux_format_string_multilines(i->first,39).c_str(),
 			static_cast<unsigned int>(i->second.n_calls),
 			sMinT.c_str(),
 			sMeanT.c_str(),
