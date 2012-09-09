@@ -46,7 +46,7 @@
 
 // I don't like this solution, since can cause problems if CSparse structs
 //  change in the future (unlikely): even if we are linking against the CSparse
-//  embedded lib or a system lib, use the embedded headers. The reason: not to
+//  embedded lib or a system lib, use the embedded headers. The reason: don't
 //  force MRPT users to install CSparse headers.
 extern "C"{
 #include <mrpt/otherlibs/CSparse/cs.h>
@@ -72,7 +72,7 @@ namespace mrpt
 		  *		- A column-compressed sparse (CCS) matrix.
 		  *
 		  *  The latter is the "normal" format, which is expected by all mathematical operations defined
-		  *   in this class. There're two three ways of initializing and populating a sparse matrix:
+		  *   in this class. There're three ways of initializing and populating a sparse matrix:
 		  *
 		  *   <ol>
 		  *    <li> <b>As a triplet (empty), then add entries, then compress:</b>
