@@ -51,7 +51,6 @@ namespace internal_mrpt
 		static inline void doit(Eigen::Matrix<S,R,C,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
 		{
 			::mrpt::math::detail::TAuxResizer<Eigen::Matrix<S,R,C,Opt,MaxR,MaxC>,Eigen::Matrix<S,R,C,Opt,MaxR,MaxC>::SizeAtCompileTime>::internal_resize(mat,new_rows,new_cols);
-			//mat.derived().conservativeResize(new_rows,new_cols);
 		}
 	};
 	// Specialization for column matrices:
@@ -62,7 +61,6 @@ namespace internal_mrpt
 		static inline void doit(Eigen::Matrix<S,R,1,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
 		{
 			::mrpt::math::detail::TAuxResizer<Eigen::Matrix<S,R,1,Opt,MaxR,MaxC>,Eigen::Matrix<S,R,1,Opt,MaxR,MaxC>::SizeAtCompileTime>::internal_resize(mat,new_rows);
-			//mat.derived().conservativeResize(new_rows);
 		}
 	};
 	// Specialization for row matrices:
@@ -73,7 +71,6 @@ namespace internal_mrpt
 		static inline void doit(Eigen::Matrix<S,1,C,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
 		{
 			::mrpt::math::detail::TAuxResizer<Eigen::Matrix<S,1,C,Opt,MaxR,MaxC>,Eigen::Matrix<S,1,C,Opt,MaxR,MaxC>::SizeAtCompileTime>::internal_resize(mat,new_cols);
-			//mat.derived().conservativeResize(new_cols);
 		}
 	};
 	template<>
@@ -83,7 +80,6 @@ namespace internal_mrpt
 		static inline void doit(Eigen::Matrix<S,1,1,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
 		{
 			::mrpt::math::detail::TAuxResizer<Eigen::Matrix<S,1,1,Opt,MaxR,MaxC>,Eigen::Matrix<S,1,1,Opt,MaxR,MaxC>::SizeAtCompileTime>::internal_resize(mat,new_cols);
-			//mat.derived().conservativeResize(new_cols);
 		}
 	};
 }
@@ -341,7 +337,7 @@ void Eigen::MatrixBase<Derived>::loadFromTextFile(std::istream &f)
 				// Find next number: (non white-space character):
 				while (ptr[0] && (ptr[0]==' ' || ptr[0]=='\t' || ptr[0]=='\r' || ptr[0]=='\n'))
 					ptr++;
-				if (fil.size()<=i)	fil.resize(fil.size()+512);
+				if (fil.size()<=i)	fil.resize(fil.size()+ (fil.size()>>1));
 				// Convert to "double":
 				fil[i] = strtod(ptr,&ptrEnd);
 				// A valid conversion has been done?
@@ -361,7 +357,13 @@ void Eigen::MatrixBase<Derived>::loadFromTextFile(std::istream &f)
 
 			// Append to the matrix:
 			if ( Derived::RowsAtCompileTime==Eigen::Dynamic || Derived::ColsAtCompileTime==Eigen::Dynamic )
-				internal_mrpt::MatOrVecResizer<Derived::RowsAtCompileTime,Derived::ColsAtCompileTime>::doit(derived(),nRows+1,i);
+			{
+				if (rows()<static_cast<int>(nRows+1) || cols()<static_cast<int>(i))
+				{
+					const size_t extra_rows = std::max(static_cast<size_t>(1), nRows >> 1 );
+					internal_mrpt::MatOrVecResizer<Derived::RowsAtCompileTime,Derived::ColsAtCompileTime>::doit(derived(),nRows+extra_rows,i);
+				}
+			}
 			else if (Derived::RowsAtCompileTime!=Eigen::Dynamic && int(nRows)>=Derived::RowsAtCompileTime)
 				throw std::runtime_error("loadFromTextFile: Read more rows than the capacity of the fixed sized matrix.");
 
@@ -372,9 +374,12 @@ void Eigen::MatrixBase<Derived>::loadFromTextFile(std::istream &f)
 		} // end if fgets
 	} // end while not feof
 
+	// Final resize to the real size (in case we allocated space in advance):
+	if ( Derived::RowsAtCompileTime==Eigen::Dynamic || Derived::ColsAtCompileTime==Eigen::Dynamic )
+		internal_mrpt::MatOrVecResizer<Derived::RowsAtCompileTime,Derived::ColsAtCompileTime>::doit(derived(),nRows,cols());
+
 	// Report error as exception
-	if (!nRows)
-		throw std::runtime_error("loadFromTextFile: Error loading from text file");
+	if (!nRows) throw std::runtime_error("loadFromTextFile: Error loading from text file");
 }
 
 
