@@ -221,7 +221,7 @@ namespace mrpt
 					// It might be that we're overwriting an existing data structure:
 					for (size_t i=0;i<nC;i++)
 					{
-						ASSERTDEBMSG_(cols[i].size()>=o.cols[i].size(), "copyNumericalValuesFrom() invoked on dissimilar structures")
+						ASSERTMSG_(cols[i].size()>=o.cols[i].size(), "copyNumericalValuesFrom() invoked on dissimilar structures")
 						typename col_t::iterator       it_dst = cols[i].begin();
 						typename col_t::const_iterator it_src = o.cols[i].begin();
 						while (it_src!=o.cols[i].end())
