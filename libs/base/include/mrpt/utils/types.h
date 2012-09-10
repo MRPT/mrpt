@@ -114,9 +114,9 @@ namespace mrpt
 		template <typename R>
 		inline dynamicsize_vector(const std::vector<R>& v) : Base(v.size(),1) { for (size_t i=0;i<v.size();i++) (*this)[i]=v[i]; }
 		/** Overloaded resize method that mimics std::vector::resize(SIZE,DEFAULT_VALUE) instead of resize(nrows,ncols) \note This method exists for backward compatibility in MRPT  */
-		inline void resize(const size_t N, const T default_val) { Base::derived().resize(N,1); Base::derived().setConstant(default_val); }
+		inline void resize(const size_t N, const T default_val) { if (static_cast<size_t>(Base::derived().size())!=N) Base::derived().resize(N,1); Base::derived().setConstant(default_val); }
 		/** Normal resize of the vector (preserving old contents). */
-		inline void resize(const size_t N) { Base::derived().conservativeResize(N); }
+		inline void resize(const size_t N) { if (static_cast<size_t>(Base::derived().size())!=N) Base::derived().conservativeResize(N); }
 		/** Reset the vector to a 0-length */
 		inline void clear() { *this = dynamicsize_vector<T>(); }
 		/** DOES NOTHING (it's here for backward compatibility) */
