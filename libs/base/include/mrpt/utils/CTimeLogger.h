@@ -49,6 +49,9 @@ namespace mrpt
 		/** A versatile "profiler" that logs the time spent within each pair of calls to enter(X)-leave(X), among other stats.
 		 *  The results can be dumped to cout or to Visual Studio's output panel.
 		 *  Recursive methods are supported with no problems, that is, calling "enter(X) enter(X) ... leave(X) leave(X)".
+		 *
+		 *  This class can be also used to monitorize min/mean/max/total stats of any user-provided parameters via the method CTimeLogger::registerUserMeasure()
+		 *
 		 * \note The default behavior is dumping all the information at destruction.
 		 * \ingroup mrpt_base_grp
 		 */
@@ -90,6 +93,7 @@ namespace mrpt
 			void enable(bool enabled = true) { m_enabled = enabled; }
 			void disable() { m_enabled = false; }
 			void saveToCSVFile(const std::string &csv_file)  const; 	//!< Dump all stats to a Comma Separated Values (CSV) file. \sa dumpAllStats
+			void registerUserMeasure(const char *event_name, const double value);
 
 			/** Start of a named section \sa enter */
 			inline void enter( const char *func_name ) {

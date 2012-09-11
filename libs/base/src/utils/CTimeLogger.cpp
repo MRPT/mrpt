@@ -198,6 +198,24 @@ double CTimeLogger::do_leave(const char *func_name)
 	else return 0; // This shouldn't happen!
 }
 
+void CTimeLogger::registerUserMeasure(const char *event_name, const double value)
+{
+	const string  s = event_name;
+	TCallData &d = m_data[s];
+
+	d.mean_t+=value;
+	if (d.n_calls==1)
+	{
+		d.min_t= value;
+		d.max_t= value;
+	}
+	else
+	{
+		mrpt::utils::keep_min( d.min_t, value);
+		mrpt::utils::keep_max( d.max_t, value);
+	}
+}
+
 CTimeLogger::TCallData::TCallData() :
 	n_calls	(0),
 	min_t	(0),
