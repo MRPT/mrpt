@@ -69,6 +69,7 @@ namespace mrpt
 				size_t n_calls;
 				double min_t,max_t,mean_t;
 				stack<double,vector<double> >   open_calls;
+				bool has_time_units;
 			};
 
 			map<string,TCallData>  m_data;

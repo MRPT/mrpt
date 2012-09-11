@@ -123,13 +123,13 @@ std::string CTimeLogger::getStatsAsText(const size_t column_width)  const
 		const string sTotalT = unitsFormat(i->second.mean_t,1,false);
 		const string sMeanT  = unitsFormat(i->second.n_calls ? i->second.mean_t/i->second.n_calls : 0,1,false);
 
-		s+=format("%s %7u %6ss %6ss %6ss %6ss\n",
+		s+=format("%s %7u %6s%c %6s%c %6s%c %6s%c\n",
 			aux_format_string_multilines(i->first,39).c_str(),
 			static_cast<unsigned int>(i->second.n_calls),
-			sMinT.c_str(),
-			sMeanT.c_str(),
-			sMaxT.c_str(),
-			sTotalT.c_str() );
+			sMinT.c_str(), i->second.has_time_units ? 's':' ',
+			sMeanT.c_str(),i->second.has_time_units ? 's':' ',
+			sMaxT.c_str(),i->second.has_time_units ? 's':' ',
+			sTotalT.c_str(),i->second.has_time_units ? 's':' ' );
 	}
 
 	s+="---------------------- End of MRPT CTimeLogger report ------------------------\n";
@@ -203,8 +203,9 @@ void CTimeLogger::registerUserMeasure(const char *event_name, const double value
 	const string  s = event_name;
 	TCallData &d = m_data[s];
 
+	d.has_time_units = false;
 	d.mean_t+=value;
-	if (d.n_calls==1)
+	if (++d.n_calls==1)
 	{
 		d.min_t= value;
 		d.max_t= value;
@@ -220,7 +221,8 @@ CTimeLogger::TCallData::TCallData() :
 	n_calls	(0),
 	min_t	(0),
 	max_t	(0),
-	mean_t	(0)
+	mean_t	(0),
+	has_time_units(true)
 {
 }
 
