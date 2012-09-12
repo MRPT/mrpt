@@ -490,7 +490,10 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 							msg->vector_x[5],
 							mrpt::opengl::TOpenGLFontStyle(msg->x),
 							size_t(msg->y),
-							msg->vector_x[6],msg->vector_x[7] );
+							msg->vector_x[6],msg->vector_x[7],
+							msg->vector_x[8]!=0,
+							mrpt::utils::TColorf(msg->vector_x[9],msg->vector_x[10],msg->vector_x[11])
+							);
                     }
                 }
                 break;

@@ -401,11 +401,13 @@ void C3DWindowDialog::addTextMessage(
 	const mrpt::opengl::TOpenGLFontStyle font_style,
 	const size_t  unique_index,
 	const double  font_spacing,
-	const double  font_kerning
+	const double  font_kerning,
+	const bool has_shadow,
+	const mrpt::utils::TColorf &shadow_color
 	)
 {
 #if MRPT_HAS_OPENGL_GLUT
-	m_canvas->m_text_msgs.addTextMessage( x_frac, y_frac, text,color, font_name, font_size, font_style, unique_index, font_spacing, font_kerning );
+	m_canvas->m_text_msgs.addTextMessage( x_frac, y_frac, text,color, font_name, font_size, font_style, unique_index, font_spacing, font_kerning,has_shadow,shadow_color );
 #endif
 }
 
@@ -884,7 +886,9 @@ void CDisplayWindow3D::addTextMessage(
 	const mrpt::opengl::TOpenGLFontStyle font_style,
 	const size_t  unique_index,
 	const double  font_spacing,
-	const double  font_kerning
+	const double  font_kerning,
+	const bool draw_shadow,
+	const mrpt::utils::TColorf &shadow_color
 	)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
@@ -898,7 +902,7 @@ void CDisplayWindow3D::addTextMessage(
         REQ->OPCODE   = 362;
         REQ->str 		= text;
         REQ->plotName   = font_name;
-        REQ->vector_x.resize(8);
+        REQ->vector_x.resize(12);
         REQ->vector_x[0] = x_frac;
         REQ->vector_x[1] = y_frac;
         REQ->vector_x[2] = color.R;
@@ -907,6 +911,11 @@ void CDisplayWindow3D::addTextMessage(
         REQ->vector_x[5] = font_size;
         REQ->vector_x[6] = font_spacing;
         REQ->vector_x[7] = font_kerning;
+		REQ->vector_x[8] = draw_shadow ? 1:0;
+        REQ->vector_x[9] = shadow_color.R;
+        REQ->vector_x[10] = shadow_color.G;
+        REQ->vector_x[11] = shadow_color.B;
+
         REQ->x			= int(font_style);
         REQ->y			= int(unique_index);
 

@@ -421,7 +421,9 @@ namespace mrpt
 					const mrpt::opengl::TOpenGLFontStyle font_style,
 					const size_t  unique_index,
 					const double  font_spacing,
-					const double  font_kerning
+					const double  font_kerning,
+					const bool has_shadow,
+					const mrpt::utils::TColorf &shadow_color
 					);
 
 			private:

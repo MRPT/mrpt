@@ -93,8 +93,15 @@ namespace mrpt
 				const mrpt::opengl::TOpenGLFontStyle font_style = mrpt::opengl::NICE,
 				const size_t  unique_index = 0,
 				const double  font_spacing = 1.5,
-				const double  font_kerning = 0.1
+				const double  font_kerning = 0.1,
+				const bool has_shadow = false,
+				const mrpt::utils::TColorf &shadow_color = mrpt::utils::TColorf(0,0,0)
 				);
+
+			/** Just updates the text of a given text message, without touching the other parameters.
+			  * \return false if given ID doesn't exist.
+			  */
+			bool updateTextMessage(const size_t  unique_index, const std::string &text);
 
 		}; // end of CTextMessageCapable
 

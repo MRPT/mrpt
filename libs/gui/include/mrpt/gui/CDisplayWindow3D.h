@@ -93,7 +93,7 @@ namespace mrpt
 		  *  is locked it will not be responsive to the user input or window redraw.
 		  *
 		  * The window can also display a set of 2D text messages overlapped to the 3D scene.
-		  *  See CDisplayWindow3D::add2DTextMessage
+		  *  See CDisplayWindow3D::addTextMessage
 		  *
 		  *  For a list of supported events with the observer/observable pattern, see the discussion in mrpt::gui::CBaseGUIWindow.
 		  *  In addition to those events, this class introduces mrpt::gui::mrptEvent3DWindowGrabImageFile
@@ -344,7 +344,7 @@ namespace mrpt
 				const TOpenGLFont font = MRPT_GLUT_BITMAP_TIMES_ROMAN_24
 				);
 
-			/* \overload with more font parameters - refer to mrpt::opengl::gl_utils::glDrawText()
+			/** \overload with more font parameters - refer to mrpt::opengl::gl_utils::glDrawText()
 			 *  Available fonts are enumerated at mrpt::opengl::gl_utils::glSetFont() */
 			void addTextMessage(
 				const double x_frac,
@@ -356,7 +356,9 @@ namespace mrpt
 				const mrpt::opengl::TOpenGLFontStyle font_style = mrpt::opengl::NICE,
 				const size_t  unique_index = 0,
 				const double  font_spacing = 1.5,
-				const double  font_kerning = 0.1
+				const double  font_kerning = 0.1,
+				const bool draw_shadow = false,
+				const mrpt::utils::TColorf &shadow_color = mrpt::utils::TColorf(0,0,0)
 				);
 
 			/**  Clear all text messages created with addTextMessage().

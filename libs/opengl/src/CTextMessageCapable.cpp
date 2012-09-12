@@ -99,6 +99,20 @@ void CTextMessageCapable::render_text_messages(const int w, const int h) const
 				break;
 		};
 
+		if (it->second.draw_shadow)
+		{
+			// Draw shadow:
+			glPushMatrix();
+
+			glTranslatef(x+1, y-1, 0.0);
+			glColor3f(it->second.shadow_color.R,it->second.shadow_color.G,it->second.shadow_color.B);
+			mrpt::opengl::gl_utils::glSetFont(font_name);
+			mrpt::opengl::gl_utils::glDrawText(it->second.text, font_size, font_style, font_spacing, font_kerning );
+
+			glPopMatrix();
+		}
+
+		// Draw text:
 		glPushMatrix();
 
 		glTranslatef(x, y, 0.0);
@@ -145,6 +159,22 @@ void CTextMessageCapable::addTextMessage(
 	m_2D_texts[unique_index] = d;
 }
 
+/** Just updates the text of a given text message, without touching the other parameters.
+  * \return false if given ID doesn't exist.
+  */
+bool CTextMessageCapable::updateTextMessage(const size_t  unique_index, const std::string &text)
+{
+	std::map<size_t,mrpt::opengl::T2DTextData>::iterator it = m_2D_texts.find(unique_index);
+	if (it == m_2D_texts.end())
+		return false;
+	else 
+	{
+		it->second.text = text;
+		return true;
+	}	
+}
+
+
 /// \overload with more font parameters - refer to mrpt::opengl::gl_utils::glDrawText()
 void CTextMessageCapable::addTextMessage(
 	const double x_frac,
@@ -156,12 +186,16 @@ void CTextMessageCapable::addTextMessage(
 	const mrpt::opengl::TOpenGLFontStyle font_style,
 	const size_t  unique_index,
 	const double  font_spacing,
-	const double  font_kerning
+	const double  font_kerning,
+	const bool has_shadow,
+	const mrpt::utils::TColorf &shadow_color
 	)
 {
 	mrpt::opengl::T2DTextData  d;
 	d.text = text;
 	d.color = color;
+	d.draw_shadow = has_shadow;
+	d.shadow_color = shadow_color;
 	d.x = x_frac;
 	d.y = y_frac;
 	d.font = MRPT_GLUT_BITMAP_NONE;  // It's not a bitmapped font

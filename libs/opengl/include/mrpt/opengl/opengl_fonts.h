@@ -73,6 +73,7 @@ namespace mrpt
 		struct OPENGL_IMPEXP TFontParams
 		{
 			TFontParams() :
+				draw_shadow(false),
 				font(MRPT_GLUT_BITMAP_NONE),
 				vfont_name("sans"),
 				vfont_scale(10),
@@ -83,6 +84,9 @@ namespace mrpt
 			}
 
 			mrpt::utils::TColorf	color;
+
+			bool                    draw_shadow;
+			mrpt::utils::TColorf	shadow_color;
 
 			/** @name Bitmapped font params
 			    @{ */
