@@ -61,8 +61,8 @@ namespace mrpt
 		template <
 			typename Scalar,
 			int NROWS,
-			int NCOLS, 
-			typename INFO, 
+			int NCOLS,
+			typename INFO,
 			bool HAS_REMAP,
 			typename INDEX_REMAP_MAP_IMPL = mrpt::utils::map_as_vector<size_t,size_t>
 		>
@@ -102,7 +102,7 @@ namespace mrpt
 			inline col_t & appendCol(const size_t remapIndex) {
 				const size_t idx = cols.size();
 				cols.push_back( col_t() );
-				
+
 				if (HAS_REMAP)
 				{
 					col_remapped_indices.resize(idx+1);
@@ -221,15 +221,20 @@ namespace mrpt
 					// It might be that we're overwriting an existing data structure:
 					for (size_t i=0;i<nC;i++)
 					{
-						ASSERTMSG_(cols[i].size()>=o.cols[i].size(), "copyNumericalValuesFrom() invoked on dissimilar structures")
+						//ASSERTMSG_(cols[i].size()>=o.cols[i].size(), "copyNumericalValuesFrom() invoked on dissimilar structures")
 						typename col_t::iterator       it_dst = cols[i].begin();
 						typename col_t::const_iterator it_src = o.cols[i].begin();
 						while (it_src!=o.cols[i].end())
 						{
-							if (it_src->first!=it_dst->first)
+							if (it_dst->first < it_src->first)
 							{
 								it_dst->second.num.setZero();
 								it_dst++;
+							}
+							else if (it_dst->first > it_src->first)
+							{
+								cols[i][it_src->first].num = it_src->second.num;
+								it_src++;
 							}
 							else
 							{
