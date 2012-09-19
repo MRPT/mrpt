@@ -27,6 +27,7 @@ for alpha=1:DECIM:nTrajs,
   y=ys(alpha,:);
   plot(x,y,'-k'); hold on; 
 end
+axis equal;
 title('Paths (x,y)');
 
 
