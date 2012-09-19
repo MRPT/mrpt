@@ -225,7 +225,7 @@ void CParameterizedTrajectoryGenerator::simulateTrajectories(
 
 			// Add the first, initial point:
 			points.push_back( TCPoint(	x,y,phi, t,dist, v,w ) );
-			
+
 			// Simulate until...
 			while ( t < max_time && dist < max_dist && points.size() < max_n && fabs(girado) < 1.95 * M_PI )
 			{
@@ -242,7 +242,7 @@ void CParameterizedTrajectoryGenerator::simulateTrajectories(
 				float cmd_v, cmd_w;
 				PTG_Generator( alpha,t, x, y, phi, cmd_v,cmd_w );
 
-				if (t==0) 
+				if (t==0)
 					mrpt::utils::keep_max(maxV_inTPSpace, (float)( sqrt( square(cmd_v) + square(cmd_w*turningRadiusReference) ) ) );
 
 				// Low-pass filter ----------------------------------
@@ -322,7 +322,7 @@ void CParameterizedTrajectoryGenerator::simulateTrajectories(
 		const TCellForLambdaFunction defaultCell;
 		m_lambdaFunctionOptimizer.setSize(
 			x_min-0.5f,x_max+0.5f,
-			y_min-0.5f,y_max+0.5f,  0.25f, 
+			y_min-0.5f,y_max+0.5f,  0.25f,
 			&defaultCell);
 
 		for (uint16_t k=0;k<m_alphaValuesCount;k++)
@@ -390,69 +390,82 @@ void CParameterizedTrajectoryGenerator::getCPointWhen_d_Is (
 /*---------------------------------------------------------------
 						debugDumpInFiles
   ---------------------------------------------------------------*/
-void CParameterizedTrajectoryGenerator::debugDumpInFiles( int nPT )
+bool CParameterizedTrajectoryGenerator::debugDumpInFiles( const int nPT )
 {
-	char str[100];
-
-//#define alsoDumpForMATLAB
-
 	mrpt::system::createDirectory( "./reactivenav.logs" );
 	mrpt::system::createDirectory( "./reactivenav.logs/PTGs" );
 
-	os::sprintf(str,100, "./reactivenav.logs/PTGs/PTG%u.dat",nPT);
-	FILE* f = os::fopen(str,"wb");
+	const std::string sFilBin = mrpt::format("./reactivenav.logs/PTGs/PTG%i.dat",nPT);
 
-#ifdef alsoDumpForMATLAB
-	sprintf(str, "./reactivenav.logs/PTGs/PTG%u_x.txt",nPT); FILE* fx = fopen(str,"wt");
-	sprintf(str, "./reactivenav.logs/PTGs/PTG%u_y.txt",nPT); FILE* fy = fopen(str,"wt");
-	sprintf(str, "./reactivenav.logs/PTGs/PTG%u_p.txt",nPT); FILE* fp = fopen(str,"wt");
-	sprintf(str, "./reactivenav.logs/PTGs/PTG%u_t.txt",nPT); FILE* ft = fopen(str,"wt");
-	sprintf(str, "./reactivenav.logs/PTGs/PTG%u_d.txt",nPT); FILE* fd = fopen(str,"wt");
-#endif
+	const std::string sFilTxt_x   = mrpt::format("./reactivenav.logs/PTGs/PTG%i_x.txt",nPT);
+	const std::string sFilTxt_y   = mrpt::format("./reactivenav.logs/PTGs/PTG%i_y.txt",nPT);
+	const std::string sFilTxt_phi = mrpt::format("./reactivenav.logs/PTGs/PTG%i_phi.txt",nPT);
+	const std::string sFilTxt_t   = mrpt::format("./reactivenav.logs/PTGs/PTG%i_t.txt",nPT);
+	const std::string sFilTxt_d   = mrpt::format("./reactivenav.logs/PTGs/PTG%i_d.txt",nPT);
+
+	std::ofstream fx(sFilTxt_x.c_str());  if (!fx.is_open()) return false;
+	std::ofstream fy(sFilTxt_y.c_str());  if (!fy.is_open()) return false;
+	std::ofstream fp(sFilTxt_phi.c_str());if (!fp.is_open()) return false;
+	std::ofstream ft(sFilTxt_t.c_str());  if (!ft.is_open()) return false;
+	std::ofstream fd(sFilTxt_d.c_str());  if (!fd.is_open()) return false;
+
+	FILE* fbin = os::fopen(sFilBin.c_str(),"wb");
+	if (!fbin) return false;
 
 	const size_t nPaths = getAlfaValuesCount();
 
-#ifdef alsoDumpForMATLAB
-	// Version texto:
+	// Text version:
+	fx << "% PTG data file for 'x'. Each row is the trajectory for a different 'alpha' parameter value." << endl;
+	fy << "% PTG data file for 'y'. Each row is the trajectory for a different 'alpha' parameter value." << endl;
+	fp << "% PTG data file for 'phi'. Each row is the trajectory for a different 'alpha' parameter value." << endl;
+	ft << "% PTG data file for 't'. Each row is the trajectory for a different 'alpha' parameter value." << endl;
+	fd << "% PTG data file for 'd'. Each row is the trajectory for a different 'alpha' parameter value." << endl;
+
+	size_t maxPoints=0;
 	for (size_t k=0;k<nPaths;k++)
-		maxPoints = max( maxPoints, getPointsCountInCPath_k(k) );
+		maxPoints = std::max( maxPoints, getPointsCountInCPath_k(k) );
 
 	for (size_t k=0;k<nPaths;k++)
 	{
-		for (int n=0;n< maxPoints;n++)
+		for (size_t n=0;n< maxPoints;n++)
 		{
-				int nn;
-
-				nn= min( n, getPointsCountInCPath_k(k)-1 );
-
-				fprintf(fx,"%0.02f ", GetCPathPoint_x(k,nn) );
-				fprintf(fy,"%0.02f ", GetCPathPoint_y(k,nn) );
-				fprintf(fp,"%0.02f ", GetCPathPoint_phi(k,nn) );
-				fprintf(ft,"%0.02f ", GetCPathPoint_t(k,nn) );
-				fprintf(fd,"%0.02f ", GetCPathPoint_d(k,nn) );
+				const size_t nn = std::min( n, getPointsCountInCPath_k(k)-1 );
+				fx << GetCPathPoint_x(k,nn) << " ";
+				fy << GetCPathPoint_y(k,nn) << " ";
+				fp << GetCPathPoint_phi(k,nn) << " ";
+				ft << GetCPathPoint_t(k,nn) << " ";
+				fd << GetCPathPoint_d(k,nn) << " ";
 		}
-		fprintf(fx,"\n" );fprintf(fy,"\n" );fprintf(fp,"\n" );fprintf(ft,"\n" );fprintf(fd,"\n" );
+		fx << endl;
+		fy << endl;
+		fp << endl;
+		ft << endl;
+		fd << endl;
 	}
-	fclose(fx);fclose(fy);fclose(fp);fclose(ft);fclose(fd);
-#endif
 
 	// Binary dump:
 	for (size_t k=0;k<nPaths;k++)
 	{
-		int     nPoints = getPointsCountInCPath_k(k);
-		float   fl;
-		size_t wr=fwrite( &nPoints ,sizeof(int),1 , f ); ASSERT_(wr>0);
-		for (int n=0;n<nPoints;n++)
+		const size_t nPoints = getPointsCountInCPath_k(k);
+		if (!fwrite( &nPoints ,sizeof(int),1 , fbin ))
+			return false;
+
+		float fls[5];
+		for (size_t n=0;n<nPoints;n++)
 		{
-			fl = GetCPathPoint_x(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
-			fl = GetCPathPoint_y(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
-			fl = GetCPathPoint_phi(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
-			fl = GetCPathPoint_t(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
-			fl = GetCPathPoint_d(k,n); wr=fwrite(&fl,sizeof(float),1,f);ASSERT_(wr>0);
+			fls[0] = GetCPathPoint_x(k,n);
+			fls[1] = GetCPathPoint_y(k,n);
+			fls[2] = GetCPathPoint_phi(k,n);
+			fls[3] = GetCPathPoint_t(k,n);
+			fls[4] = GetCPathPoint_d(k,n);
+
+			if (!fwrite(&fls[0],sizeof(float),5,fbin)) return false;
 		}
 	}
 
-	os::fclose(f);
+	os::fclose(fbin);
+
+	return true;
 }
 
 /*---------------------------------------------------------------
@@ -551,14 +564,14 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::saveToFile( CStream *f, c
 
 		// Save magic signature && serialization version:
 		*f << COLGRID_FILE_MAGIC << serialize_version;
-		
-		// Robot shape: 
+
+		// Robot shape:
 		*f << computed_robotShape;
 
 		// and standard PTG data:
-		*f << m_parent->getDescription() 
+		*f << m_parent->getDescription()
 			<< m_parent->getAlfaValuesCount()
-			<< m_parent->getMax_V() 
+			<< m_parent->getMax_V()
 			<< m_parent->getMax_W();
 
 		*f << m_x_min << m_x_max << m_y_min << m_y_max;
@@ -584,7 +597,7 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 		// Return false if the file contents doesn't match what we expected:
 		uint32_t file_magic;
 		*f >> file_magic;
-		
+
 		if (COLGRID_FILE_MAGIC!=file_magic)
 		{
 			// May it be a file in the old format?
@@ -603,8 +616,8 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 				mrpt::math::CPolygon stored_shape;
 				*f >> stored_shape;
 
-				const bool shapes_match = 
-					( stored_shape.size()==current_robotShape.size() && 
+				const bool shapes_match =
+					( stored_shape.size()==current_robotShape.size() &&
 					  std::equal(stored_shape.begin(),stored_shape.end(), current_robotShape.begin() ) );
 
 				if (!shapes_match) return false; // Must recompute if the robot shape changed.
@@ -616,7 +629,7 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 			return false;
 		};
 
-		// Standard PTG data:		
+		// Standard PTG data:
 		const std::string expected_desc = m_parent->getDescription();
 		std::string desc;
 		*f >> desc;
@@ -684,7 +697,7 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 				{
 					mrpt::utils::keep_min(k_min, cell->k_min);
 					mrpt::utils::keep_max(k_max, cell->k_max);
-					
+
 					mrpt::utils::keep_min(n_min, cell->n_min);
 					mrpt::utils::keep_max(n_max, cell->n_max);
 				}

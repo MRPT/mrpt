@@ -181,9 +181,16 @@ namespace mrpt
 			return (uint16_t)(0.5f*(m_alphaValuesCount*(1+alpha/M_PI) - 1));
 		}
 
-		/** Dump PTG trajectories in files in directory "./PTGs/".
-		 */
-        void    debugDumpInFiles(int nPT);
+		/** Dump PTG trajectories in a binary file "./reactivenav.logs/PTGs/PTG%i.dat", with "%i" being the user-supplied parameter "nPT",
+		  * and in FIVE text files: "./reactivenav.logs/PTGs/PTG%i_{x,y,phi,t,d}.txt".
+		  *
+		  * Text files are loadable from MATLAB/Octave, and can be visualized with the script [MRPT_DIR]/scripts/viewPTG.m ,
+		  *  also online: http://mrpt.googlecode.com/svn/trunk/scripts/viewPTG.m
+		  *
+		  * \note The directory "./reactivenav.logs/PTGs" will be created if doesn't exist.
+		  * \return false on any error writing to disk.
+		  */
+        bool debugDumpInFiles(const int nPT);
 
 		/**  A list of all the pairs (alpha,distance) such as the robot collides at that cell.
 		  *  - map key   (uint16_t) -> alpha value (k)
@@ -250,7 +257,7 @@ protected:
 		  */
 		struct TCellForLambdaFunction
 		{
-			TCellForLambdaFunction() : 
+			TCellForLambdaFunction() :
 				k_min( std::numeric_limits<uint16_t>::max() ),
 				k_max( std::numeric_limits<uint16_t>::min() ),
 				n_min( std::numeric_limits<uint32_t>::max() ),
@@ -280,8 +287,8 @@ protected:
         {
 			TCPoint(const float	x_,const float	y_,const float	phi_,
 					const float	t_,const float	dist_,
-					const float	v_,const float	w_) : 
-				x(x_), y(y_), phi(phi_), t(t_), dist(dist_), v(v_), w(w_) 
+					const float	v_,const float	w_) :
+				x(x_), y(y_), phi(phi_), t(t_), dist(dist_), v(v_), w(w_)
 			{}
 
 			float x, y, phi,t, dist,v,w;
