@@ -97,12 +97,14 @@ Also, pose PDF classes can be converted into OpenGL objects with CSetOfObjects::
 
 
 Note: The following extra OpenGL classes are provided by other libraries:
- * mrpt::opengl::CAngularObservationMesh (In mrpt-maps)
- * mrpt::opengl::CPlanarLaserScan (In mrpt-maps)
 
 
-
-preview_CPosePDFParticles_as_opengl
+<div align="center">
+<table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+<tr> <td> mrpt::opengl::CAngularObservationMesh <br> (In mrpt-maps) </td> <td> \image html preview_CAngularObservationMesh.png </td> </tr>
+<tr> <td> mrpt::opengl::CPlanarLaserScan <br> (In mrpt-maps) </td> <td> \image html preview_CPlanarLaserScan.png </td> </tr>
+</table>
+</div>
 
 */
 

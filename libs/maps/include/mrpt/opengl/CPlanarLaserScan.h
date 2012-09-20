@@ -65,6 +65,12 @@ namespace mrpt
 		  *
 		  *  The scan is passed or updated through CPlanarLaserScan::setScan()
 		  *
+		  *  <div align="center">
+		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+		  *   <tr> <td> mrpt::opengl::CPlanarLaserScan </td> <td> \image html preview_CPlanarLaserScan.png </td> </tr>
+		  *  </table>
+		  *  </div>
+		  *
 		  *  \note The laser points are projected at the sensor pose as given in the "scan" object, so this CPlanarLaserScan object should be placed at the exact pose of the robot coordinates origin.
 		  *
 		  *  \sa mrpt::opengl::CPointCloud, opengl::COpenGLScene

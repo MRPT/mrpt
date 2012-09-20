@@ -59,6 +59,13 @@ namespace opengl	{
 	  * Each element of this set is a single scan through the yaw, given a specific pitch.
 	  * Each scan has a CPose3D identifying the origin of the scan, which ideally is the
 	  * same for every one of them.
+	  *
+	  *  <div align="center">
+	  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+	  *   <tr> <td> mrpt::opengl::CAngularObservationMesh </td> <td> \image html preview_CAngularObservationMesh.png </td> </tr>
+	  *  </table>
+	  *  </div>
+	  *
 	  * \ingroup mrpt_maps_grp
 	  */
 	class MAPS_IMPEXP CAngularObservationMesh:public CRenderizableDisplayList	{
@@ -70,7 +77,7 @@ namespace opengl	{
 		struct MAPS_IMPEXP TDoubleRange	{
 		private:
 			/**
-			  * Range type. 
+			  * Range type.
 			  * If 0, it's specified by an initial and a final value, and an increment.
 			  * If 1, it's specified by an initial and a final value, and a fixed size of samples.
 			  * If 2, it's specified by an aperture, a fixed size of samples and a boolean variable controlling direction. This type is always zero-centered.
