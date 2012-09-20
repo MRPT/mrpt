@@ -11,6 +11,7 @@ echo "Running format change with command: $1"
 find . -name "*.cpp" | xargs $1
 find . -name "*.c" | xargs $1
 find . -name "*.h" | xargs $1
+find . -name "*.in" | xargs $1
 find . -name "*.hpp" | xargs $1 
 find . -name "*.tpp" | xargs $1 
 find . -name "CMakeLists.txt" | xargs $1 
