@@ -177,6 +177,7 @@ include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtc
 include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
 include(cmakemodules/script_jpeg.cmake REQUIRED)        # Check for jpeg
 include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE 3D camera:
+include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
 include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
 include(cmakemodules/script_clang.cmake REQUIRED)       # clang library (For UTFConvert)
 
