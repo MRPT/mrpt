@@ -356,7 +356,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 //***********************************************************************************************
 		case OpenCV:
 		{
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x211
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x211 && MRPT_HAS_OPENCV_NONFREE
 			SiftFeatureDetector SIFTDetector(
 				options.SIFTOptions.threshold, //SIFT::DetectorParams::GET_DEFAULT_THRESHOLD(),
 				options.SIFTOptions.edgeThreshold //SIFT::DetectorParams::GET_DEFAULT_EDGE_THRESHOLD() );
@@ -424,7 +424,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 			feats.resize( cont );
 
 #else
-	THROW_EXCEPTION("This method requires OpenCV >= 2.1.1")
+	THROW_EXCEPTION("This method requires OpenCV >= 2.1.1 with nonfree module")
 #endif
 			break;
 		} // end case OpenCV
