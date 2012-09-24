@@ -103,7 +103,7 @@ SHOW_CONFIG_LINE_SYSTEM("Has libjpeg (jpeg)                      " CMAKE_MRPT_HA
 IF(UNIX)
 SHOW_CONFIG_LINE_SYSTEM("Has libftdi (USB)                       " CMAKE_MRPT_HAS_FTDI)
 ENDIF(UNIX)
-SHOW_CONFIG_LINE_SYSTEM("Has OpenCV (Image manipulation)         " CMAKE_MRPT_HAS_OPENCV "[Version: ${MRPT_OPENCV_VERSION}]")
+SHOW_CONFIG_LINE_SYSTEM("Has OpenCV (Image manipulation)         " CMAKE_MRPT_HAS_OPENCV "[Version: ${MRPT_OPENCV_VERSION}, Has non-free: ${CMAKE_MRPT_HAS_OPENCV_NONFREE}]")
 SHOW_CONFIG_LINE_SYSTEM("Has OpenGL                              " CMAKE_MRPT_HAS_OPENGL_GLUT)
 SHOW_CONFIG_LINE_SYSTEM("Has GLUT                                " CMAKE_MRPT_HAS_GLUT)
 SHOW_CONFIG_LINE_SYSTEM("Has OpenKinect libfreenect              " CMAKE_MRPT_HAS_FREENECT)

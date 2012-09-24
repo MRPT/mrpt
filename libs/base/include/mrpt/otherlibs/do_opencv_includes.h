@@ -62,7 +62,7 @@
 
 #		include <opencv2/legacy/legacy.hpp>  // CvImage
 #		include <opencv2/legacy/compat.hpp>
-#		if MRPT_OPENCV_VERSION_NUM>=0x240
+#		if (MRPT_OPENCV_VERSION_NUM>=0x240) && MRPT_HAS_OPENCV_NONFREE
 #			include <opencv2/nonfree/nonfree.hpp>
 #		endif
 #	endif
