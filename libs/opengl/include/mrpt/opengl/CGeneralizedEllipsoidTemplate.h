@@ -50,6 +50,9 @@ namespace mrpt
 				const float    lineWidth,
 				const uint32_t slices,
 				const uint32_t stacks);
+			template <> void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate<2>(const std::vector<mrpt::math::CArray<float,2> > & pts,const float    lineWidth,const uint32_t slices,const uint32_t stacks);
+			template <> void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate<3>(const std::vector<mrpt::math::CArray<float,3> > & pts,const float    lineWidth,const uint32_t slices,const uint32_t stacks);
+
 			template <int DIM>
 			void OPENGL_IMPEXP generalizedEllipsoidPoints(
 				const mrpt::math::CMatrixFixedNumeric<double,DIM,DIM> & U,
@@ -57,6 +60,8 @@ namespace mrpt
 				std::vector<mrpt::math::CArray<float,DIM> >   &out_params_pts,
 				const uint32_t slices,
 				const uint32_t stacks);
+			template <> void OPENGL_IMPEXP generalizedEllipsoidPoints<2>(const mrpt::math::CMatrixFixedNumeric<double,2,2> & U,const mrpt::math::CMatrixFixedNumeric<double,2,1> & mean,std::vector<mrpt::math::CArray<float,2> >   &out_params_pts,const uint32_t slices,const uint32_t stacks);
+			template <> void OPENGL_IMPEXP generalizedEllipsoidPoints<3>(const mrpt::math::CMatrixFixedNumeric<double,3,3> & U,const mrpt::math::CMatrixFixedNumeric<double,3,1> & mean,std::vector<mrpt::math::CArray<float,3> >   &out_params_pts,const uint32_t slices,const uint32_t stacks);
 		}
 
 		/** A class that generalizes the concept of an ellipsoid to arbitrary parameterizations of

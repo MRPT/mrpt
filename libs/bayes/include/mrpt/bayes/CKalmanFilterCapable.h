@@ -523,7 +523,7 @@ namespace mrpt
 							xkk_vehicle,
 							&KF_aux_estimate_trans_jacobian, //(const VECTORLIKE &x,const USERPARAM &y, VECTORLIKE3  &out),
 							xkk_veh_increments,
-							std::make_pair<KFCLASS*,KFArray_ACT>(this,u),
+							std::pair<KFCLASS*,KFArray_ACT>(this,u),
 							dfv_dxv);
 
 						if (KF_options.debug_verify_analytic_jacobians)
@@ -708,7 +708,7 @@ namespace mrpt
 								x_vehicle,
 								&KF_aux_estimate_obs_Hx_jacobian,
 								xkk_veh_increments,
-								std::make_pair<KFCLASS*,size_t>(this,lm_idx),
+								std::pair<KFCLASS*,size_t>(this,lm_idx),
 								Hx);
 							// The state vector was temporarily modified by KF_aux_estimate_*, restore it:
 							::memcpy(&m_xkk[0],&x_vehicle[0],sizeof(m_xkk[0])*VEH_SIZE);
@@ -717,7 +717,7 @@ namespace mrpt
 								x_feat,
 								&KF_aux_estimate_obs_Hy_jacobian,
 								feat_increments,
-								std::make_pair<KFCLASS*,size_t>(this,lm_idx),
+								std::pair<KFCLASS*,size_t>(this,lm_idx),
 								Hy);
 							// The state vector was temporarily modified by KF_aux_estimate_*, restore it:
 							::memcpy(&m_xkk[lm_idx_in_statevector],&x_feat[0],sizeof(m_xkk[0])*FEAT_SIZE);

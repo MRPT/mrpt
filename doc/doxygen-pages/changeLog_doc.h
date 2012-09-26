@@ -79,11 +79,12 @@
 		- [mrpt-base]
 			- mrpt::utils::abs_diff()
 	- Build system:
-		- Update to nanoflann 1.1.3 - <a href="http://code.google.com/p/mrpt/source/detail?r=2937" >r2937</a>
+		- Update to nanoflann 1.1.4 - <a href="http://code.google.com/p/mrpt/source/detail?r=2937" >r2937</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3017" >r3017</a>
 		- MRPT's root "CMakeLists.txt" has undergone a big refactoring and cleanup - <a href="http://code.google.com/p/mrpt/source/detail?r=2961" >r2961</a>
 		- Backward compatible "mrpt-core" has been removed as a fake lib for which to search with CMake from user programs - <a href="http://code.google.com/p/mrpt/source/detail?r=2961" >r2961</a>
 		- More system libs are detected in Linux (libclang-dev, lib3ds-dev), discarding embedded versions then - <a href="http://code.google.com/p/mrpt/source/detail?r=2963" >r2963</a> - <a href="http://code.google.com/p/mrpt/issues/detail?id=17" >Closes #17</a>
 		- Automatic detection of supported SIMD extensions (SSE*) from CMake (only for Linux OS) - <a href="http://code.google.com/p/mrpt/source/detail?r=3013" >r3013</a>
+		- Fixed building with Visual Studio 2012 (MSVC11) - <a href="http://code.google.com/p/mrpt/source/detail?r=3017" >r3017</a>
 	- BUG FIXES:
 		- [mrpt-base] The iterator returned by end() in all MRPT vectors and matrices (based on Eigen) pointed to the last element, not to the (now correct) next position after the last element - <a href="http://code.google.com/p/mrpt/source/detail?r=2941" >r2941</a>
 		- [mrpt-base] mrpt::dynamicsize_vector::resize() performed a memory reallocation even if given the current size, due to an inherited behavior from Eigen. It is not the expected behavior, so it has been fixed. - <a href="http://code.google.com/p/mrpt/source/detail?r=3003" >r3003</a> 

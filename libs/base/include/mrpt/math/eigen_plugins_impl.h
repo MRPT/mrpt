@@ -111,7 +111,7 @@ EIGEN_STRONG_INLINE void Eigen::MatrixBase<Derived>::eigenVectorsVec( MATRIX1 & 
 	std::vector<std::pair<Scalar,Index> > D;
 	D.reserve(eVals.size());
 	for (Index i=0;i<eVals.size();i++)
-		D.push_back(std::make_pair<Scalar,Index>(eVals.coeff(i,0),i));
+		D.push_back(std::pair<Scalar,Index>(eVals.coeff(i,0),i));
 	std::sort(D.begin(),D.end());
 	MATRIX1 sortedEigs;
 	sortedEigs.resizeLike(eVecs);

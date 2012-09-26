@@ -7,6 +7,11 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 
 PROJECT(mrptgtest)
 
+# Fix a "bug" in VS11 (MSVC 2012):
+if(MSVC)
+	add_definitions(-D_VARIADIC_MAX=10)
+endif(MSVC)
+
 INCLUDE_DIRECTORIES("fused-src")
 
 ADD_LIBRARY(mrptgtest 

@@ -276,7 +276,7 @@ double mrpt::vision::bundle_adj_full(
 
 			aligned_containers<pair<TCameraPoseID,TLandmarkID>,Matrix_FxF>::map_t  YW_map;
 			for (size_t i=0; i<H_f.size(); ++i)
-				YW_map[make_pair<TCameraPoseID,TLandmarkID>(i,i)] = U_star[i];
+				YW_map[std::pair<TCameraPoseID,TLandmarkID>(i,i)] = U_star[i];
 
 			vector_double  delta( len_free_frames + len_free_points ); // The optimal step
 			vector_double  e    ( len_free_frames );
@@ -304,7 +304,7 @@ double mrpt::vision::bundle_adj_full(
 					YWt.multiply_ABt( Y_ij->second, W_ik->second );
 					//YWt*=-1.0; // The "-" sign is taken into account below:
 
-					const pair<TCameraPoseID,TLandmarkID> ids_jk = make_pair<TCameraPoseID,TLandmarkID>(j,k);
+					const pair<TCameraPoseID,TLandmarkID> ids_jk = pair<TCameraPoseID,TLandmarkID>(j,k);
 
 					aligned_containers<pair<TCameraPoseID,TLandmarkID>,Matrix_FxF>::map_t::iterator it = YW_map.find(ids_jk);
 					if(it!=YW_map.end())
