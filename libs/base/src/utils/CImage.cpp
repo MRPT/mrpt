@@ -644,8 +644,9 @@ void  CImage::writeToStream(CStream &out, int *version) const
 					// Dump raw image data:
 					const IplImage *ipl = static_cast<const IplImage*>(img);
 					const size_t bytes_per_row = ipl->width * 3;
-					for (int y=0;y<ipl->height;y++)
-						out.WriteBuffer( &ipl->imageData[y*ipl->widthStep], bytes_per_row);
+					
+					out.WriteBuffer( &ipl->imageData[0], bytes_per_row*ipl->height );				
+					
 				}
 			}
 		} // end m_imgIsExternalStorage=false
