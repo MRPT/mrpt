@@ -72,7 +72,7 @@ string 			CONFIG_FIL;
 
 double STD_NOISE_XY=0, STD_NOISE_PHI=0;
 double STD_NOISE_LASER=0;
-double GT_Ax,GT_Ay, GT_Aphi;
+double GT_Ax,GT_Ay, GT_Aphi_rad;
 
 bool	NOISE_IN_LASER		= false;
 bool	NOISE_IN_POSE		= false;
@@ -254,7 +254,7 @@ void do_grid_align()
 				// If it's detect_test, translate the map2 by a fixed, known quantity:
 				if (is_detect_test)
 				{
-					CPose2D  gt(GT_Ax,GT_Ay, GT_Aphi);
+					CPose2D  gt(GT_Ax,GT_Ay, GT_Aphi_rad);
 					gt = -gt;
 					PDF->changeCoordinatesReference(  CPose3D( gt ) );
 				}
@@ -341,9 +341,9 @@ void do_grid_align()
 				float		stdXY  = sqrt(estimateCOV22.det());
 
 				float		Axy			= estimateMean.distance2DTo(GT_Ax,GT_Ay);
-				float		Aphi		= fabs( math::wrapToPi(estimateMean.phi() - (float)DEG2RAD( GT_Aphi )));
+				float		Aphi		= fabs( math::wrapToPi(estimateMean.phi() - GT_Aphi_rad) );
 				float		AxyBrute	= info.noRobustEstimation.distance2DTo(GT_Ax,GT_Ay);
-				float		AphiBrute	= fabs( math::wrapToPi(info.noRobustEstimation.phi() - (float)DEG2RAD( GT_Aphi )));
+				float		AphiBrute	= fabs( math::wrapToPi(info.noRobustEstimation.phi() - GT_Aphi_rad ));
 
 				printf("Done in %.03fms\n", 1000.0f*tim);
 
@@ -370,7 +370,7 @@ void do_grid_align()
 					pdf_SOG->normalizeWeights();
 					//pdf_SOG->saveToTextFile("_debug_SoG.txt");
 
-					stats_GT_likelihood.push_back( (float)pdf_SOG->evaluatePDF(CPose2D(GT_Ax,GT_Ay,DEG2RAD(GT_Aphi)),true) );
+					stats_GT_likelihood.push_back( (float)pdf_SOG->evaluatePDF(CPose2D(GT_Ax,GT_Ay,GT_Aphi_rad),true) );
 
 
 					if (f_out_log.fileOpenCorrectly())
@@ -555,7 +555,7 @@ void do_grid_align()
 				ASSERT_(lm1 && lm2);
 
 				// GT transformation:
-				const CPose2D  GT_Ap( GT_Ax, GT_Ay, GT_Aphi);
+				const CPose2D  GT_Ap( GT_Ax, GT_Ay, GT_Aphi_rad);
 				TMatchingPairList	gt_corrs;
 
 				CFileOutputStream	fout_CORR("GT_EXP_CORR.txt", true);
@@ -720,7 +720,7 @@ int main(int argc, char **argv)
 
 		GT_Ax = arg_Ax.getValue();
 		GT_Ay = arg_Ay.getValue();
-		GT_Aphi = DEG2RAD( arg_Aphi.getValue() );
+		GT_Aphi_rad = DEG2RAD( arg_Aphi.getValue() );
 
 		SAVE_SOG_3DSCENE = arg_savesog3d.getValue();
 		SAVE_SOG_ALL_MAPS_OVERLAP_HYPOTHESES= arg_savesogall.getValue();
@@ -760,9 +760,6 @@ int main(int argc, char **argv)
 				return 1;
 			}
 		}
-
-		// pass deg 2 rads:
-		GT_Aphi= DEG2RAD(GT_Aphi);
 
 		// Invoke method:
 		do_grid_align();
