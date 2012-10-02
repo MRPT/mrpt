@@ -79,6 +79,8 @@ bool	NOISE_IN_POSE		= false;
 
 unsigned int N_ITERS		= 1;
 
+CGridMapAligner::TAlignerMethod  aligner_method = CGridMapAligner::amModifiedRANSAC;
+
 #define START_NOISE_STD			0.00f
 #define END_NOISE_STD			0.00f
 #define NOISE_STEPS				0.01f
@@ -157,9 +159,7 @@ void do_grid_align()
 	CGridMapAligner::TReturnInfo	info;
 	float							tim;
 
-//	gridAlign.options.methodSelection = CGridMapAligner::amModifiedRANSAC;
-//	gridAlign.options.methodSelection = CGridMapAligner::amRobustMatch;
-//	gridAlign.options.methodSelection = CGridMapAligner::amCorrelation;
+	gridAlign.options.methodSelection = aligner_method;
 
 	if (!CONFIG_FIL.empty())
 	{
@@ -676,6 +676,8 @@ int main(int argc, char **argv)
 		TCLAP::ValueArg<std::string> arg_out("o","out","Output file for the results",false,"gridmatching_out.txt","result_outfile",cmd);
 		TCLAP::ValueArg<std::string> arg_config("c","config","Optional config. file with more params",false,"","config.ini",cmd);
 
+		TCLAP::ValueArg<std::string> arg_aligner_method("","aligner","The method to use for map aligning",false,"amModifiedRANSAC","[amCorrelation|amRobustMatch|amModifiedRANSAC]",cmd);
+
 		TCLAP::SwitchArg arg_savesog3d("3","save-sog-3d","Save a 3D view of all the SOG modes",cmd, false);
 		TCLAP::SwitchArg arg_savesogall("a","save-sog-all","Save all the map overlaps",cmd, false);
 		TCLAP::SwitchArg arg_savecorrdists("t","save-corr-dists","Save corr & non-corr distances",cmd, false);
@@ -708,6 +710,8 @@ int main(int argc, char **argv)
 		OUTPUT_FIL = arg_out.getValue();
 		CONFIG_FIL = arg_config.getValue();
 		SAVE_ICP_GOODNESS_FIL = arg_icpgoodness.getValue();
+
+		aligner_method = TEnumType<CGridMapAligner::TAlignerMethod>::name2value( arg_aligner_method.getValue() );
 
 		STD_NOISE_XY = arg_noise_std_xy.getValue();
 		STD_NOISE_PHI = DEG2RAD( arg_noise_std_phi.getValue() );

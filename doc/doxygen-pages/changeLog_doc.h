@@ -46,6 +46,7 @@
 			- The default holonomic navigation method is now the VFF, since after the last bug fixes and tunes it seems to work quite well.
 		- <a href="http://www.mrpt.org/Application%3ASceneViewer" >SceneViewer3D</a>:
 			- The GUI toolbar has been ported from wxWidget's ToolBar to sets of wxCustomButton's to avoid visualization problems in wx 2.9.X - <a href="http://code.google.com/p/mrpt/source/detail?r=2952" >r2952</a>
+		- <a href="http://www.mrpt.org/Application%3Agrid-matching" >grid-matching</a>: new argument "--aligner" to select aligner method - <a href="http://code.google.com/p/mrpt/source/detail?r=3021" >r3021</a>
 	- New classes:
 		- [mrpt-base]
 			- mrpt::math::MatrixBlockSparseCols, a templated column-indexed efficient storage of block-sparse Jacobian or Hessian matrices, together with other arbitrary information - <a href="http://code.google.com/p/mrpt/source/detail?r=2995" >r2995</a>

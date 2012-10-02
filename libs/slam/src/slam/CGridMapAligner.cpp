@@ -363,7 +363,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 		}
 		else
 		{
-			printf_debug("[CGridMapAligner] Debug: Overall estimation(%u corrs, total: %u): (%.03f,%.03f,%.03fdeg)\n",
+			printf_debug("[CGridMapAligner] Overall estimation(%u corrs, total: %u): (%.03f,%.03f,%.03fdeg)\n",
 				corrsCount,(unsigned)correspondences.size(),
 				outInfo.noRobustEstimation.x(),
 				outInfo.noRobustEstimation.y(),
@@ -385,11 +385,13 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 				// RANSAC over the found correspondences:
 				// -------------------------------------------------
+				const unsigned int min_inliers = options.ransac_minSetSizeRatio *(nLM1+nLM2)/2;
+
 				scanmatching::robustRigidTransformation(
 					correspondences,
 					*pdf_SOG,
 					options.ransac_SOG_sigma_m,
-					options.ransac_minSetSizeRatio *(nLM1+nLM2)/2,
+					min_inliers,
 					nLM1+nLM2,
 					options.ransac_mahalanobisDistanceThreshold,
 					0, // dyn. number of steps ransac_nSimulations,
@@ -417,7 +419,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 				size_t nA = pdf_SOG->size();
 
-				printf_debug("[CGridMapAligner] Debug: %u SOG modes merged to %u in %.03fsec\n", (unsigned int)nB, (unsigned int)nA, merge_clock_tim );
+				printf_debug("[CGridMapAligner] amRobustMatch: %u SOG modes merged to %u in %.03fsec (min.inliers=%u)\n", (unsigned int)nB, (unsigned int)nA, merge_clock_tim, min_inliers );
 
 			} // end of amRobustMatch
 			else
@@ -765,7 +767,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 				outInfo.sog2 = pdf_SOG; outInfo.sog2.make_unique();
 				size_t nA = pdf_SOG->size();
-				printf_debug("[CGridMapAligner] Debug: %u SOG modes merged to %u in %.03fsec\n", (unsigned int)nB, (unsigned int)nA, merge_clock_tim );
+				printf_debug("[CGridMapAligner] amModifiedRANSAC: %u SOG modes merged to %u in %.03fsec\n", (unsigned int)nB, (unsigned int)nA, merge_clock_tim );
 
 			} // end of amModifiedRANSAC
 

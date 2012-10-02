@@ -52,7 +52,10 @@ namespace mrpt
 		/** A class for aligning two multi-metric maps (with an occupancy grid maps and a points map, at least) based on features extraction and matching.
 		 * The matching pose is returned as a Sum of Gaussians (poses::CPosePDFSOG).
 		 *
-		 *  This method was reported in the paper: http://www.mrpt.org/Paper%3AOccupancy_Grid_Matching
+		 *  This class can use three methods (see options.methodSelection):
+		 *   - amCorrelation: "Brute-force" correlation of the two maps over a 2D+orientation grid of possible 2D poses.
+		 *   - amRobustMatch: Detection of features + RANSAC matching
+		 *   - amModifiedRANSAC: Detection of features + modified multi-hypothesis RANSAC matching as described in was reported in the paper http://www.mrpt.org/Paper%3AOccupancy_Grid_Matching
 		 *
 		 * See CGridMapAligner::Align for more instructions.
 		 *
@@ -267,6 +270,23 @@ namespace mrpt
 		};
 
 	} // End of namespace
+
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<slam::CGridMapAligner::TAlignerMethod>
+		{
+			typedef slam::CGridMapAligner::TAlignerMethod enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(slam::CGridMapAligner::amRobustMatch,    "amRobustMatch");
+				m_map.insert(slam::CGridMapAligner::amCorrelation,    "amCorrelation");
+				m_map.insert(slam::CGridMapAligner::amModifiedRANSAC, "amModifiedRANSAC");
+			}
+		};
+	} // End of namespace
+
 } // End of namespace
 
 #endif

@@ -79,7 +79,8 @@ void  scanmatching::robustRigidTransformation(
 	float						ransac_fuseMaxDiffPhi,
 	bool						ransac_algorithmForLandmarks,
 	double 						probability_find_good_model,
-	unsigned int				ransac_min_nSimulations
+	unsigned int				ransac_min_nSimulations,
+	const bool                  verbose
 	)
 {
 	size_t								i,N = in_correspondences.size();
@@ -485,7 +486,7 @@ void  scanmatching::robustRigidTransformation(
 				if (ransac_nSimulations<ransac_min_nSimulations)
 					ransac_nSimulations = ransac_min_nSimulations;
 
-				//if (verbose)
+				if (verbose)
 					cout << "[scanmatching::RANSAC] Iter #" << i << " Estimated number of iters: " << ransac_nSimulations << "  pNoOutliers = " << pNoOutliers << " #inliers: " << ninliers << endl;
 
 			}

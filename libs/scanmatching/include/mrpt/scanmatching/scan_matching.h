@@ -212,7 +212,8 @@ namespace mrpt
 			float						ransac_fuseMaxDiffPhi = DEG2RAD(0.1f),
 			bool						ransac_algorithmForLandmarks = true,
 			double 						probability_find_good_model = 0.999,
-			unsigned int				ransac_min_nSimulations = 1500
+			unsigned int				ransac_min_nSimulations = 1500,
+			const bool                  verbose = false
 			);
 
 
