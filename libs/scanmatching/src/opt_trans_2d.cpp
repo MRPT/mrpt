@@ -261,8 +261,8 @@ bool  scanmatching::leastSquareErrorRigidTransformation(
 		// -------------------------------------------------------
 		const double D = square(Ax)+square(Ay);
 
-		C->get_unsafe(0,0) = 2.0*N_inv + BETA * pow((mean_x_b*Ay+mean_y_b*Ax)/D,2.0);
-		C->get_unsafe(1,1) = 2.0*N_inv + BETA * pow((mean_x_b*Ax-mean_y_b*Ay)/D,2.0);
+		C->get_unsafe(0,0) = 2.0*N_inv + BETA * square((mean_x_b*Ay+mean_y_b*Ax)/D);
+		C->get_unsafe(1,1) = 2.0*N_inv + BETA * square((mean_x_b*Ax-mean_y_b*Ay)/D);
 		C->get_unsafe(2,2) = BETA / D;
 
 		C->get_unsafe(0,1) =
@@ -273,26 +273,6 @@ bool  scanmatching::leastSquareErrorRigidTransformation(
 
 		C->get_unsafe(1,2) =
 		C->get_unsafe(2,1) = BETA*(mean_y_b*Ay-mean_x_b*Ax)/pow(D,1.5);
-
-//		// 2) Compute  the jacobian J_Delta
-//		// -----------------------------------
-//		const double K_1 = square(Ax)+square(Ay);
-//		const double K_32 = pow(K_1,1.5);
-//		CMatrixFixedNumeric<double,3,2>		J;
-//
-//		J(0,0) = -( mean_x_b * Ay*Ay + mean_y_b * Ax * Ay )/K_32;
-//		J(0,1) =  ( mean_x_b * Ax*Ay + mean_y_b * Ax * Ax )/K_32;
-//		J(1,0) =  ( mean_x_b * Ax*Ay - mean_y_b * Ay * Ay )/K_32;
-//		J(1,1) = -( mean_x_b * Ax*Ax - mean_y_b * Ax * Ay )/K_32;
-//		J(2,0) = - Ay / K_1;
-//		J(2,1) =   Ax / K_1;
-//
-//		// 3) And the final covariance matrix:
-//		// -------------------------------------
-//		out_estimateCovariance->multiply_AAt(J);	// = J * (~J);
-//		(*out_estimateCovariance) *= var_Delta;
-//		out_estimateCovariance->get_unsafe(0,0) += 2.0/square(N);
-//		out_estimateCovariance->get_unsafe(1,1) += 2.0/square(N);
 	}
 
 	return true;

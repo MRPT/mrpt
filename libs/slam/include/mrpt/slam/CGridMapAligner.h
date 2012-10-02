@@ -52,7 +52,7 @@ namespace mrpt
 		/** A class for aligning two multi-metric maps (with an occupancy grid maps and a points map, at least) based on features extraction and matching.
 		 * The matching pose is returned as a Sum of Gaussians (poses::CPosePDFSOG).
 		 *
-		 *  This method was reported in the paper: <br>
+		 *  This method was reported in the paper: http://www.mrpt.org/Paper%3AOccupancy_Grid_Matching
 		 *
 		 * See CGridMapAligner::Align for more instructions.
 		 *
