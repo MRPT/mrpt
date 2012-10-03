@@ -399,9 +399,10 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 					true,
 					0.01f,
 					DEG2RAD(0.1f),
-					true,
+					true,  // Use maha. dist (true) or Euclidean dist (false)
 					options.ransac_prob_good_inliers,  // Prob. of finding a good model
-					2500
+					15000,
+					false // verbose
 					);
 
 				ASSERT_(pdf_SOG);
@@ -411,15 +412,25 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				size_t nB = pdf_SOG->size();
 				outInfo.sog1 = pdf_SOG; outInfo.sog1.make_unique();
 
-				CTicTac	merge_clock;
-				pdf_SOG->mergeModes( options.maxKLd_for_merge, false );
-				const double merge_clock_tim = merge_clock.Tac();
+				// Keep only the most-likely Gaussian mode:
+				CPosePDFSOG::TGaussianMode best_mode;
+				best_mode.log_w=-std::numeric_limits<double>::max();
 
+				for (size_t n=0;n<pdf_SOG->size();n++)
+				{
+					const CPosePDFSOG::TGaussianMode & m = (*pdf_SOG)[n];
+
+					if ( m.log_w >best_mode.log_w)
+						best_mode = m;
+				}
+
+				pdf_SOG->clear();
+				pdf_SOG->push_back( best_mode );
 				outInfo.sog2 = pdf_SOG; outInfo.sog2.make_unique();
 
 				size_t nA = pdf_SOG->size();
 
-				printf_debug("[CGridMapAligner] amRobustMatch: %u SOG modes merged to %u in %.03fsec (min.inliers=%u)\n", (unsigned int)nB, (unsigned int)nA, merge_clock_tim, min_inliers );
+				printf_debug("[CGridMapAligner] amRobustMatch: %u SOG modes reduced to %u (most-likely) (min.inliers=%u)\n", (unsigned int)nB, (unsigned int)nA, min_inliers );
 
 			} // end of amRobustMatch
 			else

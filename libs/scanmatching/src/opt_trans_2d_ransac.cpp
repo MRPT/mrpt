@@ -326,12 +326,12 @@ void  scanmatching::robustRigidTransformation(
 					//  If the correspondences as such the transformation has a high ambiguity, we discard it!
 					if ( temptativeEstimation.cov(2,2)<square(DEG2RAD(5.0f)) )
 					{
-						// ASSERT minimum covariance!!
-						/*temptativeEstimation.cov(0,0) = max( temptativeEstimation.cov(0,0), square( 0.03f ) );
-						temptativeEstimation.cov(1,1) = max( temptativeEstimation.cov(1,1), square( 0.03f ) );
+						// Assure a minimum variance!!
+						/*temptativeEstimation.cov(0,0) = max( temptativeEstimation.cov(0,0), square( 0.03 ) );
+						temptativeEstimation.cov(1,1) = max( temptativeEstimation.cov(1,1), square( 0.03 ) );
 
-						referenceEstimation.cov(0,0) = max( referenceEstimation.cov(0,0), square( 0.03f ) );
-						referenceEstimation.cov(1,1) = max( referenceEstimation.cov(1,1), square( 0.03f ) ); */
+						referenceEstimation.cov(0,0) = max( referenceEstimation.cov(0,0), square( 0.03 ) );
+						referenceEstimation.cov(1,1) = max( referenceEstimation.cov(1,1), square( 0.03 ) );*/
 
 						temptativeEstimation.cov(2,2) = max( temptativeEstimation.cov(2,2), square( DEG2RAD(0.2) ) );
 						referenceEstimation.cov(2,2) = max( referenceEstimation.cov(2,2), square( DEG2RAD(0.2) ) );
@@ -351,17 +351,13 @@ void  scanmatching::robustRigidTransformation(
 							double diffXY = referenceEstimation.mean.distanceTo( temptativeEstimation.mean );
 							double diffPhi = fabs( math::wrapToPi( referenceEstimation.mean.phi() - temptativeEstimation.mean.phi() ) );
 							passTest  = diffXY < 0.02f && diffPhi < DEG2RAD(2.0f);
-
-							//FILE *f=os::fopen("hist.txt","at");
-							//fprintf(f,"%f %f\n",diffXY, RAD2DEG(diffPhi) );
-							//fclose(f);
 						}
 
 						if ( passTest )
 						{
 							// OK, consensus passed!!
 							subSet.push_back( *matchIt );
-							referenceEstimation = temptativeEstimation;
+							//referenceEstimation = temptativeEstimation;
 						}
 						else
 						{

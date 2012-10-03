@@ -38,6 +38,12 @@
 #include <mrpt/base.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
+//#if MRPT_HAS_TBB
+//#	include <tbb/parallel_for.h>
+//#	include <tbb/blocked_range.h>
+//	using namespace tbb;
+//#endif
+
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -80,10 +86,6 @@ bool	NOISE_IN_POSE		= false;
 unsigned int N_ITERS		= 1;
 
 CGridMapAligner::TAlignerMethod  aligner_method = CGridMapAligner::amModifiedRANSAC;
-
-#define START_NOISE_STD			0.00f
-#define END_NOISE_STD			0.00f
-#define NOISE_STEPS				0.01f
 
 
 /* ------------------------------------------------------------------------
@@ -228,9 +230,6 @@ void do_grid_align()
 		img.saveToFile(format("%s/map1_filt.png",RESULTS_DIR.c_str()));
 	}
 
-	// ADDITIVE WHITE GAUSSIAN NOISE:
-	// ----------------------------------------
-	//for (noiseStd=START_NOISE_STD;noiseStd<=END_NOISE_STD;noiseStd+=NOISE_STEPS)
 	{
 		vector_float	stats_covDet, stats_stdPhi;
 		vector_float	stats_errorXY, stats_errorPhi;
@@ -677,6 +676,7 @@ int main(int argc, char **argv)
 		TCLAP::ValueArg<std::string> arg_config("c","config","Optional config. file with more params",false,"","config.ini",cmd);
 
 		TCLAP::ValueArg<std::string> arg_aligner_method("","aligner","The method to use for map aligning",false,"amModifiedRANSAC","[amCorrelation|amRobustMatch|amModifiedRANSAC]",cmd);
+		TCLAP::ValueArg<std::string> arg_out_dir("","out-dir","The output directory",false,"GRID-MATCHING_RESULTS","GRID-MATCHING_RESULTS",cmd);
 
 		TCLAP::SwitchArg arg_savesog3d("3","save-sog-3d","Save a 3D view of all the SOG modes",cmd, false);
 		TCLAP::SwitchArg arg_savesogall("a","save-sog-all","Save all the map overlaps",cmd, false);
@@ -737,6 +737,8 @@ int main(int argc, char **argv)
 		SKIP_ICP_STAGE = arg_skip_icp.getValue();
 		NOISE_IN_POSE  = arg_noise_pose.getValue();
 		NOISE_IN_LASER = arg_noise_laser.getValue();
+
+		RESULTS_DIR = arg_out_dir.getValue();
 
 		is_match = arg_match.getValue();
 		is_detect_test = arg_detect.getValue();
