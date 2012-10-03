@@ -64,6 +64,7 @@ bool	SAVE_CORR_AND_NONCORR_DISTS;
 bool	IS_VERBOSE;
 bool	NOSAVE=false;
 bool	SKIP_ICP_STAGE=false;
+bool	MOST_LIKELY_SOG_MODE_ONLY=false;
 
 string 	SAVE_ICP_GOODNESS_FIL;
 
@@ -324,7 +325,7 @@ void do_grid_align()
 				CMatrixDouble33	estimateCOV;
 
 				// Get the mean, or the best Gassian mean in the case of a SOG:
-				if (IS_CLASS(parts,CPosePDFSOG))
+				if (IS_CLASS(parts,CPosePDFSOG) && MOST_LIKELY_SOG_MODE_ONLY)
 				{
 					CPosePDFSOGPtr pdf_SOG= CPosePDFSOGPtr( parts );
 					pdf_SOG->getMostLikelyCovarianceAndMean(estimateCOV,estimateMean);
@@ -700,6 +701,7 @@ int main(int argc, char **argv)
 		TCLAP::SwitchArg arg_nologo("g","nologo","skip the logo at startup",cmd, false);
 		TCLAP::SwitchArg arg_nosave("n","nosave","skip saving map images",cmd, false);
 		TCLAP::SwitchArg arg_skip_icp("s","noicp","skip ICP optimization stage",cmd, false);
+		TCLAP::SwitchArg arg_most_likely("","most-likely-only","Keep the most-likely Gaussian mode from the SOG",cmd, false);
 
 		// Parse arguments:
 		if (!cmd.parse( argc, argv ))
@@ -735,6 +737,7 @@ int main(int argc, char **argv)
 		}
 
 		SKIP_ICP_STAGE = arg_skip_icp.getValue();
+		MOST_LIKELY_SOG_MODE_ONLY = arg_most_likely.getValue();
 		NOISE_IN_POSE  = arg_noise_pose.getValue();
 		NOISE_IN_LASER = arg_noise_laser.getValue();
 
