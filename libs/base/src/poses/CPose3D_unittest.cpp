@@ -176,6 +176,16 @@ protected:
 
 		EXPECT_NEAR(0, (p1_plus_p2.getAsVectorVal()-p1_plus_p.getAsVectorVal()).Abs().sumAll(), 1e-5);
 
+		// Repeat using same input/output variables:
+		{
+			double x = p.x();
+			double y = p.y();
+			double z = p.z();
+
+			p1.composePoint(x,y,z, x,y,z);
+			EXPECT_NEAR(0, std::abs(x-p1_plus_p.x())+std::abs(y-p1_plus_p.y())+std::abs(z-p1_plus_p.z()) , 1e-5);
+		}
+
 		// Inverse:
 		CPoint3D  p_recov = p1_plus_p - p1;
 		CPoint3D  p_recov2;
