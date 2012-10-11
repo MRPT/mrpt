@@ -218,7 +218,7 @@ void  CGraphPartitioner::RecursiveSpectralPartition(
 				for (j=0;j<p1.size();j++)
 					A_1(i,j)= in_A(p1[i],p1[j]);
 
-			RecursiveSpectralPartition(A_1,p1_parts, threshold_Ncut, forceSimetry,useSpectralBisection);
+			RecursiveSpectralPartition(A_1,p1_parts, threshold_Ncut, forceSimetry,useSpectralBisection, recursive, minSizeClusters);
 
 			// Split "p2":
 			// --------------------------------------------
@@ -228,7 +228,7 @@ void  CGraphPartitioner::RecursiveSpectralPartition(
 				for (j=0;j<p2.size();j++)
 					A_2(i,j)= in_A(p2[i],p2[j]);
 
-			RecursiveSpectralPartition(A_2,p2_parts, threshold_Ncut, forceSimetry,useSpectralBisection);
+			RecursiveSpectralPartition(A_2,p2_parts, threshold_Ncut, forceSimetry,useSpectralBisection, recursive, minSizeClusters);
 
 			// Build "out_parts" from "p1_parts" + "p2_parts"
 			//  taken care of indexes mapping!
