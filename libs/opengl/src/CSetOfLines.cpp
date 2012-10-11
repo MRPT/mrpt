@@ -140,3 +140,27 @@ void  CSetOfLines::readFromStream(CStream &in,int version)
 
 	};
 }
+
+void CSetOfLines::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min = mrpt::math::TPoint3D(std::numeric_limits<double>::max(),std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+	bb_max = mrpt::math::TPoint3D(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max());
+
+	for (size_t i=0;i<mSegments.size();i++) 
+	{
+		const TSegment3D &s=mSegments[i];
+		for (size_t p=0;p<2;p++)
+		{
+			const TPoint3D &pt = s[p];
+			for (size_t j=0;j<3;j++)
+			{
+				keep_min(bb_min[j], pt[j]);
+				keep_max(bb_max[j], pt[j]);
+			}
+		}
+	}
+
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
+}

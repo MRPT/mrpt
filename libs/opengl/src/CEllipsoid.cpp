@@ -108,6 +108,15 @@ void   CEllipsoid::render_dl() const
 			} // end for points on ellipse
 
 			glEnd();
+
+			// 2D: Save bounding box:
+			const double max_radius = m_quantiles * std::max( m_eigVal(0,0), m_eigVal(1,1) );
+			m_bb_min = mrpt::math::TPoint3D(-max_radius,-max_radius, 0);
+			m_bb_max = mrpt::math::TPoint3D(max_radius,max_radius, 0);
+			// Convert to coordinates of my parent:
+			m_pose.composePoint(m_bb_min, m_bb_min);
+			m_pose.composePoint(m_bb_max, m_bb_max);
+
 		}
 		else
 		{
@@ -156,7 +165,13 @@ void   CEllipsoid::render_dl() const
 			glDisable(GL_LIGHTING);
 			glDisable(GL_LIGHT0);
 
-
+			// 3D: Save bounding box:
+			const double max_radius = m_quantiles * std::max( m_eigVal(0,0), std::max(m_eigVal(1,1), m_eigVal(2,2) ) );
+			m_bb_min = mrpt::math::TPoint3D(-max_radius,-max_radius, 0);
+			m_bb_max = mrpt::math::TPoint3D(max_radius,max_radius, 0);
+			// Convert to coordinates of my parent:
+			m_pose.composePoint(m_bb_min, m_bb_min);
+			m_pose.composePoint(m_bb_max, m_bb_max);
 		}
 
 
@@ -300,4 +315,11 @@ void CEllipsoid::setCovMatrix( const mrpt::math::CMatrixFloat &m, int resizeToSi
 {
 	CRenderizableDisplayList::notifyChange();
 	setCovMatrix( CMatrixDouble(m), resizeToSize);
+}
+
+/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
+void CEllipsoid::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min = m_bb_min;
+	bb_max = m_bb_max;
 }

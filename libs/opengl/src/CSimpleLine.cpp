@@ -116,3 +116,17 @@ void  CSimpleLine::readFromStream(CStream &in,int version)
 	};
 }
 
+void CSimpleLine::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min.x = std::min(m_x0, m_x1);
+	bb_min.y = std::min(m_y0, m_y1);
+	bb_min.z = std::min(m_z0, m_z1);
+
+	bb_max.x = std::max(m_x0, m_x1);
+	bb_max.y = std::max(m_y0, m_y1);
+	bb_max.z = std::max(m_z0, m_z1);
+
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
+}

@@ -83,6 +83,7 @@ namespace mrpt
 			unsigned int	m_2D_segments;	//!< The number of segments of a 2D ellipse (default=20)
 			unsigned int	m_3D_segments;	//!< The number of segments of a 3D ellipse (in both "axis") (default=20)
 			float			m_lineWidth;	//!< The line width for 2D ellipses or 3D wireframe ellipsoids (default=1)
+			mutable mrpt::math::TPoint3D m_bb_min, m_bb_max;
 
 		public:
 			void setCovMatrix( const mrpt::math::CMatrixDouble &m, int resizeToSize = -1 ); //!< Set the 2x2 or 3x3 covariance matrix that will determine the aspect of the ellipsoid (if resizeToSize>0, the matrix will be cut to the square matrix of the given size)
@@ -120,6 +121,10 @@ namespace mrpt
 			  * be rendered to ensure stability in the rendering process.
 			  */
 			void  render_dl() const;
+
+			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
+			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+
 			/** Ray tracing
 			  */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
@@ -133,7 +138,9 @@ namespace mrpt
 				m_quantiles(3),
 				m_2D_segments(20),
 				m_3D_segments(20),
-				m_lineWidth(1.0)
+				m_lineWidth(1.0),
+				m_bb_min(0,0,0), 
+				m_bb_max(0,0,0)
 			{
 			}
 			/** Private, virtual destructor: only can be deleted from smart pointers */

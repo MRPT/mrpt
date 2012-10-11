@@ -360,6 +360,10 @@ namespace opengl	{
 		  * Updates the mutable set of polygons used in ray tracing.
 		  */
 		void updatePolys() const;
+
+		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
+		virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+
 	private:
 		/**
 		  * Updates the axis, transforming each point into a pose pointing to the next section.

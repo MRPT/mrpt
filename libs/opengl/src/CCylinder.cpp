@@ -174,3 +174,20 @@ bool CCylinder::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	}
 	return fnd;
 }
+
+
+
+void CCylinder::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min.x = -std::max(mBaseRadius,mTopRadius);
+	bb_min.y = bb_min.x;
+	bb_min.z = 0;
+
+	bb_max.x = std::max(mBaseRadius,mTopRadius);
+	bb_max.y = bb_max.x;
+	bb_max.z = mHeight;
+
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
+}

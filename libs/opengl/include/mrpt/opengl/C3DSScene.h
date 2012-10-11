@@ -64,6 +64,9 @@ namespace mrpt
 			  */
 			void  render_dl() const;
 
+			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
+			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+
 			/**  Loads a scene from a 3DS file (3D Studio format) into this object, from either plain .3ds format, or in gzip compressed .3ds.gz format.
 			  *    Previous contents are lost.
 			  *    If the file ends in ".gz", it'll be automatically decompressed using gzip (see mrpt::compress::zip).
@@ -110,6 +113,7 @@ namespace mrpt
 
 			/** Scale of the object */
 			//double	m_scale_x,m_scale_y,m_scale_z;
+			mrpt::math::TPoint3D   m_bbox_min, m_bbox_max; //!< Bounding box
 
 			bool	m_enable_extra_lighting;
 

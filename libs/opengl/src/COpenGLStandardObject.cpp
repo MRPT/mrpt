@@ -118,3 +118,20 @@ bool COpenGLStandardObject::traceRay(const mrpt::poses::CPose3D &o,float &dist) 
 	//This object isn't intended to hold geometric properties. No trace ray should be performed on it.
 	return false;
 }
+
+
+void COpenGLStandardObject::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min.x = 0;
+	bb_min.y = 0;
+	bb_min.z = 0;
+
+	bb_max.x = 0;
+	bb_max.y = 0;
+	bb_max.z = 0;
+
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
+}
+

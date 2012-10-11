@@ -196,6 +196,8 @@ namespace mrpt
 			  */
 			bool traceRay(const mrpt::poses::CPose3D&o,double &dist) const;
 
+			/** Evaluates the bounding box of the scene in the given viewport (default: "main"). */
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max, const std::string &vpn=std::string("main") ) const;
 
 			/** Recursive depth-first visit all objects in all viewports of the scene, calling the user-supplied function
 			  *  The passed function must accept only one argument of type "const mrpt::opengl::CRenderizablePtr &"

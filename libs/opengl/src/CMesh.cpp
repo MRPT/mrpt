@@ -348,3 +348,19 @@ void CMesh::updatePolygons() const	{
 	polygonsUpToDate=true;
 	CRenderizableDisplayList::notifyChange();
 }
+
+
+void CMesh::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min.x = xMin;
+	bb_min.y = yMin;
+	bb_min.z = Z.minCoeff();
+
+	bb_max.x = xMax;
+	bb_max.y = yMax;
+	bb_max.z = Z.maxCoeff();
+
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
+}

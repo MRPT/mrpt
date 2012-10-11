@@ -137,3 +137,18 @@ void  CText3D::readFromStream(CStream &in,int version)
 
 	};
 }
+
+void CText3D::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min.x = 0;
+	bb_min.y = 0;
+	bb_min.z = 0;
+
+	bb_max.x = m_str.size() * m_scale_x;
+	bb_max.y = 1; 
+	bb_max.z = 0;
+
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
+}

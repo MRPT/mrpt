@@ -96,6 +96,9 @@ namespace mrpt
 				void readFromStream(CStream &in) { m_v1.readFromStream(in); m_v2.readFromStream(in);  m_v3.readFromStream(in); }
 			};
 
+			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
+			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+
 		protected:
 			/** Triangle array. */
 			std::vector<TTriangle>	m_triangles;

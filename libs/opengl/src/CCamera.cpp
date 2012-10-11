@@ -109,3 +109,11 @@ void  CCamera::readFromStream(CStream &in,int version)
 
 	};
 }
+
+
+/** In this class, returns a fixed box (max,max,max), (-max,-max,-max). */
+void CCamera::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min = mrpt::math::TPoint3D(std::numeric_limits<double>::max(),std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+	bb_max = mrpt::math::TPoint3D(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max());
+}

@@ -342,3 +342,30 @@ void CSetOfTriangles::updatePolygons() const	{
 	polygonsUpToDate=true;
 	CRenderizableDisplayList::notifyChange();
 }
+
+void CSetOfTriangles::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min = mrpt::math::TPoint3D(std::numeric_limits<double>::max(),std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+	bb_max = mrpt::math::TPoint3D(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max());
+
+	for (size_t i=0;i<m_triangles.size();i++) 
+	{
+		const TTriangle &t=m_triangles[i];
+
+		keep_min(bb_min.x, t.x[0]);  keep_max(bb_max.x, t.x[0]);
+		keep_min(bb_min.y, t.y[0]);  keep_max(bb_max.y, t.y[0]);
+		keep_min(bb_min.z, t.z[0]);  keep_max(bb_max.z, t.z[0]);
+
+		keep_min(bb_min.x, t.x[1]);  keep_max(bb_max.x, t.x[1]);
+		keep_min(bb_min.y, t.y[1]);  keep_max(bb_max.y, t.y[1]);
+		keep_min(bb_min.z, t.z[1]);  keep_max(bb_max.z, t.z[1]);
+
+		keep_min(bb_min.x, t.x[2]);  keep_max(bb_max.x, t.x[2]);
+		keep_min(bb_min.y, t.y[2]);  keep_max(bb_max.y, t.y[2]);
+		keep_min(bb_min.z, t.z[2]);  keep_max(bb_max.z, t.z[2]);
+	}
+
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
+}

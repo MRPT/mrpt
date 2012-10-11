@@ -361,3 +361,13 @@ bool CGeneralizedCylinder::getLastVisibleSectionPose(CPose3D &p)	{
 	p=axis[lastSection];
 	return true;
 }
+
+void CGeneralizedCylinder::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min = TPoint3D(0,0,0);
+	bb_max = TPoint3D(0,0,0);
+
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
+}

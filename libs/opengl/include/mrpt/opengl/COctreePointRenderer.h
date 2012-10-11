@@ -124,6 +124,17 @@ namespace mrpt
 			}
 
 
+			void octree_getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+			{
+				octree_assure_uptodate();
+				if (!m_octree_nodes.empty())
+				{
+					bb_min = mrpt::math::TPoint3D( m_octree_nodes[0].bb_min );
+					bb_max = mrpt::math::TPoint3D( m_octree_nodes[0].bb_max );
+				}
+			}
+
+
 		private:
 			/** The structure for each octree spatial node. Each node can either be a leaf of has 8 children nodes.
 			  *  Instead of pointers, children are referenced by their indices in \a m_octree_nodes

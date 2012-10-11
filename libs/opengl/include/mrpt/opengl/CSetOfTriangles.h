@@ -200,6 +200,10 @@ namespace mrpt
 			inline const_reverse_iterator rend() const	{
 				return m_triangles.rend();
 			}
+
+			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
+			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+
 		private:
 			/** Constructor
 			  */

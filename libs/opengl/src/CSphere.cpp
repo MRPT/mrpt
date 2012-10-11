@@ -173,3 +173,18 @@ bool CSphere::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 		return true;
 	}	else return false;
 }
+
+void CSphere::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min.x = -m_radius;
+	bb_min.y = -m_radius;
+	bb_min.z = -m_radius;
+
+	bb_max.x = m_radius;
+	bb_max.y = m_radius;
+	bb_max.z = m_radius;
+	
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
+}

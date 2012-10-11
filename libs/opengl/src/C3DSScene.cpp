@@ -553,7 +553,10 @@ void  C3DSScene::initializeAllTextures()
 #endif
 }
 
-C3DSScene::C3DSScene() : m_enable_extra_lighting(false)
+C3DSScene::C3DSScene() : 
+	m_enable_extra_lighting(false),
+	m_bbox_min(0,0,0), 
+	m_bbox_max(0,0,0)
 {
 	m_3dsfile.set( new TImpl3DS() );
 }
@@ -631,13 +634,18 @@ void C3DSScene::loadFrom3DSFile( const std::string &filepath )
 	float	sx, sy, sz, size;	/* bounding box dimensions */
 	float	cx, cy, cz;		/* bounding box center */
 
-#ifdef lib3ds_file_bounding_box_of_nodes
+#if 1 //def lib3ds_file_bounding_box_of_nodes
 	lib3ds_file_bounding_box_of_nodes(file, LIB3DS_TRUE, LIB3DS_FALSE, LIB3DS_FALSE, bmin, bmax);
 #else
 	bmin[0] = -2;  bmax[0] = -2;
 	bmin[1] = -2;  bmax[1] = -2;
 	bmin[2] = -2;  bmax[2] = -2;
 #endif
+
+	for (int k=0;k<3;k++) {
+		m_bbox_min[k] = bmin[k];
+		m_bbox_max[k] = bmax[k];
+	}
 
 	sx = bmax[0] - bmin[0];
 	sy = bmax[1] - bmin[1];
@@ -708,6 +716,15 @@ void C3DSScene::evaluateAnimation( double time_anim )
 	}
 }
 
+void C3DSScene::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min = m_bbox_min;
+	bb_max = m_bbox_max;
+
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
+}
 
 
 C3DSScene::TImpl3DS::TImpl3DS() : file(NULL)

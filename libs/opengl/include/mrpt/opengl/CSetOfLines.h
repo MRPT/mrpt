@@ -243,6 +243,9 @@ namespace mrpt
 				return mSegments.rend();
 			}
 
+			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
+			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+
 		private:
 			/** Constructor
 			  */

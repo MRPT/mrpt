@@ -182,6 +182,9 @@ namespace opengl	{
 		  */
 		static CPolyhedronPtr Create(const std::vector<math::TPolygon3D> &polys);
 
+		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
+		virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+
 		//Static methods to create frequent polyhedra. More bizarre polyhedra are intended to be added in a near future.
 
 		/** @name Platonic solids.

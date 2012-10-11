@@ -114,9 +114,11 @@ namespace mrpt
 			float getProjectiveFOVdeg() const { return m_projectiveFOVdeg; }  //!< Field-of-View in degs, only when projectiveModel=true (default=30 deg).
 
 
-			/** Render does nothing here.
-			  */
+			/** Render does nothing here. */
 			void  render()  const {  }
+
+			/** In this class, returns a fixed box (max,max,max), (-max,-max,-max). */
+			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
 
 		private:
 			/** Constructor

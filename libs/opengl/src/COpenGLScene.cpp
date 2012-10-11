@@ -349,3 +349,13 @@ bool COpenGLScene::loadFromFile(const std::string &fil)
 	}
 	catch (...)	{ return false;	}
 }
+
+
+/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
+void COpenGLScene::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max,const std::string &vpn) const
+{
+	COpenGLViewportPtr vp = this->getViewport(vpn);
+	ASSERTMSG_(vp.present(), "No opengl viewport exists with the given name")
+	
+	return vp->getBoundingBox(bb_min, bb_max);
+}

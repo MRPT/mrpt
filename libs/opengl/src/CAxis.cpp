@@ -205,3 +205,17 @@ void  CAxis::readFromStream(CStream &in,int version)
 	};
 }
 
+void CAxis::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min.x = m_xmin;
+	bb_min.y = m_ymin;
+	bb_min.z = m_zmin;
+
+	bb_max.x = m_xmax;
+	bb_max.y = m_ymax;
+	bb_max.z = m_zmax;
+
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
+}

@@ -197,3 +197,19 @@ void CTexturedPlane::updatePoly() const	{
 	tmpPoly[0]=poly;
 	polygonUpToDate=true;
 }
+
+
+void CTexturedPlane::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min.x = std::min(m_xMin, m_xMax);
+	bb_min.y = std::min(m_yMin, m_yMax);
+	bb_min.z = 0;
+
+	bb_max.x = std::max(m_xMin, m_xMax);
+	bb_max.y = std::max(m_yMin, m_yMax);
+	bb_max.z = 0;
+
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
+}

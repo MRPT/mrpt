@@ -138,3 +138,17 @@ bool CDisk::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	//IMPORTANT NOTICE: using geometric intersection between Z plane and CPose's line intersection is SLOWER than the used method.
 }
 
+void CDisk::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	bb_min.x = -std::max(m_radiusIn, m_radiusOut);
+	bb_min.y = bb_min.x;
+	bb_min.z = 0;
+
+	bb_max.x = std::max(m_radiusIn, m_radiusOut);
+	bb_max.y = bb_max.x;
+	bb_max.z = 0;
+
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
+}

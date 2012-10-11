@@ -181,6 +181,19 @@ namespace mrpt
 					std::vector<array_point_t> render_pts;
 					this->transformFromParameterSpace(params_pts,render_pts);
 
+					// 3.5) Save bounding box:
+					m_bb_min = mrpt::math::TPoint3D(std::numeric_limits<double>::max(),std::numeric_limits<double>::max(), 0);
+					m_bb_max = mrpt::math::TPoint3D(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max(),0);
+					for (size_t i=0;i<render_pts.size();i++)
+						for (int k=0;k<DIM;k++)
+						{
+							mrpt::utils::keep_min(m_bb_min[k], render_pts[i][k] ); 
+							mrpt::utils::keep_max(m_bb_max[k], render_pts[i][k] ); 
+						}
+					// Convert to coordinates of my parent:
+					m_pose.composePoint(m_bb_min, m_bb_min);
+					m_pose.composePoint(m_bb_max, m_bb_max);
+
 					// 4) Render them:
 					mrpt::opengl::detail::renderGeneralizedEllipsoidTemplate<DIM>(render_pts,
 						m_lineWidth,
@@ -188,6 +201,13 @@ namespace mrpt
 				}
 
 				MRPT_END
+			}
+
+			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
+			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+			{
+				bb_min = m_bb_min; 
+				bb_max = m_bb_max;
 			}
 
 			/** Ray tracing
@@ -208,6 +228,7 @@ namespace mrpt
 			float           m_quantiles;	//!< The number of "sigmas" for drawing the ellipse/ellipsoid (default=3)
 			float           m_lineWidth;	//!< The line width for 2D ellipses or 3D wireframe ellipsoids (default=1)
 			uint32_t        m_numSegments;  //!< Number of segments in 2D/3D ellipsoids (default=10)
+			mutable mrpt::math::TPoint3D m_bb_min, m_bb_max;
 
 			mutable cov_matrix_t  m_U;  //!< Cholesky U triangular matrix cache. */
 
@@ -240,7 +261,9 @@ namespace mrpt
 				m_needToRecomputeEigenVals(true),
 				m_quantiles(3.f),
 				m_lineWidth(1.f),
-				m_numSegments(50)
+				m_numSegments(50),
+				m_bb_min(0,0,0), 
+				m_bb_max(0,0,0)
 			{
 			}
 			virtual ~CGeneralizedEllipsoidTemplate() { }
