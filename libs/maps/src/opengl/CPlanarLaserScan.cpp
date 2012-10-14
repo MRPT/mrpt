@@ -241,3 +241,38 @@ void  CPlanarLaserScan::readFromStream(CStream &in,int version)
 	};
 }
 
+
+void CPlanarLaserScan::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	// Load into cache:
+	if (!m_cache_valid)
+	{
+		m_cache_valid=true;
+		m_cache_points.clear();
+		m_cache_points.insertionOptions.minDistBetweenLaserPoints = 0;
+		m_cache_points.insertionOptions.isPlanarMap=false;
+
+		m_cache_points.insertObservation( &m_scan );
+	}
+
+	size_t n;
+	const float	*x,*y,*z;
+
+	m_cache_points.getPointsBuffer(n,x,y,z);
+	if (!n || !x) return;
+
+	bb_min = mrpt::math::TPoint3D(std::numeric_limits<double>::max(),std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+	bb_max = mrpt::math::TPoint3D(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max());
+
+	for (size_t i=0;i<n;i++)
+	{
+		keep_min(bb_min.x, x[i]);  keep_max(bb_max.x, x[i]);
+		keep_min(bb_min.y, y[i]);  keep_max(bb_max.y, y[i]);
+		keep_min(bb_min.z, z[i]);  keep_max(bb_max.z, z[i]);
+	}
+
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
+}
+

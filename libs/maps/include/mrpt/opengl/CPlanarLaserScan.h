@@ -147,6 +147,8 @@ namespace mrpt
 			  */
 			void  render_dl() const;
 
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
+
 		private:
 			/** Constructor
 			  */

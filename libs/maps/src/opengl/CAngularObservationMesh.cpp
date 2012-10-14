@@ -257,7 +257,7 @@ void CAngularObservationMesh::generatePointCloud(CPointsMap *out_map) const {
 	}	else for (size_t i=0;i<numRows;i++) pitchs[i]=pitchBounds[i];
 	for (size_t i=0;i<numRows;i++) out_map->insertObservation(&scanSet[i]);
 */
-	
+
 	std::for_each(scanSet.begin(),scanSet.end(),CAngularObservationMesh_fnctr(out_map));
 }
 
@@ -345,4 +345,33 @@ void CAngularObservationMesh::generateSetOfTriangles(std::vector<TPolygon3D> &re
 	if (!meshUpToDate) updateMesh();
 	res.resize(triangles.size());
 	transform(triangles.begin(),triangles.end(),res.begin(),createFromTriangle);
+}
+
+void CAngularObservationMesh::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+{
+	if (!meshUpToDate) updateMesh();
+
+	bb_min = mrpt::math::TPoint3D(std::numeric_limits<double>::max(),std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+	bb_max = mrpt::math::TPoint3D(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max());
+
+	for (size_t i=0;i<triangles.size();i++)
+	{
+		const CSetOfTriangles::TTriangle &t=triangles[i];
+
+		keep_min(bb_min.x, t.x[0]);  keep_max(bb_max.x, t.x[0]);
+		keep_min(bb_min.y, t.y[0]);  keep_max(bb_max.y, t.y[0]);
+		keep_min(bb_min.z, t.z[0]);  keep_max(bb_max.z, t.z[0]);
+
+		keep_min(bb_min.x, t.x[1]);  keep_max(bb_max.x, t.x[1]);
+		keep_min(bb_min.y, t.y[1]);  keep_max(bb_max.y, t.y[1]);
+		keep_min(bb_min.z, t.z[1]);  keep_max(bb_max.z, t.z[1]);
+
+		keep_min(bb_min.x, t.x[2]);  keep_max(bb_max.x, t.x[2]);
+		keep_min(bb_min.y, t.y[2]);  keep_max(bb_max.y, t.y[2]);
+		keep_min(bb_min.z, t.z[2]);  keep_max(bb_max.z, t.z[2]);
+	}
+
+	// Convert to coordinates of my parent:
+	m_pose.composePoint(bb_min, bb_min);
+	m_pose.composePoint(bb_max, bb_max);
 }
