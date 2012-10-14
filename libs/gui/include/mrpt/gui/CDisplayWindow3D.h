@@ -301,15 +301,17 @@ namespace mrpt
 
 			/** Retrieve the last captured image from the window.
 			  *  You MUST CALL FIRST captureImagesStart to enable image grabbing.
+			  * \return false if there was no time yet for grabbing any image (then, the output image is undefined).
 			  * \sa captureImagesStart, getLastWindowImagePtr
 			  */
-			void getLastWindowImage( mrpt::utils::CImage &out_img) const;
+			bool getLastWindowImage( mrpt::utils::CImage &out_img) const;
 
 			/** Retrieve the last captured image from the window, as a smart pointer.
 			  *  This method is more efficient than getLastWindowImage since only a copy of the pointer is performed, while
 			  *   getLastWindowImage would copy the entire image.
 			  *
 			  *  You MUST CALL FIRST captureImagesStart to enable image grabbing.
+			  * \Note If there was no time yet for grabbing any image, an empty smart pointer will be returned.
 			  * \sa captureImagesStart, getLastWindowImage
 			  */
 			mrpt::utils::CImagePtr getLastWindowImagePtr() const;

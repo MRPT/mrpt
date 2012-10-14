@@ -820,11 +820,20 @@ void CDisplayWindow3D::captureImagesStop()
 /*---------------------------------------------------------------
 					getLastWindowImage
  ---------------------------------------------------------------*/
-void CDisplayWindow3D::getLastWindowImage( mrpt::utils::CImage &out_img ) const
+bool CDisplayWindow3D::getLastWindowImage( mrpt::utils::CImage &out_img ) const
 {
-	mrpt::synch::CCriticalSectionLocker	lock(& m_last_captured_img_cs );
+	bool ret;
 
-	out_img = *m_last_captured_img;  // Copy the full image
+	{
+		mrpt::synch::CCriticalSectionLocker	lock(& m_last_captured_img_cs );
+		if (m_last_captured_img)
+		{
+			out_img = *m_last_captured_img;  // Copy the full image
+			ret = true;
+		}
+		else ret = false;
+	}
+	return ret;
 }
 
 /*---------------------------------------------------------------
