@@ -51,7 +51,7 @@ namespace mrpt
 		  *
 		  *  \code
 		  *    CVideoFileWriter  vid;
-		  *    vid.open("test.avi","MJPG",15,TPixelCoord(320,200));
+		  *    vid.open("test.avi",15,TPixelCoord(320,200), "MJPG");
 		  *    CImage  img(320,200);
 		  *    vid << img;
 		  *    vid.close;
