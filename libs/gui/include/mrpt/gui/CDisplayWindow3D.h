@@ -59,7 +59,7 @@ namespace mrpt
 		  *   the objects, viewports, etc. to be rendered.
 		  *
 		  *  Images can be grabbed automatically to disk for easy creation of videos.
-		  *  See CDisplayWindow3D::grabImagesStart  (and for creating videos, mrpt::utils::CVideoFileWriter).
+		  *  See CDisplayWindow3D::grabImagesStart  (and for creating videos, mrpt::vision::CVideoFileWriter).
 		  *
 		  *  A short-cut for displaying 2D images (using the OpenGL rendering hardware) is available
 		  *  through \a setImageView() and \a setImageView_fast(). Internally, these methods call methods
