@@ -562,11 +562,13 @@ namespace mrpt
 			inline void octree_mark_as_outdated() { m_octree_has_to_rebuild_all=true; }
 
 			/** Returns a graphical representation of all the bounding boxes of the octree (leaf) nodes.
+			  * \param[in] draw_solid_boxes If false, will draw solid boxes of color \a lines_color. Otherwise, wireframe boxes will be drawn.
 			  */
 			void octree_get_graphics_boundingboxes(
 				mrpt::opengl::CSetOfObjects &gl_bb,
 				const double lines_width = 1,
-				const TColorf lines_color = TColorf(1,1,1) ) const
+				const TColorf lines_color = TColorf(1,1,1),
+				const bool draw_solid_boxes = false ) const
 			{
 				octree_assure_uptodate();
 				gl_bb.clear();
@@ -578,7 +580,7 @@ namespace mrpt
 					gl_box->setBoxCorners( mrpt::math::TPoint3D(node.bb_min), mrpt::math::TPoint3D(node.bb_max) );
 					gl_box->setColor(lines_color);
 					gl_box->setLineWidth(lines_width);
-					gl_box->setWireframe(true);
+					gl_box->setWireframe(!draw_solid_boxes);
 					gl_bb.insert(gl_box);
 				}
 			}
