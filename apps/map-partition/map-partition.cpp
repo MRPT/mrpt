@@ -83,9 +83,6 @@ void Test()
 	imp.options.minDistForCorrespondence	 = 0.20f;
 	imp.options.minMahaDistForCorrespondence = 10.00f;
 	imp.options.useMapMatching               = true;
-	imp.options.debugSaveAllEigenvectors	 = false;
-
-	CGraphPartitioner::VERBOSE = false;
 
 	if (fileExists("./MAP-PARTITION_CONFIG.ini"))
 	{

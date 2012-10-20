@@ -62,7 +62,7 @@ namespace mrpt
 	{
 		/** \defgroup mrpt_system_os OS and compiler abstraction
 		  * \ingroup mrpt_base_grp */
-	
+
 		/** This namespace provides a OS-independent interface to low-level functions.
 		 *   Most of these functions are converted into calls to standard functions, unless we are into Visual Studio 2005 (or newer). In that case the secure version
 		 *     of the standard library functions (prefix "_s") are used instead. \ingroup mrpt_base_grp mrpt_system_os
@@ -166,11 +166,11 @@ namespace mrpt
 			/** An OS-independent version of kbhit, which returns true if a key has been pushed.
 			  */
 			bool BASE_IMPEXP kbhit() MRPT_NO_THROWS;
-	
+
 			/** @} */
 
 		}	// end namespace "os"
-		
+
 		/** \addtogroup mrpt_system_os
 		  * @{ */
 
@@ -226,6 +226,9 @@ namespace mrpt
 		  */
 		std::string BASE_IMPEXP MRPT_getVersion();
 
+		/** Returns a const ref to a text with the same text that appears at the beginning of each MRPT file (useful for displaying the License text in GUIs) */
+		const std::string & BASE_IMPEXP getMRPTLicense();
+
 		/** Call this to register handlers for fatal erros (memory access,etc) that show useful debug information (It is called automatically normally, no need for the user to explicitly call this method.).
 		  */
 		void BASE_IMPEXP registerFatalExceptionHandlers();
@@ -256,7 +259,7 @@ namespace mrpt
 		  * By default the color of "cout" is changed, unless changeStdErr=true, in which case "cerr" is changed.
 		  */
 		void BASE_IMPEXP setConsoleColor( TConsoleColor color, bool changeStdErr=false );
-		
+
 		/** @} */
 
 	} // End of namespace

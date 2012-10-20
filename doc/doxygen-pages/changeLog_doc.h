@@ -88,6 +88,7 @@
 	- New functions:
 		- [mrpt-base]
 			- mrpt::utils::abs_diff()
+			- mrpt::system::getMRPTLicense()
 	- Build system:
 		- Update to nanoflann 1.1.4 - <a href="http://code.google.com/p/mrpt/source/detail?r=2937" >r2937</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3017" >r3017</a>
 		- MRPT's root "CMakeLists.txt" has undergone a big refactoring and cleanup - <a href="http://code.google.com/p/mrpt/source/detail?r=2961" >r2961</a>
