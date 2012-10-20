@@ -9,9 +9,13 @@ list_subdirectories(LIST_MRPT_LIB_DIRS "${MRPT_SOURCE_DIR}/libs")
 # 2) Auto detect which libs are header-only:
 # -----------------------------------------------
 foreach(dir ${LIST_MRPT_LIB_DIRS})
-	if (EXISTS "${dir}/include/" AND NOT EXISTS "${dir}/src/")
-		set_property(GLOBAL PROPERTY "mrpt-${dir}_LIB_IS_HEADERS_ONLY" "1")
-	endif (EXISTS "${dir}/include/" AND NOT EXISTS "${dir}/src/")
+	set(is_hdr "0")
+	if (EXISTS "${MRPT_SOURCE_DIR}/libs/${dir}/include/mrpt/${dir}.h" AND NOT EXISTS "${MRPT_SOURCE_DIR}/libs/${dir}/src/registerAllClasses.cpp")
+		set(is_hdr "1")
+	endif (EXISTS "${MRPT_SOURCE_DIR}/libs/${dir}/include/mrpt/${dir}.h" AND NOT EXISTS "${MRPT_SOURCE_DIR}/libs/${dir}/src/registerAllClasses.cpp")
+
+	set_property(GLOBAL PROPERTY "mrpt-${dir}_LIB_IS_HEADERS_ONLY" "${is_hdr}")
+	#MESSAGE(STATUS "mrpt-${dir}_LIB_IS_HEADERS_ONLY = ${is_hdr}")
 endforeach(dir)
 
 # -----------------------------------------------
