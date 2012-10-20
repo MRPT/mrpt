@@ -48,7 +48,7 @@ IF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 	# System vesion:
 	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} gtest)
 ELSE (CMAKE_MRPT_HAS_GTEST_SYSTEM)
-	# Own vesion:
+	# Own version:
 	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest) 
 	ADD_DEPENDENCIES(test_${_TSTLIB} mrptgtest)  # Assure the MRPT library is updated:
 ENDIF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
@@ -64,9 +64,13 @@ ENDIF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 		STRING(REGEX REPLACE "mrpt-(.*)" "\\1" _DEPLIB_DASH ${_DEPLIB})
 		include_directories("${MRPT_LIBS_ROOT}/${_DEPLIB_DASH}/include")
 
-		# Linking deps:
+		# Deps:
 		ADD_DEPENDENCIES(test_${_TSTLIB} ${_DEPLIB})
-		TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${_DEPLIB})
+		# Linking deps:
+		get_property(_LIB_HDRONLY GLOBAL PROPERTY "${_DEPLIB}_LIB_IS_HEADERS_ONLY")
+		IF(NOT _LIB_HDRONLY)
+			TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${_DEPLIB})
+		ENDIF(NOT _LIB_HDRONLY)
 	ENDFOREACH(_DEPLIB)
 	
 

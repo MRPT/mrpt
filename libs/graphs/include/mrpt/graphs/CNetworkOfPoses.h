@@ -255,7 +255,7 @@ namespace mrpt
 			/** @} */
 		};
 
-#define DEFINE_SERIALIZABLE_GRAPH  \
+/*#define DEFINE_SERIALIZABLE_GRAPH  \
 		protected: \
 			virtual void  writeToStream(CStream &out, int *version) const { \
 				if (version) *version = 0; \
@@ -268,77 +268,20 @@ namespace mrpt
 				default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version) \
 				}; \
 			}
-
-
+*/
 
 		/** \addtogroup mrpt_graphs_grp
 		    @{ */
 
-		// Define serializable versions of the template above for each specific kind of "edge":
-
-		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( CNetworkOfPoses2D, GRAPHS_IMPEXP )
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( CNetworkOfPoses3D, GRAPHS_IMPEXP )
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( CNetworkOfPoses2DCov, GRAPHS_IMPEXP )
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( CNetworkOfPoses3DCov, GRAPHS_IMPEXP )
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( CNetworkOfPoses2DInf, GRAPHS_IMPEXP )
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( CNetworkOfPoses3DInf, GRAPHS_IMPEXP )
-
-		/** The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing serialization.
-		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
-		  */
-		class GRAPHS_IMPEXP CNetworkOfPoses2D : public CNetworkOfPoses<CPose2D,map_traits_stdmap>, public mrpt::utils::CSerializable
-		{
-			DEFINE_MRPT_OBJECT( CNetworkOfPoses2D )	// Should be DEFINE_SERIALIZABLE but the next macro defines what that macro only declared.
-			DEFINE_SERIALIZABLE_GRAPH
-		};
-
-		/** The specialization of CNetworkOfPoses for poses of type CPose3D (not a PDF!), also implementing serialization.
-		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
-		  */
-		class GRAPHS_IMPEXP CNetworkOfPoses3D : public CNetworkOfPoses<CPose3D,map_traits_stdmap>, public mrpt::utils::CSerializable
-		{
-			DEFINE_MRPT_OBJECT( CNetworkOfPoses3D )	// Should be DEFINE_SERIALIZABLE but the next macro defines what that macro only declared.
-			DEFINE_SERIALIZABLE_GRAPH
-		};
-
-		/** The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian, also implementing serialization.
-		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
-		  */
-		class GRAPHS_IMPEXP CNetworkOfPoses2DCov : public CNetworkOfPoses<CPosePDFGaussian,map_traits_stdmap>, public mrpt::utils::CSerializable
-		{
-			DEFINE_MRPT_OBJECT( CNetworkOfPoses2DCov )	// Should be DEFINE_SERIALIZABLE but the next macro defines what that macro only declared.
-			DEFINE_SERIALIZABLE_GRAPH
-		};
-
-		/** The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian, also implementing serialization.
-		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
-		  */
-		class GRAPHS_IMPEXP CNetworkOfPoses3DCov : public CNetworkOfPoses<CPose3DPDFGaussian,map_traits_stdmap>, public mrpt::utils::CSerializable
-		{
-			DEFINE_MRPT_OBJECT( CNetworkOfPoses3DCov )	// Should be DEFINE_SERIALIZABLE but the next macro defines what that macro only declared.
-			DEFINE_SERIALIZABLE_GRAPH
-		};
-
-		/** The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf, also implementing serialization.
-		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
-		  */
-		class GRAPHS_IMPEXP CNetworkOfPoses2DInf : public CNetworkOfPoses<CPosePDFGaussianInf,map_traits_stdmap>, public mrpt::utils::CSerializable
-		{
-			DEFINE_MRPT_OBJECT( CNetworkOfPoses2DInf )	// Should be DEFINE_SERIALIZABLE but the next macro defines what that macro only declared.
-			DEFINE_SERIALIZABLE_GRAPH
-		};
-
-		/** The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussianInf, also implementing serialization.
-		  * \sa CNetworkOfPoses, CNetworkOfPoses2D, CNetworkOfPoses3D, CNetworkOfPoses2DInf, CNetworkOfPoses3DInf
-		  */
-		class GRAPHS_IMPEXP CNetworkOfPoses3DInf : public CNetworkOfPoses<CPose3DPDFGaussianInf,map_traits_stdmap>, public mrpt::utils::CSerializable
-		{
-			DEFINE_MRPT_OBJECT( CNetworkOfPoses3DInf )	// Should be DEFINE_SERIALIZABLE but the next macro defines what that macro only declared.
-			DEFINE_SERIALIZABLE_GRAPH
-		};
+		typedef CNetworkOfPoses<CPose2D,map_traits_stdmap>               CNetworkOfPoses2D;     //!< The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing serialization.
+		typedef CNetworkOfPoses<CPose3D,map_traits_stdmap>               CNetworkOfPoses3D;     //!< The specialization of CNetworkOfPoses for poses of type CPose3D (not a PDF!), also implementing serialization.
+		typedef CNetworkOfPoses<CPosePDFGaussian,map_traits_stdmap>      CNetworkOfPoses2DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian, also implementing serialization.
+		typedef CNetworkOfPoses<CPose3DPDFGaussian,map_traits_stdmap>    CNetworkOfPoses3DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian, also implementing serialization.
+		typedef CNetworkOfPoses<CPosePDFGaussianInf,map_traits_stdmap>   CNetworkOfPoses2DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf, also implementing serialization.
+		typedef CNetworkOfPoses<CPose3DPDFGaussianInf,map_traits_stdmap> CNetworkOfPoses3DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussianInf, also implementing serialization.
 
 		/** @} */  // end of grouping
+
 	} // End of namespace
 } // End of namespace
 

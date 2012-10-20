@@ -50,6 +50,10 @@
 	- New classes:
 		- [mrpt-base]
 			- mrpt::math::MatrixBlockSparseCols, a templated column-indexed efficient storage of block-sparse Jacobian or Hessian matrices, together with other arbitrary information - <a href="http://code.google.com/p/mrpt/source/detail?r=2995" >r2995</a>
+	- Changes in libraries:
+		- These libs are now header-only: <a href="http://code.google.com/p/mrpt/source/detail?r=3035" >r3035</a>
+			- [mrpt-bayes]
+			- [mrpt-graphs]
 	- Changes in classes:
 		- [mrpt-base]
 			- Eigen::MatrixBase<Derived>::loadFromTextFile(), and all MRPT derived matrix classes, are now much faster loading huge matrices from text files - <a href="http://code.google.com/p/mrpt/source/detail?r=2997" >r2997</a>
@@ -81,7 +85,6 @@
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::debugDumpInFiles() now also saves text files which can be used to visualize PTGs from MATLAB (see scripts/viewPTG.m) - <a href="http://code.google.com/p/mrpt/source/detail?r=3009" >r3009</a> 
 			- mrpt::reactivenav::CHolonomicVFF and mrpt::reactivenav::CHolonomicND now have more configurable parameters, loadable from config files. See their documentation.
 			- Repulsive forces from obstacles in mrpt::reactivenav::CHolonomicVFF are now automatically normalized wrt the density of the 360deg view of obstacles and forces follow a "1/range" law instead of the old "exp(-range)".
-
 	- New functions:
 		- [mrpt-base]
 			- mrpt::utils::abs_diff()
@@ -92,7 +95,7 @@
 		- More system libs are detected in Linux (libclang-dev, lib3ds-dev), discarding embedded versions then - <a href="http://code.google.com/p/mrpt/source/detail?r=2963" >r2963</a> - <a href="http://code.google.com/p/mrpt/issues/detail?id=17" >Closes #17</a>
 		- Automatic detection of supported SIMD extensions (SSE*) from CMake (only for Linux OS) - <a href="http://code.google.com/p/mrpt/source/detail?r=3013" >r3013</a>
 		- Fixed building with Visual Studio 2012 (MSVC11) - <a href="http://code.google.com/p/mrpt/source/detail?r=3017" >r3017</a>
-		- MRPT now allows defining header-only libraries with the define_mrpt_lib_headers_only() macro - <a href="http://code.google.com/p/mrpt/source/detail?r=3034" >r3034</a>
+		- MRPT now allows defining header-only libraries with the define_mrpt_lib_header_only() macro - <a href="http://code.google.com/p/mrpt/source/detail?r=3034" >r3034</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3035" >r3035</a>
 	- BUG FIXES:
 		- Build: Fixed detection of OpenCV 2.4.2+ installed in the system via CMake config file instead of pkg-config, which seems to be broken. - <a href="http://code.google.com/p/mrpt/source/detail?r=3019" >r3019</a>
 		- [mrpt-base] The iterator returned by end() in all MRPT vectors and matrices (based on Eigen) pointed to the last element, not to the (now correct) next position after the last element - <a href="http://code.google.com/p/mrpt/source/detail?r=2941" >r2941</a>

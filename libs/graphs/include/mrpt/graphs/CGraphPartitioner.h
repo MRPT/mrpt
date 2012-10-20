@@ -40,8 +40,6 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/ops_matrices.h>
 
-#include <mrpt/graphs/link_pragmas.h>
-
 namespace mrpt
 {
 	/** Abstract graph and tree data structures, plus generic graph algorithms
@@ -49,16 +47,19 @@ namespace mrpt
 	  */
 	namespace graphs
 	{
-		using namespace mrpt::math;
-
 		/** Algorithms for finding the min-normalized-cut of a weighted undirected graph.
-		 *    Two static methods are provided, one for bisection and the other for
+		 *    Two methods are provided, one for bisection and the other for
 		 *      iterative N-parts partition.
-		 *  It is based on the Shi-Malik method, proposed for example in:<br><br>
+		 *  It is an implementation of the Shi-Malik method proposed in:<br><br>
 		 *  <code>J. Shi and J. Malik, "Normalized Cuts and Image Segmentation,"IEEE Transactions on Pattern Analysis and Machine Intelligence, vol.22, no.8, pp. 888-905, Aug. 2000.</code><br>
 		 *
+		 * \tparam GRAPH_MATRIX The type of square matrices used to represent the connectivity in a graph (e.g. mrpt::math::CMatrix)
+		 * \tparam num_t The type of matrix elements, thresholds, etc. (typ: float or double). Defaults to the type of matrix elements.
+		 *
+		 * \note Prior to MRPT 1.0.0 this class wasn't a template and provided static variables for debugging, which were removed since that version.
 		 */
-		class GRAPHS_IMPEXP CGraphPartitioner : public mrpt::utils::CDebugOutputCapable
+		template <class GRAPH_MATRIX, typename num_t = typename GRAPH_MATRIX::Scalar>
+		class CGraphPartitioner : public mrpt::utils::CDebugOutputCapable
 		{
 		public:
 			/** Performs the spectral recursive partition into K-parts for a given graph.
@@ -77,14 +78,15 @@ namespace mrpt
 			 *
 			 * \exception Throws a std::logic_error if an invalid matrix is passed.
 			 */
-			static void  RecursiveSpectralPartition(
-			  CMatrix					&in_A,
+			static void RecursiveSpectralPartition(
+			  GRAPH_MATRIX	&in_A,
 			  std::vector<vector_uint>	&out_parts,
-			  float						threshold_Ncut = 1.0f,
+			  num_t						threshold_Ncut = 1,
 			  bool						forceSimetry = true,
 			  bool						useSpectralBisection = true,
 			  bool						recursive = true,
-			  unsigned					minSizeClusters = 1);
+			  unsigned					minSizeClusters = 1,
+			  const bool  verbose = false);
 
 			/** Performs the spectral bisection of a graph. This method always perform
 			 *   the bisection, and a measure of the goodness for this cut is returned.
@@ -99,12 +101,12 @@ namespace mrpt
 			 *
 			 * \exception Throws a std::logic_error if an invalid matrix is passed.
 			 */
-			static void  SpectralBisection(
-								CMatrix					&in_A,
-								vector_uint				&out_part1,
-								vector_uint				&out_part2,
-								float					&out_cut_value,
-								bool					forceSimetry = true );
+			static void SpectralBisection(
+				GRAPH_MATRIX					&in_A,
+				vector_uint				&out_part1,
+				vector_uint				&out_part2,
+				num_t					&out_cut_value,
+				bool					forceSimetry = true );
 
 			/** Performs an EXACT minimum n-Cut graph bisection, (Use CGraphPartitioner::SpectralBisection for a faster algorithm)
 			 *
@@ -119,35 +121,25 @@ namespace mrpt
 			 * \exception Throws a std::logic_error if an invalid matrix is passed.
 			 */
 			static void  exactBisection(
-								CMatrix			&in_A,
-								vector_uint		&out_part1,
-								vector_uint		&out_part2,
-								float			&out_cut_value,
-								bool			forceSimetry = true );
+				GRAPH_MATRIX	&in_A,
+				vector_uint		&out_part1,
+				vector_uint		&out_part2,
+				num_t			&out_cut_value,
+				bool			forceSimetry = true );
 
 			/** Returns the normaliced cut of a graph, given its adjacency matrix A and a bisection:
 			  */
-			static float  nCut(
-								const CMatrix			&in_A,
-								const vector_uint		&in_part1,
-								const vector_uint		&in_part2 );
-
-
-				/** If set to true (default=false), each eigenvector computed (and the laplacian of the adj. matrix) will be saved to files "DEBUG_GRAPHPART_eigvectors_xxx" and "DEBUG_GRAPHPART_laplacian_xxx", respectively.
-				  */
-				static bool DEBUG_SAVE_EIGENVECTOR_FILES;
-
-				/** If set to true (default=false), debug info will be displayed to cout.
-				  */
-				static bool VERBOSE;
-
-			private:
-				/** Used internally when DEBUG_SAVE_EIGENVECTOR_FILES=true
-				  */
-				static int debug_file_no;
+			static num_t nCut(
+				const GRAPH_MATRIX		&in_A,
+				const vector_uint		&in_part1,
+				const vector_uint		&in_part2 );
 
 		}; // End of class def.
 
 	} // End of namespace
 } // End of namespace
+
+// Template implementation:
+#include "CGraphPartitioner_impl.h"
+
 #endif

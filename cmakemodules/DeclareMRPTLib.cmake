@@ -4,11 +4,11 @@ macro(define_mrpt_lib name)
 	internal_define_mrpt_lib(${name} 0 ${ARGN}) # headers_only = 0
 endmacro(define_mrpt_lib)
 
-# define_mrpt_lib_headers_only(): Declares an MRPT headers-only library:
+# define_mrpt_lib_header_only(): Declares an MRPT headers-only library:
 #-----------------------------------------------------------------------
-macro(define_mrpt_lib_headers_only name)
+macro(define_mrpt_lib_header_only name)
 	internal_define_mrpt_lib(${name} 1 ${ARGN}) # headers_only = 1
-endmacro(define_mrpt_lib_headers_only)
+endmacro(define_mrpt_lib_header_only)
 
 
 # Implementation of both define_mrpt_lib() and define_mrpt_lib_headers_only():
@@ -147,12 +147,14 @@ macro(internal_define_mrpt_lib name headers_only)
 				# Include dir:
 				INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/${DEP_MRPT_NAME}/include")
 				
-				# Link "-lmrpt-name", only for GCC:
-				IF (NOT ${headers_only})
-					IF(CMAKE_COMPILER_IS_GNUCXX)
+				# Link "-lmrpt-name", only for GCC and if both THIS and the dependence are non-header-only:
+				IF(CMAKE_COMPILER_IS_GNUCXX AND NOT ${headers_only})
+					get_property(_LIB_HDRONLY GLOBAL PROPERTY "${DEP}_LIB_IS_HEADERS_ONLY")
+					IF(NOT _LIB_HDRONLY)
+						#MESSAGE(STATUS "adding link dep: mrpt-${name} -> ${DEP}")
 						LIST(APPEND AUX_EXTRA_LINK_LIBS ${DEP}${MRPT_LINKER_LIBS_POSTFIX})
-					ENDIF(CMAKE_COMPILER_IS_GNUCXX)
-				ENDIF (NOT ${headers_only})
+					ENDIF(NOT _LIB_HDRONLY)
+				ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT ${headers_only})
 				
 				# Append to list of mrpt-* lib dependences:
 				LIST(APPEND AUX_DEPS_LIST ${DEP})
@@ -223,14 +225,14 @@ macro(internal_define_mrpt_lib name headers_only)
 		ELSE(CMAKE_MRPT_USE_DEB_POSTFIXS)
 			SET(MRPT_PREFIX_INSTALL "")
 		ENDIF(CMAKE_MRPT_USE_DEB_POSTFIXS)
-	ENDIF (NOT ${headers_only})
 
-	# make sure the library gets installed
-	INSTALL(TARGETS mrpt-${name}
-		RUNTIME DESTINATION ${MRPT_PREFIX_INSTALL}bin  COMPONENT main
-		LIBRARY DESTINATION ${MRPT_PREFIX_INSTALL}lib${LIB_SUFFIX} COMPONENT main
-		ARCHIVE DESTINATION ${MRPT_PREFIX_INSTALL}lib${LIB_SUFFIX} COMPONENT main
-		)
+		# make sure the library gets installed
+		INSTALL(TARGETS mrpt-${name}
+			RUNTIME DESTINATION ${MRPT_PREFIX_INSTALL}bin  COMPONENT main
+			LIBRARY DESTINATION ${MRPT_PREFIX_INSTALL}lib${LIB_SUFFIX} COMPONENT main
+			ARCHIVE DESTINATION ${MRPT_PREFIX_INSTALL}lib${LIB_SUFFIX} COMPONENT main
+			)
+	ENDIF (NOT ${headers_only})
 
 	# Generate the libmrpt-$NAME.pc file for pkg-config:
 	IF(UNIX)

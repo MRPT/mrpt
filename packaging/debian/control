@@ -84,39 +84,6 @@ Description: Mobile Robot Programming Toolkit - opengl library
  . 
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
-Package: libmrpt-bayes1.0
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-          libmrpt-base1.0
-Description: Mobile Robot Programming Toolkit - bayes library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM), computer vision, and motion planning (obstacle avoidance).
- .
- This package includes the mrpt-bayes library (mostly, Kalman filter and 
- particle filters)
- .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
-
-Package: libmrpt-graphs1.0
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-          libmrpt-base1.0
-Description: Mobile Robot Programming Toolkit - graphs library
- The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
- and open source C++ library aimed to help robotics researchers to design and
- implement algorithms in the fields of Simultaneous Localization and Mapping
- (SLAM), computer vision, and motion planning (obstacle avoidance).
- .
- This package includes the mrpt-graphs library (mathematical graph algorithms, 
- graphs of pose constraints, etc.)
- .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
-
-
 
 Package: libmrpt-gui1.0
 Section: libs
@@ -253,9 +220,7 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-maps1.0,
 	  libmrpt-vision1.0,
-	  libmrpt-scanmatching1.0,
-	  libmrpt-graphs1.0,
-	  libmrpt-bayes1.0
+	  libmrpt-scanmatching1.0
 Description: Mobile Robot Programming Toolkit - slam library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
@@ -320,7 +285,6 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
          libmrpt-base1.0, 
          libmrpt-opengl1.0, 
          libmrpt-scanmatching1.0,
-         libmrpt-bayes1.0,
          libmrpt-graphs1.0,
          libmrpt-gui1.0, 
          libmrpt-obs1.0, 

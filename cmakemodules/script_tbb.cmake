@@ -7,7 +7,7 @@ SET(CMAKE_MRPT_HAS_TBB  0)
 if (MRPT_HAS_TBB)
     if (UNIX AND NOT APPLE AND NOT ANDROID)
         PKG_CHECK_MODULES(TBB tbb)
-        message(STATUS "TBB detected: ${TBBLIB_FOUND}")
+        #message(STATUS "TBB detected: ${TBBLIB_FOUND}")
 
         if (TBB_FOUND)
             set(CMAKE_MRPT_HAS_TBB 1)

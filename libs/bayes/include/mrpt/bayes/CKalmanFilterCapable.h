@@ -49,8 +49,6 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/TEnumType.h>
 
-#include <mrpt/bayes/link_pragmas.h>
-
 
 namespace mrpt
 {
@@ -83,16 +81,45 @@ namespace mrpt
 		/** Generic options for the Kalman Filter algorithm in itself.
 	 	  * \ingroup mrpt_bayes_grp
 		  */
-		struct BAYES_IMPEXP TKF_options : public utils::CLoadableOptions
+		struct TKF_options : public mrpt::utils::CLoadableOptions
 		{
-			TKF_options();
+			TKF_options() :
+				method      	( kfEKFNaive),
+				verbose     	( false ),
+				IKF_iterations 	( 5 ),
+				enable_profiler	(false),
+				use_analytic_transition_jacobian	(true),
+				use_analytic_observation_jacobian	(true),
+				debug_verify_analytic_jacobians		(false),
+				debug_verify_analytic_jacobians_threshold	(1e-2)
+			{
+			}
 
 			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string		&section);
+				const mrpt::utils::CConfigFileBase	&iniFile,
+				const std::string		&section)
+			{
+				method = iniFile.read_enum<TKFMethod>(section,"method", method );
+				MRPT_LOAD_CONFIG_VAR( verbose, bool    , iniFile, section  );
+				MRPT_LOAD_CONFIG_VAR( IKF_iterations, int , iniFile, section  );
+				MRPT_LOAD_CONFIG_VAR( enable_profiler, bool    , iniFile, section  );
+				MRPT_LOAD_CONFIG_VAR( use_analytic_transition_jacobian, bool    , iniFile, section  );
+				MRPT_LOAD_CONFIG_VAR( use_analytic_observation_jacobian, bool    , iniFile, section  );
+				MRPT_LOAD_CONFIG_VAR( debug_verify_analytic_jacobians, bool    , iniFile, section  );
+				MRPT_LOAD_CONFIG_VAR( debug_verify_analytic_jacobians_threshold, double, iniFile, section );
+			}
 
 			/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream. */
-			void  dumpToTextStream(CStream	&out) const;
+			void  dumpToTextStream(CStream	&out) const
+			{
+				out.printf("\n----------- [TKF_options] ------------ \n\n");
+				out.printf("method                                  = %s\n", mrpt::utils::TEnumType<TKFMethod>::value2name(method).c_str() );
+				out.printf("verbose                                 = %c\n", verbose ? 'Y':'N');
+				out.printf("IKF_iterations                          = %i\n", IKF_iterations);
+				out.printf("enable_profiler                         = %c\n", enable_profiler ? 'Y':'N');
+				out.printf("\n");
+			}
+
 
 			TKFMethod	method;				//!< The method to employ (default: kfEKFNaive)
 			bool		verbose; 		//!< If set to true timing and other information will be dumped during the execution (default=false)
@@ -650,7 +677,7 @@ namespace mrpt
 
 				vector_int  data_association;  // -1: New map feature.>=0: Indexes in the state vector
 
-				// The next loop will only do more than one iteration if the heuristic in OnPreComputingPredictions() fails, 
+				// The next loop will only do more than one iteration if the heuristic in OnPreComputingPredictions() fails,
 				//  which will be detected by the addition of extra landmarks to predict into "missing_predictions_to_add"
 				std::vector<size_t> missing_predictions_to_add;
 
@@ -664,7 +691,7 @@ namespace mrpt
 
 				size_t first_new_pred = 0; // This will be >0 only if we perform multiple loops due to failures in the prediction heuristic.
 
-				do  
+				do
 				{
 					if (!missing_predictions_to_add.empty())
 					{
@@ -800,9 +827,9 @@ namespace mrpt
 						);
 					ASSERTDEB_(data_association.size()==Z.size() || (data_association.empty() && FEAT_SIZE==0));
 
-					// Check if an observation hasn't been predicted in OnPreComputingPredictions() but has been actually 
+					// Check if an observation hasn't been predicted in OnPreComputingPredictions() but has been actually
 					//  observed. This may imply an error in the heuristic of OnPreComputingPredictions(), and forces us
-					//  to rebuild the matrices 
+					//  to rebuild the matrices
 					missing_predictions_to_add.clear();
 					if (FEAT_SIZE!=0)
 					{

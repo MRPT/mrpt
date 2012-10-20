@@ -119,10 +119,6 @@ namespace slam
 			  */
 			bool   useMapMatching;
 
-			/** This variable will be mapped to utils::CGraphPartitioner::DEBUG_SAVE_EIGENVECTOR_FILES.
-			  */
-			bool   debugSaveAllEigenvectors;
-
 			/** If a partition leads to a cluster with less elements than this, it will be rejected even if had a good Ncut (default=1). */
 			int    minimumNumberElementsEachCluster;
 

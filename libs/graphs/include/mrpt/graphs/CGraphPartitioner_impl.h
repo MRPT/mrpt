@@ -33,32 +33,30 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/graphs.h>  // Precompiled headers
-#include <mrpt/graphs/CGraphPartitioner.h>
 
-using namespace mrpt;
-using namespace mrpt::graphs;
-using namespace mrpt::math;
-using namespace mrpt::utils;
-using namespace std;
+#if !defined(CGRAPHPARTITIONER_H)
+#error "This file can't be included from outside of CGraphPartitioner.h"
+#endif
 
-bool CGraphPartitioner::DEBUG_SAVE_EIGENVECTOR_FILES = false;
-int CGraphPartitioner::debug_file_no = 0;
-bool CGraphPartitioner::VERBOSE = false;
+namespace mrpt
+{
+namespace graphs
+{
 
 /*---------------------------------------------------------------
 					SpectralPartition
   ---------------------------------------------------------------*/
-void  CGraphPartitioner::SpectralBisection(
-			CMatrix					&in_A,
-			vector_uint		&out_part1,
-			vector_uint		&out_part2,
-			float					&out_cut_value,
-			bool					forceSimetry )
+template <class GRAPH_MATRIX, typename num_t>
+void CGraphPartitioner<GRAPH_MATRIX,num_t>::SpectralBisection(
+	GRAPH_MATRIX    &in_A,
+	vector_uint		&out_part1,
+	vector_uint		&out_part2,
+	num_t			&out_cut_value,
+	bool			forceSimetry )
 {
-	size_t				nodeCount;		// Nodes count
-	size_t    			i,j;
-    CMatrix				Adj, eigenVectors,eigenValues;
+	size_t  nodeCount;		// Nodes count
+	size_t  i,j;
+    GRAPH_MATRIX	Adj, eigenVectors,eigenValues;
 
 	// Check matrix is square:
 	if (in_A.getColCount() != (nodeCount = in_A.getRowCount()) )
@@ -78,7 +76,7 @@ void  CGraphPartitioner::SpectralBisection(
 	else Adj = in_A;
 
     // Compute eigen-vectors of laplacian:
-	CMatrix   LAPLACIAN;
+	GRAPH_MATRIX   LAPLACIAN;
 	Adj.laplacian(LAPLACIAN);
 
 
@@ -121,41 +119,29 @@ void  CGraphPartitioner::SpectralBisection(
 
 	// Compute the N-cut value
 	out_cut_value = nCut( Adj, out_part1, out_part2);
-
-	// DEBUG
-	if (CGraphPartitioner::DEBUG_SAVE_EIGENVECTOR_FILES)
-	{
-        CMatrix aux(1,1);
-        aux(0,0) = out_cut_value;
-
-        eigenVectors.saveToTextFile( format("DEBUG_GRAPHPART_eigvectors_%05u.txt",CGraphPartitioner::debug_file_no) );
-        Adj.saveToTextFile( format("DEBUG_GRAPHPART_adj_%05u.txt",CGraphPartitioner::debug_file_no) );
-        LAPLACIAN.saveToTextFile( format("DEBUG_GRAPHPART_laplacian_%05u.txt",CGraphPartitioner::debug_file_no) );
-        eigenValues.saveToTextFile( format("DEBUG_GRAPHPART_eigenvalues_%05u.txt",CGraphPartitioner::debug_file_no) );
-        aux.saveToTextFile( format("DEBUG_GRAPHPART_eigvectors_%05u_ncut.txt",CGraphPartitioner::debug_file_no) );
-        debug_file_no++;
-	}
 }
 
 /*---------------------------------------------------------------
 					RecursiveSpectralPartition
   ---------------------------------------------------------------*/
-void  CGraphPartitioner::RecursiveSpectralPartition(
-	CMatrix					&in_A,
+template <class GRAPH_MATRIX, typename num_t>
+void CGraphPartitioner<GRAPH_MATRIX,num_t>::RecursiveSpectralPartition(
+	GRAPH_MATRIX   				&in_A,
 	std::vector<vector_uint>	&out_parts,
-	float						threshold_Ncut,
+	num_t						threshold_Ncut,
 	bool						forceSimetry,
 	bool						useSpectralBisection,
 	bool						recursive,
-	unsigned 					minSizeClusters )
+	unsigned 					minSizeClusters,
+	const bool verbose )
 {
 	MRPT_START
 
 	size_t				nodeCount;
 	vector_uint			p1,p2;
-	float				cut_value;
+	num_t				cut_value;
 	size_t				i,j;
-	CMatrix				Adj;
+	GRAPH_MATRIX				Adj;
 
 	out_parts.clear();
 
@@ -186,14 +172,14 @@ void  CGraphPartitioner::RecursiveSpectralPartition(
 			SpectralBisection( Adj, p1, p2, cut_value, false);
 	else	exactBisection(Adj, p1, p2, cut_value, false);
 
-	if (CGraphPartitioner::VERBOSE)
-		cout << format("Cut:%u=%u+%u,nCut=%.02f->",(unsigned int)nodeCount,(unsigned int)p1.size(),(unsigned int)p2.size(),cut_value);
+	if (verbose)
+		std::cout << format("Cut:%u=%u+%u,nCut=%.02f->",(unsigned int)nodeCount,(unsigned int)p1.size(),(unsigned int)p2.size(),cut_value);
 
 	// Is it a useful partition?
 	if (cut_value>threshold_Ncut || p1.size()<minSizeClusters || p2.size()<minSizeClusters )
 	{
-		if (CGraphPartitioner::VERBOSE)
-			cout << "->NO!" << endl;
+		if (verbose)
+			std::cout << "->NO!" << std::endl;
 
 		// No:
 		p1.clear();
@@ -202,8 +188,8 @@ void  CGraphPartitioner::RecursiveSpectralPartition(
 	}
 	else
 	{
-		if (CGraphPartitioner::VERBOSE)
-			cout << "->YES!" << endl;
+		if (verbose)
+			std::cout << "->YES!" << std::endl;
 
 		// Yes:
 		std::vector<vector_uint>	p1_parts, p2_parts;
@@ -213,7 +199,7 @@ void  CGraphPartitioner::RecursiveSpectralPartition(
 			// Split "p1":
 			// --------------------------------------------
 			// sub-matrix:
-			CMatrix A_1( p1.size(),p1.size() );
+			GRAPH_MATRIX A_1( p1.size(),p1.size() );
 			for (i=0;i<p1.size();i++)
 				for (j=0;j<p1.size();j++)
 					A_1(i,j)= in_A(p1[i],p1[j]);
@@ -223,7 +209,7 @@ void  CGraphPartitioner::RecursiveSpectralPartition(
 			// Split "p2":
 			// --------------------------------------------
 			// sub-matrix:
-			CMatrix A_2( p2.size(),p2.size() );
+			GRAPH_MATRIX A_2( p2.size(),p2.size() );
 			for (i=0;i<p2.size();i++)
 				for (j=0;j<p2.size();j++)
 					A_2(i,j)= in_A(p2[i],p2[j]);
@@ -266,8 +252,9 @@ void  CGraphPartitioner::RecursiveSpectralPartition(
 /*---------------------------------------------------------------
 						nCut
   ---------------------------------------------------------------*/
-float  CGraphPartitioner::nCut(
-    const CMatrix					&in_A,
+template <class GRAPH_MATRIX, typename num_t>
+num_t CGraphPartitioner<GRAPH_MATRIX,num_t>::nCut(
+    const GRAPH_MATRIX		&in_A,
     const vector_uint		&in_part1,
     const vector_uint		&in_part2)
 {
@@ -277,25 +264,25 @@ float  CGraphPartitioner::nCut(
 
 	// Compute the N-cut value
 	// -----------------------------------------------
-	float		cut_AB=0;
+	num_t		cut_AB=0;
     for(i=0;i<size1;i++)
 		for(j=0;j<size2;j++)
 				cut_AB += in_A(in_part1[i],in_part2[j]);
 
-	float assoc_AA = 0;
+	num_t assoc_AA = 0;
     for(i=0;i<size1;i++)
 		for(j=i;j<size1;j++)
 			if (i!=j)
 				assoc_AA += in_A(in_part1[i],in_part1[j]);
 
-	float assoc_BB = 0;
+	num_t assoc_BB = 0;
     for(i=0;i<size2;i++)
 		for(j=i;j<size2;j++)
 			if (i!=j)
 				assoc_BB += in_A(in_part2[i],in_part2[j]);
 
-	float assoc_AV = assoc_AA + cut_AB;
-	float assoc_BV = assoc_BB + cut_AB;
+	num_t assoc_AV = assoc_AA + cut_AB;
+	num_t assoc_BV = assoc_BB + cut_AB;
 
 	if (!cut_AB)
 			return 0;
@@ -307,19 +294,20 @@ float  CGraphPartitioner::nCut(
 /*---------------------------------------------------------------
 					exactBisection
   ---------------------------------------------------------------*/
-void  CGraphPartitioner::exactBisection(
-			CMatrix					&in_A,
-			vector_uint		&out_part1,
-			vector_uint		&out_part2,
-			float					&out_cut_value,
-			bool					forceSimetry )
+template <class GRAPH_MATRIX, typename num_t>
+void CGraphPartitioner<GRAPH_MATRIX,num_t>::exactBisection(
+	GRAPH_MATRIX    &in_A,
+	vector_uint		&out_part1,
+	vector_uint		&out_part2,
+	num_t			&out_cut_value,
+	bool			forceSimetry )
 {
 	size_t						nodeCount;		// Nodes count
 	size_t		    			i,j;
-    CMatrix						Adj;
+    GRAPH_MATRIX						Adj;
 	vector_bool					partition, bestPartition;
 	vector_uint					part1,part2;
-	float						partCutValue, bestCutValue = 1e+20f;
+	num_t						partCutValue, bestCutValue = std::numeric_limits<num_t>::max();
 	bool						end = false;
 	bool						carry;
 
@@ -402,3 +390,6 @@ void  CGraphPartitioner::exactBisection(
 	}
 
 }
+
+} // end NS
+} // end NS

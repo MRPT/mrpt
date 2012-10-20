@@ -87,7 +87,6 @@ CIncrementalMapPartitioner::TOptions::TOptions() :
 	minMahaDistForCorrespondence	( 2.0f ),
 	forceBisectionOnly				( false ),
 	useMapMatching				    ( true ),
-	debugSaveAllEigenvectors        ( false ),
 	minimumNumberElementsEachCluster( 1 )
 {
 }
@@ -106,7 +105,6 @@ void  CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(minDistForCorrespondence,	  float,source,section);
 	MRPT_LOAD_CONFIG_VAR(forceBisectionOnly,          bool,source,section);
 	MRPT_LOAD_CONFIG_VAR(useMapMatching,		      bool,source,section);
-	MRPT_LOAD_CONFIG_VAR(debugSaveAllEigenvectors,    bool,source,section);
 	MRPT_LOAD_CONFIG_VAR(minimumNumberElementsEachCluster, int, source,section);
 
 
@@ -176,9 +174,6 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	int									debug_CheckPoint = 0;
 	mrpt::utils::TMatchingPairList		corrs;
 	static CPose3D						nullPose(0,0,0);
-
-	// Set options in graph partition:
-	CGraphPartitioner::DEBUG_SAVE_EIGENVECTOR_FILES = options.debugSaveAllEigenvectors;
 
 	// Create the maps:
 	TSetOfMetricMapInitializers			mapInitializer;
@@ -482,14 +477,16 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 		vector<vector_uint>		mods_parts;
 		mods_parts.clear();
 
-		CGraphPartitioner::RecursiveSpectralPartition(
+		CGraphPartitioner<CMatrix>::RecursiveSpectralPartition(
 			A_mods,
 			mods_parts,
 			options.partitionThreshold,
 			true,
 			true,
 			!options.forceBisectionOnly,
-			options.minimumNumberElementsEachCluster );
+			options.minimumNumberElementsEachCluster,
+			false /* verbose */
+			);
 
 		// Mezclar los resultados con los clusters que no se tocaron y devolverlos
 		// --------------------------------------------------------------------------
