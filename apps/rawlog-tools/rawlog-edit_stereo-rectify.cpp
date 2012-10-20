@@ -167,7 +167,7 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
                         }
                         m_changedCams++;
 					}
-					catch (mrpt::utils::CExceptionExternalImageNotFound &e)
+					catch (mrpt::utils::CExceptionExternalImageNotFound &)
 					{
 					    const size_t MAX_FAILURES = 1000;
 					    m_num_external_files_failures++;

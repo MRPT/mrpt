@@ -48,6 +48,7 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/gui/WxUtils.h>
 
 using namespace mrpt;
 using namespace mrpt::system;

@@ -45,6 +45,7 @@
 
 #include "holonomic_navigator_demoMain.h"
 #include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/WxUtils.h>
 
 #include <mrpt/utils/utils_defs.h>
 

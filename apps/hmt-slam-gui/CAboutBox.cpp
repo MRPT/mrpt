@@ -45,6 +45,7 @@
 //*)
 
 #include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/WxUtils.h>
 
 // For CV_VERSION
 #include <mrpt/base.h>
