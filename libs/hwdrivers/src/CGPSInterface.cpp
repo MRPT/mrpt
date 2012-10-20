@@ -107,7 +107,7 @@ void  CGPSInterface::loadConfig_sensorSpecific(
 	m_JAVAD_rtk_format   = configSource.read_string(iniSection,"JAVAD_rtk_format", m_JAVAD_rtk_format );
 
     m_useAIMMode = configSource.read_bool( iniSection,"JAVAD_useAIMMode", m_useAIMMode );
-    m_data_period = 1.0/configSource.read_bool( iniSection,"outputRate", m_data_period );
+    m_data_period = 1.0/configSource.read_double( iniSection,"outputRate", m_data_period );
 }
 
 
