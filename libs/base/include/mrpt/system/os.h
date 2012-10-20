@@ -227,7 +227,7 @@ namespace mrpt
 		std::string BASE_IMPEXP MRPT_getVersion();
 
 		/** Returns a const ref to a text with the same text that appears at the beginning of each MRPT file (useful for displaying the License text in GUIs) */
-		const std::string & BASE_IMPEXP getMRPTLicense();
+		const std::string BASE_IMPEXP & getMRPTLicense();
 
 		/** Call this to register handlers for fatal erros (memory access,etc) that show useful debug information (It is called automatically normally, no need for the user to explicitly call this method.).
 		  */
