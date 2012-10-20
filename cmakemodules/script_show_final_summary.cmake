@@ -35,7 +35,14 @@ MESSAGE(STATUS "List of MRPT libs/modules to be built (and dependencies):")
 MESSAGE(STATUS "-----------------------------------------------------------------")
 FOREACH(_LIB ${ALL_MRPT_LIBS})
 	get_property(_LIB_DEP GLOBAL PROPERTY "${_LIB}_LIB_DEPS")
-	MESSAGE(STATUS "  ${_LIB} : ${_LIB_DEP}")
+	get_property(_LIB_HDRONLY GLOBAL PROPERTY "${_LIB}_LIB_IS_HEADERS_ONLY")
+	# Say whether each lib is a normal or header-only lib:
+	set(_LIB_TYPE "")
+	IF (_LIB_HDRONLY)
+		SET(_LIB_TYPE "  (header-only)")
+	ENDIF(_LIB_HDRONLY)
+	
+	MESSAGE(STATUS "  ${_LIB} : ${_LIB_DEP} ${_LIB_TYPE}")
 ENDFOREACH(_LIB)
 MESSAGE(STATUS "")
 

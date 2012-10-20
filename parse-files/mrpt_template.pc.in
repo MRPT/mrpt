@@ -9,8 +9,8 @@ Description: Mobile Robot Programming Toolkit (MRPT) - @mrpt_pkgconfig_LIBNAME@ 
 URL: http://www.mrpt.org/
 Requires: @mrpt_pkgconfig_REQUIRES@
 Version: @CMAKE_MRPT_VERSION_NUMBER_MAJOR@.@CMAKE_MRPT_VERSION_NUMBER_MINOR@.@CMAKE_MRPT_VERSION_NUMBER_PATCH@
-Libs: -L${libdir}  -lmrpt-@mrpt_pkgconfig_LIBNAME@ 
-Libs.private: @MRPTLIB_LINKER_LIBS@
+@mrpt_pkgconfig_lib_line_install@
+@mrpt_pkgconfig_libs_private_line@
 Cflags: -I${includedir}/mrpt/@mrpt_pkgconfig_LIBNAME@/include/ -I${includedir}/mrpt/mrpt-config/ @mrpt_pkgconfig_EXTRA_CFLAGS@
 
 #@ wxWidgets_CXX_FLAGS @
