@@ -113,7 +113,7 @@ namespace mrpt
 			uint64_t getPosition();
 
 			/** This method is not implemented in this class */
-			uint64_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning)
+			uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning)
 			{
 				THROW_EXCEPTION("Seek is not implemented in this class");
 			}

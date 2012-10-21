@@ -106,7 +106,7 @@ namespace utils
 		/** Method for moving to a specified position in the streamed resource.
 		 *  \sa CStream::Seek
 		 */
-		uint64_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning);
+		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning);
 
 		/** Returns the total size of the internal buffer.
 		 */

@@ -100,6 +100,9 @@ the University of Malaga.
 * Mariano Jaimez Tarifa, University of Malaga (2012-)
   - Several improvements and bug fixes in the mrpt-reactivenav library.
 
+* Robert Schattschneider, University of Canterbury (2012)
+  - Patches for bug fixes, serialization of templates.
+
 
 Several bug reports have been provided from MRPT users world-wide. We kindly thank all of
 them for this valuable feedback, and they are usually mentioned in changelogs.

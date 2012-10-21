@@ -142,7 +142,7 @@ namespace utils
 
 		/** This virtual method has no effect in this implementation over a TCP socket, and its use raises an exception
 		 */
-		uint64_t Seek(long Offset, CStream::TSeekOrigin Origin = sFromBeginning)
+		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning)
 		{
 		    MRPT_START
 			MRPT_UNUSED_PARAM(Offset); MRPT_UNUSED_PARAM(Origin);
