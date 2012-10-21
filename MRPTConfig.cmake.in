@@ -55,20 +55,6 @@ SET(MRPT_CONFIG_DIR "@THE_MRPT_CONFIG_FILE_INCLUDE_DIR@")
 
 #MESSAGE(STATUS "MRPT_FIND_COMPONENTS: ${MRPT_FIND_COMPONENTS}")
 
-# Warning on deprecated style:
-IF(MRPT_USE_LIBS)
-	MESSAGE(STATUS "***********************************************************************" )
-	MESSAGE(STATUS "  MRPT WARNING: Deprecated variable MRPT_USE_LIBS. Replace your code:" )
-	MESSAGE(STATUS "    SET(MRPT_USE_LIBS ${MRPT_USE_LIBS})" )
-	MESSAGE(STATUS "    FIND_PACKAGE(MRPT REQUIRED)" )
-	MESSAGE(STATUS "  By the new code:" )
-	MESSAGE(STATUS "    FIND_PACKAGE(MRPT REQUIRED ${MRPT_USE_LIBS})" )
-	MESSAGE(STATUS "***********************************************************************" )
-
-	LIST(APPEND MRPT_FIND_COMPONENTS ${MRPT_USE_LIBS})
-ENDIF(MRPT_USE_LIBS)
-
-
 # ======================================================
 # Include directories where Eigen3 headers are... if 
 #  they are not embedded under mrpt-base headers:
@@ -104,7 +90,7 @@ ENDIF(@CMAKE_MRPT_HAS_OPENCV_SYSTEM@)
 #  for backward compatibility (< MRPT 0.9.0)
 # ==========================================================
 IF ("${MRPT_FIND_COMPONENTS}" STREQUAL "")
-	SET(MRPT_FIND_COMPONENTS core)
+	SET(MRPT_FIND_COMPONENTS slam topography)
 ENDIF ("${MRPT_FIND_COMPONENTS}" STREQUAL "")
 
 # ======================================================
@@ -114,6 +100,10 @@ SET(ALL_MRPT_LIBS "@ALL_MRPT_LIBS@")
 #  Start of DECLARE_LIBS_DEPS 
 @DECLARE_LIBS_DEPS@
 #  End of DECLARE_LIBS_DEPS 
+
+#  Start of DECLARE_LIBS_HDR_ONLY
+@DECLARE_LIBS_HDR_ONLY@
+#  End of DECLARE_LIBS_HDR_ONLY
 
 # Add hierarchical dependencies of MRPT libraries,
 #  and replace "base"->"mrpt-base", etc.
@@ -169,11 +159,15 @@ FOREACH(MRPTLIB ${MRPT_FIND_COMPONENTS})
 
 	# List of link libs only needed in GCC. In MSVC we use pragma link libs.
 	IF(NOT MSVC AND NOT BORLAND)
-		IF(NOT MRPT_DONT_USE_DBG_LIBS)
-			LIST(APPEND MRPT_LIBS  optimized mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@ debug mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@-dbg)
-		ELSE(NOT MRPT_DONT_USE_DBG_LIBS)
-			LIST(APPEND MRPT_LIBS  mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@)
-		ENDIF(NOT MRPT_DONT_USE_DBG_LIBS)
+		# If the required lib is header-only, don't add to the list of libs to link!
+		get_property(_LIB_HDRONLY GLOBAL PROPERTY "mrpt-${MRPTLIB}_LIB_IS_HEADERS_ONLY")
+		IF(NOT _LIB_HDRONLY)
+			IF(NOT MRPT_DONT_USE_DBG_LIBS)
+				LIST(APPEND MRPT_LIBS  optimized mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@ debug mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@-dbg)
+			ELSE(NOT MRPT_DONT_USE_DBG_LIBS)
+				LIST(APPEND MRPT_LIBS  mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@)
+			ENDIF(NOT MRPT_DONT_USE_DBG_LIBS)
+		ENDIF(NOT _LIB_HDRONLY)
 	ENDIF(NOT MSVC AND NOT BORLAND)
 	
 	IF(MRPTLIB MATCHES "hwdrivers")

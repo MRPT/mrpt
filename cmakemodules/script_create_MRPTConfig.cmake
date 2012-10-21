@@ -9,6 +9,14 @@ FOREACH(_LIB ${ALL_MRPT_LIBS})
 	SET(DECLARE_LIBS_DEPS "${DECLARE_LIBS_DEPS} set_property(GLOBAL PROPERTY \"${_LIB}_LIB_DEPS\" \"${_LIB_DEP}\")\n")
 ENDFOREACH(_LIB)
 
+# Create the code fragment: "DECLARE_LIBS_HDR_ONLY", for usage below while
+#  generating "MRPTConfig.cmake"
+SET(DECLARE_LIBS_HDR_ONLY "")
+FOREACH(_LIB ${ALL_MRPT_LIBS})
+	get_property(_LIB_HDR_ONLY GLOBAL PROPERTY "${_LIB}_LIB_IS_HEADERS_ONLY")
+	SET(DECLARE_LIBS_HDR_ONLY "${DECLARE_LIBS_HDR_ONLY} set_property(GLOBAL PROPERTY \"${_LIB}_LIB_IS_HEADERS_ONLY\" \"${_LIB_HDR_ONLY}\")\n")
+ENDFOREACH(_LIB)
+
 # ----------------------------------------------------------------------------
 #   Generate the MRPTConfig.cmake file
 # ----------------------------------------------------------------------------
