@@ -588,6 +588,6 @@ void  CTexturedObject::readFromStreamTexturedObject(CStream &in)
 			}
 		} break;
 	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(ver)
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }

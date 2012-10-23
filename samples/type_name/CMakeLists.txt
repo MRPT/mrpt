@@ -31,7 +31,7 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 #   The dependencies of a library are automatically added, so you only 
 #    need to specify the top-most libraries your code depend on.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED base)
+FIND_PACKAGE(MRPT REQUIRED graphs;gui)
 
 # ---------------------------------------------
 # TARGET:
@@ -67,7 +67,7 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 #  the MRPT tree:
 # -------------------------------------------------------------------------
 IF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT") # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt-base) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt-graphs;mrpt-gui) # Dependencies
 ENDIF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT")
 # -------------------------------------------------------------------------
 

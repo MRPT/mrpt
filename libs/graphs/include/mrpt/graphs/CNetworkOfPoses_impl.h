@@ -137,9 +137,9 @@ namespace mrpt
 
 
 				// =================================================================
-				//                     save_graph_of_poses_from_text_file
+				//                     save_graph_of_poses_to_text_file
 				// =================================================================
-				static void save_graph_of_poses_from_text_file(const graph_t *g, const std::string &fil)
+				static void save_graph_of_poses_to_text_file(const graph_t *g, const std::string &fil)
 				{
 					typedef typename graph_t::constraint_t CPOSE;
 
@@ -159,6 +159,46 @@ namespace mrpt
 
 				} // end save_graph
 
+				// =================================================================
+				//                     save_graph_of_poses_to_binary_file
+				// =================================================================
+				static void save_graph_of_poses_to_binary_file(const graph_t *g, mrpt::utils::CStream &out)
+				{
+					// Store class name:
+					const std::string sClassName = TTypeName<graph_t>::get();
+					out << sClassName;
+
+					// Store serialization version & object data:
+					const uint32_t version = 0;
+					out << version;
+					out << g->nodes << g->edges << g->root;
+				}
+
+				// =================================================================
+				//                     read_graph_of_poses_from_binary_file
+				// =================================================================
+				static void read_graph_of_poses_from_binary_file(graph_t *g, mrpt::utils::CStream &in)
+				{
+					// Compare class name:
+					const std::string sClassName = TTypeName<graph_t>::get();
+					std::string sStoredClassName;
+					in >> sStoredClassName;
+					ASSERT_EQUAL_(sStoredClassName,sClassName)
+
+					// Check serialization version:
+					uint32_t stored_version;
+					in >> stored_version;
+
+					g->clear();
+					switch (stored_version)
+					{
+					case 0:
+						in >> g->nodes >> g->edges >> g->root;
+						break;
+					default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(stored_version)
+					}
+
+				}
 
 				// =================================================================
 				//                     load_graph_of_poses_from_text_file

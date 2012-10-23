@@ -59,7 +59,6 @@ IF(BUILD_EXAMPLES)
 		geometry3D
 		poses
 		se3
-		type_name
 		csparse_demo
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base)
@@ -167,6 +166,7 @@ IF(BUILD_EXAMPLES)
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		a_starAlgorithm
 		dijkstra-example
+		type_name
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-graphs mrpt-gui)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

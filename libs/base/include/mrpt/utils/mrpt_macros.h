@@ -119,9 +119,9 @@
 #endif
 
 
-/** \def MRPT_DEBUG_BREAKPOINT(_msg)  
-  *  Only if compiled in debug (_DEBUG defined), calls mrpt::system::breakpoint() with the given message. 
-  *  All MRPT exceptions use this macro, so mrpt::system::breakpoint() is the ideal point to set a breakpoint 
+/** \def MRPT_DEBUG_BREAKPOINT(_msg)
+  *  Only if compiled in debug (_DEBUG defined), calls mrpt::system::breakpoint() with the given message.
+  *  All MRPT exceptions use this macro, so mrpt::system::breakpoint() is the ideal point to set a breakpoint
   *  and catch exception before they're actually raised.
   */
 #ifdef _DEBUG
@@ -231,7 +231,7 @@
 	}\
 
 /** For use in CSerializable implementations */
-#define MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(V) THROW_EXCEPTION(mrpt::format("Cannot parse object: unknown serialization version number: '%i'",static_cast<int>(version)))
+#define MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(__V) THROW_EXCEPTION(mrpt::format("Cannot parse object: unknown serialization version number: '%i'",static_cast<int>(__V)))
 
 
 #if MRPT_HAS_ASSERT

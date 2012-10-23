@@ -80,7 +80,7 @@ namespace mrpt
 		  *      - mrpt::graphs::CNetworkOfPoses3DCov : 3D edges as a Gaussian PDF with covariance matrix ( CPose3DPDFGaussian ). It's more efficient to use the information matrix version instead!
 		  *
 		  *  Two main members store all the information in this class:
-		  *		- \a edge  (in the base class mrpt::graphs::CDirectedGraph::edge): A map from pairs of node ID -> pose constraints.
+		  *		- \a edges  (in the base class mrpt::graphs::CDirectedGraph::edges): A map from pairs of node ID -> pose constraints.
 		  *		- \a nodes : A map from node ID -> estimated pose of that node (actually, read below on the template argument MAPS_IMPLEMENTATION).
 		  *
 		  *  Graphs can be loaded and saved to text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a> ),
@@ -166,7 +166,7 @@ namespace mrpt
 			  * \exception On any error
 			  */
 			inline void saveToTextFile( const std::string &fileName ) const {
-				detail::graph_ops<self_t>::save_graph_of_poses_from_text_file(this,fileName);
+				detail::graph_ops<self_t>::save_graph_of_poses_to_text_file(this,fileName);
 			}
 
 			/** Loads from a text file in the format used by TORO & HoG-man (more on the format <a href="http://www.mrpt.org/Robotics_file_formats" >here</a> )
@@ -255,20 +255,24 @@ namespace mrpt
 			/** @} */
 		};
 
-/*#define DEFINE_SERIALIZABLE_GRAPH  \
-		protected: \
-			virtual void  writeToStream(CStream &out, int *version) const { \
-				if (version) *version = 0; \
-				else out << nodes << edges << root;  \
-			} \
-			virtual void readFromStream(CStream &in, int version) { \
-				switch(version) \
-				{ \
-				case 0: { in >> nodes >> edges >> root; } break; \
-				default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version) \
-				}; \
-			}
-*/
+
+		/** Binary serialization (write) operator "stream << graph" */
+		template <class CPOSE,class MAPS_IMPLEMENTATION,class NODE_ANNOTATIONS,class EDGE_ANNOTATIONS>
+		CStream & operator << (CStream&out, const CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> &obj)
+		{
+			typedef CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> graph_t;
+			detail::graph_ops<graph_t>::save_graph_of_poses_to_binary_file(&obj,out);
+			return out;
+		}
+
+		/** Binary serialization (read) operator "stream >> graph" */
+		template <class CPOSE,class MAPS_IMPLEMENTATION,class NODE_ANNOTATIONS,class EDGE_ANNOTATIONS>
+		CStream & operator >> (CStream&in, CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> &obj)
+		{
+			typedef CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> graph_t;
+			detail::graph_ops<graph_t>::read_graph_of_poses_from_binary_file(&obj,in);
+			return in;
+		}
 
 		/** \addtogroup mrpt_graphs_grp
 		    @{ */
@@ -283,6 +287,37 @@ namespace mrpt
 		/** @} */  // end of grouping
 
 	} // End of namespace
+
+	// Specialization of TTypeName must occur in the same namespace:
+	namespace utils
+	{
+		// Extensions to mrpt::utils::TTypeName for matrices:
+		template<
+			class CPOSE,
+			class MAPS_IMPLEMENTATION,
+			class NODE_ANNOTATIONS,
+			class EDGE_ANNOTATIONS
+			>
+		struct TTypeName <mrpt::graphs::CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> >
+		{
+			static std::string get()
+			{
+				return std::string("mrpt::graphs::CNetworkOfPoses<")
+					+TTypeName<CPOSE>::get() + std::string(",")
+					+TTypeName<MAPS_IMPLEMENTATION>::get() + std::string(",")
+					+TTypeName<NODE_ANNOTATIONS>::get() + std::string(",")
+					+TTypeName<EDGE_ANNOTATIONS>::get()
+					+std::string(">");
+			}
+		};
+
+
+		MRPT_DECLARE_TTYPENAME(mrpt::graphs::detail::node_annotations_empty)
+		MRPT_DECLARE_TTYPENAME(mrpt::utils::map_traits_stdmap)
+		MRPT_DECLARE_TTYPENAME(mrpt::utils::map_traits_map_as_vector)
+
+	}
+
 } // End of namespace
 
 

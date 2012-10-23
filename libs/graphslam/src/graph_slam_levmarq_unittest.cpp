@@ -37,6 +37,7 @@
 #include <mrpt/graphslam.h>
 #include <mrpt/graphs.h>
 #include <mrpt/random.h>
+#include <mrpt/utils/CMemoryStream.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -63,11 +64,9 @@ protected:
 		graph.insertEdge(from,to, RelativePose );
 	}
 
-	void test_ring_path()
+	// The graph: nodes + edges:
+	void create_ring_path(my_graph_t & graph)
 	{
-		// The graph: nodes + edges:
-		my_graph_t  graph;
-
 		// The global poses of each node (without covariance):
 		typename my_graph_t::global_poses_t  real_node_poses;
 
@@ -142,9 +141,14 @@ protected:
 					randomGenerator.drawGaussian1D(0,STD_NOISE_NODE_ANG),
 					randomGenerator.drawGaussian1D(0,STD_NOISE_NODE_ANG),
 					randomGenerator.drawGaussian1D(0,STD_NOISE_NODE_ANG) ) );
+	}
 
-
+	void test_ring_path()
+	{
 		// This is the initial input graph (make a copy for later use):
+		my_graph_t graph;
+		create_ring_path(graph);
+
 		const my_graph_t  graph_initial = graph;
 
 		// ----------------------------
@@ -170,6 +174,34 @@ protected:
 
 	} // end test_ring_path
 
+	void test_graph_bin_serialization()
+	{
+		my_graph_t graph;
+		create_ring_path(graph);
+
+		// binary dump:
+		mrpt::utils::CMemoryStream mem;
+		mem << graph;
+
+		{
+			my_graph_t read_graph;
+			mem.Seek(0);
+			mem >> read_graph;
+
+			EXPECT_EQ( read_graph.edges.size(), graph.edges.size() );
+			EXPECT_EQ( read_graph.nodes.size(), graph.nodes.size() );
+
+			// Also check that the edge values are OK:
+			typename my_graph_t::const_iterator it1, it2;
+			for (it1=read_graph.edges.begin(), it2=graph.edges.begin(); it1!=read_graph.edges.end(); ++it1, ++it2)
+			{
+				EXPECT_EQ(it1->first, it2->first);
+				EXPECT_NEAR(0, (it1->second.getPoseMean().getAsVectorVal() - it2->second.getPoseMean().getAsVectorVal() ).array().abs().sum(), 1e-9 );
+			}
+		}
+
+	}
+
 };
 
 typedef GraphSlamLevMarqTester<CNetworkOfPoses2D> GraphSlamLevMarqTester2D;
@@ -183,6 +215,11 @@ TEST_F(GraphSlamLevMarqTester2D, OptimizeSampleRingPath)
 		test_ring_path();
 	}
 }
+TEST_F(GraphSlamLevMarqTester2D, BinarySerialization)
+{
+	randomGenerator.randomize(123);
+	test_graph_bin_serialization();
+}
 
 TEST_F(GraphSlamLevMarqTester3D, OptimizeSampleRingPath)
 {
@@ -191,4 +228,9 @@ TEST_F(GraphSlamLevMarqTester3D, OptimizeSampleRingPath)
 		randomGenerator.randomize(seed);
 		test_ring_path();
 	}
+}
+TEST_F(GraphSlamLevMarqTester3D, BinarySerialization)
+{
+	randomGenerator.randomize(123);
+	test_graph_bin_serialization();
 }

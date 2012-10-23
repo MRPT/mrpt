@@ -36,6 +36,7 @@
 #define  MRPT_DIRECTEDGRAPH_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/TTypeName.h>
 
 namespace mrpt
 {
@@ -54,7 +55,7 @@ namespace mrpt
 			std::map<TNodeID,std::string> node_names; //!< If provided, these textual names will be used for naming the nodes instead of their numeric IDs given in the edges.
 			std::map<TNodeID,std::string> node_props; //!< If provided, an extra line will be added setting Graphviz properties for each node, e.g. to set a node position, use the string "pos = \"x,y\""
 
-			TGraphvizExportParams() : mark_edges_as_not_constraint(false) 
+			TGraphvizExportParams() : mark_edges_as_not_constraint(false)
 			{}
 		};
 
@@ -253,7 +254,7 @@ namespace mrpt
 			/** @name I/O utilities
 				@{ */
 
-			/** Save the graph in a Graphviz (.dot files) text format; useful for quickly rendering the graph with "dot" 
+			/** Save the graph in a Graphviz (.dot files) text format; useful for quickly rendering the graph with "dot"
 			  * \return false on any error */
 			bool saveAsDot(std::ostream &o, const TGraphvizExportParams &p = TGraphvizExportParams() ) const
 			{
@@ -285,7 +286,7 @@ namespace mrpt
 				}
 				return !((o << "}\n").fail());
 			}
-			
+
 			/** \overload */
 			bool saveAsDot(const std::string &fileName, const TGraphvizExportParams &p = TGraphvizExportParams() ) const
 			{
@@ -299,5 +300,12 @@ namespace mrpt
 
 		/** @} */
 	} // End of namespace
+
+	// Specialization of TTypeName must occur in the same namespace:
+	namespace utils
+	{
+		MRPT_DECLARE_TTYPENAME(mrpt::graphs::detail::edge_annotations_empty)
+	}
+
 } // End of namespace
 #endif

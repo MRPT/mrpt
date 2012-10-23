@@ -63,6 +63,7 @@ namespace mrpt
 
 		/** @} */
 		/** @} */  // end of grouping
+
 	} // End of namespace
 } // End of namespace
 

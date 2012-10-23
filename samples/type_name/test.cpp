@@ -34,6 +34,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/base.h>
+#include <mrpt/graphs.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -74,6 +75,9 @@ void Test_TypeName()
 	cout << "Type: " << TTypeName<CArrayDouble<5> >::get() << endl;
 
 	cout << "Type: " << TTypeName< deque<vector<vector<int32_t> > > >::get() << endl;
+
+	// classes in mrpt::graphs
+	cout << "Type: " << TTypeName< mrpt::graphs::CNetworkOfPoses2D >::get() << endl;
 
 }
 
