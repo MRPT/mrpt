@@ -3,7 +3,7 @@
    |                                                                           |
    |                       http://www.mrpt.org/                                |
    |                                                                           |
-   |   Copyright (C) 2004-2011  University of Malaga                           |
+   |   Copyright (C) 2004-2012  University of Malaga                           |
    |                                                                           |
    |    This software was written by the Perception and Robotics               |
    |      research group, University of Malaga (Spain).                        |
@@ -51,9 +51,10 @@
 		- [mrpt-base]
 			- mrpt::math::MatrixBlockSparseCols, a templated column-indexed efficient storage of block-sparse Jacobian or Hessian matrices, together with other arbitrary information - <a href="http://code.google.com/p/mrpt/source/detail?r=2995" >r2995</a>
 	- Changes in libraries:
-		- These libs are now header-only: <a href="http://code.google.com/p/mrpt/source/detail?r=3035" >r3035</a>
+		- These libs are now header-only: <a href="http://code.google.com/p/mrpt/source/detail?r=3035" >r3035</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3045" >r3045</a>
 			- [mrpt-bayes]
 			- [mrpt-graphs]
+			- [mrpt-graphslam]
 	- Changes in classes:
 		- [mrpt-base]
 			- Eigen::MatrixBase<Derived>::loadFromTextFile(), and all MRPT derived matrix classes, are now much faster loading huge matrices from text files - <a href="http://code.google.com/p/mrpt/source/detail?r=2997" >r2997</a>

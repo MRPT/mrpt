@@ -38,8 +38,6 @@
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/poses/SE_traits.h>
 
-#include <mrpt/graphslam/link_pragmas.h>
-
 namespace mrpt
 {
 	/** SLAM methods related to graphs of pose constraints
@@ -84,7 +82,7 @@ namespace mrpt
 		};
 
 		/** Output information for mrpt::graphslam::optimize_graph_spa_levmarq() */
-		struct GRAPHSLAM_IMPEXP TResultInfoSpaLevMarq
+		struct TResultInfoSpaLevMarq
 		{
 			size_t  num_iters;             //!< The number of LM iterations executed.
 			double  final_total_sq_error;  //!< The sum of all the squared errors for every constraint involved in the problem.

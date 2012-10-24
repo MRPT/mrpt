@@ -15,7 +15,7 @@ digraph MRPT_LIBS {
 	scanmatching 		[label="mrpt-scanmatching",URL="group__mrpt__scanmatching__grp.html"];
 
 	slam 		[label="mrpt-slam",URL="group__mrpt__slam__grp.html"];
-	graphslam	[label="mrpt-graphslam",URL="group__mrpt__graphslam__grp.html"];
+	graphslam	[label="mrpt-graphslam (.h)",URL="group__mrpt__graphslam__grp.html"];
 	
 	hmtslam		[label="mrpt-hmtslam",URL="group__mrpt__hmtslam__grp.html"];
 	reactivenav	[label="mrpt-reactivenav",URL="group__mrpt__reactivenav__grp.html"];

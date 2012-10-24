@@ -1,19 +1,19 @@
 <map id="MRPT_LIBS" name="MRPT_LIBS">
-<area shape="rect" id="node1" href="group__mrpt__base__grp.html" title="mrpt&#45;base" alt="" coords="591,581,692,629"/>
-<area shape="rect" id="node2" href="group__mrpt__graphs__grp.html" title="mrpt&#45;graphs (.h)" alt="" coords="488,293,640,341"/>
-<area shape="rect" id="node3" href="group__mrpt__bayes__grp.html" title="mrpt&#45;bayes (.h)" alt="" coords="783,485,927,533"/>
-<area shape="rect" id="node4" href="group__mrpt__opengl__grp.html" title="mrpt&#45;opengl" alt="" coords="284,485,401,533"/>
-<area shape="rect" id="node5" href="group__mrpt__gui__grp.html" title="mrpt&#45;gui" alt="" coords="83,389,171,437"/>
-<area shape="rect" id="node6" href="group__mrpt__obs__grp.html" title="mrpt&#45;obs" alt="" coords="296,389,389,437"/>
-<area shape="rect" id="node7" href="group__mrpt__hwdrivers__grp.html" title="mrpt&#45;hwdrivers" alt="" coords="56,293,197,341"/>
-<area shape="rect" id="node8" href="group__mrpt__topography__grp.html" title="mrpt&#45;topography" alt="" coords="664,293,821,341"/>
-<area shape="rect" id="node11" href="group__mrpt__scanmatching__grp.html" title="mrpt&#45;scanmatching" alt="" coords="656,389,829,437"/>
-<area shape="rect" id="node9" href="group__mrpt__maps__grp.html" title="mrpt&#45;maps" alt="" coords="355,293,464,341"/>
-<area shape="rect" id="node10" href="group__mrpt__vision__grp.html" title="mrpt&#45;vision" alt="" coords="221,293,331,341"/>
-<area shape="rect" id="node12" href="group__mrpt__slam__grp.html" title="mrpt&#45;slam" alt="" coords="549,197,651,245"/>
-<area shape="rect" id="node13" href="group__mrpt__graphslam__grp.html" title="mrpt&#45;graphslam" alt="" coords="581,101,728,149"/>
-<area shape="rect" id="node14" href="group__mrpt__hmtslam__grp.html" title="mrpt&#45;hmtslam" alt="" coords="532,5,665,53"/>
-<area shape="rect" id="node15" href="group__mrpt__reactivenav__grp.html" title="mrpt&#45;reactivenav" alt="" coords="371,197,525,245"/>
-<area shape="rect" id="node16" href="group__mrpt__stereoslam__grp.html" title="mrpt&#45;stereoslam (*)" alt="" coords="5,197,181,245"/>
-<area shape="rect" id="node17" href="group__mrpt__detectors__grp.html" title="mrpt&#45;detectors" alt="" coords="205,197,347,245"/>
+<area shape="rect" id="node1" href="group__mrpt__base__grp.html" title="mrpt&#45;base" alt="" coords="494,581,577,629"/>
+<area shape="rect" id="node2" href="group__mrpt__graphs__grp.html" title="mrpt&#45;graphs (.h)" alt="" coords="410,293,531,341"/>
+<area shape="rect" id="node3" href="group__mrpt__bayes__grp.html" title="mrpt&#45;bayes (.h)" alt="" coords="665,485,780,533"/>
+<area shape="rect" id="node4" href="group__mrpt__opengl__grp.html" title="mrpt&#45;opengl" alt="" coords="237,485,333,533"/>
+<area shape="rect" id="node5" href="group__mrpt__gui__grp.html" title="mrpt&#45;gui" alt="" coords="65,389,137,437"/>
+<area shape="rect" id="node6" href="group__mrpt__obs__grp.html" title="mrpt&#45;obs" alt="" coords="246,389,324,437"/>
+<area shape="rect" id="node7" href="group__mrpt__hwdrivers__grp.html" title="mrpt&#45;hwdrivers" alt="" coords="44,293,159,341"/>
+<area shape="rect" id="node8" href="group__mrpt__topography__grp.html" title="mrpt&#45;topography" alt="" coords="556,293,681,341"/>
+<area shape="rect" id="node11" href="group__mrpt__scanmatching__grp.html" title="mrpt&#45;scanmatching" alt="" coords="551,389,687,437"/>
+<area shape="rect" id="node9" href="group__mrpt__maps__grp.html" title="mrpt&#45;maps" alt="" coords="297,293,385,341"/>
+<area shape="rect" id="node10" href="group__mrpt__vision__grp.html" title="mrpt&#45;vision" alt="" coords="183,293,273,341"/>
+<area shape="rect" id="node12" href="group__mrpt__slam__grp.html" title="mrpt&#45;slam" alt="" coords="457,197,540,245"/>
+<area shape="rect" id="node13" href="group__mrpt__graphslam__grp.html" title="mrpt&#45;graphslam (.h)" alt="" coords="482,101,624,149"/>
+<area shape="rect" id="node14" href="group__mrpt__hmtslam__grp.html" title="mrpt&#45;hmtslam" alt="" coords="446,5,551,53"/>
+<area shape="rect" id="node15" href="group__mrpt__reactivenav__grp.html" title="mrpt&#45;reactivenav" alt="" coords="309,197,432,245"/>
+<area shape="rect" id="node16" href="group__mrpt__stereoslam__grp.html" title="mrpt&#45;stereoslam (*)" alt="" coords="5,197,147,245"/>
+<area shape="rect" id="node17" href="group__mrpt__detectors__grp.html" title="mrpt&#45;detectors" alt="" coords="172,197,284,245"/>
 </map>
