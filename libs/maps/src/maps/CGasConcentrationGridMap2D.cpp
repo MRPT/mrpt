@@ -43,7 +43,10 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/color_maps.h>
-
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/system.h>
+#include <mrpt/base.h>
 #include <mrpt/opengl.h>
 #include <numeric>
 #include <ios>
@@ -54,6 +57,7 @@ using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
+using namespace mrpt::math;
 
 IMPLEMENTS_SERIALIZABLE(CGasConcentrationGridMap2D, CRandomFieldGridMap2D,mrpt::slam)
 
@@ -74,8 +78,12 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 	//  Also, calling clear() is mandatory to end initialization of our base class (read note in CRandomFieldGridMap2D::CRandomFieldGridMap2D)
 	CMetricMap::clear();
 
-	//Set initial map center position to (0,0).
-	mapCenterPose = CPose2D(0,0,0);
+	// Create WindGrids with same dimensions that the original map
+	windGrid_module.setSize( x_min,x_max,y_min,y_max,resolution );
+	windGrid_direction.setSize( x_min,x_max,y_min,y_max,resolution );
+		
+	//initialize counter for advection simulation
+	timeLastSimulated = now();
 }
 
 CGasConcentrationGridMap2D::~CGasConcentrationGridMap2D()
@@ -91,7 +99,33 @@ void  CGasConcentrationGridMap2D::internal_clear()
 	CRandomFieldGridMap2D::internal_clear();
 
 	// Anything else special for this derived class?
-	// ...
+	
+	if (insertionOptions.useWindInformation)
+	{
+		//Set default values of the wind grid
+		windGrid_module.fill(insertionOptions.default_wind_speed);
+		windGrid_direction.fill(insertionOptions.default_wind_direction);
+
+		/*float S = windGrid_direction.getSizeX() * windGrid_direction.getSizeY();
+		
+		for( unsigned int y=windGrid_direction.getSizeY()/2; y<windGrid_direction.getSizeY(); y++ )
+		{
+			for( unsigned int x=0; x<windGrid_direction.getSizeX(); x++ )
+			{			
+				double * wind_cell = windGrid_direction.cellByIndex(x,y);
+				*wind_cell =  3*3.141516/2;
+}
+		}*/
+
+		// Generate Look-Up Table of the Gaussian weights due to wind advection.
+		if( !build_Gaussian_Wind_Grid())
+		{
+			mrpt::system::pause();
+			THROW_EXCEPTION("Problem with LUT wind table");
+
+		}
+
+	}
 }
 
 
@@ -124,9 +158,9 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 		********************************************************************/
 		const CObservationGasSensors	*o = static_cast<const CObservationGasSensors*>( obs );
 
-		if (o->sensorLabel == insertionOptions.sensorLabel)
+		if (o->sensorLabel == insertionOptions.gasSensorLabel)
 		{
-			/** Correct sensorLabel, process the observation */			
+			/** Correct gasSensorLabel, process the observation */			
 
 			float sensorReading;
 			// Get index to differentiate between enoses --> insertionoptions.enose_id
@@ -139,7 +173,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 				CPose2D		sensorPose( CPose3D(robotPose2D) + it->eNosePoseOnTheRobot );
 
 				// Compute the sensor reading value (Volts):
-				if (insertionOptions.sensorType==0x0000){	//compute the mean
+				if (insertionOptions.gasSensorType==0x0000){	//compute the mean
 					sensorReading = math::mean( it->readingsVoltage );
 				}
 				else
@@ -148,7 +182,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 					size_t i;
 					for (i=0; i<it->sensorTypes.size(); i++)
 					{
-						if (it->sensorTypes.at(i) == int(insertionOptions.sensorType) )
+						if (it->sensorTypes.at(i) == int(insertionOptions.gasSensorType) )
 							break;
 					}
 
@@ -188,7 +222,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 
 			return true;	// Done!
 
-		} //endif correct "sensorLabel"
+		} //endif correct "gasSensorLabel"
 
 	} // end if "CObservationGasSensors"
 
@@ -371,9 +405,16 @@ void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
 					TInsertionOptions
  ---------------------------------------------------------------*/
 CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
+	
+	gasSensorLabel				( "MCEnose" ),
 	enose_id				( 0 ),			//By default use the first enose
-	sensorType				( 0x0000 )		//By default use the mean between all e-nose sensors
-
+	gasSensorType				( 0x0000 ),		//By default use the mean between all e-nose sensors
+	windSensorLabel				( "windSensor" ),
+	useWindInformation			( false ),		//By default dont use wind
+	default_wind_direction		( 0.0 ),
+	default_wind_speed			( 1.0 ),
+	std_windNoise_phi			( 0.2 ),
+	std_windNoise_mod			( 0.2 )
 {
 }
 
@@ -383,11 +424,22 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 void  CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
 {
 	out.printf("\n----------- [CGasConcentrationGridMap2D::TInsertionOptions] ------------ \n\n");
+	out.printf("[TInsertionOptions.Common] ------------ \n\n");
 	internal_dumpToTextStream_common(out);  // Common params to all random fields maps:
 
-	out.printf("sensorType								= %u\n", (unsigned)sensorType);
+	out.printf("[TInsertionOptions.GasSpecific] ------------ \n\n");
+	out.printf("gasSensorLabel							= %s\n", gasSensorLabel);	
 	out.printf("enose_id								= %u\n", (unsigned)enose_id);
+	out.printf("gasSensorType							= %u\n", (unsigned)gasSensorType);
+	out.printf("windSensorLabel							= %s\n", windSensorLabel);
+	out.printf("useWindInformation						= %u\n", useWindInformation);
 
+	out.printf("advectionFreq							= %f\n", advectionFreq);
+	out.printf("default_wind_direction					= %f\n", default_wind_direction);
+	out.printf("default_wind_speed						= %f\n", default_wind_speed);
+	out.printf("std_windNoise_phi						= %f\n", std_windNoise_phi);
+	out.printf("std_windNoise_mod						= %f\n", std_windNoise_mod);
+	
 	out.printf("\n");
 }
 
@@ -402,11 +454,11 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 	internal_loadFromConfigFile_common(iniFile,section);
 
 	// Specific data fields for gasGridMaps
-	sensorLabel	= iniFile.read_string(section.c_str(),"sensorLabel","Full_MCEnose");
+	gasSensorLabel	= iniFile.read_string(section.c_str(),"gasSensorLabel","Full_MCEnose",true);
 	enose_id	= iniFile.read_int(section.c_str(),"enoseID",enose_id);
+	//Read sensor type in hexadecimal
 	{
-		//Read sensor type in hexadecimal
-		std::string sensorType_str = iniFile.read_string(section.c_str(),"sensorType","-1");
+		std::string sensorType_str = iniFile.read_string(section.c_str(),"gasSensorType","-1",true);
 		int tmpSensorType;
 		stringstream convert ( sensorType_str );
 		convert>> std::hex >> tmpSensorType;
@@ -414,14 +466,30 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 		if (tmpSensorType>=0)
 		{
 			// Valid number found:
-			sensorType = tmpSensorType;
+			gasSensorType = tmpSensorType;
 		}
 		else
 		{ // fall back to old name, or default to current value:
-			sensorType = iniFile.read_int(section.c_str(),"KF_sensorType",sensorType);
+			gasSensorType = iniFile.read_int(section.c_str(),"KF_sensorType",gasSensorType,true);
 		}
 	}
+	windSensorLabel	= iniFile.read_string(section.c_str(),"windSensorLabel","Full_MCEnose",true);
 
+	//Indicates if wind information must be used for Advection Simulation
+	useWindInformation				 = iniFile.read_bool(section.c_str(),"useWindInformation","false",true);
+	
+	//(rad) The initial/default value of the wind direction
+	default_wind_direction			 = iniFile.read_float(section.c_str(),"default_wind_direction",0,false);
+	//(m/s) The initial/default value of the wind speed
+	default_wind_speed				 = iniFile.read_float(section.c_str(),"default_wind_speed",0,false);
+
+	//(rad) The noise in the wind direction
+	std_windNoise_phi				 = iniFile.read_float(section.c_str(),"std_windNoise_phi",0,false);
+	//(m/s) The noise in the wind strenght
+	std_windNoise_mod				 = iniFile.read_float(section.c_str(),"std_windNoise_mod",0,false);
+
+	//(m/s) The noise in the wind strenght
+	advectionFreq				 = iniFile.read_float(section.c_str(),"advectionFreq",1,true);	
 }
 
 
@@ -497,257 +565,889 @@ void  CGasConcentrationGridMap2D::getAs3DObject(
 }
 
 /*---------------------------------------------------------------
-						centerMapAtLocation
+						getWindAs3DObject
 ---------------------------------------------------------------*/
-void CGasConcentrationGridMap2D::centerMapAtLocation( 
-	CGasConcentrationGridMap2D &reference_map,
-	const CPose3D &newSensorPose)
+void  CGasConcentrationGridMap2D::getWindAs3DObject( mrpt::opengl::CSetOfObjectsPtr &windObj) const
 {
-
-	// REFERENCE MAP
-	// Assure we have room enough in the reference grid!
-	//----------------------------------------------------
-	const TRandomFieldCell defCell(
-				m_insertOptions_common->KF_defaultCellMeanValue,	// mean
-				m_insertOptions_common->KF_initialCellStd			// std
-				);
-
-	const double AspaceX = m_size_x*m_resolution /2;	//Half width of the Mobile_map (meters)
-	const double AspaceY = m_size_y*m_resolution /2;	//Half height of the Mobile_map (meters)
-
-	const TPose3D sensorPose = TPose3D(newSensorPose);
-	const TPose2D sensorPose2D = TPose2D(sensorPose);
+	//Return an arrow map of the wind state (module(color) and direction).
+	float scale = 0.2;
+	size_t arrow_separation = 5;	//distance between arrows, expresed as times the cell resolution
 
 
-	//cout << "Resizing( " << sensorPose2D.x - AspaceX << " , " << sensorPose2D.x + AspaceX;
-	//cout << " , " << sensorPose2D.y - AspaceY << " , " << sensorPose2D.y + AspaceY;
-	//cout << " , " << 4*max(AspaceX,AspaceY) << endl;
+	//map limits				  
+	float x_min = getXMin();
+	float x_max = getXMax();
+	float y_min = getYMin();
+	float y_max = getYMax();
+	float resol = getResolution();
 
-	reference_map.resize(	sensorPose2D.x - AspaceX,
-			sensorPose2D.x + AspaceX,
-			sensorPose2D.y - AspaceY,
-			sensorPose2D.y + AspaceY,
-			defCell,
-			4*max(AspaceX,AspaceY) );
+
+	//Ensure map dimensions match with wind map
+	unsigned int wind_map_size = windGrid_direction.getSizeX() * windGrid_direction.getSizeY();
+	ASSERT_( wind_map_size == windGrid_module.getSizeX() * windGrid_module.getSizeY() );
+	if( m_map.size() != wind_map_size )
+	{
+		cout << " GAS MAP DIMENSIONS DO NOT MATCH WIND MAP " << endl;
+		mrpt::system::pause();
+	}
+
+
+	unsigned int	cx,cy;
+	vector<float>	xs,ys;
 	
-	//cout << "Resized OK" << endl;
-	// MOBILE MAP
-	// Update mobile m_map according to the new position
-	//---------------------------------------------------------------
+	// xs: array of X-axis values	
+	xs.resize( floor((x_max-x_min)/(arrow_separation*resol)) );
+	for (cx=0;cx<xs.size();cx++)
+		xs[cx] = x_min + arrow_separation*resol * cx;
 	
-	//Estimate cell displacement of the mobile map over the reference map
-	int old_cx = reference_map.x2idx(mapCenterPose.x);
-    int old_cy = reference_map.y2idx(mapCenterPose.y);
+	// ys: array of X-axis values
+	ys.resize( floor((y_max-y_min)/(arrow_separation*resol)) );
+	for (cy=0;cy<ys.size();cy++)
+		ys[cy] = y_min + arrow_separation*resol * cy;
 
-    int new_cx = reference_map.x2idx(sensorPose2D.x);
-    int new_cy = reference_map.y2idx(sensorPose2D.y);
+	for (cy=0;cy<ys.size();cy++)
+	{
+		for (cx=0;cx<xs.size();cx++)
+		{
+			// Cell values [0,inf]:
+			double dir_xy = *windGrid_direction.cellByPos( xs[cx],ys[cy] );
+			double mod_xy = *windGrid_module.cellByPos( xs[cx],ys[cy] );
 	
-	int Ax = new_cx - old_cx;
-	int Ay = new_cy - old_cy;
 
-	//make a copy of the fixed size m_map mobile grid
-	std::vector<TRandomFieldCell> old_m_map;
-	std::vector<TRandomFieldCell>::iterator	itSrc,itOld;
-	unsigned int cx,cy;
-	old_m_map = m_map;
+			mrpt::opengl::CArrowPtr obj = CArrow::Create(
+				xs[cx],ys[cy],0,
+				xs[cx]+scale*cos(dir_xy),ys[cy]+scale*sin(dir_xy),0,
+				1.15f*scale,0.3f*scale,0.35f*scale);
 
+			float r,g,b;
+			jet2rgb( mod_xy,r,g,b );
+			obj->setColor(r,g,b);
 
-	int local_map_center_x = x2idx(0);//m_size_x/2;
-	int local_map_center_y = y2idx(0);//m_size_y/2;
+			windObj->insert( obj );
+		}
+	}
+}
 
-	//update mobile m_map
-	for (cy=0; cy<m_size_y; cy++)
+/*---------------------------------------------------------------
+						increaseUncertainty
+---------------------------------------------------------------*/
+void CGasConcentrationGridMap2D::increaseUncertainty(const double STD_increase_value)
     {
-        for (cx=0,itSrc=(m_map.begin()+cy*m_size_x),itOld=(old_m_map.begin()+cy*m_size_x); cx<m_size_x; cx++,itSrc++,itOld++)
+	//Increase cell variance
+//	unsigned int cx,cy;
+//	double memory_retention;
+	
+	m_hasToRecoverMeanAndCov = true;
+	for( size_t it=0; it<m_map.size(); it++ )
         {
-			if ( (cx+Ax>0) && (cx+Ax<m_size_x) && (cy+Ay>0) && (cy+Ay<m_size_y) )
+		m_stackedCov(it,0) = m_stackedCov(it,0)+STD_increase_value;
+	}
+
+	//Update m_map.kf_std
+	recoverMeanAndCov();
+
+	//for (cy=0; cy<m_size_y; cy++)
+ //   {
+ //       for (cx=0; cx<m_size_x; cx++)
+ //       {
+	//		// Forgetting_curve --> memory_retention = exp(-time/memory_relative_strenght)
+	//		memory_retention = exp(- mrpt::system::timeDifference(m_map[cx + cy*m_size_x].last_updated, now()) / memory_relative_strenght);
+	//		//Update Uncertainty (STD)
+	//		m_map[cx + cy*m_size_x].kf_std = 1 - ( (1-m_map[cx + cy*m_size_x].updated_std) * memory_retention );
+ //       }
+ //   }
+}
+
+
+/*---------------------------------------------------------------
+						simulateAdvection
+---------------------------------------------------------------*/
+bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_value )
 			{
-				//Copy from old_m_map
-				*itSrc = old_m_map[ (cx+Ax) + (cy+Ay)*m_size_x ];
+			
+	/* 1- Ensure we can use Wind Information
+	-------------------------------------------------*/
+	if(!insertionOptions.useWindInformation)
+	{	
+		return false;
 			}
-			else
+
+	/* 2- Define Variables
+	-------------------------------------------------------------------------------------------*/	
+	int cell_i_cx,cell_i_cy;
+	float cell_i_x, cell_i_y;
+	float mu_phi, mu_r, mu_modwind;	
+	
+	//Get time since last simulation
+	double At = mrpt::system::timeDifference(timeLastSimulated, mrpt::system::now());
+	cout << " - At since last simulation = " << At << "seconds" << endl;
+	//update time of last updated.
+	timeLastSimulated = mrpt::system::now();
+
+	// Sparse Matrix depicting the relation between cells with the wind
+	// mean(t+1) = SA * mean(t)
+	// Cov(t+1) = SA * Cov(t) * SA'
+	const size_t N = m_map.size();
+	//mrpt::math::CSparseMatrix SA(N,N);
+	//mrpt::math::CSparseMatrix SAtranspose(N,N);
+	std::vector<float> row_prob (N, 0.0);
+
+
+	/* 3- Build Transition Matrix (SA)
+	  This Matrix contains the probabilities of each cell 
+	  to "be displaced" to other cells by the wind effect.
+	------------------------------------------------------*/
+	mrpt::utils::CTicTac tictac;	
+	size_t i,c;
+	mrpt::math::CMatrix A(N,N);
+	A.fill(0.0);
+
+	try
 			{
-				//Copy from reference grid
-				int ref_x = new_cx + (cx- local_map_center_x);
-				int ref_y = new_cy + (cy- local_map_center_y);
-				*itSrc = *reference_map.cellByIndex(ref_x,ref_y);
+		//Ensure map dimensions match with wind map
+		unsigned int wind_map_size = windGrid_direction.getSizeX() * windGrid_direction.getSizeY();
+		ASSERT_( wind_map_size == windGrid_module.getSizeX() * windGrid_module.getSizeY() );
+		if( N != wind_map_size )
+		{
+			cout << " GAS MAP DIMENSIONS DO NOT MATCH WIND INFORMATION " << endl;
+			mrpt::system::pause();
 			}
+		
+		tictac.Tic();
+
+		//Generate Sparse Matrix of the wind advection SA
+		for(i=0; i<N; i++)
+		{
+			//Cell_i indx and coordinates
+			idx2cxcy(i,cell_i_cx,cell_i_cy);
+			cell_i_x = idx2x(cell_i_cx);
+			cell_i_y = idx2y(cell_i_cy);
+
+			//Read dirwind value of cell i		
+			mu_phi = *windGrid_direction.cellByIndex(cell_i_cx,cell_i_cy);		//[0,2*pi]
+			unsigned int phi_indx = round(mu_phi/LUT.phi_inc);			
+						
+			//Read modwind value of cell i
+			mu_modwind = *windGrid_module.cellByIndex(cell_i_cx,cell_i_cy);		//[0,inf)
+			mu_r =  mu_modwind * At;
+			if( mu_r > LUT.max_r)
+				mu_r = LUT.max_r;
+			unsigned int r_indx = round(mu_r/LUT.r_inc);			
+													
+			//Evaluate LUT			
+			ASSERT_(phi_indx < LUT.phi_count);
+			ASSERT_(r_indx < LUT.r_count);
+
+			//define label
+			vector<TGaussianCell> &cells_to_update = LUT_TABLE[phi_indx][r_indx];
+
+			//Generate Sparse Matrix with the wind weights "SA"
+			for( unsigned int ci=0; ci<cells_to_update.size(); ci++)
+			{
+				int final_cx = cell_i_cx + cells_to_update[ci].cx;
+				int final_cy = cell_i_cy + cells_to_update[ci].cy;
+				//Check if affected cells is within the map
+				if( (final_cx>=0) && (final_cx<(int)getSizeX()) && (final_cy>=0) && (final_cy<(int)getSizeY()) )
+				{
+					int final_idx = final_cx + final_cy*getSizeX();
+									
+					// Add Value to SA Matrix
+					if( cells_to_update[ci].value != 0.0 )
+					{
+						A(final_idx,i) = cells_to_update[ci].value;
+						//Sparse
+						//SA.insert_entry(final_idx,i,cells_to_update[ci].value);
+						row_prob[ci] += cells_to_update[ci].value;
         }
     }
+			}//end-for ci
+		}//end-for cell i
+
+		// normalize each row of A so the sum(prob)=1
+	
+		
+		//Compress and transpose Sparse Matrix A
+		//---------------------------------------
+		//cout << " - SA NotNullElements= " << SA.getNumElementsNotNull() << endl;
+//		SA.compressFromTriplet();
+//		SAtranspose = SA.transpose();
+		//cout << " - SA matrix computed in " << tictac.Tac() << "s" << endl<<endl;
+	}
+	catch( mrpt::utils::exception e)
+	{
+		cout << " #########  EXCEPTION computing Transition Matrix (A) ##########\n: " << e.what() << endl;
+		cout << "on cell i= " << i << "  c=" << c << endl << endl;
+		return false;
+	}
+
+
+
+
+	/* Update Mean + Variance as a Gaussian Mixture
+	------------------------------------------------*/
+	try
+		{
+		std::vector<double> new_means(N,0.0);
+		std::vector<double> new_variances(N,0.0);
+
+		for( size_t it_i=0; it_i<N; it_i++)
+			{
+			//mean
+			for( size_t it_j=0; it_j<N; it_j++)
+			{		
+				new_means[it_i] += ( A(it_i,it_j) * m_map[it_j].kf_mean );
+			}
+			//variance
+			for( size_t it_j=0; it_j<N; it_j++)
+			{		
+				new_variances[it_i] += A(it_i,it_j) * ( m_stackedCov(it_j,0) + square( m_map[it_j].kf_mean - new_means[it_i]) );
+			}
+		}
+
+		for( size_t it_i=0; it_i<N; it_i++)
+		{
+			m_map[it_i].kf_mean = new_means[it_i];		//means
+			m_stackedCov(it_i,0) = new_variances[it_i];	//variances
+		}
+		m_hasToRecoverMeanAndCov = true;
+		recoverMeanAndCov();
+
+
+
+
+	///* 4. Update Means: C(t+1) = A * C(t) 
+	//-------------------------------------*/	
+	//	tictac.Tic();		
+	//	//Transform from vector to CSparseMatrix
+	//	mrpt::math::CSparseMatrix Smeans(N,1);
+	//	for( size_t it=0; it<N; it++)
+	//	{			
+	//		if( m_map[it].kf_mean > 0.0 )	//keep only non null values
+	//			Smeans.insert_entry(it,0,m_map[it].kf_mean);			
+	//	}
+	//			
+	//	//Compress Sparse Matrix
+	//	Smeans.compressFromTriplet();
+
+	//	//Update Means with Transition Matrix
+	//	Smeans.multiply_AB(SA,Smeans);
+
+	//	//Transform from CSparse to vector
+	//	mrpt::math::CMatrixDouble meanMatrix;
+	//	Smeans.get_dense(meanMatrix);
+	//	ASSERT_(meanMatrix.getRowCount() == N);
+	//	ASSERT_(meanMatrix.getColCount() == 1);
+	//	for( size_t row=0; row<N; row++)
+	//	{
+	//		m_map[row].kf_mean = meanMatrix(row,0);		
+	//	}		
+	//	//cout << " - Mean updated in " << tictac.Tac() << "s" << endl;
+	//}
+	//catch( mrpt::utils::exception e)
+	//{
+	//	cout << " #########  EXCEPTION Updating Means ##########\n: " << e.what() << endl;		
+	//	return false;
+	//}
+
+	//
+	//
+	///* 5. Update Covariances: Cov(t+1) = A * Cov(t) * A'
+	//----------------------------------------------------*/
+	//try
+	//{
+	//	tictac.Tic();
+	//	CSparseMatrix SCov(N,N);
+	//	const uint16_t	W = m_insertOptions_common->KF_W_size;
+	//	const size_t _2W1 = 2*W +1;
+	//	const size_t	K = 2*W*(W+1)+1;
+	//	//Check dimensions
+	//	_ASSERT(m_stackedCov.rows() == N);
+	//	_ASSERT(m_stackedCov.cols() == K);
+
+
+	//	//m_stackedCov.saveToTextFile("old_cov");
+
+	//	// Transform from m_stackedCov to CSparse
+	//	for( i=0;i<N;i++ )	//for each row of the Compresed Cov Matrix
+	//	{
+	//		for( c=0; c<K; c++ ) //for each column of the Compresed Cov Matrix
+	//		{
+	//			if( m_stackedCov(i,c)>0.0 )
+	//			{
+	//				if( c==0 )	//j==i Variance of cell i
+	//				{
+	//					SCov.insert_entry(i,i,m_stackedCov(i,c));
+	//				}
+	//				else if( c<=W )	//j>i in the same row
+	//				{
+	//					//calculate index of cells in the MAP, corresponding to the actual covariance in the m_stackedCov(i,c) = sigma(i,j)
+	//					size_t j = i+c;
+	//					if( (j<N) && ( (j/m_size_x) == (i/m_size_x) ) )	//inside the map and in the same row
+	//					{
+	//						SCov.insert_entry(i,j,m_stackedCov(i,c));
+	//						SCov.insert_entry(j,i,m_stackedCov(i,c));
+	//					}
+	//				}
+	//				else //cell_j belongs to a row over cell_i
+	//				{
+	//					size_t row = (c+W)/_2W1;
+	//															
+	//					//calculate index of cells in the MAP, corresponding to the actual covariance in the Compressed_Cov(i,c) = sigma(i,j)
+	//					//size_t j = i+(row*m_size_x)+counter;
+	//					size_t j = i+(row*m_size_x)+c-(row*_2W1);
+	//					if( (j<N) && ( (j/m_size_x) == ((i/m_size_x) +row)) )
+	//					{
+	//						SCov.insert_entry(i,j,m_stackedCov(i,c));
+	//						SCov.insert_entry(j,i,m_stackedCov(i,c));
+	//					}
+	//				}
+	//			}
+	//		}//end-for c
+	//	}//end-for i
+
+	//	//ensure conversion is ok
+	//	//CMatrixD new_m_stackedCov(N,K);		
+	//	//SCov.getCompressedCov(new_m_stackedCov, W, m_size_x);
+	//	//new_m_stackedCov.saveToTextFile("new_cov.txt");
+	//	
+
+	//	
+	//	//Compress the Sparse Cov Matrix
+	//	//cout << " - SCov NotNullElements= " << SCov.getNumElementsNotNull() << endl;
+	//	SCov.compressFromTriplet();
+	//	//cout << " - SCov generated in " << tictac.Tac() << "s" << endl << endl;
+	//	tictac.Tic();
+
+	//
+	//	//Multiply!!
+	//	CSparseMatrix SCov_t_1;
+	//	SCov_t_1.multiply_AB(SA,SCov);
+	//	SCov_t_1.multiply_AB(SCov_t_1,SAtranspose);
+	//	//cout << " - Multiplication in " << tictac.Tac() << "s" << endl;
+	//	//tictac.Tic();
+
+	//	SCov_t_1.getCompressedCov(m_stackedCov, W, m_size_x);
+	//	m_hasToRecoverMeanAndCov = true;
+	//	recoverMeanAndCov();
+	//	//cout << " - Covariances updates in " << tictac.Tac() << "s" << endl;
+
+	}
+	catch( mrpt::utils::exception e)
+				{
+		cout << " #########  EXCEPTION Updating Covariances ##########\n: " << e.what() << endl;
+		cout << "on row i= " << i << "  column c=" << c << endl << endl;
+		return false;
+	}
 
 	
-	// MOBILE MAP
-	// Update mobile Cov. Matrix
-	//---------------------------------------------------------------
-	switch (m_mapType)
-	{
-	default:
-		THROW_EXCEPTION("Operation not implemented for this map type")
-		break;
+	//cout << " Increasing general STD..." << endl;
+	increaseUncertainty(STD_increase_value);	
+	
+	return true;
+	
+}
 
-	case mrKalmanFilter:
-		{
-			// ------------------------------------------
-			//		Update the covariance matrix
-			// ------------------------------------------
-			size_t			i,j,N = m_size_y*m_size_x;	// The new number of cells
-			CMatrixD		oldCov( m_cov );			// Make a copy
 
-			// -------------------------------------------------------
-			// STEP 1: Copy the old map values:
-			// -------------------------------------------------------
-			for (i = 0;i<N;i++)
-			{
-				size_t	cx1 = i % m_size_x;
-				size_t	cy1 = i / m_size_x;
 
-				bool	C1_isFromOldMap =	(cx1+Ax>0) && (cx1+Ax<m_size_x) && (cy1+Ay>0) && (cy1+Ay<m_size_y);
 
-				if ( C1_isFromOldMap )
-				{
-					for (j = i;j<N;j++)
+/*---------------------------------------------------------------
+						build_Gaussian_Wind_Grid
+---------------------------------------------------------------*/
+
+bool CGasConcentrationGridMap2D::build_Gaussian_Wind_Grid()
+/** Builds a LookUp table with the values of the Gaussian Weights result of the wind advection
+*   for a specific condition.
+*
+*	The LUT contains the values of the Gaussian Weigths and the references to the cell indexes to be applied.
+*	Since the LUT is independent of the wind direction and angle, it generates the Gaussian Weights for different configurations
+*	of wind angle and module values.
+*
+*	To increase precission, each cell of the grid is sub-divided in subcells of smaller size.
+
+*	cell_i --> Cell origin (We consider our reference system in the bottom left corner of cell_i ). 
+			   Is the cell that contains the gas measurement which will be propagated by the wind.
+			   The wind propagates in the shape of a 2D Gaussian with center in the target cell (cell_j)
+*	cell_j --> Target cell. Is the cell where falls the center of the Gaussian that models the propagation of the gas comming from cell_i.
+*/
+
 					{
-						size_t	cx2 = j % m_size_x;
-						size_t	cy2 = j / m_size_x;
 
-						bool	C2_isFromOldMap =	(cx2+Ax>0) && (cx2+Ax<m_size_x) && (cy2+Ay>0) && (cy2+Ay<m_size_y);
+	cout << endl << "---------------------------------" << endl;
+	cout << " BUILDING GAUSSIAN WIND WEIGHTS " << endl;
+	cout << "---------------------------------" << endl << endl;
 
-						// Were both cells in the old map??? --> Copy it!
-						if ( C1_isFromOldMap && C2_isFromOldMap )
+
+	//-----------------------------
+	//          PARAMS
+	//-----------------------------
+	LUT.resolution = getResolution();														//resolution of the grid-cells (m)
+	LUT.std_phi = insertionOptions.std_windNoise_phi;										//Standard Deviation in wind Angle (cte)
+	LUT.std_r = insertionOptions.std_windNoise_mod / insertionOptions.advectionFreq;		//Standard Deviation in wind module (cte)
+	std::string filename = format("Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",LUT.resolution,LUT.std_phi,LUT.std_r);
+	
+	// Fixed Params:	
+	LUT.phi_inc = M_PI/8;									//Increment in the wind Angle. (rad)
+	LUT.phi_count = round(2*M_PI/LUT.phi_inc)+1;			//Number of angles to generate
+	LUT.r_inc = 0.1;										//Increment in the wind Module. (m)
+	LUT.max_r = 2;											//maximum distance (m) to simulate
+	LUT.r_count = round(LUT.max_r/LUT.r_inc)+1;				//Number of wind modules to simulate
+
+	LUT.table = new vector<vector<vector<TGaussianCell>>>(LUT.phi_count, vector<vector<TGaussianCell>>(LUT.r_count,vector<TGaussianCell>()) );
+
+
+	//LUT.table = new vector<vector<vector<vector<vector<TGaussianCell>>>>>(LUT.subcell_count, vector<vector<vector<vector<TGaussianCell>>>>(LUT.subcell_count, vector<vector<vector<TGaussianCell>>>(LUT.phi_count, vector<vector<TGaussianCell>>(LUT.r_count,vector<TGaussianCell>()) ) ) );
+
+	//-----------------------------
+	//    Check if file exists
+	//-----------------------------
+
+	cout << "Looking for file: " << filename.c_str() << endl;
+
+	if( mrpt::system::fileExists(filename.c_str()) )
 						{
-							// Copy values from the old Cov. matrix:
-							unsigned int	idx_c1 = cx1+Ax + (cy1+Ay)*m_size_x;
-							unsigned int	idx_c2 = cx2+Ax + (cy2+Ay)*m_size_x;
+		// file exists. Load lookUptable from file
+		cout << "LookUp table found for this configuration. Loading..." << endl;
+		return load_Gaussian_Wind_Grid_From_File();
 
-							m_cov(i,j) = oldCov( idx_c1, idx_c2 );
-							m_cov(j,i) = m_cov(i,j);
+	}
+	else 
+	{
+		// file does not exists. Generate LookUp table.
+		cout << "LookUp table NOT found. Generating table..." << endl;
 
-							if (i==j)
-								ASSERT_( idx_c1 == idx_c2 );							
+		bool debug = true;
+		FILE *debug_file;
+
+		if (debug)
+		{
+			debug_file = fopen ("simple_LUT.txt","w");
+			fprintf(debug_file," phi_inc = %.4f \n r_inc = %.4f \n",LUT.phi_inc,LUT.r_inc);
+			fprintf(debug_file," std_phi = %.4f \n std_r = %.4f \n",LUT.std_phi,LUT.std_r);
+			fprintf(debug_file,"[ phi ] [ r ] ---> (cx,cy)=Value\n");
+			fprintf(debug_file,"----------------------------------\n");
 						}
 
-						ASSERT_( !isNaN( m_cov(i,j) ) );
-
-					} // for j
-				}
-				else //Compute only the m_cov(i,i)
-				{	
-					//Update according to the STD from reference grid cell
-					const double ref_cell_std = m_map[cx1 + cy1*m_size_x].kf_std;
-					m_cov(i,i) = square(  ref_cell_std );					
-				}
-
-			} // for i
-
-			// -------------------------------------------------------
-			// STEP 2: Set default values (or values from the main_map) for new cells
-			// -------------------------------------------------------
-			for (i=0;i<N;i++)
-			{
-				size_t	cx1 = i % m_size_x;
-				size_t	cy1 = i / m_size_x;
-
-				bool	C1_isFromOldMap =	(cx1+Ax>0) && (cx1+Ax<m_size_x) && (cy1+Ay>0) && (cy1+Ay<m_size_y);
-
-				for (j=i;j<N;j++)
+				// For the different possible angles (phi)
+				for (size_t phi_indx=0; phi_indx<LUT.phi_count; phi_indx++ )
 				{
-					size_t	cx2 = j % m_size_x;
-					size_t	cy2 = j / m_size_x;
+					// mean of the phi value
+					float phi = phi_indx * LUT.phi_inc;
 
-					bool	C2_isFromOldMap =	(cx2+Ax>0) && (cx2+Ax<m_size_x) && (cy2+Ay>0) && (cy2+Ay<m_size_y);
-
-					double	dist=0;
-
-					// Ensure is not case 1
-					if ( !C1_isFromOldMap || !C2_isFromOldMap )
+					//For the different and possibe wind modules (r)
+					for (size_t r_indx=0; r_indx<LUT.r_count; r_indx++ )
 					{
-						// Update according to the reference_map(main_map):
-						if (i!=j)						
-						{
-							dist = m_resolution*sqrt( static_cast<double>( square(cx1-cx2) +  square(cy1-cy2) ));
-							double K = sqrt(m_cov(i,i)*m_cov(j,j));
+						//mean of the radius value
+						float r = r_indx * LUT.r_inc;
 
-							if ( isNaN( K ) )
+						if (debug)
+						{
+							fprintf(debug_file, "\n[%.2f] [%.2f] ---> ",phi, r);
+				}
+
+						//Estimates Cell_i_position
+						unsigned int cell_i_cx = 0;
+						unsigned int cell_i_cy = 0;
+						float cell_i_x = LUT.resolution/2.0;
+						float cell_i_y = LUT.resolution/2.0;
+
+						//Estimate target position according to the mean value of wind.
+						float x_final = cell_i_x + r*cos(phi);
+						float y_final = cell_i_y + r*sin(phi);
+
+						//Determine cell_j coordinates respect to origin_cell
+						int cell_j_cx = static_cast<int>(floor( (x_final)/LUT.resolution ));
+						int cell_j_cy = static_cast<int>(floor( (y_final)/LUT.resolution ));
+						//Center of cell_j
+						float cell_j_x = (cell_j_cx+0.5f)*LUT.resolution;
+						float cell_j_y = (cell_j_cy+0.5f)*LUT.resolution;
+						//left bottom corner of cell_j
+						float cell_j_xmin = cell_j_x - LUT.resolution/2.0;
+						float cell_j_ymin = cell_j_y - LUT.resolution/2.0;
+
+						 
+
+						/* ---------------------------------------------------------------------------------
+							Generate bounding-box  (+/- 3std) to determine which cells to update
+						---------------------------------------------------------------------------------*/
+						std::vector<double> vertex_x, vertex_y;
+						vertex_x.resize(14);
+						vertex_y.resize(14);
+						//Bounding-Box initialization
+						double minBBox_x = 1000;
+						double maxBBox_x = -1000;
+						double minBBox_y = 1000;
+						double maxBBox_y = -1000;
+
+						//Consider special case for high uncertainty in PHI. The shape of the polygon is a donut.
+						double std_phi_BBox = LUT.std_phi;
+						if( std_phi_BBox > M_PI/3)
+				{	
+							std_phi_BBox = M_PI/3;	//To avoid problems generating the bounding box. For std>pi/3 the shape is always a donut.
+				}
+
+						// Calculate bounding box limits
+						size_t indx = 0;
+						int sr=3;			
+						for( int sd=(-3); sd<=(3); sd++ )
+						{
+							vertex_x[indx] = cell_i_x + (r+sr*LUT.std_r)*cos(phi+sd*std_phi_BBox);
+							if (vertex_x[indx] < minBBox_x)
+								minBBox_x = vertex_x[indx];
+							if (vertex_x[indx] > maxBBox_x)
+								maxBBox_x = vertex_x[indx];
+
+							vertex_y[indx] = cell_i_y + (r+sr*LUT.std_r)*sin(phi+sd*std_phi_BBox);
+							if (vertex_y[indx] < minBBox_y)
+								minBBox_y = vertex_y[indx];
+							if (vertex_y[indx] > maxBBox_y)
+								maxBBox_y = vertex_y[indx];
+
+							indx++;
+						}
+						sr=-3;			
+						for( int sd=(3); sd>=(-3); sd-- )
+			{
+							vertex_x[indx] = cell_i_x + (r+sr*LUT.std_r)*cos(phi+sd*std_phi_BBox);
+							if (vertex_x[indx] < minBBox_x)
+								minBBox_x = vertex_x[indx];
+							if (vertex_x[indx] > maxBBox_x)
+								maxBBox_x = vertex_x[indx];
+
+							vertex_y[indx] = cell_i_y + (r+sr*LUT.std_r)*sin(phi+sd*std_phi_BBox);
+							if (vertex_y[indx] < minBBox_y)
+								minBBox_y = vertex_y[indx];
+							if (vertex_y[indx] > maxBBox_y)
+								maxBBox_y = vertex_y[indx];
+
+							indx++;
+						}
+
+						/* ------------------------------------------------------------------------
+						   Determine range of cells to update according to the Bounding-Box limits.
+						   Origin cell is cx=cy= 0   x[0,res), y[0,res)
+						---------------------------------------------------------------------------*/
+						int min_cx = static_cast<int>( floor(minBBox_x/LUT.resolution) );
+						int max_cx = static_cast<int>( floor(maxBBox_x/LUT.resolution) );
+						int min_cy = static_cast<int>( floor(minBBox_y/LUT.resolution) );
+						int max_cy = static_cast<int>( floor(maxBBox_y/LUT.resolution) );
+
+						int num_cells_affected = (max_cx-min_cx+1) * (max_cy-min_cy+1);
+						
+						if( num_cells_affected == 1 )
+				{
+							//Concentration of cell_i moves to cell_a (cx,cy)
+							TGaussianCell gauss_info;
+							gauss_info.cx = min_cx;		//since max_cx == min_cx
+							gauss_info.cy = min_cy;
+							gauss_info.value = 1;		//prob = 1
+
+							//Add cell volume to LookUp Table
+							LUT_TABLE[phi_indx][r_indx].push_back(gauss_info);
+
+							if (debug)
 							{
-								printf("c(i,i)=%e   c(j,j)=%e\n",m_cov(i,i),m_cov(j,j));
-								ASSERT_( !isNaN( K ) );
+								//Save to file (debug)								
+								fprintf(debug_file, "(%d,%d)=%.4f",gauss_info.cx, gauss_info.cy, gauss_info.value);							
+							}
+						}
+						else
+						{							
+							// Estimate volume of the Gaussian under each affected cell
+
+							float subcell_pres = LUT.resolution/10;
+							//Determine the number of subcells inside the Bounding-Box
+							const int BB_x_subcells = (int) (floor( (maxBBox_x - minBBox_x)/subcell_pres ) +1 );
+							const int BB_y_subcells = (int) (floor( (maxBBox_y - minBBox_y)/subcell_pres ) +1 );
+
+							double subcell_pres_x = (maxBBox_x - minBBox_x)/BB_x_subcells;
+							double subcell_pres_y = (maxBBox_y - minBBox_y)/BB_y_subcells;
+							
+							//Save the W value of each cell using a map
+							std::map<std::pair<int,int>, float> w_values;
+							std::map<std::pair<int,int>, float>::iterator it;							
+							float sum_w = 0;
+
+							for(int scy=0; scy<BB_y_subcells; scy++)
+					{
+								for(int scx=0; scx<BB_x_subcells; scx++)
+						{
+									//P-Subcell coordinates (center of the p-subcell)
+									float subcell_a_x = minBBox_x + (scx+0.5f)*subcell_pres_x;
+									float subcell_a_y = minBBox_y + (scy+0.5f)*subcell_pres_y;
+
+									//distance and angle between cell_i and subcell_a
+									float r_ia = sqrt( square(subcell_a_x-cell_i_x) + square(subcell_a_y-cell_i_y) );
+									float phi_ia = atan2(subcell_a_y-cell_i_y, subcell_a_x-cell_i_x);
+
+									//Volume Approximation of subcell_a (Gaussian Bivariate)
+									float w = (1/(2*M_PI*LUT.std_r*LUT.std_phi)) * exp(-0.5*( square(r_ia-r)/square(LUT.std_r) + square(phi_ia-phi)/square(LUT.std_phi) ) );
+									w += (1/(2*M_PI*LUT.std_r*LUT.std_phi)) * exp(-0.5*( square(r_ia-r)/square(LUT.std_r) + square(phi_ia+2*M_PI-phi)/square(LUT.std_phi) ) );
+									w += (1/(2*M_PI*LUT.std_r*LUT.std_phi)) * exp(-0.5*( square(r_ia-r)/square(LUT.std_r) + square(phi_ia-2*M_PI-phi)/square(LUT.std_phi) ) );
+										
+									//Since we work with a cell grid, approximate the weight of the gaussian by the volume of the subcell_a
+									if (r_ia != 0.0)
+										w = (w * (subcell_pres_x*subcell_pres_y)/r_ia);
+
+									//Determine cell index of the current subcell
+									int cell_cx = static_cast<int>( floor(subcell_a_x/LUT.resolution) );
+									int cell_cy = static_cast<int>( floor(subcell_a_y/LUT.resolution) );
+
+									//Save w value
+									it = w_values.find(std::make_pair(cell_cx,cell_cy));
+									if( it!=w_values.end() )	//already exists
+										w_values[std::make_pair(cell_cx,cell_cy)] += w;
+									else
+										w_values[std::make_pair(cell_cx,cell_cy)] = w;
+
+									sum_w = sum_w + w;
+								}//end-for scx
+							}//end-for scy
+
+
+							//SAVE to LUT
+							for(it= w_values.begin(); it != w_values.end(); it++)
+							{
+								float w_final = (it->second)/sum_w;	//normalization to 1
+
+								if( w_final >= 0.001 )
+								{
+									//Save the weight of the gaussian volume for cell_a (cx,cy)
+									TGaussianCell gauss_info;
+									gauss_info.cx = it->first.first;
+									gauss_info.cy = it->first.second;
+									gauss_info.value = w_final;
+	
+									//Add cell volume to LookUp Table
+									LUT_TABLE[phi_indx][r_indx].push_back(gauss_info);
+								
+									if (debug)
+									{
+										//Save to file (debug)								
+										fprintf(debug_file, "(%d,%d)=%.6f    ",gauss_info.cx, gauss_info.cy, gauss_info.value);							
+						}
+								}
 							}
 
-							m_cov(i,j) = K * exp( -0.5 * square( dist/m_insertOptions_common->KF_covSigma ) );
-							m_cov(j,i) = m_cov(i,j);
-						}
+							//OLD WAY
 
-						ASSERT_( !isNaN( m_cov(i,j) ) );
+							/* ---------------------------------------------------------
+							   Estimate the volume of the Gaussian on each affected cell
+							//-----------------------------------------------------------*/
+							//for(int cx=min_cx; cx<=max_cx; cx++)
+							//{
+							//	for(int cy=min_cy; cy<=max_cy; cy++)
+							//	{					
+							//		// Coordinates of affected cell (center of the cell)
+							//		float cell_a_x = (cx+0.5f)*LUT.resolution;
+							//		float cell_a_y = (cy+0.5f)*LUT.resolution;
+							//		float w_cell_a = 0.0;	//initial Gaussian value of cell afected
+
+							//		// Estimate volume of the Gaussian under cell (a)
+							//		// Partition each cell into (p x p) subcells and evaluate the gaussian.
+							//		int p = 40;								
+							//		float subcell_pres = LUT.resolution/p;
+							//		float cell_a_x_min = cell_a_x - LUT.resolution/2.0;
+							//		float cell_a_y_min = cell_a_y - LUT.resolution/2.0;
+
+							//	
+							//		for(int scy=0; scy<p; scy++)
+							//		{	
+							//			for(int scx=0; scx<p; scx++)
+							//			{									
+							//				//P-Subcell coordinates (center of the p-subcell)
+							//				float subcell_a_x = cell_a_x_min + (scx+0.5f)*subcell_pres;
+							//				float subcell_a_y = cell_a_y_min + (scy+0.5f)*subcell_pres;
+
+							//				//distance and angle between cell_i and subcell_a
+							//				float r_ia = sqrt( square(subcell_a_x-cell_i_x) + square(subcell_a_y-cell_i_y) );
+							//				float phi_ia = atan2(subcell_a_y-cell_i_y, subcell_a_x-cell_i_x);
+
+							//				//Volume Approximation of subcell_a (Gaussian Bivariate)
+							//				float w = (1/(2*M_PI*LUT.std_r*LUT.std_phi)) * exp(-0.5*( square(r_ia-r)/square(LUT.std_r) + square(phi_ia-phi)/square(LUT.std_phi) ) );
+							//				w += (1/(2*M_PI*LUT.std_r*LUT.std_phi)) * exp(-0.5*( square(r_ia-r)/square(LUT.std_r) + square(phi_ia+2*M_PI-phi)/square(LUT.std_phi) ) );
+							//				w += (1/(2*M_PI*LUT.std_r*LUT.std_phi)) * exp(-0.5*( square(r_ia-r)/square(LUT.std_r) + square(phi_ia-2*M_PI-phi)/square(LUT.std_phi) ) );
+							//			
+							//				//Since we work with a cell grid, approximate the weight of the gaussian by the volume of the subcell_a
+							//				if (r_ia != 0.0)
+							//					w_cell_a = w_cell_a + (w * square(subcell_pres)/r_ia);
+							//			}//end-for scx
+							//		}//end-for scy
+
+							//		//Save the weight of the gaussian volume for cell_a (cx,cy)
+							//		TGaussianCell gauss_info;
+							//		gauss_info.cx = cx;
+							//		gauss_info.cy = cy;
+							//		gauss_info.value = w_cell_a;
+
+							//		//Add cell volume to LookUp Table
+							//		LUT_TABLE[phi_indx][r_indx].push_back(gauss_info);
+
+							//		if (debug)
+							//		{
+							//			//Save to file (debug)								
+							//			fprintf(debug_file, "(%d,%d)=%.6f    ",gauss_info.cx, gauss_info.cy, gauss_info.value);							
+							//		}
+							//	
+							//	
+							//	}//end-for cy
+							//}//end-for cx
+
+						}//end-if only one affected cell
+
+					}//end-for r
+				}//end-for phi			
+
+		if (debug)
+			fclose(debug_file);
+
+		//Save LUT to File
+		return save_Gaussian_Wind_Grid_To_File();
+
+	}//end-if table not available
 					}
-				} // for j
-			} // for i
 
-			// m_cov Updated done!			
 
-		} // end of Kalman Filter map		
-		break;
-	};
+bool CGasConcentrationGridMap2D::save_Gaussian_Wind_Grid_To_File()
+{
+	// Save LUT to file
+	cout << "Saving to File ....";
 
-	//update center pose
-	mapCenterPose = sensorPose2D;
+	CFileGZOutputStream	f( format("Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",LUT.resolution,LUT.std_phi,LUT.std_r) );
 	
+	if( !f.fileOpenCorrectly() )
+	{
+		return false;
+		cout << "WARNING: Gaussian_Wind_Weights file NOT SAVED" << endl;
 }
 
-/*---------------------------------------------------------------
-						updateFromMobileMap
----------------------------------------------------------------*/
-void CGasConcentrationGridMap2D::updateFromMobileMap(
-	const CGasConcentrationGridMap2D &mobile_map)
+	try
 {
+		//Save params first
+		f << LUT.resolution;	//cell resolution used
+		f << LUT.std_phi;		//std_phi used
+		f << LUT.std_r;			
 
-	//Get cell indexes of the mobile_map center in the main_map reference system
 	
-	int centerMob_cx = x2idx(mobile_map.mapCenterPose.x);
-    int centerMob_cy = y2idx(mobile_map.mapCenterPose.y);
+		f << LUT.phi_inc;	//rad
+		f << (float)LUT.phi_count;
+		f << LUT.r_inc;	//m
+		f << LUT.max_r;	//maximum distance (m)
+		f << (float)LUT.r_count;
 
-	//Get cell indexes of the mobile_map in the mobile_map reference system
-	float local_map_center_x = mobile_map.x2idx(0);
-	float local_map_center_y = mobile_map.y2idx(0);
+		//Save Multi-table
+		//vector< vector< vector<TGaussianCell>>>>> *table;	
 
-	//cout << "\nCopying values from the mobile_map provided (" <<mobile_map.m_size_x <<","<< mobile_map.m_size_y<<")" << endl;
-	//cout << "Copying values to reference_map (" <<m_size_x <<","<< m_size_y<<")" << endl;
-	//cout << "mapCenterPose of mobile on reference system is " << mobile_map.mapCenterPose << endl;
+		for (size_t phi_indx=0; phi_indx<LUT.phi_count; phi_indx++ )
+		{
+			for (size_t r_indx=0; r_indx<LUT.r_count; r_indx++ )
+			{
+				//save all cell values.
+				size_t N = LUT_TABLE[phi_indx][r_indx].size();
+				f << (float)N;
 
-	//update main_map (copying values from the mobile_map provided)
-	unsigned int cx,cy;
-	for (cy=0; cy<mobile_map.m_size_y; cy++)
+				for (size_t i=0; i<N; i++)
     {
-        for (cx=0; cx<mobile_map.m_size_x; cx++)
-        {
-			//Copy from mobile_map to reference_map
-//			printf("Main_map(%u,%u) = %.3f",cx,cy,m_map[(centerMob_cx+cx-local_map_center_x),(centerMob_cy+cy-local_map_center_y)]);
-			TRandomFieldCell *main_map_cell;
-			main_map_cell = cellByIndex((centerMob_cx+cx-local_map_center_x),(centerMob_cy+cy-local_map_center_y));
-			*main_map_cell = *mobile_map.cellByIndex(cx,cy);
-			//update last_updated time
-			main_map_cell->last_updated = now();
-			main_map_cell->updated_std = main_map_cell->kf_std;
+					f << (float)LUT_TABLE[phi_indx][r_indx][i].cx;
+					f << (float)LUT_TABLE[phi_indx][r_indx][i].cy;
+					f << LUT_TABLE[phi_indx][r_indx][i].value;
         }
     }
 }
+		cout << "DONE" << endl;
+		f.close();
+		return true;
+	}
+	catch(exception e)
+	{
+		cout << endl << "------------------------------------------------------------" << endl;
+		cout << "EXCEPTION WHILE SAVING LUT TO FILE" << endl;
+		cout << "Exception = " << e.what() << endl;
+		f.close();
+		return false;
+	}
 
-/*---------------------------------------------------------------
-						increaseMapCells_STD
----------------------------------------------------------------*/
-void CGasConcentrationGridMap2D::increaseMapCells_STD(const double memory_relative_strenght)
+}
+
+bool CGasConcentrationGridMap2D::load_Gaussian_Wind_Grid_From_File()
 {
-	//Increase kf_std of all cells within the m_map
-	unsigned int cx,cy;
-	double memory_retention;
+	// LOAD LUT from file
+	cout << "Loading from File ....";
 	
-	for (cy=0; cy<m_size_y; cy++)
+	try
     {
-        for (cx=0; cx<m_size_x; cx++)
+		CFileGZInputStream	f( format("Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",LUT.resolution,LUT.std_phi,LUT.std_r) );
+		
+		if( !f.fileOpenCorrectly() )
         {
-			// Forgetting_curve --> memory_retention = exp(-time/memory_relative_strenght)
-			memory_retention = exp(- mrpt::system::timeDifference(m_map[cx + cy*m_size_x].last_updated, now()) / memory_relative_strenght);
-			//Update Uncertainty (STD)
-			m_map[cx + cy*m_size_x].kf_std = 1 - ( (1-m_map[cx + cy*m_size_x].updated_std) * memory_retention );
+			cout << "WARNING WHILE READING FROM: Gaussian_Wind_Weights" << endl;
+			return false;
         }
+
+		float t_float;
+		unsigned int t_uint;
+		// Ensure params from file are correct with the specified in the ini file
+		f >> t_float;
+		ASSERT_(LUT.resolution == t_float)
+
+		f >> t_float;
+		ASSERT_(LUT.std_phi == t_float);
+
+		f >> t_float;
+		ASSERT_(LUT.std_r == t_float);
+						
+		f >> t_float;
+		ASSERT_(LUT.phi_inc == t_float);
+		
+		f >> t_float;
+		t_uint = (unsigned int)t_float;
+		ASSERT_(LUT.phi_count == t_uint);
+
+		f >> t_float;
+		ASSERT_(LUT.r_inc == t_float);
+
+		f >> t_float;
+		ASSERT_(LUT.max_r == t_float);
+		
+		f >> t_float;
+		t_uint = (unsigned int)t_float;
+		ASSERT_(LUT.r_count == t_uint);
+
+		// Load Multi-table
+		// vector< vector< vector<TGaussianCell>>>>> *table;	
+
+				for (size_t phi_indx=0; phi_indx<LUT.phi_count; phi_indx++ )
+				{
+					for (size_t r_indx=0; r_indx<LUT.r_count; r_indx++ )
+					{
+						//Number of cells to update
+						size_t N;
+						f >> t_float;
+						N = (size_t)t_float;
+
+						for (size_t i=0; i<N; i++)
+						{
+							TGaussianCell gauss_info;
+							f >> t_float;
+							gauss_info.cx = (int)t_float;
+													
+							f >> t_float;
+							gauss_info.cy = (int)t_float;
+							
+							f >> gauss_info.value;
+
+							//Add cell volume to LookUp Table
+							LUT_TABLE[phi_indx][r_indx].push_back(gauss_info);
     }
+}
+				}			
+		cout << "DONE" << endl;
+		return true;
+	}
+	catch (exception e)
+	{
+		cout << endl << "------------------------------------------------------------" << endl;
+		cout << "EXCEPTION WHILE LOADING LUT FROM FILE" << endl;
+		cout << "Exception = " << e.what() << endl;
+		return false;
+	}
 }

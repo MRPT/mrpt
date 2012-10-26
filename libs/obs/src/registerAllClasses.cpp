@@ -73,6 +73,7 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CObservationBearingRange ) );
 	registerClass( CLASS_ID( CObservationComment ) );
 	registerClass( CLASS_ID( CObservationGasSensors ) );
+	registerClass( CLASS_ID( CObservationWindSensor ) );
 	registerClass( CLASS_ID( CObservationGPS ) );
 	registerClass( CLASS_ID( CObservationImage ) );
 	registerClass( CLASS_ID( CObservationIMU ) );

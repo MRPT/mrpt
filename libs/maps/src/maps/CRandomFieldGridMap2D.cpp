@@ -1112,7 +1112,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 	xs.resize( m_size_x );
 	for (cx=0;cx<m_size_x;cx++)	xs[cx] = m_x_min + m_resolution * cx;
 
-	// ys: array of X-axis values
+	// ys: array of Y-axis values
 	ys.resize( m_size_y );
 	for (cy=0;cy<m_size_y;cy++)	ys[cy] = m_y_min + m_resolution * cy;
 
@@ -1200,15 +1200,15 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 
 					// VARIANCE values
 					//------------------
-					double v_xy			= min(1.0,max(0.0, square(cell_xy->kf_std) ) );
-					double v_x_1y		= min(1.0,max(0.0, square(cell_x_1y->kf_std) ) );
-					double v_xy_1		= min(1.0,max(0.0, square(cell_xy_1->kf_std) ) );
-					double v_x_1y_1		= min(1.0,max(0.0, square(cell_x_1y_1->kf_std) ) );
+					double v_xy			= min(10.0,max(0.0, square(cell_xy->kf_std) ) );
+					double v_x_1y		= min(10.0,max(0.0, square(cell_x_1y->kf_std) ) );
+					double v_xy_1		= min(10.0,max(0.0, square(cell_xy_1->kf_std) ) );
+					double v_x_1y_1		= min(10.0,max(0.0, square(cell_x_1y_1->kf_std) ) );
 
-					col_xy				= v_xy;		//min(1.0,max(0.0, (v_xy-minVal_v)/AMaxMin_v ) );
-					col_x_1y			= v_x_1y;	//min(1.0,max(0.0, (v_x_1y-minVal_v)/AMaxMin_v ) );
-					col_xy_1			= v_xy_1;	//min(1.0,max(0.0, (v_xy_1-minVal_v)/AMaxMin_v ) );
-					col_x_1y_1			= v_x_1y_1;	//min(1.0,max(0.0, (v_x_1y_1-minVal_v)/AMaxMin_v ) );
+					col_xy				= v_xy/10;		//min(1.0,max(0.0, (v_xy-minVal_v)/AMaxMin_v ) );
+					col_x_1y			= v_x_1y/10;	//min(1.0,max(0.0, (v_x_1y-minVal_v)/AMaxMin_v ) );
+					col_xy_1			= v_xy_1/10;	//min(1.0,max(0.0, (v_xy_1-minVal_v)/AMaxMin_v ) );
+					col_x_1y_1			= v_x_1y_1/10;	//min(1.0,max(0.0, (v_x_1y_1-minVal_v)/AMaxMin_v ) );
 
 
 					// Triangle #1:
@@ -1694,10 +1694,6 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 {
 	MRPT_START
 
-	// DEBUG
-	// Save to file the actual cov_matrix to plot it with matlab
-	//m_stackedCov.saveToTextFile( std::string("LOG_ICP-SLAM\_mean_compressed_cov.txt"), MATRIX_FORMAT_FIXED );
-
 	const signed	W = m_insertOptions_common->KF_W_size;
 	const size_t	K = 2*W*(W+1)+1;
 	const size_t	W21	= 2*W+1;
@@ -1800,6 +1796,8 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 		{
 			ASSERT_(idx_c_in_idx>0);
 			const double cov_i_c = m_stackedCov(idx,idx_c_in_idx);
+			//JGmonroy - review m_stackedCov
+			
 			m_map[idx].kf_mean += yk * sk_1 * cov_i_c;
 
 			// Save window indexes:
@@ -1933,6 +1931,9 @@ void  CRandomFieldGridMap2D::recoverMeanAndCov() const
 }
 
 
+/*---------------------------------------------------------------
+					getMeanAndCov
+  ---------------------------------------------------------------*/
 void CRandomFieldGridMap2D::getMeanAndCov( vector_double &out_means, CMatrixDouble &out_cov) const
 {
 	const size_t N = BASE::m_map.size();
@@ -1943,6 +1944,45 @@ void CRandomFieldGridMap2D::getMeanAndCov( vector_double &out_means, CMatrixDoub
 	recoverMeanAndCov();
 	out_cov = m_cov;
 }
+
+
+
+/*---------------------------------------------------------------
+					getMeanAndSTD
+  ---------------------------------------------------------------*/
+void CRandomFieldGridMap2D::getMeanAndSTD( vector_double &out_means, vector_double &out_STD) const
+{
+	const size_t N = BASE::m_map.size();
+	out_means.resize(N);
+	out_STD.resize(N);
+	
+	for (size_t i=0;i<N;++i)
+	{
+		out_means[i] = BASE::m_map[i].kf_mean;
+		out_STD[i] = sqrt(m_stackedCov(i,0));
+	}
+}
+
+
+/*---------------------------------------------------------------
+					setMeanAndSTD
+  ---------------------------------------------------------------*/
+void CRandomFieldGridMap2D::setMeanAndSTD( vector_double &in_means, vector_double &in_std)
+{
+	//Assure dimmensions match
+	size_t N = BASE::m_map.size();
+	ASSERT_( N == in_means.size() );
+	ASSERT_( N == in_std.size() );
+	
+	m_hasToRecoverMeanAndCov = true;
+	for (size_t i=0; i<N; ++i)
+	{
+		m_map[i].kf_mean = in_means[i];	//update mean values		
+		m_stackedCov(i,0) = square(in_std[i]);	//update variance values
+	}
+	recoverMeanAndCov();	//update STD values from cov matrix
+}
+
 
 CRandomFieldGridMap2D::TMapRepresentation	 CRandomFieldGridMap2D::getMapType()
 {

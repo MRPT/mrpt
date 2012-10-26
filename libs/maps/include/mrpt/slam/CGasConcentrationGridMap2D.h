@@ -48,6 +48,7 @@ namespace slam
 	using namespace mrpt::utils;
 	using namespace mrpt::poses;
 	using namespace mrpt::math;
+	using namespace std;
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CGasConcentrationGridMap2D , CRandomFieldGridMap2D, MAPS_IMPEXP )
 
@@ -109,9 +110,16 @@ namespace slam
 
 			/** @name For all mapping methods
 			    @{ */
-			std::string sensorLabel;	//!< The label of the CObservationGasSensor used to generate the map
+			std::string gasSensorLabel;	//!< The label of the CObservationGasSensor used to generate the map
 			uint16_t enose_id;			//!< id for the enose used to generate this map (must be < gasGrid_count)
-			uint16_t sensorType;		//!< The sensor type for the gas concentration map (0x0000 ->mean of all installed sensors, 0x2600, 0x6810, ...)
+			uint16_t gasSensorType;		//!< The sensor type for the gas concentration map (0x0000 ->mean of all installed sensors, 0x2600, 0x6810, ...)
+			std::string windSensorLabel; //!< The label of the WindSenor used to simulate advection
+			
+			//[Advection Options]
+			bool useWindInformation;	//! Indicates if wind information must be used to simulate Advection
+			float advectionFreq;		//! Frequency for simulating advection (only used to transform wind speed to distance)
+			float std_windNoise_phi, std_windNoise_mod;  //! The std to consider on wind information measurements
+			float default_wind_direction, default_wind_speed;	//! The default value for the wind information
 			
 			/** @} */			
 
@@ -140,25 +148,47 @@ namespace slam
 		  */
 		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const;
 
-		/** Center the map on the given location keeping the actual dimensions.
-		 *	This mehod is usually called by the mobile map.
-		 * \param reference_map The main map over which the mobile map works
-		 * \param centerPose The 3D pose on the reference_map over which center the mobile map
+		/** Returns the 3D object representing the wind grid information
 		 */
-		 virtual void centerMapAtLocation( CGasConcentrationGridMap2D &reference_map,const CPose3D &centerPose );
+		void  getWindAs3DObject( mrpt::opengl::CSetOfObjectsPtr &windObj) const;
 		
-		 /** Updates the main_map with the information of the mobile_map
-		 *	This mehod is usually called by the main_map, after a insertObservation in the mobile_map.		 
-		 */
-		 virtual void updateFromMobileMap(const CGasConcentrationGridMap2D &mobile_map);
 		 /** Increase the kf_std of all cells from the m_map
 		 *	This mehod is usually called by the main_map to simulate loss of confidence in measurements when time passes
 		 */
-		 virtual void increaseMapCells_STD(const double memory_relative_strenght);
-		 /** Map center Pose2D in the main_map reference system
-		 * Only applies for the case of mrMobile mapTypes
+		virtual void increaseUncertainty(const double STD_increase_value);
+		 
+		 /** Implements the transition model of the gasConcentration map using the information of the wind maps.
 		 */
-		 mrpt::poses::TPose2D		mapCenterPose;
+		bool simulateAdvection(const double &STD_increase_value);
+
+		
+		// Params for the estimation of the gaussian volume in a cell.
+		struct MAPS_IMPEXP TGaussianCell
+		{
+			int cx;			//x-index of the cell
+			int cy;			//y-index of the cell
+			float value;	//volume approximation
+		};
+		
+		//Params for the estimation of the wind effect on each cell of the grid
+		struct MAPS_IMPEXP TGaussianWindTable
+		{
+			#define LUT_TABLE (*(LUT.table))
+			//Fixed params
+			float resolution;	//Cell_resolution. To be read from config-file
+			float std_phi;		//to be read from config-file
+			float std_r;		//to be read from config-file
+			
+			//unsigned int subcell_count; //subcell_count x subcell_count	subcells
+			//float subcell_res;
+			float phi_inc;	//rad
+			unsigned int phi_count;
+			float r_inc;	//m
+			float max_r;	//maximum distance (m)
+			unsigned int r_count;
+
+			vector< vector< vector<TGaussianCell>>> *table;			
+		}LUT;
 
 	protected:
 
@@ -179,6 +209,21 @@ namespace slam
 		  */
 		 virtual bool  internal_insertObservation( const CObservation *obs, const CPose3D *robotPose = NULL );
 		 
+		 /** Builds a LookUp table with the values of the Gaussian Weights result of the wind advection
+		 *   for a specific std_windNoise_phi value.
+		 */
+		 bool build_Gaussian_Wind_Grid();
+
+		 bool save_Gaussian_Wind_Grid_To_File();
+		 bool load_Gaussian_Wind_Grid_From_File();
+		 
+		 /** Gridmaps of the wind Direction/Module.
+		  */
+		 mrpt::slam::CDynamicGrid<double> windGrid_module, windGrid_direction;
+
+		 /** The timestamp of the last time the advection simulation was executed */
+		 mrpt::system::TTimeStamp timeLastSimulated;
+
 
 	};
 

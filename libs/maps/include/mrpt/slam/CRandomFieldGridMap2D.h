@@ -287,6 +287,12 @@ namespace slam
 		/** Return the mean and covariance vector of the full Kalman filter estimate (works for all KF-based methods). */
 		void getMeanAndCov( vector_double &out_means, CMatrixDouble &out_cov) const;
 
+		/** Return the mean and STD vectors of the full Kalman filter estimate (works for all KF-based methods). */
+		void getMeanAndSTD( vector_double &out_means, vector_double &out_STD) const;
+
+		/** Load the mean and STD vectors of the full Kalman filter estimate (works for all KF-based methods). */
+		void setMeanAndSTD( vector_double &out_means, vector_double &out_STD);
+
 	protected:
 		/** Common options to all random-field grid maps: pointer that is set to the derived-class instance of "insertOptions" upon construction of this class. */
 		TInsertionOptionsCommon * m_insertOptions_common;
