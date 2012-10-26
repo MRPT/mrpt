@@ -209,7 +209,9 @@ void  CHolonomicND::gapsEstimator(
 
 						newGap.ini				= sec_ini;
 						newGap.end				= sec_end;
-						newGap.entranceDistance = min( obstacles[sec_ini], obstacles[sec_end] );
+						if (i == n-1)  // This "if" is required to detect/select the last ("rightmost") gap:
+						     newGap.entranceDistance = min( obstacles[sec_ini], obstacles[sec_ini - 1] );
+						else newGap.entranceDistance = min( obstacles[sec_ini], obstacles[sec_end] );
 						newGap.maxDistance		= maxDist;
 					}
 				}
@@ -509,6 +511,7 @@ void  CHolonomicND::calcRepresentativeSectorForGap(
 		else {
 				sector = gap.end;
 				dir = -1; }
+		MRPT_TODO("Change by Mariano here:")
 		sector = sector + dir * sectors_to_be_wide/2 ;
 	}
 
