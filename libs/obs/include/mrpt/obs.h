@@ -62,6 +62,7 @@
 #include <mrpt/slam/CObservationWirelessPower.h>
 #include <mrpt/slam/CObservationRFID.h>
 #include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/slam/CObservationWindSensor.h>
 
 
 // Observations:

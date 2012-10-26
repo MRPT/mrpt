@@ -50,6 +50,8 @@
 	- New classes:
 		- [mrpt-base]
 			- mrpt::math::MatrixBlockSparseCols, a templated column-indexed efficient storage of block-sparse Jacobian or Hessian matrices, together with other arbitrary information - <a href="http://code.google.com/p/mrpt/source/detail?r=2995" >r2995</a>
+		- [mrpt-obs]
+			- mrpt::slam::CObservationWindSensor - <a href="http://code.google.com/p/mrpt/source/detail?r=3049" >r3049</a>
 	- Changes in libraries:
 		- These libs are now header-only: <a href="http://code.google.com/p/mrpt/source/detail?r=3035" >r3035</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3045" >r3045</a>
 			- [mrpt-bayes]
@@ -78,6 +80,7 @@
 				- mrpt::slam::CPointsMap::loadPCDFile()
 				- mrpt::slam::CPointsMap::setFromPCLPointCloud()
 				- mrpt::slam::CColouredPointsMap::setFromPCLPointCloudRGB()
+			- Integration of wind measurements in gas-concentration maps (by Javier G. Monroy) - <a href="http://code.google.com/p/mrpt/source/detail?r=3049" >r3049</a>
 		- [mrpt-opengl]
 			- Evaluation of bounding box of opengl objects. New methods: - <a href="http://code.google.com/p/mrpt/source/detail?r=3026" >r3026</a>
 				- mrpt::opengl::CRenderizable::getBoundingBox()
