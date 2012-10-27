@@ -41,12 +41,9 @@ EMAIL4DEB="Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>"
 rm -fr $MRPT_UBUNTU_OUT_DIR/
 
 # -------------------------------------------------------------------
-# And now create the custom packages for each Ubuntu distribution
-# LTS distros: 
-#  - 10.04 (lucid)
-#  - 12.04 (precise)
+# And now create the custom packages for each Ubuntu distribution:
 # -------------------------------------------------------------------
-LST_DISTROS=(quantal precise oneiric natty lucid)
+LST_DISTROS=(raring quantal precise oneiric natty lucid)
 
 count=${#LST_DISTROS[@]}
 IDXS=$(seq 0 $(expr $count - 1))
