@@ -1797,7 +1797,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 			ASSERT_(idx_c_in_idx>0);
 			const double cov_i_c = m_stackedCov(idx,idx_c_in_idx);
 			//JGmonroy - review m_stackedCov
-			
+
 			m_map[idx].kf_mean += yk * sk_1 * cov_i_c;
 
 			// Save window indexes:
@@ -1955,7 +1955,7 @@ void CRandomFieldGridMap2D::getMeanAndSTD( vector_double &out_means, vector_doub
 	const size_t N = BASE::m_map.size();
 	out_means.resize(N);
 	out_STD.resize(N);
-	
+
 	for (size_t i=0;i<N;++i)
 	{
 		out_means[i] = BASE::m_map[i].kf_mean;
@@ -1970,14 +1970,14 @@ void CRandomFieldGridMap2D::getMeanAndSTD( vector_double &out_means, vector_doub
 void CRandomFieldGridMap2D::setMeanAndSTD( vector_double &in_means, vector_double &in_std)
 {
 	//Assure dimmensions match
-	size_t N = BASE::m_map.size();
-	ASSERT_( N == in_means.size() );
-	ASSERT_( N == in_std.size() );
-	
+	const size_t N = BASE::m_map.size();
+	ASSERT_( N == size_t(in_means.size()) );
+	ASSERT_( N == size_t(in_std.size()) );
+
 	m_hasToRecoverMeanAndCov = true;
 	for (size_t i=0; i<N; ++i)
 	{
-		m_map[i].kf_mean = in_means[i];	//update mean values		
+		m_map[i].kf_mean = in_means[i];	//update mean values
 		m_stackedCov(i,0) = square(in_std[i]);	//update variance values
 	}
 	recoverMeanAndCov();	//update STD values from cov matrix

@@ -114,14 +114,14 @@ namespace slam
 			uint16_t enose_id;			//!< id for the enose used to generate this map (must be < gasGrid_count)
 			uint16_t gasSensorType;		//!< The sensor type for the gas concentration map (0x0000 ->mean of all installed sensors, 0x2600, 0x6810, ...)
 			std::string windSensorLabel; //!< The label of the WindSenor used to simulate advection
-			
+
 			//[Advection Options]
 			bool useWindInformation;	//! Indicates if wind information must be used to simulate Advection
 			float advectionFreq;		//! Frequency for simulating advection (only used to transform wind speed to distance)
 			float std_windNoise_phi, std_windNoise_mod;  //! The std to consider on wind information measurements
 			float default_wind_direction, default_wind_speed;	//! The default value for the wind information
-			
-			/** @} */			
+
+			/** @} */
 
 		} insertionOptions;
 
@@ -151,17 +151,17 @@ namespace slam
 		/** Returns the 3D object representing the wind grid information
 		 */
 		void  getWindAs3DObject( mrpt::opengl::CSetOfObjectsPtr &windObj) const;
-		
+
 		 /** Increase the kf_std of all cells from the m_map
 		 *	This mehod is usually called by the main_map to simulate loss of confidence in measurements when time passes
 		 */
 		virtual void increaseUncertainty(const double STD_increase_value);
-		 
+
 		 /** Implements the transition model of the gasConcentration map using the information of the wind maps.
 		 */
 		bool simulateAdvection(const double &STD_increase_value);
 
-		
+
 		// Params for the estimation of the gaussian volume in a cell.
 		struct MAPS_IMPEXP TGaussianCell
 		{
@@ -169,16 +169,15 @@ namespace slam
 			int cy;			//y-index of the cell
 			float value;	//volume approximation
 		};
-		
+
 		//Params for the estimation of the wind effect on each cell of the grid
 		struct MAPS_IMPEXP TGaussianWindTable
 		{
-			#define LUT_TABLE (*(LUT.table))
 			//Fixed params
 			float resolution;	//Cell_resolution. To be read from config-file
 			float std_phi;		//to be read from config-file
 			float std_r;		//to be read from config-file
-			
+
 			//unsigned int subcell_count; //subcell_count x subcell_count	subcells
 			//float subcell_res;
 			float phi_inc;	//rad
@@ -187,7 +186,7 @@ namespace slam
 			float max_r;	//maximum distance (m)
 			unsigned int r_count;
 
-			vector< vector< vector<TGaussianCell>>> *table;			
+			std::vector< std::vector< std::vector<TGaussianCell> > > *table;
 		}LUT;
 
 	protected:
@@ -196,7 +195,7 @@ namespace slam
 		virtual CRandomFieldGridMap2D::TInsertionOptionsCommon * getCommonInsertOptions() {
 			return &insertionOptions;
 		}
-		
+
 		 /** Erase all the contents of the map */
 		 virtual void  internal_clear();
 
@@ -208,7 +207,7 @@ namespace slam
 		  * \sa CObservation::insertObservationInto
 		  */
 		 virtual bool  internal_insertObservation( const CObservation *obs, const CPose3D *robotPose = NULL );
-		 
+
 		 /** Builds a LookUp table with the values of the Gaussian Weights result of the wind advection
 		 *   for a specific std_windNoise_phi value.
 		 */
@@ -216,7 +215,7 @@ namespace slam
 
 		 bool save_Gaussian_Wind_Grid_To_File();
 		 bool load_Gaussian_Wind_Grid_From_File();
-		 
+
 		 /** Gridmaps of the wind Direction/Module.
 		  */
 		 mrpt::slam::CDynamicGrid<double> windGrid_module, windGrid_direction;
