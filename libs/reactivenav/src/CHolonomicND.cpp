@@ -511,8 +511,7 @@ void  CHolonomicND::calcRepresentativeSectorForGap(
 		else {
 				sector = gap.end;
 				dir = -1; }
-		MRPT_TODO("Change by Mariano here:")
-		sector = sector + dir * sectors_to_be_wide/2 ;
+		sector = sector + dir *  static_cast<int>(sectors_to_be_wide)/2 ;
 	}
 
 	keep_max(sector, 0);
