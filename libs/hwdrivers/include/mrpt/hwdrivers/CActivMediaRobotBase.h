@@ -194,8 +194,14 @@ namespace mrpt
 			/** Get state of manual control with a joystick */
 			bool isJoystickControlEnabled() const { return m_enableJoyControl;}
 
+			/** Disable motors but keeps the connection with ARIA*/
 			void DisableMotors();
+			
+			/** Enable motors after a call to DisableMotors()*/
 			void EnableMotors();
+			
+			/** Get the motors state*/
+			bool areMotorsEnabled() const;
 
 		protected:
 			std::string		m_com_port;		//!< The serial port name to use for communications (COM1, ttyS1,...)
@@ -203,6 +209,7 @@ namespace mrpt
 
 			bool			m_firstIncreOdometry;	//!< Used in getOdometryIncrement
 			bool			m_enableSonars;
+			
 
 			void* /*ArRobot*/				m_robot;
 			void* /*ArSonarDevice*/			m_sonarDev;

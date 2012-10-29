@@ -367,8 +367,8 @@ void  CHolonomicND::searchBestGap(
 	if (target_sector>static_cast<unsigned int>(freeSectorsNearTarget) &&
 		target_sector<static_cast<unsigned int>(obstacles.size()-freeSectorsNearTarget) )
 	{
-		//const double min_free_dist = std::min(1.05*target_dist, 0.95*maxObsRange);
-		const double min_free_dist = 0.95*target_dist;
+		const double min_free_dist = std::min(1.05*target_dist, 0.95*maxObsRange);
+		//const double min_free_dist = 0.95*target_dist;
 		for (int j=-freeSectorsNearTarget;j<=freeSectorsNearTarget;j++)
 				if (obstacles[ target_sector + j ]<min_free_dist)
 						theyAreFree = false;
