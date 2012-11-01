@@ -759,17 +759,19 @@ namespace mrpt
 					// ------------------------------------------
 					S.setSize(N_pred*OBS_SIZE,N_pred*OBS_SIZE);
 
-					{
+					if ( FEAT_SIZE>0 )
+					{	// SLAM-like problem:
 						const Eigen::Block<const typename KFMatrix::Base,VEH_SIZE,VEH_SIZE>  Px(m_pkk,0,0);  // Covariance of the vehicle pose
+
 						for (size_t i=0;i<N_pred;++i)
 						{
-							const size_t lm_idx_i = FEAT_SIZE==0 ? 0 : predictLMidxs[i];
+							const size_t lm_idx_i = predictLMidxs[i];
 							const Eigen::Block<const typename KFMatrix::Base,FEAT_SIZE,VEH_SIZE>   Pxyi_t(m_pkk,VEH_SIZE+lm_idx_i*FEAT_SIZE,0);  // Pxyi^t
 
 							// Only do j>=i (upper triangle), since S is symmetric:
 							for (size_t j=i;j<N_pred;++j)
 							{
-								const size_t lm_idx_j = FEAT_SIZE==0 ? 0 : predictLMidxs[j];
+								const size_t lm_idx_j = predictLMidxs[j];
 								// Sij block:
 								Eigen::Block<typename KFMatrix::Base, OBS_SIZE, OBS_SIZE> Sij(S,OBS_SIZE*i,OBS_SIZE*j);
 
@@ -785,23 +787,18 @@ namespace mrpt
 								if (i!=j)
 									Eigen::Block<typename KFMatrix::Base, OBS_SIZE, OBS_SIZE>(S,OBS_SIZE*j,OBS_SIZE*i) = Sij.transpose();
 							}
-						}
-					}
 
-
-					// Sum the "R" term:
-					if ( FEAT_SIZE>0 )
-					{
-						for (size_t i=0;i<N_pred;++i)
-						{
+							// Sum the "R" term to the diagonal blocks:
 							const size_t obs_idx_off = i*OBS_SIZE;
 							Eigen::Block<typename KFMatrix::Base, OBS_SIZE, OBS_SIZE>(S,obs_idx_off,obs_idx_off) += R;
 						}
 					}
 					else
-					{	// Not a SLAM-like EKF problem:
-						ASSERTDEB_(S.getColCount() == OBS_SIZE );
-						S+=R;
+					{ // Not SLAM-like problem: simply S=H*Pkk*H^t + R
+						ASSERTDEB_(N_pred==1)
+						ASSERTDEB_(S.getColCount() == OBS_SIZE )
+
+						S = Hxs[0] * m_pkk *Hxs[0].transpose() + R;
 					}
 
 					m_timLogger.leave("KF:6.build S");
