@@ -473,9 +473,10 @@ namespace mrpt
 			//  (The variables that go into the stack remains in the function body)
 			vector_KFArray_OBS		all_predictions;
 			vector_size_t  			predictLMidxs;
+			typename mrpt::aligned_containers<KFMatrix_OxV>::vector_t  Hxs; //!< The vector of all partial Jacobians dh[i]_dx for each prediction
+			typename mrpt::aligned_containers<KFMatrix_OxF>::vector_t  Hys; //!< The vector of all partial Jacobians dh[i]_dy[i] for each prediction
 			KFMatrix 				dh_dx;
 			KFMatrix 				dh_dx_full;
-			vector_size_t 			idxs;
 			KFMatrix  				S;
 			KFMatrix 				Pkk_subset;
 			vector_KFArray_OBS 		Z;		// Each entry is one observation:
@@ -575,9 +576,9 @@ namespace mrpt
 					//  3.1:  Pxx submatrix
 					// ====================================
 					// Replace old covariance:
-					m_pkk.block(0,0,VEH_SIZE,VEH_SIZE) =
+					Eigen::Block<typename KFMatrix::Base,VEH_SIZE,VEH_SIZE>(m_pkk,0,0) =
 						Q +
-						dfv_dxv * m_pkk.block(0,0,VEH_SIZE,VEH_SIZE) * dfv_dxv.transpose();
+						dfv_dxv * Eigen::Block<typename KFMatrix::Base,VEH_SIZE,VEH_SIZE>(m_pkk,0,0) * dfv_dxv.transpose();
 
 					// ====================================
 					//  3.2:  All Pxy_i
@@ -586,17 +587,10 @@ namespace mrpt
 					KFMatrix_VxF aux;
 					for (size_t i=0 ; i<N_map ; i++)
 					{
-						// aux = dfv_dxv(...) * m_pkk(...)
-						dfv_dxv.multiply_subMatrix(
-							m_pkk,
-							aux,  // Output
-							VEH_SIZE+i*FEAT_SIZE,   // Offset col
-							0,				                 // Offset row
-							FEAT_SIZE                        // Number of columns desired in output
-						);
+						aux = dfv_dxv * Eigen::Block<typename KFMatrix::Base,VEH_SIZE,FEAT_SIZE>(m_pkk,0,VEH_SIZE+i*FEAT_SIZE);
 
-						m_pkk.insertMatrix         (0,                VEH_SIZE+i*FEAT_SIZE,  aux );
-						m_pkk.insertMatrixTranspose(VEH_SIZE+i*FEAT_SIZE, 0               ,  aux );
+						Eigen::Block<typename KFMatrix::Base,VEH_SIZE,FEAT_SIZE>(m_pkk, 0                    , VEH_SIZE+i*FEAT_SIZE) = aux;
+						Eigen::Block<typename KFMatrix::Base,FEAT_SIZE,VEH_SIZE>(m_pkk, VEH_SIZE+i*FEAT_SIZE , 0                   ) = aux.transpose();
 					}
 
 					// =============================================================
@@ -610,9 +604,7 @@ namespace mrpt
 
 				} // end if (!skipPrediction)
 
-
 				const double tim_pred = m_timLogger.leave("KF:2.prediction stage");
-
 
 				// =============================================================
 				//  5. PREDICTION OF OBSERVATIONS AND COMPUTE JACOBIANS
@@ -662,13 +654,6 @@ namespace mrpt
 				//  F=size of features in the map
 				//
 
-				// This is the beginning of a loop if we are doing sequential
-				//  data association, where after each incorporation of an observation
-				//  into the filter we recompute the vehicle state, then reconsider the
-				//  data associations:
-				// TKFFusionMethod fusion_strategy
-
-
 				m_timLogger.enter("KF:5.build Jacobians");
 
 				size_t N_pred = FEAT_SIZE==0 ?
@@ -681,13 +666,10 @@ namespace mrpt
 				//  which will be detected by the addition of extra landmarks to predict into "missing_predictions_to_add"
 				std::vector<size_t> missing_predictions_to_add;
 
-				// Indices in xkk (& Pkk) that are involved in this observation (used below).
-				idxs.clear();
-				idxs.reserve(VEH_SIZE+N_pred*FEAT_SIZE);
-				for (size_t i=0;i<VEH_SIZE;i++) idxs.push_back(i);
-
 				dh_dx.zeros(N_pred*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_pred ); // Init to zeros.
 				dh_dx_full.zeros(N_pred*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_map ); // Init to zeros.
+				Hxs.resize(N_pred);  // Lists of partial Jacobians
+				Hys.resize(N_pred);
 
 				size_t first_new_pred = 0; // This will be >0 only if we perform multiple loops due to failures in the prediction heuristic.
 
@@ -708,12 +690,14 @@ namespace mrpt
 
 					dh_dx.setSize(N_pred*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_pred ); // Pad with zeros.
 					dh_dx_full.setSize(N_pred*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_map ); // Pad with zeros.
+					Hxs.resize(N_pred);  // Append new entries, if needed.
+					Hys.resize(N_pred);
 
 					for (size_t i=first_new_pred;i<N_pred;++i)
 					{
 						const size_t lm_idx = FEAT_SIZE==0 ? 0 : predictLMidxs[i];
-						KFMatrix_OxV Hx(UNINITIALIZED_MATRIX);
-						KFMatrix_OxF Hy(UNINITIALIZED_MATRIX);
+						KFMatrix_OxV &Hx = Hxs[i];
+						KFMatrix_OxF &Hy = Hys[i];
 
 						// Try the analitic Jacobian first:
 						m_user_didnt_implement_jacobian=false; // Set to true by the default method if not reimplemented in base class.
@@ -775,26 +759,48 @@ namespace mrpt
 						if (FEAT_SIZE!=0)
 						{
 							dh_dx_full.insertMatrix(i*OBS_SIZE,VEH_SIZE+lm_idx*FEAT_SIZE, Hy);
-
-							for (size_t k=0;k<FEAT_SIZE;k++)
-								idxs.push_back(k+VEH_SIZE+FEAT_SIZE*lm_idx);
 						}
 					}
 					m_timLogger.leave("KF:5.build Jacobians");
 
-					// Compute S:  S = H P ~H + R
-					// *TODO*: This can be accelerated by exploiting the sparsity of dh_dx!!!
-					// ------------------------------------
 					m_timLogger.enter("KF:6.build S");
 
+					// Compute S:  S = H P ~H + R  (R will be added below)
+					//  exploiting the sparsity of H:
+					// Each block in S is:
+					//    Sij =
+					// ------------------------------------------
 					S.setSize(N_pred*OBS_SIZE,N_pred*OBS_SIZE);
 
-					// (TODO: Implement multiply_HCHt for a subset of COV directly.)
-					// Extract the subset of m_Pkk that is involved in this observation:
-					m_pkk.extractSubmatrixSymmetrical(idxs,Pkk_subset);
+					{
+						const Eigen::Block<const typename KFMatrix::Base,VEH_SIZE,VEH_SIZE>  Px(m_pkk,0,0);  // Covariance of the vehicle pose
+						for (size_t i=0;i<N_pred;++i)
+						{
+							const size_t lm_idx_i = FEAT_SIZE==0 ? 0 : predictLMidxs[i];
+							const Eigen::Block<const typename KFMatrix::Base,FEAT_SIZE,VEH_SIZE>   Pxyi_t(m_pkk,VEH_SIZE+lm_idx_i*FEAT_SIZE,0);  // Pxyi^t
 
-					// S = dh_dx * m_pkk(subset) * (~dh_dx);
-					dh_dx.multiply_HCHt(Pkk_subset,S);
+							// Only do j>=i (upper triangle), since S is symmetric:
+							for (size_t j=i;j<N_pred;++j)
+							{
+								const size_t lm_idx_j = FEAT_SIZE==0 ? 0 : predictLMidxs[j];
+								// Sij block:
+								Eigen::Block<typename KFMatrix::Base, OBS_SIZE, OBS_SIZE> Sij(S,OBS_SIZE*i,OBS_SIZE*j);
+
+								const Eigen::Block<const typename KFMatrix::Base,VEH_SIZE,FEAT_SIZE>   Pxyj(m_pkk,0, VEH_SIZE+lm_idx_j*FEAT_SIZE);
+								const Eigen::Block<const typename KFMatrix::Base,FEAT_SIZE,FEAT_SIZE>  Pyiyj(m_pkk,VEH_SIZE+lm_idx_i*FEAT_SIZE,VEH_SIZE+lm_idx_j*FEAT_SIZE);
+
+								Sij = Hxs[i] * Px * Hxs[j].transpose()
+								    + Hys[i] * Pxyi_t * Hxs[j].transpose()
+								    + Hxs[i] * Pxyj * Hys[j].transpose()
+								    + Hys[i] * Pyiyj * Hys[j].transpose();
+
+								// Copy transposed to the symmetric lower-triangular part:
+								if (i!=j)
+									Eigen::Block<typename KFMatrix::Base, OBS_SIZE, OBS_SIZE>(S,OBS_SIZE*j,OBS_SIZE*i) = Sij.transpose();
+							}
+						}
+					}
+
 
 					// Sum the "R" term:
 					if ( FEAT_SIZE>0 )
@@ -802,9 +808,7 @@ namespace mrpt
 						for (size_t i=0;i<N_pred;++i)
 						{
 							const size_t obs_idx_off = i*OBS_SIZE;
-							for (size_t j=0;j<OBS_SIZE;j++)
-								for (size_t k=0;k<OBS_SIZE;k++)
-									S.get_unsafe(obs_idx_off+j,obs_idx_off+k) += R.get_unsafe(j,k);
+							Eigen::Block<typename KFMatrix::Base, OBS_SIZE, OBS_SIZE>(S,obs_idx_off,obs_idx_off) += R;
 						}
 					}
 					else
@@ -814,7 +818,6 @@ namespace mrpt
 					}
 
 					m_timLogger.leave("KF:6.build S");
-
 
 					Z.clear();	// Each entry is one observation:
 
@@ -1541,8 +1544,9 @@ namespace mrpt
 
 		namespace detail
 		{
- 			// generic version for SLAM. There is a speciation below for NON-SLAM problems.
- 			struct CRunOneKalmanIteration_addNewLandmarks {
+ 			struct CRunOneKalmanIteration_addNewLandmarks
+ 			{
+				// generic version for SLAM. There is a speciation below for NON-SLAM problems.
  				template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
  				void operator()(
  					CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj,
