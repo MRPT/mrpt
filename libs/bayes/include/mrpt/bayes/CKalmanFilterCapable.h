@@ -475,8 +475,6 @@ namespace mrpt
 			vector_size_t  			predictLMidxs;
 			typename mrpt::aligned_containers<KFMatrix_OxV>::vector_t  Hxs; //!< The vector of all partial Jacobians dh[i]_dx for each prediction
 			typename mrpt::aligned_containers<KFMatrix_OxF>::vector_t  Hys; //!< The vector of all partial Jacobians dh[i]_dy[i] for each prediction
-			KFMatrix 				dh_dx;
-			KFMatrix 				dh_dx_full;
 			KFMatrix  				S;
 			KFMatrix 				Pkk_subset;
 			vector_KFArray_OBS 		Z;		// Each entry is one observation:
@@ -653,6 +651,9 @@ namespace mrpt
 				//  O=size of each observation.
 				//  F=size of features in the map
 				//
+				//  Updated: Now we only keep the non-zero blocks of that Jacobian,
+				//    in the vectors Hxs[] and Hys[].
+				//
 
 				m_timLogger.enter("KF:5.build Jacobians");
 
@@ -666,8 +667,6 @@ namespace mrpt
 				//  which will be detected by the addition of extra landmarks to predict into "missing_predictions_to_add"
 				std::vector<size_t> missing_predictions_to_add;
 
-				dh_dx.zeros(N_pred*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_pred ); // Init to zeros.
-				dh_dx_full.zeros(N_pred*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_map ); // Init to zeros.
 				Hxs.resize(N_pred);  // Lists of partial Jacobians
 				Hys.resize(N_pred);
 
@@ -688,8 +687,6 @@ namespace mrpt
 						missing_predictions_to_add.clear();
 					}
 
-					dh_dx.setSize(N_pred*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_pred ); // Pad with zeros.
-					dh_dx_full.setSize(N_pred*OBS_SIZE, VEH_SIZE + FEAT_SIZE * N_map ); // Pad with zeros.
 					Hxs.resize(N_pred);  // Append new entries, if needed.
 					Hys.resize(N_pred);
 
@@ -749,16 +746,6 @@ namespace mrpt
 									THROW_EXCEPTION("ERROR: User analytical observation Hy Jacobians are wrong (More details dumped to cerr)")
 								}
 							}
-						}
-
-						dh_dx.insertMatrix(i*OBS_SIZE,0, Hx);
-						if (FEAT_SIZE!=0)
-							dh_dx.insertMatrix(i*OBS_SIZE,VEH_SIZE+i*FEAT_SIZE, Hy);
-
-						dh_dx_full.insertMatrix(i*OBS_SIZE,0, Hx);
-						if (FEAT_SIZE!=0)
-						{
-							dh_dx_full.insertMatrix(i*OBS_SIZE,VEH_SIZE+lm_idx*FEAT_SIZE, Hy);
 						}
 					}
 					m_timLogger.leave("KF:5.build Jacobians");
@@ -907,7 +894,7 @@ namespace mrpt
 									vector_size_t S_idxs;
 									S_idxs.reserve(OBS_SIZE*N_upd);
 
-									const size_t row_len = VEH_SIZE + FEAT_SIZE * N_map;
+									//const size_t row_len = VEH_SIZE + FEAT_SIZE * N_map;
 
 									for (size_t i=0;i<data_association.size();++i)
 									{
@@ -919,9 +906,13 @@ namespace mrpt
 										// TODO: In these cases, extend the prediction right now instead of launching an exception... or is this a bad idea??
 
 										// Build the subset dh_dx_full_obs:
-										dh_dx_full_obs.block(S_idxs.size()             ,0, OBS_SIZE, row_len)
-										=
-										dh_dx_full.block    (assoc_idx_in_pred*OBS_SIZE,0, OBS_SIZE, row_len);
+//										dh_dx_full_obs.block(S_idxs.size()             ,0, OBS_SIZE, row_len)
+//										=
+//										dh_dx_full.block    (assoc_idx_in_pred*OBS_SIZE,0, OBS_SIZE, row_len);
+
+										Eigen::Block<typename KFMatrix::Base,OBS_SIZE,VEH_SIZE> (dh_dx_full_obs, S_idxs.size(),0) = Hxs[assoc_idx_in_pred];
+										Eigen::Block<typename KFMatrix::Base,OBS_SIZE,FEAT_SIZE>(dh_dx_full_obs, S_idxs.size(), VEH_SIZE+assoc_idx_in_map*FEAT_SIZE ) = Hys[assoc_idx_in_pred];
+
 										// S_idxs.size() is used as counter for "dh_dx_full_obs".
 										for (size_t k=0;k<OBS_SIZE;k++)
 											S_idxs.push_back(assoc_idx_in_pred*OBS_SIZE+k);
@@ -938,8 +929,10 @@ namespace mrpt
 								else
 								{	// Non-SLAM problems:
 									ASSERT_(Z.size()==1 && all_predictions.size()==1)
+									ASSERT_(dh_dx_full_obs.getRowCount()==OBS_SIZE && dh_dx_full_obs.getColCount()==VEH_SIZE)
+									ASSERT_(Hxs.size()==1)
 
-									dh_dx_full_obs = dh_dx_full;
+									dh_dx_full_obs = Hxs[0];  // Was: dh_dx_full
 									KFArray_OBS ytilde_i = Z[0];
 									OnSubstractObservationVectors(ytilde_i,all_predictions[0]);
 									for (size_t k=0;k<OBS_SIZE;k++)
@@ -957,8 +950,8 @@ namespace mrpt
 								// K = m_pkk * (~dh_dx) * S.inv() );
 								K.multiply_ABt(m_pkk, dh_dx_full_obs);
 
-								//KFMatrix S_1( S_observed.getRowCount(), S_observed.getColCount() );
-								S_observed.inv(S_1); // Do NOT call inv_fast since it destroys S
+								// Inverse of S_observed -> S_1
+								S_observed.inv(S_1);
 								K*=S_1;
 
 								m_timLogger.leave("KF:8.update stage:1.FULLKF:build K");
@@ -997,7 +990,7 @@ namespace mrpt
 									//m_pkk = (I - K*dh_dx ) * m_pkk;
 									// TODO: "Optimize this: sparsity!"
 
-									// K * dh_dx_full
+									// K * dh_dx_full_obs
 									aux_K_dh_dx.multiply(K,dh_dx_full_obs);
 
 									// aux_K_dh_dx  <-- I-aux_K_dh_dx
@@ -1060,13 +1053,11 @@ namespace mrpt
 								// dh_dx: already is (N_pred*OBS_SIZE) x (VEH_SIZE + FEAT_SIZE * N_pred )
 								//         with N_pred = |predictLMidxs|
 
-								KFMatrix_OxV Hx(UNINITIALIZED_MATRIX);
-								KFMatrix_OxF Hy(UNINITIALIZED_MATRIX);
 								const size_t i_idx_in_preds = mrpt::utils::find_in_vector(idxInTheFilter,predictLMidxs);
 								ASSERTMSG_(i_idx_in_preds!=string::npos, "OnPreComputingPredictions() didn't recommend the prediction of a landmark which has been actually observed!")
-								dh_dx.extractMatrix(i_idx_in_preds*OBS_SIZE,0, Hx);
-								dh_dx.extractMatrix(i_idx_in_preds*OBS_SIZE,VEH_SIZE+i_idx_in_preds*OBS_SIZE, Hy);
 
+								const KFMatrix_OxV & Hx = Hxs[i_idx_in_preds];
+								const KFMatrix_OxF & Hy = Hys[i_idx_in_preds];
 
 								m_timLogger.leave("KF:8.update stage:1.ScalarAtOnce.prepare");
 
