@@ -58,7 +58,7 @@ namespace mrpt
 	 * // 2: Dist. in sectors
 	 * // 3: Closer to target (euclidean)
 	 * // 4: Hysteresis
-	 * WIDE_GAP_SIZE_PERCENT            = 0.50
+	 * WIDE_GAP_SIZE_PERCENT            = 0.25
 	 * MAX_SECTOR_DIST_FOR_D2_PERCENT   = 0.25
 	 * RISK_EVALUATION_SECTORS_PERCENT  = 0.25
 	 * RISK_EVALUATION_DISTANCE         = 0.15  // In normalized ps-meters [0,1]
@@ -102,8 +102,8 @@ namespace mrpt
 		{
 			unsigned int  ini;
 			unsigned int  end;
-			double        entranceDistance;
 			double        maxDistance;
+			double		  minDistance;
 			unsigned int  representative_sector;
 		};
 
@@ -153,6 +153,7 @@ namespace mrpt
 			const vector_double         & obstacles,
 			const mrpt::math::TPoint2D  & in_target,
 			TGapArray                   & gaps );
+
 
 		/** Search the best gap.
 		  */
