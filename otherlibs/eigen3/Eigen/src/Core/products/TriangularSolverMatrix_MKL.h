@@ -51,7 +51,7 @@ struct triangular_solve_matrix<EIGTYPE,Index,OnTheLeft,Mode,Conjugate,TriStorage
   static EIGEN_DONT_INLINE void run( \
       Index size, Index otherSize, \
       const EIGTYPE* _tri, Index triStride, \
-      EIGTYPE* _other, Index otherStride) \
+      EIGTYPE* _other, Index otherStride, level3_blocking<EIGTYPE,EIGTYPE>& /*blocking*/) \
   { \
    MKL_INT m = size, n = otherSize, lda, ldb; \
    char side = 'L', uplo, diag='N', transa; \
@@ -106,7 +106,7 @@ struct triangular_solve_matrix<EIGTYPE,Index,OnTheRight,Mode,Conjugate,TriStorag
   static EIGEN_DONT_INLINE void run( \
       Index size, Index otherSize, \
       const EIGTYPE* _tri, Index triStride, \
-      EIGTYPE* _other, Index otherStride) \
+      EIGTYPE* _other, Index otherStride, level3_blocking<EIGTYPE,EIGTYPE>& /*blocking*/) \
   { \
    MKL_INT m = otherSize, n = size, lda, ldb; \
    char side = 'R', uplo, diag='N', transa; \

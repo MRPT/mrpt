@@ -3,30 +3,15 @@
 //
 // Copyright (C) 2008-2009 Gael Guennebaud <gael.guennebaud@inria.fr>
 //
-// Eigen is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// Alternatively, you can redistribute it and/or
-// modify it under the terms of the GNU General Public License as
-// published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// Eigen is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-// FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License or the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License and a copy of the GNU General Public License along with
-// Eigen. If not, see <http://www.gnu.org/licenses/>.
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #ifndef EIGEN_GENERAL_BLOCK_PANEL_H
 #define EIGEN_GENERAL_BLOCK_PANEL_H
 
 namespace Eigen { 
-
+  
 namespace internal {
 
 template<typename _LhsScalar, typename _RhsScalar, bool _ConjLhs=false, bool _ConjRhs=false>
@@ -42,9 +27,14 @@ inline std::ptrdiff_t manage_caching_sizes_helper(std::ptrdiff_t a, std::ptrdiff
 /** \internal */
 inline void manage_caching_sizes(Action action, std::ptrdiff_t* l1=0, std::ptrdiff_t* l2=0)
 {
-  static std::ptrdiff_t m_l1CacheSize = manage_caching_sizes_helper(queryL1CacheSize(),8 * 1024);
-  static std::ptrdiff_t m_l2CacheSize = manage_caching_sizes_helper(queryTopLevelCacheSize(),1*1024*1024);
-
+  static std::ptrdiff_t m_l1CacheSize = 0;
+  static std::ptrdiff_t m_l2CacheSize = 0;
+  if(m_l2CacheSize==0)
+  {
+    m_l1CacheSize = manage_caching_sizes_helper(queryL1CacheSize(),8 * 1024);
+    m_l2CacheSize = manage_caching_sizes_helper(queryTopLevelCacheSize(),1*1024*1024);
+  }
+  
   if(action==SetAction)
   {
     // set the cpu cache size and cache all block sizes from a global cache size in byte

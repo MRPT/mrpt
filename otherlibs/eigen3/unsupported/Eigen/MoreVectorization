@@ -6,8 +6,7 @@
 namespace Eigen {
 
 /** \ingroup Unsupported_modules
-  * \defgroup MoreVectorization More vectorization module 
- * \ingroup eigen_grp
+  * \defgroup MoreVectorization More vectorization module
   */
 
 }

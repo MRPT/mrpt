@@ -3,30 +3,24 @@
 //
 // Copyright (C) 2008 Gael Guennebaud <g.gael@free.fr>
 //
-// Eigen is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// Alternatively, you can redistribute it and/or
-// modify it under the terms of the GNU General Public License as
-// published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// Eigen is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-// FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License or the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License and a copy of the GNU General Public License along with
-// Eigen. If not, see <http://www.gnu.org/licenses/>.
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "main.h"
+#include <Eigen/Dense>
+
 #define NUMBER_DIRECTIONS 16
 #include <unsupported/Eigen/AdolcForward>
 
 int adtl::ADOLC_numDir;
+
+template<typename Vector>
+EIGEN_DONT_INLINE typename Vector::Scalar foo(const Vector& p)
+{
+  typedef typename Vector::Scalar Scalar;
+  return (p-Vector(Scalar(-1),Scalar(1.))).norm() + (p.array().sqrt().abs() * p.array().sin()).sum() + p.dot(p);
+}
 
 template<typename _Scalar, int NX=Dynamic, int NY=Dynamic>
 struct TestFunc1
@@ -137,5 +131,13 @@ void test_forward_adolc()
     CALL_SUBTEST(( adolc_forward_jacobian(TestFunc1<double,3,2>()) ));
     CALL_SUBTEST(( adolc_forward_jacobian(TestFunc1<double,3,3>()) ));
     CALL_SUBTEST(( adolc_forward_jacobian(TestFunc1<double>(3,3)) ));
+  }
+
+  {
+    // simple instanciation tests
+    Matrix<adtl::adouble,2,1> x;
+    foo(x);
+    Matrix<adtl::adouble,Dynamic,Dynamic> A(4,4);;
+    A.selfadjointView<Lower>().eigenvalues();
   }
 }

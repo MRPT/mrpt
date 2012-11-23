@@ -3,24 +3,9 @@
 //
 // Copyright (C) 2012 Désiré Nuentsa-Wakam <desire.nuentsa_wakam@inria.fr>
 //
-// Eigen is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// Alternatively, you can redistribute it and/or
-// modify it under the terms of the GNU General Public License as
-// published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// Eigen is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-// FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License or the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License and a copy of the GNU General Public License along with
-// Eigen. If not, see <http://www.gnu.org/licenses/>.
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #ifndef EIGEN_PASTIXSUPPORT_H
 #define EIGEN_PASTIXSUPPORT_H
@@ -35,7 +20,6 @@ namespace Eigen {
   *
   * \sa TutorialSparseDirectSolvers
   */
-
 template<typename _MatrixType, bool IsStrSym = false> class PastixLU;
 template<typename _MatrixType, int Options> class PastixLLT;
 template<typename _MatrixType, int Options> class PastixLDLT;
@@ -75,32 +59,34 @@ namespace internal
   void eigen_pastix(pastix_data_t **pastix_data, int pastix_comm, int n, int *ptr, int *idx, float *vals, int *perm, int * invp, float *x, int nbrhs, int *iparm, double *dparm)
   {
     if (n == 0) { ptr = NULL; idx = NULL; vals = NULL; }
-    if (nbrhs == 0) x = NULL;
+    if (nbrhs == 0) {x = NULL; nbrhs=1;}
     s_pastix(pastix_data, pastix_comm, n, ptr, idx, vals, perm, invp, x, nbrhs, iparm, dparm); 
   }
   
   void eigen_pastix(pastix_data_t **pastix_data, int pastix_comm, int n, int *ptr, int *idx, double *vals, int *perm, int * invp, double *x, int nbrhs, int *iparm, double *dparm)
   {
     if (n == 0) { ptr = NULL; idx = NULL; vals = NULL; }
-    if (nbrhs == 0) x = NULL;
+    if (nbrhs == 0) {x = NULL; nbrhs=1;}
     d_pastix(pastix_data, pastix_comm, n, ptr, idx, vals, perm, invp, x, nbrhs, iparm, dparm); 
   }
   
   void eigen_pastix(pastix_data_t **pastix_data, int pastix_comm, int n, int *ptr, int *idx, std::complex<float> *vals, int *perm, int * invp, std::complex<float> *x, int nbrhs, int *iparm, double *dparm)
   {
+    if (n == 0) { ptr = NULL; idx = NULL; vals = NULL; }
+    if (nbrhs == 0) {x = NULL; nbrhs=1;}
     c_pastix(pastix_data, pastix_comm, n, ptr, idx, reinterpret_cast<COMPLEX*>(vals), perm, invp, reinterpret_cast<COMPLEX*>(x), nbrhs, iparm, dparm); 
   }
   
   void eigen_pastix(pastix_data_t **pastix_data, int pastix_comm, int n, int *ptr, int *idx, std::complex<double> *vals, int *perm, int * invp, std::complex<double> *x, int nbrhs, int *iparm, double *dparm)
   {
     if (n == 0) { ptr = NULL; idx = NULL; vals = NULL; }
-    if (nbrhs == 0) x = NULL;
+    if (nbrhs == 0) {x = NULL; nbrhs=1;}
     z_pastix(pastix_data, pastix_comm, n, ptr, idx, reinterpret_cast<DCOMPLEX*>(vals), perm, invp, reinterpret_cast<DCOMPLEX*>(x), nbrhs, iparm, dparm); 
   }
 
   // Convert the matrix  to Fortran-style Numbering
   template <typename MatrixType>
-  void EigenToFortranNumbering (MatrixType& mat)
+  void c_to_fortran_numbering (MatrixType& mat)
   {
     if ( !(mat.outerIndexPtr()[0]) ) 
     { 
@@ -114,7 +100,7 @@ namespace internal
   
   // Convert to C-style Numbering
   template <typename MatrixType>
-  void EigenToCNumbering (MatrixType& mat)
+  void fortran_to_c_numbering (MatrixType& mat)
   {
     // Check the Numbering
     if ( mat.outerIndexPtr()[0] == 1 ) 
@@ -126,38 +112,12 @@ namespace internal
         --mat.innerIndexPtr()[i];
     }
   }
-  
-  // Symmetrize the graph of the input matrix 
-  // In : The Input matrix to symmetrize the pattern
-  // Out : The output matrix
-  // StrMatTrans : The structural pattern of the transpose of In; It is 
-  // used to optimize the future symmetrization with the same matrix pattern
-  // WARNING It is assumed here that successive calls to this routine are done 
-  // with matrices having the same pattern.
-  template <typename MatrixType>
-  void EigenSymmetrizeMatrixGraph (const MatrixType& In, MatrixType& Out, MatrixType& StrMatTrans, bool& hasTranspose)
-  {
-    eigen_assert(In.cols()==In.rows() && " Can only symmetrize the graph of a square matrix");
-    if (!hasTranspose)
-    { //First call to this routine, need to compute the structural pattern of In^T
-      StrMatTrans = In.transpose();
-      // Set the elements of the matrix to zero 
-      for (int i = 0; i < StrMatTrans.rows(); i++) 
-      {
-        for (typename MatrixType::InnerIterator it(StrMatTrans, i); it; ++it)
-          it.valueRef() = 0.0;
-      }
-      hasTranspose = true;
-    }
-    Out = (StrMatTrans + In).eval(); 
-  }
-
 }
 
 // This is the base class to interface with PaStiX functions. 
 // Users should not used this class directly. 
 template <class Derived>
-class PastixBase
+class PastixBase : internal::noncopyable
 {
   public:
     typedef typename internal::pastix_traits<Derived>::MatrixType _MatrixType;
@@ -166,29 +126,19 @@ class PastixBase
     typedef typename MatrixType::RealScalar RealScalar;
     typedef typename MatrixType::Index Index;
     typedef Matrix<Scalar,Dynamic,1> Vector;
+    typedef SparseMatrix<Scalar, ColMajor> ColSpMatrix;
     
   public:
     
-    PastixBase():m_initisOk(false),m_analysisIsOk(false),m_factorizationIsOk(false),m_isInitialized(false) 
+    PastixBase() : m_initisOk(false), m_analysisIsOk(false), m_factorizationIsOk(false), m_isInitialized(false), m_pastixdata(0), m_size(0)
     {
-      m_pastixdata = 0;
-      m_hasTranspose = false;
-      PastixInit();
+      init();
     }
     
     ~PastixBase() 
     {
-       PastixDestroy();
+      clean();
     }
-    
-    // Initialize the Pastix data structure, check the matrix
-    void PastixInit(); 
-    
-    // Compute the ordering and the symbolic factorization
-    Derived& analyzePattern (MatrixType& mat);
-    
-    // Compute the numerical factorization
-    Derived& factorize (MatrixType& mat);
 
     /** \returns the solution x of \f$ A x = b \f$ using the current decomposition of A.
       *
@@ -269,7 +219,6 @@ class PastixBase
     /** Return a reference to a particular index parameter of the DPARM vector 
      * \sa dparm()
      */
-    
     double& dparm(int idxparam)
     {
       return m_dparm(idxparam);
@@ -307,17 +256,27 @@ class PastixBase
     }
     
   protected:
+
+    // Initialize the Pastix data structure, check the matrix
+    void init(); 
+    
+    // Compute the ordering and the symbolic factorization
+    void analyzePattern(ColSpMatrix& mat);
+    
+    // Compute the numerical factorization
+    void factorize(ColSpMatrix& mat);
+    
     // Free all the data allocated by Pastix
-    void PastixDestroy()
+    void clean()
     {
       eigen_assert(m_initisOk && "The Pastix structure should be allocated first"); 
       m_iparm(IPARM_START_TASK) = API_TASK_CLEAN;
       m_iparm(IPARM_END_TASK) = API_TASK_CLEAN;
-      internal::eigen_pastix(&m_pastixdata, MPI_COMM_WORLD, 0, m_mat_null.outerIndexPtr(), m_mat_null.innerIndexPtr(),
-               m_mat_null.valuePtr(), m_perm.data(), m_invp.data(), m_vec_null.data(), 1, m_iparm.data(), m_dparm.data());
+      internal::eigen_pastix(&m_pastixdata, MPI_COMM_WORLD, 0, 0, 0, (Scalar*)0,
+                             m_perm.data(), m_invp.data(), 0, 0, m_iparm.data(), m_dparm.data());
     }
     
-    Derived& compute (MatrixType& mat);
+    void compute(ColSpMatrix& mat);
     
     int m_initisOk; 
     int m_analysisIsOk;
@@ -325,22 +284,12 @@ class PastixBase
     bool m_isInitialized;
     mutable ComputationInfo m_info; 
     mutable pastix_data_t *m_pastixdata; // Data structure for pastix
-    mutable SparseMatrix<Scalar, ColMajor> m_mat_null; // An input  null matrix
-    mutable Matrix<Scalar, Dynamic,1> m_vec_null; // An input null vector
-    mutable SparseMatrix<Scalar, ColMajor> m_StrMatTrans; // The transpose pattern of the input matrix
-    mutable bool m_hasTranspose; // The transpose of the current matrix has already been computed
     mutable int m_comm; // The MPI communicator identifier
-    mutable Matrix<Index,IPARM_SIZE,1> m_iparm; // integer vector for the input parameters
+    mutable Matrix<int,IPARM_SIZE,1> m_iparm; // integer vector for the input parameters
     mutable Matrix<double,DPARM_SIZE,1> m_dparm; // Scalar vector for the input parameters
     mutable Matrix<Index,Dynamic,1> m_perm;  // Permutation vector
     mutable Matrix<Index,Dynamic,1> m_invp;  // Inverse permutation vector
-    mutable int m_ordering; // ordering method to use
-    mutable int m_amalgamation; // level of amalgamation
     mutable int m_size; // Size of the matrix 
-    
-  private:
-    PastixBase(PastixBase& ) {}
-    
 }; 
 
  /** Initialize the PaStiX data structure. 
@@ -348,29 +297,29 @@ class PastixBase
    * \sa iparm() dparm()
    */
 template <class Derived>
-void PastixBase<Derived>::PastixInit()
+void PastixBase<Derived>::init()
 {
   m_size = 0; 
-  m_iparm.resize(IPARM_SIZE);
-  m_dparm.resize(DPARM_SIZE);
+  m_iparm.setZero(IPARM_SIZE);
+  m_dparm.setZero(DPARM_SIZE);
   
   m_iparm(IPARM_MODIFY_PARAMETER) = API_NO;
-  if(m_pastixdata)
-  { // This trick is used to reset the Pastix internal data between successive
-    // calls with (structural) different matrices
-    PastixDestroy();
-    m_pastixdata = 0;
-    m_iparm(IPARM_MODIFY_PARAMETER) = API_YES;
-    m_hasTranspose = false; 
-  }
+  pastix(&m_pastixdata, MPI_COMM_WORLD,
+         0, 0, 0, 0,
+         0, 0, 0, 1, m_iparm.data(), m_dparm.data());
+  
+  m_iparm[IPARM_MATRIX_VERIFICATION] = API_NO;
+  m_iparm[IPARM_VERBOSE]             = 2;
+  m_iparm[IPARM_ORDERING]            = API_ORDER_SCOTCH;
+  m_iparm[IPARM_INCOMPLETE]          = API_NO;
+  m_iparm[IPARM_OOC_LIMIT]           = 2000;
+  m_iparm[IPARM_RHS_MAKING]          = API_RHS_B;
+  m_iparm(IPARM_MATRIX_VERIFICATION) = API_NO;
   
   m_iparm(IPARM_START_TASK) = API_TASK_INIT;
   m_iparm(IPARM_END_TASK) = API_TASK_INIT;
-  m_iparm(IPARM_MATRIX_VERIFICATION) = API_NO;
-  internal::eigen_pastix(&m_pastixdata, MPI_COMM_WORLD, 0, m_mat_null.outerIndexPtr(), m_mat_null.innerIndexPtr(),
-               m_mat_null.valuePtr(), m_perm.data(), m_invp.data(), m_vec_null.data(), 1, m_iparm.data(), m_dparm.data());
-  
-  m_iparm(IPARM_MATRIX_VERIFICATION) = API_NO;
+  internal::eigen_pastix(&m_pastixdata, MPI_COMM_WORLD, 0, 0, 0, (Scalar*)0,
+                         0, 0, 0, 0, m_iparm.data(), m_dparm.data());
   
   // Check the returned error
   if(m_iparm(IPARM_ERROR_NUMBER)) {
@@ -384,82 +333,74 @@ void PastixBase<Derived>::PastixInit()
 }
 
 template <class Derived>
-Derived& PastixBase<Derived>::compute(MatrixType& mat)
+void PastixBase<Derived>::compute(ColSpMatrix& mat)
 {
   eigen_assert(mat.rows() == mat.cols() && "The input matrix should be squared");
-  typedef typename MatrixType::Scalar Scalar;
   
-  // Save the size of the current matrix 
-  m_size = mat.rows();
-  // Convert the matrix in fortran-style numbering 
-  internal::EigenToFortranNumbering(mat);
-  analyzePattern(mat);
+  analyzePattern(mat);  
   factorize(mat);
+  
   m_iparm(IPARM_MATRIX_VERIFICATION) = API_NO;
-  if (m_factorizationIsOk) m_isInitialized = true;
-  
-  //Convert back the matrix -- Is it really necessary here 
-  internal::EigenToCNumbering(mat);
-  
-  return derived();
+  m_isInitialized = m_factorizationIsOk;
 }
 
 
 template <class Derived>
-Derived& PastixBase<Derived>::analyzePattern(MatrixType& mat)
-{
-  eigen_assert(m_initisOk && "PastixInit should be called first to set the default  parameters");
+void PastixBase<Derived>::analyzePattern(ColSpMatrix& mat)
+{                         
+  eigen_assert(m_initisOk && "The initialization of PaSTiX failed");
+  
+  // clean previous calls
+  if(m_size>0)
+    clean();
+  
   m_size = mat.rows();
   m_perm.resize(m_size);
   m_invp.resize(m_size);
   
-  // Convert the matrix in fortran-style numbering 
-  internal::EigenToFortranNumbering(mat);
-  
   m_iparm(IPARM_START_TASK) = API_TASK_ORDERING;
   m_iparm(IPARM_END_TASK) = API_TASK_ANALYSE;
-  
   internal::eigen_pastix(&m_pastixdata, MPI_COMM_WORLD, m_size, mat.outerIndexPtr(), mat.innerIndexPtr(),
-               mat.valuePtr(), m_perm.data(), m_invp.data(), m_vec_null.data(), 0, m_iparm.data(), m_dparm.data());
+               mat.valuePtr(), m_perm.data(), m_invp.data(), 0, 0, m_iparm.data(), m_dparm.data());
   
   // Check the returned error
-  if(m_iparm(IPARM_ERROR_NUMBER)) {
+  if(m_iparm(IPARM_ERROR_NUMBER))
+  {
     m_info = NumericalIssue;
     m_analysisIsOk = false;
   }
-  else { 
+  else
+  { 
     m_info = Success;
     m_analysisIsOk = true;
   }
-  return derived();
 }
 
 template <class Derived>
-Derived& PastixBase<Derived>::factorize(MatrixType& mat)
+void PastixBase<Derived>::factorize(ColSpMatrix& mat)
 {
+//   if(&m_cpyMat != &mat) m_cpyMat = mat;
   eigen_assert(m_analysisIsOk && "The analysis phase should be called before the factorization phase");
   m_iparm(IPARM_START_TASK) = API_TASK_NUMFACT;
   m_iparm(IPARM_END_TASK) = API_TASK_NUMFACT;
   m_size = mat.rows();
   
-  // Convert the matrix in fortran-style numbering 
-  internal::EigenToFortranNumbering(mat);
-  
   internal::eigen_pastix(&m_pastixdata, MPI_COMM_WORLD, m_size, mat.outerIndexPtr(), mat.innerIndexPtr(),
-               mat.valuePtr(), m_perm.data(), m_invp.data(), m_vec_null.data(), 0, m_iparm.data(), m_dparm.data());
+               mat.valuePtr(), m_perm.data(), m_invp.data(), 0, 0, m_iparm.data(), m_dparm.data());
   
   // Check the returned error
-  if(m_iparm(IPARM_ERROR_NUMBER)) {
+  if(m_iparm(IPARM_ERROR_NUMBER))
+  {
     m_info = NumericalIssue;
     m_factorizationIsOk = false;
     m_isInitialized = false;
   }
-  else { 
+  else
+  {
     m_info = Success;
     m_factorizationIsOk = true;
     m_isInitialized = true;
   }
-  return derived();
 }
 
 /* Solve the system */
@@ -475,20 +416,17 @@ bool PastixBase<Base>::_solve (const MatrixBase<Rhs> &b, MatrixBase<Dest> &x) co
   x = b; /* on return, x is overwritten by the computed solution */
   
   for (int i = 0; i < b.cols(); i++){
-    m_iparm(IPARM_START_TASK) = API_TASK_SOLVE;
-    m_iparm(IPARM_END_TASK) = API_TASK_REFINE;
-    m_iparm(IPARM_RHS_MAKING) = API_RHS_B;
-    internal::eigen_pastix(&m_pastixdata, MPI_COMM_WORLD, x.rows(), m_mat_null.outerIndexPtr(), m_mat_null.innerIndexPtr(),
-               m_mat_null.valuePtr(), m_perm.data(), m_invp.data(), &x(0, i), rhs, m_iparm.data(), m_dparm.data());
+    m_iparm[IPARM_START_TASK]          = API_TASK_SOLVE;
+    m_iparm[IPARM_END_TASK]            = API_TASK_REFINE;
+  
+    internal::eigen_pastix(&m_pastixdata, MPI_COMM_WORLD, x.rows(), 0, 0, 0,
+                           m_perm.data(), m_invp.data(), &x(0, i), rhs, m_iparm.data(), m_dparm.data());
   }
+  
   // Check the returned error
-  if(m_iparm(IPARM_ERROR_NUMBER)) {
-    m_info = NumericalIssue; 
-    return false;
-  }
-  else {
-    return true;
-  }
+  m_info = m_iparm(IPARM_ERROR_NUMBER)==0 ? Success : NumericalIssue;
+  
+  return m_iparm(IPARM_ERROR_NUMBER)==0;
 }
 
 /** \ingroup PaStiXSupport_Module
@@ -516,14 +454,18 @@ class PastixLU : public PastixBase< PastixLU<_MatrixType> >
   public:
     typedef _MatrixType MatrixType;
     typedef PastixBase<PastixLU<MatrixType> > Base;
-    typedef typename MatrixType::Scalar Scalar;
-    typedef SparseMatrix<Scalar, ColMajor> PaStiXType; 
+    typedef typename Base::ColSpMatrix ColSpMatrix;
+    typedef typename MatrixType::Index Index;
     
   public:
-    PastixLU():Base() {}
+    PastixLU() : Base()
+    {
+      init();
+    }
     
     PastixLU(const MatrixType& matrix):Base()
     {
+      init();
       compute(matrix);
     }
     /** Compute the LU supernodal factorization of \p matrix. 
@@ -533,18 +475,9 @@ class PastixLU : public PastixBase< PastixLU<_MatrixType> >
       */
     void compute (const MatrixType& matrix)
     {
-      // Pastix supports only column-major matrices with a symmetric pattern
-      Base::PastixInit(); 
-      PaStiXType temp(matrix.rows(), matrix.cols());
-      // Symmetrize the graph of the matrix
-      if (IsStrSym)   
-        temp = matrix;
-      else 
-      { 
-        internal::EigenSymmetrizeMatrixGraph<PaStiXType>(matrix, temp, m_StrMatTrans, m_hasTranspose);
-      }
-      m_iparm[IPARM_SYM] = API_SYM_NO;
-      m_iparm(IPARM_FACTORIZATION) = API_FACT_LU;
+      m_structureIsUptodate = false;
+      ColSpMatrix temp;
+      grabMatrix(matrix, temp);
       Base::compute(temp);
     }
     /** Compute the LU symbolic factorization of \p matrix using its sparsity pattern. 
@@ -554,20 +487,9 @@ class PastixLU : public PastixBase< PastixLU<_MatrixType> >
       */
     void analyzePattern(const MatrixType& matrix)
     {
-      
-      Base::PastixInit(); 
-      /* Pastix supports only column-major matrices with symmetrized patterns */
-      SparseMatrix<Scalar, ColMajor> temp(matrix.rows(), matrix.cols());
-      // Symmetrize the graph of the matrix
-      if (IsStrSym)   
-        temp = matrix;
-      else 
-      { 
-        internal::EigenSymmetrizeMatrixGraph<PaStiXType>(matrix, temp, m_StrMatTrans,m_hasTranspose);
-      }
-      
-      m_iparm(IPARM_SYM) = API_SYM_NO;
-      m_iparm(IPARM_FACTORIZATION) = API_FACT_LU;
+      m_structureIsUptodate = false;
+      ColSpMatrix temp;
+      grabMatrix(matrix, temp);
       Base::analyzePattern(temp);
     }
 
@@ -578,27 +500,48 @@ class PastixLU : public PastixBase< PastixLU<_MatrixType> >
       */ 
     void factorize(const MatrixType& matrix)
     {
-      /* Pastix supports only column-major matrices with symmetrized patterns */
-      SparseMatrix<Scalar, ColMajor> temp(matrix.rows(), matrix.cols());
-      // Symmetrize the graph of the matrix
-      if (IsStrSym)   
-        temp = matrix;
-      else 
-      { 
-        internal::EigenSymmetrizeMatrixGraph<PaStiXType>(matrix, temp, m_StrMatTrans,m_hasTranspose);
-      }
-      m_iparm(IPARM_SYM) = API_SYM_NO;
-      m_iparm(IPARM_FACTORIZATION) = API_FACT_LU;
+      ColSpMatrix temp;
+      grabMatrix(matrix, temp);
       Base::factorize(temp);
     }
   protected:
+    
+    void init()
+    {
+      m_structureIsUptodate = false;
+      m_iparm(IPARM_SYM) = API_SYM_NO;
+      m_iparm(IPARM_FACTORIZATION) = API_FACT_LU;
+    }
+    
+    void grabMatrix(const MatrixType& matrix, ColSpMatrix& out)
+    {
+      if(IsStrSym)
+        out = matrix;
+      else
+      {
+        if(!m_structureIsUptodate)
+        {
+          // update the transposed structure
+          m_transposedStructure = matrix.transpose();
+          
+          // Set the elements of the matrix to zero 
+          for (Index j=0; j<m_transposedStructure.outerSize(); ++j) 
+            for(typename ColSpMatrix::InnerIterator it(m_transposedStructure, j); it; ++it)
+              it.valueRef() = 0.0;
+
+          m_structureIsUptodate = true;
+        }
+        
+        out = m_transposedStructure + matrix;
+      }
+      internal::c_to_fortran_numbering(out);
+    }
+    
     using Base::m_iparm;
     using Base::m_dparm;
-    using Base::m_StrMatTrans;
-    using Base::m_hasTranspose;
     
-  private:
-    PastixLU(PastixLU& ) {}
+    ColSpMatrix m_transposedStructure;
+    bool m_structureIsUptodate;
 };
 
 /** \ingroup PaStiXSupport_Module
@@ -621,15 +564,18 @@ class PastixLLT : public PastixBase< PastixLLT<_MatrixType, _UpLo> >
   public:
     typedef _MatrixType MatrixType;
     typedef PastixBase<PastixLLT<MatrixType, _UpLo> > Base;
-    typedef typename MatrixType::Scalar Scalar;
-    typedef typename MatrixType::Index Index;
+    typedef typename Base::ColSpMatrix ColSpMatrix;
     
   public:
     enum { UpLo = _UpLo };
-    PastixLLT():Base() {}
+    PastixLLT() : Base()
+    {
+      init();
+    }
     
     PastixLLT(const MatrixType& matrix):Base()
     {
+      init();
       compute(matrix);
     }
 
@@ -638,13 +584,8 @@ class PastixLLT : public PastixBase< PastixLLT<_MatrixType, _UpLo> >
       */
     void compute (const MatrixType& matrix)
     {
-      // Pastix supports only lower, column-major matrices
-      Base::PastixInit(); // This is necessary to let PaStiX initialize its data structure between successive calls to compute
-      SparseMatrix<Scalar, ColMajor> temp(matrix.rows(), matrix.cols());
-      PermutationMatrix<Dynamic,Dynamic,Index> pnull;
-      temp.template selfadjointView<Lower>() = matrix.template selfadjointView<UpLo>().twistedBy(pnull);
-      m_iparm(IPARM_SYM) = API_SYM_YES;
-      m_iparm(IPARM_FACTORIZATION) = API_FACT_LLT;
+      ColSpMatrix temp;
+      grabMatrix(matrix, temp);
       Base::compute(temp);
     }
 
@@ -654,13 +595,8 @@ class PastixLLT : public PastixBase< PastixLLT<_MatrixType, _UpLo> >
       */
     void analyzePattern(const MatrixType& matrix)
     {
-      Base::PastixInit(); 
-      // Pastix supports only lower, column-major matrices
-      SparseMatrix<Scalar, ColMajor> temp(matrix.rows(), matrix.cols());
-      PermutationMatrix<Dynamic,Dynamic,Index> pnull;
-      temp.template selfadjointView<Lower>() = matrix.template selfadjointView<UpLo>().twistedBy(pnull);
-      m_iparm(IPARM_SYM) = API_SYM_YES;
-      m_iparm(IPARM_FACTORIZATION) = API_FACT_LLT;
+      ColSpMatrix temp;
+      grabMatrix(matrix, temp);
       Base::analyzePattern(temp);
     }
       /** Compute the LL^T supernodal numerical factorization of \p matrix 
@@ -668,19 +604,25 @@ class PastixLLT : public PastixBase< PastixLLT<_MatrixType, _UpLo> >
         */
     void factorize(const MatrixType& matrix)
     {
-      // Pastix supports only lower, column-major matrices 
-      SparseMatrix<Scalar, ColMajor> temp(matrix.rows(), matrix.cols());
-      PermutationMatrix<Dynamic,Dynamic,Index> pnull;
-      temp.template selfadjointView<Lower>() = matrix.template selfadjointView<UpLo>().twistedBy(pnull);
-      m_iparm(IPARM_SYM) = API_SYM_YES;
-      m_iparm(IPARM_FACTORIZATION) = API_FACT_LLT;
+      ColSpMatrix temp;
+      grabMatrix(matrix, temp);
       Base::factorize(temp);
     }
   protected:
     using Base::m_iparm;
     
-  private:
-    PastixLLT(PastixLLT& ) {}
+    void init()
+    {
+      m_iparm(IPARM_SYM) = API_SYM_YES;
+      m_iparm(IPARM_FACTORIZATION) = API_FACT_LLT;
+    }
+    
+    void grabMatrix(const MatrixType& matrix, ColSpMatrix& out)
+    {
+      // Pastix supports only lower, column-major matrices 
+      out.template selfadjointView<Lower>() = matrix.template selfadjointView<UpLo>();
+      internal::c_to_fortran_numbering(out);
+    }
 };
 
 /** \ingroup PaStiXSupport_Module
@@ -700,18 +642,21 @@ class PastixLLT : public PastixBase< PastixLLT<_MatrixType, _UpLo> >
 template<typename _MatrixType, int _UpLo>
 class PastixLDLT : public PastixBase< PastixLDLT<_MatrixType, _UpLo> >
 {
-public:
+  public:
     typedef _MatrixType MatrixType;
     typedef PastixBase<PastixLDLT<MatrixType, _UpLo> > Base; 
-    typedef typename MatrixType::Scalar Scalar;
-    typedef typename MatrixType::Index Index;
+    typedef typename Base::ColSpMatrix ColSpMatrix;
     
   public:
     enum { UpLo = _UpLo };
-    PastixLDLT():Base() {}
+    PastixLDLT():Base()
+    {
+      init();
+    }
     
     PastixLDLT(const MatrixType& matrix):Base()
     {
+      init();
       compute(matrix);
     }
 
@@ -720,13 +665,8 @@ public:
       */
     void compute (const MatrixType& matrix)
     {
-      Base::PastixInit();
-      // Pastix supports only lower, column-major matrices
-      SparseMatrix<Scalar, ColMajor> temp(matrix.rows(), matrix.cols());
-      PermutationMatrix<Dynamic,Dynamic,Index> pnull;
-      temp.template selfadjointView<Lower>() = matrix.template selfadjointView<UpLo>().twistedBy(pnull);
-      m_iparm(IPARM_SYM) = API_SYM_YES;
-      m_iparm(IPARM_FACTORIZATION) = API_FACT_LDLT;
+      ColSpMatrix temp;
+      grabMatrix(matrix, temp);
       Base::compute(temp);
     }
 
@@ -736,14 +676,8 @@ public:
       */
     void analyzePattern(const MatrixType& matrix)
     { 
-      Base::PastixInit();
-      // Pastix supports only lower, column-major matrices
-      SparseMatrix<Scalar, ColMajor> temp(matrix.rows(), matrix.cols());
-      PermutationMatrix<Dynamic,Dynamic,Index> pnull;
-      temp.template selfadjointView<Lower>() = matrix.template selfadjointView<UpLo>().twistedBy(pnull);
-    
-      m_iparm(IPARM_SYM) = API_SYM_YES;
-      m_iparm(IPARM_FACTORIZATION) = API_FACT_LDLT;
+      ColSpMatrix temp;
+      grabMatrix(matrix, temp);
       Base::analyzePattern(temp);
     }
     /** Compute the LDL^T supernodal numerical factorization of \p matrix 
@@ -751,21 +685,26 @@ public:
       */
     void factorize(const MatrixType& matrix)
     {
-      // Pastix supports only lower, column-major matrices
-      SparseMatrix<Scalar, ColMajor> temp(matrix.rows(), matrix.cols());
-      PermutationMatrix<Dynamic,Dynamic,Index> pnull;
-      temp.template selfadjointView<Lower>() = matrix.template selfadjointView<UpLo>().twistedBy(pnull);
-
-      m_iparm(IPARM_SYM) = API_SYM_YES;
-      m_iparm(IPARM_FACTORIZATION) = API_FACT_LDLT;
+      ColSpMatrix temp;
+      grabMatrix(matrix, temp);
       Base::factorize(temp);
     }
 
   protected:
     using Base::m_iparm;
     
-  private:
-    PastixLDLT(PastixLDLT& ) {}
+    void init()
+    {
+      m_iparm(IPARM_SYM) = API_SYM_YES;
+      m_iparm(IPARM_FACTORIZATION) = API_FACT_LDLT;
+    }
+    
+    void grabMatrix(const MatrixType& matrix, ColSpMatrix& out)
+    {
+      // Pastix supports only lower, column-major matrices 
+      out.template selfadjointView<Lower>() = matrix.template selfadjointView<UpLo>();
+      internal::c_to_fortran_numbering(out);
+    }
 };
 
 namespace internal {

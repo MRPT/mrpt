@@ -5,24 +5,9 @@
 // Copyright (C) 2010 Konstantin Holoborodko <konstantin@holoborodko.com>
 // Copyright (C) 2010 Gael Guennebaud <gael.guennebaud@inria.fr>
 //
-// Eigen is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// Alternatively, you can redistribute it and/or
-// modify it under the terms of the GNU General Public License as
-// published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// Eigen is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-// FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License or the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License and a copy of the GNU General Public License along with
-// this library. If not, see <http://www.gnu.org/licenses/>.
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 // 
 // Contributors:
 // Brian Gladman, Helmut Jarausch, Fokko Beekhof, Ulrich Mutze, Heinz van Saanen, Pere Constans
@@ -37,8 +22,7 @@
 namespace Eigen {
   
   /** \ingroup Unsupported_modules
-    * \defgroup MPRealSupport_Module MPFRC++ Support module 
- * \ingroup eigen_grp
+    * \defgroup MPRealSupport_Module MPFRC++ Support module
     *
     * \code
     * #include <Eigen/MPRealSupport>
@@ -108,7 +92,7 @@ int main()
     }
   };
 
-  namespace internal {
+namespace internal {
 
   template<> mpfr::mpreal random<mpfr::mpreal>()
   {
@@ -134,18 +118,6 @@ int main()
     return a + (b-a) * random<mpfr::mpreal>();
   }
 
-  template<> struct conj_impl<mpfr::mpreal> { inline static const mpfr::mpreal& run(const mpfr::mpreal& x) { return x; } };
-  template<> struct real_impl<mpfr::mpreal> { inline static const mpfr::mpreal& run(const mpfr::mpreal& x) { return x; } };
-  template<> struct imag_impl<mpfr::mpreal> { inline static const mpfr::mpreal run(const mpfr::mpreal&)   { return mpfr::mpreal(0); } };
-  template<> struct abs_impl<mpfr::mpreal> { inline static const mpfr::mpreal run(const mpfr::mpreal& x)  { return mpfr::fabs(x); } };
-  template<> struct abs2_impl<mpfr::mpreal> { inline static const mpfr::mpreal run(const mpfr::mpreal& x) { return x*x; } };
-  template<> struct sqrt_impl<mpfr::mpreal> { inline static const mpfr::mpreal run(const mpfr::mpreal& x) { return mpfr::sqrt(x); } };
-  template<> struct exp_impl<mpfr::mpreal> { inline static const mpfr::mpreal run(const mpfr::mpreal& x)  { return mpfr::exp(x); } };
-  template<> struct log_impl<mpfr::mpreal> { inline static const mpfr::mpreal run(const mpfr::mpreal& x)  { return mpfr::log(x); } };
-  template<> struct sin_impl<mpfr::mpreal> { inline static const mpfr::mpreal run(const mpfr::mpreal& x)  { return mpfr::sin(x); } };
-  template<> struct cos_impl<mpfr::mpreal> { inline static const mpfr::mpreal run(const mpfr::mpreal& x)  { return mpfr::cos(x); } };
-  template<> struct pow_impl<mpfr::mpreal> { inline static const mpfr::mpreal run(const mpfr::mpreal& x, const mpfr::mpreal& y)  { return mpfr::pow(x, y); } };
-
   bool isMuchSmallerThan(const mpfr::mpreal& a, const mpfr::mpreal& b, const mpfr::mpreal& prec)
   {
     return mpfr::abs(a) <= mpfr::abs(b) * prec;
@@ -160,8 +132,17 @@ int main()
   {
     return a <= b || isApprox(a, b, prec);
   }
+  
+  template<> inline long double cast<mpfr::mpreal,long double>(const mpfr::mpreal& x)
+  { return x.toLDouble(); }
+  template<> inline double cast<mpfr::mpreal,double>(const mpfr::mpreal& x)
+  { return x.toDouble(); }
+  template<> inline long cast<mpfr::mpreal,long>(const mpfr::mpreal& x)
+  { return x.toLong(); }
+  template<> inline int cast<mpfr::mpreal,int>(const mpfr::mpreal& x)
+  { return int(x.toLong()); }
 
-  } // end namespace internal
+} // end namespace internal
 }
 
 #endif // EIGEN_MPREALSUPPORT_MODULE_H

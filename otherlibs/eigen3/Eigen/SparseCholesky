@@ -6,8 +6,7 @@
 #include "src/Core/util/DisableStupidWarnings.h"
 
 /** \ingroup Sparse_modules
-  * \defgroup SparseCholesky_Module SparseCholesky module 
- * \ingroup eigen_grp
+  * \defgroup SparseCholesky_Module SparseCholesky module
   *
   * This module currently provides two variants of the direct sparse Cholesky decomposition for selfadjoint (hermitian) matrices.
   * Those decompositions are accessible via the following classes:

@@ -3,24 +3,9 @@
 //
 // Copyright (C) 2008-2010 Gael Guennebaud <gael.guennebaud@inria.fr>
 //
-// Eigen is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// Alternatively, you can redistribute it and/or
-// modify it under the terms of the GNU General Public License as
-// published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// Eigen is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-// FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License or the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License and a copy of the GNU General Public License along with
-// Eigen. If not, see <http://www.gnu.org/licenses/>.
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #ifndef EIGEN_CHOLMODSUPPORT_H
 #define EIGEN_CHOLMODSUPPORT_H
@@ -160,24 +145,14 @@ enum CholmodMode {
   CholmodAuto, CholmodSimplicialLLt, CholmodSupernodalLLt, CholmodLDLt
 };
 
+
 /** \ingroup CholmodSupport_Module
-  * \class CholmodDecomposition
-  * \brief A Cholesky factorization and solver based on Cholmod
-  *
-  * This class allows to solve for A.X = B sparse linear problems via a LL^T or LDL^T Cholesky factorization
-  * using the Cholmod library. The sparse matrix A must be selfajoint and positive definite. The vectors or matrices
-  * X and B can be either dense or sparse.
-  *
-  * \tparam _MatrixType the type of the sparse matrix A, it must be a SparseMatrix<>
-  * \tparam _UpLo the triangular part that will be used for the computations. It can be Lower
-  *               or Upper. Default is Lower.
-  *
-  * This class supports all kind of SparseMatrix<>: row or column major; upper, lower, or both; isCompressed() or unisCompressed().
-  *
-  * \sa \ref TutorialSparseDirectSolvers
+  * \class CholmodBase
+  * \brief The base class for the direct Cholesky factorization of Cholmod
+  * \sa class CholmodSupernodalLLT, class CholmodSimplicialLDLT, class CholmodSimplicialLLT
   */
-template<typename _MatrixType, int _UpLo = Lower>
-class CholmodDecomposition
+template<typename _MatrixType, int _UpLo, typename Derived>
+class CholmodBase : internal::noncopyable
 {
   public:
     typedef _MatrixType MatrixType;
@@ -189,21 +164,20 @@ class CholmodDecomposition
 
   public:
 
-    CholmodDecomposition()
+    CholmodBase()
       : m_cholmodFactor(0), m_info(Success), m_isInitialized(false)
     {
       cholmod_start(&m_cholmod);
-      setMode(CholmodLDLt);
     }
 
-    CholmodDecomposition(const MatrixType& matrix)
+    CholmodBase(const MatrixType& matrix)
       : m_cholmodFactor(0), m_info(Success), m_isInitialized(false)
     {
       cholmod_start(&m_cholmod);
       compute(matrix);
     }
 
-    ~CholmodDecomposition()
+    ~CholmodBase()
     {
       if(m_cholmodFactor)
         cholmod_free_factor(&m_cholmodFactor, &m_cholmod);
@@ -213,31 +187,8 @@ class CholmodDecomposition
     inline Index cols() const { return m_cholmodFactor->n; }
     inline Index rows() const { return m_cholmodFactor->n; }
     
-    void setMode(CholmodMode mode)
-    {
-      switch(mode)
-      {
-        case CholmodAuto:
-          m_cholmod.final_asis = 1;
-          m_cholmod.supernodal = CHOLMOD_AUTO;
-          break;
-        case CholmodSimplicialLLt:
-          m_cholmod.final_asis = 0;
-          m_cholmod.supernodal = CHOLMOD_SIMPLICIAL;
-          m_cholmod.final_ll = 1;
-          break;
-        case CholmodSupernodalLLt:
-          m_cholmod.final_asis = 1;
-          m_cholmod.supernodal = CHOLMOD_SUPERNODAL;
-          break;
-        case CholmodLDLt:
-          m_cholmod.final_asis = 1;
-          m_cholmod.supernodal = CHOLMOD_SIMPLICIAL;
-          break;
-        default:
-          break;
-      }
-    }
+    Derived& derived() { return *static_cast<Derived*>(this); }
+    const Derived& derived() const { return *static_cast<const Derived*>(this); }
     
     /** \brief Reports whether previous computation was successful.
       *
@@ -251,10 +202,11 @@ class CholmodDecomposition
     }
 
     /** Computes the sparse Cholesky decomposition of \a matrix */
-    void compute(const MatrixType& matrix)
+    Derived& compute(const MatrixType& matrix)
     {
       analyzePattern(matrix);
       factorize(matrix);
+      return derived();
     }
     
     /** \returns the solution x of \f$ A x = b \f$ using the current decomposition of A.
@@ -262,13 +214,13 @@ class CholmodDecomposition
       * \sa compute()
       */
     template<typename Rhs>
-    inline const internal::solve_retval<CholmodDecomposition, Rhs>
+    inline const internal::solve_retval<CholmodBase, Rhs>
     solve(const MatrixBase<Rhs>& b) const
     {
       eigen_assert(m_isInitialized && "LLT is not initialized.");
       eigen_assert(rows()==b.rows()
                 && "CholmodDecomposition::solve(): invalid number of rows of the right hand side matrix b");
-      return internal::solve_retval<CholmodDecomposition, Rhs>(*this, b.derived());
+      return internal::solve_retval<CholmodBase, Rhs>(*this, b.derived());
     }
     
     /** \returns the solution x of \f$ A x = b \f$ using the current decomposition of A.
@@ -276,13 +228,13 @@ class CholmodDecomposition
       * \sa compute()
       */
     template<typename Rhs>
-    inline const internal::sparse_solve_retval<CholmodDecomposition, Rhs>
+    inline const internal::sparse_solve_retval<CholmodBase, Rhs>
     solve(const SparseMatrixBase<Rhs>& b) const
     {
       eigen_assert(m_isInitialized && "LLT is not initialized.");
       eigen_assert(rows()==b.rows()
                 && "CholmodDecomposition::solve(): invalid number of rows of the right hand side matrix b");
-      return internal::sparse_solve_retval<CholmodDecomposition, Rhs>(*this, b.derived());
+      return internal::sparse_solve_retval<CholmodBase, Rhs>(*this, b.derived());
     }
     
     /** Performs a symbolic decomposition on the sparcity of \a matrix.
@@ -372,7 +324,7 @@ class CholmodDecomposition
     template<typename Stream>
     void dumpMemory(Stream& s)
     {}
-
+    
   protected:
     mutable cholmod_common m_cholmod;
     cholmod_factor* m_cholmodFactor;
@@ -380,18 +332,225 @@ class CholmodDecomposition
     bool m_isInitialized;
     int m_factorizationIsOk;
     int m_analysisIsOk;
+};
+
+/** \ingroup CholmodSupport_Module
+  * \class CholmodSimplicialLLT
+  * \brief A simplicial direct Cholesky (LLT) factorization and solver based on Cholmod
+  *
+  * This class allows to solve for A.X = B sparse linear problems via a simplicial LL^T Cholesky factorization
+  * using the Cholmod library.
+  * This simplicial variant is equivalent to Eigen's built-in SimplicialLLT class. Thefore, it has little practical interest.
+  * The sparse matrix A must be selfajoint and positive definite. The vectors or matrices
+  * X and B can be either dense or sparse.
+  *
+  * \tparam _MatrixType the type of the sparse matrix A, it must be a SparseMatrix<>
+  * \tparam _UpLo the triangular part that will be used for the computations. It can be Lower
+  *               or Upper. Default is Lower.
+  *
+  * This class supports all kind of SparseMatrix<>: row or column major; upper, lower, or both; compressed or non compressed.
+  *
+  * \sa \ref TutorialSparseDirectSolvers, class CholmodSupernodalLLT, class SimplicialLLT
+  */
+template<typename _MatrixType, int _UpLo = Lower>
+class CholmodSimplicialLLT : public CholmodBase<_MatrixType, _UpLo, CholmodSimplicialLLT<_MatrixType, _UpLo> >
+{
+    typedef CholmodBase<_MatrixType, _UpLo, CholmodSimplicialLLT> Base;
+    using Base::m_cholmod;
     
-  private:
-    CholmodDecomposition(CholmodDecomposition& ) {}
+  public:
+    
+    typedef _MatrixType MatrixType;
+    
+    CholmodSimplicialLLT() : Base() { init(); }
+
+    CholmodSimplicialLLT(const MatrixType& matrix) : Base()
+    {
+      init();
+      compute(matrix);
+    }
+
+    ~CholmodSimplicialLLT() {}
+  protected:
+    void init()
+    {
+      m_cholmod.final_asis = 0;
+      m_cholmod.supernodal = CHOLMOD_SIMPLICIAL;
+      m_cholmod.final_ll = 1;
+    }
+};
+
+
+/** \ingroup CholmodSupport_Module
+  * \class CholmodSimplicialLDLT
+  * \brief A simplicial direct Cholesky (LDLT) factorization and solver based on Cholmod
+  *
+  * This class allows to solve for A.X = B sparse linear problems via a simplicial LDL^T Cholesky factorization
+  * using the Cholmod library.
+  * This simplicial variant is equivalent to Eigen's built-in SimplicialLDLT class. Thefore, it has little practical interest.
+  * The sparse matrix A must be selfajoint and positive definite. The vectors or matrices
+  * X and B can be either dense or sparse.
+  *
+  * \tparam _MatrixType the type of the sparse matrix A, it must be a SparseMatrix<>
+  * \tparam _UpLo the triangular part that will be used for the computations. It can be Lower
+  *               or Upper. Default is Lower.
+  *
+  * This class supports all kind of SparseMatrix<>: row or column major; upper, lower, or both; compressed or non compressed.
+  *
+  * \sa \ref TutorialSparseDirectSolvers, class CholmodSupernodalLLT, class SimplicialLDLT
+  */
+template<typename _MatrixType, int _UpLo = Lower>
+class CholmodSimplicialLDLT : public CholmodBase<_MatrixType, _UpLo, CholmodSimplicialLDLT<_MatrixType, _UpLo> >
+{
+    typedef CholmodBase<_MatrixType, _UpLo, CholmodSimplicialLDLT> Base;
+    using Base::m_cholmod;
+    
+  public:
+    
+    typedef _MatrixType MatrixType;
+    
+    CholmodSimplicialLDLT() : Base() { init(); }
+
+    CholmodSimplicialLDLT(const MatrixType& matrix) : Base()
+    {
+      init();
+      compute(matrix);
+    }
+
+    ~CholmodSimplicialLDLT() {}
+  protected:
+    void init()
+    {
+      m_cholmod.final_asis = 1;
+      m_cholmod.supernodal = CHOLMOD_SIMPLICIAL;
+    }
+};
+
+/** \ingroup CholmodSupport_Module
+  * \class CholmodSupernodalLLT
+  * \brief A supernodal Cholesky (LLT) factorization and solver based on Cholmod
+  *
+  * This class allows to solve for A.X = B sparse linear problems via a supernodal LL^T Cholesky factorization
+  * using the Cholmod library.
+  * This supernodal variant performs best on dense enough problems, e.g., 3D FEM, or very high order 2D FEM.
+  * The sparse matrix A must be selfajoint and positive definite. The vectors or matrices
+  * X and B can be either dense or sparse.
+  *
+  * \tparam _MatrixType the type of the sparse matrix A, it must be a SparseMatrix<>
+  * \tparam _UpLo the triangular part that will be used for the computations. It can be Lower
+  *               or Upper. Default is Lower.
+  *
+  * This class supports all kind of SparseMatrix<>: row or column major; upper, lower, or both; compressed or non compressed.
+  *
+  * \sa \ref TutorialSparseDirectSolvers
+  */
+template<typename _MatrixType, int _UpLo = Lower>
+class CholmodSupernodalLLT : public CholmodBase<_MatrixType, _UpLo, CholmodSupernodalLLT<_MatrixType, _UpLo> >
+{
+    typedef CholmodBase<_MatrixType, _UpLo, CholmodSupernodalLLT> Base;
+    using Base::m_cholmod;
+    
+  public:
+    
+    typedef _MatrixType MatrixType;
+    
+    CholmodSupernodalLLT() : Base() { init(); }
+
+    CholmodSupernodalLLT(const MatrixType& matrix) : Base()
+    {
+      init();
+      compute(matrix);
+    }
+
+    ~CholmodSupernodalLLT() {}
+  protected:
+    void init()
+    {
+      m_cholmod.final_asis = 1;
+      m_cholmod.supernodal = CHOLMOD_SUPERNODAL;
+    }
+};
+
+/** \ingroup CholmodSupport_Module
+  * \class CholmodDecomposition
+  * \brief A general Cholesky factorization and solver based on Cholmod
+  *
+  * This class allows to solve for A.X = B sparse linear problems via a LL^T or LDL^T Cholesky factorization
+  * using the Cholmod library. The sparse matrix A must be selfajoint and positive definite. The vectors or matrices
+  * X and B can be either dense or sparse.
+  *
+  * This variant permits to change the underlying Cholesky method at runtime.
+  * On the other hand, it does not provide access to the result of the factorization.
+  * The default is to let Cholmod automatically choose between a simplicial and supernodal factorization.
+  *
+  * \tparam _MatrixType the type of the sparse matrix A, it must be a SparseMatrix<>
+  * \tparam _UpLo the triangular part that will be used for the computations. It can be Lower
+  *               or Upper. Default is Lower.
+  *
+  * This class supports all kind of SparseMatrix<>: row or column major; upper, lower, or both; compressed or non compressed.
+  *
+  * \sa \ref TutorialSparseDirectSolvers
+  */
+template<typename _MatrixType, int _UpLo = Lower>
+class CholmodDecomposition : public CholmodBase<_MatrixType, _UpLo, CholmodDecomposition<_MatrixType, _UpLo> >
+{
+    typedef CholmodBase<_MatrixType, _UpLo, CholmodDecomposition> Base;
+    using Base::m_cholmod;
+    
+  public:
+    
+    typedef _MatrixType MatrixType;
+    
+    CholmodDecomposition() : Base() { init(); }
+
+    CholmodDecomposition(const MatrixType& matrix) : Base()
+    {
+      init();
+      compute(matrix);
+    }
+
+    ~CholmodDecomposition() {}
+    
+    void setMode(CholmodMode mode)
+    {
+      switch(mode)
+      {
+        case CholmodAuto:
+          m_cholmod.final_asis = 1;
+          m_cholmod.supernodal = CHOLMOD_AUTO;
+          break;
+        case CholmodSimplicialLLt:
+          m_cholmod.final_asis = 0;
+          m_cholmod.supernodal = CHOLMOD_SIMPLICIAL;
+          m_cholmod.final_ll = 1;
+          break;
+        case CholmodSupernodalLLt:
+          m_cholmod.final_asis = 1;
+          m_cholmod.supernodal = CHOLMOD_SUPERNODAL;
+          break;
+        case CholmodLDLt:
+          m_cholmod.final_asis = 1;
+          m_cholmod.supernodal = CHOLMOD_SIMPLICIAL;
+          break;
+        default:
+          break;
+      }
+    }
+  protected:
+    void init()
+    {
+      m_cholmod.final_asis = 1;
+      m_cholmod.supernodal = CHOLMOD_AUTO;
+    }
 };
 
 namespace internal {
   
-template<typename _MatrixType, int _UpLo, typename Rhs>
-struct solve_retval<CholmodDecomposition<_MatrixType,_UpLo>, Rhs>
-  : solve_retval_base<CholmodDecomposition<_MatrixType,_UpLo>, Rhs>
+template<typename _MatrixType, int _UpLo, typename Derived, typename Rhs>
+struct solve_retval<CholmodBase<_MatrixType,_UpLo,Derived>, Rhs>
+  : solve_retval_base<CholmodBase<_MatrixType,_UpLo,Derived>, Rhs>
 {
-  typedef CholmodDecomposition<_MatrixType,_UpLo> Dec;
+  typedef CholmodBase<_MatrixType,_UpLo,Derived> Dec;
   EIGEN_MAKE_SOLVE_HELPERS(Dec,Rhs)
 
   template<typename Dest> void evalTo(Dest& dst) const
@@ -400,11 +559,11 @@ struct solve_retval<CholmodDecomposition<_MatrixType,_UpLo>, Rhs>
   }
 };
 
-template<typename _MatrixType, int _UpLo, typename Rhs>
-struct sparse_solve_retval<CholmodDecomposition<_MatrixType,_UpLo>, Rhs>
-  : sparse_solve_retval_base<CholmodDecomposition<_MatrixType,_UpLo>, Rhs>
+template<typename _MatrixType, int _UpLo, typename Derived, typename Rhs>
+struct sparse_solve_retval<CholmodBase<_MatrixType,_UpLo,Derived>, Rhs>
+  : sparse_solve_retval_base<CholmodBase<_MatrixType,_UpLo,Derived>, Rhs>
 {
-  typedef CholmodDecomposition<_MatrixType,_UpLo> Dec;
+  typedef CholmodBase<_MatrixType,_UpLo,Derived> Dec;
   EIGEN_MAKE_SPARSE_SOLVE_HELPERS(Dec,Rhs)
 
   template<typename Dest> void evalTo(Dest& dst) const

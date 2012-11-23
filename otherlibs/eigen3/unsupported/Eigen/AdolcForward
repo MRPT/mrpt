@@ -3,24 +3,9 @@
 //
 // Copyright (C) 2008-2009 Gael Guennebaud <g.gael@free.fr>
 //
-// Eigen is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// Alternatively, you can redistribute it and/or
-// modify it under the terms of the GNU General Public License as
-// published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// Eigen is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-// FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License or the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License and a copy of the GNU General Public License along with
-// Eigen. If not, see <http://www.gnu.org/licenses/>.
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #ifndef EIGEN_ADLOC_FORWARD
 #define EIGEN_ADLOC_FORWARD
@@ -60,8 +45,7 @@
 namespace Eigen {
 
 /** \ingroup Unsupported_modules
-  * \defgroup AdolcForward_Module Adolc forward module 
- * \ingroup eigen_grp
+  * \defgroup AdolcForward_Module Adolc forward module
   * This module provides support for adolc's adouble type in forward mode.
   * ADOL-C is a C++ automatic differentiation library,
   * see https://projects.coin-or.org/ADOL-C for more information.
@@ -80,33 +64,22 @@ namespace Eigen {
 
 } // namespace Eigen
 
-// the Adolc's type adouble is defined in the adtl namespace
-// therefore, the following internal::* functions *must* be defined
-// in the same namespace
-namespace Eigen {
+// Eigen's require a few additional functions which must be defined in the same namespace
+// than the custom scalar type own namespace
+namespace adtl {
 
-  namespace internal {
-
-    inline const adtl::adouble& conj(const adtl::adouble& x)  { return x; }
-    inline const adtl::adouble& real(const adtl::adouble& x)  { return x; }
-    inline adtl::adouble imag(const adtl::adouble&)    { return 0.; }
-    inline adtl::adouble abs(const adtl::adouble&  x)  { return adtl::fabs(x); }
-    inline adtl::adouble abs2(const adtl::adouble& x)  { return x*x; }
-    
-    using adtl::sqrt;
-    using adtl::exp;
-    using adtl::log;
-    using adtl::sin;
-    using adtl::cos;
-    using adtl::pow;
-
-  }
+inline const adouble& conj(const adouble& x)  { return x; }
+inline const adouble& real(const adouble& x)  { return x; }
+inline adouble imag(const adouble&)    { return 0.; }
+inline adouble abs(const adouble&  x)  { return fabs(x); }
+inline adouble abs2(const adouble& x)  { return x*x; }
 
 }
 
 namespace Eigen {
 
 template<> struct NumTraits<adtl::adouble>
+    : NumTraits<double>
 {
   typedef adtl::adouble Real;
   typedef adtl::adouble NonInteger;

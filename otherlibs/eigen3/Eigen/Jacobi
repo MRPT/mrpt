@@ -5,8 +5,7 @@
 
 #include "src/Core/util/DisableStupidWarnings.h"
 
-/** \defgroup Jacobi_Module Jacobi module 
- * \ingroup eigen_grp
+/** \defgroup Jacobi_Module Jacobi module
   * This module provides Jacobi and Givens rotations.
   *
   * \code

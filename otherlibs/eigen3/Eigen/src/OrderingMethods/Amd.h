@@ -3,24 +3,9 @@
 //
 // Copyright (C) 2010 Gael Guennebaud <gael.guennebaud@inria.fr>
 //
-// Eigen is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// Alternatively, you can redistribute it and/or
-// modify it under the terms of the GNU General Public License as
-// published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// Eigen is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-// FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License or the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License and a copy of the GNU General Public License along with
-// Eigen. If not, see <http://www.gnu.org/licenses/>.
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 /*
 
@@ -44,6 +29,8 @@ License along with this Module; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 */
+
+#include "../Core/util/NonMPL2.h"
 
 #ifndef EIGEN_SPARSE_AMD_H
 #define EIGEN_SPARSE_AMD_H
@@ -106,6 +93,7 @@ Index cs_tdfs(Index j, Index k, Index *head, const Index *next, Index *post, Ind
 template<typename Scalar, typename Index>
 void minimum_degree_ordering(SparseMatrix<Scalar,ColMajor,Index>& C, PermutationMatrix<Dynamic,Dynamic,Index>& perm)
 {
+  using std::sqrt;
   typedef SparseMatrix<Scalar,ColMajor,Index> CCS;
   
   int d, dk, dext, lemax = 0, e, elenk, eln, i, j, k, k1,
@@ -114,7 +102,7 @@ void minimum_degree_ordering(SparseMatrix<Scalar,ColMajor,Index>& C, Permutation
   unsigned int h;
   
   Index n = C.cols();
-  dense = std::max<Index> (16, 10 * sqrt ((double) n));   /* find dense threshold */
+  dense = std::max<Index> (16, Index(10 * sqrt(double(n))));   /* find dense threshold */
   dense = std::min<Index> (n-2, dense);
   
   Index cnz = C.nonZeros();

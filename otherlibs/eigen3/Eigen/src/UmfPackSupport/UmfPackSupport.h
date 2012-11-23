@@ -3,24 +3,9 @@
 //
 // Copyright (C) 2008-2011 Gael Guennebaud <gael.guennebaud@inria.fr>
 //
-// Eigen is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// Alternatively, you can redistribute it and/or
-// modify it under the terms of the GNU General Public License as
-// published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// Eigen is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-// FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License or the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License and a copy of the GNU General Public License along with
-// Eigen. If not, see <http://www.gnu.org/licenses/>.
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #ifndef EIGEN_UMFPACKSUPPORT_H
 #define EIGEN_UMFPACKSUPPORT_H
@@ -126,17 +111,17 @@ inline int umfpack_get_determinant(std::complex<double> *Mx, double *Ex, void *N
   * \brief A sparse LU factorization and solver based on UmfPack
   *
   * This class allows to solve for A.X = B sparse linear problems via a LU factorization
-  * using the UmfPack library. The sparse matrix A must be in a compressed column-major form, squared and full rank.
+  * using the UmfPack library. The sparse matrix A must be squared and full rank.
   * The vectors or matrices X and B can be either dense or sparse.
   *
-  * WARNING The Eigen column-major SparseMatrix is not always in compressed form. 
-  * The user should call makeCompressed() to get a matrix in CSC suitable for UMFPACK
+  * \WARNING The input matrix A should be in a \b compressed and \b column-major form.
+  * Otherwise an expensive copy will be made. You can call the inexpensive makeCompressed() to get a compressed matrix.
   * \tparam _MatrixType the type of the sparse matrix A, it must be a SparseMatrix<>
   *
   * \sa \ref TutorialSparseDirectSolvers
   */
 template<typename _MatrixType>
-class UmfPackLU
+class UmfPackLU : internal::noncopyable
 {
   public:
     typedef _MatrixType MatrixType;
@@ -147,6 +132,7 @@ class UmfPackLU
     typedef Matrix<int, 1, MatrixType::ColsAtCompileTime> IntRowVectorType;
     typedef Matrix<int, MatrixType::RowsAtCompileTime, 1> IntColVectorType;
     typedef SparseMatrix<Scalar> LUMatrixType;
+    typedef SparseMatrix<Scalar,ColMajor,int> UmfpackMatrixType;
 
   public:
 
@@ -164,8 +150,8 @@ class UmfPackLU
       if(m_numeric)  umfpack_free_numeric(&m_numeric,Scalar());
     }
 
-    inline Index rows() const { return m_matrixRef->rows(); }
-    inline Index cols() const { return m_matrixRef->cols(); }
+    inline Index rows() const { return m_copyMatrix.rows(); }
+    inline Index cols() const { return m_copyMatrix.cols(); }
 
     /** \brief Reports whether previous computation was successful.
       *
@@ -203,7 +189,8 @@ class UmfPackLU
     }
 
     /** Computes the sparse Cholesky decomposition of \a matrix 
-     *  Note that the matrix should be in compressed format. Please, use makeCompressed() to get it !!
+     *  Note that the matrix should be column-major, and in compressed format for best performance.
+     *  \sa SparseMatrix::makeCompressed().
      */
     void compute(const MatrixType& matrix)
     {
@@ -218,9 +205,9 @@ class UmfPackLU
     template<typename Rhs>
     inline const internal::solve_retval<UmfPackLU, Rhs> solve(const MatrixBase<Rhs>& b) const
     {
-      eigen_assert(m_isInitialized && "UmfPAckLU is not initialized.");
+      eigen_assert(m_isInitialized && "UmfPackLU is not initialized.");
       eigen_assert(rows()==b.rows()
-                && "UmfPAckLU::solve(): invalid number of rows of the right hand side matrix b");
+                && "UmfPackLU::solve(): invalid number of rows of the right hand side matrix b");
       return internal::solve_retval<UmfPackLU, Rhs>(*this, b.derived());
     }
 
@@ -241,19 +228,19 @@ class UmfPackLU
       *
       * This function is particularly useful when solving for several problems having the same structure.
       *
-      * \sa factorize()
+      * \sa factorize(), compute()
       */
     void analyzePattern(const MatrixType& matrix)
     {
-      eigen_assert((MatrixType::Flags&RowMajorBit)==0 && "UmfPackLU: Row major matrices are not supported yet");
-
       if(m_symbolic)
         umfpack_free_symbolic(&m_symbolic,Scalar());
       if(m_numeric)
         umfpack_free_numeric(&m_numeric,Scalar());
+      
+      grapInput(matrix);
 
       int errorCode = 0;
-      errorCode = umfpack_symbolic(matrix.rows(), matrix.cols(), matrix.outerIndexPtr(), matrix.innerIndexPtr(), matrix.valuePtr(),
+      errorCode = umfpack_symbolic(matrix.rows(), matrix.cols(), m_outerIndexPtr, m_innerIndexPtr, m_valuePtr,
                                    &m_symbolic, 0, 0);
 
       m_isInitialized = true;
@@ -264,9 +251,9 @@ class UmfPackLU
 
     /** Performs a numeric decomposition of \a matrix
       *
-      * The given matrix must has the same sparcity than the matrix on which the symbolic decomposition has been performed.
+      * The given matrix must has the same sparcity than the matrix on which the pattern anylysis has been performed.
       *
-      * \sa analyzePattern()
+      * \sa analyzePattern(), compute()
       */
     void factorize(const MatrixType& matrix)
     {
@@ -274,10 +261,10 @@ class UmfPackLU
       if(m_numeric)
         umfpack_free_numeric(&m_numeric,Scalar());
 
-      m_matrixRef = &matrix;
+      grapInput(matrix);
 
       int errorCode;
-      errorCode = umfpack_numeric(matrix.outerIndexPtr(), matrix.innerIndexPtr(), matrix.valuePtr(),
+      errorCode = umfpack_numeric(m_outerIndexPtr, m_innerIndexPtr, m_valuePtr,
                                   m_symbolic, &m_numeric, 0, 0);
 
       m_info = errorCode ? NumericalIssue : Success;
@@ -303,6 +290,28 @@ class UmfPackLU
       m_isInitialized = false;
       m_numeric = 0;
       m_symbolic = 0;
+      m_outerIndexPtr = 0;
+      m_innerIndexPtr = 0;
+      m_valuePtr      = 0;
+    }
+    
+    void grapInput(const MatrixType& mat)
+    {
+      m_copyMatrix.resize(mat.rows(), mat.cols());
+      if( ((MatrixType::Flags&RowMajorBit)==RowMajorBit) || sizeof(typename MatrixType::Index)!=sizeof(int) || !mat.isCompressed() )
+      {
+        // non supported input -> copy
+        m_copyMatrix = mat;
+        m_outerIndexPtr = m_copyMatrix.outerIndexPtr();
+        m_innerIndexPtr = m_copyMatrix.innerIndexPtr();
+        m_valuePtr      = m_copyMatrix.valuePtr();
+      }
+      else
+      {
+        m_outerIndexPtr = mat.outerIndexPtr();
+        m_innerIndexPtr = mat.innerIndexPtr();
+        m_valuePtr      = mat.valuePtr();
+      }
     }
 
     // cached data to reduce reallocation, etc.
@@ -311,7 +320,10 @@ class UmfPackLU
     mutable IntColVectorType m_p;
     mutable IntRowVectorType m_q;
 
-    const MatrixType* m_matrixRef;
+    UmfpackMatrixType m_copyMatrix;
+    const Scalar* m_valuePtr;
+    const int* m_outerIndexPtr;
+    const int* m_innerIndexPtr;
     void* m_numeric;
     void* m_symbolic;
 
@@ -374,7 +386,7 @@ bool UmfPackLU<MatrixType>::_solve(const MatrixBase<BDerived> &b, MatrixBase<XDe
   for (int j=0; j<rhsCols; ++j)
   {
     errorCode = umfpack_solve(UMFPACK_A,
-        m_matrixRef->outerIndexPtr(), m_matrixRef->innerIndexPtr(), m_matrixRef->valuePtr(),
+        m_outerIndexPtr, m_innerIndexPtr, m_valuePtr,
         &x.col(j).coeffRef(0), &b.const_cast_derived().col(j).coeffRef(0), m_numeric, 0, 0);
     if (errorCode!=0)
       return false;

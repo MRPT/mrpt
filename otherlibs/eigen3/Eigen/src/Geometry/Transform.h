@@ -5,24 +5,9 @@
 // Copyright (C) 2009 Benoit Jacob <jacob.benoit.1@gmail.com>
 // Copyright (C) 2010 Hauke Heibel <hauke.heibel@gmail.com>
 //
-// Eigen is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// Alternatively, you can redistribute it and/or
-// modify it under the terms of the GNU General Public License as
-// published by the Free Software Foundation; either version 2 of
-// the License, or (at your option) any later version.
-//
-// Eigen is distributed in the hope that it will be useful, but WITHOUT ANY
-// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-// FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License or the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License and a copy of the GNU General Public License along with
-// Eigen. If not, see <http://www.gnu.org/licenses/>.
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #ifndef EIGEN_TRANSFORM_H
 #define EIGEN_TRANSFORM_H
@@ -39,7 +24,7 @@ struct transform_traits
     Dim = Transform::Dim,
     HDim = Transform::HDim,
     Mode = Transform::Mode,
-    IsProjective = (Mode==Projective)
+    IsProjective = (int(Mode)==int(Projective))
   };
 };
 
@@ -468,15 +453,40 @@ public:
   {
     return internal::transform_transform_product_impl<Transform,Transform>::run(*this,other);
   }
-
+  
+  #ifdef __INTEL_COMPILER
+private:
+  // this intermediate structure permits to workaround a bug in ICC 11:
+  //   error: template instantiation resulted in unexpected function type of "Eigen::Transform<double, 3, 32, 0>
+  //             (const Eigen::Transform<double, 3, 2, 0> &) const"
+  //  (the meaning of a name may have changed since the template declaration -- the type of the template is:
+  // "Eigen::internal::transform_transform_product_impl<Eigen::Transform<double, 3, 32, 0>,
+  //     Eigen::Transform<double, 3, Mode, Options>, <expression>>::ResultType (const Eigen::Transform<double, 3, Mode, Options> &) const")
+  // 
+  template<int OtherMode,int OtherOptions> struct icc_11_workaround
+  {
+    typedef internal::transform_transform_product_impl<Transform,Transform<Scalar,Dim,OtherMode,OtherOptions> > ProductType;
+    typedef typename ProductType::ResultType ResultType;
+  };
+  
+public:
   /** Concatenates two different transformations */
   template<int OtherMode,int OtherOptions>
-  inline const typename internal::transform_transform_product_impl<
-    Transform,Transform<Scalar,Dim,OtherMode,OtherOptions> >::ResultType
+  inline typename icc_11_workaround<OtherMode,OtherOptions>::ResultType
+    operator * (const Transform<Scalar,Dim,OtherMode,OtherOptions>& other) const
+  {
+    typedef typename icc_11_workaround<OtherMode,OtherOptions>::ProductType ProductType;
+    return ProductType::run(*this,other);
+  }
+  #else
+  /** Concatenates two different transformations */
+  template<int OtherMode,int OtherOptions>
+  inline typename internal::transform_transform_product_impl<Transform,Transform<Scalar,Dim,OtherMode,OtherOptions> >::ResultType
     operator * (const Transform<Scalar,Dim,OtherMode,OtherOptions>& other) const
   {
     return internal::transform_transform_product_impl<Transform,Transform<Scalar,Dim,OtherMode,OtherOptions> >::run(*this,other);
   }
+  #endif
 
   /** \sa MatrixBase::setIdentity() */
   void setIdentity() { m_matrix.setIdentity(); }
@@ -520,7 +530,12 @@ public:
 
   inline Transform& operator=(const UniformScaling<Scalar>& t);
   inline Transform& operator*=(const UniformScaling<Scalar>& s) { return scale(s.factor()); }
-  inline Transform operator*(const UniformScaling<Scalar>& s) const;
+  inline Transform<Scalar,Dim,(int(Mode)==int(Isometry)?Affine:Isometry)> operator*(const UniformScaling<Scalar>& s) const
+  {
+    Transform<Scalar,Dim,(int(Mode)==int(Isometry)?Affine:Isometry),Options> res = *this;
+    res.scale(s.factor());
+    return res;
+  }
 
   inline Transform& operator*=(const DiagonalMatrix<Scalar,Dim>& s) { linear() *= s; return *this; }
 
@@ -579,7 +594,7 @@ public:
     if(int(Mode)!=int(AffineCompact))
     {
       matrix().template block<1,Dim>(Dim,0).setZero();
-      matrix().coeffRef(Dim,Dim) = 1;
+      matrix().coeffRef(Dim,Dim) = Scalar(1);
     }
   }
 
@@ -946,14 +961,6 @@ inline Transform<Scalar,Dim,Mode,Options>& Transform<Scalar,Dim,Mode,Options>::o
   linear().diagonal().fill(s.factor());
   makeAffine();
   return *this;
-}
-
-template<typename Scalar, int Dim, int Mode, int Options>
-inline Transform<Scalar,Dim,Mode,Options> Transform<Scalar,Dim,Mode,Options>::operator*(const UniformScaling<Scalar>& s) const
-{
-  Transform res = *this;
-  res.scale(s.factor());
-  return res;
 }
 
 template<typename Scalar, int Dim, int Mode, int Options>
