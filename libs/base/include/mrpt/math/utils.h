@@ -111,7 +111,7 @@ namespace mrpt
 				const T incr = (last-first)/T(count-1);
 				T c = first;
 				for (size_t i=0;i<count;i++,c+=incr)
-					out_vector[i] = static_cast<typename VECTOR::value_type>(c);
+					out_vector[i] = c;
 			}
 		}
 
@@ -214,7 +214,7 @@ namespace mrpt
 		template<class VEC1,class VEC2>
 		void normalize(const VEC1 &v, VEC2 &out_v)
 		{
-			typename VEC1::value_type total=0;
+			typename VEC1::Scalar total=0;
 			const size_t N = v.size();
 			for (size_t i=0;i<N;i++)
 				total += square(v[i]);
@@ -247,7 +247,7 @@ namespace mrpt
 			)
 		{
 			ASSERTMSG_(elements.size()!=0,"No samples provided, so there is no way to deduce the output size.")
-			typedef typename VECTORLIKE::value_type T;
+			typedef typename MATRIXLIKE::Scalar T;
 			const size_t DIM = elements[0].size();
 			means.resize(DIM);
 			covariances.setSize(DIM,DIM);
@@ -363,7 +363,7 @@ namespace mrpt
 				VECTORLIKE2	&out_binValues )
 			{
 				MRPT_START
-				typedef typename VECTORLIKE1::value_type TNum;
+				typedef typename VECTORLIKE1::Scalar TNum;
 
 				ASSERT_( values.size() == weights.size() );
 				ASSERT_( binWidth > 0 );
@@ -417,7 +417,7 @@ namespace mrpt
 				VECTORLIKE2	&out_binValues )
 			{
 				MRPT_START
-				typedef typename VECTORLIKE1::value_type TNum;
+				typedef typename VECTORLIKE1::Scalar TNum;
 
 				ASSERT_( values.size() == log_weights.size() );
 				ASSERT_( binWidth > 0 );
@@ -673,7 +673,7 @@ namespace mrpt
 			out_xyz.resize(3);
 
 			// translation part:
-			typedef typename IN_XYZ::value_type T;
+			typedef typename IN_ROTMATRIX::Scalar T;
 			const T tx = -in_xyz[0];
 			const T ty = -in_xyz[1];
 			const T tz = -in_xyz[2];
@@ -834,7 +834,7 @@ namespace mrpt
 		  *  \f[ d^2 =  (X-MU)^\top \Sigma^{-1} (X-MU)  \f]
 		  */
 		template<class VECTORLIKE1,class VECTORLIKE2,class MAT>
-		typename VECTORLIKE1::value_type mahalanobisDistance2(
+		typename MAT::Scalar mahalanobisDistance2(
 			const VECTORLIKE1 &X,
 			const VECTORLIKE2 &MU,
 			const MAT &COV )
@@ -846,7 +846,7 @@ namespace mrpt
 				ASSERT_( X.size()==size(COV,1) && COV.isSquare() );
 			#endif
 			const size_t N = X.size();
-			mrpt::dynamicsize_vector<typename VECTORLIKE1::value_type> X_MU(N);
+			mrpt::dynamicsize_vector<typename MAT::Scalar> X_MU(N);
 			for (size_t i=0;i<N;i++) X_MU[i]=X[i]-MU[i];
 			return multiply_HCHt_scalar(X_MU, COV.inv() );
 			MRPT_END
@@ -857,7 +857,7 @@ namespace mrpt
 		  *  \f[ d = \sqrt{ (X-MU)^\top \Sigma^{-1} (X-MU) }  \f]
 		  */
 		template<class VECTORLIKE1,class VECTORLIKE2,class MAT>
-		inline typename VECTORLIKE1::value_type mahalanobisDistance(
+		inline typename VECTORLIKE1::Scalar mahalanobisDistance(
 			const VECTORLIKE1 &X,
 			const VECTORLIKE2 &MU,
 			const MAT &COV )
@@ -870,7 +870,7 @@ namespace mrpt
 		  *  \f[ d^2 = \Delta_\mu^\top (\Sigma_1 + \Sigma_2 - 2 \Sigma_12 )^{-1} \Delta_\mu  \f]
 		  */
 		template<class VECTORLIKE,class MAT1,class MAT2,class MAT3>
-		typename VECTORLIKE::value_type
+		typename MAT1::Scalar
 		mahalanobisDistance2(
 			const VECTORLIKE &mean_diffs,
 			const MAT1 &COV1,
@@ -897,7 +897,7 @@ namespace mrpt
 		/** Computes the mahalanobis distance between two *non-independent* Gaussians (or independent if CROSS_COV12=NULL), given the two covariance matrices and the vector with the difference of their means.
 		  *  \f[ d = \sqrt{ \Delta_\mu^\top (\Sigma_1 + \Sigma_2 - 2 \Sigma_12 )^{-1} \Delta_\mu } \f]
 		  */
-		template<class VECTORLIKE,class MAT1,class MAT2,class MAT3> inline typename VECTORLIKE::value_type
+		template<class VECTORLIKE,class MAT1,class MAT2,class MAT3> inline typename VECTORLIKE::Scalar
 		mahalanobisDistance(
 			const VECTORLIKE &mean_diffs,
 			const MAT1 &COV1,
@@ -1099,7 +1099,7 @@ namespace mrpt
 
 			const size_t N = x.size();
 
-			typedef typename VECTORLIKE::value_type NUM;
+			typedef typename VECTORLIKE::Scalar NUM;
 
 			// X= [1 columns of ones, x' ]
 			const NUM x_min = x.minimum();
@@ -1155,7 +1155,7 @@ namespace mrpt
 			const size_t N = x.size();
 
 			// X= [1 columns of ones, x' ]
-			typedef typename VECTORLIKE3::value_type NUM;
+			typedef typename VECTORLIKE3::Scalar NUM;
 			const NUM x_min = x.minimum();
 			CMatrixTemplateNumeric<NUM> Xt(2,N);
 			for (size_t i=0;i<N;i++)

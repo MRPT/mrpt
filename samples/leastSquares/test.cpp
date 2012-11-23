@@ -41,13 +41,13 @@ using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace std;
 
-
 // ------------------------------------------------------
 //				TestLeastSquares
 // ------------------------------------------------------
 void TestLeastSquares()
 {
 	vector_double	x,y;
+	normalize(x,y);
 
 	const double X[] = { 1,2,3,4 };
 	const double Y[] = { 6,5,7,10 };
