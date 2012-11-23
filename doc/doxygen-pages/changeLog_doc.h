@@ -67,6 +67,7 @@
 	- Changes in classes:
 		- [mrpt-base]
 			- Eigen::MatrixBase<Derived>::loadFromTextFile(), and all MRPT derived matrix classes, are now much faster loading huge matrices from text files - <a href="http://code.google.com/p/mrpt/source/detail?r=2997" >r2997</a>
+			- The typedef Eigen::MatrixBase<Derived>::typename of MRPT's plugin to Eigen classes has been REMOVED, to avoid conflicts with some part of Eigen's sparse classes. Use Matrix::Scalar instead - <a href="http://code.google.com/p/mrpt/source/detail?r=3065" >r3065</a>
 			- mrpt::utils::CTimeLogger:
 				- New method mrpt::utils::CTimeLogger::getStats() for programatic execution time stats analysis - <a href="http://code.google.com/p/mrpt/source/detail?r=2998" >r2998</a>
 				- New method mrpt::utils::CTimeLogger::registerUserMeasure() for making stats of user-providen values - <a href="http://code.google.com/p/mrpt/source/detail?r=3005" >r3005</a>

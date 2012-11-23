@@ -365,7 +365,7 @@ void mrpt::slam::data_association_full_covariance(
 
 	CMatrixDouble pred_i_cov(length_O,length_O);
 
-	mrpt::dynamicsize_vector<CMatrixDouble::value_type>  diff_means_i_j(length_O);
+	mrpt::dynamicsize_vector<CMatrixDouble::Scalar>  diff_means_i_j(length_O);
 
 	for (size_t j=0;j<nObservations;++j)
 	{
@@ -515,9 +515,9 @@ void mrpt::slam::data_association_full_covariance(
 			info.length_O		= length_O;
 
 			if (metric==metricMaha)
-				JCBB_recursive<CMatrixDouble::value_type,metricMaha>(Z_observations_mean,  Y_predictions_mean, Y_predictions_cov,results, info, 0 );
+				JCBB_recursive<CMatrixDouble::Scalar,metricMaha>(Z_observations_mean,  Y_predictions_mean, Y_predictions_cov,results, info, 0 );
 			else
-				JCBB_recursive<CMatrixDouble::value_type,metricML>(Z_observations_mean,  Y_predictions_mean, Y_predictions_cov,results, info, 0 );
+				JCBB_recursive<CMatrixDouble::Scalar,metricML>(Z_observations_mean,  Y_predictions_mean, Y_predictions_cov,results, info, 0 );
 		}
 		break;
 

@@ -220,11 +220,8 @@ namespace mrpt
 			MAT *m_mat;
 			size_t	m_rowInd;
 		public:
-			typedef typename MAT::value_type value_type;
+			typedef typename MAT::Scalar value_type;
 			typedef CMatrixRowAccessor<MAT> mrpt_autotype;
-			//DECLARE_MRPT_CONTAINER_TYPES
-			//DECLARE_MRPT_CONTAINER_IS_VECTOR
-			//DECLARE_COMMON_CONTAINERS_MEMBERS(value_type)
 			inline CMatrixRowAccessor(MAT &mat, size_t rowIdx) : m_mat(&mat), m_rowInd(rowIdx) { ASSERT_(rowIdx<mat.getRowCount()) }
 			inline CMatrixRowAccessor()	{}
 			inline value_type &operator[](const size_t i) { return (*m_mat)(m_rowInd,i); }
@@ -281,11 +278,8 @@ namespace mrpt
 			size_t m_elementsSpace;
 			size_t howMany;
 		public:
-			typedef typename MAT::value_type value_type;
+			typedef typename MAT::Scalar value_type;
 			typedef CMatrixRowAccessorExtended<MAT> mrpt_autotype;
-			//DECLARE_MRPT_CONTAINER_TYPES
-			//DECLARE_MRPT_CONTAINER_IS_VECTOR
-			//DECLARE_COMMON_CONTAINERS_MEMBERS(value_type)
 			inline CMatrixRowAccessorExtended(MAT &mat,size_t row,size_t offset,size_t space):m_mat(&mat),m_rowInd(row),m_colOffset(offset),m_elementsSpace(space)	{
 				ASSERT_(row<mat.getRowCount());
 				howMany=(mat.getColCount()-m_colOffset)/m_elementsSpace;
@@ -346,11 +340,8 @@ namespace mrpt
 			const MAT *m_mat;
 			size_t m_rowInd;
 		public:
-			typedef typename MAT::value_type value_type;
+			typedef typename MAT::Scalar value_type;
 			typedef CConstMatrixRowAccessor<MAT> mrpt_autotype;
-			//DECLARE_MRPT_CONTAINER_TYPES
-			//DECLARE_MRPT_CONTAINER_IS_VECTOR
-			//DECLARE_COMMON_CONTAINERS_MEMBERS(value_type)
 			inline CConstMatrixRowAccessor(const MAT &mat,size_t row):m_mat(&mat),m_rowInd(row)	{
 				ASSERT_(row<mat.getRowCount());
 			}
@@ -396,11 +387,8 @@ namespace mrpt
 			size_t m_elementsSpace;
 			size_t howMany;
 		public:
-			typedef typename MAT::value_type value_type;
+			typedef typename MAT::Scalar value_type;
 			typedef CConstMatrixRowAccessorExtended<MAT> mrpt_autotype;
-			//DECLARE_MRPT_CONTAINER_TYPES
-			//DECLARE_MRPT_CONTAINER_IS_VECTOR
-			//DECLARE_COMMON_CONTAINERS_MEMBERS(value_type)
 			inline CConstMatrixRowAccessorExtended(const MAT &mat,size_t row,size_t offset,size_t space):m_mat(&mat),m_rowInd(row),m_colOffset(offset),m_elementsSpace(space)	{
 				ASSERT_(row<mat.getRowCount());
 				howMany=(mat.getColCount()-m_colOffset)/m_elementsSpace;
@@ -443,11 +431,8 @@ namespace mrpt
 			MAT *m_mat;
 			size_t	m_colInd;
 		public:
-			typedef typename MAT::value_type value_type;
+			typedef typename MAT::Scalar value_type;
 			typedef CMatrixColumnAccessor<MAT> mrpt_autotype;
-			//DECLARE_MRPT_CONTAINER_TYPES
-			//DECLARE_MRPT_CONTAINER_IS_VECTOR
-			//DECLARE_COMMON_CONTAINERS_MEMBERS(value_type)
 			inline CMatrixColumnAccessor(MAT &mat, size_t colIdx) : m_mat(&mat), m_colInd(colIdx) { ASSERT_(colIdx<mat.getColCount()) }
 			inline CMatrixColumnAccessor()	{}
 			inline value_type &operator[](const size_t i) { return (*m_mat)(i,m_colInd); }
@@ -503,11 +488,8 @@ namespace mrpt
 			size_t m_elementsSpace;
 			size_t howMany;
 		public:
-			typedef typename MAT::value_type value_type;
+			typedef typename MAT::Scalar value_type;
 			typedef CMatrixColumnAccessorExtended<MAT> mrpt_autotype;
-			//DECLARE_MRPT_CONTAINER_TYPES
-			//DECLARE_MRPT_CONTAINER_IS_VECTOR
-			//DECLARE_COMMON_CONTAINERS_MEMBERS(mrpt_autotype)
 			inline CMatrixColumnAccessorExtended(MAT &mat,size_t col,size_t offset,size_t space):m_mat(&mat),m_colInd(col),m_rowOffset(offset),m_elementsSpace(space)	{
 				ASSERT_(col<mat.getColCount());
 				howMany=(mat.getRowCount()-m_rowOffset)/m_elementsSpace;
@@ -567,11 +549,8 @@ namespace mrpt
 			const MAT *m_mat;
 			size_t m_colInd;
 		public:
-			typedef typename MAT::value_type value_type;
+			typedef typename MAT::Scalar value_type;
 			typedef CConstMatrixColumnAccessor<MAT> mrpt_autotype;
-			//DECLARE_MRPT_CONTAINER_TYPES
-			//DECLARE_MRPT_CONTAINER_IS_VECTOR
-			//DECLARE_COMMON_CONTAINERS_MEMBERS(value_type)
 			inline CConstMatrixColumnAccessor(const MAT &mat,size_t colIdx):m_mat(&mat),m_colInd(colIdx)	{
 				ASSERT_(colIdx<mat.getColCount());
 			}
@@ -616,11 +595,8 @@ namespace mrpt
 			size_t m_elementsSpace;
 			size_t howMany;
 		public:
-			typedef typename MAT::value_type value_type;
+			typedef typename MAT::Scalar value_type;
 			typedef CMatrixColumnAccessorExtended<MAT> mrpt_autotype;
-			//DECLARE_MRPT_CONTAINER_TYPES
-			//DECLARE_MRPT_CONTAINER_IS_VECTOR
-			//DECLARE_COMMON_CONTAINERS_MEMBERS(value_type)
 			inline CConstMatrixColumnAccessorExtended(const MAT &mat,size_t col,size_t offset,size_t space):m_mat(&mat),m_colInd(col),m_rowOffset(offset),m_elementsSpace(space)	{
 				ASSERT_(col<mat.getColCount());
 				howMany=(mat.getRowCount()-m_rowOffset)/m_elementsSpace;

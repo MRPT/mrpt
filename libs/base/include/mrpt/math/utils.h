@@ -302,7 +302,7 @@ namespace mrpt
 			for (size_t i=0;i<DIM;i++)
 				for (size_t j=0;j<=i;j++)	// Only 1/2 of the matrix
 				{
-					typename MATRIXLIKE::value_type elem=0;
+					typename MATRIXLIKE::Scalar elem=0;
 					if (weights_cov)
 					{
 						ASSERTDEB_(size_t(weights_cov->size())==size_t(nElms))
@@ -911,7 +911,7 @@ namespace mrpt
 		  *  \f[ d^2 = \Delta_\mu^\top \Sigma^{-1} \Delta_\mu  \f]
 		  */
 		template<class VECTORLIKE,class MATRIXLIKE>
-		inline typename MATRIXLIKE::value_type
+		inline typename MATRIXLIKE::Scalar
 		mahalanobisDistance2(const VECTORLIKE &delta_mu,const MATRIXLIKE &cov)
 		{
 			ASSERTDEB_(cov.isSquare())
@@ -923,7 +923,7 @@ namespace mrpt
 		  *  \f[ d^2 = \sqrt( \Delta_\mu^\top \Sigma^{-1} \Delta_\mu ) \f]
 		  */
 		template<class VECTORLIKE,class MATRIXLIKE>
-		inline typename MATRIXLIKE::value_type
+		inline typename MATRIXLIKE::Scalar
 		mahalanobisDistance(const VECTORLIKE &delta_mu,const MATRIXLIKE &cov)
 		{
 			return std::sqrt(mahalanobisDistance2(delta_mu,cov));
@@ -1017,9 +1017,9 @@ namespace mrpt
 			MATRIXLIKE C_inv;
 			cov.inv(C_inv);
 			maha2_out = multiply_HCHt_scalar(diff_mean,C_inv);
-			log_pdf_out = static_cast<typename MATRIXLIKE::value_type>(-0.5)* (
+			log_pdf_out = static_cast<typename MATRIXLIKE::Scalar>(-0.5)* (
 				maha2_out+
-				static_cast<typename MATRIXLIKE::value_type>(cov.getColCount())*::log(static_cast<typename MATRIXLIKE::value_type>(M_2PI))+
+				static_cast<typename MATRIXLIKE::Scalar>(cov.getColCount())*::log(static_cast<typename MATRIXLIKE::Scalar>(M_2PI))+
 				::log(cov.det())
 				);
 			MRPT_END

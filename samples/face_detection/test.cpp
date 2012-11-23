@@ -63,7 +63,7 @@ bool showEachDetectedFace;	// If using a 3D face detection (actually with swissr
 bool batchMode;
 vector<string> rawlogs;
 vector<vector_uint> falsePositives;
-vector<vector_uint> ignore;
+vector<vector_uint> ignored;
 string rawlogsDir;
 
 #ifdef MRPT_OPENCV_SRC_DIR
@@ -414,7 +414,7 @@ void BatchMode()
 		}
 
 		unsigned int falsePositivesDeleted, realFacesDeleted;
-		faceDetector.debug_returnResults( falsePositives[i], ignore[i], falsePositivesDeleted, realFacesDeleted );
+		faceDetector.debug_returnResults( falsePositives[i], ignored[i], falsePositivesDeleted, realFacesDeleted );
 		cout << "False positives deleted: " << falsePositivesDeleted << endl;
 		cout << "Real faces delted: " << realFacesDeleted << endl << endl;
 		
@@ -477,12 +477,12 @@ void TestPrepareDetector()
 
 		size_t numRawlogs = rawlogs.size();
 		falsePositives.resize( numRawlogs );
-		ignore.resize( numRawlogs );
+		ignored.resize( numRawlogs );
 
 		for ( size_t i = 0; i < numRawlogs; i++ )
 		{
 			cfg.read_vector( rawlogs[i], "falsePositives", vector_uint(), falsePositives[i] );
-			cfg.read_vector( rawlogs[i], "ignore", vector_uint(), ignore[i] );
+			cfg.read_vector( rawlogs[i], "ignored", vector_uint(), ignored[i] );
 		}
 
 		rawlogsDir = cfg.read_string( "Example", "rawlogsDir", "" );

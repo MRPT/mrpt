@@ -331,6 +331,7 @@ namespace math
     class CArrayNumeric : public Eigen::Matrix<T,N,1>
     {
 	public:
+        typedef T                    value_type;
 		typedef Eigen::Matrix<T,N,1> Base;
 
     	CArrayNumeric() {}  //!< Default constructor

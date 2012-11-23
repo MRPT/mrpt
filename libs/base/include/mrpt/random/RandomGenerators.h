@@ -133,7 +133,7 @@ namespace mrpt
 				{
 					for (size_t r=0;r<matrix.getRowCount();r++)
 						for (size_t c=0;c<matrix.getColCount();c++)
-							matrix.get_unsafe(r,c) = static_cast<typename MAT::value_type>( drawUniform(unif_min,unif_max) );
+							matrix.get_unsafe(r,c) = static_cast<typename MAT::Scalar>( drawUniform(unif_min,unif_max) );
 				}
 
 				/** Fills the given vector with independent, uniformly distributed samples.
@@ -180,7 +180,7 @@ namespace mrpt
 				{
 					for (size_t r=0;r<matrix.getRowCount();r++)
 						for (size_t c=0;c<matrix.getColCount();c++)
-							matrix.get_unsafe(r,c) = static_cast<typename MAT::value_type>( drawGaussian1D(mean,std) );
+							matrix.get_unsafe(r,c) = static_cast<typename MAT::Scalar>( drawGaussian1D(mean,std) );
 				}
 
 				/** Generates a random definite-positive matrix of the given size, using the formula C = v*v^t + epsilon*I, with "v" being a vector of gaussian random samples.
@@ -348,7 +348,7 @@ namespace mrpt
 		{
 			for (size_t r=0;r<matrix.getRowCount();r++)
 				for (size_t c=0;c<matrix.getColCount();c++)
-					matrix.get_unsafe(r,c) = static_cast<typename MAT::value_type>( randomGenerator.drawUniform(unif_min,unif_max) );
+					matrix.get_unsafe(r,c) = static_cast<typename MAT::Scalar>( randomGenerator.drawUniform(unif_min,unif_max) );
 		}
 
 		/** Fills the given matrix with independent, uniformly distributed samples.
@@ -377,7 +377,7 @@ namespace mrpt
 		{
 			for (size_t r=0;r<matrix.getRowCount();r++)
 				for (size_t c=0;c<matrix.getColCount();c++)
-					matrix.get_unsafe(r,c) = static_cast<typename MAT::value_type>( mean + std*randomGenerator.drawGaussian1D_normalized() );
+					matrix.get_unsafe(r,c) = static_cast<typename MAT::Scalar>( mean + std*randomGenerator.drawGaussian1D_normalized() );
 		}
 
 		/** Generates a random vector with independent, normally distributed samples.

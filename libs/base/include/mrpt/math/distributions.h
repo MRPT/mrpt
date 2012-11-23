@@ -65,7 +65,7 @@ namespace mrpt
 		  *  \param  scaled_pdf If set to true, the PDF will be scaled to be in the range [0,1], in contrast to its integral from [-inf,+inf] being 1.
 		  */
 		template <class VECTORLIKE1,class VECTORLIKE2,class MATRIXLIKE>
-		inline typename MATRIXLIKE::value_type
+		inline typename MATRIXLIKE::Scalar
 			normalPDFInf(
 				const VECTORLIKE1  & x,
 				const VECTORLIKE2  & mu,
@@ -73,10 +73,10 @@ namespace mrpt
 				const bool scaled_pdf = false )
 		{
 			MRPT_START
-			typedef typename MATRIXLIKE::value_type T;
+			typedef typename MATRIXLIKE::Scalar T;
 			ASSERTDEB_(cov_inv.isSquare())
 			ASSERTDEB_(size_t(cov_inv.getColCount())==size_t(x.size()) && size_t(cov_inv.getColCount())==size_t(mu.size()))
-			T ret = ::exp( static_cast<T>(-0.5) * mrpt::math::multiply_HCHt_scalar((x-mu), cov_inv ) );
+			T ret = ::exp( static_cast<T>(-0.5) * mrpt::math::multiply_HCHt_scalar((x-mu).eval(), cov_inv ) );
 			return scaled_pdf ? ret : ret * ::sqrt(cov_inv.det()) / ::pow(static_cast<T>(M_2PI),static_cast<T>( size(cov_inv,1) ));
 			MRPT_END
 		}
@@ -88,7 +88,7 @@ namespace mrpt
 		  *  \param  scaled_pdf If set to true, the PDF will be scaled to be in the range [0,1], in contrast to its integral from [-inf,+inf] being 1.
 		  */
 		template <class VECTORLIKE1,class VECTORLIKE2,class MATRIXLIKE>
-		inline typename MATRIXLIKE::value_type
+		inline typename MATRIXLIKE::Scalar
 			normalPDF(
 				const VECTORLIKE1  & x,
 				const VECTORLIKE2  & mu,
@@ -101,16 +101,16 @@ namespace mrpt
 		/** Evaluates the multivariate normal (Gaussian) distribution at a given point given its distance vector "d" from the Gaussian mean.
 		  */
 		template <typename VECTORLIKE,typename MATRIXLIKE>
-		typename MATRIXLIKE::value_type
+		typename MATRIXLIKE::Scalar
 		normalPDF(const VECTORLIKE &d,const MATRIXLIKE &cov)
 		{
 			MRPT_START
 			ASSERTDEB_(cov.isSquare())
 			ASSERTDEB_(size_t(cov.getColCount())==size_t(d.size()))
-			return std::exp( static_cast<typename MATRIXLIKE::value_type>(-0.5)*mrpt::math::multiply_HCHt_scalar(d,cov.inverse()))
+			return std::exp( static_cast<typename MATRIXLIKE::Scalar>(-0.5)*mrpt::math::multiply_HCHt_scalar(d,cov.inverse()))
 			/ (::pow(
-					static_cast<typename MATRIXLIKE::value_type>(M_2PI),
-					static_cast<typename MATRIXLIKE::value_type>(cov.getColCount()))
+					static_cast<typename MATRIXLIKE::Scalar>(M_2PI),
+					static_cast<typename MATRIXLIKE::Scalar>(cov.getColCount()))
 				* ::sqrt(cov.det()));
 			MRPT_END
 		}

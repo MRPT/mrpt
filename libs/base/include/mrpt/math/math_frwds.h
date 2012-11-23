@@ -128,8 +128,8 @@ namespace mrpt
 
 		template <class CONTAINER1,class CONTAINER2> void cumsum(const CONTAINER1 &in_data, CONTAINER2 &out_cumsum);
 
-		template <class CONTAINER> inline typename CONTAINER::value_type norm(const CONTAINER &v);
-		template <class CONTAINER> inline typename CONTAINER::value_type norm_inf(const CONTAINER &v);
+		template <class CONTAINER> inline typename CONTAINER::Scalar norm(const CONTAINER &v);
+		template <class CONTAINER> inline typename CONTAINER::Scalar norm_inf(const CONTAINER &v);
 
 		template <class MAT_A,class SKEW_3VECTOR,class MAT_OUT> void multiply_A_skew3(const MAT_A &A,const SKEW_3VECTOR &v, MAT_OUT &out);
 		template <class SKEW_3VECTOR,class MAT_A,class MAT_OUT> void multiply_skew3_A(const SKEW_3VECTOR &v,const MAT_A &A, MAT_OUT &out);

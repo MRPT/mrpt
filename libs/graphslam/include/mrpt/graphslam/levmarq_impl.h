@@ -184,7 +184,7 @@ namespace mrpt
 			}
 
 			// return overall square error:
-			return std::accumulate( errs.begin(), errs.end(),0.0, mrpt::math::squareNorm_accum<typename gst::Array_O> );
+			return std::accumulate( errs.begin(), errs.end(),0.0, mrpt::math::squareNorm_accum<typename gst::Array_O, typename gst::Array_O::Scalar> );
 		}
 
 	} // end of NS

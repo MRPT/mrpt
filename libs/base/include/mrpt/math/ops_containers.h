@@ -98,15 +98,18 @@ namespace mrpt
 		  *  This works for both matrices (even mixing their types) and vectores/arrays (even mixing types),
 		  *  and even to store the cumsum of any matrix into any vector/array, but not in opposite direction.
 		  * \sa sum */
-		template <class CONTAINER1,class CONTAINER2>
-		inline void cumsum(const CONTAINER1 &in_data, CONTAINER2 &out_cumsum)
+		template <class CONTAINER1,class CONTAINER2, typename VALUE>
+		inline void cumsum_tmpl(const CONTAINER1 &in_data, CONTAINER2 &out_cumsum)
 		{
 			out_cumsum.resizeLike(in_data);
-			typename CONTAINER1::value_type last=0;
+			VALUE last=0;
 			const size_t N = in_data.size();
 			for (size_t i=0;i<N;i++)
 				last = out_cumsum[i] = last + in_data[i];
 		}
+
+		template <class CONTAINER1,class CONTAINER2>
+		inline void cumsum(const CONTAINER1 &in_data, CONTAINER2 &out_cumsum) { cumsum_tmpl<CONTAINER1,CONTAINER2,typename CONTAINER1::Scalar>(in_data,out_cumsum); }
 
 		/** Computes the cumulative sum of all the elements
 		  * \sa sum  */
@@ -118,10 +121,10 @@ namespace mrpt
 			return ret;
 		}
 
-		template <class CONTAINER> inline typename CONTAINER::value_type norm_inf(const CONTAINER &v) { return v.norm_inf(); }
-		template <class CONTAINER> inline typename CONTAINER::value_type norm(const CONTAINER &v) { return v.norm(); }
-		template <class CONTAINER> inline typename CONTAINER::value_type maximum(const CONTAINER &v) { return v.maximum(); }
-		template <class CONTAINER> inline typename CONTAINER::value_type minimum(const CONTAINER &v) { return v.minimum(); }
+		template <class CONTAINER> inline typename CONTAINER::Scalar norm_inf(const CONTAINER &v) { return v.norm_inf(); }
+		template <class CONTAINER> inline typename CONTAINER::Scalar norm(const CONTAINER &v) { return v.norm(); }
+		template <class CONTAINER> inline typename CONTAINER::Scalar maximum(const CONTAINER &v) { return v.maximum(); }
+		template <class CONTAINER> inline typename CONTAINER::Scalar minimum(const CONTAINER &v) { return v.minimum(); }
 
 		template <typename T> inline T maximum(const std::vector<T> &v)
 		{
@@ -178,9 +181,8 @@ namespace mrpt
 		  */
 
 		/** Accumulate the squared-norm of a vector/array/matrix into "total" (this function is compatible with std::accumulate). */
-		template <class CONTAINER>
-		typename CONTAINER::value_type squareNorm_accum(const typename CONTAINER::value_type total, const CONTAINER &v);
-		template <class CONTAINER> typename CONTAINER::value_type squareNorm_accum(const typename CONTAINER::value_type total, const CONTAINER &v) {
+		template <class CONTAINER, typename VALUE> 
+		VALUE squareNorm_accum(const VALUE total, const CONTAINER &v) {
 			return total+v.squaredNorm();
 		}
 
@@ -195,7 +197,7 @@ namespace mrpt
 
 		/** v1·v2: The dot product of two containers (vectors/arrays/matrices) */
 		template <class CONTAINER1,class CONTAINER2>
-		inline typename CONTAINER1::value_type
+		inline typename CONTAINER1::Scalar
 		dotProduct(const CONTAINER1 &v1,const CONTAINER1 &v2)
 		{
 			return v1.dot(v2);
@@ -212,7 +214,7 @@ namespace mrpt
 		/** Computes the sum of all the elements.
 		  * \note If used with containers of integer types (uint8_t, int, etc...) this could overflow. In those cases, use sumRetType the second argument RET to specify a larger type to hold the sum.
 		   \sa cumsum  */
-		template <class CONTAINER> inline typename CONTAINER::value_type sum(const CONTAINER &v) { return v.sum(); }
+		template <class CONTAINER> inline typename CONTAINER::Scalar sum(const CONTAINER &v) { return v.sum(); }
 
 		/// \overload
 		template <typename T> inline T sum(const std::vector<T> &v) { return std::accumulate(v.begin(),v.end(),T(0)); }
@@ -249,8 +251,8 @@ namespace mrpt
 		template <class Derived>
 		inline void minimum_maximum(
 			const Eigen::MatrixBase<Derived> &V,
-			typename Eigen::MatrixBase<Derived>::value_type &curMin,
-			typename Eigen::MatrixBase<Derived>::value_type &curMax)
+			typename Eigen::MatrixBase<Derived>::Scalar &curMin,
+			typename Eigen::MatrixBase<Derived>::Scalar &curMax)
 		{
 			V.minimum_maximum(curMin,curMax);
 		}
@@ -270,12 +272,12 @@ namespace mrpt
 
 		/** Adjusts the range of all the elements such as the minimum and maximum values being those supplied by the user.  */
 		template <class CONTAINER>
-		void  adjustRange(CONTAINER &m, const typename CONTAINER::value_type minVal,const typename CONTAINER::value_type maxVal)
+		void  adjustRange(CONTAINER &m, const typename CONTAINER::Scalar minVal,const typename CONTAINER::Scalar maxVal)
 		{
 			if (size_t(m.size())==0) return;
-			typename CONTAINER::value_type curMin,curMax;
+			typename CONTAINER::Scalar curMin,curMax;
 			minimum_maximum(m,curMin,curMax);
-			const typename CONTAINER::value_type curRan = curMax-curMin;
+			const typename CONTAINER::Scalar curRan = curMax-curMin;
 			m -= (curMin+minVal);
 			if (curRan!=0) m *= (maxVal-minVal)/curRan;
 		}

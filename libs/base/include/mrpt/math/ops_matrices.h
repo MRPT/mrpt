@@ -163,7 +163,7 @@ namespace mrpt
 
 		/** r (a scalar) = H * C * H^t (with a vector H and a symmetric matrix C) */
 		template <typename VECTOR_H, typename MAT_C>
-		typename MAT_C::value_type
+		typename MAT_C::Scalar
 		multiply_HCHt_scalar(const VECTOR_H &H, const MAT_C &C)
 		{
 			return (H.matrix().adjoint() * C * H.matrix()).eval()(0,0);

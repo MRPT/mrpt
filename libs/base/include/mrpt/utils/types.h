@@ -100,6 +100,7 @@ namespace mrpt
 	template <typename T>
 	struct dynamicsize_vector : public Eigen::Matrix<T,Eigen::Dynamic,1>
 	{
+		typedef T value_type;
 		typedef Eigen::Matrix<T,Eigen::Dynamic,1> Base;
 		typedef dynamicsize_vector<T> mrpt_autotype;
 		MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(dynamicsize_vector)

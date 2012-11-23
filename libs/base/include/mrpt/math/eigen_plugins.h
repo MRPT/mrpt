@@ -39,7 +39,6 @@
 public:
 	/** @name MRPT plugin: Types
 	  *  @{ */
-	typedef Scalar value_type; //!< Type of the elements
 	// size is constant
 	enum { static_size = RowsAtCompileTime*ColsAtCompileTime };
 	/** @} */
@@ -581,12 +580,12 @@ public:
 
 	/*! this = C * C<sup>T</sup> * f (with a matrix C and a scalar f). */
 	template<typename MAT_A>
-	EIGEN_STRONG_INLINE void multiply_AAt_scalar(const MAT_A &A,typename MAT_A::value_type f)	{
+	EIGEN_STRONG_INLINE void multiply_AAt_scalar(const MAT_A &A,typename MAT_A::Scalar f)	{
 		*this = (A * A.adjoint()) * f;
 	}
 
 	/*! this = C<sup>T</sup> * C * f (with a matrix C and a scalar f). */
-	template<typename MAT_A> EIGEN_STRONG_INLINE void multiply_AtA_scalar(const MAT_A &A,typename MAT_A::value_type f)	{
+	template<typename MAT_A> EIGEN_STRONG_INLINE void multiply_AtA_scalar(const MAT_A &A,typename MAT_A::Scalar f)	{
 		*this = (A.adjoint() * A) * f;
 	}
 
