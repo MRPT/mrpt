@@ -232,5 +232,4 @@ ENDIF(WIN32 AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
 # Link directories to add to the user project:
 # ======================================================
 LINK_DIRECTORIES(${MRPT_DIR}/lib)
-LINK_DIRECTORIES(${MRPT_DIR}/lib/otherlibs)
 
