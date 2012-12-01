@@ -993,7 +993,10 @@ double  math::erf(double x)
  ---------------------------------------------------------------*/
 double  math::chi2inv(double P, unsigned int dim)
 {
-    return dim * pow( 1.0 - 2.0/(9*dim) + sqrt(2.0/(9*dim))*normalQuantile(P), 3 );
+	ASSERT_(P>=0 && P<1)
+	if (P==0)
+	     return 0;
+	else return dim * pow( 1.0 - 2.0/(9*dim) + sqrt(2.0/(9*dim))*normalQuantile(P), 3 );
 }
 
 /*---------------------------------------------------------------
@@ -2224,3 +2227,108 @@ void mrpt::math::medianFilter( const std::vector<double> &inV, std::vector<doubl
         outV[k] = auxSz%2 ? aux[auxMPoint] : 0.5*(aux[auxMPoint-1]+aux[auxMPoint]);     // If the window is even, take the mean value of the middle points
     } // end-for
 } // end medianFilter
+
+
+double mrpt::math::chi2CDF(unsigned int degreesOfFreedom, double arg)
+{
+	return noncentralChi2CDF(degreesOfFreedom, 0.0, arg);
+}
+
+template <class T>
+void noncentralChi2OneIteration(T arg, T & lans, T & dans, T & pans, unsigned int & j)
+{
+	double tol = -50.0;
+	if(lans < tol)
+	{
+		lans = lans + std::log(arg / j);
+		dans = std::exp(lans);
+	}
+	else
+	{
+		dans = dans * arg / j;
+	}
+	pans = pans - dans;
+	j += 2;
+}
+
+std::pair<double, double> mrpt::math::noncentralChi2PDF_CDF(unsigned int degreesOfFreedom, double noncentrality, double arg, double eps)
+{
+	ASSERTMSG_(noncentrality >= 0.0 && arg >= 0.0 && eps > 0.0,"noncentralChi2PDF_CDF(): parameters must be positive.")
+
+	if (arg == 0.0 && degreesOfFreedom > 0)
+		return std::make_pair(0.0, 0.0);
+
+	// Determine initial values
+	double b1 = 0.5 * noncentrality,
+		   ao = std::exp(-b1),
+		   eps2 = eps / ao,
+		   lnrtpi2 = 0.22579135264473,
+		   probability, density, lans, dans, pans, sum, am, hold;
+	unsigned int maxit = 500,
+		i, m;
+	if(degreesOfFreedom % 2)
+	{
+		i = 1;
+		lans = -0.5 * (arg + std::log(arg)) - lnrtpi2;
+		dans = std::exp(lans);
+		pans = mrpt::math::erf(std::sqrt(arg/2.0));
+	}
+	else
+	{
+		i = 2;
+		lans = -0.5 * arg;
+		dans = std::exp(lans);
+		pans = 1.0 - dans;
+	}
+
+	// Evaluate first term
+	if(degreesOfFreedom == 0)
+	{
+		m = 1;
+		degreesOfFreedom = 2;
+		am = b1;
+		sum = 1.0 / ao - 1.0 - am;
+		density = am * dans;
+		probability = 1.0 + am * pans;
+	}
+	else
+	{
+		m = 0;
+		degreesOfFreedom = degreesOfFreedom - 1;
+		am = 1.0;
+		sum = 1.0 / ao - 1.0;
+		while(i < degreesOfFreedom)
+			noncentralChi2OneIteration(arg, lans, dans, pans, i);
+		degreesOfFreedom = degreesOfFreedom + 1;
+		density = dans;
+		probability = pans;
+	}
+	// Evaluate successive terms of the expansion
+	for(++m; m<maxit; ++m)
+	{
+		am = b1 * am / m;
+		noncentralChi2OneIteration(arg, lans, dans, pans, degreesOfFreedom);
+		sum = sum - am;
+		density = density + am * dans;
+		hold = am * pans;
+		probability = probability + hold;
+		if((pans * sum < eps2) && (hold < eps2))
+			break; // converged
+	}
+	if(m == maxit)
+		THROW_EXCEPTION("noncentralChi2PDF_CDF(): no convergence.");
+	return std::make_pair(0.5 * ao * density, std::min(1.0, std::max(0.0, ao * probability)));
+}
+
+double mrpt::math::chi2PDF(unsigned int degreesOfFreedom, double arg, double accuracy)
+{
+	return mrpt::math::noncentralChi2PDF_CDF(degreesOfFreedom, 0.0, arg, accuracy).first;
+}
+
+double mrpt::math::noncentralChi2CDF(unsigned int degreesOfFreedom, double noncentrality, double arg)
+{
+	const double a = degreesOfFreedom + noncentrality;
+	const double b = (a + noncentrality) / square(a);
+	const double t = (std::pow((double)arg / a, 1.0/3.0) - (1.0 - 2.0 / 9.0 * b)) / std::sqrt(2.0 / 9.0 * b);
+	return 0.5*(1.0 + mrpt::math::erf(t/std::sqrt(2.0)));
+}

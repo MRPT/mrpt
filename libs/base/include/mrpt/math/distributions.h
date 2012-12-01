@@ -158,7 +158,7 @@ namespace mrpt
 
 		/** The "quantile" of the Chi-Square distribution, for dimension "dim" and probability 0<P<1 (the inverse of chi2CDF)
 		  * An aproximation from the Wilson-Hilferty transformation is used.
-		  *  \note Equivalent to MATLAB chi2inv()
+		  *  \note Equivalent to MATLAB chi2inv(), but note that this is just an approximation, which becomes very poor for small values of "P".
 		  */
 		double  BASE_IMPEXP chi2inv(double P, unsigned int dim=1);
 
@@ -173,15 +173,9 @@ namespace mrpt
 			about 0.1 for few degrees of freedom, but reaches about 0.001 above dof = 5.
 
 			\note Function code from the Vigra project (http://hci.iwr.uni-heidelberg.de/vigra/); code under "MIT X11 License", GNU GPL-compatible.
+		* \sa noncentralChi2PDF_CDF
 		*/
-		template <class T>
-		double noncentralChi2CDF(unsigned int degreesOfFreedom, T noncentrality, T arg)
-		{
-			const double a = degreesOfFreedom + noncentrality;
-			const double b = (a + noncentrality) / square(a);
-			const double t = (std::pow((double)arg / a, 1.0/3.0) - (1.0 - 2.0 / 9.0 * b)) / std::sqrt(2.0 / 9.0 * b);
-			return 0.5*(1.0 + mrpt::math::erf(t/std::sqrt(2.0)));
-		}
+		double BASE_IMPEXP noncentralChi2CDF(unsigned int degreesOfFreedom, double noncentrality, double arg);
 
 		/*! Cumulative chi square distribution.
 
@@ -192,112 +186,22 @@ namespace mrpt
 
 			\note Function code from the Vigra project (http://hci.iwr.uni-heidelberg.de/vigra/); code under "MIT X11 License", GNU GPL-compatible.
 		*/
-		inline double chi2CDF(unsigned int degreesOfFreedom, double arg)
-		{
-			return noncentralChi2CDF(degreesOfFreedom, 0.0, arg);
-		}
+		double BASE_IMPEXP chi2CDF(unsigned int degreesOfFreedom, double arg);
 
-		namespace detail
-		{
-			template <class T>
-			void noncentralChi2OneIteration(T arg, T & lans, T & dans, T & pans, unsigned int & j)
-			{
-				double tol = -50.0;
-				if(lans < tol)
-				{
-					lans = lans + std::log(arg / j);
-					dans = std::exp(lans);
-				}
-				else
-				{
-					dans = dans * arg / j;
-				}
-				pans = pans - dans;
-				j += 2;
-			}
+		/*! Chi square distribution PDF.
+		 *	Computes the density of a chi square distribution with \a degreesOfFreedom
+		 *	and tolerance \a accuracy at the given argument \a arg
+		 *	by calling <tt>noncentralChi2(degreesOfFreedom, 0.0, arg, accuracy)</tt>.
+		 *	\note Function code from the Vigra project (http://hci.iwr.uni-heidelberg.de/vigra/); code under "MIT X11 License", GNU GPL-compatible.
+		 *
+		 * \note Equivalent to MATLAB's chi2pdf(arg,degreesOfFreedom)
+		 */
+		double BASE_IMPEXP chi2PDF(unsigned int degreesOfFreedom, double arg, double accuracy = 1e-7);
 
-			template <class T>
-			std::pair<double, double> noncentralChi2CDF_exact(unsigned int degreesOfFreedom, T noncentrality, T arg, T eps)
-			{
-				ASSERTMSG_(noncentrality >= 0.0 && arg >= 0.0 && eps > 0.0,"noncentralChi2P(): parameters must be positive.");
-				if (arg == 0.0 && degreesOfFreedom > 0)
-					return std::make_pair(0.0, 0.0);
-
-				// Determine initial values
-				double b1 = 0.5 * noncentrality,
-					   ao = std::exp(-b1),
-					   eps2 = eps / ao,
-					   lnrtpi2 = 0.22579135264473,
-					   probability, density, lans, dans, pans, sum, am, hold;
-				unsigned int maxit = 500,
-					i, m;
-				if(degreesOfFreedom % 2)
-				{
-					i = 1;
-					lans = -0.5 * (arg + std::log(arg)) - lnrtpi2;
-					dans = std::exp(lans);
-					pans = erf(std::sqrt(arg/2.0));
-				}
-				else
-				{
-					i = 2;
-					lans = -0.5 * arg;
-					dans = std::exp(lans);
-					pans = 1.0 - dans;
-				}
-
-				// Evaluate first term
-				if(degreesOfFreedom == 0)
-				{
-					m = 1;
-					degreesOfFreedom = 2;
-					am = b1;
-					sum = 1.0 / ao - 1.0 - am;
-					density = am * dans;
-					probability = 1.0 + am * pans;
-				}
-				else
-				{
-					m = 0;
-					degreesOfFreedom = degreesOfFreedom - 1;
-					am = 1.0;
-					sum = 1.0 / ao - 1.0;
-					while(i < degreesOfFreedom)
-						detail::noncentralChi2OneIteration(arg, lans, dans, pans, i);
-					degreesOfFreedom = degreesOfFreedom + 1;
-					density = dans;
-					probability = pans;
-				}
-				// Evaluate successive terms of the expansion
-				for(++m; m<maxit; ++m)
-				{
-					am = b1 * am / m;
-					detail::noncentralChi2OneIteration(arg, lans, dans, pans, degreesOfFreedom);
-					sum = sum - am;
-					density = density + am * dans;
-					hold = am * pans;
-					probability = probability + hold;
-					if((pans * sum < eps2) && (hold < eps2))
-						break; // converged
-				}
-				if(m == maxit)
-					THROW_EXCEPTION("noncentralChi2P(): no convergence.");
-				return std::make_pair(0.5 * ao * density, std::min(1.0, std::max(0.0, ao * probability)));
-			}
-		} // namespace detail
-
-		/*! Chi square distribution.
-
-			Computes the density of a chi square distribution with \a degreesOfFreedom
-			and tolerance \a accuracy at the given argument \a arg
-			by calling <tt>noncentralChi2(degreesOfFreedom, 0.0, arg, accuracy)</tt>.
-
-			\note Function code from the Vigra project (http://hci.iwr.uni-heidelberg.de/vigra/); code under "MIT X11 License", GNU GPL-compatible.
-		*/
-		inline double chi2PDF(unsigned int degreesOfFreedom, double arg, double accuracy = 1e-7)
-		{
-			return detail::noncentralChi2CDF_exact(degreesOfFreedom, 0.0, arg, accuracy).first;
-		}
+		/** Returns the 'exact' PDF (first) and CDF (second) of a Non-central chi-squared probability distribution, using an iterative method.
+		  * \note Equivalent to MATLAB's ncx2cdf(arg,degreesOfFreedom,noncentrality)
+		  */
+		std::pair<double, double> BASE_IMPEXP noncentralChi2PDF_CDF(unsigned int degreesOfFreedom, double noncentrality, double arg, double eps = 1e-7);
 
 		/** Return the mean and the 10%-90% confidence points (or with any other confidence value) of a set of samples by building the cummulative CDF of all the elements of the container.
 		  *  The container can be any MRPT container (CArray, matrices, vectors).
@@ -320,8 +224,6 @@ namespace mrpt
 			typename CONTAINER::value_type x_min,x_max;
 			minimum_maximum(data,x_min,x_max);
 
-			//std::vector<typename CONTAINER::value_type> xs;
-			//linspace(x_min,x_max,histogramNumBins, xs);
 			const typename CONTAINER::value_type binWidth = (x_max-x_min)/histogramNumBins;
 
 			const vector_double H = mrpt::math::histogram(data,x_min,x_max,histogramNumBins);
