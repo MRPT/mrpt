@@ -59,10 +59,13 @@ CGenericSensor::CGenericSensor() :
 	m_sensorLabel("UNNAMED_SENSOR"),
 	m_grab_decimation_counter(0),
 	m_state( ssInitializing ),
+	m_verbose(false),
 	m_path_for_external_images	(),
 	m_external_images_format	("jpg"),
 	m_external_images_jpeg_quality (95)
 {
+	const char * sVerbose = getenv("MRPT_HWDRIVERS_VERBOSE");
+	m_verbose = (sVerbose!=NULL) && atoi(sVerbose)!=0;
 }
 
 /*-------------------------------------------------------------

@@ -80,8 +80,11 @@ namespace mrpt
 		  *		-9/JUN/2006: First version (JLBC)
 		  *		-4/JUN/2008: Added virtual methods for device-specific initialization commands.
 		  *		-10/JUN/2008: Converted into CGenericSensor class (there are no inhirited classes anymore).
+		  *
+		  *  \note Verbose debug info will be dumped to cout if the environment variable "MRPT_HWDRIVERS_VERBOSE" is set to "1", or if you call CGenericSensor::enableVerbose(true)
+		  *
 		  * \ingroup mrpt_hwdrivers_grp
-		*/
+		  */
 		class HWDRIVERS_IMPEXP CGPSInterface : public utils::CDebugOutputCapable, public CGenericSensor
 		{
 			DEFINE_GENERIC_SENSOR(CGPSInterface)
@@ -90,11 +93,7 @@ namespace mrpt
 			/** Constructor
 			  * \param BUFFER_LENGTH The size of the communications buffer (default value should be fine always)
 			  */
-//			CGPSInterface( int BUFFER_LENGTH = 500 );
-
-			// MAR'11 -------------------------------------
 			CGPSInterface( int BUFFER_LENGTH = 500, mrpt::hwdrivers::CSerialPort *outPort = NULL, mrpt::synch::CCriticalSection *csOutPort = NULL);
-            // --------------------------------------------
 
 			/** Destructor
 			  */

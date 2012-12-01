@@ -400,7 +400,7 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	m_kinect_save_intensity_img = configSource.read_bool( iniSection, "kinect_grab_intensity", m_kinect_save_intensity_img );
 	m_kinect_save_range_img = configSource.read_bool( iniSection, "kinect_grab_range", m_kinect_save_range_img );
 	m_kinect_video_rgb = configSource.read_bool( iniSection, "kinect_video_rgb", m_kinect_video_rgb);
-	
+
 
 	// Special stuff: FPS
 	map<double,grabber_dc1394_framerate_t>	map_fps;
@@ -544,12 +544,12 @@ CObservationPtr CCameraSensor::getNextFrame()
 		const mrpt::system::TTimeStamp t0 = mrpt::system::now();
 		double max_timeout = 3.0; // seconds
 
-		// If we have an "MRPT_WXSUBSYS_TIMEOUT_MS" environment variable, use that timeout instead:
-		const char *envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS");
-		if (envVal) max_timeout = atoi(envVal)*0.001f;
+		// If we have an "MRPT_CCAMERA_KINECT_TIMEOUT_MS" environment variable, use that timeout instead:
+		const char *envVal = getenv("MRPT_CCAMERA_KINECT_TIMEOUT_MS");
+		if (envVal) max_timeout = atoi(envVal)*0.001;
 
 		bool there_is_obs, hardware_error;
-		do 
+		do
 		{
 			m_cap_kinect->getNextObservation(*obs3D, there_is_obs, hardware_error);
 			if (!there_is_obs) mrpt::system::sleep(1);

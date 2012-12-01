@@ -428,9 +428,6 @@ namespace mrpt
 
 			void calculate_range2meters(); //!< Compute m_range2meters at construction
 
-		public:
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-
 		};	// End of class
 	} // End of NS
 

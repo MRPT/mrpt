@@ -176,7 +176,7 @@ bool  CGPSInterface::tryToOpenTheCOM()
         if (m_COM.isOpen())
             return true;	// Already open
 
-    cout << "Opening " << m_COMname << " @ " << m_COMbauds << endl;
+    if (m_verbose) cout << "[CGPSInterface] Opening " << m_COMname << " @ " << m_COMbauds << endl;
 
 	try
 	{
@@ -334,23 +334,23 @@ void  CGPSInterface::doProcess()
 		// 2. it contains only GGA or RMC but the next one is not synched with it
 		if( m_last_timestamp == INVALID_TIMESTAMP )
 		{
-			cout << "Initial timestamp: " << mrpt::system::timeToString(m_latestGPS_data.timestamp) << endl;
+			if (m_verbose) cout << "[CGPSInterface] Initial timestamp: " << mrpt::system::timeToString(m_latestGPS_data.timestamp) << endl;
 			// Check if the initial timestamp seems to be OK (not a spurio one)
 			TTimeStamp tmNow = mrpt::system::now();
 			const double tdif = mrpt::system::timeDifference( m_latestGPS_data.timestamp, tmNow );
 			if( tdif >= 0 && tdif < 7500 /*Up to two hours*/)
 				m_last_timestamp = m_latestGPS_data.timestamp;
 			else
-				cout << "WARNING [CGPSInterface] -> The initial timestamp seems to be wrong! : " << tdif << endl;
+				{  if (m_verbose) cout << "[CGPSInterface] Warning: The initial timestamp seems to be wrong! : " << tdif << endl;}
 		} // end-if
 		else
 		{
 			const double time_diff = mrpt::system::timeDifference( m_last_timestamp, m_latestGPS_data.timestamp );
 			if( time_diff < 0 || time_diff > 300 )     // Assert that the current timestamp is after the previous one and not more than 5 minutes later -> remove spurious
-				{ cout << "Bad timestamp difference" << endl; return; }
+				{ if (m_verbose) cout << "[CGPSInterface ] Bad timestamp difference" << endl; return; }
 
 			if( time_diff-m_data_period > 0.25*m_data_period )
-				cout << "WARNING [CGPSInterface] -> According to the timestamps, we probably skipped one frame!" << endl;
+				{ if (m_verbose) cout << "[CGPSInterface] WARNING: According to the timestamps, we probably skipped one frame!" << endl; }
 
 	//        TTimeStamp tnow = mrpt::system::now();
 	//        const double now_diff = mrpt::system::timeDifference( m_latestGPS_data.timestamp,tnow );
@@ -371,13 +371,10 @@ void  CGPSInterface::doProcess()
 
 	//            cout << "FAMD: [GPS_GPS____GR3]: " << int(m_latestGPS_data.GGA_datum.UTCTime.hour) << ":" << int(m_latestGPS_data.GGA_datum.UTCTime.minute) << ":" << double(m_latestGPS_data.GGA_datum.UTCTime.sec);
 	//            cout /*<< " -> Lat:" << m_latestGPS_data.GGA_datum.latitude_degrees << ", Lon:" << m_latestGPS_data.GGA_datum.longitude_degrees << ", Hei:" << m_latestGPS_data.GGA_datum.altitude_meters*/ << endl;
-
 			}
 
 		} // end-else
-
 	}
-
 }
 
 /* -----------------------------------------------------
@@ -387,7 +384,6 @@ void  CGPSInterface::processBuffer()
 {
 	unsigned int	i=0, lineStart = 0;
 
-//    cout << m_buffer << endl;
 	while (i<m_bufferLength)
 	{
 		// Loof for the first complete line of text:
@@ -441,9 +437,12 @@ void  CGPSInterface::processBuffer()
 ----------------------------------------------------- */
 void  CGPSInterface::processGPSstring(const std::string &s)
 {
-//	printf_debug("[GPS raw string:] %s\n",s.c_str());
-    cout << "[GPS raw string:] " << s << endl;
+    if (m_verbose)
+		cout << "[CGPSInterface] GPS raw string: " << s << endl;
+
 	// Firstly! If the string does not start with "$GP" it is not valid:
+	if (s.size()<7) return;
+
 	if ( s[0]!='$' ||
          s[1]!='G' ) return;
 
@@ -701,7 +700,7 @@ void  CGPSInterface::processGPSstring(const std::string &s)
             TTimeStamp thisGGATS    = buildTimestampFromParts( parts );
 
             if( thisRMCTS != thisGGATS )
-                cout << "[CGPSInterface::doProcess()] WARNING: UTC Times within the frame are different!" << endl;
+				{ if (m_verbose) cout << "[CGPSInterface::doProcess()] WARNING: UTC Times within the frame are different!" << endl;}
     } // end-if
 }
 
@@ -782,9 +781,8 @@ void CGPSInterface::JAVAD_sendMessage(const char *str, bool waitForAnswer )
     else
         written = m_COM.Write(str,len);
 
-#if 1
-	std::cout << "TX: " << str;
-#endif
+	if (m_verbose)
+		std::cout << "[CGPSInterface] TX: " << str;
 
 	if (written != len )
 		throw std::runtime_error(format("Error sending command: '%s'",str).c_str());
@@ -808,9 +806,8 @@ void CGPSInterface::JAVAD_sendMessage(const char *str, bool waitForAnswer )
         else
             nRead = m_COM.Read(buf,sizeof(buf));
 
-    #if 1
-        std::cout << "RX: " << buf << std::endl;
-    #endif
+		if (m_verbose)
+			std::cout << "[CGPSInterface] RX: " << buf << std::endl;
 
         if (nRead<3 )
             throw std::runtime_error(format("ERROR: Invalid response '%s' for command '%s'",buf,str));
@@ -846,7 +843,9 @@ bool CGPSInterface::OnConnectionEstablished()
             m_COM.purgeBuffers();
 
 		// Configure RTK mode and source:
-		cout << "Configure RTK options" << endl;
+		if (m_verbose)
+			cout << "[CGPSInterface] Configure RTK options" << endl;
+
 		if (!m_JAVAD_rtk_src_port.empty())
 		{
 			const int elevation_mask = 5; // Degs
@@ -882,17 +881,17 @@ bool CGPSInterface::OnConnectionEstablished()
 
 		if( m_useAIMMode )
 		{
-		    cout << "Using Advanced Input Mode";
+		    if (m_verbose) cout << "[CGPSInterface] Using Advanced Input Mode";
             m_AIMConfigured = setJAVAD_AIM_mode();
-            cout << " ... done" << endl;
+            if (m_verbose) cout << "... done" << endl;
 		}
 		JAVAD_sendMessage(format("%%%%em,,/msg/nmea/GGA:%.1f\r\n", m_data_period ).c_str());
 		JAVAD_sendMessage(format("%%%%em,,/msg/nmea/RMC:%.1f\r\n", m_data_period ).c_str());       // FAMD: 10 Hz
 
 		if( m_useAIMMode )
-            cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon commands sent successfully with AIM." << endl;
+            { if (m_verbose) cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon commands sent successfully with AIM." << endl;}
 		else
-            cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon commands sent successfully." << endl;
+            { if (m_verbose) cout << "[CGPSInterface::OnConnectionEstablished] JAVAD/TopCon commands sent successfully." << endl;}
 
 		return true;
 	}

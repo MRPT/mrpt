@@ -109,6 +109,12 @@ namespace mrpt
 			inline std::string getSensorLabel() const { return m_sensorLabel; }
 			inline void setSensorLabel(const std::string& sensorLabel) { m_sensorLabel=sensorLabel; }
 
+			/** Enable or disable extra debug info dumped to std::cout during sensor operation.
+			  * Default: disabled unless the environment variable "MRPT_HWDRIVERS_VERBOSE" is set to "1" during object creation.
+			  */
+			inline void enableVerbose(bool enabled=true) { m_verbose=enabled; }
+			inline bool isVerboseEnabled() const { return m_verbose; }
+
 			/** Register a class into the internal list of "CGenericSensor" descendents.
 			  *  Used internally in the macros DEFINE_GENERIC_SENSOR, etc...
 			  *
@@ -139,6 +145,7 @@ namespace mrpt
 			size_t	m_grab_decimation_counter; //!< Used when "m_grab_decimation" is enabled
 
 			TSensorState    m_state;
+			bool            m_verbose;
 
 			// === Data for off-rawlog file external image directory ====
 			//  Only used by a few sensor classes.
@@ -248,6 +255,9 @@ namespace mrpt
 			unsigned int getExternalImageJPEGQuality()const  {
 				return m_external_images_jpeg_quality;
 			}
+
+		public:
+			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 		}; // end of class
 
