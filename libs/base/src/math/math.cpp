@@ -941,9 +941,11 @@ double  math::normalPDF(double x, double mu, double std)
 /*---------------------------------------------------------------
 						erfc
  ---------------------------------------------------------------*/
-#if !defined(HAVE_ERF)
-double  math::erfc(double x)
+double  math::erfc(const double x)
 {
+#if defined(HAVE_ERF)
+	return ::erfc(x);
+#else
 // copied from TMath for those platforms which do not have a
 // C99 compliant compiler
 
@@ -971,18 +973,20 @@ v = t* ::exp((-z*z) +a1+t*(a2+t*(a3+t*(a4+t*(a5+t*(a6+t*(a7+t*(a8+t*(a9+t*a10)))
 if (x < 0) v = 2.0-v; // erfc(-x)=2-erfc(x)
 
 return v;
-}
 #endif
+}
 
 /*---------------------------------------------------------------
 						erf
  ---------------------------------------------------------------*/
-#if !defined(HAVE_ERF)
 double  math::erf(double x)
 {
+#if defined(HAVE_ERF)
+	return ::erf(x);
+#else
 	return (1.0 - math::erfc(x));
-}
 #endif
+}
 
 /*---------------------------------------------------------------
 						chi2inv

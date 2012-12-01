@@ -77,7 +77,7 @@ namespace mrpt
 			ASSERTDEB_(cov_inv.isSquare())
 			ASSERTDEB_(size_t(cov_inv.getColCount())==size_t(x.size()) && size_t(cov_inv.getColCount())==size_t(mu.size()))
 			T ret = ::exp( static_cast<T>(-0.5) * mrpt::math::multiply_HCHt_scalar((x-mu).eval(), cov_inv ) );
-			return scaled_pdf ? ret : ret * ::sqrt(cov_inv.det()) / ::pow(static_cast<T>(M_2PI),static_cast<T>( size(cov_inv,1) ));
+			return scaled_pdf ? ret : ret * ::sqrt(cov_inv.det() / ::pow(static_cast<T>(M_2PI),static_cast<T>( size(cov_inv,1) )) );
 			MRPT_END
 		}
 
@@ -110,7 +110,7 @@ namespace mrpt
 			return std::exp( static_cast<typename MATRIXLIKE::Scalar>(-0.5)*mrpt::math::multiply_HCHt_scalar(d,cov.inverse()))
 			/ (::pow(
 					static_cast<typename MATRIXLIKE::Scalar>(M_2PI),
-					static_cast<typename MATRIXLIKE::Scalar>(cov.getColCount()))
+					static_cast<typename MATRIXLIKE::Scalar>(0.5*cov.getColCount()))
 				* ::sqrt(cov.det()));
 			MRPT_END
 		}
@@ -137,19 +137,12 @@ namespace mrpt
 
 		/** The complementary error function of a Normal distribution
 		  */
-#ifdef HAVE_ERF
-		inline double erfc(double x) { return ::erfc(x); }
-#else
-		double BASE_IMPEXP  erfc(double x);
-#endif
+		double BASE_IMPEXP  erfc(const double x);
 
 		/** The error function of a Normal distribution
 		  */
-#ifdef HAVE_ERF
-		inline double erf(double x) { return ::erf(x); }
-#else
-		double BASE_IMPEXP   erf(double x);
-#endif
+		double BASE_IMPEXP   erf(const double x);
+
 		/** Evaluates the Gaussian distribution quantile for the probability value p=[0,1].
 		  *  The employed approximation is that from Peter J. Acklam (pjacklam@online.no),
 		  *  freely available in http://home.online.no/~pjacklam.
@@ -159,11 +152,13 @@ namespace mrpt
 		/** Evaluates the Gaussian cumulative density function.
 		  *  The employed approximation is that from W. J. Cody
 		  *  freely available in http://www.netlib.org/specfun/erf
+		  *  \note Equivalent to MATLAB normcdf(x,mu,s) with p=(x-mu)/s
 		  */
 		double  BASE_IMPEXP normalCDF(double p);
 
 		/** The "quantile" of the Chi-Square distribution, for dimension "dim" and probability 0<P<1 (the inverse of chi2CDF)
 		  * An aproximation from the Wilson-Hilferty transformation is used.
+		  *  \note Equivalent to MATLAB chi2inv()
 		  */
 		double  BASE_IMPEXP chi2inv(double P, unsigned int dim=1);
 
