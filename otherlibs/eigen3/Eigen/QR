@@ -9,7 +9,8 @@
 #include "Jacobi"
 #include "Householder"
 
-/** \defgroup QR_Module QR module
+/** \defgroup QR_Module QR module 
+ * \ingroup eigen_grp
   *
   *
   *

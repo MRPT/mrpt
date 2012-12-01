@@ -15,7 +15,8 @@
 namespace Eigen {
 
 /** \ingroup Unsupported_modules
-  * \defgroup AlignedVector3_Module Aligned vector3 module
+  * \defgroup AlignedVector3_Module Aligned vector3 module 
+ * \ingroup eigen_grp
   *
   * \code
   * #include <unsupported/Eigen/AlignedVector3>

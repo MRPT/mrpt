@@ -17,7 +17,8 @@
 #include "src/Core/util/DisableStupidWarnings.h"
 
 /** \ingroup Support_modules
-  * \defgroup Eigen2Support_Module Eigen2 support module
+  * \defgroup Eigen2Support_Module Eigen2 support module 
+ * \ingroup eigen_grp
   * This module provides a couple of deprecated functions improving the compatibility with Eigen2.
   *
   * To use it, define EIGEN2_SUPPORT before including any Eigen header

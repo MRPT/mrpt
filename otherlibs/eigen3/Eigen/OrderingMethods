@@ -6,7 +6,8 @@
 #include "src/Core/util/DisableStupidWarnings.h"
 
 /** \ingroup Sparse_modules
-  * \defgroup OrderingMethods_Module OrderingMethods module
+  * \defgroup OrderingMethods_Module OrderingMethods module 
+ * \ingroup eigen_grp
   *
   * This module is currently for internal use only.
   *

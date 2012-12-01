@@ -15,7 +15,8 @@
 namespace Eigen {
 
 /** \ingroup Unsupported_modules
-  * \defgroup NumericalDiff_Module Numerical differentiation module
+  * \defgroup NumericalDiff_Module Numerical differentiation module 
+ * \ingroup eigen_grp
   *
   * \code
   * #include <unsupported/Eigen/NumericalDiff>

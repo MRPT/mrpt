@@ -11,7 +11,8 @@
 #include "LU"
 #include "Geometry"
 
-/** \defgroup Eigenvalues_Module Eigenvalues module
+/** \defgroup Eigenvalues_Module Eigenvalues module 
+ * \ingroup eigen_grp
   *
   *
   *

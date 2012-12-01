@@ -226,7 +226,10 @@ using std::size_t;
 // gcc 4.6.0 wants std:: for ptrdiff_t 
 using std::ptrdiff_t;
 
-/** \defgroup Core_Module Core module
+/** \defgroup eigen_grp The Eigen3 library 
+  \defgroup Core_Module Core module  
+ * \ingroup eigen_grp
+ * \ingroup eigen_grp
   * This is the main module of Eigen providing dense matrix and vector support
   * (both fixed and dynamic size) with all the features corresponding to a BLAS library
   * and much more...
@@ -236,7 +239,10 @@ using std::ptrdiff_t;
   * \endcode
   */
 
-/** \defgroup Support_modules Support modules [category]
+/** \defgroup eigen_grp The Eigen3 library 
+  \defgroup Support_modules Support modules [category]  
+ * \ingroup eigen_grp
+ * \ingroup eigen_grp
   * Category of modules which add support for external libraries.
   */
 

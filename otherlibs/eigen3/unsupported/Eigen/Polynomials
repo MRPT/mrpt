@@ -17,7 +17,8 @@
 #endif
 
 /** \ingroup Unsupported_modules
-  * \defgroup Polynomials_Module Polynomials module
+  * \defgroup Polynomials_Module Polynomials module 
+ * \ingroup eigen_grp
   *
   *
   *

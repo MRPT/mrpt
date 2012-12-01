@@ -336,7 +336,8 @@ inline Scalar AlignedBox<Scalar,AmbientDim>::squaredExteriorDistance(const Align
   return dist2;
 }
 
-/** \defgroup alignedboxtypedefs Global aligned box typedefs
+/** \defgroup alignedboxtypedefs Global aligned box typedefs 
+ * \ingroup eigen_grp
   *
   * \ingroup Geometry_Module
   *

@@ -20,7 +20,8 @@
 #include <Eigen/Eigenvalues>
 
 /** \ingroup Unsupported_modules
-  * \defgroup MatrixFunctions_Module Matrix functions module
+  * \defgroup MatrixFunctions_Module Matrix functions module 
+ * \ingroup eigen_grp
   * \brief This module aims to provide various methods for the computation of
   * matrix functions. 
   *

@@ -12,7 +12,8 @@
 #include <algorithm>
 
 /** \ingroup Unsupported_modules
- *  \defgroup Skyline_Module Skyline module
+ *  \defgroup Skyline_Module Skyline module 
+ * \ingroup eigen_grp
  *
  *
  *

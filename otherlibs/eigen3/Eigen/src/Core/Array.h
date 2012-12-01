@@ -234,7 +234,8 @@ class Array
     friend struct internal::matrix_swap_impl;
 };
 
-/** \defgroup arraytypedefs Global array typedefs
+/** \defgroup arraytypedefs Global array typedefs 
+ * \ingroup eigen_grp
   * \ingroup Core_Module
   *
   * Eigen defines several typedef shortcuts for most common 1D and 2D array types.
