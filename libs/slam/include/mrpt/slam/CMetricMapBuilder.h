@@ -156,6 +156,9 @@ namespace slam
 
 		TOptions options;
 
+		public: 
+			EIGEN_MAKE_ALIGNED_OPERATOR_NEW 
+
 	}; // End of class def.
 
 	} // End of namespace

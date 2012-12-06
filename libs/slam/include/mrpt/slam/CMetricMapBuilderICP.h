@@ -178,11 +178,17 @@ namespace slam
 			TDist() : lin(0),ang(0) { }
 			double lin; // meters
 			double ang; // degrees
+			mrpt::poses::CPose2D  last_update;
+			
+			void updateDistances(const mrpt::poses::CPose2D &p);
+			void updatePose(const mrpt::poses::CPose2D &p);
 		};
-		TDist                        m_distSinceLastICP;
-		std::map<std::string,TDist>  m_distSinceLastInsertion; //!< Indexed by sensor label.
-		bool	                     m_there_has_been_an_odometry;
-		void accumulateRobotDisplacementCounters(const CPose2D &Apose);
+		TDist    m_distSinceLastICP;
+		mrpt::aligned_containers<std::string,TDist>::map_t  m_distSinceLastInsertion; //!< Indexed by sensor label.
+		bool	 m_there_has_been_an_odometry;
+
+		void accumulateRobotDisplacementCounters(const CPose2D & new_pose);
+		void resetRobotDisplacementCounters(const CPose2D & new_pose);
 
 	};
 

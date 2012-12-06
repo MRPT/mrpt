@@ -147,7 +147,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			// Accumulate movement:
 			CPose2D pose_after;
 			if (m_lastPoseEst.getLatestRobotPose(pose_after))
-				this->accumulateRobotDisplacementCounters(pose_after - pose_before);
+				this->accumulateRobotDisplacementCounters(pose_after);
 		}
 	} // end it's odometry
 	else
@@ -173,7 +173,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		m_lastPoseEst.getLatestRobotPose(previousKnownRobotPose);
 
 		// Increment (this may only include the effects of extrapolation with velocity...):
-		this->accumulateRobotDisplacementCounters(initialEstimatedRobotPose-previousKnownRobotPose);
+		this->accumulateRobotDisplacementCounters(previousKnownRobotPose);  // initialEstimatedRobotPose-previousKnownRobotPose);
 
 		// We'll skip ICP-based localization for this observation only if:
 		//  - We had some odometry since the last pose correction (m_there_has_been_an_odometry=true).
@@ -267,6 +267,8 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 					m_lastPoseEst.processUpdateNewPoseLocalization( TPose2D(pEst2D.mean), pEst2D.cov, obs->timestamp );
 					m_lastPoseEst_cov = pEst2D.cov;
 
+					m_distSinceLastICP.updatePose(pEst2D.mean);
+
 
 					// Debug output to console:
 					if (options.verbose)
@@ -284,23 +286,27 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 						cout << "[CMetricMapBuilderICP]  Ignoring ICP of low quality: " << icpReturn.goodness*100 << std::endl;
 				}
 
+				// Compute the transversed length:
+				CPose2D  currentKnownRobotPose;
+				m_lastPoseEst.getLatestRobotPose(currentKnownRobotPose);
+
+				this->accumulateRobotDisplacementCounters(currentKnownRobotPose); //currentKnownRobotPose - previousKnownRobotPose);
+
 			} // end we can do ICP.
 
-
-			// Compute the transversed length:
-			CPose2D  currentKnownRobotPose;
-			m_lastPoseEst.getLatestRobotPose(currentKnownRobotPose);
-
-			this->accumulateRobotDisplacementCounters(currentKnownRobotPose - previousKnownRobotPose);
 		} // else, we do ICP pose correction
 
 
 		// ----------------------------------------------------------
-		//				CRITERION TO DECIDE MAP UPDATE
+		//				CRITERION TO DECIDE MAP UPDATE:
+		//   A distance large-enough from the last update for each sensor, AND
+		//    either: (i) this was a good match or (ii) this is the first time for this sensor.
 		// ----------------------------------------------------------
-		bool update = 	( m_distSinceLastInsertion[obs->sensorLabel].lin >= ICP_options.insertionLinDistance ||
-						  m_distSinceLastInsertion[obs->sensorLabel].ang >= ICP_options.insertionAngDistance )
-						&& (!can_do_icp || icpReturn.goodness>ICP_options.minICPgoodnessToAccept);
+		const bool firstTimeForThisSensor = m_distSinceLastInsertion.find(obs->sensorLabel)==m_distSinceLastInsertion.end();
+		bool update = 	firstTimeForThisSensor || 
+						( (!can_do_icp || icpReturn.goodness>ICP_options.minICPgoodnessToAccept) &&
+						( m_distSinceLastInsertion[obs->sensorLabel].lin >= ICP_options.insertionLinDistance ||
+						  m_distSinceLastInsertion[obs->sensorLabel].ang >= ICP_options.insertionAngDistance ) );
 
 		// Used any "options.alwaysInsertByClass" ??
 		if (options.alwaysInsertByClass.contains(obs->GetRuntimeClass()))
@@ -318,16 +324,19 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		{
 			CTicTac tictac;
 
-			// Reset distance counters:
-			m_distSinceLastInsertion[obs->sensorLabel].lin = 0;
-			m_distSinceLastInsertion[obs->sensorLabel].ang = 0;
-
 			if (options.verbose)
 				tictac.Tic();
 
 			// Insert the observation:
 			CPose2D  currentKnownRobotPose;
 			m_lastPoseEst.getLatestRobotPose(currentKnownRobotPose);
+
+			// Create new entry:
+			m_distSinceLastInsertion[obs->sensorLabel].last_update = currentKnownRobotPose;
+
+			// Reset distance counters:
+			resetRobotDisplacementCounters(currentKnownRobotPose);
+			//m_distSinceLastInsertion[obs->sensorLabel].updatePose(currentKnownRobotPose);
 
 			if (options.verbose)
 				printf("[CMetricMapBuilderICP] Updating map from pose %s\n",currentKnownRobotPose.asString().c_str());
@@ -589,18 +598,32 @@ void  CMetricMapBuilderICP::saveCurrentEstimationToImage(const std::string &file
 }
 
 
-void CMetricMapBuilderICP::accumulateRobotDisplacementCounters(const CPose2D &Apose)
+void CMetricMapBuilderICP::accumulateRobotDisplacementCounters(const CPose2D &new_pose)
 {
-	const double Ax   = Apose.norm();
-	const double Aphi = std::abs( Apose.phi() );
+	m_distSinceLastICP.updateDistances(new_pose);
 
-	m_distSinceLastICP.lin	+= Ax;
-	m_distSinceLastICP.ang	+= Aphi;
-
-	for (std::map<std::string,TDist>::iterator it=m_distSinceLastInsertion.begin();it!=m_distSinceLastInsertion.end();++it)
-	{
-		it->second.lin	+= Ax;
-		it->second.ang	+= Aphi;
-	}
+	for (mrpt::aligned_containers<std::string,CMetricMapBuilderICP::TDist>::map_t::iterator  it=m_distSinceLastInsertion.begin();it!=m_distSinceLastInsertion.end();++it)
+		it->second.updateDistances(new_pose);
 }
 
+void CMetricMapBuilderICP::resetRobotDisplacementCounters(const CPose2D &new_pose)
+{
+	m_distSinceLastICP.updatePose(new_pose);
+
+	for (mrpt::aligned_containers<std::string,CMetricMapBuilderICP::TDist>::map_t::iterator  it=m_distSinceLastInsertion.begin();it!=m_distSinceLastInsertion.end();++it)
+		it->second.updatePose(new_pose);
+}
+
+void CMetricMapBuilderICP::TDist::updateDistances(const mrpt::poses::CPose2D &p)
+{
+	mrpt::poses::CPose2D Ap = p - this->last_update;
+	lin = Ap.norm();
+	ang = std::abs( Ap.phi() );
+}
+
+void CMetricMapBuilderICP::TDist::updatePose(const mrpt::poses::CPose2D &p)
+{
+	this->last_update = p; 
+	lin = 0;
+	ang = 0;
+}
