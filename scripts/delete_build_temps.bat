@@ -4,6 +4,7 @@ set DIR=%CD%
 IF "%1"=="" GOTO Continue
 cd %1
 del /s *.obj  
+del /s *.o  
 del /s *.pch
 del /s *.pdb
 del /s *.ilk

@@ -320,7 +320,7 @@ IF(MSVC)
 
 	# Some black magic to avoid a memory error in the linker of MSVC 2010...
 	IF (MSVC10)
-		SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}  /Zm453 ")
+		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS}  /Zm453 ")
 	ENDIF (MSVC10)
 	
 	# SSE2?

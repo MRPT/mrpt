@@ -32,8 +32,6 @@ set WX_ROOT=D:/code/wxWidgets-2.9.4
 
 REM ==============================================================
 
-GOTO MINGW_PARTS
-
 REM msvc9 ========================
 set COMP=msvc9
 set ARCHN=32
