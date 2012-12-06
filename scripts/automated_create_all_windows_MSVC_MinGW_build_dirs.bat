@@ -28,9 +28,11 @@ REM  (NOTE: Use "/" for paths in this one)
 set MINGW_ROOT=d:/MinGW
 set MINGW_ROOT_BKSLH=d:\MinGW
 REM === wxWidgets directory base name will be: %WX_ROOT%-win%ARCHN%-%COMP%
-set WX_ROOT=D:/code/wxWidgets-2.9.2
+set WX_ROOT=D:/code/wxWidgets-2.9.4
 
 REM ==============================================================
+
+GOTO MINGW_PARTS
 
 REM msvc9 ========================
 set COMP=msvc9
@@ -114,7 +116,7 @@ if %COMP%==msvc10 set MSVC_DIR=%msvc10_DIR%
 if %COMP%==msvc11 set MSVC_DIR=%msvc11_DIR%
 if %COMP%==msvc9 set CMAKE_GEN=Visual Studio 9 2008
 if %COMP%==msvc10 set CMAKE_GEN=Visual Studio 10
-if %COMP%==msvc11 set CMAKE_GEN=Visual Studio 12
+if %COMP%==msvc11 set CMAKE_GEN=Visual Studio 11
 if %ARCHN%==64 set CMAKE_GEN=%CMAKE_GEN% Win64
 
 set CMAKE_EXTRA1=
@@ -143,6 +145,27 @@ REM Common part to all compilers -----------
 
 mkdir %DIR%
 cd %DIR%
+
+REM ---------------- Create compilation script ----------------
+set PATH_FIL=paths_%COMP%_%ARCH_NAME%
+if %KINECT%==1 set PATH_FIL=%PATH_FIL%-kinect
+set PATH_FIL=%PATH_FIL%.bat
+
+if NOT %COMP%==mingw set EXTRA_MINGW_PATHS=
+if %COMP%==mingw set EXTRA_MINGW_PATHS=;%MINGW_ROOT_BKSLH%-%ARCHN%\bin
+
+echo SET PATH=C:\Windows\system32;C:\Windows%EXTRA_MINGW_PATHS%;C:\Program Files\TortoiseSVN\bin;D:\code\opencv-%COMP%-%ARCH%\bin\Release;D:\code\opencv-%COMP%-%ARCH%\bin\Debug;%WXLIBDIR%;%FFMPEGDIR%/bin;%LIBUSBDIR%\bin\%ARCH_NAME%;%CMAKE_DIR%;%CD%\bin\Release;%CD%\bin\Debug > %PATH_FIL%
+if NOT %COMP%==mingw echo call "%MSVC_DIR%\VC\vcvarsall.bat" %ARCH_NAME% >> %PATH_FIL%
+
+echo call %PATH_FIL% > AUTOBUILD.bat
+rem ----- COMPILE ----- 
+if NOT %COMP%==mingw echo call ..\%MRPT_BASE_DIR%\scripts\automated_build_msvc_binary_package.bat ..\%MRPT_BASE_DIR%\ >> AUTOBUILD.bat
+if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make test -j4 >> AUTOBUILD.bat
+if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make -j4 >> AUTOBUILD.bat
+if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make package >> AUTOBUILD.bat
+
+REM ---------------- Call CMake ----------------
+call %PATH_FIL%
 set ALL_PARAMS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON -DOpenCV_DIR=d:/code/opencv-%COMP%-%ARCH% -DMRPT_HAS_FFMPEG_WIN32=ON -DFFMPEG_WIN32_ROOT_DIR=%FFMPEGDIR% -DwxWidgets_ROOT_DIR=%WXDIR% -DwxWidgets_LIB_DIR=%WXLIBDIR%
 
 if %ARCHN%==32 set LIBUSBLIB=%LIBUSBDIR%\lib\msvc\libusb.lib 
@@ -158,23 +181,6 @@ REM and insist to make sure wxWidgets and other vars have been fixed:
 cmake . %ALL_PARAMS%
 echo off
 
-REM ---------------- Create compilation script ----------------
-set PATH_FIL=paths_%COMP%_%ARCH_NAME%
-if %KINECT%==1 set PATH_FIL=%PATH_FIL%-kinect
-set PATH_FIL=%PATH_FIL%.bat
-
-if NOT %COMP%==mingw set EXTRA_MINGW_PATHS=
-if %COMP%==mingw set EXTRA_MINGW_PATHS=;%MINGW_ROOT_BKSLH%-%ARCHN%\bin
-
-echo SET PATH=C:\Windows\system32;C:\Windows;C:\Program Files\TortoiseSVN\bin;D:\code\opencv-%COMP%-%ARCH%\bin\Release;D:\code\opencv-%COMP%-%ARCH%\bin\Debug;%WXLIBDIR%;%FFMPEGDIR%/bin;%LIBUSBDIR%\bin\%ARCH_NAME%;%CMAKE_DIR%;%CD%\bin\Release;%CD%\bin\Debug%EXTRA_MINGW_PATHS% > %PATH_FIL%
-if NOT %COMP%==mingw echo call "%MSVC_DIR%\VC\vcvarsall.bat" %ARCH_NAME% >> %PATH_FIL%
-
-echo call %PATH_FIL% > AUTOBUILD.bat
-rem ----- COMPILE ----- 
-if NOT %COMP%==mingw echo call ..\%MRPT_BASE_DIR%\scripts\automated_build_msvc_binary_package.bat ..\%MRPT_BASE_DIR%\ >> AUTOBUILD.bat
-if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make test >> AUTOBUILD.bat
-if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make >> AUTOBUILD.bat
-if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make package >> AUTOBUILD.bat
 
 rem ----- BUILD PACKAGES ----- 
 echo move mrpt*.exe ..\%DIR%.exe >> AUTOBUILD.bat

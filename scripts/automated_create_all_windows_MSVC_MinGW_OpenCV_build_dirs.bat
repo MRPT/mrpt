@@ -79,7 +79,7 @@ if %COMP%==msvc10 set MSVC_DIR=%msvc10_DIR%
 if %COMP%==msvc11 set MSVC_DIR=%msvc11_DIR%
 if %COMP%==msvc9 set CMAKE_GEN=Visual Studio 9 2008
 if %COMP%==msvc10 set CMAKE_GEN=Visual Studio 10
-if %COMP%==msvc11 set CMAKE_GEN=Visual Studio 12
+if %COMP%==msvc11 set CMAKE_GEN=Visual Studio 11
 if %ARCHN%==64 set CMAKE_GEN=%CMAKE_GEN% Win64
 
 set CMAKE_EXTRA1=
@@ -105,6 +105,24 @@ REM Common part to all compilers -----------
 
 mkdir %DIR%
 cd %DIR%
+
+REM ---------------- Create compilation script ----------------
+set PATH_FIL=paths_%COMP%_%ARCH_NAME%
+set PATH_FIL=%PATH_FIL%.bat
+
+if NOT %COMP%==mingw set EXTRA_MINGW_PATHS=
+if %COMP%==mingw set EXTRA_MINGW_PATHS=;%MINGW_ROOT_BKSLH%-%ARCHN%\bin
+
+echo SET PATH=C:\Windows\system32;C:\Windows%EXTRA_MINGW_PATHS%;%CMAKE_DIR%;C:\Program Files\TortoiseSVN\bin;%CD%\bin\Release;%CD%\bin\Debug > %PATH_FIL%
+if NOT %COMP%==mingw echo call "%MSVC_DIR%\VC\vcvarsall.bat" %ARCH_NAME% >> %PATH_FIL%
+
+echo call %PATH_FIL% > AUTOBUILD.bat
+if NOT %COMP%==mingw echo msbuild OpenCV.sln /p:Configuration=Release >> AUTOBUILD.bat
+if NOT %COMP%==mingw echo msbuild OpenCV.sln /p:Configuration=Debug >> AUTOBUILD.bat
+if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make -j4 >> AUTOBUILD.bat
+
+REM ---------------- Call CMake ----------------
+call %PATH_FIL%
 set ALL_PARAMS=-DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_CUDA=OFF
 
 REM Create Project:
@@ -115,20 +133,6 @@ REM and insist to make sure all vars have been fixed:
 cmake . %ALL_PARAMS%
 echo off
 
-REM ---------------- Create compilation script ----------------
-set PATH_FIL=paths_%COMP%_%ARCH_NAME%
-set PATH_FIL=%PATH_FIL%.bat
-
-if NOT %COMP%==mingw set EXTRA_MINGW_PATHS=
-if %COMP%==mingw set EXTRA_MINGW_PATHS=;%MINGW_ROOT_BKSLH%-%ARCHN%\bin
-
-echo SET PATH=C:\Windows\system32;C:\Windows;C:\Program Files\TortoiseSVN\bin;%CD%\bin\Release;%CD%\bin\Debug%EXTRA_MINGW_PATHS% > %PATH_FIL%
-if NOT %COMP%==mingw echo call "%MSVC_DIR%\VC\vcvarsall.bat" %ARCH_NAME% >> %PATH_FIL%
-
-echo call %PATH_FIL% > AUTOBUILD.bat
-if NOT %COMP%==mingw echo msbuild OpenCV.sln /p:Configuration=Release >> AUTOBUILD.bat
-if NOT %COMP%==mingw echo msbuild OpenCV.sln /p:Configuration=Debug >> AUTOBUILD.bat
-if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make >> AUTOBUILD.bat
 
 cd ..
 
