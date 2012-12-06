@@ -1389,6 +1389,7 @@ void xRawLogViewerFrame::loadRawlogFile(
 	const uint64_t progDialogMax = filSize>>10; // Size, in Kb's (to avoid saturatin the "int" in wxProgressDialog)
 
 	loadedFileName = str;
+	StatusBar1->SetStatusText( _U(mrpt::format("Loading file: %s",str.c_str()).c_str()) );
 
 	wxString            auxStr;
 	wxProgressDialog    progDia(
@@ -1530,7 +1531,7 @@ void xRawLogViewerFrame::loadRawlogFile(
 
 			wxString	s = _("OUT OF MEMORY: The last part of the rawlog has been freed to allow the program to continue.\n");
 #if MRPT_WORD_SIZE==32
-			s << _("  This is a 32bit machine, so the maximum memory available is 2Gb in despite of the real RAM installed.");
+			s << _("  This is a 32bit machine, so the maximum memory available is 2Gb despite of the real RAM installed.");
 #endif
 			wxMessageBox(s);
 
@@ -1550,11 +1551,10 @@ void xRawLogViewerFrame::loadRawlogFile(
 	timeToLoad = crono_Loading.Tac();
 	progDia.Update( progDialogMax );
 
-	// Update the views:
+	//// Update the views:
 	rebuildTreeView();
 
-	// Set error msg:
-	StatusBar1->SetStatusText( _U( format("Loading file: %s",str.c_str()).c_str() ));
+	//// Set error msg:
 	txtException->SetValue( _U( errorMsg.c_str() ) );
 
 	// Seems something bad happened?
