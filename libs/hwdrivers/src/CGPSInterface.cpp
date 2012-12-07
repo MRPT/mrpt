@@ -47,6 +47,9 @@ using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CGPSInterface,mrpt::hwdrivers)
 
+/** Auxiliary function: Tokenize a string "str" into commas separated tokens */
+void  getNextToken(const std::string &str,std::string &token, unsigned int &parserPos);
+
 /* -----------------------------------------------------
                 Constructor
    ----------------------------------------------------- */
@@ -435,14 +438,28 @@ void  CGPSInterface::processBuffer()
 ----------------------------------------------------- */
 void  CGPSInterface::processGPSstring(const std::string &s)
 {
-    if (m_verbose)
+	CGPSInterface::parse_NMEA(s,m_latestGPS_data, m_verbose);
+
+	// Generic observation data:
+	m_latestGPS_data.sensorPose     = m_sensorPose;
+	m_latestGPS_data.sensorLabel    = m_sensorLabel;
+}
+
+/* -----------------------------------------------------
+					parse_NMEA
+----------------------------------------------------- */
+bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::slam::CObservationGPS &out_obs, const bool verbose)
+{
+    if (verbose)
 		cout << "[CGPSInterface] GPS raw string: " << s << endl;
 
+	bool parsed_ok = false;
+
 	// Firstly! If the string does not start with "$GP" it is not valid:
-	if (s.size()<7) return;
+	if (s.size()<7) return parsed_ok;
 
 	if ( s[0]!='$' ||
-         s[1]!='G' ) return;
+         s[1]!='G' ) return parsed_ok;
 
 	// Try to determine the kind of command:
 	if ( s[3]=='G' &&
@@ -453,6 +470,7 @@ void  CGPSInterface::processGPSstring(const std::string &s)
 		// ---------------------------------------------
 		//					GGA
 		// ---------------------------------------------
+		bool all_fields_ok=true;
 		unsigned int	parserPos = 7;
 		std::string		token;
 
@@ -463,21 +481,22 @@ void  CGPSInterface::processGPSstring(const std::string &s)
 		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
 		if (token.size()>=6)
 		{
-			m_latestGPS_data.GGA_datum.UTCTime.hour		= 10 * (token[0]-'0') + token[1]-'0';
-			m_latestGPS_data.GGA_datum.UTCTime.minute	= 10 * (token[2]-'0') + token[3]-'0';
-			m_latestGPS_data.GGA_datum.UTCTime.sec		= atof( & (token.c_str()[4]) );
+			out_obs.GGA_datum.UTCTime.hour		= 10 * (token[0]-'0') + token[1]-'0';
+			out_obs.GGA_datum.UTCTime.minute	= 10 * (token[2]-'0') + token[3]-'0';
+			out_obs.GGA_datum.UTCTime.sec		= atof( & (token.c_str()[4]) );
 		}
+		else all_fields_ok = false;
 
         // Check if there is already RMC datum within this observation.
         // If so, check if the UTC time is the same in both cases
         // If the times are different -> discard the previous RMC datum
-        if( m_latestGPS_data.has_RMC_datum )
+        if( out_obs.has_RMC_datum )
         {
-            if( m_latestGPS_data.GGA_datum.UTCTime.hour != m_latestGPS_data.RMC_datum.UTCTime.hour ||
-                m_latestGPS_data.GGA_datum.UTCTime.minute != m_latestGPS_data.RMC_datum.UTCTime.minute ||
-                m_latestGPS_data.GGA_datum.UTCTime.sec != m_latestGPS_data.RMC_datum.UTCTime.sec )
+            if( out_obs.GGA_datum.UTCTime.hour != out_obs.RMC_datum.UTCTime.hour ||
+                out_obs.GGA_datum.UTCTime.minute != out_obs.RMC_datum.UTCTime.minute ||
+                out_obs.GGA_datum.UTCTime.sec != out_obs.RMC_datum.UTCTime.sec )
             {
-                m_latestGPS_data.has_RMC_datum = false;
+                out_obs.has_RMC_datum = false;
             }
         } // end-if
 
@@ -487,13 +506,16 @@ void  CGPSInterface::processGPSstring(const std::string &s)
 		{
 			double	lat = 10 * (token[0]-'0') + token[1]-'0';
 			lat += atof( & (token.c_str()[2]) ) / 60.0;
-			m_latestGPS_data.GGA_datum.latitude_degrees = lat;
+			out_obs.GGA_datum.latitude_degrees = lat;
 		}
+		else all_fields_ok = false;
 
 		// N/S:
 		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		if (token[0]=='S')
-			m_latestGPS_data.GGA_datum.latitude_degrees = -m_latestGPS_data.GGA_datum.latitude_degrees;
+		if (token.empty())
+			all_fields_ok = false;
+		else if (token[0]=='S')
+			out_obs.GGA_datum.latitude_degrees = -out_obs.GGA_datum.latitude_degrees;
 
 		// Longitude:
 		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
@@ -501,30 +523,40 @@ void  CGPSInterface::processGPSstring(const std::string &s)
 		{
 			double	lat = 100 * (token[0]-'0') + 10 * (token[1]-'0')+ token[2]-'0';
 			lat += atof( & (token.c_str()[3]) ) / 60.0;
-			m_latestGPS_data.GGA_datum.longitude_degrees = lat;
+			out_obs.GGA_datum.longitude_degrees = lat;
 		}
+		else all_fields_ok = false;
 
 		// E_W:
 		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
+		if (token.empty())
+			all_fields_ok = false;
+		else
 		if (token[0]=='W')
-			m_latestGPS_data.GGA_datum.longitude_degrees = -m_latestGPS_data.GGA_datum.longitude_degrees;
+			out_obs.GGA_datum.longitude_degrees = -out_obs.GGA_datum.longitude_degrees;
 
 		// fix quality:
 		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		m_latestGPS_data.GGA_datum.fix_quality = (unsigned char)atoi(token.c_str());
+		if (!token.empty())
+			out_obs.GGA_datum.fix_quality = (unsigned char)atoi(token.c_str());
 
 		// sats:
 		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		m_latestGPS_data.GGA_datum.satellitesUsed = (unsigned char)atoi( token.c_str() );
+		if (!token.empty())
+			out_obs.GGA_datum.satellitesUsed = (unsigned char)atoi( token.c_str() );
 
 		// HDOP:
 		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		m_latestGPS_data.GGA_datum.HDOP = (float)atof( token.c_str() );
-		m_latestGPS_data.GGA_datum.thereis_HDOP = true;
+		if (!token.empty())
+		{
+			out_obs.GGA_datum.HDOP = (float)atof( token.c_str() );
+			out_obs.GGA_datum.thereis_HDOP = true;
+		}
 
 		// Altitude:
 		getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-		m_latestGPS_data.GGA_datum.altitude_meters = atof( token.c_str() );
+		if (token.empty()) all_fields_ok = false;
+		else out_obs.GGA_datum.altitude_meters = atof( token.c_str() );
 
         // Units of the altitude:
         getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
@@ -532,43 +564,41 @@ void  CGPSInterface::processGPSstring(const std::string &s)
 
         // Geoidal separation [B]:
         getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-        m_latestGPS_data.GGA_datum.geoidal_distance = atof( token.c_str() );
+		if (!token.empty())
+			out_obs.GGA_datum.geoidal_distance = atof( token.c_str() );
 
         // Units of the geoidal separation:
         getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
 //        ASSERT_(token == "M");
 
         // Total altitude [A]+[B] and mmGPS Corrected total altitude Corr([A]+[B]):
-        m_latestGPS_data.GGA_datum.orthometric_altitude =
-        m_latestGPS_data.GGA_datum.corrected_orthometric_altitude =
-        m_latestGPS_data.GGA_datum.altitude_meters + m_latestGPS_data.GGA_datum.geoidal_distance;
+        out_obs.GGA_datum.orthometric_altitude =
+        out_obs.GGA_datum.corrected_orthometric_altitude =
+        out_obs.GGA_datum.altitude_meters + out_obs.GGA_datum.geoidal_distance;
 
-		m_latestGPS_data.has_GGA_datum = true;
-
-		// Generic observation data:
-		m_latestGPS_data.sensorPose     = m_sensorPose;
-		m_latestGPS_data.sensorLabel    = m_sensorLabel;
+		out_obs.has_GGA_datum = all_fields_ok;
+		parsed_ok = all_fields_ok;
 
         // Only set the timestamp if this data hasn't got it yet
-        if( !m_latestGPS_data.has_RMC_datum )
+        if( !out_obs.has_RMC_datum )
         {
 #if 0
-            m_latestGPS_data.timestamp      = mrpt::system::now();
+            out_obs.timestamp      = mrpt::system::now();
 #else
             // FAMD: use satellite time as timestamp??
             TTimeParts parts;
             timestampToParts( mrpt::system::now(), parts );
-            parts.hour      = m_latestGPS_data.GGA_datum.UTCTime.hour;
-            parts.minute    = m_latestGPS_data.GGA_datum.UTCTime.minute;
-            parts.second    = m_latestGPS_data.GGA_datum.UTCTime.sec;
+            parts.hour      = out_obs.GGA_datum.UTCTime.hour;
+            parts.minute    = out_obs.GGA_datum.UTCTime.minute;
+            parts.second    = out_obs.GGA_datum.UTCTime.sec;
 
-            m_latestGPS_data.timestamp = buildTimestampFromParts(parts);
+            out_obs.timestamp = buildTimestampFromParts(parts);
 #endif
-            // cout << "Timestamp [GGA]: " << timeToString(m_latestGPS_data.timestamp) << endl;
+            // cout << "Timestamp [GGA]: " << timeToString(out_obs.timestamp) << endl;
         }
 		// printf_debug("[GPS decoded GGA string] %s\n",s.c_str());
         // cout << "GGA STRING Decoded:" << endl;
-        // cout << int(m_latestGPS_data.GGA_datum.UTCTime.hour) << ":" << int(m_latestGPS_data.GGA_datum.UTCTime.minute) << ":" << m_latestGPS_data.GGA_datum.UTCTime.sec << endl;
+        // cout << int(out_obs.GGA_datum.UTCTime.hour) << ":" << int(out_obs.GGA_datum.UTCTime.minute) << ":" << out_obs.GGA_datum.UTCTime.sec << endl;
 	}
 	else
 	{
@@ -583,6 +613,7 @@ void  CGPSInterface::processGPSstring(const std::string &s)
 			//					GPRMC
 			//
 			// ---------------------------------------------
+			bool all_fields_ok = true;
 			unsigned int	parserPos = 7;
 			std::string		token;
 
@@ -592,25 +623,27 @@ void  CGPSInterface::processGPSstring(const std::string &s)
 			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
 			if (token.size()>=6)
 			{
-				m_latestGPS_data.RMC_datum.UTCTime.hour		= 10 * (token[0]-'0') + token[1]-'0';
-				m_latestGPS_data.RMC_datum.UTCTime.minute	= 10 * (token[2]-'0') + token[3]-'0';
-				m_latestGPS_data.RMC_datum.UTCTime.sec		= atof( & (token.c_str()[4]) );
+				out_obs.RMC_datum.UTCTime.hour		= 10 * (token[0]-'0') + token[1]-'0';
+				out_obs.RMC_datum.UTCTime.minute	= 10 * (token[2]-'0') + token[3]-'0';
+				out_obs.RMC_datum.UTCTime.sec		= atof( & (token.c_str()[4]) );
 			}
+			else all_fields_ok = false;
 
 			// Check if there is also GGA data within this observation. If so, check if the UTC time is the same in both cases
-            if( m_latestGPS_data.has_GGA_datum )
+            if( out_obs.has_GGA_datum )
             {
-                if( m_latestGPS_data.GGA_datum.UTCTime.hour != m_latestGPS_data.RMC_datum.UTCTime.hour ||
-                    m_latestGPS_data.GGA_datum.UTCTime.minute != m_latestGPS_data.RMC_datum.UTCTime.minute ||
-                    m_latestGPS_data.GGA_datum.UTCTime.sec != m_latestGPS_data.RMC_datum.UTCTime.sec )
+                if( out_obs.GGA_datum.UTCTime.hour != out_obs.RMC_datum.UTCTime.hour ||
+                    out_obs.GGA_datum.UTCTime.minute != out_obs.RMC_datum.UTCTime.minute ||
+                    out_obs.GGA_datum.UTCTime.sec != out_obs.RMC_datum.UTCTime.sec )
                 {
-                    m_latestGPS_data.has_GGA_datum = false;
+                    out_obs.has_GGA_datum = false;
                 }
             } // end-if
 
 			// Valid?
 			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-			m_latestGPS_data.RMC_datum.validity_char = token.c_str()[0];
+			if (token.empty()) all_fields_ok = false;
+			else out_obs.RMC_datum.validity_char = token.c_str()[0];
 
 			// Latitude:
 			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
@@ -618,13 +651,15 @@ void  CGPSInterface::processGPSstring(const std::string &s)
 			{
 				double	lat = 10 * (token[0]-'0') + token[1]-'0';
 				lat += atof( & (token.c_str()[2]) ) / 60.0;
-				m_latestGPS_data.RMC_datum.latitude_degrees = lat;
+				out_obs.RMC_datum.latitude_degrees = lat;
 			}
+			else all_fields_ok = false;
 
 			// N/S:
 			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-			if (token[0]=='S')
-				m_latestGPS_data.RMC_datum.latitude_degrees = -m_latestGPS_data.RMC_datum.latitude_degrees;
+			if (token.empty()) all_fields_ok = false;
+			else if (token[0]=='S')
+				out_obs.RMC_datum.latitude_degrees = -out_obs.RMC_datum.latitude_degrees;
 
 			// Longitude:
 			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
@@ -632,48 +667,47 @@ void  CGPSInterface::processGPSstring(const std::string &s)
 			{
 				double	lat = 100 * (token[0]-'0') + 10 * (token[1]-'0')+ token[2]-'0';
 				lat += atof( & (token.c_str()[3]) ) / 60.0;
-				m_latestGPS_data.RMC_datum.longitude_degrees = lat;
+				out_obs.RMC_datum.longitude_degrees = lat;
 			}
+			else all_fields_ok = false;
 
 			// E/W:
 			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-			if (token[0]=='W')
-				m_latestGPS_data.RMC_datum.longitude_degrees = -m_latestGPS_data.RMC_datum.longitude_degrees;
+			if (token.empty()) all_fields_ok = false;
+			else if (token[0]=='W')
+				out_obs.RMC_datum.longitude_degrees = -out_obs.RMC_datum.longitude_degrees;
 
 			// Speed:
 			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-			m_latestGPS_data.RMC_datum.speed_knots = atof( token.c_str() );
+			if (!token.empty()) out_obs.RMC_datum.speed_knots = atof( token.c_str() );
 
-			// Directorion:
+			// Direction:
 			getNextToken(s,token,parserPos); //printf("TOKEN: %s\n",token.c_str());
-			m_latestGPS_data.RMC_datum.direction_degrees= atof( token.c_str() );
+			if (!token.empty()) out_obs.RMC_datum.direction_degrees= atof( token.c_str() );
 
-			m_latestGPS_data.has_RMC_datum = true;
-
-			// Generic observation data:
-            m_latestGPS_data.sensorPose     = m_sensorPose;
-			m_latestGPS_data.sensorLabel    = m_sensorLabel;
+			out_obs.has_RMC_datum = all_fields_ok;
+			parsed_ok = all_fields_ok;
 
             // Only set the timestamp if this data hasn't got it yet
-            if( !m_latestGPS_data.has_GGA_datum )
+            if( !out_obs.has_GGA_datum )
             {
 #if 0
-                m_latestGPS_data.timestamp      = mrpt::system::now();
+                out_obs.timestamp      = mrpt::system::now();
 #else
                 // FAMD: use satellite time as timestamp??
                 TTimeParts parts;
                 timestampToParts( mrpt::system::now(), parts );
-                parts.hour      = m_latestGPS_data.RMC_datum.UTCTime.hour;
-                parts.minute    = m_latestGPS_data.RMC_datum.UTCTime.minute;
-                parts.second    = m_latestGPS_data.RMC_datum.UTCTime.sec;
+                parts.hour      = out_obs.RMC_datum.UTCTime.hour;
+                parts.minute    = out_obs.RMC_datum.UTCTime.minute;
+                parts.second    = out_obs.RMC_datum.UTCTime.sec;
 
-                m_latestGPS_data.timestamp = buildTimestampFromParts(parts);
+                out_obs.timestamp = buildTimestampFromParts(parts);
 #endif
-                // cout << "Timestamp [RMC]: " << timeToString(m_latestGPS_data.timestamp) << endl;
+                // cout << "Timestamp [RMC]: " << timeToString(out_obs.timestamp) << endl;
             }
 			//printf_debug("[GPS decoded RMC string] %s\n",s.c_str());
 //            cout << "RMC STRING Decoded:" << endl;
-//            cout << int(m_latestGPS_data.RMC_datum.UTCTime.hour) << ":" << int(m_latestGPS_data.RMC_datum.UTCTime.minute) << ":" << m_latestGPS_data.GGA_datum.UTCTime.sec << endl;
+//            cout << int(out_obs.RMC_datum.UTCTime.hour) << ":" << int(out_obs.RMC_datum.UTCTime.minute) << ":" << out_obs.GGA_datum.UTCTime.sec << endl;
 		}
 		else
 		{
@@ -682,30 +716,32 @@ void  CGPSInterface::processGPSstring(const std::string &s)
 	}
 
 	// Ensure that both GGA and RMC data have the same timestamp
-	if( m_latestGPS_data.has_RMC_datum && m_latestGPS_data.has_GGA_datum )
+	if( out_obs.has_RMC_datum && out_obs.has_GGA_datum )
     {
             TTimeParts parts;
             timestampToParts( now(), parts );
 
-            parts.hour              = m_latestGPS_data.RMC_datum.UTCTime.hour;
-            parts.minute            = m_latestGPS_data.RMC_datum.UTCTime.minute;
-            parts.second            = m_latestGPS_data.RMC_datum.UTCTime.sec;
+            parts.hour              = out_obs.RMC_datum.UTCTime.hour;
+            parts.minute            = out_obs.RMC_datum.UTCTime.minute;
+            parts.second            = out_obs.RMC_datum.UTCTime.sec;
             TTimeStamp thisRMCTS    = buildTimestampFromParts( parts );
 
-            parts.hour              = m_latestGPS_data.GGA_datum.UTCTime.hour;
-            parts.minute            = m_latestGPS_data.GGA_datum.UTCTime.minute;
-            parts.second            = m_latestGPS_data.GGA_datum.UTCTime.sec;
+            parts.hour              = out_obs.GGA_datum.UTCTime.hour;
+            parts.minute            = out_obs.GGA_datum.UTCTime.minute;
+            parts.second            = out_obs.GGA_datum.UTCTime.sec;
             TTimeStamp thisGGATS    = buildTimestampFromParts( parts );
 
             if( thisRMCTS != thisGGATS )
-				{ if (m_verbose) cout << "[CGPSInterface::doProcess()] WARNING: UTC Times within the frame are different!" << endl;}
+				{ if (verbose) cout << "[CGPSInterface::doProcess()] WARNING: UTC Times within the frame are different!" << endl;}
     } // end-if
+
+    return parsed_ok;
 }
 
 /* -----------------------------------------------------
 					processGPSstring
 ----------------------------------------------------- */
-void  CGPSInterface::getNextToken(
+void  getNextToken(
     const std::string	&str,
     std::string			&token,
     unsigned int		&parserPos)

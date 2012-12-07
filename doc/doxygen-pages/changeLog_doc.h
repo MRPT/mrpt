@@ -88,6 +88,7 @@
 		- [mrpt-hwdrivers]
 			- New method mrpt::hwdrivers::CActivMediaRobotBase::areMotorsEnabled()
 			- mrpt::hwdrivers::CGenericSensor (and all derived classes) now allocate objects aligned in memory with EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+			- New static method mrpt::hwdrivers::CGPSInterface::parse_NMEA()
 		- [mrpt-maps]
 			- Better integration of point cloud classes with PCL: - <a href="http://code.google.com/p/mrpt/source/detail?r=2943" >r2943</a>
 				- mrpt::slam::CPointsMap::loadPCDFile()
@@ -124,7 +125,9 @@
 		- Automatic detection of supported SIMD extensions (SSE*) from CMake (only for Linux OS) - <a href="http://code.google.com/p/mrpt/source/detail?r=3013" >r3013</a>
 		- Fixed building with Visual Studio 2012 (MSVC11) - <a href="http://code.google.com/p/mrpt/source/detail?r=3017" >r3017</a>
 		- MRPT now allows defining header-only libraries with the define_mrpt_lib_header_only() macro - <a href="http://code.google.com/p/mrpt/source/detail?r=3034" >r3034</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3035" >r3035</a>
-		- Added unit tests for all probability distribution functions in mrpt::math
+		- More unit tests:
+			- for all probability distribution functions in mrpt::math,
+			- for the parser in mrpt::hwdrivers::CGPSInterface::parse_NMEA()
 		- Added new documentation page: <a href="env-vars.html" >environment variables</a>.
 	- BUG FIXES:
 		- Build: Fixed detection of OpenCV 2.4.2+ installed in the system via CMake config file instead of pkg-config, which seems to be broken. - <a href="http://code.google.com/p/mrpt/source/detail?r=3019" >r3019</a>

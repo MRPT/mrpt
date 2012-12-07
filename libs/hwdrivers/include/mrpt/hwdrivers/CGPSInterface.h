@@ -80,6 +80,7 @@ namespace mrpt
 		  *		-9/JUN/2006: First version (JLBC)
 		  *		-4/JUN/2008: Added virtual methods for device-specific initialization commands.
 		  *		-10/JUN/2008: Converted into CGenericSensor class (there are no inhirited classes anymore).
+		  *		-7/DEC/2012: Added public static method to parse NMEA strings.
 		  *
 		  *  \note Verbose debug info will be dumped to cout if the environment variable "MRPT_HWDRIVERS_VERBOSE" is set to "1", or if you call CGenericSensor::enableVerbose(true)
 		  *
@@ -120,6 +121,12 @@ namespace mrpt
 			{ m_out_COM = outPort; m_cs_out_COM = csOutPort; }
 
 			inline bool isAIMConfigured() { return m_AIMConfigured; }
+
+			/** Parses one line of NMEA data from a GPS receiver, and writes the recognized fields (if any) into an observation object.
+			  * Recognized frame types are: "GGA" and "RMC".
+			  * \return true if some new data field has been correctly parsed and inserted into out_obs
+			  */
+			static bool parse_NMEA(const std::string &cmd_line, mrpt::slam::CObservationGPS &out_obs, const bool verbose=false);
 
 		protected:
 			/** Implements custom messages to be sent to the GPS unit just after connection and before normal use.
@@ -163,7 +170,7 @@ namespace mrpt
             bool unsetJAVAD_AIM_mode();
 
             // MAR'11 -------------------------------------
-            inline bool useExternCOM() { return (m_out_COM!=NULL); }
+            inline bool useExternCOM() const { return (m_out_COM!=NULL); }
             // --------------------------------------------
 
 		private:
@@ -203,13 +210,6 @@ namespace mrpt
 			/** Process a complete string from the GPS:
 			  */
 			void  processGPSstring( const std::string &s);
-
-			/** Tokenize a string "str" into commas separated tokens
-			  */
-			void  getNextToken(
-				const std::string	&str,
-				std::string			&token,
-				unsigned int		&parserPos);
 
 			/* A private copy of the last received gps datum:
 			 */
