@@ -94,6 +94,8 @@
 				- mrpt::slam::CPointsMap::setFromPCLPointCloud()
 				- mrpt::slam::CColouredPointsMap::setFromPCLPointCloudRGB()
 			- Integration of wind measurements in gas-concentration maps (by Javier G. Monroy) - <a href="http://code.google.com/p/mrpt/source/detail?r=3050" >r3050</a>
+		- [mrpt-obs]
+			- New method mrpt::slam::CObservationGPS::clear()
 		- [mrpt-opengl]
 			- Evaluation of bounding box of opengl objects. New methods: - <a href="http://code.google.com/p/mrpt/source/detail?r=3026" >r3026</a>
 				- mrpt::opengl::CRenderizable::getBoundingBox()

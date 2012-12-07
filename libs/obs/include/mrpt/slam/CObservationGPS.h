@@ -284,6 +284,9 @@ namespace slam
 		TGPSDatum_PZS		PZS_datum;	//!< If "has_PZS_datum" is true, this contains the read PZS datum (TopCon's mmGPS devices only)
 		TGPSDatum_SATS		SATS_datum;	//!< If "has_SATS_datum" is true, this contains the read PZS datum (TopCon's mmGPS devices only)
 
+		/** Empties this observation, setting all "has_*_datum" to "false" */
+		void clear();
+
 		/** A general method to retrieve the sensor pose on the robot.
 		  *  Note that most sensors will return a full (6D) CPose3D, but see the derived classes for more details or special cases.
 		  * \sa setSensorPose

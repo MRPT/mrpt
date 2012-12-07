@@ -503,3 +503,10 @@ CObservationGPS::TGPSDatum_PZS::TGPSDatum_PZS() :
 CObservationGPS::TGPSDatum_SATS::TGPSDatum_SATS()
 { }
 
+void CObservationGPS::clear()
+{
+	has_GGA_datum = false;
+	has_RMC_datum = false;
+	has_PZS_datum = false;
+	has_SATS_datum = false;
+}

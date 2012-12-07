@@ -71,8 +71,7 @@ CGPSInterface::CGPSInterface( int BUFFER_LENGTH, mrpt::hwdrivers::CSerialPort *o
 	m_data_period           ( 0.2 ) // 20 Hz
 {
 	m_sensorLabel = "GPS";
-	m_latestGPS_data.has_GGA_datum = false;
-	m_latestGPS_data.has_RMC_datum = false;
+	m_latestGPS_data.clear();
 	m_last_UTC_time.hour = 0;
 	m_last_UTC_time.minute = 0;
 	m_last_UTC_time.sec = 0;
@@ -196,8 +195,7 @@ bool  CGPSInterface::tryToOpenTheCOM()
             m_COM.setTimeouts( 1, 0, 1, 1, 1 );
         }
 
-		m_latestGPS_data.has_GGA_datum = false;
-		m_latestGPS_data.has_RMC_datum = false;
+		m_latestGPS_data.clear();
 
 		// Do extra initialization?
 		if (! OnConnectionEstablished() )
@@ -315,14 +313,15 @@ void  CGPSInterface::doProcess()
 	{ // "Normal" GPS device
 		// Write command to buffer:
 		if ( m_latestGPS_data.has_GGA_datum ||
-			 m_latestGPS_data.has_RMC_datum )
+			 m_latestGPS_data.has_RMC_datum ||
+			 m_latestGPS_data.has_RMC_datum ||
+			 m_latestGPS_data.has_SATS_datum )
 		{
 			// Add observation to the output queue:
 			CObservationGPSPtr newObs = CObservationGPSPtr( new  CObservationGPS( m_latestGPS_data ) );
 			appendObservation( newObs );
 
-			m_latestGPS_data.has_GGA_datum = false;
-			m_latestGPS_data.has_RMC_datum = false;
+			m_latestGPS_data.clear();
 		}
 	}
 	else
@@ -364,8 +363,7 @@ void  CGPSInterface::doProcess()
 				appendObservation( newObs );
 
 				// Reset for the next frame
-				m_latestGPS_data.has_GGA_datum = false;
-				m_latestGPS_data.has_RMC_datum = false;
+				m_latestGPS_data.clear();
 
 				m_last_timestamp = m_latestGPS_data.timestamp;
 
@@ -738,30 +736,6 @@ void  CGPSInterface::getNextToken(
 	}
 
 }
-
-/* -----------------------------------------------------
-					getLastData
------------------------------------------------------ */
-/*void  CGPSInterface::getLastData(
-    bool			&out_thereIsData,
-    mrpt::slam::CObservationGPS &out_data
-)
-{
-	if (m_latestGPS_data.has_GGA_datum ||
-	        m_latestGPS_data.has_RMC_datum )
-	{
-		out_data		= m_latestGPS_data;
-		out_thereIsData = true;
-
-		m_latestGPS_data.has_GGA_datum = false;
-		m_latestGPS_data.has_RMC_datum = false;
-	}
-	else
-	{
-		out_thereIsData = false;
-	}
-}*/
-
 
 /* -----------------------------------------------------
 					JAVAD_sendMessage
