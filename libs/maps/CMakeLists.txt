@@ -7,11 +7,12 @@ LIST(APPEND maps_EXTRA_SRCS_NAME 	"maps" "maps")
 LIST(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/opengl/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/opengl/*.h")
 LIST(APPEND maps_EXTRA_SRCS_NAME 	"opengl" "opengl")
 
-# for ann:
-INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/include/mrpt/otherlibs/")
-#LIST(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/libs/maps/src/maps/ann/*.cpp" "${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/otherlibs/ann/*.h")
-#LIST(APPEND maps_EXTRA_SRCS_NAME 	"ann" "ann")
-#INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/maps/include/mrpt/otherlibs/")
+# Include OctoMap (by Kai M. Wurm and Armin Hornung, University of Freiburg, Copyright (C) 2009-2012)
+# which is stored in <MRPT>/otherlibs/octomap
+#
+LIST(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/otherlibs/octomap/src/*.cpp" "${MRPT_SOURCE_DIR}/otherlibs/octomap/src/math/*.cpp")
+LIST(APPEND maps_EXTRA_SRCS_NAME 	"octomap" "octomath")
+INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/octomap/include/")
 
 
 #---------------------------------------------
@@ -35,7 +36,11 @@ IF(BUILD_mrpt-maps)
 
 	# Ignore precompiled headers in some sources:
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-		#...
+		set_source_files_properties(
+			${octomap_FILES}
+			${octomath_FILES}
+			PROPERTIES COMPILE_FLAGS "/Y-"
+			)
 	ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 
 ENDIF(BUILD_mrpt-maps) 

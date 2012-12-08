@@ -64,6 +64,8 @@
 			- [mrpt-bayes]
 			- [mrpt-graphs]
 			- [mrpt-graphslam]
+		- Integration of the Octomap C++ library (new BSD License) by Kai M. Wurm et al.: <a href="http://code.google.com/p/mrpt/source/detail?r=3081" >r3081</a>
+			- ...
 	- Changes in classes:
 		- [mrpt-base]
 			- Eigen::MatrixBase<Derived>::loadFromTextFile(), and all MRPT derived matrix classes, are now much faster loading huge matrices from text files - <a href="http://code.google.com/p/mrpt/source/detail?r=2997" >r2997</a>
